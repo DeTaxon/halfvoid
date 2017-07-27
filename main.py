@@ -2,7 +2,6 @@ from Lex import *
 from MathS import *
 from Boxs import *
 
-Numb = 0
 
 class CodeBox:
     def __init__(self,Line):
@@ -26,7 +25,7 @@ class CodeBox:
         self.SearchPar('{','}','{}',self.Tokens)
         self.RecSearch(self.Tokens,SearchMath)
         self.Block = BoxBlock(self.Tokens)
-        #SearchMath(self.Tokens)
+        MakeGlobal(self.Block)
     def RecSearch(self,Arr,Fun):
         for c in Arr:
             if c.Value in ["{}","[]","()"]:
@@ -60,21 +59,23 @@ class CodeBox:
                 else:
                     Now = -1
             Pos += 1
+    def Out(self,Name):
+        with open(Name,"w") as F:
+            self.Block.PrintConst(F)
+            self.Block.PrintFunc(F)
 
-
-                
-            
     def Check(self):
         self.CheckB(self.Tokens,1)
-        for F in self.Funcs:
-            print(F.Name)
     def CheckB(self,Arr,Size):
         for T in Arr:
-            print(Size*'-' + "Token {}".format(T.Info()))
+            if hasattr(T,'Info'):
+                print(Size*'-' + "Token {}".format(T.Info()))
+            else:
+                print(Size*'-' + "Token {}".format(T.Value))
             if T.Value in ["{}","()","[]"]:
                 self.CheckB(T.Extra,Size+1)
-            if T.Value in Box and T.Value != 'id':
+            if T.Value in Box:
                 self.CheckB(T.Extra,Size+1)
 
 It = CodeBox("simpl.cp")
-It.Check()
+It.Out("out.ll")

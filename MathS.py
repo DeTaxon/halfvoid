@@ -16,6 +16,7 @@ def RuleIt( R, Arr,Pos):
             return False
     UNext(Arr,Pos,len(R) - 1,R[0])
     return True
+#def RuleFunc(R 
         
 
 datar  = ["numi","numi","id"]
