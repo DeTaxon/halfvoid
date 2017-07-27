@@ -7,4 +7,4 @@ test: out.ll
 out.ll: $(Sors)
 	python main.py
 
-.PHONY: test
+.PHONY: test out.ll

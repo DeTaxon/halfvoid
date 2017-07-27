@@ -9,6 +9,7 @@ class ParamChain:
     def __init__(self,Ty,Na):
         self.Type = Ty
         self.Name = None
+        
         if Na != None:
             if Na.Value == "id":
                 self.Name = Na.Extra
@@ -156,26 +157,28 @@ class BoxBlock:
         self.Items = []
         
         GotSome = True
-        while GotSome:
-            i = 0
-            GotSome = False
-            while i < len(List):
-                if List[i].Value == ":=":
-                    GotSome = True
-                    break
-                i+= 1
-            if GotSome:
-                if List[i+1].Value == '!':
-                    Fu = BoxFunc(List,i)
-                else:
-                    print("Broken := ")
-                    List.pop(i)
-        for i in range(len(List)):
-            if List[i].Value in Box:
-                Ni = GetUse(List[i])
-                if Ni != None:
-                    List[i] = Ni
-        self.Items = List
+        #while GotSome:
+        #    i = 0
+        #    GotSome = False
+        #    while i < len(List):
+        #        if List[i].Value == ":=":
+        #            GotSome = True
+        #            break
+        #        i+= 1
+        #    if GotSome:
+        #        if List[i+1].Value == '!':
+        #            Fu = BoxFunc(List,i)
+        #        else:
+        #            print("Broken := ")
+        #            List.pop(i)
+        #for i in range(len(List)):
+        #    if List[i].Value in Box:
+        #        Ni = GetUse(List[i])
+        #        if Ni != None:
+        #            List[i] = Ni
+        #self.Items = List
+        for It in List:
+            print(It.Value)
 
     def PrintConst(self,F):
         for It in self.Items:
