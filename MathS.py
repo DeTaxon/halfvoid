@@ -19,7 +19,7 @@ def RuleIt( R, Arr,Pos):
 #def RuleFunc(R 
         
 
-datar  = ["numi","numf","id"]
+datar  = ["numi","numf","id","str"]
 Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d()","dm","db","!()"]
 datar += Box
 

@@ -83,6 +83,7 @@ def PutStand(Base,Name):
 
 PutStand("void",  "void")
 PutStand("...",   "...")
+PutStand("i1",    "bool")
 PutStand("i8",    "u8")
 PutStand("i16",   "u16")
 PutStand("i32",   "u32")
