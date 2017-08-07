@@ -12,6 +12,7 @@ class Type:
         self.Type  = T #standart func point array
         self.Point = None
         self.Array = None
+        self.Id = -1
         if T == "standart":
             NameTable.append(NameChain(N,self))
     def PrintUse(self,F):
@@ -20,19 +21,25 @@ class Type:
         if self.Type in ["point","array"]:
             self.Base.PrintUse(F)
             F.write("*")
+    def GetName(self,F):
+        if self.Type == "standart":
+            return self.Base
+        if self.Type in ["point","array"]:
+            return self.Base.PrintUse(F) + "*"
 
 
 def GetPoint(Bas):
     if Bas.Point == None:
         Bas.Point = Type(Bas,"point")
         TypeTable.append(Bas.Point)
+        Bas.Point.Id = len(TypeTable)-1
     return Bas.Point
 def GetArr(Bas):
     if Bas.Point == None:
         Bas.Point = Type(Bas,"point")
         TypeTable.append(Bas.Point)
+        Bas.Point.Id = len(TypeTable)-1
     return Bas.Point
-
 
 def GetType(A):
     if type(A) == type("str"):
@@ -69,23 +76,29 @@ def MakeSame(A,B):
     if Base != None:
         NameTable.append(NameChain(B,Base))
 
+def PutStand(Base,Name):
+    PreType = Type(Base,"standart",Name)
+    PreType.Id = len(TypeTable)
+    TypeTable.append(PreType)
 
-TypeTable.append(Type("void","standart", "void"))
-TypeTable.append(Type("...","standart",  "..."))
-TypeTable.append(Type("i8","standart",   "u8"))
-TypeTable.append(Type("i16","standart",  "u16"))
-TypeTable.append(Type("i32","standart",  "u32"))
-TypeTable.append(Type("i64","standart",  "u64"))
-TypeTable.append(Type("i8","standart",   "s8"))
-TypeTable.append(Type("i16","standart",  "s16"))
-TypeTable.append(Type("i32","standart",  "s32"))
-TypeTable.append(Type("i64","standart",  "s64"))
-TypeTable.append(Type("float","standart","float"))
-TypeTable.append(Type("double","standart","double"))
+PutStand("void",  "void")
+PutStand("...",   "...")
+PutStand("i8",    "u8")
+PutStand("i16",   "u16")
+PutStand("i32",   "u32")
+PutStand("i64",   "u64")
+PutStand("i8",    "s8")
+PutStand("i16",   "s16")
+PutStand("i32",   "s32")
+PutStand("i64",   "s64")
+PutStand("float", "float")
+PutStand("double","double")
 
 MakeSame("u8","char")
 MakeSame("s16","short")
 MakeSame("s32","int")
 MakeSame("s64","long")
 MakeSame(["char","^"],"string")
+
+
 

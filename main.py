@@ -20,12 +20,12 @@ class CodeBox:
                 Lines.append(PreStr)
         for Line in Lines:
             GenTokens(self.Tokens,Line)
-        self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('(',')','()',self.Tokens)
+        self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('{','}','{}',self.Tokens)
         self.RecSearch(self.Tokens,SearchMath)
         self.Block = BoxBlock(self.Tokens)
-        MakeGlobal(self.Block)
+        self.Block.Check()
     def RecSearch(self,Arr,Fun):
         for c in Arr:
             if c.Value in ["{}","[]","()"]:
@@ -45,6 +45,8 @@ class CodeBox:
                 if Now != -1:
                     Bag.append(Now)
                 Now = Pos
+            elif Toks[Pos].Value in ["{}","[]","()"]:
+                self.SearchPar(Start,End,New,Toks[Pos].Extra)
             elif Toks[Pos].Value == End:
                 if Now == -1:
                     return
@@ -53,7 +55,7 @@ class CodeBox:
                     Block.Extra.append(Toks.pop(Now+1))
                 Toks.pop(Now)
                 Toks[Now] = Block
-                Pos = Now + 1
+                Pos = Now
                 if len(Bag) > 0:
                     Now = Bag.pop()
                 else:
