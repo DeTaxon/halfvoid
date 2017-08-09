@@ -13,32 +13,43 @@ class Type:
         self.Point = None
         self.Array = None
         self.Id = -1
+        self.IsPoint = False
         if T == "standart":
             NameTable.append(NameChain(N,self))
     def PrintUse(self,F):
         if self.Type == "standart":
             F.write(self.Base)
         if self.Type in ["point","array"]:
-            self.Base.PrintUse(F)
+            if self.Base.Id == 0:
+                F.write("i8")
+            else:
+                self.Base.PrintUse(F)
             F.write("*")
-    def GetName(self,F):
+    def GetName(self):
         if self.Type == "standart":
             return self.Base
         if self.Type in ["point","array"]:
-            return self.Base.PrintUse(F) + "*"
+            if self.Base.Id == 0:
+                return "i8*"
+            else:
+                return self.Base.GetName() + "*"
 
+def GetVoidP():
+    return GetType(["void","^"]).Id
 
 def GetPoint(Bas):
     if Bas.Point == None:
         Bas.Point = Type(Bas,"point")
         TypeTable.append(Bas.Point)
         Bas.Point.Id = len(TypeTable)-1
+        Bas.Point.IsPoint = True
     return Bas.Point
 def GetArr(Bas):
     if Bas.Point == None:
         Bas.Point = Type(Bas,"point")
         TypeTable.append(Bas.Point)
         Bas.Point.Id = len(TypeTable)-1
+        Bas.Point.IsPoint = True
     return Bas.Point
 
 def GetType(A):

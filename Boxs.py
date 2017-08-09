@@ -21,6 +21,14 @@ def PopC():
     while len(ContextName) > Unt:
         ContextName.pop()
 
+def GoodPoints(Par1,Par2):
+    if Par1.Id == GetVoidP() and Par2.IsPoint:
+       return True
+    if Par2.Id == GetVoidP() and Par1.IsPoint:
+       return True
+    return False
+    
+    
 def GetFunc(Name,Pars):
     WrongValue = False
     for Itc in ContextStuff:
@@ -30,6 +38,8 @@ def GetFunc(Name,Pars):
             for i in range(len(It.Params)):
                 if It.Params[i].Type.Id == GetType("...").Id:
                     return It
+                if GoodPoints(It.Params[i].Type,Pars[i].Type):
+                    continue
                 if It.Params[i].Type.Id != Pars[i].Type.Id:
                     #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
                     WrongValue = True
@@ -44,7 +54,7 @@ def GetFunc(Name,Pars):
                     return It
 
                 if It.Params[i].Type.Id != Pars[i].Type.Id:
-                    print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
+                    #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
                     WrongValue = True
                     break
             if not WrongValue:
@@ -99,15 +109,15 @@ class ParamChain:
             self.Extra.PrintConst(F)
         return None
     def PrintPre(self,F):
-        self.PreId = GetNumb()
-        F.write("%Tmp{} = load ".format(self.PreId))
+        self.PrevId = GetNumb()
+        F.write("%Tmp{} = load ".format(self.PrevId))
         self.Type.PrintUse(F)
         F.write(" , ")
         self.Type.PrintUse(F)
         F.write("* %Tmp{}\n".format(self.Id))
     def PrintUse(self,F):
         self.Type.PrintUse(F)
-        F.write(" %Tmp{}".format(self.PreId))
+        F.write(" %Tmp{}".format(self.PrevId))
     def PrintFunc(self,F):
         if not self.IsFunc:
             return None
@@ -119,6 +129,8 @@ class ParamChain:
         return None
     def GetName(self,F):
         return "%Tmp{}".format(self.PrevId)
+    def GetPoint(self):
+        return "%Tmp{}".format(self.Id)
     def PrintInBlock(self,F):
         if not self.IsFunc and self.Type != None:
             if self.Extra != None:
@@ -126,9 +138,6 @@ class ParamChain:
             F.write("%Tmp{} = alloca ".format(self.Id))
             self.Type.PrintUse(F)
             F.write("\n")
-            #F.write(" , ")
-            #self.Extra.PrintUse(F)
-            #F.write("\n")
             if self.Extra != None:
                 F.write("store ")
                 self.Extra.PrintUse(F)
@@ -184,38 +193,37 @@ class ParConstNum:
     def __init__(self,Obj):
         self.Value = "~num"
         self.Extra = Obj.Extra
-        self.PreId = -1
+        self.PrevId = -1
         
         if Obj.Value == "numi":
             self.Type = GetType("int")
         if Obj.Value == "numf":
-            self.Type = GetType("double") #GetType("float")
+            self.Type = GetType("float") #GetType("float")
         def PrintConst(self,F):
             return None
     def Check(self):
         return None
     def PrintConst(self,F):
-        if self.Extra != None:
+        if self.Extra != None and hasattr(self.Extra,"PrintConst"):
             self.Extra.PrintConst(F)
         return None
     def PrintFunc(self,F):
         return None
     def GetName(self):
-        return "Tmp{}".format(self.PreId)
+        return "Tmp{}".format(self.PrevId)
     def PrintPre(self,F):
-        self.PreId = GetNumb()
+        self.PrevId = GetNumb()
         if self.Type.Id == GetType("int").Id:
-            F.write("%Tmp{} = add ".format(self.PreId))
+            F.write("%Tmp{} = add ".format(self.PrevId))
             self.Type.PrintUse(F)
             F.write(" {} , 0\n".format(self.Extra))
         else:
-            F.write("%Tmp{} = fadd ".format(self.PreId))
-            self.Type.PrintUse(F)
-            F.write(" {} , 0.0\n".format(self.Extra))
+            F.write("%Tmp{} = fptrunc double ".format(self.PrevId))
+            F.write(" {} to  float\n".format(self.Extra))
 
     def PrintUse(self,F):
         self.Type.PrintUse(F)
-        F.write(" %Tmp{}".format(self.PreId))
+        F.write(" %Tmp{}".format(self.PrevId))
         return None
 class BoxReturn:
     def __init__(self,Obj):
@@ -243,7 +251,7 @@ class BoxParamCall:
     def __init__(self,Obj):
         self.Value = "~d"
         self.Type = GetType("void")
-        self.PreId = None
+        self.PrevId = None
         self.Object = None
         self.ToUse = Obj.Extra
         
@@ -254,10 +262,10 @@ class BoxParamCall:
     def PrintPre(self,F):
         #self.Object.Extra.PrintPre(F) 
         self.Object.PrintPre(F) 
-        self.PreId = self.Object.PreId
+        self.PrevId = self.Object.PrevId
         return None
     def GetName(self):
-        return "Tmp{}".format(self.PreId)
+        return "Tmp{}".format(self.PrevId)
     def PrintUse(self,F):
         #self.Ret.RetType.PrintUse(F)
         #F.write(" %Tmp{}".format(self.PrevId))
@@ -271,7 +279,82 @@ class BoxParamCall:
         if self.Object == None:
             raise ValueError("Object not found {}".format(self.ToUse))
         self.Type = self.Object.Type
+        self.Id = self.Object.Id
         #self.Type = self.CallFunc.RetType
+        return None
+    def PrintPointPre(self,F):
+        #Tempt TEMP
+        return None
+    def PrintPointUse(self,F):
+        GetPoint(self.Type).PrintUse(F)
+        F.write(" %Tmp{}".format(self.Id))
+        return None
+
+class BoxExc:
+    def __init__(self,Obj,NewType):
+        self.ToType = NewType
+        self.Extra = Obj
+        self.Value = "~[T]"
+        self.Type = Obj.Type
+    def PrintPre(self,F):
+        if self.Extra != None:
+            self.Extra.PrintPre(F)
+        self.PrevId = GetNumb()
+        if self.Type.IsPoint:
+            F.write("%Tmp{} = bitcast ".format(self.PrevId))
+            self.Extra.PrintUse(F)
+            F.write(" to {}\n".format(self.ToType.GetName()))
+    def PrintUse(self,F):
+        self.ToType.PrintUse(F)
+        F.write(" %Tmp{}".format(self.PrevId))
+    def PrintConst(self,F):
+        self.Extra.PrintConst(F)
+    def PrintFunc(self,F):
+        self.Extra.PrintConst(F)
+class BoxPrisvCall:
+    def __init__(self,Obj):
+        self.Value = "~dp"
+        self.Params = []
+        self.Type = GetType("void")
+        self.PrevId = None
+        self.CallFunc = None
+        
+        self.ToCall = Obj.Extra[1].Value
+        self.Params.append(GetUse(Obj.Extra[0]))
+        self.Params.append(GetUse(Obj.Extra[2]))
+    def PrintConst(self,F):
+        for P in self.Params:
+            P.PrintConst(F)
+    def PrintFunc(self,F):
+        for P in self.Params:
+            P.PrintFunc(F)
+    def PrintPre(self,F):
+        for N in self.Params:
+            N.PrintPre(F)
+        self.PrevId = GetNumb()
+        #self.CallFunc.PrintUse(F,self.PrevId,self.Params)
+        self.Params[0].PrintPointPre(F)
+
+        F.write("store ")
+        self.Params[1].PrintUse(F)
+        F.write(", ")
+        self.Params[0].PrintPointUse(F)
+        F.write("\n")
+        return None
+    def GetName(self):
+        return "Tmp{}".format(self.PrevId)
+    def PrintUse(self,F):
+        return None
+    def PrintInBlock(self,F):
+        self.PrintPre(F)
+        return None
+    def Check(self):
+        for It in self.Params:
+            It.Check()
+
+        self.Type = self.Params[0].Type
+        if self.Params[1].Type.Id != self.Type.Id and GoodPoints(self.Params[1].Type,self.Type):
+            self.Params[1] = BoxExc(self.Params[1],self.Type)
         return None
 
 class BoxFuncsCall:
@@ -330,8 +413,12 @@ class BoxFuncsCall:
             raise ValueError("Func not found {}".format(self.ToCall))
         self.Ret = self.CallFunc
         self.Type = self.CallFunc.Type
-        if self.Type.Id == 0:
-            print(self.CallFunc.Name)
+
+        for i in range(len(self.Params)):
+            if self.CallFunc.Params[i].Type == GetType("..."):
+                break
+            if self.CallFunc.Params[i].Type.Id != self.Params[i].Type.Id and GoodPoints(self.Params[i].Type,self.CallFunc.Params[i].Type):
+                self.Params[i] = BoxExc(self.Params[i],self.CallFunc.Params[i].Type)
         #print(self.Type.Id)
         return None
 
@@ -342,6 +429,8 @@ def GetUse(Obj):
         return  BoxFuncsCall(Obj)
     if Obj.Value in ["id"]:
         return  BoxParamCall(Obj)
+    if Obj.Value in ["dp"]:
+        return  BoxPrisvCall(Obj)
     if Obj.Value == "str": 
         return ParConstStr(Obj)
     if Obj.Value in ["numf","numi"]:
@@ -425,7 +514,7 @@ class BoxFunc:
         i = 3
         while Obj.Extra[i].Value not in  ["{}","declare"]:
             i += 1
-        self.Type = GetType(Obj.Extra[3].Extra) # VERY TEMP
+        self.Type = ParseType(Obj.Extra[3]) # VERY TEMP
         i  = 4 # Temp
         if Obj.Extra[i].Value != "declare":
             self.Block = BoxBlock(Obj.Extra[i].Extra)
@@ -434,7 +523,10 @@ class BoxFunc:
             self.Block.PrintConst(F)
     def PrintUse(self,F,PId,ParList):
         if self.AsmLine == None:
-            F.write("%Tmp{} = call ".format(PId))
+
+            if self.Type.Id != 0:
+                F.write("%Tmp{} = ".format(PId))
+            F.write("call ")
             self.PrintType(F)
             F.write(" ")
             self.PrintName(F)
@@ -505,9 +597,9 @@ TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
 StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%WW{1} = sitofp i32 %{1} to double \n%{0} = fadd double %WW{1} , %{2}\n"
+TestAdd.AsmLine ="%WW{1} = sitofp i32 %{1} to float \n%{0} = fadd float %WW{1} , %{2}\n"
 TestAdd.Name = "+"
-TestAdd.Type = GetType("double")
+TestAdd.Type = GetType("float")
 TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-TestAdd.Params.append(ParamChain(GetType("double"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("float"),"~no"))
 StandartStuff.append(TestAdd)

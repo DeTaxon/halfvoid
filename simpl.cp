@@ -1,14 +1,15 @@
 printf :=  !(char^ Line,...) -> int declare
 puts := !(char^ Line) -> int declare
-
-
+malloc := !(int Size) -> void^ declare
+free := !(void^ Point) -> void declare
 
 main := !(int argc,string[] argv) -> int 
 {
-	z := "%s %i\n"
-	i := u8
+	i := u32^
+	j := u8^
+	j = i
 	puts("{{{Start program}}}")
-	printf(z , "Hello" , i) 
+	printf("Hello %p\n" , i ) 
 	puts("{{{End program}}}")
 	return 0
 }

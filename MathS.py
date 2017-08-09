@@ -20,7 +20,7 @@ def RuleIt( R, Arr,Pos):
         
 
 datar  = ["numi","numf","id","str"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d()","dm","db","!()"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d()","dm","db","!()","dp"]
 datar += Box
 
 Rules = []
@@ -36,6 +36,7 @@ Rules.append(["dm",datar,["+","-"],datar])
 Rules.append(["db",datar,"==",datar])
 Rules.append(["db",datar,["or","xor"],datar])
 Rules.append(["db",datar,"and",datar])
+Rules.append(["dp",datar,"=",datar])
 Rules.append(["newparam","id",":=",datar])
 Rules.append(["ret","return",datar])
 #Rulse.append(["nummi"
