@@ -6,12 +6,15 @@ free := !(void^ Point) -> void declare
 
 main := !(int argc,string[] argv) -> int 
 {
-	i := int^
-	i = malloc(32)
-	i[5] = 5
+	i := 5
+	while i 
+	{
+		printf("i = %i\n",i)
+		i = i - 1
+	}
 	puts("{{{Start program}}}")
-	printf("Hello %p %i\n" , i ,i[5] ) 
+	printf("Hello %i\n" , i ) 
 	puts("{{{End program}}}")
-	free(i)
+	//free(i)
 	return 0
 }

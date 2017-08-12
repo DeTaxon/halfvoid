@@ -68,6 +68,85 @@ def GetParam(Name):
             return It
     return None
 
+class BoxWhile:
+    def __init__(self,Obj):
+        self.Id = GetNumb()
+        self.Value = "~while"
+        self.Quest = GetUse(Obj.Extra[1])
+        if Obj.Extra[2].Value == "{}":
+            self.Job = BoxBlock(Obj.Extra[2].Extra)
+        else:
+            self.Job = GetUse(Obj.Extra[2])
+    def PrintInBlock(self,F):
+        F.write("br label %WhileC{}\n".format(self.Id))
+        F.write("WhileC{}:\n".format(self.Id))
+        self.Quest.PrintPre(F)
+        F.write("br ")
+        self.Quest.PrintUse(F)
+        F.write(", label %WhileT{0}, label %WhileF{0}\n".format(self.Id))
+
+        F.write("WhileT{}:\n".format(self.Id))
+        self.Job.PrintInBlock(F)
+        F.write("br label %WhileC{}\n".format(self.Id))
+        F.write("WhileF{}:\n".format(self.Id))
+    def PrintFunc(self,F):
+        self.Quest.PrintFunc(F)
+        self.Job.PrintFunc(F)
+    def PrintConst(self,F):
+        self.Quest.PrintConst(F)
+        self.Job.PrintConst(F)
+    def Check(self):
+        self.Quest.Check()
+        self.Job.Check()
+        if self.Quest.Type != GetType("bool").Id:
+            self.Quest = BoxExc(self.Quest,GetType("bool"))
+class BoxIf:
+    def __init__(self,Obj):
+        self.Id = GetNumb()
+        self.Value = "~if"
+        self.Quest = GetUse(Obj.Extra[1])
+        if Obj.Extra[2].Value == "{}":
+            self.OnTrue = BoxBlock(Obj.Extra[2].Extra)
+        else:
+            self.OnTrue = GetUse(Obj.Extra[2])
+        self.OnFalse = None
+        if len(Obj.Extra) > 3:
+            self.OnFalse = GetUse(Obj.Extra[4])
+    def PrintInBlock(self,F):
+        self.Quest.PrintPre(F)
+        F.write("br ")
+        self.Quest.PrintUse(F)
+        F.write(", label %IfTrue{}".format(self.Id))
+        if self.OnFalse != None:
+            F.write(", label %IfFalse{}\n".format(self.Id))
+        else:
+            F.write(", label %IfEnd{}\n".format(self.Id))
+        F.write("IfTrue{}:\n".format(self.Id))
+        self.OnTrue.PrintInBlock(F)
+        F.write("br label %IfEnd{}\n".format(self.Id))
+        if self.OnFalse != None:
+            F.write("IfFalse{}:\n".format(self.Id))
+            self.OnFalse.PrintInBlock(F)
+            F.write("br label %IfEnd{}\n".format(self.Id))
+        F.write("IfEnd{}:\n".format(self.Id))
+    def PrintFunc(self,F):
+        self.Quest.PrintFunc(F)
+        self.OnTrue.PrintFunc(F)
+        if self.OnFalse != None:
+            self.OnFalse.PrintFunc(F)
+    def PrintConst(self,F):
+        self.Quest.PrintConst(F)
+        self.OnTrue.PrintConst(F)
+        if self.OnFalse != None:
+            self.OnFalse.PrintConst(F)
+    def Check(self):
+        self.Quest.Check()
+        self.OnTrue.Check()
+        if self.OnFalse != None:
+            self.OnFalse.Check()
+        if self.Quest.Type != GetType("bool").Id:
+            self.Quest = BoxExc(self.Quest,GetType("bool"))
+        
 class ParamChain:
     def __init__(self,Obj, NotObj = None):
         self.Value = "~:="
@@ -195,6 +274,9 @@ class ParConstNum:
         self.Extra = Obj.Extra
         self.PrevId = -1
         
+        if Obj.Value in ["true","false"]:
+            self.Type = GetType("bool")
+            self.Extra = (1 if Obj.Value == "true" else 0)
         if Obj.Value == "numi":
             self.Type = GetType("int")
         if Obj.Value == "numf":
@@ -213,7 +295,7 @@ class ParConstNum:
         return "Tmp{}".format(self.PrevId)
     def PrintPre(self,F):
         self.PrevId = GetNumb()
-        if self.Type.Id == GetType("int").Id:
+        if self.Type.Id == GetType("int").Id or self.Type.Id == GetType("bool").Id:
             F.write("%Tmp{} = add ".format(self.PrevId))
             self.Type.PrintUse(F)
             F.write(" {} , 0\n".format(self.Extra))
@@ -374,6 +456,10 @@ class BoxExc:
             F.write("%Tmp{} = bitcast ".format(self.PrevId))
             self.Extra.PrintUse(F)
             F.write(" to {}\n".format(self.Type.GetName()))
+        if self.Type.Id == GetType("bool").Id:
+            F.write("%Tmp{} = icmp ne ".format(self.PrevId))
+            self.Extra.PrintUse(F)
+            F.write(" , 0\n")
     def PrintUse(self,F):
         self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
@@ -498,7 +584,7 @@ class BoxFuncsCall:
 
 
 def GetUse(Obj):
-    if Obj.Value in ["d()","dm"]:
+    if Obj.Value in ["d()","dm","db"]:
         return  BoxFuncsCall(Obj)
     if Obj.Value in ["id"]:
         return  BoxParamCall(Obj)
@@ -506,9 +592,13 @@ def GetUse(Obj):
         return  BoxPrisvCall(Obj)
     if Obj.Value in ["d^","d[]"]: 
         return BoxPoint(Obj)
+    if Obj.Value == "daif": 
+        return BoxIf(Obj)
+    if Obj.Value == "dawhile": 
+        return BoxWhile(Obj)
     if Obj.Value == "str": 
         return ParConstStr(Obj)
-    if Obj.Value in ["numf","numi"]:
+    if Obj.Value in ["numf","numi","true","false"]:
         return ParConstNum(Obj)
     if Obj.Value == "ret":
         return BoxReturn(Obj)
@@ -539,6 +629,9 @@ class BoxBlock:
         for It in self.Items:
             It.PrintFunc(F)
     def PrintUse(self,F):
+        for It in self.Items:
+            It.PrintInBlock(F)
+    def PrintInBlock(self,F):
         for It in self.Items:
             It.PrintInBlock(F)
     def Check(self):
@@ -614,7 +707,7 @@ class BoxFunc:
             F.write(")\n")
         else:
             F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
-            F.write(" ")
+            #F.write(" ") ?
 
     def PrintFunc(self,F):
         if self.IsTemplate:
@@ -666,6 +759,22 @@ class BoxFunc:
 TestAdd = BoxFunc(None)
 TestAdd.AsmLine ="%{0} = add i32 %{1} , %{2}\n"
 TestAdd.Name = "+"
+TestAdd.Type = GetType("int")
+TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="%{0} = icmp sgt i32 %{1} , %{2}\n"
+TestAdd.Name = ">"
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="%{0} = sub  i32 %{1} , %{2}\n"
+TestAdd.Name = "-"
 TestAdd.Type = GetType("int")
 TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
 TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
