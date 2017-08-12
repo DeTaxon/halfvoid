@@ -22,9 +22,9 @@ def PopC():
         ContextName.pop()
 
 def GoodPoints(Par1,Par2):
-    if Par1.Id == GetVoidP() and Par2.IsPoint:
+    if Par1.Id == GetVoidP() and Par2.IsPoint and not Par2.Base.IsPoint:
        return True
-    if Par2.Id == GetVoidP() and Par1.IsPoint:
+    if Par2.Id == GetVoidP() and Par1.IsPoint and not Par1.Base.IsPoint:
        return True
     return False
     
@@ -249,7 +249,7 @@ class BoxReturn:
 
 class BoxParamCall:
     def __init__(self,Obj):
-        self.Value = "~d"
+        self.Value = "~id"
         self.Type = GetType("void")
         self.PrevId = None
         self.Object = None
@@ -290,12 +290,82 @@ class BoxParamCall:
         F.write(" %Tmp{}".format(self.Id))
         return None
 
+class BoxPoint:
+    def __init__(self,Obj):
+        if Obj.Value == "d^":
+            self.Value = "~d^"
+            self.Extra = GetUse(Obj.Extra[0])
+        if Obj.Value == "d[]":
+            self.Value = "~d[]"
+            self.Extra = GetUse(Obj.Extra[0])
+            self.Ind = GetUse(Obj.Extra[1].Extra[0])
+    def PrintPointPre(self,F):
+        if self.Value == "~d[]":
+            self.PrevId = GetNumb()
+            self.Extra.PrintPre(F)
+            self.Ind.PrintPre(F)
+            F.write("%Tmp{} = getelementptr ".format(self.PrevId))
+            self.Type.PrintUse(F)
+            F.write(" , ")
+            self.Extra.PrintUse(F)
+            F.write(" , ")
+            self.Ind.PrintUse(F)
+            F.write("\n")
+        else:
+            self.Extra.PrintPre(F)
+    def PrintPointUse(self,F):
+        if self.Value == "~d[]":
+            self.Extra.Type.PrintUse(F)
+            F.write(" %Tmp{}".format(self.PrevId))
+        else:
+            self.Extra.PrintUse(F)
+    def Check(self):
+        self.Extra.Check()
+        if not self.Extra.Type.IsPoint:
+            raise ValueError('Not a point')
+        self.Type = self.Extra.Type.Base
+
+        if self.Value == "~d[]":
+            self.Ind.Check()
+    def PrintFunc(self,F):
+        self.Extra.PrintFunc(F)
+        if self.Value == "~d[]":
+            self.Ind.PrintFunc(F)
+    def PrintConst(self,F):
+        self.Extra.PrintConst(F)
+        if self.Value == "~d[]":
+            self.Ind.PrintConst(F)
+    def PrintPre(self,F):
+        self.Extra.PrintPre(F)
+        self.PrevId = GetNumb()
+        if self.Value == "~d[]":
+            self.Ind.PrintPre(F)
+            F.write("%PreTmp{} = getelementptr ".format(self.PrevId))
+            self.Type.PrintUse(F)
+            F.write(" , ")
+            self.Extra.PrintUse(F)
+            F.write(" , ")
+            self.Ind.PrintUse(F)
+            F.write("\n")
+
+        F.write("%Tmp{} = load ".format(self.PrevId))
+        self.Type.PrintUse(F)
+        F.write(" , ")
+        if self.Value == "~d[]":
+            self.Extra.Type.PrintUse(F)
+            F.write(" %PreTmp{}\n".format(self.PrevId))
+        else:
+            self.Extra.PrintUse(F)
+            F.write("\n")
+    def PrintUse(self,F):
+        self.Type.PrintUse(F)
+        F.write(" %Tmp{}".format(self.PrevId))
+
 class BoxExc:
     def __init__(self,Obj,NewType):
-        self.ToType = NewType
         self.Extra = Obj
         self.Value = "~[T]"
-        self.Type = Obj.Type
+        self.Type = NewType
     def PrintPre(self,F):
         if self.Extra != None:
             self.Extra.PrintPre(F)
@@ -303,9 +373,9 @@ class BoxExc:
         if self.Type.IsPoint:
             F.write("%Tmp{} = bitcast ".format(self.PrevId))
             self.Extra.PrintUse(F)
-            F.write(" to {}\n".format(self.ToType.GetName()))
+            F.write(" to {}\n".format(self.Type.GetName()))
     def PrintUse(self,F):
-        self.ToType.PrintUse(F)
+        self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
     def PrintConst(self,F):
         self.Extra.PrintConst(F)
@@ -329,8 +399,9 @@ class BoxPrisvCall:
         for P in self.Params:
             P.PrintFunc(F)
     def PrintPre(self,F):
-        for N in self.Params:
-            N.PrintPre(F)
+        #for N in self.Params:
+            #N.PrintPre(F)
+        self.Params[1].PrintPre(F)
         self.PrevId = GetNumb()
         #self.CallFunc.PrintUse(F,self.PrevId,self.Params)
         self.Params[0].PrintPointPre(F)
@@ -355,6 +426,8 @@ class BoxPrisvCall:
         self.Type = self.Params[0].Type
         if self.Params[1].Type.Id != self.Type.Id and GoodPoints(self.Params[1].Type,self.Type):
             self.Params[1] = BoxExc(self.Params[1],self.Type)
+        if self.Params[0].Type.Id != self.Params[1].Type.Id:
+            raise ValueError("Type error")
         return None
 
 class BoxFuncsCall:
@@ -431,6 +504,8 @@ def GetUse(Obj):
         return  BoxParamCall(Obj)
     if Obj.Value in ["dp"]:
         return  BoxPrisvCall(Obj)
+    if Obj.Value in ["d^","d[]"]: 
+        return BoxPoint(Obj)
     if Obj.Value == "str": 
         return ParConstStr(Obj)
     if Obj.Value in ["numf","numi"]:
