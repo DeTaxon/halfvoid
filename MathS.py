@@ -23,7 +23,7 @@ datar  = ["numi","numf","id","str","true","false"]
 Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d()","dm","db","!()","dp"]
 datar += Box
 ForFor = datar
-ForFor += ["{}","daif","dawhile"]
+ForFor += ["{}","daif","dawhile","ret"]
 
 Rules = []
 Rules.append(["dm",datar,['++','--']])
@@ -42,11 +42,11 @@ Rules.append(["db",datar,"and",datar])
 Rules.append(["dp",datar,"=",datar])
 Rules.append(["newparam","id",":=",datar])
 Rules.append(["newtype","id",":=","type","!()^"])
+Rules.append(["ret","return",datar])
 Rules.append(["daif","if",datar,ForFor,"else",ForFor])
 Rules.append(["daif","if",datar,ForFor])
 Rules.append(["dawhile","do",ForFor,"while",datar])
 Rules.append(["dawhile","while",datar,ForFor])
-Rules.append(["ret","return",datar])
 #Rulse.append(["nummi"
 
 for R in Rules:

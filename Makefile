@@ -1,8 +1,8 @@
 Sors := $(wildcard *.py)
 Sors := $(Sors) simpl.cp
 
-test: out.ll
-	lli out.ll
+a.out: out.ll
+	clang out.ll -lglfw
 
 out.ll: $(Sors)
 	python main.py

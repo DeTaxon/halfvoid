@@ -1,3 +1,5 @@
+from Lex import *
+
 TypeTable = []
 NameTable = []
 
@@ -26,6 +28,14 @@ class Type:
             else:
                 self.Base.PrintUse(F)
             F.write("*")
+        if self.Type == "funcp":
+            self.Base.PrintUse(F)
+            F.write("(")
+            for i in range(len(self.Params)):
+                if i != 0:
+                    F.write(" , ")
+                self.Params[i].PrintUse(F)
+            F.write(")*")
     def GetName(self):
         if self.Type == "standart":
             return self.Base
@@ -35,9 +45,32 @@ class Type:
             else:
                 return self.Base.GetName() + "*"
 
-def AddFuncPoint(self,Obj):
+def AddFuncPoint(Obj,NewName = None):
     FuncType = Type(None,"funcp")
-    return None
+    Pars = Obj.Extra[1].Extra
+    if len(Pars) > 0:
+        Pars.append(Token(',',','))
+        PArrs = []
+        j = 0
+        while j < len(Pars):
+            if Pars[j].Value == ',':
+                if len(PArrs) == 1:
+                    if PArrs[0].Value == "...":
+                        FuncType.Params.append(ParamChain(GetType("...")))
+                    #else: 
+                        # error self.Params.append(ParamChain(None,PArrs[0]))
+                elif len(PArrs) == 2:
+                    FuncType.Params.append(ParseType(PArrs[0]))
+                #else == 4   int x = 4
+                PArrs = []
+            else:
+                PArrs.append(Pars[j])
+            j += 1
+    FuncType.Base = ParseType(Obj.Extra[4])
+    TypeTable.append(FuncType) # broken
+    if NewName != None:
+        NameTable.append(NameChain(NewName,FuncType))
+    return FuncType 
 
 def GetVoidP():
     return GetType(["void","^"]).Id

@@ -40,6 +40,8 @@ def GetFunc(Name,Pars):
                     return It
                 if GoodPoints(It.Params[i].Type,Pars[i].Type):
                     continue
+                if It.Params[i].Type.Type == "funcp":
+                    continue
                 if It.Params[i].Type.Id != Pars[i].Type.Id:
                     #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
                     WrongValue = True
@@ -195,12 +197,12 @@ class ParamChain:
             F.write("%")
             F.write(self.Name)
     def PrintConst(self,F):
-        #if self.IsFunc:
-        #    self.Extra.PrintConst(F)
         if self.Extra != None:
             self.Extra.PrintConst(F)
         return None
     def PrintPre(self,F):
+        if self.IsFunc:
+            return None
         if self.IsRef:
             self.PrevId = GetNumb()
             F.write("%Tmp{} = load ".format(self.PrevId))
@@ -209,6 +211,10 @@ class ParamChain:
             self.Type.PrintUse(F)
             F.write("* %Tmp{}\n".format(self.Id))
     def PrintUse(self,F):
+        if self.IsFunc:
+            self.Extra.PrintFPoint(F)
+            F.write(" @{}".format(self.Name))
+            return None
         if self.IsRef:
             self.Type.PrintUse(F)
             F.write(" %Tmp{}".format(self.PrevId))
@@ -362,7 +368,7 @@ class BoxParamCall:
     def PrintPre(self,F):
         #self.Object.Extra.PrintPre(F) 
         self.Object.PrintPre(F)
-        if self.Object.IsRef == True:
+        if hasattr(self.Object,"PrevId"):
             self.PrevId = self.Object.PrevId
         return None
     def GetName(self):
@@ -559,6 +565,7 @@ class BoxFuncsCall:
             self.ToCall = Obj.Extra[1].Value
             self.Params.append(GetUse(Obj.Extra[0]))
             self.Params.append(GetUse(Obj.Extra[2]))
+
     def PrintConst(self,F):
         for P in self.Params:
             P.PrintConst(F)
@@ -621,6 +628,10 @@ def GetUse(Obj):
         return ParConstNum(Obj)
     if Obj.Value == "ret":
         return BoxReturn(Obj)
+    if Obj.Value == "newtype":
+        #VERY TEMP
+        AddFuncPoint(Obj.Extra[3],Obj.Extra[0].Extra)
+        return None
 
     print("Not implemented {}".format(Obj.Value))
     return None
@@ -762,6 +773,14 @@ class BoxFunc:
         F.write(self.Name)
     def PrintPre(self,F):
         return None
+    def PrintFPoint(self,F):
+        self.Type.PrintUse(F)
+        F.write("(")
+        for c in range(len(self.Params)):
+            if c != 0:
+                F.write(",")
+            self.Params[c].Type.PrintUse(F)
+        F.write(")*")
     def Check(self):
         PushC()
         for It in self.Params:

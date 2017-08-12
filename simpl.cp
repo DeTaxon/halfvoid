@@ -9,34 +9,44 @@ glfwTerminate := !() -> void declare
 glfwCreateWindow := !(int x, int y, char^ Title, int A,int B) -> void^ declare
 glfwDestroyWindow := !(void^ W) -> void declare 
 glfwMakeContextCurrent := !(void^ W) -> void declare
+glfwPollEvents := !() -> void declare
 
 debugCall := type !(int Data,char^ Line)^ -> void
-glfwSetCallback := !(debugCall ToCall) -> void declare
+glfwSetErrorCallback := !(debugCall ToCall) -> void declare
+
+keyCall := type !(void^ win, int key, int scancode, int action, int mods)^ -> void
+glfwSetKeyCallback := !(void^ win, keyCall ToPress) -> void declare
 
 SayError := !(int Data, char^ Line) -> void
 {
-	printf("Error %i: %s",Data,Line)
+	printf("Error %i: %s\n",Data,Line)
+}
+
+keys := !(void^ win, int key, int scancode, int action, int mods) -> void
+{
+	printf("Key %i\n",scancode)
 }
 
 main := !(int argc,string[] argv) -> int 
 {
+	glfwSetErrorCallback(SayError)
 	
-	//i := 0
-	//do
-	//{
-	//	printf("i = %i\n",i)
-	//	i = i - 1
-	//}while i > 0
-	//puts("{{{Start program}}}")
-	//printf("Hello %i\n" , i ) 
-	//puts("{{{End program}}}")
-	//free(i)
+	if glfwInit()	puts("Work") 
+	else return 0
 
-	if glfwInit() puts("Work") else puts("False")
 	win := glfwCreateWindow(500,500,"Hi",0,0)
-	printf("w = %p\n",win)
-	glfwMakeContextCurrent(win)
-	sleep(5)
+	//glfwMakeContextCurrent(win)
+	glfwSetKeyCallback(win,keys)
+
+	i := int
+	i = 10
+	while i 
+	{
+		glfwPollEvents()
+		sleep(1)
+		i = i - 1
+	}
+	
 	glfwDestroyWindow(win)
 	glfwTerminate()
 	
