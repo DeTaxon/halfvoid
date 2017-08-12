@@ -72,13 +72,25 @@ class BoxWhile:
     def __init__(self,Obj):
         self.Id = GetNumb()
         self.Value = "~while"
-        self.Quest = GetUse(Obj.Extra[1])
-        if Obj.Extra[2].Value == "{}":
-            self.Job = BoxBlock(Obj.Extra[2].Extra)
+        self.IsPost = (Obj.Extra[0].Value == "do")
+
+        if self.IsPost:
+            self.Quest = GetUse(Obj.Extra[3])
+            if Obj.Extra[1].Value == "{}":
+                self.Job = BoxBlock(Obj.Extra[1].Extra)
+            else:
+                self.Job = GetUse(Obj.Extra[1])
         else:
-            self.Job = GetUse(Obj.Extra[2])
+            self.Quest = GetUse(Obj.Extra[1])
+            if Obj.Extra[2].Value == "{}":
+                self.Job = BoxBlock(Obj.Extra[2].Extra)
+            else:
+                self.Job = GetUse(Obj.Extra[2])
     def PrintInBlock(self,F):
-        F.write("br label %WhileC{}\n".format(self.Id))
+        if self.IsPost:
+            F.write("br label %WhileT{}\n".format(self.Id))
+        else:
+            F.write("br label %WhileC{}\n".format(self.Id))
         F.write("WhileC{}:\n".format(self.Id))
         self.Quest.PrintPre(F)
         F.write("br ")
@@ -152,6 +164,7 @@ class ParamChain:
         self.Value = "~:="
         self.IsFunc = False
         self.Id = GetNumb()
+        self.IsRef = True
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -188,15 +201,20 @@ class ParamChain:
             self.Extra.PrintConst(F)
         return None
     def PrintPre(self,F):
-        self.PrevId = GetNumb()
-        F.write("%Tmp{} = load ".format(self.PrevId))
-        self.Type.PrintUse(F)
-        F.write(" , ")
-        self.Type.PrintUse(F)
-        F.write("* %Tmp{}\n".format(self.Id))
+        if self.IsRef:
+            self.PrevId = GetNumb()
+            F.write("%Tmp{} = load ".format(self.PrevId))
+            self.Type.PrintUse(F)
+            F.write(" , ")
+            self.Type.PrintUse(F)
+            F.write("* %Tmp{}\n".format(self.Id))
     def PrintUse(self,F):
-        self.Type.PrintUse(F)
-        F.write(" %Tmp{}".format(self.PrevId))
+        if self.IsRef:
+            self.Type.PrintUse(F)
+            F.write(" %Tmp{}".format(self.PrevId))
+        else:
+            self.Type.PrintUse(F)
+            F.write(" %{}".format(self.Name))
     def PrintFunc(self,F):
         if not self.IsFunc:
             return None
@@ -343,8 +361,9 @@ class BoxParamCall:
         return None
     def PrintPre(self,F):
         #self.Object.Extra.PrintPre(F) 
-        self.Object.PrintPre(F) 
-        self.PrevId = self.Object.PrevId
+        self.Object.PrintPre(F)
+        if self.Object.IsRef == True:
+            self.PrevId = self.Object.PrevId
         return None
     def GetName(self):
         return "Tmp{}".format(self.PrevId)
@@ -679,6 +698,8 @@ class BoxFunc:
                     else:
                         PArrs.append(Pars[j])
                     j += 1
+            for c in self.Params:
+                c.IsRef = False
         i = 3
         while Obj.Extra[i].Value not in  ["{}","declare"]:
             i += 1
@@ -742,8 +763,12 @@ class BoxFunc:
     def PrintPre(self,F):
         return None
     def Check(self):
+        PushC()
+        for It in self.Params:
+            ContextStuff.append(It)
         if self.Block != None:
             self.Block.Check()
+        PopC()
     def PrintType(self,F):
         self.Type.PrintUse(F)
         F.write("(")

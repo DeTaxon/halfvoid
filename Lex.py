@@ -1,5 +1,5 @@
 import re
-KeyWords = ["for","while","do","if","else","operator","it","this","and","or","xor","not","declare","operator","class","return"]
+KeyWords = ["for","while","do","if","else","operator","it","this","and","or","xor","not","declare","operator","class","return","type"]
 KeyWords += ["true","false"]
 Symbols = "{}()[]?%^&!,;"
 Digits = "0123456789"

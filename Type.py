@@ -9,11 +9,12 @@ class NameChain:
 class Type:
     def __init__(self,B,T,N = None):
         self.Base = B
-        self.Type  = T #standart func point array
+        self.Type  = T #standart funcp point array
         self.Point = None
         self.Array = None
         self.Id = -1
         self.IsPoint = False
+        self.Params = []
         if T == "standart":
             NameTable.append(NameChain(N,self))
     def PrintUse(self,F):
@@ -33,6 +34,10 @@ class Type:
                 return "i8*"
             else:
                 return self.Base.GetName() + "*"
+
+def AddFuncPoint(self,Obj):
+    FuncType = Type(None,"funcp")
+    return None
 
 def GetVoidP():
     return GetType(["void","^"]).Id
