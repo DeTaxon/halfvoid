@@ -27,12 +27,10 @@ keys := !(void^ win, int key, int scancode, int action, int mods) -> void
 	printf("Key %i\n",scancode)
 }
 
+j := int
+
 main := !(int argc,string[] argv) -> int 
 {
-	printf("x = %f\n", 1.3)
-
-	return 0
-
 	glfwSetErrorCallback(SayError)
 	
 	if not glfwInit() 
@@ -47,6 +45,7 @@ main := !(int argc,string[] argv) -> int
 
 	i := int
 	i = 10
+	j = 5
 	while i 
 	{
 		glfwPollEvents()

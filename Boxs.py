@@ -2,6 +2,7 @@ from Lex import *
 from MathS import *
 from allnums import *
 from Type import *
+import struct
 
 ContextStuff = []
 ContextName = []
@@ -167,6 +168,7 @@ class ParamChain:
         self.IsFunc = False
         self.Id = GetNumb()
         self.IsRef = True
+	self.IsGlobal = False
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -209,7 +211,10 @@ class ParamChain:
             self.Type.PrintUse(F)
             F.write(" , ")
             self.Type.PrintUse(F)
-            F.write("* %Tmp{}\n".format(self.Id))
+	    if self.IsGlobal:
+            	F.write("* @Tmp{}\n".format(self.Id))
+	    else:
+            	F.write("* %Tmp{}\n".format(self.Id))
     def PrintUse(self,F):
         if self.IsFunc:
             self.Extra.PrintFPoint(F)
@@ -231,10 +236,22 @@ class ParamChain:
             self.Type = self.Extra.Type
         return None
     def GetName(self,F):
-        return "%Tmp{}".format(self.PrevId)
+	if self.IsGlobal:
+        	return "@Tmp{}".format(self.PrevId)
+	else:
+        	return "%Tmp{}".format(self.PrevId)
     def GetPoint(self):
-        return "%Tmp{}".format(self.Id)
+	if self.IsGlobal:
+        	return "@Tmp{}".format(self.Id)
+	else:
+        	return "%Tmp{}".format(self.Id)
     def PrintInBlock(self,F):
+	if self.IsGlobal and not self.IsFunc:
+		F.write("@Tmp{} = global ".format(self.Id))
+		if self.Extra == None:
+			self.Type.PrintZero(F)
+		F.write("\n")
+		return None
         if not self.IsFunc and self.Type != None:
             if self.Extra != None:
                 self.Extra.PrintPre(F)
@@ -324,8 +341,10 @@ class ParConstNum:
             self.Type.PrintUse(F)
             F.write(" {} , 0\n".format(self.Extra))
         else:
+		#F.write("%Tmp{} = fadd float 0x{} , 0.0\n".format(self.PrevId,struct.pack(">F",self.Extra).encode("hex")))
+		#F.write("%Tmp{} = fadd float {} , 0.0\n".format(self.PrevId,self.Extra.hex()))
             F.write("%Tmp{} = fptrunc double ".format(self.PrevId))
-            F.write(" {} to  float\n".format(self.Extra))
+            F.write(" {}e+00 to  float\n".format(self.Extra))
 
     def PrintUse(self,F):
         self.Type.PrintUse(F)
@@ -394,7 +413,10 @@ class BoxParamCall:
         return None
     def PrintPointUse(self,F):
         GetPoint(self.Type).PrintUse(F)
-        F.write(" %Tmp{}".format(self.Id))
+	if self.Object.IsGlobal:
+        	F.write(" @Tmp{}".format(self.Id))
+	else:
+        	F.write(" %Tmp{}".format(self.Id))
         return None
 
 class BoxPoint:
@@ -481,10 +503,26 @@ class BoxExc:
             F.write("%Tmp{} = bitcast ".format(self.PrevId))
             self.Extra.PrintUse(F)
             F.write(" to {}\n".format(self.Type.GetName()))
-        if self.Type.Id == GetType("bool").Id:
+        elif self.Type.Id == GetType("bool").Id:
             F.write("%Tmp{} = icmp ne ".format(self.PrevId))
             self.Extra.PrintUse(F)
             F.write(" , 0\n")
+	else:
+		ToUse = ShouldChange(self.Extra.Type,self.Type)
+		if ToUse != "":
+			if "d" in ToUse:
+				F.write("%Tmp{} = trunc ".format(self.PrevId))
+				self.Extra.PrintUse(F)
+				F.write(" to ")
+				self.Type.PrintUse(F)
+				F.write("\n")
+			if "u" in ToUse:
+				F.write("%Tmp{} = sext ".format(self.PrevId))
+				self.Extra.PrintUse(F)
+				F.write(" to ")
+				self.Type.PrintUse(F)
+				F.write("\n")
+	
     def PrintUse(self,F):
         self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
@@ -535,10 +573,13 @@ class BoxPrisvCall:
             It.Check()
 
         self.Type = self.Params[0].Type
-        if self.Params[1].Type.Id != self.Type.Id and GoodPoints(self.Params[1].Type,self.Type):
-            self.Params[1] = BoxExc(self.Params[1],self.Type)
         if self.Params[0].Type.Id != self.Params[1].Type.Id:
-            raise ValueError("Type error")
+        	if self.Params[1].Type.Id != self.Type.Id and GoodPoints(self.Params[1].Type,self.Type):
+        	    self.Params[1] = BoxExc(self.Params[1],self.Type)
+		elif ShouldChange(self.Params[0].Type,self.Params[1].Type) != "":
+        		self.Params[1] = BoxExc(self.Params[1],self.Params[0].Type)
+        	else:
+			raise ValueError("Type error")
         return None
 
 class BoxFuncsCall:
@@ -666,6 +707,14 @@ class BoxBlock:
     def PrintInBlock(self,F):
         for It in self.Items:
             It.PrintInBlock(F)
+    def MakeGlobal(self):
+	for It in self.Items:
+		if It.Value == "~:=":
+			It.IsGlobal = True
+    def PrintGlobal(self,F):
+	for It in self.Items:
+		if It.Value == "~:=":
+			It.PrintInBlock(F)
     def Check(self):
         PushC()
         for It in self.Items:
@@ -811,6 +860,32 @@ QFunc = ["+","-","*","/","%"]
 
 MCmp = ["eq","ne","gt","ge","lt","le"]
 QCmp = ["==","!=",">",">=","<","<="]
+
+for j in ["float","double"]:
+	for IFunc in range(len(MFunc)):
+		TestAdd = BoxFunc(None)
+		TestAdd.AsmLine ="%{0} = f"
+		TestAdd.AsmLine += MFunc[IFunc]
+		TestAdd.AsmLine += " "
+		TestAdd.AsmLine += j
+		TestAdd.AsmLine +=" %{1} , %{2}\n"
+		TestAdd.Name = QFunc[IFunc]
+		TestAdd.Type = GetType(j)
+		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
+		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
+		StandartStuff.append(TestAdd)
+	for ICmp in range(len(MCmp)):
+		TestAdd = BoxFunc(None)
+		TestAdd.AsmLine ="%{0} = fcmp "
+		TestAdd.AsmLine += " u" + MCmp[ICmp] + " "
+		TestAdd.AsmLine += j
+		TestAdd.AsmLine +=" %{1} , %{2}\n"
+		TestAdd.Name = QCmp[ICmp]
+		TestAdd.Type = GetType("bool")
+		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
+		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
+		StandartStuff.append(TestAdd)
+		
 
 for j in ["s","u"]:
 	for i in [8,16,32,64]:

@@ -26,6 +26,7 @@ class CodeBox:
         self.RecSearch(self.Tokens,SearchMath)
         #self.Check()
         self.Block = BoxBlock(self.Tokens)
+	self.Block.MakeGlobal()
         self.Block.Check()
     def RecSearch(self,Arr,Fun):
         for c in Arr:
@@ -65,6 +66,7 @@ class CodeBox:
     def Out(self,Name):
         with open(Name,"w") as F:
             self.Block.PrintConst(F)
+	    self.Block.PrintGlobal(F)
             self.Block.PrintFunc(F)
 
     def Check(self):

@@ -36,6 +36,10 @@ class Type:
                     F.write(" , ")
                 self.Params[i].PrintUse(F)
             F.write(")*")
+    def PrintZero(self,F):
+	if self.Type == "standart":
+		F.write(self.Base)
+		F.write(" 0")
     def GetName(self):
         if self.Type == "standart":
             return self.Base
@@ -150,6 +154,39 @@ MakeSame("s16","short")
 MakeSame("s32","int")
 MakeSame("s64","long")
 MakeSame(["char","^"],"string")
+
+ArrSum = []
+for i in [8,16,32,64]:
+	ArrSum.append(GetType("u{}".format(i)).Id)
+	ArrSum.append(GetType("s{}".format(i)).Id)
+for i in ["float","double"]:
+	ArrSum.append(GetType(i).Id)
+
+
+def ShouldChange(T1,T2):
+	ToRet = ""
+	if T1.Id not in ArrSum:
+		return ""
+	if T2.Id not in ArrSum:
+		return ""
+	Ind1 = ArrSum.index(T1.Id)
+	Ind2 = ArrSum.index(T2.Id)
+	if Ind1 == Ind2:
+		return ToRet
+
+	if (Ind1 >= 8) != (Ind2 >= 8):
+		ToRet += "f" if Ind1 >= 8 else "i"
+	if Ind1 % 2  != Ind2 % 2:
+		ToRet += "s" if Ind1 % 2  == 0 else "z"
+	if Ind1 / 2  != Ind2 / 2:
+		ToRet += "u" if Ind1 < Ind2 else "d"
+	return ToRet
+
+
+
+
+
+
 
 
 
