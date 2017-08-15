@@ -29,10 +29,17 @@ keys := !(void^ win, int key, int scancode, int action, int mods) -> void
 
 main := !(int argc,string[] argv) -> int 
 {
+	printf("x = %f\n", 1.3)
+
+	return 0
+
 	glfwSetErrorCallback(SayError)
 	
-	if glfwInit()	puts("Work") 
-	else return 0
+	if not glfwInit() 
+	{
+		printf("Not loaded\n")
+		return 0
+	}
 
 	win := glfwCreateWindow(500,500,"Hi",0,0)
 	//glfwMakeContextCurrent(win)

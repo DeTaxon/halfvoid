@@ -67,6 +67,7 @@ def AddFuncPoint(Obj,NewName = None):
                 PArrs.append(Pars[j])
             j += 1
     FuncType.Base = ParseType(Obj.Extra[4])
+    FuncType.Id = len(TypeTable)
     TypeTable.append(FuncType) # broken
     if NewName != None:
         NameTable.append(NameChain(NewName,FuncType))

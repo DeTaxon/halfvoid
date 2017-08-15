@@ -563,8 +563,13 @@ class BoxFuncsCall:
                     i += 1
         else:
             self.ToCall = Obj.Extra[1].Value
-            self.Params.append(GetUse(Obj.Extra[0]))
-            self.Params.append(GetUse(Obj.Extra[2]))
+            #print(Obj.Extra[0].Value)
+            if Obj.Extra[0].Value == "not":
+                self.Params.append(GetUse(Obj.Extra[1]))
+                self.ToCall = Obj.Extra[0].Value
+            else:
+                self.Params.append(GetUse(Obj.Extra[0]))
+                self.Params.append(GetUse(Obj.Extra[2]))
 
     def PrintConst(self,F):
         for P in self.Params:
@@ -587,11 +592,8 @@ class BoxFuncsCall:
     def PrintInBlock(self,F):
         self.PrintPre(F)
     def Check(self):
-
         for It in self.Params:
             It.Check()
-            #if It.Type.Id == 0:
-            #    print(It)
 
         self.CallFunc = GetFunc(self.ToCall,self.Params)
         if self.CallFunc == None:
@@ -633,8 +635,8 @@ def GetUse(Obj):
         AddFuncPoint(Obj.Extra[3],Obj.Extra[0].Extra)
         return None
 
-    print("Not implemented {}".format(Obj.Value))
-    return None
+    raise ValueError("Not implemented {}".format(Obj.Value))
+    #print("Not implemented {}".format(Obj.Value))
 
 class BoxBlock:
     def __init__(self,List):
@@ -738,7 +740,10 @@ class BoxFunc:
                     ParList[i].PrintUse(F)
             F.write(")\n")
         else:
-            F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
+            if len(ParList) == 2:
+                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
+            else:
+                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName()))
             #F.write(" ") ?
 
     def PrintFunc(self,F):
@@ -800,34 +805,46 @@ class BoxFunc:
         return None
 
 
-TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%{0} = add i32 %{1} , %{2}\n"
-TestAdd.Name = "+"
-TestAdd.Type = GetType("int")
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-StandartStuff.append(TestAdd)
+
+MFunc = ["add","sub","mul","div","rem"]
+QFunc = ["+","-","*","/","%"]
+
+MCmp = ["eq","ne","gt","ge","lt","le"]
+QCmp = ["==","!=",">",">=","<","<="]
+
+for j in ["s","u"]:
+	for i in [8,16,32,64]:
+		Si =  "{}".format(i)
+		for IFunc in range(len(MFunc)):
+			TestAdd = BoxFunc(None)
+			TestAdd.AsmLine ="%{0} = " 
+			if IFunc in [3,4]:
+				TestAdd.AsmLine += j
+			TestAdd.AsmLine += MFunc[IFunc]
+			TestAdd.AsmLine += " i" + Si +" %{1} , %{2}\n"
+			TestAdd.Name = QFunc[IFunc] #"+"
+			TestAdd.Type = GetType("{}{}".format(j,i))
+			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			StandartStuff.append(TestAdd)
+
+		for ICmp in range(len(MCmp)):
+			TestAdd = BoxFunc(None)
+			TestAdd.AsmLine ="%{0} = icmp "
+			if ICmp in [2,3,4,5]:
+				TestAdd.AsmLine += j
+			TestAdd.AsmLine += MCmp[ICmp]
+			TestAdd.AsmLine +=" i{}".format(i)
+			TestAdd.AsmLine +=" %{1} , %{2}\n"
+			TestAdd.Name = QCmp[ICmp]
+			TestAdd.Type = GetType("bool")
+			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%{0} = icmp sgt i32 %{1} , %{2}\n"
-TestAdd.Name = ">"
+TestAdd.AsmLine ="%{0} = xor i1 %{1} , 1\n"
+TestAdd.Name = "not"
 TestAdd.Type = GetType("bool")
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-StandartStuff.append(TestAdd)
-
-TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%{0} = sub  i32 %{1} , %{2}\n"
-TestAdd.Name = "-"
-TestAdd.Type = GetType("int")
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-StandartStuff.append(TestAdd)
-
-TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%WW{1} = sitofp i32 %{1} to float \n%{0} = fadd float %WW{1} , %{2}\n"
-TestAdd.Name = "+"
-TestAdd.Type = GetType("float")
-TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
-TestAdd.Params.append(ParamChain(GetType("float"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 StandartStuff.append(TestAdd)

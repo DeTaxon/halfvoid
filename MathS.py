@@ -15,6 +15,8 @@ def RuleIt( R, Arr,Pos):
         if Arr[Pos + i - 1].Value not in R[i]:
             return False
     UNext(Arr,Pos,len(R) - 1,R[0])
+    #if R[0] == "dp":
+    #    print(Arr[Pos -1].Value)
     return True
 #def RuleFunc(R 
         
@@ -36,9 +38,9 @@ Rules.append(["!()","!","()","->",datar,["{}","declare"]])
 Rules.append(["dm",datar,["**"],datar])
 Rules.append(["dm",datar,["*","/","%"],datar])
 Rules.append(["dm",datar,["+","-"],datar])
-Rules.append(["db",datar,["==",">"],datar])
-Rules.append(["db",datar,["or","xor"],datar])
-Rules.append(["db",datar,"and",datar])
+Rules.append(["db",datar,["==","!=",">",">=","<","<="],datar])
+Rules.append(["db","not",datar])
+Rules.append(["db",datar,["and","or","xor"],datar])
 Rules.append(["dp",datar,"=",datar])
 Rules.append(["newparam","id",":=",datar])
 Rules.append(["newtype","id",":=","type","!()^"])

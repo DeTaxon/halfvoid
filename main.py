@@ -24,6 +24,7 @@ class CodeBox:
         self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('{','}','{}',self.Tokens)
         self.RecSearch(self.Tokens,SearchMath)
+        #self.Check()
         self.Block = BoxBlock(self.Tokens)
         self.Block.Check()
     def RecSearch(self,Arr,Fun):
@@ -76,7 +77,7 @@ class CodeBox:
                 print(Size*'-' + "Token {}".format(T.Value))
             if T.Value in ["{}","()","[]"]:
                 self.CheckB(T.Extra,Size+1)
-            if T.Value in Box:
+            if T.Value in ForFor:
                 self.CheckB(T.Extra,Size+1)
 
 It = CodeBox("simpl.cp")
