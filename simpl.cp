@@ -10,6 +10,11 @@ glfwCreateWindow := !(int x, int y, char^ Title, int A,int B) -> void^ declare
 glfwDestroyWindow := !(void^ W) -> void declare 
 glfwMakeContextCurrent := !(void^ W) -> void declare
 glfwPollEvents := !() -> void declare
+glfwWindowShouldClose := !(void^ W) -> bool declare
+glfwSetWindowShouldClose := !(void^ W,bool To) -> bool declare
+glfwGetTime := !() -> double declare
+glfwSwapInterval := !(int Inter) -> void declare
+glfwSwapBuffers := !(void^ W) ->void declare
 
 debugCall := type !(int Data,char^ Line)^ -> void
 glfwSetErrorCallback := !(debugCall ToCall) -> void declare
@@ -17,17 +22,32 @@ glfwSetErrorCallback := !(debugCall ToCall) -> void declare
 keyCall := type !(void^ win, int key, int scancode, int action, int mods)^ -> void
 glfwSetKeyCallback := !(void^ win, keyCall ToPress) -> void declare
 
+
+glViewport := !(int a,int b,int c,int d) -> void declare
+glClearColor := !(float r, float g, float b, float a) ->void declare
+glClear := !(int Bits) -> void declare
+glBegin := !(int Bits) -> void declare
+glEnd := !() -> void declare
+glColor3f := !(float r,float g, float b) -> void declare
+glVertex2i := !(int x, int y) -> void declare
+glVertex3f := !(float x, float y, float z) -> void declare
+
 SayError := !(int Data, char^ Line) -> void
 {
 	printf("Error %i: %s\n",Data,Line)
 }
 
-keys := !(void^ win, int key, int scancode, int action, int mods) -> void
+win := void^
+
+keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
-	printf("Key %i\n",scancode)
+	if scancode == 9
+	{
+		if action == 1	glfwSetWindowShouldClose(win,true)
+	}
+	//printf("Key %i mod %i\n",scancode, action)
 }
 
-j := int
 
 main := !(int argc,string[] argv) -> int 
 {
@@ -39,18 +59,28 @@ main := !(int argc,string[] argv) -> int
 		return 0
 	}
 
-	win := glfwCreateWindow(500,500,"Hi",0,0)
-	//glfwMakeContextCurrent(win)
+	win = glfwCreateWindow(800,600,"Hi",0,0)
+	glfwMakeContextCurrent(win)
 	glfwSetKeyCallback(win,keys)
+	glfwSwapInterval(1)
 
-	i := int
-	i = 10
-	j = 5
-	while i 
+	glViewport(0,0,500,500)
+	glClearColor(1.0,.5,0.0,0.0)
+	while not glfwWindowShouldClose(win)
 	{
 		glfwPollEvents()
-		sleep(1)
-		i = i - 1
+		glClear(0x04000)
+		glBegin(0x0007)
+		glColor3f(0.0,0.4,1.0)
+		glVertex3f(0.25,0.25,0.0)
+		glColor3f(0.0,0.4,0.0)
+		glVertex3f(1.0,0.25,0.0)
+		glColor3f(1.0,0.4,1.0)
+		glVertex3f(1.0,1.0,0.0)
+		glColor3f(0.0,0.0,0.0)
+		glVertex3f(0.25,1.0,0.0)
+		glEnd()
+		glfwSwapBuffers(win)
 	}
 	
 	glfwDestroyWindow(win)

@@ -39,7 +39,13 @@ class Type:
     def PrintZero(self,F):
 	if self.Type == "standart":
 		F.write(self.Base)
-		F.write(" 0")
+		if self.Base in ["float","double"]:
+			F.write(" 0.0")
+		else:
+			F.write(" 0")
+	elif self.Type in ["point","array"]:
+		self.PrintUse(F)
+		F.write( " null")
     def GetName(self):
         if self.Type == "standart":
             return self.Base

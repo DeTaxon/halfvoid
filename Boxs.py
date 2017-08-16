@@ -37,6 +37,8 @@ def GetFunc(Name,Pars):
             It = Itc.Extra
             WrongValue = False
             for i in range(len(It.Params)):
+		if It.Params[i].Type == None:
+			print(It.Name)
                 if It.Params[i].Type.Id == GetType("...").Id:
                     return It
                 if GoodPoints(It.Params[i].Type,Pars[i].Type):
@@ -64,12 +66,18 @@ def GetFunc(Name,Pars):
                 return It
     return None
 
+
 def GetParam(Name):
     WrongValue = False
     for It in ContextStuff:
         if It.Name == Name:
             return It
     return None
+
+class BoxClass:
+	def __init__(self,Obj):
+		self.Name = None
+
 
 class BoxWhile:
     def __init__(self,Obj):
@@ -235,11 +243,15 @@ class ParamChain:
             self.Extra.Check()
             self.Type = self.Extra.Type
         return None
-    def GetName(self,F):
+    def GetName(self):
 	if self.IsGlobal:
-        	return "@Tmp{}".format(self.PrevId)
-	else:
+		# if const
         	return "%Tmp{}".format(self.PrevId)
+	else:
+		if self.IsRef:
+        		return "%Tmp{}".format(self.PrevId)
+		else:
+			return "%" + self.Name #"%{}".format(self.Name)
     def GetPoint(self):
 	if self.IsGlobal:
         	return "@Tmp{}".format(self.Id)
@@ -247,10 +259,20 @@ class ParamChain:
         	return "%Tmp{}".format(self.Id)
     def PrintInBlock(self,F):
 	if self.IsGlobal and not self.IsFunc:
-		F.write("@Tmp{} = global ".format(self.Id))
-		if self.Extra == None:
+		if self.Extra != None:
+			if self.Extra.Value == "~num":
+				F.write("@Tmp{} = global ".format(self.Id))
+				self.Extra.PrintAsConst(F)
+				#F.write(self.Extra.Type.PrintUse(F))
+				#F.write(" ")
+				#F.write(self.Extra.Extra)
+				F.write("\n")
+			elif self.Extra.Value == "~str":
+				F.write("@Tmp{0} = global i8* getelementptr ([{1} x i8], [{1} x i8]* @CStr{2},i32 0, i32 0),align 8\n".format(self.Id,self.Extra.Size,self.Extra.Id))
+		else:
+			F.write("@Tmp{} = global ".format(self.Id))
 			self.Type.PrintZero(F)
-		F.write("\n")
+			F.write("\n")
 		return None
         if not self.IsFunc and self.Type != None:
             if self.Extra != None:
@@ -302,7 +324,7 @@ class ParConstStr:
         F.write("%LStr{0} = getelementptr [{1} x i8], [{1} x i8]* @CStr{0},i32 0,i32 0\n".format(self.Id,self.Size))
         #F.write("%LStr{0} = getelementptr {{i32,[{1} x i8]}}, {{i32,[{1} x i8]}}* @CStr{0},i32 0,i32 1, i32 0\n".format(self.Id,self.Size))
     def GetName(self):
-        return "Lstr{}".format(self.Id)
+        return "%Lstr{}".format(self.Id)
     def PrintUse(self,F):
         F.write("i8* %LStr{}".format(self.Id))
     def Check(self):
@@ -332,8 +354,15 @@ class ParConstNum:
         return None
     def PrintFunc(self,F):
         return None
+    def PrintAsConst(self,F):
+	if self.Type.Id == GetType("float").Id:
+        	F.write(" float {}\n".format(hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+	else:
+		self.Type.PrintUse(F)
+		F.write(" {}".format(self.Extra))
+	return None
     def GetName(self):
-        return "Tmp{}".format(self.PrevId)
+        return "%Tmp{}".format(self.PrevId)
     def PrintPre(self,F):
         self.PrevId = GetNumb()
         if self.Type.Id == GetType("int").Id or self.Type.Id == GetType("bool").Id:
@@ -343,8 +372,10 @@ class ParConstNum:
         else:
 		#F.write("%Tmp{} = fadd float 0x{} , 0.0\n".format(self.PrevId,struct.pack(">F",self.Extra).encode("hex")))
 		#F.write("%Tmp{} = fadd float {} , 0.0\n".format(self.PrevId,self.Extra.hex()))
-            F.write("%Tmp{} = fptrunc double ".format(self.PrevId))
-            F.write(" {}e+00 to  float\n".format(self.Extra))
+            #F.write("%Tmp{} = fptrunc double ".format(self.PrevId))
+            #F.write(" {}e+00 to  float\n".format(self.Extra))
+            F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+            #F.write(" {}e+00 to  float\n".format(self.Extra))
 
     def PrintUse(self,F):
         self.Type.PrintUse(F)
@@ -391,11 +422,9 @@ class BoxParamCall:
             self.PrevId = self.Object.PrevId
         return None
     def GetName(self):
-        return "Tmp{}".format(self.PrevId)
+        #return "Tmp{}".format(self.PrevId)
+	return self.Object.GetName()
     def PrintUse(self,F):
-        #self.Ret.RetType.PrintUse(F)
-        #F.write(" %Tmp{}".format(self.PrevId))
-        #self.Object.Extra.PrintUse(F)
         self.Object.PrintUse(F)
         return None
     def PrintInBlock(self,F):
@@ -625,7 +654,7 @@ class BoxFuncsCall:
         self.CallFunc.PrintUse(F,self.PrevId,self.Params)
         return None
     def GetName(self):
-        return "Tmp{}".format(self.PrevId)
+        return "%Tmp{}".format(self.PrevId)
     def PrintUse(self,F):
         self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
@@ -868,7 +897,7 @@ for j in ["float","double"]:
 		TestAdd.AsmLine += MFunc[IFunc]
 		TestAdd.AsmLine += " "
 		TestAdd.AsmLine += j
-		TestAdd.AsmLine +=" %{1} , %{2}\n"
+		TestAdd.AsmLine +=" {1} , {2}\n"
 		TestAdd.Name = QFunc[IFunc]
 		TestAdd.Type = GetType(j)
 		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
@@ -879,7 +908,7 @@ for j in ["float","double"]:
 		TestAdd.AsmLine ="%{0} = fcmp "
 		TestAdd.AsmLine += " u" + MCmp[ICmp] + " "
 		TestAdd.AsmLine += j
-		TestAdd.AsmLine +=" %{1} , %{2}\n"
+		TestAdd.AsmLine +=" {1} , {2}\n"
 		TestAdd.Name = QCmp[ICmp]
 		TestAdd.Type = GetType("bool")
 		TestAdd.Params.append(ParamChain(GetType(j),"~no"))
@@ -896,7 +925,7 @@ for j in ["s","u"]:
 			if IFunc in [3,4]:
 				TestAdd.AsmLine += j
 			TestAdd.AsmLine += MFunc[IFunc]
-			TestAdd.AsmLine += " i" + Si +" %{1} , %{2}\n"
+			TestAdd.AsmLine += " i" + Si +" {1} , {2}\n"
 			TestAdd.Name = QFunc[IFunc] #"+"
 			TestAdd.Type = GetType("{}{}".format(j,i))
 			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
@@ -910,7 +939,7 @@ for j in ["s","u"]:
 				TestAdd.AsmLine += j
 			TestAdd.AsmLine += MCmp[ICmp]
 			TestAdd.AsmLine +=" i{}".format(i)
-			TestAdd.AsmLine +=" %{1} , %{2}\n"
+			TestAdd.AsmLine +=" {1} , {2}\n"
 			TestAdd.Name = QCmp[ICmp]
 			TestAdd.Type = GetType("bool")
 			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
@@ -918,7 +947,7 @@ for j in ["s","u"]:
 			StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
-TestAdd.AsmLine ="%{0} = xor i1 %{1} , 1\n"
+TestAdd.AsmLine ="%{0} = xor i1 {1} , 1\n"
 TestAdd.Name = "not"
 TestAdd.Type = GetType("bool")
 TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
