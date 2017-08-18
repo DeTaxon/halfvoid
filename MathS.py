@@ -22,7 +22,7 @@ def RuleIt( R, Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d()","dm","db","!()","dp"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","!()","dp"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret"]
@@ -32,6 +32,7 @@ Rules.append(["dm",datar,['++','--']])
 Rules.append(["d^",datar,'^'])
 Rules.append(["d[]",datar,'[]'])
 Rules.append(["d.d()",datar,".",datar,"()"])
+Rules.append(["d.d",datar,".",datar])
 Rules.append(["d()",datar,"()"])
 Rules.append(["!()^","!","()","^","->",datar])
 Rules.append(["!()","!","()","->",datar,["{}","declare"]])
@@ -44,6 +45,7 @@ Rules.append(["db",datar,["and","or","xor"],datar])
 Rules.append(["dp",datar,"=",datar])
 Rules.append(["newparam","id",":=",datar])
 Rules.append(["newtype","id",":=","type","!()^"])
+Rules.append(["newclass","id",":=","class","{}"])
 Rules.append(["ret","return",datar])
 Rules.append(["daif","if",datar,ForFor,"else",ForFor])
 Rules.append(["daif","if",datar,ForFor])

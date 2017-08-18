@@ -39,6 +39,17 @@ SayError := !(int Data, char^ Line) -> void
 
 win := void^
 
+Vec := class
+{
+	x := float
+	y := float
+	z := float
+	wow := !() -> void
+	{
+		printf("Hello\n",x)
+	}
+}
+
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
 	if scancode == 9
@@ -59,26 +70,26 @@ main := !(int argc,string[] argv) -> int
 		return 0
 	}
 
-	win = glfwCreateWindow(800,600,"Hi",0,0)
+	win = glfwCreateWindow(512,512,"Hi",0,0)
 	glfwMakeContextCurrent(win)
 	glfwSetKeyCallback(win,keys)
 	glfwSwapInterval(1)
 
-	glViewport(0,0,500,500)
+	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	while not glfwWindowShouldClose(win)
 	{
 		glfwPollEvents()
 		glClear(0x04000)
 		glBegin(0x0007)
-		glColor3f(0.0,0.4,1.0)
-		glVertex3f(0.25,0.25,0.0)
+		glColor3f(0.0,0.4,0.75)
+		glVertex3f(0.0-0.75,0.0-0.75,0.0)
 		glColor3f(0.0,0.4,0.0)
-		glVertex3f(1.0,0.25,0.0)
-		glColor3f(1.0,0.4,1.0)
-		glVertex3f(1.0,1.0,0.0)
+		glVertex3f(0.75,0.0-0.75,0.0)
+		glColor3f(0.75,0.4,0.75)
+		glVertex3f(0.75,0.75,0.0)
 		glColor3f(0.0,0.0,0.0)
-		glVertex3f(0.25,1.0,0.0)
+		glVertex3f(0.0-0.75,0.75,0.0)
 		glEnd()
 		glfwSwapBuffers(win)
 	}

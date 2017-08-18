@@ -3,6 +3,19 @@ from Lex import *
 TypeTable = []
 NameTable = []
 
+ClassTable = []
+ClassStack = []
+
+
+def PushT():
+	ClassStack.append(len(ClassTable))
+def PopT():
+	ToSize = ClassStack.pop()
+	while ToSize != len(ClassTable):
+		ClassTable.pop()
+def AddClass(NewC):
+	ClassTable.append(NewC)
+
 class NameChain:
     def __init__(self,N,T):
         self.Name = N
@@ -11,7 +24,7 @@ class NameChain:
 class Type:
     def __init__(self,B,T,N = None):
         self.Base = B
-        self.Type  = T #standart funcp point array
+        self.Type  = T #standart funcp point array class
         self.Point = None
         self.Array = None
         self.Id = -1
@@ -54,6 +67,8 @@ class Type:
                 return "i8*"
             else:
                 return self.Base.GetName() + "*"
+
+		
 
 def AddFuncPoint(Obj,NewName = None):
     FuncType = Type(None,"funcp")
@@ -106,6 +121,9 @@ def GetType(A):
         for N in NameTable:
             if N.Name == A:
                 return N.Type
+	for N in ClassTable:
+		if N.Name == A:
+			return N
         return None
     else:
         if len(A) == 0:
