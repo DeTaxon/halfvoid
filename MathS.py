@@ -22,17 +22,18 @@ def RuleIt( R, Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","!()","dp"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","!()","dp","this"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret"]
 
 Rules = []
 Rules.append(["dm",datar,['++','--']])
-Rules.append(["d^",datar,'^'])
-Rules.append(["d[]",datar,'[]'])
 Rules.append(["d.d()",datar,".",datar,"()"])
 Rules.append(["d.d",datar,".",datar])
+Rules.append(["d^",datar,'^'])
+Rules.append(["d[]",datar,'[]'])
+Rules.append(["d&",datar,'&'])
 Rules.append(["d()",datar,"()"])
 Rules.append(["!()^","!","()","^","->",datar])
 Rules.append(["!()","!","()","->",datar,["{}","declare"]])

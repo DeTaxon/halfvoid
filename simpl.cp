@@ -1,7 +1,9 @@
 printf :=  !(char^ Line,...) -> int declare
+sscanf := !(char^ Buf,char^ Format,...) -> int declare
 puts := !(char^ Line) -> int declare
 malloc := !(int Size) -> void^ declare
 free := !(void^ Point) -> void declare
+strtof := !(char^ Line) -> float declare
 sleep := !(s32 seconds) -> int declare
 
 glfwInit := !() -> bool declare
@@ -44,9 +46,15 @@ Vec := class
 	x := float
 	y := float
 	z := float
-	wow := !() -> void
+	this := !() -> void
 	{
-		printf("Hello\n",x)
+		x = 0
+		y = 0
+		z = 0
+	}
+	size := !() -> float
+	{
+		return this.x*this.x + this.y*this.y+this.z*this.z
 	}
 }
 
@@ -58,10 +66,18 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 	}
 	//printf("Key %i mod %i\n",scancode, action)
 }
-
-
+ 
 main := !(int argc,string[] argv) -> int 
 {
+	Pos := Vec^
+	Pos = malloc(4*4)
+	Pos.x = 4.0
+	Pos.y = 3.0
+	Pos.z = 0.0
+	printf("Size = %f\n",Pos.size())
+	free(Pos)
+	return 0
+	
 	glfwSetErrorCallback(SayError)
 	
 	if not glfwInit() 
