@@ -360,6 +360,8 @@ class BoxClass:
 					continue
 				GotSome = True
 				for j in range(len(Pars)):
+					if self.Funcs[i].Params[j+1].Type == None:
+						self.Funcs[i].Params[j+1].Check()
 					if Pars[j].Type.Id != self.Funcs[i].Params[j+1].Type.Id:
 						GotSome *= False
 				if not GotSome:
@@ -829,6 +831,9 @@ class BoxExc:
         self.Extra.PrintConst(F)
     def PrintFunc(self,F):
         self.Extra.PrintConst(F)
+
+
+
 class BoxPrisvCall:
     def __init__(self,Obj):
         self.Value = "~dp"
@@ -944,10 +949,33 @@ class BoxFuncsCall:
         for P in self.Params:
             P.PrintFunc(F)
     def PrintPre(self,F):
-        for N in self.Params:
-            N.PrintPre(F)
         self.PrevId = GetNumb()
-        self.CallFunc.PrintUse(F,self.PrevId,self.Params)
+	if len(self.Params) > 0 and self.Params[0].Type.Type == "class":
+		if self.CallFunc.Params[1].IsRef:
+        		self.Params[1].PrintPointPre(F)
+		else:
+        		self.Params[1].PrintPre(F)
+        	self.PrevId = GetNumb()
+        	self.Params[0].PrintPointPre(F)
+		
+		if self.CallFunc.Type.Id != GetType("void").Id:
+			F.write("%Tmp{} = ".format(self.PrevId))
+		F.write("call ")
+		self.CallFunc.PrintFType(F)
+		self.CallFunc.PrintName(F)
+		F.write("(")
+		self.Params[0].PrintPointUse(F)
+		F.write(",")
+		if self.CallFunc.Params[1].IsRef:
+        		self.Params[1].PrintPointUse(F)
+		else:
+        		self.Params[1].PrintUse(F)
+		F.write(")\n")
+		
+	else:
+        	for N in self.Params:
+        	    N.PrintPre(F)
+        	self.CallFunc.PrintUse(F,self.PrevId,self.Params)
         return None
     def GetName(self):
         return "%Tmp{}".format(self.PrevId)
@@ -960,8 +988,11 @@ class BoxFuncsCall:
     def Check(self):
         for It in self.Params:
             It.Check()
-
-        self.CallFunc = GetFunc(self.ToCall,self.Params)
+	
+	if len(self.Params) > 0 and self.Params[0].Type.Type == "class":
+        	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,[self.Params[1]])
+	else:
+        	self.CallFunc = GetFunc(self.ToCall,self.Params)
         if self.CallFunc == None:
             raise ValueError("Func not found {}".format(self.ToCall))
         self.Ret = self.CallFunc
@@ -1178,7 +1209,7 @@ class BoxMetod:
 	self.PrintFType(F)
         F.write("*")
     def Check(self):
-	self.FullName = self.InClass.Name + ".func" + "{}".format(GetNumb())
+	self.FullName = "func" + "{}".format(GetNumb())
         PushC()
         for It in self.Params:
 	    It.Check()

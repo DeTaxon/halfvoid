@@ -51,7 +51,8 @@ Vec := class
 	}
 	size := !() -> float
 	{
-		return this.x*this.x + this.y*this.y+this.z*this.z
+		//return this.x*this.x + this.y*this.y+this.z*this.z
+		return this^*this^
 	}
 	SetX := !(float c) -> void
 	{
@@ -74,6 +75,15 @@ Vec := class
 		this.x = this.x * ToAdd.x
 		this.y = this.y * ToAdd.y
 		this.z = this.z * ToAdd.z
+	}	
+	"*" := !(Vec ToAdd) -> float
+	{
+		Sum := 0.0
+		//Sum += vec[^i]*ToAdd.vec[i]
+		Sum = Sum + this.x*ToAdd.x
+		Sum = Sum + this.y*ToAdd.y
+		Sum = Sum + this.z*ToAdd.z
+		return Sum
 	}
 }
 
@@ -103,8 +113,6 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.x = 4.0
 	Test.Pos.y = 3.0
 	Test.Pos.z = 0.0
-
-	Test.Pos *= Plus
 
 	printf("Size = %f\n",Test.Pos.size())
 	return 0
