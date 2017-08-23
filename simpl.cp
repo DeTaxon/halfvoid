@@ -57,12 +57,31 @@ Vec := class
 	{
 		this.x = c
 	}
+	"+=" := !(Vec ToAdd) -> void
+	{
+		this.x = this.x + ToAdd.x
+		this.y = this.y + ToAdd.y
+		this.z = this.z + ToAdd.z
+	}
+	"*=" := !(float ToAdd) -> void
+	{
+		this.x = this.x * ToAdd
+		this.y = this.y * ToAdd
+		this.z = this.z * ToAdd
+	}
+	"*=" := !(Vec ToAdd) -> void
+	{
+		this.x = this.x * ToAdd.x
+		this.y = this.y * ToAdd.y
+		this.z = this.z * ToAdd.z
+	}
 }
 
 Quant := class
 {
 	Pos,Ang := Vec
 }
+
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
 	if scancode == 9
@@ -81,12 +100,11 @@ main := !(int argc,string[] argv) -> int
 	Plus.y = 2.0
 	Plus.z = 0.0
 	
-	//Test.Pos.x = 4.0
-	Test.Pos.SetX(4.0)
+	Test.Pos.x = 4.0
 	Test.Pos.y = 3.0
-	Test.Pos.z = 0.0	
+	Test.Pos.z = 0.0
 
-	//Test.Pos += Plus
+	Test.Pos *= Plus
 
 	printf("Size = %f\n",Test.Pos.size())
 	return 0
