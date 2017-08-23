@@ -18,7 +18,22 @@ def RuleIt( R, Arr,Pos):
     #if R[0] == "dp":
     #    print(Arr[Pos -1].Value)
     return True
-#def RuleFunc(R 
+
+def RuleMetod(Arr,Pos):
+	if Pos + 2 >= len(Arr):
+		return False
+	if Arr[Pos].Value not in datar:
+		return False
+	if Arr[Pos+1].Value != ".":
+		return False
+	if Arr[Pos+2].Value != "id":
+		return False
+	if Pos + 3 < len(Arr) and Arr[Pos+3].Value == "()":
+		UNext(Arr,Pos,4,"d.d()")
+	else:
+		UNext(Arr,Pos,3,"d.d")
+	return True
+			
         
 
 datar  = ["numi","numf","id","str","true","false"]
@@ -29,8 +44,11 @@ ForFor += ["{}","daif","dawhile","ret"]
 
 Rules = []
 Rules.append(["dm",datar,['++','--']])
-Rules.append(["d.d()",datar,".",datar,"()"])
-Rules.append(["d.d",datar,".",datar])
+
+#Rules.append(["d.d()",datar,".","id","()"])
+#Rules.append(["d.d",datar,".","id"])
+Rules.append(RuleMetod)
+
 Rules.append(["d^",datar,'^'])
 Rules.append(["d[]",datar,'[]'])
 Rules.append(["d&",datar,'&'])
@@ -43,7 +61,7 @@ Rules.append(["dm",datar,["+","-"],datar])
 Rules.append(["db",datar,["==","!=",">",">=","<","<="],datar])
 Rules.append(["db","not",datar])
 Rules.append(["db",datar,["and","or","xor"],datar])
-Rules.append(["dp",datar,"=",datar])
+Rules.append(["dp",datar,["=","+=","-=","*=","/="],datar])
 Rules.append(["newparams","id",",","id",",","id",":=",datar])
 Rules.append(["newparams","id",",","id",":=",datar])
 Rules.append(["newparam",["id","this"],":=",datar])
@@ -54,9 +72,10 @@ Rules.append(["daif","if",datar,ForFor,"else",ForFor])
 Rules.append(["daif","if",datar,ForFor])
 Rules.append(["dawhile","do",ForFor,"while",datar])
 Rules.append(["dawhile","while",datar,ForFor])
-#Rulse.append(["nummi"
 
 for R in Rules:
+    if type(R) is not type([]):
+	continue
     for i in range(1,len(R)):
         if type(R[i]) is str:
             R[i] = [R[i]]
@@ -71,7 +90,10 @@ def SearchMath(Arr):
         for Rule in Rules:
             i = 0
             while i < len(Arr):
-                GotSome += RuleIt(Rule,Arr,i)
+		if type(Rule) is type([]):
+                	GotSome += RuleIt(Rule,Arr,i)
+		else:
+			GotSome += Rule(Arr,i)
                 i += 1
             if GotSome:
                 break

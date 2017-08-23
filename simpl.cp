@@ -53,8 +53,16 @@ Vec := class
 	{
 		return this.x*this.x + this.y*this.y+this.z*this.z
 	}
+	SetX := !(float c) -> void
+	{
+		this.x = c
+	}
 }
 
+Quant := class
+{
+	Pos,Ang := Vec
+}
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
 	if scancode == 9
@@ -66,13 +74,21 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
  
 main := !(int argc,string[] argv) -> int 
 {
-	Pos := Vec^
-	Pos = malloc(4*4)
-	Pos.x = 4.0
-	Pos.y = 3.0
-	Pos.z = 0.0
-	printf("Size = %f\n",Pos.size())
-	free(Pos)
+	Test := Quant
+	Plus := Vec
+
+	Plus.x = 0.0
+	Plus.y = 2.0
+	Plus.z = 0.0
+	
+	//Test.Pos.x = 4.0
+	Test.Pos.SetX(4.0)
+	Test.Pos.y = 3.0
+	Test.Pos.z = 0.0	
+
+	//Test.Pos += Plus
+
+	printf("Size = %f\n",Test.Pos.size())
 	return 0
 	
 	glfwSetErrorCallback(SayError)

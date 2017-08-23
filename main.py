@@ -16,10 +16,13 @@ class CodeBox:
                 PreStr = c[:-1] + ' '
             else:
                 PreStr = c[:pos] + ' '
-            if len(PreStr) > 0:
-                Lines.append(PreStr)
-        for Line in Lines:
-            GenTokens(self.Tokens,Line)
+            Lines.append(PreStr)
+	j = 0
+        for i in range(len(Lines)):
+            GenTokens(self.Tokens,Lines[i])
+	    while j < len(self.Tokens):
+		self.Tokens[j].Line = i + 1
+		j += 1
         self.SearchPar('(',')','()',self.Tokens)
         self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('{','}','{}',self.Tokens)

@@ -18,6 +18,7 @@ class Token:
     def __init__(self,Val,Ext = None):
         self.Value = Val
         self.Extra = Ext
+	self.Line = -1
     def Info(self):
         Simple = ["str","numi","numf","nump","id","=="]
         if self.Value in Simple:

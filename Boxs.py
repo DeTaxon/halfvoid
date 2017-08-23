@@ -502,6 +502,8 @@ class BoxMetodFCall:
     def PrintPre(self,F):
         self.PrintPointPre(F)
         self.PrevId = GetNumb()
+	for It in self.Params:
+		It.PrintPre(F)
 	if self.IsPoint:
 		self.Param.PrintPre(F)
 	else:
@@ -517,7 +519,9 @@ class BoxMetodFCall:
 		self.Param.PrintUse(F)
 	else:
 		self.Param.PrintPointUse(F)
-		
+ 	for It in self.Params:
+		F.write(", ")		
+		It.PrintUse(F)
 	F.write(")\n")
     def GetName(self):
         return "%Tmp{}".format(self.PrevId)
@@ -811,6 +815,7 @@ class BoxPrisvCall:
         self.Type = GetType("void")
         self.PrevId = None
         self.CallFunc = None
+	
         
         self.ToCall = Obj.Extra[1].Value
         self.Params.append(GetUse(Obj.Extra[0]))
@@ -961,8 +966,8 @@ def GetUse(Obj):
         #VERY TEMP
         AddFuncPoint(Obj.Extra[3],Obj.Extra[0].Extra)
         return None
-
-    raise ValueError("Not implemented {}".format(Obj.Value))
+	
+    raise ValueError("Not implemented {} at line {}".format(Obj.Value,Obj.Line))
     #print("Not implemented {}".format(Obj.Value))
 
 class BoxBlock:
@@ -972,7 +977,8 @@ class BoxBlock:
         
         GotSome = True
         self.Items = []
-        for It in List:
+        for i in range(len(List)):
+	    It = List[i]
             PreAdd = None
             if It.Value == "newparam":
                 PreAdd = ParamChain(It)
