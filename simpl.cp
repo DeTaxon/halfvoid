@@ -38,19 +38,16 @@ SayError := !(int Data, char^ Line) -> void
 {
 	printf("Error %i: %s\n",Data,Line)
 }
-
 win := void^
 
 Vec := class
 {
-	x := float
-	y := float
-	z := float
+	x,y,z := float
 	this := !() -> void
 	{
-		x = 0
-		y = 0
-		z = 0
+		this.x = 0.0
+		this.y = 0.0
+		this.z = 0.0
 	}
 	size := !() -> float
 	{

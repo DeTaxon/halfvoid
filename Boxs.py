@@ -32,7 +32,8 @@ def GoodPoints(Par1,Par2):
     
 def GetFunc(Name,Pars):
     WrongValue = False
-    for Itc in ContextStuff:
+    for i in reversed(range(len(ContextStuff))):#ContextStuff:
+	Itc = ContextStuff[i]
         if Itc.Name == Name:
             It = Itc.Extra
             WrongValue = False
@@ -69,7 +70,8 @@ def GetFunc(Name,Pars):
 
 def GetParam(Name):
     WrongValue = False
-    for It in ContextStuff:
+    for i in reversed(range(len(ContextStuff))):#ContextStuff:
+	It = ContextStuff[i]
         if It.Name == Name:
             return It
     return None
@@ -260,9 +262,6 @@ class ParamChain:
 			if self.Extra.Value == "~num":
 				F.write("@Tmp{} = global ".format(self.Id))
 				self.Extra.PrintAsConst(F)
-				#F.write(self.Extra.Type.PrintUse(F))
-				#F.write(" ")
-				#F.write(self.Extra.Extra)
 				F.write("\n")
 			elif self.Extra.Value == "~str":
 				F.write("@Tmp{0} = global i8* getelementptr ([{1} x i8], [{1} x i8]* @CStr{2},i32 0, i32 0),align 8\n".format(self.Id,self.Extra.Size,self.Extra.Id))
@@ -283,7 +282,15 @@ class ParamChain:
                 F.write(", ")
                 self.Type.PrintUse(F)
                 F.write("* %Tmp{}\n".format(self.Id))
-            
+
+def AddParams(Item,Arr):
+	Pos  = 0
+	while Item.Extra[Pos].Value != ":=":
+		Pos += 1
+	for i in range(0,Pos,2):
+		PreAdd = ParamChain(None,Item.Extra[i])
+		PreAdd.PreExtra = Item.Extra[Pos+1]
+		Arr.append(PreAdd)
 
 class BoxClass:
 	def __init__(self,Obj):
@@ -304,8 +311,12 @@ class BoxClass:
 					self.Items.append(ParamChain(Stuf[i]))
 				else:
 					PreAdd = BoxMetod(Stuf[i].Extra[2],self)
+					if Stuf[i].Extra[0].Value == "this":
+						Stuf[i].Extra[0].Extra = "this"
 					PreAdd.Name = Stuf[i].Extra[0].Extra
 					self.Funcs.append(PreAdd)
+			elif Stuf[i].Value == "newparams":
+				AddParams(Stuf[i],self.Items)
 					
 	def Check(self):
 		for It in self.Items:
@@ -670,6 +681,7 @@ class BoxRef:
 		self.Extra.PrintPointUse(F)
 	def Check(self):
 		self.Extra.Check()
+		self.Type = GetPoint(self.Extra.Type)
 	def PrintConst(self,F):
 		self.Extra.PrintConst(F)
 	def PrintFunc(self,F):
