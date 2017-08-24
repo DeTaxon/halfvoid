@@ -34,10 +34,6 @@ glColor3f := !(float r,float g, float b) -> void declare
 glVertex2i := !(int x, int y) -> void declare
 glVertex3f := !(float x, float y, float z) -> void declare
 
-SayError := !(int Data, char^ Line) -> void
-{
-	printf("Error %i: %s\n",Data,Line)
-}
 win := void^
 
 Vec := class
@@ -51,8 +47,7 @@ Vec := class
 	}
 	size := !() -> float
 	{
-	      return this.x*this.x + this.y*this.y+this.z*this.z
-	      //return this^*this^
+	      return this*this
 	}
 	SetX := !(float c) -> void
 	{
@@ -100,6 +95,11 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 	}
 	printf("Key %i mod %i\n",scancode, action)
 }
+
+SayError := !(int Data,char^ Line) -> void
+{
+	printf("Error %i: %s\n",Data,Line)
+}
  
 main := !(int argc,string[] argv) -> int 
 {
@@ -113,10 +113,8 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.x = 4.0
 	Test.Pos.y = 3.0
 	Test.Pos.z = 0.0
-	
-	//Test.Pos += Plus
 
-	printf("Size = %f\n",Test.Pos.size())
+	printf("Size = %f\n",Test.Pos * Plus)
 	return 0
 	
 	glfwSetErrorCallback(SayError)
