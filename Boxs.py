@@ -114,6 +114,8 @@ class BoxWhile:
     def PrintFunc(self,F):
         self.Quest.PrintFunc(F)
         self.Job.PrintFunc(F)
+    def PrintAlloc(self,F):
+        self.Job.PrintAlloc(F)
     def PrintConst(self,F):
         self.Quest.PrintConst(F)
         self.Job.PrintConst(F)
@@ -156,6 +158,10 @@ class BoxIf:
         self.OnTrue.PrintFunc(F)
         if self.OnFalse != None:
             self.OnFalse.PrintFunc(F)
+    def PrintAlloc(self,F):
+        self.OnTrue.PrintAlloc(F)
+        if self.OnFalse != None:
+            self.OnFalse.PrintAlloc(F)
     def PrintConst(self,F):
         self.Quest.PrintConst(F)
         self.OnTrue.PrintConst(F)
@@ -275,6 +281,14 @@ class ParamChain:
         	return "@Tmp{}".format(self.Id)
 	else:
         	return "%Tmp{}".format(self.Id)
+    def PrintAlloc(self,F):
+	if self.IsGlobal:
+		raise ValueError("Impossible error")
+	if not self.IsFunc:
+            F.write("%Tmp{} = alloca ".format(self.Id))
+            self.Type.PrintUse(F)
+            F.write("\n")
+	return None
     def PrintInBlock(self,F):
 	if self.IsGlobal and not self.IsFunc:
 		if self.Extra != None:
@@ -292,10 +306,6 @@ class ParamChain:
         if not self.IsFunc and self.Type != None:
             if self.Extra != None:
                 self.Extra.PrintPre(F)
-            F.write("%Tmp{} = alloca ".format(self.Id))
-            self.Type.PrintUse(F)
-            F.write("\n")
-            if self.Extra != None:
                 F.write("store ")
                 self.Extra.PrintUse(F)
                 F.write(", ")
@@ -494,6 +504,8 @@ class BoxReturn:
             self.Ret.Check()
     def PrintPre(self,F):
         return None
+    def PrintAlloc(self,F):
+	return None
     def PrintUse(self,F):
         self.Ret.PrintPre(F)
         F.write("ret ")
@@ -565,6 +577,8 @@ class BoxMetodFCall:
     def PrintInBlock(self,F):
 	self.PrintPre(F)
         return None
+    def PrintAlloc(self,F):
+	return None
     def Check(self):
 	self.Param.Check()
 	self.Object = self.Param.Object
@@ -623,6 +637,8 @@ class BoxMetodCall:
         return None
     def PrintInBlock(self,F):
         return None
+    def PrintAlloc(self,F):
+	return None
     def Check(self):
 	self.Param.Check()
 	self.Object = self.Param.Object
@@ -886,6 +902,8 @@ class BoxFuncsCall:
     def PrintFunc(self,F):
         for P in self.Params:
             P.PrintFunc(F)
+    def PrintAlloc(self,F):
+	return None
     def PrintPre(self,F):
         self.PrevId = GetNumb()
 	for i in range(len(self.Params)):
@@ -1020,6 +1038,9 @@ class BoxBlock:
     def PrintInBlock(self,F):
         for It in self.Items:
             It.PrintInBlock(F)
+    def PrintAlloc(self,F):
+	for It in self.Items:
+		It.PrintAlloc(F)
     def MakeGlobal(self):
 	for It in self.Items:
 		if It.Value == "~:=":
@@ -1142,6 +1163,7 @@ class BoxFunc:
         if self.Block == None:
             return None
         F.write("{\n")
+	self.Block.PrintAlloc(F)
         self.Block.PrintUse(F)
         if self.Type.Type == "standart":
             if self.Type.Base == "void":
@@ -1242,6 +1264,18 @@ for j in ["float","double"]:
 for j in ["s","u"]:
 	for i in [8,16,32,64]:
 		Si =  "{}".format(i)
+		SI = "i" + Si
+		CurType = GetType("{}{}".format(j,i))
+		TestAdd = BoxFunc(None)
+		TestAdd.AsmLine ="store " +SI+ " {2} ," +SI+ "* {1}\n"
+		TestAdd.AsmLine +="{0} = add " +SI+ " {2},0\n"
+		TestAdd.Name = "="
+		TestAdd.Type = CurType
+		TestAdd.Params.append(ParamChain(CurType,"~no"))
+		TestAdd.Params[0].IsRef = True
+		TestAdd.Params.append(ParamChain(CurType,"~no"))
+		StandartStuff.append(TestAdd)
+
 		for IFunc in range(len(MFunc)):
 			TestAdd = BoxFunc(None)
 			TestAdd.AsmLine ="{0} = " 
@@ -1249,10 +1283,24 @@ for j in ["s","u"]:
 				TestAdd.AsmLine += j
 			TestAdd.AsmLine += MFunc[IFunc]
 			TestAdd.AsmLine += " i" + Si +" {1} , {2}\n"
-			TestAdd.Name = QFunc[IFunc] #"+"
-			TestAdd.Type = GetType("{}{}".format(j,i))
-			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
-			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			TestAdd.Name = QFunc[IFunc] 
+			TestAdd.Type = CurType
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
+			StandartStuff.append(TestAdd)
+
+			TestAdd = BoxFunc(None)
+			TestAdd.AsmLine ="{0}Pre = load " +SI+ " , " +SI+ "* {1}\n"
+			TestAdd.AsmLine += "{0} = "
+			if IFunc in [3,4]:
+				TestAdd.AsmLine += j
+			TestAdd.AsmLine += MFunc[IFunc] + " " + SI + " {0}Pre,{2}\n"
+			TestAdd.AsmLine += "store " +SI+ " {0} ," +SI+ "* {1}\n"
+			TestAdd.Name =  QFunc[IFunc] + "="
+			TestAdd.Type = CurType
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
+			TestAdd.Params[0].IsRef = True
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
 			StandartStuff.append(TestAdd)
 
 		for ICmp in range(len(MCmp)):
@@ -1265,8 +1313,8 @@ for j in ["s","u"]:
 			TestAdd.AsmLine +=" {1} , {2}\n"
 			TestAdd.Name = QCmp[ICmp]
 			TestAdd.Type = GetType("bool")
-			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
-			TestAdd.Params.append(ParamChain(GetType("{}{}".format(j,i)),"~no"))
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
+			TestAdd.Params.append(ParamChain(CurType,"~no"))
 			StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
@@ -1284,3 +1332,4 @@ TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params[0].IsRef = True
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 StandartStuff.append(TestAdd)
+
