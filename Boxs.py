@@ -33,13 +33,23 @@ def GoodPoints(Par1,Par2):
     
     
 def GetFunc(Name,Pars):
+	PreRet = SearchFunc(Name,Pars,ContextStuff)
+	if PreRet != None:
+		return PreRet
+	return SearchFunc(Name,Pars,StandartStuff)
+
+def SearchFunc(Name,Pars,Arr):
     WrongValue = False
-    for i in reversed(range(len(ContextStuff))):#ContextStuff:
-	Itc = ContextStuff[i]
+    for i in reversed(range(len(Arr))):
+	Itc = Arr[i]
         if Itc.Name == Name:
-            It = Itc.Extra
+	    if Itc.Value == "~:=":
+            	It = Itc.Extra
+	    else:
+		It = Itc
             WrongValue = False
             for i in range(len(It.Params)):
+		It.Params[i].Check()
 		if It.Params[i].Type == None:
 			print(It.Name)
                 if It.Params[i].Type.Id == GetType("...").Id:
@@ -48,19 +58,6 @@ def GetFunc(Name,Pars):
                     continue
                 if It.Params[i].Type.Type == "funcp":
                     continue
-                if It.Params[i].Type.Id != Pars[i].Type.Id:
-                    #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
-                    WrongValue = True
-                    break
-            if not WrongValue:
-                return It
-    for It in StandartStuff:
-        if It.Name == Name:
-            WrongValue = False
-            for i in range(len(It.Params)):
-                if It.Params[i].Type.Id == GetType("...").Id:
-                    return It
-
                 if It.Params[i].Type.Id != Pars[i].Type.Id:
                     #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
                     WrongValue = True
@@ -374,20 +371,7 @@ class BoxClass:
 	def GetName(self):
 		return "%Class{}".format(self.Id)
 	def GetFunc(self,Res,Pars):
-		for i in range(len(self.Funcs)):
-			if self.Funcs[i].Name == Res:
-				if len(Pars) != len(self.Funcs[i].Params):
-					continue
-				GotSome = True
-				for j in range(len(Pars)):
-					if self.Funcs[i].Params[j].Type == None:
-						self.Funcs[i].Params[j].Check()
-					if Pars[j].Type.Id != self.Funcs[i].Params[j].Type.Id:
-						GotSome *= False
-				if not GotSome:
-					continue
-				return self.Funcs[i]
-		return None
+		return SearchFunc(Res,Pars,self.Funcs)
 	def GetPos(self,Res):
 		for i in range(len(self.Items)):
 			if self.Items[i].Name == Res:
