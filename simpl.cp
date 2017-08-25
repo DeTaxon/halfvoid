@@ -109,12 +109,13 @@ main := !(int argc,string[] argv) -> int
 	Plus.x = 0.0
 	Plus.y = 2.0
 	Plus.z = 0.0
-	
+
+	Test.Pos.SetX(3.0)	
 	Test.Pos.x = 4.0
 	Test.Pos.y = 3.0
 	Test.Pos.z = 0.0
 
-	printf("Size = %f\n",Test.Pos * Plus)
+	printf("Size = %f\n",Test.Pos.size())
 	return 0
 	
 	glfwSetErrorCallback(SayError)

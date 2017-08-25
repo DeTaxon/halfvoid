@@ -376,13 +376,13 @@ class BoxClass:
 	def GetFunc(self,Res,Pars):
 		for i in range(len(self.Funcs)):
 			if self.Funcs[i].Name == Res:
-				if len(Pars) != len(self.Funcs[i].Params) - 1:
+				if len(Pars) != len(self.Funcs[i].Params):
 					continue
 				GotSome = True
 				for j in range(len(Pars)):
-					if self.Funcs[i].Params[j+1].Type == None:
-						self.Funcs[i].Params[j+1].Check()
-					if Pars[j].Type.Id != self.Funcs[i].Params[j+1].Type.Id:
+					if self.Funcs[i].Params[j].Type == None:
+						self.Funcs[i].Params[j].Check()
+					if Pars[j].Type.Id != self.Funcs[i].Params[j].Type.Id:
 						GotSome *= False
 				if not GotSome:
 					continue
@@ -515,92 +515,6 @@ class BoxReturn:
     def PrintInBlock(self,F):
         self.PrintUse(F)
 
-class BoxMetodFCall:
-    def __init__(self,Obj):
-        self.Value = "~d.d()"
-        self.Type = GetType("void")
-        self.PrevId = None
-        self.Object = None
-	self.Id = GetNumb()
-	self.Params = []
-	self.IsPoint = False
-	
-	if Obj.Value == "d.d()":
-		self.Param = GetUse(Obj.Extra[0])
-		self.ToCall = Obj.Extra[2].Extra
-            	Pars = Obj.Extra[3].Extra
-            	if len(Pars) != 0:
-            	    i = 0
-            	    while i < len(Pars):
-            	        if Pars[i].Value != ',':
-            	            self.Params.append(GetUse(Pars[i]))                    
-            	        i += 1
-			
-    def PrintConst(self,F):
-	for It in self.Params:
-		It.PrintConst(F)
-        return None
-    def PrintFunc(self,F):
-	for It in self.Params:
-		It.PrintFunc(F)
-        return None
-    def PrintPre(self,F):
-        self.PrintPointPre(F)
-        self.PrevId = GetNumb()
-	for It in self.Params:
-		It.PrintPre(F)
-	if self.IsPoint:
-		self.Param.PrintPre(F)
-	else:
-		self.Param.PrintPointPre(F)
-
-	if self.Type.Id != GetType("void").Id:
-		F.write("%Tmp{} = ".format(self.PrevId))
-	F.write("call ")
-	self.Func.PrintFType(F)
-	F.write("@{}".format(self.Func.FullName))
-	F.write(" (")	
-	if self.IsPoint:
-		self.Param.PrintUse(F)
-	else:
-		self.Param.PrintPointUse(F)
- 	for It in self.Params:
-		F.write(", ")		
-		It.PrintUse(F)
-	F.write(")\n")
-    def GetName(self):
-        return "%Tmp{}".format(self.PrevId)
-    def PrintUse(self,F):
-	self.Type.PrintUse(F)
-	F.write(" %Tmp{}".format(self.PrevId))
-        return None
-    def PrintInBlock(self,F):
-	self.PrintPre(F)
-        return None
-    def PrintAlloc(self,F):
-	return None
-    def Check(self):
-	self.Param.Check()
-	self.Object = self.Param.Object
-        self.ClassType = self.Param.Type
-	if self.ClassType.Type != "class":
-		if self.ClassType.Base.Type != "class":
-			raise ValueError("Not a class")
-		else:
-			self.IsPoint = True
-	if self.IsPoint:
-		self.Func = self.ClassType.Base.GetFunc(self.ToCall,self.Params)
-	else:
-		self.Func = self.ClassType.GetFunc(self.ToCall,self.Params)
-	if self.Func == None:
-		raise ValueError("Object does not have function {}".format(self.ToCall))
-	self.Type = self.Func.Type
-        #self.Id = self.Object.Id
-        return None
-    def PrintPointPre(self,F):
-        return None
-    def PrintPointUse(self,F):
-        return None
 class BoxMetodCall:
     def __init__(self,Obj):
         self.Value = "~id"
@@ -871,10 +785,9 @@ class BoxFuncsCall:
         self.Value = "~d()"
         self.Params = []
         self.Type = GetType("void")
-        #self.IsSquare = False ArrFunc[]
         self.PrevId = None
         self.CallFunc = None
-        #self.AsmLine = None #self.IsAsm = False   
+	self.IsMetod = False
         
         
         if Obj.Value == "d()" and Obj.Extra[0].Value == "id": 
@@ -886,7 +799,17 @@ class BoxFuncsCall:
                     if Pars[i].Value != ',':
                         self.Params.append(GetUse(Pars[i]))                    
                     i += 1
-        else:
+        elif Obj.Value == "d.d()":
+	    self.ToCall = Obj.Extra[2].Extra
+	    self.Params.append(GetUse(Obj.Extra[0]))
+            Pars = Obj.Extra[3].Extra
+            if len(Pars) != 0:
+                i = 0
+                while i < len(Pars):
+                    if Pars[i].Value != ',':
+                        self.Params.append(GetUse(Pars[i]))                    
+                    i += 1
+	else:
             self.ToCall = Obj.Extra[1].Value
             #print(Obj.Extra[0].Value)
             if Obj.Extra[0].Value == "not":
@@ -954,7 +877,7 @@ class BoxFuncsCall:
             It.Check()
 	
 	if len(self.Params) > 0 and self.Params[0].Type.Type == "class":
-        	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,[self.Params[1]])
+        	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
         if self.CallFunc == None:
@@ -977,14 +900,14 @@ class BoxFuncsCall:
 
 
 def GetUse(Obj):
-    if Obj.Value in ["d()","dm","db","dp"]:
+    if Obj.Value in ["d()","dm","db","dp","d.d()"]:
         return  BoxFuncsCall(Obj)
     if Obj.Value in ["id","this"]:
         return  BoxParamCall(Obj)
     if Obj.Value in ["d.d"]:
         return  BoxMetodCall(Obj)
-    if Obj.Value in ["d.d()"]:
-        return  BoxMetodFCall(Obj)
+    #if Obj.Value in ["d.d()"]:
+    #    return  BoxMetodFCall(Obj)
     if Obj.Value in ["d&"]: 
         return BoxRef(Obj)
     if Obj.Value in ["d^","d[]"]: 
@@ -1159,7 +1082,7 @@ class BoxFunc:
                 if i > 0:
 			F.write(",")
                 self.Params[i].PrintParam(F)
-        F.write(")\n")
+        F.write(")" + "; {}\n".format(self.Name))
         if self.Block == None:
             return None
         F.write("{\n")
