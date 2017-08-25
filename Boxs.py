@@ -286,6 +286,13 @@ class ParamChain:
             self.Type.PrintUse(F)
             F.write("\n")
 	return None
+    def PrintPointPre(self,F):
+	if not self.IsRef:
+		raise ValueError("Not a refence")
+    def PrintPointUse(self,F):
+	GetPoint(self.Type).PrintUse(F)
+	F.write(" %Tmp{}".format(self.Id))
+	return None
     def PrintInBlock(self,F):
 	if self.IsGlobal and not self.IsFunc:
 		if self.Extra != None:
@@ -318,6 +325,65 @@ def AddParams(Item,Arr):
 		PreAdd.PreExtra = Item.Extra[Pos+1]
 		Arr.append(PreAdd)
 
+class BoxFakeMetod:
+	def __init__(self,Obj):
+		self.Value = "~mimic"
+		self.Type = None
+		self.Pos = -1
+		self.ToCall = None
+		self.Id = GetNumb()
+		self.PreType = None
+		self.PrevType = None
+		if type(Obj) is type(""):
+			self.ToCall = Obj
+			self.Name = Obj
+		elif Obj.Value == "fakeparam":
+			self.Name = Obj.Extra[0].Extra
+			self.PreType = Obj.Extra[2]
+			self.ToCall = Obj.Extra[4].Extra #TODO
+		else:
+			print("Not now") # TODO
+			
+	def PrintInBlock(self,F,ToUse):
+		ToUse.PrintPointPre(F)
+		F.write("%Tmp{} = getelementptr ".format(self.Id))
+		ToUse.Type.PrintUse(F)
+		F.write(",")
+		ToUse.PrintPointUse(F)
+		F.write(", i32 0, i32 {}\n".format(self.Pos))
+		if self.PreType != None:
+			PrePre = self.Id
+			self.Id = GetNumb()
+			F.write("%Tmp{} = bitcast ".format(self.Id))
+			GetPoint(self.PrevType).PrintUse(F)
+			F.write(" %Tmp{}".format(PrePre))
+			F.write(" to ")
+			GetPoint(self.Type).PrintUse(F)
+			F.write("\n")
+	def GetName(self):
+		return "%Tmp{}".format(self.PrevId)
+	def GetPName(self):
+		return "%Tmp{}".format(self.Id)
+	def PrintPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%Tmp{} = load ".format(self.PrevId))
+		self.Type.PrintUse(F)
+		F.write(",")
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}\n".format(self.Id))
+	def Check(self,Paren = None):
+		if Paren == None:
+			return None
+		self.Pos = Paren.GetPos(self.ToCall)
+		if self.Pos < 0:
+			raise ValueError("There is no object {}".format(self.ToCall))
+		if self.PreType == None:
+			self.Type = Paren.Items[self.Pos].Type 
+		else:
+			self.PrevType = Paren.Items[self.Pos].Type
+			self.Type = ParseType(self.PreType)	
+	
+
 class BoxClass:
 	def __init__(self,Obj):
 		self.Name = Obj.Extra[0].Extra
@@ -328,6 +394,7 @@ class BoxClass:
 		self.IsPoint = False
 		self.Items = []
 		self.Funcs = []
+		self.Fakes = []
 		self.Id = GetNumb()
 		
 		Stuf = Obj.Extra[3].Extra
@@ -343,10 +410,18 @@ class BoxClass:
 					self.Funcs.append(PreAdd)
 			elif Stuf[i].Value == "newparams":
 				AddParams(Stuf[i],self.Items)
+			elif Stuf[i].Value == "fakeparam":
+				self.Fakes.append(BoxFakeMetod(Stuf[i])) #print("Hello")
+		for It in self.Items:
+			self.Fakes.append(BoxFakeMetod(It.Name))
 					
 	def Check(self):
 		for It in self.Items:
 			It.Check()
+		for It in self.Fakes:
+			It.Check(self)
+		for It in self.Fakes:
+			ContextStuff.append(It)
 		for It in self.Funcs:
 			It.Check()
 	def PrintConst(self,F):
@@ -360,6 +435,12 @@ class BoxClass:
 				F.write(" , ")
 			self.Items[i].Type.PrintUse(F)
 		F.write("}\n")
+	def AppendFakes(self):
+		for It in self.Fakes:
+			ContextStuff.append(It)
+	def UseFakes(self,F,Param):
+		for It in self.Fakes:
+			It.PrintInBlock(F,Param)
 	def PrintFunc(self,F):
 		for It in self.Items:
 			It.PrintFunc(F)
@@ -890,8 +971,6 @@ def GetUse(Obj):
         return  BoxParamCall(Obj)
     if Obj.Value in ["d.d"]:
         return  BoxMetodCall(Obj)
-    #if Obj.Value in ["d.d()"]:
-    #    return  BoxMetodFCall(Obj)
     if Obj.Value in ["d&"]: 
         return BoxRef(Obj)
     if Obj.Value in ["d^","d[]"]: 
@@ -1071,6 +1150,8 @@ class BoxFunc:
             return None
         F.write("{\n")
 	self.Block.PrintAlloc(F)
+	if self.InClass != None:
+		self.InClass.UseFakes(F,self.Params[0])
         self.Block.PrintUse(F)
         if self.Type.Type == "standart":
             if self.Type.Base == "void":

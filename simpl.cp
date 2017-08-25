@@ -39,11 +39,12 @@ win := void^
 Vec := class
 {
 	x,y,z := float
+	vec := float at x
 	this := !() -> void
 	{
-		this.x = 0.0
-		this.y = 0.0
-		this.z = 0.0
+		x = 0.0
+		y = 0.0
+		z = 0.0
 	}
 	size := !() -> float
 	{
@@ -51,33 +52,33 @@ Vec := class
 	}
 	SetX := !(float c) -> void
 	{
-		this.x = c
+		x = c
 	}
 	"+=" := !(Vec ToAdd) -> void
 	{
-		this.x += ToAdd.x
-		this.y += ToAdd.y
-		this.z += ToAdd.z
+		x += ToAdd.x
+		y += ToAdd.y
+		z += ToAdd.z
 	}
 	"*=" := !(float ToAdd) -> void
 	{
-		this.x *= ToAdd
-		this.y *= ToAdd
-		this.z *= ToAdd
+		x *= ToAdd
+		y *= ToAdd
+		z *= ToAdd
 	}
 	"*=" := !(Vec ToAdd) -> void
 	{
-		this.x *= ToAdd.x
-		this.y *= ToAdd.y
-		this.z *= ToAdd.z
+		x *= ToAdd.x
+		y *= ToAdd.y
+		z *= ToAdd.z
 	}	
 	"*" := !(Vec ToAdd) -> float
 	{
 		Sum := 0.0
 		//Sum += vec[^i]*ToAdd.vec[i]
-		Sum += this.x*ToAdd.x
-		Sum += this.y*ToAdd.y
-		Sum += this.z*ToAdd.z
+		Sum += x*ToAdd.x
+		Sum += y*ToAdd.y
+		Sum += z*ToAdd.z
 		return Sum
 	}
 }
