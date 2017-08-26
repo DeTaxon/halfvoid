@@ -39,7 +39,7 @@ win := void^
 Vec := class
 {
 	x,y,z := float
-	vec := float at x
+	vec := float[3] at x
 	this := !() -> void
 	{
 		x = 0.0
@@ -56,9 +56,9 @@ Vec := class
 	}
 	"+=" := !(Vec ToAdd) -> void
 	{
-		x += ToAdd.x
-		y += ToAdd.y
-		z += ToAdd.z
+		vec[0] += ToAdd.x
+		vec[1] += ToAdd.y
+		vec[2] += ToAdd.z
 	}
 	"*=" := !(float ToAdd) -> void
 	{
@@ -68,9 +68,9 @@ Vec := class
 	}
 	"*=" := !(Vec ToAdd) -> void
 	{
-		x *= ToAdd.x
-		y *= ToAdd.y
-		z *= ToAdd.z
+		vec[0] *= ToAdd.x
+		vec[1] *= ToAdd.y
+		vec[2] *= ToAdd.z
 	}	
 	"*" := !(Vec ToAdd) -> float
 	{
@@ -115,6 +115,9 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.x = 4.0
 	Test.Pos.y = 3.0
 	Test.Pos.z = 0.0
+	
+	Te := int[20]
+	Te[0] = 12
 
 	printf("Size = %f\n",Test.Pos.size())
 	return 0

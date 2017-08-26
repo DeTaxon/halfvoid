@@ -224,12 +224,17 @@ class ParamChain:
     def PrintPre(self,F):
         if self.IsFunc:
             return None
+	if self.Type.Type == "fixed":
+		return self.PrintPointPre(F)
         if self.IsRef:
             self.PrevId = GetNumb()
             F.write("%Tmp{} = load ".format(self.PrevId))
             self.Type.PrintUse(F)
             F.write(" , ")
-            self.Type.PrintUse(F)
+	    if self.Type.Type == "fixed":
+            	GetPoint(self.Type).PrintUse(F)
+	    else:
+            	self.Type.PrintUse(F)
 	    if self.IsGlobal:
             	F.write("* @Tmp{}\n".format(self.Id))
 	    else:
@@ -239,6 +244,8 @@ class ParamChain:
             self.Extra.PrintFPoint(F)
             F.write(" @{}".format(self.Extra.FullName))
             return None
+	if self.Type.Type == "fixed":
+		return self.PrintPointUse(F)
         if self.IsRef:
             self.Type.PrintUse(F)
             F.write(" %Tmp{}".format(self.PrevId))
@@ -265,6 +272,8 @@ class ParamChain:
 	else:
 		return "%Tmp{}".format(self.Id)
     def GetName(self):
+	if self.Type.Type == "fixed":
+		return self.GetPName()
 	if self.IsGlobal:
 		# TODO: ref or const
         	return "@Tmp{}".format(self.Id)
@@ -282,9 +291,19 @@ class ParamChain:
 	if self.IsGlobal:
 		raise ValueError("Impossible error")
 	if not self.IsFunc:
-            F.write("%Tmp{} = alloca ".format(self.Id))
-            self.Type.PrintUse(F)
-            F.write("\n")
+		if self.Type.Type == "fixed":
+            		F.write("%Tmp{}Pre = alloca ".format(self.Id))
+            		self.Type.PrintInAlloc(F)
+            		F.write("\n")
+            		F.write("%Tmp{} = bitcast ".format(self.Id))
+            		self.Type.PrintInAlloc(F)
+			F.write("* %Tmp{}Pre to ".format(self.Id))
+            		GetPoint(self.Type).PrintUse(F)
+            		F.write("\n")
+		else:
+            		F.write("%Tmp{} = alloca ".format(self.Id))
+            		self.Type.PrintInAlloc(F)
+            		F.write("\n")
 	return None
     def PrintPointPre(self,F):
 	if not self.IsRef:
@@ -334,6 +353,7 @@ class BoxFakeMetod:
 		self.Id = GetNumb()
 		self.PreType = None
 		self.PrevType = None
+		self.InClass = None
 		if type(Obj) is type(""):
 			self.ToCall = Obj
 			self.Name = Obj
@@ -351,11 +371,18 @@ class BoxFakeMetod:
 		F.write(",")
 		ToUse.PrintPointUse(F)
 		F.write(", i32 0, i32 {}\n".format(self.Pos))
-		if self.PreType != None:
+		if self.PreType != None or self.Type.Type == "fixed":
 			PrePre = self.Id
 			self.Id = GetNumb()
 			F.write("%Tmp{} = bitcast ".format(self.Id))
-			GetPoint(self.PrevType).PrintUse(F)
+			if self.Type.Type == "fixed":
+				if self.PrevType == None:
+					self.Type.PrintInAlloc(F)
+				else:
+					self.PrevType.PrintInAlloc(F)
+				F.write("*")
+			else:
+				GetPoint(self.PrevType).PrintUse(F)
 			F.write(" %Tmp{}".format(PrePre))
 			F.write(" to ")
 			GetPoint(self.Type).PrintUse(F)
@@ -364,7 +391,22 @@ class BoxFakeMetod:
 		return "%Tmp{}".format(self.PrevId)
 	def GetPName(self):
 		return "%Tmp{}".format(self.Id)
+	def PrintPointPre(self,F):
+		return None
+	def PrintPointUse(self,F):
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}".format(self.Id))
+		return None
+	def PrintUse(self,F):
+		if self.Type.Type == "fixed":
+			self.PrintPointUse(F)
+			return None
+		self.Type.PrintUse(F)
+		F.write(" %Tmp{}".format(self.PrevId))
 	def PrintPre(self,F):
+		if self.Type.Type == "fixed":
+			self.PrintPointPre(F)
+			return None
 		self.PrevId = GetNumb()
 		F.write("%Tmp{} = load ".format(self.PrevId))
 		self.Type.PrintUse(F)
@@ -374,6 +416,7 @@ class BoxFakeMetod:
 	def Check(self,Paren = None):
 		if Paren == None:
 			return None
+		self.InClass = Paren
 		self.Pos = Paren.GetPos(self.ToCall)
 		if self.Pos < 0:
 			raise ValueError("There is no object {}".format(self.ToCall))
@@ -424,6 +467,8 @@ class BoxClass:
 			ContextStuff.append(It)
 		for It in self.Funcs:
 			It.Check()
+	def PrintInAlloc(self,F):
+		F.write("%Class{}".format(self.Id))
 	def PrintConst(self,F):
 		for It in self.Items:
 			It.PrintConst(F)
@@ -433,7 +478,7 @@ class BoxClass:
 		for i in range(len(self.Items)):
 			if i >= 1:
 				F.write(" , ")
-			self.Items[i].Type.PrintUse(F)
+			self.Items[i].Type.PrintInAlloc(F)
 		F.write("}\n")
 	def AppendFakes(self):
 		for It in self.Fakes:
@@ -763,6 +808,13 @@ class BoxPoint:
 
         if self.Value == "~d[]":
             self.Ind.Check()
+    def GetName(self):
+        return "%Tmp{}".format(self.PrevId)
+    def GetPName(self):
+        if self.Value == "~d[]":
+            return "%Tmp{}".format(self.PrevId)
+        else:
+            self.Extra.GetName(F)
     def PrintFunc(self,F):
         self.Extra.PrintFunc(F)
         if self.Value == "~d[]":
@@ -788,7 +840,10 @@ class BoxPoint:
         self.Type.PrintUse(F)
         F.write(" , ")
         if self.Value == "~d[]":
-            self.Extra.Type.PrintUse(F)
+	    if self.Extra.Type.Type == "fixed":
+            	GetPoint(self.Extra.Type).PrintUse(F)
+	    else:
+            	self.Extra.Type.PrintUse(F)
             F.write(" %PreTmp{}\n".format(self.PrevId))
         else:
             self.Extra.PrintUse(F)
@@ -946,7 +1001,10 @@ class BoxFuncsCall:
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
         if self.CallFunc == None:
-            raise ValueError("Func not found {}".format(self.ToCall))
+		PreError = "Func not found {}".format(self.ToCall)
+		for it in self.Params:
+			PreError += "\nParam {}".format(it.Type.GetName())
+            	raise ValueError(PreError)
         self.Ret = self.CallFunc
         self.Type = self.CallFunc.Type
 

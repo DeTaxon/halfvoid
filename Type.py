@@ -24,18 +24,41 @@ class NameChain:
 class Type:
     def __init__(self,B,T,N = None):
         self.Base = B
-        self.Type  = T #standart funcp point array class
+        self.Type  = T #standart funcp point array class fixed
         self.Point = None
         self.Array = None
+	self.Fixs = []
+	self.Size = 0
         self.Id = -1
         self.IsPoint = False
         self.Params = []
         if T == "standart":
             NameTable.append(NameChain(N,self))
-    def PrintUse(self,F):
+    def PrintInAlloc(self,F):
         if self.Type == "standart":
             F.write(self.Base)
         if self.Type in ["point","array"]:
+            if self.Base.Id == 0:
+                F.write("i8")
+            else:
+                self.Base.PrintUse(F)
+            F.write("*")
+	if self.Type == "fixed":
+		F.write("[ {} x ".format(self.Size))
+		self.Base.PrintUse(F)
+		F.write(" ]")
+        if self.Type == "funcp":
+            self.Base.PrintUse(F)
+            F.write("(")
+            for i in range(len(self.Params)):
+                if i != 0:
+                    F.write(" , ")
+                self.Params[i].PrintUse(F)
+            F.write(")*")
+    def PrintUse(self,F):
+        if self.Type == "standart":
+            F.write(self.Base)
+        if self.Type in ["point","array","fixed"]:
             if self.Base.Id == 0:
                 F.write("i8")
             else:
@@ -102,6 +125,8 @@ def GetVoidP():
     return GetType(["void","^"]).Id
 
 def GetPoint(Bas):
+    if Bas.Type == "fixed":
+	return GetPoint(Bas.Base)
     if Bas.Point == None:
         Bas.Point = Type(Bas,"point")
         TypeTable.append(Bas.Point)
@@ -115,6 +140,19 @@ def GetArr(Bas):
         Bas.Point.Id = len(TypeTable)-1
         Bas.Point.IsPoint = True
     return Bas.Point
+
+def GetFixedArr(Bas,Siz):
+	for It in Bas.Fixs: 
+		if It.Size == Siz:
+			return It
+	Pre = Type(Bas,"fixed")
+	Pre.Size = Siz
+	Pre.Base = Bas
+	Pre.IsPoint = True
+        Pre.Id = len(TypeTable)
+	TypeTable.append(Pre)
+	Bas.Fixs.append(Pre)
+	return Pre
 
 def GetType(A):
     if type(A) == type("str"):
@@ -140,13 +178,17 @@ def GetType(A):
 def ParseType(A):
     if A.Value == "id":
         return GetType(A.Extra)
-    if A.Value in ["d^","d[]"]:
+    if A.Value in ["d^"]:
         Base = ParseType(A.Extra[0])
-        It = A.Extra[1].Value
-        if It == "^":
-            Base = GetPoint(Base)
-        if It == "[]":
-            Base = GetArr(Base)
+        Base = GetPoint(Base)
+	return Base
+    if A.Value in ["d[]"]:
+        Base = ParseType(A.Extra[0])
+	if len(A.Extra[1].Extra) > 0 and A.Extra[1].Extra[0].Value == "numi":
+		Size = A.Extra[1].Extra[0].Extra
+		Base = GetFixedArr(Base,Size)
+	else:
+        	Base = GetArr(Base)
         return Base
 
 def MakeSame(A,B):
