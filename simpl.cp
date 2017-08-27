@@ -108,11 +108,12 @@ main := !(int argc,string[] argv) -> int
 	Plus := Vec
 
 	Plus.x = 0.0
-	Plus.y = 2.0
-	Plus.z = 0.0
+	Plus.vec[0] = 0.0
+	Plus.vec[1] = 2.0
+	Plus.vec[2] = 0.0
 
 	Test.Pos.SetX(3.0)	
-	Test.Pos.x = 4.0
+	Test.Pos.vec[0] = 4.0
 	Test.Pos.y = 3.0
 	Test.Pos.z = 0.0
 	

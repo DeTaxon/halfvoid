@@ -354,6 +354,7 @@ class BoxFakeMetod:
 		self.PreType = None
 		self.PrevType = None
 		self.InClass = None
+		self.IsPoint = False
 		if type(Obj) is type(""):
 			self.ToCall = Obj
 			self.Name = Obj
@@ -364,17 +365,20 @@ class BoxFakeMetod:
 		else:
 			print("Not now") # TODO
 			
-	def PrintInBlock(self,F,ToUse):
+	def PrintInBlock(self,F,ToUse,UseId = -1):
+		if UseId == -1:
+			UseId = self.Id
+
 		ToUse.PrintPointPre(F)
-		F.write("%Tmp{} = getelementptr ".format(self.Id))
+		F.write("%Tmp{} = getelementptr ".format(UseId))
 		ToUse.Type.PrintUse(F)
 		F.write(",")
 		ToUse.PrintPointUse(F)
 		F.write(", i32 0, i32 {}\n".format(self.Pos))
 		if self.PreType != None or self.Type.Type == "fixed":
-			PrePre = self.Id
-			self.Id = GetNumb()
-			F.write("%Tmp{} = bitcast ".format(self.Id))
+			PrePre = UseId
+			UseId = GetNumb()
+			F.write("%Tmp{} = bitcast ".format(UseId))
 			if self.Type.Type == "fixed":
 				if self.PrevType == None:
 					self.Type.PrintInAlloc(F)
@@ -389,21 +393,29 @@ class BoxFakeMetod:
 			F.write("\n")
 	def GetName(self):
 		return "%Tmp{}".format(self.PrevId)
-	def GetPName(self):
-		return "%Tmp{}".format(self.Id)
-	def PrintPointPre(self,F):
+	def GetPName(self,UseId = -1):
+		if UseId == -1:
+			UseId = self.Id
+		return "%Tmp{}".format(UseId)
+	def PrintPointPre(self,F,UseId = -1):
 		return None
-	def PrintPointUse(self,F):
+	def PrintPointUse(self,F,UseId = -1):
+		if UseId == -1:
+			UseId = self.Id
 		GetPoint(self.Type).PrintUse(F)
-		F.write(" %Tmp{}".format(self.Id))
+		F.write(" %Tmp{}".format(UseId))
 		return None
-	def PrintUse(self,F):
+	def PrintUse(self,F,UseId = -1):
+		if UseId == -1:
+			UseId = self.Id
 		if self.Type.Type == "fixed":
-			self.PrintPointUse(F)
+			self.PrintPointUse(F,UseId)
 			return None
 		self.Type.PrintUse(F)
 		F.write(" %Tmp{}".format(self.PrevId))
-	def PrintPre(self,F):
+	def PrintPre(self,F,UseId = -1):
+		if UseId == -1:
+			UseId = self.Id
 		if self.Type.Type == "fixed":
 			self.PrintPointPre(F)
 			return None
@@ -412,7 +424,7 @@ class BoxFakeMetod:
 		self.Type.PrintUse(F)
 		F.write(",")
 		GetPoint(self.Type).PrintUse(F)
-		F.write(" %Tmp{}\n".format(self.Id))
+		F.write(" %Tmp{}\n".format(UseId))
 	def Check(self,Paren = None):
 		if Paren == None:
 			return None
@@ -503,6 +515,11 @@ class BoxClass:
 			if self.Items[i].Name == Res:
 				return i
 		return -1
+	def GetFake(self,Res):
+		for i in self.Fakes:
+			if i.Name == Res:
+				return i
+		return None
 	def GetType(self,Res):
 		for i in range(len(self.Items)):
 			if self.Items[i].Name == Res:
@@ -590,12 +607,7 @@ class ParConstNum:
             self.Type.PrintUse(F)
             F.write(" {} , 0\n".format(self.Extra))
         else:
-		#F.write("%Tmp{} = fadd float 0x{} , 0.0\n".format(self.PrevId,struct.pack(">F",self.Extra).encode("hex")))
-		#F.write("%Tmp{} = fadd float {} , 0.0\n".format(self.PrevId,self.Extra.hex()))
-            #F.write("%Tmp{} = fptrunc double ".format(self.PrevId))
-            #F.write(" {}e+00 to  float\n".format(self.Extra))
             F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
-            #F.write(" {}e+00 to  float\n".format(self.Extra))
 
     def PrintUse(self,F):
         self.Type.PrintUse(F)
@@ -643,22 +655,16 @@ class BoxMetodCall:
     def PrintFunc(self,F):
         return None
     def PrintPre(self,F):
-        self.PrintPointPre(F)
-        self.PrevId = GetNumb()
-	F.write("%Tmp{} = load ".format(self.PrevId))
-	self.Type.PrintUse(F)
-	F.write(",")
-	self.PrintPointUse(F)
-	F.write("\n")
+	self.PrevId = GetNumb()
+	self.ToUse.PrintInBlock(F,self.Param,self.PrevId)
+	self.ToUse.PrintPre(F,self.PrevId)
     def GetPName(self):
-        return "%Tmp{}".format(self.Id)
+	return self.ToUse.GetPName(self.PrevId)
+        #return "%Tmp{}".format(self.Id)
     def GetName(self):
-        return "%Tmp{}".format(self.PrevId)
+	return self.ToUse.GetName()
     def PrintUse(self,F):
-        #self.Object.PrintUse(F)
-	self.Type.PrintUse(F)
-	F.write(" %Tmp{}".format(self.PrevId))
-        return None
+	self.ToUse.PrintUse(F,self.PrevId)
     def PrintInBlock(self,F):
         return None
     def PrintAlloc(self,F):
@@ -671,40 +677,19 @@ class BoxMetodCall:
 		if self.ClassType.Base.Type != "class":
 			raise ValueError("Not a class")
 		else: 
-			self.IsPoint = True
-	if self.IsPoint:
-		self.Pos = self.ClassType.Base.GetPos(self.ToCall)
+			self.ToUse = self.ClassType.Base
 	else:
-		self.Pos = self.ClassType.GetPos(self.ToCall)
-	if self.Pos == -1:
+		self.UseClass = self.ClassType
+	self.ToUse = self.UseClass.GetFake(self.ToCall)
+	if self.ToUse == None:
 		raise ValueError("Object does not have field {}".format(self.ToCall))
-	if self.IsPoint:
-		self.Type = self.ClassType.Base.GetType(self.ToCall)
-	else:
-		self.Type = self.ClassType.GetType(self.ToCall)
-        #self.Id = self.Object.Id
-        return None
+	self.Type = self.ToUse.Type
     def PrintPointPre(self,F):
-	self.PrevId = self.Id
-	if self.IsPoint:
-		self.Param.PrintPre(F)	
-		F.write("%Tmp{} = getelementptr ".format(self.Id))
-		self.ClassType.Base.PrintUse(F)
-		F.write(" , ")
-		self.Param.PrintUse(F)
-		F.write(" ,i32 0, i32 {}\n".format(self.Pos))
-	else:
-		self.Param.PrintPointPre(F)	
-		F.write("%Tmp{} = getelementptr ".format(self.Id))
-		self.ClassType.PrintUse(F)
-		F.write(" , ")
-		self.Param.PrintPointUse(F)
-		F.write(" ,i32 0, i32 {}\n".format(self.Pos))
-        return None
+	self.PrevId = GetNumb()
+	self.ToUse.PrintInBlock(F,self.Param,self.PrevId)
+	self.ToUse.PrintPointPre(F,self.PrevId)
     def PrintPointUse(self,F):
-        GetPoint(self.Type).PrintUse(F)
-        F.write(" %Tmp{}".format(self.Id))
-        return None
+	self.ToUse.PrintPointUse(F,self.PrevId)
 class BoxParamCall:
     def __init__(self,Obj):
         self.Value = "~id"
