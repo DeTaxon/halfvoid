@@ -27,7 +27,6 @@ class CodeBox:
         self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('{','}','{}',self.Tokens)
         self.RecSearch(self.Tokens,SearchMath)
-        #self.Check()
         self.Block = BoxBlock(self.Tokens)
 	self.Block.MakeGlobal()
         self.Block.Check()

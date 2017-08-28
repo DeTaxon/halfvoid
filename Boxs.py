@@ -47,6 +47,7 @@ def SearchFunc(Name,Pars,Arr):
             	It = Itc.Extra
 	    else:
 		It = Itc
+		
             WrongValue = False
             for i in range(len(It.Params)):
 		It.Params[i].Check()
@@ -54,6 +55,9 @@ def SearchFunc(Name,Pars,Arr):
 			print(It.Name)
                 if It.Params[i].Type.Id == GetType("...").Id:
                     return It
+		if i >= len(Pars):
+			WrongValue = True
+			continue
                 if GoodPoints(It.Params[i].Type,Pars[i].Type):
                     continue
                 if It.Params[i].Type.Type == "funcp":
@@ -917,7 +921,7 @@ class BoxFuncsCall:
 	else:
             self.ToCall = Obj.Extra[1].Value
             #print(Obj.Extra[0].Value)
-            if Obj.Extra[0].Value == "not":
+            if Obj.Extra[0].Value == "not" or Obj.Extra[0].Value == "-":
                 self.Params.append(GetUse(Obj.Extra[1]))
                 self.ToCall = Obj.Extra[0].Value
             else:
@@ -1255,6 +1259,13 @@ for j in ["float","double"]:
 	TestAdd.Params[0].IsRef = True
 	TestAdd.Params.append(ParamChain(GetType(j),"~no"))
 	StandartStuff.append(TestAdd)
+
+	TestAdd = BoxFunc(None)
+	TestAdd.AsmLine ="{0} = fsub " +j+ " 0.0,{1}\n"
+	TestAdd.Name = "-"
+	TestAdd.Type = GetType(j)
+	TestAdd.Params.append(ParamChain(GetType(j),"~no"))
+	StandartStuff.append(TestAdd)
 	
 	for IFunc in range(len(MFunc)):
 		TestAdd = BoxFunc(None)
@@ -1297,6 +1308,7 @@ for j in ["s","u"]:
 		Si =  "{}".format(i)
 		SI = "i" + Si
 		CurType = GetType("{}{}".format(j,i))
+
 		TestAdd = BoxFunc(None)
 		TestAdd.AsmLine ="store " +SI+ " {2} ," +SI+ "* {1}\n"
 		TestAdd.AsmLine +="{0} = add " +SI+ " {2},0\n"
@@ -1304,6 +1316,13 @@ for j in ["s","u"]:
 		TestAdd.Type = CurType
 		TestAdd.Params.append(ParamChain(CurType,"~no"))
 		TestAdd.Params[0].IsRef = True
+		TestAdd.Params.append(ParamChain(CurType,"~no"))
+		StandartStuff.append(TestAdd)
+
+		TestAdd = BoxFunc(None)
+		TestAdd.AsmLine ="{0} = sub " +SI+ " 0,{1}\n"
+		TestAdd.Name = "-"
+		TestAdd.Type = CurType
 		TestAdd.Params.append(ParamChain(CurType,"~no"))
 		StandartStuff.append(TestAdd)
 
