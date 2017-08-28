@@ -79,6 +79,60 @@ def GetParam(Name):
             return It
     return None
 
+class BoxFor:
+    def __init__(self,Obj):
+        self.Id = GetNumb()
+        self.Value = "~for"
+	self.Job = None
+	self.Quest = None #How?
+	self.ParName = "it"
+	self.IndName = "~hiden"
+
+        if len(Obj.Extra) == 3:
+            if Obj.Extra[2].Value == "{}":
+                self.Job = BoxBlock(Obj.Extra[2].Extra)
+            else:
+                self.Job = GetUse(Obj.Extra[2])
+        if len(Obj.Extra) == 5:
+            if Obj.Extra[4].Value == "{}":
+                self.Job = BoxBlock(Obj.Extra[4].Extra)
+            else:
+                self.Job = GetUse(Obj.Extra[4])
+        if len(Obj.Extra) == 7:
+            if Obj.Extra[6].Value == "{}":
+                self.Job = BoxBlock(Obj.Extra[4].Extra)
+            else:
+                self.Job = GetUse(Obj.Extra[4])
+		
+		
+    def PrintInBlock(self,F):
+        if self.IsPost:
+            F.write("br label %WhileT{}\n".format(self.Id))
+        else:
+            F.write("br label %WhileC{}\n".format(self.Id))
+        F.write("WhileC{}:\n".format(self.Id))
+        self.Quest.PrintPre(F)
+        F.write("br ")
+        self.Quest.PrintUse(F)
+        F.write(", label %WhileT{0}, label %WhileF{0}\n".format(self.Id))
+
+        F.write("WhileT{}:\n".format(self.Id))
+        self.Job.PrintInBlock(F)
+        F.write("br label %WhileC{}\n".format(self.Id))
+        F.write("WhileF{}:\n".format(self.Id))
+    def PrintFunc(self,F):
+        self.Quest.PrintFunc(F)
+        self.Job.PrintFunc(F)
+    def PrintAlloc(self,F):
+        self.Job.PrintAlloc(F)
+    def PrintConst(self,F):
+        self.Quest.PrintConst(F)
+        self.Job.PrintConst(F)
+    def Check(self):
+        self.Quest.Check()
+        self.Job.Check()
+        if self.Quest.Type != GetType("bool").Id:
+            self.Quest = BoxExc(self.Quest,GetType("bool"))
 class BoxWhile:
     def __init__(self,Obj):
         self.Id = GetNumb()
@@ -524,6 +578,14 @@ class BoxClass:
 			if i.Name == Res:
 				return i
 		return None
+	def PrintZero(self,F):
+		self.PrintUse(F)
+		F.write(" {")
+		for i in range(len(self.Items)):
+			if i > 0:
+				F.write(",")
+			self.Items[i].Type.PrintZero(F)
+		F.write("}")
 	def GetType(self,Res):
 		for i in range(len(self.Items)):
 			if self.Items[i].Name == Res:

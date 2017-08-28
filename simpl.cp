@@ -50,9 +50,11 @@ Vec := class
 	{
 	      return this*this
 	}
-	SetX := !(float c) -> void
+	Set := !(float a,float b,float c) -> void
 	{
-		x = c
+		x = a
+		y = b
+		z = c
 	}
 	"+=" := !(Vec ToAdd) -> void
 	{
@@ -101,27 +103,22 @@ SayError := !(int Data,char^ Line) -> void
 {
 	printf("Error %i: %s\n",Data,Line)
 }
+
+GlobalPos := Vec
  
 main := !(int argc,string[] argv) -> int 
 {
 	Test := Quant
-	Plus := Vec
 
-	Plus.x = 0.0
-	Plus.vec[0] = 0.0
-	Plus.vec[1] = 2.0
-	Plus.vec[2] = 0.0
-
-	Test.Pos.SetX(3.0)	
-	Test.Pos.vec[0] = 4.0
-	Test.Pos.y = 3.0
-	Test.Pos.z = 0.0
+	Test.Pos.Set(4.0,3.0,0.0)
+	GlobalPos.Set(0.0,3.0,0.0)
 	
 	Te := int[20]
 	Te[0] =  5 * (7 - 13)
 
-	printf("Size = %f\n",Test.Pos.size())
+	printf("Size = %f\n",Test.Pos * GlobalPos)
 	printf("Size = %i\n",Te[0])
+	for 3 printf("Size = %i\n",it)
 	return 0
 	
 	glfwSetErrorCallback(SayError)

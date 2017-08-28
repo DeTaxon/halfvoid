@@ -40,7 +40,7 @@ datar  = ["numi","numf","id","str","true","false"]
 Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this"]
 datar += Box
 ForFor = datar
-ForFor += ["{}","daif","dawhile","ret"]
+ForFor += ["{}","daif","dawhile","ret","dafor"]
 
 Rules = []
 Rules.append(["dm",datar,['++','--']])
@@ -75,6 +75,9 @@ Rules.append(["daif","if",datar,ForFor,"else",ForFor])
 Rules.append(["daif","if",datar,ForFor])
 Rules.append(["dawhile","do",ForFor,"while",datar])
 Rules.append(["dawhile","while",datar,ForFor])
+Rules.append(["dafor","for","id",",","id",":",datar,ForFor])
+Rules.append(["dafor","for","id",":",datar,ForFor])
+Rules.append(["dafor","for",datar,ForFor])
 
 for R in Rules:
     if type(R) is not type([]):
