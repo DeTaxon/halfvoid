@@ -42,9 +42,7 @@ Vec := class
 	vec := float[3] at x
 	this := !() -> void
 	{
-		x = 0.0
-		y = 0.0
-		z = 0.0
+		for 3 vec[it] = 0.0
 	}
 	size := !() -> float
 	{
@@ -58,29 +56,21 @@ Vec := class
 	}
 	"+=" := !(Vec ToAdd) -> void
 	{
-		vec[0] += ToAdd.x
-		vec[1] += ToAdd.y
-		vec[2] += ToAdd.z
+		for 3 vec[it] += ToAdd.vec[it]
 	}
 	"*=" := !(float ToAdd) -> void
 	{
-		x *= ToAdd
-		y *= ToAdd
-		z *= ToAdd
+		for 3 vec[it] += ToAdd
 	}
 	"*=" := !(Vec ToAdd) -> void
 	{
-		vec[0] *= ToAdd.x
-		vec[1] *= ToAdd.y
-		vec[2] *= ToAdd.z
+		for 3 vec[it] *= ToAdd.vec[it]
 	}	
 	"*" := !(Vec ToAdd) -> float
 	{
 		Sum := 0.0
 		//Sum += vec[^i]*ToAdd.vec[i]
-		Sum += vec[0]*ToAdd.x
-		Sum += vec[1]*ToAdd.y
-		Sum += vec[2]*ToAdd.z
+		for 3 Sum += vec[it]*ToAdd.vec[it]
 		return Sum
 	}
 }
@@ -108,6 +98,9 @@ GlobalPos := Vec
  
 main := !(int argc,string[] argv) -> int 
 {
+	for i : 4
+		for j : 4 
+			printf("%i %i\n",i,j)
 	Test := Quant
 
 	Test.Pos.Set(4.0,3.0,0.0)
@@ -118,7 +111,6 @@ main := !(int argc,string[] argv) -> int
 
 	printf("Size = %f\n",Test.Pos * GlobalPos)
 	printf("Size = %i\n",Te[0])
-	for 3 printf("Size = %i\n",it)
 	return 0
 	
 	glfwSetErrorCallback(SayError)
@@ -158,3 +150,4 @@ main := !(int argc,string[] argv) -> int
 	
 	return 0
 }
+

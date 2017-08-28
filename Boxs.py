@@ -87,52 +87,81 @@ class BoxFor:
 	self.Quest = None #How?
 	self.ParName = "it"
 	self.IndName = "~hiden"
-
+	self.Id = GetNumb()
+	self.IsNumI = True
+	self.IndParam = None
+	JobPos = -1
         if len(Obj.Extra) == 3:
-            if Obj.Extra[2].Value == "{}":
-                self.Job = BoxBlock(Obj.Extra[2].Extra)
-            else:
-                self.Job = GetUse(Obj.Extra[2])
+		JobPos = 2
         if len(Obj.Extra) == 5:
-            if Obj.Extra[4].Value == "{}":
-                self.Job = BoxBlock(Obj.Extra[4].Extra)
-            else:
-                self.Job = GetUse(Obj.Extra[4])
+		JobPos = 4
+		self.ParName = Obj.Extra[1].Extra
         if len(Obj.Extra) == 7:
-            if Obj.Extra[6].Value == "{}":
-                self.Job = BoxBlock(Obj.Extra[4].Extra)
-            else:
-                self.Job = GetUse(Obj.Extra[4])
+		JobPos = 6
+		self.ParName = Obj.Extra[1].Extra
+		self.IndName = Obj.Extra[3].Extra
+
+	self.Quest = GetUse(Obj.Extra[JobPos - 1])
+        if Obj.Extra[JobPos].Value == "{}":
+            self.Job = BoxBlock(Obj.Extra[JobPos].Extra)
+        else:
+            self.Job = GetUse(Obj.Extra[JobPos])
 		
 		
     def PrintInBlock(self,F):
-        if self.IsPost:
-            F.write("br label %WhileT{}\n".format(self.Id))
-        else:
-            F.write("br label %WhileC{}\n".format(self.Id))
-        F.write("WhileC{}:\n".format(self.Id))
-        self.Quest.PrintPre(F)
-        F.write("br ")
-        self.Quest.PrintUse(F)
-        F.write(", label %WhileT{0}, label %WhileF{0}\n".format(self.Id))
+	if self.IsNumI:
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForCheck{}:\n".format(self.Id))
+        	self.Quest.PrintPre(F)
+		self.ParParam.PrintPre(F)
+		F.write("%Result{} = icmp slt i32 {} , {}\n".format(self.Id,self.ParParam.GetName(),self.Quest.GetName()))
+        	F.write("br i1 %Result{0}, label %ForStart{0}, label %ForEnd{0}\n".format(self.Id))
 
-        F.write("WhileT{}:\n".format(self.Id))
-        self.Job.PrintInBlock(F)
-        F.write("br label %WhileC{}\n".format(self.Id))
-        F.write("WhileF{}:\n".format(self.Id))
+        	F.write("ForStart{}:\n".format(self.Id))
+        	self.Job.PrintInBlock(F)
+
+		self.ParParam.PrintPre(F)
+		F.write("%ToStore{} = add i32 {} , 1\n".format(self.Id,self.ParParam.GetName()))
+		self.ParParam.PrintPointPre(F)
+		F.write("store i32 %ToStore{},".format(self.Id))
+		self.ParParam.PrintPointUse(F)
+		F.write("\n")
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForEnd{}:\n".format(self.Id))
+		
+        #F.write("br label %ForCheck{}\n".format(self.Id))
+        #F.write("ForCheck{}:\n".format(self.Id))
+        #self.Quest.PrintPre(F)
+        #F.write("br ")
+        #self.Quest.PrintUse(F)
+        #F.write(", label %WhileT{0}, label %WhileF{0}\n".format(self.Id))
+
+        #F.write("WhileStart{}:\n".format(self.Id))
+        #self.Job.PrintInBlock(F)
+        #F.write("br label %ForCheck{}\n".format(self.Id))
+        #F.write("ForEnd{}:\n".format(self.Id))
     def PrintFunc(self,F):
-        self.Quest.PrintFunc(F)
+	if self.Quest != None:
+        	self.Quest.PrintFunc(F)
         self.Job.PrintFunc(F)
     def PrintAlloc(self,F):
         self.Job.PrintAlloc(F)
+	if self.ParParam != None:
+		self.ParParam.PrintAlloc(F)
     def PrintConst(self,F):
-        self.Quest.PrintConst(F)
+	if self.Quest != None:
+        	self.Quest.PrintConst(F)
         self.Job.PrintConst(F)
     def Check(self):
         self.Quest.Check()
+	if self.Quest.Type.Id == GetType("int").Id:
+		self.IsNumI = True
+		self.ParParam = ParamChain(GetType("int"),Token("id",self.ParName))
+	PushC()
+	if self.ParParam != None:
+		ContextStuff.append(self.ParParam)
         self.Job.Check()
-        if self.Quest.Type != GetType("bool").Id:
-            self.Quest = BoxExc(self.Quest,GetType("bool"))
+	PopC()
 class BoxWhile:
     def __init__(self,Obj):
         self.Id = GetNumb()
@@ -1088,6 +1117,8 @@ def GetUse(Obj):
         return BoxPoint(Obj)
     if Obj.Value == "daif": 
         return BoxIf(Obj)
+    if Obj.Value == "dafor": 
+        return BoxFor(Obj)
     if Obj.Value == "dawhile": 
         return BoxWhile(Obj)
     if Obj.Value == "str": 
