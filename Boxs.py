@@ -1016,6 +1016,8 @@ def GetUse(Obj):
         return  BoxFuncsCall(Obj)
     if Obj.Value in ["id","this"]:
         return  BoxParamCall(Obj)
+    if Obj.Value in ["ds"]:
+	return GetUse(Obj.Extra[0].Extra[0])
     if Obj.Value in ["d.d"]:
         return  BoxMetodCall(Obj)
     if Obj.Value in ["d&"]: 

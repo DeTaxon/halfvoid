@@ -76,9 +76,9 @@ Vec := class
 	{
 		Sum := 0.0
 		//Sum += vec[^i]*ToAdd.vec[i]
-		Sum += x*ToAdd.x
-		Sum += y*ToAdd.y
-		Sum += z*ToAdd.z
+		Sum += vec[0]*ToAdd.x
+		Sum += vec[1]*ToAdd.y
+		Sum += vec[2]*ToAdd.z
 		return Sum
 	}
 }
@@ -118,9 +118,10 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.z = 0.0
 	
 	Te := int[20]
-	Te[0] = 12
+	Te[0] =  5 * (7 - 13)
 
 	printf("Size = %f\n",Test.Pos.size())
+	printf("Size = %i\n",Te[0])
 	return 0
 	
 	glfwSetErrorCallback(SayError)
