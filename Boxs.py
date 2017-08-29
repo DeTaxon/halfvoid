@@ -110,6 +110,8 @@ class BoxFor:
 		
     def PrintInBlock(self,F):
 	if self.IsNumI:
+		self.ParParam.PrintPointPre(F)
+		F.write("store i32 0, i32* {}\n".format(self.ParParam.GetPName()))
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForCheck{}:\n".format(self.Id))
         	self.Quest.PrintPre(F)

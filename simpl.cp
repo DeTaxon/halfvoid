@@ -99,7 +99,7 @@ GlobalPos := Vec
 main := !(int argc,string[] argv) -> int 
 {
 	for i : 4
-		for j : 4 
+		for j : i 
 			printf("%i %i\n",i,j)
 	Test := Quant
 
