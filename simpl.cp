@@ -60,7 +60,7 @@ Vec := class
 	}
 	"*=" := !(float ToAdd) -> void
 	{
-		for 3 vec[it] += ToAdd
+		for 3 vec[it] *= ToAdd
 	}
 	"*=" := !(Vec ToAdd) -> void
 	{
@@ -70,6 +70,7 @@ Vec := class
 	{
 		Sum := 0.0
 		//Sum += vec[^i]*ToAdd.vec[i]
+		//for it,i vec += it*ToAdd.vec[i]
 		for 3 Sum += vec[it]*ToAdd.vec[it]
 		return Sum
 	}
@@ -99,14 +100,15 @@ GlobalPos := Vec
 main := !(int argc,string[] argv) -> int 
 {
 	for i : 4
-		for j : i 
+		for j : 4 
 			printf("%i %i\n",i,j)
 	Test := Quant
 
 	Test.Pos.Set(4.0,3.0,0.0)
 	GlobalPos.Set(0.0,3.0,0.0)
 	
-	Te := int[20]
+	Te := int[5]
+	for Te it = 0
 	Te[0] =  5 * (7 - 13)
 
 	printf("Size = %f\n",Test.Pos * GlobalPos)

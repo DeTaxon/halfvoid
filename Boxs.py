@@ -90,6 +90,7 @@ class BoxFor:
 	self.Id = GetNumb()
 	self.IsNumI = True
 	self.IndParam = None
+	self.IsFixed = -1
 	JobPos = -1
         if len(Obj.Extra) == 3:
 		JobPos = 2
@@ -130,6 +131,27 @@ class BoxFor:
 		F.write("\n")
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForEnd{}:\n".format(self.Id))
+	elif self.IsFixed != -1:
+		self.IndParam.PrintPointPre(F)
+		F.write("store i32 0, i32* {}\n".format(self.IndParam.GetPName()))
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForCheck{}:\n".format(self.Id))
+        	self.Quest.PrintPre(F)
+		self.IndParam.PrintPre(F)
+		F.write("%Result{} = icmp slt i32 {} , {}\n".format(self.Id,self.IndParam.GetName(),self.Quest.GetName()))
+        	F.write("br i1 %Result{0}, label %ForStart{0}, label %ForEnd{0}\n".format(self.Id))
+
+        	F.write("ForStart{}:\n".format(self.Id))
+        	self.Job.PrintInBlock(F)
+
+		self.IndParam.PrintPre(F)
+		F.write("%ToStore{} = add i32 {} , 1\n".format(self.Id,self.IndParam.GetName()))
+		self.IndParam.PrintPointPre(F)
+		F.write("store i32 %ToStore{},".format(self.Id))
+		self.IndParam.PrintPointUse(F)
+		F.write("\n")
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForEnd{}:\n".format(self.Id))
 		
         #F.write("br label %ForCheck{}\n".format(self.Id))
         #F.write("ForCheck{}:\n".format(self.Id))
@@ -150,6 +172,8 @@ class BoxFor:
         self.Job.PrintAlloc(F)
 	if self.ParParam != None:
 		self.ParParam.PrintAlloc(F)
+	if self.IndParam != None:
+		self.ParParam.PrintAlloc(F)
     def PrintConst(self,F):
 	if self.Quest != None:
         	self.Quest.PrintConst(F)
@@ -159,6 +183,10 @@ class BoxFor:
 	if self.Quest.Type.Id == GetType("int").Id:
 		self.IsNumI = True
 		self.ParParam = ParamChain(GetType("int"),Token("id",self.ParName))
+	elif self.Quest.Type.Type == "fixed":
+		self.IsFixed = self.Quest.Type.Size
+		self.ParParam = ParamChain(GetPoint(self.Quest.Type),Token("id",self.ParName))
+		self.IndParam = ParamChain(GetType("int"),Token("id",self.IndName))
 	PushC()
 	if self.ParParam != None:
 		ContextStuff.append(self.ParParam)
