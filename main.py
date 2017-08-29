@@ -1,3 +1,4 @@
+import sys
 from Lex import *
 from MathS import *
 from Boxs import *
@@ -7,8 +8,10 @@ class CodeBox:
     def __init__(self,Line):
         self.Tokens = []
 
-        with open(Line,"r") as f:
-            PreLines = f.readlines()
+	PreLines = []
+	for g in range(1,len(Line)):
+        	with open(Line[g],"r") as f:
+            		PreLines += f.readlines()
         Lines = []
         for c in PreLines: #deleting comments
             pos = c.find('//')
@@ -84,5 +87,5 @@ class CodeBox:
             if T.Value in ForFor:
                 self.CheckB(T.Extra,Size+1)
 
-It = CodeBox("simpl.cp")
+It = CodeBox(sys.argv)
 It.Out("out.ll")
