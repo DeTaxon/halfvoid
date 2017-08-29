@@ -64,7 +64,7 @@ Vec := class
 	}
 	"*=" := !(Vec ToAdd) -> void
 	{
-		for 3 vec[it] *= ToAdd.vec[it]
+		for it,i : vec it *= ToAdd.vec[i]
 	}	
 	"*" := !(Vec ToAdd) -> float
 	{
@@ -99,6 +99,10 @@ GlobalPos := Vec
  
 main := !(int argc,string[] argv) -> int 
 {
+	Te := int[5]
+	for i,j : Te i = (j + 4)*2
+	for Te printf("i = %i\n",it)	
+`
 	for i : 4
 		for j : 4 
 			printf("%i %i\n",i,j)
@@ -107,8 +111,6 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.Set(4.0,3.0,0.0)
 	GlobalPos.Set(0.0,3.0,0.0)
 	
-	Te := int[5]
-	for Te it = 0
 	Te[0] =  5 * (7 - 13)
 
 	printf("Size = %f\n",Test.Pos * GlobalPos)
