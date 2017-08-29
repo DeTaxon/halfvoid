@@ -89,6 +89,7 @@ class BoxFor:
 	self.IndName = "~hiden"
 	self.Id = GetNumb()
 	self.IsNumI = False 
+	self.ParParam = None
 	self.IndParam = None
 	self.IsFixed = -1
 	JobPos = -1
@@ -465,6 +466,65 @@ class ParamChain:
                 F.write("* %Tmp{}\n".format(self.Id))
 
 	
+
+class BoxNew:
+	def __init__(self,Obj):
+		self.Value = "~new"
+		self.Type = None
+		self.Extra = None
+		self.PreType = None
+		self.HaveConstr = False
+		self.Size = None
+		
+		U = Obj.Extra[1]
+		if U.Value == "d()":
+			print("Problem")
+		else:
+			if U.Value == "d[]":
+				self.PreType = U.Extra[0]
+				self.Size = GetUse(U.Extra[1].Extra[0])
+			else:
+				self.PreType = U
+	def PrintConst(self,F):
+		if self.Size != None:
+			self.Size.PrintConst(F)
+		if self.Extra != None:
+			self.Extra.PrintConst(F)
+	def PrintPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%EndPos{} = getelementptr ".format(self.PrevId))
+		self.Type.Base.PrintUse(F)
+		F.write(" , ")
+		self.Type.PrintUse(F)
+		F.write(" null,i32 1\n")
+		F.write("%Size{} = ptrtoint ".format(self.PrevId))
+		self.Type.PrintUse(F)
+		F.write(" %EndPos{} to i32\n".format(self.PrevId))
+		if self.Size == None:
+			F.write("%EndSize{0} = mul i32 1,%Size{0}\n".format(self.PrevId))
+		else:
+			self.Size.PrintPre(F)
+			F.write("%EndSize{0} = mul i32 {1},%Size{0}\n".format(self.PrevId,self.Size.GetName()))
+		F.write("%TmpPre{0} = call i8* @malloc(i32 %EndSize{0})\n".format(self.PrevId))
+		F.write("%Tmp{0} = bitcast i8* %TmpPre{0} to ".format(self.PrevId))
+		self.Type.PrintUse(F)
+		F.write("\n")
+	def PrintUse(self,F):
+		self.Type.PrintUse(F)
+		F.write(" %Tmp{0}".format(self.PrevId))	
+	def Check(self):
+		if self.Extra != None:
+			self.Extra.Check()
+		self.Type = ParseType(self.PreType)
+		if self.Type == None:
+			raise ValueError("Not found type")
+		self.Type = GetPoint(self.Type)
+		if self.Size != None:
+			self.Size.Check()
+			if self.Size.Type.Id != GetType("int").Id:
+				raise ValueError("Must be int")
+		if self.HaveConstr:
+			print("Not implemented")
 
 def AddParams(Item,Arr):
 	Pos  = 0
@@ -1160,6 +1220,8 @@ def GetUse(Obj):
         return BoxRef(Obj)
     if Obj.Value in ["d^","d[]"]: 
         return BoxPoint(Obj)
+    if Obj.Value in ["newstuf"]:
+	return BoxNew(Obj)
     if Obj.Value == "daif": 
         return BoxIf(Obj)
     if Obj.Value == "dafor": 

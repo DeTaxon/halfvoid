@@ -19,9 +19,15 @@ GlobalPos := Vec
  
 main := !(int argc,string[] argv) -> int 
 {
-	Te := int[7]
-	for i,j : Te i = (j + 4)*2
-	for Te printf("i = %i\n",it)	
+	Te := new int[7]
+	printf("p = %p\n",Te)
+	p := int^
+	//p =
+	Te[0] = 6
+	printf("o = %i\n",p)
+	return 0
+	//#for i,j : Te i = (j + 4)*2
+	//#for Te printf("i = %i\n",it)	
 `
 	for i : 4
 		for j : 4 

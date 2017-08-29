@@ -1,4 +1,3 @@
-
 Vec := class
 {
 	x,y,z := float
@@ -32,8 +31,6 @@ Vec := class
 	"*" := !(Vec ToAdd) -> float
 	{
 		Sum := 0.0
-		//Sum += vec[^i]*ToAdd.vec[i]
-		//for it,i vec += it*ToAdd.vec[i]
 		for 3 Sum += vec[it]*ToAdd.vec[it]
 		return Sum
 	}
