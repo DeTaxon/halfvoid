@@ -8,6 +8,7 @@ ContextStuff = []
 ContextName = []
 NameStack = []
 StuffStack = []
+ConstTable = {}
 
 StandartStuff = []
 
@@ -72,6 +73,25 @@ def SearchFunc(Name,Pars,Arr):
                 return It
     return None
 
+class BoxConst:
+	def __init__(self,Obj):
+		self.Value = "~const"
+		self.Name = Obj.Extra[0].Extra
+		self.Type = None
+		self.Id = -1
+		if Obj.Extra[2].Value == "numi":
+			self.Extra = Obj.Extra[2].Extra
+			self.Type = GetType("int")
+	def PrintUse(self,F):
+		F.write("i32 {}".format(self.Extra))
+	def PrintPre(self,F):
+		return None
+	def PrintFunc(self,F):
+		return None
+	def PrintConst(self,F):
+		return None
+	def Check(self):
+		return None
 
 def GetParam(Name):
     WrongValue = False
@@ -79,6 +99,8 @@ def GetParam(Name):
 	It = ContextStuff[i]
         if It.Name == Name:
             return It
+    if Name in ConstTable:	
+	return ConstTable[Name]
     return None
 
 class BoxFor:
@@ -1278,6 +1300,8 @@ def GetUse(Obj):
         return BoxRef(Obj)
     if Obj.Value in ["d^","d[]"]: 
         return BoxPoint(Obj)
+    if Obj.Value in ["newconst"]:
+	return BoxConst(Obj)
     if Obj.Value in ["newstuf"]:
 	return BoxNew(Obj)
     if Obj.Value == "daif": 
@@ -1350,6 +1374,8 @@ class BoxBlock:
                 ContextStuff.append(It)
 	    if It.Value == "~class":
 		AddClass(It)
+	    if It.Value == "~const":
+		ConstTable[It.Name] = It
         for It in self.Items:
             It.Check()
             if It.Value == "~:=" and (It.Extra == None or It.Extra.Value != "~Func"):

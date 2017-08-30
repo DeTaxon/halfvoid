@@ -23,7 +23,7 @@ main := !(int argc,string[] argv) -> int
 	Te^.x = 20.0
 	printf("i = %f\n",Te.y)
 	free(Te)
-	return 0
+	//return 0
 	//#for i,j : Te i = (j + 4)*2
 	//#for Te printf("i = %i\n",it)	
 
@@ -37,7 +37,7 @@ main := !(int argc,string[] argv) -> int
 	
 
 	printf("Size = %f\n",Test.Pos * GlobalPos)
-	return 0
+	//return 0
 	
 	glfwSetErrorCallback(SayError)
 	
@@ -57,8 +57,8 @@ main := !(int argc,string[] argv) -> int
 	while not glfwWindowShouldClose(win)
 	{
 		glfwPollEvents()
-		glClear(0x04000)
-		glBegin(0x0007)
+		glClear(GL_COLOR_BUFFER_BIT)
+		glBegin(GL_QUADS)
 		glColor3f(0.0,0.4,0.75)
 		glVertex3f(-0.75,-0.75,0.0)
 		glColor3f(0.0,0.4,0.0)
