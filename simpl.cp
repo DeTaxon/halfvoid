@@ -19,11 +19,9 @@ GlobalPos := Vec
  
 main := !(int argc,string[] argv) -> int 
 {
-	Te := new int[7]
-	printf("p = %p\n",Te)
-	p := Te[6]&
-	Te[6] = 6
-	printf("i = %i\n",p^)
+	Te := new Vec()
+	print("i = %f\n",Te^.vec[0])
+	free(Te)
 	return 0
 	//#for i,j : Te i = (j + 4)*2
 	//#for Te printf("i = %i\n",it)	
@@ -36,10 +34,8 @@ main := !(int argc,string[] argv) -> int
 	Test.Pos.Set(4.0,3.0,0.0)
 	GlobalPos.Set(0.0,3.0,0.0)
 	
-	Te[0] =  5 * (7 - 13)
 
 	printf("Size = %f\n",Test.Pos * GlobalPos)
-	printf("Size = %i\n",Te[0])
 	return 0
 	
 	glfwSetErrorCallback(SayError)

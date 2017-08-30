@@ -475,10 +475,18 @@ class BoxNew:
 		self.PreType = None
 		self.HaveConstr = False
 		self.Size = None
+		self.Pars = []
+		self.ToUse = None
+		self.AddedThis = False
 		
 		U = Obj.Extra[1]
 		if U.Value == "d()":
-			print("Problem")
+			self.PreType = U.Extra[0]
+			U = U.Extra[1]
+			self.HaveConstr = True
+			for it in U.Extra:
+				if it.Value != ',':
+					self.Pars.append(GetUse(it))
 		else:
 			if U.Value == "d[]":
 				self.PreType = U.Extra[0]
@@ -509,6 +517,7 @@ class BoxNew:
 		F.write("%Tmp{0} = bitcast i8* %TmpPre{0} to ".format(self.PrevId))
 		self.Type.PrintUse(F)
 		F.write("\n")
+
 	def PrintUse(self,F):
 		self.Type.PrintUse(F)
 		F.write(" %Tmp{0}".format(self.PrevId))	
@@ -518,13 +527,21 @@ class BoxNew:
 		self.Type = ParseType(self.PreType)
 		if self.Type == None:
 			raise ValueError("Not found type")
-		self.Type = GetPoint(self.Type)
 		if self.Size != None:
 			self.Size.Check()
 			if self.Size.Type.Id != GetType("int").Id:
 				raise ValueError("Must be int")
 		if self.HaveConstr:
-			print("Not implemented")
+			if not self.AddedThis:
+				self.Pars = [ParamChain(self.Type,Token("id","this"))] + self.Pars
+				self.AddedThis = True
+			if self.Type.Type != "class":
+				raise ValueError("Not a class")
+			self.ToUse = self.Type.GetFunc("this",self.Pars)
+			if self.ToUse == None:
+				print("Constructor not found")
+		self.Type = GetPoint(self.Type)
+		print(self.Type.Type)
 
 def AddParams(Item,Arr):
 	Pos  = 0
