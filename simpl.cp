@@ -21,10 +21,9 @@ main := !(int argc,string[] argv) -> int
 {
 	Te := new int[7]
 	printf("p = %p\n",Te)
-	p := int^
-	//p =
-	Te[0] = 6
-	printf("o = %i\n",p)
+	p := Te[6]&
+	Te[6] = 6
+	printf("i = %i\n",p^)
 	return 0
 	//#for i,j : Te i = (j + 4)*2
 	//#for Te printf("i = %i\n",it)	

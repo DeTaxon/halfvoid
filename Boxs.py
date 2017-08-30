@@ -1073,11 +1073,25 @@ class BoxExc:
 				self.Extra.PrintUse(F)
 				F.write(" to ")
 				self.Type.PrintUse(F)
-				F.write("\n")
-	
+				F.write("\n")		
     def PrintUse(self,F):
         self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
+    def PrintPointPre(self,F):
+	self.PrevId = GetNumb()
+	if self.Type.IsPoint:
+		self.Extra.PrintPointPre(F)
+		F.write("%Tmp{}  = bitcast ".format(self.PrevId))
+		self.Extra.PrintPointUse(F)
+		F.write(" to ")
+		GetPoint(self.Type).PrintUse(F)
+		F.write("\n")
+	else:
+		raise ValueError("Wrong use")
+    def GetPName(self):
+	return "%Tmp{}".format(self.PrevId)
+    def GetName(self):
+	return "%Tmp{}".format(self.PrevId)
     def PrintConst(self,F):
         self.Extra.PrintConst(F)
     def PrintFunc(self,F):
