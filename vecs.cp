@@ -2,6 +2,14 @@ Vec := class
 {
 	x,y,z := float
 	vec := float[3] at x
+	this := !(float a,float b,float c) -> void
+	{
+		this.Set(a,b,c)
+	}
+	this := !(float c) -> void
+	{
+		for vec it = c
+	}
 	this := !() -> void
 	{
 		for vec it = 0.0

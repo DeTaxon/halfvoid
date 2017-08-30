@@ -49,6 +49,8 @@ def SearchFunc(Name,Pars,Arr):
 		It = Itc
 		
             WrongValue = False
+	    if len(Pars) != len(It.Params) and Name != "printf":
+		continue
             for i in range(len(It.Params)):
 		It.Params[i].Check()
 		if It.Params[i].Type == None:
@@ -57,7 +59,7 @@ def SearchFunc(Name,Pars,Arr):
                     return It
 		if i >= len(Pars):
 			WrongValue = True
-			continue
+			break	
                 if GoodPoints(It.Params[i].Type,Pars[i].Type):
                     continue
                 if It.Params[i].Type.Type == "funcp":
@@ -517,6 +519,23 @@ class BoxNew:
 		F.write("%Tmp{0} = bitcast i8* %TmpPre{0} to ".format(self.PrevId))
 		self.Type.PrintUse(F)
 		F.write("\n")
+		if self.HaveConstr:
+			for i in range(1,len(self.Pars)):
+				if self.ToUse.Params[i].IsRef:
+					self.Pars[i].PrintPointPre(F)
+				else:
+					self.Pars[i].PrintPre(F)
+				
+			F.write("call void @{}(".format(self.ToUse.FullName))
+			self.Type.PrintUse(F)
+			F.write(" %Tmp{}".format(self.PrevId))
+			for i in range(1,len(self.Pars)):
+				F.write(" , ")
+				if self.ToUse.Params[i].IsRef:
+					self.Pars[i].PrintPointUse(F)
+				else:
+					self.Pars[i].PrintUse(F)
+			F.write(")\n")
 
 	def PrintUse(self,F):
 		self.Type.PrintUse(F)
@@ -539,7 +558,7 @@ class BoxNew:
 				raise ValueError("Not a class")
 			self.ToUse = self.Type.GetFunc("this",self.Pars)
 			if self.ToUse == None:
-				print("Constructor not found")
+				raise ValueError("Constructor not found")
 		self.Type = GetPoint(self.Type)
 
 def AddParams(Item,Arr):
