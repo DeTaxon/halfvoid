@@ -894,7 +894,7 @@ class BoxMetodCall:
 		if self.ClassType.Base.Type != "class":
 			raise ValueError("Not a class")
 		else: 
-			self.ToUse = self.ClassType.Base
+			self.UseClass = self.ClassType.Base
 	else:
 		self.UseClass = self.ClassType
 	self.ToUse = self.UseClass.GetFake(self.ToCall)
