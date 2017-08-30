@@ -541,7 +541,6 @@ class BoxNew:
 			if self.ToUse == None:
 				print("Constructor not found")
 		self.Type = GetPoint(self.Type)
-		print(self.Type.Type)
 
 def AddParams(Item,Arr):
 	Pos  = 0
@@ -577,12 +576,21 @@ class BoxFakeMetod:
 	def PrintInBlock(self,F,ToUse,UseId = -1):
 		if UseId == -1:
 			UseId = self.Id
-
-		ToUse.PrintPointPre(F)
+		if ToUse.Type.IsPoint:
+			ToUse.PrintPre(F)
+		else:
+			ToUse.PrintPointPre(F)
 		F.write("%Tmp{} = getelementptr ".format(UseId))
-		ToUse.Type.PrintUse(F)
+		if ToUse.Type.IsPoint:
+			ToUse.Type.Base.PrintUse(F)
+		else:
+			ToUse.Type.PrintUse(F)
 		F.write(",")
-		ToUse.PrintPointUse(F)
+		if ToUse.Type.IsPoint:
+			ToUse.PrintUse(F)
+		else:
+			ToUse.PrintPointUse(F)
+		#ToUse.PrintPointUse(F)
 		F.write(", i32 0, i32 {}\n".format(self.Pos))
 		if self.PreType != None or self.Type.Type == "fixed":
 			PrePre = UseId
@@ -888,7 +896,7 @@ class BoxMetodCall:
 	return None
     def Check(self):
 	self.Param.Check()
-	self.Object = self.Param.Object
+	#self.Object = self.Param.Object
         self.ClassType = self.Param.Type
 	if self.ClassType.Type != "class":
 		if self.ClassType.Base.Type != "class":

@@ -20,12 +20,13 @@ GlobalPos := Vec
 main := !(int argc,string[] argv) -> int 
 {
 	Te := new Vec()
-	printf("i = %p\n",Te^.vec[0])
-	free(Te)
+	Te^.x = 20.0
+	printf("i = %f\n",Te[1].x)
+	//free(Te)
 	return 0
 	//#for i,j : Te i = (j + 4)*2
 	//#for Te printf("i = %i\n",it)	
-`
+
 	for i : 4
 		for j : 4 
 			printf("%i %i\n",i,j)
