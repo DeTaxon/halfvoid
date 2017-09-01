@@ -21,6 +21,11 @@ Node := class !{T}
 {
 	Data := T
 	Next := Node.{T}^
+	this := !(T To) -> void
+	{
+		Data = To
+		Next = null
+	}
 }
 
 Stack := class !{T}
@@ -29,7 +34,21 @@ Stack := class !{T}
 	Push := !(T a) -> void
 	{
 		if Start == null {
+			Start = new Node.{T}(a)
 		} else {
+			Iter := Start
+			while not Iter.Next == null
+				Iter = Iter.Next
+			Iter.Next = new Node.{T}(a)
+		}
+	}
+	Test := !()-> void
+	{
+		Iter := Start
+		while not Iter == null
+		{
+			printf("x = %i\n",Iter.Data)
+			Iter = Iter.Next
 		}
 	}
 }
@@ -40,6 +59,9 @@ main := !(int argc,string[] argv) -> int
 	Floats := Stack.{float}
 	Ints.Start = null
 	Ints.Push(1)
+	Ints.Push(-3)
+	Ints.Push(10)
+	Ints.Test()
 	return 0
 	Te := new Vec(3.0,2.0,1.0)
 	Te^.x = 20.0

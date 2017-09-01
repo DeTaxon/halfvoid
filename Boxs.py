@@ -574,6 +574,8 @@ class BoxNew:
 	def Check(self):
 		if self.Extra != None:
 			self.Extra.Check()
+		for it in self.Pars:
+			it.Check()
 		self.Type = ParseType(self.PreType)
 		if self.Type == None:
 			raise ValueError("Not found type")
