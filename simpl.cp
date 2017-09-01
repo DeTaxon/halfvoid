@@ -26,16 +26,14 @@ Node := class !{T}
 Stack := class !{T}
 {
 	Start := Node.{T}^
-	Say := !() -> void
-	{
-		printf("Test\n")
-	}
 }
  
 main := !(int argc,string[] argv) -> int 
 {
-	Ints := Node.{int}
-	Floats := Node.{float}
+	Ints := Stack.{int}
+	Floats := Stack.{float}
+	Ints.Start = null
+	Ints.Push(1)
 	return 0
 	Te := new Vec(3.0,2.0,1.0)
 	Te^.x = 20.0

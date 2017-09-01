@@ -892,9 +892,12 @@ class ParConstNum:
         if Obj.Value == "numi":
             self.Type = GetType("int")
         if Obj.Value == "numf":
-            self.Type = GetType("float") #GetType("float")
-        def PrintConst(self,F):
-            return None
+            self.Type = GetType("float") #GetType("float")i
+	if Obj.Value == "null":
+	    self.Type = GetPoint(GetType("void"))
+	    self.Extra = 0
+    def PrintConst(self,F):
+        return None
     def Check(self):
         return None
     def PrintConst(self,F):
@@ -911,19 +914,28 @@ class ParConstNum:
 		F.write(" {}".format(self.Extra))
 	return None
     def GetName(self):
-        return "%Tmp{}".format(self.PrevId)
+	if self.Type.Id == GetVoidP():
+		return "null"
+	else:
+        	return "%Tmp{}".format(self.PrevId)
     def PrintPre(self,F):
         self.PrevId = GetNumb()
         if self.Type.Id == GetType("int").Id or self.Type.Id == GetType("bool").Id:
             F.write("%Tmp{} = add ".format(self.PrevId))
             self.Type.PrintUse(F)
             F.write(" {} , 0\n".format(self.Extra))
-        else:
+        elif self.Type.Id == GetVoidP():
+	    return None
+	else:
             F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
 
     def PrintUse(self,F):
-        self.Type.PrintUse(F)
-        F.write(" %Tmp{}".format(self.PrevId))
+	if self.Type.Id == GetVoidP():
+		self.Type.PrintUse(F)
+		F.write(" null")
+	else:
+        	self.Type.PrintUse(F)
+        	F.write(" %Tmp{}".format(self.PrevId))
         return None
 class BoxReturn:
     def __init__(self,Obj):
@@ -1358,7 +1370,7 @@ def GetUse(Obj):
         return BoxWhile(Obj)
     if Obj.Value == "str": 
         return ParConstStr(Obj)
-    if Obj.Value in ["numf","numi","true","false"]:
+    if Obj.Value in ["numf","numi","true","false","null"]:
         return ParConstNum(Obj)
     if Obj.Value == "classtemplate":
         return BoxTemplate(Obj)
