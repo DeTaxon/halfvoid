@@ -48,7 +48,6 @@ def SearchFunc(Name,Pars,Arr):
             	It = Itc.Extra
 	    else:
 		It = Itc
-		
             WrongValue = False
 	    if len(Pars) != len(It.Params) and Name != "printf":
 		continue
@@ -1737,6 +1736,14 @@ TestAdd.Name = "="
 TestAdd.Type = GetPoint(GetType("void"))
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params[0].IsRef = True
+TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = icmp ne i8* {1} , {2}\n"
+TestAdd.Name = "!="
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 StandartStuff.append(TestAdd)
 

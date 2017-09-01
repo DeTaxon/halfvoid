@@ -54,7 +54,7 @@ def GenTokens(Arr,Line):
         for Cmp in Cmprs:
             Size = TryLine(Cmp,PostLine)
             if Size > 0:
-                Arr.append(Token("==",Cmp))
+                Arr.append(Token(Cmp,None))
                 i += Size
                 GotSome = True
                 break
