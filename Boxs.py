@@ -1183,9 +1183,14 @@ class BoxExc:
             self.Extra.PrintUse(F)
             F.write(" to {}\n".format(self.Type.GetName()))
         elif self.Type.Id == GetType("bool").Id:
-            F.write("%Tmp{} = icmp ne ".format(self.PrevId))
-            self.Extra.PrintUse(F)
-            F.write(" , 0\n")
+		if self.Extra.Type.IsPoint:
+            		F.write("%Tmp{} = icmp ne ".format(self.PrevId))
+            		self.Extra.PrintUse(F)
+            		F.write(" , null\n")
+		else:
+            		F.write("%Tmp{} = icmp ne ".format(self.PrevId))
+            		self.Extra.PrintUse(F)
+            		F.write(" , 0\n")
 	elif self.Type.Id == GetType("double").Id:
 		if self.Extra.Type.Id == GetType("float").Id:
 			F.write("%Tmp{} = fpext ".format(self.PrevId))	

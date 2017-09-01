@@ -47,11 +47,32 @@ Stack := class !{T}
 	PrintStuff := !()-> void
 	{
 		Iter := Start
-		while Iter != null
+		while Iter 
 		{
 			printf("x = %i\n",Iter.Data)
 			Iter = Iter.Next
 		}
+	}
+	Size := !() -> int
+	{
+		Count := 0
+		Iter := Start
+		while Iter 
+		{
+			Count += 1
+			Iter = Iter.Next
+		}
+		return Count
+	}
+	Clean := !() -> void
+	{
+		Iter := Node.{T}^
+		while Start
+		{
+			Iter = Start
+			Start = Iter.Next
+			free(Iter)
+		}	
 	}
 }
  
@@ -63,7 +84,11 @@ main := !(int argc,string[] argv) -> int
 	Ints.Push(1)
 	Ints.Push(-3)
 	Ints.Push(10)
+	Ints.Push(10)
 	Ints.PrintStuff()
+	printf("Size = %i\n",Ints.Size())
+	Ints.Clean()
+	printf("Size = %i\n",Ints.Size())
 	return 0
 	Te := new Vec(3.0,2.0,1.0)
 	Te^.x = 20.0
