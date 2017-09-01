@@ -75,20 +75,37 @@ Stack := class !{T}
 		}	
 	}
 }
+
+Queue := class !{T} extend Stack.{T}
+{
+	Push := !(T a) -> void
+	{
+		if Start == null {
+			Start = new Node.{T}(a)
+		} else {
+			Iter := Start
+			while Iter.Next Iter = Iter.Next
+			Iter.Next = new Node.{T}(a)
+		}
+	}
+}
  
 main := !(int argc,string[] argv) -> int 
 {
 	Ints := Stack.{int}
-	Floats := Stack.{float}
+	Floats := Queue.{float}
 	Ints.Start = null
 	Ints.Push(1)
 	Ints.Push(-3)
 	Ints.Push(10)
 	Ints.Push(10)
+	Floats.Push(1.0)
+	Floats.Push(5.0)
 	Ints.PrintStuff()
 	printf("Size = %i\n",Ints.Size())
 	Ints.Clean()
 	printf("Size = %i\n",Ints.Size())
+	printf("FloatSize = %i\n",Floats.Size())
 	return 0
 	Te := new Vec(3.0,2.0,1.0)
 	Te^.x = 20.0

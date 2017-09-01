@@ -59,7 +59,9 @@ def SearchFunc(Name,Pars,Arr):
                     return It
 		if i >= len(Pars):
 			WrongValue = True
-			break	
+			break
+		if Pars[i].Type.Type == "class" and It.Params[i].Type.Type == "class" and Pars[i].Type.InFamily(It.Params[i].Type):
+			continue
                 if GoodPoints(It.Params[i].Type,Pars[i].Type):
                     continue
                 if It.Params[i].Type.Type == "funcp":
@@ -763,8 +765,11 @@ class BoxClass:
 		self.Funcs = []
 		self.Fakes = []
 		self.Id = GetNumb()
+		self.ToExtend = None
 		
-		Stuf = Obj.Extra[3].Extra
+		if Obj.Extra[3].Value == "extend":
+			self.ToExtend = Obj.Extra[4]	
+		Stuf = Obj.Extra[len(Obj.Extra)-1].Extra
 		for i in range(len(Stuf)):
 			if Stuf[i].Value == "newparam":
 				if Stuf[i].Extra[2].Value != "!()":
@@ -783,6 +788,12 @@ class BoxClass:
 			self.Fakes.append(BoxFakeMetod(It.Name))
 					
 	def Check(self):
+		if self.ToExtend != None:
+			self.ToExtend = ParseType(self.ToExtend)
+			if self.ToExtend == None or self.ToExtend.Value != "~class":
+				raise ValueError("Nothing to extend")
+			self.Items = self.Items + self.ToExtend.Items 
+			self.Fakes = self.Fakes + self.ToExtend.Fakes
 		for It in self.Items:
 			It.Check()
 		for It in self.Fakes:
@@ -820,8 +831,20 @@ class BoxClass:
 		return None
 	def GetName(self):
 		return "%Class{}".format(self.Id)
+	def InFamily(self,Item):
+		if Item.Id == self.Id:
+			return True
+		if self.ToExtend != None:
+			return self.ToExtend.InFamily(Item)
+		return False
 	def GetFunc(self,Res,Pars):
-		return SearchFunc(Res,Pars,self.Funcs)
+		SomeFunc =  SearchFunc(Res,Pars,self.Funcs)
+		if SomeFunc != None:
+			return SomeFunc
+		if self.ToExtend != None:
+			return self.ToExtend.GetFunc(Res,Pars)
+		return None
+		
 	def GetPos(self,Res):
 		for i in range(len(self.Items)):
 			if self.Items[i].Name == Res:
