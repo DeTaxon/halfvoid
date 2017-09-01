@@ -760,6 +760,7 @@ class BoxClass:
 		self.Value = "~class"
 		self.Point = None
 		self.Array = None
+		self.Fixs = []
 		self.IsPoint = False
 		self.Items = []
 		self.Funcs = []

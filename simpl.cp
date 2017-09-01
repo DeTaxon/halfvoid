@@ -1,6 +1,5 @@
 win := void^
 
-
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
 	if scancode == 9
@@ -15,46 +14,9 @@ SayError := !(int Data,char^ Line) -> void
 	printf("Error %i: %s\n",Data,Line)
 }
 
-GlobalPos := Vec
-
  
 main := !(int argc,string[] argv) -> int 
 {
-	Ints := Stack.{int}
-	Floats := Queue.{float}
-	Ints.Start = null
-	Ints.Push(1)
-	Ints.Push(-3)
-	Ints.Push(10)
-	Ints.Push(10)
-	Floats.Push(1.0)
-	Floats.Push(5.0)
-	printf("j = %i\n",Ints.Pop())
-	printf("Size = %i\n",Ints.Size())
-	Ints.Clean()
-	printf("Size = %i\n",Ints.Size())
-	printf("FloatSize = %i\n",Floats.Size())
-	return 0
-	Te := new Vec(3.0,2.0,1.0)
-	Te^.x = 20.0
-	printf("i = %f\n",Te.y)
-	free(Te)
-	//return 0
-	//#for i,j : Te i = (j + 4)*2
-	//#for Te printf("i = %i\n",it)	
-
-	for i : 4
-		for j : 4 
-			printf("%i %i\n",i,j)
-	Test := Quant
-
-	Test.Pos.Set(4.0,3.0,0.0)
-	GlobalPos.Set(0.0,3.0,0.0)
-	
-
-	printf("Size = %f\n",Test.Pos * GlobalPos)
-	//return 0
-	
 	glfwSetErrorCallback(SayError)
 	
 	if not glfwInit() 

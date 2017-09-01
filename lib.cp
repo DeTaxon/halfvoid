@@ -5,3 +5,7 @@ malloc := !(int Size) -> void^ declare
 free := !(void^ Point) -> void declare
 strtof := !(char^ Line) -> float declare
 sleep := !(s32 seconds) -> int declare
+
+sinf := !(float In) -> float declare
+cosf := !(float In) -> float declare
+sqrt := !(float In) -> float declare
