@@ -284,7 +284,10 @@ class BoxIf:
             self.OnTrue = GetUse(Obj.Extra[2])
         self.OnFalse = None
         if len(Obj.Extra) > 3:
-            self.OnFalse = GetUse(Obj.Extra[4])
+		if Obj.Extra[4].Value == "{}":
+			self.OnFalse = BoxBlock(Obj.Extra[4].Extra)
+		else:
+			self.OnFalse = GetUse(Obj.Extra[4])
     def PrintInBlock(self,F):
         self.Quest.PrintPre(F)
         F.write("br ")
@@ -333,6 +336,7 @@ class ParamChain:
 	self.IsDrived = False
 	self.IsGlobal = False
 	self.PreExtra = None
+	self.IsChecked = False
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -409,6 +413,8 @@ class ParamChain:
             return None
         self.Extra.PrintFunc(F)
     def Check(self):
+	if self.IsChecked:
+		return None
 	if self.PreExtra != None:
 		self.Type = ParseType(self.PreExtra)
 		if self.Type == None:
@@ -420,6 +426,7 @@ class ParamChain:
             self.Type = self.Extra.Type
 	if self.Type.Type == "class":
 		self.IsRef = True
+	self.IsChecked = True
     def GetPName(self):
 	if self.IsGlobal:
 		return "@Tmp{}".format(self.Id)
@@ -1728,6 +1735,14 @@ TestAdd.Name = "="
 TestAdd.Type = GetPoint(GetType("void"))
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params[0].IsRef = True
+TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = icmp eq i8* {1} , {2}\n"
+TestAdd.Name = "=="
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 StandartStuff.append(TestAdd)
 

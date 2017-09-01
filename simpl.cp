@@ -26,6 +26,12 @@ Node := class !{T}
 Stack := class !{T}
 {
 	Start := Node.{T}^
+	Push := !(T a) -> void
+	{
+		if Start == null {
+		} else {
+		}
+	}
 }
  
 main := !(int argc,string[] argv) -> int 
