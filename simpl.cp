@@ -17,78 +17,6 @@ SayError := !(int Data,char^ Line) -> void
 
 GlobalPos := Vec
 
-Node := class !{T}
-{
-	Data := T
-	Next := Node.{T}^
-	this := !(T To) -> void
-	{
-		Data = To
-		Next = null
-	}
-	this := !(T To,Node.{T}^ Ne) -> void
-	{
-		Data = To
-		Next = Ne
-	}
-}
-
-Stack := class !{T}
-{
-	Start := Node.{T}^
-	Push := !(T a) -> void
-	{
-		if Start == null {
-			Start = new Node.{T}(a)
-		} else {
-			Start = new Node.{T}(a,Start)
-		}
-	}
-	PrintStuff := !()-> void
-	{
-		Iter := Start
-		while Iter 
-		{
-			printf("x = %i\n",Iter.Data)
-			Iter = Iter.Next
-		}
-	}
-	Size := !() -> int
-	{
-		Count := 0
-		Iter := Start
-		while Iter 
-		{
-			Count += 1
-			Iter = Iter.Next
-		}
-		return Count
-	}
-	Clean := !() -> void
-	{
-		Iter := Node.{T}^
-		while Start
-		{
-			Iter = Start
-			Start = Iter.Next
-			free(Iter)
-		}	
-	}
-}
-
-Queue := class !{T} extend Stack.{T}
-{
-	Push := !(T a) -> void
-	{
-		if Start == null {
-			Start = new Node.{T}(a)
-		} else {
-			Iter := Start
-			while Iter.Next Iter = Iter.Next
-			Iter.Next = new Node.{T}(a)
-		}
-	}
-}
  
 main := !(int argc,string[] argv) -> int 
 {
@@ -101,7 +29,7 @@ main := !(int argc,string[] argv) -> int
 	Ints.Push(10)
 	Floats.Push(1.0)
 	Floats.Push(5.0)
-	Ints.PrintStuff()
+	printf("j = %i\n",Ints.Pop())
 	printf("Size = %i\n",Ints.Size())
 	Ints.Clean()
 	printf("Size = %i\n",Ints.Size())
