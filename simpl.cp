@@ -16,9 +16,27 @@ SayError := !(int Data,char^ Line) -> void
 }
 
 GlobalPos := Vec
+
+Node := class !{T}
+{
+	Data := T
+	Next := Node.{T}^
+}
+
+Stack := class !{T}
+{
+	Start := Node.{T}^
+	Say := !() -> void
+	{
+		printf("Test\n")
+	}
+}
  
 main := !(int argc,string[] argv) -> int 
 {
+	Ints := Node.{int}
+	Floats := Node.{float}
+	return 0
 	Te := new Vec(3.0,2.0,1.0)
 	Te^.x = 20.0
 	printf("i = %f\n",Te.y)

@@ -37,7 +37,7 @@ def RuleMetod(Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret","dafor"]
@@ -48,6 +48,9 @@ Rules.append(["dm",datar,['++','--']])
 #Rules.append(["d.d()",datar,".","id","()"])
 #Rules.append(["d.d",datar,".","id"])
 Rules.append(RuleMetod)
+
+Rules.append(["!{}","!","{}"])
+Rules.append(["d.{}",datar,".","{}"])
 
 Rules.append(["d^",datar,'^'])
 Rules.append(["d[]",datar,'[]'])
@@ -71,6 +74,7 @@ Rules.append(["newparams","id",",","id",",","id",":=",datar])
 Rules.append(["newparams","id",",","id",":=",datar])
 Rules.append(["newparam",["id","this","str"],":=",datar])
 Rules.append(["newtype","id",":=","type","!()^"])
+Rules.append(["classtemplate","id",":=","class","!{}","{}"])
 Rules.append(["newclass","id",":=","class","{}"])
 Rules.append(["ret","return",datar])
 Rules.append(["daif","if",datar,ForFor,"else",ForFor])

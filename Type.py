@@ -5,16 +5,24 @@ NameTable = []
 
 ClassTable = []
 ClassStack = []
+DefsTable = []
+DefsStack = []
 
 
 def PushT():
 	ClassStack.append(len(ClassTable))
+	DefsStack.append(len(DefsTable))
 def PopT():
 	ToSize = ClassStack.pop()
 	while ToSize != len(ClassTable):
 		ClassTable.pop()
+	ToSize = DefsStack.pop()
+	while ToSize != len(DefsTable):
+		DefsTable.pop()
 def AddClass(NewC):
 	ClassTable.append(NewC)
+def AddDef(Na,Ty):
+	DefsTable.append(NameChain(Na,Ty))
 
 class NameChain:
     def __init__(self,N,T):
@@ -156,6 +164,9 @@ def GetFixedArr(Bas,Siz):
 
 def GetType(A):
     if type(A) == type("str"):
+        for N in DefsTable:
+            if N.Name == A:
+                return N.Type
         for N in NameTable:
             if N.Name == A:
                 return N.Type
@@ -190,6 +201,18 @@ def ParseType(A):
 	else:
         	Base = GetArr(Base)
         return Base
+    if A.Value == "d.{}":
+	PreBase = ParseType(A.Extra[0])
+	if PreBase == None:
+		return None
+	Pars = []
+	for it in A.Extra[2].Extra:
+		if it.Value != ",":
+			PreAdd = ParseType(it)
+			if PreAdd == None:
+				return None
+			Pars.append(PreAdd)
+		return PreBase.GetClass(Pars)
 
 def MakeSame(A,B):
     Base = GetType(A)

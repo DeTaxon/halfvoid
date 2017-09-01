@@ -413,6 +413,8 @@ class ParamChain:
 		self.Type = ParseType(self.PreExtra)
 		if self.Type == None:
 			self.Extra = GetUse(self.PreExtra)
+			if self.Extra == None:
+				raise ValueError("Unknown Object")
         if self.Extra != None:
             self.Extra.Check()
             self.Type = self.Extra.Type
@@ -696,7 +698,51 @@ class BoxFakeMetod:
 			self.PrevType = Paren.Items[self.Pos].Type
 			self.Type = ParseType(self.PreType)	
 	
+class BoxTemplate:
+	def __init__(self,Obj):
+		self.Value = "~templ"
 
+		self.SubClasses = []
+		self.ParsTable = []
+
+		self.ParsNames = []
+		self.Name = Obj.Extra[0].Extra
+		self.Type = "template"
+		
+		for it in Obj.Extra[3].Extra[1].Extra:
+			if it.Value == "id":
+				self.ParsNames.append(it.Extra)
+		Obj.Extra.pop(3)
+		self.Extra = Obj
+	def PrintFunc(self,F):
+		for it in self.SubClasses:
+			it.PrintFunc(F)
+	def PrintConst(self,F):
+		for it in self.SubClasses:
+			it.PrintConst(F)
+	def GetClass(self,Pars):
+		if len(self.ParsNames) != len(Pars):
+			return None
+		for i in range(len(self.ParsTable)):
+			WrongValue = False
+			for j in range(len(Pars)):
+				if self.ParsTable[i][j].Id != Pars[j].Id:
+					WrongValue = True
+					break
+				if not WrongValue:
+					return self.SubClasses[i]
+		PushT()
+		for i in range(len(Pars)):
+			AddDef(self.ParsNames[i],Pars[i])
+		NewCls = BoxClass(self.Extra)
+		self.SubClasses.append(NewCls)
+		self.ParsTable.append(Pars)
+		NewCls.Check()
+		PopT()
+		return NewCls
+			
+	def Check(self):
+		return None
 class BoxClass:
 	def __init__(self,Obj):
 		self.Name = Obj.Extra[0].Extra
@@ -1314,6 +1360,8 @@ def GetUse(Obj):
         return ParConstStr(Obj)
     if Obj.Value in ["numf","numi","true","false"]:
         return ParConstNum(Obj)
+    if Obj.Value == "classtemplate":
+        return BoxTemplate(Obj)
     if Obj.Value == "newclass":
         return BoxClass(Obj)
     if Obj.Value == "ret":
@@ -1322,6 +1370,8 @@ def GetUse(Obj):
         #VERY TEMP
         AddFuncPoint(Obj.Extra[3],Obj.Extra[0].Extra)
         return None
+    if Obj.Value == "d.{}":
+	return None
 	
     raise ValueError("Not implemented {} at line {}".format(Obj.Value,Obj.Line))
     #print("Not implemented {}".format(Obj.Value))
@@ -1372,7 +1422,7 @@ class BoxBlock:
         for It in self.Items:
             if It.Value == "~:=" and It.Extra != None and  It.Extra.Value == "~Func":
                 ContextStuff.append(It)
-	    if It.Value == "~class":
+	    if It.Value in ["~class","~templ"]:
 		AddClass(It)
 	    if It.Value == "~const":
 		ConstTable[It.Name] = It
