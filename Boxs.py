@@ -1239,7 +1239,7 @@ class BoxExc:
         F.write(" %Tmp{}".format(self.PrevId))
     def PrintPointPre(self,F):
 	self.PrevId = GetNumb()
-	if self.Type.IsPoint:
+	if self.Type.IsPoint or self.Type.Type == "class":
 		self.Extra.PrintPointPre(F)
 		F.write("%Tmp{}  = bitcast ".format(self.PrevId))
 		self.Extra.PrintPointUse(F)
@@ -1248,6 +1248,9 @@ class BoxExc:
 		F.write("\n")
 	else:
 		raise ValueError("Wrong use")
+    def PrintPointUse(self,F):
+	GetPoint(self.Type).PrintUse(F)
+	F.write(" %Tmp{}".format(self.PrevId))
     def GetPName(self):
 	return "%Tmp{}".format(self.PrevId)
     def GetName(self):
@@ -1369,6 +1372,8 @@ class BoxFuncsCall:
 
 	i = 0
         for i in range(len(self.Params)):
+	    if self.CallFunc.Params[i].Type.Id == self.Params[i].Type.Id:
+		continue
             if self.CallFunc.Params[i].Type == GetType("..."):
 		while i < len(self.Params):
 			if self.Params[i].Type.Id == GetType("float").Id:
@@ -1377,6 +1382,8 @@ class BoxFuncsCall:
             	break
             if self.CallFunc.Params[i].Type.Id != self.Params[i].Type.Id and GoodPoints(self.Params[i].Type,self.CallFunc.Params[i].Type):
                 self.Params[i] = BoxExc(self.Params[i],self.CallFunc.Params[i].Type)
+	    if self.Params[i].Type.Type == "class":
+		self.Params[i] = BoxExc(self.Params[i],self.CallFunc.Params[i].Type)
         return None
 
 
