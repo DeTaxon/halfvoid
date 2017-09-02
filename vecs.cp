@@ -138,7 +138,40 @@ Quant := class extend Vec4
 		for 3 vec[it] = Ang.vec[it]*Half
 		this.Normalize()
 	}
-	
+	"*=" := !(Quant q1) -> void
+	{
+		A := (this.w + this.x) * (q1.w + q1.x)
+		B := (this.z - this.y) * (q1.y - q1.z)
+		C := (this.x - this.w) * (q1.y + q1.z)
+		D := (this.y + this.z) * (q1.x - q1.w)
+		E := (this.x + this.z) * (q1.x + q1.y)
+		F := (this.x - this.z) * (q1.x - q1.y)
+		G := (this.w + this.y) * (q1.w - q1.z)
+		H := (this.w - this.y) * (q1.w + q1.z)
+
+		this.w = B + (0.0f -E - F + G + H) * 0.5
+		this.x = A - ( E + F + G + H) * 0.5
+		this.y =-C + ( E - F + G - H) * 0.5
+		this.z =-D + ( E - F - G + H) * 0.5
+	}
+	"=" := !(Quant q1) -> void
+	{
+		for 4 vec[it] = q1.vec[it]
+	}	
+	Move := !(Vec4 q1) -> void
+	{
+		q2 := Quant
+	}
+}
+
+Cent := class
+{
+	Pos := Vec4
+	Ang := Quant
+	SetAng := !(float An,Vec3 At) -> void
+	{
+		Ang.SetAng(An,At)
+	}
 }
 
 Mat4 := class
@@ -147,8 +180,36 @@ Mat4 := class
 	vec := float[16] at row
 	this := !() -> void
 	{
+		this.Indent()
+	}
+	GetP := !() -> float^
+	{
+		return vec
+	}
+	Indent := !() -> void
+	{
 		for vec it = 0.0
-		for 4 vec[4*it + it*4] = 1.0
+		for 4 vec[5*it] = 1.0
+	}
+	Rot := !() -> void
+	{
+		Temp := float
+		for i : 4
+		{
+			j := 0
+			while j < i
+			{	
+				Temp = vec[4*j + i]
+				vec[4*j + i] = vec[4*i + j]
+				vec[4*i + j] = Temp
+				j += 1
+			}
+		}
+	}
+	"=" := !(Quant Ang) -> void
+	{
+		this.Indent()
+		for row Ang.Move(it)
 	} 
 	SetAng := !(Vec3 ang) -> void
 	{
@@ -179,6 +240,7 @@ Mat4 := class
 		vec[13] = 0.0 
 		vec[14] = 0.0
 		vec[15]=  1.0
+		this.Rot()
 	}
 }
 

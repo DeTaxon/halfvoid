@@ -17,7 +17,6 @@ SayError := !(int Data,char^ Line) -> void
 
 //PFN_glCreateProgram := type !()^ -> void 
 //glCreateProgram := PFN_glCreateProgram
-
  
 main := !(int argc,string[] argv) -> int 
 {
@@ -35,11 +34,22 @@ main := !(int argc,string[] argv) -> int
 	glfwMakeContextCurrent(win)
 	glfwSetKeyCallback(win,keys)
 	glfwSwapInterval(1)
+	
+	Matr := Mat4
+	Ang := Vec3
+	Sec := 0.0
+	
+	for Ang.vec it = 0.0
 
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	while not glfwWindowShouldClose(win)
 	{
+		Sec += 0.001
+		Ang.z = Sec
+		Matr.SetAng(Ang)
+		glLoadMatrixf(Matr.GetP())
+		//glRotatef(Sec,0.0,0.0,1.0)
 		glfwPollEvents()
 		glClear(GL_COLOR_BUFFER_BIT)
 		glBegin(GL_QUADS)

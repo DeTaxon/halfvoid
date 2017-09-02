@@ -7,6 +7,9 @@ glColor3f := !(float r,float g, float b) -> void declare
 glVertex2i := !(int x, int y) -> void declare
 glVertex3f := !(float x, float y, float z) -> void declare
 
+glRotatef := !(float Ang, float x, float y, float z) -> void declare
+glLoadMatrixf := !(float^ arr) -> void declare
+
 // Data types 
 GL_BYTE			::		0x1400
 GL_UNSIGNED_BYTE	::		0x1401
