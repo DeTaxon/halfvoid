@@ -90,6 +90,10 @@ class Type:
 	elif self.Type in ["point","array"]:
 		self.PrintUse(F)
 		F.write( " null")
+	elif self.Type == "funcp":
+		self.PrintUse(F)
+		F.write(" null")
+		
     def GetName(self):
         if self.Type == "standart":
             return self.Base

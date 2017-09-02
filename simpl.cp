@@ -14,11 +14,16 @@ SayError := !(int Data,char^ Line) -> void
 	printf("Error %i: %s\n",Data,Line)
 }
 
+
+PFN_glCreateProgram := type !()^ -> void 
+glCreateProgram := PFN_glCreateProgram
+
  
 main := !(int argc,string[] argv) -> int 
 {
 	glfwSetErrorCallback(SayError)
-	
+	//glClearProgram = glXGetProcAdress("glCreateProgram")
+	glCreateProgram()	
 	if not glfwInit() 
 	{
 		printf("Not loaded\n")

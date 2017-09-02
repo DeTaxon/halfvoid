@@ -1282,6 +1282,7 @@ class BoxFuncsCall:
         self.PrevId = None
         self.CallFunc = None
 	self.IsMetod = False
+	self.PointCall = None
         
         
         if Obj.Value == "d()" and Obj.Extra[0].Value == "id": 
