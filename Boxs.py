@@ -627,13 +627,26 @@ class BoxFakeMetod:
 			print("Not now") # TODO
 			
 	def PrintInBlock(self,F,ToUse,UseId = -1):
-		if UseId == -1:
-			UseId = self.Id
+		EndId = -1
+		PreId = -1
+		if self.PreType != None or self.Type.Type == "fixed":
+			if UseId == -1:
+				EndId = self.Id
+				PreId = GetNumb()
+			else:
+				EndId = UseId
+				PreId = GetNumb()
+		else:
+			if UseId == -1:
+				PreId = self.Id
+			else:
+				PreId = UseId
+	
 		if ToUse.Type.IsPoint:
 			ToUse.PrintPre(F)
 		else:
 			ToUse.PrintPointPre(F)
-		F.write("%Tmp{} = getelementptr ".format(UseId))
+		F.write("%Tmp{} = getelementptr ".format(PreId))
 		if ToUse.Type.IsPoint:
 			ToUse.Type.Base.PrintUse(F)
 		else:
@@ -646,9 +659,7 @@ class BoxFakeMetod:
 		#ToUse.PrintPointUse(F)
 		F.write(", i32 0, i32 {}\n".format(self.Pos))
 		if self.PreType != None or self.Type.Type == "fixed":
-			PrePre = UseId
-			UseId = GetNumb()
-			F.write("%Tmp{} = bitcast ".format(UseId))
+			F.write("%Tmp{} = bitcast ".format(EndId))
 			if self.Type.Type == "fixed":
 				if self.PrevType == None:
 					self.Type.PrintInAlloc(F)
@@ -657,7 +668,7 @@ class BoxFakeMetod:
 				F.write("*")
 			else:
 				GetPoint(self.PrevType).PrintUse(F)
-			F.write(" %Tmp{}".format(PrePre))
+			F.write(" %Tmp{}".format(PreId))
 			F.write(" to ")
 			GetPoint(self.Type).PrintUse(F)
 			F.write("\n")
