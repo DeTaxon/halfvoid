@@ -1335,17 +1335,6 @@ class BoxFuncsCall:
         	self.PrevId = GetNumb()
 		if self.PointCall != None:
 			self.PointCall.PrintPre(F)
-			#MiniId = GetNumb()
-			#F.write("%Tmp{} = load ".format(MiniId))
-			#self.Type.PrintUse(F)
-			#F.write("(")
-			#for i in range(len(self.PointCall.Type.Params)):
-			#	if i > 0:
-			#		F.write(",")
-			#	self.PointCall.Type.Params[i].Type.PrintUse(F)
-			#F.write("), ")
-			#self.PointCall.PrintUse(F)
-			#F.write("\n")
 		if self.Type.Id != GetType("void").Id:
 			F.write("%Tmp{} = ".format(self.PrevId))
 		F.write("call ")

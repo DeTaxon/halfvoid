@@ -150,6 +150,36 @@ Mat4 := class
 		for vec it = 0.0
 		for 4 vec[4*it + it*4] = 1.0
 	} 
+	SetAng := !(Vec3 ang) -> void
+	{
+		A := cosf(ang.x)
+		B := sinf(ang.x)
+		C := cosf(ang.y)
+		D := sinf(ang.y)
+		E := cosf(ang.z)
+		F := sinf(ang.z)
+
+		AD :=   A * D
+		BD :=   B * D
+
+		vec[0] =   C * E
+		vec[1] =  -C * F
+		vec[2] =  -D
+		vec[4] = -BD * E + A * F
+		vec[5] =  BD * F + A * E
+		vec[6] =  -B * C
+		vec[8] =  AD * E + B * F
+		vec[9] = -AD * F + B * E
+		vec[10]=   A * C
+
+		vec[3] =  0.0 
+		vec[7] =  0.0
+		vec[11] = 0.0 
+		vec[12] = 0.0 
+		vec[13] = 0.0 
+		vec[14] = 0.0
+		vec[15]=  1.0
+	}
 }
 
 

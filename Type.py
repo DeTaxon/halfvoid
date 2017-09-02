@@ -79,7 +79,7 @@ class Type:
                 if i != 0:
                     F.write(" , ")
                 self.Params[i].PrintUse(F)
-            F.write(")")
+            F.write(")*")
     def PrintZero(self,F):
 	if self.Type == "standart":
 		F.write(self.Base)

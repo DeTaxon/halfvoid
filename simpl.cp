@@ -15,15 +15,15 @@ SayError := !(int Data,char^ Line) -> void
 }
 
 
-PFN_glCreateProgram := type !()^ -> void 
-glCreateProgram := PFN_glCreateProgram
+//PFN_glCreateProgram := type !()^ -> void 
+//glCreateProgram := PFN_glCreateProgram
 
  
 main := !(int argc,string[] argv) -> int 
 {
 	glfwSetErrorCallback(SayError)
 	//glCreateProgram = glfwGetProcAddress("glCreateProgram")
-	if glCreateProgram != null printf("Hey\n")
+	//if glCreateProgram != null printf("Hey\n")
 	//glCreateProgram()	
 	if not glfwInit() 
 	{
