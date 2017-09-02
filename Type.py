@@ -79,7 +79,7 @@ class Type:
                 if i != 0:
                     F.write(" , ")
                 self.Params[i].PrintUse(F)
-            F.write(")*")
+            F.write(")")
     def PrintZero(self,F):
 	if self.Type == "standart":
 		F.write(self.Base)
@@ -117,8 +117,6 @@ def AddFuncPoint(Obj,NewName = None):
                 if len(PArrs) == 1:
                     if PArrs[0].Value == "...":
                         FuncType.Params.append(ParamChain(GetType("...")))
-                    #else: 
-                        # error self.Params.append(ParamChain(None,PArrs[0]))
                 elif len(PArrs) == 2:
                     FuncType.Params.append(ParseType(PArrs[0]))
                 #else == 4   int x = 4

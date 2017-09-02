@@ -10,4 +10,4 @@ sinf := !(float In) -> float declare
 cosf := !(float In) -> float declare
 sqrt := !(float In) -> float declare
 
-//glXGetProcAdress := !(char^ name) -> void^ declare
+glXGetProcAdress := !(char^ name) -> void^ declare

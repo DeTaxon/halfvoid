@@ -22,8 +22,9 @@ glCreateProgram := PFN_glCreateProgram
 main := !(int argc,string[] argv) -> int 
 {
 	glfwSetErrorCallback(SayError)
-	//glClearProgram = glXGetProcAdress("glCreateProgram")
-	glCreateProgram()	
+	//glCreateProgram = glfwGetProcAddress("glCreateProgram")
+	if glCreateProgram != null printf("Hey\n")
+	//glCreateProgram()	
 	if not glfwInit() 
 	{
 		printf("Not loaded\n")

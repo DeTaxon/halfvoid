@@ -9,6 +9,7 @@ glfwSetWindowShouldClose := !(void^ W,bool To) -> bool declare
 glfwGetTime := !() -> double declare
 glfwSwapInterval := !(int Inter) -> void declare
 glfwSwapBuffers := !(void^ W) ->void declare
+glfwGetProcAddress := !(char^ Name) -> void^ declare
 
 debugCall := type !(int Data,char^ Line)^ -> void
 glfwSetErrorCallback := !(debugCall ToCall) -> void declare

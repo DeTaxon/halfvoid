@@ -46,6 +46,8 @@ def SearchFunc(Name,Pars,Arr):
         if Itc.Name == Name:
 	    if Itc.Value == "~:=":
             	It = Itc.Extra
+		if Itc.Extra == None:
+			continue
 	    else:
 		It = Itc
             WrongValue = False
@@ -67,7 +69,6 @@ def SearchFunc(Name,Pars,Arr):
                 if It.Params[i].Type.Type == "funcp":
                     continue
                 if It.Params[i].Type.Id != Pars[i].Type.Id:
-                    #print("wrong param {} {} {} {}".format(It.Name,i,It.Params[i].Type.Id,Pars[i].Type.Id))
                     WrongValue = True
                     break
             if not WrongValue:
@@ -338,6 +339,7 @@ class ParamChain:
 	self.IsGlobal = False
 	self.PreExtra = None
 	self.IsChecked = False
+	self.Extra = None
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -1329,19 +1331,38 @@ class BoxFuncsCall:
         		self.Params[i].PrintPointPre(F)
 		else:
         		self.Params[i].PrintPre(F)
-	if self.CallFunc.AsmLine == None: 
+	if self.CallFunc == None or self.CallFunc.AsmLine == None: 
         	self.PrevId = GetNumb()
-		
-		if self.CallFunc.Type.Id != GetType("void").Id:
+		if self.PointCall != None:
+			self.PointCall.PrintPre(F)
+			#MiniId = GetNumb()
+			#F.write("%Tmp{} = load ".format(MiniId))
+			#self.Type.PrintUse(F)
+			#F.write("(")
+			#for i in range(len(self.PointCall.Type.Params)):
+			#	if i > 0:
+			#		F.write(",")
+			#	self.PointCall.Type.Params[i].Type.PrintUse(F)
+			#F.write("), ")
+			#self.PointCall.PrintUse(F)
+			#F.write("\n")
+		if self.Type.Id != GetType("void").Id:
 			F.write("%Tmp{} = ".format(self.PrevId))
 		F.write("call ")
-		self.CallFunc.PrintFType(F)
-		self.CallFunc.PrintName(F)
+		if self.PointCall == None:
+			self.CallFunc.PrintFType(F)
+			self.CallFunc.PrintName(F)
+			Pars = self.CallFunc.Params
+		else:
+			self.Type.PrintUse(F)
+			F.write(" " + "%Tmp{}".format(self.PointCall.PrevId))
+			#F.write("%Tmp{}".format(MiniId))
+			Pars = self.PointCall.Type.Params
 		F.write("(")
 		for i in range(len(self.Params)):
 			if i > 0:
 				F.write(",")
-			if i < len(self.CallFunc.Params) and self.CallFunc.Params[i].IsRef:
+			if i < len(Pars) and Pars[i].IsRef:
         			self.Params[i].PrintPointUse(F)
 			else:
         			self.Params[i].PrintUse(F)
@@ -1375,13 +1396,18 @@ class BoxFuncsCall:
         	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
-        if self.CallFunc == None:
+		if self.CallFunc == None:
+			self.PointCall = GetParam(self.ToCall)
+        if self.CallFunc == None and self.PointCall == None:
 		PreError = "Func not found {}".format(self.ToCall)
 		for it in self.Params:
 			PreError += "\nParam {}".format(it.Type.GetName())
             	raise ValueError(PreError)
-        self.Ret = self.CallFunc
-        self.Type = self.CallFunc.Type
+        #self.Ret = self.CallFunc
+	if self.PointCall != None:
+		self.Type = self.PointCall.Type.Base 
+	else:
+        	self.Type = self.CallFunc.Type
 
 	i = 0
         for i in range(len(self.Params)):
