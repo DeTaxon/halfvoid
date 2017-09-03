@@ -26,9 +26,9 @@ def PopC():
         ContextName.pop()
 
 def GoodPoints(Par1,Par2):
-    if Par1.Id == GetVoidP() and Par2.IsPoint and not Par2.Base.IsPoint:
+    if Par1.Id == GetVoidP() and Par2.IsPoint:# and not Par2.Base.IsPoint:
        return True
-    if Par2.Id == GetVoidP() and Par1.IsPoint and not Par1.Base.IsPoint:
+    if Par2.Id == GetVoidP() and Par1.IsPoint:# and not Par1.Base.IsPoint:
        return True
     return False
     

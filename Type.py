@@ -97,6 +97,8 @@ class Type:
     def GetName(self):
         if self.Type == "standart":
             return self.Base
+	if self.Type == "funcp":
+		return "funcp"
         if self.Type in ["point","array"]:
             if self.Base.Id == 0:
                 return "i8*"
@@ -106,7 +108,8 @@ class Type:
 		
 
 def AddFuncPoint(Obj,NewName = None):
-    FuncType = Type(None,"funcp")
+    FuncType = Type(None,"funcp") 
+    FuncType.IsPoint = True
     Pars = Obj.Extra[1].Extra
     if len(Pars) > 0:
         Pars.append(Token(',',','))
