@@ -186,18 +186,6 @@ class BoxFor:
 		F.write("\n")
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForEnd{}:\n".format(self.Id))
-		
-        #F.write("br label %ForCheck{}\n".format(self.Id))
-        #F.write("ForCheck{}:\n".format(self.Id))
-        #self.Quest.PrintPre(F)
-        #F.write("br ")
-        #self.Quest.PrintUse(F)
-        #F.write(", label %WhileT{0}, label %WhileF{0}\n".format(self.Id))
-
-        #F.write("WhileStart{}:\n".format(self.Id))
-        #self.Job.PrintInBlock(F)
-        #F.write("br label %ForCheck{}\n".format(self.Id))
-        #F.write("ForEnd{}:\n".format(self.Id))
     def PrintFunc(self,F):
 	if self.Quest != None:
         	self.Quest.PrintFunc(F)

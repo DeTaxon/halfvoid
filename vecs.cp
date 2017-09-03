@@ -120,6 +120,11 @@ Vec4 := class
 			for vec it *= Si
 		}
 	}
+	Print := !() -> void
+	{
+		for vec printf("%f ",it)
+		printf("\n")
+	}
 }
 
 Quant := class extend Vec4
@@ -140,27 +145,50 @@ Quant := class extend Vec4
 	}
 	"*=" := !(Quant q1) -> void
 	{
-		A := (this.w + this.x) * (q1.w + q1.x)
-		B := (this.z - this.y) * (q1.y - q1.z)
-		C := (this.x - this.w) * (q1.y + q1.z)
-		D := (this.y + this.z) * (q1.x - q1.w)
-		E := (this.x + this.z) * (q1.x + q1.y)
-		F := (this.x - this.z) * (q1.x - q1.y)
-		G := (this.w + this.y) * (q1.w - q1.z)
-		H := (this.w - this.y) * (q1.w + q1.z)
+	    	w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z
+    		x = this.w * q1.x + this.x * q1.w + this.y * q1.z - this.z * q1.y
+    		y = this.w * q1.y - this.x * q1.z + this.y * q1.w + this.z * q1.x
+    		z = this.w * q1.z + this.x * q1.y - this.y * q1.x + this.z * q1.w
 
-		this.w = B + (0.0f -E - F + G + H) * 0.5
-		this.x = A - ( E + F + G + H) * 0.5
-		this.y =-C + ( E - F + G - H) * 0.5
-		this.z =-D + ( E - F - G + H) * 0.5
+		//A := (this.w + this.x) * (q1.w + q1.x)
+		//B := (this.z - this.y) * (q1.y - q1.z)
+		//C := (this.x - this.w) * (q1.y + q1.z)
+		//D := (this.y + this.z) * (q1.x - q1.w)
+		//E := (this.x + this.z) * (q1.x + q1.y)
+		//F := (this.x - this.z) * (q1.x - q1.y)
+		//G := (this.w + this.y) * (q1.w - q1.z)
+		//H := (this.w - this.y) * (q1.w + q1.z)
+
+		//w =  H - E - F + G
+		//x =  E + F + G + H 
+		//y =  E - F + G - H 
+		//z =  E - F - G + H 
+		//for vec it *= 0.5
+		//w = w + B
+		//x = A - x
+		//y = y - C
+		//z = z - D
 	}
 	"=" := !(Quant q1) -> void
 	{
 		for 4 vec[it] = q1.vec[it]
 	}	
-	Move := !(Vec4 q1) -> void
+	Move := !(Vec4 ToM) -> void
 	{
 		q2 := Quant
+		Temp := Quant
+		Sum := Quant
+
+		for 3 Temp.vec[it] = ToM.vec[it]
+		Temp.w = 0.0
+		for 4 Sum.vec[it] = this.vec[it]
+		q2.x = -this.x
+		q2.y = -this.y
+		q2.z = -this.z
+		q2.w =  this.w
+		Sum *= Temp
+		Sum *= q2
+		for 3 ToM.vec[it] = -Sum.vec[it]
 	}
 }
 
@@ -209,8 +237,19 @@ Mat4 := class
 	"=" := !(Quant Ang) -> void
 	{
 		this.Indent()
-		for row Ang.Move(it)
+		for 3 Ang.Move(row[it])
 	} 
+	Print := !() -> void
+	{
+		for i : 4
+		{
+			for j : 4 
+			{
+				printf("%f ",vec[i*4 + j])
+			}
+			printf("\n")
+		}
+	}
 	SetAng := !(Vec3 ang) -> void
 	{
 		A := cosf(ang.x)

@@ -38,16 +38,19 @@ main := !(int argc,string[] argv) -> int
 	Matr := Mat4
 	Ang := Vec3
 	Sec := 0.0
+	BAng := Quant
 	
-	for Ang.vec it = 0.0
-
+	Ang.Set(0.0,1.0,0.0)
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	while not glfwWindowShouldClose(win)
 	{
 		Sec += 0.001
-		Ang.z = Sec
-		Matr.SetAng(Ang)
+		BAng.SetAng(Sec,Ang)
+		BAng.Print()
+		Matr = BAng
+		Matr.Print()	
+		printf("\n")
 		glLoadMatrixf(Matr.GetP())
 		//glRotatef(Sec,0.0,0.0,1.0)
 		glfwPollEvents()
