@@ -21,7 +21,6 @@ glCreateProgram := PFN_glCreateProgram
 main := !(int argc,string[] argv) -> int 
 {
 	glfwSetErrorCallback(SayError)
-	//glCreateProgram()	
 	if not glfwInit() 
 	{
 		printf("Not loaded\n")
@@ -50,7 +49,7 @@ main := !(int argc,string[] argv) -> int
 		BAng.SetAng(Sec,Ang)
 		BAng.Print()
 		Matr = BAng
-		Matr.Print()	
+		//Matr.Print()	
 		printf("\n")
 		glLoadMatrixf(Matr.GetP())
 		//glRotatef(Sec,0.0,0.0,1.0)

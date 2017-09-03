@@ -145,10 +145,15 @@ Quant := class extend Vec4
 	}
 	"*=" := !(Quant q1) -> void
 	{
-	    	w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z
-    		x = this.w * q1.x + this.x * q1.w + this.y * q1.z - this.z * q1.y
-    		y = this.w * q1.y - this.x * q1.z + this.y * q1.w + this.z * q1.x
-    		z = this.w * q1.z + this.x * q1.y - this.y * q1.x + this.z * q1.w
+	    	nw := this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z
+    		nx := this.w * q1.x + this.x * q1.w + this.y * q1.z - this.z * q1.y
+    		ny := this.w * q1.y - this.x * q1.z + this.y * q1.w + this.z * q1.x
+    		nz := this.w * q1.z + this.x * q1.y - this.y * q1.x + this.z * q1.w
+
+		x = nx
+		y = ny
+		z = nz
+		w = nw
 
 		//A := (this.w + this.x) * (q1.w + q1.x)
 		//B := (this.z - this.y) * (q1.y - q1.z)
@@ -181,14 +186,12 @@ Quant := class extend Vec4
 
 		for 3 Temp.vec[it] = ToM.vec[it]
 		Temp.w = 0.0
-		for 4 Sum.vec[it] = this.vec[it]
-		q2.x = -this.x
-		q2.y = -this.y
-		q2.z = -this.z
-		q2.w =  this.w
+		Sum = this
+		q2.Set(-x,-y,-z,w)
 		Sum *= Temp
-		Sum *= q2
-		for 3 ToM.vec[it] = -Sum.vec[it]
+		//Sum *= q2
+		Sum.Print()
+		for 3 ToM.vec[it] = Sum.vec[it]
 	}
 }
 
@@ -237,7 +240,7 @@ Mat4 := class
 	"=" := !(Quant Ang) -> void
 	{
 		this.Indent()
-		for 3 Ang.Move(row[it])
+		for 3 Ang.Move(row[it])	
 	} 
 	Print := !() -> void
 	{
