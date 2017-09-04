@@ -21,7 +21,7 @@ Vec3 := class
 	}
 	Size := !() -> float
 	{
-	      return this*this
+	      return sqrt(this*this)
 	}
 	Set := !(float a,float b,float c) -> void
 	{
@@ -79,7 +79,7 @@ Vec4 := class
 	}
 	Size := !() -> float
 	{
-	      return this*this
+	      return sqrt(this*this)
 	}
 	Set := !(float a,float b,float c,float d) -> void
 	{
@@ -141,7 +141,6 @@ Quant := class extend Vec4
 		w = cosf(Half)
 		Half = sinf(Half)
 		for 3 vec[it] = Ang.vec[it]*Half
-		this.Normalize()
 	}
 	"*=" := !(Quant q1) -> void
 	{
@@ -178,6 +177,19 @@ Quant := class extend Vec4
 	{
 		for 4 vec[it] = q1.vec[it]
 	}	
+	Move2 := !(Vec4 ToM) -> void
+	{
+		Some := Quant
+	    	Some.w = 0.0 - this.x * ToM.x - this.y * ToM.y - this.z * ToM.z
+    		Some.x = this.w * ToM.x + this.y * ToM.z - this.z * ToM.y
+    		Some.y = this.w * ToM.y - this.x * ToM.z + this.z * ToM.x
+    		Some.z = this.w * ToM.z + this.x * ToM.y - this.y * ToM.x
+		
+    		ToM.x = Some.w * this.x - Some.x * this.w - Some.y * this.z + Some.z * this.y
+    		ToM.y = Some.w * this.y + Some.x * this.z - Some.y * this.w - Some.z * this.x
+    		ToM.z = Some.w * this.z - Some.x * this.y + Some.y * this.x - Some.z * this.w
+		ToM.Print()
+	}
 	Move := !(Vec4 ToM) -> void
 	{
 		q2 := Quant
@@ -240,7 +252,29 @@ Mat4 := class
 	"=" := !(Quant Ang) -> void
 	{
 		this.Indent()
-		for 3 Ang.Move(row[it])	
+		//for 3 Ang.Move(row[it])	
+		
+		vec[0] = 1.0 - 2.0 * (Ang.y*Ang.y + Ang.z*Ang.z)
+		vec[5] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.z*Ang.z)
+		vec[10] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.y*Ang.y)
+		
+		//vec[0]  = Ang.w*Ang.w + Ang.x*Ang.x - Ang.y*Ang.y - Ang.z* Ang.z
+		//vec[5]  = Ang.w*Ang.w - Ang.x*Ang.x + Ang.y*Ang.y - Ang.z* Ang.z
+		//vec[10] = Ang.w*Ang.w - Ang.x*Ang.x - Ang.y*Ang.y + Ang.z* Ang.z
+		
+		//vec[0]  = Ang.w*Ang.w + Ang.x*Ang.x - Ang.y*Ang.y - Ang.z* Ang.z
+		//vec[5]  = Ang.w*Ang.w - Ang.x*Ang.x + Ang.y*Ang.y - Ang.z* Ang.z
+		//vec[10] = Ang.w*Ang.w - Ang.x*Ang.x - Ang.y*Ang.y + Ang.z* Ang.z
+
+		vec[1] = 2.0 * (Ang.x*Ang.y - Ang.z*Ang.w)
+		vec[2] = 2.0 * (Ang.x*Ang.z + Ang.y*Ang.w)
+
+		vec[4] = 2.0 * (Ang.x*Ang.y + Ang.z*Ang.w)
+		vec[6] = 2.0 * (Ang.y*Ang.z - Ang.x*Ang.w)
+
+		vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
+		vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
+		this.Print()
 	} 
 	Print := !() -> void
 	{

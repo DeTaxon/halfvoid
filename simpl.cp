@@ -40,7 +40,7 @@ main := !(int argc,string[] argv) -> int
 	Sec := 0.0
 	BAng := Quant
 	
-	Ang.Set(0.0,1.0,0.0)
+	Ang.Set(1.0,1.0,1.0)
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	while not glfwWindowShouldClose(win)
