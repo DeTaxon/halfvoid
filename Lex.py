@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import re
 KeyWords = ["for","while","do","if","else","operator","this","and","or","xor","not","declare","operator","class","return","type","at","new","null","extend"] #it
 KeyWords += ["true","false"]
@@ -79,6 +80,13 @@ def GenTokens(Arr,Line):
                 Arr.append(Token("str",GotStr))
                 i = j
                 continue
+		
+	Size = TryLine(r"'[0-9a-zA-Z]'",PostLine)
+	if Size > 0:
+		t = ord(Line[i+1])
+		Arr.append(Token('numi',t))
+		i += Size - 1 #TODO: это капец, лексический анали вааще неверен
+		
 
         Size = TryLine(r"0x[0-9a-zA-Z]+",PostLine)
         if Size > 0:

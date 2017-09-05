@@ -20,7 +20,7 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 	if scancode >= 52 
 		if scancode <= 61
 			Butts[ Line3[scancode - 52] ] = action != 0
-	//printf("Key %i mod %i\n",scancode, action)
+	printf("Key %i mod %i\n",scancode, action)
 }
 
 SayError := !(int Data,char^ Line) -> void
@@ -63,7 +63,6 @@ main := !(int argc,string[] argv) -> int
 		Sec += 0.001
 		BAng.SetAng(Sec,Ang)
 		Matr = BAng
-		//printf("\n")
 		glLoadMatrixf(Matr.GetP())
 		glfwPollEvents()
 		glClear(GL_COLOR_BUFFER_BIT)
