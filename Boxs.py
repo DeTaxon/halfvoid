@@ -462,10 +462,24 @@ class ParamChain:
     def PrintPointPre(self,F):
 	if not self.IsRef:
 		raise ValueError("Not a refence")
+	if self.Type.Type == "fixed":
+		self.PrevId = GetNumb()
+		F.write("%Tmp{} = bitcast ".format(self.PrevId))
+		self.Type.PrintInAlloc(F)
+		if self.IsGlobal:	
+			F.write("* @Tmp{}".format(self.Id))	
+		else:
+			F.write("* %Tmp{}".format(self.Id))
+		F.write(" to ")
+		self.Type.PrintUse(F)
+		F.write("\n")
     def PrintPointUse(self,F):
-	GetPoint(self.Type).PrintUse(F)
-	F.write(" %Tmp{}".format(self.Id))
-	return None
+	if self.Type.Type == "fixed":
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}".format(self.PrevId))
+	else:
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}".format(self.Id))
     def PrintInBlock(self,F):
 	if self.IsGlobal and not self.IsFunc:
 		if self.Extra != None:
@@ -1806,3 +1820,11 @@ TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 StandartStuff.append(TestAdd)
 
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="store i1 {2} ,i1* {1}\n"
+TestAdd.Name = "="
+TestAdd.Type = GetType("void")
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+TestAdd.Params[0].IsRef = True
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)

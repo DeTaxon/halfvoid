@@ -90,6 +90,9 @@ class Type:
 	elif self.Type in ["point","array"]:
 		self.PrintUse(F)
 		F.write( " null")
+	elif self.Type == "fixed":
+		self.PrintInAlloc(F)
+		F.write(" zeroinitializer")
 	elif self.Type == "funcp":
 		self.PrintUse(F)
 		F.write(" null")

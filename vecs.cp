@@ -153,25 +153,6 @@ Quant := class extend Vec4
 		y = ny
 		z = nz
 		w = nw
-
-		//A := (this.w + this.x) * (q1.w + q1.x)
-		//B := (this.z - this.y) * (q1.y - q1.z)
-		//C := (this.x - this.w) * (q1.y + q1.z)
-		//D := (this.y + this.z) * (q1.x - q1.w)
-		//E := (this.x + this.z) * (q1.x + q1.y)
-		//F := (this.x - this.z) * (q1.x - q1.y)
-		//G := (this.w + this.y) * (q1.w - q1.z)
-		//H := (this.w - this.y) * (q1.w + q1.z)
-
-		//w =  H - E - F + G
-		//x =  E + F + G + H 
-		//y =  E - F + G - H 
-		//z =  E - F - G + H 
-		//for vec it *= 0.5
-		//w = w + B
-		//x = A - x
-		//y = y - C
-		//z = z - D
 	}
 	"=" := !(Quant q1) -> void
 	{
@@ -188,21 +169,16 @@ Quant := class extend Vec4
     		ToM.x = Some.w * this.x - Some.x * this.w - Some.y * this.z + Some.z * this.y
     		ToM.y = Some.w * this.y + Some.x * this.z - Some.y * this.w - Some.z * this.x
     		ToM.z = Some.w * this.z - Some.x * this.y + Some.y * this.x - Some.z * this.w
-		ToM.Print()
 	}
 	Move := !(Vec4 ToM) -> void
 	{
-		q2 := Quant
+		Sum := this
 		Temp := Quant
-		Sum := Quant
-
 		for 3 Temp.vec[it] = ToM.vec[it]
 		Temp.w = 0.0
-		Sum = this
-		q2.Set(-x,-y,-z,w)
 		Sum *= Temp
-		//Sum *= q2
-		Sum.Print()
+		Temp.Set(-x,-y,-z,w)
+		Sum *= Temp
 		for 3 ToM.vec[it] = Sum.vec[it]
 	}
 }
@@ -258,14 +234,6 @@ Mat4 := class
 		vec[5] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.z*Ang.z)
 		vec[10] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.y*Ang.y)
 		
-		//vec[0]  = Ang.w*Ang.w + Ang.x*Ang.x - Ang.y*Ang.y - Ang.z* Ang.z
-		//vec[5]  = Ang.w*Ang.w - Ang.x*Ang.x + Ang.y*Ang.y - Ang.z* Ang.z
-		//vec[10] = Ang.w*Ang.w - Ang.x*Ang.x - Ang.y*Ang.y + Ang.z* Ang.z
-		
-		//vec[0]  = Ang.w*Ang.w + Ang.x*Ang.x - Ang.y*Ang.y - Ang.z* Ang.z
-		//vec[5]  = Ang.w*Ang.w - Ang.x*Ang.x + Ang.y*Ang.y - Ang.z* Ang.z
-		//vec[10] = Ang.w*Ang.w - Ang.x*Ang.x - Ang.y*Ang.y + Ang.z* Ang.z
-
 		vec[1] = 2.0 * (Ang.x*Ang.y - Ang.z*Ang.w)
 		vec[2] = 2.0 * (Ang.x*Ang.z + Ang.y*Ang.w)
 
@@ -274,8 +242,19 @@ Mat4 := class
 
 		vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
 		vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
-		this.Print()
+		//this.Print()
 	} 
+	Persp := !(float aspect,float near ,float far,float ang) -> void
+	{
+        	f := 1.0 / tanf(ang * 3.14 / 360.0)
+        	A := (far + near) / (  near - far)
+        	B := (2.0 * far * near) / (near - far)
+
+        	vec[ 0] = f / aspect   vec[ 1] =  0.0 vec[ 2] =  0.0 vec[ 3] =  0.0
+        	vec[ 4] = 0.0          vec[ 5] =  f   vec[ 6] =  0.0 vec[ 7] =  0.0
+        	vec[ 8] = 0.0          vec[ 9] =  0.0 vec[10] =  A   vec[11] = -1.0
+        	vec[12] = 0.0          vec[13] =  0.0 vec[14] =  B   vec[15] =  0.0
+	}
 	Print := !() -> void
 	{
 		for i : 4
