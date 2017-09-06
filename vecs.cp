@@ -55,6 +55,10 @@ Vec3 := class
 			for vec it *= Si
 		}
 	}
+	"=" := !(Vec3 s) -> void
+	{
+		for 3 vec[it] = s.vec[it]
+	}
 }
 Vec4 := class
 {
@@ -191,6 +195,38 @@ Cent := class
 	{
 		Ang.SetAng(An,At)
 	}
+	this := !(Cent In) -> void
+	{
+		for i : 4 Ang.vec[i] = In.Ang.vec[i]
+		for i : 4 Pos.vec[i] = In.Pos.vec[i]
+	}
+	SetPos := !(float x,float y,float z) -> void
+	{
+		Pos.x = x
+		Pos.y = y
+		Pos.z = z
+	}
+	"*" := !(Cent In) -> void
+	{
+		NewPos := Ang 
+		Temp := In.Pos
+		Temp.w = 0.0
+		NewPos *= Temp
+		Ang *= In.Ang
+		Pos += NewPos
+	}
+	//"*" := !(Cent In) -> void
+	//{
+	//	ToRet := centf(this)
+	//	ToRet *= In
+	//	return ToRet
+	//}
+	//centf operator=(const centf& In)
+	//{
+	//	ang.vec[4.^i] = In.ang.vec[i]
+	//	pos.vec[4.^i] = In.pos.vec[i]
+	//	return this^
+	//}
 }
 
 Mat4 := class

@@ -1821,6 +1821,22 @@ TestAdd.Params.append(ParamChain(GetPoint(GetType("void")),"~no"))
 StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = and i1 {1} , {2}\n"
+TestAdd.Name = "and"
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = or i1 {1} , {2}\n"
+TestAdd.Name = "or"
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
 TestAdd.AsmLine ="store i1 {2} ,i1* {1}\n"
 TestAdd.Name = "="
 TestAdd.Type = GetType("void")

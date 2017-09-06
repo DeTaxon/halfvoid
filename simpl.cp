@@ -11,16 +11,13 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 	{
 		if action == 1	glfwSetWindowShouldClose(win,true)
 	}
-	if scancode >= 24 
-		if scancode <= 35
+	if scancode >= 24 and scancode <= 35 
 			Butts[ Line1[scancode - 24] ] = action != 0
-	if scancode >= 38 
-		if scancode <= 48
+	if scancode >= 38 and scancode <= 48
 			Butts[ Line2[scancode - 38] ] = action != 0
-	if scancode >= 52 
-		if scancode <= 61
+	if scancode >= 52 and scancode <= 61
 			Butts[ Line3[scancode - 52] ] = action != 0
-	printf("Key %i mod %i\n",scancode, action)
+	//printf("Key %i mod %i\n",scancode, action)
 }
 
 SayError := !(int Data,char^ Line) -> void
