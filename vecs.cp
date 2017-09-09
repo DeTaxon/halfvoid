@@ -65,6 +65,10 @@ Vec4 := class
 	x,y,z,w := float
 	vec := float[4] at x
 	less := Vec3 at x
+	this := !(float a,float b,float c,float d) -> void
+	{
+		this.Set(a,b,c,d)
+	}
 	this := !(float a,float b,float c) -> void
 	{
 		this.Set(a,b,c)
@@ -115,6 +119,10 @@ Vec4 := class
 		Sum := 0.0
 		for 4 Sum += vec[it]*ToAdd.vec[it]
 		return Sum
+	}
+	"=" := !(Vec4 ToSet) -> void
+	{
+		for 4 vec[it] = ToSet.vec[it]
 	}
 	Normalize := !() -> void
 	{

@@ -328,6 +328,8 @@ class ParamChain:
 	self.PreExtra = None
 	self.IsChecked = False
 	self.Extra = None
+	self.HaveConst = None
+	self.ToCall = None
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -415,6 +417,8 @@ class ParamChain:
         if self.Extra != None:
             self.Extra.Check()
             self.Type = self.Extra.Type
+	    if self.Type.Type == "class":
+		self.ToCall = self.Type.GetFunc("=",[self] + [self.Extra])
 	if self.Type.Type == "class":
 		self.IsRef = True
 	self.IsChecked = True
@@ -440,6 +444,8 @@ class ParamChain:
 	else:
         	return "%Tmp{}".format(self.Id)
     def PrintAlloc(self,F):
+	if self.Extra != None:
+		self.Extra.PrintAlloc(F)
 	if self.IsGlobal:
 		raise ValueError("Impossible error")
 	if self.IsDrived:
@@ -496,12 +502,15 @@ class ParamChain:
 		return None
         if not self.IsFunc and self.Type != None:
             if self.Extra != None:
-                self.Extra.PrintPre(F)
-                F.write("store ")
-                self.Extra.PrintUse(F)
-                F.write(", ")
-                self.Type.PrintUse(F)
-                F.write("* %Tmp{}\n".format(self.Id))
+		if self.ToCall != None:
+			self.ToCall.PrintUse(F,-1,[self] + [self.Extra])
+		else:
+                	self.Extra.PrintPre(F)
+                	F.write("store ")
+                	self.Extra.PrintUse(F)
+                	F.write(", ")
+                	self.Type.PrintUse(F)
+                	F.write("* %Tmp{}\n".format(self.Id))
 
 	
 
@@ -925,6 +934,8 @@ class ParConstStr:
         F.write("i8* %LStr{}".format(self.Id))
     def Check(self):
         return None
+    def PrintAlloc(self,F):
+	return None
 
 
 class ParConstNum:
@@ -947,6 +958,8 @@ class ParConstNum:
         return None
     def Check(self):
         return None
+    def PrintAlloc(self,F):
+	return None
     def PrintConst(self,F):
         if self.Extra != None and hasattr(self.Extra,"PrintConst"):
             self.Extra.PrintConst(F)
@@ -1087,6 +1100,8 @@ class BoxParamCall:
     def PrintUse(self,F):
         self.Object.PrintUse(F)
         return None
+    def PrintAlloc(self,F):
+	return None
     def PrintInBlock(self,F):
         return None
     def Check(self):
@@ -1155,6 +1170,10 @@ class BoxPoint:
             F.write(" %Tmp{}".format(self.PrevId))
         else:
             self.Extra.PrintUse(F)
+    def PrintAlloc(self,F):
+	self.Extra.PrintAlloc(F)
+	if self.Value == "~d[]":
+		self.Ind.PrintAlloc(F)
     def Check(self):
         self.Extra.Check()
 		
@@ -1277,6 +1296,8 @@ class BoxExc:
         self.Extra.PrintConst(F)
     def Check(self):
 	self.Extra.Check()
+    def PrintAlloc(self,F):
+	self.Extra.PrintAlloc(F)
 
 class BoxFuncsCall:
     def __init__(self,Obj):
@@ -1287,7 +1308,8 @@ class BoxFuncsCall:
         self.CallFunc = None
 	self.IsMetod = False
 	self.PointCall = None
-        
+        self.HaveConstr = None
+	self.RetId = -1
         
         if Obj.Value == "d()" and Obj.Extra[0].Value == "id": 
             self.ToCall = Obj.Extra[0].Extra
@@ -1325,19 +1347,31 @@ class BoxFuncsCall:
         for P in self.Params:
             P.PrintFunc(F)
     def PrintAlloc(self,F):
-	return None
+	for It in self.Params:
+		It.PrintAlloc(F)
+	if self.HaveConstr != None:
+		F.write("%Tmp{} = alloca ".format(self.ConstrId))
+		self.Type.PrintInAlloc(F)
+		F.write("\n")	
     def PrintPre(self,F):
         self.PrevId = GetNumb()
-	for i in range(len(self.Params)):
+	if self.HaveConstr != None:
+		NewParams = [self] + self.Params
+		StartI = 1
+	else:
+		NewParams = self.Params
+		StartI = 0
+	
+	for i in range(StartI,len(NewParams)):
 		if i < len(self.CallFunc.Params) and self.CallFunc.Params[i].IsRef:
-        		self.Params[i].PrintPointPre(F)
+        		NewParams[i].PrintPointPre(F)
 		else:
-        		self.Params[i].PrintPre(F)
+        		NewParams[i].PrintPre(F)
 	if self.CallFunc == None or self.CallFunc.AsmLine == None: 
         	self.PrevId = GetNumb()
 		if self.PointCall != None:
 			self.PointCall.PrintPre(F)
-		if self.Type.Id != GetType("void").Id:
+		if self.Type.Id != GetType("void").Id and self.HaveConstr == None:
 			F.write("%Tmp{} = ".format(self.PrevId))
 		F.write("call ")
 		if self.PointCall == None:
@@ -1350,26 +1384,26 @@ class BoxFuncsCall:
 			#F.write("%Tmp{}".format(MiniId))
 			Pars = self.PointCall.Type.Params
 		F.write("(")
-		for i in range(len(self.Params)):
+		for i in range(len(NewParams)):
 			if i > 0:
 				F.write(",")
 			if i < len(Pars) and Pars[i].IsRef:
-        			self.Params[i].PrintPointUse(F)
+        			NewParams[i].PrintPointUse(F)
 			else:
-        			self.Params[i].PrintUse(F)
+        			NewParams[i].PrintUse(F)
 		F.write(")\n")
 		
 	else:
-		if len(self.Params) == 1:
+		if len(NewParams) == 1:
 			if self.CallFunc.Params[0].IsRef:
-				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),self.Params[0].GetPName()))
+				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetPName()))
 			else:
-				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),self.Params[0].GetName()))
-		if len(self.Params) == 2:
+				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName()))
+		if len(NewParams) == 2:
 			if self.CallFunc.Params[0].IsRef:
-				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),self.Params[0].GetPName(),self.Params[1].GetName()))
+				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetPName(),NewParams[1].GetName()))
 			else:
-				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),self.Params[0].GetName(),self.Params[1].GetName()))
+				F.write(self.CallFunc.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName(),NewParams[1].GetName()))
         return None
     def GetName(self):
         return "%Tmp{}".format(self.PrevId)
@@ -1379,6 +1413,15 @@ class BoxFuncsCall:
         return None
     def PrintInBlock(self,F):
         self.PrintPre(F)
+    def PrintPointPre(self,F):
+	if self.HaveConstr != None:
+		self.PrintPre(F)
+	return None
+    def PrintPointUse(self,F):
+	GetPoint(self.Type).PrintUse(F)
+	F.write(" %Tmp{}".format(self.ConstrId))
+    def GetPName(self):
+	return "%Tmp{}".format(self.ConstrId)
     def Check(self):
         for It in self.Params:
             It.Check()
@@ -1390,16 +1433,30 @@ class BoxFuncsCall:
 		if self.CallFunc == None:
 			self.PointCall = GetParam(self.ToCall)
         if self.CallFunc == None and self.PointCall == None:
-		PreError = "Func not found {}".format(self.ToCall)
-		for it in self.Params:
-			PreError += "\nParam {}".format(it.Type.GetName())
-            	raise ValueError(PreError)
-        #self.Ret = self.CallFunc
-	if self.PointCall != None:
-		self.Type = self.PointCall.Type.Base 
-	else:
-        	self.Type = self.CallFunc.Type
+		self.HaveConstr = ParseType(Token("id",self.ToCall))
+		if self.HaveConstr != None:
+			self.Type = self.HaveConstr
+			self.CallFunc = self.HaveConstr.GetFunc("this",[self] +  self.Params)
+			
+			if self.CallFunc == None:
+				PreError = "Func not found {}".format(self.ToCall)
+				for it in self.Params:
+					PreError += "\nParam {}".format(it.Type.GetName())
+            			raise ValueError(PreError)
 
+			self.ConstrId = GetNumb()
+		else:
+			PreError = "Func not found {}".format(self.ToCall)
+			for it in self.Params:
+				PreError += "\nParam {}".format(it.Type.GetName())
+            		raise ValueError(PreError)
+        #self.Ret = self.CallFunc
+	if self.HaveConstr == None:
+		if self.PointCall != None:
+			self.Type = self.PointCall.Type.Base 
+		else:
+	        	self.Type = self.CallFunc.Type
+	
 	i = 0
         for i in range(len(self.Params)):
 	    if self.CallFunc.Params[i].Type.Id == self.Params[i].Type.Id:
@@ -1573,28 +1630,63 @@ class BoxFunc:
     def PrintConst(self,F):
         if self.Block != None:
             self.Block.PrintConst(F)
-    def PrintUse(self,F,PId,ParList):
-        if self.AsmLine == None:
-
-            if self.Type.Id != 0:
-                F.write("%Tmp{} = ".format(PId))
-            F.write("call ")
-            self.PrintType(F)
-            F.write(" ")
-            self.PrintName(F)
-            F.write("(")
-            if len(ParList) > 0:
-                ParList[0].PrintUse(F)
-                for i in range(1,len(ParList)):
-                    F.write(",")
-                    ParList[i].PrintUse(F)
-            F.write(")\n")
-        else:
-            if len(ParList) == 2:
-                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
-            else:
-                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName()))
-
+    def PrintUse(self,F,PId,NewParams):
+	for i in range(len(NewParams)):
+		if i < len(self.Params) and self.Params[i].IsRef:
+        		NewParams[i].PrintPointPre(F)
+		else:
+        		NewParams[i].PrintPre(F)
+	if self.AsmLine == None: 
+        	self.PrevId = GetNumb()
+		if self.Type.Id != GetType("void").Id:
+			F.write("%Tmp{} = ".format(PId))
+		F.write("call ")
+		self.PrintFType(F)
+		self.PrintName(F)
+		Pars = self.Params
+		F.write("(")
+		for i in range(len(NewParams)):
+			if i > 0:
+				F.write(",")
+			if i < len(Pars) and Pars[i].IsRef:
+        			NewParams[i].PrintPointUse(F)
+			else:
+        			NewParams[i].PrintUse(F)
+		F.write(")\n")
+		
+	else:
+		if len(NewParams) == 1:
+			if self.Params[0].IsRef:
+				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetPName()))
+			else:
+				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName()))
+		if len(NewParams) == 2:
+			if self.Params[0].IsRef:
+				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetPName(),NewParams[1].GetName()))
+			else:
+				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName(),NewParams[1].GetName()))
+        return None
+#        if self.AsmLine == None:
+#
+#            if self.Type.Id != 0:
+#                F.write("%Tmp{} = ".format(PId))
+#            F.write("call ")
+#            self.PrintType(F)
+#            F.write(" ")
+#            self.PrintName(F)
+#            F.write("(")
+#            if len(ParList) > 0:
+#                ParList[0].PrintUse(F)
+#                for i in range(1,len(ParList)):
+#                    F.write(",")
+#                    ParList[i].PrintUse(F)
+#            F.write(")\n")
+#        else:
+#            if len(ParList) == 2:
+#                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
+#            else:
+#                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName()))
+#
     def PrintFunc(self,F):
         if self.IsTemplate:
             return None

@@ -31,6 +31,9 @@ glCreateProgram := PFN_glCreateProgram
  
 main := !(int argc,string[] argv) -> int 
 {
+	Te := Vec4(0.0,1.0,2.0,3.0)
+	Te.Print()
+	return 0
 	glfwSetErrorCallback(SayError)
 	if not glfwInit() 
 	{
@@ -51,7 +54,8 @@ main := !(int argc,string[] argv) -> int
 	Sec := 0.0
 	BAng := Quant
 	
-	Ang.Set(0.0,0.0,1.0)
+	Ang = Vec3(0.0,0.0,1.0)
+	
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	
