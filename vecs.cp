@@ -146,6 +146,10 @@ Quant := class extend Vec4
 		for 3 vec[it] = 0.0
 		w = 1.0
 	}
+	this := !(float Val,Vec3 Ang) -> void
+	{
+		this.SetAng(Val,Ang)
+	}
 	SetAng := !(float Val,Vec3 Ang) -> void
 	{
 		Half := Val*0.5

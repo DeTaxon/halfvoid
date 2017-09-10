@@ -1345,6 +1345,7 @@ class BoxFuncsCall:
 	    self.ToCall = Obj.Extra[2].Extra
 	    self.Params.append(GetUse(Obj.Extra[0]))
             Pars = Obj.Extra[3].Extra
+	    self.IsMetod = True
             if len(Pars) != 0:
                 i = 0
                 while i < len(Pars):
@@ -1382,7 +1383,6 @@ class BoxFuncsCall:
 	else:
 		NewParams = self.Params
 		StartI = 0
-	
 	for i in range(StartI,len(NewParams)):
 		if i < len(self.CallFunc.Params) and self.CallFunc.Params[i].IsRef:
         		NewParams[i].PrintPointPre(F)
@@ -1447,7 +1447,7 @@ class BoxFuncsCall:
         for It in self.Params:
             It.Check()
 	
-	if len(self.Params) > 0 and self.Params[0].Type.Type == "class":
+	if self.IsMetod or (self.ToCall in Opers and self.Params[0].Type.Type == "class"):
         	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
@@ -1479,19 +1479,23 @@ class BoxFuncsCall:
 	        	self.Type = self.CallFunc.Type
 	
 	i = 0
-        for i in range(len(self.Params)):
-	    if self.CallFunc.Params[i].Type.Id == self.Params[i].Type.Id:
+	if self.HaveConstr == None:
+		NewParams = self.Params
+	else: 
+		NewParams = [self] + self.Params
+        for i in range(len(NewParams)):
+	    if self.CallFunc.Params[i].Type.Id == NewParams[i].Type.Id:
 		continue
             if self.CallFunc.Params[i].Type == GetType("..."):
-		while i < len(self.Params):
-			if self.Params[i].Type.Id == GetType("float").Id:
-				self.Params[i] = BoxExc(self.Params[i],GetType("double"))
+		while i < len(NewParams):
+			if NewParams[i].Type.Id == GetType("float").Id:
+				NewParams[i] = BoxExc(NewParams[i],GetType("double"))
 			i += 1
             	break
-            if self.CallFunc.Params[i].Type.Id != self.Params[i].Type.Id and GoodPoints(self.Params[i].Type,self.CallFunc.Params[i].Type):
-                self.Params[i] = BoxExc(self.Params[i],self.CallFunc.Params[i].Type)
-	    if self.Params[i].Type.Type == "class":
-		self.Params[i] = BoxExc(self.Params[i],self.CallFunc.Params[i].Type)
+            if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,self.CallFunc.Params[i].Type):
+                NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+	    if NewParams[i].Type.Type == "class":
+		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
         return None
 
 
