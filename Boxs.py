@@ -328,7 +328,8 @@ class ParamChain:
 	self.PreExtra = None
 	self.IsChecked = False
 	self.Extra = None
-	self.HaveConst = None
+	self.HaveConstr = False
+	self.Params = []
 	self.ToCall = None
 
         if NotObj == None:
@@ -408,20 +409,35 @@ class ParamChain:
     def Check(self):
 	if self.IsChecked:
 		return None
+	self.IsChecked = True
+	if self.PreExtra != None and self.PreExtra.Value == "d()" and self.PreExtra.Extra[0].Value in ["id","d.{}"]:
+		NType = ParseType(self.PreExtra.Extra[0])
+		if NType != None and NType.Type == "class":
+			self.Type = NType
+			for Items in self.PreExtra.Extra[1].Extra:
+				if Items.Value != ",":
+					self.Params.append(GetUse(Items))
+			for Items in self.Params:
+				Items.Check()
+			self.HaveConstr = True
+			self.ToCall = self.Type.GetFunc("this",[self] + self.Params)
+			if self.ToCall == None:
+				raise ValueError("Constructor not found")
+			self.IsChecked = True
+			return None
 	if self.PreExtra != None:
 		self.Type = ParseType(self.PreExtra)
 		if self.Type == None:
 			self.Extra = GetUse(self.PreExtra)
 			if self.Extra == None:
 				raise ValueError("Unknown Object")
-        if self.Extra != None:
+        if self.Extra != None and not self.HaveConstr:
             self.Extra.Check()
             self.Type = self.Extra.Type
 	    if self.Type.Type == "class":
 		self.ToCall = self.Type.GetFunc("=",[self] + [self.Extra])
 	if self.Type.Type == "class":
 		self.IsRef = True
-	self.IsChecked = True
     def GetPName(self):
 	if self.IsGlobal:
 		return "@Tmp{}".format(self.Id)
@@ -444,7 +460,7 @@ class ParamChain:
 	else:
         	return "%Tmp{}".format(self.Id)
     def PrintAlloc(self,F):
-	if self.Extra != None:
+	if self.Extra != None and not self.HaveConstr:
 		self.Extra.PrintAlloc(F)
 	if self.IsGlobal:
 		raise ValueError("Impossible error")
@@ -501,8 +517,10 @@ class ParamChain:
 			F.write("\n")
 		return None
         if not self.IsFunc and self.Type != None:
-            if self.Extra != None:
-		if self.ToCall != None:
+            if self.Extra != None or self.HaveConstr:
+		if self.HaveConstr:
+			self.ToCall.PrintUse(F,-1,[self] + self.Params)
+		elif self.ToCall != None:
 			self.ToCall.PrintUse(F,-1,[self] + [self.Extra])
 		else:
                 	self.Extra.PrintPre(F)
@@ -1139,6 +1157,9 @@ class BoxRef:
 		self.Extra.PrintConst(F)
 	def PrintFunc(self,F):
 		self.Extra.PrintFunc(F)
+	def PrintAlloc(self,F):
+		return None
+		self.Extra.PrintAlloc(F)
 	
 
 class BoxPoint:
