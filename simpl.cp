@@ -37,7 +37,8 @@ main := !(int argc,string[] argv) -> int
 		printf("Not loaded\n")
 		return 0
 	}
-
+	c := Vec3(0.0,5.0,0.0).y
+	printf("y = %f\n", c)
 	win = glfwCreateWindow(512,512,"Hi",0,0)
 	glfwMakeContextCurrent(win)
 	glfwSetKeyCallback(win,keys)

@@ -1070,6 +1070,7 @@ class BoxMetodCall:
     def PrintInBlock(self,F):
         return None
     def PrintAlloc(self,F):
+	self.Param.PrintAlloc(F)
 	return None
     def Check(self):
 	self.Param.Check()
