@@ -17,7 +17,7 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 			Butts[ Line2[scancode - 38] ] = action != 0
 	if scancode >= 52 and scancode <= 61
 			Butts[ Line3[scancode - 52] ] = action != 0
-	//printf("Key %i mod %i\n",scancode, action)
+	printf("Key %i mod %i\n",scancode, action)
 }
 
 SayError := !(int Data,char^ Line) -> void
@@ -37,8 +37,6 @@ main := !(int argc,string[] argv) -> int
 		printf("Not loaded\n")
 		return 0
 	}
-	c := Vec3(0.0,5.0,0.0).y
-	printf("y = %f\n", c)
 	win = glfwCreateWindow(512,512,"Hi",0,0)
 	glfwMakeContextCurrent(win)
 	glfwSetKeyCallback(win,keys)
@@ -49,18 +47,24 @@ main := !(int argc,string[] argv) -> int
 	
 	Matr := Mat4
 	Sec := 0.0
-	BAng := Quant
 
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	
+	Pres := Mat4
+	Pres.Persp(1.0,0.1,100.0,75.0)
+	Accum := Mat4	
+ 	
 	while not glfwWindowShouldClose(win)
 	{
 		Sec += 0.001
-		//BAng.SetAng(Sec,Vec3(0.0,0.0,1.0))
-		Matr = Quant(Sec,Vec3(0.0,0.0,1.0))
-		//Matr = BAng
-		glLoadMatrixf(Matr.GetP())
+		Matr = Quant(Sec,Vec3(1.0,1.0,0.0))
+		Matr.vec[14] = -2.0
+		Accum = Pres
+		Accum *= Matr
+		Accum.Print()
+		printf("\n")
+		glLoadMatrixf(Accum.GetP())
 		glfwPollEvents()
 		glClear(GL_COLOR_BUFFER_BIT)
 		glBegin(GL_QUADS)

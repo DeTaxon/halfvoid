@@ -703,40 +703,48 @@ class BoxFakeMetod:
 			F.write(" to ")
 			GetPoint(self.Type).PrintUse(F)
 			F.write("\n")
-	def GetName(self):
-		return "%Tmp{}".format(self.PrevId)
-	def GetPName(self,UseId = -1):
+	def GetName(self,UseId = -1,BoxId = -1):
 		if UseId == -1:
-			UseId = self.Id
+			UseId = self.PrevId
 		return "%Tmp{}".format(UseId)
-	def PrintPointPre(self,F,UseId = -1):
-		return None
-	def PrintPointUse(self,F,UseId = -1):
+	def GetPName(self,UseId = -1,BoxId = -1):
 		if UseId == -1:
-			UseId = self.Id
+			#UseId = self.PrevId
+			BoxId = self.Id
+		return "%Tmp{}".format(BoxId)
+	def PrintPointPre(self,F,UseId = -1,BoId = -1):
+		return None
+	def PrintPointUse(self,F,UseId = -1,BoId = -1):
+		if UseId == -1:
+			#UseId = self.PrevId
+			BoId = self.Id
 		GetPoint(self.Type).PrintUse(F)
-		F.write(" %Tmp{}".format(UseId))
+		F.write(" %Tmp{}".format(BoId))
 		return None
-	def PrintUse(self,F,UseId = -1):
+	def PrintUse(self,F,UseId = -1,BoId = -1):
 		if UseId == -1:
-			UseId = self.Id
+			UseId = self.PrevId
+			BoId = self.Id
 		if self.Type.Type == "fixed":
-			self.PrintPointUse(F,UseId)
+			self.PrintPointUse(F,UseId,BoId)
 			return None
 		self.Type.PrintUse(F)
-		F.write(" %Tmp{}".format(self.PrevId))
-	def PrintPre(self,F,UseId = -1):
+		F.write(" %Tmp{}".format(UseId))
+	def PrintPre(self,F,UseId = -1,BoId = -1):
 		if UseId == -1:
-			UseId = self.Id
+			self.PrevId = GetNumb()
+			UseId = self.PrevId
+			BoId = self.Id
+		
 		if self.Type.Type == "fixed":
-			self.PrintPointPre(F)
+			self.PrintPointPre(F,UseId,BoId)
 			return None
-		self.PrevId = GetNumb()
-		F.write("%Tmp{} = load ".format(self.PrevId))
+		#self.PrevId = GetNumb()
+		F.write("%Tmp{} = load ".format(UseId))
 		self.Type.PrintUse(F)
 		F.write(",")
 		GetPoint(self.Type).PrintUse(F)
-		F.write(" %Tmp{}\n".format(UseId))
+		F.write(" %Tmp{}\n".format(BoId))
 	def Check(self,Paren = None):
 		if Paren == None:
 			return None
@@ -1058,23 +1066,30 @@ class BoxMetodCall:
         return None
     def PrintPre(self,F):
 	self.PrevId = GetNumb()
-	self.ToUse.PrintInBlock(F,self.Param,self.PrevId)
-	self.ToUse.PrintPre(F,self.PrevId)
+	self.BoxId = GetNumb()
+	self.ToUse.PrintInBlock(F,self.Param,self.BoxId)
+	self.ToUse.PrintPre(F,self.PrevId,self.BoxId)
     def GetPName(self):
-	return self.ToUse.GetPName(self.PrevId)
+	return self.ToUse.GetPName(self.PrevId,self.BoxId)
         #return "%Tmp{}".format(self.Id)
     def GetName(self):
-	return self.ToUse.GetName()
+	return self.ToUse.GetName(self.PrevId,self.BoxId)
     def PrintUse(self,F):
-	self.ToUse.PrintUse(F,self.PrevId)
+	self.ToUse.PrintUse(F,self.PrevId,self.BoxId)
     def PrintInBlock(self,F):
         return None
     def PrintAlloc(self,F):
 	self.Param.PrintAlloc(F)
 	return None
+    def PrintPointPre(self,F):
+	self.PrevId = GetNumb()
+	self.BoxId = GetNumb()
+	self.ToUse.PrintInBlock(F,self.Param,self.BoxId)
+	self.ToUse.PrintPointPre(F,self.PrevId,self.BoxId)
+    def PrintPointUse(self,F):
+	self.ToUse.PrintPointUse(F,self.PrevId,self.BoxId)
     def Check(self):
 	self.Param.Check()
-	#self.Object = self.Param.Object
         self.ClassType = self.Param.Type
 	if self.ClassType.Type != "class":
 		if self.ClassType.Base.Type != "class":
@@ -1087,12 +1102,6 @@ class BoxMetodCall:
 	if self.ToUse == None:
 		raise ValueError("Object does not have field {}".format(self.ToCall))
 	self.Type = self.ToUse.Type
-    def PrintPointPre(self,F):
-	self.PrevId = GetNumb()
-	self.ToUse.PrintInBlock(F,self.Param,self.PrevId)
-	self.ToUse.PrintPointPre(F,self.PrevId)
-    def PrintPointUse(self,F):
-	self.ToUse.PrintPointUse(F,self.PrevId)
 class BoxParamCall:
     def __init__(self,Obj):
         self.Value = "~id"
@@ -1692,27 +1701,6 @@ class BoxFunc:
 			else:
 				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName(),NewParams[1].GetName()))
         return None
-#        if self.AsmLine == None:
-#
-#            if self.Type.Id != 0:
-#                F.write("%Tmp{} = ".format(PId))
-#            F.write("call ")
-#            self.PrintType(F)
-#            F.write(" ")
-#            self.PrintName(F)
-#            F.write("(")
-#            if len(ParList) > 0:
-#                ParList[0].PrintUse(F)
-#                for i in range(1,len(ParList)):
-#                    F.write(",")
-#                    ParList[i].PrintUse(F)
-#            F.write(")\n")
-#        else:
-#            if len(ParList) == 2:
-#                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName(),ParList[1].GetName()))
-#            else:
-#                F.write(self.AsmLine.format("Tmp{}".format(PId),ParList[0].GetName()))
-#
     def PrintFunc(self,F):
         if self.IsTemplate:
             return None

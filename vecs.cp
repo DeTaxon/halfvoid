@@ -160,32 +160,21 @@ Quant := class extend Vec4
 	}
 	"*=" := !(Quant q1) -> void
 	{
-	    	nw := this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z
-    		nx := this.w * q1.x + this.x * q1.w + this.y * q1.z - this.z * q1.y
-    		ny := this.w * q1.y - this.x * q1.z + this.y * q1.w + this.z * q1.x
-    		nz := this.w * q1.z + this.x * q1.y - this.y * q1.x + this.z * q1.w
+		Old := this
+	    	w = Old.w * q1.w - Old.x * q1.x - Old.y * q1.y - Old.z * q1.z
+    		x = Old.w * q1.x + Old.x * q1.w + Old.y * q1.z - Old.z * q1.y
+    		y = Old.w * q1.y - Old.x * q1.z + Old.y * q1.w + Old.z * q1.x
+    		z = Old.w * q1.z + Old.x * q1.y - Old.y * q1.x + Old.z * q1.w
+	    	//w = Old.vec[3] * q1.w - Old.vec[0] * q1.x - Old.vec[1] * q1.y - Old.vec[2] * q1.z
+    		//x = Old.vec[3] * q1.x + Old.vec[0] * q1.w + Old.vec[1] * q1.z - Old.vec[2] * q1.y
+    		//y = Old.vec[3] * q1.y - Old.vec[0] * q1.z + Old.vec[1] * q1.w + Old.vec[2] * q1.x
+    		//z = Old.vec[3] * q1.z + Old.vec[0] * q1.y - Old.vec[1] * q1.x + Old.vec[2] * q1.w
 
-		x = nx
-		y = ny
-		z = nz
-		w = nw
 	}
 	"=" := !(Quant q1) -> void
 	{
 		for 4 vec[it] = q1.vec[it]
 	}	
-	Move2 := !(Vec4 ToM) -> void
-	{
-		Some := Quant
-	    	Some.w = 0.0 - this.x * ToM.x - this.y * ToM.y - this.z * ToM.z
-    		Some.x = this.w * ToM.x + this.y * ToM.z - this.z * ToM.y
-    		Some.y = this.w * ToM.y - this.x * ToM.z + this.z * ToM.x
-    		Some.z = this.w * ToM.z + this.x * ToM.y - this.y * ToM.x
-		
-    		ToM.x = Some.w * this.x - Some.x * this.w - Some.y * this.z + Some.z * this.y
-    		ToM.y = Some.w * this.y + Some.x * this.z - Some.y * this.w - Some.z * this.x
-    		ToM.z = Some.w * this.z - Some.x * this.y + Some.y * this.x - Some.z * this.w
-	}
 	Move := !(Vec4 ToM) -> void
 	{
 		Sum := this
@@ -218,7 +207,7 @@ Cent := class
 		Pos.y = y
 		Pos.z = z
 	}
-	"*" := !(Cent In) -> void
+	"*=" := !(Cent In) -> void
 	{
 		NewPos := Ang 
 		Temp := In.Pos
@@ -276,20 +265,20 @@ Mat4 := class
 	"=" := !(Quant Ang) -> void
 	{
 		this.Indent()
-		//for 3 Ang.Move(row[it])	
+		for 3 Ang.Move(row[it])	
 		
-		vec[0] = 1.0 - 2.0 * (Ang.y*Ang.y + Ang.z*Ang.z)
-		vec[5] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.z*Ang.z)
-		vec[10] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.y*Ang.y)
-		
-		vec[1] = 2.0 * (Ang.x*Ang.y - Ang.z*Ang.w)
-		vec[2] = 2.0 * (Ang.x*Ang.z + Ang.y*Ang.w)
+		//vec[0] = 1.0 - 2.0 * (Ang.y*Ang.y + Ang.z*Ang.z)
+		//vec[5] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.z*Ang.z)
+		//vec[10] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.y*Ang.y)
+		//
+		//vec[1] = 2.0 * (Ang.x*Ang.y - Ang.z*Ang.w)
+		//vec[2] = 2.0 * (Ang.x*Ang.z + Ang.y*Ang.w)
 
-		vec[4] = 2.0 * (Ang.x*Ang.y + Ang.z*Ang.w)
-		vec[6] = 2.0 * (Ang.y*Ang.z - Ang.x*Ang.w)
+		//vec[4] = 2.0 * (Ang.x*Ang.y + Ang.z*Ang.w)
+		//vec[6] = 2.0 * (Ang.y*Ang.z - Ang.x*Ang.w)
 
-		vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
-		vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
+		//vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
+		//vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
 		//this.Print()
 	} 
 	Persp := !(float aspect,float near ,float far,float ang) -> void
@@ -312,6 +301,20 @@ Mat4 := class
 				printf("%f ",vec[i*4 + j])
 			}
 			printf("\n")
+		}
+	}
+	"=" := !(Mat4 Pr) -> void
+	{
+		for 16 vec[it] = Pr.vec[it]
+	}
+	"*=" := !(Mat4 Ml) -> void
+	{
+		Old := this
+		for vec it = 0.0
+
+		for i : 4 for j : 4 for k : 4
+		{
+			vec[i + j*4] += Old.vec[i + k*4] * Ml.vec[k + j*4]
 		}
 	}
 	SetAng := !(Vec3 ang) -> void
