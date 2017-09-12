@@ -17,7 +17,7 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 			Butts[ Line2[scancode - 38] ] = action != 0
 	if scancode >= 52 and scancode <= 61
 			Butts[ Line3[scancode - 52] ] = action != 0
-	printf("Key %i mod %i\n",scancode, action)
+	//printf("Key %i mod %i\n",scancode, action)
 }
 
 SayError := !(int Data,char^ Line) -> void
@@ -29,9 +29,8 @@ SayError := !(int Data,char^ Line) -> void
 PFN_glCreateProgram := type !()^ -> void 
 glCreateProgram := PFN_glCreateProgram
 
-PrintSquare := !(int s) -> void
+PrintSquare := !(int s,float p) -> void
 {
-	p := 0.4
 	if s == 0 glVertex3f(-p,-p,-p)
 	if s == 1 glVertex3f(p,-p,-p)
 	if s == 2 glVertex3f(p,p,-p)
@@ -40,6 +39,42 @@ PrintSquare := !(int s) -> void
 	if s == 5 glVertex3f(p,-p,p)
 	if s == 6 glVertex3f(p,p,p)
 	if s == 7 glVertex3f(-p,p,p)
+}
+
+DrawBox := !(float Size) -> void
+{
+	glBegin(GL_QUADS)
+	glColor3f(0.0,0.4,0.75)
+	PrintSquare(0,Size)
+	PrintSquare(1,Size)
+	PrintSquare(2,Size)
+	PrintSquare(3,Size)
+	glColor3f(0.75,0.4,0.0)
+	PrintSquare(7,Size)
+	PrintSquare(6,Size)
+	PrintSquare(5,Size)
+	PrintSquare(4,Size)
+	glColor3f(0.0,1.0,0.0)
+	PrintSquare(0,Size)
+	PrintSquare(1,Size)
+	PrintSquare(5,Size)
+	PrintSquare(4,Size)
+	glColor3f(1.0,0.0,1.0)
+	PrintSquare(0,Size)
+	PrintSquare(3,Size)
+	PrintSquare(7,Size)
+	PrintSquare(4,Size)
+	glColor3f(1.0,1.0,0.0)
+	PrintSquare(2,Size)
+	PrintSquare(1,Size)
+	PrintSquare(5,Size)
+	PrintSquare(6,Size)
+	glColor3f(0.0,1.0,1.0)
+	PrintSquare(3,Size)
+	PrintSquare(2,Size)
+	PrintSquare(6,Size)
+	PrintSquare(7,Size)
+	glEnd()
 }
  
 main := !(int argc,string[] argv) -> int 
@@ -68,54 +103,51 @@ main := !(int argc,string[] argv) -> int
 	Pres := Mat4
 	Pres.Persp(1.0,0.1,100.0,75.0)
 	Accum := Mat4	
- 
+ 	Box := Cent
+	Box.SetPos(0.0,0.0,-1.5)
+	Box2 := Cent
+	Box2.SetAng(0.0,Vec3(1.0,1.0,1.0))
+	Box2.SetPos(0.0,0.0,0.7)
+	BoxSum := Cent
+	C := Camera()
+	
 	glEnable(GL_DEPTH_TEST)
 		
 	while not glfwWindowShouldClose(win)
 	{
-		Sec += 0.004
-		Matr = Quant(Sec,Vec3(1.0,1.0,1.0))
-		Matr.vec[14] = -1.5
-		Accum = Pres
-		Accum *= Matr
-		//Accum = Matr
-		//Accum.Print()
-		//printf("\n")
-		glLoadMatrixf(Accum.GetP())
 		glfwPollEvents()
 		glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT)
-		glBegin(GL_QUADS)
-		glColor3f(0.0,0.4,0.75)
-		PrintSquare(0)
-		PrintSquare(1)
-		PrintSquare(2)
-		PrintSquare(3)
-		glColor3f(0.75,0.4,0.0)
-		PrintSquare(7)
-		PrintSquare(6)
-		PrintSquare(5)
-		PrintSquare(4)
-		glColor3f(0.0,1.0,0.0)
-		PrintSquare(0)
-		PrintSquare(1)
-		PrintSquare(5)
-		PrintSquare(4)
-		glColor3f(1.0,0.0,1.0)
-		PrintSquare(0)
-		PrintSquare(3)
-		PrintSquare(7)
-		PrintSquare(4)
-		glColor3f(1.0,1.0,0.0)
-		PrintSquare(2)
-		PrintSquare(1)
-		PrintSquare(5)
-		PrintSquare(6)
-		glColor3f(0.0,1.0,1.0)
-		PrintSquare(3)
-		PrintSquare(2)
-		PrintSquare(6)
-		PrintSquare(7)
-		glEnd()
+		Sec += 0.004
+		
+		if Butts['r'] C.Mouse(-0.012,0.0)
+		if Butts['f'] C.Mouse( 0.012,0.0)
+		if Butts['e'] C.Mouse(0.0, 0.012)
+		if Butts['q'] C.Mouse(0.0,-0.012)
+		if Butts['w'] C.Local(Vec3(0.0,0.0,-0.1))
+		if Butts['s'] C.Local(Vec3(0.0,0.0, 0.1))
+		if Butts['d'] C.Local(Vec3( 0.1,0.0,0.0))
+		if Butts['a'] C.Local(Vec3(-0.1,0.0,0.0))
+		C.Update()
+
+		C.Set(BoxSum)		
+	
+		Box.SetAng(Sec,Vec3(0.0,1.0,0.0))
+		BoxSum *= Box
+		Matr = BoxSum
+		Accum = Pres
+		Accum *= Matr
+		glLoadMatrixf(Accum.GetP())
+		DrawBox(0.1)
+		
+		Box2.SetAng(Sec*2.0,Vec3(0.0,0.0,1.0))
+		BoxSum *= Box2
+		Matr = BoxSum
+		Accum = Pres
+		Accum *= Matr
+		glLoadMatrixf(Accum.GetP())
+		DrawBox(0.3)
+
+
 		glfwSwapBuffers(win)
 	}
 	

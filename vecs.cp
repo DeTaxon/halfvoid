@@ -192,6 +192,17 @@ Quant := class extend Vec4
 		Sum *= Temp
 		for 3 ToM.vec[it] = Sum.vec[it]
 	}
+	UnMove := !(Vec4 ToM) -> void
+	{
+		Sum := this
+		Temp := Quant
+		Temp = ToM
+		Temp.w = 0.0
+		Sum.Set(-x,-y,-z,w)
+		Sum *= Temp	
+		Sum *= this
+		for 3 ToM.vec[it] = Sum.vec[it]
+	}
 }
 
 Cent := class
@@ -204,8 +215,8 @@ Cent := class
 	}
 	this := !(Cent In) -> void
 	{
-		for i : 4 Ang.vec[i] = In.Ang.vec[i]
-		for i : 4 Pos.vec[i] = In.Pos.vec[i]
+		Ang = In.Ang
+		Pos = In.Pos
 	}
 	SetPos := !(float x,float y,float z) -> void
 	{
@@ -213,14 +224,23 @@ Cent := class
 		Pos.y = y
 		Pos.z = z
 	}
+	"=" := !(Cent In) -> void
+	{
+		Pos = In.Pos 
+		Ang = In.Ang
+	}
 	"*=" := !(Cent In) -> void
 	{
-		NewPos := Ang 
 		Temp := In.Pos
 		Temp.w = 0.0
-		NewPos *= Temp
+		Ang.Move(Temp)
 		Ang *= In.Ang
-		Pos += NewPos
+		Pos += Temp
+	}
+	Clean := !() -> void
+	{
+		for 4 { Pos.vec[it] = 0.0 Ang.vec[it] = 0.0 }
+		Ang.w = 1.0
 	}
 	//"*" := !(Cent In) -> void
 	//{
@@ -287,7 +307,12 @@ Mat4 := class
 
 		//vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
 		//vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
-	} 
+	}
+	"=" := !(Cent Cn) -> void
+	{
+		this = Cn.Ang
+		for 3 vec[it + 12] = Cn.Pos.vec[it]
+	}
 	Persp := !(float aspect,float near ,float far,float ang) -> void
 	{
         	f := 1.0 / tanf(ang * 3.14 / 360.0)
