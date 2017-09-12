@@ -86,6 +86,8 @@ class BoxConst:
 			self.Type = GetType("int")
 	def PrintUse(self,F):
 		F.write("i32 {}".format(self.Extra))
+	def GetName(self):
+		return "{}".format(self.Extra)
 	def PrintPre(self,F):
 		return None
 	def PrintFunc(self,F):

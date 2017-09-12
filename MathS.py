@@ -106,10 +106,12 @@ def SearchMath(Arr):
             i = 0
             while i < len(Arr):
 		if type(Rule) is type([]):
-                	GotSome += RuleIt(Rule,Arr,i)
+                	Resl = RuleIt(Rule,Arr,i)
 		else:
-			GotSome += Rule(Arr,i)
-                i += 1
+			Resl = Rule(Arr,i)
+		GotSome += Resl
+		if not Resl:
+                	i += 1
             if GotSome:
                 break
 

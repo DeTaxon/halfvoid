@@ -7,6 +7,8 @@ glColor3f := !(float r,float g, float b) -> void declare
 glVertex2i := !(int x, int y) -> void declare
 glVertex3f := !(float x, float y, float z) -> void declare
 
+glEnable := !(int Flag) -> void declare
+
 glRotatef := !(float Ang, float x, float y, float z) -> void declare
 glLoadMatrixf := !(float^ arr) -> void declare
 

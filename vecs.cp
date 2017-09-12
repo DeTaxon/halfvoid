@@ -21,7 +21,7 @@ Vec3 := class
 	}
 	Size := !() -> float
 	{
-	      return sqrt(this*this)
+	      return sqrtf(this*this)
 	}
 	Set := !(float a,float b,float c) -> void
 	{
@@ -87,7 +87,7 @@ Vec4 := class
 	}
 	Size := !() -> float
 	{
-	      return sqrt(this*this)
+		return sqrtf(this*this)
 	}
 	Set := !(float a,float b,float c,float d) -> void
 	{
@@ -152,7 +152,10 @@ Quant := class extend Vec4
 	}
 	SetAng := !(float Val,Vec3 Ang) -> void
 	{
-		Half := Val*0.5
+		Half := Val
+		while Half >  6.28 Half -= 6.28
+		while Half < -6.28 Half += 6.28
+		Half *= 0.5
 		Ang.Normalize()
 		w = cosf(Half)
 		Half = sinf(Half)
@@ -161,6 +164,10 @@ Quant := class extend Vec4
 	"*=" := !(Quant q1) -> void
 	{
 		Old := this
+	    	//w = (Old.w * q1.w) + ( - Old.x * q1.x) + ( - Old.y * q1.y) + ( - Old.z * q1.z)
+    		//x = (Old.w * q1.x) + (   Old.x * q1.w) + (   Old.y * q1.z) + ( - Old.z * q1.y)
+    		//y = (Old.w * q1.y) + ( - Old.x * q1.z) + (   Old.y * q1.w) + (   Old.z * q1.x)
+    		//z = (Old.w * q1.z) + (   Old.x * q1.y) + ( - Old.y * q1.x) + (   Old.z * q1.w)
 	    	w = Old.w * q1.w - Old.x * q1.x - Old.y * q1.y - Old.z * q1.z
     		x = Old.w * q1.x + Old.x * q1.w + Old.y * q1.z - Old.z * q1.y
     		y = Old.w * q1.y - Old.x * q1.z + Old.y * q1.w + Old.z * q1.x
@@ -169,7 +176,6 @@ Quant := class extend Vec4
     		//x = Old.vec[3] * q1.x + Old.vec[0] * q1.w + Old.vec[1] * q1.z - Old.vec[2] * q1.y
     		//y = Old.vec[3] * q1.y - Old.vec[0] * q1.z + Old.vec[1] * q1.w + Old.vec[2] * q1.x
     		//z = Old.vec[3] * q1.z + Old.vec[0] * q1.y - Old.vec[1] * q1.x + Old.vec[2] * q1.w
-
 	}
 	"=" := !(Quant q1) -> void
 	{
@@ -179,7 +185,7 @@ Quant := class extend Vec4
 	{
 		Sum := this
 		Temp := Quant
-		for 3 Temp.vec[it] = ToM.vec[it]
+		Temp = ToM
 		Temp.w = 0.0
 		Sum *= Temp
 		Temp.Set(-x,-y,-z,w)
@@ -265,7 +271,9 @@ Mat4 := class
 	"=" := !(Quant Ang) -> void
 	{
 		this.Indent()
-		for 3 Ang.Move(row[it])	
+		Ang.Normalize()
+		for 3 Ang.Move(row[it])
+		//for row it.Normalize()
 		
 		//vec[0] = 1.0 - 2.0 * (Ang.y*Ang.y + Ang.z*Ang.z)
 		//vec[5] = 1.0 - 2.0 * (Ang.x*Ang.x + Ang.z*Ang.z)
@@ -279,7 +287,6 @@ Mat4 := class
 
 		//vec[8] = 2.0 * (Ang.x*Ang.z - Ang.y*Ang.w)
 		//vec[9] = 2.0 * (Ang.y*Ang.z + Ang.x*Ang.w)
-		//this.Print()
 	} 
 	Persp := !(float aspect,float near ,float far,float ang) -> void
 	{
@@ -314,7 +321,7 @@ Mat4 := class
 
 		for i : 4 for j : 4 for k : 4
 		{
-			vec[i + j*4] += Old.vec[i + k*4] * Ml.vec[k + j*4]
+			this.vec[i + j*4] += Old.vec[i + k*4] * Ml.vec[k + j*4]
 		}
 	}
 	SetAng := !(Vec3 ang) -> void
