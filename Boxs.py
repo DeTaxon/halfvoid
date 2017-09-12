@@ -333,6 +333,7 @@ class ParamChain:
 	self.HaveConstr = False
 	self.Params = []
 	self.ToCall = None
+	self.Type = None
 
         if NotObj == None:
             self.Name = Obj.Extra[0].Extra
@@ -748,17 +749,16 @@ class BoxFakeMetod:
 		GetPoint(self.Type).PrintUse(F)
 		F.write(" %Tmp{}\n".format(BoId))
 	def Check(self,Paren = None):
-		if Paren == None:
-			return None
-		self.InClass = Paren
-		self.Pos = Paren.GetPos(self.ToCall)
+		self.Pos = self.InClass.GetPos(self.ToCall)
 		if self.Pos < 0:
 			raise ValueError("There is no object {}".format(self.ToCall))
+		self.InClass.Items[self.Pos].Check()
 		if self.PreType == None:
-			self.Type = Paren.Items[self.Pos].Type 
+			self.Type = self.InClass.Items[self.Pos].Type 
 		else:
-			self.PrevType = Paren.Items[self.Pos].Type
-			self.Type = ParseType(self.PreType)	
+			self.PrevType = self.InClass.Items[self.Pos].Type
+			self.Type = ParseType(self.PreType)
+		
 	
 class BoxTemplate:
 	def __init__(self,Obj):
@@ -819,6 +819,7 @@ class BoxClass:
 		self.Fakes = []
 		self.Id = GetNumb()
 		self.ToExtend = None
+		self.IsChecked = False
 		
 		if Obj.Extra[3].Value == "extend":
 			self.ToExtend = Obj.Extra[4]	
@@ -839,8 +840,13 @@ class BoxClass:
 				self.Fakes.append(BoxFakeMetod(Stuf[i])) #print("Hello")
 		for It in self.Items:
 			self.Fakes.append(BoxFakeMetod(It.Name))
+		for It in self.Fakes:
+			It.InClass = self
 					
 	def Check(self):
+		if self.IsChecked:
+			return None
+		self.IsChecked = True
 		if self.ToExtend != None:
 			self.ToExtend = ParseType(self.ToExtend)
 			if self.ToExtend == None or self.ToExtend.Value != "~class":
@@ -1100,9 +1106,13 @@ class BoxMetodCall:
 			self.UseClass = self.ClassType.Base
 	else:
 		self.UseClass = self.ClassType
+	self.UseClass.Check()
 	self.ToUse = self.UseClass.GetFake(self.ToCall)
 	if self.ToUse == None:
+		print(len(self.UseClass.Items))
+		print(self.UseClass.Items[0].Name)
 		raise ValueError("Object does not have field {}".format(self.ToCall))
+	self.ToUse.Check()
 	self.Type = self.ToUse.Type
 class BoxParamCall:
     def __init__(self,Obj):

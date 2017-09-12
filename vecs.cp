@@ -264,10 +264,6 @@ Mat4 := class
 	{
 		this.Indent()
 	}
-	GetP := !() -> float^
-	{
-		return vec
-	}
 	Indent := !() -> void
 	{
 		for vec it = 0.0

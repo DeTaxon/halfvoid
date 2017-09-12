@@ -129,14 +129,15 @@ main := !(int argc,string[] argv) -> int
 		if Butts['a'] C.Local(Vec3(-0.1,0.0,0.0))
 		C.Update()
 
-		C.Set(BoxSum)		
+		//C.Set(BoxSum)		
+		BoxSum = C.Dot
 	
 		Box.SetAng(Sec,Vec3(0.0,1.0,0.0))
 		BoxSum *= Box
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glLoadMatrixf(Accum.GetP())
+		glLoadMatrixf(Accum.row[0].x&)
 		DrawBox(0.1)
 		
 		Box2.SetAng(Sec*2.0,Vec3(0.0,0.0,1.0))
@@ -144,7 +145,7 @@ main := !(int argc,string[] argv) -> int
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glLoadMatrixf(Accum.GetP())
+		glLoadMatrixf(Accum.row[0].x&)
 		DrawBox(0.3)
 
 
