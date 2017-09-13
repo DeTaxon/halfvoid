@@ -272,14 +272,32 @@ def ShouldChange(T1,T2):
 		return ToRet
 
 	if (Ind1 >= 8) != (Ind2 >= 8):
-		ToRet += "f" if Ind1 >= 8 else "i"
-	if Ind1 % 2  != Ind2 % 2:
-		ToRet += "s" if Ind1 % 2  == 0 else "z"
-	if Ind1 / 2  != Ind2 / 2:
-		ToRet += "u" if Ind1 < Ind2 else "d"
+		ToRet += "i" if Ind1 >= 8 else "f"
+		if Ind1 >= 8:
+			return "i" if Ind2 % 2 == 0 else "is"
+		else:
+			return "f" if Ind1 % 2 == 0 else "fs"
+	else:
+		if Ind1 % 2  != Ind2 % 2:
+			ToRet += "s" if Ind1 % 2  == 0 else "z"
+		if Ind1 / 2  != Ind2 / 2:
+			ToRet += "u" if Ind1 < Ind2 else "d"
 	return ToRet
 
 
+def BestType(T1,T2):
+	Ind1 = ArrSum.index(T1.Id)
+	Ind2 = ArrSum.index(T2.Id)
+	if Ind1 == Ind2:
+		return ToRet
+
+	if (Ind1 >= 8) != (Ind2 >= 8):
+		return  T1 if Ind1 >= 8 else T2
+	if Ind1 / 2  != Ind2 / 2:
+		return  T2 if Ind1 < Ind2 else T1
+	if Ind1 % 2  != Ind2 % 2:
+		return T2 if Ind1 % 2  == 0 else T1
+	return ToRet
 
 
 
