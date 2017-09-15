@@ -8,24 +8,25 @@ class CodeBox:
     def __init__(self,Line):
         self.Tokens = []
 
-	PreLines = []
+	j = 0
 	for g in range(1,len(Line)):
+		PreLines = []
         	with open(Line[g],"r") as f:
             		PreLines += f.readlines()
-        Lines = []
-        for c in PreLines: #deleting comments
-            pos = c.find('//')
-            if pos == -1:
-                PreStr = c[:-1] + ' '
-            else:
-                PreStr = c[:pos] + ' '
-            Lines.append(PreStr)
-	j = 0
-        for i in range(len(Lines)):
-            GenTokens(self.Tokens,Lines[i])
-	    while j < len(self.Tokens):
-		self.Tokens[j].Line = i + 1
-		j += 1
+        	Lines = []
+        	for c in PreLines: 
+        	    pos = c.find('//')
+        	    if pos == -1:
+        	        PreStr = c[:-1] + ' '
+        	    else:
+        	        PreStr = c[:pos] + ' '
+        	    Lines.append(PreStr)
+        	for i in range(len(Lines)):
+        	    GenTokens(self.Tokens,Lines[i])
+		    while j < len(self.Tokens):
+			self.Tokens[j].Line = i + 1
+			self.Tokens[j].InFile = Line[g]
+			j += 1
         self.SearchPar('(',')','()',self.Tokens)
         self.SearchPar('[',']','[]',self.Tokens)
         self.SearchPar('{','}','{}',self.Tokens)
@@ -58,6 +59,8 @@ class CodeBox:
                 if Now == -1:
                     return
                 Block = Token(New,[])
+		Block.Line = Toks[Now + 1].Line
+		Block.InFile = Toks[Now + 1].InFile
                 for j in range(Now+1,Pos):
                     Block.Extra.append(Toks.pop(Now+1))
                 Toks.pop(Now)

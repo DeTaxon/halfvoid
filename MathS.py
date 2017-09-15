@@ -1,12 +1,14 @@
 from Lex import *
 
 def UNext(Arr,Pos,Size,Name):
-    Tok = Token(Name,[])
-    for i in range(Size):
-        Tok.Extra.append(Arr[Pos+i])
-    Arr[Pos] = Tok
-    for i in range(1,Size):
-        Arr.pop(Pos + 1)
+	Tok = Token(Name,[])
+	Tok.Line = Arr[Pos].Line
+	Tok.InFile = Arr[Pos].InFile
+	for i in range(Size):
+		Tok.Extra.append(Arr[Pos+i])
+	Arr[Pos] = Tok
+	for i in range(1,Size):
+		Arr.pop(Pos + 1)
 
 def RuleIt( R, Arr,Pos):
     if Pos + len(R) - 1 > len(Arr):
@@ -15,8 +17,6 @@ def RuleIt( R, Arr,Pos):
         if Arr[Pos + i - 1].Value not in R[i]:
             return False
     UNext(Arr,Pos,len(R) - 1,R[0])
-    #if R[0] == "dp":
-    #    print(Arr[Pos -1].Value)
     return True
 
 def RuleMetod(Arr,Pos):

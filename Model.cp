@@ -2,6 +2,7 @@ Model := class
 {
 	Vert := float^
 	Ind := int^
+
 	draw := !() -> void
 	{
 	}
@@ -9,8 +10,6 @@ Model := class
 	{
 		File := sfile
 		MyLst := Queue.{char^} 
-		//TString Temp;
-		//Queue<TString> MyLst;
 
 		File.open(Name, "r")
 

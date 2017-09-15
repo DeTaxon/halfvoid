@@ -6,6 +6,10 @@ feof := !(void^ hndl) -> int declare
 file := class
 {
 	Handle := void^
+	this := !(char^ a,char^ b) -> void
+	{
+		this.open(a,b)
+	}
 	open := !(char^ Name,char^ flags) -> bool
 	{
 		Handle = fopen(Name,flags)
@@ -21,7 +25,7 @@ file := class
 	}
 	good := !() -> bool
 	{
-		return feof(Handle) != 0
+		return feof(Handle) == 0
 	}
 	IsOpen := !() -> bool
 	{
@@ -31,6 +35,10 @@ file := class
 
 sfile := class extend file
 {
+	this := !(char^ a,char^ b) -> void
+	{
+		this.open(a,b)
+	}
 	readline := !() -> char^
 	{
 		Buff := char[4096]

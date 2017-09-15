@@ -54,6 +54,25 @@ Stack := class !{T}
 			free(Iter)
 		}	
 	}
+	NotEmpty := !() -> bool
+	{
+		return Start != null
+	}
+	ToArray := !() -> T^
+	{
+		Si := this.Size()
+		if Si == 0 return null
+		ToOut := new T[Si]
+		Iter := Start
+		i := 0
+		while Iter
+		{
+			ToOut[i] = Iter.Data
+			Iter = Iter.Next
+			i += 1	
+		}
+		return ToOut
+	}
 }
 
 Queue := class !{T} extend Stack.{T}

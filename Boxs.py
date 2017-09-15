@@ -36,7 +36,7 @@ def GoodPoints(Par1,Par2):
     #   return True
     return False
 
-def NormalCheck(CParams,FParams):
+def NormalCheck(CParams,FParams,IsOper = False):
 	for i in range(len(CParams)):
 		FParams[i].Check()
 		if FParams[i].Type.Id == GetType("...").Id:
@@ -50,6 +50,8 @@ def NormalCheck(CParams,FParams):
 		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
 			continue
 		if GoodPoints(FParams[i].Type,CParams[i].Type):
+			continue
+		if not IsOper and "u" in ShouldChange(CParams[i].Type,FParams[i].Type):
 			continue
 		if FParams[i].Type.Type == "funcp":
 			continue
@@ -109,7 +111,7 @@ def SearchFunc(Name,Pars,Arr):
 		if PrisvCheck(Pars,It.Params):
 			return It
 	    else:
-            	if NormalCheck(Pars,It.Params):
+            	if NormalCheck(Pars,It.Params, Name in AllOpers):
                 	return It
     return None
 
@@ -1541,6 +1543,12 @@ class BoxFuncsCall:
 			for i in [0,1]:
 				if self.Params[i].Type.Id != TSome.Id:
 					self.Params[i] = BoxExc(self.Params[i],TSome)
+	if self.ToCall in Opers and len(self.Params) == 2 and self.Params[0].Type.Type == "standart" and self.Params[1].Type.Type == "standart":
+		if self.Params[0].Type.Id != self.Params[1].Type.Id:
+			TSome = BestType(self.Params[0].Type,self.Params[1].Type)
+			for i in [0,1]:
+				if self.Params[i].Type.Id != TSome.Id:
+					self.Params[i] = BoxExc(self.Params[i],TSome)
 	#if self.ToCall in Prisv
 	if self.ToCall in PrisvOpers and self.Params[0].Type.Type == "standart" and self.Params[1].Type.Type == "standart":
 		if self.Params[0].Type.Id != self.Params[1].Type.Id:
@@ -1597,10 +1605,16 @@ class BoxFuncsCall:
             	break
             if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,self.CallFunc.Params[i].Type):
                 NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+		continue
             if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(self.CallFunc.Params[i].Type,NewParams[i].Type):
                 NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+		continue
 	    if NewParams[i].Type.Type == "class":
 		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+		continue
+	    if "u" in ShouldChange(NewParams[i].Type,self.CallFunc.Params[i].Type):
+		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+		continue
         return None
 
 
@@ -1645,8 +1659,7 @@ def GetUse(Obj):
     if Obj.Value == "d.{}":
 	return None
 	
-    raise ValueError("Not implemented {} at line {}".format(Obj.Value,Obj.Line))
-    #print("Not implemented {}".format(Obj.Value))
+    raise ValueError("Not implemented {} at line {} in file {}".format(Obj.Value,Obj.Line,Obj.InFile))
 
 class BoxBlock:
     def __init__(self,List):

@@ -20,6 +20,7 @@ class Token:
         self.Value = Val
         self.Extra = Ext
 	self.Line = -1
+	self.InFile = ""
     def Info(self):
         Simple = ["str","numi","numf","nump","id","=="]
         if self.Value in Simple:
