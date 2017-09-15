@@ -7,16 +7,10 @@ Line3 := "zxcvbnm,./"
 
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
-	if scancode == 9
-	{
-		if action == 1	glfwSetWindowShouldClose(win,true)
-	}
-	if scancode >= 24 and scancode <= 35 
-			Butts[ Line1[scancode - 24] ] = action != 0
-	if scancode >= 38 and scancode <= 48
-			Butts[ Line2[scancode - 38] ] = action != 0
-	if scancode >= 52 and scancode <= 61
-			Butts[ Line3[scancode - 52] ] = action != 0
+	if scancode == 9 and action == 1	glfwSetWindowShouldClose(win,true)
+	if scancode >= 24 and scancode <= 35 	Butts[ Line1[scancode - 24] ] = action != 0
+	if scancode >= 38 and scancode <= 48	Butts[ Line2[scancode - 38] ] = action != 0
+	if scancode >= 52 and scancode <= 61	Butts[ Line3[scancode - 52] ] = action != 0
 	//printf("Key %i mod %i\n",scancode, action)
 }
 
@@ -96,7 +90,7 @@ main := !(int argc,string[] argv) -> int
 	
 	Matr := Mat4
 	Sec := 0.0
-
+	
 	glViewport(0,0,512,512)
 	glClearColor(1.0,.5,0.0,0.0)
 	
@@ -123,10 +117,12 @@ main := !(int argc,string[] argv) -> int
 		if Butts['f'] C.Mouse( 0.012,0.0)
 		if Butts['e'] C.Mouse(0.0, 0.012)
 		if Butts['q'] C.Mouse(0.0,-0.012)
+
 		if Butts['w'] C.Local(Vec3(0.0,0.0,-0.1))
 		if Butts['s'] C.Local(Vec3(0.0,0.0, 0.1))
 		if Butts['d'] C.Local(Vec3( 0.1,0.0,0.0))
 		if Butts['a'] C.Local(Vec3(-0.1,0.0,0.0))
+
 		C.Update()
 
 		//C.Set(BoxSum)		
@@ -137,7 +133,7 @@ main := !(int argc,string[] argv) -> int
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glLoadMatrixf(Accum.row[0].x&)
+		glLoadMatrixf(Accum.vec)
 		DrawBox(0.1)
 		
 		Box2.SetAng(Sec*2.0,Vec3(0.0,0.0,1.0))
@@ -145,7 +141,7 @@ main := !(int argc,string[] argv) -> int
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glLoadMatrixf(Accum.row[0].x&)
+		glLoadMatrixf(Accum.vec)
 		DrawBox(0.3)
 
 

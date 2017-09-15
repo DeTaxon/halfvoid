@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from Lex import *
 from MathS import *
 from allnums import *
@@ -44,15 +45,14 @@ def NormalCheck(CParams,FParams):
 			return False
 		if CParams[i].Type.Id == FParams[i].Type.Id:
 			continue
+		if FParams[i].Type.Type == "point" and CParams[i].Type.Type == "fixed" and FParams[i].Type.Base.Id == CParams[i].Type.Base.Id:
+			continue
 		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
 			continue
 		if GoodPoints(FParams[i].Type,CParams[i].Type):
 			continue
 		if FParams[i].Type.Type == "funcp":
 			continue
-		#if CParams[i].Type.Type == "standart" and FParams[i].Type.Type == "standart":
-		#	if "u" in ShouldChange(CParams[i].Type,FParams[i].Type):
-		#		continue
 		if FParams[i].Type.Id != CParams[i].Type.Id:
 			return False
 	return True
@@ -64,6 +64,8 @@ def PrisvCheck(CParams,FParams):
 			return True
 		if i >= len(CParams):
 			return False
+		if FParams[i].Type.Type == "point" and CParams[i].Type.Type == "fixed" and FParams[i].Type.Base.Id == CParams[i].Type.Base.Id:
+			continue
 		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
 			continue
 		if GoodPoints(FParams[i].Type,CParams[i].Type):
@@ -106,9 +108,6 @@ def SearchFunc(Name,Pars,Arr):
 	    if Name in ["=","+=","-=","/=","*=","%="]:
 		if PrisvCheck(Pars,It.Params):
 			return It
-	#    elif Name in Opers + ["==",">=","<=","!="] and Pars[0].Type.Type in "standart":
-	#	if StCheck(Pars,It.Params):
-	#		return It
 	    else:
             	if NormalCheck(Pars,It.Params):
                 	return It
@@ -132,6 +131,8 @@ class BoxConst:
 	def PrintFunc(self,F):
 		return None
 	def PrintConst(self,F):
+		return None
+	def PrintAlloc(self,F):
 		return None
 	def Check(self):
 		return None
@@ -509,7 +510,7 @@ class ParamChain:
 	if self.IsDrived:
 		return None
 	if not self.IsFunc:
-		if self.Type.Type == "fixed":
+		if self.Type.Type == "fixed" and False: #TODO: проверить
             		F.write("%Tmp{}Pre = alloca ".format(self.Id))
             		self.Type.PrintInAlloc(F)
             		F.write("\n")
@@ -605,6 +606,16 @@ class BoxNew:
 			self.Size.PrintConst(F)
 		if self.Extra != None:
 			self.Extra.PrintConst(F)
+	def PrintFunc(self,F):
+		if self.Size != None:
+			self.Size.PrintFunc(F)
+		if self.Extra != None:
+			self.Extra.PrintFunc(F)
+	def PrintAlloc(self,F):
+		if self.Size != None:
+			self.Size.PrintAlloc(F)
+		if self.Extra != None:
+			self.Extra.PrintAlloc(F)
 	def PrintPre(self,F):
 		self.PrevId = GetNumb()
 		F.write("%EndPos{} = getelementptr ".format(self.PrevId))
@@ -645,6 +656,8 @@ class BoxNew:
 	def PrintUse(self,F):
 		self.Type.PrintUse(F)
 		F.write(" %Tmp{0}".format(self.PrevId))	
+	def GetName(self):
+		return " %Tmp{0}".format(self.PrevId)
 	def Check(self):
 		if self.Extra != None:
 			self.Extra.Check()
@@ -890,6 +903,7 @@ class BoxClass:
 			self.ToExtend = ParseType(self.ToExtend)
 			if self.ToExtend == None or self.ToExtend.Value != "~class":
 				raise ValueError("Nothing to extend")
+			self.ToExtend.Check()
 			self.Items = self.Items + self.ToExtend.Items 
 			self.Fakes = self.Fakes + self.ToExtend.Fakes
 		for It in self.Items:
@@ -1527,11 +1541,13 @@ class BoxFuncsCall:
 			for i in [0,1]:
 				if self.Params[i].Type.Id != TSome.Id:
 					self.Params[i] = BoxExc(self.Params[i],TSome)
+	#if self.ToCall in Prisv
 	if self.ToCall in PrisvOpers and self.Params[0].Type.Type == "standart" and self.Params[1].Type.Type == "standart":
 		if self.Params[0].Type.Id != self.Params[1].Type.Id:
 			self.Params[1] = BoxExc(self.Params[1],self.Params[0].Type)
 		
 	if self.IsMetod or (self.ToCall in AllOpers and self.Params[0].Type.Type == "class"):
+		self.Params[0].Type.Check()
         	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
@@ -1580,6 +1596,8 @@ class BoxFuncsCall:
 			i += 1
             	break
             if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,self.CallFunc.Params[i].Type):
+                NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+            if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(self.CallFunc.Params[i].Type,NewParams[i].Type):
                 NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
 	    if NewParams[i].Type.Type == "class":
 		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
