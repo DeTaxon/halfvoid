@@ -13,6 +13,8 @@ ConstTable = {}
 
 StandartStuff = []
 
+InFunc = []
+
 Opers = ["+","-","*","/","%"]
 CmprOpers = ["==",">=","<=","!=","<",">"]
 PrisvOpers = ["=","+=","-=","*=","/=","%="]
@@ -1087,28 +1089,31 @@ class ParConstNum:
         	F.write(" %Tmp{}".format(self.PrevId))
         return None
 class BoxReturn:
-    def __init__(self,Obj):
-        self.Value = "~ret"
-        self.Ret = GetUse(Obj.Extra[1])
-    def PrintConst(self,F):
-        return None
-    def PrintFunc(self,F):
-        return None
-    def Check(self):
-        if self.Ret != None:
-            self.Ret.Check()
-    def PrintPre(self,F):
-        return None
-    def PrintAlloc(self,F):
-	return None
-    def PrintUse(self,F):
-        self.Ret.PrintPre(F)
-        F.write("ret ")
-        self.Ret.PrintUse(F)
-        F.write("\n")
-        return None
-    def PrintInBlock(self,F):
-        self.PrintUse(F)
+	def __init__(self,Obj):
+		self.Value = "~ret"
+		self.Ret = GetUse(Obj.Extra[1])
+	def PrintConst(self,F):
+		return None
+	def PrintFunc(self,F):
+		return None
+	def Check(self):
+		if self.Ret != None:
+			self.Ret.Check()
+		L = InFunc[len(InFunc) -1]
+		if self.Ret.Type.Id != L.Type.Id and (GoodPoints(self.Ret.Type, L.Type) or GoodPoints(L.Type,self.RetType)):
+			self.Ret = BoxExc(self.Ret,L.Type)
+	def PrintPre(self,F):
+		return None
+	def PrintAlloc(self,F):
+		return None
+	def PrintUse(self,F):
+		self.Ret.PrintPre(F)
+		F.write("ret ")
+		self.Ret.PrintUse(F)
+		F.write("\n")
+		return None
+	def PrintInBlock(self,F):
+		self.PrintUse(F)
 
 class BoxMetodCall:
     def __init__(self,Obj):
@@ -1849,6 +1854,7 @@ class BoxFunc:
         F.write("*")
     def Check(self):
         PushC()
+	InFunc.append(self)
 	if self.Block != None and self.Name != "main":
 		self.FullName = "func{}".format(GetNumb())
 	else:
@@ -1859,6 +1865,7 @@ class BoxFunc:
             ContextStuff.append(It)
         if self.Block != None:
             self.Block.Check()
+	InFunc.pop()
         PopC()
     def PrintFType(self,F):
 	self.PrintType(F)

@@ -12,7 +12,7 @@ StrSize := !(char^ a) -> int
 	return Si
 }
 
-StrCopy := !(char ^ a) -> char^
+StrCopy := !(char^ a) -> char^
 {
 	Si := StrSize(a)
 	Pre := new char[Si+1]
