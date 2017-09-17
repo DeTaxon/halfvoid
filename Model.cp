@@ -2,15 +2,27 @@ Model := class
 {
 	Vert := float^
 	Ind := int^
+	Tris := int
+	Size := int
 
 	draw := !() -> void
 	{
+		glBegin(GL_TRIANGLES)
+		glColor3f(0.0,1.0,0.0)
+		for i : Tris for j : 3
+		{
+			Pos := Ind[i*3 + j]*Size
+			glVertex3fv(Vert[Pos]&)
+		}
+		glEnd()
 	}
 	LoadFromPly := !(char^ Name) ->bool
 	{
 		File := sfile
-		MyLst := Queue.{char^} 
-
+		MyLst := Queue.{char^}()
+		MyLst.Start = null
+		Divs := Queue.{char^}()
+		Divs.Start = null
 		File.open(Name, "r")
 
 		if not File.IsOpen() { puts("File not found") return false }
@@ -18,88 +30,89 @@ Model := class
 		while File.good()
 		{
 			Line := File.readline()
-			if Line[0] != 0 MyLst.Push(Line)
+			if Line != null MyLst.Push(Line)
 		}
-
-		//MyFile.close();
-
+		File.close()
 		Header := true
-		//Queue<TString> TmpLst
 		VCount := 0
 
-		//while(Header)
-		//{
-		//	TmpLst.Clear();
-		//	MyLst.Pop(Temp);
-		//	Temp.Divide(' ', TmpLst);
-		//	if (TmpLst[0] == "element" && TmpLst[1] == "vertex")
-		//	{
-		//		VCount = TmpLst[2].ToInt();
-		//	}
-		//	else if (TmpLst[0] == "end_header")
-		//	{
-		//		Header = false;
-		//	}
-		//}
-		//int Items = (3+3+2);// 	GetVertElem();
-		//float* MyVerts = new float[VCount*Items];
-		//Queue<int> IndData;
-		//int* MyInd;
-		//for (int i = 0; i < VCount; i++)
-		//{
-		//	MyLst.Pop(Temp);
-		//	TmpLst.Clear();
-		//	Temp.Divide(' ',TmpLst);
-		//	for (int j = 0; j < Items; j++)
-		//		MyVerts[i*Items + j] = TmpLst[j].ToFloat();
-		//}
+		while Header
+		{
+			while Divs.NotEmpty() free(Divs.Pop())
+			Line := MyLst.Pop()
+			DivideStr(Line," \n", Divs)
+			if Divs.Start.Data == "element" if Divs.Start.Next.Data == "vertex"
+			{
+				VCount = StrToInt(Divs.Start.Next.Next.Data)
+			}
+			if Divs.Start.Data == "end_header"
+			{
+				Header = false
+			}
+		}
 
-		//int Value = 0;
-		//while (!MyLst.Empty())
-		//{
-		//	MyLst.Pop(Temp);
-		//	TmpLst.Clear();
-		//	Temp.Divide(' ', TmpLst);
-		//	Value = TmpLst[0].ToInt();
-		//	if (Value == 3)
-		//	{
-		//		Value = TmpLst[1].ToInt();
-		//		IndData.Push(Value);
+		Items := (3+3+2) // 	GetVertElem();
+		MyVerts := new float[VCount*Items]
+		IndData := Queue.{int}()
+	
+		for i :  VCount 
+		{
+			Temp := MyLst.Pop()
+			while Divs.NotEmpty() free(Divs.Pop())
+			DivideStr(Temp," \n",Divs)
+			//for j : Items MyVerts[i*Items + j] = TmpLst[j])
+			Iter := Divs.Start
+			j := 1
+			while Iter != null
+			{	
+				MyVerts[i*Items + j] = StrToFloat(Iter.Data)
+				Iter = Iter.Next
+			}
+		}
 
-		//		Value = TmpLst[2].ToInt();
-		//		IndData.Push(Value);
+		Value := 0
+		while MyLst.NotEmpty()
+		{
+			Temp := MyLst.Pop()
+			while Divs.NotEmpty() free(Divs.Pop())
+			DivideStr(Temp," \n",Divs)
+			Value = StrToInt(Divs.Start.Data)
+			if (Value == 3)
+			{
+				Value = StrToInt(Divs.Start.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[3].ToInt();
-		//		IndData.Push(Value);
-		//	}
-		//	else if(Value == 4)
-		//	{
-		//		Value = TmpLst[1].ToInt();
-		//		IndData.Push(Value);
+				Value = StrToInt(Divs.Start.Next.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[2].ToInt();
-		//		IndData.Push(Value);
+				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				IndData.Push(Value)
+			}
+			if(Value == 4)
+			{
+				Value = StrToInt(Divs.Start.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[3].ToInt();
-		//		IndData.Push(Value);
+				Value = StrToInt(Divs.Start.Next.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[1].ToInt();
-		//		IndData.Push(Value);
+				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[3].ToInt();
-		//		IndData.Push(Value);
+				Value = StrToInt(Divs.Start.Next.Data)
+				IndData.Push(Value)
 
-		//		Value = TmpLst[4].ToInt();
-		//		IndData.Push(Value);
-		//	}
-		//}
-		//MyInd = IndData.ToArray();
-		//int DrawCount = IndData.Size();
+				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				IndData.Push(Value)
 
-		//Create(MyVerts,VCount*8*4,MyInd,DrawCount*4);
-		//if (MyInd) delete[] MyInd;
-		//if (MyVerts) delete[] MyVerts;
-		//return true;
+				Value = StrToInt(Divs.Start.Next.Next.Next.Next.Data)
+				IndData.Push(Value)
+			}
+		}
+		Vert = MyVerts
+		Ind = IndData.ToArray()
+		Size = Items
+		Tris = IndData.Size() / 3
 		return true
 	}
 }

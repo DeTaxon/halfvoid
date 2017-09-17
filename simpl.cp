@@ -73,6 +73,9 @@ DrawBox := !(float Size) -> void
  
 main := !(int argc,string[] argv) -> int 
 {
+	Bo := Model
+	Bo.LoadFromPly("TestBox.ply")
+
 	glfwSetErrorCallback(SayError)
 	if not glfwInit() 
 	{
@@ -133,8 +136,8 @@ main := !(int argc,string[] argv) -> int
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glLoadMatrixf(Accum.vec)
-		DrawBox(0.1)
+		glColor3f(0.0,1.0,1.0)
+		Bo.draw() //DrawBox(0.1)
 		
 		Box2.SetAng(Sec*2.0,Vec3(0.0,0.0,1.0))
 		BoxSum *= Box2

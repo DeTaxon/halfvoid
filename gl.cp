@@ -6,6 +6,7 @@ glEnd := !() -> void declare
 glColor3f := !(float r,float g, float b) -> void declare
 glVertex2i := !(int x, int y) -> void declare
 glVertex3f := !(float x, float y, float z) -> void declare
+glVertex3fv := !(float^ v) -> void declare
 
 glEnable := !(int Flag) -> void declare
 

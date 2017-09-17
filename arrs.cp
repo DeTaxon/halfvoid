@@ -17,6 +17,10 @@ Node := class !{T}
 Stack := class !{T}
 {
 	Start := Node.{T}^
+	this := !() -> void
+	{
+		Start = null
+	}
 	Push := !(T a) -> void
 	{
 		if Start == null {
@@ -77,6 +81,10 @@ Stack := class !{T}
 
 Queue := class !{T} extend Stack.{T}
 {
+	this := !() -> void
+	{
+		Start = null
+	}
 	Push := !(T a) -> void
 	{
 		if Start == null {

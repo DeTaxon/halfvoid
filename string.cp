@@ -63,12 +63,19 @@ StrToInt := !(char^ a) -> int
 {
 	Sum := 0
 	i := 0
-	while a[i] != 0 and a[i] < '9' and a[i] > '0'
+	Min := false
+	if ( a[0] == "-"[0])
+	{
+		i = 1
+		Min = true
+	}
+	while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
 	{
 		Sum *= 10
 		Sum += a[i] - '0'
 		i += 1	
 	}
+	if Min return -Sum
 	return Sum
 }
 
@@ -76,7 +83,13 @@ StrToFloat := !(char^ a) -> float
 {
 	Sum := 0.0
 	i := 0
-	while a[i] != 0 and a[i] < '9' and a[i] > '0'
+	Min := false
+	if (a[0] == "-"[0])
+	{
+		i += 1
+		Min = true
+	}
+	while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
 	{
 		Sum *= 10.0
 		Sum += a[i] - '0'
@@ -86,13 +99,14 @@ StrToFloat := !(char^ a) -> float
 	{
 		i += 1
 		Q := 1.0
-		while a[i] != 0 and a[i] < '9' and a[i] > '0'
+		while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
 		{
 			Q *= 0.1
 			Sum += Q*(a[i] - '0')
 			i += 1
 		}
 	}
+	if Min return 0.0-Sum
 	return Sum
 }
 //"()" := !(char^ this,args...) -> char^ 

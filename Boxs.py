@@ -1410,7 +1410,7 @@ class BoxExc:
     def PrintConst(self,F):
         self.Extra.PrintConst(F)
     def PrintFunc(self,F):
-        self.Extra.PrintConst(F)
+        self.Extra.PrintFunc(F)
     def Check(self):
 	self.Extra.Check()
     def PrintAlloc(self,F):
