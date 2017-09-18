@@ -70,9 +70,16 @@ DrawBox := !(float Size) -> void
 	PrintSquare(7,Size)
 	glEnd()
 }
- 
+
+"[]" := !(int a,int b) -> int
+{
+	return a*20 + b
+}
+
 main := !(int argc,string[] argv) -> int 
 {
+	printf("%i\n",4[5])
+	return 0
 	Bo := Model
 	Bo.LoadFromPly("TestBox.ply")
 

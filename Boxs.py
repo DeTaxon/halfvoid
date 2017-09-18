@@ -1246,6 +1246,7 @@ class BoxRef:
 
 class BoxPoint:
     def __init__(self,Obj):
+	self.FCall = None
         if Obj.Value == "d^":
             self.Value = "~d^"
             self.Extra = GetUse(Obj.Extra[0])
@@ -1254,6 +1255,8 @@ class BoxPoint:
             self.Extra = GetUse(Obj.Extra[0])
             self.Ind = GetUse(Obj.Extra[1].Extra[0])
     def PrintPointPre(self,F):
+	if self.FCall != None:
+		return self.FCall.PrintPointPre(F)
         if self.Value == "~d[]":
             self.PrevId = GetNumb()
             self.Extra.PrintPre(F)
@@ -1268,6 +1271,10 @@ class BoxPoint:
         else:
             self.Extra.PrintPre(F)
     def PrintPointUse(self,F):
+
+	if self.FCall != None:
+		return self.FCall.PrintPointUse(F)
+
         if self.Value == "~d[]":
             self.Extra.Type.PrintUse(F)
             F.write(" %Tmp{}".format(self.PrevId))
@@ -1279,16 +1286,28 @@ class BoxPoint:
 		self.Ind.PrintAlloc(F)
     def Check(self):
         self.Extra.Check()
-		
-        if not self.Extra.Type.IsPoint:
+        if self.Value == "~d[]":
+            self.Ind.Check()
+	
+	if self.Value == "~d[]" and self.Extra.Type.Type in ["class","standart"]:
+		PrePars = [self.Extra,self.Ind]
+		self.FCall = BoxFuncsCall(None)
+		self.FCall.ToCall = "[]"
+		self.FCall.Params = PrePars
+		self.FCall.Check() 
+		self.Type = self.FCall.Type
+		return None
+        elif not self.Extra.Type.IsPoint:
             	raise ValueError('Not a point')
         self.Type = self.Extra.Type.Base
 
-        if self.Value == "~d[]":
-            self.Ind.Check()
     def GetName(self):
+	if self.FCall != None:
+		return self.FCall.GetName(F)
         return "%Tmp{}".format(self.PrevId)
     def GetPName(self):
+	if self.FCall != None:
+		return self.FCall.GetPName(F)
         if self.Value == "~d[]":
             return "%Tmp{}".format(self.PrevId)
         else:
@@ -1302,6 +1321,9 @@ class BoxPoint:
         if self.Value == "~d[]":
             self.Ind.PrintConst(F)
     def PrintPre(self,F):
+	if self.FCall != None:
+		return self.FCall.PrintPre(F)
+
         self.Extra.PrintPre(F)
         self.PrevId = GetNumb()
         if self.Value == "~d[]":
@@ -1327,6 +1349,8 @@ class BoxPoint:
             self.Extra.PrintUse(F)
             F.write("\n")
     def PrintUse(self,F):
+	if self.FCall != None:
+		return self.FCall.PrintUse(F)
         self.Type.PrintUse(F)
         F.write(" %Tmp{}".format(self.PrevId))
 
@@ -1427,6 +1451,9 @@ class BoxFuncsCall:
 	self.PointCall = None
         self.HaveConstr = None
 	self.RetId = -1
+
+	if Obj == None:
+		return None
         
         if Obj.Value == "d()" and Obj.Extra[0].Value == "id": 
             self.ToCall = Obj.Extra[0].Extra
