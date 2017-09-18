@@ -8,10 +8,10 @@ Model := class
 	draw := !() -> void
 	{
 		glBegin(GL_TRIANGLES)
-		glColor3f(0.0,1.0,0.0)
 		for i : Tris for j : 3
 		{
 			Pos := Ind[i*3 + j]*Size
+			glColor3fv(Vert[Pos+3]&)
 			glVertex3fv(Vert[Pos]&)
 		}
 		glEnd()
@@ -62,10 +62,11 @@ Model := class
 			DivideStr(Temp," \n",Divs)
 			//for j : Items MyVerts[i*Items + j] = TmpLst[j])
 			Iter := Divs.Start
-			j := 1
+			j := 0
 			while Iter != null
 			{	
 				MyVerts[i*Items + j] = StrToFloat(Iter.Data)
+				j += 1
 				Iter = Iter.Next
 			}
 		}

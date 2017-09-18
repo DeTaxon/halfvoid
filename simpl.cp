@@ -101,10 +101,10 @@ main := !(int argc,string[] argv) -> int
 	Pres.Persp(1.0,0.1,100.0,75.0)
 	Accum := Mat4	
  	Box := Cent
-	Box.SetPos(0.0,0.0,-1.5)
+	Box.SetPos(0.0,0.0,-3.5)
 	Box2 := Cent
 	Box2.SetAng(0.0,Vec3(1.0,1.0,1.0))
-	Box2.SetPos(0.0,0.0,0.7)
+	Box2.SetPos(0.0,0.0,2.7)
 	BoxSum := Cent
 	C := Camera()
 	
@@ -136,8 +136,8 @@ main := !(int argc,string[] argv) -> int
 		Matr = BoxSum
 		Accum = Pres
 		Accum *= Matr
-		glColor3f(0.0,1.0,1.0)
-		Bo.draw() //DrawBox(0.1)
+		glLoadMatrixf(Accum.vec)
+		DrawBox(0.7)
 		
 		Box2.SetAng(Sec*2.0,Vec3(0.0,0.0,1.0))
 		BoxSum *= Box2
@@ -145,7 +145,8 @@ main := !(int argc,string[] argv) -> int
 		Accum = Pres
 		Accum *= Matr
 		glLoadMatrixf(Accum.vec)
-		DrawBox(0.3)
+		Bo.draw()
+		//DrawBox(0.3)
 
 
 		glfwSwapBuffers(win)
