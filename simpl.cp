@@ -71,14 +71,14 @@ DrawBox := !(float Size) -> void
 	glEnd()
 }
 
-"[]" := !(int a,int b) -> int
-{
-	return a*20 + b
-}
 
 main := !(int argc,string[] argv) -> int 
 {
-	printf("%i\n",4[5])
+	H := Queue.{int}
+	H.Push(1)
+	H.Push(5)
+	H.Push(9)
+	printf("%i \n",H[1])
 	return 0
 	Bo := Model
 	Bo.LoadFromPly("TestBox.ply")

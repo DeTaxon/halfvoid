@@ -62,6 +62,17 @@ Stack := class !{T}
 	{
 		return Start != null
 	}
+	"[]" := !(int Ind) -> T
+	{
+		Iter := Start
+		j := Ind
+		while j
+		{
+			Iter = Iter.Next
+			j -= 1
+		}
+		return Iter.Data		
+	}
 	ToArray := !() -> T^
 	{
 		Si := this.Size()

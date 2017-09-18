@@ -1293,6 +1293,7 @@ class BoxPoint:
 		PrePars = [self.Extra,self.Ind]
 		self.FCall = BoxFuncsCall(None)
 		self.FCall.ToCall = "[]"
+		self.FCall.IsMetod = self.Extra.Type.Type == "class"
 		self.FCall.Params = PrePars
 		self.FCall.Check() 
 		self.Type = self.FCall.Type
