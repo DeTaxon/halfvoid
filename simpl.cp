@@ -11,7 +11,7 @@ keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 	if scancode >= 24 and scancode <= 35 	Butts[ Line1[scancode - 24] ] = action != 0
 	if scancode >= 38 and scancode <= 48	Butts[ Line2[scancode - 38] ] = action != 0
 	if scancode >= 52 and scancode <= 61	Butts[ Line3[scancode - 52] ] = action != 0
-	//printf("Key %i mod %i\n",scancode, action)
+	printf("Key %i mod %i\n",scancode, action)
 }
 
 SayError := !(int Data,char^ Line) -> void
@@ -74,12 +74,6 @@ DrawBox := !(float Size) -> void
 
 main := !(int argc,string[] argv) -> int 
 {
-	H := Queue.{int}
-	H.Push(1)
-	H.Push(5)
-	H.Push(9)
-	printf("%i \n",H[1])
-	return 0
 	Bo := Model
 	Bo.LoadFromPly("TestBox.ply")
 
