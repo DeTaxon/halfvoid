@@ -1092,6 +1092,7 @@ class BoxReturn:
 	def __init__(self,Obj):
 		self.Value = "~ret"
 		self.Ret = GetUse(Obj.Extra[1])
+		self.RetRef = False
 	def PrintConst(self,F):
 		return None
 	def PrintFunc(self,F):
@@ -1100,6 +1101,7 @@ class BoxReturn:
 		if self.Ret != None:
 			self.Ret.Check()
 		L = InFunc[len(InFunc) -1]
+		self.RetRef = L.RetRef
 		if self.Ret.Type.Id != L.Type.Id and (GoodPoints(self.Ret.Type, L.Type) or GoodPoints(L.Type,self.RetType)):
 			self.Ret = BoxExc(self.Ret,L.Type)
 	def PrintPre(self,F):
@@ -1107,6 +1109,12 @@ class BoxReturn:
 	def PrintAlloc(self,F):
 		return None
 	def PrintUse(self,F):
+		if self.RetRef:
+			self.Ret.PrintPointPre(F)
+			F.write("ret ")
+			self.Ret.PrintPointUse(F)
+			F.write("\n")
+			return None
 		self.Ret.PrintPre(F)
 		F.write("ret ")
 		self.Ret.PrintUse(F)
@@ -1304,11 +1312,11 @@ class BoxPoint:
 
     def GetName(self):
 	if self.FCall != None:
-		return self.FCall.GetName(F)
+		return self.FCall.GetName()
         return "%Tmp{}".format(self.PrevId)
     def GetPName(self):
 	if self.FCall != None:
-		return self.FCall.GetPName(F)
+		return self.FCall.GetPName()
         if self.Value == "~d[]":
             return "%Tmp{}".format(self.PrevId)
         else:
@@ -1451,6 +1459,7 @@ class BoxFuncsCall:
 	self.IsMetod = False
 	self.PointCall = None
         self.HaveConstr = None
+	self.RetRef = False
 	self.RetId = -1
 
 	if Obj == None:
@@ -1478,7 +1487,6 @@ class BoxFuncsCall:
                     i += 1
 	else:
             self.ToCall = Obj.Extra[1].Value
-            #print(Obj.Extra[0].Value)
             if Obj.Extra[0].Value == "not" or Obj.Extra[0].Value == "-":
                 self.Params.append(GetUse(Obj.Extra[1]))
                 self.ToCall = Obj.Extra[0].Value
@@ -1501,6 +1509,16 @@ class BoxFuncsCall:
 		F.write("\n")	
     def PrintPre(self,F):
         self.PrevId = GetNumb()
+	if self.RetRef:
+		MiniPre = GetNumb()
+		self.PrevId = GetNumb()
+		self.CallFunc.PrintUse(F,MiniPre,self.Params)
+		F.write("%Tmp{} = load ".format(self.PrevId))
+		self.Type.PrintUse(F)
+		F.write(" , ")
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}\n".format(MiniPre))
+		return None
 	if self.HaveConstr != None:
 		NewParams = [self] + self.Params
 		StartI = 1
@@ -1559,6 +1577,10 @@ class BoxFuncsCall:
     def PrintInBlock(self,F):
         self.PrintPre(F)
     def PrintPointPre(self,F):
+	if self.RetRef:
+		self.PrevId = GetNumb()
+		self.CallFunc.PrintUse(F,self.PrevId,self.Params)
+		return None
 	if self.HaveConstr != None:
 		self.PrintPre(F)
 	return None
@@ -1566,6 +1588,8 @@ class BoxFuncsCall:
 	GetPoint(self.Type).PrintUse(F)
 	F.write(" %Tmp{}".format(self.ConstrId))
     def GetPName(self):
+	if self.RetRef:
+		return "%Tmp{}".format(self.PrevId)
 	return "%Tmp{}".format(self.ConstrId)
     def Check(self):
         for It in self.Params:
@@ -1594,7 +1618,8 @@ class BoxFuncsCall:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None and self.ToCall not in AllOpers:
 			self.PointCall = GetParam(self.ToCall)
-			
+	if self.CallFunc != None:
+		self.RetRef = self.CallFunc.RetRef		
         if self.CallFunc == None and self.PointCall == None:
 		self.HaveConstr = ParseType(Token("id",self.ToCall))
 		if self.HaveConstr != None:
@@ -1762,6 +1787,7 @@ class BoxFunc:
 	self.Vargs = False
         self.AsmLine = None
 	self.InClass = Paren
+	self.RetRef = False
 
 	if Paren != None:
 		self.Params.append(ParamChain(Paren,Token("id","this")))
@@ -1796,11 +1822,14 @@ class BoxFunc:
                 c.IsRef = False
 	    if Paren != None:
 		self.Params[0].IsRef = True
-        i = 3
-        while Obj.Extra[i].Value not in  ["{}","declare"]:
-            i += 1
-        self.Type = ParseType(Obj.Extra[3]) # VERY TEMP
-        i  = 4 # Temp
+        i = 2
+	if Obj.Extra[i].Value == "->":
+		i += 1
+		if Obj.Extra[i].Value == "ref":
+			self.RetRef = True
+			i += 1
+		self.Type = ParseType(Obj.Extra[i])
+		i += 1
         if Obj.Extra[i].Value != "declare":
             self.Block = BoxBlock(Obj.Extra[i].Extra)
     def PrintConst(self,F):
@@ -1851,7 +1880,10 @@ class BoxFunc:
             F.write("declare ")
         else:
             F.write("define ")
-        self.Type.PrintUse(F)
+	if self.RetRef:
+		GetPoint(self.Type).PrintUse(F)
+        else:
+		self.Type.PrintUse(F)
         F.write(" @")
         F.write(self.FullName)
         F.write("(")
@@ -1898,7 +1930,10 @@ class BoxFunc:
     def PrintFType(self,F):
 	self.PrintType(F)
     def PrintType(self,F):
-        self.Type.PrintUse(F)
+	if self.RetRef:
+        	GetPoint(self.Type).PrintUse(F)
+	else:
+        	self.Type.PrintUse(F)
         F.write("(")
         if len(self.Params) > 0:
             for i in range(len(self.Params)):

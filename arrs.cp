@@ -62,7 +62,7 @@ Stack := class !{T}
 	{
 		return Start != null
 	}
-	"[]" := !(int Ind) -> T
+	"[]" := !(int Ind) -> ref T
 	{
 		Iter := Start
 		j := Ind
