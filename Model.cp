@@ -80,33 +80,38 @@ Model := class
 			Value = StrToInt(Divs.Start.Data)
 			if (Value == 3)
 			{
-				Value = StrToInt(Divs.Start.Next.Data)
+				Value = StrToInt(Divs[1])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Data)
+				Value = StrToInt(Divs[2])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				Value = StrToInt(Divs[3])
 				IndData.Push(Value)
 			}
 			if(Value == 4)
 			{
-				Value = StrToInt(Divs.Start.Next.Data)
+				//for i : ![1,2,3,1,3,4]
+				//{
+				//	Value = StrToInt(Divs[1])
+				//	IndData.Push(Value)
+				//}
+				Value = StrToInt(Divs[1])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Data)
+				Value = StrToInt(Divs[2])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				Value = StrToInt(Divs[3])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Data)
+				Value = StrToInt(Divs[1])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Next.Data)
+				Value = StrToInt(Divs[3])
 				IndData.Push(Value)
 
-				Value = StrToInt(Divs.Start.Next.Next.Next.Next.Data)
+				Value = StrToInt(Divs[4])
 				IndData.Push(Value)
 			}
 		}
