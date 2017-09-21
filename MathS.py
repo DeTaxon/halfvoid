@@ -37,7 +37,7 @@ def RuleMetod(Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null","![]"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret","dafor"]
@@ -60,6 +60,7 @@ Rules.append(["!()^","!","()","^","->",datar])
 Rules.append(["!()","!","()","->","ref",datar,["{}","declare"]])
 Rules.append(["!()","!","()","->",datar,["{}","declare"]])
 Rules.append(["ds","()"])
+Rules.append(["![]","!","[]"])
 Rules.append(["dm",datar,["**"],datar])
 Rules.append(["dm",datar,["*","/","%"],datar])
 Rules.append(["dm",datar,["+","-"],datar])

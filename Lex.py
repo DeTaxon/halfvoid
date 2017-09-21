@@ -67,6 +67,8 @@ def GenTokens(Arr,Line):
             Arr.append(Token(c))
             i += 1
             continue
+	
+
         if c == "\"":
             j = i + 1
             GotEnd = False
@@ -82,7 +84,7 @@ def GenTokens(Arr,Line):
                 i = j
                 continue
 		
-	Size = TryLine(r"'[0-9a-zA-Z]'",PostLine)
+	Size = TryLine(r"'[0-9a-zA-Z\+\-%\*\.]'",PostLine)
 	if Size > 0:
 		t = ord(Line[i+1])
 		Arr.append(Token('numi',t))

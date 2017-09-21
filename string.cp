@@ -64,7 +64,7 @@ StrToInt := !(char^ a) -> int
 	Sum := 0
 	i := 0
 	Min := false
-	if ( a[0] == "-"[0])
+	if ( a[0] == '-')
 	{
 		i = 1
 		Min = true
@@ -84,7 +84,7 @@ StrToFloat := !(char^ a) -> float
 	Sum := 0.0
 	i := 0
 	Min := false
-	if (a[0] == "-"[0])
+	if (a[0] == '-')
 	{
 		i += 1
 		Min = true
