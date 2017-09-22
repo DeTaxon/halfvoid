@@ -43,7 +43,7 @@ def SureNeg(Arr,Pos):
 	if Pos + 1 >= len(Arr):
 		return False
 	if Arr[Pos].Value == "-" and Arr[Pos+1].Value in ["numi","numf"]:
-		if Pos == 0 or Arr[Pos-1] in [','] + AllOpers:
+		if Pos == 0 or Arr[Pos-1].Value in [','] + AllOpers:
 			Arr[Pos+1].Extra *= -1	
 			Arr.pop(Pos)
 			return True
