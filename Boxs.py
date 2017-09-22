@@ -1100,7 +1100,8 @@ class ParConstNum:
         return None
     def PrintAsConst(self,F):
 	if self.Type.Id == GetType("float").Id:
-        	F.write(" float {}\n".format(hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+        	#F.write(" float {}\n".format(hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+        	F.write(" float {}\n".format(self.Extra))
 	else:
 		self.Type.PrintUse(F)
 		F.write(" {}".format(self.Extra))
@@ -1119,7 +1120,8 @@ class ParConstNum:
         elif self.Type.Id == GetVoidP():
 	    return None
 	else:
-            F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+            #F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
+            F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,self.Extra))
 
     def PrintUse(self,F):
 	if self.Type.Id == GetVoidP():

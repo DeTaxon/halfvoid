@@ -1,5 +1,10 @@
 from Lex import *
 
+Opers = ["+","-","*","/","%"]
+CmprOpers = ["==",">=","<=","!=","<",">"]
+PrisvOpers = ["=","+=","-=","*=","/=","%="]
+AllOpers = Opers + CmprOpers + PrisvOpers
+
 def UNext(Arr,Pos,Size,Name):
 	Tok = Token(Name,[])
 	Tok.Line = Arr[Pos].Line
@@ -33,6 +38,16 @@ def RuleMetod(Arr,Pos):
 	else:
 		UNext(Arr,Pos,3,"d.d")
 	return True
+
+def SureNeg(Arr,Pos):
+	if Pos + 1 >= len(Arr):
+		return False
+	if Arr[Pos].Value == "-" and Arr[Pos+1].Value in ["numi","numf"]:
+		if Pos == 0 or Arr[Pos-1] in [','] + AllOpers:
+			Arr[Pos+1].Extra *= -1	
+			Arr.pop(Pos)
+			return True
+	return False
 			
         
 
@@ -101,7 +116,10 @@ for R in Rules:
 
 def SearchMath(Arr):
     GotSome = True
-
+    i = 0
+    while i < len(Arr):
+    	if not SureNeg(Arr,i):
+    		i += 1 
     while GotSome:
         GotSome = False
         for Rule in Rules:
