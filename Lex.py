@@ -84,9 +84,15 @@ def GenTokens(Arr,Line):
                 i = j
                 continue
 		
-	Size = TryLine(r"'[0-9a-zA-Z\+\-%\*\.]'",PostLine)
+	Size = TryLine(r"'\\?.'",PostLine)
 	if Size > 0:
-		t = ord(Line[i+1])
+		if Size == 3:
+			t = ord(Line[i+1])
+		else:
+			if Line[i+2] == 'n':
+				t = 0x20
+			else:
+				 t = ord(Line[i+2])
 		Arr.append(Token('numi',t))
 		i += Size - 1 #TODO: это капец, лексический анали вааще неверен
 		
