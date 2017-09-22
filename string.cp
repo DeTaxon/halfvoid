@@ -32,6 +32,32 @@ ChrInStr := !(int chr,char^ str) -> bool
 	return false
 }
 
+DivideStr := !(char^ what,int  to,Queue.{char^} B) -> void
+{
+	Buf := char[1024]
+	i := 0
+	j := 0
+	while what[j]
+	{
+		if what[j] == to
+		{
+			Buf[i] = 0
+			if i B.Push(StrCopy(Buf))
+			i = 0
+			j += 1
+		} else
+		{
+			Buf[i] = what[j]
+			i += 1
+			j += 1
+		}
+	}
+	if i 
+	{
+		Buf[i] = 0
+		B.Push(StrCopy(Buf))
+	}		
+}
 DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
 {
 	Buf := char[1024]

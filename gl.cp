@@ -11,6 +11,8 @@ glVertex3fv := !(float^ v) -> void declare
 
 glEnable := !(int Flag) -> void declare
 
+glGetString := !(int ToGet) -> char^ declare
+
 glRotatef := !(float Ang, float x, float y, float z) -> void declare
 glLoadMatrixf := !(float^ arr) -> void declare
 

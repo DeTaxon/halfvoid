@@ -89,8 +89,21 @@ main := !(int argc,string[] argv) -> int
 	glfwSetKeyCallback(win,keys)
 	glfwSwapInterval(1)
 
-	//glCreateProgram = glfwGetProcAddress("glCreateProgram")
-	//return 0
+	glCreateProgram = glfwGetProcAddress("glCreateProgram")
+
+	printf("version : %s\n",glGetString(GL_VERSION))
+	printf("vendor  : %s\n",glGetString(GL_VENDOR))
+	printf("renderer: %s\n",glGetString(GL_RENDERER))
+	h := glGetString(GL_EXTENSIONS)
+	Exts := Queue.{char^}
+	DivideStr(h,' ',Exts)
+	Size := Exts.Size()
+	printf("size %i\n", Size)
+	while Size
+	{
+		Size -= 1
+		printf("exte %s\n",Exts[Size])
+	}
 	
 	Matr := Mat4
 	Sec := 0.0
