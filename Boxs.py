@@ -117,6 +117,47 @@ def SearchFunc(Name,Pars,Arr):
                 	return It
     return None
 
+class ParArrConst:
+	def __init__(self,Obj):
+		self.Value = "~![]"
+		self.Id = GetNumb()
+		self.Extra = []
+
+		for It in Obj.Extra[1].Extra:
+			if It.Value != ',':
+				self.Extra.append(GetUse(It))
+		if len(self.Extra) == 0:
+			raise ValueError("Empty array")
+		self.Type = GetFixedArr(self.Extra[0].Type, len(self.Extra))
+	def PrintPointUse(self,F):
+		F.write("i32* %Tmp{}".format(self.PrevId))
+	def PrintUse(self,F):
+		F.write("i32* %Tmp{}".format(self.PrevId))
+	def GetName(self):
+		return "{}".format(self.Extra)
+	def PrintPointPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		return None
+	def PrintPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		return None
+	def PrintFunc(self,F):
+		return None
+	def PrintConst(self,F):
+		F.write("@Tmp{} = global [{} x i32] [".format(self.Id,len(self.Extra)))
+		for i in range(len(self.Extra)):
+			if i != 0:
+				F.write(",")
+			self.Extra[i].PrintAsConst(F)
+		F.write("]\n")
+		return None
+	def PrintAlloc(self,F):
+		return None
+	def Check(self):
+		return None
+
 class BoxConst:
 	def __init__(self,Obj):
 		self.Value = "~const"
@@ -1688,6 +1729,8 @@ def GetUse(Obj):
         return  BoxMetodCall(Obj)
     if Obj.Value in ["d&"]: 
         return BoxRef(Obj)
+    if Obj.Value in ["![]"]: 
+        return ParArrConst(Obj)
     if Obj.Value in ["d^","d[]"]: 
         return BoxPoint(Obj)
     if Obj.Value in ["newconst"]:

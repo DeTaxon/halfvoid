@@ -80,39 +80,19 @@ Model := class
 			Value = StrToInt(Divs.Start.Data)
 			if (Value == 3)
 			{
-				Value = StrToInt(Divs[1])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[2])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[3])
-				IndData.Push(Value)
+				for i : ![1,2,3]
+				{
+					Value = StrToInt(Divs[i])
+					IndData.Push(Value)
+				}
 			}
 			if(Value == 4)
 			{
-				//for i : ![1,2,3,1,3,4]
-				//{
-				//	Value = StrToInt(Divs[1])
-				//	IndData.Push(Value)
-				//}
-				Value = StrToInt(Divs[1])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[2])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[3])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[1])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[3])
-				IndData.Push(Value)
-
-				Value = StrToInt(Divs[4])
-				IndData.Push(Value)
+				for i : ![1,2,3,1,3,4]
+				{
+					Value = StrToInt(Divs[i])
+					IndData.Push(Value)
+				}
 			}
 		}
 		Vert = MyVerts
