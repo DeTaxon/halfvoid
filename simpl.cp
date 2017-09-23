@@ -95,7 +95,7 @@ main := !(int argc,string[] argv) -> int
 	printf("vendor  : %s\n",glGetString(GL_VENDOR))
 	printf("renderer: %s\n",glGetString(GL_RENDERER))
 	h := glGetString(GL_EXTENSIONS)
-	Exts := Queue.{char^}
+	Exts := Queue.{char^}()
 	DivideStr(h,' ',Exts)
 	Size := Exts.Size()
 	printf("size %i\n", Size)
