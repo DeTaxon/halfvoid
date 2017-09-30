@@ -76,9 +76,7 @@ main := !(int argc,string[] argv) -> int
 
 	if GLInfo
 	{
-		printf("version : %s\n",glGetString(GL_VERSION))
-		printf("vendor  : %s\n",glGetString(GL_VENDOR))
-		printf("renderer: %s\n",glGetString(GL_RENDERER))
+		printf("extensions :\n")
 		h := glGetString(GL_EXTENSIONS)
 		Exts := Queue.{char^}()
 		DivideStr(h,' ',Exts)
@@ -88,6 +86,10 @@ main := !(int argc,string[] argv) -> int
 			printf("extension %s\n",L)
 			free(L)
 		}
+		printf("version : %s\n",glGetString(GL_VERSION))
+		printf("vendor  : %s\n",glGetString(GL_VENDOR))
+		printf("renderer: %s\n",glGetString(GL_RENDERER))
+		printf("shader  : %s\n",glGetString(GL_SHADING_LANGUAGE_VERSION))
 		return 0
 	}
 	
