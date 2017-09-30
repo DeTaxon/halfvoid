@@ -88,6 +88,15 @@ Stack := class !{T}
 		}
 		return ToOut
 	}
+	"for" := !() -> ref T
+	{
+		Iter := Start
+		while Iter
+		{	
+			block(Iter.Data)
+			Iter = Iter.Next
+		}
+	}
 }
 
 Queue := class !{T} extend Stack.{T}

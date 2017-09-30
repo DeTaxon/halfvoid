@@ -55,10 +55,19 @@ DrawBox := !(float Size) -> void
 
 main := !(int argc,string[] argv) -> int 
 {
+
+	//R := Queue.{int}
+	//R.Push(1)
+	//R.Push(-6)
+	//R.Push(7)
+	//for i : R printf("%i\n",i)
+	return 0
+
 	GLInfo := false
 	Bo := Model("TestBox.ply")
 
 	for argc if argv[it] == "GL" GLInfo = true
+	//if argv[^] == "GL" GLInfo = true
 
 	glfwSetErrorCallback(SayError)
 	if not glfwInit() 

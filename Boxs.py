@@ -6,9 +6,11 @@ from Type import *
 import struct
 
 ContextStuff = []
+StuffStack = []
+
 ContextName = []
 NameStack = []
-StuffStack = []
+
 ConstTable = {}
 
 StandartStuff = []
@@ -19,6 +21,8 @@ Opers = ["+","-","*","/","%"]
 CmprOpers = ["==",">=","<=","!=","<",">"]
 PrisvOpers = ["=","+=","-=","*=","/=","%="]
 AllOpers = Opers + CmprOpers + PrisvOpers
+
+
 
 def PushC():
 	StuffStack.append(len(ContextStuff))
@@ -205,6 +209,7 @@ class BoxFor:
 	self.ParParam = None
 	self.IndParam = None
 	self.IsFixed = -1
+	self.FuncFor = None
 	JobPos = -1
         if len(Obj.Extra) == 3:
 		JobPos = 2
@@ -273,6 +278,8 @@ class BoxFor:
 		F.write("\n")
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForEnd{}:\n".format(self.Id))
+	elif self.FuncFor != None:
+		return None
     def PrintFunc(self,F):
 	if self.Quest != None:
         	self.Quest.PrintFunc(F)
@@ -297,6 +304,12 @@ class BoxFor:
 		self.ParParam = ParamChain(self.Quest.Type.Base,Token("id",self.ParName))
 		self.ParParam.IsDrived = True
 		self.IndParam = ParamChain(GetType("int"),Token("id",self.IndName))
+	elif self.Quest.Type.Type == "class":
+		self.FuncFor = self.Quest.Type.GetFunc("for",[self.Quest])
+		if self.FuncFor == None:
+			raise ValueError("Cant build for")
+	else:
+		raise ValueError("Does not work with for")
 	PushC()
 	if self.ParParam != None:
 		ContextStuff.append(self.ParParam)
@@ -1639,6 +1652,8 @@ class BoxFuncsCall:
     def Check(self):
         for It in self.Params:
             It.Check()
+	if self.ToCall == "block":
+		return None
 	if self.ToCall in CmprOpers and self.Params[0].Type.Type == "standart" and self.Params[1].Type.Type == "standart":
 		if self.Params[0].Type.Id != self.Params[1].Type.Id:
 			TSome = BestType(self.Params[0].Type,self.Params[1].Type)
@@ -1919,7 +1934,7 @@ class BoxFunc:
 				F.write(self.AsmLine.format("%Tmp{}".format(self.PrevId),NewParams[0].GetName(),NewParams[1].GetName()))
         return None
     def PrintFunc(self,F):
-        if self.IsTemplate:
+        if self.IsTemplate or self.Name == "for":
             return None
         if self.Block != None:
             self.Block.PrintFunc(F)
