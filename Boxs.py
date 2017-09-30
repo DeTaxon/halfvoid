@@ -458,6 +458,8 @@ class ParamChain:
     def PrintConst(self,F):
         if self.Extra != None:
             self.Extra.PrintConst(F)
+	for It in self.Params:
+		It.PrintConst(F)
         return None
     def PrintPre(self,F):
         if self.IsFunc:

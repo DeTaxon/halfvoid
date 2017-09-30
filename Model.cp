@@ -5,6 +5,10 @@ Model := class
 	Tris := int
 	Size := int
 
+	this := !(char^ Line) -> void
+	{
+		this.LoadFromPly(Line)
+	}
 	draw := !() -> void
 	{
 		glBegin(GL_TRIANGLES)

@@ -39,43 +39,26 @@ DrawBox := !(float Size) -> void
 {
 	glBegin(GL_QUADS)
 	glColor3f(0.0,0.4,0.75)
-	PrintSquare(0,Size)
-	PrintSquare(1,Size)
-	PrintSquare(2,Size)
-	PrintSquare(3,Size)
+	for ![0,1,2,3]	PrintSquare(it,Size)
 	glColor3f(0.75,0.4,0.0)
-	PrintSquare(7,Size)
-	PrintSquare(6,Size)
-	PrintSquare(5,Size)
-	PrintSquare(4,Size)
+	for ![7,6,5,4]	PrintSquare(it,Size)
 	glColor3f(0.0,1.0,0.0)
-	PrintSquare(0,Size)
-	PrintSquare(1,Size)
-	PrintSquare(5,Size)
-	PrintSquare(4,Size)
+	for ![0,1,5,4]	PrintSquare(it,Size)
 	glColor3f(1.0,0.0,1.0)
-	PrintSquare(0,Size)
-	PrintSquare(3,Size)
-	PrintSquare(7,Size)
-	PrintSquare(4,Size)
+	for ![0,3,7,4]	PrintSquare(it,Size)
 	glColor3f(1.0,1.0,0.0)
-	PrintSquare(2,Size)
-	PrintSquare(1,Size)
-	PrintSquare(5,Size)
-	PrintSquare(6,Size)
+	for ![2,1,5,6]	PrintSquare(it,Size)
 	glColor3f(0.0,1.0,1.0)
-	PrintSquare(3,Size)
-	PrintSquare(2,Size)
-	PrintSquare(6,Size)
-	PrintSquare(7,Size)
+	for ![3,2,6,7]	PrintSquare(it,Size)
 	glEnd()
 }
 
-
 main := !(int argc,string[] argv) -> int 
 {
-	Bo := Model
-	Bo.LoadFromPly("TestBox.ply")
+	GLInfo := false
+	Bo := Model("TestBox.ply")
+
+	for argc if argv[it] == "GL" GLInfo = true
 
 	glfwSetErrorCallback(SayError)
 	if not glfwInit() 
@@ -91,18 +74,21 @@ main := !(int argc,string[] argv) -> int
 
 	glCreateProgram = glfwGetProcAddress("glCreateProgram")
 
-	printf("version : %s\n",glGetString(GL_VERSION))
-	printf("vendor  : %s\n",glGetString(GL_VENDOR))
-	printf("renderer: %s\n",glGetString(GL_RENDERER))
-	h := glGetString(GL_EXTENSIONS)
-	Exts := Queue.{char^}()
-	DivideStr(h,' ',Exts)
-	Size := Exts.Size()
-	printf("size %i\n", Size)
-	while Size
+	if GLInfo
 	{
-		Size -= 1
-		printf("exte %s\n",Exts[Size])
+		printf("version : %s\n",glGetString(GL_VERSION))
+		printf("vendor  : %s\n",glGetString(GL_VENDOR))
+		printf("renderer: %s\n",glGetString(GL_RENDERER))
+		h := glGetString(GL_EXTENSIONS)
+		Exts := Queue.{char^}()
+		DivideStr(h,' ',Exts)
+		while Exts.NotEmpty()
+		{
+			L := Exts.Pop()
+			printf("extension %s\n",L)
+			free(L)
+		}
+		return 0
 	}
 	
 	Matr := Mat4
