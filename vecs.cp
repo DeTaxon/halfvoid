@@ -1,4 +1,3 @@
-
 Vec3 := class
 {
 	x,y,z := float
@@ -49,7 +48,7 @@ Vec3 := class
 	}
 	Normalize := !() -> void
 	{
-		Si := this.Size()
+		Si := Size()
 		if Si >= 0.001 {
 			Si = 1.0 / Si
 			for vec it *= Si
@@ -67,11 +66,11 @@ Vec4 := class
 	less := Vec3 at x
 	this := !(float a,float b,float c,float d) -> void
 	{
-		this.Set(a,b,c,d)
+		Set(a,b,c,d)
 	}
 	this := !(float a,float b,float c) -> void
 	{
-		this.Set(a,b,c)
+		Set(a,b,c)
 	}
 	this := !(float c) -> void
 	{
@@ -126,7 +125,7 @@ Vec4 := class
 	}
 	Normalize := !() -> void
 	{
-		Si := this.Size()
+		Si := Size()
 		if Si >= 0.001 {
 			Si = 1.0 / Si
 			for vec it *= Si
@@ -148,7 +147,7 @@ Quant := class extend Vec4
 	}
 	this := !(float Val,Vec3 Ang) -> void
 	{
-		this.SetAng(Val,Ang)
+		SetAng(Val,Ang)
 	}
 	SetAng := !(float Val,Vec3 Ang) -> void
 	{
@@ -262,7 +261,7 @@ Mat4 := class
 	vec := float[16] at row
 	this := !() -> void
 	{
-		this.Indent()
+		Indent()
 	}
 	Indent := !() -> void
 	{
@@ -286,7 +285,7 @@ Mat4 := class
 	}
 	"=" := !(Quant Ang) -> void
 	{
-		this.Indent()
+		Indent()
 		Ang.Normalize()
 		for 3 Ang.Move(row[it])
 		//for row it.Normalize()

@@ -41,7 +41,7 @@ DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
 	{
 		if what[j] == to
 		{
-			Buf[i] = 0
+			Buf[i] = 0 
 			if i B.Push(StrCopy(Buf))
 			i = 0
 			j += 1

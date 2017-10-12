@@ -55,22 +55,23 @@ DrawBox := !(float Size) -> void
 
 main := !(int argc,string[] argv) -> int 
 {
-
 	//R := Queue.{int}
 	//R.Push(1)
 	//R.Push(-6)
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
-	return 0
+	//return 0
 
 	GLInfo := false
 	Bo := Model("TestBox.ply")
 
 	for argc if argv[it] == "GL" GLInfo = true
 	//if argv[^] == "GL" GLInfo = true
+	// GLInfo = "GL" in argv
+	
 
 	glfwSetErrorCallback(SayError)
-	if not glfwInit() 
+	if not glfwInit()
 	{
 		printf("Not loaded\n")
 		return 0
@@ -87,8 +88,10 @@ main := !(int argc,string[] argv) -> int
 	{
 		printf("extensions :\n")
 		h := glGetString(GL_EXTENSIONS)
+
 		Exts := Queue.{char^}()
 		DivideStr(h,' ',Exts)
+		
 		while Exts.NotEmpty()
 		{
 			L := Exts.Pop()

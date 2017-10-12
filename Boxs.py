@@ -3,6 +3,8 @@ from Lex import *
 from MathS import *
 from allnums import *
 from Type import *
+from ParamChecks import *
+from Cycles import *
 import struct
 
 ContextStuff = []
@@ -35,64 +37,6 @@ def PopC():
 	while len(ContextName) > Unt:
 	    ContextName.pop()
 
-def GoodPoints(Par1,Par2):
-    if Par1.Id == GetVoidP() and Par2.IsPoint:# and not Par2.Base.IsPoint:
-       return True
-    #if Par2.Id == GetVoidP() and Par1.IsPoint:# and not Par1.Base.IsPoint:
-    #   return True
-    return False
-
-def NormalCheck(CParams,FParams,IsOper = False):
-	for i in range(len(CParams)):
-		FParams[i].Check()
-		if FParams[i].Type.Id == GetType("...").Id:
-			return True
-		if i >= len(CParams):
-			return False
-		if CParams[i].Type.Id == FParams[i].Type.Id:
-			continue
-		if FParams[i].Type.Type == "point" and CParams[i].Type.Type == "fixed" and FParams[i].Type.Base.Id == CParams[i].Type.Base.Id:
-			continue
-		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
-			continue
-		if GoodPoints(FParams[i].Type,CParams[i].Type):
-			continue
-		if not IsOper and "u" in ShouldChange(CParams[i].Type,FParams[i].Type):
-			continue
-		if FParams[i].Type.Type == "funcp":
-			continue
-		if FParams[i].Type.Id != CParams[i].Type.Id:
-			return False
-	return True
-
-def PrisvCheck(CParams,FParams):
-	for i in range(len(CParams)):
-		FParams[i].Check()
-		if FParams[i].Type.Id == GetType("...").Id:
-			return True
-		if i >= len(CParams):
-			return False
-		if FParams[i].Type.Type == "point" and CParams[i].Type.Type == "fixed" and FParams[i].Type.Base.Id == CParams[i].Type.Base.Id:
-			continue
-		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
-			continue
-		if GoodPoints(FParams[i].Type,CParams[i].Type):
-			continue
-		if FParams[i].Type.Type == "funcp":
-			continue
-		if FParams[i].Type.Id != CParams[i].Type.Id:
-			return False
-	return True
-def StCheck(CParams,FParams):
-	for i in range(len(CParams)):
-		FParams[i].Check()
-		if GoodPoints(FParams[i].Type,CParams[i].Type):
-			continue
-		if FParams[i].Type.Type == "funcp":
-			continue
-		if FParams[i].Type.Id != CParams[i].Type.Id:
-			return False
-	return True
 def GetFunc(Name,Pars):
 	PreRet = SearchFunc(Name,Pars,ContextStuff)
 	if PreRet != None:
@@ -119,81 +63,6 @@ def SearchFunc(Name,Pars,Arr):
 	    else:
             	if NormalCheck(Pars,It.Params, Name in AllOpers):
                 	return It
-    return None
-
-class ParArrConst:
-	def __init__(self,Obj):
-		self.Value = "~![]"
-		self.Id = GetNumb()
-		self.Extra = []
-
-		for It in Obj.Extra[1].Extra:
-			if It.Value != ',':
-				self.Extra.append(GetUse(It))
-		if len(self.Extra) == 0:
-			raise ValueError("Empty array")
-		self.Type = GetFixedArr(self.Extra[0].Type, len(self.Extra))
-	def PrintPointUse(self,F):
-		F.write("i32* %Tmp{}".format(self.PrevId))
-	def PrintUse(self,F):
-		F.write("i32* %Tmp{}".format(self.PrevId))
-	def GetName(self):
-		return "{}".format(self.Extra)
-	def PrintPointPre(self,F):
-		self.PrevId = GetNumb()
-		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
-		return None
-	def PrintPre(self,F):
-		self.PrevId = GetNumb()
-		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
-		return None
-	def PrintFunc(self,F):
-		return None
-	def PrintConst(self,F):
-		F.write("@Tmp{} = global [{} x i32] [".format(self.Id,len(self.Extra)))
-		for i in range(len(self.Extra)):
-			if i != 0:
-				F.write(",")
-			self.Extra[i].PrintAsConst(F)
-		F.write("]\n")
-		return None
-	def PrintAlloc(self,F):
-		return None
-	def Check(self):
-		return None
-
-class BoxConst:
-	def __init__(self,Obj):
-		self.Value = "~const"
-		self.Name = Obj.Extra[0].Extra
-		self.Type = None
-		self.Id = -1
-		if Obj.Extra[2].Value == "numi":
-			self.Extra = Obj.Extra[2].Extra
-			self.Type = GetType("int")
-	def PrintUse(self,F):
-		F.write("i32 {}".format(self.Extra))
-	def GetName(self):
-		return "{}".format(self.Extra)
-	def PrintPre(self,F):
-		return None
-	def PrintFunc(self,F):
-		return None
-	def PrintConst(self,F):
-		return None
-	def PrintAlloc(self,F):
-		return None
-	def Check(self):
-		return None
-
-def GetParam(Name):
-    WrongValue = False
-    for i in reversed(range(len(ContextStuff))):#ContextStuff:
-	It = ContextStuff[i]
-        if It.Name == Name:
-            return It
-    if Name in ConstTable:	
-	return ConstTable[Name]
     return None
 
 class BoxFor:
@@ -416,6 +285,81 @@ class BoxIf:
             self.OnFalse.Check()
         if self.Quest.Type != GetType("bool").Id:
             self.Quest = BoxExc(self.Quest,GetType("bool"))
+class ParArrConst:
+	def __init__(self,Obj):
+		self.Value = "~![]"
+		self.Id = GetNumb()
+		self.Extra = []
+
+		for It in Obj.Extra[1].Extra:
+			if It.Value != ',':
+				self.Extra.append(GetUse(It))
+		if len(self.Extra) == 0:
+			raise ValueError("Empty array")
+		self.Type = GetFixedArr(self.Extra[0].Type, len(self.Extra))
+	def PrintPointUse(self,F):
+		F.write("i32* %Tmp{}".format(self.PrevId))
+	def PrintUse(self,F):
+		F.write("i32* %Tmp{}".format(self.PrevId))
+	def GetName(self):
+		return "{}".format(self.Extra)
+	def PrintPointPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		return None
+	def PrintPre(self,F):
+		self.PrevId = GetNumb()
+		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		return None
+	def PrintFunc(self,F):
+		return None
+	def PrintConst(self,F):
+		F.write("@Tmp{} = global [{} x i32] [".format(self.Id,len(self.Extra)))
+		for i in range(len(self.Extra)):
+			if i != 0:
+				F.write(",")
+			self.Extra[i].PrintAsConst(F)
+		F.write("]\n")
+		return None
+	def PrintAlloc(self,F):
+		return None
+	def Check(self):
+		return None
+
+class BoxConst:
+	def __init__(self,Obj):
+		self.Value = "~const"
+		self.Name = Obj.Extra[0].Extra
+		self.Type = None
+		self.Id = -1
+		if Obj.Extra[2].Value == "numi":
+			self.Extra = Obj.Extra[2].Extra
+			self.Type = GetType("int")
+	def PrintUse(self,F):
+		F.write("i32 {}".format(self.Extra))
+	def GetName(self):
+		return "{}".format(self.Extra)
+	def PrintPre(self,F):
+		return None
+	def PrintFunc(self,F):
+		return None
+	def PrintConst(self,F):
+		return None
+	def PrintAlloc(self,F):
+		return None
+	def Check(self):
+		return None
+
+def GetParam(Name):
+    WrongValue = False
+    for i in reversed(range(len(ContextStuff))):#ContextStuff:
+	It = ContextStuff[i]
+        if It.Name == Name:
+            return It
+    if Name in ConstTable:	
+	return ConstTable[Name]
+    return None
+
         
 class ParamChain:
     def __init__(self,Obj, NotObj = None):
@@ -1678,6 +1622,14 @@ class BoxFuncsCall:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None and self.ToCall not in AllOpers:
 			self.PointCall = GetParam(self.ToCall)
+			if self.PointCall == None and InFunc[len(InFunc) - 1].InClass != None:
+				AndThis = GetUse(Token("this","this"))
+				AndThis.Check()
+				self.CallFunc = InFunc[len(InFunc) -1].InClass.GetFunc(self.ToCall, [AndThis] + self.Params)
+				if self.CallFunc != None:
+					self.Params = [AndThis] + self.Params
+					self.IsMetod = True
+				
 	if self.CallFunc != None:
 		self.RetRef = self.CallFunc.RetRef		
         if self.CallFunc == None and self.PointCall == None:
