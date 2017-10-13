@@ -53,6 +53,10 @@ DrawBox := !(float Size) -> void
 	glEnd()
 }
 
+test := !(char^ this) -> void{
+	printf(this)
+}
+
 main := !(int argc,string[] argv) -> int 
 {
 	//R := Queue.{int}
@@ -60,7 +64,7 @@ main := !(int argc,string[] argv) -> int
 	//R.Push(-6)
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
-	//return 0
+	"hoho\n".test()
 
 	GLInfo := false
 	Bo := Model("TestBox.ply")

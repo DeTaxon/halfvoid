@@ -4,7 +4,6 @@ from MathS import *
 from allnums import *
 from Type import *
 from ParamChecks import *
-from Cycles import *
 import struct
 
 ContextStuff = []
@@ -37,13 +36,13 @@ def PopC():
 	while len(ContextName) > Unt:
 	    ContextName.pop()
 
-def GetFunc(Name,Pars):
-	PreRet = SearchFunc(Name,Pars,ContextStuff)
+def GetFunc(Name,Pars, SearchThis = False):
+	PreRet = SearchFunc(Name,Pars,ContextStuff, SearchThis)
 	if PreRet != None:
 		return PreRet
 	return SearchFunc(Name,Pars,StandartStuff)
 
-def SearchFunc(Name,Pars,Arr):
+def SearchFunc(Name,Pars,Arr, SearchThis = False):
     WrongValue = False
     for i in reversed(range(len(Arr))):
 	Itc = Arr[i]
@@ -54,6 +53,8 @@ def SearchFunc(Name,Pars,Arr):
 			continue
 	    else:
 		It = Itc
+	    if len(It.Params) > 0 and  (SearchThis != (It.Params[0].Name == "this")):
+		continue
             WrongValue = False
 	    if len(Pars) != len(It.Params) and Name != "printf":
 		continue
@@ -371,6 +372,7 @@ class ParamChain:
 	self.IsGlobal = False
 	self.PreExtra = None
 	self.IsChecked = False
+	self.IsFuncPointer = False
 	self.Extra = None
 	self.HaveConstr = False
 	self.Params = []
@@ -954,7 +956,7 @@ class BoxClass:
 			return self.ToExtend.InFamily(Item)
 		return False
 	def GetFunc(self,Res,Pars):
-		SomeFunc =  SearchFunc(Res,Pars,self.Funcs)
+		SomeFunc =  SearchFunc(Res,Pars,self.Funcs,True)
 		if SomeFunc != None:
 			return SomeFunc
 		if self.ToExtend != None:
@@ -1616,8 +1618,11 @@ class BoxFuncsCall:
 			self.Params[1] = BoxExc(self.Params[1],self.Params[0].Type)
 		
 	if self.IsMetod or (self.ToCall in AllOpers and self.Params[0].Type.Type == "class"):
-		self.Params[0].Type.Check()
-        	self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
+		if self.Params[0].Type.Type == "class":
+			self.Params[0].Type.Check()
+        		self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
+		if self.CallFunc == None:
+			self.CallFunc = GetFunc(self.ToCall , self.Params, True)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None and self.ToCall not in AllOpers:
@@ -1665,6 +1670,8 @@ class BoxFuncsCall:
 	if self.CallFunc == None:
 		print(self.PointCall.Value)
         for i in range(len(NewParams)):
+	    if self.CallFunc == None:
+		print(self.PointCall)
 	    if self.CallFunc.Params[i].Type.Id == NewParams[i].Type.Id:
 		continue
             if self.CallFunc.Params[i].Type == GetType("..."):

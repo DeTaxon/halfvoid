@@ -129,7 +129,7 @@ def GenTokens(Arr,Line):
         if Size > 0:
             PreAdd = Line[i:i + Size]
             if PreAdd in KeyWords:
-                Arr.append(Token(PreAdd))
+                Arr.append(Token(PreAdd,PreAdd))
             else:
                 Arr.append(Token('id',PreAdd))
             i += Size
