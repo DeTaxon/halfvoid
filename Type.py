@@ -209,6 +209,8 @@ def ParseType(A):
 	else:
         	Base = GetArr(Base)
         return Base
+    if A.Value == "!()^":
+	return AddFuncPoint(A)
     if A.Value == "d.{}":
 	PreBase = ParseType(A.Extra[0])
 	if PreBase == None:

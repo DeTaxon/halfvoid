@@ -20,8 +20,7 @@ SayError := !(int Data,char^ Line) -> void
 }
 
 
-PFN_glCreateProgram := type !()^ -> void 
-glCreateProgram := PFN_glCreateProgram
+glCreateProgram := !()^ -> void
 
 PrintSquare := !(int s,float p) -> void
 {
@@ -64,7 +63,6 @@ main := !(int argc,string[] argv) -> int
 	//R.Push(-6)
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
-	"hoho\n".test()
 
 	GLInfo := false
 	Bo := Model("TestBox.ply")
@@ -87,6 +85,8 @@ main := !(int argc,string[] argv) -> int
 	glfwSwapInterval(1)
 
 	glCreateProgram = glfwGetProcAddress("glCreateProgram")
+	return 0
+	glCreateProgram()
 
 	if GLInfo
 	{

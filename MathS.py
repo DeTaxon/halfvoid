@@ -52,7 +52,7 @@ def SureNeg(Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null","![]"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null","![]","!()^"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret","dafor"]
@@ -91,7 +91,7 @@ Rules.append(["newparams","id",",","id",",","id",",","id",":=",datar])
 Rules.append(["newparams","id",",","id",",","id",":=",datar])
 Rules.append(["newparams","id",",","id",":=",datar])
 Rules.append(["newparam",["id","this","str"],":=",datar])
-Rules.append(["newtype","id",":=","type","!()^"])
+Rules.append(["newtype","id",":=","type",datar])
 Rules.append(["classtemplate","id",":=","class","!{}","extend",datar,"{}"])
 Rules.append(["newclass","id",":=","class","extend",datar,"{}"])
 Rules.append(["classtemplate","id",":=","class","!{}","{}"])

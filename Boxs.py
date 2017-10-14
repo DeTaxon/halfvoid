@@ -66,6 +66,20 @@ def SearchFunc(Name,Pars,Arr, SearchThis = False):
                 	return It
     return None
 
+def GetParam(Name, GetFPoint = False):
+    WrongValue = False
+    for i in reversed(range(len(ContextStuff))):#ContextStuff:
+	It = ContextStuff[i]
+	if It.Name != Name:
+		continue
+	if GetFPoint and (It.Type.Type != "funcp"):
+		continue
+        return It
+    if Name in ConstTable:	
+	return ConstTable[Name]
+    return None
+
+
 class BoxFor:
     def __init__(self,Obj):
         self.Id = GetNumb()
@@ -350,16 +364,6 @@ class BoxConst:
 		return None
 	def Check(self):
 		return None
-
-def GetParam(Name):
-    WrongValue = False
-    for i in reversed(range(len(ContextStuff))):#ContextStuff:
-	It = ContextStuff[i]
-        if It.Name == Name:
-            return It
-    if Name in ConstTable:	
-	return ConstTable[Name]
-    return None
 
         
 class ParamChain:
@@ -1626,7 +1630,7 @@ class BoxFuncsCall:
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None and self.ToCall not in AllOpers:
-			self.PointCall = GetParam(self.ToCall)
+			self.PointCall = GetParam(self.ToCall,True)
 			if self.PointCall == None and InFunc[len(InFunc) - 1].InClass != None:
 				AndThis = GetUse(Token("this","this"))
 				AndThis.Check()
@@ -1667,11 +1671,7 @@ class BoxFuncsCall:
 		NewParams = self.Params
 	else: 
 		NewParams = [self] + self.Params
-	if self.CallFunc == None:
-		print(self.PointCall.Value)
         for i in range(len(NewParams)):
-	    if self.CallFunc == None:
-		print(self.PointCall)
 	    if self.CallFunc.Params[i].Type.Id == NewParams[i].Type.Id:
 		continue
             if self.CallFunc.Params[i].Type == GetType("..."):
