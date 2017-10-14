@@ -85,8 +85,6 @@ main := !(int argc,string[] argv) -> int
 	glfwSwapInterval(1)
 
 	glCreateProgram = glfwGetProcAddress("glCreateProgram")
-	return 0
-	glCreateProgram()
 
 	if GLInfo
 	{

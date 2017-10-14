@@ -489,6 +489,8 @@ class ParamChain:
             self.Type = self.Extra.Type
 	    if self.Type.Type == "class":
 		self.ToCall = self.Type.GetFunc("=",[self] + [self.Extra])
+	if self.IsFunc:
+		self.Type = self.Extra.GetFuncPointType()
 	if self.Type.Type == "class":
 		self.IsRef = True
     def GetPName(self):
@@ -1671,27 +1673,44 @@ class BoxFuncsCall:
 		NewParams = self.Params
 	else: 
 		NewParams = [self] + self.Params
+
+	if self.PointCall != None:
+		CheckParams = self.PointCall.Type.Params
+	else:
+		CheckParams = self.CallFunc.Params
+
+	if len(NewParams) != len(CheckParams) and self.ToCall != "printf":
+		raise ValueError("Wrong input for function " + self.ToCall)
+
         for i in range(len(NewParams)):
-	    if self.CallFunc.Params[i].Type.Id == NewParams[i].Type.Id:
+	    if CheckParams[i].Type.Id == NewParams[i].Type.Id:
 		continue
-            if self.CallFunc.Params[i].Type == GetType("..."):
+            if CheckParams[i].Type == GetType("..."):
 		while i < len(NewParams):
 			if NewParams[i].Type.Id == GetType("float").Id:
 				NewParams[i] = BoxExc(NewParams[i],GetType("double"))
 			i += 1
             	break
-            if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,self.CallFunc.Params[i].Type):
-                NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+            if CheckParams[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,CheckParams[i].Type):
+                NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
 		continue
-            if self.CallFunc.Params[i].Type.Id != NewParams[i].Type.Id and GoodPoints(self.CallFunc.Params[i].Type,NewParams[i].Type):
-                NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+            if CheckParams[i].Type.Id != NewParams[i].Type.Id and GoodPoints(CheckParams[i].Type,NewParams[i].Type):
+                NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
 		continue
 	    if NewParams[i].Type.Type == "class":
-		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+		NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
 		continue
-	    if "u" in ShouldChange(NewParams[i].Type,self.CallFunc.Params[i].Type):
-		NewParams[i] = BoxExc(NewParams[i],self.CallFunc.Params[i].Type)
+	    if "u" in ShouldChange(NewParams[i].Type,CheckParams[i].Type):
+		NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
 		continue
+	    if NewParams[i].Type.Type == "fixed" and CheckParams[i].Type.Type == "point":
+		if NewParams[i].Type.Base.Id == CheckParams[i].Type.Base.Id:
+			NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
+	    if NewParams[i].Type.Id != CheckParams[i].Type.Id:
+		#print(len(NewParams[i].Type.Params))
+		#for It in CheckParams[i].Type.Params:
+		#	print(It.Type.Id)
+		raise ValueError("Type mismatch in function call " + self.ToCall)
         return None
 
 
@@ -1966,6 +1985,8 @@ class BoxFunc:
                 	self.Params[i].Type.PrintUse(F)
         F.write(")")
         return None
+    def GetFuncPointType(self):
+	return GetFuncPoint(self.Params,self.Type)
 
 
 

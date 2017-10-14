@@ -73,7 +73,7 @@ class Type:
                 self.Base.PrintUse(F)
             F.write("*")
         if self.Type == "funcp":
-            self.Base.PrintUse(F)
+            self.RetType.PrintUse(F)
             F.write("(")
             for i in range(len(self.Params)):
                 if i != 0:
@@ -108,12 +108,49 @@ class Type:
             else:
                 return self.Base.GetName() + "*"
 
-		
 
-def AddFuncPoint(Obj,NewName = None):
+def GetFuncPoint(Params , ReturnType):
+    for It in TypeTable:
+	if It.Type != "funcp":
+		continue
+	SomePars = It.Params
+	MyPars = Params
+
+	if len(SomePars) != len(MyPars):
+		continue
+	WrongFunc = False
+	for i in range(len(SomePars)):
+		if type(MyPars[i].Type) is type(""):
+			CurMPar = MyPars[i]
+		else:
+			CurMPar = MyPars[i].Type
+		if SomePars[i].Id != CurMPar.Id:
+			WrongFunc = True
+			break
+	if WrongFunc:
+		continue
+	return It
+	
     FuncType = Type(None,"funcp") 
     FuncType.IsPoint = True
+    FuncType.Id = len(TypeTable)
+    FuncType.RetType = ReturnType
+
+    FuncType.Params = []
+    for It in  Params:
+	if type(It.Type) is type(""):
+		PreAdd = It
+	else:
+		PreAdd = It.Type
+	FuncType.Params.append(PreAdd)
+
+    TypeTable.append(FuncType) # broken
+    return FuncType
+	
+
+def AddFuncPoint(Obj,NewName = None):
     Pars = Obj.Extra[1].Extra
+    FPars = []
     if len(Pars) > 0:
         Pars.append(Token(',',','))
         PArrs = []
@@ -122,19 +159,19 @@ def AddFuncPoint(Obj,NewName = None):
             if Pars[j].Value == ',':
                 if len(PArrs) == 1:
                     if PArrs[0].Value == "...":
-                        FuncType.Params.append(ParamChain(GetType("...")))
+                        FPars.append(GetType("..."))
                 elif len(PArrs) == 2:
-                    FuncType.Params.append(ParseType(PArrs[0]))
+                    FPars.append(ParseType(PArrs[0]))
                 #else == 4   int x = 4
                 PArrs = []
             else:
                 PArrs.append(Pars[j])
             j += 1
-    FuncType.Base = ParseType(Obj.Extra[4])
-    FuncType.Id = len(TypeTable)
-    TypeTable.append(FuncType) # broken
+    RetType = ParseType(Obj.Extra[4])
+    FuncType = GetFuncPoint(FPars,RetType)
     if NewName != None:
         NameTable.append(NameChain(NewName,FuncType))
+
     return FuncType 
 
 def GetVoidP():
