@@ -53,7 +53,10 @@ DrawBox := !(float Size) -> void
 }
 
 test := !(char^ this) -> void{
-	printf(this)
+	printf("ico\n")
+}
+test := !(char^ NonThis) -> void{
+	printf("boco\n")
 }
 
 main := !(int argc,string[] argv) -> int 
@@ -64,13 +67,16 @@ main := !(int argc,string[] argv) -> int
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
 
+	C := 2.5
+	printf("%i \n", C->{int})
+	return 0
+
 	GLInfo := false
 	Bo := Model("TestBox.ply")
 
 	for argc if argv[it] == "GL" GLInfo = true
 	//if argv[^] == "GL" GLInfo = true
 	// GLInfo = "GL" in argv
-	
 
 	glfwSetErrorCallback(SayError)
 	if not glfwInit()
@@ -115,7 +121,7 @@ main := !(int argc,string[] argv) -> int
 	
 	Pres := Mat4
 	Pres.Persp(1.0,0.1,100.0,75.0)
-	Accum := Mat4	
+	Accum := Mat4
  	Box := Cent
 	Box.SetPos(0.0,0.0,-3.5)
 	Box2 := Cent
@@ -161,8 +167,6 @@ main := !(int argc,string[] argv) -> int
 		Accum *= Matr
 		glLoadMatrixf(Accum.vec)
 		Bo.draw()
-		//DrawBox(0.3)
-
 
 		glfwSwapBuffers(win)
 	}

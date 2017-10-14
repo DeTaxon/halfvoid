@@ -1374,10 +1374,16 @@ class BoxPoint:
         F.write(" %Tmp{}".format(self.PrevId))
 
 class BoxExc:
-    def __init__(self,Obj,NewType):
-        self.Extra = Obj
+    def __init__(self,Obj,NewType = None):
         self.Value = "~[T]"
-        self.Type = NewType
+	if NewType == None:
+		self.Extra = GetUse(Obj.Extra[0])
+		self.Type = None
+		self.PreType = Obj.Extra[2].Extra[0]
+	else:
+        	self.Extra = Obj
+        	self.Type = NewType
+		self.PreType = None
     def PrintPre(self,F):
         if self.Extra != None:
             self.Extra.PrintPre(F)
@@ -1412,6 +1418,19 @@ class BoxExc:
 					F.write("\n")
 				else: 
 					F.write("%Tmp{} = uitofp ".format(self.PrevId))
+					self.Extra.PrintUse(F)
+					F.write(" to ")
+					self.Type.PrintUse(F)
+					F.write("\n")
+			elif "i" in ToUse:
+				if "s" in ToUse:
+					F.write("%Tmp{} = fptosi ".format(self.PrevId))
+					self.Extra.PrintUse(F)
+					F.write(" to ")
+					self.Type.PrintUse(F)
+					F.write("\n")
+				else: 
+					F.write("%Tmp{} = fptoui ".format(self.PrevId))
 					self.Extra.PrintUse(F)
 					F.write(" to ")
 					self.Type.PrintUse(F)
@@ -1456,6 +1475,8 @@ class BoxExc:
         self.Extra.PrintFunc(F)
     def Check(self):
 	self.Extra.Check()
+	if self.PreType != None:
+		self.Type = ParseType(self.PreType)
     def PrintAlloc(self,F):
 	self.Extra.PrintAlloc(F)
 
@@ -1740,6 +1761,8 @@ def GetUse(Obj):
         return BoxFor(Obj)
     if Obj.Value == "dawhile": 
         return BoxWhile(Obj)
+    if Obj.Value == "d->{}":
+	return BoxExc(Obj)
     if Obj.Value == "str": 
         return ParConstStr(Obj)
     if Obj.Value in ["numf","numi","true","false","null"]:
