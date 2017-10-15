@@ -298,7 +298,7 @@ class BoxIf:
         self.OnTrue.Check()
         if self.OnFalse != None:
             self.OnFalse.Check()
-        if self.Quest.Type != GetType("bool").Id:
+        if self.Quest.Type.Id != GetType("bool").Id:
             self.Quest = BoxExc(self.Quest,GetType("bool"))
 class ParArrConst:
 	def __init__(self,Obj):
@@ -1053,8 +1053,6 @@ class ParConstNum:
 	if Obj.Value == "null":
 	    self.Type = GetPoint(GetType("void"))
 	    self.Extra = 0
-    def PrintConst(self,F):
-        return None
     def Check(self):
         return None
     def PrintAlloc(self,F):
@@ -1067,7 +1065,6 @@ class ParConstNum:
         return None
     def PrintAsConst(self,F):
 	if self.Type.Id == GetType("float").Id:
-        	#F.write(" float {}\n".format(hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
         	F.write(" float {}\n".format(self.Extra))
 	else:
 		self.Type.PrintUse(F)
@@ -1087,7 +1084,6 @@ class ParConstNum:
         elif self.Type.Id == GetVoidP():
 	    return None
 	else:
-            #F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,hex(struct.unpack("<q",struct.pack("<d",self.Extra))[0])))
             F.write("%Tmp{} = fptrunc double {} to float\n".format(self.PrevId,self.Extra))
 
     def PrintUse(self,F):
@@ -1098,6 +1094,57 @@ class ParConstNum:
         	self.Type.PrintUse(F)
         	F.write(" %Tmp{}".format(self.PrevId))
         return None
+
+class ParRangeNum:
+    def __init__(self,Obj):
+        self.Value = "~d..d"
+	self.L = GetUse(Obj.Extra[0])
+	self.R = GetUse(Obj.Extra[2])
+	self.IsConst = (self.L.Value == "~num") and (self.R.Value == "~num")
+        self.PrevId = -1
+        self.Type = GetFixedArr(GetType("u32"),32)
+	self.Id = GetNumb()
+	
+	self.Extra = [0,0,0,0,0,0,0,0]
+	if self.IsConst and self.L.Type.Id == GetType("int").Id and self.R.Type.Id == GetType("int").Id:
+		for i in range(self.L.Extra,self.R.Extra+1):
+			Md = i % 32
+			Dv = (i - Md) / 32
+			self.Extra[Dv] += 2**Md
+    def Check(self):
+        return None
+    def PrintAlloc(self,F):
+	return None
+    def PrintConst(self,F):
+	F.write("@Tmp{0} = constant [8 x i32] ".format(self.Id))
+	F.write("[")
+	for i in range(8):
+		if i != 0:
+			F.write(" , ")
+		F.write("i32 {}".format(self.Extra[i]))		
+	F.write("] \n")
+    def PrintFunc(self,F):
+        return None
+    def PrintAsConst(self,F):
+	return None
+    def GetName(self):
+	if self.IsConst:
+		return "@Tmp{}".format(self.Id)
+	else:
+		raise ValueError("not implemented")
+    def GetPName(self):
+	if self.IsConst:
+		return "@Tmp{}".format(self.Id)
+	else:
+		raise Value("not implemented")
+    def PrintPre(self,F):
+	return None
+	raise ValueError("not implemented")
+    def PrintPointPre(self,F):
+	return None
+	raise ValueError("not implemented")
+	
+
 class BoxReturn:
 	def __init__(self,Obj):
 		self.Value = "~ret"
@@ -1737,7 +1784,7 @@ class BoxFuncsCall:
 
 
 def GetUse(Obj):
-    if Obj.Value in ["d()","dm","db","dp","d.d()"]:
+    if Obj.Value in ["d()","dm","db","dp","d.d()","d_in_d"]:
         return  BoxFuncsCall(Obj)
     if Obj.Value in ["id","this"]:
         return  BoxParamCall(Obj)
@@ -1779,6 +1826,8 @@ def GetUse(Obj):
         return None
     if Obj.Value == "d.{}":
 	return None
+    if Obj.Value == "d..d":
+	return ParRangeNum(Obj)
 	
     raise ValueError("Not implemented {} at line {} in file {}".format(Obj.Value,Obj.Line,Obj.InFile))
 
@@ -2192,4 +2241,19 @@ TestAdd.Type = GetType("void")
 TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 TestAdd.Params[0].IsRef = True
 TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine  ="{0}Div = udiv i32 {1},32\n"
+TestAdd.AsmLine +="{0}Rem = urem i32 {1},32\n"
+TestAdd.AsmLine +="{0}Point = getelementptr [8 x i32],[8 x i32]* {2},i32 0,  i32 {0}Div\n"
+TestAdd.AsmLine +="{0}One = shl i32 1 , {0}Rem\n"
+TestAdd.AsmLine +="{0}Value = load i32,i32* {0}Point\n"
+TestAdd.AsmLine +="{0}And = and i32 {0}Value , {0}One\n" 
+TestAdd.AsmLine +="{0} = icmp ne i32 {0}And , 0\n"
+TestAdd.Name = "in"
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("int"),"~no"))
+TestAdd.Params.append(ParamChain(GetFixedArr(GetType("u32"),32),"~no"))
+TestAdd.Params[1].IsRef = True
 StandartStuff.append(TestAdd)

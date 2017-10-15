@@ -102,6 +102,8 @@ class Type:
             return self.Base
 	if self.Type == "funcp":
 		return "funcp"
+	if self.Type == "fixed":
+		return "{}[{}]".format(self.Base.GetName() , self.Size)
         if self.Type in ["point","array"]:
             if self.Base.Id == 0:
                 return "i8*"

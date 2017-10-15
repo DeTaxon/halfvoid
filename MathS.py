@@ -52,7 +52,8 @@ def SureNeg(Arr,Pos):
         
 
 datar  = ["numi","numf","id","str","true","false"]
-Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null","![]","!()^","d->{}"]
+Box = ["d&","d^","d[]","d()","d<>","{}[]","d.d","d.d()","dm","db","ds","!()","dp","this","newstuf","d.{}","null","![]","!()^"]
+Box += ["d..d","d->{}","d_in_d"]
 datar += Box
 ForFor = datar
 ForFor += ["{}","daif","dawhile","ret","dafor"]
@@ -69,6 +70,8 @@ Rules.append(["d.{}",datar,".","{}"])
 
 Rules.append(["d^",datar,'^'])
 Rules.append(["d[]",datar,'[]'])
+Rules.append(["d..d",datar,"..",datar])
+Rules.append(["d_in_d",datar,"in",datar])
 Rules.append(["d&",datar,'&'])
 Rules.append(["d()",datar,"()"])
 Rules.append(["d->{}",datar,"->","{}"])

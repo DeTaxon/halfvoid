@@ -1,16 +1,13 @@
 win := void^
 
 Butts := bool[256]
-Line1 := "qwertyuiop[]"
-Line2 := "asdfghjkl;'"
-Line3 := "zxcvbnm,./"
 
 keys := !(void^ winl, int key, int scancode, int action, int mods) -> void
 {
 	if scancode == 9 and action == 1	glfwSetWindowShouldClose(win,true)
-	if scancode >= 24 and scancode <= 35 	Butts[ Line1[scancode - 24] ] = action != 0
-	if scancode >= 38 and scancode <= 48	Butts[ Line2[scancode - 38] ] = action != 0
-	if scancode >= 52 and scancode <= 61	Butts[ Line3[scancode - 52] ] = action != 0
+	if scancode in 24..35 	Butts[ "qwertyuiop[]"[scancode - 24] ] = action != 0
+	if scancode in 38..48	Butts[ "asdfghjkl;'" [scancode - 38] ] = action != 0
+	if scancode in 52..61	Butts[ "zxcvbnm,./"  [scancode - 52] ] = action != 0
 	//printf("Key %i mod %i\n",scancode, action)
 }
 
@@ -66,10 +63,6 @@ main := !(int argc,string[] argv) -> int
 	//R.Push(-6)
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
-
-	C := 2.5
-	printf("%i \n", C->{int})
-	return 0
 
 	GLInfo := false
 	Bo := Model("TestBox.ply")
