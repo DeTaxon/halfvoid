@@ -89,7 +89,8 @@ class BoxFor:
 	self.ParName = "it"
 	self.IndName = "~hiden"
 	self.Id = GetNumb()
-	self.IsNumI = False 
+	self.IsNumI = False
+	self.IsRange = False 
 	self.ParParam = None
 	self.IndParam = None
 	self.IsFixed = -1
@@ -113,7 +114,27 @@ class BoxFor:
 		
 		
     def PrintInBlock(self,F):
-	if self.IsNumI:
+	if self.IsRange:
+		self.ParParam.PrintPointPre(F)
+		F.write("store i32 {}, i32* {}\n".format(self.Quest.L.Extra,self.ParParam.GetPName()))
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForCheck{}:\n".format(self.Id))
+		self.ParParam.PrintPre(F)
+		F.write("%Result{} = icmp sle i32 {} , {}\n".format(self.Id,self.ParParam.GetName(),self.Quest.R.Extra))
+        	F.write("br i1 %Result{0}, label %ForStart{0}, label %ForEnd{0}\n".format(self.Id))
+
+        	F.write("ForStart{}:\n".format(self.Id))
+        	self.Job.PrintInBlock(F)
+
+		self.ParParam.PrintPre(F)
+		F.write("%ToStore{} = add i32 {} , 1\n".format(self.Id,self.ParParam.GetName()))
+		self.ParParam.PrintPointPre(F)
+		F.write("store i32 %ToStore{},".format(self.Id))
+		self.ParParam.PrintPointUse(F)
+		F.write("\n")
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForEnd{}:\n".format(self.Id))
+	elif self.IsNumI:
 		self.ParParam.PrintPointPre(F)
 		F.write("store i32 0, i32* {}\n".format(self.ParParam.GetPName()))
         	F.write("br label %ForCheck{}\n".format(self.Id))
@@ -180,7 +201,11 @@ class BoxFor:
         self.Job.PrintConst(F)
     def Check(self):
         self.Quest.Check()
-	if self.Quest.Type.Id == GetType("int").Id:
+	if self.Quest.Value == "~d..d":
+		self.IsRange = True
+		self.ParParam = ParamChain(GetType("int"),Token("id",self.ParName))
+		#self.IndParam = ParamChain(GetType("int"),Token("id",self.IndName))
+	elif self.Quest.Type.Id == GetType("int").Id:
 		self.IsNumI = True
 		self.ParParam = ParamChain(GetType("int"),Token("id",self.ParName))
 	elif self.Quest.Type.Type == "fixed":
