@@ -22,13 +22,13 @@ glCreateProgram := !()^ -> void
 PrintSquare := !(int s,float p) -> void
 {
 	if s == 0 glVertex3f(-p,-p,-p)
-	if s == 1 glVertex3f(p,-p,-p)
-	if s == 2 glVertex3f(p,p,-p)
-	if s == 3 glVertex3f(-p,p,-p)
-	if s == 4 glVertex3f(-p,-p,p)
-	if s == 5 glVertex3f(p,-p,p)
-	if s == 6 glVertex3f(p,p,p)
-	if s == 7 glVertex3f(-p,p,p)
+	if s == 1 glVertex3f( p,-p,-p)
+	if s == 2 glVertex3f( p, p,-p)
+	if s == 3 glVertex3f(-p, p,-p)
+	if s == 4 glVertex3f(-p,-p, p)
+	if s == 5 glVertex3f( p,-p, p)
+	if s == 6 glVertex3f( p, p, p)
+	if s == 7 glVertex3f(-p, p, p)
 }
 
 DrawBox := !(float Size) -> void
@@ -63,7 +63,7 @@ main := !(int argc,string[] argv) -> int
 	//R.Push(-6)
 	//R.Push(7)
 	//for i : R printf("%i\n",i)
-
+	
 	GLInfo := false
 	Bo := Model("TestBox.ply")
 
@@ -109,17 +109,17 @@ main := !(int argc,string[] argv) -> int
 	Matr := Mat4
 	Sec := 0.0
 	
-	glViewport(0,0,512,512)
-	glClearColor(1.0,.5,0.0,0.0)
+	glViewport(0, 0, 512, 512)
+	glClearColor(1.0, 0.5, 0.0, 0.0)
 	
 	Pres := Mat4
-	Pres.Persp(1.0,0.1,100.0,75.0)
+	Pres.Persp(1.0, 0.1, 100.0, 75.0)
 	Accum := Mat4
  	Box := Cent
-	Box.SetPos(0.0,0.0,-3.5)
+	Box.SetPos(0.0, 0.0, -3.5)
 	Box2 := Cent
-	Box2.SetAng(0.0,Vec3(1.0,1.0,1.0))
-	Box2.SetPos(0.0,0.0,2.7)
+	Box2.SetAng(0.0,Vec3(1.0, 1.0, 1.0))
+	Box2.SetPos(0.0, 0.0, 2.7)
 	BoxSum := Cent
 	C := Camera()
 	
@@ -136,10 +136,10 @@ main := !(int argc,string[] argv) -> int
 		if Butts['e'] C.Mouse(0.0, 0.012)
 		if Butts['q'] C.Mouse(0.0,-0.012)
 
-		if Butts['w'] C.Local(Vec3(0.0,0.0,-0.1))
-		if Butts['s'] C.Local(Vec3(0.0,0.0, 0.1))
-		if Butts['d'] C.Local(Vec3( 0.1,0.0,0.0))
-		if Butts['a'] C.Local(Vec3(-0.1,0.0,0.0))
+		if Butts['w'] C.Local(Vec3( 0.0, 0.0,-0.1))
+		if Butts['s'] C.Local(Vec3( 0.0, 0.0, 0.1))
+		if Butts['d'] C.Local(Vec3( 0.1, 0.0, 0.0))
+		if Butts['a'] C.Local(Vec3(-0.1, 0.0, 0.0))
 
 		C.Update()
 
@@ -147,7 +147,7 @@ main := !(int argc,string[] argv) -> int
 	
 		Box.SetAng(Sec,Vec3(0.0,1.0,0.0))
 		BoxSum *= Box
-		Matr = BoxSum
+		Matr = C.Dot*Box
 		Accum = Pres
 		Accum *= Matr
 		glLoadMatrixf(Accum.vec)

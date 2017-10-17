@@ -1564,6 +1564,7 @@ class BoxFuncsCall:
         self.HaveConstr = None
 	self.RetRef = False
 	self.RetId = -1
+	self.ReserveItem = False
 
 	if Obj == None:
 		return None
@@ -1606,7 +1607,7 @@ class BoxFuncsCall:
     def PrintAlloc(self,F):
 	for It in self.Params:
 		It.PrintAlloc(F)
-	if self.HaveConstr != None:
+	if self.ReserveItem:
 		F.write("%Tmp{} = alloca ".format(self.ConstrId))
 		self.Type.PrintInAlloc(F)
 		F.write("\n")	
@@ -1622,7 +1623,7 @@ class BoxFuncsCall:
 		GetPoint(self.Type).PrintUse(F)
 		F.write(" %Tmp{}\n".format(MiniPre))
 		return None
-	if self.HaveConstr != None:
+	if self.ReserveItem: #self.HaveConstr != None:
 		NewParams = [self] + self.Params
 		StartI = 1
 	else:
@@ -1637,13 +1638,16 @@ class BoxFuncsCall:
         	self.PrevId = GetNumb()
 		if self.PointCall != None:
 			self.PointCall.PrintPre(F)
-		if self.Type.Id != GetType("void").Id and self.HaveConstr == None:
+		if self.Type.Id != GetType("void").Id and not self.ReserveItem:
 			F.write("%Tmp{} = ".format(self.PrevId))
 		F.write("call ")
 		if self.PointCall == None:
 			self.CallFunc.PrintFType(F)
 			self.CallFunc.PrintName(F)
-			Pars = self.CallFunc.Params
+			if self.CallFunc.ReturnInInput != None:
+				Pars = [self.CallFunc.ReturnInInput] +self.CallFunc.Params
+			else:
+				Pars = self.CallFunc.Params
 		else:
 			self.Type.PrintUse(F)
 			F.write(" " + "%Tmp{}".format(self.PointCall.PrevId))
@@ -1684,7 +1688,7 @@ class BoxFuncsCall:
 		self.PrevId = GetNumb()
 		self.CallFunc.PrintUse(F,self.PrevId,self.Params)
 		return None
-	if self.HaveConstr != None:
+	if self.ReserveItem:
 		self.PrintPre(F)
 	return None
     def PrintPointUse(self,F):
@@ -1735,10 +1739,14 @@ class BoxFuncsCall:
 					self.IsMetod = True
 				
 	if self.CallFunc != None:
-		self.RetRef = self.CallFunc.RetRef		
+		self.RetRef = self.CallFunc.RetRef
+		if self.CallFunc.ReturnInInput != None:
+			self.ReserveItem = True
+			self.ConstrId = GetNumb()		
         if self.CallFunc == None and self.PointCall == None:
 		self.HaveConstr = ParseType(Token("id",self.ToCall))
 		if self.HaveConstr != None:
+			self.ReserveItem = True
 			self.Type = self.HaveConstr
 			self.CallFunc = self.HaveConstr.GetFunc("this",[self] +  self.Params)
 			
@@ -1925,6 +1933,8 @@ class BoxFunc:
         self.AsmLine = None
 	self.InClass = Paren
 	self.RetRef = False
+	self.PreType = None
+	self.ReturnInInput = None
 
 	if Paren != None:
 		self.Params.append(ParamChain(Paren,Token("id","this")))
@@ -1966,6 +1976,8 @@ class BoxFunc:
 			self.RetRef = True
 			i += 1
 		self.Type = ParseType(Obj.Extra[i])
+		if self.Type == None:
+			self.PreType = Obj.Extra[i]
 		i += 1
         if Obj.Extra[i].Value != "declare":
             self.Block = BoxBlock(Obj.Extra[i].Extra)
@@ -1985,7 +1997,10 @@ class BoxFunc:
 		F.write("call ")
 		self.PrintFType(F)
 		self.PrintName(F)
-		Pars = self.Params
+		if self.ReturnInInput != None:
+			Pars = [self.ReturnInInput] + self.Params
+		else:
+			Pars = self.Params
 		F.write("(")
 		for i in range(len(NewParams)):
 			if i > 0:
@@ -2017,18 +2032,27 @@ class BoxFunc:
             F.write("declare ")
         else:
             F.write("define ")
-	if self.RetRef:
-		GetPoint(self.Type).PrintUse(F)
-        else:
-		self.Type.PrintUse(F)
+	if self.ReturnInInput:
+		F.write("void ")
+	else:
+		if self.RetRef:
+			GetPoint(self.Type).PrintUse(F)
+        	else:
+			self.Type.PrintUse(F)
         F.write(" @")
         F.write(self.FullName)
         F.write("(")
-        if len(self.Params) > 0:
-            for i in range(len(self.Params)):
+
+	if self.ReturnInInput != None:
+		NewPars = [self.ReturnInInput] + self.Params
+	else:
+		NewPars = self.Params
+	
+        if len(NewPars) > 0:
+            for i in range(len(NewPars)):
                 if i > 0:
 			F.write(",")
-                self.Params[i].PrintParam(F)
+                NewPars[i].PrintParam(F)
         F.write(")" + "; {}\n".format(self.Name))
         if self.Block == None:
             return None
@@ -2040,6 +2064,8 @@ class BoxFunc:
         if self.Type.Type == "standart":
             if self.Type.Base == "void":
                 F.write("ret void\n")
+	if self.ReturnInInput != None:
+		F.write("ret void\n")
         F.write("}\n")
     def PrintName(self,F):
         F.write("@")
@@ -2060,6 +2086,15 @@ class BoxFunc:
         for It in self.Params:
 	    It.Check()
             ContextStuff.append(It)
+	if self.PreType != None:
+		self.Type = ParseType(self.PreType)
+	if self.Type == None:
+		raise ValueError("return type not found")
+	if self.Type.Type == "class" and not self.RetRef:
+		self.ReturnInInput = ParamChain(self.Type,Token("id","ret"))
+		self.ReturnInInput.IsRef = True
+		ContextStuff.append(self.ReturnInInput)
+	
         if self.Block != None:
             self.Block.Check()
 	InFunc.pop()
@@ -2067,19 +2102,25 @@ class BoxFunc:
     def PrintFType(self,F):
 	self.PrintType(F)
     def PrintType(self,F):
-	if self.RetRef:
-        	GetPoint(self.Type).PrintUse(F)
+	if self.ReturnInInput != None:
+		F.write("void")
+		NewPars = [self.ReturnInInput] + self.Params
 	else:
-        	self.Type.PrintUse(F)
+		NewPars = self.Params
+		if self.RetRef:
+        		GetPoint(self.Type).PrintUse(F)
+		else:
+        		self.Type.PrintUse(F)
+	
         F.write("(")
-        if len(self.Params) > 0:
-            for i in range(len(self.Params)):
+        if len(NewPars) > 0:
+            for i in range(len(NewPars)):
                 if i > 0:
 			F.write(",")
-		if self.Params[i].IsRef:
-                	GetPoint(self.Params[i].Type).PrintUse(F)
+		if NewPars[i].IsRef:
+                	GetPoint(NewPars[i].Type).PrintUse(F)
 		else:
-                	self.Params[i].Type.PrintUse(F)
+                	NewPars[i].Type.PrintUse(F)
         F.write(")")
         return None
     def GetFuncPointType(self):

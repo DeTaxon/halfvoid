@@ -176,17 +176,21 @@ Quant := class extend Vec4
     		//y = Old.vec[3] * q1.y - Old.vec[0] * q1.z + Old.vec[1] * q1.w + Old.vec[2] * q1.x
     		//z = Old.vec[3] * q1.z + Old.vec[0] * q1.y - Old.vec[1] * q1.x + Old.vec[2] * q1.w
 	}
+	"*" := !(Quant q1) -> Quant
+	{
+		ret = this
+		ret *= q1
+	}
 	"=" := !(Quant q1) -> void
 	{
 		for 4 vec[it] = q1.vec[it]
 	}	
 	Move := !(Vec4 ToM) -> void
 	{
-		Sum := this
 		Temp := Quant
 		Temp = ToM
 		Temp.w = 0.0
-		Sum *= Temp
+		Sum := this*Temp
 		Temp.Set(-x,-y,-z,w)
 		Sum *= Temp
 		for 3 ToM.vec[it] = Sum.vec[it]
@@ -241,18 +245,11 @@ Cent := class
 		for 4 { Pos.vec[it] = 0.0 Ang.vec[it] = 0.0 }
 		Ang.w = 1.0
 	}
-	//"*" := !(Cent In) -> void
-	//{
-	//	ToRet := centf(this)
-	//	ToRet *= In
-	//	return ToRet
-	//}
-	//centf operator=(const centf& In)
-	//{
-	//	ang.vec[4.^i] = In.ang.vec[i]
-	//	pos.vec[4.^i] = In.pos.vec[i]
-	//	return this^
-	//}
+	"*" := !(Cent In) -> Cent
+	{
+		ret = this
+		ret *= In
+	}
 }
 
 Mat4 := class
@@ -343,6 +340,11 @@ Mat4 := class
 		{
 			this.vec[i + j*4] += Old.vec[i + k*4] * Ml.vec[k + j*4]
 		}
+	}
+	"*" := !(Mat4 Ml) -> Mat4
+	{
+		ret = this
+		ret *= Ml
 	}
 	SetAng := !(Vec3 ang) -> void
 	{

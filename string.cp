@@ -21,6 +21,11 @@ StrCopy := !(char^ a) -> char^
 	return Pre
 }
 
+"in" := !(int chr, char^ str) -> bool
+{
+	return ChrInStr(chr,str)
+}
+
 ChrInStr := !(int chr,char^ str) -> bool
 {
 	i := 0
