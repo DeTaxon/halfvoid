@@ -73,6 +73,7 @@ class CodeBox:
             Pos += 1
     def Out(self,Name):
         with open(Name,"w") as F:
+	    F.write("%OpaqueType = type opaque\n")
             self.Block.PrintConst(F)
 	    self.Block.PrintGlobal(F)
             self.Block.PrintFunc(F)

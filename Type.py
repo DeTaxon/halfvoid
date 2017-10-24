@@ -137,6 +137,7 @@ def GetFuncPoint(Params , ReturnType):
     FuncType.IsPoint = True
     FuncType.Id = len(TypeTable)
     FuncType.RetType = ReturnType
+    FuncType.Base = ReturnType
 
     FuncType.Params = []
     for It in  Params:
@@ -238,10 +239,14 @@ def ParseType(A):
         return GetType(A.Extra)
     if A.Value in ["d^"]:
         Base = ParseType(A.Extra[0])
+	if Base == None:
+		return None
         Base = GetPoint(Base)
 	return Base
     if A.Value in ["d[]"]:
         Base = ParseType(A.Extra[0])
+	if Base == None:
+		return None
 	if len(A.Extra[1].Extra) > 0 and A.Extra[1].Extra[0].Value == "numi":
 		Size = A.Extra[1].Extra[0].Extra
 		Base = GetFixedArr(Base,Size)
@@ -286,6 +291,8 @@ PutStand("i32",   "s32")
 PutStand("i64",   "s64")
 PutStand("float", "float")
 PutStand("double","double")
+
+PutStand("%OpaqueType","opaque")
 
 MakeSame("u8","char")
 MakeSame("s16","short")

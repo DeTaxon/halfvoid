@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import re
 KeyWords = ["for","while","do","if","else","operator","this","and","or","xor","not","declare","operator","class","return","type","at","new","null"] #it
-KeyWords += ["true","false","ref","in","extend"]
+KeyWords += ["true","false","ref","in","extend","extern"]
 Symbols = "{}()[]?%^&!,;"
 Digits = "0123456789"
 Digits16 = Digits + "ABCDEFabcdef"
