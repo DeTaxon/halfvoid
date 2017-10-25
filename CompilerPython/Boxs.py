@@ -1854,39 +1854,47 @@ class BoxFuncsCall:
 	else:
 		CheckParams = self.CallFunc.Params
 
+	CheckParamsType = []
+	if len(CheckParams) > 0:
+		if type(CheckParams[0].Type) is not type(""):
+			for i in range(len(CheckParams)):
+				CheckParamsType.append(CheckParams[i].Type)
+		else:
+			for i in range(len(CheckParams)):
+				CheckParamsType.append(CheckParams[i])
 	if len(NewParams) != len(CheckParams) and self.CallFunc != None and self.CallFunc.Vargs != True:
 		raise ValueError("Wrong input for function " + self.ToCall)
 
         for i in range(len(NewParams)):
-            if CheckParams[i].Type == GetType("..."):
+            if CheckParamsType[i] == GetType("..."):
 		while i < len(NewParams):
 			if NewParams[i].Type.Id == GetType("float").Id:
 				NewParams[i] = BoxExc(NewParams[i],GetType("double"))
 			i += 1
             	break
-	    if type(CheckParams[i].Type) is type(""):
+	    if type(CheckParamsType[i]) is type(""):
 		print(i)
 		print(self.PointCall) #TODO: delete
-	    if CheckParams[i].Type.Id == NewParams[i].Type.Id:
+	    if CheckParamsType[i].Id == NewParams[i].Type.Id:
 		continue
-            if CheckParams[i].Type.Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,CheckParams[i].Type):
-                NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
+            if CheckParamsType[i].Id != NewParams[i].Type.Id and GoodPoints(NewParams[i].Type,CheckParamsType[i]):
+                NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
 		continue
-            if CheckParams[i].Type.Id != NewParams[i].Type.Id and GoodPoints(CheckParams[i].Type,NewParams[i].Type):
-                NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
+            if CheckParamsType[i].Id != NewParams[i].Type.Id and GoodPoints(CheckParamsType[i],NewParams[i].Type):
+                NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
 		continue
 	    if NewParams[i].Type.Type == "class":
-		NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
+		NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
 		continue
-	    if "u" in ShouldChange(NewParams[i].Type,CheckParams[i].Type):
-		NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
+	    if "u" in ShouldChange(NewParams[i].Type,CheckParamsType[i]):
+		NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
 		continue
-	    if NewParams[i].Type.Type == "fixed" and CheckParams[i].Type.Type == "point":
-		if NewParams[i].Type.Base.Id == CheckParams[i].Type.Base.Id:
-			NewParams[i] = BoxExc(NewParams[i],CheckParams[i].Type)
-	    if NewParams[i].Type.Id != CheckParams[i].Type.Id:
+	    if NewParams[i].Type.Type == "fixed" and CheckParamsType[i].Type == "point":
+		if NewParams[i].Type.Base.Id == CheckParamsType[i].Base.Id:
+			NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
+	    if NewParams[i].Type.Id != CheckParamsType[i].Id:
 		#print(len(NewParams[i].Type.Params))
-		#for It in CheckParams[i].Type.Params:
+		#for It in CheckParams[i].Params:
 		#	print(It.Type.Id)
 		raise ValueError("Type mismatch in function call " + self.ToCall)
         return None
