@@ -266,7 +266,7 @@ def ParseType(A):
 			if PreAdd == None:
 				return None
 			Pars.append(PreAdd)
-		return PreBase.GetClass(Pars)
+	return PreBase.GetClass(Pars)
 
 def MakeSame(A,B):
     Base = GetType(A)

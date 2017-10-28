@@ -11,6 +11,12 @@ StrSize := !(char^ a) -> int
 	while a[Si] Si += 1
 	return Si
 }
+Size := !(char^ this) -> int
+{
+	Si := 0
+	while this[Si] Si += 1
+	return Si
+}
 
 StrCopy := !(char^ a) -> char^
 {

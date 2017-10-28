@@ -102,6 +102,7 @@ class BoxFor:
 	self.IndParam = None
 	self.IsFixed = -1
 	self.FuncFor = None
+	self.IsString = False
 	JobPos = -1
         if len(Obj.Extra) == 3:
 		JobPos = 2
@@ -141,14 +142,41 @@ class BoxFor:
 		F.write("\n")
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForEnd{}:\n".format(self.Id))
+	elif self.IsString:
+		F.write("%TmpPoint{} = alloca i8*\n".format(self.Id))
+		self.ParParam.PrintPointPre(F)
+        	self.Quest.PrintPre(F)
+		F.write("store i8* {}, i8** %TmpPoint{}\n".format(self.Quest.GetName(),self.Id))
+		F.write("%TmpCurValue1{} = load i8 , i8* {}\n".format(self.Id , self.Quest.GetName()))
+		F.write("store i8 %TmpCurValue1{}, i8* {}\n".format(self.Id,self.ParParam.GetPName()))
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForCheck{}:\n".format(self.Id))
+		self.ParParam.PrintPre(F)
+		F.write("%Result{} = icmp ne i8 {} , 0\n".format(self.Id,self.ParParam.GetName()))
+        	F.write("br i1 %Result{0}, label %ForStart{0}, label %ForEnd{0}\n".format(self.Id))
+
+        	F.write("ForStart{}:\n".format(self.Id))
+        	self.Job.PrintInBlock(F)
+
+		F.write("%TmpValue21{0} = load i8* , i8** %TmpPoint{0}\n".format(self.Id))
+		F.write("%TmpNext{0} = getelementptr i8 ,i8* %TmpValue21{0}, i32 1\n".format(self.Id))
+		F.write("store i8* %TmpNext{0}, i8** %TmpPoint{0}\n".format(self.Id))
+		
+		F.write("%TmpValue2{0} = load i8 , i8* %TmpNext{0}\n".format(self.Id))
+		self.ParParam.PrintPointPre(F)
+		F.write("store i8 %TmpValue2{0}, i8* {1}\n".format(self.Id,self.ParParam.GetPName()))
+		
+        	F.write("br label %ForCheck{}\n".format(self.Id))
+        	F.write("ForEnd{}:\n".format(self.Id))
 	elif self.IsNumI:
+        	self.Quest.PrintPre(F)
+		F.write("%EndValue{} = add i32 {} , 0\n".format(self.Id,self.Quest.GetName()))
 		self.ParParam.PrintPointPre(F)
 		F.write("store i32 0, i32* {}\n".format(self.ParParam.GetPName()))
         	F.write("br label %ForCheck{}\n".format(self.Id))
         	F.write("ForCheck{}:\n".format(self.Id))
-        	self.Quest.PrintPre(F)
 		self.ParParam.PrintPre(F)
-		F.write("%Result{} = icmp slt i32 {} , {}\n".format(self.Id,self.ParParam.GetName(),self.Quest.GetName()))
+		F.write("%Result{0} = icmp slt i32 {1} , %EndValue{0}\n".format(self.Id,self.ParParam.GetName()))
         	F.write("br i1 %Result{0}, label %ForStart{0}, label %ForEnd{0}\n".format(self.Id))
 
         	F.write("ForStart{}:\n".format(self.Id))
@@ -215,6 +243,9 @@ class BoxFor:
 	elif self.Quest.Type.Id == GetType("int").Id:
 		self.IsNumI = True
 		self.ParParam = ParamChain(GetType("int"),Token("id",self.ParName))
+	elif self.Quest.Type.Id == GetPoint(GetType("char")).Id:
+		self.IsString = True
+		self.ParParam = ParamChain(GetType("char"),Token("id",self.ParName))
 	elif self.Quest.Type.Type == "fixed":
 		self.IsFixed = self.Quest.Type.Size
 		self.ParParam = ParamChain(self.Quest.Type.Base,Token("id",self.ParName))
@@ -340,7 +371,12 @@ class ParArrConst:
 
 		for It in Obj.Extra[1].Extra:
 			if It.Value != ',':
-				self.Extra.append(GetUse(It))
+				if It.Value == "d..d":
+					DdD = GetUse(It)
+					for R in range(DdD.L.Extra,DdD.R.Extra + 1):
+						self.Extra.append(GetUse(Token("numi",R)))
+				else:
+					self.Extra.append(GetUse(It))
 		if len(self.Extra) == 0:
 			raise ValueError("Empty array")
 		self.Type = GetFixedArr(self.Extra[0].Type, len(self.Extra))
@@ -905,8 +941,8 @@ class BoxTemplate:
 				if self.ParsTable[i][j].Id != Pars[j].Id:
 					WrongValue = True
 					break
-				if not WrongValue:
-					return self.SubClasses[i]
+			if not WrongValue:
+				return self.SubClasses[i]
 		PushT()
 		for i in range(len(Pars)):
 			AddDef(self.ParsNames[i],Pars[i])
@@ -1078,7 +1114,7 @@ class ParConstStr:
         F.write("%LStr{0} = getelementptr [{1} x i8], [{1} x i8]* @CStr{0},i32 0,i32 0\n".format(self.Id,self.Size))
         #F.write("%LStr{0} = getelementptr {{i32,[{1} x i8]}}, {{i32,[{1} x i8]}}* @CStr{0},i32 0,i32 1, i32 0\n".format(self.Id,self.Size))
     def GetName(self):
-        return "%Lstr{}".format(self.Id)
+        return "%LStr{}".format(self.Id)
     def PrintUse(self,F):
         F.write("i8* %LStr{}".format(self.Id))
     def Check(self):
@@ -1239,6 +1275,7 @@ class BoxReturn:
 			self.Ret.Check()
 		L = InFunc[len(InFunc) -1]
 		self.RetRef = L.RetRef
+		self.RetType = L.Type
 		if self.Ret.Type.Id != L.Type.Id and (GoodPoints(self.Ret.Type, L.Type) or GoodPoints(L.Type,self.RetType)):
 			self.Ret = BoxExc(self.Ret,L.Type)
 	def PrintPre(self,F):
@@ -1627,6 +1664,12 @@ class BoxFuncsCall:
 	self.RetRef = False
 	self.RetId = -1
 	self.ReserveItem = False
+	if Obj != None:
+		self.Line = Obj.Line
+		self.InFile = Obj.InFile
+	else:
+		self.Line = -1
+		self.InFile = "error"
 
 	if Obj == None:
 		return None
@@ -1822,7 +1865,7 @@ class BoxFuncsCall:
 
 			self.ConstrId = GetNumb()
 		else:
-			PreError = "Func not found {}".format(self.ToCall)
+			PreError = "Func not found {} at line {} file {}".format(self.ToCall,self.Line,self.InFile)
 			for it in self.Params:
 				PreError += "\nParam {}".format(it.Type.GetName())
 				PreError += " {}".format(it.Type.Id)

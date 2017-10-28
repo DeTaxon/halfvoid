@@ -116,3 +116,46 @@ Queue := class !{T} extend Stack.{T}
 		}
 	}
 }
+
+DoubleNode := class !{TKey,TValue}
+{
+	Key := TKey
+	Value := TValue
+	Next := DoubleNode.{TKey,TValue}^
+
+	"this" := !(TKey k, DoubleNode.{TKey,TValue}^ v) -> void
+	{
+		Key = k
+		Next = v
+	}
+}
+
+Map := class !{TKey,TValue}
+{
+	Start := DoubleNode.{TKey,TValue}^
+
+	"[]" := !(TKey look) -> ref TValue
+	{
+		iter := Start
+		while iter
+		{
+			if iter.Key == look 
+			{
+				return iter.Value
+			}
+			iter = iter.Next
+		}
+		Start = new DoubleNode.{TKey,TValue}(look,Start)
+		return Start.Value
+	}
+	Delete := !() -> void
+	{
+		iter := Start
+		while iter 
+		{
+			Temp := iter.Next
+			free(iter)
+			iter = Temp
+		}
+	}
+}

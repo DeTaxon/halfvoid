@@ -25,18 +25,28 @@ def RuleIt( R, Arr,Pos):
     return True
 
 def RuleMetod(Arr,Pos):
-	if Pos + 2 >= len(Arr):
+	if Pos  + 1>= len(Arr):
 		return False
 	if Arr[Pos].Value not in datar:
 		return False
-	if Arr[Pos+1].Value != ".":
-		return False
-	if Arr[Pos+2].Value != "id":
-		return False
-	if Pos + 3 < len(Arr) and Arr[Pos+3].Value == "()":
-		UNext(Arr,Pos,4,"d.d()")
+
+	if Arr[Pos+1].Value in ["^"]:
+		UNext(Arr,Pos,2,"d^")
+		return True
+	elif Arr[Pos+1].Value in ["[]"]:
+		UNext(Arr,Pos,2,"d[]")
+		return True
 	else:
-		UNext(Arr,Pos,3,"d.d")
+		if Pos  + 2 >= len(Arr):
+			return False
+		if Arr[Pos+1].Value != ".":
+			return False
+		if Arr[Pos+2].Value not in  ["id"]:
+			return False
+		if Pos + 3 < len(Arr) and Arr[Pos+3].Value == "()":
+			UNext(Arr,Pos,4,"d.d()")
+		else:
+			UNext(Arr,Pos,3,"d.d")
 	return True
 
 def SureNeg(Arr,Pos):
@@ -61,15 +71,16 @@ ForFor += ["{}","daif","dawhile","ret","dafor"]
 Rules = []
 Rules.append(["dm",datar,['++','--']])
 
+Rules.append(["!{}","!","{}"])
+Rules.append(["d.{}",datar,".","{}"])
+
 #Rules.append(["d.d()",datar,".","id","()"])
 #Rules.append(["d.d",datar,".","id"])
 Rules.append(RuleMetod)
 
-Rules.append(["!{}","!","{}"])
-Rules.append(["d.{}",datar,".","{}"])
 
-Rules.append(["d^",datar,'^'])
-Rules.append(["d[]",datar,'[]'])
+#Rules.append(["d^",datar,'^'])
+#Rules.append(["d[]",datar,'[]'])
 Rules.append(["d..d",datar,"..",datar])
 Rules.append(["d_in_d",datar,"in",datar])
 Rules.append(["d&",datar,'&'])
