@@ -27,26 +27,26 @@ Object := class{
 	Left,Right,Down,Up := Object^
 	Line :=  Object^
 	Bag := void^
-	
-	"this" := !() -> void
+
+	Clean := !() -> void
 	{
-		Id = 0
 		Left = null
 		Right = null
 		Down = null
 		Up = null
 		Line = null
+	}	
+	"this" := !() -> void
+	{
+		Id = 0
+		Clean()
 	}
 	"this" := !(int id) -> void
 	{
 		Id = id
-		Left = null
-		Right = null
-		Down = null
-		Up = null
-		Line = null
+		Clean()
 	}
-	IsConst := !() -> bool
+	IsConst := virtual !() -> bool
 	{
 		if Id == Object_Int 	return true
 		if Id == Object_Double 	return true
@@ -58,7 +58,7 @@ Object := class{
 		return false
 	}
 	
-	Print := !() -> void
+	Print := virtual !() -> void
 	{
 		if Id == Object_Int{
 			printf("int %i",Bag->{int^}^)
@@ -180,7 +180,6 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 		if Tok.Id == 3 or Tok.Id == 4
 		{
 			Value := int
-			NV := new Object(Object_Int)
 			
 			Value = 0
 			
@@ -192,10 +191,8 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 				Value += Tok.Buff[k] - '0'
 				k += 1
 			}
-			PValue := new int
-			PValue[0] = Value
-			NV.Bag = PValue
-			Adder = PushObject(Adder,NV)
+			NV := new ObjInt(Value)
+			Adder = PushObject(Adder,NV->{Object^})
 
 			if Tok.Id == 4
 			{

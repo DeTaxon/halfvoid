@@ -911,13 +911,16 @@ class BoxFakeMetod:
 		F.write(" %Tmp{}\n".format(BoId))
 	def Check(self,Paren = None):
 		self.Pos = self.InClass.GetPos(self.ToCall)
+		ExtrChk = self.Pos
+		if self.InClass.VirtualFuncs != None:
+			ExtrChk -= 1
 		if self.Pos < 0:
 			raise ValueError("There is no object {}".format(self.ToCall))
-		self.InClass.Items[self.Pos].Check()
+		self.InClass.Items[ExtrChk].Check()
 		if self.PreType == None:
-			self.Type = self.InClass.Items[self.Pos].Type 
+			self.Type = self.InClass.Items[ExtrChk].Type 
 		else:
-			self.PrevType = self.InClass.Items[self.Pos].Type
+			self.PrevType = self.InClass.Items[ExtrChk].Type
 			self.Type = ParseType(self.PreType)
 		
 	
@@ -1136,10 +1139,15 @@ class BoxClass:
 		return None
 		
 	def GetPos(self,Res):
+		ItPos = -1
 		for i in range(len(self.Items)):
 			if self.Items[i].Name == Res:
-				return i
-		return -1
+				ItPos = i
+		if ItPos == -1:
+			return -1
+		if self.VirtualFuncs != None:
+			ItPos += 1
+		return ItPos
 	def GetVFuncPos(self,Res,Pars):
 		if self.VirtualFuncs != None:
 			return self.VirtualFuncs.GetVFuncPos(Res,Pars)
