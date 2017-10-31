@@ -18,7 +18,7 @@ GenerateMachine := !() -> Machine^
 {
 	begin := new Machine()
 	
-	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9
+	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11
 
 	//0: begin
 	//1: error
@@ -48,8 +48,12 @@ GenerateMachine := !() -> Machine^
 	//20: symbols - 10
 	//22: opers - 10
 	//23: operstwo - 10
+	//24: less
+	//25: less2
+	//26: big
+	//27: big2
 
-	Size := 24
+	Size := 28 //bound check??
 
 	begin.Lines = new Line[Size]
 
@@ -70,16 +74,25 @@ GenerateMachine := !() -> Machine^
 	for i : 256 begin.Lines[0].GoTo[i] = 16	
 
 	//symbols
-	for i : "{}[]()@$^&;?." begin.Lines[0].GoTo[i] = 20
+	for i : "{}[]()@$^&;?.,|" begin.Lines[0].GoTo[i] = 20
 	begin.Lines[20].GoTo['.'] = 20
 	begin.Lines[20].Id = 10
 	
 	//opers
-	for i : "<>!:+-*/%=" begin.Lines[0].GoTo[i] = 22
+	for i : "!:+-*/%=" begin.Lines[0].GoTo[i] = 22
 	begin.Lines[22].Id = 10
 	begin.Lines[22].GoTo['='] = 23
 	begin.Lines[23].Id = 10
 	
+	begin.Lines[0].GoTo['<'] = 24
+	for i : !['<','='] begin.Lines[24].GoTo['<'] = 25
+	begin.Lines[24].Id = 10
+	begin.Lines[25].Id = 10
+
+	begin.Lines[0].GoTo['>'] = 26
+	for i : !['>','='] begin.Lines[24].GoTo['>'] = 27
+	begin.Lines[26].Id = 10
+	begin.Lines[27].Id = 10
 
 	// string
 	begin.Lines[0].GoTo['"'] = 17
@@ -146,8 +159,6 @@ GenerateMachine := !() -> Machine^
 Token := class{
 	Id := int
 	Buff := char[1024]
-	AsDouble := double at Buff
-	AsInt := s32 at Buff 
 }
 
 GenerateToken := !(char^ Buuf, int id) -> Token^
@@ -171,6 +182,8 @@ GetTokensFromFile := !(char^ Name, Queue.{Token^} ToFill) -> bool
 
 	M := GenerateMachine()	
 	Buffer := char[1024]
+
+	LineNum := 1
 
 	Reverted := Stack.{char}()
 	while Cp.good()
@@ -217,8 +230,7 @@ GetTokensFromFile := !(char^ Name, Queue.{Token^} ToFill) -> bool
 						k -= 1	
 					}
 					Buffer[RealSize] = 0
-					Tok := GenerateToken(Buffer,LastGoodId)
-					ToFill.Push(Tok)
+					ToFill.Push(GenerateToken(Buffer,LastGoodId))
 					//printf("%s %i\n",Tok.Buff,Tok.Id)
 					pos = 0
 					LastGoodPos = 0
@@ -235,6 +247,7 @@ GetTokensFromFile := !(char^ Name, Queue.{Token^} ToFill) -> bool
 			
 	
 		}
+		ToFill.Push(GenerateToken("",11)) // new line
 		free(CurLine)
 	}
 	Cp.close()

@@ -733,6 +733,17 @@ class BoxNew:
 		F.write("%Tmp{0} = bitcast i8* %TmpPre{0} to ".format(self.PrevId))
 		self.Type.PrintUse(F)
 		F.write("\n")
+		if self.Type.Base.Type == "class" and self.Type.Base.VirtualFuncs != None:
+			F.write("%ZeroPos{0} = getelementptr ".format(self.PrevId))
+			self.Type.Base.PrintInAlloc(F)
+			F.write(" , ")
+			self.Type.PrintInAlloc(F)
+			F.write(" %Tmp{0}, i32 0,i32 0\n".format(self.PrevId))
+			F.write("store ")
+			self.Type.Base.VirtualFuncs.PrintUse(F)
+			F.write(", ")
+			self.Type.Base.VirtualFuncs.PrintType(F)
+			F.write("* %ZeroPos{}\n".format(self.PrevId))
 		if self.HaveConstr:
 			for i in range(1,len(self.Pars)):
 				if self.ToUse.Params[i].IsRef:
@@ -955,6 +966,57 @@ class BoxTemplate:
 			
 	def Check(self):
 		return None
+
+
+class BoxVTable:
+	def __init__(self):
+		self.Id = GetNumb()
+		self.Funcs = []
+	def GetVFuncPos(self,Res,Pars):
+		SomeFunc =  SearchFunc(Res,Pars,self.Funcs,True)
+		if SomeFunc == None:
+			return None
+		for i in range(len(self.Funcs)):
+			if self.Funcs[i] == SomeFunc:
+				return i
+		return None
+	def TryReplace(self,NewFunc):
+		j = self.GetVFuncPos(NewFunc.Name,NewFunc.Params)
+		if j == None:
+			self.Funcs.append(NewFunc)
+		else:
+			self.Funcs[j] = NewFunc
+	def CloneIt(self):
+		Cl = BoxVTable()
+		for it in self.Funcs:
+			Cl.Funcs.append(it)
+		return Cl
+	def PrintConst(self,F):
+		F.write("%Class{} = type ".format(self.Id))
+		F.write("{")
+		for i in range(len(self.Funcs)):
+			if i > 0:
+				F.write(" , ")
+			self.Funcs[i].PrintFType(F)
+			F.write("*")
+		F.write("}\n")
+		F.write("@ClassStandart{0} = global %Class{0}".format(self.Id))
+		F.write(" {")
+		for i in range(len(self.Funcs)):
+			if i > 0:
+				F.write(" , ")
+			self.Funcs[i].PrintFType(F)
+			F.write("* ")
+			self.Funcs[i].PrintName(F)
+		F.write("}\n")
+	def PrintBType(self,F):
+		F.write("%Class{}".format(self.Id))
+	def PrintType(self,F):
+		F.write("%Class{}*".format(self.Id))
+	def PrintUse(self,F):
+		F.write("%Class{0}* @ClassStandart{0}".format(self.Id))
+		
+
 class BoxClass:
 	def __init__(self,Obj):
 		self.Name = Obj.Extra[0].Extra
@@ -970,6 +1032,7 @@ class BoxClass:
 		self.Id = GetNumb()
 		self.ToExtend = None
 		self.IsChecked = False
+		self.VirtualFuncs = None
 		
 		if Obj.Extra[3].Value == "extend":
 			self.ToExtend = Obj.Extra[4]	
@@ -1004,6 +1067,15 @@ class BoxClass:
 			self.ToExtend.Check()
 			self.Items = self.Items + self.ToExtend.Items 
 			self.Fakes = self.Fakes + self.ToExtend.Fakes
+			if self.ToExtend.VirtualFuncs != None:
+				self.VirtualFuncs = self.ToExtend.VirtualFuncs.CloneIt()
+		if self.VirtualFuncs == None:
+			ContainVirt = False
+			for It in self.Funcs:
+				if It.IsVirtual:
+					ContainVirt = True
+			if ContainVirt:
+				self.VirtualFuncs = BoxVTable()
 		for It in self.Items:
 			It.Check()
 		for It in self.Fakes:
@@ -1012,14 +1084,22 @@ class BoxClass:
 			ContextStuff.append(It)
 		for It in self.Funcs:
 			It.Check()
+			if self.VirtualFuncs != None and It.IsVirtual:
+				self.VirtualFuncs.TryReplace(It)
 	def PrintInAlloc(self,F):
 		F.write("%Class{}".format(self.Id))
 	def PrintConst(self,F):
+		if self.VirtualFuncs != None:
+			self.VirtualFuncs.PrintConst(F)
 		for It in self.Items:
 			It.PrintConst(F)
 		for It in self.Funcs:
 			It.PrintConst(F)
 		F.write("%Class{} = type {}".format(self.Id,"{"))
+		if self.VirtualFuncs != None:
+			self.VirtualFuncs.PrintType(F)
+			if len(self.Items) != 0:
+				F.write(",")
 		for i in range(len(self.Items)):
 			if i >= 1:
 				F.write(" , ")
@@ -1060,6 +1140,10 @@ class BoxClass:
 			if self.Items[i].Name == Res:
 				return i
 		return -1
+	def GetVFuncPos(self,Res,Pars):
+		if self.VirtualFuncs != None:
+			return self.VirtualFuncs.GetVFuncPos(Res,Pars)
+		
 	def GetFake(self,Res):
 		for i in self.Fakes:
 			if i.Name == Res:
@@ -1426,6 +1510,26 @@ class BoxRef:
 	def PrintAlloc(self,F):
 		return None
 		self.Extra.PrintAlloc(F)
+
+class BoxRefCandy:
+	def __init__(self,Obj):
+		self.Value = "ref x"
+		self.Extra = Obj
+		self.Type = Obj.Type.Base
+	def PrintPointPre(self,F):
+		self.Extra.PrintPre(F)
+	def PrintPointUse(self,F):
+		self.Extra.PrintUse(F)
+	def Check(self):
+		self.Extra.Check()
+		self.Type = GetPoint(self.Extra.Type)
+	def PrintConst(self,F):
+		self.Extra.PrintConst(F)
+	def PrintFunc(self,F):
+		self.Extra.PrintFunc(F)
+	def PrintAlloc(self,F):
+		self.Extra.PrintAlloc(F)
+	
 	
 
 class BoxPoint:
@@ -1496,7 +1600,7 @@ class BoxPoint:
         if self.Value == "~d[]":
             return "%Tmp{}".format(self.PrevId)
         else:
-            self.Extra.GetName(F)
+            self.Extra.GetName()
     def PrintFunc(self,F):
         self.Extra.PrintFunc(F)
         if self.Value == "~d[]":
@@ -1664,6 +1768,8 @@ class BoxFuncsCall:
 	self.RetRef = False
 	self.RetId = -1
 	self.ReserveItem = False
+	self.VirtualCall = None
+
 	if Obj != None:
 		self.Line = Obj.Line
 		self.InFile = Obj.InFile
@@ -1743,12 +1849,43 @@ class BoxFuncsCall:
         	self.PrevId = GetNumb()
 		if self.PointCall != None:
 			self.PointCall.PrintPre(F)
+		if self.VirtualCall != None:
+			if self.CallFunc.ReturnInInput == None or True: #???
+				MyPar0 = self.Params[0]
+			else:
+				MyPar0 = self.Params[1]
+
+			MyPar0.PrintPointPre(F)
+			F.write("%FuncPos{} = getelementptr ".format(self.PrevId))
+			MyPar0.Type.PrintInAlloc(F)
+			F.write(" , ")
+			MyPar0.PrintPointUse(F)
+			F.write(", i32 0, i32 0\n")
+			F.write("%VTabl{} = load ".format(self.PrevId))
+			MyPar0.Type.VirtualFuncs.PrintType(F)
+			F.write(" , ")
+			MyPar0.Type.VirtualFuncs.PrintType(F)
+			F.write("* %FuncPos{}\n".format(self.PrevId))
+			F.write("%MyFuncP{} = getelementptr ".format(self.PrevId))
+			MyPar0.Type.VirtualFuncs.PrintBType(F)
+			F.write(" , ")
+			MyPar0.Type.VirtualFuncs.PrintBType(F)
+			F.write("* %VTabl{},i32 0,i32 {}\n".format(self.PrevId,self.VirtualCall))
+			F.write("%FuncCall{} = load ".format(self.PrevId))
+			self.CallFunc.PrintType(F)		
+			F.write("* , ")	
+			self.CallFunc.PrintType(F)			
+			F.write("** %MyFuncP{}\n".format(self.PrevId))
 		if self.Type.Id != GetType("void").Id and not self.ReserveItem:
 			F.write("%Tmp{} = ".format(self.PrevId))
 		F.write("call ")
 		if self.PointCall == None:
-			self.CallFunc.PrintFType(F)
-			self.CallFunc.PrintName(F)
+			if self.VirtualCall != None:
+				self.CallFunc.PrintFType(F)
+				F.write("%FuncCall{}".format(self.PrevId))
+			else:
+				self.CallFunc.PrintFType(F)
+				self.CallFunc.PrintName(F)
 			if self.CallFunc.ReturnInInput != None:
 				Pars = [self.CallFunc.ReturnInInput] +self.CallFunc.Params
 			else:
@@ -1826,11 +1963,14 @@ class BoxFuncsCall:
 			self.Params[1] = BoxExc(self.Params[1],self.Params[0].Type)
 		
 	if self.IsMetod or (self.ToCall in AllOpers and self.Params[0].Type.Type == "class"):
-		if self.Params[0].Type.Type == "class":
-			self.Params[0].Type.Check()
-        		self.CallFunc = self.Params[0].Type.GetFunc(self.ToCall,self.Params)
+		if self.Params[0].Type.Type == "class" or (self.Params[0].Type.Type == "point" and self.Params[0].Type.Base.Type == "class"):
+			CType = self.Params[0].Type if self.Params[0].Type.Type == "class" else self.Params[0].Type.Base
+			CType.Check()
+        		self.CallFunc = CType.GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None:
 			self.CallFunc = GetFunc(self.ToCall , self.Params, True)
+		if self.CallFunc != None and self.CallFunc.IsVirtual:
+			self.VirtualCall = self.CallFunc.InClass.GetVFuncPos(self.ToCall,self.Params)
 	else:
         	self.CallFunc = GetFunc(self.ToCall,self.Params)
 		if self.CallFunc == None and self.ToCall not in AllOpers:
@@ -1935,6 +2075,9 @@ class BoxFuncsCall:
 	    if NewParams[i].Type.Type == "fixed" and CheckParamsType[i].Type == "point":
 		if NewParams[i].Type.Base.Id == CheckParamsType[i].Base.Id:
 			NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
+
+	    if NewParams[i].Type.Type == "point" and NewParams[i].Type.Base.Type == "class" and NewParams[i].Type.Base.Id == CheckParamsType[i].Id:
+			NewParams[i] = BoxRefCandy(NewParams[i])
 	    if NewParams[i].Type.Id != CheckParamsType[i].Id:
 		#print(len(NewParams[i].Type.Params))
 		#for It in CheckParams[i].Params:
@@ -2072,6 +2215,7 @@ class BoxFunc:
 	self.PreType = None
 	self.ReturnInInput = None
 	self.IsChecked = False
+	self.IsVirtual = False
 
 	if Paren != None:
 		self.Params.append(ParamChain(Paren,Token("id","this")))
@@ -2079,8 +2223,13 @@ class BoxFunc:
         if Obj == None:
             return None
         
-        if Obj.Extra[1].Value == "()":
-            Pars = Obj.Extra[1].Extra
+        i = 0
+	if Obj.Extra[i].Value == "virtual":
+		self.IsVirtual = True
+		i += 1
+	i += 1
+        if Obj.Extra[i].Value == "()":
+            Pars = Obj.Extra[i].Extra
             if len(Pars) > 0:
                 Pars.append(Token(',',','))
                 PArrs = []
@@ -2106,7 +2255,7 @@ class BoxFunc:
                 c.IsRef = False
 	    if Paren != None:
 		self.Params[0].IsRef = True
-        i = 2
+        i += 1
 	if Obj.Extra[i].Value == "->":
 		i += 1
 		if Obj.Extra[i].Value == "ref":

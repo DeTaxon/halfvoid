@@ -19,6 +19,8 @@ def NormalCheck(CParams,FParams,IsOper = False):
 			continue
 		if CParams[i].Type.Type == "class" and FParams[i].Type.Type == "class" and CParams[i].Type.InFamily(FParams[i].Type):
 			continue
+		if CParams[i].Type.Type == "point" and CParams[i].Type.Base.Type == "class" and FParams[i].Type.Id == CParams[i].Type.Base.Id and FParams[i].IsRef:
+			continue
 		if GoodPoints(FParams[i].Type,CParams[i].Type):
 			continue
 		if not IsOper and "u" in ShouldChange(CParams[i].Type,FParams[i].Type):

@@ -26,6 +26,14 @@ StrCopy := !(char^ a) -> char^
 	Pre[Si] = 0
 	return Pre
 }
+Copy := !(char^ this) -> char^
+{
+	Si := StrSize(this)
+	Pre := new char[Si+1]
+	for Si Pre[it] = this[it]
+	Pre[Si] = 0
+	return Pre
+}
 
 "in" := !(int chr, char^ str) -> bool
 {

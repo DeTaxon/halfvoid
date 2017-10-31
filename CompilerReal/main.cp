@@ -1,14 +1,36 @@
 
+A := class 
+{
+	printWow := virtual !() -> void
+	{
+		printf("no\n")
+	}
+}
+B := class extend A
+{
+	printWow := virtual !() -> void
+	{
+		printf("yes\n")
+	}
+}
+
 main := !(int argc,string[] argv) -> int 
 {
 	Buf := Queue.{Token^}()
 	GetTokensFromFile("Test.cp",Buf)
-	while Buf.NotEmpty()
+	Ob := TokensToObjects("Test.cp",Buf)
+
+	iter := Ob.Down
+	while iter != null
 	{
-		Tok := Buf.Pop()
-		printf("Token %s %i\n",Tok.Buff,Tok.Id)
-		free(Tok)
-	}	
+		iter.Print()
+		iter = iter.Right
+		printf("\n")
+	}
+	P := A^
+	R := new B
+	P = R
+	P.printWow()
 	return 0
 }
 
