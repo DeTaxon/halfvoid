@@ -1086,9 +1086,12 @@ class BoxClass:
 		for It in self.Fakes:
 			ContextStuff.append(It)
 		for It in self.Funcs:
-			It.Check()
+			for k in It.Params:
+				k.Check()
 			if self.VirtualFuncs != None and It.IsVirtual:
 				self.VirtualFuncs.TryReplace(It)
+		for It in self.Funcs:
+			It.Check()
 	def PrintInAlloc(self,F):
 		F.write("%Class{}".format(self.Id))
 	def PrintConst(self,F):
@@ -1854,7 +1857,7 @@ class BoxFuncsCall:
 		else:
         		NewParams[i].PrintPre(F)
 	if self.CallFunc == None or self.CallFunc.AsmLine == None: 
-        	self.PrevId = GetNumb()
+        	#self.PrevId = GetNumb()
 		if self.PointCall != None:
 			self.PointCall.PrintPre(F)
 		if self.VirtualCall != None:
@@ -1990,6 +1993,8 @@ class BoxFuncsCall:
 				if self.CallFunc != None:
 					self.Params = [AndThis] + self.Params
 					self.IsMetod = True
+					if  self.CallFunc.IsVirtual:
+						self.VirtualCall = self.CallFunc.InClass.GetVFuncPos(self.ToCall,self.Params)
 				
 	if self.CallFunc != None:
 		self.CallFunc.Check()

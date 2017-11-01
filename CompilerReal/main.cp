@@ -1,6 +1,10 @@
 
 A := class 
 {
+	Realy := !()->void
+	{
+		printWow()	
+	}
 	printWow := virtual !() -> void
 	{
 		printf("no\n")
@@ -10,7 +14,7 @@ B := class extend A
 {
 	printWow := virtual !() -> void
 	{
-		printf("yes\n")
+		printf("YES\n")
 	}
 }
 
@@ -29,8 +33,9 @@ main := !(int argc,string[] argv) -> int
 	}
 	P := A^
 	R := new B
+	R^.Realy()
 	P = R
-	P.printWow()
+	P.Realy()
 	return 0
 }
 
