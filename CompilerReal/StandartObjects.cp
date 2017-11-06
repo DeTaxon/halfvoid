@@ -1,5 +1,13 @@
 
-ObjInt := class extend Object
+ObjConst := class extend Object
+{
+	IsConst := virtual !() -> bool
+	{
+		return true
+	}
+}
+
+ObjInt := class extend ObjConst
 {
 	MyInt := s64
 	"this" := !(int Value) -> void
@@ -7,21 +15,126 @@ ObjInt := class extend Object
 		MyInt = Value
 		Clean()
 	}
-	Print := virtual !() -> void
+	Print := virtual !(int s) -> void
 	{
-		printf("int %i",MyInt")
+		for s printf("->")
+		printf("int %i\n",MyInt)
 	}	
 }
-ObjDouble := class extend Object
+ObjDouble := class extend ObjConst
 {
 	MyDouble := double
 	"this" := !(double Value) -> void
 	{
-		//MyInt = Value
+		MyDouble = Value
 		Clean()
 	}
-	Print := virtual !() -> void
+	Print := virtual !(int s) -> void
 	{
-		printf("double %f",MyDouble)
+		for s printf("->")
+		printf("double %f\n",MyDouble)
 	}	
+}
+
+ObjStr := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ str) -> void
+	{
+		Clean()
+		MyStr = str
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~str"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("string %s\n",MyStr)
+	}
+}
+ObjIndent := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ str) -> void
+	{
+		Clean()
+		MyStr = str
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("indent %s\n",MyStr)
+	}
+}
+
+ObjSymbol := class extend ObjConst
+{
+	MySymbol := char^
+	"this" := !(char^ sym) -> void
+	{
+		MySymbol = sym
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("symbol %s\n",MySymbol)
+	}
+}
+
+ObjSuffix := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ str) -> void
+	{
+		Clean()
+		MyStr = str
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~suffix"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("suffix %s\n",MyStr)
+	}
+}
+
+ObjCmd := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ st) -> void
+	{
+		Clean()
+		MyStr = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~cmd"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("cmd %s\n",MyStr)
+	}
+}
+ObjKeyword := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ st) -> void
+	{
+		Clean()
+		MyStr = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return MyStr
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("keyword %s\n",MyStr)
+	}
 }

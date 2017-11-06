@@ -14,7 +14,7 @@ StrSize := !(char^ a) -> int
 Size := !(char^ this) -> int
 {
 	Si := 0
-	while this[Si] Si += 1
+	while this[Si] != 0 Si += 1
 	return Si
 }
 

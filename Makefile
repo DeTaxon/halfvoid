@@ -14,7 +14,7 @@ a.exe: out.ll WinMain.cpp
 	
 
 out.ll: $(Sors)
-	python CompilerPython/main.py $(Files)
+	python2.7 CompilerPython/main.py $(Files)
 clean:
 	rm -f out.ll WinObj.o a.exe a.out
 

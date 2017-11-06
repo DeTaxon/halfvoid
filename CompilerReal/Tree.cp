@@ -1,27 +1,4 @@
 
-Object_NewLine :: 1
-Object_Int :: 2
-Object_Double :: 3
-Object_Char :: 4
-Object_Null :: 5
-Object_Ident :: 6
-Object_String :: 7
-Object_Suffix :: 8
-Object_MathOpers :: 9
-Object_CmpOpers :: 10
-Object_PrisOpers :: 11
-Object_File :: 12
-Object_LineInfo :: 13
-Object_KeyWord :: 14
-Object_Type :: 15
-Object_DoubleDot :: 16
-Object_TripleDot :: 17
-Object_Cmd :: 18
-//Object_Symbol :: represented by theyr own code !(){}[]^:\|/
-
-
-Object_Array :: 256
-
 Object := class{
 	Id := int
 	Left,Right,Down,Up := Object^
@@ -48,35 +25,20 @@ Object := class{
 	}
 	IsConst := virtual !() -> bool
 	{
-		if Id == Object_Int 	return true
-		if Id == Object_Double 	return true
-		if Id == Object_Char 	return true
-		if Id == Object_String 	return true
-		
-		// if Id == Object_Array ???
-
 		return false
 	}
-	
-	Print := virtual !() -> void
+	GetValue := virtual !() -> char^
 	{
-		if Id == Object_Int{
-			printf("int %i",Bag->{int^}^)
-		}
-		if Id == Object_Double{
-			printf("double %f",Bag->{double^}^)
-		}
-		if Id == Object_Suffix{
-			printf("Suffix %s",Bag->{char^})
-		}
-		if Id == Object_String{
-			printf("string %s",Bag->{char^})
-		}	
-		if Id == Object_Ident{
-			printf("indent %s",Bag->{char^})
-		}
-		if Id in "!{}[]()*.\\|/^&:;"{
-			printf("symbols %c",Bag->{char^})
+		return "~unknown"
+	}
+	Print := virtual !(int s) -> void {
+		for s printf("->")
+		printf("item: %s\n",GetValue())
+		End := this.Down
+		while End != null
+		{
+			End.Print(s+1)
+			End = End.Right
 		}
 	}
 }
@@ -86,6 +48,54 @@ PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^
 	Ad.Right = ToAdd
 	ToAdd.Left = Ad
 	return ToAdd
+}
+
+UNext := !(Object^ where,Object^ nObj, int count) -> void
+{
+	End := where
+	for count End = End.Right
+
+	if End != null {
+		End.Left.Right = null
+		End.Left = nObj
+		nObj.Right = End
+	}
+
+	if where.Left == null{
+		Upp := where.Up
+
+		Upp.Down = nObj
+		nObj.Down = where
+		nObj.Up = Upp
+
+	}else{
+		Ll := where.Left
+
+		Ll.Right = nObj
+		nObj.Left = Ll
+		nObj.Up = Ll.Up
+		where.Left = null
+	}
+
+	End = where
+	for count {
+		End.Up = nObj
+		End = End.Right
+	}
+}
+
+IsKeyword := !(char^ W) -> bool
+{
+	if W == "return" return true
+	if W == "for" return true
+	if W == "if" return true
+	if W == "and" return true
+	if W == "or" return true
+	if W == "xor" return true
+	if W == "not" return true
+	if W == "new" return true
+	if W == "delete" return true
+	return false
 }
 
 TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
@@ -100,7 +110,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 		Tok := Toks.Pop()
 		if Tok.Id == 11
 		{
-			NL := new Object(Object_NewLine)
+			NL := new Object(0)
 			while iter.Right != null
 			{
 				iter = iter.Right
@@ -109,7 +119,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 		}
 		if Tok.Id == 10
 		{
-			NS := new Object(Tok.Id)
+			NS := new ObjSymbol(Tok.Buff.Copy())
 			Adder = PushObject(Adder,NS)
 		}
 		if Tok.Id == 9
@@ -131,34 +141,35 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 				}	
 			}
 			DaBuff[j] = 0
-			NS := new Object(Object_String)
-			NS.Bag = DaBuff.Copy()
+			NS := new ObjStr(DaBuff.Copy())
 			Adder = PushObject(Adder,NS)
 		}
 		if Tok.Id == 1
 		{ 
-			if Tok.Buff[0] in "$@"
+			if Tok.Buff[0] in "$@#"
 			{
-				if Tok.Buff[0] == '$'
+				if Tok.Buff[0] == '#'
 				{
-					NS := new Object(Object_Cmd)
-					NS.Bag = Tok.Buff.Copy()
+					NS := new ObjCmd(Tok.Buff.Copy())
 					Adder = PushObject(Adder,NS)
 				}else{
-					NS := new Object(Object_Cmd)
-					NS.Bag = Tok.Buff.Copy()
+					NS := new ObjCmd(Tok.Buff.Copy())
 					Adder = PushObject(Adder,NS)
 				}
 			}else{
-				NS := new Object(Object_Ident)
-				NS.Bag = Tok.Buff.Copy()
-				Adder = PushObject(Adder,NS)
+				if IsKeyword(Tok.Buff)
+				{
+					NS := new ObjKeyword(Tok.Buff.Copy())
+					Adder = PushObject(Adder,NS)
+				}else{
+					NS := new ObjIndent(Tok.Buff.Copy())
+					Adder = PushObject(Adder,NS)
+				}
 			}
 		}
 		if Tok.Id == 2
 		{
 			Value := int
-			NV := new Object(Object_Int)
 			
 			Value = 0
 			
@@ -172,10 +183,8 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 				if Tok.Buff[k] in 'a'..'f' Value += Tok.Buff[k] - 'a' + 10
 				k += 1
 			}
-			PValue := new int
-			PValue[0] = Value
-			NV.Bag = PValue
-			Adder = PushObject(Adder,NV)
+			NV := new ObjInt(Value)
+			Adder = PushObject(Adder,NV->{Object^})
 		}
 		if Tok.Id == 3 or Tok.Id == 4
 		{
@@ -196,8 +205,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 
 			if Tok.Id == 4
 			{
-				NS := new Object(Object_Suffix)
-				NS.Bag = Tok.Buff[k]&.Copy()
+				NS := new ObjSuffix(Tok.Buff[k]&.Copy())
 				Adder = PushObject(Adder,NS)
 			}
 		}
@@ -217,7 +225,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 			k += 1 //.
 			while Tok.Buff[k] in '0'..'9'
 			{
-				Value += Tok.Buff[k]*Quant
+				Value += (Tok.Buff[k] - '0')*Quant
 				k += 1
 				Quant *= 0.1
 			}
@@ -225,16 +233,12 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 			{
 				// not now
 			}
-			NV := new Object(Object_Double)
-			PValue := new double
-			PValue[0] = Value
-			NV.Bag = PValue
-			Adder = PushObject(Adder,NV)
+			NV := new ObjDouble(Value->{double})
+			Adder = PushObject(Adder,NV->{Object^})
 
 			if Tok.Buff[k] != 0
 			{
-				NS := new Object(Object_Suffix)
-				NS.Bag = Tok.Buff[k]&.Copy()
+				NS := new ObjSuffix(Tok.Buff[k]&.Copy())
 				Adder = PushObject(Adder,NS)
 			}
 			

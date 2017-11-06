@@ -684,6 +684,8 @@ class BoxNew:
 		self.Pars = []
 		self.ToUse = None
 		self.AddedThis = False
+		self.Line = Obj.Line
+		self.InFile = Obj.InFile
 		
 		U = Obj.Extra[1]
 		if U.Value == "d()":
@@ -774,7 +776,7 @@ class BoxNew:
 			it.Check()
 		self.Type = ParseType(self.PreType)
 		if self.Type == None:
-			raise ValueError("Not found type")
+			raise ValueError("Not found type at line {} in file {}".format(self.Line,self.InFile))
 		if self.Size != None:
 			self.Size.Check()
 			if self.Size.Type.Id != GetType("int").Id:
@@ -785,6 +787,7 @@ class BoxNew:
 				self.AddedThis = True
 			if self.Type.Type != "class":
 				raise ValueError("Not a class")
+			self.Type.Check()
 			self.ToUse = self.Type.GetFunc("this",self.Pars)
 			if self.ToUse == None:
 				raise ValueError("Constructor not found")
@@ -1068,8 +1071,8 @@ class BoxClass:
 			if self.ToExtend == None or self.ToExtend.Value != "~class":
 				raise ValueError("Nothing to extend")
 			self.ToExtend.Check()
-			self.Items = self.Items + self.ToExtend.Items 
-			self.Fakes = self.Fakes + self.ToExtend.Fakes
+			self.Items = self.ToExtend.Items  + self.Items
+			self.Fakes = self.ToExtend.Fakes  + self.Fakes
 			if self.ToExtend.VirtualFuncs != None:
 				self.VirtualFuncs = self.ToExtend.VirtualFuncs.CloneIt()
 		if self.VirtualFuncs == None:
@@ -1362,6 +1365,7 @@ class BoxReturn:
 		self.Ret = GetUse(Obj.Extra[1])
 		self.RetRef = False
 	def PrintConst(self,F):
+		self.Ret.PrintConst(F)
 		return None
 	def PrintFunc(self,F):
 		return None
@@ -2081,6 +2085,11 @@ class BoxFuncsCall:
 		continue
 	    if NewParams[i].Type.Type == "class":
 		NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
+		continue
+	    if NewParams[i].Type.Type == "point" and CheckParamsType[i].Type == "point":
+	    	if NewParams[i].Type.Base.Type == "class" and CheckParamsType[i].Base.Type == "class":
+	    		if NewParams[i].Type.Base.InFamily(CheckParamsType[i].Base):
+				NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
 		continue
 	    if "u" in ShouldChange(NewParams[i].Type,CheckParamsType[i]):
 		NewParams[i] = BoxExc(NewParams[i],CheckParamsType[i])
