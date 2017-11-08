@@ -50,10 +50,34 @@ PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^
 	return ToAdd
 }
 
+Remove := !(Object^ where ) -> void
+{
+	if where.Left == null and where.Right == null
+	{
+		where.Up.Down = null
+		free(where)
+	}else if where.Left == null
+	{
+		where.Up.Down = where.Right
+		where.Right.Left = null
+		free(where)
+	}else //if where.Right == null
+	{
+		where.Left.Right = where.Right
+		if where.Right != null where.Right.Left = where.Left
+		free(where)
+	}
+}
+
 UNext := !(Object^ where,Object^ nObj, int count) -> void
 {
-	End := where
-	for count End = End.Right
+	Last := where
+	for count-1 Last = Last.Right
+	UNext(where,nObj,Last)
+}
+UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
+{
+	End := Last.Right
 
 	if End != null {
 		End.Left.Right = null
@@ -73,12 +97,13 @@ UNext := !(Object^ where,Object^ nObj, int count) -> void
 
 		Ll.Right = nObj
 		nObj.Left = Ll
+		nObj.Down = where
 		nObj.Up = Ll.Up
 		where.Left = null
 	}
 
 	End = where
-	for count {
+	while End != null {
 		End.Up = nObj
 		End = End.Right
 	}
@@ -95,6 +120,8 @@ IsKeyword := !(char^ W) -> bool
 	if W == "not" return true
 	if W == "new" return true
 	if W == "delete" return true
+	if W == "switch" return true
+	if W == "case" return true
 	return false
 }
 

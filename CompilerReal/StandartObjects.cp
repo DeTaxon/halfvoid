@@ -76,6 +76,10 @@ ObjSymbol := class extend ObjConst
 	{
 		MySymbol = sym
 	}
+	GetValue := virtual !() -> char^
+	{
+		return MySymbol
+	}
 	Print := virtual !(int s) -> void
 	{
 		for s printf("->")

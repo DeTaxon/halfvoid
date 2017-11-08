@@ -706,6 +706,8 @@ class BoxNew:
 			self.Size.PrintConst(F)
 		if self.Extra != None:
 			self.Extra.PrintConst(F)
+		for it in self.Pars:
+			it.PrintConst(F)
 	def PrintFunc(self,F):
 		if self.Size != None:
 			self.Size.PrintFunc(F)

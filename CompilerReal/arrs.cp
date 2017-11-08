@@ -32,9 +32,9 @@ Stack := class !{T}
 	Pop := !() -> T
 	{
 		Prev := Start.Data
-		Later := Start.Next
-		free(Start)
-		Start = Later
+		Later := Start
+		Start = Start.Next
+		free(Later)
 		return Prev
 	}
 	Size := !() -> int
@@ -61,6 +61,10 @@ Stack := class !{T}
 	NotEmpty := !() -> bool
 	{
 		return Start != null
+	}
+	Empty := !() -> bool
+	{
+		return Start == null
 	}
 	"[]" := !(int Ind) -> ref T
 	{
