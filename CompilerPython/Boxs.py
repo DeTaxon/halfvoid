@@ -53,6 +53,8 @@ def SearchFunc(Name,Pars,Arr, SearchThis = False):
 			continue
 	    else:
 		It = Itc
+	    if not hasattr(It,"Params"):
+	    	return None
 	    if len(It.Params) > 0 and  (SearchThis != (It.Params[0].Name == "this")):
 		continue
             WrongValue = False
@@ -69,7 +71,7 @@ def SearchFuncClose(Name,Arr, SearchThis = False):
     WrongValue = False
     for i in reversed(range(len(Arr))):
 	Itc = Arr[i]
-        if Itc.Name == Name :
+        if Itc.Name == Name:
 		return Itc
     return None
 
@@ -79,7 +81,7 @@ def GetParam(Name, GetFPoint = False):
 	It = ContextStuff[i]
 	if It.Name != Name:
 		continue
-	if GetFPoint  and(It.Type == None or (It.Type.Type != "funcp") or (It.IsRef == False)):
+	if GetFPoint  and(It.Type == None or (It.Type.Type != "funcp") or (It.IsRef != False)):
 		continue
         return It
     if Name in ConstTable:	
@@ -1857,8 +1859,15 @@ class BoxFuncsCall:
 	else:
 		NewParams = self.Params
 		StartI = 0
+	
+	FPars = []
+	if self.CallFunc != None:
+		FPars = self.CallFunc.Params
+	if self.PointCall != None:
+		FPars = self.PointCall.Params
+
 	for i in range(StartI,len(NewParams)):
-		if i < len(self.CallFunc.Params) and self.CallFunc.Params[i].IsRef:
+		if i < len(FPars) and FPars[i].IsRef:
         		NewParams[i].PrintPointPre(F)
 		else:
         		NewParams[i].PrintPre(F)
@@ -1909,14 +1918,14 @@ class BoxFuncsCall:
 				Pars = self.CallFunc.Params
 		else:
 			self.Type.PrintUse(F)
-			F.write(" " + "%Tmp{}".format(self.PointCall.PrevId))
+			F.write(" {}".format(self.PointCall.GetName()))
 			#F.write("%Tmp{}".format(MiniId))
 			Pars = self.PointCall.Type.Params
 		F.write("(")
 		for i in range(len(NewParams)):
 			if i > 0:
 				F.write(",")
-			if i < len(Pars) and Pars[i].IsRef:
+			if i < len(Pars) and self.PointCall == None and Pars[i].IsRef:
         			NewParams[i].PrintPointUse(F)
 			else:
         			NewParams[i].PrintUse(F)

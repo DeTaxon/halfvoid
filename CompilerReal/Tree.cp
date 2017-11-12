@@ -69,11 +69,12 @@ Remove := !(Object^ where ) -> void
 	}
 }
 
-UNext := !(Object^ where,Object^ nObj, int count) -> void
+UNext := !(Object^ where,Object^ nObj, int count) -> Object^
 {
 	Last := where
 	for count-1 Last = Last.Right
 	UNext(where,nObj,Last)
+	return nObj
 }
 UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
 {

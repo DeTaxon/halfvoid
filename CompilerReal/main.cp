@@ -5,6 +5,7 @@ main := !(int argc,string[] argv) -> int
 	GetTokensFromFile("Test.cp",Buf)
 	Ob := TokensToObjects("Test.cp",Buf)
 	iter := UniteSkobs(Ob.Down)
+	SyntaxCompress(Ob)
 	Ob.Print(0)
 	if iter != null printf("error iter\n")
 

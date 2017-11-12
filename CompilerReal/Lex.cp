@@ -52,8 +52,9 @@ GenerateMachine := !() -> Machine^
 	//25: less2
 	//26: big
 	//27: big2
+	//28: ->
 
-	Size := 28 //bound check??
+	Size := 29 //bound check??
 
 	begin.Lines = new Line[Size]
 
@@ -83,6 +84,9 @@ GenerateMachine := !() -> Machine^
 	begin.Lines[22].Id = 10
 	begin.Lines[22].GoTo['='] = 23
 	begin.Lines[23].Id = 10
+
+	begin.Lines[22].GoTo['>'] = 28
+	begin.Lines[28].Id = 10
 	
 	begin.Lines[0].GoTo['<'] = 24
 	for i : !['<','='] begin.Lines[24].GoTo['<'] = 25

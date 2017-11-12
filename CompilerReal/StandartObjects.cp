@@ -15,6 +15,10 @@ ObjInt := class extend ObjConst
 		MyInt = Value
 		Clean()
 	}
+	GetValue := virtual !() -> char^
+	{
+		return "~int"
+	}
 	Print := virtual !(int s) -> void
 	{
 		for s printf("->")
@@ -28,6 +32,10 @@ ObjDouble := class extend ObjConst
 	{
 		MyDouble = Value
 		Clean()
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~float"
 	}
 	Print := virtual !(int s) -> void
 	{
@@ -61,6 +69,10 @@ ObjIndent := class extend ObjConst
 	{
 		Clean()
 		MyStr = str
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~ind"
 	}
 	Print := virtual !(int s) -> void
 	{
@@ -142,3 +154,29 @@ ObjKeyword := class extend ObjConst
 		printf("keyword %s\n",MyStr)
 	}
 }
+
+ObjObj := class extend Object
+{
+	MyStr := char^
+	"this" := !(char^ st) -> void
+	{
+		Clean()
+		MyStr = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return MyStr
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("object %s\n",MyStr)
+
+		iter := Down
+		while iter != null {
+			iter.Print(s+1)
+			iter = iter.Right
+		}
+	}
+}
+
