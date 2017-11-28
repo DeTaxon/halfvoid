@@ -109,7 +109,7 @@ GenerateMachine := !() -> Machine^
 
 	// word id 1
 	for i : !['a'..'z','A'..'Z','_','$','@','#'] begin.Lines[0].GoTo[i] = 2
-	for i : !['a'..'z','A'..'Z','_'] 	begin.Lines[2].GoTo[i] = 2
+	for i : !['a'..'z','A'..'Z','0'..'9','_'] 	begin.Lines[2].GoTo[i] = 2
 	begin.Lines[2].Id = 1
 
 	//number

@@ -1,19 +1,77 @@
-Type_Standart :: 1
-Type_Point :: 2
-Type_Fixed :: 3
-Type_FuncP :: 4
 
+TypeTable := Queue.{Type^}
 
 Type := class {
 	Id := int
 	Base := Type^
-	IRName := char^
 	ItType := int
 	
-	"this" := !() -> void
+	this := !() -> void
+	{
+		Clean()
+	}
+	Clean := !() -> void
 	{
 		Base = null
-		IRName = null
 		ItType = 0
 	}
+	GetType := !() -> string
+	{
+		return ""
+	}
+
+}
+
+TypeStandart := class extend Type{
+	IRName := string
+	
+	this := !(string Name) -> void
+	{
+		IRName = Name 
+		Clean()
+	}
+	GetType := !() -> string
+	{
+		return "standart"
+	}
+}
+
+TypePoint := class extend Type
+{
+	this := !(Type^ nBase) -> void
+	{
+		Clean()
+		Base = nBase
+	}
+	GetType := !() -> string
+	{
+		return "point"
+	}
+}
+
+TypeArr := class extend Type
+{
+	Size := int
+	this := !(Type^ B, int S) -> void
+	{
+		Base = B
+		Size = S
+	}
+	GetType := !() -> string
+	{
+		return "arr"
+	}
+}
+
+CreateStandart := !() -> void
+{
+	TypeTable.Push(new TypeStandart("i8"))	
+	TypeTable.Push(new TypeStandart("i16"))	
+	TypeTable.Push(new TypeStandart("i32"))	
+	TypeTable.Push(new TypeStandart("i64"))
+
+	TypeTable.Push(new TypeStandart("i8"))	
+	TypeTable.Push(new TypeStandart("i16"))	
+	TypeTable.Push(new TypeStandart("i32"))	
+	TypeTable.Push(new TypeStandart("i64"))	
 }

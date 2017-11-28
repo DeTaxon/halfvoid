@@ -3,7 +3,6 @@ Object := class{
 	Id := int
 	Left,Right,Down,Up := Object^
 	Line :=  Object^
-	Bag := void^
 
 	Clean := !() -> void
 	{
