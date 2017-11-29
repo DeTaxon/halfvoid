@@ -8,7 +8,6 @@ main := !(int argc,string[] argv) -> int
 	Ob := TokensToObjects("Test.cp",Buf)
 	iter := UniteSkobs(Ob.Down)
 	SyntaxCompress(Ob)
-	Ob.Print(0)
 
 	if iter != null printf("error iter\n")
 	else
@@ -16,6 +15,7 @@ main := !(int argc,string[] argv) -> int
 		//item.ParseMeta()
 		CollectParams(Ob)
 	}	
+	Ob.Print(0)
 
 	return 0
 }

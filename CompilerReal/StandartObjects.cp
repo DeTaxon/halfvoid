@@ -181,3 +181,33 @@ ObjObj := class extend Object
 	}
 }
 
+ObjParam := class extend Object
+{
+	MyStr := char^
+	"this" := !(char^ st) -> void
+	{
+		Clean()
+		MyStr = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "i:=1"
+	}
+	GetName := virtual !() -> char^
+	{
+		return MyStr
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("param %s\n",MyStr)
+
+		iter := Down
+		while iter != null {
+			iter.Print(s+1)
+			iter = iter.Right
+		}
+	}
+	
+}
+

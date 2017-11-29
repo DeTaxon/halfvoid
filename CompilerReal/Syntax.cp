@@ -120,19 +120,36 @@ RuleCmd := !(void^ itr) -> int
 
 RuleParam := !(void^ itr) -> int
 {
+	size := 0
+
 	It := itr->{Object^}
 
 	if It.GetValue() != "~ind" and It.GetValue() != "~str" return 0
 
 	It = It.Right
 	if It == null return 0
+	size += 1
+
+	while It.GetValue() == ","
+	{
+		It = It.Right
+		if It == null return 0
+		
+		if It.GetValue() != "~ind" and It.GetValue() != "~str" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
 	if It.GetValue() != ":=" return 0
 
 	It = It.Right
 	if It == null return 0
 	if not InDataR(It) return 0
 
-	return 3
+	return size + 2
 }
 
 RuleRight := !(void^ itr) -> int
