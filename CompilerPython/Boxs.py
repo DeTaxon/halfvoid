@@ -632,8 +632,12 @@ class ParamChain:
 		F.write(" @{}".format(self.Name))
 		return None
 	if self.Type.Type == "fixed":
-		GetPoint(self.Type).PrintUse(F)
-		F.write(" %Tmp{}".format(self.PrevId))
+		if self.IsGlobal:
+			GetPoint(self.Type).PrintUse(F)
+			F.write(" %Tmp{}".format(self.PrevId))
+		else:
+			GetPoint(self.Type).PrintUse(F)
+			F.write(" %Tmp{}".format(self.PrevId))
 	else:
 		GetPoint(self.Type).PrintUse(F)
 		if self.IsGlobal:
@@ -1500,7 +1504,7 @@ class BoxParamCall:
         #self.Type = self.CallFunc.RetType
         return None
     def PrintPointPre(self,F):
-        #Tempt TEMP
+    	self.Object.PrintPointPre(F)
         return None
     def PrintPointUse(self,F):
 	self.Object.PrintPointUse(F) #TODO: check

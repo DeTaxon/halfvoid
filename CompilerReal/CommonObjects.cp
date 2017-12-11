@@ -1,5 +1,4 @@
 
-
 GetItem := !(string name, Object^ start) -> Object^
 {
 	iter := start
@@ -13,7 +12,12 @@ GetItem := !(string name, Object^ start) -> Object^
 		}
 		if iter.Left != null iter = iter.Left else iter = iter.Up
 	}
-
+	
+	for SomeDef : DefsTable
+	{
+		if SomeDef.ItName == name return SomeDef->{Object^}
+	}
+	
 	return null
 }
 
