@@ -21,13 +21,14 @@ Stack := class !{T}
 	{
 		Start = null
 	}
-	Push := !(T a) -> void
+	Push := !(T a) -> int
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
 		} else {
 			Start = new Node.{T}(a,Start)
 		}
+		return 0
 	}
 	Pop := !() -> T
 	{
@@ -92,15 +93,15 @@ Stack := class !{T}
 		}
 		return ToOut
 	}
-	"for" := !() -> ref T
-	{
-		Iter := Start
-		while Iter
-		{	
-			block(Iter.Data)
-			Iter = Iter.Next
-		}
-	}
+	//"for" := !() -> ref T
+	//{
+	//	Iter := Start
+	//	while Iter
+	//	{	
+	//		block(Iter.Data)
+	//		Iter = Iter.Next
+	//	}
+	//}
 }
 
 Queue := class !{T} extend Stack.{T}
@@ -109,7 +110,7 @@ Queue := class !{T} extend Stack.{T}
 	{
 		Start = null
 	}
-	Push := !(T a) -> void
+	Push := !(T a) -> int
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
@@ -118,6 +119,33 @@ Queue := class !{T} extend Stack.{T}
 			while Iter.Next Iter = Iter.Next
 			Iter.Next = new Node.{T}(a)
 		}
+		return 0
+	}
+}
+QueueSet := class !{T} extend Stack.{T}
+{
+	this := !() -> void
+	{
+		Start = null
+	}
+	Push := !(T a) -> int
+	{
+		if Start == null {
+			Start = new Node.{T}(a)
+		} else {
+			Iter := Start
+			while Iter.Next 
+			{
+				if Iter.Data == a
+					return 0
+
+				Iter = Iter.Next
+			}
+			if Iter.Data == a
+				return 0
+			Iter.Next = new Node.{T}(a)
+		}
+		return 0
 	}
 }
 
@@ -157,6 +185,30 @@ Map := class !{TKey,TValue}
 		}
 		Start = new DoubleNode.{TKey,TValue}(look,Start)
 		return Start.Value
+	}
+	Set := !(TKey k, TValue v) -> void
+	{
+		iter := Start
+		while iter
+		{
+			if iter.Key == k 
+			{
+				iter.Value = v
+			}
+			iter = iter.Next
+		}
+		Start = new DoubleNode.{TKey,TValue}(k,Start)
+		Start.Value = v
+	}
+	Exist := !(TKey key) -> bool
+	{
+		iter := Start
+		while iter != null
+		{
+			if iter.Key == key return true
+			iter = iter.Next
+		}
+		return false
 	}
 	Delete := !() -> void
 	{

@@ -21,6 +21,25 @@ GetItem := !(string name, Object^ start) -> Object^
 	return null
 }
 
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> Object^
+{
+	iter := start
+	while iter != null
+	{
+		if iter.GetValue() == "i:=1"
+		{
+			AsNeed := iter->{ObjParam^}
+			if(AsNeed->GetName() == name)
+			{
+				//TODO: check params
+				return iter
+			}
+		}
+		if iter.Left != null iter = iter.Left else iter = iter.Up
+	}
+	return null
+}
+
 ReplaceNode := !(Object^ what, Object^ with) -> void
 {
 	wiEnd := with

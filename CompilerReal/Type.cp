@@ -28,6 +28,18 @@ Type := class {
 
 }
 
+ParseType := !(Object^ Node) -> Type^
+{
+	if Node == null return null
+
+	if Node.GetValue() == "~ind"
+	{
+		NodeName := GetItem(Node->{ObjIndent^}.MyStr,Node)
+		if NodeName == null return null
+	}
+	return null
+}
+
 TypeDef := class extend Object
 {
 	ItName := string
@@ -67,6 +79,8 @@ TypePoint := class extend Type
 		return "point"
 	}
 }
+
+
 
 TypeArr := class extend Type
 {

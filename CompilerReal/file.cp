@@ -42,7 +42,7 @@ sfile := class extend file
 	readline := !() -> char^
 	{
 		Buff := char[4096]
-		if fgets(Buff,4096,Handle) == null return null
+		if fgets(Buff,4096,Handle) == null return ""
 		return StrCopy(Buff)
 	}	
 }

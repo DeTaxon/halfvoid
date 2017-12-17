@@ -1,5 +1,11 @@
 
-ObjConst := class extend Object
+
+ObjResult := class extend Object
+{
+	ResultType := Type^
+}
+
+ObjConst := class extend ObjResult
 {
 	IsConst := virtual !() -> bool
 	{

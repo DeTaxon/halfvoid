@@ -5,6 +5,7 @@ InDataR := !(Object^ obj) -> bool
 	Val := obj.GetValue()
 
 	if Val == "~dm" return true
+	if Val == "~dr" return true
 	if Val == "~ind" return true
 	if Val == "double" return true
 	if Val == "~int" return true
@@ -41,7 +42,7 @@ StupidWhile := !(Object^ begin) -> bool
 	iter := begin.Down
 	GotStuff := false
 
-	if RuleUse(begin,"~dm",RuleRight) return true
+	if RuleUse(begin,"~dr",RuleRight) return true
 
 	if RuleUse(begin,"~dm",RuleTwoFuncMul) return true
 	if RuleUse(begin,"~dm",RuleTwoFuncAdd) return true
