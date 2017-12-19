@@ -1372,6 +1372,8 @@ class BoxReturn:
 		self.Value = "~ret"
 		self.Ret = GetUse(Obj.Extra[1])
 		self.RetRef = False
+		self.ToCall = None
+		self.Line = Obj.Line
 	def PrintConst(self,F):
 		self.Ret.PrintConst(F)
 		return None
@@ -1385,11 +1387,29 @@ class BoxReturn:
 		self.RetType = L.Type
 		if self.Ret.Type.Id != L.Type.Id and (GoodPoints(self.Ret.Type, L.Type) or GoodPoints(L.Type,self.RetType)):
 			self.Ret = BoxExc(self.Ret,L.Type)
+		if L.ReturnInInput != None:
+			self.RetParam = GetUse(Token("id","ret"))
+			self.RetParam.Check()
+			self.ToCall = GetFunc("=",[self.RetParam,self.Ret])
+			if self.ToCall == None:
+				if L.Type.Type == "class":
+					self.ToCall = L.Type.GetFunc("=",[self.RetParam,self.Ret])
+				if self.ToCall == None:
+					raise ValueError("can not return value at line {}".format(self.Line))
 	def PrintPre(self,F):
+		if self.ToCall != None:
+			self.RetParam.PrintPointPre(F)
+			if self.ToCall.Params[1].IsRef:
+				self.Ret.PrintPointPre(F)
+			else:
+				self.Ret.PrintPre(F)
 		return None
 	def PrintAlloc(self,F):
 		return None
 	def PrintUse(self,F):
+		if self.ToCall != None:
+			self.ToCall.PrintUse(F,GetNumb(),[self.RetParam,self.Ret])
+			return None
 		if self.RetRef:
 			self.Ret.PrintPointPre(F)
 			F.write("ret ")
@@ -1964,6 +1984,10 @@ class BoxFuncsCall:
 		self.PrintPre(F)
 	return None
     def PrintPointUse(self,F):
+    	if self.RetRef:
+		GetPoint(self.Type).PrintUse(F)
+		F.write(" %Tmp{}".format(self.PrevId))
+		return None
 	GetPoint(self.Type).PrintUse(F)
 	F.write(" %Tmp{}".format(self.ConstrId))
     def GetPName(self):
@@ -2266,6 +2290,7 @@ class BoxFunc:
 		i += 1
 	i += 1
         if Obj.Extra[i].Value == "()":
+	    self.Line = Obj.Extra[i].Line
             Pars = Obj.Extra[i].Extra
             if len(Pars) > 0:
                 Pars.append(Token(',',','))
@@ -2376,7 +2401,7 @@ class BoxFunc:
                 if i > 0:
 			F.write(",")
                 NewPars[i].PrintParam(F)
-        F.write(")" + "; {}\n".format(self.Name))
+        F.write(")" + "; {} {}\n".format(self.Name,self.Line))
         if self.Block == None:
             return None
         F.write("{\n")

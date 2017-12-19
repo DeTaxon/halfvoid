@@ -85,7 +85,7 @@ PriorityBag := class
 
 						if not machIter.WhatNext.Exist(someWord.Data)
 						{
-							machIter.WhatNext.Set(someWord.Data, new MiniMachineNode())
+							machIter.WhatNext[someWord.Data] =  new MiniMachineNode()
 						}
 						machIter = machIter.WhatNext[someWord.Data]
 						someWord = someWord.Next

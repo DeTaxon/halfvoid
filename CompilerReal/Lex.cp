@@ -3,6 +3,12 @@ Line := class {
 	GoTo := char[256]
 	Id := s8
 	RevertChars := u8
+	"=" := !(Line ot) -> void
+	{
+		for i : 256 this.GoTo[i] = ot.GoTo[i]
+		this.Id = ot.Id
+		this.RevertChars = ot.RevertChars
+	}
 }
 
 Machine := class{
@@ -14,10 +20,12 @@ Machine := class{
 	}	
 }
 
-GenerateMachine := !() -> Machine^
+
+GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 {
 	begin := new Machine()
 	
+	forOpers := Queue.{Line}()
 	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11
 
 	//0: begin
@@ -46,116 +54,141 @@ GenerateMachine := !() -> Machine^
 	//19: strEnd - 9
 
 	//20: symbols - 10
-	//22: opers - 10
-	//23: operstwo - 10
-	//24: less
-	//25: less2
-	//26: big
-	//27: big2
-	//28: ->
 
-	Size := 29 //bound check??
+	Size := 22 //bound check??
 
-	begin.Lines = new Line[Size]
+	//begin.Lines = new Line[Size]
+	PreLines := Queue.{Line}()
+	EmptyLine := Line
+	for i : 256 EmptyLine.GoTo[i] = 1 
+	for i : Size PreLines.Push(EmptyLine)
 
 	// clean
-	for i : Size for j : 256 begin.Lines[i].GoTo[j] = 1
+	//for i : Size for j : 256 begin.Lines[i].GoTo[j] = 1
 	for j : 256 
 	{
-		begin.Lines[0].GoTo[j] = 1
-		begin.Lines[j].RevertChars = 0
+		PreLines[0].GoTo[j] = 1
+		//PreLines[0].RevertChars = 0 // какого фига это делает
 	}
-	begin.Lines[1].Id = -1
-	begin.Lines[1].RevertChars = 1
-	begin.Lines[16].Id = -1
-	begin.Lines[16].RevertChars = 0
-	begin.Lines[21].Id = -1
-	begin.Lines[21].RevertChars = 2
 	
-	for i : 256 begin.Lines[0].GoTo[i] = 16	
+	PreLines[1].Id = -1
+	PreLines[1].RevertChars = 1
+	PreLines[16].Id = -1
+	PreLines[16].RevertChars = 0
+	PreLines[21].Id = -1
+	PreLines[21].RevertChars = 2
+	
+	//for i : 256 PreLines[0].GoTo[i] = 16	
 
 	//symbols
-	for i : "{}[]()@$^&;?.,|" begin.Lines[0].GoTo[i] = 20
-	begin.Lines[20].GoTo['.'] = 20
-	begin.Lines[20].Id = 10
-	
+	for i : "{}[]()@$^&;?.,|" PreLines[0].GoTo[i] = 20
+	PreLines[20].GoTo['.'] = 20
+	PreLines[20].Id = 10
+
 	//opers
-	for i : "!:+-*/%=" begin.Lines[0].GoTo[i] = 22
-	begin.Lines[22].Id = 10
-	begin.Lines[22].GoTo['='] = 23
-	begin.Lines[23].Id = 10
+	//for i : "!:+-*/%=" PreLines[0].GoTo[i] = 22
+	//PreLines[22].Id = 10
+	//PreLines[22].GoTo['='] = 23
+	//PreLines[23].Id = 10
 
-	begin.Lines[22].GoTo['>'] = 28
-	begin.Lines[28].Id = 10
-	
-	begin.Lines[0].GoTo['<'] = 24
-	for i : !['<','='] begin.Lines[24].GoTo['<'] = 25
-	begin.Lines[24].Id = 10
-	begin.Lines[25].Id = 10
+	//PreLines[22].GoTo['>'] = 28
+	//PreLines[28].Id = 10
+	//
+	//PreLines[0].GoTo['<'] = 24
+	//for i : !['<','='] PreLines[24].GoTo['<'] = 25
+	//PreLines[24].Id = 10
+	//PreLines[25].Id = 10
 
-	begin.Lines[0].GoTo['>'] = 26
-	for i : !['>','='] begin.Lines[24].GoTo['>'] = 27
-	begin.Lines[26].Id = 10
-	begin.Lines[27].Id = 10
+	//PreLines[0].GoTo['>'] = 26
+	//for i : !['>','='] PreLines[24].GoTo['>'] = 27
+	//PreLines[26].Id = 10
+	//PreLines[27].Id = 10
+
+	iter := Opers.Start
+	while iter != null
+	{
+		oper := iter.Data
+		j := 0
+		m := PreLines[0]&
+		while oper[j] != 0
+		{
+			if m.GoTo[oper[j]] == 1	{
+				newId := PreLines.Size()
+				newLine := Line
+				newLine.Id = 0
+				if oper[j+1] == 0 newLine.Id = 10
+				for k : 256 newLine.GoTo[k] = 1
+				PreLines.Push(newLine)
+				m.GoTo[oper[j]] = newId
+
+				m = PreLines[newId]&
+			}else{
+				m = PreLines[m.GoTo[oper[j]]]&
+				if oper[j+1] == 0 m.Id = 10
+			}
+			j += 1
+		}
+		iter = iter.Next
+	}
 
 	// string
-	begin.Lines[0].GoTo['"'] = 17
-	for i : 256 begin.Lines[17].GoTo[i] = 17
-	begin.Lines[17].GoTo['"'] = 19
-	begin.Lines[17].GoTo['\\'] = 18
-	for i : 256 begin.Lines[18].GoTo[i] = 17
-	begin.Lines[19].Id = 9
+	PreLines[0].GoTo['"'] = 17
+	for i : 256 PreLines[17].GoTo[i] = 17
+	PreLines[17].GoTo['"'] = 19
+	PreLines[17].GoTo['\\'] = 18
+	for i : 256 PreLines[18].GoTo[i] = 17
+	PreLines[19].Id = 9
 	
 
 	// word id 1
-	for i : !['a'..'z','A'..'Z','_','$','@','#'] begin.Lines[0].GoTo[i] = 2
-	for i : !['a'..'z','A'..'Z','0'..'9','_'] 	begin.Lines[2].GoTo[i] = 2
-	begin.Lines[2].Id = 1
+	for i : !['a'..'z','A'..'Z','_','$','@','#'] PreLines[0].GoTo[i] = 2
+	for i : !['a'..'z','A'..'Z','0'..'9','_'] 	PreLines[2].GoTo[i] = 2
+	PreLines[2].Id = 1
 
 	//number
-	for i : !['0'..'9'] begin.Lines[0].GoTo[i] = 3
+	for i : !['0'..'9'] PreLines[0].GoTo[i] = 3
 	
-	begin.Lines[3].GoTo['x'] = 4
-	begin.Lines[3].Id = 3
+	PreLines[3].GoTo['x'] = 4
+	PreLines[3].Id = 3
 	
-	for i : !['a'..'f','A'..'F','0'..'9','_'] begin.Lines[4].GoTo[i] = 5
-	begin.Lines[4].Id = 4
-	for i : !['a'..'f','A'..'F','0'..'9','_'] begin.Lines[5].GoTo[i] = 5
-	begin.Lines[5].Id = 2
+	for i : !['a'..'f','A'..'F','0'..'9','_'] PreLines[4].GoTo[i] = 5
+	PreLines[4].Id = 4
+	for i : !['a'..'f','A'..'F','0'..'9','_'] PreLines[5].GoTo[i] = 5
+	PreLines[5].Id = 2
 	
-	for i : !['0'..'9'] begin.Lines[3].GoTo[i] = 6
+	for i : !['0'..'9'] PreLines[3].GoTo[i] = 6
 
-	for i : !['0'..'9'] begin.Lines[6].GoTo[i] = 6
-	begin.Lines[6].Id = 3
+	for i : !['0'..'9'] PreLines[6].GoTo[i] = 6
+	PreLines[6].Id = 3
 
-	for i : !['a'..'z','A'..'Z'] begin.Lines[6].GoTo[i] = 7
-	for i : !['a'..'z','A'..'Z'] begin.Lines[7].GoTo[i] = 7
-	begin.Lines[7].Id = 4
+	for i : !['a'..'z','A'..'Z'] PreLines[6].GoTo[i] = 7
+	for i : !['a'..'z','A'..'Z'] PreLines[7].GoTo[i] = 7
+	PreLines[7].Id = 4
 
-	begin.Lines[6].GoTo['.'] = 8
-	begin.Lines[3].GoTo['.'] = 8
+	PreLines[6].GoTo['.'] = 8
+	PreLines[3].GoTo['.'] = 8
 	
-	begin.Lines[8].GoTo['.'] = 21
-	begin.Lines[9].Id = 3
+	PreLines[8].GoTo['.'] = 21
+	PreLines[9].Id = 3
 
-	for i : '0'..'9' begin.Lines[8].GoTo[i] = 10
-	for i : '0'..'9' begin.Lines[10].GoTo[i] = 10
-	begin.Lines[10].Id = 5
+	for i : '0'..'9' PreLines[8].GoTo[i] = 10
+	for i : '0'..'9' PreLines[10].GoTo[i] = 10
+	PreLines[10].Id = 5
 	
-	for i : !['a'..'z','A'..'Z'] begin.Lines[10].GoTo[i] = 11
-	for i : !['a'..'z','A'..'Z'] begin.Lines[11].GoTo[i] = 11
-	begin.Lines[11].Id = 6
+	for i : !['a'..'z','A'..'Z'] PreLines[10].GoTo[i] = 11
+	for i : !['a'..'z','A'..'Z'] PreLines[11].GoTo[i] = 11
+	PreLines[11].Id = 6
 
-	for i : !['e'] begin.Lines[10].GoTo[i] = 12
-	for i : !['-','+'] begin.Lines[12].GoTo[i] = 13
-	for i : !['0'..'9'] begin.Lines[12].GoTo[i] = 14
-	for i : !['0'..'9'] begin.Lines[13].GoTo[i] = 14
-	for i : !['0'..'9'] begin.Lines[14].GoTo[i] = 14
-	begin.Lines[14].Id = 7
+	for i : !['e'] PreLines[10].GoTo[i] = 12
+	for i : !['-','+'] PreLines[12].GoTo[i] = 13
+	for i : !['0'..'9'] PreLines[12].GoTo[i] = 14
+	for i : !['0'..'9'] PreLines[13].GoTo[i] = 14
+	for i : !['0'..'9'] PreLines[14].GoTo[i] = 14
+	PreLines[14].Id = 7
 	
-	for i : !['A'..'Z','a'..'z'] begin.Lines[14].GoTo[i] = 15
-	for i : !['A'..'Z','a'..'z'] begin.Lines[15].GoTo[i] = 15
-	begin.Lines[15].Id = 8
+	for i : !['A'..'Z','a'..'z'] PreLines[14].GoTo[i] = 15
+	for i : !['A'..'Z','a'..'z'] PreLines[15].GoTo[i] = 15
+	PreLines[15].Id = 8
 	
 	return begin
 }
@@ -179,12 +212,11 @@ GenerateToken := !(char^ Buuf, int id) -> Token^
 	return res
 }
 
-GetTokensFromFile := !(char^ Name, Queue.{Token^} ToFill) -> bool
+GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 {
 	Cp := sfile
 	Cp.open(Name,"r")
 
-	M := GenerateMachine()	
 	Buffer := char[1024]
 
 	LineNum := 1
