@@ -13,8 +13,15 @@ main := !(int argc,string[] argv) -> int
 	//	printf("oper <%s>\n",iterW.Data)
 	//	iterW = iterW.Next
 	//}
+	Pris.Opers.Push(":=")
 	Mach := GenerateMachine(Pris.Opers)
 	GetTokensFromFile("Test.cp", Mach,Buf)
+	iterC := Buf.Start
+	while iterC != null
+	{
+		printf("token %i <%s>\n",iterC.Data.Id,iterC.Data.Buff)
+		iterC = iterC.Next
+	}
 	return 0 
 	Ob := TokensToObjects("Test.cp",Buf)
 	iter := UniteSkobs(Ob.Down)

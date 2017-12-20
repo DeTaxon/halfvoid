@@ -7,5 +7,6 @@
 "d > d" "d < d" "d == d" "d != d" "d >= d" "d <= d"
 "d ?: d : d"
 "d and d" "d or d" "d xor d" "not d"
+"d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d << d" "d >> d" "d <- d"
 "d => d"

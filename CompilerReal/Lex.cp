@@ -2,12 +2,10 @@
 Line := class {
 	GoTo := char[256]
 	Id := s8
-	RevertChars := u8
 	"=" := !(Line ot) -> void
 	{
 		for i : 256 this.GoTo[i] = ot.GoTo[i]
 		this.Id = ot.Id
-		this.RevertChars = ot.RevertChars
 	}
 }
 
@@ -63,22 +61,11 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	for i : 256 EmptyLine.GoTo[i] = 1 
 	for i : Size PreLines.Push(EmptyLine)
 
-	// clean
-	//for i : Size for j : 256 begin.Lines[i].GoTo[j] = 1
-	for j : 256 
-	{
-		PreLines[0].GoTo[j] = 1
-		//PreLines[0].RevertChars = 0 // какого фига это делает
-	}
-	
 	PreLines[1].Id = -1
-	PreLines[1].RevertChars = 1
-	PreLines[16].Id = -1
-	PreLines[16].RevertChars = 0
+	PreLines[16].Id = -2
 	PreLines[21].Id = -1
-	PreLines[21].RevertChars = 2
 	
-	//for i : 256 PreLines[0].GoTo[i] = 16	
+	for i : 256 PreLines[0].GoTo[i] = 16	
 
 	//symbols
 	for i : "{}[]()@$^&;?.,|" PreLines[0].GoTo[i] = 20
@@ -86,23 +73,6 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	PreLines[20].Id = 10
 
 	//opers
-	//for i : "!:+-*/%=" PreLines[0].GoTo[i] = 22
-	//PreLines[22].Id = 10
-	//PreLines[22].GoTo['='] = 23
-	//PreLines[23].Id = 10
-
-	//PreLines[22].GoTo['>'] = 28
-	//PreLines[28].Id = 10
-	//
-	//PreLines[0].GoTo['<'] = 24
-	//for i : !['<','='] PreLines[24].GoTo['<'] = 25
-	//PreLines[24].Id = 10
-	//PreLines[25].Id = 10
-
-	//PreLines[0].GoTo['>'] = 26
-	//for i : !['>','='] PreLines[24].GoTo['>'] = 27
-	//PreLines[26].Id = 10
-	//PreLines[27].Id = 10
 
 	iter := Opers.Start
 	while iter != null
@@ -110,22 +80,25 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 		oper := iter.Data
 		j := 0
 		m := PreLines[0]&
+		AsLetter :=  oper[0] in 'a'..'z' or oper[0] in 'A'..'Z'
 		while oper[j] != 0
 		{
-			if m.GoTo[oper[j]] == 1	{
+			if m.GoTo[oper[j]] == 1 or m.GoTo[oper[j]] == 16 {
 				newId := PreLines.Size()
 				newLine := Line
 				newLine.Id = 0
-				if oper[j+1] == 0 newLine.Id = 10
 				for k : 256 newLine.GoTo[k] = 1
+				if oper[j+1] == 0 
+				{
+					printf("end? %s\n",oper)
+					newLine.Id = 10
+				}
+
 				PreLines.Push(newLine)
 				m.GoTo[oper[j]] = newId
-
-				m = PreLines[newId]&
-			}else{
-				m = PreLines[m.GoTo[oper[j]]]&
-				if oper[j+1] == 0 m.Id = 10
 			}
+
+			m = PreLines[m.GoTo[oper[j]]]&
 			j += 1
 		}
 		iter = iter.Next
@@ -190,6 +163,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	for i : !['A'..'Z','a'..'z'] PreLines[15].GoTo[i] = 15
 	PreLines[15].Id = 8
 	
+	begin.Lines = PreLines.ToArray()
 	return begin
 }
 
@@ -227,6 +201,7 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 		CurLine := Cp.readline()
 		if not Cp.good() return true		
 
+
 		Reverted.Push(0->{char})
 		L := CurLine.Size()
 		while L >= 0 
@@ -248,7 +223,8 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 			pos += 1
 			MPos = M.Lines[MPos].GoTo[Ch]
 			//printf("M %i C %c\n",MPos,Ch)
-			if M.Lines[MPos].Id == -1 and M.Lines[MPos].RevertChars == 0
+		//printf("crash?\n")
+			if M.Lines[MPos].Id == -2 
 			{
 				pos = 0
 				LastGoodPos = 0
@@ -267,7 +243,7 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 					}
 					Buffer[RealSize] = 0
 					ToFill.Push(GenerateToken(Buffer,LastGoodId))
-					//printf("%s %i\n",Tok.Buff,Tok.Id)
+					//printf("%s \n",Buffer)
 					pos = 0
 					LastGoodPos = 0
 					LastGoodId = 0
