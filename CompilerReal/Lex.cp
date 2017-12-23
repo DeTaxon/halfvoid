@@ -63,7 +63,6 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	PreLines[1].Id = -1
 	PreLines[16].Id = -2
-	PreLines[21].Id = -1
 	
 	for i : 256 PreLines[0].GoTo[i] = 16	
 
@@ -80,7 +79,6 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 		oper := iter.Data
 		j := 0
 		m := PreLines[0]&
-		AsLetter :=  oper[0] in 'a'..'z' or oper[0] in 'A'..'Z'
 		while oper[j] != 0
 		{
 			if m.GoTo[oper[j]] == 1 or m.GoTo[oper[j]] == 16 {
@@ -90,7 +88,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 				for k : 256 newLine.GoTo[k] = 1
 				if oper[j+1] == 0 
 				{
-					printf("end? %s\n",oper)
+					//printf("end? %s\n",oper)
 					newLine.Id = 10
 				}
 
@@ -99,6 +97,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 			}
 
 			m = PreLines[m.GoTo[oper[j]]]&
+			if oper[j+1] == 0 m.Id = 10
 			j += 1
 		}
 		iter = iter.Next
@@ -141,7 +140,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	PreLines[6].GoTo['.'] = 8
 	PreLines[3].GoTo['.'] = 8
 	
-	PreLines[8].GoTo['.'] = 21
+	PreLines[8].GoTo['.'] = 1
 	PreLines[9].Id = 3
 
 	for i : '0'..'9' PreLines[8].GoTo[i] = 10
@@ -222,7 +221,7 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 			Buffer[pos] = Ch
 			pos += 1
 			MPos = M.Lines[MPos].GoTo[Ch]
-			//printf("M %i C %c\n",MPos,Ch)
+		//	printf("M %i C %c\n",MPos,Ch)
 		//printf("crash?\n")
 			if M.Lines[MPos].Id == -2 
 			{

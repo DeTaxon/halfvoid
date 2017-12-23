@@ -4,13 +4,11 @@ InDataR := !(Object^ obj) -> bool
 {
 	Val := obj.GetValue()
 
-	if Val == "~dm" return true
-	if Val == "~dr" return true
+	if Val == "~d" return true
 	if Val == "~ind" return true
-	if Val == "double" return true
+	if Val == "~double" return true
 	if Val == "~int" return true
 	if Val == "~str" return true
-	if Val == "!()" return true
 	if Val == "~cmd" return true
 	return false
 }
@@ -20,7 +18,6 @@ RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
-	Pass := R
 
 	while iter != null
 	{
@@ -36,21 +33,39 @@ RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 	return GotStuff
 }
 
-
-StupidWhile := !(Object^ begin) -> bool
+RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode) -> bool
 {
-	iter := begin.Down
+	GotStuff := false
+	iter := Obj.Down
+
+	while iter != null
+	{
+		Try := RuleMachine(iter,MiniNode)
+		if Try > 0
+		{
+			iter = UNext(iter,new ObjObj(N),Try) 
+			GotStuff = true
+		}else{
+			iter = iter.Right
+		}
+	}
+	return GotStuff
+}
+
+
+StupidWhile := !(Object^ begin,PriorityBag bag ) -> bool
+{
+	//iter := begin.Down
 	GotStuff := false
 
-	if RuleUse(begin,"~dr",RuleRight) return true
+	iterBag := bag.Lines.Start
+	while iterBag != null
+	{
+		if RuleUseSome(begin,"~d",iterBag.Data) return true
+		iterBag = iterBag.Next
+	}
 
-	if RuleUse(begin,"~dm",RuleTwoFuncMul) return true
-	if RuleUse(begin,"~dm",RuleTwoFuncAdd) return true
 
-	if RuleUse(begin,"~dm",RuleTwoFuncLog) return true
-	if RuleUse(begin,"~dm",RuleTwoFuncShift) return true
-
-	if RuleUse(begin,"!()",RuleFunc) return true
 	if RuleUse(begin,"cmd()",RuleCmd) return true
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func
 	if RuleUse(begin,"~func r",RuleOneFunc) return true
@@ -59,7 +74,7 @@ StupidWhile := !(Object^ begin) -> bool
 }
 
 
-SyntaxCompress := !(Object^ begin) -> bool
+SyntaxCompress := !(Object^ begin, PriorityBag bag) -> bool
 {
 	if begin == null return true
 
@@ -69,15 +84,44 @@ SyntaxCompress := !(Object^ begin) -> bool
 
 	while iter != null
 	{
-		if iter.GetValue() == "{}" SyntaxCompress(iter)
-		if iter.GetValue() == "()" SyntaxCompress(iter)
-		if iter.GetValue() == "[]" SyntaxCompress(iter)
+		if iter.GetValue() == "{}" SyntaxCompress(iter, bag)
+		if iter.GetValue() == "()" SyntaxCompress(iter, bag)
+		if iter.GetValue() == "[]" SyntaxCompress(iter, bag)
 		iter = iter.Right
 	}
 
-	while GotWork GotWork = StupidWhile(begin)
+	while GotWork GotWork = StupidWhile(begin,bag)
 
 	return true
+}
+
+RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
+{
+	iterU := itr->{Object^}
+	iterNode := node
+	ToRet := 0
+	NowRet := 0
+
+	while iterU != null
+	{
+		if iterU == null return ToRet
+		iterVal := iterU.GetValue()
+		if InDataR(iterU) iterVal = "~d"
+		if iterNode.WhatNext.Exist(iterVal)
+		{
+			iterNode = iterNode.WhatNext[iterVal]
+			NowRet += 1
+			iterU = iterU.Right
+			if iterNode.IsTerm 
+			{
+				ToRet = NowRet
+			}
+		}else
+		{
+			return ToRet
+		}
+	}
+	return ToRet
 }
 
 RuleFunc := !(void^ itr) -> int
@@ -153,29 +197,6 @@ RuleParam := !(void^ itr) -> int
 	return size + 2
 }
 
-RuleRight := !(void^ itr) -> int
-{
-	It := itr->{Object^}
-
-	if not InDataR(It) return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if It.GetValue() == "->"
-	{
-		It = It.Right
-		if It == null return 0
-
-		if It.GetValue() != "{}" return 0
-	}else{
-		if It.GetValue() != "^" and It.GetValue() != "&" and It.GetValue() != "[]" return 0
-
-		return 2
-	}
-	return 0
-}
-
 RuleOneFunc := !(void^ itr)-> int
 {
 	It := itr->{Object^}
@@ -190,76 +211,3 @@ RuleOneFunc := !(void^ itr)-> int
 	return 2
 }
 
-RuleTwoFuncAdd := !(void^ itr)-> int
-{
-	It := itr->{Object^}
-
-	if not InDataR(It) return 0
-
-	It = It.Right
-	if It == null return 0
-	
-	if It.GetValue() != "-" and It.GetValue() != "+" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if not InDataR(It) return 0
-
-	return 3
-}
-
-RuleTwoFuncMul := !(void^ itr)-> int
-{
-	It := itr->{Object^}
-
-	if not InDataR(It) return 0
-
-	It = It.Right
-	if It == null return 0
-	
-	if It.GetValue() != "*" and It.GetValue() != "/" and It.GetValue() != "%" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if not InDataR(It) return 0
-
-	return 3
-}
-RuleTwoFuncLog := !(void^ itr)-> int
-{
-	It := itr->{Object^}
-
-	if not InDataR(It) return 0
-
-	It = It.Right
-	if It == null return 0
-	
-	if It.GetValue() != "or" and It.GetValue() != "and" and It.GetValue() != "xor" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if not InDataR(It) return 0
-
-	return 3
-}
-RuleTwoFuncShift := !(void^ itr)-> int
-{
-	It := itr->{Object^}
-
-	if not InDataR(It) return 0
-
-	It = It.Right
-	if It == null return 0
-	
-	if It.GetValue() != "<<" and It.GetValue() != ">>" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if not InDataR(It) return 0
-
-	return 3
-}

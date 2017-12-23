@@ -2,10 +2,12 @@
 MiniMachineNode := class 
 {
 	WhatNext := Map.{string,MiniMachineNode^}
+	IsTerm := bool
 
 	this := !() -> void
 	{
 		WhatNext.Start = null
+		IsTerm = false
 	}
 	GetNext := !(string item) -> MiniMachineNode^
 	{
@@ -78,6 +80,7 @@ PriorityBag := class
 					while someWord != null
 					{
 						if someWord.Data == "d" someWord.Data = "~d" else 
+						if someWord.Data == "s" someWord.Data = "~suffix" else
 						{
 							if someWord.Data != "()" and someWord.Data != "[]" and someWord.Data != "{}"
 								Opers.Push(someWord.Data)
@@ -89,6 +92,7 @@ PriorityBag := class
 						}
 						machIter = machIter.WhatNext[someWord.Data]
 						someWord = someWord.Next
+						if someWord == null machIter.IsTerm = true
 					}
 					ruleIter = ruleIter.Next
 				}

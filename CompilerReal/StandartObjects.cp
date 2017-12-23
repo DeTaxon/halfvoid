@@ -41,7 +41,7 @@ ObjDouble := class extend ObjConst
 	}
 	GetValue := virtual !() -> char^
 	{
-		return "~float"
+		return "~double"
 	}
 	Print := virtual !(int s) -> void
 	{
