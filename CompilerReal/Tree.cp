@@ -114,10 +114,6 @@ IsKeyword := !(char^ W) -> bool
 	if W == "return" return true
 	if W == "for" return true
 	if W == "if" return true
-	if W == "and" return true
-	if W == "or" return true
-	if W == "xor" return true
-	if W == "not" return true
 	if W == "new" return true
 	if W == "delete" return true
 	if W == "switch" return true

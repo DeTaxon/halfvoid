@@ -72,8 +72,8 @@ Rules = []
 Rules.append(["dm",datar,['++','--']])
 
 Rules.append(["!{}","!","{}"])
-Rules.append(["d.{}",datar,".","{}"])
 Rules.append(["d->{}",datar,"->","{}"])
+Rules.append(["d.{}",datar,".","{}"])
 
 #Rules.append(["d.d()",datar,".","id","()"])
 #Rules.append(["d.d",datar,".","id"])

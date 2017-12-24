@@ -66,9 +66,7 @@ StupidWhile := !(Object^ begin,PriorityBag bag ) -> bool
 	}
 
 
-	if RuleUse(begin,"cmd()",RuleCmd) return true
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func
-	if RuleUse(begin,"~func r",RuleOneFunc) return true
 
 	return false	
 }
@@ -124,44 +122,6 @@ RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
 	return ToRet
 }
 
-RuleFunc := !(void^ itr) -> int
-{
-	It := itr->{Object^}
-
-	if It == null return -1
-
-	if It.GetValue() != "!" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if It.GetValue() != "()" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	Size := 2
-
-	if It.GetValue() == "->"{
-		Size += 2
-		It = It.Right
-		if not InDataR(It) return 0
-		It = It.Right
-	}
-	if It.GetValue() != "declare" and It.GetValue() != "{}" return 0
-	return Size + 1
-}
-RuleCmd := !(void^ itr) -> int
-{
-	It := itr->{Object^}
-	if It.GetValue() != "~cmd" return 0
-
-	It = It.Right
-	if It == null return 0
-	if not InDataR(It) and It.GetValue() != "{}" return 0
-	
-	return 2
-}
 
 RuleParam := !(void^ itr) -> int
 {

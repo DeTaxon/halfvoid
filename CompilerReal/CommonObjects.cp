@@ -15,7 +15,11 @@ GetItem := !(string name, Object^ start) -> Object^
 	
 	for SomeDef : DefsTable
 	{
-		if SomeDef.ItName == name return SomeDef->{Object^}
+		if SomeDef.ItName == name 
+		{
+			//printf("found %s\n", SomeDef.GetValue())
+			return SomeDef->{Object^}
+		}
 	}
 	
 	return null

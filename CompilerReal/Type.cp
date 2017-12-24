@@ -2,7 +2,8 @@
 Type := class {
 	Id := int
 	Base := Type^
-	ItPoint := Type^
+	AsPoint := Type^
+	AsArray := Queue.{TypeArr^}
 	
 	this := !() -> void
 	{
@@ -11,7 +12,8 @@ Type := class {
 	Clean := !() -> void
 	{
 		Base = null
-		ItPoint = null
+		AsPoint = null
+		AsArray.Start = null
 	}
 	GetType := !() -> string
 	{
@@ -20,10 +22,28 @@ Type := class {
 
 	GetPoint := !() -> Type^
 	{
-		if ItPoint == null{
-			ItPoint = new TypePoint(this&)
+		if AsPoint == null{
+			AsPoint = new TypePoint(this&)
 		}
-		return ItPoint
+		return AsPoint
+	}
+	GetArray :=  !(int size) -> TypeArr^
+	{
+		iterE := AsArray.Start
+
+		while iterE != null
+		{
+			if iterE.Data.Size == size return iterE.Data
+			iterE = iterE.Next
+		}
+
+		NewArr := new TypeArr(this&,size)
+		AsArray.Push(NewArr)
+		return NewArr
+	}
+
+	PrintType := virtual !() -> void
+	{
 	}
 
 }
@@ -36,6 +56,39 @@ ParseType := !(Object^ Node) -> Type^
 	{
 		NodeName := GetItem(Node->{ObjIndent^}.MyStr,Node)
 		if NodeName == null return null
+		//NodeName.GetValue()
+		if NodeName.GetValue() == ":=type"
+		{
+			return NodeName->{TypeDef^}.ItType
+		}
+		return null
+	}
+	if Node.GetValue() == "~d"
+	{
+		if not InDataR(Node.Down) return null
+		Ri := Node.Down.Right
+		if Ri == null return null
+		
+		under := ParseType(Node.Down)
+		if under == null return null
+
+		if Ri.GetValue() == "^"
+		{
+			return under.GetPoint()
+		}
+		if Ri.GetValue() == "[]"
+		{
+			if Ri.Down.GetValue() == "~int"
+			{
+				Ri = Ri.Down
+				DynCast := Ri->{ObjInt^}
+				ArrSize := DynCast.MyInt
+				return under.GetArray(ArrSize->{int})->{Type^}
+			}
+			return null
+		}
+
+
 	}
 	return null
 }
@@ -51,6 +104,10 @@ TypeDef := class extend Object
 		ItName = name
 		ItType = T
 	}
+	GetValue := virtual !() -> string
+	{
+		return ":=type"
+	}
 }
 
 TypeStandart := class extend Type{
@@ -65,6 +122,10 @@ TypeStandart := class extend Type{
 	{
 		return "standart"
 	}
+	PrintType := virtual !() -> void
+	{
+		printf(IRName)
+	}
 }
 
 TypePoint := class extend Type
@@ -78,13 +139,36 @@ TypePoint := class extend Type
 	{
 		return "point"
 	}
+	PrintType := virtual !() -> void
+	{
+		Base.PrintType()
+		printf("*")
+	}
 }
 
+TypeFunc := class extend Type
+{
+	ParsCount := int
+	Pars := Type^
+	IsVArgs := bool
 
+	this := !(Queue.{Type^} P, bool IsV) -> void
+	{
+		ParsCount = P.Size()
+		Pars = null
+		if ParsCount != 0 Pars = P.ToArray()
+		IsVArgs = IsV
+	}
+	GetType := !() -> string
+	{
+		return "function"
+	}
+}
 
 TypeArr := class extend Type
 {
 	Size := int
+
 	this := !(Type^ B, int S) -> void
 	{
 		Base = B
@@ -94,12 +178,18 @@ TypeArr := class extend Type
 	{
 		return "arr"
 	}
+	PrintType := virtual !() -> void
+	{
+		printf("[%i x ",Size)
+		Base.PrintType()
+		printf("]")
+	}
 }
 
-TypeTable := Type^[12]
+TypeTable := Type^[30]
 DefsTable := TypeDef^[15]
 
-CreateStandart := !() -> void
+CreateStandartTypes := !() -> void
 {	
 	//u
 	TypeTable[0] = new TypeStandart("i8")	
@@ -136,6 +226,5 @@ CreateStandart := !() -> void
 	DefsTable[12] = new TypeDef("long",TypeTable[3])
 	DefsTable[13] = new TypeDef("float",TypeTable[10])
 	DefsTable[14] = new TypeDef("double",TypeTable[11])
-
 
 }

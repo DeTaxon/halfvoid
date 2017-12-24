@@ -202,7 +202,20 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 
 
 		Reverted.Push(0->{char})
-		L := CurLine.Size()
+		L := 0
+		LikeALazy := true
+		while LikeALazy
+		{
+			if CurLine[L] == 0 LikeALazy = false
+			else
+			{
+				if CurLine[L] == '/' and CurLine[L+1] == '/'
+				{
+					LikeALazy = false
+					L -= 1
+				}else L += 1
+			}
+		}
 		while L >= 0 
 		{	
 			Reverted.Push(CurLine[L])
@@ -221,8 +234,6 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 			Buffer[pos] = Ch
 			pos += 1
 			MPos = M.Lines[MPos].GoTo[Ch]
-		//	printf("M %i C %c\n",MPos,Ch)
-		//printf("crash?\n")
 			if M.Lines[MPos].Id == -2 
 			{
 				pos = 0

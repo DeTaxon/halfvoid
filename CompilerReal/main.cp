@@ -3,6 +3,7 @@ GlobalItems := MapCont.{string,Object^}
 
 main := !(int argc,string[] argv) -> int 
 {
+	CreateStandartTypes()
 	Buf := Queue.{Token^}()
 
 	Pris := PriorityBag("Priority.pr")
@@ -35,8 +36,7 @@ main := !(int argc,string[] argv) -> int
 	iter := UniteSkobs(Ob.Down)
 
 	SyntaxCompress(Ob,Pris)
-	Ob.Print(0)
-	return 0
+	//Ob.Print(0)
 
 	if iter != null printf("error iter\n")
 	else
@@ -46,6 +46,14 @@ main := !(int argc,string[] argv) -> int
 	}	
 	Ob.Print(0)
 
+	Test := Type^
+	Test = ParseType(Ob.Down)
+	if Test == null printf("no\n")
+	else{
+		printf("parsed\n")
+		Test.PrintType()
+		printf("\n")
+	}
 	return 0
 }
 
