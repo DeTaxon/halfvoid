@@ -38,6 +38,7 @@ main := !(int argc,string[] argv) -> int
 	SyntaxCompress(Ob,Pris)
 	//Ob.Print(0)
 
+
 	if iter != null printf("error iter\n")
 	else
 	{
