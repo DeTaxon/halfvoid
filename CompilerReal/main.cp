@@ -3,6 +3,10 @@ GlobalItems := MapCont.{string,Object^}
 
 main := !(int argc,string[] argv) -> int 
 {
+	fil := sfile("out2.ll","w")
+	fil <= "a " <= " maybe " <= "\n"
+	fil.close()
+	return 0
 	CreateStandartTypes()
 	Buf := Queue.{Token^}()
 
