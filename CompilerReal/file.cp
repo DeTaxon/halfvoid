@@ -2,6 +2,7 @@ fopen := !(char^ Name,char^ s) -> void^ declare
 fclose := !(void^ hndl) -> void declare
 fgets := !(char^ buf,int Size,void^ Hnd) -> char^ declare
 fputs := !(char^ buf,void^ Hnd) -> int declare
+fprintf := !(void^ Hnd, char^ buf,...) -> int declare
 feof := !(void^ hndl) -> int declare
 
 file := class
@@ -46,9 +47,19 @@ sfile := class extend file
 		if fgets(Buff,4096,Handle) == null return ""
 		return StrCopy(Buff)
 	}	
-	"<=" := !(string likeCpp) -> ref sfile
+	"<<" := !(string likeCpp) -> ref sfile
 	{
 		fputs(likeCpp,Handle)
+		return this
+	}
+	"<<" := !(int x) -> ref sfile
+	{
+		fprintf(Handle,"%i",x)
+		return this
+	}
+	"<<" := !(float x) -> ref sfile
+	{
+		fprintf(Handle,"%f",x)
 		return this
 	}
 }

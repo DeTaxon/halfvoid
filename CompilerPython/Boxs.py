@@ -20,7 +20,7 @@ InFunc = []
 
 Opers = ["+","-","*","/","%"]
 CmprOpers = ["==",">=","<=","!=","<",">"]
-PrisvOpers = ["=","+=","-=","*=","/=","%="]
+PrisvOpers = ["=","+=","-=","*=","/=","%=","<<",">>"]
 AllOpers = Opers + CmprOpers + PrisvOpers
 
 
@@ -739,7 +739,7 @@ class BoxNew:
 		else:
 			self.Size.PrintPre(F)
 			F.write("%EndSize{0} = mul i32 {1},%Size{0}\n".format(self.PrevId,self.Size.GetName()))
-		F.write("%TmpPre{0} = call i8* @malloc(i32 %EndSize{0})\n".format(self.PrevId))
+		F.write("%TmpPre{0} = call i8* @calloc(i32 1,i32 %EndSize{0})\n".format(self.PrevId))
 		F.write("%Tmp{0} = bitcast i8* %TmpPre{0} to ".format(self.PrevId))
 		self.Type.PrintUse(F)
 		F.write("\n")

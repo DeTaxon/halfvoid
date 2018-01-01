@@ -3,7 +3,8 @@ from Lex import *
 Opers = ["+","-","*","/","%"]
 CmprOpers = ["==",">=","<=","!=","<",">"]
 PrisvOpers = ["=","+=","-=","*=","/=","%="]
-AllOpers = Opers + CmprOpers + PrisvOpers
+ExtraOpers = ["<<",">>"]
+AllOpers = Opers + CmprOpers + PrisvOpers + ExtraOpers
 
 def UNext(Arr,Pos,Size,Name):
 	Tok = Token(Name,[])
@@ -103,6 +104,7 @@ Rules.append(["newstuf","new",datar])
 Rules.append(["db",datar,["and","or","xor"],datar])
 Rules.append(["newconst","id","::",datar])
 Rules.append(["dp",datar,["=","+=","-=","*=","/="],datar])
+Rules.append(["dm",datar,["<<",">>"],datar])
 Rules.append(["fakeparam","id",":=",datar,"at",datar])
 Rules.append(["newparams","id",",","id",",","id",",","id",":=",datar])
 Rules.append(["newparams","id",",","id",",","id",":=",datar])
