@@ -47,12 +47,10 @@ main := !(int argc,string[] argv) -> int
 	}	
 	Ob.Print(0)
 
-	Test := Type^
-	Test = ParseType(Ob.Down)
+	Test := GetBoxFunc(Ob.Down.Down)
 	if Test == null printf("no\n")
 	else{
 		printf("parsed\n")
-		Test.PrintType()
 		printf("\n")
 	}
 	return 0

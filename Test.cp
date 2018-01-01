@@ -1,4 +1,3 @@
-int[32][5]^[4]^
 printf := !(char^ str, ...) -> int #declare
 
 main := !() -> void

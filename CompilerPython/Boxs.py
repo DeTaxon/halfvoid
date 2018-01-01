@@ -1387,6 +1387,11 @@ class BoxReturn:
 		self.RetType = L.Type
 		if self.Ret.Type.Id != L.Type.Id and (GoodPoints(self.Ret.Type, L.Type) or GoodPoints(L.Type,self.RetType)):
 			self.Ret = BoxExc(self.Ret,L.Type)
+		if self.Ret.Type.Type == "point" and L.Type.Type == "point":
+			if self.Ret.Type.Base.Type == "class" and L.Type.Base.Type == "class":
+				if self.RetType.Base.InFamily(L.Type.Base):
+					self.Ret = BoxExc(self.Ret,L.Type)
+					
 		if L.ReturnInInput != None:
 			self.RetParam = GetUse(Token("id","ret"))
 			self.RetParam.Check()
@@ -2658,6 +2663,14 @@ TestAdd.Name = "="
 TestAdd.Type = GetType("void")
 TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 TestAdd.Params[0].IsRef = True
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = icmp eq i1 {2} , {1}\n"
+TestAdd.Name = "=="
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 StandartStuff.append(TestAdd)
 

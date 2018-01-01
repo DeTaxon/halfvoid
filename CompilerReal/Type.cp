@@ -93,6 +93,42 @@ ParseType := !(Object^ Node) -> Type^
 	return null
 }
 
+FuncTypeTable := Queue.{TypeFunc^}
+
+GetFuncType := !(Queue.{Type^} lin, bool IsVArgs) -> TypeFunc^
+{
+	iterT := FuncTypeTable.Start
+
+	while iterT != null
+	{
+		SomeBug := IsVArgs
+		if iterT.Data.IsVArgs == SomeBug
+		{
+			IsFound := true
+			if iterT.Data.ParsCount == lin.Size()
+			{
+				iterR := lin.Start
+				i := 0
+				while iterR != null
+				{
+					if iterT.Data.Pars[i] != iterR.Data IsFound = false
+					i += 1
+					iterR = iterR.Next 
+				}
+			}else{
+				IsFound = false
+			}
+			if IsFound return iterT.Data
+		}
+		iterT = iterT.Next
+	}
+	
+
+	newTypeFunc := new TypeFunc(lin,IsVArgs)
+	FuncTypeTable.Push(newTypeFunc)
+	return newTypeFunc
+}
+
 TypeDef := class extend Object
 {
 	ItName := string
@@ -149,7 +185,7 @@ TypePoint := class extend Type
 TypeFunc := class extend Type
 {
 	ParsCount := int
-	Pars := Type^
+	Pars := Type^^
 	IsVArgs := bool
 
 	this := !(Queue.{Type^} P, bool IsV) -> void
