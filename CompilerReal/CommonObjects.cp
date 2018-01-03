@@ -66,3 +66,12 @@ ReplaceNode := !(Object^ what, Object^ with) -> void
 	wiEnd.Right = what.Right
 	if wiEnd.Right != null wiEnd.Right.Left = wiEnd
 }
+
+
+SomeId := int
+GetNewId := !() -> int
+{
+	SomeId += 1
+	return SomeId
+}
+

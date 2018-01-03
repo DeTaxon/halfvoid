@@ -1193,12 +1193,14 @@ class ParConstStr:
         self.Id = GetNumb()
 
         i = 0
+	Doubls = 0
         while i < len(Obj.Extra):
-            if Obj.Extra[self.Size] == '\\':
+            if Obj.Extra[i] == '\\':
                 i += 1
             self.Size += 1
             i += 1
         self.Size += 1
+	self.Size -= Doubls
     def PrintConst(self,F):
         F.write('@CStr{} = constant [{} x i8] c"'.format(self.Id,self.Size))
         #F.write('@CStr{0} = constant {{i32,[{1} x i8]}} {{i32 {1}, [{1} x i8] c"'.format(self.Id,self.Size))
@@ -1209,6 +1211,12 @@ class ParConstStr:
                 if self.Extra[i] == 'n':
                     F.write('\\0A')
                     i+= 1
+		elif self.Extra[i] == '"':
+		    F.write('\\22')
+		    i += 1
+		elif self.Extra[i] == '\\':
+		    F.write('\\\\')
+		    i += 1
             else:
                 F.write(self.Extra[i])
                 i += 1

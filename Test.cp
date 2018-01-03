@@ -10,6 +10,6 @@ main := !() -> void
 	//o := new int()
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
-	printf("Hello, world!\n")
+	printf("Hello, \"world!\n")
 	//return 0
 }

@@ -52,11 +52,11 @@ ObjDouble := class extend ObjConst
 
 ObjStr := class extend ObjConst
 {
-	MyStr := char^
+	MyStrId := int
 	"this" := !(char^ str) -> void
 	{
 		Clean()
-		MyStr = str
+		MyStrId = StrContainer.GetStringValue(str)
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -65,7 +65,7 @@ ObjStr := class extend ObjConst
 	Print := virtual !(int s) -> void
 	{
 		for s printf("->")
-		printf("string %s\n",MyStr)
+		printf("string %s\n",StrContainer.GetString(MyStrId))
 	}
 }
 ObjIndent := class extend ObjConst

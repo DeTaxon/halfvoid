@@ -169,7 +169,11 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 			{
 				if Tok.Buff[k] == '\\' {
 					k += 1
-					if Tok.Buff[k] == 'n' DaBuff[j] = 20
+					if Tok.Buff[k] == 'n' DaBuff[j] = 10
+					else 
+					{
+						DaBuff[j]  = Tok.Buff[k]
+					}
 					j += 1
 					k += 1
 				}else{

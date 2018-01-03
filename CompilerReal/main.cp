@@ -55,6 +55,7 @@ main := !(int argc,string[] argv) -> int
 		{
 			printf("parsed\n")
 			fil := sfile("out2.ll","w")
+			StrContainer.PrintGlobal(fil)
 			Test.PrintGlobal(fil)
 			fil.close()
 		}
