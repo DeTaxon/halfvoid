@@ -4,6 +4,8 @@ Object := class{
 	Left,Right,Down,Up := Object^
 	Line :=  Object^
 
+	IsInvalid := bool
+
 	Clean := !() -> void
 	{
 		Left = null
@@ -39,6 +41,9 @@ Object := class{
 			End.Print(s+1)
 			End = End.Right
 		}
+	}
+	PrintGlobal := virtual !(sfile fil) -> void
+	{
 	}
 }
 

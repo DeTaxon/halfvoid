@@ -187,6 +187,7 @@ TypeFunc := class extend Type
 	ParsCount := int
 	Pars := Type^^
 	IsVArgs := bool
+	RetType := Type^
 
 	this := !(Queue.{Type^} P, bool IsV) -> void
 	{

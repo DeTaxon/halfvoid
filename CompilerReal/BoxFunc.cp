@@ -1,18 +1,48 @@
-GetBoxFunc := !(Object^ fromBag) ->Object^
+ParseFuncDataR := !(Object^ item) -> Object^
 {
-	ContainDeclare := false
+	iter := item.Down
 
-	iterW := fromBag.Down
+	IsStatic := false
+	IsVirtual := false
 
-	while iterW != null
+	RetT := Object^
+	RetT = null
+
+	if iter.GetValue() == "virtual"
 	{
-		if iterW.GetValue() == "#declare" ContainDeclare = true
-		iterW = iterW.Right
+		IsVirtual = true
+		iter = iter.Right
+	}
+	if iter.GetValue() == "static"
+	{
+		IsStatic = true
+		iter = iter.Right
+	}
+	
+	if iter.GetValue() != "!" return null
+	ParamsObj := iter
+	iter = iter.Right
+
+	if iter.GetValue() == "->"
+	{
+		iter = iter.Right
+		RetT = iter.Down
+		iter = iter.Right
 	}
 
-	if ContainDeclare return new BoxFuncDeclare(fromBag)
+	if iter.GetValue() == "#declare"
+	{
+		//return new BoxFuncDeclare(ParamsObj,RetT)
+	}
+	if iter.GetValue() == "{}"
+	{
+		return null
+	}
+
 	return null
+
 }
+
 
 BoxFunc := class extend Object
 {
@@ -82,7 +112,7 @@ BoxFunc := class extend Object
 
 BoxFuncDeclare := class  extend BoxFunc
 {
-	this := !(Object^ root) -> void
+	this := !(Object^ inPars, Object^ inOutType) -> void
 	{
 	}
 }

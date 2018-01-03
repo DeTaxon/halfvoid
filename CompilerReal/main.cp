@@ -47,11 +47,10 @@ main := !(int argc,string[] argv) -> int
 	}	
 	Ob.Print(0)
 
-	Test := GetBoxFunc(Ob.Down.Down)
+	Test := null//GetBoxFunc(Ob.Down.Down)
 	if Test == null printf("no\n")
 	else{
 		printf("parsed\n")
-		printf("\n")
 	}
 	return 0
 }

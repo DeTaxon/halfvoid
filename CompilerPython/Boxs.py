@@ -798,7 +798,7 @@ class BoxNew:
 			self.Type.Check()
 			self.ToUse = self.Type.GetFunc("this",self.Pars)
 			if self.ToUse == None:
-				raise ValueError("Constructor not found")
+				raise ValueError("Constructor not found at {} in {}".format(self.Line,self.InFile))
 		self.Type = GetPoint(self.Type)
 
 def AddParams(Item,Arr):
