@@ -47,10 +47,17 @@ main := !(int argc,string[] argv) -> int
 	}	
 	Ob.Print(0)
 
-	Test := null//GetBoxFunc(Ob.Down.Down)
+	Test := GetUse(Ob.Down.Down)
 	if Test == null printf("no\n")
 	else{
-		printf("parsed\n")
+		if (Test.IsInvalid) printf("almost\n")
+		else
+		{
+			printf("parsed\n")
+			fil := sfile("out2.ll","w")
+			Test.PrintGlobal(fil)
+			fil.close()
+		}
 	}
 	return 0
 }

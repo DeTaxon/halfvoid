@@ -2062,7 +2062,7 @@ class BoxFuncsCall:
 				PreError = "Func not found {}".format(self.ToCall)
 				for it in self.Params:
 					PreError += "\nParam {}".format(it.Type.GetName())
-            			raise ValueError(PreError)
+            			raise ValueError(PreError + " at {} in {}".format(self.Line,self.InFile))
 
 			self.ConstrId = GetNumb()
 		else:

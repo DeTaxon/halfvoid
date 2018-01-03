@@ -20,19 +20,20 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	
 	if iter.GetValue() != "!" return null
+	iter = iter.Right
 	ParamsObj := iter
 	iter = iter.Right
 
 	if iter.GetValue() == "->"
 	{
 		iter = iter.Right
-		RetT = iter.Down
+		RetT = iter
 		iter = iter.Right
 	}
 
 	if iter.GetValue() == "#declare"
 	{
-		//return new BoxFuncDeclare(ParamsObj,RetT)
+		return new BoxFuncDeclare(ParamsObj,RetT)
 	}
 	if iter.GetValue() == "{}"
 	{
@@ -49,22 +50,29 @@ BoxFunc := class extend Object
 	//this := !() 
 	MyFuncType := TypeFunc^
 	MyFuncParamNames := string^
-	PrintGlobal := !(sfile f) -> void
-	{
-	}
 
 	ParseParams := !(Object^ root) -> bool
 	{
-		iter := root.Down
+		iter := root
 		Pars := Queue.{Object^}()
 
 		Typs := Queue.{Type^}()
 		TypsNams := Queue.{string}()
 		IsVargsL := false
 
+		Stuff := Queue.{Object^}()
+
 		while iter != null
 		{
-			if iter.GetValue() == ","
+			Stuff.Push(iter)
+			iter = iter.Right
+		}
+
+		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(","))
+
+		while Stuff.NotEmpty()
+		{
+			if Stuff[0].GetValue() == ","
 			{
 				if Pars.Size() == 2
 				{
@@ -88,15 +96,17 @@ BoxFunc := class extend Object
 					TypsNams.Push(MayName.Copy())
 					Pars.Clean()		
 
-				}else
-				{
-					//TODO: implement
 				}
+				if Pars.Size() == 1
+				{
+					if Pars[0].GetValue() == "..." IsVargsL = true
+					Pars.Clean()
+				}
+				Stuff.Pop()
 			}else
 			{
-				Pars.Push(iter)
+				Pars.Push(Stuff.Pop())
 			}
-			iter = iter.Right
 		}
 		MyFuncType = null
 		MyFuncParamNames = null
@@ -112,8 +122,25 @@ BoxFunc := class extend Object
 
 BoxFuncDeclare := class  extend BoxFunc
 {
+	ItName := string
 	this := !(Object^ inPars, Object^ inOutType) -> void
 	{
+		ItName = ""
+		IsInvalid = not ParseParams(inPars.Down)
+
+		if not IsInvalid
+			MyFuncType.RetType = ParseType(inOutType)
+
+		if MyFuncType.RetType == null IsInvalid = true
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		PrintGlobalSub(f)
+		f << "declare "
+		MyFuncType.RetType.PrintType(f)
+		f << " @" << ItName
+		MyFuncType.PrintSkobs(f)
+		f << "\n"
 	}
 }
 

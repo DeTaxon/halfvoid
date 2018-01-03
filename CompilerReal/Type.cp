@@ -42,7 +42,7 @@ Type := class {
 		return NewArr
 	}
 
-	PrintType := virtual !() -> void
+	PrintType := virtual !(sfile f) -> void
 	{
 	}
 
@@ -158,9 +158,9 @@ TypeStandart := class extend Type{
 	{
 		return "standart"
 	}
-	PrintType := virtual !() -> void
+	PrintType := virtual !(sfile f) -> void
 	{
-		printf(IRName)
+		f << IRName
 	}
 }
 
@@ -175,10 +175,11 @@ TypePoint := class extend Type
 	{
 		return "point"
 	}
-	PrintType := virtual !() -> void
+	PrintType := virtual !(sfile f) -> void
 	{
-		Base.PrintType()
-		printf("*")
+		
+		Base.PrintType(f)
+		f << "*"
 	}
 }
 
@@ -200,6 +201,26 @@ TypeFunc := class extend Type
 	{
 		return "function"
 	}
+	PrintType := !(sfile f) -> void
+	{
+		RetType.PrintType(f)
+		PrintSkobs(f)
+	}
+	PrintSkobs := !(sfile f) -> void
+	{
+		f << "("
+		for i : ParsCount
+		{
+			if i != 0 f << " , "
+			Pars[i].PrintType(f)
+		}
+		if IsVArgs
+		{
+			if ParsCount != 0 f << " , "
+			f << "..."
+		}
+		f << ")"
+	}
 }
 
 TypeArr := class extend Type
@@ -215,11 +236,11 @@ TypeArr := class extend Type
 	{
 		return "arr"
 	}
-	PrintType := virtual !() -> void
+	PrintType := virtual !(sfile f) -> void
 	{
-		printf("[%i x ",Size)
-		Base.PrintType()
-		printf("]")
+		f << "[" << Size << " x "
+		Base.PrintType(f)
+		f << "]"
 	}
 }
 

@@ -42,8 +42,18 @@ Object := class{
 			End = End.Right
 		}
 	}
-	PrintGlobal := virtual !(sfile fil) -> void
+	PrintGlobalSub := !(sfile f) -> void
 	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		PrintGlobalSub(f)
 	}
 }
 

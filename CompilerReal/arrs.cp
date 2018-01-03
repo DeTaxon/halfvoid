@@ -57,7 +57,7 @@ Stack := class !{T}
 			Iter = Start
 			Start = Iter.Next
 			free(Iter)
-		}	
+		}
 	}
 	NotEmpty := !() -> bool
 	{
