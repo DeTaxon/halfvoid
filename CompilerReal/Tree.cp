@@ -55,6 +55,10 @@ Object := class{
 	{
 		PrintGlobalSub(f)
 	}
+	DoTheWork := virtual !(int st) -> void
+	{
+		printf("work not specefied for %s\n",GetValue())
+	}
 }
 
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^

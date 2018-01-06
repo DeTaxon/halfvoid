@@ -53,7 +53,7 @@ RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode) -> bool
 }
 
 
-StupidWhile := !(Object^ begin,PriorityBag bag ) -> bool
+StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 {
 	//iter := begin.Down
 	GotStuff := false
@@ -72,21 +72,21 @@ StupidWhile := !(Object^ begin,PriorityBag bag ) -> bool
 }
 
 
-SyntaxCompress := !(Object^ begin, PriorityBag bag) -> bool
+SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
 {
 	if begin == null return true
 
 	GotWork := true
 
-	iter := begin.Down
+	//iter := begin.Down
 
-	while iter != null
-	{
-		if iter.GetValue() == "{}" SyntaxCompress(iter, bag)
-		if iter.GetValue() == "()" SyntaxCompress(iter, bag)
-		if iter.GetValue() == "[]" SyntaxCompress(iter, bag)
-		iter = iter.Right
-	}
+	//while iter != null
+	//{
+	//	if iter.GetValue() == "{}" SyntaxCompress(iter, bag)
+	//	if iter.GetValue() == "()" SyntaxCompress(iter, bag)
+	//	if iter.GetValue() == "[]" SyntaxCompress(iter, bag)
+	//	iter = iter.Right
+	//}
 
 	while GotWork GotWork = StupidWhile(begin,bag)
 
