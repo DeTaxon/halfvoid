@@ -244,8 +244,6 @@ TypeArr := class extend Type
 	}
 }
 
-TypeTable := Type^[30]
-DefsTable := TypeDef^[15]
 
 CreateStandartTypes := !() -> void
 {	

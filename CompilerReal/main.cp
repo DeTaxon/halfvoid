@@ -1,5 +1,4 @@
 
-GlobalItems := MapCont.{string,Object^}
 
 main := !(int argc,string[] argv) -> int 
 {
