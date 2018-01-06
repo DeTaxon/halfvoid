@@ -1,0 +1,4 @@
+BoxBlock := class extend Object
+{
+
+}

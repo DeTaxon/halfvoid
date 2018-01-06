@@ -138,9 +138,9 @@ IsKeyword := !(char^ W) -> bool
 
 TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 {
-	DaFile := new Object()
-	iter := DaFile
-	Adder := DaFile
+	DaFile := new BoxBlock()
+	iter := DaFile->{Object^}
+	Adder := DaFile->{Object^}
 	
 	while Toks.NotEmpty()
 	{
