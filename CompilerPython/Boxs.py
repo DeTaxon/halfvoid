@@ -458,6 +458,8 @@ class ParamChain:
             self.Name = Obj.Extra[0].Extra
             self.Extra = None
             self.Type = None
+	    self.Line = Obj.Line
+	    self.InFile = Obj.InFile
 
             if Obj.Extra[2].Value == "!()":
                 self.IsFunc = True
@@ -564,6 +566,8 @@ class ParamChain:
         if self.Extra != None and not self.HaveConstr:
             self.Extra.Check()
             self.Type = self.Extra.Type
+	    if self.Type == None:
+	    	raise ValueError("can not parse type at {} in {}".format(self.Line,self.InFile))
 	    if self.Type.Type == "class":
 		self.ToCall = self.Type.GetFunc("=",[self] + [self.Extra])
 	if self.IsFunc:
