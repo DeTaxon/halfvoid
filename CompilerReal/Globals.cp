@@ -5,4 +5,5 @@ DefsTable := TypeDef^[15]
 WorkBag := PriorityStack.{Object^}
 
 PriorityData := PriorityBag^
-LexMachine := Machine^ 
+LexMachine := Machine^
+

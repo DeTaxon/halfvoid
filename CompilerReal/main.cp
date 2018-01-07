@@ -9,7 +9,6 @@ main := !(int argc,string[] argv) -> int
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob := GetObjectsFromFile("Test.cp")
 
-	
 	//fil := sfile("out2.ll","w")
 	//StrContainer.PrintGlobal(fil)
 	//Test.PrintGlobal(fil)

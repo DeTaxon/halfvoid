@@ -1,17 +1,13 @@
 
-CollectParams := !(Object^ start) -> void
+UnboxParams := !(Object^ start) -> void
 {
 	Bag := Stack.{Object^}
 
-	Bag.Push(start)
-
-	while Bag.NotEmpty()
+		Curr := start
+	while Curr != null
 	{
-		Curr := Bag.Pop()
-
 		if Curr.GetValue() == "i:=0"
 		{
-			//printf("item %s\n",Curr.Down.Right.Right.GetValue())
 			iter := Curr.Down
 			line := Object^
 			line = null
@@ -52,14 +48,11 @@ CollectParams := !(Object^ start) -> void
 			while lineIter != null
 			{
 				lineIter.Down = iter
+				iter.SetUp(lineIter)
 				lineIter = lineIter.Right
 			}
 			ReplaceNode(Curr,line)
-			Bag.Push(line)
-
-		}else{
-		      if Curr.Down  != null Bag.Push(Curr.Down)
-		      if Curr.Right != null Bag.Push(Curr.Right)
 		}
+		Curr = Curr.Right
 	}
 }

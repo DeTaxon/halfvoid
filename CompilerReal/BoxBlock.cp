@@ -9,10 +9,18 @@ BoxBlock := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		printf("good\n")
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,PriorityData)
+			UnboxParams(this.Down)	
+			WorkBag.Push(this&,State_CollectParams)
+			
+			iter := Down
+			while iter != null
+			{
+				WorkBag.Push(iter,State_Syntax)
+				iter = iter.Right
+			}
 		}
 	}
 }

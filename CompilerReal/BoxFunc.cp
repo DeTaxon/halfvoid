@@ -31,9 +31,24 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		iter = iter.Right
 	}
 
+	iterForName := iter.Up
+	FName := ""
+
+	while iterForName != null
+	{
+		if iterForName.GetValue() == "i:=1"
+		{
+			dynCa := iterForName->{ObjParam^}
+			FName = dynCa.MyStr
+			iterForName = null
+		}
+		iterForName = iterForName.Up
+	}
+
+
 	if iter.GetValue() == "#declare"
 	{
-		return new BoxFuncDeclare(ParamsObj,RetT)
+		return new BoxFuncDeclare(ParamsObj,RetT,FName)
 	}
 	if iter.GetValue() == "{}"
 	{
@@ -118,14 +133,18 @@ BoxFunc := class extend Object
 		MyFuncType = GetFuncType(Typs,IsVargsL)
 		return true
 	}
+	KeepName := virtual !()-> bool
+	{
+		return true
+	}
 }
 
 BoxFuncDeclare := class  extend BoxFunc
 {
 	ItName := string
-	this := !(Object^ inPars, Object^ inOutType) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
-		ItName = ""
+		ItName = SomeName
 		IsInvalid = not ParseParams(inPars.Down)
 
 		if not IsInvalid
@@ -142,6 +161,10 @@ BoxFuncDeclare := class  extend BoxFunc
 		MyFuncType.PrintSkobs(f)
 		f << "\n"
 	}
+	KeepName := virtual !()-> bool
+	{
+		return true
+	}
 }
 
 BoxFuncBody := class extend BoxFunc
@@ -149,5 +172,8 @@ BoxFuncBody := class extend BoxFunc
 	this := !(Object^ root) -> void
 	{
 	}
-	
+	KeepName := virtual !()-> bool
+	{
+		return false
+	}
 }

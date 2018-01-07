@@ -59,6 +59,11 @@ Object := class{
 	{
 		printf("work not specefied for %s\n",GetValue())
 	}
+	SetUp := !(Object^ nUp) -> void
+	{
+		Up = nUp
+		if Right != null Right.SetUp(nUp)
+	}
 }
 
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^
