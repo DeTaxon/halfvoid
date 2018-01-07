@@ -1,5 +1,6 @@
 printf := !(char^ str, ...) -> int #declare
 
+
 main := !() -> void
 {
 	//x := #select * #from y #where y in z #end

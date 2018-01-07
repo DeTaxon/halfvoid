@@ -67,6 +67,21 @@ ReplaceNode := !(Object^ what, Object^ with) -> void
 	if wiEnd.Right != null wiEnd.Right.Left = wiEnd
 }
 
+PopOutNode := !(Object^ what) -> void
+{
+	if what.Left != null
+	{
+		what.Left.Right = what.Right
+		if what.Right != null
+			what.Right.Left = what.Left
+	}else
+	{
+		what.Up.Down = what.Right
+		if what.Right != null
+			what.Right.Left = null
+	}
+}
+
 
 SomeId := int
 GetNewId := !() -> int

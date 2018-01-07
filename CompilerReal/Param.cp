@@ -6,7 +6,7 @@ ObjParam := class extend Object
 	{
 		MyStr
 	}
-	GetValue := !() -> string
+	GetValue := virtual !() -> string
 	{
 		return "i:=1"
 	}
@@ -19,6 +19,13 @@ ObjParam := class extend Object
 		{
 			iter.Print(lvl+1)
 			iter = iter.Right
+		}
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Syntax
+		{
+			
 		}
 	}
 }

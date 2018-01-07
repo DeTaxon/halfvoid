@@ -62,7 +62,6 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 BoxFunc := class extend Object
 {
-	//this := !() 
 	MyFuncType := TypeFunc^
 	MyFuncParamNames := string^
 
