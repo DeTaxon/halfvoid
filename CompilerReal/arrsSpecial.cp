@@ -87,4 +87,37 @@ PriorityStack := class !{TVal}
 		return Start.Prior	
 	}
 }
+PriorityQueue := class !{TVal} extend PriorityStack.{TVal}
+{
+	Push := !(TVal val, int pr) -> void
+	{
+		if Start == null
+		{
+			Start = new Node3.{TVal}(val,pr)
+		}else{
+			iter := Start
+			PrevI := Start
+			PrevI = null
+
+			lazy := bool
+			lazy = iter.Prior <= pr
+
+			while lazy
+			{
+				PrevI = iter
+				iter = iter.Next
+				lazy = iter != null
+				if lazy lazy = iter.Prior <= pr
+			}
+
+			if PrevI == null
+			{
+				Start = new Node3.{TVal}(val,pr,Start)
+			}else
+			{
+				PrevI.Next = new Node3.{TVal}(val,pr,PrevI.Next)
+			}
+		}
+	}
+}
 

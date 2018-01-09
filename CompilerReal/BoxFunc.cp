@@ -18,7 +18,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		IsStatic = true
 		iter = iter.Right
 	}
-	
+
 	if iter.GetValue() != "!" return null
 	iter = iter.Right
 	ParamsObj := iter
@@ -41,11 +41,11 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			dynCa := iterForName->{ObjParam^}
 			FName = dynCa.MyStr
 			iterForName = null
-		}
-		iterForName = iterForName.Up
+		}else	iterForName = iterForName.Up
 	}
 
 
+	
 	if iter.GetValue() == "#declare"
 	{
 		return new BoxFuncDeclare(ParamsObj,RetT,FName)

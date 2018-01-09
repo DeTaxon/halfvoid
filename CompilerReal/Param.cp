@@ -23,9 +23,30 @@ ObjParam := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Syntax
+		if pri == State_Start
 		{
-			
+			WorkBag.Push(this&,State_CheckTypes)
+		}
+
+		if pri == State_CheckTypes
+		{
+			MaybeType := ParseType(Down)
+
+			if MaybeType != null
+			{
+			}else
+			{
+				SomeObj := GetUse(Down)
+				
+				if SomeObj != null
+				{
+					Down = SomeObj
+					SomeObj.SetUp(this&)
+				}else
+				{
+					printf("compiler error\n")
+				}
+			}
 		}
 	}
 }

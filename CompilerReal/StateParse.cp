@@ -1,7 +1,8 @@
-State_Syntax := 1
-State_CollectParams := 2
-State_FuncClassEmit := 3
-State_PreGetUse := 4
-State_GetUse := 5
-State_Optimize := 6
-State_PostOptimize := 7
+State_Start := 1
+State_Syntax := 2
+State_CheckTypes := 3
+State_FuncClassEmit := 4
+State_PreGetUse := 5
+State_GetUse := 6
+State_Optimize := 7
+State_PostOptimize := 8

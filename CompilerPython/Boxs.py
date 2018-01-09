@@ -1508,6 +1508,7 @@ class BoxParamCall:
         self.Object = None
         self.ToUse = Obj.Extra
 	self.Line = Obj.Line
+	self.InFile = Obj.InFile
 	if Obj.Value == "this":
 		self.ToUse = "this"
     def PrintConst(self,F):
@@ -1534,7 +1535,7 @@ class BoxParamCall:
     def Check(self):
         self.Object = GetParam(self.ToUse)
         if self.Object == None:
-            raise ValueError("Object not found {} at line {}".format(self.ToUse,self.Line))
+            raise ValueError("Object not found {} at line {} in {}".format(self.ToUse,self.Line,self.InFile))
 	self.Object.Check()
         self.Type = self.Object.Type
         self.Id = self.Object.Id

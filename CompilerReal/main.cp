@@ -14,7 +14,7 @@ main := !(int argc,string[] argv) -> int
 	//Test.PrintGlobal(fil)
 	//fil.close()
 
-	WorkBag.Push(Ob,State_Syntax)
+	WorkBag.Push(Ob,State_Start)
 
 	while not WorkBag.IsEmpty()
 	{
