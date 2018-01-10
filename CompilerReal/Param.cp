@@ -1,10 +1,11 @@
 ObjParam := class extend Object
 {
 	MyStr := string
+	AskedGetUse := bool
 	
 	this := !(string ss) -> void
 	{
-		MyStr
+		MyStr = ss
 	}
 	GetValue := virtual !() -> string
 	{
@@ -26,6 +27,15 @@ ObjParam := class extend Object
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_CheckTypes)
+
+			iter := Down
+
+			while iter != null
+			{
+				if iter.GetValue() == "()"
+					WorkBag.Push(iter,State_Syntax)
+				iter = iter.Right
+			}
 		}
 
 		if pri == State_CheckTypes
@@ -34,6 +44,7 @@ ObjParam := class extend Object
 
 			if MaybeType != null
 			{
+				//TODO: this = typedef, class, enum
 			}else
 			{
 				SomeObj := GetUse(Down)

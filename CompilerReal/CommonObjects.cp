@@ -8,13 +8,16 @@ GetItem := !(string name, Object^ start) -> Object^
 		if iter.GetValue() == "i:=1"
 		{
 			AsNeed := iter->{ObjParam^}
-			if (AsNeed->GetName() == name) { return iter}
+			if (AsNeed.MyStr == name) {
+				return iter
+			}
 		}
 		if iter.Left != null iter = iter.Left else iter = iter.Up
 	}
 	
 	for SomeDef : DefsTable
 	{
+		if SomeDef != null
 		if SomeDef.ItName == name 
 		{
 			//printf("found %s\n", SomeDef.GetValue())

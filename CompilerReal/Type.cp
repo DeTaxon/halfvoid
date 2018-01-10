@@ -277,10 +277,12 @@ CreateStandartTypes := !() -> void
 
 	DefsTable[8] = new TypeDef("bool",TypeTable[8])
 	DefsTable[9] = new TypeDef("char",TypeTable[0])
-	DefsTable[10] = new TypeDef("short",TypeTable[1])
-	DefsTable[11] = new TypeDef("int",TypeTable[2])
-	DefsTable[12] = new TypeDef("long",TypeTable[3])
-	DefsTable[13] = new TypeDef("float",TypeTable[10])
-	DefsTable[14] = new TypeDef("double",TypeTable[11])
+	DefsTable[10] = new TypeDef("short",TypeTable[5])
+	DefsTable[11] = new TypeDef("int",TypeTable[6])
+	DefsTable[12] = new TypeDef("long",TypeTable[7])
+	DefsTable[13] = new TypeDef("float",TypeTable[9])
+	DefsTable[14] = new TypeDef("double",TypeTable[10])
+
+	DefsTable[15] = new TypeDef("void",TypeTable[11])
 
 }

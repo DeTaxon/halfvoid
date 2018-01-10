@@ -1,4 +1,5 @@
 printf :=  !(char^ Line,...) -> int declare
+sprintf := !(char^ buf, char^ Line, ...) -> int declare
 sscanf := !(char^ Buf,char^ Format,...) -> int declare
 puts := !(char^ Line) -> int declare
 malloc := !(int Size) -> void^ declare

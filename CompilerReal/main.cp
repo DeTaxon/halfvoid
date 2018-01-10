@@ -9,10 +9,6 @@ main := !(int argc,string[] argv) -> int
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob := GetObjectsFromFile("Test.cp")
 
-	//fil := sfile("out2.ll","w")
-	//StrContainer.PrintGlobal(fil)
-	//Test.PrintGlobal(fil)
-	//fil.close()
 
 	WorkBag.Push(Ob,State_Start)
 
@@ -24,6 +20,23 @@ main := !(int argc,string[] argv) -> int
 	}
 
 	Ob.Print(0)
+	
+	if ErrorLog.Empty()
+	{
+		fil := sfile("out2.ll","w")
+		StrContainer.PrintGlobal(fil)
+		Ob.PrintGlobal(fil)
+		fil.close()
+	}else
+	{
+		ite := ErrorLog.Start
+		while ite != null
+		{
+			printf(ite.Data)
+			ite = ite.Next
+		}
+	}
+
 
 	return 0
 }

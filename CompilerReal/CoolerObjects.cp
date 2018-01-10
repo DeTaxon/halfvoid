@@ -15,6 +15,13 @@ ObjSkobs := class extend Object
 		if Vers == 3 return "()"
 		return ""
 	}
+	//DoTheWork := virtual !(int pri) -> void
+	//{
+	//	if pri == State_Syntax
+	//	{
+	//		SyntaxCompress(Down)
+	//	}
+	//}
 }
 
 UniteSkobs := !(Object^ Tree) -> Object^

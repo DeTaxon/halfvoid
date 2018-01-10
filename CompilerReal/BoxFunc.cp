@@ -43,8 +43,6 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			iterForName = null
 		}else	iterForName = iterForName.Up
 	}
-
-
 	
 	if iter.GetValue() == "#declare"
 	{
@@ -52,11 +50,10 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		return null
+		return new BoxFuncBody(ParamsObj,RetT,FName,iter)
 	}
 
 	return null
-
 }
 
 
@@ -67,6 +64,7 @@ BoxFunc := class extend Object
 
 	ParseParams := !(Object^ root) -> bool
 	{
+		SyntaxCompress(root,PriorityData)
 		iter := root
 		Pars := Queue.{Object^}()
 
@@ -132,9 +130,9 @@ BoxFunc := class extend Object
 		MyFuncType = GetFuncType(Typs,IsVargsL)
 		return true
 	}
-	KeepName := virtual !()-> bool
+	GetValue := virtual !() -> string
 	{
-		return true
+		return "!()"
 	}
 }
 
@@ -150,29 +148,50 @@ BoxFuncDeclare := class  extend BoxFunc
 			MyFuncType.RetType = ParseType(inOutType)
 
 		if MyFuncType.RetType == null IsInvalid = true
+
+		if IsInvalid ErrorLog.Push("can not parse function\n")
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		PrintGlobalSub(f)
 		f << "declare "
 		MyFuncType.RetType.PrintType(f)
 		f << " @" << ItName
 		MyFuncType.PrintSkobs(f)
 		f << "\n"
 	}
-	KeepName := virtual !()-> bool
-	{
-		return true
-	}
 }
 
 BoxFuncBody := class extend BoxFunc
 {
-	this := !(Object^ root) -> void
+	OutputName := string
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
+		if SomeName == "main"
+		{
+			OutputName = "main"
+		}else
+		{
+			OutputName = new char[50]
+			sprintf(OutputName,"func%i",GetNewId())
+		}
+		IsInvalid = not ParseParams(inPars.Down)
+
+		if not IsInvalid
+			MyFuncType.RetType = ParseType(inOutType)
+
+		if MyFuncType.RetType == null IsInvalid = true
+
+		Down = Stuf
+		if IsInvalid ErrorLog.Push("can not parse function header\n")
 	}
-	KeepName := virtual !()-> bool
+	PrintGlobal := virtual !(sfile f) -> void
 	{
-		return false
+		PrintGlobalSub(f)
+		f << "define "
+		MyFuncType.RetType.PrintType(f)
+		f << " @" << OutputName
+		MyFuncType.PrintSkobs(f)
+		f << "\n{\n"
+		f << "}\n"
 	}
 }
