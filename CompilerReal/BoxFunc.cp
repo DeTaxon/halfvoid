@@ -164,6 +164,7 @@ BoxFuncDeclare := class  extend BoxFunc
 BoxFuncBody := class extend BoxFunc
 {
 	OutputName := string
+	TempBody := Object^
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
 		if SomeName == "main"
@@ -181,7 +182,7 @@ BoxFuncBody := class extend BoxFunc
 
 		if MyFuncType.RetType == null IsInvalid = true
 
-		Down = Stuf
+		TempBody = Stuf
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 	}
 	PrintGlobal := virtual !(sfile f) -> void
