@@ -65,7 +65,7 @@ BoxFunc := class extend Object
 	ParseParams := !(Object^ root) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
-		iter := root
+		iter := root.Down
 		Pars := Queue.{Object^}()
 
 		Typs := Queue.{Type^}()
@@ -142,7 +142,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
 		ItName = SomeName
-		IsInvalid = not ParseParams(inPars.Down)
+		IsInvalid = not ParseParams(inPars)
 
 		if not IsInvalid
 			MyFuncType.RetType = ParseType(inOutType)
@@ -174,7 +174,7 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = new char[50]
 			sprintf(OutputName,"func%i",GetNewId())
 		}
-		IsInvalid = not ParseParams(inPars.Down)
+		IsInvalid = not ParseParams(inPars)
 
 		if not IsInvalid
 			MyFuncType.RetType = ParseType(inOutType)
