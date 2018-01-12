@@ -193,6 +193,14 @@ BoxFuncBody := class extend BoxFunc
 		f << " @" << OutputName
 		MyFuncType.PrintSkobs(f)
 		f << "\n{\n"
+
+		iter := Down
+		while iter != null
+		{
+			iter.PrintInBlock(f)
+			iter = iter.Right
+		}
+
 		f << "}\n"
 	}
 }

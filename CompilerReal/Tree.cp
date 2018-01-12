@@ -55,6 +55,11 @@ Object := class{
 	{
 		PrintGlobalSub(f)
 	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("Compiler error: PrintInBlock is not defined")	
+	}
+
 	DoTheWork := virtual !(int st) -> void
 	{
 		printf("work not specefied for %s\n",GetValue())

@@ -1,7 +1,7 @@
 
 GetFuncCall := !(Object^ ToPase) -> Object^
 {
-	iter
+	
 	return null
 }
 
