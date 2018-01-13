@@ -15,13 +15,23 @@ ObjSkobs := class extend Object
 		if Vers == 3 return "()"
 		return ""
 	}
-	//DoTheWork := virtual !(int pri) -> void
-	//{
-	//	if pri == State_Syntax
-	//	{
-	//		SyntaxCompress(Down)
-	//	}
-	//}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Syntax
+		{
+			SyntaxCompress(this&,PriorityData)
+		}
+		if pri == State_PreGetUse
+		{
+			iter := Down
+
+			while iter != null
+			{
+				WorkBag.Push(iter,State_PreGetUse)
+				iter = iter.Right
+			}
+		}
+	}
 }
 
 UniteSkobs := !(Object^ Tree) -> Object^

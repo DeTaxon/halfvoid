@@ -67,6 +67,10 @@ ObjStr := class extend ObjConst
 		for s printf("->")
 		printf("string %s\n",StrContainer.GetString(MyStrId))
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		//noting is ok
+	}
 }
 ObjIndent := class extend ObjConst
 {
@@ -84,6 +88,10 @@ ObjIndent := class extend ObjConst
 	{
 		for s printf("->")
 		printf("indent %s\n",MyStr)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		//noting is ok
 	}
 }
 

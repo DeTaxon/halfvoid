@@ -59,5 +59,10 @@ ObjParam := class extend Object
 				}
 			}
 		}
+		if pri == State_GetUse
+		{
+			AskedGetUse = true
+			WorkBag.Push(Down,State_Start)
+		}
 	}
 }

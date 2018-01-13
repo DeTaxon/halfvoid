@@ -24,7 +24,13 @@ RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
-			iter = UNext(iter,new ObjObj(N),Try) 
+			if N == "~d"
+			{
+				iter = UNext(iter,new ObjData(),Try) 
+			}else
+			{
+				iter = UNext(iter,new ObjObj(N),Try) 
+			}
 			GotStuff = true
 		}else{
 			iter = iter.Right
@@ -43,7 +49,13 @@ RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode) -> bool
 		Try := RuleMachine(iter,MiniNode)
 		if Try > 0
 		{
-			iter = UNext(iter,new ObjObj(N),Try) 
+			if N == "~d"
+			{
+				iter = UNext(iter,new ObjData(),Try) 
+			}else
+			{
+				iter = UNext(iter,new ObjObj(N),Try) 
+			}
 			GotStuff = true
 		}else{
 			iter = iter.Right

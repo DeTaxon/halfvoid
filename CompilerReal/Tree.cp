@@ -69,6 +69,10 @@ Object := class{
 		Up = nUp
 		if Right != null Right.SetUp(nUp)
 	}
+	GetType := virtual !() -> Type^
+	{
+		return null
+	}
 }
 
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^

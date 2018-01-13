@@ -11,13 +11,17 @@ main := !(int argc,string[] argv) -> int
 
 
 	WorkBag.Push(Ob,State_Start)
+	
+	WorkWithBag()
 
-	while not WorkBag.IsEmpty()
-	{
-		prior := WorkBag.GetTopPriority()
-		it := WorkBag.Pop()
-		it.DoTheWork(prior)
-	}
+	endI := Ob.Down
+	if endI != null
+		while endI.Right != null 
+			endI = endI.Right
+	mainFunc := GetItem("main",endI)
+
+	if mainFunc == null ErrorLog.Push("main function not found")
+	else WorkWithBag()
 
 	Ob.Print(0)
 	
@@ -39,6 +43,16 @@ main := !(int argc,string[] argv) -> int
 
 
 	return 0
+}
+
+WorkWithBag := !() -> void
+{
+	while not WorkBag.IsEmpty()
+	{
+		prior := WorkBag.GetTopPriority()
+		it := WorkBag.Pop()
+		it.DoTheWork(prior)
+	}
 }
 
 GetObjectsFromFile := !(char^ fileName) -> Object^

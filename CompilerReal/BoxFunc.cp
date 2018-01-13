@@ -159,12 +159,15 @@ BoxFuncDeclare := class  extend BoxFunc
 		MyFuncType.PrintSkobs(f)
 		f << "\n"
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		//empty is ok
+	}
 }
 
 BoxFuncBody := class extend BoxFunc
 {
 	OutputName := string
-	TempBody := Object^
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
 		if SomeName == "main"
@@ -182,7 +185,13 @@ BoxFuncBody := class extend BoxFunc
 
 		if MyFuncType.RetType == null IsInvalid = true
 
-		TempBody = Stuf
+		if Stuf.GetValue() == "{}"
+		{
+			Down = Stuf.Down
+			Down.SetUp(this&)
+		}else{
+			ErrorLog.Push("CompilerError: function with weird body\n")
+		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 	}
 	PrintGlobal := virtual !(sfile f) -> void
@@ -202,5 +211,29 @@ BoxFuncBody := class extend BoxFunc
 		}
 
 		f << "}\n"
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_Syntax)
+		}
+
+		if pri == State_Syntax
+		{
+			SyntaxCompress(this&,PriorityData)
+			WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
+			iter := Down
+
+			while iter != null
+			{
+				WorkBag.Push(iter,State_PreGetUse)
+				iter = iter.Right
+			}
+			
+		}
 	}
 }
