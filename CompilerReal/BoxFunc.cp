@@ -44,7 +44,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		}else	iterForName = iterForName.Up
 	}
 	
-	if iter.GetValue() == "#declare"
+	if iter.GetValue() == "declare"
 	{
 		return new BoxFuncDeclare(ParamsObj,RetT,FName)
 	}
@@ -61,6 +61,7 @@ BoxFunc := class extend Object
 {
 	MyFuncType := TypeFunc^
 	MyFuncParamNames := string^
+	OutputName := string
 
 	ParseParams := !(Object^ root) -> bool
 	{
@@ -138,10 +139,9 @@ BoxFunc := class extend Object
 
 BoxFuncDeclare := class  extend BoxFunc
 {
-	ItName := string
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
-		ItName = SomeName
+		OutputName = SomeName.Copy()
 		IsInvalid = not ParseParams(inPars)
 
 		if not IsInvalid
@@ -155,7 +155,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	{
 		f << "declare "
 		MyFuncType.RetType.PrintType(f)
-		f << " @" << ItName
+		f << " @" << OutputName
 		MyFuncType.PrintSkobs(f)
 		f << "\n"
 	}
@@ -167,7 +167,6 @@ BoxFuncDeclare := class  extend BoxFunc
 
 BoxFuncBody := class extend BoxFunc
 {
-	OutputName := string
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
 		if SomeName == "main"
@@ -209,6 +208,9 @@ BoxFuncBody := class extend BoxFunc
 			iter.PrintInBlock(f)
 			iter = iter.Right
 		}
+
+		if MyFuncType.RetType == GetType("void")
+			f << "ret void\n"
 
 		f << "}\n"
 	}

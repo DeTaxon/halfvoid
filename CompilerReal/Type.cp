@@ -244,6 +244,14 @@ TypeArr := class extend Type
 	}
 }
 
+GetType := !(string Name) -> Type^
+{
+	for Def : DefsTable
+	{
+		if Def.ItName == Name return Def.ItType
+	}
+	return null
+}
 
 CreateStandartTypes := !() -> void
 {	

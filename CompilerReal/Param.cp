@@ -22,6 +22,10 @@ ObjParam := class extend Object
 			iter = iter.Right
 		}
 	}
+	GetName := virtual !() -> string
+	{
+		return MyStr
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start

@@ -37,7 +37,7 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> Object^
 		if iter.GetValue() == "i:=1"
 		{
 			AsNeed := iter->{ObjParam^}
-			if(AsNeed->GetName() == name)
+			if(AsNeed.GetName() == name)
 			{
 				//TODO: check params
 				return iter

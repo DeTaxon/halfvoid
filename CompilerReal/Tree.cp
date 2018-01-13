@@ -59,6 +59,22 @@ Object := class{
 	{
 		ErrorLog.Push("Compiler error: PrintInBlock is not defined")	
 	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("Compiler error: PrintPointPre is not defined")	
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("Compiler error: PrintPointUse is not defined")	
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("Compiler error: PrintPre is not defined")	
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("Compiler error: PrintUse is not defined")	
+	}
 
 	DoTheWork := virtual !(int st) -> void
 	{

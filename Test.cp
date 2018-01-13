@@ -1,4 +1,4 @@
-printf := !(char^ str, ...) -> int #declare
+printf := !(char^ str, ...) -> int declare
 
 main := !() -> void
 {

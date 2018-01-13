@@ -26,7 +26,7 @@ ObjData := class extend Object
 			if lowTest == null ErrorLog.Push("can not parse data\n")
 			else
 			{
-				printf("heillo\n")
+				ReplaceNode(this&,lowTest)
 			}
 		}
 

@@ -53,10 +53,12 @@ ObjDouble := class extend ObjConst
 ObjStr := class extend ObjConst
 {
 	MyStrId := int
+	MyTmpId := int
 	"this" := !(char^ str) -> void
 	{
 		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
+		MyTmpId = GetNewId()
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -70,6 +72,15 @@ ObjStr := class extend ObjConst
 	DoTheWork := virtual !(int pri) -> void
 	{
 		//noting is ok
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		StrSi := StrContainer.GetString(MyStrId).Size() + 1
+		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << "i8* %T" << MyTmpId	
 	}
 }
 ObjIndent := class extend ObjConst
