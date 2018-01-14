@@ -1,6 +1,6 @@
 
 TypeTable := Type^[30]
-DefsTable := TypeDef^[16]
+DefsTable := TypeDef^[30]
 
 WorkBag := PriorityQueue.{Object^}
 

@@ -25,6 +25,21 @@ OneCall := !(string Name, Object^ P) -> Object^
 {
 	Ps := Queue.{Type^}()
 
+	Temp := P.Up
+	
+	iter := Temp.Down
+	while iter != null
+	{
+		if iter.GetValue() == ","
+		{
+			PopOutNode(iter)
+			iter = Temp.Down
+		}else
+		{
+			iter = iter.Right
+		}
+	}
+
 	iterT := P
 
 	while iterT != null
@@ -50,6 +65,7 @@ NaturalCall := class extend ObjResult
 	this := !(Object^ func, Object^ Pars) -> void 
 	{
 		Down = Pars
+
 		RetId = GetNewId()
 		ToCall = (func.Down)->{BoxFunc^}
 		printf("maybe %s\n", func.Down.GetValue())
@@ -95,6 +111,10 @@ NaturalCall := class extend ObjResult
 		}
 
 		f << ")\n"
+	}
+	GetValue := virtual !() -> string
+	{
+		return "d()"
 	}
 }
 

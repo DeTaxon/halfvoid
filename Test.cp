@@ -1,6 +1,6 @@
 printf := !(char^ str, ...) -> int declare
 
-main := !() -> void
+main := !(int argc, char^^ argv) -> void
 {
 	//x := #select * #from y #where y in z #end
 	//sp := type char^
@@ -10,6 +10,7 @@ main := !() -> void
 	//o := new int()
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
+	x := int
 	printf("Hello, world!\n")
 	//return 0
 }

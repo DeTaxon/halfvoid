@@ -62,7 +62,12 @@ BoxFunc := class extend Object
 	MyFuncType := TypeFunc^
 	MyFuncParamNames := string^
 	OutputName := string
+	ABox := AllocBox
 
+	GetType := virtual !() -> Type^
+	{
+		return MyFuncType
+	}
 	ParseParams := !(Object^ root) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
@@ -199,8 +204,25 @@ BoxFuncBody := class extend BoxFunc
 		f << "define "
 		MyFuncType.RetType.PrintType(f)
 		f << " @" << OutputName
-		MyFuncType.PrintSkobs(f)
+
+		f << "("
+		for i : MyFuncType.ParsCount
+		{
+			if i > 0 f << " , "
+
+			MyFuncType.Pars[i].PrintType(f)
+			f << " %" <<MyFuncParamNames[i]
+		}
+		if MyFuncType.IsVArgs
+		{
+			if MyFuncType.ParsCount > 0 f << " , "
+			f << "..."
+		}
+		f << ")"
+
 		f << "\n{\n"
+
+		ABox.PrintAlloc(f)
 
 		iter := Down
 		while iter != null
@@ -224,6 +246,7 @@ BoxFuncBody := class extend BoxFunc
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,PriorityData)
+			UnboxParams(this.Down)
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse

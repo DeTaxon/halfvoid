@@ -3,6 +3,10 @@
 ObjResult := class extend Object
 {
 	ResultType := Type^
+	GetType := virtual !() -> Type^
+	{
+		return ResultType
+	}
 }
 
 ObjConst := class extend ObjResult
@@ -10,6 +14,10 @@ ObjConst := class extend ObjResult
 	IsConst := virtual !() -> bool
 	{
 		return true
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		//noting is ok
 	}
 }
 
@@ -20,6 +28,7 @@ ObjInt := class extend ObjConst
 	{
 		MyInt = Value
 		Clean()
+		ResultType = GetType("int")
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -29,7 +38,12 @@ ObjInt := class extend ObjConst
 	{
 		for s printf("->")
 		printf("int %i\n",MyInt)
-	}	
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ResultType.PrintType(f)
+		f << " " << MyInt
+	}
 }
 ObjDouble := class extend ObjConst
 {
@@ -38,6 +52,7 @@ ObjDouble := class extend ObjConst
 	{
 		MyDouble = Value
 		Clean()
+		ResultType = GetType("double")
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -47,7 +62,12 @@ ObjDouble := class extend ObjConst
 	{
 		for s printf("->")
 		printf("double %f\n",MyDouble)
-	}	
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ResultType.PrintType(f)
+		f << " " << MyDouble
+	}
 }
 
 ObjStr := class extend ObjConst
@@ -59,6 +79,7 @@ ObjStr := class extend ObjConst
 		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
 		MyTmpId = GetNewId()
+		ResultType = GetType("string")
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -69,10 +90,6 @@ ObjStr := class extend ObjConst
 		for s printf("->")
 		printf("string %s\n",StrContainer.GetString(MyStrId))
 	}
-	DoTheWork := virtual !(int pri) -> void
-	{
-		//noting is ok
-	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		StrSi := StrContainer.GetString(MyStrId).Size() + 1
@@ -80,7 +97,8 @@ ObjStr := class extend ObjConst
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		f << "i8* %T" << MyTmpId	
+		ResultType.PrintType(f)
+		f << " %T" << MyTmpId	
 	}
 }
 ObjIndent := class extend ObjConst

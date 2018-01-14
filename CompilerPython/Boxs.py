@@ -1386,6 +1386,7 @@ class BoxReturn:
 		self.RetRef = False
 		self.ToCall = None
 		self.Line = Obj.Line
+		self.InFile = Obj.InFile
 	def PrintConst(self,F):
 		self.Ret.PrintConst(F)
 		return None
@@ -1412,7 +1413,7 @@ class BoxReturn:
 				if L.Type.Type == "class":
 					self.ToCall = L.Type.GetFunc("=",[self.RetParam,self.Ret])
 				if self.ToCall == None:
-					raise ValueError("can not return value at line {}".format(self.Line))
+					raise ValueError("can not return value at line {} in {}".format(self.Line,self.InFile))
 	def PrintPre(self,F):
 		if self.ToCall != None:
 			self.RetParam.PrintPointPre(F)

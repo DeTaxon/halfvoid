@@ -52,12 +52,22 @@ sfile := class extend file
 		fputs(likeCpp,Handle)
 		return this
 	}
+	"<<" := !(s64 x) -> ref sfile
+	{
+		fprintf(Handle,"%li",x)
+		return this
+	}
 	"<<" := !(int x) -> ref sfile
 	{
 		fprintf(Handle,"%i",x)
 		return this
 	}
 	"<<" := !(float x) -> ref sfile
+	{
+		fprintf(Handle,"%f",x)
+		return this
+	}
+	"<<" := !(double x) -> ref sfile
 	{
 		fprintf(Handle,"%f",x)
 		return this

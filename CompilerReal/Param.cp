@@ -2,6 +2,7 @@ ObjParam := class extend Object
 {
 	MyStr := string
 	AskedGetUse := bool
+	ObjType := Type^
 	
 	this := !(string ss) -> void
 	{
@@ -10,6 +11,10 @@ ObjParam := class extend Object
 	GetValue := virtual !() -> string
 	{
 		return "i:=1"
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ObjType
 	}
 	Print := virtual !(int lvl) -> void
 	{
@@ -48,6 +53,7 @@ ObjParam := class extend Object
 
 			if MaybeType != null
 			{
+				GetAlloc(this&,MaybeType)
 				//TODO: this = typedef, class, enum
 			}else
 			{
@@ -62,6 +68,10 @@ ObjParam := class extend Object
 					printf("compiler error\n")
 				}
 			}
+		}
+		if pri == State_PreGetUse
+		{
+			WorkBag.Push(Down,State_PreGetUse)
 		}
 		if pri == State_GetUse
 		{
