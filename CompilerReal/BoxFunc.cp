@@ -2,6 +2,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 {
 	iter := item.Down
 
+	if iter == null return null
+
 	IsStatic := false
 	IsVirtual := false
 
@@ -18,6 +20,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		IsStatic = true
 		iter = iter.Right
 	}
+
 
 	if iter.GetValue() != "!" return null
 	iter = iter.Right
@@ -255,7 +258,7 @@ BoxFuncBody := class extend BoxFunc
 
 			while iter != null
 			{
-				WorkBag.Push(iter,State_PreGetUse)
+				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
 			

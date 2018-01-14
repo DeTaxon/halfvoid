@@ -53,8 +53,14 @@ ObjParam := class extend Object
 
 			if MaybeType != null
 			{
-				GetAlloc(this&,MaybeType)
-				//TODO: this = typedef, class, enum
+				allcId := GetAlloc(this&,MaybeType)
+				if allcId == -1
+				{
+					//TODO: Global?
+				}else
+				{
+					Down = new LocalParam(MaybeType,allcId)
+				}
 			}else
 			{
 				SomeObj := GetUse(Down)
@@ -71,7 +77,8 @@ ObjParam := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			WorkBag.Push(Down,State_PreGetUse)
+			WorkBag.Push(Down,State_Start)
+			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
 		{

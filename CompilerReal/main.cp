@@ -1,4 +1,4 @@
-
+Ob := Object^
 main := !(int argc,string[] argv) -> int 
 {
 	CreateStandartTypes()
@@ -7,7 +7,7 @@ main := !(int argc,string[] argv) -> int
 	PriorityData.Opers.Push(":=")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
-	Ob := GetObjectsFromFile("Test.cp")
+	Ob = GetObjectsFromFile("Test.cp")
 
 
 	WorkBag.Push(Ob,State_Start)
@@ -23,7 +23,6 @@ main := !(int argc,string[] argv) -> int
 	if mainFunc == null ErrorLog.Push("main function not found")
 	else WorkWithBag()
 
-	Ob.Print(0)
 	
 	if ErrorLog.Empty()
 	{

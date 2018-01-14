@@ -8,6 +8,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	if iter.GetValue() == "~ind"
 	{
 		iter = iter.Right
+		if iter == null return null
 
 		if iter.GetValue() == "()"
 		{
@@ -26,7 +27,6 @@ OneCall := !(string Name, Object^ P) -> Object^
 	Ps := Queue.{Type^}()
 
 	Temp := P.Up
-	
 	iter := Temp.Down
 	while iter != null
 	{
@@ -68,7 +68,6 @@ NaturalCall := class extend ObjResult
 
 		RetId = GetNewId()
 		ToCall = (func.Down)->{BoxFunc^}
-		printf("maybe %s\n", func.Down.GetValue())
 	}
 	PrintPreFuncName := virtual !(sfile f) -> void
 	{

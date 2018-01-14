@@ -11,6 +11,6 @@ main := !(int argc, char^^ argv) -> void
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
 	x := int
-	printf("Hello, world!\n")
+	printf("Hello, world! %i\n", x)
 	//return 0
 }

@@ -9,13 +9,17 @@ ObjData := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
 		if pri == State_PreGetUse
 		{
 			iter := Down
 			while iter != null
 			{
 				if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-				WorkBag.Push(iter,State_PreGetUse)
+				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
 			WorkBag.Push(this&,State_GetUse)

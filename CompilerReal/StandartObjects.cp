@@ -101,28 +101,6 @@ ObjStr := class extend ObjConst
 		f << " %T" << MyTmpId	
 	}
 }
-ObjIndent := class extend ObjConst
-{
-	MyStr := char^
-	"this" := !(char^ str) -> void
-	{
-		Clean()
-		MyStr = str
-	}
-	GetValue := virtual !() -> char^
-	{
-		return "~ind"
-	}
-	Print := virtual !(int s) -> void
-	{
-		for s printf("->")
-		printf("indent %s\n",MyStr)
-	}
-	DoTheWork := virtual !(int pri) -> void
-	{
-		//noting is ok
-	}
-}
 
 ObjSymbol := class extend ObjConst
 {
