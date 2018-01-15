@@ -28,6 +28,10 @@ Object := class{
 	{
 		return false
 	}
+	IsRef := virtual !() -> bool
+	{
+		return false
+	}
 	GetValue := virtual !() -> char^
 	{
 		return "~unknown"

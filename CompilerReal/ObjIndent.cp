@@ -20,9 +20,9 @@ ObjIndent := class extend ObjConst
 	{
 		if pri == State_Start
 		{
-			WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(this&,State_PreGetUse)
 		}
-		if pri == State_GetUse
+		if pri == State_PreGetUse
 		{
 			may := GetUse(this&)
 			if may != null

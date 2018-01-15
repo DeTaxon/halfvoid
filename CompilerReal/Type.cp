@@ -15,7 +15,7 @@ Type := class {
 		AsPoint = null
 		AsArray.Start = null
 	}
-	GetType := !() -> string
+	GetType := virtual !() -> string
 	{
 		return ""
 	}
@@ -154,7 +154,7 @@ TypeStandart := class extend Type{
 		IRName = Name 
 		Clean()
 	}
-	GetType := !() -> string
+	GetType := virtual !() -> string
 	{
 		return "standart"
 	}
@@ -171,7 +171,7 @@ TypePoint := class extend Type
 		Clean()
 		Base = nBase
 	}
-	GetType := !() -> string
+	GetType := virtual !() -> string
 	{
 		return "point"
 	}
@@ -197,7 +197,7 @@ TypeFunc := class extend Type
 		if ParsCount != 0 Pars = P.ToArray()
 		IsVArgs = IsV
 	}
-	GetType := !() -> string
+	GetType := virtual !() -> string
 	{
 		return "function"
 	}
@@ -232,7 +232,7 @@ TypeArr := class extend Type
 		Base = B
 		Size = S
 	}
-	GetType := !() -> string
+	GetType := virtual !() -> string
 	{
 		return "arr"
 	}

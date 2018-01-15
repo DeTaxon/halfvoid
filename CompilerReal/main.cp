@@ -23,6 +23,8 @@ main := !(int argc,string[] argv) -> int
 	if mainFunc == null ErrorLog.Push("main function not found")
 	else WorkWithBag()
 
+	Ob.Print(0)
+
 	
 	if ErrorLog.Empty()
 	{

@@ -54,6 +54,7 @@ ObjParam := class extend Object
 			if MaybeType != null
 			{
 				allcId := GetAlloc(this&,MaybeType)
+				ObjType = MaybeType
 				if allcId == -1
 				{
 					//TODO: Global?
@@ -69,6 +70,7 @@ ObjParam := class extend Object
 				{
 					Down = SomeObj
 					SomeObj.SetUp(this&)
+					ObjType = SomeObj.GetType()
 				}else
 				{
 					printf("compiler error\n")

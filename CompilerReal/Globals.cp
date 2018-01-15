@@ -2,7 +2,7 @@
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
-WorkBag := PriorityQueue.{Object^}
+WorkBag := PriorityStack.{Object^}
 
 PriorityData := PriorityBag^
 LexMachine := Machine^

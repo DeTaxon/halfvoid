@@ -5,15 +5,16 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 	if iter == null return null
 
-	if iter.GetValue() == "~ind"
+	if iter.GetValue() == "(d)"
 	{
 		iter = iter.Right
 		if iter == null return null
 
+
 		if iter.GetValue() == "()"
 		{
-			dynCast := (iter.Left)->{ObjIndent^}
-			return OneCall(dynCast.MyStr, iter.Down)
+			dynCast := (iter.Left)->{ParamCall^}
+			return OneCall(dynCast.BeforeName, iter.Down)
 		}
 		
 	}else

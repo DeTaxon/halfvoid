@@ -255,11 +255,15 @@ BoxFuncBody := class extend BoxFunc
 		if pri == State_GetUse
 		{
 			iter := Down
-
-			while iter != null
+			
+			if iter != null
 			{
-				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
+				while iter.Right != null iter = iter.Right
+				while iter != null
+				{
+					WorkBag.Push(iter,State_Start)
+					iter = iter.Left
+				}
 			}
 			
 		}

@@ -17,6 +17,10 @@ ObjSkobs := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,PriorityData)
