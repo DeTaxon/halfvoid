@@ -15,7 +15,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 				if itType.GetType() == "function"
 					return new ParamFuncCall(dynCast.MyStr,may->{ObjParam^})
-				return new ParamCall(dynCast.MyStr,may->{ObjParam^})
+				return new ParamNaturalCall(dynCast.MyStr,may->{ObjParam^})
 			}
 		}
 	}
@@ -25,13 +25,36 @@ ParseParamCall := !(Object^ ob) -> Object^
 ParamCall := class extend ObjResult
 {
 	BeforeName := string
-	this := !(string Name , ObjParam^ par) -> void
-	{
-		BeforeName = Name
-	}
 	GetValue := virtual !() -> string
 	{
 		return "(d)"
+	}
+}
+
+ParamNaturalCall := class extend ParamCall
+{
+	TempId := int
+	ToCall := MemParam^
+	this := !(string Name , ObjParam^ par) -> void
+	{
+		BeforeName = Name
+		TempId = GetNewId()
+		
+		if par.Down.GetValue() == "i:=2"
+		{
+			ToCall = (par.Down)->{MemParam^}
+		}else{
+			ErrorLog.Push("param not found\n")
+		}
+	}
+	
+	PrintPre := virtual !(sfile f) -> void
+	{
+		ToCall.PrintPre(f,TempId)
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ToCall.PrintUse(f,TempId)
 	}
 }
 
