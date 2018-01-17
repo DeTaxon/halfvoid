@@ -58,6 +58,7 @@ ObjParam := class extend Object
 				if allcId == -1
 				{
 					//TODO: Global?
+					Down = new GlobalParam(MaybeType)
 				}else
 				{
 					Down = new LocalParam(MaybeType,allcId)

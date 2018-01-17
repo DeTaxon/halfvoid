@@ -1,5 +1,6 @@
 printf := !(char^ str, ...) -> int declare
 
+y := double
 main := !(int argc, char^^ argv) -> void
 {
 	//x := #select * #from y #where y in z #end
@@ -11,6 +12,6 @@ main := !(int argc, char^^ argv) -> void
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
 	x := int
-	printf("Hello, world! %i\n", x)
+	printf("Hello, world! %i %f\n", x, y)
 	//return 0
 }
