@@ -8,3 +8,5 @@ PriorityData := PriorityBag^
 LexMachine := Machine^
 
 ErrorLog := Queue.{string}
+
+BuiltInFuncs := Queue.{BoxFunc^}

@@ -383,23 +383,28 @@ class ParArrConst:
 			raise ValueError("Empty array")
 		self.Type = GetFixedArr(self.Extra[0].Type, len(self.Extra))
 	def PrintPointUse(self,F):
-		F.write("i32* %Tmp{}".format(self.PrevId))
+		F.write("{}* %Tmp{}".format(self.Type.Base.GetName(),self.PrevId))
 	def PrintUse(self,F):
 		F.write("i32* %Tmp{}".format(self.PrevId))
 	def GetName(self):
 		return "{}".format(self.Extra)
 	def PrintPointPre(self,F):
 		self.PrevId = GetNumb()
-		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		F.write("%Tmp{0} = getelementptr [ {1} x {3} ] , [ {1} x {3} ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id,self.Type.Base.GetName()))
 		return None
 	def PrintPre(self,F):
 		self.PrevId = GetNumb()
-		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id))
+		F.write("%Tmp{0} = getelementptr [ {1} x i32 ] , [ {1} x i32 ]* @Tmp{2}, i32 0,i32 0\n".format(self.PrevId,len(self.Extra),self.Id)) # load?
 		return None
 	def PrintFunc(self,F):
 		return None
 	def PrintConst(self,F):
-		F.write("@Tmp{} = global [{} x i32] [".format(self.Id,len(self.Extra)))
+		for i in self.Extra:
+			i.PrintConst(F)
+		
+		F.write("@Tmp{} = global [{} x ".format(self.Id,len(self.Extra)))
+		self.Type.Base.PrintInAlloc(F)
+		F.write("] [");
 		for i in range(len(self.Extra)):
 			if i != 0:
 				F.write(",")
@@ -1206,7 +1211,7 @@ class ParConstStr:
         self.Size += 1
 	self.Size -= Doubls
     def PrintConst(self,F):
-        F.write('@CStr{} = constant [{} x i8] c"'.format(self.Id,self.Size))
+        F.write('@CStr{} =  constant [{} x i8] c"'.format(self.Id,self.Size))
         #F.write('@CStr{0} = constant {{i32,[{1} x i8]}} {{i32 {1}, [{1} x i8] c"'.format(self.Id,self.Size))
         i = 0
         while i < len(self.Extra):
@@ -1225,16 +1230,20 @@ class ParConstStr:
                 F.write(self.Extra[i])
                 i += 1
         F.write('\\00"\n')
+	#F.write('@CCStr{0} = constant i8*  getelementptr ([{1} x i8], [{1} x i8]* @CStr{0}, i32 0, i32 0)\n'.format(self.Id,self.Size))
         #F.write('\\00"}\n')
     def PrintFunc(self,F):
          return None
     def PrintPre(self,F):
+    	#return None
         F.write("%LStr{0} = getelementptr [{1} x i8], [{1} x i8]* @CStr{0},i32 0,i32 0\n".format(self.Id,self.Size))
         #F.write("%LStr{0} = getelementptr {{i32,[{1} x i8]}}, {{i32,[{1} x i8]}}* @CStr{0},i32 0,i32 1, i32 0\n".format(self.Id,self.Size))
     def GetName(self):
         return "%LStr{}".format(self.Id)
     def PrintUse(self,F):
         F.write("i8* %LStr{}".format(self.Id))
+    def PrintAsConst(self,F):
+        F.write("i8* getelementptr ([{1} x i8], [{1} x i8]* @CStr{0}, i32 0, i32 0)".format(self.Id,self.Size))
     def Check(self):
         return None
     def PrintAlloc(self,F):

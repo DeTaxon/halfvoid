@@ -139,6 +139,8 @@ BoxFunc := class extend Object
 		MyFuncType = GetFuncType(Typs,IsVargsL)
 		return true
 	}
+
+
 	GetValue := virtual !() -> string
 	{
 		return "!()"

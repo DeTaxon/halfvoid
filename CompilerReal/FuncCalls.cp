@@ -16,11 +16,48 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			dynCast := (iter.Left)->{ParamCall^}
 			return OneCall(dynCast.BeforeName, iter.Down)
 		}
+		if IsOper(iter.GetValue())
+		{
+			oper := iter.GetValue()
+			if iter.Right == null
+			{
+				//TODO x++
+				return null
+			}else
+			{
+				iter = iter.Right
+
+				if iter.Right != null
+				{
+					ErrorLog.Push("no more then binary allowed")
+					return null
+				} 
+				if iter.GetValue() == "(d)" or iter.IsConst()
+				{
+					PopOutNode(iter.Left)
+					return OneCall(oper,iter.Left)
+				}
+				return null
+			}
+		}
 		
 	}else
 	{
 	}
 	return null
+}
+
+IsOper := !(string may) -> bool
+{
+	iter := PriorityData.Opers.Start
+
+	while iter != null
+	{
+		if iter.Data == may return true
+		iter = iter.Next
+	}
+	return false
+
 }
 
 OneCall := !(string Name, Object^ P) -> Object^
@@ -63,12 +100,12 @@ NaturalCall := class extend ObjResult
 {
 	RetId := int
 	ToCall := BoxFunc^
-	this := !(Object^ func, Object^ Pars) -> void 
+	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		Down = Pars
 
 		RetId = GetNewId()
-		ToCall = (func.Down)->{BoxFunc^}
+		ToCall = func
 	}
 	PrintPreFuncName := virtual !(sfile f) -> void
 	{

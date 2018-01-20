@@ -12,6 +12,7 @@ main := !(int argc, char^^ argv) -> void
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
 	x := int
+	x = 5
 	printf("Hello, world! %i %f\n", x, y)
 	//return 0
 }

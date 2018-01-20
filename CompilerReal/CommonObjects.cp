@@ -29,7 +29,7 @@ GetItem := !(string name, Object^ start) -> Object^
 	return null
 }
 
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> Object^
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 {
 	iter := start
 	while iter != null
@@ -40,7 +40,9 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> Object^
 			if(AsNeed.GetName() == name)
 			{
 				//TODO: check params
-				return iter
+				iter = iter.Down
+				if iter.GetValue() == "!()"
+					return iter->{BoxFunc^}
 			}
 		}
 		if iter.Left != null iter = iter.Left else iter = iter.Up
