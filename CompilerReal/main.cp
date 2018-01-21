@@ -2,6 +2,7 @@ Ob := Object^
 main := !(int argc,string[] argv) -> int 
 {
 	CreateStandartTypes()
+	CreateBuiltIns()
 
 	PriorityData = new PriorityBag("Priority.pr")
 	PriorityData.Opers.Push(":=")

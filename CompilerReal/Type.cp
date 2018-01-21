@@ -95,7 +95,7 @@ ParseType := !(Object^ Node) -> Type^
 
 FuncTypeTable := Queue.{TypeFunc^}
 
-GetFuncType := !(Queue.{Type^} lin, bool IsVArgs) -> TypeFunc^
+GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bool IsVArgs) -> TypeFunc^
 {
 	iterT := FuncTypeTable.Start
 
@@ -105,7 +105,7 @@ GetFuncType := !(Queue.{Type^} lin, bool IsVArgs) -> TypeFunc^
 		if iterT.Data.IsVArgs == SomeBug
 		{
 			IsFound := true
-			if iterT.Data.ParsCount == lin.Size()
+			if iterT.Data.ParsCount == lin.Size() //VArg?
 			{
 				iterR := lin.Start
 				i := 0
@@ -124,7 +124,8 @@ GetFuncType := !(Queue.{Type^} lin, bool IsVArgs) -> TypeFunc^
 	}
 	
 
-	newTypeFunc := new TypeFunc(lin,IsVArgs)
+	newTypeFunc := new TypeFunc(lin,IsRefArr,IsVArgs)
+	newTypeFunc.RetType = retType
 	FuncTypeTable.Push(newTypeFunc)
 	return newTypeFunc
 }
@@ -187,14 +188,30 @@ TypeFunc := class extend Type
 {
 	ParsCount := int
 	Pars := Type^^
+	ParsIsRef := bool^
 	IsVArgs := bool
 	RetType := Type^
+	RetRef := bool
 
-	this := !(Queue.{Type^} P, bool IsV) -> void
+	this := !(Queue.{Type^} P,bool^ retsRef, bool IsV) -> void
 	{
 		ParsCount = P.Size()
+
+		if retsRef != null
+		{
+			ParsIsRef = new bool[ParsCount]
+			for i : ParsCount ParsIsRef[i] = retsRef[i]
+		}else{
+			if ParsCount != 0
+			{
+				ParsIsRef = new bool[ParsCount]
+				for i : ParsCount ParsIsRef[i] = 0
+			}
+		}
+
 		Pars = null
 		if ParsCount != 0 Pars = P.ToArray()
+		RetRef = false
 		IsVArgs = IsV
 	}
 	GetType := virtual !() -> string

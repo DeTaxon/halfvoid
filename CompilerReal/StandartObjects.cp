@@ -44,6 +44,12 @@ ObjInt := class extend ObjConst
 		ResultType.PrintType(f)
 		f << " " << MyInt
 	}
+	GetName := virtual !() -> string
+	{
+		buf := char[256]
+		sprintf(buf,"%i",MyInt)
+		return buf.Copy()
+	}
 }
 ObjDouble := class extend ObjConst
 {

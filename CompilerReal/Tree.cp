@@ -79,6 +79,16 @@ Object := class{
 	{
 		ErrorLog.Push("Compiler error: PrintUse is not defined")	
 	}
+	GetName := virtual !() -> string
+	{
+		ErrorLog.Push("Compiler error: GetName is not defined")	
+		return ""
+	}
+	GetPointName := virtual !() -> string
+	{
+		ErrorLog.Push("Compiler error: GetPointName is not defined")
+		return ""
+	}
 
 	DoTheWork := virtual !(int st) -> void
 	{

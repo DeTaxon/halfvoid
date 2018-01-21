@@ -1,6 +1,9 @@
 printf := !(char^ str, ...) -> int declare
 
 y := double
+
+//#run y = xml.load("asd.xml").value("size")
+
 main := !(int argc, char^^ argv) -> void
 {
 	//x := #select * #from y #where y in z #end

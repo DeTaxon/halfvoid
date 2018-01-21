@@ -47,6 +47,16 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 		}
 		if iter.Left != null iter = iter.Left else iter = iter.Up
 	}
+
+	iterQ := BuiltInFuncs.Start
+	while iterQ != null
+	{
+		if iterQ.Data.FuncName == name
+		{
+			return iterQ.Data
+		}
+		iterQ = iterQ.Next
+	}
 	return null
 }
 

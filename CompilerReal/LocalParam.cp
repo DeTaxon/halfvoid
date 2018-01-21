@@ -10,6 +10,20 @@ MemParam := class extend ObjResult
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
 	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return ""
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		return ""
+	}
 }
 LocalParam := class extend MemParam
 {
@@ -30,6 +44,7 @@ LocalParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
+
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
 		f << "%T" << newInd << " = load "
@@ -42,6 +57,26 @@ LocalParam := class extend MemParam
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
+	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %T"<< inAllocId
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		Buf := char[256]
+		sprintf(Buf,"%T%i",newInd)
+		return Buf.Copy()
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		Buf := char[256]
+		sprintf(Buf,"%T%i",inAllocId)
+		return Buf.Copy()
 	}
 }
 GlobalParam := class extend MemParam
@@ -69,6 +104,14 @@ GlobalParam := class extend MemParam
 		ResultType.PrintType(f)
 		f << " zeroinitializer\n"
 	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.GetPoint().PrintType(f)
+		f << " @T" << MainId
+	}
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
 		f << "%T" << newInd << " = load "
@@ -81,5 +124,17 @@ GlobalParam := class extend MemParam
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		Buf := char[256]
+		sprintf(Buf,"%T%i",newInd)
+		return Buf.Copy()
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		Buf := char[256]
+		sprintf(Buf,"@T%i",MainId)
+		return Buf.Copy()
 	}
 }

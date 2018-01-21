@@ -48,6 +48,14 @@ ParamNaturalCall := class extend ParamCall
 		}
 	}
 	
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		ToCall.PrintPointPre(f,TempId)
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		ToCall.PrintPointUse(f,TempId)
+	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		ToCall.PrintPre(f,TempId)
@@ -55,6 +63,14 @@ ParamNaturalCall := class extend ParamCall
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ToCall.PrintUse(f,TempId)
+	}
+	GetName := virtual !() -> string
+	{
+		return ToCall.GetName(TempId)
+	}
+	GetPointName := virtual !() -> string
+	{
+		return ToCall.GetPointName(TempId)
 	}
 }
 

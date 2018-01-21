@@ -64,6 +64,7 @@ BoxFunc := class extend Object
 {
 	MyFuncType := TypeFunc^
 	MyFuncParamNames := string^
+	FuncName := string
 	OutputName := string
 	ABox := AllocBox
 
@@ -71,7 +72,11 @@ BoxFunc := class extend Object
 	{
 		return MyFuncType
 	}
-	ParseParams := !(Object^ root) -> bool
+	IsAssembler := virtual !() -> bool
+	{
+		return false
+	}
+	ParseParams := !(Object^ root, Object^ outObj) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
 		iter := root.Down
@@ -136,7 +141,11 @@ BoxFunc := class extend Object
 		{
 			MyFuncParamNames = TypsNams.ToArray()
 		}
-		MyFuncType = GetFuncType(Typs,IsVargsL)
+		
+		RetTyp := ParseType(outObj)
+		if RetTyp == null return false
+
+		MyFuncType = GetFuncType(Typs,null->{bool^},RetTyp,false,IsVargsL)
 		return true
 	}
 
@@ -151,13 +160,9 @@ BoxFuncDeclare := class  extend BoxFunc
 {
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
+		FuncName = SomeName
 		OutputName = SomeName.Copy()
-		IsInvalid = not ParseParams(inPars)
-
-		if not IsInvalid
-			MyFuncType.RetType = ParseType(inOutType)
-
-		if MyFuncType.RetType == null IsInvalid = true
+		IsInvalid = not ParseParams(inPars,inOutType)
 
 		if IsInvalid ErrorLog.Push("can not parse function\n")
 	}
@@ -179,6 +184,7 @@ BoxFuncBody := class extend BoxFunc
 {
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
+		FuncName = SomeName
 		if SomeName == "main"
 		{
 			OutputName = "main"
@@ -187,12 +193,8 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = new char[50]
 			sprintf(OutputName,"func%i",GetNewId())
 		}
-		IsInvalid = not ParseParams(inPars)
+		IsInvalid = not ParseParams(inPars,inOutType)
 
-		if not IsInvalid
-			MyFuncType.RetType = ParseType(inOutType)
-
-		if MyFuncType.RetType == null IsInvalid = true
 
 		if Stuf.GetValue() == "{}"
 		{

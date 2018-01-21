@@ -90,6 +90,7 @@ OneCall := !(string Name, Object^ P) -> Object^
 	if SomeFunc == null ErrorLog.Push("Function not found\n") //TODO:  PointCall and closestFunc
 	else
 	{
+		if SomeFunc.IsAssembler() return new AssemblerCall(SomeFunc,P)
 		return new NaturalCall(SomeFunc,P)
 	}
 	return null	
@@ -116,17 +117,41 @@ NaturalCall := class extend ObjResult
 		if ToCall != null
 		f << "@" << ToCall.OutputName
 	}
+
+	PrintParamPres := virtual !(sfile f) -> void
+	{
+		iter := Down
+		RefsArr := ToCall.MyFuncType.ParsIsRef
+		i := 0
+		while iter != null
+		{
+			if RefsArr[i] iter.PrintPointPre(f)
+			else iter.PrintPre(f)
+			i += 1
+			iter = iter.Right
+		}
+	}
+	PrintParamUses := virtual !(sfile f) -> void
+	{
+		iter := Down
+		RefsArr := ToCall.MyFuncType.ParsIsRef
+		i := 0
+		while iter != null
+		{
+			if i > 0 f << " , "
+			if RefsArr[i] iter.PrintPointUse(f)
+			else iter.PrintUse(f)
+			iter = iter.Right
+			i += 1
+		}
+	}
+
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
+		PrintParamPres(f)
 
-		iter := Down
-		while iter != null
-		{
-			iter.PrintPre(f)
-			iter = iter.Right
-		}
 
 		if (FType.RetType != GetType("void"))
 		{
@@ -136,22 +161,89 @@ NaturalCall := class extend ObjResult
 		ToCall.MyFuncType.PrintType(f)
 		PrintFuncName(f)
 		f << "("
-		
-		iter = Down
-		i := 0
-		while iter != null
-		{
-			if i > 0 f << " , "
-			iter.PrintUse(f)
-			iter = iter.Right
-			i += 1
-		}
-
+		PrintParamUses(f)
 		f << ")\n"
 	}
 	GetValue := virtual !() -> string
 	{
 		return "d()"
+	}
+}
+
+AssemblerCall := class extend NaturalCall
+{
+	RealCall := BuiltInFunc^ at ToCall
+	this := !(BoxFunc^ func, Object^ Pars) -> void 
+	{
+		Down = Pars
+
+		RetId = GetNewId()
+		ToCall = func
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		PrintPreFuncName(f)
+		FType := ToCall.MyFuncType
+		RefsArr := ToCall.MyFuncType.ParsIsRef
+		PrintParamPres(f)
+		
+		AsmLine := RealCall.ToExe
+
+		buf := char[1024]
+		for 1024 buf[it] = 0
+		thisName := GetName()
+		i := 0
+		j := 0
+		while AsmLine[j] != 0
+		{
+			if AsmLine[j] != '#'
+			{
+				buf[i] = AsmLine[j]
+				i += 1
+				j += 1
+			}else{
+				j+= 1
+				num := AsmLine[j] - '0'
+
+				if num == 0
+				{
+					ToAdd := GetName()
+					k := 0
+					while ToAdd[k] != 0
+					{
+						buf[i] = ToAdd[k]
+						i += 1
+						k += 1
+					}
+				}else{
+					num -= 1
+					miniIter := Down
+					for num miniIter = miniIter.Right
+
+					ToAdd := string
+					if RefsArr[num] ToAdd = miniIter.GetPointName()
+					else ToAdd = miniIter.GetName()
+
+					k := 0
+					while ToAdd[k] != 0
+					{
+						buf[i] = ToAdd[k]
+						i += 1
+						k += 1
+					}
+					j += 1
+				}
+			}
+		}
+		buf[i] = 0
+		f << buf
+
+	}
+	GetName := virtual !() -> string
+	{
+		b := char[256]
+		sprintf(b,"%T%i",RetId)
+		return b.Copy()
 	}
 }
 
