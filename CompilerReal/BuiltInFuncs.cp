@@ -32,6 +32,7 @@ CreateBuiltIns := !() -> void
 	{
 		PType := GetType(it)
 		BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,GetType("void"),"store i32 #2, i32* #1\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i32 #1,#2\n"))
 	}
 
 }

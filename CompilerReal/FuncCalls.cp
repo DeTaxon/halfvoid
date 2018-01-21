@@ -140,7 +140,7 @@ NaturalCall := class extend ObjResult
 		{
 			if i > 0 f << " , "
 			if RefsArr[i] iter.PrintPointUse(f)
-			else iter.PrintUse(f)
+				else iter.PrintUse(f)
 			iter = iter.Right
 			i += 1
 		}
@@ -182,6 +182,10 @@ AssemblerCall := class extend NaturalCall
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		PrintPre(f)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
 		RefsArr := ToCall.MyFuncType.ParsIsRef
@@ -190,7 +194,6 @@ AssemblerCall := class extend NaturalCall
 		AsmLine := RealCall.ToExe
 
 		buf := char[1024]
-		for 1024 buf[it] = 0
 		thisName := GetName()
 		i := 0
 		j := 0
@@ -231,13 +234,18 @@ AssemblerCall := class extend NaturalCall
 						i += 1
 						k += 1
 					}
-					j += 1
 				}
+				j += 1
 			}
 		}
 		buf[i] = 0
 		f << buf
 
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ToCall.MyFuncType.RetType.PrintType(f)
+		f << " %T" << RetId
 	}
 	GetName := virtual !() -> string
 	{

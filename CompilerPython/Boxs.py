@@ -2698,6 +2698,14 @@ TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
 StandartStuff.append(TestAdd)
 
 TestAdd = BoxFunc(None)
+TestAdd.AsmLine ="{0} = icmp ne i1 {2} , {1}\n"
+TestAdd.Name = "!="
+TestAdd.Type = GetType("bool")
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+TestAdd.Params.append(ParamChain(GetType("bool"),"~no"))
+StandartStuff.append(TestAdd)
+
+TestAdd = BoxFunc(None)
 TestAdd.AsmLine  ="{0}Div = udiv i32 {1},32\n"
 TestAdd.AsmLine +="{0}Rem = urem i32 {1},32\n"
 TestAdd.AsmLine +="{0}Point = getelementptr [8 x i32],[8 x i32]* {2},i32 0,  i32 {0}Div\n"

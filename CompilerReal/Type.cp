@@ -112,6 +112,9 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 				while iterR != null
 				{
 					if iterT.Data.Pars[i] != iterR.Data IsFound = false
+
+					if IsRefArr != null
+						if iterT.Data.ParsIsRef[i] != IsRefArr[i] IsFound = false
 					i += 1
 					iterR = iterR.Next 
 				}
