@@ -29,23 +29,27 @@ GetItem := !(string name, Object^ start) -> Object^
 	return null
 }
 
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found) -> void
 {
-	iter := start
-	while iter != null
+	iterU := start
+	while iterU != null
 	{
-		if iter.GetValue() == "i:=1"
+		if iterU.GetValue() == "i:=1"
 		{
-			AsNeed := iter->{ObjParam^}
+			AsNeed := iterU->{ObjParam^}
 			if(AsNeed.GetName() == name)
 			{
-				//TODO: check params
-				iter = iter.Down
-				if iter.GetValue() == "!()"
-					return iter->{BoxFunc^}
+				iterW := iterU.Down
+				if iterW.GetValue() == "!()"
+					found.Push(iterW->{BoxFunc^})
 			}
 		}
-		if iter.Left != null iter = iter.Left else iter = iter.Up
+		if iterU.Left != null 
+		{
+			iterU = iterU.Left 
+		}else {
+			iterU = iterU.Up
+		}
 	}
 
 	iterQ := BuiltInFuncs.Start
@@ -53,12 +57,49 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 	{
 		if iterQ.Data.FuncName == name
 		{
-			return iterQ.Data
+			found.Push(iterQ.Data)
 		}
 		iterQ = iterQ.Next
 	}
+}
+
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
+{
+	Funcs := Queue.{BoxFunc^}()
+	CollectFuncsByName(name,start,Funcs)
+
+	May := BoxFunc^
+
+	May = RelaxedSearch(name,Funcs,pars)
+	if May != null return May
+
+	return May
+}
+
+RelaxedSearch := !(string name,Queue.{BoxFunc^} Fun, Queue.{Type^} pars) -> BoxFunc^
+{
+	iter := Fun.Start
+	parsCount := pars.Size()
+	while iter != null
+	{
+		FuncTyp := iter.Data.MyFuncType
+		if parsCount == FuncTyp.ParsCount or (FuncTyp.IsVArgs and parsCount >= FuncTyp.ParsCount)
+		{
+			IsCorrect := true
+			iterT := pars.Start
+
+			for i : FuncTyp.ParsCount
+			{
+				IsCorrect = IsCorrect and FuncTyp.Pars[i] == iterT.Data
+				iterT = iterT.Next
+			}
+			if IsCorrect return iter.Data
+		}
+		iter = iter.Next
+	}
 	return null
 }
+
 
 ReplaceNode := !(Object^ what, Object^ with) -> void
 {

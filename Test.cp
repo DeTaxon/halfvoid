@@ -16,6 +16,7 @@ main := !(int argc, char^^ argv) -> void
 	//printf("Hello, word!%f\n",4.9..5.9)
 	x := int
 	x = 5
-	printf("Hello, world! %i %f\n", x + 9, y)
+	y = 1.5
+	printf("Hello, world! %i %f\n", x + 9, y - 3.6)
 	//return 0
 }

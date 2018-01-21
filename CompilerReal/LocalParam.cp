@@ -24,6 +24,11 @@ MemParam := class extend ObjResult
 	{
 		return ""
 	}
+	GetType := virtual !() -> Type^
+	{
+		return ResultType
+	}
+
 }
 LocalParam := class extend MemParam
 {
@@ -44,7 +49,6 @@ LocalParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
-
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
 		f << "%T" << newInd << " = load "

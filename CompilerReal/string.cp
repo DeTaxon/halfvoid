@@ -1,3 +1,5 @@
+BigBuff := char[4096]
+
 "==" := !(char^ a,char^ b) -> bool
 {
 	i := 0
@@ -13,6 +15,22 @@
 		i += 1
 	}
 	return a[i] != b[i]
+}
+
+"+" := !(char^ a, char^ b) -> char^
+{
+	sprintf(BigBuff,"%s%s",a,b)
+	return BigBuff.Copy()
+}
+"+" := !(char^ a, int b) -> char^
+{
+	sprintf(BigBuff,"%s%i",a,b)
+	return BigBuff.Copy()
+}
+"+" := !(char^ a, float b) -> char^
+{
+	sprintf(BigBuff,"%s%f",a,b)
+	return BigBuff.Copy()
 }
 
 StrSize := !(char^ a) -> int

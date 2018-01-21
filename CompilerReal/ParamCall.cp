@@ -47,6 +47,11 @@ ParamNaturalCall := class extend ParamCall
 			ErrorLog.Push("param not found\n")
 		}
 	}
+	GetType := virtual !() -> Type^
+	{
+		if ToCall == null return null
+		return ToCall.GetType()
+	}
 	
 	PrintPointPre := virtual !(sfile f) -> void
 	{
