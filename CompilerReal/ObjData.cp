@@ -27,7 +27,10 @@ ObjData := class extend Object
 		if pri == State_GetUse
 		{
 			lowTest := GetUse(this&)
-			if lowTest == null ErrorLog.Push("can not parse data\n")
+			if lowTest == null
+			{
+				ErrorLog.Push("can not parse data\n")
+			}
 			else
 			{
 				ReplaceNode(this&,lowTest)

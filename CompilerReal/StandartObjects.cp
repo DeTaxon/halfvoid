@@ -74,6 +74,10 @@ ObjDouble := class extend ObjConst
 		ResultType.PrintType(f)
 		f << " " << MyDouble
 	}
+	GetType := virtual !() -> Type^
+	{
+		return GetType("double")
+	}
 	GetName := virtual !() -> string
 	{
 		buf := char[256]

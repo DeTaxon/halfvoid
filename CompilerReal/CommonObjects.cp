@@ -76,7 +76,7 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 	return May
 }
 
-RelaxedSearch := !(string name,Queue.{BoxFunc^} Fun, Queue.{Type^} pars) -> BoxFunc^
+RelaxedSearch := !(string name,Queue.{BoxFunc^} Fun, Queue.{Type^} pars) -> BoxFunc^ //TODO: remove name, debug only
 {
 	iter := Fun.Start
 	parsCount := pars.Size()

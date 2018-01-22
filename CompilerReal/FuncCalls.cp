@@ -5,7 +5,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 	if iter == null return null
 
-	if iter.GetValue() == "(d)"
+	if iter.GetType() != null
 	{
 		iter = iter.Right
 		if iter == null return null
@@ -13,8 +13,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		if iter.GetValue() == "()"
 		{
-			dynCast := (iter.Left)->{ParamCall^}
-			return OneCall(dynCast.BeforeName, iter.Down)
+			if iter.Left.GetValue() == "(d)"
+			{
+				dynCast := (iter.Left)->{ParamCall^}
+				return OneCall(dynCast.BeforeName, iter.Down)
+			}else{
+				return null //TODO: operator()
+			}
 		}
 		if IsOper(iter.GetValue())
 		{
@@ -32,7 +37,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					ErrorLog.Push("no more then binary allowed")
 					return null
 				} 
-				if iter.GetValue() == "(d)" or iter.IsConst()
+				if iter.GetType() != null
 				{
 					PopOutNode(iter.Left)
 					return OneCall(oper,iter.Left)
@@ -167,6 +172,10 @@ NaturalCall := class extend ObjResult
 	GetValue := virtual !() -> string
 	{
 		return "d()"
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ToCall.MyFuncType.RetType
 	}
 }
 
