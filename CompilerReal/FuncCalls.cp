@@ -95,12 +95,17 @@ OneCall := !(string Name, Object^ P) -> Object^
 	if SomeFunc == null ErrorLog.Push("Function not found\n") //TODO:  PointCall and closestFunc
 	else
 	{
-		if SomeFunc.IsAssembler() return new AssemblerCall(SomeFunc,P)
-		return new NaturalCall(SomeFunc,P)
+		return MakeSimpleCall(SomeFunc,P)
 	}
 	return null	
 }
 
+
+MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> NaturalCall^
+{
+	if func.IsAssembler() return new AssemblerCall(func,pars)
+	return new NaturalCall(func,pars)
+}
 
 NaturalCall := class extend ObjResult
 {
@@ -112,6 +117,27 @@ NaturalCall := class extend ObjResult
 
 		RetId = GetNewId()
 		ToCall = func
+		ExchangeParams()
+	}
+	ExchangeParams := !() -> void
+	{
+		FType := ToCall.MyFuncType
+
+		iter := Down
+		i := 0
+
+		while iter != null and i < FType.ParsCount 
+		{
+			if iter.GetType() != FType.Pars[i]
+			{
+				printf("here  %s %p %p %i\n", ToCall.FuncName,iter.GetType(),FType.Pars[i],i)
+				BoxExc(iter,FType.Pars[i])
+				iter = iter.Up
+				printf("fater %s %p %p %i\n", ToCall.FuncName,iter.GetType(),FType.Pars[i],i)
+			}
+			i += 1
+			iter = iter.Right
+		}
 	}
 	PrintPreFuncName := virtual !(sfile f) -> void
 	{
@@ -188,6 +214,7 @@ AssemblerCall := class extend NaturalCall
 
 		RetId = GetNewId()
 		ToCall = func
+		ExchangeParams()
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{

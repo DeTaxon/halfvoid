@@ -68,6 +68,6 @@ CreateBuiltIns := !() -> void
 	}
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = trunc #1 to float"))
-	
+	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = sext #1 to double"))
 
 }
