@@ -7,6 +7,22 @@ BuiltInFunc := class extend BoxFunc
 	}
 }
 
+BuiltInFuncUno := class extend BuiltInFunc
+{
+	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
+	{
+		FuncName = Name
+		OutputName = Name
+		ToExe = code
+
+		PP := Queue.{Type^}()
+		PP.Push(l)
+
+		IsRefs := bool[1]
+		IsRefs[0] = lRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+	}
+}
 BuiltInFuncBinar := class extend BuiltInFunc
 {
 	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV, string code) -> void
@@ -39,6 +55,7 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = imul i" + it + " #1,#2\n"))
 		}
 	}
+	
 	for !["float","double"] // half?
 	{
 		PType := GetType(it)
@@ -49,5 +66,8 @@ CreateBuiltIns := !() -> void
 		BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("/",PType,false,PType,false,PType,"#0 = fdiv " + it + " #1,#2\n"))
 	}
+	
+	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = trunc #1 to float"))
+	
 
 }

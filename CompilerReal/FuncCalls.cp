@@ -26,7 +26,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			oper := iter.GetValue()
 			if iter.Right == null
 			{
-				//TODO x++
+				//TODO: x++
 				return null
 			}else
 			{
