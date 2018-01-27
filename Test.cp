@@ -18,7 +18,7 @@ main := !(int argc, char^^ argv) -> void
 	x = 5
 	y = 1.5
 	z := float
-	z = 1.5
-	printf("Hello, world! %i %f\n", x + 9, y - 3.6*4.9)
+	z = 3.7
+	printf("Hello, world! %i %f %f\n", x + 9, y - 3.6*4.9)
 	//return 0
 }

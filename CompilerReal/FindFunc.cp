@@ -82,7 +82,13 @@ ComputePriorFunc := !(BoxFunc^ Fun, Queue.{Type^} pars) -> int
 
 		for i : FuncTyp.ParsCount
 		{
-			SomePrior := TypeCmp(iterT.Data, FuncTyp.Pars[i])
+			SomePrior := 0
+			if FuncTyp.ParsIsRef[i] 
+			{
+				if iterT.Data != FuncTyp.Pars[i] SomePrior = 255
+			}else {
+				SomePrior = TypeCmp(iterT.Data, FuncTyp.Pars[i])
+			}
 			if MaxPrior < SomePrior MaxPrior = SomePrior
 			iterT = iterT.Next
 		}
@@ -98,6 +104,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == funcType return 0
 
 	if inType == GetType("float") and funcType == GetType("double") return 1
+
+	if inType == GetType("double") and funcType == GetType("float") return 2
 	
 	return 255
 }

@@ -27,6 +27,7 @@ BoxExc := !(Object^ item, Type^ toType) -> bool
 
 	Call := MakeSimpleCall(Exc,item)
 	ReplaceNode(item,Call)
+	Call.Down = item
 	item.SetUp(Call)
 
 	return true
