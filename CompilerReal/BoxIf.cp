@@ -16,6 +16,10 @@ BoxIf := class extend Object
 			if Down.Right.Right != null PopOutNode(Down.Right.Right)
 
 			ReplaceNode(Down.Right,new BoxBlock(Down.Right))
+
+			RR := Down.Right.Right
+			if RR != null
+				ReplaceNode(RR,new BoxBlock(RR))
 		}
 		if pri == State_Syntax
 		{
@@ -52,9 +56,10 @@ BoxIf := class extend Object
 			f << ", label %OnTrue" << MyId << " , label %OnFalse" << MyId << "\n"
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
-			f << "br label %End" << MyId << ":\n"
-			f << "OnFalse" << MyId << "\n"
+			f << "br label %End" << MyId << "\n"
+			f << "OnFalse" << MyId << ":\n"
 			Down.Right.Right.PrintInBlock(f)
+			f << "br label %End" << MyId << "\n"
 			f << "End" << MyId << ":\n"
 		}
 
