@@ -193,29 +193,5 @@ ObjKeyword := class extend ObjConst
 	}
 }
 
-ObjObj := class extend Object
-{
-	MyStr := char^
-	"this" := !(char^ st) -> void
-	{
-		Clean()
-		MyStr = st
-	}
-	GetValue := virtual !() -> char^
-	{
-		return MyStr
-	}
-	Print := virtual !(int s) -> void
-	{
-		for s printf("->")
-		printf("object %s\n",MyStr)
-
-		iter := Down
-		while iter != null {
-			iter.Print(s+1)
-			iter = iter.Right
-		}
-	}
-}
 
 

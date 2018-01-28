@@ -39,6 +39,35 @@ RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 	return GotStuff
 }
 
+RuleUseReverse := !(Object^ Obj,char^ N,RuleType R) -> bool
+{
+	GotStuff := false
+	iter := Obj.Down
+
+	if iter == null return false
+
+	while iter.Right != null iter = iter.Right
+
+	while iter != null
+	{
+		Try := R(iter)
+		if Try > 0
+		{
+			if N == "~d"
+			{
+				iter = UNext(iter,new ObjData(),Try) 
+			}else
+			{
+				iter = UNext(iter,new ObjObj(N),Try) 
+			}
+			GotStuff = true
+		}else{
+			iter = iter.Left
+		}
+	}
+	return GotStuff
+}
+
 RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode) -> bool
 {
 	GotStuff := false
@@ -78,7 +107,8 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	}
 
 
-	if RuleUse(begin,"i:=0",RuleParam) return true // for func
+	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
+	if RuleUseReverse(begin,"if()",RuleIf) return true
 
 	return false	
 }
@@ -171,5 +201,30 @@ RuleOneFunc := !(void^ itr)-> int
 	if not InDataR(It) return 0
 
 	return 2
+}
+
+RuleIf := !(void^ itr)-> int
+{
+	It := itr->{Object^}
+
+	if It.GetValue() != "if" return 0
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" and InDataR(It) return 0
+	It = It.Right
+	if It == null return 3
+
+	if It.GetValue() != "else" return 3
+	It = It.Right
+	if It == null return 3
+	
+	if It.GetValue() == "{}" or InDataR(It) return 5
+
+	return 3
 }
 

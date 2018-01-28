@@ -12,6 +12,9 @@ main := !(int argc, char^^ argv) -> void
 	//o := new int()
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
+	if 5 > 5 {
+		printf("wow\n")
+	}
 	printf("Hello, world! %i\n",5 >= 5 )
 	//return 0
 }

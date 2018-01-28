@@ -189,6 +189,10 @@ NaturalCall := class extend ObjResult
 
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		PrintPre(f)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
 		PrintParamPres(f)
