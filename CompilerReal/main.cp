@@ -43,7 +43,7 @@ main := !(int argc,string[] argv) -> int
 		}
 	}
 
-
+	CleanStrs()
 	return 0
 }
 

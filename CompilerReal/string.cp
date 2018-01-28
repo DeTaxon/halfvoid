@@ -1,5 +1,15 @@
 BigBuff := char[4096]
 
+CreatedStrs := Stack.{char^}
+
+CleanStrs := !() -> void
+{
+	while not CreatedStrs.Empty()
+	{
+		free(CreatedStrs.Pop())
+	}
+}
+
 "==" := !(char^ a,char^ b) -> bool
 {
 	i := 0
@@ -52,6 +62,8 @@ StrCopy := !(char^ a) -> char^
 	Pre := new char[Si+1]
 	for Si Pre[it] = a[it]
 	Pre[Si] = 0
+
+	CreatedStrs.Push(Pre)
 	return Pre
 }
 Copy := !(char^ this) -> char^
@@ -60,6 +72,8 @@ Copy := !(char^ this) -> char^
 	Pre := new char[Si+1]
 	for Si Pre[it] = this[it]
 	Pre[Si] = 0
+
+	CreatedStrs.Push(Pre)
 	return Pre
 }
 

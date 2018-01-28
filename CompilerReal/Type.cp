@@ -121,6 +121,10 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 			}else{
 				IsFound = false
 			}
+			if iterT.Data.RetType != retType
+			{
+				IsFound = false
+			}
 			if IsFound return iterT.Data
 		}
 		iterT = iterT.Next
