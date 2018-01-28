@@ -67,7 +67,7 @@ LocalParam := class extend MemParam
 	}
 	PrintPointUse := virtual !(sfile f, int newInd) -> void
 	{
-		ResultType.PrintType(f)
+		ResultType.GetPoint().PrintType(f)
 		f << " %T"<< inAllocId
 	}
 	GetName := virtual !(int newInd) -> string

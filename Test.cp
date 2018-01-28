@@ -12,22 +12,12 @@ main := !(int argc, char^^ argv) -> void
 	//o := new int()
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
+	y := 13
 
-	x := int
-	x = 0
-
-	while x <= 13
+	while y >= 0
 	{
-		printf("x = %i\n",x)
-		x = x + 1
+		printf("y = %i\n",y)
+		y = y - 1
 	}
-
-	if 5 >= 5 {
-		printf("wow\n")
-	}else
-	{
-		printf("waw\n")
-	}
-	printf("Hello, world! %i\n",5 >= 5 )
 	//return 0
 }

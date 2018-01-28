@@ -3,6 +3,7 @@ ObjParam := class extend Object
 	MyStr := string
 	AskedGetUse := bool
 	ObjType := Type^
+	IsSetValue := bool
 	
 	this := !(string ss) -> void
 	{
@@ -31,6 +32,20 @@ ObjParam := class extend Object
 	{
 		return MyStr
 	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		if IsSetValue 
+		{
+			asLoc := Down->{LocalParam^}
+			Down.Right.PrintPre(f)
+			f << "store "
+			Down.Right.PrintUse(f)
+			f << " , "
+			asLoc.PrintPointUse(f,0)
+			f << "\n"
+		}
+	}
+
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -67,14 +82,30 @@ ObjParam := class extend Object
 			{
 				SomeObj := GetUse(Down)
 				
-				if SomeObj != null
+				lazy := SomeObj != null 
+				if lazy lazy = SomeObj.GetType().GetType() == "function"
+				if lazy 
 				{
 					Down = SomeObj
 					SomeObj.SetUp(this&)
 					ObjType = SomeObj.GetType()
 				}else
 				{
-					printf("compiler error\n")
+					if SomeObj == null and Down.IsConst() SomeObj = Down
+
+					if SomeObj == null
+					{
+						printf("compiler error\n")
+					}else{
+						ObjType = SomeObj.GetType()
+						allcId := GetAlloc(this&,ObjType)
+						Temp := Down
+						Down = new LocalParam(ObjType,allcId)
+						Down.Right = Temp
+						Temp.Left = Down
+						Down.SetUp(this&)
+						IsSetValue = true
+					}
 				}
 			}
 		}
