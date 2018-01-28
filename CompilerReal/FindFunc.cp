@@ -53,6 +53,7 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 
 	for FoundC if Priors[it] == 0 return Funcs[it]
 	for FoundC if Priors[it] == 1 return Funcs[it]
+	for FoundC if Priors[it] == 2 return Funcs[it]
 
 	return null
 }

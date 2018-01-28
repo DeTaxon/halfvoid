@@ -141,6 +141,11 @@ NaturalCall := class extend ObjResult
 
 		while iter != null
 		{
+			if iter.GetType() == GetType("float")
+			{
+				BoxExc(iter,GetType("double"))
+				iter = iter.Up
+			}
 			iter = iter.Right
 		}
 	}
