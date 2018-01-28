@@ -33,6 +33,13 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 			}
+			if MyStr == "while()"
+			{
+				It := this&->{Object^}
+				NewNode := new BoxWhile(It)
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+			}
 		}
 	}
 }

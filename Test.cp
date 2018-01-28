@@ -12,6 +12,16 @@ main := !(int argc, char^^ argv) -> void
 	//o := new int()
 	//orer := true or false
 	//printf("Hello, word!%f\n",4.9..5.9)
+
+	x := int
+	x = 0
+
+	while x <= 13
+	{
+		printf("x = %i\n",x)
+		x = x + 1
+	}
+
 	if 5 >= 5 {
 		printf("wow\n")
 	}else
