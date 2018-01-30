@@ -2,9 +2,9 @@ printf := !(char^ str, ...) -> int declare
 
 //#run y = xml.load("asd.xml").value("size")
 
-wow := !() -> void
+wow := !() -> int
 {
-	printf("waw\n")
+	return 0
 }
 
 main := !(int argc, char^^ argv) -> void

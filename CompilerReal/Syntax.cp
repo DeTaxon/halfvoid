@@ -110,6 +110,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
+	if RuleUse(begin,"Return()",RuleOneFunc) return true
 
 	return false	
 }
@@ -194,7 +195,7 @@ RuleOneFunc := !(void^ itr)-> int
 {
 	It := itr->{Object^}
 
-	if It.GetValue() != "delete" and It.GetValue() != "new" and It.GetValue() != "return" and It.GetValue() != "not" return 0
+	if  It.GetValue() != "return" return 0
 
 	It = It.Right
 	if It == null return 0
