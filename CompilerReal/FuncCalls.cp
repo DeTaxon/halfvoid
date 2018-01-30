@@ -16,7 +16,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if iter.Left.GetValue() == "(d)"
 			{
 				dynCast := (iter.Left)->{ParamCall^}
-				return OneCall(dynCast.BeforeName, iter.Down)
+				return OneCall(dynCast.BeforeName, iter)
 			}else{
 				return null //TODO: operator()
 			}
@@ -40,7 +40,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.GetType() != null
 				{
 					PopOutNode(iter.Left)
-					return OneCall(oper,iter.Left)
+					return OneCall(oper,iter.Up)
 				}
 				return null
 			}
@@ -65,21 +65,25 @@ IsOper := !(string may) -> bool
 
 }
 
-OneCall := !(string Name, Object^ P) -> Object^
+OneCall := !(string Name, Object^ G) -> Object^
 {
 	Ps := Queue.{Type^}()
 
-	Temp := P.Up
-	iter := Temp.Down
-	while iter != null
+	P := G.Down
+	if P != null
 	{
-		if iter.GetValue() == ","
+		Temp := P.Up
+		iter := Temp.Down
+		while iter != null
 		{
-			PopOutNode(iter)
-			iter = Temp.Down
-		}else
-		{
-			iter = iter.Right
+			if iter.GetValue() == ","
+			{
+				PopOutNode(iter)
+				iter = Temp.Down
+			}else
+			{
+				iter = iter.Right
+			}
 		}
 	}
 
@@ -90,7 +94,7 @@ OneCall := !(string Name, Object^ P) -> Object^
 		Ps.Push(iterT.GetType())
 		iterT = iterT.Right
 	}
-	SomeFunc := FindFunc(Name,P,Ps)
+	SomeFunc := FindFunc(Name,G,Ps)
 
 	if SomeFunc == null ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	else
@@ -117,7 +121,7 @@ NaturalCall := class extend ObjResult
 		
 		RetId = GetNewId()
 		ToCall = func
-		Pars.SetUp(this&)
+		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
 	}
 	ExchangeParams := !() -> void

@@ -89,6 +89,7 @@ ObjParam := class extend Object
 					Down = SomeObj
 					SomeObj.SetUp(this&)
 					ObjType = SomeObj.GetType()
+					WorkBag.Push(this&,State_GetUse)
 				}else
 				{
 					if SomeObj == null and Down.IsConst() SomeObj = Down

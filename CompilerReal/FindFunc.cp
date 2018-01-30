@@ -43,14 +43,22 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 	
 	FoundC := Funcs.Size()
 
-	if FoundC == 0 return null //TODO:
+	if FoundC == 0 
+	{
+		return null //TODO:
+	}
 
 	Priors := new int[FoundC]
 
 	//for FoundC Priors[it] = 255
 
-	ComputePriors(Funcs,pars,Priors)
+	if pars.Empty()
+	{
+		for FoundC if Funcs[it].MyFuncType.ParsCount return Funcs[it]
+	}
 
+	ComputePriors(Funcs,pars,Priors)
+	
 	for FoundC if Priors[it] == 0 return Funcs[it]
 	for FoundC if Priors[it] == 1 return Funcs[it]
 	for FoundC if Priors[it] == 2 return Funcs[it]
