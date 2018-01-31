@@ -110,7 +110,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
-	if RuleUse(begin,"Return()",RuleOneFunc) return true
+	if RuleUse(begin,"return()",RuleOneFunc) return true
 
 	return false	
 }

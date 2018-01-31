@@ -40,6 +40,13 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 			}
+			if MyStr == "return()"
+			{
+				It := this&->{Object^}
+				NewNode := new BoxReturn(It)
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+			}
 		}
 	}
 }
