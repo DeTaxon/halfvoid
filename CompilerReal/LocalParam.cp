@@ -142,3 +142,23 @@ GlobalParam := class extend MemParam
 		return Buf.Copy()
 	}
 }
+
+FuncParam := class extend MemParam
+{
+	ItName := string
+	this := !(string Name,Type^ typ) -> void
+	{
+		ResultType = typ
+		ItName = Name
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %" << ItName
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return "%" + ItName
+	}
+	
+}

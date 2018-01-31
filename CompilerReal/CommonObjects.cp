@@ -13,7 +13,25 @@ GetItem := !(string name, Object^ start) -> Object^
 				return iter
 			}
 		}
-		if iter.Left != null iter = iter.Left else iter = iter.Up
+		if iter.Left != null iter = iter.Left 
+		else
+		{
+			iter = iter.Up
+
+			if iter != null
+			{
+				if iter.GetValue() == "!()"
+				{
+					AsNeed2 := iter->{BoxFuncBody^}
+
+					for AsNeed2.MyFuncType.ParsCount
+					{
+						printf("here %s %s\n",AsNeed2.ItParams[it].ItName, name)
+						if AsNeed2.ItParams[it].ItName == name return AsNeed2.ItParams[it]
+					}
+				}
+			}
+		}
 	}
 	
 	for SomeDef : DefsTable

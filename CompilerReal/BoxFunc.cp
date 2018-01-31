@@ -182,6 +182,7 @@ BoxFuncDeclare := class  extend BoxFunc
 
 BoxFuncBody := class extend BoxFunc
 {
+	ItParams := FuncParam^^
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
 	{
 		FuncName = SomeName
@@ -194,6 +195,16 @@ BoxFuncBody := class extend BoxFunc
 			sprintf(OutputName,"func%i",GetNewId())
 		}
 		IsInvalid = not ParseParams(inPars,inOutType)
+
+		if MyFuncType.ParsCount != 0
+		{
+			ItParams = new FuncParam[MyFuncType.ParsCount]
+
+			for MyFuncType.ParsCount
+			{
+				ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it])
+			}
+		}
 
 
 		if Stuf.GetValue() == "{}"

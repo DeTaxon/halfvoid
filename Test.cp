@@ -4,6 +4,7 @@ printf := !(char^ str, ...) -> int declare
 
 wow := !(int x) -> int
 {
+	printf(" value %i\n",x)
 	return 0
 }
 
