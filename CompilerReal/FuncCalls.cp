@@ -213,6 +213,10 @@ NaturalCall := class extend ObjResult
 		PrintParamUses(f)
 		f << ")\n"
 	}
+	GetName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
 	GetValue := virtual !() -> string
 	{
 		return "d()"
@@ -226,15 +230,15 @@ NaturalCall := class extend ObjResult
 AssemblerCall := class extend NaturalCall
 {
 	RealCall := BuiltInFunc^ at ToCall
+
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		Down = Pars
-
 		RetId = GetNewId()
 		ToCall = func
 		Pars.SetUp(this&)
-		Pars.SetUp(this&)
 		ExchangeParams()
+
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -245,57 +249,70 @@ AssemblerCall := class extend NaturalCall
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
 		RefsArr := ToCall.MyFuncType.ParsIsRef
-		PrintParamPres(f)
+
+		if not RealCall.IsSelfPre
+			PrintParamPres(f)
 		
 		AsmLine := RealCall.ToExe
 
-		buf := char[1024]
+
+		buf := char[2]
+		buf[1] = 0
+
 		thisName := GetName()
-		i := 0
 		j := 0
 		while AsmLine[j] != 0
 		{
 			if AsmLine[j] != '#'
 			{
-				buf[i] = AsmLine[j]
-				i += 1
+				buf[0] = AsmLine[j]
+				f << buf
 				j += 1
 			}else{
 				j+= 1
-				num := AsmLine[j] - '0'
-
-				if num == 0
+				if AsmLine[j] in '0'..'9'
 				{
-					ToAdd := GetName()
-					k := 0
-					while ToAdd[k] != 0
-					{
-						buf[i] = ToAdd[k]
-						i += 1
-						k += 1
-					}
-				}else{
-					num -= 1
-					miniIter := Down
-					for num miniIter = miniIter.Right
+					num := AsmLine[j] - '0'
 
-					ToAdd := string
-					if RefsArr[num] ToAdd = miniIter.GetPointName()
-					else ToAdd = miniIter.GetName()
-
-					k := 0
-					while ToAdd[k] != 0
+					if num == 0
 					{
-						buf[i] = ToAdd[k]
-						i += 1
-						k += 1
+						f << GetName()
+					}else{
+						num -= 1
+						miniIter := Down
+						for num miniIter = miniIter.Right
+
+						ToAdd := string
+						if RefsArr[num] ToAdd = miniIter.GetPointName()
+						else ToAdd = miniIter.GetName()
+
+						f << ToAdd
 					}
+				}
+				if AsmLine[j] in 'A'..'Z'
+				{
+					numC := AsmLine[j] - 'A'
+					iterR := Down
+					
+					k := numC
+					while k  != 0
+					{
+						iterR = iterR.Right
+						k -= 1
+					}
+
+					if RealCall.MyFuncType.ParsIsRef[numC]
+						iterR.PrintPointPre(f)
+					else	iterR.PrintPre(f)
+
+				}
+				if AsmLine[j] == '#'
+				{
+					f << RetId
 				}
 				j += 1
 			}
 		}
-		buf[i] = 0
-		f << buf
 
 	}
 	PrintUse := virtual !(sfile f) -> void

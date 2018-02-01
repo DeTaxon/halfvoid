@@ -146,10 +146,12 @@ GlobalParam := class extend MemParam
 FuncParam := class extend MemParam
 {
 	ItName := string
-	this := !(string Name,Type^ typ) -> void
+	IsRef := bool
+	this := !(string Name,Type^ typ, bool IIsRef) -> void
 	{
 		ResultType = typ
 		ItName = Name
+		IsRef = IIsRef
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{

@@ -202,7 +202,7 @@ BoxFuncBody := class extend BoxFunc
 
 			for MyFuncType.ParsCount
 			{
-				ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it])
+				ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
 			}
 		}
 

@@ -1,9 +1,27 @@
 BuiltInFunc := class extend BoxFunc
 {
 	ToExe := string
+	IsSelfPre := bool
+
 	IsAssembler := virtual !() -> bool
 	{
 		return true
+	}
+	CheckIsSelf := !() -> void
+	{	
+		AsmLine := ToExe
+
+		i := 0
+		while AsmLine[i]
+		{
+			if AsmLine[i] == '#'
+			{
+				i += 1
+				if AsmLine[i] in 'A'..'Z' IsSelfPre = true
+			}else i += 1
+		}
+		printf("isSelf %i\n",IsSelfPre)
+
 	}
 }
 
@@ -21,6 +39,8 @@ BuiltInFuncUno := class extend BuiltInFunc
 		IsRefs := bool[1]
 		IsRefs[0] = lRef
 		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+
+		CheckIsSelf()
 	}
 }
 BuiltInFuncBinar := class extend BuiltInFunc
@@ -39,6 +59,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		IsRefs[0] = lRef
 		IsRefs[1] = rRef
 		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+		CheckIsSelf()
 	}
 }
 
@@ -79,8 +100,30 @@ CreateBuiltIns := !() -> void
 		BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("/",PType,false,PType,false,PType,"#0 = fdiv " + it + " #1,#2\n"))
 	}
+
+	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"
+										+"#0 = add i1 #2,0\n"))
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
+
+	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"br  label %Start##\n" +
+											"Start##:\n" +
+											"#A" +
+											"br i1 #1, label %Next##, label %End##\n" +
+											"Next##:\n" +
+											"#B" +
+											"br label %End##\n" +
+											"End##:\n" +
+											"#0 = phi i1 [false,%Start##],[#2,%Next##]\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"br  label %Start##\n" +
+											"Start##:\n" +
+											"#A" +
+											"br i1 #1, label %End##, label %Next##\n" +
+											"Next##:\n" +
+											"#B" +
+											"br label %End##\n" +
+											"End##:\n" +
+											"#0 = phi i1 [true,%Start##],[#2,%Next##]\n"))
 
 }
