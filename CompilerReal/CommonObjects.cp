@@ -26,7 +26,6 @@ GetItem := !(string name, Object^ start) -> Object^
 
 					for AsNeed2.MyFuncType.ParsCount
 					{
-						printf("here %s %s\n",AsNeed2.ItParams[it].ItName, name)
 						if AsNeed2.ItParams[it].ItName == name return AsNeed2.ItParams[it]
 					}
 				}
