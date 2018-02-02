@@ -136,7 +136,8 @@ NaturalCall := class extend ObjResult
 		{
 			if iter.GetType() != FType.Pars[i]
 			{
-				BoxExc(iter,FType.Pars[i])
+				if not BoxExc(iter,FType.Pars[i])
+					ErrorLog.Push("can not exchange param\n")
 				iter = iter.Up
 			}
 			i += 1
@@ -238,7 +239,6 @@ AssemblerCall := class extend NaturalCall
 		ToCall = func
 		Pars.SetUp(this&)
 		ExchangeParams()
-
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{

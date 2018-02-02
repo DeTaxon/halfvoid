@@ -62,6 +62,7 @@ FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 	for FoundC if Priors[it] == 0 return Funcs[it]
 	for FoundC if Priors[it] == 1 return Funcs[it]
 	for FoundC if Priors[it] == 2 return Funcs[it]
+	for FoundC if Priors[it] == 3 return Funcs[it]
 
 	return null
 }
@@ -115,6 +116,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == GetType("float") and funcType == GetType("double") return 1
 
 	if inType == GetType("double") and funcType == GetType("float") return 2
+
+	if inType == GetType("int") and funcType == GetType("bool") return 3
 	
 	return 255
 }

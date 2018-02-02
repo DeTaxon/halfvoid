@@ -20,7 +20,6 @@ BuiltInFunc := class extend BoxFunc
 				if AsmLine[i] in 'A'..'Z' IsSelfPre = true
 			}else i += 1
 		}
-		printf("isSelf %i\n",IsSelfPre)
 
 	}
 }
@@ -87,6 +86,8 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"le i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"gt i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"lt i" + it + " #1,#2\n"))
+
+			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",PType,false,BoolT,"#0 = icmp ne i"+it+" #1,0\n"))
 		}
 	}
 	
