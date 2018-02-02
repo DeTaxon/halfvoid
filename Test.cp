@@ -9,6 +9,6 @@ wow := !() -> int
 main := !(int argc, char^^ argv) -> int
 {
 	j := bool
-	j = wow() == 0 or wow() == 0
+	j = wow() == 0 and wow() == 0 and wow() == 0
 	return 0
 }

@@ -107,23 +107,20 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
 
-	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"br  label %Start##\n" +
-											"Start##:\n" +
-											"#A" +
-											"br i1 #1, label %Next##, label %End##\n" +
-											"Next##:\n" +
-											"#B" +
-											"br label %End##\n" +
-											"End##:\n" +
-											"#0 = phi i1 [false,%Start##],[#2,%Next##]\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"br  label %Start##\n" +
-											"Start##:\n" +
-											"#A" +
+
+	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#A" +
 											"br i1 #1, label %End##, label %Next##\n" +
 											"Next##:\n" +
 											"#B" +
 											"br label %End##\n" +
 											"End##:\n" +
-											"#0 = phi i1 [true,%Start##],[#2,%Next##]\n"))
+											"#0 = select i1 #1, i1 true, i1 #2\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"#A" +
+											"br i1 #1, label %Next##, label %End##\n" +
+											"Next##:\n" +
+											"#B" +
+											"br label %End##\n" +
+											"End##:\n" +
+											"#0 = select i1 #1, i1 #2, i1 false\n"))
 
 }
