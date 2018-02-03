@@ -6,6 +6,13 @@ Object := class{
 
 	IsInvalid := bool
 
+	TestNodes := virtual !() ->void
+	{
+		if Up == null printf("broken %s\n",GetValue())
+		if Right != null Right.TestNodes()
+		if Down != null Down.TestNodes()
+	}
+
 	Clean := !() -> void
 	{
 		Left = null

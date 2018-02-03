@@ -9,6 +9,8 @@ wow := !() -> int
 main := !(int argc, char^^ argv) -> int
 {
 	j := bool
-	j = wow() or wow() or wow()
+	if wow() or wow() 
+		printf("hello\n")
+	if wow()printf("hello\n")
 	return 0
 }

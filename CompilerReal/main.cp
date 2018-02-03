@@ -25,6 +25,7 @@ main := !(int argc,string[] argv) -> int
 	else WorkWithBag()
 
 	Ob.Print(0)
+	Ob.TestNodes()
 	
 	if ErrorLog.Empty()
 	{

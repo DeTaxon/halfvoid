@@ -210,6 +210,11 @@ NaturalCall := class extend ObjResult
 		PrintParamUses(f)
 		f << ")\n"
 	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ToCall.MyFuncType.RetType.PrintType(f)
+		f << " %T" << RetId
+	}
 	GetName := virtual !() -> string
 	{
 		return "%T" + RetId
@@ -324,17 +329,17 @@ AssemblerCall := class extend NaturalCall
 		}
 
 	}
-	PrintUse := virtual !(sfile f) -> void
-	{
-		ToCall.MyFuncType.RetType.PrintType(f)
-		f << " %T" << RetId
-	}
-	GetName := virtual !() -> string
-	{
-		b := char[256]
-		sprintf(b,"%T%i",RetId)
-		return b.Copy()
-	}
+	//PrintUse := virtual !(sfile f) -> void
+	//{
+	//	ToCall.MyFuncType.RetType.PrintType(f)
+	//	f << " %T" << RetId
+	//}
+	//GetName := virtual !() -> string
+	//{
+	//	b := char[256]
+	//	sprintf(b,"%T%i",RetId)
+	//	return b.Copy()
+	//}
 }
 
 //PointCall

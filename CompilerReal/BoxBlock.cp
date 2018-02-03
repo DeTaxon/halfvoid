@@ -1,3 +1,29 @@
+MakeItBlock := !(Object^ item) -> bool
+{
+	if item == null return false
+	if item.GetValue() == "{d}" return true
+
+	oldUp := item.Up
+	oldRight := item.Right
+	oldLeft := item.Left
+
+	item.Up = null
+	item.Right = null
+	item.Left = null
+
+	bloc := new BoxBlock(item)
+
+	item.Up = oldUp
+	item.Right = oldRight
+	item.Left = oldLeft
+
+	ReplaceNode(item,bloc)
+
+	item.SetUp(bloc)
+
+	return true
+}
+
 BoxBlock := class extend Object
 {
 	this := !() -> void

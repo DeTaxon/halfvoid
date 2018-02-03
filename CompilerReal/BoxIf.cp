@@ -15,11 +15,11 @@ BoxIf := class extend Object
 			PopOutNode(Down)
 			if Down.Right.Right != null PopOutNode(Down.Right.Right)
 
-			ReplaceNode(Down.Right,new BoxBlock(Down.Right))
+			MakeItBlock(Down.Right)
 
 			RR := Down.Right.Right
 			if RR != null
-				ReplaceNode(RR,new BoxBlock(RR))
+				MakeItBlock(RR)
 		}
 		if pri == State_Syntax
 		{
@@ -30,10 +30,12 @@ BoxIf := class extend Object
 				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
-			//WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
 		{
+			if Down.GetType() != GetType("bool")
+				BoxExc(Down,GetType("bool"))
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -86,7 +88,7 @@ BoxWhile := class extend Object
 			Down.SetUp(this&)
 			PopOutNode(Down)
 
-			ReplaceNode(Down.Right,new BoxBlock(Down.Right))
+			MakeItBlock(Down.Right)
 		}
 		if pri == State_Syntax
 		{
