@@ -25,7 +25,6 @@ main := !(int argc,string[] argv) -> int
 	else WorkWithBag()
 
 	Ob.Print(0)
-
 	
 	if ErrorLog.Empty()
 	{

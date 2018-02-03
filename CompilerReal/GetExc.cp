@@ -25,10 +25,21 @@ BoxExc := !(Object^ item, Type^ toType) -> Object^
 	
 	if Exc == null return null
 
+	oldUp := item.Up
+	oldRight := item.Right
+	oldLeft := item.Left
+
+	item.Up = null
+	item.Right = null
+	item.Left = null
 	Call := MakeSimpleCall(Exc,item)
+
+	item.Up = oldUp
+	item.Right = oldRight
+	item.Left = oldLeft
 	ReplaceNode(item,Call)
-	Call.Down = item
 	item.SetUp(Call)
+
 
 	return Call
 }

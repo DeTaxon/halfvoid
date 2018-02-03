@@ -61,7 +61,10 @@ ReplaceNode := !(Object^ what, Object^ with) -> void
 
 	if what.Left == null
 	{
-		what.Up.Down = with
+		if what.Up != null
+		{
+			what.Up.Down = with
+		}
 		with.Left = null
 	}else{
 		with.Left = what.Left
@@ -70,6 +73,8 @@ ReplaceNode := !(Object^ what, Object^ with) -> void
 
 	wiEnd.Right = what.Right
 	if wiEnd.Right != null wiEnd.Right.Left = wiEnd
+
+	with.SetUp(what.Up)
 
 	what.Up = null
 	what.Left = null
@@ -89,6 +94,9 @@ PopOutNode := !(Object^ what) -> void
 		if what.Right != null
 			what.Right.Left = null
 	}
+	what.Up = null
+	what.Left = null
+	what.Right = null
 }
 
 

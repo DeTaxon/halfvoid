@@ -3,7 +3,7 @@ UnboxParams := !(Object^ start) -> void
 {
 	Bag := Stack.{Object^}
 
-		Curr := start
+	Curr := start
 	while Curr != null
 	{
 		if Curr.GetValue() == "i:=0"
@@ -52,6 +52,7 @@ UnboxParams := !(Object^ start) -> void
 				lineIter = lineIter.Right
 			}
 			ReplaceNode(Curr,line)
+			Curr = line
 		}
 		Curr = Curr.Right
 	}

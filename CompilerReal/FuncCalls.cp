@@ -135,7 +135,6 @@ NaturalCall := class extend ObjResult
 		{
 			if iter.GetType() != FType.Pars[i]
 			{
-				PreIter := iter
 				iter = BoxExc(iter,FType.Pars[i])
 			}
 			i += 1
@@ -146,8 +145,7 @@ NaturalCall := class extend ObjResult
 		{
 			if iter.GetType() == GetType("float")
 			{
-				BoxExc(iter,GetType("double"))
-				iter = iter.Up
+				iter = BoxExc(iter,GetType("double"))
 			}
 			iter = iter.Right
 		}

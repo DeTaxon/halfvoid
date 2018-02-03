@@ -1,5 +1,4 @@
 printf := !(char^ str, ...) -> int declare
-memcpy := !(void^ a, void^ b,int size) -> void declare
 
 wow := !() -> int
 {
@@ -10,6 +9,6 @@ wow := !() -> int
 main := !(int argc, char^^ argv) -> int
 {
 	j := bool
-	j = wow() and wow() and wow()
+	j = wow() or wow() or wow()
 	return 0
 }
