@@ -21,7 +21,7 @@ main := !(int argc,string[] argv) -> int
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
 
-	if mainFunc == null ErrorLog.Push("main function not found")
+	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag()
 
 	Ob.Print(0)

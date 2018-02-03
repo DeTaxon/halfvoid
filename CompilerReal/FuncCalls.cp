@@ -131,14 +131,12 @@ NaturalCall := class extend ObjResult
 		iter := Down
 		i := 0
 
-
 		while iter != null and i < FType.ParsCount 
 		{
 			if iter.GetType() != FType.Pars[i]
 			{
-				if not BoxExc(iter,FType.Pars[i])
-					ErrorLog.Push("can not exchange param\n")
-				iter = iter.Up
+				PreIter := iter
+				iter = BoxExc(iter,FType.Pars[i])
 			}
 			i += 1
 			iter = iter.Right
@@ -225,6 +223,19 @@ NaturalCall := class extend ObjResult
 	GetType := virtual !() -> Type^
 	{
 		return ToCall.MyFuncType.RetType
+	}
+	Print := virtual !(int s) -> void {
+		for s printf("->")
+		printf("item: %s %s\n",GetValue(),ToCall.FuncName)
+		End := this.Down
+		while End != null
+		{
+			End.Print(s+1)
+			End = End.Right
+		}
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
 	}
 }
 

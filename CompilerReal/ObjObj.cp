@@ -47,6 +47,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 			}
+			printf("here %s\n",MyStr)
 		}
 	}
 }

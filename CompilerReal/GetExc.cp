@@ -19,16 +19,16 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 	return null
 }
 
-BoxExc := !(Object^ item, Type^ toType) -> bool
+BoxExc := !(Object^ item, Type^ toType) -> Object^
 {
 	Exc := GetExchange(item,item,toType)
 	
-	if Exc == null return false
+	if Exc == null return null
 
 	Call := MakeSimpleCall(Exc,item)
 	ReplaceNode(item,Call)
 	Call.Down = item
 	item.SetUp(Call)
 
-	return true
+	return Call
 }

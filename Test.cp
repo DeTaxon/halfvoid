@@ -1,4 +1,5 @@
 printf := !(char^ str, ...) -> int declare
+memcpy := !(void^ a, void^ b,int size) -> void declare
 
 wow := !() -> int
 {
