@@ -26,12 +26,14 @@ ObjObj := class extend Object
 	{
 		if pri == State_Start
 		{
+			Found := false
 			if MyStr == "if()"
 			{
 				It := this&->{Object^}
 				NewNode := new BoxIf(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
+				Found = true
 			}
 			if MyStr == "while()"
 			{
@@ -39,6 +41,7 @@ ObjObj := class extend Object
 				NewNode := new BoxWhile(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
+				Found = true
 			}
 			if MyStr == "return()"
 			{
@@ -46,6 +49,31 @@ ObjObj := class extend Object
 				NewNode := new BoxReturn(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
+				Found = true
+			}
+			if not Found
+			{
+				//WorkBag.Push(this&,State_PreGetUse)
+			}
+		}
+		if pri == State_PreGetUse
+		{
+			iterQ := Down
+			while iterQ != null
+			{
+				WorkBag.Push(iterQ,State_Start)
+				iterQ = iterQ.Right
+			}
+			WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
+			Maybe := GetUse(this&)
+
+			if Maybe != null
+			{
+				ReplaceNode(this&,Maybe)
+				printf("nope\n")
 			}
 		}
 	}

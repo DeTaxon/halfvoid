@@ -80,6 +80,7 @@ ObjParam := class extend Object
 				}
 			}else
 			{
+				WorkBag.Push(this&,State_PreGetUse)
 				SomeObj := GetUse(Down)
 				
 				lazy := SomeObj != null 
@@ -96,7 +97,8 @@ ObjParam := class extend Object
 
 					if SomeObj == null
 					{
-						printf("compiler error\n")
+						//printf("compiler error\n")
+						WorkBag.Push(this&,State_PreGetUse)
 					}else{
 						ObjType = SomeObj.GetType()
 						allcId := GetAlloc(this&,ObjType)
@@ -119,6 +121,7 @@ ObjParam := class extend Object
 		{
 			AskedGetUse = true
 			WorkBag.Push(Down,State_Start)
+			ObjType = Down.GetType()
 		}
 	}
 }
