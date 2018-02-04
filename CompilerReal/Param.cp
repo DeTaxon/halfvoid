@@ -117,6 +117,7 @@ ObjParam := class extend Object
 					Down.Right = Temp
 					Temp.Left = Down
 					Down.SetUp(this&)
+					IsSetValue = true
 				}
 			}
 		}
