@@ -26,6 +26,7 @@ MakeItBlock := !(Object^ item) -> bool
 
 BoxBlock := class extend Object
 {
+	GetUseIter := int
 	this := !() -> void
 	{
 	}
@@ -63,12 +64,19 @@ BoxBlock := class extend Object
 		{
 			SyntaxCompress(this&,PriorityData)
 			UnboxParams(this.Down)	
-
+			WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
 			iter := Down
-			while iter != null
+
+			for GetUseIter
+				if iter != null iter = iter.Right
+			if iter != null
 			{
+				WorkBag.Push(this&,State_GetUse)
 				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
+				GetUseIter += 1
 			}
 		}
 	}

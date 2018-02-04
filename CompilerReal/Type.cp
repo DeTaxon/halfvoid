@@ -297,7 +297,8 @@ CreateStandartTypes := !() -> void
 	TypeTable[10] = new TypeStandart("double")
 	TypeTable[11] = new TypeStandart("void")
 
-	TypeTable[12] = TypeTable[0].GetPoint()
+	TypeTable[12] = TypeTable[0].GetPoint() // char*
+	TypeTable[11].AsPoint = TypeTable[12] // void*
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

@@ -11,6 +11,13 @@ Object := class{
 		if Up == null printf("broken %s\n",GetValue())
 		if Right != null Right.TestNodes()
 		if Down != null Down.TestNodes()
+
+		iterW := Down
+		while iterW != null
+		{
+			if iterW.Up != this& printf("broken Up %s\n",iterW.GetValue())
+			iterW = iterW.Right
+		}
 	}
 
 	Clean := !() -> void

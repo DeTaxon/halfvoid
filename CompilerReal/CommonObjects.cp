@@ -9,7 +9,7 @@ GetItem := !(string name, Object^ start) -> Object^
 		{
 			AsNeed := iter->{ObjParam^}
 			if (AsNeed.MyStr == name) {
-				if not AsNeed.AskedGetUse WorkBag.Push(iter,State_GetUse)
+				if not AsNeed.AskedGetUse and AsNeed.IsFunc WorkBag.Push(iter,State_GetUse)
 				return iter
 			}
 		}

@@ -24,13 +24,17 @@ ObjIndent := class extend ObjConst
 		}
 		if pri == State_PreGetUse
 		{
+			WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
 			may := GetUse(this&)
 			if may != null
 			{
 				ReplaceNode(this&,may)
 			}else
 			{
-				ErrorLog.Push("unknown indent\n")
+				ErrorLog.Push("unknown indent "+ MyStr + "\n")
 			}
 		}
 	}

@@ -43,15 +43,18 @@ UnboxParams := !(Object^ start) -> void
 			}
 
 			iter = iter.Right
+			iter.Left = null
 			lineIter = line
 
 			while lineIter != null
 			{
 				lineIter.Down = iter
-				iter.SetUp(lineIter)
+				//iter.SetUp(lineIter)
 				lineIter = lineIter.Right
 			}
 			ReplaceNode(Curr,line)
+			iter.SetUp(line)
+
 			Curr = line
 		}
 		Curr = Curr.Right

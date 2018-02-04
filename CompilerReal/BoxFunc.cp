@@ -209,8 +209,11 @@ BoxFuncBody := class extend BoxFunc
 
 		if Stuf.GetValue() == "{}"
 		{
-			Down = Stuf.Down
-			Down.SetUp(this&)
+			Down = new BoxBlock()
+			Down.Up = this&
+			Down.Down = Stuf.Down
+			Stuf.Down.SetUp(Down)
+
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}

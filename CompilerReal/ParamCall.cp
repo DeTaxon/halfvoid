@@ -11,7 +11,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 			if may.GetValue() == "i:=1"
 			{
 				itType := may.GetType()
-				if itType == null return null
+				if itType == null	return null
 
 				if itType.GetType() == "function"
 					return new ParamFuncCall(dynCast.MyStr,may->{ObjParam^})
