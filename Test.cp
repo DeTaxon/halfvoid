@@ -1,8 +1,10 @@
 printf := !(char^ str, ...) -> int declare
+calloc := !(int size) -> void^ declare
+free := !(void^ point) -> void declare
 
 wut := !() -> double
 {
-	return 0.0
+	return 0.7
 }
 
 

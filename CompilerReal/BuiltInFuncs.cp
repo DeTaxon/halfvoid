@@ -65,6 +65,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 CreateBuiltIns := !() -> void
 {
 	BoolT := GetType("bool")
+	VoidP := GetType("void").GetPoint()
 
 	for ![8,16,32,64]
 	{
@@ -102,6 +103,7 @@ CreateBuiltIns := !() -> void
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"
 										+"#0 = add i1 #2,0\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("=",VoidP,true,VoidP,false,GetPoint("void"),"store i8* #2, i8** #1\n"))
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
