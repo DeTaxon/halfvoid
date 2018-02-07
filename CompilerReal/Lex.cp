@@ -119,6 +119,8 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	//number
 	for i : !['0'..'9'] PreLines[0].GoTo[i] = 3
+	for i : !['a'..'z','A'..'Z'] PreLines[3].GoTo[i] = 7
+	//for i : !['0'..'9'] PreLines[3].GoTo[i] = 3
 	
 	PreLines[3].GoTo['x'] = 4
 	PreLines[3].Id = 3
