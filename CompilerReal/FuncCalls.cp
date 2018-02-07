@@ -21,6 +21,22 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				return null //TODO: operator()
 			}
 		}
+		if iter.GetValue() == "~suffix"
+		{
+			if iter.Left.GetType() == null return null
+
+			AsSuf := iter->{ObjSuffix^}
+			Pars := Queue.{Type^}()
+			Pars.Push(iter.Left.GetType())
+
+			Func := FindSuffix(AsSuf.MyStr,iter,Pars)
+			if Func == null return null
+			
+			iter = iter.Left
+			PopOutNode(iter.Right)
+			Pars.Clean()
+			return MakeSimpleCall(Func,iter) 
+		}
 		if IsOper(iter.GetValue())
 		{
 			oper := iter.GetValue()

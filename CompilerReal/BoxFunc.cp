@@ -67,6 +67,7 @@ BoxFunc := class extend Object
 	FuncName := string
 	OutputName := string
 	ABox := AllocBox
+	IsSuffix := bool
 
 	GetType := virtual !() -> Type^
 	{

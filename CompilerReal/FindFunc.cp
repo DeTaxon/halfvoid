@@ -1,5 +1,5 @@
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, bool IsSuffix) -> void
 {
 	iterU := start
 	while iterU != null
@@ -12,7 +12,9 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found) -> v
 				iterW := iterU.Down
 				if iterW.GetValue() == "!()"
 				{
-					found.Push(iterW->{BoxFunc^})
+					AsBoxFunc := iterW->{BoxFunc^}
+					if AsBoxFunc.IsSuffix == IsSuffix
+						found.Push(AsBoxFunc)
 				}
 			}
 		}
@@ -36,10 +38,20 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found) -> v
 	}
 }
 
+
+
 FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 {
+	return FindStuff(name,start,pars,false)
+}
+FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
+{
+	return FindStuff(name,start,pars,true)
+}
+FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> BoxFunc^
+{
 	Funcs := Queue.{BoxFunc^}()
-	CollectFuncsByName(name,start,Funcs)
+	CollectFuncsByName(name,start,Funcs,IsSuffix)
 	
 	FoundC := Funcs.Size()
 

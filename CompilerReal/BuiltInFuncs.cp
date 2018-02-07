@@ -24,6 +24,26 @@ BuiltInFunc := class extend BoxFunc
 	}
 }
 
+BuiltInSuffix := class extend BuiltInFunc
+{
+	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
+	{
+		IsSuffix = true
+		FuncName = Name
+		OutputName = Name
+		ToExe = code
+
+		PP := Queue.{Type^}()
+		PP.Push(l)
+
+		IsRefs := bool[1]
+		IsRefs[0] = lRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+
+		CheckIsSelf()
+	}
+}
+
 BuiltInFuncUno := class extend BuiltInFunc
 {
 	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
@@ -65,7 +85,8 @@ BuiltInFuncBinar := class extend BuiltInFunc
 CreateBuiltIns := !() -> void
 {
 	BoolT := GetType("bool")
-	VoidP := GetType("void").GetPoint()
+	VoidT := GetType("void")
+	VoidP := VoidT.GetPoint()
 
 	for ![8,16,32,64]
 	{
@@ -103,7 +124,6 @@ CreateBuiltIns := !() -> void
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"
 										+"#0 = add i1 #2,0\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("=",VoidP,true,VoidP,false,GetPoint("void"),"store i8* #2, i8** #1\n"))
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
@@ -123,5 +143,5 @@ CreateBuiltIns := !() -> void
 											"br label %End##\n" +
 											"End##:\n" +
 											"#0 = select i1 #1, i1 #2, i1 false\n"))
-
+	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunt double #1 to float\n"))
 }
