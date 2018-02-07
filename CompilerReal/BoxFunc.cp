@@ -36,12 +36,14 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	iterForName := iter.Up
 	FName := ""
+	IsSuf := false
 
 	while iterForName != null
 	{
 		if iterForName.GetValue() == "i:=1"
 		{
 			dynCa := iterForName->{ObjParam^}
+			IsSuf = dynCa.IsStrName
 			FName = dynCa.MyStr
 			iterForName = null
 		}else	iterForName = iterForName.Up
@@ -53,7 +55,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		return new BoxFuncBody(ParamsObj,RetT,FName,iter)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter)
+		PreRet.IsSuffix = IsSuf
+		return PreRet
 	}
 
 	return null

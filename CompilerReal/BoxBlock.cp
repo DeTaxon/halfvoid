@@ -63,7 +63,7 @@ BoxBlock := class extend Object
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,PriorityData)
-			UnboxParams(this.Down)	
+			UnboxParams(this.Down)
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse

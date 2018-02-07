@@ -21,18 +21,24 @@ UnboxParams := !(Object^ start) -> void
 			while lazy 
 			{
 				StrAdd = null
+				IsStr := false
 				if iter.GetValue() == "~ind"
 				{
 					StrAdd = iter->{ObjIndent^}.MyStr
+				}
+				if iter.GetValue() == "~str"
+				{
+					StrAdd = iter->{ObjStr^}.GetString()
+					IsStr = true
 				}
 				
 				if StrAdd != null
 				{
 					if line == null	{
-						line = new ObjParam(StrAdd)
+						line = new ObjParam(StrAdd,IsStr)
 						lineIter = line
 					}else{
-						lineIter.Right = new ObjParam(StrAdd)
+						lineIter.Right = new ObjParam(StrAdd,IsStr)
 						lineIter = lineIter.Right
 					}
 				}

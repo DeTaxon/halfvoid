@@ -97,6 +97,10 @@ ObjStr := class extend ObjConst
 		MyTmpId = GetNewId()
 		ResultType = GetType("string")
 	}
+	GetString := virtual !() -> string
+	{
+		return StrContainer.GetString(MyStrId)
+	}
 	GetValue := virtual !() -> char^
 	{
 		return "~str"
@@ -143,7 +147,7 @@ ObjSuffix := class extend ObjConst
 	"this" := !(char^ str) -> void
 	{
 		Clean()
-		MyStr = str
+		MyStr = str.Copy()
 	}
 	GetValue := virtual !() -> char^
 	{

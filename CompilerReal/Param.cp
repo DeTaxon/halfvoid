@@ -5,10 +5,12 @@ ObjParam := class extend Object
 	ObjType := Type^
 	IsSetValue := bool
 	IsFunc := bool
+	IsStrName := bool
 	
-	this := !(string ss) -> void
+	this := !(string ss, bool IsstName) -> void
 	{
-		MyStr = ss
+		MyStr = ss.Copy()
+		IsStrName = IsstName
 	}
 	GetValue := virtual !() -> string
 	{
