@@ -8,10 +8,10 @@ a.out: out.ll
 
 all : clean a.out a.exe
 
-out2.ll: a.out
+out2.ll: a.out 
 	./a.out
 
-b : out2.ll
+b : out2.ll	
 	clang out2.ll -o b
 
 a.exe: out.ll WinMain.cpp
@@ -19,9 +19,10 @@ a.exe: out.ll WinMain.cpp
 
 	
 
+
 out.ll: $(Sors)
 	python2.7 CompilerPython/main.py $(Files)
 clean:
 	rm -f out.ll WinObj.o a.exe a.out
 
-.PHONY: test out.ll All clean
+.PHONY: test All clean ou2.ll b a.out

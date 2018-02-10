@@ -55,8 +55,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter)
-		PreRet.IsSuffix = IsSuf
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf)
 		return PreRet
 	}
 
@@ -188,8 +187,9 @@ BoxFuncDeclare := class  extend BoxFunc
 BoxFuncBody := class extend BoxFunc
 {
 	ItParams := FuncParam^^
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
+		IsSuffix = IsSuf
 		FuncName = SomeName
 		if SomeName == "main"
 		{

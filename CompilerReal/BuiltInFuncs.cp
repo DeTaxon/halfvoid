@@ -87,6 +87,7 @@ CreateBuiltIns := !() -> void
 	BoolT := GetType("bool")
 	VoidT := GetType("void")
 	VoidP := VoidT.GetPoint()
+	DoubleT := GetType("double")
 
 	for ![8,16,32,64]
 	{
@@ -108,6 +109,17 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"lt i" + it + " #1,#2\n"))
 
 			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",PType,false,BoolT,"#0 = icmp ne i"+it+" #1 ,0\n"))
+			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",PType,false,DoubleT,"#0 = "+IsS+"itofp i"+it+" #1 to double\n"))
+
+			BuiltInFuncs.Push(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
+												+"#0 = add i" + it + " #2,#0pre\n"
+												+"store i"+it+" #0, i"+it+"* #1"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
+												+"#0 = add i" + it + " #2,#0pre\n"
+												+"store i"+it+" #0, i"+it+"* #1"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
+												+"#0 = imul i" + it + " #2,#0pre\n"
+												+"store i"+it+" #0, i"+it+"* #1"))
 		}
 	}
 	

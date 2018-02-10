@@ -13,6 +13,16 @@ InDataR := !(Object^ obj) -> bool
 	return false
 }
 
+InBlockData := !(Object^ obj) -> bool
+{
+	if InDataR(obj) return true
+	if obj.GetValue() == "return()" return true
+	if obj.GetValue() == "if()" return true
+	if obj.GetValue() == "while()" return true
+
+	return false
+}
+
 RuleType := !(void^ begin)^ -> int
 RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 {
@@ -107,10 +117,10 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	}
 
 
+	if RuleUse(begin,"return()",RuleOneFunc) return true
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
-	if RuleUse(begin,"return()",RuleOneFunc) return true
 
 	return false	
 }
@@ -217,7 +227,7 @@ RuleIf := !(void^ itr)-> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "{}" and not InDataR(It) return 0
+	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	It = It.Right
 	if It == null return 3
 
@@ -225,7 +235,7 @@ RuleIf := !(void^ itr)-> int
 	It = It.Right
 	if It == null return 3
 	
-	if It.GetValue() == "{}" or InDataR(It) return 5
+	if It.GetValue() == "{}" or InBlockData(It) return 5
 
 	return 3
 }
@@ -241,7 +251,7 @@ RuleWhile := !(void^ itr)-> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "{}" and not InDataR(It) return 0
+	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	return 3
 }
 

@@ -1,6 +1,7 @@
 Ob := Object^
 main := !(int argc,string[] argv) -> int 
 {
+
 	CreateStandartTypes()
 	CreateBuiltIns()
 

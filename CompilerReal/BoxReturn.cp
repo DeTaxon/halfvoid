@@ -2,7 +2,8 @@ BoxReturn := class extend Object
 {
 	this := !(Object^ toUse) -> void
 	{
-		Down = toUse.Down.Right
+		PopOutNode(toUse.Down)
+		Down = toUse.Down
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -17,6 +18,7 @@ BoxReturn := class extend Object
 		}
 		if pri == State_GetUse
 		{
+			Down.SetUp(this&)
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -25,5 +27,9 @@ BoxReturn := class extend Object
 		f << "ret "
 		Down.PrintUse(f)
 		f << "\n"
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~Return()"
 	}
 }

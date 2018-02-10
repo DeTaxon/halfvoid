@@ -35,7 +35,14 @@ BoxIf := class extend Object
 		if pri == State_GetUse
 		{
 			if Down.GetType() != GetType("bool")
-				BoxExc(Down,GetType("bool"))
+			{
+				if TypeCmp(Down.GetType(),GetType("bool")) != 255
+				{
+					BoxExc(Down,GetType("bool"))
+				}else{
+					ErrorLog.Push("can not use type as if statement\n")
+				}
+			}
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -99,10 +106,19 @@ BoxWhile := class extend Object
 				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
-			//WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
 		{
+			if Down.GetType() != GetType("bool")
+			{
+				if TypeCmp(Down.GetType(),GetType("bool")) != 255
+				{
+					BoxExc(Down,GetType("bool"))
+				}else{
+					ErrorLog.Push("can not use type as if statement\n")
+				}
+			}
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
