@@ -40,6 +40,18 @@ BoxReturn := class extend Object
 					if PreType == null
 					{
 						asNeed.SetReturnType(Down.GetType())
+					}else
+					{
+						if PreType != Down.GetType()
+						{
+							if TypeCmp(Down.GetType(),PreType) != 255
+							{
+								Down = BoxExc(Down,PreType)
+								Down.Up = this&
+							}else{
+								ErrorLog.Push("Can not return value")
+							}
+						}
 					}
 				}else{
 					ErrorLog.Push("recursion detected\n")

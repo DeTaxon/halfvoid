@@ -6,8 +6,14 @@ free := !(void^ point) -> void declare
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("autodetect = %f %f\n", fun(),7deg)
+	printf("autodetect = %f %f\n", 7deg,7deg)
+	AsVoid()
 	return 0
+}
+AsVoid := !() -> bool
+{
+	printf("void\n")
+	return 4
 }
 fun := !()
 {
