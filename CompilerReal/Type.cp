@@ -83,7 +83,7 @@ ParseType := !(Object^ Node) -> Type^
 				Ri = Ri.Down
 				DynCast := Ri->{ObjInt^}
 				ArrSize := DynCast.MyInt
-				return under.GetArray(ArrSize->{int})->{Type^}
+				return under.GetArray(ArrSize)->{Type^}
 			}
 			return null
 		}

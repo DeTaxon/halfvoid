@@ -117,6 +117,11 @@ Object := class{
 	{
 		return null
 	}
+	Clone := virtual !() -> Object^
+	{
+		ErrorLog.Push("Clone not defined for " + GetValue() + "\n")
+		return null
+	}
 }
 
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^

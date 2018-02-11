@@ -38,4 +38,30 @@ ObjData := class extend Object
 		}
 
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjData()
+		PreRet.Line = Line
+
+		IterD := Down
+		LineI := Object^
+		LineI = null
+		
+		while IterD != null
+		{
+			if LineI == null
+			{
+				PreRet.Down = IterD.Clone()
+				LineI = PreRet.Down
+			}else{
+				LineI.Right = IterD.Clone()
+				LineI.Right.Left = LineI
+				LineI = LineI.Right
+			}
+			IterD = IterD.Right
+		}
+		if PreRet.Down != null PreRet.Down.SetUp(PreRet)
+
+		return PreRet
+	}
 }

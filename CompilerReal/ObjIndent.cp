@@ -50,6 +50,12 @@ ObjIndent := class extend ObjConst
 			}
 		}
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjIndent(MyStr)
+		PreRet.Line = Line
+		return PreRet
+	}
 }
 ObjSuffix := class extend ObjConst
 {
@@ -86,5 +92,11 @@ ObjSuffix := class extend ObjConst
 				iter0 = iter0.Next
 			}
 		}
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjSuffix(MyStr)
+		PreRet.Line = Line
+		return PreRet
 	}
 }

@@ -54,12 +54,11 @@ UnboxParams := !(Object^ start) -> void
 
 			while lineIter != null
 			{
-				lineIter.Down = iter
-				//iter.SetUp(lineIter)
+				lineIter.Down = iter.Clone()
+				lineIter.Down.SetUp(lineIter)
 				lineIter = lineIter.Right
 			}
 			ReplaceNode(Curr,line)
-			iter.SetUp(line)
 
 			Curr = line
 		}

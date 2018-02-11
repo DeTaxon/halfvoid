@@ -23,7 +23,7 @@ ObjConst := class extend ObjResult
 
 ObjInt := class extend ObjConst
 {
-	MyInt := s64
+	MyInt := s32
 	"this" := !(int Value) -> void
 	{
 		MyInt = Value
@@ -49,6 +49,12 @@ ObjInt := class extend ObjConst
 		buf := char[256]
 		sprintf(buf,"%i",MyInt)
 		return buf.Copy()
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjInt(MyInt)
+		PreRet.Line = Line
+		return PreRet
 	}
 }
 ObjDouble := class extend ObjConst
@@ -84,6 +90,12 @@ ObjDouble := class extend ObjConst
 		sprintf(buf,"%f",MyDouble)
 		return buf.Copy()
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjDouble(MyDouble)
+		PreRet.Line = Line
+		return PreRet
+	}
 }
 
 ObjStr := class extend ObjConst
@@ -94,6 +106,12 @@ ObjStr := class extend ObjConst
 	{
 		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
+		MyTmpId = GetNewId()
+		ResultType = GetType("string")
+	}
+	"this" := !(int SId) -> void
+	{
+		MyStrId = SId
 		MyTmpId = GetNewId()
 		ResultType = GetType("string")
 	}
@@ -120,6 +138,12 @@ ObjStr := class extend ObjConst
 		ResultType.PrintType(f)
 		f << " %T" << MyTmpId	
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjStr(MyStrId)
+		PreRet.Line = Line
+		return PreRet
+	}
 }
 
 ObjSymbol := class extend ObjConst
@@ -138,6 +162,12 @@ ObjSymbol := class extend ObjConst
 	{
 		for s printf("->")
 		printf("symbol %s\n",MySymbol)
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjSymbol(MySymbol)
+		PreRet.Line = Line
+		return PreRet
 	}
 }
 
@@ -159,6 +189,12 @@ ObjCmd := class extend ObjConst
 		for s printf("->")
 		printf("cmd %s\n",MyStr)
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjCmd(MyStr)
+		PreRet.Line = Line
+		return PreRet
+	}
 }
 ObjKeyword := class extend ObjConst
 {
@@ -177,7 +213,10 @@ ObjKeyword := class extend ObjConst
 		for s printf("->")
 		printf("keyword %s\n",MyStr)
 	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjKeyword(MyStr)
+		PreRet.Line = Line
+		return PreRet
+	}
 }
-
-
-
