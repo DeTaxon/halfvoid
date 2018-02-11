@@ -189,15 +189,13 @@ BoxFuncBody := class extend BoxFunc
 	ItParams := FuncParam^^
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
-		IsSuffix = IsSuf
 		FuncName = SomeName
 		if SomeName == "main"
 		{
 			OutputName = "main"
 		}else
 		{
-			OutputName = new char[50]
-			sprintf(OutputName,"func%i",GetNewId())
+			OutputName = "func" + GetNewId()
 		}
 		IsInvalid = not ParseParams(inPars,inOutType)
 
@@ -223,6 +221,7 @@ BoxFuncBody := class extend BoxFunc
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
+		IsSuffix = IsSuf
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
