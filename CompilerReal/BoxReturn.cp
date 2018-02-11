@@ -15,10 +15,38 @@ BoxReturn := class extend Object
 		if pri == State_Syntax
 		{
 			WorkBag.Push(Down,State_Start)
+			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
 		{
 			Down.SetUp(this&)
+
+			iterF := Up
+
+			lazy := iterF != null
+			if lazy lazy = iterF.GetValue() != "!()"
+			while lazy
+			{
+				iterF = iterF.Up
+				lazy = iterF != null
+				if lazy lazy = iterF.GetValue() != "!()"
+			}
+			if iterF != null
+			{
+				asNeed := iterF->{BoxFunc^}
+				if Down.GetType() != null
+				{
+					PreType := asNeed.MyFuncType.RetType
+					if PreType == null
+					{
+						asNeed.SetReturnType(Down.GetType())
+					}
+				}else{
+					ErrorLog.Push("recursion detected\n")
+				}
+			}else{
+				ErrorLog.Push("impossible state\n")
+			}
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void

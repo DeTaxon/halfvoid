@@ -25,6 +25,15 @@ ObjIndent := class extend ObjConst
 		if pri == State_PreGetUse
 		{
 			WorkBag.Push(this&,State_GetUse)
+			ItFuncs := Queue.{ObjParam^}()
+			CollectParamsAllByName(MyStr,this&,ItFuncs)
+
+			iter0 := ItFuncs.Start
+			while iter0 != null
+			{
+				WorkBag.Push(iter0.Data,State_CheckTypes)
+				iter0 = iter0.Next
+			}
 		}
 		if pri == State_GetUse
 		{
@@ -34,7 +43,10 @@ ObjIndent := class extend ObjConst
 				ReplaceNode(this&,may)
 			}else
 			{
-				ErrorLog.Push("unknown indent "+ MyStr + "\n")
+				ItFuncs := Queue.{BoxFunc^}()
+				CollectFuncsByName(MyStr,this&,ItFuncs,false)
+				if ItFuncs.Size() == 0 
+					ErrorLog.Push("unknown indent "+ MyStr + "\n")
 			}
 		}
 	}

@@ -26,6 +26,23 @@ ParseParamCall := !(Object^ ob) -> Object^
 			{
 					return new ParamNaturalCall(dynCast.MyStr,may)
 			}
+		}else{	
+			ItPars := Queue.{ObjParam^}()
+			CollectParamsAllByName(dynCast.MyStr,ob,ItPars)
+			
+			iterF := ItPars.Start
+			while iterF != null
+			{
+				itType := iterF.Data.GetType()
+				if itType != null
+				{
+					if itType.GetType() == "function"
+					{
+						return new ParamFuncCall(dynCast.MyStr,iterF.Data)
+					}
+				}
+				iterF = iterF.Next
+			}
 		}
 	}
 	return null

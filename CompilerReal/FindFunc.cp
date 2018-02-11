@@ -1,28 +1,79 @@
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, bool IsSuffix) -> void
+InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found) -> void
 {
-	iterU := start
-	while iterU != null
-	{
-		if iterU.GetValue() == "i:=1"
+		if ii.GetValue() == "i:=1"
 		{
-			AsNeed := iterU->{ObjParam^}
+			AsNeed := ii->{ObjParam^}
 			if(AsNeed.GetName() == name)
 			{
-				iterW := iterU.Down
-				if iterW.GetValue() == "!()"
-				{
-					AsBoxFunc := iterW->{BoxFunc^}
-					if AsBoxFunc.IsSuffix == IsSuffix
-						found.Push(AsBoxFunc)
-				}
+				found.Push(AsNeed)	
 			}
 		}
+}
+
+CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
+{
+	iterU := start
+	LastPos := start
+	while iterU != null
+	{
+		InsertParam(name,iterU,found)
 		if iterU.Left != null 
 		{
 			iterU = iterU.Left 
 		}else {
 			iterU = iterU.Up
+
+			iterK := LastPos.Right
+			while iterK != null
+			{
+				InsertParam(name,iterK,found)
+				iterK = iterK.Right
+			}
+			LastPos = iterU
+		}
+	}
+}
+
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, bool IsSuffix) -> void
+{
+		if ii.GetValue() == "i:=1"
+		{
+			AsNeed := ii->{ObjParam^}
+			if(AsNeed.GetName() == name)
+			{
+				iterW := AsNeed.Down
+				if iterW.GetValue() == "!()"
+				{
+					AsBoxFunc := iterW->{BoxFunc^}
+					SomeBug := IsSuffix
+					if (AsBoxFunc.IsSuffix == SomeBug)
+						found.Push(AsBoxFunc)
+				}
+			}
+		}
+}
+
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, bool IsSuffix) -> void
+{
+	iterU := start
+	LastPos := start
+	while iterU != null
+	{
+		InsertFunc(name,iterU,found,IsSuffix)
+		if iterU.Left != null 
+		{
+			iterU = iterU.Left 
+		}else {
+			iterU = iterU.Up
+
+			iterK := LastPos.Right
+			while iterK != null
+			{
+				InsertFunc(name,iterK,found,IsSuffix)
+				iterK = iterK.Right
+			}
+			LastPos = iterU
 		}
 	}
 

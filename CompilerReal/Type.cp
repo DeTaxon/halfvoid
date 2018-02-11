@@ -95,6 +95,38 @@ ParseType := !(Object^ Node) -> Type^
 
 FuncTypeTable := Queue.{TypeFunc^}
 
+
+ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
+{
+	iterT := FuncTypeTable.Start
+
+	while iterT != null
+	{
+		if iterT.Data.IsVArgs == FType.IsVArgs
+			and iterT.Data.ParsCount == FType.ParsCount
+			and iterT.Data.RetType == retType
+		{
+			IsFound := true
+
+			for FType.ParsCount
+			{
+				if FType.Pars[it] != iterT.Data.Pars[it] IsFound = false 
+				if FType.ParsIsRef[it] != iterT.Data.ParsIsRef[it] IsFound = false 
+			}
+			if IsFound
+			{
+				return iterT.Data
+			}
+		}
+		iterT = iterT.Next
+	}
+	newTypeFunc := new TypeFunc(FType)
+	newTypeFunc.RetType = retType
+	FuncTypeTable.Push(newTypeFunc)
+	return newTypeFunc
+
+}
+
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bool IsVArgs) -> TypeFunc^
 {
 	iterT := FuncTypeTable.Start
@@ -200,6 +232,21 @@ TypeFunc := class extend Type
 	RetType := Type^
 	RetRef := bool
 
+	this := !(TypeFunc^ FType) -> void
+	{
+		ParsCount = FType.ParsCount
+
+		ParsIsRef = new bool[ParsCount]
+		for i : ParsCount ParsIsRef[i] = FType.ParsIsRef[i]
+
+		Pars = null
+		if ParsCount != 0 {
+			Pars := new Type^[ParsCount]
+			for ParsCount Pars[it] = FType.Pars[it]
+		}
+		RetRef = false
+		IsVArgs = FType.IsVArgs
+	}
 	this := !(Queue.{Type^} P,bool^ retsRef, bool IsV) -> void
 	{
 		ParsCount = P.Size()

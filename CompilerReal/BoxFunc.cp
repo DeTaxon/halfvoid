@@ -56,9 +56,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	if iter.GetValue() == "{}"
 	{
 		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf)
+		
 		return PreRet
 	}
-
 	return null
 }
 
@@ -147,12 +147,17 @@ BoxFunc := class extend Object
 		}
 		
 		RetTyp := ParseType(outObj)
-		if RetTyp == null return false
 
 		MyFuncType = GetFuncType(Typs,null->{bool^},RetTyp,false,IsVargsL)
 		return true
 	}
-
+	SetReturnType := !(Type^ toSet) -> void
+	{
+		if MyFuncType.RetType != toSet
+		{
+			MyFuncType = ExchangeFuncType(MyFuncType,toSet)
+		}			
+	}
 
 	GetValue := virtual !() -> string
 	{
@@ -199,16 +204,18 @@ BoxFuncBody := class extend BoxFunc
 		}
 		IsInvalid = not ParseParams(inPars,inOutType)
 
-		if MyFuncType.ParsCount != 0
+		if MyFuncType != null 
 		{
-			ItParams = new FuncParam[MyFuncType.ParsCount]
-
-			for MyFuncType.ParsCount
+			if MyFuncType.ParsCount != 0
 			{
-				ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
+				ItParams = new FuncParam[MyFuncType.ParsCount]
+
+				for MyFuncType.ParsCount
+				{
+					ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
+				}
 			}
 		}
-
 
 		if Stuf.GetValue() == "{}"
 		{
@@ -287,7 +294,18 @@ BoxFuncBody := class extend BoxFunc
 					iter = iter.Left
 				}
 			}
+			WorkBag.Push(this&,State_ErrorCheck)
 			
+		}
+		if pri == State_ErrorCheck
+		{
+			if MyFuncType == null
+			{
+				ErrorLog.Push("wut?\n")
+			}else{
+				if MyFuncType.RetType == null
+					SetReturnType(GetType("void"))
+			}
 		}
 	}
 }
