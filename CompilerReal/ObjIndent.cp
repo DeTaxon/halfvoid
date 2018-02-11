@@ -51,3 +51,40 @@ ObjIndent := class extend ObjConst
 		}
 	}
 }
+ObjSuffix := class extend ObjConst
+{
+	MyStr := char^
+	"this" := !(char^ str) -> void
+	{
+		Clean()
+		MyStr = str.Copy()
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~suffix"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("suffix %s\n",MyStr)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
+		if pri == State_PreGetUse
+		{
+			ItFuncs := Queue.{ObjParam^}()
+			CollectParamsAllByName(MyStr,this&,ItFuncs)
+
+			iter0 := ItFuncs.Start
+			while iter0 != null
+			{
+				WorkBag.Push(iter0.Data,State_CheckTypes)
+				iter0 = iter0.Next
+			}
+		}
+	}
+}

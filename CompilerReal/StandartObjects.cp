@@ -141,24 +141,6 @@ ObjSymbol := class extend ObjConst
 	}
 }
 
-ObjSuffix := class extend ObjConst
-{
-	MyStr := char^
-	"this" := !(char^ str) -> void
-	{
-		Clean()
-		MyStr = str.Copy()
-	}
-	GetValue := virtual !() -> char^
-	{
-		return "~suffix"
-	}
-	Print := virtual !(int s) -> void
-	{
-		for s printf("->")
-		printf("suffix %s\n",MyStr)
-	}
-}
 
 ObjCmd := class extend ObjConst
 {

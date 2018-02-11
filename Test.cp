@@ -6,14 +6,14 @@ free := !(void^ point) -> void declare
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("autodetect = %f\n", fun(6))
+	printf("autodetect = %f %f\n", fun(),7deg)
 	return 0
 }
-fun := !(int x)
+fun := !()
 {
 	return 7.0
 }
-"deg" := !(int x) -> double
+"deg" := !(int x)
 {
 	return x*3.14/180.0
 }
