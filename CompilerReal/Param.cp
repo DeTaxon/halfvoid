@@ -94,7 +94,14 @@ ObjParam := class extend Object
 					WorkBag.Push(this&,State_GetUse)
 				}else
 				{
-					WorkBag.Push(this&,State_PreGetUse)
+					asClass := ParseClass(Down)
+					if asClass != null
+					{
+						Down = asClass
+						asClass.Up = this&
+					}else{
+						WorkBag.Push(this&,State_PreGetUse)
+					}
 				}
 			}
 		}
