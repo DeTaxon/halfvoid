@@ -10,6 +10,6 @@ max := !(a,b)
 
 main := !(int argc, char^^ argv) -> int
 {
-	max(3,4)
+	printf("wit %i %f %i\n", max(3,4), max(1.4,1.66), max(6,1) )
 	return 0
 }

@@ -123,6 +123,14 @@ BoxTemplate := class extend BoxFunc
 
 		newFuncType := GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
 
+		iterJ := Down
+		while iterJ != null
+		{
+			asBoxFunc := iterJ->{BoxFunc^}
+			if asBoxFunc.MyFuncType == newFuncType return asBoxFunc
+			iterJ = iterJ.Right
+		}
+
 		newFunc := new BoxFuncBody(MyFuncParamNames,newFuncType,FuncName,CopyTree.Clone(),IsSuffix)
 		WorkBag.Push(newFunc,State_Start)
 
@@ -138,6 +146,15 @@ BoxTemplate := class extend BoxFunc
 			EndPos.Up = this&
 		}
 		return newFunc	
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		iterS := Down
+		while iterS != null
+		{
+			iterS.PrintGlobal(f)
+			iterS = iterS.Right
+		}
 	}
 
 	DoTheWork := virtual !(int pri) -> void
@@ -286,6 +303,7 @@ BoxFuncBody := class extend BoxFunc
 	ItParams := FuncParam^^
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
+		MyFuncParamNames = names
 		FuncName = SomeName
 		if SomeName == "main"
 		{
@@ -370,6 +388,7 @@ BoxFuncBody := class extend BoxFunc
 		f << "("
 		for i : MyFuncType.ParsCount
 		{
+			
 			if i > 0 f << " , "
 
 			MyFuncType.Pars[i].PrintType(f)

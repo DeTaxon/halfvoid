@@ -27,7 +27,7 @@ main := !(int argc,string[] argv) -> int
 
 	Ob.Print(0)
 	Ob.TestNodes()
-	
+
 	if ErrorLog.Empty()
 	{
 		fil := sfile("out2.ll","w")
