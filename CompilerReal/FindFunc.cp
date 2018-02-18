@@ -113,8 +113,9 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix)
 	
 	FoundC := Funcs.Size()
+	FoundT := Templs.Size()
 
-	if FoundC == 0 and Templs.Empty()
+	if FoundC + FoundT == 0
 	{
 		return null //TODO:
 	}
@@ -135,6 +136,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 	ComputePriors(Funcs,pars,Priors)
 	
 	for FoundC if Priors[it] == 0 return Funcs[it]
+	for FoundT if TemplsPrior[it] == 0 return Templs[it].GetFunc(pars)
 	for FoundC if Priors[it] == 1 return Funcs[it]
 	for FoundC if Priors[it] == 2 return Funcs[it]
 	for FoundC if Priors[it] == 3 return Funcs[it]

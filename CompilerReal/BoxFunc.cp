@@ -90,6 +90,7 @@ BoxTemplate := class extend BoxFunc
 	CopyParams := Object^
 	CopyRet := Object^
 	CopyTree := Object^
+	EndPos := Object^
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
 		FuncName = SomeName
@@ -108,7 +109,35 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetFunc := !(Queue.{Type^} pars) -> BoxFunc^
 	{
-		
+		outT := Queue.{Type^}()
+
+		for MyFuncType.ParsCount
+		{
+			if MyFuncType.Pars[it] == null
+			{
+				outT.Push(pars[it])
+			}else{
+				outT.Push(MyFuncType.Pars[it])
+			}
+		}
+
+		newFuncType := GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
+
+		newFunc := new BoxFuncBody(MyFuncParamNames,newFuncType,FuncName,CopyTree.Clone(),IsSuffix)
+		WorkBag.Push(newFunc,State_Start)
+
+		if EndPos == null
+		{
+			newFunc.Up = this&
+			Down = newFunc
+			EndPos = Down
+		}else{
+			EndPos.Right = newFunc
+			newFunc.Left = EndPos
+			EndPos = newFunc
+			EndPos.Up = this&
+		}
+		return newFunc	
 	}
 
 	DoTheWork := virtual !(int pri) -> void
@@ -255,6 +284,44 @@ BoxFuncDeclare := class  extend BoxFunc
 BoxFuncBody := class extend BoxFunc
 {
 	ItParams := FuncParam^^
+	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf) -> void
+	{
+		FuncName = SomeName
+		if SomeName == "main"
+		{
+			OutputName = "main"
+		}else
+		{
+			OutputName = "func" + GetNewId()
+		}
+		MyFuncType = fType
+
+		if MyFuncType != null 
+		{
+			if MyFuncType.ParsCount != 0
+			{
+				ItParams = new FuncParam[MyFuncType.ParsCount]
+
+				for MyFuncType.ParsCount
+				{
+					ItParams[it] = new FuncParam(names[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
+				}
+			}
+		}
+
+		if Stuf.GetValue() == "{}"
+		{
+			Down = new BoxBlock()
+			Down.Up = this&
+			Down.Down = Stuf.Down
+			Stuf.Down.SetUp(Down)
+
+		}else{
+			ErrorLog.Push("CompilerError: function with weird body\n")
+		}
+		if IsInvalid ErrorLog.Push("can not parse function header\n")
+		IsSuffix = IsSuf
+	}
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
 		FuncName = SomeName
