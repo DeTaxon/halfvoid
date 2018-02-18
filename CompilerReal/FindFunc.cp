@@ -186,6 +186,7 @@ ComputePriorFunc := !(BoxFunc^ Fun, Queue.{Type^} pars) -> int
 
 TypeCmp := !(Type^ inType, Type^ funcType) -> int
 {
+	if funcType == null return 0
 	if inType == funcType return 0
 
 	if inType == GetType("float") and funcType == GetType("double") return 1

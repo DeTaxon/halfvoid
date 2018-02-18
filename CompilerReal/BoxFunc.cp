@@ -100,10 +100,15 @@ BoxTemplate := class extend BoxFunc
 		if Stuf != null CopyTree = Stuf.Clone()
 
 		IsSuffix = IsSuf
+		ParseParams(CopyParams,CopyRet)
 	}
 	GetValue := virtual !() -> string
 	{
 		return "d{}()"
+	}
+	GetFunc := !(Queue.{Type^} pars) -> BoxFunc^
+	{
+		
 	}
 
 	DoTheWork := virtual !(int pri) -> void
