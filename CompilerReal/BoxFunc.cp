@@ -55,6 +55,10 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
+		if IsTemplate(ParamsObj)
+		{
+			return null
+		}
 		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf)
 		
 		return PreRet
@@ -62,6 +66,24 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	return null
 }
 
+IsTemplate := !(Object^ sk) -> bool
+{
+	if sk == null return false
+	iter := sk.Down
+
+	Counter := 0
+
+	while iter != null
+	{
+		if iter.GetValue() == ","
+		{
+			if Counter == 1 return true
+			Counter = 0
+		} else Counter += 1
+		iter = iter.Right
+	}
+	return false
+}
 
 BoxFunc := class extend Object
 {

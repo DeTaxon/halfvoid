@@ -2,17 +2,14 @@ printf := !(char^ str, ...) -> int declare
 calloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare
 
-pos := class
+max := !(a,b)
 {
-	x,y,z := double
+	if a > b return a
+	return b
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("autodetect = %f %f\n", 7deg,7deg)
+	max(3,4)
 	return 0
-}
-"deg" := !(int x)
-{
-	return x*3.14/180.0
 }
