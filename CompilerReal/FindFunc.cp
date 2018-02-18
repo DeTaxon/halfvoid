@@ -35,7 +35,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found)
 	}
 }
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, bool IsSuffix) -> void
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
 {
 		if ii.GetValue() == "i:=1"
 		{
@@ -50,17 +50,24 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, bool IsSuffix)
 					if (AsBoxFunc.IsSuffix == SomeBug)
 						found.Push(AsBoxFunc)
 				}
+				if iterW.GetValue() == "d{}()"
+				{
+					AsBoxFunc2 :=  iterW->{BoxTemplate^}
+					SomeBug := IsSuffix
+						if (AsBoxFunc2.IsSuffix == SomeBug)
+							templates.Push(AsBoxFunc2)
+				}
 			}
 		}
 }
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, bool IsSuffix) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
 {
 	iterU := start
 	LastPos := start
 	while iterU != null
 	{
-		InsertFunc(name,iterU,found,IsSuffix)
+		InsertFunc(name,iterU,found,templates,IsSuffix)
 		if iterU.Left != null 
 		{
 			iterU = iterU.Left 
@@ -70,7 +77,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, bool
 			iterK := LastPos.Right
 			while iterK != null
 			{
-				InsertFunc(name,iterK,found,IsSuffix)
+				InsertFunc(name,iterK,found,templates,IsSuffix)
 				iterK = iterK.Right
 			}
 			LastPos = iterU
@@ -102,16 +109,21 @@ FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> BoxFunc^
 {
 	Funcs := Queue.{BoxFunc^}()
-	CollectFuncsByName(name,start,Funcs,IsSuffix)
+	Templs := Queue.{BoxTemplate^}()
+	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix)
 	
 	FoundC := Funcs.Size()
 
-	if FoundC == 0 
+	if FoundC == 0 and Templs.Empty()
 	{
 		return null //TODO:
 	}
 
-	Priors := new int[FoundC]
+	Priors := int^
+	if FoundC != 0 Priors = new int[FoundC] else Priors = null
+
+	TemplsPrior := int^
+	if not Templs.Empty() TemplsPrior = new int[Templs.Size()] else TemplsPrior = null
 
 	//for FoundC Priors[it] = 255
 

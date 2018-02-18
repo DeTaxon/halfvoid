@@ -44,7 +44,8 @@ ObjIndent := class extend ObjConst
 			}else
 			{
 				ItFuncs := Queue.{BoxFunc^}()
-				CollectFuncsByName(MyStr,this&,ItFuncs,false)
+				ItTempls := Queue.{BoxTemplate^}()
+				CollectFuncsByName(MyStr,this&,ItFuncs,ItTempls,false)
 				if ItFuncs.Size() == 0 
 					ErrorLog.Push("unknown indent "+ MyStr + "\n")
 			}

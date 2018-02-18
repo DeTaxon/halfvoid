@@ -57,7 +57,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return null
+			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf)
 		}
 		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf)
 		
@@ -84,6 +84,34 @@ IsTemplate := !(Object^ sk) -> bool
 	}
 	return false
 }
+
+BoxTemplate := class extend BoxFunc
+{
+	CopyParams := Object^
+	CopyRet := Object^
+	CopyTree := Object^
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
+	{
+		FuncName = SomeName
+
+		
+		if inPars != null CopyParams = inPars.Clone()
+		if inOutType != null CopyRet = inOutType.Clone()
+		if Stuf != null CopyTree = Stuf.Clone()
+
+		IsSuffix = IsSuf
+	}
+	GetValue := virtual !() -> string
+	{
+		return "d{}()"
+	}
+
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+
 
 BoxFunc := class extend Object
 {
@@ -152,6 +180,14 @@ BoxFunc := class extend Object
 				if Pars.Size() == 1
 				{
 					if Pars[0].GetValue() == "..." IsVargsL = true
+					else
+					{
+						if Pars[0].GetValue() == "~ind"
+						{
+							Typs.Push(null->{Type^})
+							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
+						}
+					}
 					Pars.Clean()
 				}
 				Stuff.Pop()
