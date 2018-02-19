@@ -133,6 +133,8 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 		for FoundC if Funcs[it].MyFuncType.ParsCount return Funcs[it]
 	}
 
+	for FoundT TemplsPrior[it] = Templs[it].GetPriority(pars)
+
 	ComputePriors(Funcs,pars,Priors)
 	
 	for FoundC if Priors[it] == 0 return Funcs[it]

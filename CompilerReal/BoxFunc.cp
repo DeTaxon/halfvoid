@@ -98,7 +98,6 @@ BoxTemplate := class extend BoxFunc
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
 		FuncName = SomeName
-
 		
 		if inPars != null CopyParams = inPars.Clone()
 		if inOutType != null CopyRet = inOutType.Clone()
@@ -110,6 +109,32 @@ BoxTemplate := class extend BoxFunc
 	GetValue := virtual !() -> string
 	{
 		return "d{}()"
+	}
+	GetPriority := !(Queue.{Type^} pars) -> int
+	{
+		parsCount := pars.Size()
+		if parsCount == MyFuncType.ParsCount or (MyFuncType.IsVArgs and parsCount >= MyFuncType.ParsCount)
+		{
+			IsCorrect := true
+			iterT := pars.Start
+
+			MaxPrior := 0
+
+			for i : MyFuncType.ParsCount
+			{
+				SomePrior := 0
+				if MyFuncType.ParsIsRef[i] 
+				{
+					if iterT.Data != MyFuncType.Pars[i] SomePrior = 255
+				}else {
+					SomePrior = TypeCmp(iterT.Data, MyFuncType.Pars[i])
+				}
+				if MaxPrior < SomePrior MaxPrior = SomePrior
+				iterT = iterT.Next
+			}
+			return MaxPrior
+		}
+		return 255	
 	}
 	GetFunc := !(Queue.{Type^} pars) -> BoxFunc^
 	{
