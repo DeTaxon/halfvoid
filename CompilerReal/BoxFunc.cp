@@ -90,7 +90,11 @@ BoxTemplate := class extend BoxFunc
 	CopyParams := Object^
 	CopyRet := Object^
 	CopyTree := Object^
+
 	EndPos := Object^
+	FuncsType := Queue.{TypeFunc^}
+
+
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
 	{
 		FuncName = SomeName
@@ -123,15 +127,22 @@ BoxTemplate := class extend BoxFunc
 
 		newFuncType := GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
 
-		iterJ := Down
+		iterJ := FuncsType.Start
+		somePos := 0
 		while iterJ != null
 		{
-			asBoxFunc := iterJ->{BoxFunc^}
-			if asBoxFunc.MyFuncType == newFuncType return asBoxFunc
-			iterJ = iterJ.Right
+			if iterJ.Data == newFuncType 
+			{
+				inDown := Down
+				for somePos inDown = inDown.Right
+				return inDown->{BoxFunc^}
+			}
+			iterJ = iterJ.Next
+			somePos += 1
 		}
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,newFuncType,FuncName,CopyTree.Clone(),IsSuffix)
+		FuncsType.Push(newFuncType)
 		WorkBag.Push(newFunc,State_Start)
 
 		if EndPos == null
