@@ -10,3 +10,4 @@ LexMachine := Machine^
 ErrorLog := Queue.{string}
 
 BuiltInFuncs := Queue.{BoxFunc^}
+BuiltInTemplates := Queue.{BoxTemplate^}

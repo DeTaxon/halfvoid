@@ -41,9 +41,13 @@ Type := class {
 		AsArray.Push(NewArr)
 		return NewArr
 	}
-
+	GetName := virtual !() -> string
+	{
+		return ""
+	}
 	PrintType := virtual !(sfile f) -> void
 	{
+		f << GetName()
 	}
 
 }
@@ -198,9 +202,9 @@ TypeStandart := class extend Type{
 	{
 		return "standart"
 	}
-	PrintType := virtual !(sfile f) -> void
+	GetName := virtual !() -> string
 	{
-		f << IRName
+		return IRName
 	}
 }
 
@@ -215,11 +219,9 @@ TypePoint := class extend Type
 	{
 		return "point"
 	}
-	PrintType := virtual !(sfile f) -> void
+	GetName := virtual !() -> string
 	{
-		
-		Base.PrintType(f)
-		f << "*"
+		return Base.GetName() + "*"
 	}
 }
 
@@ -272,25 +274,35 @@ TypeFunc := class extend Type
 	{
 		return "function"
 	}
-	PrintType := !(sfile f) -> void
+	GetName := virtual !() -> string
 	{
-		RetType.PrintType(f)
-		PrintSkobs(f)
+		return RetType.GetName() + GetSkobs() 
 	}
-	PrintSkobs := !(sfile f) -> void
+	GetSkobs := !() -> string
 	{
-		f << "("
+		ToRet := string
+		ToRet = ""
+		ToRet = ToRet + "("
 		for i : ParsCount
 		{
-			if i != 0 f << " , "
-			Pars[i].PrintType(f)
+			if i != 0 ToRet = ToRet +  " , "
+			ToRet = ToRet + Pars[i].GetName()
 		}
 		if IsVArgs
 		{
-			if ParsCount != 0 f << " , "
-			f << "..."
+			if ParsCount != 0 ToRet = ToRet +  " , "
+			ToRet = ToRet + "..."
 		}
-		f << ")"
+		ToRet = ToRet + ")"
+		return ToRet
+	}
+	PrintSkobs := virtual !(sfile f) -> void
+	{
+		f << GetSkobs()
+	}
+	PrintType := virtual !(sfile f) -> void
+	{
+		f << GetName()
 	}
 }
 
@@ -307,11 +319,9 @@ TypeArr := class extend Type
 	{
 		return "arr"
 	}
-	PrintType := virtual !(sfile f) -> void
+	GetName := virtual !() -> string
 	{
-		f << "[" << Size << " x "
-		Base.PrintType(f)
-		f << "]"
+		return "[" + Size + " x " + Base.GetName() + "]"
 	}
 }
 

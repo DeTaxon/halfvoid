@@ -42,8 +42,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			oper := iter.GetValue()
 			if iter.Right == null
 			{
-				//TODO: x++
-				return null
+				//TODO: x++ x^ x[]
+				iter = iter.Left
+				PopOutNode(iter.Right)
+				return OneCall(oper,iter.Up)
 			}else
 			{
 				iter = iter.Right

@@ -82,8 +82,38 @@ BuiltInFuncBinar := class extend BuiltInFunc
 	}
 }
 
+BuiltInTemplatePoint := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "^"
+		OutputName = "error"
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		if pars.Size() != 1 return 255
+		if pars[0].GetType() != "point" return 255
+		return 0
+	}
+	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	{
+		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base, "#0 = load " + pars[0].Base.GetName() + "," + pars[0].GetName() + " #1\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+
+AddTemplates := !() -> void
+{
+	BuiltInTemplates.Push(new BuiltInTemplatePoint())
+}
+
 CreateBuiltIns := !() -> void
 {
+	AddTemplates()
+
 	BoolT := GetType("bool")
 	VoidT := GetType("void")
 	VoidP := VoidT.GetPoint()

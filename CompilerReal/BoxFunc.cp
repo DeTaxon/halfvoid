@@ -110,7 +110,7 @@ BoxTemplate := class extend BoxFunc
 	{
 		return "d{}()"
 	}
-	GetPriority := !(Queue.{Type^} pars) -> int
+	GetPriority :=virtual !(Queue.{Type^} pars) -> int
 	{
 		parsCount := pars.Size()
 		if parsCount == MyFuncType.ParsCount or (MyFuncType.IsVArgs and parsCount >= MyFuncType.ParsCount)
@@ -136,7 +136,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		return 255	
 	}
-	GetFunc := !(Queue.{Type^} pars) -> BoxFunc^
+	GetFunc := virtual !(Queue.{Type^} pars) -> BoxFunc^
 	{
 		outT := Queue.{Type^}()
 

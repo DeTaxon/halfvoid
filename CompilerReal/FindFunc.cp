@@ -94,6 +94,16 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		}
 		iterQ = iterQ.Next
 	}
+
+	iterH := BuiltInTemplates.Start
+	while iterH != null
+	{
+		if iterH.Data.FuncName == name
+		{
+			templates.Push(iterH.Data)
+		}
+		iterH = iterH.Next
+	}
 }
 
 
@@ -124,6 +134,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 	if FoundC != 0 Priors = new int[FoundC] else Priors = null
 
 	TemplsPrior := int^
+	TemplsPrior = null
 	if not Templs.Empty() TemplsPrior = new int[Templs.Size()] else TemplsPrior = null
 
 	//for FoundC Priors[it] = 255
@@ -133,7 +144,10 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 		for FoundC if Funcs[it].MyFuncType.ParsCount return Funcs[it]
 	}
 
-	for FoundT TemplsPrior[it] = Templs[it].GetPriority(pars)
+	for FoundT
+	{
+		TemplsPrior[it] = Templs[it].GetPriority(pars)
+	}
 
 	ComputePriors(Funcs,pars,Priors)
 	
