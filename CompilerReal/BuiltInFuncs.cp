@@ -46,7 +46,15 @@ BuiltInSuffix := class extend BuiltInFunc
 
 BuiltInFuncUno := class extend BuiltInFunc
 {
+	this := !(string Name, Type^ l, bool lRef,Type^ retV,bool RRetRef, string code) -> void
+	{
+		Init(Name,l,lRef,retV,RRetRef,code)
+	}
 	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
+	{
+		Init(Name,l,lRef,retV,false,code)
+	}
+	Init := !(string Name, Type^ l, bool lRef,Type^ retV, bool RRetRef, string code) -> void
 	{
 		FuncName = Name
 		OutputName = Name
@@ -57,7 +65,7 @@ BuiltInFuncUno := class extend BuiltInFunc
 
 		IsRefs := bool[1]
 		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
 
 		CheckIsSelf()
 	}
@@ -97,7 +105,36 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	}
 	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base, "#0 = load " + pars[0].Base.GetName() + "," + pars[0].GetName() + " #1\n")
+		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true, "#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 0\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+BuiltInTemplateSet := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "="
+		OutputName = "error"
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" return 255
+		return TypeCmp(pars[0],(GetType("void").GetPoint()))
+	}
+	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	{
+		if pars[0].GetType() == "point" and pars[0] != pars[1] 
+		{
+			OT :=(GetType("void").GetPoint()) 
+			PreRet := new BuiltInFuncBinar("=",pars[0],true,OT,false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
+													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
+			return PreRet
+		}
+		return new BuiltInFuncBinar("=",pars[0],true,pars[0],false,GetType("void"), "store " + pars[0].GetName() + " #2, " + pars[0].GetName() +"* #1\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -108,6 +145,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 AddTemplates := !() -> void
 {
 	BuiltInTemplates.Push(new BuiltInTemplatePoint())
+	BuiltInTemplates.Push(new BuiltInTemplateSet())
 }
 
 CreateBuiltIns := !() -> void

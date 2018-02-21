@@ -138,7 +138,8 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 	while iterT != null
 	{
 		SomeBug := IsVArgs
-		if iterT.Data.IsVArgs == SomeBug
+		SomeBug2 := retRef
+		if iterT.Data.IsVArgs == SomeBug and SomeBug2 == iterT.Data.RetRef
 		{
 			IsFound := true
 			if iterT.Data.ParsCount == lin.Size() //VArg?
@@ -169,6 +170,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 
 	newTypeFunc := new TypeFunc(lin,IsRefArr,IsVArgs)
 	newTypeFunc.RetType = retType
+	newTypeFunc.RetRef = retRef
 	FuncTypeTable.Push(newTypeFunc)
 	return newTypeFunc
 }

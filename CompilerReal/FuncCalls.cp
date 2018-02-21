@@ -129,10 +129,68 @@ MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> NaturalCall^
 	return new NaturalCall(func,pars)
 }
 
-NaturalCall := class extend ObjResult
+SomeFuncCall := class extend ObjResult
 {
 	RetId := int
 	ToCall := BoxFunc^
+
+	UseCall := virtual !(sfile f) -> void
+	{
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		UseCall(f)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		UseCall(f)
+		if ToCall.MyFuncType.RetRef
+		{
+			f << "%TE" << RetId << " = load "
+			f << ToCall.MyFuncType.RetType.GetName()
+			f << " , "
+			f << ToCall.MyFuncType.RetType.GetPoint().GetName()
+			f << " %T" <<RetId << "\n"
+		}
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		f << " %TE" << RetId
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ToCall.MyFuncType.RetType.PrintType(f)
+		if ToCall.MyFuncType.RetRef
+		{
+			f << " %TE" << RetId
+		}else{
+			f << " %T" << RetId
+		}
+	}
+	GetPointName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
+	GetName := virtual !() -> string
+	{
+		if ToCall.MyFuncType.RetRef
+		{
+			return "%TE" + RetId
+		}
+		return "%T" + RetId
+	}
+	GetOutputName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
+	GetValue := virtual !() -> string
+	{
+		return "d()"
+	}
+}
+
+NaturalCall := class extend SomeFuncCall
+{
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		Down = Pars
@@ -210,7 +268,7 @@ NaturalCall := class extend ObjResult
 	{
 		PrintPre(f)
 	}
-	PrintPre := virtual !(sfile f) -> void
+	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
@@ -227,19 +285,6 @@ NaturalCall := class extend ObjResult
 		f << "("
 		PrintParamUses(f)
 		f << ")\n"
-	}
-	PrintUse := virtual !(sfile f) -> void
-	{
-		ToCall.MyFuncType.RetType.PrintType(f)
-		f << " %T" << RetId
-	}
-	GetName := virtual !() -> string
-	{
-		return "%T" + RetId
-	}
-	GetValue := virtual !() -> string
-	{
-		return "d()"
 	}
 	GetType := virtual !() -> Type^
 	{
@@ -276,7 +321,7 @@ AssemblerCall := class extend NaturalCall
 	{
 		PrintPre(f)
 	}
-	PrintPre := virtual !(sfile f) -> void
+	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
 		FType := ToCall.MyFuncType
@@ -308,7 +353,7 @@ AssemblerCall := class extend NaturalCall
 
 					if num == 0
 					{
-						f << GetName()
+						f << GetOutputName()
 					}else{
 						num -= 1
 						miniIter := Down
@@ -347,17 +392,6 @@ AssemblerCall := class extend NaturalCall
 		}
 
 	}
-	//PrintUse := virtual !(sfile f) -> void
-	//{
-	//	ToCall.MyFuncType.RetType.PrintType(f)
-	//	f << " %T" << RetId
-	//}
-	//GetName := virtual !() -> string
-	//{
-	//	b := char[256]
-	//	sprintf(b,"%T%i",RetId)
-	//	return b.Copy()
-	//}
 }
 
 //PointCall
