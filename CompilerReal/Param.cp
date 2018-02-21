@@ -80,6 +80,7 @@ ObjParam := class extend Object
 				}else
 				{
 					Down = new LocalParam(MaybeType,allcId)
+					Down.SetUp(this&)
 				}
 			}else
 			{
@@ -107,8 +108,11 @@ ObjParam := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			WorkBag.Push(Down,State_Start)
-			WorkBag.Push(this&,State_GetUse)
+			if Down.GetValue() != "i:=2"
+			{
+				WorkBag.Push(Down,State_Start)
+				WorkBag.Push(this&,State_GetUse)
+			}
 		}
 		if pri == State_GetUse
 		{
@@ -117,16 +121,19 @@ ObjParam := class extend Object
 				AskedGetUse = true
 				WorkBag.Push(Down,State_Start)
 			}else{
-				ObjType = Down.GetType()
-				if ObjType != null
+				if Down.GetValue() != "i:=2"
 				{
-					Temp := Down
-					allcId := GetAlloc(this&,ObjType)
-					Down = new LocalParam(ObjType,allcId)
-					Down.Right = Temp
-					Temp.Left = Down
-					Down.SetUp(this&)
-					IsSetValue = true
+					ObjType = Down.GetType()
+					if ObjType != null
+					{
+						Temp := Down
+						allcId := GetAlloc(this&,ObjType)
+						Down = new LocalParam(ObjType,allcId)
+						Down.Right = Temp
+						Temp.Left = Down
+						Down.SetUp(this&)
+						IsSetValue = true
+					}
 				}
 			}
 		}
