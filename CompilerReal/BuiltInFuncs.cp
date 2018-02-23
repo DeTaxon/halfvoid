@@ -130,7 +130,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
 			OT :=(GetType("void").GetPoint()) 
-			PreRet := new BuiltInFuncBinar("=",pars[0],true,OT,false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
+			PreRet := new BuiltInFuncBinar("=",pars[0],true,VoidPType,false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
 													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 			return PreRet
 		}
