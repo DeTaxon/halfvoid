@@ -21,6 +21,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				return null //TODO: operator()
 			}
 		}
+		if iter.GetValue() == "[]"
+		{
+			iter = iter.Left
+			iter.Right = iter.Right.Down
+			iter.Right.Left = iter
+			iter.SetUp(iter.Up)
+			return OneCall("[]",iter.Up)
+		}
 		if iter.GetValue() == "~suffix"
 		{
 			if iter.Left.GetType() == null return null

@@ -105,7 +105,32 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	}
 	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true, "#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 0\n")
+		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true, 
+		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 0\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+BuiltInTemplatePointArr := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "[]"
+		OutputName = "error"
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" return 255
+		if pars[1].GetType() != "standart" return 255
+		return 0
+	}
+	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	{
+		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true,
+		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 #2\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -144,6 +169,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 AddTemplates := !() -> void
 {
 	BuiltInTemplates.Push(new BuiltInTemplatePoint())
+	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
 }
 
