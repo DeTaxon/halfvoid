@@ -12,4 +12,6 @@ ErrorLog := Queue.{string}
 BuiltInFuncs := Queue.{BoxFunc^}
 BuiltInTemplates := Queue.{BoxTemplate^}
 
+GlobalUnroll := BuiltInTemplateUnroll^
+
 VoidPType := Type^

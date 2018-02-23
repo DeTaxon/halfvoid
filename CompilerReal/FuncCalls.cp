@@ -45,6 +45,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			Pars.Clean()
 			return MakeSimpleCall(Func,iter) 
 		}
+		if iter.GetValue() == "."
+		{
+			if iter.Right.GetValue() == "~ind"
+			{
+				asIndent := (iter.Right)->{ObjIndent^} 
+				asName := asIndent.MyStr
+				pars := Queue.{Type^}
+				pars.Start = null
+				pars.Push(iter.Left.GetType())
+				return GlobalUnroll.GetFunc(pars,asName)
+			}
+		}
 		if IsOper(iter.GetValue())
 		{
 			oper := iter.GetValue()

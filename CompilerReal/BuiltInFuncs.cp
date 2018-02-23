@@ -165,12 +165,63 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateUnroll := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "."
+		OutputName = "error"
+	}
+	//GetPriority := virtual !(Queue.{Type^} pars) -> int
+	//{
+	//	if pars.Size() != 2 return 255
+	//	if pars[0].GetType() != "point" return 255
+	//	if pars[1].GetType() != "standart" return 255
+	//	return 0
+	//}
+	GetFunc := virtual  !(Queue.{Type^} pars,string Name) -> BoxFunc^
+	{
+		AsClass := BoxClass^
+
+		if pars[0].GetType() == "point"
+		{
+			AsClass = pars[0].Base
+		}else{
+			AsClass = pars[0]
+		}
+		pos := -1
+		for AsClass.Params.Size()
+		{
+			if AsClass.Params[it].ItName == Name
+			{
+				pos = it
+			}
+		}
+		if pos == -1 return null
+
+		if pars[0].GetType() == "point"
+		{
+			return new BuiltInFuncUno(".",pars[0],false,AsClass.Params[pos].ResultType,true,
+			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetName() + " #1, i32 0, i32 "+pos+"\n")
+		}else{
+			return new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
+			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetPoint().GetName() + " #1, i32 0, i32 "+pos+"\n")
+		}
+		return null
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 
 AddTemplates := !() -> void
 {
 	BuiltInTemplates.Push(new BuiltInTemplatePoint())
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
+
+	GlobalUnroll = new BuiltInTemplateUnroll
 }
 
 CreateBuiltIns := !() -> void

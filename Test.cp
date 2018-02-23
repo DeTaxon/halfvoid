@@ -11,5 +11,6 @@ ve := class
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
+	waw.x = 0
 	return 0
 }
