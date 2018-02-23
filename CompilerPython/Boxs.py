@@ -567,7 +567,10 @@ class ParamChain:
 		if self.Type == None:
 			self.Extra = GetUse(self.PreExtra)
 			if self.Extra == None:
-				raise ValueError("Unknown Object")
+				if hasattr(self,"Line"):
+					raise ValueError("Unknown Object at {} in {}".format(self.Line,self.InFile) )
+				else:
+					raise ValueError("Unknown Object" )
         if self.Extra != None and not self.HaveConstr:
             self.Extra.Check()
             self.Type = self.Extra.Type

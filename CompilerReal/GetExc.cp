@@ -11,12 +11,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 	printf("here %s %s\n", itemType.GetType(), ToType.GetType())
 	if itemType.GetType() == "point" and ToType.GetType() == "point"
 	{
-		if itemType == VPT
-		{
-			return GetExcFromVoidP(SomeBugEnd)
-		}else{
-			return GetExcToVoidP(SomeBugEnd)
-		}
+		return GetExcPointers(itemType,ToType)
 	}
 
 	iterB := BuiltInFuncs.Start
@@ -35,31 +30,18 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 	return null
 }
 
-ExcToVoid := Map.{Type^,BoxFunc^}
-ExcFromVoid := Map.{Type^,BoxFunc^}
+DoubleType := type pair.{Type^,Type^}
 
-GetExcToVoidP := !(Type^ toCh) -> BoxFunc^
+ExcPointers := Map.{DoubleType,BoxFunc^}
+
+GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 {
-	if ExcToVoid.Exist(toCh)
-		return ExcToVoid[toCh]
-	
-	VT := GetType("void")
-	VPT := VT.GetPoint()
+	//AsPair := pair.{Type^,Type^}
+	//if ExcPointers.Exist(AsPair)
+	//	return ExcPointers[AsPair]
 
-	toAdd := new BuiltInFuncUno("->{}",toCh,false,VPT,"#0 = bitcast " + toCh.GetName() + " #1 to i8*\n")
-	ExcToVoid[toCh] = toAdd
-	return toAdd
-}
-GetExcFromVoidP := !(Type^ toCh) -> BoxFunc^
-{
-	if ExcFromVoid.Exist(toCh)
-		return ExcToVoid[toCh]
-	
-	VT := GetType("void")
-	VPT := VT.GetPoint()
-
-	toAdd := new BuiltInFuncUno("->{}",toCh,false,VPT,"#0 = bitcast i8* #1 to "+toCh.GetName()+"\n")
-	ExcToVoid[toCh] = toAdd
+	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast " + from.GetName() + " #1 to " + to.GetName()+"\n")
+	//ExcPointers[AsPair] = toAdd
 	return toAdd
 }
 
