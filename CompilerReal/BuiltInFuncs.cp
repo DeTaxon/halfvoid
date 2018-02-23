@@ -123,13 +123,12 @@ BuiltInTemplateSet := class extend BoxTemplate
 	{
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" return 255
-		return TypeCmp(pars[0],(GetType("void").GetPoint()))
+		return TypeCmp(pars[0],VoidPType)
 	}
 	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
 	{
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
-			OT :=(GetType("void").GetPoint()) 
 			PreRet := new BuiltInFuncBinar("=",pars[0],true,VoidPType,false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
 													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 			return PreRet

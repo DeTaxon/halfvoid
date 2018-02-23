@@ -20,8 +20,9 @@ Type := class {
 		return ""
 	}
 
-	GetPoint := !() -> Type^
+	GetPoint := virtual !() -> Type^
 	{
+		////printf("called %p %p\n",this&, AsPoint)
 		if AsPoint == null{
 			AsPoint = new TypePoint(this&)
 		}
@@ -226,6 +227,17 @@ TypePoint := class extend Type
 		return Base.GetName() + "*"
 	}
 }
+TypePointVoidP := class extend TypePoint
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+	}
+	GetName := virtual !() -> string
+	{
+		return "i8*"
+	}
+}
 
 TypeFunc := class extend Type
 {
@@ -357,8 +369,10 @@ CreateStandartTypes := !() -> void
 	TypeTable[11] = new TypeStandart("void")
 
 	TypeTable[12] = TypeTable[0].GetPoint() // char*
-	TypeTable[11].AsPoint = TypeTable[12] // void*
-	VoidPType = TypeTable[12]
+
+	VoidPType = new TypePointVoidP(TypeTable[11]) // void*
+	TypeTable[11].AsPoint = VoidPType
+
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

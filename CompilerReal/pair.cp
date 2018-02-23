@@ -1,4 +1,4 @@
-pair := class !{T1,T2}
+Pair := class !{T1,T2}
 {
 	first := T1
 	second := T2
@@ -12,12 +12,12 @@ pair := class !{T1,T2}
 		second = t2
 	}
 
-	"==" := !(pair.{T1,T2} toCmp) -> bool
+	"==" := !(Pair.{T1,T2} toCmp) -> bool
 	{
 		if first == toCmp.first return true
 		return second == toCmp.second
 	}
-	"=" := !(pair.{T1.T2} toSet) -> bool
+	"=" := !(Pair.{T1.T2} toSet) -> bool
 	{
 		first = toSet.first
 		second = toSet.second

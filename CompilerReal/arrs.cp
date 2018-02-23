@@ -186,6 +186,10 @@ Map := class !{TKey,TValue}
 		Start = new DoubleNode.{TKey,TValue}(look,Start)
 		return Start.Value
 	}
+	"=" := !(Map.{TKey,TValue} toSet) ->void
+	{
+		Start = toSet.Start
+	}
 	Set := !(TKey k, TValue v) -> void
 	{
 		iter := Start
@@ -220,50 +224,6 @@ Map := class !{TKey,TValue}
 			iter = Temp
 		}
 	}
-}
-
-MapCont := class !{TKey,TValue}
-{
-	Start := DoubleNode.{TKey,TValue}^
-	Cont := Stack.{int}
-
-	this := !() -> void
-	{
-		Start = null
-		Cont.Start = null
-	}
 	
-	Find := !(TKey look) -> TValue^
-	{
-		iter := Start
-		while iter
-		{
-			if iter.Key == look 
-			{
-				return iter.Value&
-			}
-			iter = iter.Next
-		}
-		return null
-	}
-	Push := !(TKey key, TValue value) -> void
-	{
-		Start = new DoubleNode.{TKey,TValue}(key,value,Start)
-		Cont[0] += 1
-	}
-	PushContext := !() -> void
-	{
-		Cont.Push(0)
-	}
-	PopContext := !() -> void
-	{
-		ToPop := Cont.Pop()
-		for ToPop
-		{
-			itr := Start.Next
-			free(Start)
-			Start = itr
-		}
-	}
-
 }
+

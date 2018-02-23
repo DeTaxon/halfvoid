@@ -121,7 +121,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix)
-	
+
 	FoundC := Funcs.Size()
 	FoundT := Templs.Size()
 
@@ -159,6 +159,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 	for FoundT if TemplsPrior[it] == 2 return Templs[it].GetFunc(pars)
 	for FoundC if Priors[it] == 3 return Funcs[it]
 	for FoundT if TemplsPrior[it] == 3 return Templs[it].GetFunc(pars)
+
 
 	return null
 }
@@ -214,7 +215,10 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == GetType("int") and funcType == GetType("double") return 1
 
 	if inType == GetType("double") and funcType == GetType("float") return 2
-	if (inType.GetType() == "point" and funcType == (GetType("void").GetPoint())) return 2
+	//if (inType.GetType() == "point" and funcType == (GetType("void").GetPoint())) return 2
+	//if (funcType.GetType() == "point" and inType == (GetType("void").GetPoint())) return 2
+	if (funcType.GetType() == "point" and inType == VoidPType) return 2
+	if (inType.GetType() == "point" and funcType == VoidPType) return 2
 
 	if inType == GetType("int") and funcType == GetType("bool") return 3
 	

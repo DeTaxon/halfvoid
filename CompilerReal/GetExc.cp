@@ -8,7 +8,6 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
-	printf("here %s %s\n", itemType.GetType(), ToType.GetType())
 	if itemType.GetType() == "point" and ToType.GetType() == "point"
 	{
 		return GetExcPointers(itemType,ToType)
@@ -30,18 +29,17 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 	return null
 }
 
-DoubleType := type pair.{Type^,Type^}
-
-ExcPointers := Map.{DoubleType,BoxFunc^}
+ExcPointers := Map.{ Type^,Map.{Type^, BoxFunc^} }
 
 GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 {
-	//AsPair := pair.{Type^,Type^}
-	//if ExcPointers.Exist(AsPair)
-	//	return ExcPointers[AsPair]
+	if ExcPointers[from][to] != null
+	{
+		return ExcPointers[from][to]
+	}
 
 	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast " + from.GetName() + " #1 to " + to.GetName()+"\n")
-	//ExcPointers[AsPair] = toAdd
+	ExcPointers[from][to] = toAdd
 	return toAdd
 }
 
