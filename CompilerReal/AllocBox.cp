@@ -34,6 +34,10 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 			dynCast := iter->{BoxFunc^}
 			return dynCast.ABox.GetAlloc(t)
 		}
+		if iter.GetValue() == "{...}"
+		{
+			return -2
+		}
 		iter = iter.Up
 	}
 	return -1

@@ -66,6 +66,11 @@ ParseType := !(Object^ Node) -> Type^
 		{
 			return NodeName->{TypeDef^}.ItType
 		}
+		if NodeName.Down.GetValue() == "{...}"
+		{
+			asCl := ((NodeName.Down)->{BoxClass^})
+			return asCl.ClassType
+		}
 		return null
 	}
 	if Node.GetValue() == "~d"
@@ -343,6 +348,10 @@ TypeClass := class extend Type
 	this := !(BoxClass^ ToSet) -> void
 	{
 		ToClass = ToSet
+	}
+	GetName := virtual !() -> string
+	{
+		return "%Class" + ToClass.ClassId
 	}
 }
 

@@ -14,9 +14,22 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 	return new BoxClass(iterT)
 }
 
+GetUpClass := !(Object^ toS) -> BoxClass^
+{
+	iterF := toS
+	while iterF != null
+	{
+		if iterF.GetValue() == "{...}" return iterF->{BoxClass^}
+		iterF = iterF.Up
+	}
+	return null
+}
+
 BoxClass := class extend Object
 {
 	ClassId := int
+	Params := Queue.{FieldParam^}
+	ClassType := TypeClass^
 	"this" := !(Object^ item) -> void 
 	{
 		PopOutNode(item)
@@ -27,13 +40,28 @@ BoxClass := class extend Object
 		WorkBag.Push(Down,State_Start)
 
 		ClassId = GetNewId()
+		ClassType = new TypeClass(this&)
 	}
 	GetValue := virtual !() -> string
 	{
-		return "{..}"
+		return "{...}"
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		if Params.Size() == 0
+		{
+			f << "%Class" << ClassId << " = type{i1}\n"
+		}else{
+			f << "%Class" << ClassId << " = type {"
+			for Params.Size()
+			{
+				if it != 0 f <<","
+				f << Params[it].ResultType.GetName()
+			}
+			f << "}\n"
+
+		}
+
 		//print class
 	}
 }

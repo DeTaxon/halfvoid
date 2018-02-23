@@ -164,3 +164,26 @@ FuncParam := class extend MemParam
 	}
 	
 }
+
+FieldParam := class extend MemParam
+{
+	ItName := string
+	ToMerge := BoxClass^
+	this := !(string Name,Type^ typ, BoxClass^ pp) -> void
+	{
+		ResultType = typ
+		ItName = Name
+		ToMerge = pp
+		pp.Params.Push(this&)
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %" << ItName
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return "%" + ItName
+	}
+	
+}

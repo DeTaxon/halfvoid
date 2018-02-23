@@ -80,8 +80,20 @@ ObjParam := class extend Object
 					Down.SetUp(this&)
 				}else
 				{
-					Down = new LocalParam(MaybeType,allcId)
-					Down.SetUp(this&)
+					if allcId == -2
+					{
+						asCl := GetUpClass(this&)
+						if asCl != null
+						{
+							Down = new FieldParam(MyStr,MaybeType,asCl)
+							Down.SetUp(this&)
+						}else{
+							ErrorLog.Push("Compiler bag\n")
+						}
+					}else{
+						Down = new LocalParam(MaybeType,allcId)
+						Down.SetUp(this&)
+					}
 				}
 			}else
 			{

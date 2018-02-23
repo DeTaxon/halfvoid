@@ -5,16 +5,11 @@ free := !(void^ point) -> void declare
 
 ve := class
 {
-	x := int
+	x,y,z := int
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	test := int^
-	test = malloc(16)
-	printf("point = %p\n",test)
-	test[2] = 4
-	printf("some %i\n",test[2])
-	free(test)
+	waw := ve
 	return 0
 }
