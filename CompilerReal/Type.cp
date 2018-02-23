@@ -167,7 +167,6 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 		}
 		iterT = iterT.Next
 	}
-	
 
 	newTypeFunc := new TypeFunc(lin,IsRefArr,IsVArgs)
 	newTypeFunc.RetType = retType
@@ -336,6 +335,14 @@ TypeArr := class extend Type
 	GetName := virtual !() -> string
 	{
 		return "[" + Size + " x " + Base.GetName() + "]"
+	}
+}
+TypeClass := class extend Type
+{
+	ToClass := BoxClass^
+	this := !(BoxClass^ ToSet) -> void
+	{
+		ToClass = ToSet
 	}
 }
 

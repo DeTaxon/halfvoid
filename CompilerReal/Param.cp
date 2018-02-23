@@ -77,6 +77,7 @@ ObjParam := class extend Object
 				{
 					//TODO: Global?
 					Down = new GlobalParam(MaybeType)
+					Down.SetUp(this&)
 				}else
 				{
 					Down = new LocalParam(MaybeType,allcId)

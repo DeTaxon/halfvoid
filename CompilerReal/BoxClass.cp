@@ -16,14 +16,25 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 
 BoxClass := class extend Object
 {
+	ClassId := int
 	"this" := !(Object^ item) -> void 
 	{
 		PopOutNode(item)
-		MakeItBlock(item)
+		Down = item
+		Down.SetUp(this&)
+		MakeItBlock(Down)
+		Down.SetUp(this&)
+		WorkBag.Push(Down,State_Start)
+
+		ClassId = GetNewId()
 	}
 	GetValue := virtual !() -> string
 	{
 		return "{..}"
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		//print class
 	}
 }
 
