@@ -181,14 +181,23 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	//}
 	GetFunc := virtual  !(Queue.{Type^} pars,string Name) -> BoxFunc^
 	{
+		AsClassT := Type^
 		AsClass := BoxClass^
+
+		AsClassT = null
 
 		if pars[0].GetType() == "point"
 		{
-			AsClass = pars[0].Base
+			if pars[0].Base.GetType() == "class"
+				AsClassT = pars[0].Base
 		}else{
-			AsClass = pars[0]
+			if pars[0].GetType() == "class"
+				AsClassT = pars[0]
 		}
+
+		if AsClassT == null return null
+		AsClass = (AsClassT->{TypeClass^}).ToClass
+
 		pos := -1
 		for AsClass.Params.Size()
 		{

@@ -349,6 +349,10 @@ TypeClass := class extend Type
 	{
 		ToClass = ToSet
 	}
+	GetType := virtual !() -> string
+	{
+		return "class"
+	}
 	GetName := virtual !() -> string
 	{
 		return "%Class" + ToClass.ClassId
