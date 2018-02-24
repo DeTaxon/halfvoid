@@ -6,7 +6,7 @@ StringContainer := class
 		if not Strs.Exist(St)
 		{
 			SomId := GetNewId()
-			Strs[St] = SomId
+			Strs[St.Copy()] = SomId
 			return SomId
 		}
 		return Strs[St]

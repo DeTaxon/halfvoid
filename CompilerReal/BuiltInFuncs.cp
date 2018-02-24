@@ -103,7 +103,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 		if pars[0].GetType() != "point" return 255
 		return 0
 	}
-	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
 		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true, 
 		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 0\n")
@@ -127,7 +127,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		if pars[1].GetType() != "standart" return 255
 		return 0
 	}
-	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
 		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true,
 		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 #2\n")
@@ -150,7 +150,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 		if pars[0].GetType() != "point" return 255
 		return TypeCmp(pars[0],VoidPType)
 	}
-	GetFunc := virtual  !(Queue.{Type^} pars) -> BoxFunc^
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
@@ -171,6 +171,9 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	{
 		FuncName = "."
 		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	//GetPriority := virtual !(Queue.{Type^} pars) -> int
 	//{
@@ -179,8 +182,15 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	//	if pars[1].GetType() != "standart" return 255
 	//	return 0
 	//}
-	GetFunc := virtual  !(Queue.{Type^} pars,string Name) -> BoxFunc^
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
 	{
+		Name := string
+		if consts.Size() != 1 return null
+		if consts[0].GetValue() != "~str" 
+			return null
+		AsStrObj := (consts[0]->{ObjStr^})
+		Name = (AsStrObj.GetString())
+
 		AsClassT := Type^
 		AsClass := BoxClass^
 
@@ -234,7 +244,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
 
-	GlobalUnroll = new BuiltInTemplateUnroll
+	GlobalUnroll = new BuiltInTemplateUnroll()
 }
 
 CreateBuiltIns := !() -> void

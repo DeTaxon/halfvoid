@@ -93,6 +93,7 @@ BoxTemplate := class extend BoxFunc
 
 	EndPos := Object^
 	FuncsType := Queue.{TypeFunc^}
+	FuncsConsts := Queue.{Queue.{Object^}}
 
 
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
@@ -138,6 +139,11 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetFunc := virtual !(Queue.{Type^} pars) -> BoxFunc^
 	{
+		zeto := Queue.{Object^}()
+		return GetFunc(pars,zeto)
+	}
+	GetFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+	{
 		outT := Queue.{Type^}()
 
 		for MyFuncType.ParsCount
@@ -158,16 +164,34 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iterJ.Data == newFuncType 
 			{
-				inDown := Down
-				for somePos inDown = inDown.Right
-				return inDown->{BoxFunc^}
+				PointQ := FuncsConsts[somePos]&
+				Found := true
+
+				if consts.Size() == PointQ^.Size()
+				{
+					for consts.Size()
+					{
+						if not CmpConstObjs(consts[it],PointQ^[it])
+							Found = false
+					}
+				}else{
+					Found = false
+				}
+				if Found
+				{
+					inDown := Down
+					for somePos inDown = inDown.Right
+					return inDown->{BoxFunc^}
+				}
 			}
 			iterJ = iterJ.Next
 			somePos += 1
 		}
 
-		newFunc := new BoxFuncBody(MyFuncParamNames,newFuncType,FuncName,CopyTree.Clone(),IsSuffix)
+		newFunc := GetNewFunc(pars,consts,newFuncType)
 		FuncsType.Push(newFuncType)
+		FuncsConsts.Push(consts)
+
 		WorkBag.Push(newFunc,State_Start)
 
 		if EndPos == null
@@ -181,6 +205,13 @@ BoxTemplate := class extend BoxFunc
 			EndPos = newFunc
 			EndPos.Up = this&
 		}
+		return newFunc	
+	}
+	GetNewFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ FunType) -> BoxFunc^
+	{
+
+		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix)
+
 		return newFunc	
 	}
 	PrintGlobal := virtual !(sfile f) -> void

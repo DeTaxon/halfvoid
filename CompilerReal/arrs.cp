@@ -93,6 +93,10 @@ Stack := class !{T}
 		}
 		return ToOut
 	}
+	"=" := !(Stack.{T} toSet) -> void
+	{
+		Start = toSet.Start
+	}
 	//"for" := !() -> ref T
 	//{
 	//	Iter := Start
@@ -109,6 +113,10 @@ Queue := class !{T} extend Stack.{T}
 	this := !() -> void
 	{
 		Start = null
+	}
+	"=" := !(Queue.{T} toSet) -> void
+	{
+		for toSet.Size() Push(toSet[it])
 	}
 	Push := !(T a) -> int
 	{
