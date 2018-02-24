@@ -13,5 +13,6 @@ BuiltInFuncs := Queue.{BoxFunc^}
 BuiltInTemplates := Queue.{BoxTemplate^}
 
 GlobalUnroll := BuiltInTemplateUnroll^
+GlobalNew := BuiltInTemplateNew^
 
 VoidPType := Type^

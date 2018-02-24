@@ -92,6 +92,22 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		
 	}else
 	{
+		if iter.GetValue() == "new"
+		{
+			useType := ParseType(iter.Right)
+
+			if useType == null
+			{
+				ErrorLog.Push("Incorrect new type\n")
+				return null
+			}
+			if iter.Right.Right != null
+			{
+				return new NewCall(useType,iter.Right.Right)
+			}else{
+				return new NewCall(useType)
+			}
+		}
 	}
 	return null
 }
@@ -421,6 +437,72 @@ AssemblerCall := class extend NaturalCall
 			}
 		}
 
+	}
+}
+
+TypeSizeCall := class extend SomeFuncCall
+{
+	ToCmp := Type^
+	this := !(Type^ toCmp) ->void
+	{
+		ToCmp = toCmp
+		ResultType = GetType("int")
+	}
+	PrintPointPre := virtual !(sfile f) -> void {	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		f << "%TPre" << RetId << " = getelementptr "<<ToCmp.GetName()<< " , "<<ToCmp.GetPoint().GetName()<< " undef, i32 1\n"
+		f << "%T" << RetId << " = bitcast "<<ToCmp.GetPoint().GetName() << " to i32\n"
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << " %T" << RetId
+	}
+	GetPointName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
+	GetName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
+	GetOutputName := virtual !() -> string
+	{
+		return "%T" + RetId
+	}
+}
+
+NewCall := class extend SomeFuncCall
+{
+	ExtraFunc := SomeFuncCall^
+	this := !(Type^ toCreate) -> void
+	{
+		ResultType = toCreate.GetPoint()
+		Down = new TypeSizeCall(toCreate)
+		Down.Right = new ObjInt(1)
+		Down.SetUp(this&)
+	}
+	this := !(Type^ toCreate,Object^ toCr) -> void
+	{
+		ResultType = toCreate.GetPoint()
+		Down = new TypeSizeCall(toCreate)
+		Down.Right = toCr
+		Down.SetUp(this&)
+
+		outT := Queue.{Type^}()
+		outT.Push(GetType("int"))
+		outT.Push(GetType("int"))
+		outC := Queue.{Object^}()
+		outC.Push(new ObjType(toCreate))
+		fun := (GlobalNew^.GetFunc(outT,outC))
+		ExtraFunc = MakeSimpleCall(fun,Down)
+	}
+	UseCall := virtual !(sfile f) -> void
+	{
+		ExtraFunc.UseCall(f)
 	}
 }
 

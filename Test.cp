@@ -1,5 +1,5 @@
 printf := !(char^ str, ...) -> int declare
-calloc := !(int size) -> void^ declare
+calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare
 
@@ -10,7 +10,9 @@ ve := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	waw := ve
+	waw := ve^
+	x := 4
+	new ve
 	waw.y = 88
 	printf("y = %i\n",waw.y)
 	return 0

@@ -11,7 +11,7 @@
 "d ?: d : d"
 "d in d"
 "d and d" "d or d" "d xor d" "not d"
+"new d" "delete d"
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d << d" "d >> d" "d <- d"
 "d => d" 
-"new d" "delete d"

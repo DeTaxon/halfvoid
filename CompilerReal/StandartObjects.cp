@@ -172,6 +172,28 @@ ObjSymbol := class extend ObjConst
 }
 
 
+ObjType := class extend ObjConst
+{
+	MyType := Type^
+	"this" := !(Type^ st) -> void
+	{
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~type"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("type %p\n",MyType)
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjType(MyType)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjCmd := class extend ObjConst
 {
 	MyStr := char^

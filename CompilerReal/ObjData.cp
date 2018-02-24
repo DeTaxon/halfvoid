@@ -25,8 +25,36 @@ ObjData := class extend Object
 					iter = iter.Right
 				}else
 				{
-					if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-					WorkBag.Push(iter,State_Start)
+					if iter.GetValue() == "new"
+					{
+						SomeDown := iter.Right.Down
+						SizeTree := Object^
+						SizeTree = null
+						if SomeDown != null
+						{
+							if SomeDown.Right != null
+							{	
+								if SomeDown.Right.GetValue() == "[]"
+								{
+									SizeTree = SomeDown.Right.Down
+									PopOutNode(SomeDown.Right)
+									iter.Right.Right = SomeDown
+									SomeDown.Left = iter.Right
+								}
+							}
+						}
+						SomeDown = iter.Right
+						if SizeTree != null
+						{
+							SomeDown.Right = SizeTree
+							SizeTree.Left = SomeDown
+							WorkBag.Push(SizeTree,State_Start)
+						}
+						iter = iter.Right
+					}else{
+						if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
+						WorkBag.Push(iter,State_Start)
+					}
 				}
 				iter = iter.Right
 			}

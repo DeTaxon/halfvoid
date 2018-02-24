@@ -96,6 +96,9 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	{
 		FuncName = "^"
 		OutputName = "error"
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars) -> int
 	{
@@ -119,6 +122,10 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	{
 		FuncName = "[]"
 		OutputName = "error"
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars) -> int
 	{
@@ -143,6 +150,10 @@ BuiltInTemplateSet := class extend BoxTemplate
 	{
 		FuncName = "="
 		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars) -> int
 	{
@@ -237,6 +248,44 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateNew := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "."
+		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		emptType.Push(GetType("int"))
+		emptType.Push(GetType("int"))
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	//GetPriority := virtual !(Queue.{Type^} pars) -> int
+	//{
+	//	if pars.Size() != 2 return 255
+	//	if pars[0].GetType() != "point" return 255
+	//	if pars[1].GetType() != "standart" return 255
+	//	return 0
+	//}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		ResType := Type^
+		if consts.Size() != 1 return null
+		if consts[0].GetValue() != "~type" 
+			return null
+		AsTypeObj := (consts[0]->{ObjType^})
+		ResType = AsTypeObj.MyType
+		ResP := ResType.GetPoint()
+
+		return new BuiltInFuncBinar(".",pars[0],false,pars[1],false,ResP,
+			"%Pre## = call @calloc(i32 #1,i32 #2)\n"+
+			"#0 = bitcast i8* %Pre## to " + ResP.GetName() + "\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 
 AddTemplates := !() -> void
 {
@@ -245,6 +294,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
 
 	GlobalUnroll = new BuiltInTemplateUnroll()
+	GlobalNew = new BuiltInTemplateNew()
 }
 
 CreateBuiltIns := !() -> void
