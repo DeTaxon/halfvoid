@@ -18,8 +18,16 @@ ObjData := class extend Object
 			iter := Down
 			while iter != null
 			{
-				if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-				WorkBag.Push(iter,State_Start)
+				lazy := iter.GetValue() == "."
+				if lazy lazy = iter.Right.GetValue() == "~ind"
+				if lazy
+				{
+					iter = iter.Right
+				}else
+				{
+					if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
+					WorkBag.Push(iter,State_Start)
+				}
 				iter = iter.Right
 			}
 			WorkBag.Push(this&,State_GetUse)

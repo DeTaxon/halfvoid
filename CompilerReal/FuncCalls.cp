@@ -54,7 +54,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				pars := Queue.{Type^}
 				pars.Start = null
 				pars.Push(iter.Left.GetType())
-				return GlobalUnroll.GetFunc(pars,asName)
+				roll :=  GlobalUnroll.GetFunc(pars,asName)
+				if roll == null return null
+
+				iter = iter.Left
+				return MakeSimpleCall(roll,iter)
 			}
 		}
 		if IsOper(iter.GetValue())
@@ -340,6 +344,10 @@ AssemblerCall := class extend NaturalCall
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		PrintPre(f)
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ToCall.MyFuncType.RetType
 	}
 	UseCall := virtual !(sfile f) -> void
 	{

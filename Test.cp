@@ -11,6 +11,7 @@ ve := class
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
-	waw.x = 0
+	waw.y = 88
+	printf("y = %i\n",waw.y)
 	return 0
 }

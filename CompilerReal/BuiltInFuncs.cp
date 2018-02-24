@@ -206,7 +206,11 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 				pos = it
 			}
 		}
-		if pos == -1 return null
+		if pos == -1 
+		{
+			ErrorLog.Push("Cannot find field"+Name+"\n")
+			return null
+		}
 
 		if pars[0].GetType() == "point"
 		{
