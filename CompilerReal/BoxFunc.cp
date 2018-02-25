@@ -7,8 +7,21 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	IsStatic := false
 	IsVirtual := false
 
+	ClassPtr := BoxClass^
+	ClassPtr = null
+
 	RetT := Object^
 	RetT = null
+
+	ExtraIter := item
+	while ExtraIter != null
+	{
+		if ExtraIter.GetValue() == "{...}"
+		{
+			ClassPtr = ExtraIter->{BoxClass^}
+			ExtraIter = null
+		}else 	ExtraIter = ExtraIter.Up
+	}
 
 	if iter.GetValue() == "virtual"
 	{
@@ -57,9 +70,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf)
+			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassPtr)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassPtr)
 		
 		return PreRet
 	}
@@ -96,9 +109,10 @@ BoxTemplate := class extend BoxFunc
 	FuncsConsts := Queue.{Queue.{Object^}}
 
 
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, BoxClass^ metC) -> void
 	{
 		FuncName = SomeName
+		MethodClass = metC
 		
 		if inPars != null CopyParams = inPars.Clone()
 		if inOutType != null CopyRet = inOutType.Clone()
@@ -210,7 +224,7 @@ BoxTemplate := class extend BoxFunc
 	GetNewFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ FunType) -> BoxFunc^
 	{
 
-		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix)
+		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodClass)
 
 		return newFunc	
 	}
@@ -239,6 +253,7 @@ BoxFunc := class extend Object
 	OutputName := string
 	ABox := AllocBox
 	IsSuffix := bool
+	MethodClass := BoxClass^
 
 	GetType := virtual !() -> Type^
 	{
@@ -350,6 +365,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		IsInvalid = not ParseParams(inPars,inOutType)
 
 		if IsInvalid ErrorLog.Push("can not parse function\n")
+		MethodClass = null
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
@@ -368,10 +384,12 @@ BoxFuncDeclare := class  extend BoxFunc
 BoxFuncBody := class extend BoxFunc
 {
 	ItParams := FuncParam^^
-	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf) -> void
+	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,BoxClass^ metC) -> void
 	{
 		MyFuncParamNames = names
 		FuncName = SomeName
+		MethodClass = metC
+
 		if SomeName == "main"
 		{
 			OutputName = "main"
@@ -407,9 +425,10 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 		IsSuffix = IsSuf
 	}
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,BoxClass^ metC) -> void
 	{
 		FuncName = SomeName
+		MethodClass = metC
 		if SomeName == "main"
 		{
 			OutputName = "main"
