@@ -14,9 +14,7 @@ ve := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	waw := ve^
-	waw = new ve
+	waw := ve
 	waw.print()
-	free(waw)
 	return 0
 }

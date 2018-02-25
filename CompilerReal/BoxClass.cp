@@ -46,6 +46,34 @@ BoxClass := class extend Object
 	{
 		return "{...}"
 	}
+	GetFunc := !(string name,Queue.{Type^} pars) -> BoxFunc^
+	{
+		temp := Queue.{Object^}()
+		return GetFunc(name,pars,temp)
+	}
+	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
+	{
+		Funcs := Queue.{BoxFunc^}()
+		Templs := Queue.{BoxTemplate^}()
+
+		iterJ := Down
+		while iterJ != null
+		{
+			if iterJ.GetValue() == "i:=1"
+			{
+				itName := ((iterJ->{ObjParam^}).MyStr)
+				if itName == name
+				{
+					if iterJ.Down.GetValue() == "d()" and consts.Size() == 0
+						Funcs.Push((iterJ.Down)->{BoxFunc^})
+					if iterJ.Down.GetValue() == "d{}()"
+						Templs.Push((iterJ.Down)->{BoxTemplate^})
+				}
+			}
+			iterJ = iterJ.Right
+		}
+		return GetBestFunc(pars,Funcs,Templs)
+	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		if Params.Size() == 0

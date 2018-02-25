@@ -48,14 +48,38 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			if iter.Right.GetValue() == "~ind"
 			{
+				asIndent := (iter.Right)->{ObjIndent^} 
+				asName := asIndent.MyStr
+
 				if iter.Right.Right != null
 				{
-					printf("here\n")
+					LL := iter.Left
+					if  LL.GetType().GetType() != "class" 
+					{
+						if LL.GetType().GetType() == "point"	
+						{
+							if LL.GetType().Base.GetType() != "class"
+								return null
+						}else	return null
+					}
+					asClass := ((iter.Left)->{TypeClass^}).ToClass
+					
+					gg := Queue.{Type^}()
+					gg.Push(iter.Left.GetType())
+					iterK := iter.Right.Right.Down
+					while iterK != null
+					{
+						if iterK.GetValue() != ","
+							gg.Push(iterK.GetType())
+						iterK = iterK.Right
+					}
+
+					func := asClass.GetFunc(asName,gg)
+					printf("pls %p %i\n",func,gg.Size())
+
 					return null
 				}else
 				{
-					asIndent := (iter.Right)->{ObjIndent^} 
-					asName := asIndent.MyStr
 					pars := Queue.{Type^}
 					pars.Start = null
 					pars.Push(iter.Left.GetType())
