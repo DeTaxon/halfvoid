@@ -218,9 +218,12 @@ SomeFuncCall := class extend ObjResult
 	}
 	GetName := virtual !() -> string
 	{
-		if ToCall.MyFuncType.RetRef
+		if ToCall != null
 		{
-			return "%TE" + RetId
+			if ToCall.MyFuncType.RetRef
+			{
+				return "%TE" + RetId
+			}
 		}
 		return "%T" + RetId
 	}
@@ -235,6 +238,10 @@ SomeFuncCall := class extend ObjResult
 	GetValue := virtual !() -> string
 	{
 		return "d()"
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ToCall.MyFuncType.RetType
 	}
 }
 
@@ -330,10 +337,6 @@ NaturalCall := class extend SomeFuncCall
 		f << "("
 		PrintParamUses(f)
 		f << ")\n"
-	}
-	GetType := virtual !() -> Type^
-	{
-		return ToCall.MyFuncType.RetType
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
@@ -476,6 +479,10 @@ TypeSizeCall := class extend SomeFuncCall
 	{
 		return "%T" + RetId
 	}
+	GetType := virtual !() -> Type^
+	{
+		return ResultType
+	}
 }
 
 NewCall := class extend SomeFuncCall
@@ -483,20 +490,13 @@ NewCall := class extend SomeFuncCall
 	ExtraFunc := SomeFuncCall^
 	this := !(Type^ toCreate) -> void
 	{
-		ResultType = toCreate.GetPoint()
-		Down = new TypeSizeCall(toCreate)
-		Down.Right = new ObjInt(1)
-		Down.SetUp(this&)
-
-		outT := Queue.{Type^}()
-		outT.Push(GetType("int"))
-		outT.Push(GetType("int"))
-		outC := Queue.{Object^}()
-		outC.Push(new ObjType(toCreate))
-		fun := (GlobalNew^.GetFunc(outT,outC))
-		ExtraFunc = MakeSimpleCall(fun,Down)
+		This2(toCreate,new ObjInt(1))
 	}
 	this := !(Type^ toCreate,Object^ toCr) -> void
+	{
+		This2(toCreate,toCr)
+	}
+	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
 		ResultType = toCreate.GetPoint()
 		Down = new TypeSizeCall(toCreate)
@@ -510,10 +510,23 @@ NewCall := class extend SomeFuncCall
 		outC.Push(new ObjType(toCreate))
 		fun := (GlobalNew^.GetFunc(outT,outC))
 		ExtraFunc = MakeSimpleCall(fun,Down)
+		ExtraFunc.Down.SetUp(ExtraFunc)
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
 		ExtraFunc.UseCall(f)
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ResultType
+	}
+	GetName := virtual !() -> string
+	{
+		return ExtraFunc.GetName()
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ExtraFunc.PrintUse(f)
 	}
 }
 

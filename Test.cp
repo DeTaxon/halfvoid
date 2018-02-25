@@ -11,6 +11,9 @@ ve := class
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve^
-	new ve
+	waw = new ve
+	waw.z = 5
+	printf("wow %i\n",waw.z)
+	free(waw)
 	return 0
 }
