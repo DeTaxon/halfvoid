@@ -15,6 +15,12 @@ CmpConstObjs := !(Object^ a, Object^ b) -> bool
 		bS := b->{ObjStr^}
 		return aS.MyStrId == bS.MyStrId
 	}
+	if a.GetValue() == "~type" and b.GetValue() == "~type"
+	{
+		aT := a->{ObjType^}
+		bT := b->{ObjType^}
+		return aT.MyType == bT.MyType
+	}
 	// float, func ??
 	return false
 }

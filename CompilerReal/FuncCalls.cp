@@ -186,13 +186,16 @@ SomeFuncCall := class extend ObjResult
 	PrintPre := virtual !(sfile f) -> void
 	{
 		UseCall(f)
-		if ToCall.MyFuncType.RetRef
+		if ToCall != null
 		{
-			f << "%TE" << RetId << " = load "
-			f << ToCall.MyFuncType.RetType.GetName()
-			f << " , "
-			f << ToCall.MyFuncType.RetType.GetPoint().GetName()
-			f << " %T" <<RetId << "\n"
+			if ToCall.MyFuncType.RetRef
+			{
+				f << "%TE" << RetId << " = load "
+				f << ToCall.MyFuncType.RetType.GetName()
+				f << " , "
+				f << ToCall.MyFuncType.RetType.GetPoint().GetName()
+				f << " %T" <<RetId << "\n"
+			}
 		}
 	}
 	PrintPointUse := virtual !(sfile f) -> void
@@ -224,6 +227,10 @@ SomeFuncCall := class extend ObjResult
 	GetOutputName := virtual !() -> string
 	{
 		return "%T" + RetId
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		PrintPre(f)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -306,10 +313,6 @@ NaturalCall := class extend SomeFuncCall
 		}
 	}
 
-	PrintInBlock := virtual !(sfile f) -> void
-	{
-		PrintPre(f)
-	}
 	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
@@ -451,8 +454,8 @@ TypeSizeCall := class extend SomeFuncCall
 	PrintPointPre := virtual !(sfile f) -> void {	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		f << "%TPre" << RetId << " = getelementptr "<<ToCmp.GetName()<< " , "<<ToCmp.GetPoint().GetName()<< " undef, i32 1\n"
-		f << "%T" << RetId << " = bitcast "<<ToCmp.GetPoint().GetName() << " to i32\n"
+		f << "%TPre" << RetId << " = getelementptr "<<ToCmp.GetName()<< " , "<<ToCmp.GetPoint().GetName()<< " null, i32 1\n"
+		f << "%T" << RetId << " = ptrtoint "<<ToCmp.GetPoint().GetName() << "%TPre" <<RetId<< " to i32\n"
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
@@ -484,6 +487,14 @@ NewCall := class extend SomeFuncCall
 		Down = new TypeSizeCall(toCreate)
 		Down.Right = new ObjInt(1)
 		Down.SetUp(this&)
+
+		outT := Queue.{Type^}()
+		outT.Push(GetType("int"))
+		outT.Push(GetType("int"))
+		outC := Queue.{Object^}()
+		outC.Push(new ObjType(toCreate))
+		fun := (GlobalNew^.GetFunc(outT,outC))
+		ExtraFunc = MakeSimpleCall(fun,Down)
 	}
 	this := !(Type^ toCreate,Object^ toCr) -> void
 	{

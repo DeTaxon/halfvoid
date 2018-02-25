@@ -177,6 +177,7 @@ ObjType := class extend ObjConst
 	MyType := Type^
 	"this" := !(Type^ st) -> void
 	{
+		MyType = st
 	}
 	GetValue := virtual !() -> char^
 	{
