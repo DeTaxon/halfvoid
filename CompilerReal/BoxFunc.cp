@@ -271,9 +271,17 @@ BoxFunc := class extend Object
 
 		Typs := Queue.{Type^}()
 		TypsNams := Queue.{string}()
+		TypsIsRef := Queue.{bool}()
 		IsVargsL := false
 
 		Stuff := Queue.{Object^}()
+
+		if MethodClass != null
+		{
+			Typs.Push(MethodClass.ClassType)
+			TypsNams.Push("this")
+			TypsIsRef.Push(true)
+		}
 
 		while iter != null
 		{
@@ -283,6 +291,7 @@ BoxFunc := class extend Object
 
 		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(","))
 
+		IsParRef := false
 		while Stuff.NotEmpty()
 		{
 			if Stuff[0].GetValue() == ","
@@ -306,6 +315,7 @@ BoxFunc := class extend Object
 						return false
 					}
 					Typs.Push(MayType)
+					TypsIsRef.Push(IsParRef) // TODO
 					TypsNams.Push(MayName.Copy())
 					Pars.Clean()		
 
@@ -318,6 +328,7 @@ BoxFunc := class extend Object
 						if Pars[0].GetValue() == "~ind"
 						{
 							Typs.Push(null->{Type^})
+							TypsIsRef.Push(IsParRef)
 							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
 						}
 					}
@@ -339,7 +350,9 @@ BoxFunc := class extend Object
 		
 		RetTyp := ParseType(outObj)
 
-		MyFuncType = GetFuncType(Typs,null->{bool^},RetTyp,false,IsVargsL)
+		arr := TypsIsRef.ToArray()
+		MyFuncType = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
+		free(arr)
 		return true
 	}
 	SetReturnType := !(Type^ toSet) -> void
@@ -476,7 +489,6 @@ BoxFuncBody := class extend BoxFunc
 		{
 			
 			if i > 0 f << " , "
-
 			MyFuncType.Pars[i].PrintType(f)
 			f << " %" <<MyFuncParamNames[i]
 		}

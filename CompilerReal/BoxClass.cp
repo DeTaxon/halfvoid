@@ -61,6 +61,18 @@ BoxClass := class extend Object
 			f << "}\n"
 
 		}
+		iterJ := Down.Down
+		while iterJ != null
+		{
+			if iterJ.GetValue() == "i:=1"
+			{
+				if iterJ.Down.GetValue() == "!()"
+				{
+					iterJ.PrintGlobal(f)
+				}
+			}
+			iterJ = iterJ.Right
+		}
 
 		//print class
 	}

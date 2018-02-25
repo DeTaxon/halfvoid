@@ -261,7 +261,7 @@ TypeFunc := class extend Type
 
 		Pars = null
 		if ParsCount != 0 {
-			Pars := new Type^[ParsCount]
+			Pars = new Type^[ParsCount]
 			for ParsCount Pars[it] = FType.Pars[it]
 		}
 		RetRef = false
@@ -282,7 +282,6 @@ TypeFunc := class extend Type
 				for i : ParsCount ParsIsRef[i] = 0
 			}
 		}
-
 		Pars = null
 		if ParsCount != 0 Pars = P.ToArray()
 		RetRef = false
