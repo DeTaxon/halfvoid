@@ -203,6 +203,9 @@ BoxTemplate := class extend BoxFunc
 		}
 
 		newFunc := GetNewFunc(pars,consts,newFuncType)
+		
+		if newFunc == null return null
+
 		FuncsType.Push(newFuncType)
 		FuncsConsts.Push(consts)
 
@@ -489,7 +492,9 @@ BoxFuncBody := class extend BoxFunc
 		{
 			
 			if i > 0 f << " , "
-			MyFuncType.Pars[i].PrintType(f)
+			if MyFuncType.ParsIsRef[i]
+				MyFuncType.Pars[i].GetPoint().PrintType(f)
+			else	MyFuncType.Pars[i].PrintType(f)
 			f << " %" <<MyFuncParamNames[i]
 		}
 		if MyFuncType.IsVArgs

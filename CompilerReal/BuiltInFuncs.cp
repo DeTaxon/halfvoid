@@ -229,7 +229,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		}
 		if pos == -1 
 		{
-			ErrorLog.Push("Cannot find field"+Name+"\n")
+			ErrorLog.Push("Cannot find field "+Name+"\n")
 			return null
 		}
 

@@ -10,7 +10,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		iter = iter.Right
 		if iter == null return null
 
-
 		if iter.GetValue() == "()"
 		{
 			if iter.Left.GetValue() == "(d)"
@@ -49,18 +48,25 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			if iter.Right.GetValue() == "~ind"
 			{
-				asIndent := (iter.Right)->{ObjIndent^} 
-				asName := asIndent.MyStr
-				pars := Queue.{Type^}
-				pars.Start = null
-				pars.Push(iter.Left.GetType())
-				Consts := Queue.{Object^}()
-				Consts.Push(new ObjStr(asName))
-				roll :=  (GlobalUnroll^.GetFunc(pars,Consts))
-				if roll == null return null
+				if iter.Right.Right != null
+				{
+					printf("here\n")
+					return null
+				}else
+				{
+					asIndent := (iter.Right)->{ObjIndent^} 
+					asName := asIndent.MyStr
+					pars := Queue.{Type^}
+					pars.Start = null
+					pars.Push(iter.Left.GetType())
+					Consts := Queue.{Object^}()
+					Consts.Push(new ObjStr(asName))
+					roll :=  (GlobalUnroll^.GetFunc(pars,Consts))
+					if roll == null return null
 
-				iter = iter.Left
-				return MakeSimpleCall(roll,iter)
+					iter = iter.Left
+					return MakeSimpleCall(roll,iter)
+				}
 			}
 		}
 		if IsOper(iter.GetValue())

@@ -131,15 +131,11 @@ GlobalParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		Buf := char[256]
-		sprintf(Buf,"%T%i",newInd)
-		return Buf.Copy()
+		return "%T" + newInd 
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
-		Buf := char[256]
-		sprintf(Buf,"@T%i",MainId)
-		return Buf.Copy()
+		return "@T" + MainId
 	}
 }
 
@@ -153,10 +149,29 @@ FuncParam := class extend MemParam
 		ItName = Name
 		IsRef = IIsRef
 	}
+	PrintPre := virtual !(sfile f, int newInd) -> void
+	{
+		if IsRef
+		{
+			f << "%Tpre" << newInd << " = load "
+			ResultType.PrintType(f)
+			f << " , "
+			ResultType.PrintType(f)
+			f << "* %" << ItName << "\n"
+		}
+	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %" << ItName
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		//assert(IsRef)
+		return "%" + ItName
 	}
 	GetName := virtual !(int newInd) -> string
 	{

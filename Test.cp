@@ -16,8 +16,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	waw := ve^
 	waw = new ve
-	waw.z = 5
-	printf("wow %i\n",waw.z)
+	waw.print()
 	free(waw)
 	return 0
 }
