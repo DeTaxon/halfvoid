@@ -49,14 +49,14 @@ BoxClass := class extend Object
 	GetFunc := !(string name,Queue.{Type^} pars) -> BoxFunc^
 	{
 		temp := Queue.{Object^}()
-		return GetFunc(name,pars,temp)
+		return this.GetFunc(name,pars,temp)
 	}
 	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
 	{
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
 
-		iterJ := Down
+		iterJ := Down.Down
 		while iterJ != null
 		{
 			if iterJ.GetValue() == "i:=1"
@@ -64,9 +64,9 @@ BoxClass := class extend Object
 				itName := ((iterJ->{ObjParam^}).MyStr)
 				if itName == name
 				{
-					if iterJ.Down.GetValue() == "d()" and consts.Size() == 0
+					if iterJ.Down.GetValue() == "!()" and consts.Size() == 0
 						Funcs.Push((iterJ.Down)->{BoxFunc^})
-					if iterJ.Down.GetValue() == "d{}()"
+					if iterJ.Down.GetValue() == "!(){}"
 						Templs.Push((iterJ.Down)->{BoxTemplate^})
 				}
 			}

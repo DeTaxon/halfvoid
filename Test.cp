@@ -6,15 +6,16 @@ free := !(void^ point) -> void declare
 ve := class
 {
 	x,y,z := int
-	print := !()
+	print := !() -> void
 	{
-		printf("hello method\n")
+		printf("hello method %i %i %i\n",this.x,this.y,this.z)
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
+	waw.y = 6
 	waw.print()
 	return 0
 }

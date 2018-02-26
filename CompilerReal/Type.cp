@@ -303,7 +303,8 @@ TypeFunc := class extend Type
 		for i : ParsCount
 		{
 			if i != 0 ToRet = ToRet +  " , "
-			ToRet = ToRet + Pars[i].GetName()
+			if ParsIsRef[i]	ToRet = ToRet + Pars[i].GetPoint().GetName()
+			else ToRet = ToRet + Pars[i].GetName()
 		}
 		if IsVArgs
 		{

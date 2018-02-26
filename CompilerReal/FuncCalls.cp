@@ -62,7 +62,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 								return null
 						}else	return null
 					}
-					asClass := ((iter.Left)->{TypeClass^}).ToClass
+					asClass := ((iter.Left.GetType())->{TypeClass^}).ToClass
 					
 					gg := Queue.{Type^}()
 					gg.Push(iter.Left.GetType())
@@ -75,7 +75,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}
 
 					func := asClass.GetFunc(asName,gg)
-					printf("pls %p %i\n",func,gg.Size())
+
+					if func != null
+					{
+						iter = iter.Left
+						iter.Right = iter.Right.Right.Right.Down
+						if iter.Right != null	iter.Right.Left = iter
+						iter.SetUp(iter.Up)
+						return MakeSimpleCall(func,iter)
+					}
 
 					return null
 				}else

@@ -123,7 +123,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetValue := virtual !() -> string
 	{
-		return "d{}()"
+		return "!(){}"
 	}
 	GetPriority :=virtual !(Queue.{Type^} pars) -> int
 	{
