@@ -10,7 +10,7 @@ main := !(int argc,string[] argv) -> int
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob = GetObjectsFromFile("Test.cp")
-
+	
 
 	WorkBag.Push(Ob,State_Start)
 	

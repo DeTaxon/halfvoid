@@ -16,9 +16,17 @@ ve := class
 	}
 }
 
+a := !() -> void
+{
+	b()
+}
+b := !() -> void
+{
+}
 
 main := !(int argc, char^^ argv) -> int
 {
+	a()
 	waw := ve
 	waw.y = 6
 	waw.print2()

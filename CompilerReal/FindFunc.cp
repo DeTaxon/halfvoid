@@ -50,7 +50,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					if (AsBoxFunc.IsSuffix == SomeBug)
 						found.Push(AsBoxFunc)
 				}
-				if iterW.GetValue() == "d{}()"
+				if iterW.GetValue() == "!(){}"
 				{
 					AsBoxFunc2 :=  iterW->{BoxTemplate^}
 					SomeBug := IsSuffix

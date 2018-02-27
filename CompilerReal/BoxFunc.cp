@@ -472,7 +472,7 @@ BoxFuncBody := class extend BoxFunc
 			Down = new BoxBlock()
 			Down.Up = this&
 			Down.Down = Stuf.Down
-			Stuf.Down.SetUp(Down)
+			if Stuf.Down != null Stuf.Down.SetUp(Down)
 
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
