@@ -105,7 +105,7 @@ ObjParam := class extend Object
 					Down = SomeObj
 					SomeObj.SetUp(this&)
 					ObjType = SomeObj.GetType()
-					WorkBag.Push(this&,State_GetUse)
+					//WorkBag.Push(this&,State_GetUse)
 				}else
 				{
 					asClass := ParseClass(Down)

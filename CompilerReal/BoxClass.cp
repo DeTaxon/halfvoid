@@ -72,7 +72,9 @@ BoxClass := class extend Object
 			}
 			iterJ = iterJ.Right
 		}
-		return GetBestFunc(pars,Funcs,Templs)
+		bestFunc := GetBestFunc(pars,Funcs,Templs)
+		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
+		return bestFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
