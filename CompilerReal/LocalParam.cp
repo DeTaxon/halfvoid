@@ -163,6 +163,14 @@ FuncParam := class extend MemParam
 	PrintPointPre := virtual !(sfile f, int newInd) -> void
 	{
 	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		if IsRef
+		{
+			ResultType.GetPoint().PrintType(f)
+			f << "%" << ItName
+		}
+	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
 		ResultType.PrintType(f)
