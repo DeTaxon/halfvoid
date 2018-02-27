@@ -48,6 +48,13 @@ ObjParam := class extend Object
 			f << "\n"
 		}
 	}
+	//PrintGlobal := !(sfile f) -> void
+	//{
+	//	if not IsFunc or AskedGetUse
+	//	{
+	//		Down.PrintGlobal(f)
+	//	}
+	//}
 
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -131,8 +138,8 @@ ObjParam := class extend Object
 		{
 			if IsFunc 
 			{
+				if not AskedGetUse WorkBag.Push(Down,State_Start)
 				AskedGetUse = true
-				WorkBag.Push(Down,State_Start)
 			}else{
 				if Down.GetValue() != "i:=2"
 				{
