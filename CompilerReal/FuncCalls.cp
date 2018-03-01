@@ -65,7 +65,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					asClass := ((iter.Left.GetType())->{TypeClass^}).ToClass
 					
 					gg := Queue.{Type^}()
-					gg.Push(iter.Left.GetType())
+					//gg.Push(iter.Left.GetType())
 					iterK := iter.Right.Right.Down
 					while iterK != null
 					{
@@ -197,6 +197,20 @@ OneCall := !(string Name, Object^ G) -> Object^
 	if SomeFunc == null ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	else
 	{
+		if SomeFunc.MyFuncTypeClassless != null
+		{
+			toThis := GetItem("this",G)
+			if toThis == null return null
+			if toThis.GetValue() != "i:=2" return null
+
+			Extra := new ParamNaturalCall("this",toThis)
+			Extra.Right = G.Down
+			if Extra.Right != null Extra.Right.Left = Extra
+			Extra.Up = G
+			G.Down = Extra
+			P = Extra
+			
+		}
 		return MakeSimpleCall(SomeFunc,P)
 	}
 	return null	

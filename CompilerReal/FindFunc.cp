@@ -173,16 +173,20 @@ ComputePriors := !(Queue.{BoxFunc^} Fun, Queue.{Type^} pars, int^ priors) -> voi
 	h := 0
 	while iter != null
 	{
-		priors[h] = ComputePriorFunc(iter.Data,pars)
+		if iter.Data.MyFuncTypeClassless != null
+		{
+			priors[h] = ComputePriorFunc(iter.Data.MyFuncTypeClassless,pars)
+		}else{
+			priors[h] = ComputePriorFunc(iter.Data.MyFuncType,pars)
+		}
 		h += 1	
 		iter = iter.Next
 	}
 }
 
-ComputePriorFunc := !(BoxFunc^ Fun, Queue.{Type^} pars) -> int
+ComputePriorFunc := !(TypeFunc^ FuncTyp, Queue.{Type^} pars) -> int
 {
 	parsCount := pars.Size()
-	FuncTyp := Fun.MyFuncType
 	if parsCount == FuncTyp.ParsCount or (FuncTyp.IsVArgs and parsCount >= FuncTyp.ParsCount)
 	{
 		IsCorrect := true

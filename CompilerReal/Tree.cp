@@ -2,7 +2,7 @@
 Object := class{
 	Id := int
 	Left,Right,Down,Up := Object^
-	Line :=  Object^
+	Line :=  ObjLine^
 
 	IsInvalid := bool
 
@@ -124,6 +124,21 @@ Object := class{
 	}
 }
 
+ObjLine := class 
+{
+	LinePos := int
+	inFile := string
+	this := !(int LP, string IF) -> void
+	{
+		LinePos = LP
+		inFile = IF
+	}
+	GetLog := !() -> string
+	{
+		return " at line " + LinePos + " in file " + inFile
+	}
+}
+
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^
 {
 	Ad.Right = ToAdd
@@ -155,6 +170,7 @@ UNext := !(Object^ where,Object^ nObj, int count) -> Object^
 	Last := where
 	for count-1 Last = Last.Right
 	UNext(where,nObj,Last)
+	nObj.Line = where.Line
 	return nObj
 }
 UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
@@ -211,14 +227,16 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 	DaFile := new BoxBlock()
 	iter := DaFile->{Object^}
 	Adder := DaFile->{Object^}
-	
+
+	LineCounter := 0
 	while Toks.NotEmpty()
 	{
 	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11
 		Tok := Toks.Pop()
 		if Tok.Id == 11
 		{
-			NL := new Object(0)
+			LineCounter += 1
+			NL := new ObjLine(LineCounter,"wip")
 			while iter.Right != null
 			{
 				iter = iter.Right

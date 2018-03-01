@@ -11,12 +11,16 @@ ve := class
 	{
 		printf("hello method %i %i %i\n",this.x,this.y,this.z)
 	}
+	print2 := !() -> void
+	{
+		print()
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
 	waw.y = 6
-	waw.print()
+	waw.print2()
 	return 0
 }

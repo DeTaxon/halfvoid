@@ -65,7 +65,12 @@ ObjData := class extend Object
 			lowTest := GetUse(this&)
 			if lowTest == null
 			{
-				ErrorLog.Push("can not parse data\n")
+				err := "can not parse data"
+				if Line != null{
+					err = err + Line.GetLog()	
+				}
+				err =err + "\n"
+				ErrorLog.Push(err)
 			}
 			else
 			{

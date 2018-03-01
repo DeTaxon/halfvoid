@@ -8,7 +8,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	IsVirtual := false
 
 	ClassPtr := BoxClass^
+	ClassType := Type^
 	ClassPtr = null
+	ClassType = null
 
 	RetT := Object^
 	RetT = null
@@ -19,6 +21,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		if ExtraIter.GetValue() == "{...}"
 		{
 			ClassPtr = ExtraIter->{BoxClass^}
+			ClassType = ClassPtr.ClassType
 			ExtraIter = null
 		}else 	ExtraIter = ExtraIter.Up
 	}
@@ -70,9 +73,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassPtr)
+			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassType)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassPtr)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassType)
 		
 		return PreRet
 	}
@@ -109,10 +112,10 @@ BoxTemplate := class extend BoxFunc
 	FuncsConsts := Queue.{Queue.{Object^}}
 
 
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, BoxClass^ metC) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC) -> void
 	{
 		FuncName = SomeName
-		MethodClass = metC
+		MethodType = metC
 		
 		if inPars != null CopyParams = inPars.Clone()
 		if inOutType != null CopyRet = inOutType.Clone()
@@ -227,7 +230,7 @@ BoxTemplate := class extend BoxFunc
 	GetNewFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ FunType) -> BoxFunc^
 	{
 
-		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodClass)
+		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType)
 
 		return newFunc	
 	}
@@ -251,12 +254,14 @@ BoxTemplate := class extend BoxFunc
 BoxFunc := class extend Object
 {
 	MyFuncType := TypeFunc^
+	MyFuncTypeClassless := TypeFunc^
 	MyFuncParamNames := string^
 	FuncName := string
 	OutputName := string
 	ABox := AllocBox
 	IsSuffix := bool
-	MethodClass := BoxClass^
+
+	MethodType := Type^
 
 	GetType := virtual !() -> Type^
 	{
@@ -279,9 +284,9 @@ BoxFunc := class extend Object
 
 		Stuff := Queue.{Object^}()
 
-		if MethodClass != null
+		if MethodType != null
 		{
-			Typs.Push(MethodClass.ClassType)
+			Typs.Push(MethodType)
 			TypsNams.Push("this")
 			TypsIsRef.Push(true)
 		}
@@ -356,6 +361,18 @@ BoxFunc := class extend Object
 		arr := TypsIsRef.ToArray()
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
 		free(arr)
+
+		if Typs.Size() == 0 return true
+		
+		if MyFuncParamNames[0] == "this"
+		{
+			MethodType = Typs.PopFront()
+			TypsIsRef.PopFront()
+			arr = TypsIsRef.ToArray()
+			MyFuncTypeClassless  = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
+			free(arr)
+		}
+
 		return true
 	}
 	SetReturnType := !(Type^ toSet) -> void
@@ -381,7 +398,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		IsInvalid = not ParseParams(inPars,inOutType)
 
 		if IsInvalid ErrorLog.Push("can not parse function\n")
-		MethodClass = null
+		MethodType = null
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
@@ -400,11 +417,11 @@ BoxFuncDeclare := class  extend BoxFunc
 BoxFuncBody := class extend BoxFunc
 {
 	ItParams := FuncParam^^
-	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,BoxClass^ metC) -> void
+	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void
 	{
 		MyFuncParamNames = names
 		FuncName = SomeName
-		MethodClass = metC
+		MethodType = metC
 
 		if SomeName == "main"
 		{
@@ -441,10 +458,10 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 		IsSuffix = IsSuf
 	}
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,BoxClass^ metC) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void
 	{
 		FuncName = SomeName
-		MethodClass = metC
+		MethodType = metC
 		if SomeName == "main"
 		{
 			OutputName = "main"

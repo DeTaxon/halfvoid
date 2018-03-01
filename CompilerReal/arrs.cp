@@ -38,6 +38,14 @@ Stack := class !{T}
 		free(Later)
 		return Prev
 	}
+	PopFront := !() -> T
+	{
+		Prev := Start.Data
+		Later := Start
+		Start = Start.Next
+		free(Later)
+		return Prev
+	}
 	Size := !() -> int
 	{
 		Count := 0
