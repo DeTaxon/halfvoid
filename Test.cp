@@ -3,7 +3,6 @@ calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare
 
-
 ve := class
 {
 	x,y,z := int
@@ -19,7 +18,7 @@ ve := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	waw := ve
+	waw := new ve
 	waw.y = 6
 	waw.print2()
 	return 0

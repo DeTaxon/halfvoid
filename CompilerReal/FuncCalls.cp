@@ -62,7 +62,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 								return null
 						}else	return null
 					}
-					asClass := ((iter.Left.GetType())->{TypeClass^}).ToClass
+					asClass := BoxClass^
+					if LL.GetType().GetType() == "point"
+					{
+						asClass = ((iter.Left.GetType().Base)->{TypeClass^}).ToClass
+					}else
+					{
+						asClass = ((iter.Left.GetType())->{TypeClass^}).ToClass
+					}
 					
 					gg := Queue.{Type^}()
 					//gg.Push(iter.Left.GetType())
@@ -314,6 +321,30 @@ NaturalCall := class extend SomeFuncCall
 
 		iter := Down
 		i := 0
+
+		if Down != null
+		{
+			if ToCall.MyFuncTypeClassless != null
+			{
+				if Down.GetType().GetType() == "point"
+				{
+					pars := Queue.{Type^}()
+					pars.Push(Down.GetType())
+					fun := GlobalUnroll^.GetFunc(pars)
+					if fun != null
+					{
+						Noda := Down
+						PopOutNode(Noda)
+						NewNoda := MakeSimpleCall(fun,Noda)
+						NewNoda.Right = Down
+						if NewNoda.Right != null NewNoda.Right.Left = NewNoda
+						Down = NewNoda
+						NewNoda.Up = this&
+						iter = NewNoda
+					}
+				}
+			}
+		}
 
 		while iter != null and i < FType.ParsCount 
 		{
