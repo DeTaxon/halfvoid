@@ -289,12 +289,14 @@ BuiltInTemplateNew := class extend BoxTemplate
 
 AddTemplates := !() -> void
 {
-	BuiltInTemplates.Push(new BuiltInTemplatePoint())
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
 
 	GlobalUnroll = new BuiltInTemplateUnroll()
 	GlobalNew = new BuiltInTemplateNew()
+	GlobalUnpoint = new BuiltInTemplatePoint()
+
+	BuiltInTemplates.Push(GlobalUnpoint)
 }
 
 CreateBuiltIns := !() -> void

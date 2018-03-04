@@ -100,6 +100,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					pars.Push(iter.Left.GetType())
 					Consts := Queue.{Object^}()
 					Consts.Push(new ObjStr(asName))
+					printf("here %s\n",asName)
 					roll :=  (GlobalUnroll^.GetFunc(pars,Consts))
 					if roll == null return null
 
@@ -259,7 +260,8 @@ SomeFuncCall := class extend ObjResult
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
-		f << " %TE" << RetId
+		ToCall.MyFuncType.RetType.GetPoint().PrintType(f)
+		f << " %T" << RetId
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
@@ -330,7 +332,7 @@ NaturalCall := class extend SomeFuncCall
 				{
 					pars := Queue.{Type^}()
 					pars.Push(Down.GetType())
-					fun := GlobalUnroll^.GetFunc(pars)
+					fun := GlobalUnpoint^.GetFunc(pars)
 					if fun != null
 					{
 						Noda := Down

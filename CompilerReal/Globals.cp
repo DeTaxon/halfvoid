@@ -14,5 +14,6 @@ BuiltInTemplates := Queue.{BoxTemplate^}
 
 GlobalUnroll := BuiltInTemplateUnroll^
 GlobalNew := BuiltInTemplateNew^
+GlobalUnpoint := BuiltInTemplatePoint^
 
 VoidPType := Type^

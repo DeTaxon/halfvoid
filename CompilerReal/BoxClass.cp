@@ -73,6 +73,7 @@ BoxClass := class extend Object
 			iterJ = iterJ.Right
 		}
 		bestFunc := GetBestFunc(pars,Funcs,Templs)
+		printf("using %p\n",bestFunc)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 		return bestFunc
 	}
