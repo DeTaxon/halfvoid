@@ -26,6 +26,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 		}
 		iterB = iterB.Next
 	}
+	printf("damb %s %s\n",itemType.GetName(),ToType.GetName())
 	return null
 }
 

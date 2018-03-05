@@ -184,6 +184,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		OutputName = "error"
 
 		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	//GetPriority := virtual !(Queue.{Type^} pars) -> int
