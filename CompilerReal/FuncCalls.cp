@@ -5,6 +5,23 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 	if iter == null return null
 
+	if iter.GetValue() == "~ind"
+	{
+		asInd := iter->{ObjIndent^}
+		
+		funcData := Queue.{Type^}()
+		consts := Queue.{Object^}()
+		consts.Push(new ObjStr(asInd.MyStr)) 
+		someF := FindFunc(".",iter,,funcData,consts)
+
+		if someF != null
+		{
+			printf("asdasdasd\n")
+			return MakeSimpleCall(someF,iter)
+		}
+
+	}
+
 	if iter.GetType() != null
 	{
 		iter = iter.Right

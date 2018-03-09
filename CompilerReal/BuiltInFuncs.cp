@@ -186,6 +186,9 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		emptType := Queue.{Type^}()
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+
+		emptType.Pop()
+		MyFuncTypeClassless = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	//GetPriority := virtual !(Queue.{Type^} pars) -> int
 	//{
@@ -236,11 +239,13 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		if pars[0].GetType() == "point"
 		{
-			return new BuiltInFuncUno(".",pars[0],false,AsClass.Params[pos].ResultType,true,
+			return  new BuiltInFuncUno(".",pars[0],false,AsClass.Params[pos].ResultType,true,
 			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetName() + " #1, i32 0, i32 "+pos+"\n")
 		}else{
-			return new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
+			preRet :=  new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
 			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetPoint().GetName() + " #1, i32 0, i32 "+pos+"\n")
+			preRet.MyFuncTypeClassless = MyFuncTypeClassless
+			return preRet
 		}
 		return null
 	}

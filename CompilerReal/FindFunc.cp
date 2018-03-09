@@ -110,7 +110,12 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 
 FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 {
-	return FindStuff(name,start,pars,false)
+	wut := Queue.{Object^}()
+	return FindFunc(name,start,pars,wut)
+}
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+{
+	return FindStuff(name,start,pars,consts,false)
 }
 FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 {
@@ -118,12 +123,22 @@ FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 }
 FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> BoxFunc^
 {
+	wut := Queue.{Object^}()
+	return FindStuff(name,start,pars,wut,IsSuffix)
+}
+FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts, bool IsSuffix) -> BoxFunc^
+{
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix)
-	return GetBestFunc(pars,Funcs,Templs)
+	return GetBestFunc(pars,consts,Funcs,Templs)
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
+{
+	wut := Queue.{Object^}()
+	return GetBestFunc(pars,wut,funcs,templs)
+}
+GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
 {
 	FoundC := funcs.Size()
 	FoundT := templs.Size()
@@ -155,13 +170,13 @@ GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	ComputePriors(funcs,pars,Priors)
 	
 	for FoundC if Priors[it] == 0 return funcs[it]
-	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(pars)
+	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(pars,consts)
 	for FoundC if Priors[it] == 1 return funcs[it]
-	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(pars)
+	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(pars,consts)
 	for FoundC if Priors[it] == 2 return funcs[it]
-	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(pars)
+	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(pars,consts)
 	for FoundC if Priors[it] == 3 return funcs[it]
-	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(pars)
+	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(pars,consts)
 
 
 	return null
