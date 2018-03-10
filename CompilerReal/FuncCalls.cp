@@ -1,7 +1,7 @@
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
-	iter := ToParse.Down
+	iter := ToParse
 
 	if iter == null return null
 
@@ -12,15 +12,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		funcData := Queue.{Type^}()
 		consts := Queue.{Object^}()
 		consts.Push(new ObjStr(asInd.MyStr)) 
-		someF := FindFunc(".",iter,,funcData,consts)
+		printf("asdasdasd %s\n",asInd.MyStr)
+		someF := FindFunc(".",iter,funcData,consts)
 
 		if someF != null
 		{
-			printf("asdasdasd\n")
 			return MakeSimpleCall(someF,iter)
 		}
 
 	}
+
+	iter = ToParse.Down
+	if iter == null return null
 
 	if iter.GetType() != null
 	{
@@ -117,7 +120,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					pars.Push(iter.Left.GetType())
 					Consts := Queue.{Object^}()
 					Consts.Push(new ObjStr(asName))
-					printf("here %s\n",asName)
 					roll :=  (GlobalUnroll^.GetFunc(pars,Consts))
 					if roll == null return null
 
