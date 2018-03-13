@@ -131,21 +131,23 @@ BoxTemplate := class extend BoxFunc
 	GetPriority :=virtual !(Queue.{Type^} pars) -> int
 	{
 		parsCount := pars.Size()
-		if parsCount == MyFuncType.ParsCount or (MyFuncType.IsVArgs and parsCount >= MyFuncType.ParsCount)
+		FType := MyFuncType
+		if MyFuncTypeClassless != null FType = MyFuncTypeClassless
+		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
 			iterT := pars.Start
 
 			MaxPrior := 0
 
-			for i : MyFuncType.ParsCount
+			for i : FType.ParsCount
 			{
 				SomePrior := 0
-				if MyFuncType.ParsIsRef[i] 
+				if FType.ParsIsRef[i] 
 				{
-					if iterT.Data != MyFuncType.Pars[i] SomePrior = 255
+					if iterT.Data != FType.Pars[i] SomePrior = 255
 				}else {
-					SomePrior = TypeCmp(iterT.Data, MyFuncType.Pars[i])
+					SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
 				}
 				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next

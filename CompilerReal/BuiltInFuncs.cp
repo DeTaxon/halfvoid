@@ -303,6 +303,7 @@ AddTemplates := !() -> void
 	GlobalUnpoint = new BuiltInTemplatePoint()
 
 	BuiltInTemplates.Push(GlobalUnpoint)
+	BuiltInTemplates.Push(GlobalUnroll)
 }
 
 CreateBuiltIns := !() -> void
