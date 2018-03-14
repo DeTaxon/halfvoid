@@ -178,10 +178,14 @@ BuiltInTemplateSet := class extend BoxTemplate
 }
 BuiltInTemplateUnroll := class extend BoxTemplate
 {
-	this := !() -> void
+	ToClass := BoxClass^
+
+	this := !(BoxClass^ toAdd) -> void
 	{
 		FuncName = "."
 		OutputName = "error"
+
+		ToClass = toAdd
 
 		emptType := Queue.{Type^}()
 		emptType.Push(null->{Type^})
@@ -197,6 +201,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	//	if pars[1].GetType() != "standart" return 255
 	//	return 0
 	//}
+
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
 	{
 		Name := string
@@ -298,12 +303,12 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
 
-	GlobalUnroll = new BuiltInTemplateUnroll()
+	//GlobalUnroll = new BuiltInTemplateUnroll()
 	GlobalNew = new BuiltInTemplateNew()
 	GlobalUnpoint = new BuiltInTemplatePoint()
 
 	BuiltInTemplates.Push(GlobalUnpoint)
-	BuiltInTemplates.Push(GlobalUnroll)
+	//BuiltInTemplates.Push(GlobalUnroll)
 }
 
 CreateBuiltIns := !() -> void

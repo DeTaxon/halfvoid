@@ -59,6 +59,11 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				}
 			}
 		}
+		if ii.GetValue() == "{...}"
+		{
+			asClass := ii->{BoxClass^}
+			if name == "." templates.Push((asClass.UnrollTemplate)->{BoxTemplate^})
+		}
 }
 
 CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void

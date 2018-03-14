@@ -115,12 +115,27 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					return null
 				}else
 				{
+
+					asClass := BoxClass^
+					LT := iter.Left.GetType()
+
+					if LT.GetType() == "class"
+					{
+						asClass = ((LT->{TypeClass^}).ToClass)
+					}else{
+						if LT.GetType() == "point" and LT.Base.GetType() == "class"
+						{
+							asClass = ((LT->{TypeClass^}).ToClass)
+						}else{
+							return null
+						}
+					}
 					pars := Queue.{Type^}
 					pars.Start = null
 					pars.Push(iter.Left.GetType())
 					Consts := Queue.{Object^}()
 					Consts.Push(new ObjStr(asName))
-					roll :=  (GlobalUnroll^.GetFunc(pars,Consts))
+					roll :=  (asClass.UnrollTemplate^.GetFunc(pars,Consts))
 					if roll == null return null
 
 					iter = iter.Left

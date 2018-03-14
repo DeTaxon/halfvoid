@@ -30,6 +30,7 @@ BoxClass := class extend Object
 	ClassId := int
 	Params := Queue.{FieldParam^}
 	ClassType := TypeClass^
+	UnrollTemplate := BuiltInTemplateUnroll^
 	"this" := !(Object^ item) -> void 
 	{
 		PopOutNode(item)
@@ -41,6 +42,7 @@ BoxClass := class extend Object
 
 		ClassId = GetNewId()
 		ClassType = new TypeClass(this&)
+		UnrollTemplate = new BuiltInTemplateUnroll(this&)
 	}
 	GetValue := virtual !() -> string
 	{
