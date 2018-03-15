@@ -169,7 +169,7 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 
 	for FoundT
 	{
-		templsPrior[it] = templs[it].GetPriority(pars)
+		templsPrior[it] = templs[it].GetPriority(pars,consts)
 	}
 
 	ComputePriors(funcs,pars,Priors)

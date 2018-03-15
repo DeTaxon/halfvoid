@@ -12,7 +12,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		funcData := Queue.{Type^}()
 		consts := Queue.{Object^}()
 		consts.Push(new ObjStr(asInd.MyStr)) 
-		printf("asdasdasd %s\n",asInd.MyStr)
 		someF := FindFunc(".",iter,funcData,consts)
 
 		if someF != null

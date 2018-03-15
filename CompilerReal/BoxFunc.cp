@@ -128,7 +128,7 @@ BoxTemplate := class extend BoxFunc
 	{
 		return "!(){}"
 	}
-	GetPriority :=virtual !(Queue.{Type^} pars) -> int
+	GetPriority :=virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
 		parsCount := pars.Size()
 		FType := MyFuncType
@@ -165,13 +165,16 @@ BoxTemplate := class extend BoxFunc
 	{
 		outT := Queue.{Type^}()
 
-		for MyFuncType.ParsCount
+		FType := MyFuncType
+		if MyFuncTypeClassless != null FType = MyFuncTypeClassless
+
+		for FType.ParsCount
 		{
-			if MyFuncType.Pars[it] == null
+			if FType.Pars[it] == null
 			{
 				outT.Push(pars[it])
 			}else{
-				outT.Push(MyFuncType.Pars[it])
+				outT.Push(FType.Pars[it])
 			}
 		}
 

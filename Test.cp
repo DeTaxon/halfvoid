@@ -18,8 +18,8 @@ ve := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	waw := new ve
-	//waw.y = 20
+	waw := ve
+	waw.y = 20
 	waw.print2()
 	return 0
 }

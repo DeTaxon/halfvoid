@@ -188,19 +188,30 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		ToClass = toAdd
 
 		emptType := Queue.{Type^}()
-		emptType.Push(null->{Type^})
-		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		emptType.Push(toAdd.ClassType)
+		miniArr := true
+		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
 
 		emptType.Pop()
 		MyFuncTypeClassless = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	//GetPriority := virtual !(Queue.{Type^} pars) -> int
-	//{
-	//	if pars.Size() != 2 return 255
-	//	if pars[0].GetType() != "point" return 255
-	//	if pars[1].GetType() != "standart" return 255
-	//	return 0
-	//}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 1 return 255
+		if pars[0].GetType() != "class" return 255
+		if consts.Size() != 1 return 255
+		if (consts[0].GetValue() != "~str") return 255
+
+		asStr := ((consts[0]->{ObjStr^}).GetString())
+		
+		for ToClass.Params.Size()
+		{
+			if ToClass.Params[it].ItName == asStr
+				return 0
+			
+		}
+		return 255
+	}
 
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
 	{
@@ -216,14 +227,8 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		AsClassT = null
 
-		if pars[0].GetType() == "point"
-		{
-			if pars[0].Base.GetType() == "class"
-				AsClassT = pars[0].Base
-		}else{
-			if pars[0].GetType() == "class"
-				AsClassT = pars[0]
-		}
+		if pars[0].GetType() == "class"
+			AsClassT = pars[0]
 
 		if AsClassT == null return null
 		AsClass = (AsClassT->{TypeClass^}).ToClass
@@ -242,17 +247,10 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 			return null
 		}
 
-		if pars[0].GetType() == "point"
-		{
-			return  new BuiltInFuncUno(".",pars[0],false,AsClass.Params[pos].ResultType,true,
-			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetName() + " #1, i32 0, i32 "+pos+"\n")
-		}else{
-			preRet :=  new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
-			"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetPoint().GetName() + " #1, i32 0, i32 "+pos+"\n")
-			preRet.MyFuncTypeClassless = MyFuncTypeClassless
-			return preRet
-		}
-		return null
+		preRet :=  new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
+		"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetPoint().GetName() + " #1, i32 0, i32 "+pos+"\n")
+		preRet.MyFuncTypeClassless = MyFuncTypeClassless
+		return preRet
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
