@@ -197,12 +197,15 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
-		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "class" return 255
+		if pars.Size() > 1 return 255
+		if pars.Size() > 0
+			if pars[0].GetType() != "class" 
+				return 255
 		if consts.Size() != 1 return 255
 		if (consts[0].GetValue() != "~str") return 255
 
-		asStr := ((consts[0]->{ObjStr^}).GetString())
+		asStrT := (consts[0]->{ObjStr^})
+		asStr := asStrT.GetString()
 		
 		for ToClass.Params.Size()
 		{
@@ -222,21 +225,12 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
 
-		AsClassT := Type^
-		AsClass := BoxClass^
 
-		AsClassT = null
-
-		if pars[0].GetType() == "class"
-			AsClassT = pars[0]
-
-		if AsClassT == null return null
-		AsClass = (AsClassT->{TypeClass^}).ToClass
 
 		pos := -1
-		for AsClass.Params.Size()
+		for ToClass.Params.Size()
 		{
-			if AsClass.Params[it].ItName == Name
+			if ToClass.Params[it].ItName == Name
 			{
 				pos = it
 			}
@@ -247,8 +241,11 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 			return null
 		}
 
-		preRet :=  new BuiltInFuncUno(".",pars[0],true,AsClass.Params[pos].ResultType,true,
-		"#0 = getelementptr " + AsClass.ClassType.GetName() + " , " + pars[0].GetPoint().GetName() + " #1, i32 0, i32 "+pos+"\n")
+		CType := ((ToClass.ClassType)->{Type^})
+		CTypeP := CType.GetPoint()
+
+		preRet :=  new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
+		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos+"\n")
 		preRet.MyFuncTypeClassless = MyFuncTypeClassless
 		return preRet
 	}
