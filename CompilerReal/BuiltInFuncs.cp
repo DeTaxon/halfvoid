@@ -194,10 +194,8 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
-		if pars.Size() > 1 return 255
-		if pars.Size() > 0
-			if pars[0].GetType() != "class" 
-				return 255
+		if pars.Size() != 1 return 255
+		if pars[0].GetType() != "class" return 255
 		if consts.Size() != 1 return 255
 		if (consts[0].GetValue() != "~str") return 255
 
