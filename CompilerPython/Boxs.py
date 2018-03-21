@@ -1462,6 +1462,10 @@ class BoxMetodCall:
         self.Object = None
 	self.Id = GetNumb()
 	self.IsPoint = False
+
+	self.Line = Obj.Line
+	self.InFile = Obj.InFile
+
 	
 	if Obj.Value == "d.d":
 		self.Param = GetUse(Obj.Extra[0])
@@ -1508,9 +1512,7 @@ class BoxMetodCall:
 	self.UseClass.Check()
 	self.ToUse = self.UseClass.GetFake(self.ToCall)
 	if self.ToUse == None:
-		print(len(self.UseClass.Items))
-		print(self.UseClass.Items[0].Name)
-		raise ValueError("Object does not have field {}".format(self.ToCall))
+		raise ValueError("Object does not have field {} at {} in {}".format(self.ToCall,self.Line,self.InFile))
 	self.ToUse.Check()
 	self.Type = self.ToUse.Type
 class BoxParamCall:

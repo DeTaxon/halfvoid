@@ -193,12 +193,7 @@ ComputePriors := !(Queue.{BoxFunc^} Fun, Queue.{Type^} pars, int^ priors) -> voi
 	h := 0
 	while iter != null
 	{
-		if iter.Data.MyFuncTypeClassless != null
-		{
-			priors[h] = ComputePriorFunc(iter.Data.MyFuncTypeClassless,pars)
-		}else{
-			priors[h] = ComputePriorFunc(iter.Data.MyFuncType,pars)
-		}
+		priors[h] = ComputePriorFunc(iter.Data.MyFuncType,pars)
 		h += 1	
 		iter = iter.Next
 	}

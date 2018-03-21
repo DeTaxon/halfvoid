@@ -238,20 +238,6 @@ OneCall := !(string Name, Object^ G) -> Object^
 	if SomeFunc == null ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	else
 	{
-		if SomeFunc.MyFuncTypeClassless != null
-		{
-			toThis := GetItem("this",G)
-			if toThis == null return null
-			if toThis.GetValue() != "i:=2" return null
-
-			Extra := new ParamNaturalCall("this",toThis)
-			Extra.Right = G.Down
-			if Extra.Right != null Extra.Right.Left = Extra
-			Extra.Up = G
-			G.Down = Extra
-			P = Extra
-			
-		}
 		return MakeSimpleCall(SomeFunc,P)
 	}
 	return null	
@@ -356,30 +342,6 @@ NaturalCall := class extend SomeFuncCall
 
 		iter := Down
 		i := 0
-
-		if Down != null
-		{
-			if ToCall.MyFuncTypeClassless != null
-			{
-				if Down.GetType().GetType() == "point"
-				{
-					pars := Queue.{Type^}()
-					pars.Push(Down.GetType())
-					fun := GlobalUnpoint^.GetFunc(pars)
-					if fun != null
-					{
-						Noda := Down
-						PopOutNode(Noda)
-						NewNoda := MakeSimpleCall(fun,Noda)
-						NewNoda.Right = Down
-						if NewNoda.Right != null NewNoda.Right.Left = NewNoda
-						Down = NewNoda
-						NewNoda.Up = this&
-						iter = NewNoda
-					}
-				}
-			}
-		}
 
 		while iter != null and i < FType.ParsCount 
 		{

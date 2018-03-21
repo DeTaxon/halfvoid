@@ -132,7 +132,6 @@ BoxTemplate := class extend BoxFunc
 	{
 		parsCount := pars.Size()
 		FType := MyFuncType
-		if MyFuncTypeClassless != null FType = MyFuncTypeClassless
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
@@ -166,7 +165,6 @@ BoxTemplate := class extend BoxFunc
 		outT := Queue.{Type^}()
 
 		FType := MyFuncType
-		if MyFuncTypeClassless != null FType = MyFuncTypeClassless
 
 		for FType.ParsCount
 		{
@@ -259,7 +257,6 @@ BoxTemplate := class extend BoxFunc
 BoxFunc := class extend Object
 {
 	MyFuncType := TypeFunc^
-	MyFuncTypeClassless := TypeFunc^
 	MyFuncParamNames := string^
 	FuncName := string
 	OutputName := string
@@ -368,15 +365,6 @@ BoxFunc := class extend Object
 		free(arr)
 
 		if Typs.Size() == 0 return true
-		
-		if MyFuncParamNames[0] == "this"
-		{
-			MethodType = Typs.PopFront()
-			TypsIsRef.PopFront()
-			arr = TypsIsRef.ToArray()
-			MyFuncTypeClassless  = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
-			free(arr)
-		}
 
 		return true
 	}

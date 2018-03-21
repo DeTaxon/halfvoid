@@ -191,9 +191,6 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		emptType.Push(toAdd.ClassType)
 		miniArr := true
 		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
-
-		emptType.Pop()
-		MyFuncTypeClassless = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
@@ -246,7 +243,6 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		preRet :=  new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
 		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos+"\n")
-		preRet.MyFuncTypeClassless = MyFuncTypeClassless
 		return preRet
 	}
 	DoTheWork := virtual !(int pri) -> void
