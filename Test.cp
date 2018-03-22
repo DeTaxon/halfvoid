@@ -12,13 +12,14 @@ ve := class
 	}
 	print2 := !() -> void
 	{
-		print()
+		this.print()
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
-	waw.print2()
+	if waw.x == 0 and waw.y == 0
+		waw.print2()
 	return 0
 }

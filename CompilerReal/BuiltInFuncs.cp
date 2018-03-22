@@ -17,7 +17,7 @@ BuiltInFunc := class extend BoxFunc
 			if AsmLine[i] == '#'
 			{
 				i += 1
-				if AsmLine[i] in 'A'..'Z' IsSelfPre = true
+				if AsmLine[i] == '^' IsSelfPre = true
 			}else i += 1
 		}
 
@@ -366,17 +366,17 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
 
 
-	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#A" +
+	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#^1" +
 											"br i1 #1, label %End##, label %Next##\n" +
 											"Next##:\n" +
-											"#B" +
+											"#^2" +
 											"br label %End##\n" +
 											"End##:\n" +
 											"#0 = select i1 #1, i1 true, i1 #2\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"#A" +
+	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"#^1" +
 											"br i1 #1, label %Next##, label %End##\n" +
 											"Next##:\n" +
-											"#B" +
+											"#^2" +
 											"br label %End##\n" +
 											"End##:\n" +
 											"#0 = select i1 #1, i1 #2, i1 false\n"))

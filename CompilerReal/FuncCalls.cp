@@ -488,7 +488,14 @@ AssemblerCall := class extend NaturalCall
 				j+= 1
 				if AsmLine[j] in '0'..'9'
 				{
-					num := AsmLine[j] - '0'
+					num := 0
+
+					while AsmLine[j] in '0'..'9'
+					{
+						num *= 10
+						num += AsmLine[j] - '0'
+						j += 1
+					}
 
 					if num == 0
 					{
@@ -505,11 +512,21 @@ AssemblerCall := class extend NaturalCall
 						f << ToAdd
 					}
 				}
-				if AsmLine[j] in 'A'..'Z'
+				if AsmLine[j] == '^'
 				{
-					numC := AsmLine[j] - 'A'
+					numC := 0
+					j += 1
+
+					while AsmLine[j] in '0'..'9'
+					{
+						numC *= 10
+						numC += AsmLine[j] - '0'
+						j += 1
+					}
+
 					iterR := Down
 					
+					numC -= 1
 					k := numC
 					while k  != 0
 					{
@@ -525,8 +542,8 @@ AssemblerCall := class extend NaturalCall
 				if AsmLine[j] == '#'
 				{
 					f << RetId
+					j += 1
 				}
-				j += 1
 			}
 		}
 
