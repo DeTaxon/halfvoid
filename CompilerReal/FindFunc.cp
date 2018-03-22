@@ -59,36 +59,50 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				}
 			}
 		}
-		if ii.GetValue() == "{...}"
-		{
-			asClass := ii->{BoxClass^}
-			if name == "." templates.Push((asClass.UnrollTemplate)->{BoxTemplate^})
-		}
 }
 
 CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
 {
 	iterU := start
 	LastPos := start
+
 	while iterU != null
 	{
-		InsertFunc(name,iterU,found,templates,IsSuffix)
-		if iterU.Left != null 
+		lazy := true
+		while (lazy)
 		{
-			iterU = iterU.Left 
-		}else {
-			iterU = iterU.Up
-
-			iterK := LastPos.Right
-			while iterK != null
+			lazy = iterU.Up != null
+			if lazy
 			{
-				InsertFunc(name,iterK,found,templates,IsSuffix)
-				iterK = iterK.Right
+				lazy = iterU.Up.GetValue() == "{d}"
+				if lazy lazy = iterU.Up.Up != null
+				if lazy lazy = iterU.Up.Up.GetValue() == "{...}"
 			}
-			LastPos = iterU
+			if lazy
+			{
+				iterU = iterU.Up
+				LastPos = iterU
+			}
+		}
+		if iterU != null
+		{
+			InsertFunc(name,iterU,found,templates,IsSuffix)
+			if iterU.Left != null 
+			{
+				iterU = iterU.Left 
+			}else {
+				iterU = iterU.Up
+
+				iterK := LastPos.Right
+				while iterK != null
+				{
+					InsertFunc(name,iterK,found,templates,IsSuffix)
+					iterK = iterK.Right
+				}
+				LastPos = iterU
+			}
 		}
 	}
-
 
 	iterQ := BuiltInFuncs.Start
 	while iterQ != null
