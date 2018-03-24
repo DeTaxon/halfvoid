@@ -8,7 +8,7 @@ ve := class
 	x,y,z := int
 	print := !() -> void
 	{
-		printf("hello method %i %i %i\n",this.x,this.y,this.z)
+		printf("hello method %i %i %i\n",x,y,z)
 	}
 	print2 := !() -> void
 	{
@@ -19,7 +19,7 @@ ve := class
 main := !(int argc, char^^ argv) -> int
 {
 	waw := ve
-	if waw.x == 0 and waw.y == 0
-		waw.print2()
+	waw.y = 20
+	waw.print2()
 	return 0
 }

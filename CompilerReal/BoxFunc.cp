@@ -15,16 +15,6 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	RetT := Object^
 	RetT = null
 
-	ExtraIter := item
-	while ExtraIter != null
-	{
-		if ExtraIter.GetValue() == "{...}"
-		{
-			ClassPtr = ExtraIter->{BoxClass^}
-			ClassType = ClassPtr.ClassType
-			ExtraIter = null
-		}else 	ExtraIter = ExtraIter.Up
-	}
 
 	if iter.GetValue() == "virtual"
 	{
@@ -39,6 +29,18 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 
 	if iter.GetValue() != "!" return null
+
+	ExtraIter := item
+	while ExtraIter != null
+	{
+		if ExtraIter.GetValue() == "{...}"
+		{
+			ClassPtr = ExtraIter->{BoxClass^}
+			ClassType = ClassPtr.ClassType
+			ExtraIter = null
+		}else 	ExtraIter = ExtraIter.Up
+	}
+
 	iter = iter.Right
 	ParamsObj := iter
 	iter = iter.Right

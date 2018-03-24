@@ -16,7 +16,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		if someF != null
 		{
-			return MakeSimpleCall(someF,iter)
+			return MakeSimpleCall(someF,null->{Object^})
 		}
 
 	}
@@ -449,7 +449,7 @@ AssemblerCall := class extend NaturalCall
 		Down = Pars
 		RetId = GetNewId()
 		ToCall = func
-		Pars.SetUp(this&)
+		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
 	}
 	PrintInBlock := virtual !(sfile f) -> void

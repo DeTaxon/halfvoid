@@ -65,6 +65,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 {
 	iterU := start
 	LastPos := start
+	FirstMetClass := true
 
 	while iterU != null
 	{
@@ -77,6 +78,16 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				lazy = iterU.Up.GetValue() == "{d}"
 				if lazy lazy = iterU.Up.Up != null
 				if lazy lazy = iterU.Up.Up.GetValue() == "{...}"
+				if lazy and FirstMetClass
+				{
+					asClass := ((iterU.Up.Up)->{BoxClass^})
+					theTemplate := BoxTemplate^
+					if (name == ".") {
+						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
+						
+					}
+					FirstMetClass = false
+				}
 			}
 			if lazy
 			{
