@@ -191,6 +191,91 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateFuncWrapper := class extend BoxTemplate
+{
+	ToClass := BoxClass^
+
+	this := !(BoxFunc^ toAdd) -> void
+	{
+		FuncName = toAdd.FuncName
+		OutputName = toAdd.OutputName
+
+		ToClass = toAdd
+
+		emptType := Queue.{Type^}()
+		parsC := toAdd.MyFuncType.ParsCount
+		
+		refs := null->{bool^}
+
+		if parsC > 1 refs = new bool[parsC-1]
+
+		PP := Queue.{Type^}()
+
+		for parsC
+		{
+			if it != 0
+			{
+				refs[it] = toAdd.MyFuncType.ParsIsRef[it-1]
+				PP.Push(toAdd.MyFuncType.Pars[it-1])
+			}
+		}
+
+		MyFuncType = GetFuncType(PP,refs,toAdd.MyFuncType.RetType,toAdd.MyFuncType.RetRef,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 0 return 255
+		if consts.Size() != 1 return 255
+		if (consts[0].GetValue() != "~str") return 255
+
+		asStrT := (consts[0]->{ObjStr^})
+		asStr := asStrT.GetString()
+		
+		for ToClass.Params.Size()
+		{
+			if ToClass.Params[it].ItName == asStr
+				return 0
+			
+		}
+		return 255
+	}
+
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		Name := string
+		if consts.Size() != 1 return null
+		if consts[0].GetValue() != "~str" 
+			return null
+		AsStrObj := (consts[0]->{ObjStr^})
+		Name = (AsStrObj.GetString())
+
+
+		pos := -1
+		for ToClass.Params.Size()
+		{
+			if ToClass.Params[it].ItName == Name
+			{
+				pos = it
+			}
+		}
+		if pos == -1 
+		{
+			ErrorLog.Push("Cannot find field "+Name+"\n")
+			return null
+		}
+
+		CType := ((ToClass.ClassType)->{Type^})
+		CTypeP := CType.GetPoint()
+
+		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
+		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos+"\n")
+		return preRet
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 BuiltInTemplateAutoField := class extend BoxTemplate
 {
 	ToClass := BoxClass^
