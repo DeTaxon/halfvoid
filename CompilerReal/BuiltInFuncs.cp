@@ -104,6 +104,18 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		CheckIsSelf()
 	}
 }
+BuiltInFuncMega := class extend BuiltInFunc
+{
+	this := !(string Name, TypeFunc^ fType, string code) -> void
+	{
+		FuncName = Name
+		OutputName = Name
+		ToExe = code
+
+		MyFuncType = fType
+		CheckIsSelf()
+	}
+}
 
 BuiltInTemplatePoint := class extend BoxTemplate
 {
@@ -191,16 +203,24 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 	}
 }
+
+WrapFunc := !(BoxFunc^ toAdd,BoxClass^ toClass) -> BuiltInTemplateFuncWrapper^
+{
+	return new BuiltInTemplateFuncWrapper(toAdd,toClass)
+}
+
 BuiltInTemplateFuncWrapper := class extend BoxTemplate
 {
 	ToClass := BoxClass^
+	ToFunc := BoxFunc^
 
-	this := !(BoxFunc^ toAdd) -> void
+	this := !(BoxFunc^ toAdd,BoxClass^ toClass) -> void
 	{
 		FuncName = toAdd.FuncName
 		OutputName = toAdd.OutputName
 
-		ToClass = toAdd
+		ToClass = toClass
+		ToFunc = toAdd
 
 		emptType := Queue.{Type^}()
 		parsC := toAdd.MyFuncType.ParsCount
@@ -224,52 +244,27 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
-		if pars.Size() != 0 return 255
-		if consts.Size() != 1 return 255
-		if (consts[0].GetValue() != "~str") return 255
-
-		asStrT := (consts[0]->{ObjStr^})
-		asStr := asStrT.GetString()
-		
-		for ToClass.Params.Size()
-		{
-			if ToClass.Params[it].ItName == asStr
-				return 0
-			
-		}
-		return 255
+		return ComputePriorFunc(MyFuncType,pars)
 	}
 
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
 	{
 		Name := string
-		if consts.Size() != 1 return null
-		if consts[0].GetValue() != "~str" 
-			return null
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
-
-
-		pos := -1
-		for ToClass.Params.Size()
-		{
-			if ToClass.Params[it].ItName == Name
-			{
-				pos = it
-			}
-		}
-		if pos == -1 
-		{
-			ErrorLog.Push("Cannot find field "+Name+"\n")
-			return null
-		}
 
 		CType := ((ToClass.ClassType)->{Type^})
 		CTypeP := CType.GetPoint()
 
-		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
-		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos+"\n")
-		return preRet
+		preRetCode := ""
+
+		if ToFunc.MyFuncType.RetType != GetType("void")
+			preRetCode = "#0 = "
+
+		preRetCode = preRetCode + ToFunc.MyFuncType.GetName() + "@" + ToFunc.OutputName
+
+		preRet :=  new BuiltInFuncMega(".",ToFunc.MyFuncType,preRetCode)
+		return	preRet
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

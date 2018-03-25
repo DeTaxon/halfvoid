@@ -451,6 +451,7 @@ BoxFuncBody := class extend BoxFunc
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
+
 		IsSuffix = IsSuf
 	}
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void

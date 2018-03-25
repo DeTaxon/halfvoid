@@ -32,6 +32,8 @@ BoxClass := class extend Object
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
+	FuncWrappers := Queue.{BoxTemplate^}
+
 	"this" := !(Object^ item) -> void 
 	{
 		PopOutNode(item)
