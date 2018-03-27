@@ -136,7 +136,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					pars.Push(iter.Left.GetType())
 					Consts := Queue.{Object^}()
 					Consts.Push(new ObjStr(asName))
-					printf("wut %p\n",asClass)
+					pru := (asClass.UnrollTemplate^.GetPriority(pars,Consts))
+					if pru == 255 return null //TODO: check for user functions
 					roll :=  (asClass.UnrollTemplate^.GetFunc(pars,Consts))
 					if roll == null return null
 
