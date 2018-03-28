@@ -731,6 +731,8 @@ class BoxNew:
 			self.Size.PrintFunc(F)
 		if self.Extra != None:
 			self.Extra.PrintFunc(F)
+	def PrintInBlock(self,F):
+		self.PrintPre(F)
 	def PrintAlloc(self,F):
 		if self.Size != None:
 			self.Size.PrintAlloc(F)

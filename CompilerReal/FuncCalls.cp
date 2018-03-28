@@ -108,6 +108,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						iter.Right = iter.Right.Right.Right.Down
 						if iter.Right != null	iter.Right.Left = iter
 						iter.SetUp(iter.Up)
+
+						if iter.GetType().GetType() == "point"
+						{
+							iter = new PtrToRef(iter)
+						}
 						return MakeSimpleCall(func,iter)
 					}
 
@@ -133,7 +138,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 					pars := Queue.{Type^}
 					pars.Start = null
-					pars.Push(iter.Left.GetType())
+					pars.Push(asClass.ClassType)
 					Consts := Queue.{Object^}()
 					Consts.Push(new ObjStr(asName))
 					pru := (asClass.UnrollTemplate^.GetPriority(pars,Consts))
@@ -142,6 +147,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if roll == null return null
 
 					iter = iter.Left
+					if iter.GetType().GetType() == "point"
+					{
+						iter = new PtrToRef(iter)
+					}
 					return MakeSimpleCall(roll,iter)
 				}
 			}
