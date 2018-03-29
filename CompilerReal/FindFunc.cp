@@ -61,6 +61,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 		}
 }
 
+
 CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
 {
 	iterU := start
@@ -85,6 +86,8 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 					if (name == ".") {
 						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
 						
+					}else{
+						//AddClassFuncs(name,asClass,found&,templates&)
 					}
 					FirstMetClass = false
 				}
@@ -272,4 +275,34 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	return 255
 }
 
+
+
+AddClassFuncs := !(string name, BoxClass^ cl, void^ funcsP, void^ templsP) -> void
+{
+	funcs := funcsP->{Queue.{BoxFunc^}^}
+	templs := templsP->{Queue.{BoxTemplate^}i^}
+	if not cl.createdWrappers
+	{
+		cl.createdWrappers = true
+
+		iter := cl.Down.Down
+		while iter != null
+		{
+			if iter.GetValue() == "i:=1" and iter.Down != null
+			{
+				if iter.Down.GetValue() == "!()"
+				{
+					cl.FuncWrappers.Push(new BuiltInTemplateFuncWrapper((iter.Down)->{BoxFunc^},cl))
+				}
+			}
+			iter = iter.Right
+		}
+	}
+
+	for i : cl.FuncWrappers.Size()
+	{
+		if cl.FuncWrappers[i].FuncName == name
+			funcs.Push(cl.FuncWrappers[i])
+	}
+}
 

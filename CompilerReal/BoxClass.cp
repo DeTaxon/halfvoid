@@ -34,6 +34,8 @@ BoxClass := class extend Object
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	FuncWrappers := Queue.{BoxTemplate^}
 
+	createdWrappers := bool
+
 	"this" := !(Object^ item) -> void 
 	{
 		PopOutNode(item)
@@ -52,11 +54,13 @@ BoxClass := class extend Object
 	{
 		return "{...}"
 	}
+	//GetMethod
 	GetFunc := !(string name,Queue.{Type^} pars) -> BoxFunc^
 	{
 		temp := Queue.{Object^}()
 		return this.GetFunc(name,pars,temp)
 	}
+	//GetMethod
 	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
 	{
 		Funcs := Queue.{BoxFunc^}()
