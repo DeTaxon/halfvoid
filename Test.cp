@@ -6,13 +6,13 @@ free := !(void^ point) -> void declare
 ve := class
 {
 	x,y,z := int
-	print := !() -> void
+	print := !(int u) -> void
 	{
-		printf("hello method %i %i %i\n",x,y,z)
+		printf("hello method %i %i %i %i\n",x,y,z,u)
 	}
 	print2 := !() -> void
 	{
-		this.print()
+		print(15)
 	}
 }
 

@@ -126,6 +126,15 @@ Queue := class !{T} extend Stack.{T}
 	{
 		for toSet.Size() Push(toSet[it])
 	}
+	PushFront := !(T a) -> int
+	{
+		if Start == null{
+			Start = new Node.{T}(a)
+		}else{
+			Start = new Node.{T}(a,Start)
+		}
+		return 0
+	}
 	Push := !(T a) -> int
 	{
 		if Start == null {

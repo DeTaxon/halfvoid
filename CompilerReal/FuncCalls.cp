@@ -248,6 +248,39 @@ OneCall := !(string Name, Object^ G) -> Object^
 	}
 	SomeFunc := FindFunc(Name,G,Ps)
 
+	if SomeFunc == null{
+		inClass := GetUpClass(G)
+		if inClass != null
+		{
+			Ps.PushFront(inClass.ClassType)
+			funcH := inClass.GetFunc(Name,Ps)
+			if funcH != null
+			{
+				daFunc := GetFuncBlock(G)
+				if daFunc != null
+				{
+					thisParamCallPre := new FuncParam("this",(inClass.ClassType)->{Type^},true)
+					thisParamCall := new ParamNaturalCall("this",thisParamCallPre->{Object^})
+
+
+					if P != null
+					{
+						thisParamCall.Right = P
+						P.Left = thisParamCall
+						thisParamCall.Up = P.Up
+						P.Up.Down = thisParamCall
+						P = P.Left
+					}else
+					{
+						P = thisParamCall
+					}
+					return MakeSimpleCall(funcH,P)
+				}
+			}
+
+		}
+	}
+
 	if SomeFunc == null ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	else
 	{

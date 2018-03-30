@@ -574,3 +574,18 @@ BoxFuncBody := class extend BoxFunc
 		}
 	}
 }
+
+GetFuncBlock := !(Object^ to) -> BoxFunc^
+{
+	iterE := to
+
+	while iterE != null
+	{
+		if iterE.GetValue() == "!()"
+		{
+			return iterE->{BoxFunc^}
+		}
+		iterE = iterE.Up
+	}
+	return null
+}
