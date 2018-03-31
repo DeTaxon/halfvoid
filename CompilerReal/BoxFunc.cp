@@ -495,43 +495,46 @@ BoxFuncBody := class extend BoxFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		PrintGlobalSub(f)
-		f << "define "
-		MyFuncType.RetType.PrintType(f)
-		f << " @" << OutputName
-
-		f << "("
-		for i : MyFuncType.ParsCount
+		if MyFuncType.RetType != null
 		{
-			
-			if i > 0 f << " , "
-			if MyFuncType.ParsIsRef[i]
-				MyFuncType.Pars[i].GetPoint().PrintType(f)
-			else	MyFuncType.Pars[i].PrintType(f)
-			f << " %" <<MyFuncParamNames[i]
+			PrintGlobalSub(f)
+			f << "define "
+			MyFuncType.RetType.PrintType(f)
+			f << " @" << OutputName
+
+			f << "("
+			for i : MyFuncType.ParsCount
+			{
+				
+				if i > 0 f << " , "
+				if MyFuncType.ParsIsRef[i]
+					MyFuncType.Pars[i].GetPoint().PrintType(f)
+				else	MyFuncType.Pars[i].PrintType(f)
+				f << " %" <<MyFuncParamNames[i]
+			}
+			if MyFuncType.IsVArgs
+			{
+				if MyFuncType.ParsCount > 0 f << " , "
+				f << "..."
+			}
+			f << ")"
+
+			f << "\n{\n"
+
+			ABox.PrintAlloc(f)
+
+			iter := Down
+			while iter != null
+			{
+				iter.PrintInBlock(f)
+				iter = iter.Right
+			}
+
+			if MyFuncType.RetType == GetType("void")
+				f << "ret void\n"
+
+			f << "}\n"
 		}
-		if MyFuncType.IsVArgs
-		{
-			if MyFuncType.ParsCount > 0 f << " , "
-			f << "..."
-		}
-		f << ")"
-
-		f << "\n{\n"
-
-		ABox.PrintAlloc(f)
-
-		iter := Down
-		while iter != null
-		{
-			iter.PrintInBlock(f)
-			iter = iter.Right
-		}
-
-		if MyFuncType.RetType == GetType("void")
-			f << "ret void\n"
-
-		f << "}\n"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

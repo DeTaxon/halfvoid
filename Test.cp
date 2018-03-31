@@ -6,6 +6,10 @@ free := !(void^ point) -> void declare
 ve := class
 {
 	x,y,z := int
+	this := !()
+	{
+		print(12)
+	}
 	print := !(int u) -> void
 	{
 		printf("hello method %i %i %i %i\n",x,y,z,u)
@@ -18,7 +22,7 @@ ve := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	waw := new ve
+	waw := new ve()
 	waw.y = 20
 	waw.print2()
 	return 0
