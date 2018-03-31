@@ -160,7 +160,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			oper := iter.GetValue()
 			if iter.Right == null
 			{
-				//TODO: x++ x^ x[]
 				iter = iter.Left
 				PopOutNode(iter.Right)
 				return OneCall(oper,iter.Up)
@@ -638,13 +637,50 @@ TypeSizeCall := class extend SomeFuncCall
 NewCall := class extend SomeFuncCall
 {
 	ExtraFunc := SomeFuncCall^
+	Constr := SomeFuncCall^
+	ConstrPars := Object^
+
 	this := !(Type^ toCreate) -> void
 	{
 		This2(toCreate,new ObjInt(1))
 	}
 	this := !(Type^ toCreate,Object^ toCr) -> void
 	{
-		This2(toCreate,toCr)
+		if toCr.GetValue() == "()"
+		{
+			This2(toCreate,new ObjInt(1))
+			ConstrPars = toCr.Down
+
+			if ConstrPars != null
+				ConstrPars.SetUp(null->{Object^})
+
+			pars := Queue.{Type^}()
+			
+			if toCreate.GetType() == "class"
+			{	
+				pars.Push(toCreate)
+
+				iter := ConstrPars
+				while iter != null
+				{
+					pars.Push(iter.GetType())
+					iter = iter.Right
+				}
+				asClass := toCreate->{TypeClass^}
+				func := asClass.ToClass.GetFunc("this",pars)
+				if func != null
+				{
+					Constr = MakeSimpleCall(func,ConstrPars)
+				}else{
+					//ErrorLog.Push("constructor no found at " + Line.LinePos + "in file " +  Line.inFile)
+					ErrorLog.Push("constructor no found")
+				}
+
+			}else{
+			}
+		}else{
+			This2(toCreate,toCr)
+		}
 	}
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
@@ -677,6 +713,60 @@ NewCall := class extend SomeFuncCall
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ExtraFunc.PrintUse(f)
+	}
+}
+
+SoftLink := class extend Object
+{
+	Link := Object^
+	this := !(Object^ toCopy) -> void
+	{
+		Link = toCopy
+	}
+	IsRef := virtual !() -> bool
+	{
+		return Link.IsRef()
+	}
+	GetValue := virtual !() -> char^
+	{
+		return Link.GetValue()
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		Link.PrintPointPre(f)
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		Link.PrintPointUse(f)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		Link.PrintPre(f)
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		Link.PrintUse(f)
+	}
+	GetName := virtual !() -> string
+	{
+		return Link.GetName()
+	}
+	GetPointName := virtual !() -> string
+	{
+		return Link.GetPointName()
+	}
+	DoTheWork := virtual !(int st) -> void
+	{
+	}
+	GetType := virtual !() -> Type^
+	{
+		return Link.GetType()
 	}
 }
 
