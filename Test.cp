@@ -5,14 +5,13 @@ free := !(void^ point) -> void declare
 
 ve := class
 {
-	x,y,z := int
+	x,y,z := float
 	this := !()
 	{
-		print(12)
 	}
 	print := !(int u) -> void
 	{
-		printf("hello method %i %i %i %i\n",x,y,z,u)
+		printf("hello method %f %f %f %i\n",x,y,z,u)
 	}
 	print2 := !() -> void
 	{
@@ -20,10 +19,14 @@ ve := class
 	}
 }
 
+ve2 := class extend ve
+{
+	w := int
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	waw := new ve()
-	waw.y = 20
-	waw.print2()
+	Test := new ve2
+	Test.print2()
 	return 0
 }

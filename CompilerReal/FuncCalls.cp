@@ -392,13 +392,18 @@ NaturalCall := class extend SomeFuncCall
 		{
 			if iter.GetType() != FType.Pars[i]
 			{
-				preRet := BoxExc(iter,FType.Pars[i])
-
-				if preRet == null
+				if iter.GetType().GetType() == "class" and FType.Pars[i].GetType() == "class" and FType.ParsIsRef[i]
 				{
-					ErrorLog.Push("compiler bug\n")
 				}else{
-					iter = preRet
+	
+					preRet := BoxExc(iter,FType.Pars[i])
+	
+					if preRet == null
+					{
+						ErrorLog.Push("compiler bug\n")
+					}else{
+						iter = preRet
+					}
 				}
 			}
 			i += 1

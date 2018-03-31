@@ -1,5 +1,6 @@
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
+
 	if ob == null return null
 
 	iterT := ob.Down
@@ -9,9 +10,30 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 	iterT = iterT.Right
 
 	if iterT == null return null
+	
+	if iterT.GetValue() == "extend"
+	{
+		iterT = iterT.Right
+		if iterT == null return null
+
+		extType := ParseType(iterT)
+
+		if extType == null return null
+		if extType.GetType() != "class" return null
+
+		asClass := extType->{TypeClass^}
+
+		iterT = iterT.Right
+		if iterT == null return null
+		if iterT.GetValue() != "{}" return null
+
+		return new BoxClass(iterT,asClass.ToClass)
+
+	}
+
 	if iterT.GetValue() != "{}" return null
 
-	return new BoxClass(iterT)
+	return new BoxClass(iterT,null->{BoxClass^})
 }
 
 GetUpClass := !(Object^ toS) -> BoxClass^
@@ -32,11 +54,9 @@ BoxClass := class extend Object
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
-	FuncWrappers := Queue.{BoxTemplate^}
+	Parent := BoxClass^
 
-	createdWrappers := bool
-
-	"this" := !(Object^ item) -> void 
+	"this" := !(Object^ item, BoxClass^ par) -> void 
 	{
 		PopOutNode(item)
 		Down = item
@@ -44,11 +64,25 @@ BoxClass := class extend Object
 		MakeItBlock(Down)
 		Down.SetUp(this&)
 		WorkBag.Push(Down,State_Start)
+		WorkBag.Push(this&,State_GetUse)
 
 		ClassId = GetNewId()
 		ClassType = new TypeClass(this&)
 		UnrollTemplate = new BuiltInTemplateUnroll(this&)
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
+
+		Parent = par
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse and Parent != null
+		{
+			Size := Parent.Params.Size()
+			for i : Size
+			{
+				Params.PushFront(Parent.Params[Size - i - 1])
+			}
+		}
 	}
 	GetValue := virtual !() -> string
 	{
@@ -83,8 +117,13 @@ BoxClass := class extend Object
 			iterJ = iterJ.Right
 		}
 		bestFunc := GetBestFunc(pars,Funcs,Templs)
-		printf("using %p\n",bestFunc)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
+
+		if bestFunc == null and Parent != null
+		{
+			return Parent.GetFunc(name,pars,consts)
+		}
+
 		return bestFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
