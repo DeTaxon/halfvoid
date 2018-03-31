@@ -670,6 +670,13 @@ NewCall := class extend SomeFuncCall
 				func := asClass.ToClass.GetFunc("this",pars)
 				if func != null
 				{
+					Temp := ConstrPars
+					ConstrPars = new LinkForThis(this&->{Object^},toCreate->{Type^})
+					if Temp != null
+					{
+						ConstrPars.Right = Temp
+						Temp.Left = ConstrPars
+					}
 					Constr = MakeSimpleCall(func,ConstrPars)
 				}else{
 					//ErrorLog.Push("constructor no found at " + Line.LinePos + "in file " +  Line.inFile)
@@ -701,6 +708,7 @@ NewCall := class extend SomeFuncCall
 	UseCall := virtual !(sfile f) -> void
 	{
 		ExtraFunc.UseCall(f)
+		Constr.PrintInBlock(f)
 	}
 	GetType := virtual !() -> Type^
 	{
@@ -716,12 +724,14 @@ NewCall := class extend SomeFuncCall
 	}
 }
 
-SoftLink := class extend Object
+LinkForThis := class extend Object
 {
 	Link := Object^
-	this := !(Object^ toCopy) -> void
+	ResultType := Type^
+	this := !(Object^ toCopy,Type^ tp) -> void
 	{
 		Link = toCopy
+		ResultType = tp
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -739,23 +749,21 @@ SoftLink := class extend Object
 	}
 	PrintPointPre := virtual !(sfile f) -> void
 	{
-		Link.PrintPointPre(f)
+		//Link.PrintPre(f)
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
-		Link.PrintPointUse(f)
+		Link.PrintUse(f)
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		Link.PrintPre(f)
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		Link.PrintUse(f)
 	}
 	GetName := virtual !() -> string
 	{
-		return Link.GetName()
+		return Link.GetPointName()
 	}
 	GetPointName := virtual !() -> string
 	{
@@ -766,7 +774,7 @@ SoftLink := class extend Object
 	}
 	GetType := virtual !() -> Type^
 	{
-		return Link.GetType()
+		return ResultType
 	}
 }
 
