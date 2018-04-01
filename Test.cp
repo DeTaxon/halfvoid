@@ -22,11 +22,15 @@ ve := class
 ve2 := class extend ve
 {
 	w := int
+	this := !()
+	{
+		w = 0
+	}
 }
-
 main := !(int argc, char^^ argv) -> int
 {
-	Test := new ve2
-	//Test.print2()
+	Test := new ve()
+	Test2 := new ve2()
+	Test2.print2()
 	return 0
 }

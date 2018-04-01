@@ -1,4 +1,4 @@
-GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
+GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFunc^
 {
 	//iter := start
 	//TODO: Find "->{}"
@@ -26,7 +26,17 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType) -> BoxFunc^
 		}
 		iterB = iterB.Next
 	}
-	printf("damb %s %s\n",itemType.GetName(),ToType.GetName())
+
+	if isRef and ToType.GetType() == "class" and itemType.GetType() == "class"
+	{
+		pars := Queue.{Type^}()
+		consts := Queue.{Object^}()
+		pars.Push(itemType)
+		consts.Push((new ObjType(ToType))->{Object^})
+		preRet :=  GlobalRefExc^.GetFunc(pars,consts)
+		return preRet
+	}
+
 	return null
 }
 
@@ -46,7 +56,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
-	Exc := GetExchange(item,item,toType)
+	Exc := GetExchange(item,item,toType,isRef)
 	
 	if Exc == null return null
 

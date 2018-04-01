@@ -449,6 +449,33 @@ BuiltInTemplateNew := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateRefEx := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "."
+		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		if pars.Size() != 1 return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		asType := consts[0]->{ObjType^}
+		return new BuiltInFuncUno("->",pars[0],true,asType.MyType,true,
+			"#0 = bitcast " + pars[0].GetPoint().GetName() + " #1 to " + asType.MyType.GetPoint().GetName() + "\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 
 AddTemplates := !() -> void
 {
@@ -458,6 +485,7 @@ AddTemplates := !() -> void
 	//GlobalUnroll = new BuiltInTemplateUnroll()
 	GlobalNew = new BuiltInTemplateNew()
 	GlobalUnpoint = new BuiltInTemplatePoint()
+	GlobalRefExc = new BuiltInTemplateRefEx()
 
 	BuiltInTemplates.Push(GlobalUnpoint)
 	//BuiltInTemplates.Push(GlobalUnroll)

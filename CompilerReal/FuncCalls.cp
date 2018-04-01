@@ -392,8 +392,12 @@ NaturalCall := class extend SomeFuncCall
 		{
 			if iter.GetType() != FType.Pars[i]
 			{
+				RetR := false
+				if FType.ParsIsRef != null
+					RetR = FType.ParsIsRef[i]
+					
 	
-				preRet := BoxExc(iter,FType.Pars[i],FType.ParsIsRef[i])
+				preRet := BoxExc(iter,FType.Pars[i],RetR)
 	
 				if preRet == null
 				{
@@ -601,6 +605,7 @@ TypeSizeCall := class extend SomeFuncCall
 	ToCmp := Type^
 	this := !(Type^ toCmp) ->void
 	{
+		RetId = GetNewId()
 		ToCmp = toCmp
 		ResultType = GetType("int")
 	}
@@ -608,7 +613,7 @@ TypeSizeCall := class extend SomeFuncCall
 	PrintPre := virtual !(sfile f) -> void
 	{
 		f << "%TPre" << RetId << " = getelementptr "<<ToCmp.GetName()<< " , "<<ToCmp.GetPoint().GetName()<< " null, i32 1\n"
-		f << "%T" << RetId << " = ptrtoint "<<ToCmp.GetPoint().GetName() << "%TPre" <<RetId<< " to i32\n"
+		f << "%T" << RetId << " = ptrtoint "<<ToCmp.GetPoint().GetName() << " %TPre" <<RetId<< " to i32\n"
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
