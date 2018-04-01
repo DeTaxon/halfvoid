@@ -37,7 +37,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter.Left.GetType().GetType() == "point"
 				{
-					return null
+					if iter.Left.GetType().Base.GetType() == "function"
+					{
+						iterL := iter.Left
+						iterLT := iterL.GetType()
+						printf("wow\n")
+						return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
+					}
 				}else{
 					return OneCall(dynCast.BeforeName, iter)
 				}
@@ -498,12 +504,13 @@ NaturalCall := class extend SomeFuncCall
 
 PointFuncCall := class extend NaturalCall
 {
-	this := !(BoxFunc^ func, Object^ Pars) -> void 
+	ParamCal := Object^
+	this := !(TypeFunc^ funcT, Object^ Pars, Object^ pCall) -> void 
 	{
 		Down = Pars
 		
 		RetId = GetNewId()
-		ToCall = func
+		FType = funcT
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
 	}
@@ -511,6 +518,7 @@ PointFuncCall := class extend NaturalCall
 	{
 		PrintPreFuncName(f)
 		PrintParamPres(f)
+		ParamCal.PrintPre(f)
 
 
 		if (FType.RetType != GetType("void"))
@@ -519,10 +527,20 @@ PointFuncCall := class extend NaturalCall
 		}
 		f << " call "
 		FType.PrintType(f)
-		PrintFuncName(f)
+		f << ParamCal.GetName()
 		f << "("
 		PrintParamUses(f)
 		f << ")\n"
+	}
+	Print := virtual !(int s) -> void {
+		for s printf("->")
+		printf("item: %s \n",GetValue())
+		End := this.Down
+		while End != null
+		{
+			End.Print(s+1)
+			End = End.Right
+		}
 	}
 }
 
