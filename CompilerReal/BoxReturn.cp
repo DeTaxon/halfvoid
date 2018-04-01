@@ -46,7 +46,7 @@ BoxReturn := class extend Object
 						{
 							if TypeCmp(Down.GetType(),PreType) != 255
 							{
-								Down = BoxExc(Down,PreType)
+								Down = BoxExc(Down,PreType,asNeed.MyFuncType.RetRef)
 								Down.Up = this&
 							}else{
 								ErrorLog.Push("Can not return value")

@@ -44,7 +44,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 	return toAdd
 }
 
-BoxExc := !(Object^ item, Type^ toType) -> Object^
+BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
 	Exc := GetExchange(item,item,toType)
 	

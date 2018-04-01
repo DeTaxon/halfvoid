@@ -38,7 +38,7 @@ BoxIf := class extend Object
 			{
 				if TypeCmp(Down.GetType(),GetType("bool")) != 255
 				{
-					BoxExc(Down,GetType("bool"))
+					BoxExc(Down,GetType("bool"),false)
 				}else{
 					ErrorLog.Push("can not use type as if statement\n")
 				}
@@ -114,7 +114,7 @@ BoxWhile := class extend Object
 			{
 				if TypeCmp(Down.GetType(),GetType("bool")) != 255
 				{
-					BoxExc(Down,GetType("bool"))
+					BoxExc(Down,GetType("bool"),false)
 				}else{
 					ErrorLog.Push("can not use type as if statement\n")
 				}

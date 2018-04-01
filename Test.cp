@@ -27,6 +27,6 @@ ve2 := class extend ve
 main := !(int argc, char^^ argv) -> int
 {
 	Test := new ve2
-	Test.print2()
+	//Test.print2()
 	return 0
 }
