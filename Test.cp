@@ -3,12 +3,27 @@ calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare
 
-func := !()^ -> void
+dlopen := !(char^ name,int pri) -> void^ declare
+dlsym := !(void^ hndl, char^ name) -> void^ declare
+dlclose := !(void^ hndl) -> int declare
+
+
+//vkEnumerateInstanceExtensionProperties := !(
+
+VkLayerProperties := class
+{
+	name := char[256]
+	version := s32
+	iVer := s32
+	descr := char[256]
+}
+vkEnumerateInstanceLayerProperties := !(int^ , int^)^ -> void
+
 
 ve := class
 {
 	x,y,z := float
-	this := !()
+	this := !() -> void
 	{
 	}
 	print := !(int u) -> void
@@ -24,15 +39,19 @@ ve := class
 ve2 := class extend ve
 {
 	w := int
-	this := !()
+	this := !() -> void
 	{
 		w = 0
 	}
 }
 main := !(int argc, char^^ argv) -> int
 {
-	Test2 := new ve2()
-	Test2.print2()
-	func()
+	handl := dlopen("libvulkan.so.1",2)
+	count := s32
+	vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
+
+
+	printf("lol %p\n",vkEnumerateInstanceLayerProperties )
+	dlclose(handl)
 	return 0
 }

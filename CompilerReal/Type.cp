@@ -84,6 +84,9 @@ ParseType := !(Object^ Node) -> Type^
 			types := Queue.{Type^}()
 			isVARR := false
 
+			SyntaxCompress(Node.Down.Right,PriorityData)
+			UnboxParams(Node.Down.Right)
+
 			iter := Node.Down.Right.Down
 
 			while iter != null

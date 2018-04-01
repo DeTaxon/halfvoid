@@ -512,14 +512,18 @@ PointFuncCall := class extend NaturalCall
 		RetId = GetNewId()
 		FType = funcT
 		if Pars != null Pars.SetUp(this&)
+		ParamCal = pCall
 		ExchangeParams()
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		UseCall(f)
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 		ParamCal.PrintPre(f)
-
 
 		if (FType.RetType != GetType("void"))
 		{
@@ -542,6 +546,10 @@ PointFuncCall := class extend NaturalCall
 			End = End.Right
 		}
 	}
+	GetType := virtual !() -> Type^
+	{
+		return FType.RetType
+	}
 }
 
 AssemblerCall := class extend NaturalCall
@@ -563,13 +571,12 @@ AssemblerCall := class extend NaturalCall
 	}
 	GetType := virtual !() -> Type^
 	{
-		return ToCall.MyFuncType.RetType
+		return FType.RetType
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
-		FType := ToCall.MyFuncType
-		RefsArr := ToCall.MyFuncType.ParsIsRef
+		RefsArr := FType.ParsIsRef
 
 		if not RealCall.IsSelfPre
 			PrintParamPres(f)

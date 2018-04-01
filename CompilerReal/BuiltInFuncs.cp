@@ -449,6 +449,40 @@ BuiltInTemplateNew := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateStorePoint := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "="
+		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		emptType.Push(null->{Type^})
+		arrr := bool[2]
+		arrr[0] = true
+		arrr[1] = false
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		printf("wut %s %s\n", pars[0].GetType(),pars[1].GetType())
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" return 255
+		if pars[1].GetType() != "point" return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		return new BuiltInFuncBinar("->{}",pars[0],true,pars[1],false,GetType("void"),
+			"%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
+			"store " + pars[0].GetName() + " %TPre## , " + pars[0].GetPoint().GetName() + " #1\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 BuiltInTemplateRefEx := class extend BoxTemplate
 {
 	this := !() -> void
@@ -481,6 +515,7 @@ AddTemplates := !() -> void
 {
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
+	BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 
 	//GlobalUnroll = new BuiltInTemplateUnroll()
 	GlobalNew = new BuiltInTemplateNew()
@@ -552,6 +587,7 @@ CreateBuiltIns := !() -> void
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"
 										+"#0 = add i1 #2,0\n"))
+
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
