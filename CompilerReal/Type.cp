@@ -75,27 +75,58 @@ ParseType := !(Object^ Node) -> Type^
 	}
 	if Node.GetValue() == "~d"
 	{
-		if not InDataR(Node.Down) return null
-		Ri := Node.Down.Right
-		if Ri == null return null
-		
-		under := ParseType(Node.Down)
-		if under == null return null
+		lazy := Node.Down != null
+		if lazy lazy = Node.Down.GetValue() == "!"
+		if lazy lazy = Node.Down.Right.GetValue() == "()"
+		if lazy lazy = Node.Down.Right.Right.GetValue() == "^"
+		if lazy
+		{
+			types := Queue.{Type^}()
+			isVARR := false
 
-		if Ri.GetValue() == "^"
-		{
-			return under.GetPoint()
-		}
-		if Ri.GetValue() == "[]"
-		{
-			if Ri.Down.GetValue() == "~int"
+			iter := Node.Down.Right.Down
+
+			while iter != null
 			{
-				Ri = Ri.Down
-				DynCast := Ri->{ObjInt^}
-				ArrSize := DynCast.MyInt
-				return under.GetArray(ArrSize)->{Type^}
+				if iter.GetValue() != ","
+				{
+					someType := ParseType(iter)
+					if someType == null
+						return null
+					types.Push(someType)
+				}
+				iter = iter.Right 
 			}
-			return null
+			iter = Node.Down.Right.Right.Right.Right
+			someType := ParseType(iter)
+			if someType == null return null
+			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
+			return (someType.GetPoint())
+		}
+		else
+		{
+			if not InDataR(Node.Down) return null
+			Ri := Node.Down.Right
+			if Ri == null return null
+			
+			under := ParseType(Node.Down)
+			if under == null return null
+
+			if Ri.GetValue() == "^"
+			{
+				return under.GetPoint()
+			}
+			if Ri.GetValue() == "[]"
+			{
+				if Ri.Down.GetValue() == "~int"
+				{
+					Ri = Ri.Down
+					DynCast := Ri->{ObjInt^}
+					ArrSize := DynCast.MyInt
+					return under.GetArray(ArrSize)->{Type^}
+				}
+				return null
+			}
 		}
 
 

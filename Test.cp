@@ -3,6 +3,8 @@ calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare
 
+func := !()^ -> void
+
 ve := class
 {
 	x,y,z := float
@@ -29,7 +31,6 @@ ve2 := class extend ve
 }
 main := !(int argc, char^^ argv) -> int
 {
-	Test := new ve()
 	Test2 := new ve2()
 	Test2.print2()
 	return 0
