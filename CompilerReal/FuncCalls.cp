@@ -34,7 +34,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if iter.Left.GetValue() == "(d)"
 			{
 				dynCast := (iter.Left)->{ParamCall^}
-				return OneCall(dynCast.BeforeName, iter)
+
+				if iter.Left.GetType().GetType() == "point"
+				{
+					return null
+				}else{
+					return OneCall(dynCast.BeforeName, iter)
+				}
 			}else{
 				return null //TODO: operator()
 			}
@@ -299,6 +305,7 @@ SomeFuncCall := class extend ObjResult
 {
 	RetId := int
 	ToCall := BoxFunc^
+	FType := TypeFunc^
 
 	UseCall := virtual !(sfile f) -> void
 	{
@@ -312,25 +319,25 @@ SomeFuncCall := class extend ObjResult
 		UseCall(f)
 		if ToCall != null
 		{
-			if ToCall.MyFuncType.RetRef
+			if FType.RetRef
 			{
 				f << "%TE" << RetId << " = load "
-				f << ToCall.MyFuncType.RetType.GetName()
+				f << FType.RetType.GetName()
 				f << " , "
-				f << ToCall.MyFuncType.RetType.GetPoint().GetName()
+				f << FType.RetType.GetPoint().GetName()
 				f << " %T" <<RetId << "\n"
 			}
 		}
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
-		ToCall.MyFuncType.RetType.GetPoint().PrintType(f)
+		FType.RetType.GetPoint().PrintType(f)
 		f << " %T" << RetId
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		ToCall.MyFuncType.RetType.PrintType(f)
-		if ToCall.MyFuncType.RetRef
+		FType.RetType.PrintType(f)
+		if FType.RetRef
 		{
 			f << " %TE" << RetId
 		}else{
@@ -345,7 +352,7 @@ SomeFuncCall := class extend ObjResult
 	{
 		if ToCall != null
 		{
-			if ToCall.MyFuncType.RetRef
+			if FType.RetRef
 			{
 				return "%TE" + RetId
 			}
@@ -366,7 +373,7 @@ SomeFuncCall := class extend ObjResult
 	}
 	GetType := virtual !() -> Type^
 	{
-		return ToCall.MyFuncType.RetType
+		return FType.RetType
 	}
 }
 
@@ -378,12 +385,12 @@ NaturalCall := class extend SomeFuncCall
 		
 		RetId = GetNewId()
 		ToCall = func
+		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
 	}
 	ExchangeParams := !() -> void
 	{
-		FType := ToCall.MyFuncType
 
 		iter := Down
 		i := 0
@@ -432,7 +439,7 @@ NaturalCall := class extend SomeFuncCall
 	PrintParamPres := virtual !(sfile f) -> void
 	{
 		iter := Down
-		RefsArr := ToCall.MyFuncType.ParsIsRef
+		RefsArr := FType.ParsIsRef
 		i := 0
 		while iter != null
 		{
@@ -445,7 +452,7 @@ NaturalCall := class extend SomeFuncCall
 	PrintParamUses := virtual !(sfile f) -> void
 	{
 		iter := Down
-		RefsArr := ToCall.MyFuncType.ParsIsRef
+		RefsArr := FType.ParsIsRef
 		i := 0
 		while iter != null
 		{
@@ -460,7 +467,6 @@ NaturalCall := class extend SomeFuncCall
 	UseCall := virtual !(sfile f) -> void
 	{
 		PrintPreFuncName(f)
-		FType := ToCall.MyFuncType
 		PrintParamPres(f)
 
 
@@ -469,7 +475,7 @@ NaturalCall := class extend SomeFuncCall
 			f << "%T" << RetId <<" = "	
 		}
 		f << " call "
-		ToCall.MyFuncType.PrintType(f)
+		FType.PrintType(f)
 		PrintFuncName(f)
 		f << "("
 		PrintParamUses(f)
@@ -490,6 +496,36 @@ NaturalCall := class extend SomeFuncCall
 	}
 }
 
+PointFuncCall := class extend NaturalCall
+{
+	this := !(BoxFunc^ func, Object^ Pars) -> void 
+	{
+		Down = Pars
+		
+		RetId = GetNewId()
+		ToCall = func
+		if Pars != null Pars.SetUp(this&)
+		ExchangeParams()
+	}
+	UseCall := virtual !(sfile f) -> void
+	{
+		PrintPreFuncName(f)
+		PrintParamPres(f)
+
+
+		if (FType.RetType != GetType("void"))
+		{
+			f << "%T" << RetId <<" = "	
+		}
+		f << " call "
+		FType.PrintType(f)
+		PrintFuncName(f)
+		f << "("
+		PrintParamUses(f)
+		f << ")\n"
+	}
+}
+
 AssemblerCall := class extend NaturalCall
 {
 	RealCall := BuiltInFunc^ at ToCall
@@ -499,6 +535,7 @@ AssemblerCall := class extend NaturalCall
 		Down = Pars
 		RetId = GetNewId()
 		ToCall = func
+		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
 	}

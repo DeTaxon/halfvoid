@@ -33,5 +33,6 @@ main := !(int argc, char^^ argv) -> int
 {
 	Test2 := new ve2()
 	Test2.print2()
+	func()
 	return 0
 }
