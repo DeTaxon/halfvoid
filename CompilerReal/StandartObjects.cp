@@ -21,6 +21,36 @@ ObjConst := class extend ObjResult
 	}
 }
 
+ObjNULL := class extend ObjConst
+{
+	"this" := !() -> void
+	{
+		ResultType = VoidPType
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~null"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("null\n")
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << "i8* null"
+	}
+	GetName := virtual !() -> string
+	{
+		return "null"
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjNULL()
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjInt := class extend ObjConst
 {
 	MyInt := s32

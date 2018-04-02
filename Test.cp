@@ -17,38 +17,31 @@ VkLayerProperties := class
 	iVer := s32
 	descr := char[256]
 }
-vkEnumerateInstanceLayerProperties := !(int^ , int^)^ -> void
-
-
-ve := class
-{
-	x,y,z := float
-	this := !() -> void
-	{
-	}
-	print := !(int u) -> void
-	{
-		printf("hello method %f %f %f %i\n",x,y,z,u)
-	}
-	print2 := !() -> void
-	{
-		print(15)
-	}
-}
-
-ve2 := class extend ve
-{
-	w := int
-	this := !() -> void
-	{
-		w = 0
-	}
-}
+vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 main := !(int argc, char^^ argv) -> int
 {
 	handl := dlopen("libvulkan.so.1",2)
 	count := s32
+	nums := VkLayerProperties^
 	vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
+
+	vkEnumerateInstanceLayerProperties(count&,null)
+
+	size := int
+	size = 0
+	size = 256 + 256 + 8
+	size *= count
+	nums = malloc(size)
+
+	vkEnumerateInstanceLayerProperties(count&,nums)
+
+	i := int
+	i = 0
+	while i < count
+	{
+		printf("%i : %s\n",i,nums[i]&)
+		i -= 1
+	}
 
 
 	printf("lol %p\n",vkEnumerateInstanceLayerProperties )

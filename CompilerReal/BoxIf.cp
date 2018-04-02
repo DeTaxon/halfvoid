@@ -133,7 +133,7 @@ BoxWhile := class extend Object
 			f << ", label %OnTrue" << MyId << " , label %End" << MyId << "\n"
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
-			f << "br label %Check" << MyId << "\n"
+			f << "\nbr label %Check" << MyId << "\n"
 			f << "End" << MyId << ":\n"
 
 		}

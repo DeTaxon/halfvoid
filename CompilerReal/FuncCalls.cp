@@ -41,7 +41,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						iterL := iter.Left
 						iterLT := iterL.GetType()
-						printf("wow\n")
+						TrimCommas(iter)
 						return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
 					}
 				}else{
@@ -228,14 +228,11 @@ IsOper := !(string may) -> bool
 
 }
 
-OneCall := !(string Name, Object^ G) -> Object^
+TrimCommas := !(Object up) -> void
 {
-	Ps := Queue.{Type^}()
-
-	P := G.Down
-	if P != null
+	if up.Down != null
 	{
-		Temp := P.Up
+		Temp := up
 		iter := Temp.Down
 		while iter != null
 		{
@@ -249,6 +246,14 @@ OneCall := !(string Name, Object^ G) -> Object^
 			}
 		}
 	}
+}
+
+OneCall := !(string Name, Object^ G) -> Object^
+{
+	Ps := Queue.{Type^}()
+
+	P := G.Down
+	TrimCommas(G)
 
 	iterT := P
 
