@@ -53,7 +53,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	//20: symbols - 10
 
-	Size := 22 //bound check??
+	Size := 23 //bound check??
 
 	//begin.Lines = new Line[Size]
 	PreLines := Queue.{Line}()
@@ -67,9 +67,11 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	for i : 256 PreLines[0].GoTo[i] = 16	
 
 	//symbols
-	for i : "{}[]()@$^&;?.,|" PreLines[0].GoTo[i] = 20
-	PreLines[20].GoTo['.'] = 20
+	for i : "{}[]()@$^&;?,|" PreLines[0].GoTo[i] = 20
 	PreLines[20].Id = 10
+	PreLines[0].GoTo['.'] = 21
+	PreLines[21].GoTo['.'] = 21
+	PreLines[21].Id = 10
 
 	//opers
 

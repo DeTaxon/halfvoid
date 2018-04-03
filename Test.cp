@@ -39,12 +39,10 @@ main := !(int argc, char^^ argv) -> int
 	i = 0
 	while i < count
 	{
-		printf("%i : %s\n",i,nums[i]&)
+		printf("%i : %s\n",i,nums[i].name)
 		i -= 1
 	}
 
-
-	printf("lol %p\n",vkEnumerateInstanceLayerProperties )
 	dlclose(handl)
 	return 0
 }
