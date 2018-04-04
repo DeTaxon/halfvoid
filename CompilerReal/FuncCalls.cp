@@ -430,9 +430,17 @@ NaturalCall := class extend SomeFuncCall
 
 		while iter != null
 		{
-			if iter.GetType() == GetType("float")
+			itType := iter.GetType()
+			if itType != null
 			{
-				iter = BoxExc(iter,GetType("double"),false)
+				if itType == GetType("float")
+				{
+					iter = BoxExc(iter,GetType("double"),false)
+				}
+				if itType.GetType() == "arr"
+				{
+					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
+				}
 			}
 			iter = iter.Right
 		}

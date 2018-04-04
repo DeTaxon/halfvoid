@@ -16,5 +16,6 @@ GlobalUnroll := BuiltInTemplateUnroll^
 GlobalNew := BuiltInTemplateNew^
 GlobalUnpoint := BuiltInTemplatePoint^
 GlobalRefExc := BuiltInTemplateRefEx^
+GlobalExcArr := BuiltInTemplateExcArr^
 
 VoidPType := Type^

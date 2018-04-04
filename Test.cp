@@ -35,7 +35,7 @@ main := !(int argc, char^^ argv) -> int
 	i = 0
 	while i < count
 	{
-		printf("%i : %s\n",i,nums[i].name&)
+		printf("%i : %s\n",i,nums[i].name)
 		i += 1
 	}
 

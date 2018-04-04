@@ -87,6 +87,22 @@ BuiltInFuncUno := class extend BuiltInFunc
 }
 BuiltInFuncBinar := class extend BuiltInFunc
 {
+	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV,bool retRef, string code) -> void
+	{
+		FuncName = Name
+		OutputName = Name
+		ToExe = code
+
+		PP := Queue.{Type^}()
+		PP.Push(l)
+		PP.Push(r)
+
+		IsRefs := bool[2]
+		IsRefs[0] = lRef
+		IsRefs[1] = rRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,retRef,false)
+		CheckIsSelf()
+	}
 	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV, string code) -> void
 	{
 		FuncName = Name
@@ -188,8 +204,34 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true,
-		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 #2\n")
+		return new BuiltInFuncBinar("[]",pars[0],false,pars[1],false,pars[0].Base,true,
+		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, " + pars[1].GetName() + " #2\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+BuiltInTemplateExcArr := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "->{}"
+		OutputName = "error"
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	{
+		if pars.Size() != 1 return 255
+		if pars[0].GetType() != "arr" return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	{
+		return new BuiltInFuncUno("->{}",pars[0],true,pars[0].Base.GetPoint(),false,
+		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0,i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -229,10 +271,6 @@ BuiltInTemplateSet := class extend BoxTemplate
 	}
 }
 
-WrapFunc := !(BoxFunc^ toAdd,BoxClass^ toClass) -> BuiltInTemplateFuncWrapper^
-{
-	return new BuiltInTemplateFuncWrapper(toAdd,toClass)
-}
 
 BuiltInTemplateFuncWrapper := class extend BoxTemplate
 {
@@ -547,6 +585,7 @@ AddTemplates := !() -> void
 	GlobalNew = new BuiltInTemplateNew()
 	GlobalUnpoint = new BuiltInTemplatePoint()
 	GlobalRefExc = new BuiltInTemplateRefEx()
+	GlobalExcArr = new BuiltInTemplateExcArr()
 
 	BuiltInTemplates.Push(GlobalUnpoint)
 	//BuiltInTemplates.Push(GlobalUnroll)

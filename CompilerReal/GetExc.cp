@@ -39,6 +39,16 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		return preRet
 	}
 
+	if itemType.GetType() == "arr" and ToType.GetType() == "point"
+	{
+		if itemType.Base == ToType.Base
+		{
+			pars := Queue.{Type^}()
+			pars.Push(itemType)
+			return GlobalExcArr^.GetFunc(pars)
+		}
+	}
+
 	return null
 }
 
