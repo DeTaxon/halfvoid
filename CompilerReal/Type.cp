@@ -110,7 +110,7 @@ ParseType := !(Object^ Node) -> Type^
 		{
 			if not InDataR(Node.Down) return null
 			Ri := Node.Down.Right
-			if Ri == null return null
+			if Ri == null return ParseType(Node.Down)
 			
 			under := ParseType(Node.Down)
 			if under == null return null

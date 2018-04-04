@@ -466,7 +466,7 @@ BuiltInTemplateNew := class extend BoxTemplate
 		ResP := ResType.GetPoint()
 
 		return new BuiltInFuncBinar(".",pars[0],false,pars[1],false,ResP,
-			"%Pre## = call i8*(i32,i32)@calloc(i32 #1,i32 #2)\n"+
+			"%Pre## = call i8*(i32,i32)@calloc(i32 #2,i32 #1)\n"+
 			"#0 = bitcast i8* %Pre## to " + ResP.GetName() + "\n")
 	}
 	DoTheWork := virtual !(int pri) -> void

@@ -26,7 +26,7 @@ main := !(int argc,string[] argv) -> int
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag()
 
-	//Ob.Print(0)
+	Ob.Print(0)
 	Ob.TestNodes()
 
 	if ErrorLog.Empty()

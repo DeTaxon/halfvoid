@@ -781,7 +781,8 @@ NewCall := class extend SomeFuncCall
 	UseCall := virtual !(sfile f) -> void
 	{
 		ExtraFunc.UseCall(f)
-		Constr.PrintInBlock(f)
+		if Constr != null
+			Constr.PrintInBlock(f)
 	}
 	GetType := virtual !() -> Type^
 	{

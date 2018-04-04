@@ -40,6 +40,7 @@ ObjData := class extend Object
 									PopOutNode(SomeDown.Right)
 									iter.Right.Right = SomeDown
 									SomeDown.Left = iter.Right
+									SizeTree.SetUp(SomeDown.Up)
 								}
 							}
 						}

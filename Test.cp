@@ -27,11 +27,7 @@ main := !(int argc, char^^ argv) -> int
 
 	vkEnumerateInstanceLayerProperties(count&,null)
 
-	size := int
-	size = 0
-	size = 256 + 256 + 8
-	size *= count
-	nums = malloc(size)
+	nums = new VkLayerProperties[8]
 
 	vkEnumerateInstanceLayerProperties(count&,nums)
 
@@ -39,8 +35,8 @@ main := !(int argc, char^^ argv) -> int
 	i = 0
 	while i < count
 	{
-		printf("%i : %s\n",i,nums[i].name)
-		i -= 1
+		printf("%i : %s\n",i,nums[i].name&)
+		i += 1
 	}
 
 	dlclose(handl)
