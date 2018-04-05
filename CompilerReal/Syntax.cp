@@ -121,6 +121,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
+	if RuleUse(begin,"for()",RuleFor) return true
 
 	return false	
 }
@@ -253,5 +254,45 @@ RuleWhile := !(void^ itr)-> int
 
 	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	return 3
+}
+
+RuleFor := !(void^ itr)-> int
+{
+	It := itr->{Object^}
+	Size := 3
+
+	if It.GetValue() != "for" return 0
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() == ","
+	{
+		It = It.Right
+
+		if It == null return 0
+
+		if not InDataR(It) return 0
+
+		It = It.Right
+		if It == null return 0
+		Size += 2
+	}
+
+	if It.GetValue() == ":"
+	{
+		It = It.Right
+		if It == null return 0
+
+		if not InDataR(It) return 0
+
+		Size += 2
+	}
+
+	if It.GetValue() != "{}" and not InBlockData(It) return 0
+	return Size
 }
 

@@ -1,0 +1,3 @@
+BoxFor := class extend Object
+{
+}

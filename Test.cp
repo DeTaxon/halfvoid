@@ -31,8 +31,7 @@ main := !(int argc, char^^ argv) -> int
 
 	vkEnumerateInstanceLayerProperties(count&,nums)
 
-	i := int
-	i = 0
+	i := 0
 	while i < count
 	{
 		printf("%i : %s\n",i,nums[i].name)
