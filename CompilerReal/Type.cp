@@ -106,7 +106,50 @@ ParseType := !(Object^ Node) -> Type^
 			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 			return (someType.GetPoint())
 		}
-		else
+		
+		lazy = Node.Down.GetValue() == "~ind"
+		if lazy lazy = Node.Down.Right != null
+		if lazy lazy = Node.Down.Right.GetValue() == "."
+		if lazy lazy = Node.Down.Right.Right != null
+		if lazy lazy = Node.Down.Right.Right.GetValue() == "{}"
+		if lazy 
+		{
+			NodeName := GetItem(((Node.Down)->{ObjIndent^}).MyStr,Node)
+			if NodeName == null return null
+			if NodeName.Down.GetValue() == "!{}{...}"
+			{
+				asT := ((NodeName.Down)->{BoxClassTemplate^})
+				Objs := Queue.{Object^}()
+				
+				iterR := Node.Down.Right.Right.Down
+
+				while iterR != null
+				{	
+					if iterR.GetValue() != ","
+					{
+						isType := ParseType(iterR)
+						if isType == null
+						{
+							if iterR.IsConst() Objs.Push(iterR)
+							else 
+							{
+								ErrorLog.Push("can not create class\n")
+							}
+						}else{
+							Objs.Push(new ObjType(isType))
+						}
+					}
+					iterR = iterR.Right
+				}
+
+				return asT.GetClass(Objs)
+			}
+			return null
+		}
+
+
+
+		if true
 		{
 			if not InDataR(Node.Down) return null
 			Ri := Node.Down.Right
@@ -221,7 +264,6 @@ TypeDef := class extend Object
 
 	this := !(string name, Type^ T) -> void
 	{
-		Clean()
 		ItName = name
 		ItType = T
 	}

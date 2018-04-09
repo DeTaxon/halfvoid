@@ -13,6 +13,11 @@ GetItem := !(string name, Object^ start) -> Object^
 				return iter
 			}
 		}
+		if iter.GetValue() == ":=type"
+		{
+			asDef := iter->{TypeDef^}
+			if asDef.ItName == name return iter
+		}
 		if iter.Left != null iter = iter.Left 
 		else
 		{
@@ -38,7 +43,6 @@ GetItem := !(string name, Object^ start) -> Object^
 		if SomeDef != null
 		if SomeDef.ItName == name 
 		{
-			//printf("found %s\n", SomeDef.GetValue())
 			return SomeDef->{Object^}
 		}
 	}
@@ -86,13 +90,11 @@ PopOutNode := !(Object^ what) -> void
 	if what.Left != null
 	{
 		what.Left.Right = what.Right
-		if what.Right != null
-			what.Right.Left = what.Left
+		if what.Right != null	what.Right.Left = what.Left
 	}else
 	{
-		what.Up.Down = what.Right
-		if what.Right != null
-			what.Right.Left = null
+		if what.Up != null what.Up.Down = what.Right
+		if what.Right != null what.Right.Left = null
 	}
 	what.Up = null
 	what.Left = null

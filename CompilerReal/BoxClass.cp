@@ -1,6 +1,8 @@
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
 
+	IsTemplate := false
+	
 	if ob == null return null
 
 	iterT := ob.Down
@@ -10,6 +12,12 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 	iterT = iterT.Right
 
 	if iterT == null return null
+
+	if iterT.GetValue() == "!"
+	{
+		iterT = iterT.Right.Right
+		IsTemplate = true
+	}
 	
 	if iterT.GetValue() == "extend"
 	{
@@ -27,12 +35,14 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 		if iterT == null return null
 		if iterT.GetValue() != "{}" return null
 
+		if IsTemplate return new BoxClassTemplate(ob)
 		return new BoxClass(iterT,asClass.ToClass)
 
 	}
 
 	if iterT.GetValue() != "{}" return null
 
+	if IsTemplate return new BoxClassTemplate(ob)
 	return new BoxClass(iterT,null->{BoxClass^})
 }
 
@@ -45,6 +55,77 @@ GetUpClass := !(Object^ toS) -> BoxClass^
 		iterF = iterF.Up
 	}
 	return null
+}
+
+BoxClassTemplate := class extend Object
+{
+	Classes := Queue.{BoxClass^}
+	ClassesObjs := Queue.{Object^}()
+	Names := Queue.{string}
+	ClassTree := Object^
+
+	this := !(Object^ tree) -> void
+	{
+		ClassTree = tree.Clone()
+
+		iterY := ClassTree.Down.Right.Right.Down
+
+		while iterY != null
+		{
+			if iterY.GetValue() == "~ind"
+			{
+				Names.Push(iterY->{ObjIndent^}.MyStr)
+			}
+			iterY = iterY.Right
+		}
+
+		PopOutNode(ClassTree.Down.Right)		
+		PopOutNode(ClassTree.Down.Right)		
+	}
+
+	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
+	{
+		cont := new BoxBlock()
+
+		cont.Right = Down
+		cont.Up = this&
+		if Down != null Down.Left = cont
+		Down = cont
+
+		for i : stuf.Size()
+		{
+			if stuf[i].GetValue() == "~type"
+			{
+				def := new TypeDef(Names[i],((stuf[i])->{ObjType^}).MyType)
+				def.Right = cont.Down
+				def.Up = cont
+				if def.Right != null cont.Down.Left = def
+				cont.Down = def
+			}
+		}
+
+		iterR := cont.Down
+		while iterR.Right != null
+		{
+			iterR = iterR.Right
+		}
+		
+		newTree := ClassTree.Clone()
+
+		newClass := new BoxClass(newTree.Down.Right,null->{BoxClass^})
+		iterR.Right = newClass
+		iterR.Right.Left = iterR
+		iterR.Right.Up = iterR.Up
+
+		return newClass.ClassType
+	}
+	GetValue := virtual !() -> string
+	{
+		return "!{}{...}"
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+	}
 }
 
 BoxClass := class extend Object

@@ -44,8 +44,7 @@ main := !(int argc,string[] argv) -> int
 			ite = ite.Next
 		}
 	}
-
-	CleanStrs()
+	//CleanStrs() shiet
 	return 0
 }
 

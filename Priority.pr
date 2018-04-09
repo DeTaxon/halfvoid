@@ -1,6 +1,6 @@
 "! () -> d {}" "! () {}" "! () -> d declare"  "class {}" "class extend d {}" "class ! {} {}" "class ! {} extend d {}"
 "new d ()"
-"d ^" "d []" "d &" "d ?" "d -> {}" "d . d" "d . d ()" "d ()" "d s"
+"d ^" "d []" "d &" "d ?" "d -> {}" "d . {} " "d . d" "d . d ()" "d ()" "d s"
 "! () ^ -> d"
 "()"
 "d .. d"
