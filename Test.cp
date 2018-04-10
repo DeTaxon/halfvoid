@@ -42,7 +42,12 @@ dlclose := !(void^ hndl) -> int declare
 //	return 0
 //}
 
-Arr := class !{a}
+Empt := class
+{
+	x := int
+}
+
+Arr := class !{a} extend Empt
 {
 	ar := a[13]
 }
@@ -50,7 +55,6 @@ Arr := class !{a}
 main := !(int argc,char^^ argv) -> int
 {
 	c := Arr.{char}
-	h := Arr.{int}
 	return 0
 }
 

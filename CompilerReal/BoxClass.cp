@@ -111,8 +111,26 @@ BoxClassTemplate := class extend Object
 		}
 		
 		newTree := ClassTree.Clone()
+		
+		inher := BoxClass^
+		inher = null
 
-		newClass := new BoxClass(newTree.Down.Right,null->{BoxClass^})
+		iterR.Right = newTree
+		iterR.Right.Left = iterR
+		iterR.Right.Up = iterR.Up
+
+		treeIter := newTree.Down.Right
+
+		if treeIter.GetValue() == "extend"
+		{
+			inher = ParseType(treeIter.Right)
+			if inher == null return null
+			inher = ((inher->{TypeClass^}).ToClass)
+
+			treeIter = treeIter.Right.Right
+		}
+
+		newClass := new BoxClass(treeIter,inher)
 		iterR.Right = newClass
 		iterR.Right.Left = iterR
 		iterR.Right.Up = iterR.Up
