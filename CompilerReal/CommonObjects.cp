@@ -18,6 +18,12 @@ GetItem := !(string name, Object^ start) -> Object^
 			asDef := iter->{TypeDef^}
 			if asDef.ItName == name return iter
 		}
+		if iter.GetValue() == "(const)"
+		{
+			asC := iter->{ConstItem^}
+			if asC.Name == name return iter
+		}
+
 		if iter.Left != null iter = iter.Left 
 		else
 		{

@@ -47,14 +47,15 @@ Empt := class
 	x := int
 }
 
-Arr := class !{a} extend Empt
+Arr := class !{a,size} extend Empt
 {
-	ar := a[13]
+	ar := a[size]
 }
 
 main := !(int argc,char^^ argv) -> int
 {
-	c := Arr.{char}
+	c := Arr.{char,13}
+	o := Arr.{char,17}
 	return 0
 }
 

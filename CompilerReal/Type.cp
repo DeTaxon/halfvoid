@@ -130,7 +130,8 @@ ParseType := !(Object^ Node) -> Type^
 						isType := ParseType(iterR)
 						if isType == null
 						{
-							if iterR.IsConst() Objs.Push(iterR)
+							val := TryCompute(iterR)
+							if val != null Objs.Push(val)
 							else 
 							{
 								ErrorLog.Push("can not create class\n")
@@ -164,13 +165,15 @@ ParseType := !(Object^ Node) -> Type^
 			}
 			if Ri.GetValue() == "[]"
 			{
-				if Ri.Down.GetValue() == "~int"
+				val := TryCompute(Ri.Down)
+				if val == null return null
+				if val.GetValue() == "~int"
 				{
-					Ri = Ri.Down
-					DynCast := Ri->{ObjInt^}
+					DynCast := val->{ObjInt^}
 					ArrSize := DynCast.MyInt
 					return under.GetArray(ArrSize)->{Type^}
 				}
+
 				return null
 			}
 		}

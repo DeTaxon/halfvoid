@@ -1,5 +1,5 @@
 
-ObjIndent := class extend ObjConst
+ObjIndent := class extend Object
 {
 	MyStr := char^
 	"this" := !(char^ str) -> void

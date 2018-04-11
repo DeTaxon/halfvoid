@@ -102,6 +102,14 @@ BoxClassTemplate := class extend Object
 				if def.Right != null cont.Down.Left = def
 				cont.Down = def
 			}
+			if stuf[i].IsConst()
+			{
+				toAd := new ConstItem(Names[i],stuf[i])
+				toAd.Right = cont.Down
+				toAd.Up = cont
+				if toAd.Right != null cont.Down.Left = toAd
+				cont.Down = toAd
+			}
 		}
 
 		iterR := cont.Down
