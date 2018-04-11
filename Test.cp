@@ -56,6 +56,8 @@ main := !(int argc,char^^ argv) -> int
 {
 	c := Arr.{char,13}
 	o := Arr.{char,17}
+	p := Arr.{char,13}
+	e := Arr.{char,13}
 	return 0
 }
 

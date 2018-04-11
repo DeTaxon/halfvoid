@@ -59,8 +59,8 @@ GetUpClass := !(Object^ toS) -> BoxClass^
 
 BoxClassTemplate := class extend Object
 {
-	Classes := Queue.{BoxClass^}
-	ClassesObjs := Queue.{Object^}()
+	Classes := Stack.{BoxClass^}
+	ClassesObjs := Stack.{Object^^}()
 	Names := Queue.{string}
 	ClassTree := Object^
 
@@ -85,6 +85,19 @@ BoxClassTemplate := class extend Object
 
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
+		if stuf.Size() != Names.Size() return null
+
+		for i : Classes.Size()
+		{	
+			coud := true
+			for j : stuf.Size()
+			{
+				if not CmpConstObjs(stuf[j],ClassesObjs[i][j])
+					coud = false
+			}
+			if coud return Classes[i].ClassType
+		}
+
 		cont := new BoxBlock()
 
 		cont.Right = Down
@@ -143,6 +156,8 @@ BoxClassTemplate := class extend Object
 		iterR.Right.Left = iterR
 		iterR.Right.Up = iterR.Up
 
+		Classes.Push(newClass)
+		ClassesObjs.Push(stuf.ToArray())
 		return newClass.ClassType
 	}
 	GetValue := virtual !() -> string
