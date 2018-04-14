@@ -19,6 +19,7 @@ InBlockData := !(Object^ obj) -> bool
 	if obj.GetValue() == "return()" return true
 	if obj.GetValue() == "if()" return true
 	if obj.GetValue() == "while()" return true
+	if obj.GetValue() == "for()" return true
 
 	return false
 }

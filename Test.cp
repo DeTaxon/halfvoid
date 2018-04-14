@@ -42,22 +42,13 @@ dlclose := !(void^ hndl) -> int declare
 //	return 0
 //}
 
-Empt := class
-{
-	x := int
-}
-
-Arr := class !{a,size} extend Empt
-{
-	ar := a[size]
-}
 
 main := !(int argc,char^^ argv) -> int
 {
-	c := Arr.{char,13}
-	o := Arr.{char,17}
-	p := Arr.{char,13}
-	e := Arr.{char,13}
+	for i : 5
+	{
+		printf("wow\n")
+	}
 	return 0
 }
 

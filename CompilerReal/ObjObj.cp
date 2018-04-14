@@ -51,6 +51,14 @@ ObjObj := class extend Object
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
 			}
+			if MyStr == "for()"
+			{
+				It := this&->{Object^}
+				NewNode := GetBoxFor(It)->{Object^}
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+				Found = true
+			}
 			if not Found
 			{
 				//WorkBag.Push(this&,State_PreGetUse)
