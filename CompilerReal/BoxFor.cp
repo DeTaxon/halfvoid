@@ -95,6 +95,7 @@ BoxForInt := class extend BoxFor
 		IntName = ((LocPar->{ConstParam^}).itName)
 
 		beg.PrintPre(f)
+		end.PrintPre(f)
 		printf("wut %s\n",end.GetValue())
 
 		f << "br label %Start" << thisId <<"\n"
