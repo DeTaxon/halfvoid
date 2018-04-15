@@ -37,19 +37,22 @@ ObjData := class extend Object
 								if SomeDown.Right.GetValue() == "[]"
 								{
 									SizeTree = SomeDown.Right.Down
-									PopOutNode(SomeDown.Right)
-									iter.Right.Right = SomeDown
-									SomeDown.Left = iter.Right
-									SizeTree.SetUp(SomeDown.Up)
+									SomeDown.Right.Up = null
+									SomeDown.Right.Left = null
+									SomeDown.Right = null
+									iter.Right = iter.Right.Down
+									iter.Right.Left = iter
+									iter.Right.Up = iter.Up
+									iter.Right.Right = null
 								}
 							}
 						}
 						SomeDown = iter.Right
 						if SizeTree != null
 						{
-							SomeDown.Right = SizeTree
-							SizeTree.Left = SomeDown
-							WorkBag.Push(SizeTree,State_Start)
+							iter.Right.Right = SizeTree
+							SizeTree.Left = iter.Right
+							SizeTree.Up = iter.Up
 						}
 						iter = iter.Right
 					}else{

@@ -38,6 +38,7 @@ ObjIndent := class extend Object
 		if pri == State_GetUse
 		{
 			may := GetUse(this&)
+
 			if may != null
 			{
 				ReplaceNode(this&,may)

@@ -27,7 +27,7 @@ main := !(int argc, char^^ argv) -> int
 
 	vkEnumerateInstanceLayerProperties(count&,null)
 
-	nums = new VkLayerProperties[8]
+	nums = new VkLayerProperties[count]
 
 	vkEnumerateInstanceLayerProperties(count&,nums)
 
