@@ -23,6 +23,12 @@ GetItem := !(string name, Object^ start) -> Object^
 			asC := iter->{ConstItem^}
 			if asC.Name == name return iter
 		}
+		if iter.GetValue() == "~for()"
+		{
+			asC := iter->{BoxFor^}
+			if asC.itName == name return asC.LocPar
+			if asC.indName == name return asC.IndPar
+		}
 
 		if iter.Left != null iter = iter.Left 
 		else

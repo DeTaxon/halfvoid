@@ -4,6 +4,9 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	itemName := string
 	indName := string
 
+	itemName = null
+	indName = null
+
 	iterY := dat.Down.Right
 
 	if iterY.Right.GetValue() == ","
@@ -30,20 +33,32 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 BoxFor := class extend Object
 {
+	LocPar := MemParam^
+	IndPar := MemParam^
+	itName := string
+	indName := string
 
 }
 
 BoxForInt := class extend BoxFor
 {
-	LocPar := LocalParam^
 	thisId := int
 	this := !(string f_it, string f_ind,Object^ start, Object^ end, Object^ stuf) -> void
 	{	
+		thisId =  GetNewId()
+
+		itName = f_it
+		if itName == null itName = "it"
+
+		indName = f_ind
+		if indName == null indName = "it_ind"
+
 		itemStart := start
 		if start == null itemStart = new ObjInt(0)
 		
 		parId := GetAlloc(stuf,GetType("int"))
-		LocPar = new LocalParam(GetType("int"),parId)
+		LocPar = new ConstParam("iterInt" + thisId ,GetType("int"))
+		IndPar = LocPar
 		
 		Down = stuf
 		stuf.Left = null
@@ -54,9 +69,10 @@ BoxForInt := class extend BoxFor
 		end.Right = null
 		Down.SetUp(this&)
 		MakeItBlock(stuf)
-		stuf.Up = this&
 
-		thisId =  GetNewId()
+		WorkBag.Push(Down.Right,State_Start)
+		WorkBag.Push(Down.Right.Right,State_Start)
+
 	}
 	GetValue := virtual !() -> string
 	{
@@ -75,17 +91,29 @@ BoxForInt := class extend BoxFor
 		beg := Down.Right
 		end := beg.Right
 
-		LocPar.PrintPointPre(f,thisId)
+		IntName := string
+		IntName = ((LocPar->{ConstParam^}).itName)
+
 		beg.PrintPre(f)
+		printf("wut %s\n",end.GetValue())
 
-		f << "store i32 " << beg.GetName() << " , i32* " << LocPar.GetPointName(thisId) << "\n"
-		f << "%GoingTo" << thisId << " = add i32 " << beg.GetName() << " , 0\n"
+		f << "br label %Start" << thisId <<"\n"
+		f << "Start" << thisId << ":\n"
+		f << "%GoingTo" << thisId << " = add i32 " << end.GetName() << " , 0\n"
 
-		f << "br label %Check\n"
-		f << "Check" << thisId << " :n"
-
-
-
+		f << "br label %Check" << thisId <<"\n"
+		f << "Check" << thisId << ":\n"
+		f << IntName << " = phi i32 [0, %Start" << thisId << "] , [%nextInd" << thisId << " , %PreEnd" << thisId << " ]\n"
+		f << "%Res" << thisId << " = icmp slt i32 "<< IntName << " ,%GoingTo" << thisId << "\n"
+		f << "br i1 %Res" << thisId << ", label %Begin" << thisId << " , label %End" << thisId <<"\n"
+		
+		f << "Begin" << thisId <<":\n"
+		stuf.PrintInBlock(f)
+		f << "br label %PreEnd" << thisId << "\n"
+		f << "PreEnd" << thisId << ":\n"
+		f << "%nextInd" << thisId << " = add i32 1," << IntName << "\n"
+		f << "br label %Check" << thisId << "\n"
+		f << "End" << thisId <<":\n"
 	}
 }
 

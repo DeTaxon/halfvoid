@@ -47,7 +47,8 @@ main := !(int argc,char^^ argv) -> int
 {
 	for i : 5
 	{
-		printf("wow\n")
+		for j : i
+			printf("wow %i %i\n",i,j)
 	}
 	return 0
 }

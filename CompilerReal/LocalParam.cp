@@ -30,6 +30,27 @@ MemParam := class extend ObjResult
 	}
 
 }
+ConstParam := class extend MemParam
+{
+	itName := string
+	this := !(string name, Type^ tp) -> void
+	{
+		itName = "%" + name
+		ResultType = tp
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		f << ResultType.GetName() <<" " <<itName
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return itName
+	}
+	GetName := virtual !() -> string
+	{
+		return itName
+	}
+}
 LocalParam := class extend MemParam
 {
 	inAllocId := int
