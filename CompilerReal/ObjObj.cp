@@ -59,6 +59,14 @@ ObjObj := class extend Object
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
 			}
+			if MyStr == "imprt"
+			{
+				asS := (Down.Right)->{ObjStr^}
+				NewNode := new ImportCmd(asS.GetString())
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+				Found = true
+			}
 			if not Found
 			{
 				//WorkBag.Push(this&,State_PreGetUse)

@@ -9,6 +9,12 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found) -> void
 				found.Push(AsNeed)	
 			}
 		}
+		if ii.GetValue() == "#import cp"
+		{
+			asNeed := ii->{ImportCmd^}
+			fl := asNeed.GetFile()
+			CollectParamsAllByName(name,fl.Down,found)
+		}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
@@ -58,6 +64,12 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 							templates.Push(AsBoxFunc2)
 				}
 			}
+		}
+		if ii.GetValue() == "#import cp"
+		{
+			asNeed := ii->{ImportCmd^}
+			fl := asNeed.GetFile()
+			CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix)
 		}
 }
 

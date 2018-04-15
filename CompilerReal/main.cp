@@ -9,10 +9,8 @@ main := !(int argc,string[] argv) -> int
 	PriorityData.Opers.Push(":=")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
-	Ob = GetObjectsFromFile("Test.cp")
+	Ob = LoadFile("Test.cp")
 	
-
-	//Ob.Print(0)
 	WorkBag.Push(Ob,State_Start)
 	
 	WorkWithBag()
@@ -26,14 +24,21 @@ main := !(int argc,string[] argv) -> int
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag()
 
-	Ob.Print(0)
+	//Ob.Print(0)
 	Ob.TestNodes()
 
 	if ErrorLog.Empty()
 	{
 		fil := sfile("out2.ll","w")
 		StrContainer.PrintGlobal(fil)
-		Ob.PrintGlobal(fil)
+
+		wutt := Files.Start
+		while wutt != null
+		{
+			wutt.Data^.Print(0)
+			wutt.Data^.PrintGlobal(fil)
+			wutt = wutt.Next
+		}
 		fil.close()
 	}else
 	{

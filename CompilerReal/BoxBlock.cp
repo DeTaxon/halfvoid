@@ -81,3 +81,37 @@ BoxBlock := class extend Object
 		}
 	}
 }
+BoxFile := class extend BoxBlock
+{
+	fileId := int
+	fileName := string
+	this := !() -> void
+	{
+		fileId = GetNewId()
+	}
+	this := !(Object^ toRepl) -> void
+	{
+		fileId = GetNewId()
+		if toRepl.GetValue() == "{}"
+		{	
+			Down = toRepl.Down
+		}else
+		{
+			Down = toRepl
+		}
+		Down.SetUp(this&)
+	}
+	GetValue := virtual !() -> string
+	{
+		return "{d}.cp"
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintInBlock(f)
+			iter = iter.Right
+		}
+	}
+}

@@ -224,7 +224,7 @@ IsKeyword := !(char^ W) -> bool
 
 TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 {
-	DaFile := new BoxBlock()
+	DaFile := new BoxFile()
 	iter := DaFile->{Object^}
 	Adder := DaFile->{Object^}
 
