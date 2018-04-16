@@ -14,7 +14,6 @@ LoadFile := !(string name, Object^ start) -> BoxFile^
 		if Files[it].fileName == name
 			return Files[it]
 	}
-
 	ob := GetObjectsFromFile(name)
 	Files.Push(ob->{BoxFile^})
 	return ob->{BoxFile^}

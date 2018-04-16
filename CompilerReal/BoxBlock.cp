@@ -85,21 +85,10 @@ BoxFile := class extend BoxBlock
 {
 	fileId := int
 	fileName := string
-	this := !() -> void
+	this := !(string name) -> void
 	{
 		fileId = GetNewId()
-	}
-	this := !(Object^ toRepl) -> void
-	{
-		fileId = GetNewId()
-		if toRepl.GetValue() == "{}"
-		{	
-			Down = toRepl.Down
-		}else
-		{
-			Down = toRepl
-		}
-		Down.SetUp(this&)
+		fileName = name
 	}
 	GetValue := virtual !() -> string
 	{

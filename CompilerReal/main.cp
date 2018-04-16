@@ -82,7 +82,7 @@ GetObjectsFromFile := !(char^ fileName) -> Object^
 		iterC = iterC.Next
 	}
 
-	Ob := TokensToObjects("Test.cp",Buf)
+	Ob := TokensToObjects(fileName,Buf)
 	UniteSkobs(Ob)
 	return Ob
 }

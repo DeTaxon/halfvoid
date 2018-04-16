@@ -1,5 +1,5 @@
 
-InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found) -> void
+InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} Searched) -> void
 {
 		if ii.GetValue() == "i:=1"
 		{
@@ -13,17 +13,35 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found) -> void
 		{
 			asNeed := ii->{ImportCmd^}
 			fl := asNeed.GetFile()
-			CollectParamsAllByName(name,fl.Down,found)
+
+			Found := false
+
+			for Searched.Size()
+			{
+				if Searched[it] == fl.fileId
+					Found = true
+			}
+			if not Found
+			{
+				Searched.Push(fl.fileId)
+				CollectParamsAllByName(name,fl.Down,found,Searched)
+			}
 		}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
 {
+	Searched := Queue.{int}()
+	CollectParamsAllByName(name,start,found,Searched)
+}
+
+CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found, Queue.{int} Searched) -> void
+{
 	iterU := start
 	LastPos := start
 	while iterU != null
 	{
-		InsertParam(name,iterU,found)
+		InsertParam(name,iterU,found,Searched)
 		if iterU.Left != null 
 		{
 			iterU = iterU.Left 
@@ -33,7 +51,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found)
 			iterK := LastPos.Right
 			while iterK != null
 			{
-				InsertParam(name,iterK,found)
+				InsertParam(name,iterK,found,Searched)
 				iterK = iterK.Right
 			}
 			LastPos = iterU
@@ -41,7 +59,8 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found)
 	}
 }
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
+
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,Queue.{int} Searched) -> void
 {
 		if ii.GetValue() == "i:=1"
 		{
@@ -69,12 +88,24 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 		{
 			asNeed := ii->{ImportCmd^}
 			fl := asNeed.GetFile()
-			CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix)
+
+			Found := false
+
+			for Searched.Size()
+			{
+				if Searched[it] == fl.fileId
+					Found = true
+			}
+			if not Found
+			{
+				Searched.Push(fl.fileId)
+				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,Searched)
+			}
 		}
 }
 
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,Queue.{int} Searched) -> void
 {
 	iterU := start
 	LastPos := start
@@ -96,8 +127,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 					asClass := ((iterU.Up.Up)->{BoxClass^})
 					theTemplate := BoxTemplate^
 					if (name == ".") {
-						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
-						
+						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})						
 					}else{
 						//AddClassFuncs(name,asClass,found&,templates&)
 					}
@@ -112,7 +142,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		}
 		if iterU != null
 		{
-			InsertFunc(name,iterU,found,templates,IsSuffix)
+			InsertFunc(name,iterU,found,templates,IsSuffix,Searched)
 			if iterU.Left != null 
 			{
 				iterU = iterU.Left 
@@ -122,7 +152,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				iterK := LastPos.Right
 				while iterK != null
 				{
-					InsertFunc(name,iterK,found,templates,IsSuffix)
+					InsertFunc(name,iterK,found,templates,IsSuffix,Searched)
 					iterK = iterK.Right
 				}
 				LastPos = iterU
@@ -173,9 +203,19 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> 
 }
 FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts, bool IsSuffix) -> BoxFunc^
 {
+	Searched := Queue.{int}()
+
+	iterS := start
+	if iterS != null
+	{
+		while iterS.Up != null
+			iterS = iterS.Up
+		Searched.Push(iterS->{BoxFile^}.fileId)
+	}
+
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
-	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix)
+	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,Searched)
 	return GetBestFunc(pars,consts,Funcs,Templs)
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
