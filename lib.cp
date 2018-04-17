@@ -1,4 +1,3 @@
-#import "lib.cp"
 
 printf := !(char^ str, ...) -> int declare
 calloc := !(int size,int sizet) -> void^ declare

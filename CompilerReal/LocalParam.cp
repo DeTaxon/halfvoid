@@ -107,9 +107,10 @@ LocalParam := class extend MemParam
 GlobalParam := class extend MemParam
 {
 	MainId := int
-	this := !(Type^ th) -> void
+	this := !(Type^ th,Object^ toSet) -> void
 	{
 		ResultType = th
+		Down = toSet
 		MainId = GetNewId()
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -127,7 +128,12 @@ GlobalParam := class extend MemParam
 	{
 		f << "@T" << MainId << " = global "
 		ResultType.PrintType(f)
-		f << " zeroinitializer\n"
+		if Down == null
+		{
+			f << " zeroinitializer\n"
+		}else{
+			f << " " << Down.GetName() << "\n"
+		}
 	}
 	PrintPointPre := virtual !(sfile f, int newInd) -> void
 	{

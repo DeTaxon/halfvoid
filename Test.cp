@@ -10,6 +10,10 @@ VkLayerProperties := class
 	descr := char[256]
 }
 vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
+
+
+v := 15
+
 main := !(int argc, char^^ argv) -> int
 {
 	handl := dlopen("libvulkan.so.1",2)
@@ -23,8 +27,7 @@ main := !(int argc, char^^ argv) -> int
 
 	vkEnumerateInstanceLayerProperties(count&,nums)
 
-	for i : count
-		printf("%i : %s\n",i,nums[i].name)
+	for i : count printf("%i : %s\n",i,nums[i].name)
 
 	dlclose(handl)
 	return 0

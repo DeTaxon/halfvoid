@@ -75,6 +75,17 @@ ObjParam := class extend Object
 		if pri == State_CheckTypes
 		{
 			MaybeType := ParseType(Down)
+			val := Object^
+			val = null
+
+			if MaybeType == null
+			{
+				val = TryCompute(Down)
+				if val != null
+				{
+					MaybeType = val.GetType()
+				}
+			}
 
 			if MaybeType != null
 			{
@@ -83,7 +94,7 @@ ObjParam := class extend Object
 				if allcId == -1
 				{
 					//TODO: Global?
-					Down = new GlobalParam(MaybeType)
+					Down = new GlobalParam(MaybeType,val)
 					Down.SetUp(this&)
 				}else
 				{
