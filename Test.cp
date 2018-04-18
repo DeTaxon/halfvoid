@@ -12,18 +12,26 @@ VkLayerProperties := class
 vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
 
-v := 15
+v := 3.5
+
+"in" := !(int x, int y) -> int
+{
+	printf("test\n")
+	return 0
+}
 
 main := !(int argc, char^^ argv) -> int
 {
+	2 in 2
+	return 0
 	handl := dlopen("libvulkan.so.1",2)
 	count := s32
-	nums := VkLayerProperties^
+
 	vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
 
 	vkEnumerateInstanceLayerProperties(count&,null)
 
-	nums = new VkLayerProperties[count]
+	nums := new VkLayerProperties[count]
 
 	vkEnumerateInstanceLayerProperties(count&,nums)
 

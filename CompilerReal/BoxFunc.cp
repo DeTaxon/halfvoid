@@ -63,6 +63,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			dynCa := iterForName->{ObjParam^}
 			IsSuf = dynCa.IsStrName
 			FName = dynCa.MyStr
+
+			if IsOper(FName) IsSuf = false
+
 			iterForName = null
 		}else	iterForName = iterForName.Up
 	}

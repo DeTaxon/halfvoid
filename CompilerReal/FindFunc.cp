@@ -230,7 +230,7 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 
 	if FoundC + FoundT == 0
 	{
-		return null //TODO:
+		return null
 	}
 
 	Priors := int^
@@ -239,8 +239,6 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 	templsPrior := int^
 	templsPrior = null
 	if not templs.Empty() templsPrior = new int[templs.Size()] else templsPrior = null
-
-	//for FoundC Priors[it] = 255
 
 	if pars.Empty()
 	{

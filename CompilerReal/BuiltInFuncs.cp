@@ -529,7 +529,6 @@ BuiltInTemplateStorePoint := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars) -> int
 	{
-		printf("wut %s %s\n", pars[0].GetType(),pars[1].GetType())
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" return 255
 		if pars[1].GetType() != "point" return 255
