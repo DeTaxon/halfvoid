@@ -20,7 +20,6 @@ ParseParamCall := !(Object^ ob) -> Object^
 				{
 					return new ParamNaturalCall(dynCast.MyStr,may.Down)
 				}
-				printf("here\n")
 			}
 			if may.GetValue() == "i:=2"
 			{
@@ -106,6 +105,9 @@ ParamFuncCall := class extend ParamCall
 	{
 		BeforeName = Name
 		ResultType = Par.ObjType
+
+		asNeed := ((Par.Down)->{BoxFunc^})
+		asNeed.ParseBlock()
 	}
 }
 
