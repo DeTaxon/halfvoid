@@ -1,32 +1,32 @@
 
 InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} Searched) -> void
 {
-		if ii.GetValue() == "i:=1"
+	if ii.GetValue() == "i:=1"
+	{
+		AsNeed := ii->{ObjParam^}
+		if(AsNeed.GetName() == name)
 		{
-			AsNeed := ii->{ObjParam^}
-			if(AsNeed.GetName() == name)
-			{
-				found.Push(AsNeed)	
-			}
+			found.Push(AsNeed)	
 		}
-		if ii.GetValue() == "#import cp"
+	}
+	if ii.GetValue() == "#import cp"
+	{
+		asNeed := ii->{ImportCmd^}
+		fl := asNeed.GetFile()
+
+		Found := false
+
+		for Searched.Size()
 		{
-			asNeed := ii->{ImportCmd^}
-			fl := asNeed.GetFile()
-
-			Found := false
-
-			for Searched.Size()
-			{
-				if Searched[it] == fl.fileId
-					Found = true
-			}
-			if not Found
-			{
-				Searched.Push(fl.fileId)
-				CollectParamsAllByName(name,fl.Down,found,Searched)
-			}
+			if Searched[it] == fl.fileId
+				Found = true
 		}
+		if not Found
+		{
+			Searched.Push(fl.fileId)
+			CollectParamsAllByName(name,fl.Down,found,Searched)
+		}
+	}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
@@ -252,15 +252,14 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 
 	ComputePriors(funcs,pars,Priors)
 	
-	for FoundC if Priors[it] == 0 return funcs[it]
+	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(pars,consts)
-	for FoundC if Priors[it] == 1 return funcs[it]
+	for FoundC if Priors[it] == 1  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(pars,consts)
-	for FoundC if Priors[it] == 2 return funcs[it]
+	for FoundC if Priors[it] == 2  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(pars,consts)
-	for FoundC if Priors[it] == 3 return funcs[it]
+	for FoundC if Priors[it] == 3  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(pars,consts)
-
 
 	return null
 }

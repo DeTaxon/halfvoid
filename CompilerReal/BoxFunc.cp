@@ -380,6 +380,9 @@ BoxFunc := class extend Object
 			MyFuncType = ExchangeFuncType(MyFuncType,toSet)
 		}			
 	}
+	ParseBlock := virtual !() -> void
+	{
+	}
 
 	GetValue := virtual !() -> string
 	{
@@ -406,6 +409,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		MyFuncType.PrintSkobs(f)
 		f << "\n"
 	}
+
 	DoTheWork := virtual !(int pri) -> void
 	{
 		//empty is ok
@@ -414,6 +418,7 @@ BoxFuncDeclare := class  extend BoxFunc
 
 BoxFuncBody := class extend BoxFunc
 {
+	parsed := bool
 	ItParams := FuncParam^^
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void
 	{
@@ -495,6 +500,14 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 		IsSuffix = IsSuf
+	}
+	ParseBlock := virtual !() -> void
+	{
+		if not parsed
+		{
+			parsed = true
+			WorkBag.Push(Down,State_Start)
+		}
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{

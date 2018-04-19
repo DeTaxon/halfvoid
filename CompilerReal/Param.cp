@@ -149,7 +149,6 @@ ObjParam := class extend Object
 		{
 			if IsFunc 
 			{
-				if not AskedGetUse WorkBag.Push(Down,State_Start)
 				AskedGetUse = true
 			}else{
 				if Down.GetValue() != "i:=2"
