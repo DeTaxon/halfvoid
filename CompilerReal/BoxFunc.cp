@@ -78,9 +78,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassType)
+			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassType)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassType,IsVirtual)
 		
 		return PreRet
 	}
@@ -116,9 +116,12 @@ BoxTemplate := class extend BoxFunc
 	FuncsType := Queue.{TypeFunc^}
 	FuncsConsts := Queue.{Queue.{Object^}}
 
+	IsVirtual := bool
 
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC) -> void
+
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
+		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
 		
@@ -238,7 +241,7 @@ BoxTemplate := class extend BoxFunc
 	GetNewFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ FunType) -> BoxFunc^
 	{
 
-		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType)
+		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
 
 		return newFunc	
 	}
@@ -420,11 +423,14 @@ BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
 	ItParams := FuncParam^^
-	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void
+	IsVirtual := bool
+	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		MyFuncParamNames = names
 		FuncName = SomeName
 		MethodType = metC
+		IsVirtual = IsVirt
+
 
 		if SomeName == "main"
 		{
@@ -462,8 +468,9 @@ BoxFuncBody := class extend BoxFunc
 
 		IsSuffix = IsSuf
 	}
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC) -> void
+	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
+		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
 		if SomeName == "main"
@@ -500,6 +507,12 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 		IsSuffix = IsSuf
+
+		if IsVirt and metC != null
+		{
+			asNeed := (metC->{TypeClass^}).ToClass
+			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+		}
 	}
 	ParseBlock := virtual !() -> void
 	{

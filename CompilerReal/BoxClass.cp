@@ -169,6 +169,20 @@ BoxClassTemplate := class extend Object
 	}
 }
 
+FuncItem := class
+{
+	fName := string
+	fType := TypeFunc^
+	fItem := BoxFunc^
+
+	CmpItem := !(FuncItem^ Ri) -> bool
+	{	
+		if fName != Ri return false
+		if fType != Ri.fType return false
+		return true
+	}
+}
+
 BoxClass := class extend Object
 {
 	ClassId := int
@@ -177,6 +191,7 @@ BoxClass := class extend Object
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	Parent := BoxClass^
+
 
 	"this" := !(Object^ item, BoxClass^ par) -> void 
 	{
@@ -248,8 +263,54 @@ BoxClass := class extend Object
 
 		return bestFunc
 	}
+
+	vTypes := Queue.{FuncItem^}
+	vTable := Queue.{FuncItem^}
+
+	computedVTable := bool
+	ComputeVTable := !() -> void
+	{	
+		if not computedVTable
+		{
+			computedVTable = true
+
+			if Parent != null
+			{
+				Parent.ComputeVTable()
+				for i : Parent.vTable.Size()
+				{
+					vTable.Push(Parent.vTable[i])
+				}
+			}
+
+			for i : vTypes.Size()
+			{
+				found := false
+				for j : vTable.Size()
+				{
+					if vTable[j].CmpItem(vTypes[i])
+					{
+						vTable[j] = vTypes[i]
+						found = true
+					}
+				}
+				if not found vTable.Push(vTypes[i])
+			}
+		}
+	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		ComputeVTable()		
+		if not vTable.Empty()
+		{
+			f << "%ClassTableType" << ClassId << " = type {"
+			for vTable.Size()
+			{
+				if it > 1 f << " , "
+				f << vTable[it].fType.GetName()
+			}
+			f << " }\n"
+		}
 		if Params.Size() == 0
 		{
 			f << "%Class" << ClassId << " = type{i1}\n"
@@ -278,5 +339,15 @@ BoxClass := class extend Object
 
 		//print class
 	}
+	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
+	{
+		newItem := new FuncItem
+		newItem.fName = fNam
+		newItem.fType = fTyo
+		newItem.fItem = fF
+
+		vTypes.Push(newItem)
+	}
+
 }
 

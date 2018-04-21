@@ -11,11 +11,31 @@ VkLayerProperties := class
 }
 vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
+ve := class
+{
+	x := int
+	print := virtual !() -> void
+	{
+		printf("nope\n")
+	}
+}
+ve2 := class extend ve
+{
+	printf := virtual !() -> void
+	{
+		printf("yea\n")
+	}
+}
 
 v := 3.5
 
 main := !(int argc, char^^ argv) -> int
 {
+	v := new ve2
+	vb := ve^
+	vb = v&
+	vb.print()
+	return 0
 	handl := dlopen("libvulkan.so.1",2)
 	count := s32
 
