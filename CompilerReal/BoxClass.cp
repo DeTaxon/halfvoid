@@ -177,8 +177,21 @@ FuncItem := class
 
 	CmpItem := !(FuncItem^ Ri) -> bool
 	{	
-		if fName != Ri return false
-		if fType != Ri.fType return false
+		if fName != Ri.fName return false
+		if fType.RetType != Ri.fType.RetType return false
+		if fType.ParsCount != Ri.fType.ParsCount return false
+		if fType.IsVArgs != Ri.fType.IsVArgs return false
+
+		for i : fType.ParsCount
+		{
+			if i == 0
+			{
+				//TODO:no need to check inherence?				
+			}else{
+				if fType.Pars[i] != Ri.fType.Pars[i] return false
+			}
+		}
+
 		return true
 	}
 }
@@ -191,6 +204,7 @@ BoxClass := class extend Object
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	Parent := BoxClass^
+	ContainVirtual  := bool
 
 
 	"this" := !(Object^ item, BoxClass^ par) -> void 
@@ -209,6 +223,18 @@ BoxClass := class extend Object
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 
 		Parent = par
+
+		if par != null 
+		{
+			if par.ContainVirtual ContainVirtual = true
+		}
+		iterH := Down.Down
+		while iterH != null
+		{
+			if iterH.GetValue() == "virtual" ContainVirtual = true
+			iterH = iterH.Right
+		}
+
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -306,19 +332,36 @@ BoxClass := class extend Object
 			f << "%ClassTableType" << ClassId << " = type {"
 			for vTable.Size()
 			{
-				if it > 1 f << " , "
-				f << vTable[it].fType.GetName()
+				if it > 0 f << " , "
+				f << vTable[it].fType.GetName() << "*"
 			}
 			f << " }\n"
+
+			f << "@ClassTableItem" << ClassId << " = global %ClassTableType" << ClassId << " {"
+			for i : vTable.Size()
+			{
+				if i > 0 f << " , "
+				f << vTable[i].fType.GetName() << "* @" << vTable[i].fItem.OutputName
+			}
+			f << "}\n"
 		}
 		if Params.Size() == 0
 		{
-			f << "%Class" << ClassId << " = type{i1}\n"
+			if vTable.Empty()
+			{
+				f << "%Class" << ClassId << " = type{i1}\n"
+			}else{
+				f << "%Class" << ClassId << " = type{ %ClassTableType" << ClassId << "*}\n"
+			}
 		}else{
 			f << "%Class" << ClassId << " = type {"
+			if not vTable.Empty()
+			{
+				f << "%ClassTableType" << ClassId << "*"
+			}
 			for Params.Size()
 			{
-				if it != 0 f <<","
+				if it != 0 or not vTable.Empty() f <<","
 				f << Params[it].ResultType.GetName()
 			}
 			f << "}\n"
@@ -347,6 +390,22 @@ BoxClass := class extend Object
 		newItem.fItem = fF
 
 		vTypes.Push(newItem)
+		//ContainVirtual = true
+	}
+	ApplyConstants := !(sfile f,Object^ itm) -> void
+	{
+		if ContainVirtual
+		{
+			f << "%TmpPt" << ClassId << " = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* "
+			if itm.GetType().GetType() == "point"
+			{
+				f << itm.GetName()
+			}else{
+				f << itm.GetPointName()
+			}
+			f << ", i32 0, i32 0\n"
+			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
+		}
 	}
 
 }

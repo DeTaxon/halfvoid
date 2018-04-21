@@ -21,7 +21,7 @@ ve := class
 }
 ve2 := class extend ve
 {
-	printf := virtual !() -> void
+	print := virtual !() -> void
 	{
 		printf("yea\n")
 	}
@@ -34,6 +34,7 @@ main := !(int argc, char^^ argv) -> int
 	v := new ve2
 	vb := ve^
 	vb = v&
+	vb.x = 2
 	vb.print()
 	return 0
 	handl := dlopen("libvulkan.so.1",2)

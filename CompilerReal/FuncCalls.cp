@@ -789,6 +789,11 @@ NewCall := class extend SomeFuncCall
 	UseCall := virtual !(sfile f) -> void
 	{
 		ExtraFunc.UseCall(f)
+		if ResultType.Base.GetType() == "class"
+		{
+			asNeed := (((ResultType.Base)->{TypeClass^}).ToClass)
+			asNeed.ApplyConstants(f,ExtraFunc)
+		}
 		if Constr != null
 			Constr.PrintInBlock(f)
 	}

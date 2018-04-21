@@ -420,7 +420,6 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
-		printf("wow\n")
 		if pars.Size() != 1 return 255
 		if pars[0].GetType() != "class" return 255
 		if consts.Size() != 1 return 255
@@ -465,9 +464,15 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		CType := ((ToClass.ClassType)->{Type^})
 		CTypeP := CType.GetPoint()
+
+		usePos := pos
+		if ToClass != null
+			if ToClass.ContainVirtual {
+				usePos = pos + 1
+			}
 		
 		return new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
-		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos+"\n")
+		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+"\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

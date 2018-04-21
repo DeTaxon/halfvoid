@@ -7,7 +7,7 @@
 "d in d"
 "d ++" "d --"
 "d ** d"
-"d * d" " d / d" "d % d"
+"d * d" " d / d" "d % d" "d div d"
 "d + d" "d - d"
 "- d"
 "d > d" "d < d" "d == d" "d != d" "d >= d" "d <= d" 
