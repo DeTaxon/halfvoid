@@ -72,7 +72,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				{
 					AsBoxFunc := iterW->{BoxFunc^}
 					SomeBug := IsSuffix
-					if (AsBoxFunc.IsSuffix == SomeBug)
+					if (AsBoxFunc.IsSuffix == SomeBug and not AsBoxFunc.IsVirtual)
 						found.Push(AsBoxFunc)
 				}
 				if iterW.GetValue() == "!(){}"

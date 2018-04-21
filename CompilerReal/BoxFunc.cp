@@ -270,6 +270,7 @@ BoxFunc := class extend Object
 	OutputName := string
 	ABox := AllocBox
 	IsSuffix := bool
+	IsVirtual := bool
 
 	MethodType := Type^
 
@@ -423,7 +424,6 @@ BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
 	ItParams := FuncParam^^
-	IsVirtual := bool
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		MyFuncParamNames = names

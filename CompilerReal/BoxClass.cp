@@ -272,7 +272,11 @@ BoxClass := class extend Object
 				if itName == name
 				{
 					if iterJ.Down.GetValue() == "!()" and consts.Size() == 0
-						Funcs.Push((iterJ.Down)->{BoxFunc^})
+					{
+						asFunc := (iterJ.Down)->{BoxFunc^}
+						if not asFunc.IsVirtual
+							Funcs.Push(asFunc)
+					}
 					if iterJ.Down.GetValue() == "!(){}"
 						Templs.Push((iterJ.Down)->{BoxTemplate^})
 				}
