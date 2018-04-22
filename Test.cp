@@ -2,14 +2,14 @@
 
 //vkEnumerateInstanceExtensionProperties := !(
 
-VkLayerProperties := class
-{
-	name := char[256]
-	version := s32
-	iVer := s32
-	descr := char[256]
-}
-vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
+//VkLayerProperties := class
+//{
+//	name := char[256]
+//	version := s32
+//	iVer := s32
+//	descr := char[256]
+//}
+//vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
 ve := class
 {
@@ -33,25 +33,24 @@ main := !(int argc, char^^ argv) -> int
 {
 	v := new ve2
 	vb := ve^
-	vb = v&
-	vb.x = 2
+	vb = v
 	vb.print()
 	return 0
-	handl := dlopen("libvulkan.so.1",2)
-	count := s32
+	//handl := dlopen("libvulkan.so.1",2)
+	//count := s32
 
-	vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
+	//vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
 
-	vkEnumerateInstanceLayerProperties(count&,null)
+	//vkEnumerateInstanceLayerProperties(count&,null)
 
-	nums := new VkLayerProperties[count]
+	//nums := new VkLayerProperties[count]
 
-	vkEnumerateInstanceLayerProperties(count&,nums)
+	//vkEnumerateInstanceLayerProperties(count&,nums)
 
-	for i : count printf("%i : %s\n",i,nums[i].name)
+	//for i : count printf("%i : %s\n",i,nums[i].name)
 
-	dlclose(handl)
-	return 0
+	//dlclose(handl)
+	//return 0
 }
 
 

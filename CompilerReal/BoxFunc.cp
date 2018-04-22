@@ -467,6 +467,12 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 
 		IsSuffix = IsSuf
+		if IsVirt and metC != null
+		{
+			ParseBlock()
+			asNeed := (metC->{TypeClass^}).ToClass
+			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+		}
 	}
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
@@ -510,6 +516,7 @@ BoxFuncBody := class extend BoxFunc
 
 		if IsVirt and metC != null
 		{
+			ParseBlock()
 			asNeed := (metC->{TypeClass^}).ToClass
 			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
 		}

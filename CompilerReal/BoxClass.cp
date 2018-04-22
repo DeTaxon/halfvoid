@@ -174,6 +174,7 @@ FuncItem := class
 	fName := string
 	fType := TypeFunc^
 	fItem := BoxFunc^
+	funcWrapper := BoxFunc^
 
 	CmpItem := !(FuncItem^ Ri) -> bool
 	{	
@@ -204,8 +205,8 @@ BoxClass := class extend Object
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	Parent := BoxClass^
-	ContainVirtual  := bool
 
+	ContainVirtual  := bool
 
 	"this" := !(Object^ item, BoxClass^ par) -> void 
 	{
@@ -234,6 +235,7 @@ BoxClass := class extend Object
 			if iterH.GetValue() == "virtual" ContainVirtual = true
 			iterH = iterH.Right
 		}
+		WorkBag.Push(this&,State_PrePrint)
 
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -245,6 +247,10 @@ BoxClass := class extend Object
 			{
 				Params.PushFront(Parent.Params[Size - i - 1])
 			}
+		}
+		if pri == State_PrePrint
+		{
+			ComputeVTable()		
 		}
 	}
 	GetValue := virtual !() -> string
@@ -262,6 +268,12 @@ BoxClass := class extend Object
 	{
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
+
+		for i : vTypes.Size()
+		{
+			if vTypes[i].fName == name
+				Funcs.Push(vTypes[i].funcWrapper)
+		}
 
 		iterJ := Down.Down
 		while iterJ != null
@@ -321,16 +333,24 @@ BoxClass := class extend Object
 					if vTable[j].CmpItem(vTypes[i])
 					{
 						vTable[j] = vTypes[i]
+						aS := vTypes[i].funcWrapper
+						aB := aS->{BuiltInVirtualCall^}
+						aB.MakeLine(j)
 						found = true
 					}
 				}
-				if not found vTable.Push(vTypes[i])
+				if not found
+				{
+					aS2 := vTypes[i].funcWrapper
+					aB2 := aS2->{BuiltInVirtualCall^}
+					aB2.MakeLine(vTable.Size())
+					vTable.Push(vTypes[i])
+				}
 			}
 		}
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		ComputeVTable()		
 		if not vTable.Empty()
 		{
 			f << "%ClassTableType" << ClassId << " = type {"
@@ -383,8 +403,6 @@ BoxClass := class extend Object
 			}
 			iterJ = iterJ.Right
 		}
-
-		//print class
 	}
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{
@@ -392,9 +410,9 @@ BoxClass := class extend Object
 		newItem.fName = fNam
 		newItem.fType = fTyo
 		newItem.fItem = fF
+		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
 
 		vTypes.Push(newItem)
-		//ContainVirtual = true
 	}
 	ApplyConstants := !(sfile f,Object^ itm) -> void
 	{
@@ -410,6 +428,43 @@ BoxClass := class extend Object
 			f << ", i32 0, i32 0\n"
 			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
 		}
+	}
+}
+
+BuiltInVirtualCall := class extend BuiltInFunc
+{
+	classId := int
+	this := !(string name, BoxFunc^ from, int classID) -> void
+	{
+		classId = classID
+		MyFuncType = from.MyFuncType
+		FuncName = name
+		ToExe  = ""	
+		printf("wut %s %p\n",FuncName,MyFuncType)
+	}
+	MakeLine := !(int id) -> void
+	{
+		printf("wuuut %i\n",id)
+		ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
+		ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
+		ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
+		ToExe = ToExe + "%Func## = load " + MyFuncType.GetName() + "* , " + MyFuncType.GetName() + "** %FuncPtr##\n" 
+		if MyFuncType.RetType != GetType("void")
+			ToExe = ToExe + "#0 = "
+		ToExe = ToExe + "call " + MyFuncType.GetName() +  "%Func##("
+		for i : MyFuncType.ParsCount
+		{
+			if i > 0 ToExe = ToExe + " , "
+			if MyFuncType.ParsIsRef[i]
+			{
+				ToExe = ToExe + MyFuncType.Pars[i].GetName() + "* "
+			}else{
+				ToExe = ToExe + MyFuncType.Pars[i].GetName() + " "
+			}
+			ToExe = ToExe + "#" + (i + 1)
+		}
+
+		ToExe = ToExe + ")\n"
 	}
 
 }

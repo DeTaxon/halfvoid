@@ -8,3 +8,4 @@ State_PostGetUse := 7
 State_Optimize := 8
 State_PostOptimize := 9
 State_ErrorCheck := 10
+State_PrePrint := 11
