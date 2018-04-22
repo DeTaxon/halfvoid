@@ -440,11 +440,9 @@ BuiltInVirtualCall := class extend BuiltInFunc
 		MyFuncType = from.MyFuncType
 		FuncName = name
 		ToExe  = ""	
-		printf("wut %s %p\n",FuncName,MyFuncType)
 	}
 	MakeLine := !(int id) -> void
 	{
-		printf("wuuut %i\n",id)
 		ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
 		ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
 		ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"

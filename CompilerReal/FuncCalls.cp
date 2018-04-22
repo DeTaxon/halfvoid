@@ -18,7 +18,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			return MakeSimpleCall(someF,null->{Object^})
 		}
-
 	}
 
 	iter = ToParse.Down
@@ -85,25 +84,31 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.Right.Right != null
 				{
 					LL := iter.Left
+					GotClass := false
 					if  LL.GetType().GetType() != "class" 
 					{
 						if LL.GetType().GetType() == "point"	
 						{
 							if LL.GetType().Base.GetType() != "class"
-								return null
-						}else	return null
+								GotClass = true
+						}else	GotClass = true
 					}
 					asClass := BoxClass^
-					if LL.GetType().GetType() == "point"
+					if GotClass
 					{
-						asClass = ((iter.Left.GetType().Base)->{TypeClass^}).ToClass
-					}else
-					{
-						asClass = ((iter.Left.GetType())->{TypeClass^}).ToClass
+						if LL.GetType().GetType() == "point"
+						{
+							asClass = ((iter.Left.GetType().Base)->{TypeClass^}).ToClass
+						}else
+						{
+							asClass = ((iter.Left.GetType())->{TypeClass^}).ToClass
+						}
+					}else{
+						asClass = null
 					}
 					
 					gg := Queue.{Type^}()
-					//gg.Push(iter.Left.GetType())
+					gg.Push(iter.Left.GetType())
 					iterK := iter.Right.Right.Down
 					while iterK != null
 					{
@@ -112,7 +117,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						iterK = iterK.Right
 					}
 
-					func := asClass.GetFunc(asName,gg)
+					if not GotClass return null
+					func := FindFunc(asName,iter,gg)
+					
+					if func == null
+					{
+						gg.Pop()
+						func = asClass.GetFunc(asName,gg)
+					}
 
 					if func != null
 					{

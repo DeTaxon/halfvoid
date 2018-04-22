@@ -145,6 +145,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	PreLines[3].GoTo['.'] = 8
 	
 	PreLines[8].GoTo['.'] = 1
+	PreLines[8].Id = 0
 	PreLines[9].Id = 3
 
 	for i : '0'..'9' PreLines[8].GoTo[i] = 10
