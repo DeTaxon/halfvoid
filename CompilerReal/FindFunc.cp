@@ -60,7 +60,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 }
 
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,Queue.{int} Searched) -> void
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched) -> void
 {
 		if ii.GetValue() == "i:=1"
 		{
@@ -72,8 +72,16 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				{
 					AsBoxFunc := iterW->{BoxFunc^}
 					SomeBug := IsSuffix
-					if (AsBoxFunc.IsSuffix == SomeBug and not AsBoxFunc.IsVirtual)
-						found.Push(AsBoxFunc)
+					//if (AsBoxFunc.IsSuffix == SmeBug and not AsBoxFunc.IsVirtual)
+					//	found.Push(AsBoxFunc)
+					if SomeBug
+					{
+						if AsBoxFunc.IsSuffix and AsBoxFunc.IsVirtual
+							found.Push(AsBoxFunc)
+					}else{
+						if not AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual and IsMethod == AsBoxFunc.IsMethod
+							found.Push(AsBoxFunc)
+					}
 				}
 				if iterW.GetValue() == "!(){}"
 				{
@@ -99,13 +107,13 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 			if not Found
 			{
 				Searched.Push(fl.fileId)
-				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,Searched)
+				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,IsMethod,Searched)
 			}
 		}
 }
 
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,Queue.{int} Searched) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched) -> void
 {
 	iterU := start
 	LastPos := start
@@ -142,7 +150,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		}
 		if iterU != null
 		{
-			InsertFunc(name,iterU,found,templates,IsSuffix,Searched)
+			InsertFunc(name,iterU,found,templates,IsSuffix,IsMethod,Searched)
 			if iterU.Left != null 
 			{
 				iterU = iterU.Left 
@@ -152,7 +160,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				iterK := LastPos.Right
 				while iterK != null
 				{
-					InsertFunc(name,iterK,found,templates,IsSuffix,Searched)
+					InsertFunc(name,iterK,found,templates,IsSuffix,IsMethod,Searched)
 					iterK = iterK.Right
 				}
 				LastPos = iterU
@@ -183,25 +191,25 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 
 
 
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars,bool IsMethod) -> BoxFunc^
 {
 	wut := Queue.{Object^}()
-	return FindFunc(name,start,pars,wut)
+	return FindFunc(name,start,pars,wut,IsMethod)
 }
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+FindFunc := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts,bool IsMethod) -> BoxFunc^
 {
-	return FindStuff(name,start,pars,consts,false)
+	return FindStuff(name,start,pars,consts,false,IsMethod)
 }
 FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
 {
-	return FindStuff(name,start,pars,true)
+	return FindStuff(name,start,pars,true,false)
 }
-FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix) -> BoxFunc^
+FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
 	wut := Queue.{Object^}()
-	return FindStuff(name,start,pars,wut,IsSuffix)
+	return FindStuff(name,start,pars,wut,IsSuffix,IsMethod)
 }
-FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts, bool IsSuffix) -> BoxFunc^
+FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
 	Searched := Queue.{int}()
 
@@ -215,7 +223,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
-	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,Searched)
+	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched)
 	return GetBestFunc(pars,consts,Funcs,Templs)
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^

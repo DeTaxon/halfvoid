@@ -417,6 +417,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		emptType.Push(toAdd.ClassType)
 		miniArr := true
 		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
+		IsMethod = true
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
@@ -560,6 +561,7 @@ BuiltInTemplateRefEx := class extend BoxTemplate
 		emptType := Queue.{Type^}()
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		IsMethod = true
 	}
 	GetPriority := virtual !(Queue.{Type^} pars) -> int
 	{

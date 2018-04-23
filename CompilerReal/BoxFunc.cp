@@ -271,6 +271,7 @@ BoxFunc := class extend Object
 	ABox := AllocBox
 	IsSuffix := bool
 	IsVirtual := bool
+	IsMethod := bool
 
 	MethodType := Type^
 
@@ -373,6 +374,11 @@ BoxFunc := class extend Object
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
 		free(arr)
 
+		if MyFuncParamNames != null and MyFuncType.ParsCount != 0
+		{
+			if MyFuncParamNames[0] == "this" IsMethod = true
+		}
+
 		if Typs.Size() == 0 return true
 
 		return true
@@ -431,7 +437,6 @@ BoxFuncBody := class extend BoxFunc
 		MethodType = metC
 		IsVirtual = IsVirt
 
-
 		if SomeName == "main"
 		{
 			OutputName = "main"
@@ -467,6 +472,10 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 
 		IsSuffix = IsSuf
+		if MyFuncParamNames != null
+		{
+				
+		}
 		if IsVirt and metC != null
 		{
 			ParseBlock()
@@ -512,6 +521,7 @@ BoxFuncBody := class extend BoxFunc
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
+
 		IsSuffix = IsSuf
 
 		if IsVirt and metC != null

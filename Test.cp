@@ -33,10 +33,15 @@ lol := !(int this) -> void
 {
 	printf("hello\n")
 }
+lol := !(int x) -> void
+{
+	printf("world\n")
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	3.lol()
+	lol(3)
 	return 0
 
 	handl := dlopen("libvulkan.so.1",2)

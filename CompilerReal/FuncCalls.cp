@@ -12,7 +12,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		funcData := Queue.{Type^}()
 		consts := Queue.{Object^}()
 		consts.Push(new ObjStr(asInd.MyStr)) 
-		someF := FindFunc(".",iter,funcData,consts)
+		someF := FindFunc(".",iter,funcData,consts,true)
 
 		if someF != null
 		{
@@ -84,14 +84,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.Right.Right != null
 				{
 					LL := iter.Left
-					GotClass := false
+					GotClass := true
 					if  LL.GetType().GetType() != "class" 
 					{
 						if LL.GetType().GetType() == "point"	
 						{
 							if LL.GetType().Base.GetType() != "class"
-								GotClass = true
-						}else	GotClass = true
+								GotClass = false
+						}else	GotClass = false
 					}
 					asClass := BoxClass^
 					if GotClass
@@ -117,10 +117,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						iterK = iterK.Right
 					}
 
-					if not GotClass return null
-					func := FindFunc(asName,iter,gg)
-					
-					if func == null
+					func := FindFunc(asName,iter,gg,true)
+				
+					if func == null and GotClass and asClass != null
 					{
 						gg.Pop()
 						func = asClass.GetFunc(asName,gg)
@@ -274,7 +273,7 @@ OneCall := !(string Name, Object^ G) -> Object^
 		Ps.Push(iterT.GetType())
 		iterT = iterT.Right
 	}
-	SomeFunc := FindFunc(Name,G,Ps)
+	SomeFunc := FindFunc(Name,G,Ps,false)
 
 	if SomeFunc == null{
 		inClass := GetUpClass(G)
