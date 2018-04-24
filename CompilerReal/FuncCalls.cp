@@ -417,7 +417,6 @@ NaturalCall := class extend SomeFuncCall
 		iter := Down
 		i := 0
 
-		printf("wut %p\n",ToCall)
 		while iter != null and i < FType.ParsCount 
 		{
 			if iter.GetType() != FType.Pars[i]

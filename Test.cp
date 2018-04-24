@@ -37,11 +37,19 @@ lol := !(this) -> void
 {
 	printf("hello\n")
 }
+max := !(x,y)
+{
+	if x > y return x
+	return y
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	3.lol()
 	lol(3)
+	
+	a := int
+	a = max(1,2)
 
 	return 0
 
