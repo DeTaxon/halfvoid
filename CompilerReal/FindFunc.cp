@@ -87,8 +87,14 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				{
 					AsBoxFunc2 :=  iterW->{BoxTemplate^}
 					SomeBug := IsSuffix
-						if (AsBoxFunc2.IsSuffix == SomeBug)
+					if SomeBug
+					{
+						if AsBoxFunc2.IsSuffix and AsBoxFunc2.IsVirtual
 							templates.Push(AsBoxFunc2)
+					}else{
+						if not AsBoxFunc2.IsSuffix and not AsBoxFunc2.IsVirtual and IsMethod == AsBoxFunc2.IsMethod
+							templates.Push(AsBoxFunc2)
+					}
 				}
 			}
 		}

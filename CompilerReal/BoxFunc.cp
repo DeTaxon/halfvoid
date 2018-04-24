@@ -103,7 +103,7 @@ IsTemplate := !(Object^ sk) -> bool
 		} else Counter += 1
 		iter = iter.Right
 	}
-	return false
+	return Counter == 1 
 }
 
 BoxTemplate := class extend BoxFunc
