@@ -26,9 +26,11 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 		}
 	}
 	//TODO: check type
-	return new BoxForInt(itemName,indName,null->{Object^},iterY,iterY.Right)
 
-	return null
+	return new BoxFor(itemName,indName,iterY,iterY.Right)
+
+
+	//return null
 }
 
 BoxFor := class extend Object
@@ -37,8 +39,45 @@ BoxFor := class extend Object
 	IndPar := MemParam^
 	itName := string
 	indName := string
+	block := Object^
+
+	this := !(string inN, string indN,Object^ Dwn, Object^ blk) -> void
+	{
+		itName = inN
+		indName = indN
+		block = blk
+		Down = Dwn
+		Down.Left = null
+		Down.Right = null
+		Dwn.Up = this&
+		block.Up = null
+
+		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(Down,State_PreGetUse)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			newNode := Object^
+			newNode = null
+			if Down.GetType() == TypeTable[13] 
+			{
+				 newNode = new BoxForRange(this.itName,this.indName,this.Down,this.block)
+			}
+			if Down.GetType() == GetType("int")
+			{
+				newNode = new BoxForInt(this.itName,this.indName,null->{Object^},Down,this.block)
+			}
+			if newNode != null
+			{
+				ReplaceNode(this&,newNode)
+			}
+		}
+	}
 
 }
+
 
 BoxForInt := class extend BoxFor
 {
@@ -96,7 +135,6 @@ BoxForInt := class extend BoxFor
 
 		beg.PrintPre(f)
 		end.PrintPre(f)
-		printf("wut %s\n",end.GetValue())
 
 		f << "br label %Start" << thisId <<"\n"
 		f << "Start" << thisId << ":\n"
@@ -118,3 +156,75 @@ BoxForInt := class extend BoxFor
 	}
 }
 
+BoxForRange := class extend BoxFor
+{
+	thisId := int
+	this := !(string f_it, string f_ind,Object^ start, Object^ stuf) -> void
+	{	
+		thisId =  GetNewId()
+
+		itName = f_it
+		if itName == null itName = "it"
+
+		indName = f_ind
+		if indName == null indName = "it_ind"
+
+		itemStart := start
+		if start == null itemStart = new ObjInt(0)
+		
+		parId := GetAlloc(stuf,GetType("int"))
+		LocPar = new ConstParam("iterInt" + thisId ,GetType("int"))
+		IndPar = LocPar
+		
+		Down = stuf
+		stuf.Left = null
+		stuf.Right = itemStart
+		itemStart.Right = null
+		itemStart.Left = stuf
+		Down.SetUp(this&)
+		MakeItBlock(stuf)
+
+		WorkBag.Push(stuf,State_Start)
+
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~for()"
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			WorkBag.Push(Down,State_Start)
+		}
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		stuf := Down
+		beg := Down.Right
+
+		IntName := string
+		IntName = ((LocPar->{ConstParam^}).itName)
+
+		beg.PrintPre(f)
+
+		f << "br label %Start" << thisId <<"\n"
+		f << "Start" << thisId << ":\n"
+		f << "%GoingTo" << thisId << " = extractvalue %RangeTypeInt " + beg.GetName()  +",1\n"
+		f << "%startVal" << thisId << " = extractvalue %RangeTypeInt " +beg.GetName() +",0\n"
+
+		f << "br label %Check" << thisId <<"\n"
+		f << "Check" << thisId << ":\n"
+		f << IntName << " = phi i32 [%startVal" <<thisId << ", %Start" << thisId << "] , [%nextInd" << thisId << " , %PreEnd" << thisId << " ]\n"
+		f << "%Res" << thisId << " = icmp sle i32 "<< IntName << " ,%GoingTo" << thisId << "\n"
+		f << "br i1 %Res" << thisId << ", label %Begin" << thisId << " , label %End" << thisId <<"\n"
+		
+		f << "Begin" << thisId <<":\n"
+		stuf.PrintInBlock(f)
+		f << "br label %PreEnd" << thisId << "\n"
+		f << "PreEnd" << thisId << ":\n"
+		f << "%nextInd" << thisId << " = add i32 1," << IntName << "\n"
+		f << "br label %Check" << thisId << "\n"
+		f << "End" << thisId <<":\n"
+	}
+}

@@ -50,8 +50,8 @@ main := !(int argc, char^^ argv) -> int
 	
 	a := int
 	a = max(1,2)
-	x := 1..4
-	x = 5..1
+
+	for 3..6 printf("wow %i\n",it)
 
 	return 0
 
