@@ -33,6 +33,7 @@ main := !(int argc,string[] argv) -> int
 	if ErrorLog.Empty()
 	{
 		fil := sfile("out2.ll","w")
+		fil << GlobalStrs
 		StrContainer.PrintGlobal(fil)
 
 		wutt := Files.Start

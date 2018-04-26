@@ -472,6 +472,11 @@ CreateStandartTypes := !() -> void
 	VoidPType = new TypePointVoidP(TypeTable[11]) // void*
 	TypeTable[11].AsPoint = VoidPType
 
+	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
+	 			+ "%RangeTypeFloat = type {float,float}\n"
+	TypeTable[13] = new TypeStandart("%RangeTypeInt")
+	TypeTable[14] = new TypeStandart("%RangeTypeFloat")
+
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

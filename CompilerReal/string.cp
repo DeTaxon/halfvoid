@@ -30,6 +30,8 @@ CleanStrs := !() -> void
 
 "+" := !(char^ a, char^ b) -> char^
 {
+	if a == null return b
+	if b == null return a
 	sprintf(BigBuff,"%s%s",a,b)
 	return BigBuff.Copy()
 }
@@ -43,6 +45,7 @@ CleanStrs := !() -> void
 	sprintf(BigBuff,"%s%f",a,b)
 	return BigBuff.Copy()
 }
+
 
 StrSize := !(char^ a) -> int
 {

@@ -679,4 +679,16 @@ CreateBuiltIns := !() -> void
 											"End##:\n" +
 											"#0 = select i1 #1, i1 #2, i1 false\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
+	RangeFuncs()
+}
+
+RangeFuncs := !() -> void
+{
+	intType := GetType("int")
+	rangeType := TypeTable[13]
+	BuiltInFuncs.Push( new BuiltInFuncBinar("..",intType,false,intType,false,rangeType,"%PreR## = insertvalue %RangeTypeInt undef,i32 #1, 0\n" 
+												+"#0 = insertvalue %RangeTypeInt %PreR##,i32 #2,1\n"))
+
+	BuiltInFuncs.Push( new BuiltInFuncBinar("=",rangeType,true,rangeType,false,rangeType,"store %RangeTypeInt #2, %RangeTypeInt* #1\n"))
+
 }

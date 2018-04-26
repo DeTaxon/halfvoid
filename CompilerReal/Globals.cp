@@ -19,3 +19,5 @@ GlobalRefExc := BuiltInTemplateRefEx^
 GlobalExcArr := BuiltInTemplateExcArr^
 
 VoidPType := Type^
+
+GlobalStrs := string
