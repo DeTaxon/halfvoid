@@ -109,8 +109,18 @@ ObjParam := class extend Object
 							ErrorLog.Push("Compiler bag\n")
 						}
 					}else{
-						Down = new LocalParam(MaybeType,allcId)
-						Down.SetUp(this&)
+						if val != null
+						{
+							Down = new LocalParam(MaybeType,allcId)
+							Down.Right = val
+							val.Right = null
+							val.Left = Down
+							Down.SetUp(this&)
+							IsSetValue = true
+						}else{
+							Down = new LocalParam(MaybeType,allcId)
+							Down.SetUp(this&)
+						}
 					}
 				}
 			}else
@@ -156,6 +166,7 @@ ObjParam := class extend Object
 					ObjType = Down.GetType()
 					if ObjType != null
 					{
+						printf("HALLO\n")
 						Temp := Down
 						allcId := GetAlloc(this&,ObjType)
 						Down = new LocalParam(ObjType,allcId)

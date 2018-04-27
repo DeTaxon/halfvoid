@@ -27,8 +27,6 @@ ve2 := class extend ve
 	}
 }
 
-v := 3.5
-
 lol := !(x) -> void
 {
 	printf("world\n")
@@ -50,8 +48,9 @@ main := !(int argc, char^^ argv) -> int
 	
 	a := int
 	a = max(1,2)
+	x := 12
 
-	for 3..6 printf("wow %i\n",it)
+	for 3..x printf("wow %i\n",it)
 
 	return 0
 
