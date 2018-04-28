@@ -14,6 +14,10 @@ vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 ve := class
 {
 	x := int
+	sure := !() -> void
+	{
+		print()
+	}
 	print := virtual !() -> void
 	{
 		printf("nope\n")
@@ -43,16 +47,7 @@ max := !(x,y) -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	3.lol()
-	lol(3)
-	
-	a := int
-	a = max(1,2)
-	x := 12
-
-	for 3..x printf("wow %i\n",it)
-
-	return 0
+	![1,2,3]
 
 	handl := dlopen("libvulkan.so.1",2)
 	count := s32

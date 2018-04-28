@@ -200,6 +200,42 @@ ObjSymbol := class extend ObjConst
 		return PreRet
 	}
 }
+ObjArray := class extend ObjConst
+{
+	itType := TypeArr^
+	Items := Object^^
+	MyTmpId := int
+
+	this := !(TypeArr^ ToUs,Object^^ ims) -> void
+	{
+		MyTmpId = GetNewId()
+		itType = ToUs
+		ResultType = itType.Base.GetPoint()
+	}		
+	
+
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		for itType.Size Items[it].PrintGlobal(f)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %T" << MyTmpId	
+	}
+	Clone := virtual !() -> Object^
+	{
+		itItems := new Object^[itType.Size]
+		for i : itType.Size itItems[i] = Items[i].Clone()
+		PreRet := new ObjArray(itType,Items)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 
 
 ObjType := class extend ObjConst
@@ -273,3 +309,4 @@ ObjKeyword := class extend ObjConst
 		return PreRet
 	}
 }
+
