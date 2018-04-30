@@ -111,6 +111,7 @@ BoxForInt := class extend BoxFor
 
 		WorkBag.Push(Down.Right,State_Start)
 		WorkBag.Push(Down.Right.Right,State_Start)
+		WorkBag.Push(Down,State_Start)
 
 	}
 	GetValue := virtual !() -> string

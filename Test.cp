@@ -47,7 +47,10 @@ max := !(x,y) -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	![1,2,3]
+	j := ![5,8,1]
+
+	for 3  { printf("www %i\n",j[it]) }
+	return 0
 
 	handl := dlopen("libvulkan.so.1",2)
 	count := s32

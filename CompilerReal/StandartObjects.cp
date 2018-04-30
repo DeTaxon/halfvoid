@@ -210,6 +210,7 @@ ObjArray := class extend ObjConst
 	{
 		MyTmpId = GetNewId()
 		itType = ToUs
+		Items = ims
 		ResultType = itType.Base.GetPoint()
 	}		
 	
@@ -217,15 +218,30 @@ ObjArray := class extend ObjConst
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		for itType.Size Items[it].PrintGlobal(f)
+		f << "@Arr" << MyTmpId << " = global " << itType.GetName() << " ["
+		for i : itType.Size 
+		{
+			if i > 0 f << " , "
+			f << Items[i].GetType().GetName() << " " << Items[i].GetName()
+		}
+		f << "]"
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		
+		f << "%ArrTmp" << MyTmpId << " = getelementptr " << itType.GetName() << " , " << itType.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"	
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
-		f << " %T" << MyTmpId	
+		f << " %ArrTmp"	<< MyTmpId
+	}
+	GetName := virtual !() -> string
+	{
+		return "null"
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~![]"
 	}
 	Clone := virtual !() -> Object^
 	{
