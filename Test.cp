@@ -45,6 +45,8 @@ max := !(x,y) -> int
 	return y
 }
 
+k := extern int
+
 main := !(int argc, char^^ argv) -> int
 {
 	j := ![5,8,1]

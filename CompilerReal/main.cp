@@ -7,6 +7,7 @@ main := !(int argc,string[] argv) -> int
 
 	PriorityData = new PriorityBag("Priority.pr")
 	PriorityData.Opers.Push(":=")
+	PriorityData.Opers.Push("extern")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob = LoadFile("Test.cp")

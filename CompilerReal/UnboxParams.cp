@@ -48,12 +48,21 @@ UnboxParams := !(Object^ start) -> void
 				if lazy  lazy = (iter.GetValue() != ":=")
 			}
 
+			IsExt := false
 			iter = iter.Right
+
+			if iter.GetValue() == "extern"
+			{
+				IsExt = true
+				iter = iter.Right
+			}
+
 			iter.Left = null
 			lineIter = line
 
 			while lineIter != null
 			{
+				((lineIter->{ObjParam^}).IsExtern) = IsExt
 				lineIter.Down = iter.Clone()
 				lineIter.Down.SetUp(lineIter)
 				lineIter = lineIter.Right

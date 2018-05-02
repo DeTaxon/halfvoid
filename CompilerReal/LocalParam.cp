@@ -107,8 +107,10 @@ LocalParam := class extend MemParam
 GlobalParam := class extend MemParam
 {
 	MainId := int
-	this := !(Type^ th,Object^ toSet) -> void
+	IsExtern := bool
+	this := !(Type^ th,Object^ toSet,bool IsExt) -> void
 	{
+		IsExtern = IsExt
 		ResultType = th
 		Down = toSet
 		MainId = GetNewId()
@@ -126,7 +128,8 @@ GlobalParam := class extend MemParam
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		f << "@T" << MainId << " = global "
+		f << "@T" << MainId << " = "
+		if IsExtern {f << "extern "} else {f << "global "}
 		ResultType.PrintType(f)
 		if Down == null
 		{

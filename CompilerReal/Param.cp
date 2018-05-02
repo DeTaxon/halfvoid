@@ -6,6 +6,7 @@ ObjParam := class extend Object
 	IsSetValue := bool
 	IsFunc := bool
 	IsStrName := bool
+	IsExtern := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -74,6 +75,8 @@ ObjParam := class extend Object
 
 		if pri == State_CheckTypes
 		{
+			IsExtrn := false
+
 			MaybeType := ParseType(Down)
 			val := Object^
 			val = null
@@ -94,7 +97,7 @@ ObjParam := class extend Object
 				if allcId == -1
 				{
 					//TODO: Global?
-					Down = new GlobalParam(MaybeType,val)
+					Down = new GlobalParam(MaybeType,val,IsExtern)
 					Down.SetUp(this&)
 				}else
 				{
@@ -166,7 +169,6 @@ ObjParam := class extend Object
 					ObjType = Down.GetType()
 					if ObjType != null
 					{
-						printf("HALLO\n")
 						Temp := Down
 						allcId := GetAlloc(this&,ObjType)
 						Down = new LocalParam(ObjType,allcId)

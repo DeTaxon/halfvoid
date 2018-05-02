@@ -201,6 +201,14 @@ RuleParam := !(void^ itr) -> int
 
 	It = It.Right
 	if It == null return 0
+	
+	if It.GetValue() == "extern"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+
 	if not InDataR(It) return 0
 
 	return size + 2

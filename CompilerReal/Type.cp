@@ -52,7 +52,6 @@ Type := class {
 	}
 
 }
-
 ParseType := !(Object^ Node) -> Type^
 {
 	if Node == null return null
