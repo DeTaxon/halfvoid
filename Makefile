@@ -12,7 +12,7 @@ out2.ll: a.out
 	./a.out
 
 b : out2.ll	
-	clang -O0 out2.ll -o b -ldl
+	clang -O0 out2.ll -o b -ldl -lwayland-client
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe

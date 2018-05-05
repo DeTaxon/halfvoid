@@ -1,5 +1,12 @@
 
+
+
 GetItem := !(string name, Object^ start) -> Object^
+{
+	 stuf := Queue.{int}()
+	 return GetItem2(name,start,stuf)
+}
+GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 {
 	iter := start
 
@@ -28,6 +35,32 @@ GetItem := !(string name, Object^ start) -> Object^
 			asC := iter->{BoxFor^}
 			if asC.itName == name return asC.LocPar
 			if asC.indName == name return asC.IndPar
+		}
+		if iter.GetValue() == "#import cp"
+		{
+			asN := iter->{ImportCmd^}
+			fl := asN.GetFile()
+			Fnd := false
+
+			for Searched.Size()
+			{
+				if Searched[it] == fl.fileId
+				Fnd = true
+			}
+			if not Fnd
+			{
+				Searched.Push(fl.fileId)
+				notSure := fl.Down
+
+				if notSure != null
+				{
+					while notSure.Right != null
+						notSure = notSure.Right
+				}
+
+				res := GetItem2(name,notSure,Searched)
+				if res != null return res
+			}
 		}
 
 		if iter.Left != null iter = iter.Left 

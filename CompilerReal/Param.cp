@@ -97,7 +97,11 @@ ObjParam := class extend Object
 				if allcId == -1
 				{
 					//TODO: Global?
-					Down = new GlobalParam(MaybeType,val,IsExtern)
+					if IsExtern
+						Down = new ExternParam(MaybeType,val,MyStr)
+					else 
+						Down = new GlobalParam(MaybeType,val)
+
 					Down.SetUp(this&)
 				}else
 				{

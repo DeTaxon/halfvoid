@@ -107,10 +107,8 @@ LocalParam := class extend MemParam
 GlobalParam := class extend MemParam
 {
 	MainId := int
-	IsExtern := bool
-	this := !(Type^ th,Object^ toSet,bool IsExt) -> void
+	this := !(Type^ th,Object^ toSet) -> void
 	{
-		IsExtern = IsExt
 		ResultType = th
 		Down = toSet
 		MainId = GetNewId()
@@ -129,7 +127,7 @@ GlobalParam := class extend MemParam
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "@T" << MainId << " = "
-		if IsExtern {f << "extern "} else {f << "global "}
+		f << "global "
 		ResultType.PrintType(f)
 		if Down == null
 		{
@@ -168,6 +166,65 @@ GlobalParam := class extend MemParam
 		return "@T" + MainId
 	}
 }
+ExternParam := class extend MemParam
+{
+	MainId := int
+	itName := string
+	this := !(Type^ th,Object^ toSet,string itN) -> void
+	{
+		itName = itN
+		ResultType = th
+		Down = toSet
+		MainId = GetNewId()
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			//WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
+			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
+		}
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		f << "@" << itName << " = "
+		f << "external global "
+		ResultType.PrintType(f)
+		f << "\n"
+	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.GetPoint().PrintType(f)
+		f << " @" << itName
+	}
+	PrintPre := virtual !(sfile f, int newInd) -> void
+	{
+		f << "%T" << newInd << " = load "
+		ResultType.PrintType(f)
+		f << " , "
+		ResultType.PrintType(f)
+		f << "* @" << itName << "\n"
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %T"<< newInd
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return "%T" + newInd 
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		return "@" + itName
+	}
+}
 
 FuncParam := class extend MemParam
 {
@@ -203,6 +260,7 @@ FuncParam := class extend MemParam
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
+		printf(";slkdg;askdgj\n")
 		ResultType.PrintType(f)
 		f << " %" << ItName
 	}

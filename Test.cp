@@ -1,5 +1,7 @@
 #import "lib.cp"
+#import "wayland.cp"
 
+getch := !() -> void declare
 //vkEnumerateInstanceExtensionProperties := !(
 
 VkLayerProperties := class
@@ -11,47 +13,37 @@ VkLayerProperties := class
 }
 vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
-ve := class
+
+global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 version) -> void
 {
-	x := int
-	sure := !() -> void
-	{
-		print()
-	}
-	print := virtual !() -> void
-	{
-		printf("nope\n")
-	}
-}
-ve2 := class extend ve
-{
-	print := virtual !() -> void
-	{
-		printf("yea\n")
-	}
+	printf("hey %s\n",intr)
 }
 
-lol := !(x) -> void
+remover := !(void^ data, void^ reg, u32 id) -> void
 {
-	printf("world\n")
-}
-lol := !(this) -> void
-{
-	printf("hello\n")
-}
-max := !(x,y) -> int
-{
-	if x > y return x
-	return y
+	
 }
 
-k := extern int
+listt := wl_display_listener
 
 main := !(int argc, char^^ argv) -> int
 {
-	j := ![5,8,1]
 
-	for 3  { printf("www %i\n",j[it]) }
+	listt.error = global_registry_handler
+	listt.delete_id = remover
+
+	g_w_display := wl_display_connect(null)
+	
+	if g_w_display == null return 0
+
+	reg := wl_display_get_registry(g_w_display)
+	wl_registry_add_listener(reg,listt&,null)
+
+	wl_display_dispatch(g_w_display)
+	wl_display_roundtrip(g_w_display)
+
+	getch()
+
 	return 0
 
 	handl := dlopen("libvulkan.so.1",2)

@@ -476,6 +476,9 @@ CreateStandartTypes := !() -> void
 	TypeTable[13] = new TypeStandart("%RangeTypeInt")
 	TypeTable[14] = new TypeStandart("%RangeTypeFloat")
 
+	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
+	TypeTable[15] = new TypeStandart("%OpaqType")
+
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])
@@ -498,5 +501,7 @@ CreateStandartTypes := !() -> void
 	DefsTable[15] = new TypeDef("void",TypeTable[11])
 
 	DefsTable[16] = new TypeDef("string",TypeTable[12])
+
+	DefsTable[17] = new TypeDef("opaque",TypeTable[15])
 
 }
