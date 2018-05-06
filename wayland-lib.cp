@@ -1,3 +1,5 @@
+#import "lib.cp"
+
 //
 // WAYLAND CORE
 //
@@ -90,28 +92,28 @@ wl_message := class
 //
 
 
-wl_display_interface := extern opaque
-wl_registry_interface := extern opaque
-wl_callback_interface := extern opaque
-wl_compositor_interface := opaque
-wl_shm_pool_interface := opaque
-wl_shm_interface := opaque
-wl_buffer_interface := opaque
-wl_data_offer_interface := opaque
-wl_data_source_interface := opaque
-wl_data_device_interface := opaque
-wl_data_device_manager_interface := opaque
-wl_shell_interface := opaque
-wl_shell_surface_interface := opaque
-wl_surface_interface := opaque
-wl_seat_interface := opaque
-wl_pointer_interface := opaque
-wl_keyboard_interface := opaque
-wl_touch_interface := opaque
-wl_output_interface := opaque
-wl_region_interface := opaque
-wl_subcompositor_interface := opaque
-wl_subsurface_interface := opaque
+wl_display_interface := extern wl_interface
+wl_registry_interface := extern wl_interface
+wl_callback_interface := extern wl_interface
+wl_compositor_interface := extern wl_interface
+wl_shm_pool_interface := extern wl_interface
+wl_shm_interface := extern wl_interface
+wl_buffer_interface := extern wl_interface
+wl_data_offer_interface := extern wl_interface
+wl_data_source_interface := extern wl_interface
+wl_data_device_interface := extern wl_interface
+wl_data_device_manager_interface := extern wl_interface
+wl_shell_interface := extern wl_interface
+wl_shell_surface_interface := extern wl_interface
+wl_surface_interface := extern wl_interface
+wl_seat_interface := extern wl_interface
+wl_pointer_interface := extern wl_interface
+wl_keyboard_interface := extern wl_interface
+wl_touch_interface := extern wl_interface
+wl_output_interface := extern wl_interface
+wl_region_interface := extern wl_interface
+wl_subcompositor_interface := extern wl_interface
+wl_subsurface_interface := extern wl_interface
 
 WL_DISPLAY_ERROR_INVALID_OBJECT := 0
 WL_DISPLAY_ERROR_INVALID_METHOD := 1
@@ -146,12 +148,10 @@ wl_registry_add_listener := !(void^ wl_registry,void^ listener, void^ data) -> i
 {
 	return wl_proxy_add_listener(wl_registry,listener, data)
 }
-
 WL_REGISTRY_BIND := 0
-wl_registry_bind := !(void^ reg, u32 name, void^ interface, u32 version) -> void^
+wl_registry_bind := !(void^ reg, u32 name, wl_interface^ intr, u32 version) -> void^
 {
-	
-	return wl_proxy_marshal_constructor_versioned( reg, WL_REGISTRY_BIND, interface, version, name, interface.name, version, null)
+	return wl_proxy_marshal_constructor_versioned( reg, WL_REGISTRY_BIND, intr, version, name, intr.name, version, null)
 }
 
 WL_COMPOSITOR_CREATE_SURFACE  := 0
