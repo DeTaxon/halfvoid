@@ -37,6 +37,8 @@ main := !(int argc,string[] argv) -> int
 		fil << GlobalStrs
 		StrContainer.PrintGlobal(fil)
 
+		for Classes.Size() Classes[it].PrintStruct(fil)
+
 		wutt := Files.Start
 		while wutt != null
 		{

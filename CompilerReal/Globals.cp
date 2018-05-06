@@ -21,3 +21,5 @@ GlobalExcArr := BuiltInTemplateExcArr^
 VoidPType := Type^
 
 GlobalStrs := string
+
+Classes := Queue.{BoxClass^}

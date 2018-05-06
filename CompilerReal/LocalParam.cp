@@ -260,7 +260,6 @@ FuncParam := class extend MemParam
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
-		printf(";slkdg;askdgj\n")
 		ResultType.PrintType(f)
 		f << " %" << ItName
 	}

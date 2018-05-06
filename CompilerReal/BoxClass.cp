@@ -1,3 +1,4 @@
+
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
 
@@ -208,7 +209,7 @@ BoxClass := class extend Object
 
 	ContainVirtual  := bool
 
-	"this" := !(Object^ item, BoxClass^ par) -> void 
+	this := !(Object^ item, BoxClass^ par) -> void 
 	{
 		PopOutNode(item)
 		Down = item
@@ -236,6 +237,7 @@ BoxClass := class extend Object
 			iterH = iterH.Right
 		}
 		WorkBag.Push(this&,State_PrePrint)
+		Classes.Push(this&)
 
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -349,7 +351,7 @@ BoxClass := class extend Object
 			}
 		}
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintStruct := virtual !(sfile f) -> void
 	{
 		if not vTable.Empty()
 		{
@@ -389,8 +391,10 @@ BoxClass := class extend Object
 				f << Params[it].ResultType.GetName()
 			}
 			f << "}\n"
-
 		}
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
 		iterJ := Down.Down
 		while iterJ != null
 		{
