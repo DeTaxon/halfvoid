@@ -1,5 +1,7 @@
 #import "lib.cp"
 #import "wayland.cp"
+#import "egl.cp"
+#import "gl.cp"
 
 //vkEnumerateInstanceExtensionProperties := !(
 
@@ -59,8 +61,65 @@ main := !(int argc, char^^ argv) -> int
 	surf := wl_compositor_create_surface(compos)
 	shell_surf := wl_shell_get_shell_surface(shell,surf)
 
-	wl_shell_surface_set_toplevel(shell_surf)	
+	wl_shell_surface_set_toplevel(shell_surf)
 
+
+	region := wl_compositor_create_region(compos)
+	wl_region_add(region,0,0,400,400)
+	wl_surface_set_opaque_region(surf,region)
+
+
+
+	egl_display := eglGetDisplay(g_w_display)
+
+	attrs := new int[20]
+
+	attrs[0] = EGL_SURFACE_TYPE
+	attrs[1] = EGL_WINDOW_BIT
+	attrs[2] = EGL_RED_SIZE
+	attrs[3] = 8
+	attrs[4] = EGL_GREEN_SIZE
+	attrs[5] = 8
+	attrs[6] = EGL_BLUE_SIZE
+	attrs[7] = 8
+	attrs[8] = EGL_RENDERABLE_TYPE
+	attrs[9] = EGL_OPENGL_ES2_BIT
+	attrs[10] = 0
+
+	maj := int
+	min := int
+	eglInitialize(egl_display,maj&,min&)
+	printf("egl %i %i\n",maj,min)
+	
+	cCount := int
+	eglGetConfigs(egl_display,null,0,cCount&)
+
+	confs := new void^[cCount]
+	eglGetConfigs(egl_display,confs,cCount,cCount&)
+
+	sizeI := int
+	redI := int
+	for i : cCount
+	{
+		eglGetConfigAttrib(egl_display,confs[i],EGL_BUFFER_SIZE,sizeI&)
+		eglGetConfigAttrib(egl_display,confs[i],EGL_RED_SIZE,redI&)
+		printf("Buffer %i %i %i\n",i,sizeI,redI)
+
+	}
+
+	egl_cont := eglCreateContext(egl_display,confs[0],null,attrs)
+
+	egl_win := wl_egl_window_create(surf,400,400)
+	
+	egl_surf := eglCreateWindowSurface(egl_display,confs[0],egl_win,null)
+	eglMakeCurrent(egl_display,egl_surf,egl_surf,egl_cont)
+
+	glClearColor(1.0,0.5,0.0,1.0)
+	glClear(GL_COLOR_BUFFER_BIT)
+	glFlush()
+	eglSwapBuffers(egl_display,egl_surf)
+
+	wl_display_dispatch(g_w_display)
 	system("sleep 4s")
 	wl_display_disconnect(g_w_display)
 	return 0

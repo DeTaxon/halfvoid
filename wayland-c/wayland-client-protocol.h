@@ -273,16 +273,6 @@ wl_compositor_destroy(struct wl_compositor *wl_compositor)
  *
  * Ask the compositor to create a new region.
  */
-static inline struct wl_region *
-wl_compositor_create_region(struct wl_compositor *wl_compositor)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor((struct wl_proxy *) wl_compositor,
-			 WL_COMPOSITOR_CREATE_REGION, &wl_region_interface, NULL);
-
-	return (struct wl_region *) id;
-}
 
 #define WL_SHM_POOL_CREATE_BUFFER 0
 #define WL_SHM_POOL_DESTROY 1
@@ -2345,16 +2335,6 @@ wl_surface_add_listener(struct wl_surface *wl_surface,
 				     (void (**)(void)) listener, data);
 }
 
-#define WL_SURFACE_DESTROY 0
-#define WL_SURFACE_ATTACH 1
-#define WL_SURFACE_DAMAGE 2
-#define WL_SURFACE_FRAME 3
-#define WL_SURFACE_SET_OPAQUE_REGION 4
-#define WL_SURFACE_SET_INPUT_REGION 5
-#define WL_SURFACE_COMMIT 6
-#define WL_SURFACE_SET_BUFFER_TRANSFORM 7
-#define WL_SURFACE_SET_BUFFER_SCALE 8
-#define WL_SURFACE_DAMAGE_BUFFER 9
 
 /**
  * @ingroup iface_wl_surface
@@ -2597,12 +2577,6 @@ wl_surface_frame(struct wl_surface *wl_surface)
  * destroyed immediately. A NULL wl_region causes the pending opaque
  * region to be set to empty.
  */
-static inline void
-wl_surface_set_opaque_region(struct wl_surface *wl_surface, struct wl_region *region)
-{
-	wl_proxy_marshal((struct wl_proxy *) wl_surface,
-			 WL_SURFACE_SET_OPAQUE_REGION, region);
-}
 
 /**
  * @ingroup iface_wl_surface
@@ -4265,9 +4239,6 @@ wl_output_release(struct wl_output *wl_output)
 	wl_proxy_destroy((struct wl_proxy *) wl_output);
 }
 
-#define WL_REGION_DESTROY 0
-#define WL_REGION_ADD 1
-#define WL_REGION_SUBTRACT 2
 
 
 /**
@@ -4322,12 +4293,6 @@ wl_region_destroy(struct wl_region *wl_region)
  *
  * Add the specified rectangle to the region.
  */
-static inline void
-wl_region_add(struct wl_region *wl_region, int32_t x, int32_t y, int32_t width, int32_t height)
-{
-	wl_proxy_marshal((struct wl_proxy *) wl_region,
-			 WL_REGION_ADD, x, y, width, height);
-}
 
 /**
  * @ingroup iface_wl_region

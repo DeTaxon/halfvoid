@@ -185,3 +185,44 @@ wl_shell_surface_set_toplevel := !(void^ wl_shell_surface) -> void
 {
 	wl_proxy_marshal(wl_shell_surface, WL_SHELL_SURFACE_SET_TOPLEVEL)
 }
+
+wl_compositor_create_region := !(void^ wl_compositor) -> void^
+{
+
+	return wl_proxy_marshal_constructor( wl_compositor,WL_COMPOSITOR_CREATE_REGION, wl_region_interface&, null)
+}
+
+WL_REGION_DESTROY  := 0
+WL_REGION_ADD  := 1
+WL_REGION_SUBTRACT := 2
+
+wl_region_add := !(void^ wl_region, int x, int y, int width, int height) -> void
+{
+	wl_proxy_marshal(wl_region, WL_REGION_ADD, x, y, width, height)
+}
+
+WL_SURFACE_DESTROY  := 0
+WL_SURFACE_ATTACH := 1
+WL_SURFACE_DAMAGE := 2
+WL_SURFACE_FRAME := 3
+WL_SURFACE_SET_OPAQUE_REGION := 4
+WL_SURFACE_SET_INPUT_REGION := 5
+WL_SURFACE_COMMIT := 6
+WL_SURFACE_SET_BUFFER_TRANSFORM := 7
+WL_SURFACE_SET_BUFFER_SCALE := 8
+WL_SURFACE_DAMAGE_BUFFER := 9
+
+wl_surface_set_opaque_region := !(void^ wl_surface, void^ region)-> void
+{
+	wl_proxy_marshal(wl_surface,WL_SURFACE_SET_OPAQUE_REGION, region)
+}
+
+//
+// WAYLAND EGL
+//
+
+
+wl_egl_window_create := !(void^ surface,   int width, int height) -> void^ declare
+wl_egl_window_destroy := !(void^ egl_window) -> void declare
+wl_egl_window_resize := !(void^ egl_window,int width, int height, int dx, int dy) -> void declare
+wl_egl_window_get_attached_size := !(void^ egl_window,int^ width, int^ height) -> void declare
