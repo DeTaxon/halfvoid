@@ -166,6 +166,68 @@ GlobalParam := class extend MemParam
 		return "@T" + MainId
 	}
 }
+GlobalFuncParam := class extend MemParam
+{
+	MainId := int
+	this := !(Type^ th,Object^ toSet) -> void
+	{
+		ResultType = th
+		Down = toSet
+		MainId = GetNewId()
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			//WorkBag.Push(this&,State_GetUse)
+		}
+		if pri == State_GetUse
+		{
+			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
+		}
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		f << "@T" << MainId << " = "
+		f << "global "
+		ResultType.PrintType(f)
+		if Down == null
+		{
+			f << " zeroinitializer\n"
+		}else{
+			f << " " << Down.GetName() << "\n"
+		}
+	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.GetPoint().PrintType(f)
+		f << " @T" << MainId
+	}
+	PrintPre := virtual !(sfile f, int newInd) -> void
+	{
+		f << "%T" << newInd << " = load "
+		ResultType.PrintType(f)
+		f << " , "
+		ResultType.PrintType(f)
+		f << "* @T" << MainId << "\n"
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		ResultType.PrintType(f)
+		f << " %T"<< newInd
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return "%T" + newInd 
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		return "@T" + MainId
+	}
+}
 ExternParam := class extend MemParam
 {
 	MainId := int
@@ -252,6 +314,7 @@ FuncParam := class extend MemParam
 	}
 	PrintPointUse := virtual !(sfile f, int newInd) -> void
 	{
+		
 		if IsRef
 		{
 			ResultType.GetPoint().PrintType(f)

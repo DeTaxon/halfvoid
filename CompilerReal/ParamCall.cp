@@ -101,13 +101,19 @@ ParamNaturalCall := class extend ParamCall
 
 ParamFuncCall := class extend ParamCall
 {
+	OutName := string
 	this := !(string Name, ObjParam^ Par) -> void
 	{
 		BeforeName = Name
-		ResultType = Par.ObjType
+		ResultType = Par.ObjType.GetPoint()
 
 		asNeed := ((Par.Down)->{BoxFunc^})
 		asNeed.ParseBlock()
+		OutName = asNeed.OutputName
+	}
+	GetName := virtual !() -> string
+	{
+		return "@" + OutName
 	}
 }
 

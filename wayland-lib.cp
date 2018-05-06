@@ -62,6 +62,29 @@ wl_display_cancel_read := !(void^ display) -> void declare
 wl_display_read_events := !(void^ display) ->int declare
 //wl_log_set_handler_client := !(wl_log_func_t handler) -> void declare
 
+
+//
+// WAYLAND UTILS
+//
+
+wl_interface := class
+{
+	name := char^
+	version := s32
+	method_count := s32
+	methods := void^ //wl_message^
+	event_count := s32
+	events := void^ //wl_message^
+}
+
+wl_message := class
+{
+	name := char^
+	signature := char^
+	types := wl_interface^^
+}
+
+
 //
 // WAYLAND PROTOCOL
 //
@@ -111,8 +134,7 @@ WL_DISPLAY_GET_REGISTRY  := 1
 
 wl_display_get_registry := !(void^ wl_display) -> void^
 {
-	return wl_proxy_marshal_constructor( wl_display,
-			 WL_DISPLAY_GET_REGISTRY, wl_registry_interface&, null);
+	return wl_proxy_marshal_constructor( wl_display, WL_DISPLAY_GET_REGISTRY, wl_registry_interface&, null)
 }
 
 wl_display_add_listener := !(void^ wl_display,void^ listener, void^ data) -> int
@@ -123,4 +145,43 @@ wl_display_add_listener := !(void^ wl_display,void^ listener, void^ data) -> int
 wl_registry_add_listener := !(void^ wl_registry,void^ listener, void^ data) -> int
 {
 	return wl_proxy_add_listener(wl_registry,listener, data)
+}
+
+WL_REGISTRY_BIND := 0
+wl_registry_bind := !(void^ reg, u32 name, void^ interface, u32 version) -> void^
+{
+	
+	return wl_proxy_marshal_constructor_versioned( reg, WL_REGISTRY_BIND, interface, version, name, interface.name, version, null)
+}
+
+WL_COMPOSITOR_CREATE_SURFACE  := 0
+WL_COMPOSITOR_CREATE_REGION := 1
+
+wl_compositor_create_surface := !(void^ comp) -> void^
+{
+	return wl_proxy_marshal_constructor(comp, WL_COMPOSITOR_CREATE_SURFACE, wl_surface_interface&, null)
+}
+
+WL_SHELL_SURFACE_PONG  := 0
+WL_SHELL_SURFACE_MOVE  := 1
+WL_SHELL_SURFACE_RESIZE  := 2
+WL_SHELL_SURFACE_SET_TOPLEVEL  := 3
+WL_SHELL_SURFACE_SET_TRANSIENT  := 4
+WL_SHELL_SURFACE_SET_FULLSCREEN  := 5
+WL_SHELL_SURFACE_SET_POPUP  := 6
+WL_SHELL_SURFACE_SET_MAXIMIZED  := 7
+WL_SHELL_SURFACE_SET_TITLE  := 8
+WL_SHELL_SURFACE_SET_CLASS  := 9
+
+WL_SHELL_GET_SHELL_SURFACE  := 0
+
+wl_shell_get_shell_surface := !(void^ wl_shell, void^ surface) -> void^
+{
+	return wl_proxy_marshal_constructor( wl_shell,
+			 WL_SHELL_GET_SHELL_SURFACE, wl_shell_surface_interface&, null, surface)
+
+}
+wl_shell_surface_set_toplevel := !(void^ wl_shell_surface) -> void
+{
+	wl_proxy_marshal(wl_shell_surface, WL_SHELL_SURFACE_SET_TOPLEVEL)
 }

@@ -99,8 +99,9 @@ ObjParam := class extend Object
 					//TODO: Global?
 					if IsExtern
 						Down = new ExternParam(MaybeType,val,MyStr)
-					else 
+					else{ 
 						Down = new GlobalParam(MaybeType,val)
+					}
 
 					Down.SetUp(this&)
 				}else

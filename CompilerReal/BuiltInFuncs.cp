@@ -638,6 +638,7 @@ CreateBuiltIns := !() -> void
 												+"#0 = mul i" + it + " #2,#0pre\n"
 												+"store i"+it+" #0, i"+it+"* #1"))
 		}
+		BuiltInFuncs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i" + it + " #1,0"))
 	}
 	
 	for !["float","double"] // half?

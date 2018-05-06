@@ -530,6 +530,10 @@ BoxFuncBody := class extend BoxFunc
 			asNeed := (metC->{TypeClass^}).ToClass
 			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
 		}
+		if FuncName == "main"
+		{
+			ParseBlock()
+		}
 	}
 	ParseBlock := virtual !() -> void
 	{
@@ -541,7 +545,7 @@ BoxFuncBody := class extend BoxFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		if MyFuncType.RetType != null
+		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
 			f << "define "
@@ -564,6 +568,7 @@ BoxFuncBody := class extend BoxFunc
 				f << "..."
 			}
 			f << ")"
+			f << " ; " << FuncName
 
 			f << "\n{\n"
 

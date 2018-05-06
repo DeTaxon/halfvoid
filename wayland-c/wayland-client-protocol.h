@@ -122,7 +122,6 @@ struct wl_registry_listener {
  * @ingroup iface_wl_registry
  */
 
-#define WL_REGISTRY_BIND 0
 
 /**
  * @ingroup iface_wl_registry
@@ -163,23 +162,6 @@ static inline void
 wl_registry_destroy(struct wl_registry *wl_registry)
 {
 	wl_proxy_destroy((struct wl_proxy *) wl_registry);
-}
-
-/**
- * @ingroup iface_wl_registry
- *
- * Binds a new, client-created object to the server using the
- * specified name as the identifier.
- */
-static inline void *
-wl_registry_bind(struct wl_registry *wl_registry, uint32_t name, const struct wl_interface *interface, uint32_t version)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor_versioned((struct wl_proxy *) wl_registry,
-			 WL_REGISTRY_BIND, interface, version, name, interface->name, version, NULL);
-
-	return (void *) id;
 }
 
 /**
@@ -242,8 +224,6 @@ wl_callback_destroy(struct wl_callback *wl_callback)
 	wl_proxy_destroy((struct wl_proxy *) wl_callback);
 }
 
-#define WL_COMPOSITOR_CREATE_SURFACE 0
-#define WL_COMPOSITOR_CREATE_REGION 1
 
 
 /**
@@ -287,16 +267,6 @@ wl_compositor_destroy(struct wl_compositor *wl_compositor)
  *
  * Ask the compositor to create a new surface.
  */
-static inline struct wl_surface *
-wl_compositor_create_surface(struct wl_compositor *wl_compositor)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor((struct wl_proxy *) wl_compositor,
-			 WL_COMPOSITOR_CREATE_SURFACE, &wl_surface_interface, NULL);
-
-	return (struct wl_surface *) id;
-}
 
 /**
  * @ingroup iface_wl_compositor
@@ -1813,7 +1783,6 @@ enum wl_shell_error {
 };
 #endif /* WL_SHELL_ERROR_ENUM */
 
-#define WL_SHELL_GET_SHELL_SURFACE 0
 
 
 /**
@@ -1857,16 +1826,6 @@ wl_shell_destroy(struct wl_shell *wl_shell)
  *
  * Only one shell surface can be associated with a given surface.
  */
-static inline struct wl_shell_surface *
-wl_shell_get_shell_surface(struct wl_shell *wl_shell, struct wl_surface *surface)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor((struct wl_proxy *) wl_shell,
-			 WL_SHELL_GET_SHELL_SURFACE, &wl_shell_surface_interface, NULL, surface);
-
-	return (struct wl_shell_surface *) id;
-}
 
 #ifndef WL_SHELL_SURFACE_RESIZE_ENUM
 #define WL_SHELL_SURFACE_RESIZE_ENUM
@@ -2032,16 +1991,6 @@ wl_shell_surface_add_listener(struct wl_shell_surface *wl_shell_surface,
 				     (void (**)(void)) listener, data);
 }
 
-#define WL_SHELL_SURFACE_PONG 0
-#define WL_SHELL_SURFACE_MOVE 1
-#define WL_SHELL_SURFACE_RESIZE 2
-#define WL_SHELL_SURFACE_SET_TOPLEVEL 3
-#define WL_SHELL_SURFACE_SET_TRANSIENT 4
-#define WL_SHELL_SURFACE_SET_FULLSCREEN 5
-#define WL_SHELL_SURFACE_SET_POPUP 6
-#define WL_SHELL_SURFACE_SET_MAXIMIZED 7
-#define WL_SHELL_SURFACE_SET_TITLE 8
-#define WL_SHELL_SURFACE_SET_CLASS 9
 
 /**
  * @ingroup iface_wl_shell_surface
@@ -2176,12 +2125,6 @@ wl_shell_surface_resize(struct wl_shell_surface *wl_shell_surface, struct wl_sea
  *
  * A toplevel surface is not fullscreen, maximized or transient.
  */
-static inline void
-wl_shell_surface_set_toplevel(struct wl_shell_surface *wl_shell_surface)
-{
-	wl_proxy_marshal((struct wl_proxy *) wl_shell_surface,
-			 WL_SHELL_SURFACE_SET_TOPLEVEL);
-}
 
 /**
  * @ingroup iface_wl_shell_surface
