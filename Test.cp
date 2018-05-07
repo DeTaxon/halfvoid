@@ -69,7 +69,6 @@ main := !(int argc, char^^ argv) -> int
 	wl_surface_set_opaque_region(surf,region)
 
 
-
 	egl_display := eglGetDisplay(g_w_display)
 
 	attrs := new int[20]
@@ -84,23 +83,25 @@ main := !(int argc, char^^ argv) -> int
 	attrs[7] = 8
 	attrs[8] = EGL_RENDERABLE_TYPE
 	attrs[9] = EGL_OPENGL_ES2_BIT
-	attrs[10] = 0
+	attrs[10] = EGL_DEPTH_SIZE
+	attrs[11] = 24
+	attrs[12] = EGL_NONE
 
 	conattr := new int[3]
 	conattr[0] = EGL_CONTEXT_CLIENT_VERSION
 	conattr[1] = 2
-	conattr[2] = 0
+	conattr[2] = EGL_NONE
 
 	maj := int
 	min := int
-	eglInitialize(egl_display,maj&,min&)
-	printf("egl %i %i\n",maj,min)
+	isInitedEGL := eglInitialize(egl_display,maj&,min&)
+	printf("egl %i.%i isInited %i\n",maj,min,isInitedEGL)
 	
 	cCount := int
 	eglGetConfigs(egl_display,null,0,cCount&)
 
 	confs := new void^[cCount]
-	eglGetConfigs(egl_display,confs,cCount,cCount&)
+	//eglGetConfigs(egl_display,confs,cCount,cCount&)
 
 	eglChooseConfig(egl_display,attrs,confs,cCount,cCount&)
 
