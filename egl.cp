@@ -60,7 +60,7 @@ EGL_VERSION                       := 0x3054
 EGL_WIDTH                         := 0x3057
 EGL_WINDOW_BIT                    := 0x0004
 
-//EGLAPI EGLBoolean EGLAPIENTRY eglChooseConfig (EGLDisplay dpy, const EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config);
+eglChooseConfig := !(void^ dpy, int^ attrib_list, void^ configs, int config_size, int^ num_config) -> int declare
 //EGLAPI EGLBoolean EGLAPIENTRY eglCopyBuffers (EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target);
 eglCreateContext := !(void^ dpy, void^ config, void^ share_context, s32^ attrib_list) -> void^ declare
 //EGLAPI EGLSurface EGLAPIENTRY eglCreatePbufferSurface (EGLDisplay dpy, EGLConfig config, const EGLint *attrib_list);

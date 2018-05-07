@@ -86,6 +86,11 @@ main := !(int argc, char^^ argv) -> int
 	attrs[9] = EGL_OPENGL_ES2_BIT
 	attrs[10] = 0
 
+	conattr := new int[3]
+	conattr[0] = EGL_CONTEXT_CLIENT_VERSION
+	conattr[1] = 2
+	conattr[2] = 0
+
 	maj := int
 	min := int
 	eglInitialize(egl_display,maj&,min&)
@@ -97,6 +102,8 @@ main := !(int argc, char^^ argv) -> int
 	confs := new void^[cCount]
 	eglGetConfigs(egl_display,confs,cCount,cCount&)
 
+	eglChooseConfig(egl_display,attrs,confs,cCount,cCount&)
+
 	sizeI := int
 	redI := int
 	for i : cCount
@@ -107,20 +114,22 @@ main := !(int argc, char^^ argv) -> int
 
 	}
 
-	egl_cont := eglCreateContext(egl_display,confs[0],null,attrs)
+	egl_cont := eglCreateContext(egl_display,confs[0],null,conattr)
 
 	egl_win := wl_egl_window_create(surf,400,400)
 	
 	egl_surf := eglCreateWindowSurface(egl_display,confs[0],egl_win,null)
 	eglMakeCurrent(egl_display,egl_surf,egl_surf,egl_cont)
 
-	glClearColor(1.0,0.5,0.0,1.0)
-	glClear(GL_COLOR_BUFFER_BIT)
-	glFlush()
-	eglSwapBuffers(egl_display,egl_surf)
+	
+	
+		glClearColor(1.0,0.5,0.0,1.0)
+		glClear(GL_COLOR_BUFFER_BIT)
+		glFlush()
+		eglSwapBuffers(egl_display,egl_surf)
 
 	wl_display_dispatch(g_w_display)
-	system("sleep 4s")
+		system("sleep 1s")
 	wl_display_disconnect(g_w_display)
 	return 0
 
