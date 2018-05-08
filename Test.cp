@@ -28,9 +28,10 @@ global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 ver
 	{
 		compos = wl_registry_bind(reg,id,wl_compositor_interface&,1)
 	}
-	//if strcmp(intr,"zxdg_shell_v6") == 0
+	//if strcmp(intr,"xdg_shell") == 0
 	if strcmp(intr,"wl_shell") == 0
 	{
+		//shell = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
 		shell = wl_registry_bind(reg,id,wl_shell_interface&,1)
 	}
 }
@@ -64,9 +65,9 @@ main := !(int argc, char^^ argv) -> int
 	wl_shell_surface_set_toplevel(shell_surf)
 
 
-	region := wl_compositor_create_region(compos)
-	wl_region_add(region,0,0,400,400)
-	wl_surface_set_opaque_region(surf,region)
+	//region := wl_compositor_create_region(compos)
+	//wl_region_add(region,0,0,700,700)
+	//wl_surface_set_opaque_region(surf,region)
 
 
 	egl_display := eglGetDisplay(g_w_display)
@@ -117,7 +118,7 @@ main := !(int argc, char^^ argv) -> int
 
 	egl_cont := eglCreateContext(egl_display,confs[0],null,conattr)
 
-	egl_win := wl_egl_window_create(surf,400,400)
+	egl_win := wl_egl_window_create(surf,700,700)
 	
 	egl_surf := eglCreateWindowSurface(egl_display,confs[0],egl_win,null)
 	eglMakeCurrent(egl_display,egl_surf,egl_surf,egl_cont)

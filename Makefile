@@ -10,9 +10,10 @@ all : clean a.out a.exe
 
 out2.ll: a.out 
 	./a.out
-
-b : out2.ll	
-	clang++ -O0 out2.ll -o b -ldl -lwayland-client -lwayland-egl -lEGL -lGLESv2
+xdg.o: wayland-c/xdg.c
+	gcc wayland-c/xdg.c -c -o xdg.o
+b : out2.ll xdg.o
+	clang++ -O0 out2.ll -o b xdg.o -ldl -lwayland-client -lwayland-egl -lEGL -lGLESv2
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe

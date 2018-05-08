@@ -226,3 +226,24 @@ wl_egl_window_create := !(void^ surface,   int width, int height) -> void^ decla
 wl_egl_window_destroy := !(void^ egl_window) -> void declare
 wl_egl_window_resize := !(void^ egl_window,int width, int height, int dx, int dy) -> void declare
 wl_egl_window_get_attached_size := !(void^ egl_window,int^ width, int^ height) -> void declare
+
+//
+// XDG-SHELL
+//
+////extern const struct wl_interface xdg_wm_base_interface;
+////extern const struct wl_interface xdg_positioner_interface;
+////extern const struct wl_interface xdg_surface_interface;
+////extern const struct wl_interface xdg_toplevel_interface;
+////extern const struct wl_interface xdg_popup_interface;
+////
+////XDG_WM_BASE_ERROR_ROLE = 0,
+////XDG_WM_BASE_ERROR_DEFUNCT_SURFACES = 1,
+////XDG_WM_BASE_ERROR_NOT_THE_TOPMOST_POPUP = 2,
+////XDG_WM_BASE_ERROR_INVALID_POPUP_PARENT = 3,
+////XDG_WM_BASE_ERROR_INVALID_SURFACE_STATE = 4,
+////XDG_WM_BASE_ERROR_INVALID_POSITIONER = 5,
+////
+////XDG_WM_BASE_DESTROY 0
+////XDG_WM_BASE_CREATE_POSITIONER 1
+////XDG_WM_BASE_GET_XDG_SURFACE 2
+////XDG_WM_BASE_PONG 3
