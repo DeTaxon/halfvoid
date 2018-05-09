@@ -78,6 +78,10 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 					{
 						if AsNeed2.ItParams[it].ItName == name return AsNeed2.ItParams[it]
 					}
+					if AsNeed2.ExtraRetParam != null
+					{
+						if AsNeed2.ExtraRetParam.ItName == name return AsNeed2.ExtraRetParam
+					}
 				}
 			}
 		}

@@ -371,6 +371,10 @@ TypeFunc := class extend Type
 	}
 	GetName := virtual !() -> string
 	{
+		if RetType.GetType() == "arr" or RetType.GetType() == "class"
+		{
+			return "void" + GetSkobs() 
+		}
 		return RetType.GetName() + GetSkobs() 
 	}
 	GetSkobs := !() -> string
@@ -378,6 +382,17 @@ TypeFunc := class extend Type
 		ToRet := string
 		ToRet = ""
 		ToRet = ToRet + "("
+		
+		if RetType != null
+		{
+			if RetType.GetType() == "arr" or RetType.GetType() == "class"
+			{
+				ToRet = ToRet + RetType.GetName() + "* "
+				if ParsCount > 0 ToRet = ToRet + " , "
+			}
+		}
+
+
 		for i : ParsCount
 		{
 			if i != 0 ToRet = ToRet +  " , "

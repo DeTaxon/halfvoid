@@ -23,36 +23,40 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	iter = ToParse.Down
 	if iter == null return null
 
+	if iter.GetValue() == "!"
+	{
+		if iter.Right != null
+		if iter.Right.GetValue() == "[]"
+		{
+			Pars := Queue.{Type^}()
+
+			iterY := iter.Right.Down
+
+			while iterY != null
+			{
+				if iterY.GetValue() != ","
+				{
+					Pars.Push(iterY.GetType())
+				}
+				iterY = iterY.Right
+			}
+			f := FindFunc("![]",iter,Pars,false)
+
+			if f != null
+			{
+				TrimCommas(iter.Right)
+				return MakeSimpleCall(f,iter.Right.Down)
+			}
+			
+		}
+		return null
+	}
+
 	if iter.GetType() != null
 	{
 		iter = iter.Right
 		if iter == null return null
 
-		if iter.GetValue() == "!"
-		{
-			if iter.Right.GetValue() == "[]"
-			{
-				Pars := Queue.{Type^}()
-
-				iterY := iter.Right.Down
-
-				while iterY != null
-				{
-					if iterY.GetValue() != ","
-					{
-						Pars.Push(iterY.GetType())
-					}
-					iterY = iterY.Right
-				}
-				f := FindFunc("![]",iter,Pars,true)
-				if f != null
-				{
-					TrimCommas(iter.Right)
-					return MakeSimpleCall(f,iter.Right.Down)
-				}
-				
-			}			
-		}
 
 		if iter.GetValue() == "()"
 		{
@@ -355,12 +359,36 @@ SomeFuncCall := class extend ObjResult
 	ToCall := BoxFunc^
 	FType := TypeFunc^
 
+	gotAlloc := bool
+	InAlloc := int
+
+	TName := string
+	TEName := string
+
+
 	UseCall := virtual !(sfile f) -> void
 	{
 	}
 	PrintPointPre := virtual !(sfile f) -> void
 	{
 		UseCall(f)
+	}
+	CheckReturn := virtual !() -> void
+	{
+		if ToCall != null
+		{
+			gotAlloc = ToCall.IsRetComplex
+			if gotAlloc
+			{
+				InAlloc = GetAlloc(this&,ToCall.MyFuncType.RetType)
+				TName = "%T" + InAlloc
+				TEName = "%TE" + RetId
+			}else
+			{
+				TName = "%T" + RetId
+				TEName = "%TE" + RetId
+			}
+		}
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -369,32 +397,32 @@ SomeFuncCall := class extend ObjResult
 		{
 			if FType.RetRef
 			{
-				f << "%TE" << RetId << " = load "
+				f << TEName << " = load "
 				f << FType.RetType.GetName()
 				f << " , "
 				f << FType.RetType.GetPoint().GetName()
-				f << " %T" <<RetId << "\n"
+				f << " " << TName << "\n"
 			}
 		}
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
 		FType.RetType.GetPoint().PrintType(f)
-		f << " %T" << RetId
+		f << " " << TName
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		FType.RetType.PrintType(f)
 		if FType.RetRef
 		{
-			f << " %TE" << RetId
+			f << " " << TEName
 		}else{
-			f << " %T" << RetId
+			f << " " << TName
 		}
 	}
 	GetPointName := virtual !() -> string
 	{
-		return "%T" + RetId
+		return TName
 	}
 	GetName := virtual !() -> string
 	{
@@ -402,14 +430,14 @@ SomeFuncCall := class extend ObjResult
 		{
 			if FType.RetRef
 			{
-				return "%TE" + RetId
+				return TEName
 			}
 		}
-		return "%T" + RetId
+		return TName
 	}
 	GetOutputName := virtual !() -> string
 	{
-		return "%T" + RetId
+		return TName
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -436,6 +464,7 @@ NaturalCall := class extend SomeFuncCall
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
+		WorkBag.Push(this&,State_GetUse)
 	}
 	ExchangeParams := !() -> void
 	{
@@ -509,6 +538,12 @@ NaturalCall := class extend SomeFuncCall
 		iter := Down
 		RefsArr := FType.ParsIsRef
 		i := 0
+		if gotAlloc
+		{
+			f << ToCall.MyFuncType.RetType.GetName() << "* "
+			f << TName
+			i += 1
+		}
 		while iter != null
 		{
 			if i > 0 f << " , "
@@ -525,9 +560,9 @@ NaturalCall := class extend SomeFuncCall
 		PrintParamPres(f)
 
 
-		if (FType.RetType != GetType("void"))
+		if (FType.RetType != GetType("void") and not gotAlloc)
 		{
-			f << "%T" << RetId <<" = "	
+			f << TName <<" = "	
 		}
 		f << " call "
 		FType.PrintType(f)
@@ -548,6 +583,10 @@ NaturalCall := class extend SomeFuncCall
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_GetUse
+		{
+			CheckReturn()
+		}
 	}
 }
 
@@ -563,6 +602,7 @@ PointFuncCall := class extend NaturalCall
 		if Pars != null Pars.SetUp(this&)
 		ParamCal = pCall
 		ExchangeParams()
+		WorkBag.Push(this&,State_GetUse)
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -599,6 +639,13 @@ PointFuncCall := class extend NaturalCall
 	{
 		return FType.RetType
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			CheckReturn()
+		}
+	}
 }
 
 AssemblerCall := class extend NaturalCall
@@ -613,6 +660,7 @@ AssemblerCall := class extend NaturalCall
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
+		WorkBag.Push(this&,State_GetUse)
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -708,6 +756,13 @@ AssemblerCall := class extend NaturalCall
 			}
 		}
 
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			CheckReturn()
+		}
 	}
 }
 
@@ -821,6 +876,7 @@ NewCall := class extend SomeFuncCall
 		fun := (GlobalNew^.GetFunc(outT,outC))
 		ExtraFunc = MakeSimpleCall(fun,Down)
 		ExtraFunc.Down.SetUp(ExtraFunc)
+		CheckReturn()
 	}
 	UseCall := virtual !(sfile f) -> void
 	{

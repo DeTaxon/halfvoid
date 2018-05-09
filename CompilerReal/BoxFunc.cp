@@ -42,6 +42,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 
 	iter = iter.Right
+	
+	if iter.GetValue() != "()" return null
+
 	ParamsObj := iter
 	iter = iter.Right
 
@@ -63,6 +66,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			dynCa := iterForName->{ObjParam^}
 			IsSuf = dynCa.IsStrName
 			FName = dynCa.MyStr
+
+			if FName == "![]" IsSuf = false
+			if FName == "this" IsSuf = false
 
 			if IsOper(FName) IsSuf = false
 
@@ -272,6 +278,7 @@ BoxFunc := class extend Object
 	IsSuffix := bool
 	IsVirtual := bool
 	IsMethod := bool
+	IsRetComplex := bool
 
 	MethodType := Type^
 
@@ -294,7 +301,17 @@ BoxFunc := class extend Object
 		TypsIsRef := Queue.{bool}()
 		IsVargsL := false
 
+		RetTyp := ParseType(outObj)
+
 		Stuff := Queue.{Object^}()
+
+		if RetTyp != null
+		{
+			if RetTyp.GetType() == "arr" or RetTyp.GetType() == "class"
+			{
+				IsRetComplex = true
+			}
+		}
 
 		if MethodType != null
 		{
@@ -302,6 +319,7 @@ BoxFunc := class extend Object
 			TypsNams.Push("this")
 			TypsIsRef.Push(true)
 		}
+
 
 		while iter != null
 		{
@@ -368,7 +386,6 @@ BoxFunc := class extend Object
 			MyFuncParamNames = TypsNams.ToArray()
 		}
 		
-		RetTyp := ParseType(outObj)
 
 		arr := TypsIsRef.ToArray()
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
@@ -430,6 +447,7 @@ BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
 	ItParams := FuncParam^^
+	ExtraRetParam := FuncParam^
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		MyFuncParamNames = names
@@ -445,6 +463,9 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "func" + GetNewId()
 		}
 		MyFuncType = fType
+
+		TestRet(fType.RetType)
+
 
 		if MyFuncType != null 
 		{
@@ -483,6 +504,16 @@ BoxFuncBody := class extend BoxFunc
 			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
 		}
 	}
+	TestRet := !(Type^ t) -> void
+	{
+		if t != null
+		{
+			if t.GetType() == "arr" or t.GetType() == "class"
+			{
+				ExtraRetParam = new FuncParam("ToRet",t,true)
+			}
+		}
+	}
 	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		IsVirtual = IsVirt
@@ -496,6 +527,8 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "func" + GetNewId()
 		}
 		IsInvalid = not ParseParams(inPars,inOutType)
+
+		if MyFuncType != null TestRet(MyFuncType.RetType)
 
 		if MyFuncType != null 
 		{
@@ -549,10 +582,18 @@ BoxFuncBody := class extend BoxFunc
 		{
 			PrintGlobalSub(f)
 			f << "define "
-			MyFuncType.RetType.PrintType(f)
+
+			if IsRetComplex f << "void"
+			else MyFuncType.RetType.PrintType(f)
+
 			f << " @" << OutputName
 
 			f << "("
+			if IsRetComplex 
+			{
+				f << MyFuncType.RetType.GetName() << "* %ToRet"
+				if MyFuncType.ParsCount != 0 f << " , "
+			}
 			for i : MyFuncType.ParsCount
 			{
 				
@@ -581,7 +622,7 @@ BoxFuncBody := class extend BoxFunc
 				iter = iter.Right
 			}
 
-			if MyFuncType.RetType == GetType("void")
+			if MyFuncType.RetType == GetType("void") or IsRetComplex
 				f << "ret void\n"
 
 			f << "}\n"

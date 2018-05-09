@@ -204,6 +204,11 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
+		if pars[0].GetType() == "arr"
+		{
+			return new BuiltInFuncBinar("[]",pars[0],true,pars[1],false,pars[0].Base,true,
+		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0, " + pars[1].GetName() + " #2\n")
+		}
 		return new BuiltInFuncBinar("[]",pars[0],false,pars[1],false,pars[0].Base,true,
 		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, " + pars[1].GetName() + " #2\n")
 	}
