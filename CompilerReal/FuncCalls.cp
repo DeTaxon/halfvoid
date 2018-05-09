@@ -28,6 +28,32 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		iter = iter.Right
 		if iter == null return null
 
+		if iter.GetValue() == "!"
+		{
+			if iter.Right.GetValue() == "[]"
+			{
+				Pars := Queue.{Type^}()
+
+				iterY := iter.Right.Down
+
+				while iterY != null
+				{
+					if iterY.GetValue() != ","
+					{
+						Pars.Push(iterY.GetType())
+					}
+					iterY = iterY.Right
+				}
+				f := FindFunc("![]",iter,Pars,true)
+				if f != null
+				{
+					TrimCommas(iter.Right)
+					return MakeSimpleCall(f,iter.Right.Down)
+				}
+				
+			}			
+		}
+
 		if iter.GetValue() == "()"
 		{
 			if iter.Left.GetValue() == "(d)"

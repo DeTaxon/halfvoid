@@ -1,4 +1,4 @@
-
+// TODO: это костыль, нужно заменить на оптимизатор и более умный WorkBag
 
 ConstItem := class extend Object
 {
@@ -35,7 +35,7 @@ TryCompute := !(Object^ ob) -> Object^
 	lazy := ob.GetValue() == "~d"
 	if lazy lazy = ob.Down.GetValue() == "!"
 	if lazy lazy = ob.Down.Right.GetValue() == "[]"
-	if lazy
+	if lazy and false
 	{
 		
 		iterR := ob.Down.Right.Down
