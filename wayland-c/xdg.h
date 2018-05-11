@@ -278,39 +278,10 @@
  * @ingroup iface_xdg_wm_base
  * @struct xdg_wm_base_listener
  */
-struct xdg_wm_base_listener {
-	/**
-	 * check if the client is alive
-	 *
-	 * The ping event asks the client if it's still alive. Pass the
-	 * serial specified in the event back to the compositor by sending
-	 * a "pong" request back with the specified serial. See
-	 * xdg_wm_base.ping.
-	 *
-	 * Compositors can use this to determine if the client is still
-	 * alive. It's unspecified what will happen if the client doesn't
-	 * respond to the ping request, or in what timeframe. Clients
-	 * should try to respond in a reasonable amount of time.
-	 *
-	 * A compositor is free to ping in any way it wants, but a client
-	 * must always respond to any xdg_wm_base object it created.
-	 * @param serial pass this to the pong request
-	 */
-	void (*ping)(void *data,
-		     struct xdg_wm_base *xdg_wm_base,
-		     uint32_t serial);
-};
 
 /**
  * @ingroup iface_xdg_wm_base
  */
-static inline int
-xdg_wm_base_add_listener(struct xdg_wm_base *xdg_wm_base,
-			 const struct xdg_wm_base_listener *listener, void *data)
-{
-	return wl_proxy_add_listener((struct wl_proxy *) xdg_wm_base,
-				     (void (**)(void)) listener, data);
-}
 
 
 /**
@@ -391,31 +362,6 @@ xdg_wm_base_create_positioner(struct xdg_wm_base *xdg_wm_base)
 	return (struct xdg_positioner *) id;
 }
 
-/**
- * @ingroup iface_xdg_wm_base
- *
- * This creates an xdg_surface for the given surface. While xdg_surface
- * itself is not a role, the corresponding surface may only be assigned
- * a role extending xdg_surface, such as xdg_toplevel or xdg_popup.
- *
- * This creates an xdg_surface for the given surface. An xdg_surface is
- * used as basis to define a role to a given surface, such as xdg_toplevel
- * or xdg_popup. It also manages functionality shared between xdg_surface
- * based surface roles.
- *
- * See the documentation of xdg_surface for more details about what an
- * xdg_surface is and how it is used.
- */
-static inline struct xdg_surface *
-xdg_wm_base_get_xdg_surface(struct xdg_wm_base *xdg_wm_base, struct wl_surface *surface)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor((struct wl_proxy *) xdg_wm_base,
-			 XDG_WM_BASE_GET_XDG_SURFACE, &xdg_surface_interface, NULL, surface);
-
-	return (struct xdg_surface *) id;
-}
 
 /**
  * @ingroup iface_xdg_wm_base
@@ -423,12 +369,6 @@ xdg_wm_base_get_xdg_surface(struct xdg_wm_base *xdg_wm_base, struct wl_surface *
  * A client must respond to a ping event with a pong request or
  * the client may be deemed unresponsive. See xdg_wm_base.ping.
  */
-static inline void
-xdg_wm_base_pong(struct xdg_wm_base *xdg_wm_base, uint32_t serial)
-{
-	wl_proxy_marshal((struct wl_proxy *) xdg_wm_base,
-			 XDG_WM_BASE_PONG, serial);
-}
 
 #ifndef XDG_POSITIONER_ERROR_ENUM
 #define XDG_POSITIONER_ERROR_ENUM
@@ -732,11 +672,6 @@ xdg_surface_add_listener(struct xdg_surface *xdg_surface,
 				     (void (**)(void)) listener, data);
 }
 
-#define XDG_SURFACE_DESTROY 0
-#define XDG_SURFACE_GET_TOPLEVEL 1
-#define XDG_SURFACE_GET_POPUP 2
-#define XDG_SURFACE_SET_WINDOW_GEOMETRY 3
-#define XDG_SURFACE_ACK_CONFIGURE 4
 
 /**
  * @ingroup iface_xdg_surface
@@ -808,16 +743,6 @@ xdg_surface_destroy(struct xdg_surface *xdg_surface)
  * See the documentation of xdg_toplevel for more details about what an
  * xdg_toplevel is and how it is used.
  */
-static inline struct xdg_toplevel *
-xdg_surface_get_toplevel(struct xdg_surface *xdg_surface)
-{
-	struct wl_proxy *id;
-
-	id = wl_proxy_marshal_constructor((struct wl_proxy *) xdg_surface,
-			 XDG_SURFACE_GET_TOPLEVEL, &xdg_toplevel_interface, NULL);
-
-	return (struct xdg_toplevel *) id;
-}
 
 /**
  * @ingroup iface_xdg_surface

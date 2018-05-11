@@ -64,7 +64,6 @@ wl_display_cancel_read := !(void^ display) -> void declare
 wl_display_read_events := !(void^ display) ->int declare
 //wl_log_set_handler_client := !(wl_log_func_t handler) -> void declare
 
-
 //
 // WAYLAND UTILS
 //
@@ -217,6 +216,11 @@ wl_surface_set_opaque_region := !(void^ wl_surface, void^ region)-> void
 	wl_proxy_marshal(wl_surface,WL_SURFACE_SET_OPAQUE_REGION, region)
 }
 
+wl_surface_commit := !(void^ wl_surface) -> void
+{
+	wl_proxy_marshal( wl_surface, WL_SURFACE_COMMIT)
+}
+
 //
 // WAYLAND EGL
 //
@@ -230,10 +234,10 @@ wl_egl_window_get_attached_size := !(void^ egl_window,int^ width, int^ height) -
 //
 // XDG-SHELL
 //
-////extern const struct wl_interface xdg_wm_base_interface;
-////extern const struct wl_interface xdg_positioner_interface;
-////extern const struct wl_interface xdg_surface_interface;
-////extern const struct wl_interface xdg_toplevel_interface;
+xdg_wm_base_interface := extern wl_interface
+xdg_positioner_interface := extern wl_interface
+xdg_surface_interface :=extern wl_interface
+xdg_toplevel_interface := extern wl_interface
 ////extern const struct wl_interface xdg_popup_interface;
 ////
 ////XDG_WM_BASE_ERROR_ROLE = 0,
@@ -243,7 +247,37 @@ wl_egl_window_get_attached_size := !(void^ egl_window,int^ width, int^ height) -
 ////XDG_WM_BASE_ERROR_INVALID_SURFACE_STATE = 4,
 ////XDG_WM_BASE_ERROR_INVALID_POSITIONER = 5,
 ////
-////XDG_WM_BASE_DESTROY 0
-////XDG_WM_BASE_CREATE_POSITIONER 1
-////XDG_WM_BASE_GET_XDG_SURFACE 2
-////XDG_WM_BASE_PONG 3
+XDG_WM_BASE_DESTROY  := 0
+XDG_WM_BASE_CREATE_POSITIONER  := 1
+XDG_WM_BASE_GET_XDG_SURFACE  := 2
+XDG_WM_BASE_PONG  := 3
+
+xdg_wm_base_listener  := class {
+	//void (*ping)(void *data,
+	//	     struct xdg_wm_base *xdg_wm_base,
+	//	     uint32_t serial);
+	ping := void^
+}
+xdg_wm_base_add_listener := !(void^ xdg_wm_base,void^ listener, void^ data) -> int
+{
+	return wl_proxy_add_listener(xdg_wm_base,listener, data)
+}
+xdg_wm_base_get_xdg_surface := !(void^ xdg_wm_base, void^ surface) ->void^
+{
+	return wl_proxy_marshal_constructor( xdg_wm_base,
+			 XDG_WM_BASE_GET_XDG_SURFACE, xdg_surface_interface&, null, surface)
+}
+xdg_wm_base_pong := !(void^ xdg_wm_base, u32 serial) -> void
+{
+	wl_proxy_marshal( xdg_wm_base,	 XDG_WM_BASE_PONG, serial)
+}
+XDG_SURFACE_DESTROY  := 0
+XDG_SURFACE_GET_TOPLEVEL  := 1
+XDG_SURFACE_GET_POPUP  := 2
+XDG_SURFACE_SET_WINDOW_GEOMETRY  := 3
+XDG_SURFACE_ACK_CONFIGURE  := 4
+xdg_surface_get_toplevel := !(void^ xdg_surface) ->void^
+{
+	return wl_proxy_marshal_constructor( xdg_surface,
+			 XDG_SURFACE_GET_TOPLEVEL, xdg_toplevel_interface&, null)
+}

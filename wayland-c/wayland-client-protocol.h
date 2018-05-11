@@ -2632,12 +2632,6 @@ wl_surface_set_input_region(struct wl_surface *wl_surface, struct wl_region *reg
  *
  * Other interfaces may add further double-buffered surface state.
  */
-static inline void
-wl_surface_commit(struct wl_surface *wl_surface)
-{
-	wl_proxy_marshal((struct wl_proxy *) wl_surface,
-			 WL_SURFACE_COMMIT);
-}
 
 /**
  * @ingroup iface_wl_surface

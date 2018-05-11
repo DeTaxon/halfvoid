@@ -388,6 +388,9 @@ SomeFuncCall := class extend ObjResult
 				TName = "%T" + RetId
 				TEName = "%TE" + RetId
 			}
+		}else{
+			TName = "%T" + RetId
+			TEName = "%TE" + RetId
 		}
 	}
 	PrintPre := virtual !(sfile f) -> void

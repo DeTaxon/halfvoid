@@ -19,6 +19,7 @@ vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
 compos := void^
 shell := void^
+xdg_wm_item := void^
 
 global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 version) -> void
 {
@@ -28,7 +29,10 @@ global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 ver
 	{
 		compos = wl_registry_bind(reg,id,wl_compositor_interface&,1)
 	}
-	//if strcmp(intr,"xdg_shell") == 0
+	if strcmp(intr,"xdg_shell") == 0
+	{
+		xdg_wm_item = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
+	}
 	if strcmp(intr,"wl_shell") == 0
 	{
 		//shell = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
@@ -41,11 +45,16 @@ remover := !(void^ data, void^ reg, u32 id) -> void
 	printf("wut %i\n",id)	
 }
 
+le_pong := !(void^ data, void^ xdg_base, u32 serial) -> void
+{
+	xdg_wm_base_pong(xdg_base,serial)
+}
 listt := wl_display_listener
+pingList := xdg_wm_base_listener
 
 main2 := !(int argc, char^^ argv) -> int
 {
-
+	pingList.ping = le_pong
 	listt.error = global_registry_handler
 	listt.delete_id = remover
 
@@ -61,13 +70,19 @@ main2 := !(int argc, char^^ argv) -> int
 
 	surf := wl_compositor_create_surface(compos)
 	shell_surf := wl_shell_get_shell_surface(shell,surf)
+	xdg_surf := xdg_wm_base_get_xdg_surface(xdg_wm_item,shell_surf)
+	printf("point %p\n",xdg_surf)
 
-	wl_shell_surface_set_toplevel(shell_surf)
+	//wl_shell_surface_set_toplevel(xdg_surf)
+	xdg_level := xdg_surface_get_toplevel(xdg_surf)
+	printf("point %p\n",xdg_level)
 
 
-	//region := wl_compositor_create_region(compos)
-	//wl_region_add(region,0,0,700,700)
-	//wl_surface_set_opaque_region(surf,region)
+	region := wl_compositor_create_region(compos)
+	wl_region_add(region,0,0,700,700)
+	wl_surface_set_opaque_region(surf,region)
+
+	wl_surface_commit(surf)
 
 
 	egl_display := eglGetDisplay(g_w_display)
