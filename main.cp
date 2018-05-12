@@ -5,6 +5,8 @@
 
 //vkEnumerateInstanceExtensionProperties := !(
 
+working := bool
+
 strcmp := !(string a,string b) -> int declare
 system := !(char^ cmd) -> void declare
 
@@ -23,7 +25,6 @@ xdg_item := void^
 
 le_pong := !(void^ data, void^ xdg_base, u32 serial) -> void
 {
-	printf("got le pong %i\n",serial)
 	//xdg_wm_base_pong(xdg_base,serial)
 	zxdg_shell_v6_pong(xdg_base,serial)
 }
@@ -56,7 +57,6 @@ global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 ver
 
 remover := !(void^ data, void^ reg, u32 id) -> void
 {
-	printf("wut %i\n",id)	
 }
 
 
@@ -66,6 +66,7 @@ conf_wut := !(void^ data, void^ top_lvl, s32 widt, s32 hei, void^ state) -> void
 }
 close_wut := !(void^ data, void^ tp_lvl) -> void
 {
+	working = false
 }
 
 shell_handle := !(void^ data, void^ surf, u32 serial) -> void
@@ -79,6 +80,7 @@ cfgLi := xdg_wm_base_listener
 
 main2 := !(int argc, char^^ argv) -> int
 {
+	working = true
 	pingList.ping = le_pong
 	listt.error = global_registry_handler
 	listt.delete_id = remover
@@ -101,22 +103,15 @@ main2 := !(int argc, char^^ argv) -> int
 	//shell_surf := wl_shell_get_shell_surface(shell,surf)
 	//xdg_surf := xdg_wm_base_get_xdg_surface(xdg_item,surf)
 	xdg_surf := zxdg_shell_v6_get_xdg_surface(xdg_item,surf)
-	printf("point %p\n",xdg_surf)
 
 	zxdg_surface_v6_add_listener(xdg_surf,cfgLi&,null)
 
 	wl_shell_surface_set_toplevel(xdg_surf)
 	//xdg_level := xdg_surface_get_toplevel(xdg_surf)
 	xdg_level := zxdg_surface_v6_get_toplevel(xdg_surf)
-	printf("point %p\n",xdg_level)
 	zxdg_toplevel_v6_add_listener(xdg_level,resizeList&,null)
 	zxdg_toplevel_v6_set_title(xdg_level,"hello pls")
 
-
-
-	//region := wl_compositor_create_region(compos)
-	//wl_region_add(region,0,0,700,700)
-	//wl_surface_set_opaque_region(surf,region)
 	zxdg_surface_v6_set_window_geometry(xdg_surf,20,20,700,700)
 
 	wl_surface_commit(surf)
@@ -187,7 +182,7 @@ main2 := !(int argc, char^^ argv) -> int
 		glClear(GL_COLOR_BUFFER_BIT)
 		glFlush()
 		eglSwapBuffers(egl_display,egl_surf)
-	for 100000
+	while working
 	{
 		wl_display_dispatch(g_w_display)
 	}

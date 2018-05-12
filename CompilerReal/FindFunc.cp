@@ -174,25 +174,6 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		}
 	}
 
-	iterQ := BuiltInFuncs.Start
-	while iterQ != null
-	{
-		if iterQ.Data.FuncName == name
-		{
-			found.Push(iterQ.Data)
-		}
-		iterQ = iterQ.Next
-	}
-
-	iterH := BuiltInTemplates.Start
-	while iterH != null
-	{
-		if iterH.Data.FuncName == name
-		{
-			templates.Push(iterH.Data)
-		}
-		iterH = iterH.Next
-	}
 }
 
 
@@ -230,6 +211,27 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched)
+
+	iterQ := BuiltInFuncs.Start
+	while iterQ != null
+	{
+		if iterQ.Data.FuncName == name
+		{
+			Funcs.Push(iterQ.Data)
+		}
+		iterQ = iterQ.Next
+	}
+
+	iterH := BuiltInTemplates.Start
+	while iterH != null
+	{
+		if iterH.Data.FuncName == name
+		{
+			Templs.Push(iterH.Data)
+		}
+		iterH = iterH.Next
+	}
+
 	return GetBestFunc(pars,consts,Funcs,Templs)
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^

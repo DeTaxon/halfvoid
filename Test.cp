@@ -9,10 +9,9 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	//z := ![5,6]&
-	//printf("wow %i %i\n",z[0],z[1])
-	//return 0
-	return main2(argc,argv)
+	![5,6]
+	return 0
+	//return main2(argc,argv)
 }
 
 

@@ -8,8 +8,6 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
-	printf("get ext %s\n",item.GetValue())
-
 	if itemType.GetType() == "point" and ToType.GetType() == "point"
 	{
 		return GetExcPointers(itemType,ToType)

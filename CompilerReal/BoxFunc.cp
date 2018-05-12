@@ -174,12 +174,11 @@ BoxTemplate := class extend BoxFunc
 		zeto := Queue.{Object^}()
 		return GetFunc(pars,zeto)
 	}
-	GetFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+	CreateFuncPointer := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> TypeFunc^
 	{
 		outT := Queue.{Type^}()
-
 		FType := MyFuncType
-
+		
 		for FType.ParsCount
 		{
 			if FType.Pars[it] == null
@@ -189,8 +188,13 @@ BoxTemplate := class extend BoxFunc
 				outT.Push(FType.Pars[it])
 			}
 		}
+		return GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
+	}
+	GetFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+	{
+		outT := Queue.{Type^}()
 
-		newFuncType := GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
+		newFuncType := CreateFuncPointer(pars,consts)
 
 		iterJ := FuncsType.Start
 		somePos := 0

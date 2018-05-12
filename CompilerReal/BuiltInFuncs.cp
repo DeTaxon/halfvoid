@@ -485,6 +485,64 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		
 	}
 }
+BuiltInLenArr := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "![]"
+		OutputName = "error"
+
+		//emptType := Queue.{Type^}()
+		//emptType.Push(GetType("int"))
+		//emptType.Push(GetType("int"))
+		//MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	{
+		if consts.Size() != 0 return 255
+		if pars.Size() == 0 return 255
+		for pars.Size() 
+			if pars[it].GetType() != "standart"
+				return 255
+		return 0
+	}
+	CreateFuncPointer := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> TypeFunc^
+	{
+		newQueue := Queue.{Type^}()
+		for pars.Size() newQueue.Push(pars[0])
+		return GetFuncType(newQueue,null->{bool^},pars[0].GetArray(pars.Size()),false,false)
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		toCreate := ""
+
+		baseType := pars[0]
+		retType := baseType.GetArray(pars.Size())
+
+		baseTypeN := baseType.GetName()
+		retTypeN := retType.GetName()
+
+		for i : pars.Size()
+		{
+			toCreate = toCreate + "%TPre##n" + i + " = getelementptr " + retTypeN + " , " + retTypeN + "* #0,i32 0,i32 " + i + "\n"
+			toCreate = toCreate + "store " + baseTypeN + " #" + (i + 1) + " , " + baseTypeN + "* %TPre##n" + i + "\n"
+		}
+
+		newQueue := Queue.{Type^}()
+		for pars.Size() newQueue.Push(pars[0])
+
+		itFunc := new BuiltInFunc
+		itFunc.MyFuncType = GetFuncType(newQueue,null->{bool^},retType,false,false)
+		itFunc.ToExe = toCreate
+		itFunc.IsRetComplex = true
+
+		return itFunc
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 BuiltInTemplateNew := class extend BoxTemplate
 {
 	this := !() -> void
@@ -538,8 +596,9 @@ BuiltInTemplateStorePoint := class extend BoxTemplate
 		arrr[1] = false
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
+		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" return 255
 		if pars[1].GetType() != "point" return 255
@@ -599,6 +658,7 @@ AddTemplates := !() -> void
 	GlobalExcArr = new BuiltInTemplateExcArr()
 
 	BuiltInTemplates.Push(GlobalUnpoint)
+	BuiltInTemplates.Push(new BuiltInLenArr())
 	//BuiltInTemplates.Push(GlobalUnroll)
 }
 
