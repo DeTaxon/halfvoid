@@ -281,3 +281,91 @@ xdg_surface_get_toplevel := !(void^ xdg_surface) ->void^
 	return wl_proxy_marshal_constructor( xdg_surface,
 			 XDG_SURFACE_GET_TOPLEVEL, xdg_toplevel_interface&, null)
 }
+
+//
+// XDG6-shell
+//
+
+zxdg_shell_v6_interface := extern wl_interface
+zxdg_positioner_v6_interface := extern  wl_interface
+zxdg_surface_v6_interface := extern wl_interface
+zxdg_toplevel_v6_interface := extern wl_interface
+zxdg_popup_v6_interface := extern wl_interface
+
+ZXDG_SHELL_V6_DESTROY  := 0
+ZXDG_SHELL_V6_CREATE_POSITIONER  := 1
+ZXDG_SHELL_V6_GET_XDG_SURFACE  := 2
+ZXDG_SHELL_V6_PONG  := 3
+
+zxdg_shell_v6_add_listener := !(void^zxdg_shell_v6,   void^ listener, void^ data) -> int
+{
+	return wl_proxy_add_listener(zxdg_shell_v6,listener, data)
+}
+
+zxdg_shell_v6_get_xdg_surface := !(void^ zxdg_shell_v6, void^ surface) -> void^
+{
+	return wl_proxy_marshal_constructor( zxdg_shell_v6, ZXDG_SHELL_V6_GET_XDG_SURFACE,zxdg_surface_v6_interface&, null, surface)
+}
+ZXDG_SURFACE_V6_DESTROY  := 0
+ZXDG_SURFACE_V6_GET_TOPLEVEL := 1
+ZXDG_SURFACE_V6_GET_POPUP := 2
+ZXDG_SURFACE_V6_SET_WINDOW_GEOMETRY := 3
+ZXDG_SURFACE_V6_ACK_CONFIGURE := 4
+
+zxdg_surface_v6_get_toplevel := !(void^ zxdg_surface_v6) -> void^
+{
+	return wl_proxy_marshal_constructor(zxdg_surface_v6, ZXDG_SURFACE_V6_GET_TOPLEVEL, zxdg_toplevel_v6_interface&, null)
+
+}
+zxdg_shell_v6_pong := !(void^ zxdg_shell_v6, u32 serial) -> void
+{
+	wl_proxy_marshal(zxdg_shell_v6, ZXDG_SHELL_V6_PONG, serial)
+}
+
+zxdg_surface_v6_set_window_geometry := !(void^ zxdg_surface_v6, s32 x, s32 y, s32 width, s32 height) -> void
+{
+	wl_proxy_marshal( zxdg_surface_v6, ZXDG_SURFACE_V6_SET_WINDOW_GEOMETRY, x, y, width, height);
+}
+zxdg_toplevel_v6_listener  := class{
+	//void (*configure)(void *data,
+	//		  struct zxdg_toplevel_v6 *zxdg_toplevel_v6,
+	//		  int32_t width,
+	//		  int32_t height,
+	//		  struct wl_array *states);
+	configure := void^
+	//void (*close)(void *data,
+	//	      struct zxdg_toplevel_v6 *zxdg_toplevel_v6);
+	close := void^
+}
+ZXDG_TOPLEVEL_V6_DESTROY := 0
+ZXDG_TOPLEVEL_V6_SET_PARENT := 1
+ZXDG_TOPLEVEL_V6_SET_TITLE := 2
+ZXDG_TOPLEVEL_V6_SET_APP_ID := 3
+ZXDG_TOPLEVEL_V6_SHOW_WINDOW_MENU := 4
+ZXDG_TOPLEVEL_V6_MOVE := 5
+ZXDG_TOPLEVEL_V6_RESIZE := 6
+ZXDG_TOPLEVEL_V6_SET_MAX_SIZE := 7
+ZXDG_TOPLEVEL_V6_SET_MIN_SIZE := 8
+ZXDG_TOPLEVEL_V6_SET_MAXIMIZED := 9
+ZXDG_TOPLEVEL_V6_UNSET_MAXIMIZED := 10
+ZXDG_TOPLEVEL_V6_SET_FULLSCREEN := 11
+ZXDG_TOPLEVEL_V6_UNSET_FULLSCREEN := 12
+ZXDG_TOPLEVEL_V6_SET_MINIMIZED := 13
+
+zxdg_toplevel_v6_add_listener := !(void^ zxdg_toplevel_v6,void^ listener, void^ data) -> int
+{
+	return wl_proxy_add_listener(zxdg_toplevel_v6,listener, data)
+}
+zxdg_toplevel_v6_set_title := !(void^ zxdg_toplevel_v6, char^ title) -> void
+{
+	wl_proxy_marshal( zxdg_toplevel_v6, ZXDG_TOPLEVEL_V6_SET_TITLE, title)
+}
+
+zxdg_surface_v6_ack_configure := !(void^ zxdg_surface_v6, u32 serial) -> void
+{
+	wl_proxy_marshal(zxdg_surface_v6, ZXDG_SURFACE_V6_ACK_CONFIGURE, serial)
+}
+zxdg_surface_v6_add_listener := !(void^ zxdg_surface_v6,void^ listener, void^ data) -> int
+{
+	return wl_proxy_add_listener(zxdg_surface_v6,listener, data)
+}

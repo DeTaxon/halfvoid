@@ -19,20 +19,34 @@ vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
 
 compos := void^
 shell := void^
-xdg_wm_item := void^
+xdg_item := void^
+
+le_pong := !(void^ data, void^ xdg_base, u32 serial) -> void
+{
+	printf("got le pong %i\n",serial)
+	//xdg_wm_base_pong(xdg_base,serial)
+	zxdg_shell_v6_pong(xdg_base,serial)
+}
+pingList := xdg_wm_base_listener
 
 global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 version) -> void
 {
-	//printf("hey %s %i\n",intr,version)
+	printf("hey %s %i\n",intr,version)
 	
 	if strcmp(intr,"wl_compositor") == 0
 	{
 		compos = wl_registry_bind(reg,id,wl_compositor_interface&,1)
 	}
-	if strcmp(intr,"xdg_shell") == 0
+	//if strcmp(intr,"xdg_shell") == 0
+	//{
+	//	xdg_item = wl_registry_bind(reg,id,zxdg_shell_v6_interface&,1)
+	//}
+	if strcmp(intr,"zxdg_shell_v6") == 0
 	{
-		xdg_wm_item = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
+		xdg_item = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
+	zxdg_shell_v6_add_listener(xdg_item,pingList&,null)
 	}
+	
 	if strcmp(intr,"wl_shell") == 0
 	{
 		//shell = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
@@ -45,18 +59,32 @@ remover := !(void^ data, void^ reg, u32 id) -> void
 	printf("wut %i\n",id)	
 }
 
-le_pong := !(void^ data, void^ xdg_base, u32 serial) -> void
+
+conf_wut := !(void^ data, void^ top_lvl, s32 widt, s32 hei, void^ state) -> void
 {
-	xdg_wm_base_pong(xdg_base,serial)
+	printf("new size %i %i\n",widt,hei)
 }
+close_wut := !(void^ data, void^ tp_lvl) -> void
+{
+}
+
+shell_handle := !(void^ data, void^ surf, u32 serial) -> void
+{
+	zxdg_surface_v6_ack_configure(surf,serial)
+}
+
 listt := wl_display_listener
-pingList := xdg_wm_base_listener
+resizeList := zxdg_toplevel_v6_listener
+cfgLi := xdg_wm_base_listener
 
 main2 := !(int argc, char^^ argv) -> int
 {
 	pingList.ping = le_pong
 	listt.error = global_registry_handler
 	listt.delete_id = remover
+	resizeList.configure = conf_wut
+	resizeList.close = close_wut
+	cfgLi.ping = shell_handle
 
 	g_w_display := wl_display_connect(null)
 	
@@ -68,19 +96,28 @@ main2 := !(int argc, char^^ argv) -> int
 	wl_display_dispatch(g_w_display)
 	wl_display_roundtrip(g_w_display)
 
+
 	surf := wl_compositor_create_surface(compos)
-	shell_surf := wl_shell_get_shell_surface(shell,surf)
-	xdg_surf := xdg_wm_base_get_xdg_surface(xdg_wm_item,shell_surf)
+	//shell_surf := wl_shell_get_shell_surface(shell,surf)
+	//xdg_surf := xdg_wm_base_get_xdg_surface(xdg_item,surf)
+	xdg_surf := zxdg_shell_v6_get_xdg_surface(xdg_item,surf)
 	printf("point %p\n",xdg_surf)
 
-	//wl_shell_surface_set_toplevel(xdg_surf)
-	xdg_level := xdg_surface_get_toplevel(xdg_surf)
+	zxdg_surface_v6_add_listener(xdg_surf,cfgLi&,null)
+
+	wl_shell_surface_set_toplevel(xdg_surf)
+	//xdg_level := xdg_surface_get_toplevel(xdg_surf)
+	xdg_level := zxdg_surface_v6_get_toplevel(xdg_surf)
 	printf("point %p\n",xdg_level)
+	zxdg_toplevel_v6_add_listener(xdg_level,resizeList&,null)
+	zxdg_toplevel_v6_set_title(xdg_level,"hello pls")
 
 
-	region := wl_compositor_create_region(compos)
-	wl_region_add(region,0,0,700,700)
-	wl_surface_set_opaque_region(surf,region)
+
+	//region := wl_compositor_create_region(compos)
+	//wl_region_add(region,0,0,700,700)
+	//wl_surface_set_opaque_region(surf,region)
+	zxdg_surface_v6_set_window_geometry(xdg_surf,20,20,700,700)
 
 	wl_surface_commit(surf)
 
@@ -116,6 +153,12 @@ main2 := !(int argc, char^^ argv) -> int
 	cCount := int
 	eglGetConfigs(egl_display,null,0,cCount&)
 
+	if cCount > 100
+	{
+		printf("nah\n")
+		return 0
+	}
+
 	confs := new void^[cCount]
 	//eglGetConfigs(egl_display,confs,cCount,cCount&)
 
@@ -144,9 +187,10 @@ main2 := !(int argc, char^^ argv) -> int
 		glClear(GL_COLOR_BUFFER_BIT)
 		glFlush()
 		eglSwapBuffers(egl_display,egl_surf)
-
-	wl_display_dispatch(g_w_display)
-		system("sleep 1s")
+	for 100000
+	{
+		wl_display_dispatch(g_w_display)
+	}
 	wl_display_disconnect(g_w_display)
 	return 0
 
