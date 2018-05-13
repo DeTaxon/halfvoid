@@ -57,6 +57,10 @@ Type := class {
 	{
 		f << GetName()
 	}
+	GetAlign := virtual !() -> int
+	{
+		return 0
+	}
 
 }
 ParseType := !(Object^ Node) -> Type^
@@ -290,10 +294,14 @@ TypeDef := class extend Object
 
 TypeStandart := class extend Type{
 	IRName := string
+	ItSize  := int
+	ItAlign := int
 	
-	this := !(string Name) -> void
+	this := !(string Name, int siz, int Aln) -> void
 	{
 		IRName = Name 
+		ItSize = siz
+		ItAlign = Aln
 		Clean()
 	}
 	GetType := virtual !() -> string
@@ -303,6 +311,10 @@ TypeStandart := class extend Type{
 	GetName := virtual !() -> string
 	{
 		return IRName
+	}
+	GetAlign := virtual !() -> int
+	{
+		return ItAlign
 	}
 }
 
@@ -320,6 +332,10 @@ TypePoint := class extend Type
 	GetName := virtual !() -> string
 	{
 		return Base.GetName() + "*"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return 8
 	}
 }
 TypePointVoidP := class extend TypePoint
@@ -428,6 +444,10 @@ TypeFunc := class extend Type
 	{
 		f << GetName()
 	}
+	GetAlign := virtual !() -> int
+	{
+		return 8
+	}
 }
 
 TypeArr := class extend Type
@@ -447,6 +467,10 @@ TypeArr := class extend Type
 	{
 		return "[" + Size + " x " + Base.GetName() + "]"
 	}
+	GetAlign := virtual !() -> int
+	{
+		return Base.GetAlign()
+	}
 }
 TypeFatArr := class extend Type
 {
@@ -461,6 +485,10 @@ TypeFatArr := class extend Type
 	GetName := virtual !() -> string
 	{
 		return Base.GetName() + "*"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return 9
 	}
 }
 TypeClass := class extend Type
@@ -478,6 +506,11 @@ TypeClass := class extend Type
 	{
 		return "%Class" + ToClass.ClassId
 	}
+	GetAlign := virtual !() -> int
+	{
+		//TODO: max(stuf)
+		return 8
+	}
 }
 
 GetType := !(string Name) -> Type^
@@ -492,22 +525,22 @@ GetType := !(string Name) -> Type^
 CreateStandartTypes := !() -> void
 {	
 	//u
-	TypeTable[0] = new TypeStandart("i8")	
-	TypeTable[1] = new TypeStandart("i16")	
-	TypeTable[2] = new TypeStandart("i32")	
-	TypeTable[3] = new TypeStandart("i64")
+	TypeTable[0] = new TypeStandart("i8",1,1)	
+	TypeTable[1] = new TypeStandart("i16",2,2)	
+	TypeTable[2] = new TypeStandart("i32",4,4)	
+	TypeTable[3] = new TypeStandart("i64",8,8)
 
 	//s
-	TypeTable[4] = new TypeStandart("i8")	
-	TypeTable[5] = new TypeStandart("i16")	
-	TypeTable[6] = new TypeStandart("i32")	
-	TypeTable[7] = new TypeStandart("i64")
+	TypeTable[4] = new TypeStandart("i8",1,1)	
+	TypeTable[5] = new TypeStandart("i16",2,2)	
+	TypeTable[6] = new TypeStandart("i32",4,4)	
+	TypeTable[7] = new TypeStandart("i64",8,8)
 
-	TypeTable[8] = new TypeStandart("i1")	// bool
+	TypeTable[8] = new TypeStandart("i1",1,1)	// bool
 
-	TypeTable[9] = new TypeStandart("float")
-	TypeTable[10] = new TypeStandart("double")
-	TypeTable[11] = new TypeStandart("void")
+	TypeTable[9] = new TypeStandart("float",4,4)
+	TypeTable[10] = new TypeStandart("double",8,8)
+	TypeTable[11] = new TypeStandart("void",0,0)
 
 	TypeTable[12] = TypeTable[0].GetPoint() // char*
 
@@ -516,11 +549,11 @@ CreateStandartTypes := !() -> void
 
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
-	TypeTable[13] = new TypeStandart("%RangeTypeInt")
-	TypeTable[14] = new TypeStandart("%RangeTypeFloat")
+	TypeTable[13] = new TypeStandart("%RangeTypeInt",8,8)
+	TypeTable[14] = new TypeStandart("%RangeTypeFloat",8,8)
 
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
-	TypeTable[15] = new TypeStandart("%OpaqType")
+	TypeTable[15] = new TypeStandart("%OpaqType",0,0)
 
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])

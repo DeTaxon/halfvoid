@@ -628,7 +628,7 @@ BuiltInTemplateNew := class extend BoxTemplate
 {
 	this := !() -> void
 	{
-		FuncName = "."
+		FuncName = "new"
 		OutputName = "error"
 
 		emptType := Queue.{Type^}()
@@ -651,11 +651,20 @@ BuiltInTemplateNew := class extend BoxTemplate
 			return null
 		AsTypeObj := (consts[0]->{ObjType^})
 		ResType = AsTypeObj.MyType
-		ResP := ResType.GetPoint()
+		ResP := ResType.GetFatArray()
+		ExtraSize := ResType.GetAlign()
+		if ExtraSize < 4 ExtraSize = 4
 
-		return new BuiltInFuncBinar(".",pars[0],false,pars[1],false,ResP,
-			"%Pre## = call i8*(i32,i32)@calloc(i32 #2,i32 #1)\n"+
-			"#0 = bitcast i8* %Pre## to " + ResP.GetName() + "\n")
+		return new BuiltInFuncBinar("new",pars[0],false,pars[1],false,ResP,
+			"%PreTotalSize## = mul i32 #1,#2" + "\n" +
+			"%TotalSize## = add i32 %PreTotalSize##, " + ExtraSize + "\n" +
+			"%PrePtr## = call i8*(i32)@malloc(i32 %TotalSize##)\n"+
+			"%PtrInt## = ptrtoint i8* %PrePtr## to i64\n" + 
+			"%RealPtrInt## = add i64 %PtrInt## , " + ExtraSize + "\n" +
+			"%SizePtrInt## = sub i64 %RealPtrInt## , 4 \n" +
+			"%SizePtr## = inttoptr i64 %SizePtrInt## to i32*\n" + 
+			"store i32 #2, i32* %SizePtr##\n" +
+			"#0 = inttoptr i64 %RealPtrInt## to " + ResP.GetName() + "\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -727,7 +736,7 @@ CreateBuiltIns := !() -> void
 												+"#0 = add i" + it + " #2,0\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i" + it + " #1,#2\n"))
-			BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = imul i" + it + " #1,#2\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i" + it + " #1,#2\n"))
 
 			BuiltInFuncs.Push(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("!=",PType,false,PType,false,BoolT,"#0 = icmp ne i" + it + " #1,#2\n"))
@@ -744,7 +753,7 @@ CreateBuiltIns := !() -> void
 												+"#0 = add i" + it + " #2,#0pre\n"
 												+"store i"+it+" #0, i"+it+"* #1"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
-												+"#0 = add i" + it + " #2,#0pre\n"
+												+"#0 = sub i" + it + " #2,#0pre\n"
 												+"store i"+it+" #0, i"+it+"* #1"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
 												+"#0 = mul i" + it + " #2,#0pre\n"
