@@ -7,6 +7,7 @@ InDataR := !(Object^ obj) -> bool
 	if Val == "~d" return true
 	if Val == "~ind" return true
 	if Val == "~double" return true
+	if Val == "~bool" return true
 	if Val == "~int" return true
 	if Val == "~str" return true
 	if Val == "~cmd" return true

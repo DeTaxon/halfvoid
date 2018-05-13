@@ -21,14 +21,14 @@ Type := class {
 		return ""
 	}
 
-	GetPoint := virtual !() -> Type^
+	GetFatArray := virtual !() -> Type^
 	{
 		if AsFatArr == null{
 			AsFatArr = new TypeFatArr(this&)
 		}
 		return AsFatArr
 	}
-	GetFatArray := virtual !() -> Type^
+	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null{
 			AsPoint = new TypePoint(this&)

@@ -327,18 +327,25 @@ BuiltInTemplateSet := class extend BoxTemplate
 	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" return 255
-		if pars[1].GetType() == "fararray"
+		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
+		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" return 255
+		if pars[1].Base == GetType("void") return 1
+		if pars[0].GetType() == "point"
 		{
-			if pars[0].Base == pars[1].Base return 1
+			if pars[0].Base == GetType("void") return 1
+			if pars[1].Base == GetType("void") return 1
+			if pars[1].Base == pars[0].Base return 0
+		}else
+		{
+			if pars[1].Base == pars[0].Base return 0
 		}
-		return TypeCmp(pars[0],VoidPType)
+		return 255
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
-			PreRet := new BuiltInFuncBinar("=",pars[0],true,VoidPType,false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
+			PreRet := new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
 													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 			return PreRet
 		}

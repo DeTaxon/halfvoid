@@ -87,6 +87,41 @@ ObjInt := class extend ObjConst
 		return PreRet
 	}
 }
+ObjBool := class extend ObjConst
+{
+	MyBool := bool
+	this := !(bool Value) -> void
+	{
+		MyBool = Value
+		ResultType = GetType("bool")
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~bool"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("bool %i\n",MyBool)
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		ResultType.PrintType(f)
+		f << " "
+		if MyBool f << "1" else f << "0"
+	}
+	GetName := virtual !() -> string
+	{
+		if MyBool return "1"
+		return "0"
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjBool(MyBool)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjDouble := class extend ObjConst
 {
 	MyDouble := double
