@@ -257,7 +257,7 @@ ObjArray := class extend ObjConst
 ObjType := class extend ObjConst
 {
 	MyType := Type^
-	"this" := !(Type^ st) -> void
+	this := !(Type^ st) -> void
 	{
 		MyType = st
 	}

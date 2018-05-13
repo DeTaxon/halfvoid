@@ -3,6 +3,7 @@ Type := class {
 	Id := int
 	Base := Type^
 	AsPoint := Type^
+	AsFatArr := Type^
 	AsArray := Queue.{TypeArr^}
 	
 	this := !() -> void
@@ -22,7 +23,13 @@ Type := class {
 
 	GetPoint := virtual !() -> Type^
 	{
-		////printf("called %p %p\n",this&, AsPoint)
+		if AsFatArr == null{
+			AsFatArr = new TypeFatArr(this&)
+		}
+		return AsFatArr
+	}
+	GetFatArray := virtual !() -> Type^
+	{
 		if AsPoint == null{
 			AsPoint = new TypePoint(this&)
 		}
@@ -164,13 +171,19 @@ ParseType := !(Object^ Node) -> Type^
 			}
 			if Ri.GetValue() == "[]"
 			{
-				val := TryCompute(Ri.Down)
-				if val == null return null
-				if val.GetValue() == "~int"
+				if Ri.Down == null
 				{
-					DynCast := val->{ObjInt^}
-					ArrSize := DynCast.MyInt
-					return under.GetArray(ArrSize)->{Type^}
+					return under.GetFatArray()
+				}else
+				{
+					val := TryCompute(Ri.Down)
+					if val == null return null
+					if val.GetValue() == "~int"
+					{
+						DynCast := val->{ObjInt^}
+						ArrSize := DynCast.MyInt
+						return under.GetArray(ArrSize)->{Type^}
+					}
 				}
 
 				return null
@@ -433,6 +446,21 @@ TypeArr := class extend Type
 	GetName := virtual !() -> string
 	{
 		return "[" + Size + " x " + Base.GetName() + "]"
+	}
+}
+TypeFatArr := class extend Type
+{
+	this := !(Type^ B) -> void
+	{
+		Base = B
+	}
+	GetType := virtual !() -> string
+	{
+		return "fatarr"
+	}
+	GetName := virtual !() -> string
+	{
+		return Base.GetName() + "*"
 	}
 }
 TypeClass := class extend Type

@@ -293,8 +293,8 @@ OneCall := !(string Name, Object^ G) -> Object^
 {
 	Ps := Queue.{Type^}()
 
-	P := G.Down
 	TrimCommas(G)
+	P := G.Down
 
 	iterT := P
 

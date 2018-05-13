@@ -9,7 +9,9 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	![5,6]
+	j := int[]
+	k := int^
+	k = j
 	return 0
 	//return main2(argc,argv)
 }
