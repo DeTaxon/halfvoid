@@ -752,6 +752,7 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"gt i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"lt i" + it + " #1,#2\n"))
 
+
 			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",PType,false,BoolT,"#0 = icmp ne i"+it+" #1 ,0\n"))
 			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",PType,false,DoubleT,"#0 = "+IsS+"itofp i"+it+" #1 to double\n"))
 
@@ -759,12 +760,24 @@ CreateBuiltIns := !() -> void
 												+"#0 = add i" + it + " #2,#0pre\n"
 												+"store i"+it+" #0, i"+it+"* #1"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
-												+"#0 = sub i" + it + " #2,#0pre\n"
-												+"store i"+it+" #0, i"+it+"* #1"))
+												+"#0 = sub i" + it + " #0pre,#2\n"
+												+"store i"+it+" #0, i"+it+"* #1\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
 												+"#0 = mul i" + it + " #2,#0pre\n"
-												+"store i"+it+" #0, i"+it+"* #1"))
+												+"store i"+it+" #0, i"+it+"* #1\n"))
 		}
+		BuiltInFuncs.Push(new BuiltInFuncBinar("in",GetType("int"),false,TypeTable[13],false,BoolT,
+												"br label %Start##\n" +
+												"Start##:" +
+												"%First## = extractvalue %RangeTypeInt #2,0\n"+
+												"%T1T## = icmp sge i32 #1,%First##\n" + 
+												"br i1 %T1T## ,label %OnNext##, label %OnEnd##\n" +
+												"OnNext##:\n"+
+												"%Second## = extractvalue %RangeTypeInt #2,1\n" +
+												"%T2T## = icmp sle i32 #1, %Second##\n" +
+												"br label %OnEnd##\n" +
+												"OnEnd##:\n" +
+												"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
 		BuiltInFuncs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i" + it + " #1,0"))
 	}
 	
