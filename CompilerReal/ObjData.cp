@@ -19,6 +19,7 @@ ObjData := class extend Object
 			while iter != null
 			{
 				lazy := iter.GetValue() == "."
+				lazy = lazy or iter.GetValue() == "->"
 				if lazy lazy = iter.Right.GetValue() == "~ind"
 				if lazy
 				{

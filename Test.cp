@@ -3,7 +3,8 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	if 5 in 1..10 printf("wow\n")
+	w := new int[5]
+	w->len
 	return 0
 	//return main2(argc,argv)
 }

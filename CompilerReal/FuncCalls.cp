@@ -104,12 +104,22 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			Pars.Clean()
 			return MakeSimpleCall(Func,iter) 
 		}
-		if iter.GetValue() == "."
+		if iter.GetValue() == "." or iter.GetValue() == "->"
 		{
 			if iter.Right.GetValue() == "~ind"
 			{
 				asIndent := (iter.Right)->{ObjIndent^} 
 				asName := asIndent.MyStr
+
+					if iter.GetValue() == "->"
+					{
+						consts := Queue.{Object^}()
+						pars := Queue.{Type^}()
+						pars.Push(iter.Left.GetType())
+						consts.Push(new ObjStr(asName))
+
+						return FindFunc("->",iter,pars,consts,false)
+					}
 
 				if iter.Right.Right != null
 				{

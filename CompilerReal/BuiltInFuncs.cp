@@ -671,6 +671,53 @@ BuiltInTemplateNew := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateNext := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "->"
+		OutputName = "error"
+
+		//emptType := Queue.{Type^}()
+		//emptType.Push(GetType("int"))
+		//emptType.Push(GetType("int"))
+		//MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	{
+		if consts.Size() != 1 return 255
+		if consts[0].GetValue() != "~str" return 255
+
+		asObjStr := consts[0]->{ObjStr^}
+		asStr := asObjStr.GetString()
+		
+		if asStr == "len"
+		{
+			if pars[0].GetType() != "fatarr" return 255
+			return 0
+		}
+
+		return 255
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		asPreStr := consts[0]->{ObjStr^}
+		asStr := asPreStr.GetString()
+
+		if asStr == "len"
+		{
+			return new BuiltInFuncUno("->",pars[0],false,GetType("int"),false,
+			"%PreP## = bitcast " + pars[0].GetName() + " #1 to i32*\n" + 
+			"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
+			"#0 = load i32 , i32 * %PreI##\n")
+		}
+		return null
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 BuiltInTemplateRefEx := class extend BoxTemplate
 {
 	this := !() -> void
@@ -704,6 +751,7 @@ AddTemplates := !() -> void
 {
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
+	BuiltInTemplates.Push(new BuiltInTemplateNext())
 	//BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 	BuiltInTemplates.Push(new BuiltInTemplateGetRef())
 

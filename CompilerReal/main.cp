@@ -42,7 +42,7 @@ main := !(int argc,string[] argv) -> int
 		wutt := Files.Start
 		while wutt != null
 		{
-			//wutt.Data^.Print(0)
+			wutt.Data^.Print(0)
 			wutt.Data^.PrintGlobal(fil)
 			wutt = wutt.Next
 		}
