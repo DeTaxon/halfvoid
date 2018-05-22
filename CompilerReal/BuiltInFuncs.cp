@@ -693,7 +693,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 		
 		if asStr == "len"
 		{
-			if pars[0].GetType() != "fatarr" return 255
+			if pars[0].GetType() != "fatarr" and pars[0].GetType() != "arr" return 255
 			return 0
 		}
 
@@ -706,10 +706,17 @@ BuiltInTemplateNext := class extend BoxTemplate
 
 		if asStr == "len"
 		{
-			return new BuiltInFuncUno("->",pars[0],false,GetType("int"),false,
-			"%PreP## = bitcast " + pars[0].GetName() + " #1 to i32*\n" + 
-			"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
-			"#0 = load i32 , i32 * %PreI##\n")
+			if pars[0].GetType() == "arr"
+			{	
+				asType := pars[0]->{TypeArr^}
+				return new BuiltInFuncUno("->",pars[0],true,GetType("int"),false,
+					"#0 = add i32 0," + asType.Size + "\n")
+			}else{
+				return new BuiltInFuncUno("->",pars[0],false,GetType("int"),false,
+				"%PreP## = bitcast " + pars[0].GetName() + " #1 to i32*\n" + 
+				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
+				"#0 = load i32 , i32 * %PreI##\n")
+			}
 		}
 		return null
 	}

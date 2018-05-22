@@ -3,7 +3,7 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	w := new int[5]
+	w := int[5]
 	printf("wow %i\n", w->len)
 	return 0
 	//return main2(argc,argv)
