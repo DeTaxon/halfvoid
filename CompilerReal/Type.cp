@@ -549,8 +549,11 @@ CreateStandartTypes := !() -> void
 
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
+
 	TypeTable[13] = new TypeStandart("%RangeTypeInt",8,8)
+	TypeTable[13].Base = TypeTable[6]
 	TypeTable[14] = new TypeStandart("%RangeTypeFloat",8,8)
+	TypeTable[14].Base = TypeTable[9]
 
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
 	TypeTable[15] = new TypeStandart("%OpaqType",0,0)
@@ -579,5 +582,8 @@ CreateStandartTypes := !() -> void
 	DefsTable[16] = new TypeDef("string",TypeTable[12])
 
 	DefsTable[17] = new TypeDef("opaque",TypeTable[15])
+
+	DefsTable[18] = new TypeDef("range",TypeTable[13])
+	DefsTable[19] = new TypeDef("rangef",TypeTable[14])
 
 }

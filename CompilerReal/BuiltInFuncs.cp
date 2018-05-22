@@ -687,6 +687,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 	{
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~str" return 255
+		if pars.Size() != 1 return 255
 
 		asObjStr := consts[0]->{ObjStr^}
 		asStr := asObjStr.GetString()
@@ -695,6 +696,16 @@ BuiltInTemplateNext := class extend BoxTemplate
 		{
 			if pars[0].GetType() != "fatarr" and pars[0].GetType() != "arr" return 255
 			return 0
+		}
+		if asStr == "begin"
+		{
+			if pars[0] == TypeTable[13] or pars[0] == TypeTable[14] return 0
+			return 255
+		}
+		if asStr == "end"
+		{
+			if pars[0] == TypeTable[13] or pars[0] == TypeTable[14] return 0
+			return 255
 		}
 
 		return 255
@@ -709,14 +720,26 @@ BuiltInTemplateNext := class extend BoxTemplate
 			if pars[0].GetType() == "arr"
 			{	
 				asType := pars[0]->{TypeArr^}
-				return new BuiltInFuncUno("->",pars[0],true,GetType("int"),false,
+				pre := new BuiltInFuncUno("->",pars[0],true,GetType("int"),false,
 					"#0 = add i32 0," + asType.Size + "\n")
+				pre.IsSelfPre = true
+				return pre
 			}else{
 				return new BuiltInFuncUno("->",pars[0],false,GetType("int"),false,
 				"%PreP## = bitcast " + pars[0].GetName() + " #1 to i32*\n" + 
 				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
 				"#0 = load i32 , i32 * %PreI##\n")
 			}
+		}
+		if asStr == "begin"
+		{
+			return new BuiltInFuncUno("->",pars[0],false,pars[0].Base,false,
+					"#0 = extractvalue " + pars[0].GetName() + " #1,0\n")
+		}
+		if asStr == "end"
+		{
+			return new BuiltInFuncUno("->",pars[0],false,pars[0].Base,false,
+					"#0 = extractvalue " + pars[0].GetName() + " #1,1\n")
 		}
 		return null
 	}

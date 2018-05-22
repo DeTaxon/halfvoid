@@ -3,8 +3,8 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	w := int[5]
-	printf("wow %i\n", w->len)
+	w := 5..9
+	printf("wow %i %i\n", w->begin,w->end)
 	return 0
 	//return main2(argc,argv)
 }
