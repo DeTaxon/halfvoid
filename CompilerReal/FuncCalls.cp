@@ -118,7 +118,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						pars.Push(iter.Left.GetType())
 						consts.Push(new ObjStr(asName))
 
-						return FindFunc("->",iter,pars,consts,false)
+						fun := FindFunc("->",iter,pars,consts,false)
+						iter = iter.Left
+						iter.Right.Left = null
+						iter.Right = null
+						return MakeSimpleCall(fun,iter)
 					}
 
 				if iter.Right.Right != null
@@ -876,7 +880,7 @@ NewCall := class extend SomeFuncCall
 	}
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
-		ResultType = toCreate.GetPoint()
+		//ResultType = toCreate.GetPoint()
 		Down = new TypeSizeCall(toCreate)
 		Down.Right = toCr
 		Down.SetUp(this&)
@@ -887,6 +891,7 @@ NewCall := class extend SomeFuncCall
 		outC := Queue.{Object^}()
 		outC.Push(new ObjType(toCreate))
 		fun := (GlobalNew^.GetFunc(outT,outC))
+		ResultType = fun.MyFuncType.RetType
 		ExtraFunc = MakeSimpleCall(fun,Down)
 		ExtraFunc.Down.SetUp(ExtraFunc)
 		CheckReturn()

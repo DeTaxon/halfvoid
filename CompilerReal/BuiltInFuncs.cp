@@ -343,6 +343,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
+		printf("creating %s %s\n", pars[0].GetType(),pars[1].GetType())
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
 			PreRet := new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
@@ -678,10 +679,9 @@ BuiltInTemplateNext := class extend BoxTemplate
 		FuncName = "->"
 		OutputName = "error"
 
-		//emptType := Queue.{Type^}()
-		//emptType.Push(GetType("int"))
-		//emptType.Push(GetType("int"))
-		//MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},GetType("int"),false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
