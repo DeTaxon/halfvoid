@@ -283,8 +283,14 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 					NS := new ObjCmd(Tok.Buff.Copy())
 					Adder = PushObject(Adder,NS)
 				}else{
-					NS := new ObjCmd(Tok.Buff.Copy())
-					Adder = PushObject(Adder,NS)
+					if Tok.Buff[0] == '@'
+					{
+						NS := new ObjTemplateType(Tok.Buff.Copy())
+						Adder = PushObject(Adder,NS)
+					}else{
+						NS := new ObjCmd(Tok.Buff.Copy())
+						Adder = PushObject(Adder,NS)
+					}
 				}
 			}else{
 				if Tok.Buff == "null"

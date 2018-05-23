@@ -93,6 +93,28 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	return null
 }
 
+ContainTType := !(Object^ toCheck) -> bool
+{
+	bag := Stack.{Object^}()
+	bag.Push(toCheck)
+
+	while bag.NotEmpty()
+	{
+		item := bag.Pop()
+		printf("test %s\n",item.GetValue())
+		if item.GetValue() == "~{}type" return true
+
+		iter := item.Down
+
+		while iter != null
+		{
+			bag.Push(iter)
+			iter = iter.Right
+		}
+	}
+	return false
+}
+
 IsTemplate := !(Object^ sk) -> bool
 {
 	if sk == null return false
@@ -105,6 +127,10 @@ IsTemplate := !(Object^ sk) -> bool
 		if iter.GetValue() == ","
 		{
 			if Counter == 1 return true
+			if Counter == 2 
+			{
+				if ContainTType(iter.Left.Left) return true
+			}
 			Counter = 0
 		} else Counter += 1
 		iter = iter.Right
@@ -122,6 +148,8 @@ BoxTemplate := class extend BoxFunc
 	FuncsType := Queue.{TypeFunc^}
 	FuncsConsts := Queue.{Queue.{Object^}}
 
+	FuncsTTemps := Object^^
+
 	IsVirtual := bool
 
 
@@ -137,6 +165,30 @@ BoxTemplate := class extend BoxFunc
 
 		IsSuffix = IsSuf
 		ParseParams(CopyParams,CopyRet)
+
+		iter := CopyParams.Down
+		firstNon := Object^
+		firstNon = null
+		FuncsTs := Queue.{Object^}()
+
+		while iter != null
+		{
+			if iter.GetValue() == ","
+			{
+				if ContainTType(firstNon)
+				{
+					FuncsTs.Push(firstNon)
+				}else{
+					FuncsTs.Push(null->{Object^})
+				}
+			}else{
+				if firstNon == null 
+				{
+					firstNon = iter
+				}
+			}
+			iter = iter.Right
+		}
 	}
 	GetValue := virtual !() -> string
 	{
@@ -284,6 +336,10 @@ BoxFunc := class extend Object
 	IsMethod := bool
 	IsRetComplex := bool
 
+	//TODO UserConsts := Queue.{Object^}
+	HiddenConsts := Queue.{Object^}
+
+
 	MethodType := Type^
 
 	GetType := virtual !() -> Type^
@@ -343,7 +399,7 @@ BoxFunc := class extend Object
 					MayType := ParseType(Pars[0])
 					MayName := ""
 
-					if MayType == null
+					if MayType == null and not ContainTType(Pars[0])
 					{
 						printf("can not parse type\n")
 						return false

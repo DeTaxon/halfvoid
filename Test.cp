@@ -1,6 +1,10 @@
 #import "lib.cp"
 //#import "main.cp"
 
+test := !(@T x) -> int
+{
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	w := 5..9

@@ -336,6 +336,30 @@ ObjCmd := class extend ObjConst
 		return PreRet
 	}
 }
+ObjTemplateType := class extend ObjConst
+{
+	MyStr := char^
+	this := !(char^ st) -> void
+	{
+		Clean()
+		MyStr = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~{}type"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("template type %s\n",MyStr)
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjCmd(MyStr)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjKeyword := class extend ObjConst
 {
 	MyStr := char^
