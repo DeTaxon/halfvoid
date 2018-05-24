@@ -21,6 +21,23 @@ ObjConst := class extend ObjResult
 	}
 }
 
+ObjConstHolder := class extend Object
+{
+	ItName := string
+
+	this := !(string name,Object^ cons) -> void
+	{
+		ItName = name
+		Down = cons.Clone()
+		Down.Up = Down
+	}
+
+	GetValue := virtual !() -> string
+	{
+		return "{const}"
+	}
+}
+
 ObjNULL := class extend ObjConst
 {
 	"this" := !() -> void
@@ -355,7 +372,7 @@ ObjTemplateType := class extend ObjConst
 	}
 	Clone := virtual !() -> Object^
 	{
-		PreRet := new ObjCmd(MyStr)
+		PreRet := new ObjTemplateType(MyStr)
 		PreRet.Line = Line
 		return PreRet
 	}

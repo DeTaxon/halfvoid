@@ -190,6 +190,9 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 		}
 	}
+	ParseParamsT := !(Object^ parss, Object^ retPar) -> void
+	{
+	}
 	GetValue := virtual !() -> string
 	{
 		return "!(){}"
@@ -336,8 +339,6 @@ BoxFunc := class extend Object
 	IsMethod := bool
 	IsRetComplex := bool
 
-	//TODO UserConsts := Queue.{Object^}
-	HiddenConsts := Queue.{Object^}
 
 
 	MethodType := Type^
@@ -508,6 +509,10 @@ BoxFuncBody := class extend BoxFunc
 	parsed := bool
 	ItParams := FuncParam^^
 	ExtraRetParam := FuncParam^
+
+	//TODO UserConsts := Queue.{Object^} // !().{T}
+	HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
+
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		MyFuncParamNames = names
