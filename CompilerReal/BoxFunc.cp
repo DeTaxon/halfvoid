@@ -314,6 +314,7 @@ BoxTemplate := class extend BoxFunc
 	{
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
+		newFunc.ParseBlock()
 
 		return newFunc	
 	}
