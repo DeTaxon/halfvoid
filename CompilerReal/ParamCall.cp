@@ -14,7 +14,12 @@ ParseParamCall := !(Object^ ob) -> Object^
 				if itType == null	return null
 
 				if itType.GetType() == "function"
-					return new ParamFuncCall(dynCast.MyStr,may->{ObjParam^})
+				{
+					may2 := may->{ObjParam^}
+					may3 := may2.Down
+					//if may3.GetValue() != "!()" return null
+					return new ParamFuncCall(dynCast.MyStr,may2)
+				}
 
 				if may.Down.GetValue() == "i:=2"
 				{
@@ -108,7 +113,7 @@ ParamFuncCall := class extend ParamCall
 		ResultType = Par.ObjType.GetPoint()
 
 		asNeed := ((Par.Down)->{BoxFunc^})
-		asNeed.ParseBlock()
+		if asNeed.GetValue() == "!()" asNeed.ParseBlock()
 		OutName = asNeed.OutputName
 	}
 	GetName := virtual !() -> string

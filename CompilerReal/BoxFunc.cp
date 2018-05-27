@@ -101,7 +101,6 @@ ContainTType := !(Object^ toCheck) -> bool
 	while bag.NotEmpty()
 	{
 		item := bag.Pop()
-		printf("test %s\n",item.GetValue())
 		if item.GetValue() == "~{}type" return true
 
 		iter := item.Down
@@ -127,12 +126,9 @@ IsTemplate := !(Object^ sk) -> bool
 		if iter.GetValue() == ","
 		{
 			if Counter == 1 return true
-			if Counter == 2 
-			{
-				if ContainTType(iter.Left.Left) return true
-			}
 			Counter = 0
 		} else Counter += 1
+		if ContainTType(iter) return true //TODO: check after Syntax, not Before
 		iter = iter.Right
 	}
 	return Counter == 1 
@@ -148,7 +144,7 @@ BoxTemplate := class extend BoxFunc
 	FuncsType := Queue.{TypeFunc^}
 	FuncsConsts := Queue.{Queue.{Object^}}
 
-	FuncsTTemps := Object^^
+	FuncsTTemps := Queue.{Object^}
 
 	IsVirtual := bool
 
@@ -166,10 +162,12 @@ BoxTemplate := class extend BoxFunc
 		IsSuffix = IsSuf
 		ParseParams(CopyParams,CopyRet)
 
+		SyntaxCompress(CopyParams.Down,PriorityData)
 		iter := CopyParams.Down
 		firstNon := Object^
 		firstNon = null
-		FuncsTs := Queue.{Object^}()
+		//FuncsTs := Queue.{Object^}()
+
 
 		while iter != null
 		{
@@ -177,10 +175,11 @@ BoxTemplate := class extend BoxFunc
 			{
 				if ContainTType(firstNon)
 				{
-					FuncsTs.Push(firstNon)
+					FuncsTTemps.Push(firstNon)
 				}else{
-					FuncsTs.Push(null->{Object^})
+					FuncsTTemps.Push(null->{Object^})
 				}
+				firstNon = null
 			}else{
 				if firstNon == null 
 				{
@@ -188,14 +187,22 @@ BoxTemplate := class extend BoxFunc
 				}
 			}
 			iter = iter.Right
+			if iter == null
+			{
+				if ContainTType(firstNon)
+				{
+					FuncsTTemps.Push(firstNon)
+				}else{
+					FuncsTTemps.Push(null->{Object^})
+				}
+				firstNon = null
+			}else{
+				if firstNon == null 
+				{
+					firstNon = iter
+				}
+			}
 		}
-	}
-	ParseParamsT := !(Object^ parss, Object^ retPar) -> void
-	{
-	}
-	GetValue := virtual !() -> string
-	{
-		return "!(){}"
 	}
 	GetPriority :=virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
@@ -322,7 +329,10 @@ BoxTemplate := class extend BoxFunc
 
 	DoTheWork := virtual !(int pri) -> void
 	{
-		
+	}
+	GetValue := virtual !() -> string
+	{
+		return "!(){}"
 	}
 }
 
@@ -361,6 +371,7 @@ BoxFunc := class extend Object
 		TypsNams := Queue.{string}()
 		TypsIsRef := Queue.{bool}()
 		IsVargsL := false
+		ContainTT := false
 
 		RetTyp := ParseType(outObj)
 
@@ -402,8 +413,14 @@ BoxFunc := class extend Object
 
 					if MayType == null and not ContainTType(Pars[0])
 					{
-						printf("can not parse type\n")
-						return false
+						if ContainTType(Pars[0]) or ContainTT
+						{
+							ContainTT = true
+						}else
+						{
+							printf("can not parse type\n")
+							return false
+						}
 					}
 
 					if Pars[1].GetValue() == "~ind" 
