@@ -167,6 +167,7 @@ BoxTemplate := class extend BoxFunc
 		firstNon := Object^
 		firstNon = null
 		//FuncsTs := Queue.{Object^}()
+		printf("hi %s %i\n",SomeName,MyFuncType.ParsCount)
 
 
 		while iter != null

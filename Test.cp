@@ -1,7 +1,7 @@
 #import "lib.cp"
 //#import "main.cp"
 
-test := !(int y,@T x) -> int
+test := !(@T^ x) -> int
 {
 	printf("wow\n")
 	return 0
@@ -9,8 +9,8 @@ test := !(int y,@T x) -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("ww\n")
-	test(5,5)
+	k := 5
+	test(k)
 	return 0
 	//return main2(argc,argv)
 }
