@@ -168,7 +168,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 1 return 255
 		if pars[0].GetType() != "point" return 255
@@ -836,7 +836,7 @@ CreateBuiltIns := !() -> void
 
 			BuiltInFuncs.Push(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
 												+"#0 = add i" + it + " #2,#0pre\n"
-												+"store i"+it+" #0, i"+it+"* #1"))
+												+"store i"+it+" #0, i"+it+"* #1\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
 												+"#0 = sub i" + it + " #0pre,#2\n"
 												+"store i"+it+" #0, i"+it+"* #1\n"))

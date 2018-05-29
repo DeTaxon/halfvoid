@@ -1,16 +1,29 @@
 #import "lib.cp"
 //#import "main.cp"
 
-test := !(@T^ x) -> int
+
+TT := class
 {
-	printf("wow\n")
-	return 0
+	a := int
+
+	"^" := !() -> void
+	{
+		printf("its work %i\n",a)
+	}
+	"+=" := !(int c) -> void
+	{
+		a += c
+	}
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	k := 5
-	test(k)
+	k := TT
+	k.a = 87
+	k^
+	k += 15
+	k^
 	return 0
 	//return main2(argc,argv)
 }

@@ -229,7 +229,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				iter = iter.Left
 				PopOutNode(iter.Right)
-				return OneCall(oper,iter.Up)
+				return OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up,true)
+
 			}else
 			{
 				iter = iter.Right
@@ -242,7 +243,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.GetType() != null
 				{
 					PopOutNode(iter.Left)
-					return OneCall(oper,iter.Up)
+					return OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up)
 				}
 				return null
 			}
@@ -269,7 +270,39 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	}
 	return null
 }
+OperFunc := !(string oper,Object^ pars) -> Object^
+{
+	preRet := OneCall(oper,pars.Up,true)
 
+	if preRet == null
+	{
+		if pars.GetType() != null
+		{
+			if pars.GetType().GetType() == "class"
+			{
+				asNeedPre := pars.GetType()
+				asNeed := asNeedPre->{TypeClass^}
+				cls := asNeed.ToClass
+
+				Pars := Queue.{Type^}()
+
+				iter := pars
+				while iter != null
+				{
+					Pars.Push(iter.GetType())
+					iter = iter.Right
+				}
+
+				newPre := cls.GetFunc(oper,Pars)
+				if newPre == null return null
+				return MakeSimpleCall(newPre,pars)
+			}
+		}
+	}else{
+		return preRet
+	}
+	return null
+}
 IsOper := !(string may) -> bool
 {
 	iter := PriorityData.Opers.Start
@@ -304,6 +337,10 @@ TrimCommas := !(Object up) -> void
 }
 
 OneCall := !(string Name, Object^ G) -> Object^
+{
+	return OneCall(Name,G,false)
+}
+OneCall := !(string Name, Object^ G,bool ignoreNull) -> Object^
 {
 	Ps := Queue.{Type^}()
 
@@ -352,7 +389,10 @@ OneCall := !(string Name, Object^ G) -> Object^
 		}
 	}
 
-	if SomeFunc == null ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
+	if SomeFunc == null 
+	{
+		if not ignoreNull ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
+	}
 	else
 	{
 		return MakeSimpleCall(SomeFunc,P)
