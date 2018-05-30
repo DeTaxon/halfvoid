@@ -69,6 +69,17 @@ BoxFor := class extend Object
 			{
 				newNode = new BoxForInt(this.itName,this.indName,null->{Object^},Down,this.block)
 			}
+			if Down.GetType().GetType() == "class"
+			{
+				asNeed := Down.GetType()->{TypeClass^}
+				asNeed2 := asNeed.ToClass
+
+				func := asNeed2.GetFunc("For")
+
+				if func != null
+					newNode = new BoxForOldFashion(this.itName,this.indName,func,Down,this.block)
+
+			}
 			if newNode != null
 			{
 				ReplaceNode(this&,newNode)
@@ -78,6 +89,29 @@ BoxFor := class extend Object
 
 }
 
+BoxForOldFashion := class extend BoxFor
+{
+	ItId := int
+
+	IncFunc := Object^
+	UnrefFunc := Object^
+	IsEndFunc := Object^
+
+	this := !(string f_it, string f_ind,BoxFunc^ Proxy, Object^ item,Object^ block) -> void
+	{
+		itName == f_it
+		if itName == null itName = "it"
+
+		indName = f_ind
+		if indName == null indName = "it_ind"
+		Down = item
+		item.Right = block
+		block.Right = null
+		block.Left = item
+		item.Left = null
+		Down.SetUp(this&)
+	}
+}
 
 BoxForInt := class extend BoxFor
 {

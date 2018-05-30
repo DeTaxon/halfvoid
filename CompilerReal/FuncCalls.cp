@@ -477,6 +477,11 @@ SomeFuncCall := class extend ObjResult
 			f << " " << TName
 		}
 	}
+	GetItAllocId := !() -> int
+	{
+		if not gotAlloc return -1
+		return InAlloc
+	}
 	GetPointName := virtual !() -> string
 	{
 		return TName

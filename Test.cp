@@ -2,28 +2,41 @@
 //#import "main.cp"
 
 
-TT := class
+T2 := class
 {
 	a := int
 
-	"^" := !() -> void
+	"^" := !() -> int
 	{
-		printf("its work %i\n",a)
+		return a
 	}
-	"+=" := !(int c) -> void
+	Ind := !() -> int
 	{
-		a += c
+		return a
+	}
+	Inc := !() -> void
+	{
+		a += 2
+	}
+	IsEnd := !() -> bool
+	{
+		return a >= 10
+	}
+}
+T1 := class
+{
+	a := bool
+	For := !() -> T2
+	{	
+		ToRet.a = 0
 	}
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	k := TT
-	k.a = 87
-	k^
-	k += 15
-	k^
+	T := T1
+	for i : T printf("pleas %i\n",i)
 	return 0
 	//return main2(argc,argv)
 }

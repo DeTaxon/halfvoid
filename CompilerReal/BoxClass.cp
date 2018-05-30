@@ -260,6 +260,12 @@ BoxClass := class extend Object
 		return "{...}"
 	}
 	//GetMethod
+	GetFunc := !(string name) -> BoxFunc^
+	{
+		Pars := Queue.{Type^}()
+		temp := Queue.{Object^}()
+		return GetFunc(name,Pars,temp)
+	}
 	GetFunc := !(string name,Queue.{Type^} pars) -> BoxFunc^
 	{
 		temp := Queue.{Object^}()
