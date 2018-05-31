@@ -626,7 +626,7 @@ NaturalCall := class extend SomeFuncCall
 		{
 			f << TName <<" = "	
 		}
-		f << " call "
+		f << "call "
 		FType.PrintType(f)
 		PrintFuncName(f)
 		f << "("
@@ -680,7 +680,7 @@ PointFuncCall := class extend NaturalCall
 		{
 			f << "%T" << RetId <<" = "	
 		}
-		f << " call "
+		f << "call "
 		FType.PrintType(f)
 		f << ParamCal.GetName()
 		f << "("
