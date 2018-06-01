@@ -429,7 +429,7 @@ SomeFuncCall := class extend ObjResult
 	}
 	CheckReturn := virtual !() -> void
 	{
-		if ToCall != null
+		if ToCall != null and not gotAlloc
 		{
 			gotAlloc = ToCall.IsRetComplex
 			if gotAlloc

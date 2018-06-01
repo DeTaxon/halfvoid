@@ -106,11 +106,13 @@ BoxForOldFashion := class extend BoxFor
 
 		indName = f_ind
 		if indName == null indName = "it_ind"
+		PopOutNode(item)
+		PopOutNode(block)
 		Down = MakeSimpleCall(Proxy,item)
-		item.Right = block
+		Down.Right = block
 		block.Right = null
 		block.Left = Down
-		item.Left = null
+		Down.Left = null
 		Down.SetUp(this&)
 
 		ProxyFunc = Proxy

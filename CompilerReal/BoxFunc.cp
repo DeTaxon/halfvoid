@@ -167,7 +167,6 @@ BoxTemplate := class extend BoxFunc
 		firstNon := Object^
 		firstNon = null
 		//FuncsTs := Queue.{Object^}()
-		printf("hi %s %i\n",SomeName,MyFuncType.ParsCount)
 
 
 		while iter != null
@@ -594,7 +593,8 @@ BoxFuncBody := class extend BoxFunc
 		{
 			if t.GetType() == "arr" or t.GetType() == "class"
 			{
-				ExtraRetParam = new FuncParam("ToRet",t,true)
+				if ExtraRetParam == null
+					ExtraRetParam = new FuncParam("ToRet",t,true)
 			}
 		}
 	}
