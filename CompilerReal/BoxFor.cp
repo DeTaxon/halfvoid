@@ -148,7 +148,7 @@ BoxForOldFashion := class extend BoxFor
 			ForItem := new LocalParam(asNeedPre,ItId)
 			
 			test := new ParamNaturalCall("",ForItem)
-			IsEndFunc = MakeSimpleCall(IsEndFuncP, test->{Object^} )
+			//IsEndFunc = MakeSimpleCall(IsEndFuncP, test->{Object^} )
 			//UnrefFunc = MakeSimpleCall(UnrefFuncP,new ParamNaturalCall("",ForItem)
 			//IncFunc = MakeSimpleCall(IncFuncP,new ParamNaturalCall("",ForItem))
 
