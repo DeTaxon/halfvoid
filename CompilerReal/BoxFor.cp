@@ -131,8 +131,6 @@ BoxForOldFashion := class extend BoxFor
 			ItIdPre := Down->{SomeFuncCall^}
 			ItId = ItIdPre.GetItAllocId()
 
-			printf("wuut %i %s %i\n",ItId,Down.GetType().GetType(),ProxyFunc.MyFuncType.ParsCount)
-
 			asNeedPre := ProxyFunc.MyFuncType.RetType
 			asNeedPre2 := asNeedPre->{TypeClass^}
 			asNeed := asNeedPre2.ToClass
@@ -147,10 +145,12 @@ BoxForOldFashion := class extend BoxFor
 
 			ForItem := new LocalParam(asNeedPre,ItId)
 			
-			test := new ParamNaturalCall("",ForItem)
-			//IsEndFunc = MakeSimpleCall(IsEndFuncP, test->{Object^} )
-			//UnrefFunc = MakeSimpleCall(UnrefFuncP,new ParamNaturalCall("",ForItem)
-			//IncFunc = MakeSimpleCall(IncFuncP,new ParamNaturalCall("",ForItem))
+			test := new ParamNaturalCall("",ForItem->{Object^})
+			IsEndFunc = MakeSimpleCall(IsEndFuncP, test )
+			test = new ParamNaturalCall("",ForItem->{Object^})
+			UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
+			test = new ParamNaturalCall("",ForItem->{Object^})
+			IncFunc = MakeSimpleCall(IncFuncP,test)
 
 		}
 	}
@@ -161,7 +161,7 @@ BoxForOldFashion := class extend BoxFor
 		f << "br label %start" << ItId << "\n"
 		f << "start" << ItId << ":\n"
 		IsEndFunc.PrintPre(f)
-		f << "br i1 " << IsEndFunc.GetName() << " label %End" << ItId << " , label %Next" << ItId << "\n"
+		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 		Down.Right.PrintInBlock(f)
 		IncFunc.PrintPre(f)
