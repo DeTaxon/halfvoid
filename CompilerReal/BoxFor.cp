@@ -101,6 +101,8 @@ BoxForOldFashion := class extend BoxFor
 
 	this := !(string f_it, string f_ind,BoxFunc^ Proxy, Object^ item,Object^ block) -> void
 	{
+		Proxy.ParseBlock()
+
 		itName == f_it
 		if itName == null itName = "it"
 
@@ -115,9 +117,12 @@ BoxForOldFashion := class extend BoxFor
 		Down.Left = null
 		Down.SetUp(this&)
 
+		MakeItBlock(Down.Right)
 		ProxyFunc = Proxy
+
 		WorkBag.Push(this&,State_GetUse)
 		WorkBag.Push(Down,State_GetUse)
+		WorkBag.Push(Down.Right,State_Start)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -134,17 +139,35 @@ BoxForOldFashion := class extend BoxFor
 
 			IsEndFuncP := asNeed.GetFunc("IsEnd")
 			UnrefFuncP := asNeed.GetFunc("^")
-			IncFunc := asNeed.GetFunc("Inc")
+			IncFuncP := asNeed.GetFunc("Inc")
 
-			IsEndFunc = MakeSimpleCall(IsEndFuncP,new LocalParam(asNeedPre,ItId))
-			UnrefFunc = MakeSimpleCall(UnrefFuncP,new LocalParam(asNeedPre,ItId))
-			IsEndFunc = MakeSimpleCall(IsEndFuncP,new LocalParam(asNeedPre,ItId))
+			IsEndFuncP.ParseBlock()
+			UnrefFuncP.ParseBlock()
+			IncFuncP.ParseBlock()
+
+			ForItem := new LocalParam(asNeedPre,ItId)
+			
+			test := new ParamNaturalCall("",ForItem)
+			IsEndFunc = MakeSimpleCall(IsEndFuncP, test->{Object^} )
+			//UnrefFunc = MakeSimpleCall(UnrefFuncP,new ParamNaturalCall("",ForItem)
+			//IncFunc = MakeSimpleCall(IncFuncP,new ParamNaturalCall("",ForItem))
 
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		Down.PrintPre(f)
+
+		f << "br label %start" << ItId << "\n"
+		f << "start" << ItId << ":\n"
+		IsEndFunc.PrintPre(f)
+		f << "br i1 " << IsEndFunc.GetName() << " label %End" << ItId << " , label %Next" << ItId << "\n"
+		f << "Next" << ItId << ":\n"
+		Down.Right.PrintInBlock(f)
+		IncFunc.PrintPre(f)
+		f << "br label %start" << ItId << "\n"
+		f << "End" << ItId << ":\n"
+
 	}
 }
 

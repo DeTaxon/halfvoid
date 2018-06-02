@@ -443,8 +443,11 @@ SomeFuncCall := class extend ObjResult
 				TEName = "%TE" + RetId
 			}
 		}else{
-			TName = "%T" + RetId
-			TEName = "%TE" + RetId
+			if not gotAlloc
+			{
+				TName = "%T" + RetId
+				TEName = "%TE" + RetId
+			}
 		}
 	}
 	PrintPre := virtual !(sfile f) -> void
@@ -599,16 +602,17 @@ NaturalCall := class extend SomeFuncCall
 	{
 		iter := Down
 		RefsArr := FType.ParsIsRef
+
 		i := 0
 		if gotAlloc
 		{
 			f << ToCall.MyFuncType.RetType.GetName() << "* "
 			f << TName
-			i += 1
+			//i += 1
 		}
 		while iter != null
 		{
-			if i > 0 f << " , "
+			if i > 0 or gotAlloc f << " , "
 			if RefsArr[i] iter.PrintPointUse(f)
 				else iter.PrintUse(f)
 			iter = iter.Right
