@@ -33,7 +33,10 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 		if iter.GetValue() == "~for()"
 		{
 			asC := iter->{BoxFor^}
-			if asC.itName == name return asC.LocPar
+			if asC.itName == name 
+			{
+				return asC.LocPar
+			}
 			if asC.indName == name return asC.IndPar
 		}
 		if iter.GetValue() == "#import cp"

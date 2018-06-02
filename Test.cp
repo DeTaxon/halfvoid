@@ -36,7 +36,7 @@ T1 := class
 main := !(int argc, char^^ argv) -> int
 {
 	T := T1
-	for i : T printf("pleas\n")
+	for i : T printf("pleas %i\n",i)
 	return 0
 	//return main2(argc,argv)
 }

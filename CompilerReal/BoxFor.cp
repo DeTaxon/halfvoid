@@ -103,7 +103,7 @@ BoxForOldFashion := class extend BoxFor
 	{
 		Proxy.ParseBlock()
 
-		itName == f_it
+		itName = f_it
 		if itName == null itName = "it"
 
 		indName = f_ind
@@ -122,7 +122,6 @@ BoxForOldFashion := class extend BoxFor
 
 		WorkBag.Push(this&,State_GetUse)
 		WorkBag.Push(Down,State_GetUse)
-		WorkBag.Push(Down.Right,State_Start)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -152,6 +151,9 @@ BoxForOldFashion := class extend BoxFor
 			test = new ParamNaturalCall("",ForItem->{Object^})
 			IncFunc = MakeSimpleCall(IncFuncP,test)
 
+			LocPar = new RetFuncParam(UnrefFunc)
+
+			WorkBag.Push(Down.Right,State_Start)
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -168,6 +170,10 @@ BoxForOldFashion := class extend BoxFor
 		f << "br label %start" << ItId << "\n"
 		f << "End" << ItId << ":\n"
 
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~for()"
 	}
 }
 

@@ -358,5 +358,36 @@ FieldParam := class extend MemParam
 	{
 		return "%" + ItName
 	}
-	
+}
+RetFuncParam := class extend MemParam
+{
+	ToCall := Object^
+	this := !(Object^ fun) -> void
+	{
+		ToCall = fun
+	}
+	PrintPre := virtual !(sfile f, int newInd) -> void
+	{
+		ToCall.PrintPre(f)
+	}
+	PrintUse := virtual !(sfile f, int newInd) -> void
+	{
+		ToCall.PrintUse(f)
+	}
+	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	{
+		ToCall.PrintPointPre(f)
+	}
+	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	{
+		ToCall.PrintPointUse(f)
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return ToCall.GetName()
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		return ToCall.GetPointName()
+	}
 }
