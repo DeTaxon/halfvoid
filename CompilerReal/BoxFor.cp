@@ -82,6 +82,7 @@ BoxFor := class extend Object
 			}
 			if newNode != null
 			{
+				newNode.Line = this.Line
 				ReplaceNode(this&,newNode)
 			}
 		}
@@ -138,22 +139,36 @@ BoxForOldFashion := class extend BoxFor
 			UnrefFuncP := asNeed.GetFunc("^")
 			IncFuncP := asNeed.GetFunc("Inc")
 
-			IsEndFuncP.ParseBlock()
-			UnrefFuncP.ParseBlock()
-			IncFuncP.ParseBlock()
+			IsGood := true
 
-			ForItem := new LocalParam(asNeedPre,ItId)
-			
-			test := new ParamNaturalCall("",ForItem->{Object^})
-			IsEndFunc = MakeSimpleCall(IsEndFuncP, test )
-			test = new ParamNaturalCall("",ForItem->{Object^})
-			UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
-			test = new ParamNaturalCall("",ForItem->{Object^})
-			IncFunc = MakeSimpleCall(IncFuncP,test)
+			if IsEndFuncP == null IsGood = false
+			if UnrefFuncP == null IsGood = false
+			if IncFuncP == null IsGood = false
 
-			LocPar = new RetFuncParam(UnrefFunc)
+			if IsGood
+				if IsEndFuncP.MyFuncType.RetType != GetType("bool") IsGood = false
 
-			WorkBag.Push(Down.Right,State_Start)
+			if IsGood
+			{
+				IsEndFuncP.ParseBlock()
+				UnrefFuncP.ParseBlock()
+				IncFuncP.ParseBlock()
+
+				ForItem := new LocalParam(asNeedPre,ItId)
+				
+				test := new ParamNaturalCall("",ForItem->{Object^})
+				IsEndFunc = MakeSimpleCall(IsEndFuncP, test )
+				test = new ParamNaturalCall("",ForItem->{Object^})
+				UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
+				test = new ParamNaturalCall("",ForItem->{Object^})
+				IncFunc = MakeSimpleCall(IncFuncP,test)
+
+				LocPar = new RetFuncParam(UnrefFunc)
+
+				WorkBag.Push(Down.Right,State_Start)
+			}else{
+				ErrorLog.Push("Incorect For class\n")
+			}
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void

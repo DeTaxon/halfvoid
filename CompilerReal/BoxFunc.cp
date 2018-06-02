@@ -14,6 +14,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	RetT := Object^
 	RetT = null
+	RetRef := false
 
 
 	if iter.GetValue() == "virtual"
@@ -51,9 +52,15 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	if iter.GetValue() == "->"
 	{
 		iter = iter.Right
+		if iter.GetValue() == "ref"
+		{
+			RetRef = true
+			iter = iter.Right
+		}
 		RetT = iter
 		iter = iter.Right
 	}
+
 
 	iterForName := iter.Up
 	FName := ""
@@ -84,9 +91,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,FName,iter,IsSuf,ClassType,IsVirtual)
+			return new BoxTemplate(ParamsObj,RetT,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,FName,iter,IsSuf,ClassType,IsVirtual)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		
 		return PreRet
 	}
@@ -149,8 +156,9 @@ BoxTemplate := class extend BoxFunc
 	IsVirtual := bool
 
 
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
+		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
@@ -349,8 +357,7 @@ BoxFunc := class extend Object
 	IsVirtual := bool
 	IsMethod := bool
 	IsRetComplex := bool
-
-
+	IsRetRef := bool
 
 	MethodType := Type^
 
@@ -467,7 +474,7 @@ BoxFunc := class extend Object
 		
 
 		arr := TypsIsRef.ToArray()
-		MyFuncType = GetFuncType(Typs,arr,RetTyp,false,IsVargsL)
+		MyFuncType = GetFuncType(Typs,arr,RetTyp,IsRetRef,IsVargsL)
 		free(arr)
 
 		if MyFuncParamNames != null and MyFuncType.ParsCount != 0
@@ -500,6 +507,7 @@ BoxFuncDeclare := class  extend BoxFunc
 {
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
+		IsRetRef = false
 		FuncName = SomeName
 		OutputName = SomeName.Copy()
 		IsInvalid = not ParseParams(inPars,inOutType)
@@ -531,8 +539,10 @@ BoxFuncBody := class extend BoxFunc
 	//TODO UserConsts := Queue.{Object^} // !().{T}
 	HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
 
+
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
+		IsRetRef = fType.RetRef
 		MyFuncParamNames = names
 		FuncName = SomeName
 		MethodType = metC
@@ -598,8 +608,9 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
+		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
@@ -668,7 +679,11 @@ BoxFuncBody := class extend BoxFunc
 			f << "define "
 
 			if IsRetComplex f << "void"
-			else MyFuncType.RetType.PrintType(f)
+			else 
+			{
+				MyFuncType.RetType.PrintType(f)
+				if IsRetRef f << "*"
+			}
 
 			f << " @" << OutputName
 

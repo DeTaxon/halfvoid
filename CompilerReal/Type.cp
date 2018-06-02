@@ -404,6 +404,7 @@ TypeFunc := class extend Type
 		{
 			return "void" + GetSkobs() 
 		}
+		if RetRef return RetType.GetName() + "*" + GetSkobs()
 		return RetType.GetName() + GetSkobs() 
 	}
 	GetSkobs := !() -> string

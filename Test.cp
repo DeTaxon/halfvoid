@@ -6,7 +6,7 @@ T2 := class
 {
 	a := int
 
-	"^" := !() -> int
+	"^" := !() -> ref int
 	{
 		return a
 	}
@@ -36,7 +36,11 @@ T1 := class
 main := !(int argc, char^^ argv) -> int
 {
 	T := T1
-	for i : T printf("pleas %i\n",i)
+	for i : T 
+	{
+		printf("pleas %i\n",i)
+		i -= 1
+	}
 	return 0
 	//return main2(argc,argv)
 }

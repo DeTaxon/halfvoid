@@ -1,5 +1,6 @@
 BoxReturn := class extend Object
 {
+	IsRetRef := bool
 	this := !(Object^ toUse) -> void
 	{
 		PopOutNode(toUse.Down)
@@ -34,6 +35,7 @@ BoxReturn := class extend Object
 			if iterF != null
 			{
 				asNeed := iterF->{BoxFunc^}
+				IsRetRef = asNeed.MyFuncType.RetRef
 				if Down.GetType() != null
 				{
 					PreType := asNeed.MyFuncType.RetType
@@ -63,9 +65,9 @@ BoxReturn := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		Down.PrintPre(f)
+		if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
 		f << "ret "
-		Down.PrintUse(f)
+		if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
 		f << "\n"
 	}
 	GetValue := virtual !() -> string

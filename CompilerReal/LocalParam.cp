@@ -365,6 +365,7 @@ RetFuncParam := class extend MemParam
 	this := !(Object^ fun) -> void
 	{
 		ToCall = fun
+		ResultType = fun.GetType()
 	}
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
