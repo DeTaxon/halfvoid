@@ -51,7 +51,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}
 		return null
 	}
-
+	if iter.GetValue() == "~type"
+	{
+		return null
+	}
 	if iter.GetType() != null
 	{
 		iter = iter.Right

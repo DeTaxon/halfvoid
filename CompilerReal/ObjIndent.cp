@@ -48,8 +48,16 @@ ObjIndent := class extend Object
 				ItTempls := Queue.{BoxTemplate^}()
 				Searched := Queue.{int}()
 				CollectFuncsByName(MyStr,this&,ItFuncs,ItTempls,false,false,Searched)
-				if ItFuncs.Size() == 0 
-					ErrorLog.Push("unknown indent "+ MyStr + "\n")
+				if ItFuncs.Size() == 0
+				{
+					Typ := ParseType(this&)
+					if Typ != null
+					{
+						ReplaceNode(this&,new ObjType(Typ) )
+					}else{
+						ErrorLog.Push("unknown indent "+ MyStr + "\n")
+					}
+				}
 			}
 		}
 	}
