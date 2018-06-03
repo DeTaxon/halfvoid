@@ -17,11 +17,11 @@ T2 := class
 	}
 	Inc := !() -> void
 	{
-		a += 1
+		a -= 1
 	}
 	IsEnd := !() -> bool
 	{
-		return a >= 20
+		return a <= 0
 	}
 }
 T1 := class
@@ -29,7 +29,7 @@ T1 := class
 	arr := int[20]
 	For := !() -> T2
 	{	
-		ToRet.a = 0
+		ToRet.a = arr->len - 1
 		ToRet.p = arr
 	}
 }
