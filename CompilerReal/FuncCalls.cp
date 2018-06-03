@@ -427,6 +427,12 @@ SomeFuncCall := class extend ObjResult
 	{
 		UseCall(f)
 	}
+	IsRef := virtual !() -> bool
+	{
+		if gotAlloc return true
+		if ToCall.MyFuncType.RetRef return true
+		return false
+	}
 	CheckReturn := virtual !() -> void
 	{
 		if ToCall != null and not gotAlloc

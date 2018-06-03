@@ -180,6 +180,9 @@ BoxForOldFashion := class extend BoxFor
 		IsEndFunc.PrintPre(f)
 		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
+
+		if UnrefFunc.IsRef() UnrefFunc.PrintPointPre(f) else UnrefFunc.PrintPre(f)
+		
 		Down.Right.PrintInBlock(f)
 		IncFunc.PrintPre(f)
 		f << "br label %start" << ItId << "\n"

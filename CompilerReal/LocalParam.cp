@@ -83,6 +83,10 @@ LocalParam := class extend MemParam
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
 	}
+	IsRef := virtual !() -> bool
+	{
+		return true
+	}
 	PrintPointPre := virtual !(sfile f, int newInd) -> void
 	{
 	}
@@ -112,6 +116,10 @@ GlobalParam := class extend MemParam
 		ResultType = th
 		Down = toSet
 		MainId = GetNewId()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return true
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -174,6 +182,10 @@ GlobalFuncParam := class extend MemParam
 		ResultType = th
 		Down = toSet
 		MainId = GetNewId()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return true
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -238,6 +250,10 @@ ExternParam := class extend MemParam
 		ResultType = th
 		Down = toSet
 		MainId = GetNewId()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return true
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -349,6 +365,10 @@ FieldParam := class extend MemParam
 		ToMerge = pp
 		pp.Params.Push(this&)
 	}
+	IsRef := virtual !() -> bool
+	{
+		return true
+	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
 		ResultType.PrintType(f)
@@ -367,17 +387,32 @@ RetFuncParam := class extend MemParam
 		ToCall = fun
 		ResultType = fun.GetType()
 	}
+	IsRef := virtual !() -> bool
+	{
+		return ToCall.IsRef()
+	}
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
-		ToCall.PrintPre(f)
+		//ToCall.PrintPre(f)
+		if ToCall.IsRef()
+		{
+			f << "%T" << newInd << " = load " << ResultType.GetName() << " , " 
+			ToCall.PrintPointUse(f)
+			f << "\n"
+		}
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
-		ToCall.PrintUse(f)
+		if ToCall.IsRef()
+		{
+			f << ResultType.GetName() << " %T" << newInd << "\n"
+		}else{
+			ToCall.PrintUse(f)
+		}
 	}
 	PrintPointPre := virtual !(sfile f, int newInd) -> void
 	{
-		ToCall.PrintPointPre(f)
+		//ToCall.PrintPointPre(f)
 	}
 	PrintPointUse := virtual !(sfile f, int newInd) -> void
 	{
@@ -385,6 +420,10 @@ RetFuncParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
+		if ToCall.IsRef()
+		{
+			return "%T" + newInd
+		}
 		return ToCall.GetName()
 	}
 	GetPointName := virtual !(int newInd) -> string

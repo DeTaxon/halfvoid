@@ -72,6 +72,11 @@ ParamNaturalCall := class extend ParamCall
 		
 		ToCall = par->{MemParam^}
 	}
+	IsRef := virtual !() -> bool
+	{
+		wut := ToCall->{Object^}
+		return wut.IsRef()
+	}
 	GetType := virtual !() -> Type^
 	{
 		if ToCall == null return null
