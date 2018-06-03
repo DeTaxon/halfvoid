@@ -5,10 +5,11 @@
 T2 := class
 {
 	a := int
+	p := int^
 
 	"^" := !() -> ref int
 	{
-		return a
+		return p[a] //a[p]
 	}
 	Ind := !() -> int
 	{
@@ -16,19 +17,20 @@ T2 := class
 	}
 	Inc := !() -> void
 	{
-		a += 2
+		a += 1
 	}
 	IsEnd := !() -> bool
 	{
-		return a >= 10
+		return a >= 20
 	}
 }
 T1 := class
 {
-	a := bool
+	arr := int[20]
 	For := !() -> T2
 	{	
 		ToRet.a = 0
+		ToRet.p = arr
 	}
 }
 
@@ -36,10 +38,12 @@ T1 := class
 main := !(int argc, char^^ argv) -> int
 {
 	T := T1
+	for i : 20 T.arr[i] = i
+	for i : T i += 20
+
 	for i : T 
 	{
 		printf("pleas %i\n",i)
-		i -= 1
 	}
 	return 0
 	//return main2(argc,argv)

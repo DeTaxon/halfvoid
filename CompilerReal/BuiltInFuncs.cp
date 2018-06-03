@@ -328,7 +328,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 	{
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
-		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" return 255
+		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" and pars[1].GetType() != "arr" return 255
 		if pars[1].Base == GetType("void") return 1
 		if pars[0].GetType() == "point"
 		{
@@ -343,7 +343,6 @@ BuiltInTemplateSet := class extend BoxTemplate
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
-		printf("creating %s %s\n", pars[0].GetType(),pars[1].GetType())
 		if pars[0].GetType() == "point" and pars[0] != pars[1] 
 		{
 			PreRet := new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
