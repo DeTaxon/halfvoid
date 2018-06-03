@@ -53,6 +53,25 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	}
 	if iter.GetValue() == "~type"
 	{
+		asNeed := iter->{ObjType^}
+		asNeed2 := asNeed.MyType
+
+		if asNeed2.GetType() == "class" and iter.Right == "()"
+		{
+			asNeed3 := asNeed2->{TypeClass^}
+			asNeed4 := asNeed3.ToClass
+
+			Pars := Queue.{Type^}()
+			TrimCommas(iter.Right)
+
+			iter2 := iter.Right.Down
+
+			while iter2 != null
+			{
+				Pars.Push(iter2.GetType())
+				iter2 = iter2.Right
+			}
+		}
 		return null
 	}
 	if iter.GetType() != null
