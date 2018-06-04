@@ -665,7 +665,7 @@ NaturalCall := class extend SomeFuncCall
 			f << TName <<" = "	
 		}
 		f << "call "
-		FType.PrintType(f)
+		ToCall.MyFuncType.PrintType(f)
 		PrintFuncName(f)
 		f << "("
 		PrintParamUses(f)
@@ -1011,7 +1011,7 @@ ConstructCall := class extend NaturalCall
 		IsConstr = true
 		Down = new LinkForThis(this&->{Object^},func.MyFuncType.Pars[0])
 		Down.Right = Pars
-		Pars.Left = Right
+		if Pars != null Pars.Left = Right
 		
 		RetId = GetNewId()
 		ToCall = func
@@ -1027,8 +1027,44 @@ ConstructCall := class extend NaturalCall
 			gotAlloc = true
 			InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
 			TName = "%T" + InAlloc
-			TEName = "%TE" + RetId
+			//TEName = "%TE" + RetId
 		}
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ToCall.MyFuncType.Pars[0]
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		UseCall(f)
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		ToCall.MyFuncType.Pars[0].PrintType(f)
+		f << "* " << TName
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		UseCall(f)
+	}
+
+	PrintPre := virtual !(sfile f) -> void
+	{
+		ErrorLog.Push("compiler error in func call, class asked by value")
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		//ErrorLog.Push("compiler error in func call, class asked by value")
+		PrintPointUse(f) // жирный костыль
+	}
+	GetName := virtual !() -> string
+	{
+		ErrorLog.Push("compiler error in func call, class asked by value")
+		return ""
+	}
+	GetPointName := virtual !() -> string
+	{
+		return TName
 	}
 }
 

@@ -5,7 +5,7 @@
 T1 := class
 {
 	x := int
-	this := !() 
+	this := !() -> void 
 	{
 		x = 5
 	}
