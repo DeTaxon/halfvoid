@@ -56,12 +56,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		asNeed := iter->{ObjType^}
 		asNeed2 := asNeed.MyType
 
-		if asNeed2.GetType() == "class" and iter.Right == "()"
+		if asNeed2.GetType() == "class" and iter.Right.GetValue() == "()"
 		{
 			asNeed3 := asNeed2->{TypeClass^}
 			asNeed4 := asNeed3.ToClass
 
 			Pars := Queue.{Type^}()
+			Pars.Push(asNeed2)
 			TrimCommas(iter.Right)
 
 			iter2 := iter.Right.Down
@@ -71,6 +72,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				Pars.Push(iter2.GetType())
 				iter2 = iter2.Right
 			}
+
+			func := asNeed4.GetFunc("this",Pars)
+			if func != null return new ConstructCall(func,iter.Right.Down)
 		}
 		return null
 	}
@@ -435,6 +439,7 @@ SomeFuncCall := class extend ObjResult
 	ToCall := BoxFunc^
 	FType := TypeFunc^
 
+	IsConstr := bool
 	gotAlloc := bool
 	InAlloc := int
 
@@ -481,7 +486,7 @@ SomeFuncCall := class extend ObjResult
 	PrintPre := virtual !(sfile f) -> void
 	{
 		UseCall(f)
-		if ToCall != null
+		if ToCall != null //TODO: ??? ToCall can not be null 
 		{
 			if FType.RetRef
 			{
@@ -632,15 +637,16 @@ NaturalCall := class extend SomeFuncCall
 		RefsArr := FType.ParsIsRef
 
 		i := 0
-		if gotAlloc
+		if gotAlloc and not IsConstr
 		{
 			f << ToCall.MyFuncType.RetType.GetName() << "* "
 			f << TName
+			if iter != null f << " , "
 			//i += 1
 		}
 		while iter != null
 		{
-			if i > 0 or gotAlloc f << " , "
+			if i > 0  f << " , "
 			if RefsArr[i] iter.PrintPointUse(f)
 				else iter.PrintUse(f)
 			iter = iter.Right
@@ -995,6 +1001,34 @@ NewCall := class extend SomeFuncCall
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ExtraFunc.PrintUse(f)
+	}
+}
+
+ConstructCall := class extend NaturalCall
+{
+	this := !(BoxFunc^ func, Object^ Pars) -> void 
+	{
+		IsConstr = true
+		Down = new LinkForThis(this&->{Object^},func.MyFuncType.Pars[0])
+		Down.Right = Pars
+		Pars.Left = Right
+		
+		RetId = GetNewId()
+		ToCall = func
+		FType = ToCall.MyFuncType
+		Down.SetUp(this&)
+		ExchangeParams()
+		WorkBag.Push(this&,State_GetUse)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			gotAlloc = true
+			InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
+			TName = "%T" + InAlloc
+			TEName = "%TE" + RetId
+		}
 	}
 }
 
