@@ -7,6 +7,7 @@ ObjParam := class extend Object
 	IsFunc := bool
 	IsStrName := bool
 	IsExtern := bool
+	IsTook := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -38,15 +39,20 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if IsSetValue 
+		if IsTook
 		{
-			asLoc := Down->{LocalParam^}
-			Down.Right.PrintPre(f)
-			f << "store "
-			Down.Right.PrintUse(f)
-			f << " , "
-			asLoc.PrintPointUse(f,0)
-			f << "\n"
+			Down.Right.PrintInBlock(f)
+		}else{
+			if IsSetValue 
+			{
+				asLoc := Down->{LocalParam^}
+				Down.Right.PrintPre(f)
+				f << "store "
+				Down.Right.PrintUse(f)
+				f << " , "
+				asLoc.PrintPointUse(f,0)
+				f << "\n"
+			}
 		}
 	}
 	//PrintGlobal := !(sfile f) -> void
@@ -181,6 +187,7 @@ ObjParam := class extend Object
 						{
 							asNeed := Down->{SomeFuncCall^}
 							allcId = asNeed.GetItAllocId()
+							IsTook = true
 						}
 						if allcId == -1 allcId = GetAlloc(this&,ObjType)
 						Down = new LocalParam(ObjType,allcId)
