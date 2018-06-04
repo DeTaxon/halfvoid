@@ -175,7 +175,14 @@ ObjParam := class extend Object
 					if ObjType != null
 					{
 						Temp := Down
-						allcId := GetAlloc(this&,ObjType)
+						allcId := -1
+
+						if Down.GetValue() == "d()"
+						{
+							asNeed := Down->{SomeFuncCall^}
+							allcId = asNeed.GetItAllocId()
+						}
+						if allcId == -1 allcId = GetAlloc(this&,ObjType)
 						Down = new LocalParam(ObjType,allcId)
 						Down.Right = Temp
 						Temp.Left = Down

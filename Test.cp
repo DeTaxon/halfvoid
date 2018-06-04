@@ -14,7 +14,7 @@ T1 := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	T1()
+	T := T1()
 	//printf("pleas %i\n",T.x)
 	return 0
 }
