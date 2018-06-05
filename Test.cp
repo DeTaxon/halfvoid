@@ -36,11 +36,19 @@ T1 := class
 		return T2(0,x)
 	}
 }
+TestA := !() -> T1
+{
+	return T1(5)
+}
+TestB := !() -> T1
+{
+	return TestA()
+}
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	for T1(7) printf("wow %i\n", it)
+	for TestB() printf("wow %i\n", it)
 	return 0
 }
 

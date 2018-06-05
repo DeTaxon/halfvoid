@@ -467,8 +467,13 @@ SomeFuncCall := class extend ObjResult
 			gotAlloc = ToCall.IsRetComplex
 			if gotAlloc
 			{
-				InAlloc = GetAlloc(this&,ToCall.MyFuncType.RetType)
-				TName = "%T" + InAlloc
+				if Up.GetValue() == "~Return()"
+				{
+					TName = "%ToRet"
+				}else{
+					InAlloc = GetAlloc(this&,ToCall.MyFuncType.RetType)
+					TName = "%T" + InAlloc
+				}
 				TEName = "%TE" + RetId
 			}else
 			{
