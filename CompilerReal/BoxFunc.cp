@@ -102,13 +102,25 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 ContainTType := !(Object^ toCheck) -> bool
 {
+	res := Queue.{string}()
+	return ContainTType(toCheck,res)
+}
+ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
+{
+	added := false
 	bag := Stack.{Object^}()
 	bag.Push(toCheck)
 
 	while bag.NotEmpty()
 	{
 		item := bag.Pop()
-		if item.GetValue() == "~{}type" return true
+		if item.GetValue() == "~{}type" 
+		{
+			asNeed := item->{ObjTemplateType^}
+			res.Push(asNeed.MyStr)
+			added = true
+			//return true
+		}
 
 		iter := item.Down
 
@@ -118,7 +130,7 @@ ContainTType := !(Object^ toCheck) -> bool
 			iter = iter.Right
 		}
 	}
-	return false
+	return added
 }
 
 IsTemplate := !(Object^ sk) -> bool
@@ -141,6 +153,7 @@ IsTemplate := !(Object^ sk) -> bool
 	return Counter == 1 
 }
 
+
 BoxTemplate := class extend BoxFunc
 {
 	CopyParams := Object^
@@ -152,10 +165,15 @@ BoxTemplate := class extend BoxFunc
 	FuncsConsts := Queue.{Queue.{Object^}}
 
 	FuncsTTemps := Queue.{Object^}
+	TTNames := Queue.{string}
 
 	IsVirtual := bool
 
-
+	ComputeTypes := !(Queue.{Type^} pars,Queue.{Object^} res) -> bool
+	{
+		
+		return false
+	}
 	this := !(Object^ inPars, Object^ inOutType, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
 		IsRetRef = RetRef
@@ -181,7 +199,7 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iter.GetValue() == ","
 			{
-				if ContainTType(firstNon)
+				if ContainTType(firstNon,TTNames)
 				{
 					FuncsTTemps.Push(firstNon)
 				}else{
@@ -197,7 +215,7 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 			if iter == null
 			{
-				if ContainTType(firstNon)
+				if ContainTType(firstNon,TTNames)
 				{
 					FuncsTTemps.Push(firstNon)
 				}else{
