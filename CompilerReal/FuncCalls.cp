@@ -90,7 +90,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				dynCast := (iter.Left)->{ParamCall^}
 
-				if iter.Left.GetType().GetType() == "point" and false //TODO: fix point call
+				if iter.Left.IsRef() //iter.Left.GetType().GetType() == "point"
 				{
 					if iter.Left.GetType().Base.GetType() == "function"
 					{
