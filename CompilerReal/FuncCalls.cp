@@ -1024,10 +1024,18 @@ ConstructCall := class extend NaturalCall
 	{
 		if pri == State_GetUse
 		{
-			gotAlloc = true
-			InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
-			TName = "%T" + InAlloc
-			//TEName = "%TE" + RetId
+			
+			if Up.GetValue() == "~Return()"
+			{
+				itm := GetItem("ToRet",this&)
+				ReplaceNode(Down,new ParamNaturalCall("this",itm))
+			}else
+			{
+				gotAlloc = true
+				InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
+				TName = "%T" + InAlloc
+				//TEName = "%TE" + RetId
+			}
 		}
 	}
 	GetType := virtual !() -> Type^

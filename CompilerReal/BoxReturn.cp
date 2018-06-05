@@ -1,6 +1,7 @@
 BoxReturn := class extend Object
 {
 	IsRetRef := bool
+	IsRetComplex := bool
 	this := !(Object^ toUse) -> void
 	{
 		PopOutNode(toUse.Down)
@@ -35,6 +36,7 @@ BoxReturn := class extend Object
 			if iterF != null
 			{
 				asNeed := iterF->{BoxFunc^}
+				IsRetComplex = asNeed.IsRetComplex
 				IsRetRef = asNeed.MyFuncType.RetRef
 				if Down.GetType() != null
 				{
@@ -65,10 +67,16 @@ BoxReturn := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
-		f << "ret "
-		if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
-		f << "\n"
+		if not IsRetComplex
+		{
+			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
+			f << "ret "
+			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
+			f << "\n"
+		}else{
+			Down.PrintInBlock(f)
+			f << "ret void\n"
+		}
 	}
 	GetValue := virtual !() -> string
 	{
