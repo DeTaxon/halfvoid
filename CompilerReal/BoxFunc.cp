@@ -153,6 +153,22 @@ IsTemplate := !(Object^ sk) -> bool
 	return Counter == 1 
 }
 
+MiniWork := class
+{
+	SomeNode := Object^
+	SomeType := Type^
+	this := !(Object^ o, Type^ t) -> void
+	{
+		SomeNode = o
+		SomeType = t
+	}
+
+	"=" := !(MiniWork ToSet) -> void
+	{
+		SomeNode = ToSet.SomeNode
+		SomeType = ToSet.SomeType
+	}
+}
 
 BoxTemplate := class extend BoxFunc
 {
@@ -171,7 +187,61 @@ BoxTemplate := class extend BoxFunc
 
 	ComputeTypes := !(Queue.{Type^} pars,Queue.{Object^} res) -> bool
 	{
-		
+		for TTNames.Size() res.Push(null->{Object^})
+		MiniBag := Queue.{MiniWork}()
+	
+		for i : FuncsTTemps.Size()
+		{
+			if FuncsTTemps[i] != null
+			{
+				MiniBag.Push(MiniWork(FuncsTTemps[i],pars[i]))
+			}
+		}
+
+		iter := MiniBag.Start
+		NowWork := MiniWork
+
+		while iter != null
+		{
+			NowWork = iter.Data
+			NowNod := NowWork.SomeNode
+			NowType := NowWork.SomeType
+			NowVal := NowWork.SomeNode.GetValue()
+			iter = iter.Next
+
+			if NowVal  == "~d"
+			{
+			}else{
+				if NowVal == "~ind"
+				{
+					asNeed := NowVal->{ObjIndent^}
+
+					gotType := Type^
+					gotType = null
+					for TTNames.Size()
+					{
+						if asNeed.MyStr == TTNames[it] gotType = res[i]
+					}
+					if gotType == null gotType = ParseType(NowNow)
+
+					//if gotType == null 
+				}else{
+					if NowVal == "~{}type"
+					{
+						asNeed := NowNod->{ObjTemplateName^}
+						for i : TTNames.Size()
+						{	
+							if TTNames[i] == asNeed.MyStr
+							{
+								res[i] = NowType
+							}
+						}
+					}
+				}
+			}
+		}
+		return MiniBag.Empty()
+
 		return false
 	}
 	this := !(Object^ inPars, Object^ inOutType, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
