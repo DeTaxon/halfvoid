@@ -38,6 +38,12 @@ Stack := class !{T}
 		free(Later)
 		return Prev
 	}
+	JustPopFront := !() -> void
+	{
+		Later := Start
+		Start = Start.Next
+		free(Later)
+	}
 	PopFront := !() -> T
 	{
 		Prev := Start.Data

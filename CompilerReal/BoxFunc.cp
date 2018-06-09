@@ -207,6 +207,7 @@ BoxTemplate := class extend BoxFunc
 			NowNod := NowWork.SomeNode
 			NowType := NowWork.SomeType
 			NowVal := NowWork.SomeNode.GetValue()
+			MiniBag.JustPopFront()
 			iter = iter.Next
 
 			if NowVal  == "~d"
@@ -228,6 +229,7 @@ BoxTemplate := class extend BoxFunc
 					}
 					if objType != null
 					{
+						printf("here\n")
 						minT := ObjType(NowType)
 						return CmpConstObjs(objType,minT&->{Object^})
 					}
@@ -242,12 +244,14 @@ BoxTemplate := class extend BoxFunc
 							if TTNames[i] == asNeed.MyStr
 							{
 								res[i] = new ObjType(NowType)
+								//iter = MiniBag.Start
 							}
 						}
 					}
 				}
 			}
 		}
+		printf("wut %i\n",MiniBag.Size())
 		return MiniBag.Empty()
 
 		return false
@@ -331,7 +335,9 @@ BoxTemplate := class extend BoxFunc
 				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next
 			}
-			return MaxPrior
+			temp := Queue.{Object^}()
+			if ComputeTypes(pars,temp) return MaxPrior
+			return 255 //MaxPrior
 		}
 		return 255	
 	}
