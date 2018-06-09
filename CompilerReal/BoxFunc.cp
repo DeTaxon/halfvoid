@@ -232,7 +232,8 @@ BoxTemplate := class extend BoxFunc
 					if objType != null
 					{
 						minT := ObjType(NowType)
-						return CmpConstObjs(objType,minT&->{Object^})
+						if not CmpConstObjs(objType,minT&->{Object^})
+							return false
 					}
 
 					//if gotType == null 
@@ -263,8 +264,14 @@ BoxTemplate := class extend BoxFunc
 		FuncName = SomeName
 		MethodType = metC
 		
-		if inPars != null CopyParams = inPars.Clone()
-		if inOutType != null CopyRet = inOutType.Clone()
+		if inPars != null {
+			CopyParams = inPars.Clone()
+			CopyParams.SetUp(this&)
+		}
+		if inOutType != null {
+			CopyRet = inOutType.Clone()
+			inOutType.SetUp(this&)
+		}
 		if Stuf != null CopyTree = Stuf.Clone()
 
 		IsSuffix = IsSuf
@@ -281,6 +288,7 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iter.GetValue() == ","
 			{
+				ContainTType(firstNon,TTNames)
 				//if ContainTType(firstNon,TTNames)
 				//{
 				//	FuncsTTemps.Push(firstNon)
@@ -298,6 +306,7 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 			if iter == null
 			{
+				ContainTType(firstNon,TTNames)
 				//if ContainTType(firstNon,TTNames)
 				//{
 				//	FuncsTTemps.Push(firstNon)
@@ -320,6 +329,21 @@ BoxTemplate := class extend BoxFunc
 		FType := MyFuncType
 		temp := Queue.{Object^}()
 		if not ComputeTypes(pars,temp) return 255
+
+		nowTPars := Queue.{Type^}()
+
+		for i : FType.ParsCount
+		{
+			if FType.Pars[i] == null
+			{
+				tp := ParseType(FuncsTTemps[i],TTNames,temp)
+				if tp == null return 255
+				nowTPars.Push(tp)
+			}else{
+				nowTPars.Push(FType.Pars[i])
+			}
+		}
+
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
@@ -332,14 +356,14 @@ BoxTemplate := class extend BoxFunc
 				SomePrior := 0
 				if FType.ParsIsRef[i] 
 				{
-					if iterT.Data != FType.Pars[i] SomePrior = 255
+					if iterT.Data != nowTPars[i] SomePrior = 255
 				}else {
-					SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
+					SomePrior = TypeCmp(iterT.Data, nowTPars[i])
 				}
 				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next
 			}
-			return 255
+			return MaxPrior
 		}
 		return 255	
 	}
@@ -542,7 +566,7 @@ BoxFunc := class extend Object
 					{
 						MayName = (Pars[1]->{ObjIndent^}).MyStr
 					}else{
-						printf("only indentificator allowed\n")
+						printf("only indentificators allowed\n")
 						return false
 					}
 					Typs.Push(MayType)

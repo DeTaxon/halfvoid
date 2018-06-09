@@ -9,7 +9,7 @@ Test := !(@T a,T b) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	Test(2,3.0)
+	Test(2,3)
 	return 0
 }
 
