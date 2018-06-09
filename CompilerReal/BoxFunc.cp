@@ -187,9 +187,11 @@ BoxTemplate := class extend BoxFunc
 
 	ComputeTypes := !(Queue.{Type^} pars,Queue.{Object^} res) -> bool
 	{
+		if TTNames.Size() == 0 return true
+
 		for TTNames.Size() res.Push(null->{Object^})
 		MiniBag := Queue.{MiniWork}()
-	
+
 		for i : FuncsTTemps.Size()
 		{
 			if FuncsTTemps[i] != null
@@ -225,11 +227,10 @@ BoxTemplate := class extend BoxFunc
 					objType = null
 					for TTNames.Size()
 					{
-						if asNeed.MyStr == TTNames[it] objType = res[it]
+						if asNeed.MyStr == TTNames[it][1]& objType = res[it]
 					}
 					if objType != null
 					{
-						printf("here\n")
 						minT := ObjType(NowType)
 						return CmpConstObjs(objType,minT&->{Object^})
 					}
@@ -251,7 +252,6 @@ BoxTemplate := class extend BoxFunc
 				}
 			}
 		}
-		printf("wut %i\n",MiniBag.Size())
 		return MiniBag.Empty()
 
 		return false
@@ -268,7 +268,7 @@ BoxTemplate := class extend BoxFunc
 		if Stuf != null CopyTree = Stuf.Clone()
 
 		IsSuffix = IsSuf
-		ParseParams(CopyParams,CopyRet)
+		ParseParams(CopyParams,CopyRet,true)
 
 		SyntaxCompress(CopyParams.Down,PriorityData)
 		iter := CopyParams.Down
@@ -281,12 +281,13 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iter.GetValue() == ","
 			{
-				if ContainTType(firstNon,TTNames)
-				{
-					FuncsTTemps.Push(firstNon)
-				}else{
-					FuncsTTemps.Push(null->{Object^})
-				}
+				//if ContainTType(firstNon,TTNames)
+				//{
+				//	FuncsTTemps.Push(firstNon)
+				//}else{
+				//	FuncsTTemps.Push(null->{Object^})
+				//}
+				FuncsTTemps.Push(firstNon)
 				firstNon = null
 			}else{
 				if firstNon == null 
@@ -297,12 +298,13 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 			if iter == null
 			{
-				if ContainTType(firstNon,TTNames)
-				{
-					FuncsTTemps.Push(firstNon)
-				}else{
-					FuncsTTemps.Push(null->{Object^})
-				}
+				//if ContainTType(firstNon,TTNames)
+				//{
+				//	FuncsTTemps.Push(firstNon)
+				//}else{
+				//	FuncsTTemps.Push(null->{Object^})
+				//}
+				FuncsTTemps.Push(firstNon)
 				firstNon = null
 			}else{
 				if firstNon == null 
@@ -316,6 +318,8 @@ BoxTemplate := class extend BoxFunc
 	{
 		parsCount := pars.Size()
 		FType := MyFuncType
+		temp := Queue.{Object^}()
+		if not ComputeTypes(pars,temp) return 255
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
@@ -335,9 +339,7 @@ BoxTemplate := class extend BoxFunc
 				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next
 			}
-			temp := Queue.{Object^}()
-			if ComputeTypes(pars,temp) return MaxPrior
-			return 255 //MaxPrior
+			return 255
 		}
 		return 255	
 	}
@@ -471,7 +473,7 @@ BoxFunc := class extend Object
 	{
 		return false
 	}
-	ParseParams := !(Object^ root, Object^ outObj) -> bool
+	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
 		iter := root.Down
@@ -528,8 +530,11 @@ BoxFunc := class extend Object
 							ContainTT = true
 						}else
 						{
-							printf("can not parse type\n")
-							return false
+							if not IsTempl
+							{
+								printf("can not parse type\n")
+								return false
+							}
 						}
 					}
 
@@ -612,7 +617,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		IsRetRef = false
 		FuncName = SomeName
 		OutputName = SomeName.Copy()
-		IsInvalid = not ParseParams(inPars,inOutType)
+		IsInvalid = not ParseParams(inPars,inOutType,false)
 
 		if IsInvalid ErrorLog.Push("can not parse function\n")
 		MethodType = null
@@ -723,7 +728,7 @@ BoxFuncBody := class extend BoxFunc
 		{
 			OutputName = "func" + GetNewId()
 		}
-		IsInvalid = not ParseParams(inPars,inOutType)
+		IsInvalid = not ParseParams(inPars,inOutType,false)
 
 		if MyFuncType != null TestRet(MyFuncType.RetType)
 
