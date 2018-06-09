@@ -211,29 +211,37 @@ BoxTemplate := class extend BoxFunc
 
 			if NowVal  == "~d"
 			{
+				if Down.Right == "[]"
+				{
+						
+				}
 			}else{
 				if NowVal == "~ind"
 				{
 					asNeed := NowVal->{ObjIndent^}
 
-					gotType := Type^
-					gotType = null
+					objType := Object^
+					objType = null
 					for TTNames.Size()
 					{
-						if asNeed.MyStr == TTNames[it] gotType = res[i]
+						if asNeed.MyStr == TTNames[it] objType = res[it]
 					}
-					if gotType == null gotType = ParseType(NowNow)
+					if objType != null
+					{
+						minT := ObjType(NowType)
+						return CmpConstObjs(objType,minT&->{Object^})
+					}
 
 					//if gotType == null 
 				}else{
 					if NowVal == "~{}type"
 					{
-						asNeed := NowNod->{ObjTemplateName^}
+						asNeed := NowNod->{ObjTemplateType^}
 						for i : TTNames.Size()
 						{	
 							if TTNames[i] == asNeed.MyStr
 							{
-								res[i] = NowType
+								res[i] = new ObjType(NowType)
 							}
 						}
 					}
