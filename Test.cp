@@ -2,7 +2,7 @@
 //#import "main.cp"
 
 
-Test := !(@T a,T b) -> void
+Test := !( a, b) -> void
 {
 	printf("b\n")
 }
@@ -10,6 +10,8 @@ Test := !(@T a,T b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	Test(2,3)
+	Test(2,3.0)
+	Test(2,7)
 	return 0
 }
 

@@ -221,15 +221,20 @@ BoxTemplate := class extend BoxFunc
 			}else{
 				if NowVal == "~ind"
 				{
-					asNeed := NowVal->{ObjIndent^}
+					asNeed := NowNod->{ObjIndent^}
 
 					objType := Object^
 					objType = null
+					gotIt := false
 					for TTNames.Size()
 					{
-						if asNeed.MyStr == TTNames[it][1]& objType = res[it]
+						if asNeed.MyStr == TTNames[it][1]& 
+						{
+							gotIt = true
+							objType = res[it]
+						}
 					}
-					if objType != null
+					if objType != null and not gotIt
 					{
 						minT := ObjType(NowType)
 						if not CmpConstObjs(objType,minT&->{Object^})
@@ -327,22 +332,21 @@ BoxTemplate := class extend BoxFunc
 	{
 		parsCount := pars.Size()
 		FType := MyFuncType
-		temp := Queue.{Object^}()
-		if not ComputeTypes(pars,temp) return 255
+		//temp := Queue.{Object^}()
+		//if not ComputeTypes(pars,temp) return 255
 
-		nowTPars := Queue.{Type^}()
+		//nowTPars := Queue.{Type^}()
 
-		for i : FType.ParsCount
-		{
-			if FType.Pars[i] == null
-			{
-				tp := ParseType(FuncsTTemps[i],TTNames,temp)
-				if tp == null return 255
-				nowTPars.Push(tp)
-			}else{
-				nowTPars.Push(FType.Pars[i])
-			}
-		}
+		//for i : FType.ParsCount
+		//{
+		//	if FType.Pars[i] == null{
+		//		tp := ParseType(FuncsTTemps[i],TTNames,temp)
+		//		if tp == null return 255
+		//		nowTPars.Push(tp)
+		//	}else{
+		//		nowTPars.Push(FType.Pars[i])
+		//	}
+		//}
 
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
@@ -356,9 +360,9 @@ BoxTemplate := class extend BoxFunc
 				SomePrior := 0
 				if FType.ParsIsRef[i] 
 				{
-					if iterT.Data != nowTPars[i] SomePrior = 255
+					if iterT.Data != FType.Pars[i] SomePrior = 255
 				}else {
-					SomePrior = TypeCmp(iterT.Data, nowTPars[i])
+					SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
 				}
 				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next
