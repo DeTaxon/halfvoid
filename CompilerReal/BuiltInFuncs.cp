@@ -564,6 +564,11 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 				return 0
 			
 		}
+		for ToClass.FakeParams.Size()
+		{
+			if ToClass.FakeParams[it].ItName == asStr
+				return 0
+		}
 		return 255
 	}
 
@@ -576,8 +581,6 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
 
-
-
 		pos := -1
 		for ToClass.Params.Size()
 		{
@@ -588,6 +591,38 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		}
 		if pos == -1 
 		{
+			for ToClass.FakeParams.Size()
+			{
+				if ToClass.FakeParams[it].ItName == Name
+				{
+					pos = it
+				}
+			}
+			if pos != -1
+			{
+				CType := ((ToClass.ClassType)->{Type^})
+				CTypeP := CType.GetPoint()
+
+				FP := ToClass.FakeParams[pos]
+				if FP.Atter.GetValue() != "~ind" return null //TODO: check in GetPrior and add stuff like 'array[2]'
+				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
+				pos2 := -1
+				midType := FieldParam^
+
+				for ToClass.Params.Size()
+				{
+					if ToClass.Params[it].ItName == FPN {
+						midType = ToClass.Params[it]
+						pos2 = it
+					}
+				}
+				if pos2 == -1 return null //TODO: check in GetPrior
+
+				if ToClass.ContainVirtual pos2 += 1
+				return  new BuiltInFuncUno(".",CType,true,FP.ResultType,true,
+				"%Pre## = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+"\n" +
+				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
+			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
 			return null
 		}
@@ -601,7 +636,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 				usePos = pos + 1
 			}
 		
-		return new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
+	return new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
 		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+"\n")
 	}
 	DoTheWork := virtual !(int pri) -> void

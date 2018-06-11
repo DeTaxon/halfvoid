@@ -8,8 +8,7 @@ Test := class
 	j := float[3] at x
 	ho := !() -> void
 	{
-		y = 5.0
-		printf("wut %f\n",j[1])
+		printf("wut %f\n",y)
 	}
 }
 
@@ -17,6 +16,7 @@ Test := class
 main := !(int argc, char^^ argv) -> int
 {
 	T := Test
+	T.j[1] = 4.7
 	T.ho()
 	return 0
 }
