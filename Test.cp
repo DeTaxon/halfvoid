@@ -2,16 +2,20 @@
 //#import "main.cp"
 
 
-Test := !( a, b) -> void
+Test := class
 {
-	printf("b\n")
+	x,y,z := int
+	ho := !() -> void
+	{
+		y = 5
+	}
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	Test(2,3)
-	Test(2,3.0)
-	Test(2,7)
+	T := Test
+	T.ho()
 	return 0
 }
 

@@ -2,6 +2,8 @@
 UnboxParams := !(Object^ start) -> void
 {
 	Bag := Stack.{Object^}
+	Atter := Object^
+	Atter = null
 
 	Curr := start
 	while Curr != null
@@ -57,6 +59,11 @@ UnboxParams := !(Object^ start) -> void
 				iter = iter.Right
 			}
 
+			if iter.Right != null
+			{
+				if iter.Right.GetValue() == "at" Atter = iter.Right.Right
+			}
+
 			iter.Left = null
 			lineIter = line
 
@@ -65,6 +72,9 @@ UnboxParams := !(Object^ start) -> void
 				((lineIter->{ObjParam^}).IsExtern) = IsExt
 				lineIter.Down = iter.Clone()
 				lineIter.Down.SetUp(lineIter)
+				if Atter != null {
+					((lineIter->{ObjParam^}).Atter) = Atter.Clone()
+				}
 				lineIter = lineIter.Right
 			}
 			ReplaceNode(Curr,line)

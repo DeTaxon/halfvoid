@@ -202,6 +202,7 @@ BoxClass := class extend Object
 {
 	ClassId := int
 	Params := Queue.{FieldParam^}
+	FakeParams := Queue.{FakeFieldParam^}
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
@@ -249,6 +250,7 @@ BoxClass := class extend Object
 			{
 				Params.PushFront(Parent.Params[Size - i - 1])
 			}
+			for i : Parent.FakeParams.Size() FakeParams.PushFront(Parent.FakeParams[i])
 		}
 		if pri == State_PrePrint
 		{

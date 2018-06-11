@@ -453,8 +453,12 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		for ToClass.Params.Size()
 		{
 			if ToClass.Params[it].ItName == asStr
+				return 0			
+		}
+		for ToClass.FakeParams.Size()
+		{
+			if ToClass.FakeParams[it].ItName == asStr
 				return 0
-			
 		}
 		return 255
 	}
@@ -479,6 +483,38 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		}
 		if pos == -1 
 		{
+			for ToClass.FakeParams.Size()
+			{
+				if ToClass.FakeParams[it].ItName == Name
+				{
+					pos = it
+				}
+			}
+			if pos != -1
+			{
+				CType := ((ToClass.ClassType)->{Type^})
+				CTypeP := CType.GetPoint()
+
+				FP := ToClass.FakeParams[pos]
+				if FP.Atter.GetValue() != "~ind" return null //TODO: check in GetPrior
+				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
+				pos2 := -1
+				midType := FieldParam^
+
+				for ToClass.Params.Size()
+				{
+					if ToClass.Params[it].ItName == FPN {
+						midType = ToClass.Params[it]
+						pos2 = it
+					}
+				}
+				if pos2 == -1 return null //TODO: check in GetPrior
+
+				if ToClass.ContainVirtual pos2 += 1
+				return  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
+				"%Pre## = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
+				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
+			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
 			return null
 		}

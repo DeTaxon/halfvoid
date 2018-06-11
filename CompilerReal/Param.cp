@@ -1,8 +1,9 @@
 ObjParam := class extend Object
 {
 	MyStr := string
-	AskedGetUse := bool
 	ObjType := Type^
+	Atter := Object^
+	AskedGetUse := bool
 	IsSetValue := bool
 	IsFunc := bool
 	IsStrName := bool
@@ -117,7 +118,8 @@ ObjParam := class extend Object
 						asCl := GetUpClass(this&)
 						if asCl != null
 						{
-							Down = new FieldParam(MyStr,MaybeType,asCl)
+							if Atter != null Down = new FakeFieldParam(MyStr,MaybeType,asCl,Atter)
+							else Down = new FieldParam(MyStr,MaybeType,asCl)
 							Down.SetUp(this&)
 						}else{
 							ErrorLog.Push("Compiler bag\n")

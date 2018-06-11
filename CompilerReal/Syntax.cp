@@ -213,7 +213,16 @@ RuleParam := !(void^ itr) -> int
 
 	if not InDataR(It) return 0
 
-	return size + 2
+	It = It.Right
+	if It == null return size + 2
+
+	if It.GetValue() != "at" return size + 2
+
+	It = It.Right
+	if It == null return 0
+	if not InDataR(It) return 0
+
+	return size + 4
 }
 
 RuleOneFunc := !(void^ itr)-> int
