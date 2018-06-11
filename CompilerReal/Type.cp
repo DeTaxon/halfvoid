@@ -63,40 +63,13 @@ Type := class {
 	}
 
 }
-ParseType := !(Object^ Node) -> Type^
-{
-	nams := Queue.{string}()
-	vals := Queue.{Object^}()
-	return ParseType(Node,nams,vals)
-}
-ParseType := !(Object^ Node,Queue.{string} nams, Queue.{Object^} vals) -> Type^ //TODO: replace on ParseType(Object^, map.{string,Object^}...)
+ParseType := !(Object^ Node) -> Type^ 
 {
 	if Node == null return null
-	if Node.GetValue() == "~{}type"
-	{
-		asNeed := Node->{ObjTemplateType^}
-
-		for i : nams.Size() 
-		{
-			if asNeed.MyStr == nams[i] 
-			{
-				if vals[i].GetValue() == "~type" return (((vals[i])->{ObjType^}).MyType)
-			}
-		}
-		return null
-	}
 	if Node.GetValue() == "~ind"
 	{
 		indName := (Node->{ObjIndent^}).MyStr
 		
-		for i : nams.Size() {
-			if nams[i][1]& == indName {
-				if vals[i].GetValue() == "~type"{
-					return ((vals[i])->{ObjType^}).MyType
-				}
-			}
-		}
-
 		NodeName := GetItem(indName,Node)
 		if NodeName == null return null
 		//NodeName.GetValue()
@@ -121,6 +94,7 @@ ParseType := !(Object^ Node,Queue.{string} nams, Queue.{Object^} vals) -> Type^ 
 		{
 			types := Queue.{Type^}()
 			isVARR := false
+			ptrSize := 0
 
 			SyntaxCompress(Node.Down.Right,PriorityData)
 			UnboxParams(Node.Down.Right)
@@ -131,18 +105,27 @@ ParseType := !(Object^ Node,Queue.{string} nams, Queue.{Object^} vals) -> Type^ 
 			{
 				if iter.GetValue() != ","
 				{
-					someType := ParseType(iter,nams,vals)
+					someType := ParseType(iter)
 					if someType == null
 						return null
 					types.Push(someType)
 				}
 				iter = iter.Right 
 			}
-			iter = Node.Down.Right.Right.Right.Right
-			someType := ParseType(iter,nams,vals)
+			iter = Node.Down.Right.Right
+			while iter.GetValue() == "^"
+			{
+				ptrSize += 1
+				iter = iter.Right
+			}
+
+			iter = iter.Right
+			someType := ParseType(iter)
 			if someType == null return null
 			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
-			return (someType.GetPoint())
+
+			for ptrSize someType = someType.GetPoint()
+			return someType
 		}
 		
 		lazy = Node.Down.GetValue() == "~ind"
@@ -165,7 +148,7 @@ ParseType := !(Object^ Node,Queue.{string} nams, Queue.{Object^} vals) -> Type^ 
 				{	
 					if iterR.GetValue() != ","
 					{
-						isType := ParseType(iterR,nams,vals)
+						isType := ParseType(iterR)
 						if isType == null
 						{
 							val := TryCompute(iterR)
@@ -210,13 +193,13 @@ ParseType := !(Object^ Node,Queue.{string} nams, Queue.{Object^} vals) -> Type^ 
 				{
 					val := Object^
 					val = null
-					if Ri.Down.GetValue() == "~ind"
-					{
-						asNeed := ((Ri.Down)->{ObjIndent^})
-						for i : nams.Size() 
-							if nams[i] == asNeed.MyStr[1]& 
-								val = vals[i]
-					}
+					//if Ri.Down.GetValue() == "~ind"
+					//{
+					//	asNeed := ((Ri.Down)->{ObjIndent^})
+					//	for i : nams.Size() 
+					//		if nams[i] == asNeed.MyStr[1]& 
+					//			val = vals[i]
+					//}
 					if val == null val = TryCompute(Ri.Down)
 					if val == null return null
 					if val.GetValue() == "~int"

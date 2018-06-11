@@ -1,7 +1,7 @@
 #import "lib.cp"
 //#import "main.cp"
 
-ix := !(int)^ -> void
+ix := !(int)^^ -> void
 
 main := !(int argc, char^^ argv) -> int
 {

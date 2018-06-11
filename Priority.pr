@@ -1,4 +1,4 @@
-"! () ^ -> d"
+"! () ^ -> d" "! () ^ ^ -> d"
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () -> d declare"  "class {}" "class extend d {}" "class ! {} {}" "class ! {} extend d {}" "! () -> ref d {}"
 "new d ()" "! []"
 "d ^" "d []" "d &" "d ?" "d -> {}" "d . {} " "d . d" "d . d ()" "d ()" "d s" "d -> d"
