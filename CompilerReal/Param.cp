@@ -9,6 +9,7 @@ ObjParam := class extend Object
 	IsStrName := bool
 	IsExtern := bool
 	IsTook := bool
+	IsGlobal := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -40,6 +41,19 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		if ObjType.GetType() == "class" and not IsTook
+		{
+			asNeed2 := ObjType->{TypeClass^}
+			asNeed := asNeed2.ToClass
+			
+			if not IsGlobal
+			{
+				tmp := new ParamNaturalCall("_",Down)
+				asNeed.ApplyConstants(f,tmp)
+				free(tmp)
+			}
+		}
+		
 		if IsTook
 		{
 			Down.Right.PrintInBlock(f)
@@ -109,6 +123,7 @@ ObjParam := class extend Object
 					else{ 
 						Down = new GlobalParam(MaybeType,val)
 					}
+					IsGlobal = true
 
 					Down.SetUp(this&)
 				}else

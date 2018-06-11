@@ -1044,12 +1044,24 @@ ConstructCall := class extend NaturalCall
 			}
 		}
 	}
+	FillConsts := !(sfile f) -> void
+	{
+		asNeed3 :=  ToCall.MyFuncType.Pars[0]
+		if asNeed3.GetType() == "class"
+		{
+			asNeed2 := asNeed3->{TypeClass^}
+			asNeed := asNeed2.ToClass
+
+			asNeed.ApplyConstants(f,this&)
+		}
+	}
 	GetType := virtual !() -> Type^
 	{
 		return ToCall.MyFuncType.Pars[0]
 	}
 	PrintPointPre := virtual !(sfile f) -> void
 	{
+		FillConsts(f)
 		UseCall(f)
 	}
 	PrintPointUse := virtual !(sfile f) -> void
@@ -1059,6 +1071,7 @@ ConstructCall := class extend NaturalCall
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		FillConsts(f)
 		UseCall(f)
 	}
 

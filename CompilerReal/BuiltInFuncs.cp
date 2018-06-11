@@ -522,6 +522,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		CType := ((ToClass.ClassType)->{Type^})
 		CTypeP := CType.GetPoint()
 
+		if ToClass.ContainVirtual pos += 1
 		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
 		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos+"\n")
 		return preRet
