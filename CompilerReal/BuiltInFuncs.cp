@@ -511,7 +511,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 				if pos2 == -1 return null //TODO: check in GetPrior
 
 				if ToClass.ContainVirtual pos2 += 1
-				return  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
+				return  new BuiltInFuncZero(".",FP.ResultType,true,
 				"%Pre## = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
 				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
 			}

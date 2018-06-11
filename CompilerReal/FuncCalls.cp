@@ -564,6 +564,7 @@ NaturalCall := class extend SomeFuncCall
 		
 		RetId = GetNewId()
 		ToCall = func
+		ToCall.ParseBlock()
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()

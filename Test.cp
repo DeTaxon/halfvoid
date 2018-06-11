@@ -4,10 +4,12 @@
 
 Test := class
 {
-	x,y,z := int
+	x,y,z := float
+	j := float[3] at x
 	ho := !() -> void
 	{
-		y = 5
+		y = 5.0
+		printf("wut %f\n",j[1])
 	}
 }
 
