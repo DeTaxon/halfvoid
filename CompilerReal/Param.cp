@@ -204,7 +204,7 @@ ObjParam := class extend Object
 						{
 							asNeed := Down->{SomeFuncCall^}
 							allcId = asNeed.GetItAllocId()
-							IsTook = true
+							if allcId != -1 IsTook = true
 						}
 						if allcId == -1 allcId = GetAlloc(this&,ObjType)
 						Down = new LocalParam(ObjType,allcId)
