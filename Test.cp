@@ -1,11 +1,14 @@
 #import "lib.cp"
 //#import "main.cp"
 
-ix := !(int)^^ -> void
-
+sh := !(a) -> void
+{
+	printf("lol %i\n",a)
+}
 main := !(int argc, char^^ argv) -> int
 {
-	T := 5 + 3
+	sh(3).{2}
+	sh(3).{2}
 	return 0
 }
 

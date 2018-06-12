@@ -83,7 +83,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		iter = iter.Right
 		if iter == null return null
 
-
+		consts := null->{Object^}
 		if iter.GetValue() == "()"
 		{
 			if iter.Left.GetValue() == "(d)"
@@ -100,7 +100,21 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
 					}
 				}else{
-					return OneCall(dynCast.BeforeName, iter)
+					consts := null->{Object^}
+					if iter.Right != null
+					{
+						if iter.Right.GetValue() == "."
+						{
+							if iter.Right.Right != null
+							{
+								if iter.Right.Right.GetValue() == "{}"
+								{
+									consts = iter.Right.Right
+								}
+							}
+						}
+					}
+					return OneCall(dynCast.BeforeName, iter,consts)
 				}
 			}else{
 				return null //TODO: operator()
@@ -112,7 +126,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			iter.Right = iter.Right.Down
 			iter.Right.Left = iter
 			iter.SetUp(iter.Up)
-			return OneCall("[]",iter.Up)
+			return OneCall("[]",iter.Up,null->{Object^})
 		}
 		if iter.GetValue() == "~suffix"
 		{
@@ -298,7 +312,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 }
 OperFunc := !(string oper,Object^ pars) -> Object^
 {
-	preRet := OneCall(oper,pars.Up,true)
+	preRet := OneCall(oper,pars.Up,null->{Object^},true)
 
 	if preRet == null
 	{
@@ -362,13 +376,14 @@ TrimCommas := !(Object up) -> void
 	}
 }
 
-OneCall := !(string Name, Object^ G) -> Object^
+OneCall := !(string Name, Object^ G,Object^ consts) -> Object^
 {
-	return OneCall(Name,G,false)
+	return OneCall(Name,G,consts,false)
 }
-OneCall := !(string Name, Object^ G,bool ignoreNull) -> Object^
+OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object^
 {
 	Ps := Queue.{Type^}()
+	Cs := Queue.{Object^}()
 
 	TrimCommas(G)
 	P := G.Down
@@ -380,7 +395,32 @@ OneCall := !(string Name, Object^ G,bool ignoreNull) -> Object^
 		Ps.Push(iterT.GetType())
 		iterT = iterT.Right
 	}
-	SomeFunc := FindFunc(Name,G,Ps,false)
+
+	if constsPre != null
+	{
+		H := constsPre.Down
+
+		while H != null
+		{
+			if H.GetValue() != ","
+			{
+				if H.IsConst()
+				{
+					Cs.Push(H)
+				}else{
+					tp := ParseType(H)
+					if tp == null
+					{
+						ErrorLog.Push("can not parse type in .{}\n")
+					}else{
+						Cs.Push(new ObjType(tp))
+					}
+				}
+			}
+			H = H.Right
+		}
+	}
+	SomeFunc := FindFunc(Name,G,Ps,Cs,false)
 
 	if SomeFunc == null{
 		inClass := GetUpClass(G)
