@@ -79,7 +79,9 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 						if AsBoxFunc.IsSuffix and AsBoxFunc.IsVirtual
 							found.Push(AsBoxFunc)
 					}else{
-						if not AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual and IsMethod == AsBoxFunc.IsMethod
+						metApp := IsMethod == AsBoxFunc.IsMethod
+						if name == "->{}" metApp = true
+						if not AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual and metApp
 							found.Push(AsBoxFunc)
 					}
 				}
@@ -231,7 +233,6 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		}
 		iterH = iterH.Next
 	}
-
 	return GetBestFunc(pars,consts,Funcs,Templs)
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^

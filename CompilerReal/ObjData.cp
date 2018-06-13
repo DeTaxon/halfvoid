@@ -59,10 +59,6 @@ ObjData := class extend Object
 					}else{
 						ignore := false
 						if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-						if iter.GetValue() == "."
-							if iter.Right != null
-								if iter.Right.GetValue() == "{}"
-									WorkBag.Push(iter.Right,State_Syntax)
 						if iter.GetValue() == "{}"
 							if iter.Left != null
 								if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"

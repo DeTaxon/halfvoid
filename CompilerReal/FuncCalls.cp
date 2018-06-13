@@ -148,12 +148,16 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			if iter.Right.GetValue() == "{}"
 			{
+				SyntaxCompress(iter.Right,PriorityData)
 				typ := ParseType(iter.Right.Down)
 				if typ == null return null
 
 				fun := GetExchange(iter.Left,iter.Left,typ,iter.Left.IsRef())
 				if fun == null return null
-				return MakeSimpleCall(fun,iter.Left)
+				iter = iter.Left
+				iter.Right.Left = null
+				iter.Right = null
+				return MakeSimpleCall(fun,iter)
 			}
 			if iter.Right.GetValue() == "~ind"
 			{

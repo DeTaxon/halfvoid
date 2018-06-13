@@ -857,6 +857,10 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid ErrorLog.Push("can not parse function header\n")
 
 		IsSuffix = IsSuf
+		for c : FuncName
+		{
+			if not (c in 'a'..'z') and not (c in 'A'..'Z') IsSuffix = false 
+		}
 
 		if IsVirt and metC != null
 		{

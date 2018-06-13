@@ -51,7 +51,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	p.Push(itemType)
 	c.Push(new ObjType(ToType))
 
-	return FindFunc("->{}",start,p,c,false)
+	return FindFunc("->{}",start,p,c,true)
 }
 
 ExcPointers := Map.{ Type^,Map.{Type^, BoxFunc^} }
