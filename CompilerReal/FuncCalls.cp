@@ -146,6 +146,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}
 		if iter.GetValue() == "." or iter.GetValue() == "->"
 		{
+			if iter.Right.GetValue() == "{}"
+			{
+				typ := ParseType(iter.Right.Down)
+				if typ == null return null
+
+				fun := GetExchange(iter.Left,iter.Left,typ,iter.Left.IsRef())
+				if fun == null return null
+				return MakeSimpleCall(fun,iter.Left)
+			}
 			if iter.Right.GetValue() == "~ind"
 			{
 				asIndent := (iter.Right)->{ObjIndent^} 

@@ -883,6 +883,31 @@ CreateBuiltIns := !() -> void
 	VoidP := VoidT.GetPoint()
 	DoubleT := GetType("double")
 
+
+	for i : ![8,16,32,64] for j : ![8,16,32,64]
+	for IsS1 : !["s","u"]
+	for IsS2 : !["s","u"]
+	{
+		from := GetType(IsS1 + i)
+		to := GetType(IsS2 + j)
+		if i > j
+		{
+			BuiltInFuncs.Push(new BuiltInFuncUno("->{}",from,false,to,false,"#0 = trunc " + from.GetName() + " #1 to " + to.GetName() + "\n"))
+		}
+		if i < j
+		{
+			if IsS1 == "s"
+			{
+				BuiltInFuncs.Push(new BuiltInFuncUno("->{}",from,false,to,"#0 = sext " + from.GetName() + " #1 to " + to.GetName() + "\n"))
+			}else{
+				BuiltInFuncs.Push(new BuiltInFuncUno("->{}",from,false,to,"#0 = zext " + from.GetName() + " #1 to " + to.GetName() + "\n"))
+			}
+		}
+		//if i == j
+		//{
+		//}
+	}
+
 	for ![8,16,32,64]
 	{
 		for IsS : !["s","u"]

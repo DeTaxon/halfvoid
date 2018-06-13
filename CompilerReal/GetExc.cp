@@ -1,7 +1,5 @@
 GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFunc^
 {
-	//iter := start
-	//TODO: Find "->{}"
 
 	VT := GetType("void")
 	VPT := VT.GetPoint()
@@ -47,7 +45,13 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		}
 	}
 
-	return null
+	p := Queue.{Type^}()
+	c := Queue.{Object^}()
+
+	p.Push(itemType)
+	c.Push(new ObjType(ToType))
+
+	return FindFunc("->{}",start,p,c,false)
 }
 
 ExcPointers := Map.{ Type^,Map.{Type^, BoxFunc^} }

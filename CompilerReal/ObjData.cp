@@ -65,7 +65,7 @@ ObjData := class extend Object
 									WorkBag.Push(iter.Right,State_Syntax)
 						if iter.GetValue() == "{}"
 							if iter.Left != null
-								if iter.Left.GetValue() == "."
+								if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
 									ignore = true
 						if not ignore WorkBag.Push(iter,State_Start)
 					}
