@@ -76,7 +76,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					//	found.Push(AsBoxFunc)
 					if SomeBug
 					{
-						if AsBoxFunc.IsSuffix and AsBoxFunc.IsVirtual
+						if AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual
 							found.Push(AsBoxFunc)
 					}else{
 						metApp := IsMethod == AsBoxFunc.IsMethod
