@@ -12,6 +12,7 @@ InDataR := !(Object^ obj) -> bool
 	if Val == "~str" return true
 	if Val == "~cmd" return true
 	if Val == "~{}type" return true
+	if Val == "~type" return true
 	return false
 }
 

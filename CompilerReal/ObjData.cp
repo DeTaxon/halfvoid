@@ -57,8 +57,17 @@ ObjData := class extend Object
 						}
 						iter = iter.Right
 					}else{
+						ignore := false
 						if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-						WorkBag.Push(iter,State_Start)
+						if iter.GetValue() == "."
+							if iter.Right != null
+								if iter.Right.GetValue() == "{}"
+									WorkBag.Push(iter.Right,State_Syntax)
+						if iter.GetValue() == "{}"
+							if iter.Left != null
+								if iter.Left.GetValue() == "."
+									ignore = true
+						if not ignore WorkBag.Push(iter,State_Start)
 					}
 				}
 				iter = iter.Right

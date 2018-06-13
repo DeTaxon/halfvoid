@@ -16,6 +16,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	RetT = null
 	RetRef := false
 
+	constsI := null->{Object^}
+
 
 	if iter.GetValue() == "virtual"
 	{
@@ -48,6 +50,12 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	ParamsObj := iter
 	iter = iter.Right
+
+	if iter.GetValue() == "."
+	{
+		constsI = iter.Right
+		iter = constsI.Right
+	}
 
 	if iter.GetValue() == "->"
 	{
@@ -82,7 +90,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			iterForName = null
 		}else	iterForName = iterForName.Up
 	}
-	
+	if constsI != null	SyntaxCompress(constsI,PriorityData)	
 	if iter.GetValue() == "declare"
 	{
 		return new BoxFuncDeclare(ParamsObj,RetT,FName)
@@ -91,9 +99,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
+			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
+		PreRet :=  new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		
 		return PreRet
 	}
@@ -150,7 +158,29 @@ IsTemplate := !(Object^ sk) -> bool
 		if ContainTType(iter) return true //TODO: check after Syntax, not Before
 		iter = iter.Right
 	}
-	return Counter == 1 
+	if  Counter == 1 return true
+
+	lazy := sk.Right != null
+	if lazy lazy = sk.Right.GetValue() == "."
+	if lazy lazy = sk.Right.Right != null
+	if lazy lazy =  sk.Right.Right.GetValue() == "{}"
+	if lazy
+	{
+		iter = sk.Right.Right.Down
+
+		while iter != null
+		{
+			if iter.GetValue() != ","
+			{
+				if not iter.IsConst() 
+					if ParseType(iter) == null
+						return true
+			}
+			iter = iter.Right
+		}
+	}
+
+	return false
 }
 
 MiniWork := class
@@ -262,7 +292,7 @@ BoxTemplate := class extend BoxFunc
 
 		return false
 	}
-	this := !(Object^ inPars, Object^ inOutType, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
@@ -286,7 +316,7 @@ BoxTemplate := class extend BoxFunc
 		iter := CopyParams.Down
 		firstNon := Object^
 		firstNon = null
-		//FuncsTs := Queue.{Object^}()
+		//FuncsTs := Queue.{Object^}() 
 
 
 		while iter != null
@@ -493,6 +523,8 @@ BoxFunc := class extend Object
 
 	MethodType := Type^
 
+	ItConsts := Queue.{Object^}
+
 	GetType := virtual !() -> Type^
 	{
 		return MyFuncType
@@ -501,6 +533,44 @@ BoxFunc := class extend Object
 	{
 		return false
 	}
+	
+	IsSameConsts := !(Queue.{Object^} consts) -> bool
+	{
+		if consts.Size() != ItConsts.Size() return false
+
+		for i : consts.Size()
+		{
+			if not CmpConstObjs(consts[i],ItConsts[i]) return false
+		}
+		return true
+	}
+	ParseConsts := !(Object^ cons) -> void
+	{
+		if cons != null
+		{
+			iter := cons.Down
+			while iter != null
+			{
+				if iter.GetValue() != ","
+				{
+					if iter.IsConst()
+					{
+						ItConsts.Push(iter.Clone())
+					}else{
+						typ := ParseType(iter)
+						if typ != null
+						{
+							ItConsts.Push(new ObjType(typ))
+						}else{
+							//impossible
+						}
+					}
+				}
+				iter = iter.Right
+			}
+		}
+	}
+
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
@@ -743,7 +813,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
@@ -757,6 +827,7 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "func" + GetNewId()
 		}
 		IsInvalid = not ParseParams(inPars,inOutType,false)
+		ParseConsts(cons)
 
 		if MyFuncType != null TestRet(MyFuncType.RetType)
 

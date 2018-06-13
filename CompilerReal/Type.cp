@@ -84,6 +84,11 @@ ParseType := !(Object^ Node) -> Type^
 		}
 		return null
 	}
+	if Node.GetValue() == "~type"
+	{
+		asNeed := Node->{ObjType^}
+		return asNeed.MyType
+	}
 	if Node.GetValue() == "~d"
 	{
 		lazy := Node.Down != null
