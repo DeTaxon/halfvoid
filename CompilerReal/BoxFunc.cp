@@ -175,6 +175,7 @@ IsTemplate := !(Object^ sk) -> bool
 				if not iter.IsConst() 
 					if ParseType(iter) == null
 						return true
+				if ContainTType(iter) return true
 			}
 			iter = iter.Right
 		}
@@ -208,7 +209,7 @@ BoxTemplate := class extend BoxFunc
 
 	EndPos := Object^
 	FuncsType := Queue.{TypeFunc^}
-	FuncsConsts := Queue.{Queue.{Object^}}
+	//FuncsConsts := Queue.{Queue.{Object^}}
 
 	FuncsTTemps := Queue.{Object^}
 	TTNames := Queue.{string}
@@ -434,25 +435,12 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iterJ.Data == newFuncType 
 			{
-				PointQ := FuncsConsts[somePos]&
-				Found := true
 
-				if consts.Size() == PointQ^.Size()
-				{
-					for consts.Size()
-					{
-						if not CmpConstObjs(consts[it],PointQ^[it])
-							Found = false
-					}
-				}else{
-					Found = false
-				}
-				if Found
-				{
-					inDown := Down
-					for somePos inDown = inDown.Right
-					return inDown->{BoxFunc^}
-				}
+				inDown := Down
+				for somePos inDown = inDown.Right
+				asNeed :=  inDown->{BoxFunc^}
+
+				if asNeed.IsSameConsts(consts) return asNeed
 			}
 			iterJ = iterJ.Next
 			somePos += 1
@@ -463,7 +451,6 @@ BoxTemplate := class extend BoxFunc
 		if newFunc == null return null
 
 		FuncsType.Push(newFuncType)
-		FuncsConsts.Push(consts)
 
 		WorkBag.Push(newFunc,State_Start)
 
@@ -524,6 +511,7 @@ BoxFunc := class extend Object
 	MethodType := Type^
 
 	ItConsts := Queue.{Object^}
+	ItVals := Queue.{ObjConstHolder^}
 
 	GetType := virtual !() -> Type^
 	{
@@ -532,6 +520,17 @@ BoxFunc := class extend Object
 	IsAssembler := virtual !() -> bool
 	{
 		return false
+	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		iter := ItVals.Start
+
+		while iter != null
+		{
+			if iter.Data.ItName == name  return iter.Data.Down
+			iter = iter.Next
+		}
+		return null
 	}
 	
 	IsSameConsts := !(Queue.{Object^} consts) -> bool

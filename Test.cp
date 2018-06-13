@@ -1,10 +1,15 @@
 #import "lib.cp"
 //#import "main.cp"
 
+pls := !() .{@B}
+{
+	printf("wot %i\n",B)
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("w  %f\n",3.7**1.5)
+	pls().{1}
+	pls().{2}
 	return 0
 }
 
