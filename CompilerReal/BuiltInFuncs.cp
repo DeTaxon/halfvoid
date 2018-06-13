@@ -985,6 +985,8 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("float"),false,GetType("double"),"#0 = fpext float #1 to double\n"))
 
+	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("int"),false,GetType("float"),"#0 = sitofp i32 #1 to float\n"))
+
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#^1" +
 											"br i1 #1, label %End##, label %Next##\n" +
@@ -1003,6 +1005,10 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))
+	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("int"),false,GetType("float"),
+					"%PrePre## = sitofp i32 #1 to float\n" +
+					"%Pre## = fptrunc double 3.14159265389 to float\n" +
+					"#0 = fmul float %PrePre##,%Pre##\n"))
 	RangeFuncs()
 }
 

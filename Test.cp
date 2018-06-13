@@ -17,7 +17,7 @@ W := class
 main := !(int argc, char^^ argv) -> int
 {
 	j := W
-	printf("wow %s %f %f %f\n",j->{string},2.0pi,1.0pi,0.5pi)
+	printf("wow %s %f %f %f\n",j->{string},2.0pi,1pi,0.5pi)
 	return 0
 }
 
