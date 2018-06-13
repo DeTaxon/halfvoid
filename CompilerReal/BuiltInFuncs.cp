@@ -976,6 +976,12 @@ CreateBuiltIns := !() -> void
 		BuiltInFuncs.Push(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = fcmp ule " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = fcmp ugt " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = fcmp ult " + it + " #1,#2\n"))
+		if it == "float"
+		{
+			BuiltInFuncs.Push(new BuiltInFuncBinar("**",PType,false,PType,false,PType,"#0 = call float @llvm.pow.f32(float #1,float #2)\n"))
+		}else{
+			BuiltInFuncs.Push(new BuiltInFuncBinar("**",PType,false,PType,false,PType,"#0 = call double @llvm.pow.f64(double #1,double #2)\n"))
+		}
 	}
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"

@@ -220,6 +220,10 @@ ObjStr := class extend ObjConst
 		ResultType.PrintType(f)
 		f << " %T" << MyTmpId	
 	}
+	GetName := virtual !() -> string
+	{
+		return "%T" + MyTmpId
+	}
 	Clone := virtual !() -> Object^
 	{
 		PreRet := new ObjStr(MyStrId)

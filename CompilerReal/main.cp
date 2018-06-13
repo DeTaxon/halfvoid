@@ -36,6 +36,8 @@ main := !(int argc,string[] argv) -> int
 	{
 		fil := sfile("out2.ll","w")
 		fil << GlobalStrs
+		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)"
+		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)"
 		StrContainer.PrintGlobal(fil)
 
 		for Classes.Size() Classes[it].PrintStruct(fil)
