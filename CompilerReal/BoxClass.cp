@@ -293,10 +293,10 @@ BoxClass := class extend Object
 				itName := ((iterJ->{ObjParam^}).MyStr)
 				if itName == name
 				{
-					if iterJ.Down.GetValue() == "!()" and consts.Size() == 0
+					if iterJ.Down.GetValue() == "!()"
 					{
 						asFunc := (iterJ.Down)->{BoxFunc^}
-						if not asFunc.IsVirtual
+						if (not asFunc.IsVirtual) and asFunc.IsSameConsts(consts)
 							Funcs.Push(asFunc)
 					}
 					if iterJ.Down.GetValue() == "!(){}"
@@ -305,7 +305,7 @@ BoxClass := class extend Object
 			}
 			iterJ = iterJ.Right
 		}
-		bestFunc := GetBestFunc(pars,Funcs,Templs)
+		bestFunc := GetBestFunc(pars,consts,Funcs,Templs)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
 		if bestFunc == null and Parent != null

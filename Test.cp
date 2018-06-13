@@ -1,15 +1,19 @@
 #import "lib.cp"
 //#import "main.cp"
 
-"->{}" := !(int x) . {char^} -> string
+W := class 
 {
-	return "5"
+	y := int
+	"->{}" := !() . {string} -> string
+	{
+		return "www"
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := 6->{string}
-	printf("st %s\n",x)
+	j := W
+	printf("wow %s\n",j->{string})
 	return 0
 }
 
