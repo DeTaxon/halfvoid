@@ -25,6 +25,30 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 			iterY = iterY.Right.Right
 		}
 	}
+	if iterY.Right.GetValue() == ","
+	{
+		Names := Queue.{string}()
+		Downs := Queue.{Object^}()
+		Downs.Push(iterY)
+		if itemName == null{
+			Names.Push("it")
+		}else{
+			Names.Push(itemName)
+		}
+
+		iterY = iterY.Right
+		while iterY.GetValue() == ","
+		{
+			iterY = iterY.Right
+			asNeed := iterY->{ObjIndent^}
+			Names.Push(asNeed.MyStr)
+			iterY = iterY.Right.Right
+			Downs.Push(iterY)
+			iterY = iterY.Right
+		}
+
+		return new BoxForOldFashionMulti(Names,indName,Downs,iterY)
+	}
 	//TODO: check type
 
 	return new BoxFor(itemName,indName,iterY,iterY.Right)
@@ -88,6 +112,80 @@ BoxFor := class extend Object
 		}
 	}
 
+}
+BoxForOldFashionMulti := class extend BoxFor
+{
+	ItId := int
+
+	itemsCount := int
+	IncFuncs := Object^^
+	UnrefFuncs := Object^^
+	IsEndFuncs := Object^
+
+	ProxyFuncs := BoxFunc^^
+
+	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ block) -> void
+	{
+		Down = block
+		itemsCount = items.Size()
+		iter := Down
+
+		for i : itemsCount
+		{
+			iter.Right = items[i]
+			iter.Right.Left = iter
+			iter = iter.Right
+		}
+		iter.Right = null
+		Down.SetUp(this&)
+
+
+		IncFuncs = new Object^[itemsCount]
+		UnrefFuncs = new Object^[itemsCount]
+		ProxyFuncs = new BoxFunc^[itemsCount]
+
+		iter = Down.Right
+		for i : itemsCount
+		{
+			Pars := Queue.{Type^}()
+			Pars.Push(iter.GetType())
+
+			func := FindFunc("~For",this&,Pars,false)
+			ProxyFuncs[i] = func
+		}
+		
+
+		//WorkBag.Push(this&,State_GetUse)
+		//WorkBag.Push(Down,State_GetUse)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+		}
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		//Down.PrintPre(f)
+
+		//f << "br label %start" << ItId << "\n"
+		//f << "start" << ItId << ":\n"
+		//IsEndFunc.PrintPre(f)
+		//f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
+		//f << "Next" << ItId << ":\n"
+
+		//if UnrefFunc.IsRef() UnrefFunc.PrintPointPre(f) else UnrefFunc.PrintPre(f)
+		//
+		//Down.Right.PrintInBlock(f)
+		//IncFunc.PrintPre(f)
+		//f << "br label %start" << ItId << "\n"
+		//f << "End" << ItId << ":\n"
+
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~for()"
+	}
 }
 
 BoxForOldFashion := class extend BoxFor

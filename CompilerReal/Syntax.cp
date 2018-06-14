@@ -312,8 +312,33 @@ RuleFor := !(void^ itr)-> int
 		if It == null return 0
 
 		if not InDataR(It) return 0
+		It = It.Right
+		if It == null return 0
 
 		Size += 2
+	}
+
+	if It == null return 0
+
+
+	while It.GetValue() == ","
+	{
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "~ind" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != ":" return 0
+
+		It = It.Right
+		if not InDataR(It) return 0
+		It = It.Right
+		if It == null return 0
+
+		Size += 4
 	}
 
 	if It.GetValue() != "{}" and not InBlockData(It) return 0

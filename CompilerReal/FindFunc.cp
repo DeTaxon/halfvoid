@@ -1,4 +1,13 @@
 
+IsWord := !(string name) -> bool
+{
+	for c : name
+	{
+		if not (c in 'a'..'z' or c in 'A'..'Z') return false
+	}
+	return true
+}
+
 InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} Searched) -> void
 {
 	if ii.GetValue() == "i:=1"
@@ -233,7 +242,19 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		}
 		iterH = iterH.Next
 	}
-	return GetBestFunc(pars,consts,Funcs,Templs)
+	func :=  GetBestFunc(pars,consts,Funcs,Templs)
+	if func != null return func
+
+	if not IsWord(name) and pars.Size() != 0 // wtf if not word and size = 0
+	{
+		if pars[0].GetType() == "class"
+		{
+			asNeed := (((pars[0])->{TypeClass^}).ToClass)
+			return asNeed.GetFunc(name,pars,consts)
+		}
+	}
+	return null
+
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
 {

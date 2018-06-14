@@ -718,7 +718,6 @@ NaturalCall := class extend SomeFuncCall
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 
-
 		if (FType.RetType != GetType("void") and not gotAlloc)
 		{
 			f << TName <<" = "	
