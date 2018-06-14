@@ -98,7 +98,7 @@ BoxFor := class extend Object
 				asNeed := Down.GetType()->{TypeClass^}
 				asNeed2 := asNeed.ToClass
 
-				func := asNeed2.GetFunc("For")
+				func := asNeed2.GetFunc("~For")
 
 				if func != null
 					newNode = new BoxForOldFashion(this.itName,this.indName,func,Down,this.block)
@@ -138,30 +138,40 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		iter.Right = null
 		Down.SetUp(this&)
-
-
-		IncFuncs = new Object^[itemsCount]
-		UnrefFuncs = new Object^[itemsCount]
-		ProxyFuncs = new BoxFunc^[itemsCount]
-
-		iter = Down.Right
-		for i : itemsCount
-		{
-			Pars := Queue.{Type^}()
-			Pars.Push(iter.GetType())
-
-			func := FindFunc("~For",this&,Pars,false)
-			ProxyFuncs[i] = func
-		}
 		
 
-		//WorkBag.Push(this&,State_GetUse)
-		//WorkBag.Push(Down,State_GetUse)
+		WorkBag.Push(this&,State_PreGetUse)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_PreGetUse
+		{
+			WorkBag.Push(this&,State_GetUse)
+			iter := Down
+			while iter != null
+			{
+				//WorkBag.Push(iter,State_Start)
+				printf("wut %s\n",iter.GetValue())
+				iter = iter.Right
+			}
+			//WorkBag.Push(Down.Right.Right,State_Start)
+		}
 		if pri == State_GetUse
 		{
+			IncFuncs = new Object^[itemsCount]
+			UnrefFuncs = new Object^[itemsCount]
+			ProxyFuncs = new BoxFunc^[itemsCount]
+
+			iter := Down.Right
+			for i : itemsCount
+			{
+				Pars := Queue.{Type^}()
+				Pars.Push(iter.GetType())
+
+				//func := FindFunc("~For",this&,Pars,false)
+				//ProxyFuncs[i] = func
+				iter = iter.Right
+			}
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void

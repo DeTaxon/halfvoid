@@ -29,7 +29,7 @@ W := class
 	{
 		x = l
 	}
-	For := !() -> W2
+	"~For" := !() -> W2
 	{
 		ToRet.start = x
 		ToRet.end = 10
@@ -38,8 +38,9 @@ W := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	for i : W(0), j : W(6)
+	for i : W(0), j : W(6) {
 		printf("wut %i %i\n",i,j)
+	}
 	return 0
 }
 
