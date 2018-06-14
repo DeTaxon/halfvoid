@@ -116,19 +116,23 @@ BoxFor := class extend Object
 BoxForOldFashionMulti := class extend BoxFor
 {
 	ItId := int
+	IsStep1 := bool
 
 	itemsCount := int
+	Names := string^
 	IncFuncs := Object^^
 	UnrefFuncs := Object^^
-	IsEndFuncs := Object^
+	IsEndFunc := Object^
 
 	ProxyFuncs := BoxFunc^^
+	Params := MemParam^^
 
 	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ block) -> void
 	{
 		Down = block
 		itemsCount = items.Size()
 		iter := Down
+		block.Left = null
 
 		for i : itemsCount
 		{
@@ -138,63 +142,142 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		iter.Right = null
 		Down.SetUp(this&)
-		
+		MakeItBlock(Down)
 
+		Names = names.ToArray()
 		WorkBag.Push(this&,State_PreGetUse)
+
+		IsStep1 = true
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_PreGetUse
 		{
 			WorkBag.Push(this&,State_GetUse)
-			iter := Down
+			iter := Down.Right
 			while iter != null
 			{
-				//WorkBag.Push(iter,State_Start)
-				printf("wut %s\n",iter.GetValue())
+				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
-			//WorkBag.Push(Down.Right.Right,State_Start)
 		}
 		if pri == State_GetUse
 		{
-			IncFuncs = new Object^[itemsCount]
-			UnrefFuncs = new Object^[itemsCount]
-			ProxyFuncs = new BoxFunc^[itemsCount]
-
-			iter := Down.Right
-			for i : itemsCount
+			if IsStep1
 			{
-				Pars := Queue.{Type^}()
-				Pars.Push(iter.GetType())
+				IncFuncs = new Object^[itemsCount]
+				UnrefFuncs = new Object^[itemsCount]
+				ProxyFuncs = new BoxFunc^[itemsCount]
+				Params = new MemParam^[itemsCount]
 
-				//func := FindFunc("~For",this&,Pars,false)
-				//ProxyFuncs[i] = func
-				iter = iter.Right
+				Downs:= Queue.{Object^}()
+				for i : itemsCount
+				{
+					if Down.Right.GetType() == null
+					{
+						ErrorLog.Push("can not evaluate type in for each\n")
+					}else{
+						Pars := Queue.{Type^}()
+						Pars.Push(Down.Right.GetType())
+
+						func := FindFunc("~For",this&,Pars,false)
+						if func == null ErrorLog.Push("can not load ~For func\n")
+						if Pars[0].GetType() != "class" ErrorLog.Push("~For have to return class")
+						ProxyFuncs[i] = func
+
+						tmp := Down.Right
+						PopOutNode(tmp)
+						Downs.Push(MakeSimpleCall(func,tmp))
+					}
+				}
+
+				iter := Down
+				iter2 := Downs.Start
+				iter = Down
+				WorkBag.Push(this&,State_GetUse)
+				while iter2 != null
+				{
+					iter.Right = iter2.Data
+					iter.Right.Left = iter
+					iter = iter.Right
+					iter2 = iter2.Next
+					WorkBag.Push(iter,State_GetUse)
+				}
+				Down.SetUp(this&)
+				IsStep1 = false
+			}else{
+
+				WorkBag.Push(Down,State_Start)
+				iter := Down.Right
+				for i : itemsCount
+				{
+					asNeed2 := iter->{SomeFuncCall^}
+					itType := ProxyFuncs[i].MyFuncType.RetType
+					ItId := asNeed2.GetItAllocId()
+
+					ForItem := new LocalParam(itType,ItId)
+					
+					asNeed := ((itType->{TypeClass^}).ToClass)
+
+					IncFuncP := asNeed.GetFunc("Inc")
+					UnrefFuncP := asNeed.GetFunc("^")
+
+
+					test := new ParamNaturalCall("",ForItem->{Object^})
+					UnrefFuncs[i] = MakeSimpleCall(UnrefFuncP,test)
+					test = new ParamNaturalCall("",ForItem->{Object^})
+					IncFuncs[i] = MakeSimpleCall(IncFuncP,test)
+
+					if i == 0
+					{
+						IsEndFuncP := asNeed.GetFunc("IsEnd")
+						test = new ParamNaturalCall("",ForItem->{Object^})
+						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
+					}
+					Params[i] = new RetFuncParam(UnrefFuncs[i])
+					iter = iter.Right
+				}
 			}
 		}
 	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		for i : itemsCount
+		{
+			if Names[i] == name 
+			{
+				return Params[i]
+			}
+		}
+		return null
+	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		//Down.PrintPre(f)
+		iter := Down.Right
+		while iter != null
+		{
+			iter.PrintPre(f)
+			iter = iter.Right
+		}
 
-		//f << "br label %start" << ItId << "\n"
-		//f << "start" << ItId << ":\n"
-		//IsEndFunc.PrintPre(f)
-		//f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
-		//f << "Next" << ItId << ":\n"
+		f << "br label %start" << ItId << "\n"
+		f << "start" << ItId << ":\n"
+		IsEndFunc.PrintPre(f)
+		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
+		f << "Next" << ItId << ":\n"
 
-		//if UnrefFunc.IsRef() UnrefFunc.PrintPointPre(f) else UnrefFunc.PrintPre(f)
-		//
-		//Down.Right.PrintInBlock(f)
-		//IncFunc.PrintPre(f)
-		//f << "br label %start" << ItId << "\n"
-		//f << "End" << ItId << ":\n"
+		for i : itemsCount if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
+		
+		Down.PrintInBlock(f)
+
+		for i : itemsCount IncFuncs[i].PrintPre(f)
+		f << "br label %start" << ItId << "\n"
+		f << "End" << ItId << ":\n"
 
 	}
 	GetValue := virtual !() -> string
 	{
-		return "~for()"
+		return "~~for()"
 	}
 }
 

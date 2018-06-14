@@ -103,7 +103,7 @@ Object := class{
 		ErrorLog.Push("Compiler error: GetPointName is not defined")
 		return ""
 	}
-	GetItem := !(string name) -> Object^
+	GetItem := virtual !(string name) -> Object^
 	{
 		return null
 	}
