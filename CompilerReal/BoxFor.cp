@@ -182,7 +182,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 						func := FindFunc("~For",this&,Pars,false)
 						if func == null ErrorLog.Push("can not load ~For func\n")
-						if Pars[0].GetType() != "class" ErrorLog.Push("~For have to return class")
+						if func.MyFuncType.RetType.GetType() != "class" ErrorLog.Push("~For have to return class\n")
 						ProxyFuncs[i] = func
 
 						tmp := Down.Right
