@@ -1,19 +1,43 @@
 #import "lib.cp"
 //#import "main.cp"
 
-Y := class
+IntIter := class 
 {
-	o := int
-	"[]" := !(int x) -> int
-	{
-		return x + 3
+	start,end := int
+	this := !(int a,int b) -> void
+	{	
+		start = a
+		end = b
 	}
+	"^" := !() -> int
+	{
+		return start
+	}
+	Inc := !() -> void
+	{
+		start += 1
+	}
+	IsEnd := !() -> bool
+	{
+		return start >= end
+	}
+	//IsInvalid := !() -> bool
+	//{
+	//	return false
+	//}
+}
+"~For" := !(int x) -> IntIter
+{
+	return IntIter(0,x)
+}
+"~For" := !(range x) -> IntIter
+{
+	return IntIter(x->begin,x->end + 1)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := Y
-	printf("wut %i\n",c[10 + 2])
+	for i : 5..9, k : 7 printf("wow %i\n",i)
 	return 0
 }
 
