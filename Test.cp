@@ -25,10 +25,33 @@ close := !(int fd) -> void declare
 
 mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
 
-//ArrayIterMappedFile := class
-//{	
-//	x := int
-//}
+ArrayIterMappedFile := class
+{	
+	x := int
+	pFile := MappedFile^
+	this := !(MappedFile^ pF) -> void
+	{
+		x = 0
+		pFile = pF
+	}
+	//"^" := !() -> ref char
+	//{
+	//	return pFile.point[x]
+	//}
+	//Inc := !() -> void
+	//{
+	//	x += 1
+	//}
+	//IsEnd := !() -> bool
+	//{
+	//	return x >= pFile.size
+	//}
+	//IsInvalid := !() -> bool
+	//{
+	//	//if pFile == null return true
+	//	return pFile.IsInvalid()
+	//}
+}
 MappedFile := class
 {
 	name := string
@@ -67,12 +90,16 @@ MappedFile := class
 	}
 	IsInvalid := !() -> bool
 	{
-		return itemId
+		return false
 	}
 
 	Size := !() -> int
 	{
 		return size
+	}
+	For := !() -> ArrayIterMappedFile
+	{
+		ToRet.x = 0
 	}
 	Close := !() -> void
 	{
@@ -89,7 +116,8 @@ main := !(int argc, char^^ argv) -> int
 	//	//printf("invalid file\n")
 	//}else{
 		printf("part %i %p\n",c.size,c.point)
-		printf("part %c\n",c.point^)
+		//for ch : c printf("%c\n",ch)
+		c.For()
 	//}
 	return 0
 }
