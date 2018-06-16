@@ -143,7 +143,7 @@ BuiltInTemplateGetRef := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 1 return 255
 		return 0
@@ -195,7 +195,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" return 255
@@ -227,7 +227,7 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars) -> int
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 1 return 255
 		if pars[0].GetType() != "arr" return 255
@@ -274,45 +274,6 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 		
 	}
 }
-//BuiltInTemplateStorePoint := class extend BoxTemplate
-//{
-//	this := !() -> void
-//	{
-//		FuncName = "="
-//		OutputName = "error"
-//
-//		emptType := Queue.{Type^}()
-//		emptType.Push(null->{Type^})
-//		emptType.Push(null->{Type^})
-//		arrr := bool[2]
-//		arrr[0] = true
-//		arrr[1] = false
-//		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
-//	}
-//	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
-//	{
-//		if consts.Size() != 0 return 255
-//		if pars.Size() != 2 return 255
-//		printf("wut %s %s\n",pars[0].GetType(),pars[1].GetType())
-//		if pars[0].GetType() != "point" return 255
-//
-//		if pars[1].GetType() != "point"
-//		{
-//			if pars[1].GetType() != "fatarr" return 255
-//		}
-//		return 0
-//	}
-//	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
-//	{
-//		return new BuiltInFuncBinar("->{}",pars[0],true,pars[1],false,GetType("void"),
-//			"%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
-//			"store " + pars[0].GetName() + " %TPre## , " + pars[0].GetPoint().GetName() + " #1\n")
-//	}
-//	DoTheWork := virtual !(int pri) -> void
-//	{
-//		
-//	}
-//}
 BuiltInTemplateSet := class extend BoxTemplate
 {
 	this := !() -> void
