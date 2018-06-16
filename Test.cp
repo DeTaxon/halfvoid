@@ -21,7 +21,7 @@ MAP_ANON := 32
 
 GetFileSizeLinux := !(int fd,s64^ size) -> bool declare
 open := !(char^ name,int flags) -> int declare
-//close := !(int fd) -> void declare
+close := !(int fd) -> void declare
 
 mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
 
@@ -37,7 +37,7 @@ MappedFile := class
 	point := char^
 	this := !(char^ fileName) -> void
 	{
-		itemId = open(fileName,2)
+		itemId = open(fileName,O_RDONLY)
 		printf("name %i\n",itemId)
 
 		//if true
@@ -50,7 +50,8 @@ MappedFile := class
 			//	if size == 0{
 			//		itemId = 0 - 1
 			//	}else{
-					point = mmap(null,size,PROT_NONE,MAP_SHARED,itemId,null)
+					point = mmap(null,size,PROT_READ,MAP_PRIVATE,itemId,null)
+					close(itemId)
 					printf("point %p\n",point)
 
 			//		if point == null {
@@ -87,7 +88,8 @@ main := !(int argc, char^^ argv) -> int
 	//{
 	//	//printf("invalid file\n")
 	//}else{
-		printf("part %i\n",c.size)
+		printf("part %i %p\n",c.size,c.point)
+		printf("part %c\n",c.point^)
 	//}
 	return 0
 }
