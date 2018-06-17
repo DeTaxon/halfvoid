@@ -13,6 +13,7 @@ InDataR := !(Object^ obj) -> bool
 	if Val == "~cmd" return true
 	if Val == "~{}type" return true
 	if Val == "~type" return true
+	//if Val == "()" return true
 	return false
 }
 
@@ -113,6 +114,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	//iter := begin.Down
 	
 	if RuleUse(begin,"imprt",RuleImport) return true
+	if RuleUse(begin,"~d",RuleMinus) return true
 
 	GotStuff := false
 
@@ -224,6 +226,21 @@ RuleParam := !(void^ itr) -> int
 	if not InDataR(It) return 0
 
 	return size + 4
+}
+RuleMinus := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+
+	if It.Left != null
+		if InDataR(It.Left) and It.Left.GetValue() != "()"
+			return 0
+	if It.GetValue() != "-" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if InDataR(It) return 2
+	return 0
 }
 
 RuleOneFunc := !(void^ itr)-> int

@@ -881,6 +881,8 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("div",PType,false,PType,false,PType,"#0 = " + IsS + "div  i" + it + " #1,#2\n"))
 			
+			BuiltInFuncs.Push(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = sub i" + it + " 0,#1\n"))
+			
 			BuiltInFuncs.Push(new BuiltInFuncBinar("/",PType,false,PType,false,GetType("float"),
 										"%Pre1## = " + IsS + "itofp i" + it + " #1 to float\n" +
 										"%Pre2## = " + IsS + "itofp i" + it +" #2 to float\n" +

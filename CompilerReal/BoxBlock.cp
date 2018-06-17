@@ -2,7 +2,7 @@ MakeItBlock := !(Object^ item) -> bool
 {
 	if item == null return false
 	if item.GetValue() == "{d}" return true
-
+	
 	oldUp := item.Up
 	oldRight := item.Right
 	oldLeft := item.Left
@@ -39,7 +39,7 @@ BoxBlock := class extend Object
 		{
 			Down = toRepl
 		}
-		Down.SetUp(this&)
+		if Down != null Down.SetUp(this&)
 	}
 	GetValue := virtual !() -> string
 	{

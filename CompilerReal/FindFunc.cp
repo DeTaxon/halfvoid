@@ -3,7 +3,7 @@ IsWord := !(string name) -> bool
 {
 	for c : name
 	{
-		if not (c in 'a'..'z' or c in 'A'..'Z') return false
+		if not (c in 'a'..'z' or c in 'A'..'Z' or c == '_') return false
 	}
 	return true
 }

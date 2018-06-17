@@ -319,6 +319,20 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}else{
 				return new NewCall(useType)
 			}
+		}else{
+			if iter.GetValue() == "-"
+			{
+				if iter.Right != null
+				{
+					if iter.Right.Right == null
+					{
+						name := ". " + iter.GetValue()
+						iter = iter.Right
+						PopOutNode(iter.Left)
+						return OneCall(name,iter.Up,null->{Object^})
+					}
+				}
+			}
 		}
 	}
 	return null
