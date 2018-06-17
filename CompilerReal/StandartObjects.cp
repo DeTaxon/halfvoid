@@ -21,6 +21,20 @@ ObjConst := class extend ObjResult
 	}
 }
 
+ObjHolder := class extend Object
+{
+	ItName := string
+	this := !(string name,Object^ ob) -> void
+	{
+		ItName = name
+		Down = ob
+	}
+	GetValue := virtual !() -> string
+	{
+		return "{object}"
+	}
+}
+
 ObjConstHolder := class extend Object
 {
 	ItName := string

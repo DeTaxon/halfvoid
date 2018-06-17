@@ -978,6 +978,7 @@ CreateBuiltIns := !() -> void
 											"End##:\n" +
 											"#0 = select i1 #1, i1 #2, i1 false\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
+	BuiltInFuncs.Push( new BuiltInSuffix("L",GetType("int"),false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("int"),false,GetType("float"),

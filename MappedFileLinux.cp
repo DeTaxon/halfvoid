@@ -26,68 +26,67 @@ mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^
 //ArrayIterMappedFile := class
 //{	
 //	x := int
-//	pFile := MappedFile^
-//	this := !(MappedFile^ pF) -> void
+//	pFile := void^
+//	this := !(void^ pF) -> void
 //	{
 //		x = 0
 //		pFile = pF
 //	}
-//	//"^" := !() -> ref char
-//	//{
-//	//	return pFile.point[x]
-//	//}
-//	//Inc := !() -> void
-//	//{
-//	//	x += 1
-//	//}
-//	//IsEnd := !() -> bool
-//	//{
-//	//	return x >= pFile.size
-//	//}
-//	//IsInvalid := !() -> bool
-//	//{
-//	//	//if pFile == null return true
-//	//	return pFile.IsInvalid()
-//	//}
+//	"^" := !() -> ref char
+//	{
+//		pP := pFile->{MappedFile^}
+//		return pP.point[x]
+//	}
+//	Inc := !() -> void
+//	{
+//		x += 1
+//	}
+//	IsEnd := !() -> bool
+//	{
+//		pP := pFile->{MappedFile^}
+//		return x >= pP.size
+//	}
+//	IsInvalid := !() -> bool
+//	{
+//		pP := pFile->{MappedFile^}
+//		return pP.IsInvalid()
+//	}
 //}
 MappedFile := class
 {
 	name := string
 	itemId := int
-	size  := s64
+	size  := int
 	point := char^
 	this := !(char^ fileName) -> void
 	{
 		itemId = open(fileName,O_RDONLY)
-		printf("name %i\n",itemId)
 
-		//if true
-		//{
-			//if 
-				val := GetFileSizeLinux(itemId,size&)
-				printf("size %i %i\n",val,size)
+		if itemId == -1 return void
+
+		bigSize := s64
+		val := GetFileSizeLinux(itemId,bigSize&)
+		size = bigSize->{int}
+
+		if not val
+		{
+			close(itemId)
+			itemId = -1
+			return void
+		}
+
+		if size == 0 return void
 	
-			//{
-			//	if size == 0{
-			//		itemId = 0 - 1
-			//	}else{
-					point = mmap(null,size,PROT_READ,MAP_PRIVATE,itemId,null)
-					close(itemId)
-					printf("point %p\n",point)
-
-			//		if point == null {
-			//			itemId = 0 - 1						
-			//		}else{
-			//			//good?
-			//		}
-			//	}
-			//}else{
-			//	itemId =  0 - 1
-			//}
-		//}
+		point = mmap(null,bigSize,PROT_READ,MAP_PRIVATE,itemId,null)
+		if point == null
+		{
+			close(itemId)
+			itemId = -1
+		}
 	}
 	IsInvalid := !() -> bool
 	{
+		if itemId == -1 return true
 		return false
 	}
 
@@ -95,9 +94,10 @@ MappedFile := class
 	{
 		return size
 	}
-	//For := !() -> ArrayIterMappedFile
+	//"~For" := !() -> ArrayIterMappedFile
 	//{
 	//	ToRet.x = 0
+	//	ToRet.pFile = this&
 	//}
 	Close := !() -> void
 	{
