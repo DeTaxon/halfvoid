@@ -891,6 +891,11 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("!=",PType,false,PType,false,BoolT,"#0 = icmp ne i" + it + " #1,#2\n"))
 
+			BuiltInFuncs.Push(new BuiltInFuncBinar("and_b",PType,false,PType,false,PType,"#0 = and i" + it + " #1,#2\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("or_b",PType,false,PType,false,PType,"#0 = or i" + it + " #1,#2\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("xor_b",PType,false,PType,false,PType,"#0 = xor i" + it + " #1,#2\n"))
+			BuiltInFuncs.Push(new BuiltInFuncUno(". not_b",PType,false,PType,"#0 = xor i" + it + " #1,-1\n"))
+
 			BuiltInFuncs.Push(new BuiltInFuncBinar(">=",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"ge i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"le i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"gt i" + it + " #1,#2\n"))
@@ -957,6 +962,7 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("int"),false,GetType("float"),"#0 = sitofp i32 #1 to float\n"))
 
 
+	BuiltInFuncs.Push(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1\n"))
 	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#^1" +
 											"br i1 #1, label %End##, label %Next##\n" +
 											"Next##:\n" +

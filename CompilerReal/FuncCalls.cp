@@ -320,7 +320,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				return new NewCall(useType)
 			}
 		}else{
-			if iter.GetValue() == "-"
+			if IsOper(iter.GetValue())
 			{
 				if iter.Right != null
 				{
