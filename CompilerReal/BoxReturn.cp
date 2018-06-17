@@ -2,6 +2,7 @@ BoxReturn := class extend Object
 {
 	IsRetRef := bool
 	IsRetComplex := bool
+	IsRetVoid := bool
 	this := !(Object^ toUse) -> void
 	{
 		PopOutNode(toUse.Down)
@@ -16,8 +17,17 @@ BoxReturn := class extend Object
 		}
 		if pri == State_Syntax
 		{
-			WorkBag.Push(Down,State_Start)
-			WorkBag.Push(this&,State_GetUse)
+			if Down.GetValue() == "~ind"
+			{
+				asNeed := Down->{ObjIndent^}
+				if asNeed.MyStr == "void"
+					IsRetVoid = true
+			}
+			if not IsRetVoid
+			{
+				WorkBag.Push(Down,State_Start)
+				WorkBag.Push(this&,State_GetUse)
+			}
 		}
 		if pri == State_GetUse
 		{
@@ -67,14 +77,14 @@ BoxReturn := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if not IsRetComplex
+		if not IsRetComplex and not IsRetVoid
 		{
 			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
 			f << "ret "
 			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
 			f << "\n"
 		}else{
-			Down.PrintInBlock(f)
+			if not IsRetVoid Down.PrintInBlock(f)
 			f << "ret void\n"
 		}
 	}
