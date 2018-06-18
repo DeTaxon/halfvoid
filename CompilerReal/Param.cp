@@ -172,6 +172,25 @@ ObjParam := class extend Object
 					{
 						Down = asClass
 						asClass.Up = this&
+
+						iterB := this&
+						lazy := true
+
+						while lazy
+						{
+							if iterB.GetValue() == "{d}" or iterB.GetValue() == "{d}.cp"
+							{
+								lazy = false
+							}else{
+								iterB = iterB.Up
+								lazy = iterB != null
+							}
+						}
+						if iterB != null
+						{
+							asNeed := iterB->{BoxBlock^}
+							asNeed.Items.Push(new ObjHolder(MyStr,this&->{Object^}))
+						}
 					}else{
 						WorkBag.Push(this&,State_PreGetUse)
 					}

@@ -23,35 +23,35 @@ close := !(int fd) -> void declare
 
 mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
 
-//ArrayIterMappedFile := class
-//{	
-//	x := int
-//	pFile := void^
-//	this := !(void^ pF) -> void
-//	{
-//		x = 0
-//		pFile = pF
-//	}
-//	"^" := !() -> ref char
-//	{
-//		pP := pFile->{MappedFile^}
-//		return pP.point[x]
-//	}
-//	Inc := !() -> void
-//	{
-//		x += 1
-//	}
-//	IsEnd := !() -> bool
-//	{
-//		pP := pFile->{MappedFile^}
-//		return x >= pP.size
-//	}
-//	IsInvalid := !() -> bool
-//	{
-//		pP := pFile->{MappedFile^}
-//		return pP.IsInvalid()
-//	}
-//}
+ArrayIterMappedFile := class
+{	
+	x := int
+	pFile := void^
+	this := !(void^ pF) -> void
+	{
+		x = 0
+		pFile = pF
+	}
+	"^" := !() -> ref char
+	{
+		pP := pFile->{MappedFile^}
+		return pP.point[x]
+	}
+	Inc := !() -> void
+	{
+		x += 1
+	}
+	IsEnd := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return x >= pP.size
+	}
+	IsInvalid := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return pP.IsInvalid()
+	}
+}
 MappedFile := class
 {
 	name := string
@@ -94,11 +94,11 @@ MappedFile := class
 	{
 		return size
 	}
-	//"~For" := !() -> ArrayIterMappedFile
-	//{
-	//	ToRet.x = 0
-	//	ToRet.pFile = this&
-	//}
+	"~For" := !() -> ArrayIterMappedFile
+	{
+		ToRet.x = 0
+		ToRet.pFile = this&
+	}
 	Close := !() -> void
 	{
 		

@@ -27,6 +27,7 @@ MakeItBlock := !(Object^ item) -> bool
 BoxBlock := class extend Object
 {
 	GetUseIter := int
+	Items := Queue.{ObjHolder^}
 	this := !() -> void
 	{
 	}
@@ -40,6 +41,16 @@ BoxBlock := class extend Object
 			Down = toRepl
 		}
 		if Down != null Down.SetUp(this&)
+	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		iter := Items.Start
+		while iter != null
+		{
+			if iter.Data.ItName == name return iter.Data.Down
+			iter = iter.Next
+		}
+		return null
 	}
 	GetValue := virtual !() -> string
 	{

@@ -2,13 +2,6 @@
 //#import "main.cp"
 #import "MappedFileLinux.cp"
 
-hi := !() -> void
-{
-	printf("hello\n")
-	return void
-	printf("word\n")
-}
-
 main := !(int argc, char^^ argv) -> int
 {
 	c := MappedFile("Test.cp")
