@@ -87,16 +87,22 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 	oldRight := item.Right
 	oldLeft := item.Left
 
+
 	item.Up = null
 	item.Right = null
 	item.Left = null
 	Call := MakeSimpleCall(Exc,item)
 
-	item.Up = oldUp
-	item.Right = oldRight
-	item.Left = oldLeft
-	ReplaceNode(item,Call)
-	item.SetUp(Call)
+	Call.Left = oldLeft
+	Call.Up = oldUp
+	if oldLeft != null 
+		oldLeft.Right = Call
+	else
+		oldUp.Down = Call
+	Call.Right = oldRight
+	if oldRight != null oldRight.Left = Call
+	Call.Up = oldUp
+	item.Up = Call
 
 	return Call
 }

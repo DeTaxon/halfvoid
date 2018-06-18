@@ -59,6 +59,9 @@ ParamCall := class extend ObjResult
 	{
 		return "(d)"
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+	}
 }
 
 ParamNaturalCall := class extend ParamCall

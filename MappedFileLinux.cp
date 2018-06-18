@@ -60,7 +60,7 @@ MappedFile := class
 	point := char^
 	this := !(char^ fileName) -> void
 	{
-		itemId = open(fileName,O_RDONLY)
+		itemId = open(fileName,O_RDWR)
 
 		if itemId == -1 return void
 
@@ -77,7 +77,7 @@ MappedFile := class
 
 		if size == 0 return void
 	
-		point = mmap(null,bigSize,PROT_READ,MAP_PRIVATE,itemId,null)
+		point = mmap(null,bigSize,PROT_READ + PROT_WRITE,MAP_PRIVATE,itemId,null)
 		if point == null
 		{
 			close(itemId)
@@ -96,8 +96,11 @@ MappedFile := class
 	}
 	"~For" := !() -> ArrayIterMappedFile
 	{
-		ToRet.x = 0
-		ToRet.pFile = this&
+		return ArrayIterMappedFile(this&)
+	}
+	"[]" := !(int pos) -> ref char
+	{	
+		return point[pos]
 	}
 	Close := !() -> void
 	{

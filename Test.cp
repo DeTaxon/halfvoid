@@ -6,6 +6,8 @@ main := !(int argc, char^^ argv) -> int
 {
 	c := MappedFile("Test.cp")
 	for c printf("%c",it)
+	c.point[0] = ")"[0]
+
 	return 0
 }
 

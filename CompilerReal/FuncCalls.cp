@@ -641,6 +641,7 @@ NaturalCall := class extend SomeFuncCall
 	{
 
 		iter := Down
+		if ToCall.IsRetComplex iter = iter.Right //???
 		i := 0
 
 		while iter != null and i < FType.ParsCount 
@@ -650,7 +651,7 @@ NaturalCall := class extend SomeFuncCall
 				RetR := false
 				if FType.ParsIsRef != null
 					RetR = FType.ParsIsRef[i]
-	
+				
 				preRet := BoxExc(iter,FType.Pars[i],RetR)
 	
 				if preRet == null
@@ -1099,6 +1100,7 @@ ConstructCall := class extend NaturalCall
 			
 			if Up.GetValue() == "~Return()"
 			{
+				rights := Down.Right
 				itm := GetItem("ToRet",this&)
 				ReplaceNode(Down,new ParamNaturalCall("this",itm))
 			}else
