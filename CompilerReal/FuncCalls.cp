@@ -296,7 +296,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.GetType() != null
 				{
 					PopOutNode(iter.Left)
-					return OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up)
+					return  OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up)
 				}
 				return null
 			}
@@ -852,7 +852,6 @@ AssemblerCall := class extend NaturalCall
 			PrintParamPres(f)
 		
 		AsmLine := RealCall.ToExe
-
 
 		buf := char[2]
 		buf[1] = 0

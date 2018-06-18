@@ -65,7 +65,7 @@ main := !(int argc,string[] argv) -> int
 
 WorkWithBag := !() -> void
 {
-	while not WorkBag.IsEmpty()
+	while not WorkBag.IsEmpty() and ErrorLog.Empty()
 	{
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
