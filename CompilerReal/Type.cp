@@ -611,5 +611,27 @@ CreateStandartTypes := !() -> void
 
 	DefsTable[18] = new TypeDef("range",TypeTable[13])
 	DefsTable[19] = new TypeDef("rangef",TypeTable[14])
-
 }
+IsInt := !(Type^ tp) -> bool
+{
+	for 8 if TypeTable[it] == tp return true
+	return false
+}
+GetIntSize := !(Type^ tp) -> int
+{
+	i := 8
+	for 4 
+	{
+		if TypeTable[it] == tp return i
+		i = i*2
+	}
+	i = 8
+	for 4 
+	{
+		if TypeTable[it + 4] == tp return i
+		i = i*2
+	}
+	return 0
+}
+
+

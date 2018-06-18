@@ -348,6 +348,8 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, Queue.{Type^} pars) -> int
 
 TypeCmp := !(Type^ inType, Type^ funcType) -> int
 {
+
+
 	if funcType == null return 0
 	if inType == funcType return 0
 
@@ -358,6 +360,15 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		if inType.Base == funcType.Base
 			return 1
 	}
+
+	if inType.GetType() == "standart" and funcType.GetType() == "standart"
+	{
+		if IsInt(inType) and IsInt(funcType) {
+			if GetIntSize(inType) < GetIntSize(funcType) return 1
+			return 2
+		}
+	}
+
 
 	if inType == GetType("double") and funcType == GetType("float") return 2
 	//if (inType.GetType() == "point" and funcType == (GetType("void").GetPoint())) return 2
