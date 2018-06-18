@@ -1084,7 +1084,7 @@ ConstructCall := class extend NaturalCall
 		IsConstr = true
 		Down = new LinkForThis(this&->{Object^},func.MyFuncType.Pars[0])
 		Down.Right = Pars
-		if Pars != null Pars.Left = Right
+		if Pars != null Pars.Left = Down
 		
 		RetId = GetNewId()
 		ToCall = func
@@ -1218,8 +1218,6 @@ LinkForThis := class extend Object
 }
 
 //PointCall
-//MethodCall
-//VirtualMethodCall
 //MethodPointCall
 //Operator()
 

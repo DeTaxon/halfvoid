@@ -87,7 +87,6 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 	oldRight := item.Right
 	oldLeft := item.Left
 
-
 	item.Up = null
 	item.Right = null
 	item.Left = null

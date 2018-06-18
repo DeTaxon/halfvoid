@@ -110,7 +110,7 @@ Object := class{
 
 	DoTheWork := virtual !(int st) -> void
 	{
-		printf("work not specefied for %s\n",GetValue())
+		//printf("work not specefied for %s\n",GetValue())
 	}
 	SetUp := !(Object^ nUp) -> void
 	{
