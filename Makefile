@@ -8,17 +8,14 @@ a.out: out.ll
 
 all : clean a.out a.exe
 
-MappedFileLinux.o: MappedFileLinux.cpp
-	clang++ -c MappedFileLinux.cpp -o MappedFileLinux.o
-
 out2.ll: a.out 
 	./a.out
 xdg.o: wayland-c/xdg.c
 	gcc wayland-c/xdg.c -c -o xdg.o
 xdg6.o: wayland-c/xdg.c
 	gcc wayland-c/xdg6.c -c -o xdg6.o
-b : out2.ll xdg.o xdg6.o MappedFileLinux.o
-	clang++ -O0 out2.ll -o b xdg.o xdg6.o MappedFileLinux.o -ldl -lwayland-client -lwayland-egl #-lEGL -lGLESv2
+b : out2.ll xdg.o xdg6.o 
+	clang++ -O0 out2.ll -o b xdg.o xdg6.o -ldl -lwayland-client -lwayland-egl #-lEGL -lGLESv2
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe

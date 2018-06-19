@@ -232,8 +232,11 @@ RuleMinus := !(void^ itr) -> int
 	It := itr->{Object^}
 
 	if It.Left != null
-		if InDataR(It.Left) and It.Left.GetValue() != "()"
-			return 0
+	{
+		if It.Left.GetValue() == "[]" return 0
+		if It.Left.GetValue() == "()" return 0
+		if InDataR(It.Left)	return 0
+	}
 	if It.GetValue() != "-" return 0
 
 	It = It.Right

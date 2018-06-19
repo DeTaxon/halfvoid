@@ -21,8 +21,6 @@ MAP_SHARED := 1
 MAP_PRIVATE := 2
 MAP_ANON := 32 
 
-GetFileSizeLinux := !(int fd,s64^ size) -> bool declare
-
 open := !(char^ name,int flags,int mode) -> int declare
 close := !(int fd) -> void declare
 
@@ -31,6 +29,18 @@ ftruncate := !(int fd,s64 size) -> int declare
 mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
 munmap := !(void^ addt,s64 len) -> int declare
 
+fstat := !(int fd,char^ st) -> int declare
+
+GetFileSizeLinux2 := !(int fd,s64^ size) -> bool
+{
+	dataD := char[144]
+	val := fstat(fd,dataD->{char^})
+	if val == -1 return false
+	asNeed1 := dataD->{char^}[48]&
+	asNeed2 := asNeed1->{s64^}
+	size^ = asNeed2^
+	return true
+}
 ArrayIterMappedFile := class
 {	
 	x := int
@@ -102,7 +112,7 @@ MappedFile := class
 
 		if itemId == -1 return void
 
-		val := GetFileSizeLinux(itemId,size&)
+		val := GetFileSizeLinux2(itemId,size&)
 
 		if not val
 		{

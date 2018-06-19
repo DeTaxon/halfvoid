@@ -4,13 +4,9 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	b := "Z"[0]
-	a := "A"[0]
-	c := MappedFile("tmp.txt",FILE_CREATE,b - a + 1)
-	i := a
+	c := MappedFile("Test.cp")
 	for c {
-		it = i
-		i += 1
+		printf("%c",it)
 	}
 	c.Close()
 
