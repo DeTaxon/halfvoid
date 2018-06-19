@@ -21,7 +21,10 @@ GetFileSizeLinux := !(int fd,s64^ size) -> bool declare
 open := !(char^ name,int flags) -> int declare
 close := !(int fd) -> void declare
 
+truncate := !(int fd,s64 size) -> int declare
+
 mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
+munmap := !(void^ addt,s64 len) -> int declare
 
 ArrayIterMappedFile := class
 {	
@@ -77,7 +80,7 @@ MappedFile := class
 
 		if size == 0 return void
 	
-		point = mmap(null,bigSize,PROT_READ + PROT_WRITE,MAP_PRIVATE,itemId,null)
+		point = mmap(null,bigSize,PROT_READ + PROT_WRITE,MAP_SHARED,itemId,null)
 		if point == null
 		{
 			close(itemId)
@@ -104,6 +107,9 @@ MappedFile := class
 	}
 	Close := !() -> void
 	{
-		
+		if itemId == -1 return void
+		close(itemId)
+		if point == null return void
+		munmap(point,size)
 	}
 }
