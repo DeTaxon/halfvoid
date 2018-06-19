@@ -43,7 +43,7 @@ GetFileSizeLinux2 := !(int fd,s64^ size) -> bool
 }
 ArrayIterMappedFile := class
 {	
-	x := int
+	x := s64
 	pFile := void^
 	this := !(void^ pF) -> void
 	{
