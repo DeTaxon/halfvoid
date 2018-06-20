@@ -8,7 +8,10 @@ glfwWindowHint := !(int what, int to) -> void declare
 glfwDestroyWindow := !(void^ wind) -> void declare
 
 glfwMakeContextCurrent := !(void^ wind) -> void declare
+glfwGetProcAddress := !(char^ proc) -> void^ declare
 
 glfwWindowShouldClose := !(void^ wind) -> bool declare
 glfwPollEvents := !() -> void declare
+
+glfwSwapBuffers := !(void^ win) -> void declare
 

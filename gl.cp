@@ -174,6 +174,6 @@ GL_TEXTURE_WRAP_T                 := 0x2803
 GL_REPEAT                         := 0x2901
 
 
-glClear := !(int mask) -> void declare
-glClearColor := !(float red, float green, float blue, float alpha) -> void declare
-glFlush := !() -> void declare
+//glClear := !(int mask) -> void declare
+//glClearColor := !(float red, float green, float blue, float alpha) -> void declare
+//glFlush := !() -> void declare
