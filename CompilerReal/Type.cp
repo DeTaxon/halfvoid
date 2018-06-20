@@ -584,6 +584,8 @@ CreateStandartTypes := !() -> void
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
 	TypeTable[15] = new TypeStandart("%OpaqType",0,0)
 
+	GlobalStrs = GlobalStrs + "%Vec4f = type <4 x float>\n"
+	TypeTable[16] = new TypeStandart("%Vec4f",16,16)
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])
@@ -611,6 +613,8 @@ CreateStandartTypes := !() -> void
 
 	DefsTable[18] = new TypeDef("range",TypeTable[13])
 	DefsTable[19] = new TypeDef("rangef",TypeTable[14])
+
+	DefsTable[20] = new TypeDef("vec4f",TypeTable[16])
 }
 IsInt := !(Type^ tp) -> bool
 {

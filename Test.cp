@@ -1,33 +1,41 @@
 #import "lib.cp"
 //#import "main.cp"
-#import "MappedFileLinux.cp"
-#import "glfw.cp"
-#import "gl.cp"
+//#import "MappedFileLinux.cp"
+//#import "glfw.cp"
+//#import "gl.cp"
+//
+//glClearColor := !(float,float,float,float)^ -> void
+//glClear := !(int)^ -> void
 
-glClearColor := !(float,float,float,float)^ -> void
-glClear := !(int)^ -> void
+cc := !(vec4f f) -> void
+{
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	glfwInit()
+	T := vec4f(1.0f,2.0f)
+	cc(vec4f(1.0f,2.0f,3.0f,5.0f))
 
-	win := glfwCreateWindow(500,500,"Hi!",null,null)
-	glfwMakeContextCurrent(win)
-	
-	glClearColor = glfwGetProcAddress("glClearColor")
-	glClear = glfwGetProcAddress("glClear")
-	
-	glClearColor(1.0f,0.5f,0.0f,1.0f)
+	//glfwInit()
 
-	while not glfwWindowShouldClose(win)
-	{
-		glfwPollEvents()
+	//win := glfwCreateWindow(500,500,"Hi!",null,null)
+	//glfwMakeContextCurrent(win)
+	//glfwSwapInterval(1)
+	//
+	//glClearColor = glfwGetProcAddress("glClearColor")
+	//glClear = glfwGetProcAddress("glClear")
+	//
+	//glClearColor(1.0f,0.5f,0.0f,1.0f)
 
-		glClear(GL_COLOR_BUFFER_BIT)
+	//while not glfwWindowShouldClose(win)
+	//{
+	//	glfwPollEvents()
 
-		glfwSwapBuffers(win)
-		
-	}
+	//	glClear(GL_COLOR_BUFFER_BIT)
+
+	//	glfwSwapBuffers(win)
+	//	
+	//}
 
 	return 0
 }

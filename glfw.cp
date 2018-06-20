@@ -14,4 +14,5 @@ glfwWindowShouldClose := !(void^ wind) -> bool declare
 glfwPollEvents := !() -> void declare
 
 glfwSwapBuffers := !(void^ win) -> void declare
+glfwSwapInterval := !(int num) -> void declare
 

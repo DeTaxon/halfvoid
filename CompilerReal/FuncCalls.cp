@@ -76,6 +76,17 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			func := asNeed4.GetFunc("this",Pars)
 			if func != null return new ConstructCall(func,iter.Right.Down)
 		}
+
+		if asNeed2.GetType() == "standart"
+		{
+			if iter.Right != null
+			{
+				if iter.Right.GetValue() == "()"
+				{
+					return OneCall(". this",iter.Right,null->{Object^})
+				}
+			}
+		}
 		return null
 	}
 	if iter.GetType() != null

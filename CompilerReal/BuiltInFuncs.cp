@@ -59,6 +59,23 @@ BuiltInFuncZero := class extend BuiltInFunc
 	}
 }
 
+BuiltInFuncTypeTimes := class extend BuiltInFunc
+{
+	this := !(string Name,Type^ inType, int Count,Type^ retV,string code) -> void
+	{
+		FuncName = Name
+		OutputName = Name
+		ToExe = code
+
+		PP := Queue.{Type^}()
+		for Count PP.Push(inType)
+
+		MyFuncType = GetFuncType(PP,null->{bool^},retV,false,false)
+
+		CheckIsSelf()
+	}
+}
+
 BuiltInFuncUno := class extend BuiltInFunc
 {
 	this := !(string Name, Type^ l, bool lRef,Type^ retV,bool RRetRef, string code) -> void
@@ -986,6 +1003,7 @@ CreateBuiltIns := !() -> void
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))
 	RangeFuncs()
+	Vec4fFuncs()
 }
 
 RangeFuncs := !() -> void
@@ -998,3 +1016,28 @@ RangeFuncs := !() -> void
 	BuiltInFuncs.Push( new BuiltInFuncBinar("=",rangeType,true,rangeType,false,rangeType,"store %RangeTypeInt #2, %RangeTypeInt* #1\n"))
 
 }
+
+Vec4fFuncs := !() -> void
+{
+	F4T := GetType("vec4f")
+	FT := GetType("float")
+	F4N := F4T.GetName()
+
+	BuiltInFuncs.Push( new BuiltInFuncBinar("+",F4T,false,F4T,false,F4T,"#0 = fadd " + F4N + " #1 , #2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("-",F4T,false,F4T,false,F4T,"#0 = fsub " + F4N + " #1 , #2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("/",F4T,false,F4T,false,F4T,"#0 = fdiv " + F4N + " #1 , #2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("*",F4T,false,F4T,false,F4T,"#0 = fmul " + F4N + " #1 , #2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("=",F4T,true,F4T,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
+
+	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,1,F4T,"#0 = insertelement " + F4N + " undef, float #1,i32 0\n"))
+	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,2,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+								"#0 = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"))
+	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,3,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+								"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
+								"#0 = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,4,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+								"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
+								"%Pre1p## = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"+
+								"#0	  = insertelement " + F4N + " %Pre1p##, float #4,i32 3\n"))
+}
+
