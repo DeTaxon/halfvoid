@@ -70,6 +70,11 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 		PP := Queue.{Type^}()
 		for Count PP.Push(inType)
 
+		if Name == ". this" 
+		{
+			ItConsts.Push(new ObjType(retV)) 
+		}
+
 		MyFuncType = GetFuncType(PP,null->{bool^},retV,false,false)
 
 		CheckIsSelf()
@@ -405,6 +410,7 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 		
 	}
 }
+
 BuiltInTemplateAutoField := class extend BoxTemplate
 {
 	ToClass := BoxClass^
@@ -1028,6 +1034,9 @@ Vec4fFuncs := !() -> void
 	BuiltInFuncs.Push( new BuiltInFuncBinar("/",F4T,false,F4T,false,F4T,"#0 = fdiv " + F4N + " #1 , #2\n"))
 	BuiltInFuncs.Push( new BuiltInFuncBinar("*",F4T,false,F4T,false,F4T,"#0 = fmul " + F4N + " #1 , #2\n"))
 	BuiltInFuncs.Push( new BuiltInFuncBinar("=",F4T,true,F4T,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
+
+	BuiltInFuncs.Push( new BuiltInFuncBinar("<+>",F4T,false,F4T,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
+		"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##)\n"))
 
 	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,1,F4T,"#0 = insertelement " + F4N + " undef, float #1,i32 0\n"))
 	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,2,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 

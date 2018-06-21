@@ -13,8 +13,8 @@ cc := !(vec4f f) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	T := vec4f(1.0f,2.0f)
-	cc(vec4f(1.0f,2.0f,3.0f,5.0f))
+	T := vec4f(3.0f,2.0f)
+	printf("wut %f\n", vec4f(1.0f,2.0f,3.0f,5.0f) <+> T)
 
 	//glfwInit()
 

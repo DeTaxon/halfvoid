@@ -83,7 +83,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				if iter.Right.GetValue() == "()"
 				{
-					return OneCall(". this",iter.Right,null->{Object^})
+					Cs := Queue.{Object^}()
+					Cs.Push(new ObjType(asNeed2))
+					return OneCall(". this",iter.Right,Cs,false)
 				}
 			}
 		}
@@ -420,19 +422,7 @@ OneCall := !(string Name, Object^ G,Object^ consts) -> Object^
 }
 OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object^
 {
-	Ps := Queue.{Type^}()
 	Cs := Queue.{Object^}()
-
-	TrimCommas(G)
-	P := G.Down
-
-	iterT := P
-
-	while iterT != null
-	{
-		Ps.Push(iterT.GetType())
-		iterT = iterT.Right
-	}
 
 	if constsPre != null
 	{
@@ -458,7 +448,25 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 			H = H.Right
 		}
 	}
-	SomeFunc := FindFunc(Name,G,Ps,Cs,false)
+
+	return OneCall(Name,G,Cs,ignoreNull)
+}
+OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
+{
+	Ps := Queue.{Type^}()
+
+	TrimCommas(G)
+	P := G.Down
+
+	iterT := P
+
+	while iterT != null
+	{
+		Ps.Push(iterT.GetType())
+		iterT = iterT.Right
+	}
+
+	SomeFunc := FindFunc(Name,G,Ps,consts,false)
 
 	if SomeFunc == null{
 		inClass := GetUpClass(G)

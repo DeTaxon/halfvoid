@@ -38,6 +38,7 @@ main := !(int argc,string[] argv) -> int
 		fil << GlobalStrs
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 		StrContainer.PrintGlobal(fil)
 
 		for Classes.Size() Classes[it].PrintStruct(fil)
