@@ -293,6 +293,10 @@ BoxTemplate := class extend BoxFunc
 
 		return false
 	}
+	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{Object^} res) -> bool
+	{
+		return true
+	}
 	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
 		IsRetRef = RetRef
@@ -324,14 +328,12 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iter.GetValue() == ","
 			{
-				ContainTType(firstNon,TTNames)
-				//if ContainTType(firstNon,TTNames)
-				//{
-				//	FuncsTTemps.Push(firstNon)
-				//}else{
-				//	FuncsTTemps.Push(null->{Object^})
-				//}
-				FuncsTTemps.Push(firstNon)
+				if ContainTType(firstNon,TTNames)
+				{
+					FuncsTTemps.Push(firstNon)
+				}else{
+					FuncsTTemps.Push(null->{Object^})
+				}
 				firstNon = null
 			}else{
 				if firstNon == null 
@@ -342,14 +344,12 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 			if iter == null
 			{
-				ContainTType(firstNon,TTNames)
-				//if ContainTType(firstNon,TTNames)
-				//{
-				//	FuncsTTemps.Push(firstNon)
-				//}else{
-				//	FuncsTTemps.Push(null->{Object^})
-				//}
-				FuncsTTemps.Push(firstNon)
+				if ContainTType(firstNon,TTNames)
+				{
+					FuncsTTemps.Push(firstNon)
+				}else{
+					FuncsTTemps.Push(null->{Object^})
+				}
 				firstNon = null
 			}else{
 				if firstNon == null 

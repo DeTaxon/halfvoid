@@ -7,8 +7,10 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-cc := !(vec4f f) -> void
+wut := !(@G Y) -> void
 {
+	printf("wow \n")
+	
 }
 
 main := !(int argc, char^^ argv) -> int
