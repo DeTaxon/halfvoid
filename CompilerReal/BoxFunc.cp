@@ -293,8 +293,18 @@ BoxTemplate := class extend BoxFunc
 
 		return false
 	}
-	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{Object^} res) -> bool
+	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{ObjConstHolder^} res) -> bool
 	{
+		for i : FuncsTTemps.Size()
+		{
+			if MyFuncType.Pars[i] == null
+			{
+				if FuncsTTemps[i] != null
+				{
+					
+				}
+			}			
+		}
 		return true
 	}
 	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
