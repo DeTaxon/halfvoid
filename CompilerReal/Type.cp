@@ -77,10 +77,18 @@ ParseType := !(Object^ Node) -> Type^
 		{
 			return NodeName->{TypeDef^}.ItType
 		}
-		if NodeName.Down.GetValue() == "{...}"
+		if NodeName.Down != null
 		{
-			asCl := ((NodeName.Down)->{BoxClass^})
-			return asCl.ClassType
+			if NodeName.Down.GetValue() == "{...}"
+			{
+				asCl := ((NodeName.Down)->{BoxClass^})
+				return asCl.ClassType
+			}
+		}
+		if NodeName.GetValue() == "~type"
+		{	
+			asNeed := NodeName->{ObjType^}
+			return asNeed.MyType
 		}
 		return null
 	}

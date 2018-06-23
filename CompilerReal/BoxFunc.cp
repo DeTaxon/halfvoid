@@ -204,6 +204,7 @@ MiniWork := class
 BoxTemplate := class extend BoxFunc
 {
 	CopyParams := Object^
+	CopyConsts := Object^
 	CopyRet := Object^
 	CopyTree := Object^
 
@@ -216,94 +217,69 @@ BoxTemplate := class extend BoxFunc
 
 	IsVirtual := bool
 
-	ComputeTypes := !(Queue.{Type^} pars,Queue.{Object^} res) -> bool
+	IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 	{
-		if TTNames.Size() == 0 return true
-
-		for TTNames.Size() res.Push(null->{Object^})
-		MiniBag := Queue.{MiniWork}()
-
-		for i : FuncsTTemps.Size()
+		if obj == null return null
+		
+		if obj.GetValue() == "~ind"
 		{
-			if FuncsTTemps[i] != null
-			{
-				MiniBag.Push(MiniWork(FuncsTTemps[i],pars[i]))
-			}
+			val := ParseType(obj)
+			if val != itT resB[0] = false
+			return val
 		}
-
-		iter := MiniBag.Start
-		NowWork := MiniWork
-
-		while iter != null
+		if obj.GetValue() == "~{}type"
 		{
-			NowWork = iter.Data
-			NowNod := NowWork.SomeNode
-			NowType := NowWork.SomeType
-			NowVal := NowWork.SomeNode.GetValue()
-			MiniBag.JustPopFront()
-			iter = iter.Next
-
-			if NowVal  == "~d"
-			{
-				if Down.Right == "[]"
-				{
-						
-				}
-			}else{
-				if NowVal == "~ind"
-				{
-					asNeed := NowNod->{ObjIndent^}
-
-					objType := Object^
-					objType = null
-					gotIt := false
-					for TTNames.Size()
-					{
-						if asNeed.MyStr == TTNames[it][1]& 
-						{
-							gotIt = true
-							objType = res[it]
-						}
-					}
-					if objType != null and not gotIt
-					{
-						minT := ObjType(NowType)
-						if not CmpConstObjs(objType,minT&->{Object^})
-							return false
-					}
-
-					//if gotType == null 
-				}else{
-					if NowVal == "~{}type"
-					{
-						asNeed := NowNod->{ObjTemplateType^}
-						for i : TTNames.Size()
-						{	
-							if TTNames[i] == asNeed.MyStr
-							{
-								res[i] = new ObjType(NowType)
-								//iter = MiniBag.Start
-							}
-						}
-					}
-				}
-			}
+			sNeed := obj->{ObjTemplateType^}
+			res.Push(new ObjConstHolder(sNeed.MyStr,(new ObjType(itT))->{Object^}))
+			return itT
 		}
-		return MiniBag.Empty()
-
-		return false
+		if obj.GetValue() == "~d"
+		{
+			//later
+		}
+		resB[0] = false
+		return null
 	}
 	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{ObjConstHolder^} res) -> bool
 	{
+		re := true
 		for i : FuncsTTemps.Size()
 		{
 			if MyFuncType.Pars[i] == null
 			{
 				if FuncsTTemps[i] != null
 				{
-					
+					IsSameType(FuncsTTemps[i],pars[i],res,re&)
+					if not re return false
 				}
 			}			
+		}
+		if CopyConsts != null
+		{
+			iter := CopyConsts.Down
+
+			i := 0
+			while iter != null
+			{
+				if ItConsts[i] == null
+				{
+					if consts[i].GetValue() == "~type"
+					{
+						asNeed := consts[i]->{ObjType^}
+						IsSameType(iter,asNeed.MyType,res,re&)
+						if not re return false
+					}else{
+						if iter.GetValue() != "~{}type" return false
+						asNeed := iter->{ObjTemplateType^}
+						res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
+					}
+				}else{
+					if not CmpConstObjs(ItConsts[i],consts[i])
+						return false
+				}
+				iter = iter.Right
+				i += 1
+			}
 		}
 		return true
 	}
@@ -317,6 +293,13 @@ BoxTemplate := class extend BoxFunc
 		if inPars != null {
 			CopyParams = inPars.Clone()
 			CopyParams.SetUp(this&)
+		}
+		if cons != null
+		{
+			CopyConsts = cons.Clone()
+			TrimCommas(CopyConsts)
+			ParseConsts(CopyConsts)
+			CopyConsts.Up = this&
 		}
 		if inOutType != null {
 			CopyRet = inOutType.Clone()
@@ -373,21 +356,11 @@ BoxTemplate := class extend BoxFunc
 	{
 		parsCount := pars.Size()
 		FType := MyFuncType
-		//temp := Queue.{Object^}()
-		//if not ComputeTypes(pars,temp) return 255
 
-		//nowTPars := Queue.{Type^}()
+		if consts.Size() != ItConsts.Size() return 255
 
-		//for i : FType.ParsCount
-		//{
-		//	if FType.Pars[i] == null{
-		//		tp := ParseType(FuncsTTemps[i],TTNames,temp)
-		//		if tp == null return 255
-		//		nowTPars.Push(tp)
-		//	}else{
-		//		nowTPars.Push(FType.Pars[i])
-		//	}
-		//}
+		st := Queue.{ObjConstHolder^}()
+		if not CheckTypes(pars,consts,st) return 255
 
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
@@ -399,13 +372,16 @@ BoxTemplate := class extend BoxFunc
 			for i : FType.ParsCount
 			{
 				SomePrior := 0
-				if FType.ParsIsRef[i] 
+				if FType.Pars[i] != null and FuncsTTemps[i] == null
 				{
-					if iterT.Data != FType.Pars[i] SomePrior = 255
-				}else {
-					SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
+					if FType.ParsIsRef[i] 
+					{
+						if iterT.Data != FType.Pars[i] SomePrior = 255
+					}else {
+						SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
+					}
+					if MaxPrior < SomePrior MaxPrior = SomePrior
 				}
-				if MaxPrior < SomePrior MaxPrior = SomePrior
 				iterT = iterT.Next
 			}
 			return MaxPrior
@@ -457,6 +433,14 @@ BoxTemplate := class extend BoxFunc
 		}
 
 		newFunc := GetNewFunc(pars,consts,newFuncType)
+
+		parConsts := Queue.{ObjConstHolder^}()
+		CheckTypes(pars,consts,parConsts)
+
+		for i : parConsts.Size()
+		{
+			newFunc.ItVals.Push(parConsts[i])
+		}
 		
 		if newFunc == null return null
 
@@ -537,7 +521,10 @@ BoxFunc := class extend Object
 
 		while iter != null
 		{
-			if iter.Data.ItName == name  return iter.Data.Down
+			if iter.Data.ItName == name  
+			{
+				return iter.Data.Down
+			}
 			iter = iter.Next
 		}
 		return null
@@ -571,7 +558,13 @@ BoxFunc := class extend Object
 						{
 							ItConsts.Push(new ObjType(typ))
 						}else{
-							//impossible
+							stdL := Queue.{string}()
+							if ContainTType(iter,stdL)
+							{
+								ItConsts.Push(null->{Object^})
+							}else{
+								ErrorLog.Push("can not parse object in .{}\n")
+							}
 						}
 					}
 				}
@@ -751,7 +744,7 @@ BoxFuncBody := class extend BoxFunc
 	ExtraRetParam := FuncParam^
 
 	//TODO UserConsts := Queue.{Object^} // !().{T}
-	HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
+	//HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
 
 
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void

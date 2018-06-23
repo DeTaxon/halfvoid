@@ -97,7 +97,7 @@ ObjParam := class extend Object
 		if pri == State_CheckTypes
 		{
 			IsExtrn := false
-
+			
 			MaybeType := ParseType(Down)
 			val := Object^
 			val = null

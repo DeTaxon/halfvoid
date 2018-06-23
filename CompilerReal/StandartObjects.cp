@@ -371,13 +371,15 @@ ObjCmd := class extend ObjConst
 		return PreRet
 	}
 }
-ObjTemplateType := class extend ObjConst
+ObjTemplateType := class extend Object
 {
 	MyStr := char^
 	this := !(char^ st) -> void
 	{
-		Clean()
-		MyStr = st
+		MyStr = st[1]&.Copy()
+	}
+	this := !() -> void
+	{
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -390,7 +392,8 @@ ObjTemplateType := class extend ObjConst
 	}
 	Clone := virtual !() -> Object^
 	{
-		PreRet := new ObjTemplateType(MyStr)
+		PreRet := new ObjTemplateType()
+		PreRet.MyStr = MyStr
 		PreRet.Line = Line
 		return PreRet
 	}

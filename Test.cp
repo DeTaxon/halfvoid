@@ -7,16 +7,17 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-wut := !(@G Y) -> void
+wut := !(@G Y) .{@R}-> void
 {
+	kk := G
+	rr := R
 	printf("wow \n")
 	
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	T := vec4f(3.0f,2.0f)
-	printf("wut %f\n", vec4f(1.0f,2.0f,3.0f,5.0f) <+> T)
+	wut(3).{char}
 
 	//glfwInit()
 
