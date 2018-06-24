@@ -7,15 +7,15 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-H := class . {@J}
+J := class
 {
-	c := int[J]
+	x,y,z := float
+	l := vec4f
 }
-
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := H.{6}
+	printf("wut %i\n",J->Align)
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)

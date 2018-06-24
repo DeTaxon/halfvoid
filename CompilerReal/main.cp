@@ -34,6 +34,13 @@ main := !(int argc,string[] argv) -> int
 
 	if ErrorLog.Empty()
 	{
+		iterTR := PostFuncs.Start
+		while iterTR != null
+		{
+			iterTR.Data.PostCreate()
+			iterTR = iterTR.Next
+		}
+
 		fil := sfile("out2.ll","w")
 		fil << GlobalStrs
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"

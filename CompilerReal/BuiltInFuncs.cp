@@ -266,6 +266,107 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 	}
 }
 
+BuiltInFuncClassInfo := class extend BuiltInFunc
+{
+	toGet := TypeClass^
+	toCheck := int
+	this := !(TypeClass^ tp,int toC) -> void
+	{
+		toGet = tp
+		toCheck = toC
+
+		cc := Queue.{Type^}()
+
+		MyFuncType = GetFuncType(cc,null->{bool^},GetType("int"),false,false)
+
+		PostFuncs.Push(this&)
+	}
+	PostCreate := !() -> void
+	{
+		if toCheck == 0 //TypeSize
+		{
+			ToExe = "%Pre## = getelementptr " + toGet.GetName() + ", " + toGet.GetName() + "* null ,i32 1\n"
+			ToExe = ToExe + "#0 = ptrtoint " + toGet.GetName() + "* %Pre## to i32\n"
+		}
+		if toCheck == 1 //Align
+		{
+			ToExe = "#0 = add i32 " + toGet.GetAlign() + ",0\n"
+		}
+		if toCheck == 2 //FatTypeSize
+		{
+			ToExe = "%Pre## = getelementptr " + toGet.GetName() + ", " + toGet.GetName() + "* null ,i32 1\n"
+			ToExe = ToExe + "#0 = ptrtoint " + toGet.GetName() + "* %Pre## to i32\n"
+		}
+	}
+}
+
+BuiltInTemplateTypeInfo := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "->"
+		OutputName = "error"
+		emptType := Queue.{Type^}()
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 0 return 0
+		if consts.Size() != 2 return 255
+		if consts[0].GetValue() != "~type" return 255
+		if consts[1].GetValue() != "~str" return 255
+
+		asN := consts[1]->{ObjStr^}
+		St := asN.GetString()
+
+		if St == "TypeSize" return 0
+		if St == "Align" return 0
+		if St == "FatTypeSize" return 0
+		return 255
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	{
+		asN := consts[1]->{ObjStr^}
+		St := asN.GetString()
+
+		intT := GetType("int")
+
+		itT := (((consts[0])->{ObjType^}).MyType)
+
+		if itT.GetType() == "standart"
+		{
+			itT2 := itT->{TypeStandart^}
+
+			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItSize + ", 0 \n")
+			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItAlign + ", 0 \n")
+			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItSize + ", 0 \n")
+		}
+		if itT.GetType() == "point" or itT.GetType() == "fatarr"
+		{
+			//WARN64:
+			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
+			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
+			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
+		}
+		if itT.GetType() == "class"
+		{
+			itT2 := itT->{TypeClass^}
+			if St == "TypeSize" return new BuiltInFuncClassInfo(itT2,0)
+			if St == "Align" return new BuiltInFuncClassInfo(itT2,1)
+			if St == "FatTypeSize" return new BuiltInFuncClassInfo(itT2,2)
+		}
+
+		return null
+		
+		return new BuiltInFuncUno("->{}",pars[0],true,pars[0].Base.GetPoint(),false,
+		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0,i32 0\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+
 BuiltInTemplateExcFatArr := class extend BoxTemplate
 {
 	this := !() -> void
@@ -846,6 +947,8 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateNext())
 	//BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 	BuiltInTemplates.Push(new BuiltInTemplateGetRef())
+
+	BuiltInTemplates.Push(new BuiltInTemplateTypeInfo())
 
 	//GlobalUnroll = new BuiltInTemplateUnroll()
 	GlobalNew = new BuiltInTemplateNew()

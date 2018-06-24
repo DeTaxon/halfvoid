@@ -198,14 +198,14 @@ ObjStr := class extend ObjConst
 {
 	MyStrId := int
 	MyTmpId := int
-	"this" := !(char^ str) -> void
+	this := !(char^ str) -> void
 	{
 		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
 		MyTmpId = GetNewId()
 		ResultType = GetType("string")
 	}
-	"this" := !(int SId) -> void
+	this := !(int SId) -> void
 	{
 		MyStrId = SId
 		MyTmpId = GetNewId()

@@ -522,7 +522,7 @@ TypeFatArr := class extend Type
 	}
 	GetAlign := virtual !() -> int
 	{
-		return 9
+		return 8
 	}
 }
 TypeClass := class extend Type
@@ -542,8 +542,18 @@ TypeClass := class extend Type
 	}
 	GetAlign := virtual !() -> int
 	{
-		//TODO: max(stuf)
-		return 8
+		maxVal := 1
+
+		iter := ToClass.Params.Start
+
+		while iter != null
+		{
+			al := iter.Data.ResultType.GetAlign()
+
+			if maxVal < al maxVal = al
+			iter = iter.Next
+		}
+		return maxVal
 	}
 }
 

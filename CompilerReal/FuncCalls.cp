@@ -77,6 +77,24 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if func != null return new ConstructCall(func,iter.Right.Down)
 		}
 
+		if iter.Right.GetValue() == "->"
+		{
+			if iter.Right.Right.GetValue() == "~ind"
+			{
+				tt := iter.Right.Right
+				asNeed := tt->{ObjIndent^}
+
+				pars := Queue.{Type^}()
+
+				cc := Queue.{Object^}()
+				cc.Push(iter)
+				cc.Push(new ObjStr(asNeed.MyStr))
+				
+				func := FindFunc("->",iter,pars,cc,false)
+				if func != null return MakeSimpleCall(func,null->{Object^})
+			}
+		}
+
 		if asNeed2.GetType() == "standart"
 		{
 			if iter.Right != null
