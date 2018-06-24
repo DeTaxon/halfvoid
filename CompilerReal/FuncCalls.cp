@@ -1031,6 +1031,27 @@ NewCallOne := class extend SomeFuncCall
 			Down.SetUp(this&)
 		}
 		WorkBag.Push(this&,State_GetUse)
+		
+		ResultType = nT.GetPoint()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return false
+	}
+	GetType := virtual !() -> Type^
+	{
+		return ResultType
+	}
+	GetName := virtual !() -> string
+	{
+		return ""
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << ResultType.GetName()
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

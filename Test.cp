@@ -13,9 +13,9 @@ J := class
 	l := vec4f
 }
 
-"new" := !() . {@newType} 
+"new" := !() . {@R} -> void^ 
 {
-	return calloc(newType->TypeSize)->{newType^}
+	return null//calloc(newType->TypeSize)->{newType^}
 }
 
 main := !(int argc, char^^ argv) -> int
