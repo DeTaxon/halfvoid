@@ -348,6 +348,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				return new NewCall(useType,iter.Right.Right)
 			}else{
+				return new NewCallOne(useType,null->{Object^})
 				return new NewCall(useType)
 			}
 		}else{
@@ -1014,6 +1015,35 @@ TypeSizeCall := class extend SomeFuncCall
 	GetType := virtual !() -> Type^
 	{
 		return ResultType
+	}
+}
+
+NewCallOne := class extend SomeFuncCall
+{
+	newItm := SomeFuncCall^
+	newType := Type^
+	this := !(Type^ nT,Object^ DW) -> void
+	{
+		if DW != null	Down = DW.Down
+		if Down != null
+		{
+			Down.Up.Down = null
+			Down.SetUp(this&)
+		}
+		WorkBag.Push(this&,State_GetUse)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse	
+		{
+			pars := Queue.{Type^}()
+			cc := Queue.{Object^}()
+			cc.Push(new ObjType(newType))
+			func := FindFunc("new",this&,pars,cc,false)
+
+			if func == null ErrorLog.Push("cant create type\n")
+
+		}
 	}
 }
 

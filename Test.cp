@@ -13,9 +13,14 @@ J := class
 	l := vec4f
 }
 
+"new" := !() . {@newType} 
+{
+	return calloc(newType->TypeSize)->{newType^}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	printf("wut %i\n",J->Align)
+	k := new int
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)
