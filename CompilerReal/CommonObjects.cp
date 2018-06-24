@@ -107,7 +107,7 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 
 
 
-ReplaceNode := !(Object^ what, Object^ with) -> void
+ReplaceNode := !(Object^ what, Object^ with) -> Object^
 {
 	wiEnd := with
 
@@ -138,6 +138,8 @@ ReplaceNode := !(Object^ what, Object^ with) -> void
 	what.Up = null
 	what.Left = null
 	what.Right = null
+
+	return with
 }
 
 PopOutNode := !(Object^ what) -> void

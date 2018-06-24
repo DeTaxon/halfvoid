@@ -7,15 +7,16 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-te := class .{@T}
+H := !().{@J}  -> void
 {
-	x,y,z := T
+	x := J
+	printf("good\n")
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	h := te.{int}
-
+	H().{int}
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)

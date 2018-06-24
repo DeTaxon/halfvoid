@@ -90,7 +90,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			iterForName = null
 		}else	iterForName = iterForName.Up
 	}
-	if constsI != null	SyntaxCompress(constsI,PriorityData)	
+	if constsI != null	SyntaxCompress(constsI,PriorityData)
 	if iter.GetValue() == "declare"
 	{
 		return new BoxFuncDeclare(ParamsObj,RetT,FName)
@@ -233,30 +233,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if CopyConsts != null
 		{
-			iter := CopyConsts.Down
-
-			i := 0
-			while iter != null
-			{
-				if ItConsts[i] == null
-				{
-					if consts[i].GetValue() == "~type"
-					{
-						asNeed := consts[i]->{ObjType^}
-						IsSameType(iter,asNeed.MyType,res,re&)
-						if not re return false
-					}else{
-						if iter.GetValue() != "~{}type" return false
-						asNeed := iter->{ObjTemplateType^}
-						res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
-					}
-				}else{
-					if not CmpConstObjs(ItConsts[i],consts[i])
-						return false
-				}
-				iter = iter.Right
-				i += 1
-			}
+			//return IsEqConsts(CopyConsts,consts,res)
 		}
 		return true
 	}
@@ -276,6 +253,7 @@ BoxTemplate := class extend BoxFunc
 			CopyConsts = cons.Clone()
 			ParseConsts(CopyConsts)
 			CopyConsts.Up = this&
+			MakeGoodConsts(CopyConsts)
 		}
 		if inOutType != null {
 			CopyRet = inOutType.Clone()
