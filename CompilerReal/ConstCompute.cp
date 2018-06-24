@@ -31,6 +31,7 @@ TryCompute := !(Object^ ob) -> Object^
 		{
 			return it.Down
 		}
+		if it.IsConst() return it
 	}
 	lazy := ob.GetValue() == "~d"
 	if lazy lazy = ob.Down.GetValue() == "!"

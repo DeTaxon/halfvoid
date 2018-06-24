@@ -9,20 +9,13 @@
 
 H := class . {@J}
 {
-	c := J
-	f := !() -> void
-	{
-		r := J
-	}
+	c := int[J]
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := H.{int}
-	c.f()
-	k := H.{float}
-	k.f()
+	c := H.{6}
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)
