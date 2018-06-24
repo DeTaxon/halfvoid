@@ -14,7 +14,7 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 
 	if iterT == null return null
 
-	if iterT.GetValue() == "!"
+	if iterT.GetValue() == "."
 	{
 		iterT = iterT.Right.Right
 		IsTemplate = true
@@ -61,85 +61,39 @@ GetUpClass := !(Object^ toS) -> BoxClass^
 BoxClassTemplate := class extend Object
 {
 	Classes := Stack.{BoxClass^}
-	ClassesObjs := Stack.{Object^^}()
-	Names := Queue.{string}
 	ClassTree := Object^
+	ConstTree := Object^
 
 	this := !(Object^ tree) -> void
 	{
 		ClassTree = tree.Clone()
 
-		iterY := ClassTree.Down.Right.Right.Down
-
-		while iterY != null
-		{
-			if iterY.GetValue() == "~ind"
-			{
-				Names.Push(iterY->{ObjIndent^}.MyStr)
-			}
-			iterY = iterY.Right
-		}
+		ConstTree = ClassTree.Down.Right.Right
 
 		PopOutNode(ClassTree.Down.Right)		
-		PopOutNode(ClassTree.Down.Right)		
+		PopOutNode(ClassTree.Down.Right)
+		ConstTree.Up = this&
+
+		MakeGoodConsts(ConstTree)
 	}
 
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
-		if stuf.Size() != Names.Size() return null
 
 		for i : Classes.Size()
 		{	
-			coud := true
-			for j : stuf.Size()
-			{
-				if not CmpConstObjs(stuf[j],ClassesObjs[i][j])
-					coud = false
-			}
-			if coud return Classes[i].ClassType
+			if Classes[i].IsSameConsts(stuf)
+				return Classes[i].ClassType
 		}
 
-		cont := new BoxBlock()
+		newConsts := Queue.{ObjConstHolder^}()
+		if not IsEqConsts(ConstTree,stuf,newConsts)
+			return null
 
-		cont.Right = Down
-		cont.Up = this&
-		if Down != null Down.Left = cont
-		Down = cont
-
-		for i : stuf.Size()
-		{
-			if stuf[i].GetValue() == "~type"
-			{
-				def := new TypeDef(Names[i],((stuf[i])->{ObjType^}).MyType)
-				def.Right = cont.Down
-				def.Up = cont
-				if def.Right != null cont.Down.Left = def
-				cont.Down = def
-			}
-			if stuf[i].IsConst()
-			{
-				toAd := new ConstItem(Names[i],stuf[i])
-				toAd.Right = cont.Down
-				toAd.Up = cont
-				if toAd.Right != null cont.Down.Left = toAd
-				cont.Down = toAd
-			}
-		}
-
-		iterR := cont.Down
-		while iterR.Right != null
-		{
-			iterR = iterR.Right
-		}
-		
 		newTree := ClassTree.Clone()
 		
 		inher := BoxClass^
 		inher = null
-
-		iterR.Right = newTree
-		iterR.Right.Left = iterR
-		iterR.Right.Up = iterR.Up
 
 		treeIter := newTree.Down.Right
 
@@ -148,17 +102,30 @@ BoxClassTemplate := class extend Object
 			inher = ParseType(treeIter.Right)
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
-
-			treeIter = treeIter.Right.Right
 		}
 
 		newClass := new BoxClass(treeIter,inher)
-		iterR.Right = newClass
-		iterR.Right.Left = iterR
-		iterR.Right.Up = iterR.Up
+		newClass.Up = this&
+
+		newClass.Right = Down
+		if Down != null Down.Left = newClass
+		Down = newClass
+
+		i := stuf.Size()
+		i -= 1
+
+		while i >= 0
+		{
+			newClass.ItConsts.Push(stuf[i])
+			i -= 1		
+		}
+
+		for j : newConsts.Size()
+		{
+			newClass.ItVals.Push(newConsts[j])
+		}
 
 		Classes.Push(newClass)
-		ClassesObjs.Push(stuf.ToArray())
 		return newClass.ClassType
 	}
 	GetValue := virtual !() -> string
@@ -190,7 +157,7 @@ FuncItem := class
 			{
 				//TODO:no need to check inherence?				
 			}else{
-				if fType.Pars[i] != Ri.fType.Pars[i] return false
+				//if fType.Pars[i] != Ri.fType.Pars[i] return false
 			}
 		}
 
@@ -209,6 +176,30 @@ BoxClass := class extend Object
 	Parent := BoxClass^
 
 	ContainVirtual  := bool
+
+	ItVals := Queue.{ObjConstHolder^}
+	ItConsts := Queue.{Object^}()
+
+	IsSameConsts := !(Queue.{Object^} consts) -> bool
+	{
+		if consts.Size() != ItConsts.Size() return false
+
+		for i : consts.Size()
+		{
+			if not CmpConstObjs(consts[i],ItConsts[i])
+				return false
+		}
+
+		return false
+	}
+
+	GetItem := virtual !(string name) -> Object^
+	{
+		for ItVals.Size() 
+			if ItVals[it].ItName == name
+				return ItVals[it].Down
+		return null
+	}
 
 	this := !(Object^ item, BoxClass^ par) -> void 
 	{
