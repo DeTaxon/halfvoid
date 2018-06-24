@@ -7,17 +7,14 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-wut := !(@G Y) .{@R}-> void
+te := class .{@T}
 {
-	kk := G
-	rr := R
-	printf("wow \n")
-	
+	x,y,z := T
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	wut(3).{char}
+	h := te.{int}
 
 	//glfwInit()
 
