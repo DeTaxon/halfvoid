@@ -57,9 +57,9 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 	i := 0
 	while iter != null
 	{
-		if l.GetValue() != ","
+		if iter.GetValue() != ","
 		{
-			if not l.IsConst()
+			if not iter.IsConst()
 			{
 				if consts[i].GetValue() == "~type"
 				{
@@ -73,7 +73,7 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 					res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
 				}
 			}else{
-				if not CmpConstObjs(l,consts[i])
+				if not CmpConstObjs(iter,consts[i])
 					return false
 			}
 			i += 1

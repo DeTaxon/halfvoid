@@ -7,7 +7,7 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-H := !().{@H}  -> void
+H := !().{@H,int}  -> void
 {
 	x := H
 	printf("good\n")
@@ -16,7 +16,7 @@ H := !().{@H}  -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	H().{int}
+	H().{int,int}
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)
