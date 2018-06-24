@@ -7,9 +7,9 @@
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 
-H := !().{@J}  -> void
+H := !().{@H}  -> void
 {
-	x := J
+	x := H
 	printf("good\n")
 }
 

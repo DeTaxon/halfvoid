@@ -233,7 +233,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if CopyConsts != null
 		{
-			//return IsEqConsts(CopyConsts,consts,res)
+			return IsEqConsts(CopyConsts,consts,res)
 		}
 		return true
 	}

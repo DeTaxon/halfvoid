@@ -64,6 +64,7 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 				if consts[i].GetValue() == "~type"
 				{
 					asNeed := consts[i]->{ObjType^}
+					re = true
 					IsSameType(iter,asNeed.MyType,res,re&)
 					if not re return false
 				}else{
@@ -79,5 +80,5 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 		}
 		iter = iter.Right
 	}
-	return false
+	return true
 }
