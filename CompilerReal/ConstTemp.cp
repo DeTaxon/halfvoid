@@ -23,6 +23,21 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	return null
 }
 
+InHolder := class extend Object
+{
+	this := !(Object^ v) -> void
+	{
+		Down = v.Down
+		Down.SetUp(this&)
+		PopOutNode(Down.Right)
+		v.Down = null
+	}
+	GetValue := virtual !() -> string
+	{
+		return "~{in}type"
+	}
+}
+
 MakeGoodConsts := !(Object^ l) -> bool
 {
 	iter := l.Down
@@ -33,7 +48,20 @@ MakeGoodConsts := !(Object^ l) -> bool
 		{
 			if not iter.IsConst() 
 			{
-				if iter.GetValue() != "~{}type"
+				gotIt := false
+				if iter.GetValue() == "~d"
+				{
+					if iter.Down.Right != null
+					{
+						if iter.Down.Right.GetValue() == "in"
+						{
+							gotIt = true
+							cr := new InHolder(iter)
+							iter  = ReplaceNode(iter,cr)
+						}
+					}
+				}
+				if iter.GetValue() != "~{}type" and not gotIt
 				{
 					val := ParseType(iter)
 
@@ -61,16 +89,46 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 		{
 			if not iter.IsConst()
 			{
-				if consts[i].GetValue() == "~type"
+				if iter.GetValue() == "~{in}type"
 				{
-					asNeed := consts[i]->{ObjType^}
+					if consts[i].GetValue() != "~type" return false
+					asNeed := iter->{InHolder^}
+					asN2 := consts[i]->{ObjType^}
+					
+					if asN2.MyType == null return false
+					if asN2.MyType.GetType() != "class" return false
+
+					val := ParseType(asNeed.Down.Right)
+					if val.GetType() != "class" return false
+					val2 := val->{TypeClass^}
 					re = true
-					IsSameType(iter,asNeed.MyType,res,re&)
+					val3 := IsSameType(asNeed.Down,asN2.MyType,res,re&)
 					if not re return false
+
+					iterInT := ((val3->{TypeClass^}).ToClass)
+					found := false
+
+					while iterInT != null
+					{
+						if iterInT.ClassType
+							found  = true
+						iterInT = iterInT.Parent
+					}
+
+					if not found return false
+
 				}else{
-					if iter.GetValue() != "~{}type" return false
-					asNeed := iter->{ObjTemplateType^}
-					res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
+					if consts[i].GetValue() == "~type"
+					{
+						asNeed := consts[i]->{ObjType^}
+						re = true
+						IsSameType(iter,asNeed.MyType,res,re&)
+						if not re return false
+					}else{
+						if iter.GetValue() != "~{}type" return false
+						asNeed := iter->{ObjTemplateType^}
+						res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
+					}
 				}
 			}else{
 				if not CmpConstObjs(iter,consts[i])

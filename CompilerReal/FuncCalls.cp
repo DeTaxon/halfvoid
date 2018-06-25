@@ -1022,6 +1022,7 @@ NewCallOne := class extend SomeFuncCall
 {
 	newItm := SomeFuncCall^
 	newType := Type^
+	ItId := int
 	this := !(Type^ nT,Object^ DW) -> void
 	{
 		if DW != null	Down = DW.Down
@@ -1031,7 +1032,9 @@ NewCallOne := class extend SomeFuncCall
 			Down.SetUp(this&)
 		}
 		WorkBag.Push(this&,State_GetUse)
-		
+
+		ItId = GetNewId()
+		newType = nT	
 		ResultType = nT.GetPoint()
 	}
 	IsRef := virtual !() -> bool
@@ -1044,14 +1047,25 @@ NewCallOne := class extend SomeFuncCall
 	}
 	GetName := virtual !() -> string
 	{
-		return ""
+		//return newItm.GetName()
+		return "%Pre" + ItId
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		f << ResultType.GetName()
+		//newItm.PrintUse(f)
+		f << ResultType.GetName() << " %Pre" << ItId
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		newItm.PrintInBlock(f)
+		f << "%Pre" << ItId << " = bitcast "
+		newItm.PrintUse(f)
+		f << " to " << ResultType.GetName() << "\n"
+
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		PrintPre(f)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1062,7 +1076,13 @@ NewCallOne := class extend SomeFuncCall
 			cc.Push(new ObjType(newType))
 			func := FindFunc("new",this&,pars,cc,false)
 
-			if func == null ErrorLog.Push("cant create type\n")
+			if func == null 
+			{
+				//TODO: Class.Get
+				ErrorLog.Push("cant create type\n")
+			}
+
+			newItm = MakeSimpleCall(func,null->{Object^})
 
 		}
 	}
