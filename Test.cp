@@ -11,9 +11,16 @@ J := class
 {
 	x,y,z := float
 	l := vec4f
+	 G := virtual !() -> void
+	 {
+	 	printf("wow\n")
+	 }
 }
 L := class extend J
 {
+	this := !() -> void
+	{
+	}
 }
 
 "new" := !() . {@R in J} -> void^ 
@@ -22,9 +29,10 @@ L := class extend J
 	return c&//calloc(newType->TypeSize)->{newType^}
 }
 
+
 main := !(int argc, char^^ argv) -> int
 {
-	k := new L
+	k := new L()
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)

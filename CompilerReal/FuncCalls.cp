@@ -346,10 +346,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			if iter.Right.Right != null
 			{
+				if iter.Right.Right.GetValue() == "()" return new NewCallOne(useType,iter.Right.Right) 
 				return new NewCall(useType,iter.Right.Right)
 			}else{
 				return new NewCallOne(useType,null->{Object^})
-				return new NewCall(useType)
 			}
 		}else{
 			if IsOper(iter.GetValue())
@@ -1023,8 +1023,10 @@ NewCallOne := class extend SomeFuncCall
 	newItm := SomeFuncCall^
 	newType := Type^
 	ItId := int
+	useConstr := bool
 	this := !(Type^ nT,Object^ DW) -> void
 	{
+		useConstr = DW != null
 		if DW != null	Down = DW.Down
 		if Down != null
 		{
@@ -1062,6 +1064,14 @@ NewCallOne := class extend SomeFuncCall
 		newItm.PrintUse(f)
 		f << " to " << ResultType.GetName() << "\n"
 
+		if newType.GetType() == "class"
+		{
+			asNeed := newType->{TypeClass^}
+			asNeed.ToClass.ApplyConstants(f,this&)
+		}
+
+		if Down != null Down.PrintInBlock(f)
+
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -1084,6 +1094,40 @@ NewCallOne := class extend SomeFuncCall
 
 			newItm = MakeSimpleCall(func,null->{Object^})
 
+			if useConstr
+			{
+				if newType.GetType() == "class"
+				{
+					parsC := Queue.{Type^}()
+					empCon := Queue.{Object^}()
+
+					iter3 := Down
+
+
+					while iter3 != null
+					{
+						parsC.Push(iter3.GetType())
+						iter3 = iter3.Right
+					}
+
+					asNeed := newType->{TypeClass^}
+
+					constrFunc := asNeed.ToClass.GetFunc("this",parsC,empCon)
+
+					if constrFunc == null 
+					{
+						ErrorLog.Push("can not find constructor")
+					}else{
+						extraF := new LinkForThis(this&->{Object^},ResultType)
+						extraF.Right = Down
+						extraF.Up = this&
+						if Down != null Down.Left = extraF
+						Down = extraF
+
+						Down = MakeSimpleCall(constrFunc,Down)
+					}
+				}
+			}
 		}
 	}
 }
