@@ -1101,8 +1101,8 @@ NewCallOne := class extend SomeFuncCall
 					parsC := Queue.{Type^}()
 					empCon := Queue.{Object^}()
 
+					parsC.Push(newType)
 					iter3 := Down
-
 
 					while iter3 != null
 					{
@@ -1116,9 +1116,9 @@ NewCallOne := class extend SomeFuncCall
 
 					if constrFunc == null 
 					{
-						ErrorLog.Push("can not find constructor")
+						ErrorLog.Push("can not find constructor\n")
 					}else{
-						extraF := new LinkForThis(this&->{Object^},ResultType)
+						extraF := new LinkForThis(this&->{Object^},newType)
 						extraF.Right = Down
 						extraF.Up = this&
 						if Down != null Down.Left = extraF
