@@ -10,10 +10,10 @@
 J := class
 {
 	x,y,z := int
-	 G := virtual !() -> void
-	 {
-	 	printf("wow\n")
-	 }
+	G := virtual !() -> void
+	{
+		printf("wow\n")
+	}
 }
 L := class extend J
 {
@@ -31,7 +31,7 @@ L := class extend J
 
 main := !(int argc, char^^ argv) -> int
 {
-	k := new L(5)
+	k := new int
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)

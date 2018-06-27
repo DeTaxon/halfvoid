@@ -800,13 +800,15 @@ BuiltInTemplateNew := class extend BoxTemplate
 		emptType.Push(GetType("int"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	//GetPriority := virtual !(Queue.{Type^} pars) -> int
-	//{
-	//	if pars.Size() != 2 return 255
-	//	if pars[0].GetType() != "point" return 255
-	//	if pars[1].GetType() != "standart" return 255
-	//	return 0
-	//}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "standart" return 255
+		if pars[1].GetType() != "standart" return 255
+		if consts.Size() != 1 return 255
+		if consts[0].GetValue() != "~type" return 255
+		return 0
+	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
 	{
 		ResType := Type^
