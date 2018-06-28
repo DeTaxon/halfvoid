@@ -23,15 +23,13 @@ L := class extend J
 	}
 }
 
-"new" := !() . {@R in J} -> void^ 
+"new" := !() . {@R} -> void^ 
 {
 	return malloc(R->TypeSize)
 }
 
-
 main := !(int argc, char^^ argv) -> int
 {
-	k := new int
 	//glfwInit()
 
 	//win := glfwCreateWindow(500,500,"Hi!",null,null)

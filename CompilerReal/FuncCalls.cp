@@ -1090,41 +1090,42 @@ NewCallOne := class extend SomeFuncCall
 			{
 				//TODO: Class.Get
 				ErrorLog.Push("cant create type\n")
-			}
+			}else{
 
-			newItm = MakeSimpleCall(func,null->{Object^})
+				newItm = MakeSimpleCall(func,null->{Object^})
 
-			if useConstr
-			{
-				if newType.GetType() == "class"
+				if useConstr
 				{
-					parsC := Queue.{Type^}()
-					empCon := Queue.{Object^}()
-
-					parsC.Push(newType)
-					iter3 := Down
-
-					while iter3 != null
+					if newType.GetType() == "class"
 					{
-						parsC.Push(iter3.GetType())
-						iter3 = iter3.Right
-					}
+						parsC := Queue.{Type^}()
+						empCon := Queue.{Object^}()
 
-					asNeed := newType->{TypeClass^}
+						parsC.Push(newType)
+						iter3 := Down
 
-					constrFunc := asNeed.ToClass.GetFunc("this",parsC,empCon)
+						while iter3 != null
+						{
+							parsC.Push(iter3.GetType())
+							iter3 = iter3.Right
+						}
 
-					if constrFunc == null 
-					{
-						ErrorLog.Push("can not find constructor\n")
-					}else{
-						extraF := new LinkForThis(this&->{Object^},newType)
-						extraF.Right = Down
-						extraF.Up = this&
-						if Down != null Down.Left = extraF
-						Down = extraF
+						asNeed := newType->{TypeClass^}
 
-						Down = MakeSimpleCall(constrFunc,Down)
+						constrFunc := asNeed.ToClass.GetFunc("this",parsC,empCon)
+
+						if constrFunc == null 
+						{
+							ErrorLog.Push("can not find constructor\n")
+						}else{
+							extraF := new LinkForThis(this&->{Object^},newType)
+							extraF.Right = Down
+							extraF.Up = this&
+							if Down != null Down.Left = extraF
+							Down = extraF
+
+							Down = MakeSimpleCall(constrFunc,Down)
+						}
 					}
 				}
 			}
