@@ -235,8 +235,28 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 	LineCounter := 0
 	while Toks.NotEmpty()
 	{
-	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11
+	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12
 		Tok := Toks.Pop()
+
+		if Tok.Id == 12
+		{
+			newVal := int
+			if Tok.Buff[1] == '\\'
+			{
+				if Tok.Buff[2] == 'n'
+				{	
+					newVal = 0x0A
+				}else
+				{
+					newVal = Tok.Buff[2]
+				}
+			}else{
+				newVal = Tok.Buff[1]
+			}
+			NV := new ObjInt(newVal)
+			Adder = PushObject(Adder,NV->{Object^})
+		}
+
 		if Tok.Id == 11
 		{
 			LineCounter += 1

@@ -220,7 +220,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" return 255
+		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" return 255
 		if pars[1].GetType() != "standart" return 255
 		return 0
 	}

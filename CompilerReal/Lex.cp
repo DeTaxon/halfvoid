@@ -24,7 +24,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	begin := new Machine()
 	
 	forOpers := Queue.{Line}()
-	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11
+	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12
 
 	//0: begin
 	//1: error
@@ -53,7 +53,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	//20: symbols - 10
 
-	Size := 23 //bound check??
+	Size := 30 //bound check??
 
 	//begin.Lines = new Line[Size]
 	PreLines := Queue.{Line}()
@@ -73,6 +73,13 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	PreLines[21].GoTo['.'] = 21
 	PreLines[21].Id = 10
 
+	//char
+	PreLines[0].GoTo['\''] = 24
+	for i : !['a'..'z','A'..'Z'] PreLines[24].GoTo[i] = 25
+	PreLines[24].GoTo['\\'] = 27
+	for i : 255 PreLines[27].GoTo[i] = 25
+	PreLines[25].GoTo['\''] = 26
+	PreLines[26].Id = 12
 	//opers
 
 	iter := Opers.Start

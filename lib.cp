@@ -8,6 +8,17 @@ dlopen := !(char^ name,int pri) -> void^ declare
 dlsym := !(void^ hndl, char^ name) -> void^ declare
 dlclose := !(void^ hndl) -> int declare
 
+"new" := !() . {@R} -> void^ 
+{
+	return malloc(R->TypeSize)
+}
+"in" := !(int a, range b) -> bool
+{
+	if a < b->begin return false
+	if a > b->end return false
+	return true
+}
+
 IntIter := class 
 {
 	start,end := int
