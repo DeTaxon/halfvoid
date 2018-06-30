@@ -30,6 +30,10 @@ ParseParamCall := !(Object^ ob) -> Object^
 			{
 					return new ParamNaturalCall(dynCast.MyStr,may)
 			}
+			if may.IsConst()
+			{
+				return may.Cone()
+			}
 		}else{	
 			ItPars := Queue.{ObjParam^}()
 			CollectParamsAllByName(dynCast.MyStr,ob,ItPars)
