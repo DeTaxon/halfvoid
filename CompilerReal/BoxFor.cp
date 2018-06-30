@@ -191,19 +191,30 @@ BoxForOldFashionMulti := class extend BoxFor
 				{
 					if Down.Right.GetType() == null
 					{
-						ErrorLog.Push("can not evaluate type in for each\n")
+						EmitError("can not evaluate type in for each\n")
 					}else{
 						Pars := Queue.{Type^}()
 						Pars.Push(Down.Right.GetType())
 
 						func := FindFunc("~For",this&,Pars,false)
-						if func == null ErrorLog.Push("can not load ~For func\n")
-						if func.MyFuncType.RetType.GetType() != "class" ErrorLog.Push("~For have to return class\n")
-						ProxyFuncs[i] = func
+						if func == null 
+							EmitError("can not load ~For func\n")
+						else{
+							if func.MyFuncType.RetType == null
+							{
+								EmitError("can not deduce return type of function ~For\n")
+							}else{
 
-						tmp := Down.Right
-						PopOutNode(tmp)
-						Downs.Push(MakeSimpleCall(func,tmp))
+								if func.MyFuncType.RetType.GetType() != "class" EmitError("~For have to return class\n")
+								else{
+									ProxyFuncs[i] = func
+
+									tmp := Down.Right
+									PopOutNode(tmp)
+									Downs.Push(MakeSimpleCall(func,tmp))
+								}
+							}
+						}
 					}
 				}
 

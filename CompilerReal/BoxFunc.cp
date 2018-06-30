@@ -215,6 +215,8 @@ BoxTemplate := class extend BoxFunc
 	FuncsTTemps := Queue.{Object^}
 	TTNames := Queue.{string}
 
+	TempReturnConsts := Queue.{ObjConstHolder^}^
+
 	IsVirtual := bool
 
 	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{ObjConstHolder^} res) -> bool
@@ -237,6 +239,23 @@ BoxTemplate := class extend BoxFunc
 		}
 		return true
 	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		if TempReturnConsts != null
+		{
+			iter := TempReturnConsts.Start
+
+			while iter != null
+			{
+				if iter.Data.ItName == name
+				{
+					return iter.Data.Down
+				}
+				iter = iter.Next
+			}
+		}
+		return null
+	}
 	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
 		IsRetRef = RetRef
@@ -257,7 +276,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if inOutType != null {
 			CopyRet = inOutType.Clone()
-			inOutType.SetUp(this&)
+			CopyRet.SetUp(this&)
 		}
 		if Stuf != null CopyTree = Stuf.Clone()
 
@@ -305,6 +324,7 @@ BoxTemplate := class extend BoxFunc
 				}
 			}
 		}
+		if not IsWord(SomeName) IsSuffix = false
 	}
 	GetPriority :=virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
@@ -361,13 +381,23 @@ BoxTemplate := class extend BoxFunc
 				outT.Push(FType.Pars[it])
 			}
 		}
-		return GetFuncType(outT,MyFuncType.ParsIsRef,MyFuncType.RetType,MyFuncType.RetRef,MyFuncType.IsVArgs)
+		newRet := MyFuncType.RetType
+		if MyFuncType.RetType == null and CopyRet != null
+		{
+			newRet = ParseType(CopyRet)
+		}
+		return GetFuncType(outT,MyFuncType.ParsIsRef,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
 	}
 	GetFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
 	{
 		outT := Queue.{Type^}()
 
+		parConsts := Queue.{ObjConstHolder^}()
+		CheckTypes(pars,consts,parConsts)
+
+		TempReturnConsts = parConsts& //TODO: replace
 		newFuncType := CreateFuncPointer(pars,consts)
+		TempReturnConsts = null
 
 		iterJ := FuncsType.Start
 		somePos := 0
@@ -387,9 +417,6 @@ BoxTemplate := class extend BoxFunc
 		}
 
 		newFunc := GetNewFunc(pars,consts,newFuncType)
-
-		parConsts := Queue.{ObjConstHolder^}()
-		CheckTypes(pars,consts,parConsts)
 
 		for i : parConsts.Size()
 		{

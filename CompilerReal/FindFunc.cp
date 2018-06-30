@@ -249,7 +249,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 	func :=  GetBestFunc(pars,consts,Funcs,Templs)
 	if func != null return func
 
-	if not IsWord(name) and pars.Size() != 0 // wtf if not word and size = 0
+	if (not IsWord(name) or IsMethod) and pars.Size() != 0 // wtf if not word and size = 0
 	{
 		if pars[0] != null
 		if pars[0].GetType() == "class"

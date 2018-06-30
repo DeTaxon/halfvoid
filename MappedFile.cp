@@ -50,7 +50,7 @@ ArrayIterMappedFile := class
 		x = 0
 		pFile = pF
 	}
-	"^" := !() -> ref char
+	"^" := !() -> ref u8
 	{
 		pP := pFile->{MappedFile^}
 		return pP.point[x]
@@ -76,7 +76,7 @@ MappedFile := class
 	itemId := int
 	flag := int
 	size  := s64
-	point := char^
+	point := u8^
 	this := !(char^ fileName) -> void
 	{
 		itemId = -1
@@ -154,7 +154,7 @@ MappedFile := class
 	{
 		return ArrayIterMappedFile(this&)
 	}
-	"[]" := !(int pos) -> ref char
+	"[]" := !(int pos) -> ref u8
 	{	
 		return point[pos]
 	}

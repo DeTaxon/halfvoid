@@ -1,8 +1,9 @@
 #import "lib.cp"
 //#import "main.cp"
-#import "MappedFileLinux.cp"
+#import "MappedFile.cp"
 #import "glfw.cp"
 #import "gl.cp"
+#import "Model.cp"
 
 glClearColor := !(float,float,float,float)^ -> void
 glClear := !(int)^ -> void
@@ -23,16 +24,10 @@ key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
 	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
 }
 
-tt := !(@Type[@Size] arr) -> void
-{
-	c := Type
-	printf("got size %i\n",Size)
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	x := int[16]
-	tt(x)
+	m := Model()
+	m.LoadFromPLY("HiResBox.ply")
 	return 0
 
 	glfwInit()
