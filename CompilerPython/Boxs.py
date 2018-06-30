@@ -1988,7 +1988,13 @@ class BoxFuncsCall:
         			NewParams[i].PrintPointUse(F)
 			else:
         			NewParams[i].PrintUse(F)
-		F.write(")\n")
+		F.write(")")
+
+		if self.Line == -1:
+			F.write("\n")
+		else:
+			F.write(" ; {} {}\n".format(self.Line,self.InFile))
+
 		
 	else:
 		if len(NewParams) == 1:

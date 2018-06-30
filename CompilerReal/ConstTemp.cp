@@ -17,7 +17,46 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	}
 	if obj.GetValue() == "~d"
 	{
-		//later
+		if obj.Down.Right == null return IsSameType(obj.Down,itT,res,resB)
+		if obj.Down.Right.GetValue() == "[]"
+		{
+			if itT.GetType() != "arr"{
+				resB[0] = false
+				return null
+			}
+			asNeedType := itT->{TypeArr^}
+
+			typD := IsSameType(obj.Down,itT.Base,res,resB)
+			if typD == null return null
+
+			itemD := obj.Down.Right.Down
+			
+			if itemD.IsConst()
+			{
+				if itemD.GetValue() != "~int"
+				{
+					resB[0] = false
+					return null
+				}
+				asNeedDown := itemD->{ObjInt^}
+				if asNeedDown.MyInt != asNeedType.Size
+				{
+					resB[0] = false
+					return null
+				}
+				return null				
+			}else{
+				if itemD.GetValue() == "~{}type"
+				{
+					asNeedDown2 := itemD->{ObjTemplateType^}
+					res.Push(new ObjConstHolder(asNeedDown2.MyStr,(new ObjInt(asNeedType.Size))->{Object^}))
+					return itT
+				}else{
+					resB[0] = false
+					return null
+				}
+			}
+		}
 	}
 	resB[0] = false
 	return null
