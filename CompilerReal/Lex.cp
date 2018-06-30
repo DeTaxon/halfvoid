@@ -202,6 +202,8 @@ GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
 	Cp := sfile
 	Cp.open(Name,"r")
 
+	if not Cp.IsOpen() return false
+
 	Buffer := char[1024]
 
 	LineNum := 1

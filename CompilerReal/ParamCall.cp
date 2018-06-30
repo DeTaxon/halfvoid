@@ -32,7 +32,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 			}
 			if may.IsConst()
 			{
-				return may.Cone()
+				return may.Clone()
 			}
 		}else{	
 			ItPars := Queue.{ObjParam^}()

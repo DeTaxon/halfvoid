@@ -23,17 +23,21 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} S
 		asNeed := ii->{ImportCmd^}
 		fl := asNeed.GetFile()
 
-		Found := false
+		if fl != null
+		{
 
-		for Searched.Size()
-		{
-			if Searched[it] == fl.fileId
-				Found = true
-		}
-		if not Found
-		{
-			Searched.Push(fl.fileId)
-			CollectParamsAllByName(name,fl.Down,found,Searched)
+			Found := false
+
+			for Searched.Size()
+			{
+				if Searched[it] == fl.fileId
+					Found = true
+			}
+			if not Found
+			{
+				Searched.Push(fl.fileId)
+				CollectParamsAllByName(name,fl.Down,found,Searched)
+			}
 		}
 	}
 }

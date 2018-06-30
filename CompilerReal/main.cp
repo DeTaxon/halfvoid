@@ -84,7 +84,8 @@ WorkWithBag := !() -> void
 GetObjectsFromFile := !(char^ fileName) -> Object^
 {
 	Buf := Queue.{Token^}()
-	GetTokensFromFile(fileName, LexMachine^,Buf)
+	if not GetTokensFromFile(fileName, LexMachine^,Buf)
+		return null
 
 	iterC := Buf.Start
 	while iterC != null

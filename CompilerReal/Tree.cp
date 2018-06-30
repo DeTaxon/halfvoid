@@ -28,12 +28,12 @@ Object := class{
 		Up = null
 		Line = null
 	}	
-	"this" := !() -> void
+	this := !() -> void
 	{
 		Id = 0
 		Clean()
 	}
-	"this" := !(int id) -> void
+	this := !(int id) -> void
 	{
 		Id = id
 		Clean()
@@ -58,6 +58,15 @@ Object := class{
 		{
 			End.Print(s+1)
 			End = End.Right
+		}
+	}
+	EmitError := !(string err) -> void
+	{
+		if Line != null
+		{
+			ErrorLog.Push("Error in file <" + Line.inFile + "> at <" +Line.LinePos + ">:" + err)
+		}else{
+			ErrorLog.Push(err)
 		}
 	}
 	PrintGlobalSub := !(sfile f) -> void

@@ -115,7 +115,9 @@ ReplaceNode := !(Object^ what, Object^ with) -> Object^
 	{
 		wiEnd.Up = what.Up
 		wiEnd = wiEnd.Right
+		if wiEnd.Line == null wiEnd.Line = what.Line
 	}
+	if wiEnd.Line == null wiEnd.Line = what.Line
 	wiEnd.Up = what.Up
 
 	if what.Left == null

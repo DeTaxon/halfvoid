@@ -15,6 +15,9 @@ LoadFile := !(string name, Object^ start) -> BoxFile^
 			return Files[it]
 	}
 	ob := GetObjectsFromFile(name)
+
+	if ob == null return null
+
 	Files.Push(ob->{BoxFile^})
 	return ob->{BoxFile^}
 }
@@ -36,6 +39,11 @@ ImportCmd := class extend Object
 		if toPoint == null
 		{
 			toPoint = LoadFile(toImport)
+
+			if toPoint == null
+			{
+				ErrorLog.Push("file " + toImport + " not found\n")
+			}
 		}
 		return toPoint
 	}
