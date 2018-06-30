@@ -10,6 +10,8 @@ InspectDataR := !(Object^ item) -> Object^
 
 	DaR = ParseParamCall(item)
 	if DaR != null return DaR
+
+	if item.GetValue() == "()" return item.Down
 	
 	return null
 }
