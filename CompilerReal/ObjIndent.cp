@@ -55,7 +55,7 @@ ObjIndent := class extend Object
 					{
 						ReplaceNode(this&,new ObjType(Typ) )
 					}else{
-						ErrorLog.Push("unknown indent "+ MyStr + "\n")
+						EmitError("unknown indent "+ MyStr + "\n")
 					}
 				}
 			}

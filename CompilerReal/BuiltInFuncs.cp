@@ -220,7 +220,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" return 255
+		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
 		if pars[1].GetType() != "standart" return 255
 		return 0
 	}
@@ -1067,6 +1067,21 @@ CreateBuiltIns := !() -> void
 		BuiltInFuncs.Push(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = fsub " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("/",PType,false,PType,false,PType,"#0 = fdiv " + it + " #1,#2\n"))
+		BuiltInFuncs.Push(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = fsub " + it + " 0.0,#1\n"))
+
+		BuiltInFuncs.Push(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load " + it +" , "+ it +"* #1\n"
+											+"#0 = fadd " + it + " #2,#0pre\n"
+											+"store "+it+" #0, "+it+"* #1\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load " + it + " , " + it + "* #1\n"
+											+"#0 = fsub i" + it + " #0pre,#2\n"
+											+"store "+it+" #0, "+it+"* #1\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load " + it + " , " + it + "* #1\n"
+											+"#0 = fmul " + it + " #2,#0pre\n"
+											+"store "+it+" #0, "+it+"* #1\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar("/=",PType,true,PType,false,PType,"#0pre = load " + it + " , " + it + "* #1\n"
+											+"#0 = fdiv " + it + " #0pre,#2\n"
+											+"store "+it+" #0, "+it+"* #1\n"))
+
 
 		BuiltInFuncs.Push(new BuiltInFuncBinar(">=",PType,false,PType,false,BoolT,"#0 = fcmp uge " + it + " #1,#2\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = fcmp ule " + it + " #1,#2\n"))

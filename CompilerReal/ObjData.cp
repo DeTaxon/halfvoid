@@ -37,6 +37,7 @@ ObjData := class extend Object
 							{	
 								if SomeDown.Right.GetValue() == "[]"
 								{
+									SyntaxCompress(SomeDown.Right,PriorityData)
 									SizeTree = SomeDown.Right.Down
 									SomeDown.Right.Up = null
 									SomeDown.Right.Left = null
@@ -60,6 +61,7 @@ ObjData := class extend Object
 						ignore := false
 						if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
 						if iter.GetValue() == "[]" WorkBag.Push(iter,State_Syntax)
+						//if iter.GetValue() == "[]" WorkBag.Push(iter,State_PreGetUse)
 						if iter.GetValue() == "{}"
 							if iter.Left != null
 								if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
@@ -76,12 +78,7 @@ ObjData := class extend Object
 			lowTest := GetUse(this&)
 			if lowTest == null
 			{
-				err := "can not parse data"
-				if Line != null{
-					err = err + Line.GetLog()	
-				}
-				err =err + "\n"
-				ErrorLog.Push(err)
+				EmitError("can not parse data\n")
 			}
 			else
 			{
