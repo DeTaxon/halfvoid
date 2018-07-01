@@ -110,22 +110,18 @@ Model := class
 		{
 			if vertFileState == 0
 			{
-				if daFile[pos] == '-'
+				switch daFile[pos]
 				{
-					isNeg = true
-				}else{
-					if daFile[pos] in '0'..'9'
-					{
+					case '-'
+						isNeg = true
+					case '0'..'9'
 						hiValue = hiValue*10 + daFile[pos] - '0'
-					}else{	if daFile[pos] == '.'
-						{
-							vertFileState = 1
-						}else{
-							isNeg = false
-							lowValue = 1
-							hiValue = 0
-						}
-					}
+					case '.'
+						vertFileState = 1
+					case void
+						isNeg = false
+						lowValue = 1
+						hiValue = 0
 				}
 			}
 			if vertFileState == 1
@@ -148,9 +144,7 @@ Model := class
 			}
 			pos += 1
 		}
-		printf("wut %i %i\n",posInVerts,vertsCount)
-
-
+		printf("wut %i %i %i\n",posInVerts,vertsCount)
 
 		return true
 	}

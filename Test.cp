@@ -3,7 +3,7 @@
 #import "MappedFile.cp"
 #import "glfw.cp"
 #import "gl.cp"
-//#import "Model.cp"
+#import "Model.cp"
 
 glClearColor := !(float,float,float,float)^ -> void
 glClear := !(int)^ -> void
@@ -26,19 +26,9 @@ key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
 
 main := !(int argc, char^^ argv) -> int
 {
-	//m := Model()
-	//m.LoadFromPLY("HiResBox.ply")
+	m := Model()
+	m.LoadFromPLY("HiResBox.ply")
 
-	for i : 15
-	switch i
-	{
-		case void
-			printf("else\n")
-		case 5
-			printf("5\n")
-		case 1..3
-			printf("3\n")
-	}
 	return 0
 
 	//glfwInit()
