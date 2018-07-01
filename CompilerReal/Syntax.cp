@@ -24,6 +24,7 @@ InBlockData := !(Object^ obj) -> bool
 	if obj.GetValue() == "if()" return true
 	if obj.GetValue() == "while()" return true
 	if obj.GetValue() == "for()" return true
+	if obj.GetValue() == "switch()" return true
 
 	return false
 }
@@ -131,6 +132,8 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
 	if RuleUse(begin,"for()",RuleFor) return true
+	if RuleUse(begin,"switch()",RuleSwitch) return true
+	if RuleUse(begin,"case()",RuleCase) return true
 
 	return false	
 }
@@ -283,6 +286,37 @@ RuleIf := !(void^ itr)-> int
 	if It.GetValue() == "{}" or InBlockData(It) return 5
 
 	return 3
+}
+RuleSwitch := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+
+	if It.GetValue() != "switch" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" return 0
+
+	return 3
+}
+
+RuleCase := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+
+	if It.GetValue() != "case" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if InDataR(It) return 2
+	return 0
 }
 RuleWhile := !(void^ itr)-> int
 {

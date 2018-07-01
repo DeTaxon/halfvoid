@@ -59,6 +59,23 @@ ObjObj := class extend Object
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
 			}
+			if MyStr == "switch()"
+			{
+				It := this&->{Object^}
+				NewNode := new BoxSwitch(It)
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+				Found = true
+			}
+			if MyStr == "case()"
+			{
+				It := this&->{Object^}
+				NewNode := new BoxCase(It)
+				ReplaceNode(this&,NewNode)
+				WorkBag.Push(NewNode,State_Start)
+				Found = true
+			}
+
 			if MyStr == "imprt"
 			{
 				asS := (Down.Right)->{ObjStr^}

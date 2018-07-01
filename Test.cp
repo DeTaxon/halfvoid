@@ -3,7 +3,7 @@
 #import "MappedFile.cp"
 #import "glfw.cp"
 #import "gl.cp"
-#import "Model.cp"
+//#import "Model.cp"
 
 glClearColor := !(float,float,float,float)^ -> void
 glClear := !(int)^ -> void
@@ -26,34 +26,45 @@ key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
 
 main := !(int argc, char^^ argv) -> int
 {
-	m := Model()
-	m.LoadFromPLY("HiResBox.ply")
-	return 0
+	//m := Model()
+	//m.LoadFromPLY("HiResBox.ply")
 
-	glfwInit()
-	glfwSetErrorCallback(error_callback)
-
-	win := glfwCreateWindow(500,500,"Hi!",null,null)
-
-	glfwSetKeyCallback(win,key_input)
-
-	glfwMakeContextCurrent(win)
-	glfwSwapInterval(1)
-	
-	glClearColor = glfwGetProcAddress("glClearColor")
-	glClear = glfwGetProcAddress("glClear")
-	
-	glClearColor(1.0f,0.5f,0.0f,1.0f)
-
-	while not glfwWindowShouldClose(win)
+	for i : 15
+	switch i
 	{
-		glfwPollEvents()
-
-		glClear(GL_COLOR_BUFFER_BIT)
-
-		glfwSwapBuffers(win)
+		case void
+			printf("else\n")
+		case 5
+			printf("5\n")
+		case 1..3
+			printf("3\n")
 	}
-
 	return 0
+
+	//glfwInit()
+	//glfwSetErrorCallback(error_callback)
+
+	//win := glfwCreateWindow(500,500,"Hi!",null,null)
+
+	//glfwSetKeyCallback(win,key_input)
+
+	//glfwMakeContextCurrent(win)
+	//glfwSwapInterval(1)
+	//
+	//glClearColor = glfwGetProcAddress("glClearColor")
+	//glClear = glfwGetProcAddress("glClear")
+	//
+	//glClearColor(1.0f,0.5f,0.0f,1.0f)
+
+	//while not glfwWindowShouldClose(win)
+	//{
+	//	glfwPollEvents()
+
+	//	glClear(GL_COLOR_BUFFER_BIT)
+
+	//	glfwSwapBuffers(win)
+	//}
+
+	//return 0
 }
 
