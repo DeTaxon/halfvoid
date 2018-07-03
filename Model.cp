@@ -1,5 +1,6 @@
 #import "lib.cp"
 #import "MappedFile.cp"
+#import "arrs.cp"
 
 MODEL_NONE := 0
 MODEL_LOADED := 1
@@ -144,7 +145,36 @@ Model := class
 			}
 			pos += 1
 		}
-		printf("wut %i %i %i\n",posInVerts,vertsCount)
+		printf("wut %c\n",daFile[pos])
+		return true
+
+		preInd := Queue.{int}()
+		miniBox := int[16]
+		miniPos := 0
+		nowValue := 0
+		nowState := 0
+
+		while pos < dfFile.Size()
+		{	
+			switch nowState
+			{
+				case 0 //start
+					switch daFile[pos]
+					{
+						case '0'..'9'
+							nowState = nowState*10 + daFile[pos] - '0'
+						case ' '
+							nowState = 1
+					}
+
+				case 1 //space
+
+				case 2 // end
+			}
+			pos += 1
+		}
+
+
 
 		return true
 	}

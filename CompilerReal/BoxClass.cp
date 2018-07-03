@@ -1,8 +1,6 @@
 
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
-
-	IsTemplate := false
 	
 	if ob == null return null
 
@@ -17,7 +15,7 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 	if iterT.GetValue() == "."
 	{
 		iterT = iterT.Right.Right
-		IsTemplate = true
+		return new BoxClassTemplate(ob)
 	}
 	
 	if iterT.GetValue() == "extend"
@@ -43,7 +41,6 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 
 	if iterT.GetValue() != "{}" return null
 
-	if IsTemplate return new BoxClassTemplate(ob)
 	return new BoxClass(iterT,null->{BoxClass^})
 }
 
@@ -64,19 +61,34 @@ BoxClassTemplate := class extend Object
 	ClassTree := Object^
 	ConstTree := Object^
 
+	TempConsts := Queue.{ObjConstHolder^}^
+
 	this := !(Object^ tree) -> void
 	{
 		ClassTree = tree.Clone()
+		ClassTree.SetUp(this&)
 
 		ConstTree = ClassTree.Down.Right.Right
 
 		PopOutNode(ClassTree.Down.Right)		
 		PopOutNode(ClassTree.Down.Right)
-		ConstTree.Up = this&
+		ConstTree.SetUp(this&)
 
 		MakeGoodConsts(ConstTree)
 	}
-
+	GetItem := virtual !(string name) -> Object^
+	{
+		if TempConsts != null
+		{
+			itr := TempConsts.Start
+			while itr != null
+			{
+				if itr.Data.ItName == name return itr.Data.Down
+				itr = itr.Next
+			}
+		}
+		return null
+	}
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
 
@@ -91,6 +103,7 @@ BoxClassTemplate := class extend Object
 			return null
 
 		newTree := ClassTree.Clone()
+		newTree.Up = this&
 		
 		inher := BoxClass^
 		inher = null
@@ -99,7 +112,9 @@ BoxClassTemplate := class extend Object
 
 		if treeIter.GetValue() == "extend"
 		{
+			TempConsts = newConsts&
 			inher = ParseType(treeIter.Right)
+			TempConsts = null
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
 		}

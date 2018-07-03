@@ -1,34 +1,45 @@
 #import "lib.cp"
 //#import "main.cp"
-#import "MappedFile.cp"
-#import "glfw.cp"
-#import "gl.cp"
-#import "Model.cp"
+//#import "MappedFile.cp"
+//#import "glfw.cp"
+//#import "gl.cp"
+//#import "Model.cp"
 
-glClearColor := !(float,float,float,float)^ -> void
-glClear := !(int)^ -> void
+//glClearColor := !(float,float,float,float)^ -> void
+//glClear := !(int)^ -> void
+//
+//keys := bool[256]
+//
+//error_callback := !(int error,char^ descp) -> void
+//{
+//	printf("error: %s\n",descp)
+//}
+//
+//key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
+//{
+//	if action != GLFW_RELEASE and action != GLFW_PRESS return void
+//	res := action == GLFW_RELEASE	
+//	
+//	if key in GLFW_KEY_A..GLFW_KEY_Z keys[key - GLFW_KEY_A + 'a'] = action
+//	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
+//}
 
-keys := bool[256]
-
-error_callback := !(int error,char^ descp) -> void
+A := class .{@T}
 {
-	printf("error: %s\n",descp)
+	h := T
 }
-
-key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
+B := class .{@T} extend A.{T}
 {
-	if action != GLFW_RELEASE and action != GLFW_PRESS return void
-	res := action == GLFW_RELEASE	
-	
-	if key in GLFW_KEY_A..GLFW_KEY_Z keys[key - GLFW_KEY_A + 'a'] = action
-	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
+	l := int
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	m := Model()
-	m.LoadFromPLY("HiResBox.ply")
+	//m := Model()
+	//m.LoadFromPLY("HiResBox.ply")
 
+	c := B.{float}
+	c.h = 1.0f
 	return 0
 
 	//glfwInit()

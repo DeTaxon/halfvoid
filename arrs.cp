@@ -1,4 +1,4 @@
-Node := class !{T}
+Node := class .{@T}
 {
 	Data := T
 	Next := Node.{T}^
@@ -14,7 +14,7 @@ Node := class !{T}
 	}
 }
 
-Stack := class !{T}
+Stack := class .{@T}
 {
 	Start := Node.{T}^
 	this := !() -> void
@@ -99,7 +99,7 @@ Stack := class !{T}
 	}
 }
 
-Queue := class !{T} extend Stack.{T}
+Queue := class .{@T} extend Stack.{T}
 {
 	this := !() -> void
 	{
@@ -130,7 +130,7 @@ Queue := class !{T} extend Stack.{T}
 		return 0
 	}
 }
-QueueSet := class !{T} extend Stack.{T}
+QueueSet := class .{@T} extend Stack.{T}
 {
 	this := !() -> void
 	{
@@ -157,7 +157,7 @@ QueueSet := class !{T} extend Stack.{T}
 	}
 }
 
-DoubleNode := class !{TKey,TValue}
+DoubleNode := class .{@TKey,@TValue}
 {
 	Key := TKey
 	Value := TValue
@@ -176,7 +176,7 @@ DoubleNode := class !{TKey,TValue}
 	}
 }
 
-Map := class !{TKey,TValue}
+Map := class .{@TKey,@TValue}
 {
 	Start := DoubleNode.{TKey,TValue}^
 
