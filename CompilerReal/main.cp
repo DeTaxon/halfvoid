@@ -60,6 +60,12 @@ main := !(int argc,string[] argv) -> int
 		fil.close()
 	}else
 	{
+		iterTr := Files.Start
+		while iterTr != null
+		{
+			iterTr.Data^.Print(0)
+			iterTr = iterTr.Next
+		}
 		ite := ErrorLog.Start
 		while ite != null
 		{

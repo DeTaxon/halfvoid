@@ -4,6 +4,7 @@ InDataR := !(Object^ obj) -> bool
 {
 	Val := obj.GetValue()
 
+	if obj.IsConst() return true
 	if Val == "~d" return true
 	if Val == "~ind" return true
 	if Val == "~double" return true
