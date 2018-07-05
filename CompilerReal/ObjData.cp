@@ -57,7 +57,6 @@ ObjData := class extend Object
 							SizeTree.Up = iter.Up
 						}
 						iter = iter.Right
-						if iter != null iter = iter.Right
 					}else{
 						lazy2 := iter.GetValue() == "~ind"
 						if lazy2 lazy2 = iter.Right != null
