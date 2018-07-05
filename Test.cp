@@ -1,9 +1,10 @@
-#import "lib.cp"
+//#import "lib.cp"
 //#import "main.cp"
 //#import "MappedFile.cp"
 //#import "glfw.cp"
 //#import "gl.cp"
 //#import "Model.cp"
+#import "arrs.cp"
 
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
@@ -24,22 +25,16 @@
 //	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
 //}
 
-A := class .{@T}
-{
-	h := T
-}
-B := class .{@T} extend A.{T}
-{
-	l := int
-}
 
 main := !(int argc, char^^ argv) -> int
 {
 	//m := Model()
 	//m.LoadFromPLY("HiResBox.ply")
 
-	c := B.{float}
-	c.h = 1.0f
+	c := Stack.{int}()
+	c.Push(6)
+	c.Push(10)
+	c.Push(4)
 	return 0
 
 	//glfwInit()

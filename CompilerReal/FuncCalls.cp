@@ -51,10 +51,27 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}
 		return null
 	}
+
+	fastType := Type^
+	fastType = null
+	
+	if iter.Right != null
+	{
+		if iter.Right.GetValue() == "()"
+		{	
+			fastType = ParseType(iter)
+		}
+	}
 	if iter.GetValue() == "~type"
 	{
 		asNeed := iter->{ObjType^}
-		asNeed2 := asNeed.MyType
+		fastType = asNeed.MyType
+	}
+
+	if fastType != null
+	{
+		//asNeed := iter->{ObjType^}
+		asNeed2 := fastType
 
 		if asNeed2.GetType() == "class" and iter.Right.GetValue() == "()"
 		{
@@ -65,6 +82,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			Pars.Push(asNeed2)
 			TrimCommas(iter.Right)
 
+			cc := Queue.{Object^}()
+
 			iter2 := iter.Right.Down
 
 			while iter2 != null
@@ -73,9 +92,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter2 = iter2.Right
 			}
 
-			func := asNeed4.GetFunc("this",Pars)
+			func := asNeed4.GetFunc("this",Pars,cc)
 			if func != null return new ConstructCall(func,iter.Right.Down)
 		}
+
 
 		if iter.Right.GetValue() == "->"
 		{

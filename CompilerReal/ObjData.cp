@@ -57,16 +57,27 @@ ObjData := class extend Object
 							SizeTree.Up = iter.Up
 						}
 						iter = iter.Right
+						if iter != null iter = iter.Right
 					}else{
-						ignore := false
-						if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-						if iter.GetValue() == "[]" WorkBag.Push(iter,State_Syntax)
-						//if iter.GetValue() == "[]" WorkBag.Push(iter,State_PreGetUse)
-						if iter.GetValue() == "{}"
-							if iter.Left != null
-								if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
-									ignore = true
-						if not ignore WorkBag.Push(iter,State_Start)
+						lazy2 := iter.GetValue() == "~ind"
+						if lazy2 lazy2 = iter.Right != null
+						if lazy2 lazy2 = iter.Right.GetValue() == "."
+						if lazy2 lazy2 = iter.Right.Right != null
+						if lazy2 lazy2 = iter.Right.Right.GetValue() == "{}"
+						if lazy2
+						{
+							iter = iter.Right
+						}else{
+							ignore := false
+							if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
+							if iter.GetValue() == "[]" WorkBag.Push(iter,State_Syntax)
+							//if iter.GetValue() == "[]" WorkBag.Push(iter,State_PreGetUse)
+							if iter.GetValue() == "{}"
+								if iter.Left != null
+									if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
+										ignore = true
+							if not ignore WorkBag.Push(iter,State_Start)
+						}
 					}
 				}
 				iter = iter.Right
@@ -78,7 +89,13 @@ ObjData := class extend Object
 			lowTest := GetUse(this&)
 			if lowTest == null
 			{
-				EmitError("can not parse data\n")
+				itType := ParseType(this&)
+				if itType != null
+				{
+					ReplaceNode(this&,new ObjType(itType))
+				}else{
+					EmitError("can not parse data\n")
+				}
 			}
 			else
 			{

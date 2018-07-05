@@ -341,8 +341,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 						{
 							NS := new ObjBool(Tok.Buff == "true")
 							Adder = PushObject(Adder,NS)
-						}else
-						{
+						}else{
 							NS := new ObjIndent(Tok.Buff.Copy())
 							Adder = PushObject(Adder,NS)
 						}

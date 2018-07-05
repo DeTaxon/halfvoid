@@ -28,6 +28,7 @@ BoxBlock := class extend Object
 {
 	GetUseIter := int
 	Items := Queue.{ObjHolder^}
+	InClass := bool
 	this := !() -> void
 	{
 	}
@@ -70,14 +71,29 @@ BoxBlock := class extend Object
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
+			if Up != null
+			{
+				InClass =  Up.GetValue() == "{...}"
+			}
 		}
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,PriorityData)
 			UnboxParams(this.Down)
 			WorkBag.Push(this&,State_GetUse)
+
+			if InClass
+			{
+				iter := this.Down
+				while iter != null
+				{
+					WorkBag.Push(iter,State_Start)
+					iter = iter.Right
+				}
+			}
+
 		}
-		if pri == State_GetUse
+		if pri == State_GetUse and not InClass
 		{
 			iter := Down
 

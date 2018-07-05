@@ -60,6 +60,7 @@ BoxClassTemplate := class extend Object
 	Classes := Stack.{BoxClass^}
 	ClassTree := Object^
 	ConstTree := Object^
+	ExtendTree := Object^
 
 	TempConsts := Queue.{ObjConstHolder^}^
 
@@ -73,6 +74,15 @@ BoxClassTemplate := class extend Object
 		PopOutNode(ClassTree.Down.Right)		
 		PopOutNode(ClassTree.Down.Right)
 		ConstTree.SetUp(this&)
+
+		if ClassTree.Down.Right.GetValue() == "extend"
+		{
+			ExtendTree = ClassTree.Down.Right.Right.Clone()
+			ExtendTree.Up = this&
+
+			PopOutNode(ClassTree.Down.Right)
+			PopOutNode(ClassTree.Down.Right)
+		}
 
 		MakeGoodConsts(ConstTree)
 	}
@@ -91,7 +101,6 @@ BoxClassTemplate := class extend Object
 	}
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
-
 		for i : Classes.Size()
 		{	
 			if Classes[i].IsSameConsts(stuf)
@@ -110,10 +119,10 @@ BoxClassTemplate := class extend Object
 
 		treeIter := newTree.Down.Right
 
-		if treeIter.GetValue() == "extend"
+		if ExtendTree != null
 		{
 			TempConsts = newConsts&
-			inher = ParseType(treeIter.Right)
+			inher = ParseType(ExtendTree)
 			TempConsts = null
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
@@ -205,7 +214,7 @@ BoxClass := class extend Object
 				return false
 		}
 
-		return false
+		return true
 	}
 
 	GetItem := virtual !(string name) -> Object^
@@ -218,9 +227,9 @@ BoxClass := class extend Object
 
 	this := !(Object^ item, BoxClass^ par) -> void 
 	{
-		PopOutNode(item)
 		Down = item
 		Down.SetUp(this&)
+		Down.Left = null
 		MakeItBlock(Down)
 		Down.SetUp(this&)
 		WorkBag.Push(Down,State_Start)
