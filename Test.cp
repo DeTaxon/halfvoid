@@ -1,10 +1,10 @@
-//#import "lib.cp"
+#import "lib.cp"
 //#import "main.cp"
 //#import "MappedFile.cp"
 //#import "glfw.cp"
 //#import "gl.cp"
 //#import "Model.cp"
-#import "arrs.cp"
+//#import "arrs.cp"
 
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
@@ -28,13 +28,22 @@
 
 main := !(int argc, char^^ argv) -> int
 {
+	v := 0
+	h := int[10]
+	for h {
+		it = v
+		v += 1
+	}
+	for h printf("wut %i\n",it)
+	
 	//m := Model()
 	//m.LoadFromPLY("HiResBox.ply")
 
-	c := Stack.{int}()
-	c.Push(6)
-	c.Push(10)
-	c.Push(4)
+	//c := Queue.{int}()
+	//c.Push(6)
+	//c.Push(10)
+	//c.Push(4)
+
 	return 0
 
 	//glfwInit()

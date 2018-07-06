@@ -63,7 +63,7 @@ main := !(int argc,string[] argv) -> int
 		iterTr := Files.Start
 		while iterTr != null
 		{
-			iterTr.Data^.Print(0)
+			//iterTr.Data^.Print(0)
 			iterTr = iterTr.Next
 		}
 		ite := ErrorLog.Start

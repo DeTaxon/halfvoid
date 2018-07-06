@@ -590,6 +590,11 @@ SomeFuncCall := class extend ObjResult
 		if ToCall != null and not gotAlloc
 		{
 			gotAlloc = ToCall.IsRetComplex
+			if ToCall.MyFuncType.RetType != null
+			{
+				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "class"
+				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "arr"
+			}
 			if gotAlloc
 			{
 				if Up.GetValue() == "~Return()"
@@ -793,7 +798,7 @@ NaturalCall := class extend SomeFuncCall
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 
-		if (FType.RetType != GetType("void") and not gotAlloc)
+		if (FType.RetType != GetType("void") and not gotAlloc and TName != null)
 		{
 			f << TName <<" = "	
 		}
@@ -1058,6 +1063,8 @@ NewCallOne := class extend SomeFuncCall
 		ItId = GetNewId()
 		newType = nT	
 		ResultType = nT.GetPoint()
+
+		if Down != null TrimCommas(this&->{Object^})
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -1132,11 +1139,12 @@ NewCallOne := class extend SomeFuncCall
 
 						asNeed := newType->{TypeClass^}
 
+
 						constrFunc := asNeed.ToClass.GetFunc("this",parsC,empCon)
 
 						if constrFunc == null 
 						{
-							ErrorLog.Push("can not find constructor\n")
+							EmitError("can not find constructor\n")
 						}else{
 							extraF := new LinkForThis(this&->{Object^},newType)
 							extraF.Right = Down
@@ -1259,7 +1267,7 @@ ConstructCall := class extend NaturalCall
 		Down = new LinkForThis(this&->{Object^},func.MyFuncType.Pars[0])
 		Down.Right = Pars
 		if Pars != null Pars.Left = Down
-		
+
 		RetId = GetNewId()
 		ToCall = func
 		FType = ToCall.MyFuncType

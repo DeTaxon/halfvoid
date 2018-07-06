@@ -228,7 +228,6 @@ IsKeyword := !(char^ W) -> bool
 	if W == "else" return true
 	if W == "while" return true
 	if W == "do" return true
-	if W == "new" return true
 	if W == "delete" return true
 	if W == "switch" return true
 	if W == "case" return true

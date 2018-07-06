@@ -676,6 +676,11 @@ BoxFunc := class extend Object
 	}
 	SetReturnType := !(Type^ toSet) -> void
 	{
+		IsRetComplex = false
+		if toSet.GetType() == "arr" or toSet.GetType() == "class"
+		{
+			IsRetComplex = true
+		}
 		if MyFuncType.RetType != toSet
 		{
 			MyFuncType = ExchangeFuncType(MyFuncType,toSet)
@@ -789,8 +794,10 @@ BoxFuncBody := class extend BoxFunc
 	{
 		if t != null
 		{
+			IsRetComplex = false
 			if t.GetType() == "arr" or t.GetType() == "class"
 			{
+				IsRetComplex = true
 				if ExtraRetParam == null
 					ExtraRetParam = new FuncParam("ToRet",t,true)
 			}

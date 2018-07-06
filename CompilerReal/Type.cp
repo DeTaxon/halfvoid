@@ -270,6 +270,18 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 {
 	iterT := FuncTypeTable.Start
 
+	ExtraArr := new bool[lin.Size()]
+	for i : lin.Size()
+	{
+		ExtraArr[i] = false
+		if IsRefArr != null ExtraArr[i] = IsRefArr[i]
+		if lin[i] != null
+		{
+			if lin[i].GetType() == "class" ExtraArr[i] = true
+			if lin[i].GetType() == "arr" ExtraArr[i] = true
+		}
+	}
+
 	while iterT != null
 	{
 		SomeBug := IsVArgs
@@ -285,8 +297,8 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 				{
 					if iterT.Data.Pars[i] != iterR.Data IsFound = false
 
-					if IsRefArr != null
-						if iterT.Data.ParsIsRef[i] != IsRefArr[i] IsFound = false
+					if i < lin.Size()
+						if iterT.Data.ParsIsRef[i] != ExtraArr[i] IsFound = false
 					i += 1
 					iterR = iterR.Next 
 				}
@@ -302,7 +314,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 		iterT = iterT.Next
 	}
 
-	newTypeFunc := new TypeFunc(lin,IsRefArr,IsVArgs)
+	newTypeFunc := new TypeFunc(lin,ExtraArr,IsVArgs)
 	newTypeFunc.RetType = retType
 	newTypeFunc.RetRef = retRef
 	FuncTypeTable.Push(newTypeFunc)

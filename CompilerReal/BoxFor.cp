@@ -161,6 +161,8 @@ BoxForOldFashionMulti := class extend BoxFor
 		WorkBag.Push(this&,State_PreGetUse)
 
 		IsStep1 = true
+
+		ItId = GetNewId()
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
