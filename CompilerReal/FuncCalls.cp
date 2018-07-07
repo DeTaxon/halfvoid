@@ -595,6 +595,7 @@ SomeFuncCall := class extend ObjResult
 				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "class"
 				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "arr"
 			}
+			if ToCall.MyFuncType.RetRef gotAlloc = false
 			if gotAlloc
 			{
 				if Up.GetValue() == "~Return()"

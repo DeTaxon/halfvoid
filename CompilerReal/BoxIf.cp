@@ -38,9 +38,10 @@ BoxIf := class extend Object
 			{
 				if TypeCmp(Down.GetType(),GetType("bool")) != 255
 				{
-					BoxExc(Down,GetType("bool"),false)
+					if BoxExc(Down,GetType("bool"),false) == null
+						EmitError("compiler error: can not convert\n")
 				}else{
-					ErrorLog.Push("can not use type as if statement\n")
+					EmitError("can not use type as if statement\n")
 				}
 			}
 		}
@@ -114,9 +115,10 @@ BoxWhile := class extend Object
 			{
 				if TypeCmp(Down.GetType(),GetType("bool")) != 255
 				{
-					BoxExc(Down,GetType("bool"),false)
+					if BoxExc(Down,GetType("bool"),false) == null
+						EmitError("compiler error: can not convert\n")
 				}else{
-					ErrorLog.Push("can not use type as if statement\n")
+					EmitError("can not use type as while statement\n")
 				}
 			}
 		}

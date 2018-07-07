@@ -52,7 +52,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	c.Push(new ObjType(ToType))
 
 	func :=  FindFunc("->{}",start,p,c,true)
-	if func != null return null
+	if func != null return func
 
 	if itemType.GetType() == "class"
 	{
@@ -80,7 +80,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
 	Exc := GetExchange(item,item,toType,isRef)
-	
+
 	if Exc == null return null
 
 	oldUp := item.Up

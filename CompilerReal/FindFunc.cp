@@ -156,7 +156,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 					asClass := ((iterU.Up.Up)->{BoxClass^})
 					theTemplate := BoxTemplate^
 					if (name == ".") {
-						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})						
+						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
 					}else{
 						//AddClassFuncs(name,asClass,found&,templates&)
 					}
@@ -372,6 +372,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			return 2
 		}
 	}
+	if (inType.GetType() == "point" and funcType == GetType("bool")) return 1
+	if inType.GetType() == "fatarr" and funcType == GetType("bool") return 1
 
 
 	if inType == GetType("double") and funcType == GetType("float") return 2

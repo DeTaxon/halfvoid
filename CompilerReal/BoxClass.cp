@@ -233,7 +233,7 @@ BoxClass := class extend Object
 		MakeItBlock(Down)
 		Down.SetUp(this&)
 		WorkBag.Push(Down,State_Start)
-		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(this&,State_PreGetUse)
 
 		ClassId = GetNewId()
 		ClassType = new TypeClass(this&)
@@ -258,7 +258,7 @@ BoxClass := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse and Parent != null
+		if pri == State_PreGetUse and Parent != null
 		{
 			Size := Parent.Params.Size()
 			for i : Size
@@ -325,7 +325,14 @@ BoxClass := class extend Object
 
 		if bestFunc == null and Parent != null
 		{
-			return Parent.GetFunc(name,pars,consts)
+			pars2 := Queue.{Type^}()
+			pars2.Push(Parent.ClassType)
+			for i : pars.Size()
+			{
+				if i != 0
+					pars2.Push(pars[i])
+			}
+			return Parent.GetFunc(name,pars2,consts)
 		}
 
 		return bestFunc
