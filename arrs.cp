@@ -16,6 +16,17 @@ Node := class .{@T}
 	}
 }
 
+
+StackTypeIter := class .{@T}
+{
+	iter := Node.{T}^
+	this := !(Node.{T}^ toStart) {	iter = toStart }
+	"^" := !() -> ref T { return iter.Data }
+	Inc := !() -> void { iter = iter.Next }
+	IsEnd := !() -> bool { return iter == null }
+}
+
+
 Stack := class .{@T}
 {
 	Start := Node.{T}^
@@ -99,6 +110,10 @@ Stack := class .{@T}
 	{
 		Start = toSet.Start
 	}
+	"~For" := !() -> StackTypeIter.{T}
+	{
+		return StackTypeIter.{T}(Start)
+	}
 }
 
 Queue := class .{@T} extend Stack.{T}
@@ -181,7 +196,9 @@ DoubleNode := class .{@TKey,@TValue}
 Map := class .{@TKey,@TValue}
 {
 	Start := DoubleNode.{TKey,TValue}^
-
+	this := !() {
+		Start = null
+	}
 	"[]" := !(TKey look) -> ref TValue
 	{
 		iter := Start

@@ -32,12 +32,13 @@ main := !(int argc, char^^ argv) -> int
 	//m := Model()
 	//m.LoadFromPLY("HiResBox.ply")
 
-	c := Queue.{int}()
-	c.Push(6)
-	c.Push(10)
-	c.Push(4)
+	c := Stack.{int}()
 
-	printf("wut %i\n",c[0])
+	c.Push(5)
+	c.Push(1)
+	c.Push(12)
+
+	for i : c printf("wut %i\n",i)
 
 	return 0
 
