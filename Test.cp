@@ -31,16 +31,9 @@ main := !(int argc, char^^ argv) -> int
 	//m := Model()
 	//m.LoadFromPLY("HiResBox.ply")
 
-	c := Queue.{int}()
+	c := Map.{int, Map.{int, int} }()
 
-	c.Push(4)
-	c.Push(7)
-	c.Push(1)
-	c.Push(3)
-
-	r := c.ToArray()
-
-	for i : r printf("wut %i\n",i)
+	c[0]
 
 	return 0
 

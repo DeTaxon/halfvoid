@@ -106,7 +106,6 @@ BoxClassTemplate := class extend Object
 			if Classes[i].IsSameConsts(stuf)
 				return Classes[i].ClassType
 		}
-
 		newConsts := Queue.{ObjConstHolder^}()
 		if not IsEqConsts(ConstTree,stuf,newConsts)
 			return null
@@ -135,13 +134,10 @@ BoxClassTemplate := class extend Object
 		if Down != null Down.Left = newClass
 		Down = newClass
 
-		i := stuf.Size()
-		i -= 1
 
-		while i >= 0
+		for i : stuf.Size()
 		{
 			newClass.ItConsts.Push(stuf[i])
-			i -= 1		
 		}
 
 		for j : newConsts.Size()

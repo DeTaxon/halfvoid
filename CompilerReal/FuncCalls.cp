@@ -595,7 +595,8 @@ SomeFuncCall := class extend ObjResult
 				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "class"
 				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "arr"
 			}
-			if ToCall.MyFuncType.RetRef gotAlloc = false
+			if ToCall.IsRetRef gotAlloc = false
+			if ToCall.MyFuncType.RetRef gotAlloc = false //TOD: WHAT THE FUK?
 			if gotAlloc
 			{
 				if Up.GetValue() == "~Return()"
@@ -1287,10 +1288,13 @@ ConstructCall := class extend NaturalCall
 				ReplaceNode(Down,new ParamNaturalCall("this",itm))
 			}else
 			{
-				gotAlloc = true
-				InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
-				TName = "%T" + InAlloc
-				//TEName = "%TE" + RetId
+				if not ToCall.IsRetRef 
+				{
+					gotAlloc = true
+					InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
+					TName = "%T" + InAlloc
+					//TEName = "%TE" + RetId
+				}
 			}
 		}
 	}

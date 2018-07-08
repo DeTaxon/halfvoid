@@ -574,7 +574,7 @@ BoxFunc := class extend Object
 		{
 			if RetTyp.GetType() == "arr" or RetTyp.GetType() == "class"
 			{
-				IsRetComplex = true
+				if not IsRetRef IsRetComplex = true
 			}
 		}
 
@@ -679,7 +679,7 @@ BoxFunc := class extend Object
 		IsRetComplex = false
 		if toSet.GetType() == "arr" or toSet.GetType() == "class"
 		{
-			IsRetComplex = true
+			if not IsRetRef IsRetComplex = true
 		}
 		if MyFuncType.RetType != toSet
 		{
@@ -797,9 +797,12 @@ BoxFuncBody := class extend BoxFunc
 			IsRetComplex = false
 			if t.GetType() == "arr" or t.GetType() == "class"
 			{
-				IsRetComplex = true
-				if ExtraRetParam == null
-					ExtraRetParam = new FuncParam("ToRet",t,true)
+				if not IsRetRef
+				{
+					IsRetComplex = true
+					if ExtraRetParam == null
+						ExtraRetParam = new FuncParam("ToRet",t,true)
+				}
 			}
 		}
 	}
@@ -815,7 +818,7 @@ BoxFuncBody := class extend BoxFunc
 		}else
 		{
 			OutputName = "func" + GetNewId()
-		}
+		}	
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 		ParseConsts(cons)
 

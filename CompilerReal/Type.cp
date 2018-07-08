@@ -148,6 +148,7 @@ ParseType := !(Object^ Node) -> Type^
 		if lazy lazy = Node.Down.Right.Right.GetValue() == "{}"
 		if lazy 
 		{
+			SyntaxCompress(Node.Down.Right.Right,PriorityData)
 			NodeName := GetItem(((Node.Down)->{ObjIndent^}).MyStr,Node)
 			if NodeName == null return null
 			if NodeName.Down.GetValue() == "!{}{...}"
@@ -156,7 +157,7 @@ ParseType := !(Object^ Node) -> Type^
 				Objs := Queue.{Object^}()
 				
 				iterR := Node.Down.Right.Right.Down
-
+				
 				while iterR != null
 				{	
 					if iterR.GetValue() != ","
@@ -456,7 +457,7 @@ TypeFunc := class extend Type
 	}
 	GetName := virtual !() -> string
 	{
-		if RetType.GetType() == "arr" or RetType.GetType() == "class"
+		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef
 		{
 			return "void" + GetSkobs() 
 		}
@@ -473,8 +474,11 @@ TypeFunc := class extend Type
 		{
 			if RetType.GetType() == "arr" or RetType.GetType() == "class"
 			{
-				ToRet = ToRet + RetType.GetName() + "* "
-				if ParsCount > 0 ToRet = ToRet + " , "
+				if not RetRef
+				{
+					ToRet = ToRet + RetType.GetName() + "* "
+					if ParsCount > 0 ToRet = ToRet + " , "
+				}
 			}
 		}
 
