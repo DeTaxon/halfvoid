@@ -28,11 +28,10 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	
 	//m := Model()
 	//m.LoadFromPLY("HiResBox.ply")
 
-	c := Stack.{int}()
+	c := Queue.{int}()
 
 	c.Push(5)
 	c.Push(1)

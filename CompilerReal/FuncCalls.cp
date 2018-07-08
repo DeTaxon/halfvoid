@@ -705,9 +705,9 @@ NaturalCall := class extend SomeFuncCall
 	{
 
 		iter := Down
-		if ToCall != null 
-			if ToCall.IsRetComplex 
-				iter = iter.Right //???
+		//if ToCall != null 
+		//	if ToCall.IsRetComplex 
+		//		iter = iter.Right //???
 		i := 0
 
 		while iter != null and i < FType.ParsCount 
