@@ -379,10 +379,11 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
 	{
+		return 255
 		if pars.Size() != 1 return 255
 		if pars[0].GetType() != "fatarr" return 255
-		//if consts.Size() != 1 return 255
-		//if consts[0].GetValue() != "~type" return 255 
+		if consts.Size() != 1 return 255
+		if consts[0].GetValue() != "~type" return 255 
 		return 0
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
@@ -471,6 +472,11 @@ BuiltInTemplateSet := class extend BoxTemplate
 													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 			}
 			return PreRet
+		}
+		if pars[0] != pars[1]
+		{
+			return new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
+													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 		}
 		return new BuiltInFuncBinar("=",pars[0],true,pars[0],false,GetType("void"), "store " + pars[0].GetName() + " #2, " + pars[0].GetName() +"* #1\n")
 	}
@@ -1022,6 +1028,7 @@ AddTemplates := !() -> void
 	GlobalRefExc = new BuiltInTemplateRefEx()
 	GlobalExcArr = new BuiltInTemplateExcArr()
 
+	//BuiltInTemplates.Push(new BuiltInTemplateExcFatArr())
 	BuiltInTemplates.Push(GlobalUnpoint)
 	BuiltInTemplates.Push(new BuiltInLenArr())
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPoints())

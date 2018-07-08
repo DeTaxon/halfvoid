@@ -394,6 +394,17 @@ TypePointVoidP := class extend TypePoint
 		return "i8*"
 	}
 }
+TypePointVoidFatP := class extend TypeFatArr
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+	}
+	GetName := virtual !() -> string
+	{
+		return "i8*"
+	}
+}
 
 TypeFunc := class extend Type
 {
@@ -603,6 +614,9 @@ CreateStandartTypes := !() -> void
 	VoidPType = new TypePointVoidP(TypeTable[11]) // void*
 	TypeTable[11].AsPoint = VoidPType
 
+	TypeTable[17] = new TypePointVoidFatP(TypeTable[11])
+	TypeTable[11].AsFatArr = TypeTable[17]
+
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
 
@@ -616,6 +630,8 @@ CreateStandartTypes := !() -> void
 
 	GlobalStrs = GlobalStrs + "%Vec4f = type <4 x float>\n"
 	TypeTable[16] = new TypeStandart("%Vec4f",16,16)
+
+
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

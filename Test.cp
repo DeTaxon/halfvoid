@@ -37,6 +37,8 @@ main := !(int argc, char^^ argv) -> int
 	c.Push(1)
 	c.Push(12)
 
+	r := c.ToArray()
+
 	for i : c printf("wut %i\n",i)
 
 	return 0

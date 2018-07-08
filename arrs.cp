@@ -91,19 +91,19 @@ Stack := class .{@T}
 		}
 		return Iter.Data		
 	}
-	ToArray := !() -> T^
+	ToArray := !() -> T[]
 	{
 		Si := this.Size()
 		if Si == 0 return null
 		ToOut := new T[Si]
-		Iter := Start
-		i := 0
-		while Iter
-		{
-			ToOut[i] = Iter.Data
-			Iter = Iter.Next
-			i += 1	
-		}
+		//Iter := Start
+		//i := 0
+		//while Iter
+		//{
+		//	ToOut[i] = Iter.Data
+		//	Iter = Iter.Next
+		//	i += 1	
+		//}
 		return ToOut
 	}
 	"=" := !(Stack.{T} toSet) -> void

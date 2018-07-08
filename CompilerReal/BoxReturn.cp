@@ -63,15 +63,15 @@ BoxReturn := class extend Object
 								Down = BoxExc(Down,PreType,asNeed.MyFuncType.RetRef)
 								Down.Up = this&
 							}else{
-								ErrorLog.Push("Can not return value")
+								EmitError("Can not return value\n")
 							}
 						}
 					}
 				}else{
-					ErrorLog.Push("recursion detected\n")
+					EmitError("recursion detected\n")
 				}
 			}else{
-				ErrorLog.Push("impossible state\n")
+				EmitError("impossible state\n")
 			}
 		}
 	}

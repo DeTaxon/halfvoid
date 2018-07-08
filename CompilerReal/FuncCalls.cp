@@ -698,6 +698,7 @@ NaturalCall := class extend SomeFuncCall
 		ToCall.ParseBlock()
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
+		Line = Pars.Line
 		ExchangeParams()
 		WorkBag.Push(this&,State_GetUse)
 	}
@@ -722,7 +723,7 @@ NaturalCall := class extend SomeFuncCall
 	
 				if preRet == null
 				{
-					ErrorLog.Push("compiler bug\n")
+					EmitError("compiler bug\n")
 				}else{
 					iter = preRet
 				}

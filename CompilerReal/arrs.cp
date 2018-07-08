@@ -92,7 +92,7 @@ Stack := class !{T}
 		}
 		return Iter.Data		
 	}
-	ToArray := !() -> T^
+	ToArray := !() -> T[]
 	{
 		Si := this.Size()
 		if Si == 0 return null
