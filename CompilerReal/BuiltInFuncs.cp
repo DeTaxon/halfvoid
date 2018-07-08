@@ -984,6 +984,38 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateCmpPointsNE := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "!="
+		OutputName = "error"
+
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if consts.Size() != 0 return 255
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
+		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		return new BuiltInFuncBinar("->",pars[0],false,pars[1],false,GetType("bool"),false,
+			"%PreOne## = bitcast " + pars[0].GetName() + " #1 to i8*\n" +
+			"%PreTwo## = bitcast " + pars[1].GetName() + " #2 to i8*\n" +
+			"#0 = icmp ne " + pars[0].GetName() + " #1,#2\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 BuiltInTemplateRefEx := class extend BoxTemplate
 {
 	this := !() -> void
@@ -1033,6 +1065,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(GlobalUnpoint)
 	BuiltInTemplates.Push(new BuiltInLenArr())
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPoints())
+	BuiltInTemplates.Push(new BuiltInTemplateCmpPointsNE())
 	BuiltInTemplates.Push(new BuiltInTemplateCheckPoint())
 
 	//BuiltInTemplates.Push(GlobalUnroll)

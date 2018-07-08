@@ -97,7 +97,8 @@ Model := class
 
 		if vertItems != 7 return false //TODO: normalless support
 
-		verts = new float[vertsCount*vertSize]
+		totalVerts := vertsCount*vertSize
+		verts = new float[totalVerts]
 
 		posInVerts := 0
 
@@ -107,7 +108,7 @@ Model := class
 
 		vertFileState := 0
 
-		while posInVerts < vertsCount and pos < daFile.Size()
+		while posInVerts < totalVerts and pos < daFile.Size()
 		{
 			if vertFileState == 0
 			{
@@ -119,6 +120,7 @@ Model := class
 						hiValue = hiValue*10 + daFile[pos] - '0'
 					case '.'
 						vertFileState = 1
+						pos += 1 //TODO: why?
 					case void
 						isNeg = false
 						lowValue = 1
@@ -145,35 +147,66 @@ Model := class
 			}
 			pos += 1
 		}
-		printf("wut %c\n",daFile[pos])
-		return true
+
 
 		preInd := Queue.{int}()
 		miniBox := int[16]
 		miniPos := 0
 		nowValue := 0
 		nowState := 0
+		intVal := 0
 
-		while pos < dfFile.Size()
-		{	
+		while pos < daFile.Size()
+		{
 			switch nowState
 			{
 				case 0 //start
 					switch daFile[pos]
 					{
 						case '0'..'9'
-							nowState = nowState*10 + daFile[pos] - '0'
+							nowValue = nowValue*10 + daFile[pos] - '0'
 						case ' '
 							nowState = 1
+							intVal = 0
 					}
 
 				case 1 //space
+					switch daFile[pos]
+					{
+						case '0'..'9'
+							intVal = intVal*10 + daFile[pos] - '0'
+						case ' '
+							miniBox[miniPos] = intVal
+							intVal = 0
+							miniPos += 1
+						case '\n'
+							nowState = 0
+							miniBox[miniPos] = intVal
+							intVal = 0
+							miniPos += 1
 
-				case 2 // end
+							switch nowValue
+							{
+								case 4
+									preInd.Push(miniBox[0])
+									preInd.Push(miniBox[1])
+									preInd.Push(miniBox[2])
+									preInd.Push(miniBox[0])
+									preInd.Push(miniBox[2])
+									preInd.Push(miniBox[3])
+								case 3
+									preInd.Push(miniBox[0])
+									preInd.Push(miniBox[1])
+									preInd.Push(miniBox[2])
+							}
+							miniPos = 0
+							nowValue = 0
+					}
+
 			}
 			pos += 1
 		}
-
+		inds = preInd.ToArray()
 
 
 		return true
