@@ -698,7 +698,6 @@ NaturalCall := class extend SomeFuncCall
 		ToCall.ParseBlock()
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
-		Line = Pars.Line
 		ExchangeParams()
 		WorkBag.Push(this&,State_GetUse)
 	}
@@ -1120,7 +1119,6 @@ NewCallOne := class extend SomeFuncCall
 				//TODO: Class.Get
 				ErrorLog.Push("cant create type\n")
 			}else{
-
 				newItm = MakeSimpleCall(func,null->{Object^})
 
 				if useConstr

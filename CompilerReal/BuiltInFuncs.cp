@@ -439,6 +439,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 
 		emptType := Queue.{Type^}()
 		emptType.Push(null->{Type^})
+		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
@@ -478,7 +479,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 			return new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
 													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
 		}
-		return new BuiltInFuncBinar("=",pars[0],true,pars[0],false,GetType("void"), "store " + pars[0].GetName() + " #2, " + pars[0].GetName() +"* #1\n")
+		return new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "store " + pars[0].GetName() + " #2, " + pars[0].GetName() +"* #1\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

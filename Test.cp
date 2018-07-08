@@ -33,13 +33,14 @@ main := !(int argc, char^^ argv) -> int
 
 	c := Queue.{int}()
 
-	c.Push(5)
+	c.Push(4)
+	c.Push(7)
 	c.Push(1)
-	c.Push(12)
+	c.Push(3)
 
 	r := c.ToArray()
 
-	for i : c printf("wut %i\n",i)
+	for i : c.Size() printf("wut %i\n",r[i])
 
 	return 0
 

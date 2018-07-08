@@ -6,7 +6,11 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
-	if itemType.GetType() == "point" and ToType.GetType() == "point"
+	if (itemType.GetType() == "point" or itemType.GetType() == "fatarr") and ToType.GetType() == "point"
+	{
+		return GetExcPointers(itemType,ToType)
+	}
+	if itemType.GetType() == "fatarr" and ToType.GetType() == "fatarr"
 	{
 		return GetExcPointers(itemType,ToType)
 	}

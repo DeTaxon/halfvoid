@@ -36,7 +36,7 @@ Stack := class .{@T}
 	}
 	Push := !(T a) -> int
 	{
-		if Start == null {
+		if Start == Start {
 			Start = new Node.{T}(a)
 		} else {
 			Start = new Node.{T}(a,Start)
@@ -96,14 +96,14 @@ Stack := class .{@T}
 		Si := this.Size()
 		if Si == 0 return null
 		ToOut := new T[Si]
-		//Iter := Start
-		//i := 0
-		//while Iter
-		//{
-		//	ToOut[i] = Iter.Data
-		//	Iter = Iter.Next
-		//	i += 1	
-		//}
+		Iter := Start
+		i := 0
+		while Iter
+		{
+			ToOut[i] = Iter.Data
+			Iter = Iter.Next
+			i += 1	
+		}
 		return ToOut
 	}
 	"=" := !(Stack.{T} toSet) -> void
@@ -141,7 +141,7 @@ Queue := class .{@T} extend Stack.{T}
 			Start = new Node.{T}(a)
 		} else {
 			Iter := Start
-			while Iter.Next Iter = Iter.Next
+			while Iter.Next {Iter = Iter.Next}
 			Iter.Next = new Node.{T}(a)
 		}
 		return 0
