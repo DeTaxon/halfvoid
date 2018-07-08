@@ -63,22 +63,17 @@ FixedArrayIter := class .{@Type}
 		size = si		
 		nowPos = 0
 	}
-	"^" := !() -> ref Type
-	{
-		return ptr[nowPos]
-	}
-	Inc := !() -> void
-	{
-		nowPos += 1
-	}
-	IsEnd := !() -> bool
-	{
-		return nowPos >= size
-	}
+	"^" := !() -> ref Type	{ return ptr[nowPos] }
+	Inc := !() -> void	{ nowPos += 1 }
+	IsEnd := !() -> bool	{ return nowPos >= size }
 }
 
 "~For" := !(@Type[@Size] item) -> FixedArrayIter.{Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},Size)
+}
+"~For" := !(@Type[] item) -> FixedArrayIter.{Type}
+{
+	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }
 

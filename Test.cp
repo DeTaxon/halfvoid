@@ -40,7 +40,7 @@ main := !(int argc, char^^ argv) -> int
 
 	r := c.ToArray()
 
-	for i : c.Size() printf("wut %i\n",r[i])
+	for i : r printf("wut %i\n",i)
 
 	return 0
 
