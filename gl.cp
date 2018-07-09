@@ -173,6 +173,10 @@ GL_TEXTURE_WRAP_S                 := 0x2802
 GL_TEXTURE_WRAP_T                 := 0x2803
 GL_REPEAT                         := 0x2901
 
+GL_MATRIX_MODE		:=		0x0BA0
+GL_MODELVIEW		:=		0x1700
+GL_PROJECTION		:=		0x1701
+GL_TEXTURE		:=		0x1702
 
 //glClear := !(int mask) -> void declare
 //glClearColor := !(float red, float green, float blue, float alpha) -> void declare

@@ -14,6 +14,13 @@ glVertex3fv := !(float^)^ -> void
 glColor3fv := !(float^)^ -> void
 glEnd := !()^ -> void
 
+glLoadIdentity := !()^ -> void
+gluPerspective := !(double,double,double,double)^ -> void
+glRotatef := !(float,float,float,float)^ -> void
+glTranslatef := !(float,float,float)^ -> void
+glMatrixMode := !(int)^ -> void
+glLoadMatrixf := !(float^)^ -> void
+
 keys := bool[256]
 
 error_callback := !(int error,char^ descp) -> void
@@ -29,7 +36,6 @@ key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
 	if key in GLFW_KEY_A..GLFW_KEY_Z keys[key - GLFW_KEY_A + 'a'] = action
 	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
 }
-
 
 main := !(int argc, char^^ argv) -> int
 {
@@ -53,13 +59,66 @@ main := !(int argc, char^^ argv) -> int
 	glVertex3fv = glfwGetProcAddress("glVertex3fv")
 	glColor3fv = glfwGetProcAddress("glColor3fv")
 	glEnd 	= glfwGetProcAddress("glEnd")
+
+	glLoadIdentity = glfwGetProcAddress("glLoadIdentity")
+	gluPerspective = glfwGetProcAddress("gluPerspective")
+	glRotatef = glfwGetProcAddress("glRotatef")
+	glTranslatef = glfwGetProcAddress("glTranslatef")
+	glMatrixMode = glfwGetProcAddress("glMatrixMode")
+	glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
+
 	glClearColor(1.0f,0.5f,0.0f,1.0f)
+
+	xC :=0.0f 
+	yC :=0.0f 
+	zC :=0.0f 
+
+	fov := 45deg
+	fF := 1.0f / tanf(fov*0.5f)
+	zFar := 200.0f
+	zNear := 1.5f
+	diff := zNear - zFar
+	sum := zNear + zFar
+	aspect := 1.0f
+
+	matrProj := float[16]
+	for c : 16 matrProj[c] = 0.0f
+	matrProj[0] = fF / aspect
+	matrProj[5] = fF
+	matrProj[10] = sum / diff
+	matrProj[11] = 2.0f*zFar*zNear / diff
+	matrProj[14] = -1.0f
+	
+
+	glMatrixMode(GL_PROJECTION)
+	glLoadMatrixf(matrProj)
+	glMatrixMode(GL_MODELVIEW)
 
 	while not glfwWindowShouldClose(win)
 	{
 		glfwPollEvents()
 
+		if keys['w']
+		{
+			zC += 0.005f
+		}
+		if keys['s']
+		{
+			zC -= 0.005f
+		}
+		if keys['a']
+		{
+			xC += 0.005f
+		}
+		if keys['d']
+		{
+			xC -= 0.005f
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT)
+
+		glLoadIdentity()
+		glTranslatef(xC,yC,zC)
 
 		glBegin(GL_TRIANGLES)
 		for i : m.inds->len

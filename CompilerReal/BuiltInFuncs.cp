@@ -1181,7 +1181,7 @@ CreateBuiltIns := !() -> void
 											+"#0 = fadd " + it + " #2,#0pre\n"
 											+"store "+it+" #0, "+it+"* #1\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load " + it + " , " + it + "* #1\n"
-											+"#0 = fsub i" + it + " #0pre,#2\n"
+											+"#0 = fsub " + it + " #0pre,#2\n"
 											+"store "+it+" #0, "+it+"* #1\n"))
 		BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load " + it + " , " + it + "* #1\n"
 											+"#0 = fmul " + it + " #2,#0pre\n"
@@ -1232,6 +1232,11 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push( new BuiltInSuffix("L",GetType("int"),false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))
+	BuiltInFuncs.Push( new BuiltInSuffix("deg",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float\n" +
+					"#0 = fmul float #1,%Pre##\n"))
+	BuiltInFuncs.Push( new BuiltInSuffix("deg",GetType("int"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float\n" +
+					"%PrePre## = sitofp i32 #1 to float\n" +
+					"#0 = fmul float %PrePre##,%Pre##\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("int"),false,GetType("float"),
 					"%PrePre## = sitofp i32 #1 to float\n" +
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +

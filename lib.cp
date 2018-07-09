@@ -8,6 +8,8 @@ dlopen := !(char^ name,int pri) -> void^ declare
 dlsym := !(void^ hndl, char^ name) -> void^ declare
 dlclose := !(void^ hndl) -> int declare
 
+tanf := !(float iiin) ->float declare
+
 "new" := !() . {@R} -> void^ 
 {
 	return malloc(R->TypeSize)
