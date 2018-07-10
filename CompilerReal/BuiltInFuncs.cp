@@ -299,6 +299,45 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 		}
 	}
 }
+BuiltInTemplateVec4fGet := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "."
+	
+		cc := Queue.{Type^}()
+		cc.Push(null->{Type^})
+
+		MyFuncType = GetFuncType(cc,null->{bool^},GetType("int"),false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int 
+	{
+		if pars.Size() != 1 return 255
+		if pars[0] != GetType("vec4f") return 255
+		if consts.Size() != 1 return 255
+		if consts[0].GetValue() != "~str" return 255
+
+		asNeedPre := consts[0]->{ObjStr^}
+		asNeed := asNeedPre.GetString()
+
+		if asNeed == "x" return 0
+		if asNeed == "y" return 0
+		if asNeed == "z" return 0
+
+		return 255
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	{
+		asNeedPre := consts[0]->{ObjStr^}
+		asNeed := asNeedPre.GetString()
+		
+		x := 0
+		if asNeed == "y" x = 1
+		if asNeed == "z" x = 2
+		
+		return new BuiltInFuncUno(".",pars[0],false,GetType("float"), "#0 = extractelement <4 x float> #1, i32 " + x + "\n")
+	}
+}
 
 BuiltInTemplateTypeInfo := class extend BoxTemplate
 {
@@ -1067,6 +1106,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPoints())
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPointsNE())
 	BuiltInTemplates.Push(new BuiltInTemplateCheckPoint())
+	BuiltInTemplates.Push(new BuiltInTemplateVec4fGet())
 
 	//BuiltInTemplates.Push(GlobalUnroll)
 }
@@ -1267,6 +1307,13 @@ Vec4fFuncs := !() -> void
 	BuiltInFuncs.Push( new BuiltInFuncBinar("/",F4T,false,F4T,false,F4T,"#0 = fdiv " + F4N + " #1 , #2\n"))
 	BuiltInFuncs.Push( new BuiltInFuncBinar("*",F4T,false,F4T,false,F4T,"#0 = fmul " + F4N + " #1 , #2\n"))
 	BuiltInFuncs.Push( new BuiltInFuncBinar("=",F4T,true,F4T,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
+
+	BuiltInFuncs.Push(new BuiltInFuncBinar("+=",F4T,true,F4T,false,F4T,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
+										+"#0 = fadd " + F4N + " #2,#0pre\n"
+										+"store "+ F4N +" #0, "+F4N+"* #1\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("-=",F4T,true,F4T,false,F4T,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
+										+"#0 = fsub " + F4N + " #0pre,#2\n"
+										+"store "+ F4N +" #0, "+F4N+"* #1\n"))
 
 	BuiltInFuncs.Push( new BuiltInFuncBinar("<+>",F4T,false,F4T,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
 		"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##)\n"))

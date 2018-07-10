@@ -215,23 +215,29 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				asIndent := (iter.Right)->{ObjIndent^} 
 				asName := asIndent.MyStr
 
-					if iter.GetValue() == "->"
-					{
-						consts := Queue.{Object^}()
-						pars := Queue.{Type^}()
-						pars.Push(iter.Left.GetType())
-						consts.Push(new ObjStr(asName))
+				if iter.GetValue() == "->"
+				{
+					consts := Queue.{Object^}()
+					pars := Queue.{Type^}()
+					pars.Push(iter.Left.GetType())
+					consts.Push(new ObjStr(asName))
 
-						fun := FindFunc("->",iter,pars,consts,false)
-						iter = iter.Left
-						iter.Right.Left = null
-						iter.Right = null
-						return MakeSimpleCall(fun,iter)
-					}
+					fun := FindFunc("->",iter,pars,consts,false)
+					iter = iter.Left
+					iter.Right.Left = null
+					iter.Right = null
+					return MakeSimpleCall(fun,iter)
+				}
 
 				if iter.Right.Right != null
 				{
 					LL := iter.Left
+
+					if iter.Left.GetType() == "standart"
+					{
+						return null
+					}
+
 					GotClass := true
 					if  LL.GetType().GetType() != "class" 
 					{
@@ -294,6 +300,17 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					asClass := BoxClass^
 					asClass = null
 					LT := iter.Left.GetType()
+
+					if LT.GetType() == "standart"
+					{
+						pars := Queue.{Type^}()
+						pars.Push(LT)
+						cc := Queue.{Object^}()
+						cc.Push(new ObjStr(asName))
+						func := FindFunc(".",iter,pars,cc,false)
+						if func == null return null
+						return MakeSimpleCall(func,iter.Left)
+					}
 
 					if LT.GetType() == "class"
 					{

@@ -68,10 +68,8 @@ main := !(int argc, char^^ argv) -> int
 	glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
 
 	glClearColor(1.0f,0.5f,0.0f,1.0f)
-
-	xC :=0.0f 
-	yC :=0.0f 
-	zC :=0.0f 
+	
+	vecPos := vec4f(0.0f,0.0f,0.0f,0.0f)
 
 	fov := 45deg
 	fF := 1.0f / tanf(fov*0.5f)
@@ -100,25 +98,25 @@ main := !(int argc, char^^ argv) -> int
 
 		if keys['w']
 		{
-			zC += 0.005f
+			vecPos += vec4f(0.0f,0.0f,0.005f,0.0f)
 		}
 		if keys['s']
 		{
-			zC -= 0.005f
+			vecPos -= vec4f(0.0f,0.0f,0.005f,0.0f)
 		}
 		if keys['a']
 		{
-			xC += 0.005f
+			vecPos += vec4f(0.005f,0.0f,0.0f,0.0f)
 		}
 		if keys['d']
 		{
-			xC -= 0.005f
+			vecPos -= vec4f(0.005f,0.0f,0.0f,0.0f)
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT)
 
 		glLoadIdentity()
-		glTranslatef(xC,yC,zC)
+		glTranslatef(vecPos.x,vecPos.y,vecPos.z)
 
 		glBegin(GL_TRIANGLES)
 		for i : m.inds->len
