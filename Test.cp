@@ -39,9 +39,11 @@
 
 "<*>" := !(quantf a,quantf b) -> quantf
 {
-	res := quantf
-	x := (a * b.wzyx) <+> vec4f(1.0f,1.0f,-1.0f,1.0f)
-	return res
+	x := (a * b.wzyx) <+> quantf( 1.0f, 1.0f,-1.0f, 1.0f)
+	y := (a * b.zwxy) <+> quantf(-1.0f, 1.0f, 1.0f, 1.0f)
+	z := (a * b.yxwz) <+> quantf( 1.0f,-1.0f, 1.0f, 1.0f)
+	w := (a * b.xyzw) <+> quantf(-1.0f,-1.0f,-1.0f, 1.0f)
+	return quantf(x,y,z,w)
 }
 
 main := !(int argc, char^^ argv) -> int
