@@ -56,7 +56,7 @@ ObjNULL := class extend ObjConst
 {
 	"this" := !() -> void
 	{
-		ResultType = TypeTable[17] 
+		ResultType = TypeTable[16] 
 	}
 	GetValue := virtual !() -> char^
 	{

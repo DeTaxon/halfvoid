@@ -358,7 +358,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter.Right != null
 				{
-					ErrorLog.Push("no more then binary allowed")
+					iter.Up.Print(0)
+					iter.EmitError("no more then binary allowed\n")
 					return null
 				} 
 				if iter.GetType() != null

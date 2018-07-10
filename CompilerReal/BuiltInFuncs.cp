@@ -313,7 +313,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int 
 	{
 		if pars.Size() != 1 return 255
-		if pars[0] != GetType("vec4f") return 255
+		if pars[0] != GetType("vec4f") and pars[0] != GetType("quantf") return 255
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~str" return 255
 
@@ -323,6 +323,17 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		if asNeed == "x" return 0
 		if asNeed == "y" return 0
 		if asNeed == "z" return 0
+		if asNeed == "w" return 0
+
+
+		if asNeed.Size() == 4
+		{
+			for i : asNeed
+			{
+				if not (i in "xyzw") return 255
+			}
+			return 0
+		}
 
 		return 255
 	}
@@ -331,11 +342,27 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		asNeedPre := consts[0]->{ObjStr^}
 		asNeed := asNeedPre.GetString()
 		
-		x := 0
-		if asNeed == "y" x = 1
-		if asNeed == "z" x = 2
-		
-		return new BuiltInFuncUno(".",pars[0],false,GetType("float"), "#0 = extractelement <4 x float> #1, i32 " + x + "\n")
+		if asNeed.Size() == 1
+		{
+			x := 0
+			if asNeed == "y" x = 1
+			if asNeed == "z" x = 2
+			if asNeed == "w" x = 3
+			
+			return new BuiltInFuncUno(".",pars[0],false,GetType("float"), "#0 = extractelement <4 x float> #1, i32 " + x + "\n")
+		}else{
+			vecData := int[4]
+			for i : 4
+			{
+				if asNeed[i] == 'x' vecData[i] = 0
+				if asNeed[i] == 'y' vecData[i] = 1
+				if asNeed[i] == 'z' vecData[i] = 2
+				if asNeed[i] == 'w' vecData[i] = 3
+			}
+			return new BuiltInFuncUno(".",pars[0],false,pars[0],"#0 = shufflevector <4 x float> #1, <4 x float> undef , <4 x i32> " +
+					"<i32 " + vecData[0] + ",i32 " + vecData[1] + ",i32 " + vecData[2] + ",i32 " + vecData[3] + ">\n")
+		}
+		return null
 	}
 }
 
@@ -1302,31 +1329,40 @@ Vec4fFuncs := !() -> void
 	FT := GetType("float")
 	F4N := F4T.GetName()
 
-	BuiltInFuncs.Push( new BuiltInFuncBinar("+",F4T,false,F4T,false,F4T,"#0 = fadd " + F4N + " #1 , #2\n"))
-	BuiltInFuncs.Push( new BuiltInFuncBinar("-",F4T,false,F4T,false,F4T,"#0 = fsub " + F4N + " #1 , #2\n"))
-	BuiltInFuncs.Push( new BuiltInFuncBinar("/",F4T,false,F4T,false,F4T,"#0 = fdiv " + F4N + " #1 , #2\n"))
-	BuiltInFuncs.Push( new BuiltInFuncBinar("*",F4T,false,F4T,false,F4T,"#0 = fmul " + F4N + " #1 , #2\n"))
-	BuiltInFuncs.Push( new BuiltInFuncBinar("=",F4T,true,F4T,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
 
-	BuiltInFuncs.Push(new BuiltInFuncBinar("+=",F4T,true,F4T,false,F4T,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
-										+"#0 = fadd " + F4N + " #2,#0pre\n"
-										+"store "+ F4N +" #0, "+F4N+"* #1\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("-=",F4T,true,F4T,false,F4T,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
-										+"#0 = fsub " + F4N + " #0pre,#2\n"
-										+"store "+ F4N +" #0, "+F4N+"* #1\n"))
 
-	BuiltInFuncs.Push( new BuiltInFuncBinar("<+>",F4T,false,F4T,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
-		"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##)\n"))
+	Typs := Type^[2]
+	Typs[0] = F4T
+	Typs[1] = GetType("quantf")
+	
+	for NT : Typs
+	{
+		BuiltInFuncs.Push( new BuiltInFuncBinar("+",NT,false,NT,false,NT,"#0 = fadd " + F4N + " #1 , #2\n"))
+		BuiltInFuncs.Push( new BuiltInFuncBinar("-",NT,false,NT,false,NT,"#0 = fsub " + F4N + " #1 , #2\n"))
+		BuiltInFuncs.Push( new BuiltInFuncBinar("/",NT,false,NT,false,NT,"#0 = fdiv " + F4N + " #1 , #2\n"))
+		BuiltInFuncs.Push( new BuiltInFuncBinar("*",NT,false,NT,false,NT,"#0 = fmul " + F4N + " #1 , #2\n"))
+		BuiltInFuncs.Push( new BuiltInFuncBinar("=",NT,true,NT,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
+	
+		BuiltInFuncs.Push(new BuiltInFuncBinar("+=",NT,true,NT,false,NT,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
+											+"#0 = fadd " + F4N + " #2,#0pre\n"
+											+"store "+ F4N +" #0, "+F4N+"* #1\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar("-=",NT,true,NT,false,NT,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
+											+"#0 = fsub " + F4N + " #0pre,#2\n"
+											+"store "+ F4N +" #0, "+F4N+"* #1\n"))
+	
+		BuiltInFuncs.Push( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
+			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##)\n"))
 
-	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,1,F4T,"#0 = insertelement " + F4N + " undef, float #1,i32 0\n"))
-	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,2,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
-								"#0 = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"))
-	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,3,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
-								"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
-								"#0 = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"))
-	BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,4,F4T,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
-								"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
-								"%Pre1p## = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"+
-								"#0	  = insertelement " + F4N + " %Pre1p##, float #4,i32 3\n"))
+		BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,1,NT,"#0 = insertelement " + F4N + " undef, float #1,i32 0\n"))
+		BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,2,NT,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+									"#0 = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"))
+		BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,3,NT,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+									"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
+									"#0 = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"))
+		BuiltInFuncs.Push( new BuiltInFuncTypeTimes(". this",FT,4,NT,"%Pre3p## = insertelement " + F4N + " undef, float #1,i32 0\n" + 
+									"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
+									"%Pre1p## = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"+
+									"#0	  = insertelement " + F4N + " %Pre1p##, float #4,i32 3\n"))
+	}
 }
 

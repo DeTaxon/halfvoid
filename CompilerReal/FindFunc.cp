@@ -377,7 +377,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 
 
 	if inType == GetType("double") and funcType == GetType("float") return 2
-	if inType == TypeTable[17] and funcType.GetType() == "fatarr" return 2
+	if inType == TypeTable[16] and funcType.GetType() == "fatarr" return 2
 	//if (inType.GetType() == "point" and funcType == (GetType("void").GetPoint())) return 2
 	//if (funcType.GetType() == "point" and inType == (GetType("void").GetPoint())) return 2
 	if (funcType.GetType() == "point" and inType == VoidPType) return 2

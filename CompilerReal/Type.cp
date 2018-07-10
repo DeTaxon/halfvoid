@@ -618,8 +618,8 @@ CreateStandartTypes := !() -> void
 	VoidPType = new TypePointVoidP(TypeTable[11]) // void*
 	TypeTable[11].AsPoint = VoidPType
 
-	TypeTable[17] = new TypePointVoidFatP(TypeTable[11])
-	TypeTable[11].AsFatArr = TypeTable[17]
+	TypeTable[16] = new TypePointVoidFatP(TypeTable[11])
+	TypeTable[11].AsFatArr = TypeTable[16]
 
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
@@ -633,7 +633,8 @@ CreateStandartTypes := !() -> void
 	TypeTable[15] = new TypeStandart("%OpaqType",0,0)
 
 	GlobalStrs = GlobalStrs + "%Vec4f = type <4 x float>\n"
-	TypeTable[16] = new TypeStandart("%Vec4f",16,16)
+	TypeTable[17] = new TypeStandart("%Vec4f",16,16)
+	TypeTable[18] = new TypeStandart("%Vec4f",16,16)
 
 
 
@@ -664,7 +665,8 @@ CreateStandartTypes := !() -> void
 	DefsTable[18] = new TypeDef("range",TypeTable[13])
 	DefsTable[19] = new TypeDef("rangef",TypeTable[14])
 
-	DefsTable[20] = new TypeDef("vec4f",TypeTable[16])
+	DefsTable[20] = new TypeDef("vec4f",TypeTable[17])
+	DefsTable[21] = new TypeDef("quantf",TypeTable[18])
 }
 IsInt := !(Type^ tp) -> bool
 {

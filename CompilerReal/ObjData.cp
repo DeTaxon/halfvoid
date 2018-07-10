@@ -12,6 +12,23 @@ ObjData := class extend Object
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_PreGetUse)
+			if Down != null
+			{
+				if Down.Right == null and Down.GetValue() == "()"
+				{
+					SyntaxCompress(Down,PriorityData)
+					newDown := Down.Down
+					if newDown.GetValue() == "~d" and newDown.Right == null
+					{
+						newDown = newDown.Down
+					}
+					Down = newDown
+					if Down != null
+					{
+						Down.SetUp(this&)
+					}
+				}
+			}
 		}
 		if pri == State_PreGetUse
 		{
