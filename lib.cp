@@ -9,6 +9,9 @@ dlsym := !(void^ hndl, char^ name) -> void^ declare
 dlclose := !(void^ hndl) -> int declare
 
 tanf := !(float iiin) ->float declare
+cosf := !(float iiin) ->float declare
+sinf := !(float iiin) ->float declare
+sqrtf := !(float iiin) ->float declare
 
 "new" := !() . {@R} -> void^ 
 {
