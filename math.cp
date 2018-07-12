@@ -11,8 +11,8 @@
 "*" := !(quantf a, vec4f b) -> vec4f
 {
 	c := quantf(b.x,b.y,b.z,0.0f)
-	revA := quantf(-(a.x),-(a.y),-(a.z),-(a.w))
-	preRes := a <*> c <*>revA
+	revA := quantf(-(a.x),-(a.y),-(a.z),a.w)
+	preRes := (a <*> c) <*>revA
 	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
 }
 quantfAt := !(float x, float y, float z, float de) -> quantf
@@ -33,7 +33,11 @@ centf := class
 {
 	ang := quantf
 	pos := vec4f
-
+	this := !() -> void
+	{
+		ang = quantf(0.0f,0.0f,0.0f,1.0f)
+		pos = vec4f(0.0f,0.0f,0.0f,1.0f)
+	}
 	FillMatr := !(float[16] toSet) -> void
 	{
 		for 16 toSet[it] = 0.0f
@@ -53,6 +57,15 @@ centf := class
 		toSet[12] = pos.x
 		toSet[13] = pos.y
 		toSet[14] = pos.z
-
+	}
+	"<*>" := !(centf toAdd) -> centf
+	{
+		ToRet.ang = ang <*> toAdd.ang
+		ToRet.pos = (toAdd.ang * this.pos) + pos
+	}
+	"=" := !(centf toSet) -> void
+	{	
+		ang = toSet.ang
+		pos = toSet.pos
 	}
 }

@@ -38,6 +38,50 @@ key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
 	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
 }
 
+camera_t := class 
+{
+	pos := vec4f
+	angX,angY := float
+
+	this := !() -> void
+	{
+		pos = vec4f(0.0f,0.0f,0.0f,1.0f)
+		angX = 0.0f
+		angY = 0.0f
+	}
+
+	CheckMove := !(float diff) -> void
+	{
+		ang := quantfAt(0.0f,1.0f,0.0f,angY) <*> quantfAt(1.0f,0.0f,0.0f,angX)
+		cons := 0.005f
+		atVec := ang * vec4f(0.0f,0.0f,cons*diff,1.0f)
+		right := ang * vec4f(cons*diff,0.0f,0.0f,1.0f)
+		
+		if keys['w']	{ pos += atVec }
+		if keys['s']	{ pos -= atVec }
+		if keys['a']	{ pos += right}
+		if keys['d']	{ pos -= right}
+		if keys['q']	{ angY += cons}
+		if keys['e']	{ angY -= cons}
+		if keys['r']	{ angX += cons}
+		if keys['f']	{ angX -= cons}
+
+		if angY > 2.0pi angY -= 2.0pi
+		if angY < 0.0f angY += 2.0pi
+		if angX > 2.0pi angX -= 2.0pi
+		if angX < 0.0f angX += 2.0pi
+	}
+	GetCent := !() -> centf
+	{
+		ang := quantfAt(0.0f,1.0f,0.0f,angY) <*> quantfAt(1.0f,0.0f,0.0f,angX)
+		revAng := quantf(-(ang.x),-(ang.y),-(ang.z),ang.w)
+		revPos := vec4f(-(pos.x),-(pos.y),-(pos.z),pos.w)
+
+		ToRet.ang = ang
+		ToRet.pos = revAng*pos
+	}
+
+}
 
 main := !(int argc, char^^ argv) -> int
 {
@@ -89,9 +133,7 @@ main := !(int argc, char^^ argv) -> int
 	matrProj[11] = 2.0f*zFar*zNear / diff
 	matrProj[14] = -1.0f
 	
-	c := centf
-	c.ang = quantf(0.0f,0.0f,0.0f,1.0f)
-	c.pos = vec4f(0.0f,0.0f,0.0f,1.0f)
+	c := camera_t()
 	matr := float[16]
 
 	glMatrixMode(GL_PROJECTION)
@@ -101,34 +143,11 @@ main := !(int argc, char^^ argv) -> int
 	while not glfwWindowShouldClose(win)
 	{
 		glfwPollEvents()
-
-		if keys['w']
-		{
-			c.pos += vec4f(0.0f,0.0f,0.005f,0.0f)
-		}
-		if keys['s']
-		{
-			c.pos -= vec4f(0.0f,0.0f,0.005f,0.0f)
-		}
-		if keys['a']
-		{
-			c.pos += vec4f(0.005f,0.0f,0.0f,0.0f)
-		}
-		if keys['d']
-		{
-			c.pos -= vec4f(0.005f,0.0f,0.0f,0.0f)
-		}
-		if keys['q']
-		{
-			c.ang = c.ang <*> quantfAt(0.0f,1.0f,0.0f,0.5deg)
-		}
-		if keys['e']
-		{
-			c.ang = c.ang <*> quantfAt(0.0f,1.0f,0.0f,-0.5deg)
-		}
+		
+		c.CheckMove(1.0f)
 
 		glClear(GL_COLOR_BUFFER_BIT)
-		c.FillMatr(matr)
+		c.GetCent().FillMatr(matr)
 		glLoadIdentity()
 		glLoadMatrixf(matr[0]&)
 		//glTranslatef(vecPos.x,vecPos.y,vecPos.z)
