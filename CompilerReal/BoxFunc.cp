@@ -723,6 +723,50 @@ BoxFuncDeclare := class  extend BoxFunc
 	}
 }
 
+PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName) -> void
+{
+	f << "define "
+
+	IsRetComplex := false
+
+	if not fType.RetRef
+	{
+		if fType.RetType.GetType() == "class" IsRetComplex = true
+		if fType.RetType.GetType() == "arr" IsRetComplex = true
+	}
+
+	if IsRetComplex f << "void"
+	else 
+	{
+		fType.RetType.PrintType(f)
+		if fType.RetRef f << "*"
+	}
+
+	f << " @" << fName
+
+	f << "("
+	if IsRetComplex 
+	{
+		f << fType.RetType.GetName() << "* %ToRet"
+		if fType.ParsCount != 0 f << " , "
+	}
+	for i : fType.ParsCount
+	{
+		
+		if i > 0 f << " , "
+		if fType.ParsIsRef[i]
+			fType.Pars[i].GetPoint().PrintType(f)
+		else	fType.Pars[i].PrintType(f)
+		f << " %" <<names[i]
+	}
+	if fType.IsVArgs
+	{
+		if fType.ParsCount > 0 f << " , "
+		f << "..."
+	}
+	f << ")"
+}
+
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
@@ -879,38 +923,7 @@ BoxFuncBody := class extend BoxFunc
 		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
-			f << "define "
-
-			if IsRetComplex f << "void"
-			else 
-			{
-				MyFuncType.RetType.PrintType(f)
-				if IsRetRef f << "*"
-			}
-
-			f << " @" << OutputName
-
-			f << "("
-			if IsRetComplex 
-			{
-				f << MyFuncType.RetType.GetName() << "* %ToRet"
-				if MyFuncType.ParsCount != 0 f << " , "
-			}
-			for i : MyFuncType.ParsCount
-			{
-				
-				if i > 0 f << " , "
-				if MyFuncType.ParsIsRef[i]
-					MyFuncType.Pars[i].GetPoint().PrintType(f)
-				else	MyFuncType.Pars[i].PrintType(f)
-				f << " %" <<MyFuncParamNames[i]
-			}
-			if MyFuncType.IsVArgs
-			{
-				if MyFuncType.ParsCount > 0 f << " , "
-				f << "..."
-			}
-			f << ")"
+			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName)
 			f << " ; " << FuncName
 
 			f << "\n{\n"
