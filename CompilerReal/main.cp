@@ -1,12 +1,18 @@
 Ob := Object^
-main := !(int argc,string[] argv) -> int 
+main := !(int argc,char^^ argv) -> int 
 {
+	emitTree := false
+	for argc
+	{
+		if argv[it] == "tree" emitTree = true
+	}
 
 	CreateStandartTypes()
 	CreateBuiltIns()
 
 	PriorityData = new PriorityBag("Priority.pr")
 	PriorityData.Opers.Push(":=")
+	PriorityData.Opers.Push("=>")
 	PriorityData.Opers.Push("extern")
 	PriorityData.Opers.Push("at")
 
@@ -53,7 +59,7 @@ main := !(int argc,string[] argv) -> int
 		wutt := Files.Start
 		while wutt != null
 		{
-			//wutt.Data^.Print(0)
+			if emitTree wutt.Data^.Print(0)
 			wutt.Data^.PrintGlobal(fil)
 			wutt = wutt.Next
 		}
@@ -63,7 +69,7 @@ main := !(int argc,string[] argv) -> int
 		iterTr := Files.Start
 		while iterTr != null
 		{
-			//iterTr.Data^.Print(0)
+			if emitTree iterTr.Data^.Print(0)
 			iterTr = iterTr.Next
 		}
 		ite := ErrorLog.Start

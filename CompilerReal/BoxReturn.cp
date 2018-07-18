@@ -5,7 +5,7 @@ BoxReturn := class extend Object
 	IsRetVoid := bool
 	this := !(Object^ toUse) -> void
 	{
-		PopOutNode(toUse.Down)
+		if toUse.Down.Right != null PopOutNode(toUse.Down)
 		Down = toUse.Down
 	}
 	DoTheWork := virtual !(int pri) -> void

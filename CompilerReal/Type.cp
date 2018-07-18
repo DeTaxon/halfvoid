@@ -102,11 +102,12 @@ ParseType := !(Object^ Node) -> Type^
 		lazy := Node.Down != null
 		if lazy lazy = Node.Down.GetValue() == "!"
 		if lazy lazy = Node.Down.Right.GetValue() == "()"
-		if lazy lazy = Node.Down.Right.Right.GetValue() == "^"
+		if lazy lazy = Node.Down.Right.Right.GetValue() == "^"  or Node.Down.Right.Right.GetValue() == "&"
 		if lazy
 		{
 			types := Queue.{Type^}()
 			isVARR := false
+			isLambda := false
 			ptrSize := 0
 
 			SyntaxCompress(Node.Down.Right,PriorityData)
@@ -131,12 +132,22 @@ ParseType := !(Object^ Node) -> Type^
 				ptrSize += 1
 				iter = iter.Right
 			}
+			if iter.GetValue() == "&"
+			{
+				isLambda = true
+				iter = iter.Right
+			}
 
 			iter = iter.Right
 			someType := ParseType(iter)
 			if someType == null return null
 			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 
+			if isLambda 
+			{
+				asN := someType->{TypeFunc^}
+				return asN.GetLambda()
+			}
 			for ptrSize someType = someType.GetPoint()
 			return someType
 		}
@@ -416,6 +427,8 @@ TypeFunc := class extend Type
 	RetType := Type^
 	RetRef := bool
 
+	asLambda := Type^
+
 	this := !(TypeFunc^ FType) -> void
 	{
 		ParsCount = FType.ParsCount
@@ -464,6 +477,14 @@ TypeFunc := class extend Type
 		if RetRef return RetType.GetName() + "*" + GetSkobs()
 		return RetType.GetName() + GetSkobs() 
 	}
+	GetLambda := !() -> Type^
+	{
+		if asLambda == null
+		{
+			asLambda = new TypeFuncLambda(this&->{Type^})
+		}
+		return asLambda
+	}
 	GetSkobs := !() -> string
 	{
 		ToRet := string
@@ -508,6 +529,31 @@ TypeFunc := class extend Type
 	GetAlign := virtual !() -> int
 	{
 		return 8
+	}
+}
+
+TypeFuncLambda := class extend Type
+{
+	this := !(Type^ asBase) -> void
+	{
+		Base = asBase
+	}
+	PrintType := virtual !(sfile f) -> void
+	{
+		Base.PrintType(f)
+		f << "**"
+	}
+	GetName := virtual !() -> string
+	{
+		return Base.GetName() + "**"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return 8
+	}
+	GetType :=  virtual !() -> string
+	{
+		return "lambda"
 	}
 }
 

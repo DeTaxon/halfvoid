@@ -384,6 +384,26 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if (inType.GetType() == "point" and funcType == VoidPType) return 2
 
 	if inType == GetType("int") and funcType == GetType("bool") return 3
+
+	if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
+	{
+		asBI := ((inType.Base)->{TypeFunc^})
+		asBO := ((inType.Base)->{TypeFunc^})
+		if asBI.ParsCount == asBO.ParsCount
+		{
+			isGood := true
+			for i : asBI.ParsCount
+			{
+				if asBI.Pars[i] != null
+				{
+					if asBI.Pars[i] != asBO.Pars[i]
+						isGood = false
+				}
+			}
+			if isGood return 0
+		}
+		
+	}
 	
 	return 255
 }
