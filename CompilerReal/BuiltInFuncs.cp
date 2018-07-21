@@ -725,6 +725,100 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		
 	}
 }
+BuiltInLambdaCall := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "()"
+		IsMethod = true
+
+		pars := Queue.{Type^}()
+
+		MyFuncType = null
+	}
+	CreateFuncPointer := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> TypeFunc^
+	{
+		asL := pars[0]->{TypeFuncLambda^}
+		asB :=  ((pars[0].Base)->{TypeFunc^})
+
+		Pars := Queue.{Type^}()
+
+		for i : pars.Size()
+		{
+			if i == 0{
+				Pars.Push(pars[0])
+			}else{
+				Pars.Push(asB.Pars[i])
+			}
+		}
+		return GetFuncType(Pars,asB.ParsIsRef,asB.RetType,asB.RetRef,asB.IsVArgs)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() == 0 return 255
+		if pars[0].GetType() != "lambda" return 255
+
+		asL := pars[0]->{TypeFuncLambda^}
+		asB := ((pars[0].Base)->{TypeFunc^})
+
+		if asB.ParsCount != pars.Size() return 255
+
+		maxCmp := 0
+		for i : pars.Size()
+		{
+			if i > 0
+			{
+				nowCmp := TypeCmp(pars[i],asB.Pars[i])
+				if maxCmp < nowCmp maxCmp = nowCmp					
+			}
+		}
+		return maxCmp
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	{
+		asL := pars[0]->{TypeFuncLambda^}
+		asB := ((pars[0].Base)->{TypeFunc^})
+
+		IsCompl := false
+
+		if not asB.RetRef {
+			IsCompl = IsComplexType(asB.RetType)	
+		}
+
+		ToSet := "%Wut## = bitcast " + pars[0].GetName() + " #1 to i8*\n"
+		ToSet = ToSet + "%Func## = load " +pars[0].Base.GetName() + "* , " + pars[0].GetName() + " #1\n"
+
+
+		if IsCompl or asB.RetType == GetType("void"){
+			ToSet = ToSet + "call "
+		}else{
+			ToSet = ToSet + "#0 = call " 
+		}
+		ToSet = ToSet + pars[0].Base.GetName() + "%Func##(i8*  %Wut##"
+
+		//if Pars.Size() != 0 or IsCompl ToSet = ToSet + " , "
+		if IsCompl
+		{
+			ToSet = ToSet + " , " + asB.RetType.GetName() + "* #0"
+		}
+
+		for i : pars.Size()
+		{
+			if i != 0{
+			ToSet = ToSet + " , "
+
+				ToSet = ToSet + asB.Pars[i].GetName()
+				if asB.ParsIsRef[i]{
+					ToSet = ToSet + "*"
+				}
+				ToSet = ToSet + " #" + (i + 1)
+			}
+		}
+		ToSet = ToSet + ")\n"
+		
+		return new BuiltInFuncMega("()",fun,ToSet)
+	}
+}
 BuiltInTemplateUnroll := class extend BoxTemplate
 {
 	ToClass := BoxClass^
@@ -1139,6 +1233,8 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPointsNE())
 	BuiltInTemplates.Push(new BuiltInTemplateCheckPoint())
 	BuiltInTemplates.Push(new BuiltInTemplateVec4fGet())
+
+	BuiltInTemplates.Push(new BuiltInLambdaCall())
 
 	//BuiltInTemplates.Push(GlobalUnroll)
 }

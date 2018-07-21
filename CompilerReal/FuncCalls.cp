@@ -166,7 +166,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 							}
 						}
 					}
-					return OneCall(dynCast.BeforeName, iter,consts)
+					preRet :=  OneCall(dynCast.BeforeName, iter,consts,true)
+					if preRet != null return preRet
 				}
 			}
 			if true
