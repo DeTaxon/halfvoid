@@ -4,6 +4,7 @@ SLambda := class extend ObjResult
 	parsedStart := bool
 	applyed := bool
 	Names := string^
+	parms := FuncParam^^
 	fastUse := TypeFunc^
 	ItId := int
 	inAlloc := int
@@ -50,6 +51,9 @@ SLambda := class extend ObjResult
 				}
 			}
 			Names = names.ToArray()
+
+			parms = new FuncParam[names.Size()]
+			for names.Size() parms[it] = null
 
 			asFunc := GetFuncType(pars,null->{bool^},null->{Type^},false,false)
 
@@ -108,6 +112,20 @@ SLambda := class extend ObjResult
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_PostGetUse)
 
+	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		for i : fastUse.ParsCount 
+		{
+			if Names[i] == name
+			{
+				if parms[i] == null{
+					parms[i] = new FuncParam(Names[i],fastUse.Pars[i],fastUse.ParsIsRef[i])
+				}
+				return parms[i]
+			}
+		}
+		return null
 	}
 	GetValue := virtual !() -> string
 	{
