@@ -7,13 +7,18 @@
 //#import "arrs.cp"
 //#import "math.cp"
 
+"()" := !(int this,int y) -> void
+{
+	printf("some %i call %i\n",this,y)
+}
+
 func := !( !(int)&->int lm) -> void
 {
 }
 
 main := !(int argc,char^^ argv) -> int
 {
-	func(x => 3)
+	5(2)
 	return 0
 }
 

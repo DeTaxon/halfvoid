@@ -20,6 +20,7 @@ SLambda := class extend ObjResult
 			parsedStart = true
 			WorkBag.Push(this&,State_Syntax)
 			names := Queue.{string}()
+			names.Push("lambdaParam" + ItId)
 
 			pars := Queue.{Type^}()
 
@@ -68,7 +69,8 @@ SLambda := class extend ObjResult
 		
 		if applyed
 		{
-			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId)
+			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string})
+
 			f << "\n{\n"
 			Down.PrintInBlock(f)
 			f << "}\n"
@@ -79,7 +81,8 @@ SLambda := class extend ObjResult
 	{
 		if applyed
 		{
-			f << "store " + ResultType.Base.GetPoint().GetName() + " @lambda" + ItId + ", " + ResultType.GetName() + " %T" + inAlloc + "\n"
+			asL := ResultType->{TypeFuncLambda^}
+			f << "store " + asL.GetPointName() + " @lambda" + ItId + ", " + ResultType.GetName() + " %T" + inAlloc + "\n"
 		}
 	}
 	PrintUse := virtual !(sfile f) -> void

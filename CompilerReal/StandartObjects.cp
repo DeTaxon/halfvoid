@@ -287,8 +287,9 @@ ObjArray := class extend ObjConst
 
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		asBase := itType->{Type^}
 		for itType.Size Items[it].PrintGlobal(f)
-		f << "@Arr" << MyTmpId << " = global " << itType.GetName() << " ["
+		f << "@Arr" << MyTmpId << " = global " << asBase.GetName() << " ["
 		for i : itType.Size 
 		{
 			if i > 0 f << " , "
@@ -298,7 +299,8 @@ ObjArray := class extend ObjConst
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		f << "%ArrTmp" << MyTmpId << " = getelementptr " << itType.GetName() << " , " << itType.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"	
+		asBase := itType->{Type^}
+		f << "%ArrTmp" << MyTmpId << " = getelementptr " << asBase.GetName() << " , " << asBase.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"	
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{

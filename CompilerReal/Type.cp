@@ -5,6 +5,7 @@ Type := class {
 	AsPoint := Type^
 	AsFatArr := Type^
 	AsArray := Queue.{TypeArr^}
+	ItName := string
 	
 	this := !() -> void
 	{
@@ -49,9 +50,15 @@ Type := class {
 		AsArray.Push(NewArr)
 		return NewArr
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		return ""
+	}
+	GetName := virtual !() -> string
+	{
+		if ItName == null
+			ItName = GetNewName()
+		return ItName
 	}
 	PrintType := virtual !(sfile f) -> void
 	{
@@ -141,13 +148,16 @@ ParseType := !(Object^ Node) -> Type^
 			iter = iter.Right
 			someType := ParseType(iter)
 			if someType == null return null
-			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 
 			if isLambda 
 			{
+				types.PushFront(TypeTable[11].GetPoint())
+				someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 				asN := someType->{TypeFunc^}
 				return asN.GetLambda()
 			}
+
+			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 			for ptrSize someType = someType.GetPoint()
 			return someType
 		}
@@ -386,7 +396,7 @@ TypePoint := class extend Type
 	{
 		return "point"
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		return Base.GetName() + "*"
 	}
@@ -468,7 +478,7 @@ TypeFunc := class extend Type
 	{
 		return "function"
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef
 		{
@@ -534,18 +544,60 @@ TypeFunc := class extend Type
 
 TypeFuncLambda := class extend Type
 {
+	almostName := string
 	this := !(Type^ asBase) -> void
 	{
 		Base = asBase
 	}
 	PrintType := virtual !(sfile f) -> void
 	{
-		Base.PrintType(f)
-		f << "**"
+		f << GetName()
 	}
-	GetName := virtual !() -> string
+	GetPointName := !() -> string
+	{
+		if almostName == null
+			almostName = Base.GetName() + "*"
+		return almostName
+	}
+	GetNewName := virtual !() -> string
 	{
 		return Base.GetName() + "**"
+		//return GetNewNamePre() + "*"
+	}
+	GetNewNamePre := virtual !() -> string
+	{
+		asB := Base->{TypeFunc^}
+
+		ToRet := ""
+
+		IsCompl := false
+
+		if not asB.RetRef
+		{
+			IsCompl = IsComplexType(asB.RetType)
+		}
+
+		if IsCompl {
+			ToRet = ToRet + "void"
+		}else{
+			ToRet = ToRet + asB.RetType.GetName()
+		}
+		ToRet = ToRet + "(i8*"
+
+		if IsCompl or asB.ParsCount != 0 ToRet = ToRet + ","
+
+		if IsCompl{
+			ToRet = ToRet + asB.RetType.GetName() + "*"			
+			if asB.ParsCount != 0 ToRet = ToRet + ","
+		}
+		
+		for i : asB.ParsCount
+		{
+			if i > 0 ToRet = ToRet + ","
+			ToRet = ToRet + asB.Pars[i].GetName()
+		}
+		ToRet = ToRet + ")*"
+		return ToRet	
 	}
 	GetAlign := virtual !() -> int
 	{
@@ -570,7 +622,7 @@ TypeArr := class extend Type
 	{
 		return "arr"
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		return "[" + Size + " x " + Base.GetName() + "]"
 	}
@@ -589,7 +641,7 @@ TypeFatArr := class extend Type
 	{
 		return "fatarr"
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		return Base.GetName() + "*"
 	}
@@ -609,7 +661,7 @@ TypeClass := class extend Type
 	{
 		return "class"
 	}
-	GetName := virtual !() -> string
+	GetNewName := virtual !() -> string
 	{
 		return "%Class" + ToClass.ClassId
 	}
@@ -736,4 +788,11 @@ GetIntSize := !(Type^ tp) -> int
 	return 0
 }
 
+IsComplexType := !(Type^ typ) -> bool
+{
+	t := typ.GetType()
+	if t == "arr" return true
+	if t == "class" return true
+	return false
+}
 

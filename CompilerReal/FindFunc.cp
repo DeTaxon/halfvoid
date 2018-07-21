@@ -94,6 +94,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					}else{
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
+						if not IsWord(name) metApp = true
 						if not AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual and metApp
 							found.Push(AsBoxFunc)
 					}

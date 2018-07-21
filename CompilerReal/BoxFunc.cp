@@ -723,7 +723,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	}
 }
 
-PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName) -> void
+PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,string Extra) -> void
 {
 	f << "define "
 
@@ -731,8 +731,7 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName) -> v
 
 	if not fType.RetRef
 	{
-		if fType.RetType.GetType() == "class" IsRetComplex = true
-		if fType.RetType.GetType() == "arr" IsRetComplex = true
+		IsRetComplex = IsComplexType(fType.RetType)
 	}
 
 	if IsRetComplex f << "void"
@@ -745,6 +744,13 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName) -> v
 	f << " @" << fName
 
 	f << "("
+	
+	if Extra != null
+	{
+		f <<	Extra
+		if IsRetComplex or fType.ParsCount != 0 
+			f << " , "
+	}
 	if IsRetComplex 
 	{
 		f << fType.RetType.GetName() << "* %ToRet"
@@ -923,7 +929,7 @@ BoxFuncBody := class extend BoxFunc
 		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
-			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName)
+			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string})
 			f << " ; " << FuncName
 
 			f << "\n{\n"

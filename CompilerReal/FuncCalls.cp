@@ -133,6 +133,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	{
 		iter = iter.Right
 		if iter == null return null
+		iterPre := iter
 
 		consts := null->{Object^}
 		if iter.GetValue() == "()"
@@ -167,8 +168,36 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}
 					return OneCall(dynCast.BeforeName, iter,consts)
 				}
-			}else{
-				return null //TODO: operator()
+			}
+			if true
+			{
+				iterL := iterPre.Left
+				iterD := iterPre.Down
+
+				pars := Queue.{Type^}()
+				cc := Queue.{Object^}()
+
+				pars.Push(iterPre.Left.GetType())
+
+				while iterD != null
+				{
+					if iterD.GetValue() != ","
+						pars.Push(iterD.GetType())
+					iterD = iterD.Right
+				}
+
+				//TODO: add consts
+				
+				plsF := FindFunc("()",iter,pars,false)
+
+				if plsF != null
+				{
+					iterL.Right = iter.Down
+					iter.Down.Left = iterL
+					iter.SetUp(iterL.Up)
+					return MakeSimpleCall(plsF,iterL)
+				}
+				return null
 			}
 		}
 		if iter.GetValue() == "[]"

@@ -283,19 +283,20 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 	}
 	PostCreate := !() -> void
 	{
+		asBase := toGet->{Type^}
 		if toCheck == 0 //TypeSize
 		{
-			ToExe = "%Pre## = getelementptr " + toGet.GetName() + ", " + toGet.GetName() + "* null ,i32 1\n"
-			ToExe = ToExe + "#0 = ptrtoint " + toGet.GetName() + "* %Pre## to i32\n"
+			ToExe = "%Pre## = getelementptr " + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1\n"
+			ToExe = ToExe + "#0 = ptrtoint " + asBase.GetName() + "* %Pre## to i32\n"
 		}
 		if toCheck == 1 //Align
 		{
-			ToExe = "#0 = add i32 " + toGet.GetAlign() + ",0\n"
+			ToExe = "#0 = add i32 " + asBase.GetAlign() + ",0\n"
 		}
 		if toCheck == 2 //FatTypeSize
 		{
-			ToExe = "%Pre## = getelementptr " + toGet.GetName() + ", " + toGet.GetName() + "* null ,i32 1\n"
-			ToExe = ToExe + "#0 = ptrtoint " + toGet.GetName() + "* %Pre## to i32\n"
+			ToExe = "%Pre## = getelementptr " + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1\n"
+			ToExe = ToExe + "#0 = ptrtoint " + asBase.GetName() + "* %Pre## to i32\n"
 		}
 	}
 }
@@ -606,7 +607,9 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 		if ToFunc.MyFuncType.RetType != GetType("void")
 			preRetCode = "#0 = "
 
-		preRetCode = preRetCode + ToFunc.MyFuncType.GetName() + "@" + ToFunc.OutputName
+		asBasePre := ToFunc.MyFuncType
+		asBase := asBasePre->{Type^}
+		preRetCode = preRetCode + asBase.GetName() + "@" + ToFunc.OutputName
 
 		preRet :=  new BuiltInFuncMega(".",ToFunc.MyFuncType,preRetCode)
 		return	preRet
@@ -870,7 +873,9 @@ BuiltInLenArr := class extend BoxTemplate
 		retType := baseType.GetArray(pars.Size())
 
 		baseTypeN := baseType.GetName()
-		retTypeN := retType.GetName()
+
+		asBase := retType->{Type^}
+		retTypeN := asBase.GetName()
 
 		for i : pars.Size()
 		{

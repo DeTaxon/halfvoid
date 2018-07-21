@@ -384,16 +384,20 @@ BoxClass := class extend Object
 			f << "%ClassTableType" << ClassId << " = type {"
 			for vTable.Size()
 			{
+				asBasePre := vTable[it].fType
+				asBase2 := asBasePre->{Type^}
 				if it > 0 f << " , "
-				f << vTable[it].fType.GetName() << "*"
+				f << asBase2.GetName() << "*"
 			}
 			f << " }\n"
 
 			f << "@ClassTableItem" << ClassId << " = global %ClassTableType" << ClassId << " {"
 			for i : vTable.Size()
 			{
+				asBasePre := vTable[i].fType
+				asBase2 := asBasePre->{Type^}
 				if i > 0 f << " , "
-				f << vTable[i].fType.GetName() << "* @" << vTable[i].fItem.OutputName
+				f << asBase2.GetName() << "* @" << vTable[i].fItem.OutputName
 			}
 			f << "}\n"
 		}
@@ -473,13 +477,16 @@ BuiltInVirtualCall := class extend BuiltInFunc
 	}
 	MakeLine := !(int id) -> void
 	{
+		aseBase := MyFuncType->{Type^}
+		FuncTypeName := aseBase.GetName()
+		
 		ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
 		ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
 		ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
-		ToExe = ToExe + "%Func## = load " + MyFuncType.GetName() + "* , " + MyFuncType.GetName() + "** %FuncPtr##\n" 
+		ToExe = ToExe + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
 		if MyFuncType.RetType != GetType("void")
 			ToExe = ToExe + "#0 = "
-		ToExe = ToExe + "call " + MyFuncType.GetName() +  "%Func##("
+		ToExe = ToExe + "call " + FuncTypeName +  "%Func##("
 		for i : MyFuncType.ParsCount
 		{
 			if i > 0 ToExe = ToExe + " , "
