@@ -142,7 +142,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				dynCast := (iter.Left)->{ParamCall^}
 
-				if iter.Left.IsRef() //iter.Left.GetType().GetType() == "point"
+				if iter.Left.IsRef()  and iter.Left.GetType().GetType() == "point"
 				{
 					if iter.Left.GetType().Base.GetType() == "function"
 					{
@@ -740,6 +740,7 @@ NaturalCall := class extend SomeFuncCall
 {
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
+		Line = Pars.Line
 		Down = Pars
 		
 		RetId = GetNewId()
@@ -771,6 +772,7 @@ NaturalCall := class extend SomeFuncCall
 	
 				if preRet == null
 				{
+					printf("wut %i %s %s\n",i,iter.GetType().GetName(),FType.Pars[i].GetName())
 					EmitError("compiler bug\n")
 				}else{
 					iter = preRet

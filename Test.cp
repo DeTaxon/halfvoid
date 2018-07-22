@@ -8,15 +8,15 @@
 //#import "math.cp"
 
 
-func := !( !(int)&->int lm) -> void
+func := !( !(int)&->int lm2) -> void
 {
-	printf("answer %i\n",lm(3))
+	printf("wut %i\n",lm2(3))
 }
 
 main := !(int argc,char^^ argv) -> int
 {
 	y := 3
-	func(x => x*y)
+	func(x => x*3)
 	return 0
 }
 

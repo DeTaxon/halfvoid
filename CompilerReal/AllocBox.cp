@@ -2,6 +2,8 @@
 
 AllocBox := class 
 {
+	ItId := int
+
 	ItemBag := Map.{int,Type^}
 	GetAlloc := !(Type^ ToAdd) -> int
 	{
@@ -10,19 +12,43 @@ AllocBox := class
 		return DaID
 	}
 	//ReturnAlloc := !()
-	//PrintGlobal := !(sfile f) -> void
-	//{
-	//}
+	PrintGlobal := !(sfile f) -> void
+	{
+		if not ItemBag.Empty()
+		{
+			f << "%AllocClass" << ItId << " = type {"
+			
+			sIter := ItemBag.Start
+			i := 0
+
+			while sIter != null
+			{	
+				if i != 0 f << " , "
+				f << sIter.Value.GetName()
+				sIter = sIter.Next
+				i += 1
+			}
+
+
+			f << "}\n"
+		}
+	}
 	PrintAlloc := !(sfile f) -> void
 	{
+		if not ItemBag.Empty()
+		{
+			f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+		}
+
 		iter := ItemBag.Start
+		i := 0
 		while iter != null
 		{
-			f << "%T" << iter.Key <<" = alloca "
-			iter.Value.PrintType(f)
-			f << "\n"
+			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* %AllocItem" << ItId
+			f << " , i32 0, i32 " << i<<"\n"
 
 			iter = iter.Next
+			i += 1
 		}
 	}
 }

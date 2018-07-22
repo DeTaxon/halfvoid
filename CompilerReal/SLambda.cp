@@ -3,7 +3,7 @@ SLambda := class extend ObjResult
 {
 	parsedStart := bool
 	applyed := bool
-	//ABox := AllocBox
+	ABox := AllocBox
 	Names := string^
 	parms := FuncParam^^
 	fastUse := TypeFunc^
@@ -12,6 +12,7 @@ SLambda := class extend ObjResult
 
 	this := !() -> void
 	{
+		ABox.ItId = GetNewId()
 		WorkBag.Push(this&,State_Start)
 		ItId = GetNewId()
 		inAlloc = -1
@@ -71,6 +72,7 @@ SLambda := class extend ObjResult
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		ABox.PrintGlobal(f)
 		Down.PrintGlobal(f)
 		
 		if applyed

@@ -79,10 +79,11 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 				if iter.GetValue() == "!()"
 				{
 					AsNeed2 := iter->{BoxFuncBody^}
+					as2 := iter->{BoxFunc^}
 
 					for AsNeed2.MyFuncType.ParsCount
 					{
-						if AsNeed2.ItParams[it].ItName == name return AsNeed2.ItParams[it]
+						if as2.MyFuncParamNames[it] == name return AsNeed2.ItParams[it]
 					}
 					if AsNeed2.ExtraRetParam != null
 					{

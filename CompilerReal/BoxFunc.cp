@@ -776,15 +776,31 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,strin
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
-	ItParams := FuncParam^^
+	ItParams := LocalParam^^
+	InAlloc := int^	
 	ExtraRetParam := FuncParam^
 
 	//TODO UserConsts := Queue.{Object^} // !().{T}
 	//HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
 
 
+	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
+	{
+		if count != 0
+		{
+			ItParams = new LocalParam^[count]
+			InAlloc = new int[count]
+		}
+		for i : count
+		{
+			InAlloc[i] = ABox.GetAlloc(pars[i])
+			ItParams[i] = new LocalParam(pars[i],InAlloc[i])
+		}
+	}
+	
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
+		ABox.ItId = GetNewId()
 		IsRetRef = fType.RetRef
 		MyFuncParamNames = names
 		FuncName = SomeName
@@ -802,18 +818,10 @@ BoxFuncBody := class extend BoxFunc
 
 		TestRet(fType.RetType)
 
-
+	
 		if MyFuncType != null 
 		{
-			if MyFuncType.ParsCount != 0
-			{
-				ItParams = new FuncParam[MyFuncType.ParsCount]
-
-				for MyFuncType.ParsCount
-				{
-					ItParams[it] = new FuncParam(names[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
-				}
-			}
+			ApplyParams(MyFuncType.ParsCount,names,MyFuncType.Pars,MyFuncType.ParsIsRef)
 		}
 
 		if Stuf.GetValue() == "{}"
@@ -858,6 +866,7 @@ BoxFuncBody := class extend BoxFunc
 	}
 	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
+		ABox.ItId = GetNewId()
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
@@ -876,15 +885,7 @@ BoxFuncBody := class extend BoxFunc
 
 		if MyFuncType != null 
 		{
-			if MyFuncType.ParsCount != 0
-			{
-				ItParams = new FuncParam[MyFuncType.ParsCount]
-
-				for MyFuncType.ParsCount
-				{
-					ItParams[it] = new FuncParam(MyFuncParamNames[it],MyFuncType.Pars[it],MyFuncType.ParsIsRef[it])
-				}
-			}
+			ApplyParams(MyFuncType.ParsCount,MyFuncParamNames,MyFuncType.Pars,MyFuncType.ParsIsRef)
 		}
 
 		if Stuf.GetValue() == "{}"
@@ -926,6 +927,10 @@ BoxFuncBody := class extend BoxFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		ABox.PrintGlobal(f)
+
+
+
 		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
@@ -935,6 +940,17 @@ BoxFuncBody := class extend BoxFunc
 			f << "\n{\n"
 
 			ABox.PrintAlloc(f)
+
+			for i : MyFuncType.ParsCount
+			{
+				f << "store "
+				f << MyFuncType.Pars[i].GetName()
+				if MyFuncType.ParsIsRef[i] f << "*"
+				f << " %" << MyFuncParamNames[i] << " , "
+				f << MyFuncType.Pars[i].GetName()
+				if MyFuncType.ParsIsRef[i] f << "*"
+				f << "* %T" << InAlloc[i] << "\n"
+			}
 
 			iter := Down
 			while iter != null

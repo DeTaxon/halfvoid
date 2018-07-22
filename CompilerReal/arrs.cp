@@ -235,6 +235,23 @@ Map := class !{TKey,TValue}
 		Start = new DoubleNode.{TKey,TValue}(k,Start)
 		Start.Value = v
 	}
+	Empty := !() -> bool
+	{
+		return Start == null
+	}
+	Size := !() -> int
+	{
+		i := 0
+		iter := Start
+
+		while iter != null
+		{
+			i += 1
+			iter = iter.Next
+		}
+
+		return i
+	}
 	Exist := !(TKey key) -> bool
 	{
 		iter := Start
