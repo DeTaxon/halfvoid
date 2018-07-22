@@ -15,7 +15,8 @@ func := !( !(int)&->int lm) -> void
 
 main := !(int argc,char^^ argv) -> int
 {
-	func(x => x*3)
+	y := 3
+	func(x => x*y)
 	return 0
 }
 

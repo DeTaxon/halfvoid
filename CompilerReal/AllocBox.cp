@@ -10,6 +10,9 @@ AllocBox := class
 		return DaID
 	}
 	//ReturnAlloc := !()
+	//PrintGlobal := !(sfile f) -> void
+	//{
+	//}
 	PrintAlloc := !(sfile f) -> void
 	{
 		iter := ItemBag.Start
@@ -34,6 +37,11 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 			dynCast := iter->{BoxFunc^}
 			return dynCast.ABox.GetAlloc(t)
 		}
+		//if iter.GetValue() == "x=>x"
+		//{
+		//	asL2 := iter->{SLambda^}
+		//	return asL2.ABox.GetAlloc(t)
+		//}
 		if iter.GetValue() == "{...}"
 		{
 			return -2

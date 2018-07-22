@@ -3,11 +3,13 @@ SLambda := class extend ObjResult
 {
 	parsedStart := bool
 	applyed := bool
+	//ABox := AllocBox
 	Names := string^
 	parms := FuncParam^^
 	fastUse := TypeFunc^
 	ItId := int
 	inAlloc := int
+
 	this := !() -> void
 	{
 		WorkBag.Push(this&,State_Start)
