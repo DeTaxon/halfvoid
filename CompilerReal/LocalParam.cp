@@ -28,6 +28,10 @@ MemParam := class extend ObjResult
 	{
 		return ResultType
 	}
+	GetSubName := virtual !() -> string
+	{
+		return "Mem"
+	}
 
 }
 ConstParam := class extend MemParam
@@ -106,6 +110,13 @@ LocalParam := class extend MemParam
 		Buf := char[256]
 		sprintf(Buf,"%T%i",inAllocId)
 		return Buf.Copy()
+	}
+}
+VeryLocalParam := class extend LocalParam
+{
+	GetSubName := virtual !() -> string
+	{
+		return "VeryLocal"
 	}
 }
 GlobalParam := class extend MemParam

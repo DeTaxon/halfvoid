@@ -11,6 +11,9 @@ SLambda := class extend ObjResult
 	ItId := int
 	inAlloc := int
 
+	StolenNames := Queue.{string}
+	StolenParams := Queue.{MemParam^}
+
 	this := !() -> void
 	{
 		ABox.ItId = GetNewId()
@@ -147,10 +150,16 @@ SLambda := class extend ObjResult
 		{
 			if Names[i] == name
 			{
-				printf("return %s %p\n",name,parms[i])
 				return parms[i]
 			}
 		}
+
+		for i : StolenNames.Size() 
+		{
+			if StolenNames[i] == name
+				return StolenParams[i]
+		}
+
 		return null
 	}
 	GetValue := virtual !() -> string
