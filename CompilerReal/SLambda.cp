@@ -5,7 +5,8 @@ SLambda := class extend ObjResult
 	applyed := bool
 	ABox := AllocBox
 	Names := string^
-	parms := FuncParam^^
+	parms := LocalParam^^
+	InAlloc := int^
 	fastUse := TypeFunc^
 	ItId := int
 	inAlloc := int
@@ -16,6 +17,19 @@ SLambda := class extend ObjResult
 		WorkBag.Push(this&,State_Start)
 		ItId = GetNewId()
 		inAlloc = -1
+	}
+	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
+	{
+		if count != 0
+		{
+			parms = new LocalParam^[count]
+			InAlloc = new int[count]
+		}
+		for i : count
+		{
+			InAlloc[i] = ABox.GetAlloc(pars[i])
+			parms[i] = new LocalParam(pars[i],InAlloc[i])
+		}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -55,10 +69,8 @@ SLambda := class extend ObjResult
 			}
 			Names = names.ToArray()
 
-			parms = new FuncParam[names.Size()]
-			for names.Size() parms[it] = null
-
 			asFunc := GetFuncType(pars,null->{bool^},null->{Type^},false,false)
+
 
 			MakeItBlock(Down.Right.Right)
 			ResultType = asFunc.GetLambda()
@@ -80,6 +92,17 @@ SLambda := class extend ObjResult
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string})
 
 			f << "\n{\n"
+			ABox.PrintAlloc(f)
+			for i : fastUse.ParsCount
+			{
+				f << "store "
+				f << fastUse.Pars[i].GetName()
+				if fastUse.ParsIsRef[i] f << "*"
+				f << " %" << Names[i] << " , "
+				f << fastUse.Pars[i].GetName()
+				if fastUse.ParsIsRef[i] f << "*"
+				f << "* %T" << InAlloc[i] << "\n"
+			}
 			Down.PrintInBlock(f)
 			f << "}\n"
 		}
@@ -116,6 +139,7 @@ SLambda := class extend ObjResult
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_PostGetUse)
 
+		ApplyParams(fastUse.ParsCount,Names,fastUse.Pars,fastUse.ParsIsRef)
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
@@ -123,9 +147,7 @@ SLambda := class extend ObjResult
 		{
 			if Names[i] == name
 			{
-				if parms[i] == null{
-					parms[i] = new FuncParam(Names[i],fastUse.Pars[i],fastUse.ParsIsRef[i])
-				}
+				printf("return %s %p\n",name,parms[i])
 				return parms[i]
 			}
 		}
