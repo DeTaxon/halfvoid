@@ -31,8 +31,12 @@ SLambda := class extend ObjResult
 		}
 		for i : count
 		{
-			InAlloc[i] = ABox.GetAlloc(pars[i])
-			parms[i] = new LocalParam(pars[i],InAlloc[i])
+			if isRef[i] {
+				InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
+			}else{
+				InAlloc[i] = ABox.GetAlloc(pars[i])
+			}
+			parms[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -125,6 +129,14 @@ SLambda := class extend ObjResult
 					f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
 					f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
 					asN.ABox.PrintBoxItems(f,"%Lambda" + nameIter + "Box")
+					if asN.IsMethod
+					{
+						fT := asN.MyFuncType
+						f << "%thisPre = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
+						f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+					}else{
+						printf("nope\n")
+					}
 								
 				}
 				iter = iter.Up

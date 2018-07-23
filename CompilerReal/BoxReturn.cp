@@ -36,23 +36,36 @@ BoxReturn := class extend Object
 			iterF := Up
 
 			lazy := iterF != null
-			if lazy lazy = iterF.GetValue() != "!()"
+			if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			while lazy
 			{
 				iterF = iterF.Up
 				lazy = iterF != null
-				if lazy lazy = iterF.GetValue() != "!()"
+				if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			}
+
 			if iterF != null
 			{
-				asNeed := iterF->{BoxFunc^}
-				IsRetComplex = asNeed.IsRetComplex
-				IsRetRef = asNeed.MyFuncType.RetRef
+				RetFunc := TypeFunc^
+				if iterF.GetValue() == "!()"{
+					asNeed := iterF->{BoxFunc^}
+					RetFunc = asNeed.MyFuncType
+					IsRetComplex = asNeed.IsRetComplex
+				}
+				if iterF.GetValue() == "x=>x"{
+					asNeed2 := iterF->{SLambda^}
+					RetFunc = asNeed2.fastUse
+					IsRetComplex = false
+					if not RetFunc.RetRef IsRetComplex = IsComplexType(RetFunc.RetType)
+				}
+
+				IsRetRef = RetFunc.RetRef
 				if Down.GetType() != null
 				{
-					PreType := asNeed.MyFuncType.RetType
+					PreType := RetFunc.RetType
 					if PreType == null
 					{
+						asNeed := iterF->{BoxFunc^}
 						asNeed.SetReturnType(Down.GetType())
 					}else
 					{
@@ -60,9 +73,10 @@ BoxReturn := class extend Object
 						{
 							if TypeCmp(Down.GetType(),PreType) != 255
 							{
-								Down = BoxExc(Down,PreType,asNeed.MyFuncType.RetRef)
+								Down = BoxExc(Down,PreType,RetFunc.RetRef)
 								Down.Up = this&
 							}else{
+								printf("from %s to %s\n",Down.GetType().GetName(),PreType.GetName())
 								EmitError("Can not return value\n")
 							}
 						}

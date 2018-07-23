@@ -214,8 +214,17 @@ Map := class !{TKey,TValue}
 			}
 			iter = iter.Next
 		}
-		Start = new DoubleNode.{TKey,TValue}(look,Start)
-		return Start.Value
+		if Start == null
+		{
+			Start = new DoubleNode.{TKey,TValue}(look,Start)
+			iter = Start
+		}else{
+			iter = Start
+			while iter.Next != null  iter = iter.Next
+			iter.Next = new DoubleNode.{TKey,TValue}(look,iter.Next)
+			iter = iter.Next
+		}
+		return iter.Value
 	}
 	"=" := !(Map.{TKey,TValue} toSet) ->void
 	{

@@ -58,10 +58,18 @@ ConstParam := class extend MemParam
 LocalParam := class extend MemParam
 {
 	inAllocId := int
+	IsRef := bool
 	this := !(Type^ th,int allcId) -> void
 	{
 		ResultType = th
 		inAllocId = allcId
+		IsRef = false
+	}
+	this := !(Type^ th,int allcId,bool asRef) -> void
+	{
+		ResultType = th
+		inAllocId = allcId
+		IsRef = asRef
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -76,11 +84,26 @@ LocalParam := class extend MemParam
 	}
 	PrintPre := virtual !(sfile f, int newInd) -> void
 	{
-		f << "%T" << newInd << " = load "
-		ResultType.PrintType(f)
-		f << " , "
-		ResultType.PrintType(f)
-		f << "* %T" << inAllocId << "\n"
+		if IsRef {
+			f << "%TPre" << newInd << " = load "
+			ResultType.GetPoint().PrintType(f)
+			f << " , "
+			ResultType.GetPoint().PrintType(f)
+			f << "* %T" << inAllocId << "\n"
+
+			f << "%T" << newInd << " = load "
+			ResultType.PrintType(f)
+			f << " , "
+			ResultType.PrintType(f)
+			f << "* %TPre" << newInd << "\n"
+			
+		}else{
+			f << "%T" << newInd << " = load "
+			ResultType.PrintType(f)
+			f << " , "
+			ResultType.PrintType(f)
+			f << "* %T" << inAllocId << "\n"
+		}
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
@@ -93,6 +116,13 @@ LocalParam := class extend MemParam
 	}
 	PrintPointPre := virtual !(sfile f, int newInd) -> void
 	{
+		if IsRef {
+			f << "%T" << newInd << " = load "
+			ResultType.GetPoint().PrintType(f)
+			f << " , "
+			ResultType.GetPoint().PrintType(f)
+			f << "* %T" << inAllocId << "\n"
+		}
 	}
 	PrintPointUse := virtual !(sfile f, int newInd) -> void
 	{
@@ -110,6 +140,10 @@ LocalParam := class extend MemParam
 		Buf := char[256]
 		sprintf(Buf,"%T%i",inAllocId)
 		return Buf.Copy()
+	}
+	GetSubName := virtual !() -> string
+	{
+		return "Local"
 	}
 }
 VeryLocalParam := class extend LocalParam

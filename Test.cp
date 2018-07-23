@@ -13,12 +13,27 @@ func := !( !(int)&->int lm2) -> void
 	printf("wut %i\n",lm2(3))
 }
 
+tT := class
+{
+	g := int
+	ret5 := !() -> int
+	{
+		g += 1
+		return 5
+	}
+	v := !() -> void
+	{
+		func(x => x*ret5())
+	}
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	y := 7
-	printf("before %i\n",y)
-	func(x => y += 14)
-	printf("after %i\n",y)
+	argc = 7
+	g := tT
+	printf("h1 %i\n",g.g)
+	g.v()
+	printf("h2 %i\n",g.g)
 	return 0
 }
 

@@ -793,8 +793,12 @@ BoxFuncBody := class extend BoxFunc
 		}
 		for i : count
 		{
-			InAlloc[i] = ABox.GetAlloc(pars[i])
-			ItParams[i] = new LocalParam(pars[i],InAlloc[i])
+			if isRef[i]{
+				InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
+			}else{
+				InAlloc[i] = ABox.GetAlloc(pars[i])
+			}
+			ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 		}
 	}
 	
