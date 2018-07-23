@@ -9,6 +9,7 @@ SLambda := class extend ObjResult
 	InAlloc := int^
 	fastUse := TypeFunc^
 	ItId := int
+	ItNR := int
 	inAlloc := int
 
 	StolenNames := Queue.{string}
@@ -83,6 +84,7 @@ SLambda := class extend ObjResult
 		if pri == State_PostGetUse
 		{
 			inAlloc = GetAlloc(Up,ResultType.Base.GetPoint())
+			ItNR = GetAllocNR(Up,inAlloc)
 		}
 	}
 	PrintGlobal := virtual !(sfile f) -> void
@@ -106,6 +108,28 @@ SLambda := class extend ObjResult
 				if fastUse.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
 			}
+			iter := Up
+			
+			nameIter := 0
+			prevLName := Names[0]
+			
+			while iter != null
+			{
+				if iter.GetValue() == "!()"
+				{
+					asN := iter->{BoxFuncBody^}
+					ABName := asN.ABox.GetClassName()
+					f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << ItNR << "\n"
+					f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
+					f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
+					f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
+					f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
+					asN.ABox.PrintBoxItems(f,"%Lambda" + nameIter + "Box")
+								
+				}
+				iter = iter.Up
+			}
+
 			Down.PrintInBlock(f)
 			f << "}\n"
 		}

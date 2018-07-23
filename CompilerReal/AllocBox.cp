@@ -11,6 +11,22 @@ AllocBox := class
 		ItemBag[DaID] = ToAdd
 		return DaID
 	}
+	GetClassName := !() -> string
+	{
+		return "%AllocClass" + ItId
+	}
+	GetNR := !(int id) -> int
+	{
+		i := 0
+		iter := ItemBag.Start
+		while iter != null
+		{
+			if iter.Key == id return i
+			iter = iter.Next
+			i += 1
+		}
+		return -0
+	}
 	//ReturnAlloc := !()
 	PrintGlobal := !(sfile f) -> void
 	{
@@ -40,11 +56,15 @@ AllocBox := class
 			f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
 		}
 
+		PrintBoxItems(f,"%AllocItem" + ItId)
+	}
+	PrintBoxItems := !(sfile f,string Name) -> void
+	{
 		iter := ItemBag.Start
 		i := 0
 		while iter != null
 		{
-			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* %AllocItem" << ItId
+			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " + Name
 			f << " , i32 0, i32 " << i<<"\n"
 
 			iter = iter.Next
@@ -53,6 +73,29 @@ AllocBox := class
 	}
 }
 
+GetAllocNR := !(Object^ Start,int id) -> int
+{
+	iter := Start
+	while iter != null
+	{
+		if iter.GetValue() == "!()"
+		{
+			dynCast := iter->{BoxFunc^}
+			return dynCast.ABox.GetNR(id)
+		}
+		//if iter.GetValue() == "x=>x"
+		//{
+		//	asL2 := iter->{SLambda^}
+		//	return asL2.ABox.GetNR(id)
+		//}
+		if iter.GetValue() == "{...}"
+		{
+			return -2
+		}
+		iter = iter.Up
+	}
+	return -1
+}
 GetAlloc := !(Object^ Start,Type^ t) -> int
 {
 	iter := Start

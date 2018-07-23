@@ -16,7 +16,9 @@ func := !( !(int)&->int lm2) -> void
 main := !(int argc,char^^ argv) -> int
 {
 	y := 7
-	func(x => x*y)
+	printf("before %i\n",y)
+	func(x => y += 14)
+	printf("after %i\n",y)
 	return 0
 }
 
