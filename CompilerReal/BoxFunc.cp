@@ -955,6 +955,12 @@ BoxFuncBody := class extend BoxFunc
 				if MyFuncType.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
 			}
+			if not IsRetComplex and MyFuncType.RetType != GetType("void")
+			{
+				f << "%Result = alloca " << MyFuncType.RetType.GetName()
+				if MyFuncType.RetRef f << "*"
+				f << "\n"
+			}
 
 			iter := Down
 			while iter != null
@@ -964,7 +970,14 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			if MyFuncType.RetType == GetType("void") or IsRetComplex
+			{
 				f << "ret void\n"
+			}else{
+				retTypeName := MyFuncType.RetType.GetName()
+				if MyFuncType.RetRef retTypeName = retTypeName + "*"
+				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
+				f << "ret " << retTypeName << " " << "%ResultItem\n"
+			}
 
 			f << "}\n"
 		}

@@ -93,13 +93,20 @@ BoxReturn := class extend Object
 	{
 		if not IsRetComplex and not IsRetVoid
 		{
+			//if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
+			//f << "ret "
+			//if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
+			//f << "\n"
+
+			retTypeName := Down.GetType().GetName()
 			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
-			f << "ret "
+			f << "store " 
 			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
-			f << "\n"
+			f << " , " << retTypeName << "* %Result\n"
+			
 		}else{
-			if not IsRetVoid Down.PrintInBlock(f)
-			f << "ret void\n"
+			//if not IsRetVoid Down.PrintInBlock(f)
+			//f << "ret void\n"
 		}
 	}
 	GetValue := virtual !() -> string

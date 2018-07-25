@@ -141,8 +141,29 @@ SLambda := class extend ObjResult
 				}
 				iter = iter.Up
 			}
+			IsRetComplex := false
+			if not fastUse.RetRef
+			{
+				IsRetComplex = IsComplexType(fastUse.RetType)
+			}
+			if not IsRetComplex and fastUse.RetType != GetType("void")
+			{
+				f << "%Result = alloca " << fastUse.RetType.GetName()
+				if fastUse.RetRef f << "*"
+				f << "\n"
+			}
 
 			Down.PrintInBlock(f)
+
+			if fastUse.RetType == GetType("void") or IsRetComplex
+			{
+				f << "ret void\n"
+			}else{
+				retTypeName := fastUse.RetType.GetName()
+				if fastUse.RetRef retTypeName = retTypeName + "*"
+				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
+				f << "ret " << retTypeName << " " << "%ResultItem\n"
+			}
 			f << "}\n"
 		}
 

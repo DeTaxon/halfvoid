@@ -7,33 +7,23 @@
 //#import "arrs.cp"
 //#import "math.cp"
 
-
-func := !( !(int)&->int lm2) -> void
-{
-	printf("wut %i\n",lm2(3))
-}
-
 tT := class
 {
 	g := int
-	ret5 := !() -> int
+	this := !(int k) -> void
 	{
-		g += 1
-		return 5
+		g = k
 	}
-	v := !() -> void
+	"~this" := !() -> void
 	{
-		func(x => x*ret5())
+		printf("State %i\n",g)
 	}
 }
 
 main := !(int argc,char^^ argv) -> int
 {
-	argc = 7
-	g := tT
-	printf("h1 %i\n",g.g)
-	g.v()
-	printf("h2 %i\n",g.g)
+	V1 := tT(2)
+	V2 := tT(1)
 	return 0
 }
 
