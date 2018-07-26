@@ -968,6 +968,8 @@ BoxFuncBody := class extend BoxFunc
 				iter.PrintInBlock(f)
 				iter = iter.Right
 			}
+			f << "br label %OutLabel" << ABox.ItId << "\n"
+			f << "OutLabel" << ABox.ItId << ":\n"
 
 			if MyFuncType.RetType == GetType("void") or IsRetComplex
 			{
@@ -982,6 +984,10 @@ BoxFuncBody := class extend BoxFunc
 			f << "}\n"
 		}
 	}
+	GetOutPath := virtual !(Object^ item, int type,int size) ->string
+	{
+		return "OutLabel" + ABox.ItId
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -991,26 +997,26 @@ BoxFuncBody := class extend BoxFunc
 
 		if pri == State_Syntax
 		{
-			SyntaxCompress(this&,PriorityData)
-			UnboxParams(this.Down)
-			WorkBag.Push(this&,State_GetUse)
-		}
-		if pri == State_GetUse
-		{
-			iter := Down
-			
-			if iter != null
-			{
-				while iter.Right != null iter = iter.Right
-				while iter != null
-				{
-					WorkBag.Push(iter,State_Start)
-					iter = iter.Left
-				}
-			}
+			//SyntaxCompress(this&,PriorityData)
+			//UnboxParams(this.Down)
 			WorkBag.Push(this&,State_ErrorCheck)
-			
 		}
+		//if pri == State_GetUse
+		//{
+		//	iter := Down
+		//	
+		//	if iter != null
+		//	{
+		//		while iter.Right != null iter = iter.Right
+		//		while iter != null
+		//		{
+		//			WorkBag.Push(iter,State_Start)
+		//			iter = iter.Left
+		//		}
+		//	}
+		//	WorkBag.Push(this&,State_ErrorCheck)
+		//	
+		//}
 		if pri == State_ErrorCheck
 		{
 			if MyFuncType == null

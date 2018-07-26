@@ -7,23 +7,23 @@
 //#import "arrs.cp"
 //#import "math.cp"
 
-tT := class
-{
-	g := int
-	this := !(int k) -> void
-	{
-		g = k
-	}
-	"~this" := !() -> void
-	{
-		printf("State %i\n",g)
-	}
-}
+//tT := class
+//{
+//	g := int
+//	this := !(int k) -> void
+//	{
+//		g = k
+//	}
+//	"~this" := !() -> void
+//	{
+//		printf("State %i\n",g)
+//	}
+//}
 
 main := !(int argc,char^^ argv) -> int
 {
-	V1 := tT(2)
-	V2 := tT(1)
+	V1 := int
+	V2 := int
 	return 0
 }
 

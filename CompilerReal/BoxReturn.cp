@@ -105,7 +105,7 @@ BoxReturn := class extend Object
 			f << " , " << retTypeName << "* %Result\n"
 			
 		}else{
-			//if not IsRetVoid Down.PrintInBlock(f)
+			if not IsRetVoid Down.PrintInBlock(f)
 			//f << "ret void\n"
 		}
 	}

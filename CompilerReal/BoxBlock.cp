@@ -29,8 +29,14 @@ BoxBlock := class extend Object
 	GetUseIter := int
 	Items := Queue.{ObjHolder^}
 	InClass := bool
+	ItId := int
+
+	RNames := Queue.{string}
+	outRName := string
+
 	this := !() -> void
 	{
+		ItId = GetNewId()
 	}
 	this := !(Object^ toRepl) -> void
 	{
@@ -64,6 +70,25 @@ BoxBlock := class extend Object
 		{
 			iter.PrintInBlock(f)
 			iter = iter.Right
+		}
+
+		if not InClass
+		{
+			iter = Down
+
+			nowOutName := outRName
+
+			iter2 := RNames.Start
+
+			while iter != null
+			{
+				iter.PrintDestructor(f)
+				f << "br label %" << outRName <<"\n"
+				outRName = iter2.Data
+				iter = iter.Right
+				iter2 = iter2.Next
+			}
+
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -104,6 +129,29 @@ BoxBlock := class extend Object
 				WorkBag.Push(this&,State_GetUse)
 				WorkBag.Push(iter,State_Start)
 				GetUseIter += 1
+			}else{
+				WorkBag.Push(this&,State_DestructCheck)
+			}
+		}
+		if pri == State_DestructCheck
+		{
+		 	iter := Down
+			i := 0
+
+			while iter != null
+			{
+				RNames.Push("%RName" + ItId + "n" + i)
+				iter = iter.Right
+				i += 1
+			}
+			WorkBag.Push(this&,State_DestructGet)
+		}
+		if pri == State_DestructGet
+		{
+			if Up != null{
+				outRName = Up.GetOutPath(this&,PATH_RETURN,1)
+			}else{
+				EmitError("software error 311653\n")
 			}
 		}
 	}
@@ -112,6 +160,9 @@ BoxFile := class extend BoxBlock
 {
 	fileId := int
 	fileName := string
+
+	returnPath := Queue.{string}
+
 	this := !(string name) -> void
 	{
 		fileId = GetNewId()
@@ -131,3 +182,5 @@ BoxFile := class extend BoxBlock
 		}
 	}
 }
+
+PATH_RETURN := 1

@@ -83,6 +83,7 @@ ObjParam := class extend Object
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_CheckTypes)
+			WorkBag.Push(this&,State_DestructCheck)
 
 			iter := Down
 

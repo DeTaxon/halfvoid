@@ -82,6 +82,13 @@ Object := class{
 	{
 		PrintGlobalSub(f)
 	}
+	PrintDestructor := virtual !(sfile f) -> void
+	{
+	}
+	GetOutPath := virtual !(Object^ from,int type,int size) -> string
+	{
+		return ""
+	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintInBlock is not defined")	
