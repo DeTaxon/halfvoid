@@ -79,14 +79,20 @@ BoxBlock := class extend Object
 			nowOutName := outRName
 
 			iter2 := RNames.Start
+			i := 0
 
 			while iter != null
 			{
+				if i > 0{
+					if iter2.Next != null
+						f << iter2.Next.Data <<":\n"
+				}
 				iter.PrintDestructor(f)
-				f << "br label %" << outRName <<"\n"
-				outRName = iter2.Data
+				f << "br label %" << nowOutName <<"\n"
+				nowOutName = iter2.Data
 				iter = iter.Right
 				iter2 = iter2.Next
+				i += 1
 			}
 
 		}
