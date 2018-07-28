@@ -140,7 +140,7 @@ BoxBlock := class extend Object
 
 			while iter != null
 			{
-				RNames.Push("%RName" + ItId + "n" + i)
+				RNames.Push("RName" + ItId + "n" + i)
 				iter = iter.Right
 				i += 1
 			}
@@ -167,6 +167,7 @@ BoxFile := class extend BoxBlock
 	{
 		fileId = GetNewId()
 		fileName = name
+		WorkBag.Push(this&,State_Syntax)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -179,6 +180,20 @@ BoxFile := class extend BoxBlock
 		{
 			iter.PrintInBlock(f)
 			iter = iter.Right
+		}
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Syntax
+		{
+			SyntaxCompress(this&,PriorityData)
+			UnboxParams(this.Down)
+			iter := this.Down
+			while iter != null
+			{
+				WorkBag.Push(iter,State_Start)
+				iter = iter.Right
+			}
 		}
 	}
 }

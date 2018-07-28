@@ -927,13 +927,12 @@ BoxFuncBody := class extend BoxFunc
 		{
 			parsed = true
 			WorkBag.Push(Down,State_Start)
+			Down.Up = this&
 		}
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		ABox.PrintGlobal(f)
-
-
 
 		if MyFuncType.RetType != null and parsed
 		{
