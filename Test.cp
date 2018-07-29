@@ -28,6 +28,7 @@ tr := !(bool is) -> int
 
 main := !(int argc,char^^ argv) -> int
 {
+	defer printf("at end\n")
 	printf("wut %i\n",tr(true))
 	printf("wut %i\n",tr(false))
 	return 0

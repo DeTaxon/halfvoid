@@ -15,6 +15,7 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("=>")
 	PriorityData.Opers.Push("extern")
 	PriorityData.Opers.Push("at")
+	PriorityData.Opers.Push("defer")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob = LoadFile("Test.cp")

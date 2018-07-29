@@ -59,6 +59,15 @@ ObjObj := class extend Object
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
 			}
+			if MyStr == "Defer()"
+			{
+				It := this&->{Object^}
+				preSet := It.Down.Right
+				PopOutNode(preSet)
+				NewNode := new ObjDefer(preSet)
+				ReplaceNode(this&,NewNode)
+				Found = true
+			}
 			if MyStr == "switch()"
 			{
 				It := this&->{Object^}

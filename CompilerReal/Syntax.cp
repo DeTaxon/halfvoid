@@ -139,6 +139,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 
 
 	if RuleUse(begin,"~extra1",RuleSLambda) return true
+	if RuleUse(begin,"Defer()",RuleDefer) return true
 	if RuleUse(begin,"return()",RuleOneFunc) return true
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
@@ -277,6 +278,18 @@ RuleMinus := !(void^ itr) -> int
 
 	if InDataR(It) return 2
 	return 0
+}
+RuleDefer := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+
+	if It.GetValue() != "defer" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	return 2
 }
 
 RuleOneFunc := !(void^ itr)-> int
