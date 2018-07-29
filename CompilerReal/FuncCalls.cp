@@ -740,8 +740,12 @@ NaturalCall := class extend SomeFuncCall
 {
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
-		Line = Pars.Line
-		Down = Pars
+		if Pars != null
+		{
+			Line = Pars.Line
+			Down = Pars
+			//TODO:set up line for empty params func()
+		}
 		
 		RetId = GetNewId()
 		ToCall = func

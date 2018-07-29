@@ -90,6 +90,8 @@ WorkWithBag := !() -> void
 	{
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
+		//printf("working on %p %s\n",it,it.GetValue())
+		//if it.Line != null printf("at %i\n",it.Line.LinePos)
 		it.DoTheWork(prior)
 	}
 }

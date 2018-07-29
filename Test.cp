@@ -25,12 +25,18 @@ tr := !(bool is) -> int
 	if is return 4
 	return 3
 }
+vdst := !() -> void
+{
+	defer printf("1wut\n")
+	defer printf("1wat\n")
+}
 
 main := !(int argc,char^^ argv) -> int
 {
 	defer printf("at end\n")
 	printf("wut %i\n",tr(true))
 	printf("wut %i\n",tr(false))
+	vdst()
 	return 0
 }
 

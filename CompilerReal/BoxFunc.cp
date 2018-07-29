@@ -115,6 +115,7 @@ ContainTType := !(Object^ toCheck) -> bool
 }
 ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 {
+	if toCheck == null return false
 	added := false
 	bag := Stack.{Object^}()
 	bag.Push(toCheck)
@@ -790,15 +791,16 @@ BoxFuncBody := class extend BoxFunc
 		{
 			ItParams = new LocalParam^[count]
 			InAlloc = new int[count]
-		}
-		for i : count
-		{
-			if isRef[i]{
-				InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
-			}else{
-				InAlloc[i] = ABox.GetAlloc(pars[i])
+
+			for i : count
+			{
+				if isRef[i]{
+					InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
+				}else{
+					InAlloc[i] = ABox.GetAlloc(pars[i])
+				}
+				ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 			}
-			ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 		}
 	}
 	
@@ -822,7 +824,6 @@ BoxFuncBody := class extend BoxFunc
 
 		TestRet(fType.RetType)
 
-	
 		if MyFuncType != null 
 		{
 			ApplyParams(MyFuncType.ParsCount,names,MyFuncType.Pars,MyFuncType.ParsIsRef)
