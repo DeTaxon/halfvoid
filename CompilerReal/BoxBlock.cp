@@ -32,7 +32,9 @@ BoxBlock := class extend Object
 	ItId := int
 
 	RNames := Queue.{string}
+
 	outRName := string
+	gotOutRName := bool
 
 	this := !() -> void
 	{
@@ -72,30 +74,86 @@ BoxBlock := class extend Object
 			iter = iter.Right
 		}
 
+		if not RNames.Empty()
+		{
+			f << "br label %" << RNames[RNames.Size() - 1] << "\n"
+		}
+
 		if not InClass
 		{
+			
+			Iters := Stack.{Object^}()
+			INames := Stack.{string}()
+
 			iter = Down
-
-			nowOutName := outRName
-
 			iter2 := RNames.Start
-			i := 0
 
 			while iter != null
 			{
-				if i > 0{
-					if iter2.Next != null
-						f << iter2.Next.Data <<":\n"
-				}
-				iter.PrintDestructor(f)
-				f << "br label %" << nowOutName <<"\n"
-				nowOutName = iter2.Data
-				iter = iter.Right
+				Iters.Push(iter)
+				INames.Push(iter2.Data)
 				iter2 = iter2.Next
-				i += 1
+				iter = iter.Right
 			}
 
+			while not Iters.Empty()
+			{
+				itr1 := Iters.Pop()
+				nms := INames.Pop()
+
+				f << nms << ":\n"
+				itr1.PrintDestructor(f)
+				if not INames.Empty(){
+					nxtName := INames[0]
+					f << "br label %" << nxtName << "\n"
+				}
+			}
+			f << "br label %" << outRName << "\n"
+
 		}
+	}
+	LoadOutPath := !() -> void
+	{
+		if not gotOutRName{
+			if Up != null{
+				outRName = Up.GetOutPath(this&,PATH_RETURN,1)
+			}else{
+				EmitError("software error 311653\n")
+			}
+			gotOutRName = true
+		}
+	}
+	GetOutPath := virtual !(Object^ objs, int typ , int size) -> string
+	{
+		if typ == PATH_RETURN
+		{
+			LoadOutPath()
+
+			iter1 := Down
+			iter2 := RNames.Start
+			preName := outRName
+			fourd := false
+
+			while iter1 != null
+			{
+				if iter1 == objs
+				{
+					iter1 = null
+					fourd = true
+				}else
+				{
+					preName = iter2.Data
+					iter1 = iter1.Right
+					iter2 = iter2.Next
+				}
+			}
+			if not fourd
+			{
+				EmitError("Path not found\n")
+			}
+			return preName
+		}
+		return ""
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -154,11 +212,7 @@ BoxBlock := class extend Object
 		}
 		if pri == State_DestructGet
 		{
-			if Up != null{
-				outRName = Up.GetOutPath(this&,PATH_RETURN,1)
-			}else{
-				EmitError("software error 311653\n")
-			}
+			LoadOutPath()
 		}
 	}
 }

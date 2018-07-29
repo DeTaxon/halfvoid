@@ -74,6 +74,15 @@ BoxIf := class extend Object
 		}
 
 	}
+	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> string
+	{
+		if Up != null
+		{	
+			return Up.GetOutPath(this&,typ,siz)
+		}else{
+		}
+		return ""
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~if()"
@@ -140,6 +149,15 @@ BoxWhile := class extend Object
 
 		}
 
+	}
+	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> string
+	{
+		if Up != null
+		{	
+			return Up.GetOutPath(this&,typ,siz)
+		}else{
+		}
+		return ""
 	}
 	GetValue := virtual !() -> string
 	{

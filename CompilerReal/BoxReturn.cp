@@ -3,6 +3,7 @@ BoxReturn := class extend Object
 	IsRetRef := bool
 	IsRetComplex := bool
 	IsRetVoid := bool
+	OutPathName := string
 	this := !(Object^ toUse) -> void
 	{
 		if toUse.Down.Right != null PopOutNode(toUse.Down)
@@ -31,6 +32,7 @@ BoxReturn := class extend Object
 		}
 		if pri == State_GetUse
 		{
+			WorkBag.Push(this&,State_DestructGet)
 			Down.SetUp(this&)
 
 			iterF := Up
@@ -88,6 +90,15 @@ BoxReturn := class extend Object
 				EmitError("impossible state\n")
 			}
 		}
+		if pri == State_DestructGet
+		{
+			if Up == null
+			{
+				EmitError("error to get return path 24135\n")
+			}else{
+				OutPathName = Up.GetOutPath(this&,PATH_RETURN,0)
+			}
+		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -108,6 +119,7 @@ BoxReturn := class extend Object
 			if not IsRetVoid Down.PrintInBlock(f)
 			//f << "ret void\n"
 		}
+		f << "br label %" << OutPathName << "\n"
 	}
 	GetValue := virtual !() -> string
 	{

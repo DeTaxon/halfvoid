@@ -20,10 +20,16 @@
 //	}
 //}
 
+tr := !(bool is) -> int
+{
+	if is return 4
+	return 3
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	V1 := int
-	V2 := int
+	printf("wut %i\n",tr(true))
+	printf("wut %i\n",tr(false))
 	return 0
 }
 
