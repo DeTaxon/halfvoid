@@ -743,9 +743,9 @@ NaturalCall := class extend SomeFuncCall
 		if Pars != null
 		{
 			Line = Pars.Line
-			Down = Pars
 			//TODO:set up line for empty params func()
 		}
+		Down = Pars
 		
 		RetId = GetNewId()
 		ToCall = func

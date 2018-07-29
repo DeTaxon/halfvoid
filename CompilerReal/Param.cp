@@ -10,6 +10,8 @@ ObjParam := class extend Object
 	IsExtern := bool
 	IsTook := bool
 	IsGlobal := bool
+
+	DestrCall := NaturalCall^
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -70,6 +72,14 @@ ObjParam := class extend Object
 			}
 		}
 	}
+	PrintDestructor := virtual !(sfile f) -> void
+	{
+		if DestrCall != null
+		{
+			asOb := DestrCall->{Object^}
+			asOb.PrintInBlock(f)
+		}
+	}
 	//PrintGlobal := !(sfile f) -> void
 	//{
 	//	if not IsFunc or AskedGetUse
@@ -93,6 +103,7 @@ ObjParam := class extend Object
 					WorkBag.Push(iter,State_Syntax)
 				iter = iter.Right
 			}
+
 		}
 
 		if pri == State_CheckTypes
@@ -232,6 +243,28 @@ ObjParam := class extend Object
 						Temp.Left = Down
 						Down.SetUp(this&)
 						IsSetValue = true
+					}
+				}
+			}
+		}
+		if pri == State_DestructCheck
+		{
+			if ObjType != null
+			{
+				if ObjType.GetType() == "class"
+				{	
+					asClass := ObjType->{TypeClass^}
+
+					pars := Queue.{Type^}()
+					cc := Queue.{Object^}()
+					pars.Push(asClass)
+					asCl := asClass.ToClass
+					DestructFunc := asCl.GetFunc("~this",pars,cc)
+					if DestructFunc != null
+					{
+						asLoc := Down->{LocalParam^}
+						parCall := new ParamNaturalCall("",asLoc->{Object^})
+						DestrCall = MakeSimpleCall(DestructFunc,parCall)
 					}
 				}
 			}

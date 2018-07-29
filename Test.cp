@@ -7,18 +7,18 @@
 //#import "arrs.cp"
 //#import "math.cp"
 
-//tT := class
-//{
-//	g := int
-//	this := !(int k) -> void
-//	{
-//		g = k
-//	}
-//	"~this" := !() -> void
-//	{
-//		printf("State %i\n",g)
-//	}
-//}
+tT := class
+{
+	g := int
+	this := !(int k) -> void
+	{
+		g = k
+	}
+	"~this" := !() -> void
+	{
+		printf("State %i\n",g)
+	}
+}
 
 tr := !(bool is) -> int
 {
@@ -33,6 +33,8 @@ vdst := !() -> void
 
 main := !(int argc,char^^ argv) -> int
 {
+	h := tT(3)
+	h2 := tT(7)
 	defer printf("at end\n")
 	printf("wut %i\n",tr(true))
 	printf("wut %i\n",tr(false))
