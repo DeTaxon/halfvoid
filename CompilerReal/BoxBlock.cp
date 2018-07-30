@@ -24,14 +24,18 @@ MakeItBlock := !(Object^ item) -> bool
 	return true
 }
 
+
+
 BoxBlock := class extend Object
 {
 	GetUseIter := int
 	Items := Queue.{ObjHolder^}
 	InClass := bool
 	ItId := int
-
-	RNames := Queue.{string}
+	
+	gotRetPath := bool
+	ContinuePath := Stack.{int}
+	BreakPath := Stack.{int}
 
 	outRName := string
 	gotOutRName := bool
@@ -39,9 +43,11 @@ BoxBlock := class extend Object
 	this := !() -> void
 	{
 		ItId = GetNewId()
+		ContinuePath.Push(0)
 	}
 	this := !(Object^ toRepl) -> void
 	{
+		ContinuePath.Push(0)
 		if toRepl.GetValue() == "{}"
 		{	
 			Down = toRepl.Down
@@ -65,52 +71,50 @@ BoxBlock := class extend Object
 	{
 		return "{d}"
 	}
+	PrintSomePath := !(sfile f, string PathName, int num,string OutName) -> void
+	{
+		i := 0	
+		iter := Down
+
+		while iter != null
+		{
+			f << "br label %" << PathName << num << "in" << i << "\n"	
+			f << PathName << num << "in" << i << ":\n"
+			iter.PrintDestructor(f)
+			if i == 0{
+				f << "br label %" << OutName << "\n"
+			}else{
+				f << "br label %" << PathName << num << "in" << i - 1 << "\n"
+			}
+			i += 1
+			iter = iter.Right
+		}
+	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		iter := Down
+		i := 0
 		while iter != null
 		{
 			iter.PrintInBlock(f)
+			i += 1
 			iter = iter.Right
 		}
-
-		if not RNames.Empty()
-		{
-			f << "br label %" << RNames[RNames.Size() - 1] << "\n"
-		}
+		if i != 0 f << "br label %ContPath" << ItId << "id0in" << i - 1 << "\n"
+		f << "br label %LastContPath" <<ItId << "\n"
 
 		if not InClass
 		{
-			
-			Iters := Stack.{Object^}()
-			INames := Stack.{string}()
-
-			iter = Down
-			iter2 := RNames.Start
-
-			while iter != null
+			if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
+			for i : ContinuePath.Size()
 			{
-				Iters.Push(iter)
-				INames.Push(iter2.Data)
-				iter2 = iter2.Next
-				iter = iter.Right
+				siz := ContinuePath[i]
+				retCPath := "LastContPath" + ItId
+				if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
+				PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
 			}
-
-			while not Iters.Empty()
-			{
-				itr1 := Iters.Pop()
-				nms := INames.Pop()
-
-				f << nms << ":\n"
-				itr1.PrintDestructor(f)
-				if not INames.Empty(){
-					nxtName := INames[0]
-					f << "br label %" << nxtName << "\n"
-				}
-			}
-			f << "br label %" << outRName << "\n"
-
 		}
+		f << "LastContPath" <<ItId << ":\n"
 	}
 	LoadOutPath := !() -> void
 	{
@@ -125,33 +129,52 @@ BoxBlock := class extend Object
 	}
 	GetOutPath := virtual !(Object^ objs, int typ , int size) -> string
 	{
+		LoadOutPath()
+
+		iter1 := Down
+		i := 0
+		found := false
+
+		while iter1 != null
+		{
+			if iter1 == objs
+			{
+				iter1 = null
+				found = true
+			}else
+			{
+				i += 1
+				iter1 = iter1.Right
+			}
+		}
+
+		if not found
+		{
+			EmitError("Path not found\n")
+			return ""
+		}
+
 		if typ == PATH_RETURN
 		{
-			LoadOutPath()
+			gotRetPath = true
+			if i == 0 return outRName
+			return "RetPath" + ItId + "in" + (i - 1)
+		}
+		if typ == PATH_CONTINUE
+		{
+			fnd := false
 
-			iter1 := Down
-			iter2 := RNames.Start
-			preName := outRName
-			fourd := false
-
-			while iter1 != null
+			for i : ContinuePath.Size()
 			{
-				if iter1 == objs
-				{
-					iter1 = null
-					fourd = true
-				}else
-				{
-					preName = iter2.Data
-					iter1 = iter1.Right
-					iter2 = iter2.Next
-				}
+				if ContinuePath[i] == size 
+					fnd = true
 			}
-			if not fourd
-			{
-				EmitError("Path not found\n")
+			if not fnd ContinuePath.Push(size)
+			if i == 0 {
+				if size == 0 return "LastContPath" + ItId + ":\n"
+				return Up.GetOutPath(this&,typ,size)
 			}
-			return preName
+			return "ContPath" + ItId + "id"  + size + "in" + (i - 1)
 		}
 		return ""
 	}
@@ -199,15 +222,6 @@ BoxBlock := class extend Object
 		}
 		if pri == State_DestructCheck
 		{
-		 	iter := Down
-			i := 0
-
-			while iter != null
-			{
-				RNames.Push("RName" + ItId + "n" + i)
-				iter = iter.Right
-				i += 1
-			}
 			WorkBag.Push(this&,State_DestructGet)
 		}
 		if pri == State_DestructGet
@@ -259,3 +273,4 @@ BoxFile := class extend BoxBlock
 }
 
 PATH_RETURN := 1
+PATH_CONTINUE := 2
