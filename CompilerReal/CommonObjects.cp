@@ -83,7 +83,9 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 
 					for AsNeed2.MyFuncType.ParsCount
 					{
-						if as2.MyFuncParamNames[it] == name return AsNeed2.ItParams[it]
+						if AsNeed2.ItParams != null
+							if as2.MyFuncParamNames[it] == name 
+								return AsNeed2.ItParams[it]
 					}
 					if AsNeed2.ExtraRetParam != null
 					{

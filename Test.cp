@@ -33,11 +33,7 @@
 
 main := !(int argc,char^^ argv) -> int
 {
-	defer printf("at end\n")
-	if true{
-		defer printf("at end2\n")
-	}
-	printf("wut 7\n")
+	defer printf("hey\n")
 	return 0
 }
 

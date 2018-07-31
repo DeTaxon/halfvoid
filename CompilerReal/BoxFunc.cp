@@ -781,10 +781,6 @@ BoxFuncBody := class extend BoxFunc
 	InAlloc := int^	
 	ExtraRetParam := FuncParam^
 
-	//TODO UserConsts := Queue.{Object^} // !().{T}
-	//HiddenConsts := Queue.{ObjConstHolder^} // !(@T x)
-
-
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0
@@ -945,6 +941,7 @@ BoxFuncBody := class extend BoxFunc
 
 			ABox.PrintAlloc(f)
 
+			if InAlloc != null
 			for i : MyFuncType.ParsCount
 			{
 				f << "store "
@@ -1001,22 +998,6 @@ BoxFuncBody := class extend BoxFunc
 			//UnboxParams(this.Down)
 			WorkBag.Push(this&,State_ErrorCheck)
 		}
-		//if pri == State_GetUse
-		//{
-		//	iter := Down
-		//	
-		//	if iter != null
-		//	{
-		//		while iter.Right != null iter = iter.Right
-		//		while iter != null
-		//		{
-		//			WorkBag.Push(iter,State_Start)
-		//			iter = iter.Left
-		//		}
-		//	}
-		//	WorkBag.Push(this&,State_ErrorCheck)
-		//	
-		//}
 		if pri == State_ErrorCheck
 		{
 			if MyFuncType == null

@@ -7,6 +7,9 @@ ObjResult := class extend Object
 	{
 		return ResultType
 	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+	}
 }
 
 ObjConst := class extend ObjResult

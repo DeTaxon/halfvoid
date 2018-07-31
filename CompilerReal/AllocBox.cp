@@ -1,5 +1,3 @@
-
-
 AllocBox := class 
 {
 	ItId := int
@@ -25,7 +23,7 @@ AllocBox := class
 			iter = iter.Next
 			i += 1
 		}
-		return -0
+		return -1
 	}
 	//ReturnAlloc := !()
 	PrintGlobal := !(sfile f) -> void
@@ -48,6 +46,10 @@ AllocBox := class
 
 			f << "}\n"
 		}
+	}
+	GetAsUse := !() -> string
+	{
+		return "%AllocClass" + ItId + "* %AllocItem" + ItId
 	}
 	PrintAlloc := !(sfile f) -> void
 	{
