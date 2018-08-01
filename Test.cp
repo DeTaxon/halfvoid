@@ -7,36 +7,15 @@
 //#import "arrs.cp"
 //#import "math.cp"
 
-tT := class
-{
-	g := int
-	this := !(int k) -> void
-	{
-		g = k
-	}
-	"~this" := !() -> void
-	{
-		printf("State %i\n",g)
-	}
-}
-
-//tr := !(bool is) -> int
-//{
-//	if is return 4
-//	return 3
-//}
-//vdst := !() -> void
-//{
-//	defer printf("1wut\n")
-//	defer printf("1wat\n")
-//}
-
 main := !(int argc,char^^ argv) -> int
 {
-	x := 5
-	defer printf("hey %i\n",x)
-	printf("a %i\n",x)
-	x += 9
+	for i : 5
+	{
+		if i == 2 { 
+			continue
+		}
+		printf("here %i\n",i)
+	}
 	return 0
 }
 

@@ -121,6 +121,10 @@ BoxReturn := class extend Object
 		}
 		f << "br label %" << OutPathName << "\n"
 	}
+	GetOutPath := virtual !(Object^ ob, int typ, int size) -> string
+	{
+		return Up.GetOutPath(this&,typ,size)
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~Return()"

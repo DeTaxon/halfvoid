@@ -348,8 +348,14 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 							NS := new ObjBool(Tok.Buff == "true")
 							Adder = PushObject(Adder,NS)
 						}else{
-							NS := new ObjIndent(Tok.Buff.Copy())
-							Adder = PushObject(Adder,NS)
+							if Tok.Buff == "continue" or Tok.Buff == "break"
+							{
+								NS := new WayControl(Tok.Buff)
+								Adder = PushObject(Adder,NS)
+							}else{
+								NS := new ObjIndent(Tok.Buff.Copy())
+								Adder = PushObject(Adder,NS)
+							}
 						}
 					}
 				}
