@@ -780,6 +780,7 @@ BoxFuncBody := class extend BoxFunc
 	ItParams := LocalParam^^
 	InAlloc := int^	
 	ExtraRetParam := FuncParam^
+	Parent := BoxFuncBody^
 
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
@@ -952,6 +953,31 @@ BoxFuncBody := class extend BoxFunc
 				if MyFuncType.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
 			}
+			
+			iterP := Parent
+
+			while iterP != null
+			{
+				asN := iterP
+				ABName := asN.ABox.GetClassName()
+				//f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << ItNR << "\n"
+				//f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
+				//f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
+				//f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
+				//f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
+				f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
+				asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+				if asN.IsMethod
+				{
+					fT := asN.MyFuncType
+					f << "%thisPre = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName" + ABox.ItId + " , i32 0,i32 0\n"
+					f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+				}else{
+					//printf("nope\n")
+				}
+				iterP = iterP.Parent
+			}
+
 			if not IsRetComplex and MyFuncType.RetType != GetType("void")
 			{
 				f << "%Result = alloca " << MyFuncType.RetType.GetName()

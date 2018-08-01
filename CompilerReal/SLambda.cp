@@ -1,4 +1,3 @@
-
 SLambda := class extend ObjResult
 {
 	parsedStart := bool

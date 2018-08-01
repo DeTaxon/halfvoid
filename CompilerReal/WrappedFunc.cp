@@ -1,6 +1,5 @@
 WrappedFunc := class extend BoxFuncBody //TODO: fill InAlloc
 {
-	Parent := BoxFuncBody^
 	this := !(Object^ itm) -> void
 	{
 		Down = itm
