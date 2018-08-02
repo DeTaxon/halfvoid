@@ -337,6 +337,15 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "End" << ItId << ":\n"
 
 	}
+	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
+	{
+		if typ == PATH_RETURN
+		{
+			//TODO: destruct items
+			if Up != null return Up.GetOutPath(this&,typ,size)
+		}
+		return ""
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~~for()"

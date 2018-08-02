@@ -79,7 +79,6 @@ BoxIf := class extend Object
 		if Up != null
 		{	
 			return Up.GetOutPath(this&,typ,siz)
-		}else{
 		}
 		return ""
 	}
