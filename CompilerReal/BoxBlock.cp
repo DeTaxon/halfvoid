@@ -34,8 +34,8 @@ BoxBlock := class extend Object
 	ItId := int
 	
 	gotRetPath := bool
-	ContinuePath := Stack.{int}
-	BreakPath := Stack.{int}
+	ContinuePath := Set.{int}
+	BreakPath := Set.{int}
 
 	outRName := string
 	gotOutRName := bool
@@ -47,6 +47,7 @@ BoxBlock := class extend Object
 	}
 	this := !(Object^ toRepl) -> void
 	{
+		ItId = GetNewId()
 		ContinuePath.Push(0)
 		if toRepl.GetValue() == "{}"
 		{	
@@ -78,7 +79,7 @@ BoxBlock := class extend Object
 
 		while iter != null
 		{
-			f << "br label %" << PathName << num << "in" << i << "\n"	
+			//f << "br label %" << PathName << num << "in" << i << "\n"	
 			f << PathName << num << "in" << i << ":\n"
 			iter.PrintDestructor(f)
 			if i == 0{
@@ -162,16 +163,9 @@ BoxBlock := class extend Object
 		}
 		if typ == PATH_CONTINUE
 		{
-			fnd := false
-
-			for i : ContinuePath.Size()
-			{
-				if ContinuePath[i] == size 
-					fnd = true
-			}
-			if not fnd ContinuePath.Push(size)
+			ContinuePath.Insert(size)
 			if i == 0 {
-				if size == 0 return "LastContPath" + ItId + ":\n"
+				if size == 0 return "LastContPath" + ItId
 				return Up.GetOutPath(this&,typ,size)
 			}
 			return "ContPath" + ItId + "id"  + size + "in" + (i - 1)
@@ -274,3 +268,4 @@ BoxFile := class extend BoxBlock
 
 PATH_RETURN := 1
 PATH_CONTINUE := 2
+PATH_BREAK := 3 

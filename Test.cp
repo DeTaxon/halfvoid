@@ -11,7 +11,7 @@ main := !(int argc,char^^ argv) -> int
 {
 	for i : 5
 	{
-		if i == 2 { 
+		if i == 2 {
 			continue
 		}
 		printf("here %i\n",i)

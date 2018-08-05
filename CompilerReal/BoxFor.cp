@@ -142,6 +142,8 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ block) -> void
 	{
+		ContPath.Insert(0)
+
 		Down = block
 		itemsCount = items.Size()
 		iter := Down
@@ -328,21 +330,75 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 
-		for i : itemsCount if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
-		
-		Down.PrintInBlock(f)
 
+		for i : itemsCount if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
+		Down.PrintInBlock(f)
+		
+		f << "br label %IncFuncs" << ItId << "\n"
+		f << "IncFuncs" << ItId << ":\n"
 		for i : itemsCount IncFuncs[i].PrintPre(f)
 		f << "br label %start" << ItId << "\n"
-		f << "End" << ItId << ":\n"
 
+		if UseRetPath
+		{
+			iter4 := Down.Right
+			f << "br label %RetPath" << ItId << "\n"
+			f << "RetPath" << ItId << ":\n"
+
+			while iter4 != null
+			{
+				iter4.PrintDestructor(f)
+				iter4 = iter4.Right
+			}
+			f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
+		}
+		for i : ContPath.Size()
+		{
+			itSize := ContPath[i]
+
+				iter4 := Down.Right
+
+				f << "br label %ContPath" << itSize <<"size\n"
+				f << "ContPath" << itSize << "size:\n"
+
+				while iter4 != null
+				{
+					iter4.PrintDestructor(f)
+					iter4 = iter4.Right
+				}
+				f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
+		}
+		f << "End" << ItId << ":\n"
 	}
+
+	UseRetPath := bool
+	ContPath := Set.{int}
+	BreakPath := Set.{int}
+
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
 	{
 		if typ == PATH_RETURN
 		{
-			//TODO: destruct items
-			if Up != null return Up.GetOutPath(this&,typ,size)
+			UseRetPath = true
+			//if Up != null return Up.GetOutPath(this&,typ,size)
+			return "RetPath" + ItId
+		}
+		if typ == PATH_CONTINUE
+		{
+			printf("here %i\n", size)
+			if size == 0{
+				return "IncFuncs" + ItId
+			}
+			ContPath.Insert(size)
+			return "ContPath" + size + "size"
+		}
+		if typ == PATH_BREAK
+		{
+			if size == 0{
+				return "End" + ItId
+			}
+			BreakPath.Insert(size)
+			return "BreakPath" + size + "size"
 		}
 		return ""
 	}
