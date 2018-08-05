@@ -114,6 +114,13 @@ BoxBlock := class extend Object
 				if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
 				PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
 			}
+			for i : BreakPath.Size()
+			{
+				siz := BreakPath[i]
+				retCPath := "LastContPath" + ItId
+				if siz != 0 retCPath = Up.GetOutPath(this&,PATH_BREAK,siz - 1)
+				PrintSomePath(f,"BreakPath" + ItId + "id",siz,retCPath)
+			}
 		}
 		f << "LastContPath" <<ItId << ":\n"
 	}
@@ -169,6 +176,18 @@ BoxBlock := class extend Object
 				return Up.GetOutPath(this&,typ,size - 1)
 			}
 			return "ContPath" + ItId + "id"  + size + "in" + (i - 1)
+		}
+		if typ == PATH_BREAK
+		{
+			BreakPath.Insert(size)
+			//if i == 0 { should not be here
+			//	if size == 0 return "LastContPath" + ItId
+			//	return Up.GetOutPath(this&,typ,size - 1)
+			//}
+			if i == 0 {
+				return Up.GetOutPath(this&,typ,size - 1)
+			}
+			return "BreakPath" + ItId + "id"  + size + "in" + (i - 1)
 		}
 		return ""
 	}

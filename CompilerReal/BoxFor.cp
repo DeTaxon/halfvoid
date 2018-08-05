@@ -359,8 +359,8 @@ BoxForOldFashionMulti := class extend BoxFor
 
 				iter4 := Down.Right
 
-				f << "br label %ContPath" << itSize <<"size\n"
-				f << "ContPath" << itSize << "size:\n"
+				f << "br label %ContPath" << ItId << "id" << itSize <<"size\n"
+				f << "ContPath" << ItId << "id" << itSize << "size:\n"
 
 				while iter4 != null
 				{
@@ -369,6 +369,25 @@ BoxForOldFashionMulti := class extend BoxFor
 				}
 				
 				f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
+			}
+		}
+		for i : BreakPath.Size()
+		{
+			itSize := ContPath[i]
+			if itSize != 0{
+
+				iter4 := Down.Right
+
+				f << "br label %BreakPath" << ItId << "id" << itSize <<"size\n"
+				f << "BreakPath" << ItId << "id" << itSize << "size:\n"
+
+				while iter4 != null
+				{
+					iter4.PrintDestructor(f)
+					iter4 = iter4.Right
+				}
+				
+				f << "br label %" << Up.GetOutPath(this&,PATH_BREAK,itSize - 1) << "\n"
 			}
 		}
 		f << "End" << ItId << ":\n"
@@ -392,7 +411,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				return "IncFuncs" + ItId
 			}
 			ContPath.Insert(size)
-			return "ContPath" + size + "size"
+			return "ContPath" + ItId + "id" + size + "size"
 		}
 		if typ == PATH_BREAK
 		{
@@ -400,7 +419,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				return "End" + ItId
 			}
 			BreakPath.Insert(size)
-			return "BreakPath" + size + "size"
+			return "BreakPath" + ItId + "id" + size + "size"
 		}
 		return ""
 	}
