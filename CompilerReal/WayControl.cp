@@ -9,7 +9,6 @@ WayControl := class extend Object
 		itType = PATH_CONTINUE
 		if itm == "break" itType = PATH_BREAK
 		itItm = itm
-		WorkBag.Push(this&,State_DestructGet)
 	}
 	Clone := virtual !() -> Object^
 	{
@@ -21,6 +20,10 @@ WayControl := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_DestructGet)
+		}
 		if pri == State_DestructGet
 		{
 			itSize = 0

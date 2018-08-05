@@ -355,6 +355,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		for i : ContPath.Size()
 		{
 			itSize := ContPath[i]
+			if itSize != 0{
 
 				iter4 := Down.Right
 
@@ -366,7 +367,9 @@ BoxForOldFashionMulti := class extend BoxFor
 					iter4.PrintDestructor(f)
 					iter4 = iter4.Right
 				}
+				
 				f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
+			}
 		}
 		f << "End" << ItId << ":\n"
 	}
@@ -385,7 +388,6 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		if typ == PATH_CONTINUE
 		{
-			printf("here %i\n", size)
 			if size == 0{
 				return "IncFuncs" + ItId
 			}

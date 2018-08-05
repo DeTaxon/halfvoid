@@ -166,7 +166,7 @@ BoxBlock := class extend Object
 			ContinuePath.Insert(size)
 			if i == 0 {
 				if size == 0 return "LastContPath" + ItId
-				return Up.GetOutPath(this&,typ,size)
+				return Up.GetOutPath(this&,typ,size - 1)
 			}
 			return "ContPath" + ItId + "id"  + size + "in" + (i - 1)
 		}
