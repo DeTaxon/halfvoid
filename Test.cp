@@ -9,13 +9,16 @@
 
 main := !(int argc,char^^ argv) -> int
 {
-	for i : 10
+	i := 0
+	while i < 10
 	{
 		if i == 2 {
+		i += 1
 			continue
 		}
 		if i == 5 { break }
 		printf("here %i\n",i)
+		i += 1
 	}
 	return 0
 }

@@ -33,6 +33,7 @@ WayControl := class extend Object
 			{
 				lazy := false
 				if iter.GetValue() == "~~for()" lazy = true
+				if iter.GetValue() == "~while()" lazy = true
 
 				if lazy
 				{

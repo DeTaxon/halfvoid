@@ -144,20 +144,96 @@ BoxWhile := class extend Object
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
 			f << "\nbr label %Check" << MyId << "\n"
+
+
+			if UseRetPath
+			{
+				iter4 := Down.Right
+				f << "br label %RetPath" << MyId << "\n"
+				f << "RetPath" << MyId << ":\n"
+
+				while iter4 != null
+				{
+					iter4.PrintDestructor(f)
+					iter4 = iter4.Right
+				}
+				f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
+			}
+			for i : ContPath.Size()
+			{
+				itSize := ContPath[i]
+				if itSize != 0{
+
+					iter4 := Down.Right
+
+					f << "br label %ContPath" << MyId << "id" << itSize <<"size\n"
+					f << "ContPath" << MyId << "id" << itSize << "size:\n"
+
+					while iter4 != null
+					{
+						iter4.PrintDestructor(f)
+						iter4 = iter4.Right
+					}
+					
+					f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
+				}
+			}
+			for i : BreakPath.Size()
+			{
+				itSize := ContPath[i]
+				if itSize != 0{
+
+					iter4 := Down.Right
+
+					f << "br label %BreakPath" << MyId << "id" << itSize <<"size\n"
+					f << "BreakPath" << MyId << "id" << itSize << "size:\n"
+
+					while iter4 != null
+					{
+						iter4.PrintDestructor(f)
+						iter4 = iter4.Right
+					}
+					
+					f << "br label %" << Up.GetOutPath(this&,PATH_BREAK,itSize - 1) << "\n"
+				}
+			}
+
 			f << "End" << MyId << ":\n"
 
 		}
 
 	}
-	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> string
+	UseRetPath := bool
+	ContPath := Set.{int}
+	BreakPath := Set.{int}
+
+	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
 	{
-		if Up != null
-		{	
-			return Up.GetOutPath(this&,typ,siz)
-		}else{
+		if typ == PATH_RETURN
+		{
+			UseRetPath = true
+			//if Up != null return Up.GetOutPath(this&,typ,size)
+			return "RetPath" + MyId
+		}
+		if typ == PATH_CONTINUE
+		{
+			if size == 0{
+				return "Check" + MyId
+			}
+			ContPath.Insert(size)
+			return "ContPath" + MyId + "id" + size + "size"
+		}
+		if typ == PATH_BREAK
+		{
+			if size == 0{
+				return "End" + MyId
+			}
+			BreakPath.Insert(size)
+			return "BreakPath" + MyId + "id" + size + "size"
 		}
 		return ""
 	}
+
 	GetValue := virtual !() -> string
 	{
 		return "~while()"
