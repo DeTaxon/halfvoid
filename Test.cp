@@ -4,22 +4,12 @@
 //#import "glfw.cp"
 //#import "gl.cp"
 //#import "Model.cp"
-//#import "arrs.cp"
+#import "arrs.cp"
 //#import "math.cp"
 
 main := !(int argc,char^^ argv) -> int
 {
-	i := 0
-	while i < 10
-	{
-		if i == 2 {
-		i += 1
-			continue
-		}
-		if i == 5 { break }
-		printf("here %i\n",i)
-		i += 1
-	}
+	t := Queue.{int}
 	return 0
 }
 

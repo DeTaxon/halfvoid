@@ -256,6 +256,40 @@ BoxClass := class extend Object
 	{
 		if pri == State_PreGetUse and Parent != null
 		{
+			iterH := Down.Down
+			foundNotThis := false
+
+			while iterH != null
+			{
+				if iterH.GetValue() == "i:=1"
+				{
+					asParam := iterH->{ObjParam^}
+
+					if asParam.MyStr == "~this"
+						foundNotThis = true
+				}
+				iterH = iterH.Right
+			}
+
+			if not foundNotThis
+			{
+				newPrm := new ObjParam("~this",false)
+				newPrm.Right = Down.Down
+				newPrm.Up = Down
+				newPrm.Right.Left = newPrm
+				Down.Down = newPrm
+
+				pars := Queue.{Type^}()
+				pars.Push(ClassType)
+				bools := true
+				funcT := GetFuncType(pars,bools&,GetType("void"),false,false)
+				
+				names := new char^[1]
+				names^ = "this"
+				newPrm.Down = new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},false)
+				newPrm.Down.Up = newPrm
+			}
+			
 			Size := Parent.Params.Size()
 			for i : Size
 			{
