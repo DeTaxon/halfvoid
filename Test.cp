@@ -4,12 +4,23 @@
 //#import "glfw.cp"
 //#import "gl.cp"
 //#import "Model.cp"
-#import "arrs.cp"
+//#import "arrs.cp"
 //#import "math.cp"
+
+t1 := class 
+{
+	G := virtual !() -> void
+	{
+		printf("hi\n")
+	}
+	"~this" := !() -> void
+	{
+	}
+}
 
 main := !(int argc,char^^ argv) -> int
 {
-	t := Queue.{int}
+	t := t1
 	return 0
 }
 

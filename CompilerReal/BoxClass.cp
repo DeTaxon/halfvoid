@@ -254,8 +254,20 @@ BoxClass := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_PreGetUse and Parent != null
+		if pri == State_PreGetUse
 		{
+			if Parent != null
+			{
+				Size := Parent.Params.Size()
+				for i : Size
+				{
+					Params.PushFront(Parent.Params[Size - i - 1])
+				}
+				for i : Parent.FakeParams.Size() FakeParams.PushFront(Parent.FakeParams[i])
+				if Parent.ContainVirtual 
+					ContainVirtual = true
+			}
+
 			iterH := Down.Down
 			foundNotThis := false
 
@@ -286,16 +298,10 @@ BoxClass := class extend Object
 				
 				names := new char^[1]
 				names^ = "this"
-				newPrm.Down = new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},false)
+				newPrm.Down = new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
 				newPrm.Down.Up = newPrm
 			}
-			
-			Size := Parent.Params.Size()
-			for i : Size
-			{
-				Params.PushFront(Parent.Params[Size - i - 1])
-			}
-			for i : Parent.FakeParams.Size() FakeParams.PushFront(Parent.FakeParams[i])
+
 		}
 		if pri == State_PrePrint
 		{

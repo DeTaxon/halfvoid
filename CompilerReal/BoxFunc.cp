@@ -886,6 +886,20 @@ BoxFuncBody := class extend BoxFunc
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 		ParseConsts(cons)
 
+		if SomeName == "~this"
+		{
+			if metC == null
+			{
+				EmitError("~this outside class\n")
+			}else{
+				asC := metC->{TypeClass^}
+				toC := asC.ToClass
+				if toC.ContainVirtual{
+					IsVirtual = true
+				}
+			}
+		}
+
 		if MyFuncType != null TestRet(MyFuncType.RetType)
 
 		if MyFuncType != null 
