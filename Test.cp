@@ -11,10 +11,10 @@ t1 := class
 {
 	G := virtual !() -> void
 	{
-		printf("hi\n")
 	}
 	"~this" := !() -> void
 	{
+		printf("hi\n")
 	}
 }
 

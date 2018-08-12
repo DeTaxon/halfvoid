@@ -76,7 +76,8 @@ ObjParam := class extend Object
 	{
 		if DestrCall != null
 		{
-			asOb := DestrCall->{Object^}
+			DestrCall.RetId = GetNewId()
+			asOb := DestrCall->{Object^}	
 			asOb.PrintInBlock(f)
 		}
 	}
