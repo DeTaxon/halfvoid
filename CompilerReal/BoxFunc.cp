@@ -846,7 +846,8 @@ BoxFuncBody := class extend BoxFunc
 		{
 				
 		}
-		if IsVirt and metC != null
+
+		if IsVirtual and metC != null
 		{
 			ParseBlock()
 			asNeed := (metC->{TypeClass^}).ToClass
@@ -883,8 +884,6 @@ BoxFuncBody := class extend BoxFunc
 		{
 			OutputName = "func" + GetNewId()
 		}	
-		IsInvalid = not ParseParams(inPars,inOutType,false)
-		ParseConsts(cons)
 
 		if SomeName == "~this"
 		{
@@ -899,6 +898,9 @@ BoxFuncBody := class extend BoxFunc
 				}
 			}
 		}
+
+		IsInvalid = not ParseParams(inPars,inOutType,false)
+		ParseConsts(cons)
 
 		if MyFuncType != null TestRet(MyFuncType.RetType)
 
@@ -925,7 +927,7 @@ BoxFuncBody := class extend BoxFunc
 			if not (c in 'a'..'z') and not (c in 'A'..'Z') IsSuffix = false 
 		}
 
-		if IsVirt and metC != null
+		if IsVirtual and metC != null
 		{
 			ParseBlock()
 			asNeed := (metC->{TypeClass^}).ToClass

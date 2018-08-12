@@ -298,8 +298,11 @@ BoxClass := class extend Object
 				
 				names := new char^[1]
 				names^ = "this"
-				newPrm.Down = new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
+				newFunc := new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
+				newPrm.Down = newFunc
 				newPrm.Down.Up = newPrm
+
+				//newFunc.ParseBlock()
 			}
 
 		}
@@ -327,13 +330,16 @@ BoxClass := class extend Object
 	//GetMethod
 	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
 	{
+		printf("creating %s\n",name)
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
 
 		for i : vTypes.Size()
 		{
 			if vTypes[i].fName == name
+			{
 				Funcs.Push(vTypes[i].funcWrapper)
+			}
 		}
 
 		iterJ := Down.Down
