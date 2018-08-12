@@ -34,6 +34,8 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 		if iterT == null return null
 		if iterT.GetValue() != "{}" return null
 
+		IsTemplate := asClass.ToClass.GetValue() == "!{}{...}"
+
 		if IsTemplate return new BoxClassTemplate(ob)
 		return new BoxClass(iterT,asClass.ToClass)
 
@@ -236,7 +238,7 @@ BoxClass := class extend Object
 		UnrollTemplate = new BuiltInTemplateUnroll(this&)
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 
-		Parent = par
+		this.Parent = par
 
 		if par != null 
 		{
@@ -256,15 +258,15 @@ BoxClass := class extend Object
 	{
 		if pri == State_PreGetUse
 		{
-			if Parent != null
+			if this.Parent != null
 			{
-				Size := Parent.Params.Size()
+				Size := this.Parent.Params.Size()
 				for i : Size
 				{
-					Params.PushFront(Parent.Params[Size - i - 1])
+					Params.PushFront(this.Parent.Params[Size - i - 1])
 				}
-				for i : Parent.FakeParams.Size() FakeParams.PushFront(Parent.FakeParams[i])
-				if Parent.ContainVirtual 
+				for i : this.Parent.FakeParams.Size() FakeParams.PushFront(this.Parent.FakeParams[i])
+				if this.Parent.ContainVirtual 
 					ContainVirtual = true
 			}
 
@@ -330,15 +332,21 @@ BoxClass := class extend Object
 	//GetMethod
 	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
 	{
-		printf("creating %s\n",name)
+		return GetFunc(name,pars,consts,false)
+	}
+	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts,bool iVir) -> BoxFunc^
+	{
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
 
-		for i : vTypes.Size()
+		if not iVir
 		{
-			if vTypes[i].fName == name
+			for i : vTypes.Size()
 			{
-				Funcs.Push(vTypes[i].funcWrapper)
+				if vTypes[i].fName == name
+				{
+					Funcs.Push(vTypes[i].funcWrapper)
+				}
 			}
 		}
 
@@ -353,7 +361,7 @@ BoxClass := class extend Object
 					if iterJ.Down.GetValue() == "!()"
 					{
 						asFunc := (iterJ.Down)->{BoxFunc^}
-						if (not asFunc.IsVirtual) and asFunc.IsSameConsts(consts)
+						if (not asFunc.IsVirtual or iVir) and asFunc.IsSameConsts(consts)
 							Funcs.Push(asFunc)
 					}
 					if iterJ.Down.GetValue() == "!(){}"
@@ -365,16 +373,16 @@ BoxClass := class extend Object
 		bestFunc := GetBestFunc(pars,consts,Funcs,Templs)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
-		if bestFunc == null and Parent != null
+		if bestFunc == null and this.Parent != null
 		{
 			pars2 := Queue.{Type^}()
-			pars2.Push(Parent.ClassType)
+			pars2.Push(this.Parent.ClassType)
 			for i : pars.Size()
 			{
 				if i != 0
 					pars2.Push(pars[i])
 			}
-			return Parent.GetFunc(name,pars2,consts)
+			return this.Parent.GetFunc(name,pars2,consts)
 		}
 
 		return bestFunc
@@ -390,12 +398,12 @@ BoxClass := class extend Object
 		{
 			computedVTable = true
 
-			if Parent != null
+			if this.Parent != null
 			{
-				Parent.ComputeVTable()
-				for i : Parent.vTable.Size()
+				this.Parent.ComputeVTable()
+				for i : this.Parent.vTable.Size()
 				{
-					vTable.Push(Parent.vTable[i])
+					vTable.Push(this.Parent.vTable[i])
 				}
 			}
 

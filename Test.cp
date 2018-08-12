@@ -18,9 +18,17 @@ t1 := class
 	}
 }
 
+t2 := class extend t1
+{
+	c := int
+	k := virtual !() -> void
+	{
+	}
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	t := t1
+	t := t2
 	return 0
 }
 

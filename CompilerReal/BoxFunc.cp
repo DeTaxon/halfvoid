@@ -575,7 +575,7 @@ BoxFunc := class extend Object
 		{
 			if RetTyp.GetType() == "arr" or RetTyp.GetType() == "class"
 			{
-				if not IsRetRef IsRetComplex = true
+				if not IsRetRef this.IsRetComplex = true
 			}
 		}
 
@@ -677,10 +677,10 @@ BoxFunc := class extend Object
 	}
 	SetReturnType := !(Type^ toSet) -> void
 	{
-		IsRetComplex = false
+		this.IsRetComplex = false
 		if toSet.GetType() == "arr" or toSet.GetType() == "class"
 		{
-			if not IsRetRef IsRetComplex = true
+			if not this.IsRetRef this.IsRetComplex = true
 		}
 		if MyFuncType.RetType != toSet
 		{
@@ -858,12 +858,12 @@ BoxFuncBody := class extend BoxFunc
 	{
 		if t != null
 		{
-			IsRetComplex = false
+			this.IsRetComplex = false
 			if t.GetType() == "arr" or t.GetType() == "class"
 			{
 				if not IsRetRef
 				{
-					IsRetComplex = true
+					this.IsRetComplex = true
 					if ExtraRetParam == null
 						ExtraRetParam = new FuncParam("ToRet",t,true)
 				}
@@ -938,10 +938,57 @@ BoxFuncBody := class extend BoxFunc
 			ParseBlock()
 		}
 	}
+	AddFuncCall := !(Object^ itm) -> void
+	{
+		itr := Down.Down
+
+		if itr == null
+		{
+			Down.Down = itm
+			itm.Up = Down
+		}else{
+			while itr.Right != null
+			{
+				itr = itr.Right
+			}
+			itr.Right = itm
+			itm.Left = itr
+			itm.Up = itr
+		}
+	}
 	ParseBlock := virtual !() -> void
 	{
-		if not parsed
+		if not parsed 
 		{
+			if FuncName == "~this" and MethodType != null
+			{
+				if this.MethodType.GetType() == "class"
+				{
+					asCT := MethodType->{TypeClass^}
+					asC := asCT.ToClass
+
+					if asC.Parent != null
+					{
+						pars := Queue.{Type^}()
+						consts := Queue.{Object^}()
+						stp := asC.Parent
+						pars.Push(stp.ClassType)
+						func2 := asC.Parent.GetFunc("~this",pars,consts,true)
+
+						if func2 != null
+						{
+							pL := new FuncParam("this",MethodType,true)
+							pCall := new ParamNaturalCall("",pL->{Object^})
+							fCall := MakeSimpleCall(func2,pCall)
+							AddFuncCall(fCall)
+						}else{
+							EmitError("compiler error 82346\n")
+						}
+					}
+				}
+				
+			}
+			
 			parsed = true
 			WorkBag.Push(Down,State_Start)
 			Down.Up = this&
@@ -997,7 +1044,7 @@ BoxFuncBody := class extend BoxFunc
 				iterP = iterP.Parent
 			}
 
-			if not IsRetComplex and MyFuncType.RetType != GetType("void")
+			if not this.IsRetComplex and MyFuncType.RetType != GetType("void")
 			{
 				f << "%Result = alloca " << MyFuncType.RetType.GetName()
 				if MyFuncType.RetRef f << "*"
@@ -1013,7 +1060,7 @@ BoxFuncBody := class extend BoxFunc
 			f << "br label %OutLabel" << ABox.ItId << "\n"
 			f << "OutLabel" << ABox.ItId << ":\n"
 
-			if MyFuncType.RetType == GetType("void") or IsRetComplex
+			if MyFuncType.RetType == GetType("void") or this.IsRetComplex
 			{
 				f << "ret void\n"
 			}else{
