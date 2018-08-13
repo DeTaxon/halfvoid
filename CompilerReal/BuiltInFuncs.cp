@@ -666,7 +666,6 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
 
-
 		pos := -1
 		for ToClass.Params.Size()
 		{
@@ -716,9 +715,10 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		CType := ((ToClass.ClassType)->{Type^})
 		CTypeP := CType.GetPoint()
 
-		if ToClass.ContainVirtual pos += 1
-		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,
-		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos+"\n")
+		fatPos := pos
+		if ToClass.ContainVirtual fatPos += 1
+		itStr := "#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+"\n" 
+		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,itStr)
 		return preRet
 	}
 	DoTheWork := virtual !(int pri) -> void

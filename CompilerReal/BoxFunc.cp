@@ -416,7 +416,8 @@ BoxTemplate := class extend BoxFunc
 			iterJ = iterJ.Next
 			somePos += 1
 		}
-
+		
+		
 		newFunc := GetNewFunc(pars,consts,newFuncType)
 
 		for i : parConsts.Size()
@@ -1103,40 +1104,48 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if pri == State_PrePrint
 		{
-			//asCT := MethodType->{TypeClass^}
-			//asC := asCT.ToClass
-			//		
-			//i := asC.NotMineParams
-			//EndS := asC.Params.Size()
-			//while i < EndS
-			//{
-			//	nowField := asC.Params[i]
-			//	sBug := nowField->{Object^}
-			//	itCPre := sBug.GetType()
-			//	if itCPre.GetType() == "class"
-			//	{
-			//		itC := itCPre->{TypeClass^}.ToClass
+			asCT := MethodType->{TypeClass^}
+			asC := asCT.ToClass
+					
+			i := asC.NotMineParams
+			EndS := asC.Params.Size()
+			while i < EndS
+			{
+				nowField := asC.Params[i]
+				sBug := nowField->{Object^}
+				itCPre := sBug.GetType()
+				if itCPre.GetType() == "class"
+				{
+					itC := itCPre->{TypeClass^}.ToClass
 
-			//		pars2 := Queue.{Type^}()
-			//		consts2 := Queue.{Object^}()
-			//		pars2.Push(itCPre)
-			//		func3 := itC.GetFunc("~this",pars2,consts2)
-			//		if func3 != null
-			//		{
-			//			pars3 := Queue.{Type^}()
-			//			consts3 := Queue.{Object^}()
-			//			consts3.Push(new ObjStr(nowField.ItName))
-			//			fnc := itC.AutoFieldTemplate
-			//			pr := fnc.GetPriority(pars3,consts3)
-			//			printf("wut %i\n",pr)
-			//			//exF := MakeSimpleCall(func3,pCall2)
-			//			//AddFuncCall(exF)
-			//		}else{
-			//			EmitError("compiler error 2345\n")
-			//		}
-			//	}
-			//	i += 1
-			//}
+					pars2 := Queue.{Type^}()
+					consts2 := Queue.{Object^}()
+					pars2.Push(itCPre)
+					func3 := itC.GetFunc("~this",pars2,consts2)
+					if func3 != null
+					{
+						pars3 := Queue.{Type^}()
+						consts3 := Queue.{Object^}()
+						consts3.Push(new ObjStr(nowField.ItName))
+						fnc := asC.AutoFieldTemplate
+						pr := fnc.GetPriority(pars3,consts3)
+						if pr == 0
+						{
+							asT := fnc->{BoxTemplate^}
+							funcCl := asT.GetFunc(pars3,consts3)
+							funcCll := MakeSimpleCall(funcCl,null->{Object^})
+
+							exF := MakeSimpleCall(func3,funcCll)
+							AddFuncCall(exF)
+						}
+						//exF := MakeSimpleCall(func3,pCall2)
+						//AddFuncCall(exF)
+					}else{
+						EmitError("compiler error 2345\n")
+					}
+				}
+				i += 1
+			}
 		}
 	}
 }
