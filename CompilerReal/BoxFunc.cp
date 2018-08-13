@@ -962,6 +962,7 @@ BoxFuncBody := class extend BoxFunc
 		{
 			if FuncName == "~this" and MethodType != null
 			{
+				pL := new FuncParam("this",MethodType,true)
 				if this.MethodType.GetType() == "class"
 				{
 					asCT := MethodType->{TypeClass^}
@@ -977,7 +978,6 @@ BoxFuncBody := class extend BoxFunc
 
 						if func2 != null
 						{
-							pL := new FuncParam("this",MethodType,true)
 							pCall := new ParamNaturalCall("",pL->{Object^})
 							fCall := MakeSimpleCall(func2,pCall)
 							AddFuncCall(fCall)
@@ -985,6 +985,7 @@ BoxFuncBody := class extend BoxFunc
 							EmitError("compiler error 82346\n")
 						}
 					}
+					WorkBag.Push(this&,State_PrePrint)
 				}
 				
 			}
@@ -1099,6 +1100,43 @@ BoxFuncBody := class extend BoxFunc
 				if MyFuncType.RetType == null
 					SetReturnType(GetType("void"))
 			}
+		}
+		if pri == State_PrePrint
+		{
+			//asCT := MethodType->{TypeClass^}
+			//asC := asCT.ToClass
+			//		
+			//i := asC.NotMineParams
+			//EndS := asC.Params.Size()
+			//while i < EndS
+			//{
+			//	nowField := asC.Params[i]
+			//	sBug := nowField->{Object^}
+			//	itCPre := sBug.GetType()
+			//	if itCPre.GetType() == "class"
+			//	{
+			//		itC := itCPre->{TypeClass^}.ToClass
+
+			//		pars2 := Queue.{Type^}()
+			//		consts2 := Queue.{Object^}()
+			//		pars2.Push(itCPre)
+			//		func3 := itC.GetFunc("~this",pars2,consts2)
+			//		if func3 != null
+			//		{
+			//			pars3 := Queue.{Type^}()
+			//			consts3 := Queue.{Object^}()
+			//			consts3.Push(new ObjStr(nowField.ItName))
+			//			fnc := itC.AutoFieldTemplate
+			//			pr := fnc.GetPriority(pars3,consts3)
+			//			printf("wut %i\n",pr)
+			//			//exF := MakeSimpleCall(func3,pCall2)
+			//			//AddFuncCall(exF)
+			//		}else{
+			//			EmitError("compiler error 2345\n")
+			//		}
+			//	}
+			//	i += 1
+			//}
 		}
 	}
 }

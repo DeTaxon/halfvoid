@@ -17,12 +17,20 @@ t1 := class
 		printf("hi\n")
 	}
 }
+b1 := class
+{
+	"~this" := !() -> void
+	{
+		printf("world\n")
+	}
+}
 
 t2 := class extend t1
 {
-	c := int
+	c := b1
 	k := virtual !() -> void
 	{
+		//c.G()
 	}
 }
 

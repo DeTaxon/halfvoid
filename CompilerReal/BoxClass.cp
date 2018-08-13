@@ -190,6 +190,7 @@ FuncItem := class
 BoxClass := class extend Object
 {
 	ClassId := int
+	NotMineParams := int
 	Params := Queue.{FieldParam^}
 	FakeParams := Queue.{FakeFieldParam^}
 	ClassType := TypeClass^
@@ -261,6 +262,7 @@ BoxClass := class extend Object
 			if this.Parent != null
 			{
 				Size := this.Parent.Params.Size()
+				NotMineParams = Size
 				for i : Size
 				{
 					Params.PushFront(this.Parent.Params[Size - i - 1])
@@ -373,7 +375,7 @@ BoxClass := class extend Object
 		bestFunc := GetBestFunc(pars,consts,Funcs,Templs)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
-		if bestFunc == null and this.Parent != null
+		if bestFunc == null and this.Parent != null and name != "this"
 		{
 			pars2 := Queue.{Type^}()
 			pars2.Push(this.Parent.ClassType)
