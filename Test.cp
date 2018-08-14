@@ -11,6 +11,7 @@ t1 := class
 {
 	G := virtual !() -> void
 	{
+		printf("G\n")
 	}
 	"~this" := !() -> void
 	{
@@ -21,6 +22,7 @@ b1 := class
 {
 	H := virtual !() -> void
 	{
+		printf("H\n")
 	}
 	"~this" := !() -> void
 	{
@@ -39,8 +41,10 @@ t2 := class extend t1
 
 main := !(int argc,char^^ argv) -> int
 {
-	t := t2
+	t := new t2
 	t.G()
+	t.c.H()
+	delete t
 	return 0
 }
 

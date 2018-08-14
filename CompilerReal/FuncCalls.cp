@@ -403,6 +403,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		
 	}else
 	{
+		if iter.GetValue() == "delete"
+		{
+			return new DeleteCall(iter.Right)
+		}
 		if iter.GetValue() == "new"
 		{
 			useType := ParseType(iter.Right)
@@ -1216,6 +1220,77 @@ NewCallOne := class extend SomeFuncCall
 	}
 }
 
+DeleteCall := class extend SomeFuncCall
+{
+	DestructFuncCall := Object^
+	DeleteFuncCall := Object^	
+	this := !(Object^ itm) -> void
+	{
+		PopOutNode(itm)
+		Down = itm
+		itm.SetUp(this&)
+		if itm.GetType().GetType() != "point"
+		{
+			EmitError("only pointer could be deleted\n")
+		}else{
+			WorkBag.Push(this&,State_GetUse)
+		}
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			pars := Queue.{Type^}()
+			consts := Queue.{Object^}()
+
+			pars.Push(VoidPType)
+			consts.Push(new ObjType(Down.GetType()))
+
+			func := FindFunc("delete",Up,pars,consts,false)
+
+			if func != null
+			{
+				DeleteFuncCall = MakeSimpleCall(func,new LinkForThis(Down,Down.GetType(),true))
+				DeleteFuncCall.Up = this&
+
+				if Down.GetType().Base.GetType() == "class"
+				{
+					itTypPre := Down.GetType().Base
+					itTyp := itTypPre->{TypeClass^}
+
+					pars2 := Queue.{Type^}()
+					pars2.Push(Down.GetType())
+					func2 := itTyp.ToClass.GetFunc("~this",pars2)
+
+					if func2 != null
+					{
+				printf("here\n")
+						DestructFuncCall = MakeSimpleCall(func2,new LinkForThis(Down,Down.GetType(),true))
+						DestructFuncCall.Up = this&
+					}else{
+				printf(" not here\n")
+						EmitError("Software error 4251354\n")
+					}
+				}
+			}else{
+				EmitError("can not delete item\n")
+			}
+		}
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		if DeleteFuncCall != null
+		{
+			Down.PrintPre(f)
+			if DestructFuncCall != null
+			{
+				DestructFuncCall.PrintInBlock(f)
+			}
+			DeleteFuncCall.PrintInBlock(f)
+		}
+	}
+}
+
 NewCall := class extend SomeFuncCall
 {
 	ExtraFunc := SomeFuncCall^
@@ -1407,6 +1482,13 @@ LinkForThis := class extend Object
 {
 	Link := Object^
 	ResultType := Type^
+	keepClean := bool
+	this := !(Object^ toCopy,Type^ tp,bool isKeep) -> void
+	{
+		Link = toCopy
+		ResultType = tp
+		keepClean = isKeep
+	}
 	this := !(Object^ toCopy,Type^ tp) -> void
 	{
 		Link = toCopy
@@ -1432,7 +1514,12 @@ LinkForThis := class extend Object
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
-		Link.PrintUse(f)
+		if keepClean
+		{
+			Link.PrintPointUse(f)
+		}else{
+			Link.PrintUse(f)
+		}
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -1442,6 +1529,10 @@ LinkForThis := class extend Object
 	}
 	GetName := virtual !() -> string
 	{
+		if keepClean
+		{
+			return Link.GetName()
+		}
 		return Link.GetPointName()
 	}
 	GetPointName := virtual !() -> string

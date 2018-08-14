@@ -17,6 +17,11 @@ sqrtf := !(float iiin) ->float declare
 {
 	return malloc(R->TypeSize)
 }
+"delete" := !(void^ item) .{@R} -> void
+{
+	free(item)
+}
+
 "in" := !(int a, range b) -> bool
 {
 	if a < b->begin return false
