@@ -481,6 +481,37 @@ BoxClass := class extend Object
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
+		f << "{\n"
+		if ContainVirtual
+		{
+			f << "%TmpPt" << ClassId << " = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* "
+			f << "%this"
+			f << ", i32 0, i32 0\n"
+			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
+		}
+
+		for myStuf : this.Params.Size()
+		{
+			itParm := this.Params[myStuf]
+			asBase := itParm->{Object^}
+			if asBase.GetType().GetType() == "class"
+			{
+				clTyp := asBase.GetType()->{TypeClass^}
+				classItm := clTyp.ToClass
+				if classItm.ContainVirtual
+				{
+					pos := myStuf
+					if this.ContainVirtual pos += 1
+					f << "%itrItm" << pos << " = getelementptr %Class" << ClassId << " , %Class" << ClassId
+					f << "* %this" <<", i32 0, i32 " << pos <<"\n"
+					classItm.ApplyConstants(f,"%itrItm" + pos)
+				}
+			}
+
+		}
+		f << "ret void\n}\n"
+
 		iterJ := Down.Down
 		while iterJ != null
 		{
@@ -506,18 +537,18 @@ BoxClass := class extend Object
 	}
 	ApplyConstants := !(sfile f,Object^ itm) -> void
 	{
-		if ContainVirtual
+		if itm.GetType().GetType() == "point"
 		{
-			f << "%TmpPt" << ClassId << " = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* "
-			if itm.GetType().GetType() == "point"
-			{
-				f << itm.GetName()
-			}else{
-				f << itm.GetPointName()
-			}
-			f << ", i32 0, i32 0\n"
-			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
+			ApplyConstants(f,itm.GetName())
+		}else{
+			ApplyConstants(f,itm.GetPointName())
 		}
+	}
+	ApplyConstants := !(sfile f,string itm) -> void
+	{
+		f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
+		f << itm
+		f << ")\n"
 	}
 }
 

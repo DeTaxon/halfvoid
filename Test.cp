@@ -19,6 +19,9 @@ t1 := class
 }
 b1 := class
 {
+	H := virtual !() -> void
+	{
+	}
 	"~this" := !() -> void
 	{
 		printf("world\n")
@@ -37,6 +40,7 @@ t2 := class extend t1
 main := !(int argc,char^^ argv) -> int
 {
 	t := t2
+	t.G()
 	return 0
 }
 
