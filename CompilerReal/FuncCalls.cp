@@ -1264,11 +1264,10 @@ DeleteCall := class extend SomeFuncCall
 
 					if func2 != null
 					{
-				printf("here\n")
-						DestructFuncCall = MakeSimpleCall(func2,new LinkForThis(Down,Down.GetType(),true))
+						halfCall := new LinkForThis(Down,Down.GetType(),true)
+						DestructFuncCall = MakeSimpleCall(func2,new PtrToRef(halfCall->{Object^}))
 						DestructFuncCall.Up = this&
 					}else{
-				printf(" not here\n")
 						EmitError("Software error 4251354\n")
 					}
 				}
