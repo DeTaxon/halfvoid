@@ -13,6 +13,7 @@ BoxReturn := class extend Object
 	{
 		if pri == State_Start
 		{
+			WorkBag.Push(this&,State_DestructGet)
 			WorkBag.Push(this&,State_Syntax)
 			Down.SetUp(this&)
 		}
@@ -32,7 +33,6 @@ BoxReturn := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			WorkBag.Push(this&,State_DestructGet)
 			Down.SetUp(this&)
 
 			iterF := Up

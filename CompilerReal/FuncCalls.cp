@@ -1414,15 +1414,16 @@ ConstructCall := class extend NaturalCall
 				rights := Down.Right
 				itm := GetItem("ToRet",this&)
 				ReplaceNode(Down,new ParamNaturalCall("this",itm))
+				TName = "%ToRet"
 			}else
 			{
-				if not ToCall.IsRetRef 
-				{
+				//if not ToCall.IsRetRef wut???
+				//{
 					gotAlloc = true
 					InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
 					TName = "%T" + InAlloc
 					//TEName = "%TE" + RetId
-				}
+				//}
 			}
 		}
 	}

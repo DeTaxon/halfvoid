@@ -1,84 +1,44 @@
 #import "lib.cp"
 //#import "main.cp"
 //#import "MappedFile.cp"
-//#import "glfw.cp"
-//#import "gl.cp"
-//#import "Model.cp"
-//#import "arrs.cp"
-//#import "math.cp"
+#import "glfw.cp"
+#import "gl.cp"
+#import "Model.cp"
+#import "arrs.cp"
+#import "math.cp"
 
-t1 := class 
-{
-	G := virtual !() -> void
-	{
-		printf("G\n")
-	}
-	"~this" := !() -> void
-	{
-		printf("hi\n")
-	}
-}
-b1 := class
-{
-	H := virtual !() -> void
-	{
-		printf("H\n")
-	}
-	"~this" := !() -> void
-	{
-		printf("world\n")
-	}
-}
 
-t2 := class extend t1
+glClearColor := !(float,float,float,float)^ -> void
+glClear := !(int)^ -> void
+
+glBegin := !(int)^ -> void
+glVertex3fv := !(float^)^ -> void
+glColor3fv := !(float^)^ -> void
+glEnd := !()^ -> void
+
+glLoadIdentity := !()^ -> void
+gluPerspective := !(double,double,double,double)^ -> void
+glRotatef := !(float,float,float,float)^ -> void
+glTranslatef := !(float,float,float)^ -> void
+glMatrixMode := !(int)^ -> void
+glLoadMatrixf := !(float^)^ -> void
+
+keys := bool[256]
+
+error_callback := !(int error,char^ descp) -> void
 {
-	c := b1
-	k := virtual !() -> void
-	{
-		//c.G()
-	}
+	printf("error: %s\n",descp)
 }
 
-main := !(int argc,char^^ argv) -> int
+key_input  := !(void^ win, int key, int scancode, int action , int mods) -> void
 {
-	t := new t2
-	t.G()
-	t.c.H()
-	delete t
-	return 0
+	if action != GLFW_RELEASE and action != GLFW_PRESS return void
+	res := action == GLFW_RELEASE	
+	
+	if key in GLFW_KEY_A..GLFW_KEY_Z keys[key - GLFW_KEY_A + 'a'] = action
+	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
 }
 
-//glClearColor := !(float,float,float,float)^ -> void
-//glClear := !(int)^ -> void
-//
-//glBegin := !(int)^ -> void
-//glVertex3fv := !(float^)^ -> void
-//glColor3fv := !(float^)^ -> void
-//glEnd := !()^ -> void
-//
-//glLoadIdentity := !()^ -> void
-//gluPerspective := !(double,double,double,double)^ -> void
-//glRotatef := !(float,float,float,float)^ -> void
-//glTranslatef := !(float,float,float)^ -> void
-//glMatrixMode := !(int)^ -> void
-//glLoadMatrixf := !(float^)^ -> void
-//
-//keys := bool[256]
-//
-//error_callback := !(int error,char^ descp) -> void
-//{
-//	printf("error: %s\n",descp)
-//}
-//
-//key_input  := !(void^ win, int key, int scancode, int action , int mods) ->void
-//{
-//	if action != GLFW_RELEASE and action != GLFW_PRESS return void
-//	res := action == GLFW_RELEASE	
-//	
-//	if key in GLFW_KEY_A..GLFW_KEY_Z keys[key - GLFW_KEY_A + 'a'] = action
-//	if key in GLFW_KEY_0..GLFW_KEY_9 keys[key - GLFW_KEY_0 + '0'] = action
-//}
-//
 //camera_t := class 
 //{
 //	pos := vec4f
@@ -121,91 +81,90 @@ main := !(int argc,char^^ argv) -> int
 //		ToRet.ang = ang
 //		ToRet.pos = revAng*pos
 //	}
-//
 //}
-//
-//main := !(int argc, char^^ argv) -> int
-//{
-//
-//	m := Model()
-//	m.LoadFromPLY("HiResBox.ply")
-//
-//	glfwInit()
-//	glfwSetErrorCallback(error_callback)
-//
-//	win := glfwCreateWindow(500,500,"Hi!",null,null)
-//
-//	glfwSetKeyCallback(win,key_input)
-//
-//	glfwMakeContextCurrent(win)
-//	glfwSwapInterval(1)
-//	
-//	glClearColor = glfwGetProcAddress("glClearColor")
-//	glClear = glfwGetProcAddress("glClear")
-//	
-//	glBegin = glfwGetProcAddress("glBegin") 
-//	glVertex3fv = glfwGetProcAddress("glVertex3fv")
-//	glColor3fv = glfwGetProcAddress("glColor3fv")
-//	glEnd 	= glfwGetProcAddress("glEnd")
-//
-//	glLoadIdentity = glfwGetProcAddress("glLoadIdentity")
-//	gluPerspective = glfwGetProcAddress("gluPerspective")
-//	glRotatef = glfwGetProcAddress("glRotatef")
-//	glTranslatef = glfwGetProcAddress("glTranslatef")
-//	glMatrixMode = glfwGetProcAddress("glMatrixMode")
-//	glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
-//
-//	glClearColor(1.0f,0.5f,0.0f,1.0f)
-//	
-//
-//	fov := 45deg
-//	fF := 1.0f / tanf(fov*0.5f)
-//	zFar := 200.0f
-//	zNear := 1.5f
-//	diff := zNear - zFar
-//	sum := zNear + zFar
-//	aspect := 1.0f
-//
-//	matrProj := float[16]
-//	for c : 16 matrProj[c] = 0.0f
-//	matrProj[0] = fF / aspect
-//	matrProj[5] = fF
-//	matrProj[10] = sum / diff
-//	matrProj[11] = 2.0f*zFar*zNear / diff
-//	matrProj[14] = -1.0f
-//	
-//	c := camera_t()
-//	matr := float[16]
-//
-//	glMatrixMode(GL_PROJECTION)
-//	glLoadMatrixf(matrProj)
-//	glMatrixMode(GL_MODELVIEW)
-//
-//	while not glfwWindowShouldClose(win)
-//	{
-//		glfwPollEvents()
-//		
-//		c.CheckMove(1.0f)
-//
-//		glClear(GL_COLOR_BUFFER_BIT)
-//		c.GetCent().FillMatr(matr)
-//		glLoadIdentity()
-//		glLoadMatrixf(matr[0]&)
-//		//glTranslatef(vecPos.x,vecPos.y,vecPos.z)
-//
-//		glBegin(GL_TRIANGLES)
-//		for i : m.inds->len
-//		{
-//			nowInd := m.inds[i]
-//			nowInd *= 8
-//			glColor3fv(m.verts[nowInd+3]&)
-//			glVertex3fv(m.verts[nowInd]&)
-//		}
-//		glEnd()
-//
-//		glfwSwapBuffers(win)
-//	}
-//
-//	return 0
-//}
-//
+
+main := !(int argc, char^^ argv) -> int
+{
+
+	m := Model()
+	m.LoadFromPLY("HiResBox.ply")
+
+	glfwInit()
+	glfwSetErrorCallback(error_callback)
+
+	win := glfwCreateWindow(500,500,"Hi!",null,null)
+
+	glfwSetKeyCallback(win,key_input)
+
+	//glfwMakeContextCurrent(win)
+	//glfwSwapInterval(1)
+	//
+	//glClearColor = glfwGetProcAddress("glClearColor")
+	//glClear = glfwGetProcAddress("glClear")
+	//
+	//glBegin = glfwGetProcAddress("glBegin") 
+	//glVertex3fv = glfwGetProcAddress("glVertex3fv")
+	//glColor3fv = glfwGetProcAddress("glColor3fv")
+	//glEnd 	= glfwGetProcAddress("glEnd")
+
+	//glLoadIdentity = glfwGetProcAddress("glLoadIdentity")
+	//gluPerspective = glfwGetProcAddress("gluPerspective")
+	//glRotatef = glfwGetProcAddress("glRotatef")
+	//glTranslatef = glfwGetProcAddress("glTranslatef")
+	//glMatrixMode = glfwGetProcAddress("glMatrixMode")
+	//glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
+
+	//glClearColor(1.0f,0.5f,0.0f,1.0f)
+	
+
+	//fov := 45deg
+	//fF := 1.0f / tanf(fov*0.5f)
+	//zFar := 200.0f
+	//zNear := 1.5f
+	//diff := zNear - zFar
+	//sum := zNear + zFar
+	//aspect := 1.0f
+
+	//matrProj := float[16]
+	//for c : 16 matrProj[c] = 0.0f
+	//matrProj[0] = fF / aspect
+	//matrProj[5] = fF
+	//matrProj[10] = sum / diff
+	//matrProj[11] = 2.0f*zFar*zNear / diff
+	//matrProj[14] = -1.0f
+	
+	//c := camera_t()
+	//matr := float[16]
+
+	//glMatrixMode(GL_PROJECTION)
+	//glLoadMatrixf(matrProj)
+	//glMatrixMode(GL_MODELVIEW)
+
+	//while not glfwWindowShouldClose(win)
+	//{
+	//	glfwPollEvents()
+	//	
+	//	//c.CheckMove(1.0f)
+
+	//	glClear(GL_COLOR_BUFFER_BIT)
+	//	//c.GetCent().FillMatr(matr)
+	//	glLoadIdentity()
+	//	//glLoadMatrixf(matr[0]&)
+	//	//glTranslatef(vecPos.x,vecPos.y,vecPos.z)
+
+	//	//glBegin(GL_TRIANGLES)
+	//	//for i : m.inds->len
+	//	//{
+	//	//	nowInd := m.inds[i]
+	//	//	nowInd *= 8
+	//	//	glColor3fv(m.verts[nowInd+3]&)
+	//	//	glVertex3fv(m.verts[nowInd]&)
+	//	//}
+	//	//glEnd()
+
+	//	glfwSwapBuffers(win)
+	//}
+
+	return 0
+}
+
