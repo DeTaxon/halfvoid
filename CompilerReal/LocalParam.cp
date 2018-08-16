@@ -126,8 +126,13 @@ LocalParam := class extend MemParam
 	}
 	PrintPointUse := virtual !(sfile f, int newInd) -> void
 	{
-		ResultType.GetPoint().PrintType(f)
-		f << " %T"<< inAllocId
+		if IsRef{
+			ResultType.GetPoint().PrintType(f)
+			f <<" %T" << newInd
+		}else{
+			ResultType.GetPoint().PrintType(f)
+			f << " %T"<< inAllocId
+		}
 	}
 	GetName := virtual !(int newInd) -> string
 	{
@@ -137,6 +142,9 @@ LocalParam := class extend MemParam
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
+		if IsRef{
+			return "%T" + newInd
+		}
 		Buf := char[256]
 		sprintf(Buf,"%T%i",inAllocId)
 		return Buf.Copy()
