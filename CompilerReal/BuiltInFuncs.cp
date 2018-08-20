@@ -239,6 +239,68 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		
 	}
 }
+
+BuiltInPointAdd := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "+"
+		OutputName = "error"
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		emptType.Push(GetType("s64"))
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
+		return TypeCmp(pars[1],GetType("s64"))
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	{
+		if pars[0].Base == GetType("void")
+		{
+			return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+			"#0 = getelementptr i8 , i8* #1 , i64 #2\n")
+		}
+
+		return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].Base.GetName() + "* #1 ,i64 #2\n")
+	}
+}
+BuiltInPointSub := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "-"
+		OutputName = "error"
+		emptType := Queue.{Type^}()
+		emptType.Push(null->{Type^})
+		emptType.Push(GetType("s64"))
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	{
+		if pars.Size() != 2 return 255
+		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
+		return TypeCmp(pars[1],GetType("s64"))
+	}
+	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	{
+		if pars[0].Base == GetType("void")
+		{
+			return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+			"%Pre## = sub i64 0,#2\n" +
+			"#0 = getelementptr i8 , i8* #1 , i64 %Pre##\n")
+		}
+
+		return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+		"%Pre## = sub i64 0,#2\n" +
+		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].Base.GetName() + "* #1 ,i64 %Pre##\n")
+	}
+}
+
 BuiltInTemplateExcArr := class extend BoxTemplate
 {
 	this := !() -> void
@@ -1234,6 +1296,9 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateCmpPointsNE())
 	BuiltInTemplates.Push(new BuiltInTemplateCheckPoint())
 	BuiltInTemplates.Push(new BuiltInTemplateVec4fGet())
+
+	BuiltInTemplates.Push(new BuiltInPointAdd())
+	BuiltInTemplates.Push(new BuiltInPointSub())
 
 	BuiltInTemplates.Push(new BuiltInLambdaCall())
 

@@ -75,8 +75,8 @@ camera_t := class
 	GetCent := !() -> centf
 	{
 		ang := quantfAt(0.0f,1.0f,0.0f,angY) <*> quantfAt(1.0f,0.0f,0.0f,angX)
-		revAng := quantf(-(ang.x),-(ang.y),-(ang.z),ang.w)
-		revPos := vec4f(-(pos.x),-(pos.y),-(pos.z),pos.w)
+		revAng := quantf(-ang.x,-ang.y,-ang.z,ang.w)
+		revPos := vec4f(-pos.x,-pos.y,-pos.z,pos.w)
 
 		ToRet.ang = ang
 		ToRet.pos = revAng*pos
@@ -85,6 +85,8 @@ camera_t := class
 
 main := !(int argc, char^^ argv) -> int
 {
+	c := new int[20]
+	delete c
 
 	m := Model()
 	m.LoadFromPLY("HiResBox.ply")

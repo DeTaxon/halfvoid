@@ -1233,7 +1233,7 @@ DeleteCall := class extend SomeFuncCall
 		PopOutNode(itm)
 		Down = itm
 		itm.SetUp(this&)
-		if itm.GetType().GetType() != "point"
+		if itm.GetType().GetType() != "point" and itm.GetType().GetType() != "fatarr"
 		{
 			EmitError("only pointer could be deleted\n")
 		}else{

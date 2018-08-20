@@ -17,6 +17,12 @@ sqrtf := !(float iiin) ->float declare
 {
 	return malloc(R->TypeSize)
 }
+"delete" := !(void^ item) .{@R[]} -> void
+{
+	sub := 4
+	if R->Align > 4 sub = R->Align
+	free(item - sub)
+}
 "delete" := !(void^ item) .{@R} -> void
 {
 	free(item)
