@@ -86,92 +86,92 @@ camera_t := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := dlopen("libxcb.so",2)
-	printf("wut %p\n",c)
-	if c == null return 0
-	b := dlsym(c,"xcb_generate_id")
-	printf("wuut %p\n",b) 
-	dlclose(c)
-	return 0
+	//c := dlopen("libxcb.so",2)
+	//printf("wut %p\n",c)
+	//if c == null return 0
+	//b := dlsym(c,"xcb_generate_id")
+	//printf("wuut %p\n",b) 
+	//dlclose(c)
+	//return 0
 
-	//m := Model()
-	//m.LoadFromPLY("HiResBox.ply")
+	m := Model()
+	m.LoadFromPLY("HiResBox.ply")
 
-	//glfwInit()
-	//glfwSetErrorCallback(error_callback)
+	glfwInit()
+	glfwSetErrorCallback(error_callback)
 
-	//win := glfwCreateWindow(500,500,"Hi!",null,null)
+	win := glfwCreateWindow(500,500,"Hi!",null,null)
 
-	//glfwSetKeyCallback(win,key_input)
+	glfwSetKeyCallback(win,key_input)
 
-	//glfwMakeContextCurrent(win)
-	//glfwSwapInterval(1)
-	//
-	//glClearColor = glfwGetProcAddress("glClearColor")
-	//glClear = glfwGetProcAddress("glClear")
+	glfwMakeContextCurrent(win)
+	glfwSwapInterval(1)
+	
+	glClearColor = glfwGetProcAddress("glClearColor")
+	glClear = glfwGetProcAddress("glClear")
 
-	//glBegin = glfwGetProcAddress("glBegin") 
-	//glVertex3fv = glfwGetProcAddress("glVertex3fv")
-	//glColor3fv = glfwGetProcAddress("glColor3fv")
-	//glEnd 	= glfwGetProcAddress("glEnd")
+	glBegin = glfwGetProcAddress("glBegin") 
+	glVertex3fv = glfwGetProcAddress("glVertex3fv")
+	glColor3fv = glfwGetProcAddress("glColor3fv")
+	glEnd 	= glfwGetProcAddress("glEnd")
 
-	//glLoadIdentity = glfwGetProcAddress("glLoadIdentity")
-	//gluPerspective = glfwGetProcAddress("gluPerspective")
-	//glRotatef = glfwGetProcAddress("glRotatef")
-	//glTranslatef = glfwGetProcAddress("glTranslatef")
-	//glMatrixMode = glfwGetProcAddress("glMatrixMode")
-	//glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
+	glLoadIdentity = glfwGetProcAddress("glLoadIdentity")
+	gluPerspective = glfwGetProcAddress("gluPerspective")
+	glRotatef = glfwGetProcAddress("glRotatef")
+	glTranslatef = glfwGetProcAddress("glTranslatef")
+	glMatrixMode = glfwGetProcAddress("glMatrixMode")
+	glLoadMatrixf = glfwGetProcAddress("glLoadMatrixf")
 
-	//glClearColor(1.0f,0.5f,0.0f,1.0f)
-	//
+	glClearColor(1.0f,0.5f,0.0f,1.0f)
+	
 
-	//fov := 45deg
-	//fF := 1.0f / tanf(fov*0.5f)
-	//zFar := 200.0f
-	//zNear := 1.5f
-	//diff := zNear - zFar
-	//sum := zNear + zFar
-	//aspect := 1.0f
+	fov := 45deg
+	fF := 1.0f / tanf(fov*0.5f)
+	zFar := 200.0f
+	zNear := 1.5f
+	diff := zNear - zFar
+	sum := zNear + zFar
+	aspect := 1.0f
 
-	//matrProj := float[16]
-	//for c : 16 matrProj[c] = 0.0f
-	//matrProj[0] = fF / aspect
-	//matrProj[5] = fF
-	//matrProj[10] = sum / diff
-	//matrProj[11] = 2.0f*zFar*zNear / diff
-	//matrProj[14] = -1.0f
-	//
-	//c := camera_t()
-	//matr := float[16]
+	matrProj := float[16]
+	for c : 16 matrProj[c] = 0.0f
+	matrProj[0] = fF / aspect
+	matrProj[5] = fF
+	matrProj[10] = sum / diff
+	matrProj[11] = 2.0f*zFar*zNear / diff
+	matrProj[14] = -1.0f
+	
+	c := camera_t()
+	matr := float[16]
 
-	//glMatrixMode(GL_PROJECTION)
-	//glLoadMatrixf(matrProj)
-	//glMatrixMode(GL_MODELVIEW)
+	glMatrixMode(GL_PROJECTION)
+	glLoadMatrixf(matrProj)
+	glMatrixMode(GL_MODELVIEW)
 
-	//while not glfwWindowShouldClose(win)
-	//{
-	//	glfwPollEvents()
-	//	
-	//	c.CheckMove(1.0f)
+	while not glfwWindowShouldClose(win)
+	{
+		glfwPollEvents()
+		
+		c.CheckMove(1.0f)
 
-	//	glClear(GL_COLOR_BUFFER_BIT)
-	//	c.GetCent().FillMatr(matr)
-	//	glLoadIdentity()
-	//	glLoadMatrixf(matr[0]&)
-	//	//glTranslatef(vecPos.x,vecPos.y,vecPos.z)
+		glClear(GL_COLOR_BUFFER_BIT)
+		c.GetCent().FillMatr(matr)
+		glLoadIdentity()
+		glLoadMatrixf(matr[0]&)
+		//glTranslatef(vecPos.x,vecPos.y,vecPos.z)
 
-	//	glBegin(GL_TRIANGLES)
-	//	for i : m.inds->len
-	//	{
-	//		nowInd := m.inds[i]
-	//		nowInd *= 8
-	//		glColor3fv(m.verts[nowInd+3]&)
-	//		glVertex3fv(m.verts[nowInd]&)
-	//	}
-	//	glEnd()
+		glBegin(GL_TRIANGLES)
+		for i : m.inds->len
+		{
+			nowInd := m.inds[i]
+			nowInd *= 8
+			glColor3fv(m.verts[nowInd+3]&)
+			glVertex3fv(m.verts[nowInd]&)
+		}
+		glEnd()
 
-	//	glfwSwapBuffers(win)
-	//}
+		glfwSwapBuffers(win)
+	}
 
 	return 0
 }

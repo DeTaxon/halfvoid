@@ -1048,9 +1048,31 @@ BoxFuncBody := class extend BoxFunc
 
 			if not this.IsRetComplex and MyFuncType.RetType != GetType("void")
 			{
-				f << "%Result = alloca " << MyFuncType.RetType.GetName()
+				RT := MyFuncType.RetType
+				f << "%Result = alloca " << RT.GetName()
 				if MyFuncType.RetRef f << "*"
 				f << "\n"
+				if MyFuncType.RetRef
+				{
+					f << "store " << RT.GetName() << "* null , " << RT.GetName() << "** %Result\n"
+				}else{
+					if IsBool(RT)
+					{
+						f << "store i1 0,i1* %Result\n"
+					}
+					if IsInt(RT)
+					{
+						f << "store " << RT.GetName() << " 0 , " << RT.GetName() << "* %Result\n"
+					}
+					if IsFloat(RT)
+					{
+						f << "store " << RT.GetName() << " 0.0 , " << RT.GetName() << "* %Result\n"
+					}
+					if RT.GetType() == "point" or RT.GetType() == "fatarr"
+					{
+						f << "store " << RT.GetName() << " null , " << RT.GetName() << "* %Result\n"
+					}
+				}
 			}
 
 			iter := Down

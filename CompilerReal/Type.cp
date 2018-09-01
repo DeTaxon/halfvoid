@@ -771,6 +771,18 @@ IsInt := !(Type^ tp) -> bool
 	for 8 if TypeTable[it] == tp return true
 	return false
 }
+IsFloat := !(Type^ tp) -> bool
+{
+	if TypeTable[9] == tp return true
+	if TypeTable[10] == tp return true
+	return false
+}
+IsBool := !(Type^ tp) -> bool
+{
+	if TypeTable[8] == tp return true
+	return false
+}
+
 GetIntSize := !(Type^ tp) -> int
 {
 	i := 8
