@@ -51,11 +51,17 @@ UnboxParams := !(Object^ start) -> void
 			}
 
 			IsExt := false
+			IsRef := false
 			iter = iter.Right
 
 			if iter.GetValue() == "extern"
 			{
 				IsExt = true
+				iter = iter.Right
+			}
+			if iter.GetValue() == "ref"
+			{
+				IsRef = true
 				iter = iter.Right
 			}
 
@@ -69,7 +75,9 @@ UnboxParams := !(Object^ start) -> void
 
 			while lineIter != null
 			{
-				((lineIter->{ObjParam^}).IsExtern) = IsExt
+				asPar := lineIter->{ObjParam^}
+				asPar.IsExtern = IsExt
+				asPar.IsRef = IsRef
 				lineIter.Down = iter.Clone()
 				lineIter.Down.SetUp(lineIter)
 				if Atter != null {

@@ -1238,6 +1238,7 @@ DeleteCall := class extend SomeFuncCall
 			EmitError("only pointer could be deleted\n")
 		}else{
 			WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(this&,State_PreGetUse)
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1272,7 +1273,7 @@ DeleteCall := class extend SomeFuncCall
 						DestructFuncCall = MakeSimpleCall(func2,new PtrToRef(halfCall->{Object^}))
 						DestructFuncCall.Up = this&
 					}else{
-						EmitError("Software error 4251354\n")
+						EmitError("Software error 4251354\n") 
 					}
 				}
 			}else{

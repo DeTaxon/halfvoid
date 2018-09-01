@@ -230,6 +230,13 @@ RuleParam := !(void^ itr) -> int
 		size += 1
 	}
 
+	if It.GetValue() == "ref"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+
 	if not InDataR(It) return 0
 
 	It = It.Right

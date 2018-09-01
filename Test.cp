@@ -7,6 +7,7 @@
 #import "arrs.cp"
 #import "math.cp"
 #import "xcb-lib.cp"
+#import "RegExpBuilder.cp"
 
 
 glClearColor := !(float,float,float,float)^ -> void
@@ -92,7 +93,16 @@ main := !(int argc, char^^ argv) -> int
 	//b := dlsym(c,"xcb_generate_id")
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
-	//return 0
+
+	c := int
+	g := ref c
+	c = 15
+	printf("wow %i\n",g)
+	return 0
+	
+	M := DetMachine
+
+	return 0
 
 	m := Model()
 	m.LoadFromPLY("HiResBox.ply")

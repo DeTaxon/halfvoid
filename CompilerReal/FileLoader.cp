@@ -16,7 +16,11 @@ LoadFile := !(string name, Object^ start) -> BoxFile^
 	}
 	ob := GetObjectsFromFile(name)
 
-	if ob == null return null
+	if ob == null 
+	{
+		ErrorLog.Push("file "+ name +" not found\n")
+		return null
+	}
 
 	Files.Push(ob->{BoxFile^})
 	return ob->{BoxFile^}

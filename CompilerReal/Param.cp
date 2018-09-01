@@ -10,6 +10,7 @@ ObjParam := class extend Object
 	IsExtern := bool
 	IsTook := bool
 	IsGlobal := bool
+	IsRef := bool
 
 	DestrCall := NaturalCall^
 	
@@ -43,7 +44,7 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if ObjType.GetType() == "class" and not IsTook
+		if ObjType.GetType() == "class" and not IsTook and not IsRef
 		{
 			asNeed2 := ObjType->{TypeClass^}
 			asNeed := asNeed2.ToClass
@@ -62,13 +63,24 @@ ObjParam := class extend Object
 		}else{
 			if IsSetValue 
 			{
-				asLoc := Down->{LocalParam^}
-				Down.Right.PrintPre(f)
-				f << "store "
-				Down.Right.PrintUse(f)
-				f << " , "
-				asLoc.PrintPointUse(f,0)
-				f << "\n"
+				if IsRef
+				{
+					asLoc := Down->{LocalParam^}
+					itType := Down.Right.GetType()
+					Down.Right.PrintPointPre(f)
+					f << "store " 
+					Down.Right.PrintPointUse(f)
+					f << " , " << itType.GetName() << "** %T" << asLoc.inAllocId << "\n"
+					
+				}else{
+					asLoc := Down->{LocalParam^}
+					Down.Right.PrintPre(f)
+					f << "store "
+					Down.Right.PrintUse(f)
+					f << " , "
+					asLoc.PrintPointUse(f,0)
+					f << "\n"
+				}
 			}
 		}
 	}
@@ -155,6 +167,7 @@ ObjParam := class extend Object
 					}else{
 						if val != null
 						{
+							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
 							Down.Right = val
 							val.Right = null
@@ -162,6 +175,7 @@ ObjParam := class extend Object
 							Down.SetUp(this&)
 							IsSetValue = true
 						}else{
+							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
 							Down.SetUp(this&)
 						}
@@ -238,8 +252,13 @@ ObjParam := class extend Object
 							allcId = asNeed.GetItAllocId()
 							if allcId != -1 IsTook = true
 						}
-						if allcId == -1 allcId = GetAlloc(this&,ObjType)
-						Down = new LocalParam(ObjType,allcId)
+						if allcId == -1 {
+							if IsRef
+								allcId = GetAlloc(this&,ObjType.GetPoint())
+							else
+								allcId = GetAlloc(this&,ObjType)
+						}
+						Down = new LocalParam(ObjType,allcId,IsRef)
 						Down.Right = Temp
 						Temp.Left = Down
 						Down.SetUp(this&)
@@ -250,7 +269,7 @@ ObjParam := class extend Object
 		}
 		if pri == State_DestructCheck
 		{
-			if ObjType != null
+			if ObjType != null and not IsRef
 			{
 				if ObjType.GetType() == "class"
 				{	
