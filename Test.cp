@@ -94,10 +94,19 @@ main := !(int argc, char^^ argv) -> int
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
 
-	c := int
-	g := ref c
-	c = 15
-	printf("wow %i\n",g)
+	r := Stack.{int}()
+	for i : 4
+	{
+		r.Push(i)
+
+		c := ref r[0]
+
+		c *= 10
+		c += 4 - i
+	}
+
+	for i : r printf("wow %i\n",i) 
+
 	return 0
 	
 	M := DetMachine

@@ -579,6 +579,10 @@ BoxFunc := class extend Object
 				if not IsRetRef this.IsRetComplex = true
 			}
 		}
+		if RetTyp == null and outObj != null
+		{
+			printf("wut\n")
+		}
 
 		if MethodType != null
 		{

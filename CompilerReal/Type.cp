@@ -480,6 +480,10 @@ TypeFunc := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
+		if RetType == null
+		{
+			return ""
+		}
 		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef
 		{
 			return "void" + GetSkobs() 
