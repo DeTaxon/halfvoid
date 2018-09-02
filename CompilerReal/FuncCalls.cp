@@ -240,10 +240,17 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter.Right = null
 				return MakeSimpleCall(fun,iter)
 			}
-			if iter.Right.GetValue() == "~ind"
+			if iter.Right.GetValue() == "~ind" or iter.Right.GetValue() == "~str"
 			{
-				asIndent := (iter.Right)->{ObjIndent^} 
-				asName := asIndent.MyStr
+				asName := ""
+				if iter.Right.GetValue() == "~ind"
+				{
+					asIndent := (iter.Right)->{ObjIndent^} 
+					asName = asIndent.MyStr
+				}else{
+					asStr := (iter.Right)->{ObjStr^}
+					asName = asStr.GetString()
+				}
 
 				if iter.GetValue() == "->"
 				{
@@ -1267,17 +1274,31 @@ DeleteCall := class extend SomeFuncCall
 					itTyp := itTypPre->{TypeClass^}
 
 					pars2 := Queue.{Type^}()
-					pars2.Push(Down.GetType())
+					pars2.Push(itTypPre)
 					func2 := itTyp.ToClass.GetFunc("~this",pars2)
 
 					if func2 != null
 					{
 						halfCall := new LinkForThis(Down,Down.GetType(),true)
-						DestructFuncCall = MakeSimpleCall(func2,new PtrToRef(halfCall->{Object^}))
+						ptrCall := new PtrToRef(halfCall->{Object^})
+						DestructFuncCall = MakeSimpleCall(func2,ptrCall)
 						DestructFuncCall.Up = this&
 					}else{
-						printf("wuut %s\n",Down.GetType().GetType())
 						EmitError("Software error 4251354\n") 
+					}
+				}else {
+					if Down.GetType().GetType() != "point"
+					{
+						pars3 := Queue.{Type^}()
+						pars3.Push(Down.GetType())
+						consts3 := Queue.{Object^}()
+						func2 := FindFunc("~this",this&,pars3,consts3,true)
+						if func2 != null
+						{
+							halfCall := new LinkForThis(Down,Down.GetType(),true)
+							DestructFuncCall = MakeSimpleCall(func2,halfCall)
+							DestructFuncCall.Up = this&
+						}
 					}
 				}
 			}else{
@@ -1532,9 +1553,11 @@ LinkForThis := class extend Object
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
+		//if keepClean Link.PrintPre(f)
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
+		if keepClean Link.PrintUse(f)
 	}
 	GetName := virtual !() -> string
 	{

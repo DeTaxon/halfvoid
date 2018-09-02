@@ -72,6 +72,11 @@ Stack := class .{@T}
 			free(Iter)
 		}
 	}
+	"~this" := !() -> void
+	{
+		printf("teest\n")
+		Clean()
+	}
 	NotEmpty := !() -> bool
 	{
 		return Start != null

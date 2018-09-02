@@ -20,8 +20,22 @@ sqrtf := !(float iiin) ->float declare
 "delete" := !(void^ item) .{@R[]} -> void
 {
 	sub := 4
-	if R->Align > 4 sub = R->Align
+	//if R->Align > 4 sub = R->Align
 	free(item - sub)
+}
+"~this" := !(@R[] this) -> void
+{
+	for this
+	{
+		it."~this"()
+	}
+}
+"~this" := !(@R^ this) -> void
+{
+	this^."~this"()
+}
+"~this" := !(@R this) -> void
+{
 }
 "delete" := !(void^ item) .{@R} -> void
 {
@@ -73,7 +87,7 @@ FixedArrayIter := class .{@Type}
 {
 	ptr := Type^
 	size,nowPos := int
-	this := !(Type^ itm, int si)
+	this := !(Type^ itm, int si) -> void
 	{
 		ptr = itm
 		size = si		
