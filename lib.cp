@@ -106,4 +106,15 @@ FixedArrayIter := class .{@Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }
+"in" := !(int val, string str) -> bool
+{
+	if str == null return false
+	i := 0
+	while str[i] != 0 {
+		if val == str[i] return true
+		i += 1
+	}
+	return false
+}
+
 

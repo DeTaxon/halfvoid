@@ -2,6 +2,9 @@ Node := class .{@T}
 {
 	Data := T
 	Next := Node.{T}^
+	this := !() -> void
+	{
+	}
 	this := !(T To) -> void
 	{
 		Data = To
@@ -31,13 +34,15 @@ Stack := class .{@T}
 	{
 		Start = null
 	}
+	Emplace := !() -> void
+	{
+		newItm := new Node.{T}() //TODO: vargs
+		newItm.Next = Start
+		Start = newItm
+	}
 	Push := !(T a) -> int
 	{
-		if Start == null {
-			Start = new Node.{T}(a)
-		} else {
-			Start = new Node.{T}(a,Start)
-		}
+		Start = new Node.{T}(a,Start)
 		return 0
 	}
 	Pop := !() -> T

@@ -93,21 +93,9 @@ main := !(int argc, char^^ argv) -> int
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
 
-	r := new Stack.{int}()
-	for i : 4
-	{
-		printf("wut\n")
-		r^.Push(i)
 
-		c := ref r^[0]
-
-		c *= 10
-		c += 4 - i
-	}
-
-	printf("c %i\n",r^.Size())
-	for i : r^ printf("wow %i\n",i)
-	delete r
+	B := LexBuilder
+	B.ApplyReg("[0-9]+")
 	return 0
 	
 	//M := DetMachine
