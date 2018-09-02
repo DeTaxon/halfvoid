@@ -76,7 +76,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	//char
 	PreLines[0].GoTo['\''] = 24
 	for i : !['a'..'z','A'..'Z','0'..'9'] PreLines[24].GoTo[i] = 25
-	for i : " .-@$^&;?,|!" PreLines[24].GoTo[i] = 25
+	for i : " .-@$^&;?,|!()[]+*" PreLines[24].GoTo[i] = 25
 	PreLines[24].GoTo['\\'] = 27
 	for i : 255 PreLines[27].GoTo[i] = 25
 	PreLines[25].GoTo['\''] = 26

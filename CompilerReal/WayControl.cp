@@ -8,7 +8,7 @@ WayControl := class extend Object
 	{
 		itType = PATH_CONTINUE
 		if itm == "break" itType = PATH_BREAK
-		itItm = itm
+		itItm = itm.Copy()
 	}
 	Clone := virtual !() -> Object^
 	{
@@ -17,6 +17,11 @@ WayControl := class extend Object
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		f << "br label %" << toName << "\n"
+	}
+	GetValue := virtual !() -> string
+	{
+		if itItm == "break" return "~break"
+		return "~continue"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

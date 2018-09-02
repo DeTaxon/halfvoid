@@ -26,6 +26,8 @@ InBlockData := !(Object^ obj) -> bool
 	if obj.GetValue() == "while()" return true
 	if obj.GetValue() == "for()" return true
 	if obj.GetValue() == "switch()" return true
+	if obj.GetValue() == "~continue" return true
+	if obj.GetValue() == "~break" return true
 
 	return false
 }
