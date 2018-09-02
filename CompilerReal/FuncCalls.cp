@@ -1261,7 +1261,7 @@ DeleteCall := class extend SomeFuncCall
 				DeleteFuncCall = MakeSimpleCall(func,new LinkForThis(Down,Down.GetType(),true))
 				DeleteFuncCall.Up = this&
 
-				if Down.GetType().Base.GetType() == "class"
+				if Down.GetType().Base.GetType() == "class" and Down.GetType().GetType() == "point"
 				{
 					itTypPre := Down.GetType().Base
 					itTyp := itTypPre->{TypeClass^}
@@ -1276,6 +1276,7 @@ DeleteCall := class extend SomeFuncCall
 						DestructFuncCall = MakeSimpleCall(func2,new PtrToRef(halfCall->{Object^}))
 						DestructFuncCall.Up = this&
 					}else{
+						printf("wuut %s\n",Down.GetType().GetType())
 						EmitError("Software error 4251354\n") 
 					}
 				}

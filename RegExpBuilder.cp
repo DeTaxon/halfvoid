@@ -25,7 +25,7 @@ NonDefMachine := class
 	"~this" := !() -> void
 	{
 		delete IsEndNode
-		//delete Lines //Todo: unbug
+		delete Lines //TODO: call ~this for each
 	}
 }
 
