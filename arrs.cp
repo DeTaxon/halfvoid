@@ -24,7 +24,6 @@ StackTypeIter := class .{@T}
 	IsEnd := !() -> bool { return iter == null }
 }
 
-
 Stack := class .{@T}
 {
 	Start := Node.{T}^
@@ -72,7 +71,6 @@ Stack := class .{@T}
 	}
 	"~this" := !() -> void
 	{
-		printf("teest\n")
 		Clean()
 	}
 	NotEmpty := !() -> bool

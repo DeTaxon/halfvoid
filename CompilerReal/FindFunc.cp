@@ -70,10 +70,23 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			LastPos = iterU
 		}
 	}
+
+	for i : ForcedLibs.Size()
+	{
+		Found := false
+		for j : Searched.Size(){
+			if ForcedLibs[i].fileId == Searched[j] Found = true
+		}
+		if not Found
+		{
+			Searched.Push(ForcedLibs[i].fileId)
+			CollectParamsAllByName(name,ForcedLibs[i].Down,found,Searched)
+		}
+	}
 }
 
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched) -> void
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched,bool IgnoreLibs) -> void
 {
 		if ii.GetValue() == "i:=1"
 		{
@@ -129,17 +142,30 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 			if not Found
 			{
 				Searched.Push(fl.fileId)
-				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,IsMethod,Searched)
+				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 			}
 		}
 }
 
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched,bool IgnoreLibs) -> void
 {
 	iterU := start
 	LastPos := start
 	FirstMetClass := true
+
+	if IgnoreLibs
+	{
+		iterr := start
+		if iterr != null
+		{
+			while iterr.Up != null iterr = iterr.Up
+			for i : ForcedLibs.Size()
+			{
+				if ForcedLibs[i] == iterr iterU = null
+			}
+		}
+	}
 
 	while iterU != null
 	{
@@ -172,7 +198,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		}
 		if iterU != null
 		{
-			InsertFunc(name,iterU,found,templates,IsSuffix,IsMethod,Searched)
+			InsertFunc(name,iterU,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 			if iterU.Left != null 
 			{
 				iterU = iterU.Left 
@@ -182,7 +208,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				iterK := LastPos.Right
 				while iterK != null
 				{
-					InsertFunc(name,iterK,found,templates,IsSuffix,IsMethod,Searched)
+					InsertFunc(name,iterK,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 					iterK = iterK.Right
 				}
 				LastPos = iterU
@@ -224,9 +250,12 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		Searched.Push(iterS->{BoxFile^}.fileId)
 	}
 
+	iterr := start
+	if iterr != null while iterr.Up != null iterr = iterr.Up
+
 	Funcs := Queue.{BoxFunc^}()
 	Templs := Queue.{BoxTemplate^}()
-	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched)
+	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,true)
 
 	func :=  GetBestFunc(pars,consts,Funcs,Templs)
 	if func != null return func
@@ -240,22 +269,15 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 			return asNeed.GetFunc(name,pars,consts)
 		}
 	}
-	
-	for i : ForcedLibs.Size()
-	{
-		h := ForcedLibs[i].Down
-		if h != null
-		{
-			while h.Right != null
-			{
-				h = h.Right
-			}
-		}
-		if h != null
-		CollectFuncsByName(name,h,Funcs,Templs,IsSuffix,IsMethod,Searched)
-	}
+		
 	Funcs.Clean()
 	Templs.Clean()
+	for i : ForcedLibs.Size()
+	{
+		itUp := ForcedLibs[i].Down
+		if ForcedLibs[i] == iterr itUp = start
+		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+	}
 	iterQ := BuiltInFuncs.Start
 	while iterQ != null
 	{
