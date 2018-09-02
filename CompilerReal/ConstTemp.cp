@@ -18,6 +18,19 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	if obj.GetValue() == "~d"
 	{
 		if obj.Down.Right == null return IsSameType(obj.Down,itT,res,resB)
+		if obj.Down.Right.GetValue() == "^"
+		{
+			if itT.GetType() != "point"
+			{
+				resB[0] = false
+				return null
+			}
+			preT :=  IsSameType(obj.Down,itT.Base,res,resB)
+			if preT != null {
+				return preT.GetPoint()
+			}
+			return null
+		}
 		if obj.Down.Right.GetValue() == "[]"
 		{
 			if itT.GetType() != "arr"{

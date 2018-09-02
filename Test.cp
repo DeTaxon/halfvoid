@@ -93,21 +93,20 @@ main := !(int argc, char^^ argv) -> int
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
 
-	r := new Stack.{int}[2]
-	for i : 2 r[i].Start = null
+	r := new Stack.{int}()
 	for i : 4
 	{
 		printf("wut\n")
-		r[0].Push(i)
+		r^.Push(i)
 
-		c := ref r[0][0]
+		c := ref r^[0]
 
 		c *= 10
 		c += 4 - i
 	}
 
-	printf("c %i\n",r[0].Size())
-	for i : r[0] printf("wow %i\n",i)
+	printf("c %i\n",r^.Size())
+	for i : r^ printf("wow %i\n",i)
 	delete r
 	return 0
 	

@@ -1268,27 +1268,27 @@ DeleteCall := class extend SomeFuncCall
 				DeleteFuncCall = MakeSimpleCall(func,new LinkForThis(Down,Down.GetType(),true))
 				DeleteFuncCall.Up = this&
 
-				if Down.GetType().Base.GetType() == "class" and Down.GetType().GetType() == "point"
-				{
-					itTypPre := Down.GetType().Base
-					itTyp := itTypPre->{TypeClass^}
+				//if Down.GetType().Base.GetType() == "class" and Down.GetType().GetType() == "point"
+				//{
+				//	itTypPre := Down.GetType().Base
+				//	itTyp := itTypPre->{TypeClass^}
 
-					pars2 := Queue.{Type^}()
-					pars2.Push(itTypPre)
-					func2 := itTyp.ToClass.GetFunc("~this",pars2)
+				//	pars2 := Queue.{Type^}()
+				//	pars2.Push(itTypPre)
+				//	func2 := itTyp.ToClass.GetFunc("~this",pars2)
 
-					if func2 != null
-					{
-						halfCall := new LinkForThis(Down,Down.GetType(),true)
-						ptrCall := new PtrToRef(halfCall->{Object^})
-						DestructFuncCall = MakeSimpleCall(func2,ptrCall)
-						DestructFuncCall.Up = this&
-					}else{
-						EmitError("Software error 4251354\n") 
-					}
-				}else {
-					if Down.GetType().GetType() != "point"
-					{
+				//	if func2 != null
+				//	{
+				//		halfCall := new LinkForThis(Down,Down.GetType(),true)
+				//		ptrCall := new PtrToRef(halfCall->{Object^})
+				//		DestructFuncCall = MakeSimpleCall(func2,ptrCall)
+				//		DestructFuncCall.Up = this&
+				//	}else{
+				//		EmitError("Software error 4251354\n") 
+				//	}
+				//}else {
+				//	if Down.GetType().GetType() != "point"
+				//	{
 						pars3 := Queue.{Type^}()
 						pars3.Push(Down.GetType())
 						consts3 := Queue.{Object^}()
@@ -1299,8 +1299,8 @@ DeleteCall := class extend SomeFuncCall
 							DestructFuncCall = MakeSimpleCall(func2,halfCall)
 							DestructFuncCall.Up = this&
 						}
-					}
-				}
+					//}
+				//}
 			}else{
 				EmitError("can not delete item\n")
 			}
