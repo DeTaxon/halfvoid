@@ -19,6 +19,9 @@ main := !(int argc,char^^ argv) -> int
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 	Ob = LoadFile("Test.cp")
+
+	libFile := LoadFile("lib.cp")
+	ForcedLibs.Push(libFile)
 	
 	WorkBag.Push(Ob,State_Start)
 	

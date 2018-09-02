@@ -25,3 +25,5 @@ GlobalStrs := string
 Classes := Queue.{BoxClass^}
 
 PostFuncs := Queue.{BuiltInFuncClassInfo^}
+
+ForcedLibs := Queue.{BoxFile^}

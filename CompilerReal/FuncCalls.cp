@@ -1190,7 +1190,7 @@ NewCallOne := class extend SomeFuncCall
 			if func == null 
 			{
 				//TODO: Class.Get
-				ErrorLog.Push("cant create type\n")
+				EmitError("cant create type\n")
 			}else{
 				newItm = MakeSimpleCall(func,null->{Object^})
 

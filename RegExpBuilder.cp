@@ -1,4 +1,3 @@
-#import "lib.cp"
 #import "arrs.cp"
 
 NonDefNodeLines := class

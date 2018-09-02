@@ -1,4 +1,3 @@
-#import "lib.cp"
 //#import "main.cp"
 //#import "MappedFile.cp"
 #import "glfw.cp"

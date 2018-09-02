@@ -1,5 +1,3 @@
-#import "lib.cp"
-
 Node := class .{@T}
 {
 	Data := T

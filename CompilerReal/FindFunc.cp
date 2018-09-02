@@ -228,6 +228,34 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 	Templs := Queue.{BoxTemplate^}()
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched)
 
+	func :=  GetBestFunc(pars,consts,Funcs,Templs)
+	if func != null return func
+
+	if (not IsWord(name) or IsMethod) and pars.Size() != 0 // wtf if not word and size = 0
+	{
+		if pars[0] != null
+		if pars[0].GetType() == "class"
+		{
+			asNeed := (((pars[0])->{TypeClass^}).ToClass)
+			return asNeed.GetFunc(name,pars,consts)
+		}
+	}
+	
+	for i : ForcedLibs.Size()
+	{
+		h := ForcedLibs[i].Down
+		if h != null
+		{
+			while h.Right != null
+			{
+				h = h.Right
+			}
+		}
+		if h != null
+		CollectFuncsByName(name,h,Funcs,Templs,IsSuffix,IsMethod,Searched)
+	}
+	Funcs.Clean()
+	Templs.Clean()
 	iterQ := BuiltInFuncs.Start
 	while iterQ != null
 	{
@@ -247,19 +275,8 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		}
 		iterH = iterH.Next
 	}
-	func :=  GetBestFunc(pars,consts,Funcs,Templs)
-	if func != null return func
-
-	if (not IsWord(name) or IsMethod) and pars.Size() != 0 // wtf if not word and size = 0
-	{
-		if pars[0] != null
-		if pars[0].GetType() == "class"
-		{
-			asNeed := (((pars[0])->{TypeClass^}).ToClass)
-			return asNeed.GetFunc(name,pars,consts)
-		}
-	}
-	return null
+	func2 := GetBestFunc(pars,consts,Funcs,Templs)
+	return func2
 
 }
 GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
