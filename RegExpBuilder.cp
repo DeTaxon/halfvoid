@@ -142,6 +142,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ prev) -> bool
 		if not failed 
 		{
 			itr = UNextLex(prv,'3',res,siz)
+			gotSome = true
 		}
 		else
 		{
