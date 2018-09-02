@@ -482,6 +482,7 @@ TypeFunc := class extend Type
 	{
 		if RetType == null
 		{
+			printf("wuut %p\n",this&)
 			return ""
 		}
 		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef

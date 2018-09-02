@@ -20,7 +20,7 @@ Node := class .{@T}
 StackTypeIter := class .{@T}
 {
 	iter := Node.{T}^
-	this := !(Node.{T}^ toStart) {	iter = toStart }
+	this := !(Node.{T}^ toStart) -> void {	iter = toStart }
 	"^" := !() -> ref T { return iter.Data }
 	Inc := !() -> void { iter = iter.Next }
 	IsEnd := !() -> bool { return iter == null }
@@ -36,7 +36,7 @@ Stack := class .{@T}
 	}
 	Push := !(T a) -> int
 	{
-		if Start == Start {
+		if Start == null {
 			Start = new Node.{T}(a)
 		} else {
 			Start = new Node.{T}(a,Start)

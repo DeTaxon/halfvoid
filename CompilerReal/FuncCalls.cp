@@ -867,7 +867,10 @@ NaturalCall := class extend SomeFuncCall
 			f << TName <<" = "	
 		}
 		f << "call "
-		ToCall.MyFuncType.PrintType(f)
+		//ToCall.MyFuncType.PrintType(f)
+		base := ToCall.MyFuncType
+		base2 := base->{Type^}
+		f << base2.GetName()
 		PrintFuncName(f)
 		f << "("
 		PrintParamUses(f)
