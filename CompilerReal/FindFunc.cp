@@ -415,6 +415,24 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if (inType.GetType() == "point" and funcType == GetType("bool")) return 1
 	if inType.GetType() == "fatarr" and funcType == GetType("bool") return 1
 
+	if inType.GetType() == "point" and funcType.GetType() == "point"
+	{
+		if inType.Base.GetType() == "class" and funcType.Base.GetType() == "class"
+		{
+			asClType1 := ((inType.Base)->{TypeClass^})
+			asCl1 := asClType1.ToClass
+			asClType2 := ((funcType.Base)->{TypeClass^})
+			asCl2 := asClType2.ToClass
+
+			while asCl1 != null
+			{
+				it asCl1 == asCl2 return 1
+				asCl1 = asCl1.Parent
+			}
+
+		}
+	}
+
 
 	if inType == GetType("double") and funcType == GetType("float") return 2
 	if inType == TypeTable[16] and funcType.GetType() == "fatarr" return 2

@@ -1,4 +1,5 @@
 #import "arrs.cp"
+#import "BasicTree.cp"
 
 NonDefNodeLines := class
 {
@@ -51,7 +52,7 @@ DetMachine := class
 }
 
 
-LexTreeNode := class
+LexTreeNode := class extend BasicTree
 {
 	nodeType := int
 	nodeValue := int
@@ -59,15 +60,11 @@ LexTreeNode := class
 	this := !(int type) -> void
 	{
 		nodeType = type
-		Down = null
-		Right = null
 	}
 	this := !(int type,int cal) -> void
 	{
 		nodeType = type
 		nodeValue = cal
-		Down = null
-		Right = null
 	}
 	Print := !(int s) -> void
 	{	
@@ -82,26 +79,11 @@ LexTreeNode := class
 	}
 
 }
-UNextLex := !(LexTreeNode^ prev, int nType, int nVal,int Size) -> LexTreeNode^
-{
-	preEnd := prev
-	frst := prev.Right
-	for Size preEnd = preEnd.Right
-	Last := preEnd.Right
 
-	preEnd.Right = null
-	prev.Right = new LexTreeNode(nType,nVal)
-	prev.Right.Right = Last
-	prev.Right.Down = frst
-	
-	return prev.Right
-}
-
-CheckRule := !(int[@S] rule,int res, LexTreeNode^ prev) -> bool
+CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 {
 	gotSome := false
-	itr := prev.Right
-	prv := prev
+	itr := nowNode
 	while itr != null{
 		c := itr
 		siz := 0
@@ -109,44 +91,67 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ prev) -> bool
 		for i : S
 		{
 			if c == null return gotSome
-			if rule[i] == '3'
-			{	
-				if c.nodeType in "23" {
-					siz += 1
-				}else failed = true
-			}else{
-				if c.nodeType == '1' and rule[i] == c.nodeValue 
-				{
-					siz += 1
-				}else{
-					if rule[i] == '4'
+			if c.Right == null return gotSome
+			switch rule[i]
+			{
+				case '3'
+					if c.nodeType in "23" {
+						siz += 1
+					}else failed = true
+				case '4'
+					if c.nodeType in "23"
 					{
-						if c.Right == null return gotSome
-						if c.nodeType in "23"
+						while c.Right.nodeType in "23"
 						{
-							while c.Right.nodeType in "23"
-							{
-								c = c.Right
-								siz += 1
-							}
+							c = c.Right
 							siz += 1
-						}else failed = true
-					}else{
-						failed = true
-					}
-				}
+						}
+						siz += 1
+					}else failed = true
+				case void
+					if c.nodeType == '1'
+					{
+						siz += 1
+					}else failed = true
 			}
+			//if rule[i] == '3'
+			//{	
+			//	if c.nodeType in "23" {
+			//		siz += 1
+			//	}else failed = true
+			//}else{
+			//	if c.nodeType == '1' and rule[i] == c.nodeValue 
+			//	{
+			//		siz += 1
+			//	}else{
+			//		if rule[i] == '4'
+			//		{
+			//			if c.Right == null return gotSome
+			//			if c.nodeType in "23"
+			//			{
+			//				while c.Right.nodeType in "23"
+			//				{
+			//					c = c.Right
+			//					siz += 1
+			//				}
+			//				siz += 1
+			//			}else failed = true
+			//		}else{
+			//			failed = true
+			//		}
+			//	}
+			//}
 			c = c.Right
 		}
 
 		if not failed 
 		{
-			itr = UNextLex(prv,'3',res,siz)
+			newNd := new LexTreeNode('3')
+			itr = UNext(itr,newNd,siz)->{LexTreeNode^}
 			gotSome = true
 		}
 		else
 		{
-			prv = itr
 			itr = itr.Right
 		}
 	}
@@ -172,22 +177,24 @@ LexBuilder := class
 		i := 0
 		while regEx[i] != 0
 		{
-			if regEx[i] in "+-*[]()|"
+			switch regEx[i] // BUG: can not use switch(regEx[i])
 			{
-				iter.Right = new LexTreeNode('1',regEx[i])
-				iter = iter.Right
-			}else{
-				if regEx[i] == '\\'
-				{
+				case "+-*[]()|"
+					iter.Right = new LexTreeNode('1',regEx[i])
+					iter.Right.Left = iter->{BasicTree^}
+					iter = iter.Right
+				case '\\'
 					iter.Right = new LexTreeNode('2',regEx[i+1])
+					iter.Right.Left = iter->{BasicTree^} //BUG:auto type to BasicTree not working
 					iter = iter.Right
 					i += 1
-				}else{
-					if regEx[i] != ' '{
-						iter.Right = new LexTreeNode('2',regEx[i])
-						iter = iter.Right
-					}
-				}
+				case ' '
+					//empty
+				case void 
+					iter.Right = new LexTreeNode('2',regEx[i])
+					iter.Right.Left = iter->{BasicTree^}
+					iter = iter.Right
+
 			}
 			i += 1
 		}

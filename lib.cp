@@ -13,9 +13,13 @@ cosf := !(float iiin) ->float declare
 sinf := !(float iiin) ->float declare
 sqrtf := !(float iiin) ->float declare
 
+memset := !(void^ dst, char val,int size) -> void declare
+
 "new" := !() . {@R} -> void^ 
 {
-	return malloc(R->TypeSize)
+	newNode :=  malloc(R->TypeSize)
+	memset(newNode,0,R->TypeSize)
+	return newNode
 }
 "delete" := !(void^ item) .{@R[]} -> void
 {
