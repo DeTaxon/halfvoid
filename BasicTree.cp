@@ -13,13 +13,18 @@ BasicTree := class{
 }
 UNext := !(BasicTree^ where,BasicTree^ nObj, int count) -> BasicTree^
 {
-	Last := where
-	for count-1 Last = Last.Right
-	UNext(where,nObj,Last)
+	printf("wyyt %p %p %p %i\n",where, where.Right,nObj,count)
+	Last2 := where
+	for count-1 {
+		printf("wuut %p %p\n",Last2, Last2.Right)
+		Last2 = Last2.Right
+	}
+	UNext(where,nObj,Last2)
 	return nObj
 }
 UNext := !(BasicTree^ where,BasicTree^ nObj, BasicTree^ Last) -> BasicTree^
 {
+	printf("maybe\n")
 	End := Last.Right
 
 	if End != null {

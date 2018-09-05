@@ -114,39 +114,13 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 						siz += 1
 					}else failed = true
 			}
-			//if rule[i] == '3'
-			//{	
-			//	if c.nodeType in "23" {
-			//		siz += 1
-			//	}else failed = true
-			//}else{
-			//	if c.nodeType == '1' and rule[i] == c.nodeValue 
-			//	{
-			//		siz += 1
-			//	}else{
-			//		if rule[i] == '4'
-			//		{
-			//			if c.Right == null return gotSome
-			//			if c.nodeType in "23"
-			//			{
-			//				while c.Right.nodeType in "23"
-			//				{
-			//					c = c.Right
-			//					siz += 1
-			//				}
-			//				siz += 1
-			//			}else failed = true
-			//		}else{
-			//			failed = true
-			//		}
-			//	}
-			//}
 			c = c.Right
 		}
 
 		if not failed 
 		{
 			newNd := new LexTreeNode('3')
+			printf("woot %p %p %p %i\n",itr,itr.Right,newNd,siz)
 			itr = UNext(itr,newNd,siz)->{LexTreeNode^}
 			gotSome = true
 		}
@@ -209,14 +183,14 @@ LexBuilder := class
 
 		while true
 		{
-			if CheckRule(!['3','-','3'],'-',Words) continue
-			if CheckRule(!['3','3'],'&',Words)  continue 
-			if CheckRule(!['3','|','3'],'|',Words)  continue 
-			if CheckRule(!['(','3',')'],'(',Words)  continue 
-			if CheckRule(!['[','4',']'],'[',Words)  continue 
-			if CheckRule(!['3','+'],'0',Words)  continue 
-			if CheckRule(!['3','*'],'*',Words)  continue 
-			if CheckRule(!['3','?'],'?',Words)  continue 
+			if CheckRule(!['3','-','3'],'-',Words.Right) continue
+			//if CheckRule(!['3','3'],'&',Words.Right)  continue 
+			//if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
+			//if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
+			//if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
+			//if CheckRule(!['3','+'],'0',Words.Right)  continue 
+			//if CheckRule(!['3','*'],'*',Words.Right)  continue 
+			//if CheckRule(!['3','?'],'?',Words.Right)  continue 
 			break
 		}
 		it3 := Words.Right
