@@ -212,7 +212,7 @@ BoxWhile := class extend Object
 		if typ == PATH_RETURN
 		{
 			UseRetPath = true
-			//if Up != null return Up.GetOutPath(this&,typ,size)
+			if Up != null Up.GetOutPath(this&,typ,size) //poke
 			return "RetPath" + MyId
 		}
 		if typ == PATH_CONTINUE

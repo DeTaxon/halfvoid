@@ -92,7 +92,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 		{
 			if c == null return gotSome
 			if c.Right == null return gotSome
-			switch rule[i]
+			switch rule[i] //BUG: can not return/continue/break from switch
 			{
 				case '3'
 					if c.nodeType in "23" {

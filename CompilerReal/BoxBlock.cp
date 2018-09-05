@@ -137,7 +137,6 @@ BoxBlock := class extend Object
 	}
 	GetOutPath := virtual !(Object^ objs, int typ , int size) -> string
 	{
-		LoadOutPath()
 
 		iter1 := Down
 		i := 0
@@ -164,8 +163,11 @@ BoxBlock := class extend Object
 
 		if typ == PATH_RETURN
 		{
+			LoadOutPath()
+
 			gotRetPath = true
 			if i == 0 return outRName
+			if Up != null Up.GetOutPath(this&,typ,0)
 			return "RetPath" + ItId + "in" + (i - 1)
 		}
 		if typ == PATH_CONTINUE
@@ -239,7 +241,6 @@ BoxBlock := class extend Object
 		}
 		if pri == State_DestructGet
 		{
-			LoadOutPath()
 		}
 	}
 }
