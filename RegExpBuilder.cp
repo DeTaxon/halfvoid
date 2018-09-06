@@ -56,7 +56,6 @@ LexTreeNode := class extend BasicTree
 {
 	nodeType := int
 	nodeValue := int
-	Down,Right:= LexTreeNode^
 	this := !(int type) -> void
 	{
 		nodeType = type
@@ -69,11 +68,11 @@ LexTreeNode := class extend BasicTree
 	Print := !(int s) -> void
 	{	
 		for s printf("->")
-		printf("node %c %c\n",nodeType,nodeValue)
 		it3 := Down
+		printf("Node %c %c\n",nodeType,nodeValue)
 		while it3 != null
 		{
-			it3^.Print(s+1)
+			it3->{LexTreeNode^}^.Print(s+1)
 			it3 = it3.Right
 		}
 	}
@@ -85,7 +84,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 	gotSome := false
 	itr := nowNode
 	while itr != null{
-		c := itr
+		c := itr->{LexTreeNode^}
 		siz := 0
 		failed := false
 		for i : S
@@ -101,9 +100,9 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 				case '4'
 					if c.nodeType in "23"
 					{
-						while c.Right.nodeType in "23"
+						while c.Right->{LexTreeNode^}.nodeType in "23"
 						{
-							c = c.Right
+							c = c.Right->{LexTreeNode^}
 							siz += 1
 						}
 						siz += 1
@@ -114,14 +113,13 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 						siz += 1
 					}else failed = true
 			}
-			c = c.Right
+			c = c.Right->{LexTreeNode^}
 		}
 
 		if not failed 
 		{
 			newNd := new LexTreeNode('3')
-			printf("woot %p %p %p %i\n",itr,itr.Right,newNd,siz)
-			itr = UNext(itr,newNd,siz)->{LexTreeNode^}
+			itr = UNext(itr,newNd,siz)
 			gotSome = true
 		}
 		else
@@ -154,49 +152,49 @@ LexBuilder := class
 			switch regEx[i] // BUG: can not use switch(regEx[i])
 			{
 				case "+-*[]()|"
-					iter.Right = new LexTreeNode('1',regEx[i])
+					iter.Right = new LexTreeNode('1',regEx[i])->{BasicTree^}
 					iter.Right.Left = iter->{BasicTree^}
-					iter = iter.Right
+					iter = iter.Right->{LexTreeNode^}
 				case '\\'
-					iter.Right = new LexTreeNode('2',regEx[i+1])
+					iter.Right = new LexTreeNode('2',regEx[i+1])->{BasicTree^}
 					iter.Right.Left = iter->{BasicTree^} //BUG:auto type to BasicTree not working
-					iter = iter.Right
+					iter = iter.Right->{LexTreeNode^}
 					i += 1
 				case ' '
 					//empty
 				case void 
-					iter.Right = new LexTreeNode('2',regEx[i])
+					iter.Right = new LexTreeNode('2',regEx[i])->{BasicTree^}
 					iter.Right.Left = iter->{BasicTree^}
-					iter = iter.Right
+					iter = iter.Right->{LexTreeNode^}
 
 			}
 			i += 1
 		}
 
-		i3 := Words.Right
+		i3 := Words.Right->{LexTreeNode^}
 		while i3 != null
 		{
-			printf("Node %c %i\n",i3.nodeType,i3.nodeValue)
-			i3 = i3.Right
+			printf("Node %c %i\n",i3^.nodeType,i3^.nodeValue)
+			i3 = i3.Right->{LexTreeNode^}
 		}
 		printf("---------\n")
 
 		while true
 		{
 			if CheckRule(!['3','-','3'],'-',Words.Right) continue
-			//if CheckRule(!['3','3'],'&',Words.Right)  continue 
-			//if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
-			//if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
-			//if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
-			//if CheckRule(!['3','+'],'0',Words.Right)  continue 
-			//if CheckRule(!['3','*'],'*',Words.Right)  continue 
-			//if CheckRule(!['3','?'],'?',Words.Right)  continue 
+			if CheckRule(!['3','3'],'&',Words.Right)  continue 
+			if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
+			if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
+			if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
+			if CheckRule(!['3','+'],'0',Words.Right)  continue 
+			if CheckRule(!['3','*'],'*',Words.Right)  continue 
+			if CheckRule(!['3','?'],'?',Words.Right)  continue 
 			break
 		}
 		it3 := Words.Right
 		while it3 != null
 		{
-			it3^.Print(0)
+			it3->{LexTreeNode^}^.Print(0)
 			it3 = it3.Right
 		}
 
