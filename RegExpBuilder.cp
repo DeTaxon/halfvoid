@@ -57,6 +57,8 @@ LexTreeNode := class
 	Left,Right,Up,Down := LexTreeNode^
 	nodeType := int
 	nodeValue := int
+	nodeIdStart := int
+	nodeIdEnd := int
 	this := !(int type) -> void
 	{
 		nodeType = type
@@ -69,13 +71,9 @@ LexTreeNode := class
 	Print := !(int s) -> void
 	{	
 		for s printf("->")
-		it3 := Down
 		printf("Node %c %c\n",nodeType,nodeValue)
-		while it3 != null
-		{
-			it3^.Print(s+1)
-			it3 = it3.Right
-		}
+		if Down != null Down.Print(s+1)
+		if Right != null Right.Print(s)
 	}
 
 }
@@ -193,15 +191,25 @@ LexBuilder := class
 			if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
 			break
 		}
-		it3 := Words.Right
-		while it3 != null
-		{
-			it3.Print(0)
-			it3 = it3.Right
-		}
-		Nfas.Emplace()
-		nowItm := ref Nfas[0]
+		Words.Right.Print(0)
 
+		Nfas.Emplace()
+		//nowItm := ref Nfas[0]
+		itrId := 1
+		mstart := 1
+		mend := 1
+		BuildPartOfNode(Nfas[0],itrId&,mstart&,mend&)
+		
+	}
+	BuildPartOfNode := !(NonDefMachine mach,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> void
+	{
+		switch nd.nodeType
+		{
+			case '2'{
+				itStart^ = itr^++
+				itEnd^ = itr^++
+			}
+		}
 	}
 }
 
