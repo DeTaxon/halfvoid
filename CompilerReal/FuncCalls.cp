@@ -313,6 +313,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if func == null and GotClass and asClass != null
 					{
 						gg.Pop()
+						gg.PushFront(asClass.ClassType)
 						func = asClass.GetFunc(asName,gg)
 					}
 

@@ -196,7 +196,7 @@ LexBuilder := class
 		it3 := Words.Right
 		while it3 != null
 		{
-			it3^.Print(0)
+			it3.Print(0)
 			it3 = it3.Right
 		}
 		Nfas.Emplace()
