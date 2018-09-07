@@ -91,7 +91,6 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 		for i : S
 		{
 			if c == null return gotSome
-			if c.Right == null return gotSome
 			switch rule[i] //BUG: can not return/continue/break from switch
 			{
 				case '3'
@@ -101,19 +100,24 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 				case '4'
 					if c.nodeType in "23"
 					{
-						while c.Right.nodeType in "23"
+						while c.Right.nodeType in "23" and c != null
 						{
 							c = c.Right
 							siz += 1
 						}
+						if c == null failed = true
 						siz += 1
 					}else failed = true
 				case void
 					if c.nodeType == '1'
 					{
-						siz += 1
+						if c.nodeValue == rule[i] 
+							siz += 1
+						else failed = true
 					}else failed = true
 			}
+			if failed break
+			if c == null return gotSome
 			c = c.Right
 		}
 
@@ -136,13 +140,10 @@ LexBuilder := class
 	Nfas := Stack.{NonDefMachine}
 	ApplyReg := !(string regEx) -> void
 	{
-		ApplyReg(regEx,'1')
+		ApplyReg(regEx,1)
 	}
 	ApplyReg := !(string regEx, int val) -> void
 	{
-		Nfas.Emplace()
-
-		nowItm := ref Nfas[0]
 
 		Words := new LexTreeNode(0)
 		iter := Words
@@ -172,24 +173,25 @@ LexBuilder := class
 			i += 1
 		}
 
-		i3 := Words.Right->{LexTreeNode^}
-		while i3 != null
-		{
-			printf("Node %c %i\n",i3^.nodeType,i3^.nodeValue)
-			i3 = i3.Right
-		}
-		printf("---------\n")
+		//i3 := Words.Right->{LexTreeNode^}
+		//while i3 != null
+		//{
+		//	printf("Node %c %c\n",i3^.nodeType,i3^.nodeValue)
+		//	i3 = i3.Right
+		//}
+		//printf("---------\n")
 
 		while true
 		{
 			if CheckRule(!['3','-','3'],'-',Words.Right) continue
-			if CheckRule(!['3','3'],'&',Words.Right)  continue 
-			if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
-			if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
 			if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
+			if CheckRule(!['[','^','4',']'],'[',Words.Right)  continue 
 			if CheckRule(!['3','+'],'0',Words.Right)  continue 
 			if CheckRule(!['3','*'],'*',Words.Right)  continue 
 			if CheckRule(!['3','?'],'?',Words.Right)  continue 
+			if CheckRule(!['3','3'],'&',Words.Right)  continue 
+			if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
+			if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
 			break
 		}
 		it3 := Words.Right
@@ -198,6 +200,8 @@ LexBuilder := class
 			it3^.Print(0)
 			it3 = it3.Right
 		}
+		Nfas.Emplace()
+		nowItm := ref Nfas[0]
 
 	}
 }
