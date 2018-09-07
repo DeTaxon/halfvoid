@@ -1,4 +1,9 @@
+
 MakeItBlock := !(Object^ item) -> bool
+{
+	return MakeItBlock(item,true)
+}
+MakeItBlock := !(Object^ item,bool useStuf) -> bool
 {
 	if item == null return false
 	if item.GetValue() == "{d}" return true
@@ -21,6 +26,8 @@ MakeItBlock := !(Object^ item) -> bool
 
 	item.SetUp(bloc)
 
+	bloc.usePaths = useStuf
+
 	return true
 }
 
@@ -39,6 +46,8 @@ BoxBlock := class extend Object
 
 	outRName := string
 	gotOutRName := bool
+
+	usePaths := bool
 
 	this := !() -> void
 	{
@@ -101,28 +110,30 @@ BoxBlock := class extend Object
 			i += 1
 			iter = iter.Right
 		}
-		if i != 0 f << "br label %ContPath" << ItId << "id0in" << i - 1 << "\n"
-		f << "br label %LastContPath" <<ItId << "\n"
+		if usePaths {
+			if i != 0 f << "br label %ContPath" << ItId << "id0in" << i - 1 << "\n"
+			f << "br label %LastContPath" <<ItId << "\n"
 
-		if not InClass
-		{
-			if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
-			for i : ContinuePath.Size()
+			if not InClass
 			{
-				siz := ContinuePath[i]
-				retCPath := "LastContPath" + ItId
-				if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
-				PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
+				if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
+				for i : ContinuePath.Size()
+				{
+					siz := ContinuePath[i]
+					retCPath := "LastContPath" + ItId
+					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
+					PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
+				}
+				for i : BreakPath.Size()
+				{
+					siz := BreakPath[i]
+					retCPath := "LastContPath" + ItId
+					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_BREAK,siz - 1)
+					PrintSomePath(f,"BreakPath" + ItId + "id",siz,retCPath)
+				}
 			}
-			for i : BreakPath.Size()
-			{
-				siz := BreakPath[i]
-				retCPath := "LastContPath" + ItId
-				if siz != 0 retCPath = Up.GetOutPath(this&,PATH_BREAK,siz - 1)
-				PrintSomePath(f,"BreakPath" + ItId + "id",siz,retCPath)
-			}
+			f << "LastContPath" <<ItId << ":\n"
 		}
-		f << "LastContPath" <<ItId << ":\n"
 	}
 	LoadOutPath := !() -> void
 	{
@@ -137,6 +148,11 @@ BoxBlock := class extend Object
 	}
 	GetOutPath := virtual !(Object^ objs, int typ , int size) -> string
 	{
+		if not usePaths
+		{
+			if Up == null return ""
+			return Up.GetOutPath(this&,typ,size)
+		}
 
 		iter1 := Down
 		i := 0

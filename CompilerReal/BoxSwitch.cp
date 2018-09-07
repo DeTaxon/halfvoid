@@ -8,7 +8,7 @@ BoxSwitch := class extend Object
 		Down = itm.Down
 		Down.SetUp(this&)
 		PopOutNode(Down)
-		MakeItBlock(Down.Right)
+		MakeItBlock(Down.Right,false)
 		id = GetNewId()
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -142,6 +142,10 @@ BoxSwitch := class extend Object
 		f << "br label %SwitchEnd" << id << "\n"
 
 		f << "SwitchEnd" << id << ":\n"
+	}
+	GetOutPath := virtual !(Object^ objs, int typ, int size) -> string
+	{
+		return Up.GetOutPath(this&,typ,size)
 	}
 	GetValue := virtual  !() -> string
 	{

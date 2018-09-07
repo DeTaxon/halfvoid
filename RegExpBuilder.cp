@@ -100,12 +100,12 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 				case '4'
 					if c.nodeType in "23"
 					{
-						while c.Right.nodeType in "23" and c != null
+						while c.Right.nodeType in "23"
 						{
 							c = c.Right
+							if c == null return gotSome
 							siz += 1
 						}
-						if c == null failed = true
 						siz += 1
 					}else failed = true
 				case void
@@ -117,7 +117,6 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 					}else failed = true
 			}
 			if failed break
-			if c == null return gotSome
 			c = c.Right
 		}
 
