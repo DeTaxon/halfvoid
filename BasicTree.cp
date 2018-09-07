@@ -1,17 +1,17 @@
 
-BasicTree := class{
-	Left,Right,Down,Up := BasicTree^
-
-	SetUp := !(BasicTree^ nUp) -> void
-	{
-		Up = nUp
-		if Right != null Right.SetUp(nUp)
-	}
-	"~this" := virtual !() -> void
-	{
-	}
-}
-UNext := !(BasicTree^ where,BasicTree^ nObj, int count) -> BasicTree^
+//BasicTree := class{
+//	Left,Right,Down,Up := BasicTree^
+//
+//	SetUp := !(BasicTree^ nUp) -> void
+//	{
+//		Up = nUp
+//		if Right != null Right.SetUp(nUp)
+//	}
+//	"~this" := virtual !() -> void
+//	{
+//	}
+//}
+UNext := !(@R1 where,@R2 nObj, int count) -> R2
 {
 	Last2 := where
 	for count-1 {
@@ -20,7 +20,7 @@ UNext := !(BasicTree^ where,BasicTree^ nObj, int count) -> BasicTree^
 	UNext(where,nObj,Last2)
 	return nObj
 }
-UNext := !(BasicTree^ where,BasicTree^ nObj, BasicTree^ Last) -> BasicTree^
+UNext := !(@R1 where,@R2 nObj, @R3^ Last) -> R2
 {
 	End := Last.Right
 
@@ -54,55 +54,55 @@ UNext := !(BasicTree^ where,BasicTree^ nObj, BasicTree^ Last) -> BasicTree^
 	}
 	return nObj
 }
-ReplaceNode := !(BasicTree^ what, BasicTree^ with) -> BasicTree^
-{
-	wiEnd := with
-
-	while wiEnd.Right != null 
-	{
-		wiEnd.Up = what.Up
-		wiEnd = wiEnd.Right
-		if wiEnd.Line == null wiEnd.Line = what.Line
-	}
-	if wiEnd.Line == null wiEnd.Line = what.Line
-	wiEnd.Up = what.Up
-
-	if what.Left == null
-	{
-		if what.Up != null
-		{
-			what.Up.Down = with
-		}
-		with.Left = null
-	}else{
-		with.Left = what.Left
-		with.Left.Right = with
-	}
-
-	wiEnd.Right = what.Right
-	if wiEnd.Right != null wiEnd.Right.Left = wiEnd
-
-	with.SetUp(what.Up)
-
-	what.Up = null
-	what.Left = null
-	what.Right = null
-
-	return with
-}
-
-PopOutNode := !(BasicTree^ what) -> void
-{
-	if what.Left != null
-	{
-		what.Left.Right = what.Right
-		if what.Right != null	what.Right.Left = what.Left
-	}else
-	{
-		if what.Up != null what.Up.Down = what.Right
-		if what.Right != null what.Right.Left = null
-	}
-	what.Up = null
-	what.Left = null
-	what.Right = null
-}
+//ReplaceNode := !(@R1 what, @R2 with) -> R1
+//{
+//	wiEnd := with
+//
+//	while wiEnd.Right != null 
+//	{
+//		wiEnd.Up = what.Up
+//		wiEnd = wiEnd.Right
+//		if wiEnd.Line == null wiEnd.Line = what.Line
+//	}
+//	if wiEnd.Line == null wiEnd.Line = what.Line
+//	wiEnd.Up = what.Up
+//
+//	if what.Left == null
+//	{
+//		if what.Up != null
+//		{
+//			what.Up.Down = with
+//		}
+//		with.Left = null
+//	}else{
+//		with.Left = what.Left
+//		with.Left.Right = with
+//	}
+//
+//	wiEnd.Right = what.Right
+//	if wiEnd.Right != null wiEnd.Right.Left = wiEnd
+//
+//	with.SetUp(what.Up)
+//
+//	what.Up = null
+//	what.Left = null
+//	what.Right = null
+//
+//	return with
+//}
+//
+//PopOutNode := !(@R1 what) -> void
+//{
+//	if what.Left != null
+//	{
+//		what.Left.Right = what.Right
+//		if what.Right != null	what.Right.Left = what.Left
+//	}else
+//	{
+//		if what.Up != null what.Up.Down = what.Right
+//		if what.Right != null what.Right.Left = null
+//	}
+//	what.Up = null
+//	what.Left = null
+//	what.Right = null
+//}

@@ -25,7 +25,11 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 
 		extType := ParseType(iterT)
 
-		if extType == null return null
+		if extType == null 
+		{
+			iterT.Left.EmitError("Can not extend class\n")
+			return null
+		}
 		if extType.GetType() != "class" return null
 
 		asClass := extType->{TypeClass^}

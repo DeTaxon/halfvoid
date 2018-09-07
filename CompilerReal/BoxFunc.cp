@@ -519,7 +519,10 @@ BoxFunc := class extend Object
 
 		for i : consts.Size()
 		{
-			if not CmpConstObjs(consts[i],ItConsts[i]) return false
+			if not CmpConstObjs(consts[i],ItConsts[i]) 
+			{
+				return false
+			}
 		}
 		return true
 	}
@@ -840,7 +843,7 @@ BoxFuncBody := class extend BoxFunc
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
-		if IsInvalid ErrorLog.Push("can not parse function header\n")
+		if IsInvalid EmitError("can not parse function header\n")
 
 		IsSuffix = IsSuf
 		if MyFuncParamNames != null
@@ -920,7 +923,7 @@ BoxFuncBody := class extend BoxFunc
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
-		if IsInvalid ErrorLog.Push("can not parse function header\n")
+		if IsInvalid EmitError("can not parse function header\n")
 
 		IsSuffix = IsSuf
 		for c : FuncName

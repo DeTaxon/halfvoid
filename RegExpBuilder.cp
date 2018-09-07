@@ -52,8 +52,9 @@ DetMachine := class
 }
 
 
-LexTreeNode := class extend BasicTree
+LexTreeNode := class
 {
+	Left,Right,Up,Down := LexTreeNode^
 	nodeType := int
 	nodeValue := int
 	this := !(int type) -> void
@@ -72,7 +73,7 @@ LexTreeNode := class extend BasicTree
 		printf("Node %c %c\n",nodeType,nodeValue)
 		while it3 != null
 		{
-			it3->{LexTreeNode^}^.Print(s+1)
+			it3^.Print(s+1)
 			it3 = it3.Right
 		}
 	}
@@ -84,7 +85,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 	gotSome := false
 	itr := nowNode
 	while itr != null{
-		c := itr->{LexTreeNode^}
+		c := itr
 		siz := 0
 		failed := false
 		for i : S
@@ -100,9 +101,9 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 				case '4'
 					if c.nodeType in "23"
 					{
-						while c.Right->{LexTreeNode^}.nodeType in "23"
+						while c.Right.nodeType in "23"
 						{
-							c = c.Right->{LexTreeNode^}
+							c = c.Right
 							siz += 1
 						}
 						siz += 1
@@ -113,7 +114,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 						siz += 1
 					}else failed = true
 			}
-			c = c.Right->{LexTreeNode^}
+			c = c.Right
 		}
 
 		if not failed 
@@ -151,21 +152,21 @@ LexBuilder := class
 		{
 			switch regEx[i] // BUG: can not use switch(regEx[i])
 			{
-				case "+-*[]()|"
-					iter.Right = new LexTreeNode('1',regEx[i])->{BasicTree^}
-					iter.Right.Left = iter->{BasicTree^}
-					iter = iter.Right->{LexTreeNode^}
+				case "+-*[]()|?^"
+					iter.Right = new LexTreeNode('1',regEx[i])
+					iter.Right.Left = iter
+					iter = iter.Right
 				case '\\'
-					iter.Right = new LexTreeNode('2',regEx[i+1])->{BasicTree^}
-					iter.Right.Left = iter->{BasicTree^} //BUG:auto type to BasicTree not working
-					iter = iter.Right->{LexTreeNode^}
+					iter.Right = new LexTreeNode('2',regEx[i+1])
+					iter.Right.Left = iter
+					iter = iter.Right
 					i += 1
 				case ' '
 					//empty
 				case void 
-					iter.Right = new LexTreeNode('2',regEx[i])->{BasicTree^}
-					iter.Right.Left = iter->{BasicTree^}
-					iter = iter.Right->{LexTreeNode^}
+					iter.Right = new LexTreeNode('2',regEx[i])
+					iter.Right.Left = iter
+					iter = iter.Right
 
 			}
 			i += 1
@@ -175,7 +176,7 @@ LexBuilder := class
 		while i3 != null
 		{
 			printf("Node %c %i\n",i3^.nodeType,i3^.nodeValue)
-			i3 = i3.Right->{LexTreeNode^}
+			i3 = i3.Right
 		}
 		printf("---------\n")
 
@@ -194,7 +195,7 @@ LexBuilder := class
 		it3 := Words.Right
 		while it3 != null
 		{
-			it3->{LexTreeNode^}^.Print(0)
+			it3^.Print(0)
 			it3 = it3.Right
 		}
 
