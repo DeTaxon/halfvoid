@@ -1384,21 +1384,29 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load i" + it + " , i" + it + "* #1\n"
 												+"#0 = mul i" + it + " #2,#0pre\n"
 												+"store i"+it+" #0, i"+it+"* #1\n"))
+
+			BuiltInFuncs.Push(new BuiltInFuncUno("++",PType,true,PType,"#0 = load i" + it + " , i" + it + "* #1\n"
+												+"#0Pre = add i" + it + " 1,#0\n"
+												+"store i"+it+" #0Pre, i"+it+"* #1\n"))
+			BuiltInFuncs.Push(new BuiltInFuncUno("--",PType,true,PType,"#0 = load i" + it + " , i" + it + "* #1\n"
+												+"#0Pre = sub i" + it + " 1,#0\n"
+												+"store i"+it+" #0Pre, i"+it+"* #1\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2\n"))
 		}
-		BuiltInFuncs.Push(new BuiltInFuncBinar("in",GetType("int"),false,TypeTable[13],false,BoolT,
-												"br label %Start##\n" +
-												"Start##:" +
-												"%First## = extractvalue %RangeTypeInt #2,0\n"+
-												"%T1T## = icmp sge i32 #1,%First##\n" + 
-												"br i1 %T1T## ,label %OnNext##, label %OnEnd##\n" +
-												"OnNext##:\n"+
-												"%Second## = extractvalue %RangeTypeInt #2,1\n" +
-												"%T2T## = icmp sle i32 #1, %Second##\n" +
-												"br label %OnEnd##\n" +
-												"OnEnd##:\n" +
-												"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
 		BuiltInFuncs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i" + it + " #1,0"))
 	}
+	BuiltInFuncs.Push(new BuiltInFuncBinar("in",GetType("int"),false,TypeTable[13],false,BoolT,
+											"br label %Start##\n" +
+											"Start##:" +
+											"%First## = extractvalue %RangeTypeInt #2,0\n"+
+											"%T1T## = icmp sge i32 #1,%First##\n" + 
+											"br i1 %T1T## ,label %OnNext##, label %OnEnd##\n" +
+											"OnNext##:\n"+
+											"%Second## = extractvalue %RangeTypeInt #2,1\n" +
+											"%T2T## = icmp sle i32 #1, %Second##\n" +
+											"br label %OnEnd##\n" +
+											"OnEnd##:\n" +
+											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
 	
 	for !["float","double"] // half?
 	{
@@ -1439,6 +1447,8 @@ CreateBuiltIns := !() -> void
 
 	BuiltInFuncs.Push(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1\n"
 										+"#0 = add i1 #2,0\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("==",BoolT,false,BoolT,false,BoolT,"#0 = icmp eq i1 #1,#2\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("!=",BoolT,false,BoolT,false,BoolT,"#0 = icmp ne i1 #1,#2\n"))
 
 	
 	BuiltInFuncs.Push(new BuiltInFuncUno("->{}",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))

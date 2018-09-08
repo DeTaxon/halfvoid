@@ -9,12 +9,15 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 	iterY := dat.Down.Right
 
+	Names := Queue.{string}()
+	Downs := Queue.{Object^}()
+
 	if iterY.Right.GetValue() == ","
 	{
 		itemName = iterY->{ObjIndent^}.MyStr
 		indName = ((iterY.Right.Right)->{ObjIndent^}).MyStr
 		
-		iterY = iterY.Right.Right.Right
+		iterY = iterY.Right.Right.Right.Right
 	}else
 	{
 		if iterY.Right.GetValue() == ":"
@@ -27,8 +30,6 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	}
 	if iterY.Right.GetValue() == ","
 	{
-		Names := Queue.{string}()
-		Downs := Queue.{Object^}()
 		Downs.Push(iterY)
 		if itemName == null{
 			Names.Push("it")
@@ -49,9 +50,6 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 		return new BoxForOldFashionMulti(Names,indName,Downs,iterY)
 	}
-
-	Names := Queue.{string}()
-	Downs := Queue.{Object^}()
 	
 	Downs.Push(iterY)
 
@@ -132,13 +130,16 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	itemsCount := int
 	Names := string^
+	IndNames := string^
 	IncFuncs := Object^^
 	UnrefFuncs := Object^^
+	IndFuncs := Object^^
 	IsInvalids := Object^^
 	IsEndFunc := Object^
 
 	ProxyFuncs := BoxFunc^^
 	Params := MemParam^^
+	IndParams := MemParam^^
 
 	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ block) -> void
 	{
@@ -160,11 +161,15 @@ BoxForOldFashionMulti := class extend BoxFor
 		MakeItBlock(Down)
 
 		Names = names.ToArray()
+		IndNames = new string[names.Size()]
+		for names.Size() IndNames[it] = null
+
 		WorkBag.Push(this&,State_PreGetUse)
 
 		IsStep1 = true
 
 		ItId = GetNewId()
+		IndNames[0] = f_ind
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -184,8 +189,10 @@ BoxForOldFashionMulti := class extend BoxFor
 			{
 				IncFuncs = new Object^[itemsCount]
 				UnrefFuncs = new Object^[itemsCount]
+				IndFuncs = new Object^[itemsCount]
 				ProxyFuncs = new BoxFunc^[itemsCount]
 				Params = new MemParam^[itemsCount]
+				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
 
 				for itemsCount IsInvalids[it] = null
@@ -273,6 +280,19 @@ BoxForOldFashionMulti := class extend BoxFor
 						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
 					}
 					Params[i] = new RetFuncParam(UnrefFuncs[i])
+
+					if IndNames[i] != null
+					{
+						itFunc4 := asNeed.GetFunc("Ind")
+						if itFunc4 == null
+						{
+							EmitError("Can not get index item\n")
+						}else{
+							test = new ParamNaturalCall("",ForItem->{Object^})
+							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
+							IndParams[i] = new RetFuncParam(IndFuncs[i])
+						}
+					}
 					iter = iter.Right
 				}
 			}
@@ -285,6 +305,10 @@ BoxForOldFashionMulti := class extend BoxFor
 			if Names[i] == name 
 			{
 				return Params[i]
+			}
+			if IndNames[i] != null
+			{
+				if IndNames[i] == name return IndParams[i]
 			}
 		}
 		return null
@@ -331,7 +355,18 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "Next" << ItId << ":\n"
 
 
-		for i : itemsCount if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
+		for i : itemsCount {
+			if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
+			if IndFuncs[i] != null
+			{
+				if IndFuncs[i].IsRef()
+				{
+					IndFuncs[i].PrintPointPre(f)
+				}else{
+					IndFuncs[i].PrintPre(f)
+				}
+			}
+		}
 		Down.PrintInBlock(f)
 		
 		f << "br label %IncFuncs" << ItId << "\n"

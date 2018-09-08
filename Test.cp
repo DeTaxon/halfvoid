@@ -7,7 +7,7 @@
 //#import "math.cp"
 //#import "xcb-lib.cp"
 //#import "RegExpBuilder.cp"
-#import "bitset.cp"
+#import "Bitset.cp"
 
 
 //glClearColor := !(float,float,float,float)^ -> void
@@ -97,8 +97,18 @@ main := !(int argc, char^^ argv) -> int
 
 	//B := LexBuilder
 	//B.ApplyReg("[0-9]+(.[0-9]+)?")
-	Tst := Bitset.{8}()
+	Tst := Bitset.{32}()
 
+	c := ![3,16,130,250]
+
+	for i,j : Tst
+	{
+		if j in c i = true
+	}
+	for Tst {
+		if it	printf("1") else printf("0")
+	}
+	printf("\n")
 	return 0
 	
 	//M := DetMachine

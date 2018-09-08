@@ -121,4 +121,12 @@ FixedArrayIter := class .{@Type}
 	return false
 }
 
+"in" := !(int val, @SArr[@SSize] itArr) -> bool
+{
+	for i : SSize
+	{
+		if val == itArr[i] return true
+	}
+	return false
+}
 

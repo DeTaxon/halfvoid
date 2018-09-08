@@ -27,3 +27,6 @@ Classes := Queue.{BoxClass^}
 PostFuncs := Queue.{BuiltInFuncClassInfo^}
 
 ForcedLibs := Queue.{BoxFile^}
+
+DebugMode := false
+DebugMetaData := Stack.{string}

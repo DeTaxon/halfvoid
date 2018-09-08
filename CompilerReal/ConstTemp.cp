@@ -38,7 +38,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 				{
 					typD2 := IsSameType(obj.Down,itT.Base,res,resB)
 					if typD2 == null return null
-
+					
 					if obj.Down.Right.Down != null 
 					{
 						resB[0] = false
@@ -55,6 +55,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 			if typD == null return null
 
 			itemD := obj.Down.Right.Down
+			if itemD == null return null
 			
 			if itemD.IsConst()
 			{
