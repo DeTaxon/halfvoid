@@ -195,12 +195,14 @@ LexBuilder := class
 
 		Nfas.Emplace()
 		//nowItm := ref Nfas[0]
-		itrId := 1
-		mstart := 1
-		mend := 1
-		BuildPartOfNode(Nfas[0],itrId&,mstart&,mend&)
+		itrId := int
+		mstart := int
+		mend := int
+		BuildPartOfNode(Nfas[0],Words.Right,itrId&,mstart&,mend&)
 		
 	}
+}
+
 	BuildPartOfNode := !(NonDefMachine mach,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> void
 	{
 		switch nd.nodeType
@@ -211,7 +213,5 @@ LexBuilder := class
 			}
 		}
 	}
-}
-
 
 
