@@ -101,12 +101,13 @@ main := !(int argc, char^^ argv) -> int
 
 	c := ![3,16,130,250]
 
-	for i,j : Tst
-	{
-		if j in c i = true
-	}
+	for c Tst << it
+	Tst << 18..36
+	Tst << 167 << 179
+
+	Tst.Clean(20)
 	for Tst {
-		if it	printf("1") else printf("0")
+		printf("%i ",it)
 	}
 	printf("\n")
 	return 0

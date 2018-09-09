@@ -5,36 +5,49 @@ BitsetIterator := class
 	lowIter,bigIter := int
 	bigSize := int
 
-	oldBool,nowBool := bool
-
 	this := !(u8^ val, int siz) -> void
 	{
 		lowIter = 0
 		bigIter = 0
 		bigSize = siz
 		dataPointer = val
+		
+		while val[bigIter] == 0 and bigIter < siz
+		{
+			bigIter++
+		}
+		if bigIter < siz
+		{	
+			itVal := val[bigIter]
+			while (itVal and_b ( 1 << lowIter)) == 0
+			{
+				lowIter++
+			}
+		}
 	}
-	"^" := !() -> ref bool
+	"^" := !() -> int
 	{
-		nowBool = ((dataPointer[bigIter] and_b (1 << lowIter)) != 0)
-		oldBool = nowBool
-		return nowBool
+		return lowIter + bigIter*8
 	}
 	Inc := !() -> void
 	{
-		if nowBool != oldBool
-		{
-			mask := 1 << lowIter
-			dataPointer[bigIter] = dataPointer[bigIter] xor_b mask
-		}
 		lowIter++
-		if lowIter >= 8
-		{
-			lowIter = 0
+		if lowIter >= 8{
 			bigIter++
+			lowIter = 0
+		}
+		if bigIter >= bigSize return void
+		while dataPointer[bigIter] < (1 << lowIter)
+		{
+			bigIter++
+			lowIter = 0
+			if bigIter >= bigSize return void
+		}
+		while (dataPointer[bigIter] and_b (1 << lowIter)) == 0
+		{
+			lowIter++
 		}
 	}
-	Ind := !() -> int { return bigIter*8 + lowIter }
 	IsEnd := !() -> bool {	return bigIter >= bigSize }
 }
 
@@ -49,6 +62,36 @@ Bitset := class .{@ArraySize}
 	"~For" := !() -> BitsetIterator
 	{
 		return BitsetIterator(itArray->{u8^},ArraySize)
+	}
+	Inverse := !() -> void
+	{
+		for itArray it = it xor_b 0xFF
+	}
+	"<<" := !(int x) -> ref Bitset.{ArraySize}
+	{
+		if x < ArraySize*8
+		{
+			itArray[x div 8] = itArray[x div 8] or_b (1 << (x % 8))
+		}
+		return this
+	}
+	"<<" := !(range x) -> ref Bitset.{ArraySize}
+	{
+		for x this << it
+		return this
+	}
+	Clean := !(int x) -> void
+	{
+		if x >= ArraySize*8 return void
+
+		ind := x div 8
+		atVal := x % 8
+
+		itArray[ind] = itArray[ind] and_b (not_b (1 << atVal))
+	}
+	Clean := !() -> void
+	{
+		for itArray it = 0
 	}
 
 }
