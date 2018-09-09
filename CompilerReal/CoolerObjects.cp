@@ -19,6 +19,7 @@ ObjSkobs := class extend Object
 	{
 		if pri == State_Start
 		{
+			WorkBag.Push(this&,State_Syntax)
 			WorkBag.Push(this&,State_PreGetUse)
 		}
 		if pri == State_Syntax

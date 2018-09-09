@@ -166,7 +166,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 							}
 						}
 					}
-					preRet :=  OneCall(dynCast.BeforeName, iter,consts,true)
+					preRet := OneCall(dynCast.BeforeName, iter,consts,true)
 					if preRet != null return preRet
 				}
 			}
@@ -321,14 +321,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						iter = iter.Left
 						iter.Right = iter.Right.Right.Right.Down
-						if iter.Right != null	iter.Right.Left = iter
+						if iter.Right != null iter.Right.Left = iter
 						iter.SetUp(iter.Up)
 
 						if iter.GetType().GetType() == "point"
 						{
 							iter = new PtrToRef(iter)
 						}
-						return MakeSimpleCall(func,iter)
+						resMake :=  MakeSimpleCall(func,iter)
+						return resMake
 					}
 
 					return null

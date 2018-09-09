@@ -1,7 +1,8 @@
 #import "arrs.cp"
 #import "BasicTree.cp"
+#import "Bitset.cp"
 
-NonDefNodeLines := class
+NonDefNodeLine := class
 {
 	from := int
 	to := int
@@ -16,7 +17,7 @@ NonDefNodeLines := class
 NonDefMachine := class
 {
 	IsEndNode := int[]
-	Lines := NonDefNodeLines[]
+	Lines := NonDefNodeLine[]
 	this := !() -> void
 	{
 		IsEndNode = null
@@ -92,7 +93,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 			switch rule[i] //BUG: can not return/continue/break from switch
 			{
 				case '3'
-					if c.nodeType in "23" {
+					if c.nodeType in "23-+*([&?" {
 						siz += 1
 					}else failed = true
 				case '4'
@@ -120,7 +121,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 
 		if not failed 
 		{
-			newNd := new LexTreeNode('3')
+			newNd := new LexTreeNode(res)
 			itr = UNext(itr,newNd,siz)
 			gotSome = true
 		}
@@ -183,7 +184,7 @@ LexBuilder := class
 			if CheckRule(!['3','-','3'],'-',Words.Right) continue
 			if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
 			if CheckRule(!['[','^','4',']'],'[',Words.Right)  continue 
-			if CheckRule(!['3','+'],'0',Words.Right)  continue 
+			if CheckRule(!['3','+'],'+',Words.Right)  continue 
 			if CheckRule(!['3','*'],'*',Words.Right)  continue 
 			if CheckRule(!['3','?'],'?',Words.Right)  continue 
 			if CheckRule(!['3','3'],'&',Words.Right)  continue 
@@ -195,23 +196,60 @@ LexBuilder := class
 
 		Nfas.Emplace()
 		//nowItm := ref Nfas[0]
+		nowNodes := Stack.{NonDefNodeLine}()
 		itrId := int
 		mstart := int
 		mend := int
-		BuildPartOfNode(Nfas[0],Words.Right,itrId&,mstart&,mend&)
-		
+		BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
 	}
 }
 
-	BuildPartOfNode := !(NonDefMachine mach,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> void
+BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> bool
+{
+	switch nd.nodeType
 	{
-		switch nd.nodeType
+		case '2'{
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			lines.Emplace()
+			lines[0].from = itStart^
+			lines[0].to = itEnd^
+			lines[0].symbl = nd.nodeValue
+
+			return true
+		}
+		case '('{
+			return BuildPartOfNode(lines,nd.Down.Right,itr,itStart,itEnd)
+		}
+		case '['
 		{
-			case '2'{
-				itStart^ = itr^++
-				itEnd^ = itr^++
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			nowSet := Bitset.{32}()
+			reverseIt := false
+			
+			iterat := nd.Down
+
+			while iterat != null
+			{
+				switch iterat.nodeType
+				{
+					case '2'{
+						nowSet << iterat.nodeValue
+					}
+					case '^'{
+						reverseIt = true
+					}
+					case '-'{
+						itmStart := iterat.Down.nodeValue
+						itmEnd := iterat.Down.Right.Right.nodeValue
+						nowSet << itmStart..itmEnd
+					}
+				}
+				iterat = iterat.Right
 			}
 		}
 	}
+}
 
 

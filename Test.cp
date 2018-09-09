@@ -6,7 +6,7 @@
 //#import "arrs.cp"
 //#import "math.cp"
 //#import "xcb-lib.cp"
-//#import "RegExpBuilder.cp"
+#import "RegExpBuilder.cp"
 #import "Bitset.cp"
 
 
@@ -95,21 +95,8 @@ main := !(int argc, char^^ argv) -> int
 	//dlclose(c)
 
 
-	//B := LexBuilder
-	//B.ApplyReg("[0-9]+(.[0-9]+)?")
-	Tst := Bitset.{32}()
-
-	c := ![3,16,130,250]
-
-	for c Tst << it
-	Tst << 18..36
-	Tst << 167 << 179
-
-	Tst.Clean(20)
-	for Tst {
-		printf("%i ",it)
-	}
-	printf("\n")
+	B := LexBuilder
+	B.ApplyReg("[0-9]+(.[0-9]+)?")
 	return 0
 	
 	//M := DetMachine

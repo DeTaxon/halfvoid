@@ -20,7 +20,7 @@ BoxSwitch := class extend Object
 		if pri == State_PreGetUse
 		{
 			WorkBag.Push(this&,State_GetUse)
-			WorkBag.Push(Down,State_PreGetUse)
+			WorkBag.Push(Down,State_Start)
 			WorkBag.Push(Down.Right,State_Start)
 		}
 		if pri == State_GetUse
@@ -172,12 +172,12 @@ BoxCase := class extend Object
 	{
 		if pri == State_Start
 		{
-			WorkBag.Push(this&,State_PreGetUse)
-
+			//WorkBag.Push(this&,State_PreGetUse)
+			WorkBag.Push(Down,State_Start)
 		}
 		if pri == State_PreGetUse
 		{
-			WorkBag.Push(Down,State_Start)
+			//WorkBag.Push(Down,State_Start)
 			//WorkBag.Push(Down,State_PreGetUse)
 		}
 	}

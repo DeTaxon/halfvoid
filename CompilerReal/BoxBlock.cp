@@ -218,6 +218,22 @@ BoxBlock := class extend Object
 			{
 				InClass =  Up.GetValue() == "{...}"
 			}
+			woot := Queue.{Object^}()
+
+			itrr := Down
+			while itrr != null
+			{
+				if itrr.GetValue() == "{}"
+				{
+					woot.Push(itrr)
+				}
+				itrr = itrr.Right
+			}
+			for woot.Size()
+			{
+				MakeItBlock(woot[it])
+			}
+
 		}
 		if pri == State_Syntax
 		{

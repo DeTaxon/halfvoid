@@ -55,7 +55,13 @@ ObjIndent := class extend Object
 					{
 						ReplaceNode(this&,new ObjType(Typ) )
 					}else{
-						EmitError("unknown indent "+ MyStr + "\n")
+						ignore := false
+						if Left != null 
+						{
+							if Left.GetValue() == "." ignore = true
+						}
+						if not ignore //BUG: someone using it before Syntax
+							EmitError("unknown indent "+ MyStr + "\n")
 					}
 				}
 			}

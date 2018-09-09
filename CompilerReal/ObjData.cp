@@ -18,14 +18,19 @@ ObjData := class extend Object
 				{
 					SyntaxCompress(Down,PriorityData)
 					newDown := Down.Down
-					if newDown.GetValue() == "~d" and newDown.Right == null
+					if newDown != null
 					{
-						newDown = newDown.Down
-					}
-					Down = newDown
-					if Down != null
-					{
-						Down.SetUp(this&)
+						if newDown.GetValue() == "~d" and newDown.Right == null
+						{
+							newDown = newDown.Down
+						}
+						Down = newDown
+						if Down != null
+						{
+							Down.SetUp(this&)
+						}
+					}else{
+						EmitError("Put\n")
 					}
 				}
 			}

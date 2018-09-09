@@ -275,7 +275,7 @@ TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
 		if Tok.Id == 11
 		{
 			LineCounter += 1
-			NL := new ObjLine(LineCounter,"wip")
+			NL := new ObjLine(LineCounter,filename)
 			while iter.Right != null
 			{
 				iter = iter.Right

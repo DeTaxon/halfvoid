@@ -48,7 +48,10 @@ BitsetIterator := class
 			lowIter++
 		}
 	}
-	IsEnd := !() -> bool {	return bigIter >= bigSize }
+	IsEnd := !() -> bool 
+	{	
+		return bigIter >= bigSize 
+	}
 }
 
 
