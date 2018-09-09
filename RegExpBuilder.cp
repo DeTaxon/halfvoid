@@ -206,6 +206,9 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 {
 	switch nd.nodeType
 	{
+		case 'A'{
+			someLine := int[4]
+		}
 		case '2'{
 			itStart^ = itr^++
 			itEnd^ = itr^++
@@ -216,36 +219,37 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 
 			return true
 		}
-		case '('{
+		case 'B'{
 			return BuildPartOfNode(lines,nd.Down.Right,itr,itStart,itEnd)
 		}
-		case '['
+		case 'S'
 		{
 			itStart^ = itr^++
 			itEnd^ = itr^++
-			//nowSet := Bitset.{32}()
-			//reverseIt := false
+			nowSet := Bitset.{32}()
+			reverseIt := false
 			
-			//iterat := nd.Down
+			iterat := nd.Down
+			printf("wut\n")
 
-			//while iterat != null
-			//{
-			//	switch iterat.nodeType
-			//	{
-			//		case '2'{
-			//			nowSet << iterat.nodeValue
-			//		}
-			//		case '^'{
-			//			reverseIt = true
-			//		}
-			//		case '-'{
-			//			itmStart := iterat.Down.nodeValue
-			//			itmEnd := iterat.Down.Right.Right.nodeValue
-			//			nowSet << itmStart..itmEnd
-			//		}
-			//	}
-			//	iterat = iterat.Right
-			//}
+			while iterat != null
+			{
+				switch iterat.nodeType
+				{
+					case '2'{
+						nowSet << iterat.nodeValue
+					}
+					case '^'{
+						reverseIt = true
+					}
+					case 'R'{
+						itmStart := iterat.Down.nodeValue
+						itmEnd := iterat.Down.Right.Right.nodeValue
+						nowSet << itmStart..itmEnd
+					}
+				}
+				iterat = iterat.Right
+			}
 		}
 	}
 }

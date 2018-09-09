@@ -19,8 +19,29 @@ ObjSkobs := class extend Object
 	{
 		if pri == State_Start
 		{
-			WorkBag.Push(this&,State_Syntax)
-			WorkBag.Push(this&,State_PreGetUse)
+			if Vers == 1
+			{
+				isLft := Left != null
+				oldVal := Object^
+				if isLft {
+					oldVal = Left
+				}else{
+					oldVal = Right
+				}
+				MakeItBlock(this&)
+				if oldVal != null
+				{
+					if isLft{
+						WorkBag.Push(oldVal.Right,State_Start)
+					}else{
+						WorkBag.Push(oldVal.Down,State_Start)
+					}
+				}
+
+			}else{
+				WorkBag.Push(this&,State_Syntax)
+				WorkBag.Push(this&,State_PreGetUse)
+			}
 		}
 		if pri == State_Syntax
 		{
