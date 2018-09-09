@@ -208,6 +208,14 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 	{
 		case 'A'{
 			someLine := int[4]
+			BuildPartOfNode(lines,nd.Down,itr,someLine[0]&,someLine[1]&)
+			BuildPartOfNode(lines,nd.Down.Right,itr,someLine[2]&,someLine[3]&)
+
+			lines.Emplace()
+			lines[0].from = someLine[1]
+			lines[0].to = someLine[2]
+			lines[0].symbl = -1
+			return true
 		}
 		case '2'{
 			itStart^ = itr^++
@@ -230,7 +238,6 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 			reverseIt := false
 			
 			iterat := nd.Down
-			printf("wut\n")
 
 			while iterat != null
 			{
@@ -249,6 +256,15 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 					}
 				}
 				iterat = iterat.Right
+			}
+			if reverseIt nowSet.Inverse()
+
+			for nowSet
+			{
+				lines.Emplace()
+				lines[0].from = itStart^
+				lines[0].to = itEnd^
+				lines[0].symbl = it
 			}
 		}
 	}
