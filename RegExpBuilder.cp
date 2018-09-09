@@ -93,13 +93,13 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 			switch rule[i] //BUG: can not return/continue/break from switch
 			{
 				case '3'
-					if c.nodeType in "23-+*([&?" {
+					if c.nodeType in "2RSPMQBOA" {
 						siz += 1
 					}else failed = true
 				case '4'
-					if c.nodeType in "23"
+					if c.nodeType in "2RSPMQBOA^"
 					{
-						while c.Right.nodeType in "23"
+						while c.Right.nodeType in "2RSPMQBOA^"
 						{
 							c = c.Right
 							if c == null return gotSome
@@ -108,11 +108,9 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 						siz += 1
 					}else failed = true
 				case void
-					if c.nodeType == '1'
+					if c.nodeType == rule[i]
 					{
-						if c.nodeValue == rule[i] 
-							siz += 1
-						else failed = true
+						siz += 1
 					}else failed = true
 			}
 			if failed break
@@ -152,7 +150,7 @@ LexBuilder := class
 			switch regEx[i] // BUG: can not use switch(regEx[i])
 			{
 				case "+-*[]()|?^"
-					iter.Right = new LexTreeNode('1',regEx[i])
+					iter.Right = new LexTreeNode(regEx[i],' ')
 					iter.Right.Left = iter
 					iter = iter.Right
 				case '\\'
@@ -181,15 +179,15 @@ LexBuilder := class
 
 		while true
 		{
-			if CheckRule(!['3','-','3'],'-',Words.Right) continue
-			if CheckRule(!['[','4',']'],'[',Words.Right)  continue 
-			if CheckRule(!['[','^','4',']'],'[',Words.Right)  continue 
-			if CheckRule(!['3','+'],'+',Words.Right)  continue 
-			if CheckRule(!['3','*'],'*',Words.Right)  continue 
-			if CheckRule(!['3','?'],'?',Words.Right)  continue 
-			if CheckRule(!['3','3'],'&',Words.Right)  continue 
-			if CheckRule(!['3','|','3'],'|',Words.Right)  continue 
-			if CheckRule(!['(','3',')'],'(',Words.Right)  continue 
+			if CheckRule(!['3','-','3'],'R',Words.Right) continue
+			if CheckRule(!['[','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['[','^','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['3','+'],'P',Words.Right)  continue 
+			if CheckRule(!['3','*'],'M',Words.Right)  continue 
+			if CheckRule(!['3','?'],'Q',Words.Right)  continue 
+			if CheckRule(!['3','3'],'A',Words.Right)  continue 
+			if CheckRule(!['3','|','3'],'O',Words.Right)  continue 
+			if CheckRule(!['(','3',')'],'B',Words.Right)  continue 
 			break
 		}
 		Words.Right.Print(0)
@@ -225,29 +223,29 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 		{
 			itStart^ = itr^++
 			itEnd^ = itr^++
-			nowSet := Bitset.{32}()
-			reverseIt := false
+			//nowSet := Bitset.{32}()
+			//reverseIt := false
 			
-			iterat := nd.Down
+			//iterat := nd.Down
 
-			while iterat != null
-			{
-				switch iterat.nodeType
-				{
-					case '2'{
-						nowSet << iterat.nodeValue
-					}
-					case '^'{
-						reverseIt = true
-					}
-					case '-'{
-						itmStart := iterat.Down.nodeValue
-						itmEnd := iterat.Down.Right.Right.nodeValue
-						nowSet << itmStart..itmEnd
-					}
-				}
-				iterat = iterat.Right
-			}
+			//while iterat != null
+			//{
+			//	switch iterat.nodeType
+			//	{
+			//		case '2'{
+			//			nowSet << iterat.nodeValue
+			//		}
+			//		case '^'{
+			//			reverseIt = true
+			//		}
+			//		case '-'{
+			//			itmStart := iterat.Down.nodeValue
+			//			itmEnd := iterat.Down.Right.Right.nodeValue
+			//			nowSet << itmStart..itmEnd
+			//		}
+			//	}
+			//	iterat = iterat.Right
+			//}
 		}
 	}
 }

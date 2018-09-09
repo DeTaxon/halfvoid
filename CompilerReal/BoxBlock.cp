@@ -67,6 +67,24 @@ BoxBlock := class extend Object
 		}
 		if Down != null Down.SetUp(this&)
 	}
+	RecursMake := !() -> void
+	{
+			woot := Queue.{Object^}()
+
+			itrr := Down
+			while itrr != null
+			{
+				if itrr.GetValue() == "{}"
+				{
+					woot.Push(itrr)
+				}
+				itrr = itrr.Right
+			}
+			for woot.Size()
+			{
+				MakeItBlock(woot[it])
+			}
+	}
 	GetItem := virtual !(string name) -> Object^
 	{
 		iter := Items.Start
@@ -218,22 +236,8 @@ BoxBlock := class extend Object
 			{
 				InClass =  Up.GetValue() == "{...}"
 			}
-			woot := Queue.{Object^}()
-
-			itrr := Down
-			while itrr != null
-			{
-				if itrr.GetValue() == "{}"
-				{
-					woot.Push(itrr)
-				}
-				itrr = itrr.Right
-			}
-			for woot.Size()
-			{
-				MakeItBlock(woot[it])
-			}
-
+			//if Up.GetValue() == "~switch()" RecursMake()
+			//if (not InClass and (Up.GetValue() == "{d}" or Up.GetValue() == "~switch()")) RecursMake()
 		}
 		if pri == State_Syntax
 		{
