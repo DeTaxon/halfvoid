@@ -8,6 +8,7 @@
 //#import "xcb-lib.cp"
 #import "RegExpBuilder.cp"
 #import "Bitset.cp"
+#import "Pair.cp"
 
 
 //glClearColor := !(float,float,float,float)^ -> void
@@ -93,7 +94,6 @@ main := !(int argc, char^^ argv) -> int
 	//b := dlsym(c,"xcb_generate_id")
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
-
 
 	B := LexBuilder
 	B.ApplyReg("[0-9]+(.[0-9]+)?")

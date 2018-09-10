@@ -1,8 +1,10 @@
 #import "arrs.cp"
 #import "BasicTree.cp"
 #import "Bitset.cp"
+#import "Set.cp"
+#import "Pair.cp"
 
-NonDefNodeLine := class
+NonDetNodeLine := class
 {
 	from := int
 	to := int
@@ -13,19 +15,25 @@ NonDefNodeLine := class
 		to = tt
 		symbl = s
 	}
+	"=" := !(NonDetNodeLine newVal) -> void
+	{
+		from = newVal.from
+		to = newVal.to
+		symbl = newVal.symbl
+	}
 }
-NonDefMachine := class
+NonDetMachine := class
 {
-	IsEndNode := int[]
-	Lines := NonDefNodeLine[]
+	Lines := NonDetNodeLine[]
+	EndNodeData := Pair.{int,int}[] // nodeId,resultId
 	this := !() -> void
 	{
-		IsEndNode = null
+		EndNodeData = null
 		Lines = null
 	}
 	"~this" := !() -> void
 	{
-		delete IsEndNode
+		delete EndNodeData
 		delete Lines
 	}
 }
@@ -50,6 +58,11 @@ DetMachine := class
 		delete NodeId
 		delete IsEndNode
 	}
+}
+
+DeterminateMachine := !(NonDetMachine input) -> DetMachine
+{
+	
 }
 
 
@@ -133,7 +146,7 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 
 LexBuilder := class
 {
-	Nfas := Stack.{NonDefMachine}
+	Nfas := Stack.{NonDetMachine}
 	ApplyReg := !(string regEx) -> void
 	{
 		ApplyReg(regEx,1)
@@ -194,37 +207,79 @@ LexBuilder := class
 
 		Nfas.Emplace()
 		//nowItm := ref Nfas[0]
-		nowNodes := Stack.{NonDefNodeLine}()
-		itrId := int
+		nowNodes := Stack.{NonDetNodeLine}()
+		itrId := 1
 		mstart := int
 		mend := int
 		BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
+		AddNodeLine(nowNodes,0,mstart,-1)
+		Nfas[0].Lines = nowNodes.ToArray()
+		Nfas[0].EndNodeData = new Pair.{int,int}[1]
+		Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
 	}
 }
 
-BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> bool
+AddNodeLine := !(Stack.{NonDetNodeLine} lines,int frm,int toNode, int val) -> void
+{
+	lines.Emplace()
+	lines[0].from = frm
+	lines[0].to = toNode
+	lines[0].symbl = val
+}
+
+BuildPartOfNode := !(Stack.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> bool 
 {
 	switch nd.nodeType
 	{
-		case 'A'{
-			someLine := int[4]
-			BuildPartOfNode(lines,nd.Down,itr,someLine[0]&,someLine[1]&)
-			BuildPartOfNode(lines,nd.Down.Right,itr,someLine[2]&,someLine[3]&)
+		case 'R' { return false }
+		case 'O'{
+			reses := int[4]
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
+			BuildPartOfNode(lines,nd.Down.Right.Right,itr,reses[2]&,reses[3]&)
+			itStart^ = itr^++
+			itEnd^ = itr^++
 
-			lines.Emplace()
-			lines[0].from = someLine[1]
-			lines[0].to = someLine[2]
-			lines[0].symbl = -1
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,itStart^,reses[1],-1)
+			AddNodeLine(lines,reses[2],itEnd^,-1)
+			AddNodeLine(lines,reses[3],itEnd^,-1)
+
+			return true
+		}
+		case 'Q'{
+			BuildPartOfNode(lines,nd.Down,itr,itStart,itEnd)
+			AddNodeLine(lines,itStart^,itEnd^,-1)
+			return true
+		}
+		case 'M'{
+			reses := int[2]
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
+			AddNodeLine(lines,itStart^,itEnd^,-1)
+			AddNodeLine(lines,reses[1],reses[0],-1)
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
+			return true
+		}
+		case 'P'{
+			BuildPartOfNode(lines,nd.Down,itr,itStart,itEnd)
+
+			AddNodeLine(lines,itEnd^,itStart^,-1)
+			return true
+		}
+		case 'A'{
+			someLine := int[2]
+			BuildPartOfNode(lines,nd.Down,itr,itStart,someLine[0]&)
+			BuildPartOfNode(lines,nd.Down.Right,itr,someLine[1]&,itEnd)
+
+			AddNodeLine(lines,someLine[0],someLine[1],-1)
 			return true
 		}
 		case '2'{
 			itStart^ = itr^++
 			itEnd^ = itr^++
-			lines.Emplace()
-			lines[0].from = itStart^
-			lines[0].to = itEnd^
-			lines[0].symbl = nd.nodeValue
-
+			AddNodeLine(lines,itStart^,itEnd^,nd.nodeValue)
 			return true
 		}
 		case 'B'{
@@ -261,13 +316,12 @@ BuildPartOfNode := !(Stack.{NonDefNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 
 			for nowSet
 			{
-				lines.Emplace()
-				lines[0].from = itStart^
-				lines[0].to = itEnd^
-				lines[0].symbl = it
+				AddNodeLine(lines,itStart^,itEnd^,it)
 			}
+			return true
 		}
 	}
+	return true	
 }
 
 
