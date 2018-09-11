@@ -30,19 +30,23 @@ StackTypeIter := class .{@T}
 Stack := class .{@T}
 {
 	Start := Node.{T}^
+	itSize := int
 	this := !() -> void
 	{
 		Start = null
+		itSize = 0
 	}
 	Emplace := !() -> void
 	{
 		newItm := new Node.{T}() //TODO: vargs
 		newItm.Next = Start
 		Start = newItm
+		itSize++
 	}
 	Push := !(T a) -> int
 	{
 		Start = new Node.{T}(a,Start)
+		itSize++
 		return 0
 	}
 	Pop := !() -> T
@@ -50,19 +54,21 @@ Stack := class .{@T}
 		Prev := Start.Data
 		Later := Start
 		Start = Start.Next
-		free(Later)
+		delete Later
+		itSize--
 		return Prev
 	}
 	Size := !() -> int
 	{
-		Count := 0
-		Iter := Start
-		while Iter 
-		{
-			Count += 1
-			Iter = Iter.Next
-		}
-		return Count
+		return itSize
+		//Count := 0
+		//Iter := Start
+		//while Iter 
+		//{
+		//	Count += 1
+		//	Iter = Iter.Next
+		//}
+		//return Count
 	}
 	Clean := !() -> void
 	{
@@ -71,8 +77,10 @@ Stack := class .{@T}
 		{
 			Iter = Start
 			Start = Iter.Next
-			free(Iter)
+			delete Iter
 		}
+		itSize = 0
+
 	}
 	"~this" := !() -> void
 	{
@@ -84,7 +92,7 @@ Stack := class .{@T}
 	}
 	Empty := !() -> bool
 	{
-		return Start == null
+		return Start == null 
 	}
 	"[]" := !(int Ind) -> ref T
 	{
@@ -99,7 +107,7 @@ Stack := class .{@T}
 	}
 	ToArray := !() -> T[]
 	{
-		Si := this.Size()
+		Si := itSize
 		if Si == 0 return null
 		ToOut := new T[Si]
 		Iter := Start
@@ -139,6 +147,7 @@ Queue := class .{@T} extend Stack.{T}
 		}else{
 			Start = new Node.{T}(a,Start)
 		}
+		itSize++
 		return 0
 	}
 	Push := !(T a) -> int
@@ -150,6 +159,7 @@ Queue := class .{@T} extend Stack.{T}
 			while Iter.Next {Iter = Iter.Next}
 			Iter.Next = new Node.{T}(a)
 		}
+		itSize++
 		return 0
 	}
 }
@@ -163,6 +173,7 @@ QueueSet := class .{@T} extend Stack.{T}
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
+			itSize++
 		} else {
 			Iter := Start
 			while Iter.Next 
@@ -175,6 +186,7 @@ QueueSet := class .{@T} extend Stack.{T}
 			if Iter.Data == a
 				return 0
 			Iter.Next = new Node.{T}(a)
+			itSize++
 		}
 		return 0
 	}

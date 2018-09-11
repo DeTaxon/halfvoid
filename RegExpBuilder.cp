@@ -60,9 +60,42 @@ DetMachine := class
 	}
 }
 
+
+CollectByEpsilon := !(NonDetMachine input,QueueSet.{int} OldStates) -> void
+{
+	for it : OldStates
+	{	
+		for line : input.Lines
+		{
+			if line.from == it and line.symbl == -1
+				OldStates.Push(line.to)
+		}
+	}
+}
+
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
-	
+	NewNodes := QueueSet.{Set.{int}}
+	Letters := QueueSet.{int}
+	nowNodeValue :=  QueueSet.{int}()
+
+	for input.Lines
+	{
+		if it.symbl != -1 Letters.Push(it.symbl)
+	}
+
+	nowNodeValue.Push(0)
+	CollectByEpsilon(input,nowNodeValue)
+
+	res := Set.{int}()
+	for nowNodeValue res.Add(it)
+	NewNodes.Push(res)
+	//nowNodeValue.Clean()
+
+	//for NewNodes
+	//{
+	//	
+	//}
 }
 
 
@@ -216,6 +249,8 @@ LexBuilder := class
 		Nfas[0].Lines = nowNodes.ToArray()
 		Nfas[0].EndNodeData = new Pair.{int,int}[1]
 		Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
+
+		DeterminateMachine(Nfas[0])
 	}
 }
 

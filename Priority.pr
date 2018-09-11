@@ -15,7 +15,7 @@
 "d + d" "d - d"
 "d <+> d" "d <*> d"
 "- d"
-"d > d" "d < d" "d == d" "d != d" "d >= d" "d <= d" 
+"d > d" "d < d" "d == d" "d != d" "d >= d" "d <= d" "d <=> d"
 "d ?: d : d"
 "d in d"
 "d and_b d" "d or_b d" "d xor_b d"
