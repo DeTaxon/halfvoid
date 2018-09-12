@@ -108,13 +108,24 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 			nowNodeValue := QueueSet.{int}()
 			CollectMove(input,c,itNode,nowNodeValue)
 			CollectByEpsilon(input,nowNodeValue)
-			resId := NewNodes <<< nowNodeValue
-			//TODO: itLines.Emplace(!{nowId,resId,c})
-			itLines.Emplace()
-			itLines[0].first = nowId
-			itLines[0].second.first = resId
-			itLines[0].second.second = c
+
+			if nowNodeValue.Size() != 0
+			{
+				resId := NewNodes <<< nowNodeValue
+				//TODO: itLines.Emplace(!{nowId,resId,c})
+				itLines.Emplace()
+				itLines[0].first = nowId
+				itLines[0].second.first = resId
+				itLines[0].second.second = c
+			}
 		}
+	}
+	printf("letters %i\n",Letters.Size())
+	for nNode : NewNodes
+	{
+		printf("node data ")
+		for nNode printf("%i ",it)
+		printf("\n")
 	}
 	for move : itLines
 	{
@@ -273,6 +284,22 @@ LexBuilder := class
 		Nfas[0].Lines = nowNodes.ToArray()
 		Nfas[0].EndNodeData = new Pair.{int,int}[1]
 		Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
+
+		printf("--------non det--------\n")
+
+		for Nfas[0].Lines
+		{
+			if it.symbl != -1
+			{
+				printf("line %i %i %c\n",it.from,it.to,it.symbl)
+			}else{
+				printf("line %i %i eps\n",it.from,it.to)
+			}
+		}
+		for Nfas[0].EndNodeData
+		{
+			printf("determ %i %i\n",it.first,it.second)
+		}
 
 		DeterminateMachine(Nfas[0])
 	}
