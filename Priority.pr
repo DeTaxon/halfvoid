@@ -25,3 +25,4 @@
 "new d" "delete d"
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d << d" "d >> d" "d <- d"
+"d <<< d" "d >>> d"

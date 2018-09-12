@@ -1,7 +1,7 @@
 
 Line := class {
-	GoTo := char[256]
-	Id := s8
+	GoTo := int[256]
+	Id := int
 	"=" := !(Line ot) -> void
 	{
 		for i : 256 this.GoTo[i] = ot.GoTo[i]
@@ -101,7 +101,6 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 					//printf("end? %s\n",oper)
 					newLine.Id = 10
 				}
-
 				PreLines.Push(newLine)
 				m.GoTo[oper[j]] = newId
 			}

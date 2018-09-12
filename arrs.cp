@@ -122,7 +122,7 @@ Stack := class .{@T}
 	}
 	"=" := !(Stack.{T} toSet) -> void
 	{
-		Start = toSet.Start
+		for toSet Push(it)
 	}
 	"~For" := !() -> StackTypeIter.{T}
 	{
@@ -162,12 +162,17 @@ Queue := class .{@T} extend Stack.{T}
 		itSize++
 		return 0
 	}
+	"=" := !(Stack.{T} toSet) -> void
+	{
+		for toSet Push(it)
+	}
 }
 QueueSet := class .{@T} extend Stack.{T}
 {
 	this := !() -> void
 	{
 		Start = null
+		itSize = 0
 	}
 	Push := !(T a) -> int
 	{
@@ -189,6 +194,50 @@ QueueSet := class .{@T} extend Stack.{T}
 			itSize++
 		}
 		return 0
+	}
+	Contain := !(T itm) -> bool
+	{
+		for this 
+			if it == itm return true
+		return false
+	}
+	"<<<" := !(T itm) -> int
+	{
+		for it : this , i : 0
+			if it == itm return i
+		if Start == null
+		{
+			Start = new Node.{T}()
+			Start.Data <<< itm
+			itSize++
+			return 0
+		}
+		itr := Start
+		while itr.Next != null	itr = itr.Next
+		itr.Next = new Node.{T}()
+		itr = itr.Next
+		itr.Data <<< itm
+		return itSize++
+	}
+	"<<<" := !(QueueSet.{T} toAdd) -> void
+	{
+		itSize = toAdd.itSize
+		Start = toAdd.Start
+		toAdd.itSize = 0
+		toAdd.Start = null
+	}
+	"==" := !(QueueSet.{T} toCmp) -> bool
+	{
+		if toCmp.Size() != itSize return false
+
+		for this
+			if not toCmp.Contain(it) return false
+
+		return true
+	}
+	"=" := !(Stack.{T} toSet) -> void
+	{
+		for toSet Push(it)
 	}
 }
 

@@ -72,30 +72,54 @@ CollectByEpsilon := !(NonDetMachine input,QueueSet.{int} OldStates) -> void
 		}
 	}
 }
+CollectMove := !(NonDetMachine input, int sId, QueueSet.{int} frm, QueueSet.{int} to) -> void
+{
+	for line : input.Lines
+	{
+		for fNode : frm
+		{
+			if line.from == fNode and line.symbl == sId
+				to.Push(line.to)
+		}		
+	}
+}
 
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
-	NewNodes := QueueSet.{Set.{int}}
-	Letters := QueueSet.{int}
-	nowNodeValue :=  QueueSet.{int}()
+	NewNodes := QueueSet.{QueueSet.{int}}()
+	Letters := QueueSet.{int}()
+	itLines := Stack.{Pair.{int,Pair.{int,int}}}()
 
 	for input.Lines
 	{
 		if it.symbl != -1 Letters.Push(it.symbl)
 	}
+	{
+		nowNodeValue :=  QueueSet.{int}()
+		nowNodeValue.Push(0)
+		CollectByEpsilon(input,nowNodeValue)
+		NewNodes <<< nowNodeValue
+	}
 
-	nowNodeValue.Push(0)
-	CollectByEpsilon(input,nowNodeValue)
-
-	res := Set.{int}()
-	for nowNodeValue res.Add(it)
-	NewNodes.Push(res)
-	//nowNodeValue.Clean()
-
-	//for NewNodes
-	//{
-	//	
-	//}
+	for itNode : NewNodes, nowId : 0
+	{
+		for c : Letters
+		{
+			nowNodeValue := QueueSet.{int}()
+			CollectMove(input,c,itNode,nowNodeValue)
+			CollectByEpsilon(input,nowNodeValue)
+			resId := NewNodes <<< nowNodeValue
+			//TODO: itLines.Emplace(!{nowId,resId,c})
+			itLines.Emplace()
+			itLines[0].first = nowId
+			itLines[0].second.first = resId
+			itLines[0].second.second = c
+		}
+	}
+	for move : itLines
+	{
+		printf("move %i %i %c\n",move.first,move.second.first,move.second.second)
+	}
 }
 
 
