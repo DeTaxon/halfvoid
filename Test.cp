@@ -97,7 +97,7 @@ main := !(int argc, char^^ argv) -> int
 
 	B := LexBuilder
 	//B.ApplyReg("[0-9]+(.[0-9]+)?")
-	B.ApplyReg("9 (8 | 9)")
+	B.ApplyReg("9 (8 | 9) 8*")
 	return 0
 	
 	//M := DetMachine

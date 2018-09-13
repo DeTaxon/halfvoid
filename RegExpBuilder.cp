@@ -120,6 +120,24 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 			}
 		}
 	}
+	ToRet.IsEndNode = new int[NewNodes.Size()]
+	
+	for itN : ToRet.IsEndNode,nowSet : NewNodes, i : 0
+	{
+		itN = -1
+
+		for itVal : nowSet
+		{
+			for  EndNode : input.EndNodeData
+			{
+				if itVal == EndNode.first and EndNode.second > itN
+				{
+					itN = EndNode.second
+				}
+			}
+		}
+	}
+
 	printf("letters %i\n",Letters.Size())
 	for nNode : NewNodes
 	{
@@ -131,6 +149,9 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 	{
 		printf("move %i %i %c\n",move.first,move.second.first,move.second.second)
 	}
+	printf("end nodes ")
+	for ToRet.IsEndNode printf("%i ",it)
+	printf("\n")
 }
 
 
@@ -326,8 +347,8 @@ BuildPartOfNode := !(Stack.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 			itEnd^ = itr^++
 
 			AddNodeLine(lines,itStart^,reses[0],-1)
-			AddNodeLine(lines,itStart^,reses[1],-1)
-			AddNodeLine(lines,reses[2],itEnd^,-1)
+			AddNodeLine(lines,itStart^,reses[2],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
 			AddNodeLine(lines,reses[3],itEnd^,-1)
 
 			return true
