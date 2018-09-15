@@ -3,6 +3,7 @@
 #import "Bitset.cp"
 #import "Set.cp"
 #import "Pair.cp"
+#import "Vector.cp"
 
 NonDetNodeLine := class
 {
@@ -40,7 +41,7 @@ NonDetMachine := class
 
 DetMachine := class
 {
-	table := int[][]
+	Table := int[][]
 	NodeId := int[]
 	IsEndNode := int[]
 	this := !() -> void
@@ -51,13 +52,160 @@ DetMachine := class
 	}
 	"~this" := !() -> void
 	{
-		if table != null {
-			for i : table->len delete table[i] //TODO: for table delete it //TODODO: delete table?.^
+		if Table != null {
+			for i : Table->len delete Table[i] //TODO: for table delete it //TODODO: delete table?.^
 		}
-		delete table
+		delete Table
 		delete NodeId
 		delete IsEndNode
 	}
+	PrintIt := !() -> void
+	{
+		printf("     ")
+		for IsEndNode->len printf("%4i ",it)
+		printf("\n")
+		printf("     ")
+		for IsEndNode printf("%4i ",it)
+		printf("\n")
+		for i : NodeId->len
+		{
+			printf("%4i ",NodeId[i])
+			for j : IsEndNode->len
+			{	
+				printf("%4i ",Table[j][i])
+			}
+			printf("\n")
+		}
+	}
+}
+WordDetermMachine := class
+{
+	Table := int[][]
+	IsEndNode := int[]
+	CharToGo := u8[256]
+
+	PrintIt := !() -> void
+	{
+		printf("           ")
+		for IsEndNode->len printf("%4i ",it)
+		printf("\n")
+		printf("lines %3i  ",Table[0]->len)
+		for IsEndNode printf("%4i ",it)
+		printf("\n")
+		chStart := 0
+		chEnd := 0
+		while chStart < 256
+		{
+			while CharToGo[chEnd] == CharToGo[chStart] {
+				chEnd++
+				if chEnd == 256 break
+			}
+			newEnd := chEnd - 1
+			if chStart == newEnd
+			{
+				if IsPrintable(chStart) printf("     %c     ",chStart) else printf("   0x%02X    ",chStart)
+			}else{
+				if IsPrintable(chStart) printf("   %c",chStart) else printf("0x%02X",chStart)
+				printf("..")
+				if IsPrintable(newEnd) printf("%c   ",newEnd) else printf("0X%02X",newEnd)
+				printf(" ")
+			}
+
+			nodLine := CharToGo[chStart]->{int}
+
+			for j : IsEndNode->len
+			{
+				printf("%4i ",Table[j][nodLine])
+			}
+			printf("\n")
+
+			chStart = chEnd
+
+		}
+		//printf("test\n")
+		//for CharToGo printf("%i ",it)
+		//printf("\n")
+		//printf("maybe\n")
+		//for i : Table[0]->len
+		//{
+		//	printf("%4i ",0)
+		//	for j : IsEndNode->len
+		//	{	
+		//		printf("%4i ",Table[j][i])
+		//	}
+		//	printf("\n")
+		//}
+
+	}
+}
+
+MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
+{
+	kindaHashed := Vector.{int}(input.NodeId->len)
+	borrow := Vector.{int}(input.NodeId->len)
+
+	for it : kindaHashed, i : 0
+	{
+		it = 0
+		for j : input.IsEndNode->len
+		{
+			it = it*5 + input.Table[j][i]
+		}
+	}
+
+
+	totalItems := QueueSet.{int}()
+	for i : borrow.Size() //BUG: borrow->len crashes
+	{
+		found := i
+		for j : (0..(i-1))
+		{
+			if kindaHashed[j] == kindaHashed[i]
+			{
+				gotDiff := false
+				for k : input.IsEndNode->len
+				{
+					if input.Table[k][i] != input.Table[k][j]{
+						gotDiff = true
+						break
+					}
+				}
+				if not gotDiff
+				{
+					found = j
+					break
+				}
+			}
+		}
+		borrow[i] = found
+		totalItems.Push(found)
+	}
+	newSize := totalItems.Size()
+	containFake := false
+	if input.NodeId->len != 256 { newSize += 1 containFake = true}
+
+	for ch : 256
+		ToRet.CharToGo[ch] = newSize - 1
+	for lt : input.NodeId
+	{
+		posInT := totalItems.GetPos(borrow[lt])
+		ToRet.CharToGo[lt] = posInT
+	}
+	ToRet.Table = new int[][input.IsEndNode->len]
+	for it : ToRet.Table, i : 0
+	{
+		it = new int[newSize]
+		for  frm : totalItems, j : 0 
+		{
+			it[j] = input.Table[i][frm]
+		}
+		if containFake
+		{
+			it[totalItems.Size()] = -1
+		}
+	}
+	ToRet.IsEndNode = new int[input.IsEndNode->len]
+	for a : ToRet.IsEndNode, b : input.IsEndNode a = b
 }
 
 
@@ -138,22 +286,117 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 		}
 	}
 
-	printf("letters %i\n",Letters.Size())
-	for nNode : NewNodes
-	{
-		printf("node data ")
-		for nNode printf("%i ",it)
-		printf("\n")
+	ToRet.Table = new int[][NewNodes.Size()]
+	for ToRet.Table {
+		it = new int[Letters.Size()]
+		for itm : it itm = -1
 	}
+
 	for move : itLines
 	{
-		printf("move %i %i %c\n",move.first,move.second.first,move.second.second)
+		chId := Letters.GetPos(move.second.second)	
+		ToRet.Table[move.first][chId] = move.second.first
 	}
-	printf("end nodes ")
-	for ToRet.IsEndNode printf("%i ",it)
-	printf("\n")
-}
 
+	ToRet.NodeId = new int[Letters.Size()]
+	for it : Letters , i : 0
+	{
+		ToRet.NodeId[i] = it
+	}
+}
+MinimizeMachine := !(DetMachine input) -> DetMachine
+{
+	EndStates := QueueSet.{int}()
+	for input.IsEndNode 
+		EndStates.Push(it)
+	
+	NodeSets := new int[input.IsEndNode->len]
+	for it : input.IsEndNode, i : 0
+		NodeSets[i] = EndStates.GetPos(it)
+
+	setCheck := 0
+	setSize := EndStates.Size()
+	while setCheck < setSize
+	{
+		for j : input.NodeId->len
+		{
+			gotSets := QueueSet.{int}()
+			for i : input.IsEndNode->len
+				if setCheck == NodeSets[i]
+				{
+					if input.Table[i][j] != -1
+						gotSets.Push(NodeSets[input.Table[i][j]])
+					else gotSets.Push(-1)
+				}
+			if gotSets.Size() >= 2
+			{	
+				for i : input.IsEndNode->len
+				if setCheck == NodeSets[i]
+				{
+					goTo := input.Table[i][j]
+					inSet := 0 
+					if goTo != -1
+					{
+						inSet = gotSets.GetPos(NodeSets[goTo])
+					}else{
+						inSet = gotSets.GetPos(-1)
+					}
+					if inSet != 0
+					{
+						NodeSets[i] = setSize + inSet - 1
+					}
+				}
+				setSize += gotSets.Size() - 1
+			}
+		}
+		setCheck++
+	}
+	ToRet.Table = new int[][setSize]
+	for ToRet.Table
+	{
+		it = new int[input.NodeId->len]
+		for itm : it itm = -1
+	}
+	ToRet.NodeId = new int[input.NodeId->len]
+	for a : ToRet.NodeId, b : input.NodeId a = b
+	ToRet.IsEndNode = new int[setSize]
+	transformer := new int[NodeSets->len]
+	defer delete transformer
+	{
+		someIter := 0
+		usedSets := QueueSet.{int}()
+		for i : NodeSets->len
+		{
+			if usedSets.Contain(NodeSets[i])
+			{
+				transformer[i] = someIter - 1
+			}else{
+				transformer[i] = someIter
+				usedSets.Push(NodeSets[i])
+				someIter++
+			}
+		}
+	}
+	printf("     ")
+	for NodeSets printf("%4i ",it)
+	printf("\n")
+
+	for i : NodeSets->len
+	{
+		fromNew := transformer[i]
+		ToRet.IsEndNode[fromNew] = input.IsEndNode[i]
+		for j : input.NodeId->len
+		{
+			toOld := input.Table[i][j]
+			if toOld != -1
+			{
+				toNew := transformer[toOld]
+				ToRet.Table[fromNew][j] = toNew
+			}
+		}
+	}
+	
+}
 
 LexTreeNode := class
 {
@@ -322,7 +565,17 @@ LexBuilder := class
 			printf("determ %i %i\n",it.first,it.second)
 		}
 
-		DeterminateMachine(Nfas[0])
+		newMach := DeterminateMachine(Nfas[0])
+		MinMach := MinimizeMachine(newMach)
+		WordMach := MakeWordDetermMachine(MinMach)
+
+		printf("-------------- determ ------------\n")
+		newMach.PrintIt()
+		printf("-------------- minim -------------\n")
+		MinMach.PrintIt()
+		printf("-------------- word --------------\n")
+		WordMach.PrintIt()
+
 	}
 }
 
@@ -354,8 +607,14 @@ BuildPartOfNode := !(Stack.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ 
 			return true
 		}
 		case 'Q'{
-			BuildPartOfNode(lines,nd.Down,itr,itStart,itEnd)
+			reses := int[2]
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
 			AddNodeLine(lines,itStart^,itEnd^,-1)
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
 			return true
 		}
 		case 'M'{

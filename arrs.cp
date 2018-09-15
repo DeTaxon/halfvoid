@@ -195,6 +195,16 @@ QueueSet := class .{@T} extend Stack.{T}
 		}
 		return 0
 	}
+	GetPos := !(T  itm) -> int
+	{
+		i := 0
+		for this
+		{
+			if it == itm return i
+			i++
+		}
+		return -1
+	}
 	Contain := !(T itm) -> bool
 	{
 		for this 

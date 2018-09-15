@@ -1390,7 +1390,7 @@ CreateBuiltIns := !() -> void
 												+"#0Pre = add i" + it + " 1,#0\n"
 												+"store i"+it+" #0Pre, i"+it+"* #1\n"))
 			BuiltInFuncs.Push(new BuiltInFuncUno("--",PType,true,PType,"#0 = load i" + it + " , i" + it + "* #1\n"
-												+"#0Pre = sub i" + it + " 1,#0\n"
+												+"#0Pre = sub i" + it + " #0,1\n"
 												+"store i"+it+" #0Pre, i"+it+"* #1\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2\n"))
 		}

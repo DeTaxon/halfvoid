@@ -100,6 +100,7 @@ FixedArrayIter := class .{@Type}
 	"^" := !() -> ref Type	{ return ptr[nowPos] }
 	Inc := !() -> void	{ nowPos += 1 }
 	IsEnd := !() -> bool	{ return nowPos >= size }
+	Ind := !() -> int { return nowPos }
 }
 
 "~For" := !(@Type[@Size] item) -> FixedArrayIter.{Type}
@@ -127,6 +128,14 @@ FixedArrayIter := class .{@Type}
 	{
 		if val == itArr[i] return true
 	}
+	return false
+}
+IsPrintable := !(int ch) -> bool
+{
+	if ch in 'a'..'z' return true
+	if ch in 'A'..'Z' return true
+	if ch in '0'..'9' return true
+	if ch in "_(){}[]!@#$%^&*~\"\\/.," return true
 	return false
 }
 

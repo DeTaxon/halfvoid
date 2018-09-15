@@ -95,9 +95,10 @@ main := !(int argc, char^^ argv) -> int
 	//printf("wuut %p\n",b) 
 	//dlclose(c)
 
+	if argc != 2 return 1
 	B := LexBuilder
 	//B.ApplyReg("[0-9]+(.[0-9]+)?")
-	B.ApplyReg("9 (8 | 9) 8*")
+	B.ApplyReg(argv[1])
 	return 0
 	
 	//M := DetMachine

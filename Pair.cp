@@ -1,3 +1,8 @@
+MakePair := !(@A a , @B b) -> Pair.{A,B}
+{
+	return Pair.{A,B}(a.b)
+}
+
 Pair := class .{@Frst,@Scnd}
 {
 	first := Frst
