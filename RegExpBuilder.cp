@@ -186,9 +186,9 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 
 	for ch : 256
 		ToRet.CharToGo[ch] = newSize - 1
-	for lt : input.NodeId
+	for lt : input.NodeId , i : 0
 	{
-		posInT := totalItems.GetPos(borrow[lt])
+		posInT := totalItems.GetPos(borrow[i])
 		ToRet.CharToGo[lt] = posInT
 	}
 	ToRet.Table = new int[][input.IsEndNode->len]
