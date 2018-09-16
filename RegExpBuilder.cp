@@ -316,6 +316,7 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 
 	setCheck := 0
 	setSize := EndStates.Size()
+	foundMin := false
 	while setCheck < setSize
 	{
 		for j : input.NodeId->len
@@ -347,9 +348,15 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 					}
 				}
 				setSize += gotSets.Size() - 1
+				foundMin = true
 			}
 		}
 		setCheck++
+		if setCheck == setSize and foundMin
+		{
+			foundMin = false
+			setCheck = 0
+		}
 	}
 	ToRet.Table = new int[][setSize]
 	for ToRet.Table
