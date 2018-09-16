@@ -25,7 +25,7 @@ memset := !(void^ dst, char val,int size) -> void declare
 {
 	sub := 4
 	//if R->Align > 4 sub = R->Align
-	free(item - sub)
+	//free(item - sub) //BUG: incorrect creating and deleting
 }
 "~this" := !(@R[] this) -> void
 {

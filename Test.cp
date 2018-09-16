@@ -96,9 +96,11 @@ main := !(int argc, char^^ argv) -> int
 	//dlclose(c)
 
 	if argc != 2 return 1
-	B := LexBuilder
+	B := LexBuilder()
 	//B.ApplyReg("[0-9]+(.[0-9]+)?")
 	B.ApplyReg(argv[1])
+	C := B.GenerateMachine()
+	C.PrintIt()
 	return 0
 	
 	//M := DetMachine

@@ -1,3 +1,5 @@
+int[] // incorrect deleting and creating
+
 
 нельзя x,y := !() -> void {} // x,y
 x,y := z /// z have to be copied, stupid way

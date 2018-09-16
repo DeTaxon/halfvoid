@@ -384,9 +384,6 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 			}
 		}
 	}
-	printf("     ")
-	for NodeSets printf("%4i ",it)
-	printf("\n")
 
 	for i : NodeSets->len
 	{
@@ -486,6 +483,10 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 LexBuilder := class
 {
 	Nfas := Stack.{NonDetMachine}
+	this := !() -> void
+	{
+		Nfas."this"()
+	}
 	ApplyReg := !(string regEx) -> void
 	{
 		ApplyReg(regEx,1)
@@ -521,13 +522,6 @@ LexBuilder := class
 			i += 1
 		}
 
-		//i3 := Words.Right->{LexTreeNode^}
-		//while i3 != null
-		//{
-		//	printf("Node %c %c\n",i3^.nodeType,i3^.nodeValue)
-		//	i3 = i3.Right
-		//}
-		//printf("---------\n")
 
 		while true
 		{
@@ -542,10 +536,9 @@ LexBuilder := class
 			if CheckRule(!['(','3',')'],'B',Words.Right)  continue 
 			break
 		}
-		Words.Right.Print(0)
+		//Words.Right.Print(0)
 
 		Nfas.Emplace()
-		//nowItm := ref Nfas[0]
 		nowNodes := Stack.{NonDetNodeLine}()
 		itrId := 1
 		mstart := int
@@ -556,33 +549,21 @@ LexBuilder := class
 		Nfas[0].EndNodeData = new Pair.{int,int}[1]
 		Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
 
-		printf("--------non det--------\n")
-
-		for Nfas[0].Lines
+	}
+	GenerateMachine := !() -> WordDetermMachine
+	{
+		printf("here %i\n",Nfas.Size())
+		if Nfas.Size() == 0 return void //TODO: assert? or throw
+		if Nfas.Size() == 1
 		{
-			if it.symbl != -1
-			{
-				printf("line %i %i %c\n",it.from,it.to,it.symbl)
-			}else{
-				printf("line %i %i eps\n",it.from,it.to)
-			}
-		}
-		for Nfas[0].EndNodeData
+			newMach := DeterminateMachine(Nfas[0])
+			MinMach := MinimizeMachine(newMach)
+			return MakeWordDetermMachine(MinMach)
+		}else
 		{
-			printf("determ %i %i\n",it.first,it.second)
+			multyNode := NonDetMachine()  
 		}
-
-		newMach := DeterminateMachine(Nfas[0])
-		MinMach := MinimizeMachine(newMach)
-		WordMach := MakeWordDetermMachine(MinMach)
-
-		printf("-------------- determ ------------\n")
-		newMach.PrintIt()
-		printf("-------------- minim -------------\n")
-		MinMach.PrintIt()
-		printf("-------------- word --------------\n")
-		WordMach.PrintIt()
-
+		return void
 	}
 }
 
