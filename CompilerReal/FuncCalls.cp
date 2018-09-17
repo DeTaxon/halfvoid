@@ -646,6 +646,15 @@ SomeFuncCall := class extend ObjResult
 		if ToCall.MyFuncType.RetRef return true
 		return false
 	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+	}
 	CheckReturn := virtual !() -> void
 	{
 		if ToCall != null and not gotAlloc
@@ -769,6 +778,7 @@ NaturalCall := class extend SomeFuncCall
 		ToCall.ParseBlock()
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
+		if Pars != null TrimCommas(Down.Up)
 		ExchangeParams()
 		WorkBag.Push(this&,State_GetUse)
 	}
@@ -788,7 +798,6 @@ NaturalCall := class extend SomeFuncCall
 				RetR := false
 				if FType.ParsIsRef != null
 					RetR = FType.ParsIsRef[i]
-				
 				preRet := BoxExc(iter,FType.Pars[i],RetR)
 	
 				if preRet == null

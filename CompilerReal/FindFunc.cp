@@ -266,7 +266,8 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		if pars[0].GetType() == "class"
 		{
 			asNeed := (((pars[0])->{TypeClass^}).ToClass)
-			return asNeed.GetFunc(name,pars,consts)
+			funcRes := asNeed.GetFunc(name,pars,consts)
+			if funcRes != null return funcRes
 		}
 	}
 		

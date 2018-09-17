@@ -66,6 +66,7 @@ SLambda := class extend ObjResult
 
 			if skobPos != null
 			{
+				TrimCommas(skobPos)
 				iter := skobPos.Down
 				while iter != null
 				{

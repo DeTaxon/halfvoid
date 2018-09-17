@@ -102,11 +102,11 @@ main := !(int argc, char^^ argv) -> int
 	B.ApplyReg(argv[1])
 	te := WordParser
 	C := B.GenerateMachine()
-	//te.itCode.Table = C.Table
+	//te.itCore = C&
 	//te.itCode.IsEndNode = C.IsEndNode
 	//for i : 256 te.itCode.CharToGo[i] = C.CharToGo[i]
 	wow := "123 dhsdfhbadfv 123.567"
-	te.ReadText(C&,wow,23, (x,y,z) =>
+	te.ReadText(C&,wow,23, (x y z) =>
 	{
 		printf("value %i %i %i\n",x,y,z)
 	})
