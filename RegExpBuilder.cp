@@ -561,7 +561,40 @@ LexBuilder := class
 			return MakeWordDetermMachine(MinMach)
 		}else
 		{
-			multyNode := NonDetMachine()  
+			newLines := Stack.{NonDetNodeLine}()
+			newEnds := Stack.{Pair.{int,int}}()
+			multiNode := NonDetMachine()
+			nowOffset := 0
+
+			for itM : Nfas
+			{
+				maxNodes := 0
+				for lin : itM.Lines
+				{
+					newLines.Emplace()
+					newLines[0].from = lin.from
+					if lin.from != 0 newLines[0].from += nowOffset
+					newLines[0].to = lin.to
+					if lin.to != 0 newLines[0].to += nowOffset
+
+					if maxNodes < lin.from maxNodes = lin.from
+					if maxNodes < lin.to maxNodes = lin.to
+					//maxNodes = max(maxNodes,lin.from)
+					//maxNodes = max(maxNodes,lin.to)
+				}
+				for ends : itM.EndNodeData
+				{
+					newEnds.Emplace()
+					newEnds[0].first = ends.first + nowOffset
+					newEnds[0].second = ends.second
+				}
+				nowOffset += maxNodes + 1
+			}
+			multiNode.Lines = newLines.ToArray()
+			multiNode.EndNodeData = newEnds.ToArray()
+			newMach := DeterminateMachine(multiNode)
+			MinMach := MinimizeMachine(newMach)
+			return MakeWordDetermMachine(MinMach)
 		}
 		return void
 	}

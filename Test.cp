@@ -9,6 +9,7 @@
 #import "RegExpBuilder.cp"
 #import "Bitset.cp"
 #import "Pair.cp"
+#import "WordParser.cp"
 
 
 //glClearColor := !(float,float,float,float)^ -> void
@@ -99,8 +100,17 @@ main := !(int argc, char^^ argv) -> int
 	B := LexBuilder()
 	//B.ApplyReg("[0-9]+(.[0-9]+)?")
 	B.ApplyReg(argv[1])
+	te := WordParser
 	C := B.GenerateMachine()
-	C.PrintIt()
+	//te.itCode.Table = C.Table
+	//te.itCode.IsEndNode = C.IsEndNode
+	//for i : 256 te.itCode.CharToGo[i] = C.CharToGo[i]
+	wow := "123 dhsdfhbadfv 123.567"
+	te.ReadText(C&,wow,23, (x,y,z) =>
+	{
+		printf("value %i %i %i\n",x,y,z)
+	})
+
 	return 0
 	
 	//M := DetMachine

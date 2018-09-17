@@ -49,9 +49,24 @@ SLambda := class extend ObjResult
 
 			pars := Queue.{Type^}()
 
+			skobPos := Object^
+			skobPos = null
 			if Down.GetValue() == "()"
 			{
-				iter := Down
+				skobPos = Down
+			}else{
+				if Down.GetValue() == "~d"
+				{
+					if Down.Down.GetValue() == "()"
+					{
+						skobPos = Down.Down					
+					}
+				}
+			}
+
+			if skobPos != null
+			{
+				iter := skobPos.Down
 				while iter != null
 				{
 					if iter.GetValue() == "~ind"
@@ -63,6 +78,7 @@ SLambda := class extend ObjResult
 						if iter.GetValue() != ","
 							EmitError("incorrect input of lambda\n")
 					}
+					iter = iter.Right
 				}
 			}else{
 				if Down.GetValue() == "~ind"

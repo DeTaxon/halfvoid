@@ -139,3 +139,14 @@ IsPrintable := !(int ch) -> bool
 	return false
 }
 
+min := !(@A a, @B b) 
+{
+	if a > b return b
+	return a
+}
+max := !(@A a, @B b) 
+{
+	if a > b return a
+	return b
+}
+
