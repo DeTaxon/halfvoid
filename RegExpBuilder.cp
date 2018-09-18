@@ -372,14 +372,17 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	{
 		someIter := 0
 		usedSets := QueueSet.{int}()
+		itNode := Queue.{int}()
 		for i : NodeSets->len
 		{
 			if usedSets.Contain(NodeSets[i])
 			{
-				transformer[i] = someIter - 1
+				ps := usedSets.GetPos(NodeSets[i])
+				transformer[i] = itNode[ps]
 			}else{
 				transformer[i] = someIter
 				usedSets.Push(NodeSets[i])
+				itNode.Push(someIter)
 				someIter++
 			}
 		}
@@ -399,6 +402,9 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 			}
 		}
 	}
+	//printf("     ")
+	//for NodeSets printf("%3i ",it)
+	//printf("\n")
 	
 }
 
@@ -507,10 +513,19 @@ LexBuilder := class
 					iter.Right.Left = iter
 					iter = iter.Right
 				case '\\'
-					iter.Right = new LexTreeNode('2',regEx[i+1])
-					iter.Right.Left = iter
-					iter = iter.Right
-					i += 1
+					switch regEx[i+1]
+					{
+					case 'n'
+						iter.Right = new LexTreeNode('2',10)
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					case void
+						iter.Right = new LexTreeNode('2',regEx[i+1])
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					}
 				case ' '
 					//empty
 				case void 
@@ -552,12 +567,16 @@ LexBuilder := class
 	}
 	GenerateMachine := !() -> WordDetermMachine
 	{
-		printf("here %i\n",Nfas.Size())
 		if Nfas.Size() == 0 return void //TODO: assert? or throw
 		if Nfas.Size() == 1
 		{
 			newMach := DeterminateMachine(Nfas[0])
+			printf("------------determ-------\n")
+			newMach.PrintIt()
 			MinMach := MinimizeMachine(newMach)
+			printf("-------------minim--------\n")
+			MinMach.PrintIt()
+			printf("-------------word--------\n")
 			return MakeWordDetermMachine(MinMach)
 		}else
 		{
@@ -576,6 +595,7 @@ LexBuilder := class
 					if lin.from != 0 newLines[0].from += nowOffset
 					newLines[0].to = lin.to
 					if lin.to != 0 newLines[0].to += nowOffset
+					newLines[0].symbl = lin.symbl
 
 					if maxNodes < lin.from maxNodes = lin.from
 					if maxNodes < lin.to maxNodes = lin.to

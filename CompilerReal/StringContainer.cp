@@ -26,7 +26,7 @@ StringContainer := class
 		iter := Strs.Start
 		while iter != null
 		{
-			f << "@Str" << iter.Value << " = constant [" << iter.Key.Size() + 1 << " x i8] c\""
+			f << "@Str" << iter.Value << " = constant [" << iter.Key.Size() +  1 << " x i8] c\""
 			k := 0
 			SomeBuf := char[2]
 			SomeBuf[1] = 0
@@ -43,7 +43,12 @@ StringContainer := class
 						f << "\\22"
 					}else
 					{
-						f << SomeBuf
+						if iter.Key[k] == "\\"[0]
+						{
+							f << "\\5C"
+						}else{
+							f << SomeBuf
+						}
 					}
 				}
 				k += 1

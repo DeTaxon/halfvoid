@@ -104,7 +104,6 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 			return SomeDef->{Object^}
 		}
 	}
-	
 	return null
 }
 

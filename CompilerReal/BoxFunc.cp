@@ -923,7 +923,7 @@ BoxFuncBody := class extend BoxFunc
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
-		if IsInvalid EmitError("can not parse function header\n")
+		if IsInvalid EmitError("can not parse function header\n" + "func name " + FuncName + "\n")
 
 		IsSuffix = IsSuf
 		for c : FuncName

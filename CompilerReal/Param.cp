@@ -116,7 +116,6 @@ ObjParam := class extend Object
 					WorkBag.Push(iter,State_Syntax)
 				iter = iter.Right
 			}
-
 		}
 
 		if pri == State_CheckTypes

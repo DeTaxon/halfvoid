@@ -4,10 +4,11 @@ WordParser := class
 {
 	//itCore := WordDetermMachine^
 
-	ReadText := !(WordDetermMachine^ itCorePre,char^ data,int siz, !(int,int,int)&->void toEmit) -> void
+	ReadText := !(void^ itCorePre,char^ data,int siz, !(int,int,int)&->void toEmit) -> void
 	{
 		itCore := itCorePre->{WordDetermMachine^}
-		for i : siz
+		i := 0
+		while i < siz
 		{
 			nowState := 0
 			nowPos := 0
@@ -17,7 +18,7 @@ WordParser := class
 
 			while nowPos != -1
 			{
-				if nowSize + i >= siz break
+				if nowSize + i - 1 >= siz break
 
 				if itCore.IsEndNode[nowPos] != -1
 				{
@@ -28,10 +29,14 @@ WordParser := class
 				nowChar := data[i + nowSize]
 				inTable := itCore.CharToGo[nowChar]
 				nowPos = itCore.Table[nowPos][inTable]
+				nowSize++
 			}
 			if lastGoodTerm != -1
 			{
 				toEmit(lastGoodTerm,i,lastGoodSize)
+				i += lastGoodSize
+			}else{
+				i++
 			}
 		}
 	}

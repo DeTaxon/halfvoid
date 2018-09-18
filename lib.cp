@@ -149,4 +149,15 @@ max := !(@A a, @B b)
 	if a > b return a
 	return b
 }
+StrSize := !(string xs) -> int
+{
+	itSize := 0
+	i := 0
+	while xs[i] != 0
+	{
+		itSize++
+		i++
+	}
+	return itSize
+}
 

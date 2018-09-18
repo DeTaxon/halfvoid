@@ -78,7 +78,10 @@ ParseType := !(Object^ Node) -> Type^
 		indName := (Node->{ObjIndent^}).MyStr
 		
 		NodeName := GetItem(indName,Node)
-		if NodeName == null return null
+
+		if NodeName == null {
+			return null
+		}
 		//NodeName.GetValue()
 		if NodeName.GetValue() == ":=type"
 		{
