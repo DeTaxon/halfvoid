@@ -3,6 +3,7 @@
 realpath := !(char^ inp, char^ outp) -> char^ declare
 
 opendir := !(char^ inp) -> void^ declare
+closedir := !(void^ dirFd) ->int declare
 readdir := !(void^ dirFd) -> void^ declare
 stat := !(char^ pth, void^ outStat) ->int declare
 
@@ -29,6 +30,10 @@ DirectoryIterator := class
 		{
 			nowPath.itStr = toUse^.itStr + "/" + GetDirectoryName(nowEntry)
 		}
+	}
+	"~this" := !() -> void
+	{
+		if dirFd != null closedir(dirFd)
 	}
 	"^" := !() -> ref Path
 	{
