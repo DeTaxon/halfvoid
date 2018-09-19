@@ -136,7 +136,7 @@ main := !(int argc, char^^ argv) -> int
 	//inline := """ "wow" """
 
 	test := Path(".")
-	for test printf("wow \n")
+	for test printf("wow %s %i\n",it.itStr,it.IsDir())
 	//printf("maybe %i\n",test.IsDir())
 
 	return 0

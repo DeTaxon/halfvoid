@@ -105,16 +105,42 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
-			WorkBag.Push(this&,State_CheckTypes)
-			WorkBag.Push(this&,State_DestructCheck)
-
-			iter := Down
-
-			while iter != null
+			asClass := ParseClass(Down)
+			if asClass != null
 			{
-				if iter.GetValue() == "()"
-					WorkBag.Push(iter,State_Syntax)
-				iter = iter.Right
+				Down = asClass
+				asClass.Up = this&
+
+				iterB := this&
+				lazy := true
+
+				while lazy
+				{
+					if iterB.GetValue() == "{d}" or iterB.GetValue() == "{d}.cp"
+					{
+						lazy = false
+					}else{
+						iterB = iterB.Up
+						lazy = iterB != null
+					}
+				}
+				if iterB != null
+				{
+					asNeed := iterB->{BoxBlock^}
+					asNeed.Items.Push(new ObjHolder(MyStr,this&->{Object^}))
+				}
+			}else{
+				WorkBag.Push(this&,State_CheckTypes)
+				WorkBag.Push(this&,State_DestructCheck)
+
+				iter := Down
+
+				while iter != null
+				{
+					if iter.GetValue() == "()"
+						WorkBag.Push(iter,State_Syntax)
+					iter = iter.Right
+				}
 			}
 		}
 

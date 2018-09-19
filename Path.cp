@@ -9,7 +9,7 @@ stat := !(char^ pth, void^ outStat) ->int declare
 GetDirectoryName := !(void^ dirFd) -> char^
 {
 	itAsChar := dirFd->{char^}
-	return itAsChar + 19
+	return itAsChar[19]&
 }
 //st_mode 24 size = 144
 DirectoryIterator := class
@@ -18,16 +18,16 @@ DirectoryIterator := class
 	dirFd := void^
 	nowEntry := void^
 	nowPath := Path
-	this := !(void^ tu) -> void
+	this := !(Path^ tu) -> void
 	{
-		toUse = tu->{Path^}
+		toUse = tu
 		dirFd = opendir(toUse.itStr)
 		nowEntry =  readdir(dirFd)
 		if GetDirectoryName(nowEntry) == "." nowEntry = readdir(dirFd)
 		if GetDirectoryName(nowEntry) == ".." nowEntry = readdir(dirFd)
 		if nowEntry != null
 		{
-			nowPath.itStr = toUse^.itStr + "/" + GetDirectoryName(dirFd)
+			nowPath.itStr = toUse^.itStr + "/" + GetDirectoryName(nowEntry)
 		}
 	}
 	"^" := !() -> ref Path
@@ -39,7 +39,8 @@ DirectoryIterator := class
 		nowEntry = readdir(dirFd)
 		if nowEntry != null
 		{
-			nowPath.itStr = toUse.itStr + "/" + GetDirectoryName(dirFd)
+			newName := GetDirectoryName(nowEntry)
+			nowPath.itStr = toUse.itStr + "/" + GetDirectoryName(nowEntry)
 		}
 	}
 	IsEnd := !() -> bool
@@ -80,8 +81,7 @@ Path := class
 	{
 		statStruct := char[144]
 		res := stat(itStr,statStruct->{char^})
-		printf("wut %o %o %o %o\n",statStruct[24],statStruct[25],statStruct[26],statStruct[27])
-		return (statStruct[25] and_b 4) != 0
+		return (statStruct[25] and_b 0x40) != 0
 	}
 	"/=" := !(string str) -> void
 	{
