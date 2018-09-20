@@ -11,6 +11,8 @@
 #import "Pair.cp"
 #import "WordParser.cp"
 #import "Path.cp"
+#import "RBSet.cp"
+#import "AVLTree.cp"
 
 
 //glClearColor := !(float,float,float,float)^ -> void
@@ -97,47 +99,22 @@ main := !(int argc, char^^ argv) -> int
 	////printf("wuut %p\n",b) 
 	////dlclose(c)
 
-	////if argc != 2 return 1
-	//B := LexBuilder()
-	////B.ApplyReg("[0-9]+(.[0-9]+)?")
-	//B.ApplyReg("[1-9][0-9]*(.[0-9]+(e[\\+\\-]?[0-9]+))?",1)
-	//B.ApplyReg("[a-zA-Z_][a-zA-Z0-9_]*",2)
-	//B.ApplyReg("0b[01]+",1)
-	//B.ApplyReg("0[0-7]*",1)
-	//B.ApplyReg("0x[a-fA-F0-9_]+",1)
-	//B.ApplyReg(" / / [^\\n]*",10)
-	//B.ApplyReg("\" ([^\"]* | \\\\ \" ) \"",4)
-	//B.ApplyReg("\" \" \"  [^]+ \" \" \"",4)
-	//B.ApplyReg("\\( | \\) | [,.~!@#$%&] | \\* | \\^ | [{}]",5)
-	//B.ApplyReg("<< | >> | <<< | >>> | <\\- | \\->",5)
-	//B.ApplyReg(":=",5)
-	//B.ApplyReg("..",5)
-	//B.ApplyReg("[\\+\\*]",5)
-	//B.ApplyReg("[\\+\\*]",5)
-	//B.ApplyReg("[\\+\\-\\*/=]=?",5)
-	//B.ApplyReg("#[0-9a-zA-Z]+",6)
-	////B.ApplyReg(argv[1])
-	//te := WordParser
-	//C := B.GenerateMachine()
-	//C.PrintIt()
-	////te.itCore = C&
-	////te.itCode.IsEndNode = C.IsEndNode
-	////for i : 256 te.itCode.CharToGo[i] = C.CharToGo[i]
-	//wow := "123 dhsdfhbadfv 123.567 5.0e+10 + 5.7e12 * 5 << = += -= == a..b 0xFF 0b1101 0b123 0123 0129"
-	//itFile := MappedFile("Test.cp")
-	//te.ReadText(C&,itFile.point,itFile.Size(), (x y z) =>
-	//{	
-	//	itWord := char[1024]
-	//	for i :  z itWord[i] = itFile[i + y]
-	//	itWord[z] = 0
-	//	if x != 10 printf("word %i %s\n",x,itWord&)
-	//})
+	//hi := RBSet.{int}()
+	//for i : 40 hi << i
 
-	//inline := """ "wow" """
+	//hi.itTree.Start.PrintIt(0)
 
-	test := Path(".")
-	for test printf("wow %s %i\n",it.itStr,it.IsDir())
-	//printf("maybe %i\n",test.IsDir())
+	//return 0
+
+	itTree := AVLTree.{int}()
+
+	res := AVLTreeNode.{int}^
+	for i : 40 {
+		itTree.FindOrCreate(i,res&)
+		res.data = i
+	}
+
+	itTree.Start.PrintIt(0)
 
 	return 0
 	
