@@ -211,6 +211,11 @@ QueueSet := class .{@T} extend Stack.{T}
 			if it == itm return true
 		return false
 	}
+	"<<" := !(T itm) -> ref QueueSet.{T}
+	{
+		Push(itm)
+		return this
+	}
 	"<<<" := !(T itm) -> int
 	{
 		for it : this , i : 0

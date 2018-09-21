@@ -221,7 +221,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	{
 		if pars.Size() != 2 return 255
 		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
-		if pars[1].GetType() != "standart" return 255
+		if not IsInt(pars[1]) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^

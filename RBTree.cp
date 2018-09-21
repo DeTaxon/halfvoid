@@ -20,6 +20,12 @@ RBTreeNode := class .{@DATA}
 		if Left != null Left.PrintIt(i+1)
 		if Right != null Right.PrintIt(i+1)
 	}
+	TestSize := !(int i, !(int)&-> void toSay) -> void
+	{
+		if Left != null TestSize(i+1,toSay)
+		if Right != null TestSize(i+1,toSay)
+		if Left != null and Right != null toSay(i)
+	}
 }
 
 RBTree := class .{@DATA}
@@ -80,6 +86,7 @@ RBTree := class .{@DATA}
 	{
 		dwNode := toRotate.Right
 		toRotate.Right = dwNode.Left
+		if toRotate.Right != null toRotate.Right.Up = toRotate
 		dwNode.Up = toRotate.Up
 		toRotate.Up = dwNode
 		dwNode.Left = toRotate
@@ -94,6 +101,7 @@ RBTree := class .{@DATA}
 	{
 		dwNode := toRotate.Left
 		toRotate.Left = dwNode.Right
+		if toRotate.Left != null toRotate.Left.Up = toRotate
 		dwNode.Up = toRotate.Up
 		toRotate.Up = dwNode
 		dwNode.Right = toRotate

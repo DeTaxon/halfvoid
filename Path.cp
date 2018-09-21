@@ -78,6 +78,12 @@ Path := class
 
 		return pathA == pathB
 	}
+	FullPath := !() -> Path
+	{
+		newLine := realpath(itStr,null->{char^})
+		if newLine == null return Path("")
+		return Path(newLine)
+	}
 	"~For" := !() -> DirectoryIterator
 	{
 		return DirectoryIterator(this&)
@@ -99,5 +105,71 @@ Path := class
 	"/" := !(Path pt2) -> Path
 	{
 		return Path(itStr + "/" + pt2.itStr)
+	}
+	Ext := !() -> string
+	{
+		size := StrSize(itStr)
+		pos := size - 1
+		if size == 0 return ""
+
+		while pos >= 0 and itStr[pos] != '.' {
+			if itStr[pos] in "/\\"  return ""
+			pos--
+		}
+		if pos < 0 return ""
+
+		return StrCopy(itStr[pos]&)
+	}
+	Name := !() -> string
+	{
+		size := StrSize(itStr)
+		pos := size - 1
+		if size == 0 return ""
+
+		while pos >= 0 {
+			if itStr[pos] in "/\\"  break
+			pos--
+		}
+		if pos < 0 return ""
+		if size - pos == 1 return ""
+
+		return StrCopy(itStr[pos + 1]&)
+	}
+	PathName := !() -> string
+	{
+		size := StrSize(itStr)
+		pos := size - 1
+		if size == 0 return ""
+
+		while pos >= 0 {
+			if itStr[pos] in "/\\"  break
+			pos--
+		}
+		if pos < 0 return ""
+		if size - pos == 1 return ""
+		pos++
+		newStr :=  malloc(pos + 1)->{char^}
+
+		for i : pos newStr[i] = itStr[i]
+		newStr[pos] = 0
+
+		return newStr
+	}
+	JustName := !() -> string
+	{
+		itName := this.Name()
+		if itName == "" return ""
+		defer delete itName
+		
+		itSize := StrSize(itName)
+		pos := itSize - 1
+
+		while pos >= 0 and itName[pos] != '.' pos--
+
+		if pos < 0 return itName
+		itNewName := malloc(pos + 1)->{char^}
+		for i : pos itNewName[i] = itName[i]
+		itNewName[pos] = 0
+		return itNewName
 	}
 }

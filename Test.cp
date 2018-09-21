@@ -3,7 +3,7 @@
 //#import "glfw.cp"
 //#import "gl.cp"
 //#import "Model.cp"
-//#import "arrs.cp"
+#import "arrs.cp"
 //#import "math.cp"
 //#import "xcb-lib.cp"
 #import "RegExpBuilder.cp"
@@ -12,6 +12,7 @@
 #import "WordParser.cp"
 #import "Path.cp"
 #import "RBSet.cp"
+#import "AVLSet.cp"
 #import "AVLTree.cp"
 
 
@@ -90,34 +91,61 @@
 //	}
 //}
 
+
+
 main := !(int argc, char^^ argv) -> int
 {
-	////c := dlopen("libxcb.so",2)
-	////printf("wut %p\n",c)
-	////if c == null return 0
-	////b := dlsym(c,"xcb_generate_id")
-	////printf("wuut %p\n",b) 
-	////dlclose(c)
-
-	//hi := RBSet.{int}()
-	//for i : 40 hi << i
-
-	//hi.itTree.Start.PrintIt(0)
-
+	//c := dlopen("libxcb.so.1",2)
+	//printf("wut %p\n",c)
+	//if c == null return 0
+	//b := dlsym(c,"xcb_generate_id")
+	//printf("wuut %p\n",b) 
+	//dlclose(c)
 	//return 0
 
-	itTree := AVLTree.{int}()
+
+	itSet := AVLSet.{int}()
+	sizes := QueueSet.{int}()
 
 	res := AVLTreeNode.{int}^
-	for i : 40 {
-		itTree.FindOrCreate(i,res&)
-		res.data = i
+	wut := 0
+	for i : 4000 {
+		wut++
+		newNum := rand() % 50
+		printf("adding %i\n",newNum)
+		itSet << newNum
+		res := true
+		itSet.itTree.Start.CheckHeight(res&)
+		if not res {
+			printf("size erro\n")
+			break
+		}
 	}
+	res := true
+	bigSize := itSet.itTree.Start.CheckHeight(res&)
+	minSize := itSet.itTree.Start.MinSize()
+	printf("why %i %i %i %i\n",wut,bigSize,minSize,itSet.Contain(17))
+	itSet.itTree.Start.TestSize(0, (x) => { sizes.Push( x) })
 
-	itTree.Start.PrintIt(0)
+	for sizes printf("size %i\n",it)
+	printf("is correct %i\n",itSet.itTree.Start.IsCorrect())
+	for i : 15..20 itSet.Remove(i)
+	res = true
+	bigSize := itSet.itTree.Start.CheckHeight(res&)
+	minSize := itSet.itTree.Start.MinSize()
+	printf("why %i %i %i %i\n",wut,bigSize,minSize,itSet.Contain(17))
+	itSet.itTree.Start.TestSize(0, (x) => { sizes.Push( x) })
+
+	for sizes printf("size %i\n",it)
+	printf("is correct %i\n",itSet.itTree.Start.IsCorrect())
+	//itSet.itTree.Start.PrintIt(0)
+
 
 	return 0
-	
+
+	//x := name[0~23]
+
+	return 0
 	//M := DetMachine
 
 	//return 0

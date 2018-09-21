@@ -92,7 +92,7 @@ Copy := !(char^ this) -> char^
 ChrInStr := !(int chr,char^ str) -> bool
 {
 	i := 0
-	while str[i] 
+	while str[i] != 0 
 	{
 		if chr == str[i] return true
 		i += 1
