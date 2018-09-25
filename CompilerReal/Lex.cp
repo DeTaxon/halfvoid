@@ -197,10 +197,10 @@ GenerateToken := !(char^ Buuf, int id) -> Token^
 	return res
 }
 
-GetTokensFromFile := !(char^ Name, Machine M, Queue.{Token^} ToFill) -> bool
+GetTokensFromFile := !(Path Name, Machine M, Queue.{Token^} ToFill) -> bool
 {
 	Cp := sfile
-	Cp.open(Name,"r")
+	Cp.open(Name.itStr,"r")
 
 	if not Cp.IsOpen() return false
 

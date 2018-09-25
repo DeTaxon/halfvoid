@@ -64,7 +64,7 @@ Object := class{
 	{
 		if Line != null
 		{
-			ErrorLog.Push("Error in file <" + Line.inFile + "> at <" +Line.LinePos + ">:" + err)
+			ErrorLog.Push("Error in file <" + Line.inFile.itStr + "> at <" +Line.LinePos + ">:" + err)
 		}else{
 			ErrorLog.Push(err)
 		}
@@ -147,15 +147,15 @@ Object := class{
 ObjLine := class 
 {
 	LinePos := int
-	inFile := string
-	this := !(int LP, string IF) -> void
+	inFile := Path
+	this := !(int LP, Path IF) -> void
 	{
 		LinePos = LP
 		inFile = IF
 	}
 	GetLog := !() -> string
 	{
-		return " at line " + LinePos + " in file " + inFile
+		return " at line " + LinePos + " in file " + inFile.itStr
 	}
 }
 
@@ -241,7 +241,7 @@ IsKeyword := !(char^ W) -> bool
 	return false
 }
 
-TokensToObjects := !(char^ filename, Queue.{Token^} Toks) -> Object^
+TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 {
 	DaFile := new BoxFile(filename)
 	iter := DaFile->{Object^}

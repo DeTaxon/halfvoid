@@ -283,14 +283,14 @@ BoxBlock := class extend Object
 BoxFile := class extend BoxBlock
 {
 	fileId := int
-	fileName := string
+	filePath := Path
 
 	returnPath := Queue.{string}
 
-	this := !(string name) -> void
+	this := !(Path fullPath) -> void
 	{
 		fileId = GetNewId()
-		fileName = name
+		filePath.itStr = fullPath.itStr
 		WorkBag.Push(this&,State_Syntax)
 	}
 	GetValue := virtual !() -> string

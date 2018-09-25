@@ -15,7 +15,6 @@
 #import "AVLSet.cp"
 #import "AVLTree.cp"
 
-
 //glClearColor := !(float,float,float,float)^ -> void
 //glClear := !(int)^ -> void
 //

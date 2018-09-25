@@ -1,24 +1,33 @@
 
 Files := Queue.{BoxFile^}
 
-LoadFile := !(string name) -> BoxFile^
+LoadFile := !(string name,Object^ start) -> BoxFile^
 {
-	return LoadFile(name,null->{Object^})
+	if start == null return null
+	iter := start
+	while iter.Up != null iter = iter.Up
+
+	asF := iter->{BoxFile^}
+	prePath := Path(asF.filePath.itStr)
+	prePath = prePath.PathName()
+	prePath /= name
+	newName := prePath.FullPath()
+	newPath := Path(newName)
+	return LoadFile(newPath)
 }
-LoadFile := !(string name, Object^ start) -> BoxFile^
+LoadFile := !(Path fullName) -> BoxFile^
 {
-	//TODO: check for 
-	// import "file" vs "folder/file"
 	for Files.Size()
 	{
-		if Files[it].fileName == name
+		if Files[it].filePath == fullName
 			return Files[it]
 	}
-	ob := GetObjectsFromFile(name)
+	printf("loading %s\n",fullName.itStr)
+	ob := GetObjectsFromFile(fullName)
 
 	if ob == null 
 	{
-		ErrorLog.Push("file "+ name +" not found\n")
+		ErrorLog.Push("file "+ fullName.itStr +" not found\n")
 		return null
 	}
 
@@ -42,7 +51,7 @@ ImportCmd := class extend Object
 	{
 		if toPoint == null
 		{
-			toPoint = LoadFile(toImport)
+			toPoint = LoadFile(toImport,this&)
 
 			if toPoint == null
 			{
@@ -55,7 +64,7 @@ ImportCmd := class extend Object
 	{
 		if toPoint == null
 		{
-			toPoint = LoadFile(toImport)
+			toPoint = LoadFile(toImport,this&)
 			if toPoint != null
 			{
 				WorkBag.Push(toPoint,State_Start)

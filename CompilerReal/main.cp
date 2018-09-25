@@ -18,9 +18,9 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("defer")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
-	Ob = LoadFile("Test.cp")
+	Ob = LoadFile(Path("Test.cp"))
 
-	libFile := LoadFile("lib.cp")
+	libFile := LoadFile(Path("lib.cp"))
 	ForcedLibs.Push(libFile)
 	
 	WorkBag.Push(Ob,State_Start)
@@ -100,7 +100,7 @@ WorkWithBag := !() -> void
 	}
 }
 
-GetObjectsFromFile := !(char^ fileName) -> Object^
+GetObjectsFromFile := !(Path fileName) -> Object^
 {
 	Buf := Queue.{Token^}()
 	if not GetTokensFromFile(fileName, LexMachine^,Buf)

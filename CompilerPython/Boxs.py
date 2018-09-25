@@ -1885,6 +1885,8 @@ class BoxFuncsCall:
                 self.ToCall = Obj.Extra[0].Value
             else:
                 self.Params.append(GetUse(Obj.Extra[0]))
+		if len(Obj.Extra) != 3:
+			raise ValueError("wut {} {}",self.InFile,self.Line)
                 self.Params.append(GetUse(Obj.Extra[2]))
 
     def PrintConst(self,F):
