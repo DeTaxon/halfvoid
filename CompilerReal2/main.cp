@@ -1,3 +1,6 @@
+#import "Path.cp"
+#import "Tree.cp"
+
 Ob := Object^
 main := !(int argc,char^^ argv) -> int 
 {
@@ -18,9 +21,9 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("defer")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
-	Ob = LoadFile(Path("CompilerReal2/main.cp"))
+	Ob = LoadFile(Path("Test.cp"))
 
-	libFile := LoadFile(Path("CompilerReal2/lib.cp"))
+	libFile := LoadFile(Path("lib.cp"))
 	ForcedLibs.Push(libFile)
 	
 	WorkBag.Push(Ob,State_Start)
@@ -32,7 +35,6 @@ main := !(int argc,char^^ argv) -> int
 		while endI.Right != null 
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
-	printf("here %p\n",mainFunc)
 
 	if mainFunc != null 
 		WorkBag.Push(mainFunc.Down,State_Start)

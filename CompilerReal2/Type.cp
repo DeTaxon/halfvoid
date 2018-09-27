@@ -173,8 +173,7 @@ ParseType := !(Object^ Node) -> Type^
 		if lazy 
 		{
 			SyntaxCompress(Node.Down.Right.Right,PriorityData)
-			itName := ((Node.Down)->{ObjIndent^}).MyStr
-			NodeName := GetItem(itName,Node)
+			NodeName := GetItem(((Node.Down)->{ObjIndent^}).MyStr,Node)
 			if NodeName == null return null
 			if NodeName.Down.GetValue() == "!{}{...}"
 			{

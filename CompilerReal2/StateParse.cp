@@ -1,0 +1,13 @@
+State_Start := 1
+State_Syntax := 2
+State_CheckTypes := 3
+State_FuncClassEmit := 4
+State_PreGetUse := 5
+State_GetUse := 6
+State_PostGetUse := 7
+State_DestructCheck := 8
+State_DestructGet := 9
+State_Optimize := 10
+State_PostOptimize := 11
+State_ErrorCheck := 12
+State_PrePrint := 13

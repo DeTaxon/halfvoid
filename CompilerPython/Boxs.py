@@ -1504,6 +1504,8 @@ class BoxMetodCall:
     def Check(self):
 	self.Param.Check()
         self.ClassType = self.Param.Type
+	if self.ClassType == None:
+		raise ValueError("error {} {}".format(self.InFile,self.Line))
 	if self.ClassType.Type != "class":
 		if self.ClassType.Base.Type != "class":
 			raise ValueError("Not a class")

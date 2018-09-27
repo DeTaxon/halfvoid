@@ -600,7 +600,6 @@ BoxFunc := class extend Object
 		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(","))
 
 		IsParRef := false
-		indType := 0
 		while Stuff.NotEmpty()
 		{
 			if Stuff[0].GetValue() == ","
@@ -608,7 +607,6 @@ BoxFunc := class extend Object
 				if Pars.Size() == 2
 				{
 					MayType := ParseType(Pars[0])
-					indType += 1
 					MayName := ""
 
 					if MayType == null and not ContainTType(Pars[0])
@@ -620,7 +618,7 @@ BoxFunc := class extend Object
 						{
 							if not IsTempl
 							{
-								printf("can not parse type at %i\n",indType)
+								printf("can not parse type\n")
 								return false
 							}
 						}

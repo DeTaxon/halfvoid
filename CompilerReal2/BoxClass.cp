@@ -224,7 +224,6 @@ BoxClass := class extend Object
 
 	this := !(Object^ item, BoxClass^ par,Object^ extItem) -> void 
 	{
-		Line = item.Line	
 		ExtendObject = extItem
 
 		Down = item
@@ -252,14 +251,14 @@ BoxClass := class extend Object
 			if iterH.GetValue() == "virtual" ContainVirtual = true
 			iterH = iterH.Right
 		}
-		WorkBag.Push(this&,State_Syntax)
+		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_PrePrint)
 		Classes.Push(this&)
 
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Syntax
+		if pri == State_Start
 		{
 			if ExtendObject != null{
 				newType := ParseType(ExtendObject)
