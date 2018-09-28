@@ -32,7 +32,6 @@ main := !(int argc,char^^ argv) -> int
 		while endI.Right != null 
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
-	printf("here %p\n",mainFunc)
 
 	if mainFunc != null 
 		WorkBag.Push(mainFunc.Down,State_Start)

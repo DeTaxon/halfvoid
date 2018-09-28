@@ -42,6 +42,7 @@ ImportCmd := class extend Object
 	this := !(string toAdd) ->void
 	{
 		toImport = toAdd
+		WorkBag.Push(this&,State_Load)
 	}
 	GetValue := virtual !() -> string
 	{

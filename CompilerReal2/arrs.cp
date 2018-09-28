@@ -1,7 +1,10 @@
-Node := class !{T}
+Node := class .{@T}
 {
 	Data := T
 	Next := Node.{T}^
+	this := !() -> void
+	{
+	}
 	this := !(T To) -> void
 	{
 		Data = To
@@ -14,20 +17,36 @@ Node := class !{T}
 	}
 }
 
-Stack := class !{T}
+
+StackTypeIter := class .{@T}
+{
+	iter := Node.{T}^
+	this := !(Node.{T}^ toStart) -> void {	iter = toStart }
+	"^" := !() -> ref T { return iter.Data }
+	Inc := !() -> void { iter = iter.Next }
+	IsEnd := !() -> bool { return iter == null }
+}
+
+Stack := class .{@T}
 {
 	Start := Node.{T}^
+	itSize := int
 	this := !() -> void
 	{
 		Start = null
+		itSize = 0
+	}
+	Emplace := !() -> void
+	{
+		newItm := new Node.{T}() //TODO: vargs
+		newItm.Next = Start
+		Start = newItm
+		itSize++
 	}
 	Push := !(T a) -> int
 	{
-		if Start == null {
-			Start = new Node.{T}(a)
-		} else {
-			Start = new Node.{T}(a,Start)
-		}
+		Start = new Node.{T}(a,Start)
+		itSize++
 		return 0
 	}
 	Pop := !() -> T
@@ -35,33 +54,21 @@ Stack := class !{T}
 		Prev := Start.Data
 		Later := Start
 		Start = Start.Next
-		free(Later)
-		return Prev
-	}
-	JustPopFront := !() -> void
-	{
-		Later := Start
-		Start = Start.Next
-		free(Later)
-	}
-	PopFront := !() -> T
-	{
-		Prev := Start.Data
-		Later := Start
-		Start = Start.Next
-		free(Later)
+		delete Later
+		itSize--
 		return Prev
 	}
 	Size := !() -> int
 	{
-		Count := 0
-		Iter := Start
-		while Iter 
-		{
-			Count += 1
-			Iter = Iter.Next
-		}
-		return Count
+		return itSize
+		//Count := 0
+		//Iter := Start
+		//while Iter 
+		//{
+		//	Count += 1
+		//	Iter = Iter.Next
+		//}
+		//return Count
 	}
 	Clean := !() -> void
 	{
@@ -70,8 +77,14 @@ Stack := class !{T}
 		{
 			Iter = Start
 			Start = Iter.Next
-			free(Iter)
+			delete Iter
 		}
+		itSize = 0
+
+	}
+	"~this" := !() -> void
+	{
+		Clean()
 	}
 	NotEmpty := !() -> bool
 	{
@@ -79,7 +92,7 @@ Stack := class !{T}
 	}
 	Empty := !() -> bool
 	{
-		return Start == null
+		return Start == null 
 	}
 	"[]" := !(int Ind) -> ref T
 	{
@@ -94,7 +107,7 @@ Stack := class !{T}
 	}
 	ToArray := !() -> T[]
 	{
-		Si := this.Size()
+		Si := itSize
 		if Si == 0 return null
 		ToOut := new T[Si]
 		Iter := Start
@@ -109,20 +122,15 @@ Stack := class !{T}
 	}
 	"=" := !(Stack.{T} toSet) -> void
 	{
-		Start = toSet.Start
+		for toSet Push(it)
 	}
-	//"for" := !() -> ref T
-	//{
-	//	Iter := Start
-	//	while Iter
-	//	{	
-	//		block(Iter.Data)
-	//		Iter = Iter.Next
-	//	}
-	//}
+	"~For" := !() -> StackTypeIter.{T}
+	{
+		return StackTypeIter.{T}(Start)
+	}
 }
 
-Queue := class !{T} extend Stack.{T}
+Queue := class .{@T} extend Stack.{T}
 {
 	this := !() -> void
 	{
@@ -139,6 +147,7 @@ Queue := class !{T} extend Stack.{T}
 		}else{
 			Start = new Node.{T}(a,Start)
 		}
+		itSize++
 		return 0
 	}
 	Push := !(T a) -> int
@@ -147,22 +156,29 @@ Queue := class !{T} extend Stack.{T}
 			Start = new Node.{T}(a)
 		} else {
 			Iter := Start
-			while Iter.Next Iter = Iter.Next
+			while Iter.Next {Iter = Iter.Next}
 			Iter.Next = new Node.{T}(a)
 		}
+		itSize++
 		return 0
 	}
+	"=" := !(Stack.{T} toSet) -> void
+	{
+		for toSet Push(it)
+	}
 }
-QueueSet := class !{T} extend Stack.{T}
+QueueSet := class .{@T} extend Stack.{T}
 {
 	this := !() -> void
 	{
 		Start = null
+		itSize = 0
 	}
 	Push := !(T a) -> int
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
+			itSize++
 		} else {
 			Iter := Start
 			while Iter.Next 
@@ -175,12 +191,72 @@ QueueSet := class !{T} extend Stack.{T}
 			if Iter.Data == a
 				return 0
 			Iter.Next = new Node.{T}(a)
+			itSize++
 		}
 		return 0
 	}
+	GetPos := !(T  itm) -> int
+	{
+		i := 0
+		for this
+		{
+			if it == itm return i
+			i++
+		}
+		return -1
+	}
+	Contain := !(T itm) -> bool
+	{
+		for this 
+			if it == itm return true
+		return false
+	}
+	"<<" := !(T itm) -> ref QueueSet.{T}
+	{
+		Push(itm)
+		return this
+	}
+	"<<<" := !(T itm) -> int
+	{
+		for it : this , i : 0
+			if it == itm return i
+		if Start == null
+		{
+			Start = new Node.{T}()
+			Start.Data <<< itm
+			itSize++
+			return 0
+		}
+		itr := Start
+		while itr.Next != null	itr = itr.Next
+		itr.Next = new Node.{T}()
+		itr = itr.Next
+		itr.Data <<< itm
+		return itSize++
+	}
+	"<<<" := !(QueueSet.{T} toAdd) -> void
+	{
+		itSize = toAdd.itSize
+		Start = toAdd.Start
+		toAdd.itSize = 0
+		toAdd.Start = null
+	}
+	"==" := !(QueueSet.{T} toCmp) -> bool
+	{
+		if toCmp.Size() != itSize return false
+
+		for this
+			if not toCmp.Contain(it) return false
+
+		return true
+	}
+	"=" := !(Stack.{T} toSet) -> void
+	{
+		for toSet Push(it)
+	}
 }
 
-DoubleNode := class !{TKey,TValue}
+DoubleNode := class .{@TKey,@TValue}
 {
 	Key := TKey
 	Value := TValue
@@ -199,10 +275,12 @@ DoubleNode := class !{TKey,TValue}
 	}
 }
 
-Map := class !{TKey,TValue}
+Map := class .{@TKey,@TValue}
 {
 	Start := DoubleNode.{TKey,TValue}^
-
+	this := !() {
+		Start = null
+	}
 	"[]" := !(TKey look) -> ref TValue
 	{
 		iter := Start
@@ -214,17 +292,8 @@ Map := class !{TKey,TValue}
 			}
 			iter = iter.Next
 		}
-		if Start == null
-		{
-			Start = new DoubleNode.{TKey,TValue}(look,Start)
-			iter = Start
-		}else{
-			iter = Start
-			while iter.Next != null  iter = iter.Next
-			iter.Next = new DoubleNode.{TKey,TValue}(look,iter.Next)
-			iter = iter.Next
-		}
-		return iter.Value
+		Start = new DoubleNode.{TKey,TValue}(look,Start)
+		return Start.Value
 	}
 	"=" := !(Map.{TKey,TValue} toSet) ->void
 	{
@@ -243,23 +312,6 @@ Map := class !{TKey,TValue}
 		}
 		Start = new DoubleNode.{TKey,TValue}(k,Start)
 		Start.Value = v
-	}
-	Empty := !() -> bool
-	{
-		return Start == null
-	}
-	Size := !() -> int
-	{
-		i := 0
-		iter := Start
-
-		while iter != null
-		{
-			i += 1
-			iter = iter.Next
-		}
-
-		return i
 	}
 	Exist := !(TKey key) -> bool
 	{

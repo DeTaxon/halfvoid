@@ -1,3 +1,4 @@
+State_Load := 0
 State_Start := 1
 State_Syntax := 2
 State_CheckTypes := 3
