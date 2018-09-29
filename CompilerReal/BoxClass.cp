@@ -99,14 +99,21 @@ BoxClassTemplate := class extend Object
 	}
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
+		printf("from\n")
 		for i : Classes.Size()
 		{	
 			if Classes[i].IsSameConsts(stuf)
+			{
+				printf("to\n")
 				return Classes[i].ClassType
+			}
 		}
 		newConsts := Queue.{ObjConstHolder^}()
 		if not IsEqConsts(ConstTree,stuf,newConsts)
+		{
+				printf("to\n")
 			return null
+		}
 
 		newTree := ClassTree.Clone()
 		newTree.Up = this&
@@ -124,9 +131,17 @@ BoxClassTemplate := class extend Object
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
 		}
-
-		newClass := new BoxClass(treeIter,inher,ExtendTree.Clone())
+		
+		newEx := Object^
+		newEx = null
+		if ExtendTree != null{
+			newEx = ExtendTree.Clone()
+		}
+		newClass := new BoxClass(treeIter,inher,newEx)
 		newClass.Up = this&
+		if newEx != null{
+			newEx.Up = newClass
+		}
 
 		newClass.Right = Down
 		if Down != null Down.Left = newClass

@@ -248,11 +248,17 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 	iter := DaFile->{Object^}
 	Adder := DaFile->{Object^}
 
+	printf("hahahah2\n")
 	LineCounter := 0
 	while Toks.NotEmpty()
 	{
 	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12
 		Tok := Toks.Pop()
+		if Tok.Id > 12
+		{
+			printf("cant not lex file %s at %i\n",filename.itStr,LineCounter)
+			return null			
+		}
 
 		if Tok.Id == 12
 		{
@@ -438,8 +444,8 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 			}
 			
 		}
-		free(Tok)
 	}
+	printf("hahahah3\n")
 	DaFile.Down = DaFile.Right
 	iter = DaFile.Down
 	iter.Left = null

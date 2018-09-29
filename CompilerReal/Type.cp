@@ -203,7 +203,6 @@ ParseType := !(Object^ Node) -> Type^
 					}
 					iterR = iterR.Right
 				}
-
 				return asT.GetClass(Objs)
 			}
 			return null

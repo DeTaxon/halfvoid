@@ -248,7 +248,6 @@ IsKeyword := !(char^ W) -> bool
 
 TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 {
-	printf("wubwubwbu\n")
 	DaFile := new BoxFile(filename)
 	iter := DaFile->{Object^}
 	Adder := DaFile->{Object^}

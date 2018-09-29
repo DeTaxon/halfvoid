@@ -1,5 +1,6 @@
 #import "Path.cp"
 #import "Tree.cp"
+#import "Type.cp"
 
 Ob := Object^
 main := !(int argc,char^^ argv) -> int 

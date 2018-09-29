@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 
 Type := class {
 	Id := int

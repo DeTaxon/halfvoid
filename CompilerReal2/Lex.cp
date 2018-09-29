@@ -1,3 +1,5 @@
+#import "arrs.cp"
+#import "Path.cp"
 
 Line := class {
 	GoTo := int[256]
