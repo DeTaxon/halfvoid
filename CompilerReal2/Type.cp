@@ -1,4 +1,6 @@
 #import "Tree.cp"
+#import "BoxClass.cp"
+#import "Globals.cp"
 
 
 Type := class {
@@ -374,7 +376,7 @@ TypeStandart := class extend Type{
 		IRName = Name 
 		ItSize = siz
 		ItAlign = Aln
-		Clean()
+		this.Clean()
 	}
 	GetType := virtual !() -> string
 	{

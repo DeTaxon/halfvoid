@@ -925,7 +925,7 @@ BoxFuncBody := class extend BoxFunc
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
-		if IsInvalid EmitError("can not parse function header\n" + "func name " + FuncName + "\n")
+		if IsInvalid inPars.EmitError("can not parse function header\n" + "func name " + FuncName + "\n")
 
 		IsSuffix = IsSuf
 		for c : FuncName
@@ -988,7 +988,7 @@ BoxFuncBody := class extend BoxFunc
 							fCall := MakeSimpleCall(func2,pCall)
 							AddFuncCall(fCall)
 						}else{
-							EmitError("compiler error 82346\n")
+							//EmitError("compiler error 82346\n")
 						}
 					}
 					WorkBag.Push(this&,State_PrePrint)

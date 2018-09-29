@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 
 ObjResult := class extend Object

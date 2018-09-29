@@ -99,19 +99,16 @@ BoxClassTemplate := class extend Object
 	}
 	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
 	{
-		printf("from\n")
 		for i : Classes.Size()
 		{	
 			if Classes[i].IsSameConsts(stuf)
 			{
-				printf("to\n")
 				return Classes[i].ClassType
 			}
 		}
 		newConsts := Queue.{ObjConstHolder^}()
 		if not IsEqConsts(ConstTree,stuf,newConsts)
 		{
-				printf("to\n")
 			return null
 		}
 

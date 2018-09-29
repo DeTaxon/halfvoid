@@ -1,3 +1,7 @@
+#import "Tree.cp"
+#import "BuiltInFuncs.cp"
+#import "ConstTemp.cp"
+#import "LocalParam.cp"
 
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {

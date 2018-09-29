@@ -195,7 +195,7 @@ ParseType := !(Object^ Node) -> Type^
 							if val != null Objs.Push(val)
 							else 
 							{
-								ErrorLog.Push("can not create class\n")
+								Node.EmitError("can not create class\n")
 							}
 						}else{
 							Objs.Push(new ObjType(isType))
@@ -203,6 +203,7 @@ ParseType := !(Object^ Node) -> Type^
 					}
 					iterR = iterR.Right
 				}
+				if Objs.Size() == 0 return null
 				return asT.GetClass(Objs)
 			}
 			return null

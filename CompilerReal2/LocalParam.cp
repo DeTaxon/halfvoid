@@ -1,3 +1,7 @@
+#import "Tree.cp"
+#import "StandartObjects.cp"
+#import "BoxClass.cp"
+
 MemParam := class extend ObjResult
 {
 	GetValue := virtual !() -> string

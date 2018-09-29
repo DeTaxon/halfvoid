@@ -1,5 +1,6 @@
+#import "arrs.cp"
 
-Set := class !{T} extend Stack.{T}
+Set := class .{@T} extend Stack.{T}
 {
 	Insert := !(T a) -> void
 	{

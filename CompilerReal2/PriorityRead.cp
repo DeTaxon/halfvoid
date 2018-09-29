@@ -1,3 +1,5 @@
+#import "Tree.cp"
+#import "arrs.cp"
 
 MiniMachineNode := class 
 {

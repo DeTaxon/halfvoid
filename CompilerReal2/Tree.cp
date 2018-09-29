@@ -1,4 +1,5 @@
 #import "arrs.cp"
+#import "Type.cp"
 #import "Path.cp"
 #import "file.cp"
 #import "Lex.cp"

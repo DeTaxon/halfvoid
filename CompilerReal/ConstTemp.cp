@@ -1,6 +1,10 @@
 
 IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
+	for i : res.Size()
+	{
+		if res[i] == null return null
+	}
 	if obj == null return null
 	
 	if obj.GetValue() == "~ind"
@@ -144,6 +148,11 @@ MakeGoodConsts := !(Object^ l) -> bool
 
 IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) -> bool
 {
+	for i : consts.Size()
+	{
+		if consts[i] == null return false
+	}
+	if l == null return false
 	re := bool
 	iter := l.Down
 
@@ -183,6 +192,7 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 					if not found return false
 
 				}else{
+					if consts.Size() < i return false
 					if consts[i].GetValue() == "~type"
 					{
 						asNeed := consts[i]->{ObjType^}

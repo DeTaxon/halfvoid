@@ -1,3 +1,6 @@
+#import "BoxFunc.cp"
+#import "Type.cp"
+
 BuiltInFunc := class extend BoxFunc
 {
 	ToExe := string

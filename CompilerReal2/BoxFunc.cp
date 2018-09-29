@@ -1,3 +1,7 @@
+#import "Tree.cp"
+#import "ConstTemp.cp"
+#import "AllocBox.cp"
+
 ParseFuncDataR := !(Object^ item) -> Object^
 {
 	iter := item.Down

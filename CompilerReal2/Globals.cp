@@ -1,3 +1,8 @@
+#import "Tree.cp"
+#import "BoxBlock.cp"
+#import "arrsSpecial.cp"
+#import "BuiltInFuncs.cp"
+#import "PriorityRead.cp"
 
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
