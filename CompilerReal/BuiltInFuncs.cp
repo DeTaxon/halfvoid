@@ -582,6 +582,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 			if pars[0].Base == GetType("void") return 1
 			if pars[1].Base == GetType("void") return 1
 			if pars[1].Base == pars[0].Base return 0
+			if pars[1].GetType() == "point" return TypeCmp(pars[1],pars[0])
 		}else
 		{
 			if pars[1].Base == pars[0].Base return 0

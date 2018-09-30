@@ -427,7 +427,7 @@ TypePointVoidFatP := class extend TypeFatArr
 {
 	this := !(Type^ nBase) -> void
 	{
-		Base = nBase
+		this.Base = nBase
 	}
 	GetName := virtual !() -> string
 	{
