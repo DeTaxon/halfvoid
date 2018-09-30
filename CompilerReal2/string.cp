@@ -2,6 +2,19 @@
 
 BigBuff := char[4096]
 
+StrIter := class 
+{
+	start := char^
+	this := !(char^ a) -> void	{ start = a	}
+	"^" := !() -> ref char {	return start^	}
+	Inc := !() -> void {	start = start[1]&	}
+	IsEnd := !() -> bool	{	return start[0] == 0	}
+}
+"~For" := !(char^ x) -> StrIter
+{
+	return StrIter(x)
+}
+
 CreatedStrs := Stack.{char^}
 
 CleanStrs := !() -> void
@@ -39,8 +52,8 @@ CleanStrs := !() -> void
 }
 "+" := !(char^ a, int b) -> char^
 {
-	sprintf(BigBuff,"%s%i",a,b)
-	return BigBuff[0]&.Copy()
+	sprintf(BigBuff[0]&,"%s%i",a,b)
+	return StrCopy(BigBuff[0]&)
 }
 "+" := !(char^ a, float b) -> char^
 {
@@ -91,7 +104,7 @@ Copy := !(char^ this) -> char^
 ChrInStr := !(int chr,char^ str) -> bool
 {
 	i := 0
-	while str[i] 
+	while str[i] != 0 
 	{
 		if chr == str[i] return true
 		i += 1
@@ -104,12 +117,12 @@ DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
 	Buf := char[1024]
 	i := 0
 	j := 0
-	while what[j]
+	while what[j] != 0
 	{
 		if what[j] == to
 		{
 			Buf[i] = 0 
-			if i B.Push(StrCopy(Buf))
+			if i B.Push(StrCopy(Buf[0]&))
 			i = 0
 			j += 1
 		} else
@@ -122,7 +135,7 @@ DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
 	if i 
 	{
 		Buf[i] = 0
-		B.Push(StrCopy(Buf))
+		B.Push(StrCopy(Buf[0]&))
 	}		
 }
 DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
@@ -130,12 +143,12 @@ DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
 	Buf := char[1024]
 	i := 0
 	j := 0
-	while what[j]
+	while what[j] != 0
 	{
 		if ChrInStr(what[j],to)
 		{
 			Buf[i] = 0
-			if i B.Push(StrCopy(Buf))
+			if i B.Push(StrCopy(Buf[0]&))
 			i = 0
 			j += 1
 		} else
@@ -148,7 +161,7 @@ DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
 	if i 
 	{
 		Buf[i] = 0
-		B.Push(StrCopy(Buf))
+		B.Push(StrCopy(Buf[0]&))
 	}		
 }
 

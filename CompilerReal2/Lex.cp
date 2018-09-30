@@ -1,5 +1,7 @@
 #import "arrs.cp"
 #import "Path.cp"
+#import "string.cp"
+#import "file.cp"
 
 Line := class {
 	GoTo := int[256]
@@ -77,7 +79,9 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	//char
 	PreLines[0].GoTo['\''] = 24
-	for i : !['a'..'z','A'..'Z','0'..'9'] PreLines[24].GoTo[i] = 25
+	for i : 'a'..'z' PreLines[24].GoTo[i] = 25
+	for i : 'A'..'Z' PreLines[24].GoTo[i] = 25
+	for i : '0'..'9' PreLines[24].GoTo[i] = 25
 	for i : " #/\".-@$^_&;?,|!()[]+*" PreLines[24].GoTo[i] = 25
 	PreLines[24].GoTo['\\'] = 27
 	for i : 255 PreLines[27].GoTo[i] = 25
@@ -124,30 +128,44 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	
 
 	// word id 1
-	for i : !['a'..'z','A'..'Z','_','$','@','#'] PreLines[0].GoTo[i] = 2
-	for i : !['a'..'z','A'..'Z','0'..'9','_'] 	PreLines[2].GoTo[i] = 2
+	for i : 'a'..'z' PreLines[0].GoTo[i] = 2
+	for i : 'A'..'Z' PreLines[0].GoTo[i] = 2
+	for i : "_$@#" PreLines[0].GoTo[i] = 2
+	for i : "_"	 	PreLines[2].GoTo[i] = 2
+	for i : 'a'..'z' 	PreLines[2].GoTo[i] = 2
+	for i : 'A'..'Z' 	PreLines[2].GoTo[i] = 2
+	for i : '0'..'9' 	PreLines[2].GoTo[i] = 2
 	PreLines[2].Id = 1
 
 	//number
-	for i : !['0'..'9'] PreLines[0].GoTo[i] = 3
-	for i : !['a'..'z','A'..'Z'] PreLines[3].GoTo[i] = 7
-	//for i : !['0'..'9'] PreLines[3].GoTo[i] = 3
+	for i : '0'..'9' PreLines[0].GoTo[i] = 3
+	for i : 'a'..'z' PreLines[3].GoTo[i] = 7
+	for i : 'A'..'Z' PreLines[3].GoTo[i] = 7
+	//for i : '0'..'9' PreLines[3].GoTo[i] = 3
 	
 	PreLines[3].GoTo['x'] = 4
 	PreLines[3].Id = 3
 	
-	for i : !['a'..'f','A'..'F','0'..'9','_'] PreLines[4].GoTo[i] = 5
+	for i : 'a'..'f' PreLines[4].GoTo[i] = 5
+	for i : 'A'..'F' PreLines[4].GoTo[i] = 5
+	for i : '0'..'9' PreLines[4].GoTo[i] = 5
+	for i : "_" PreLines[4].GoTo[i] = 5
 	PreLines[4].Id = 4
-	for i : !['a'..'f','A'..'F','0'..'9','_'] PreLines[5].GoTo[i] = 5
+	for i : 'a'..'f'  PreLines[5].GoTo[i] = 5
+	for i : 'A'..'F' PreLines[5].GoTo[i] = 5
+	for i : '0'..'9' PreLines[5].GoTo[i] = 5
+	for i : "_" PreLines[5].GoTo[i] = 5
 	PreLines[5].Id = 2
 	
-	for i : !['0'..'9'] PreLines[3].GoTo[i] = 6
+	for i : '0'..'9' PreLines[3].GoTo[i] = 6
 
-	for i : !['0'..'9'] PreLines[6].GoTo[i] = 6
+	for i : '0'..'9' PreLines[6].GoTo[i] = 6
 	PreLines[6].Id = 3
 
-	for i : !['a'..'z','A'..'Z'] PreLines[6].GoTo[i] = 7
-	for i : !['a'..'z','A'..'Z'] PreLines[7].GoTo[i] = 7
+	for i : 'a'..'z' PreLines[6].GoTo[i] = 7
+	for i : 'A'..'Z' PreLines[6].GoTo[i] = 7
+	for i : 'a'..'z' PreLines[7].GoTo[i] = 7
+	for i : 'A'..'Z' PreLines[7].GoTo[i] = 7
 	PreLines[7].Id = 4
 
 	PreLines[6].GoTo['.'] = 8
@@ -161,19 +179,23 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	for i : '0'..'9' PreLines[10].GoTo[i] = 10
 	PreLines[10].Id = 5
 	
-	for i : !['a'..'z','A'..'Z'] PreLines[10].GoTo[i] = 11
-	for i : !['a'..'z','A'..'Z'] PreLines[11].GoTo[i] = 11
+	for i : 'a'..'z' PreLines[10].GoTo[i] = 11
+	for i : 'A'..'Z' PreLines[10].GoTo[i] = 11
+	for i : 'a'..'z' PreLines[11].GoTo[i] = 11
+	for i : 'A'..'Z' PreLines[11].GoTo[i] = 11
 	PreLines[11].Id = 6
 
-	for i : !['e'] PreLines[10].GoTo[i] = 12
-	for i : !['-','+'] PreLines[12].GoTo[i] = 13
-	for i : !['0'..'9'] PreLines[12].GoTo[i] = 14
-	for i : !['0'..'9'] PreLines[13].GoTo[i] = 14
-	for i : !['0'..'9'] PreLines[14].GoTo[i] = 14
+	for i : "e" PreLines[10].GoTo[i] = 12
+	for i : "-+" PreLines[12].GoTo[i] = 13
+	for i : '0'..'9' PreLines[12].GoTo[i] = 14
+	for i : '0'..'9' PreLines[13].GoTo[i] = 14
+	for i : '0'..'9' PreLines[14].GoTo[i] = 14
 	PreLines[14].Id = 7
 	
-	for i : !['A'..'Z','a'..'z'] PreLines[14].GoTo[i] = 15
-	for i : !['A'..'Z','a'..'z'] PreLines[15].GoTo[i] = 15
+	for i : 'A'..'Z' PreLines[14].GoTo[i] = 15
+	for i : 'a'..'z' PreLines[14].GoTo[i] = 15
+	for i : 'A'..'Z' PreLines[15].GoTo[i] = 15
+	for i : 'a'..'z' PreLines[15].GoTo[i] = 15
 	PreLines[15].Id = 8
 	
 	begin.Lines = PreLines.ToArray()
@@ -190,7 +212,7 @@ GenerateToken := !(char^ Buuf, int id) -> Token^
 	i := 0
 	res := new Token
 	res.Id = id
-	while Buuf[i]
+	while Buuf[i] != 0
 	{
 		res.Buff[i] = Buuf[i]
 		i += 1
@@ -268,7 +290,7 @@ GetTokensFromFile := !(Path Name, Machine M, Queue.{Token^} ToFill) -> bool
 						k -= 1	
 					}
 					Buffer[RealSize] = 0
-					ToFill.Push(GenerateToken(Buffer,LastGoodId))
+					ToFill.Push(GenerateToken(Buffer[0]&,LastGoodId))
 					//printf("%s \n",Buffer)
 					pos = 0
 					LastGoodPos = 0

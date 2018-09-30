@@ -1,3 +1,5 @@
+#import "Tree.cp"
+#import "main.cp"
 
 Files := Queue.{BoxFile^}
 

@@ -700,7 +700,7 @@ GetType := !(string Name) -> Type^
 	{
 		if Def.ItName == Name return Def.ItType
 	}
-	return null
+	return null->{Type^}
 }
 
 CreateStandartTypes := !() -> void

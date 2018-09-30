@@ -15,7 +15,7 @@ BuiltInFunc := class extend BoxFunc
 		AsmLine := ToExe
 
 		i := 0
-		while AsmLine[i]
+		while AsmLine[i] != 0
 		{
 			if AsmLine[i] == '#'
 			{
@@ -41,9 +41,9 @@ BuiltInSuffix := class extend BuiltInFunc
 
 		IsRefs := bool[1]
 		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+		MyFuncType = GetFuncType(PP,IsRefs[0]&,retV,false,false)
 
-		CheckIsSelf()
+		this.CheckIsSelf()
 	}
 }
 
@@ -58,7 +58,7 @@ BuiltInFuncZero := class extend BuiltInFunc
 		PP := Queue.{Type^}()
 		MyFuncType = GetFuncType(PP,null->{bool^},retV,RRetRef,false)
 
-		CheckIsSelf()
+		this.CheckIsSelf()
 	}
 }
 
@@ -80,7 +80,7 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 
 		MyFuncType = GetFuncType(PP,null->{bool^},retV,false,false)
 
-		CheckIsSelf()
+		this.CheckIsSelf()
 	}
 }
 
@@ -105,9 +105,9 @@ BuiltInFuncUno := class extend BuiltInFunc
 
 		IsRefs := bool[1]
 		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+		MyFuncType = GetFuncType(PP,IsRefs[0]&,retV,RRetRef,false)
 
-		CheckIsSelf()
+		this.CheckIsSelf()
 	}
 }
 BuiltInFuncBinar := class extend BuiltInFunc
@@ -141,8 +141,8 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		IsRefs := bool[2]
 		IsRefs[0] = lRef
 		IsRefs[1] = rRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
-		CheckIsSelf()
+		MyFuncType = GetFuncType(PP,IsRefs[0]&,retV,false,false)
+		this.CheckIsSelf()
 	}
 }
 BuiltInFuncMega := class extend BuiltInFunc
@@ -1317,11 +1317,16 @@ CreateBuiltIns := !() -> void
 	VoidP := VoidT.GetPoint()
 	DoubleT := GetType("double")
 
+	IsSM := string[2]
+	IsSM[0] = "s"
+	IsSM[1] = "u"
 
 	for i : ![8,16,32,64] for j : ![8,16,32,64]
-	for IsS1 : !["s","u"]
-	for IsS2 : !["s","u"]
+	for IsS1I : 2
+	for IsS2I : 2
 	{
+		IsS1 := IsSM[IsS1I]
+		IsS2 := IsSM[IsS2I]
 		from := GetType(IsS1 + i)
 		to := GetType(IsS2 + j)
 		if i > j
@@ -1342,10 +1347,15 @@ CreateBuiltIns := !() -> void
 		//}
 	}
 
+	IsSM := string[2]
+	IsSM[0] = "s"
+	IsSM[1] = "u"
+
 	for ![8,16,32,64]
 	{
-		for IsS : !["s","u"]
+		for IsSI : 2
 		{
+			IsS := IsSM[IsSI]
 			PType := GetType(IsS + it) // u8 s32 ...
 			BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i" + it + " #2, i" + it + "* #1\n"
 												+"#0 = add i" + it + " #2,0\n"))
@@ -1412,8 +1422,13 @@ CreateBuiltIns := !() -> void
 											"OnEnd##:\n" +
 											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
 	
-	for !["float","double"] // half?
+	flts := string[2]
+	flts[0] = "float"
+	flts[1] = "double"
+
+	for iii : 2 // half?
 	{
+		it := flts[iii]
 		PType := GetType(it)
 		BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store " + it + " #2, " + it + "* #1\n"
 											+"#0 = fadd " + it + " #2,0.0\n"))

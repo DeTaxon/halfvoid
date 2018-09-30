@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "StringContainer.cp"
 
 
 ObjResult := class extend Object
@@ -92,7 +93,6 @@ ObjInt := class extend ObjConst
 	"this" := !(int Value) -> void
 	{
 		MyInt = Value
-		Clean()
 		ResultType = GetType("int")
 	}
 	GetValue := virtual !() -> char^
@@ -163,7 +163,6 @@ ObjDouble := class extend ObjConst
 	"this" := !(double Value) -> void
 	{
 		MyDouble = Value
-		Clean()
 		ResultType = GetType("double")
 	}
 	GetValue := virtual !() -> char^
@@ -204,7 +203,6 @@ ObjStr := class extend ObjConst
 	MyTmpId := int
 	this := !(char^ str) -> void
 	{
-		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
 		MyTmpId = GetNewId()
 		ResultType = GetType("string")
@@ -256,7 +254,6 @@ ObjSymbol := class extend ObjConst
 	"this" := !(char^ sym) -> void
 	{
 		MySymbol = sym
-		Clean()
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -358,7 +355,6 @@ ObjCmd := class extend ObjConst
 	MyStr := char^
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		MyStr = st
 	}
 	GetValue := virtual !() -> char^
@@ -409,7 +405,6 @@ ObjKeyword := class extend ObjConst
 	MyStr := char^
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		MyStr = st
 	}
 	GetValue := virtual !() -> char^

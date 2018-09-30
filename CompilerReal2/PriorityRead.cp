@@ -47,7 +47,7 @@ PriorityBag := class
 					if CurLine[i] == '\"'
 					{
 						buffer[j] = 0
-						CurWords.Push(buffer.Copy())			
+						CurWords.Push(StrCopy(buffer[0]&))			
 						j = 0
 					}else
 					{

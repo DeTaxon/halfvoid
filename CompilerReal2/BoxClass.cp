@@ -280,17 +280,20 @@ BoxClass := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			if this.Parent != null
+			parentTree := this.Parent
+			while parentTree != null
 			{
-				Size := this.Parent.Params.Size()
+				Size := parentTree.Params.Size()
 				NotMineParams = Size
 				for i : Size
 				{
-					Params.PushFront(this.Parent.Params[Size - i - 1])
+					Params.PushFront(parentTree.Params[Size - i - 1])
 				}
-				for i : this.Parent.FakeParams.Size() FakeParams.PushFront(this.Parent.FakeParams[i])
-				if this.Parent.ContainVirtual 
+				for i : parentTree.FakeParams.Size() FakeParams.PushFront(parentTree.FakeParams[i])
+				if parentTree.ContainVirtual 
 					ContainVirtual = true
+
+				parentTree = parentTree.Parent
 			}
 
 			iterH := Down.Down

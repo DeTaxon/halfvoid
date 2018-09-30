@@ -803,7 +803,7 @@ NaturalCall := class extend SomeFuncCall
 				if preRet == null
 				{
 					printf("wut %i %s %s\n",i,iter.GetType().GetName(),FType.Pars[i].GetName())
-					EmitError("compiler bug\n")
+					iter.EmitError("compiler bug\n")
 				}else{
 					iter = preRet
 				}

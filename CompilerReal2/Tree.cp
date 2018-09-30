@@ -3,6 +3,10 @@
 #import "Path.cp"
 #import "file.cp"
 #import "Lex.cp"
+#import "CommonObjects.cp"
+#import "StateParse.cp"
+#import "string.cp"
+#import "ObjIndent.cp"
 
 
 Object := class{
@@ -290,7 +294,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 		}
 		if Tok.Id == 10
 		{
-			NS := new ObjSymbol(Tok.Buff.Copy())
+			NS := new ObjSymbol(StrCopy(Tok.Buff[0]&))
 			Adder = PushObject(Adder,NS)
 		}
 		if Tok.Id == 9
@@ -316,7 +320,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 				}	
 			}
 			DaBuff[j] = 0
-			NS := new ObjStr(DaBuff.Copy())
+			NS := new ObjStr(StrCopy(DaBuff[0]&))
 			Adder = PushObject(Adder,NS)
 		}
 		if Tok.Id == 1
@@ -338,28 +342,28 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 					}
 				}
 			}else{
-				if Tok.Buff == "null"
+				if Tok.Buff[0]& == "null"
 				{
 					NS := new ObjNULL()
 					Adder = PushObject(Adder,NS)
 				}else
 				{
-					if IsKeyword(Tok.Buff)
+					if IsKeyword(Tok.Buff[0]&)
 					{
 						NS := new ObjKeyword(Tok.Buff.Copy())
 						Adder = PushObject(Adder,NS)
 					}else{
-						if Tok.Buff == "true" or Tok.Buff == "false"
+						if Tok.Buff[0]& == "true" or Tok.Buff[0]& == "false"
 						{
 							NS := new ObjBool(Tok.Buff == "true")
 							Adder = PushObject(Adder,NS)
 						}else{
-							if Tok.Buff == "continue" or Tok.Buff == "break"
+							if Tok.Buff[0]& == "continue" or Tok.Buff[0]& == "break"
 							{
-								NS := new WayControl(Tok.Buff)
+								NS := new WayControl(StrCopy(Tok.Buff[0]&))
 								Adder = PushObject(Adder,NS)
 							}else{
-								NS := new ObjIndent(Tok.Buff.Copy())
+								NS := new ObjIndent(StrCopy(Tok.Buff[0]&))
 								Adder = PushObject(Adder,NS)
 							}
 						}

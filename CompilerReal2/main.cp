@@ -1,6 +1,7 @@
 #import "Path.cp"
 #import "Tree.cp"
 #import "Type.cp"
+#import "FileLoader.cp"
 
 Ob := Object^
 main := !(int argc,char^^ argv) -> int 
@@ -108,7 +109,7 @@ GetObjectsFromFile := !(Path fileName) -> Object^
 {
 	Buf := Queue.{Token^}()
 	if not GetTokensFromFile(fileName, LexMachine^,Buf)
-		return null
+		return null->{Object^}
 
 	iterC := Buf.Start
 	while iterC != null
@@ -116,7 +117,7 @@ GetObjectsFromFile := !(Path fileName) -> Object^
 		iterG := PriorityData.Opers.Start
 		while iterG != null
 		{
-			if iterG.Data == iterC.Data.Buff{
+			if iterG.Data == iterC.Data.Buff[0]&{
 				iterC.Data.Id = 10
 			}
 			iterG = iterG.Next

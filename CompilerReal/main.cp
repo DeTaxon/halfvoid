@@ -22,6 +22,7 @@ main := !(int argc,char^^ argv) -> int
 
 	libFile := LoadFile(Path("CompilerReal2/lib.cp"))
 	ForcedLibs.Push(libFile)
+	ForcedLibs.Push(LoadFile(Path("CompilerReal2/Tree.cp")))
 	
 	WorkBag.Push(Ob,State_Start)
 	

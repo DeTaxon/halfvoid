@@ -1,3 +1,5 @@
+#import "string.cp"
+
 fopen := !(char^ Name,char^ s) -> void^ declare
 fclose := !(void^ hndl) -> void declare
 fgets := !(char^ buf,int Size,void^ Hnd) -> char^ declare
@@ -44,8 +46,8 @@ sfile := class extend file
 	readline := !() -> char^
 	{
 		Buff := char[4096]
-		if fgets(Buff,4096,Handle) == null return ""
-		return StrCopy(Buff)
+		if fgets(Buff[0]&,4096,Handle) == null return ""
+		return StrCopy(Buff[0]&)
 	}	
 	"<<" := !(string likeCpp) -> ref sfile
 	{
