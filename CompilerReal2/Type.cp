@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "BoxClass.cp"
 #import "Globals.cp"
+#import "string.cp"
 
 
 Type := class {
@@ -427,7 +428,7 @@ TypePointVoidFatP := class extend TypeFatArr
 {
 	this := !(Type^ nBase) -> void
 	{
-		this.Base = nBase
+		this&->{Type^}.Base = nBase
 	}
 	GetName := virtual !() -> string
 	{

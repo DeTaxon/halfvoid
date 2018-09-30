@@ -1,5 +1,6 @@
 
 printf := !(char^ str, ...) -> int declare
+sprintf := !(char^,char^ str, ...) -> int declare
 calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
 free := !(void^ point) -> void declare

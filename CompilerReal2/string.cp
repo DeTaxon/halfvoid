@@ -1,3 +1,5 @@
+#import "arrs.cp"
+
 BigBuff := char[4096]
 
 CreatedStrs := Stack.{char^}
@@ -32,13 +34,13 @@ CleanStrs := !() -> void
 {
 	if a == null return b
 	if b == null return a
-	sprintf(BigBuff,"%s%s",a,b)
-	return BigBuff.Copy()
+	sprintf(BigBuff[0]&,"%s%s",a,b)
+	return StrCopy(BigBuff[0]&)
 }
 "+" := !(char^ a, int b) -> char^
 {
 	sprintf(BigBuff,"%s%i",a,b)
-	return BigBuff.Copy()
+	return BigBuff[0]&.Copy()
 }
 "+" := !(char^ a, float b) -> char^
 {
@@ -50,7 +52,7 @@ CleanStrs := !() -> void
 StrSize := !(char^ a) -> int
 {
 	Si := 0
-	while a[Si] Si += 1
+	while a[Si] != 0 Si += 1
 	return Si
 }
 Size := !(char^ this) -> int

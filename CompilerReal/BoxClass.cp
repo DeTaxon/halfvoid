@@ -402,6 +402,9 @@ BoxClass := class extend Object
 			}
 			iterJ = iterJ.Right
 		}
+		if name == "."{
+			Templs.Push(UnrollTemplate->{BoxTemplate^})
+		}
 		bestFunc := GetBestFunc(pars,consts,Funcs,Templs)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
