@@ -1,10 +1,37 @@
-Ob := Object^
+
 main := !(int argc,char^^ argv) -> int 
 {
+
+	targetFiles := Queue.{string}()
+	targetObjects := Queue.{Object^}()
+
+	forcedFiles := Queue.{string}()
+
 	emitTree := false
-	for argc
+
+	i := 1
+	while  i < argc
 	{
-		if argv[it] == "tree" emitTree = true
+		if argv[i] == "tree" {
+			emitTree = true
+		}else{
+
+			if argv[i] == "-f"
+			{
+				forcedFiles.Push(argv[i+1])
+				i += 1
+			}else{
+				targetFiles.Push(argv[i])
+			}
+		}
+		i += 1
+	}
+
+	if targetFiles.Size() != 1
+	{
+		printf("WARN:only one target file requared\n")
+		targetFiles.Push("main2.cp")
+		forcedFiles.Push("Libs/lib.cp")
 	}
 
 	CreateStandartTypes()
@@ -18,11 +45,18 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("defer")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
-	Ob = LoadFile(Path("CompilerReal2/main.cp"))
 
-	libFile := LoadFile(Path("CompilerReal2/lib.cp"))
-	ForcedLibs.Push(libFile)
-	ForcedLibs.Push(LoadFile(Path("CompilerReal2/Tree.cp")))
+	for i : targetFiles.Size()
+	{
+		targetObjects.Push(LoadFile(Path(targetFiles[i])))
+	}
+	for i : forcedFiles.Size()
+	{
+		fL := LoadFile(Path(forcedFiles[i]))
+		ForcedLibs.Push(fL)
+	}
+
+	Ob := targetObjects[0]
 	
 	WorkBag.Push(Ob,State_Start)
 	

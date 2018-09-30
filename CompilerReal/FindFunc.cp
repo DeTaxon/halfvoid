@@ -410,7 +410,16 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType.GetType() == "fatarr"  and funcType.GetType() == "point" 
 	{
 		if inType.Base == funcType.Base
+		{
 			return 1
+		}
+	}
+	if inType.GetType() == "arr"  and funcType.GetType() == "point" 
+	{
+		if inType.Base == funcType.Base
+		{
+			return 1
+		}
 	}
 
 	if inType.GetType() == "standart" and funcType.GetType() == "standart"

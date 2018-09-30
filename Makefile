@@ -9,7 +9,7 @@ a.out: out.ll
 all : clean a.out a.exe
 
 out2.ll: a.out 
-	./a.out
+	./a.out -f Libs/lib.cp main2.cp
 xdg.o: wayland-c/xdg.c
 	gcc wayland-c/xdg.c -c -o xdg.o
 xdg6.o: wayland-c/xdg.c
