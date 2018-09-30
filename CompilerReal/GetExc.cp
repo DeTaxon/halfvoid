@@ -83,6 +83,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
+	if item.GetType() == null return null
 	if toType.GetType() == "lambda" and item.GetType().GetType() == "lambda"
 	{
 		asN := item->{SLambda^}
