@@ -325,8 +325,13 @@ BoxClass := class extend Object
 				newPrm := new ObjParam("~this",false)
 				newPrm.Right = Down.Down
 				newPrm.Up = Down
-				newPrm.Right.Left = newPrm
-				Down.Down = newPrm
+				if Down.Down != null
+				{
+					newPrm.Right.Left = newPrm
+					Down.Down = newPrm
+				}else{
+					Down.Down = newPrm
+				}
 
 				pars := Queue.{Type^}()
 				pars.Push(ClassType)
