@@ -199,8 +199,11 @@ BoxClass := class extend Object
 {
 	ClassId := int
 	NotMineParams := int
+
 	Params := Queue.{FieldParam^}
 	FakeParams := Queue.{FakeFieldParam^}
+	QuicFuncs := Queue.{BuiltInThislessFunc^}
+
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
@@ -212,6 +215,11 @@ BoxClass := class extend Object
 
 	ItVals := Queue.{ObjConstHolder^}
 	ItConsts := Queue.{Object^}()
+
+	GetClassOutputName := !() -> string
+	{
+		return "%Class" + ClassId
+	}
 
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
@@ -631,4 +639,67 @@ BuiltInVirtualCall := class extend BuiltInFunc
 	}
 
 }
+BuiltInThislessFunc := class extend BuiltInFunc
+{
+	itFunc := BoxFunc^
+	itClass := BoxClass^
+	this := !(BoxFunc^ toFunc,BoxClass^ toClass) -> void
+	{
+		itFunc = toFunc
+		itClass = toClass
+		FuncName = toFunc.FuncName
+		FuncName = toFunc.OutputName
+
+		newTypes := Queue.{Type^}()
+		itsBools := Queue.{bool}()
+
+		fTyp := toFunc.MyFuncType
+
+		i := 1
+		while i < fTyp.ParsCount
+		{
+			if fTyp.ParsIsRef == null{
+				itsBools.Push(false)
+			}else{
+				itsBools.Push(fTyp.ParsIsRef[i])
+			}
+			newTypes.Push(fTyp.Pars[i])
+			i += 1
+		}
+		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
+	}
+	MakeLine := !(int id) -> void
+	{
+		aseBase := MyFuncType->{Type^}
+		FuncTypeName := aseBase.GetName()
+
+		isRetComp := MyFuncType.RetRef
+		if not isRetComp
+		{
+			if MyFuncType.RetType != null
+			{
+				isRetComp = MyFuncType.RetType.GetType() == "class" //TODO in ["class","fixarr"]
+			}
+		}
+		
+		if MyFuncType.RetType != GetType("void") and not isRetComp
+			ToExe = ToExe + "#0 = "
+		ToExe = ToExe + "call " + OutputName + "("
+		ToExe = ToExe + itClass.GetClassOutputName() + " %this"
+		for i : MyFuncType.ParsCount
+		{
+			ToExe = ToExe + " , "
+			if MyFuncType.ParsIsRef[i]
+			{
+				ToExe = ToExe + MyFuncType.Pars[i].GetName() + "* "
+			}else{
+				ToExe = ToExe + MyFuncType.Pars[i].GetName() + " "
+			}
+			ToExe = ToExe + "#" + (i + 1)
+		}
+
+		ToExe = ToExe + ")\n"
+	}
+}
+
 

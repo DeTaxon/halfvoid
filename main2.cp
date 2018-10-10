@@ -6,6 +6,10 @@ A := class
 	{
 		x = f
 	}
+	Waw := !() -> void
+	{
+		SetX(3)
+	}
 }
 
 B := class extend A
@@ -22,7 +26,7 @@ C := class extend B
 main := !(int argc, char^^ argv) -> int
 {
 	R := C
-	R.Wow(4)
+	R.Wow(5)
 	return 0
 }
 
