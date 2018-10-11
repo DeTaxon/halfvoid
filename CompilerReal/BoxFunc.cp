@@ -853,11 +853,17 @@ BoxFuncBody := class extend BoxFunc
 				
 		}
 
-		if IsVirtual and metC != null
-		{
-			ParseBlock()
-			asNeed := (metC->{TypeClass^}).ToClass
-			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+		if metC != null{
+			
+			asCls := metC->{TypeClass^}
+			asClsT := asCls.ToClass
+			asClsT.ItMethods.Push(this&->{BoxFunc^})
+
+			if IsVirtual
+			{
+				ParseBlock()
+				asClsT.PutVirtualFunc(FuncName,MyFuncType,this&)
+			}
 		}
 	}
 	TestRet := !(Type^ t) -> void

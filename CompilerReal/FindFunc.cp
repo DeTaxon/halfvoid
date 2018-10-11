@@ -137,19 +137,20 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 		if ii.GetValue() == "#import cp"
 		{
 			asNeed := ii->{ImportCmd^}
-			fl := asNeed.GetFile()
+			fl2 := asNeed.GetFile()
+			fl3 := fl2->{Object^}
 
 			Found := false
 
 			for Searched.Size()
 			{
-				if Searched[it] == fl.fileId
+				if Searched[it] == fl2.fileId
 					Found = true
 			}
 			if not Found
 			{
-				Searched.Push(fl.fileId)
-				CollectFuncsByName(name,(fl.Down)->{Object^},found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+				Searched.Push(fl2.fileId)
+				CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 			}
 		}
 }
@@ -282,7 +283,7 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 	Templs.Clean()
 	for i : ForcedLibs.Size()
 	{
-		itUp := ForcedLibs[i].Down
+		itUp := (ForcedLibs[i]->{Object^}).Down
 		if ForcedLibs[i] == iterr itUp = start
 		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
 	}
@@ -443,7 +444,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 
 			while asCl1 != null
 			{
-				it asCl1 == asCl2 return 1
+				if asCl1 == asCl2 return 1
 				asCl1 = asCl1.Parent
 			}
 

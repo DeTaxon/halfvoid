@@ -202,7 +202,9 @@ BoxClass := class extend Object
 
 	Params := Queue.{FieldParam^}
 	FakeParams := Queue.{FakeFieldParam^}
-	QuicFuncs := Queue.{BuiltInThislessFunc^}
+
+	ItMethods := Queue.{BoxFunc^}
+	ThislessFuncs := Queue.{BuiltInThislessFunc^}
 
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
@@ -219,6 +221,43 @@ BoxClass := class extend Object
 	GetClassOutputName := !() -> string
 	{
 		return "%Class" + ClassId
+	}
+
+	GetWrappedFunc := !(string name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
+	{
+		gotFuncs := Queue.{BoxFunc^}()
+
+		iterF := this&
+
+		while iterF != null
+		{
+			ptrToQ := iterF.ItMethods&
+			itSize := ptrToQ^.Size()
+			for i : itSize
+			{
+				if iterF.ItMethods[i].FuncName == name
+					gotFuncs.Push(iterF.ItMethods[i])
+			}
+			iterF = iterF.Parent
+		}
+
+		for i : gotFuncs.Size()
+		{
+			inTh := BoxFunc^
+			inTh = null
+			for j : ThislessFuncs.Size()
+			{
+				if ThislessFuncs[j].itFunc == gotFuncs[i]
+					inTh = ThislessFuncs[j]
+
+			}
+			if inTh != null{
+				funcs.Push(inTh)
+			}else{
+				toCr := gotFuncs[i]
+				inTh =  new BuiltInThislessFunc(toCr,this&->{BoxClass^},((toCr.MethodType)->{BoxClass^}))
+			}
+		}
 	}
 
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
@@ -643,10 +682,12 @@ BuiltInThislessFunc := class extend BuiltInFunc
 {
 	itFunc := BoxFunc^
 	itClass := BoxClass^
-	this := !(BoxFunc^ toFunc,BoxClass^ toClass) -> void
+	itInClass := BoxClass^
+	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
 	{
 		itFunc = toFunc
 		itClass = toClass
+		itInClass = inClass
 		FuncName = toFunc.FuncName
 		FuncName = toFunc.OutputName
 
@@ -667,6 +708,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			i += 1
 		}
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
+		ToExe = ""
 	}
 	MakeLine := !(int id) -> void
 	{
@@ -681,11 +723,11 @@ BuiltInThislessFunc := class extend BuiltInFunc
 				isRetComp = MyFuncType.RetType.GetType() == "class" //TODO in ["class","fixarr"]
 			}
 		}
-		
+		ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if MyFuncType.RetType != GetType("void") and not isRetComp
 			ToExe = ToExe + "#0 = "
 		ToExe = ToExe + "call " + OutputName + "("
-		ToExe = ToExe + itClass.GetClassOutputName() + " %this"
+		ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
 		for i : MyFuncType.ParsCount
 		{
 			ToExe = ToExe + " , "
