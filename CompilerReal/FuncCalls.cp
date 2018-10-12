@@ -23,6 +23,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	iter = ToParse.Down
 	if iter == null return null
 
+
+
 	if iter.GetValue() == "!"
 	{
 		if iter.Right != null
@@ -445,6 +447,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return OneCall(name,iter.Up,null->{Object^})
 					}
 				}
+			}
+		}
+		if iter.GetValue() == "~ind"
+		{
+			if iter.Right == null return null
+
+			if iter.Right.GetValue() == "()"
+			{
+				asInd := iter->{ObjIndent^}
+				itName := asInd.MyStr
+
+				return OneCall(itName,iter.Right.Down,null->{Object^})
 			}
 		}
 	}
@@ -1025,6 +1039,7 @@ AssemblerCall := class extend NaturalCall
 				j+= 1
 				if AsmLine[j] in '0'..'9'
 				{
+					printf("before\n")
 					num := 0
 
 					while AsmLine[j] in '0'..'9'
@@ -1033,6 +1048,7 @@ AssemblerCall := class extend NaturalCall
 						num += AsmLine[j] - '0'
 						j += 1
 					}
+					printf("here %i\n",num)
 
 					if num == 0
 					{

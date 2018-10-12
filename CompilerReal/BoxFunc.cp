@@ -332,7 +332,7 @@ BoxTemplate := class extend BoxFunc
 		parsCount := pars.Size()
 		FType := MyFuncType
 
-		if consts.Size() != ItConsts.Size() return 255
+		if consts.Size() != this.ItConsts.Size() return 255
 
 		st := Queue.{ObjConstHolder^}()
 		if not CheckTypes(pars,consts,st) return 255
@@ -515,11 +515,11 @@ BoxFunc := class extend Object
 	
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
-		if consts.Size() != ItConsts.Size() return false
+		if consts.Size() != this.ItConsts.Size() return false
 
 		for i : consts.Size()
 		{
-			if not CmpConstObjs(consts[i],ItConsts[i]) 
+			if not CmpConstObjs(consts[i],this.ItConsts[i]) 
 			{
 				return false
 			}
@@ -537,17 +537,17 @@ BoxFunc := class extend Object
 				{
 					if iter.IsConst()
 					{
-						ItConsts.Push(iter.Clone())
+						this.ItConsts.Push(iter.Clone())
 					}else{
 						typ := ParseType(iter)
 						if typ != null
 						{
-							ItConsts.Push(new ObjType(typ))
+							this.ItConsts.Push(new ObjType(typ))
 						}else{
 							stdL := Queue.{string}()
 							if ContainTType(iter,stdL)
 							{
-								ItConsts.Push(null->{Object^})
+								this.ItConsts.Push(null->{Object^})
 							}else{
 								ErrorLog.Push("can not parse object in .{}\n")
 							}
@@ -939,11 +939,18 @@ BoxFuncBody := class extend BoxFunc
 			if not (c in 'a'..'z') and not (c in 'A'..'Z') IsSuffix = false 
 		}
 
-		if IsVirtual and metC != null
-		{
-			ParseBlock()
-			asNeed := (metC->{TypeClass^}).ToClass
-			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+		if metC != null{
+			
+			asCls := metC->{TypeClass^}
+			asClsT := asCls.ToClass
+			asClsT.ItMethods.Push(this&->{BoxFunc^})
+
+			if IsVirtual 
+			{
+				ParseBlock()
+				asNeed := (metC->{TypeClass^}).ToClass
+				asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+			}
 		}
 		if FuncName == "main"
 		{

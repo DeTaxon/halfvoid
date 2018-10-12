@@ -27,6 +27,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	R := C
 	R.Wow(5)
+	printf("wut %i\n",R.x)
 	return 0
 }
 

@@ -115,6 +115,8 @@ ObjData := class extend Object
 				{
 					ReplaceNode(this&,new ObjType(itType))
 				}else{
+					printf("this error\n")
+					Print(0)
 					EmitError("can not parse data\n")
 				}
 			}

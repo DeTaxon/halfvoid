@@ -252,21 +252,22 @@ BoxClass := class extend Object
 
 			}
 			if inTh != null{
-				funcs.Push(inTh)
 			}else{
 				toCr := gotFuncs[i]
 				inTh =  new BuiltInThislessFunc(toCr,this&->{BoxClass^},((toCr.MethodType)->{BoxClass^}))
+				this.ItMethods.Push(inTh)
 			}
+			funcs.Push(inTh)
 		}
 	}
 
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
-		if consts.Size() != ItConsts.Size() return false
+		if consts.Size() != this.ItConsts.Size() return false
 
 		for i : consts.Size()
 		{
-			if not CmpConstObjs(consts[i],ItConsts[i])
+			if not CmpConstObjs(consts[i],this.ItConsts[i])
 				return false
 		}
 
@@ -709,8 +710,9 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		}
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
 		ToExe = ""
+		MakeLine()
 	}
-	MakeLine := !(int id) -> void
+	MakeLine := !() -> void
 	{
 		aseBase := MyFuncType->{Type^}
 		FuncTypeName := aseBase.GetName()

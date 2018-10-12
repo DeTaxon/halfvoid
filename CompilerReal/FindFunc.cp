@@ -127,13 +127,16 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				}
 			}
 		}
-		//if ii.GetValue() == "{...}"
-		//{
-		//	if name == "."{	
-		//		asC := ii->{BoxClass^}
-		//		templates.Push((asC.UnrollTemplate)->{BoxTemplate^})
-		//	}
-		//}
+		if ii.GetValue() == "{...}"
+		{
+			//if name == "."{	
+			//	asC := ii->{BoxClass^}
+			//	templates.Push((asC.UnrollTemplate)->{BoxTemplate^})
+			//}
+			asC := ii->{BoxClass^}
+			asC.GetWrappedFunc(name,found,templates)
+
+		}
 		if ii.GetValue() == "#import cp"
 		{
 			asNeed := ii->{ImportCmd^}
