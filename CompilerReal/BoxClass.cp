@@ -226,6 +226,7 @@ BoxClass := class extend Object
 	GetWrappedFunc := !(string name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
 	{
 		gotFuncs := Queue.{BoxFunc^}()
+		funcsCl := Queue.{BoxClass^}()
 
 		iterF := this&
 
@@ -236,7 +237,10 @@ BoxClass := class extend Object
 			for i : itSize
 			{
 				if iterF.ItMethods[i].FuncName == name
+				{
 					gotFuncs.Push(iterF.ItMethods[i])
+					funcsCl.Push(iterF)
+				}
 			}
 			iterF = iterF.Parent
 		}
@@ -254,7 +258,8 @@ BoxClass := class extend Object
 			if inTh != null{
 			}else{
 				toCr := gotFuncs[i]
-				inTh =  new BuiltInThislessFunc(toCr,this&->{BoxClass^},((toCr.MethodType)->{BoxClass^}))
+
+				inTh =  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsCl[i])
 				this.ItMethods.Push(inTh)
 			}
 			funcs.Push(inTh)
@@ -686,11 +691,12 @@ BuiltInThislessFunc := class extend BuiltInFunc
 	itInClass := BoxClass^
 	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
 	{
+		toFunc.ParseBlock()
 		itFunc = toFunc
 		itClass = toClass
 		itInClass = inClass
 		FuncName = toFunc.FuncName
-		FuncName = toFunc.OutputName
+		OutputName = toFunc.OutputName
 
 		newTypes := Queue.{Type^}()
 		itsBools := Queue.{bool}()
@@ -728,7 +734,9 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if MyFuncType.RetType != GetType("void") and not isRetComp
 			ToExe = ToExe + "#0 = "
-		ToExe = ToExe + "call " + OutputName + "("
+		fTypp := itFunc.MyFuncType
+		fTypp2 := fTypp->{Type^}
+		ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
 		ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
 		for i : MyFuncType.ParsCount
 		{

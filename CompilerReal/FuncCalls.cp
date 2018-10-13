@@ -458,7 +458,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				asInd := iter->{ObjIndent^}
 				itName := asInd.MyStr
 
-				return OneCall(itName,iter.Right.Down,null->{Object^})
+				return OneCall(itName,iter.Right,null->{Object^})
 			}
 		}
 	}
@@ -1039,7 +1039,6 @@ AssemblerCall := class extend NaturalCall
 				j+= 1
 				if AsmLine[j] in '0'..'9'
 				{
-					printf("before\n")
 					num := 0
 
 					while AsmLine[j] in '0'..'9'
@@ -1048,7 +1047,6 @@ AssemblerCall := class extend NaturalCall
 						num += AsmLine[j] - '0'
 						j += 1
 					}
-					printf("here %i\n",num)
 
 					if num == 0
 					{
@@ -1057,6 +1055,11 @@ AssemblerCall := class extend NaturalCall
 						num -= 1
 						miniIter := Down
 						for num miniIter = miniIter.Right
+
+						if miniIter == null
+						{
+							printf("nope %s\n",RealCall.FuncName)
+						}
 
 						ToAdd := string
 						if RefsArr[num] ToAdd = miniIter.GetPointName()
