@@ -93,7 +93,8 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 		StrContainer.PrintGlobal(fil)
 
-		for Classes.Size() Classes[it].PrintStruct(fil)
+		for Classes.Size() 
+			Classes[it].PrintStruct(fil)
 
 		wutt := Files.Start
 		while wutt != null
