@@ -322,6 +322,32 @@ BoxClass := class extend Object
 		Classes.Push(this&)
 
 	}
+
+	Inherited := false
+	InheritParams := !() -> void
+	{
+		if not Inherited
+		{
+			Inherited = true
+			parentTree := this.Parent
+			while parentTree != null
+			{
+				parentTree.InheritParams()
+				Size := parentTree.Params.Size()
+				NotMineParams = Size
+				for i : Size
+				{
+					Params.PushFront(parentTree.Params[Size - i - 1])
+				}
+				for i : parentTree.FakeParams.Size() FakeParams.PushFront(parentTree.FakeParams[i])
+				if parentTree.ContainVirtual 
+					ContainVirtual = true
+
+				//parentTree = parentTree.Parent
+				parentTree = null
+			}
+		}
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Syntax
@@ -342,21 +368,7 @@ BoxClass := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			parentTree := this.Parent
-			while parentTree != null
-			{
-				Size := parentTree.Params.Size()
-				NotMineParams = Size
-				for i : Size
-				{
-					Params.PushFront(parentTree.Params[Size - i - 1])
-				}
-				for i : parentTree.FakeParams.Size() FakeParams.PushFront(parentTree.FakeParams[i])
-				if parentTree.ContainVirtual 
-					ContainVirtual = true
-
-				parentTree = parentTree.Parent
-			}
+			InheritParams()
 
 			iterH := Down.Down
 			foundNotThis := false
