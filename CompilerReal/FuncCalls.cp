@@ -51,6 +51,30 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			
 		}
+		if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
+		{
+			Pars := Queue.{Type^}()
+
+			iterY := iter.Right.Down
+
+			while iterY != null
+			{
+				if iterY.GetValue() != ","
+				{
+					Pars.Push(iterY.GetType())
+				}
+				iterY = iterY.Right
+			}
+
+			CTT2 := CTT->{BoxTemplate^}
+
+			f := CTT2.GetFunc(Pars)
+			if f != null
+			{
+				TrimCommas(iter.Right)
+				return MakeSimpleCall(f,iter.Right.Down)
+			}
+		}
 		return null
 	}
 

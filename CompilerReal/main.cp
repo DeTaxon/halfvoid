@@ -1,6 +1,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	CTT = new CreateTupleTemplate()
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
