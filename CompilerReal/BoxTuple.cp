@@ -37,7 +37,7 @@ TupleClass := class extend BoxClass
 		ClassType = new TypeClass(this&->{BoxClass^})
 		for i : typs.Size()
 		{
-			Params.Push(new FieldParam("",typs[i],this&->{BoxClass^}))
+			new FieldParam("",typs[i],this&->{BoxClass^})
 		}
 		ClassId = GetNewId()
 		GetNmFunc = new TupleFuncGetItem(this&)

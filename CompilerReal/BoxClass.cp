@@ -423,23 +423,23 @@ BoxClass := class extend Object
 		return "{...}"
 	}
 	//GetMethod
-	GetFunc := !(string name) -> BoxFunc^
+	GetFunc := virtual !(string name) -> BoxFunc^
 	{
 		Pars := Queue.{Type^}()
 		temp := Queue.{Object^}()
 		return GetFunc(name,Pars,temp)
 	}
-	GetFunc := !(string name,Queue.{Type^} pars) -> BoxFunc^
+	GetFunc := virtual !(string name,Queue.{Type^} pars) -> BoxFunc^
 	{
 		temp := Queue.{Object^}()
 		return this.GetFunc(name,pars,temp)
 	}
 	//GetMethod
-	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
+	GetFunc := virtual !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
 	{
 		return GetFunc(name,pars,consts,false)
 	}
-	GetFunc := !(string name,Queue.{Type^} pars, Queue.{Object^} consts,bool iVir) -> BoxFunc^
+	GetFunc := virtual !(string name,Queue.{Type^} pars, Queue.{Object^} consts,bool iVir) -> BoxFunc^
 	{
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
