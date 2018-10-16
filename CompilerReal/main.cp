@@ -97,6 +97,8 @@ main := !(int argc,char^^ argv) -> int
 		for Classes.Size() 
 			Classes[it].PrintStruct(fil)
 
+		PrintTuples(fil)
+
 		wutt := Files.Start
 		while wutt != null
 		{

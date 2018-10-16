@@ -2,6 +2,14 @@
 
 Tupls := Queue.{TupleClass^}
 
+PrintTuples := !(sfile f) -> void
+{
+	for i : Tupls.Size()
+	{
+		Tupls[i].PrintGlobal(f)
+	}
+}
+
 GetTuple := !(Queue.{Type^} typs) -> TupleClass^
 {
 	for i : Tupls.Size()
@@ -59,6 +67,13 @@ TupleClass := class extend BoxClass
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		f << "%Class" << ClassId << " = type {"
+		for i : Params.Size()
+		{
+			if i > 0 f << ","
+			f <<  Params[i].ResultType.GetName()
+		}
+		f << "}\n"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -133,14 +148,14 @@ CreateTupleTemplate := class extend BoxTemplate
 
 		for i : pars.Size()
 		{
-			if pars[i].GetType() == "class" or pars[i].GetType() == "fixed"
+			if funct.ParsIsRef[i]
 			{
 				toEx = toEx + ", " + pars[i].GetName() + "* #" + (i + 1)
 			}else{
-				toEx = toEx + ", " + pars[i].GetName() + "* #" + (i + 1)
+				toEx = toEx + ", " + pars[i].GetName() + " #" + (i + 1)
 			}
 		}
-		toEx = toEx + ")"
+		toEx = toEx + ")\n"
 
 		return new BuiltInFuncMega("",funct,toEx)
 	}
