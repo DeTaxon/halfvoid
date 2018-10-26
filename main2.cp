@@ -1,7 +1,7 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	h := !{1,2,3}
+	//h := !{1,2,3}
 	return 0
 }
 

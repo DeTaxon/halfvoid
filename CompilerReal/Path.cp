@@ -78,6 +78,13 @@ Path := class
 
 		return pathA == pathB
 	}
+	IsExist := !() -> bool
+	{
+		newLine := realpath(itStr,null->{char^})
+		if newLine == null return false
+		free(newLine)
+		return true
+	}
 	FullPath := !() -> string
 	{
 		newLine := realpath(itStr,null->{char^})

@@ -5,6 +5,7 @@ main := !(int argc,char^^ argv) -> int
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
+	outputFile := "out.ll"
 
 	forcedFiles := Queue.{string}()
 
@@ -13,7 +14,7 @@ main := !(int argc,char^^ argv) -> int
 	i := 1
 	while  i < argc
 	{
-		if argv[i] == "tree" {
+		if argv[i] == "--tree" {
 			emitTree = true
 		}else{
 
@@ -22,7 +23,13 @@ main := !(int argc,char^^ argv) -> int
 				forcedFiles.Push(argv[i+1])
 				i += 1
 			}else{
-				targetFiles.Push(argv[i])
+				if argv[i] == "-o"
+				{
+					outputFile = argv[i+1]
+					i += 1
+				}else{
+					targetFiles.Push(argv[i])
+				}
 			}
 		}
 		i += 1
@@ -47,6 +54,17 @@ main := !(int argc,char^^ argv) -> int
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 
+	for i : targetFiles.Size()
+	{
+		ItPath := Path(targetFiles[i])
+		resA := ItPath.IsExist()
+		resB := not resA
+		if resB
+		{
+			printf("file %s does not exist\n",targetFiles[i])
+			return 0
+		}
+	}
 	for i : targetFiles.Size()
 	{
 		targetObjects.Push(LoadFile(Path(targetFiles[i])))
