@@ -1,5 +1,5 @@
 
-Node3 := class !{TVal}
+Node3 := class .{@TVal}
 {
 	Data := TVal
 	Prior := int
@@ -19,7 +19,7 @@ Node3 := class !{TVal}
 	}
 }
 
-PriorityStack := class !{TVal}
+PriorityStack := class .{@TVal}
 {
 	Start := Node3.{TVal}^
 
@@ -87,7 +87,7 @@ PriorityStack := class !{TVal}
 		return Start.Prior	
 	}
 }
-PriorityQueue := class !{TVal} extend PriorityStack.{TVal}
+PriorityQueue := class .{@TVal} extend PriorityStack.{TVal}
 {
 	Push := !(TVal val, int pr) -> void
 	{

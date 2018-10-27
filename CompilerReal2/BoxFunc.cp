@@ -1,5 +1,6 @@
 #import "Tree.cp"
 #import "StandartObjects.cp"
+#import "AllocBox.cp"
 
 ParseFuncDataR := !(Object^ item) -> Object^
 {
@@ -414,7 +415,9 @@ BoxTemplate := class extend BoxFunc
 				for somePos inDown = inDown.Right
 				asNeed :=  inDown->{BoxFunc^}
 
-				if asNeed.IsSameConsts(consts) return asNeed
+				if asNeed.IsSameConsts(consts) {
+					return asNeed
+				}
 			}
 			iterJ = iterJ.Next
 			somePos += 1
@@ -1025,6 +1028,12 @@ BoxFuncBody := class extend BoxFunc
 		{
 			PrintGlobalSub(f)
 			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string})
+
+			if DebugMode
+			{
+				f << " !dbg !" << ABox.ItId
+			}
+
 			f << " ; " << FuncName
 
 			f << "\n{\n"
@@ -1116,6 +1125,30 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			f << "}\n"
+
+			if DebugMode
+			{	
+				iter := Up
+				if iter != null
+				{
+					while iter.Up != null
+					{
+						iter = iter.Up
+					}
+				}
+				if iter != null
+				{
+					asN := iter->{BoxFile^}
+					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\"" << FuncName << "\","
+					f << "scope: !" << asN.fileId << " , file: !" << asN.fileId
+					if Line != null
+					{
+						f << ", line: " << Line.LinePos						
+					}
+					f << ")\n"
+
+				}
+			}
 		}
 	}
 	GetOutPath := virtual !(Object^ item, int type,int size) ->string

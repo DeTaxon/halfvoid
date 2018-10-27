@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 MakeItBlock := !(Object^ item) -> bool
 {
@@ -297,6 +298,21 @@ BoxFile := class extend BoxBlock
 	{
 		return "{d}.cp"
 	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+		if DebugMode //later
+		{
+			f << "!" << fileId  << " = !DIFile(filename: \"" 
+			f << filePath.FullPath() << "\", directory: \""
+			f <<  filePath.FolderName() <<"\")\n"
+		}
+	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		iter := Down
@@ -305,10 +321,12 @@ BoxFile := class extend BoxBlock
 			iter.PrintInBlock(f)
 			iter = iter.Right
 		}
-		//if DebugMode //later
-		//{
-		//	f << "!" << fileId  << " = !DIFile(filename: \" << fileName << "\", directory: \"/tmp/Lang2/CompilerReal/\")\n"
-		//}
+		if DebugMode //later
+		{
+			f << "!" << fileId  << " = !DIFile(filename: \"" 
+			f << filePath.FullPath() << "\", directory: \""
+			f <<  filePath.FolderName() <<"\")\n"
+		}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

@@ -124,6 +124,7 @@ Stack := class !{T}
 
 Queue := class !{T} extend Stack.{T}
 {
+	itEnd := Node.{T}^
 	this := !() -> void
 	{
 		Start = null
@@ -145,10 +146,10 @@ Queue := class !{T} extend Stack.{T}
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
+			itEnd = Start
 		} else {
-			Iter := Start
-			while Iter.Next Iter = Iter.Next
-			Iter.Next = new Node.{T}(a)
+			itEnd.Next = new Node.{T}(a)
+			itEnd = itEnd.Next
 		}
 		return 0
 	}

@@ -297,6 +297,21 @@ BoxFile := class extend BoxBlock
 	{
 		return "{d}.cp"
 	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+		if DebugMode //later
+		{
+			f << "!" << fileId  << " = !DIFile(filename: \"" 
+			f << filePath.FullPath() << "\", directory: \""
+			f <<  filePath.FolderName() <<"\")\n"
+		}
+	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		iter := Down

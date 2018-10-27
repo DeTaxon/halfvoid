@@ -20,6 +20,8 @@ c.out: c.ll
 	clang c.ll -o c.out
 c.ll: $(wildcard CompilerReal2/*.cp) a.out
 	./a.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp CompilerReal2/main.cp -o c.ll
+gdbc: $(wildcard CompilerReal2/*.cp) a.out
+	nemiver ./a.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp CompilerReal2/main.cp -o c.ll
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe
@@ -30,4 +32,4 @@ out.ll: $(Sors)
 clean:
 	rm -f out.ll WinObj.o a.exe a.out
 
-.PHONY: test All clean ou2.ll b a.out
+.PHONY: test All clean ou2.ll b a.out gdbc

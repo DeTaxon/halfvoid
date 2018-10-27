@@ -1,5 +1,6 @@
 #import "Tree.cp"
 #import "BoxClass.cp"
+#import "Globals.cp"
 
 Type := class {
 	Id := int

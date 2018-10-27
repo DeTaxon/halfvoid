@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 AllocBox := class 
 {
 	ItId := int

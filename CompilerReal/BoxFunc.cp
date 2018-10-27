@@ -517,7 +517,10 @@ BoxFunc := class extend Object
 	
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
-		if consts.Size() != this.ItConsts.Size() return false
+		//if this& == null return false
+		if consts.Size() != this.ItConsts.Size() {
+			return false
+		}
 
 		for i : consts.Size()
 		{
@@ -1024,6 +1027,12 @@ BoxFuncBody := class extend BoxFunc
 		{
 			PrintGlobalSub(f)
 			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string})
+
+			if DebugMode
+			{
+				f << " !dbg !" << ABox.ItId
+			}
+
 			f << " ; " << FuncName
 
 			f << "\n{\n"
@@ -1115,6 +1124,30 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			f << "}\n"
+
+			if DebugMode
+			{	
+				iter := Up
+				if iter != null
+				{
+					while iter.Up != null
+					{
+						iter = iter.Up
+					}
+				}
+				if iter != null
+				{
+					asN := iter->{BoxFile^}
+					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\"" << FuncName << "\","
+					f << "scope: !" << asN.fileId << " , file: !" << asN.fileId
+					if Line != null
+					{
+						f << ", line: " << Line.LinePos						
+					}
+					f << ")\n"
+
+				}
+			}
 		}
 	}
 	GetOutPath := virtual !(Object^ item, int type,int size) ->string
