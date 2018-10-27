@@ -150,7 +150,7 @@ Path := class
 
 	//	return StrCopy(itStr[pos + 1]&)
 	//}
-	FolderName := !() -> string
+	PathName := !() -> string
 	{
 		size := StrSize(itStr)
 		pos := size - 1

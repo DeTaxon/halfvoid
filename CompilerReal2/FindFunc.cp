@@ -1,3 +1,4 @@
+
 IsWord := !(string name) -> bool
 {
 	for c : name

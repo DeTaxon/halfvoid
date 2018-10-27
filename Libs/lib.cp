@@ -107,11 +107,11 @@ FixedArrayIter := class .{@Type}
 	Ind := !() -> int { return nowPos }
 }
 
-"~For" := !(@Type[@Size] item) -> FixedArrayIter.{Type}
+"~For" := !(@Type[@Size] item) //-> FixedArrayIter.{Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},Size)
 }
-"~For" := !(@Type[] item) -> FixedArrayIter.{Type}
+"~For" := !(@Type[] item) //-> FixedArrayIter.{Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }

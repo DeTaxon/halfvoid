@@ -305,12 +305,10 @@ BoxFile := class extend BoxBlock
 			iter.PrintInBlock(f)
 			iter = iter.Right
 		}
-		if DebugMode //later
-		{
-			f << "!" << fileId  << " = !DIFile(filename: \"" 
-			f << filePath.FullPath() << "\", directory: \""
-			f <<  filePath.FolderName() <<"\")\n"
-		}
+		//if DebugMode //later
+		//{
+		//	f << "!" << fileId  << " = !DIFile(filename: \" << fileName << "\", directory: \"/tmp/Lang2/CompilerReal/\")\n"
+		//}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

@@ -19,7 +19,7 @@ b : out2.ll #xdg.o xdg6.o
 c.out: c.ll
 	clang c.ll -o c.out
 c.ll: $(wildcard CompilerReal2/*.cp) a.out
-	./a.out -f Libs/lib.cp CompilerReal2/main.cp -o c.ll
+	./a.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp CompilerReal2/main.cp -o c.ll
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe

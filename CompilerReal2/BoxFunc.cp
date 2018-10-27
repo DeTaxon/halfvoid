@@ -1,3 +1,6 @@
+#import "Tree.cp"
+#import "StandartObjects.cp"
+
 ParseFuncDataR := !(Object^ item) -> Object^
 {
 	iter := item.Down
@@ -411,9 +414,7 @@ BoxTemplate := class extend BoxFunc
 				for somePos inDown = inDown.Right
 				asNeed :=  inDown->{BoxFunc^}
 
-				if asNeed.IsSameConsts(consts) {
-					return asNeed
-				}
+				if asNeed.IsSameConsts(consts) return asNeed
 			}
 			iterJ = iterJ.Next
 			somePos += 1

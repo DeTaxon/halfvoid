@@ -1,3 +1,5 @@
+#import "Tree.cp"
+#import "BoxTuple.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {
@@ -145,8 +147,6 @@ main := !(int argc,char^^ argv) -> int
 	return 0
 }
 
-
-workIter := int
 WorkWithBag := !() -> void
 {
 	while not WorkBag.IsEmpty() and ErrorLog.Empty()
@@ -154,12 +154,7 @@ WorkWithBag := !() -> void
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
 		//printf("working on %p %s\n",it,it.GetValue())
-		printf("itWork %i %s\n",workIter,it.GetValue())
-		if it.Line != null {
-			printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
-			//it.Print(0)
-			}
-		workIter += 1
+		//if it.Line != null printf("at %i\n",it.Line.LinePos)
 		it.DoTheWork(prior)
 	}
 }
