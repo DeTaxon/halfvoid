@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 ObjSkobs := class extend Object
 {
 	Vers := int
@@ -86,6 +88,7 @@ ObjSkobs := class extend Object
 	}
 }
 
+
 UniteSkobs := !(Object^ Tree) -> Object^
 {
 	Bag := Stack.{Object^}()
@@ -99,16 +102,16 @@ UniteSkobs := !(Object^ Tree) -> Object^
 
 		if Value[0] in "}])"
 		{
-			Pair := char^
-			if Value[0] == '}' Pair = "{}"
-			if Value[0] == ']' Pair = "[]"
-			if Value[0] == ')' Pair = "()"
+			itPair := char^
+			if Value[0] == '\}' itPair = "{}"
+			if Value[0] == '\]' itPair = "[]"
+			if Value[0] == '\)' itPair = "()"
 
 			if Bag.Empty() return iter
 			Old := Bag.Pop()
-			if Old.GetValue()[0] != Pair[0] return iter
+			if Old.GetValue()[0] != itPair[0] return iter
 
-			NewObj := new ObjSkobs(Pair)
+			NewObj := new ObjSkobs(itPair)
 			NewObj.Line = iter.Line
 			UNext(Old,NewObj,iter)
 

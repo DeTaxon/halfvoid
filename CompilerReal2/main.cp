@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "BoxTuple.cp"
 #import "FileLoader.cp"
+#import "CoolerObjects.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {

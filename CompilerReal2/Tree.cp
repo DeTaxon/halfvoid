@@ -5,6 +5,7 @@
 #import "ObjIndent.cp"
 #import "WayControl.cp"
 #import "StandartObjects.cp"
+#import "Syntax.cp"
 
 Object := class{
 	Id := int
@@ -439,12 +440,12 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 			{
 				// not now
 			}
-			NV := new ObjDouble(Value->{double})
+			NV := new ObjDouble(Value)
 			Adder = PushObject(Adder,NV->{Object^})
 
 			if Tok.Buff[k] != 0
 			{
-				NS := new ObjSuffix(Tok.Buff[k]&.Copy())
+				NS := new ObjSuffix(StrCopy(Tok.Buff[k]&))
 				Adder = PushObject(Adder,NS)
 			}
 			

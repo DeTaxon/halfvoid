@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {

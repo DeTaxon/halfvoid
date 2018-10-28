@@ -66,6 +66,10 @@ Path := class
 	{
 		itStr = st
 	}
+	this := !(Path st) -> void
+	{
+		itStr = st.itStr
+	}
 	"==" := !(Path pt2) -> bool
 	{
 		pathA := realpath(itStr,null->{char^})
@@ -105,6 +109,10 @@ Path := class
 	"=" := !(Path pt) -> void
 	{
 		itStr = pt.itStr
+	}
+	"=" := !(string pt) -> void
+	{
+		itStr = pt
 	}
 	"/=" := !(string str) -> void
 	{

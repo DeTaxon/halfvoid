@@ -1,3 +1,6 @@
+#import "Tree.cp"
+#import "FuncCalls.cp"
+
 ObjParam := class extend Object
 {
 	MyStr := string
@@ -16,7 +19,7 @@ ObjParam := class extend Object
 	
 	this := !(string ss, bool IsstName) -> void
 	{
-		MyStr = ss.Copy()
+		MyStr = StrCopy(ss)
 		IsStrName = IsstName
 	}
 	GetValue := virtual !() -> string

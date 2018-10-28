@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 ObjData := class extend Object
 {
 	this := !() -> void

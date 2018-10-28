@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 SLambda := class extend ObjResult
 {
 	parsedStart := bool

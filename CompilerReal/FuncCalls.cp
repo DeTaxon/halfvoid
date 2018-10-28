@@ -1,4 +1,3 @@
-
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
 	iter := ToParse
@@ -843,9 +842,12 @@ NaturalCall := class extend SomeFuncCall
 					msg := "compiler bug at param " + (i+1) + " "
 					if iter.GetType() != null{
 						msg = msg + " from " + iter.GetType().GetName()
+					}else{
+						msg = msg + " from unknown(null)"
+						iter.Print(0)
 					}
 					if FType.Pars[i] != null {
-						msg = msg + " to " + FType.Pars[i].GetName()
+						msg = msg + " to <" + FType.Pars[i].GetName() + ">"
 					}
 					
 					iter.EmitError(msg + "\n")

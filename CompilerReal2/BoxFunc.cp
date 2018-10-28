@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "StandartObjects.cp"
 #import "AllocBox.cp"
+#import "ConstTemp.cp"
 
 ParseFuncDataR := !(Object^ item) -> Object^
 {
@@ -868,7 +869,7 @@ BoxFuncBody := class extend BoxFunc
 			if IsVirtual
 			{
 				ParseBlock()
-				asClsT.PutVirtualFunc(FuncName,MyFuncType,this&)
+				asClsT.PutVirtualFunc(FuncName MyFuncType this&->{BoxFunc^})
 			}
 		}
 	}

@@ -1,4 +1,7 @@
-
+#import "Tree.cp"
+#import "ObjObj.cp"
+#import "SLambda.cp"
+#import "ObjData.cp"
 
 InDataR := !(Object^ obj) -> bool
 {
@@ -32,8 +35,8 @@ InBlockData := !(Object^ obj) -> bool
 	return false
 }
 
-RuleType := !(void^ begin)^ -> int
-RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
+//RuleType := type !(void^ begin)^ -> int
+RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -63,7 +66,7 @@ RuleUse := !(Object^ Obj,char^ N,RuleType R) -> bool
 	return GotStuff
 }
 
-RuleUseReverse := !(Object^ Obj,char^ N,RuleType R) -> bool
+RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down

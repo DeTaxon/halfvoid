@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "BuiltInFuncs.cp"
 #import "LocalParam.cp"
+#import "CmpConstObjs.cp"
 
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
@@ -126,7 +127,7 @@ BoxClassTemplate := class extend Object
 		if ExtendTree != null
 		{
 			TempConsts = newConsts&
-			inher = ParseType(ExtendTree)
+			inher = ParseType(ExtendTree)->{BoxClass^}
 			TempConsts = null
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
@@ -284,13 +285,13 @@ BoxClass := class extend Object
 
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
-		if consts.Size() != this.ItConsts.Size() {
+		if consts.Size() != ItConsts.Size() {
 			return false
 		}
 
 		for i : consts.Size()
 		{
-			if not CmpConstObjs(consts[i],this.ItConsts[i])
+			if not CmpConstObjs(consts[i],ItConsts[i])
 				return false
 		}
 
@@ -335,7 +336,7 @@ BoxClass := class extend Object
 			if iterH.GetValue() == "virtual" ContainVirtual = true
 			iterH = iterH.Right
 		}
-		WorkBag.Push(this&,State_Syntax)
+		WorkBag.Push(this&,State_CheckBaseClass)
 		WorkBag.Push(this&,State_PrePrint)
 		Classes.Push(this&)
 
@@ -368,7 +369,7 @@ BoxClass := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Syntax
+		if pri == State_CheckBaseClass
 		{
 			if ExtendObject != null{
 				newType := ParseType(ExtendObject)

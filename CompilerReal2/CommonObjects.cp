@@ -1,4 +1,8 @@
 #import "Tree.cp"
+#import "Param.cp"
+#import "ConstCompute.cp"
+#import "BoxFor.cp"
+#import "FileLoader.cp"
 
 GetItem := !(string name, Object^ start) -> Object^
 {
@@ -95,8 +99,9 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 		}
 	}
 	
-	for SomeDef : DefsTable
+	for i : DefsTable->len
 	{
+		SomeDef := ref DefsTable[i]
 		if SomeDef != null
 		if SomeDef.ItName == name 
 		{

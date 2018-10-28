@@ -332,7 +332,7 @@ BoxClass := class extend Object
 			if iterH.GetValue() == "virtual" ContainVirtual = true
 			iterH = iterH.Right
 		}
-		WorkBag.Push(this&,State_Syntax)
+		WorkBag.Push(this&,State_CheckBaseClass)
 		WorkBag.Push(this&,State_PrePrint)
 		Classes.Push(this&)
 
@@ -365,7 +365,7 @@ BoxClass := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Syntax
+		if pri == State_CheckBaseClass
 		{
 			if ExtendObject != null{
 				newType := ParseType(ExtendObject)

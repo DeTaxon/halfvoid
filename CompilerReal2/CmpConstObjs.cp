@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 CmpConstObjs := !(Object^ a, Object^ b) -> bool
 {
 	if a == null return false
