@@ -233,7 +233,7 @@ BoxClass := class extend Object
 		while iterF != null
 		{
 			ptrToQ := iterF.ItMethods&
-			//itSize := ptrToQ^.Size()
+			itSize := ptrToQ^.Size()
 			qIter := ptrToQ.Start
 			while qIter != null
 			{
@@ -246,7 +246,6 @@ BoxClass := class extend Object
 			}
 			iterF = iterF.Parent
 		}
-		printf("wut %i %i\n",gotFuncs.Size(),ThislessFuncs.Size())
 
 		gotFuncsIter := gotFuncs.Start
 		funcsClIter := funcsCl.Start
@@ -272,7 +271,6 @@ BoxClass := class extend Object
 
 				inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter.Data)
 				ThislessFuncs.Push(inThPre)
-				this.ItMethods.Push(inThPre)
 				inTh = inThPre
 			}
 			funcs.Push(inTh)

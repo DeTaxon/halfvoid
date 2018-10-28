@@ -108,7 +108,7 @@ Stack := class .{@T}
 	ToArray := !() -> T[]
 	{
 		Si := itSize
-		if Si == 0 return null
+		//if Si == 0 return null->{T[]}
 		ToOut := new T[Si]
 		Iter := Start
 		i := 0

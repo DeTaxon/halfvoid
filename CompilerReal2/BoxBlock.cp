@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "set.cp"
 
 MakeItBlock := !(Object^ item) -> bool
 {

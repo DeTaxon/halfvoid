@@ -1,6 +1,3 @@
-#import "Tree.cp"
-#import "BuiltInFuncs.cp"
-#import "LocalParam.cp"
 
 ParseClass := virtual !(Object^ ob)-> BoxClass^
 {
@@ -237,41 +234,56 @@ BoxClass := class extend Object
 		{
 			ptrToQ := iterF.ItMethods&
 			itSize := ptrToQ^.Size()
-			for i : itSize
+			qIter := ptrToQ.Start
+			while qIter != null
 			{
-				if iterF.ItMethods[i].FuncName == name
+				if qIter.Data.FuncName == name
 				{
-					gotFuncs.Push(iterF.ItMethods[i])
+					gotFuncs.Push(qIter.Data)
 					funcsCl.Push(iterF)
 				}
+				qIter = qIter.Next
 			}
 			iterF = iterF.Parent
 		}
 
-		for i : gotFuncs.Size()
+		gotFuncsIter := gotFuncs.Start
+		funcsClIter := funcsCl.Start
+		while gotFuncsIter != null
 		{
 			inTh := BoxFunc^
 			inTh = null
-			for j : ThislessFuncs.Size()
+			ThislessIter := ThislessFuncs.Start
+			while ThislessIter != null
 			{
-				if ThislessFuncs[j].itFunc == gotFuncs[i]
-					inTh = ThislessFuncs[j]
+				if ThislessIter.Data.itFunc == gotFuncsIter.Data
+				{
+					inTh = ThislessIter.Data
+					ThislessIter = null
+				}else{
+					ThislessIter = ThislessIter.Next
+				}
 
 			}
 			if inTh != null{
 			}else{
-				toCr := gotFuncs[i]
+				toCr := gotFuncsIter.Data
 
-				inTh =  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsCl[i])
-				this.ItMethods.Push(inTh)
+				inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter.Data)
+				ThislessFuncs.Push(inThPre)
+				inTh = inThPre
 			}
 			funcs.Push(inTh)
+			gotFuncsIter = gotFuncsIter.Next
+			funcsClIter = funcsClIter.Next
 		}
 	}
 
 	IsSameConsts := !(Queue.{Object^} consts) -> bool
 	{
-		if consts.Size() != this.ItConsts.Size() return false
+		if consts.Size() != this.ItConsts.Size() {
+			return false
+		}
 
 		for i : consts.Size()
 		{
