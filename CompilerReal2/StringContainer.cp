@@ -1,3 +1,4 @@
+#import "Tree.cp"
 StringContainer := class 
 {
 	Strs := Map.{string,int}
@@ -6,7 +7,8 @@ StringContainer := class
 		if not Strs.Exist(St)
 		{
 			SomId := GetNewId()
-			Strs[St.Copy()] = SomId
+			strToSet := ref Strs[StrCopy(St)]
+			strToSet = SomId
 			return SomId
 		}
 		return Strs[St]

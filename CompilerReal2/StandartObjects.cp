@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "StringContainer.cp"
 
 ObjResult := class extend Object
 {
@@ -381,7 +382,7 @@ ObjTemplateType := class extend Object
 	MyStr := char^
 	this := !(char^ st) -> void
 	{
-		MyStr = st[1]&.Copy()
+		MyStr = StrCopy(st[1]&)
 	}
 	this := !() -> void
 	{

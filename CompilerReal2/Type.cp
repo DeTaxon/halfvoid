@@ -696,9 +696,10 @@ TypeClass := class extend Type
 
 GetType := !(string Name) -> Type^
 {
-	for Def : DefsTable
+	for i : DefsTable->len
 	{
-		if Def.ItName == Name return Def.ItType
+		it := ref DefsTable[i]
+		if it.ItName == Name return it.ItType
 	}
 	return null
 }

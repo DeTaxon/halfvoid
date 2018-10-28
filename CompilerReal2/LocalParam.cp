@@ -1,6 +1,6 @@
 #import "Tree.cp"
-#import "StandartObjects.cp"
 #import "BoxClass.cp"
+#import "StandartObjects.cp"
 
 MemParam := class extend ObjResult
 {

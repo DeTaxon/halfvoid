@@ -12,6 +12,7 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 
 	while iter != null
 	{
+		printf("wut %s\n",iter.GetValue())
 		if iter.GetValue() == "i:=1"
 		{
 			AsNeed := iter->{ObjParam^}
@@ -60,6 +61,7 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 					while notSure.Right != null
 						notSure = notSure.Right
 				}
+				printf("searching %s in %s\n",name,fl.filePath.itStr)
 
 				res := GetItem2(name,notSure,Searched)
 				if res != null return res

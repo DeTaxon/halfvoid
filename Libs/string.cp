@@ -13,6 +13,19 @@ CleanStrs := !() -> void
 	}
 }
 
+ToString := !(int x) -> char^
+{
+	toRet := new char[13]
+	sprintf(toRet,"%i",x)
+	return toRet
+}
+ToString := !(float x) -> char^
+{
+	toRet := new char[30]
+	sprintf(toRet,"%f",x)
+	return toRet
+}
+
 "==" := !(char^ a,char^ b) -> bool
 {
 	if a->{void^} == null or b->{void^} == null return false
@@ -100,58 +113,58 @@ ChrInStr := !(int chr,char^ str) -> bool
 	return false
 }
 
-//DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
-//{
-//	Buf := char[1024]
-//	i := 0
-//	j := 0
-//	while what[j]
-//	{
-//		if what[j] == to
-//		{
-//			Buf[i] = 0 
-//			if i B.Push(StrCopy(Buf))
-//			i = 0
-//			j += 1
-//		} else
-//		{
-//			Buf[i] = what[j]
-//			i += 1
-//			j += 1
-//		}
-//	}
-//	if i 
-//	{
-//		Buf[i] = 0
-//		B.Push(StrCopy(Buf))
-//	}		
-//}
-//DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
-//{
-//	Buf := char[1024]
-//	i := 0
-//	j := 0
-//	while what[j]
-//	{
-//		if ChrInStr(what[j],to)
-//		{
-//			Buf[i] = 0
-//			if i B.Push(StrCopy(Buf))
-//			i = 0
-//			j += 1
-//		} else
-//		{
-//			Buf[i] = what[j]
-//			i += 1
-//			j += 1
-//		}
-//	}
-//	if i 
-//	{
-//		Buf[i] = 0
-//		B.Push(StrCopy(Buf))
-//	}		
-//}
+DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
+{
+	Buf := char[1024]
+	i := 0
+	j := 0
+	while what[j] != 0
+	{
+		if what[j] == to
+		{
+			Buf[i] = 0 
+			if i B.Push(StrCopy(Buf))
+			i = 0
+			j += 1
+		} else
+		{
+			Buf[i] = what[j]
+			i += 1
+			j += 1
+		}
+	}
+	if i 
+	{
+		Buf[i] = 0
+		B.Push(StrCopy(Buf))
+	}		
+}
+DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
+{
+	Buf := char[1024]
+	i := 0
+	j := 0
+	while what[j] != 0
+	{
+		if ChrInStr(what[j],to)
+		{
+			Buf[i] = 0
+			if i B.Push(StrCopy(Buf))
+			i = 0
+			j += 1
+		} else
+		{
+			Buf[i] = what[j]
+			i += 1
+			j += 1
+		}
+	}
+	if i 
+	{
+		Buf[i] = 0
+		B.Push(StrCopy(Buf))
+	}		
+}
 
 StrToInt := !(char^ a) -> int 
 {
@@ -203,6 +216,16 @@ StrToFloat := !(char^ a) -> float
 	if Min return 0.0-Sum
 	return Sum
 }
+
+StringIterator := class
+{
+	itr := char^
+	this := !(char^ itm) -> void {	itr = itm}
+	Inc := !() -> void { itr = itr + 1}
+	IsEnd := !() -> bool { return itr == null}
+	"^" := !() -> ref char { return itr^ }
+}
+"~For" := !(char^ str) -> StringIterator { return StringIterator(str)}
 //"()" := !(char^ this,args...) -> char^ 
 //{
 //}

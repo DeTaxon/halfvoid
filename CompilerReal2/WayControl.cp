@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 WayControl := class extend Object
 {
 	itItm := string
@@ -8,7 +10,7 @@ WayControl := class extend Object
 	{
 		itType = PATH_CONTINUE
 		if itm == "break" itType = PATH_BREAK
-		itItm = itm.Copy()
+		itItm = StrCopy(itm)
 	}
 	Clone := virtual !() -> Object^
 	{

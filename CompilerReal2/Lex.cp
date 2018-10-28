@@ -203,7 +203,7 @@ GenerateToken := !(char^ Buuf, int id) -> Token^
 	i := 0
 	res := new Token
 	res.Id = id
-	while Buuf[i]
+	while Buuf[i] != 0
 	{
 		res.Buff[i] = Buuf[i]
 		i += 1

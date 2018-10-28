@@ -102,6 +102,10 @@ Path := class
 		res := stat(itStr,statStruct->{char^})
 		return (statStruct[25] and_b 0x40) != 0
 	}
+	"=" := !(Path pt) -> void
+	{
+		itStr = pt.itStr
+	}
 	"/=" := !(string str) -> void
 	{
 		itStr = itStr + "/" + str

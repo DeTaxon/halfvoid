@@ -1,5 +1,10 @@
 #import "Lex.cp"
 #import "Type.cp"
+#import "CommonObjects.cp"
+#import "StateParse.cp"
+#import "ObjIndent.cp"
+#import "WayControl.cp"
+#import "StandartObjects.cp"
 
 Object := class{
 	Id := int
@@ -360,7 +365,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 								NS := new WayControl(Tok.Buff)
 								Adder = PushObject(Adder,NS)
 							}else{
-								NS := new ObjIndent(Tok.Buff.Copy())
+								NS := new ObjIndent(StrCopy(Tok.Buff))
 								Adder = PushObject(Adder,NS)
 							}
 						}
@@ -376,7 +381,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 			
 			k := 2
 		
-			while Tok.Buff[k]
+			while Tok.Buff[k] != 0
 			{
 				Value *= 16
 				if Tok.Buff[k] in '0'..'9' Value += Tok.Buff[k] - '0'
@@ -406,7 +411,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 
 			if Tok.Id == 4
 			{
-				NS := new ObjSuffix(Tok.Buff[k]&.Copy())
+				NS := new ObjSuffix(StrCopy(Tok.Buff[k]&))
 				Adder = PushObject(Adder,NS)
 			}
 		}

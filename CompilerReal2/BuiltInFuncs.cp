@@ -15,7 +15,7 @@ BuiltInFunc := class extend BoxFunc
 		AsmLine := ToExe
 
 		i := 0
-		while AsmLine[i]
+		while AsmLine[i] != 0
 		{
 			if AsmLine[i] == '#'
 			{
@@ -1318,11 +1318,23 @@ CreateBuiltIns := !() -> void
 	VoidP := VoidT.GetPoint()
 	DoubleT := GetType("double")
 
+	preRes := int[4]
+	preRes[0] = 8
+	preRes[1] = 16
+	preRes[2] = 32
+	preRes[3] = 64
+	preRes2 := string[2]
+	preRes2[0] = "s"
+	preRes2[1] = "u"
 
-	for i : ![8,16,32,64] for j : ![8,16,32,64]
-	for IsS1 : !["s","u"]
-	for IsS2 : !["s","u"]
+	for iPre : 4 for jPre : 4
+	for IsS1Pre : 2
+	for IsS2Pre : 2
 	{
+		i := preRes[iPre]
+		j := preRes[jPre]
+		IsS1 := preRes2[IsS1Pre]
+		IsS2 := preRes2[IsS2Pre]
 		from := GetType(IsS1 + i)
 		to := GetType(IsS2 + j)
 		if i > j
@@ -1343,10 +1355,12 @@ CreateBuiltIns := !() -> void
 		//}
 	}
 
-	for ![8,16,32,64]
+	for itPre : 4
 	{
-		for IsS : !["s","u"]
+		it := preRes[itPre]
+		for IsSPre : 2
 		{
+			IsS := preRes2[IsSPre]
 			PType := GetType(IsS + it) // u8 s32 ...
 			BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i" + it + " #2, i" + it + "* #1\n"
 												+"#0 = add i" + it + " #2,0\n"))
@@ -1413,8 +1427,12 @@ CreateBuiltIns := !() -> void
 											"OnEnd##:\n" +
 											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
 	
-	for !["float","double"] // half?
+	preRes3 := string[2]
+	preRes3[0] = "float"
+	preRes3[1] = "double"
+	for itPre : 2 // half?
 	{
+		it := preRes3[itPre]
 		PType := GetType(it)
 		BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store " + it + " #2, " + it + "* #1\n"
 											+"#0 = fadd " + it + " #2,0.0\n"))
@@ -1517,8 +1535,9 @@ Vec4fFuncs := !() -> void
 	Typs[0] = F4T
 	Typs[1] = GetType("quantf")
 	
-	for NT : Typs
+	for NTPre: Typs->len
 	{
+		NT := Typs[NTPre]
 		BuiltInFuncs.Push( new BuiltInFuncBinar("+",NT,false,NT,false,NT,"#0 = fadd " + F4N + " #1 , #2\n"))
 		BuiltInFuncs.Push( new BuiltInFuncBinar("-",NT,false,NT,false,NT,"#0 = fsub " + F4N + " #1 , #2\n"))
 		BuiltInFuncs.Push( new BuiltInFuncBinar("/",NT,false,NT,false,NT,"#0 = fdiv " + F4N + " #1 , #2\n"))

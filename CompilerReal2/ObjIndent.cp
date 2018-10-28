@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 ObjIndent := class extend Object
 {
@@ -80,7 +81,7 @@ ObjSuffix := class extend ObjConst
 	"this" := !(char^ str) -> void
 	{
 		Clean()
-		MyStr = str.Copy()
+		MyStr = StrCopy(str)
 	}
 	GetValue := virtual !() -> char^
 	{
