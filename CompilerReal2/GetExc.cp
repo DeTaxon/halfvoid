@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFunc^
 {
 

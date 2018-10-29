@@ -2,6 +2,7 @@
 #import "StandartObjects.cp"
 #import "AllocBox.cp"
 #import "ConstTemp.cp"
+#import "FindFunc.cp"
 
 ParseFuncDataR := !(Object^ item) -> Object^
 {

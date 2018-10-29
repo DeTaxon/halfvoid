@@ -909,7 +909,6 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		asStrT := (consts[0]->{ObjStr^})
 		asStr := asStrT.GetString()
-		
 		for ToClass.Params.Size()
 		{
 			if ToClass.Params[it].ItName == asStr

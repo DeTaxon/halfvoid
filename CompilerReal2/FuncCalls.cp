@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "GetExc.cp"
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
@@ -346,6 +347,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 					if func != null
 					{
+						TrimCommas(iter.Right.Right)
 						iter = iter.Left
 						iter.Right = iter.Right.Right.Right.Down
 						if iter.Right != null iter.Right.Left = iter
@@ -535,7 +537,7 @@ IsOper := !(string may) -> bool
 
 }
 
-TrimCommas := !(Object up) -> void
+TrimCommas := !(Object^ up) -> void
 {
 	if up.Down != null
 	{

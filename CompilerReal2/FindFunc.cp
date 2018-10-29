@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 IsWord := !(string name) -> bool
 {
@@ -181,7 +182,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 	while iterU != null
 	{
 		lazy := true
-		while (lazy)
+		while lazy
 		{
 			lazy = iterU.Up != null
 			if lazy

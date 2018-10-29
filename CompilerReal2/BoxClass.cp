@@ -220,7 +220,7 @@ BoxClass := class extend Object
 	ContainVirtual  := bool
 
 	ItVals := Queue.{ObjConstHolder^}
-	ItConsts := Queue.{Object^}()
+	ItConsts := Queue.{Object^}
 
 	GetClassOutputName := !() -> string
 	{
