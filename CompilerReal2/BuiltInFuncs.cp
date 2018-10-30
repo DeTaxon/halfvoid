@@ -392,7 +392,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		if asNeed == "w" return 0
 
 
-		if asNeed.Size() == 4
+		if StrSize(asNeed) == 4
 		{
 			for i : asNeed
 			{
@@ -408,7 +408,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		asNeedPre := consts[0]->{ObjStr^}
 		asNeed := asNeedPre.GetString()
 		
-		if asNeed.Size() == 1
+		if StrSize(asNeed) == 1
 		{
 			x := 0
 			if asNeed == "y" x = 1
@@ -521,7 +521,7 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
 	{
 		//toToT := ((consts[0]) ->{ObjType^}).MyType
-		toToT := ((pars[0].Base).GetPoint())
+		toToT := pars[0].Base.GetPoint()
 		return new BuiltInFuncUno("->{}",pars[0],false,pars[0].Base.GetPoint(),false,
 		"#0 = bitcast " + pars[0].GetName() +  "#1 to " + toToT.GetName() + "\n")
 	}

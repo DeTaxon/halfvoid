@@ -310,7 +310,7 @@ BoxFile := class extend BoxBlock
 		if DebugMode //later
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
-			f << filePath.FullPath() << "\", directory: \""
+			f << filePath.FullPath().itStr << "\", directory: \""
 			f <<  filePath.FolderName() <<"\")\n"
 		}
 	}
@@ -325,7 +325,7 @@ BoxFile := class extend BoxBlock
 		if DebugMode //later
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
-			f << filePath.FullPath() << "\", directory: \""
+			f << filePath.FullPath().itStr << "\", directory: \""
 			f <<  filePath.FolderName() <<"\")\n"
 		}
 	}

@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 ParseParamCall := !(Object^ ob) -> Object^
 {
 	if ob.GetValue() == "~ind"

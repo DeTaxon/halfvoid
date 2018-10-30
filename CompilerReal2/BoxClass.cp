@@ -3,7 +3,7 @@
 #import "LocalParam.cp"
 #import "CmpConstObjs.cp"
 
-ParseClass := virtual !(Object^ ob)-> BoxClass^
+ParseClass := !(Object^ ob)-> BoxClass^
 {
 	
 	if ob == null return null
@@ -19,7 +19,8 @@ ParseClass := virtual !(Object^ ob)-> BoxClass^
 	if iterT.GetValue() == "."
 	{
 		iterT = iterT.Right.Right
-		return new BoxClassTemplate(ob,null->{Object^})
+		preRes := new BoxClassTemplate(ob,null->{Object^})
+		return preRes->{BoxClass^}
 	}
 
 	ExtObj := Object^
@@ -423,7 +424,7 @@ BoxClass := class extend Object
 				funcT := GetFuncType(pars,bools&,GetType("void"),false,false)
 				
 				names := new char^[1]
-				names^ = "this"
+				names[0] = "this"
 				newFunc := new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
 				newPrm.Down = newFunc
 				newPrm.Down.Up = newPrm

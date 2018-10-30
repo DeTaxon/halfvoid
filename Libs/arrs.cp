@@ -323,6 +323,10 @@ Map := class .{@TKey,@TValue}
 		}
 		return false
 	}
+	Empty := !() -> bool
+	{
+		return Start == null
+	}
 	Delete := !() -> void
 	{
 		iter := Start
