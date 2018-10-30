@@ -440,7 +440,7 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
 	{
-		if pars.Size() != 0 return 0
+		if pars.Size() != 0 return 255
 		if consts.Size() != 2 return 255
 		if consts[0].GetValue() != "~type" return 255
 		if consts[1].GetValue() != "~str" return 255

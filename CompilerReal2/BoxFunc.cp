@@ -644,7 +644,7 @@ BoxFunc := class extend Object
 					}
 					Typs.Push(MayType)
 					TypsIsRef.Push(IsParRef) // TODO
-					TypsNams.Push(MayName.Copy())
+					TypsNams.Push(StrCopy(MayName))
 					Pars.Clean()		
 
 				}
@@ -679,7 +679,6 @@ BoxFunc := class extend Object
 
 		arr := TypsIsRef.ToArray()
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,IsRetRef,IsVargsL)
-		free(arr)
 
 		if MyFuncParamNames != null and MyFuncType.ParsCount != 0
 		{
@@ -718,7 +717,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	{
 		IsRetRef = false
 		FuncName = SomeName
-		OutputName = SomeName.Copy()
+		OutputName = StrCopy(SomeName)
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 
 		if IsInvalid ErrorLog.Push("can not parse function\n")

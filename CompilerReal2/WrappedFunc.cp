@@ -1,3 +1,5 @@
+#import "BoxFunc.cp"
+
 WrappedFunc := class extend BoxFuncBody //TODO: fill InAlloc
 {
 	this := !(Object^ itm) -> void

@@ -115,7 +115,7 @@ ObjParam := class extend Object
 				Down = asClass
 				asClass.Up = this&
 
-				iterB := this&
+				iterB := this&->{Object^}
 				lazy := true
 
 				while lazy
@@ -229,7 +229,7 @@ ObjParam := class extend Object
 						Down = asClass
 						asClass.Up = this&
 
-						iterB := this&
+						iterB := this&->{Object^}
 						lazy := true
 
 						while lazy

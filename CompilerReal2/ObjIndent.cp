@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "GetUse.cp"
 
 ObjIndent := class extend Object
 {

@@ -1,3 +1,6 @@
+#import "Tree.cp"
+#import "WrappedFunc.cp"
+
 ObjDefer := class extend Object
 {
 	this := !(Object^ dwn) -> void

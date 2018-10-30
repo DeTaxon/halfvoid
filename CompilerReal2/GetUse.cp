@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 InspectDataR := !(Object^ item) -> Object^
 {
 	DaR := null->{Object^}
@@ -20,7 +22,7 @@ GetUse := !(Object^ item) -> Object^
 {
 	GotObject := null->{Object^}
 
-	if (item->GetValue() == "~d")
+	if item.GetValue() == "~d"
 	{
 		res := InspectDataR(item)
 		if res != null return res

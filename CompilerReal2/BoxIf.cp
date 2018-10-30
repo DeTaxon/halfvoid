@@ -1,3 +1,5 @@
+#import "Tree.cp"
+
 BoxIf := class extend Object
 {
 	MyId := int

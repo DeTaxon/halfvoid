@@ -1,3 +1,4 @@
+#import "Tree.cp"
 
 BoxSwitch := class extend Object
 {

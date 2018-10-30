@@ -98,6 +98,7 @@ main := !(int argc,char^^ argv) -> int
 
 	if ErrorLog.Empty()
 	{
+		printf("good to go\n")
 		iterTR := PostFuncs.Start
 		while iterTR != null
 		{
@@ -105,7 +106,7 @@ main := !(int argc,char^^ argv) -> int
 			iterTR = iterTR.Next
 		}
 
-		fil := sfile("out2.ll","w")
+		fil := sfile(outputFile,"w")
 		fil << GlobalStrs
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"

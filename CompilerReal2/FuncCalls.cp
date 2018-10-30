@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "GetExc.cp"
 #import "ParamCall.cp"
+#import "PtrToRef.cp"
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {

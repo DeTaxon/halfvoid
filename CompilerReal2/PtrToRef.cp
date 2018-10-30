@@ -1,3 +1,5 @@
+#import "StandartObjects.cp"
+
 PtrToRef := class extend ObjResult
 {
 	this := !(Object^ toReplace) -> void

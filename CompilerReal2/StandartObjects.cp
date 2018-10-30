@@ -230,7 +230,7 @@ ObjStr := class extend ObjConst
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		StrSi := StrContainer.GetString(MyStrId).Size() + 1
+		StrSi := StrSize(StrContainer.GetString(MyStrId)) + 1
 		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
 	}
 	PrintUse := virtual !(sfile f) -> void
