@@ -6,6 +6,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 		may := GetItem(dynCast.MyStr,ob)
 
+
 		if may != null
 		{
 			if may.GetValue() == "i:=1"
@@ -131,6 +132,11 @@ ParamFuncCall := class extend ParamCall
 	GetName := virtual !() -> string
 	{
 		return "@" + OutName
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << ResultType.GetName() << " "
+		f << "@" << OutName
 	}
 }
 

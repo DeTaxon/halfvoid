@@ -1205,7 +1205,7 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 		return new BuiltInFuncBinar("->",pars[0],false,pars[1],false,GetType("bool"),false,
 			"%PreOne## = bitcast " + pars[0].GetName() + " #1 to i8*\n" +
 			"%PreTwo## = bitcast " + pars[1].GetName() + " #2 to i8*\n" +
-			"#0 = icmp eq " + pars[0].GetName() + " #1,#2\n")
+			"#0 = icmp eq i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1237,7 +1237,7 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 		return new BuiltInFuncBinar("->",pars[0],false,pars[1],false,GetType("bool"),false,
 			"%PreOne## = bitcast " + pars[0].GetName() + " #1 to i8*\n" +
 			"%PreTwo## = bitcast " + pars[1].GetName() + " #2 to i8*\n" +
-			"#0 = icmp ne " + pars[0].GetName() + " #1,#2\n")
+			"#0 = icmp ne i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

@@ -939,7 +939,13 @@ NaturalCall := class extend SomeFuncCall
 		PrintFuncName(f)
 		f << "("
 		PrintParamUses(f)
-		f << ")\n"
+		f << ")"
+		if Line != null
+		{
+			f << "; Line: " << Line.LinePos << " File: " << Line.inFile.itStr 
+
+		}
+		f << "\n"
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")

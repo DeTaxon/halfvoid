@@ -134,5 +134,10 @@ ParamFuncCall := class extend ParamCall
 	{
 		return "@" + OutName
 	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << ResultType.GetName() << " "
+		f << "@" << OutName
+	}
 }
 

@@ -300,10 +300,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				{
 					LL := iter.Left
 
-					if iter.Left.GetType() == "standart"
-					{
-						return null
-					}
+					//if iter.Left.GetType().Ge == "standart"
+					//{
+					//	return null
+					//}
 
 					GotClass := true
 					if  LL.GetType().GetType() != "class" 
@@ -941,7 +941,13 @@ NaturalCall := class extend SomeFuncCall
 		PrintFuncName(f)
 		f << "("
 		PrintParamUses(f)
-		f << ")\n"
+		f << ")"
+		if Line != null
+		{
+			f << "; Line: " << Line.LinePos << " File: " << Line.inFile.itStr 
+
+		}
+		f << "\n"
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
