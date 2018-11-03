@@ -4,6 +4,7 @@
 #import "BoxBlock.cp"
 #import "PriorityRead.cp"
 #import "BuiltInFuncs.cp"
+archSize := 64
 
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]

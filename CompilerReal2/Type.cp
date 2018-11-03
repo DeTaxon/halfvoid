@@ -64,6 +64,9 @@ Type := class {
 			ItName = GetNewName()
 		return ItName
 	}
+
+	metaId := int
+
 	PrintType := virtual !(sfile f) -> void
 	{
 		f << GetName()
@@ -378,6 +381,14 @@ TypeStandart := class extend Type{
 		IRName = Name 
 		ItSize = siz
 		ItAlign = Aln
+		
+		if DebugMode
+		{
+			metaId = GetNewId()
+			itStr := "!" + metaId  + " = " + mName + "\n"
+			DebugMetaData.Push(itStr)
+		}
+
 		Clean()
 	}
 	GetType := virtual !() -> string
@@ -400,6 +411,12 @@ TypePoint := class extend Type
 	{
 		Clean()
 		Base = nBase
+		if DebugMode
+		{
+			metaId = GetNewId()
+			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			DebugMetaData.Push(itStr)
+		}
 	}
 	GetType := virtual !() -> string
 	{
@@ -419,6 +436,12 @@ TypePointVoidP := class extend TypePoint
 	this := !(Type^ nBase) -> void
 	{
 		Base = nBase
+		if DebugMode
+		{
+			metaId = GetNewId()
+			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			DebugMetaData.Push(itStr)
+		}
 	}
 	GetName := virtual !() -> string
 	{
@@ -430,6 +453,12 @@ TypePointVoidFatP := class extend TypeFatArr
 	this := !(Type^ nBase) -> void
 	{
 		Base = nBase
+		if DebugMode
+		{
+			metaId = GetNewId()
+			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			DebugMetaData.Push(itStr)
+		}
 	}
 	GetName := virtual !() -> string
 	{
@@ -630,6 +659,12 @@ TypeArr := class extend Type
 	{
 		Base = B
 		Size = S
+		if DebugMode
+		{
+			metaId = GetNewId()
+			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			DebugMetaData.Push(itStr)
+		}
 	}
 	GetType := virtual !() -> string
 	{

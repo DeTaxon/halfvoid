@@ -598,6 +598,10 @@ BoxClass := class extend Object
 				f << Params[it].ResultType.GetName()
 			}
 			f << "}\n"
+			if DebugMode
+			{
+				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type,  
+			}
 		}
 	}
 	PrintGlobal := virtual !(sfile f) -> void

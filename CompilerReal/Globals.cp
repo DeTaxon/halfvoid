@@ -1,4 +1,6 @@
 
+archSize := 64
+
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
