@@ -125,6 +125,19 @@ main := !(int argc,char^^ argv) -> int
 			wutt.Data^.PrintGlobal(fil)
 			wutt = wutt.Next
 		}
+		if DebugMode
+		{
+			fileId := Files.Start.Data.fileId
+			preId := GetNewId()
+			fil << "!llvm.dbg.cu = !{!"<< preId <<"}\n"
+			fil << "!" << preId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !{}, language: DW_LANG_C99, file: !"<< fileId <<" )\n"
+			iter7 := DebugMetaData.Start
+			while iter7 != null
+			{
+				fil << iter7.Data
+				iter7 = iter7.Next
+			}
+		}
 		fil.close()
 	}else
 	{

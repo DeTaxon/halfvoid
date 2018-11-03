@@ -218,6 +218,8 @@ BoxClass := class extend Object
 	ItVals := Queue.{ObjConstHolder^}
 	ItConsts := Queue.{Object^}()
 
+	ClassName := string
+
 	GetClassOutputName := !() -> string
 	{
 		return "%Class" + ClassId
@@ -304,6 +306,7 @@ BoxClass := class extend Object
 
 	this := !(Object^ item, BoxClass^ par,Object^ extItem) -> void 
 	{
+		ClassName = "anon"
 		Line = item.Line	
 		ExtendObject = extItem
 
@@ -317,6 +320,7 @@ BoxClass := class extend Object
 
 		ClassId = GetNewId()
 		ClassType = new TypeClass(this&)
+		ClassType.metaId = ClassId
 		UnrollTemplate = new BuiltInTemplateUnroll(this&)
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 
@@ -600,7 +604,8 @@ BoxClass := class extend Object
 			f << "}\n"
 			if DebugMode
 			{
-				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type,  
+				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
+				f << ", elements: !{})\n"
 			}
 		}
 	}

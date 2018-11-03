@@ -1143,6 +1143,7 @@ BoxFuncBody := class extend BoxFunc
 					asN := iter->{BoxFile^}
 					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\"" << FuncName << "\","
 					f << "scope: !" << asN.fileId << " , file: !" << asN.fileId
+					f << ",type: !" << MyFuncType.metaId 
 					if Line != null
 					{
 						f << ", line: " << Line.LinePos						

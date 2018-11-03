@@ -347,6 +347,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 	newTypeFunc := new TypeFunc(lin,ExtraArr,IsVArgs)
 	newTypeFunc.RetType = retType
 	newTypeFunc.RetRef = retRef
+	newTypeFunc.DoMeta()
 	FuncTypeTable.Push(newTypeFunc)
 	return newTypeFunc
 }
@@ -487,6 +488,7 @@ TypeFunc := class extend Type
 		}
 		RetRef = false
 		IsVArgs = FType.IsVArgs
+
 	}
 	this := !(Queue.{Type^} P,bool^ retsRef, bool IsV) -> void
 	{
@@ -507,6 +509,47 @@ TypeFunc := class extend Type
 		if ParsCount != 0 Pars = P.ToArray()
 		RetRef = false
 		IsVArgs = IsV
+
+
+	}
+	DoMeta := !() -> void
+	{
+		if DebugMode
+		{
+			canCreate := RetType != null
+			for i : ParsCount
+			{
+				if Pars[i] == null canCreate = false
+			}
+			if canCreate
+			{
+				metaId = GetNewId()
+				subMeta := GetNewId()
+				itStr := "!" + subMeta + " = !{"
+				if RetType == GetType("void")
+				{
+					itStr = itStr + "null"
+				}else{
+					itStr = itStr + "!" + RetType.metaId
+				}
+				for i : ParsCount
+				{
+					itStr = itStr + ",!" 
+					if ParsIsRef[i]
+					{
+						asP := Pars[i].GetPoint()
+						itStr = itStr + asP.metaId
+
+					}else{
+						itStr = itStr + Pars[i].metaId
+					}
+				}
+		
+				itStr = itStr + "}\n"
+				itStr = itStr + "!" + metaId + " = !DISubroutineType(types: !" + subMeta + ")\n"
+				DebugMetaData.Push(itStr)
+			}
+		}
 	}
 	GetType := virtual !() -> string
 	{
@@ -658,7 +701,7 @@ TypeArr := class extend Type
 		if DebugMode
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
 			DebugMetaData.Push(itStr)
 		}
 	}
