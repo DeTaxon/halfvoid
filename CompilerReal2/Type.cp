@@ -412,6 +412,7 @@ TypePoint := class extend Type
 	{
 		Clean()
 		Base = nBase
+		ItName = Base.GetName() + "*"
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -437,6 +438,7 @@ TypePointVoidP := class extend TypePoint
 	this := !(Type^ nBase) -> void
 	{
 		Base = nBase
+		ItName = "i8*"
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -454,6 +456,7 @@ TypePointVoidFatP := class extend TypeFatArr
 	this := !(Type^ nBase) -> void
 	{
 		Base = nBase
+		ItName = "i8*"
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -480,6 +483,7 @@ TypeFunc := class extend Type
 
 	this := !(TypeFunc^ FType) -> void
 	{
+		ItName = null
 		ParsCount = FType.ParsCount
 
 		ParsIsRef = new bool[ParsCount]
@@ -492,6 +496,7 @@ TypeFunc := class extend Type
 		}
 		RetRef = false
 		IsVArgs = FType.IsVArgs
+		ItName = GetNewName()
 	}
 	this := !(Queue.{Type^} P,bool^ retsRef, bool IsV) -> void
 	{
@@ -513,7 +518,7 @@ TypeFunc := class extend Type
 		RetRef = false
 		IsVArgs = IsV
 
-
+		ItName = GetNewName()
 	}
 	DoMeta := !() -> void
 	{
@@ -701,6 +706,7 @@ TypeArr := class extend Type
 	{
 		Base = B
 		Size = S
+		ItName = GetNewName()
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -746,6 +752,7 @@ TypeClass := class extend Type
 	this := !(BoxClass^ ToSet) -> void
 	{
 		ToClass = ToSet
+		ItName = GetNewName()
 	}
 	GetType := virtual !() -> string
 	{
