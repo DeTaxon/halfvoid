@@ -53,11 +53,19 @@ ToString := !(float x) -> char^
 }
 "+" := !(char^ a, int b) -> char^
 {
+	if a == null {
+		sprintf(BigBuff->{char^},"%i",b)
+		return BigBuff
+	}
 	sprintf(BigBuff->{char^},"%s%i",a,b)
 	return StrCopy(BigBuff->{char^})
 }
 "+" := !(char^ a, float b) -> char^
 {
+	if a == null {
+		sprintf(BigBuff->{char^},"%i",b)
+		return BigBuff
+	}
 	sprintf(BigBuff,"%s%f",a,b)
 	return BigBuff.Copy()
 }

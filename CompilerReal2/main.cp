@@ -5,6 +5,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	GlobalStrs = ""
 	CTT = new CreateTupleTemplate()
 
 	targetFiles := Queue.{string}()

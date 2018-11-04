@@ -2,6 +2,7 @@
 main := !(int argc, char^^ argv) -> int
 {
 	//h := !{1,2,3}
+	printf("Wow\n")
 	return 0
 }
 
