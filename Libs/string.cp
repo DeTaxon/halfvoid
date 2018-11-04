@@ -2,7 +2,7 @@
 
 BigBuff := char[4096]
 
-CreatedStrs := Stack.{char^}
+//CreatedStrs := Stack.{char^}
 sprintf := !(char^ buf,char^ frmt, ...) -> int declare
 
 CleanStrs := !() -> void
@@ -28,7 +28,7 @@ ToString := !(float x) -> char^
 
 "==" := !(char^ a,char^ b) -> bool
 {
-	if a->{void^} == null or b->{void^} == null return false
+	if a->{int^} == null or b->{int^} == null return false
 	i := 0
 	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	return a[i] == b[i]
@@ -83,7 +83,7 @@ StrCopy := !(char^ a) -> char^
 	for Si Pre[it] = a[it]
 	Pre[Si] = 0
 
-	CreatedStrs.Push(Pre)
+	//CreatedStrs.Push(Pre)
 	return Pre
 }
 Copy := !(char^ this) -> char^
@@ -93,7 +93,7 @@ Copy := !(char^ this) -> char^
 	for Si Pre[it] = this[it]
 	Pre[Si] = 0
 
-	CreatedStrs.Push(Pre)
+	//CreatedStrs.Push(Pre)
 	return Pre
 }
 
@@ -220,10 +220,11 @@ StrToFloat := !(char^ a) -> float
 StringIterator := class
 {
 	itr := char^
-	this := !(char^ itm) -> void {	itr = itm}
-	Inc := !() -> void { itr = itr + 1}
-	IsEnd := !() -> bool { return itr == null}
-	"^" := !() -> ref char { return itr^ }
+	ind := int
+	this := !(char^ itm) -> void {	itr = itm ind = 0}
+	Inc := !() -> void { ind += 1}
+	IsEnd := !() -> bool { return itr[ind] == 0}
+	"^" := !() -> ref char { return itr[ind] }
 }
 "~For" := !(char^ str) -> StringIterator { return StringIterator(str)}
 //"()" := !(char^ this,args...) -> char^ 

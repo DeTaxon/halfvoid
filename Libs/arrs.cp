@@ -54,7 +54,7 @@ Stack := class .{@T}
 		Prev := Start.Data
 		Later := Start
 		Start = Start.Next
-		delete Later
+		//delete Later
 		itSize--
 		return Prev
 	}
@@ -135,6 +135,7 @@ Queue := class .{@T} extend Stack.{T}
 	this := !() -> void
 	{
 		Start = null
+		itSize = 0
 	}
 	"=" := !(Queue.{T} toSet) -> void
 	{

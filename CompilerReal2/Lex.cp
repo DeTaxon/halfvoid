@@ -126,6 +126,9 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	// word id 1
 	for i : 'a'..'z' PreLines[0].GoTo[i] = 2
 	for i : 'A'..'Z' PreLines[0].GoTo[i] = 2
+	for i : 'a'..'z' PreLines[2].GoTo[i] = 2
+	for i : 'A'..'Z' PreLines[2].GoTo[i] = 2
+	PreLines[2].GoTo['_'] = 2
 	for i : "_$@#" PreLines[0].GoTo[i] = 2
 	PreLines[2].Id = 1
 
@@ -299,7 +302,7 @@ GetTokensFromFile := !(Path Name, Machine M, Queue.{Token^} ToFill) -> bool
 	
 		}
 		ToFill.Push(GenerateToken("",11)) // new line
-		free(CurLine)
+		//free(CurLine)
 	}
 	Cp.close()
 	return true

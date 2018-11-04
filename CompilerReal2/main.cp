@@ -110,7 +110,7 @@ main := !(int argc,char^^ argv) -> int
 			iterTR = iterTR.Next
 		}
 
-		fil := sfile("out2.ll","w")
+		fil := sfile(outputFile,"w")
 		fil << GlobalStrs
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
@@ -167,7 +167,7 @@ main := !(int argc,char^^ argv) -> int
 workIter := int
 WorkWithBag := !() -> void
 {
-	while not WorkBag.IsEmpty() and ErrorLog.Empty()
+	while WorkBag.Size() != 0 and ErrorLog.Empty()
 	{
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
