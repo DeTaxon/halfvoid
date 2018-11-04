@@ -377,7 +377,7 @@ TypeStandart := class extend Type{
 	ItSize  := int
 	ItAlign := int
 	
-	this := !(string Name, int siz, int Aln) -> void
+	this := !(string Name,string mName,  int siz, int Aln) -> void
 	{
 		IRName = Name 
 		ItSize = siz
@@ -704,7 +704,7 @@ TypeArr := class extend Type
 		if DebugMode
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
+			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
 			DebugMetaData.Push(itStr)
 		}
 	}
@@ -785,22 +785,22 @@ GetType := !(string Name) -> Type^
 CreateStandartTypes := !() -> void
 {	
 	//u
-	TypeTable[0] = new TypeStandart("i8",1,1)	
-	TypeTable[1] = new TypeStandart("i16",2,2)	
-	TypeTable[2] = new TypeStandart("i32",4,4)	
-	TypeTable[3] = new TypeStandart("i64",8,8)
+	TypeTable[0] = new TypeStandart("i8" ,"!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)	
+	TypeTable[1] = new TypeStandart("i16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)	
+	TypeTable[2] = new TypeStandart("i32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)	
+	TypeTable[3] = new TypeStandart("i64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 
 	//s
-	TypeTable[4] = new TypeStandart("i8",1,1)	
-	TypeTable[5] = new TypeStandart("i16",2,2)	
-	TypeTable[6] = new TypeStandart("i32",4,4)	
-	TypeTable[7] = new TypeStandart("i64",8,8)
+	TypeTable[4] = new TypeStandart("i8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)	
+	TypeTable[5] = new TypeStandart("i16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)	
+	TypeTable[6] = new TypeStandart("i32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)	
+	TypeTable[7] = new TypeStandart("i64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
 
-	TypeTable[8] = new TypeStandart("i1",1,1)	// bool
+	TypeTable[8] = new TypeStandart("i1","!DIBasicType(name: \"byte\", size: 8, align: 1,encoding: DW_ATE_boolean)",1,1)	// bool
 
-	TypeTable[9] = new TypeStandart("float",4,4)
-	TypeTable[10] = new TypeStandart("double",8,8)
-	TypeTable[11] = new TypeStandart("void",0,0)
+	TypeTable[9] = new TypeStandart("float","!DIBasicType(name: \"float\", size: 32, align: 32,encoding: DW_ATE_float)",4,4)
+	TypeTable[10] = new TypeStandart("double","!DIBasicType(name: \"double\", size: 64, align: 64,encoding: DW_ATE_float)",8,8)
+	TypeTable[11] = new TypeStandart("void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
 
 	TypeTable[12] = TypeTable[0].GetPoint() // char*
 
@@ -813,17 +813,17 @@ CreateStandartTypes := !() -> void
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
 
-	TypeTable[13] = new TypeStandart("%RangeTypeInt",8,8)
+	TypeTable[13] = new TypeStandart("%RangeTypeInt","!DIBasicType(name: \"range\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 	TypeTable[13].Base = TypeTable[6]
-	TypeTable[14] = new TypeStandart("%RangeTypeFloat",8,8)
+	TypeTable[14] = new TypeStandart("%RangeTypeFloat","!DIBasicType(name: \"rangef\", size: 32, align: 64,encoding: DW_ATE_float)",8,8)
 	TypeTable[14].Base = TypeTable[9]
 
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
-	TypeTable[15] = new TypeStandart("%OpaqType",0,0)
+	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
 
 	GlobalStrs = GlobalStrs + "%Vec4f = type <4 x float>\n"
-	TypeTable[17] = new TypeStandart("%Vec4f",16,16)
-	TypeTable[18] = new TypeStandart("%Vec4f",16,16)
+	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 
 
 
