@@ -547,6 +547,7 @@ BoxClass := class extend Object
 					if vTable[j].CmpItem(vTypes[i])
 					{
 						vTable[j] = vTypes[i]
+						vTypes[i].fItem.VirtualId = j
 						aS := vTypes[i].funcWrapper
 						aB := aS->{BuiltInVirtualCall^}
 						aB.MakeLine(j)
@@ -556,11 +557,23 @@ BoxClass := class extend Object
 				if not found
 				{
 					aS2 := vTypes[i].funcWrapper
+					vTypes[i].fItem.VirtualId = vTable.Size()
 					aB2 := aS2->{BuiltInVirtualCall^}
 					aB2.MakeLine(vTable.Size())
 					vTable.Push(vTypes[i])
 				}
 			}
+
+			for ThislessFuncs
+			{
+				if it.itFunc.IsVirtual
+				{
+					it.MakeLine(0)
+				}else{
+					it.MakeLine(it.itFunc.VirtualId)
+				}
+			}
+
 		}
 	}
 	PrintStruct := virtual !(sfile f) -> void
@@ -757,12 +770,13 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		}
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
 		ToExe = ""
-		MakeLine()
+		//MakeLine()
 	}
-	MakeLine := !() -> void
+	MakeLine := !(int id) -> void
 	{
 		aseBase := MyFuncType->{Type^}
 		FuncTypeName := aseBase.GetName()
+		classId := itClass.ClassId
 
 		isRetComp := MyFuncType.RetRef
 		if not isRetComp
@@ -772,12 +786,25 @@ BuiltInThislessFunc := class extend BuiltInFunc
 				isRetComp = MyFuncType.RetType.GetType() == "class" //TODO in ["class","fixarr"]
 			}
 		}
+		if itFunc.IsVirtual
+		{
+			ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* this, i32 0, i32 0\n" 
+			ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
+			ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
+			ToExe = ToExe + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
+		}
+
 		ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if MyFuncType.RetType != GetType("void") and not isRetComp
 			ToExe = ToExe + "#0 = "
 		fTypp := itFunc.MyFuncType
 		fTypp2 := fTypp->{Type^}
-		ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
+		if itFunc.IsVirtual
+		{
+			ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
+		}else{
+			ToExe = ToExe + "call " + fTypp2.GetName()  + "%Func##("
+		}
 		ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
 		for i : MyFuncType.ParsCount
 		{

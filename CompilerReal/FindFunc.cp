@@ -451,7 +451,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			}
 
 		}
-		if inType == VoidPType or funcType == VoidPType return 2
+		if funcType == VoidPType return 2
+		if inType == VoidPType and funcType != GetType("string") return 2
 	}
 
 

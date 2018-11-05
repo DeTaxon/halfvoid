@@ -55,7 +55,7 @@ ToString := !(float x) -> char^
 {
 	if a == null {
 		sprintf(BigBuff->{char^},"%i",b)
-		return BigBuff
+		return StrCopy(BigBuff)
 	}
 	sprintf(BigBuff->{char^},"%s%i",a,b)
 	return StrCopy(BigBuff->{char^})
@@ -64,7 +64,7 @@ ToString := !(float x) -> char^
 {
 	if a == null {
 		sprintf(BigBuff->{char^},"%i",b)
-		return BigBuff
+		return StrCopy(BigBuff)
 	}
 	sprintf(BigBuff,"%s%f",a,b)
 	return BigBuff.Copy()

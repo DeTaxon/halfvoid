@@ -494,6 +494,8 @@ BoxFunc := class extend Object
 	IsRetComplex := bool
 	IsRetRef := bool
 
+	VirtualId := int
+
 	MethodType := Type^
 
 	ItConsts := Queue.{Object^}

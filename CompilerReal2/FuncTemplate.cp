@@ -4,7 +4,7 @@ FuncTemplate := class extend Object
 	{
 		
 	}
-	GetValue := !() -> string
+	GetValue := virtual !() -> string
 	{
 		return "d{}()"
 	}

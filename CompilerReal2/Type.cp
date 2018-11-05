@@ -60,8 +60,10 @@ Type := class {
 	}
 	GetName := virtual !() -> string
 	{
-		if ItName == null
+		if ItName == null->{int^}
+		{
 			ItName = GetNewName()
+		}
 		return ItName
 	}
 
@@ -348,9 +350,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 		iterT = iterT.Next
 	}
 
-	newTypeFunc := new TypeFunc(lin,ExtraArr,IsVArgs)
-	newTypeFunc.RetType = retType
-	newTypeFunc.RetRef = retRef
+	newTypeFunc := new TypeFunc(lin,ExtraArr,retType,retRef,IsVArgs)
 	newTypeFunc.DoMeta()
 	FuncTypeTable.Push(newTypeFunc)
 	return newTypeFunc
@@ -412,7 +412,7 @@ TypePoint := class extend Type
 	{
 		Clean()
 		Base = nBase
-		ItName = Base.GetName() + "*"
+		//ItName = Base.GetName() + "*"
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -495,11 +495,14 @@ TypeFunc := class extend Type
 			for ParsCount Pars[it] = FType.Pars[it]
 		}
 		RetRef = false
+		RetType = FType.RetType
 		IsVArgs = FType.IsVArgs
-		ItName = GetNewName()
+		//ItName = GetNewName()
 	}
-	this := !(Queue.{Type^} P,bool^ retsRef, bool IsV) -> void
+	this := !(Queue.{Type^} P,bool^ retsRef,Type^ retType, bool isRetRef, bool IsV) -> void
 	{
+		RetType = retType
+		RetRef = isRetRef
 		ParsCount = P.Size()
 
 		if retsRef != null
@@ -518,7 +521,7 @@ TypeFunc := class extend Type
 		RetRef = false
 		IsVArgs = IsV
 
-		ItName = GetNewName()
+		//ItName = GetNewName()
 	}
 	DoMeta := !() -> void
 	{
@@ -568,6 +571,10 @@ TypeFunc := class extend Type
 		if RetType == null
 		{
 			return ""
+		}
+		for i : ParsCount
+		{
+			if Pars[i] == null return ""
 		}
 		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef
 		{

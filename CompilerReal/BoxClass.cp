@@ -542,6 +542,7 @@ BoxClass := class extend Object
 					if vTable[j].CmpItem(vTypes[i])
 					{
 						vTable[j] = vTypes[i]
+						vTypes[i].fItem.VirtualId = j
 						aS := vTypes[i].funcWrapper
 						aB := aS->{BuiltInVirtualCall^}
 						aB.MakeLine(j)
@@ -551,11 +552,24 @@ BoxClass := class extend Object
 				if not found
 				{
 					aS2 := vTypes[i].funcWrapper
+					vTypes[i].fItem.VirtualId = vTable.Size()
 					aB2 := aS2->{BuiltInVirtualCall^}
 					aB2.MakeLine(vTable.Size())
 					vTable.Push(vTypes[i])
 				}
 			}
+
+			for i : ThislessFuncs.Size()
+			{
+				it := ThislessFuncs[i]
+				if it.itFunc.IsVirtual
+				{
+					it.MakeLine(0)
+				}else{
+					it.MakeLine(it.itFunc.VirtualId)
+				}
+			}
+
 		}
 	}
 	PrintStruct := virtual !(sfile f) -> void
@@ -752,12 +766,13 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		}
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
 		ToExe = ""
-		MakeLine()
+		//MakeLine()
 	}
-	MakeLine := !() -> void
+	MakeLine := !(int id) -> void
 	{
 		aseBase := MyFuncType->{Type^}
 		FuncTypeName := aseBase.GetName()
+		classId := itClass.ClassId
 
 		isRetComp := MyFuncType.RetRef
 		if not isRetComp
@@ -767,13 +782,38 @@ BuiltInThislessFunc := class extend BuiltInFunc
 				isRetComp = MyFuncType.RetType.GetType() == "class" //TODO in ["class","fixarr"]
 			}
 		}
-		ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
+		if itFunc.IsVirtual
+		{
+			a1 := itInClass.vTable[id]
+			a2 := a1.fItem.MyFuncType
+			a3 := a2->{Type^}
+			FuncTypeName2 := a3.GetName()
+			ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0\n" 
+			ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
+			ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
+			ToExe = ToExe + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr##\n" 
+
+			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "*\n"
+			MyFuncType = itInClass.vTable[id].fType
+		}else{
+			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
+		}
+
 		if MyFuncType.RetType != GetType("void") and not isRetComp
 			ToExe = ToExe + "#0 = "
 		fTypp := itFunc.MyFuncType
 		fTypp2 := fTypp->{Type^}
-		ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
-		ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
+		if itFunc.IsVirtual
+		{
+			asPre1 := itInClass.vTable[id].fType
+			asPre2 := asPre1->{Type^}
+			ToExe = ToExe + "call " + asPre2.GetName()  + "%Func##("
+			ToExe = ToExe + itInClass.vTable[id].fType.Pars[0].GetName() + "* %NewThis##"
+		}else{
+			ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
+			ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
+		}
+
 		for i : MyFuncType.ParsCount
 		{
 			ToExe = ToExe + " , "
