@@ -128,6 +128,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	for i : 'A'..'Z' PreLines[0].GoTo[i] = 2
 	for i : 'a'..'z' PreLines[2].GoTo[i] = 2
 	for i : 'A'..'Z' PreLines[2].GoTo[i] = 2
+	for i : '0'..'9' PreLines[2].GoTo[i] = 2
 	PreLines[2].GoTo['_'] = 2
 	for i : "_$@#" PreLines[0].GoTo[i] = 2
 	PreLines[2].Id = 1

@@ -2,10 +2,11 @@
 #import "BoxTuple.cp"
 #import "FileLoader.cp"
 #import "CoolerObjects.cp"
+#import "Globals.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {
-	GlobalStrs = ""
+	//GlobalStrs = ""
 	CTT = new CreateTupleTemplate()
 
 	targetFiles := Queue.{string}()

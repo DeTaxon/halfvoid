@@ -1,5 +1,6 @@
 #import "BoxFunc.cp"
 #import "BoxClass.cp"
+#import "Type.cp"
 
 BuiltInFunc := class extend BoxFunc
 {

@@ -62,8 +62,8 @@ ObjIndent := class extend Object
 						{
 							if Left.GetValue() == "." ignore = true
 						}
-						if not ignore //BUG: someone using it before Syntax
-							EmitError("unknown indent "+ MyStr + "\n")
+						//if not ignore //BUG: someone using it before Syntax
+						//	EmitError("unknown indent "+ MyStr + "\n")
 					}
 				}
 			}
