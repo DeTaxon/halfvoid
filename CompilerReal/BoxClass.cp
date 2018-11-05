@@ -176,7 +176,7 @@ FuncItem := class
 
 	CmpItem := !(FuncItem^ Ri) -> bool
 	{	
-		if fName != Ri.fName return false
+		if not StrCmp(fItem.FuncName,Ri.fItem.FuncName) return false
 		if fType.RetType != Ri.fType.RetType return false
 		if fType.ParsCount != Ri.fType.ParsCount return false
 		if fType.IsVArgs != Ri.fType.IsVArgs return false
@@ -565,9 +565,9 @@ BoxClass := class extend Object
 				it := ThislessFuncs[i]
 				if it.itFunc.IsVirtual
 				{
-					it.MakeLine(0)
-				}else{
 					it.MakeLine(it.itFunc.VirtualId)
+				}else{
+					it.MakeLine(0)
 				}
 			}
 
@@ -673,7 +673,7 @@ BoxClass := class extend Object
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{
 		newItem := new FuncItem
-		newItem.fName = fNam
+		newItem.fName = StrCopy(fNam)
 		newItem.fType = fTyo
 		newItem.fItem = fF
 		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
@@ -796,6 +796,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 
 			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "*\n"
 			//MyFuncType = itInClass.vTable[id].fType
+			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
 		}else{
 			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		}

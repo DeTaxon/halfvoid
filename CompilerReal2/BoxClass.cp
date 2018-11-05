@@ -568,9 +568,9 @@ BoxClass := class extend Object
 			{
 				if it.itFunc.IsVirtual
 				{
-					it.MakeLine(0)
-				}else{
 					it.MakeLine(it.itFunc.VirtualId)
+				}else{
+					it.MakeLine(0)
 				}
 			}
 
@@ -788,24 +788,38 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		}
 		if itFunc.IsVirtual
 		{
-			ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* this, i32 0, i32 0\n" 
+			a1 := itInClass.vTable[id]
+			a2 := a1.fType
+			a3 := a2->{Type^}
+			FuncTypeName2 := a3.GetName()
+			ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0\n" 
 			ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
 			ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
-			ToExe = ToExe + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
+			ToExe = ToExe + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr##\n" 
+
+			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "*\n"
+			//MyFuncType = itInClass.vTable[id].fType
+			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
+		}else{
+			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		}
 
-		ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
+		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if MyFuncType.RetType != GetType("void") and not isRetComp
 			ToExe = ToExe + "#0 = "
 		fTypp := itFunc.MyFuncType
 		fTypp2 := fTypp->{Type^}
 		if itFunc.IsVirtual
 		{
-			ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
+			asPre1 := itInClass.vTable[id].fType
+			asPre2 := asPre1->{Type^}
+			ToExe = ToExe + "call " + asPre2.GetName()  + "%Func##("
+			ToExe = ToExe + itInClass.vTable[id].fType.Pars[0].GetName() + "* %NewThis##"
 		}else{
-			ToExe = ToExe + "call " + fTypp2.GetName()  + "%Func##("
+			ToExe = ToExe + "call " + fTypp2.GetName()  + "@" + OutputName + "("
+			ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
 		}
-		ToExe = ToExe + itInClass.GetClassOutputName() + "* %NewThis##"
+
 		for i : MyFuncType.ParsCount
 		{
 			ToExe = ToExe + " , "

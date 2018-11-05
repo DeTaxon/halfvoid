@@ -10,12 +10,16 @@ CleanStrs := !() -> void
 	}
 }
 
-"==" := !(char^ a,char^ b) -> bool
+StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a->{void^} == null or b->{void^} == null return false
 	i := 0
 	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	return a[i] == b[i]
+}
+"==" := !(char^ a,char^ b) -> bool
+{
+	return StrCmp(a,b)
 }
 "!=" := !(char^ a,char^ b) -> bool
 {
