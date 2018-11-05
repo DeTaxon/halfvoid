@@ -187,7 +187,8 @@ FuncItem := class
 			{
 				//TODO:no need to check inherence?				
 			}else{
-				//if fType.Pars[i] != Ri.fType.Pars[i] return false
+				if fType.ParsIsRef[i] != Ri.fType.ParsIsRef[i] return false
+				if fType.Pars[i] != Ri.fType.Pars[i] return false
 			}
 		}
 
@@ -216,7 +217,7 @@ BoxClass := class extend Object
 	ContainVirtual  := bool
 
 	ItVals := Queue.{ObjConstHolder^}
-	ItConsts := Queue.{Object^}()
+	ItConsts := Queue.{Object^}
 
 	ClassName := string
 
@@ -785,7 +786,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		if itFunc.IsVirtual
 		{
 			a1 := itInClass.vTable[id]
-			a2 := a1.fItem.MyFuncType
+			a2 := a1.fType
 			a3 := a2->{Type^}
 			FuncTypeName2 := a3.GetName()
 			ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0\n" 
@@ -794,7 +795,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			ToExe = ToExe + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr##\n" 
 
 			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "*\n"
-			MyFuncType = itInClass.vTable[id].fType
+			//MyFuncType = itInClass.vTable[id].fType
 		}else{
 			ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		}
