@@ -406,7 +406,7 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, Queue.{Type^} pars) -> int
 TypeCmp := !(Type^ inType, Type^ funcType) -> int
 {
 
-
+	if inType == null return 255
 	if funcType == null return 0
 	if inType == funcType return 0
 

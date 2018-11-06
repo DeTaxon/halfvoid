@@ -20,6 +20,8 @@ c.out: c.ll
 	clang c.ll -o c.out
 c.ll: $(wildcard CompilerReal2/*.cp) a.out
 	./a.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp CompilerReal2/main.cp -o c.ll
+cycle: $(wildcard CompilerReal2/*.cp) c.out
+	./c.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp CompilerReal2/main.cp -o out3.ll
 gdbc: $(wildcard CompilerReal2/*.cp) a.out
 	nemiver ./a.out -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/string.cp CompilerReal2/main.cp -o c.ll
 
@@ -32,4 +34,4 @@ out.ll: $(Sors)
 clean:
 	rm -f out.ll WinObj.o a.exe a.out
 
-.PHONY: test All clean ou2.ll b a.out gdbc
+.PHONY: test All clean ou2.ll b a.out gdbc cycle

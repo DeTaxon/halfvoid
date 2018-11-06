@@ -25,7 +25,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 		if Files[it].filePath == fullName
 			return Files[it]
 	}
-	printf("loading %s\n",fullName.itStr)
+	//printf("loading %s\n",fullName.itStr)
 	ob := GetObjectsFromFile(fullName)
 
 	if ob == null 

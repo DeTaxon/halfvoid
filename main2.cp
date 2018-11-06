@@ -1,7 +1,18 @@
 
+tT := class
+{
+	u := int
+
+	this := !() -> void
+	{
+		u = 5
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	//h := !{1,2,3}
+	c := new tT()
 	printf("Wow\n")
 	return 0
 }

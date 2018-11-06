@@ -134,6 +134,22 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				tt := iter.Right.Right
 				asNeed := tt->{ObjIndent^}
 
+				if iter.GetValue() == "~type"
+				{
+					
+					pars := Queue.{Type^}()
+					constst := Queue.{Object^}()
+
+					objT := iter->{ObjType^}
+
+					constst.Push(objT)
+					constst.Push(new ObjStr(asNeed.MyStr))
+					func := FindFunc("->",iter,pars,constst,false)
+					if func != null {
+						return MakeSimpleCall(func,null->{Object^})
+					}
+				}
+
 				pars := Queue.{Type^}()
 
 				cc := Queue.{Object^}()

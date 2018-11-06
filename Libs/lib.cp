@@ -1,4 +1,3 @@
-
 printf := !(char^ str, ...) -> int declare
 calloc := !(int size,int sizet) -> void^ declare
 malloc := !(int size) -> void^ declare
@@ -21,8 +20,9 @@ memset := !(void^ dst, char val,int size) -> void declare
 
 "new" := !() . {@R} -> void^ 
 {
-	newNode :=  malloc(R->TypeSize)
-	memset(newNode,0,R->TypeSize)
+	val := R->TypeSize
+	newNode :=  malloc(val)
+	memset(newNode,0,val)
 	return newNode
 }
 "delete" := !(void^ item) .{@R[]} -> void
