@@ -410,7 +410,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						}
 					}
 
-					pars := Queue.{Type^}
+					pars := Queue.{Type^}()
 					pars.Start = null
 					pars.Push(asClass.ClassType)
 					Consts := Queue.{Object^}()

@@ -52,16 +52,16 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 		return new BoxForOldFashionMulti(Names,indName,Downs,iterY)
 	}
-	
 	Downs.Push(iterY)
 
-	if itemName == null {
+	if itemName == null->{int^} {
 		Names.Push("it")
 	}else{
 		Names.Push(itemName)
 	}
+	wut := iterY.Right
 
-	return new BoxForOldFashionMulti(Names,indName,Downs,iterY.Right)
+	return new BoxForOldFashionMulti(Names,indName,Downs,wut)
 
 	//return new BoxFor(itemName,indName,iterY,iterY.Right)
 
@@ -143,11 +143,12 @@ BoxForOldFashionMulti := class extend BoxFor
 	Params := MemParam^^
 	IndParams := MemParam^^
 
-	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ block) -> void
+	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
 		ContPath.Insert(0)
 
-		Down = block
+		Down = itBlock
+		block = itBlock
 		itemsCount = items.Size()
 		iter := Down
 		block.Left = null
