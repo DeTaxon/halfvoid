@@ -55,6 +55,7 @@ BuiltInFuncZero := class extend BuiltInFunc
 		FuncName = Name
 		OutputName = Name
 		ToExe = code
+		IsRetRef = RRetRef
 
 		PP := Queue.{Type^}()
 		MyFuncType = GetFuncType(PP,null->{bool^},retV,RRetRef,false)
@@ -100,6 +101,7 @@ BuiltInFuncUno := class extend BuiltInFunc
 		FuncName = Name
 		OutputName = Name
 		ToExe = code
+		IsRetRef = RRetRef
 
 		PP := Queue.{Type^}()
 		PP.Push(l)
@@ -118,6 +120,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		FuncName = Name
 		OutputName = Name
 		ToExe = code
+		IsRetRef = retRef
 
 		PP := Queue.{Type^}()
 		PP.Push(l)

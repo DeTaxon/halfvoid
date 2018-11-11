@@ -772,13 +772,14 @@ SomeFuncCall := class extend ObjResult
 	PrintUse := virtual !(sfile f) -> void
 	{
 		FType.RetType.PrintType(f)
-		isRef := false
-		if FType.RetRef isRef = true
 		if ToCall != null
-			if ToCall.IsRetRef isRef = true
-		if isRef
+			if FType.RetRef or ToCall.IsRetRef
+			{
+				f << " " << TEName
+			}else{
+				f << " " << TName
+			}
 		{
-			f << " " << TEName
 		}else{
 			f << " " << TName
 		}
