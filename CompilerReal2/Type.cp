@@ -302,7 +302,7 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 
 }
 
-GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bool IsVArgs) -> TypeFunc^
+GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
 	iterT := FuncTypeTable.Start
 
@@ -320,9 +320,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 
 	while iterT != null
 	{
-		SomeBug := IsVArgs
-		SomeBug2 := retRef
-		if iterT.Data.IsVArgs == SomeBug and SomeBug2 == iterT.Data.RetRef
+		if iterT.Data.IsVArgs == IsVArgs2 and retRef2  == iterT.Data.RetRef
 		{
 			IsFound := true
 			if iterT.Data.ParsCount == lin.Size() //VArg?
@@ -350,7 +348,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef, bo
 		iterT = iterT.Next
 	}
 
-	newTypeFunc := new TypeFunc(lin,ExtraArr,retType,retRef,IsVArgs)
+	newTypeFunc := new TypeFunc(lin,ExtraArr,retType,retRef2,IsVArgs2)
 	newTypeFunc.DoMeta()
 	FuncTypeTable.Push(newTypeFunc)
 	return newTypeFunc
@@ -494,7 +492,7 @@ TypeFunc := class extend Type
 			Pars = new Type^[ParsCount]
 			for ParsCount Pars[it] = FType.Pars[it]
 		}
-		RetRef = false
+		RetRef = FType.RetRef
 		RetType = FType.RetType
 		IsVArgs = FType.IsVArgs
 		//ItName = GetNewName()
@@ -518,7 +516,6 @@ TypeFunc := class extend Type
 		}
 		Pars = null
 		if ParsCount != 0 Pars = P.ToArray()
-		RetRef = false
 		IsVArgs = IsV
 
 		//ItName = GetNewName()

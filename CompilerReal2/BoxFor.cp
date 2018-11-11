@@ -254,9 +254,9 @@ BoxForOldFashionMulti := class extend BoxFor
 				{
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := ProxyFuncs[i].MyFuncType.RetType
-					ItId := asNeed2.GetItAllocId()
+					ItId2 := asNeed2.GetItAllocId()
 
-					ForItem := new LocalParam(itType,ItId)
+					ForItem := new LocalParam(itType,ItId2)
 					
 					asNeed := ((itType->{TypeClass^}).ToClass)
 

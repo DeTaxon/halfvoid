@@ -714,8 +714,12 @@ SomeFuncCall := class extend ObjResult
 			iter = iter.Right
 		}
 	}
+
+	checkedReturn := bool
 	CheckReturn := virtual !() -> void
 	{
+		if checkedReturn return void
+		checkedReturn = true
 		if ToCall != null and not gotAlloc
 		{
 			gotAlloc = ToCall.IsRetComplex
@@ -773,13 +777,14 @@ SomeFuncCall := class extend ObjResult
 	{
 		FType.RetType.PrintType(f)
 		if ToCall != null
+		{
 			if FType.RetRef or ToCall.IsRetRef
 			{
 				f << " " << TEName
 			}else{
 				f << " " << TName
 			}
-		{
+		
 		}else{
 			f << " " << TName
 		}
@@ -797,7 +802,7 @@ SomeFuncCall := class extend ObjResult
 	{
 		if ToCall != null
 		{
-			if FType.RetRef
+			if FType.RetRef or ToCall.IsRetRef
 			{
 				return TEName
 			}
