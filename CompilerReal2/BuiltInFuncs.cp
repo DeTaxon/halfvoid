@@ -1485,20 +1485,48 @@ CreateBuiltIns := !() -> void
 
 
 	BuiltInFuncs.Push(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#^1" +
+//	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,	"#^1" +
+//											"br i1 #1, label %End##, label %Next##\n" +
+//											"Next##:\n" +
+//											"#^2" +
+//											"br label %End##\n" +
+//											"End##:\n" +
+//											"#0 = select i1 #1, i1 true, i1 #2\n"))
+//	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"#^1" +
+//											"br i1 #1, label %Next##, label %End##\n" +
+//											"Next##:\n" +
+//											"#^2" +
+//											"br label %End##\n" +
+//											"End##:\n" +
+//											"#0 = select i1 #1, i1 #2, i1 false\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("or",BoolT,false,BoolT,false,BoolT,
+											"br label %First2Part##\n" +
+											"First2Part##:\n" +
+											"#^1" +
+											"br label %FirstPart##\n" +
+											"FirstPart##:\n" +
 											"br i1 #1, label %End##, label %Next##\n" +
 											"Next##:\n" +
 											"#^2" +
+											"br label %PostNext##\n" +
+											"PostNext##:\n" +
 											"br label %End##\n" +
 											"End##:\n" +
-											"#0 = select i1 #1, i1 true, i1 #2\n"))
-	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	"#^1" +
+											"#0 = phi i1 [true,%FirstPart##] ,[#2,%PostNext##]\n"))
+	BuiltInFuncs.Push(new BuiltInFuncBinar("and",BoolT,false,BoolT,false,BoolT,	
+											"br label %First2Part##\n" +
+											"First2Part##:\n" +
+											"#^1" + 
+											"br label %FirstPart##\n" +
+											"FirstPart##:\n" +
 											"br i1 #1, label %Next##, label %End##\n" +
 											"Next##:\n" +
 											"#^2" +
+											"br label %PostNext##\n" +
+											"PostNext##:\n" +
 											"br label %End##\n" +
 											"End##:\n" +
-											"#0 = select i1 #1, i1 #2, i1 false\n"))
+											"#0 = phi i1 [false,%FirstPart##] , [#2,%PostNext##]\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("L",GetType("int"),false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 3.14159265389 to float\n" +

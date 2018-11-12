@@ -37,3 +37,5 @@ ForcedLibs := Queue.{BoxFile^}
 
 DebugMode := false
 DebugMetaData := Stack.{string}
+
+UseDestructors := false

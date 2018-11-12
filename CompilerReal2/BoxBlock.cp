@@ -1,5 +1,6 @@
 #import "Tree.cp"
 #import "set.cp"
+#import "Globals.cp"
 
 MakeItBlock := !(Object^ item) -> bool
 {
@@ -110,7 +111,7 @@ BoxBlock := class extend Object
 		{
 			//f << "br label %" << PathName << num << "in" << i << "\n"	
 			f << PathName << num << "in" << i << ":\n"
-			iter.PrintDestructor(f)
+			if UseDestructors iter.PrintDestructor(f)
 			if i == 0{
 				f << "br label %" << OutName << "\n"
 			}else{
