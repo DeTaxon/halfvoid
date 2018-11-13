@@ -4,12 +4,14 @@
 #import "BoxBlock.cp"
 #import "PriorityRead.cp"
 #import "BuiltInFuncs.cp"
+#import "StandartObjects.cp"
+
 archSize := 64
 
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
-WorkBag := PriorityStack.{Object^}
+WorkBag := PriorityStack.{Object^,20}
 
 PriorityData := PriorityBag^
 LexMachine := Machine^

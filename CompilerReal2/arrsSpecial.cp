@@ -2,157 +2,140 @@
 Node3 := class .{@TVal}
 {
 	Data := TVal
-	Prior := int
 	Next := Node3.{TVal}^
-
-	this := !(TVal val,int pr) -> void
-	{
-		Data = val
-		Prior = pr
-		Next = null
-	}
-	this := !(TVal val,int pr, Node3.{TVal}^ ne) -> void
-	{
-		Data = val
-		Prior = pr
-		Next = ne
-	}
 }
 
-PriorityStack := class .{@TVal}
+PriorityStack := class .{@TVal,@TSize}
 {
-	Start := Node3.{TVal}^
+	Starts := Node3.{TVal}^[TSize]
 	Kepts := Node3.{TVal}^
+	Counter := int
 
 	this := !() -> void
 	{
-		Start = null
+		for i : TSize Starts[i] = 0
 		Kepts = null
+		Counter = 0
 	}
-	IsEmpty := !() -> bool
+	Push := !(TVal val, int pr) -> void
 	{
-		return Start == null->{int^}
+		Counter += 1
+		newItem := Node3.{TVal}^
+		newItem = null
+		if Kepts != null
+		{
+			newItem = Kepts
+			Kepts = newItem.Next
+		}else{
+			newItem = new Node3.{TVal}
+		}
+		newItem.Data = val
+		newItem.Next = Starts[pr]
+		Starts[pr] = newItem
+
 	}
 	Pop := !() -> TVal
 	{
-		Temp := Start
-		Start = Start.Next
-		miniTemp := Temp.Data
-		Temp.Next = Kepts
-		Kepts = Temp
-		return miniTemp
-	}
-	Push := !(TVal val, int pr) -> void
-	{		
-		if Start == null
+		Counter -= 1
+
+		itItem := Node3.{TVal}^
+		for i : TSize
 		{
-			Start = new Node3.{TVal}(val,pr)
-		}else{
-			iter := Start
-			PrevI := Start
-			PrevI = null
-
-			lazy := bool
-			lazy = iter.Prior < pr
-
-			while lazy
+			if Starts[i] != null
 			{
-				PrevI = iter
-				iter = iter.Next
-				lazy = iter != null
-				if lazy lazy = iter.Prior < pr
-			}
-
-			if PrevI == null
-			{
-				Start = new Node3.{TVal}(val,pr,Start)
-			}else
-			{
-				PrevI.Next = new Node3.{TVal}(val,pr,PrevI.Next)
+				itItem = Starts[i]
+				Starts[i] = itItem.Next
+				break
 			}
 		}
+		itItem.Next = Kepts
+		Kepts = itItem
+		return itItem.Data
 	}
-	Size := !() -> int
+	IsEmpty := !() -> bool
 	{
-		iter := Start
-		ToRet := 0
-
-		while iter != null
+		return Counter == 0
+	}
+	GetTopPriority := !() -> int
+	{
+		for i : TSize
 		{
-			iter = iter.Next
-			ToRet += 1
+			if Starts[i] != null
+			{
+				return i
+			}
 		}
-		return ToRet
-	}
-	GetTopPriority := !() -> int 
-	{
-		if Start == null return -1
-		return Start.Prior	
+		return -1
 	}
 }
-PriorityQueue := class .{@TVal} extend PriorityStack.{TVal}
+PriorityQueue := class .{@TVal,@TSize}
 {
+	Starts := Node3.{TVal}^[TSize]
+	Ends := Node3.{TVal}^[TSize]
+	Kepts := Node3.{TVal}^
+	Counter := int
+
+	this := !() -> void
+	{
+		for i : TSize Starts[i] = 0
+		Kepts = null
+		Counter = 0
+	}
 	Push := !(TVal val, int pr) -> void
 	{
-		if Start == null
+		Counter += 1
+		newItem := Node3.{TVal}^
+		newItem = null
+		if Kepts != null
 		{
-			if Kepts != null
-			{
-				itItm := Kepts
-				Kepts = Kepts.Next
-				itItm.Next = Start
-				itItm.Data = val
-				itItm.Prior = pr
-				Start = itItm
-			}else{
-				Start = new Node3.{TVal}(val,pr)
-			}
+			newItem = Kepts
+			Kepts.Next = newItem
 		}else{
-			iter := Start
-			PrevI := Start
-			PrevI = null
-
-			lazy := bool
-			lazy = iter.Prior <= pr
-
-			while lazy
-			{
-				PrevI = iter
-				iter = iter.Next
-				lazy = iter != null
-				if lazy lazy = iter.Prior <= pr
-			}
-
-			if PrevI == null
-			{
-				if Kepts != null
-				{
-					itItm := Kepts
-					Kepts = Kepts.Next
-					itItm.Next = itItm
-					itItm.Data = val
-					itItm.Prior = pr
-					Start = itItm
-				}else{
-					Start = new Node3.{TVal}(val,pr,Start)
-				}
-			}else
-			{
-				if Kepts != null
-				{
-					itItm := Kepts
-					Kepts = Kepts.Next
-					itItm.Data = val
-					itItm.Prior = prior
-					itItm.Next = PrevI.Next
-					PrevI.Next = itItm
-
-				}else{
-					PrevI.Next = new Node3.{TVal}(val,pr,PrevI.Next)
-				}
-			}
-
+			newItem = new Node3.{TVal}
 		}
+		newItem.Data = val
+		newItem.Next = null
+
+		if Starts[pr] == null
+		{
+			Starts[pr] = newItem
+			Ends[pr] = newItem
+		}else{
+			Ends[pr].Next = newItem
+			Ends[pr] = newItem
+		}
+	}
+	Pop := !() -> TVal
+	{
+		Counter -= 1
+
+		itItem := Node3.{TVal}^
+		for i : TSize
+		{
+			if Starts[i] != null
+			{
+				itItem = Starts[i]
+				Starts[i] = itItem.Next
+			}
+		}
+		itItem.Next = Kepts
+		Kepts = itItem
+		return itItem.Data
+	}
+	IsEmpty := !() -> bool
+	{
+		return Counter == 0
+	}
+	GetTopPriority := !() -> int
+	{
+		for i : TSize
+		{
+			if Starts[i] != null
+			{
+				return i
+			}
+		}
+		return -1
 	}
 }
 

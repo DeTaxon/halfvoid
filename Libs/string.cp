@@ -29,6 +29,7 @@ ToString := !(float x) -> char^
 "==" := !(char^ a,char^ b) -> bool
 {
 	if a->{int^} == null or b->{int^} == null return false
+	if a->{int^} == b->{int^} return true
 	i := 0
 	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	return a[i] == b[i]
