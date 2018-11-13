@@ -169,7 +169,7 @@ main := !(int argc,char^^ argv) -> int
 workIter := int
 WorkWithBag := !() -> void
 {
-	while WorkBag.Size() != 0 and ErrorLog.Empty()
+	while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
 	{
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()

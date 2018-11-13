@@ -22,21 +22,24 @@ Node3 := class .{@TVal}
 PriorityStack := class .{@TVal}
 {
 	Start := Node3.{TVal}^
+	Kepts := Node3.{TVal}^
 
 	this := !() -> void
 	{
 		Start = null
+		Kepts = null
 	}
 	IsEmpty := !() -> bool
 	{
-		return Start == null
+		return Start == null->{int^}
 	}
 	Pop := !() -> TVal
 	{
 		Temp := Start
 		Start = Start.Next
 		miniTemp := Temp.Data
-		free(Temp)
+		Temp.Next = Kepts
+		Kepts = Temp
 		return miniTemp
 	}
 	Push := !(TVal val, int pr) -> void
@@ -93,7 +96,17 @@ PriorityQueue := class .{@TVal} extend PriorityStack.{TVal}
 	{
 		if Start == null
 		{
-			Start = new Node3.{TVal}(val,pr)
+			if Kepts != null
+			{
+				itItm := Kepts
+				Kepts = Kepts.Next
+				itItm.Next = Start
+				itItm.Data = val
+				itItm.Prior = pr
+				Start = itItm
+			}else{
+				Start = new Node3.{TVal}(val,pr)
+			}
 		}else{
 			iter := Start
 			PrevI := Start
@@ -112,11 +125,33 @@ PriorityQueue := class .{@TVal} extend PriorityStack.{TVal}
 
 			if PrevI == null
 			{
-				Start = new Node3.{TVal}(val,pr,Start)
+				if Kepts != null
+				{
+					itItm := Kepts
+					Kepts = Kepts.Next
+					itItm.Next = itItm
+					itItm.Data = val
+					itItm.Prior = pr
+					Start = itItm
+				}else{
+					Start = new Node3.{TVal}(val,pr,Start)
+				}
 			}else
 			{
-				PrevI.Next = new Node3.{TVal}(val,pr,PrevI.Next)
+				if Kepts != null
+				{
+					itItm := Kepts
+					Kepts = Kepts.Next
+					itItm.Data = val
+					itItm.Prior = prior
+					itItm.Next = PrevI.Next
+					PrevI.Next = itItm
+
+				}else{
+					PrevI.Next = new Node3.{TVal}(val,pr,PrevI.Next)
+				}
 			}
+
 		}
 	}
 }
