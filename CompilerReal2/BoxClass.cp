@@ -292,9 +292,9 @@ BoxClass := class extend Object
 			return false
 		}
 
-		for i : consts.Size()
+		for c : consts , i : 0
 		{
-			if not CmpConstObjs(consts[i],ItConsts[i])
+			if not CmpConstObjs(c,ItConsts[i])
 				return false
 		}
 
@@ -303,9 +303,9 @@ BoxClass := class extend Object
 
 	GetItem := virtual !(string name) -> Object^
 	{
-		for ItVals.Size() 
-			if ItVals[it].ItName == name
-				return ItVals[it].Down
+		for ItVals
+			if it.ItName == name
+				return it.Down
 		return null
 	}
 
@@ -363,7 +363,7 @@ BoxClass := class extend Object
 				{
 					Params.PushFront(parentTree.Params[Size - i - 1])
 				}
-				for i : parentTree.FakeParams.Size() FakeParams.PushFront(parentTree.FakeParams[i])
+				for fakes : parentTree.FakeParams FakeParams.PushFront(fakes)
 				if parentTree.ContainVirtual 
 					ContainVirtual = true
 
@@ -470,11 +470,11 @@ BoxClass := class extend Object
 
 		if not iVir
 		{
-			for i : vTypes.Size()
+			for vTyp : vTypes
 			{
-				if vTypes[i].fName == name
+				if vTyp.fName == name
 				{
-					Funcs.Push(vTypes[i].funcWrapper)
+					Funcs.Push(vTyp.funcWrapper)
 				}
 			}
 		}
@@ -509,10 +509,10 @@ BoxClass := class extend Object
 		{
 			pars2 := Queue.{Type^}()
 			pars2.Push(this.Parent.ClassType)
-			for i : pars.Size()
+			for ip : pars , i : 0
 			{
 				if i != 0
-					pars2.Push(pars[i])
+					pars2.Push(ip)
 			}
 			return this.Parent.GetFunc(name,pars2,consts)
 		}
@@ -533,9 +533,9 @@ BoxClass := class extend Object
 			if this.Parent != null
 			{
 				this.Parent.ComputeVTable()
-				for i : this.Parent.vTable.Size()
+				for this.Parent.vTable
 				{
-					vTable.Push(this.Parent.vTable[i])
+					vTable.Push(it)
 				}
 			}
 

@@ -429,9 +429,9 @@ BoxTemplate := class extend BoxFunc
 		
 		newFunc := GetNewFunc(pars,consts,newFuncType)
 
-		for i : parConsts.Size()
+		for  parConsts
 		{
-			newFunc.ItVals.Push(parConsts[i])
+			newFunc.ItVals.Push(it)
 		}
 		
 		if newFunc == null return null
