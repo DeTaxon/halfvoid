@@ -230,13 +230,13 @@ BoxTemplate := class extend BoxFunc
 	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{ObjConstHolder^} res) -> bool
 	{
 		re := true
-		for i : FuncsTTemps.Size()
+		for fT : FuncsTTemps, i: 0
 		{
 			if MyFuncType.Pars[i] == null
 			{
-				if FuncsTTemps[i] != null
+				if fT != null
 				{
-					IsSameType(FuncsTTemps[i],pars[i],res,re&)
+					IsSameType(fT,pars[i],res,re&)
 					if not re return false
 				}
 			}			
@@ -528,9 +528,9 @@ BoxFunc := class extend Object
 	{
 		if consts.Size() != this.ItConsts.Size() return false
 
-		for i : consts.Size()
+		for ct : consts , i : 0, tc : this.ItConsts
 		{
-			if not CmpConstObjs(consts[i],this.ItConsts[i]) 
+			if not CmpConstObjs(ct,tc) 
 			{
 				return false
 			}
@@ -1191,9 +1191,8 @@ BoxFuncBody := class extend BoxFunc
 					
 			i := asC.NotMineParams
 			EndS := asC.Params.Size()
-			while i < EndS
+			for nowField : asC.Params, i : 0
 			{
-				nowField := asC.Params[i]
 				sBug := nowField->{Object^}
 				itCPre := sBug.GetType()
 				if itCPre.GetType() == "class"
@@ -1226,7 +1225,6 @@ BoxFuncBody := class extend BoxFunc
 						EmitError("compiler error 2345\n")
 					}
 				}
-				i += 1
 			}
 		}
 	}

@@ -20,10 +20,10 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 }
 LoadFile := !(Path fullName) -> BoxFile^
 {
-	for Files.Size()
+	for Files
 	{
-		if Files[it].filePath == fullName
-			return Files[it]
+		if it.filePath == fullName
+			return it
 	}
 	//printf("loading %s\n",fullName.itStr)
 	ob := GetObjectsFromFile(fullName)

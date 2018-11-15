@@ -29,10 +29,13 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} S
 
 			Found := false
 
-			for Searched.Size()
+			for Searched
 			{
-				if Searched[it] == fl.fileId
+				if it == fl.fileId
+				{
 					Found = true
+					break
+				}
 			}
 			if not Found
 			{
@@ -72,16 +75,19 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 		}
 	}
 
-	for i : ForcedLibs.Size()
+	for lb : ForcedLibs
 	{
 		Found := false
-		for j : Searched.Size(){
-			if ForcedLibs[i].fileId == Searched[j] Found = true
+		for sd : Searched{
+			if lb.fileId == sd {
+				Found = true
+				break
+			}
 		}
 		if not Found
 		{
-			Searched.Push(ForcedLibs[i].fileId)
-			CollectParamsAllByName(name,ForcedLibs[i].Down,found,Searched)
+			Searched.Push(lb.fileId)
+			CollectParamsAllByName(name,lb.Down,found,Searched)
 		}
 	}
 }
@@ -146,10 +152,12 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 
 			Found := false
 
-			for Searched.Size()
+			for Searched
 			{
-				if Searched[it] == fl2.fileId
+				if it == fl2.fileId{
 					Found = true
+					break
+				}
 			}
 			if not Found
 			{
@@ -172,9 +180,9 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		if iterr != null
 		{
 			while iterr.Up != null iterr = iterr.Up
-			for i : ForcedLibs.Size()
+			for it : ForcedLibs
 			{
-				if ForcedLibs[i] == iterr iterU = null
+				if it == iterr iterU = null
 			}
 		}
 	}
@@ -285,30 +293,26 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 		
 	Funcs.Clean()
 	Templs.Clean()
-	for i : ForcedLibs.Size()
+	for ForcedLibs
 	{
-		itUp := (ForcedLibs[i]->{Object^}).Down
-		if ForcedLibs[i] == iterr itUp = start
+		itUp := (it->{Object^}).Down
+		if it == iterr itUp = start
 		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
 	}
-	iterQ := BuiltInFuncs.Start
-	while iterQ != null
+	for itQ : BuiltInFuncs
 	{
-		if iterQ.Data.FuncName == name
+		if itQ.FuncName == name
 		{
-			Funcs.Push(iterQ.Data)
+			Funcs.Push(itQ)
 		}
-		iterQ = iterQ.Next
 	}
 
-	iterH := BuiltInTemplates.Start
-	while iterH != null
+	for itH : BuiltInTemplates
 	{
-		if iterH.Data.FuncName == name
+		if itH.FuncName == name
 		{
-			Templs.Push(iterH.Data)
+			Templs.Push(itH)
 		}
-		iterH = iterH.Next
 	}
 	func2 := GetBestFunc(pars,consts,Funcs,Templs)
 	return func2

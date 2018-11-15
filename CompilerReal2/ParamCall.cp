@@ -40,18 +40,16 @@ ParseParamCall := !(Object^ ob) -> Object^
 			ItPars := Queue.{ObjParam^}()
 			CollectParamsAllByName(dynCast.MyStr,ob,ItPars)
 			
-			iterF := ItPars.Start
-			while iterF != null
+			for itF : ItPars
 			{
-				itType := iterF.Data.GetType()
+				itType := itF.GetType()
 				if itType != null
 				{
 					if itType.GetType() == "function"
 					{
-						return new ParamFuncCall(dynCast.MyStr,iterF.Data)
+						return new ParamFuncCall(dynCast.MyStr,itF)
 					}
 				}
-				iterF = iterF.Next
 			}
 		}
 	}

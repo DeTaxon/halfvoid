@@ -161,9 +161,8 @@ BoxWhile := class extend Object
 				}
 				f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
 			}
-			for i : ContPath.Size()
+			for itSize : ContPath
 			{
-				itSize := ContPath[i]
 				if itSize != 0{
 
 					iter4 := Down.Right
@@ -180,9 +179,8 @@ BoxWhile := class extend Object
 					f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
 				}
 			}
-			for i : BreakPath.Size()
+			for itSize : BreakPath
 			{
-				itSize := ContPath[i]
 				if itSize != 0{
 
 					iter4 := Down.Right

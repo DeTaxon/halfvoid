@@ -10,6 +10,7 @@ Type := class {
 	AsFatArr := Type^
 	AsArray := Queue.{TypeArr^}
 	ItName := string
+	ItHash := int
 	
 	this := !() -> void
 	{
@@ -268,89 +269,106 @@ ParseType := !(Object^ Node) -> Type^
 	return null
 }
 
-FuncTypeTable := Queue.{TypeFunc^}
+FuncTypeTable := Queue.{TypeFunc^}[64]
+
+GetFuncTypeCount := !() -> int
+{
+	counter := 0
+	for i : 64
+	{
+		counter += FuncTypeTable[i].Size()
+	}
+	return counter
+}
 
 
 ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 {
-	iterT := FuncTypeTable.Start
+	hashValue := FType.ItHash
+	if FType.RetType != null hashValue = hashValue xor_b FType.RetType.ItHash
+	if retType != null hashValue = hashValue xor_b retType.ItHash
+	indVal := hashValue + hashValue div 25
+	indVal = indVal mod 64
 
-	while iterT != null
+	for itT : FuncTypeTable[indVal]
 	{
-		if iterT.Data.IsVArgs == FType.IsVArgs
-			and iterT.Data.ParsCount == FType.ParsCount
-			and iterT.Data.RetType == retType
+		if itT.ItHash == hashValue and itT.IsVArgs == FType.IsVArgs
+			and itT.ParsCount == FType.ParsCount
+			and itT.RetType == retType
 		{
 			IsFound := true
 
 			for FType.ParsCount
 			{
-				if FType.Pars[it] != iterT.Data.Pars[it] IsFound = false 
-				if FType.ParsIsRef[it] != iterT.Data.ParsIsRef[it] IsFound = false 
+				if FType.Pars[it] != itT.Pars[it] IsFound = false 
+				if FType.ParsIsRef[it] != itT.ParsIsRef[it] IsFound = false 
 			}
 			if IsFound
 			{
-				return iterT.Data
+				return itT
 			}
 		}
-		iterT = iterT.Next
 	}
-	newTypeFunc := new TypeFunc(FType)
-	newTypeFunc.RetType = retType
-	FuncTypeTable.Push(newTypeFunc)
+	newTypeFunc := new TypeFunc(FType,retType)
+	FuncTypeTable[indVal].Push(newTypeFunc)
 	return newTypeFunc
 
 }
 
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
-	iterT := FuncTypeTable.Start
 
 	ExtraArr := new bool[lin.Size()]
-	for i : lin.Size()
+	for it : lin, i : 0
 	{
 		ExtraArr[i] = false
 		if IsRefArr != null ExtraArr[i] = IsRefArr[i]
-		if lin[i] != null
+		if it != null
 		{
-			if lin[i].GetType() == "class" ExtraArr[i] = true
-			if lin[i].GetType() == "arr" ExtraArr[i] = true
+			if it.GetType() == "class" ExtraArr[i] = true
+			if it.GetType() == "arr" ExtraArr[i] = true
 		}
 	}
 
-	while iterT != null
+	hashValue := ComputeFuncHash(lin,ExtraArr,retType,retRef2)
+	indVal := hashValue + hashValue div 25
+	indVal = indVal and_b 0x3F
+	//printf("test %i\n",indVal)
+
+	for itT : FuncTypeTable[indVal]
 	{
-		if iterT.Data.IsVArgs == IsVArgs2 and retRef2  == iterT.Data.RetRef
+		if itT.ItHash == hashValue and itT.IsVArgs == IsVArgs2 and retRef2  == itT.RetRef
 		{
 			IsFound := true
-			if iterT.Data.ParsCount == lin.Size() //VArg?
+			if itT.ParsCount == lin.Size() //VArg?
 			{
-				iterR := lin.Start
-				i := 0
-				while iterR != null
+				for itR : lin, i : 0
 				{
-					if iterT.Data.Pars[i] != iterR.Data IsFound = false
+					if itT.Pars[i] != itR {
+						IsFound = false
+						break
+					}
 
 					if i < lin.Size()
-						if iterT.Data.ParsIsRef[i] != ExtraArr[i] IsFound = false
-					i += 1
-					iterR = iterR.Next 
+						if itT.ParsIsRef[i] != ExtraArr[i] {
+							IsFound = false
+							break
+						}
 				}
 			}else{
 				IsFound = false
 			}
-			if iterT.Data.RetType != retType
+			if itT.RetType != retType
 			{
 				IsFound = false
 			}
-			if IsFound return iterT.Data
+			if IsFound return itT
 		}
-		iterT = iterT.Next
 	}
 
 	newTypeFunc := new TypeFunc(lin,ExtraArr,retType,retRef2,IsVArgs2)
 	newTypeFunc.DoMeta()
-	FuncTypeTable.Push(newTypeFunc)
+	FuncTypeTable[indVal].Push(newTypeFunc)
 	return newTypeFunc
 }
 
@@ -380,6 +398,7 @@ TypeStandart := class extend Type{
 		IRName = Name 
 		ItSize = siz
 		ItAlign = Aln
+		ItHash = GetNewId()
 		
 		if DebugMode
 		{
@@ -408,6 +427,7 @@ TypePoint := class extend Type
 {
 	this := !(Type^ nBase) -> void
 	{
+		ItHash = nBase.ItHash*3
 		Clean()
 		Base = nBase
 		//ItName = Base.GetName() + "*"
@@ -437,6 +457,7 @@ TypePointVoidP := class extend TypePoint
 	{
 		Base = nBase
 		ItName = "i8*"
+		ItHash = nBase.ItHash*3
 		if DebugMode
 		{
 			metaId = GetNewId()
@@ -453,6 +474,7 @@ TypePointVoidFatP := class extend TypeFatArr
 {
 	this := !(Type^ nBase) -> void
 	{
+		ItHash = nBase.ItHash*3 + 1
 		Base = nBase
 		ItName = "i8*"
 		if DebugMode
@@ -468,6 +490,22 @@ TypePointVoidFatP := class extend TypeFatArr
 	}
 }
 
+ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef) -> int
+{
+	res := 0
+
+	for t : typs, i : 0
+	{
+		if t != null res += t.ItHash
+		if isRefs != null and isRefs[i] res = res xor_b 1527
+	}
+	if retT != null
+	{
+		res = res xor_b retT.ItHash
+	}
+	return res
+}
+
 TypeFunc := class extend Type
 {
 	ParsCount := int
@@ -479,7 +517,7 @@ TypeFunc := class extend Type
 
 	asLambda := Type^
 
-	this := !(TypeFunc^ FType) -> void
+	this := !(TypeFunc^ FType,Type^ itRetTyp) -> void
 	{
 		ItName = null
 		ParsCount = FType.ParsCount
@@ -495,6 +533,11 @@ TypeFunc := class extend Type
 		RetRef = FType.RetRef
 		RetType = FType.RetType
 		IsVArgs = FType.IsVArgs
+
+		ItHash = FType.ItHash
+		if RetType != null ItHash = ItHash xor_b RetType.ItHash
+		it itRetTyp != null ItHash = ItHash xor_b itRetTyp.ItHash
+
 		//ItName = GetNewName()
 	}
 	this := !(Queue.{Type^} P,bool^ retsRef,Type^ retType, bool isRetRef, bool IsV) -> void
@@ -517,6 +560,8 @@ TypeFunc := class extend Type
 		Pars = null
 		if ParsCount != 0 Pars = P.ToArray()
 		IsVArgs = IsV
+
+		ItHash = ComputeFuncHash(P,ParsIsRef,retType,isRetRef)
 
 		//ItName = GetNewName()
 	}
@@ -641,6 +686,7 @@ TypeFuncLambda := class extend Type
 	this := !(Type^ asBase) -> void
 	{
 		Base = asBase
+		ItHash = asBase.ItHash*3 + 2
 	}
 	PrintType := virtual !(sfile f) -> void
 	{
@@ -708,6 +754,7 @@ TypeArr := class extend Type
 
 	this := !(Type^ B, int S) -> void
 	{
+		ItHash = B.ItHash*3 + S
 		Base = B
 		Size = S
 		ItName = GetNewName()
@@ -735,6 +782,7 @@ TypeFatArr := class extend Type
 {
 	this := !(Type^ B) -> void
 	{
+		ItHash = B.ItHash*3 + 1
 		Base = B
 	}
 	GetType := virtual !() -> string
@@ -755,6 +803,7 @@ TypeClass := class extend Type
 	ToClass := BoxClass^
 	this := !(BoxClass^ ToSet) -> void
 	{
+		ItHash = ToSet.ClassId
 		ToClass = ToSet
 		ItName = GetNewName()
 	}

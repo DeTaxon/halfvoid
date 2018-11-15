@@ -83,9 +83,9 @@ BoxBlock := class extend Object
 				}
 				itrr = itrr.Right
 			}
-			for woot.Size()
+			for woot
 			{
-				MakeItBlock(woot[it])
+				MakeItBlock(it)
 			}
 	}
 	GetItem := virtual !(string name) -> Object^
@@ -138,16 +138,14 @@ BoxBlock := class extend Object
 			if not InClass
 			{
 				if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
-				for i : ContinuePath.Size()
+				for siz : ContinuePath
 				{
-					siz := ContinuePath[i]
 					retCPath := "LastContPath" + ItId
 					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
 					PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
 				}
-				for i : BreakPath.Size()
+				for siz : BreakPath
 				{
-					siz := BreakPath[i]
 					retCPath := "LastContPath" + ItId
 					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_BREAK,siz - 1)
 					PrintSomePath(f,"BreakPath" + ItId + "id",siz,retCPath)

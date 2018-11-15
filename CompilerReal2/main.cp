@@ -3,6 +3,7 @@
 #import "FileLoader.cp"
 #import "CoolerObjects.cp"
 #import "Globals.cp"
+#import "Type.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {
@@ -60,24 +61,24 @@ main := !(int argc,char^^ argv) -> int
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 
-	for i : targetFiles.Size()
+	for targetFiles
 	{
-		ItPath := Path(targetFiles[i])
+		ItPath := Path(it)
 		resA := ItPath.IsExist()
 		resB := not resA
 		if resB
 		{
-			printf("file %s does not exist\n",targetFiles[i])
+			printf("file %s does not exist\n",it)
 			return 0
 		}
 	}
-	for i : targetFiles.Size()
+	for targetFiles
 	{
-		targetObjects.Push(LoadFile(Path(targetFiles[i])))
+		targetObjects.Push(LoadFile(Path(it)))
 	}
-	for i : forcedFiles.Size()
+	for forcedFiles
 	{
-		fL := LoadFile(Path(forcedFiles[i]))
+		fL := LoadFile(Path(it))
 		ForcedLibs.Push(fL)
 	}
 
@@ -119,8 +120,7 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 		StrContainer.PrintGlobal(fil)
 
-		for Classes.Size() 
-			Classes[it].PrintStruct(fil)
+		for Classes it.PrintStruct(fil)
 
 		PrintTuples(fil)
 
@@ -162,6 +162,7 @@ main := !(int argc,char^^ argv) -> int
 	}
 	//CleanStrs() shiet
 	//if not ErrorLog.Empty() return -1
+	printf("Created func types %i\n",GetFuncTypeCount())
 	return 0
 }
 
