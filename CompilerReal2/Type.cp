@@ -269,26 +269,51 @@ ParseType := !(Object^ Node) -> Type^
 	return null
 }
 
-FuncTypeTable := Queue.{TypeFunc^}[64]
+FuncTypeTable := Queue.{TypeFunc^}[1024]
 
 GetFuncTypeCount := !() -> int
 {
 	counter := 0
-	for i : 64
+	maxSize := 0
+	for i : 1024
 	{
-		counter += FuncTypeTable[i].Size()
+		itSi := FuncTypeTable[i].Size()
+		counter += itSi
+		if maxSize < itSi maxSize = itSi
+		
 	}
+	printf("max hash size %i\n",maxSize)
 	return counter
 }
 
+ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef) -> int
+{
+	res := 7
+
+	for t : typs, i : 0
+	{
+		if t != null res += t.ItHash
+		if isRefs != null and isRefs[i] res = res xor_b 157
+		res = res*3
+	}
+	if retT != null
+	{
+		res = res xor_b retT.ItHash
+	}
+	return res
+}
+RecomputeFuncHash := !(int h) -> int
+{	
+	cVal := h  //+ h div 1359 // + h div 251460
+	return cVal->{u32} % 1024
+}
 
 ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 {
 	hashValue := FType.ItHash
 	if FType.RetType != null hashValue = hashValue xor_b FType.RetType.ItHash
 	if retType != null hashValue = hashValue xor_b retType.ItHash
-	indVal := hashValue + hashValue div 25
-	indVal = indVal mod 64
+	indVal := RecomputeFuncHash(hashValue)
 
 	for itT : FuncTypeTable[indVal]
 	{
@@ -331,9 +356,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 	}
 
 	hashValue := ComputeFuncHash(lin,ExtraArr,retType,retRef2)
-	indVal := hashValue + hashValue div 25
-	indVal = indVal and_b 0x3F
-	//printf("test %i\n",indVal)
+	indVal := RecomputeFuncHash(hashValue)
 
 	for itT : FuncTypeTable[indVal]
 	{
@@ -490,21 +513,6 @@ TypePointVoidFatP := class extend TypeFatArr
 	}
 }
 
-ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef) -> int
-{
-	res := 0
-
-	for t : typs, i : 0
-	{
-		if t != null res += t.ItHash
-		if isRefs != null and isRefs[i] res = res xor_b 1527
-	}
-	if retT != null
-	{
-		res = res xor_b retT.ItHash
-	}
-	return res
-}
 
 TypeFunc := class extend Type
 {
