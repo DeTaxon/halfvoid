@@ -5,6 +5,8 @@ BigBuff := char[4096]
 //CreatedStrs := Stack.{char^}
 sprintf := !(char^ buf,char^ frmt, ...) -> int declare
 
+strcmp := !(char^ a,char^ b) -> int declare
+
 CleanStrs := !() -> void
 {
 	while not CreatedStrs.Empty()
@@ -25,14 +27,25 @@ ToString := !(float x) -> char^
 	sprintf(toRet,"%f",x)
 	return toRet
 }
-
-"==" := !(char^ a,char^ b) -> bool
+"<" := !(char^ a, char^ b) -> bool
+{
+	if a == null return false
+	if b == null return false
+	i := 0
+	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
+	return a[i] < b[i]
+}
+StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a->{int^} == null or b->{int^} == null return false
 	if a->{int^} == b->{int^} return true
 	i := 0
 	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	return a[i] == b[i]
+}
+"==" := !(char^ a,char^ b) -> bool
+{
+	return StrCmp(a,b)
 }
 "!=" := !(char^ a,char^ b) -> bool
 {

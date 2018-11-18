@@ -41,12 +41,12 @@ Stack := class .{@T}
 		newItm := new Node.{T}() //TODO: vargs
 		newItm.Next = Start
 		Start = newItm
-		itSize++
+		itSize += 1
 	}
 	Push := !(T a) -> int
 	{
 		Start =	new Node.{T}(a,Start)
-		itSize++
+		itSize += 1
 		return 0
 	}
 	Pop := !() -> T

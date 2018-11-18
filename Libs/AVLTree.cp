@@ -86,6 +86,7 @@ AVLTree := class .{@DATA}
 		{
 			Start = new AVLTreeNode.{DATA}()
 			toRet^ = Start
+			Start.data = dat
 			return true
 		}
 		prev := Start
@@ -93,12 +94,13 @@ AVLTree := class .{@DATA}
 		
 		while iter != null
 		{
+			//printf("here %s %s\n",dat,iter.data.first)
 			if iter.data == dat{
 				break
 			}else{
 				prev = iter
 			}
-			if dat > iter.data 	iter = iter.Right
+			if  iter.data < dat 	iter = iter.Right
 			else 			iter = iter.Left
 		}
 		if iter != null {
@@ -115,6 +117,7 @@ AVLTree := class .{@DATA}
 			prev.Left.Up = prev
 			iter = prev.Left
 		}
+		iter.data = dat
 		
 		AVLRepair(iter)
 

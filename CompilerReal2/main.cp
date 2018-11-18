@@ -7,6 +7,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	BuiltInFuncs."this"()
 	//GlobalStrs = ""
 	CTT = new CreateTupleTemplate()
 
