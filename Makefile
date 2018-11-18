@@ -17,7 +17,7 @@ test2.ll: main2.cp
 	./stable main2.cp $(ForcedLibs) -o test2.ll
 test2: test2.ll
 	clang test2.ll	-o test2
-gdbc: $(wildcard CompilerReal2/*.cp) a.out
+gdbc: $(wildcard CompilerReal2/*.cp) 
 	nemiver ./c.out $(ForcedLibs) CompilerReal2/main.cp -o c.ll
 
 a.exe: out.ll WinMain.cpp

@@ -5,10 +5,13 @@ main := !(int argc, char^^ argv) -> int
 
 	test["3"] = 157
 	test["6"] = 367
+	test["3"] = 5
 	test["9"] = -1
 	printf("wut %i\n",test["3"])
 	printf("wut %i\n",test["6"])
 	printf("wut %i\n",test["9"])
+	ac := test.TryFind("6")
+	printf("gere %p %i\n",ac,ac^)
 
 	return 0
 }

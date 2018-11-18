@@ -40,7 +40,6 @@ BadPair := class .{@A,@B}
 	"=" := !(BadPair.{A,B} itR) -> void
 	{
 		first = itR.first
-		second = itR.second
 	}
 	"==" := !(BadPair.{A,B} itR) -> bool
 	{
@@ -62,6 +61,7 @@ AVLMap := class .{@KEY,@VALUE}
 		if(itTree.FindOrCreate(BadPair.{KEY,VALUE}(dat),resl&))
 		{
 			resl.data.first = dat
+			resl.data.second."this"()
 		}
 		return resl.data.second
 	}

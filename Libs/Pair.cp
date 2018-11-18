@@ -1,4 +1,4 @@
-Pair := class !{T1,T2}
+Pair := class .{@T1,@T2}
 {
 	first := T1
 	second := T2

@@ -164,6 +164,7 @@ MappedFile := class
 		close(itemId)
 		if point == null return void
 		munmap(point,size)
+		itemId = -1
 	}
 
 	makeMap := !() -> void

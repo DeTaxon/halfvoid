@@ -73,9 +73,9 @@ AVLTree := class .{@DATA}
 		{
 			if iter.data == dat return iter
 			if iter.data < dat {
-				iter = iter.Left
-			}else{
 				iter = iter.Right
+			}else{
+				iter = iter.Left
 			}
 		}
 		return null->{AVLTreeNode.{DATA}^}
@@ -94,7 +94,6 @@ AVLTree := class .{@DATA}
 		
 		while iter != null
 		{
-			//printf("here %s %s\n",dat,iter.data.first)
 			if iter.data == dat{
 				break
 			}else{
