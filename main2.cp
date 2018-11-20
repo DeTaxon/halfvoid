@@ -1,9 +1,18 @@
 
+
+te := type Queue.{int}
+
 main := !(int argc, char^^ argv) -> int
 {
-	test := AVLMap.{string,int}()
-
-
+	r := te()
+	c := te()
+	r.Push(1)
+	r.Push(2)
+	c.Push(3)
+	
+	for r printf("wow %i\n",it)
+	for c printf("wow %i\n",it)
+	
 	return 0
 }
 

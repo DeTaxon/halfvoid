@@ -1,4 +1,4 @@
-FatStack := class .{@DATA,@SIZE}
+FatArray := class .{@DATA,@SIZE}
 {
 	itData := DATA[SIZE]
 	itSize := int
@@ -17,12 +17,13 @@ FatStack := class .{@DATA,@SIZE}
 		return itData[itSize]
 	}
 	IsEmpty := !() -> bool
-	{
+	{	
 		return itSize == 0
 	}
 	Back := !() -> ref DATA { return itData[itSize - 1] }
-	//"[]" := !(int ind) -> ref DATA
-	//{
-	//	return itData[ind]
-	//}
+	Size := !() -> int { return itSize }
+	"[]" := !(int ind) -> ref DATA
+	{
+		return itData[ind]
+	}
 }

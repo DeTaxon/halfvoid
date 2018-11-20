@@ -345,9 +345,9 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 		for FoundC if funcs[it].MyFuncType.ParsCount return funcs[it]
 	}
 
-	for FoundT
+	for it : FoundT, itTmpl : templs
 	{
-		templsPrior[it] = templs[it].GetPriority(pars,consts)
+		templsPrior[it] = itTmpl.GetPriority(pars,consts)
 	}
 
 	ComputePriors(funcs,pars,consts,Priors)
@@ -366,15 +366,11 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 
 ComputePriors := !(Queue.{BoxFunc^} Fun, Queue.{Type^} pars,Queue.{Object^} consts , int^ priors) -> void
 {
-	iter := Fun.Start
-	h := 0
-	while iter != null
+	for it : Fun, h : 0
 	{
-		if iter.Data.IsSameConsts(consts)
-			priors[h] = ComputePriorFunc(iter.Data.MyFuncType,pars)
+		if it.IsSameConsts(consts)
+			priors[h] = ComputePriorFunc(it.MyFuncType,pars)
 		else priors[h] = 255
-		h += 1	
-		iter = iter.Next
 	}
 }
 

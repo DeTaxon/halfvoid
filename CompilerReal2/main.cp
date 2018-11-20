@@ -59,6 +59,7 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("extern")
 	PriorityData.Opers.Push("at")
 	PriorityData.Opers.Push("defer")
+	PriorityData.Opers.Push("type")
 
 	LexMachine = GenerateMachine(PriorityData.Opers)
 

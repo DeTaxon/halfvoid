@@ -93,7 +93,7 @@ Object := class{
 	PrintDestructor := virtual !(sfile f) -> void
 	{
 	}
-	GetOutPath := virtual !(Object^ from,int type,int size) -> string
+	GetOutPath := virtual !(Object^ from,int typ,int size) -> string
 	{
 		return ""
 	}

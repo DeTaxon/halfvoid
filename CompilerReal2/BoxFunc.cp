@@ -1157,7 +1157,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	GetOutPath := virtual !(Object^ item, int type,int size) ->string
+	GetOutPath := virtual !(Object^ item, int typ,int size) ->string
 	{
 		return "OutLabel" + ABox.ItId
 	}

@@ -95,7 +95,7 @@ ParseType := !(Object^ Node) -> Type^
 		//NodeName.GetValue()
 		if NodeName.GetValue() == ":=type"
 		{
-			return NodeName->{TypeDef^}.ItType
+			return NodeName.GetType()
 		}
 		if NodeName.Down != null
 		{
@@ -405,9 +405,28 @@ TypeDef := class extend Object
 		ItName = name
 		ItType = T
 	}
+	this := !(string name, Object^ itVal) -> void
+	{
+		ItType = null
+		ItName = name
+		Down = itVal.Clone()
+		Down.SetUp(this&)
+		firstRun = true
+	}
 	GetValue := virtual !() -> string
 	{
 		return ":=type"
+	}
+	firstRun := bool
+	GetType := virtual !() -> Type^
+	{
+		if ItType != null return ItType
+		if firstRun
+		{
+			firstRun = false
+			ItType = ParseType(Down)
+		}
+		return ItType
 	}
 }
 

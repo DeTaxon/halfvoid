@@ -1,9 +1,9 @@
 #import "AVLTree.cp"
-#import "FatStack.cp"
+#import "FatArray.cp"
 
 AVLSetIterator := class .{@DATA}
 {
-	miniStack := FatStack.{AVLTreeNode.{DATA}^,32}
+	miniStack := FatArray.{AVLTreeNode.{DATA}^,32}
 
 	this := !(AVLTreeNode.{DATA}^ nd) -> void
 	{

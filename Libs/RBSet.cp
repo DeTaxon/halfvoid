@@ -1,9 +1,9 @@
 #import "RBTree.cp"
-#import "FatStack.cp"
+#import "FatArray.cp"
 
 RBSetIterator := class .{@DATA}
 {
-	miniStack := FatStack.{RBTreeNode.{DATA}^,32}
+	miniStack := FatArray.{RBTreeNode.{DATA}^,32}
 
 	this := !(RBTreeNode.{DATA}^ nd) -> void
 	{
