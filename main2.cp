@@ -12,6 +12,8 @@ main := !(int argc, char^^ argv) -> int
 	
 	for r printf("wow %i\n",it)
 	for c printf("wow %i\n",it)
+	o := 5
+	k := new bool[o]
 	
 	return 0
 }

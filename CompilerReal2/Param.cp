@@ -304,11 +304,11 @@ ObjParam := class extend Object
 				{	
 					asClass := ObjType->{TypeClass^}
 
-					pars := Queue.{Type^}()
-					cc := Queue.{Object^}()
-					pars.Push(asClass)
+					box6 := new FuncInputBox()
+
+					box6.itPars.Emplace(asClass,true)
 					asCl := asClass.ToClass
-					DestructFunc := asCl.GetFunc("~this",pars,cc)
+					DestructFunc := asCl.GetFunc("~this",box6^,true)
 					if DestructFunc != null
 					{
 						asLoc := Down->{LocalParam^}

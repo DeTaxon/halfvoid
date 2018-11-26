@@ -25,6 +25,14 @@ memset := !(void^ dst, char val,int size) -> void declare
 	memset(newNode,0,val)
 	return newNode
 }
+"new" := !(int count) .{@R} -> R^
+{
+	val := R->FatTypeSize
+	itSi := val*count
+	newNode := malloc(itSi)
+	memset(newNode,0,itSi)
+	return newNode->{R^}
+}
 "delete" := !(void^ item) .{@R[]} -> void
 {
 	sub := 4

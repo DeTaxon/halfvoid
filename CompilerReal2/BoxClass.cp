@@ -102,18 +102,20 @@ BoxClassTemplate := class extend Object
 		}
 		return null
 	}
-	GetClass := !(Queue.{Object^} stuf) -> TypeClass^
+	GetClass := !(FuncInputBox itBox) -> TypeClass^
 	{
-		for i : Classes.Size()
+		for cl : Classes
 		{	
-			if Classes[i].IsSameConsts(stuf)
+			if cl.IsSameConsts(itBox)
 			{
-				return Classes[i].ClassType
+			
+				return cl.ClassType
 			}
 		}
 		newConsts := Queue.{ObjConstHolder^}()
-		if not IsEqConsts(ConstTree,stuf,newConsts)
+		if not IsEqConsts(ConstTree,itBox,newConsts)
 		{
+			
 			return null
 		}
 
@@ -148,16 +150,17 @@ BoxClassTemplate := class extend Object
 		newClass.Right = Down
 		if Down != null Down.Left = newClass
 		Down = newClass
+	
 
-
-		for i : stuf.Size()
+		for it : itBox.itConsts
 		{
-			newClass.ItConsts.Push(stuf[i])
+			newClass.ItConsts.Push(it)
 		}
 
-		for j : newConsts.Size()
+
+		for newConsts
 		{
-			newClass.ItVals.Push(newConsts[j])
+			newClass.ItVals.Push(it)
 		}
 
 		Classes.Push(newClass)
@@ -286,13 +289,13 @@ BoxClass := class extend Object
 		}
 	}
 
-	IsSameConsts := !(Queue.{Object^} consts) -> bool
+	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{
-		if consts.Size() != ItConsts.Size() {
+		if itBox.itConsts.Size() != ItConsts.Size() {
 			return false
 		}
 
-		for c : consts , i : 0
+		for c : itBox.itConsts , i : 0
 		{
 			if not CmpConstObjs(c,ItConsts[i])
 				return false
@@ -446,24 +449,7 @@ BoxClass := class extend Object
 	{
 		return "{...}"
 	}
-	//GetMethod
-	GetFunc := virtual !(string name) -> BoxFunc^
-	{
-		Pars := Queue.{Type^}()
-		temp := Queue.{Object^}()
-		return GetFunc(name,Pars,temp)
-	}
-	GetFunc := virtual !(string name,Queue.{Type^} pars) -> BoxFunc^
-	{
-		temp := Queue.{Object^}()
-		return this.GetFunc(name,pars,temp)
-	}
-	//GetMethod
-	GetFunc := virtual !(string name,Queue.{Type^} pars, Queue.{Object^} consts) -> BoxFunc^
-	{
-		return GetFunc(name,pars,consts,false)
-	}
-	GetFunc := virtual !(string name,Queue.{Type^} pars, Queue.{Object^} consts,bool iVir) -> BoxFunc^
+	GetFunc := virtual !(string name,FuncInputBox itBox,bool iVir) -> BoxFunc^
 	{
 		Funcs := Queue.{BoxFunc^}()
 		Templs := Queue.{BoxTemplate^}()
@@ -490,8 +476,10 @@ BoxClass := class extend Object
 					if iterJ.Down.GetValue() == "!()"
 					{
 						asFunc := (iterJ.Down)->{BoxFunc^}
-						if (not asFunc.IsVirtual or iVir) and asFunc.IsSameConsts(consts)
+						if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
+						{
 							Funcs.Push(asFunc)
+						}
 					}
 					if iterJ.Down.GetValue() == "!(){}"
 						Templs.Push((iterJ.Down)->{BoxTemplate^})
@@ -502,19 +490,16 @@ BoxClass := class extend Object
 		if name == "."{
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
 		}
-		bestFunc := GetBestFunc(pars,consts,Funcs,Templs)
+		bestFunc := GetBestFunc(itBox,Funcs,Templs)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
 		if bestFunc == null and this.Parent != null and name != "this"
 		{
-			pars2 := Queue.{Type^}()
-			pars2.Push(this.Parent.ClassType)
-			for ip : pars , i : 0
-			{
-				if i != 0
-					pars2.Push(ip)
-			}
-			return this.Parent.GetFunc(name,pars2,consts)
+			oldVal := itBox.itPars[0].first
+			itBox.itPars[0].first = Parent.ClassType
+			res :=  this.Parent.GetFunc(name,itBox,true)
+			itBox.itPars[0].first = oldVal
+			return res
 		}
 
 		return bestFunc
@@ -666,6 +651,10 @@ BoxClass := class extend Object
 			if iterJ.GetValue() == "i:=1"
 			{
 				if iterJ.Down.GetValue() == "!()"
+				{
+					iterJ.PrintGlobal(f)
+				}
+				if iterJ.Down.GetValue() == "!(){}"
 				{
 					iterJ.PrintGlobal(f)
 				}

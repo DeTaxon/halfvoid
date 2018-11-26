@@ -190,7 +190,7 @@ ParseType := !(Object^ Node) -> Type^
 			if NodeName.Down.GetValue() == "!{}{...}"
 			{
 				asT := ((NodeName.Down)->{BoxClassTemplate^})
-				Objs := Queue.{Object^}()
+				box := new FuncInputBox()
 				
 				iterR := Node.Down.Right.Right.Down
 				
@@ -202,19 +202,19 @@ ParseType := !(Object^ Node) -> Type^
 						if isType == null
 						{
 							val := TryCompute(iterR)
-							if val != null Objs.Push(val)
+							if val != null box.itConsts.Push(val)
 							else 
 							{
 								Node.EmitError("can not create class\n")
 							}
 						}else{
-							Objs.Push(new ObjType(isType))
+							box.itConsts.Push(new ObjType(isType))
 						}
 					}
 					iterR = iterR.Right
 				}
-				if Objs.Size() == 0 return null
-				return asT.GetClass(Objs)
+				if box.itConsts.Size() == 0 return null
+				return asT.GetClass(box^)
 			}
 			return null
 		}

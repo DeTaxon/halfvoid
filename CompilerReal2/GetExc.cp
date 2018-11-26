@@ -33,11 +33,10 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 
 	if isRef and ToType.GetType() == "class" and itemType.GetType() == "class"
 	{
-		pars := Queue.{Type^}()
-		consts := Queue.{Object^}()
-		pars.Push(itemType)
-		consts.Push((new ObjType(ToType))->{Object^})
-		preRet :=  GlobalRefExc^.GetFunc(pars,consts)
+		box := new FuncInputBox()
+		box.itPars.Emplace(itemType,isRef)
+		box.itConsts.Push(new ObjType(ToType))
+		preRet :=  GlobalRefExc^.GetFunc(box^)
 		return preRet
 	}
 
@@ -45,25 +44,25 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	{
 		if itemType.Base == ToType.Base
 		{
-			pars := Queue.{Type^}()
-			pars.Push(itemType)
-			return GlobalExcArr^.GetFunc(pars)
+			box := new FuncInputBox()
+			box.itPars.Emplace(itemType,isRef)
+			return GlobalExcArr^.GetFunc(box^)
 		}
 	}
 
-	p := Queue.{Type^}()
-	c := Queue.{Object^}()
 
-	p.Push(itemType)
-	c.Push(new ObjType(ToType))
+	b := new FuncInputBox() 
 
-	func :=  FindFunc("->{}",start,p,c,true)
+	b.itPars.Emplace(itemType,isRef)
+	b.itConsts.Push(new ObjType(ToType))
+
+	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func
 
 	if itemType.GetType() == "class"
 	{
 		asNeed := (itemType->{TypeClass^}).ToClass
-		func = asNeed.GetFunc("->{}",p,c)
+		func = asNeed.GetFunc("->{}",b^,false)
 		return func
 	}
 	return null

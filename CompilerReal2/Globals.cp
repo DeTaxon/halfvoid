@@ -22,7 +22,7 @@ BuiltInFuncs := Queue.{BoxFunc^}
 BuiltInTemplates := Queue.{BoxTemplate^}
 
 GlobalUnroll := BuiltInTemplateUnroll^
-GlobalNew := BuiltInTemplateNew^
+//GlobalNew := BuiltInTemplateNew^
 GlobalUnpoint := BuiltInTemplatePoint^
 GlobalRefExc := BuiltInTemplateRefEx^
 GlobalExcArr := BuiltInTemplateExcArr^

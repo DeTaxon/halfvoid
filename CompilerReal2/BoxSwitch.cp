@@ -39,15 +39,14 @@ BoxSwitch := class extend Object
 					{
 						if iter.Down.GetType() != null
 						{
-							Pars := Queue.{Type^}()
+							b := new FuncInputBox()
 
-							Pars.Push(Down.GetType())
-							Pars.Push(iter.Down.GetType())
-							cc := Queue.{Object^}()
+							b.itPars.Emplace(Down.GetType(),Down.IsRef())
+							b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
 
 
-							func := FindFunc("==",this&,Pars,cc,false)
-							if func == null func = FindFunc("in",this&,Pars,cc,false)
+							func := FindFunc("==",this&,b^,false)
+							if func == null func = FindFunc("in",this&,b^,false)
 
 							if func != null	{
 								if func.MyFuncType.RetType != GetType("bool")

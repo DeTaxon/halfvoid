@@ -4,6 +4,7 @@
 #import "ConstTemp.cp"
 #import "FindFunc.cp"
 #import "FuncCalls.cp"
+#import "FuncInputBox.cp"
 
 ParseFuncDataR := !(Object^ item) -> Object^
 {
@@ -227,23 +228,23 @@ BoxTemplate := class extend BoxFunc
 
 	IsVirtual := bool
 
-	CheckTypes := !(Queue.{Type^} pars,Queue.{Object^} consts,Queue.{ObjConstHolder^} res) -> bool
+	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res) -> bool
 	{
 		re := true
-		for fT : FuncsTTemps, i: 0
+		for fT : FuncsTTemps, i: 0, par : itBox.itPars
 		{
 			if MyFuncType.Pars[i] == null
 			{
 				if fT != null
 				{
-					IsSameType(fT,pars[i],res,re&)
+					IsSameType(fT,par.first,res,re&)
 					if not re return false
 				}
 			}			
 		}
 		if CopyConsts != null
 		{
-			return IsEqConsts(CopyConsts,consts,res)
+			return IsEqConsts(CopyConsts,itBox,res)
 		}
 		return true
 	}
@@ -334,57 +335,50 @@ BoxTemplate := class extend BoxFunc
 		}
 		if not IsWord(SomeName) IsSuffix = false
 	}
-	GetPriority :=virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority :=virtual !(FuncInputBox itBox) -> int
 	{
-		parsCount := pars.Size()
+		parsCount := itBox.itPars.Size()
 		FType := MyFuncType
 
-		if consts.Size() != this.ItConsts.Size() return 255
+		if itBox.itConsts.Size() != this.ItConsts.Size() return 255
 
 		st := Queue.{ObjConstHolder^}()
-		if not CheckTypes(pars,consts,st) return 255
+		if not CheckTypes(itBox,st) return 255
 
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
-			iterT := pars.Start
 
 			MaxPrior := 0
 
-			for i : FType.ParsCount
+			for i : FType.ParsCount, par : itBox.itPars
 			{
 				SomePrior := 0
 				if FType.Pars[i] != null and FuncsTTemps[i] == null
 				{
-					if FType.ParsIsRef[i] 
+					if FType.ParsIsRef[i]
 					{
-						if iterT.Data != FType.Pars[i] SomePrior = 255
+						if par.first != FType.Pars[i] SomePrior = 255
 					}else {
-						SomePrior = TypeCmp(iterT.Data, FType.Pars[i])
+						SomePrior = TypeCmp(par.first, FType.Pars[i])
 					}
 					if MaxPrior < SomePrior MaxPrior = SomePrior
 				}
-				iterT = iterT.Next
 			}
 			return MaxPrior
 		}
 		return 255	
 	}
-	GetFunc := virtual !(Queue.{Type^} pars) -> BoxFunc^
-	{
-		zeto := Queue.{Object^}()
-		return GetFunc(pars,zeto)
-	}
-	CreateFuncPointer := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> TypeFunc^
+	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
 		outT := Queue.{Type^}()
 		FType := MyFuncType
 		
-		for FType.ParsCount
+		for it : FType.ParsCount, par : itBox.itPars
 		{
 			if FType.Pars[it] == null
 			{
-				outT.Push(pars[it])
+				outT.Push(par.first)
 			}else{
 				outT.Push(FType.Pars[it])
 			}
@@ -396,15 +390,15 @@ BoxTemplate := class extend BoxFunc
 		}
 		return GetFuncType(outT,MyFuncType.ParsIsRef,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
 	}
-	GetFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> BoxFunc^
+	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{
 		outT := Queue.{Type^}()
 
 		parConsts := Queue.{ObjConstHolder^}()
-		CheckTypes(pars,consts,parConsts)
+		CheckTypes(itBox,parConsts)
 
 		TempReturnConsts = parConsts& //TODO: replace
-		newFuncType := CreateFuncPointer(pars,consts)
+		newFuncType := CreateFuncPointer(itBox)
 		TempReturnConsts = null
 
 		iterJ := FuncsType.Start
@@ -418,7 +412,7 @@ BoxTemplate := class extend BoxFunc
 				for somePos inDown = inDown.Right
 				asNeed :=  inDown->{BoxFunc^}
 
-				if asNeed.IsSameConsts(consts) {
+				if asNeed.IsSameConsts(itBox) {
 					return asNeed
 				}
 			}
@@ -426,8 +420,7 @@ BoxTemplate := class extend BoxFunc
 			somePos += 1
 		}
 		
-		
-		newFunc := GetNewFunc(pars,consts,newFuncType)
+		newFunc := GetNewFunc(itBox,newFuncType)
 
 		for  parConsts
 		{
@@ -453,7 +446,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		return newFunc	
 	}
-	GetNewFunc := virtual !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ FunType) -> BoxFunc^
+	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ FunType) -> BoxFunc^
 	{
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
@@ -524,11 +517,11 @@ BoxFunc := class extend Object
 		return null
 	}
 	
-	IsSameConsts := !(Queue.{Object^} consts) -> bool
+	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{
-		if consts.Size() != this.ItConsts.Size() return false
+		if itBox.itConsts.Size() != this.ItConsts.Size() return false
 
-		for ct : consts , i : 0, tc : this.ItConsts
+		for ct : itBox.itConsts , i : 0, tc : this.ItConsts
 		{
 			if not CmpConstObjs(ct,tc) 
 			{
@@ -999,11 +992,10 @@ BoxFuncBody := class extend BoxFunc
 
 					if asC.Parent != null
 					{
-						pars := Queue.{Type^}()
-						consts := Queue.{Object^}()
+						box5 := new FuncInputBox()
 						stp := asC.Parent
-						pars.Push(stp.ClassType)
-						func2 := asC.Parent.GetFunc("~this",pars,consts,true)
+						box5.itPars.Emplace(stp.ClassType,true)
+						func2 := asC.Parent.GetFunc("~this",box5^,true)
 
 						if func2 != null
 						{
@@ -1199,21 +1191,20 @@ BoxFuncBody := class extend BoxFunc
 				{
 					itC := itCPre->{TypeClass^}.ToClass
 
-					pars2 := Queue.{Type^}()
-					consts2 := Queue.{Object^}()
-					pars2.Push(itCPre)
-					func3 := itC.GetFunc("~this",pars2,consts2)
+					box3 := new FuncInputBox()
+
+					box3.itPars.Emplace(itCPre,true)
+					func3 := itC.GetFunc("~this",box3^,true)
 					if func3 != null
 					{
-						pars3 := Queue.{Type^}()
-						consts3 := Queue.{Object^}()
-						consts3.Push(new ObjStr(nowField.ItName))
+						box4 := new FuncInputBox()
+						box4.itConsts.Push(new ObjStr(nowField.ItName))
 						fnc := asC.AutoFieldTemplate
-						pr := fnc.GetPriority(pars3,consts3)
+						pr := fnc.GetPriority(box4^)
 						if pr == 0
 						{
 							asT := fnc->{BoxTemplate^}
-							funcCl := asT.GetFunc(pars3,consts3)
+							funcCl := asT.GetFunc(box4^)
 							funcCll := MakeSimpleCall(funcCl,null->{Object^})
 
 							exF := MakeSimpleCall(func3,funcCll)

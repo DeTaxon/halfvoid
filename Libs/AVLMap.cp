@@ -1,5 +1,5 @@
 #import "AVLTree.cp"
-#import "FatStack.cp"
+#import "FatArray.cp"
 
 //AVLSetIterator := class .{@DATA}
 //{

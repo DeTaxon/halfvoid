@@ -1,3 +1,18 @@
+FatArrayIterator := class .{@DATA}
+{
+	itPtr := DATA^
+	itInd,itSize := int
+	this := !(DATA^ itBegin, int inpSize) -> void
+	{
+		itPtr = itBegin
+		itInd = 0
+		itSize = inpSize
+	}
+	Inc := !() -> void { itInd += 1}
+	"^" := !() -> ref DATA { return itPtr[itInd] }
+	IsEnd := !() -> bool {	return itInd >= itSize 	} 
+}
+
 FatArray := class .{@DATA,@SIZE}
 {
 	itData := DATA[SIZE]
@@ -25,5 +40,23 @@ FatArray := class .{@DATA,@SIZE}
 	"[]" := !(int ind) -> ref DATA
 	{
 		return itData[ind]
+	}
+	Emplace := !() -> void
+	{
+		itSize += 1
+	}
+	Emplace := !(a) -> void
+	{
+		itData[itSize]."this"(a)
+		itSize += 1
+	}	
+	Emplace := !(a,b) -> void
+	{
+		itData[itSize]."this"(a,b)
+		itSize += 1
+	}
+	"~For" := !() -> FatArrayIterator.{DATA}
+	{
+		return FatArrayIterator.{DATA}(itData[0]&,itSize)
 	}
 }

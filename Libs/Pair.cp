@@ -17,7 +17,7 @@ Pair := class .{@T1,@T2}
 		if first == toCmp.first return true
 		return second == toCmp.second
 	}
-	"=" := !(Pair.{T1.T2} toSet) -> bool
+	"=" := !(Pair.{T1,T2} toSet) -> bool
 	{
 		first = toSet.first
 		second = toSet.second

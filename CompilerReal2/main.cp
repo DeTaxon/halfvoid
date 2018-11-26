@@ -9,7 +9,7 @@ main := !(int argc,char^^ argv) -> int
 {
 	BuiltInFuncs."this"()
 	//GlobalStrs = ""
-	CTT = new CreateTupleTemplate()
+	//CTT = new CreateTupleTemplate()
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
@@ -191,19 +191,17 @@ GetObjectsFromFile := !(Path fileName) -> Object^
 	Buf := Queue.{Token^}()
 	if not GetTokensFromFile(fileName, LexMachine^,Buf)
 		return null
-
-	iterC := Buf.Start
-	while iterC != null
+	
+	for iterC : Buf
 	{
 		iterG := PriorityData.Opers.Start
 		while iterG != null
 		{
-			if iterG.Data == iterC.Data.Buff{
-				iterC.Data.Id = 10
+			if iterG.Data == iterC.Buff{
+				iterC.Id = 10
 			}
 			iterG = iterG.Next
 		}
-		iterC = iterC.Next
 	}
 
 	Ob := TokensToObjects(fileName,Buf)

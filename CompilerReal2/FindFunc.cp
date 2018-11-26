@@ -1,4 +1,6 @@
 #import "Tree.cp"
+#import "Globals.cp"
+#import "FuncInputBox.cp"
 
 IsWord := !(string name) -> bool
 {
@@ -240,25 +242,15 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 
 
 
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars,bool IsMethod) -> BoxFunc^
+FindFunc := !(string name, Object^ start, FuncInputBox itBox,bool IsMethod) -> BoxFunc^
 {
-	wut := Queue.{Object^}()
-	return FindFunc(name,start,pars,wut,IsMethod)
+	return FindStuff(name,start,itBox,false,IsMethod)
 }
-FindFunc := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts,bool IsMethod) -> BoxFunc^
+FindSuffix := !(string name, Object^ start,FuncInputBox itBox) -> BoxFunc^
 {
-	return FindStuff(name,start,pars,consts,false,IsMethod)
+	return FindStuff(name,start,itBox,true,false)
 }
-FindSuffix := !(string name, Object^ start,Queue.{Type^} pars) -> BoxFunc^
-{
-	return FindStuff(name,start,pars,true,false)
-}
-FindStuff := !(string name, Object^ start,Queue.{Type^} pars, bool IsSuffix,bool IsMethod) -> BoxFunc^
-{
-	wut := Queue.{Object^}()
-	return FindStuff(name,start,pars,wut,IsSuffix,IsMethod)
-}
-FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} consts, bool IsSuffix,bool IsMethod) -> BoxFunc^
+FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
 	Searched := Queue.{int}()
 
@@ -277,19 +269,21 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 	Templs := Queue.{BoxTemplate^}()
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,true)
 
-	func :=  GetBestFunc(pars,consts,Funcs,Templs)
+	func :=  GetBestFunc(itBox,Funcs,Templs)
 	if func != null return func
 
-	if (not IsWord(name) or IsMethod) and pars.Size() != 0 // wtf if not word and size = 0
+	if (not IsWord(name) or IsMethod) and itBox.itPars.Size() != 0 // wtf if not word and size = 0
 	{
-		if pars[0] != null
-		if pars[0].GetType() == "class"
+		fT := itBox.itPars[0].first
+		if fT != null
+		if fT.GetType() == "class"
 		{
-			asNeed := (((pars[0])->{TypeClass^}).ToClass)
-			funcRes := asNeed.GetFunc(name,pars,consts)
+			asNeed := ((fT->{TypeClass^}).ToClass)
+			funcRes := asNeed.GetFunc(name,itBox,false)
 			if funcRes != null return funcRes
 		}
 	}
+
 		
 	Funcs.Clean()
 	Templs.Clean()
@@ -314,16 +308,11 @@ FindStuff := !(string name, Object^ start,Queue.{Type^} pars,Queue.{Object^} con
 			Templs.Push(itH)
 		}
 	}
-	func2 := GetBestFunc(pars,consts,Funcs,Templs)
+	func2 := GetBestFunc(itBox,Funcs,Templs)
 	return func2
 
 }
-GetBestFunc := !(Queue.{Type^} pars, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
-{
-	wut := Queue.{Object^}()
-	return GetBestFunc(pars,wut,funcs,templs)
-}
-GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
+GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
 {
 	FoundC := funcs.Size()
 	FoundT := templs.Size()
@@ -340,61 +329,69 @@ GetBestFunc := !(Queue.{Type^} pars,Queue.{Object^} consts, Queue.{BoxFunc^} fun
 	templsPrior = null
 	if not templs.Empty() templsPrior = new int[templs.Size()] else templsPrior = null
 
-	if pars.Empty()
+	if FoundC != 0 and itBox.itPars.Size() == 0
 	{
-		for FoundC if funcs[it].MyFuncType.ParsCount return funcs[it]
+		for funcs
+		{
+			if it.MyFuncType.ParsCount == 0 
+			{
+				return it
+			}
+		}
+	}
+	//for it : FoundC, fFuncs : funcs
+	//{
+	//	for FoundC if fFuncs.MyFuncType.ParsCount return fFuncs
+	//}
+
+	for  itTmpl : templs, it : 0
+	{
+		templsPrior[it] = itTmpl.GetPriority(itBox)
 	}
 
-	for it : FoundT, itTmpl : templs
-	{
-		templsPrior[it] = itTmpl.GetPriority(pars,consts)
-	}
-
-	ComputePriors(funcs,pars,consts,Priors)
+	ComputePriors(funcs,itBox,Priors)
 	
 	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }
-	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(pars,consts)
+	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(itBox)
 	for FoundC if Priors[it] == 1  { funcs[it].ParseBlock() return funcs[it] }
-	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(pars,consts)
+	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(itBox)
 	for FoundC if Priors[it] == 2  { funcs[it].ParseBlock() return funcs[it] }
-	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(pars,consts)
+	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(itBox)
 	for FoundC if Priors[it] == 3  { funcs[it].ParseBlock() return funcs[it] }
-	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(pars,consts)
+	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(itBox)
 
 	return null
 }
 
-ComputePriors := !(Queue.{BoxFunc^} Fun, Queue.{Type^} pars,Queue.{Object^} consts , int^ priors) -> void
+ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> void
 {
 	for it : Fun, h : 0
 	{
-		if it.IsSameConsts(consts)
-			priors[h] = ComputePriorFunc(it.MyFuncType,pars)
+		if it.IsSameConsts(itBox)
+			priors[h] = ComputePriorFunc(it.MyFuncType,itBox)
 		else priors[h] = 255
 	}
 }
 
-ComputePriorFunc := !(TypeFunc^ FuncTyp, Queue.{Type^} pars) -> int
+ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
 {	
-	parsCount := pars.Size()
+	parsCount := itBox.itPars.Size()
 	if parsCount == FuncTyp.ParsCount or (FuncTyp.IsVArgs and parsCount >= FuncTyp.ParsCount)
 	{
 		IsCorrect := true
-		iterT := pars.Start
 
 		MaxPrior := 0
 
-		for i : FuncTyp.ParsCount
+		for i : FuncTyp.ParsCount, par : itBox.itPars
 		{
 			SomePrior := 0
 			if FuncTyp.ParsIsRef[i] 
 			{
-				if iterT.Data != FuncTyp.Pars[i] SomePrior = 255
+				if par.first != FuncTyp.Pars[i] SomePrior = 255
 			}else {
-				SomePrior = TypeCmp(iterT.Data, FuncTyp.Pars[i])
+				SomePrior = TypeCmp(par.first, FuncTyp.Pars[i])
 			}
 			if MaxPrior < SomePrior MaxPrior = SomePrior
-			iterT = iterT.Next
 		}
 		return MaxPrior
 	}

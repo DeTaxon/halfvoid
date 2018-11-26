@@ -172,15 +172,16 @@ BuiltInTemplateGetRef := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		if pars.Size() != 1 return 255
+		if itBox.itPars.Size() != 1 return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("&",pars[0],true,pars[0].GetPoint(), 
-		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0\n")
+		pars := ref itBox.itPars
+		return new BuiltInFuncUno("&",pars[0].first,true,pars[0].first.GetPoint(), 
+		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -197,16 +198,18 @@ BuiltInTemplatePoint := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "point" return 255
+		if pars[0].first.GetType() != "point" return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("^",pars[0],false,pars[0].Base,true, 
-		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, i32 0\n")
+		pars := ref itBox.itPars
+		return new BuiltInFuncUno("^",pars[0].first,false,pars[0].first.Base,true, 
+		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -224,22 +227,24 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
-		if not IsInt(pars[1]) return 255
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		if not IsInt(pars[1].first) return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		if pars[0].GetType() == "arr"
+		pars := ref itBox.itPars
+		if pars[0].first.GetType() == "arr"
 		{
-			return new BuiltInFuncBinar("[]",pars[0],true,pars[1],false,pars[0].Base,true,
-		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0, " + pars[1].GetName() + " #2\n")
+			return new BuiltInFuncBinar("[]",pars[0].first,true,pars[1].first,false,pars[0].first.Base,true,
+		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2\n")
 		}
-		return new BuiltInFuncBinar("[]",pars[0],false,pars[1],false,pars[0].Base,true,
-		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].GetName() + " #1, " + pars[1].GetName() + " #2\n")
+		return new BuiltInFuncBinar("[]",pars[0].first,false,pars[1].first,false,pars[0].first.Base,true,
+		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, " + pars[1].first.GetName() + " #2\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -258,22 +263,24 @@ BuiltInPointAdd := class extend BoxTemplate
 		emptType.Push(GetType("s64"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
-		return TypeCmp(pars[1],GetType("s64"))
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		return TypeCmp(pars[1].first,GetType("s64"))
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		if pars[0].Base == GetType("void")
+		pars := ref itBox.itPars
+		if pars[0].first.Base == GetType("void")
 		{
-			return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 			"#0 = getelementptr i8 , i8* #1 , i64 #2\n")
 		}
 
-		return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
-		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].Base.GetName() + "* #1 ,i64 #2\n")
+		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
+		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 #2\n")
 	}
 }
 BuiltInPointSub := class extend BoxTemplate
@@ -287,24 +294,26 @@ BuiltInPointSub := class extend BoxTemplate
 		emptType.Push(GetType("s64"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "arr" and pars[0].GetType() != "fatarr" return 255
-		return TypeCmp(pars[1],GetType("s64"))
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		return TypeCmp(pars[1].first,GetType("s64"))
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		if pars[0].Base == GetType("void")
+		pars := ref itBox.itPars
+		if pars[0].first.Base == GetType("void")
 		{
-			return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 			"%Pre## = sub i64 0,#2\n" +
 			"#0 = getelementptr i8 , i8* #1 , i64 %Pre##\n")
 		}
 
-		return new BuiltInFuncBinar("-",pars[0],false,GetType("s64"),false,pars[0].Base.GetPoint(),false,
+		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 		"%Pre## = sub i64 0,#2\n" +
-		"#0 = getelementptr " + pars[0].Base.GetName() + " , " + pars[0].Base.GetName() + "* #1 ,i64 %Pre##\n")
+		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 %Pre##\n")
 	}
 }
 
@@ -318,16 +327,18 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "arr" return 255
+		if pars[0].first.GetType() != "arr" return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("->{}",pars[0],true,pars[0].Base.GetPoint(),false,
-		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0,i32 0\n")
+		pars := ref itBox.itPars
+		return new BuiltInFuncUno("->{}",pars[0].first,true,pars[0].first.Base.GetPoint(),false,
+		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0,i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -445,8 +456,10 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 		emptType := Queue.{Type^}()
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
 		if pars.Size() != 0 return 255
 		if consts.Size() != 2 return 255
 		if consts[0].GetValue() != "~type" return 255
@@ -460,8 +473,11 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 		if St == "FatTypeSize" return 0
 		return 255
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		asN := consts[1]->{ObjStr^}
 		St := asN.GetString()
 
@@ -494,8 +510,8 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 
 		return null
 		
-		return new BuiltInFuncUno("->{}",pars[0],true,pars[0].Base.GetPoint(),false,
-		"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0,i32 0\n")
+		//return new BuiltInFuncUno("->{}",pars[0],true,pars[0].Base.GetPoint(),false,
+		//"#0 = getelementptr " + pars[0].GetName() + " , " + pars[0].GetName() + "* #1, i32 0,i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -513,13 +529,14 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
 		return 255
-		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "fatarr" return 255
-		if consts.Size() != 1 return 255
-		if consts[0].GetValue() != "~type" return 255 
+
+		//if pars.Size() != 1 return 255
+		//if pars[0].GetType() != "fatarr" return 255
+		//if consts.Size() != 1 return 255
+		//if consts[0].GetValue() != "~type" return 255 
 		return 0
 	}
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
@@ -544,10 +561,12 @@ BuiltInTemplateCheckPoint := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
 		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "fatarr" and pars[0].GetType() != "point" return 255
+		if pars[0].first.GetType() != "fatarr" and pars[0].first.GetType() != "point" return 255
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~type" return 255
 
@@ -556,10 +575,11 @@ BuiltInTemplateCheckPoint := class extend BoxTemplate
 		
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		return new BuiltInFuncUno("->{}",pars[0],false,GetType("bool"),false,
-		"#0 = icmp ne " + pars[0].GetName() +  "#1,null\n")
+		pars := ref itBox.itPars
+		return new BuiltInFuncUno("->{}",pars[0].first,false,GetType("bool"),false,
+		"#0 = icmp ne " + pars[0].first.GetName() +  "#1,null\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -578,45 +598,50 @@ BuiltInTemplateSet := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
-		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" and pars[1].GetType() != "arr" return 255
-		if pars[1].Base == GetType("void") return 1
-		if pars[0].GetType() == "point"
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
+		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" and pars[1].first.GetType() != "arr" return 255
+		if pars[1].first.Base == GetType("void") return 1
+		if pars[0].first.GetType() == "point"
 		{
-			if pars[0].Base == GetType("void") return 1
-			if pars[1].Base == GetType("void") return 1
-			if pars[1].Base == pars[0].Base return 0
-			if pars[1].GetType() == "point" return TypeCmp(pars[1],pars[0])
+			if pars[0].first.Base == GetType("void") return 1
+			if pars[1].first.Base == GetType("void") return 1
+			if pars[1].first.Base == pars[0].first.Base return 0
+			if pars[1].first.GetType() == "point" return TypeCmp(pars[1].first,pars[0].first)
 		}else
 		{
-			if pars[1].Base == pars[0].Base return 0
+			if pars[1].first.Base == pars[0].first.Base return 0
 		}
 		return 255
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
-		if pars[0].GetType() == "point" and pars[0] != pars[1] 
+		pars := ref itBox.itPars
+		if pars[0].first.GetType() == "point" and pars[0].first != pars[1].first 
 		{
 			PreRet := BoxFunc^
-			if pars[1].GetType() == "arr"
+			if pars[1].first.GetType() == "arr"
 			{
-			PreRet = new BuiltInFuncBinar("=",pars[0],true,pars[1],true,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + "* #2 to " + pars[0].GetName() + "\n" +
-													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
+			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,true,GetType("void"), 
+					"%TPre## = bitcast " + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + "\n" +
+					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}else{
-			PreRet = new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
-													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
+			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
+					"%TPre## = bitcast " + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}
 			return PreRet
 		}
-		if pars[0] != pars[1]
+		if pars[0].first != pars[1].first
 		{
-			return new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "%TPre## = bitcast " + pars[1].GetName() + " #2 to " + pars[0].GetName() + "\n" +
-													"store " + pars[0].GetName() + " %TPre##, " + pars[0].GetName() + "* #1\n")
+			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
+					"%TPre## = bitcast " + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 		}
-		return new BuiltInFuncBinar("=",pars[0],true,pars[1],false,GetType("void"), "store " + pars[0].GetName() + " #2, " + pars[0].GetName() +"* #1\n")
+		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), "store " + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -658,9 +683,9 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 
 		MyFuncType = GetFuncType(PP,refs,toAdd.MyFuncType.RetType,toAdd.MyFuncType.RetRef,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		return ComputePriorFunc(MyFuncType,pars)
+		return ComputePriorFunc(MyFuncType,itBox)
 	}
 
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
@@ -704,8 +729,11 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		emptType := Queue.{Type^}()
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if pars.Size() != 0 return 255
 		if consts.Size() != 1 return 255
 		if (consts[0].GetValue() != "~str") return 255
@@ -727,8 +755,11 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		return 255
 	}
 
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		Name := string
 		if consts.Size() != 1 return null
 		if consts[0].GetValue() != "~str" 
@@ -807,30 +838,34 @@ BuiltInLambdaCall := class extend BoxTemplate
 
 		MyFuncType = null
 	}
-	CreateFuncPointer := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> TypeFunc^
+	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
-		asL := pars[0]->{TypeFuncLambda^}
-		asB :=  ((pars[0].Base)->{TypeFunc^})
+		pars := ref itBox.itPars
+
+		asL := pars[0].first->{TypeFuncLambda^}
+		asB :=  ((pars[0].first.Base)->{TypeFunc^})
 
 		Pars := Queue.{Type^}()
 
 		for i : pars.Size()
 		{
 			if i == 0{
-				Pars.Push(pars[0])
+				Pars.Push(pars[0].first)
 			}else{
 				Pars.Push(asB.Pars[i])
 			}
 		}
 		return GetFuncType(Pars,asB.ParsIsRef,asB.RetType,asB.RetRef,asB.IsVArgs)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		if pars.Size() == 0 return 255
-		if pars[0].GetType() != "lambda" return 255
+		pars := ref itBox.itPars
 
-		asL := pars[0]->{TypeFuncLambda^}
-		asB := ((pars[0].Base)->{TypeFunc^})
+		if pars.Size() == 0 return 255
+		if pars[0].first.GetType() != "lambda" return 255
+
+		asL := pars[0].first->{TypeFuncLambda^}
+		asB := ((pars[0].first.Base)->{TypeFunc^})
 
 		if asB.ParsCount != pars.Size() return 255
 
@@ -839,16 +874,18 @@ BuiltInLambdaCall := class extend BoxTemplate
 		{
 			if i > 0
 			{
-				nowCmp := TypeCmp(pars[i],asB.Pars[i])
+				nowCmp := TypeCmp(pars[i].first,asB.Pars[i])
 				if maxCmp < nowCmp maxCmp = nowCmp					
 			}
 		}
 		return maxCmp
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
-		asL := pars[0]->{TypeFuncLambda^}
-		asB := ((pars[0].Base)->{TypeFunc^})
+		pars := ref itBox.itPars
+
+		asL := pars[0].first->{TypeFuncLambda^}
+		asB := ((pars[0].first.Base)->{TypeFunc^})
 
 		IsCompl := false
 
@@ -856,8 +893,8 @@ BuiltInLambdaCall := class extend BoxTemplate
 			IsCompl = IsComplexType(asB.RetType)	
 		}
 
-		ToSet := "%Wut## = bitcast " + pars[0].GetName() + " #1 to i8*\n"
-		ToSet = ToSet + "%Func## = load " +pars[0].Base.GetName() + "* , " + pars[0].GetName() + " #1\n"
+		ToSet := "%Wut## = bitcast " + pars[0].first.GetName() + " #1 to i8*\n"
+		ToSet = ToSet + "%Func## = load " +pars[0].first.Base.GetName() + "* , " + pars[0].first.GetName() + " #1\n"
 
 
 		if IsCompl or asB.RetType == GetType("void"){
@@ -865,7 +902,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		}else{
 			ToSet = ToSet + "#0 = call " 
 		}
-		ToSet = ToSet + pars[0].Base.GetName() + "%Func##(i8*  %Wut##"
+		ToSet = ToSet + pars[0].first.Base.GetName() + "%Func##(i8*  %Wut##"
 
 		//if Pars.Size() != 0 or IsCompl ToSet = ToSet + " , "
 		if IsCompl
@@ -907,10 +944,13 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
 		IsMethod = true
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if pars.Size() != 1 return 255
-		if pars[0].GetType() != "class" return 255
+		if pars[0].first.GetType() != "class" return 255
 		if consts.Size() != 1 return 255
 		if (consts[0].GetValue() != "~str") return 255
 
@@ -931,8 +971,11 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		return 255
 	}
 
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+		
 		Name := string
 		if consts.Size() != 1 return null
 		if consts[0].GetValue() != "~str" 
@@ -1015,26 +1058,32 @@ BuiltInLenArr := class extend BoxTemplate
 		//emptType.Push(GetType("int"))
 		//MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if consts.Size() != 0 return 255
 		if pars.Size() == 0 return 255
 		for pars.Size() 
-			if pars[it].GetType() != "standart"
+			if pars[it].first.GetType() != "standart"
 				return 255
 		return 0
 	}
-	CreateFuncPointer := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> TypeFunc^
+	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
+		pars := ref itBox.itPars
 		newQueue := Queue.{Type^}()
-		for pars.Size() newQueue.Push(pars[0])
-		return GetFuncType(newQueue,null->{bool^},pars[0].GetArray(pars.Size()),false,false)
+		for pars.Size() newQueue.Push(pars[0].first)
+		return GetFuncType(newQueue,null->{bool^},pars[0].first.GetArray(pars.Size()),false,false)
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
 		toCreate := ""
 
-		baseType := pars[0]
+		baseType := pars[0].first
 		retType := baseType.GetArray(pars.Size())
 
 		baseTypeN := baseType.GetName()
@@ -1049,7 +1098,7 @@ BuiltInLenArr := class extend BoxTemplate
 		}
 
 		//newQueue := Queue.{Type^}()
-		//for pars.Size() newQueue.Push(pars[0])
+		//for pars.Size() newQueue.Push(pars[0].first)
 
 		itFunc := new BuiltInFunc
 		itFunc.MyFuncType = fun //GetFuncType(newQueue,null->{bool^},retType,false,false)
@@ -1075,17 +1124,23 @@ BuiltInTemplateNew := class extend BoxTemplate
 		emptType.Push(GetType("int"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "standart" return 255
-		if pars[1].GetType() != "standart" return 255
+		if pars[0].first.GetType() != "standart" return 255
+		if pars[1].first.GetType() != "standart" return 255
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~type" return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		ResType := Type^
 		if consts.Size() != 1 return null
 		if consts[0].GetValue() != "~type" 
@@ -1096,7 +1151,7 @@ BuiltInTemplateNew := class extend BoxTemplate
 		ExtraSize := ResType.GetAlign()
 		if ExtraSize < 4 ExtraSize = 4
 
-		return new BuiltInFuncBinar("new",pars[0],false,pars[1],false,ResP,
+		return new BuiltInFuncBinar("new",pars[0].first,false,pars[1].first,false,ResP,
 			"%PreTotalSize## = mul i32 #1,#2" + "\n" +
 			"%TotalSize## = add i32 %PreTotalSize##, " + ExtraSize + "\n" +
 			"%PrePtr## = call i8*(i32)@malloc(i32 %TotalSize##)\n"+
@@ -1123,8 +1178,11 @@ BuiltInTemplateNext := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},GetType("int"),false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars, Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~str" return 255
 		if pars.Size() != 1 return 255
@@ -1134,52 +1192,55 @@ BuiltInTemplateNext := class extend BoxTemplate
 		
 		if asStr == "len"
 		{
-			if pars[0].GetType() != "fatarr" and pars[0].GetType() != "arr" return 255
+			if pars[0].first.GetType() != "fatarr" and pars[0].first.GetType() != "arr" return 255
 			return 0
 		}
 		if asStr == "begin"
 		{
-			if pars[0] == TypeTable[13] or pars[0] == TypeTable[14] return 0
+			if pars[0].first == TypeTable[13] or pars[0].first == TypeTable[14] return 0
 			return 255
 		}
 		if asStr == "end"
 		{
-			if pars[0] == TypeTable[13] or pars[0] == TypeTable[14] return 0
+			if pars[0].first == TypeTable[13] or pars[0].first == TypeTable[14] return 0
 			return 255
 		}
 
 		return 255
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		asPreStr := consts[0]->{ObjStr^}
 		asStr := asPreStr.GetString()
 
 		if asStr == "len"
 		{
-			if pars[0].GetType() == "arr"
+			if pars[0].first.GetType() == "arr"
 			{	
-				asType := pars[0]->{TypeArr^}
-				pre := new BuiltInFuncUno("->",pars[0],true,GetType("int"),false,
+				asType := (pars[0].first)->{TypeArr^}
+				pre := new BuiltInFuncUno("->",pars[0].first,true,GetType("int"),false,
 					"#0 = add i32 0," + asType.Size + "\n")
 				pre.IsSelfPre = true
 				return pre
 			}else{
-				return new BuiltInFuncUno("->",pars[0],false,GetType("int"),false,
-				"%PreP## = bitcast " + pars[0].GetName() + " #1 to i32*\n" + 
+				return new BuiltInFuncUno("->",pars[0].first,false,GetType("int"),false,
+				"%PreP## = bitcast " + pars[0].first.GetName() + " #1 to i32*\n" + 
 				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
 				"#0 = load i32 , i32 * %PreI##\n")
 			}
 		}
 		if asStr == "begin"
 		{
-			return new BuiltInFuncUno("->",pars[0],false,pars[0].Base,false,
-					"#0 = extractvalue " + pars[0].GetName() + " #1,0\n")
+			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
+					"#0 = extractvalue " + pars[0].first.GetName() + " #1,0\n")
 		}
 		if asStr == "end"
 		{
-			return new BuiltInFuncUno("->",pars[0],false,pars[0].Base,false,
-					"#0 = extractvalue " + pars[0].GetName() + " #1,1\n")
+			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
+					"#0 = extractvalue " + pars[0].first.GetName() + " #1,1\n")
 		}
 		return null
 	}
@@ -1200,19 +1261,23 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
-		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" return 255
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
+		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
-		return new BuiltInFuncBinar("->",pars[0],false,pars[1],false,GetType("bool"),false,
-			"%PreOne## = bitcast " + pars[0].GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast " + pars[1].GetName() + " #2 to i8*\n" +
+		pars := ref itBox.itPars
+		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
+			"%PreOne## = bitcast " + pars[0].first.GetName() + " #1 to i8*\n" +
+			"%PreTwo## = bitcast " + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp eq i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1232,19 +1297,23 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+
 		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
-		if pars[0].GetType() != "point" and pars[0].GetType() != "fatarr" return 255
-		if pars[1].GetType() != "point" and pars[1].GetType() != "fatarr" return 255
+		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
+		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
-		return new BuiltInFuncBinar("->",pars[0],false,pars[1],false,GetType("bool"),false,
-			"%PreOne## = bitcast " + pars[0].GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast " + pars[1].GetName() + " #2 to i8*\n" +
+		pars := ref itBox.itPars
+		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
+			"%PreOne## = bitcast " + pars[0].first.GetName() + " #1 to i8*\n" +
+			"%PreTwo## = bitcast " + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp ne i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1264,16 +1333,18 @@ BuiltInTemplateRefEx := class extend BoxTemplate
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 		IsMethod = true
 	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int
+	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		if pars.Size() != 1 return 255
+		if itBox.itPars.Size() != 1 return 255
 		return 0
 	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
 		asType := consts[0]->{ObjType^}
-		return new BuiltInFuncUno("->",pars[0],true,asType.MyType,true,
-			"#0 = bitcast " + pars[0].GetPoint().GetName() + " #1 to " + asType.MyType.GetPoint().GetName() + "\n")
+		return new BuiltInFuncUno("->",pars[0].first,true,asType.MyType,true,
+			"#0 = bitcast " + pars[0].first.GetPoint().GetName() + " #1 to " + asType.MyType.GetPoint().GetName() + "\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1292,7 +1363,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateTypeInfo())
 
 	//GlobalUnroll = new BuiltInTemplateUnroll()
-	GlobalNew = new BuiltInTemplateNew()
+	//GlobalNew = new BuiltInTemplateNew()
 	GlobalUnpoint = new BuiltInTemplatePoint()
 	GlobalRefExc = new BuiltInTemplateRefEx()
 	GlobalExcArr = new BuiltInTemplateExcArr()

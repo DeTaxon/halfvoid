@@ -147,11 +147,11 @@ MakeGoodConsts := !(Object^ l) -> bool
 	return true
 }
 
-IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) -> bool
+IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> bool
 {
-	for i : consts.Size()
+	for it : itBox.itConsts
 	{
-		if consts[i] == null return false
+		if it == null return false
 	}
 	if l == null return false
 	re := bool
@@ -166,9 +166,9 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 			{
 				if iter.GetValue() == "~{in}type"
 				{
-					if consts[i].GetValue() != "~type" return false
+					if itBox.itConsts[i].GetValue() != "~type" return false
 					asNeed := iter->{InHolder^}
-					asN2 := consts[i]->{ObjType^}
+					asN2 := itBox.itConsts[i]->{ObjType^}
 					
 					if asN2.MyType == null return false
 					if asN2.MyType.GetType() != "class" return false
@@ -193,21 +193,21 @@ IsEqConsts := !(Object^ l, Queue.{Object^} consts, Queue.{ObjConstHolder^} res) 
 					if not found return false
 
 				}else{
-					if consts.Size() < i return false
-					if consts[i].GetValue() == "~type"
+					if itBox.itConsts.Size() < i return false
+					if itBox.itConsts[i].GetValue() == "~type"
 					{
-						asNeed := consts[i]->{ObjType^}
+						asNeed := itBox.itConsts[i]->{ObjType^}
 						re = true
 						IsSameType(iter,asNeed.MyType,res,re&)
 						if not re return false
 					}else{
 						if iter.GetValue() != "~{}type" return false
 						asNeed := iter->{ObjTemplateType^}
-						res.Push(new ObjConstHolder(asNeed.MyStr,consts[i]))
+						res.Push(new ObjConstHolder(asNeed.MyStr,itBox.itConsts[i]))
 					}
 				}
 			}else{
-				if not CmpConstObjs(iter,consts[i])
+				if not CmpConstObjs(iter,itBox.itConsts[i])
 					return false
 			}
 			i += 1

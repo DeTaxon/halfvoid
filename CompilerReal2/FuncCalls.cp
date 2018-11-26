@@ -2,6 +2,7 @@
 #import "GetExc.cp"
 #import "ParamCall.cp"
 #import "PtrToRef.cp"
+#import "FuncInputBox.cp"
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
@@ -12,11 +13,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	if iter.GetValue() == "~ind"
 	{
 		asInd := iter->{ObjIndent^}
-		
-		funcData := Queue.{Type^}()
-		consts := Queue.{Object^}()
-		consts.Push(new ObjStr(asInd.MyStr)) 
-		someF := FindFunc(".",iter,funcData,consts,true)
+		box := new FuncInputBox()	
+		box.itConsts.Push(new ObjStr(asInd.MyStr)) 
+		someF := FindFunc(".",iter,box^,true)
 
 		if someF != null
 		{
@@ -27,14 +26,12 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	iter = ToParse.Down
 	if iter == null return null
 
-
-
 	if iter.GetValue() == "!"
 	{
 		if iter.Right != null
 		if iter.Right.GetValue() == "[]"
 		{
-			Pars := Queue.{Type^}()
+			box := new FuncInputBox()
 
 			iterY := iter.Right.Down
 
@@ -42,11 +39,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				if iterY.GetValue() != ","
 				{
-					Pars.Push(iterY.GetType())
+					box.itPars.Emplace(iterY.GetType(),iterY.IsRef())
 				}
 				iterY = iterY.Right
 			}
-			f := FindFunc("![]",iter,Pars,false)
+			f := FindFunc("![]",iter,box^,false)
 
 			if f != null
 			{
@@ -55,30 +52,30 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			
 		}
-		if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
-		{
-			Pars := Queue.{Type^}()
+		//if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
+		//{
+		//	box := new FuncInputBox()
 
-			iterY := iter.Right.Down
+		//	iterY := iter.Right.Down
 
-			while iterY != null
-			{
-				if iterY.GetValue() != ","
-				{
-					Pars.Push(iterY.GetType())
-				}
-				iterY = iterY.Right
-			}
+		//	while iterY != null
+		//	{
+		//		if iterY.GetValue() != ","
+		//		{
+		//			box.itPars.Emplace(iterY.GetType(),iterY.IsRef())
+		//		}
+		//		iterY = iterY.Right
+		//	}
 
-			CTT2 := CTT->{BoxTemplate^}
+		//	CTT2 := CTT->{BoxTemplate^}
 
-			f := CTT2.GetFunc(Pars)
-			if f != null
-			{
-				TrimCommas(iter.Right)
-				return MakeSimpleCall(f,iter.Right.Down)
-			}
-		}
+		//	f := CTT2.GetFunc(box^)
+		//	if f != null
+		//	{
+		//		TrimCommas(iter.Right)
+		//		return MakeSimpleCall(f,iter.Right.Down)
+		//	}
+		//}
 		return null
 	}
 
@@ -107,22 +104,20 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			asNeed3 := asNeed2->{TypeClass^}
 			asNeed4 := asNeed3.ToClass
-
-			Pars := Queue.{Type^}()
-			Pars.Push(asNeed2)
+			
+			box := new FuncInputBox()
+			box.itPars.Emplace(asNeed2,true)
 			TrimCommas(iter.Right)
-
-			cc := Queue.{Object^}()
 
 			iter2 := iter.Right.Down
 
 			while iter2 != null
 			{
-				Pars.Push(iter2.GetType())
+				box.itPars.Emplace(iter2.GetType(),iter2.IsRef())
 				iter2 = iter2.Right
 			}
 
-			func := asNeed4.GetFunc("this",Pars,cc)
+			func := asNeed4.GetFunc("this",box^,true)
 			if func != null return new ConstructCall(func,iter.Right.Down)
 		}
 
@@ -136,27 +131,25 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter.GetValue() == "~type"
 				{
-					
-					pars := Queue.{Type^}()
-					constst := Queue.{Object^}()
+					box := new FuncInputBox()					
 
 					objT := iter->{ObjType^}
 
-					constst.Push(objT)
-					constst.Push(new ObjStr(asNeed.MyStr))
-					func := FindFunc("->",iter,pars,constst,false)
+					box.itConsts.Push(objT)
+					box.itConsts.Push(new ObjStr(asNeed.MyStr))
+					func := FindFunc("->",iter,box^,false)
 					if func != null {
 						return MakeSimpleCall(func,null->{Object^})
 					}
 				}
 
-				pars := Queue.{Type^}()
+				box := new FuncInputBox()
 
-				cc := Queue.{Object^}()
-				cc.Push(iter)
-				cc.Push(new ObjStr(asNeed.MyStr))
+
+				box.itConsts.Push(iter)
+				box.itConsts.Push(new ObjStr(asNeed.MyStr))
 				
-				func := FindFunc("->",iter,pars,cc,false)
+				func := FindFunc("->", iter,box^,false)
 				if func != null return MakeSimpleCall(func,null->{Object^})
 			}
 		}
@@ -221,21 +214,20 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iterL := iterPre.Left
 				iterD := iterPre.Down
 
-				pars := Queue.{Type^}()
-				cc := Queue.{Object^}()
+				box := new FuncInputBox()
 
-				pars.Push(iterPre.Left.GetType())
+				box.itPars.Emplace(iterPre.Left.GetType(),true)
 
 				while iterD != null
 				{
 					if iterD.GetValue() != ","
-						pars.Push(iterD.GetType())
+						box.itPars.Emplace(iterD.GetType(),iterD.IsRef())
 					iterD = iterD.Right
 				}
 
 				//TODO: add consts
 				
-				plsF := FindFunc("()",iter,pars,false)
+				plsF := FindFunc("()",iter,box^,false)
 
 				if plsF != null
 				{
@@ -258,17 +250,16 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		if iter.GetValue() == "~suffix"
 		{
 			if iter.Left.GetType() == null return null
+			sBox := new FuncInputBox()
 
 			AsSuf := iter->{ObjSuffix^}
-			Pars := Queue.{Type^}()
-			Pars.Push(iter.Left.GetType())
+			sBox.itPars.Emplace(iter.Left.GetType(),false)
 
-			Func := FindSuffix(AsSuf.MyStr,iter,Pars)
+			Func := FindSuffix(AsSuf.MyStr,iter,sBox^)
 			if Func == null return null
 			
 			iter = iter.Left
 			PopOutNode(iter.Right)
-			Pars.Clean()
 			return MakeSimpleCall(Func,iter) 
 		}
 		if iter.GetValue() == "." or iter.GetValue() == "->"
@@ -300,12 +291,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter.GetValue() == "->"
 				{
-					consts := Queue.{Object^}()
-					pars := Queue.{Type^}()
-					pars.Push(iter.Left.GetType())
-					consts.Push(new ObjStr(asName))
+					box := new FuncInputBox()
+					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
+					box.itConsts.Push(new ObjStr(asName))
 
-					fun := FindFunc("->",iter,pars,consts,false)
+					fun := FindFunc("->",iter,box^,false)
 					iter = iter.Left
 					iter.Right.Left = null
 					iter.Right = null
@@ -343,24 +333,24 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}else{
 						asClass = null
 					}
+
+					box := new FuncInputBox()
 					
-					gg := Queue.{Type^}()
-					gg.Push(iter.Left.GetType())
+					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
 					iterK := iter.Right.Right.Down
 					while iterK != null
 					{
 						if iterK.GetValue() != ","
-							gg.Push(iterK.GetType())
+							box.itPars.Emplace(iterK.GetType(),iterK.IsRef())
 						iterK = iterK.Right
 					}
 
-					func := FindFunc(asName,iter,gg,true)
+					func := FindFunc(asName,iter,box^,true)
 				
 					if func == null and GotClass and asClass != null
 					{
-						gg.Pop()
-						gg.PushFront(asClass.ClassType)
-						func = asClass.GetFunc(asName,gg)
+						box.itPars[0].first = asClass.ClassType
+						func = asClass.GetFunc(asName,box^,false)
 					}
 
 					if func != null
@@ -387,13 +377,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					asClass = null
 					LT := iter.Left.GetType()
 
+					box1 := new FuncInputBox()
+
 					if LT.GetType() == "standart"
 					{
-						pars := Queue.{Type^}()
-						pars.Push(LT)
-						cc := Queue.{Object^}()
-						cc.Push(new ObjStr(asName))
-						func := FindFunc(".",iter,pars,cc,false)
+						box1.itPars.Emplace(LT,iter.Left.IsRef())
+						box1.itConsts.Push(new ObjStr(asName))
+						func := FindFunc(".",iter,box1^,false)
 						if func == null return null
 						return MakeSimpleCall(func,iter.Left)
 					}
@@ -409,15 +399,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 							return null
 						}
 					}
+					box1 := new FuncInputBox()
 
-					pars := Queue.{Type^}()
-					pars.Start = null
-					pars.Push(asClass.ClassType)
-					Consts := Queue.{Object^}()
-					Consts.Push(new ObjStr(asName))
-					pru := (asClass.UnrollTemplate^.GetPriority(pars,Consts))
+					box1.itPars.Emplace(asClass.ClassType,true)
+					box1.itConsts.Push(new ObjStr(asName))
+					pru := (asClass.UnrollTemplate^.GetPriority(box1^))
 					if pru == 255 return null //TODO: check for user functions
-					roll :=  (asClass.UnrollTemplate^.GetFunc(pars,Consts))
+					roll :=  (asClass.UnrollTemplate^.GetFunc(box1^))
 					if roll == null return null
 
 					iter = iter.Left
@@ -474,8 +462,22 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			if iter.Right.Right != null
 			{
+				if iter.Right.Right.GetValue() != "()"
+				{
+					irr := iter.Right.Right
+					itB := new FuncInputBox()
+					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
+					itB.itConsts.Push(new ObjType(useType))
+					func := FindFunc("new",iter,itB^,true)
+					if func != null
+					{
+						irr.Up.Down = irr
+						itF := MakeSimpleCall(func,irr)
+						return itF
+					}
+				}
 				if iter.Right.Right.GetValue() == "()" return new NewCallOne(useType,iter.Right.Right) 
-				return new NewCall(useType,iter.Right.Right)
+				//return new NewCall(useType,iter.Right.Right)
 			}else{
 				return new NewCallOne(useType,null->{Object^})
 			}
@@ -523,16 +525,17 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 				asNeed := asNeedPre->{TypeClass^}
 				cls := asNeed.ToClass
 
-				Pars := Queue.{Type^}()
+				oBox := new FuncInputBox()
+
 
 				iter := pars
 				while iter != null
 				{
-					Pars.Push(iter.GetType())
+					oBox.itPars.Emplace(iter.GetType(),iter.IsRef())
 					iter = iter.Right
 				}
 
-				newPre := cls.GetFunc(oper,Pars)
+				newPre := cls.GetFunc(oper,oBox^,true)
 				if newPre == null return null
 				return MakeSimpleCall(newPre,pars)
 			}
@@ -612,7 +615,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 }
 OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
 {
-	Ps := Queue.{Type^}()
+	box := new FuncInputBox()
 
 	TrimCommas(G)
 	P := G.Down
@@ -621,44 +624,47 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	while iterT != null
 	{
-		Ps.Push(iterT.GetType())
+		box.itPars.Emplace(iterT.GetType(),iterT.IsRef())
 		iterT = iterT.Right
 	}
+	for it : consts box.itConsts.Push(it)
 
-	SomeFunc := FindFunc(Name,G,Ps,consts,false)
+	SomeFunc := FindFunc(Name,G,box^,false)
 
-	if SomeFunc == null{
-		inClass := GetUpClass(G)
-		if inClass != null
-		{
-			Ps.PushFront(inClass.ClassType)
-			funcH := inClass.GetFunc(Name,Ps)
-			if funcH != null
-			{
-				daFunc := GetFuncBlock(G)
-				if daFunc != null
-				{
-					thisParamCallPre := new FuncParam("this",(inClass.ClassType)->{Type^},true)
-					thisParamCall := new ParamNaturalCall("this",thisParamCallPre->{Object^})
+	//if SomeFunc == null{
+	//	inClass := GetUpClass(G)
+	//	if inClass != null
+	//	{	
+	//		box2 := new FuncInputBox()
+	//		box2.itPars
+	//		Ps.PushFront(inClass.ClassType)
+	//		funcH := inClass.GetFunc(Name,box^,true)
+	//		if funcH != null
+	//		{
+	//			daFunc := GetFuncBlock(G)
+	//			if daFunc != null
+	//			{
+	//				thisParamCallPre := new FuncParam("this",(inClass.ClassType)->{Type^},true)
+	//				thisParamCall := new ParamNaturalCall("this",thisParamCallPre->{Object^})
 
 
-					if P != null
-					{
-						thisParamCall.Right = P
-						P.Left = thisParamCall
-						thisParamCall.Up = P.Up
-						P.Up.Down = thisParamCall
-						P = P.Left
-					}else
-					{
-						P = thisParamCall
-					}
-					return MakeSimpleCall(funcH,P)
-				}
-			}
+	//				if P != null
+	//				{
+	//					thisParamCall.Right = P
+	//					P.Left = thisParamCall
+	//					thisParamCall.Up = P.Up
+	//					P.Up.Down = thisParamCall
+	//					P = P.Left
+	//				}else
+	//				{
+	//					P = thisParamCall
+	//				}
+	//				return MakeSimpleCall(funcH,P)
+	//			}
+	//		}
 
-		}
-	}
+	//	}
+	//}
 
 	if SomeFunc == null 
 	{
@@ -702,6 +708,11 @@ SomeFuncCall := class extend ObjResult
 	IsRef := virtual !() -> bool
 	{
 		if gotAlloc return true
+		if ToCall == null {
+			EmitError("compiler error?\n")
+			Print(0)
+			return false
+		}
 		if ToCall.MyFuncType.RetRef return true
 		return false
 	}
@@ -1275,10 +1286,9 @@ NewCallOne := class extend SomeFuncCall
 	{
 		if pri == State_GetUse	
 		{
-			pars := Queue.{Type^}()
-			cc := Queue.{Object^}()
-			cc.Push(new ObjType(newType))
-			func := FindFunc("new",this&,pars,cc,false)
+			box := new FuncInputBox()
+			box.itConsts.Push(new ObjType(newType))
+			func := FindFunc("new",this&,box^,false)
 
 			if func == null 
 			{
@@ -1291,22 +1301,21 @@ NewCallOne := class extend SomeFuncCall
 				{
 					if newType.GetType() == "class"
 					{
-						parsC := Queue.{Type^}()
-						empCon := Queue.{Object^}()
+						box := new FuncInputBox()
 
-						parsC.Push(newType)
+						box.itPars.Emplace(newType,true)
 						iter3 := Down
 
 						while iter3 != null
 						{
-							parsC.Push(iter3.GetType())
+							box.itPars.Emplace(iter3.GetType(),iter3.IsRef())
 							iter3 = iter3.Right
 						}
 
 						asNeed := newType->{TypeClass^}
 
 
-						constrFunc := asNeed.ToClass.GetFunc("this",parsC,empCon)
+						constrFunc := asNeed.ToClass.GetFunc("this",box^,false)
 
 						if constrFunc == null 
 						{
@@ -1348,13 +1357,12 @@ DeleteCall := class extend SomeFuncCall
 	{
 		if pri == State_GetUse
 		{
-			pars := Queue.{Type^}()
-			consts := Queue.{Object^}()
+			box := new FuncInputBox()
 
-			pars.Push(VoidPType)
-			consts.Push(new ObjType(Down.GetType()))
+			box.itPars.Emplace(VoidPType,false)
+			box.itConsts.Push(new ObjType(Down.GetType()))
 
-			func := FindFunc("delete",Up,pars,consts,false)
+			func := FindFunc("delete",Up,box^,false)
 
 			if func != null
 			{
@@ -1382,10 +1390,9 @@ DeleteCall := class extend SomeFuncCall
 				//}else {
 				//	if Down.GetType().GetType() != "point"
 				//	{
-						pars3 := Queue.{Type^}()
-						pars3.Push(Down.GetType())
-						consts3 := Queue.{Object^}()
-						func2 := FindFunc("~this",this&,pars3,consts3,true)
+						box2 := new FuncInputBox()
+						box2.itPars.Emplace(Down.GetType(),Down.IsRef())
+						func2 := FindFunc("~this",this&,box2^,true)
 						if func2 != null
 						{
 							halfCall := new LinkForThis(Down,Down.GetType(),true)
@@ -1433,20 +1440,20 @@ NewCall := class extend SomeFuncCall
 			if ConstrPars != null
 				ConstrPars.SetUp(null->{Object^})
 
-			pars := Queue.{Type^}()
 			
 			if toCreate.GetType() == "class"
-			{	
-				pars.Push(toCreate)
+			{
+				b := new FuncInputBox()
+				b.itPars.Emplace(toCreate,true)
 
 				iter := ConstrPars
 				while iter != null
 				{
-					pars.Push(iter.GetType())
+					b.itPars.Emplace(iter.GetType(),iter.IsRef())
 					iter = iter.Right
 				}
 				asClass := toCreate->{TypeClass^}
-				func := asClass.ToClass.GetFunc("this",pars)
+				func := asClass.ToClass.GetFunc("this",b^,true)
 				if func != null
 				{
 					Temp := ConstrPars
@@ -1470,17 +1477,21 @@ NewCall := class extend SomeFuncCall
 	}
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
+		box := new FuncInputBox()
 		//ResultType = toCreate.GetPoint()
-		Down = new TypeSizeCall(toCreate)
-		Down.Right = toCr
+		//Down = new TypeSizeCall(toCreate)
+		Down = toCr
 		Down.SetUp(this&)
 
-		outT := Queue.{Type^}()
-		outT.Push(GetType("int"))
-		outT.Push(GetType("int"))
-		outC := Queue.{Object^}()
-		outC.Push(new ObjType(toCreate))
-		fun := (GlobalNew^.GetFunc(outT,outC))
+		box.itPars.Emplace(GetType("int"),false)
+		box.itConsts.Push(new ObjType(toCreate))
+
+		fun := FindFunc("new",this&,box^,false)
+		if fun == null
+		{
+			toCr.EmitError("can not create new obj\n")
+			return void
+		}
 		ResultType = fun.MyFuncType.RetType
 		ExtraFunc = MakeSimpleCall(fun,Down)
 		ExtraFunc.Down.SetUp(ExtraFunc)
