@@ -8,6 +8,7 @@
 main := !(int argc,char^^ argv) -> int 
 {
 	BuiltInFuncs."this"()
+	ObjectsPool."this"()
 	//GlobalStrs = ""
 	//CTT = new CreateTupleTemplate()
 

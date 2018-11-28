@@ -57,7 +57,7 @@ ObjParam := class extend Object
 			{
 				tmp := new ParamNaturalCall("_",Down)
 				asNeed.ApplyConstants(f,tmp)
-				free(tmp)
+				//free(tmp)
 			}
 		}
 		

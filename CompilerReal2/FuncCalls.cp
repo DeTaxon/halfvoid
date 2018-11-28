@@ -1288,7 +1288,20 @@ NewCallOne := class extend SomeFuncCall
 		{
 			box := new FuncInputBox()
 			box.itConsts.Push(new ObjType(newType))
-			func := FindFunc("new",this&,box^,false)
+
+			func := BoxFunc^
+			func = null
+
+			if newType.GetType() == "class"
+			{
+				asTPre := newType->{TypeClass^}
+				asT := asTPre.ToClass
+				func = asT.GetFunc("new",box^,true)
+			}
+
+			if func == null{
+				func = FindFunc("new",this&,box^,false)
+			}
 
 			if func == null 
 			{

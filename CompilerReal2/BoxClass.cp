@@ -240,6 +240,10 @@ BoxClass := class extend Object
 
 		iterF := this&
 
+		//if name == "new" {
+		//	return void
+		//}
+
 		while iterF != null
 		{
 			ptrToQ := iterF.ItMethods&
@@ -276,14 +280,15 @@ BoxClass := class extend Object
 
 			}
 			if inTh != null{
-			}else{
+			}else{	
 				toCr := gotFuncsIter.Data
-
-				inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter.Data)
-				ThislessFuncs.Push(inThPre)
-				inTh = inThPre
+				if not toCr.IsStatic {
+					inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter.Data)
+					ThislessFuncs.Push(inThPre)
+					inTh = inThPre
+				}
 			}
-			funcs.Push(inTh)
+			if inTh != null funcs.Push(inTh)
 			gotFuncsIter = gotFuncsIter.Next
 			funcsClIter = funcsClIter.Next
 		}
@@ -495,10 +500,15 @@ BoxClass := class extend Object
 
 		if bestFunc == null and this.Parent != null and name != "this"
 		{
-			oldVal := itBox.itPars[0].first
-			itBox.itPars[0].first = Parent.ClassType
+			oldVal := Type^
+			if name != "new"
+			{
+				oldVal = itBox.itPars[0].first
+				itBox.itPars[0].first = Parent.ClassType
+			}
 			res :=  this.Parent.GetFunc(name,itBox,true)
-			itBox.itPars[0].first = oldVal
+			if name != "new" { itBox.itPars[0].first = oldVal }
+
 			return res
 		}
 

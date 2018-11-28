@@ -1,19 +1,37 @@
 
+itT := StupidMemoryPool.{16000000}
 
-te := type Queue.{int}
+A := class
+{
+	x := int
+	this := !() -> void
+	{
+		printf("creating A\n")
+	}
+	"new" := !() .{@R} -> void^
+	{
+		printf("alloc type %i\n",R->TypeSize)
+		return itT.GetMem(R->TypeSize,R->Align)
+	}
+}
+B := class extend A
+{
+	y := int[16]
+	this := !() -> void
+	{
+		printf("creating B\n")
+	}
+	
+}
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	r := te()
-	c := te()
-	r.Push(1)
-	r.Push(2)
-	c.Push(3)
-	
-	for r printf("wow %i\n",it)
-	for c printf("wow %i\n",it)
-	o := 5
-	k := new bool[o]
+	itT."this"()
+	j := new A()
+	k := new B()
+
+	k.y[15] = 4
 	
 	return 0
 }

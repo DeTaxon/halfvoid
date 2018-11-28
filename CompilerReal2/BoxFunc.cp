@@ -486,6 +486,7 @@ BoxFunc := class extend Object
 	IsMethod := bool
 	IsRetComplex := bool
 	IsRetRef := bool
+	IsStatic := bool
 
 	VirtualId := int
 
@@ -586,8 +587,9 @@ BoxFunc := class extend Object
 				if not IsRetRef this.IsRetComplex = true
 			}
 		}
+		if FuncName == "new" IsStatic = true
 
-		if MethodType != null
+		if MethodType != null and (not IsStatic)
 		{
 			Typs.Push(MethodType)
 			TypsNams.Push("this")
@@ -826,6 +828,9 @@ BoxFuncBody := class extend BoxFunc
 		{
 			OutputName = "func" + GetNewId()
 		}
+
+		if SomeName == "new" IsStatic = true
+
 		MyFuncType = fType
 
 		TestRet(fType.RetType)
@@ -898,7 +903,11 @@ BoxFuncBody := class extend BoxFunc
 		}else
 		{
 			OutputName = "func" + GetNewId()
-		}	
+		}
+		if SomeName == "new" {
+			IsStatic = true
+			printf("creating static\n")
+		}
 
 		if SomeName == "~this"
 		{
@@ -942,7 +951,7 @@ BoxFuncBody := class extend BoxFunc
 			if not (c in 'a'..'z') and not (c in 'A'..'Z') IsSuffix = false 
 		}
 
-		if metC != null{
+		if metC != null {
 			
 			asCls := metC->{TypeClass^}
 			asClsT := asCls.ToClass

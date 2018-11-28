@@ -7,6 +7,9 @@
 #import "StandartObjects.cp"
 #import "Syntax.cp"
 
+
+ObjectsPool := StupidMemoryPool.{32000000}
+
 Object := class{
 	Id := int
 	Left,Right,Down,Up := Object^
@@ -14,6 +17,11 @@ Object := class{
 
 	IsInvalid := bool
 
+	"new" := !() .{@R} -> void^
+	{
+		return ObjectsPool.GetMem(R->TypeSize,R->Align)
+	}
+	
 	TestNodes := virtual !() ->void
 	{
 		if Up == null printf("broken %s\n",GetValue())
@@ -179,17 +187,17 @@ Remove := !(Object^ where ) -> void
 	if where.Left == null and where.Right == null
 	{
 		where.Up.Down = null
-		free(where)
+		//free(where)
 	}else if where.Left == null
 	{
 		where.Up.Down = where.Right
 		where.Right.Left = null
-		free(where)
+		//free(where)
 	}else //if where.Right == null
 	{
 		where.Left.Right = where.Right
 		if where.Right != null where.Right.Left = where.Left
-		free(where)
+		//free(where)
 	}
 }
 
