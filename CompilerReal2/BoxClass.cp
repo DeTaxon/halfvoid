@@ -751,6 +751,8 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		FuncName = toFunc.FuncName
 		OutputName = toFunc.OutputName
 
+		IsRetRef = toFunc.IsRetRef
+
 		newTypes := Queue.{Type^}()
 		itsBools := Queue.{bool}()
 
@@ -804,7 +806,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		}
 
 		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
-		if MyFuncType.RetType != GetType("void") and not isRetComp
+		if (MyFuncType.RetType != GetType("void") and not isRetComp) or IsRetRef
 			ToExe = ToExe + "#0 = "
 		fTypp := itFunc.MyFuncType
 		fTypp2 := fTypp->{Type^}

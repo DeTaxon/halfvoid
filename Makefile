@@ -1,4 +1,4 @@
-ForcedLibs := -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/FatArray.cp -f Libs/Pair.cp -f Libs/AVLMap.cp -f Libs/MemoryPool.cp
+ForcedLibs := -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/FatArray.cp -f Libs/Pair.cp -f Libs/AVLMap.cp -f Libs/MemoryPool.cp -f Libs/HybridQueue.cp
 
 out2.ll: a.out 
 	./a.out -f Libs/lib.cp main2.cp -o out2.ll
@@ -9,7 +9,7 @@ xdg6.o: wayland-c/xdg.c
 b : out2.ll #xdg.o xdg6.o 
 	clang++ -O0 $<  -target x86_64-pc-linux-gnu -d -o b  -ldl #-lglfw #-lwayland-client -lwayland-egl #-lEGL -lGLESv2
 cycle: $(wildcard CompilerReal2/*.cp)
-	time ./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang -O3 out3.ll -o c.out
+	time ./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll -o c.out
 repair: $(wildcard CompilerReal2/*.cp) 
 	time ./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll -o c.out
 
