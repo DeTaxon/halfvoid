@@ -35,6 +35,10 @@ FatArray := class .{@DATA,@SIZE}
 	{	
 		return itSize == 0
 	}
+	NotEmpty := !() -> bool
+	{
+		return itSize != 0
+	}
 	Back := !() -> ref DATA { return itData[itSize - 1] }
 	Size := !() -> int { return itSize }
 	"[]" := !(int ind) -> ref DATA

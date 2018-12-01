@@ -35,13 +35,15 @@ ToString := !(float x) -> char^
 	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	return a[i] < b[i]
 }
+//strcmp := !(char^ a,char^ b) -> int declare
 StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a->{int^} == null or b->{int^} == null return false
 	if a->{int^} == b->{int^} return true
-	i := 0
-	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
-	return a[i] == b[i]
+	//i := 0
+	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
+	//return a[i] == b[i]
+	return strcmp(a,b) == 0
 }
 "==" := !(char^ a,char^ b) -> bool
 {
@@ -49,13 +51,13 @@ StrCmp := !(char^ a,char^ b) -> bool
 }
 "!=" := !(char^ a,char^ b) -> bool
 {
-	i := 0
-	while a[i] != 0 and b[i] != 0 
-	{
-		if a[i] != b[i] return true
-		i += 1
-	}
-	return a[i] != b[i]
+	//i := 0
+	//while a[i] != 0 and b[i] != 0 
+	//{
+	//	if a[i] != b[i] return true
+	//	i += 1
+	//}
+	return strcmp(a,b) != 0
 }
 
 "+" := !(char^ a, char^ b) -> char^

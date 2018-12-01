@@ -37,7 +37,12 @@ main := !(int argc,char^^ argv) -> int
 					outputFile = argv[i+1]
 					i += 1
 				}else{
-					targetFiles.Push(argv[i])
+					if argv[i] == "-g"
+					{
+						DebugMode = true	
+					}else{
+						targetFiles.Push(argv[i])
+					}
 				}
 			}
 		}

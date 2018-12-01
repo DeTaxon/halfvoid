@@ -36,6 +36,7 @@ Stack := class .{@T}
 		Start = null
 		itSize = 0
 	}
+	Front := !() -> ref T { return Start.Data }
 	Emplace := !() -> void
 	{
 		newItm := new Node.{T}() //TODO: vargs

@@ -199,7 +199,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 Token := class{
 	Id := int
-	Buff := char[1024]
+	Buff := char[256]
 }
 
 GenerateToken := !(char^ Buuf, int id) -> Token^

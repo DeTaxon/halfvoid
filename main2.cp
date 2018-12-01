@@ -3,11 +3,10 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	hi := HybridQueue.{int,16}()
+	x := 12
 
-	for 32 hi.Push(it)
+	printf("wow %i\n",x)
 
-	for hi printf("wow %i\n",it)
 	
 	return 0
 }

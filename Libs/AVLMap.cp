@@ -1,50 +1,37 @@
 #import "AVLTree.cp"
-#import "FatArray.cp"
+#import "arrs.cp"
 
-//AVLSetIterator := class .{@DATA}
-//{
-//	miniStack := FatStack.{AVLTreeNode.{DATA}^,32}
-//
-//	this := !(AVLTreeNode.{DATA}^ nd) -> void
-//	{
-//		miniStack."this"()
-//		if nd != null{
-//			miniStack.Push(nd)
-//		}
-//	}
-//	IsEnd := !() -> bool { return miniStack.IsEmpty() }
-//	"^" := !() -> ref DATA { return miniStack.Back().data }
-//	Inc := !() -> void { 
-//		nowNod := miniStack.Pop()
-//		if nowNod.Left != null miniStack.Push(nowNod.Left)
-//		if nowNod.Right != null miniStack.Push(nowNod.Right)
-//	}
-//}
+AVLMapIterator := class .{@DATA,@KEY,@VALUE}
+{
+	miniStack := Stack.{AVLTreeNode.{DATA}^,32}
+
+	this := !(AVLTreeNode.{DATA}^ nd) -> void
+	{
+		miniStack."this"()
+		if nd != null{
+			miniStack.Push(nd)
+		}
+	}
+	IsEnd := !() -> bool { return miniStack.Size() == 0 }
+	"^" := !() -> ref VALUE { return miniStack.Front().data.second }
+	Ind := !() -> ref KEY { return miniStack.Front().data.first}
+	Inc := !() -> void { 
+		nowNod := miniStack.Pop()
+		if nowNod.Left != null miniStack.Push(nowNod.Left)
+		if nowNod.Right != null miniStack.Push(nowNod.Right)
+	}
+}p
 
 BadPair := class .{@A,@B}
 {
 	first := A
 	second := B
 
-	this := !() -> void
-	{
-	}
-	this := !(A itA) -> void
-	{
-		first = itA
-	}
-	"<" := !(BadPair.{A,B} itR) -> bool
-	{
-		return first < itR.first
-	}
-	"=" := !(BadPair.{A,B} itR) -> void
-	{
-		first = itR.first
-	}
-	"==" := !(BadPair.{A,B} itR) -> bool
-	{
-		return first == itR.first
-	}
+	this := !() -> void	{	}
+	this := !(A itA) -> void{ first = itA	}
+	"<" := !(BadPair.{A,B} itR) -> bool {	return first < itR.first }
+	"=" := !(BadPair.{A,B} itR) -> void {	first = itR.first	}
+	"==" := !(BadPair.{A,B} itR) -> bool {	return first == itR.first }
 }
 
 AVLMap := class .{@KEY,@VALUE}
@@ -61,7 +48,7 @@ AVLMap := class .{@KEY,@VALUE}
 		if(itTree.FindOrCreate(BadPair.{KEY,VALUE}(dat),resl&))
 		{
 			resl.data.first = dat
-			resl.data.second."this"()
+			//resl.data.second."this"()
 		}
 		return resl.data.second
 	}
@@ -71,5 +58,9 @@ AVLMap := class .{@KEY,@VALUE}
 		resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
 		if resl == null return null
 		return resl.data.second&
+	}
+	"~For" := !() -> AVLMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}
+	{
+		return AVLMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
 	}
 }
