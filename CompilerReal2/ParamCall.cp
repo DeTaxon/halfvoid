@@ -8,6 +8,12 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 		may := GetItem(dynCast.MyStr,ob)
 
+		if dynCast.MyStr[0] == '$'
+		{
+			if may == null return new ObjBool(false)
+			return may
+		}
+
 		if may != null
 		{
 			if may.GetValue() == "i:=1"

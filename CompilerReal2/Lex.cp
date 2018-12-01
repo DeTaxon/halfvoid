@@ -24,7 +24,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	begin := new Machine()
 	
 	forOpers := Queue.{Line}()
-	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12
+	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12 attrs - 13
 
 	//0: begin
 	//1: error
@@ -53,7 +53,7 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 
 	//20: symbols - 10
 
-	Size := 30 //bound check??
+	Size := 31 //bound check??
 
 	//begin.Lines = new Line[Size]
 	PreLines := Queue.{Line}()
@@ -66,8 +66,15 @@ GenerateMachine := !(QueueSet.{string} Opers) -> Machine^
 	
 	for i : 256 PreLines[0].GoTo[i] = 16	
 
+	//attrs
+	PreLines[0].GoTo[';'] = 30
+	PreLines[30].Id = 13
+	for i : 256 PreLines[30].GoTo[i] = 30
+	PreLines[30].GoTo['\n'] = 1
+	PreLines[30].GoTo[0] = 1
+
 	//symbols
-	for i : "{}[]()@$^&;?,|" PreLines[0].GoTo[i] = 20
+	for i : "{}[]()@$^&?,|" PreLines[0].GoTo[i] = 20
 	PreLines[20].Id = 10
 	PreLines[0].GoTo['.'] = 21
 	PreLines[21].GoTo['.'] = 21
@@ -286,7 +293,6 @@ GetTokensFromFile := !(Path Name, Machine M, Queue.{Token^} ToFill) -> bool
 					}
 					Buffer[RealSize] = 0
 					ToFill.Push(GenerateToken(Buffer,LastGoodId))
-					//printf("%s \n",Buffer)
 					pos = 0
 					LastGoodPos = 0
 					LastGoodId = 0

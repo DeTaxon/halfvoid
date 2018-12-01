@@ -37,10 +37,12 @@ BadPair := class .{@A,@B}
 AVLMap := class .{@KEY,@VALUE}
 {
 	itTree := AVLTree.{BadPair.{KEY,VALUE}}
+	itSize := int
 
 	this := !() -> void
 	{
 		itTree."this"()
+		itSize = 0
 	}
 	"[]" := !(KEY dat) -> ref VALUE
 	{
@@ -49,6 +51,7 @@ AVLMap := class .{@KEY,@VALUE}
 		{
 			resl.data.first = dat
 			//resl.data.second."this"()
+			itSize += 1
 		}
 		return resl.data.second
 	}
@@ -63,4 +66,5 @@ AVLMap := class .{@KEY,@VALUE}
 	{
 		return AVLMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
 	}
+	Size := !() -> int { return itSize }
 }

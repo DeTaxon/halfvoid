@@ -407,19 +407,17 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iterJ.Data == newFuncType 
 			{
-
 				inDown := Down
 				for somePos inDown = inDown.Right
 				asNeed :=  inDown->{BoxFunc^}
 
 				if asNeed.IsSameConsts(itBox) {
 					return asNeed
-				}
+				} 
 			}
 			iterJ = iterJ.Next
 			somePos += 1
 		}
-		
 		newFunc := GetNewFunc(itBox,newFuncType)
 
 		for  parConsts
@@ -450,6 +448,8 @@ BoxTemplate := class extend BoxFunc
 	{
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
+		for itBox.itConsts newFunc.ItConsts.Push(it)
+		for value,key : itBox.itAttrs 	{ newFunc.ItAttrs[key] = value}
 		newFunc.ParseBlock()
 
 		return newFunc	
@@ -493,6 +493,7 @@ BoxFunc := class extend Object
 	MethodType := Type^
 
 	ItConsts := Queue.{Object^}
+	ItAttrs := AVLMap.{string,Object^}
 	ItVals := Queue.{ObjConstHolder^}
 
 	GetType := virtual !() -> Type^
@@ -515,12 +516,18 @@ BoxFunc := class extend Object
 			}
 			iter = iter.Next
 		}
+		atrVal := ItAttrs.TryFind(name)
+		if atrVal != null
+		{
+			return atrVal^
+		}
 		return null
 	}
 	
 	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{
 		if itBox.itConsts.Size() != this.ItConsts.Size() return false
+		if itBox.itAttrs.Size() != this.ItAttrs.Size() return false
 
 		for ct : itBox.itConsts , i : 0, tc : this.ItConsts
 		{

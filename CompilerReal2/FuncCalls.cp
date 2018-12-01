@@ -468,6 +468,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					itB := new FuncInputBox()
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
 					itB.itConsts.Push(new ObjType(useType))
+					
+					if iter.Line != null{
+						for v,k : iter.Line.itAttrs
+						{
+							printf("adding %s\n",k)
+							itB.itAttrs[k] = v
+						}
+					}
+
 					func := FindFunc("new",iter,itB^,true)
 					if func != null
 					{
@@ -1288,6 +1297,10 @@ NewCallOne := class extend SomeFuncCall
 		{
 			box := new FuncInputBox()
 			box.itConsts.Push(new ObjType(newType))
+
+			if Line != null {
+				for v,k : Line.itAttrs box.itAttrs[k] = v
+			}
 
 			func := BoxFunc^
 			func = null

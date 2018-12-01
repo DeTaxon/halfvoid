@@ -164,14 +164,28 @@ ObjLine := class
 {
 	LinePos := int
 	inFile := Path
+	itAttrs := AVLMap.{string,Object^}
 	this := !(int LP, Path IF) -> void
 	{
 		LinePos = LP
 		inFile = IF
+		itAttrs."this"()
 	}
 	GetLog := !() -> string
 	{
 		return " at line " + LinePos + " in file " + inFile.itStr
+	}
+	LoadAttrs := !(char^ str) -> void
+	{
+		newItm := Queue.{char^}()
+		DivideStr(str,' ',newItm)
+		for newItm
+		{
+			if it != ";"
+			{
+				itAttrs[it] = new ObjBool(true)
+			}
+		}
 	}
 }
 
@@ -264,14 +278,20 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 	Adder := DaFile->{Object^}
 
 	LineCounter := 0
+	nowAttrs := null->{Token^}
 	while Toks.NotEmpty()
 	{
 	// word-1 Hex-2 int-3 int_s-4 float-5 float_s-6 floate-7 floate_s-8 str 9 #-10 \n-11 char-12
 		Tok := Toks.Pop()
-		if Tok.Id > 12
+		if Tok.Id > 13
 		{
 			printf("cant not lex file %s at %i\n",filename.itStr,LineCounter)
 			return null			
+		}
+
+		if Tok.Id == 13
+		{
+			nowAttrs = Tok
 		}
 
 		if Tok.Id == 12
@@ -297,6 +317,12 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 		{
 			LineCounter += 1
 			NL := new ObjLine(LineCounter,filename)
+			if nowAttrs != null
+			{
+				NL.LoadAttrs(nowAttrs.Buff)
+				nowAttrs = null
+			}
+
 			while iter.Right != null
 			{
 				iter = iter.Right
@@ -336,7 +362,7 @@ TokensToObjects := !(Path filename, Queue.{Token^} Toks) -> Object^
 		}
 		if Tok.Id == 1
 		{ 
-			if Tok.Buff[0] in "$@#"
+			if Tok.Buff[0] in "@#"
 			{
 				if Tok.Buff[0] == '#'
 				{

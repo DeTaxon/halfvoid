@@ -1,4 +1,4 @@
-#import "../PriorityRead.cp"
+#import "../CompilerReadl2/PriorityRead.cp"
 
 main := !(int argc, char^^ argv) -> int
 {
