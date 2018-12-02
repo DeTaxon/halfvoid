@@ -129,6 +129,19 @@ Stack := class .{@T}
 	{
 		return StackTypeIter.{T}(Start)
 	}
+	"<<<" := !(Stack.{T} toMove) -> void
+	{
+		if toMove.Start != null
+		{
+			itr := toMove.Start
+			while itr.Next != null itr = itr.Next
+			itr.Next = this.Start
+			this.Start = toMove.Start
+			this.itSize += toMove.itSize
+			toMove.itSize = 0
+			toMove.Start = null
+		}
+	}
 }
 
 Queue := class .{@T} extend Stack.{T}

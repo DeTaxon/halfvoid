@@ -11,7 +11,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 		if dynCast.MyStr[0] == '$'
 		{
 			if may == null return new ObjBool(false)
-			return may
+			return may.Clone()
 		}
 
 		if may != null

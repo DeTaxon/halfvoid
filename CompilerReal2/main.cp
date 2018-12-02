@@ -179,6 +179,7 @@ WorkWithBag := !() -> void
 {
 	while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
 	{
+		FlushTempMemory()
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
 		//printf("working on %p %s\n",it,it.GetValue())

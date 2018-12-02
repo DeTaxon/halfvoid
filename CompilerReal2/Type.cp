@@ -3,6 +3,8 @@
 #import "Globals.cp"
 #import "UnboxParams.cp"
 
+TypesPool := StupidMemoryPool.{16000000}
+
 Type := class {
 	Id := int
 	Base := Type^
@@ -12,6 +14,10 @@ Type := class {
 	ItName := string
 	ItHash := int
 	
+	"new" := !() .{@R} -> void^
+	{
+		return TypesPool.GetMem(R->TypeSize,R->Align)
+	}
 	this := !() -> void
 	{
 		Clean()

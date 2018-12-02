@@ -18,27 +18,6 @@ rand := !() -> int declare
 
 memset := !(void^ dst, char val,int size) -> void declare
 
-"new" := !() . {@R} -> void^ 
-{
-	val := R->TypeSize
-	newNode :=  malloc(val)
-	memset(newNode,0,val)
-	return newNode
-}
-"new" := !(int count) .{@R} -> R^
-{
-	val := R->FatTypeSize
-	itSi := val*count
-	newNode := malloc(itSi)
-	memset(newNode,0,itSi)
-	return newNode->{R^}
-}
-"delete" := !(void^ item) .{@R[]} -> void
-{
-	sub := 4
-	//if R->Align > 4 sub = R->Align
-	//free(item - sub) //BUG: incorrect creating and deleting
-}
 "~this" := !(@R[] this) -> void
 {
 	for this

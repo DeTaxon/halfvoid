@@ -69,12 +69,14 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 			}
 		}
 
+
 		ItTp := iter.GetItem(name)
 		if ItTp != null return ItTp
 
 		if iter.Left != null iter = iter.Left 
 		else
 		{
+
 			iter = iter.Up
 
 			if iter != null
@@ -94,6 +96,8 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 					{
 						if AsNeed2.ExtraRetParam.ItName == name return AsNeed2.ExtraRetParam
 					}
+					trVal := AsNeed2.ItAttrs.TryFind(name)
+					if trVal != null return trVal^
 				}
 			}
 		}

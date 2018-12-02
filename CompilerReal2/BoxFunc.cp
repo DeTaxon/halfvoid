@@ -516,11 +516,6 @@ BoxFunc := class extend Object
 			}
 			iter = iter.Next
 		}
-		atrVal := ItAttrs.TryFind(name)
-		if atrVal != null
-		{
-			return atrVal^
-		}
 		return null
 	}
 	

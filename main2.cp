@@ -1,22 +1,20 @@
 
-
-
-"new" := !() .{@R} -> void^
+CC := class
 {
-	if $nope {
-		printf("ha\n")
-	}else{
-		printf("ho\n")
+	x := int
+	this := !(int a) -> void
+	{
+		x = a
 	}
-	return null
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	new int	
-	new int	 ; $nope
-	new int	 ; $nope
-	
+
+	c := new CC(15) ; $temp
+	FlushTempMemory()
+	h := new CC(12) ; $temp
+	h.x = 8
 	return 0
 }
 
