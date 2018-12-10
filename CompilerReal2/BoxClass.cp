@@ -180,22 +180,31 @@ FuncItem := class
 	fName := string
 	fType := TypeFunc^
 	fItem := BoxFunc^
+	fConstVal := Object^
+	fTyp := Type^
+
 	funcWrapper := BoxFunc^
 
 	CmpItem := !(FuncItem^ Ri) -> bool
 	{	
-		if fName != Ri.fName return false
-		if fType.RetType != Ri.fType.RetType return false
-		if fType.ParsCount != Ri.fType.ParsCount return false
-		if fType.IsVArgs != Ri.fType.IsVArgs return false
+		if (fConstVal != null) !=  (Ri.fConstVal != null) return false
+		if fConstVal != null {
+			if fName != Ri.fName return false
+			return fTyp == Ri.fTyp
+		}else{
+			if fName != Ri.fName return false
+			if fType.RetType != Ri.fType.RetType return false
+			if fType.ParsCount != Ri.fType.ParsCount return false
+			if fType.IsVArgs != Ri.fType.IsVArgs return false
 
-		for i : fType.ParsCount
-		{
-			if i == 0
+			for i : fType.ParsCount
 			{
-				//TODO:no need to check inherence?				
-			}else{
-				//if fType.Pars[i] != Ri.fType.Pars[i] return false
+				if i == 0
+				{
+					//TODO:no need to check inherence?
+				}else{
+					//if fType.Pars[i] != Ri.fType.Pars[i] return false
+				}
 			}
 		}
 
@@ -534,28 +543,40 @@ BoxClass := class extend Object
 				}
 			}
 
-			for i : vTypes.Size()
+			for invTypes : vTypes// i : 0
 			{
 				found := false
-				for j : vTable.Size()
+				for invTable : vTable , j : 0
 				{
-					if vTable[j].CmpItem(vTypes[i])
+					if invTable.CmpItem(invTypes)
 					{
-						vTable[j] = vTypes[i]
-						vTypes[i].fItem.VirtualId = j
-						aS := vTypes[i].funcWrapper
-						aB := aS->{BuiltInVirtualCall^}
-						aB.MakeLine(j)
+						invTable = invTypes
+						if invTypes.fConstVal != null
+						{
+							aB := invTypes.fItem->{BuiltInGetVirtualParam^}
+							aB.MakeLine(j)
+						}else{
+							invTypes.fItem.VirtualId = j
+							aS := invTypes.funcWrapper
+							aB := aS->{BuiltInVirtualCall^}
+							aB.MakeLine(j)
+						}
 						found = true
 					}
 				}
 				if not found
 				{
-					aS2 := vTypes[i].funcWrapper
-					vTypes[i].fItem.VirtualId = vTable.Size()
-					aB2 := aS2->{BuiltInVirtualCall^}
-					aB2.MakeLine(vTable.Size())
-					vTable.Push(vTypes[i])
+					aS2 := invTypes.funcWrapper
+					if invTypes.fConstVal != null{
+						aB := invTypes.fItem->{BuiltInGetVirtualParam^}
+						aB.MakeLine(vTable.Size())
+						vTable.Push(invTypes)
+					}else{
+						invTypes.fItem.VirtualId = vTable.Size()
+						aB2 := aS2->{BuiltInVirtualCall^}
+						aB2.MakeLine(vTable.Size())
+						vTable.Push(invTypes)
+					}
 				}
 			}
 
@@ -576,22 +597,27 @@ BoxClass := class extend Object
 		if not vTable.Empty()
 		{
 			f << "%ClassTableType" << ClassId << " = type {"
-			for vTable.Size()
+			for it : vTable , i : 0
 			{
-				asBasePre := vTable[it].fType
-				asBase2 := asBasePre->{Type^}
-				if it > 0 f << " , "
-				f << asBase2.GetName() << "*"
+				if i > 0 f << " , "
+				if it.fConstVal == null
+					f << it.fType.GetName() << "*"
+				else
+					f << it.fTyp.GetName()
 			}
 			f << " }\n"
 
 			f << "@ClassTableItem" << ClassId << " = global %ClassTableType" << ClassId << " {"
-			for i : vTable.Size()
+			for it : vTable, i : 0
 			{
-				asBasePre := vTable[i].fType
-				asBase2 := asBasePre->{Type^}
 				if i > 0 f << " , "
-				f << asBase2.GetName() << "* @" << vTable[i].fItem.OutputName
+				if it.fConstVal != null
+				{
+					f << it.fTyp.GetName() << " " << it.fConstVal.GetName()
+				}else{
+					f << it.fType.GetName() << "* @" << it.fItem.OutputName
+				}
+				
 			}
 			f << "}\n"
 		}
@@ -678,7 +704,18 @@ BoxClass := class extend Object
 		newItem.fName = fNam
 		newItem.fType = fTyo
 		newItem.fItem = fF
+		newItem.fConstVal = null
 		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
+
+		vTypes.Push(newItem)
+	}
+	PutVirtualParam := virtual !(string fName,Object^ cnst) -> void
+	{
+		newItem := new FuncItem
+		newItem.fName = fName
+		newItem.fTyp = cnst.GetType()
+		newItem.fConstVal = cnst
+		newItem.fItem = new BuiltInGetVirtualParam(this&,cnst.GetType())
 
 		vTypes.Push(newItem)
 	}
@@ -696,6 +733,16 @@ BoxClass := class extend Object
 		f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
 		f << itm
 		f << ")\n"
+	}
+	GetVirtualParamFunc := !(string name) -> BoxFunc^
+	{
+		for it : vTypes
+		{
+			if it.fName == name and it.fConstVal != null
+				return it.fItem
+		}
+		if Parent != null return Parent.GetVirtualParamFunc(name)
+		return null
 	}
 }
 
@@ -736,6 +783,38 @@ BuiltInVirtualCall := class extend BuiltInFunc
 		ToExe = ToExe + ")\n"
 	}
 
+}
+BuiltInGetVirtualParam := class extend BuiltInFunc
+{
+	inClass := BoxClass^
+	this := !(BoxClass^ frmClass,Type^ itType) -> void
+	{
+		inClass = frmClass
+
+		itsBools := Queue.{bool}() itsBools.Push(true)
+		newTypes := Queue.{Type^}()
+		newTypes.Push(frmClass.ClassType)
+
+		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),itType,true,false)
+
+		IsRetRef = true
+	}
+	MakeLine := !(int j) -> void
+	{
+		tp := inClass.ClassType
+		classId := inClass.ClassId
+
+		ToExe = "%Pre## = getelementptr " + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0\n"
+		ToExe = ToExe + "%Tabl## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %Pre##\n"
+		ToExe = ToExe + "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + "\n"
+	}
+	//GetPriority := virtual !(FuncInputBox inBox) -> int
+	//{
+	//	if inBox.Pars.Size() != 1 return 255
+
+	//	return 0		
+	//}
+	
 }
 BuiltInThislessFunc := class extend BuiltInFunc
 {
@@ -833,7 +912,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			ToExe = ToExe + "#" + (i + 1)
 		}
 
-		ToExe = ToExe + ")\n"
+		ToExe = ToExe + ") #d\n"
 	}
 }
 

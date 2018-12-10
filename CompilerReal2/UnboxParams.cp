@@ -63,6 +63,7 @@ UnboxParams := !(Object^ start) -> void
 
 				IsExt := false
 				IsRef := false
+				IsVir := false
 				iter = iter.Right
 
 				if iter.GetValue() == "extern"
@@ -73,6 +74,11 @@ UnboxParams := !(Object^ start) -> void
 				if iter.GetValue() == "ref"
 				{
 					IsRef = true
+					iter = iter.Right
+				}
+				if iter.GetValue() == "virtual"
+				{
+					IsVir = true
 					iter = iter.Right
 				}
 
@@ -89,6 +95,8 @@ UnboxParams := !(Object^ start) -> void
 					asPar := lineIter->{ObjParam^}
 					asPar.IsExtern = IsExt
 					asPar.IsRef = IsRef
+					asPar.IsVirtual = IsVir
+					if IsVir WorkBag.Push(asPar,State_Start)
 					lineIter.Down = iter.Clone()
 					lineIter.Down.SetUp(lineIter)
 					if Atter != null {

@@ -15,6 +15,7 @@ ObjParam := class extend Object
 	IsTook := bool
 	IsGlobal := bool
 	IsRef := bool
+	IsVirtual := bool
 
 	DestrCall := NaturalCall^
 	
@@ -109,6 +110,18 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if IsVirtual {
+				val := TryCompute(Down)
+				if val != null{
+					itr := this&->{Object^}
+					while itr != null and itr.GetValue() != "{...}" itr = itr.Up
+					if itr != null{
+						asN := itr->{BoxClass^}
+						asN.PutVirtualParam(MyStr,val)
+						return void
+					}
+				}
+			}
 			asClass := ParseClass(Down)
 			if asClass != null
 			{

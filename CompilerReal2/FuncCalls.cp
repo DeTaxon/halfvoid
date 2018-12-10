@@ -3,6 +3,7 @@
 #import "ParamCall.cp"
 #import "PtrToRef.cp"
 #import "FuncInputBox.cp"
+#import "DebugStuf.cp"
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
@@ -399,13 +400,20 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 							return null
 						}
 					}
+
 					box2 := new FuncInputBox() ; $temp
 
 					box2.itPars.Emplace(asClass.ClassType,true)
 					box2.itConsts.Push(new ObjStr(asName))
 					pru := (asClass.UnrollTemplate^.GetPriority(box2^))
-					if pru == 255 return null //TODO: check for user functions
-					roll :=  (asClass.UnrollTemplate^.GetFunc(box2^))
+					roll := null->{BoxFunc^}
+					if pru == 255 
+					{
+						roll = asClass.GetVirtualParamFunc(asName)
+						if roll == null return null //TODO: check for user functions
+					}else{
+						roll =  (asClass.UnrollTemplate^.GetFunc(box2^))
+					}
 					if roll == null return null
 
 					iter = iter.Left
@@ -984,6 +992,12 @@ NaturalCall := class extend SomeFuncCall
 		f << "("
 		PrintParamUses(f)
 		f << ")"
+		if DebugMode {
+			newId := CreateDebugCall(this&) 
+			if newId != -1{
+				f << ", !dbg !" << newId
+			}
+		}
 		if Line != null
 		{
 			f << "; Line: " << Line.LinePos << " File: " << Line.inFile.itStr 
@@ -1144,6 +1158,18 @@ AssemblerCall := class extend NaturalCall
 
 						f << ToAdd
 					}
+				}
+				if AsmLine[j] == 'd'
+				{
+					j += 1
+					if DebugMode {
+						newId := CreateDebugCall(this&)
+						if newId != -1
+						{
+							f << ", !dbg !" << newId
+						}
+					}
+
 				}
 				if AsmLine[j] == '^'
 				{
@@ -1322,6 +1348,7 @@ NewCallOne := class extend SomeFuncCall
 				EmitError("cant create type\n")
 			}else{
 				newItm = MakeSimpleCall(func,null->{Object^})
+				newItm.Up = this&
 
 				if useConstr
 				{
@@ -1354,6 +1381,7 @@ NewCallOne := class extend SomeFuncCall
 							Down = extraF
 
 							Down = MakeSimpleCall(constrFunc,Down)
+							Down.Up = this&
 						}
 					}
 				}

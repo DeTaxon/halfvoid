@@ -38,6 +38,7 @@ PostFuncs := Queue.{BuiltInFuncClassInfo^}
 ForcedLibs := Queue.{BoxFile^}
 
 DebugMode := false
+cuId := int
 DebugMetaData := Stack.{string}
 
 UseDestructors := false

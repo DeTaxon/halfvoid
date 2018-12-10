@@ -70,17 +70,16 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 		}
 
 
-		ItTp := iter.GetItem(name)
-		if ItTp != null return ItTp
-
 		if iter.Left != null iter = iter.Left 
 		else
 		{
-
 			iter = iter.Up
 
 			if iter != null
 			{
+				ItTp := iter.GetItem(name)
+				if ItTp != null return ItTp
+
 				if iter.GetValue() == "!()"
 				{
 					AsNeed2 := iter->{BoxFuncBody^}

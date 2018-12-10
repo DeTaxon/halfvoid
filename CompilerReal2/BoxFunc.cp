@@ -1152,8 +1152,9 @@ BoxFuncBody := class extend BoxFunc
 					f << ",type: !" << MyFuncType.metaId 
 					if Line != null
 					{
-						f << ", line: " << Line.LinePos						
+						f << ", line: " << Line.LinePos	
 					}
+					f << ", unit: !" << cuId
 					f << ")\n"
 
 				}

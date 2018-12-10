@@ -247,6 +247,12 @@ RuleParam := !(void^ itr) -> int
 		if It == null return 0
 		size += 1
 	}
+	if It.GetValue() == "virtual"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
 
 	if not InDataR(It) return 0
 

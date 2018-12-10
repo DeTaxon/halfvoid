@@ -310,7 +310,7 @@ BoxFile := class extend BoxBlock
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
 			f << filePath.FullPath().itStr << "\", directory: \""
-			f <<  filePath.FolderName() <<"\")\n"
+			f <<  "/" <<"\")\n"
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -325,7 +325,7 @@ BoxFile := class extend BoxBlock
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
 			f << filePath.FullPath().itStr << "\", directory: \""
-			f <<  filePath.FolderName() <<"\")\n"
+			f <<  "/" <<"\")\n"
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
