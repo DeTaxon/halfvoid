@@ -579,8 +579,7 @@ BoxFunc := class extend Object
 		ContainTT := false
 
 		RetTyp := null->{Type^}
-		//if GetValue() == "!()" RetTyp =  ParseType(outObj)
-		RetTyp = ParseType(outObj)
+		if GetValue() == "!()" RetTyp =  ParseType(outObj)
 
 		Stuff := Queue.{Object^}()
 
@@ -926,7 +925,7 @@ BoxFuncBody := class extend BoxFunc
 				}
 			}
 		}
-		//inOutType.Up = this&
+		if inOutType != null inOutType.Up = this&
 
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 		ParseConsts(cons)

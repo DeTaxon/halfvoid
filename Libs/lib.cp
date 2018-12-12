@@ -94,13 +94,13 @@ FixedArrayIter := class .{@Type}
 	Ind := !() -> int { return nowPos }
 }
 
-"~For" := !(@Type[@Size] item) //-> FixedArrayIter.{Type}
+"~For" := !(@Type[@Size] item) -> FixedArrayIter.{Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},Size)
 }
-"~For" := !(@Typ[] item) //-> FixedArrayIter.{Type}
+"~For" := !(@Type[] item) -> FixedArrayIter.{Type}
 {
-	return FixedArrayIter.{Typ}(item->{Typ^},item->len)
+	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }
 "in" := !(int val, string str) -> bool
 {
