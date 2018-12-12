@@ -98,9 +98,9 @@ FixedArrayIter := class .{@Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},Size)
 }
-"~For" := !(@Type[] item) //-> FixedArrayIter.{Type}
+"~For" := !(@Typ[] item) //-> FixedArrayIter.{Type}
 {
-	return FixedArrayIter.{Type}(item->{Type^},item->len)
+	return FixedArrayIter.{Typ}(item->{Typ^},item->len)
 }
 "in" := !(int val, string str) -> bool
 {

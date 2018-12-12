@@ -106,7 +106,7 @@ Stack := class .{@T}
 		}
 		return Iter.Data		
 	}
-	ToArray := !() -> T^
+	ToArray := !() -> T[]
 	{
 		Si := itSize
 		//if Si == 0 return null->{T[]}

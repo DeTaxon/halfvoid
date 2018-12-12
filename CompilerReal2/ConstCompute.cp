@@ -1,5 +1,6 @@
 // TODO: это костыль, нужно заменить на оптимизатор и более умный WorkBag
 #import "Tree.cp"
+#import "Chairwheel.cp"
 
 ConstItem := class extend Object
 {
@@ -33,6 +34,14 @@ TryCompute := !(Object^ ob) -> Object^
 			return it.Down
 		}
 		if it.IsConst() return it
+	}
+	if ob.GetValue() == "~str" and ob.Right != null
+		and ob.Right.GetValue() == "~suffix"
+	{
+		asStr := ob->{ObjStr^}
+		asSuf := ob.Right->{ObjSuffix^}
+		val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
+		if val != null return val
 	}
 	lazy := ob.GetValue() == "~d"
 	if lazy lazy = ob.Down.GetValue() == "!"

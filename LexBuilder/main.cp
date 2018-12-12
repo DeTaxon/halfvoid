@@ -1,4 +1,4 @@
-#import "../CompilerReadl2/PriorityRead.cp"
+#import "../Libs/RegExpBuilder.cp"
 
 main := !(int argc, char^^ argv) -> int
 {

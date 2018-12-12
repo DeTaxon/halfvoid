@@ -89,6 +89,10 @@ main := !(int argc,char^^ argv) -> int
 	for forcedFiles
 	{
 		fL := LoadFile(Path(it))
+		if fL == null {
+			printf("file does not exist %s\n",it)
+			return 0
+		}
 		ForcedLibs.Push(fL)
 	}
 
