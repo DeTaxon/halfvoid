@@ -877,6 +877,19 @@ NaturalCall := class extend SomeFuncCall
 	}
 	ExchangeParams := !() -> void
 	{
+		itLiner := this.Line
+		lnr := this&->{Object^}
+
+		if itLiner == null{
+			wl := Down
+			while wl != null{
+				if wl.Line != null {
+					itLiner = wl.Line
+					lnr = wl
+				}
+				wl = wl.Right
+			}
+		}
 
 		iter := Down
 		//if ToCall != null 
@@ -896,14 +909,17 @@ NaturalCall := class extend SomeFuncCall
 				if preRet == null
 				{
 					msg := "compiler bug at param " + (i+1) + " "
+					msg = msg + " object " + iter.GetValue()
 					if iter.GetType() != null{
 						msg = msg + " from " + iter.GetType().GetName()
+					}else {
+						msg = msg + " from null "
 					}
 					if FType.Pars[i] != null {
 						msg = msg + " to " + FType.Pars[i].GetName()
 					}
-					
-					iter.EmitError(msg + "\n")
+				
+					if itLiner != null lnr.EmitError(msg + "\n")
 				}else{
 					iter = preRet
 				}

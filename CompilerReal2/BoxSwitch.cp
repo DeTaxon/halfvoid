@@ -31,7 +31,7 @@ BoxSwitch := class extend Object
 			if Down.GetType() != null
 			{
 
-				itemCall := new RetFuncParam(Down)
+				itemCall = new RetFuncParam(Down)
 
 				while iter != null
 				{
@@ -43,7 +43,6 @@ BoxSwitch := class extend Object
 
 							b.itPars.Emplace(Down.GetType(),Down.IsRef())
 							b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
-
 
 							func := FindFunc("==",this&,b^,false)
 							if func == null func = FindFunc("in",this&,b^,false)

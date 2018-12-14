@@ -511,6 +511,9 @@ RetFuncParam := class extend MemParam
 		}
 		return ToCall.GetName()
 	}
+	GetType := virtual !() -> Type^ { 
+		return ResultType 
+	}
 	GetPointName := virtual !(int newInd) -> string
 	{
 		return ToCall.GetPointName()

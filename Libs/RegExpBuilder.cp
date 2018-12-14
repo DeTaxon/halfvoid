@@ -37,6 +37,7 @@ NonDetMachine := class
 		delete EndNodeData
 		delete Lines
 	}
+	"=" := !(NonDetMachine wut) -> void {}
 }
 
 DetMachine := class
@@ -78,135 +79,135 @@ DetMachine := class
 		}
 	}
 }
-//WordDetermMachine := class
-//{
-//	Table := int[][]
-//	IsEndNode := int[]
-//	CharToGo := u8[256]
-//
-//	PrintIt := !() -> void
-//	{
-//		printf("           ")
-//		for IsEndNode->len printf("%4i ",it)
-//		printf("\n")
-//		printf("lines %3i  ",Table[0]->len)
-//		for IsEndNode printf("%4i ",it)
-//		printf("\n")
-//		chStart := 0
-//		chEnd := 0
-//		while chStart < 256
-//		{
-//			while CharToGo[chEnd] == CharToGo[chStart] {
-//				chEnd++
-//				if chEnd == 256 break
-//			}
-//			newEnd := chEnd - 1
-//			if chStart == newEnd
-//			{
-//				if IsPrintable(chStart) printf("     %c     ",chStart) else printf("   0x%02X    ",chStart)
-//			}else{
-//				if IsPrintable(chStart) printf("   %c",chStart) else printf("0x%02X",chStart)
-//				printf("..")
-//				if IsPrintable(newEnd) printf("%c   ",newEnd) else printf("0X%02X",newEnd)
-//				printf(" ")
-//			}
-//
-//			nodLine := CharToGo[chStart]->{int}
-//
-//			for j : IsEndNode->len
-//			{
-//				printf("%4i ",Table[j][nodLine])
-//			}
-//			printf("\n")
-//
-//			chStart = chEnd
-//
-//		}
-//		//printf("test\n")
-//		//for CharToGo printf("%i ",it)
-//		//printf("\n")
-//		//printf("maybe\n")
-//		//for i : Table[0]->len
-//		//{
-//		//	printf("%4i ",0)
-//		//	for j : IsEndNode->len
-//		//	{	
-//		//		printf("%4i ",Table[j][i])
-//		//	}
-//		//	printf("\n")
-//		//}
-//
-//	}
-//}
+WordDetermMachine := class
+{
+	Table := int[][]
+	IsEndNode := int[]
+	CharToGo := u8[256]
 
-//MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
-//{
-//	kindaHashed := Vector.{int}(input.NodeId->len)
-//	borrow := Vector.{int}(input.NodeId->len)
-//
-//	for it : kindaHashed, i : 0
-//	{
-//		it = 0
-//		for j : input.IsEndNode->len
-//		{
-//			it = it*5 + input.Table[j][i]
-//		}
-//	}
-//
-//
-//	totalItems := QueueSet.{int}()
-//	for i : borrow.Size() //BUG: borrow->len crashes
-//	{
-//		found := i
-//		for j : (0..(i-1))
-//		{
-//			if kindaHashed[j] == kindaHashed[i]
-//			{
-//				gotDiff := false
-//				for k : input.IsEndNode->len
-//				{
-//					if input.Table[k][i] != input.Table[k][j]{
-//						gotDiff = true
-//						break
-//					}
-//				}
-//				if not gotDiff
-//				{
-//					found = j
-//					break
-//				}
-//			}
-//		}
-//		borrow[i] = found
-//		totalItems.Push(found)
-//	}
-//	newSize := totalItems.Size()
-//	containFake := false
-//	if input.NodeId->len != 256 { newSize += 1 containFake = true}
-//
-//	for ch : 256
-//		ToRet.CharToGo[ch] = newSize - 1
-//	for lt : input.NodeId , i : 0
-//	{
-//		posInT := totalItems.GetPos(borrow[i])
-//		ToRet.CharToGo[lt] = posInT
-//	}
-//	ToRet.Table = new int[][input.IsEndNode->len]
-//	for it : ToRet.Table, i : 0
-//	{
-//		it = new int[newSize]
-//		for  frm : totalItems, j : 0 
-//		{
-//			it[j] = input.Table[i][frm]
-//		}
-//		if containFake
-//		{
-//			it[totalItems.Size()] = -1
-//		}
-//	}
-//	ToRet.IsEndNode = new int[input.IsEndNode->len]
-//	for a : ToRet.IsEndNode, b : input.IsEndNode a = b
-//}
+	PrintIt := !() -> void
+	{
+		printf("           ")
+		for IsEndNode->len printf("%4i ",it)
+		printf("\n")
+		printf("lines %3i  ",Table[0]->len)
+		for IsEndNode printf("%4i ",it)
+		printf("\n")
+		chStart := 0
+		chEnd := 0
+		while chStart < 256
+		{
+			while CharToGo[chEnd] == CharToGo[chStart] {
+				chEnd++
+				if chEnd == 256 break
+			}
+			newEnd := chEnd - 1
+			if chStart == newEnd
+			{
+				if IsPrintable(chStart) printf("     %c     ",chStart) else printf("   0x%02X    ",chStart)
+			}else{
+				if IsPrintable(chStart) printf("   %c",chStart) else printf("0x%02X",chStart)
+				printf("..")
+				if IsPrintable(newEnd) printf("%c   ",newEnd) else printf("0X%02X",newEnd)
+				printf(" ")
+			}
+
+			nodLine := CharToGo[chStart]->{int}
+
+			for j : IsEndNode->len
+			{
+				printf("%4i ",Table[j][nodLine])
+			}
+			printf("\n")
+
+			chStart = chEnd
+
+		}
+		//printf("test\n")
+		//for CharToGo printf("%i ",it)
+		//printf("\n")
+		//printf("maybe\n")
+		//for i : Table[0]->len
+		//{
+		//	printf("%4i ",0)
+		//	for j : IsEndNode->len
+		//	{	
+		//		printf("%4i ",Table[j][i])
+		//	}
+		//	printf("\n")
+		//}
+
+	}
+}
+
+MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
+{
+	kindaHashed := Vector.{int}(input.NodeId->len)
+	borrow := Vector.{int}(input.NodeId->len)
+
+	for it : kindaHashed, i : 0
+	{
+		it = 0
+		for j : input.IsEndNode->len
+		{
+			it = it*5 + input.Table[j][i]
+		}
+	}
+
+
+	totalItems := QueueSet.{int}()
+	for i : borrow.Size() //BUG: borrow->len crashes
+	{
+		found := i
+		for j : (0..(i-1))
+		{
+			if kindaHashed[j] == kindaHashed[i]
+			{
+				gotDiff := false
+				for k : input.IsEndNode->len
+				{
+					if input.Table[k][i] != input.Table[k][j]{
+						gotDiff = true
+						break
+					}
+				}
+				if not gotDiff
+				{
+					found = j
+					break
+				}
+			}
+		}
+		borrow[i] = found
+		totalItems.Push(found)
+	}
+	newSize := totalItems.Size()
+	containFake := false
+	if input.NodeId->len != 256 { newSize += 1 containFake = true}
+
+	for ch : 256
+		ToRet.CharToGo[ch] = newSize - 1
+	for lt : input.NodeId , i : 0
+	{
+		posInT := totalItems.GetPos(borrow[i])
+		ToRet.CharToGo[lt] = posInT
+	}
+	ToRet.Table = new int[][input.IsEndNode->len]
+	for it : ToRet.Table, i : 0
+	{
+		it = new int[newSize]
+		for  frm : totalItems, j : 0 
+		{
+			it[j] = input.Table[i][frm]
+		}
+		if containFake
+		{
+			it[totalItems.Size()] = -1
+		}
+	}
+	ToRet.IsEndNode = new int[input.IsEndNode->len]
+	for a : ToRet.IsEndNode, b : input.IsEndNode a = b
+}
 
 
 CollectByEpsilon := !(NonDetMachine input,QueueSet.{int} OldStates) -> void
@@ -232,181 +233,181 @@ CollectMove := !(NonDetMachine input, int sId, QueueSet.{int} frm, QueueSet.{int
 	}
 }
 
-//DeterminateMachine := !(NonDetMachine input) -> DetMachine
-//{
-//	NewNodes := QueueSet.{QueueSet.{int}}()
-//	Letters := QueueSet.{int}()
-//	itLines := Stack.{Pair.{int,Pair.{int,int}}}()
-//
-//	for input.Lines
-//	{
-//		if it.symbl != -1 Letters.Push(it.symbl)
-//	}
-//	{
-//		nowNodeValue :=  QueueSet.{int}()
-//		nowNodeValue.Push(0)
-//		CollectByEpsilon(input,nowNodeValue)
-//		NewNodes <<< nowNodeValue
-//	}
-//
-//	for itNode : NewNodes, nowId : 0
-//	{
-//		for c : Letters
-//		{
-//			nowNodeValue := QueueSet.{int}()
-//			CollectMove(input,c,itNode,nowNodeValue)
-//			CollectByEpsilon(input,nowNodeValue)
-//
-//			if nowNodeValue.Size() != 0
-//			{
-//				resId := NewNodes <<< nowNodeValue
-//				//TODO: itLines.Emplace(!{nowId,resId,c})
-//				itLines.Emplace()
-//				itLines[0].first = nowId
-//				itLines[0].second.first = resId
-//				itLines[0].second.second = c
-//			}
-//		}
-//	}
-//	ToRet.IsEndNode = new int[NewNodes.Size()]
-//	
-//	for itN : ToRet.IsEndNode,nowSet : NewNodes, i : 0
-//	{
-//		itN = -1
-//
-//		for itVal : nowSet
-//		{
-//			for  EndNode : input.EndNodeData
-//			{
-//				if itVal == EndNode.first and EndNode.second > itN
-//				{
-//					itN = EndNode.second
-//				}
-//			}
-//		}
-//	}
-//
-//	ToRet.Table = new int[][NewNodes.Size()]
-//	for ToRet.Table {
-//		it = new int[Letters.Size()]
-//		for itm : it itm = -1
-//	}
-//
-//	for move : itLines
-//	{
-//		chId := Letters.GetPos(move.second.second)	
-//		ToRet.Table[move.first][chId] = move.second.first
-//	}
-//
-//	ToRet.NodeId = new int[Letters.Size()]
-//	for it : Letters , i : 0
-//	{
-//		ToRet.NodeId[i] = it
-//	}
-//}
-//MinimizeMachine := !(DetMachine input) -> DetMachine
-//{
-//	EndStates := QueueSet.{int}()
-//	for input.IsEndNode 
-//		EndStates.Push(it)
-//	
-//	NodeSets := new int[input.IsEndNode->len]
-//	for it : input.IsEndNode, i : 0
-//		NodeSets[i] = EndStates.GetPos(it)
-//
-//	setCheck := 0
-//	setSize := EndStates.Size()
-//	foundMin := false
-//	while setCheck < setSize
-//	{
-//		for j : input.NodeId->len
-//		{
-//			gotSets := QueueSet.{int}()
-//			for i : input.IsEndNode->len
-//				if setCheck == NodeSets[i]
-//				{
-//					if input.Table[i][j] != -1
-//						gotSets.Push(NodeSets[input.Table[i][j]])
-//					else gotSets.Push(-1)
-//				}
-//			if gotSets.Size() >= 2
-//			{	
-//				for i : input.IsEndNode->len
-//				if setCheck == NodeSets[i]
-//				{
-//					goTo := input.Table[i][j]
-//					inSet := 0 
-//					if goTo != -1
-//					{
-//						inSet = gotSets.GetPos(NodeSets[goTo])
-//					}else{
-//						inSet = gotSets.GetPos(-1)
-//					}
-//					if inSet != 0
-//					{
-//						NodeSets[i] = setSize + inSet - 1
-//					}
-//				}
-//				setSize += gotSets.Size() - 1
-//				foundMin = true
-//			}
-//		}
-//		setCheck++
-//		if setCheck == setSize and foundMin
-//		{
-//			foundMin = false
-//			setCheck = 0
-//		}
-//	}
-//	ToRet.Table = new int[][setSize]
-//	for ToRet.Table
-//	{
-//		it = new int[input.NodeId->len]
-//		for itm : it itm = -1
-//	}
-//	ToRet.NodeId = new int[input.NodeId->len]
-//	for a : ToRet.NodeId, b : input.NodeId a = b
-//	ToRet.IsEndNode = new int[setSize]
-//	transformer := new int[NodeSets->len]
-//	defer delete transformer
-//	{
-//		someIter := 0
-//		usedSets := QueueSet.{int}()
-//		itNode := Queue.{int}()
-//		for i : NodeSets->len
-//		{
-//			if usedSets.Contain(NodeSets[i])
-//			{
-//				ps := usedSets.GetPos(NodeSets[i])
-//				transformer[i] = itNode[ps]
-//			}else{
-//				transformer[i] = someIter
-//				usedSets.Push(NodeSets[i])
-//				itNode.Push(someIter)
-//				someIter++
-//			}
-//		}
-//	}
-//
-//	for i : NodeSets->len
-//	{
-//		fromNew := transformer[i]
-//		ToRet.IsEndNode[fromNew] = input.IsEndNode[i]
-//		for j : input.NodeId->len
-//		{
-//			toOld := input.Table[i][j]
-//			if toOld != -1
-//			{
-//				toNew := transformer[toOld]
-//				ToRet.Table[fromNew][j] = toNew
-//			}
-//		}
-//	}
-//	//printf("     ")
-//	//for NodeSets printf("%3i ",it)
-//	//printf("\n")
-//	
-//}
+DeterminateMachine := !(NonDetMachine input) -> DetMachine
+{
+	NewNodes := QueueSet.{QueueSet.{int}}()
+	Letters := QueueSet.{int}()
+	itLines := Stack.{Pair.{int,Pair.{int,int}}}()
+
+	for input.Lines
+	{
+		if it.symbl != -1 Letters.Push(it.symbl)
+	}
+	{
+		nowNodeValue :=  QueueSet.{int}()
+		nowNodeValue.Push(0)
+		CollectByEpsilon(input,nowNodeValue)
+		NewNodes <<< nowNodeValue
+	}
+
+	for itNode : NewNodes, nowId : 0
+	{
+		for c : Letters
+		{
+			nowNodeValue := QueueSet.{int}()
+			CollectMove(input,c,itNode,nowNodeValue)
+			CollectByEpsilon(input,nowNodeValue)
+
+			if nowNodeValue.Size() != 0
+			{
+				resId := NewNodes <<< nowNodeValue
+				//TODO: itLines.Emplace(!{nowId,resId,c})
+				itLines.Emplace()
+				itLines[0].first = nowId
+				itLines[0].second.first = resId
+				itLines[0].second.second = c
+			}
+		}
+	}
+	ToRet.IsEndNode = new int[NewNodes.Size()]
+	
+	for itN : ToRet.IsEndNode,nowSet : NewNodes, i : 0
+	{
+		itN = -1
+
+		for itVal : nowSet
+		{
+			for  EndNode : input.EndNodeData
+			{
+				if itVal == EndNode.first and EndNode.second > itN
+				{
+					itN = EndNode.second
+				}
+			}
+		}
+	}
+
+	ToRet.Table = new int[][NewNodes.Size()]
+	for ToRet.Table {
+		it = new int[Letters.Size()]
+		for itm : it itm = -1
+	}
+
+	for move : itLines
+	{
+		chId := Letters.GetPos(move.second.second)	
+		ToRet.Table[move.first][chId] = move.second.first
+	}
+
+	ToRet.NodeId = new int[Letters.Size()]
+	for it : Letters , i : 0
+	{
+		ToRet.NodeId[i] = it
+	}
+}
+MinimizeMachine := !(DetMachine input) -> DetMachine
+{
+	EndStates := QueueSet.{int}()
+	for input.IsEndNode 
+		EndStates.Push(it)
+	
+	NodeSets := new int[input.IsEndNode->len]
+	for it : input.IsEndNode, i : 0
+		NodeSets[i] = EndStates.GetPos(it)
+
+	setCheck := 0
+	setSize := EndStates.Size()
+	foundMin := false
+	while setCheck < setSize
+	{
+		for j : input.NodeId->len
+		{
+			gotSets := QueueSet.{int}()
+			for i : input.IsEndNode->len
+				if setCheck == NodeSets[i]
+				{
+					if input.Table[i][j] != -1
+						gotSets.Push(NodeSets[input.Table[i][j]])
+					else gotSets.Push(-1)
+				}
+			if gotSets.Size() >= 2
+			{	
+				for i : input.IsEndNode->len
+				if setCheck == NodeSets[i]
+				{
+					goTo := input.Table[i][j]
+					inSet := 0 
+					if goTo != -1
+					{
+						inSet = gotSets.GetPos(NodeSets[goTo])
+					}else{
+						inSet = gotSets.GetPos(-1)
+					}
+					if inSet != 0
+					{
+						NodeSets[i] = setSize + inSet - 1
+					}
+				}
+				setSize += gotSets.Size() - 1
+				foundMin = true
+			}
+		}
+		setCheck++
+		if setCheck == setSize and foundMin
+		{
+			foundMin = false
+			setCheck = 0
+		}
+	}
+	ToRet.Table = new int[][setSize]
+	for ToRet.Table
+	{
+		it = new int[input.NodeId->len]
+		for itm : it itm = -1
+	}
+	ToRet.NodeId = new int[input.NodeId->len]
+	for a : ToRet.NodeId, b : input.NodeId a = b
+	ToRet.IsEndNode = new int[setSize]
+	transformer := new int[NodeSets->len]
+	defer delete transformer
+	{
+		someIter := 0
+		usedSets := QueueSet.{int}()
+		itNode := Queue.{int}()
+		for i : NodeSets->len
+		{
+			if usedSets.Contain(NodeSets[i])
+			{
+				ps := usedSets.GetPos(NodeSets[i])
+				transformer[i] = itNode[ps]
+			}else{
+				transformer[i] = someIter
+				usedSets.Push(NodeSets[i])
+				itNode.Push(someIter)
+				someIter++
+			}
+		}
+	}
+
+	for i : NodeSets->len
+	{
+		fromNew := transformer[i]
+		ToRet.IsEndNode[fromNew] = input.IsEndNode[i]
+		for j : input.NodeId->len
+		{
+			toOld := input.Table[i][j]
+			if toOld != -1
+			{
+				toNew := transformer[toOld]
+				ToRet.Table[fromNew][j] = toNew
+			}
+		}
+	}
+	//printf("     ")
+	//for NodeSets printf("%3i ",it)
+	//printf("\n")
+	
+}
 
 LexTreeNode := class
 {
@@ -500,122 +501,122 @@ LexBuilder := class
 	ApplyReg := !(string regEx, int val) -> void
 	{
 
-		//Words := new LexTreeNode(0)
-		//iter := Words
+		Words := new LexTreeNode(0)
+		iter := Words
 
-		//i := 0
-		//while regEx[i] != 0
-		//{
-		//	switch regEx[i] // BUG: can not use switch(regEx[i])
-		//	{
-		//		case "+-*[]()|?^"
-		//			iter.Right = new LexTreeNode(regEx[i],' ')
-		//			iter.Right.Left = iter
-		//			iter = iter.Right
-		//		case '\\'
-		//			switch regEx[i+1]
-		//			{
-		//			case 'n'
-		//				iter.Right = new LexTreeNode('2',10)
-		//				iter.Right.Left = iter
-		//				iter = iter.Right
-		//				i += 1
-		//			case void
-		//				iter.Right = new LexTreeNode('2',regEx[i+1])
-		//				iter.Right.Left = iter
-		//				iter = iter.Right
-		//				i += 1
-		//			}
-		//		case ' '
-		//			//empty
-		//		case void 
-		//			iter.Right = new LexTreeNode('2',regEx[i])
-		//			iter.Right.Left = iter
-		//			iter = iter.Right
+		i := 0
+		while regEx[i] != 0
+		{
+			switch regEx[i] // BUG: can not use switch(regEx[i])
+			{
+				case "+-*[]()|?^"
+					iter.Right = new LexTreeNode(regEx[i],' ')
+					iter.Right.Left = iter
+					iter = iter.Right
+				case '\\'
+					switch regEx[i+1]
+					{
+					case 'n'
+						iter.Right = new LexTreeNode('2',10)
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					case void
+						iter.Right = new LexTreeNode('2',regEx[i+1])
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					}
+				case ' '
+					//empty
+				case void 
+					iter.Right = new LexTreeNode('2',regEx[i])
+					iter.Right.Left = iter
+					iter = iter.Right
 
-		//	}
-		//	i += 1
-		//}
+			}
+			i += 1
+		}
 
 
-		//while true
-		//{
-		//	if CheckRule(!['3','-','3'],'R',Words.Right) continue
-		//	if CheckRule(!['[','4',']'],'S',Words.Right)  continue 
-		//	if CheckRule(!['[','^','4',']'],'S',Words.Right)  continue 
-		//	if CheckRule(!['3','+'],'P',Words.Right)  continue 
-		//	if CheckRule(!['3','*'],'M',Words.Right)  continue 
-		//	if CheckRule(!['3','?'],'Q',Words.Right)  continue 
-		//	if CheckRule(!['3','3'],'A',Words.Right)  continue 
-		//	if CheckRule(!['3','|','3'],'O',Words.Right)  continue 
-		//	if CheckRule(!['(','3',')'],'B',Words.Right)  continue 
-		//	break
-		//}
-		////Words.Right.Print(0)
+		while true
+		{
+			if CheckRule(!['3','-','3'],'R',Words.Right) continue
+			if CheckRule(!['[','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['[','^','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['3','+'],'P',Words.Right)  continue 
+			if CheckRule(!['3','*'],'M',Words.Right)  continue 
+			if CheckRule(!['3','?'],'Q',Words.Right)  continue 
+			if CheckRule(!['3','3'],'A',Words.Right)  continue 
+			if CheckRule(!['3','|','3'],'O',Words.Right)  continue 
+			if CheckRule(!['(','3',')'],'B',Words.Right)  continue 
+			break
+		}
+		//Words.Right.Print(0)
 
-		//Nfas.Emplace()
-		//nowNodes := Stack.{NonDetNodeLine}()
-		//itrId := 1
-		//mstart := int
-		//mend := int
-		//BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
-		//AddNodeLine(nowNodes,0,mstart,-1)
-		//Nfas[0].Lines = nowNodes.ToArray()
-		//Nfas[0].EndNodeData = new Pair.{int,int}[1]
-		//Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
+		Nfas.Emplace()
+		nowNodes := Stack.{NonDetNodeLine}()
+		itrId := 1
+		mstart := int
+		mend := int
+		BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
+		AddNodeLine(nowNodes,0,mstart,-1)
+		Nfas[0].Lines = nowNodes.ToArray()
+		Nfas[0].EndNodeData = new Pair.{int,int}[1]
+		Nfas[0].EndNodeData[0] = Pair.{int,int}(mend,val)
 
 	}
 	GenerateMachine := !() -> WordDetermMachine
 	{
-		//if Nfas.Size() == 0 return void //TODO: assert? or throw
-		//if Nfas.Size() == 1
-		//{
-		//	newMach := DeterminateMachine(Nfas[0])
-		//	printf("------------determ-------\n")
-		//	newMach.PrintIt()
-		//	MinMach := MinimizeMachine(newMach)
-		//	printf("-------------minim--------\n")
-		//	MinMach.PrintIt()
-		//	printf("-------------word--------\n")
-		//	return MakeWordDetermMachine(MinMach)
-		//}else
-		//{
-		//	newLines := Stack.{NonDetNodeLine}()
-		//	newEnds := Stack.{Pair.{int,int}}()
-		//	multiNode := NonDetMachine()
-		//	nowOffset := 0
+		if Nfas.Size() == 0 return void //TODO: assert? or throw
+		if Nfas.Size() == 1
+		{
+			newMach := DeterminateMachine(Nfas[0])
+			printf("------------determ-------\n")
+			newMach.PrintIt()
+			MinMach := MinimizeMachine(newMach)
+			printf("-------------minim--------\n")
+			MinMach.PrintIt()
+			printf("-------------word--------\n")
+			return MakeWordDetermMachine(MinMach)
+		}else
+		{
+			newLines := Stack.{NonDetNodeLine}()
+			newEnds := Stack.{Pair.{int,int}}()
+			multiNode := NonDetMachine()
+			nowOffset := 0
 
-		//	for itM : Nfas
-		//	{
-		//		maxNodes := 0
-		//		for lin : itM.Lines
-		//		{
-		//			newLines.Emplace()
-		//			newLines[0].from = lin.from
-		//			if lin.from != 0 newLines[0].from += nowOffset
-		//			newLines[0].to = lin.to
-		//			if lin.to != 0 newLines[0].to += nowOffset
-		//			newLines[0].symbl = lin.symbl
+			for itM : Nfas
+			{
+				maxNodes := 0
+				for lin : itM.Lines
+				{
+					newLines.Emplace()
+					newLines[0].from = lin.from
+					if lin.from != 0 newLines[0].from += nowOffset
+					newLines[0].to = lin.to
+					if lin.to != 0 newLines[0].to += nowOffset
+					newLines[0].symbl = lin.symbl
 
-		//			if maxNodes < lin.from maxNodes = lin.from
-		//			if maxNodes < lin.to maxNodes = lin.to
-		//			//maxNodes = max(maxNodes,lin.from)
-		//			//maxNodes = max(maxNodes,lin.to)
-		//		}
-		//		for ends : itM.EndNodeData
-		//		{
-		//			newEnds.Emplace()
-		//			newEnds[0].first = ends.first + nowOffset
-		//			newEnds[0].second = ends.second
-		//		}
-		//		nowOffset += maxNodes + 1
-		//	}
-		//	multiNode.Lines = newLines.ToArray()
-		//	multiNode.EndNodeData = newEnds.ToArray()
-		//	newMach := DeterminateMachine(multiNode)
-		//	MinMach := MinimizeMachine(newMach)
-		//	return MakeWordDetermMachine(MinMach)
-		//}
+					if maxNodes < lin.from maxNodes = lin.from
+					if maxNodes < lin.to maxNodes = lin.to
+					//maxNodes = max(maxNodes,lin.from)
+					//maxNodes = max(maxNodes,lin.to)
+				}
+				for ends : itM.EndNodeData
+				{
+					newEnds.Emplace()
+					newEnds[0].first = ends.first + nowOffset
+					newEnds[0].second = ends.second
+				}
+				nowOffset += maxNodes + 1
+			}
+			multiNode.Lines = newLines.ToArray()
+			multiNode.EndNodeData = newEnds.ToArray()
+			newMach := DeterminateMachine(multiNode)
+			MinMach := MinimizeMachine(newMach)
+			return MakeWordDetermMachine(MinMach)
+		}
 		return void
 	}
 }

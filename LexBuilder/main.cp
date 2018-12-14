@@ -4,7 +4,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	itBuilder := LexBuilder()
 
-	//itBuilder.ApplyReg("[a-zA-Z_][a-zA-Z0-9_]*",1)
+	itBuilder.ApplyReg("[a-zA-Z_][a-zA-Z0-9_]*",1)
 	//itBuilder.ApplyReg("[$#][a-zA-Z0-9_]*,2)
 	//itBuilder.ApplyReg("\"[^\"]*\"",3)
 	//itBuilder.ApplyReg("'( (\\\\ [^]) |  [^'\\\\])'",4)
