@@ -265,6 +265,10 @@ QueueSet := class .{@T} extend Stack.{T}
 
 		return true
 	}
+	"=" := !(QueueSet.{T} toSet) -> void
+	{
+		for toSet Push(it)
+	}
 	"=" := !(Stack.{T} toSet) -> void
 	{
 		for toSet Push(it)

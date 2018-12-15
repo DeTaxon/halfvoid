@@ -1,4 +1,5 @@
 fopen := !(char^ Name,char^ s) -> void^ declare
+fwrite := !(void^ data, int size, int count, void^ hndl) -> int declare
 fclose := !(void^ hndl) -> void declare
 fgets := !(char^ buf,int Size,void^ Hnd) -> char^ declare
 fputs := !(char^ buf,void^ Hnd) -> int declare
@@ -18,12 +19,16 @@ file := class
 		return Handle != null
 	}
 	close := !() -> void
-	{
+	{	
 		fclose(Handle)
 	}
 	read := !(void^ data, int Size) -> int 
 	{
 		return 0	
+	}
+	write := !(void^ data, int Size) -> int
+	{	
+		return fwrite(data,Size,1,Handle)
 	}
 	good := !() -> bool
 	{

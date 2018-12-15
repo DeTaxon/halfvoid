@@ -106,7 +106,7 @@ MappedFile := class
 			fdFlag = O_RDONLY
 		else
 			fdFlag = O_RDWR
-		if flg == FILE_CREATE fdFlag += O_CREAT
+		if flg == FILE_CREATE fdFlag = O_CREAT + O_RDWR
 
 		itemId = open(fileName,fdFlag,511)
 
@@ -173,10 +173,9 @@ MappedFile := class
 		SHARES := MAP_PRIVATE
 		if flag != FILE_READ 
 		{
-			PROTS += PROT_WRITE
+			PROTS = PROTS or_b PROT_WRITE
 			SHARES = MAP_SHARED
 		}
-
 		point = mmap(null,size,PROTS,SHARES,itemId,null)
 		if point == null //TODO: in error it returns 0xFFFFFFFFFFFFF
 		{

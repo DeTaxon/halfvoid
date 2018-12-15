@@ -1086,7 +1086,7 @@ BoxFuncBody := class extend BoxFunc
 				iterP = iterP.Parent
 			}
 
-			if (not this.IsRetComplex) and (MyFuncType.RetType != GetType("void"))
+			if (not this.IsRetComplex) and (MyFuncType.RetType != GetType("void")) and (MyFuncType.RetType.GetName() != "void")
 			{
 				RT := MyFuncType.RetType
 				f << "%Result = alloca " << RT.GetName()

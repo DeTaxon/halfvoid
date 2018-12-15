@@ -60,6 +60,7 @@ DetMachine := class
 		delete NodeId
 		delete IsEndNode
 	}
+	"=" := !(DetMachine wut) -> void {}
 	PrintIt := !() -> void
 	{
 		printf("     ")
@@ -85,6 +86,47 @@ WordDetermMachine := class
 	IsEndNode := int[]
 	CharToGo := u8[256]
 
+	ComputeFileSize := !() -> int{
+		return 256 + 4 + 4 + Table->len*(Table[0]->len + 1)*4
+	}
+	SerializeToMap := !(u8^ data) -> void{
+		asInt := data->{int^}
+		asInt[0] = Table->len
+		asInt[1] = Table[0]->len
+		itr := data[8]&
+		memcpy(itr,CharToGo[0]&,256)
+		itr = itr[256]&
+		lineSize := IsEndNode->len*4
+		memcpy(itr,IsEndNode->{int^},lineSize)
+		itr = itr[lineSize]&
+		lineSize = Table[0]->len*4
+
+		for state : Table
+		{
+			memcpy(itr,state->{int^},lineSize)
+			itr = itr[lineSize]&
+		}
+	}
+	LoadFromMap := !(u8^ data, int size) -> void
+	{
+		asInt := data->{int^}
+		states := asInt[0]
+		lines := asInt[1]
+		itr := data[8]&
+
+		lineSize := states*4
+		IsEndNode := new int[states]
+		memcpy(IsEndNode->{void^},itr,lineSize)
+
+		Table = new int[][states]
+		for st : states, tb : Table
+		{
+			itr = itr[lineSize]&
+			tb = new int[lines]
+			memcpy(tb->{void^},itr,lineSize)
+		}
+	}
+	"=" := !(WordDetermMachine wut) -> void {}
 	PrintIt := !() -> void
 	{
 		printf("           ")
@@ -616,6 +658,7 @@ LexBuilder := class
 			newMach := DeterminateMachine(multiNode)
 			MinMach := MinimizeMachine(newMach)
 			return MakeWordDetermMachine(MinMach)
+			return void
 		}
 		return void
 	}

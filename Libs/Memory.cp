@@ -22,7 +22,7 @@ FlushTempMemory := !() -> void
 	itSi := val*count
 	itAl := R->Align
 	if itAl < 4 itAl = 4
-	itSi += itAl
+	itSi += itAl + 16
 	newNode := null->{u8^}
 	if $temp {
 		newNode = gTemporaryPool.GetMem(itSi,itAl)->{u8^}

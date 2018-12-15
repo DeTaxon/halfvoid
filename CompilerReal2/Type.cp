@@ -73,6 +73,10 @@ Type := class {
 		}
 		return ItName
 	}
+	GetGoodName := virtual !() -> string
+	{
+		return ""
+	}
 
 	metaId := int
 
@@ -465,6 +469,7 @@ TypeStandart := class extend Type{
 	{
 		return IRName
 	}
+	GetGoodName := virtual !() -> string { return IRName }
 	GetAlign := virtual !() -> int
 	{
 		return ItAlign
@@ -494,6 +499,7 @@ TypePoint := class extend Type
 	{
 		return Base.GetName() + "*"
 	}
+	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "^" }
 	GetAlign := virtual !() -> int
 	{
 		return 8
@@ -517,6 +523,7 @@ TypePointVoidP := class extend TypePoint
 	{
 		return "i8*"
 	}
+	GetGoodName := virtual !() -> string { return "void^" }
 }
 TypePointVoidFatP := class extend TypeFatArr
 {
@@ -536,6 +543,7 @@ TypePointVoidFatP := class extend TypeFatArr
 	{
 		return "i8*"
 	}
+	GetGoodName := virtual !() -> string { return "void[]" }
 }
 
 
@@ -666,6 +674,7 @@ TypeFunc := class extend Type
 		}
 		return asLambda
 	}
+	GetGoodName := virtual !() -> string { return GetName() }
 	GetSkobs := !() -> string
 	{
 		ToRet := string
@@ -736,6 +745,7 @@ TypeFuncLambda := class extend Type
 		return Base.GetName() + "**"
 		//return GetNewNamePre() + "*"
 	}
+	GetGoodName := virtual !() -> string { return GetName() }
 	GetNewNamePre := virtual !() -> string
 	{
 		asB := Base->{TypeFunc^}
@@ -806,6 +816,7 @@ TypeArr := class extend Type
 	{
 		return "[" + Size + " x " + Base.GetName() + "]"
 	}
+	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[" + Size + "]" }
 	GetAlign := virtual !() -> int
 	{
 		return Base.GetAlign()
@@ -826,6 +837,7 @@ TypeFatArr := class extend Type
 	{
 		return Base.GetName() + "*"
 	}
+	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[]" }
 	GetAlign := virtual !() -> int
 	{
 		return 8
@@ -848,6 +860,7 @@ TypeClass := class extend Type
 	{
 		return "%Class" + ToClass.ClassId
 	}
+	GetGoodName := virtual !() -> string { return ToClass.ClassName }
 	GetAlign := virtual !() -> int
 	{
 		maxVal := 1

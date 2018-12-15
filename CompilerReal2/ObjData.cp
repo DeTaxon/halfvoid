@@ -119,6 +119,16 @@ ObjData := class extend Object
 				}else{
 					printf("this error\n")
 					Print(0)
+					printf("items\n")
+					ir := Down
+					while ir != null
+					{
+						if ir.GetType() != null
+						{
+							printf("item type %s\n",ir.GetType().GetGoodName())
+						}
+						ir = ir.Right
+					}
 					EmitError("can not parse data\n")
 				}
 			}

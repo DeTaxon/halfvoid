@@ -17,6 +17,7 @@ srand := !(int time) -> void declare
 rand := !() -> int declare
 
 memset := !(void^ dst, char val,int size) -> void declare
+memcpy := !(void^ dst, void^ src,int size) -> void declare
 
 "~this" := !(@R[] this) -> void
 {

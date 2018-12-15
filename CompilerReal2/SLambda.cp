@@ -154,7 +154,7 @@ SLambda := class extend ObjResult
 						//f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
 						f << "%this = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
 					}else{
-						printf("nope\n")
+						//printf("nope\n")
 					}
 								
 				}
@@ -165,7 +165,7 @@ SLambda := class extend ObjResult
 			{
 				IsRetComplex = IsComplexType(fastUse.RetType)
 			}
-			if not IsRetComplex and fastUse.RetType != GetType("void")
+			if (not IsRetComplex) and fastUse.RetType != GetType("void") 
 			{
 				f << "%Result = alloca " << fastUse.RetType.GetName()
 				if fastUse.RetRef f << "*"

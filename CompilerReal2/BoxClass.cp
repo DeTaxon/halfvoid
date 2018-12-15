@@ -358,6 +358,7 @@ BoxClass := class extend Object
 			if iterH.GetValue() == "virtual" ContainVirtual = true
 			iterH = iterH.Right
 		}
+		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_CheckBaseClass)
 		WorkBag.Push(this&,State_PrePrint)
 		Classes.Push(this&)
@@ -391,6 +392,15 @@ BoxClass := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_Start
+		{
+			itr := Up
+			while itr != null and itr.GetValue() != "i:=1" itr = itr.Up
+			if itr != null{
+				asN := itr->{ObjParam^}
+				ClassName = asN.MyStr
+			}
+		}
 		if pri == State_CheckBaseClass
 		{
 			if ExtendObject != null{
