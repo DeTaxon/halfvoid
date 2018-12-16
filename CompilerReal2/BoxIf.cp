@@ -220,7 +220,7 @@ BoxWhile := class extend Object
 			if size == 0{
 				return "Check" + MyId
 			}
-			ContPath.Insert(size)
+			ContPath.Add(size)
 			return "ContPath" + MyId + "id" + size + "size"
 		}
 		if typ == PATH_BREAK
@@ -228,7 +228,7 @@ BoxWhile := class extend Object
 			if size == 0{
 				return "End" + MyId
 			}
-			BreakPath.Insert(size)
+			BreakPath.Add(size)
 			return "BreakPath" + MyId + "id" + size + "size"
 		}
 		return ""

@@ -1,5 +1,4 @@
 #import "Tree.cp"
-#import "set.cp"
 #import "Globals.cp"
 
 MakeItBlock := !(Object^ item) -> bool
@@ -55,12 +54,12 @@ BoxBlock := class extend Object
 	this := !() -> void
 	{
 		ItId = GetNewId()
-		ContinuePath.Push(0)
+		ContinuePath.Add(0)
 	}
 	this := !(Object^ toRepl) -> void
 	{
 		ItId = GetNewId()
-		ContinuePath.Push(0)
+		ContinuePath.Add(0)
 		if toRepl.GetValue() == "{}"
 		{	
 			Down = toRepl.Down
@@ -207,7 +206,7 @@ BoxBlock := class extend Object
 		}
 		if typ == PATH_CONTINUE
 		{
-			ContinuePath.Insert(size)
+			ContinuePath.Add(size)
 			if i == 0 {
 				if size == 0 return "LastContPath" + ItId
 				return Up.GetOutPath(this&,typ,size - 1)
@@ -216,7 +215,7 @@ BoxBlock := class extend Object
 		}
 		if typ == PATH_BREAK
 		{
-			BreakPath.Insert(size)
+			BreakPath.Add(size)
 			//if i == 0 { should not be here
 			//	if size == 0 return "LastContPath" + ItId
 			//	return Up.GetOutPath(this&,typ,size - 1)

@@ -1,4 +1,4 @@
-ForcedLibs := -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/FatArray.cp -f Libs/Pair.cp -f Libs/AVLMap.cp -f Libs/MemoryPool.cp -f Libs/HybridQueue.cp -f Libs/Memory.cp
+ForcedLibs := -f Libs/WordParser.cp -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/FatArray.cp -f Libs/Pair.cp -f Libs/AVLMap.cp -f Libs/MemoryPool.cp -f Libs/HybridQueue.cp -f Libs/Memory.cp
 
 out2.ll: a.out 
 	./a.out -f Libs/lib.cp main2.cp -o out2.ll
@@ -26,7 +26,7 @@ Objs/Lex: LexBuilder/main.cp Priority.pr
 	./c.out LexBuilder/main.cp $(ForcedLibs)  -o lex.ll; clang lex.ll -o Objs/Lex;
 Mach.m: Objs/Lex Libs/RegExpBuilder.cp
 	./Objs/Lex
-Objs/LexTester: LexBuilder/test.cp
+Objs/LexTester: LexBuilder/test.cp Libs/RegExpBuilder.cp
 	./c.out LexBuilder/test.cp $(ForcedLibs) -o Objs/LexTester.ll; clang Objs/LexTester.ll -o Objs/LexTester
 LexTest: Objs/LexTester
 	./Objs/LexTester

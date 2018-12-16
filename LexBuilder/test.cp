@@ -32,5 +32,6 @@ main := !(int argc, char^^ argv) -> int{
 			printf("<%i %s>",a,bufff)
 		}
 	})
+	res.PrintIt()
 	return 0
 }

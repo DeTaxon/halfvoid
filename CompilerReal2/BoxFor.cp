@@ -145,7 +145,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
-		ContPath.Insert(0)
+		ContPath.Add(0)
 
 		Down = itBlock
 		block = itBlock
@@ -458,7 +458,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			if size == 0{
 				return "IncFuncs" + ItId
 			}
-			ContPath.Insert(size)
+			ContPath.Add(size)
 			return "ContPath" + ItId + "id" + size + "size"
 		}
 		if typ == PATH_BREAK
@@ -466,7 +466,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			if size == 0{
 				return "End" + ItId
 			}
-			BreakPath.Insert(size)
+			BreakPath.Add(size)
 			return "BreakPath" + ItId + "id" + size + "size"
 		}
 		return ""

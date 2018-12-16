@@ -1,16 +1,15 @@
 #import "arrs.cp"
 
-Set := class .{@T}
+Set := class .{@T} extend Stack.{T}
 {
-	tempItem := Stack.{T}
 
 	this := !() -> void
 	{
-		tempItem.Start = null
+		Start = null
 	}
 	Contain := !(T itm) -> bool
 	{
-		for tempItem
+		for this
 			if it == itm 
 				return true
 		return false
@@ -18,16 +17,16 @@ Set := class .{@T}
 	Add := !(T itm) -> void
 	{
 		if not Contain(itm)
-			tempItem.Push(itm)
+			Push(itm)
 	}
-	"==" := !(Set.{@Y} scnd) -> bool
+	"==" := !(Set.{T} scnd) -> bool
 	{
-		if scnd.tempItem.Size() != tempItem.Size() return false
-		for tempItem
+		if scnd.Size() != Size() return false
+		for this
 		{
 			if not scnd.Contain(it) return false
 		}
-		for scnd.tempItem
+		for scnd
 		{
 			if not Contain(it) return false
 		}

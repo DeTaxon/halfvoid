@@ -113,18 +113,24 @@ WordDetermMachine := class
 		states := asInt[0]
 		lines := asInt[1]
 		itr := data[8]&
+		
+		memcpy(CharToGo[0]&,itr,256)
+		itr = itr[256]&
 
 		lineSize := states*4
-		IsEndNode := new int[states]
+		IsEndNode = new int[states]
 		memcpy(IsEndNode->{void^},itr,lineSize)
+		itr = itr[lineSize]&
+		lineSize = lines*4
 
 		Table = new int[][states]
-		for st : states, tb : Table
+		for tb : Table
 		{
-			itr = itr[lineSize]&
 			tb = new int[lines]
 			memcpy(tb->{void^},itr,lineSize)
+			itr = itr[lineSize]&
 		}
+
 	}
 	"=" := !(WordDetermMachine wut) -> void {}
 	PrintIt := !() -> void
