@@ -7,6 +7,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	//LoadLexMachine()
 	BuiltInFuncs."this"()
 	ObjectsPool."this"()
 	//GlobalStrs = ""

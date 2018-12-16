@@ -165,6 +165,11 @@ ObjLine := class
 	LinePos := int
 	inFile := Path
 	itAttrs := AVLMap.{string,Object^}
+	this := !() -> void
+	{
+		inFile."this"()
+		itAttrs."this"()
+	}
 	this := !(int LP, Path IF) -> void
 	{
 		LinePos = LP
