@@ -256,7 +256,6 @@ ObjSymbol := class extend ObjConst
 	"this" := !(char^ sym) -> void
 	{
 		MySymbol = sym
-		Clean()
 	}
 	GetValue := virtual !() -> char^
 	{

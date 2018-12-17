@@ -273,6 +273,15 @@ IsKeyword := !(char^ W) -> bool
 	if W == "delete" return true
 	if W == "switch" return true
 	if W == "case" return true
+	if W == "class" return true
+	if W == "extern" return true
+	if W == "extend" return true
+	if W == "at" return true
+	if W == "defer" return true
+	if W == "type" return true
+	if W == "virtual" return true
+	if W == "new" return true
+	if W == "delete" return true
 	return false
 }
 

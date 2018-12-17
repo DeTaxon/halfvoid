@@ -1,6 +1,6 @@
 #import "Tree.cp"
 #import "BoxBlock.cp"
-//#import "NewLex.cp"
+#import "NewLex.cp"
 #import "main.cp"
 
 Files := Queue.{BoxFile^}
@@ -27,7 +27,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 			return it
 	}
 	//printf("loading %s\n",fullName.itStr)
-	ob := GetObjectsFromFile(fullName)
+	ob := GetObjectsFromFile2(fullName)
 
 	if ob == null 
 	{

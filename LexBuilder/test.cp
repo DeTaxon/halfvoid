@@ -6,7 +6,7 @@
 
 main := !(int argc, char^^ argv) -> int{
 
-	testFile := MappedFile("CompilerReal2/Lex.cp")
+	testFile := MappedFile("CompilerReal2/NewLex.cp")
 
 	if testFile.IsInvalid(){
 		printf("cant read file\n")
@@ -32,6 +32,6 @@ main := !(int argc, char^^ argv) -> int{
 			printf("<%i %s>",a,bufff)
 		}
 	})
-	res.PrintIt()
+	//res.PrintIt()
 	return 0
 }

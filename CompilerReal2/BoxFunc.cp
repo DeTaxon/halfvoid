@@ -720,7 +720,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		OutputName = StrCopy(SomeName)
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 
-		if IsInvalid ErrorLog.Push("can not parse function\n")
+		if IsInvalid inOutType.EmitError("can not parse function\n")
 		MethodType = null
 	}
 	PrintGlobal := virtual !(sfile f) -> void
