@@ -1,13 +1,9 @@
 
-"pr" := !(string ch) -> void
-{
-	printf("suff %s\n",ch)
-}
 
 main := !(int argc, char^^ argv) -> int
 {	
-	"wow"pr
-	"waw"pr
+	w := "wow waw"
+	printf("span = <%i>\n",w[0..3] == "wow")
 	return 0
 }
 
