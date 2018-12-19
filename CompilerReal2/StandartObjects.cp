@@ -381,7 +381,7 @@ ObjTemplateType := class extend Object
 	MyStr := char^
 	this := !(char^ st) -> void
 	{
-		MyStr = StrCopy(st[1]&)
+		MyStr = st
 	}
 	this := !() -> void
 	{

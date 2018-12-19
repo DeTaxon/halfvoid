@@ -8,7 +8,7 @@
 #import "Syntax.cp"
 
 
-ObjectsPool := StupidMemoryPool.{32000000}
+ObjectsPool := StupidMemoryPool.{64000000}
 
 Object := class{
 	Id := int
@@ -262,7 +262,7 @@ UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
 	}
 }
 
-IsKeyword := !(char^ W) -> bool
+IsKeyword := !(W) -> bool
 {
 	if W == "return" return true
 	if W == "for" return true

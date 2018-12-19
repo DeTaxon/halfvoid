@@ -639,7 +639,7 @@ BoxFunc := class extend Object
 					{
 						MayName = (Pars[1]->{ObjIndent^}).MyStr
 					}else{
-						printf("only indentificators allowed\n")
+						printf("only indentificators allowed, got %s\n",Pars[1].GetValue())
 						return false
 					}
 					Typs.Push(MayType)

@@ -10,7 +10,7 @@ WayControl := class extend Object
 	{
 		itType = PATH_CONTINUE
 		if itm == "break" itType = PATH_BREAK
-		itItm = StrCopy(itm)
+		itItm = itm
 	}
 	Clone := virtual !() -> Object^
 	{

@@ -44,6 +44,14 @@ Stack := class .{@T}
 		Start = newItm
 		itSize += 1
 	}
+	Emplace := !(a,b) -> void
+	{
+		newItm := new Node.{T}() //TODO: vargs
+		newItm.Data."this"(a,b)
+		newItm.Next = Start
+		Start = newItm
+		itSize += 1
+	}
 	Push := !(T a) -> int
 	{
 		Start =	new Node.{T}(a,Start)
@@ -165,6 +173,21 @@ Queue := class .{@T} extend Stack.{T}
 		itSize++
 		return 0
 	}
+	Emplace := !(a,b) -> int
+	{
+		if Start == null {
+			Start = new Node.{T}()
+			Start.Data."this"(a,b)
+		} else {
+			Iter := Start
+			while Iter.Next {Iter = Iter.Next}
+			Iter.Next = new Node.{T}()
+			Iter.Next.Data."this"(a,b)
+		}
+		itSize++
+		return 0
+	}
+
 	Push := !(T a) -> int
 	{
 		if Start == null {

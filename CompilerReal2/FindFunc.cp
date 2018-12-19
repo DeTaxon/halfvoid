@@ -117,7 +117,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
 						if not IsWord(name) metApp = true
-						if not AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual and metApp
+						if (not AsBoxFunc.IsSuffix) and not AsBoxFunc.IsVirtual and metApp
 							found.Push(AsBoxFunc)
 					}
 				}
@@ -272,7 +272,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	func :=  GetBestFunc(itBox,Funcs,Templs)
 	if func != null return func
 
-	if (not IsWord(name) or IsMethod) and itBox.itPars.Size() != 0 // wtf if not word and size = 0
+	if ((not IsWord(name)) or IsMethod) and itBox.itPars.Size() != 0 // wtf if not word and size = 0
 	{
 		fT := itBox.itPars[0].first
 		if fT != null
@@ -453,6 +453,15 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		}
 		if funcType == VoidPType return 2
 		if inType == VoidPType and funcType != GetType("string") return 2
+	}
+	if inType.GetType() == "class"
+	{
+		itFc := new FuncInputBox ; $temp
+		itFc.itPars.Emplace(inType,true)
+		itFc.itConsts.Push(new ObjType(funcType))
+
+		asN := inType->{TypeClass^}.ToClass
+		if asN.GetFunc("->{}",itFc^,false) != null return 2
 	}
 
 

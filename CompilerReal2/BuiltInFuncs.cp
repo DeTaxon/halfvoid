@@ -181,7 +181,7 @@ BuiltInTemplateGetRef := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("&",pars[0].first,true,pars[0].first.GetPoint(), 
-		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0\n")
+		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -209,7 +209,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("^",pars[0].first,false,pars[0].first.Base,true, 
-		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, i32 0\n")
+		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -241,10 +241,10 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		if pars[0].first.GetType() == "arr"
 		{
 			return new BuiltInFuncBinar("[]",pars[0].first,true,pars[1].first,false,pars[0].first.Base,true,
-		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2\n")
+		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2\n")
 		}
 		return new BuiltInFuncBinar("[]",pars[0].first,false,pars[1].first,false,pars[0].first.Base,true,
-		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, " + pars[1].first.GetName() + " #2\n")
+		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, " + pars[1].first.GetName() + " #2\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -280,7 +280,7 @@ BuiltInPointAdd := class extend BoxTemplate
 		}
 
 		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
-		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 #2\n")
+		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 #2\n")
 	}
 }
 BuiltInPointSub := class extend BoxTemplate
@@ -307,12 +307,12 @@ BuiltInPointSub := class extend BoxTemplate
 		if pars[0].first.Base == GetType("void")
 		{
 			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
-			"%Pre## = sub i64 0,#2\n" +
+			"%Pre## = sub i64 0,#2\n"sbt +
 			"#0 = getelementptr i8 , i8* #1 , i64 %Pre##\n")
 		}
 
 		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
-		"%Pre## = sub i64 0,#2\n" +
+		"%Pre## = sub i64 0,#2\n"sbt +
 		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 %Pre##\n")
 	}
 }
@@ -338,7 +338,7 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("->{}",pars[0].first,true,pars[0].first.Base.GetPoint(),false,
-		"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0,i32 0\n")
+		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0,i32 0\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -440,7 +440,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 				if asNeed[i] == 'z' vecData[i] = 2
 				if asNeed[i] == 'w' vecData[i] = 3
 			}
-			return new BuiltInFuncUno(".",pars[0],false,pars[0],"#0 = shufflevector <4 x float> #1, <4 x float> undef , <4 x i32> " +
+			return new BuiltInFuncUno(".",pars[0],false,pars[0],"#0 = shufflevector <4 x float> #1, <4 x float> undef , <4 x i32> "sbt +
 					"<i32 " + vecData[0] + ",i32 " + vecData[1] + ",i32 " + vecData[2] + ",i32 " + vecData[3] + ">\n")
 		}
 		return null
@@ -489,9 +489,9 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 		{
 			itT2 := itT->{TypeStandart^}
 
-			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItSize + ", 0 \n")
-			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItAlign + ", 0 \n")
-			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 " + itT2.ItSize + ", 0 \n")
+			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItSize + ", 0 \n")
+			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItAlign + ", 0 \n")
+			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItSize + ", 0 \n")
 		}
 		if itT.GetType() == "point" or itT.GetType() == "fatarr"
 		{
@@ -544,7 +544,7 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 		//toToT := ((consts[0]) ->{ObjType^}).MyType
 		toToT := pars[0].Base.GetPoint()
 		return new BuiltInFuncUno("->{}",pars[0],false,pars[0].Base.GetPoint(),false,
-		"#0 = bitcast " + pars[0].GetName() +  "#1 to " + toToT.GetName() + "\n")
+		"#0 = bitcast "sbt + pars[0].GetName() +  "#1 to " + toToT.GetName() + "\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -579,7 +579,7 @@ BuiltInTemplateCheckPoint := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("->{}",pars[0].first,false,GetType("bool"),false,
-		"#0 = icmp ne " + pars[0].first.GetName() +  "#1,null\n")
+		"#0 = icmp ne "sbt + pars[0].first.GetName() +  "#1,null\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -626,11 +626,11 @@ BuiltInTemplateSet := class extend BoxTemplate
 			if pars[1].first.GetType() == "arr"
 			{
 			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,true,GetType("void"), 
-					"%TPre## = bitcast " + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}else{
 			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
-					"%TPre## = bitcast " + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}
 			return PreRet
@@ -638,10 +638,10 @@ BuiltInTemplateSet := class extend BoxTemplate
 		if pars[0].first != pars[1].first
 		{
 			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
-					"%TPre## = bitcast " + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 		}
-		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), "store " + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
+		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), "store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -806,7 +806,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncZero(".",FP.ResultType,true,
-				"%Pre## = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
+				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
 				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
@@ -818,7 +818,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 		fatPos := pos
 		if ToClass.ContainVirtual fatPos += 1
-		itStr := "#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+"\n" 
+		itStr := "#0 = getelementptr "sbt+ (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+"\n" 
 		preRet :=  new BuiltInFuncZero(".",ToClass.Params[pos].ResultType,true,itStr)
 		return preRet
 	}
@@ -1022,7 +1022,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncUno(".",CType,true,FP.ResultType,true,
-				"%Pre## = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+"\n" +
+				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+"\n" +
 				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
@@ -1039,7 +1039,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 			}
 		
 	return new BuiltInFuncUno(".",CType,true,ToClass.Params[pos].ResultType,true,
-		"#0 = getelementptr " + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+"\n")
+		"#0 = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+"\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1152,7 +1152,7 @@ BuiltInTemplateNew := class extend BoxTemplate
 		if ExtraSize < 4 ExtraSize = 4
 
 		return new BuiltInFuncBinar("new",pars[0].first,false,pars[1].first,false,ResP,
-			"%PreTotalSize## = mul i32 #1,#2" + "\n" +
+			"%PreTotalSize## = mul i32 #1,#2"sbt + "\n" +
 			"%TotalSize## = add i32 %PreTotalSize##, " + ExtraSize + "\n" +
 			"%PrePtr## = call i8*(i32)@malloc(i32 %TotalSize##)\n"+
 			"%PtrInt## = ptrtoint i8* %PrePtr## to i64\n" + 
@@ -1227,7 +1227,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 				return pre
 			}else{
 				return new BuiltInFuncUno("->",pars[0].first,false,GetType("int"),false,
-				"%PreP## = bitcast " + pars[0].first.GetName() + " #1 to i32*\n" + 
+				"%PreP## = bitcast "sbt + pars[0].first.GetName() + " #1 to i32*\n" + 
 				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
 				"#0 = load i32 , i32 * %PreI##\n")
 			}
@@ -1235,12 +1235,12 @@ BuiltInTemplateNext := class extend BoxTemplate
 		if asStr == "begin"
 		{
 			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
-					"#0 = extractvalue " + pars[0].first.GetName() + " #1,0\n")
+					"#0 = extractvalue "sbt + pars[0].first.GetName() + " #1,0\n")
 		}
 		if asStr == "end"
 		{
 			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
-					"#0 = extractvalue " + pars[0].first.GetName() + " #1,1\n")
+					"#0 = extractvalue "sbt + pars[0].first.GetName() + " #1,1\n")
 		}
 		return null
 	}
@@ -1276,8 +1276,8 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
-			"%PreOne## = bitcast " + pars[0].first.GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast " + pars[1].first.GetName() + " #2 to i8*\n" +
+			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
+			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp eq i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1312,8 +1312,8 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
-			"%PreOne## = bitcast " + pars[0].first.GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast " + pars[1].first.GetName() + " #2 to i8*\n" +
+			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
+			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp ne i8* %PreOne##,%PreTwo##\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1490,7 +1490,7 @@ CreateBuiltIns := !() -> void
 		BuiltInFuncs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i" + it + " #1,0"))
 	}
 	BuiltInFuncs.Push(new BuiltInFuncBinar("in",GetType("int"),false,TypeTable[13],false,BoolT,
-											"br label %Start##\n" +
+											"br label %Start##\n"sbt +
 											"Start##:" +
 											"%First## = extractvalue %RangeTypeInt #2,0\n"+
 											"%T1T## = icmp sge i32 #1,%First##\n" + 

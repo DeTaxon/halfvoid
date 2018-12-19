@@ -23,17 +23,22 @@ StringSpan := class{
 		ptr = st[startInd]&
 		itSize = endInd - startInd + 1
 	}
+	"[]" := !(int ind) -> ref char { return ptr[ind] }
 	"[]" := !(range ran) -> StringSpan
 	{
 		return StringSpan(ptr,itSize,ran)
 	}
 	"==" := !(char^ toCmp) -> bool {
-		return strncmp(toCmp,ptr,itSize) == 0
+		if toCmp == null return false
+		for itSize {
+			if toCmp[it] != ptr[it] return false
+		}
+		return toCmp[itSize] == 0
 	}
-	"==" := !(StringSpan toCmp) -> bool {
-		if toCmp.itSize != itSize return false
-		return strncmp(toCmp.ptr,ptr,itSize) == 0
-	}
+	//"==" := !(StringSpan toCmp) -> bool {
+	//	if toCmp.itSize != itSize return false
+	//	return strncmp(toCmp.ptr,ptr,itSize) == 0
+	//}
 	Str := !() -> string {
 		preRet := new char[itSize+1]
 		preRet[itSize] = 0

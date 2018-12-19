@@ -480,7 +480,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if iter.Line != null{
 						for v,k : iter.Line.itAttrs
 						{
-							printf("adding %s\n",k)
+							//printf("adding %s\n",k)
 							itB.itAttrs[k] = v
 						}
 					}

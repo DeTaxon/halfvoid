@@ -18,7 +18,6 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 	inputFile := MappedFile(fileName.itStr)
 
 	d := WordParser
-	bufff := char[1024]
 	itLine := null->{ObjLine^}
 	treeIter := null->{Object^}
 	prevId := -1
@@ -26,10 +25,8 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 	d.ReadText(lexWordMachine&->{void^},inputFile.point,inputFile.Size(), (a,b,c) =>
 	{
 		ptr := inputFile.point->{char^}[b]&
-		for i : c {
-			bufff[i] = ptr[i]
-		}
-		bufff[c] = 0
+
+		tok := StringSpan(ptr,c)
 
 		ns := null->{Object^}
 		if a != 20{
@@ -38,57 +35,58 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			}
 		}
 		if a == 1 {
-			if bufff == "null"
+			switch tok
 			{
-				ns = new ObjNULL()
-			}else{
-				if IsKeyword(bufff)
-				{
-					ns = new ObjKeyword(StrCopy(bufff))
-				}else{
-					if bufff == "true" or bufff == "false"
+				case "null"
+					ns = new ObjNULL()
+				case "true"
+					ns = new ObjBool(true)
+				case "false"
+					ns = new ObjBool(false)
+				case "continue"
+					ns = new WayControl(tok.Str())
+				case "break"
+					ns = new WayControl(tok.Str())
+				case void
+					if IsKeyword(tok)
 					{
-						ns = new ObjBool(bufff == "true")
+						ns = new ObjKeyword(tok.Str())
 					}else{
-						if bufff == "continue" or bufff == "break"{
-							ns = new WayControl(bufff)
+						if prevId == 3 or prevId == 5 or prevId ==  6
+						{
+							ns = new ObjSuffix(tok.Str())
 						}else{
-							if prevId == 3 or prevId == 5 or prevId ==  6
-							{
-								ns = new ObjSuffix(StrCopy(bufff))
-							}else{
-								ns = new ObjIndent(StrCopy(bufff))
-							}
+							ns = new ObjIndent(tok.Str())
 						}
 					}
-				}
 			}
 		}
 		if a == 2{
-			if bufff[0] == '#'
+			if tok[0] == '#'
 			{
-				ns = new ObjCmd(StrCopy(bufff))
+				ns = new ObjCmd(tok.Str())
 			}else{
-				ns = new ObjTemplateType(bufff)
+				ns = new ObjTemplateType(tok[1..0].Str())
 			}
 		}
 		if a == 3 {
 			DaBuff := char[2048]
 			j := 0
 			k := 1
-			while bufff[k] != '"'
+			while tok[k] != '"'
 			{
-				if bufff[k] == '\\'{
+				if tok[k] == '\\'{
 					k += 1
-					if bufff[k] == 'n' DaBuff[j] = 10
-					else 
+					switch tok[k]
 					{
-						DaBuff[j]  = bufff[k]
+						case 't' DaBuff[j] = 9
+						case 'n' DaBuff[j] = 10
+						case void DaBuff[j] = tok[k]
 					}
 					j += 1
 					k += 1
 				}else{
-					DaBuff[j] = bufff[k]
+					DaBuff[j] = tok[k]
 					k += 1
 					j += 1
 				}	
@@ -98,17 +96,16 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 		}
 		if a == 4 {
 			newVal := int
-			if bufff[1] == '\\'
+			if tok[1] == '\\'
 			{
-				if bufff[2] == 'n'
-				{	
-					newVal = 10
-				}else
+				switch tok[2]
 				{
-					newVal = bufff[2]
+					case 't' newVal = 9
+					case 'n' newVal = 10
+					case void newVal = tok[2]
 				}
 			}else{
-				newVal = bufff[1]
+				newVal = tok[1]
 			}
 			ns = new ObjInt(newVal)
 		}
@@ -118,10 +115,10 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			
 			k := 0
 		
-			while bufff[k] in '0'..'9'
+			while tok[k] in '0'..'9'
 			{
 				Value *= 10
-				Value += bufff[k] - '0'
+				Value += tok[k] - '0'
 				k += 1
 			}
 			ns = new ObjInt(Value)
@@ -132,20 +129,20 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			Quant := 0.1
 			SSing := 1.0
 
-			while bufff[k] != '.'
+			while tok[k] != '.'
 			{
 				Value *= 10
-				Value += bufff[k] - '0' 
+				Value += tok[k] - '0' 
 				k += 1 
 			}
 			k += 1 //.
-			while bufff[k] in '0'..'9'
+			while tok[k] in '0'..'9'
 			{
-				Value += (bufff[k] - '0')*Quant
+				Value += (tok[k] - '0')*Quant
 				k += 1
 				Quant *= 0.1
 			}
-			if bufff[k] == 'e' 
+			if tok[k] == 'e' 
 			{
 				// not now
 			}
@@ -157,18 +154,18 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			
 			k := 2
 		
-			while bufff[k] != 0
+			while tok[k] != 0
 			{
 				Value *= 16
-				if bufff[k] in '0'..'9' Value += bufff[k] - '0'
-				if bufff[k] in 'A'..'F' Value += bufff[k] - 'A' + 10
-				if bufff[k] in 'a'..'f' Value += bufff[k] - 'a' + 10
+				if tok[k] in '0'..'9' Value += tok[k] - '0'
+				if tok[k] in 'A'..'F' Value += tok[k] - 'A' + 10
+				if tok[k] in 'a'..'f' Value += tok[k] - 'a' + 10
 				k += 1
 			}
 			ns = new ObjInt(Value)
 		}
 		if a == 8 {
-			ns = new ObjSymbol(StrCopy(bufff)) 
+			ns = new ObjSymbol(tok.Str()) 
 		}
 		if a == 9{
 			//comments
@@ -196,7 +193,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			itLine = null
 		}
 		if a == 21 {
-			if itLine != null itLine.LoadAttrs(bufff)
+			if itLine != null itLine.LoadAttrs(tok.Str())
 			// attrs
 		}
 		prevId = a

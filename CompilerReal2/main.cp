@@ -70,7 +70,7 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("type")
 	PriorityData.Opers.Push("virtual")
 
-	LexMachine = GenerateMachine(PriorityData.Opers)
+	//LexMachine = GenerateMachine(PriorityData.Opers)
 
 	for targetFiles
 	{
