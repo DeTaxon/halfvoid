@@ -226,6 +226,7 @@ BoxClass := class extend Object
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
+	VirtualCheck := BuiltInCheckVirtualType^
 
 	ExtendObject := Object^
 	Parent := BoxClass^
@@ -345,6 +346,7 @@ BoxClass := class extend Object
 		ClassType.metaId = ClassId
 		UnrollTemplate = new BuiltInTemplateUnroll(this&)
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
+		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
 		this.Parent = par
 
@@ -408,7 +410,7 @@ BoxClass := class extend Object
 				if newType == null{
 					EmitError("Can not extend type\n")
 				}else{
-					if newType.GetType() != "class"{
+					if not newType is TypeClass{
 						EmitError("wip\n")
 					}else{
 						PreParent := newType->{TypeClass^}
@@ -426,7 +428,7 @@ BoxClass := class extend Object
 
 			while iterH != null
 			{
-				if iterH.GetValue() == "i:=1"
+				if iterH is ObjParam//iterH.GetValue() == "i:=1"
 				{
 					asParam := iterH->{ObjParam^}
 
@@ -492,7 +494,7 @@ BoxClass := class extend Object
 		iterJ := Down.Down
 		while iterJ != null
 		{
-			if iterJ.GetValue() == "i:=1"
+			if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
 			{
 				itName := ((iterJ->{ObjParam^}).MyStr)
 				if itName == name
@@ -771,26 +773,29 @@ BuiltInVirtualCall := class extend BuiltInFunc
 		aseBase := MyFuncType->{Type^}
 		FuncTypeName := aseBase.GetName()
 		
-		ToExe = "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
-		ToExe = ToExe + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
-		ToExe = ToExe + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
-		ToExe = ToExe + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
-		if MyFuncType.RetType != GetType("void")
-			ToExe = ToExe + "#0 = "
-		ToExe = ToExe + "call " + FuncTypeName +  "%Func##("
+		builder := ""sbt
+	
+		builder + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
+		builder + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
+		builder + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
+		builder + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
+		if MyFuncType.RetType != GTypeVoid
+			builder + "#0 = "
+		builder + "call " + FuncTypeName +  "%Func##("
 		for i : MyFuncType.ParsCount
 		{
-			if i > 0 ToExe = ToExe + " , "
+			if i > 0 builder + " , "
 			if MyFuncType.ParsIsRef[i]
 			{
-				ToExe = ToExe + MyFuncType.Pars[i].GetName() + "* "
+				builder + MyFuncType.Pars[i].GetName() + "* "
 			}else{
-				ToExe = ToExe + MyFuncType.Pars[i].GetName() + " "
+				builder + MyFuncType.Pars[i].GetName() + " "
 			}
-			ToExe = ToExe + "#" + (i + 1)
+			builder << "#"  << (i + 1)
 		}
 
-		ToExe = ToExe + ")\n"
+		builder + ")\n"
+		ToExe = builder.Str()
 	}
 
 }
@@ -826,6 +831,36 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 	//}
 	
 }
+BuiltInCheckVirtualType := class extend BoxTemplate
+{
+	classType := Type^
+	this := !(Type^ clss) -> void
+	{
+		classType = clss
+		FuncName = "is"
+		OutputName = "error"
+		typs := Queue.{Type^}()
+		typs.Push(clss.GetPoint())
+		MyFuncType = GetFuncType(typs,null->{bool^},GetType("bool"),false,false)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int{
+		return 0
+	}
+	GetNewFunc := virtual !(FuncInputBox itPars, TypeFunc^ funct) -> BoxFunc^
+	{
+		rightCl := itPars.itConsts[0]->{ObjType^}.MyType->{TypeClass^}.ToClass.ClassId
+		asCl := classType->{TypeClass^}.ToClass
+		classId := asCl.ClassId
+		return new BuiltInFuncUno("is",classType.GetPoint(),false,GetType("bool"),false,
+			"#0PrePre = getelementptr "sbt + classType.GetName() + " , " + classType.GetName() + "* #1 , i32 0, i32 0\n" +
+			"#0Pre = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** #0PrePre\n" +
+			"#0Left = bitcast %ClassTableType" + classId + "* #0Pre to i8*\n" +
+			"#0Right = bitcast %ClassTableType" + rightCl + "* @ClassTableItem" + rightCl + " to i8*\n" +
+			"#0 = icmp eq i8* #0Left,#0Right\n")
+		
+	}
+}
+	
 BuiltInThislessFunc := class extend BuiltInFunc
 {
 	itFunc := BoxFunc^
@@ -873,7 +908,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		{
 			if MyFuncType.RetType != null
 			{
-				isRetComp = MyFuncType.RetType.GetType() == "class" //TODO in ["class","fixarr"]
+				isRetComp = MyFuncType.RetType is TypeArr //TODO in ["class","fixarr"]
 			}
 		}
 		if itFunc.IsVirtual

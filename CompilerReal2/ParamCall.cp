@@ -2,7 +2,7 @@
 
 ParseParamCall := !(Object^ ob) -> Object^
 {
-	if ob.GetValue() == "~ind"
+	if ob is ObjIndent //ob.GetValue() == "~ind"
 	{
 		dynCast := ob->{ObjIndent^}
 
@@ -16,7 +16,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 		if may != null
 		{
-			if may.GetValue() == "i:=1"
+			if may is ObjParam //may.GetValue() == "i:=1"
 			{
 				itType := may.GetType()
 				if itType == null	return null

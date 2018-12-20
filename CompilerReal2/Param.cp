@@ -110,6 +110,11 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Up != null and Up is BoxFile
+			{
+				asNeed := Up->{BoxFile^}
+				asNeed.VisibleParams[MyStr].Push(this&) 
+			}
 			if IsVirtual {
 				val := TryCompute(Down)
 				if val != null{

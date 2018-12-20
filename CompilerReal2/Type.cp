@@ -360,8 +360,8 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 		if IsRefArr != null ExtraArr[i] = IsRefArr[i]
 		if it != null
 		{
-			if it.GetType() == "class" ExtraArr[i] = true
-			if it.GetType() == "arr" ExtraArr[i] = true
+			if it is TypeClass ExtraArr[i] = true
+			if it is TypeArr  ExtraArr[i] = true
 		}
 	}
 
@@ -620,7 +620,7 @@ TypeFunc := class extend Type
 				metaId = GetNewId()
 				subMeta := GetNewId()
 				itStr := "!" + subMeta + " = !{"
-				if RetType == GetType("void")
+				if RetType == GTypeVoid
 				{
 					itStr = itStr + "null"
 				}else{
@@ -659,7 +659,7 @@ TypeFunc := class extend Type
 		{
 			if Pars[i] == null return ""
 		}
-		if (RetType.GetType() == "arr" or RetType.GetType() == "class") and not RetRef
+		if (RetType is TypeArr or RetType is TypeClass) and not RetRef
 		{
 			return "void" + GetSkobs() 
 		}
@@ -683,7 +683,7 @@ TypeFunc := class extend Type
 		
 		if RetType != null
 		{
-			if RetType.GetType() == "arr" or RetType.GetType() == "class"
+			if RetType is TypeArr  or RetType is TypeClass
 			{
 				if not RetRef
 				{
@@ -910,11 +910,13 @@ CreateStandartTypes := !() -> void
 
 	TypeTable[12] = TypeTable[0].GetPoint() // char*
 
-	VoidPType = new TypePointVoidP(TypeTable[11]) // void*
-	TypeTable[11].AsPoint = VoidPType
+	VoidPType = TypeTable[11].GetPoint() //new TypePointVoidP(TypeTable[11]) // void*
+	VoidPType.ItName = "i8*"
 
-	TypeTable[16] = new TypePointVoidFatP(TypeTable[11])
-	TypeTable[11].AsFatArr = TypeTable[16]
+	//TypeTable[16] = new TypePointVoidFatP(TypeTable[11])
+	//TypeTable[11].AsFatArr = TypeTable[16]
+	voidFatArr := TypeTable[11].GetFatArray()
+	voidFatArr.ItName = "i8*"
 
 	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
 	 			+ "%RangeTypeFloat = type {float,float}\n"
@@ -923,6 +925,14 @@ CreateStandartTypes := !() -> void
 	TypeTable[13].Base = TypeTable[6]
 	TypeTable[14] = new TypeStandart("%RangeTypeFloat","!DIBasicType(name: \"rangef\", size: 32, align: 64,encoding: DW_ATE_float)",8,8)
 	TypeTable[14].Base = TypeTable[9]
+
+	GTypeBool =   TypeTable[8]
+	GTypeFloat =  TypeTable[9]
+	GTypeDouble = TypeTable[10]
+	GTypeInt =    TypeTable[6]
+	GTypeRange =  TypeTable[13]
+	GTypeVoid =   TypeTable[11]
+	GTypeString = TypeTable[12]
 
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
 	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)

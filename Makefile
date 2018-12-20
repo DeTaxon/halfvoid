@@ -23,7 +23,7 @@ gdbc: $(wildcard CompilerReal2/*.cp)
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe
 Objs/Lex: LexBuilder/main.cp Priority.pr
-	./stable LexBuilder/main.cp $(ForcedLibs)  -o lex.ll; clang lex.ll -o Objs/Lex;
+	./c.out LexBuilder/main.cp $(ForcedLibs)  -o lex.ll; clang lex.ll -o Objs/Lex;
 Mach.m: Objs/Lex Libs/RegExpBuilder.cp
 	./Objs/Lex
 Objs/LexTester: LexBuilder/test.cp Libs/RegExpBuilder.cp

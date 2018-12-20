@@ -48,7 +48,7 @@ ObjIndent := class extend Object
 			{
 				ItFuncs := Queue.{BoxFunc^}()
 				ItTempls := Queue.{BoxTemplate^}()
-				Searched := Queue.{int}()
+				Searched := QueueSet.{int}()
 				CollectFuncsByName(MyStr,this&,ItFuncs,ItTempls,false,false,Searched,false)
 				if ItFuncs.Size() == 0
 				{

@@ -75,6 +75,10 @@ ImportCmd := class extend Object
 				WorkBag.Push(toPoint,State_Start)
 			}
 		}
+		if Up != and Up is BoxFile{
+			asNeed := Up->{BoxFile^}
+			asNeed.ImportingFiles.Push(toPoint)
+		}
 	}
 }
 

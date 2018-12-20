@@ -22,7 +22,8 @@ GetUse := !(Object^ item) -> Object^
 {
 	GotObject := null->{Object^}
 
-	if item.GetValue() == "~d" or item.GetValue() == "~ind"
+	//if item.GetValue() == "~d" or item.GetValue() == "~ind"
+	if item is ObjData or item is ObjIndent 
 	{
 		res := InspectDataR(item)
 		if res != null return res

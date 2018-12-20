@@ -11,7 +11,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 	if iter == null return null
 
-	if iter.GetValue() == "~ind"
+	if iter is ObjIndent //iter.GetValue() == "~ind"
 	{
 		asInd := iter->{ObjIndent^}
 		box := new FuncInputBox() ; $temp
@@ -24,6 +24,26 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}
 	}
 
+	if iter.Down != null and iter.Down.Right != null and iter.Down.Right.GetValue() == "is"
+	{
+		asCl1 := iter.Down.GetType()
+		if asCl1 == null or asCl1.GetType() != "point" or asCl1.Base.GetType() != "class" return null
+		asCl2 := ParseType(iter.Down.Right.Right)
+		if asCl2 == null or asCl2.GetType() != "class" return null
+
+		asNeed := asCl1.Base->{TypeClass^}.ToClass
+		
+		itBox := new FuncInputBox() ; $temp
+
+		itBox.itPars.Emplace(asCl1.Base,true)
+		itBox.itConsts.Push(new ObjType(asCl2))
+		
+		func := asNeed.VirtualCheck.GetFunc(itBox^)
+		if func == null return null
+		return MakeSimpleCall(func,iter.Down)
+
+	}
+
 	iter = ToParse.Down
 	if iter == null return null
 
@@ -32,6 +52,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		if iter.Right != null
 		if iter.Right.GetValue() == "[]"
 		{
+			tryCmp := TryCompute(ToParse)
+			if tryCmp != null{
+				return tryCmp
+			}
 			box := new FuncInputBox() ; $temp 
 
 			iterY := iter.Right.Down
@@ -90,7 +114,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			fastType = ParseType(iter)
 		}
 	}
-	if iter.GetValue() == "~type"
+	if iter is ObjType //iter.GetValue() == "~type"
 	{
 		asNeed := iter->{ObjType^}
 		fastType = asNeed.MyType
@@ -125,7 +149,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		if iter.Right.GetValue() == "->"
 		{
-			if iter.Right.Right.GetValue() == "~ind"
+			if iter.Right.Right is ObjIndent //iter.Right.Right.GetValue() == "~ind"
 			{
 				tt := iter.Right.Right
 				asNeed := tt->{ObjIndent^}
@@ -248,7 +272,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			iter.SetUp(iter.Up)
 			return OneCall("[]",iter.Up,null->{Object^})
 		}
-		if iter.GetValue() == "~suffix"
+		if iter is ObjSuffix //iter.GetValue() == "~suffix"
 		{
 			if iter.Left.GetType() == null return null
 			sBox := new FuncInputBox() ; $temp
@@ -278,7 +302,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter.Right = null
 				return MakeSimpleCall(fun,iter)
 			}
-			if iter.Right.GetValue() == "~ind" or iter.Right.GetValue() == "~str"
+			//if iter.Right.GetValue() == "~ind" or iter.Right.GetValue() == "~str"
+			if iter.Right is ObjIndent or iter.Right is ObjStr
 			{
 				asName := ""
 				if iter.Right.GetValue() == "~ind"
@@ -513,7 +538,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				}
 			}
 		}
-		if iter.GetValue() == "~ind"
+		if iter is ObjIndent //iter.GetValue() == "~ind"
 		{
 			if iter.Right == null return null
 

@@ -8,15 +8,15 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
-	if (itemType.GetType() == "point" or itemType.GetType() == "fatarr") 
-	and (ToType.GetType() == "point" or ToType.GetType() == "fatarr")
+	if (itemType is TypePoint or itemType is TypeFatArr) 
+	and (ToType is TypePoint or ToType is TypeFatArr)
 	{
 		return GetExcPointers(itemType,ToType)
 	}
-	if itemType.GetType() == "fatarr" and ToType.GetType() == "fatarr"
-	{
-		return GetExcPointers(itemType,ToType)
-	}
+	//if itemType is TypeFatArr and ToType is TypeFatArr
+	//{
+	//	return GetExcPointers(itemType,ToType)
+	//}
 
 	iterB := BuiltInFuncs.Start
 	while iterB != null
@@ -32,7 +32,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		iterB = iterB.Next
 	}
 
-	if isRef and ToType.GetType() == "class" and itemType.GetType() == "class"
+	if isRef and ToType is TypeClass and itemType is TypeClass
 	{
 		box := new FuncInputBox()
 		box.itPars.Emplace(itemType,isRef)
@@ -41,7 +41,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		return preRet
 	}
 
-	if itemType.GetType() == "arr" and ToType.GetType() == "point"
+	if itemType is TypeArr and ToType is TypePoint
 	{
 		if itemType.Base == ToType.Base
 		{
@@ -60,7 +60,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func
 
-	if itemType.GetType() == "class"
+	if itemType is TypeClass
 	{
 		asNeed := (itemType->{TypeClass^}).ToClass
 		func = asNeed.GetFunc("->{}",b^,false)
@@ -78,7 +78,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 		return ExcPointers[from][to]
 	}
 
-	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast " + from.GetName() + " #1 to " + to.GetName()+"\n")
+	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast "sbt + from.GetName() + " #1 to " + to.GetName()+"\n")
 	ExcPointers[from][to] = toAdd
 	return toAdd
 }
@@ -86,7 +86,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
 	if item.GetType() == null return null
-	if toType.GetType() == "lambda" and item.GetType().GetType() == "lambda"
+	if toType is TypeFuncLambda and item.GetType() is TypeFuncLambda
 	{
 		asN := item->{SLambda^}
 		asN.ApplyFunc(toType)

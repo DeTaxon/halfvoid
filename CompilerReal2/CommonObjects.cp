@@ -3,36 +3,37 @@
 #import "ConstCompute.cp"
 #import "BoxFor.cp"
 #import "FileLoader.cp"
+#import "GlobalParams.cp"
 
 GetItem := !(string name, Object^ start) -> Object^
 {
-	 stuf := Queue.{int}()
+	 stuf := QueueSet.{int}()
 	 return GetItem2(name,start,stuf)
 }
-GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
+GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 {
 	iter := start
 
 	while iter != null
 	{
-		if iter.GetValue() == "i:=1"
+		if iter is ObjParam //iter.GetValue() == "i:=1"
 		{
 			AsNeed := iter->{ObjParam^}
 			if (AsNeed.MyStr == name) {
 				if not AsNeed.AskedGetUse and AsNeed.IsFunc WorkBag.Push(iter,State_GetUse)
 				return iter
 			}
-		}
-		if iter.GetValue() == ":=type"
+		}else
+		if iter is TypeDef //iter.GetValue() == ":=type"
 		{
 			asDef := iter->{TypeDef^}
 			if asDef.ItName == name return iter
-		}
+		}else
 		if iter.GetValue() == "(const)"
 		{
 			asC := iter->{ConstItem^}
 			if asC.Name == name return iter
-		}
+		}else
 		if iter.GetValue() == "~for()"
 		{
 			asC := iter->{BoxFor^}
@@ -41,18 +42,19 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 				return asC.LocPar
 			}
 			if asC.indName == name return asC.IndPar
-		}
-		if iter.GetValue() == "#import cp"
+		}else
+		if iter is ImportCmd //iter.GetValue() == "#import cp"
 		{
 			asN := iter->{ImportCmd^}
 			fl := asN.GetFile()
-			Fnd := false
-
-			for Searched.Size()
-			{
-				if Searched[it] == fl.fileId
-				Fnd = true
+			res := fl.VisibleParams.TryFind(name)
+			if res != null {
+				return res^[0]
 			}
+
+
+			Fnd := Searched.Contain(fl.fileId)
+
 			if not Fnd
 			{
 				Searched.Push(fl.fileId)
@@ -75,12 +77,13 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 		{
 			iter = iter.Up
 
+
 			if iter != null
 			{
 				ItTp := iter.GetItem(name)
 				if ItTp != null return ItTp
 
-				if iter.GetValue() == "!()"
+				if iter is BoxFuncBody //iter.GetValue() == "!()"
 				{
 					AsNeed2 := iter->{BoxFuncBody^}
 					as2 := iter->{BoxFunc^}
@@ -102,38 +105,36 @@ GetItem2 := !(string name, Object^ start,Queue.{int} Searched) -> Object^
 		}
 	}
 	
-	for i : DefsTable->len
+	for SomeDef : DefsTable
 	{
-		SomeDef := ref DefsTable[i]
-		if SomeDef != null
-		if SomeDef.ItName == name 
+		if SomeDef != null and  SomeDef.ItName == name 
 		{
 			return SomeDef->{Object^}
 		}
 	}
-	for i : ForcedLibs.Size()
+
+	//glRes := GlobalParams.TryFind(name)
+	//if glRes != null return glRes^[0]
+	for nowLib : ForcedLibs
 	{
-		nowLib := ForcedLibs[i]
-		Fnd := false
-		for Searched.Size()
-		{
-			if Searched[it] == nowLib.fileId
-			Fnd = true
-		}
-		if not Fnd
-		{
-			Searched.Push(nowLib.fileId)
-			notSure := nowLib.Down
+		res := nowLib.VisibleParams.TryFind(name)
+		if res != null return res^[0]
 
-			if notSure != null
-			{
-				while notSure.Right != null
-					notSure = notSure.Right
-			}
+		//Fnd := Searched.Contain(nowLib.fileId)
+		//if not Fnd
+		//{
+		//	Searched.Push(nowLib.fileId)
+		//	notSure := nowLib.Down
 
-			res := GetItem2(name,notSure,Searched)
-			if res != null return res
-		}
+		//	if notSure != null
+		//	{
+		//		while notSure.Right != null
+		//			notSure = notSure.Right
+		//	}
+
+		//	res := GetItem2(name,notSure,Searched)
+		//	if res != null return res
+		//}
 
 	}
 	return null

@@ -202,7 +202,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 1 return 255
-		if pars[0].first.GetType() != "point" return 255
+		if not pars[0].first is TypePoint return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
@@ -231,14 +231,15 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		if not (pars[0].first is TypePoint or pars[0].first is TypeArr or  pars[0].first is TypeFatArr) return 255
+		
 		if not IsInt(pars[1].first) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		if pars[0].first.GetType() == "arr"
+		if pars[0].first is TypeArr
 		{
 			return new BuiltInFuncBinar("[]",pars[0].first,true,pars[1].first,false,pars[0].first.Base,true,
 		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2\n")
@@ -267,13 +268,14 @@ BuiltInPointAdd := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		//if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		if not (pars[0].first is TypePoint or pars[0].first is TypeArr or  pars[0].first is TypeFatArr) return 255
 		return TypeCmp(pars[1].first,GetType("s64"))
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		if pars[0].first.Base == GetType("void")
+		if pars[0].first.Base == GTypeVoid
 		{
 			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 			"#0 = getelementptr i8 , i8* #1 , i64 #2\n")
@@ -304,7 +306,7 @@ BuiltInPointSub := class extend BoxTemplate
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		if pars[0].first.Base == GetType("void")
+		if pars[0].first.Base == GTypeVoid
 		{
 			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 			"%Pre## = sub i64 0,#2\n"sbt +
@@ -331,7 +333,7 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 1 return 255
-		if pars[0].first.GetType() != "arr" return 255
+		if not pars[0].first is TypeArr  return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
@@ -357,7 +359,7 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 
 		cc := Queue.{Type^}()
 
-		MyFuncType = GetFuncType(cc,null->{bool^},GetType("int"),false,false)
+		MyFuncType = GetFuncType(cc,null->{bool^},GTypeInt,false,false)
 
 		PostFuncs.Push(this&)
 	}
@@ -389,7 +391,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		cc := Queue.{Type^}()
 		cc.Push(null->{Type^})
 
-		MyFuncType = GetFuncType(cc,null->{bool^},GetType("int"),false,false)
+		MyFuncType = GetFuncType(cc,null->{bool^},GTypeInt,false,false)
 	}
 	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int 
 	{
@@ -481,26 +483,26 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 		asN := consts[1]->{ObjStr^}
 		St := asN.GetString()
 
-		intT := GetType("int")
+		intT := GTypeInt
 
 		itT := (((consts[0])->{ObjType^}).MyType)
 
-		if itT.GetType() == "standart"
+		if itT is TypeStandart
 		{
 			itT2 := itT->{TypeStandart^}
 
 			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItSize + ", 0 \n")
 			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItAlign + ", 0 \n")
 			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 "sbt + itT2.ItSize + ", 0 \n")
-		}
-		if itT.GetType() == "point" or itT.GetType() == "fatarr"
+		}else
+		if itT is TypePoint or itT is TypeFatArr
 		{
 			//WARN64:
 			if St == "TypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
 			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
 			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0 \n")
-		}
-		if itT.GetType() == "class"
+		}else
+		if itT is TypeClass
 		{
 			itT2 := itT->{TypeClass^}
 			if St == "TypeSize" return new BuiltInFuncClassInfo(itT2,0)
@@ -566,19 +568,19 @@ BuiltInTemplateCheckPoint := class extend BoxTemplate
 		pars := ref itBox.itPars
 		consts := ref itBox.itConsts
 		if pars.Size() != 1 return 255
-		if pars[0].first.GetType() != "fatarr" and pars[0].first.GetType() != "point" return 255
+		if not (pars[0].first is TypeFatArr or pars[0].first is TypePoint) return 255
 		if consts.Size() != 1 return 255
-		if consts[0].GetValue() != "~type" return 255
+		if not consts[0] is ObjType return 255
 
 		asNeed := consts[0]->{ObjType^}
-		if asNeed.MyType != GetType("bool") return 255
+		if asNeed.MyType != GTypeBool return 255
 		
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		return new BuiltInFuncUno("->{}",pars[0].first,false,GetType("bool"),false,
+		return new BuiltInFuncUno("->{}",pars[0].first,false,GTypeBool,false,
 		"#0 = icmp ne "sbt + pars[0].first.GetName() +  "#1,null\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -602,15 +604,15 @@ BuiltInTemplateSet := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
-		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" and pars[1].first.GetType() != "arr" return 255
-		if pars[1].first.Base == GetType("void") return 1
-		if pars[0].first.GetType() == "point"
+		if not (pars[0].first is TypePoint or pars[0].first is TypeFatArr ) return 255
+		if not (pars[1].first is TypePoint or pars[1].first is TypeFatArr or pars[1].first is TypeArr) return 255
+		if pars[1].first.Base == GTypeVoid return 1
+		if pars[0].first is TypePoint
 		{
-			if pars[0].first.Base == GetType("void") return 1
-			if pars[1].first.Base == GetType("void") return 1
+			if pars[0].first.Base == GTypeVoid return 1
+			if pars[1].first.Base == GTypeVoid return 1
 			if pars[1].first.Base == pars[0].first.Base return 0
-			if pars[1].first.GetType() == "point" return TypeCmp(pars[1].first,pars[0].first)
+			if pars[1].first is TypePoint return TypeCmp(pars[1].first,pars[0].first)
 		}else
 		{
 			if pars[1].first.Base == pars[0].first.Base return 0
@@ -620,16 +622,16 @@ BuiltInTemplateSet := class extend BoxTemplate
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		if pars[0].first.GetType() == "point" and pars[0].first != pars[1].first 
+		if pars[0].first is TypePoint and pars[0].first != pars[1].first 
 		{
 			PreRet := BoxFunc^
-			if pars[1].first.GetType() == "arr"
+			if pars[1].first is TypeArr
 			{
-			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,true,GetType("void"), 
+			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,true,GTypeVoid, 
 					"%TPre## = bitcast "sbt + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}else{
-			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
+			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
 					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 			}
@@ -637,11 +639,11 @@ BuiltInTemplateSet := class extend BoxTemplate
 		}
 		if pars[0].first != pars[1].first
 		{
-			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), 
+			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
 					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1\n")
 		}
-		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GetType("void"), "store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
+		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, "store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -699,7 +701,7 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 
 		preRetCode := ""
 
-		if ToFunc.MyFuncType.RetType != GetType("void")
+		if ToFunc.MyFuncType.RetType != GTypeVoid
 			preRetCode = "#0 = "
 
 		asBasePre := ToFunc.MyFuncType
@@ -736,7 +738,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 		if pars.Size() != 0 return 255
 		if consts.Size() != 1 return 255
-		if (consts[0].GetValue() != "~str") return 255
+		if (not consts[0] is ObjStr) return 255
 
 		asStrT := (consts[0]->{ObjStr^})
 		asStr := asStrT.GetString()
@@ -762,7 +764,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 		Name := string
 		if consts.Size() != 1 return null
-		if consts[0].GetValue() != "~str" 
+		if not consts[0] is ObjStr
 			return null
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
@@ -790,7 +792,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 				CTypeP := CType.GetPoint()
 
 				FP := ToClass.FakeParams[pos]
-				if FP.Atter.GetValue() != "~ind" return null //TODO: check in GetPrior
+				if not FP.Atter is ObjIndent return null //TODO: check in GetPrior
 				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
 				pos2 := -1
 				midType := FieldParam^
@@ -862,7 +864,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		pars := ref itBox.itPars
 
 		if pars.Size() == 0 return 255
-		if pars[0].first.GetType() != "lambda" return 255
+		if not pars[0].first is TypeFuncLambda return 255
 
 		asL := pars[0].first->{TypeFuncLambda^}
 		asB := ((pars[0].first.Base)->{TypeFunc^})
@@ -897,7 +899,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		ToSet = ToSet + "%Func## = load " +pars[0].first.Base.GetName() + "* , " + pars[0].first.GetName() + " #1\n"
 
 
-		if IsCompl or asB.RetType == GetType("void"){
+		if IsCompl or asB.RetType == GTypeVoid{
 			ToSet = ToSet + "call "
 		}else{
 			ToSet = ToSet + "#0 = call " 
@@ -950,9 +952,9 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		consts := ref itBox.itConsts
 
 		if pars.Size() != 1 return 255
-		if pars[0].first.GetType() != "class" return 255
+		if not pars[0].first is TypeClass return 255
 		if consts.Size() != 1 return 255
-		if (consts[0].GetValue() != "~str") return 255
+		if not consts[0] is ObjStr return 255
 
 		asStrT := (consts[0]->{ObjStr^})
 		asStr := asStrT.GetString()
@@ -978,7 +980,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		
 		Name := string
 		if consts.Size() != 1 return null
-		if consts[0].GetValue() != "~str" 
+		if not consts[0] is ObjStr
 			return null
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
@@ -1065,8 +1067,8 @@ BuiltInLenArr := class extend BoxTemplate
 
 		if consts.Size() != 0 return 255
 		if pars.Size() == 0 return 255
-		for pars.Size() 
-			if pars[it].first.GetType() != "standart"
+		for pars
+			if not it.first is TypeStandart
 				return 255
 		return 0
 	}
@@ -1120,8 +1122,8 @@ BuiltInTemplateNew := class extend BoxTemplate
 		OutputName = "error"
 
 		emptType := Queue.{Type^}()
-		emptType.Push(GetType("int"))
-		emptType.Push(GetType("int"))
+		emptType.Push(GTypeInt)
+		emptType.Push(GTypeInt)
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
@@ -1130,10 +1132,10 @@ BuiltInTemplateNew := class extend BoxTemplate
 		consts := ref itBox.itConsts
 
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "standart" return 255
-		if pars[1].first.GetType() != "standart" return 255
+		if not (pars[0].first is TypeStandart) return 255
+		if not (pars[1].first is TypeStandart) return 255
 		if consts.Size() != 1 return 255
-		if consts[0].GetValue() != "~type" return 255
+		if not (consts[0] is ObjType) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
@@ -1176,7 +1178,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 
 		emptType := Queue.{Type^}()
 		emptType.Push(null->{Type^})
-		MyFuncType = GetFuncType(emptType,null->{bool^},GetType("int"),false,false)
+		MyFuncType = GetFuncType(emptType,null->{bool^},GTypeInt,false,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -1184,7 +1186,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 		consts := ref itBox.itConsts
 
 		if consts.Size() != 1 return 255
-		if consts[0].GetValue() != "~str" return 255
+		if not (consts[0] is ObjStr) return 255
 		if pars.Size() != 1 return 255
 
 		asObjStr := consts[0]->{ObjStr^}
@@ -1192,7 +1194,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 		
 		if asStr == "len"
 		{
-			if pars[0].first.GetType() != "fatarr" and pars[0].first.GetType() != "arr" return 255
+			if not (pars[0].first is TypeFatArr or pars[0].first is TypeArr) return 255
 			return 0
 		}
 		if asStr == "begin"
@@ -1216,31 +1218,31 @@ BuiltInTemplateNext := class extend BoxTemplate
 		asPreStr := consts[0]->{ObjStr^}
 		asStr := asPreStr.GetString()
 
-		if asStr == "len"
-		{
-			if pars[0].first.GetType() == "arr"
-			{	
-				asType := (pars[0].first)->{TypeArr^}
-				pre := new BuiltInFuncUno("->",pars[0].first,true,GetType("int"),false,
-					"#0 = add i32 0," + asType.Size + "\n")
-				pre.IsSelfPre = true
-				return pre
-			}else{
-				return new BuiltInFuncUno("->",pars[0].first,false,GetType("int"),false,
-				"%PreP## = bitcast "sbt + pars[0].first.GetName() + " #1 to i32*\n" + 
-				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
-				"#0 = load i32 , i32 * %PreI##\n")
-			}
-		}
 		if asStr == "begin"
 		{
 			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
 					"#0 = extractvalue "sbt + pars[0].first.GetName() + " #1,0\n")
-		}
+		}else
 		if asStr == "end"
 		{
 			return new BuiltInFuncUno("->",pars[0].first,false,pars[0].first.Base,false,
 					"#0 = extractvalue "sbt + pars[0].first.GetName() + " #1,1\n")
+		}else
+		if asStr == "len"
+		{
+			if pars[0].first is TypeArr
+			{	
+				asType := (pars[0].first)->{TypeArr^}
+				pre := new BuiltInFuncUno("->",pars[0].first,true,GTypeInt,false,
+					"#0 = add i32 0," + asType.Size + "\n")
+				pre.IsSelfPre = true
+				return pre
+			}else{
+				return new BuiltInFuncUno("->",pars[0].first,false,GTypeInt,false,
+				"%PreP## = bitcast "sbt + pars[0].first.GetName() + " #1 to i32*\n" + 
+				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
+				"#0 = load i32 , i32 * %PreI##\n")
+			}
 		}
 		return null
 	}
@@ -1268,14 +1270,14 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 
 		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
-		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" return 255
+		if not (pars[0].first is TypePoint or pars[0].first is TypeFatArr) return 255
+		if not (pars[1].first is TypePoint or pars[1].first is TypeFatArr) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
+		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GTypeBool,false,
 			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
 			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp eq i8* %PreOne##,%PreTwo##\n")
@@ -1304,14 +1306,14 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 
 		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
-		if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "fatarr" return 255
-		if pars[1].first.GetType() != "point" and pars[1].first.GetType() != "fatarr" return 255
+		if not (pars[0].first is TypePoint or pars[0].first is TypeFatArr) return 255
+		if not (pars[1].first is TypePoint or pars[1].first is TypeFatArr) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
-		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GetType("bool"),false,
+		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GTypeBool,false,
 			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
 			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
 			"#0 = icmp ne i8* %PreOne##,%PreTwo##\n")
@@ -1598,9 +1600,9 @@ CreateBuiltIns := !() -> void
 											"br label %End##\n" +
 											"End##:\n" +
 											"#0 = phi i1 [false,%FirstPart##] , [#2,%PostNext##]\n"))
-	BuiltInFuncs.Push( new BuiltInSuffix("f",GetType("double"),false,GetType("float"),"#0 = fptrunc double #1 to float\n"))
+	BuiltInFuncs.Push( new BuiltInSuffix("f",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("L",GetType("int"),false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
-	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 3.14159265389 to float\n" +
+	BuiltInFuncs.Push( new BuiltInSuffix("pi",GTypeFloat,false,GTypeFloat,"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))
 	BuiltInFuncs.Push( new BuiltInSuffix("deg",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))

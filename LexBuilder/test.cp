@@ -6,7 +6,7 @@
 
 main := !(int argc, char^^ argv) -> int{
 
-	testFile := MappedFile("CompilerReal2/NewLex.cp")
+	testFile := MappedFile("LexBuilder/main.cp")
 
 	if testFile.IsInvalid(){
 		printf("cant read file\n")

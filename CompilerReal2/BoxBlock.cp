@@ -1,5 +1,6 @@
 #import "Tree.cp"
 #import "Globals.cp"
+#import "GlobalParams.cp"
 
 MakeItBlock := !(Object^ item) -> bool
 {
@@ -286,12 +287,16 @@ BoxFile := class extend BoxBlock
 	filePath := Path
 
 	returnPath := Queue.{string}
+	
+	ImportingFiles := Queue.{BoxFile^}
+	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
 	this := !(Path fullPath) -> void
 	{
 		fileId = GetNewId()
 		filePath.itStr = fullPath.itStr
 		WorkBag.Push(this&,State_Syntax)
+		WorkBag.Push(this&,State_CheckTypes)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -338,6 +343,46 @@ BoxFile := class extend BoxBlock
 			{
 				WorkBag.Push(iter,State_Start)
 				iter = iter.Right
+			}
+		}
+		if pri == State_CheckTypes
+		{
+			//Fnd := false
+			//for ForcedLibs{
+			//	if it == this& {
+			//		Fnd = true
+			//		break
+			//	}
+			//}
+			//if Fnd{
+			//	for v,k : VisibleParams
+			//	{
+			//		for v ForcedGlobalParams[k].Push(it)
+			//	}
+			//}
+
+			toVisit := Stack.{BoxFile^}()
+			visited := QueueSet.{BoxFile^}()
+
+			visited.Push(this&)
+			for ImportingFiles toVisit.Push(it)
+
+			while toVisit.NotEmpty()
+			{
+				toTest := toVisit.Pop()
+
+				for toTest.ImportingFiles
+				{
+					if not visited.Contain(it){
+						toVisit.Push(it)
+						visited.Push(it)
+					}
+				}
+				for preIt : toTest.VisibleParams 
+				for preIt
+				{
+					VisibleParams[it.MyStr].Push(it)
+				}
 			}
 		}
 	}

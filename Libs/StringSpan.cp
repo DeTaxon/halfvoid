@@ -23,6 +23,7 @@ StringSpan := class{
 		ptr = st[startInd]&
 		itSize = endInd - startInd + 1
 	}
+	Size := !() -> int { return itSize }
 	"[]" := !(int ind) -> ref char { return ptr[ind] }
 	"[]" := !(range ran) -> StringSpan
 	{

@@ -27,7 +27,6 @@ GlobalUnpoint := BuiltInTemplatePoint^
 GlobalRefExc := BuiltInTemplateRefEx^
 GlobalExcArr := BuiltInTemplateExcArr^
 
-VoidPType := Type^
 
 GlobalStrs := string
 
@@ -35,10 +34,18 @@ Classes := Queue.{BoxClass^}
 
 PostFuncs := Queue.{BuiltInFuncClassInfo^}
 
-ForcedLibs := Queue.{BoxFile^}
 
 DebugMode := false
 cuId := int
 DebugMetaData := Stack.{string}
 
 UseDestructors := false
+
+VoidPType := Type^
+GTypeBool := Type^
+GTypeDouble := Type^
+GTypeFloat := Type^
+GTypeInt := Type^
+GTypeRange := Type^
+GTypeVoid := Type^
+GTypeString := Type^

@@ -154,7 +154,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			
 			k := 2
 		
-			while tok[k] != 0
+			while k != tok.Size()
 			{
 				Value *= 16
 				if tok[k] in '0'..'9' Value += tok[k] - '0'

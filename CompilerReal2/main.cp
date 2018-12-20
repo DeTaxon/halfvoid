@@ -4,6 +4,7 @@
 #import "CoolerObjects.cp"
 #import "Globals.cp"
 #import "Type.cp"
+#import "GlobalParams.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {

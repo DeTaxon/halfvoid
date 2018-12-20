@@ -585,7 +585,7 @@ BoxFunc := class extend Object
 
 		if RetTyp != null
 		{
-			if RetTyp.GetType() == "arr" or RetTyp.GetType() == "class"
+			if RetTyp is TypeArr or RetTyp is TypeClass
 			{
 				if not IsRetRef this.IsRetComplex = true
 			}
@@ -635,7 +635,7 @@ BoxFunc := class extend Object
 						}
 					}
 
-					if Pars[1].GetValue() == "~ind" 
+					if Pars[1] is ObjIndent
 					{
 						MayName = (Pars[1]->{ObjIndent^}).MyStr
 					}else{
@@ -692,7 +692,7 @@ BoxFunc := class extend Object
 	SetReturnType := !(Type^ toSet) -> void
 	{
 		this.IsRetComplex = false
-		if toSet.GetType() == "arr" or toSet.GetType() == "class"
+		if toSet is TypeArr  or toSet is TypeClass
 		{
 			if not this.IsRetRef this.IsRetComplex = true
 		}
@@ -1201,7 +1201,7 @@ BoxFuncBody := class extend BoxFunc
 			{
 				sBug := nowField->{Object^}
 				itCPre := sBug.GetType()
-				if itCPre.GetType() == "class"
+				if itCPre is TypeClass
 				{
 					itC := itCPre->{TypeClass^}.ToClass
 

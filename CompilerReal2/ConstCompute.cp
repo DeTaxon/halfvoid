@@ -63,7 +63,25 @@ TryCompute := !(Object^ ob) -> Object^
 			if iterR.GetValue() != ","
 			{
 				itm := TryCompute(iterR)
-				if itm == null return null
+				if itm == null 
+				{
+					return null
+					if iterR.GetType() == TypeTable[13]
+					{
+						if iterR.Down.GetType() != GetType("int") return null
+						if iterR.Down.Right.GetType() != GetType("int") return null
+						return null
+
+						start := iterR.Down->{ObjInt^}.MyInt
+						end := iterR.Down.Right.Right->{ObjInt^}.MyInt
+
+						if start > end return null
+
+						for i : start..end Sutf.Push(new ObjInt(i))
+					}else{
+						return null
+					}
+				}
 				Sutf.Push(itm)
 			}
 			iterR = iterR.Right

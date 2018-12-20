@@ -11,9 +11,9 @@ IsWord := !(string name) -> bool
 	return true
 }
 
-InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} Searched) -> void
+InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int} Searched) -> void
 {
-	if ii.GetValue() == "i:=1"
+	if ii is ObjParam
 	{
 		AsNeed := ii->{ObjParam^}
 		if(AsNeed.GetName() == name)
@@ -21,40 +21,39 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,Queue.{int} S
 			found.Push(AsNeed)	
 		}
 	}
-	if ii.GetValue() == "#import cp"
+	if ii is ImportCmd //ii.GetValue() == "#import cp"
 	{
 		asNeed := ii->{ImportCmd^}
 		fl := asNeed.GetFile()
 
+
 		if fl != null
 		{
+			//res := fl.VisibleParams.TryFind(name)
+			//if res != null {
+			//	for res^ {
+			//		found.Push(it)
+			//	}
+			//}
 
-			Found := false
+			//Found := Searched.Contain(fl.fileId)
 
-			for Searched
-			{
-				if it == fl.fileId
-				{
-					Found = true
-					break
-				}
-			}
-			if not Found
-			{
-				Searched.Push(fl.fileId)
-				CollectParamsAllByName(name,fl.Down,found,Searched)
-			}
+			//if not Found
+			//{
+			//	Searched.Push(fl.fileId)
+			//	CollectParamsAllByName(name,fl.Down,found,Searched)
+			//}
 		}
 	}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
 {
-	Searched := Queue.{int}()
+	Searched := QueueSet.{int}()
 	CollectParamsAllByName(name,start,found,Searched)
 }
 
-CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found, Queue.{int} Searched) -> void
+CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found, QueueSet.{int} Searched) -> void
 {
 	iterU := start
 	LastPos := start
@@ -66,38 +65,50 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			iterU = iterU.Left 
 		}else {
 			iterU = iterU.Up
-
-			iterK := LastPos.Right
-			while iterK != null
-			{
-				InsertParam(name,iterK,found,Searched)
-				iterK = iterK.Right
+			
+			if iterU != null and iterU.Up != null and iterU.Up is BoxFile
+			{	
+				asN := iterU.Up->{BoxFile^}
+				res := asN.VisibleParams.TryFind(name)
+				if res != null{
+					for res^ found.Push(it)
+				}
+				iterU = null
+			}else{
+				iterK := LastPos.Right
+				while iterK != null
+				{
+					InsertParam(name,iterK,found,Searched)
+					iterK = iterK.Right
+				}
+				LastPos = iterU
 			}
-			LastPos = iterU
 		}
 	}
 
+	//res := ForcedGlobalParams.TryFind(name)
+	//it res != null{
+	//	for res^ found.Push(it)
+	//}
 	for lb : ForcedLibs
 	{
-		Found := false
-		for sd : Searched{
-			if lb.fileId == sd {
-				Found = true
-				break
-			}
+		res := lb.VisibleParams.TryFind(name)
+		if res != null{
+			for res^ found.Push(it)
 		}
-		if not Found
-		{
-			Searched.Push(lb.fileId)
-			CollectParamsAllByName(name,lb.Down,found,Searched)
-		}
+		//Found := Searched.Contain(lb.fileId)
+		//if not Found
+		//{
+		//	Searched.Push(lb.fileId)
+		//	CollectParamsAllByName(name,lb.Down,found,Searched)
+		//}
 	}
 }
 
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched,bool IgnoreLibs) -> void
+InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
 {
-		if ii.GetValue() == "i:=1"
+		if ii is ObjParam //ii.GetValue() == "i:=1"
 		{
 			AsNeed := ii->{ObjParam^}
 			if(AsNeed.GetName() == name)
@@ -135,7 +146,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					}
 				}
 			}
-		}
+		}else
 		if ii.GetValue() == "{...}"
 		{
 			//if name == "."{	
@@ -145,32 +156,31 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 			asC := ii->{BoxClass^}
 			asC.GetWrappedFunc(name,found,templates)
 
-		}
-		if ii.GetValue() == "#import cp"
+		}else
+		if ii is ImportCmd //ii.GetValue() == "#import cp"
 		{
 			asNeed := ii->{ImportCmd^}
 			fl2 := asNeed.GetFile()
 			fl3 := fl2->{Object^}
 
-			Found := false
+			Found := Searched.Contain(fl2.fileId)
 
-			for Searched
-			{
-				if it == fl2.fileId{
-					Found = true
-					break
-				}
-			}
 			if not Found
 			{
 				Searched.Push(fl2.fileId)
-				CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+				//CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+			}
+			res := fl2.VisibleParams.TryFind(name)
+			if res != null {
+				for res^{
+					InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+				}
 			}
 		}
 }
 
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,Queue.{int} Searched,bool IgnoreLibs) -> void
+CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
 {
 	iterU := start
 	LastPos := start
@@ -217,6 +227,16 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				iterU = iterU.Up
 				LastPos = iterU
 			}
+			if iterU != null and iterU.Up != null and iterU.Up is BoxFile
+			{
+				asN := iterU.Up->{BoxFile^}
+				res := asN.VisibleParams.TryFind(name)
+				if res != null{
+					for res^ 
+						InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+				}
+				iterU = null
+			}
 		}
 		if iterU != null
 		{
@@ -252,7 +272,7 @@ FindSuffix := !(string name, Object^ start,FuncInputBox itBox) -> BoxFunc^
 }
 FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
-	Searched := Queue.{int}()
+	Searched := QueueSet.{int}()
 
 	iterS := start
 	if iterS != null
@@ -287,11 +307,24 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 		
 	Funcs.Clean()
 	Templs.Clean()
+
+	//for ForcedLibs
+	//{	
+	//	res := it.VisibleParams.TryFind(name)
+	//	if res != null{
+	//		InsertFunc(name,it,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+	//	}
+	//}
+
 	for ForcedLibs
 	{
 		itUp := (it->{Object^}).Down
 		if it == iterr itUp = start
-		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+		//if not Searched.Contain(it.fileId)
+		//{
+		//	Searched.Push(it.fileId)
+			CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+		//}
 	}
 	for itQ : BuiltInFuncs
 	{
@@ -408,16 +441,16 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if funcType == null return 0
 	if inType == funcType return 0
 
-	if inType == GetType("float") and funcType == GetType("double") return 1
-	if inType == GetType("int") and funcType == GetType("double") return 1
-	if inType.GetType() == "fatarr"  and funcType.GetType() == "point" 
+	if inType == GTypeFloat and funcType == GTypeDouble return 1
+	if inType == GTypeInt and funcType == GTypeDouble return 1
+	if inType is TypeFatArr  and funcType is TypePoint
 	{
 		if inType.Base == funcType.Base
 		{
 			return 1
 		}
 	}
-	if inType.GetType() == "arr"  and funcType.GetType() == "point" 
+	if inType is TypeArr  and funcType is TypePoint 
 	{
 		if inType.Base == funcType.Base
 		{
@@ -425,19 +458,20 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		}
 	}
 
-	if inType.GetType() == "standart" and funcType.GetType() == "standart"
+	if inType is TypeStandart and funcType is TypeStandart
 	{
 		if IsInt(inType) and IsInt(funcType) {
 			if GetIntSize(inType) < GetIntSize(funcType) return 1
 			return 2
 		}
 	}
-	if (inType.GetType() == "point" and funcType == GetType("bool")) return 1
-	if inType.GetType() == "fatarr" and funcType == GetType("bool") return 1
+	if (inType is TypePoint and funcType == GTypeBool) return 1
+	if inType is TypeFatArr and funcType == GTypeBool return 1
 
-	if inType.GetType() == "point" and funcType.GetType() == "point"
+	if inType is TypePoint and funcType is TypePoint
 	{
-		if inType.Base.GetType() == "class" and funcType.Base.GetType() == "class"
+		//if inType.Base.GetType() == "class" and funcType.Base.GetType() == "class"
+		if inType.Base is TypeClass and funcType.Base is TypeClass
 		{
 			asClType1 := ((inType.Base)->{TypeClass^})
 			asCl1 := asClType1.ToClass
@@ -452,9 +486,9 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 
 		}
 		if funcType == VoidPType return 2
-		if inType == VoidPType and funcType != GetType("string") return 2
+		if inType == VoidPType and funcType != GTypeString return 2
 	}
-	if inType.GetType() == "class"
+	if inType is TypeClass //inType.GetType() == "class"
 	{
 		itFc := new FuncInputBox ; $temp
 		itFc.itPars.Emplace(inType,true)
@@ -465,12 +499,13 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 
 
-	if inType == GetType("double") and funcType == GetType("float") return 2
-	if inType == TypeTable[16] and funcType.GetType() == "fatarr" return 2
+	if inType == GTypeDouble and funcType == GTypeFloat return 2
+	if inType == TypeTable[16] and funcType is TypeFatArr  return 2
 
-	if inType == GetType("int") and funcType == GetType("bool") return 3
+	if inType == GTypeInt and funcType == GTypeBool return 3
 
-	if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
+	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
+	if inType is  TypeFuncLambda and funcType is TypeFuncLambda
 	{
 		asBI := ((inType.Base)->{TypeFunc^})
 		asBO := ((inType.Base)->{TypeFunc^})
