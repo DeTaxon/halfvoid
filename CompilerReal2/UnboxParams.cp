@@ -35,11 +35,11 @@ UnboxParams := !(Object^ start) -> void
 				{
 					StrAdd = null
 					IsStr := false
-					if iter.GetValue() == "~ind"
+					if iter is ObjIndent
 					{
 						StrAdd = iter->{ObjIndent^}.MyStr
-					}
-					if iter.GetValue() == "~str"
+					}else
+					if iter is ObjStr
 					{
 						StrAdd = iter->{ObjStr^}.GetString()
 						IsStr = true

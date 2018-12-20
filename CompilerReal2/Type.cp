@@ -505,46 +505,6 @@ TypePoint := class extend Type
 		return 8
 	}
 }
-TypePointVoidP := class extend TypePoint
-{
-	this := !(Type^ nBase) -> void
-	{
-		Base = nBase
-		ItName = "i8*"
-		ItHash = nBase.ItHash*3
-		if DebugMode
-		{
-			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
-			DebugMetaData.Push(itStr)
-		}
-	}
-	GetName := virtual !() -> string
-	{
-		return "i8*"
-	}
-	GetGoodName := virtual !() -> string { return "void^" }
-}
-TypePointVoidFatP := class extend TypeFatArr
-{
-	this := !(Type^ nBase) -> void
-	{
-		ItHash = nBase.ItHash*3 + 1
-		Base = nBase
-		ItName = "i8*"
-		if DebugMode
-		{
-			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")" 
-			DebugMetaData.Push(itStr)
-		}
-	}
-	GetName := virtual !() -> string
-	{
-		return "i8*"
-	}
-	GetGoodName := virtual !() -> string { return "void[]" }
-}
 
 
 TypeFunc := class extend Type
@@ -619,29 +579,30 @@ TypeFunc := class extend Type
 			{
 				metaId = GetNewId()
 				subMeta := GetNewId()
-				itStr := "!" + subMeta + " = !{"
+				itStr := "!"sbt
+				itStr <<  subMeta << " = !{"
 				if RetType == GTypeVoid
 				{
-					itStr = itStr + "null"
+					itStr << "null"
 				}else{
-					itStr = itStr + "!" + RetType.metaId
+					itStr << "!" << RetType.metaId
 				}
 				for i : ParsCount
 				{
-					itStr = itStr + ",!" 
+					itStr << ",!" 
 					if ParsIsRef[i]
 					{
 						asP := Pars[i].GetPoint()
-						itStr = itStr + asP.metaId
+						itStr << asP.metaId
 
 					}else{
-						itStr = itStr + Pars[i].metaId
+						itStr << Pars[i].metaId
 					}
 				}
 		
-				itStr = itStr + "}\n"
-				itStr = itStr + "!" + metaId + " = !DISubroutineType(types: !" + subMeta + ")\n"
-				DebugMetaData.Push(itStr)
+				itStr << "}\n"
+				itStr << "!" << metaId << " = !DISubroutineType(types: !" << subMeta << ")\n"
+				DebugMetaData.Push(itStr.Str())
 			}
 		}
 	}
@@ -677,9 +638,8 @@ TypeFunc := class extend Type
 	GetGoodName := virtual !() -> string { return GetName() }
 	GetSkobs := !() -> string
 	{
-		ToRet := string
-		ToRet = ""
-		ToRet = ToRet + "("
+		ToRet := ""sbt
+		ToRet << "("
 		
 		if RetType != null
 		{
@@ -687,8 +647,8 @@ TypeFunc := class extend Type
 			{
 				if not RetRef
 				{
-					ToRet = ToRet + RetType.GetName() + "* "
-					if ParsCount > 0 ToRet = ToRet + " , "
+					ToRet << RetType.GetName() << "* "
+					if ParsCount > 0 ToRet << " , "
 				}
 			}
 		}
@@ -696,17 +656,17 @@ TypeFunc := class extend Type
 
 		for i : ParsCount
 		{
-			if i != 0 ToRet = ToRet +  " , "
-			if ParsIsRef[i]	ToRet = ToRet + Pars[i].GetPoint().GetName()
-			else ToRet = ToRet + Pars[i].GetName()
+			if i != 0 ToRet <<  " , "
+			if ParsIsRef[i]	ToRet << Pars[i].GetPoint().GetName()
+			else ToRet << Pars[i].GetName()
 		}
 		if IsVArgs
 		{
-			if ParsCount != 0 ToRet = ToRet +  " , "
-			ToRet = ToRet + "..."
+			if ParsCount != 0 ToRet <<  " , "
+			ToRet << "..."
 		}
-		ToRet = ToRet + ")"
-		return ToRet
+		ToRet << ")"
+		return ToRet.Str()
 	}
 	PrintSkobs := virtual !(sfile f) -> void
 	{
@@ -750,7 +710,7 @@ TypeFuncLambda := class extend Type
 	{
 		asB := Base->{TypeFunc^}
 
-		ToRet := ""
+		ToRet := ""sbt
 
 		IsCompl := false
 
@@ -760,26 +720,26 @@ TypeFuncLambda := class extend Type
 		}
 
 		if IsCompl {
-			ToRet = ToRet + "void"
+			ToRet << "void"
 		}else{
-			ToRet = ToRet + asB.RetType.GetName()
+			ToRet << asB.RetType.GetName()
 		}
-		ToRet = ToRet + "(i8*"
+		ToRet << "(i8*"
 
-		if IsCompl or asB.ParsCount != 0 ToRet = ToRet + ","
+		if IsCompl or asB.ParsCount != 0 ToRet << ","
 
 		if IsCompl{
-			ToRet = ToRet + asB.RetType.GetName() + "*"			
-			if asB.ParsCount != 0 ToRet = ToRet + ","
+			ToRet << asB.RetType.GetName() << "*"			
+			if asB.ParsCount != 0 ToRet << ","
 		}
 		
 		for i : asB.ParsCount
 		{
-			if i > 0 ToRet = ToRet + ","
-			ToRet = ToRet + asB.Pars[i].GetName()
+			if i > 0 ToRet << ","
+			ToRet << asB.Pars[i].GetName()
 		}
-		ToRet = ToRet + ")*"
-		return ToRet	
+		ToRet << ")*"
+		return ToRet.Str()
 	}
 	GetAlign := virtual !() -> int
 	{

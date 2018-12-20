@@ -27,9 +27,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	if iter.Down != null and iter.Down.Right != null and iter.Down.Right.GetValue() == "is"
 	{
 		asCl1 := iter.Down.GetType()
-		if asCl1 == null or asCl1.GetType() != "point" or asCl1.Base.GetType() != "class" return null
+		if not(asCl1 == null or asCl1 is TypePoint or asCl1.Base is TypeClass) return null
 		asCl2 := ParseType(iter.Down.Right.Right)
-		if asCl2 == null or asCl2.GetType() != "class" return null
+		if asCl2 == null or not asCl2 is TypeClass return null
 
 		asNeed := asCl1.Base->{TypeClass^}.ToClass
 		
@@ -125,7 +125,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		//asNeed := iter->{ObjType^}
 		asNeed2 := fastType
 
-		if asNeed2.GetType() == "class" and iter.Right.GetValue() == "()"
+		if asNeed2 is TypeClass and iter.Right.GetValue() == "()"
 		{
 			asNeed3 := asNeed2->{TypeClass^}
 			asNeed4 := asNeed3.ToClass
@@ -154,7 +154,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				tt := iter.Right.Right
 				asNeed := tt->{ObjIndent^}
 
-				if iter.GetValue() == "~type"
+				if iter is ObjType
 				{
 					box := new FuncInputBox() ; $temp
 
@@ -179,7 +179,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 		}
 
-		if asNeed2.GetType() == "standart"
+		if asNeed2 is TypeStandart
 		{
 			if iter.Right != null
 			{
@@ -206,9 +206,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				dynCast := (iter.Left)->{ParamCall^}
 
-				if iter.Left.IsRef()  and iter.Left.GetType().GetType() == "point"
+				if iter.Left.IsRef()  and iter.Left.GetType() is TypePoint
 				{
-					if iter.Left.GetType().Base.GetType() == "function"
+					if iter.Left.GetType().Base is TypeFunc
 					{
 						iterL := iter.Left
 						iterLT := iterL.GetType()
@@ -306,7 +306,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if iter.Right is ObjIndent or iter.Right is ObjStr
 			{
 				asName := ""
-				if iter.Right.GetValue() == "~ind"
+				if iter.Right is ObjIndent
 				{
 					asIndent := (iter.Right)->{ObjIndent^} 
 					asName = asIndent.MyStr
@@ -338,18 +338,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					//}
 
 					GotClass := true
-					if  LL.GetType().GetType() != "class" 
+					if  not LL.GetType() is TypeClass
 					{
-						if LL.GetType().GetType() == "point"	
+						if LL.GetType() is TypePoint	
 						{
-							if LL.GetType().Base.GetType() != "class"
+							if not LL.GetType().Base is TypeClass
 								GotClass = false
 						}else	GotClass = false
 					}
 					asClass := BoxClass^
 					if GotClass
 					{
-						if LL.GetType().GetType() == "point"
+						if LL.GetType() is TypePoint
 						{
 							asClass = ((iter.Left.GetType().Base)->{TypeClass^}).ToClass
 						}else
@@ -387,7 +387,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						if iter.Right != null iter.Right.Left = iter
 						iter.SetUp(iter.Up)
 
-						if iter.GetType().GetType() == "point"
+						if iter.GetType() is TypePoint
 						{
 							iter = new PtrToRef(iter)
 						}
@@ -404,7 +404,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					LT := iter.Left.GetType()
 
 
-					if LT.GetType() == "standart"
+					if LT is TypeStandart
 					{
 						box1 := new FuncInputBox() ; $temp
 						box1.itPars.Emplace(LT,iter.Left.IsRef())
@@ -414,11 +414,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return MakeSimpleCall(func,iter.Left)
 					}
 
-					if LT.GetType() == "class"
+					if LT is TypeClass
 					{
 						asClass = ((LT->{TypeClass^}).ToClass)
 					}else{
-						if LT.GetType() == "point" and LT.Base.GetType() == "class"
+						if LT is TypePoint  and LT.Base is TypeClass
 						{
 							asClass = (((LT.Base)->{TypeClass^}).ToClass)
 						}else{
@@ -442,7 +442,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if roll == null return null
 
 					iter = iter.Left
-					if iter.GetType().GetType() == "point"
+					if iter.GetType() is TypePoint
 					{
 						iter = new PtrToRef(iter)
 					}
@@ -561,7 +561,7 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 	{
 		if pars.GetType() != null
 		{
-			if pars.GetType().GetType() == "class"
+			if pars.GetType() is TypeClass
 			{
 				asNeedPre := pars.GetType()
 				asNeed := asNeedPre->{TypeClass^}
@@ -778,8 +778,8 @@ SomeFuncCall := class extend ObjResult
 			gotAlloc = ToCall.IsRetComplex
 			if ToCall.MyFuncType.RetType != null
 			{
-				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "class"
-				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType.GetType() == "arr"
+				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType is TypeClass
+				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType is TypeArr
 			}
 			if ToCall.IsRetRef gotAlloc = false
 			if ToCall.MyFuncType.RetRef gotAlloc = false //TOD: WHAT THE FUK?
@@ -957,11 +957,11 @@ NaturalCall := class extend SomeFuncCall
 			itType := iter.GetType()
 			if itType != null
 			{
-				if itType == GetType("float")
+				if itType == GTypeFloat
 				{
-					iter = BoxExc(iter,GetType("double"),false)
+					iter = BoxExc(iter,GTypeDouble,false)
 				}
-				if itType.GetType() == "arr"
+				if itType is TypeArr
 				{
 					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
 				}
@@ -1020,7 +1020,7 @@ NaturalCall := class extend SomeFuncCall
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 
-		if (FType.RetType != GetType("void") and not gotAlloc and TName != null) or ToCall.IsRetRef
+		if (FType.RetType != GTypeVoid and not gotAlloc and TName != null) or ToCall.IsRetRef
 		{
 			f << TName <<" = "	
 		}
@@ -1089,7 +1089,7 @@ PointFuncCall := class extend NaturalCall
 		PrintParamPres(f)
 		ParamCal.PrintPre(f)
 
-		if (FType.RetType != GetType("void"))
+		if (FType.RetType != GTypeVoid)
 		{
 			f << "%T" << RetId <<" = "	
 		}
@@ -1264,7 +1264,7 @@ TypeSizeCall := class extend SomeFuncCall
 	{
 		RetId = GetNewId()
 		ToCmp = toCmp
-		ResultType = GetType("int")
+		ResultType = GTypeInt
 	}
 	PrintPointPre := virtual !(sfile f) -> void {	}
 	PrintPre := virtual !(sfile f) -> void
@@ -1372,7 +1372,7 @@ NewCallOne := class extend SomeFuncCall
 			func := BoxFunc^
 			func = null
 
-			if newType.GetType() == "class"
+			if newType is TypeClass
 			{
 				asTPre := newType->{TypeClass^}
 				asT := asTPre.ToClass
@@ -1393,7 +1393,7 @@ NewCallOne := class extend SomeFuncCall
 
 				if useConstr
 				{
-					if newType.GetType() == "class"
+					if newType is TypeClass
 					{
 						box := new FuncInputBox() ; $temp
 
@@ -1440,7 +1440,7 @@ DeleteCall := class extend SomeFuncCall
 		PopOutNode(itm)
 		Down = itm
 		itm.SetUp(this&)
-		if itm.GetType().GetType() != "point" and itm.GetType().GetType() != "fatarr"
+		if not (itm.GetType() is TypePoint or itm.GetType() is TypeFatArr)
 		{
 			EmitError("only pointer could be deleted\n")
 		}else{
@@ -1536,7 +1536,7 @@ NewCall := class extend SomeFuncCall
 				ConstrPars.SetUp(null->{Object^})
 
 			
-			if toCreate.GetType() == "class"
+			if toCreate is TypeClass
 			{
 				b := new FuncInputBox() ; $temp
 				b.itPars.Emplace(toCreate,true)
@@ -1578,7 +1578,7 @@ NewCall := class extend SomeFuncCall
 		Down = toCr
 		Down.SetUp(this&)
 
-		box.itPars.Emplace(GetType("int"),false)
+		box.itPars.Emplace(GTypeInt,false)
 		box.itConsts.Push(new ObjType(toCreate))
 
 		fun := FindFunc("new",this&,box^,false)
@@ -1595,7 +1595,7 @@ NewCall := class extend SomeFuncCall
 	UseCall := virtual !(sfile f) -> void
 	{
 		ExtraFunc.UseCall(f)
-		if ResultType.Base.GetType() == "class"
+		if ResultType.Base is TypeClass
 		{
 			asNeed := (((ResultType.Base)->{TypeClass^}).ToClass)
 			asNeed.ApplyConstants(f,ExtraFunc)
@@ -1659,7 +1659,7 @@ ConstructCall := class extend NaturalCall
 	FillConsts := !(sfile f) -> void
 	{
 		asNeed3 :=  ToCall.MyFuncType.Pars[0]
-		if asNeed3.GetType() == "class"
+		if asNeed3 is TypeClass
 		{
 			asNeed2 := asNeed3->{TypeClass^}
 			asNeed := asNeed2.ToClass

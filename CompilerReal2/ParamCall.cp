@@ -21,7 +21,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 				itType := may.GetType()
 				if itType == null	return null
 
-				if itType.GetType() == "function"
+				if itType is TypeFunc
 				{
 					may2 := may->{ObjParam^}
 					may3 := may2.Down
@@ -51,7 +51,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 				itType := itF.GetType()
 				if itType != null
 				{
-					if itType.GetType() == "function"
+					if itType is TypeFunc
 					{
 						return new ParamFuncCall(dynCast.MyStr,itF)
 					}

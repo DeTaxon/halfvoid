@@ -22,7 +22,7 @@ ObjData := class extend Object
 					newDown := Down.Down
 					if newDown != null
 					{
-						if newDown.GetValue() == "~d" and newDown.Right == null
+						if newDown is ObjData and newDown.Right == null
 						{
 							newDown = newDown.Down
 						}
@@ -44,7 +44,7 @@ ObjData := class extend Object
 			{
 				lazy := iter.GetValue() == "."
 				lazy = lazy or iter.GetValue() == "->"
-				if lazy lazy = iter.Right.GetValue() == "~ind"
+				if lazy lazy = iter.Right is ObjIndent
 				if lazy
 				{
 					iter = iter.Right
@@ -82,7 +82,7 @@ ObjData := class extend Object
 						}
 						iter = iter.Right
 					}else{
-						lazy2 := iter.GetValue() == "~ind"
+						lazy2 := iter is ObjIndent
 						if lazy2 lazy2 = iter.Right != null
 						if lazy2 lazy2 = iter.Right.GetValue() == "."
 						if lazy2 lazy2 = iter.Right.Right != null

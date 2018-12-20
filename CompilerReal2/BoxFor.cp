@@ -459,7 +459,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				return "IncFuncs" + ItId
 			}
 			ContPath.Add(size)
-			return "ContPath" + ItId + "id" + size + "size"
+			return "ContPath"sbt + ItId + "id" + size + "size"
 		}
 		if typ == PATH_BREAK
 		{
@@ -467,7 +467,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				return "End" + ItId
 			}
 			BreakPath.Add(size)
-			return "BreakPath" + ItId + "id" + size + "size"
+			return "BreakPath"sbt + ItId + "id" + size + "size"
 		}
 		return ""
 	}

@@ -40,7 +40,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
+			}else
 			if MyStr == "while()"
 			{
 				It := this&->{Object^}
@@ -48,7 +48,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
+			}else
 			if MyStr == "return()"
 			{
 				It := this&->{Object^}
@@ -56,7 +56,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
+			}else
 			if MyStr == "for()"
 			{
 				It := this&->{Object^}
@@ -64,7 +64,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
+			}else
 			if MyStr == "Defer()"
 			{
 				It := this&->{Object^}
@@ -73,7 +73,7 @@ ObjObj := class extend Object
 				NewNode := new ObjDefer(preSet)
 				ReplaceNode(this&,NewNode)
 				Found = true
-			}
+			}else
 			if MyStr == "switch()"
 			{
 				It := this&->{Object^}
@@ -81,7 +81,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
+			}else
 			if MyStr == "case()"
 			{
 				It := this&->{Object^}
@@ -89,8 +89,7 @@ ObjObj := class extend Object
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
 				Found = true
-			}
-
+			}else
 			if MyStr == "imprt"
 			{
 				asS := (Down.Right)->{ObjStr^}

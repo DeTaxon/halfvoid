@@ -203,7 +203,7 @@ BoxBlock := class extend Object
 			gotRetPath = true
 			if i == 0 return outRName
 			if Up != null Up.GetOutPath(this&,typ,0)
-			return "RetPath" + ItId + "in" + (i - 1)
+			return "RetPath"sbt + ItId + "in" + (i - 1)
 		}
 		if typ == PATH_CONTINUE
 		{
@@ -212,7 +212,7 @@ BoxBlock := class extend Object
 				if size == 0 return "LastContPath" + ItId
 				return Up.GetOutPath(this&,typ,size - 1)
 			}
-			return "ContPath" + ItId + "id"  + size + "in" + (i - 1)
+			return "ContPath"sbt + ItId + "id"  + size + "in" + (i - 1)
 		}
 		if typ == PATH_BREAK
 		{
@@ -224,7 +224,7 @@ BoxBlock := class extend Object
 			if i == 0 {
 				return Up.GetOutPath(this&,typ,size - 1)
 			}
-			return "BreakPath" + ItId + "id"  + size + "in" + (i - 1)
+			return "BreakPath"sbt + ItId + "id"  + size + "in" + (i - 1)
 		}
 		return ""
 	}
@@ -289,6 +289,7 @@ BoxFile := class extend BoxBlock
 	returnPath := Queue.{string}
 	
 	ImportingFiles := Queue.{BoxFile^}
+	borrowed := QueueSet.{BoxFile^}
 	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
 	this := !(Path fullPath) -> void
@@ -296,7 +297,7 @@ BoxFile := class extend BoxBlock
 		fileId = GetNewId()
 		filePath.itStr = fullPath.itStr
 		WorkBag.Push(this&,State_Syntax)
-		WorkBag.Push(this&,State_CheckTypes)
+		WorkBag.Push(this&,State_BlockParamStep)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -345,21 +346,22 @@ BoxFile := class extend BoxBlock
 				iter = iter.Right
 			}
 		}
-		if pri == State_CheckTypes
+		if pri == State_BlockParamStep
 		{
-			//Fnd := false
-			//for ForcedLibs{
-			//	if it == this& {
-			//		Fnd = true
-			//		break
-			//	}
-			//}
-			//if Fnd{
-			//	for v,k : VisibleParams
-			//	{
-			//		for v ForcedGlobalParams[k].Push(it)
-			//	}
-			//}
+			Fnd := false
+			for ForcedLibs{
+				if it == this& {
+					Fnd = true
+					break
+				}
+			}
+			if Fnd{
+				for v,k : VisibleParams
+				{
+					toAdd := ref ForcedGlobalParams[k]
+					for v toAdd.Push(it)
+				}
+			}
 
 			toVisit := Stack.{BoxFile^}()
 			visited := QueueSet.{BoxFile^}()
@@ -370,6 +372,11 @@ BoxFile := class extend BoxBlock
 			while toVisit.NotEmpty()
 			{
 				toTest := toVisit.Pop()
+
+				if borrowed.Contain(toTest) continue
+				
+				borrowed.Push(toTest)
+				for toTest.borrowed borrowed.Push(it)
 
 				for toTest.ImportingFiles
 				{

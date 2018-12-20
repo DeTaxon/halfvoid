@@ -36,11 +36,11 @@ BoxIf := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			if Down.GetType() != GetType("bool")
+			if Down.GetType() != GTypeBool
 			{
-				if TypeCmp(Down.GetType(),GetType("bool")) != 255
+				if TypeCmp(Down.GetType(),GTypeBool) != 255
 				{
-					if BoxExc(Down,GetType("bool"),false) == null
+					if BoxExc(Down,GTypeBool,false) == null
 						EmitError("compiler error: can not convert\n")
 				}else{
 					EmitError("can not use type as if statement\n")
@@ -121,11 +121,11 @@ BoxWhile := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			if Down.GetType() != GetType("bool")
+			if Down.GetType() != GTypeBool
 			{
-				if TypeCmp(Down.GetType(),GetType("bool")) != 255
+				if TypeCmp(Down.GetType(),GTypeBool) != 255
 				{
-					if BoxExc(Down,GetType("bool"),false) == null
+					if BoxExc(Down,GTypeBool,false) == null
 						EmitError("compiler error: can not convert\n")
 				}else{
 					EmitError("can not use type as while statement\n")
@@ -221,7 +221,7 @@ BoxWhile := class extend Object
 				return "Check" + MyId
 			}
 			ContPath.Add(size)
-			return "ContPath" + MyId + "id" + size + "size"
+			return "ContPath"sbt + MyId + "id" + size + "size"
 		}
 		if typ == PATH_BREAK
 		{
@@ -229,7 +229,7 @@ BoxWhile := class extend Object
 				return "End" + MyId
 			}
 			BreakPath.Add(size)
-			return "BreakPath" + MyId + "id" + size + "size"
+			return "BreakPath"sbt + MyId + "id" + size + "size"
 		}
 		return ""
 	}

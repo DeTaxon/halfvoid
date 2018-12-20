@@ -21,30 +21,30 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int
 			found.Push(AsNeed)	
 		}
 	}
-	if ii is ImportCmd //ii.GetValue() == "#import cp"
-	{
-		asNeed := ii->{ImportCmd^}
-		fl := asNeed.GetFile()
+	//if ii is ImportCmd //ii.GetValue() == "#import cp"
+	//{
+	//	asNeed := ii->{ImportCmd^}
+	//	fl := asNeed.GetFile()
 
 
-		if fl != null
-		{
-			//res := fl.VisibleParams.TryFind(name)
-			//if res != null {
-			//	for res^ {
-			//		found.Push(it)
-			//	}
-			//}
+	//	if fl != null
+	//	{
+	//		//res := fl.VisibleParams.TryFind(name)
+	//		//if res != null {
+	//		//	for res^ {
+	//		//		found.Push(it)
+	//		//	}
+	//		//}
 
-			//Found := Searched.Contain(fl.fileId)
+	//		//Found := Searched.Contain(fl.fileId)
 
-			//if not Found
-			//{
-			//	Searched.Push(fl.fileId)
-			//	CollectParamsAllByName(name,fl.Down,found,Searched)
-			//}
-		}
-	}
+	//		//if not Found
+	//		//{
+	//		//	Searched.Push(fl.fileId)
+	//		//	CollectParamsAllByName(name,fl.Down,found,Searched)
+	//		//}
+	//	}
+	//}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
@@ -85,24 +85,27 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			}
 		}
 	}
-
-	//res := ForcedGlobalParams.TryFind(name)
-	//it res != null{
-	//	for res^ found.Push(it)
-	//}
-	for lb : ForcedLibs
-	{
-		res := lb.VisibleParams.TryFind(name)
-		if res != null{
-			for res^ found.Push(it)
-		}
-		//Found := Searched.Contain(lb.fileId)
-		//if not Found
-		//{
-		//	Searched.Push(lb.fileId)
-		//	CollectParamsAllByName(name,lb.Down,found,Searched)
-		//}
+	
+	//printf("a\n")
+	res := ForcedGlobalParams.TryFind(name)
+	//printf("c %p\n",res)
+	if res != null{
+		for res^ found.Push(it)
 	}
+	//printf("b\n")
+	//for lb : ForcedLibs
+	//{
+	//	res := lb.VisibleParams.TryFind(name)
+	//	if res != null{
+	//		for res^ found.Push(it)
+	//	}
+	//	//Found := Searched.Contain(lb.fileId)
+	//	//if not Found
+	//	//{
+	//	//	Searched.Push(lb.fileId)
+	//	//	CollectParamsAllByName(name,lb.Down,found,Searched)
+	//	//}
+	//}
 }
 
 
@@ -156,27 +159,27 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 			asC := ii->{BoxClass^}
 			asC.GetWrappedFunc(name,found,templates)
 
-		}else
-		if ii is ImportCmd //ii.GetValue() == "#import cp"
-		{
-			asNeed := ii->{ImportCmd^}
-			fl2 := asNeed.GetFile()
-			fl3 := fl2->{Object^}
+		}//else
+		//if ii is ImportCmd //ii.GetValue() == "#import cp"
+		//{
+		//	asNeed := ii->{ImportCmd^}
+		//	fl2 := asNeed.GetFile()
+		//	fl3 := fl2->{Object^}
 
-			Found := Searched.Contain(fl2.fileId)
+		//	Found := Searched.Contain(fl2.fileId)
 
-			if not Found
-			{
-				Searched.Push(fl2.fileId)
-				//CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-			}
-			res := fl2.VisibleParams.TryFind(name)
-			if res != null {
-				for res^{
-					InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-				}
-			}
-		}
+		//	if not Found
+		//	{
+		//		Searched.Push(fl2.fileId)
+		//		//CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+		//	}
+		//	res := fl2.VisibleParams.TryFind(name)
+		//	if res != null {
+		//		for res^{
+		//			InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+		//		}
+		//	}
+		//}
 }
 
 
@@ -312,6 +315,13 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	//{	
 	//	res := it.VisibleParams.TryFind(name)
 	//	if res != null{
+	//		InsertFunc(name,it,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+	//	}
+	//}
+
+	//resS := ForcedGlobalParams.TryFind(name)
+	//if resS != null{
+	//	for resS^{
 	//		InsertFunc(name,it,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
 	//	}
 	//}

@@ -882,7 +882,7 @@ BoxFuncBody := class extend BoxFunc
 		if t != null
 		{
 			this.IsRetComplex = false
-			if t.GetType() == "arr" or t.GetType() == "class"
+			if t is TypeArr or t is TypeClass
 			{
 				if not IsRetRef
 				{
@@ -998,7 +998,7 @@ BoxFuncBody := class extend BoxFunc
 			if FuncName == "~this" and MethodType != null
 			{
 				pL := new FuncParam("this",MethodType,true)
-				if this.MethodType.GetType() == "class"
+				if this.MethodType is TypeClass
 				{
 					asCT := MethodType->{TypeClass^}
 					asC := asCT.ToClass
@@ -1099,16 +1099,16 @@ BoxFuncBody := class extend BoxFunc
 					if IsBool(RT)
 					{
 						f << "store i1 0,i1* %Result\n"
-					}
+					}else
 					if IsInt(RT)
 					{
 						f << "store " << RT.GetName() << " 0 , " << RT.GetName() << "* %Result\n"
-					}
+					}else
 					if IsFloat(RT)
 					{
 						f << "store " << RT.GetName() << " 0.0 , " << RT.GetName() << "* %Result\n"
-					}
-					if RT.GetType() == "point" or RT.GetType() == "fatarr"
+					}else
+					if RT is TypePoint or RT is TypeFatArr
 					{
 						f << "store " << RT.GetName() << " null , " << RT.GetName() << "* %Result\n"
 					}
@@ -1124,7 +1124,7 @@ BoxFuncBody := class extend BoxFunc
 			f << "br label %OutLabel" << ABox.ItId << "\n"
 			f << "OutLabel" << ABox.ItId << ":\n"
 
-			if MyFuncType.RetType == GetType("void") or this.IsRetComplex
+			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex
 			{
 				f << "ret void\n"
 			}else{

@@ -21,7 +21,7 @@ BoxReturn := class extend Object
 		}
 		if pri == State_Syntax
 		{
-			if Down.GetValue() == "~ind"
+			if Down is ObjIndent
 			{
 				asNeed := Down->{ObjIndent^}
 				if asNeed.MyStr == "void"

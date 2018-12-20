@@ -21,7 +21,7 @@ WrappedFunc := class extend BoxFuncBody //TODO: fill InAlloc
 
 		pars := Queue.{Type^}()
 		
-		vT := GetType("void")
+		vT := GTypeVoid
 
 		pars.Push(vT.GetPoint())
 

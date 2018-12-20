@@ -71,8 +71,6 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("type")
 	PriorityData.Opers.Push("virtual")
 
-	//LexMachine = GenerateMachine(PriorityData.Opers)
-
 	for targetFiles
 	{
 		ItPath := Path(it)
@@ -122,12 +120,7 @@ main := !(int argc,char^^ argv) -> int
 	if ErrorLog.Empty()
 	{
 		printf("good to go\n")
-		iterTR := PostFuncs.Start
-		while iterTR != null
-		{
-			iterTR.Data.PostCreate()
-			iterTR = iterTR.Next
-		}
+		for PostFuncs it.PostCreate()
 
 		fil := sfile(outputFile,"w")
 		fil << GlobalStrs
@@ -140,12 +133,11 @@ main := !(int argc,char^^ argv) -> int
 
 		PrintTuples(fil)
 
-		wutt := Files.Start
-		while wutt != null
+		for wutt : Files
 		{
-			if emitTree wutt.Data^.Print(0)
-			wutt.Data^.PrintGlobal(fil)
-			wutt = wutt.Next
+			FlushTempMemory()
+			if emitTree wutt.Print(0)
+			wutt.PrintGlobal(fil)
 		}
 		if DebugMode
 		{
@@ -164,34 +156,20 @@ main := !(int argc,char^^ argv) -> int
 			PieLevel := GetNewId() fil << "!" << PieLevel << " = !{i32 7, !\"PIE Level\", i32 2}\n"
 			fil << "!llvm.module.flags = !{!" << dwrdV << ",!" << DbgInf << ",!" << WchSize << ",!" << PicLevel << ",!" << PieLevel << "}\n"
 
-			iter7 := DebugMetaData.Start
-			while iter7 != null
-			{
-				fil << iter7.Data
-				iter7 = iter7.Next
-			}
+			for DebugMetaData fil << it
 		}
 		fil.close()
 	}else
 	{
-		iterTr := Files.Start
-		while iterTr != null
-		{
-			if emitTree iterTr.Data^.Print(0)
-			iterTr = iterTr.Next
-		}
-		ite := ErrorLog.Start
-		while ite != null
-		{
-			printf(ite.Data)
-			ite = ite.Next
-		}
+		if emitTree for Files it.Print(0)
+		for ErrorLog printf(it)
 	}
 	//CleanStrs() shiet
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())
 	return 0
 }
+sleep := !(int tm) -> int declare
 
 workIter := int
 WorkWithBag := !() -> void

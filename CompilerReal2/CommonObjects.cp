@@ -113,7 +113,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 		}
 	}
 
-	//glRes := GlobalParams.TryFind(name)
+	//glRes := ForcedGlobalParams.TryFind(name)
 	//if glRes != null return glRes^[0]
 	for nowLib : ForcedLibs
 	{
