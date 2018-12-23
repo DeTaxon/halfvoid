@@ -1647,7 +1647,7 @@ Vec4fFuncs := !() -> void
 		BuiltInFuncs.Push( new BuiltInFuncBinar("-",NT,false,NT,false,NT,"#0 = fsub " + F4N + " #1 , #2\n"))
 		BuiltInFuncs.Push( new BuiltInFuncBinar("/",NT,false,NT,false,NT,"#0 = fdiv " + F4N + " #1 , #2\n"))
 		BuiltInFuncs.Push( new BuiltInFuncBinar("*",NT,false,NT,false,NT,"#0 = fmul " + F4N + " #1 , #2\n"))
-		BuiltInFuncs.Push( new BuiltInFuncBinar("=",NT,true,NT,false,GetType("void"),"store " + F4N + " #2 ," + F4N + "* #1\n"))
+		BuiltInFuncs.Push( new BuiltInFuncBinar("=",NT,true,NT,false,GTypeVoid,"store " + F4N + " #2 ," + F4N + "* #1\n"))
 	
 		BuiltInFuncs.Push(new BuiltInFuncBinar("+=",NT,true,NT,false,NT,"#0pre = load " + F4N +" , "+ F4N +"* #1\n"
 											+"#0 = fadd " + F4N + " #2,#0pre\n"

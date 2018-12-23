@@ -192,6 +192,10 @@ ObjLine := class
 			}
 		}
 	}
+	"new" := !() .{@R} -> void^
+	{
+		return ObjectsPool.GetMem(R->TypeSize,R->Align)
+	}
 }
 
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^

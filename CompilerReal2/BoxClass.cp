@@ -330,15 +330,18 @@ BoxClass := class extend Object
 	this := !(Object^ item, BoxClass^ par,Object^ extItem) -> void 
 	{
 		ClassName = "anon"
-		Line = item.Line	
+		if item != null Line = item.Line	
 		ExtendObject = extItem
 
 		Down = item
-		Down.SetUp(this&)
-		Down.Left = null
-		MakeItBlock(Down)
-		Down.SetUp(this&)
-		WorkBag.Push(Down,State_Start)
+		if Down != null
+		{
+			Down.SetUp(this&)
+			Down.Left = null
+			MakeItBlock(Down)
+			Down.SetUp(this&)
+			WorkBag.Push(Down,State_Start)
+		}
 		WorkBag.Push(this&,State_PreGetUse)
 
 		ClassId = GetNewId()
@@ -354,11 +357,14 @@ BoxClass := class extend Object
 		{
 			if par.ContainVirtual ContainVirtual = true
 		}
-		iterH := Down.Down
-		while iterH != null
+		if Down != null
 		{
-			if iterH.GetValue() == "virtual" ContainVirtual = true
-			iterH = iterH.Right
+			iterH := Down.Down
+			while iterH != null
+			{
+				if iterH.GetValue() == "virtual" ContainVirtual = true
+				iterH = iterH.Right
+			}
 		}
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_CheckBaseClass)
@@ -423,6 +429,7 @@ BoxClass := class extend Object
 		{
 			InheritParams()
 
+			if Down == null return void
 			iterH := Down.Down
 			foundNotThis := false
 
@@ -491,27 +498,30 @@ BoxClass := class extend Object
 			}
 		}
 
-		iterJ := Down.Down
-		while iterJ != null
+		if Down != null
 		{
-			if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
+			iterJ := Down.Down
+			while iterJ != null
 			{
-				itName := ((iterJ->{ObjParam^}).MyStr)
-				if itName == name
+				if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
 				{
-					if iterJ.Down.GetValue() == "!()"
+					itName := ((iterJ->{ObjParam^}).MyStr)
+					if itName == name
 					{
-						asFunc := (iterJ.Down)->{BoxFunc^}
-						if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
+						if iterJ.Down.GetValue() == "!()"
 						{
-							Funcs.Push(asFunc)
+							asFunc := (iterJ.Down)->{BoxFunc^}
+							if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
+							{
+								Funcs.Push(asFunc)
+							}
 						}
+						if iterJ.Down.GetValue() == "!(){}"
+							Templs.Push((iterJ.Down)->{BoxTemplate^})
 					}
-					if iterJ.Down.GetValue() == "!(){}"
-						Templs.Push((iterJ.Down)->{BoxTemplate^})
 				}
+				iterJ = iterJ.Right
 			}
-			iterJ = iterJ.Right
 		}
 		if name == "."{
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
@@ -647,10 +657,10 @@ BoxClass := class extend Object
 			{
 				f << "%ClassTableType" << ClassId << "*"
 			}
-			for Params.Size()
+			for it : Params, i : 0
 			{
-				if it != 0 or not vTable.Empty() f <<","
-				f << Params[it].ResultType.GetName()
+				if i != 0 or not vTable.Empty() f <<","
+				f << it.ResultType.GetName()
 			}
 			f << "}\n"
 			if DebugMode
@@ -742,9 +752,12 @@ BoxClass := class extend Object
 	}
 	ApplyConstants := !(sfile f,string itm) -> void
 	{
-		f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
-		f << itm
-		f << ")\n"
+		if ContainVirtual
+		{
+			f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
+			f << itm
+			f << ")\n"
+		}
 	}
 	GetVirtualParamFunc := !(string name) -> BoxFunc^
 	{

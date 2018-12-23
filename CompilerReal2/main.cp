@@ -5,6 +5,7 @@
 #import "Globals.cp"
 #import "Type.cp"
 #import "GlobalParams.cp"
+#import "ModuleVulkan.cp"
 
 main := !(int argc,char^^ argv) -> int 
 {
@@ -25,29 +26,30 @@ main := !(int argc,char^^ argv) -> int
 	i := 1
 	while  i < argc
 	{
-		if argv[i] == "--tree" {
+		switch argv[i]
+		{
+		case  "--tree"
 			emitTree = true
-		}else{
-
-			if argv[i] == "-f"
-			{
-				forcedFiles.Push(argv[i+1])
-				i += 1
+		case "-f"
+			forcedFiles.Push(argv[i+1])
+			i += 1
+		case "-o"
+			outputFile = argv[i+1]
+			i += 1
+		case "-g"
+			DebugMode = true	
+			cuId = GetNewId()
+		case "--vk"
+			i += 1
+			p := Path(argv[i])
+			if p.IsExist(){
+				Modules.Push(new ModuleVulkan(argv[i]))
 			}else{
-				if argv[i] == "-o"
-				{
-					outputFile = argv[i+1]
-					i += 1
-				}else{
-					if argv[i] == "-g"
-					{
-						DebugMode = true	
-						cuId = GetNewId()
-					}else{
-						targetFiles.Push(argv[i])
-					}
-				}
+				printf("--vk module does not exist\n")
+				return 0
 			}
+		case void
+			targetFiles.Push(argv[i])
 		}
 		i += 1
 	}
@@ -97,6 +99,9 @@ main := !(int argc,char^^ argv) -> int
 	}
 
 	Ob := targetObjects[0]
+
+	for Modules
+		it.InitModule()
 	
 	WorkBag.Push(Ob,State_Start)
 	

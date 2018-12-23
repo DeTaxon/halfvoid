@@ -2,6 +2,26 @@ TreeNode := class {
 	NodeName := string
 	Childs := Queue.{Pair.{bool,void^}} // bool ? TreeNode : string
 	Attrs := AVLMap.{string,string}
+
+	GetValueString := !(string name) -> string
+	{
+		for Childs
+		{
+			if it.first
+			{
+				asNeed := it.second->{TreeNode^}
+				if asNeed.NodeName == name
+				{
+					for inSub : asNeed.Childs
+					{
+						if not inSub.first return inSub.second->{string}
+					}
+					return null->{string}
+				}
+			}
+		}
+		return null->{string}
+	}
 }
 
 FillXMLNode := !(char^ str, TreeNode toFil) -> int{

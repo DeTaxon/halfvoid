@@ -14,9 +14,9 @@ repair: $(wildcard CompilerReal2/*.cp)
 	time ./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll -o c.out
 
 test2: main2.cp
-	./c.out main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -o test2
+	./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -o test2
 test2g: main2.cp
-	nemiver ./c.out main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -o test2
+	nemiver ./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -o test2
 gdbc: $(wildcard CompilerReal2/*.cp) 
 	nemiver ./c.out $(ForcedLibs) CompilerReal2/main.cp -o c.ll
 

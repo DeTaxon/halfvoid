@@ -137,6 +137,10 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 		//}
 
 	}
+	for Modules {
+		inMod := it.GetItem(name)
+		if inMod != null return inMod
+	}
 	return null
 }
 

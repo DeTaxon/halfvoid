@@ -93,13 +93,18 @@ Type := class {
 ParseType := !(Object^ Node) -> Type^ 
 {
 	if Node == null return null
-	if Node.GetValue() == "~ind"
+	if Node is ObjIndent
 	{
 		indName := (Node->{ObjIndent^}).MyStr
 		
 		NodeName := GetItem(indName,Node)
 
 		if NodeName == null {
+			for Modules
+			{
+				tryType := it.GetModuleType(indName)
+				if tryType != null return tryType
+			}
 			return null
 		}
 		//NodeName.GetValue()
@@ -115,7 +120,7 @@ ParseType := !(Object^ Node) -> Type^
 				return asCl.ClassType
 			}
 		}
-		if NodeName.GetValue() == "~type"
+		if NodeName is ObjType
 		{	
 			asNeed := NodeName->{ObjType^}
 			return asNeed.MyType
