@@ -1613,6 +1613,7 @@ CreateBuiltIns := !() -> void
 					"%PrePre## = sitofp i32 #1 to float\n" +
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("<",GTypeVoidP,false,GTypeVoidP,false,GTypeBool,false,"#0 = icmp ult i8* #1,#2\n"))
 	RangeFuncs()
 	Vec4fFuncs()
 }

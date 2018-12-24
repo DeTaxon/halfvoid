@@ -898,6 +898,7 @@ CreateStandartTypes := !() -> void
 	GTypeRange =  TypeTable[13]
 	GTypeVoid =   TypeTable[11]
 	GTypeString = TypeTable[12]
+	GTypeVoidP =  GTypeVoid.GetPoint()
 
 	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
 	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)

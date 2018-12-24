@@ -69,7 +69,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	return null
 }
 
-ExcPointers := Map.{ Type^,Map.{Type^, BoxFunc^} }
+ExcPointers := AVLMap.{ Type^,AVLMap.{Type^, BoxFunc^} }
 
 GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 {

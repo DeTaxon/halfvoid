@@ -403,18 +403,18 @@ BoxTemplate := class extend BoxFunc
 
 		iterJ := FuncsType.Start
 		somePos := 0
+		inDown := Down
 		while iterJ != null
 		{
 			if iterJ.Data == newFuncType 
 			{
-				inDown := Down
-				for somePos inDown = inDown.Right
 				asNeed :=  inDown->{BoxFunc^}
 
 				if asNeed.IsSameConsts(itBox) {
 					return asNeed
 				} 
 			}
+			inDown = inDown.Right
 			iterJ = iterJ.Next
 			somePos += 1
 		}

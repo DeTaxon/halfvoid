@@ -48,4 +48,5 @@ GTypeFloat := Type^
 GTypeInt := Type^
 GTypeRange := Type^
 GTypeVoid := Type^
+GTypeVoidP := Type^
 GTypeString := Type^
