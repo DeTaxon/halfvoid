@@ -23,27 +23,27 @@ TryCompute := !(Object^ ob) -> Object^
 
 	if ob.IsConst return ob
 
-	if ob.GetValue() == "~ind"
+	if ob is ObjIndent
 	{
 		asN := ob->{ObjIndent^}
 		it := GetItem(asN.MyStr,ob)
 
 		if it == null return null
-		if it.GetValue() == "(const)"
+		if it is ConstItem
 		{
 			return it.Down
 		}
 		if it.IsConst return it
 	}
-	if ob.GetValue() == "~str" and ob.Right != null
-		and ob.Right.GetValue() == "~suffix"
+	if ob is ObjStr and ob.Right != null
+		and ob.Right is ObjSuffix
 	{
 		asStr := ob->{ObjStr^}
 		asSuf := ob.Right->{ObjSuffix^}
 		val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
 		if val != null return val
 	}
-	lazy := ob.GetValue() == "~d"
+	lazy := ob  is ObjData
 	if lazy lazy = ob.Down.GetValue() == "!"
 	if lazy lazy = ob.Down.Right.GetValue() == "[]"
 	if lazy and false
@@ -68,8 +68,8 @@ TryCompute := !(Object^ ob) -> Object^
 					return null
 					if iterR.GetType() == TypeTable[13]
 					{
-						if iterR.Down.GetType() != GetType("int") return null
-						if iterR.Down.Right.GetType() != GetType("int") return null
+						if iterR.Down.GetType() != GTypeInt return null
+						if iterR.Down.Right.GetType() != GTypeInt return null
 						return null
 
 						start := iterR.Down->{ObjInt^}.MyInt

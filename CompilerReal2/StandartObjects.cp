@@ -198,23 +198,25 @@ ObjDouble := class extend ObjConst
 ObjStr := class extend ObjConst
 {
 	MyStrId := int
+	justStr := string
 	MyTmpId := int
 	this := !(char^ str) -> void
 	{
-		Clean()
 		MyStrId = StrContainer.GetStringValue(str)
 		MyTmpId = GetNewId()
-		ResultType = GetType("string")
+		justStr = str
+		ResultType = GTypeString
 	}
-	this := !(int SId) -> void
+	this := !(int SId,char^ str) -> void
 	{
 		MyStrId = SId
 		MyTmpId = GetNewId()
-		ResultType = GetType("string")
+		ResultType = GTypeString
+		justStr = str
 	}
 	GetString := virtual !() -> string
 	{
-		return StrContainer.GetString(MyStrId)
+		return justStr
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -241,7 +243,7 @@ ObjStr := class extend ObjConst
 	}
 	Clone := virtual !() -> Object^
 	{
-		PreRet := new ObjStr(MyStrId)
+		PreRet := new ObjStr(MyStrId,justStr)
 		PreRet.Line = Line
 		return PreRet
 	}

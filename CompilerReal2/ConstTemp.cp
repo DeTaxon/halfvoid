@@ -2,25 +2,25 @@
 
 IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
-	for i : res.Size()
+	for it : res
 	{
-		if res[i] == null return null
+		if it == null return null
 	}
 	if obj == null return null
 	
-	if obj.GetValue() == "~ind"
+	if obj is ObjIndent
 	{
 		val := ParseType(obj)
 		if val != itT resB[0] = false
 		return val
-	}
+	}else
 	if obj.GetValue() == "~{}type"
 	{
 		sNeed := obj->{ObjTemplateType^}
 		res.Push(new ObjConstHolder(sNeed.MyStr,(new ObjType(itT))->{Object^}))
 		return itT
-	}
-	if obj.GetValue() == "~d"
+	}else
+	if obj is ObjData
 	{
 		if obj.Down.Right == null return IsSameType(obj.Down,itT,res,resB)
 		if obj.Down.Right.GetValue() == "^"
@@ -171,10 +171,10 @@ IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> b
 					asN2 := itBox.itConsts[i]->{ObjType^}
 					
 					if asN2.MyType == null return false
-					if asN2.MyType.GetType() != "class" return false
+					if not asN2.MyType is TypeClass return false
 
 					val := ParseType(asNeed.Down.Right)
-					if val.GetType() != "class" return false
+					if val is TypeClass return false
 					val2 := val->{TypeClass^}
 					re = true
 					val3 := IsSameType(asNeed.Down,asN2.MyType,res,re&)

@@ -299,7 +299,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	{
 		fT := itBox.itPars[0].first
 		if fT != null
-		if fT.GetType() == "class"
+		if fT is TypeClass
 		{
 			asNeed := ((fT->{TypeClass^}).ToClass)
 			funcRes := asNeed.GetFunc(name,itBox,false)
@@ -387,14 +387,16 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	//	for FoundC if fFuncs.MyFuncType.ParsCount return fFuncs
 	//}
 
+	ComputePriors(funcs,itBox,Priors)
+	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }
+
 	for  itTmpl : templs, it : 0
 	{
 		templsPrior[it] = itTmpl.GetPriority(itBox)
+		if templsPrior[it] == 0 break
 	}
 
-	ComputePriors(funcs,itBox,Priors)
 	
-	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 0 return templs[it].GetFunc(itBox)
 	for FoundC if Priors[it] == 1  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 1 return templs[it].GetFunc(itBox)
