@@ -302,7 +302,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter.Right = null
 				return MakeSimpleCall(fun,iter)
 			}
-			//if iter.Right.GetValue() == "~ind" or iter.Right.GetValue() == "~str"
 			if iter.Right is ObjIndent or iter.Right is ObjStr
 			{
 				asName := ""
@@ -391,8 +390,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						{
 							iter = new PtrToRef(iter)
 						}
-						resMake :=  MakeSimpleCall(func,iter)
-						return resMake
+						return  MakeSimpleCall(func,iter)
 					}
 
 					return null
@@ -636,7 +634,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 		{
 			if H.GetValue() != ","
 			{
-				if H.IsConst()
+				if H.IsConst
 				{
 					Cs.Push(H)
 				}else{

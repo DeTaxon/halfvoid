@@ -17,6 +17,8 @@ Object := class{
 
 	IsInvalid := bool
 
+	IsConst := virtual false
+
 	"new" := !() .{@R} -> void^
 	{
 		return ObjectsPool.GetMem(R->TypeSize,R->Align)
@@ -53,10 +55,6 @@ Object := class{
 	{
 		Id = id
 		Clean()
-	}
-	IsConst := virtual !() -> bool
-	{
-		return false
 	}
 	IsRef := virtual !() -> bool
 	{

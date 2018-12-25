@@ -542,7 +542,8 @@ TypeFunc := class extend Type
 
 		ItHash = FType.ItHash
 		if RetType != null ItHash = ItHash xor_b RetType.ItHash
-		it itRetTyp != null ItHash = ItHash xor_b itRetTyp.ItHash
+		if itRetTyp != null ItHash = ItHash xor_b itRetTyp.ItHash
+		RetType = itRetTyp
 
 		//ItName = GetNewName()
 	}

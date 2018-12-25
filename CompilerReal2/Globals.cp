@@ -19,6 +19,7 @@ LexMachine := Machine^
 ErrorLog := Queue.{string}
 
 BuiltInFuncs := Queue.{BoxFunc^}
+BuiltInExcs := Queue.{BoxFunc^}
 BuiltInTemplates := Queue.{BoxTemplate^}
 
 GlobalUnroll := BuiltInTemplateUnroll^

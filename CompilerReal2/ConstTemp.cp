@@ -62,7 +62,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 			itemD := obj.Down.Right.Down
 			if itemD == null return null
 			
-			if itemD.IsConst()
+			if itemD.IsConst
 			{
 				if itemD.GetValue() != "~int"
 				{
@@ -116,7 +116,7 @@ MakeGoodConsts := !(Object^ l) -> bool
 	{
 		if iter.GetValue() != ","
 		{
-			if not iter.IsConst() 
+			if not iter.IsConst 
 			{
 				gotIt := false
 				if iter.GetValue() == "~d"
@@ -162,7 +162,7 @@ IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> b
 	{
 		if iter.GetValue() != ","
 		{
-			if not iter.IsConst()
+			if not iter.IsConst
 			{
 				if iter.GetValue() == "~{in}type"
 				{

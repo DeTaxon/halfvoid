@@ -15,10 +15,7 @@ ObjResult := class extend Object
 
 ObjConst := class extend ObjResult
 {
-	IsConst := virtual !() -> bool
-	{
-		return true
-	}
+	IsConst := virtual true
 	DoTheWork := virtual !(int pri) -> void
 	{
 		//noting is ok

@@ -18,18 +18,13 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	//	return GetExcPointers(itemType,ToType)
 	//}
 
-	iterB := BuiltInFuncs.Start
-	while iterB != null
+	for BuiltInExcs
 	{
-		if iterB.Data.FuncName == "->{}"
+		ItType := it.MyFuncType
+		if ItType.Pars[0] == item.GetType() and ItType.RetType == ToType
 		{
-			ItType := iterB.Data.MyFuncType
-			if ItType.Pars[0] == item.GetType() and ItType.RetType == ToType
-			{
-				return iterB.Data
-			}
+			return it
 		}
-		iterB = iterB.Next
 	}
 
 	if isRef and ToType is TypeClass and itemType is TypeClass

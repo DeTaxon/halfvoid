@@ -366,7 +366,7 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	}
 
 	Priors := int^
-	if FoundC != 0 Priors = new int[FoundC] else Priors = null
+	if FoundC != 0 Priors = new int[FoundC] else Priors = null ; $temp
 
 	templsPrior := int^
 	templsPrior = null

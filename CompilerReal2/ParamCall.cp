@@ -38,7 +38,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 			{
 					return new ParamNaturalCall(dynCast.MyStr,may)
 			}
-			if may.IsConst()
+			if may.IsConst
 			{
 				return may.Clone()
 			}

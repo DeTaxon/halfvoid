@@ -181,7 +181,7 @@ IsTemplate := !(Object^ sk) -> bool
 		{
 			if iter.GetValue() != ","
 			{
-				if not iter.IsConst() 
+				if not iter.IsConst 
 					if ParseType(iter) == null
 						return true
 				if ContainTType(iter) return true
@@ -210,6 +210,24 @@ MiniWork := class
 	}
 }
 
+TemplateData := class 
+{
+	simpleFuncType := Type^
+	ptrToFunc := BoxFunc^
+
+	this := !() -> void {}
+	this := !(Type^ toSetT,BoxFunc^ toSetF) -> void
+	{
+		simpleFuncType = toSetT
+		ptrToFunc = toSetF
+	}
+	"=" := !(TemplateData toSet) -> void
+	{
+		simpleFuncType = toSet.simpleFuncType
+		ptrToFunc = toSet.ptrToFunc
+	}
+}
+
 BoxTemplate := class extend BoxFunc
 {
 	CopyParams := Object^
@@ -218,8 +236,10 @@ BoxTemplate := class extend BoxFunc
 	CopyTree := Object^
 
 	EndPos := Object^
-	FuncsType := Queue.{TypeFunc^}
+	//FuncsType := Queue.{TypeFunc^}
 	//FuncsConsts := Queue.{Queue.{Object^}}
+
+	NewFuncs := AVLMap.{int,Stack.{TemplateData}}
 
 	FuncsTTemps := Queue.{Object^}
 	TTNames := Queue.{string}
@@ -271,6 +291,7 @@ BoxTemplate := class extend BoxFunc
 		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
+		NewFuncs."this"()
 		
 		if inPars != null {
 			CopyParams = inPars.Clone()
@@ -401,35 +422,45 @@ BoxTemplate := class extend BoxFunc
 		newFuncType := CreateFuncPointer(itBox)
 		TempReturnConsts = null
 
-		iterJ := FuncsType.Start
-		somePos := 0
-		inDown := Down
-		while iterJ != null
-		{
-			if iterJ.Data == newFuncType 
-			{
-				asNeed :=  inDown->{BoxFunc^}
+		if newFuncType == null return null
 
-				if asNeed.IsSameConsts(itBox) {
-					return asNeed
+		cmpFuncF := newFuncType
+		if cmpFuncF.RetType != null cmpFuncF = ExchangeFuncType(cmpFuncF,null)
+
+		somePos := 0
+
+		sHash := cmpFuncF.ItHash + itBox.GetConstsHash()
+		toAddLine := ref NewFuncs[sHash]
+		
+		for it : toAddLine
+		{
+			if it.simpleFuncType  == cmpFuncF
+			{
+
+				if it.ptrToFunc.IsSameConsts(itBox) {
+					return it.ptrToFunc
 				} 
 			}
-			inDown = inDown.Right
-			iterJ = iterJ.Next
 			somePos += 1
 		}
 		newFunc := GetNewFunc(itBox,newFuncType)
+
+		//if somePos > 100 printf("wut %i %s\n",somePos,FuncName)
+
 
 		for  parConsts
 		{
 			newFunc.ItVals.Push(it)
 		}
+		for itBox.itConsts
+			newFunc.ItConsts.Push(it)
+		for value,key : itBox.itAttrs 	{ newFunc.ItAttrs[key] = value}
 		
 		if newFunc == null return null
 
-		FuncsType.Push(newFuncType)
-
 		WorkBag.Push(newFunc,State_Start)
+
+		toAddLine.Emplace(cmpFuncF,newFunc)
 
 		if EndPos == null
 		{
@@ -448,8 +479,6 @@ BoxTemplate := class extend BoxFunc
 	{
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
-		for itBox.itConsts newFunc.ItConsts.Push(it)
-		for value,key : itBox.itAttrs 	{ newFunc.ItAttrs[key] = value}
 		newFunc.ParseBlock()
 
 		return newFunc	
@@ -542,7 +571,7 @@ BoxFunc := class extend Object
 			{
 				if iter.GetValue() != ","
 				{
-					if iter.IsConst()
+					if iter.IsConst
 					{
 						this.ItConsts.Push(iter.Clone())
 					}else{

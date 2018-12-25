@@ -18,4 +18,23 @@ FuncInputBox := class
 		itConsts."this"()
 		itAttrs."this"()
 	}
+	GetConstsHash := !() -> int
+	{
+		retHash := int
+
+		for it : itConsts
+		{
+			if it is ObjType{
+				asNeed := it->{ObjType^}
+				if asNeed.MyType != null
+					retHash += asNeed.MyType.ItHash
+			}
+			if it is ObjInt{
+				asNeed := it->{ObjInt^}
+				retHash += asNeed.MyInt
+			}
+		}
+
+		return retHash
+	}
 }

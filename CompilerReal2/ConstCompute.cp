@@ -21,7 +21,7 @@ TryCompute := !(Object^ ob) -> Object^
 {
 	if ob == null return null
 
-	if ob.IsConst() return ob
+	if ob.IsConst return ob
 
 	if ob.GetValue() == "~ind"
 	{
@@ -33,7 +33,7 @@ TryCompute := !(Object^ ob) -> Object^
 		{
 			return it.Down
 		}
-		if it.IsConst() return it
+		if it.IsConst return it
 	}
 	if ob.GetValue() == "~str" and ob.Right != null
 		and ob.Right.GetValue() == "~suffix"
