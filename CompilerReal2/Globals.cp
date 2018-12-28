@@ -14,7 +14,6 @@ DefsTable := TypeDef^[30]
 WorkBag := PriorityStack.{Object^,20}
 
 PriorityData := PriorityBag^
-LexMachine := Machine^
 
 ErrorLog := Queue.{string}
 
