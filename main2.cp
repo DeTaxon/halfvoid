@@ -1,8 +1,11 @@
 main := !(int argc, char^^ argv) -> int
 {
-	ins := VkLayerProperties
-	ins.specVersion = 3
-	printf("test %i\n",VK_STRUCTURE_TYPE_SUBMIT_INFO)
+	for i : 1..10
+	{
+	printf("ww\n")
+	defer printf("hallo2\n")
+	printf("hallo\n")
+	}
 	return 0
 }
 

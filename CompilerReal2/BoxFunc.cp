@@ -971,6 +971,7 @@ BoxFuncBody := class extend BoxFunc
 			Down = new BoxBlock()
 			Down.Up = this&
 			Down.Down = Stuf.Down
+			Down->{BoxBlock^}.usePaths = true
 			if Stuf.Down != null Stuf.Down.SetUp(Down)
 
 		}else{

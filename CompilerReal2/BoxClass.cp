@@ -651,6 +651,11 @@ BoxClass := class extend Object
 			}else{
 				f << "%Class" << ClassId << " = type{ %ClassTableType" << ClassId << "*}\n"
 			}
+			if DebugMode
+			{
+				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
+				f << ", elements: !{})\n"
+			}
 		}else{
 			f << "%Class" << ClassId << " = type {"
 			if not vTable.Empty()

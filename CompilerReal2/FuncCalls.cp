@@ -1386,7 +1386,9 @@ NewCallOne := class extend SomeFuncCall
 				//TODO: Class.Get
 				EmitError("cant create type\n")
 			}else{
+				func.Line = Line
 				newItm = MakeSimpleCall(func,null->{Object^})
+				newItm.Line = Line
 				newItm.Up = this&
 
 				if useConstr
@@ -1420,6 +1422,7 @@ NewCallOne := class extend SomeFuncCall
 							Down = extraF
 
 							Down = MakeSimpleCall(constrFunc,Down)
+							Down.Line = Line
 							Down.Up = this&
 						}
 					}
@@ -1445,6 +1448,7 @@ DeleteCall := class extend SomeFuncCall
 			WorkBag.Push(this&,State_GetUse)
 			WorkBag.Push(this&,State_PreGetUse)
 		}
+		Line = itm.Line
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1459,6 +1463,7 @@ DeleteCall := class extend SomeFuncCall
 
 			if func != null
 			{
+				func.Line = Line
 				DeleteFuncCall = MakeSimpleCall(func,new LinkForThis(Down,Down.GetType(),true))
 				DeleteFuncCall.Up = this&
 
@@ -1490,6 +1495,7 @@ DeleteCall := class extend SomeFuncCall
 						{
 							halfCall := new LinkForThis(Down,Down.GetType(),true)
 							DestructFuncCall = MakeSimpleCall(func2,halfCall)
+							DestructFuncCall.Line = Line
 							DestructFuncCall.Up = this&
 						}
 					//}
