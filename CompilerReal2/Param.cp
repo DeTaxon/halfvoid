@@ -16,6 +16,7 @@ ObjParam := class extend Object
 	IsGlobal := bool
 	IsRef := bool
 	IsVirtual := bool
+	IsThreadLocal := bool
 
 	DestrCall := NaturalCall^
 	
@@ -193,7 +194,9 @@ ObjParam := class extend Object
 					if IsExtern
 						Down = new ExternParam(MaybeType,val,MyStr)
 					else{ 
-						Down = new GlobalParam(MaybeType,val)
+						preRes := new GlobalParam(MaybeType,val)
+						preRes.IsThreadLocal = IsThreadLocal
+						Down = preRes 
 					}
 					IsGlobal = true
 

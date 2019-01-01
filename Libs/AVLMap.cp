@@ -30,6 +30,7 @@ BadPair := class .{@A,@B}
 	this := !() -> void	{	}
 	this := !(A itA) -> void{ first = itA	}
 	"<" := !(BadPair.{A,B} itR) -> bool {	return first < itR.first }
+	"<=>" := !(BadPair.{A,B} itR) -> int {	return first <=> itR.first }
 	"=" := !(BadPair.{A,B} itR) -> void {	first = itR.first	}
 	"==" := !(BadPair.{A,B} itR) -> bool {	return first == itR.first }
 }

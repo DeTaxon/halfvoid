@@ -29,12 +29,17 @@ StringSpan := class{
 	{
 		return StringSpan(ptr,itSize,ran)
 	}
-	"==" := !(char^ toCmp) -> bool {
-		if toCmp == null return false
+	"!=" := !(char^ toCmp) -> bool { return this <=> toCmp != 0 }
+	"==" := !(char^ toCmp) -> bool { return this <=> toCmp == 0 }
+	"<=>" := !(char^ toCmp) -> int {
+		if toCmp == null return 1
 		for itSize {
-			if toCmp[it] != ptr[it] return false
+			if toCmp[it] != ptr[it] return toCmp[it] <=> ptr[it]
+			if toCmp[it] == 0 return -1
+			if ptr[it] == 0 return 1
 		}
-		return toCmp[itSize] == 0
+		if toCmp[itSize] == 0 return 0
+		return 1
 	}
 	//"==" := !(StringSpan toCmp) -> bool {
 	//	if toCmp.itSize != itSize return false

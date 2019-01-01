@@ -22,6 +22,21 @@ TreeNode := class {
 		}
 		return null->{string}
 	}
+	GetSubNode := !(string name) -> TreeNode^
+	{
+		for Childs
+		{
+			if it.first
+			{
+				asNeed := it.second->{TreeNode^}
+				if asNeed.NodeName == name
+				{
+					return asNeed
+				}
+			}
+		}
+		return null
+	}
 }
 
 FillXMLNode := !(char^ str, TreeNode toFil) -> int{

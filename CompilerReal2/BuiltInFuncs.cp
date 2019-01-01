@@ -1473,6 +1473,13 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"gt i" + it + " #1,#2\n"))
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"lt i" + it + " #1,#2\n"))
 
+			BuiltInFuncs.Push(new BuiltInFuncBinar("<=>",PType,false,PType,false,GTypeInt,
+				"%PrePre1## = icmp " + IsS + "le i" + it + " #1,#2\n" +
+				"%PrePre2## = icmp " + IsS + "le i" + it + " #2,#1\n" +
+				"%Pre1## = zext i1 %PrePre1## to i32\n" + 
+				"%Pre2## = zext i1 %PrePre2## to i32\n" + 
+				"#0 = sub i32 %Pre1## , %Pre2##\n")) 
+
 
 			BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,BoolT,"#0 = icmp ne i"+it+" #1 ,0\n"))
 			BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,DoubleT,"#0 = "+IsS+"itofp i"+it+" #1 to double\n"))
@@ -1620,6 +1627,12 @@ CreateBuiltIns := !() -> void
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))
 	BuiltInFuncs.Push( new BuiltInFuncBinar("<",GTypeVoidP,false,GTypeVoidP,false,GTypeBool,false,"#0 = icmp ult i8* #1,#2\n"))
+	BuiltInFuncs.Push( new BuiltInFuncBinar("<=>",GTypeVoidP,false,GTypeVoidP,false,GTypeInt,false,
+				"%PrePre1## = icmp ule i8* #1,#2\n" +
+				"%PrePre2## = icmp ule i8* #2,#1\n" +
+				"%Pre1## = zext i1 %PrePre1## to i32\n" + 
+				"%Pre2## = zext i1 %PrePre2## to i32\n" + 
+				"#0 = sub i32 %Pre1## , %Pre2##\n")) 
 	RangeFuncs()
 	Vec4fFuncs()
 }

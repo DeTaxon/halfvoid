@@ -94,12 +94,13 @@ AVLTree := class .{@DATA}
 		
 		while iter != null
 		{
-			if iter.data == dat{
+			cmpRes := iter.data <=> dat
+			if cmpRes == 0{
 				break
 			}else{
 				prev = iter
 			}
-			if  iter.data < dat 	iter = iter.Right
+			if  cmpRes == -1 	iter = iter.Right
 			else 			iter = iter.Left
 		}
 		if iter != null {
@@ -107,7 +108,7 @@ AVLTree := class .{@DATA}
 			return false
 		}
 		
-		if prev.data < dat{
+		if prev.data <=> dat == -1{
 			prev.Right = new AVLTreeNode.{DATA}()
 			prev.Right.Up = prev
 			iter = prev.Right

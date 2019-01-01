@@ -64,6 +64,7 @@ UnboxParams := !(Object^ start) -> void
 				IsExt := false
 				IsRef := false
 				IsVir := false
+				IsLP := false
 				iter = iter.Right
 
 				if iter.GetValue() == "extern"
@@ -81,6 +82,11 @@ UnboxParams := !(Object^ start) -> void
 					IsVir = true
 					iter = iter.Right
 				}
+				if iter.GetValue() == "thread_local"
+				{
+					IsLP = true
+					iter = iter.Right
+				}
 
 				if iter.Right != null
 				{
@@ -96,6 +102,7 @@ UnboxParams := !(Object^ start) -> void
 					asPar.IsExtern = IsExt
 					asPar.IsRef = IsRef
 					asPar.IsVirtual = IsVir
+					asPar.IsThreadLocal = IsLP
 					if IsVir WorkBag.Push(asPar,State_Start)
 					lineIter.Down = iter.Clone()
 					lineIter.Down.SetUp(lineIter)

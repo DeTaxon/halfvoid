@@ -27,13 +27,29 @@ ToString := !(float x) -> char^
 	sprintf(toRet,"%f",x)
 	return toRet
 }
+"<=>" := !(char^ a, char^ b) -> int
+{
+	if a->{int^} == b->{int^} return 0
+	if a == null return 1
+	if b == null return -1
+	//i := 0
+	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
+	//if a[i] < b[i] return -1
+	//if a[i] > b[i] return 1
+	//return 0
+	cmpRes := strcmp(a,b)
+	if cmpRes > 0 return 1
+	if cmpRes < 0 return -1
+	return 0
+}
 "<" := !(char^ a, char^ b) -> bool
 {
 	if a == null return false
 	if b == null return false
-	i := 0
-	while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
-	return a[i] < b[i]
+	//i := 0
+	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
+	//return a[i] < b[i]
+	return strcmp(a,b) < 0
 }
 //strcmp := !(char^ a,char^ b) -> int declare
 StrCmp := !(char^ a,char^ b) -> bool
@@ -104,7 +120,8 @@ StrCopy := !(char^ a) -> char^
 {
 	Si := StrSize(a)
 	Pre := new char[Si+1]
-	for Si Pre[it] = a[it]
+	//for Si Pre[it] = a[it]
+	memcpy(Pre->{void^},a,Si)
 	Pre[Si] = 0
 
 	//CreatedStrs.Push(Pre)
@@ -114,7 +131,8 @@ Copy := !(char^ this) -> char^
 {
 	Si := StrSize(this)
 	Pre := new char[Si+1]
-	for Si Pre[it] = this[it]
+	//for Si Pre[it] = this[it]
+	memcpy(Pre->{void^},this,Si)
 	Pre[Si] = 0
 
 	//CreatedStrs.Push(Pre)

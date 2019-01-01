@@ -73,6 +73,11 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("type")
 	PriorityData.Opers.Push("virtual")
 
+	for PriorityData.Opers
+	{
+		OpersTree << it
+	}
+
 	for targetFiles
 	{
 		ItPath := Path(it)
@@ -132,6 +137,8 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+		fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
+		fil << "attributes #0 = { nounwind }\n"
 		StrContainer.PrintGlobal(fil)
 
 		for Classes it.PrintStruct(fil)

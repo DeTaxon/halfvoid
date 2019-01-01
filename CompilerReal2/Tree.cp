@@ -1,4 +1,3 @@
-#import "Lex.cp"
 #import "Type.cp"
 #import "CommonObjects.cp"
 #import "StateParse.cp"
@@ -284,6 +283,7 @@ IsKeyword := !(W) -> bool
 	if W == "virtual" return true
 	if W == "new" return true
 	if W == "delete" return true
+	if W == "thread_local" return true
 	return false
 }
 

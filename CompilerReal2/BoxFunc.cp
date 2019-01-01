@@ -1068,6 +1068,8 @@ BoxFuncBody := class extend BoxFunc
 			PrintGlobalSub(f)
 			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string})
 
+			f << " #0 "
+
 			if DebugMode
 			{
 				f << " !dbg !" << ABox.ItId

@@ -11,6 +11,8 @@ ModuleVulkan := class extend CompilerModule
 	Typedefs := AVLMap.{string,Type^}
 	ItInts := AVLMap.{string,int}
 
+	Commands := AVLMap.{string,TreeNode^}
+
 	Structs := AVLMap.{string,TreeNode^}
 
 	this := !(string p) -> void
@@ -49,11 +51,30 @@ ModuleVulkan := class extend CompilerModule
 					CheckEnum(asNode)
 				case "types"
 					CheckTypes(asNode)
+				case "commands"
+					CheckCommands(asNode)
 				}
 			}else{
 			}
 		}
 		return true
+	}
+	CheckCommands := !(TreeNode^ nd) -> void
+	{
+		for sN : nd.Childs
+		{
+			if not sN.first continue
+
+			asNeed := sN.second->{TreeNode^}
+
+			if asNeed.NodeName != "command" continue
+
+			pr := asNeed.GetSubNode("proto")
+			if pr == null continue
+			itName := pr.GetValueString("name")
+
+			Commands[itName] = asNeed
+		}
 	}
 	CheckTypes := !(TreeNode^ nd) -> void
 	{
@@ -260,6 +281,20 @@ ModuleVulkan := class extend CompilerModule
 				return itT
 			}
 		}
+		if nd.Childs.Size() == 5{
+			if not nd.Childs[0].first and nd.Childs[1].first and not nd.Childs[2].first
+			and nd.Childs[3].first and nd.Childs[4].first
+			{
+				mConst := nd.Childs[0].second->{string}
+				mPP := nd.Childs[2].second->{string}
+
+				if mConst == "const " and mPP == "* const*      "{
+					itTp := GetModuleType(nd.GetValueString("type"))
+					if itTp == null return null
+					return itTp.GetPoint().GetPoint()
+				}
+			}
+		}
 		if nd.Childs.Size() == 6{
 			if (not nd.Childs[2].first) and (not nd.Childs[4].first) and nd.Childs[3].first
 			{
@@ -320,6 +355,106 @@ ModuleVulkan := class extend CompilerModule
 
 		return null
 	}
+	CheckProto := !(TreeNode^ nd) -> Type^
+	{
+		if nd.Childs.Size() == 2{
+			itTypeName := nd.GetValueString("type")
+			return GetModuleType(itTypeName)
+		}
+		return null
+	}
+	CheckCommandParam := !(TreeNode^ nd) -> Type^
+	{
+		if nd.Childs.Size() == 2{
+			itTypeName := nd.GetValueString("type")
+			return GetModuleType(itTypeName)
+		}
+		if nd.Childs.Size() == 3{
+			if not nd.Childs[1].first{
+				asSt := nd.Childs[1].second->{string}
+				if asSt == "* "{
+					asTp := GetModuleType(nd.GetValueString("type"))
+					if asTp == null return null
+					return asTp.GetPoint()
+				}
+			}
+		}
+		if nd.Childs.Size() == 4{
+			if nd.Childs[0].first
+			{
+			}else{
+				fSt := nd.Childs[0].second->{string}
+				if nd.Childs[1].first
+				{
+					sNd := nd.Childs[1].second->{TreeNode^}
+					if nd.Childs[2].first
+					{
+					}else{
+						tSt := nd.Childs[2].second->{string}
+						if nd.Childs[3].first
+						{
+							fNd := nd.Childs[3].second->{TreeNode^}
+
+							if fSt == "const " and tSt == "* "{
+								itTypeName := GetModuleType(nd.GetValueString("type"))
+								if itTypeName == null return null
+								return itTypeName.GetPoint()
+							}
+						}else{
+						}
+					}
+				}else{
+				}
+			}
+		}
+		return null
+	}
+	GetTryFuncPointer := !(string name) -> Type^
+	{	
+		if name[0..4] != "PFN_" return null
+		smplName := name[4..0].Str()
+		inCmds := Commands.TryFind(smplName)
+
+		if inCmds == null return null
+
+		retType := null->{Type^}
+		itms := Queue.{Type^}()
+		for inCmds^.Childs
+		{
+			if it.first
+			{
+				asN := it.second->{TreeNode^}
+				switch asN.NodeName
+				{
+					case "proto"
+						retType = CheckProto(it.second->{TreeNode^})
+						if retType == null {
+							printf("VKMODULE: can not create func pointer %s ... proto\n",name)
+							return null
+						}
+					case "param"
+						resPar := CheckCommandParam(it.second->{TreeNode^})
+						if resPar == null {
+							printf("VKMODULE: can not create func pointer %s ... param %i\n",name,itms.Size() + 1)
+							return null
+						}
+						itms.Push(resPar)
+					case void
+						printf("VKMODULE: can not create func pointer %s\n",name)
+						return null
+				}
+			}else{
+				printf("VKMODULE: can not create func pointer %s\n",name)
+				return null
+			}
+		}
+		itPreType := GetFuncType(itms,null->{bool^},retType,false,false)
+		return itPreType.GetPoint()
+		
+		if inCmds != null
+			printf("VKMODULE: can not create func pointer %s\n",name)
+		return null
+	}
 	GetModuleType := virtual !(string name) -> Type^
 	{
 		inDefs := Typedefs.TryFind(name)
@@ -327,6 +462,9 @@ ModuleVulkan := class extend CompilerModule
 
 		maybeStruct := TryGetStruct(name)
 		if maybeStruct != null return maybeStruct
+
+		maybeCommand := GetTryFuncPointer(name)
+		if maybeCommand != null return maybeCommand
 
 		return null
 	}

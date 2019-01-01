@@ -587,6 +587,7 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 }
 IsOper := !(string may) -> bool
 {
+	return OpersTree.Contain(may)
 	iter := PriorityData.Opers.Start
 
 	while iter != null

@@ -168,6 +168,7 @@ VeryLocalParam := class extend LocalParam
 GlobalParam := class extend MemParam
 {
 	MainId := int
+	IsThreadLocal := bool
 	this := !(Type^ th,Object^ toSet) -> void
 	{
 		ResultType = th
@@ -192,6 +193,7 @@ GlobalParam := class extend MemParam
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "@T" << MainId << " = "
+		if IsThreadLocal f << "thread_local "
 		f << "global "
 		ResultType.PrintType(f)
 		if Down == null

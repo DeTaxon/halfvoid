@@ -48,7 +48,7 @@ BoxSwitch := class extend Object
 							if func == null func = FindFunc("in",this&,b^,false)
 
 							if func != null	{
-								if func.MyFuncType.RetType != GetType("bool")
+								if func.MyFuncType.RetType != GTypeBool
 									EmitError("one of case compares is not boolean\n")
 							}
 
@@ -161,7 +161,7 @@ BoxCase := class extend Object
 		Down.SetUp(this&)
 		PopOutNode(Down)
 
-		if Down.GetValue() == "~ind"
+		if Down is ObjIndent
 		{
 			asNeed := Down->{ObjIndent^}
 			IsVoid = asNeed.MyStr == "void"
