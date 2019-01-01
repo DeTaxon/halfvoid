@@ -192,7 +192,7 @@ GlobalParam := class extend MemParam
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		f << "@T" << MainId << " = "
+		f << "@T" << MainId << " = dso_local "
 		if IsThreadLocal f << "thread_local "
 		f << "global "
 		ResultType.PrintType(f)

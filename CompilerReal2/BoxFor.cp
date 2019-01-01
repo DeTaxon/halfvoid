@@ -147,6 +147,13 @@ BoxForOldFashionMulti := class extend BoxFor
 	{
 		ContPath.Add(0)
 
+		for items
+		{
+			mayb := TryCompute(it)
+			if mayb != null
+				it = mayb
+		}
+
 		Down = itBlock
 		block = itBlock
 		itemsCount = items.Size()

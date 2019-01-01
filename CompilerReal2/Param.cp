@@ -50,7 +50,7 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if ObjType.GetType() == "class" and not IsTook and not IsRef
+		if ObjType is TypeClass and (not IsTook) and (not IsRef)
 		{
 			asNeed2 := ObjType->{TypeClass^}
 			asNeed := asNeed2.ToClass
@@ -181,6 +181,8 @@ ObjParam := class extend Object
 				if val != null
 				{
 					MaybeType = val.GetType()
+					Down = val
+					Down.SetUp(this&)
 				}
 			}
 

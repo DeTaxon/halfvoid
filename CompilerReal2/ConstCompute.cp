@@ -43,10 +43,16 @@ TryCompute := !(Object^ ob) -> Object^
 		val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
 		if val != null return val
 	}
+	//if ob.Down != null and ob.Down.IsConst and ob.Down.Right != null and ob.Down.Right.Right != null
+	//and ob.Down.Right.Right.GetValue() == ".." and ob.Down.Right.Right.IsConst and Ob.Down.GetType
+	//{
+	//	
+	//}
+
 	lazy := ob  is ObjData
 	if lazy lazy = ob.Down.GetValue() == "!"
 	if lazy lazy = ob.Down.Right.GetValue() == "[]"
-	if lazy and false
+	if lazy
 	{
 		
 		iterR := ob.Down.Right.Down
@@ -62,32 +68,53 @@ TryCompute := !(Object^ ob) -> Object^
 		{
 			if iterR.GetValue() != ","
 			{
-				itm := TryCompute(iterR)
-				if itm == null 
+				if iterR.Right != null and iterR.Right.GetValue() == ".."
 				{
-					return null
-					if iterR.GetType() == TypeTable[13]
+					if iterR.Right.Right != null and iterR.Right.Right.IsConst
+						and iterR.GetType() == GTypeInt and iterR.Right.Right.GetType() == GTypeInt
 					{
-						if iterR.Down.GetType() != GTypeInt return null
-						if iterR.Down.Right.GetType() != GTypeInt return null
-						return null
-
-						start := iterR.Down->{ObjInt^}.MyInt
-						end := iterR.Down.Right.Right->{ObjInt^}.MyInt
+						start := iterR->{ObjInt^}.MyInt
+						end := iterR.Right.Right->{ObjInt^}.MyInt
 
 						if start > end return null
 
 						for i : start..end Sutf.Push(new ObjInt(i))
+
+						iterR = iterR.Right.Right
+						
 					}else{
 						return null
 					}
+				}else{
+					itm := TryCompute(iterR)
+					if itm == null 
+					{
+						//return null
+						if iterR.GetType() == GTypeRange
+						{
+							if iterR.Down.GetType() != GTypeInt return null
+							if iterR.Down.Right.GetType() != GTypeInt return null
+							//return null
+
+							start := iterR.Down->{ObjInt^}.MyInt
+							end := iterR.Down.Right.Right->{ObjInt^}.MyInt
+
+							if start > end return null
+
+							for i : start..end Sutf.Push(new ObjInt(i))
+						}else{
+							return null
+						}
+					}else{
+						Sutf.Push(itm)
+					}
 				}
-				Sutf.Push(itm)
 			}
 			iterR = iterR.Right
 		}
 		if typ == null and Sutf.Size() == 0 return null
 		typ = Sutf[0].GetType()
+		if typ == GTypeRange typ = GTypeInt
 		return new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray())
 	}
 

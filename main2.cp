@@ -1,17 +1,18 @@
+x := thread_local int
 
-c := thread_local int
-d := thread_local bool
-
-testWow := !() -> void
+haha := !() -> void
 {
-	c = 7
-	d = false
+	x = 7
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	testWow()
-	printf("hah %i %i\n",c,d)
+	haha()
+	printf("w %i\n",x)
+	//for c : ![1,2,8..12]
+	//	printf("it %i\n",c)
+
+	//for c printf("wow %i\n",it)
 	//handl := dlopen("libvulkan.so.1",2)
 	//count := s32
 

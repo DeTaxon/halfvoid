@@ -1622,7 +1622,7 @@ CreateBuiltIns := !() -> void
 	BuiltInFuncs.Push( new BuiltInSuffix("deg",GetType("int"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float\n" +
 					"%PrePre## = sitofp i32 #1 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))
-	BuiltInFuncs.Push( new BuiltInSuffix("pi",GetType("int"),false,GetType("float"),
+	BuiltInFuncs.Push( new BuiltInSuffix("pi",GTypeInt,false,GTypeFloat,
 					"%PrePre## = sitofp i32 #1 to float\n" +
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))

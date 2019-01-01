@@ -1,6 +1,6 @@
 #import "MemoryPool.cp"
 
-gTemporaryPool := StupidMemoryPool.{16000000}
+gTemporaryPool := thread_local StupidMemoryPool.{16000000}
 FlushTempMemory := !() -> void
 {
 	gTemporaryPool.FlushMem()

@@ -195,6 +195,42 @@ ObjDouble := class extend ObjConst
 	}
 }
 
+ObjRangeI := class extend ObjConst
+{
+	beginR,endR := int
+	this := !(int a, int b) -> void
+	{
+		beginR = a
+		endR = b
+		ResultType = GTypeRange
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~a..b"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("range %i..%i\n",beginR,endR)
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << " @RangeTypeInt {i32 " << beginR << " , i32 " << endR << " }"
+	}
+	GetName := virtual !() -> string
+	{
+		buf := char[256]
+		sprintf(buf," @RangeTypeInt {i32 %i, i32 %i}",beginR,endR)
+		return buf.Copy()
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjRangeI(beginR,endR)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
+
 ObjStr := class extend ObjConst
 {
 	MyStrId := int
@@ -283,7 +319,7 @@ ObjArray := class extend ObjConst
 		MyTmpId = GetNewId()
 		itType = ToUs
 		Items = ims
-		ResultType = itType.Base.GetPoint()
+		ResultType = ToUs
 	}		
 	
 
@@ -297,17 +333,31 @@ ObjArray := class extend ObjConst
 			if i > 0 f << " , "
 			f << Items[i].GetType().GetName() << " " << Items[i].GetName()
 		}
-		f << "]"
+		f << "]\n"
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		asBase := itType->{Type^}
-		f << "%ArrTmp" << MyTmpId << " = getelementptr " << asBase.GetName() << " , " << asBase.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"	
+		//asBase := itType->{Type^}
+		//f << "%ArrTmp" << MyTmpId << " = getelementptr " << asBase.GetName() << " , " << asBase.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"
+		f << "%ArrTmp" << MyTmpId << " = load "
+		ResultType.PrintType(f)
+		f << " , "
+		ResultType.PrintType(f)
+		f << "* @Arr" << MyTmpId << "\n"
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %ArrTmp"	<< MyTmpId
+	}
+	PrintPointUse := virtual !(sfile f) 
+	{
+		ResultType.PrintType(f)
+		f << "* @Arr" << MyTmpId
+	}
+	GetPointName := virtual !() -> string
+	{
+		return "@Arr" + MyTmpId
 	}
 	GetName := virtual !() -> string
 	{

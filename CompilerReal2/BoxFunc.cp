@@ -769,7 +769,7 @@ BoxFuncDeclare := class  extend BoxFunc
 
 PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,string Extra) -> void
 {
-	f << "define "
+	f << "define dso_local "
 
 	IsRetComplex := false
 
