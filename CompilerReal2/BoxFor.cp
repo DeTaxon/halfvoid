@@ -87,6 +87,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	Params := MemParam^^
 	IndParams := MemParam^^
 
+	EnabledIIndex := bool
+
 	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
 		ContPath.Add(0)
@@ -251,7 +253,9 @@ BoxForOldFashionMulti := class extend BoxFor
 						itFunc4 := asNeed.GetFunc("Ind",emptyBox^,true)
 						if itFunc4 == null
 						{
-							EmitError("Can not get index item\n")
+							//EmitError("Can not get index item\n")
+							EnabledIIndex = true
+							IndParams[i] = new FuncParam("ForIndex" + ItId,GTypeInt,false)
 						}else{
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
@@ -315,6 +319,11 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "start" << ItId << ":\n"
 		}
 
+		if EnabledIIndex {
+			f << "br label %ExtraStart" << ItId << "\n"
+			f << "ExtraStart" << ItId << ":\n"
+			f << "%ForIndex" << ItId << " = phi i32 [0,%start" << ItId << "] , [%FIndex" << ItId << ", %ExtraEnd" << ItId << "]\n"
+		}
 		IsEndFunc.PrintPre(f)
 		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
@@ -337,7 +346,16 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "br label %IncFuncs" << ItId << "\n"
 		f << "IncFuncs" << ItId << ":\n"
 		for i : itemsCount IncFuncs[i].PrintPre(f)
-		f << "br label %start" << ItId << "\n"
+
+		if EnabledIIndex
+		{
+			f << "br label %ExtraEnd" << ItId << "\n"
+			f << "ExtraEnd" << ItId << ":\n"
+			f << "%FIndex" << ItId << " = add i32 %ForIndex" << ItId << " , 1\n"
+			f << "br label %ExtraStart" << ItId << "\n"
+		}else{
+			f << "br label %start" << ItId << "\n"
+		}
 
 		if UseRetPath
 		{
