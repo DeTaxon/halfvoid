@@ -7,25 +7,25 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	indName := string
 
 	itemName = null
-	indName = null
 
 	iterY := dat.Down.Right
 
 	Names := Queue.{string}()
+	indNames := Queue.{string}()
 	Downs := Queue.{Object^}()
 
 	if iterY.Right.GetValue() == ","
 	{
 		itemName = iterY->{ObjIndent^}.MyStr
-		indName = ((iterY.Right.Right)->{ObjIndent^}).MyStr
+		indNames.Push(iterY.Right.Right->{ObjIndent^}.MyStr)
 		
 		iterY = iterY.Right.Right.Right.Right
 	}else
 	{
+		indNames.Push(null->{string})
 		if iterY.Right.GetValue() == ":"
 		{
 			itemName = iterY->{ObjIndent^}.MyStr
-			indName = null
 
 			iterY = iterY.Right.Right
 		}
@@ -47,10 +47,11 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 			Names.Push(asNeed.MyStr)
 			iterY = iterY.Right.Right
 			Downs.Push(iterY)
+			indNames.Push(null->{string}) 
 			iterY = iterY.Right
 		}
 
-		return new BoxForOldFashionMulti(Names,indName,Downs,iterY)
+		return new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
 	}
 	Downs.Push(iterY)
 
@@ -61,7 +62,7 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	}
 	wut := iterY.Right
 
-	return new BoxForOldFashionMulti(Names,indName,Downs,wut)
+	return new BoxForOldFashionMulti(Names,indNames,Downs,wut)
 }
 
 BoxFor := class extend Object
@@ -86,7 +87,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	Params := MemParam^^
 	IndParams := MemParam^^
 
-	this := !(Queue.{string} names, string f_ind,Queue.{Object^} items,Object^ itBlock) -> void
+	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
 		ContPath.Add(0)
 
@@ -98,11 +99,9 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 
 		Down = itBlock
-		//block = itBlock
+		Down.Left = null
 		itemsCount = items.Size()
 		iter := Down
-		//block.Left = null
-		Down.Left = null
 
 		for i : itemsCount, itm : items
 		{
@@ -116,14 +115,14 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		Names = names.ToArray()
 		IndNames = new string[names.Size()]
-		for names.Size() IndNames[it] = null
+		for it : names.Size(), itInd : f_ind
+			IndNames[it] = itInd
 
 		WorkBag.Push(this&,State_PreGetUse)
 
 		IsStep1 = true
 
 		ItId = GetNewId()
-		IndNames[0] = f_ind
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
