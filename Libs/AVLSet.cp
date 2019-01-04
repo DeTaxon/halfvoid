@@ -30,6 +30,11 @@ AVLSet := class .{@DATA}
 		itTree."this"()
 	}
 
+	"<<" := !(DATA data) -> ref AVLSet.{DATA}
+	{
+		Insert(data)
+		return this
+	}
 	Insert := !(DATA dat) -> void
 	{
 		resl := AVLTreeNode.{DATA}^
@@ -61,3 +66,8 @@ AVLSet := class .{@DATA}
 		return this
 	}
 }
+
+//"in" := !(A itm, AVLSet.{@A} bag) -> bool
+//{
+//	return bag.Contain(itm)
+//}

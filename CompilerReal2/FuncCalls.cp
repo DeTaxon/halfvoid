@@ -749,12 +749,12 @@ SomeFuncCall := class extend ObjResult
 	IsRef := virtual !() -> bool
 	{
 		if gotAlloc return true
-		if ToCall == null {
+		if FType == null {
 			EmitError("compiler error?\n")
 			Print(0)
 			return false
 		}
-		if ToCall.MyFuncType.RetRef return true
+		if FType.RetRef return true
 		return false
 	}
 	PrintGlobal := virtual !(sfile f) -> void

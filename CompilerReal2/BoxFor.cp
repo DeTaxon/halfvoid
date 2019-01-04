@@ -62,69 +62,12 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	wut := iterY.Right
 
 	return new BoxForOldFashionMulti(Names,indName,Downs,wut)
-
-	//return new BoxFor(itemName,indName,iterY,iterY.Right)
-
-
-	//return null
 }
 
 BoxFor := class extend Object
 {
-	LocPar := MemParam^
-	IndPar := MemParam^
-	itName := string
-	indName := string
-	block := Object^
-
-	this := !(string inN, string indN,Object^ Dwn, Object^ blk) -> void
-	{
-		itName = inN
-		indName = indN
-		block = blk
-		Down = Dwn
-		Down.Left = null
-		Down.Right = null
-		Dwn.Up = this&
-		block.Up = null
-
-		WorkBag.Push(this&,State_GetUse)
-		WorkBag.Push(Down,State_PreGetUse)
-	}
-	DoTheWork := virtual !(int pri) -> void
-	{
-		if pri == State_GetUse
-		{
-			newNode := Object^
-			newNode = null
-			//if Down.GetType() == TypeTable[13] 
-			//{
-			//	 newNode = new BoxForRange(this.itName,this.indName,this.Down,this.block)
-			//}
-			//if Down.GetType() == GetType("int")
-			//{
-			//	newNode = new BoxForInt(this.itName,this.indName,null->{Object^},Down,this.block)
-			//}
-			//if Down.GetType().GetType() == "class"
-			//{
-			//	asNeed := Down.GetType()->{TypeClass^}
-			//	asNeed2 := asNeed.ToClass
-
-			//	func := asNeed2.GetFunc("~For")
-
-			//	if func != null
-			//		newNode = new BoxForOldFashion(this.itName,this.indName,func,Down,this.block)
-
-			//}
-			if newNode != null
-			{
-				newNode.Line = this.Line
-				ReplaceNode(this&,newNode)
-			}
-		}
-	}
-
 }
+
 BoxForOldFashionMulti := class extend BoxFor
 {
 	ItId := int
@@ -155,14 +98,15 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 
 		Down = itBlock
-		block = itBlock
+		//block = itBlock
 		itemsCount = items.Size()
 		iter := Down
-		block.Left = null
+		//block.Left = null
+		Down.Left = null
 
-		for i : itemsCount
+		for i : itemsCount, itm : items
 		{
-			iter.Right = items[i]
+			iter.Right = itm
 			iter.Right.Left = iter
 			iter = iter.Right
 		}

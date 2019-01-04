@@ -138,7 +138,7 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 		fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
-		fil << "attributes #0 = { nounwind }\n"
+		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
 		StrContainer.PrintGlobal(fil)
 
 		for Classes it.PrintStruct(fil)

@@ -220,7 +220,8 @@ ParseType := !(Object^ Node) -> Type^
 							if val != null box.itConsts.Push(val)
 							else 
 							{
-								Node.EmitError("can not create class\n")
+								//Node.EmitError("can not create class\n")
+								return null
 							}
 						}else{
 							box.itConsts.Push(new ObjType(isType))
