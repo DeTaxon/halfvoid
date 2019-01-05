@@ -75,8 +75,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsStep1 := bool
 
 	itemsCount := int
-	Names := string^
-	IndNames := string^
+	Names := string[]
+	IndNames := string[]
 	IncFuncs := Object^^
 	UnrefFuncs := Object^^
 	IndFuncs := Object^^

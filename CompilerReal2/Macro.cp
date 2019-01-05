@@ -24,16 +24,66 @@ TryParseMacro2 := !(Object^ tr ,Object^ itUp) -> Object^
 	if tr.Down.Right.Down == null return null
 	if tr.Down.Right.Down.GetValue() != "^" return null
 
-	printf("before\n")
 
 	indName := null->{string}
-	if tr.Down.Right.Down.Right != null and tr.Down.Right.Down.Right is ObjIndent
+	itName := "_"
+	deSkob := tr.Down.Right.Down.Right
+	if deSkob != null and deSkob is ObjIndent
 	{
-		asNeed := tr.Down.Right.Down.Right->{ObjIndent^}
+		asNeed := deSkob->{ObjIndent^}
 		indName = asNeed.MyStr
+		
+		if deSkob.Right != null and deSkob.Right.GetValue() == ","
+		{
+			deSkob = deSkob.Right.Right
+			if deSkob != null and deSkob is ObjIndent
+			{
+				asNeed := deSkob->{ObjIndent^}
+				itName = asNeed.MyStr
+			}
+		}
 	}
-	
-	itName := "it" + GetNewId()
+	if indName == "_" indName = null
+	if itName == "_"
+	{
+		foundIt := false
+		tstr := tr
+		while tstr != null
+		{
+			if tstr.GetValue() == "~~for()" 
+			{
+				if tstr is BoxForOldFashionMulti
+				{
+					asNeed := tstr->{BoxForOldFashionMulti^}
+					for asNeed.Names{
+						if it == "it"{
+							foundIt = true
+							break
+						}
+					}
+					for asNeed.IndNames
+					{
+						if it == "it"{
+							foundIt = true
+							break
+						}
+					}
+					
+
+				}else{
+					foundIt = true
+					break
+				}
+			}
+			tstr = tstr.Up
+		}
+		if foundIt{
+			itName = "it" + GetNewId()
+		}
+		else {
+			itName = "it"
+		}
+	}
 
 	tr.Down.Right = null
 	itm := tr.Down
@@ -52,6 +102,5 @@ TryParseMacro2 := !(Object^ tr ,Object^ itUp) -> Object^
 	ReplaceNode(itUp,tmpNode)
 	fr := new BoxForOldFashionMulti(nms,indNames,itms,itUp)
 	ReplaceNode(tmpNode,fr)
-	printf("after\n")
 	return fr
 }
