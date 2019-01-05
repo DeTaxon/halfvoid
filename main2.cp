@@ -8,23 +8,14 @@ vkCreateInstance := PFN_vkCreateInstance
 main := !(int argc, char^^ argv) -> int
 {
 
-	t := Queue.{int}()
-	t.Push(1)
-	t.Push(6)
-	t.Push(10)
-	t.Push(-3)
-	t.Push(7)
-	
-	for it, i : t
-		printf("%i heh %i\n",i,it)
+	t := new Queue.{int}[2]
+	t[0].Push(1)
+	t[0].Push(6)
+	t[1].Push(10)
+	t[1].Push(-3)
+	t[1].Push(7)
 
-	h := AVLMap.{string,int}()
-	h["456"] = 5
-	h["724"] = 0
-	h["dsgsdfg"] = 13
-
-	for it, i : h
-		printf("hah %s %i\n", i,it)
+	printf("hey %i %i %i\n",t[^i][^j],i,j)
 
 	//handl := dlopen("libvulkan.so.1",2)
 

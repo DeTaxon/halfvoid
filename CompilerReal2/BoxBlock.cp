@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "Globals.cp"
 #import "GlobalParams.cp"
+#import "Macro.cp"
 
 MakeItBlock := !(Object^ item) -> bool
 {
@@ -245,6 +246,21 @@ BoxBlock := class extend Object
 			SyntaxCompress(this&,PriorityData)
 			UnboxParams(this.Down)
 			WorkBag.Push(this&,State_GetUse)
+
+			itr := Down
+			while itr != null
+			{
+				if not itr is ObjData {
+					itr = itr.Right
+					continue
+				}
+				tstNode := TryParseMacro(itr)
+				if tstNode != null{
+					itr = tstNode
+				}else{
+					itr = itr.Right
+				}
+			}
 
 			if InClass
 			{

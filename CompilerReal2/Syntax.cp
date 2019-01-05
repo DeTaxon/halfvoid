@@ -163,6 +163,13 @@ SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
 
 	GotWork := true
 
+	itr := begin.Down
+	while itr != null
+	{
+		if itr.GetValue() == "()" SyntaxCompress(itr,bag)
+		itr = itr.Right
+	}
+
 	while GotWork GotWork = StupidWhile(begin,bag)
 
 	return true
