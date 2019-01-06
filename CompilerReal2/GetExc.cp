@@ -3,7 +3,7 @@
 GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFunc^
 {
 
-	VT := GetType("void")
+	VT := GTypeVoidP
 	VPT := VT.GetPoint()
 	itemType := item.GetType()
 	SomeBugEnd := ToType
@@ -29,9 +29,9 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 
 	if isRef and ToType is TypeClass and itemType is TypeClass
 	{
-		box := new FuncInputBox()
+		box := new FuncInputBox() ; $temp
 		box.itPars.Emplace(itemType,isRef)
-		box.itConsts.Push(new ObjType(ToType))
+		box.itConsts.Push(new ObjType(ToType)) ;$temp
 		preRet :=  GlobalRefExc^.GetFunc(box^)
 		return preRet
 	}
@@ -47,10 +47,10 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	}
 
 
-	b := new FuncInputBox() 
+	b := new FuncInputBox() ; $temp 
 
 	b.itPars.Emplace(itemType,isRef)
-	b.itConsts.Push(new ObjType(ToType))
+	b.itConsts.Push(new ObjType(ToType)) ; $temp
 
 	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func

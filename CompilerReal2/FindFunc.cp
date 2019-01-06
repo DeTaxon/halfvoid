@@ -134,7 +134,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 						if (not AsBoxFunc.IsSuffix) and not AsBoxFunc.IsVirtual and metApp
 							found.Push(AsBoxFunc)
 					}
-				}
+				}else
 				if iterW.GetValue() == "!(){}"
 				{
 					AsBoxFunc2 :=  iterW->{BoxTemplate^}

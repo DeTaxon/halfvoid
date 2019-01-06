@@ -36,7 +36,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		itBox := new FuncInputBox() ; $temp
 
 		itBox.itPars.Emplace(asCl1.Base,true)
-		itBox.itConsts.Push(new ObjType(asCl2))
+		itBox.itConsts.Push(new ObjType(asCl2)) ; $temp
 		
 		func := asNeed.VirtualCheck.GetFunc(itBox^)
 		if func == null return null
@@ -186,7 +186,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.Right.GetValue() == "()"
 				{
 					Cs := Queue.{Object^}()
-					Cs.Push(new ObjType(asNeed2))
+					Cs.Push(new ObjType(asNeed2)) ; $temp
 					return OneCall(". this",iter.Right,Cs,false)
 				}
 			}
@@ -498,7 +498,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					irr := iter.Right.Right
 					itB := new FuncInputBox() ; $temp
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
-					itB.itConsts.Push(new ObjType(useType))
+					itB.itConsts.Push(new ObjType(useType)) ; $temp
 					
 					if iter.Line != null{
 						for v,k : iter.Line.itAttrs
@@ -644,7 +644,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 					{
 						ErrorLog.Push("can not parse type in .{}\n")
 					}else{
-						Cs.Push(new ObjType(tp))
+						Cs.Push(new ObjType(tp)) ; $temp
 					}
 				}
 			}
@@ -1362,7 +1362,7 @@ NewCallOne := class extend SomeFuncCall
 		if pri == State_GetUse	
 		{
 			box := new FuncInputBox() ; $temp
-			box.itConsts.Push(new ObjType(newType))
+			box.itConsts.Push(new ObjType(newType)) ; $temp
 
 			if Line != null {
 				for v,k : Line.itAttrs box.itAttrs[k] = v
@@ -1458,7 +1458,7 @@ DeleteCall := class extend SomeFuncCall
 			box := new FuncInputBox() ; $temp
 
 			box.itPars.Emplace(VoidPType,false)
-			box.itConsts.Push(new ObjType(Down.GetType()))
+			box.itConsts.Push(new ObjType(Down.GetType())) ; $temp
 
 			func := FindFunc("delete",Up,box^,false)
 

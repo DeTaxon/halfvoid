@@ -10,6 +10,9 @@ BoxIf := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if visitedWork[pri] return void
+		else visitedWork << pri
+
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
@@ -17,14 +20,17 @@ BoxIf := class extend Object
 			PopOutNode(Down)
 			if Down.Right.Right != null PopOutNode(Down.Right.Right)
 
+
 			MakeItBlock(Down.Right)
 
 			RR := Down.Right.Right
 			if RR != null
 				MakeItBlock(RR)
+			while TryParseMacro(Down,this&) != null {}
 		}
 		if pri == State_Syntax
 		{
+			
 			iter := Down
 
 			while iter != null
@@ -100,6 +106,9 @@ BoxWhile := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if visitedWork[pri] return void
+		else visitedWork << pri
+
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
@@ -107,6 +116,7 @@ BoxWhile := class extend Object
 			PopOutNode(Down)
 
 			MakeItBlock(Down.Right)
+			while TryParseMacro(Down,this&) != null {}
 		}
 		if pri == State_Syntax
 		{

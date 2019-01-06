@@ -82,11 +82,17 @@ ObjData := class extend Object
 						}
 						iter = iter.Right
 					}else{
-						lazy2 := iter is ObjIndent
-						if lazy2 lazy2 = iter.Right != null
-						if lazy2 lazy2 = iter.Right.GetValue() == "."
-						if lazy2 lazy2 = iter.Right.Right != null
-						if lazy2 lazy2 = iter.Right.Right.GetValue() == "{}"
+						lazy2 := false
+						while iter is ObjIndent
+						{
+							itr2 := iter.Right
+							if itr2 == null break
+							if itr2.GetValue() != "." break
+							itr2 = itr2.Right
+							if itr2 == null break
+							lazy2 = itr2.GetValue() == "{}"
+							break
+						}
 						if lazy2
 						{
 							iter = iter.Right

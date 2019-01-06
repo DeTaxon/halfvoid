@@ -134,10 +134,18 @@ ParseType := !(Object^ Node) -> Type^
 	}
 	if Node.GetValue() == "~d"
 	{
-		lazy := Node.Down != null
-		if lazy lazy = Node.Down.GetValue() == "!"
-		if lazy lazy = Node.Down.Right.GetValue() == "()"
-		if lazy lazy = Node.Down.Right.Right.GetValue() == "^"  or Node.Down.Right.Right.GetValue() == "&"
+		lazy := false
+		while true
+		{
+			itr2 := Node.Down
+			if itr2 == null break
+			if itr2.GetValue() != "!" break
+			itr2 = itr2.Right
+			if itr2.GetValue() != "()"  break
+			itr2 = itr2.Right
+			lazy = itr2.GetValue() == "^"  or itr2.GetValue() == "&"
+			break
+		}
 		if lazy
 		{
 			types := Queue.{Type^}()

@@ -128,8 +128,12 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if visitedWork[pri] return void
+		else if pri != State_GetUse  visitedWork << pri
+
 		if pri == State_PreGetUse
 		{
+			while TryParseMacro(Down.Right,this&) != null {}
 			WorkBag.Push(this&,State_GetUse)
 			iter := Down.Right
 			while iter != null
@@ -199,6 +203,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				Down.SetUp(this&)
 				IsStep1 = false
 			}else{
+				visitedWork << pri
 
 				WorkBag.Push(Down,State_Start)
 				iter := Down.Right

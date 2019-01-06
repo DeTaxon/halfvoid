@@ -2,10 +2,10 @@
 
 TryParseMacro := !(Object^ tr) -> Object^
 {
-	return TryParseMacro2(tr,tr)
+	return TryParseMacro(tr,tr)
 }
 
-TryParseMacro2 := !(Object^ tr ,Object^ itUp) -> Object^
+TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 {
 	if tr == null return null
 	if tr.GetValue() == "{}" return null
@@ -14,7 +14,7 @@ TryParseMacro2 := !(Object^ tr ,Object^ itUp) -> Object^
 	itr := tr.Down
 	while itr != null
 	{
-		mbRes := TryParseMacro2(itr,itUp)
+		mbRes := TryParseMacro(itr,itUp)
 		if mbRes != null return mbRes
 		itr = itr.Right
 	}
@@ -98,7 +98,7 @@ TryParseMacro2 := !(Object^ tr ,Object^ itUp) -> Object^
 	itms := Queue.{Object^}()
 	itms.Push(itm)
 
-	tmpNode := new Object
+	tmpNode := new Object ; $temp
 	ReplaceNode(itUp,tmpNode)
 	fr := new BoxForOldFashionMulti(nms,indNames,itms,itUp)
 	ReplaceNode(tmpNode,fr)

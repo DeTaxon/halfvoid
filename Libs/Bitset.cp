@@ -70,6 +70,18 @@ Bitset := class .{@ArraySize}
 	{
 		for itArray it = it xor_b 0xFF
 	}
+	"[]" := !(int x) -> bool
+	{
+		return Contain(x)
+	}
+	Contain := !(int x) -> bool
+	{
+		if x < ArraySize*8
+		{
+			return (itArray[x div 8] and_b (1 << (x %8))) != 0
+		}
+		return false
+	}
 	"<<" := !(int x) -> ref Bitset.{ArraySize}
 	{
 		if x < ArraySize*8

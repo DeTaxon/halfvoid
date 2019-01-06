@@ -416,8 +416,8 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	ToRet.NodeId = new int[input.NodeId->len]
 	for a : ToRet.NodeId, b : input.NodeId a = b
 	ToRet.IsEndNode = new int[setSize]
-	transformer := new int[NodeSets->len]
-	defer delete transformer
+	transformer := new int[NodeSets->len] ; $temp
+	//defer delete transformer
 	{
 		someIter := 0
 		usedSets := QueueSet.{int}()

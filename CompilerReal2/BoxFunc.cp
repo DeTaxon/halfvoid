@@ -109,9 +109,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		{
 			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
-		PreRet :=  new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
+		return new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		
-		return PreRet
 	}
 	return null
 }

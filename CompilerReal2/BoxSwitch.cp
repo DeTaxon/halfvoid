@@ -14,9 +14,13 @@ BoxSwitch := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if visitedWork[pri] return void
+		else visitedWork << pri
+
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_PreGetUse)
+			while TryParseMacro(Down,this&) != null {}
 		}
 		if pri == State_PreGetUse
 		{

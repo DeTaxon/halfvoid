@@ -15,11 +15,15 @@ Object := class{
 	Line :=  ObjLine^
 
 	IsInvalid := bool
+	visitedWork := Bitset.{4}
 
 	IsConst := virtual false
 
 	"new" := !() .{@R} -> void^
 	{
+		if $temp {
+			return gTemporaryPool.GetMem(R->TypeSize,R->Align)
+		}
 		return ObjectsPool.GetMem(R->TypeSize,R->Align)
 	}
 	

@@ -34,22 +34,6 @@ FlushTempMemory := !() -> void
 	preRet->{int^}[-1] = count	
 	return preRet
 }
-//"new" := !(int count) .{@R} -> R^
-//{
-//	val := R->FatTypeSize
-//	itSi := val*count
-//	itAl := R->Align
-//	if itAl < 4 itAl = 4
-//	itSi += itAl
-//	newNode := null->{u8^}
-//	if $temp {
-//		return  gTemporaryPool.GetMem(itSi,itAl)->{R^}
-//	}else{
-//		newNode = malloc(itSi)->{u8^}
-//		memset(newNode,0,itSi)
-//	}
-//	return newNode->{R^}
-//}
 "delete" := !(void^ item) .{@R[]} -> void
 {
 	sub := 4

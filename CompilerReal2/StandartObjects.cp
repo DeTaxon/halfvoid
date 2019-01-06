@@ -350,7 +350,7 @@ ObjArray := class extend ObjConst
 		ResultType.PrintType(f)
 		f << " %ArrTmp"	<< MyTmpId
 	}
-	PrintPointUse := virtual !(sfile f) 
+	PrintPointUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
 		f << "* @Arr" << MyTmpId
