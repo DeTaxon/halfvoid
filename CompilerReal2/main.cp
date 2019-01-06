@@ -9,6 +9,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	WorkBag."this"()
 	LoadLexMachine()
 	BuiltInFuncs."this"()
 	ObjectsPool."this"()
@@ -181,7 +182,6 @@ main := !(int argc,char^^ argv) -> int
 	printf("Created func types %i\n",GetFuncTypeCount())
 	return 0
 }
-sleep := !(int tm) -> int declare
 
 workIter := int
 WorkWithBag := !() -> void

@@ -92,7 +92,7 @@ ObjParam := class extend Object
 	}
 	PrintDestructor := virtual !(sfile f) -> void
 	{
-		if DestrCall != null
+		if DestrCall != null and UseDestructors
 		{
 			DestrCall.RetId = GetNewId()
 			asOb := DestrCall->{Object^}	

@@ -1,4 +1,5 @@
 #import "Tree.cp"
+#import "OMPStyle.cp"
 
 InspectDataR := !(Object^ item) -> Object^
 {

@@ -418,6 +418,13 @@ ObjCmd := class extend ObjConst
 		for s printf("->")
 		printf("cmd %s\n",MyStr)
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if MyStr == "#critical_atomic"
+		{
+			ReplaceNode(this&,new CriticalAtomic())
+		}
+	}
 	Clone := virtual !() -> Object^
 	{
 		PreRet := new ObjCmd(MyStr)

@@ -112,7 +112,7 @@ BoxBlock := class extend Object
 		{
 			//f << "br label %" << PathName << num << "in" << i << "\n"	
 			f << PathName << num << "in" << i << ":\n"
-			if UseDestructors or iter is ObjDefer  iter.PrintDestructor(f)
+			iter.PrintDestructor(f)
 			if i == 0{
 				f << "br label %" << OutName << "\n"
 			}else{

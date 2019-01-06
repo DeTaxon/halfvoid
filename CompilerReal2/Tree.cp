@@ -288,6 +288,7 @@ IsKeyword := !(W) -> bool
 	if W == "new" return true
 	if W == "delete" return true
 	if W == "thread_local" return true
+	if W == "keep_name" return true
 	return false
 }
 

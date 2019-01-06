@@ -5,9 +5,29 @@ vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
 vkCreateInstance := PFN_vkCreateInstance
 
 
+val := int
+
+
+testFunc := !(void^ itm) -> void^
+{
+	for i : 40000
+	{
+		#critical_atomic
+		val += 1
+	}
+	return null
+}
+
+
 main := !(int argc, char^^ argv) -> int
 {
-
+	thr1 := new Thread(testFunc)
+	thr2 := new Thread(testFunc)
+	thr3 := new Thread(testFunc)
+	thr1.Join()
+	thr2.Join()
+	thr3.Join()
+	printf("total %i\n",val)
 	//handl := dlopen("libvulkan.so.1",2)
 
 	//vkLoadAddr = dlsym(handl,"vkGetInstanceProcAddr")

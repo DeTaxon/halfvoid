@@ -1,5 +1,18 @@
 #import "PosixFuncs.cp"
 
+AtomicMutex := class
+{
+	atmValue := u8
+	Lock := !() -> void
+	{
+		while InterlockSet(atmValue,1) != 0 {}
+	}
+	Unlock := !() -> void
+	{
+		InterlockSet(atmValue,0)
+	}
+}
+
 Mutex := class 
 {
 	semItem := sem_t
@@ -23,4 +36,5 @@ Mutex := class
 	{
 		sem_destroy(semItem&)
 	}
+	"=" := !(Mutex r) -> void { }
 }

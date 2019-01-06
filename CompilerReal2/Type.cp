@@ -361,7 +361,6 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 	newTypeFunc := new TypeFunc(FType,retType)
 	FuncTypeTable[indVal].Push(newTypeFunc)
 	return newTypeFunc
-
 }
 
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^

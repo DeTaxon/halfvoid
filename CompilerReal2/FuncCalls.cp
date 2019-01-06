@@ -1489,7 +1489,9 @@ DeleteCall := class extend SomeFuncCall
 				//}else {
 				//	if Down.GetType().GetType() != "point"
 				//	{
-						box2 := new FuncInputBox()
+					if UseDestructors
+					{
+						box2 := new FuncInputBox() ; $temp
 						box2.itPars.Emplace(Down.GetType(),Down.IsRef())
 						func2 := FindFunc("~this",this&,box2^,true)
 						if func2 != null
@@ -1499,6 +1501,7 @@ DeleteCall := class extend SomeFuncCall
 							DestructFuncCall.Line = Line
 							DestructFuncCall.Up = this&
 						}
+					}
 					//}
 				//}
 			}else{
