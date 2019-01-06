@@ -819,8 +819,8 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,strin
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
-	ItParams := LocalParam^^
-	InAlloc := int^	
+	ItParams := LocalParam^[]
+	InAlloc := int[]
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
 
@@ -1107,10 +1107,11 @@ BoxFuncBody := class extend BoxFunc
 				asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
 				if asN.IsMethod
 				{
+					thisId := iterP.ItParams[0].inAllocId
 					fT := asN.MyFuncType
-					//f << "%thisPre = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName" + ABox.ItId + " , i32 0,i32 0\n"
-					//f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
-					f << "%this = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName" + ABox.ItId + " , i32 0,i32 0\n"
+					f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
+					f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+					//f << "%this = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName" <<  ABox.ItId <<  " , i32 0\n"
 				}else{
 					//printf("nope\n")
 				}
