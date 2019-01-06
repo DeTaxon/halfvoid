@@ -60,11 +60,6 @@ AVLSet := class .{@DATA}
 	{
 		return AVLSetIterator.{DATA}(itTree.Start)
 	}
-	"<<" := !(DATA dat) -> ref AVLSet.{DATA}
-	{
-		Insert(dat)
-		return this
-	}
 }
 
 //"in" := !(A itm, AVLSet.{@A} bag) -> bool

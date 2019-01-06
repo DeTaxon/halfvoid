@@ -39,11 +39,11 @@ BoxSwitch := class extend Object
 
 				while iter != null
 				{
-					if iter.GetValue() == "~case()"
+					if iter is BoxCase
 					{
 						if iter.Down.GetType() != null
 						{
-							b := new FuncInputBox()
+							b := new FuncInputBox() ; $temp
 
 							b.itPars.Emplace(Down.GetType(),Down.IsRef())
 							b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
@@ -75,7 +75,7 @@ BoxSwitch := class extend Object
 							asNeed := iter->{BoxCase^}
 							if not asNeed.IsVoid{
 								EmitError("bad case type\n")
-								}
+							}
 						}
 					}
 					iter = iter.Right
@@ -95,7 +95,7 @@ BoxSwitch := class extend Object
 
 		while iter != null
 		{
-			if iter.GetValue() == "~case()" {
+			if iter is BoxCase {
 				asNeed := iter->{BoxCase^}
 				if asNeed.IsVoid {
 					defThing = iter
@@ -107,9 +107,8 @@ BoxSwitch := class extend Object
 		}
 		Down.PrintInBlock(f)
 
-		for i : things.Size()
+		for iter , i : things
 		{
-			iter = things[i]
 			iter.Down.PrintPre(f)
 			f << "br i1 " << iter.Down.GetName() << " , label %Switch" << id << "true" << i
 			f << " , label %Switch" << id << "false" << i << "\n"

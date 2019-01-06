@@ -1,35 +1,11 @@
 #import "lib.cp"
+#import "PosixFuncs.cp"
 
 FILE_READ := 1
 FILE_WRITE := 2
 FILE_CREATE := 3
 
-O_RDONLY := 0
-O_WRONLY := 1
-O_RDWR := 2
 
-O_APPEND := 1024
-O_CREAT := 64
-O_TRUNC := 512
-O_TMPFILE := 4259840
-
-PROT_READ := 1
-PROT_WRITE := 2
-PROT_NONE := 0
-
-MAP_SHARED := 1
-MAP_PRIVATE := 2
-MAP_ANON := 32 
-
-open := !(char^ name,int flags,int mode) -> int declare
-close := !(int fd) -> void declare
-
-ftruncate := !(int fd,s64 size) -> int declare
-
-mmap := !(void^ addt,s64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
-munmap := !(void^ addt,s64 len) -> int declare
-
-fstat := !(int fd,char^ st) -> int declare
 
 GetFileSizeLinux2 := !(int fd,s64^ size) -> bool
 {

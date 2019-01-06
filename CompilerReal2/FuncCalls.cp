@@ -161,7 +161,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					objT := iter->{ObjType^}
 
 					box.itConsts.Push(objT)
-					box.itConsts.Push(new ObjStr(asNeed.MyStr))
+					box.itConsts.Push(new ObjStr(asNeed.MyStr)) 
 					func := FindFunc("->",iter,box^,false)
 					if func != null {
 						return MakeSimpleCall(func,null->{Object^})
@@ -172,7 +172,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 
 				box.itConsts.Push(iter)
-				box.itConsts.Push(new ObjStr(asNeed.MyStr))
+				box.itConsts.Push(new ObjStr(asNeed.MyStr)) 
 				
 				func := FindFunc("->", iter,box^,false)
 				if func != null return MakeSimpleCall(func,null->{Object^})

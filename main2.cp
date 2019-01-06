@@ -1,58 +1,59 @@
 
-
 vkLoadAddr := PFN_vkGetInstanceProcAddr
 vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProperties
 vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
 vkCreateInstance := PFN_vkCreateInstance
 
+
 main := !(int argc, char^^ argv) -> int
 {
-	handl := dlopen("libvulkan.so.1",2)
 
-	vkLoadAddr = dlsym(handl,"vkGetInstanceProcAddr")
+	//handl := dlopen("libvulkan.so.1",2)
 
-	if vkLoadAddr == null{
-		printf("cant get function ProcAddr\n")
-		return 0
-	}
+	//vkLoadAddr = dlsym(handl,"vkGetInstanceProcAddr")
 
-	newFunc := void^
-	newFunc = vkLoadAddr(null,"vkEnumerateInstanceExtensionProperties")
-	if newFunc == null{ printf("cant get func props\n")	return 0	}
-	vkEnumerateInstanceExtensionProperties = newFunc->{PFN_vkEnumerateInstanceExtensionProperties}
+	//if vkLoadAddr == null{
+	//	printf("cant get function ProcAddr\n")
+	//	return 0
+	//}
 
-	newFunc = vkLoadAddr(null,"vkEnumerateInstanceLayerProperties")
-	if newFunc == null{ printf("cant get func props\n")	return 0	}
-	vkEnumerateInstanceLayerProperties = newFunc->{PFN_vkEnumerateInstanceLayerProperties}
+	//newFunc := void^
+	//newFunc = vkLoadAddr(null,"vkEnumerateInstanceExtensionProperties")
+	//if newFunc == null{ printf("cant get func props\n")	return 0	}
+	//vkEnumerateInstanceExtensionProperties = newFunc->{PFN_vkEnumerateInstanceExtensionProperties}
 
-	newFunc = vkLoadAddr(null,"vkCreateInstance")
-	if newFunc == null{ printf("cant get func props\n")	return 0	}
-	vkCreateInstance = newFunc->{PFN_vkCreateInstance}
+	//newFunc = vkLoadAddr(null,"vkEnumerateInstanceLayerProperties")
+	//if newFunc == null{ printf("cant get func props\n")	return 0	}
+	//vkEnumerateInstanceLayerProperties = newFunc->{PFN_vkEnumerateInstanceLayerProperties}
 
-	count := s32
+	//newFunc = vkLoadAddr(null,"vkCreateInstance")
+	//if newFunc == null{ printf("cant get func props\n")	return 0	}
+	//vkCreateInstance = newFunc->{PFN_vkCreateInstance}
 
-	vkEnumerateInstanceLayerProperties(count&,null)
-	lays := new VkLayerProperties[count] ; $temp
-	vkEnumerateInstanceLayerProperties(count&,lays)
+	//count := s32
 
-	printf("%i : %s\n",i,lays[^i].layerName)
+	//vkEnumerateInstanceLayerProperties(count&,null)
+	//lays := new VkLayerProperties[count] ; $temp
+	//vkEnumerateInstanceLayerProperties(count&,lays)
 
-	vkEnumerateInstanceExtensionProperties(null,count&,null)
-	exts := new VkExtensionProperties[count] ; $temp
-	vkEnumerateInstanceExtensionProperties(null,count&,exts)
+	//printf("%i : %s\n",i,lays[^i].layerName)
 
-	printf("%i : %s\n",i,exts[^i].extensionName)
+	//vkEnumerateInstanceExtensionProperties(null,count&,null)
+	//exts := new VkExtensionProperties[count] ; $temp
+	//vkEnumerateInstanceExtensionProperties(null,count&,exts)
 
-	wantedLayers := AVLSet.{string}()
-	wantedLayers << "VK_LAYER_LUNARG_standard_validation"
-	
-	toUseLayers := Queue.{string}()
-	if wantedLayers.Contain(lays[^].layerName)
-		toUseLayers.Push(it.layerName)
+	//printf("%i : %s\n",i,exts[^i].extensionName)
 
-	printf("using %i %s\n",i,toUseLayers[^i])
+	//wantedLayers := AVLSet.{string}()
+	//wantedLayers << "VK_LAYER_LUNARG_standard_validation"
+	//
+	//toUseLayers := Queue.{string}()
+	//if wantedLayers.Contain(lays[^].layerName)
+	//	toUseLayers.Push(it.layerName)
 
-	dlclose(handl)
+	//printf("using %i %s\n",i,toUseLayers[^i])
+
+	//dlclose(handl)
 	return 0
 }
 
