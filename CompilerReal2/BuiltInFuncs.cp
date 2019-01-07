@@ -1447,9 +1447,9 @@ CreateBuiltIns := !() -> void
 			IsS := preRes2[IsSPre]
 			PType := GetType(IsS + it) // u8 s32 ...
 
-			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockAdd",PType,true,PType,false,PType,"#0 = atomicrmw add i32* #1, i32 #2 acquire\n"))
-			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockSub",PType,true,PType,false,PType,"#0 = atomicrmw sub i32* #1, i32 #2 acquire\n"))
-			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockSet",PType,true,PType,false,PType,"#0 = atomicrmw xchg i32* #1, i32 #2 acquire\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockAdd",PType,true,PType,false,PType,"#0 = atomicrmw add  i" + it + "* #1, i" + it + " #2 acquire\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockSub",PType,true,PType,false,PType,"#0 = atomicrmw sub  i" + it + "* #1, i" + it + " #2 acquire\n"))
+			BuiltInFuncs.Push(new BuiltInFuncBinar("InterlockSet",PType,true,PType,false,PType,"#0 = atomicrmw xchg i" + it + "* #1, i" + it + " #2 acquire\n"))
 
 			BuiltInFuncs.Push(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i" + it + " #2, i" + it + "* #1\n"
 												+"#0 = add i" + it + " #2,0\n"))
