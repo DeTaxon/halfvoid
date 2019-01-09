@@ -5,7 +5,6 @@ ObjSkobs := class extend Object
 	Vers := int
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		if st == "{}" Vers = 1
 		if st == "[]" Vers = 2
 		if st == "()" Vers = 3

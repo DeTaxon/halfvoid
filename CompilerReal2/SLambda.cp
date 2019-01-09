@@ -5,7 +5,7 @@ SLambda := class extend ObjResult
 	parsedStart := bool
 	applyed := bool
 	ABox := AllocBox
-	Names := string^
+	Names := string[]
 	parms := LocalParam^^
 	InAlloc := int^
 	fastUse := TypeFunc^
@@ -116,7 +116,7 @@ SLambda := class extend ObjResult
 		
 		if applyed
 		{
-			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string})
+			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
 
 			f << "\n{\n"
 			ABox.PrintAlloc(f)

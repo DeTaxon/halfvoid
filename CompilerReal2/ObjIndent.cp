@@ -6,7 +6,6 @@ ObjIndent := class extend Object
 	MyStr := char^
 	"this" := !(char^ str) -> void
 	{
-		Clean()
 		MyStr = str
 	}
 	GetValue := virtual !() -> char^
@@ -81,7 +80,6 @@ ObjSuffix := class extend ObjConst
 	MyStr := char^
 	"this" := !(char^ str) -> void
 	{
-		Clean()
 		MyStr = StrCopy(str)
 	}
 	GetValue := virtual !() -> char^

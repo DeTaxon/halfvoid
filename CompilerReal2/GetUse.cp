@@ -7,7 +7,6 @@ InspectDataR := !(Object^ item) -> Object^
 	DaR = ParseFuncDataR(item)
 	if DaR != null->{int^} return DaR	
 
-
 	DaR = GetFuncCall(item)
 	if DaR != null->{int^} return DaR
 

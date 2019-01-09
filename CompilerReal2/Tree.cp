@@ -5,12 +5,12 @@
 #import "WayControl.cp"
 #import "StandartObjects.cp"
 #import "Syntax.cp"
+#import "OMPStyle.cp"
 
 
 ObjectsPool := StupidMemoryPool.{64000000}
 
 Object := class{
-	Id := int
 	Left,Right,Down,Up := Object^
 	Line :=  ObjLine^
 
@@ -21,10 +21,13 @@ Object := class{
 
 	"new" := !() .{@R} -> void^
 	{
+		preRes := void^
 		if $temp {
-			return gTemporaryPool.GetMem(R->TypeSize,R->Align)
+			preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align)
+		}else{
+			preRes = ObjectsPool.GetMem(R->TypeSize,R->Align)
 		}
-		return ObjectsPool.GetMem(R->TypeSize,R->Align)
+		return preRes
 	}
 	
 	TestNodes := virtual !() ->void
@@ -41,23 +44,8 @@ Object := class{
 		}
 	}
 
-	Clean := !() -> void
-	{
-		Left = null
-		Right = null
-		Down = null
-		Up = null
-		Line = null
-	}	
 	this := !() -> void
 	{
-		Id = 0
-		Clean()
-	}
-	this := !(int id) -> void
-	{
-		Id = id
-		Clean()
 	}
 	IsRef := virtual !() -> bool
 	{

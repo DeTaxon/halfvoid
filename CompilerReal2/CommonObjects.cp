@@ -79,11 +79,11 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 					AsNeed2 := iter->{BoxFuncBody^}
 					as2 := iter->{BoxFunc^}
 
-					for AsNeed2.MyFuncType.ParsCount
+					if AsNeed2.ItParams != null
+					for itNames : as2.MyFuncParamNames , itParrs : AsNeed2.ItParams
 					{
-						if AsNeed2.ItParams != null
-							if as2.MyFuncParamNames[it] == name 
-								return AsNeed2.ItParams[it]
+						if itNames == name 
+							return itParrs
 					}
 					if AsNeed2.ExtraRetParam != null
 					{
@@ -95,7 +95,6 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 			}
 		}
 	}
-	
 	for SomeDef : DefsTable
 	{
 		if SomeDef != null and  SomeDef.ItName == name 

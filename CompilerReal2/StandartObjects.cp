@@ -89,7 +89,6 @@ ObjInt := class extend ObjConst
 	"this" := !(int Value) -> void
 	{
 		MyInt = Value
-		Clean()
 		ResultType = GetType("int")
 	}
 	GetValue := virtual !() -> char^
@@ -160,7 +159,6 @@ ObjDouble := class extend ObjConst
 	"this" := !(double Value) -> void
 	{
 		MyDouble = Value
-		Clean()
 		ResultType = GetType("double")
 	}
 	GetValue := virtual !() -> char^
@@ -238,10 +236,10 @@ ObjStr := class extend ObjConst
 	MyTmpId := int
 	this := !(char^ str) -> void
 	{
-		MyStrId = StrContainer.GetStringValue(str)
 		MyTmpId = GetNewId()
 		justStr = str
 		ResultType = GTypeString
+		MyStrId = StrContainer.GetStringValue(str)
 	}
 	this := !(int SId,char^ str) -> void
 	{
@@ -265,7 +263,7 @@ ObjStr := class extend ObjConst
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		StrSi := StrSize(StrContainer.GetString(MyStrId)) + 1
+		StrSi := StrSize(justStr) + 1
 		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
 	}
 	PrintUse := virtual !(sfile f) -> void
@@ -406,7 +404,6 @@ ObjCmd := class extend ObjConst
 	MyStr := char^
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		MyStr = st
 	}
 	GetValue := virtual !() -> char^
@@ -464,7 +461,6 @@ ObjKeyword := class extend ObjConst
 	MyStr := char^
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		MyStr = st
 	}
 	GetValue := virtual !() -> char^

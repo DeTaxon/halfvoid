@@ -27,6 +27,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 			return it
 	}
 	//printf("loading %s\n",fullName.itStr)
+	//#critical_atomic
 	ob := GetObjectsFromFile2(fullName)
 
 	if ob == null 

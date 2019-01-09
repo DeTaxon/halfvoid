@@ -7,16 +7,17 @@ TypesPool := StupidMemoryPool.{16000000}
 
 Type := class {
 	Id := int
+	ItHash := int
 	Base := Type^
 	AsPoint := Type^
 	AsFatArr := Type^
 	AsArray := Queue.{TypeArr^}
 	ItName := string
-	ItHash := int
 	
 	"new" := !() .{@R} -> void^
 	{
-		return TypesPool.GetMem(R->TypeSize,R->Align)
+		preRes :=  TypesPool.GetMem(R->TypeSize,R->Align)
+		return preRes
 	}
 	this := !() -> void
 	{

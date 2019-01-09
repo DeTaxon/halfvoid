@@ -1,13 +1,16 @@
 #import "Tree.cp"
+
 StringContainer := class 
 {
 	Strs := Map.{string,int}
+
 	GetStringValue := !(string St) -> int
 	{
+		//#critical_atomic
 		if not Strs.Exist(St)
 		{
 			SomId := GetNewId()
-			strToSet := ref Strs[StrCopy(St)]
+			strToSet := ref Strs[St]
 			strToSet = SomId
 			return SomId
 		}

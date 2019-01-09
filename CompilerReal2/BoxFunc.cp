@@ -163,6 +163,13 @@ IsTemplate := !(Object^ sk) -> bool
 			if Counter == 1 return true
 			Counter = 0
 		} else Counter += 1
+
+		if iter is ObjData and iter.Down != null and iter.Down.Right != null 
+		and iter.Down.Right.GetValue() == "..."  and iter.Down is ObjIndent
+		{
+			return true
+		}
+
 		if ContainTType(iter) return true //TODO: check after Syntax, not Before
 		iter = iter.Right
 	}
@@ -365,7 +372,7 @@ BoxTemplate := class extend BoxFunc
 		st := Queue.{ObjConstHolder^}()
 		if not CheckTypes(itBox,st) return 255
 
-		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount)
+		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
 
@@ -404,11 +411,23 @@ BoxTemplate := class extend BoxFunc
 			}
 		}
 		newRet := MyFuncType.RetType
+		retRefArray := MyFuncType.ParsIsRef
 		if MyFuncType.RetType == null and CopyRet != null
 		{
 			newRet = ParseType(CopyRet)
 		}
-		return GetFuncType(outT,MyFuncType.ParsIsRef,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
+		if itBox.itPars.Size() > FType.ParsCount
+		{
+			retRefArray = new bool[itBox.itPars.Size()] ; $temp
+			for i : itBox.itPars.Size()
+				retRefArray[i] = MyFuncType.ParsIsRef[i]
+			for it, i : itBox.itPars
+			{
+				if i < outT.Size() continue
+				outT.Push(it.first)
+			}
+		}
+		return GetFuncType(outT,retRefArray,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{
@@ -444,9 +463,6 @@ BoxTemplate := class extend BoxFunc
 		}
 		newFunc := GetNewFunc(itBox,newFuncType)
 
-		//if somePos > 100 printf("wut %i %s\n",somePos,FuncName)
-
-
 		for  parConsts
 		{
 			newFunc.ItVals.Push(it)
@@ -479,6 +495,8 @@ BoxTemplate := class extend BoxFunc
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
 		newFunc.ParseBlock()
+		if MyFuncType != null newFunc.funcUserParamsCount = MyFuncType.ParsCount
+		newFunc.vargsName = vargsName
 
 		return newFunc	
 	}
@@ -505,7 +523,7 @@ BoxTemplate := class extend BoxFunc
 BoxFunc := class extend Object
 {
 	MyFuncType := TypeFunc^
-	MyFuncParamNames := string^
+	MyFuncParamNames := string[]
 	FuncName := string
 	OutputName := string
 	ABox := AllocBox
@@ -523,6 +541,9 @@ BoxFunc := class extend Object
 	ItConsts := Queue.{Object^}
 	ItAttrs := AVLMap.{string,Object^}
 	ItVals := Queue.{ObjConstHolder^}
+
+	vargsName := string
+	funcUserParamsCount := int
 
 	GetType := virtual !() -> Type^
 	{
@@ -634,7 +655,7 @@ BoxFunc := class extend Object
 			iter = iter.Right
 		}
 
-		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(","))
+		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp
 
 		IsParRef := false
 		indType := 0
@@ -673,8 +694,8 @@ BoxFunc := class extend Object
 					Typs.Push(MayType)
 					TypsIsRef.Push(IsParRef) // TODO
 					TypsNams.Push(StrCopy(MayName))
+					
 					Pars.Clean()		
-
 				}
 				if Pars.Size() == 1
 				{
@@ -686,6 +707,17 @@ BoxFunc := class extend Object
 							Typs.Push(null->{Type^})
 							TypsIsRef.Push(IsParRef)
 							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
+						}else{
+							itr := Pars[0]
+							if itr is ObjData and itr.Down != null and itr.Down is ObjIndent
+							and itr.Down.Right != null and itr.Down.Right.GetValue() == "..."
+							{
+								asIn := itr.Down->{ObjIndent^}
+								vargsName = asIn.MyStr
+							}else{
+								EmitError("unknown error\n")
+							}
+
 						}
 					}
 					Pars.Clean()
@@ -707,6 +739,7 @@ BoxFunc := class extend Object
 
 		arr := TypsIsRef.ToArray()
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,IsRetRef,IsVargsL)
+		funcUserParamsCount = MyFuncType.ParsCount
 
 		if MyFuncParamNames != null and MyFuncType.ParsCount != 0
 		{
@@ -766,7 +799,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	}
 }
 
-PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,string Extra) -> void
+PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
 {
 	f << "define dso_local "
 
@@ -800,13 +833,20 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string^ names,string fName,strin
 		if fType.ParsCount != 0 f << " , "
 	}
 	for i : fType.ParsCount
-	{
-		
+	{	
 		if i > 0 f << " , "
-		if fType.ParsIsRef[i]
-			fType.Pars[i].GetPoint().PrintType(f)
-		else	fType.Pars[i].PrintType(f)
-		f << " %" <<names[i]
+		if i < names->len
+		{
+			if fType.ParsIsRef[i]
+				fType.Pars[i].GetPoint().PrintType(f)
+			else	fType.Pars[i].PrintType(f)
+			f << " %" <<names[i]
+		}else{
+			if fType.ParsIsRef[i]
+				fType.Pars[i].GetPoint().PrintType(f)
+			else	fType.Pars[i].PrintType(f)
+			f << " %Extra" << itId << "Param" << i
+		}
 	}
 	if fType.IsVArgs
 	{
@@ -1065,7 +1105,7 @@ BoxFuncBody := class extend BoxFunc
 		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
-			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string})
+			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string},ABox.ItId)
 
 			f << " #0 "
 
@@ -1083,13 +1123,18 @@ BoxFuncBody := class extend BoxFunc
 			if InAlloc != null
 			for i : MyFuncType.ParsCount
 			{
-				f << "store "
-				f << MyFuncType.Pars[i].GetName()
-				if MyFuncType.ParsIsRef[i] f << "*"
-				f << " %" << MyFuncParamNames[i] << " , "
-				f << MyFuncType.Pars[i].GetName()
-				if MyFuncType.ParsIsRef[i] f << "*"
-				f << "* %T" << InAlloc[i] << "\n"
+					f << "store "
+					f << MyFuncType.Pars[i].GetName()
+					if MyFuncType.ParsIsRef[i] f << "*"
+				if i < MyFuncParamNames->len
+				{
+					f << " %" << MyFuncParamNames[i] << " , "
+				}else{
+					f << " %Extra" << ABox.ItId << "Param" << i << " , "
+				}
+					f << MyFuncType.Pars[i].GetName()
+					if MyFuncType.ParsIsRef[i] f << "*"
+					f << "* %T" << InAlloc[i] << "\n"
 			}
 			
 			iterP := Parent

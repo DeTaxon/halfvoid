@@ -10,20 +10,18 @@ PriorityStack := class .{@TVal,@TSize}
 	Starts := Node3.{TVal}^[TSize]
 	Kepts := Node3.{TVal}^
 	Counter := int
-	oneUse := Mutex
+	oneUse := AtomicMutex
 
 	this := !() -> void
 	{
 		//for i : TSize Starts[i] = 0
 		//Kepts = null
 		//Counter = 0
-		oneUse."this"()
-		oneUse.Unlock()
 	}
 	Push := !(TVal val, int pr) -> void
 	{
-		oneUse.Lock()
-		defer oneUse.Unlock()
+		//oneUse.Lock()
+		//defer oneUse.Unlock()
 
 		Counter += 1
 		newItem := Node3.{TVal}^

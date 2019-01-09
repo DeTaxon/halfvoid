@@ -22,6 +22,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 	treeIter := null->{Object^}
 	prevId := -1
 	linePos := 0
+	DaBuff := new char[2048] ; $temp
 	d.ReadText(lexWordMachine&->{void^},inputFile.point,inputFile.Size(), (a,b,c) =>
 	{
 		ptr := inputFile.point->{char^}[b]&
@@ -70,7 +71,6 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			}
 		}
 		if a == 3 {
-			DaBuff := char[2048]
 			j := 0
 			k := 1
 			while tok[k] != '"'
@@ -92,7 +92,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 				}	
 			}
 			DaBuff[j] = 0
-			ns = new ObjStr(DaBuff.Copy())
+			ns = new ObjStr(StrCopy(DaBuff[0]&))
 		}
 		if a == 4 {
 			newVal := int

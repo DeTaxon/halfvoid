@@ -10,7 +10,6 @@ ObjObj := class extend Object
 	MyStr := char^
 	"this" := !(char^ st) -> void
 	{
-		Clean()
 		MyStr = st
 	}
 	GetValue := virtual !() -> char^
