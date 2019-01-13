@@ -115,6 +115,7 @@ ObjData := class extend Object
 		}
 		if pri == State_GetUse
 		{
+			printf("a\n")
 			lowTest := GetUse(this&)
 			if lowTest == null
 			{

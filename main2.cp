@@ -4,17 +4,21 @@ vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProper
 vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
 vkCreateInstance := PFN_vkCreateInstance
 
-wut := !() -> void {}
-wut := !(float y,args...) -> void
+huh := !() -> void{}
+huh := !(int x,args...) -> void
 {
-	printf("da float %f\n",y)
-	wut(args...)
+	printf("da int %i\n",x)
+	huh(args...)
+}
+huh := !(float x,args...) -> void
+{
+	printf("da float %f\n",x)
+	huh(args...)
 }
 
-wut := !(int x , args...) -> void
+wut := !(args...) -> void
 {
-	printf("val %i\n",x)
-	wut(args...)
+	huh(args...)
 }
 
 main := !(int argc, char^^ argv) -> int

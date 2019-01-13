@@ -137,6 +137,10 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 			added = true
 			//return true
 		}
+		if item.GetValue() == "..."
+		{
+			return false
+		}
 
 		iter := item.Down
 
@@ -259,6 +263,7 @@ BoxTemplate := class extend BoxFunc
 		re := true
 		for fT : FuncsTTemps, i: 0, par : itBox.itPars
 		{
+			if MyFuncType.ParsCount >= i break
 			if MyFuncType.Pars[i] == null
 			{
 				if fT != null
@@ -290,6 +295,16 @@ BoxTemplate := class extend BoxFunc
 			}
 		}
 		return null
+	}
+
+	CheckBottomParams := !(Object^ firstNon) -> void
+	{
+		if ContainTType(firstNon,TTNames)
+		{
+			FuncsTTemps.Push(firstNon)
+		}else{
+			FuncsTTemps.Push(null->{Object^})
+		}
 	}
 	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
 	{
@@ -330,12 +345,7 @@ BoxTemplate := class extend BoxFunc
 		{
 			if iter.GetValue() == ","
 			{
-				if ContainTType(firstNon,TTNames)
-				{
-					FuncsTTemps.Push(firstNon)
-				}else{
-					FuncsTTemps.Push(null->{Object^})
-				}
+				CheckBottomParams(firstNon)
 				firstNon = null
 			}else{
 				if firstNon == null 
@@ -346,12 +356,7 @@ BoxTemplate := class extend BoxFunc
 			iter = iter.Right
 			if iter == null
 			{
-				if ContainTType(firstNon,TTNames)
-				{
-					FuncsTTemps.Push(firstNon)
-				}else{
-					FuncsTTemps.Push(null->{Object^})
-				}
+				CheckBottomParams(firstNon)
 				firstNon = null
 			}else{
 				if firstNon == null 
@@ -370,7 +375,9 @@ BoxTemplate := class extend BoxFunc
 		if itBox.itConsts.Size() != this.ItConsts.Size() return 255
 
 		st := Queue.{ObjConstHolder^}()
-		if not CheckTypes(itBox,st) return 255
+		if not CheckTypes(itBox,st) {
+		return 255
+		}
 
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
 		{
@@ -820,6 +827,8 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 	f << " @" << fName
 
 	f << "("
+
+	printf("gu\n")
 	
 	if Extra != null
 	{
@@ -833,9 +842,9 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 		if fType.ParsCount != 0 f << " , "
 	}
 	for i : fType.ParsCount
-	{	
+	{
 		if i > 0 f << " , "
-		if i < names->len
+		if names != null and i < names->len
 		{
 			if fType.ParsIsRef[i]
 				fType.Pars[i].GetPoint().PrintType(f)
@@ -1126,7 +1135,7 @@ BoxFuncBody := class extend BoxFunc
 					f << "store "
 					f << MyFuncType.Pars[i].GetName()
 					if MyFuncType.ParsIsRef[i] f << "*"
-				if i < MyFuncParamNames->len
+				if MyFuncParamNames != null and i < MyFuncParamNames->len
 				{
 					f << " %" << MyFuncParamNames[i] << " , "
 				}else{
