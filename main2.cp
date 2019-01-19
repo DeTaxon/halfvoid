@@ -18,13 +18,15 @@ huh := !(float x,args...) -> void
 
 wut := !(args...) -> void
 {
-	huh(args...)
+	sum := 0
+	,(sum += args+sum)...
+	printf("val %i\n",sum)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 
-	wut(123,7,3,8,1.13,7,51,4352,23,3.14)
+	wut(1,2,3,4)
 	//handl := dlopen("libvulkan.so.1",2)
 
 	//vkLoadAddr = dlsym(handl,"vkGetInstanceProcAddr")

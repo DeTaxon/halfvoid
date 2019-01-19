@@ -263,7 +263,7 @@ BoxTemplate := class extend BoxFunc
 		re := true
 		for fT : FuncsTTemps, i: 0, par : itBox.itPars
 		{
-			if MyFuncType.ParsCount >= i break
+			if i >= MyFuncType.ParsCount  break
 			if MyFuncType.Pars[i] == null
 			{
 				if fT != null
@@ -827,8 +827,6 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 	f << " @" << fName
 
 	f << "("
-
-	printf("gu\n")
 	
 	if Extra != null
 	{
