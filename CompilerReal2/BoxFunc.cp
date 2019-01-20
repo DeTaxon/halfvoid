@@ -1081,7 +1081,7 @@ BoxFuncBody := class extend BoxFunc
 
 					if asC.Parent != null
 					{
-						box5 := new FuncInputBox()
+						box5 := new FuncInputBox() ; $temp
 						stp := asC.Parent
 						box5.itPars.Emplace(stp.ClassType,true)
 						func2 := asC.Parent.GetFunc("~this",box5^,true)
@@ -1295,7 +1295,7 @@ BoxFuncBody := class extend BoxFunc
 					func3 := itC.GetFunc("~this",box3^,true)
 					if func3 != null
 					{
-						box4 := new FuncInputBox()
+						box4 := new FuncInputBox() ; $temp
 						box4.itConsts.Push(new ObjStr(nowField.ItName))
 						fnc := asC.AutoFieldTemplate
 						pr := fnc.GetPriority(box4^)

@@ -4,29 +4,17 @@ vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProper
 vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
 vkCreateInstance := PFN_vkCreateInstance
 
-huh := !() -> void{}
-huh := !(int x,args...) -> void
-{
-	printf("da int %i\n",x)
-	huh(args...)
-}
-huh := !(float x,args...) -> void
-{
-	printf("da float %f\n",x)
-	huh(args...)
-}
 
-wut := !(args...) -> void
-{
-	sum := 0
-	,(sum += args+sum)...
-	printf("val %i\n",sum)
-}
+
+
 
 main := !(int argc, char^^ argv) -> int
 {
+	val := int^
+	val = null
+	val?^ = 2
+	printf("here %i\n",val?^)
 
-	wut(1,2,3,4)
 	//handl := dlopen("libvulkan.so.1",2)
 
 	//vkLoadAddr = dlsym(handl,"vkGetInstanceProcAddr")

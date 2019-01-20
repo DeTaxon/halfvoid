@@ -47,18 +47,39 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	
 	if tr.Down != null and tr.Down.Right != null
 	{
-		//if tr.Down.Right.GetValue() == "?"
-		//{
-		//	qObject := new QuestionBox()
-		//	qTree := tr.Down
-		//	replObject := new Object
-		//	qObject.paramObject = replObject 
-		//	ReplaceNode(itUp,qObject)
-		//	ReplaceNode(tr,replNode)
-		//	qObject.Down.Right = itUp
-		//	itUp.Left = qObject.Down
-		//	itUp.Up = qObject
-		//}
+		if tr.Down.Right.GetValue() == "or"
+		{
+			newNode := new FlowOr()
+			ReplaceNode(tr,newNode)
+			newNode.Down = tr.Down
+			PopOutNode(tr.Down.Right)
+			newNode.Down.SetUp(newNode)
+			if tr == itUp return newNode
+			return itUp
+		}
+		if tr.Down.Right.GetValue() == "and"
+		{
+			newNode := new FlowAnd()
+			ReplaceNode(tr,newNode)
+			newNode.Down = tr.Down
+			PopOutNode(tr.Down.Right)
+			newNode.Down.SetUp(newNode)
+			if tr == itUp return newNode
+			return itUp
+		}
+		if tr.Down.Right.GetValue() == "?"
+		{
+			replObject := new Object
+			qObject := new QuestionBox(replObject,false)
+			qTree := tr.Down
+			ReplaceNode(itUp,qObject)
+			ReplaceNode(tr,replObject)
+			qObject.Down = qTree
+			qObject.Down.Right = itUp
+			qObject.Down.SetUp(qObject)
+			itUp.Left = qObject.Down
+			return qObject
+		}
 		if tr.Down.Right.GetValue() == "..."
 		{
 			vargName := null->{string}
