@@ -73,7 +73,8 @@ QuestionBox := class extend ControlFlowBox
 					ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
 					StepTwo = true
 				}else{
-					EmitError("question type is not a pointer")
+					Down.Print(0)
+					EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
 				}
 			}else{
 				if Down.Right.GetType() != GTypeBool

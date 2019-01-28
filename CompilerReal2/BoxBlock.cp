@@ -250,7 +250,7 @@ BoxBlock := class extend Object
 			itr := Down
 			while itr != null
 			{
-				if not itr is ObjData {
+				if not itr is ObjData and not itr.GetValue() == "?or??"{
 					itr = itr.Right
 					continue
 				}

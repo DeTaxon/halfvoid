@@ -17,6 +17,8 @@ repair: $(wildcard CompilerReal2/*.cp)
 
 test2: main2.cp
 	./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2
+test2t: main2.cp
+	./c.out main2.cp $(ForcedLibs) --tree --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2g: main2.cp
 	gdb  --args ./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2
 gdbc: $(wildcard CompilerReal2/*.cp) 

@@ -27,13 +27,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	if tr.GetValue() == "{}" return null
 	if tr.Down == null return null
 	
-	itr := tr.Down
-	while itr != null
-	{
-		mbRes := TryParseMacro(itr,itUp)
-		if mbRes != null return mbRes
-		itr = itr.Right
-	}
 		
 	if tr.GetValue() == "()" and tr.Left == null and tr.Down != null and tr.Down.Right == null
 	{
@@ -44,7 +37,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		return itUp
 	}
-	
 	if tr.Down != null and tr.Down.Right != null
 	{
 		if tr.Down.Right.GetValue() == "or"
@@ -69,16 +61,47 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		if tr.Down.Right.GetValue() == "?"
 		{
+			forceToBool := false
+			toDownd := tr
+			prevNode := tr
+
+			while toDownd != null
+			{
+				if toDownd.GetValue() == "while()" or toDownd.GetValue() == "~if()"
+					or toDownd.GetValue() == "if()"
+					or toDownd.GetValue() == "?or??"
+				{
+					if toDownd is QuestionBox
+					{
+					}else{
+						toDownd = prevNode
+						forceToBool = true
+						break
+					}
+				}
+				if toDownd == itUp
+					break
+				prevNode = toDownd
+				toDownd = toDownd.Up
+			}
+			if toDownd == null{
+				itUp.EmitError("problem at macro\n")
+				return null
+			}
+
 			replObject := new Object
-			qObject := new QuestionBox(replObject,false)
+			qObject := new QuestionBox(replObject,forceToBool)
 			qTree := tr.Down
-			ReplaceNode(itUp,qObject)
+			ReplaceNode(toDownd,qObject)
 			ReplaceNode(tr,replObject)
 			qObject.Down = qTree
-			qObject.Down.Right = itUp
+			qObject.Down.Right = toDownd
 			qObject.Down.SetUp(qObject)
-			itUp.Left = qObject.Down
-			return qObject
+			toDownd.Left = qTree
+			if toDownd == itUp{
+				return qObject
+			}
+			return itUp
 		}
 		if tr.Down.Right.GetValue() == "..."
 		{
@@ -140,6 +163,14 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				return preRes
 			}
 		}
+	}
+
+	itr := tr.Down
+	while itr != null
+	{
+		mbRes := TryParseMacro(itr,itUp)
+		if mbRes != null return mbRes
+		itr = itr.Right
 	}
 
 	if tr.Down.Right == null return null

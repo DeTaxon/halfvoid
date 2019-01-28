@@ -6,14 +6,33 @@ vkCreateInstance := PFN_vkCreateInstance
 
 
 
+testSt := Stack.{int}
+
+huh := !() -> void
+{
+	printf("----\n")
+	printf("1: %i\n",testSt.Start?.Data)
+	printf("2: %i\n",testSt.Start?.Next?.Data)
+	printf("3: %i\n",testSt.Start?.Next?.Next?.Data)
+
+	if testSt.Start?.Next?.Data == 16
+	{
+		printf("hallo\n")
+	}
+}
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	val := int^
-	val = null
-	val?^ = 2
-	printf("here %i\n",val?^)
+	huh()
+	testSt.Push(234)
+	huh()
+	testSt.Push(456)
+	huh()
+	testSt.Push(16)
+	huh()
+
+
 
 	//handl := dlopen("libvulkan.so.1",2)
 
