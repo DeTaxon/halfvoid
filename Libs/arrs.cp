@@ -131,7 +131,7 @@ Stack := class .{@T}
 	}
 	"=" := !(Stack.{T} toSet) -> void
 	{
-		for toSet Push(it)
+		for toSet this.Push(it)
 	}
 	"~For" := !() -> StackTypeIter.{T}
 	{
@@ -202,7 +202,7 @@ Queue := class .{@T} extend Stack.{T}
 	}
 	"=" := !(Stack.{T} toSet) -> void
 	{
-		for toSet Push(it)
+		for toSet this.Push(it)
 	}
 }
 QueueSet := class .{@T} extend Stack.{T}

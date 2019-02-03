@@ -6,12 +6,22 @@ FlushTempMemory := !() -> void
 	gTemporaryPool.FlushMem()
 }
 
+TempAsked := int
+RealAsked := int
+
+PrintMemUse := !() -> void
+{
+	printf("new temp called %i , new malloc called %i\n",TempAsked,RealAsked)
+}
+
 "new" := !() . {@R} -> void^ 
 {
 	val := R->TypeSize
 	if $temp {
+		TempAsked++
 		return gTemporaryPool.GetMem(val,R->Align)
 	}
+	RealAsked++
 	newNode :=  malloc(val)
 	memset(newNode,0,val)
 	return newNode

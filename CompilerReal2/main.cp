@@ -180,6 +180,7 @@ main := !(int argc,char^^ argv) -> int
 	//CleanStrs() shiet
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())
+	PrintMemUse()
 	return 0
 }
 

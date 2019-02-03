@@ -5,6 +5,35 @@
 #import "FuncInputBox.cp"
 #import "DebugStuf.cp"
 
+
+FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void
+{	
+	if itm != null{
+		for v,k : itm.Line.itAttrs
+		{
+			//printf("adding %s\n",k)
+			itBox.itAttrs[k] = v
+		}
+	}
+
+	itr := itm
+	while itr != null
+	{
+		if itr is BoxFuncBody
+			break
+		itr = itr.Up
+	}
+	if itr == null return void
+
+	asFunc := itr->{BoxFuncBody^}
+
+	for val,key : asFunc.ItAttrs
+	{	
+		if itBox.itAttrs.TryFind(key) == null
+			itBox.itAttrs[key] = val
+	}
+}
+
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
 	iter := ToParse
@@ -131,7 +160,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			asNeed4 := asNeed3.ToClass
 			
 			box := new FuncInputBox() ; $temp
-			box.itPars.Emplace(asNeed2,true)
+			FillAttrs(box^,iter)
+			box.itPars.Emplace(asNeed2,true) 
 			TrimCommas(iter.Right)
 
 			iter2 := iter.Right.Down
@@ -240,13 +270,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iterD := iterPre.Down
 
 				box := new FuncInputBox() ; $temp
+				FillAttrs(box^,iter)
 
 				box.itPars.Emplace(iterPre.Left.GetType(),true)
 
 				while iterD != null
 				{
 					if iterD.GetValue() != ","
-						box.itPars.Emplace(iterD.GetType(),iterD.IsRef())
+						box.itPars.Emplace(iterD.GetType(),iterD.IsRef()) ; $temp
 					iterD = iterD.Right
 				}
 
@@ -360,8 +391,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}
 
 					box := new FuncInputBox() ; $temp
+					FillAttrs(box^,iter)
 					
-					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
+					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) ; $temp
 					iterK := iter.Right.Right.Down
 					while iterK != null
 					{
@@ -406,7 +438,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						box1 := new FuncInputBox() ; $temp
 						box1.itPars.Emplace(LT,iter.Left.IsRef())
-						box1.itConsts.Push(new ObjStr(asName))
+						box1.itConsts.Push(new ObjStr(asName)) 
 						func := FindFunc(".",iter,box1^,false)
 						if func == null return null
 						return MakeSimpleCall(func,iter.Left)
@@ -500,13 +532,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
 					itB.itConsts.Push(new ObjType(useType)) ; $temp
 					
-					if iter.Line != null{
-						for v,k : iter.Line.itAttrs
-						{
-							//printf("adding %s\n",k)
-							itB.itAttrs[k] = v
-						}
-					}
+					
+					FillAttrs(itB^,iter)
 
 					func := FindFunc("new",iter,itB^,true)
 					if func != null
@@ -566,6 +593,7 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 				cls := asNeed.ToClass
 
 				oBox := new FuncInputBox() ; $temp
+				FillAttrs(oBox^,pars)
 
 
 				iter := pars
@@ -657,6 +685,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
 {
 	box := new FuncInputBox() ; $temp
+	FillAttrs(box^,G)
 
 	TrimCommas(G)
 	P := G.Down
@@ -665,10 +694,10 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	while iterT != null
 	{
-		box.itPars.Emplace(iterT.GetType(),iterT.IsRef())
+		box.itPars.Emplace(iterT.GetType(),iterT.IsRef()) ; $temp
 		iterT = iterT.Right
 	}
-	for it : consts box.itConsts.Push(it)
+	for it : consts box.itConsts.Push(it) ; $temp
 
 	SomeFunc := FindFunc(Name,G,box^,false)
 
@@ -1363,6 +1392,7 @@ NewCallOne := class extend SomeFuncCall
 		{
 			box := new FuncInputBox() ; $temp
 			box.itConsts.Push(new ObjType(newType)) ; $temp
+			FillAttrs(box^,this&)
 
 			if Line != null {
 				for v,k : Line.itAttrs box.itAttrs[k] = v
@@ -1548,6 +1578,7 @@ NewCall := class extend SomeFuncCall
 			{
 				b := new FuncInputBox() ; $temp
 				b.itPars.Emplace(toCreate,true)
+				FillAttrs(b^,toCr)
 
 				iter := ConstrPars
 				while iter != null
@@ -1580,6 +1611,7 @@ NewCall := class extend SomeFuncCall
 	}
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
+		oldUp := toCr.Up
 		box := new FuncInputBox() ; $temp
 		//ResultType = toCreate.GetPoint()
 		//Down = new TypeSizeCall(toCreate)
@@ -1588,6 +1620,7 @@ NewCall := class extend SomeFuncCall
 
 		box.itPars.Emplace(GTypeInt,false)
 		box.itConsts.Push(new ObjType(toCreate))
+		FillAttrs(box^,oldUp)
 
 		fun := FindFunc("new",this&,box^,false)
 		if fun == null

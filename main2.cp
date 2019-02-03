@@ -4,34 +4,41 @@ vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProper
 vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
 vkCreateInstance := PFN_vkCreateInstance
 
-
-
-testSt := Stack.{int}
-
-huh := !() -> void
-{
-	printf("----\n")
-	printf("1: %i\n",testSt.Start?.Data)
-	printf("2: %i\n",testSt.Start?.Next?.Data)
-	printf("3: %i\n",testSt.Start?.Next?.Next?.Data)
-
-	if testSt.Start?.Next?.Data == 16
-	{
-		printf("hallo\n")
+CheckVal := !(a) -> void
+{	
+	if $temp {
+		printf("Check temp\n")
+	}else{
+		printf("Check regular\n")
 	}
 }
 
 
+LikeAStack := class
+{
+	x := int
+	Push := !(a) -> void
+	{
+		if $temp{
+			printf("Push temp\n")
+		CheckVal(a)
+		}else{
+			printf("Push regular\n")
+		CheckVal(a)
+		}
+	}
+}
+
+snikers := class
+{
+	st := LikeAStack
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	huh()
-	testSt.Push(234)
-	huh()
-	testSt.Push(456)
-	huh()
-	testSt.Push(16)
-	huh()
+	asS := new snikers ; $temp
 
+	asS.st.Push(1) 
 
 
 	//handl := dlopen("libvulkan.so.1",2)

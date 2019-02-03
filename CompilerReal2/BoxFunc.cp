@@ -504,6 +504,7 @@ BoxTemplate := class extend BoxFunc
 		newFunc.ParseBlock()
 		if MyFuncType != null newFunc.funcUserParamsCount = MyFuncType.ParsCount
 		newFunc.vargsName = vargsName
+		newFunc.CountAttrs = true
 
 		return newFunc	
 	}
@@ -540,6 +541,9 @@ BoxFunc := class extend Object
 	IsRetComplex := bool
 	IsRetRef := bool
 	IsStatic := bool
+	IsInvalid := bool
+
+	CountAttrs := bool
 
 	VirtualId := int
 
@@ -578,7 +582,29 @@ BoxFunc := class extend Object
 	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{
 		if itBox.itConsts.Size() != this.ItConsts.Size() return false
-		if itBox.itAttrs.Size() != this.ItAttrs.Size() return false
+
+		if CountAttrs
+		{
+			if itBox.itAttrs.Size() < this.ItAttrs.Size() return false
+			for val,key : itBox.itAttrs
+			{
+				sRes :=  ItAttrs.TryFind(key)
+				if sRes != null
+				{
+					if not CmpConstObjs(val,sRes^)
+						return false
+				}else{
+					if val is ObjBool
+					{
+						asBool := val->{ObjBool^}
+						if asBool.MyBool
+							return false
+					}else{
+						return false
+					}
+				}
+			}
+		}
 
 		for ct : itBox.itConsts , i : 0, tc : this.ItConsts
 		{

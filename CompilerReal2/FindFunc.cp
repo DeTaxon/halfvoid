@@ -21,30 +21,6 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int
 			found.Push(AsNeed)	
 		}
 	}
-	//if ii is ImportCmd //ii.GetValue() == "#import cp"
-	//{
-	//	asNeed := ii->{ImportCmd^}
-	//	fl := asNeed.GetFile()
-
-
-	//	if fl != null
-	//	{
-	//		//res := fl.VisibleParams.TryFind(name)
-	//		//if res != null {
-	//		//	for res^ {
-	//		//		found.Push(it)
-	//		//	}
-	//		//}
-
-	//		//Found := Searched.Contain(fl.fileId)
-
-	//		//if not Found
-	//		//{
-	//		//	Searched.Push(fl.fileId)
-	//		//	CollectParamsAllByName(name,fl.Down,found,Searched)
-	//		//}
-	//	}
-	//}
 }
 
 CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
@@ -86,26 +62,10 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 		}
 	}
 	
-	//printf("a\n")
 	res := ForcedGlobalParams.TryFind(name)
-	//printf("c %p\n",res)
 	if res != null{
 		for res^ found.Push(it)
 	}
-	//printf("b\n")
-	//for lb : ForcedLibs
-	//{
-	//	res := lb.VisibleParams.TryFind(name)
-	//	if res != null{
-	//		for res^ found.Push(it)
-	//	}
-	//	//Found := Searched.Contain(lb.fileId)
-	//	//if not Found
-	//	//{
-	//	//	Searched.Push(lb.fileId)
-	//	//	CollectParamsAllByName(name,lb.Down,found,Searched)
-	//	//}
-	//}
 }
 
 
@@ -126,13 +86,13 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					if SomeBug
 					{
 						if AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual
-							found.Push(AsBoxFunc)
+							found.Push(AsBoxFunc) 
 					}else{
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
 						if not IsWord(name) metApp = true
 						if (not AsBoxFunc.IsSuffix) and not AsBoxFunc.IsVirtual and metApp
-							found.Push(AsBoxFunc)
+							found.Push(AsBoxFunc) 
 					}
 				}else
 				if iterW.GetValue() == "!(){}"

@@ -4,6 +4,8 @@
 //FuncConstsArray := type FatArray.{Object^,1024}
 //FuncAttrsArray := type AVLMap.{string,Object^}
 
+AttrArrayType := type AVLMap.{string,Object^}
+
 FuncInputBox := class
 {	
 	//itPars := FatArray.{Pair.{Type^,bool},1024} //FuncTypesArray

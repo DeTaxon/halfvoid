@@ -14,8 +14,8 @@ Object := class{
 	Left,Right,Down,Up := Object^
 	Line :=  ObjLine^
 
-	IsInvalid := bool
 	visitedWork := Bitset.{4}
+
 
 	IsConst := virtual false
 
