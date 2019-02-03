@@ -14,6 +14,8 @@ Object := class{
 	Left,Right,Down,Up := Object^
 	Line :=  ObjLine^
 
+	inhAttrs := AttrArrayType^
+
 	visitedWork := Bitset.{4}
 
 

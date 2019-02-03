@@ -392,6 +392,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 					box := new FuncInputBox() ; $temp
 					FillAttrs(box^,iter)
+
+					if LL.inhAttrs != null
+					{
+						for v,k : LL.inhAttrs^
+						{
+							if box.itAttrs.TryFind(k) == null
+								box.itAttrs[k] = v
+						}
+					}
 					
 					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) ; $temp
 					iterK := iter.Right.Right.Down

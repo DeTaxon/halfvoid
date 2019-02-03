@@ -31,7 +31,9 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 				if may.Down.GetValue() == "i:=2"
 				{
-					return new ParamNaturalCall(dynCast.MyStr,may.Down)
+					preRes := new ParamNaturalCall(dynCast.MyStr,may.Down)
+					preRes.inhAttrs = may.inhAttrs
+					return preRes
 				}
 			}else
 			if may.GetValue() == "i:=2"

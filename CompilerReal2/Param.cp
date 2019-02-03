@@ -111,6 +111,7 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Line != null inhAttrs = Line.itAttrs&
 			if Up != null and Up is BoxFile
 			{
 				asNeed := Up->{BoxFile^}
@@ -221,6 +222,7 @@ ObjParam := class extend Object
 						{
 							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
+							Down.inhAttrs = inhAttrs
 							Down.Right = val
 							val.Right = null
 							val.Left = Down
@@ -229,6 +231,7 @@ ObjParam := class extend Object
 						}else{
 							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
+							Down.inhAttrs = inhAttrs
 							Down.SetUp(this&)
 						}
 					}
