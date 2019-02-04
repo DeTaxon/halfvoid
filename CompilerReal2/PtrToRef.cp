@@ -9,6 +9,7 @@ PtrToRef := class extend ObjResult
 		ReplaceNode(toReplace,this&)
 		Down = temp
 		Down.Up = this&
+		inhAttrs = toReplace.inhAttrs
 	}
 	PrintPointPre := virtual !(sfile f) -> void
 	{

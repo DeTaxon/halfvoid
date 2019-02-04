@@ -105,7 +105,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		if IsTemplate(ParamsObj)
+		if  IsTemplate(ParamsObj)
 		{
 			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
@@ -425,7 +425,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if itBox.itPars.Size() > FType.ParsCount
 		{
-			retRefArray = new bool[itBox.itPars.Size()] ; $temp
+			retRefArray = new bool[itBox.itPars.Size()] 
 			for i : itBox.itPars.Size()
 				retRefArray[i] = MyFuncType.ParsIsRef[i]
 			for it, i : itBox.itPars
@@ -688,7 +688,7 @@ BoxFunc := class extend Object
 			iter = iter.Right
 		}
 
-		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp
+		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) 
 
 		IsParRef := false
 		indType := 0
@@ -1107,7 +1107,7 @@ BoxFuncBody := class extend BoxFunc
 
 					if asC.Parent != null
 					{
-						box5 := new FuncInputBox() ; $temp
+						box5 := new FuncInputBox() 
 						stp := asC.Parent
 						box5.itPars.Emplace(stp.ClassType,true)
 						func2 := asC.Parent.GetFunc("~this",box5^,true)
@@ -1321,7 +1321,7 @@ BoxFuncBody := class extend BoxFunc
 					func3 := itC.GetFunc("~this",box3^,true)
 					if func3 != null
 					{
-						box4 := new FuncInputBox() ; $temp
+						box4 := new FuncInputBox() 
 						box4.itConsts.Push(new ObjStr(nowField.ItName))
 						fnc := asC.AutoFieldTemplate
 						pr := fnc.GetPriority(box4^)

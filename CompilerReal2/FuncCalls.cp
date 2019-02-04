@@ -43,7 +43,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	if iter is ObjIndent //iter.GetValue() == "~ind"
 	{
 		asInd := iter->{ObjIndent^}
-		box := new FuncInputBox() ; $temp
+		box := new FuncInputBox() 
 		box.itConsts.Push(new ObjStr(asInd.MyStr)) 
 		someF := FindFunc(".",iter,box^,true)
 
@@ -62,10 +62,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		asNeed := asCl1.Base->{TypeClass^}.ToClass
 		
-		itBox := new FuncInputBox() ; $temp
+		itBox := new FuncInputBox() 
 
 		itBox.itPars.Emplace(asCl1.Base,true)
-		itBox.itConsts.Push(new ObjType(asCl2)) ; $temp
+		itBox.itConsts.Push(new ObjType(asCl2)) 
 		
 		func := asNeed.VirtualCheck.GetFunc(itBox^)
 		if func == null return null
@@ -85,7 +85,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if tryCmp != null{
 				return tryCmp
 			}
-			box := new FuncInputBox() ; $temp 
+			box := new FuncInputBox() 
 
 			iterY := iter.Right.Down
 
@@ -159,7 +159,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			asNeed3 := asNeed2->{TypeClass^}
 			asNeed4 := asNeed3.ToClass
 			
-			box := new FuncInputBox() ; $temp
+			box := new FuncInputBox() 
 			FillAttrs(box^,iter)
 			box.itPars.Emplace(asNeed2,true) 
 			TrimCommas(iter.Right)
@@ -186,7 +186,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter is ObjType
 				{
-					box := new FuncInputBox() ; $temp
+					box := new FuncInputBox() 
 
 					objT := iter->{ObjType^}
 
@@ -198,7 +198,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}
 				}
 
-				box := new FuncInputBox() ; $temp
+				box := new FuncInputBox() 
 
 
 				box.itConsts.Push(iter)
@@ -216,7 +216,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.Right.GetValue() == "()"
 				{
 					Cs := Queue.{Object^}()
-					Cs.Push(new ObjType(asNeed2)) ; $temp
+					Cs.Push(new ObjType(asNeed2)) 
 					return OneCall(". this",iter.Right,Cs,false)
 				}
 			}
@@ -269,7 +269,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iterL := iterPre.Left
 				iterD := iterPre.Down
 
-				box := new FuncInputBox() ; $temp
+				box := new FuncInputBox() 
 				FillAttrs(box^,iter)
 
 				box.itPars.Emplace(iterPre.Left.GetType(),true)
@@ -277,7 +277,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				while iterD != null
 				{
 					if iterD.GetValue() != ","
-						box.itPars.Emplace(iterD.GetType(),iterD.IsRef()) ; $temp
+						box.itPars.Emplace(iterD.GetType(),iterD.IsRef()) 
 					iterD = iterD.Right
 				}
 
@@ -306,7 +306,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		if iter is ObjSuffix //iter.GetValue() == "~suffix"
 		{
 			if iter.Left.GetType() == null return null
-			sBox := new FuncInputBox() ; $temp
+			sBox := new FuncInputBox() 
 
 			AsSuf := iter->{ObjSuffix^}
 			sBox.itPars.Emplace(iter.Left.GetType(),false)
@@ -347,7 +347,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if iter.GetValue() == "->"
 				{
-					box := new FuncInputBox() ; $temp
+					box := new FuncInputBox() 
 					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
 					box.itConsts.Push(new ObjStr(asName))
 
@@ -390,7 +390,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						asClass = null
 					}
 
-					box := new FuncInputBox() ; $temp
+					box := new FuncInputBox() 
 					FillAttrs(box^,iter)
 
 					if LL.inhAttrs != null
@@ -402,7 +402,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						}
 					}
 					
-					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) ; $temp
+					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) 
 					iterK := iter.Right.Right.Down
 					while iterK != null
 					{
@@ -445,7 +445,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 					if LT is TypeStandart
 					{
-						box1 := new FuncInputBox() ; $temp
+						box1 := new FuncInputBox() 
 						box1.itPars.Emplace(LT,iter.Left.IsRef())
 						box1.itConsts.Push(new ObjStr(asName)) 
 						func := FindFunc(".",iter,box1^,false)
@@ -465,7 +465,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						}
 					}
 
-					box2 := new FuncInputBox() ; $temp
+					box2 := new FuncInputBox() 
 
 					box2.itPars.Emplace(asClass.ClassType,true)
 					box2.itConsts.Push(new ObjStr(asName))
@@ -485,7 +485,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						iter = new PtrToRef(iter)
 					}
-					return MakeSimpleCall(roll,iter)
+					preRes :=  MakeSimpleCall(roll,iter)
+					if preRes != null {
+						preRes.inhAttrs = iter.inhAttrs
+					}
+					return preRes
 				}
 			}
 		}
@@ -537,9 +541,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.Right.Right.GetValue() != "()"
 				{
 					irr := iter.Right.Right
-					itB := new FuncInputBox() ; $temp
+					itB := new FuncInputBox() 
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
-					itB.itConsts.Push(new ObjType(useType)) ; $temp
+					itB.itConsts.Push(new ObjType(useType)) 
 					
 					
 					FillAttrs(itB^,iter)
@@ -601,7 +605,7 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 				asNeed := asNeedPre->{TypeClass^}
 				cls := asNeed.ToClass
 
-				oBox := new FuncInputBox() ; $temp
+				oBox := new FuncInputBox() 
 				FillAttrs(oBox^,pars)
 
 
@@ -681,7 +685,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 					{
 						ErrorLog.Push("can not parse type in .{}\n")
 					}else{
-						Cs.Push(new ObjType(tp)) ; $temp
+						Cs.Push(new ObjType(tp)) 
 					}
 				}
 			}
@@ -693,7 +697,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 }
 OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
 {
-	box := new FuncInputBox() ; $temp
+	box := new FuncInputBox() 
 	FillAttrs(box^,G)
 
 	TrimCommas(G)
@@ -703,10 +707,10 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	while iterT != null
 	{
-		box.itPars.Emplace(iterT.GetType(),iterT.IsRef()) ; $temp
+		box.itPars.Emplace(iterT.GetType(),iterT.IsRef()) 
 		iterT = iterT.Right
 	}
-	for it : consts box.itConsts.Push(it) ; $temp
+	for it : consts box.itConsts.Push(it) 
 
 	SomeFunc := FindFunc(Name,G,box^,false)
 
@@ -1399,8 +1403,8 @@ NewCallOne := class extend SomeFuncCall
 	{
 		if pri == State_GetUse	
 		{
-			box := new FuncInputBox() ; $temp
-			box.itConsts.Push(new ObjType(newType)) ; $temp
+			box := new FuncInputBox() 
+			box.itConsts.Push(new ObjType(newType)) 
 			FillAttrs(box^,this&)
 
 			if Line != null {
@@ -1435,7 +1439,7 @@ NewCallOne := class extend SomeFuncCall
 				{
 					if newType is TypeClass
 					{
-						box := new FuncInputBox() ; $temp
+						box := new FuncInputBox() 
 
 						box.itPars.Emplace(newType,true)
 						iter3 := Down
@@ -1494,10 +1498,10 @@ DeleteCall := class extend SomeFuncCall
 	{
 		if pri == State_GetUse
 		{
-			box := new FuncInputBox() ; $temp
+			box := new FuncInputBox() 
 
 			box.itPars.Emplace(VoidPType,false)
-			box.itConsts.Push(new ObjType(Down.GetType())) ; $temp
+			box.itConsts.Push(new ObjType(Down.GetType())) 
 
 			func := FindFunc("delete",Up,box^,false)
 
@@ -1530,7 +1534,7 @@ DeleteCall := class extend SomeFuncCall
 				//	{
 					if UseDestructors
 					{
-						box2 := new FuncInputBox() ; $temp
+						box2 := new FuncInputBox() 
 						box2.itPars.Emplace(Down.GetType(),Down.IsRef())
 						func2 := FindFunc("~this",this&,box2^,true)
 						if func2 != null
@@ -1585,7 +1589,7 @@ NewCall := class extend SomeFuncCall
 			
 			if toCreate is TypeClass
 			{
-				b := new FuncInputBox() ; $temp
+				b := new FuncInputBox() 
 				b.itPars.Emplace(toCreate,true)
 				FillAttrs(b^,toCr)
 
@@ -1621,7 +1625,7 @@ NewCall := class extend SomeFuncCall
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
 		oldUp := toCr.Up
-		box := new FuncInputBox() ; $temp
+		box := new FuncInputBox() 
 		//ResultType = toCreate.GetPoint()
 		//Down = new TypeSizeCall(toCreate)
 		Down = toCr

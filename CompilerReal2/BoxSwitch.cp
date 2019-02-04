@@ -43,7 +43,7 @@ BoxSwitch := class extend Object
 					{
 						if iter.Down.GetType() != null
 						{
-							b := new FuncInputBox() ; $temp
+							b := new FuncInputBox() 
 
 							b.itPars.Emplace(Down.GetType(),Down.IsRef())
 							b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())

@@ -29,9 +29,9 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 
 	if isRef and ToType is TypeClass and itemType is TypeClass
 	{
-		box := new FuncInputBox() ; $temp
+		box := new FuncInputBox() 
 		box.itPars.Emplace(itemType,isRef)
-		box.itConsts.Push(new ObjType(ToType)) ;$temp
+		box.itConsts.Push(new ObjType(ToType)) 
 		preRet :=  GlobalRefExc^.GetFunc(box^)
 		return preRet
 	}
@@ -47,10 +47,10 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	}
 
 
-	b := new FuncInputBox() ; $temp 
+	b := new FuncInputBox()  
 
 	b.itPars.Emplace(itemType,isRef)
-	b.itConsts.Push(new ObjType(ToType)) ; $temp
+	b.itConsts.Push(new ObjType(ToType))
 
 	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func

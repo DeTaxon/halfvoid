@@ -326,7 +326,7 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	}
 
 	Priors := int^
-	if FoundC != 0 Priors = new int[FoundC] else Priors = null ; $temp
+	if FoundC != 0 Priors = new int[FoundC] else Priors = null 
 
 	templsPrior := int^
 	templsPrior = null
@@ -462,7 +462,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 	if inType is TypeClass //inType.GetType() == "class"
 	{
-		itFc := new FuncInputBox ; $temp
+		itFc := new FuncInputBox 
 		itFc.itPars.Emplace(inType,true)
 		itFc.itConsts.Push(new ObjType(funcType))
 

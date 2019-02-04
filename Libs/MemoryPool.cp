@@ -35,7 +35,7 @@ StupidMemoryPool := class .{@PageSize}
 		if newSize % align != 0 {
 			newSize += align
 		}
-		if newSize > PageSize
+		if newSize >= PageSize
 		{
 			itBusyPages.Push(itPage)
 			itPage = GetPage()
