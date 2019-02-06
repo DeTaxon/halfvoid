@@ -105,7 +105,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		if  IsTemplate(ParamsObj)
+		if IsTemplate(ParamsObj)
 		{
 			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}

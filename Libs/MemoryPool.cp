@@ -31,20 +31,21 @@ StupidMemoryPool := class .{@PageSize}
 		if itPage == null{
 			itPage = GetPage()
 		}
-		newSize := itLoaded + size
-		if newSize % align != 0 {
-			newSize += align
+		newSize := itLoaded
+		if align > 1 {
+			newSize +=  0xFF % align
+			newSize -= newSize % align
 		}
-		if newSize >= PageSize
+		itLoaded = newSize + size
+
+		if itLoaded >= PageSize
 		{
 			itBusyPages.Push(itPage)
 			itPage = GetPage()
-			itLoaded = 0
+			itLoaded = size
 			return itPage
 		}
-		offs := newSize - size
-		itLoaded = newSize
-		return itPage[offs]&
+		return itPage[newSize]&
 	}
 	FreeMem := !(void^ itm) -> void
 	{

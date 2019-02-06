@@ -8,7 +8,7 @@
 #import "OMPStyle.cp"
 
 
-ObjectsPool := StupidMemoryPool.{64000000}
+ObjectsPool := StupidMemoryPool.{8388608}
 
 Object := class{
 	Left,Right,Down,Up := Object^
