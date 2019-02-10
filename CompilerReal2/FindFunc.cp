@@ -296,21 +296,13 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 			CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
 		//}
 	}
-	for itQ : BuiltInFuncs
-	{
-		if itQ.FuncName == name
-		{
-			Funcs.Push(itQ)
-		}
-	}
 
-	for itH : BuiltInTemplates
-	{
-		if itH.FuncName == name
-		{
-			Templs.Push(itH)
-		}
-	}
+	if BuiltInFuncs[^].FuncName == name
+		Funcs.Push(it)
+
+	if BuiltInTemplates[^].FuncName == name
+		Templs.Push(it)
+
 	func2 := GetBestFunc(itBox,Funcs,Templs)
 	return func2
 
@@ -326,21 +318,18 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	}
 
 	Priors := int^
-	if FoundC != 0 Priors = new int[FoundC] else Priors = null 
+	if FoundC != 0 Priors = new int[FoundC] else Priors = null ; $temp
 
 	templsPrior := int^
 	templsPrior = null
-	if not templs.Empty() templsPrior = new int[templs.Size()] else templsPrior = null
+	if not templs.Empty() 
+		templsPrior = new int[templs.Size()] ; $temp
+	else templsPrior = null
 
 	if FoundC != 0 and itBox.itPars.Size() == 0
 	{
-		for funcs
-		{
-			if it.MyFuncType.ParsCount == 0 
-			{
-				return it
-			}
-		}
+		if funcs[^].MyFuncType.ParsCount == 0
+			return it
 	}
 	//for it : FoundC, fFuncs : funcs
 	//{
@@ -350,10 +339,10 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	ComputePriors(funcs,itBox,Priors)
 	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }
 
-	for  itTmpl : templs, it : 0
+	for  itTmpl,i : templs
 	{
-		templsPrior[it] = itTmpl.GetPriority(itBox)
-		if templsPrior[it] == 0 break
+		templsPrior[i] = itTmpl.GetPriority(itBox)
+		if templsPrior[i] == 0 break
 	}
 
 	
@@ -370,7 +359,7 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 
 ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> void
 {
-	for it : Fun, h : 0
+	for it,h : Fun
 	{
 		if it.IsSameConsts(itBox)
 			priors[h] = ComputePriorFunc(it.MyFuncType,itBox)
@@ -462,9 +451,9 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 	if inType is TypeClass //inType.GetType() == "class"
 	{
-		itFc := new FuncInputBox 
+		itFc := new FuncInputBox ; $temp 
 		itFc.itPars.Emplace(inType,true)
-		itFc.itConsts.Push(new ObjType(funcType))
+		itFc.itConsts.Push(new ObjType(funcType)) ; $temp
 
 		asN := inType->{TypeClass^}.ToClass
 		if asN.GetFunc("->{}",itFc^,false) != null return 2

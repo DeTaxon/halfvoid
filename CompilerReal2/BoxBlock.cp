@@ -75,28 +75,14 @@ BoxBlock := class extend Object
 	{
 			woot := Queue.{Object^}()
 
-			itrr := Down
-			while itrr != null
-			{
-				if itrr.GetValue() == "{}"
-				{
-					woot.Push(itrr)
-				}
-				itrr = itrr.Right
-			}
-			for woot
-			{
-				MakeItBlock(it)
-			}
+			if Down[^].GetValue() == "{}"
+				woot.Push(it)
+			MakeItBlock(woot[^])
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
-		iter := Items.Start
-		while iter != null
-		{
-			if iter.Data.ItName == name return iter.Data.Down
-			iter = iter.Next
-		}
+		if Items[^].ItName == name 
+			return it.Down
 		return null
 	}
 	GetValue := virtual !() -> string
@@ -105,10 +91,7 @@ BoxBlock := class extend Object
 	}
 	PrintSomePath := !(sfile f, string PathName, int num,string OutName) -> void
 	{
-		i := 0	
-		iter := Down
-
-		while iter != null
+		for iter,i : Down
 		{
 			//f << "br label %" << PathName << num << "in" << i << "\n"	
 			f << PathName << num << "in" << i << ":\n"
@@ -118,19 +101,15 @@ BoxBlock := class extend Object
 			}else{
 				f << "br label %" << PathName << num << "in" << i - 1 << "\n"
 			}
-			i += 1
-			iter = iter.Right
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		iter := Down
 		i := 0
-		while iter != null
+		for iter : Down
 		{
 			iter.PrintInBlock(f)
 			i += 1
-			iter = iter.Right
 		}
 		if usePaths {
 			if i != 0 f << "br label %ContPath" << ItId << "id0in" << i - 1 << "\n"
@@ -174,21 +153,16 @@ BoxBlock := class extend Object
 			return Up.GetOutPath(this&,typ,size)
 		}
 
-		iter1 := Down
 		i := 0
 		found := false
-
-		while iter1 != null
+		for Down
 		{
-			if iter1 == objs
+			if it == objs
 			{
-				iter1 = null
 				found = true
-			}else
-			{
-				i += 1
-				iter1 = iter1.Right
+				break
 			}
+			i += 1
 		}
 
 		if not found
@@ -264,12 +238,7 @@ BoxBlock := class extend Object
 
 			if InClass
 			{
-				iter := this.Down
-				while iter != null
-				{
-					WorkBag.Push(iter,State_Start)
-					iter = iter.Right
-				}
+				WorkBag.Push(Down[^],State_Start)
 			}
 
 		}
@@ -321,12 +290,7 @@ BoxFile := class extend BoxBlock
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		iter := Down
-		while iter != null
-		{
-			iter.PrintGlobal(f)
-			iter = iter.Right
-		}
+		Down[^].PrintGlobal(f)
 		if DebugMode //later
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
@@ -336,12 +300,7 @@ BoxFile := class extend BoxBlock
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		iter := Down
-		while iter != null
-		{
-			iter.PrintInBlock(f)
-			iter = iter.Right
-		}
+		Down[^].PrintInBlock(f)
 		if DebugMode //later
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
@@ -355,21 +314,14 @@ BoxFile := class extend BoxBlock
 		{
 			SyntaxCompress(this&,PriorityData)
 			UnboxParams(this.Down)
-			iter := this.Down
-			while iter != null
-			{
-				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
-			}
+			WorkBag.Push(Down[^],State_Start)
 		}
 		if pri == State_BlockParamStep
 		{
 			Fnd := false
-			for ForcedLibs{
-				if it == this& {
-					Fnd = true
-					break
-				}
+			if ForcedLibs[^] == this& {
+				Fnd = true
+				break
 			}
 			if Fnd{
 				for v,k : VisibleParams
@@ -383,7 +335,7 @@ BoxFile := class extend BoxBlock
 			visited := QueueSet.{BoxFile^}()
 
 			visited.Push(this&)
-			for ImportingFiles toVisit.Push(it)
+			toVisit.Push(ImportingFiles[^])
 
 			while toVisit.NotEmpty()
 			{

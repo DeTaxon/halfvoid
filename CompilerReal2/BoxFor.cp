@@ -289,12 +289,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		iter := Down.Right
-		while iter != null
-		{
-			iter.PrintPre(f)
-			iter = iter.Right
-		}
+		Down.Right[^].PrintPre(f)
 
 		Checks := 0
 		for itemsCount if IsInvalids[it] != null Checks += 1

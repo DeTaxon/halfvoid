@@ -30,14 +30,7 @@ BoxIf := class extend Object
 		}
 		if pri == State_Syntax
 		{
-			
-			iter := Down
-
-			while iter != null
-			{
-				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
-			}
+			WorkBag.Push(Down[^],State_Start)
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
@@ -160,49 +153,30 @@ BoxWhile := class extend Object
 
 			if UseRetPath
 			{
-				iter4 := Down.Right
 				f << "br label %RetPath" << MyId << "\n"
 				f << "RetPath" << MyId << ":\n"
 
-				while iter4 != null
-				{
-					iter4.PrintDestructor(f)
-					iter4 = iter4.Right
-				}
+				Down.Right[^].PrintDestructor(f)
 				f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
 			}
 			for itSize : ContPath
 			{
 				if itSize != 0{
-
-					iter4 := Down.Right
-
 					f << "br label %ContPath" << MyId << "id" << itSize <<"size\n"
 					f << "ContPath" << MyId << "id" << itSize << "size:\n"
 
-					while iter4 != null
-					{
-						iter4.PrintDestructor(f)
-						iter4 = iter4.Right
-					}
-					
+					Down.Right[^].PrintDestructor(f)
+
 					f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
 				}
 			}
 			for itSize : BreakPath
 			{
 				if itSize != 0{
-
-					iter4 := Down.Right
-
 					f << "br label %BreakPath" << MyId << "id" << itSize <<"size\n"
 					f << "BreakPath" << MyId << "id" << itSize << "size:\n"
 
-					while iter4 != null
-					{
-						iter4.PrintDestructor(f)
-						iter4 = iter4.Right
-					}
+					Down.Right[^].PrintDestructor(f)
 					
 					f << "br label %" << Up.GetOutPath(this&,PATH_BREAK,itSize - 1) << "\n"
 				}

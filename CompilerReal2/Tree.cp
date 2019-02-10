@@ -38,12 +38,8 @@ Object := class{
 		if Right != null Right.TestNodes()
 		if Down != null Down.TestNodes()
 
-		iterW := Down
-		while iterW != null
-		{
-			if iterW.Up != this& printf("broken Up %s\n",iterW.GetValue())
-			iterW = iterW.Right
-		}
+		if Down[^].Up != this&
+			printf("broken Up %s\n")
 	}
 
 	this := !() -> void
@@ -78,12 +74,7 @@ Object := class{
 	}
 	PrintGlobalSub := !(sfile f) -> void
 	{
-		iter := Down
-		while iter != null
-		{
-			iter.PrintGlobal(f)
-			iter = iter.Right
-		}
+		Down[^].PrintGlobal(f)
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
@@ -137,8 +128,7 @@ Object := class{
 	}
 	SetUp := !(Object^ nUp) -> void
 	{
-		Up = nUp
-		if Right != null Right.SetUp(nUp)
+		this&[^].Up = nUp
 	}
 	GetType := virtual !() -> Type^
 	{
@@ -189,12 +179,28 @@ ObjLine := class
 	}
 }
 
+ForIteratorOverLineInTree := class
+{
+	itr := Object^
+	this := !(Object^ item) -> void	{ itr = item }
+	"^" := !() -> Object^ { return itr }
+	Inc := !() -> void { itr = itr.Right }
+	IsEnd := !() -> bool { return itr == null }
+}
+"~For" := !(Object^ itrOver) -> ForIteratorOverLineInTree
+{
+	return ForIteratorOverLineInTree(itrOver)
+}
+
+
+
 PushObject := !(Object^ Ad,Object^ ToAdd) -> Object^
 {
 	Ad.Right = ToAdd
 	ToAdd.Left = Ad
 	return ToAdd
 }
+
 
 Remove := !(Object^ where ) -> void
 {

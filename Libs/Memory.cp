@@ -35,8 +35,10 @@ PrintMemUse := !() -> void
 	itSi += itAl + 16
 	newNode := null->{u8^}
 	if $temp {
+		TempAsked++
 		newNode = gTemporaryPool.GetMem(itSi,itAl)->{u8^}
 	}else{
+		RealAsked++
 		newNode = malloc(itSi)->{u8^}
 		memset(newNode,0,itSi)
 	}

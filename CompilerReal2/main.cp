@@ -74,10 +74,7 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Push("type")
 	PriorityData.Opers.Push("virtual")
 
-	for PriorityData.Opers
-	{
-		OpersTree << it
-	}
+	OpersTree << PriorityData.Opers[^]
 
 	for targetFiles
 	{
@@ -90,10 +87,9 @@ main := !(int argc,char^^ argv) -> int
 			return 0
 		}
 	}
-	for targetFiles
-	{
-		targetObjects.Push(LoadFile(Path(it)))
-	}
+
+	targetObjects.Push(LoadFile(Path(targetFiles[^])))
+
 	for forcedFiles
 	{
 		fL := LoadFile(Path(it))
@@ -106,8 +102,7 @@ main := !(int argc,char^^ argv) -> int
 
 	Ob := targetObjects[0]
 
-	for Modules
-		it.InitModule()
+	Modules[^].InitModule()
 	
 	WorkBag.Push(Ob,State_Start)
 	
@@ -119,8 +114,7 @@ main := !(int argc,char^^ argv) -> int
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
 
-	if mainFunc != null 
-		WorkBag.Push(mainFunc.Down,State_Start)
+	WorkBag.Push(mainFunc?.Down,State_Start)
 
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag()
@@ -142,7 +136,7 @@ main := !(int argc,char^^ argv) -> int
 		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
 		StrContainer.PrintGlobal(fil)
 
-		for Classes it.PrintStruct(fil)
+		Classes[^].PrintStruct(fil)
 
 		PrintTuples(fil)
 

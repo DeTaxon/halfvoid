@@ -156,11 +156,10 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 IsTemplate := !(Object^ sk) -> bool
 {
 	if sk == null return false
-	iter := sk.Down
 
 	Counter := 0
 
-	while iter != null
+	for iter : sk.Down
 	{
 		if iter.GetValue() == ","
 		{
@@ -168,26 +167,18 @@ IsTemplate := !(Object^ sk) -> bool
 			Counter = 0
 		} else Counter += 1
 
-		if iter is ObjData and iter.Down != null and iter.Down.Right != null 
-		and iter.Down.Right.GetValue() == "..."  and iter.Down is ObjIndent
+		if iter is ObjData and iter.Down?.Right?.GetValue() == "..."  and iter.Down is ObjIndent
 		{
 			return true
 		}
 
 		if ContainTType(iter) return true //TODO: check after Syntax, not Before
-		iter = iter.Right
 	}
 	if  Counter == 1 return true
 
-	lazy := sk.Right != null
-	if lazy lazy = sk.Right.GetValue() == "."
-	if lazy lazy = sk.Right.Right != null
-	if lazy lazy =  sk.Right.Right.GetValue() == "{}"
-	if lazy
+	if sk.Right?.GetValue() == "." and sk.Right.Right?.GetValue() == "{}"
 	{
-		iter = sk.Right.Right.Down
-
-		while iter != null
+		for iter : sk.Right.Right.Down
 		{
 			if iter.GetValue() != ","
 			{
@@ -196,7 +187,6 @@ IsTemplate := !(Object^ sk) -> bool
 						return true
 				if ContainTType(iter) return true
 			}
-			iter = iter.Right
 		}
 	}
 
@@ -1010,7 +1000,6 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if SomeName == "new" {
 			IsStatic = true
-			printf("creating static\n")
 		}
 
 		if SomeName == "~this"

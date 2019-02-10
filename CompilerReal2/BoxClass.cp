@@ -93,29 +93,19 @@ BoxClassTemplate := class extend Object
 	{
 		if TempConsts != null
 		{
-			itr := TempConsts.Start
-			while itr != null
-			{
-				if itr.Data.ItName == name return itr.Data.Down
-				itr = itr.Next
-			}
+			if TempConsts^[^].ItName == name 
+				return it.Down
 		}
 		return null
 	}
 	GetClass := !(FuncInputBox itBox) -> TypeClass^
 	{
-		for cl : Classes
-		{	
-			if cl.IsSameConsts(itBox)
-			{
-			
-				return cl.ClassType
-			}
-		}
+		if Classes[^].IsSameConsts(itBox)
+			return it.ClassType
+
 		newConsts := Queue.{ObjConstHolder^}()
 		if not IsEqConsts(ConstTree,itBox,newConsts)
 		{
-			
 			return null
 		}
 
@@ -152,16 +142,8 @@ BoxClassTemplate := class extend Object
 		Down = newClass
 	
 
-		for it : itBox.itConsts
-		{
-			newClass.ItConsts.Push(it)
-		}
-
-
-		for newConsts
-		{
-			newClass.ItVals.Push(it)
-		}
+		newClass.ItConsts.Push(itBox.itConsts[^])
+		newClass.ItVals.Push(newConsts[^])
 
 		Classes.Push(newClass)
 		return newClass.ClassType
@@ -310,7 +292,7 @@ BoxClass := class extend Object
 			return false
 		}
 
-		for c : itBox.itConsts , i : 0
+		for c,i : itBox.itConsts
 		{
 			if not CmpConstObjs(c,ItConsts[i])
 				return false
@@ -321,9 +303,8 @@ BoxClass := class extend Object
 
 	GetItem := virtual !(string name) -> Object^
 	{
-		for ItVals
-			if it.ItName == name
-				return it.Down
+		if ItVals[^].ItName == name
+			return it.Down
 		return null
 	}
 
@@ -357,13 +338,12 @@ BoxClass := class extend Object
 		{
 			if par.ContainVirtual ContainVirtual = true
 		}
-		if Down != null
+		if Down != null and not ContainVirtual
 		{
-			iterH := Down.Down
-			while iterH != null
+			if Down.Down[^].GetValue() == "virtual" 
 			{
-				if iterH.GetValue() == "virtual" ContainVirtual = true
-				iterH = iterH.Right
+				ContainVirtual = true
+				break
 			}
 		}
 		WorkBag.Push(this&,State_Start)
@@ -430,10 +410,9 @@ BoxClass := class extend Object
 			InheritParams()
 
 			if Down == null return void
-			iterH := Down.Down
 			foundNotThis := false
 
-			while iterH != null
+			for iterH : Down.Down
 			{
 				if iterH is ObjParam//iterH.GetValue() == "i:=1"
 				{
@@ -442,7 +421,6 @@ BoxClass := class extend Object
 					if asParam.MyStr == "~this"
 						foundNotThis = true
 				}
-				iterH = iterH.Right
 			}
 
 			if not foundNotThis
@@ -489,19 +467,15 @@ BoxClass := class extend Object
 
 		if not iVir
 		{
-			for vTyp : vTypes
+			if vTypes[^].fName == name
 			{
-				if vTyp.fName == name
-				{
-					Funcs.Push(vTyp.funcWrapper)
-				}
+				Funcs.Push(it.funcWrapper)
 			}
 		}
 
 		if Down != null
 		{
-			iterJ := Down.Down
-			while iterJ != null
+			for iterJ : Down.Down
 			{
 				if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
 				{
@@ -520,7 +494,6 @@ BoxClass := class extend Object
 							Templs.Push((iterJ.Down)->{BoxTemplate^})
 					}
 				}
-				iterJ = iterJ.Right
 			}
 		}
 		if name == "."{
@@ -568,7 +541,7 @@ BoxClass := class extend Object
 			for invTypes : vTypes// i : 0
 			{
 				found := false
-				for invTable : vTable , j : 0
+				for invTable, j : vTable
 				{
 					if invTable.CmpItem(invTypes)
 					{
@@ -602,14 +575,11 @@ BoxClass := class extend Object
 				}
 			}
 
-			for ThislessFuncs
+			if ThislessFuncs[^].itFunc.IsVirtual
 			{
-				if it.itFunc.IsVirtual
-				{
-					it.MakeLine(it.itFunc.VirtualId)
-				}else{
-					it.MakeLine(0)
-				}
+				it.MakeLine(it.itFunc.VirtualId)
+			}else{
+				it.MakeLine(0)
 			}
 
 		}
@@ -619,7 +589,7 @@ BoxClass := class extend Object
 		if not vTable.Empty()
 		{
 			f << "%ClassTableType" << ClassId << " = type {"
-			for it : vTable , i : 0
+			for it,i : vTable 
 			{
 				if i > 0 f << " , "
 				if it.fConstVal == null
@@ -630,7 +600,7 @@ BoxClass := class extend Object
 			f << " }\n"
 
 			f << "@ClassTableItem" << ClassId << " = global %ClassTableType" << ClassId << " {"
-			for it : vTable, i : 0
+			for it,i : vTable
 			{
 				if i > 0 f << " , "
 				if it.fConstVal != null
@@ -662,7 +632,7 @@ BoxClass := class extend Object
 			{
 				f << "%ClassTableType" << ClassId << "*"
 			}
-			for it : Params, i : 0
+			for it, i : Params
 			{
 				if i != 0 or not vTable.Empty() f <<","
 				f << it.ResultType.GetName()
@@ -708,8 +678,7 @@ BoxClass := class extend Object
 		}
 		f << "ret void\n}\n"
 
-		iterJ := Down.Down
-		while iterJ != null
+		for iterJ : Down.Down
 		{
 			if iterJ.GetValue() == "i:=1"
 			{
@@ -722,7 +691,6 @@ BoxClass := class extend Object
 					iterJ.PrintGlobal(f)
 				}
 			}
-			iterJ = iterJ.Right
 		}
 	}
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
@@ -859,7 +827,7 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		OutputName = "error"
 		typs := Queue.{Type^}()
 		typs.Push(clss.GetPoint())
-		MyFuncType = GetFuncType(typs,null->{bool^},GetType("bool"),false,false)
+		MyFuncType = GetFuncType(typs,null->{bool^},GTypeBool,false,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int{
 		return 0
