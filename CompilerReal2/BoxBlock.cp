@@ -331,8 +331,8 @@ BoxFile := class extend BoxBlock
 				}
 			}
 
-			toVisit := Stack.{BoxFile^}()
-			visited := QueueSet.{BoxFile^}()
+			toVisit := Stack.{BoxFile^}() ; $temp
+			visited := QueueSet.{BoxFile^}() ; $temp
 
 			visited.Push(this&)
 			toVisit.Push(ImportingFiles[^])

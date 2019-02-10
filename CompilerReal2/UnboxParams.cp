@@ -3,7 +3,7 @@
 UnboxParams := !(Object^ start) -> void
 {
 	
-	Bag := Stack.{Object^}
+	Bag := Stack.{Object^}() ; $temp
 	Atter := Object^
 	Atter = null
 

@@ -81,13 +81,14 @@ Stack := class .{@T}
 	}
 	Clean := !() -> void
 	{
-		Iter := Node.{T}^
-		while Start
-		{
-			Iter = Start
-			Start = Iter.Next
-			delete Iter
-		}
+		//Iter := Node.{T}^
+		//while Start
+		//{
+		//	Iter = Start
+		//	Start = Iter.Next
+		//	delete Iter
+		//}
+		Start = null
 		itSize = 0
 
 	}

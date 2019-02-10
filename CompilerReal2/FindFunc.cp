@@ -88,13 +88,13 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					if SomeBug
 					{
 						if AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual
-							found.Push(AsBoxFunc) 
+							found.Push(AsBoxFunc) ; $temp 
 					}else{
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
 						if not IsWord(name) metApp = true
 						if (not AsBoxFunc.IsSuffix) and not AsBoxFunc.IsVirtual and metApp
-							found.Push(AsBoxFunc) 
+							found.Push(AsBoxFunc) ; $temp
 					}
 				}else
 				if iterW.GetValue() == "!(){}"
@@ -104,10 +104,10 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					if SomeBug
 					{
 						if AsBoxFunc2.IsSuffix and AsBoxFunc2.IsVirtual
-							templates.Push(AsBoxFunc2)
+							templates.Push(AsBoxFunc2) ; $temp
 					}else{
 						if not AsBoxFunc2.IsSuffix and not AsBoxFunc2.IsVirtual and IsMethod == AsBoxFunc2.IsMethod
-							templates.Push(AsBoxFunc2)
+							templates.Push(AsBoxFunc2) ; $temp
 					}
 				}
 			}
@@ -244,7 +244,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	{
 		while iterS.Up != null
 			iterS = iterS.Up
-		Searched.Push(iterS->{BoxFile^}.fileId)
+		Searched.Push(iterS->{BoxFile^}.fileId) ; $temp
 	}
 
 	iterr := start
@@ -300,10 +300,10 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	}
 
 	if BuiltInFuncs[^].FuncName == name
-		Funcs.Push(it)
+		Funcs.Push(it) ; $temp
 
 	if BuiltInTemplates[^].FuncName == name
-		Templs.Push(it)
+		Templs.Push(it) ; $temp
 
 	func2 := GetBestFunc(itBox,Funcs,Templs)
 	return func2

@@ -245,8 +245,8 @@ BoxClass := class extend Object
 			{
 				if qIter.Data.FuncName == name
 				{
-					gotFuncs.Push(qIter.Data)
-					funcsCl.Push(iterF)
+					gotFuncs.Push(qIter.Data) ; $temp
+					funcsCl.Push(iterF) ; $temp
 				}
 				qIter = qIter.Next
 			}
@@ -280,7 +280,7 @@ BoxClass := class extend Object
 					inTh = inThPre
 				}
 			}
-			if inTh != null funcs.Push(inTh)
+			if inTh != null funcs.Push(inTh) ; $temp
 			gotFuncsIter = gotFuncsIter.Next
 			funcsClIter = funcsClIter.Next
 		}
@@ -437,7 +437,7 @@ BoxClass := class extend Object
 				}
 
 				pars := Queue.{Type^}()
-				pars.Push(ClassType)
+				pars.Push(ClassType) ; $temp
 				bools := true
 				funcT := GetFuncType(pars,bools&,GTypeVoid,false,false)
 				
@@ -462,14 +462,14 @@ BoxClass := class extend Object
 	}
 	GetFunc := virtual !(string name,FuncInputBox itBox,bool iVir) -> BoxFunc^
 	{
-		Funcs := Queue.{BoxFunc^}()
-		Templs := Queue.{BoxTemplate^}()
+		Funcs := Queue.{BoxFunc^}() ; $temp
+		Templs := Queue.{BoxTemplate^}() ; $temp
 
 		if not iVir
 		{
 			if vTypes[^].fName == name
 			{
-				Funcs.Push(it.funcWrapper)
+				Funcs.Push(it.funcWrapper) 
 			}
 		}
 
@@ -792,9 +792,9 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 	{
 		inClass = frmClass
 
-		itsBools := Queue.{bool}() itsBools.Push(true)
+		itsBools := Queue.{bool}() itsBools.Push(true) ; $temp
 		newTypes := Queue.{Type^}()
-		newTypes.Push(frmClass.ClassType)
+		newTypes.Push(frmClass.ClassType) ; $temp
 
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),itType,true,false)
 
@@ -825,7 +825,7 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		classType = clss
 		FuncName = "is"
 		OutputName = "error"
-		typs := Queue.{Type^}()
+		typs := Queue.{Type^}() ; $temp
 		typs.Push(clss.GetPoint())
 		MyFuncType = GetFuncType(typs,null->{bool^},GTypeBool,false,false)
 	}
@@ -863,8 +863,8 @@ BuiltInThislessFunc := class extend BuiltInFunc
 
 		IsRetRef = toFunc.IsRetRef
 
-		newTypes := Queue.{Type^}()
-		itsBools := Queue.{bool}()
+		newTypes := Queue.{Type^}() ; $temp
+		itsBools := Queue.{bool}() ; $temp
 
 		fTyp := toFunc.MyFuncType
 

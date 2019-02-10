@@ -330,7 +330,7 @@ ObjParam := class extend Object
 				{	
 					asClass := ObjType->{TypeClass^}
 
-					box6 := new FuncInputBox()
+					box6 := new FuncInputBox() ; $temp
 
 					box6.itPars.Emplace(asClass,true)
 					asCl := asClass.ToClass

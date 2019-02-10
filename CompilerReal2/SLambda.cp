@@ -46,7 +46,7 @@ SLambda := class extend ObjResult
 		{
 			parsedStart = true
 			WorkBag.Push(this&,State_Syntax)
-			names := Queue.{string}()
+			names := Queue.{string}() ; $temp
 			names.Push("lambdaParam" + ItId)
 
 			pars := Queue.{Type^}()
@@ -165,7 +165,7 @@ SLambda := class extend ObjResult
 			{
 				IsRetComplex = IsComplexType(fastUse.RetType)
 			}
-			if (not IsRetComplex) and fastUse.RetType != GetType("void") 
+			if (not IsRetComplex) and fastUse.RetType != GTypeVoid
 			{
 				f << "%Result = alloca " << fastUse.RetType.GetName()
 				if fastUse.RetRef f << "*"
@@ -174,7 +174,7 @@ SLambda := class extend ObjResult
 
 			Down.PrintInBlock(f)
 
-			if fastUse.RetType == GetType("void") or IsRetComplex
+			if fastUse.RetType == GTypeVoid or IsRetComplex
 			{
 				f << "ret void\n"
 			}else{
@@ -230,11 +230,14 @@ SLambda := class extend ObjResult
 			}
 		}
 
-		for i : StolenNames.Size() 
-		{
-			if StolenNames[i] == name
-				return StolenParams[i]
-		}
+		if StolenNames[^i] == name
+			return StolenParams[i]
+
+		//for i : StolenNames.Size() 
+		//{
+		//	if StolenNames[i] == name
+		//		return StolenParams[i]
+		//}
 
 		return null
 	}

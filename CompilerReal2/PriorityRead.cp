@@ -32,7 +32,7 @@ PriorityBag := class
 		while itFile.good()
 		{
 			CurLine := itFile.readline()
-			CurWords := Queue.{string}()
+			CurWords := Queue.{string}() ; $temp
 
 			i := 0
 			j := 0
@@ -65,7 +65,7 @@ PriorityBag := class
 			if CurWords.NotEmpty()
 			{
 				newMach := new MiniMachineNode()
-				items := Queue.{string}()
+				items := Queue.{string}() ; $temp
 
 				ruleIter := CurWords.Start
 

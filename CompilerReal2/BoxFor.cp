@@ -217,7 +217,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					
 					asNeed := ((itType->{TypeClass^}).ToClass)
 
-					emptyBox := new FuncInputBox()
+					emptyBox := new FuncInputBox() ; $temp
 					emptyBox.itPars.Emplace(itType,true)
 
 					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,true)
