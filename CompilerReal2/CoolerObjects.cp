@@ -97,7 +97,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 	{
 		Value := iter.GetValue()
 
-		if Value[0] in "{[(" 	Bag.Push(iter)
+		if Value[0] in "{[(" 	Bag.Push(iter) ; $temp
 
 		if Value[0] in "}])"
 		{

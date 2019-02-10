@@ -18,7 +18,7 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int
 		AsNeed := ii->{ObjParam^}
 		if(AsNeed.GetName() == name)
 		{
-			found.Push(AsNeed)	
+			found.Push(AsNeed) ; $temp	
 		}
 	}
 }
@@ -47,7 +47,8 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 				asN := iterU.Up->{BoxFile^}
 				res := asN.VisibleParams.TryFind(name)
 				if res != null{
-					for res^ found.Push(it)
+					for res^ 
+						found.Push(it) ; $temp
 				}
 				iterU = null
 			}else{
@@ -64,7 +65,8 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 	
 	res := ForcedGlobalParams.TryFind(name)
 	if res != null{
-		for res^ found.Push(it)
+		for res^ 
+			found.Push(it) ; $temp
 	}
 }
 

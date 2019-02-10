@@ -52,7 +52,7 @@ Stack := class .{@T}
 		Start = newItm
 		itSize += 1
 	}
-	Push := !(T a) -> int
+	Push := !(T a) .{} -> int
 	{
 		Start =	new Node.{T}(a,Start)
 		itSize += 1
@@ -188,7 +188,7 @@ Queue := class .{@T} extend Stack.{T}
 		return 0
 	}
 
-	Push := !(T a) -> int
+	Push := !(T a) .{} -> int
 	{
 		if Start == null {
 			Start = new Node.{T}(a)
@@ -212,7 +212,7 @@ QueueSet := class .{@T} extend Stack.{T}
 		Start = null
 		itSize = 0
 	}
-	Push := !(T a) -> int
+	Push := !(T a) .{} -> int
 	{
 		if Start == null {
 			Start = new Node.{T}(a)

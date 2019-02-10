@@ -105,7 +105,9 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		if IsTemplate(ParamsObj)
+		maybeForceConsts := constsI != null 
+		if maybeForceConsts maybeForceConsts =  constsI.Down == null
+		if maybeForceConsts or IsTemplate(ParamsObj)
 		{
 			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
 		}
@@ -310,7 +312,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if cons != null
 		{
-			CopyConsts = cons.Clone()
+			CopyConsts = cons//.Clone()
 			ParseConsts(CopyConsts)
 			CopyConsts.Up = this&
 			MakeGoodConsts(CopyConsts)
@@ -319,7 +321,7 @@ BoxTemplate := class extend BoxFunc
 			CopyRet = inOutType.Clone()
 			CopyRet.SetUp(this&)
 		}
-		if Stuf != null CopyTree = Stuf.Clone()
+		if Stuf != null CopyTree = Stuf//.Clone()
 
 		IsSuffix = IsSuf
 		ParseParams(CopyParams,CopyRet,true)
