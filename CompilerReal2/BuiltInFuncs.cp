@@ -1509,6 +1509,8 @@ CreateBuiltIns := !() -> void
 			BuiltInFuncs.Push(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2\n"))
 		}
 		BuiltInExcs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i" + it + " #1,0"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar(">>",GetType("s" + it),false,GetType("s" + it),false,GetType("s" + it), "#0 = ashr i" + it + " #1,#2\n"))
+		BuiltInFuncs.Push(new BuiltInFuncBinar(">>",GetType("u" + it),false,GetType("s" + it),false,GetType("u" + it), "#0 = lshr i" + it + " #1,#2\n"))
 	}
 	BuiltInFuncs.Push(new BuiltInFuncBinar("in",GetType("int"),false,TypeTable[13],false,BoolT,
 											"br label %Start##\n"sbt +

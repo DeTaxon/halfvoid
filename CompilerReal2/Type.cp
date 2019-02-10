@@ -313,9 +313,9 @@ GetFuncTypeCount := !() -> int
 
 ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef) -> int
 {
-	res := 7
+	res := 3
 
-	for t : typs, i : 0
+	for t,i : typs
 	{
 		if t != null res += t.ItHash
 		if isRefs != null and isRefs[i] res = res xor_b 157
@@ -329,7 +329,7 @@ ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef)
 }
 RecomputeFuncHash := !(int h) -> int
 {	
-	cVal := h  //+ h div 1359 // + h div 251460
+	cVal := h + ((h >> 10) and_b 0x0F) // + h div 251460
 	return cVal->{u32} % 1024
 }
 
@@ -494,7 +494,7 @@ TypePoint := class extend Type
 {
 	this := !(Type^ nBase) -> void
 	{
-		ItHash = nBase.ItHash*3
+		ItHash = nBase.ItHash*11 + 31
 		Clean()
 		Base = nBase
 		//ItName = Base.GetName() + "*"
@@ -779,7 +779,7 @@ TypeArr := class extend Type
 
 	this := !(Type^ B, int S) -> void
 	{
-		ItHash = B.ItHash*3 + S
+		ItHash = B.ItHash*27 + S
 		Base = B
 		Size = S
 		ItName = GetNewName()
