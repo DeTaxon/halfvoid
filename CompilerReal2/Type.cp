@@ -907,8 +907,8 @@ CreateStandartTypes := !() -> void
 	voidFatArr := TypeTable[11].GetFatArray()
 	voidFatArr.ItName = "i8*"
 
-	GlobalStrs = GlobalStrs + "%RangeTypeInt = type {i32,i32}\n"
-	 			+ "%RangeTypeFloat = type {float,float}\n"
+	GlobalStrs.Push("%RangeTypeInt = type {i32,i32}\n")
+	GlobalStrs.Push("%RangeTypeFloat = type {float,float}\n")
 
 	TypeTable[13] = new TypeStandart("%RangeTypeInt","!DIBasicType(name: \"range\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 	TypeTable[13].Base = TypeTable[6]
@@ -924,10 +924,10 @@ CreateStandartTypes := !() -> void
 	GTypeString = TypeTable[12]
 	GTypeVoidP =  GTypeVoid.GetPoint()
 
-	GlobalStrs = GlobalStrs + "%OpaqType = type {i1}\n"
+	GlobalStrs.Push("%OpaqType = type {i1}\n")
 	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
 
-	GlobalStrs = GlobalStrs + "%Vec4f = type <4 x float>\n"
+	GlobalStrs.Push("%Vec4f = type <4 x float>\n")
 	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 

@@ -29,7 +29,7 @@ GlobalExcArr := BuiltInTemplateExcArr^
 
 OpersTree := AVLSet.{string}
 
-GlobalStrs := string
+GlobalStrs := Stack.{string}
 
 Classes := Queue.{BoxClass^}
 

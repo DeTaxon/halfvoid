@@ -86,6 +86,12 @@ WordDetermMachine := class
 	IsEndNode := int[]
 	CharToGo := u8[256]
 
+	"this" := !() -> void
+	{
+		Table = null
+		IsEndNode = null
+		CharToGo[^] = 0
+	}
 	ComputeFileSize := !() -> int{
 		return 256 + 4 + 4 + Table->len*(Table[0]->len + 1)*4
 	}
@@ -566,6 +572,11 @@ LexBuilder := class
 					{
 					case 'n'
 						iter.Right = new LexTreeNode('2',10)
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					case 't'
+						iter.Right = new LexTreeNode('2',9)
 						iter.Right.Left = iter
 						iter = iter.Right
 						i += 1

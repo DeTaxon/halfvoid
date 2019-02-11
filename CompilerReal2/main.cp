@@ -9,6 +9,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	StrContainer = new StringContainer()
 	WorkBag."this"()
 	LoadLexMachine()
 	BuiltInFuncs."this"()
@@ -87,7 +88,6 @@ main := !(int argc,char^^ argv) -> int
 			return 0
 		}
 	}
-
 	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
 	for forcedFiles
@@ -114,7 +114,8 @@ main := !(int argc,char^^ argv) -> int
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
 
-	WorkBag.Push(mainFunc?.Down,State_Start)
+	if mainFunc != null
+		WorkBag.Push(mainFunc.Down,State_Start)
 
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag()
@@ -128,7 +129,7 @@ main := !(int argc,char^^ argv) -> int
 		for PostFuncs it.PostCreate()
 
 		fil := sfile(outputFile,"w")
-		fil << GlobalStrs
+		fil << GlobalStrs[^]
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"

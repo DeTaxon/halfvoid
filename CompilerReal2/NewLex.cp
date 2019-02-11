@@ -7,6 +7,7 @@ lexWordMachine := WordDetermMachine
 LoadLexMachine := !() -> void
 {
 	machFile := MappedFile("Mach.m")
+	//lexWordMachine = new WordDetermMachine()
 	lexWordMachine.LoadFromMap(machFile.point,machFile.Size())
 	machFile.Close()
 }
@@ -91,8 +92,12 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 					j += 1
 				}	
 			}
-			DaBuff[j] = 0
-			ns = new ObjStr(StrCopy(DaBuff[0]&))
+			//DaBuff[j] = 0
+			//ns = new ObjStr(StrCopy(DaBuff[0]&))
+			newLine := new char[j+1]
+			memcpy(newLine->{void^},DaBuff[0]&,j)
+			newLine[j] = 0
+			ns = new ObjStr(newLine)
 		}
 		if a == 4 {
 			newVal := int

@@ -90,14 +90,14 @@ ObjSkobs := class extend Object
 
 UniteSkobs := !(Object^ Tree) -> Object^
 {
-	Bag := Stack.{Object^}()
+	Bag := new Stack.{Object^} ; $temp
 	iter := Tree
 	
 	while iter != null
 	{
 		Value := iter.GetValue()
 
-		if Value[0] in "{[(" 	Bag.Push(iter) ; $temp
+		if Value[0] in "{[(" 	Bag.Push(iter)
 
 		if Value[0] in "}])"
 		{
@@ -129,6 +129,6 @@ UniteSkobs := !(Object^ Tree) -> Object^
 		}
 
 	}
-	if Bag.NotEmpty() return Bag.Pop()
+	//if Bag.NotEmpty() return Bag.Pop()
 	return null
 }

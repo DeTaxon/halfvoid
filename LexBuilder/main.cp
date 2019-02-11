@@ -47,7 +47,7 @@ main := !(int argc, char^^ argv) -> int
 	itBuilder.ApplyReg("\\? | \\, | \\! | \\|",8)
 
 	itBuilder.ApplyReg("/ /[^\n]*",9)
-	itBuilder.ApplyReg("\\ ",10) // space
+	itBuilder.ApplyReg("\\ | \\t",10) // space
 	itBuilder.ApplyReg("\n",20)
 	itBuilder.ApplyReg("; [^\n]*",21)
 

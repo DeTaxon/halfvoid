@@ -80,26 +80,27 @@ StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a == null return b
 	if b == null return a
-	sprintf(BigBuff->{char^},"%s%s",a,b)
-	return StrCopy(BigBuff->{char^})
+	sA := StrSize(a)
+	sB := StrSize(b)
+	newStr := new char[sA + sB + 1]
+	memcpy(newStr[0]&,a,sA)
+	memcpy(newStr[sA]&,b,sB)
+	newStr[sA + sB + 1] = 0
+	return newStr
 }
 "+" := !(char^ a, int b) -> char^
 {
 	if a == null {
-		sprintf(BigBuff->{char^},"%i",b)
-		return StrCopy(BigBuff)
+		return ToString(b)
 	}
-	sprintf(BigBuff->{char^},"%s%i",a,b)
-	return StrCopy(BigBuff->{char^})
+	return a + ToString(b)
 }
 "+" := !(char^ a, float b) -> char^
 {
 	if a == null {
-		sprintf(BigBuff->{char^},"%i",b)
-		return StrCopy(BigBuff)
+		return ToString(b)
 	}
-	sprintf(BigBuff,"%s%f",a,b)
-	return BigBuff.Copy()
+	return a + ToString(b)
 }
 
 
@@ -120,22 +121,18 @@ StrCopy := !(char^ a) -> char^
 {
 	Si := StrSize(a)
 	Pre := new char[Si+1]
-	//for Si Pre[it] = a[it]
 	memcpy(Pre->{void^},a,Si)
 	Pre[Si] = 0
 
-	//CreatedStrs.Push(Pre)
 	return Pre
 }
 Copy := !(char^ this) -> char^
 {
 	Si := StrSize(this)
 	Pre := new char[Si+1]
-	//for Si Pre[it] = this[it]
 	memcpy(Pre->{void^},this,Si)
 	Pre[Si] = 0
 
-	//CreatedStrs.Push(Pre)
 	return Pre
 }
 
