@@ -299,8 +299,11 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 		//}
 	}
 
-	if BuiltInFuncs[^].FuncName == name
-		Funcs.Push(it) ; $temp
+	inBuiltInMap := BuiltInFuncs.TryFind(name)
+	if inBuiltInMap != null
+	{
+		Funcs.Push(inBuiltInMap^[^])
+	}
 
 	if BuiltInTemplates[^].FuncName == name
 		Templs.Push(it) ; $temp

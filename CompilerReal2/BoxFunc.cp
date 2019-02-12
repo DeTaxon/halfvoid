@@ -126,7 +126,7 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 {
 	if toCheck == null return false
 	added := false
-	bag := Stack.{Object^}()
+	bag := Stack.{Object^}() ; $temp
 	bag.Push(toCheck)
 
 	while bag.NotEmpty()
@@ -135,7 +135,7 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 		if item.GetValue() == "~{}type" 
 		{
 			asNeed := item->{ObjTemplateType^}
-			res.Push(asNeed.MyStr)
+			res.Push(asNeed.MyStr) ; $temp
 			added = true
 			//return true
 		}
@@ -143,14 +143,7 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 		{
 			return false
 		}
-
-		iter := item.Down
-
-		while iter != null
-		{
-			bag.Push(iter)
-			iter = iter.Right
-		}
+		bag.Push(item.Down[^])
 	}
 	return added
 }
@@ -397,7 +390,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
-		outT := Queue.{Type^}()
+		outT := Queue.{Type^}() ; $temp
 		FType := MyFuncType
 		
 		for it : FType.ParsCount, par : itBox.itPars
@@ -417,7 +410,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if itBox.itPars.Size() > FType.ParsCount
 		{
-			retRefArray = new bool[itBox.itPars.Size()] 
+			retRefArray = new bool[itBox.itPars.Size()] ; $temp 
 			for i : itBox.itPars.Size()
 				retRefArray[i] = MyFuncType.ParsIsRef[i]
 			for it, i : itBox.itPars
@@ -430,7 +423,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{
-		outT := Queue.{Type^}()
+		outT := Queue.{Type^}() ; $temp
 
 		parConsts := Queue.{ObjConstHolder^}()
 		CheckTypes(itBox,parConsts)
@@ -643,19 +636,18 @@ BoxFunc := class extend Object
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl) -> bool
 	{
 		SyntaxCompress(root,PriorityData)
-		iter := root.Down
-		Pars := Queue.{Object^}()
+		Pars := Queue.{Object^}() ; $temp
 
-		Typs := Queue.{Type^}()
-		TypsNams := Queue.{string}()
-		TypsIsRef := Queue.{bool}()
+		Typs := Queue.{Type^}() ; $temp
+		TypsNams := Queue.{string}() ; $temp
+		TypsIsRef := Queue.{bool}() ; $temp
 		IsVargsL := false
 		ContainTT := false
 
 		RetTyp := null->{Type^}
 		if GetValue() == "!()" RetTyp =  ParseType(outObj)
 
-		Stuff := Queue.{Object^}()
+		Stuff := Queue.{Object^}() ; $temp
 
 		if RetTyp != null
 		{
@@ -673,12 +665,8 @@ BoxFunc := class extend Object
 			TypsIsRef.Push(true)
 		}
 
+		Stuff.Push(root.Down[^])
 
-		while iter != null
-		{
-			Stuff.Push(iter)
-			iter = iter.Right
-		}
 
 		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) 
 
