@@ -34,8 +34,10 @@ snikers := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	asS := new snikers ; $temp
-	asS.st.Push(1) 
+	c := s64()
+	printf("wut %i\n",c)
+	//asS := new snikers ; $temp
+	//asS.st.Push(1) 
 	//asS := new LikeAStack ; $temp
 	//asS.Push(1) 
 

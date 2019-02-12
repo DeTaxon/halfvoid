@@ -209,14 +209,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 		}
 
-		if asNeed2 is TypeStandart
+		if asNeed2 is TypeStandart or asNeed2 is TypePoint or asNeed2 is TypeFatArr
 		{
 			if iter.Right != null
 			{
 				if iter.Right.GetValue() == "()"
 				{
 					Cs := Queue.{Object^}()
-					Cs.Push(new ObjType(asNeed2)) 
+					Cs.Push(new ObjType(asNeed2)) ; $temp 
 					return OneCall(". this",iter.Right,Cs,false)
 				}
 			}
