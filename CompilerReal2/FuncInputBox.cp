@@ -22,7 +22,7 @@ FuncInputBox := class
 	}
 	GetConstsHash := !() -> int
 	{
-		retHash := int
+		retHash := 0
 
 		for it : itConsts
 		{

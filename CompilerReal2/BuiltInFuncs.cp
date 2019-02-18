@@ -72,7 +72,7 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 		OutputName = Name
 		ToExe = code
 
-		PP := Queue.{Type^}()
+		PP := Queue.{Type^}() ; $temp
 		for Count PP.Push(inType)
 
 		if Name == ". this" 
@@ -103,7 +103,7 @@ BuiltInFuncUno := class extend BuiltInFunc
 		ToExe = code
 		IsRetRef = RRetRef
 
-		PP := Queue.{Type^}()
+		PP := Queue.{Type^}() ; $temp
 		PP.Push(l)
 
 		IsRefs := bool[1]
@@ -122,7 +122,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		ToExe = code
 		IsRetRef = retRef
 
-		PP := Queue.{Type^}()
+		PP := Queue.{Type^}() ; $temp
 		PP.Push(l)
 		PP.Push(r)
 
@@ -138,7 +138,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		OutputName = Name
 		ToExe = code
 
-		PP := Queue.{Type^}()
+		PP := Queue.{Type^}() ; $temp
 		PP.Push(l)
 		PP.Push(r)
 
@@ -168,7 +168,7 @@ BuiltInTemplateGetRef := class extend BoxTemplate
 	{
 		FuncName = "&"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
@@ -194,7 +194,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	{
 		FuncName = "^"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
@@ -222,7 +222,7 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 	{
 		FuncName = "[]"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -259,7 +259,7 @@ BuiltInPointAdd := class extend BoxTemplate
 	{
 		FuncName = "+"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(GetType("s64"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -291,7 +291,7 @@ BuiltInPointSub := class extend BoxTemplate
 	{
 		FuncName = "-"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(GetType("s64"))
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -325,7 +325,7 @@ BuiltInTemplateExcArr := class extend BoxTemplate
 	{
 		FuncName = "->{}"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
@@ -388,7 +388,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 	{
 		FuncName = "."
 	
-		cc := Queue.{Type^}()
+		cc := Queue.{Type^}() ; $temp
 		cc.Push(null->{Type^})
 
 		MyFuncType = GetFuncType(cc,null->{bool^},GTypeInt,false,false)
@@ -527,7 +527,7 @@ BuiltInTemplateExcFatArr := class extend BoxTemplate
 	{
 		FuncName = "->{}"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
@@ -559,7 +559,7 @@ BuiltInTemplateCheckPoint := class extend BoxTemplate
 	{
 		FuncName = "->{}"
 		OutputName = "error"
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 	}
@@ -595,7 +595,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 		FuncName = "="
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -665,14 +665,14 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 		ToClass = toClass
 		ToFunc = toAdd
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		parsC := toAdd.MyFuncType.ParsCount
 		
 		refs := null->{bool^}
 
-		if parsC > 1 refs = new bool[parsC-1]
+		if parsC > 1 refs = new bool[parsC-1] ; $temp
 
-		PP := Queue.{Type^}()
+		PP := Queue.{Type^}() ; $temp
 
 		for parsC
 		{
@@ -850,7 +850,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		asL := pars[0].first->{TypeFuncLambda^}
 		asB :=  ((pars[0].first.Base)->{TypeFunc^})
 
-		Pars := Queue.{Type^}()
+		Pars := Queue.{Type^}() ; $temp
 
 		for i : pars.Size()
 		{
@@ -943,7 +943,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		ToClass = toAdd
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(toAdd.ClassType)
 		miniArr := true
 		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
@@ -1127,7 +1127,7 @@ BuiltInTemplateNew := class extend BoxTemplate
 		FuncName = "new"
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(GTypeInt)
 		emptType.Push(GTypeInt)
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -1182,7 +1182,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 		FuncName = "->"
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},GTypeInt,false,false)
 	}
@@ -1264,7 +1264,7 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 		FuncName = "=="
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -1300,7 +1300,7 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 		FuncName = "!="
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
@@ -1336,7 +1336,7 @@ BuiltInTemplateRefEx := class extend BoxTemplate
 		FuncName = "."
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		emptType.Push(null->{Type^})
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 		IsMethod = true
@@ -1367,7 +1367,7 @@ BuiltInTemplateStandartTypeConstructor := class extend BoxTemplate
 		FuncName = ". this"
 		OutputName = "error"
 
-		emptType := Queue.{Type^}()
+		emptType := Queue.{Type^}() ; $temp
 		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
 		IsMethod = true
 	}

@@ -45,7 +45,7 @@ AVLMap := class .{@KEY,@VALUE}
 		itTree."this"()
 		itSize = 0
 	}
-	"[]" := !(KEY dat) -> ref VALUE
+	"[]" := !(KEY dat) .{}  -> ref VALUE
 	{
 		resl := AVLTreeNode.{BadPair.{KEY,VALUE}}^
 		if(itTree.FindOrCreate(BadPair.{KEY,VALUE}(dat),resl&))

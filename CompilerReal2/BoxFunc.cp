@@ -268,16 +268,8 @@ BoxTemplate := class extend BoxFunc
 	{
 		if TempReturnConsts != null
 		{
-			iter := TempReturnConsts.Start
-
-			while iter != null
-			{
-				if iter.Data.ItName == name
-				{
-					return iter.Data.Down
-				}
-				iter = iter.Next
-			}
+			if TempReturnConsts^[^].ItName == name
+				return it.Down
 		}
 		return null
 	}
@@ -468,6 +460,10 @@ BoxTemplate := class extend BoxFunc
 		WorkBag.Push(newFunc,State_Start)
 
 		toAddLine.Emplace(cmpFuncF,newFunc)
+
+		//if toAddLine.Size() >= 10{
+		//	printf("heh %i %s %i\n",toAddLine.Size(),FuncName,sHash)
+		//}
 
 		if EndPos == null
 		{

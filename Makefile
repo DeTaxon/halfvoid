@@ -12,11 +12,11 @@ xdg6.o: wayland-c/xdg.c
 b : out2.ll #xdg.o xdg6.o 
 	clang++ -O0 $<  -target x86_64-pc-linux-gnu -d -o b  -ldl #-lglfw #-lwayland-client -lwayland-egl #-lEGL -lGLESv2
 cycle: $(wildcard CompilerReal2/*.cp)
-	time $(TimeFlags) ./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
+	./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
 	gdb --args ./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 repair: $(wildcard CompilerReal2/*.cp) 
-	time $(TimeFlags) ./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
+	./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 
 test2: main2.cp
 	./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2

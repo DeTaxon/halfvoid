@@ -80,7 +80,7 @@ AVLTree := class .{@DATA}
 		}
 		return null->{AVLTreeNode.{DATA}^}
 	}
-	FindOrCreate := !(DATA dat,AVLTreeNode.{DATA}^^ toRet) -> bool //bool isCreated
+	FindOrCreate := !(DATA dat,AVLTreeNode.{DATA}^^ toRet) .{} -> bool //bool isCreated
 	{
 		if Start == null 
 		{
