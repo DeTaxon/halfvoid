@@ -11,6 +11,11 @@ Pair := class .{@T1,@T2}
 		first = t1
 		second = t2
 	}
+	this := !(Pair.{T1,T2} toSet) -> void
+	{
+		first = toSet.first
+		second = toSet.second
+	}
 
 	"==" := !(Pair.{T1,T2} toCmp) -> bool
 	{

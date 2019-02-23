@@ -1,41 +1,24 @@
 
-CheckVal := !() .{} -> void
-{	
-	if $temp {
-		printf("Check temp\n")
-	}else{
-		printf("Check regular\n")
-	}
-}
 
 
 LikeAStack := class
 {
 	x := int
-	Push := !(a) -> void
+	Push := !(a) .{} -> void
 	{
-		if true
-		{
-			if $temp{
-				printf("Push temp\n")
-				CheckVal()
-			}else{
-				printf("Push regular\n")
-				CheckVal()
-			}
-		}
+		printf("wow\n")
+	}
+	Insert := !(a) -> void
+	{	
+		Push(a)
 	}
 }
 
-snikers := class
-{
-	st := LikeAStack
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := s64()
-	printf("wut %i\n",c)
+	asS := LikeAStack
+	asS.Insert(1)
 	//asS := new snikers ; $temp
 	//asS.st.Push(1) 
 	//asS := new LikeAStack ; $temp

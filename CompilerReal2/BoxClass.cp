@@ -203,7 +203,7 @@ BoxClass := class extend Object
 	FakeParams := Queue.{FakeFieldParam^}
 
 	ItMethods := Queue.{BoxFunc^}
-	ThislessFuncs := Queue.{BuiltInThislessFunc^}
+	ItTemplates := Queue.{BoxTemplate^}
 
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
@@ -225,10 +225,14 @@ BoxClass := class extend Object
 		return "%Class" + ClassId
 	}
 
+	ThislessFuncs := Queue.{BuiltInThislessFunc^}
+	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
 	GetWrappedFunc := !(string name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
 	{
 		gotFuncs := Queue.{BoxFunc^}()
 		funcsCl := Queue.{BoxClass^}()
+
+		gotTempls := Queue.{Pair.{BoxTemplate^,BoxClass^}}() ; $temp
 
 		iterF := this&
 
@@ -238,52 +242,67 @@ BoxClass := class extend Object
 
 		while iterF != null
 		{
-			ptrToQ := iterF.ItMethods&
-			itSize := ptrToQ^.Size()
-			qIter := ptrToQ.Start
-			while qIter != null
+			for qIter : iterF.ItMethods 
 			{
-				if qIter.Data.FuncName == name
+				if qIter.FuncName == name
 				{
-					gotFuncs.Push(qIter.Data) ; $temp
+					gotFuncs.Push(qIter) ; $temp
 					funcsCl.Push(iterF) ; $temp
 				}
-				qIter = qIter.Next
+			}
+			for tmps : iterF.ItTemplates
+			{
+				if tmps.FuncName == name
+				{
+					gotTempls.Emplace(tmps,iterF)
+				}
 			}
 			iterF = iterF.Parent
 		}
 
-		gotFuncsIter := gotFuncs.Start
-		funcsClIter := funcsCl.Start
-		while gotFuncsIter != null
+		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
 		{
 			inTh := BoxFunc^
 			inTh = null
-			ThislessIter := ThislessFuncs.Start
-			while ThislessIter != null
-			{
-				if ThislessIter.Data.itFunc == gotFuncsIter.Data
-				{
-					inTh = ThislessIter.Data
-					ThislessIter = null
-				}else{
-					ThislessIter = ThislessIter.Next
-				}
 
+			if ThislessFuncs[^].itFunc == gotFuncsIter
+			{
+				inTh = it
+				break
 			}
-			if inTh != null{
-			}else{	
-				toCr := gotFuncsIter.Data
+
+
+			if inTh == null
+			{
+				toCr := gotFuncsIter
 				if not toCr.IsStatic {
-					inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter.Data)
+					inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter)
 					ThislessFuncs.Push(inThPre)
 					inTh = inThPre
 				}
 			}
 			if inTh != null funcs.Push(inTh) ; $temp
-			gotFuncsIter = gotFuncsIter.Next
-			funcsClIter = funcsClIter.Next
 		}
+		for templ : gotTempls
+		{
+			inTh := BoxTemplate^()
+
+			if ThislessTemplates[^].itTemplate == templ.first
+			{
+				inTh = it
+				break
+			}
+			if inTh == null
+			{
+				if not templ.first.IsStatic{
+					inThPre := new BuiltInThislessTemplate(templ.first,this&,templ.second)
+					ThislessTemplates.Push(inThPre)
+					inTh = inThPre
+				}
+			}
+			if inTh != null templs.Push(inTh)
+		}
+
 	}
 
 	IsSameConsts := !(FuncInputBox itBox) -> bool
@@ -581,6 +600,7 @@ BoxClass := class extend Object
 			}else{
 				it.MakeLine(0)
 			}
+			ThislessTemplates[^].MakeLine()
 
 		}
 	}
@@ -846,7 +866,73 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		
 	}
 }
-	
+
+BuiltInThislessTemplate := class extend BoxTemplate
+{
+	itTemplate := BoxTemplate^
+	itClass := BoxClass^
+	itInClass := BoxClass^
+	createdFuncs := Queue.{BuiltInThislessFunc^}
+
+	this := !(BoxTemplate^ templ,BoxClass^ toClass, BoxClass^ inClass) -> void
+	{
+		itTemplate = templ
+		itClass = toClass
+		itInClass = inClass
+
+		fT := templ.MyFuncType
+
+		newPars := Queue.{Type^}() ; $temp
+		newBools := bool[]
+		newBools = null
+		if fT.ParsCount >= 2
+			newBools = new bool[fT.ParsCount - 1]
+
+		for i : fT.ParsCount
+		{
+			if i == 0 continue
+
+			newPars.Push(fT.Pars[i])
+			newBools[i-1] = fT.ParsIsRef[i]
+		}
+		MyFuncType = GetFuncType(newPars,newBools,fT.RetType,fT.RetRef,fT.IsVArgs)
+
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		newBox := new FuncInputBox ; $temp
+
+		newBox.itPars.Emplace(itClass.ClassType,true)
+		for it,i : itBox.itPars
+		{	
+			newBox.itPars.Emplace(it.first,it.second)
+		}
+		newBox.itConsts.Push(itBox.itConsts[^])
+		newBox.itAttrs[ind] = itBox.itAttrs[^ind]
+		return itTemplate.GetPriority(newBox^)
+	}
+	GetNewFunc := virtual !(FuncInputBox itBox,TypeFunc^ funType) -> BoxFunc^
+	{
+		newBox := new FuncInputBox ; $temp
+
+		newBox.itPars.Emplace(itClass.ClassType,true)
+		for it,i : itBox.itPars
+		{	
+			newBox.itPars.Emplace(it.first,it.second)
+		}
+		newBox.itConsts.Push(itBox.itConsts[^])
+		newBox.itAttrs[ind] =itBox.itAttrs[^ind]
+		newFunc := itTemplate.GetFunc(newBox^)
+
+		preRes := new BuiltInThislessFunc(newFunc,itClass,itInClass)
+		createdFuncs.Push(preRes)
+		return preRes
+	}
+	MakeLine := !() -> void
+	{
+		createdFuncs[^].MakeLine(0)
+	}
+}
 BuiltInThislessFunc := class extend BuiltInFunc
 {
 	itFunc := BoxFunc^

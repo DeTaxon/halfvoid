@@ -30,12 +30,12 @@ AVLSet := class .{@DATA}
 		itTree."this"()
 	}
 
-	"<<" := !(DATA data) -> ref AVLSet.{DATA}
+	"<<" := !(DATA data) .{} -> ref AVLSet.{DATA}
 	{
 		Insert(data)
 		return this
 	}
-	Insert := !(DATA dat) -> void
+	Insert := !(DATA dat) .{} -> void
 	{
 		resl := AVLTreeNode.{DATA}^
 		if(itTree.FindOrCreate(dat,resl&))
@@ -44,7 +44,7 @@ AVLSet := class .{@DATA}
 		}
 		
 	}
-	Remove := !(DATA dat) -> void
+	Remove := !(DATA dat) .{} -> void
 	{
 		resl := itTree.FindNode(dat)
 		if resl != null{

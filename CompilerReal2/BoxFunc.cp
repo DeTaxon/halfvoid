@@ -343,6 +343,12 @@ BoxTemplate := class extend BoxFunc
 			}
 		}
 		if not IsWord(SomeName) IsSuffix = false
+
+		if metC != null and metC is TypeClass
+		{
+			asTC := metC->{TypeClass^}
+			asTC.ToClass.ItTemplates.Push(this&)
+		}
 	}
 	GetPriority :=virtual !(FuncInputBox itBox) -> int
 	{

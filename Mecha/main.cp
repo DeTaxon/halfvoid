@@ -44,10 +44,10 @@ main := !(int argc, char^^ argv) -> int
 
 	printf("%i : %s\n",i,exts[^i].extensionName)
 
-	wantedLayers := AVLSet.{string}()
+	wantedLayers := AVLSet.{string}() ; $temp
 	wantedLayers << "VK_LAYER_LUNARG_standard_validation"
 	
-	toUseLayers := Queue.{string}()
+	toUseLayers := Queue.{string}() ; $temp
 	if wantedLayers.Contain(lays[^].layerName)
 		toUseLayers.Push(it.layerName)
 
