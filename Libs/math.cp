@@ -60,8 +60,8 @@ centf := class
 	}
 	"<*>" := !(centf toAdd) -> centf
 	{
-		ToRet.ang = ang <*> toAdd.ang
-		ToRet.pos = (toAdd.ang * this.pos) + pos
+		result.ang = ang <*> toAdd.ang
+		result.pos = (toAdd.ang * this.pos) + pos
 	}
 	"=" := !(centf toSet) -> void
 	{	

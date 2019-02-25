@@ -143,7 +143,7 @@ ModuleVulkan := class extend CompilerModule
 					}
 					if category^ == "funcpointer"{
 						retType := null->{Type^}
-						funcTypes := Queue.{Type^}()
+						funcTypes := Queue.{Type^}() ; $temp
 
 						if not asNeed.Childs[0].first{
 							itRet := asNeed.Childs[0].second->{string}

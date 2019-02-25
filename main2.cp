@@ -1,30 +1,29 @@
 
 
 
-LikeAStack := class
+A := class 
 {
 	x := int
-	Push := !(a) .{} -> void
+	foo := virtual !() -> void
 	{
-		printf("wow\n")
-	}
-	Insert := !(a) -> void
-	{	
-		Push(a)
+		printf("hoh\n")
+		foo()
 	}
 }
 
+B := class extend A
+{
+	foo := virtual !() -> void
+	{
+		printf("hah\n")
+		this."A.foo"()
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	asS := LikeAStack
-	asS.Insert(1)
-	//asS := new snikers ; $temp
-	//asS.st.Push(1) 
-	//asS := new LikeAStack ; $temp
-	//asS.Push(1) 
-
-
+	tt := new B
+	tt.foo()
 	return 0
 }
 

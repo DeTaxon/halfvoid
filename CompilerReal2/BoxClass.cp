@@ -491,6 +491,33 @@ BoxClass := class extend Object
 				Funcs.Push(it.funcWrapper) 
 			}
 		}
+		maybeForced := Find(name,'.')
+		if maybeForced != -1
+		{
+			clName := StringSpan(name,maybeForced)
+			if clName == ClassName
+			{
+				funcName := name[(maybeForced+1) .. 0].Str()
+				if vTypes[^].fName == funcName
+				{
+					Funcs.Push(it.fItem)
+				}
+				for ItMethods
+				{
+					if it.FuncName == funcName and it.IsSameConsts(itBox) and not it.IsVirtual
+					{
+						Funcs.Push(it)
+					}
+				}
+				for ItTemplates
+				{
+					if it.FuncName == funcName
+					{
+						Templs.Push(it)
+					}
+				}
+			}
+		}
 
 		if Down != null
 		{

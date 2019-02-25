@@ -136,6 +136,16 @@ Copy := !(char^ this) -> char^
 	return Pre
 }
 
+Find := !(char^ this,char val) -> int
+{
+	for i,j : this
+	{
+		if i == val 
+			return j
+	}
+	return -1
+}
+
 "in" := !(int chr, char^ str) -> bool
 {
 	return ChrInStr(chr,str)
