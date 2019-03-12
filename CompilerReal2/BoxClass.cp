@@ -67,6 +67,8 @@ BoxClassTemplate := class extend Object
 
 	TempConsts := Queue.{ObjConstHolder^}^
 
+	relAttrs := QueueSet.{string}
+
 	this := !(Object^ tree,Object^ txt) -> void
 	{
 		ClassTree = tree.Clone()
@@ -88,6 +90,16 @@ BoxClassTemplate := class extend Object
 		}
 
 		MakeGoodConsts(ConstTree)
+
+		for ite : ClassTree.Down.Right.Down
+		{
+			if ite.GetValue() == "~ind"
+			{
+				asInd := ite->{ObjIndent^}
+				if asInd.MyStr[0] == '$'
+					relAttrs.Push(asInd.MyStr)
+			}
+		}
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
@@ -144,6 +156,13 @@ BoxClassTemplate := class extend Object
 
 		newClass.ItConsts.Push(itBox.itConsts[^])
 		newClass.ItVals.Push(newConsts[^])
+		
+		for itr : relAttrs
+		{
+			inMap := itBox.itAttrs.TryFind(itr)
+			if inMap != null
+				newClass.ItAttrs[itr] = inMap^
+		}
 
 		Classes.Push(newClass)
 		return newClass.ClassType
@@ -217,6 +236,7 @@ BoxClass := class extend Object
 
 	ItVals := Queue.{ObjConstHolder^}
 	ItConsts := Queue.{Object^}
+	ItAttrs := AVLMap.{string,Object^}
 
 	ClassName := string
 
@@ -315,6 +335,17 @@ BoxClass := class extend Object
 		{
 			if not CmpConstObjs(c,ItConsts[i])
 				return false
+		}
+		if Up != null and Up.GetValue() == "!{}{...}"
+		{
+			asTmp := Up->{BoxClassTemplate^}
+			for itr : asTmp.relAttrs
+			{
+				inItMap := ItAttrs.TryFind(itr)
+				inOtMap := itBox.itAttrs.TryFind(itr)
+				if inItMap == null and inOtMap != null return false
+				if inItMap != null and inOtMap == null return false
+			}
 		}
 
 		return true

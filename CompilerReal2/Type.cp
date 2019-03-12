@@ -214,7 +214,7 @@ ParseType := !(Object^ Node) -> Type^
 			if NodeName.Down.GetValue() == "!{}{...}"
 			{
 				asT := ((NodeName.Down)->{BoxClassTemplate^})
-				box := new FuncInputBox()
+				box := new FuncInputBox() ; $temp
 				
 				iterR := Node.Down.Right.Right.Down
 				
@@ -239,6 +239,17 @@ ParseType := !(Object^ Node) -> Type^
 					iterR = iterR.Right
 				}
 				if box.itConsts.Size() == 0 return null
+
+				//if Node.inhAttrs != null
+				//	box.itAttrs[key] = Node.inhAttrs^[^key]
+
+				if Node.Line != null
+				for value,key : Node.Line.itAttrs
+				{	
+					box.itAttrs[key] = value
+				}
+
+
 				return asT.GetClass(box^)
 			}
 			return null
