@@ -178,6 +178,6 @@ GL_MODELVIEW		:=		0x1700
 GL_PROJECTION		:=		0x1701
 GL_TEXTURE		:=		0x1702
 
-//glClear := !(int mask) -> void declare
+glClear := !(int mask) -> void declare
 //glClearColor := !(float red, float green, float blue, float alpha) -> void declare
 //glFlush := !() -> void declare

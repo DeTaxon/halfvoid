@@ -27,8 +27,10 @@ test2g: main2.cp
 gdbc: $(wildcard CompilerReal2/*.cp) 
 	nemiver ./c.out $(ForcedLibs) CompilerReal2/main.cp -o c.ll
 
+FLibs := -f FLibs/glfw.cp -f FLibs/gl.cp 
+
 engi: 
-	./cf Mecha/main.cp $(ForcedLibs) --vk vk.xml -o Objs/engi.ll; clang Objs/engi.ll $(Libs) -o engi
+	./cf Mecha/main.cp $(FLibs) $(ForcedLibs) --vk vk.xml -o Objs/engi.ll; clang++ Objs/engi.ll $(Libs) -lGL -lglfw -o engi
 
 a.exe: out.ll WinMain.cpp
 	clang out.ll -target x86_64-pc-windows-gnu -c -o WinObj.o ; x86_64-w64-mingw32-g++   WinMain.o  -mwindows -L.  -o a.exe
