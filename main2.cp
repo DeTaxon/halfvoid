@@ -1,21 +1,19 @@
 
 
 
-A := class 
+A := class .{@A}
 {
-	x := int
-	foo := virtual !() -> void
-	{
-		printf("hoh\n")
-		foo()
-	}
+	x := A
+	if $keep
+		y := A
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	tt := new B
-	tt.foo()
+	a := A.{int}
+	b := A.{int} ; $keep
+	b.y = 0
 	return 0
 }
 

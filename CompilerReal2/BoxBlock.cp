@@ -238,6 +238,54 @@ BoxBlock := class extend Object
 
 			if InClass
 			{
+				clsItm := Up->{BoxClass^}
+				resvItm := true
+
+				while resvItm 
+				{
+					resvItm = false
+
+					for itr : Down
+					{
+						if itr.GetValue() == "if()"
+						{
+							if itr.Down.Right.GetValue() == "~ind"
+							{
+								asInd := itr.Down.Right->{ObjIndent^}
+								if asInd.MyStr[0] == '$'
+								{
+									inMap := clsItm.ItAttrs.TryFind(asInd.MyStr)
+									itmToPut := Object^()
+									if inMap != null
+									{
+										itmToPut = itr.Down.Right
+										printf("hah\n")
+									}else{
+										if itr.Down.Right.Right.Right != null
+											itmToPut = itr.Down.Right.Right.Right.Right
+										printf("hoh\n")
+									}
+									if itmToPut == null
+										PopOutNode(itr)
+									else{
+										ReplaceNode(itr,itmToPut)
+										UnboxParams(itmToPut)
+									}
+
+
+									
+								}
+							}
+							resvItm = true
+							break
+						}
+					}
+				}
+				
+			}
+
+			if InClass
+			{
 				WorkBag.Push(Down[^],State_Start)
 			}
 
