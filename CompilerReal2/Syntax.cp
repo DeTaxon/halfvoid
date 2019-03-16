@@ -365,15 +365,16 @@ RuleIf := !(void^ itr)-> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "{}" and (not InBlockData(It)) and not It.GetValue() != "i:=1" return 0
+	if It.GetValue() != "{}" and (not InBlockData(It)) and (It.GetValue() != "i:=1") return 0
+	//if It.GetValue() != "{}" and (not InBlockData(It)) return 0
 	It = It.Right
 	if It == null return 3
 
 	if It.GetValue() != "else" return 3
 	It = It.Right
 	if It == null return 3
-	
-	if It.GetValue() == "{}" or InBlockData(It) or It.GetValue() == "i:=1" return 5
+
+	if It.GetValue() == "{}" or InBlockData(It)  return 5
 
 	return 3
 }
