@@ -4,16 +4,16 @@
 A := class .{@A}
 {
 	x := A
-	if $keep
-		y := A
+	Pop132132 := !() .{} -> void
+	{
+	}
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
 	a := A.{int}
-	b := A.{int} ; $keep
-	b.y = 0
+	a.Pop132132()
 	return 0
 }
 

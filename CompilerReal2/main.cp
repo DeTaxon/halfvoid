@@ -16,6 +16,7 @@ main := !(int argc,char^^ argv) -> int
 	ObjectsPool."this"()
 	//GlobalStrs = ""
 	//CTT = new CreateTupleTemplate()
+	printWork := false
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
@@ -50,6 +51,8 @@ main := !(int argc,char^^ argv) -> int
 				printf("--vk module does not exist\n")
 				return 0
 			}
+		case "--work"
+			printWork = true
 		case void
 			targetFiles.Push(argv[i])
 		}
@@ -106,7 +109,7 @@ main := !(int argc,char^^ argv) -> int
 	
 	WorkBag.Push(Ob,State_Start)
 	
-	WorkWithBag()
+	WorkWithBag(printWork)
 
 	endI := Ob.Down
 	if endI != null
@@ -118,7 +121,7 @@ main := !(int argc,char^^ argv) -> int
 		WorkBag.Push(mainFunc.Down,State_Start)
 
 	if mainFunc == null ErrorLog.Push("main function not found\n")
-	else WorkWithBag()
+	else WorkWithBag(printWork)
 
 	//Ob.Print(0)
 	Ob.TestNodes()
@@ -180,20 +183,24 @@ main := !(int argc,char^^ argv) -> int
 }
 
 workIter := int
-WorkWithBag := !() -> void
+WorkWithBag := !(bool printW) -> void
 {
 	while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
 	{
 		FlushTempMemory()
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
-		//printf("working on %p %s\n",it,it.GetValue())
-		//printf("itWork %i %s\n",workIter,it.GetValue())
-		//if it.Line != null {
-		//	printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
-		//	//it.Print(0)
-		//	}
-		//workIter += 1
+
+		if printW
+		{
+			printf("itWork %i %s\n",workIter,it.GetValue())
+			if it.Line != null {
+				printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
+				//it.Print(0)
+				}
+			workIter += 1
+		}
+
 		it.DoTheWork(prior)
 	}
 }

@@ -290,6 +290,7 @@ BoxTemplate := class extend BoxFunc
 		FuncName = SomeName
 		MethodType = metC
 		NewFuncs."this"()
+
 		
 		if inPars != null {
 			CopyParams = inPars.Clone()
@@ -316,6 +317,9 @@ BoxTemplate := class extend BoxFunc
 		firstNon := Object^
 		firstNon = null
 		//FuncsTs := Queue.{Object^}() 
+
+		if FuncName != "new" and FuncName != "delete" and FuncName != "~For"
+			FuncsTTemps.Push(null->{Object^})
 
 
 		while iter != null
@@ -371,7 +375,7 @@ BoxTemplate := class extend BoxFunc
 			for i : FType.ParsCount, par : itBox.itPars
 			{
 				SomePrior := 0
-				if FType.Pars[i] != null and FuncsTTemps[i] == null
+				if FType.Pars[i] != null and (FuncsTTemps.Size() > i or FuncsTTemps[i] == null)
 				{
 					if FType.ParsIsRef[i]
 					{
