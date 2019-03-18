@@ -54,6 +54,139 @@ DirectoryIterator := class
 	}
 }
 
+DirectoryWildcardIterator := class
+{
+	dirFd := void^
+	nowEntry := void^
+	nowPath := Path
+	buff := char[256]
+	addToBuff := int
+	wildCard := char[80]
+	this := !(char^ tu) -> void
+	{
+		strL := strlen(tu)
+
+		for c,u : tu
+		{
+			buff[u] = c
+		}
+		buff[strL] = 0
+
+		dirL := strL - 1
+
+		while dirL >= 0
+		{
+			if buff[dirL] in "/\\"
+				break
+			dirL--
+		}
+		dirL++
+
+		for i,j : dirL..(strL-1)
+		{
+			wildCard[j] = buff[i]
+			buff[i] = 0
+		}
+		addToBuff = dirL
+		if dirL == 0
+		{
+			buff[0] = '.'
+			buff[1] = '/'
+			buff[2] = 0
+			addToBuff = 2
+		}
+
+		wildCard[strL - dirL] = 0
+
+		dirFd = opendir(buff[0]&)
+		Inc()
+		nowPath.itStr = buff[0]&
+	}
+	"~this" := !() -> void
+	{
+		if dirFd != null closedir(dirFd)
+	}
+	"^" := !() -> ref Path
+	{
+		return nowPath
+	}
+	Inc := !() -> void
+	{
+		nowEntry = readdir(dirFd)
+		while nowEntry != null
+		{
+			newName := GetDirectoryName(nowEntry)
+
+			if not IsInWildcard(newName)
+			{
+				nowEntry = readdir(dirFd)
+				continue
+			}
+
+			preSet := this.addToBuff
+			for c : newName
+			{
+				buff[preSet] = c
+				preSet++
+			}
+			buff[preSet] = 0
+
+			break
+
+		}
+	}
+	IsInWildcard := !(char^ str) -> bool
+	{
+		return IsInWildcardReq(str,wildCard[0]&)
+	}
+	IsInWildcardReq := !(char^ toCmp,char^ inWild) -> bool
+	{
+		j := 0
+		k := 0
+
+		while inWild[k] != 0
+		{
+			if inWild[k] == '*'
+			{
+				numAfter := inWild[k+1]
+				if numAfter == 0 return true
+
+				while toCmp[j] != 0
+				{
+					if toCmp[j] == numAfter and IsInWildcardReq(toCmp[j]&,inWild[k+1]&)
+						return true
+					j += 1
+				}
+				k += 1
+			}else
+			{
+				if toCmp[j] != inWild[k]
+					return false
+				j += 1
+				k += 1
+			}
+		}
+		return true
+	}
+	IsEnd := !() -> bool
+	{
+		return nowEntry == null
+	}
+}
+Wildcard := class
+{
+	toParse := char^
+	this := !(char^ toIt) -> void
+	{
+		toParse = toIt
+	}
+	"~For" := !() -> DirectoryWildcardIterator
+	{
+		return DirectoryWildcardIterator(toParse)
+	}
+
+}
+
 
 Path := class
 {

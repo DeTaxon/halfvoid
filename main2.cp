@@ -1,19 +1,12 @@
 
 
 
-A := class .{@A}
-{
-	x := A
-	Pop132132 := !() .{} -> void
-	{
-	}
-}
-
-
 main := !(int argc, char^^ argv) -> int
 {
-	a := A.{int}
-	a.Pop132132()
+	for i : Wildcard("./*.cp")
+	{
+		printf("stuf %s\n", i.itStr)
+	}
 	return 0
 }
 
