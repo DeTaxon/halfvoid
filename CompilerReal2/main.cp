@@ -36,6 +36,12 @@ main := !(int argc,char^^ argv) -> int
 		case "-f"
 			forcedFiles.Push(argv[i+1])
 			i += 1
+		case "-F"
+			for newItm : Wildcard(argv[i+1])
+			{
+				forcedFiles.Push(StrCopy(newItm.itStr))
+			}
+			i += 1
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
