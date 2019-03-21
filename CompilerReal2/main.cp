@@ -138,7 +138,6 @@ main := !(int argc,char^^ argv) -> int
 		for PostFuncs it.PostCreate()
 
 		fil := sfile(outputFile,"w")
-		fil << GlobalStrs[^]
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
@@ -147,6 +146,7 @@ main := !(int argc,char^^ argv) -> int
 		StrContainer.PrintGlobal(fil)
 
 		Classes[^].PrintStruct(fil)
+		fil << GlobalStrs[^]
 
 		PrintTuples(fil)
 

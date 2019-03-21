@@ -15,6 +15,8 @@ ModuleVulkan := class extend CompilerModule
 
 	Structs := AVLMap.{string,TreeNode^}
 
+	InstClass := BoxClass^
+
 	this := !(string p) -> void
 	{
 		xmlFile := MappedFile(p)
@@ -23,6 +25,8 @@ ModuleVulkan := class extend CompilerModule
 	}
 	InitModule := virtual !() -> bool
 	{
+		InstClass = new InstanceArr(this&)
+
 		Typedefs["float"] = GTypeFloat
 		Typedefs["char"] = GetType("char")
 		Typedefs["void"] = GTypeVoid
@@ -38,6 +42,7 @@ ModuleVulkan := class extend CompilerModule
 		Typedefs["int16_t"] = GetType("s16")
 		Typedefs["int32_t"] = GetType("s32")
 		Typedefs["int64_t"] = GetType("s64")
+		Typedefs["VkFuncsHolder"] = InstClass.ClassType
 
 
 		for xmlTree.Childs
@@ -293,6 +298,11 @@ ModuleVulkan := class extend CompilerModule
 					if itTp == null return null
 					return itTp.GetPoint().GetPoint()
 				}
+				if mConst == "const " and mPP == "*                  "{
+					itTp := GetModuleType(nd.GetValueString("type"))
+					if itTp == null return null
+					return itTp.GetPoint().GetPoint()
+				}
 			}
 		}
 		if nd.Childs.Size() == 6{
@@ -325,6 +335,8 @@ ModuleVulkan := class extend CompilerModule
 			newStruct := new BoxClass(null,null,null)
 			Typedefs[name] = newStruct.ClassType
 
+			sTypVal := char^()
+
 			for mems : inMap^.Childs
 			{
 				if mems.first{
@@ -336,12 +348,60 @@ ModuleVulkan := class extend CompilerModule
 							printf("VKMODULE: in struct %s need check %s\n",name,asN.GetValueString("name"))
 							return null 
 						}
-						new FieldParam(asN.GetValueString("name"),memType,newStruct)
+						fieldName := asN.GetValueString("name")
+						new FieldParam(fieldName,memType,newStruct)
+
+						if fieldName == "sType"
+						{
+							inMapValues := asN.Attrs.TryFind("values")
+							if inMapValues != null
+							{
+								sTypVal = inMapValues^
+							}
+						}
 					}else{
 						printf("VKMODULE: need check structure %s\n",name)
 					}
 				}
 			}
+
+
+
+			if sTypVal != null
+			{
+				sTypeValue := GetItem(sTypVal)
+				if sTypeValue == null or sTypeValue.GetValue() != "~int"
+				{
+					printf("WARN: structure %s does not have create value\n",name)
+				}else{
+					resPre := sTypeValue->{ObjInt^}
+					resVal := resPre.MyInt
+					itTyp := newStruct.ClassType
+					newId := GetNewId()
+					newName := "Func" + newId
+					newFunc := new BuiltInFuncUno(newName,itTyp,true,GTypeVoid,false,"")
+						//"%Ptr## = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* #0 , i32 0, i32 0\n"
+						//+ "store i32 " + resVal + ", i32* %Ptr##\n" )
+
+					GlobalStrs.Push("define void @"sbt + newName + "(" + itTyp.GetName() + "* %this"+newId+") \n"+
+						"{\n" +
+						"%Ptr"+newId+" = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* %this"+newId+" , i32 0, i32 0\n"
+						+ "store i32 " + resVal + ", i32* %Ptr"+newId+"\n" 
+						+ "ret void\n"
+						+ "}\n")
+
+					kindaBlock := new Object
+					kindaBlock.Down = new ObjParam("this",false)
+					kindaBlock.Down.Up = kindaBlock
+					kindaBlock.Down.Down = newFunc
+					newFunc.Up = newStruct.Down
+					newStruct.Down = kindaBlock
+					kindaBlock.Up = newStruct
+				}
+			}
+
+
+
 
 			return newStruct.ClassType
 		}
@@ -500,4 +560,33 @@ TryReadInt := !(string s, int^ res) -> bool {
 	}
 	res^ = val
 	return true
+}
+
+addedFieldsOrder := Queue.{Pair.{string,Type^}}
+InstanceArr := class extend BoxClass
+{
+	itmPtr := ModuleVulkan^
+	addedFields := AVLSet.{string}
+	this := !(ModuleVulkan^ p) -> void
+	{	
+		itmPtr = p
+		this."BoxClass.this"(null,null,null)
+	}
+	PreAskField:= virtual !(string name) -> void 
+	{
+		if addedFields.Contain(name)
+			return void
+
+		inWut := itmPtr.GetModuleType("PFN_" + name)
+		if inWut != null
+		{
+			new FieldParam(name,inWut,this&)
+
+			addedFields.Insert(name)
+			addedFieldsOrder.Emplace(name,inWut)
+		}else{
+			EmitError("cant create class field " + name)
+		}
+
+	}
 }

@@ -465,6 +465,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						}
 					}
 
+					asClass.PreAskField(asName)
+
 					box2 := new FuncInputBox()  ; $temp
 
 					box2.itPars.Emplace(asClass.ClassType,true)

@@ -53,6 +53,12 @@ InitVulkan := !() -> bool
 
 	printf("using %i %s\n",i,toUseLayers[^i])
 
+	appInfo := VkInstanceCreateInfo()
+	printf("haho %i %i\n",appInfo.sType , VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO)
+
+	heh := VkFuncsHolder
+	heh.vkCreateSwapchainKHR = null
+
 	return 0
 }
 

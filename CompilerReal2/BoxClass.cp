@@ -762,7 +762,9 @@ BoxClass := class extend Object
 			{
 				if iterJ.Down.GetValue() == "!()"
 				{
-					iterJ.PrintGlobal(f)
+					asFunc := iterJ.Down->{BoxFunc^}
+					if not asFunc.IsAssembler()
+						iterJ.PrintGlobal(f)
 				}
 				if iterJ.Down.GetValue() == "!(){}"
 				{
@@ -819,6 +821,9 @@ BoxClass := class extend Object
 		}
 		if Parent != null return Parent.GetVirtualParamFunc(name)
 		return null
+	}
+	PreAskField := virtual !(string name) -> void
+	{
 	}
 }
 
