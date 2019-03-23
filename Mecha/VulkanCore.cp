@@ -59,6 +59,12 @@ InitVulkan := !() -> bool
 	heh := VkFuncsHolder
 	heh.vkCreateSwapchainKHR = null
 
+	printf("itms %i\n",VkFuncsHolderCount)
+	for VkFuncsHolderCount
+	{
+		printf("wut %s\n",VkFuncsHolderStrs[it])
+	}
+
 	return 0
 }
 

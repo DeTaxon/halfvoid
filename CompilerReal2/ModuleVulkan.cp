@@ -15,6 +15,10 @@ ModuleVulkan := class extend CompilerModule
 
 	Structs := AVLMap.{string,TreeNode^}
 
+	ParsCount := GlobalParam^
+	ParsNames := GlobalParam^
+
+
 	InstClass := BoxClass^
 
 	this := !(string p) -> void
@@ -43,6 +47,9 @@ ModuleVulkan := class extend CompilerModule
 		Typedefs["int32_t"] = GetType("s32")
 		Typedefs["int64_t"] = GetType("s64")
 		Typedefs["VkFuncsHolder"] = InstClass.ClassType
+
+		ParsCount = new GlobalParam(GTypeInt,null)
+		ParsNames = new GlobalParam(GTypeString.GetPoint(),null)
 
 
 		for xmlTree.Childs
@@ -261,6 +268,14 @@ ModuleVulkan := class extend CompilerModule
 				postType := nd.Childs[2].second->{string}
 				
 				if preType == "const " and postType[0] == '*' and postType[1] == ' '{
+					return itT.GetPoint()
+				}
+			}
+			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
+			{
+				postType := nd.Childs[1].second->{string}
+				if postType == "*            "
+				{
 					return itT.GetPoint()
 				}
 			}
@@ -530,6 +545,10 @@ ModuleVulkan := class extend CompilerModule
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
+		if name == "VkFuncsHolderCount"
+			return ParsCount
+		if name == "VkFuncsHolderStrs"
+			return ParsNames
 		testTypes := GetTypes(name)
 		if testTypes != null return testTypes
 
@@ -562,7 +581,7 @@ TryReadInt := !(string s, int^ res) -> bool {
 	return true
 }
 
-addedFieldsOrder := Queue.{Pair.{string,Type^}}
+addedFieldsOrder := Queue.{Pair.{int,string}}
 InstanceArr := class extend BoxClass
 {
 	itmPtr := ModuleVulkan^
@@ -576,17 +595,40 @@ InstanceArr := class extend BoxClass
 	{
 		if addedFields.Contain(name)
 			return void
-
-		inWut := itmPtr.GetModuleType("PFN_" + name)
+		
+		fullStr := "PFN_" + name
+		inWut := itmPtr.GetModuleType(fullStr)
 		if inWut != null
 		{
 			new FieldParam(name,inWut,this&)
 
+			newStrId := StrContainer.GetStringValue(fullStr)
 			addedFields.Insert(name)
-			addedFieldsOrder.Emplace(name,inWut)
+			addedFieldsOrder.Emplace(newStrId,fullStr)
 		}else{
 			EmitError("cant create class field " + name)
 		}
 
+	}
+	PrintStruct := virtual !(sfile s) -> void
+	{
+		funcsCount := addedFieldsOrder.Size()
+	
+		s << "@T" << itmPtr.ParsCount.MainId << " = global i32 " << funcsCount << "\n"
+
+		if addedFieldsOrder.Size() != 0
+		{
+			s << "@T" << itmPtr.ParsNames.MainId << "Pre = global [ " << funcsCount << " x i8*] [\n"
+			for it,i : addedFieldsOrder
+			{
+				strLL := strlen(it.second) + 1
+				if i != 0 s << ","
+				s << "i8* getelementptr inbounds(["<< strLL <<" x i8],["<< strLL <<" x i8]* @Str" << it.first <<" ,i32 0, i32 0)"
+			}
+			s << "]\n"
+			s << "@T" << itmPtr.ParsNames.MainId << "= global i8** getelementptr inbounds([ "<< funcsCount <<" x i8*] , ["<< funcsCount <<" x i8*]* @T"
+				<< itmPtr.ParsNames.MainId <<"Pre , i32 0, i32 0)\n"
+		}
+		this."BoxClass.PrintStruct"(s)
 	}
 }

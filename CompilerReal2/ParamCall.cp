@@ -7,6 +7,15 @@ ParseParamCall := !(Object^ ob) -> Object^
 		dynCast := ob->{ObjIndent^}
 
 		may := GetItem(dynCast.MyStr,ob)
+		if may == null
+		{
+			for Modules
+			{
+				may = it.GetItem(dynCast.MyStr)
+				if may != null
+					break
+			}
+		}
 
 		if dynCast.MyStr[0] == '$'
 		{
