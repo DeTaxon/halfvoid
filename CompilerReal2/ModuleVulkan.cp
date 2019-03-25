@@ -602,9 +602,9 @@ InstanceArr := class extend BoxClass
 		{
 			new FieldParam(name,inWut,this&)
 
-			newStrId := StrContainer.GetStringValue(fullStr)
+			newStrId := StrContainer.GetStringValue(name)
 			addedFields.Insert(name)
-			addedFieldsOrder.Emplace(newStrId,fullStr)
+			addedFieldsOrder.Emplace(newStrId,name)
 		}else{
 			EmitError("cant create class field " + name)
 		}

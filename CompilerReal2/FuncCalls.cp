@@ -232,7 +232,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		consts := null->{Object^}
 		if iter.GetValue() == "()"
 		{
-			if iter.Left.GetValue() == "(d)"
+			if iter.Left.GetValue() == "(d)" or iter.Left.GetValue() == "d()"
 			{
 				dynCast := (iter.Left)->{ParamCall^}
 
@@ -434,7 +434,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return  MakeSimpleCall(func,iter)
 					}
 
-					return null
+					iter = UNext(iter.Left,new ObjData(),3)
+					oldIter := iter
+					iter = GetFuncCall(iter)
+					if iter == null 
+						return null
+					ReplaceNode(oldIter,iter)
+
+					return GetFuncCall(iter.Up)
 				}else
 				{
 
