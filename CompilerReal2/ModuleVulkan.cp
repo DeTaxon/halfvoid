@@ -4,6 +4,17 @@
 EnumsValue := 1
 EnumsBitPos := 2
 
+IsReqList := !(TreeNode^ nd, char^ str) -> bool
+{
+	for c : str, val : nd.Childs
+	{
+		if c == '0' and val.first return false
+		if c == '1' and not val.first return false
+	}
+	return true
+}
+
+
 ModuleVulkan := class extend CompilerModule
 {
 	xmlTree := TreeNode^
@@ -96,7 +107,7 @@ ModuleVulkan := class extend CompilerModule
 		{
 			asNeed := typ.second->{TreeNode^}
 			category := asNeed.Attrs.TryFind("category")
-			if category != null and category^ == "struct"
+			if category != null and (category^ == "struct" or category^ == "union")
 			{
 				stName := asNeed.Attrs.TryFind("name")
 				if stName != null{
@@ -262,24 +273,6 @@ ModuleVulkan := class extend CompilerModule
 		if nd.Childs.Size() == 2 {
 			return itT
 		}
-		if nd.Childs.Size() == 4{
-			if (not nd.Childs[0].first) and not nd.Childs[2].first{
-				preType := nd.Childs[0].second->{string}
-				postType := nd.Childs[2].second->{string}
-				
-				if preType == "const " and postType[0] == '*' and postType[1] == ' '{
-					return itT.GetPoint()
-				}
-			}
-			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
-			{
-				postType := nd.Childs[1].second->{string}
-				if postType == "*            "
-				{
-					return itT.GetPoint()
-				}
-			}
-		}
 		if nd.Childs.Size() == 3 {
 			if not nd.Childs[1].first
 			{
@@ -301,6 +294,39 @@ ModuleVulkan := class extend CompilerModule
 				return itT
 			}
 		}
+		if nd.Childs.Size() == 4{
+			if (not nd.Childs[0].first) and not nd.Childs[2].first{
+				preType := nd.Childs[0].second->{string}
+				postType := nd.Childs[2].second->{string}
+				
+				if preType == "const " and postType[0] == '*' and postType[1] == ' '{
+					return itT.GetPoint()
+				}
+			}
+			if IsReqList(nd,"0101")
+			{
+				preType := nd.Childs[0].second->{string}
+				postType := nd.Childs[2].second->{string}
+				if preType == "const " and postType == "*    "{
+					return itT.GetPoint()
+				}
+			}
+			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
+			{
+				postType := nd.Childs[1].second->{string}
+				if postType == "*            " or postType == "* "
+				{
+					return itT.GetPoint()
+				}
+			}
+			if IsReqList(nd,"1101")
+			{
+				arrData := nd.Childs[2].second->{string}
+				if arrData == "[4]" return itT.GetArray(4)
+				if arrData == "[3]" return itT.GetArray(3)
+				if arrData == "[2]" return itT.GetArray(2)
+			}
+		}
 		if nd.Childs.Size() == 5{
 			if not nd.Childs[0].first and nd.Childs[1].first and not nd.Childs[2].first
 			and nd.Childs[3].first and nd.Childs[4].first
@@ -313,10 +339,29 @@ ModuleVulkan := class extend CompilerModule
 					if itTp == null return null
 					return itTp.GetPoint().GetPoint()
 				}
-				if mConst == "const " and mPP == "*                  "{
+				if mConst == "const " and (mPP == "*                  " or mPP == "*       " or mPP == "* "){
 					itTp := GetModuleType(nd.GetValueString("type"))
 					if itTp == null return null
 					return itTp.GetPoint().GetPoint()
+				}
+			}
+			if IsReqList(nd,"11010")
+			{
+				fConst := nd.Childs[2].second->{string}
+				sConst := nd.Childs[4].second->{string}
+
+				if fConst == "[" and sConst == "]"
+				{
+					asVNod := nd.Childs[3].second->{TreeNode^}
+					if asVNod.NodeName == "enum"
+					{
+						itTp := GetModuleType(nd.GetValueString("type"))
+						itConst := nd.GetValueString("enum")
+						intRes := 0
+						if not GetFromInts(itConst,intRes&)
+							return null
+						return itTp.GetArray(intRes)
+					}
 				}
 			}
 		}
@@ -375,7 +420,10 @@ ModuleVulkan := class extend CompilerModule
 							}
 						}
 					}else{
-						printf("VKMODULE: need check structure %s\n",name)
+						if asN.NodeName != "comment"
+						{
+							printf("VKMODULE: need check structure %s , node %s\n",name,asN.NodeName)
+						}
 					}
 				}
 			}
@@ -394,9 +442,9 @@ ModuleVulkan := class extend CompilerModule
 					itTyp := newStruct.ClassType
 					newId := GetNewId()
 					newName := "Func" + newId
-					newFunc := new BuiltInFuncUno(newName,itTyp,true,GTypeVoid,false,"")
-						//"%Ptr## = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* #0 , i32 0, i32 0\n"
-						//+ "store i32 " + resVal + ", i32* %Ptr##\n" )
+					newFunc := new BuiltInFuncUno(newName,itTyp,true,GTypeVoid,false,
+						"%Ptr## = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* #1 , i32 0, i32 0\n"
+						+ "store i32 " + resVal + ", i32* %Ptr##\n" )
 
 					GlobalStrs.Push("define void @"sbt + newName + "(" + itTyp.GetName() + "* %this"+newId+") \n"+
 						"{\n" +
@@ -514,6 +562,8 @@ ModuleVulkan := class extend CompilerModule
 							return null
 						}
 						itms.Push(resPar)
+					case "implicitexternsyncparams"
+						// nothing
 					case void
 						printf("VKMODULE: can not create func pointer %s\n",name)
 						return null

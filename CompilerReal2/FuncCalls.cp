@@ -1383,6 +1383,10 @@ NewCallOne := class extend SomeFuncCall
 		//return newItm.GetName()
 		return "%Pre" + ItId
 	}
+	GetPointName := virtual !() -> string
+	{
+		return "%Pre" + ItId
+	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		//newItm.PrintUse(f)
@@ -1673,6 +1677,10 @@ NewCall := class extend SomeFuncCall
 	GetName := virtual !() -> string
 	{
 		return ExtraFunc.GetName()
+	}
+	GetPointName := virtual !() -> string
+	{
+		return ""
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
