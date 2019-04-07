@@ -14,6 +14,17 @@ IsReqList := !(TreeNode^ nd, char^ str) -> bool
 	return true
 }
 
+IsStrPointer := !( char^ str) -> bool
+{
+	if str^ != '*' return false
+	i := 1
+	while str[i] != 0
+	{
+		if str[i] != ' ' return false
+		i++
+	}
+	return str[i] == 0
+}
 
 ModuleVulkan := class extend CompilerModule
 {
@@ -274,24 +285,25 @@ ModuleVulkan := class extend CompilerModule
 			return itT
 		}
 		if nd.Childs.Size() == 3 {
-			if not nd.Childs[1].first
-			{
-				postType := nd.Childs[1].second->{string}
-				if postType[0] == '*' and postType[1] == ' '{
-					return itT.GetPoint()
-				}
-			}
-			if not nd.Childs[2].first
+			if IsReqList(nd,"110") //not nd.Childs[2].first
 			{
 				arrData := nd.Childs[2].second->{string}
 				if arrData == "[4]" return itT.GetArray(4)
 				if arrData == "[3]" return itT.GetArray(3)
 			}
-			if nd.Childs[0].first and nd.Childs[1].first and nd.Childs[2].first
+			if IsReqList(nd,"111") //nd.Childs[0].first and nd.Childs[1].first and nd.Childs[2].first
 			{
 				asTest := nd.Childs[2].second->{TreeNode^}
 				if asTest.NodeName != "comment" return null
 				return itT
+			}
+			if IsReqList(nd,"101")
+			{
+				postType := nd.Childs[1].second->{string}
+				if postType[0] == '*' and postType[1] == ' '{
+					return itT.GetPoint()
+				}
+				if postType == "** " return itT.GetPoint().GetPoint()
 			}
 		}
 		if nd.Childs.Size() == 4{
@@ -307,14 +319,14 @@ ModuleVulkan := class extend CompilerModule
 			{
 				preType := nd.Childs[0].second->{string}
 				postType := nd.Childs[2].second->{string}
-				if preType == "const " and postType == "*    "{
+				if preType == "const " and IsStrPointer(postType){
 					return itT.GetPoint()
 				}
 			}
 			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
 			{
 				postType := nd.Childs[1].second->{string}
-				if postType == "*            " or postType == "* "
+				if IsStrPointer(postType)
 				{
 					return itT.GetPoint()
 				}
@@ -339,7 +351,7 @@ ModuleVulkan := class extend CompilerModule
 					if itTp == null return null
 					return itTp.GetPoint().GetPoint()
 				}
-				if mConst == "const " and (mPP == "*                  " or mPP == "*       " or mPP == "* "){
+				if mConst == "const " and IsStrPointer(mPP){
 					itTp := GetModuleType(nd.GetValueString("type"))
 					if itTp == null return null
 					return itTp.GetPoint().GetPoint()
@@ -493,13 +505,20 @@ ModuleVulkan := class extend CompilerModule
 			return GetModuleType(itTypeName)
 		}
 		if nd.Childs.Size() == 3{
-			if not nd.Childs[1].first{
+			if not nd.Childs[1].first
+			{
 				asSt := nd.Childs[1].second->{string}
 				if asSt == "* "{
 					asTp := GetModuleType(nd.GetValueString("type"))
 					if asTp == null return null
 					return asTp.GetPoint()
 				}
+				if asSt == "** "{
+					asTp := GetModuleType(nd.GetValueString("type"))
+					if asTp == null return null
+					return asTp.GetPoint().GetPoint()
+				}
+				
 			}
 		}
 		if nd.Childs.Size() == 4{
