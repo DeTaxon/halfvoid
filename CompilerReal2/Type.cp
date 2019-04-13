@@ -935,10 +935,8 @@ CreateStandartTypes := !() -> void
 	GTypeString = TypeTable[12]
 	GTypeVoidP =  GTypeVoid.GetPoint()
 
-	GlobalStrs.Push("%OpaqType = type {i1}\n")
 	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
 
-	GlobalStrs.Push("%Vec4f = type <4 x float>\n")
 	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 

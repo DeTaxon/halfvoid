@@ -1,5 +1,6 @@
 "! () ^ -> d" "! () ^ ^ -> d" "! () & -> d"
 "! () . {} -> d {}"  "! () . {} {}"
+"packed_class {}"
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
 "new d ()" "! []" "! {}"
 "d () . {}"

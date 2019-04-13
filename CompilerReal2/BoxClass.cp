@@ -6,11 +6,19 @@
 ParseClass := !(Object^ ob)-> BoxClass^
 {
 	
+	putPack := false
 	if ob == null return null
 
 	iterT := ob.Down
 	if iterT == null return null
-	if iterT.GetValue() != "class" return null
+
+	if iterT.GetValue() == "packed_class"
+	{
+		putPack = true
+	}else{
+		if iterT.GetValue() != "class" return null
+	}
+
 
 	iterT = iterT.Right
 
@@ -38,13 +46,17 @@ ParseClass := !(Object^ ob)-> BoxClass^
 		if iterT.GetValue() != "{}" return null
 
 		//if IsTemplate return new BoxClassTemplate(ob,ExtObj)
-		return new BoxClass(iterT,null->{BoxClass^},ExtObj)
+		preRes :=  new BoxClass(iterT,null->{BoxClass^},ExtObj)
+		preRes.IsPacked = putPack
+		return preRes
 
 	}
 
 	if iterT.GetValue() != "{}" return null
 
-	return new BoxClass(iterT,null->{BoxClass^},null->{Object^})
+	preRes2 := new BoxClass(iterT,null->{BoxClass^},null->{Object^})
+	preRes2.IsPacked = putPack
+	return preRes2
 }
 
 GetUpClass := !(Object^ toS) -> BoxClass^
@@ -233,6 +245,8 @@ BoxClass := class extend Object
 	Parent := BoxClass^
 
 	ContainVirtual  := bool
+
+	IsPacked := bool
 
 	ItVals := Queue.{ObjConstHolder^}
 	ItConsts := Queue.{Object^}
@@ -705,7 +719,9 @@ BoxClass := class extend Object
 				f << ", elements: !{})\n"
 			}
 		}else{
-			f << "%Class" << ClassId << " = type {"
+			f << "%Class" << ClassId << " = type "
+			if IsPacked f << "<"
+			f << "{"
 			if not vTable.Empty()
 			{
 				f << "%ClassTableType" << ClassId << "*"
@@ -715,7 +731,9 @@ BoxClass := class extend Object
 				if i != 0 or not vTable.Empty() f <<","
 				f << it.ResultType.GetName()
 			}
-			f << "}\n"
+			f << "}"
+			if IsPacked f << ">"
+			f <<"\n"
 			if DebugMode
 			{
 				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""

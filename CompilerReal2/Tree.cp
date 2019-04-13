@@ -285,6 +285,7 @@ IsKeyword := !(W) -> bool
 	if W == "delete" return true
 	if W == "thread_local" return true
 	if W == "keep_name" return true
+	if W == "packed_class" return true
 	return false
 }
 

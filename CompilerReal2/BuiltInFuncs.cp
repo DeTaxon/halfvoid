@@ -1,6 +1,7 @@
 #import "BoxFunc.cp"
 #import "BoxClass.cp"
 #import "Type.cp"
+#import "BuiltInVec3d.cp"
 
 BuiltInFunc := class extend BoxFunc
 {
@@ -380,72 +381,6 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 			ToExe = "%Pre## = getelementptr " + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1\n"
 			ToExe = ToExe + "#0 = ptrtoint " + asBase.GetName() + "* %Pre## to i32\n"
 		}
-	}
-}
-BuiltInTemplateVec4fGet := class extend BoxTemplate
-{
-	this := !() -> void
-	{
-		FuncName = "."
-	
-		cc := Queue.{Type^}() ; $temp
-		cc.Push(null->{Type^})
-
-		MyFuncType = GetFuncType(cc,null->{bool^},GTypeInt,false,false)
-	}
-	GetPriority := virtual !(Queue.{Type^} pars,Queue.{Object^} consts) -> int 
-	{
-		if pars.Size() != 1 return 255
-		if pars[0] != GetType("vec4f") and pars[0] != GetType("quantf") return 255
-		if consts.Size() != 1 return 255
-		if consts[0].GetValue() != "~str" return 255
-
-		asNeedPre := consts[0]->{ObjStr^}
-		asNeed := asNeedPre.GetString()
-
-		if asNeed == "x" return 0
-		if asNeed == "y" return 0
-		if asNeed == "z" return 0
-		if asNeed == "w" return 0
-
-
-		if StrSize(asNeed) == 4
-		{
-			for i : asNeed
-			{
-				if not (i in "xyzw") return 255
-			}
-			return 0
-		}
-
-		return 255
-	}
-	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ funct) -> BoxFunc^
-	{
-		asNeedPre := consts[0]->{ObjStr^}
-		asNeed := asNeedPre.GetString()
-		
-		if StrSize(asNeed) == 1
-		{
-			x := 0
-			if asNeed == "y" x = 1
-			if asNeed == "z" x = 2
-			if asNeed == "w" x = 3
-			
-			return new BuiltInFuncUno(".",pars[0],false,GetType("float"), "#0 = extractelement <4 x float> #1, i32 " + x + "\n")
-		}else{
-			vecData := int[4]
-			for i : 4
-			{
-				if asNeed[i] == 'x' vecData[i] = 0
-				if asNeed[i] == 'y' vecData[i] = 1
-				if asNeed[i] == 'z' vecData[i] = 2
-				if asNeed[i] == 'w' vecData[i] = 3
-			}
-			return new BuiltInFuncUno(".",pars[0],false,pars[0],"#0 = shufflevector <4 x float> #1, <4 x float> undef , <4 x i32> "sbt +
-					"<i32 " + vecData[0] + ",i32 " + vecData[1] + ",i32 " + vecData[2] + ",i32 " + vecData[3] + ">\n")
-		}
-		return null
 	}
 }
 

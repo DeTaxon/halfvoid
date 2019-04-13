@@ -406,6 +406,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		newRet := MyFuncType.RetType
 		retRefArray := MyFuncType.ParsIsRef
+
 		if MyFuncType.RetType == null and CopyRet != null
 		{
 			newRet = ParseType(CopyRet)
