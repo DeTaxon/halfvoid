@@ -971,6 +971,8 @@ CreateStandartTypes := !() -> void
 
 	DefsTable[20] = new TypeDef("vec4f",TypeTable[17])
 	DefsTable[21] = new TypeDef("quantf",TypeTable[18])
+
+	DefsTable[22] = new TypeDef("size_t",TypeTable[3])
 }
 IsInt := !(Type^ tp) -> bool
 {

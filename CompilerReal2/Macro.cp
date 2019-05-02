@@ -146,6 +146,9 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			}else{
 				addIter := tr
 
+				objList := Queue.{Object^}() ; $temp
+				objParms := Queue.{LocalParam^}() ; $temp
+
 				for i : parsCount
 				{
 					newObj := tr.Down.Clone()
@@ -154,9 +157,16 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 					if newObj.Right != null newObj.Right.Left = newObj
 					newObj.Left = addIter
 					addIter.Right = newObj
-					reParseDown(newObj,lastFunc.ItParams[i+lastFunc.funcUserParamsCount],vargName)
+					//reParseDown(newObj,lastFunc.ItParams[i+lastFunc.funcUserParamsCount],vargName)
+					objList.Push(newObj)
+					objParms.Push(lastFunc.ItParams[i+lastFunc.funcUserParamsCount])
 
 					addIter = newObj
+				}
+
+				for a : objList, b : objParms
+				{
+					reParseDown(a,b,vargName)
 				}
 				preRes := tr.Right
 				PopOutNode(tr)

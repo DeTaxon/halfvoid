@@ -837,7 +837,7 @@ SomeFuncCall := class extend ObjResult
 			{
 				if Up.GetValue() == "~Return()"
 				{
-					TName = "%ToRet"
+					TName = "%" + ReturnName
 				}else{
 					InAlloc = GetAlloc(this&,ToCall.MyFuncType.RetType)
 					TName = "%T" + InAlloc
@@ -1712,9 +1712,9 @@ ConstructCall := class extend NaturalCall
 			if Up.GetValue() == "~Return()"
 			{
 				rights := Down.Right
-				itm := GetItem("ToRet",this&)
+				itm := GetItem(ReturnName,this&)
 				ReplaceNode(Down,new ParamNaturalCall("this",itm))
-				TName = "%ToRet"
+				TName = "%" + ReturnName
 			}else
 			{
 				//if not ToCall.IsRetRef wut???

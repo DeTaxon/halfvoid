@@ -849,7 +849,7 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 	}
 	if IsRetComplex 
 	{
-		f << fType.RetType.GetName() << "* %ToRet"
+		f << fType.RetType.GetName() << "* %" << ReturnName
 		if fType.ParsCount != 0 f << " , "
 	}
 	for i : fType.ParsCount
@@ -976,7 +976,7 @@ BoxFuncBody := class extend BoxFunc
 				{
 					this.IsRetComplex = true
 					if ExtraRetParam == null
-						ExtraRetParam = new FuncParam("ToRet",t,true)
+						ExtraRetParam = new FuncParam(ReturnName,t,true)
 				}
 			}
 		}

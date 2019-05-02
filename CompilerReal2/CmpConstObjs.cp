@@ -28,6 +28,12 @@ CmpConstObjs := !(Object^ a, Object^ b) -> bool
 		bS := b->{ObjStr^}
 		return aS.MyStrId == bS.MyStrId
 	}
+	if a is ObjBool and b is ObjBool
+	{
+		aS := a->{ObjBool^}
+		bS := b->{ObjBool^}
+		return aS.MyBool == bS.MyBool
+	}
 	// float, func ??
 	return false
 }

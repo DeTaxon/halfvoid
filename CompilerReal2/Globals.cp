@@ -27,6 +27,8 @@ GlobalUnpoint := BuiltInTemplatePoint^
 GlobalRefExc := BuiltInTemplateRefEx^
 GlobalExcArr := BuiltInTemplateExcArr^
 
+ReturnName := string
+
 OpersTree := AVLSet.{string}
 
 GlobalStrs := Queue.{string}

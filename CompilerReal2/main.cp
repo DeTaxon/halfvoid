@@ -9,6 +9,7 @@
 
 main := !(int argc,char^^ argv) -> int 
 {
+	ReturnName = "ToRet"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
 	LoadLexMachine()
@@ -31,6 +32,9 @@ main := !(int argc,char^^ argv) -> int
 	{
 		switch argv[i]
 		{
+		case "--rname"
+			ReturnName = argv[i+1]
+			i += 1
 		case  "--tree"
 			emitTree = true
 		case "-f"

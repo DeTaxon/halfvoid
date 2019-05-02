@@ -259,11 +259,9 @@ BoxBlock := class extend Object
 									if inMap != null
 									{
 										itmToPut = itr.Down.Right
-										printf("hah\n")
 									}else{
 										if itr.Down.Right.Right.Right != null
 											itmToPut = itr.Down.Right.Right.Right.Right
-										printf("hoh\n")
 									}
 									if itmToPut == null
 										PopOutNode(itr)
