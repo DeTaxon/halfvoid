@@ -146,8 +146,8 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			}else{
 				addIter := tr
 
-				objList := Queue.{Object^}() ; $temp
-				objParms := Queue.{LocalParam^}() ; $temp
+				objList := Stack.{Object^}() ; $temp
+				objParms := Stack.{LocalParam^}() ; $temp
 
 				for i : parsCount
 				{
