@@ -35,11 +35,20 @@ main := !(int argc,char^^ argv) -> int
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
+		case "--fatstr"
+			UseFatString = true
 		case  "--tree"
 			emitTree = true
 		case "-f"
 			forcedFiles.Push(argv[i+1])
 			i += 1
+		case "--cci"
+			InCC = argv[i+1]
+			i += 1
+		case "--cco"
+			OutCC = argv[i+1]
+			i += 1
+
 		case "-F"
 			for newItm : Wildcard(argv[i+1])
 			{

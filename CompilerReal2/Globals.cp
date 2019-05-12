@@ -43,6 +43,10 @@ cuId := int
 DebugMetaData := Stack.{string}
 
 UseDestructors := false
+UseFatString := false
+
+InCC := char^
+OutCC := char^
 
 VoidPType := Type^
 GTypeBool := Type^

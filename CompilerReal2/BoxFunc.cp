@@ -807,6 +807,9 @@ BoxFuncDeclare := class  extend BoxFunc
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "declare "
+		if OutCC != null{
+			f << " " << OutCC << " "
+		}
 		MyFuncType.RetType.PrintType(f)
 		f << " @" << OutputName
 		MyFuncType.PrintSkobs(f)
@@ -822,6 +825,9 @@ BoxFuncDeclare := class  extend BoxFunc
 PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
 {
 	f << "define dso_local "
+
+	if InCC != null
+		f << " " << InCC << " "
 
 	IsRetComplex := false
 

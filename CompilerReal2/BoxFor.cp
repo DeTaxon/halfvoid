@@ -131,6 +131,10 @@ BoxForOldFashionMulti := class extend BoxFor
 		if visitedWork[pri] return void
 		else if pri != State_GetUse  visitedWork << pri
 
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
 		if pri == State_PreGetUse
 		{
 			while TryParseMacro(Down.Right,this&) != null {}

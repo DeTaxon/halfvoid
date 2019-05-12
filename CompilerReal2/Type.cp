@@ -961,8 +961,13 @@ CreateStandartTypes := !() -> void
 	DefsTable[14] = new TypeDef("double",TypeTable[10])
 
 	DefsTable[15] = new TypeDef("void",TypeTable[11])
-
-	DefsTable[16] = new TypeDef("string",TypeTable[12])
+	
+	if UseFatString
+	{
+		DefsTable[16] = new TypeDef("String",TypeTable[0].GetFatArray())
+	}else{
+		DefsTable[16] = new TypeDef("string",TypeTable[12])
+	}
 
 	DefsTable[17] = new TypeDef("opaque",TypeTable[15])
 

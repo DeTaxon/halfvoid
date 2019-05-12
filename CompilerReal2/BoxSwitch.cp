@@ -21,9 +21,7 @@ BoxSwitch := class extend Object
 		{
 			WorkBag.Push(this&,State_PreGetUse)
 			while TryParseMacro(Down,this&) != null {}
-		}
-		if pri == State_PreGetUse
-		{
+
 			WorkBag.Push(this&,State_GetUse)
 			WorkBag.Push(Down,State_Start)
 			WorkBag.Push(Down.Right,State_Start)
