@@ -1588,7 +1588,8 @@ CreateBuiltIns := !() -> void
 
 	AddBuiltInFunc(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1\n"))
 	AddBuiltInFunc( new BuiltInSuffix("f",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float\n"))
-	AddBuiltInFunc( new BuiltInSuffix("L",GetType("int"),false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
+	AddBuiltInFunc( new BuiltInSuffix("L",GTypeInt,false,GetType("s64"),"#0 = sext i32 #1 to i64\n"))
+	AddBuiltInFunc( new BuiltInSuffix("U",GTypeInt,false,GetType("u64"),"#0 = zext i32 #1 to i64\n"))
 	AddBuiltInFunc( new BuiltInSuffix("pi",GTypeFloat,false,GTypeFloat,"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float #1,%Pre##\n"))
 	AddBuiltInFunc( new BuiltInSuffix("deg",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float\n" +
