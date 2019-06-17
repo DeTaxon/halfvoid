@@ -37,6 +37,7 @@ Classes := Queue.{BoxClass^}
 
 PostFuncs := Queue.{BuiltInFuncClassInfo^}
 
+CTT := CreateTupleTemplate^
 
 DebugMode := false
 cuId := int
@@ -44,6 +45,9 @@ DebugMetaData := Stack.{string}
 
 UseDestructors := false
 UseFatString := false
+
+getTempData :=  FuncInputBox^
+workingOnObject := Object^
 
 InCC := char^
 OutCC := char^

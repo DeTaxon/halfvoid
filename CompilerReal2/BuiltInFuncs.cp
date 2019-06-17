@@ -1439,6 +1439,10 @@ CreateBuiltIns := !() -> void
 				BuiltInExcs.Push(new BuiltInFuncUno("->{}",from,false,to,"#0 = zext " + from.GetName() + " #1 to " + to.GetName() + "\n"))
 			}
 		}
+		if i == j 
+		{
+			BuiltInExcs.Push(new BuiltInFuncUno("->{}",from,false,to,"#0 = add " + from.GetName() + " #1,0 \n"))
+		}
 		//if i == j
 		//{
 		//}
@@ -1584,6 +1588,8 @@ CreateBuiltIns := !() -> void
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeDouble,"#0 = fpext float #1 to double\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float\n"))
+
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = bitcast i8* #1 to i64\n"))
 
 
 	AddBuiltInFunc(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1\n"))

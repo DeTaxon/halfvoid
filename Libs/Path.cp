@@ -157,7 +157,8 @@ DirectoryWildcardIterator := class
 						return true
 					j += 1
 				}
-				k += 1
+				return false
+				//k += 1
 			}else
 			{
 				if toCmp[j] != inWild[k]
@@ -166,7 +167,7 @@ DirectoryWildcardIterator := class
 				k += 1
 			}
 		}
-		return true
+		return toCmp[j] == 0
 	}
 	IsEnd := !() -> bool
 	{

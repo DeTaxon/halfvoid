@@ -28,6 +28,8 @@ Object := class{
 			preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align)
 		}else{
 			preRes = ObjectsPool.GetMem(R->TypeSize,R->Align)
+			//preRes = malloc(R->TypeSize)
+			//memset(preRes,0,R->TypeSize)
 		}
 		return preRes
 	}
@@ -65,12 +67,31 @@ Object := class{
 	}
 	EmitError := !(string err) -> void
 	{
+		sbtt := ""sbt
 		if Line != null
 		{
-			ErrorLog.Push("Error in file <" + Line.inFile.itStr + "> at <" +Line.LinePos + ">:" + err)
-		}else{
-			ErrorLog.Push(err)
+			sbtt << "Error in file <" << Line.inFile.itStr << "> at <" << Line.LinePos << ">:"
 		}
+		sbtt << err
+		sbtt << "\n"
+		if workingOnObject != null and workingOnObject.Line != null
+		{
+			sbtt << "Called from <" << workingOnObject.Line.inFile.itStr << "> at <" << workingOnObject.Line.LinePos << ">\n"
+		}
+
+		itr := Up
+		while itr != null
+		{
+			if itr is BoxFuncBody
+				break
+			itr = itr.Up
+		}
+		if itr != null and itr.Up != null and itr.Up is BoxTemplate
+		{
+			asB := itr->{BoxFuncBody^}
+			sbtt << "template type " << asB.MyFuncType.GetGoodName() << "\n"
+		}
+		ErrorLog.Push(sbtt)
 	}
 	PrintGlobalSub := !(sfile f) -> void
 	{

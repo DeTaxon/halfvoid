@@ -16,8 +16,8 @@ main := !(int argc,char^^ argv) -> int
 	BuiltInFuncs."this"()
 	ObjectsPool."this"()
 	//GlobalStrs = ""
-	//CTT = new CreateTupleTemplate()
 	printWork := false
+	CTT = new CreateTupleTemplate
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
@@ -88,6 +88,7 @@ main := !(int argc,char^^ argv) -> int
 	CreateStandartTypes()
 	CreateBuiltIns()
 
+
 	PriorityData = new PriorityBag("Priority.pr")
 	PriorityData.Opers.Push(":=")
 	PriorityData.Opers.Push("=>")
@@ -110,6 +111,11 @@ main := !(int argc,char^^ argv) -> int
 			return 0
 		}
 	}
+	//workAround2 := CreateTupleTemplate()
+	//workAround := CreateTupleTemplate()
+	//memset(workAround&,0,CreateTupleTemplate->TypeSize)
+	//workAround&->{void^^}^ = workAround2&->{void^^}^
+	//CTT = workAround&
 	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
 	for forcedFiles
@@ -161,9 +167,10 @@ main := !(int argc,char^^ argv) -> int
 		StrContainer.PrintGlobal(fil)
 
 		Classes[^].PrintStruct(fil)
-		fil << GlobalStrs[^]
-
 		PrintTuples(fil)
+		fil << GlobalStrs[^]
+		PrintTuplesFuncs(fil)
+
 
 		for wutt : Files
 		{
@@ -211,6 +218,7 @@ WorkWithBag := !(bool printW) -> void
 		FlushTempMemory()
 		prior := WorkBag.GetTopPriority()
 		it := WorkBag.Pop()
+		workingOnObject = it
 
 		if printW
 		{

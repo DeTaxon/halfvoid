@@ -6,7 +6,10 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	{
 		if it == null return null
 	}
-	if obj == null return null
+	if obj == null {
+		resB[0] = false
+		return null
+	}
 	
 	if obj is ObjIndent
 	{
@@ -17,6 +20,8 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	if obj.GetValue() == "~{}type"
 	{
 		sNeed := obj->{ObjTemplateType^}
+		if res[^].ItName == sNeed.MyStr
+			return itT
 		res.Push(new ObjConstHolder(sNeed.MyStr,(new ObjType(itT))->{Object^}))
 		return itT
 	}else
@@ -42,7 +47,11 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 				if itT.GetType() == "fatarr"
 				{
 					typD2 := IsSameType(obj.Down,itT.Base,res,resB)
-					if typD2 == null return null
+					if typD2 == null 
+					{
+						resB[0] = false
+						return null
+					}
 					
 					if obj.Down.Right.Down != null 
 					{
@@ -57,10 +66,16 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 			asNeedType := itT->{TypeArr^}
 
 			typD := IsSameType(obj.Down,itT.Base,res,resB)
-			if typD == null return null
+			if typD == null {
+				resB[0] = false
+				return null
+			}
 
 			itemD := obj.Down.Right.Down
-			if itemD == null return null
+			if itemD == null {
+				resB[0] = false
+				return null
+			}
 			
 			if itemD.IsConst
 			{
@@ -80,6 +95,8 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 				if itemD.GetValue() == "~{}type"
 				{
 					asNeedDown2 := itemD->{ObjTemplateType^}
+					if res[^].ItName == asNeedDown2.MyStr
+						return itT
 					res.Push(new ObjConstHolder(asNeedDown2.MyStr,(new ObjInt(asNeedType.Size))->{Object^}))
 					return itT
 				}else{

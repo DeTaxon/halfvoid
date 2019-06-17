@@ -246,17 +246,54 @@ BoxTemplate := class extend BoxFunc
 	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res) -> bool
 	{
 		re := true
-		for fT : FuncsTTemps, i: 0, par : itBox.itPars
+
+		failedC := 0
+		succedC := 0
+
+		limit := 50
+		while true
 		{
-			if i >= MyFuncType.ParsCount  break
-			if MyFuncType.Pars[i] == null
+			failedC = 0
+			succedC = 0
+			metPars := false
+			for fT : FuncsTTemps, i: 0, par : itBox.itPars
 			{
-				if fT != null
-				{
-					IsSameType(fT,par.first,res,re&)
-					if not re return false
+				if i >= MyFuncType.ParsCount  {
+					metPars = true
+					break
 				}
-			}			
+				if MyFuncType.Pars[i] == null
+				{
+					if fT != null
+					{
+						if IsSameType(fT,par.first,res,re&) == null
+						{
+							failedC++
+						}else{
+							succedC++
+						}
+						if not re return false
+					}else{
+						succedC++
+					}
+				}else{
+					succedC++
+					failedC++
+				}
+			}
+			if metPars and succedC == MyFuncType.ParsCount
+				break
+			if succedC == FuncsTTemps.Size()
+				break
+			if failedC == FuncsTTemps.Size()
+				return false
+			limit -= 1
+			if limit <= 0 {
+				printf("types\n")
+				printf("typ %s\n",itBox.itPars[^].first.GetGoodName())
+				EmitError("compiler error")
+				return false
+			}
 		}
 		if CopyConsts != null
 		{
@@ -318,9 +355,8 @@ BoxTemplate := class extend BoxFunc
 		firstNon = null
 		//FuncsTs := Queue.{Object^}() 
 
-		if FuncName != "new" and FuncName != "delete" and FuncName != "~For"
+		if FuncName != "new" and FuncName != "delete" and FuncName != "~For" and metC != null
 			FuncsTTemps.Push(null->{Object^})
-
 
 		while iter != null
 		{
@@ -426,6 +462,10 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{
+
+		getTempData = itBox&
+		defer getTempData = null
+
 		outT := Queue.{Type^}() ; $temp
 
 		parConsts := Queue.{ObjConstHolder^}()

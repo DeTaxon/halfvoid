@@ -21,7 +21,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 	./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 
 test2: main2.cp
-	./c.out main2.cp $(ForcedLibs) --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2
+	./c.out main2.cp -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2t: main2.cp
 	./c.out main2.cp $(ForcedLibs) --tree --vk vk.xml -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2g: main2.cp

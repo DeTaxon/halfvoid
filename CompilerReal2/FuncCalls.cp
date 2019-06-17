@@ -106,30 +106,24 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			
 		}
-		//if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
-		//{
-		//	box := new FuncInputBox() ; $temp
+		if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
+		{
+			box := new FuncInputBox() ; $temp
 
-		//	iterY := iter.Right.Down
+			if iter.Right.Down[^].GetValue() != ","
+			{
+				box.itPars.Emplace(it.GetType(),it.IsRef())
+			}
 
-		//	while iterY != null
-		//	{
-		//		if iterY.GetValue() != ","
-		//		{
-		//			box.itPars.Emplace(iterY.GetType(),iterY.IsRef())
-		//		}
-		//		iterY = iterY.Right
-		//	}
+			CTT2 := CTT->{BoxTemplate^}
 
-		//	CTT2 := CTT->{BoxTemplate^}
-
-		//	f := CTT2.GetFunc(box^)
-		//	if f != null
-		//	{
-		//		TrimCommas(iter.Right)
-		//		return MakeSimpleCall(f,iter.Right.Down)
-		//	}
-		//}
+			f := CTT2.GetFunc(box^)
+			if f != null
+			{
+				TrimCommas(iter.Right)
+				return MakeSimpleCall(f,iter.Right.Down)
+			}
+		}
 		return null
 	}
 
@@ -333,6 +327,25 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter.Right = null
 				return MakeSimpleCall(fun,iter)
 			}
+			if iter.Right is ObjInt and iter.Right.Right == null
+			{
+				box := new FuncInputBox() ; $temp
+				box.itConsts.Push(iter.Right)
+
+				box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
+
+				fnc := FindFunc(".x",iter,box^,false)
+
+				if fnc != null
+				{
+					iter = iter.Left
+					iter.Right = null
+					return MakeSimpleCall(fnc,iter)
+				}
+
+
+			}
+
 			if iter.Right is ObjIndent or iter.Right is ObjStr
 			{
 				asName := ""
@@ -1514,7 +1527,7 @@ DeleteCall := class extend SomeFuncCall
 			box := new FuncInputBox()  ; $temp
 
 			box.itPars.Emplace(VoidPType,false)
-			box.itConsts.Push(new ObjType(Down.GetType())) 
+			//box.itConsts.Push(new ObjType(Down.GetType())) 
 
 			func := FindFunc("delete",Up,box^,false)
 

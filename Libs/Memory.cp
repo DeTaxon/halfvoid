@@ -46,7 +46,7 @@ PrintMemUse := !() -> void
 	preRet->{int^}[-1] = count	
 	return preRet
 }
-"delete" := !(void^ item) .{@R[]} -> void
+"delete" := !(void^ item) -> void
 {
 	sub := 4
 	//if R->Align > 4 sub = R->Align
