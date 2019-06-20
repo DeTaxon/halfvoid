@@ -334,7 +334,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
 
-				fnc := FindFunc(".x",iter,box^,false)
+				fnc := FindFunc(".",iter,box^,false)
 
 				if fnc != null
 				{
