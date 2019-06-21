@@ -2,6 +2,7 @@
 #import "BoxClass.cp"
 #import "Globals.cp"
 #import "UnboxParams.cp"
+#import "BoxTuple.cp"
 
 TypesPool := StupidMemoryPool.{16000000}
 
@@ -208,6 +209,27 @@ ParseType := !(Object^ Node) -> Type^
 		{
 			SyntaxCompress(Node.Down.Right.Right,PriorityData)
 			itName := ((Node.Down)->{ObjIndent^}).MyStr
+
+			if itName == "Tuple"
+			{
+				itms  := new FuncInputBox()  ; $temp
+				if Node.Down.Right.Right.Down[^].GetValue() != ","
+				{
+					isType := ParseType(it)
+					if isType == null
+					{
+						return null
+					}else{
+						itms.itPars.Emplace(isType,false)
+						
+					}
+				}
+				asCt :=  GetTuple(itms)
+				if asCt == null
+					return null
+				return asCt.ClassType
+			}
+
 			NodeName := GetItem(itName,Node)
 
 			if NodeName == null return null
