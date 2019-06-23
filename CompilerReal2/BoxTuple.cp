@@ -196,15 +196,22 @@ TupleClass := class extend BoxClass
 
 						if func != null
 						{
+							oneInt := new ObjInt(i)
 							box2 := new FuncInputBox() ; $temp
 							box2.itPars.Emplace(ClassType->{Type^},true)
-							box2.itConsts.Push(new ObjInt(i))
+							box2.itConsts.Push(oneInt)
 							
 							frmPre := GetNmFunc->{BoxTemplate^}
 							frm := frmPre.GetFunc(box2^)
 
-							partA := MakeSimpleCall(frm,new ParamNaturalCall("",new FuncParam("ToSet",ClassType->{Type^},true)))
-							partB := MakeSimpleCall(frm,new ParamNaturalCall("",new FuncParam("ToGet",asT.ClassType,true)))
+							box3 := new FuncInputBox ; $temp
+							box3.itPars.Emplace(asT.ClassType,true)
+							box3.itConsts.Push(oneInt)
+							frmPre2 := asT.GetNmFunc->{BoxTemplate^}
+							frm2 := frmPre2.GetFunc(box3^)
+
+							partA := MakeSimpleCall(frm ,new ParamNaturalCall("",new FuncParam("ToSet",ClassType->{Type^},true)))
+							partB := MakeSimpleCall(frm2,new ParamNaturalCall("",new FuncParam("ToGet",asT.ClassType,true)))
 
 							partA.Right = partB
 							partB.Left = partA
