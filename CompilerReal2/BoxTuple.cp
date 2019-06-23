@@ -69,6 +69,8 @@ TupleClass := class extend BoxClass
 	simpleSetters := Queue.{SimpleSetTuple}
 	setSimpleNeedCheck := bool
 
+	cttAsFunc := BoxFunc^
+
 
 	this := !(FuncInputBox^ typs) -> void
 	{
@@ -98,6 +100,18 @@ TupleClass := class extend BoxClass
 			if setSimple.GetPriority(itBox) == 255
 				return null
 			return setSimple.GetFunc(itBox)
+		}
+		if name == "this"
+		{
+			if cttAsFunc == null
+			{
+				box := new FuncInputBox ; $temp
+				box.itPars.Emplace(ClassType,false)
+				box.itPars.Emplace(Params[^].ResultType,false)
+				cttAsFunc =TCT.GetFunc(box^)
+				cttAsFunc.IsMethod = true
+			}
+			return cttAsFunc
 		}
 		return null->{BoxFunc^}
 	}
@@ -374,6 +388,57 @@ CreateTupleTemplate := class extend BoxTemplate
 				toEx = toEx + ", " + pars[i].first.GetName() + "* #" + (i + 1)
 			}else{
 				toEx = toEx + ", " + pars[i].first.GetName() + " #" + (i + 1)
+			}
+		}
+		toEx = toEx + ")\n"
+
+		return new BuiltInFuncMega("",funct,toEx)
+	}
+}
+TupleConstructorTemplate := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+	}
+	GetPriority := virtual !(FuncInputBox it) -> int
+	{
+		return 0
+	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+	}
+	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
+	{
+		itTpl := GetTuple(itBox&)
+		ct := itTpl.ClassType
+		cc := ct->{Type^}
+		tps := Queue.{Type^}() ; $temp
+		tps.Push(itBox.itPars[^].first)
+		return GetFuncType(tps,null->{bool^},GTypeVoid,false,false)
+	}
+	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+
+		ftB := funct->{Type^}
+		itTpl := funct.Pars[0]->{TypeClass^}.ToClass->{TupleClass^}
+		if itTpl.askedCreate == 0
+			itTpl.askedCreate = 1
+
+		WorkBag.Push(itTpl,State_PreGetUse)
+
+		toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
+			"(" 
+
+		for par,i : pars
+		{
+			if i != 0
+				toEx = toEx + ", "
+			if funct.ParsIsRef[i]
+			{
+				toEx = toEx + pars[i].first.GetName() + "* #" + (i + 1)
+			}else{
+				toEx = toEx + pars[i].first.GetName() + " #" + (i + 1) 
 			}
 		}
 		toEx = toEx + ")\n"

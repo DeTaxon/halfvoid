@@ -18,6 +18,7 @@ main := !(int argc,char^^ argv) -> int
 	//GlobalStrs = ""
 	printWork := false
 	CTT = new CreateTupleTemplate
+	TCT = new TupleConstructorTemplate
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()

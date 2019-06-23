@@ -38,6 +38,7 @@ Classes := Queue.{BoxClass^}
 PostFuncs := Queue.{BuiltInFuncClassInfo^}
 
 CTT := CreateTupleTemplate^
+TCT := TupleConstructorTemplate^
 
 DebugMode := false
 cuId := int

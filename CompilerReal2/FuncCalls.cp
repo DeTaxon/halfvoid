@@ -1715,7 +1715,9 @@ ConstructCall := class extend NaturalCall
 		FType = ToCall.MyFuncType
 		Down.SetUp(this&)
 		ExchangeParams()
+
 		WorkBag.Push(this&,State_GetUse)
+
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1767,8 +1769,113 @@ ConstructCall := class extend NaturalCall
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		FillConsts(f)
-		UseCall(f)
+		if ToCall.IsAssembler()
+		{
+			PrintPreFuncName(f)
+			RefsArr := FType.ParsIsRef
+			RealCall := ToCall->{BuiltInFunc^}
+
+			if not RealCall.IsSelfPre
+				PrintParamPres(f)
+			
+			AsmLine := RealCall.ToExe
+
+			buf := char[2]
+			buf[1] = 0
+
+			thisName := GetName()
+			j := 0
+			while AsmLine[j] != 0
+			{
+				if AsmLine[j] != '#'
+				{
+					buf[0] = AsmLine[j]
+					f << buf
+					j += 1
+				}else{
+					j+= 1
+					if AsmLine[j] in '0'..'9'
+					{
+						num := 0
+
+						while AsmLine[j] in '0'..'9'
+						{
+							num *= 10
+							num += AsmLine[j] - '0'
+							j += 1
+						}
+
+						if num == 0
+						{
+							f << GetOutputName()
+						}else{
+							num -= 1
+							miniIter := Down
+							for num miniIter = miniIter.Right
+
+							if miniIter == null
+							{
+								printf("nope %s\n",RealCall.FuncName)
+							}
+
+							ToAdd := string
+							if RefsArr[num] ToAdd = miniIter.GetPointName()
+							else ToAdd = miniIter.GetName()
+
+							f << ToAdd
+						}
+					}
+					if AsmLine[j] == 'd'
+					{
+						j += 1
+						if DebugMode {
+							newId := CreateDebugCall(this&)
+							if newId != -1
+							{
+								f << ", !dbg !" << newId
+							}
+						}
+
+					}
+					if AsmLine[j] == '^'
+					{
+						numC := 0
+						j += 1
+
+						while AsmLine[j] in '0'..'9'
+						{
+							numC *= 10
+							numC += AsmLine[j] - '0'
+							j += 1
+						}
+
+						iterR := Down
+						
+						numC -= 1
+						k := numC
+						while k  != 0
+						{
+							iterR = iterR.Right
+							k -= 1
+						}
+
+						if RealCall.MyFuncType.ParsIsRef[numC]
+							iterR.PrintPointPre(f)
+						else	iterR.PrintPre(f)
+
+					}
+					if AsmLine[j] == '#'
+					{
+						f << RetId
+						j += 1
+					}
+				}
+			}
+		}else{
+
+			FillConsts(f)
+			UseCall(f)
+		}
 	}
 
 	PrintPre := virtual !(sfile f) -> void
