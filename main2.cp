@@ -1,22 +1,10 @@
-
+printf := !(char^ a,...) -> void declare
 
 main := !(int argc, char^^ argv) -> int
 {
-	srand(7)
-	printf("start\n")
-	c := AVLMap.{int,int}()
-	for 15
-	{
-		w := rand() % 128
-
-		c[w] = 0
-	}
-
-	for i,j : c
-	{
-		printf("%i ",j)
-	}
-	printf("\n")
+	c := !{1,6}
+	k := c
+	printf("heh %i %i\n",k.0,k.1)
 	return 0
 }
 

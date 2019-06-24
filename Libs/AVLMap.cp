@@ -3,7 +3,7 @@
 
 AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 {
-	miniStack := Stack.{Pair.{AVLTreeNode.{DATA}^,bool},32}
+	miniStack := Stack.{Tuple.{AVLTreeNode.{DATA}^,bool},32}
 	nNode := AVLTreeNode.{DATA}^
 
 	this := !(AVLTreeNode.{DATA}^ nd) -> void
@@ -31,8 +31,8 @@ AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 			nNode = null
 			return void
 		}
-		nNode = miniStack.Front().first
-		part := miniStack.Front().second
+		nNode = miniStack.Front().0
+		part := miniStack.Front().1
 		miniStack.Pop()
 
 		if part
