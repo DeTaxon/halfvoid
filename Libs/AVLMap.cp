@@ -3,24 +3,54 @@
 
 AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 {
-	miniStack := Stack.{AVLTreeNode.{DATA}^,32}
+	miniStack := Stack.{Pair.{AVLTreeNode.{DATA}^,bool},32}
+	nNode := AVLTreeNode.{DATA}^
 
 	this := !(AVLTreeNode.{DATA}^ nd) -> void
 	{
 		miniStack."this"()
+		nNode = nd
 		if nd != null{
-			miniStack.Push(nd)
+			while nNode.Left != null
+			{
+				if nNode.Right != null
+					miniStack.Emplace(nNode.Right,true)
+				miniStack.Emplace(nNode,false)
+				nNode = nNode.Left
+			}
+			if nNode.Right != null
+				miniStack.Emplace(nNode.Right,false)
 		}
 	}
-	IsEnd := !() -> bool { return miniStack.Size() == 0 }
-	"^" := !() -> ref VALUE { return miniStack.Front().data.second }
-	Ind := !() -> ref KEY { return miniStack.Front().data.first}
-	Inc := !() -> void { 
-		nowNod := miniStack.Pop()
-		if nowNod.Left != null miniStack.Push(nowNod.Left)
-		if nowNod.Right != null miniStack.Push(nowNod.Right)
+	IsEnd := !() -> bool { return nNode == null }
+	"^" := !() -> ref VALUE { return nNode.data.second }
+	Ind := !() -> ref KEY { return nNode.data.first}
+	Inc := !() -> void {
+		if miniStack.Empty()
+		{
+			nNode = null
+			return void
+		}
+		nNode = miniStack.Front().first
+		part := miniStack.Front().second
+		miniStack.Pop()
+
+		if part
+		{
+			while nNode.Left != null
+			{
+				if nNode.Right != null
+					miniStack.Emplace(nNode.Right,true)
+				miniStack.Emplace(nNode,false)
+				nNode = nNode.Left
+			}
+			if nNode.Right != null
+				miniStack.Emplace(nNode.Right,false)
+			//None
+		}else{
+		}
 	}
-}p
+}
 
 BadPair := class .{@A,@B}
 {
