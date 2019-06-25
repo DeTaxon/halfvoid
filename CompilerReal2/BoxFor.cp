@@ -51,7 +51,15 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 			iterY = iterY.Right
 		}
 
-		return new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
+		preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
+		if dat.Line != null
+		{
+			if dat.Line.itAttrs.Size() != 0
+			{
+				preRes.attrs = dat.Line.itAttrs&
+			}
+		}.
+		return preRes
 	}
 	Downs.Push(iterY)
 
@@ -62,7 +70,15 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	}
 	wut := iterY.Right
 
-	return new BoxForOldFashionMulti(Names,indNames,Downs,wut)
+	preRes := new BoxForOldFashionMulti(Names,indNames,Downs,wut)
+	if dat.Line != null
+	{
+		if dat.Line.itAttrs.Size() != 0
+		{
+			preRes.attrs = dat.Line.itAttrs&
+		}
+	}.
+	return preRes
 }
 
 BoxFor := class extend Object
@@ -86,6 +102,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	ProxyFuncs := BoxFunc^^
 	Params := MemParam^^
 	IndParams := MemParam^^
+
+	attrs := AttrArrayType^
 
 	EnabledIIndex := bool
 
@@ -167,8 +185,12 @@ BoxForOldFashionMulti := class extend BoxFor
 					{
 						EmitError("can not evaluate type in for each\n")
 					}else{
-						someBox := new FuncInputBox()
+						someBox := new FuncInputBox() ; $temp
 						someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
+						if attrs != null for q,k : attrs^
+						{
+							someBox.itAttrs[k] = q
+						}
 
 						func := FindFunc("~For",this&,someBox^,false)
 						if func == null 
@@ -223,6 +245,10 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					emptyBox := new FuncInputBox() ; $temp
 					emptyBox.itPars.Emplace(itType,true)
+					if attrs != null for q,k : attrs^
+					{
+						emptyBox.itAttrs[k] = q
+					}
 
 					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,true)
 					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,true)

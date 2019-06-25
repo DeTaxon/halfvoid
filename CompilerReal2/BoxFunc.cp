@@ -401,7 +401,7 @@ BoxTemplate := class extend BoxFunc
 		if not CheckTypes(itBox,st) {
 		return 255
 		}
-
+		
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
 		{
 			IsCorrect := true
@@ -411,7 +411,8 @@ BoxTemplate := class extend BoxFunc
 			for i : FType.ParsCount, par : itBox.itPars
 			{
 				SomePrior := 0
-				if FType.Pars[i] != null and (FuncsTTemps.Size() > i or FuncsTTemps[i] == null)
+			
+				if FType.Pars[i] != null and (FuncsTTemps.Size() >= i or FuncsTTemps[i] == null)
 				{
 					if FType.ParsIsRef[i]
 					{

@@ -270,10 +270,6 @@ BoxClass := class extend Object
 
 		iterF := this&
 
-		//if name == "new" {
-		//	return void
-		//}
-
 		while iterF != null
 		{
 			for qIter : iterF.ItMethods 
