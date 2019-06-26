@@ -40,7 +40,6 @@ AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 			}else{
 				DoAMoveLeft()
 			}
-			//None
 		}else{
 		}
 	}
