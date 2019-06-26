@@ -323,6 +323,8 @@ BoxFile := class extend BoxBlock
 	borrowed := QueueSet.{BoxFile^}
 	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
+	cs := CodeSpace^
+
 	this := !(Path fullPath) -> void
 	{
 		fileId = GetNewId()
@@ -374,6 +376,15 @@ BoxFile := class extend BoxBlock
 				{
 					toAdd := ref ForcedGlobalParams[k]
 					for v toAdd.Push(it)
+				}
+			}
+
+			if cs != null
+			{
+				for v,k : VisibleParams
+				{
+					toAdd := ref cs.codeParams[k]
+					toAdd.Push(v[^])
 				}
 			}
 

@@ -1,6 +1,7 @@
 #import "Tree.cp"
 #import "Globals.cp"
 #import "FuncInputBox.cp"
+#import "GlobalParams.cp"
 
 IsWord := !(string name) -> bool
 {
@@ -157,11 +158,16 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		if iterr != null
 		{
 			while iterr.Up != null iterr = iterr.Up
-			for it : ForcedLibs
+			//for it : ForcedLibs
+			//{
+			//	if it == iterr iterU = null
+			//}
+			if FilesInSpace.Contain(iterr)
 			{
-				if it == iterr iterU = null
+				iterU = null
 			}
 		}
+
 	}
 
 	while iterU != null
@@ -288,15 +294,25 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	//	}
 	//}
 
-	for ForcedLibs
+	//for ForcedLibs
+	//{
+	//	itUp := (it->{Object^}).Down
+	//	if it == iterr itUp = start
+	//	//if not Searched.Contain(it.fileId)
+	//	//{
+	//	//	Searched.Push(it.fileId)
+	//		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+	//	//}
+	//}
+
+	for itCodeS : CodeSpaces ; $reverse
 	{
-		itUp := (it->{Object^}).Down
-		if it == iterr itUp = start
-		//if not Searched.Contain(it.fileId)
-		//{
-		//	Searched.Push(it.fileId)
+		for itCodeS.codeLibs
+		{
+			itUp := (it->{Object^}).Down
+			if it == iterr itUp = start
 			CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-		//}
+		}
 	}
 
 	inBuiltInMap := BuiltInFuncs.TryFind(name)

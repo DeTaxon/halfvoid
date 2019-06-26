@@ -119,14 +119,18 @@ main := !(int argc,char^^ argv) -> int
 	//CTT = workAround&
 	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
+	fLibSp := ref CodeSpaces[0]
 	for forcedFiles
 	{
 		fL := LoadFile(Path(it))
+		fL.cs = fLibSp&
 		if fL == null {
 			printf("file does not exist %s\n",it)
 			return 0
 		}
 		ForcedLibs.Push(fL)
+		fLibSp.codeLibs.Push(fL)
+		FilesInSpace.Insert(fL)
 	}
 
 	Ob := targetObjects[0]
