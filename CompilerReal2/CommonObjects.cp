@@ -105,27 +105,35 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 
 	//glRes := ForcedGlobalParams.TryFind(name)
 	//if glRes != null return glRes^[0]
-	for nowLib : ForcedLibs
+	//for nowLib : ForcedLibs
+	//{
+	//	res := nowLib.VisibleParams.TryFind(name)
+	//	if res != null return res^[0]
+
+	//	//Fnd := Searched.Contain(nowLib.fileId)
+	//	//if not Fnd
+	//	//{
+	//	//	Searched.Push(nowLib.fileId)
+	//	//	notSure := nowLib.Down
+
+	//	//	if notSure != null
+	//	//	{
+	//	//		while notSure.Right != null
+	//	//			notSure = notSure.Right
+	//	//	}
+
+	//	//	res := GetItem2(name,notSure,Searched)
+	//	//	if res != null return res
+	//	//}
+
+	//}
+	for itCS : CodeSpaces ; $reverse
 	{
-		res := nowLib.VisibleParams.TryFind(name)
-		if res != null return res^[0]
-
-		//Fnd := Searched.Contain(nowLib.fileId)
-		//if not Fnd
-		//{
-		//	Searched.Push(nowLib.fileId)
-		//	notSure := nowLib.Down
-
-		//	if notSure != null
-		//	{
-		//		while notSure.Right != null
-		//			notSure = notSure.Right
-		//	}
-
-		//	res := GetItem2(name,notSure,Searched)
-		//	if res != null return res
-		//}
-
+		for itLib : itCS.codeLibs
+		{
+			res := itLib.VisibleParams.TryFind(name)
+			if res != null return res^[0]
+		}
 	}
 	for Modules {
 		inMod := it.GetItem(name)

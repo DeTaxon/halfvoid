@@ -58,3 +58,23 @@ StringSpan := class{
 	return StringSpan(this,strlen(this),ran)
 }
 
+StrToInt := !(StringSpan strSpn) -> int 
+{
+	Sum := 0
+	i := 0
+	Min := false
+	a := strSpn.ptr
+	if ( a[0] == '-')
+	{
+		i = 1
+		Min = true
+	}
+	while a[i] != 0 and a[i] <= '9' and a[i] >= '0' and i < strSpn.itSize
+	{
+		Sum *= 10
+		Sum += a[i] - '0'
+		i += 1	
+	}
+	if Min return -Sum
+	return Sum
+}

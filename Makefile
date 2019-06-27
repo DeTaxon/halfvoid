@@ -1,4 +1,4 @@
-ForcedLibs := -f Libs/AVLSet.cp -f Libs/XMLLoader.cp -f Libs/MappedFile.cp  -f Libs/StringBuilder.cp -f Libs/StringSpan.cp -f Libs/WordParser.cp -f Libs/lib.cp -f Libs/Path.cp -f Libs/file.cp -f Libs/arrs.cp -f Libs/FatArray.cp -f Libs/Pair.cp -f Libs/AVLMap.cp -f Libs/MemoryPool.cp -f Libs/HybridQueue.cp -f Libs/Memory.cp -f Libs/Mutex.cp -f Libs/Thread.cp -f Libs/MutexPool.cp
+ForcedLibs := -C0 "Libs/*.cp" 
 TimeFlags := -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 Libs := -ldl -lpthread
@@ -12,13 +12,13 @@ xdg6.o: wayland-c/xdg.c
 b : out2.ll #xdg.o xdg6.o 
 	clang++ -O0 $<  -target x86_64-pc-linux-gnu -d -o b  -ldl #-lglfw #-lwayland-client -lwayland-egl #-lEGL -lGLESv2
 cycle: $(wildcard CompilerReal2/*.cp)
-	./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
+	./c.out -C0 "Libs/*.cp" CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 ManyCycle:
 	for i in {1..30}; do make cycle; done
 cycleg: $(wildcard CompilerReal2/*.cp)
 	gdb --args ./c.out $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 repair: $(wildcard CompilerReal2/*.cp) 
-	./stable $(ForcedLibs) CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
+	./stable -C0 "Libs/*.cp" CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -g  -o c.out
 
 test2: main2.cp
 	./c.out  -F "Libs/*.cp" main2.cp -o test2.ll; clang test2.ll -g $(Libs) -o test2

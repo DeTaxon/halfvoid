@@ -366,18 +366,18 @@ BoxFile := class extend BoxBlock
 		}
 		if pri == State_BlockParamStep
 		{
-			Fnd := false
-			if ForcedLibs[^] == this& {
-				Fnd = true
-				break
-			}
-			if Fnd{
-				for v,k : VisibleParams
-				{
-					toAdd := ref ForcedGlobalParams[k]
-					for v toAdd.Push(it)
-				}
-			}
+			//Fnd := false
+			//if ForcedLibs[^] == this& {
+			//	Fnd = true
+			//	break
+			//}
+			//if Fnd{
+			//	for v,k : VisibleParams
+			//	{
+			//		toAdd := ref ForcedGlobalParams[k]
+			//		for v toAdd.Push(it)
+			//	}
+			//}
 
 			if cs != null
 			{

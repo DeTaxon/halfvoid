@@ -24,7 +24,7 @@ main := !(int argc,char^^ argv) -> int
 	targetObjects := Queue.{Object^}()
 	outputFile := "out.ll"
 
-	forcedFiles := Queue.{string}()
+	codeSp := Queue.{Pair.{int,string}}()
 
 	emitTree := false
 
@@ -40,21 +40,11 @@ main := !(int argc,char^^ argv) -> int
 			UseFatString = true
 		case  "--tree"
 			emitTree = true
-		case "-f"
-			forcedFiles.Push(argv[i+1])
-			i += 1
 		case "--cci"
 			InCC = argv[i+1]
 			i += 1
 		case "--cco"
 			OutCC = argv[i+1]
-			i += 1
-
-		case "-F"
-			for newItm : Wildcard(argv[i+1])
-			{
-				forcedFiles.Push(StrCopy(newItm.itStr))
-			}
 			i += 1
 		case "-o"
 			outputFile = argv[i+1]
@@ -74,16 +64,26 @@ main := !(int argc,char^^ argv) -> int
 		case "--work"
 			printWork = true
 		case void
-			targetFiles.Push(argv[i])
+			if StrSize(argv[i]) >= 3 and StringSpan(argv[i][0]&,2) == "-C"
+			{
+				itPri := StrToInt(argv[i][2..0])
+				for newItm : Wildcard(argv[i+1])
+				{
+					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+				}
+				i++
+
+			}else{
+				targetFiles.Push(argv[i])
+			}
 		}
 		i += 1
 	}
 
 	if targetFiles.Size() != 1
 	{
-		printf("WARN:only one target file requared\n")
-		targetFiles.Push("main2.cp")
-		forcedFiles.Push("Libs/lib.cp")
+		printf("WARN:no input file found\n")
+		return 0
 	}
 
 	CreateStandartTypes()
@@ -119,18 +119,30 @@ main := !(int argc,char^^ argv) -> int
 	//CTT = workAround&
 	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
-	fLibSp := ref CodeSpaces[0]
-	for forcedFiles
+	//fLibSp := ref CodeSpaces[0]
+	//for forcedFiles
+	//{
+	//	fL := LoadFile(Path(it))
+	//	fL.cs = fLibSp&
+	//	if fL == null {
+	//		printf("file does not exist %s\n",it)
+	//		return 0
+	//	}
+	//	fLibSp.codeLibs.Push(fL)
+	//	FilesInSpace.Insert(fL)
+	//}
+	for it : codeSp
 	{
-		fL := LoadFile(Path(it))
-		fL.cs = fLibSp&
-		if fL == null {
-			printf("file does not exist %s\n",it)
-			return 0
+		fL := LoadFile(Path(it.second))
+		if fL == null
+		{
+			printf("file %s does not exist\n",it.second)
 		}
-		ForcedLibs.Push(fL)
+		fLibSp := ref CodeSpaces[it.first]
+		fL.cs = fLibSp&
 		fLibSp.codeLibs.Push(fL)
 		FilesInSpace.Insert(fL)
+
 	}
 
 	Ob := targetObjects[0]

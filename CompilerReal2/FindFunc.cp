@@ -64,11 +64,11 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 		}
 	}
 	
-	res := ForcedGlobalParams.TryFind(name)
-	if res != null{
-		for res^ 
-			found.Push(it) ; $temp
-	}
+	//res := ForcedGlobalParams.TryFind(name)
+	//if res != null{
+	//	for res^ 
+	//		found.Push(it) ; $temp
+	//}
 }
 
 
