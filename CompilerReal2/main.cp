@@ -25,6 +25,7 @@ main := !(int argc,char^^ argv) -> int
 	outputFile := "out.ll"
 
 	codeSp := Queue.{Pair.{int,string}}()
+	zipSp := Queue.{Pair.{int,string}}()
 
 	emitTree := false
 
@@ -64,7 +65,7 @@ main := !(int argc,char^^ argv) -> int
 		case "--work"
 			printWork = true
 		case void
-			if StrSize(argv[i]) >= 3 and StringSpan(argv[i][0]&,2) == "-C"
+			if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-C"
 			{
 				itPri := StrToInt(argv[i][2..0])
 				for newItm : Wildcard(argv[i+1])
@@ -74,7 +75,20 @@ main := !(int argc,char^^ argv) -> int
 				i++
 
 			}else{
-				targetFiles.Push(argv[i])
+				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
+				{
+					itPri := StrToInt(argv[i][2..0])
+					itP := Path(argv[i+1])
+					if not itP.IsExist()
+					{
+						printf("zip file %s not found\n",argv[i+1])
+						return 0
+					}
+					zipSp.Emplace(itPri,argv[i+1])
+					i++
+				}else{
+					targetFiles.Push(argv[i])
+				}
 			}
 		}
 		i += 1
@@ -127,6 +141,20 @@ main := !(int argc,char^^ argv) -> int
 		FilesInSpace.Insert(fL)
 
 	}
+	for it : zipSp
+	{
+		newFiles := new Queue.{void^} ; $temp
+		LoadZipFile(Path(it.second),newFiles^)
+
+		fLibSp := ref CodeSpaces[it.first]
+		for fils : newFiles^
+		{
+			zFile := fils->{BoxFile^}
+			zFile.cs = fLibSp&
+			fLibSp.codeLibs.Push(zFile)
+			FilesInSpace.Insert(zFile)
+		}
+	}
 
 	Ob := targetObjects[0]
 
@@ -173,6 +201,12 @@ main := !(int argc,char^^ argv) -> int
 
 
 		for wutt : Files
+		{
+			FlushTempMemory()
+			if emitTree wutt.Print(0)
+			wutt.PrintGlobal(fil)
+		}
+		for wutt : ZipFiles
 		{
 			FlushTempMemory()
 			if emitTree wutt.Print(0)
@@ -234,27 +268,27 @@ WorkWithBag := !(bool printW) -> void
 	}
 }
 
-GetObjectsFromFile := !(Path fileName) -> Object^
-{
-	Buf := Queue.{Token^}()
-	if not GetTokensFromFile(fileName, LexMachine^,Buf)
-		return null
-	
-	for iterC : Buf
-	{
-		iterG := PriorityData.Opers.Start
-		while iterG != null
-		{
-			if iterG.Data == iterC.Buff{
-				iterC.Id = 10
-			}
-			iterG = iterG.Next
-		}
-	}
-
-	Ob := TokensToObjects(fileName,Buf)
-	UniteSkobs(Ob)
-	Buf.Clean()
-	return Ob
-}
+//GetObjectsFromFile := !(Path fileName) -> Object^
+//{
+//	Buf := Queue.{Token^}()
+//	if not GetTokensFromFile(fileName, LexMachine^,Buf)
+//		return null
+//	
+//	for iterC : Buf
+//	{
+//		iterG := PriorityData.Opers.Start
+//		while iterG != null
+//		{
+//			if iterG.Data == iterC.Buff{
+//				iterC.Id = 10
+//			}
+//			iterG = iterG.Next
+//		}
+//	}
+//
+//	Ob := TokensToObjects(fileName,Buf)
+//	UniteSkobs(Ob)
+//	Buf.Clean()
+//	return Ob
+//}
 

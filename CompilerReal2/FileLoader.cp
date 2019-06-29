@@ -1,9 +1,11 @@
 #import "Tree.cp"
 #import "BoxBlock.cp"
 #import "NewLex.cp"
+#import "NewLexZip.cp"
 #import "main.cp"
 
 Files := Queue.{BoxFile^}
+ZipFiles := Queue.{BoxFile^}
 
 LoadFile := !(string name,Object^ start) -> BoxFile^
 {
@@ -38,6 +40,23 @@ LoadFile := !(Path fullName) -> BoxFile^
 
 	Files.Push(ob->{BoxFile^})
 	return ob->{BoxFile^}
+}
+LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
+{
+	newZip := new vZipObject ; $temp
+	newZip.AnalizeFile(fullName.itStr)
+	for fil : newZip^
+	{
+		if fil.realSize == 0
+			continue
+		itPtr := fil.Map()
+		ob := GetObjectsFromMemory(fullName,itPtr->{char^},fil.realSize)
+		res.Push(ob)
+		ZipFiles.Push(ob)
+		fil.Unmap()
+	}
+	newZip.DecUser()
+
 }
 
 ImportCmd := class extend Object

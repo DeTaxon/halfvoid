@@ -5,6 +5,7 @@ StringSpan := class{
 	ptr := char^
 	itSize := int
 	this := !() -> void {ptr = null itSize = 0}
+	this := !(char^ st) -> void{ptr = st itSize = StrSize(st)}
 	this := !(char^ st,int si) -> void{ptr = st itSize = si}
 
 	this := !(char^ st, int si,range ran) -> void{
@@ -22,6 +23,12 @@ StringSpan := class{
 		}
 		ptr = st[startInd]&
 		itSize = endInd - startInd + 1
+	}
+	"=" := !(StringSpan toGet) -> ref StringSpan
+	{
+		ptr = toGet.ptr
+		itSize = toGet.itSize
+		return this
 	}
 	Size := !() -> int { return itSize }
 	"[]" := !(int ind) -> ref char { return ptr[ind] }
@@ -45,11 +52,37 @@ StringSpan := class{
 	//	if toCmp.itSize != itSize return false
 	//	return strncmp(toCmp.ptr,ptr,itSize) == 0
 	//}
+	"==" := !(StringSpan toCmp) -> bool {
+		if toCmp.itSize != itSize return false
+		return strncmp(toCmp.ptr,ptr,itSize) == 0
+	}
 	Str := !() -> string {
 		preRet := new char[itSize+1]
 		preRet[itSize] = 0
 		memcpy(preRet->{void^},ptr,itSize)
 		return preRet
+	}
+	DivideStr := !(char^ to) . {} -> Queue.{StringSpan}
+	{
+		ToRet."this"()
+		i := 0
+		j := 0
+		while ptr[j] != 0 and j != itSize
+		{
+			if ptr[j] in to
+			{
+				if j != i ToRet.Emplace(ptr[i]&,j - i)
+				i = j+1
+				j += 1
+			} else
+			{
+				j += 1
+			}
+		}
+		if j - i != 0
+		{
+			ToRet.Emplace(ptr[i]&,j - i)
+		}		
 	}
 }
 
