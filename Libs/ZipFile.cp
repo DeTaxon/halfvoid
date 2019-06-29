@@ -55,6 +55,7 @@ vZipEntry := class
 	realSize := u32
 	zipSize := u32
 	objName := StringSpan
+	fullName := StringSpan
 	comprType := int
 	subFolders := Queue.{vZipEntry^}
 	compressedPointer := void^
@@ -220,6 +221,7 @@ vZipObject := class
 					nI := itmIter.subFolders.Back()
 					nI.ptrToObj = this&
 					nI.objName = StringSpan(itm.Str())
+					nI.fullName = newStr
 
 					if  j == fldrs.Size() - 1
 					{

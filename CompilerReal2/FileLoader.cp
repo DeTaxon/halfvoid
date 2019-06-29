@@ -50,7 +50,8 @@ LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
 		if fil.realSize == 0
 			continue
 		itPtr := fil.Map()
-		ob := GetObjectsFromMemory(fullName,itPtr->{char^},fil.realSize)
+		itName := fullName.itStr + "/" + fil.fullName.Str()
+		ob := GetObjectsFromMemory(Path(itName),itPtr->{char^},fil.realSize)
 		res.Push(ob)
 		ZipFiles.Push(ob)
 		fil.Unmap()
