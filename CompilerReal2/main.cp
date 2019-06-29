@@ -112,25 +112,8 @@ main := !(int argc,char^^ argv) -> int
 			return 0
 		}
 	}
-	//workAround2 := CreateTupleTemplate()
-	//workAround := CreateTupleTemplate()
-	//memset(workAround&,0,CreateTupleTemplate->TypeSize)
-	//workAround&->{void^^}^ = workAround2&->{void^^}^
-	//CTT = workAround&
 	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
-	//fLibSp := ref CodeSpaces[0]
-	//for forcedFiles
-	//{
-	//	fL := LoadFile(Path(it))
-	//	fL.cs = fLibSp&
-	//	if fL == null {
-	//		printf("file does not exist %s\n",it)
-	//		return 0
-	//	}
-	//	fLibSp.codeLibs.Push(fL)
-	//	FilesInSpace.Insert(fL)
-	//}
 	for it : codeSp
 	{
 		fL := LoadFile(Path(it.second))

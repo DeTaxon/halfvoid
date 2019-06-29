@@ -152,6 +152,7 @@ MappedFile := class
 			PROTS = PROTS or_b PROT_WRITE
 			SHARES = MAP_SHARED
 		}
+		SHARES += 32768
 		point = mmap(null,size,PROTS,SHARES,itemId,null)
 		if point == null //TODO: in error it returns 0xFFFFFFFFFFFFF
 		{
