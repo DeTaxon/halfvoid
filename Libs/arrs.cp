@@ -174,6 +174,13 @@ Queue := class .{@T} extend Stack.{T}
 		itSize++
 		return 0
 	}
+	Back := !() -> ref T
+	{
+		itr := Start
+		while itr.Next != null
+			itr = itr.Next
+		return itr.Data
+	}
 	Emplace := !(a,b) -> int
 	{
 		if Start == null {
