@@ -284,6 +284,7 @@ UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
 	}
 }
 
+
 IsKeyword := !(W) -> bool
 {
 	if W == "return" return true
@@ -307,6 +308,7 @@ IsKeyword := !(W) -> bool
 	if W == "thread_local" return true
 	if W == "keep_name" return true
 	if W == "packed_class" return true
+	if W == "self_return" return true
 	return false
 }
 

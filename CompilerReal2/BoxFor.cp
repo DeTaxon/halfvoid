@@ -10,75 +10,112 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 	iterY := dat.Down.Right
 
-	Names := Queue.{string}()
-	indNames := Queue.{string}()
-	Downs := Queue.{Object^}()
-
-	if iterY.Right.GetValue() == ","
+	Names := Queue.{string}() ; $temp
+	indNames := Queue.{string}() ; $temp
+	Downs := Queue.{Object^}() ; $temp
+	if iterY.Right.Right == null
 	{
-		itemName = iterY->{ObjIndent^}.MyStr
-		indNames.Push(iterY.Right.Right->{ObjIndent^}.MyStr)
-		
-		iterY = iterY.Right.Right.Right.Right
-	}else
-	{
-		indNames.Push(null->{string})
-		if iterY.Right.GetValue() == ":"
-		{
-			itemName = iterY->{ObjIndent^}.MyStr
-
-			iterY = iterY.Right.Right
-		}
-	}
-	if iterY.Right.GetValue() == ","
-	{
-		Downs.Push(iterY)
-		if itemName == null{
-			Names.Push("it")
-		}else{
-			Names.Push(itemName)
-		}
-
-		iterY = iterY.Right
-		while iterY.GetValue() == ","
-		{
-			iterY = iterY.Right
-			asNeed := iterY->{ObjIndent^}
-			Names.Push(asNeed.MyStr)
-			iterY = iterY.Right.Right
-			Downs.Push(iterY)
-			indNames.Push(null->{string}) 
-			iterY = iterY.Right
-		}
-
-		preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
-		if dat.Line != null
-		{
-			if dat.Line.itAttrs.Size() != 0
-			{
-				preRes.attrs = dat.Line.itAttrs&
-			}
-		}.
-		return preRes
-	}
-	Downs.Push(iterY)
-
-	if itemName == null->{int^} {
 		Names.Push("it")
+		Downs.Push(iterY)
+		indNames.Push("it_ind")
+		iterY = iterY.Right
 	}else{
-		Names.Push(itemName)
-	}
-	wut := iterY.Right
+		while iterY.Right != null
+		{
+			if iterY.Right.GetValue() == ","
+			{
+				Names.Push(iterY->{ObjIndent^}.MyStr)
+				iterY = iterY.Right.Right
+				indNames.Push(iterY->{ObjIndent^}.MyStr)
+				iterY = iterY.Right.Right
+			}else{ // ":"
+				Names.Push(iterY->{ObjIndent^}.MyStr)
+				iterY = iterY.Right.Right
+				indNames.Push(null->{string})
+			}
+			Downs.Push(iterY)
+			iterY = iterY.Right
+			if iterY.GetValue() == ","
+				iterY = iterY.Right
 
-	preRes := new BoxForOldFashionMulti(Names,indNames,Downs,wut)
+		}
+	}
+	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
 	if dat.Line != null
 	{
 		if dat.Line.itAttrs.Size() != 0
 		{
 			preRes.attrs = dat.Line.itAttrs&
 		}
-	}.
+	}
 	return preRes
+
+	//if iterY.Right.GetValue() == ","
+	//{
+	//	itemName = iterY->{ObjIndent^}.MyStr
+	//	iterY = iterY.Right.Right
+	//	indNames.Push(iterY->{ObjIndent^}.MyStr)
+	//	
+	//	iterY = iterY.Right.Right
+	//}else
+	//{
+	//	indNames.Push(null->{string})
+	//	if iterY.Right.GetValue() == ":"
+	//	{
+	//		itemName = iterY->{ObjIndent^}.MyStr
+
+	//		iterY = iterY.Right.Right
+	//	}
+	//}
+	//if iterY.Right.GetValue() == ","
+	//{
+	//	Downs.Push(iterY)
+	//	if itemName == null{
+	//		Names.Push("it")
+	//	}else{
+	//		Names.Push(itemName)
+	//	}
+
+	//	iterY = iterY.Right
+	//	while iterY.GetValue() == ","
+	//	{
+	//		iterY = iterY.Right
+	//		asNeed := iterY->{ObjIndent^}
+	//		Names.Push(asNeed.MyStr)
+	//		iterY = iterY.Right.Right
+	//		Downs.Push(iterY)
+	//		indNames.Push(null->{string}) 
+	//		iterY = iterY.Right
+	//	}
+
+	//	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
+	//	if dat.Line != null
+	//	{
+	//		if dat.Line.itAttrs.Size() != 0
+	//		{
+	//			preRes.attrs = dat.Line.itAttrs&
+	//		}
+	//	}.
+	//	return preRes
+	//}
+	//Downs.Push(iterY)
+
+	//if itemName == null->{int^} {
+	//	Names.Push("it")
+	//}else{
+	//	Names.Push(itemName)
+	//}
+	//wut := iterY.Right
+
+	//preRes := new BoxForOldFashionMulti(Names,indNames,Downs,wut)
+	//if dat.Line != null
+	//{
+	//	if dat.Line.itAttrs.Size() != 0
+	//	{
+	//		preRes.attrs = dat.Line.itAttrs&
+	//	}
+	//}
+	//return preRes
 }
 
 BoxFor := class extend Object
@@ -449,7 +486,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			UseRetPath = true
 			//if Up != null return Up.GetOutPath(this&,typ,size)
-			return "RetPath" + ItId
+			return "RetPath"sbt + ItId
 		}
 		if typ == PATH_CONTINUE
 		{

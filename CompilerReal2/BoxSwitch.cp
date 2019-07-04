@@ -86,7 +86,7 @@ BoxSwitch := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		things := Queue.{Object^}()
+		things := Queue.{Object^}() ; $temp
 		defThing := Object^
 		defThing = null
 		iter := Down.Right.Down

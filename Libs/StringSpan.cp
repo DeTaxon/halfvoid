@@ -48,6 +48,18 @@ StringSpan := class{
 		if toCmp[itSize] == 0 return 0
 		return 1
 	}
+	"<=>" := !(StringSpan toCmp) -> int {
+		if toCmp.ptr == null return 1
+		for itSize {
+			if it => toCmp.itSize return 1
+			if toCmp.ptr[it] != ptr[it] return toCmp.ptr[it] <=> ptr[it]
+			if toCmp.ptr[it] == 0 return -1
+			if ptr[it] == 0 return 1
+		}
+		if toCmp.itSize == itSize return 0
+		if toCmp.ptr[itSize] == 0 return 0
+		return 1
+	}
 	//"==" := !(StringSpan toCmp) -> bool {
 	//	if toCmp.itSize != itSize return false
 	//	return strncmp(toCmp.ptr,ptr,itSize) == 0

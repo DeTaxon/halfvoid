@@ -37,6 +37,15 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		return itUp
 	}
+	//if tr.GetValue() == "()" and tr.Left == null
+	//{
+	//	lastTr := tr.Down
+	//	if lastTr != null
+	//	{
+	//		ReplaceNode(tr,new ObjData())
+	//	}
+	//	return itUp
+	//}
 	if tr.Down != null and tr.Down.Right != null
 	{
 		if tr.Down.Right.GetValue() == "or"

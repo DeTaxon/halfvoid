@@ -96,7 +96,11 @@ main := !(int argc,char^^ argv) -> int
 
 	if targetFiles.Size() != 1
 	{
-		printf("WARN:no input file found\n")
+		printf("ERROR: must be only 1 file\n")
+		for targetFiles
+		{
+			printf("input file %s\n",it)
+		}
 		return 0
 	}
 

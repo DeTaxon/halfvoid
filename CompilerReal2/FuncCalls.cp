@@ -112,6 +112,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 			if iter.Right.Down[^].GetValue() != ","
 			{
+				if it == null or it.GetType() == null
+					return null
 				box.itPars.Emplace(it.GetType(),it.IsRef())
 			}
 
@@ -508,9 +510,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						iter = new PtrToRef(iter)
 					}
 					preRes :=  MakeSimpleCall(roll,iter)
-					if preRes != null {
-						preRes.inhAttrs = iter.inhAttrs
-					}
+					//if preRes != null {
+					//	preRes.inhAttrs = iter.inhAttrs
+					//}
 					return preRes
 				}
 			}
@@ -721,6 +723,14 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 {
 	box := new FuncInputBox()  ; $temp
 	FillAttrs(box^,G)
+	if G != null and G.Down != null and IsOper(Name) and G.Down.inhAttrs != null
+	{
+		for v,k : G.Down.inhAttrs^
+		{
+			if box.itAttrs.TryFind(k) == null
+				box.itAttrs[k] = v ; $temp
+		}
+	}
 
 	TrimCommas(G)
 	P := G.Down
@@ -839,6 +849,10 @@ SomeFuncCall := class extend ObjResult
 		if ToCall != null and not gotAlloc
 		{
 			gotAlloc = ToCall.IsRetComplex
+			//printf("check func %p IsRetComplex-%i RetType-%s ToCallRetRef-%i ToClallMyFuncTypeRetRef-%i\n",
+			//	this&, ToCall.IsRetComplex, ToCall.MyFuncType.RetType.GetType(),ToCall.IsRetRef,
+			//	ToCall.MyFuncType.RetRef)
+
 			if ToCall.MyFuncType.RetType != null
 			{
 				if not gotAlloc gotAlloc = ToCall.MyFuncType.RetType is TypeClass
@@ -952,6 +966,10 @@ NaturalCall := class extend SomeFuncCall
 			Line = Pars.Line
 			//TODO:set up line for empty params func()
 		}
+		if func.IsPassAttrs and Pars != null
+		{
+			inhAttrs = Pars.inhAttrs
+		}
 		Down = Pars
 		
 		RetId = GetNewId()
@@ -961,7 +979,7 @@ NaturalCall := class extend SomeFuncCall
 		if Pars != null Pars.SetUp(this&)
 		if Pars != null TrimCommas(Down.Up)
 		ExchangeParams()
-		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(this&,State_MiddleGetUse)
 	}
 	ExchangeParams := !() -> void
 	{
@@ -1121,7 +1139,7 @@ NaturalCall := class extend SomeFuncCall
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse
+		if pri == State_MiddleGetUse
 		{
 			CheckReturn()
 		}
@@ -1140,7 +1158,7 @@ PointFuncCall := class extend NaturalCall
 		if Pars != null Pars.SetUp(this&)
 		ParamCal = pCall
 		ExchangeParams()
-		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(this&,State_MiddleGetUse)
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -1179,7 +1197,7 @@ PointFuncCall := class extend NaturalCall
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse
+		if pri == State_MiddleGetUse
 		{
 			CheckReturn()
 		}
@@ -1192,13 +1210,17 @@ AssemblerCall := class extend NaturalCall
 
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
+		if func.IsPassAttrs and Pars != null
+		{
+			inhAttrs = Pars.inhAttrs
+		}
 		Down = Pars
 		RetId = GetNewId()
 		ToCall = func
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
-		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(this&,State_MiddleGetUse)
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -1313,7 +1335,7 @@ AssemblerCall := class extend NaturalCall
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse
+		if pri == State_MiddleGetUse
 		{
 			CheckReturn()
 		}
@@ -1716,12 +1738,12 @@ ConstructCall := class extend NaturalCall
 		Down.SetUp(this&)
 		ExchangeParams()
 
-		WorkBag.Push(this&,State_GetUse)
+		WorkBag.Push(this&,State_MiddleGetUse)
 
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse
+		if pri == State_MiddleGetUse
 		{
 			
 			if Up.GetValue() == "~Return()"

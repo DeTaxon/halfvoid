@@ -136,6 +136,22 @@ ParseType := !(Object^ Node) -> Type^
 	}
 	if Node.GetValue() == "~d"
 	{
+		if Node.Down?.GetValue() == "!" and (Node.Down.Right?.GetValue() == "{}" or Node.Down.Right?.GetValue() == "{d}")
+		{
+			itBox := new FuncInputBox ; $temp
+			for nd : Node.Down.Right.Down
+			{
+				if nd.GetValue() == ","
+					continue
+				newTyp := ParseType(nd)
+				if newTyp == null
+					return null
+				itBox.itPars.Emplace(newTyp,false)
+			}
+			if itBox.itPars.Size() == 0
+				return null
+			return GetTuple(itBox).ClassType
+		}
 		lazy := false
 		while true
 		{
@@ -200,12 +216,13 @@ ParseType := !(Object^ Node) -> Type^
 			return someType
 		}
 		
-		lazy = Node.Down.GetValue() == "~ind"
-		if lazy lazy = Node.Down.Right != null
-		if lazy lazy = Node.Down.Right.GetValue() == "."
-		if lazy lazy = Node.Down.Right.Right != null
-		if lazy lazy = Node.Down.Right.Right.GetValue() == "{}"
-		if lazy 
+		//lazy = Node.Down.GetValue() == "~ind"
+		//if lazy lazy = Node.Down.Right != null
+		//if lazy lazy = Node.Down.Right.GetValue() == "."
+		//if lazy lazy = Node.Down.Right.Right != null
+		//if lazy lazy = Node.Down.Right.Right.GetValue() == "{}"
+		//if lazy
+		if Node.Down.GetValue() == "~ind" and Node.Down.Right?.GetValue() == "." and Node.Down.Right.Right?.GetValue() == "{}"
 		{
 			SyntaxCompress(Node.Down.Right.Right,PriorityData)
 			itName := ((Node.Down)->{ObjIndent^}).MyStr

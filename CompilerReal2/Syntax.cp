@@ -475,7 +475,20 @@ RuleFor := !(void^ itr)-> int
 
 		It = It.Right
 		if It == null return 0
+		
+		if It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
 
+			if It.GetValue() != "~ind" return 0
+			
+			It = It.Right
+			if It == null return 0
+
+			Size += 2
+		}
+			
 		if It.GetValue() != ":" return 0
 
 		It = It.Right

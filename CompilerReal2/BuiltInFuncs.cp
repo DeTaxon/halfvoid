@@ -874,6 +874,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	this := !(BoxClass^ toAdd) -> void
 	{
 		FuncName = "."
+		IsPassAttrs = true
 		OutputName = "error"
 
 		ToClass = toAdd

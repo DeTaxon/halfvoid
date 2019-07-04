@@ -5,11 +5,11 @@ StringBuilder := class .{@BufSize}{
 
 	this := !() -> void { ptr = null inPtrSize = 0 pages."this"()}
 
-	"+" := !(char^ adding) -> ref StringBuilder.{BufSize}
+	"+" := !(char^ adding) self_return
 	{
 		return this << adding
 	}
-	"<<" := !(char^ adding) -> ref StringBuilder.{BufSize}
+	"<<" := !(char^ adding) self_return
 	{
 		sLen := strlen(adding)
 

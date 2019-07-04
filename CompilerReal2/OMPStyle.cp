@@ -9,7 +9,7 @@ CriticalAtomic := class extend Object
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		f << "@Atomic" << itId << " = dso_local global i8 0\n"
+		f << "@Atomic" << itId << " = global i8 0\n"
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{

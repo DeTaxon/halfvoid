@@ -197,7 +197,7 @@ BoxWhile := class extend Object
 		{
 			UseRetPath = true
 			if Up != null Up.GetOutPath(this&,typ,size) //poke
-			return "RetPath" + MyId
+			return "RetPath"sbt + MyId
 		}
 		if typ == PATH_CONTINUE
 		{

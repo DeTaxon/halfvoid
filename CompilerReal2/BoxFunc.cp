@@ -23,6 +23,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	RetT := Object^
 	RetT = null
 	RetRef := false
+	itsSelfRet := false
 
 	constsI := null->{Object^}
 
@@ -76,6 +77,13 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		RetT = iter
 		iter = iter.Right
 	}
+	if iter.GetValue() == "self_return"
+	{
+		iter = iter.Right
+		itsSelfRet = true
+		if ClassType == null
+			return null
+	}
 
 
 	iterForName := iter.Up
@@ -109,9 +117,15 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		if maybeForceConsts maybeForceConsts =  constsI.Down == null
 		if maybeForceConsts or IsTemplate(ParamsObj)
 		{
-			return new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
+			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
+			preRes.IsSelfReturn = itsSelfRet
+			preRes.IsPassAttrs = itsSelfRet
+			return preRes
 		}
-		return new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual)
+		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
+		preRet.IsSelfReturn = itsSelfRet
+		preRet.IsPassAttrs = itsSelfRet
+		return preRet
 		
 	}
 	return null
@@ -320,8 +334,9 @@ BoxTemplate := class extend BoxFunc
 			FuncsTTemps.Push(null->{Object^})
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt,bool isRetSelf) -> void
 	{
+		IsSelfReturn = isRetSelf
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
@@ -498,6 +513,10 @@ BoxTemplate := class extend BoxFunc
 			somePos += 1
 		}
 		newFunc := GetNewFunc(itBox,newFuncType)
+		if IsSelfReturn
+			newFunc.IsSelfReturn = true
+		if IsPassAttrs
+			newFunc.IsPassAttrs = true
 
 		for  parConsts
 		{
@@ -535,6 +554,7 @@ BoxTemplate := class extend BoxFunc
 
 		newFunc := new BoxFuncBody(MyFuncParamNames,FunType,FuncName,CopyTree.Clone(),IsSuffix,MethodType,IsVirtual)
 		newFunc.ParseBlock()
+		newFunc.IsSelfReturn = IsSelfReturn
 		if MyFuncType != null newFunc.funcUserParamsCount = MyFuncType.ParsCount
 		newFunc.vargsName = vargsName
 		newFunc.CountAttrs = true
@@ -575,6 +595,8 @@ BoxFunc := class extend Object
 	IsRetRef := bool
 	IsStatic := bool
 	IsInvalid := bool
+	IsSelfReturn := bool
+	IsPassAttrs := bool
 
 	CountAttrs := bool
 
@@ -694,6 +716,11 @@ BoxFunc := class extend Object
 
 		RetTyp := null->{Type^}
 		if GetValue() == "!()" RetTyp =  ParseType(outObj)
+		if IsSelfReturn
+		{
+			RetTyp = MethodType
+			IsRetRef = true
+		}
 
 		Stuff := Queue.{Object^}() ; $temp
 
@@ -865,7 +892,7 @@ BoxFuncDeclare := class  extend BoxFunc
 
 PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
 {
-	f << "define dso_local "
+	f << "define " //"dso_local "
 
 	if InCC != null
 		f << " " << InCC << " "
@@ -1028,8 +1055,9 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
+	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf) -> void
 	{
+		IsSelfReturn = isRetSelf
 		ABox.ItId = GetNewId()
 		IsRetRef = RetRef
 		IsVirtual = IsVirt

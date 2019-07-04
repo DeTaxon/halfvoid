@@ -301,12 +301,32 @@ ObjParam := class extend Object
 						Temp := Down
 						allcId := -1
 
-						if Down.GetValue() == "d()"
+						//injTest
+						dwnIter := Down
+						while dwnIter != null and dwnIter.GetValue() == "d()"
 						{
-							asNeed := Down->{SomeFuncCall^}
+							asNeed := dwnIter->{SomeFuncCall^}
 							allcId = asNeed.GetItAllocId()
-							if allcId != -1 IsTook = true
+							if allcId != -1
+							{
+								IsTook = true
+								break
+							}else{
+								if asNeed.ToCall?.IsSelfReturn
+								{
+									dwnIter = dwnIter.Down
+								}else{
+									break
+								}
+							}
 						}
+
+						//if Down.GetValue() == "d()"
+						//{
+						//	asNeed := Down->{SomeFuncCall^}
+						//	allcId = asNeed.GetItAllocId()
+						//	if allcId != -1 IsTook = true
+						//}
 						if allcId == -1 {
 							if IsRef
 								allcId = GetAlloc(this&,ObjType.GetPoint())

@@ -461,6 +461,7 @@ TupleFuncGetItem := class extend BoxTemplate
 	this := !(TupleClass^ frmOn) -> void
 	{
 		frmIn = frmOn
+		IsPassAttrs = true
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -497,7 +498,10 @@ TupleFuncGetItem := class extend BoxTemplate
 		
 		itParam := frmIn.Params[ind]
 		itType := itParam.ResultType
-		return new BuiltInFuncUno(".",pars[0].first,true,itType,true,"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, i32 " + ind + "\n")
+		preRet :=  new BuiltInFuncUno(".",pars[0].first,true,itType,true,
+			"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, i32 " + ind + "\n")
+		preRet.IsSelfReturn = true
+		return preRet
 	}
 }
 

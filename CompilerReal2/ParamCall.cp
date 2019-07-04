@@ -95,6 +95,7 @@ ParamNaturalCall := class extend ParamCall
 		TempId = GetNewId()
 		
 		ToCall = par->{MemParam^}
+		inhAttrs = par.inhAttrs
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -144,6 +145,7 @@ ParamFuncCall := class extend ParamCall
 		asNeed := ((Par.Down)->{BoxFunc^})
 		if asNeed.GetValue() == "!()" asNeed.ParseBlock()
 		OutName = asNeed.OutputName
+		inhAttrs = Par.inhAttrs
 	}
 	GetName := virtual !() -> string
 	{
