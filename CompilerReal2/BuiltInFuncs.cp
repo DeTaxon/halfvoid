@@ -286,6 +286,47 @@ BuiltInPointAdd := class extend BoxTemplate
 		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 #2\n")
 	}
 }
+BuiltInPointAddInc := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "+="
+		OutputName = "error"
+		emptType := Queue.{Type^}() ; $temp
+		emptType.Push(null->{Type^})
+		emptType.Push(GetType("size_t"))
+		bols := bool[2]
+		bols[0] = true
+		bols[1] = false
+		MyFuncType = GetFuncType(emptType,bols[0]&,null->{Type^},false,false)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		pars := ref itBox.itPars
+		if pars.Size() != 2 return 255
+		//if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		if not pars[0].first is TypePoint return 255
+		if not pars[0].second return 255
+		return TypeCmp(pars[1].first,GetType("size_t"))
+	}
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+		if pars[0].first.Base == GTypeVoid
+		{
+			return new BuiltInFuncBinar("+=",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
+			"#0Pre = load i8* , i8** #1\n"sbt
+			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #2\n"
+			<< "store i8* #0,i8** #1\n")
+		}
+
+		ptrName := pars[0].first.Base.GetName()
+		return new BuiltInFuncBinar("-",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
+			"#0Pre = load "sbt << ptrName << "* , " << ptrName <<"** #1\n"
+			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #2\n"
+			<< "store "<< ptrName <<"* #0," << ptrName <<"** #1\n");
+	}
+}
 BuiltInPointSub := class extend BoxTemplate
 {
 	this := !() -> void
@@ -317,6 +358,49 @@ BuiltInPointSub := class extend BoxTemplate
 		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
 		"%Pre## = sub i64 0,#2\n"sbt +
 		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 %Pre##\n")
+	}
+}
+BuiltInPointSubDec := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "-="
+		OutputName = "error"
+		emptType := Queue.{Type^}() ; $temp
+		emptType.Push(null->{Type^})
+		emptType.Push(GetType("size_t"))
+		bols := bool[2]
+		bols[0] = true
+		bols[1] = false
+		MyFuncType = GetFuncType(emptType,bols[0]&,null->{Type^},false,false)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		pars := ref itBox.itPars
+		if pars.Size() != 2 return 255
+		//if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
+		if not pars[0].first is TypePoint return 255
+		if not pars[0].second return 255
+		return TypeCmp(pars[1].first,GetType("size_t"))
+	}
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+		if pars[0].first.Base == GTypeVoid
+		{
+			return new BuiltInFuncBinar("-=",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
+			"#0Pre = load i8* , i8** #1\n"sbt
+			<<"#0PreVal = sub i64 0,#2\n"
+			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #0PreVal\n"
+			<< "store i8* #0,i8** #1\n")
+		}
+
+		ptrName := pars[0].first.Base.GetName()
+		return new BuiltInFuncBinar("-",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
+			"#0Pre = load "sbt << ptrName << "* , " << ptrName <<"** #1\n"
+			<<"#0PreVal = sub i64 0,#2\n"
+			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #0PreVal\n"
+			<< "store "<< ptrName <<"* #0," << ptrName <<"** #1\n");
 	}
 }
 
@@ -1387,7 +1471,9 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateVec4fGet())
 
 	BuiltInTemplates.Push(new BuiltInPointAdd())
+	BuiltInTemplates.Push(new BuiltInPointAddInc())
 	BuiltInTemplates.Push(new BuiltInPointSub())
+	BuiltInTemplates.Push(new BuiltInPointSubDec())
 
 	BuiltInTemplates.Push(new BuiltInLambdaCall())
 
@@ -1590,7 +1676,7 @@ CreateBuiltIns := !() -> void
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float\n"))
 
-	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = bitcast i8* #1 to i64\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = ptrtoint i8* #1 to i64\n"))
 
 
 	AddBuiltInFunc(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1\n"))
@@ -1615,6 +1701,10 @@ CreateBuiltIns := !() -> void
 				"%Pre1## = zext i1 %PrePre1## to i32\n" + 
 				"%Pre2## = zext i1 %PrePre2## to i32\n" + 
 				"#0 = sub i32 %Pre1## , %Pre2##\n")) 
+	AddBuiltInFunc(new BuiltInFuncBinar("-",GTypeVoidP,false,GTypeVoidP,false,GetType("size_t"),
+						"#0Pre1 = ptrtoint i8* #1 to i64\n"sbt +
+						"#0Pre2 = ptrtoint i8* #2 to i64\n" +
+						"#0 = sub i64 #0Pre1,#0Pre2\n"))
 	RangeFuncs()
 	Vec4fFuncs()
 }

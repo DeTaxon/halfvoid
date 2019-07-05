@@ -247,3 +247,96 @@ vZipObject := class
 	}
 }
 
+ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
+{
+	inpFile := MappedFile(inpFileI)
+	defer inpFile.Close()
+
+	zipFile := MappedFile(zipFileI)
+	defer zipFile.Close()
+
+	inpSize := inpFile.Size()
+	zipSize := zipFile.Size()
+	totalSize := inpSize + zipSize
+	outFile := file(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
+	defer outFile.close()
+	outFile.write(inpFile.point,inpSize)
+	//memcpy(outFile.Get(),inpFile.Get(),inpSize)
+	//memcpy(outFile.Get()[inpSize]&,zipFile.Get(),zipSize)
+
+	eod := zipFile.Get()[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
+
+	ignores := Queue.{void^}() ; $temp
+	ignores.Push(eod.offsetToStartOfCD&)
+
+	filesCount := eod.numberOfCentralDirectoryHere
+	cdTable := zipFile.Get()[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+	for i : filesCount
+	{
+		ignores.Push(cdTable.offsetToFileHeader&)
+		cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
+			+ cdTable.fileNameLen 
+			+ cdTable.extraFieldsLen
+			+ cdTable.commentLen
+			]&->{zipCentralDirectory^}
+	}
+	endOfPoint := zipFile.point[zipSize]&
+	startPoint := zipFile.point->{u8^}
+	for ignores.Size() + 1
+	{
+		metIgnore := false
+		maxValue := endOfPoint
+		for it : ignores
+		{
+			if it < startPoint
+				continue
+			if it < maxValue
+			{
+				maxValue = it
+				metIgnore = true
+			}
+		}
+		toWrite := maxValue - startPoint
+		outFile.write(startPoint,toWrite)
+		startPoint = startPoint[toWrite]&
+		if metIgnore{
+			offstValue := startPoint->{u32^}^
+			offstValue += inpSize
+			startPoint = startPoint[4]&
+			outFile.write(offstValue&,4)
+		}
+	}
+}
+
+//ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
+//{
+//	inpFile := MappedFile(inpFileI)
+//	defer inpFile.Close()
+//
+//	zipFile := MappedFile(zipFileI)
+//	defer zipFile.Close()
+//
+//	inpSize := inpFile.Size()
+//	zipSize := zipFile.Size()
+//	totalSize := inpSize + zipSize
+//	outFile := file(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
+//	defer outFile.close()
+//	//memcpy(outFile.Get(),inpFile.Get(),inpSize)
+//	//memcpy(outFile.Get()[inpSize]&,zipFile.Get(),zipSize)
+//
+//	eod := zipFile.Get()[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
+//
+//	eod.offsetToStartOfCD = inpSize
+//
+//	filesCount := eod.numberOfCentralDirectoryHere
+//	cdTable := outFile.Get()[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+//	for i : filesCount
+//	{
+//		cdTable.offsetToFileHeader += inpSize	
+//		cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
+//			+ cdTable.fileNameLen 
+//			+ cdTable.extraFieldsLen
+//			+ cdTable.commentLen
+//			]&->{zipCentralDirectory^}
+//	}
+//}
