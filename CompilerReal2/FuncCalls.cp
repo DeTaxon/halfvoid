@@ -723,7 +723,7 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 {
 	box := new FuncInputBox()  ; $temp
 	FillAttrs(box^,G)
-	if G != null and G.Down != null and IsOper(Name) and G.Down.inhAttrs != null
+	if G != null and G.Down != null and G.Down.inhAttrs != null
 	{
 		for v,k : G.Down.inhAttrs^
 		{

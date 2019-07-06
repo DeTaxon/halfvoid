@@ -1,9 +1,34 @@
+printf := !(char^ a,...) -> void declare
+
+t := class
+{
+	x := int
+	"<<" := !(int y) .{} self_return
+	{
+		if $a
+		{
+			printf("a\n")
+		}else{
+			printf("b\n")
+		}
+	}
+	C := !(int y) .{} self_return
+	{
+		if $a
+		{
+			printf("a\n")
+		}else{
+			printf("b\n")
+		}
+	}
+
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	//c := "where "sbt + "am " + "i?"
-	c := ("where "sbt +  "am " + "i?").Str()
-	printf("test <%s>\n",c.Str())
+	k := t ; $a
+	k << 1 << 2 << 3
+	k.C(1).C(2).C(3)
 	return 0
 }
 

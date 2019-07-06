@@ -21,85 +21,78 @@ PriorityBag := class
 	Opers := QueueSet.{string}
 	Lines := Queue.{MiniMachineNode^}
 
-	this := !(string filename) -> void
+	this := !(char^ ptrChar, int mapSize) -> void
 	{
 		Opers.Start = null
 		Lines.Start = null
-		itFile := sfile(filename,"r")
 		
-		buffer := char[1024]
 
-		while itFile.good()
+		itS := 0
+		while itS < mapSize
 		{
-			CurLine := itFile.readline()
-			CurWords := Queue.{string}() ; $temp
+			CurWords := Queue.{StringSpan}() ; $temp
 
-			i := 0
-			j := 0
-			
+			j := itS
 			isLoading := false
-			while CurLine[i] != 0
+			while itS < mapSize and ptrChar[itS] != '\n'
 			{
 				if isLoading
 				{
-					if CurLine[i] == '\"'
+					if ptrChar[itS] == '\"'
 					{
-						buffer[j] = 0
-						CurWords.Push(buffer.Copy())			
-						j = 0
-					}else
-					{
-						buffer[j] = CurLine[i]
-						j += 1
+						CurWords.Emplace(ptrChar[j]&,itS - j)
+						isLoading = false
 					}
 				}else
 				{
-					if CurLine[i]  == '\"'
+					if ptrChar[itS]  == '\"'
 					{
 						isLoading = true
+						j = itS + 1
 					}
 				}
-				i += 1
+				itS++
 			}
+			itS++
 
 			if CurWords.NotEmpty()
 			{
 				newMach := new MiniMachineNode()
-				items := Queue.{string}() ; $temp
 
-				ruleIter := CurWords.Start
-
-				while ruleIter != null
+				for rule : CurWords
 				{
-					items.Clean()
-					DivideStr(ruleIter.Data,' ',items)
+					items := rule.DivideStr(" ")
 
-					someWord := items.Start
 					machIter := newMach
 
-					while someWord != null
+					//while someWord != null
+					for word : items
 					{
-						if someWord.Data == "d" someWord.Data = "~d" else 
-						if someWord.Data == "s" someWord.Data = "~suffix" else
+						stW := word.Str()
+						switch stW
 						{
-							if someWord.Data != "()" and someWord.Data != "[]" and someWord.Data != "{}"
-								Opers.Push(someWord.Data)
+							case "d"
+								stW = "~d"
+							case "s"
+								stW = "~suffix"
+							case "()"
+							case "[]"
+							case "{}"
+							case void
+								Opers.Push(stW)
 						}
 
-						if not machIter.WhatNext.Exist(someWord.Data)
-						{
-							machIter.WhatNext[someWord.Data] =  new MiniMachineNode()
-						}
-						machIter = machIter.WhatNext[someWord.Data]
-						someWord = someWord.Next
-						if someWord == null machIter.IsTerm = true
+						k := ref machIter.WhatNext[stW]
+
+						if k == null
+							k =  new MiniMachineNode()
+						machIter = k
 					}
-					ruleIter = ruleIter.Next
+					machIter.IsTerm = true
 				}
 				Lines.Push(newMach)
 			}
 		}
-		itFile.close()
 	}
 }
 

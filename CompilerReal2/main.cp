@@ -108,7 +108,9 @@ main := !(int argc,char^^ argv) -> int
 	CreateBuiltIns()
 
 
-	PriorityData = new PriorityBag("Priority.pr")
+	prFile := MappedFile("Priority.pr")
+	PriorityData = new PriorityBag(prFile.point,prFile.Size())
+	//PriorityData = new PriorityBag("Priority.pr")
 	PriorityData.Opers.Push(":=")
 	PriorityData.Opers.Push("=>")
 	PriorityData.Opers.Push("extern")

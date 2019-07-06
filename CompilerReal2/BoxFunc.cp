@@ -119,12 +119,10 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		{
 			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
 			preRes.IsSelfReturn = itsSelfRet
-			preRes.IsPassAttrs = itsSelfRet
 			return preRes
 		}
 		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
 		preRet.IsSelfReturn = itsSelfRet
-		preRet.IsPassAttrs = itsSelfRet
 		return preRet
 		
 	}
