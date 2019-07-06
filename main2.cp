@@ -26,9 +26,7 @@ t := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	k := t ; $a
-	k << 1 << 2 << 3
-	k.C(1).C(2).C(3)
+	printf("heh\x0A")
 	return 0
 }
 

@@ -82,6 +82,30 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 					{
 						case 't' DaBuff[j] = 9
 						case 'n' DaBuff[j] = 10
+						case 'x' 
+							numM := 0
+							switch tok[k+1]
+							{
+								case '0'..'9'
+									numM = tok[k+1] - '0'
+								case 'a'..'f'
+									numM = tok[k+1] - 'a' + 10
+								case 'A'..'F'
+									numM = tok[k+1] - 'A' + 10
+							}
+							numM *= 16
+							switch tok[k+2]
+							{
+								case '0'..'9'
+									numM += tok[k+2] - '0'
+								case 'a'..'f'
+									numM += tok[k+2] - 'a' + 10
+								case 'A'..'F'
+									numM += tok[k+2] - 'A' + 10
+							}
+							DaBuff[j] = numM
+							k += 2
+
 						case void DaBuff[j] = tok[k]
 					}
 					j += 1
@@ -92,8 +116,6 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 					j += 1
 				}	
 			}
-			//DaBuff[j] = 0
-			//ns = new ObjStr(StrCopy(DaBuff[0]&))
 			newLine := new char[j+1]
 			memcpy(newLine->{void^},DaBuff[0]&,j)
 			newLine[j] = 0
