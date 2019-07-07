@@ -9,7 +9,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 cycle: $(wildcard CompilerReal2/*.cp)
 	./c.out -C0 "Libs/*.cp" CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -o c.out
 ManyCycle:
-	for i in {1..30}; do make cycle; done
+	for i in {1..10}; do make cycle; done
 
 test2: main2.cp
 	./c.out   main2.cp -o test2.ll; clang test2.ll -g $(Libs) -o test2
@@ -20,6 +20,11 @@ test2g: main2.cp
 
 FLibs := -f FLibs/glfw.cp -f FLibs/gl.cp 
 
+TempDir/CompilerData.zip: Mach.m Priority2.pr
+	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m; zip -u TempDir/CompilerData.zip Priority2.pr
+
+halfvoid: cycle TempDir/CompilerData.zip
+	clang -s -O2 out3.ll -ldl -o PreHalf ; ./stable --ZipGlue PreHalf TempDir/CompilerData.zip halfvoid; chmod 777 halfvoid
 
 Objs/Lex: LexBuilder/main.cp Priority.pr
 	./c.out LexBuilder/main.cp $(ForcedLibs)  -o Objs/Lex.ll; clang Objs/Lex.ll -o Objs/Lex;

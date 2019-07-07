@@ -43,7 +43,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 }
 LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
 {
-	newZip := new vZipObject ; $temp
+	newZip := new ZipFile ; $temp
 	newZip.AnalizeFile(fullName.itStr)
 	for fil : newZip^
 	{

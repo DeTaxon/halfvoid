@@ -162,7 +162,7 @@ ChrInStr := !(int chr,char^ str) -> bool
 	return false
 }
 
-DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
+DivideStr := !(char^ what,int to,Queue.{char^} B) .{} -> void
 {
 	Buf := char[1024]
 	i := 0
@@ -188,7 +188,7 @@ DivideStr := !(char^ what,int to,Queue.{char^} B) -> void
 		B.Push(StrCopy(Buf))
 	}		
 }
-DivideStr := !(char^ what,char^ to,Queue.{char^} B) -> void
+DivideStr := !(char^ what,char^ to,Queue.{char^} B) .{} -> void
 {
 	Buf := char[1024]
 	i := 0

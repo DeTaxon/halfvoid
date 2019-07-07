@@ -4,12 +4,16 @@
 
 lexWordMachine := WordDetermMachine 
 
-LoadLexMachine := !() -> void
+//LoadLexMachine := !() -> void
+//{
+//	machFile := MappedFile("Mach.m")
+//	//lexWordMachine = new WordDetermMachine()
+//	lexWordMachine.LoadFromMap(machFile.point,machFile.Size())
+//	machFile.Close()
+//}
+LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 {
-	machFile := MappedFile("Mach.m")
-	//lexWordMachine = new WordDetermMachine()
-	lexWordMachine.LoadFromMap(machFile.point,machFile.Size())
-	machFile.Close()
+	lexWordMachine.LoadFromMap(ptrToChar,Si)
 }
 
 

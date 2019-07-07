@@ -12,7 +12,6 @@ main := !(int argc,char^^ argv) -> int
 	ReturnName = "ToRet"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
-	LoadLexMachine()
 	BuiltInFuncs."this"()
 	ObjectsPool."this"()
 	//GlobalStrs = ""
@@ -34,6 +33,9 @@ main := !(int argc,char^^ argv) -> int
 	{
 		switch argv[i]
 		{
+		case "--ZipGlue"
+			ZipConCat(argv[i+1],argv[i+2],argv[i+3])
+			return 0
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
@@ -107,10 +109,45 @@ main := !(int argc,char^^ argv) -> int
 	CreateStandartTypes()
 	CreateBuiltIns()
 
+	selfFile := ZipFile()
 
-	prFile := MappedFile("Priority.pr")
-	PriorityData = new PriorityBag(prFile.point,prFile.Size())
-	//PriorityData = new PriorityBag("Priority.pr")
+	loadedLex := false
+
+	if selfFile.AnalizeFile(argv[0])
+	{
+		defer selfFile.DecUser()
+		itMach := selfFile.GetFile("Mach.m")
+		itPri := selfFile.GetFile("Priority.pr")
+
+		if itPri !=null
+		{
+			priPtr := itPri.Map()
+			PriorityData = new PriorityBag(priPtr->{char^},itPri.realSize)
+			itPri.Unmap()
+		}
+		if itMach != null
+		{
+			loadedLex = true
+			mPoint := itMach.Map()
+			LoadLexMachine(mPoint->{char^},itMach.realSize)
+			itMach.Unmap()
+		}
+	}
+	if not loadedLex
+	{
+		printf("loading lexical machine from outside\n")
+		itMach := MappedFile("./Mach.m")
+		LoadLexMachine(itMach.point,itMach.Size())
+		itMach.Close()
+	}
+
+	if PriorityData == null
+	{
+		printf("priority loadede from outside\n")
+		prFile := MappedFile("./Priority.pr")
+		defer prFile.Close()
+		PriorityData = new PriorityBag(prFile.point,prFile.Size())
+	}	
 	PriorityData.Opers.Push(":=")
 	PriorityData.Opers.Push("=>")
 	PriorityData.Opers.Push("extern")

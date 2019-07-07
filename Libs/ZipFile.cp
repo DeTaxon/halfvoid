@@ -37,7 +37,6 @@ prvtInitZip := !() -> void
 	prvtZipInited = true
 
 	dllHandle := dlopen("libz.so",2)
-
 	if dllHandle == 0
 	{
 		return void
@@ -50,7 +49,7 @@ prvtInitZip := !() -> void
 
 vZipEntry := class
 {
-	ptrToObj := vZipObject^
+	ptrToObj := ZipFile^
 	offset := int
 	realSize := u32
 	zipSize := u32
@@ -66,6 +65,15 @@ vZipEntry := class
 	{
 		return realSize
 	}
+	Name := !() -> StringSpan
+	{
+		return objName
+	}
+	Path := !() -> StringSpan
+	{
+		return fullName
+	}
+
 	Map := !() -> void^
 	{
 		ptrToObj.AddUser()
@@ -133,21 +141,9 @@ zipIterator := class
 			miniStack.Push(it)
 		}
 	}
-	DoAMoveRight := !() -> void
-	{
-		while nNode.Right != null
-		{
-			if nNode.Left != null
-				miniStack.Emplace(nNode.Left,true)
-			miniStack.Emplace(nNode,false)
-			nNode = nNode.Right
-		}
-		if nNode.Left != null
-			miniStack.Emplace(nNode.Left,false)
-	}
 }
 
-vZipObject := class
+ZipFile := class
 {
 	filesInUse := int
 	examined := bool
@@ -177,6 +173,32 @@ vZipObject := class
 	{
 		return zipIterator(zipRoot&)
 	}
+	GetFile := !(char^ fileNameI) -> vZipEntry^
+	{
+		items := Queue.{char^}()
+		DivideStr(fileNameI,"\\/",items) ; $temp
+		if items.Size() == 0
+			return null
+
+		itr := zipRoot&
+		for it : items
+		{
+			found := false
+			for subs : itr.subFolders
+			{
+				if subs.objName == it
+				{
+					found = true
+					itr = subs
+					break
+				}
+			}
+			if not found
+				return null
+		}
+		return itr
+	}
+		
 
 	AnalizeFile := !(char^ fileToLoad) -> bool
 	{
@@ -186,8 +208,14 @@ vZipObject := class
 		ptrToFl := asMapped.point
 		eod := ptrToFl[asMapped.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
+		if eod.signature != 0x06054b50
+		{
+			return false
+		}
+
 		tableCount := eod.numberOfCentralDirectoryHere
 		cdTable := ptrToFl[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+	
 
 		for i : tableCount
 		{	
@@ -244,6 +272,7 @@ vZipObject := class
 			+ cdTable.commentLen
 			]&->{zipCentralDirectory^}
 		}
+		return true
 	}
 }
 
@@ -264,13 +293,13 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 	//memcpy(outFile.Get(),inpFile.Get(),inpSize)
 	//memcpy(outFile.Get()[inpSize]&,zipFile.Get(),zipSize)
 
-	eod := zipFile.Get()[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
+	eod := zipFile.point[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
 	ignores := Queue.{void^}() ; $temp
 	ignores.Push(eod.offsetToStartOfCD&)
 
 	filesCount := eod.numberOfCentralDirectoryHere
-	cdTable := zipFile.Get()[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+	cdTable := zipFile.point[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
 	for i : filesCount
 	{
 		ignores.Push(cdTable.offsetToFileHeader&)
