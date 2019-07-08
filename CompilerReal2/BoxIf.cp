@@ -3,6 +3,7 @@
 BoxIf := class extend Object
 {
 	MyId := int
+	ForceGo := int 
 	this := !(Object^ DaRet) -> void
 	{
 		Down = DaRet.Down
@@ -15,8 +16,16 @@ BoxIf := class extend Object
 
 		if pri == State_Start
 		{
-			WorkBag.Push(this&,State_Syntax)
 			Down.SetUp(this&)
+			compRes := TryCompute(Down.Right)
+			if compRes != null and compRes is ObjBool
+			{
+				ForceGo = 2
+				if compRes->{ObjBool^}.MyBool
+					ForceGo = 1
+			}
+
+			WorkBag.Push(this&,State_Syntax)
 			PopOutNode(Down)
 			if Down.Right.Right != null PopOutNode(Down.Right.Right)
 
@@ -26,12 +35,23 @@ BoxIf := class extend Object
 			RR := Down.Right.Right
 			if RR != null
 				MakeItBlock(RR)
-			while TryParseMacro(Down,this&) != null {}
+			if ForceGo == 0{
+				while TryParseMacro(Down,this&) != null {}
+			}
 		}
 		if pri == State_Syntax
 		{
-			WorkBag.Push(Down[^],State_Start)
-			WorkBag.Push(this&,State_GetUse)
+			switch ForceGo
+			{
+			case 0
+				WorkBag.Push(Down[^],State_Start)
+				WorkBag.Push(this&,State_GetUse)
+			case 1
+				WorkBag.Push(Down.Right,State_Start)
+			case 2
+				if Down.Right.Right != null
+					WorkBag.Push(Down.Right.Right,State_Start)
+			}
 		}
 		if pri == State_GetUse
 		{
@@ -49,6 +69,17 @@ BoxIf := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		if ForceGo != 0
+		{
+			if ForceGo == 1
+			{
+				Down.Right.PrintInBlock(f)
+			}else{
+				if Down.Right.Right != null
+					Down.Right.Right.PrintInBlock(f)
+			}
+			return void
+		}
 		if Down.Right.Right == null
 		{
 			Down.PrintPre(f)

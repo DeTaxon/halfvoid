@@ -60,6 +60,13 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 				res := GetItem2(name,notSure,Searched)
 				if res != null return res
 			}
+		}else if iter.Up != null and iter.Up is BoxClass and name[0] == '$'
+		{
+			asCl := iter.Up->{BoxClass^}
+			resObj := asCl.ItAttrs.TryFind(name)
+			if resObj != null
+				return resObj^
+
 		}
 
 

@@ -135,7 +135,7 @@ main := !(int argc,char^^ argv) -> int
 	}
 	if not loadedLex
 	{
-		printf("loading lexical machine from outside\n")
+		printf("lexical machine loaded from outside\n")
 		itMach := MappedFile("./Mach.m")
 		LoadLexMachine(itMach.point,itMach.Size())
 		itMach.Close()
@@ -143,7 +143,7 @@ main := !(int argc,char^^ argv) -> int
 
 	if PriorityData == null
 	{
-		printf("priority loadede from outside\n")
+		printf("priority loaded from outside\n")
 		prFile := MappedFile("./Priority.pr")
 		defer prFile.Close()
 		PriorityData = new PriorityBag(prFile.point,prFile.Size())

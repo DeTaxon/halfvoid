@@ -37,6 +37,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		return itUp
 	}
+	if tr.GetValue() == "if()"
+	{
+		printf("heh\n")
+	}
 	//if tr.GetValue() == "()" and tr.Left == null
 	//{
 	//	lastTr := tr.Down

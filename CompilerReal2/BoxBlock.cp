@@ -247,31 +247,24 @@ BoxBlock := class extend Object
 
 					for itr : Down
 					{
-						if itr.GetValue() == "if()"
+						if itr.GetValue() == "if" and itr.Right != null and itr.Right.GetValue() == "~ind"
 						{
-							if itr.Down.Right.GetValue() == "~ind"
+							if itr.Right.GetValue() == "~ind"
 							{
-								asInd := itr.Down.Right->{ObjIndent^}
+								asInd := itr.Right->{ObjIndent^}
 								if asInd.MyStr[0] == '$'
 								{
-									inMap := clsItm.ItAttrs.TryFind(asInd.MyStr)
-									itmToPut := Object^()
-									if inMap != null
+									inMap := TryCompute(asInd)
+									if inMap == null or (inMap is ObjBool and not inMap->{ObjBool^}.MyBool)
 									{
-										itmToPut = itr.Down.Right
-									}else{
-										if itr.Down.Right.Right.Right != null
-											itmToPut = itr.Down.Right.Right.Right.Right
-									}
-									if itmToPut == null
+										PopOutNode(itr.Right.Right)
+										PopOutNode(itr.Right)
 										PopOutNode(itr)
-									else{
-										ReplaceNode(itr,itmToPut)
-										UnboxParams(itmToPut)
+									}else{
+										//PopOutNode(itr.Right.Right)
+										PopOutNode(itr.Right)
+										PopOutNode(itr)
 									}
-
-
-									
 								}
 							}
 							resvItm = true
@@ -343,7 +336,7 @@ BoxFile := class extend BoxBlock
 		{
 			f << "!" << fileId  << " = !DIFile(filename: \"" 
 			f << filePath.FullPath().itStr << "\", directory: \""
-			f <<  "/" <<"\")\n"
+			f <<  "/mnt/Lanq2/" <<"\")\n"
 		}
 	}
 	PrintInBlock := virtual !(sfile f) -> void

@@ -216,12 +216,6 @@ ParseType := !(Object^ Node) -> Type^
 			return someType
 		}
 		
-		//lazy = Node.Down.GetValue() == "~ind"
-		//if lazy lazy = Node.Down.Right != null
-		//if lazy lazy = Node.Down.Right.GetValue() == "."
-		//if lazy lazy = Node.Down.Right.Right != null
-		//if lazy lazy = Node.Down.Right.Right.GetValue() == "{}"
-		//if lazy
 		if Node.Down.GetValue() == "~ind" and Node.Down.Right?.GetValue() == "." and Node.Down.Right.Right?.GetValue() == "{}"
 		{
 			SyntaxCompress(Node.Down.Right.Right,PriorityData)
@@ -285,7 +279,7 @@ ParseType := !(Object^ Node) -> Type^
 				if Node.Line != null
 				for value,key : Node.Line.itAttrs
 				{	
-					box.itAttrs[key] = value
+					box.itAttrs[key] = value ; $temp
 				}
 
 
@@ -369,6 +363,7 @@ ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef)
 	{
 		if t != null res += t.ItHash
 		if isRefs != null and isRefs[i] res = res xor_b 157
+		res += (t->{void^}->{u64} >> 6) % 128
 		res = res*3
 	}
 	if retT != null

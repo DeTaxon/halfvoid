@@ -28,6 +28,10 @@ TryCompute := !(Object^ ob) -> Object^
 		asN := ob->{ObjIndent^}
 		it := GetItem(asN.MyStr,ob)
 
+		if it == null and asN.MyStr[0] == '$' 
+		{
+			return new ObjBool(false)
+		}
 		if it == null return null
 		if it is ConstItem
 		{
