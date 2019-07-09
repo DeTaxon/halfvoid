@@ -545,10 +545,14 @@ TypePoint := class extend Type
 		//ItName = Base.GetName() + "*"
 		if DebugMode
 		{
-			metaId = GetNewId()
-			itStr := "!"sbt + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")"
-			itStr << "; " << GetGoodName() << "\n"
-			DebugMetaData.Push(itStr)
+			if nBase == null or nBase.metaId == 0
+			{
+			}else{
+				metaId = GetNewId()
+				itStr := "!"sbt + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")"
+				itStr << "; " << GetGoodName() << "\n"
+				DebugMetaData.Push(itStr)
+			}
 		}
 	}
 	GetType := virtual !() -> string
@@ -601,6 +605,7 @@ TypeFunc := class extend Type
 		RetType = itRetTyp
 
 		//ItName = GetNewName()
+		DoMeta()
 	}
 	this := !(Queue.{Type^} P,bool^ retsRef,Type^ retType, bool isRetRef, bool IsV) -> void
 	{
@@ -626,17 +631,19 @@ TypeFunc := class extend Type
 		ItHash = ComputeFuncHash(P,ParsIsRef,retType,isRetRef)
 
 		//ItName = GetNewName()
+		DoMeta()
 	}
 	DoMeta := !() -> void
 	{
 		if DebugMode
 		{
-			canCreate := RetType != null
+			if RetType == null
+				return void
 			for i : ParsCount
 			{
-				if Pars[i] == null canCreate = false
+				if Pars[i] == null return void
 			}
-			if canCreate
+			if true
 			{
 				metaId = GetNewId()
 				subMeta := GetNewId()
@@ -750,7 +757,7 @@ TypeFuncLambda := class extend Type
 	{
 		Base = asBase
 		ItHash = asBase.ItHash*3 + 2
-		if DebugMode
+		if DebugMode and asBase.metaId != 0
 		{
 			metaId = GetNewId()
 			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + asBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
@@ -828,7 +835,7 @@ TypeArr := class extend Type
 		Base = B
 		Size = S
 		ItName = GetNewName()
-		if DebugMode
+		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()
 			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
@@ -855,7 +862,7 @@ TypeFatArr := class extend Type
 	{
 		ItHash = B.ItHash*3 + 1
 		Base = B
-		if DebugMode
+		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()
 			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 

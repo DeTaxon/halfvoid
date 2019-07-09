@@ -124,6 +124,11 @@ TupleClass := class extend BoxClass
 			f <<  Params[i].ResultType.GetName()
 		}
 		f << "}\n"
+		if DebugMode
+		{
+			f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << "Tuple" << "\""
+			f << ", elements: !{})\n"
+		}
 	}
 	PrintGlobalExtra := !(sfile f) -> void
 	{

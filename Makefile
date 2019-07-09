@@ -8,6 +8,8 @@ repair: $(wildcard CompilerReal2/*.cp)
 
 cycle: $(wildcard CompilerReal2/*.cp)
 	time $(TimeFlags) ./c.out -C0 "Libs/*.cp" CompilerReal2/main.cp -o out3.ll; clang out3.ll $(Libs) -o c.out
+cycleg: $(wildcard CompilerReal2/*.cp)
+	time $(TimeFlags) ./c.out -g -C0 "Libs/*.cp" CompilerReal2/main.cp -o out3.ll; clang -g out3.ll $(Libs) -o c.out
 ManyCycle:
 	for i in {1..10}; do make cycle; done
 

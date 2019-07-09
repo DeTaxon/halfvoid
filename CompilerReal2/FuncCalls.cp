@@ -283,9 +283,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				if plsF != null
 				{
-					iterL.Right = iter.Down
-					iter.Down.Left = iterL
-					iter.SetUp(iterL.Up)
+					if iter.Down != null
+					{
+						iterL.Right = iter.Down
+						iter.Down.Left = iterL
+						iter.SetUp(iterL.Up)
+					}else{
+						PopOutNode(iter)
+					}
 					return MakeSimpleCall(plsF,iterL)
 				}
 				return null
@@ -448,6 +453,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						}
 						return  MakeSimpleCall(func,iter)
 					}
+
 
 					iter = UNext(iter.Left,new ObjData(),3)
 					oldIter := iter
@@ -1243,6 +1249,8 @@ AssemblerCall := class extend NaturalCall
 		buf := char[2]
 		buf[1] = 0
 
+		debId := 0
+
 		thisName := GetName()
 		j := 0
 		while AsmLine[j] != 0
@@ -1289,10 +1297,11 @@ AssemblerCall := class extend NaturalCall
 				{
 					j += 1
 					if DebugMode {
-						newId := CreateDebugCall(this&)
-						if newId != -1
+						if debId == 0
+							debId = CreateDebugCall(this&)
+						if debId != -1
 						{
-							f << ", !dbg !" << newId
+							f << ", !dbg !" << debId
 						}
 					}
 

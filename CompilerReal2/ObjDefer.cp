@@ -1,6 +1,19 @@
 #import "Tree.cp"
 #import "WrappedFunc.cp"
 
+deferAddDefer := BoxFunc^ // AddDefer(!()&->void,bool isException)
+deferPushStack := BoxFunc^ // GetStackDepth()
+deferPopStack := BoxFunc^  // PopStack(int Depth)
+deferApplyStack := BoxFunc^  // ApplyStack(int Depth)
+deferApplyExceptionStack := BoxFunc^  // ApplyExceptionStack(int Depth)
+
+DeferInit := !() -> void
+{
+	dummy := new Object
+	box := new FunctionInputBox ; $temp
+	itFunc := FindFunc("internalAddDefer",dummy,box^,false,false)
+}
+
 ObjDefer := class extend Object
 {
 	this := !(Object^ dwn) -> void

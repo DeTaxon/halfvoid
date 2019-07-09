@@ -182,7 +182,7 @@ BuiltInTemplateGetRef := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("&",pars[0].first,true,pars[0].first.GetPoint(), 
-		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0\n")
+		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0 #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -210,7 +210,7 @@ BuiltInTemplatePoint := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncUno("^",pars[0].first,false,pars[0].first.Base,true, 
-		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, i32 0\n")
+		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, i32 0 #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -243,10 +243,10 @@ BuiltInTemplatePointArr := class extend BoxTemplate
 		if pars[0].first is TypeArr
 		{
 			return new BuiltInFuncBinar("[]",pars[0].first,true,pars[1].first,false,pars[0].first.Base,true,
-		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2\n")
+		"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, " + pars[1].first.GetName() + " #2 #d\n")
 		}
 		return new BuiltInFuncBinar("[]",pars[0].first,false,pars[1].first,false,pars[0].first.Base,true,
-		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, " + pars[1].first.GetName() + " #2\n")
+		"#0 = getelementptr "sbt + pars[0].first.Base.GetName() + " , " + pars[0].first.GetName() + " #1, " + pars[1].first.GetName() + " #2 #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -669,6 +669,38 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 	}
 }
+BuiltInTemplateSetLambda := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "="
+		OutputName = "error"
+
+		emptType := Queue.{Type^}() ; $temp
+		emptType.Push(null->{Type^})
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		pars := ref itBox.itPars
+		if pars.Size() != 2 return 255
+		if not pars[0].second return 255
+		if pars[0].first != pars[1].first return 255
+		if pars[0].first.GetType() != "lambda" return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
+		"store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1\n")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
 
 
 BuiltInTemplateFuncWrapper := class extend BoxTemplate
@@ -831,7 +863,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncZero(".",retType,true,
 				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
-				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
+				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
 			return null
@@ -842,7 +874,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 		fatPos := pos
 		if ToClass.ContainVirtual fatPos += 1
-		itStr := "#0 = getelementptr "sbt+ (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+"\n" 
+		itStr := "#0 = getelementptr "sbt+ (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+" #d\n" 
 		preRet :=  new BuiltInFuncZero(".",retType,true,itStr)
 		return preRet
 	}
@@ -1051,7 +1083,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncUno(".",CType,true,retType,true,
 				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+"\n" +
-				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "*\n")
+				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
 			return null
@@ -1067,7 +1099,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 			}
 		
 	return new BuiltInFuncUno(".",CType,true,retType,true,
-		"#0 = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+"\n")
+		"#0 = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+" #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1450,6 +1482,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateStandartTypeConstructor())
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
+	BuiltInTemplates.Push(new BuiltInTemplateSetLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateNext())
 	//BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 	BuiltInTemplates.Push(new BuiltInTemplateGetRef())
@@ -1550,28 +1583,28 @@ CreateBuiltIns := !() -> void
 
 			//AddBuiltInFunc(new BuiltInFuncTypeTimes(". this",null,0,PType,"#0 = add  i" + it + " 0, 0\n"))
 
-			AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1\n"
+			AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1 #d\n"
 												+"#0 = add i" + it + " #2,0\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i"sbt + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("div",PType,false,PType,false,PType,"#0 = "sbt + IsS + "div  i" + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("%",PType,false,PType,false,PType,"#0 = "sbt + IsS + "rem  i" + it + " #1,#2\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i"sbt + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("div",PType,false,PType,false,PType,"#0 = "sbt + IsS + "div  i" + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("%",PType,false,PType,false,PType,"#0 = "sbt + IsS + "rem  i" + it + " #1,#2 #d\n"))
 			
-			AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = sub i"sbt + it + " 0,#1\n"))
+			AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = sub i"sbt + it + " 0,#1 #d\n"))
 			
 			AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,GTypeFloat,
 										"%Pre1## = "sbt + IsS + "itofp i" + it + " #1 to float\n" +
 										"%Pre2## = " + IsS + "itofp i" + it +" #2 to float\n" +
-										"#0 = fdiv float %Pre1##,%Pre2##\n"))
+										"#0 = fdiv float %Pre1##,%Pre2## #d\n"))
 
-			AddBuiltInFunc(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i" + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("!=",PType,false,PType,false,BoolT,"#0 = icmp ne i" + it + " #1,#2\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i" + it + " #1,#2\n #d"))
+			AddBuiltInFunc(new BuiltInFuncBinar("!=",PType,false,PType,false,BoolT,"#0 = icmp ne i" + it + " #1,#2\n #d"))
 
-			AddBuiltInFunc(new BuiltInFuncBinar("and_b",PType,false,PType,false,PType,"#0 = and i" + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("or_b",PType,false,PType,false,PType,"#0 = or i" + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("xor_b",PType,false,PType,false,PType,"#0 = xor i" + it + " #1,#2\n"))
-			AddBuiltInFunc(new BuiltInFuncUno(". not_b",PType,false,PType,"#0 = xor i" + it + " #1,-1\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("and_b",PType,false,PType,false,PType,"#0 = and i" + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("or_b",PType,false,PType,false,PType,"#0 = or i" + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("xor_b",PType,false,PType,false,PType,"#0 = xor i" + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncUno(". not_b",PType,false,PType,"#0 = xor i" + it + " #1,-1 #d\n"))
 
 			AddBuiltInFunc(new BuiltInFuncBinar(">=",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"ge i" + it + " #1,#2\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = icmp "+ IsS +"le i" + it + " #1,#2\n"))
