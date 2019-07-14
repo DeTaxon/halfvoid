@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 ObjSkobs := class extend Object
 {
 	Vers := int

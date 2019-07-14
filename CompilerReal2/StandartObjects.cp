@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 ObjResult := class extend Object
 {
 	ResultType := Type^

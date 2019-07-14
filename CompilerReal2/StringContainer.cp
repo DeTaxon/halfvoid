@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 StringContainer := class 
 {
 	Strs := AVLMap.{string,int}

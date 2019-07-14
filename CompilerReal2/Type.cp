@@ -1,9 +1,3 @@
-#import "Tree.cp"
-#import "BoxClass.cp"
-#import "Globals.cp"
-#import "UnboxParams.cp"
-#import "BoxTuple.cp"
-
 TypesPool := StupidMemoryPool.{16000000}
 
 Type := class {

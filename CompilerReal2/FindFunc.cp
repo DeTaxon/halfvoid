@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "Globals.cp"
-#import "FuncInputBox.cp"
-#import "GlobalParams.cp"
-
 IsWord := !(string name) -> bool
 {
 	for c : name

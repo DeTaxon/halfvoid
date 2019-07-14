@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 CodeSpace := class
 {
 	codeLibs := Queue.{BoxFile^}

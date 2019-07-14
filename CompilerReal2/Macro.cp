@@ -1,6 +1,3 @@
-#import "Tree.cp"
-#import "QuestionBox.cp"
-
 reParseDown := !(Object^ itm, LocalParam^ prm,string vargName) -> void
 {
 	if itm == null return void

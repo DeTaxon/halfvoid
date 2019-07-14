@@ -1,6 +1,3 @@
-#import "Type.cp"
-#import "BuiltInVec3d.cp"
-
 BuiltInFunc := class extend BoxFunc
 {
 	ToExe := string

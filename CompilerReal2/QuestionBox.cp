@@ -1,6 +1,3 @@
-#import "Tree.cp"
-
-
 ControlFlowBox := class extend Object
 {
 	GetValue := virtual !() -> string

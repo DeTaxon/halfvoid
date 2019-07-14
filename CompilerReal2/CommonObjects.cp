@@ -1,10 +1,3 @@
-#import "Tree.cp"
-#import "Param.cp"
-#import "ConstCompute.cp"
-#import "BoxFor.cp"
-#import "FileLoader.cp"
-#import "GlobalParams.cp"
-
 GetItem := !(string name, Object^ start) -> Object^
 {
 	 stuf := QueueSet.{int}()

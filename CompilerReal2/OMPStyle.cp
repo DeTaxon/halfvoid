@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 CriticalAtomic := class extend Object
 {
 	itId := int

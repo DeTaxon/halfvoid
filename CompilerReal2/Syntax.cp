@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "ObjObj.cp"
-#import "SLambda.cp"
-#import "ObjData.cp"
-
 InDataR := !(Object^ obj) -> bool
 {
 	Val := obj.GetValue()

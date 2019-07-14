@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 Modules := Queue.{CompilerModule^}
 
 CompilerModule := class

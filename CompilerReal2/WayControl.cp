@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 WayControl := class extend Object
 {
 	itItm := string

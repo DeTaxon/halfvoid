@@ -1,5 +1,3 @@
-#import "BuiltInFuncs.cp"
-
 BuiltInTemplateVec4fGet := class extend BoxTemplate
 {
 	this := !() -> void

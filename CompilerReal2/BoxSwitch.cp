@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 BoxSwitch := class extend Object
 {
 	id := int

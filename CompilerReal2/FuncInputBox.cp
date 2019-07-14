@@ -1,5 +1,3 @@
-#import "Globals.cp"
-
 //FuncTypesArray := type FatArray.{Pair.{Type^,bool},1024}
 //FuncConstsArray := type FatArray.{Object^,1024}
 //FuncAttrsArray := type AVLMap.{string,Object^}

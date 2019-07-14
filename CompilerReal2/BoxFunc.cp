@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "ConstTemp.cp"
-#import "FindFunc.cp"
-#import "FuncInputBox.cp"
-
 ParseFuncDataR := !(Object^ item) -> Object^
 {
 	iter := item.Down

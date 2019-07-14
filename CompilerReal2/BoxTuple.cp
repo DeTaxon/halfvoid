@@ -1,5 +1,3 @@
-#import "BoxClass.cp"
-
 Tupls := Queue.{TupleClass^}
 
 PrintTuples := !(sfile f) -> void

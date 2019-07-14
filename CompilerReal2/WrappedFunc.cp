@@ -1,5 +1,3 @@
-#import "BoxFunc.cp"
-
 WrappedFunc := class extend BoxFuncBody 
 {
 	this := !(Object^ itm) -> void

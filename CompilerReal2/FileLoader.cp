@@ -1,7 +1,3 @@
-#import "Tree.cp"
-#import "BoxBlock.cp"
-#import "NewLex.cp"
-
 Files := Queue.{BoxFile^}
 ZipFiles := Queue.{BoxFile^}
 

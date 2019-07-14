@@ -1,11 +1,3 @@
-#import "Tree.cp"
-#import "GetExc.cp"
-#import "ParamCall.cp"
-#import "PtrToRef.cp"
-#import "FuncInputBox.cp"
-#import "DebugStuf.cp"
-
-
 FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void
 {	
 	if itm != null{

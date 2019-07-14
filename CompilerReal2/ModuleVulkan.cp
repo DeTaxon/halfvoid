@@ -1,6 +1,3 @@
-#import "Module.cp"
-#mport "Type.cp"
-
 EnumsValue := 1
 EnumsBitPos := 2
 

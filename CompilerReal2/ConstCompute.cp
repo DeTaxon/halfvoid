@@ -1,7 +1,4 @@
 // TODO: это костыль, нужно заменить на оптимизатор и более умный WorkBag
-#import "Tree.cp"
-#import "Chairwheel.cp"
-
 ConstItem := class extend Object
 {
 	Name := string

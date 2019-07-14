@@ -1,5 +1,3 @@
-#import "BoxBlock.cp"
-
 lexWordMachine := WordDetermMachine^
 
 //LoadLexMachine := !() -> void

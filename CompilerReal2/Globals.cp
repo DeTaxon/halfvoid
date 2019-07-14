@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "Type.cp"
-#import "arrsSpecial.cp"
-#import "PriorityRead.cp"
-
 archSize := 64
 
 TypeTable := Type^[30]

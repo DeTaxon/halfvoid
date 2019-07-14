@@ -1,12 +1,3 @@
-#import "Tree.cp"
-#import "BoxTuple.cp"
-#import "FileLoader.cp"
-#import "CoolerObjects.cp"
-#import "Globals.cp"
-#import "Type.cp"
-#import "GlobalParams.cp"
-#import "ModuleVulkan.cp"
-
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "ToRet"

@@ -1,6 +1,3 @@
-#import "Tree.cp"
-#import "WrappedFunc.cp"
-
 deferAddDefer := BoxFunc^ // AddDefer(!()&->void,bool isException)
 deferPushStack := BoxFunc^ // GetStackDepth()
 deferPopStack := BoxFunc^  // PopStack(int Depth)

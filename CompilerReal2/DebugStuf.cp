@@ -1,5 +1,3 @@
-#import "Globals.cp"
-
 
 DebugMode := false
 cuId := int

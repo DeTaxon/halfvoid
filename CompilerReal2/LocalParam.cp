@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 MemParam := class extend ObjResult
 {
 	GetValue := virtual !() -> string

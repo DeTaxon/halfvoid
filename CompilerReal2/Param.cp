@@ -1,7 +1,3 @@
-#import "Tree.cp"
-#import "FuncCalls.cp"
-#import "BoxClass.cp"
-
 ObjParam := class extend Object
 {
 	MyStr := string

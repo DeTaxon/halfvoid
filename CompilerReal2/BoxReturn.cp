@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 BoxReturn := class extend Object
 {
 	IsRetRef := bool

@@ -1,12 +1,3 @@
-#import "Type.cp"
-#import "StateParse.cp"
-#import "ObjIndent.cp"
-#import "WayControl.cp"
-#import "Syntax.cp"
-#import "OMPStyle.cp"
-#import "FuncInputBox.cp"
-
-
 ObjectsPool := StupidMemoryPool.{8388608}
 
 Object := class{
