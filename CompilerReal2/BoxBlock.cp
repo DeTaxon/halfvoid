@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "Globals.cp"
-#import "GlobalParams.cp"
-#import "Macro.cp"
-
 MakeItBlock := !(Object^ item) -> bool
 {
 	return MakeItBlock(item,true)

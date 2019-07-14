@@ -1,4 +1,3 @@
-#import "Tree.cp"
 
 AllocBox := class 
 {

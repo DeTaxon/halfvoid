@@ -26,8 +26,10 @@ LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 
 GetObjectsFromFile2 := !(Path fileName) -> Object^
 {
-	DaFile := new BoxFile(fileName)
 	inputFile := MappedFile(fileName.itStr)
+	defer inputFile.Close()
+
+	DaFile := new BoxFile(fileName)
 
 	d :=  new WordParser ; $temp
 	itLine := null->{ObjLine^}
@@ -42,6 +44,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 		tok := StringSpan(ptr,c)
 
 		ns := null->{Object^}
+
 		if a != 20{
 			if itLine == null {
 				itLine = new ObjLine()
@@ -236,7 +239,6 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 		}
 		prevId = a
 	})
-	inputFile.Close()
 	UniteSkobs(DaFile.Down)
 	return DaFile
 }

@@ -1,7 +1,3 @@
-#import "ZipSpec.cp"
-#import "DeflateEncoder.cp"
-
-
 
 z_stream := class
 {

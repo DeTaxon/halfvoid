@@ -19,6 +19,7 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 	prePath /= name
 	newName := prePath.FullPath()
 	newPath := Path(newName)
+	//printf("hah %s %s\n",name,asF.filePath.itStr)
 	return LoadFile(newPath)
 }
 LoadFile := !(Path fullName) -> BoxFile^

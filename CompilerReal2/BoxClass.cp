@@ -1,8 +1,3 @@
-#import "Tree.cp"
-#import "BuiltInFuncs.cp"
-#import "LocalParam.cp"
-#import "CmpConstObjs.cp"
-
 ParseClass := !(Object^ ob)-> BoxClass^
 {
 	

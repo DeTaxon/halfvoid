@@ -236,7 +236,7 @@ Path := class
 	}
 	IsDir := !() -> bool
 	{
-		statStruct := char[144]
+		statStruct := new char[1024] ; $temp
 		res := stat(itStr,statStruct->{char^})
 		return (statStruct[25] and_b 0x40) != 0
 	}
@@ -302,7 +302,7 @@ Path := class
 		if pos < 0 return ""
 		if size - pos == 1 return ""
 		pos++
-		newStr :=  malloc(pos + 1)->{char^}
+		newStr :=  new char[pos + 1] ; $temp
 
 		for i : pos newStr[i] = itStr[i]
 		newStr[pos] = 0

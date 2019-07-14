@@ -115,13 +115,13 @@ UniteSkobs := !(Object^ Tree) -> Object^
 			UNext(Old,NewObj,iter)
 
 			TIter := NewObj.Down
-			Remove(TIter)
+			PopOutNode(TIter)
 			TIter = NewObj.Down
 
 			if TIter.Right != null{
 				while TIter.Right != null TIter = TIter.Right
 			}
-			Remove(TIter)
+			PopOutNode(TIter)
 
 			iter = NewObj.Right
 		}else{

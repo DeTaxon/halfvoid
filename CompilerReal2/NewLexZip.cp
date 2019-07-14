@@ -1,6 +1,4 @@
-#import "Lex.cp"
 #import "BoxBlock.cp"
-#import "../Libs/MappedFile.cp"
 #import "NewLex.cp"
 
 GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
