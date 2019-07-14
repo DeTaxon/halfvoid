@@ -549,7 +549,7 @@ TypePoint := class extend Type
 			{
 			}else{
 				metaId = GetNewId()
-				itStr := "!"sbt + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + nBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")"
+				itStr := "!"sbt << metaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << nBase.metaId << " ,size: " << archSize << ", align: " << archSize << ")"
 				itStr << "; " << GetGoodName() << "\n"
 				DebugMetaData.Push(itStr)
 			}

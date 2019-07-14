@@ -146,7 +146,7 @@ MappedFile := class
 	makeMap := !() -> void
 	{
 		PROTS := PROT_READ
-		SHARES := MAP_PRIVATE
+		SHARES := MAP_SHARED //MAP_PRIVATE
 		if flag != FILE_READ 
 		{
 			PROTS = PROTS or_b PROT_WRITE

@@ -51,14 +51,12 @@ StringSpan := class{
 	"<=>" := !(StringSpan toCmp) -> int {
 		if toCmp.ptr == null return 1
 		for itSize {
-			if it => toCmp.itSize return 1
+			if it >= toCmp.itSize return 1
 			if toCmp.ptr[it] != ptr[it] return toCmp.ptr[it] <=> ptr[it]
-			if toCmp.ptr[it] == 0 return -1
-			if ptr[it] == 0 return 1
+			//if toCmp.ptr[it] == 0 return -1
+			//if ptr[it] == 0 return 1
 		}
-		if toCmp.itSize == itSize return 0
-		if toCmp.ptr[itSize] == 0 return 0
-		return 1
+		return itSize <=> toCmp.itSize		
 	}
 	//"==" := !(StringSpan toCmp) -> bool {
 	//	if toCmp.itSize != itSize return false

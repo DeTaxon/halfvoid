@@ -72,3 +72,24 @@ StringContainer := class
 }
 
 StrContainer := StringContainer^
+
+
+YStrContainer := AVLMap.{StringSpan,char^}
+GetConstString := !(StringSpan itSt) -> char^
+{
+	inMap := YStrContainer.TryFind(itSt)
+	if inMap == null
+	{
+		newStr := itSt.Str()
+		newSpan := StringSpan(newStr,itSt.Size())
+		YStrContainer[newSpan] = newStr
+		return newStr
+	}
+	return inMap^
+}
+PutConstString := !(char^ newStr) -> void
+{
+	YStrContainer[StringSpan(newStr)] = newStr
+}
+
+

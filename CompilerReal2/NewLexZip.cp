@@ -13,7 +13,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 	prevId := -1
 	linePos := 0
 	DaBuff := new char[2048] ; $temp
-	d.ReadText(lexWordMachine&->{void^},memPtr,Siz, (a,b,c) =>
+	d.ReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) =>
 	{
 		ptr := memPtr[b]&
 
@@ -35,13 +35,13 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 				case "false"
 					ns = new ObjBool(false)
 				case "continue"
-					ns = new WayControl(tok.Str())
+					ns = new WayControl("continue")
 				case "break"
-					ns = new WayControl(tok.Str())
+					ns = new WayControl("break")
 				case void
 					if IsKeyword(tok)
 					{
-						ns = new ObjKeyword(tok.Str())
+						ns = new ObjKeyword(GetConstString(tok))
 					}else{
 						if prevId == 3 or prevId == 5 or prevId ==  6
 						{
@@ -55,7 +55,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 		if a == 2{
 			if tok[0] == '#'
 			{
-				ns = new ObjCmd(tok.Str())
+				ns = new ObjCmd(GetConstString(tok))
 			}else{
 				ns = new ObjTemplateType(tok[1..0].Str())
 			}
@@ -183,7 +183,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 			ns = new ObjInt(Value)
 		}
 		if a == 8 {
-			ns = new ObjSymbol(tok.Str()) 
+			ns = new ObjSymbol(GetConstString(tok)) 
 		}
 		if a == 9{
 			//comments

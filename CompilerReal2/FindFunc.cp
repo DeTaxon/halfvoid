@@ -63,12 +63,6 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			}
 		}
 	}
-	
-	//res := ForcedGlobalParams.TryFind(name)
-	//if res != null{
-	//	for res^ 
-	//		found.Push(it) ; $temp
-	//}
 }
 
 
@@ -115,34 +109,10 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 		}else
 		if ii.GetValue() == "{...}"
 		{
-			//if name == "."{	
-			//	asC := ii->{BoxClass^}
-			//	templates.Push((asC.UnrollTemplate)->{BoxTemplate^})
-			//}
 			asC := ii->{BoxClass^}
 			asC.GetWrappedFunc(name,found,templates)
 
-		}//else
-		//if ii is ImportCmd //ii.GetValue() == "#import cp"
-		//{
-		//	asNeed := ii->{ImportCmd^}
-		//	fl2 := asNeed.GetFile()
-		//	fl3 := fl2->{Object^}
-
-		//	Found := Searched.Contain(fl2.fileId)
-
-		//	if not Found
-		//	{
-		//		Searched.Push(fl2.fileId)
-		//		//CollectFuncsByName(name,fl3.Down,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-		//	}
-		//	res := fl2.VisibleParams.TryFind(name)
-		//	if res != null {
-		//		for res^{
-		//			InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-		//		}
-		//	}
-		//}
+		}
 }
 
 
@@ -158,10 +128,6 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		if iterr != null
 		{
 			while iterr.Up != null iterr = iterr.Up
-			//for it : ForcedLibs
-			//{
-			//	if it == iterr iterU = null
-			//}
 			if FilesInSpace.Contain(iterr)
 			{
 				iterU = null
@@ -278,41 +244,33 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 		
 	Funcs.Clean()
 	Templs.Clean()
-
-	//for ForcedLibs
-	//{	
-	//	res := it.VisibleParams.TryFind(name)
-	//	if res != null{
-	//		InsertFunc(name,it,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-	//	}
-	//}
-
-	//resS := ForcedGlobalParams.TryFind(name)
-	//if resS != null{
-	//	for resS^{
-	//		InsertFunc(name,it,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-	//	}
-	//}
-
-	//for ForcedLibs
+	
+	//if name == "."
 	//{
-	//	itUp := (it->{Object^}).Down
-	//	if it == iterr itUp = start
-	//	//if not Searched.Contain(it.fileId)
-	//	//{
-	//	//	Searched.Push(it.fileId)
-	//		CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-	//	//}
+		CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+		func3 := GetBestFunc(itBox,Funcs,Templs)
+		if func3 != null return func3
 	//}
+
+
 
 	for itCodeS : CodeSpaces ; $reverse
 	{
-		for itCodeS.codeLibs
+		Funcs.Clean()
+		Templs.Clean()
+		inMMap := itCodeS.codeParams.TryFind(name)
+		if inMMap != null
 		{
-			itUp := (it->{Object^}).Down
-			if it == iterr itUp = start
-			CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+			InsertFunc(name,inMMap^[^], Funcs, Templs,IsSuffix,IsMethod,Searched,false)
 		}
+		//for itCodeS.codeLibs
+		//{
+		//	itUp := (it->{Object^}).Down
+		//	if it == iterr itUp = start
+		//	CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
+		//}
+		func4 := GetBestFunc(itBox,Funcs,Templs)
+		if func4 != null return func4
 	}
 
 	inBuiltInMap := BuiltInFuncs.TryFind(name)
@@ -352,10 +310,6 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 		if funcs[^].MyFuncType.ParsCount == 0
 			return it
 	}
-	//for it : FoundC, fFuncs : funcs
-	//{
-	//	for FoundC if fFuncs.MyFuncType.ParsCount return fFuncs
-	//}
 
 	ComputePriors(funcs,itBox,Priors)
 	for FoundC if Priors[it] == 0  { funcs[it].ParseBlock() return funcs[it] }

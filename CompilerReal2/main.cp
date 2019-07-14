@@ -12,8 +12,8 @@ main := !(int argc,char^^ argv) -> int
 	ReturnName = "ToRet"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
-	BuiltInFuncs."this"()
-	ObjectsPool."this"()
+	//BuiltInFuncs."this"()
+	//ObjectsPool."this"()
 	//GlobalStrs = ""
 	printWork := false
 	CTT = new CreateTupleTemplate
@@ -147,7 +147,16 @@ main := !(int argc,char^^ argv) -> int
 		prFile := MappedFile("./Priority.pr")
 		defer prFile.Close()
 		PriorityData = new PriorityBag(prFile.point,prFile.Size())
-	}	
+	}
+	PutConstString(":=")
+	PutConstString("for")
+	PutConstString("if")
+	PutConstString("extern")
+	PutConstString("virtual")
+	PutConstString("class")
+	PutConstString("return")
+	PutConstString("self_return")
+
 	PriorityData.Opers.Push(":=")
 	PriorityData.Opers.Push("=>")
 	PriorityData.Opers.Push("extern")
@@ -257,22 +266,7 @@ main := !(int argc,char^^ argv) -> int
 		}
 		if DebugMode
 		{
-			fileId := Files.Start.Data.fileId
-			fil << "!llvm.dbg.cu = !{!"<< cuId <<"}\n"
-			fil << "!" << cuId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !{}, language: DW_LANG_C99, file: !"<< fileId <<" )\n"
-
-			nm := GetNewId()
-			fil << "!" << nm << " = !{!\"Taxon's stupid compiler\"}\n" 
-			fil << "!llvm.ident = !{!" << nm <<"}\n"
-
-			dwrdV := GetNewId() fil << "!" << dwrdV << " = !{i32 2, !\"Dwarf Version\", i32 4}\n"
-			DbgInf := GetNewId() fil << "!" << DbgInf << " = !{i32 2, !\"Debug Info Version\",i32 3}\n"
-			WchSize := GetNewId() fil << "!" << WchSize << " = !{i32 1, !\"wchar_size\",i32 4}\n"
-			PicLevel := GetNewId() fil << "!" << PicLevel << " = !{i32 7, !\"PIC Level\", i32 2}\n"
-			PieLevel := GetNewId() fil << "!" << PieLevel << " = !{i32 7, !\"PIE Level\", i32 2}\n"
-			fil << "!llvm.module.flags = !{!" << dwrdV << ",!" << DbgInf << ",!" << WchSize << ",!" << PicLevel << ",!" << PieLevel << "}\n"
-
-			for DebugMetaData fil << it
+			PrintDebugMeta(fil)
 		}
 		fil.close()
 	}else
@@ -310,28 +304,3 @@ WorkWithBag := !(bool printW) -> void
 		it.DoTheWork(prior)
 	}
 }
-
-//GetObjectsFromFile := !(Path fileName) -> Object^
-//{
-//	Buf := Queue.{Token^}()
-//	if not GetTokensFromFile(fileName, LexMachine^,Buf)
-//		return null
-//	
-//	for iterC : Buf
-//	{
-//		iterG := PriorityData.Opers.Start
-//		while iterG != null
-//		{
-//			if iterG.Data == iterC.Buff{
-//				iterC.Id = 10
-//			}
-//			iterG = iterG.Next
-//		}
-//	}
-//
-//	Ob := TokensToObjects(fileName,Buf)
-//	UniteSkobs(Ob)
-//	Buf.Clean()
-//	return Ob
-//}
-

@@ -28,8 +28,6 @@ Object := class{
 			preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align)
 		}else{
 			preRes = ObjectsPool.GetMem(R->TypeSize,R->Align)
-			//preRes = malloc(R->TypeSize)
-			//memset(preRes,0,R->TypeSize)
 		}
 		return preRes
 	}

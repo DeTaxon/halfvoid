@@ -84,7 +84,7 @@ TupleClass := class extend BoxClass
 		cnPre := ClassType->{Type^}
 		cn := cnPre.GetName()
 		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GetType("void"),false,
-			"call void(" + cn + "*," + cn + "*)@TupleSet" + ClassId + "(" + cn + "* #1," + cn + "* #2)\n")
+			"call void("sbt + cn + "*," + cn + "*)@TupleSet" + ClassId + "(" + cn + "* #1," + cn + "* #2)\n")
 
 	}
 	GetFunc := virtual !(string name,FuncInputBox itBox, bool isV) -> BoxFunc^
@@ -389,22 +389,22 @@ CreateTupleTemplate := class extend BoxTemplate
 
 		WorkBag.Push(itTpl,State_PreGetUse)
 
-		toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
+		toEx := "call "sbt << ftB.GetName() << "@TupleCreate" << itTpl.ClassId << 
 			"(" 
-		toEx = toEx + ctB.GetName() + "* #0"
+		toEx << ctB.GetName() << "* #0"
 
 		for par,i : pars
 		{
 			if funct.ParsIsRef[i]
 			{
-				toEx = toEx + ", " + pars[i].first.GetName() + "* #" + (i + 1)
+				toEx + ", " + pars[i].first.GetName() + "* #" + (i + 1)
 			}else{
-				toEx = toEx + ", " + pars[i].first.GetName() + " #" + (i + 1)
+				toEx + ", " + pars[i].first.GetName() + " #" + (i + 1)
 			}
 		}
-		toEx = toEx + ")\n"
+		toEx + ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx)
+		return new BuiltInFuncMega("",funct,toEx.Str())
 	}
 }
 TupleConstructorTemplate := class extend BoxTemplate
@@ -439,23 +439,23 @@ TupleConstructorTemplate := class extend BoxTemplate
 
 		WorkBag.Push(itTpl,State_PreGetUse)
 
-		toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
+		toEx := "call "sbt << ftB.GetName() + "@TupleCreate" << itTpl.ClassId << 
 			"(" 
 
 		for par,i : pars
 		{
 			if i != 0
-				toEx = toEx + ", "
+				toEx << ", "
 			if funct.ParsIsRef[i]
 			{
-				toEx = toEx + pars[i].first.GetName() + "* #" + (i + 1)
+				toEx + pars[i].first.GetName() + "* #" + (i + 1)
 			}else{
-				toEx = toEx + pars[i].first.GetName() + " #" + (i + 1) 
+				toEx + pars[i].first.GetName() + " #" + (i + 1) 
 			}
 		}
-		toEx = toEx + ")\n"
+		toEx + ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx)
+		return new BuiltInFuncMega("",funct,toEx.Str())
 	}
 }
 
@@ -504,7 +504,7 @@ TupleFuncGetItem := class extend BoxTemplate
 		itParam := frmIn.Params[ind]
 		itType := itParam.ResultType
 		preRet :=  new BuiltInFuncUno(".",pars[0].first,true,itType,true,
-			"#0 = getelementptr " + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, i32 " + ind + "\n")
+			"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, i32 " + ind + "\n")
 		preRet.IsSelfReturn = true
 		return preRet
 	}

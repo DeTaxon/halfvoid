@@ -752,41 +752,6 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	SomeFunc := FindFunc(Name,G,box^,false)
 
-	//if SomeFunc == null{
-	//	inClass := GetUpClass(G)
-	//	if inClass != null
-	//	{	
-	//		box2 := new FuncInputBox() ; $temp
-	//		box2.itPars
-	//		Ps.PushFront(inClass.ClassType)
-	//		funcH := inClass.GetFunc(Name,box^,true)
-	//		if funcH != null
-	//		{
-	//			daFunc := GetFuncBlock(G)
-	//			if daFunc != null
-	//			{
-	//				thisParamCallPre := new FuncParam("this",(inClass.ClassType)->{Type^},true)
-	//				thisParamCall := new ParamNaturalCall("this",thisParamCallPre->{Object^})
-
-
-	//				if P != null
-	//				{
-	//					thisParamCall.Right = P
-	//					P.Left = thisParamCall
-	//					thisParamCall.Up = P.Up
-	//					P.Up.Down = thisParamCall
-	//					P = P.Left
-	//				}else
-	//				{
-	//					P = thisParamCall
-	//				}
-	//				return MakeSimpleCall(funcH,P)
-	//			}
-	//		}
-
-	//	}
-	//}
-
 	if SomeFunc == null 
 	{
 		if not ignoreNull ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
@@ -855,9 +820,6 @@ SomeFuncCall := class extend ObjResult
 		if ToCall != null and not gotAlloc
 		{
 			gotAlloc = ToCall.IsRetComplex
-			//printf("check func %p IsRetComplex-%i RetType-%s ToCallRetRef-%i ToClallMyFuncTypeRetRef-%i\n",
-			//	this&, ToCall.IsRetComplex, ToCall.MyFuncType.RetType.GetType(),ToCall.IsRetRef,
-			//	ToCall.MyFuncType.RetRef)
 
 			if ToCall.MyFuncType.RetType != null
 			{
@@ -1185,7 +1147,14 @@ PointFuncCall := class extend NaturalCall
 		f << ParamCal.GetName()
 		f << "("
 		PrintParamUses(f)
-		f << ")\n"
+		f << ")"
+		if DebugMode
+		{
+			newId := CreateDebugCall(this&)
+			if newId != -1
+				f << " , !dbg !" << newId
+		}
+		f << "\n"
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")

@@ -52,6 +52,14 @@ Stack := class .{@T}
 		Start = newItm
 		itSize += 1
 	}
+	Emplace := !(a,b,c) -> void
+	{
+		newItm := new Node.{T}() //TODO: vargs
+		newItm.Data."this"(a,b,c)
+		newItm.Next = Start
+		Start = newItm
+		itSize += 1
+	}
 	Push := !(T a) .{} -> int
 	{
 		Start =	new Node.{T}(a,Start)

@@ -13,10 +13,6 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	{
 		return GetExcPointers(itemType,ToType)
 	}
-	//if itemType is TypeFatArr and ToType is TypeFatArr
-	//{
-	//	return GetExcPointers(itemType,ToType)
-	//}
 
 	for BuiltInExcs
 	{
@@ -50,7 +46,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	b := new FuncInputBox() ; $temp 
 
 	b.itPars.Emplace(itemType,isRef)
-	b.itConsts.Push(new ObjType(ToType))
+	b.itConsts.Push(new ObjType(ToType)) ; $temp
 
 	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func

@@ -6,6 +6,8 @@ t := class
 	iop := virtual !() ->void
 	{
 		printf("nope\n")
+		j := u8^()
+		j^ = 0
 	}
 }
 

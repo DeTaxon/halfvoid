@@ -107,10 +107,10 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 
 			if itBox.itPars[0].second
 			{
-				return new BuiltInFuncUno(".",pars[0].first,true,GTypeFloat,true, "#0 = getelementptr <4 x float> ,<4 x float>* #1, i32 0, i32 " + x + "\n")
+				return new BuiltInFuncUno(".",pars[0].first,true,GTypeFloat,true, "#0 = getelementptr <4 x float> ,<4 x float>* #1, i32 0, i32 "sbt + x + "\n")
 			}
 			
-			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat, "#0 = extractelement <4 x float> #1, i32 " + x + "\n")
+			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat, "#0 = extractelement <4 x float> #1, i32 "sbt + x + "\n")
 		}else{
 			vecData := int[4]
 			for i : 4

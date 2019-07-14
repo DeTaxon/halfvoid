@@ -40,10 +40,6 @@ PostFuncs := Queue.{BuiltInFuncClassInfo^}
 CTT := CreateTupleTemplate^
 TCT := TupleConstructorTemplate^
 
-DebugMode := false
-cuId := int
-DebugMetaData := Stack.{string}
-
 UseDestructors := false
 UseFatString := false
 

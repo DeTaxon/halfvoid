@@ -1,8 +1,8 @@
-#import "Lex.cp"
 #import "BoxBlock.cp"
 #import "../Libs/MappedFile.cp"
+#import "NewLexZip.cp"
 
-lexWordMachine := WordDetermMachine 
+lexWordMachine := WordDetermMachine^
 
 //LoadLexMachine := !() -> void
 //{
@@ -13,22 +13,29 @@ lexWordMachine := WordDetermMachine
 //}
 LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 {
+	lexWordMachine = new WordDetermMachine
 	lexWordMachine.LoadFromMap(ptrToChar,Si)
 }
 
+//GetObjectsFromFile2 := !(Path fileName) -> Object^
+//{
+//	inputFile := MappedFile(fileName.itStr)
+//	defer inputFile.Close()
+//	return GetObjectsFromMemory(fileName,inputFile.point->{char^},inputFile.Size())
+//}
 
 GetObjectsFromFile2 := !(Path fileName) -> Object^
 {
 	DaFile := new BoxFile(fileName)
 	inputFile := MappedFile(fileName.itStr)
 
-	d := WordParser
+	d :=  new WordParser ; $temp
 	itLine := null->{ObjLine^}
 	treeIter := null->{Object^}
 	prevId := -1
 	linePos := 0
 	DaBuff := new char[2048] ; $temp
-	d.ReadText(lexWordMachine&->{void^},inputFile.point,inputFile.Size(), (a,b,c) =>
+	d.ReadText(lexWordMachine->{void^},inputFile.point,inputFile.Size(), (a,b,c) =>
 	{
 		ptr := inputFile.point->{char^}[b]&
 
@@ -50,17 +57,17 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 				case "false"
 					ns = new ObjBool(false)
 				case "continue"
-					ns = new WayControl(tok.Str())
+					ns = new WayControl("continue")
 				case "break"
-					ns = new WayControl(tok.Str())
+					ns = new WayControl("break")
 				case void
 					if IsKeyword(tok)
 					{
-						ns = new ObjKeyword(tok.Str())
+						ns = new ObjKeyword(GetConstString(tok))
 					}else{
 						if prevId == 3 or prevId == 5 or prevId ==  6
 						{
-							ns = new ObjSuffix(tok.Str())
+							ns = new ObjSuffix(GetConstString(tok))
 						}else{
 							ns = new ObjIndent(tok.Str())
 						}
@@ -70,7 +77,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 		if a == 2{
 			if tok[0] == '#'
 			{
-				ns = new ObjCmd(tok.Str())
+				ns = new ObjCmd(GetConstString(tok))
 			}else{
 				ns = new ObjTemplateType(tok[1..0].Str())
 			}
@@ -196,7 +203,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			ns = new ObjInt(Value)
 		}
 		if a == 8 {
-			ns = new ObjSymbol(tok.Str()) 
+			ns = new ObjSymbol(GetConstString(tok)) 
 		}
 		if a == 9{
 			//comments
@@ -224,7 +231,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			itLine = null
 		}
 		if a == 21 {
-			if itLine != null itLine.LoadAttrs(tok.Str())
+			if itLine != null itLine.LoadAttrs(GetConstString(tok))
 			// attrs
 		}
 		prevId = a

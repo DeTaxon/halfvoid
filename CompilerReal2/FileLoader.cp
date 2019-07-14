@@ -50,7 +50,8 @@ LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
 		if fil.realSize == 0
 			continue
 		itPtr := fil.Map()
-		itName := fullName.itStr + "/" + fil.fullName.Str()
+		itNamePre := ""sbt << fullName.itStr << "/" << fil.fullName.Str()
+		itName := itNamePre.Str()
 		ob := GetObjectsFromMemory(Path(itName),itPtr->{char^},fil.realSize)
 		res.Push(ob)
 		ZipFiles.Push(ob)
