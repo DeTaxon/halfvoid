@@ -107,6 +107,14 @@ ParseType := !(Object^ Node) -> Type^
 				tryType := it.GetModuleType(indName)
 				if tryType != null return tryType
 			}
+			for itCodeS : CodeSpaces ; $reverse
+			{
+				inMMap := itCodeS.codeTypeDefs.TryFind(indName)
+				if inMMap != null
+				{
+					return inMMap^.GetType()
+				}
+			}
 			return null
 		}
 		//NodeName.GetValue()
@@ -497,6 +505,7 @@ TypeDef := class extend Object
 		}
 		return ItType
 	}
+	
 }
 
 TypeStandart := class extend Type{

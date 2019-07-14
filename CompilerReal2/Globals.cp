@@ -1,10 +1,7 @@
 #import "Tree.cp"
 #import "Type.cp"
 #import "arrsSpecial.cp"
-#import "BoxBlock.cp"
 #import "PriorityRead.cp"
-#import "BuiltInFuncs.cp"
-#import "StandartObjects.cp"
 
 archSize := 64
 

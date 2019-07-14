@@ -1,9 +1,6 @@
 #import "Tree.cp"
-#import "StandartObjects.cp"
-#import "AllocBox.cp"
 #import "ConstTemp.cp"
 #import "FindFunc.cp"
-#import "FuncCalls.cp"
 #import "FuncInputBox.cp"
 
 ParseFuncDataR := !(Object^ item) -> Object^

@@ -1,9 +1,4 @@
 #import "Tree.cp"
-#import "BoxIf.cp"
-#import "BoxFor.cp"
-#import "BoxSwitch.cp"
-#import "BoxReturn.cp"
-#import "ObjDefer.cp"
 
 ObjObj := class extend Object
 {

@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 GetBoxFor := !(Object^ dat) -> BoxFor^
 {
 

@@ -1,6 +1,4 @@
 #import "BoxBlock.cp"
-#import "../Libs/MappedFile.cp"
-#import "NewLexZip.cp"
 
 lexWordMachine := WordDetermMachine^
 
@@ -17,34 +15,30 @@ LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 	lexWordMachine.LoadFromMap(ptrToChar,Si)
 }
 
-//GetObjectsFromFile2 := !(Path fileName) -> Object^
-//{
-//	inputFile := MappedFile(fileName.itStr)
-//	defer inputFile.Close()
-//	return GetObjectsFromMemory(fileName,inputFile.point->{char^},inputFile.Size())
-//}
-
 GetObjectsFromFile2 := !(Path fileName) -> Object^
 {
 	inputFile := MappedFile(fileName.itStr)
 	defer inputFile.Close()
+	return GetObjectsFromMemory(fileName,inputFile.point->{char^},inputFile.Size())
+}
 
+GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
+{
 	DaFile := new BoxFile(fileName)
 
-	d :=  new WordParser ; $temp
+	d := WordParser
 	itLine := null->{ObjLine^}
 	treeIter := null->{Object^}
 	prevId := -1
 	linePos := 0
 	DaBuff := new char[2048] ; $temp
-	d.ReadText(lexWordMachine->{void^},inputFile.point,inputFile.Size(), (a,b,c) =>
+	d.ReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) =>
 	{
-		ptr := inputFile.point->{char^}[b]&
+		ptr := memPtr[b]&
 
 		tok := StringSpan(ptr,c)
 
 		ns := null->{Object^}
-
 		if a != 20{
 			if itLine == null {
 				itLine = new ObjLine()
@@ -70,7 +64,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 					}else{
 						if prevId == 3 or prevId == 5 or prevId ==  6
 						{
-							ns = new ObjSuffix(GetConstString(tok))
+							ns = new ObjSuffix(tok.Str())
 						}else{
 							ns = new ObjIndent(tok.Str())
 						}
@@ -130,6 +124,8 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 					j += 1
 				}	
 			}
+			//DaBuff[j] = 0
+			//ns = new ObjStr(StrCopy(DaBuff[0]&))
 			newLine := new char[j+1]
 			memcpy(newLine->{void^},DaBuff[0]&,j)
 			newLine[j] = 0
@@ -234,7 +230,7 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 			itLine = null
 		}
 		if a == 21 {
-			if itLine != null itLine.LoadAttrs(GetConstString(tok))
+			if itLine != null itLine.LoadAttrs(tok.Str())
 			// attrs
 		}
 		prevId = a

@@ -1,5 +1,3 @@
-#import "BoxFunc.cp"
-#import "BoxClass.cp"
 #import "Type.cp"
 #import "BuiltInVec3d.cp"
 

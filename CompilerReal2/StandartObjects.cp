@@ -1,5 +1,4 @@
 #import "Tree.cp"
-#import "StringContainer.cp"
 
 ObjResult := class extend Object
 {

@@ -20,6 +20,17 @@ UnboxParams := !(Object^ start) -> void
 				newObj :=  new TypeDef(itN.MyStr,iter.Right.Right.Right.Clone())
 				ReplaceNode(Curr,newObj)
 				Curr = newObj
+
+				itrUp := newObj->{Object^}
+				if itrUp != null
+				{
+					while itrUp.Up != null itrUp = itrUp.Up
+					asBF := itrUp->{BoxFile^}
+					if asBF.cs != null
+					{
+						asBF.cs.codeTypeDefs[itN.MyStr] = newObj
+					}
+				}
 			}else{
 
 				line := Object^

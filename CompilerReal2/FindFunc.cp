@@ -63,6 +63,15 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			}
 		}
 	}
+	for itCodeS : CodeSpaces ; $reverse
+	{
+		inMMap := itCodeS.codeParams.TryFind(name)
+		if inMMap != null
+		{
+			InsertParam(name,inMMap^[^], found,Searched)
+		}
+	}
+	
 }
 
 
