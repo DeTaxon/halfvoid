@@ -13,7 +13,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 cycle: $(wildcard CompilerReal2/*.cp)
 	time $(TimeFlags) ./c.out -C0 "Libs/*.cp" -C1 "CompilerReal2/*.cp" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
-	time $(TimeFlags) ./c.out -g -C0 "Libs/*.cp" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	time $(TimeFlags) ./c.out -g -C0 "Libs/*.cp" -C1 "CompilerReal2/*.cp" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 ManyCycle:
 	for i in {1..30}; do make cycle; done
 

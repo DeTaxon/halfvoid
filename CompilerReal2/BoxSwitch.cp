@@ -4,6 +4,7 @@ BoxSwitch := class extend Object
 	itemCall  := MemParam^
 	this := !(Object^ itm) -> void
 	{
+		Line = itm.Line
 		Down = itm.Down
 		Down.SetUp(this&)
 		PopOutNode(Down)
@@ -64,6 +65,7 @@ BoxSwitch := class extend Object
 
 								checkCall := MakeSimpleCall(func,iter.Down)
 								iter.Down = checkCall
+								checkCall.Line = this.Line
 								checkCall.Up = iter
 								
 							}

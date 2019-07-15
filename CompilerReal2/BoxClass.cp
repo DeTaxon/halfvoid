@@ -467,43 +467,43 @@ BoxClass := class extend Object
 			if Down == null return void
 			foundNotThis := false
 
-			for iterH : Down.Down
-			{
-				if iterH is ObjParam//iterH.GetValue() == "i:=1"
-				{
-					asParam := iterH->{ObjParam^}
+			//for iterH : Down.Down
+			//{
+			//	if iterH is ObjParam//iterH.GetValue() == "i:=1"
+			//	{
+			//		asParam := iterH->{ObjParam^}
 
-					if asParam.MyStr == "~this"
-						foundNotThis = true
-				}
-			}
+			//		if asParam.MyStr == "~this"
+			//			foundNotThis = true
+			//	}
+			//}
 
-			if not foundNotThis
-			{
-				newPrm := new ObjParam("~this",false)
-				newPrm.Right = Down.Down
-				newPrm.Up = Down
-				if Down.Down != null
-				{
-					newPrm.Right.Left = newPrm
-					Down.Down = newPrm
-				}else{
-					Down.Down = newPrm
-				}
+			//if not foundNotThis
+			//{
+			//	newPrm := new ObjParam("~this",false)
+			//	newPrm.Right = Down.Down
+			//	newPrm.Up = Down
+			//	if Down.Down != null
+			//	{
+			//		newPrm.Right.Left = newPrm
+			//		Down.Down = newPrm
+			//	}else{
+			//		Down.Down = newPrm
+			//	}
 
-				pars := Queue.{Type^}()
-				pars.Push(ClassType) ; $temp
-				bools := true
-				funcT := GetFuncType(pars,bools&,GTypeVoid,false,false)
-				
-				names := new char^[1]
-				names[0] = "this"
-				newFunc := new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
-				newPrm.Down = newFunc
-				newPrm.Down.Up = newPrm
+			//	pars := Queue.{Type^}()
+			//	pars.Push(ClassType) ; $temp
+			//	bools := true
+			//	funcT := GetFuncType(pars,bools&,GTypeVoid,false,false)
+			//	
+			//	names := new char^[1]
+			//	names[0] = "this"
+			//	newFunc := new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
+			//	newPrm.Down = newFunc
+			//	newPrm.Down.Up = newPrm
 
-				//newFunc.ParseBlock()
-			}
+			//	//newFunc.ParseBlock()
+			//}
 
 		}
 		if pri == State_PrePrint
@@ -897,9 +897,10 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 		tp := inClass.ClassType
 		classId := inClass.ClassId
 
-		ToExe = "%Pre## = getelementptr " + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0\n"
-		ToExe = ToExe + "%Tabl## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %Pre##\n"
-		ToExe = ToExe + "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + "\n"
+		preRes := "%Pre## = getelementptr "sbt + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0\n"
+		preRes << "%Tabl## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %Pre## #d\n"
+		preRes <<  "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + "\n"
+		ToExe = preRes.Str()
 	}
 	//GetPriority := virtual !(FuncInputBox inBox) -> int
 	//{
@@ -931,7 +932,7 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		classId := asCl.ClassId
 		return new BuiltInFuncUno("is",classType.GetPoint(),false,GetType("bool"),false,
 			"#0PrePre = getelementptr "sbt + classType.GetName() + " , " + classType.GetName() + "* #1 , i32 0, i32 0\n" +
-			"#0Pre = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** #0PrePre\n" +
+			"#0Pre = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** #0PrePre #d\n" +
 			"#0Left = bitcast %ClassTableType" + classId + "* #0Pre to i8*\n" +
 			"#0Right = bitcast %ClassTableType" + rightCl + "* @ClassTableItem" + rightCl + " to i8*\n" +
 			"#0 = icmp eq i8* #0Left,#0Right\n")

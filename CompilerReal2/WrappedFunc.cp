@@ -2,6 +2,7 @@ WrappedFunc := class extend BoxFuncBody
 {
 	this := !(Object^ itm) -> void
 	{
+		Line = itm.Line
 		Down = itm
 		itm.Up = this&
 		Down.Left = null
@@ -54,7 +55,16 @@ WrappedFunc := class extend BoxFuncBody
 	{
 		nId := GetNewId()
 		f << "%T" << nId << " = bitcast " << Parent.ABox.GetAsUse() << " to i8*\n"
-		f << "call void(i8*)@" << OutputName <<"(i8* %T" << nId<<")\n"
+		f << "call void(i8*)@" << OutputName <<"(i8* %T" << nId<<")"
+		if DebugMode
+		{
+			newId := CreateDebugCall(Up)
+			if newId != -1
+			{
+				f << " , !dbg !" << newId 
+			}
+		}
+		f << "\n"
 
 	}
 

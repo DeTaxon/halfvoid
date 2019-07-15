@@ -275,6 +275,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	tmpNode := new Object ; $temp
 	ReplaceNode(itUp,tmpNode)
 	fr := new BoxForOldFashionMulti(nms,indNames,itms,itUp)
+	fr.Line = newNode.Line
 	ReplaceNode(tmpNode,fr)
 	return fr
 }

@@ -1528,6 +1528,7 @@ DeleteCall := class extend SomeFuncCall
 				func.Line = Line
 				DeleteFuncCall = MakeSimpleCall(func,new LinkForThis(Down,Down.GetType(),true))
 				DeleteFuncCall.Up = this&
+				DeleteFuncCall.Line = this.Line
 
 				//if Down.GetType().Base.GetType() == "class" and Down.GetType().GetType() == "point"
 				//{

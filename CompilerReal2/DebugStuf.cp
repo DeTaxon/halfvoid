@@ -11,7 +11,7 @@ CreateDebugCall := !(Object^ itm) -> int
 	if not DebugMode return -1
 
 	itr := itm
-	while itr != null and itr.GetValue() != "!()" itr = itr.Up
+	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  itr = itr.Up
 
 	if itr == null return -1
 

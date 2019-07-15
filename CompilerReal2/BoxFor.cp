@@ -39,6 +39,7 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 		}
 	}
 	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
+	preRes.Line = dat.Down.Line
 	if dat.Line != null
 	{
 		if dat.Line.itAttrs.Size() != 0
@@ -242,7 +243,10 @@ BoxForOldFashionMulti := class extend BoxFor
 
 									tmp := Down.Right
 									PopOutNode(tmp)
-									Downs.Push(MakeSimpleCall(func,tmp))
+									preSet := MakeSimpleCall(func,tmp)
+									preSet.Line = Line
+									preSet.Up = this&
+									Downs.Push(preSet)
 								}
 							}
 						}
@@ -258,6 +262,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					iter.Right = iter2.Data
 					iter.Right.Left = iter
 					iter = iter.Right
+					iter2.Data.Up = this&
 					iter2 = iter2.Next
 					WorkBag.Push(iter,State_GetUse)
 				}
@@ -301,13 +306,19 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					test := new ParamNaturalCall("",ForItem->{Object^})
 					UnrefFuncs[i] = MakeSimpleCall(UnrefFuncP,test)
+					UnrefFuncs[i].Line = this.Line
+					UnrefFuncs[i].Up = this&
 					test = new ParamNaturalCall("",ForItem->{Object^})
 					IncFuncs[i] = MakeSimpleCall(IncFuncP,test)
+					IncFuncs[i].Line = this.Line
+					IncFuncs[i].Up = this&
 
 					if IsInvP != null
 					{
 						test = new ParamNaturalCall("",ForItem->{Object^})
 						IsInvalids[i] = MakeSimpleCall(IsInvP,test)
+						IsInvalids[i].Line = this.Line
+						IsInvalids[i].Up = this&
 					}
 
 					if i == 0
@@ -315,6 +326,8 @@ BoxForOldFashionMulti := class extend BoxFor
 						IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,true)
 						test = new ParamNaturalCall("",ForItem->{Object^})
 						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
+						IsEndFunc.Line = this.Line
+						IsEndFunc.Up = this&
 					}
 					Params[i] = new RetFuncParam(UnrefFuncs[i])
 
@@ -330,6 +343,8 @@ BoxForOldFashionMulti := class extend BoxFor
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
 							IndParams[i] = new RetFuncParam(IndFuncs[i])
+							IndFuncs[i].Line = this.Line
+							IndFuncs[i].Up = this&
 						}
 					}
 					iter = iter.Right

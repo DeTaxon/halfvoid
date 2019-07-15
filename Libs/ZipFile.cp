@@ -333,35 +333,3 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 	}
 }
 
-//ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
-//{
-//	inpFile := MappedFile(inpFileI)
-//	defer inpFile.Close()
-//
-//	zipFile := MappedFile(zipFileI)
-//	defer zipFile.Close()
-//
-//	inpSize := inpFile.Size()
-//	zipSize := zipFile.Size()
-//	totalSize := inpSize + zipSize
-//	outFile := file(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
-//	defer outFile.close()
-//	//memcpy(outFile.Get(),inpFile.Get(),inpSize)
-//	//memcpy(outFile.Get()[inpSize]&,zipFile.Get(),zipSize)
-//
-//	eod := zipFile.Get()[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
-//
-//	eod.offsetToStartOfCD = inpSize
-//
-//	filesCount := eod.numberOfCentralDirectoryHere
-//	cdTable := outFile.Get()[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
-//	for i : filesCount
-//	{
-//		cdTable.offsetToFileHeader += inpSize	
-//		cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
-//			+ cdTable.fileNameLen 
-//			+ cdTable.extraFieldsLen
-//			+ cdTable.commentLen
-//			]&->{zipCentralDirectory^}
-//	}
-//}
