@@ -19,6 +19,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	constsI := null->{Object^}
 
+	itLine := item.Line
+
 
 	if iter.GetValue() == "virtual"
 	{
@@ -111,10 +113,12 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		{
 			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
 			preRes.IsSelfReturn = itsSelfRet
+			preRes.Line = itLine
 			return preRes
 		}
 		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
 		preRet.IsSelfReturn = itsSelfRet
+		preRet.Line = itLine
 		return preRet
 		
 	}
@@ -1320,8 +1324,10 @@ BoxFuncBody := class extend BoxFunc
 					if Line != null
 					{
 						f << ", line: " << Line.LinePos	
+						f << ", scopeLine: " << Line.LinePos	
 					}
 					f << ", unit: !" << cuId
+					f << ", flags: DIFlagPrototyped, spFlags: DISPFlagDefinition"
 					f << ")\n"
 
 				}
