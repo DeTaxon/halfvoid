@@ -85,6 +85,20 @@ ObjParam := class extend Object
 				}
 			}
 		}
+		if Down != null and Down is LocalParam
+		{
+			asLoc := Down->{LocalParam^}
+			if IsRef
+			{
+			}else{
+				outId := CreateDbgLocVar(this&)
+				newId := CreateDebugCall(this&)
+				if newId != -1 and outId != -1
+				{
+					f << "call void @llvm.dbg.declare(metadata " << ObjType.GetName() << "* %T" << asLoc.inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+				}
+			}
+		}
 	}
 	PrintDestructor := virtual !(sfile f) -> void
 	{
