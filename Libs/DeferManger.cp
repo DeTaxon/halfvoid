@@ -3,16 +3,17 @@
 internalDeferBlock := thread_local DeferBlock.{512}
 
 DeferBlock := class .{@DeferStackSize} {
-	funcsExe := !()&->void[DeferStackSize]
+	funcsExe := Tuple.{!(void^)^->void,void^}[DeferStackSize]
 	funcsIsExcp := bool[DeferStackSize]
 	indPoint := int
 }
 
-internalDeferAdd := !(!()&->void defFunc, bool isExcp) -> void
+internalDeferAdd := !(!(void^)^->void defFunc,void^ stackPoint) -> void
 {
 	defBlock := ref internalDeferBlock
-	defBlock.funcsExe[defBlock.indPoint] = defFunc
-	defBlock.funcsIsExcp[defBlock.indPoint] = isExcp
+	defBlock.funcsExe[defBlock.indPoint].0 = defFunc
+	defBlock.funcsExe[defBlock.indPoint].1 = stackPoint
+	defBlock.funcsIsExcp[defBlock.indPoint] = false
 	defBlock.indPoint++
 }
 
@@ -20,17 +21,17 @@ internalDeferGetDepth := !() -> int
 {
 	return internalDeferBlock.indPoint
 }
-internalDeferApply := !(int depth, bool isExcp) -> void
+internalDeferApply := !(int depth) -> void
 {
 	defBlock := ref internalDeferBlock
 	i := defBlock.indPoint
 	while i != depth
 	{
 		i--
-		if isExcp or not defBlock.funcsIsExcp[i]
+		if not defBlock.funcsIsExcp[i]
 		{
-			itFunc := defBlock.funcsExe[i]
-			itFunc()
+			itFunc := defBlock.funcsExe[i].0
+			itFunc(defBlock.funcsExe[i].1)
 		}
 	}
 }

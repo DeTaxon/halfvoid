@@ -207,6 +207,12 @@ main := !(int argc,char^^ argv) -> int
 	
 	WorkWithBag(printWork)
 
+	if not DeferInit2()
+	{
+		printf("internal error, no defer manager\n")
+		return -1
+	}
+
 	endI := Ob.Down
 	if endI != null
 		while endI.Right != null 
@@ -264,6 +270,7 @@ main := !(int argc,char^^ argv) -> int
 	{
 		if emitTree for Files it.Print(0)
 		for ErrorLog printf(it)
+		return -1
 	}
 	//CleanStrs() shiet
 	//if not ErrorLog.Empty() return -1

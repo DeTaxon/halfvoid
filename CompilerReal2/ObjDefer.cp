@@ -1,14 +1,36 @@
 deferAddDefer := BoxFunc^ // AddDefer(!()&->void,bool isException)
-deferPushStack := BoxFunc^ // GetStackDepth()
-deferPopStack := BoxFunc^  // PopStack(int Depth)
-deferApplyStack := BoxFunc^  // ApplyStack(int Depth)
-deferApplyExceptionStack := BoxFunc^  // ApplyExceptionStack(int Depth)
+deferGetDepth := BoxFunc^
+deferApply := BoxFunc^
 
-DeferInit := !() -> void
+
+DeferInit2 := !() -> bool
 {
-	dummy := new Object
-	box := new FunctionInputBox ; $temp
-	itFunc := FindFunc("internalAddDefer",dummy,box^,false,false)
+
+	inPars := Queue.{Type^}() ; $temp
+	inPars.Push(GTypeVoidP)
+	defFunc := GetFuncType(inPars,null,GTypeVoid,false,false) ; $temp
+
+	dummy := new Object ; $temp
+	box := new FuncInputBox ; $temp
+
+	depth := FindFunc("internalDeferGetDepth",dummy,box^,false)
+	if depth == null return false
+	deferGetDepth = depth
+
+	box.itPars.Emplace(defFunc.GetPoint(),false)
+	box.itPars.Emplace(GTypeVoidP,false)
+	itFunc := FindFunc("internalDeferAdd",dummy,box^,false)
+	if itFunc == null return false
+
+	deferAddDefer = itFunc
+
+	box2 := new FuncInputBox ; $temp
+	box2.itPars.Emplace(GTypeInt,false)
+	applyFunc := FindFunc("internalDeferApply",dummy,box2^,false)
+	if applyFunc == null
+		return false
+
+	return true
 }
 
 ObjDefer := class extend Object
