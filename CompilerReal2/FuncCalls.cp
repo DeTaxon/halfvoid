@@ -566,6 +566,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					itB := new FuncInputBox()  ; $temp
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
 					itB.itConsts.Push(new ObjType(useType)) 
+				
+
+					//if iter.Up?.Left?.GetValue() == "throw"
+					//{
+					//	printf("geg\n")
+					//	itB.itAttrs["$temp"] = new ObjBool(true)
+					//}
 					
 					
 					FillAttrs(itB^,iter)
@@ -578,10 +585,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return itF
 					}
 				}
-				if iter.Right.Right.GetValue() == "()" return new NewCallOne(useType,iter.Right.Right) 
+				if iter.Right.Right.GetValue() == "()" 
+				{
+					preRet :=  new NewCallOne(useType,iter.Right.Right) 
+					preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
+					return preRet
+				}
+
 				//return new NewCall(useType,iter.Right.Right)
 			}else{
-				return new NewCallOne(useType,null->{Object^})
+				preRet := new NewCallOne(useType,null->{Object^})
+				preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
+				return preRet
 			}
 		}else{
 			if IsOper(iter.GetValue())
@@ -1358,6 +1373,7 @@ NewCallOne := class extend SomeFuncCall
 	newType := Type^
 	ItId := int
 	useConstr := bool
+	appendTemp := bool
 	this := !(Type^ nT,Object^ DW) -> void
 	{
 		useConstr = DW != null
@@ -1427,6 +1443,11 @@ NewCallOne := class extend SomeFuncCall
 
 			if Line != null {
 				for v,k : Line.itAttrs box.itAttrs[k] = v
+			}
+
+			if appendTemp
+			{
+				box.itAttrs["$temp"] = GBoolTrue
 			}
 
 			func := BoxFunc^

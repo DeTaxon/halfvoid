@@ -852,6 +852,9 @@ BoxFunc := class extend Object
 	{
 		return "!()"
 	}
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+	}
 }
 
 BoxFuncDeclare := class  extend BoxFunc
@@ -1002,6 +1005,7 @@ BoxFuncBody := class extend BoxFunc
 		if Stuf.GetValue() == "{}"
 		{
 			Down = new BoxBlock()
+			Down.Line = Line
 			Down.Up = this&
 			if Stuf.Down != null
 			{
@@ -1097,6 +1101,7 @@ BoxFuncBody := class extend BoxFunc
 		{
 			Down = new BoxBlock()
 			Down.Up = this&
+			Down.Line = Line
 			Down.Down = Stuf.Down
 			Down->{BoxBlock^}.usePaths = true
 			if Stuf.Down != null Stuf.Down.SetUp(Down)
@@ -1235,22 +1240,19 @@ BoxFuncBody := class extend BoxFunc
 			{
 				asN := iterP
 				ABName := asN.ABox.GetClassName()
-				//f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << ItNR << "\n"
-				//f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
-				//f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
-				//f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
-				//f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
-				f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-				asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
-				if asN.IsMethod
+				if not iterP.ABox.ItemBag.Empty()
 				{
-					thisId := iterP.ItParams[0].inAllocId
-					fT := asN.MyFuncType
-					f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
-					f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
-					//f << "%this = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName" <<  ABox.ItId <<  " , i32 0\n"
-				}else{
-					//printf("nope\n")
+					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
+					asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+					if asN.IsMethod
+					{
+						thisId := iterP.ItParams[0].inAllocId
+						fT := asN.MyFuncType
+						f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
+						f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+					}else{
+						//printf("nope\n")
+					}
 				}
 				iterP = iterP.Parent
 			}

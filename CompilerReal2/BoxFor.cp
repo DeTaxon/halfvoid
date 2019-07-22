@@ -48,73 +48,6 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 		}
 	}
 	return preRes
-
-	//if iterY.Right.GetValue() == ","
-	//{
-	//	itemName = iterY->{ObjIndent^}.MyStr
-	//	iterY = iterY.Right.Right
-	//	indNames.Push(iterY->{ObjIndent^}.MyStr)
-	//	
-	//	iterY = iterY.Right.Right
-	//}else
-	//{
-	//	indNames.Push(null->{string})
-	//	if iterY.Right.GetValue() == ":"
-	//	{
-	//		itemName = iterY->{ObjIndent^}.MyStr
-
-	//		iterY = iterY.Right.Right
-	//	}
-	//}
-	//if iterY.Right.GetValue() == ","
-	//{
-	//	Downs.Push(iterY)
-	//	if itemName == null{
-	//		Names.Push("it")
-	//	}else{
-	//		Names.Push(itemName)
-	//	}
-
-	//	iterY = iterY.Right
-	//	while iterY.GetValue() == ","
-	//	{
-	//		iterY = iterY.Right
-	//		asNeed := iterY->{ObjIndent^}
-	//		Names.Push(asNeed.MyStr)
-	//		iterY = iterY.Right.Right
-	//		Downs.Push(iterY)
-	//		indNames.Push(null->{string}) 
-	//		iterY = iterY.Right
-	//	}
-
-	//	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
-	//	if dat.Line != null
-	//	{
-	//		if dat.Line.itAttrs.Size() != 0
-	//		{
-	//			preRes.attrs = dat.Line.itAttrs&
-	//		}
-	//	}.
-	//	return preRes
-	//}
-	//Downs.Push(iterY)
-
-	//if itemName == null->{int^} {
-	//	Names.Push("it")
-	//}else{
-	//	Names.Push(itemName)
-	//}
-	//wut := iterY.Right
-
-	//preRes := new BoxForOldFashionMulti(Names,indNames,Downs,wut)
-	//if dat.Line != null
-	//{
-	//	if dat.Line.itAttrs.Size() != 0
-	//	{
-	//		preRes.attrs = dat.Line.itAttrs&
-	//	}
-	//}
-	//return preRes
 }
 
 BoxFor := class extend Object
@@ -145,8 +78,6 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
-		ContPath.Add(0)
-
 		for items
 		{
 			mayb := TryCompute(it)
@@ -369,6 +300,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		if callDeferStuf
+			PrintDeferDepth(f,ItId,this&)	
 		Down.Right[^].PrintPre(f)
 
 		Checks := 0
@@ -437,85 +370,57 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "br label %start" << ItId << "\n"
 		}
 
-		if UseRetPath
+		if useContinue
 		{
-			iter4 := Down.Right
-			f << "br label %RetPath" << ItId << "\n"
-			f << "RetPath" << ItId << ":\n"
-
-			while iter4 != null
-			{
-				iter4.PrintDestructor(f)
-				iter4 = iter4.Right
-			}
-			f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
+			f << "PreContinue" << ItId << ":\n"
+			if callDeferStuf
+				PrintDeferApply(f,ItId,this&)
+			f << "br label %IncFuncs" << ItId << "\n"
 		}
-		for itSize : ContPath
+		if useBreak
 		{
-			if itSize != 0{
-
-				iter4 := Down.Right
-
-				f << "br label %ContPath" << ItId << "id" << itSize <<"size\n"
-				f << "ContPath" << ItId << "id" << itSize << "size:\n"
-
-				while iter4 != null
-				{
-					iter4.PrintDestructor(f)
-					iter4 = iter4.Right
-				}
-				
-				f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
-			}
-		}
-		for itSize : BreakPath
-		{
-			if itSize != 0{
-
-				iter4 := Down.Right
-
-				f << "br label %BreakPath" << ItId << "id" << itSize <<"size\n"
-				f << "BreakPath" << ItId << "id" << itSize << "size:\n"
-
-				while iter4 != null
-				{
-					iter4.PrintDestructor(f)
-					iter4 = iter4.Right
-				}
-				
-				f << "br label %" << Up.GetOutPath(this&,PATH_BREAK,itSize - 1) << "\n"
-			}
+			f << "PreEnd" << ItId << ":\n"
+			if callDeferStuf
+				PrintDeferApply(f,ItId,this&)
+			f << "br label %End" << ItId << "\n"
 		}
 		f << "End" << ItId << ":\n"
 	}
 
-	UseRetPath := bool
-	ContPath := Set.{int}
-	BreakPath := Set.{int}
+	useContinue := bool
+	useBreak := bool
+	callDeferStuf := bool
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+		if depth != 1
+		{
+			Up.ApplyDeferUse(depth - 1)
+		}else{
+			callDeferStuf = true
+		}
+	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
 	{
 		if typ == PATH_RETURN
 		{
-			UseRetPath = true
-			//if Up != null return Up.GetOutPath(this&,typ,size)
-			return "RetPath"sbt + ItId
+			return Up.GetOutPath(this&,typ,size) //poke
 		}
 		if typ == PATH_CONTINUE
 		{
 			if size == 0{
-				return "IncFuncs" + ItId
+				useContinue = true
+				return "PreContinue" + ItId
 			}
-			ContPath.Add(size)
-			return "ContPath"sbt + ItId + "id" + size + "size"
+			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
 			if size == 0{
-				return "End" + ItId
+				useBreak = true
+				return "PreEnd" + ItId
 			}
-			BreakPath.Add(size)
-			return "BreakPath"sbt + ItId + "id" + size + "size"
+			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		return ""
 	}

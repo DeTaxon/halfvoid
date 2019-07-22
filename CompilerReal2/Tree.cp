@@ -148,6 +148,11 @@ Object := class{
 		ErrorLog.Push("Clone not defined for " + GetValue() + "\n")
 		return null
 	}
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+		if Up != null
+			Up.ApplyDeferUse(depth)
+	}
 }
 
 ObjLine := class 
@@ -297,6 +302,10 @@ IsKeyword := !(W) -> bool
 	if W == "keep_name" return true
 	if W == "packed_class" return true
 	if W == "self_return" return true
+	if W == "try" return true
+	if W == "catch" return true
+	if W == "throw" return true
+
 	return false
 }
 

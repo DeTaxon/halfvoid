@@ -27,7 +27,7 @@ TryCompute := !(Object^ ob) -> Object^
 
 		if it == null and asN.MyStr[0] == '$' 
 		{
-			return new ObjBool(false)
+			return GBoolFalse
 		}
 		if it == null return null
 		if it is ConstItem

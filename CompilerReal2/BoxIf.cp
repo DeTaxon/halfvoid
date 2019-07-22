@@ -165,10 +165,15 @@ BoxWhile := class extend Object
 			}
 		}
 	}
+
+	useContinue := bool
+	useBreak := bool
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		if Down.Right.Right == null
 		{
+			if callDeferStuf
+				PrintDeferDepth(f,MyId,this&)	
 			f << "br label %Check" << MyId << "\n"
 			f << "Check" << MyId << ":\n"
 			Down.PrintPre(f)
@@ -178,37 +183,21 @@ BoxWhile := class extend Object
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
 			f << "\nbr label %Check" << MyId << "\n"
-
-
-			if UseRetPath
+			
+			if useContinue
 			{
-				f << "br label %RetPath" << MyId << "\n"
-				f << "RetPath" << MyId << ":\n"
-
-				Down.Right[^].PrintDestructor(f)
-				f << "br label %" << Up.GetOutPath(this&,PATH_RETURN,0) << "\n"
+				f << "PreContinue" << MyId << ":\n"
+				if callDeferStuf
+					PrintDeferApply(f,MyId,this&)
+				f << "br label %Check" << MyId << "\n"
 			}
-			for itSize : ContPath
+
+			if useBreak
 			{
-				if itSize != 0{
-					f << "br label %ContPath" << MyId << "id" << itSize <<"size\n"
-					f << "ContPath" << MyId << "id" << itSize << "size:\n"
-
-					Down.Right[^].PrintDestructor(f)
-
-					f << "br label %" << Up.GetOutPath(this&,PATH_CONTINUE,itSize - 1) << "\n"
-				}
-			}
-			for itSize : BreakPath
-			{
-				if itSize != 0{
-					f << "br label %BreakPath" << MyId << "id" << itSize <<"size\n"
-					f << "BreakPath" << MyId << "id" << itSize << "size:\n"
-
-					Down.Right[^].PrintDestructor(f)
-					
-					f << "br label %" << Up.GetOutPath(this&,PATH_BREAK,itSize - 1) << "\n"
-				}
+				f << "PreEnd" << MyId << ":\n"
+				if callDeferStuf
+					PrintDeferApply(f,MyId,this&)
+				f << "br label %End" << MyId << "\n"
 			}
 
 			f << "End" << MyId << ":\n"
@@ -216,33 +205,38 @@ BoxWhile := class extend Object
 		}
 
 	}
-	UseRetPath := bool
-	ContPath := Set.{int}
-	BreakPath := Set.{int}
+	callDeferStuf := bool
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+		if depth != 1
+		{
+			Up.ApplyDeferUse(depth - 1)
+		}else{
+			callDeferStuf = true
+		}
+	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
 	{
 		if typ == PATH_RETURN
 		{
-			UseRetPath = true
-			if Up != null Up.GetOutPath(this&,typ,size) //poke
-			return "RetPath"sbt + MyId
+			return Up.GetOutPath(this&,typ,size) //poke
 		}
 		if typ == PATH_CONTINUE
 		{
 			if size == 0{
-				return "Check" + MyId
+				useContinue = true
+				return "PreContinue" + MyId
 			}
-			ContPath.Add(size)
-			return "ContPath"sbt + MyId + "id" + size + "size"
+			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
 			if size == 0{
-				return "End" + MyId
+				useBreak = true
+				return "PreEnd" + MyId
 			}
-			BreakPath.Add(size)
-			return "BreakPath"sbt + MyId + "id" + size + "size"
+			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		return ""
 	}

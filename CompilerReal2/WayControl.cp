@@ -33,6 +33,7 @@ WayControl := class extend Object
 		{
 			itSize = 0
 			iter := Up
+			prevNode := iter
 
 			while iter != null
 			{
@@ -42,9 +43,15 @@ WayControl := class extend Object
 
 				if lazy
 				{
+					asBl := prevNode->{BoxBlock^}
+					if asBl.callDeferStuf
+					{
+						iter.ApplyDeferUse(1)
+					}
 					iter = null
 				}else{
 					if iter.GetValue() == "{d}" itSize += 1
+					prevNode = iter
 					iter = iter.Up
 				}
 			}

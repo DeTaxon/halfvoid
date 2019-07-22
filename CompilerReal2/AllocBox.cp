@@ -50,7 +50,9 @@ AllocBox := class
 	}
 	GetAsUse := !() -> string
 	{
-		return "%AllocClass" + ItId + "* %AllocItem" + ItId
+		if ItemBag.Empty()
+			return "%AllocClass"sbt + ItId + "* null"
+		return "%AllocClass"sbt + ItId + "* %AllocItem" + ItId
 	}
 	PrintAlloc := !(sfile f) -> void
 	{

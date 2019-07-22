@@ -15,12 +15,14 @@ DeferInit2 := !() -> bool
 
 	depth := FindFunc("internalDeferGetDepth",dummy,box^,false)
 	if depth == null return false
+	depth.ParseBlock()
 	deferGetDepth = depth
 
 	box.itPars.Emplace(defFunc.GetPoint(),false)
 	box.itPars.Emplace(GTypeVoidP,false)
 	itFunc := FindFunc("internalDeferAdd",dummy,box^,false)
 	if itFunc == null return false
+	itFunc.ParseBlock()
 
 	deferAddDefer = itFunc
 
@@ -29,6 +31,9 @@ DeferInit2 := !() -> bool
 	applyFunc := FindFunc("internalDeferApply",dummy,box2^,false)
 	if applyFunc == null
 		return false
+	applyFunc.ParseBlock()
+	
+	deferApply = applyFunc
 
 	return true
 }
@@ -48,9 +53,62 @@ ObjDefer := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		itr := Up
+		while itr.GetValue() != "!()" and itr.GetValue() != "x=>x" and itr.GetValue() != "{!()}"
+		{
+			itr = itr.Up
+		}
+		asWrap := Down->{WrappedFunc^}
+		fun := itr->{BoxFunc^}
+		if fun.ABox.ItemBag.Empty()
+		{
+			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
+		}else{
+			neId := GetNewId()
+			f << "%T" << neId << " = bitcast " << fun.ABox.GetAsUse() << " to i8*\n"
+			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
+		}
+		if DebugMode
+		{
+			newId := CreateDebugCall(this&)
+			if newId != -1
+			{
+				f << ", !dbg !" << newId
+			}
+		}
+		f << "\n" 
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		WorkBag.Push(Down,pri)
+		if Up != null
+			Up.ApplyDeferUse(1)
 	}
+}
+PrintDeferDepth := !(sfile f, int SomeId, Object^ itm) -> void
+{
+	f << "%NowDepth" << SomeId << " = call i32 @" << deferGetDepth.OutputName << "()"
+	if DebugMode
+	{
+		newId := CreateDebugCall(itm)
+		if newId != -1
+		{
+			f << ", !dbg !" << newId
+		}
+	}
+	f <<"\n"
+}
+
+PrintDeferApply := !(sfile f, int SomeId, Object^ itm) -> void
+{
+	f << "call void @" << deferApply.OutputName << "(i32 %NowDepth" << SomeId << ")"
+	if DebugMode
+	{
+		newId := CreateDebugCall(itm)
+		if newId != -1
+		{
+			f << ", !dbg !" << newId
+		}
+	}
+	f <<"\n"
 }

@@ -50,3 +50,6 @@ GTypeRange := Type^
 GTypeVoid := Type^
 GTypeVoidP := Type^
 GTypeString := Type^
+
+GBoolTrue := Object^
+GBoolFalse := Object^

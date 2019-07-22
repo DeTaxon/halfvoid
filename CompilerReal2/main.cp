@@ -100,6 +100,9 @@ main := !(int argc,char^^ argv) -> int
 	CreateStandartTypes()
 	CreateBuiltIns()
 
+	GBoolTrue = new ObjBool(true)
+	GBoolFalse = new ObjBool(false)
+
 	selfFile := ZipFile()
 
 	loadedLex := false
@@ -212,6 +215,11 @@ main := !(int argc,char^^ argv) -> int
 		printf("internal error, no defer manager\n")
 		return -1
 	}
+	if not ExceptionInit()
+	{
+		printf("internal error, no exception functions\n")
+		return -1
+	}
 
 	endI := Ob.Down
 	if endI != null
@@ -236,9 +244,21 @@ main := !(int argc,char^^ argv) -> int
 		fil := sfile(outputFile,"w")
 		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+		fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
+		fil << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
+		fil << "declare i32 @setjmp(i8* %abc) #1\n"
+		fil << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+		fil << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
+		fil << "declare void @llvm.debugtrap() #0\n"
+		fil << "declare i8* @llvm.frameaddress(i32 %asd) #2\n"
+		fil << "declare i8* @llvm.stacksave() #1\n"
+		fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 		fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
 		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
+		fil << "attributes #1 = { nounwind }\n"
+		fil << "attributes #2 = { nounwind readnone}\n"
+		fil << "attributes #3 = { nounwind noreturn}\n"
 		fil << "%OpaqType = type {i1}\n"
 		fil << "%Vec4f = type <4 x float>\n"
 		StrContainer.PrintGlobal(fil)

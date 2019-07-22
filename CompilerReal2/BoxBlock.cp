@@ -21,6 +21,7 @@ MakeItBlock := !(Object^ item,bool useStuf) -> bool
 	item.Right = oldRight
 	item.Left = oldLeft
 
+
 	ReplaceNode(item,bloc)
 
 	item.SetUp(bloc)
@@ -40,8 +41,6 @@ BoxBlock := class extend Object
 	ItId := int
 	
 	gotRetPath := bool
-	ContinuePath := Set.{int}
-	BreakPath := Set.{int}
 
 	outRName := string
 	gotOutRName := bool
@@ -51,12 +50,10 @@ BoxBlock := class extend Object
 	this := !() -> void
 	{
 		ItId = GetNewId()
-		ContinuePath.Add(0)
 	}
 	this := !(Object^ toRepl) -> void
 	{
 		ItId = GetNewId()
-		ContinuePath.Add(0)
 		if toRepl.GetValue() == "{}"
 		{	
 			Down = toRepl.Down
@@ -65,6 +62,7 @@ BoxBlock := class extend Object
 			Down = toRepl
 		}
 		if Down != null Down.SetUp(this&)
+		Line = toRepl.Line
 	}
 	RecursMake := !() -> void
 	{
@@ -88,7 +86,6 @@ BoxBlock := class extend Object
 	{
 		for iter,i : Down
 		{
-			//f << "br label %" << PathName << num << "in" << i << "\n"	
 			f << PathName << num << "in" << i << ":\n"
 			iter.PrintDestructor(f)
 			if i == 0{
@@ -100,33 +97,45 @@ BoxBlock := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		i := 0
+		if Line == null Line = Up.Line
+
+		if callDeferStuf and usePaths 
+			PrintDeferDepth(f,ItId,this&)	
 		for iter : Down
 		{
 			iter.PrintInBlock(f)
-			i += 1
 		}
 		if usePaths {
-			if i != 0 f << "br label %ContPath" << ItId << "id0in" << i - 1 << "\n"
-			f << "br label %LastContPath" <<ItId << "\n"
+			f << "br label %LastContPath" << ItId << "\n"
+
+			if askedRetPath
+			{
+				f << "PreRetPath" << ItId << ":\n"
+				if callDeferStuf
+					PrintDeferApply(f,ItId,this&)
+				if gotRetPath f << "br label %" << outRName << "\n"
+				
+			}
 
 			if not InClass
 			{
-				if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
-				for siz : ContinuePath
-				{
-					retCPath := "LastContPath" + ItId
-					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_CONTINUE,siz - 1)
-					PrintSomePath(f,"ContPath" + ItId + "id",siz,retCPath)
-				}
-				for siz : BreakPath
-				{
-					retCPath := "LastContPath" + ItId
-					if siz != 0 retCPath = Up.GetOutPath(this&,PATH_BREAK,siz - 1)
-					PrintSomePath(f,"BreakPath" + ItId + "id",siz,retCPath)
-				}
+				//if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
+				if gotRetPath f << "br label %" << outRName << "\n"
 			}
 			f << "LastContPath" <<ItId << ":\n"
+			if callDeferStuf
+				PrintDeferApply(f,ItId,this&)
+		}
+	}
+	callDeferStuf := bool
+	askedRetPath := bool
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+		if depth != 1
+		{
+			Up.ApplyDeferUse(depth - 1)
+		}else{
+			callDeferStuf = true
 		}
 	}
 	LoadOutPath := !() -> void
@@ -148,53 +157,31 @@ BoxBlock := class extend Object
 			return Up.GetOutPath(this&,typ,size)
 		}
 
-		i := 0
-		found := false
-		for Down
-		{
-			if it == objs
-			{
-				found = true
-				break
-			}
-			i += 1
-		}
-
-		if not found
-		{
-			EmitError("Path not found\n")
-			return ""
-		}
-
 		if typ == PATH_RETURN
 		{
 			LoadOutPath()
 
 			gotRetPath = true
-			if i == 0 return outRName
-			if Up != null Up.GetOutPath(this&,typ,0)
-			return "RetPath"sbt + ItId + "in" + (i - 1)
+
+			if Up != null
+			{
+				if Up.GetValue() == "!()" or Up.GetValue() == "{!()}"
+				{	
+					askedRetPath = true
+					return "PreRetPath" + ItId
+				}
+			}
+			return outRName
 		}
 		if typ == PATH_CONTINUE
 		{
-			ContinuePath.Add(size)
-			if i == 0 {
-				if size == 0 return "LastContPath" + ItId
-				return Up.GetOutPath(this&,typ,size - 1)
-			}
-			return "ContPath"sbt + ItId + "id"  + size + "in" + (i - 1)
+			if size == 0 return "LastContPath" + ItId 
+			return  Up.GetOutPath(this&,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
-			BreakPath.Add(size)
-			//if i == 0 { should not be here
-			//	if size == 0 return "LastContPath" + ItId
-			//	return Up.GetOutPath(this&,typ,size - 1)
-			//}
-			if i == 0 {
-				return Up.GetOutPath(this&,typ,size - 1)
-			}
-			return "BreakPath"sbt + ItId + "id"  + size + "in" + (i - 1)
+			if size == 0 return "LastContPath" + ItId
+			return Up.GetOutPath(this&,typ,size - 1)
 		}
 		return ""
 	}

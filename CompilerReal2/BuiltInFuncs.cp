@@ -1730,6 +1730,16 @@ CreateBuiltIns := !() -> void
 						"#0Pre1 = ptrtoint i8* #1 to i64 #d\n"sbt +
 						"#0Pre2 = ptrtoint i8* #2 to i64\n" +
 						"#0 = sub i64 #0Pre1,#0Pre2\n"))
+
+	AddBuiltInFunc(new BuiltInFuncUno("internalSetJmp",GTypeVoidP,false,GTypeInt,"#0 = call i32 @llvm.eh.sjlj.setjmp(i8* #1) #d\n"))
+	AddBuiltInFunc(new BuiltInFuncUno("internalLongJmp",GTypeVoidP,false,GTypeVoid,"call void @llvm.eh.sjlj.longjmp(i8* #1) #d\nunreachable\n"))
+	AddBuiltInFunc(new BuiltInFuncUno("setjmp",GTypeVoidP,false,GTypeInt,"#0 = call i32 @setjmp(i8* #1) #d\n"))
+	AddBuiltInFunc(new BuiltInFuncBinar("longjmp",GTypeVoidP,false,GTypeInt,false,GTypeVoid,"call void @longjmp(i8* #1,i32 #2) #d\nunreachable\n"))
+	AddBuiltInFunc(new BuiltInFuncZero("internalLSDA",GTypeVoidP,false,"#0 = call i8* @llvm.eh.sjlj.lsda() #d\n"))
+	AddBuiltInFunc(new BuiltInFuncZero("internalDebugTrap",GTypeVoid,false,"call void @llvm.debugtrap() #d\n"))
+	AddBuiltInFunc(new BuiltInFuncZero("internalGetCallFrame",GTypeVoidP,false,"#0 = call i8* @llvm.frameaddress(i32 0) #d\n"))
+	AddBuiltInFunc(new BuiltInFuncZero("internalStackSave",GTypeVoidP,false,"#0 = call i8* @llvm.stacksave() #d\n"))
+	AddBuiltInFunc(new BuiltInFuncUno("internalStackRestore",GTypeVoidP,false,GTypeVoid,"call i8* @llvm.stackrestore(i8* #1) #d\n"))
 	RangeFuncs()
 	Vec4fFuncs()
 }

@@ -11,6 +11,9 @@ InspectDataR := !(Object^ item) -> Object^
 	if DaR != null->{int^} return DaR
 
 	if item.GetValue() == "()" return item.Down
+
+	daObj := ParseTry(item)
+	if daObj != null return daObj
 	
 	return null
 }

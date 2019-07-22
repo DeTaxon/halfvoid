@@ -103,6 +103,7 @@ ObjData := class extend Object
 								if iter.Left != null
 									if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
 										ignore = true
+							if Down.GetValue() == "try" ignore = true
 							if not ignore WorkBag.Push(iter,State_Start)
 						}
 					}

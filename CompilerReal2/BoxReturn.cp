@@ -37,10 +37,16 @@ BoxReturn := class extend Object
 
 			iterF := Up
 
+			askedDefer := false
 			lazy := iterF != null
 			if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			while lazy
 			{
+				if iterF.GetValue() == "{d}"
+				{
+					asBl := iterF->{BoxBlock^}
+					askedDefer = askedDefer or asBl.callDeferStuf
+				}
 				iterF = iterF.Up
 				lazy = iterF != null
 				if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
@@ -49,6 +55,13 @@ BoxReturn := class extend Object
 			if iterF != null
 			{
 				RetFunc := TypeFunc^
+
+				if askedDefer
+				{
+					toSetUse := iterF.Down->{BoxBlock^}
+					toSetUse.callDeferStuf = askedDefer
+				}
+
 				if iterF.GetValue() == "!()"{
 					asNeed := iterF->{BoxFunc^}
 					RetFunc = asNeed.MyFuncType
