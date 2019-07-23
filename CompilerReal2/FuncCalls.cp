@@ -1447,7 +1447,7 @@ NewCallOne := class extend SomeFuncCall
 
 			if appendTemp
 			{
-				box.itAttrs["$temp"] = GBoolTrue
+				box.itAttrs["$temp"] = new ObjBool(true) //GBoolTrue
 			}
 
 			func := BoxFunc^

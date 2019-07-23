@@ -11,8 +11,10 @@ main := !(int argc, char^^ argv) -> int
 	keywords.Push("=>")
 	keywords.Push("...")
 	keywords.Push(":")
-	
-	pr := PriorityBag("Priority.pr")
+
+	itM := MappedFile("Priority.pr")
+	defer itM.Close()
+	pr := PriorityBag(itM.point,itM.Size())
 
 	itBuilder := LexBuilder()
 

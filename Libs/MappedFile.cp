@@ -86,7 +86,12 @@ MappedFile := class
 
 		itemId = open(fileName,fdFlag,511)
 
-		if itemId == -1 return void
+		if itemId == -1 
+		{
+			//throw new Exception(101,"can not open file "sbt + fileName)
+			printf("can not open file %s\n",fileName)
+			return void
+		}
 
 		val := GetFileSizeLinux2(itemId,size&)
 
@@ -154,10 +159,11 @@ MappedFile := class
 		}
 		SHARES += 32768
 		point = mmap(null,size,PROTS,SHARES,itemId,null)
-		if point == null //TODO: in error it returns 0xFFFFFFFFFFFFF
+		if point&->{size_t^}^ == not_b 0U  //TODO: in error it returns 0xFFFFFFFFFFFFF
 		{
 			close(itemId)
 			itemId = -1
+			//throw new Exception(102,"can not mmap file")
 		}
 	}
 }

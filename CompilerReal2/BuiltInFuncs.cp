@@ -1699,7 +1699,7 @@ CreateBuiltIns := !() -> void
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float #d\n"))
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeDouble,"#0 = fpext float #1 to double #d\n"))
 
-	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to floati #d\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float #d\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = ptrtoint i8* #1 to i64 #d\n"))
 

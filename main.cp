@@ -1,212 +1,340 @@
-#import "lib.cp"
-#import "wayland.cp"
-#import "egl.cp"
-#import "gl.cp"
-
-//vkEnumerateInstanceExtensionProperties := !(
-
-working := bool
-
-strcmp := !(string a,string b) -> int declare
-system := !(char^ cmd) -> void declare
-
-VkLayerProperties := class
+main := !(int argc,char^^ argv) -> int 
 {
-	name := char[256]
-	version := s32
-	iVer := s32
-	descr := char[256]
-}
-vkEnumerateInstanceLayerProperties := !(int^ , VkLayerProperties^)^ -> void
+	ReturnName = "ToRet"
+	StrContainer = new StringContainer()
+	WorkBag."this"()
+	//BuiltInFuncs."this"()
+	//ObjectsPool."this"()
+	//GlobalStrs = ""
+	printWork := false
+	CTT = new CreateTupleTemplate
+	TCT = new TupleConstructorTemplate
 
-compos := void^
-shell := void^
-xdg_item := void^
+	targetPlatform := "unix"
 
-le_pong := !(void^ data, void^ xdg_base, u32 serial) -> void
-{
-	//xdg_wm_base_pong(xdg_base,serial)
-	zxdg_shell_v6_pong(xdg_base,serial)
-}
-pingList := xdg_wm_base_listener
+	targetFiles := Queue.{string}()
+	targetObjects := Queue.{Object^}()
+	outputFile := "out.ll"
 
-global_registry_handler := !( void^ data, void^ reg, u32 id, char^ intr, u32 version) -> void
-{
-	printf("hey %s %i\n",intr,version)
-	
-	if strcmp(intr,"wl_compositor") == 0
+	codeSp := Queue.{Pair.{int,string}}()
+	zipSp := Queue.{Pair.{int,string}}()
+
+	emitTree := false
+
+	i := 1
+	while  i < argc
 	{
-		compos = wl_registry_bind(reg,id,wl_compositor_interface&,1)
+		switch argv[i]
+		{
+		case "--ZipGlue"
+			ZipConCat(argv[i+1],argv[i+2],argv[i+3])
+			return 0
+		case "--rname"
+			ReturnName = argv[i+1]
+			i += 1
+		case "--fatstr"
+			UseFatString = true
+		case  "--tree"
+			emitTree = true
+		case "--cci"
+			InCC = argv[i+1]
+			i += 1
+		case "--cco"
+			OutCC = argv[i+1]
+			i += 1
+		case "-o"
+			outputFile = argv[i+1]
+			i += 1
+		case "-g"
+			DebugMode = true	
+			cuId = GetNewId()
+		case "-p"
+			i += 1
+			targetPlatform = argv[i]
+		case "--vk"
+			i += 1
+			p := Path(argv[i])
+			if p.IsExist(){
+				Modules.Push(new ModuleVulkan(argv[i]))
+			}else{
+				printf("--vk module does not exist\n")
+				return 0
+			}
+		case "--work"
+			printWork = true
+		case void
+			if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-C"
+			{
+				i++
+				itPri := StrToInt(argv[i][2..0])
+
+				stB := ""sbt
+				stB << argv[i] << ".cp"
+
+				tmp1 := stB.Str() ; $temp
+
+				for newItm : Wildcard(tmp1)
+					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+
+				stB << "." << targetPlatform
+
+				tmp1 = stB.Str() ; $temp
+
+				for newItm : Wildcard(tmp1)
+					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+
+			}else{
+				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
+				{
+					itPri := StrToInt(argv[i][2..0])
+					itP := Path(argv[i+1])
+					if not itP.IsExist()
+					{
+						printf("zip file %s not found\n",argv[i+1])
+						return 0
+					}
+					zipSp.Emplace(itPri,argv[i+1])
+					i++
+				}else{
+					targetFiles.Push(argv[i])
+				}
+			}
+		}
+		i += 1
 	}
-	//if strcmp(intr,"xdg_shell") == 0
-	//{
-	//	xdg_item = wl_registry_bind(reg,id,zxdg_shell_v6_interface&,1)
-	//}
-	if strcmp(intr,"zxdg_shell_v6") == 0
+
+	if targetFiles.Size() != 1
 	{
-		xdg_item = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
-	zxdg_shell_v6_add_listener(xdg_item,pingList&,null)
-	}
-	
-	if strcmp(intr,"wl_shell") == 0
-	{
-		//shell = wl_registry_bind(reg,id,xdg_wm_base_interface&,1)
-		shell = wl_registry_bind(reg,id,wl_shell_interface&,1)
-	}
-}
-
-remover := !(void^ data, void^ reg, u32 id) -> void
-{
-}
-
-
-conf_wut := !(void^ data, void^ top_lvl, s32 widt, s32 hei, void^ state) -> void
-{
-	printf("new size %i %i\n",widt,hei)
-}
-close_wut := !(void^ data, void^ tp_lvl) -> void
-{
-	working = false
-}
-
-shell_handle := !(void^ data, void^ surf, u32 serial) -> void
-{
-	zxdg_surface_v6_ack_configure(surf,serial)
-}
-
-listt := wl_display_listener
-resizeList := zxdg_toplevel_v6_listener
-cfgLi := xdg_wm_base_listener
-
-main2 := !(int argc, char^^ argv) -> int
-{
-	working = true
-	pingList.ping = le_pong
-	listt.error = global_registry_handler
-	listt.delete_id = remover
-	resizeList.configure = conf_wut
-	resizeList.close = close_wut
-	cfgLi.ping = shell_handle
-
-	g_w_display := wl_display_connect(null)
-	
-	//if g_w_display == null return 0 ???
-
-	reg := wl_display_get_registry(g_w_display)
-	wl_registry_add_listener(reg,listt&,null)
-
-	wl_display_dispatch(g_w_display)
-	wl_display_roundtrip(g_w_display)
-
-
-	surf := wl_compositor_create_surface(compos)
-	//shell_surf := wl_shell_get_shell_surface(shell,surf)
-	//xdg_surf := xdg_wm_base_get_xdg_surface(xdg_item,surf)
-	xdg_surf := zxdg_shell_v6_get_xdg_surface(xdg_item,surf)
-
-	zxdg_surface_v6_add_listener(xdg_surf,cfgLi&,null)
-
-	wl_shell_surface_set_toplevel(xdg_surf)
-	//xdg_level := xdg_surface_get_toplevel(xdg_surf)
-	xdg_level := zxdg_surface_v6_get_toplevel(xdg_surf)
-	zxdg_toplevel_v6_add_listener(xdg_level,resizeList&,null)
-	zxdg_toplevel_v6_set_title(xdg_level,"hello pls")
-
-	zxdg_surface_v6_set_window_geometry(xdg_surf,20,20,700,700)
-
-	wl_surface_commit(surf)
-
-
-	egl_display := eglGetDisplay(g_w_display)
-
-	attrs := new int[20]
-
-	attrs[0] = EGL_SURFACE_TYPE
-	attrs[1] = EGL_WINDOW_BIT
-	attrs[2] = EGL_RED_SIZE
-	attrs[3] = 8
-	attrs[4] = EGL_GREEN_SIZE
-	attrs[5] = 8
-	attrs[6] = EGL_BLUE_SIZE
-	attrs[7] = 8
-	attrs[8] = EGL_RENDERABLE_TYPE
-	attrs[9] = EGL_OPENGL_ES2_BIT
-	attrs[10] = EGL_DEPTH_SIZE
-	attrs[11] = 24
-	attrs[12] = EGL_NONE
-
-	conattr := new int[3]
-	conattr[0] = EGL_CONTEXT_CLIENT_VERSION
-	conattr[1] = 2
-	conattr[2] = EGL_NONE
-
-	maj := int
-	min := int
-	isInitedEGL := eglInitialize(egl_display,maj&,min&)
-	printf("egl %i.%i isInited %i\n",maj,min,isInitedEGL)
-	
-	cCount := int
-	eglGetConfigs(egl_display,null,0,cCount&)
-
-	if cCount > 100
-	{
-		printf("nah\n")
+		printf("ERROR: must be only 1 file\n")
+		for targetFiles
+		{
+			printf("input file %s\n",it)
+		}
 		return 0
 	}
 
-	confs := new void^[cCount]
-	//eglGetConfigs(egl_display,confs,cCount,cCount&)
+	CreateStandartTypes()
+	CreateBuiltIns()
 
-	eglChooseConfig(egl_display,attrs,confs,cCount,cCount&)
+	GBoolTrue = new ObjBool(true)
+	GBoolFalse = new ObjBool(false)
 
-	sizeI := int
-	redI := int
-	for i : cCount
+	selfFile := ZipFile()
+
+	loadedLex := false
+
+	if selfFile.AnalizeFile(argv[0])
 	{
-		eglGetConfigAttrib(egl_display,confs[i],EGL_BUFFER_SIZE,sizeI&)
-		eglGetConfigAttrib(egl_display,confs[i],EGL_RED_SIZE,redI&)
-		printf("Buffer %i %i %i\n",i,sizeI,redI)
+		defer selfFile.DecUser()
+		itMach := selfFile.GetFile("Mach.m")
+		itPri := selfFile.GetFile("Priority.pr")
 
+		if itPri !=null
+		{
+			priPtr := itPri.Map()
+			PriorityData = new PriorityBag(priPtr->{char^},itPri.realSize)
+			itPri.Unmap()
+		}
+		if itMach != null
+		{
+			loadedLex = true
+			mPoint := itMach.Map()
+			LoadLexMachine(mPoint->{char^},itMach.realSize)
+			itMach.Unmap()
+		}
+	}
+	if not loadedLex
+	{
+		printf("lexical machine loaded from outside\n")
+		itMach := MappedFile("./Mach.m")
+		LoadLexMachine(itMach.point,itMach.Size())
+		itMach.Close()
 	}
 
-	egl_cont := eglCreateContext(egl_display,confs[0],null,conattr)
-
-	egl_win := wl_egl_window_create(surf,700,700)
-	
-	egl_surf := eglCreateWindowSurface(egl_display,confs[0],egl_win,null)
-	eglMakeCurrent(egl_display,egl_surf,egl_surf,egl_cont)
-
-	
-	
-		glClearColor(1.0,0.5,0.0,1.0)
-		glClear(GL_COLOR_BUFFER_BIT)
-		glFlush()
-		eglSwapBuffers(egl_display,egl_surf)
-	while working
+	if PriorityData == null
 	{
-		wl_display_dispatch(g_w_display)
+		printf("priority loaded from outside\n")
+		prFile := MappedFile("./Priority.pr")
+		defer prFile.Close()
+		PriorityData = new PriorityBag(prFile.point,prFile.Size())
 	}
-	wl_display_disconnect(g_w_display)
-	return 0
+	PutConstString(":=")
+	PutConstString("for")
+	PutConstString("if")
+	PutConstString("extern")
+	PutConstString("virtual")
+	PutConstString("class")
+	PutConstString("return")
+	PutConstString("self_return")
 
-	handl := dlopen("libvulkan.so.1",2)
-	count := s32
+	PriorityData.Opers.Push(":=")
+	PriorityData.Opers.Push("=>")
+	PriorityData.Opers.Push("extern")
+	PriorityData.Opers.Push("at")
+	PriorityData.Opers.Push("defer")
+	PriorityData.Opers.Push("type")
+	PriorityData.Opers.Push("virtual")
 
-	vkEnumerateInstanceLayerProperties = dlsym(handl,"vkEnumerateInstanceLayerProperties")
+	OpersTree << PriorityData.Opers[^]
 
-	vkEnumerateInstanceLayerProperties(count&,null)
+	for targetFiles
+	{
+		ItPath := Path(it)
+		resA := ItPath.IsExist()
+		resB := not resA
+		if resB
+		{
+			printf("file %s does not exist\n",it)
+			return 0
+		}
+	}
+	targetObjects.Push(LoadFile(Path(targetFiles[^])))
 
-	nums := new VkLayerProperties[count]
+	for it : codeSp
+	{
+		fL := LoadFile(Path(it.second))
+		if fL == null
+		{
+			printf("file %s does not exist\n",it.second)
+		}
+		fLibSp := ref CodeSpaces[it.first]
+		fL.cs = fLibSp&
+		fLibSp.codeLibs.Push(fL)
+		FilesInSpace.Insert(fL)
 
-	vkEnumerateInstanceLayerProperties(count&,nums)
+	}
+	for it : zipSp
+	{
+		newFiles := new Queue.{void^} ; $temp
+		LoadZipFile(Path(it.second),newFiles^)
 
-	for i : count printf("%i : %s\n",i,nums[i].name)
+		fLibSp := ref CodeSpaces[it.first]
+		for fils : newFiles^
+		{
+			zFile := fils->{BoxFile^}
+			zFile.cs = fLibSp&
+			fLibSp.codeLibs.Push(zFile)
+			FilesInSpace.Insert(zFile)
+		}
+	}
 
-	dlclose(handl)
+	Ob := targetObjects[0]
+
+	Modules[^].InitModule()
+	
+	WorkBag.Push(Ob,State_Start)
+	
+	WorkWithBag(printWork)
+
+	if not DeferInit2()
+	{
+		printf("internal error, no defer manager\n")
+		return -1
+	}
+	if not ExceptionInit()
+	{
+		printf("internal error, no exception functions\n")
+		return -1
+	}
+
+	endI := Ob.Down
+	if endI != null
+		while endI.Right != null 
+			endI = endI.Right
+	mainFunc := GetItem("main",endI)
+
+	if mainFunc != null
+		WorkBag.Push(mainFunc.Down,State_Start)
+
+	if mainFunc == null ErrorLog.Push("main function not found\n")
+	else WorkWithBag(printWork)
+
+	//Ob.Print(0)
+	Ob.TestNodes()
+
+	if ErrorLog.Empty()
+	{
+		printf("good to go\n")
+		for PostFuncs it.PostCreate()
+
+		fil := sfile(outputFile,"w")
+		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
+		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+		fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
+		fil << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
+		fil << "declare i32 @setjmp(i8* %abc) #1\n"
+		fil << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+		fil << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
+		fil << "declare void @llvm.debugtrap() #0\n"
+		fil << "declare i8* @llvm.frameaddress(i32 %asd) #2\n"
+		fil << "declare i8* @llvm.stacksave() #1\n"
+		fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
+		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+		fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
+		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
+		fil << "attributes #1 = { nounwind }\n"
+		fil << "attributes #2 = { nounwind readnone}\n"
+		fil << "attributes #3 = { nounwind noreturn}\n"
+		fil << "%OpaqType = type {i1}\n"
+		fil << "%Vec4f = type <4 x float>\n"
+		StrContainer.PrintGlobal(fil)
+
+		Classes[^].PrintStruct(fil)
+		PrintTuples(fil)
+		fil << GlobalStrs[^]
+		PrintTuplesFuncs(fil)
+
+
+		for wutt : Files
+		{
+			FlushTempMemory()
+			if emitTree wutt.Print(0)
+			wutt.PrintGlobal(fil)
+		}
+		for wutt : ZipFiles
+		{
+			FlushTempMemory()
+			if emitTree wutt.Print(0)
+			wutt.PrintGlobal(fil)
+		}
+		if DebugMode
+		{
+			PrintDebugMeta(fil)
+		}
+		fil.close()
+	}else
+	{
+		if emitTree for Files it.Print(0)
+		for ErrorLog printf(it)
+		return -1
+	}
+	//CleanStrs() shiet
+	//if not ErrorLog.Empty() return -1
+	printf("Created func types %i\n",GetFuncTypeCount())
+	PrintMemUse()
 	return 0
 }
 
+workIter := int
+WorkWithBag := !(bool printW) -> void
+{
+	while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
+	{
+		FlushTempMemory()
+		prior := WorkBag.GetTopPriority()
+		it := WorkBag.Pop()
+		workingOnObject = it
 
+		if printW
+		{
+			printf("itWork %i %s\n",workIter,it.GetValue())
+			if it.Line != null {
+				printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
+				//it.Print(0)
+				}
+			workIter += 1
+		}
 
-
-
+		it.DoTheWork(prior)
+	}
+}
