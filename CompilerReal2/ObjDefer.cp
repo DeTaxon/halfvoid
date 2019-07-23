@@ -1,4 +1,5 @@
 deferAddDefer := BoxFunc^ // AddDefer(!()&->void,bool isException)
+deferAddDeferExcp := BoxFunc^ // AddDefer(!()&->void,bool isException)
 deferGetDepth := BoxFunc^
 deferApply := BoxFunc^
 
@@ -20,11 +21,16 @@ DeferInit2 := !() -> bool
 
 	box.itPars.Emplace(defFunc.GetPoint(),false)
 	box.itPars.Emplace(GTypeVoidP,false)
+
 	itFunc := FindFunc("internalDeferAdd",dummy,box^,false)
 	if itFunc == null return false
 	itFunc.ParseBlock()
-
 	deferAddDefer = itFunc
+
+	itFuncE := FindFunc("internalDeferExcpAdd",dummy,box^,false)
+	if itFuncE == null return false
+	itFuncE.ParseBlock()
+	deferAddDeferExcp = itFuncE
 
 	box2 := new FuncInputBox ; $temp
 	box2.itPars.Emplace(GTypeInt,false)
@@ -40,8 +46,10 @@ DeferInit2 := !() -> bool
 
 ObjDefer := class extend Object
 {
-	this := !(Object^ dwn) -> void
+	onExcp := bool
+	this := !(Object^ dwn,bool iExp) -> void
 	{
+		onExcp = iExp
 		Down = new WrappedFunc(dwn)
 		Down.SetUp(this&)
 		WorkBag.Push(this&,State_Start)
@@ -53,6 +61,10 @@ ObjDefer := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+
+		callAdd := deferAddDefer
+		if onExcp
+			callAdd = deferAddDeferExcp
 		itr := Up
 		while itr.GetValue() != "!()" and itr.GetValue() != "x=>x" and itr.GetValue() != "{!()}"
 		{
@@ -62,11 +74,11 @@ ObjDefer := class extend Object
 		fun := itr->{BoxFunc^}
 		if fun.ABox.ItemBag.Empty()
 		{
-			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
+			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
 		}else{
 			neId := GetNewId()
 			f << "%T" << neId << " = bitcast " << fun.ABox.GetAsUse() << " to i8*\n"
-			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
+			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
 		}
 		if DebugMode
 		{

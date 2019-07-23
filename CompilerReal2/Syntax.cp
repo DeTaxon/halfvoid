@@ -325,7 +325,7 @@ RuleDefer := !(void^ itr) -> int
 {
 	It := itr->{Object^}
 
-	if It.GetValue() != "defer" return 0
+	if It.GetValue() != "defer" and It.GetValue() != "on_exception" return 0
 
 	It = It.Right
 	if It == null return 0

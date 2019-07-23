@@ -3,7 +3,8 @@
 c1 := !() -> void
 {
 	printf("start\n")
-	throw new Exception(1,"YEEEEEEEEEES!")
+	on_exception printf("BAAAAAAAAD!\n")
+	//throw new Exception(1,"YEEEEEEEEEES!")
 }
 c2 := !() -> void
 {

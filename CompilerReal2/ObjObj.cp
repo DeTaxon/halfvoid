@@ -61,8 +61,9 @@ ObjObj := class extend Object
 			{
 				It := this&->{Object^}
 				preSet := It.Down.Right
+				osEx := It.Down.GetValue() == "on_exception"
 				PopOutNode(preSet)
-				NewNode := new ObjDefer(preSet)
+				NewNode := new ObjDefer(preSet,osEx)
 				ReplaceNode(this&,NewNode)
 				Found = true
 			}else

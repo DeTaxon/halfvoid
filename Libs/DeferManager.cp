@@ -14,6 +14,14 @@ internalDeferAdd := !(!(void^)^->void defFunc,void^ stackPoint) -> void
 	defBlock.funcsIsExcp[defBlock.indPoint] = false
 	defBlock.indPoint++
 }
+internalDeferExcpAdd := !(!(void^)^->void defFunc,void^ stackPoint) -> void
+{
+	defBlock := ref internalDeferBlock
+	defBlock.funcsExe[defBlock.indPoint].0 = defFunc
+	defBlock.funcsExe[defBlock.indPoint].1 = stackPoint
+	defBlock.funcsIsExcp[defBlock.indPoint] = true
+	defBlock.indPoint++
+}
 
 internalDeferGetDepth := !() -> int
 {

@@ -42,6 +42,9 @@ main := !(int argc,char^^ argv) -> int
 		case "--cco"
 			OutCC = argv[i+1]
 			i += 1
+		case "-p"
+			i++
+			targetPlatform = argv[i]
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1

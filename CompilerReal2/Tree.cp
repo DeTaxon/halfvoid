@@ -305,6 +305,7 @@ IsKeyword := !(W) -> bool
 	if W == "try" return true
 	if W == "catch" return true
 	if W == "throw" return true
+	if W == "on_exception" return true
 
 	return false
 }
