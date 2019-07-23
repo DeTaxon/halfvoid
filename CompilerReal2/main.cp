@@ -17,6 +17,8 @@ main := !(int argc,char^^ argv) -> int
 	codeSp := Queue.{Pair.{int,string}}()
 	zipSp := Queue.{Pair.{int,string}}()
 
+	targetPlatform := "posix"
+
 	emitTree := false
 
 	i := 1
@@ -61,11 +63,16 @@ main := !(int argc,char^^ argv) -> int
 			if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-C"
 			{
 				itPri := StrToInt(argv[i][2..0])
-				for newItm : Wildcard(argv[i+1])
-				{
-					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
-				}
 				i++
+
+				itStb := ""sbt << argv[i] << ".cp"
+				tmp1 := itStb.Str() ; $temp
+				for newItm : Wildcard(tmp1)
+					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+				itStb << "." << targetPlatform
+				tmp1 = itStb.Str() ; $temp
+				for newItm : Wildcard(tmp1)
+					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
 
 			}else{
 				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
