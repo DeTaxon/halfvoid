@@ -1,6 +1,3 @@
-#import "AVLTree.cp"
-#import "FatArray.cp"
-
 AVLSetIterator := class .{@DATA}
 {
 	miniStack := Stack.{Tuple.{AVLTreeNode.{DATA}^,bool},32}

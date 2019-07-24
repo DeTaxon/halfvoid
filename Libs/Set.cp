@@ -1,5 +1,3 @@
-#import "arrs.cp"
-
 Set := class .{@T} extend Stack.{T}
 {
 

@@ -1,5 +1,3 @@
-#import "PosixFuncs.cp"
-
 AtomicMutex := class
 {
 	atmValue := u8

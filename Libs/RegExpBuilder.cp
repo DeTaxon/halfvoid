@@ -1,10 +1,3 @@
-#import "arrs.cp"
-#import "BasicTree.cp"
-#import "Bitset.cp"
-#import "Set.cp"
-#import "Pair.cp"
-#import "Vector.cp"
-
 NonDetNodeLine := class
 {
 	from := int

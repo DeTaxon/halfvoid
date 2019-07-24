@@ -1,5 +1,3 @@
-#import "lib.cp"
-
 Vector := class .{@T}
 {
 	itPointer := T[]

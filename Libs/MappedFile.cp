@@ -1,6 +1,3 @@
-#import "lib.cp"
-#import "PosixFuncs.cp"
-
 FILE_READ := 1
 FILE_WRITE := 2
 FILE_CREATE := 3
@@ -88,8 +85,7 @@ MappedFile := class
 
 		if itemId == -1 
 		{
-			//throw new Exception(101,"can not open file "sbt + fileName)
-			printf("can not open file %s\n",fileName)
+			throw new Exception(101,"can not open file <"sbt + fileName + ">")
 			return void
 		}
 
@@ -163,7 +159,7 @@ MappedFile := class
 		{
 			close(itemId)
 			itemId = -1
-			//throw new Exception(102,"can not mmap file")
+			throw new Exception(102,"can not mmap file")
 		}
 	}
 }

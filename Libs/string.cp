@@ -1,5 +1,3 @@
-#import "arrs.cp"
-
 BigBuff := char[4096]
 
 //CreatedStrs := Stack.{char^}

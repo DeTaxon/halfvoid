@@ -1,5 +1,3 @@
-#import "string.cp"
-
 realpath := !(char^ inp, char^ outp) -> char^ declare
 
 opendir := !(char^ inp) -> void^ declare

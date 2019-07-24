@@ -1,6 +1,3 @@
-#import "RBTree.cp"
-#import "FatArray.cp"
-
 RBSetIterator := class .{@DATA}
 {
 	miniStack := FatArray.{RBTreeNode.{DATA}^,32}

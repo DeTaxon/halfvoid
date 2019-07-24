@@ -1,5 +1,3 @@
-#import "PosixFuncs.cp"
-
 Thread := class
 {
 	threadId := pthread_t

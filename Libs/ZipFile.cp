@@ -286,8 +286,6 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 	outFile := file(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
 	defer outFile.close()
 	outFile.write(inpFile.point,inpSize)
-	//memcpy(outFile.Get(),inpFile.Get(),inpSize)
-	//memcpy(outFile.Get()[inpSize]&,zipFile.Get(),zipSize)
 
 	eod := zipFile.point[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 

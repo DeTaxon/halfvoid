@@ -1,5 +1,3 @@
-#import "lib.cp"
-
 "<*>" := !(quantf a,quantf b) -> quantf
 {
 	x := (a * b.wzyx) <+> quantf( 1.0f, 1.0f,-1.0f, 1.0f)

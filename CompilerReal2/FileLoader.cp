@@ -13,6 +13,11 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 	prePath /= name
 	newName := prePath.FullPath()
 	newPath := Path(newName)
+
+	on_exception 
+	{
+		printf("exception from import in file %s\n",asF.filePath.itStr)
+	}
 	return LoadFile(newPath)
 }
 LoadFile := !(Path fullName) -> BoxFile^

@@ -113,7 +113,7 @@ main := !(int argc,char^^ argv) -> int
 	GBoolTrue = new ObjBool(true)
 	GBoolFalse = new ObjBool(false)
 
-	selfFile := ZipFile()
+	selfFile := new ZipFile() ; $temp
 
 	loadedLex := false
 
@@ -121,7 +121,10 @@ main := !(int argc,char^^ argv) -> int
 	{
 		defer selfFile.DecUser()
 		itMach := selfFile.GetFile("Mach.m")
+
 		itPri := selfFile.GetFile("Priority.pr")
+		if itPri == null
+			itPri = selfFile.GetFile("Priority2.pr")
 
 		if itPri !=null
 		{

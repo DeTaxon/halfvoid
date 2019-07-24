@@ -1,5 +1,3 @@
-#import "MemoryPool.cp"
-
 gTemporaryPool := thread_local StupidMemoryPool.{16000000}
 FlushTempMemory := !() -> void
 {

@@ -1,5 +1,3 @@
-#import "Tree.cp"
-
 IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
 	for it : res

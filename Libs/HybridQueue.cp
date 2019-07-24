@@ -1,6 +1,3 @@
-#import "arrs.cp"
-
-
 HybridQueueIterator := class .{@T,@ExtraSize}
 {
 	itPtr := HybridQueue.{T,ExtraSize}^

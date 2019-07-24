@@ -1,5 +1,3 @@
-#import "RegExpBuilder.cp"
-
 WordParser := class 
 {
 	//itCore := WordDetermMachine^

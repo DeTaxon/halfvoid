@@ -1,6 +1,3 @@
-#import "Tree.cp"
-
-
 CVStuf := Queue.{string}
 
 TryCheckSuffix := !(string inConst,string sufff) -> Object^
