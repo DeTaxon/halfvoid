@@ -1,0 +1,44 @@
+
+prvtInitStream := !(z_stream^,int,char^,u64)^ -> int
+prvtInflate := !(z_stream^,int)^ -> int
+prvtInflateEnd := !(z_stream^)^ -> int
+
+prvtZipInited := bool
+prvtInitedSuccess := bool
+prvtInitZip := !() -> bool
+{
+	return true
+	if prvtZipInited
+		return prvtInitedSuccess
+	prvtZipInited = true
+
+	dllHandle := OpenLib("libz.so")
+	if dllHandle == null
+	{
+		dllHandle = OpenLib("zlib1.dll")
+		if dllHandle == null
+		{
+			return false
+		}
+	}
+
+	prvtInitStream = LoadFuncLib(dllHandle,"inflateInit2_")
+	prvtInflate = LoadFuncLib(dllHandle,"inflate")
+	prvtInflateEnd = LoadFuncLib(dllHandle,"inflateEnd")
+	prvtInitedSuccess = true
+	return true
+}
+
+DeflateInflate := !(void^ begPoint,u64 inSize,void^ resPos,u64 resSize) -> bool
+{
+	return iDeflateInflate(begPoint,inSize,resPos,resSize)
+	sStream := z_stream
+	memset(sStream&,0,z_stream->TypeSize)
+	sStream.avail_in = inSize
+	sStream.avail_out = resSize
+	sStream.next_in = begPoint
+	sStream.next_out = resPos
+	aa := prvtInitStream(sStream&,-15,"1.2.11",z_stream->TypeSize)
+	bb := prvtInflate(sStream&,0)
+	cc := prvtInflateEnd(sStream&)
+}

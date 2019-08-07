@@ -1,0 +1,115 @@
+
+ArrayIterMappedFile := class
+{	
+	x := u64
+	pFile := void^
+	this := !(void^ pF) -> void
+	{
+		x = 0
+		pFile = pF
+	}
+	"^" := !() -> ref u8
+	{
+		pP := pFile->{MappedFile^}
+		return pP.point[x]
+	}
+	Inc := !() -> void
+	{
+		x += 1
+	}
+	IsEnd := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return x >= pP.fileSize
+	}
+	IsInvalid := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return pP.IsInvalid()
+	}
+}
+MappedFile := class
+{
+	fileId := u64
+	fileSize  := u64
+	mapId := u64
+	point := u8^
+	this := !(char^ fileName) -> void
+	{
+		fileId = 0
+		point = null
+		Open(fileName,FILE_READ,0)
+	}
+	this := !(char^ fileName,int flg) -> void
+	{
+		fileId = 0
+		point = null
+		Open(fileName,flg,0)
+	}
+	this := !(char^ fileName,int flg, u64 itSize) -> void
+	{
+		fileId = 0
+		point = null
+		Open(fileName,flg,itSize)
+	}
+	Open := !(char^ fileName) -> void
+	{
+		Open(fileName,FILE_READ,0)
+	}
+	Open := !(char^ fileName,int flg, u64 itSize) -> void
+	{
+		posFlg := O_RDONLY
+		if flg != FILE_READ
+			posFlg = O_RDWR
+		if flg == FILE_CREATE
+			posFlg = posFlg or_b O_CREAT
+
+		fileId = open(fileName,posFlg,511)
+		if fileId == -1
+		{
+			throw new Exception(101,"can not open file <"sbt + fileName + ">")
+		}
+	
+		if not posixGetFileSize(fileId,fileSize&)
+			throw new Exception(199,"unknown error for file <"sbt + fileName + ">")
+	
+		mmFlgs := PROT_READ
+		if flg != FILE_READ
+			mmFlgs = mmFlgs or_b PROT_WRITE
+
+		if itSize != 0 and fileSize != itSize
+		{
+			if ftruncate(fileId,itSize) == -1
+				throw new Exception(101,"can not resize file <"sbt + fileName + ">")
+		}
+		mmRes := mmap(null,fileSize,mmFlgs,MAP_SHARED,fileId,null)
+		if mmRes&->{u64^}^ == not_b 0U
+		{
+			close(fileId)
+			throw new Exception(101,"can not map file <"sbt + fileName + ">")
+		}
+		point = mmRes
+	}
+	Get := !() -> u8^
+	{
+		return point
+	}
+
+	Size := !() -> int
+	{
+		return fileSize
+	}
+	"~For" := !() -> ArrayIterMappedFile
+	{
+		return ArrayIterMappedFile(this&)
+	}
+	"[]" := !(int pos) -> ref u8
+	{	
+		return point[pos]
+	}
+	Close := !() -> void
+	{
+		munmap(point,fileSize)
+		close(fileId)
+	}
+}

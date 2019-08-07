@@ -1329,7 +1329,7 @@ BoxFuncBody := class extend BoxFunc
 						f << ", scopeLine: " << Line.LinePos	
 					}
 					f << ", unit: !" << cuId
-					f << ", flags: DIFlagPrototyped, spFlags: DISPFlagDefinition"
+					f << ", flags: DIFlagPrototyped"
 					f << ")\n"
 
 				}

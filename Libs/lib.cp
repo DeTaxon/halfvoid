@@ -1,11 +1,7 @@
 printf := !(char^ str, ...) -> int declare
-calloc := !(int size,int sizet) -> void^ declare
-malloc := !(int size) -> void^ declare
+calloc := !(size_t size,int sizet) -> void^ declare
+malloc := !(size_t size) -> void^ declare
 free := !(void^ point) -> void declare
-
-dlopen := !(char^ name,int pri) -> void^ declare
-dlsym := !(void^ hndl, char^ name) -> void^ declare
-dlclose := !(void^ hndl) -> int declare
 
 tanf := !(float iiin) ->float declare
 cosf := !(float iiin) ->float declare
@@ -103,7 +99,7 @@ FixedArrayIter := class .{@Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }
-"in" := !(int val, string str) -> bool
+"in" := !(int val, char^ str) -> bool
 {
 	if str == null return false
 	i := 0
@@ -114,9 +110,17 @@ FixedArrayIter := class .{@Type}
 	return false
 }
 
-"in" := !(int val, @SArr[@SSize] itArr) -> bool
+"in" := !(SArr val, @SArr[@SSize] itArr) -> bool
 {
 	for i : SSize
+	{
+		if val == itArr[i] return true
+	}
+	return false
+}
+"in" := !(SArr val, @SArr[] itArr) -> bool
+{
+	for i : itArr->len
 	{
 		if val == itArr[i] return true
 	}

@@ -1,5 +1,5 @@
 ForcedLibs := -C0 "Libs/*.cp" 
-TimeFlags := -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
+TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
 
@@ -11,9 +11,14 @@ repair: $(wildcard CompilerReal2/*.cp)
 	./stable -C0 "Libs/*" -C1 "CompilerReal2/*" -g CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	time $(TimeFlags) ./c.out -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
+	./c.out -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
-	time $(TimeFlags) ./c.out -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	./c.out -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+
+MainOutW := $(TempFolder)/out3W.ll
+wcycle: $(wildcard CompilerReal2/*.cp)
+	./c.out -p win32 -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOutW); clang -g -c $(MainOutW) $(Libs) --target=x86_64-win32-gnu -o w.o
+
 ManyCycle:
 	for i in {1..30}; do make cycle; done
 

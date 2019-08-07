@@ -1,4 +1,55 @@
 
+zipFileHeader := packed_class
+{
+	signature := u32
+	versNeededToExtract := u16
+	flags := u16
+	compressionMethod := u16
+	lastModifTime := u16
+	lastModifDate := u16
+	crc32 := u32
+	compressedSize := u32
+	realSize := u32
+	fileNameLen := u16
+	extraFieldsLen := u16
+	//fileName
+	//extraFields
+}
+zipCentralDirectory := packed_class
+{
+	signature := u32
+	madeWithVersion := u16
+	versionNeedToExtract := u16
+	flags := u16
+	compressionMethod := u16
+	lastModifTime := u16
+	lastModifDate := u16
+	crc32 := u32
+	compressedSize := u32
+	realSize := u32
+	fileNameLen := u16
+	extraFieldsLen := u16
+	commentLen := u16
+	fileStartsAtDisk := u16
+	internalFileAttrs := u16
+	externalFileAttrs := u32
+	offsetToFileHeader := u32
+	// file name
+	// extra fields
+	// comments
+}
+zipEndOfDirectory := packed_class
+{
+	signature := u32
+	diskNumber := u16
+	centrDirStartDisk := u16
+	numberOfCentralDirectoryHere := u16
+	totalNumberOfCentralDirectory := u16
+	sizeOfCentralDirectoryBytes := u32
+	offsetToStartOfCD := u32
+	commentLength := u16
+	//comments[len]
+}
 z_stream := class
 {
 	next_in := void^
@@ -21,27 +72,10 @@ z_stream := class
 	reserved := u64
 }
 
-prvtInitStream := !(z_stream^,int,char^,u64)^ -> int
-prvtInflate := !(z_stream^,int)^ -> int
-prvtInflateEnd := !(z_stream^)^ -> int
+inflateInit2_ := !(z_stream^ a,int b,char^ c,u64 d) -> int declare
+inflate := !(z_stream^ a,int b) -> int declare
+inflateEnd := !(z_stream^ a) -> int declare
 
-prvtZipInited := bool
-prvtInitZip := !() -> void
-{
-	if prvtZipInited
-		return void
-	prvtZipInited = true
-
-	dllHandle := dlopen("libz.so",2)
-	if dllHandle == 0
-	{
-		return void
-	}
-
-	prvtInitStream = dlsym(dllHandle,"inflateInit2_")
-	prvtInflate = dlsym(dllHandle,"inflate")
-	prvtInflateEnd = dlsym(dllHandle,"inflateEnd")
-}
 
 vZipEntry := class
 {
@@ -52,7 +86,7 @@ vZipEntry := class
 	objName := StringSpan
 	fullName := StringSpan
 	comprType := int
-	subFolders := Queue.{vZipEntry^}
+	subFolders := List.{vZipEntry^}
 	compressedPointer := void^
 
 	"this" := !() -> void {}
@@ -75,26 +109,10 @@ vZipEntry := class
 		ptrToObj.AddUser()
 		if comprType == 8
 		{
-			if not prvtZipInited
-				prvtInitZip()
 			compressedPointer = malloc(realSize)
-
 			resPtr := ptrToObj.asMapped.point[offset]&
-	
-			sStream := z_stream
-			memset(sStream&,0,z_stream->TypeSize)
-			sStream.avail_in = zipSize
-			sStream.avail_out = realSize
-			sStream.next_in = resPtr
-			sStream.next_out = compressedPointer
-			//prvtDeflateInflate(resPtr,zipSize,compressedPointer,realSize)
 
-			aa := prvtInitStream(sStream&,-15,"1.2.11",z_stream->TypeSize)
-			bb := prvtInflate(sStream&,0)
-			cc := prvtInflateEnd(sStream&)
-			//printf("test %i %i %i\n",aa,bb,cc)
-			//printf("hoh %i\n",z_stream->TypeSize)
-
+			DeflateInflate(resPtr,zipSize,compressedPointer,realSize)
 			return compressedPointer
 		}
 		resPtr := ptrToObj.asMapped.point[offset]&
@@ -119,7 +137,7 @@ vZipEntry := class
 }
 zipIterator := class 
 {
-	miniStack := Stack.{vZipEntry^,32}
+	miniStack := List.{vZipEntry^}
 
 	this := !(vZipEntry^ nd) .{} -> void
 	{
@@ -127,7 +145,7 @@ zipIterator := class
 		if nd != null 
 			miniStack.Push(nd) ; $temp
 	}
-	IsEnd := !() -> bool { return miniStack.Empty() }
+	IsEnd := !() -> bool { return miniStack.IsEmpty() }
 	"^" := !() -> ref vZipEntry^ { return miniStack.Front() }
 	Inc := !() .{} -> void {
 		nnd := miniStack.Front()
@@ -229,6 +247,15 @@ ZipFile := class
 			fldrs := newStr.DivideStr("/") ; $temp
 			itmIter := zipRoot&
 
+			if cdTable.compressionMethod == 8 and not prvtInitZip()
+			{
+				cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
+				+ cdTable.fileNameLen 
+				+ cdTable.extraFieldsLen
+				+ cdTable.commentLen
+				]&->{zipCentralDirectory^}
+				continue
+			}
 
 			for itm,j : fldrs
 			{	
@@ -252,6 +279,7 @@ ZipFile := class
 						nI.realSize = cdTable.realSize
 						nI.zipSize = cdTable.compressedSize
 						nI.comprType = cdTable.compressionMethod
+
 
 						ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
 

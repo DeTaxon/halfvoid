@@ -1,0 +1,135 @@
+
+ArrayIterMappedFile := class
+{	
+	x := u64
+	pFile := void^
+	this := !(void^ pF) -> void
+	{
+		x = 0
+		pFile = pF
+	}
+	"^" := !() -> ref u8
+	{
+		pP := pFile->{MappedFile^}
+		return pP.point[x]
+	}
+	Inc := !() -> void
+	{
+		x += 1
+	}
+	IsEnd := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return x >= pP.fileSize
+	}
+	IsInvalid := !() -> bool
+	{
+		pP := pFile->{MappedFile^}
+		return pP.IsInvalid()
+	}
+}
+
+twoIntTo64 := class
+{
+	as64 := u64
+	as32 := u32[2] at as64
+}
+MappedFile := class
+{
+	hndl := void^
+	fileSize  := u64
+	mapId := void^
+	point := u8^
+	this := !(char^ fileName) -> void
+	{
+		hndl = null
+		point = null
+		Open(fileName,FILE_READ,0)
+	}
+	this := !(char^ fileName,int flg) -> void
+	{
+		hndl = null
+		point = null
+		if flg == FILE_CREATE
+			Open(fileName,FILE_WRITE,0)
+		else
+			Open(fileName,flg,0)
+	}
+	this := !(char^ fileName,int flg, u64 itSize) -> void
+	{
+		fileId = 0
+		point = null
+		Open(fileName,flg,itSize)
+	}
+	Open := !(char^ fileName) -> void
+	{
+		Open(fileName,FILE_READ,0)
+	}
+	Open := !(char^ fileName,int flg, u64 itSize) -> void
+	{
+		opTyp := GENERIC_READ
+		fFlg := OPEN_EXISTING
+		fS := FILE_SHARE_READ
+
+		if itSize == 0
+		{
+			asP := Path(fileName)
+			itSize = asP.Size()
+		}
+
+		if flg != FILE_READ
+		{
+			fS = fS or_b FILE_SHARE_WRITE
+			opTyp = opTyp or_b GENERIC_WRITE
+		}
+		if flg == FILE_CREATE
+		{
+			fFlg = CREATE_NEW
+		}
+		asW := Utf8ToUtf16(fileName)
+		hndl = CreateFileW(asW,opTyp,fS,null,fFlg,FILE_ATTRIBUTE_NORMAL,null)
+		if hndl&->{u64^}^ == not_b 0U
+		{
+			throw new Exception(101,"can not open file <"sbt + fileName + ">")
+		}
+	
+		fileSize = itSize
+		someSize := twoIntTo64
+		someSize.as64 = fileSize
+		
+		pA := PAGE_READONLY
+		if flg != FILE_READ pA = PAGE_READWRITE
+		mapId = CreateFileMappingW(hndl,null,pA,someSize.as32[1],someSize.as32[0],null)
+		if mapId&->{u64^}^ == not_b 0U
+		{
+			CloseHandle(hndl)
+			throw new Exception(199,"can not map file <"sbt + fileName + ">")
+		}
+		accTyp := FILE_MAP_READ
+		if flg != FILE_READ accTyp = FILE_MAP_ALL_ACCESS
+		point = MapViewOfFile(mapId,accTyp,0,0,fileSize)
+	}
+
+	Get := !() -> u8^
+	{
+		return point
+	}
+
+	Size := !() -> int
+	{
+		return fileSize
+	}
+	"~For" := !() -> ArrayIterMappedFile
+	{
+		return ArrayIterMappedFile(this&)
+	}
+	"[]" := !(int pos) -> ref u8
+	{	
+		return point[pos]
+	}
+	Close := !() -> void
+	{
+		UnmapViewOfFile(mapId)
+		CloseHandle(hndl)
+	}
+}
