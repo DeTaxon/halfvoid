@@ -1742,6 +1742,20 @@ CreateBuiltIns := !() -> void
 	AddBuiltInFunc(new BuiltInFuncUno("internalStackRestore",GTypeVoidP,false,GTypeVoid,"call i8* @llvm.stackrestore(i8* #1) #d\n"))
 	RangeFuncs()
 	Vec4fFuncs()
+
+	if DebugMode
+	{
+		AddBuiltInFunc(new BuiltInFuncUno("assert",GTypeBool,false,GTypeVoid,
+				"br i1 #1, label %Good##, label %Bad##\n"sbt +
+				"Bad##:\n"+
+				"call void @llvm.debugtrap() #d\n" +
+				"br label %Good##\n" +
+				"Good##:\n"))
+	}else{
+		preAdd := new BuiltInFuncUno("assert",GTypeBool,false,GTypeVoid, "")
+		preAdd.IsSelfPre = true
+		AddBuiltInFunc(preAdd)
+	}
 }
 
 RangeFuncs := !() -> void

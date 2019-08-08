@@ -214,18 +214,18 @@ iDeflateInflate := !(void^ inpPoint,size_t inpSize,void^ outpPoint,size_t outpSi
 	ApplyHuffmanTree(codeLens,newTree)
 
 	resultData := new u8[258 + HCLEN + HDIST] ; $temp
-	DecodeSmallHuffmanTable(newTree,bw&,resultData,289)
+	DecodeSmallHuffmanTable(newTree,bw&,resultData,resultData->len - 4)
 
-	for i : 289
+	for i : resultData->len
 	{
 		switch i
 		{
 			case 'A'..'Z'
-				printf("code %4c = %i\n",i,resultData[i])
+				printf("code %4i = %i\n",i,resultData[i])
 			case 'a'..'z'
-				printf("code %4c = %i\n",i,resultData[i])
+				printf("code %4i = %i\n",i,resultData[i])
 			case void
-				printf("code %4c = %i\n",i,resultData[i])
+				printf("code %4i = %i\n",i,resultData[i])
 		}
 	}
 
