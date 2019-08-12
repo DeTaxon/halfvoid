@@ -112,7 +112,7 @@ vZipEntry := class
 			compressedPointer = malloc(realSize)
 			resPtr := ptrToObj.asMapped.point[offset]&
 
-			DeflateInflate(resPtr,zipSize,compressedPointer,realSize)
+			CrappyDeflateInflate(resPtr,zipSize,compressedPointer->{u8^},realSize)
 			return compressedPointer
 		}
 		resPtr := ptrToObj.asMapped.point[offset]&
@@ -247,16 +247,6 @@ ZipFile := class
 			fldrs := newStr.DivideStr("/") ; $temp
 			itmIter := zipRoot&
 
-			if cdTable.compressionMethod == 8 and not prvtInitZip()
-			{
-				cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
-				+ cdTable.fileNameLen 
-				+ cdTable.extraFieldsLen
-				+ cdTable.commentLen
-				]&->{zipCentralDirectory^}
-				continue
-			}
-
 			for itm,j : fldrs
 			{	
 				found := false
@@ -279,7 +269,6 @@ ZipFile := class
 						nI.realSize = cdTable.realSize
 						nI.zipSize = cdTable.compressedSize
 						nI.comprType = cdTable.compressionMethod
-
 
 						ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
 

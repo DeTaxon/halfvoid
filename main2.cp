@@ -1,16 +1,8 @@
 //printf := !(char^ a,...) -> int declare
 
 
-test := !() -> bool
-{
-	return false
-}
-
-
 main := !() -> int
 {
-	assert(test())
-	return 0
 	selfF := new ZipFile() ; $temp
 	if selfF.AnalizeFile("ziptest.zip")
 	{
