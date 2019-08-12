@@ -356,7 +356,14 @@ ObjArray := class extend ObjConst
 	}
 	GetName := virtual !() -> string
 	{
-		return "null"
+		preRet := "["sbt
+		for i : itType.Size
+		{
+			if i > 0 preRet << " , "
+			preRet << Items[i].GetType().GetName() << " " << Items[i].GetName()
+		}
+		preRet << "]"
+		return preRet.Str() ; $temp
 	}
 	GetValue := virtual !() -> string
 	{

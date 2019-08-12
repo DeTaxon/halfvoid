@@ -29,7 +29,10 @@ Object := class{
 		if Down != null Down.TestNodes()
 
 		if Down[^].Up != this&
+		{
+			this.Print(0)
 			printf("broken Up %s\n")
+		}
 	}
 
 	this := !() -> void

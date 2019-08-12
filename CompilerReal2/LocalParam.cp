@@ -169,6 +169,7 @@ GlobalParam := class extend MemParam
 	{
 		ResultType = th
 		Down = toSet
+		Down?.Up = this&
 		MainId = GetNewId()
 	}
 	IsRef := virtual !() -> bool
