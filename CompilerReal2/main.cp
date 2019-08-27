@@ -29,6 +29,12 @@ main := !(int argc,char^^ argv) -> int
 		case "--ZipGlue"
 			ZipConCat(argv[i+1],argv[i+2],argv[i+3])
 			return 0
+		case "--ZipAppend"
+			zL := List.{char^}() ; $temp
+			for j : (i+2)..(argc-1)
+				zL << argv[j]
+			ZipAppend(argv[i+1],zL)
+			return 0
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
@@ -71,7 +77,9 @@ main := !(int argc,char^^ argv) -> int
 				itStb := ""sbt << argv[i] << ".cp"
 				tmp1 := itStb.Str() ; $temp
 				for newItm : Wildcard(tmp1)
+				{
 					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+				}
 				itStb << "." << targetPlatform
 				tmp1 = itStb.Str() ; $temp
 				for newItm : Wildcard(tmp1)
@@ -166,6 +174,7 @@ main := !(int argc,char^^ argv) -> int
 
 	PriorityData.Opers.Push(":=")
 	PriorityData.Opers.Push("=>")
+	PriorityData.Opers.Push("-->")
 	PriorityData.Opers.Push("extern")
 	PriorityData.Opers.Push("at")
 	PriorityData.Opers.Push("defer")
@@ -308,7 +317,7 @@ main := !(int argc,char^^ argv) -> int
 	//CleanStrs() shiet
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())
-	PrintMemUse()
+	//PrintMemUse()
 	return 0
 }
 

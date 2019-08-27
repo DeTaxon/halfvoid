@@ -319,12 +319,12 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				typ := ParseType(iter.Right.Down)
 				if typ == null return null
 
-				fun := GetExchange(iter.Left,iter.Left,typ,iter.Left.IsRef())
-				if fun == null return null
+				func := GetExchange(iter.Left,iter.Left,typ,iter.Left.IsRef())
+				if func == null return null
 				iter = iter.Left
 				iter.Right.Left = null
 				iter.Right = null
-				return MakeSimpleCall(fun,iter)
+				return MakeSimpleCall(func,iter)
 			}
 			if iter.Right is ObjInt and iter.Right.Right == null
 			{

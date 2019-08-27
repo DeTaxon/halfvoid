@@ -264,7 +264,6 @@ BoxClass := class extend Object
 		gotTempls := Queue.{Pair.{BoxTemplate^,BoxClass^}}() ; $temp
 
 		iterF := this&
-
 		while iterF != null
 		{
 			for qIter : iterF.ItMethods 
@@ -323,6 +322,7 @@ BoxClass := class extend Object
 					inThPre := new BuiltInThislessTemplate(templ.first,this&,templ.second)
 					ThislessTemplates.Push(inThPre)
 					inTh = inThPre
+					inTh.FuncName = name
 				}
 			}
 			if inTh != null templs.Push(inTh)
@@ -975,7 +975,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 	{
 		newBox := new FuncInputBox ; $temp
 
-		newBox.itPars.Emplace(itClass.ClassType,true)
+		newBox.itPars.Emplace(itInClass.ClassType,true)
 		for it,i : itBox.itPars
 		{	
 			newBox.itPars.Emplace(it.first,it.second)

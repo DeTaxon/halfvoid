@@ -71,13 +71,19 @@ ObjDefer := class extend Object
 			itr = itr.Up
 		}
 		asWrap := Down->{WrappedFunc^}
-		fun := itr->{BoxFunc^}
-		if fun.ABox.ItemBag.Empty()
+		funcAl := AllocBox^
+		if itr.GetValue() == "x=>x"
+		{
+			funcAl = itr->{SLambda^}.ABox&
+		}else{
+			funcAl = itr->{BoxFunc^}.ABox&
+		}
+		if funcAl.ItemBag.Empty()
 		{
 			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
 		}else{
 			neId := GetNewId()
-			f << "%T" << neId << " = bitcast " << fun.ABox.GetAsUse() << " to i8*\n"
+			f << "%T" << neId << " = bitcast " << funcAl.GetAsUse() << " to i8*\n"
 			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
 		}
 		if DebugMode

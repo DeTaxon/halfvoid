@@ -279,18 +279,20 @@ RuleSLambda := !(void^ itr) -> int
 {
 	It := itr->{Object^}
 
+	siz := 3
+
 	if not InDataR(It) return 0
 
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "=>" return 0
+	if It.GetValue() != "=>" and It.GetValue() != "-->" return 0
 
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() == "{}" return 3
-	if InDataR(It) return 3
+	if It.GetValue() == "{}" return siz
+	if InDataR(It) return siz
 	return 0
 }
 RuleMinus := !(void^ itr) -> int

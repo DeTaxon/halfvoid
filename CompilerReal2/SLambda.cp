@@ -10,6 +10,7 @@ SLambda := class extend ObjResult
 	ItId := int
 	ItNR := int
 	inAlloc := int
+	manSkob := bool
 
 	StolenNames := Queue.{string}
 	StolenParams := Queue.{MemParam^}
@@ -21,7 +22,7 @@ SLambda := class extend ObjResult
 		ItId = GetNewId()
 		inAlloc = -1
 	}
-	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
+	ApplyParams := !(int count, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0
 		{
@@ -37,13 +38,17 @@ SLambda := class extend ObjResult
 			}
 			parms[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 		}
+
+		WorkBag.Push(Down,State_Syntax)
+
+
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start and not parsedStart
 		{
 			parsedStart = true
-			WorkBag.Push(this&,State_Syntax)
+			//WorkBag.Push(this&,State_Syntax)
 			names := Queue.{string}() ; $temp
 			names.Push("lambdaParam" + ItId)
 
@@ -96,10 +101,13 @@ SLambda := class extend ObjResult
 			asFunc := GetFuncType(pars,null->{bool^},null->{Type^},false,false)
 
 
-			MakeItBlock(Down.Right.Right)
 			ResultType = asFunc.GetLambda()
 			PopOutNode(Down)
 			PopOutNode(Down)
+
+			if Down.GetValue() == "{}"
+				manSkob = true
+			MakeItBlock(Down)
 		}
 		if pri == State_PostGetUse
 		{
@@ -171,6 +179,8 @@ SLambda := class extend ObjResult
 			}
 
 			Down.PrintInBlock(f)
+			f << "br label %OutLabel" << ABox.ItId << "\n"
+			f << "OutLabel" << ABox.ItId << ":\n"
 
 			if fastUse.RetType == GTypeVoid or IsRetComplex
 			{
@@ -206,9 +216,14 @@ SLambda := class extend ObjResult
 	{
 		asFType := ((lambTyp.Base)->{TypeFunc^})
 
-		if asFType.RetType != GetType("void")
+		if not manSkob
 		{
-			UNext(Down.Down,new ObjObj("return()"),1)
+			isRetCm := IsComplexType(asFType.RetType)
+
+			if asFType.RetType != GTypeVoid and not isRetCm
+			{
+				UNext(Down.Down,new ObjObj("return()"),1)
+			}
 		}
 		fastUse = asFType
 		applyed = true
@@ -216,7 +231,7 @@ SLambda := class extend ObjResult
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_PostGetUse)
 
-		ApplyParams(fastUse.ParsCount,Names,fastUse.Pars,fastUse.ParsIsRef)
+		ApplyParams(fastUse.ParsCount,fastUse.Pars,fastUse.ParsIsRef)
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
@@ -231,16 +246,19 @@ SLambda := class extend ObjResult
 		if StolenNames[^i] == name
 			return StolenParams[i]
 
-		//for i : StolenNames.Size() 
-		//{
-		//	if StolenNames[i] == name
-		//		return StolenParams[i]
-		//}
-
 		return null
+	}
+
+	GetOutPath := virtual !(Object^ item, int typ,int size) ->string
+	{
+		return "OutLabel" + ABox.ItId
 	}
 	GetValue := virtual !() -> string
 	{
 		return "x=>x"
+	}
+	ApplyDeferUse := virtual !(int depth) -> void
+	{
+		printf("sfgasfhafg\n")
 	}
 }

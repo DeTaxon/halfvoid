@@ -466,10 +466,10 @@ FakeFieldParam := class extend MemParam
 RetFuncParam := class extend MemParam
 {
 	ToCall := Object^
-	this := !(Object^ fun) -> void
+	this := !(Object^ func) -> void
 	{
-		ToCall = fun
-		ResultType = fun.GetType()
+		ToCall = func
+		ResultType = func.GetType()
 	}
 	IsRef := virtual !() -> bool
 	{

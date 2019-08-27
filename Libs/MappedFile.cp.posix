@@ -81,6 +81,7 @@ MappedFile := class
 		{
 			if ftruncate(fileId,itSize) == -1
 				throw new Exception(101,"can not resize file <"sbt + fileName + ">")
+			fileSize = itSize
 		}
 		mmRes := mmap(null,fileSize,mmFlgs,MAP_SHARED,fileId,null)
 		if mmRes&->{u64^}^ == not_b 0U

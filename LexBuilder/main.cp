@@ -1,7 +1,3 @@
-#import "../Libs/RegExpBuilder.cp"
-#import "../Libs/WordParser.cp"
-#import "../Libs/MappedFile.cp"
-#import "../Libs/file.cp"
 #import "../CompilerReal2/PriorityRead.cp"
 
 main := !(int argc, char^^ argv) -> int
@@ -9,6 +5,7 @@ main := !(int argc, char^^ argv) -> int
 	keywords := Queue.{string}()
 	keywords.Push(":=")
 	keywords.Push("=>")
+	keywords.Push("==>")
 	keywords.Push("...")
 	keywords.Push(":")
 

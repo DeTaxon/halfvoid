@@ -16,7 +16,7 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 
 	on_exception 
 	{
-		printf("exception from import in file %s\n",asF.filePath.itStr)
+
 	}
 	return LoadFile(newPath)
 }

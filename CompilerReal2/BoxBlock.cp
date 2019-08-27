@@ -165,7 +165,7 @@ BoxBlock := class extend Object
 
 			if Up != null
 			{
-				if Up.GetValue() == "!()" or Up.GetValue() == "{!()}"
+				if Up.GetValue() == "!()" or Up.GetValue() == "{!()}" or Up.GetValue() == "x=>x"
 				{	
 					askedRetPath = true
 					return "PreRetPath" + ItId

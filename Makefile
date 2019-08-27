@@ -1,4 +1,4 @@
-ForcedLibs := -C0 "Libs/*.cp" 
+ForcedLibs := -C0 "Libs/*" 
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
@@ -14,6 +14,8 @@ cycle: $(wildcard CompilerReal2/*.cp)
 	./c.out -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
 	./c.out -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+cyclen: $(wildcard CompilerReal2/*.cp)
+	nemiver ./c.out -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
 MainOutW := $(TempFolder)/out3W.ll
 wcycle: $(wildcard CompilerReal2/*.cp)
@@ -26,7 +28,7 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.out -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -o test2 ./libz.a
+	./c.out -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2g: main2.cp
 	gdb --tui ./test2
 
@@ -41,7 +43,7 @@ halfvoidg: cycleg TempDir/CompilerData.zip
 	clang $(MainOut) -g -ldl -o TempDir/PreHalf ; ./stable --ZipGlue TempDir/PreHalf TempDir/CompilerData.zip halfvoid; chmod 777 halfvoid
 
 Objs/Lex: LexBuilder/main.cp Priority.pr
-	./c.out LexBuilder/main.cp $(ForcedLibs)  -o Objs/Lex.ll; clang Objs/Lex.ll -o Objs/Lex;
+	./c.out  $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o Objs/Lex;
 Mach.m: Objs/Lex Libs/RegExpBuilder.cp
 	./Objs/Lex
 Objs/LexTester: LexBuilder/test.cp Libs/RegExpBuilder.cp

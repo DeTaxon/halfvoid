@@ -46,6 +46,27 @@ List := class .{@T}
 	{
 		this << toAdd
 	}
+	EmplaceFront := !(args...) -> void
+	{
+		newNode := ListNode.{T}^()
+
+		if $keep 
+		{
+			if CreatedNodes != null
+			{
+				newNode = CreatedNodes
+				CreatedNodes = CreatedNodes.Next
+			}
+		}
+		if newNode == null
+		{
+			newNode = new ListNode.{T}
+		}
+		newNode.Data."this"(args...)
+		newNode.Next = Start
+		Start = newNode
+		Counter++
+	}
 	Emplace := !(args...) -> void
 	{
 		newNode := ListNode.{T}^()

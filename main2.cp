@@ -1,10 +1,19 @@
 //printf := !(char^ a,...) -> int declare
 
-k := ![3,6,1]
+
+c := !( !(int)& -> int adder) -> void
+{
+	l := 0
+	printf("heh %i\n" , adder(3))
+	return void
+}
 
 main := !() -> int
 {
-	printf("heh %i\n",k[^])
+	c(x => {
+		defer printf("wow\n")
+		return x + 10
+	})
 	return 0
 }
 

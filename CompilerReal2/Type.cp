@@ -904,7 +904,16 @@ TypeClass := class extend Type
 	{
 		return "%Class" + ToClass.ClassId
 	}
-	GetGoodName := virtual !() -> string { return ToClass.ClassName }
+	GetGoodName := virtual !() -> string { 
+		st := ToClass.ClassName 
+		if ToClass.ItAttrs.Size() != 0
+		{
+			st = st + " attrs: "
+			for it,ind : ToClass.ItAttrs
+				st = st + ind + " "
+		}
+		return st
+	}
 	GetAlign := virtual !() -> int
 	{
 		maxVal := 1

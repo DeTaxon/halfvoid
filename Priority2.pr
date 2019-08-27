@@ -1,4 +1,3 @@
-"! () ^ -> d" "! () ^ ^ -> d" "! () & -> d"
 "! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}"
 "packed_class {}"
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
@@ -6,6 +5,7 @@
 "d () . {}"
 "d . {}"
 "d ^" "d []" "d &" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s" "d -> d"
+"! () ^ -> d" "! () ^ ^ -> d" "! () & -> d"
 "d ()"
 "()"
 "d .. d" "d is d" "d ..."
