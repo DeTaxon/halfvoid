@@ -30,7 +30,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 	prevId := -1
 	linePos := 0
 	DaBuff := new char[2048] ; $temp
-	d.ReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) =>
+	d.ReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) ==>
 	{
 		ptr := memPtr[b]&
 

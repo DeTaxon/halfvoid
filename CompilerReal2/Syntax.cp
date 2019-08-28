@@ -286,7 +286,7 @@ RuleSLambda := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "=>" and It.GetValue() != "-->" return 0
+	if It.GetValue() != "=>" and It.GetValue() != "==>" return 0
 
 	It = It.Right
 	if It == null return 0
