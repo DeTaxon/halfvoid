@@ -1694,6 +1694,7 @@ CreateBuiltIns := !() -> void
 										+"#0 = add i1 #2,0\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("==",BoolT,false,BoolT,false,BoolT,"#0 = icmp eq i1 #1,#2 #d\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("!=",BoolT,false,BoolT,false,BoolT,"#0 = icmp ne i1 #1,#2 #d\n"))
+	AddBuiltInFunc(new BuiltInFuncBinar("xor",BoolT,false,BoolT,false,BoolT,"#0 = xor i1 #1,#2 #d\n"))
 
 	
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float #d\n"))

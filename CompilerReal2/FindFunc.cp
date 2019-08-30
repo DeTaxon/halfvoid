@@ -445,10 +445,15 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == GTypeInt and funcType == GTypeBool return 3
 
 	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
-	if inType is  TypeFuncLambda and funcType is TypeFuncLambda
+	if inType is TypeFuncLambda and funcType is TypePoint and funcType.Base is TypeFunc
+	{
+		return 0
+	}
+	if inType is  TypeFuncLambda and funcType is TypeFuncLambda 
 	{
 		asBI := ((inType.Base)->{TypeFunc^})
 		asBO := ((inType.Base)->{TypeFunc^})
+
 		if asBI.ParsCount == asBO.ParsCount
 		{
 			isGood := true

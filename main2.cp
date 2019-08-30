@@ -1,7 +1,7 @@
 //printf := !(char^ a,...) -> int declare
 
 
-c := !( !(int)& -> int adder) -> void
+c := !( !(int)^ -> int adder) -> void
 {
 	l := 0
 	printf("heh %i\n" , adder(3))

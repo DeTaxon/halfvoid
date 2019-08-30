@@ -11,6 +11,7 @@ SLambda := class extend ObjResult
 	ItNR := int
 	inAlloc := int
 	manSkob := bool
+	justFunc := bool
 
 	StolenNames := Queue.{string}
 	StolenParams := Queue.{MemParam^}
@@ -41,6 +42,11 @@ SLambda := class extend ObjResult
 
 		WorkBag.Push(Down,State_Syntax)
 
+		if justFunc
+		{
+			ResultType = ResultType.Base.GetPoint()
+		}
+
 
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -48,9 +54,12 @@ SLambda := class extend ObjResult
 		if pri == State_Start and not parsedStart
 		{
 			parsedStart = true
+			justFunc = Down.Right.GetValue() == "=>"
 			//WorkBag.Push(this&,State_Syntax)
 			names := Queue.{string}() ; $temp
-			names.Push("lambdaParam" + ItId)
+
+			if not justFunc
+				names.Push("lambdaParam" + ItId)
 
 			pars := Queue.{Type^}()
 
@@ -136,35 +145,38 @@ SLambda := class extend ObjResult
 				if fastUse.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
 			}
-			iter := Up
 			
 			nameIter := 0
 			prevLName := Names[0]
 			
-			while iter != null
+			if not justFunc
 			{
-				if iter.GetValue() == "!()"
+				iter := Up
+				while iter != null
 				{
-					asN := iter->{BoxFuncBody^}
-					ABName := asN.ABox.GetClassName()
-					f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << ItNR << "\n"
-					f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
-					f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
-					f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
-					f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
-					asN.ABox.PrintBoxItems(f,"%Lambda" + nameIter + "Box")
-					if asN.IsMethod
+					if iter.GetValue() == "!()"
 					{
-						fT := asN.MyFuncType
-						//f << "%thisPre = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
-						//f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
-						f << "%this = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
-					}else{
-						//printf("nope\n")
+						asN := iter->{BoxFuncBody^}
+						ABName := asN.ABox.GetClassName()
+						f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << ItNR << "\n"
+						f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
+						f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
+						f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
+						f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
+						asN.ABox.PrintBoxItems(f,"%Lambda" + nameIter + "Box")
+						if asN.IsMethod
+						{
+							fT := asN.MyFuncType
+							//f << "%thisPre = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
+							//f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+							f << "%this = getelementptr " << ABName << " , " << ABName << "* %Lambda" << nameIter << "Box , i32 0,i32 0\n"
+						}else{
+							//printf("nope\n")
+						}
+									
 					}
-								
+					iter = iter.Up
 				}
-				iter = iter.Up
 			}
 			IsRetComplex := false
 			if not fastUse.RetRef
@@ -197,6 +209,7 @@ SLambda := class extend ObjResult
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
+		if justFunc return void
 		if applyed
 		{
 			asL := ResultType->{TypeFuncLambda^}
@@ -205,15 +218,35 @@ SLambda := class extend ObjResult
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{	
-		ResultType.PrintType(f)
-		f << " %T" << inAlloc
+		if justFunc
+		{
+			ResultType.PrintType(f)
+			f << " @lambda" << ItId
+		}else{
+			ResultType.PrintType(f)
+			f << " %T" << inAlloc
+		}
 	}
 	GetName := virtual !() -> string
 	{
+		if justFunc
+		{
+			return "@lambda" + ItId
+		}
 		return "%T" + inAlloc
 	}
-	ApplyFunc := !(Type^ lambTyp) -> void
+	ApplyFunc := !(Type^ lambTyp, bool isFnc) -> void
 	{
+		if isFnc xor justFunc
+		{
+			if isFnc
+			{
+				EmitError("can not change lambda to func")
+			}else{
+				EmitError("can not change func to lambda")
+			}
+			return void
+		}
 		asFType := ((lambTyp.Base)->{TypeFunc^})
 
 		if not manSkob

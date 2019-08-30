@@ -78,8 +78,14 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 	if toType is TypeFuncLambda and item.GetType() is TypeFuncLambda
 	{
 		asN := item->{SLambda^}
-		asN.ApplyFunc(toType)
+		asN.ApplyFunc(toType,false)
 		return item		
+	}
+	if toType is TypePoint and toType.Base is TypeFunc  and item.GetType() is TypeFuncLambda
+	{
+		asN := item->{SLambda^}
+		asN.ApplyFunc(toType,true)
+		return	item
 	}
 	Exc := GetExchange(item,item,toType,isRef)
 
