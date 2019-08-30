@@ -280,8 +280,33 @@ ParseType := !(Object^ Node) -> Type^
 
 				if Node.Line != null
 				for value,key : Node.Line.itAttrs
-				{	
-					box.itAttrs[key] = value ; $temp
+				{
+					if key[0] == '#'
+					{
+						switch key
+						{
+							case "#outer_class"
+								itrC := Node
+								while itrC != null
+								{
+									if itrC is BoxClass
+										break
+									itrC = itrC.Up
+								}
+								if itrC != null
+								{
+									asCl := itrC->{BoxClass^}
+
+									for v2,k2 : asCl.ItAttrs
+									{
+										box.itAttrs[k2] = v2
+									}
+								}
+							case void
+						}
+					}else{
+						box.itAttrs[key] = value ; $temp
+					}
 				}
 
 

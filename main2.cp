@@ -1,19 +1,28 @@
 //printf := !(char^ a,...) -> int declare
 
-
-c := !( !(int)^ -> int adder) -> void
+A := class
 {
-	l := 0
-	printf("heh %i\n" , adder(3))
-	return void
+	c := int
+	pr := !() .{} -> void
+	{
+		if $ttt
+		{
+			printf("good\n")
+		}else{
+			printf("bad\n")
+		}
+	}
+}
+
+B := class
+{
+	h := A ; #outer_class
 }
 
 main := !() -> int
 {
-	c(x => {
-		defer printf("wow\n")
-		return x + 10
-	})
+	k := B ; $ttt
+	k.h.pr()
 	return 0
 }
 
