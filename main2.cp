@@ -14,15 +14,14 @@ A := class
 	}
 }
 
-B := class
+B := class extend A
 {
-	h := A ; #outer_class
 }
 
 main := !() -> int
 {
 	k := B ; $ttt
-	k.h.pr()
+	k.pr()
 	return 0
 }
 

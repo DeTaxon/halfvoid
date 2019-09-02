@@ -107,6 +107,10 @@ AVLMap := class .{@KEY,@VALUE}
 		if resl == null return null
 		return resl.data.second&
 	}
+	Contain := !(KEY dat) -> bool
+	{
+		return TryFind(dat) != null
+	}
 	"~For" := !() .{} -> AVLMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}
 	{
 		return AVLMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)

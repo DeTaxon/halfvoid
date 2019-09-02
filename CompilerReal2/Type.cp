@@ -86,7 +86,11 @@ Type := class {
 	}
 
 }
-ParseType := !(Object^ Node) -> Type^ 
+ParseType := !(Object^ Node) -> Type^
+{
+	return ParseType(Node,null)
+}
+ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^ 
 {
 	if Node == null return null
 	if Node is ObjIndent
@@ -277,6 +281,14 @@ ParseType := !(Object^ Node) -> Type^
 
 				//if Node.inhAttrs != null
 				//	box.itAttrs[key] = Node.inhAttrs^[^key]
+
+				if toAdd != null
+				{
+					for v3,k3 : toAdd^
+					{
+						box.itAttrs[k3] = v3
+					}
+				}
 
 				if Node.Line != null
 				for value,key : Node.Line.itAttrs

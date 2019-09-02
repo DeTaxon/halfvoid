@@ -131,15 +131,14 @@ BoxClassTemplate := class extend Object
 		newTree := ClassTree.Clone()
 		newTree.Up = this&
 		
-		inher := BoxClass^
-		inher = null
+		inher := BoxClass^()
 
 		treeIter := newTree.Down.Right
 
 		if ExtendTree != null
 		{
 			TempConsts = newConsts&
-			inher = ParseType(ExtendTree)->{BoxClass^}
+			inher = ParseType(ExtendTree,itBox.itAttrs&)->{BoxClass^}
 			TempConsts = null
 			if inher == null return null
 			inher = ((inher->{TypeClass^}).ToClass)
@@ -164,11 +163,30 @@ BoxClassTemplate := class extend Object
 		newClass.ItConsts.Push(itBox.itConsts[^])
 		newClass.ItVals.Push(newConsts[^])
 		
-		for itr : relAttrs
+		templs := Queue.{QueueSet.{string}^}() ; $temp
+		templs.Push(this.relAttrs&)
+
+		clIter := inher
+		while clIter != null
 		{
-			inMap := itBox.itAttrs.TryFind(itr)
-			if inMap != null
-				newClass.ItAttrs[itr] = inMap^
+			if clIter.Up?.GetValue() == "!{}{...}"
+			{
+				asTmpl := clIter.Up->{BoxClassTemplate^}
+				templs.Push(asTmpl.relAttrs&)
+			}
+			clIter = clIter.Parent
+		}
+		
+		
+		for itr,itrK : itBox.itAttrs
+		{
+			for templs
+			{
+				if it.Contain(itrK)
+				{
+					newClass.ItAttrs[StrCopy(itrK)] = itr
+				}
+			}
 		}
 
 		Classes.Push(newClass)
@@ -447,7 +465,7 @@ BoxClass := class extend Object
 		if pri == State_CheckBaseClass
 		{
 			if ExtendObject != null{
-				newType := ParseType(ExtendObject)
+				newType := ParseType(ExtendObject,ItAttrs&)
 				if newType == null{
 					EmitError("Can not extend type\n")
 				}else{
