@@ -1,27 +1,26 @@
-//printf := !(char^ a,...) -> int declare
 
-A := class
+hoba := class
 {
 	c := int
-	pr := !() .{} -> void
+	wut := !(!()&->void cb) -> void
 	{
-		if $ttt
-		{
-			printf("good\n")
-		}else{
-			printf("bad\n")
-		}
+		printf("lambd\n")
+		cb()
 	}
-}
+	wut := !(!()^->void cb) -> void
+	{
+		printf("func\n")
+		cb()
+	}
 
-B := class extend A
-{
 }
-
 main := !() -> int
 {
-	k := B ; $ttt
-	k.pr()
+	r := hoba
+	r.wut(() => {
+		pr := 13
+		defer printf("heh %i\n",pr)
+	})
 	return 0
 }
 

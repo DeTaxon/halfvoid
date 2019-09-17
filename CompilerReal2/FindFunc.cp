@@ -408,6 +408,11 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if (inType is TypePoint and funcType == GTypeBool) return 1
 	if inType is TypeFatArr and funcType == GTypeBool return 1
 
+	if inType is TypePoint and inType.Base is TypeFunc  
+		and funcType is TypePoint and funcType.Base is TypeFunc
+	{
+		return 1
+	}
 	if inType is TypePoint and funcType is TypePoint
 	{
 		//if inType.Base.GetType() == "class" and funcType.Base.GetType() == "class"
@@ -445,10 +450,6 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == GTypeInt and funcType == GTypeBool return 3
 
 	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
-	if inType is TypeFuncLambda and funcType is TypePoint and funcType.Base is TypeFunc
-	{
-		return 0
-	}
 	if inType is  TypeFuncLambda and funcType is TypeFuncLambda 
 	{
 		asBI := ((inType.Base)->{TypeFunc^})
@@ -465,7 +466,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 						isGood = false
 				}
 			}
-			if isGood return 0
+			if isGood return 1
 		}
 		
 	}

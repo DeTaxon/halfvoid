@@ -664,38 +664,6 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 	}
 }
-BuiltInTemplateSetLambda := class extend BoxTemplate
-{
-	this := !() -> void
-	{
-		FuncName = "="
-		OutputName = "error"
-
-		emptType := Queue.{Type^}() ; $temp
-		emptType.Push(null->{Type^})
-		emptType.Push(null->{Type^})
-		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
-	}
-	GetPriority := virtual !(FuncInputBox itBox) -> int
-	{
-		pars := ref itBox.itPars
-		if pars.Size() != 2 return 255
-		if not pars[0].second return 255
-		if pars[0].first != pars[1].first return 255
-		if pars[0].first.GetType() != "lambda" return 255
-		return 0
-	}
-	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
-	{
-		pars := ref itBox.itPars
-		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
-		"store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1 #d\n")
-	}
-	DoTheWork := virtual !(int pri) -> void
-	{
-		
-	}
-}
 
 
 BuiltInTemplateFuncWrapper := class extend BoxTemplate
@@ -876,105 +844,6 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 	DoTheWork := virtual !(int pri) -> void
 	{
 		
-	}
-}
-BuiltInLambdaCall := class extend BoxTemplate
-{
-	this := !() -> void
-	{
-		FuncName = "()"
-		IsMethod = true
-
-		pars := Queue.{Type^}()
-
-		MyFuncType = null
-	}
-	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
-	{
-		pars := ref itBox.itPars
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB :=  ((pars[0].first.Base)->{TypeFunc^})
-
-		Pars := Queue.{Type^}() ; $temp
-
-		for i : pars.Size()
-		{
-			if i == 0{
-				Pars.Push(pars[0].first)
-			}else{
-				Pars.Push(asB.Pars[i])
-			}
-		}
-		return GetFuncType(Pars,asB.ParsIsRef,asB.RetType,asB.RetRef,asB.IsVArgs)
-	}
-	GetPriority := virtual !(FuncInputBox itBox) -> int
-	{
-		pars := ref itBox.itPars
-
-		if pars.Size() == 0 return 255
-		if not pars[0].first is TypeFuncLambda return 255
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB := ((pars[0].first.Base)->{TypeFunc^})
-
-		if asB.ParsCount != pars.Size() return 255
-
-		maxCmp := 0
-		for i : pars.Size()
-		{
-			if i > 0
-			{
-				nowCmp := TypeCmp(pars[i].first,asB.Pars[i])
-				if maxCmp < nowCmp maxCmp = nowCmp					
-			}
-		}
-		return maxCmp
-	}
-	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
-	{
-		pars := ref itBox.itPars
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB := ((pars[0].first.Base)->{TypeFunc^})
-
-		IsCompl := false
-
-		if not asB.RetRef {
-			IsCompl = IsComplexType(asB.RetType)	
-		}
-
-		ToSet := "%Wut## = bitcast "sbt+ pars[0].first.GetName() + " #1 to i8*\n"
-			+ "%Func## = load " +pars[0].first.Base.GetName() + "* , " + pars[0].first.GetName() + " #1 #d\n"
-
-
-		if IsCompl or asB.RetType == GTypeVoid{
-			ToSet << "call "
-		}else{
-			ToSet << "#0 = call " 
-		}
-		ToSet << pars[0].first.Base.GetName() << "%Func##(i8*  %Wut##"
-
-		if IsCompl
-		{
-			ToSet << " , " << asB.RetType.GetName() << "* #0"
-		}
-
-		for i : pars.Size()
-		{
-			if i != 0{
-			ToSet << " , "
-
-				ToSet << asB.Pars[i].GetName()
-				if asB.ParsIsRef[i]{
-					ToSet << "*"
-				}
-				ToSet << " #" << (i + 1)
-			}
-		}
-		ToSet << ") #d\n"
-		
-		return new BuiltInFuncMega("()",fun,ToSet.Str())
 	}
 }
 BuiltInTemplateUnroll := class extend BoxTemplate
@@ -1476,7 +1345,6 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateStandartTypeConstructor())
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
-	BuiltInTemplates.Push(new BuiltInTemplateSetLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateNext())
 	//BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 	BuiltInTemplates.Push(new BuiltInTemplateGetRef())
@@ -1502,9 +1370,9 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInPointSub())
 	BuiltInTemplates.Push(new BuiltInPointSubDec())
 
-	BuiltInTemplates.Push(new BuiltInLambdaCall())
 
 	//BuiltInTemplates.Push(GlobalUnroll)
+	CreateLambdaBuilts()
 }
 
 AddBuiltInFunc := !(BoxFunc^ fnc) -> void
@@ -1682,6 +1550,9 @@ CreateBuiltIns := !() -> void
 		AddBuiltInFunc(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = fcmp ule "sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = fcmp ugt "sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = fcmp ult "sbt + it + " #1,#2 #d\n"))
+
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,GTypeInt,"#0 = fptosi "sbt + it + " #1 to i32 #d\n"))
+
 		if it == "float"
 		{
 			AddBuiltInFunc(new BuiltInFuncBinar("**",PType,false,PType,false,PType,"#0 = call float @llvm.pow.f32(float #1,float #2) #d\n"))
@@ -1720,6 +1591,12 @@ CreateBuiltIns := !() -> void
 					"%PrePre## = sitofp i32 #1 to float #d\n"sbt +
 					"%Pre## = fptrunc double 3.14159265389 to float\n" +
 					"#0 = fmul float %PrePre##,%Pre##\n"))
+
+	AddBuiltInFunc( new BuiltInSuffix("ms",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,0.001\n"))
+	AddBuiltInFunc( new BuiltInSuffix("s",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,1.0\n"))
+	AddBuiltInFunc( new BuiltInSuffix("min",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,60.0\n"))
+	AddBuiltInFunc( new BuiltInSuffix("hour",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,3600.0\n"))
+
 	AddBuiltInFunc( new BuiltInFuncBinar("<",GTypeVoidP,false,GTypeVoidP,false,GTypeBool,false,"#0 = icmp ult i8* #1,#2 #d\n"))
 	AddBuiltInFunc( new BuiltInFuncBinar("<=>",GTypeVoidP,false,GTypeVoidP,false,GTypeInt,false,
 				"%PrePre1## = icmp ule i8* #1,#2 #d\n"sbt +

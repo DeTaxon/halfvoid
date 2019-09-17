@@ -234,11 +234,13 @@ main := !(int argc,char^^ argv) -> int
 
 	if not DeferInit2()
 	{
+		for ErrorLog printf(it)
 		printf("internal error, no defer manager\n")
 		return -1
 	}
 	if not ExceptionInit()
 	{
+		for ErrorLog printf(it)
 		printf("internal error, no exception functions\n")
 		return -1
 	}

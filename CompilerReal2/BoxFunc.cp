@@ -259,6 +259,7 @@ BoxTemplate := class extend BoxFunc
 		succedC := 0
 
 		limit := 50
+
 		while true
 		{
 			failedC = 0
@@ -280,7 +281,10 @@ BoxTemplate := class extend BoxFunc
 						}else{
 							succedC++
 						}
-						if not re return false
+						if not re 
+						{
+							return false
+						}
 					}else{
 						succedC++
 					}
@@ -1234,27 +1238,47 @@ BoxFuncBody := class extend BoxFunc
 					f << "* %T" << InAlloc[i] << "\n"
 			}
 			
-			iterP := Parent
+			iterP := Up
 
 			while iterP != null
 			{
-				asN := iterP
-				ABName := asN.ABox.GetClassName()
-				if not iterP.ABox.ItemBag.Empty()
+				if iterP.GetValue() == "x=>x"
 				{
-					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-					asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
-					if asN.IsMethod
+					asL := iterP->{SLambda^}
+					ABName := asL.ABox.GetClassName()
+					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
+					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+
+					if not asL.justFunc
 					{
-						thisId := iterP.ItParams[0].inAllocId
-						fT := asN.MyFuncType
-						f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
-						f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
-					}else{
-						//printf("nope\n")
+						f << "%ItBdPre" << ABox.ItId << " = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName"<<ABox.ItId<<", i32 0,i32 " 
+							<< asL.ItNR << "\n"
+						f << "%ItBd  = load i8*, i8** " << "%ItBdPre" << ABox.ItId << "\n"
+						asL.PrintInhers(f,"ItBd")
 					}
+					break
 				}
-				iterP = iterP.Parent
+				if iterP.GetValue() == "!()" and iterP != this&
+				{
+					asN := iterP->{BoxFuncBody^}
+					ABName := asN.ABox.GetClassName()
+					if not asN.ABox.ItemBag.Empty()
+					{
+						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
+						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+						if asN.IsMethod
+						{
+							thisId := asN.ItParams[0].inAllocId
+							fT := asN.MyFuncType
+							f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
+							f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+						}else{
+							//printf("nope\n")
+						}
+					}
+					break
+				}
+				iterP = iterP.Up
 			}
 
 			if (not this.IsRetComplex) and (MyFuncType.RetType != GetType("void")) and (MyFuncType.RetType.GetName() != "void")

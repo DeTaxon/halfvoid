@@ -14,7 +14,7 @@ WrappedFunc := class extend BoxFuncBody
 		FuncName = "hiddenFunc"
 		OutputName = "hiddenFunc" + ABox.ItId
 
-		WorkBag.Push(this&,State_GetUse)
+		//WorkBag.Push(this&,State_GetUse)
 		MyFuncParamNames = new string[1]
 		MyFuncParamNames[0] = "HiddenName"
 
@@ -30,22 +30,22 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_GetUse
-		{
-			iter := Up
+		//if pri == State_GetUse
+		//{
+		//	iter := Up
 
-			while iter != null
-			{
-				if iter.GetValue() == "!()"
-				{
-					Parent = iter->{BoxFuncBody^}
-					iter = null
-				}else{
-					iter = iter.Up
-				}
-			}
+		//	while iter != null
+		//	{
+		//		if iter.GetValue() == "!()"
+		//		{
+		//			Parent = iter->{BoxFuncBody^}
+		//			iter = null
+		//		}else{
+		//			iter = iter.Up
+		//		}
+		//	}
 
-		}
+		//}
 	}
 	GetValue := virtual !() -> string
 	{
@@ -53,8 +53,22 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	PrintItCall := !(sfile f) -> void
 	{
+		itB := AllocBox^()
+
+		itrU := Up
+		while itrU != null and itrU.GetValue() != "!()" and itrU.GetValue() != "x=>x"
+			itrU = itrU.Up
+
+		assert(itrU != null)
+		if itrU == null 
+			return void
+		if itrU.GetValue() == "x=>x"
+			itB = itrU->{SLambda^}.ABox&
+		if itrU.GetValue() == "!()"
+			itB = itrU->{BoxFuncBody^}.ABox&
+			
 		nId := GetNewId()
-		f << "%T" << nId << " = bitcast " << Parent.ABox.GetAsUse() << " to i8*\n"
+		f << "%T" << nId << " = bitcast " << itB.GetAsUse() << " to i8*\n"
 		f << "call void(i8*)@" << OutputName <<"(i8* %T" << nId<<")"
 		if DebugMode
 		{

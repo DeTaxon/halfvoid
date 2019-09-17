@@ -88,11 +88,11 @@ GetAllocNR := !(Object^ Start,int id) -> int
 			dynCast := iter->{BoxFunc^}
 			return dynCast.ABox.GetNR(id)
 		}
-		//if iter.GetValue() == "x=>x"
-		//{
-		//	asL2 := iter->{SLambda^}
-		//	return asL2.ABox.GetNR(id)
-		//}
+		if iter.GetValue() == "x=>x"
+		{
+			asL2 := iter->{SLambda^}
+			return asL2.ABox.GetNR(id)
+		}
 		if iter.GetValue() == "{...}"
 		{
 			return -2
@@ -111,11 +111,11 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 			dynCast := iter->{BoxFunc^}
 			return dynCast.ABox.GetAlloc(t)
 		}
-		//if iter.GetValue() == "x=>x"
-		//{
-		//	asL2 := iter->{SLambda^}
-		//	return asL2.ABox.GetAlloc(t)
-		//}
+		if iter.GetValue() == "x=>x"
+		{
+			asL2 := iter->{SLambda^}
+			return asL2.ABox.GetAlloc(t)
+		}
 		if iter.GetValue() == "{...}"
 		{
 			return -2

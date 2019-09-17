@@ -29,6 +29,8 @@ stable:
 
 test2: main2.cp
 	./c.out -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -o test2
+test2l: main2.cp
+	./c.out -g main2.cp  -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2g: main2.cp
 	gdb --tui ./test2
 

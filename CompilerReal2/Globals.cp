@@ -46,6 +46,7 @@ GTypeBool := Type^
 GTypeDouble := Type^
 GTypeFloat := Type^
 GTypeInt := Type^
+GTypeU64 := Type^
 GTypeRange := Type^
 GTypeVoid := Type^
 GTypeVoidP := Type^

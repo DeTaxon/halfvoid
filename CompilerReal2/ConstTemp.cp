@@ -1,3 +1,21 @@
+IsSameTypeObject := !(Object^ obj, Object^ toTst,Queue.{ObjConstHolder^} res, resB) -> bool
+{
+	if obj is ObjTemplateType
+	{
+		sNeed := obj->{ObjTemplateType^}
+		if res[^].ItName == sNeed.MyStr
+			return true
+		res.Push(new ObjConstHolder(sNeed.MyStr,toTst))
+		return true
+	}
+	if not CmpConstObjs(obj,toTst)
+	{
+		resB[0] = false
+		return false
+	}
+	return true
+}
+
 IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
 	for it : res
@@ -103,6 +121,41 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 				}
 			}
 		}
+	}
+	if obj.Down?.Right?.Right?.GetValue() == "{}" and obj.Down.Right.GetValue() == "." and itT is TypeClass
+		and obj.Down is ObjIndent
+	{
+		asInd := obj.Down->{ObjIndent^}
+		asCl := itT->{TypeClass^}.ToClass
+		if asInd.MyStr == asCl.ClassName
+		{
+			itms := Queue.{Object^}() ; $temp
+			for it : asInd.Right.Right.Down
+			{
+				if it.GetValue() != ","
+					itms.Push(it)
+			}
+			if itms.Size() != asCl.ItConsts.Size()
+			{
+				resB[0] = false
+				return null
+			}
+			for inA : itms, inB : asCl.ItConsts
+			{
+				if inB is ObjType
+				{
+					IsSameType(inA,inB->{ObjType^}.MyType,res,resB)
+					if resB^ == false
+						return null
+				}else
+				{
+					if not IsSameTypeObject(inA,inB,res,resB)
+						return null
+				}
+			}
+			return itT
+		}
+		
 	}
 	resB[0] = false
 	return null
