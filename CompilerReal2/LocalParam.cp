@@ -187,6 +187,64 @@ GlobalParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
+
+	PrintArrData := !(sfile f, Type^ toPr) -> void
+	{
+		asArr := toPr->{TypeArr^}
+
+		f << asArr.GetName() << " "
+		bs := asArr.Base
+		f << "["
+		for i : asArr.Size
+		{
+			if i != 0
+				f << " , "
+			if bs is TypeClass
+			{
+				f << bs.GetName() << " "
+				PrintClassData(f , bs->{TypeClass^}.ToClass)
+			}else{
+				assert(bs is TypeArr)
+				PrintArrData(f, bs)
+			}
+		}
+		f << "]"
+	}
+	PrintClassData := !(sfile f, BoxClass^ toPr) -> void
+	{
+		addedVal := false
+		f << "{"
+		if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
+			f << "i8 0"
+		}
+		if toPr.ContainVirtual
+		{
+			addedVal = true
+			f << "%ClassTableType" << toPr.ClassId << "* @ClassTableItem" << toPr.ClassId 
+		}
+		for itPr : toPr.Params
+		{
+			if addedVal 
+				f << " , "
+			else addedVal = true
+
+			itCntV := TypeContainVTable(itPr.ResultType)
+			if itPr.ResultType is TypeClass and itCntV
+			{
+				f << itPr.ResultType.GetName() << " "
+				PrintClassData(f,itPr.ResultType->{TypeClass^}.ToClass)
+			}else{
+				if itCntV
+				{
+					assert(itPr.ResultType is TypeArr)
+					PrintArrData(f,itPr.ResultType)
+				}else{
+					f << itPr.ResultType.GetName() << " zeroinitializer"
+				}
+			}
+		}
+		f << "}\n"
+	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "@T" << MainId << " = "//" = dso_local "
@@ -195,7 +253,12 @@ GlobalParam := class extend MemParam
 		ResultType.PrintType(f)
 		if Down == null
 		{
-			f << " zeroinitializer\n"
+			if TypeContainVTable(ResultType)
+			{
+				PrintClassData(f,ResultType->{TypeClass^}.ToClass)
+			}else{
+				f << " zeroinitializer\n"
+			}
 		}else{
 			f << " " << Down.GetName() << "\n"
 		}
@@ -395,8 +458,14 @@ FuncParam := class extend MemParam
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void
 	{
-		ResultType.PrintType(f)
-		f << " %" << ItName
+		if IsRef
+		{
+			ResultType.PrintType(f)
+			f << " %Tpre" << newInd
+		}else{
+			ResultType.PrintType(f)
+			f << " %" << ItName
+		}
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
@@ -405,6 +474,10 @@ FuncParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
+		if IsRef
+		{
+			return "%Tpre" + newInd
+		}
 		return "%" + ItName
 	}
 	

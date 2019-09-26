@@ -762,17 +762,75 @@ BoxClass := class extend Object
 			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
 		}
 
-		for myStuf : this.Params.Size()
+		for itParm,i : this.Params
 		{
-			itParm := this.Params[myStuf]
-			asBase := itParm->{Object^}
-			if asBase.GetType() is TypeClass
+			if not TypeContainVTable(itParm.ResultType)
+				continue
+
+			if itParm.ResultType is TypeArr
 			{
-				clTyp := asBase.GetType()->{TypeClass^}
+				lays := Queue.{int}() ; $temp
+				typeT := itParm.ResultType->{TypeArr^}
+				itBaseT := TypeClass^()
+				while true
+				{
+					lays.Push(typeT.Size)
+
+					if typeT.Base is TypeArr {
+						typeT = typeT.Base->{TypeArr^}
+					}else{
+						assert(typeT.Base is TypeClass)
+						itBaseT = typeT.Base->{TypeClass^}
+						break
+					}
+				}
+				inCl := i
+				if ContainVirtual 
+					inCl += 1
+				for itL,k : lays
+				{
+					
+					f << "br label %L" << i <<"itr" << k << "PreStart\n"
+					f << "L" << i << "itr" << k << "PreStart:\n"
+					f << "br label %L" << i <<"itr" << k << "Start\n"
+					f << "L" << i << "itr" << k << "Start:\n"
+					f << "%L" << i << "itr" << k << "Itr = phi i32 [0," 
+						<< "%L" << i << "itr" << k << "PreStart] ,"
+						<< "[%L" << i << "itr" << k << "Itr2, "
+						<< "%L" << i << "itr" << k << "PreEnd]\n"
+
+				}
+				f << "%Pre" << i << "Set = getelementptr %Class" << ClassId << ", %Class" << ClassId << "* %this"
+					 << ", i32 0, i32 " << inCl
+				for itL, k : lays
+				{
+					f << ",i32 %L" << i << "itr" << k << "Itr"
+				}
+				f << "\n"
+				itBaseT.ToClass.ApplyConstants(f,"%Pre"sbt + i + "Set")
+
+				k := lays.Size() - 1
+				while k >= 0
+				{	itL := lays[k]
+					f << "br label %L" << i << "itr" << k << "PreEnd\n"
+					f << "L" << i << "itr" << k << "PreEnd:\n"
+					f << "%L" << i << "itr" << k << "Itr2 = add i32 1, %L" << i << "itr" << k << "Itr\n"
+					f << "%L" << i << "itr" << k << "Test = icmp eq i32 %L" << i << "itr" << k << "Itr2 , "<< itL << "\n"
+					f << "br i1 " << "%L" << i << "itr" << k << "Test ,"
+						<<"label %L" << i << "itr" << k << "End ,"
+						<<"label %L" << i << "itr" << k << "Start\n"
+					f << "L" << i << "itr" << k << "End:\n"
+
+					k -= 1
+				}
+			}
+			if itParm.ResultType is TypeClass
+			{
+				clTyp := itParm.ResultType->{TypeClass^}
 				classItm := clTyp.ToClass
 				if classItm.ContainVirtual
 				{
-					pos := myStuf
+					pos := i
 					if this.ContainVirtual pos += 1
 					f << "%itrItm" << pos << " = getelementptr %Class" << ClassId << " , %Class" << ClassId
 					f << "* %this" <<", i32 0, i32 " << pos <<"\n"
@@ -832,7 +890,7 @@ BoxClass := class extend Object
 	}
 	ApplyConstants := !(sfile f,string itm) -> void
 	{
-		if ContainVirtual
+		if TypeContainVTable(ClassType)
 		{
 			f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
 			f << itm

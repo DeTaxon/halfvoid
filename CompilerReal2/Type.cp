@@ -1112,3 +1112,23 @@ IsComplexType := !(Type^ typ) -> bool
 	return false
 }
 
+TypeContainVTable := !(Type^ toTst) -> bool
+{
+	if toTst is TypeClass
+	{
+		asCl := toTst->{TypeClass^}.ToClass
+		if asCl.ContainVirtual
+			return true
+		for itP : asCl.Params
+		{
+			if TypeContainVTable(itP.ResultType)
+				return true
+		}
+	}
+	if toTst is TypeArr
+	{
+		return TypeContainVTable(toTst.Base)
+	}
+
+	return false
+}
