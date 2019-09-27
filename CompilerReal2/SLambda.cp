@@ -17,6 +17,8 @@ SLambda := class extend ObjResult
 
 	tupleItem := TupleClass^
 
+	CaptureParams := List.{Tuple.{char^,MemParam^,bool}}
+
 	this := !() -> void
 	{
 		ABox.ItId = GetNewId()
@@ -75,8 +77,6 @@ SLambda := class extend ObjResult
 		{
 			ResultType = ResultType.Base.GetPoint()
 		}
-
-
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -136,7 +136,8 @@ SLambda := class extend ObjResult
 			}
 			Names = names.ToArray()
 
-			asFunc := GetFuncType(pars,null->{bool^},null->{Type^},false,false)
+			asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
+			fastUse = asFunc
 
 			if justFunc
 			{
@@ -146,6 +147,48 @@ SLambda := class extend ObjResult
 			}
 			PopOutNode(Down)
 			PopOutNode(Down)
+
+			if Down.GetValue() == "[]"
+			{
+				count := 0
+				for c : Down.Down
+				{
+					if c.GetValue() != ","
+					{
+						if count == 0
+						{
+							if c.GetValue() == "~ind"
+							{
+								CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false)
+								count = 1
+							}else
+							{
+								EmitError("invalid capture input")
+							}
+						}else{
+							if count == 1
+							{	
+								if c.GetValue() == "&"
+								{
+									CaptureParams.Back().2 = true
+								}else
+								{
+									EmitError("unknown object")
+								}
+							}else{
+								EmitError("too much stuf")
+							}
+						}
+					}else{
+						count = 0
+					}
+				}
+				for c : CaptureParams
+				{
+					printf("capture %s %p %i\n",c.0,c.1,c.2)
+				}
+				PopOutNode(Down)
+			}
 
 			if Down.GetValue() == "{}"
 				manSkob = true
@@ -251,7 +294,7 @@ SLambda := class extend ObjResult
 
 				prevLambd := this&
 				f << "define void @LambdaDelete" << ItId << "(i8* %ToDel" << ItId << ")\n"
-				f << "{"
+				f << "{\n"
 					ABName3 := funcsUp[0].0.GetClassName()
 					f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName3 << " , " << ABName3 << "* null ,i32 0, i32 " << prevLambd.ItNR << ",i32 0\n"
 					f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
@@ -426,6 +469,12 @@ SLambda := class extend ObjResult
 			return "@lambda" + ItId
 		}
 		return "%T" + inAlloc
+	}
+	ApplyFunc := !() -> void
+	{
+		applyed = true
+		WorkBag.Push(Down,State_Start)
+		WorkBag.Push(this&,State_PostGetUse)
 	}
 	ApplyFunc := !(Type^ lambTyp, bool isFnc) -> void
 	{

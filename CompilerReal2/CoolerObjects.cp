@@ -109,7 +109,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 			if Old.GetValue()[0] != itPair[0] return iter
 
 			NewObj := new ObjSkobs(itPair)
-			NewObj.Line = iter.Line
+			NewObj.Line = Old.Line
 			UNext(Old,NewObj,iter)
 
 			TIter := NewObj.Down

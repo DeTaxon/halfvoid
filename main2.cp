@@ -2,24 +2,25 @@
 hoba := class
 {
 	c := int
-	wut := !(!()&->void cb) -> void
+	wut := !(!(int)&->void cb) -> void
 	{
 		printf("lambd\n")
-		cb()
+		cb(1)
+		cb(1)
 	}
-	wut := !(!()^->void cb) -> void
+	wut := !(!(int)^->void cb) -> void
 	{
 		printf("func\n")
-		cb()
+		cb(1)
 	}
 
 }
 main := !() -> int
 {
 	r := hoba
-	r.wut(() => {
-		pr := 13
-		defer printf("heh %i\n",pr)
+	x := 13
+	r.wut((x) ==>[x] {
+		printf("heh %i\n",x)
 	})
 	return 0
 }

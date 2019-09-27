@@ -46,6 +46,20 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		if Down?.Right? is SLambda
+		{
+			asL := Down.Right->{SLambda^}
+			asL.PrintPre(f)
+			itMem := Down->{MemParam^}
+			extrId := GetNewId()
+			f << "store "
+			asL.PrintUse(f)
+			f << " , "
+			itMem.PrintPointUse(f,extrId)
+			f << "\n"
+
+			return void
+		}
 		if ObjType is TypeClass and (not IsTook) and (not IsRef)
 		{
 			asNeed2 := ObjType->{TypeClass^}
@@ -121,6 +135,28 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Down?.GetValue() == "x=>x"
+			{
+				Down.DoTheWork(State_Start)
+				asL := Down->{SLambda^}
+				ObjType = asL.ResultType
+				alId := GetAlloc(this&,ObjType)
+				newT := MemParam^()
+				if alId == -1
+				{
+					newT = new GlobalParam(asL.ResultType,null)
+					newT.Down = Down
+				}else{
+					newT = new LocalParam(asL.ResultType,alId,false)
+				}
+
+				newT.Right= Down
+				newT.Up = this&
+				Down.Left = newT
+				Down = newT
+				asL.ApplyFunc()
+				return void
+			}
 			if Line != null inhAttrs = Line.itAttrs&
 			if Up != null and Up is BoxFile
 			{

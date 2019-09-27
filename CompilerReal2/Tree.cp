@@ -30,8 +30,10 @@ Object := class{
 
 		if Down[^].Up != this&
 		{
+			if it is SLambda and this& is GlobalParam
+				continue
 			this.Print(0)
-			printf("broken Up %s\n")
+			printf("broken Up %s\n",it.GetValue())
 		}
 	}
 
@@ -309,6 +311,7 @@ IsKeyword := !(W) -> bool
 	if W == "catch" return true
 	if W == "throw" return true
 	if W == "on_exception" return true
+	if W == "yield" return true
 
 	return false
 }

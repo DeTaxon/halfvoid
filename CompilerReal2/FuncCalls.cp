@@ -61,6 +61,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		
 		func := asNeed.VirtualCheck.GetFunc(itBox^)
 		if func == null return null
+		PopOutNode(iter.Down.Right)
+		PopOutNode(iter.Down.Right)
 		return MakeSimpleCall(func,iter.Down)
 
 	}
@@ -507,6 +509,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						iter = new PtrToRef(iter)
 					}
+					PopOutNode(iter.Right)
+					PopOutNode(iter.Right)
 					preRes :=  MakeSimpleCall(roll,iter)
 					//if preRes != null {
 					//	preRes.inhAttrs = iter.inhAttrs
@@ -1020,6 +1024,17 @@ NaturalCall := class extend SomeFuncCall
 				if itType is TypeArr
 				{
 					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
+				}
+				if itType is TypeClass
+				{
+					iter = BoxExc(iter,GTypeString,false)
+					if iter == null
+						EmitError("variadic arg can not be casted to string")
+				}
+			}else{
+				if iter.GetValue() != ","
+				{
+					EmitError("can not parse param in variadic args ")
 				}
 			}
 			iter = iter.Right

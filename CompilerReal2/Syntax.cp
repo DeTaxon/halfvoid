@@ -12,6 +12,7 @@ InDataR := !(Object^ obj) -> bool
 	if Val == "~cmd" return true
 	if Val == "~{}type" return true
 	if Val == "~type" return true
+	if Val == "x=>x" return true
 	//if Val == "()" return true
 	return false
 }
@@ -186,11 +187,15 @@ RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
 		{
 			iterNode = iterNode.WhatNext[iterVal]
 			NowRet += 1
-			iterU = iterU.Right
 			if iterNode.IsTerm 
 			{
 				ToRet = NowRet
 			}
+			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()"
+			{
+				return ToRet
+			}
+			iterU = iterU.Right
 		}else
 		{
 			return ToRet
@@ -291,6 +296,13 @@ RuleSLambda := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
+	if It.GetValue() == "[]"
+	{
+		It = It.Right
+		if It == null return 0
+		siz += 1 
+	}
+
 	if It.GetValue() == "{}" return siz
 	if InDataR(It) return siz
 	return 0
@@ -340,7 +352,7 @@ RuleOneFunc := !(void^ itr)-> int
 {
 	It := itr->{Object^}
 
-	if  It.GetValue() != "return" return 0
+	if  It.GetValue() != "return" and It.GetValue() != "yield" return 0
 
 	It = It.Right
 	if It == null return 0

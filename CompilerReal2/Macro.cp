@@ -27,12 +27,23 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		
 	if tr.GetValue() == "()" and tr.Left == null and tr.Down != null and tr.Down.Right == null
 	{
-		prevUp := tr.Up
-		ReplaceNode(tr.Up,tr.Down)
-		if prevUp == itUp {
-			return tr.Down
-		}
-		return itUp
+		//if tr.Down.Right == null
+		//{
+			prevUp := tr.Up
+			ReplaceNode(tr.Up,tr.Down)
+			if prevUp == itUp {
+				return tr.Down
+			}
+			return itUp
+		//}else{
+		//	prevUp := tr.Up
+		//	prevUp.Down = tr.Down
+		//	tr.Down.SetUp(prevUp)
+		//	if prevUp == itUp {
+		//		return tr.Down
+		//	}
+		//	return itUp
+		//}
 	}
 	if tr.GetValue() == "if()"
 	{

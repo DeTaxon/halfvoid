@@ -377,13 +377,13 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
 	return null
 }
 
-FuncTypeTable := Queue.{TypeFunc^}[1024]
+FuncTypeTable := Queue.{TypeFunc^}[9973]
 
 GetFuncTypeCount := !() -> int
 {
 	counter := 0
 	maxSize := 0
-	for i : 1024
+	for i : 9973
 	{
 		itSi := FuncTypeTable[i].Size()
 		counter += itSi
@@ -414,7 +414,7 @@ ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef)
 RecomputeFuncHash := !(int h) -> int
 {	
 	cVal := h + ((h >> 10) and_b 0x0F) // + h div 251460
-	return cVal->{u32} % 1024
+	return cVal->{u32} % 9973
 }
 
 ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
