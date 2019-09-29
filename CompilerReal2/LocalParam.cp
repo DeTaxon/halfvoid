@@ -453,7 +453,7 @@ FuncParam := class extend MemParam
 		if IsRef
 		{
 			ResultType.GetPoint().PrintType(f)
-			f << "%" << ItName
+			f << " %" << ItName
 		}
 	}
 	PrintUse := virtual !(sfile f, int newInd) -> void

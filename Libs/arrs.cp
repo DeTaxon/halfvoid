@@ -358,27 +358,50 @@ Map := class .{@TKey,@TValue}
 			}
 			iter = iter.Next
 		}
-		Start = new DoubleNode.{TKey,TValue}(look,Start)
-		return Start.Value
+		iterr := new DoubleNode.{TKey,TValue}(look,null)
+		if Start == null
+		{
+			Start = iterr
+			return Start.Value
+		}
+		itq := Start 
+		while itq.Next != null
+		{
+			itq = itq.Next
+		}
+		itq.Next = iterr
+		return iterr.Value
 	}
 	"=" := !(Map.{TKey,TValue} toSet) ->void
 	{
 		Start = toSet.Start
 	}
-	Set := !(TKey k, TValue v) -> void
-	{
-		iter := Start
-		while iter
-		{
-			if iter.Key == k 
-			{
-				iter.Value = v
-			}
-			iter = iter.Next
-		}
-		Start = new DoubleNode.{TKey,TValue}(k,Start)
-		Start.Value = v
-	}
+	//Set := !(TKey k, TValue v) -> void
+	//{
+	//	iter := Start
+	//	while iter
+	//	{
+	//		if iter.Key == k 
+	//		{
+	//			iter.Value = v
+	//		}
+	//		iter = iter.Next
+	//	}
+	//	iterr := new DoubleNode.{TKey,TValue}(look,null)
+	//	iterr.Value = v
+	//	if Start == null
+	//	{
+	//		Start = iterr
+	//		return void
+	//	}
+	//	itq := Start 
+	//	while itq.Next != null
+	//	{
+	//		itq = itq.Next
+	//	}
+	//	itq.Next = iterr
+	//	return void
+	//}
 	Exist := !(TKey key) -> bool
 	{
 		iter := Start

@@ -17,7 +17,8 @@ SLambda := class extend ObjResult
 
 	tupleItem := TupleClass^
 
-	CaptureParams := List.{Tuple.{char^,MemParam^,bool}}
+	CaptureParams := List.{Tuple.{char^,MemParam^,bool,MemParam^}}
+	CPIndexes := List.{int}
 
 	this := !() -> void
 	{
@@ -159,7 +160,7 @@ SLambda := class extend ObjResult
 						{
 							if c.GetValue() == "~ind"
 							{
-								CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false)
+								CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false,null->{MemParam^})
 								count = 1
 							}else
 							{
@@ -183,10 +184,6 @@ SLambda := class extend ObjResult
 						count = 0
 					}
 				}
-				for c : CaptureParams
-				{
-					printf("capture %s %p %i\n",c.0,c.1,c.2)
-				}
 				PopOutNode(Down)
 			}
 
@@ -204,6 +201,10 @@ SLambda := class extend ObjResult
 			tupleItem = GetTuple(datRes)
 			inAlloc = GetAlloc(Up,tupleItem.ClassType)
 			ItNR = GetAllocNR(Up,inAlloc)
+		}
+		if pri == State_PrePrint
+		{
+			ApplyCaptures()
 		}
 	}
 	PrintInhers := !(sfile f,char^ startS) -> void
@@ -253,14 +254,83 @@ SLambda := class extend ObjResult
 			}
 			nameIter += 1
 		}
+		if applyedCaptures
+		{
+			k := 0
+			for it : CaptureParams
+			{
+				if it.1 == null
+					continue
+				kk := CPIndexes[k]
+				if it.2
+				{
+						f << "%TPr" << ABox.ItId << "l" << kk << " = getelementptr " << captureType.GetName() << " , "
+						 	<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "\n"
+						f << "%T" << ABox.ItId << "l" << kk << " = load "
+						f << it.1.ResultType.GetName() << "* , " << it.1.ResultType.GetName() << "** %TPr" <<ABox.ItId << "l" << kk << "\n"
+				}else{
+						f << "%T" << ABox.ItId << "l" << kk << " = getelementptr " << captureType.GetName() << " , "
+						 	<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "\n"
+				}
+				k++
+			}
+		}
 	}
+	
+	applyedCaptures := bool
+	GotCapture := bool
+	captureType := Type^
+	cptInAlloc := int
+	cptInAllocNR := int
+	ApplyCaptures := !() -> void
+	{
+		if applyedCaptures
+			return void
+		applyedCaptures = true
+
+		iter := Up
+		while iter != null
+		{
+			if iter is SLambda
+				iter->{SLambda^}.ApplyCaptures()
+			iter = iter.Up
+		}
+
+		toR := new FuncInputBox ; $temp	
+		GotCapture = false 
+
+		for it,i : CaptureParams
+		{
+			if it.1 != null
+			{
+				GotCapture = true
+				CPIndexes.Push(i)
+				if it.2
+				{
+					toR.itPars.Emplace(it.1.ResultType.GetPoint(),true)
+				}else{
+					toR.itPars.Emplace(it.1.ResultType,true)
+				}
+			}
+		}
+		if GotCapture
+		{
+			captureType = GetTuple(toR).ClassType
+			cptInAlloc = GetAlloc(Up,captureType)
+			cptInAllocNR = GetAllocNR(Up,cptInAlloc)
+		}
+	}
+
+
+
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		ABox.PrintGlobal(f)
 		Down.PrintGlobal(f)
 		
 		if applyed
 		{
+			ABox.PrintGlobal(f)
+			
 			funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
 			nameIter := 0
 			prevLName := Names[0]
@@ -385,6 +455,35 @@ SLambda := class extend ObjResult
 
 				}
 				
+				iii := 0
+				for it,i : CaptureParams
+				{
+					if it.1 != null
+					{	
+						newIdd := GetNewId()
+						sii := CPIndexes[iii]
+						if it.2 
+						{
+							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
+								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+							it.1.PrintPointPre(f,newIdd)
+							f << "store "
+							it.1.PrintPointUse(f,newIdd)
+							f << " , " << it.1.ResultType.GetName() << "** "
+							f << "%TSt" << sii << "\n"
+						}else{
+							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
+								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+							it.1.PrintPre(f,newIdd)
+							f << "store "
+							it.1.PrintUse(f,newIdd)
+							f << " , " << it.1.ResultType.GetName() << "* "
+							f << "%TSt" << sii << "\n"
+						}
+						iii += 1
+					}
+				}
+				
 				f << "%RRes"<< ItId << " = bitcast "<< ResultType->{TypeFuncLambda^}.GetPointName() << "* %PreSetPoint" << ItId << " to i8*\n"
 				f << "ret i8* %RRes"<< ItId << "\n"
 				f << "ret i8* null\n"
@@ -449,6 +548,39 @@ SLambda := class extend ObjResult
 			f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %Tpl2" << ItId << "\n"
 			f << "%TplCnt" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 1\n"
 			f << "store i8*(i8*)* @LambdaCopy"<< ItId << ", i8*(i8*)** %TplCnt" << ItId << "\n"
+
+			k := 0
+			for it,i : CaptureParams
+			{
+				if it.1 != null
+				{
+					nwId := GetNewId()
+					if it.2
+					{
+						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
+							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
+						it.3.PrintPointPre(f,nwId)
+						f << "store "
+						it.3.PrintPointUse(f,nwId)
+						f << " , "
+						f << it.1.ResultType.GetName() << "** "
+						f << "%StP" << nwId
+						f << "\n"
+					}else{
+						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
+							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
+						it.3.PrintPre(f,nwId)
+						f << "store "
+						it.3.PrintUse(f,nwId)
+						f << " , "
+						f << it.1.ResultType.GetName() << "* "
+						f << "%StP" << nwId
+						f << "\n"
+
+					}
+					k++
+				}
+			}
 		}
 	}
 	PrintUse := virtual !(sfile f) -> void
@@ -472,12 +604,14 @@ SLambda := class extend ObjResult
 	}
 	ApplyFunc := !() -> void
 	{
+		WorkBag.Push(this&,State_PrePrint)
 		applyed = true
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_PostGetUse)
 	}
 	ApplyFunc := !(Type^ lambTyp, bool isFnc) -> void
 	{
+		WorkBag.Push(this&,State_PrePrint)
 		if isFnc xor justFunc
 		{
 			if isFnc
@@ -509,6 +643,28 @@ SLambda := class extend ObjResult
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
+		for it,i : CaptureParams
+		{
+			if it.0 == name
+			{
+				if it.1 == null
+				{
+					inUp := GetItem(name,Up)
+					if inUp? is ObjParam and inUp.Down? is LocalParam
+					{
+						preRet := new FuncParam("T"sbt + ABox.ItId + "l" + i,inUp.Down.GetType(),true)
+						it.1 = preRet
+						it.3 = inUp.Down->{MemParam^}
+						return preRet
+					}else{
+						EmitError("can not capture parameter "sbt + name)
+					}
+				}
+				if it.1 != null
+					return it.1
+				break
+			}
+		}
 		for i : fastUse.ParsCount 
 		{
 			if Names[i] == name
@@ -796,11 +952,12 @@ BuiltInTemplateCaptureLambda := class extend BoxTemplate
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
+		asPtrN := pars[0].first.Base.GetPoint().GetName()
 		return new BuiltInFuncUno(". not",pars[0].first,false,pars[0].first, 
-		"%Nxt## = getelementptr void(i8*)* ,void(i8*)**  #1 ,i32 1#d\n"sbt +
-		"%PreCl## = load void(i8*)* ,void(i8*)** %Nxt## \n" +
-		"%AlmCl## = bitcast void(i8*)* %PreCl## to void(i8*)**(void(i8*)**)*\n"+
-		"#0 = call void(i8*)**%AlmCl##(void(i8*)** #1)\n" )
+		"%Nxt## = getelementptr "sbt +asPtrN+ " , " + asPtrN +"*  #1 ,i32 1#d\n" +
+		"%PreCl## = load "+asPtrN+" , "+asPtrN+"* %Nxt## \n" +
+		"%AlmCl## = bitcast "+asPtrN+" %PreCl## to "+asPtrN+"*("+asPtrN+"*)*\n"+
+		"#0 = call "+asPtrN+"*%AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
