@@ -3,9 +3,15 @@ BoxReturn := class extend Object
 	IsRetRef := bool
 	IsRetComplex := bool
 	IsRetVoid := bool
+
+	IsYield := bool
+	YieldId := int
+	ResetYield := bool
+
 	OutPathName := string
 	this := !(Object^ toUse) -> void
 	{
+		IsYield = toUse.Down.GetValue() == "yield"
 		if toUse.Down.Right != null PopOutNode(toUse.Down)
 		Down = toUse.Down
 	}
@@ -19,6 +25,21 @@ BoxReturn := class extend Object
 		}
 		if pri == State_Syntax
 		{
+			if IsYield
+			{
+				ii := Up
+				while ii != null
+				{
+					if ii is SLambda
+					{
+						ii->{SLambda^}.Yodlers.Push(this&) ; $uniq
+						YieldId = ii->{SLambda^}.Yodlers.Size()
+						break
+					}
+					ii = ii.Up
+				}
+			}
+			WorkBag.Push(this&,State_PreGetUse)
 			if Down is ObjIndent
 			{
 				asNeed := Down->{ObjIndent^}
@@ -29,6 +50,29 @@ BoxReturn := class extend Object
 			{
 				WorkBag.Push(Down,State_Start)
 				WorkBag.Push(this&,State_GetUse)
+			}
+		}
+		if pri == State_PreGetUse
+		{
+			if not IsYield
+			{
+				ii := Up
+				while ii != null
+				{
+					if ii is SLambda
+					{
+						if ii->{SLambda^}.Yodlers.Size() != 0
+							ResetYield = true
+						break
+					}
+					//if ii.GetValue() == "!()"
+					//{
+					//	if ii->{BoxFuncBody^}.Yodlers.Size() != 0
+					//		ResetYield = true
+					//	break
+					//}
+					ii = ii.Up
+				}
 			}
 		}
 		if pri == State_GetUse
@@ -133,7 +177,19 @@ BoxReturn := class extend Object
 			if not IsRetVoid Down.PrintInBlock(f)
 			//f << "ret void\n"
 		}
+		if IsYield
+		{
+			f << "store i32 " << YieldId << ", i32* %Yodler\n"
+		}
+		if ResetYield
+		{
+			f << "store i32 0,i32* %Yodler\n"
+		}
 		f << "br label %" << OutPathName << "\n"
+		if IsYield
+		{
+			f << "Yield" << YieldId << ":\n"
+		}
 	}
 	GetOutPath := virtual !(Object^ ob, int typ, int size) -> string
 	{

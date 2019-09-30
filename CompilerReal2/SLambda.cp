@@ -13,6 +13,9 @@ SLambda := class extend ObjResult
 	manSkob := bool
 	justFunc := bool
 
+	Yodlers := List.{BoxReturn^}
+	YodlerState := MemParam^
+
 	StolenParams := AVLMap.{char^,LocalParam^}
 
 	tupleItem := TupleClass^
@@ -197,6 +200,9 @@ SLambda := class extend ObjResult
 			datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
 			datRes.itPars.Emplace(copyLFuncTypeP,false)
 			datRes.itPars.Emplace(deleteLFuncTypeP,false)
+			
+			if Yodlers.Size() != null
+				datRes.itPars.Emplace(GTypeInt,false)
 
 			tupleItem = GetTuple(datRes)
 			inAlloc = GetAlloc(Up,tupleItem.ClassType)
@@ -325,6 +331,15 @@ SLambda := class extend ObjResult
 
 	PrintGlobal := virtual !(sfile f) -> void
 	{
+		if Yodlers.Size() != 0
+		{
+			if justFunc
+			{
+				ABox.liveOnGlobal = true
+			}else{
+				//TODO:
+			}
+		}
 		Down.PrintGlobal(f)
 		
 		if applyed
@@ -407,6 +422,16 @@ SLambda := class extend ObjResult
 
 				f << "%PreSetDelete" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 2\n"
 				f << "store void(i8*)* @LambdaDelete"<< ItId <<", void(i8*)** %PreSetDelete" << ItId << "\n"
+
+				if Yodlers.Size() != 0
+				{
+					upABox := funcsUp[0].0
+					f << "%Yodler = getelementptr " << upABox.GetClassName() << " , " 
+						<< upABox.GetClassName() << "* %Lambda0Box, i32 0, i32 " << ItNR << ",i32 3\n"
+					f << "%PreSetYodler" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 3\n"
+					f << "%YodlerValue = load i32 , i32* %Yodler\n"
+					f << "store i32 %YodlerValue , i32* %PreSetYodler" << ItId << "\n"
+				}
 				
 				prevL := SLambda^()
 				for fc : funcsUp, j : 0
@@ -489,6 +514,10 @@ SLambda := class extend ObjResult
 				f << "ret i8* null\n"
 				f << "}\n"
 			}
+			if justFunc and Yodlers.Size() != 0
+			{
+				f << "@Yodler" << ABox.ItId << " = global i32 0\n"
+			}
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
 
 			f << "\n{\n"
@@ -520,8 +549,26 @@ SLambda := class extend ObjResult
 				if fastUse.RetRef f << "*"
 				f << "\n"
 			}
+			if Yodlers.Size() != null
+			{
+				if justFunc
+				{
+					f << "%Yodler = getelementptr i32 , i32* @Yodler" << ABox.ItId << ",i32 0\n"
+				}else{
+					upABox := funcsUp[0].0
+					f << "%Yodler = getelementptr " << upABox.GetClassName() << " , " 
+						<< upABox.GetClassName() << "* %Lambda0Box, i32 0, i32 " << ItNR << ",i32 3\n"
+				}
+				f << "%StartYield = load i32, i32* %Yodler\n"
+				f << "switch i32 %StartYield, label %Yield0 ["
+				for i : Yodlers.Size() + 1
+					f << "i32 " << i << ", label %Yield" << i << "\n"
+				f << "]\n"
+				f << "Yield0:\n"
+			}
 
-			Down.PrintInBlock(f)
+			Down.PrintInBlock(f) // MAIN DATA
+
 			f << "br label %OutLabel" << ABox.ItId << "\n"
 			f << "OutLabel" << ABox.ItId << ":\n"
 
@@ -548,6 +595,11 @@ SLambda := class extend ObjResult
 			f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %Tpl2" << ItId << "\n"
 			f << "%TplCnt" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 1\n"
 			f << "store i8*(i8*)* @LambdaCopy"<< ItId << ", i8*(i8*)** %TplCnt" << ItId << "\n"
+			if Yodlers.Size() != 0
+			{
+				f << "%TpY" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 3\n"
+				f << "store i32 0, i32* %TpY" << ItId << "\n"
+			}
 
 			k := 0
 			for it,i : CaptureParams
@@ -987,11 +1039,12 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
+		asPtrN := pars[0].first.Base.GetPoint().GetName()
 		return new BuiltInFuncUno(". not",pars[0].first,false,GTypeVoid, 
-		"%Nxt## = getelementptr void(i8*)* ,void(i8*)**  #1 ,i32 2#d\n"sbt +
-		"%PreCl## = load void(i8*)* ,void(i8*)** %Nxt## \n" +
-		"%AlmCl## = bitcast void(i8*)* %PreCl## to void(void(i8*)**)*\n"+
-		"call void%AlmCl##(void(i8*)** #1)\n" )
+		"%Nxt## = getelementptr "sbt+asPtrN+" ,"+asPtrN+"*  #1 ,i32 2#d\n"sbt +
+		"%PreCl## = load "+asPtrN+" ,"+asPtrN+"* %Nxt## \n" +
+		"%AlmCl## = bitcast "+asPtrN+" %PreCl## to void("+asPtrN+"*)*\n"+
+		"call void %AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

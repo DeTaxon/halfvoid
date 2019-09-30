@@ -2,6 +2,7 @@
 AllocBox := class 
 {
 	ItId := int
+	liveOnGlobal := bool
 
 	ItemBag := Map.{int,Type^}
 	GetAlloc := !(Type^ ToAdd) -> int
@@ -46,6 +47,10 @@ AllocBox := class
 
 
 			f << "}\n"
+			if liveOnGlobal 
+			{
+				f << "@AllocObject" << ItId << " = global %AllocClass" << ItId << " zeroinitializer\n"
+			}
 		}
 	}
 	GetAsUse := !() -> string
@@ -58,7 +63,13 @@ AllocBox := class
 	{
 		if not ItemBag.Empty()
 		{
-			f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+			if liveOnGlobal
+			{
+				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
+					<< ItId << "* @AllocObject" << ItId << ", i32 0\n"
+			}else{
+				f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+			}
 		}
 
 		PrintBoxItems(f,"%AllocItem" + ItId)
