@@ -211,7 +211,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
 
 			if isLambda 
 			{
-				types.PushFront(TypeTable[11].GetPoint())
+				types.PushFront(GTypeVoidP)
 				someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
 				asN := someType->{TypeFunc^}
 				return asN.GetLambda()

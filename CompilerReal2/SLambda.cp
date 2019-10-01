@@ -13,6 +13,8 @@ SLambda := class extend ObjResult
 	manSkob := bool
 	justFunc := bool
 
+	Created := bool
+
 	Yodlers := List.{BoxReturn^}
 	YodlerState := MemParam^
 
@@ -91,10 +93,16 @@ SLambda := class extend ObjResult
 			//WorkBag.Push(this&,State_Syntax)
 			names := Queue.{string}() ; $temp
 
-			if not justFunc
-				names.Push("lambdaParam" + ItId)
+			pars := Queue.{Type^}() ; $temp
+			isRef := Queue.{bool}() ; $temp
 
-			pars := Queue.{Type^}()
+			if not justFunc{
+				names.Push("lambdaParam" + ItId)
+				pars.Push(GTypeVoidP)
+				isRef.Push(false)
+			}
+
+			isTmpl := false
 
 			skobPos := Object^
 			skobPos = null
@@ -122,6 +130,8 @@ SLambda := class extend ObjResult
 						asN := iter->{ObjIndent^}
 						names.Push(asN.MyStr)
 						pars.Push(null->{Type^})
+						isRef.Push(false)
+						isTmpl = true
 					}else{
 						if iter.GetValue() != ","
 							EmitError("incorrect input of lambda\n")
@@ -129,11 +139,13 @@ SLambda := class extend ObjResult
 					iter = iter.Right
 				}
 			}else{
+				isTmpl = true
 				if Down.GetValue() == "~ind"
 				{
 					asN := Down->{ObjIndent^}
 					names.Push(asN.MyStr)
 					pars.Push(null->{Type^})
+					isRef.Push(false)
 				}else{
 					EmitError("incorrect input items of lambda\n")
 				}
@@ -142,6 +154,29 @@ SLambda := class extend ObjResult
 
 			asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
 			fastUse = asFunc
+
+			if not isTmpl
+			{
+				if not justFunc
+				{
+					Created = true
+					parms = new LocalParam^[pars.Size()]
+					InAlloc = new int[pars.Size()]
+					for it,i : pars
+					{
+						isRf := IsComplexType(it) 
+						isRf = isRf or isRef[i]
+						if isRf {
+							InAlloc[i] = ABox.GetAlloc(it.GetPoint())
+						}else{
+							InAlloc[i] = ABox.GetAlloc(it)
+						}
+						parms[i] = new LocalParam(it,InAlloc[i],isRf)
+					}
+
+					WorkBag.Push(Down,State_Syntax)
+				}
+			}
 
 			if justFunc
 			{
