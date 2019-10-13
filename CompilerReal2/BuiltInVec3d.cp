@@ -88,7 +88,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 				outT.Push(it.first)
 			}
 		}
-		return GetFuncType(outT,retRefArray,newRet,wantRefs,MyFuncType.IsVArgs)
+		return GetFuncType(outT,retRefArray,newRet,wantRefs,false)
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{

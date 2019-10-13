@@ -347,6 +347,17 @@ Map := class .{@TKey,@TValue}
 	this := !() {
 		Start = null
 	}
+	Size := !() -> int
+	{
+		cntr := 0
+		itr := Start
+		while itr != null
+		{
+			cntr += 1
+			itr = itr.Next
+		}
+		return cntr
+	}
 	"[]" := !(TKey look) -> ref TValue
 	{
 		iter := Start

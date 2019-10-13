@@ -121,20 +121,53 @@ SLambda := class extend ObjResult
 
 			if skobPos != null
 			{
-				TrimCommas(skobPos)
+				//TrimCommas(skobPos)
 				iter := skobPos.Down
+				bag := List.{Object^}() ; $temp
 				while iter != null
 				{
-					if iter.GetValue() == "~ind"
+					if iter.GetValue() != ","
 					{
-						asN := iter->{ObjIndent^}
-						names.Push(asN.MyStr)
-						pars.Push(null->{Type^})
-						isRef.Push(false)
-						isTmpl = true
-					}else{
-						if iter.GetValue() != ","
-							EmitError("incorrect input of lambda\n")
+						bag.Push(iter)
+					}
+					if iter.GetValue() == "," or iter.Right == null
+					{
+						switch bag.Size()
+						{
+							case 1
+								if not bag[0] is ObjIndent
+								{
+									EmitError("unknown input objecy\n")
+									return void
+								}
+								asN := bag[0]->{ObjIndent^}
+								names.Push(asN.MyStr)
+								pars.Push(null->{Type^})
+								isRef.Push(false)
+								isTmpl = true
+							case 2
+								if not bag[1] is ObjIndent
+								{
+									EmitError("unknown input object\n")
+									return void
+								}
+								asN2 := bag[1]->{ObjIndent^}
+								names.Push(asN2.MyStr)
+								itTyp := ParseType(bag[0])
+								if itTyp == null
+								{
+									EmitError("can not parse type\n")
+									return void
+								}
+								pars.Push(itTyp)
+								isRef.Push(false)
+							case 0
+							case void
+								//assert(false)
+								EmitError("incorrect input of lambda \n"sbt + bag.Size())
+						}
+						bag.Clean()
+
 					}
 					iter = iter.Right
 				}
@@ -176,6 +209,7 @@ SLambda := class extend ObjResult
 
 					WorkBag.Push(Down,State_Syntax)
 				}
+				WorkBag.Push(this&,State_PrePrint)
 			}
 
 			if justFunc
@@ -246,6 +280,31 @@ SLambda := class extend ObjResult
 		if pri == State_PrePrint
 		{
 			ApplyCaptures()
+			if Yodlers.Size() != 0
+			{
+				if justFunc
+				{
+					ABox.liveOnGlobal = true
+				}else{
+					allFnd := Up
+					while allFnd != null
+					{
+						if allFnd.GetValue() == "!()" or allFnd is SLambda
+						{
+							if allFnd is SLambda
+							{
+								asL := allFnd->{SLambda^}
+								ABox.MoveTo(asL.ABox&)
+							}else{
+								asF := allFnd->{BoxFuncBody^}
+								ABox.MoveTo(asF.ABox&)
+							}
+							break
+						}
+						allFnd = allFnd.Up
+					}
+				}
+			}
 		}
 	}
 	PrintInhers := !(sfile f,char^ startS) -> void
@@ -366,15 +425,6 @@ SLambda := class extend ObjResult
 
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		if Yodlers.Size() != 0
-		{
-			if justFunc
-			{
-				ABox.liveOnGlobal = true
-			}else{
-				//TODO:
-			}
-		}
 		Down.PrintGlobal(f)
 		
 		if applyed
@@ -403,11 +453,16 @@ SLambda := class extend ObjResult
 				}
 				
 				f << "%FatLambdaType" << ItId << " = type {"
-				for bx,i : funcsUp
+				io := 0
+				for bx : funcsUp
 				{
-					if i != 0
+					if io != 0
 						f << ","
-					f << bx.0.GetClassName()
+					if bx.0.parentAlloc == null
+					{
+						f << bx.0.GetClassName()
+						io += 1
+					}
 				}
 				f << "}\n"
 
@@ -423,14 +478,14 @@ SLambda := class extend ObjResult
 					f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to i8*\n"
 					f << "call void @free(i8* %Lambda" << nameIter << "Box)\n"
 				f << "ret void\n"
-				f << "}"
+				f << "}\n"
 
 				prevLName = "ToCpy" + ItId
 
 				prevLambd = this&
 
 				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ")\n"
-				f << "{"
+				f << "{\n"
 				PrintInhers(f,"ToCpy" + ItId)
 				
 				ABName := ""
@@ -543,6 +598,26 @@ SLambda := class extend ObjResult
 						iii += 1
 					}
 				}
+
+				if ABox.parentAlloc != null and not ABox.ItemBag.Empty()
+				{
+					cntr := ABox.InheritNR()
+					nmIn := 0
+					for funcsUp
+					{
+						if it.0 == ABox.parentAlloc
+							break
+						nmIn += 1
+					}
+					f << "%ToSetAllc = getelementptr %FatLambdaType" << ItId << " , %FatLambdaType" << ItId
+					f << "* %PreApply, i32 0, i32 0,i32 " << cntr << "\n"
+					f << "%ItAllocPos = getelementptr " << ABox.parentAlloc.GetClassName() << " , " << ABox.parentAlloc.GetClassName() 
+						<< "* %Lambda0Box, i32 0, i32 " << cntr <<"\n" 
+					f << "%ItAlloc = load " << ABox.GetClassName() << " , " << ABox.GetClassName() 
+						<< "* %ItAllocPos\n" 
+					f << "store " << ABox.GetClassName() << " %ItAlloc,  " << ABox.GetClassName() 
+						<< "* %ToSetAllc\n"
+				}
 				
 				f << "%RRes"<< ItId << " = bitcast "<< ResultType->{TypeFuncLambda^}.GetPointName() << "* %PreSetPoint" << ItId << " to i8*\n"
 				f << "ret i8* %RRes"<< ItId << "\n"
@@ -556,7 +631,12 @@ SLambda := class extend ObjResult
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
 
 			f << "\n{\n"
-			ABox.PrintAlloc(f)
+			
+			if not justFunc
+			{
+				PrintInhers(f,Names[0])
+			}
+			ABox.PrintAlloc(f,"%Lambda0Box")
 			for i : fastUse.ParsCount
 			{
 				f << "store "
@@ -568,11 +648,6 @@ SLambda := class extend ObjResult
 				f << "* %T" << InAlloc[i] << "\n"
 			}
 			
-			
-			if not justFunc
-			{
-				PrintInhers(f,Names[0])
-			}
 			IsRetComplex := false
 			if not fastUse.RetRef
 			{
@@ -752,11 +827,14 @@ SLambda := class extend ObjResult
 				break
 			}
 		}
-		for i : fastUse.ParsCount 
+		if fastUse != null
 		{
-			if Names[i] == name
+			for i : fastUse.ParsCount 
 			{
-				return parms[i]
+				if Names[i] == name
+				{
+					return parms[i]
+				}
 			}
 		}
 

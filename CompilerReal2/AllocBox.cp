@@ -4,6 +4,10 @@ AllocBox := class
 	ItId := int
 	liveOnGlobal := bool
 
+	parentAlloc := AllocBox^
+	inhAllocs := List.{AllocBox^}
+
+
 	ItemBag := Map.{int,Type^}
 	GetAlloc := !(Type^ ToAdd) -> int
 	{
@@ -27,10 +31,29 @@ AllocBox := class
 		}
 		return -1
 	}
+	MoveTo := !(AllocBox^ toMv) -> void
+	{
+		toMv.inhAllocs.Push(this&) ; $uniq
+		parentAlloc = toMv
+	}
+	InheritNR := !() -> int
+	{
+		cntr := parentAlloc.ItemBag.Size()
+		for parentAlloc.inhAllocs
+		{
+			if it == this&
+				break
+			if not it.ItemBag.Empty()
+				cntr += 1
+		}
+		return cntr
+	}
 	//ReturnAlloc := !()
 	PrintGlobal := !(sfile f) -> void
 	{
-		if not ItemBag.Empty()
+		inhP := false
+		inhP = inhP or  not inhAllocs[^].ItemBag.Empty()
+		if (not ItemBag.Empty()) or inhP
 		{
 			f << "%AllocClass" << ItId << " = type {"
 			
@@ -44,6 +67,13 @@ AllocBox := class
 				sIter = sIter.Next
 				i += 1
 			}
+			if not inhAllocs[^].ItemBag.Empty()
+			{
+				if i != 0 f << " , "
+				f << it.GetClassName()
+				i += 1
+			}
+
 
 
 			f << "}\n"
@@ -61,6 +91,10 @@ AllocBox := class
 	}
 	PrintAlloc := !(sfile f) -> void
 	{
+		PrintAlloc(f,null->{char^})
+	}
+	PrintAlloc := !(sfile f,char^ prntName) -> void
+	{
 		if not ItemBag.Empty()
 		{
 			if liveOnGlobal
@@ -68,7 +102,16 @@ AllocBox := class
 				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
 					<< ItId << "* @AllocObject" << ItId << ", i32 0\n"
 			}else{
-				f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+				if parentAlloc != null
+				{
+					assert(prntName != null)
+					cntr := InheritNR()
+					f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << parentAlloc.ItId << " , "
+						f << " %AllocClass" << parentAlloc.ItId << "* " << prntName
+						f << ", i32 0, i32 " << cntr << "\n"
+				}else{
+					f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+				}
 			}
 		}
 

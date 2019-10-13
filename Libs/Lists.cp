@@ -228,6 +228,12 @@ List := class .{@T}
 		preRes[i] = this[^i]
 		return preRes
 	}
+	Clean := !() .{} -> void
+	{
+		Start = null
+		End = null
+		Counter = 0
+	}
 	"<<<" := !(List.{T} toAdd) -> ref List.{T}
 	{
 		if toAdd.Counter == 0

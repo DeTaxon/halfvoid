@@ -472,7 +472,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						box1.itConsts.Push(new ObjStr(asName)) 
 						func := FindFunc(".",iter,box1^,false)
 						if func == null return null
-						return MakeSimpleCall(func,iter.Left)
+						iter = iter.Left
+						PopOutNode(iter.Right)
+						PopOutNode(iter.Right)
+						return MakeSimpleCall(func,iter)
 					}
 
 					if LT is TypeClass
@@ -1029,7 +1032,9 @@ NaturalCall := class extend SomeFuncCall
 				{
 					iter = BoxExc(iter,GTypeString,false)
 					if iter == null
+					{
 						EmitError("variadic arg can not be casted to string")
+					}
 				}
 			}else{
 				if iter.GetValue() != ","
@@ -1274,7 +1279,8 @@ AssemblerCall := class extend NaturalCall
 
 						if miniIter == null
 						{
-							printf("nope %s\n",RealCall.FuncName)
+							printf("nope %i %s\n",num,RealCall.FuncName)
+							assert(false)
 						}
 
 						ToAdd := string
