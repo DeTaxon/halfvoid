@@ -76,7 +76,7 @@ AVLSet := class .{@DATA}
 
 	"<<" := !(DATA data) .{} -> ref AVLSet.{DATA}
 	{
-		Insert(data)
+		this.Insert(data)
 		return this
 	}
 	Insert := !(DATA dat) .{} -> void

@@ -222,7 +222,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		consts := null->{Object^}
 		if iter.GetValue() == "()"
 		{
-			if iter.Left.GetValue() == "(d)" or iter.Left.GetValue() == "d()"
+			if iter.Left.GetValue() == "(d)" //or iter.Left.GetValue() == "d()"
 			{
 				dynCast := (iter.Left)->{ParamCall^}
 
@@ -262,7 +262,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				box := new FuncInputBox()  ; $temp
 				FillAttrs(box^,iter)
 
-				box.itPars.Emplace(iterPre.Left.GetType(),true)
+				box.itPars.Emplace(iterPre.Left.GetType(),iterPre.Left.IsRef())
 
 				while iterD != null
 				{
@@ -282,6 +282,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						iterL.Right = iter.Down
 						iter.Down.Left = iterL
 						iter.SetUp(iterL.Up)
+						TrimCommas(iter)
 					}else{
 						PopOutNode(iter)
 					}
