@@ -49,8 +49,14 @@ AllocBox := class
 		return cntr
 	}
 	//ReturnAlloc := !()
+
+	printedGlobal := bool
 	PrintGlobal := !(sfile f) -> void
 	{
+		if printedGlobal 
+			return void
+		printedGlobal = true 
+
 		inhP := false
 		inhP = inhP or  not inhAllocs[^].ItemBag.Empty()
 		if (not ItemBag.Empty()) or inhP
@@ -82,6 +88,7 @@ AllocBox := class
 				f << "@AllocObject" << ItId << " = global %AllocClass" << ItId << " zeroinitializer\n"
 			}
 		}
+		inhAllocs[^].PrintGlobal(f)
 	}
 	GetAsUse := !() -> string
 	{

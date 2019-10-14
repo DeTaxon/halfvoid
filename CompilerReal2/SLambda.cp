@@ -422,14 +422,15 @@ SLambda := class extend ObjResult
 	}
 
 
-
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		Down.PrintGlobal(f)
-		
 		if applyed
 		{
 			ABox.PrintGlobal(f)
+		}
+		Down.PrintGlobal(f)
+		if applyed
+		{
 			
 			funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
 			nameIter := 0
@@ -539,7 +540,7 @@ SLambda := class extend ObjResult
 							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
 								<< j << ", i32 " << prevNR << ", i32 0\n"
 						}
-						f << "%ToSetPT" << j << " = bitcast void(i8*)** %ToSetP" << j << " to i8*\n"
+						f << "%ToSetPT" << j << " = bitcast "+prevL.ResultType.GetName() + " %ToSetP" << j << " to i8*\n"
 						f << "store i8* %ToSetPT" << j << " , i8** %WherePut" << j << "\n"
 					}
 					if fc.2 != null and fc.2.IsMethod
@@ -621,7 +622,7 @@ SLambda := class extend ObjResult
 				
 				f << "%RRes"<< ItId << " = bitcast "<< ResultType->{TypeFuncLambda^}.GetPointName() << "* %PreSetPoint" << ItId << " to i8*\n"
 				f << "ret i8* %RRes"<< ItId << "\n"
-				f << "ret i8* null\n"
+				//f << "ret i8* null\n"
 				f << "}\n"
 			}
 			if justFunc and Yodlers.Size() != 0
@@ -693,7 +694,6 @@ SLambda := class extend ObjResult
 			}
 			f << "}\n"
 		}
-
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -812,11 +812,23 @@ SLambda := class extend ObjResult
 				if it.1 == null
 				{
 					inUp := GetItem(name,Up)
-					if inUp? is ObjParam and inUp.Down? is LocalParam
+					if (inUp? is ObjParam and inUp.Down? is LocalParam) or inUp is LocalParam or inUp is FuncParam
 					{
-						preRet := new FuncParam("T"sbt + ABox.ItId + "l" + i,inUp.Down.GetType(),true)
+						itMem := MemParam^()
+						if inUp is LocalParam or inUp is FuncParam
+						{
+							itMem = inUp->{MemParam^}
+						}else{
+							if inUp.Down? is LocalParam
+							{
+								itMem = inUp.Down->{MemParam^}
+							}else{
+								assert(false)
+							}
+						}
+						preRet := new FuncParam("T"sbt + ABox.ItId + "l" + i,itMem.GetType(),true)
 						it.1 = preRet
-						it.3 = inUp.Down->{MemParam^}
+						it.3 = itMem
 						return preRet
 					}else{
 						EmitError("can not capture parameter "sbt + name)
