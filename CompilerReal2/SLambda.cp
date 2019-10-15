@@ -857,6 +857,10 @@ SLambda := class extend ObjResult
 			{
 				StolenParams[name] = inUp.Down->{LocalParam^}
 			}
+			if inUp != null and inUp is LocalParam
+			{
+				StolenParams[name] = inUp->{LocalParam^}
+			}
 		}
 
 		return null
