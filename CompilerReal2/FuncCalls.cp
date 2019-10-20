@@ -222,9 +222,8 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		consts := null->{Object^}
 		if iter.GetValue() == "()"
 		{
-			if iter.Left.GetValue() == "(d)" //or iter.Left.GetValue() == "d()"
+			if iter.Left.GetValue() == "(d)" or iter.Left.GetValue() == "d()"
 			{
-				dynCast := (iter.Left)->{ParamCall^}
 
 				if iter.Left.IsRef()  and iter.Left.GetType() is TypePoint
 				{
@@ -236,22 +235,26 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
 					}
 				}else{
-					consts := null->{Object^}
-					if iter.Right != null
+					if iter.Left.GetValue() == "(d)"
 					{
-						if iter.Right.GetValue() == "."
+						dynCast := (iter.Left)->{ParamCall^}
+						consts := null->{Object^}
+						if iter.Right != null
 						{
-							if iter.Right.Right != null
+							if iter.Right.GetValue() == "."
 							{
-								if iter.Right.Right.GetValue() == "{}"
+								if iter.Right.Right != null
 								{
-									consts = iter.Right.Right
+									if iter.Right.Right.GetValue() == "{}"
+									{
+										consts = iter.Right.Right
+									}
 								}
 							}
 						}
+						preRet := OneCall(dynCast.BeforeName, iter,consts,true)
+						if preRet != null return preRet
 					}
-					preRet := OneCall(dynCast.BeforeName, iter,consts,true)
-					if preRet != null return preRet
 				}
 			}
 			if true

@@ -559,14 +559,29 @@ SLambda := class extend ObjResult
 					for it : funcsUp, F : 0
 					{
 						asMNR = it.0.GetNR(prS.inAllocId)
+
+						is2Ref := false
+						if prS is LocalParam and prS->{LocalParam^}.IsRef
+							is2Ref = true
+
 						if asMNR == -1
 							continue
-						f << "%Pre2Get" << ItId << "L" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
-							<< "* %T" << prS.inAllocId << "\n"
-						f << "%PreSet" << ItId << "L" << L << " = getelementptr %FatLambdaType"<< ItId << " , " 
-							<< "%FatLambdaType"<< ItId << "* %PreApply , i32 0, i32 " << F << ",i32 " << asMNR << "\n"
-						f << "store " << prS.ResultType.GetName() << " %Pre2Get" << ItId << "L" << L << " , "
-							<< prS.ResultType.GetName() << "* %PreSet" << ItId << "L" << L << "\n"
+						if is2Ref
+						{
+							f << "%Pre2Get" << ItId << "L" << L << " = load " << prS.ResultType.GetName() << "* , " << prS.ResultType.GetName()
+								<< "** %T" << prS.inAllocId << "\n"
+							f << "%PreSet" << ItId << "L" << L << " = getelementptr %FatLambdaType"<< ItId << " , " 
+								<< "%FatLambdaType"<< ItId << "* %PreApply , i32 0, i32 " << F << ",i32 " << asMNR << "\n"
+							f << "store " << prS.ResultType.GetName() << "* %Pre2Get" << ItId << "L" << L << " , "
+								<< prS.ResultType.GetName() << "** %PreSet" << ItId << "L" << L << "\n"
+						}else{
+							f << "%Pre2Get" << ItId << "L" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
+								<< "* %T" << prS.inAllocId << "\n"
+							f << "%PreSet" << ItId << "L" << L << " = getelementptr %FatLambdaType"<< ItId << " , " 
+								<< "%FatLambdaType"<< ItId << "* %PreApply , i32 0, i32 " << F << ",i32 " << asMNR << "\n"
+							f << "store " << prS.ResultType.GetName() << " %Pre2Get" << ItId << "L" << L << " , "
+								<< prS.ResultType.GetName() << "* %PreSet" << ItId << "L" << L << "\n"
+						}
 					}
 
 				}
