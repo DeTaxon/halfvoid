@@ -49,7 +49,7 @@ TryCompute := !(Object^ ob) -> Object^
 	//{
 	//	
 	//}
-
+	return null
 	lazy := ob  is ObjData
 	if lazy lazy = ob.Down.GetValue() == "!"
 	if lazy lazy = ob.Down.Right.GetValue() == "[]"

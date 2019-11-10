@@ -976,10 +976,27 @@ BuiltInLenArr := class extend BoxTemplate
 		FuncName = "![]"
 		OutputName = "error"
 
-		//emptType := Queue.{Type^}()
-		//emptType.Push(GetType("int"))
-		//emptType.Push(GetType("int"))
-		//MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+	}
+	GetBestType := !(FuncInputBox itBox) -> Type^
+	{
+		pars := ref itBox.itPars
+		expectedType := pars[0].first
+		resPriority := 0
+
+		for pars
+		{
+			chA := TypeCmp(it.first,expectedType)
+			chB := TypeCmp(expectedType,it.first)
+			if chA > chB
+			{
+				expectedType = it.first
+				chA = chB
+			}
+			if chA == 255
+				return null
+		}
+
+		return expectedType
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -988,17 +1005,27 @@ BuiltInLenArr := class extend BoxTemplate
 
 		if consts.Size() != 0 return 255
 		if pars.Size() == 0 return 255
+
 		for pars
-			if not it.first is TypeStandart
-				return 255
+		{
+			if it.first is TypeStandart
+				continue
+			if it.first is TypePoint
+				continue
+			return 255
+		}
+		if GetBestType(itBox) == null
+			return 255
+			
 		return 0
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
 		pars := ref itBox.itPars
 		newQueue := Queue.{Type^}()
-		for pars.Size() newQueue.Push(pars[0].first)
-		return GetFuncType(newQueue,null->{bool^},pars[0].first.GetArray(pars.Size()),false,false)
+		retTyp := GetBestType(itBox)
+		for pars.Size() newQueue.Push(retTyp) ; $temp
+		return GetFuncType(newQueue,null->{bool^},retTyp.GetArray(pars.Size()),false,false)
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{
@@ -1006,7 +1033,7 @@ BuiltInLenArr := class extend BoxTemplate
 		consts := ref itBox.itConsts
 		toCreate := ""sbt
 
-		baseType := pars[0].first
+		baseType :=  fun.RetType.Base
 		retType := baseType.GetArray(pars.Size())
 
 		baseTypeN := baseType.GetName()
