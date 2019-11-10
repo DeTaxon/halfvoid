@@ -382,6 +382,9 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == funcType return 0
 
 	if inType == GTypeFloat and funcType == GTypeDouble return 1
+	if inType == GTypeHalf and funcType == GTypeDouble return 1
+	if inType == GTypeHalf and funcType == GTypeFloat return 1
+	if inType == GTypeInt and funcType == GTypeHalf return 1
 	if inType == GTypeInt and funcType == GTypeDouble return 1
 	if inType is TypeFatArr  and funcType is TypePoint
 	{
@@ -443,8 +446,10 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		if asN.GetFunc("->{}",itFc^,false) != null return 2
 	}
 
-
+	if inType is TypeArr and funcType == GTypeVoidP return 2
 	if inType == GTypeDouble and funcType == GTypeFloat return 2
+	if inType == GTypeDouble and funcType == GTypeHalf return 2
+	if inType == GTypeFloat and funcType == GTypeHalf return 2
 	if inType == TypeTable[16] and funcType is TypeFatArr  return 2
 
 	if inType == GTypeInt and funcType == GTypeBool return 3

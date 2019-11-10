@@ -1520,7 +1520,7 @@ CreateBuiltIns := !() -> void
 	preRes3 := string[2]
 	preRes3[0] = "float"
 	preRes3[1] = "double"
-	for itPre : 2 // half?
+	for itPre : 2
 	{
 		it := preRes3[itPre]
 		PType := GetType(it)
@@ -1560,6 +1560,7 @@ CreateBuiltIns := !() -> void
 			AddBuiltInFunc(new BuiltInFuncBinar("**",PType,false,PType,false,PType,"#0 = call double @llvm.pow.f64(double #1,double #2) #d\n"))
 		}
 	}
+	AddBuiltInFunc(new BuiltInFuncBinar("=",GTypeHalf,true,GTypeHalf,false,GTypeVoid,"store half #2, half* #1 #d\n"))
 
 	AddBuiltInFunc(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1 #d\n"sbt
 										+"#0 = add i1 #2,0\n"))
@@ -1570,6 +1571,19 @@ CreateBuiltIns := !() -> void
 	
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float #d\n"))
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeDouble,"#0 = fpext float #1 to double #d\n"))
+
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeHalf,"#0 = fptrunc float #1 to half #d\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeFloat,"#0 = fpext half #1 to float #d\n"))
+
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeHalf,"#0Pre = fptrunc double #1 to float #d\n"sbt +
+										"#0 = fptrunc float #0Pre to half #d\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeDouble,"#0Pre = fpext half #1 to float #d\n"sbt +
+										"#0 = fpext float #0Pre to double #d\n"))
+
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeHalf,"#0Pre = sitofp i32 #1 to float #d\n"sbt +
+										"#0 = fptrunc float #0Pre to half #d\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeInt,"#0Pre = fpext half #1 to float #d\n"sbt +
+										"#0 = fptosi float #0Pre to double #d\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float #d\n"))
 
@@ -1647,47 +1661,4 @@ RangeFuncs := !() -> void
 
 }
 
-Vec4fFuncs := !() -> void
-{
-	F4T := GetType("vec4f")
-	FT := GetType("float")
-	F4N := F4T.GetName()
-
-
-
-	Typs := Type^[2]
-	Typs[0] = F4T
-	Typs[1] = GetType("quantf")
-	
-	for NTPre: Typs->len
-	{
-		NT := Typs[NTPre]
-		AddBuiltInFunc( new BuiltInFuncBinar("+",NT,false,NT,false,NT,"#0 = fadd "sbt + F4N + " #1 , #2 #d\n"))
-		AddBuiltInFunc( new BuiltInFuncBinar("-",NT,false,NT,false,NT,"#0 = fsub "sbt + F4N + " #1 , #2 #d\n"))
-		AddBuiltInFunc( new BuiltInFuncBinar("/",NT,false,NT,false,NT,"#0 = fdiv "sbt + F4N + " #1 , #2 #d\n"))
-		AddBuiltInFunc( new BuiltInFuncBinar("*",NT,false,NT,false,NT,"#0 = fmul "sbt + F4N + " #1 , #2 #d\n"))
-		AddBuiltInFunc( new BuiltInFuncBinar("=",NT,true,NT,false,GTypeVoid,"store "sbt + F4N + " #2 ," + F4N + "* #1 #d\n"))
-	
-		AddBuiltInFunc(new BuiltInFuncBinar("+=",NT,true,NT,false,NT,"#0pre = load "sbt + F4N +" , "+ F4N +"* #1 #d\n"
-											+"#0 = fadd " + F4N + " #2,#0pre\n"
-											+"store "+ F4N +" #0, "+F4N+"* #1 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar("-=",NT,true,NT,false,NT,"#0pre = load "sbt + F4N +" , "+ F4N +"* #1 #d\n"
-											+"#0 = fsub " + F4N + " #0pre,#2\n"
-											+"store "+ F4N +" #0, "+F4N+"* #1 #d\n"))
-	
-		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
-			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##) #d\n"))
-
-		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,1,NT,"#0 = insertelement "sbt + F4N + " undef, float #1,i32 0 #d\n"))
-		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,2,NT,"%Pre3p## = insertelement "sbt + F4N + " undef, float #1,i32 0 #d\n" + 
-									"#0 = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"))
-		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,3,NT,"%Pre3p## = insertelement "sbt + F4N + " undef, float #1,i32 0 #d\n" + 
-									"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
-									"#0 = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"))
-		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,4,NT,"%Pre3p## = insertelement "sbt + F4N + " undef, float #1,i32 0 #d\n" + 
-									"%Pre2p## = insertelement " + F4N + " %Pre3p##, float #2,i32 1\n"+
-									"%Pre1p## = insertelement " + F4N + " %Pre2p##, float #3,i32 2\n"+
-									"#0	  = insertelement " + F4N + " %Pre1p##, float #4,i32 3\n"))
-	}
-}
 

@@ -1,29 +1,20 @@
 
+PrintIt := !(vec4f v) -> void
+{
+	printf("vec4f %f %f %f %f\n",v.x,v.y,v.z,v.w)
+}
+PrintIt := !(vec3f v) -> void
+{
+	//printf("vec3f %f %f %f\n",v.x,v.y,v.z)
+	PrintIt(v.xyz0)
+}
+
 main := !() -> int
 {
-	k1 := (int adder) ==> {
-		z := 0
-		while true
-		{
-			printf("heh %i\n",z)
-			z += adder
-			yield void
-		}
-		return void
-	}
-	k1(13)
-	k2 := k1.Capture()
+	c := vec2f(1.0f,2.0f)
+	PrintIt((c*7.0f).xyxy)
+	printf("sum %f\n",c.sum)
 
-	k1(1)
-	k2(-1)
-	k1(1)
-	k2(-1)
-	k1(1)
-	k2(-1)
-	k1(1)
-	k2(-1)
-
-	
 	return 0
 }
 

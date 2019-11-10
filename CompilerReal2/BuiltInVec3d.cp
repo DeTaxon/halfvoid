@@ -1,3 +1,22 @@
+GetVecXTypeSize := !(Type^ itY) -> int
+{
+	if itY == GTypeVec4f return 4
+	if itY == GTypeVec3f return 3
+	if itY == GTypeVec2f return 2
+	if itY == GTypeQuantf return 4
+	return 0
+}
+
+GetVecTypeX := !(int Siz) -> Type^
+{
+	switch Siz
+	{
+		case 4 return GTypeVec4f
+		case 3 return GTypeVec3f
+		case 2 return GTypeVec2f
+	}
+}
+
 BuiltInTemplateVec4fGet := class extend BoxTemplate
 {
 	this := !() -> void
@@ -15,24 +34,22 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		consts := ref itBox.itConsts
 
 		if pars.Size() != 1 return 255
-		if pars[0].first != GetType("vec4f") and pars[0].first != GetType("quantf") return 255
+		if pars[0].first != GTypeVec4f and pars[0].first != GTypeQuantf
+			and pars[0].first != GTypeVec3f and pars[0].first != GTypeVec2f return 255
 		if consts.Size() != 1 return 255
 		if consts[0].GetValue() != "~str" return 255
 
 		asNeedPre := consts[0]->{ObjStr^}
 		asNeed := asNeedPre.GetString()
 
-		if asNeed == "x" return 0
-		if asNeed == "y" return 0
-		if asNeed == "z" return 0
-		if asNeed == "w" return 0
+		if asNeed == "0" return 255
+		if asNeed == "sum" return 0
 
-
-		if StrSize(asNeed) == 4
+		if StrSize(asNeed) in 1..4
 		{
 			for i : asNeed
 			{
-				if not (i in "xyzw") return 255
+				if not (i in "xyzw0") return 255
 			}
 			return 0
 		}
@@ -95,9 +112,27 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		asNeedPre := itBox.itConsts[0]->{ObjStr^}
 		asNeed := asNeedPre.GetString()
 		pars := ref itBox.itPars
-		
-		if StrSize(asNeed) == 1
+
+		typName := pars[0].first.GetName()
+
+		outType := pars[0].first
+
+		if asNeed == "sum"
 		{
+			tSize := GetVecXTypeSize(pars[0].first)
+			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat,false, 
+			"#0 = call float @llvm.experimental.vector.reduce.v2.fadd.f32.v"sbt + tSize +
+			"f32(float zeroinitializer, "+ typName + " #1)")
+		}
+		
+		newSize := StrSize(asNeed)
+
+		if GetVecXTypeSize(outType) != newSize 
+			outType = GetVecTypeX(newSize)
+
+		switch  newSize
+		{
+		case 1:
 			x := 0
 			if asNeed == "y" x = 1
 			if asNeed == "z" x = 2
@@ -105,22 +140,102 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 
 			if itBox.itPars[0].second
 			{
-				return new BuiltInFuncUno(".",pars[0].first,true,GTypeFloat,true, "#0 = getelementptr <4 x float> ,<4 x float>* #1, i32 0, i32 "sbt + x + "\n")
+				return new BuiltInFuncUno(".",pars[0].first,true,GTypeFloat,true, "#0 = getelementptr "sbt + typName 
+					+ " ," + typName + "* #1, i32 0, i32 " + x + "\n")
 			}
 			
-			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat, "#0 = extractelement <4 x float> #1, i32 "sbt + x + "\n")
-		}else{
+			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat, "#0 = extractelement "sbt + typName + " #1, i32 " + x + "\n")
+		case 2..4
 			vecData := int[4]
-			for i : 4
+			for i : newSize
 			{
 				if asNeed[i] == 'x' vecData[i] = 0
 				if asNeed[i] == 'y' vecData[i] = 1
 				if asNeed[i] == 'z' vecData[i] = 2
 				if asNeed[i] == 'w' vecData[i] = 3
+				if asNeed[i] == '0' vecData[i] = 4
 			}
-			return new BuiltInFuncUno(".",pars[0].first,false,pars[0].first,"#0 = shufflevector <4 x float> #1, <4 x float> undef , <4 x i32> "sbt +
-					"<i32 " + vecData[0] + ",i32 " + vecData[1] + ",i32 " + vecData[2] + ",i32 " + vecData[3] + ">\n")
+			cmdText := 	"#0 = shufflevector "sbt
+					+ typName + " #1, " + typName + " zeroinitializer , <" + newSize + " x i32>  " + 
+					//"<i32 " + vecData[0] + ",i32 " + vecData[1] + ",i32 " + vecData[2] + ",i32 " + vecData[3] + ">\n"
+					"<"
+			for i : newSize
+			{
+				if i != 0 cmdText << " , "
+				cmdText << "i32 " << vecData[i]
+			}
+			cmdText << ">\n"
+			return new BuiltInFuncUno(".",pars[0].first,false,outType,cmdText)
 		}
 		return null
+	}
+}
+Vec4fFuncs := !() -> void
+{
+	F4T := GetType("vec4f")
+	FT := GetType("float")
+	F4N := F4T.GetName()
+
+	Typs2 := Type^[4]
+	Typs2[0] = GTypeVec4f 
+	Typs2[1] = GTypeQuantf
+	Typs2[2] = GTypeVec3f
+	Typs2[3] = GTypeVec2f
+	for it : Typs2
+	{
+		itName := it.GetName()
+		AddBuiltInFunc( new BuiltInFuncBinar("+",it,false,it,false,it,"#0 = fadd "sbt + itName + " #1 , #2 #d\n"))
+		AddBuiltInFunc( new BuiltInFuncBinar("-",it,false,it,false,it,"#0 = fsub "sbt + itName + " #1 , #2 #d\n"))
+		AddBuiltInFunc( new BuiltInFuncBinar("/",it,false,it,false,it,"#0 = fdiv "sbt + itName + " #1 , #2 #d\n"))
+		AddBuiltInFunc( new BuiltInFuncBinar("*",it,false,it,false,it,"#0 = fmul "sbt + itName + " #1 , #2 #d\n"))
+		AddBuiltInFunc( new BuiltInFuncBinar("=",it,true,it,false,GTypeVoid,"store "sbt + itName + " #2 ," + itName + "* #1 #d\n"))
+
+		AddBuiltInFunc(new BuiltInFuncBinar("+=",it,true,it,false,it,"#0pre = load "sbt + itName +" , "+ itName +"* #1 #d\n"
+											+"#0 = fadd " + itName + " #2,#0pre\n"
+											+"store "+ itName +" #0, "+itName+"* #1 #d\n"))
+		AddBuiltInFunc(new BuiltInFuncBinar("-=",it,true,it,false,it,"#0pre = load "sbt + itName +" , "+ itName +"* #1 #d\n"
+											+"#0 = fsub " + itName + " #0pre,#2\n"
+											+"store "+ itName +" #0, "+itName+"* #1 #d\n"))
+	
+		tS := GetVecXTypeSize(it)
+		
+		assmMulToVal := "%PrePreVec## = insertelement "sbt + itName + " undef , float #2,i32 0 #d\n" +
+				"%PreVec## = shufflevector " + itName + " %PrePreVec## , " + itName + " undef , <" + tS + " x i32> <"
+		for i : tS
+		{
+			if i != 0 assmMulToVal << " , "
+			assmMulToVal << "i32 0"
+		}
+		assmMulToVal << ">" <<
+				"#0 = fmul "sbt + itName + " #1 , %PreVec## #d\n"
+		AddBuiltInFunc( new BuiltInFuncBinar("*",it,false,GTypeFloat,false,it,assmMulToVal))
+
+		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,1,it,"#0 = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n"))
+		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,2,it,"%Pre3p## = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n" + 
+									"#0 = insertelement " + itName + " %Pre3p##, float #2,i32 1\n"))
+
+		if tS >=3 {
+		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,3,it,"%Pre3p## = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n" + 
+									"%Pre2p## = insertelement " + itName + " %Pre3p##, float #2,i32 1\n"+
+									"#0 = insertelement " + itName + " %Pre2p##, float #3,i32 2\n"))
+		if tS >= 4 {
+		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,4,it,"%Pre3p## = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n" + 
+									"%Pre2p## = insertelement " + itName + " %Pre3p##, float #2,i32 1\n"+
+									"%Pre1p## = insertelement " + itName + " %Pre2p##, float #3,i32 2\n"+
+									"#0	  = insertelement " + itName + " %Pre1p##, float #4,i32 3\n"))
+		}}
+	}
+
+	Typs := Type^[2]
+	Typs[0] = F4T
+	Typs[1] = GetType("quantf")
+	
+	for NTPre: Typs->len
+	{
+		NT := Typs[NTPre]
+	
+		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
+			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##) #d\n"))
+
 	}
 }

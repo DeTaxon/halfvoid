@@ -1016,7 +1016,19 @@ CreateStandartTypes := !() -> void
 	TypeTable[14] = new TypeStandart("%RangeTypeFloat","!DIBasicType(name: \"rangef\", size: 32, align: 64,encoding: DW_ATE_float)",8,8)
 	TypeTable[14].Base = TypeTable[9]
 
+
+	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
+
+	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+
+	TypeTable[19] = new TypeStandart("%Vec3f","!DIBasicType(name: \"vec3f\", size: 24, align: 128,encoding: DW_ATE_float)",12,16)
+	TypeTable[20] = new TypeStandart("%Vec2f","!DIBasicType(name: \"vec2f\", size: 16, align: 128,encoding: DW_ATE_float)",8,16)
+
+	TypeTable[21] = new TypeStandart("half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
+
 	GTypeBool =   TypeTable[8]
+	GTypeHalf =   TypeTable[21]
 	GTypeFloat =  TypeTable[9]
 	GTypeDouble = TypeTable[10]
 	GTypeInt =    TypeTable[6]
@@ -1025,12 +1037,10 @@ CreateStandartTypes := !() -> void
 	GTypeVoid =   TypeTable[11]
 	GTypeString = TypeTable[12]
 	GTypeVoidP =  GTypeVoid.GetPoint()
-
-	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
-
-	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
-	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
-
+	GTypeVec4f = TypeTable[17]
+	GTypeQuantf = TypeTable[18]
+	GTypeVec3f = TypeTable[19]
+	GTypeVec2f = TypeTable[20]
 
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
@@ -1069,6 +1079,10 @@ CreateStandartTypes := !() -> void
 	DefsTable[21] = new TypeDef("quantf",TypeTable[18])
 
 	DefsTable[22] = new TypeDef("size_t",TypeTable[3])
+	DefsTable[23] = new TypeDef("half",TypeTable[21])
+
+	DefsTable[24] = new TypeDef("vec3f",GTypeVec3f)
+	DefsTable[25] = new TypeDef("vec2f",GTypeVec2f)
 }
 IsInt := !(Type^ tp) -> bool
 {

@@ -45,12 +45,17 @@ VoidPType := Type^
 GTypeBool := Type^
 GTypeDouble := Type^
 GTypeFloat := Type^
+GTypeHalf := Type^
 GTypeInt := Type^
 GTypeU64 := Type^
 GTypeRange := Type^
 GTypeVoid := Type^
 GTypeVoidP := Type^
 GTypeString := Type^
+GTypeVec4f := Type^
+GTypeQuantf := Type^
+GTypeVec3f := Type^
+GTypeVec2f := Type^
 
 GBoolTrue := Object^
 GBoolFalse := Object^

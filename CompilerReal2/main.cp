@@ -278,6 +278,11 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare i8* @llvm.stacksave() #1\n"
 		fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
+		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
+		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)"
+		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)"
+		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)"
 		fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
 		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
 		fil << "attributes #1 = { nounwind }\n"
@@ -285,6 +290,8 @@ main := !(int argc,char^^ argv) -> int
 		fil << "attributes #3 = { nounwind noreturn}\n"
 		fil << "%OpaqType = type {i1}\n"
 		fil << "%Vec4f = type <4 x float>\n"
+		fil << "%Vec3f = type <3 x float>\n"
+		fil << "%Vec2f = type <2 x float>\n"
 		StrContainer.PrintGlobal(fil)
 
 		Classes[^].PrintStruct(fil)

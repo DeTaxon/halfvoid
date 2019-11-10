@@ -1,8 +1,5 @@
 GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFunc^
 {
-
-	VT := GTypeVoidP
-	VPT := VT.GetPoint()
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
@@ -38,6 +35,10 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 			box.itPars.Emplace(itemType,isRef)
 			return GlobalExcArr^.GetFunc(box^)
 		}
+		if ToType == GTypeVoidP
+		{
+			return GetExcPointers(itemType,ToType)
+		}
 	}
 
 
@@ -66,7 +67,13 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 	{
 		return ExcPointers[from][to]
 	}
-
+	
+	if from is TypeArr and to == GTypeVoidP
+	{
+		toAdd := new BuiltInFuncUno("->{}",from,true,to,"#0 = bitcast "sbt + from.GetName() + "* #1 to " + to.GetName()+"\n")
+		ExcPointers[from][to] = toAdd
+		return toAdd
+	}
 	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast "sbt + from.GetName() + " #1 to " + to.GetName()+"\n")
 	ExcPointers[from][to] = toAdd
 	return toAdd

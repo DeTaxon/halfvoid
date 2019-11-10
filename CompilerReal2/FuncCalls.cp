@@ -1024,7 +1024,7 @@ NaturalCall := class extend SomeFuncCall
 			itType := iter.GetType()
 			if itType != null
 			{
-				if itType == GTypeFloat
+				if itType == GTypeFloat or itType == GTypeHalf
 				{
 					iter = BoxExc(iter,GTypeDouble,false)
 				}
