@@ -985,14 +985,8 @@ BuiltInLenArr := class extend BoxTemplate
 
 		for pars
 		{
-			chA := TypeCmp(it.first,expectedType)
-			chB := TypeCmp(expectedType,it.first)
-			if chA > chB
-			{
-				expectedType = it.first
-				chA = chB
-			}
-			if chA == 255
+			expectedType = TypeFight(it.first,expectedType)
+			if expectedType == null
 				return null
 		}
 

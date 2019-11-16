@@ -12,7 +12,14 @@ StringBuilder := class .{@BufSize}{
 	"<<" := !(char^ adding) self_return
 	{
 		sLen := strlen(adding)
-
+		return addStrSpan(adding,sLen)
+	}
+	"<<" := !(StringSpan adding) self_return
+	{
+		return addStrSpan(adding.ptr,adding.Size())
+	}
+	addStrSpan := !(char^ adding,int sLen) self_return
+	{
 		if sLen == 0 return this
 
 		//TODO: remove temp here

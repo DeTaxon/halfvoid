@@ -36,35 +36,41 @@ TryCompute := !(Object^ ob) -> Object^
 		}
 		if it.IsConst return it
 	}
-	if ob is ObjStr and ob.Right != null
-		and ob.Right is ObjSuffix
+	if ob.Down?.Right? is ObjSuffix
 	{
-		asStr := ob->{ObjStr^}
-		asSuf := ob.Right->{ObjSuffix^}
-		val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
-		if val != null return val
+		itItm := ob.Down
+		asSuf := ob.Down.Right->{ObjSuffix^}
+		if asSuf.MyStr == "f" and (itItm is ObjInt or itItm is ObjDouble)
+		{
+			newItm := new ObjDouble(0.0)
+			newItm.ResultType = GTypeFloat
+			if itItm isObjInt
+			{
+				newItm.MyDouble = itItm->{ObjInt^}.MyInt
+			}else{
+				newItm.MyDouble = itItm->{ObjDouble^}.MyDouble
+			}
+			return newItm
+		}
+		//val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
+		//if val != null return val
 	}
 	//if ob.Down != null and ob.Down.IsConst and ob.Down.Right != null and ob.Down.Right.Right != null
 	//and ob.Down.Right.Right.GetValue() == ".." and ob.Down.Right.Right.IsConst and Ob.Down.GetType
 	//{
 	//	
 	//}
-	return null
+	//return null
 	lazy := ob  is ObjData
 	if lazy lazy = ob.Down.GetValue() == "!"
 	if lazy lazy = ob.Down.Right.GetValue() == "[]"
 	if lazy
 	{
-		
+		SyntaxCompress(ob.Down.Right,PriorityData)
 		iterR := ob.Down.Right.Down
-		typ := ParseType(iterR)
-		Sutf := Queue.{Object^}()
+		typ := Type^()
+		Sutf := Queue.{Object^}() ; $temp
 		
-		if typ != null
-		{
-			iterR = iterR.Right
-			if iterR.GetValue() == "," iterR = iterR.Right
-		}
 		while iterR != null
 		{
 			if iterR.GetValue() != ","
@@ -82,7 +88,10 @@ TryCompute := !(Object^ ob) -> Object^
 						for i : start..end Sutf.Push(new ObjInt(i))
 
 						iterR = iterR.Right.Right
-						
+
+						if typ == null typ = GTypeInt
+						typ = TypeFight(typ,GTypeInt)
+						if typ == null return null
 					}else{
 						return null
 					}
@@ -90,12 +99,10 @@ TryCompute := !(Object^ ob) -> Object^
 					itm := TryCompute(iterR)
 					if itm == null 
 					{
-						//return null
 						if iterR.GetType() == GTypeRange
 						{
 							if iterR.Down.GetType() != GTypeInt return null
 							if iterR.Down.Right.GetType() != GTypeInt return null
-							//return null
 
 							start := iterR.Down->{ObjInt^}.MyInt
 							end := iterR.Down.Right.Right->{ObjInt^}.MyInt
@@ -103,18 +110,24 @@ TryCompute := !(Object^ ob) -> Object^
 							if start > end return null
 
 							for i : start..end Sutf.Push(new ObjInt(i))
+
+							if typ == null typ = GTypeInt
+							typ = TypeFight(typ,GTypeInt)
+							if typ == null return null
 						}else{
 							return null
 						}
 					}else{
 						Sutf.Push(itm)
+						if typ == null typ = itm.GetType()
+						typ = TypeFight(typ,itm.GetType())
+						if typ == null return null
 					}
 				}
 			}
 			iterR = iterR.Right
 		}
-		if typ == null and Sutf.Size() == 0 return null
-		typ = Sutf[0].GetType()
+		if typ == null or Sutf.Size() == 0 return null
 		if typ == GTypeRange typ = GTypeInt
 		return new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray())
 	}

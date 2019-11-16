@@ -1146,3 +1146,18 @@ TypeContainVTable := !(Type^ toTst) -> bool
 
 	return false
 }
+TypeFight := !(Type^ A,Type^ B) -> Type^
+{
+	chA := TypeCmp(A,B)
+	chB := TypeCmp(B,A)
+	if chA != 255 and chB != 255
+	{
+		if chA < chB
+		{
+			return B
+		}
+		return A
+	}
+	return null
+}
+

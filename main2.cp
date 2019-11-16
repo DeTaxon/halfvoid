@@ -2,8 +2,8 @@
 
 main := !() -> int
 {
-	z := 13
-	for it : ![1,3.4f,5,8,3.2]
+	z := 1.7f
+	for it : ![1.0f,3.4f,5.0f,8.0f,3.2f,0.0f]
 	{
 		printf("heh %f\n",it)
 	}

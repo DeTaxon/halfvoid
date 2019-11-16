@@ -156,7 +156,7 @@ ObjDouble := class extend ObjConst
 	"this" := !(double Value) -> void
 	{
 		MyDouble = Value
-		ResultType = GetType("double")
+		ResultType = GTypeDouble
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -170,14 +170,37 @@ ObjDouble := class extend ObjConst
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
-		f << " " << MyDouble
+		f << " " << GetName()
 	}
 	GetType := virtual !() -> Type^
 	{
-		return GetType("double")
+		return ResultType
 	}
 	GetName := virtual !() -> string
 	{
+		if ResultType == GTypeFloat
+		{
+			preRes := "0x"sbt
+			asF := MyDouble
+			asI := asF&->{u8^}
+			sts := "0123456789ABCDEF"
+			for i : 4
+			{
+				itI := asI[7-i]
+				v := (itI >> 4) and_b 0x0F
+				preRes << sts[v..1]
+				v := itI  and_b 0x0F
+				preRes << sts[v..1]
+			}
+			itI := asI[3] and_b 0xC0
+			v := (itI >> 4) and_b 0x0F
+			preRes << sts[v..1]
+			v := itI  and_b 0x0F
+			preRes << sts[v..1]
+
+			preRes << "000000"
+			return preRes.Str()
+		}
 		buf := char[256]
 		sprintf(buf,"%f",MyDouble)
 		return buf.Copy()
@@ -185,6 +208,7 @@ ObjDouble := class extend ObjConst
 	Clone := virtual !() -> Object^
 	{
 		PreRet := new ObjDouble(MyDouble)
+		PreRet.MyDouble = MyDouble
 		PreRet.Line = Line
 		return PreRet
 	}
@@ -321,19 +345,28 @@ ObjArray := class extend ObjConst
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		asBase := itType->{Type^}
+		arrItm := asBase.Base
 		for itType.Size Items[it].PrintGlobal(f)
 		f << "@Arr" << MyTmpId << " = global " << asBase.GetName() << " ["
 		for i : itType.Size 
 		{
 			if i > 0 f << " , "
-			f << Items[i].GetType().GetName() << " " << Items[i].GetName()
+			itm := Items[i]
+			if arrItm == GTypeDouble and itm is ObjInt
+			{
+				asInt := itm->{ObjInt^}.MyInt
+				f << arrItm.GetName() << " " << asInt << ".0"
+			}else if arrItm == GTypeDouble and itm.GetType() == GTypeFloat and itm is ObjDouble{
+				asFlt := itm->{ObjDouble^}.MyDouble
+				f << arrItm.GetName() << " " << asFlt
+			}else{
+				f << arrItm.GetName() << " " << itm.GetName()
+			}
 		}
 		f << "]\n"
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		//asBase := itType->{Type^}
-		//f << "%ArrTmp" << MyTmpId << " = getelementptr " << asBase.GetName() << " , " << asBase.GetName() << "* @Arr" << MyTmpId << " , i32 0, i32 0\n"
 		f << "%ArrTmp" << MyTmpId << " = load "
 		ResultType.PrintType(f)
 		f << " , "
