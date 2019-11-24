@@ -1,9 +1,17 @@
 
+tst := !(@T... args) -> void
+{
+	printf("sz %f %f\n",args...)
+}
 
 main := !() -> int
 {
-	z := max(1.0f,3,2.3f)
-	printf("g %f\n",z)
+	printf("heh\n")
+	tst(1.0 ,2.0 )
+	tst(4.0f,3.0 )
+	tst(5.0 ,6.0f)
+	tst(8.0f,7.0f)
+	printf("hoh\n")
 	return 0
 }
 

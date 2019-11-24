@@ -37,7 +37,17 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 	{
 		sNeed := obj->{ObjTemplateType^}
 		if res[^].ItName == sNeed.MyStr
+		{
+			if it.Down is ObjType
+			{
+				asT := it.Down->{ObjType^}
+				t2 := TypeFight(asT.MyType,itT)
+				if t2 == null resB^ = false
+				asT.MyType = t2
+				return t2
+			}
 			return itT
+		}
 		res.Push(new ObjConstHolder(sNeed.MyStr,(new ObjType(itT))->{Object^}))
 		return itT
 	}else

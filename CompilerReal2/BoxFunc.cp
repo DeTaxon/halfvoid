@@ -170,7 +170,7 @@ IsTemplate := !(Object^ sk) -> bool
 			Counter = 0
 		} else Counter += 1
 
-		if iter is ObjData and iter.Down?.Right?.GetValue() == "..."  and iter.Down is ObjIndent
+		if iter is ObjData and iter.Down?.Right?.GetValue() == "..."
 		{
 			return true
 		}
@@ -239,8 +239,6 @@ BoxTemplate := class extend BoxFunc
 	CopyTree := Object^
 
 	EndPos := Object^
-	//FuncsType := Queue.{TypeFunc^}
-	//FuncsConsts := Queue.{Queue.{Object^}}
 
 	NewFuncs := AVLMap.{int,Stack.{TemplateData}}
 
@@ -251,19 +249,28 @@ BoxTemplate := class extend BoxFunc
 
 	IsVirtual := bool
 
-	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res) -> bool
+	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res,Type^^^ resTyps) -> bool
 	{
+		extraWalk := true
 		re := true
 
 		failedC := 0
 		succedC := 0
 
 		limit := 50
+		if resTyps != null 
+			resTyps^ = new Type^[itBox.itPars.Size()] ; $temp
 
-		while true
+
+		expectedChecks := FuncsTTemps.Size()
+		if vargTypeBarrier != null
+			expectedChecks += itBox.itPars.Size() - MyFuncType.ParsCount
+
+		while expectedChecks != 0
 		{
 			failedC = 0
 			succedC = 0
+
 			metPars := false
 			for fT : FuncsTTemps, i: 0, par : itBox.itPars
 			{
@@ -275,7 +282,9 @@ BoxTemplate := class extend BoxFunc
 				{
 					if fT != null
 					{
-						if IsSameType(fT,par.first,res,re&) == null
+						rTp := IsSameType(fT,par.first,res,re&)
+						if resTyps != null resTyps^[i] = rTp
+						if rTp == null
 						{
 							failedC++
 						}else{
@@ -293,14 +302,36 @@ BoxTemplate := class extend BoxFunc
 					failedC++
 				}
 			}
-			if metPars and succedC == MyFuncType.ParsCount
+			if vargTypeBarrier != null
+			{
+				for par,i : itBox.itPars
+				{
+					if i < MyFuncType.ParsCount continue
+
+					rTp := IsSameType(vargTypeBarrier.Down.Down,par.first,res,re&)
+					if resTyps != null resTyps^[i] = rTp
+					if not re return false
+					if rTp == null{
+						failedC++
+					}else{
+						succedC++
+					}
+				}
+			}
+			if (metPars and succedC == MyFuncType.ParsCount) or  succedC == expectedChecks
+			{
+				if extraWalk {
+					extraWalk = false
+					continue
+				}
 				break
-			if succedC == FuncsTTemps.Size()
-				break
-			if failedC == FuncsTTemps.Size()
+			}
+			if failedC == expectedChecks{
 				return false
+			}
 			limit -= 1
 			if limit <= 0 {
+				printf("status %i %i %i\n",succedC,failedC,expectedChecks)
 				printf("types\n")
 				printf("typ %s\n",itBox.itPars[^].first.GetGoodName())
 				EmitError("compiler error")
@@ -325,6 +356,8 @@ BoxTemplate := class extend BoxFunc
 
 	CheckBottomParams := !(Object^ firstNon) -> void
 	{
+		if firstNon == vargTypeBarrier
+			return void
 		if ContainTType(firstNon,TTNames)
 		{
 			FuncsTTemps.Push(firstNon)
@@ -411,8 +444,8 @@ BoxTemplate := class extend BoxFunc
 		if itBox.itConsts.Size() != this.ItConsts.Size() return 255
 
 		st := Queue.{ObjConstHolder^}()
-		if not CheckTypes(itBox,st) {
-		return 255
+		if not CheckTypes(itBox,st,null) {
+			return 255
 		}
 		
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
@@ -454,6 +487,17 @@ BoxTemplate := class extend BoxFunc
 				outT.Push(FType.Pars[it])
 			}
 		}
+
+		resTp := Type^^
+		parConsts := Queue.{ObjConstHolder^}()
+		CheckTypes(itBox,parConsts,resTp&)
+
+		for it,i : outT
+		{
+			if resTp[i] != null
+				it = resTp[i]
+		}
+
 		newRet := MyFuncType.RetType
 		retRefArray := MyFuncType.ParsIsRef
 
@@ -469,7 +513,11 @@ BoxTemplate := class extend BoxFunc
 			for it, i : itBox.itPars
 			{
 				if i < outT.Size() continue
-				outT.Push(it.first)
+				if resTp[i] != null printf("heh %i %s\n",i,resTp[i].GetName())
+				preSet := it.first
+				if resTp[i] != null
+					preSet = resTp[i]
+				outT.Push(preSet)
 			}
 		}
 		return GetFuncType(outT,retRefArray,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
@@ -482,7 +530,7 @@ BoxTemplate := class extend BoxFunc
 		outT := Queue.{Type^}() ; $temp
 
 		parConsts := Queue.{ObjConstHolder^}()
-		CheckTypes(itBox,parConsts)
+		CheckTypes(itBox,parConsts,null)
 
 		TempReturnConsts = parConsts& //TODO: replace
 		newFuncType := CreateFuncPointer(itBox)
@@ -530,10 +578,6 @@ BoxTemplate := class extend BoxFunc
 		WorkBag.Push(newFunc,State_Start)
 
 		toAddLine.Emplace(cmpFuncF,newFunc)
-
-		//if toAddLine.Size() >= 10{
-		//	printf("heh %i %s %i\n",toAddLine.Size(),FuncName,sHash)
-		//}
 
 		if EndPos == null
 		{
@@ -609,6 +653,8 @@ BoxFunc := class extend Object
 
 	vargsName := string
 	funcUserParamsCount := int
+
+	vargTypeBarrier := Object^
 
 	GetType := virtual !() -> Type^
 	{
@@ -742,7 +788,7 @@ BoxFunc := class extend Object
 		Stuff.Push(root.Down[^])
 
 
-		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) 
+		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp 
 
 		IsParRef := false
 		indType := 0
@@ -752,36 +798,45 @@ BoxFunc := class extend Object
 			{
 				if Pars.Size() == 2
 				{
-					MayType := ParseType(Pars[0])
-					indType += 1
-					MayName := ""
-
-					if MayType == null and not ContainTType(Pars[0])
+					if Pars[0].Down?.Right.GetValue() == "..."
 					{
-						if ContainTType(Pars[0]) or ContainTT
+						vargTypeBarrier = Pars[0]
+						if not Pars[1] is ObjIndent {
+							EmitError("it should be indent")
+							return false
+						}
+						vargsName = Pars[1]->{ObjIndent^}.MyStr
+					}else{
+						MayType := ParseType(Pars[0])
+						indType += 1
+						MayName := ""
+
+						if MayType == null and not ContainTType(Pars[0])
 						{
-							ContainTT = true
-						}else
-						{
-							if not IsTempl
+							if ContainTType(Pars[0]) or ContainTT
 							{
-								printf("can not parse type at %i\n",indType)
-								return false
+								ContainTT = true
+							}else
+							{
+								if not IsTempl
+								{
+									printf("can not parse type at %i\n",indType)
+									return false
+								}
 							}
 						}
-					}
 
-					if Pars[1] is ObjIndent
-					{
-						MayName = (Pars[1]->{ObjIndent^}).MyStr
-					}else{
-						printf("only indentificators allowed, got %s\n",Pars[1].GetValue())
-						return false
-					}
-					Typs.Push(MayType)
-					TypsIsRef.Push(IsParRef) // TODO
-					TypsNams.Push(StrCopy(MayName))
-					
+						if Pars[1] is ObjIndent
+						{
+							MayName = (Pars[1]->{ObjIndent^}).MyStr
+						}else{
+							printf("only indentificators allowed, got %s\n",Pars[1].GetValue())
+							return false
+						}
+						Typs.Push(MayType)
+						TypsIsRef.Push(IsParRef) // TODO
+						TypsNams.Push(StrCopy(MayName))
+					}	
 					Pars.Clean()		
 				}
 				if Pars.Size() == 1
