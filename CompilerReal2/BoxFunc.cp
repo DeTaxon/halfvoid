@@ -476,7 +476,6 @@ BoxTemplate := class extend BoxFunc
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{
-
 		getTempData = itBox&
 		defer getTempData = null
 
@@ -511,6 +510,7 @@ BoxTemplate := class extend BoxFunc
 			somePos += 1
 		}
 		newFunc := GetNewFunc(itBox,newFuncType)
+		assert(newFunc != null)
 		if IsSelfReturn
 			newFunc.IsSelfReturn = true
 		if IsPassAttrs
@@ -520,6 +520,7 @@ BoxTemplate := class extend BoxFunc
 		{
 			newFunc.ItVals.Push(it)
 		}
+
 		for itBox.itConsts
 			newFunc.ItConsts.Push(it)
 		for value,key : itBox.itAttrs 	{ newFunc.ItAttrs[key] = value}

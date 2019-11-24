@@ -2,12 +2,8 @@
 
 main := !() -> int
 {
-	z := 1.7f
-	for it : ![1.0f,3.4f,5.0f,8.0f,3.2f,0.0f]
-	{
-		printf("heh %f\n",it)
-	}
-
+	z := max(1.0f,3,2.3f)
+	printf("g %f\n",z)
 	return 0
 }
 

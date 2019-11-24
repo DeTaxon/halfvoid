@@ -487,9 +487,11 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 		asN := consts[1]->{ObjStr^}
 		St := asN.GetString()
 
-		if St == "TypeSize" return 0
+		if St == "TypeSize" or St == "FatTypeSize" 
+		{
+			return 0
+		}
 		if St == "Align" return 0
-		if St == "FatTypeSize" return 0
 		return 255
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
@@ -519,13 +521,14 @@ BuiltInTemplateTypeInfo := class extend BoxTemplate
 			if St == "Align" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0  #d\n")
 			if St == "FatTypeSize" return new BuiltInFuncZero("->",intT,false,"#0 = add i32 8, 0  #d\n")
 		}else
-		if itT is TypeClass
+		if itT is TypeClass or itT is TypeArr
 		{
 			itT2 := itT->{TypeClass^}
 			if St == "TypeSize" return new BuiltInFuncClassInfo(itT2,0)
 			if St == "Align" return new BuiltInFuncClassInfo(itT2,1)
 			if St == "FatTypeSize" return new BuiltInFuncClassInfo(itT2,2)
 		}
+		assert(false)
 
 		return null
 	}
@@ -1390,7 +1393,6 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInPointAddInc())
 	BuiltInTemplates.Push(new BuiltInPointSub())
 	BuiltInTemplates.Push(new BuiltInPointSubDec())
-
 
 	//BuiltInTemplates.Push(GlobalUnroll)
 	CreateLambdaBuilts()
