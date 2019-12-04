@@ -261,10 +261,23 @@ BoxTemplate := class extend BoxFunc
 		if resTyps != null 
 			resTyps^ = new Type^[itBox.itPars.Size()] ; $temp
 
+		checkConsts := List.{Tuple.{Object^,Type^}}() ; $temp 
+		//if ItConsts.Size() != null
+		//{
+		//	assert(ItConstsTT.Size() == itBox.itConsts.Size())
+		//	for itC : ItConstsTT, itT : itBox.itConsts
+		//	{
+		//		if itC != null and itT is ObjType
+		//		{
+		//			checkConsts.Emplace(itC,itT->{ObjType^}.MyType)
+		//		}
+		//	}
+		//}
 
 		expectedChecks := FuncsTTemps.Size()
 		if vargTypeBarrier != null
 			expectedChecks += itBox.itPars.Size() - MyFuncType.ParsCount
+		expectedChecks += checkConsts.Size()
 
 		while expectedChecks != 0
 		{
@@ -302,13 +315,25 @@ BoxTemplate := class extend BoxFunc
 					failedC++
 				}
 			}
+			for it : checkConsts
+			{
+				rTp := IsSameType(it.0,it.1,res,re&)
+				if not re return false
+				if rTp != null
+				{
+					succedC++
+				}else{
+					failedC++
+				}
+			}
 			if vargTypeBarrier != null
 			{
 				for par,i : itBox.itPars
 				{
 					if i < MyFuncType.ParsCount continue
 
-					rTp := IsSameType(vargTypeBarrier.Down.Down,par.first,res,re&)
+					rTp := IsSameType(vargTypeBarrier.Up.Down,par.first,res,re&)
+
 					if resTyps != null resTyps^[i] = rTp
 					if not re return false
 					if rTp == null{
@@ -327,6 +352,7 @@ BoxTemplate := class extend BoxFunc
 				break
 			}
 			if failedC == expectedChecks{
+				printf("status %i %i %i\n",succedC,failedC,expectedChecks)
 				return false
 			}
 			limit -= 1
@@ -356,7 +382,7 @@ BoxTemplate := class extend BoxFunc
 
 	CheckBottomParams := !(Object^ firstNon) -> void
 	{
-		if firstNon == vargTypeBarrier
+		if firstNon == vargTypeBarrier?.Up or firstNon == vargTypeBarrier?.Up?.Up
 			return void
 		if ContainTType(firstNon,TTNames)
 		{
@@ -447,6 +473,15 @@ BoxTemplate := class extend BoxFunc
 		if not CheckTypes(itBox,st,null) {
 			return 255
 		}
+		//if CopyRet != null
+		//{
+		//	//printf("hoh %s\n",FuncName)
+		//	itT := ParseType(CopyRet,null,st&)
+		//	if itT == null {
+		//		//printf("heh %s %s %i\n",st[^].ItName,it.Down.GetValue(),st.Size())
+		//		return 255
+		//	}
+		//}
 		
 		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
 		{
@@ -513,13 +548,17 @@ BoxTemplate := class extend BoxFunc
 			for it, i : itBox.itPars
 			{
 				if i < outT.Size() continue
-				if resTp[i] != null printf("heh %i %s\n",i,resTp[i].GetName())
 				preSet := it.first
 				if resTp[i] != null
 					preSet = resTp[i]
 				outT.Push(preSet)
 			}
 		}
+		//if CopyRet != null
+		//{
+		//	itT := ParseType(CopyRet,null,parConsts&)
+		//	newRet = itT
+		//}
 		return GetFuncType(outT,retRefArray,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
@@ -715,6 +754,8 @@ BoxFunc := class extend Object
 		}
 		return true
 	}
+
+	ItConstsTT := List.{Object^}
 	ParseConsts := !(Object^ cons) -> void
 	{
 		if cons != null
@@ -727,16 +768,19 @@ BoxFunc := class extend Object
 					if iter.IsConst
 					{
 						this.ItConsts.Push(iter.Clone())
+						ItConstsTT.Push(null)
 					}else{
 						typ := ParseType(iter)
 						if typ != null
 						{
 							this.ItConsts.Push(new ObjType(typ))
+							ItConstsTT.Push(null)
 						}else{
 							stdL := Queue.{string}()
 							if ContainTType(iter,stdL)
 							{
 								this.ItConsts.Push(null->{Object^})
+								ItConstsTT.Push(iter)
 							}else{
 								ErrorLog.Push("can not parse object in .{}\n")
 							}
@@ -800,7 +844,7 @@ BoxFunc := class extend Object
 				{
 					if Pars[0].Down?.Right.GetValue() == "..."
 					{
-						vargTypeBarrier = Pars[0]
+						vargTypeBarrier = Pars[0].Down.Right
 						if not Pars[1] is ObjIndent {
 							EmitError("it should be indent")
 							return false
@@ -1292,6 +1336,15 @@ BoxFuncBody := class extend BoxFunc
 					f << MyFuncType.Pars[i].GetName()
 					if MyFuncType.ParsIsRef[i] f << "*"
 					f << "* %T" << InAlloc[i] << "\n"
+				if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
+				{
+					outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
+					newId := CreateDebugCall(this&)
+					if newId != -1 and outId != -1
+					{
+						f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+					}
+				}
 			}
 			
 			iterP := Up

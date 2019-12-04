@@ -646,7 +646,12 @@ SLambda := class extend ObjResult
 			}
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
 
+			if DebugMode
+			{
+				f << " !dbg !" << ABox.ItId
+			}
 			f << "\n{\n"
+			
 			
 			if not justFunc
 			{
@@ -662,6 +667,15 @@ SLambda := class extend ObjResult
 				f << fastUse.Pars[i].GetName()
 				if fastUse.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
+				if DebugMode
+				{
+					outId := CreateDbgLocVar(this&,fastUse.Pars[i],Names[i])
+					newId := CreateDebugCall(this&)
+					if newId != -1 and outId != -1
+					{
+						f << "call void @llvm.dbg.declare(metadata " << fastUse.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+					}
+				}
 			}
 			
 			IsRetComplex := false
@@ -708,6 +722,33 @@ SLambda := class extend ObjResult
 				f << "ret " << retTypeName << " " << "%ResultItem\n"
 			}
 			f << "}\n"
+			if DebugMode
+			{	
+				iter := Up
+				if iter != null
+				{
+					while iter.Up != null
+					{
+						iter = iter.Up
+					}
+				}
+				if iter != null
+				{
+					asN := iter->{BoxFile^}
+					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\":LambdaFunction\","
+					f << "scope: !" << asN.fileId << " , file: !" << asN.fileId
+					f << ",type: !" << fastUse.metaId 
+					if Line != null
+					{
+						f << ", line: " << Line.LinePos	
+						f << ", scopeLine: " << Line.LinePos	
+					}
+					f << ", unit: !" << cuId
+					f << ", flags: DIFlagPrototyped"
+					f << ")\n"
+
+				}
+			}
 		}
 	}
 	PrintPre := virtual !(sfile f) -> void

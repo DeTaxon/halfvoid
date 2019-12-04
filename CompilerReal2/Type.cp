@@ -90,7 +90,11 @@ ParseType := !(Object^ Node) -> Type^
 {
 	return ParseType(Node,null)
 }
-ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^ 
+ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
+{
+	return ParseType(Node,toAdd,null)
+}
+ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts) -> Type^ 
 {
 	if Node == null return null
 	if Node is ObjIndent
@@ -98,6 +102,14 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
 		indName := (Node->{ObjIndent^}).MyStr
 		
 		NodeName := GetItem(indName,Node)
+		
+		if tempConsts != null
+		{
+			if tempConsts^[^].ItName == NodeName and it.Down? is ObjType
+			{
+				return it.Down->{ObjType^}.MyType
+			}
+		}
 
 		if NodeName == null {
 			for Modules

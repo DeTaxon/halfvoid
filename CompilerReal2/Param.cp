@@ -99,13 +99,13 @@ ObjParam := class extend Object
 				}
 			}
 		}
-		if Down != null and Down is LocalParam
+		if Down != null and Down is LocalParam and DebugMode
 		{
 			asLoc := Down->{LocalParam^}
 			if IsRef
 			{
 			}else{
-				outId := CreateDbgLocVar(this&)
+				outId := CreateDbgLocVar(this&,ObjType,MyStr)
 				newId := CreateDebugCall(this&)
 				if newId != -1 and outId != -1
 				{

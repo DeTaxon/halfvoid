@@ -315,6 +315,7 @@ RuleMinus := !(void^ itr) -> int
 	{
 		if It.Left.GetValue() == "[]" return 0
 		if It.Left.GetValue() == "()" return 0
+		if It.Left is ObjSuffix return 0 
 		if InDataR(It.Left)	return 0
 	}
 	if It.GetValue() != "-" return 0

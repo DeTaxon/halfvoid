@@ -210,6 +210,17 @@ Vec4fFuncs := !() -> void
 				"#0 = fmul "sbt + itName + " #1 , %PreVec## #d\n"
 		AddBuiltInFunc( new BuiltInFuncBinar("*",it,false,GTypeFloat,false,it,assmMulToVal))
 
+		assmDivToVal := "%PrePreVec## = insertelement "sbt + itName + " undef , float #2,i32 0 #d\n" +
+				"%PreVec## = shufflevector " + itName + " %PrePreVec## , " + itName + " undef , <" + tS + " x i32> <"
+		for i : tS
+		{
+			if i != 0 assmDivToVal << " , "
+			assmDivToVal << "i32 0"
+		}
+		assmDivToVal << ">" <<
+				"#0 = fdiv "sbt + itName + " #1 , %PreVec## #d\n"
+		AddBuiltInFunc( new BuiltInFuncBinar("/",it,false,GTypeFloat,false,it,assmDivToVal))
+
 		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,1,it,"#0 = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n"))
 		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,2,it,"%Pre3p## = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n" + 
 									"#0 = insertelement " + itName + " %Pre3p##, float #2,i32 1\n"))

@@ -12,32 +12,46 @@ CreateDebugCall := !(Object^ itm) -> int
 	if not DebugMode return -1
 
 	itr := itm
-	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  itr = itr.Up
+	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
+		and not itr is SLambda  itr = itr.Up
 
 	if itr == null return -1
 
-	asN := itr->{BoxFunc^}
+	aBId := int
+	if itr is SLambda
+	{
+		aBId = itr->{SLambda^}.ABox.ItId
+	}else{
+		aBId = itr->{BoxFunc^}.ABox.ItId
+	}
 	itId := GetNewId()
-	DebugCalls.Emplace(itId,itm.Line.LinePos,asN.ABox.ItId)
+	DebugCalls.Emplace(itId,itm.Line.LinePos,aBId)
 	return itId
 }
-CreateDbgLocVar := !(ObjParam^ itm) -> int
+CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName) -> int
 {
 	if itm.Line == null return -1
 
 	itr := itm->{Object^}
-	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  itr = itr.Up
+	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
+		and not itr is SLambda  itr = itr.Up
 
 	if itr == null return -1
-
-	asN := itr->{BoxFunc^}
 	
+	aBId := int
+	if itr is SLambda
+	{
+		aBId = itr->{SLambda^}.ABox.ItId
+	}else{
+		aBId = itr->{BoxFunc^}.ABox.ItId
+	}
+
 	while itr.Up != null itr = itr.Up
 
 	asF := itr->{BoxFile^}
 
 	newId := GetNewId()
-	DebugLocalVars.Emplace(newId,itm.MyStr,asN.ABox.ItId,asF.fileId,itm.Line.LinePos,itm.ObjType.metaId)
+	DebugLocalVars.Emplace(newId,itName,aBId,asF.fileId,itm.Line.LinePos,itType.metaId)
 	return newId
 }
 
