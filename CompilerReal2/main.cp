@@ -76,6 +76,7 @@ main := !(int argc,char^^ argv) -> int
 
 				itStb := ""sbt << argv[i] << ".cp"
 				tmp1 := itStb.Str() ; $temp
+				for k : tmp1 if k == '$' k = '*'
 				for newItm : Wildcard(tmp1)
 				{
 					codeSp.Emplace(itPri,StrCopy(newItm.itStr))

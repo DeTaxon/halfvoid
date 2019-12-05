@@ -21,6 +21,9 @@ MainOutW := $(TempFolder)/out3W.ll
 wcycle: $(wildcard CompilerReal2/*.cp)
 	./c.out -p win32 -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOutW); clang -g -c $(MainOutW) $(Libs) --target=x86_64-win32-gnu -o w.o
 
+winlinux: $(wildcard CompilerReal2/*.cp) wcycle
+	x86_64-w64-mingw32-gcc -g w.o -o c.exe
+
 ManyCycle:
 	for i in {1..30}; do make cycle; done
 

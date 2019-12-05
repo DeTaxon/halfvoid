@@ -136,18 +136,16 @@ LocalParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		Buf := char[256]
-		sprintf(Buf,"%T%i",newInd)
-		return Buf.Copy()
+		resS := "%T"sbt + newInd
+		return resS.Str() ; $temp
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
 		if IsRef{
-			return "%T" + newInd
+			return "%T"sbt + newInd
 		}
-		Buf := char[256]
-		sprintf(Buf,"%T%i",inAllocId)
-		return Buf.Copy()
+		resS := "%T"sbt + inAllocId
+		return resS.Str() ; $temp
 	}
 	GetSubName := virtual !() -> string
 	{
