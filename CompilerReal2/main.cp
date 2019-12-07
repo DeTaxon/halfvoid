@@ -17,7 +17,7 @@ main := !(int argc,char^^ argv) -> int
 	codeSp := Queue.{Pair.{int,string}}()
 	zipSp := Queue.{Pair.{int,string}}()
 
-	targetPlatform := "posix"
+	fileSuffixes := List.{char^}()
 
 	emitTree := false
 
@@ -50,7 +50,8 @@ main := !(int argc,char^^ argv) -> int
 			i += 1
 		case "-p"
 			i++
-			targetPlatform = argv[i]
+			fileSuffixes.Push(argv[i])
+			
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
@@ -81,10 +82,13 @@ main := !(int argc,char^^ argv) -> int
 				{
 					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
 				}
-				itStb << "." << targetPlatform
-				tmp1 = itStb.Str() ; $temp
-				for newItm : Wildcard(tmp1)
-					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+				for suf : fileSuffixes
+				{
+					tmp2Pre := ""sbt + tmp1 +  "." + suf
+					tmp2 := tmp2Pre.Str() ; $temp
+					for newItm : Wildcard(tmp2)
+						codeSp.Emplace(itPri,StrCopy(newItm.itStr))
+				}
 
 			}else{
 				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"

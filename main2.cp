@@ -1,13 +1,15 @@
+"in" := !(T this,@T[@S] ar) -> bool
+{
+	if ar[^] == this return true
+	return false
+}
 
 main := !() -> int
 {
-	z := (int testValue) ==> 
+	if "hello" in !["mario","Luigi","hello"]
 	{
-		printf("heh\n")
-		k := 3
-		k += 1
+		printf("yiep\n")
 	}
-	z(13)
 	return 0
 }
 

@@ -287,6 +287,12 @@ ObjStr := class extend ObjConst
 		StrSi := StrSize(justStr) + 1
 		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
 	}
+	GetConstInline := !() -> char^
+	{
+		StrSi := StrSize(justStr) + 1
+		asStr := "getelementptr inbounds (["sbt + StrSi + " x i8] , [" + StrSi + " x i8]* @Str" + MyStrId + ", i32 0, i32 0)"
+		return asStr.Str() ; $temp
+	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
@@ -359,6 +365,9 @@ ObjArray := class extend ObjConst
 			}else if arrItm == GTypeDouble and itm.GetType() == GTypeFloat and itm is ObjDouble{
 				asFlt := itm->{ObjDouble^}.MyDouble
 				f << arrItm.GetName() << " " << asFlt
+			}else if arrItm == GTypeString {
+				asStr := itm->{ObjStr^}
+				f << arrItm.GetName() << " " << asStr.GetConstInline()
 			}else{
 				f << arrItm.GetName() << " " << itm.GetName()
 			}
