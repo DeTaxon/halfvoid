@@ -1175,3 +1175,21 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 	return null
 }
 
+debRefs := AVLMap.{Type^,int}
+GetDebugRef := !(Type^ itTyp) -> int
+{
+	inMap := debRefs.TryFind(itTyp)
+	if inMap != null{
+		return inMap^
+	}
+	newId :=  GetNewId()
+	debRefs[itTyp] = newId
+	return newId
+}
+PrintDebRefs := !(sfile f) -> void
+{
+	for it,ind : debRefs
+	{
+		f << "!" << it << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << ind.metaId <<", size: 64)"
+	}
+}

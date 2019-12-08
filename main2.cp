@@ -1,15 +1,18 @@
-"in" := !(T this,@T[@S] ar) -> bool
+tst := class
 {
-	if ar[^] == this return true
-	return false
+	x := int
+	y := double
+}
+
+Cll := !(tst hh) -> void
+{
+	printf("wow %i\n",hh.y)
 }
 
 main := !() -> int
 {
-	if "hello" in !["mario","Luigi","hello"]
-	{
-		printf("yiep\n")
-	}
+	j := tst
+	Cll(j)
 	return 0
 }
 

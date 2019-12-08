@@ -30,6 +30,10 @@ CreateDebugCall := !(Object^ itm) -> int
 }
 CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName) -> int
 {
+	return CreateDbgLocVar(itm,itType,itName,false)
+}
+CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
+{
 	if itm.Line == null return -1
 
 	itr := itm->{Object^}
@@ -49,9 +53,11 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName) -> int
 	while itr.Up != null itr = itr.Up
 
 	asF := itr->{BoxFile^}
-
+	
+	typeMetaId := itType.metaId
+	if isRef typeMetaId = GetDebugRef(itType) 
 	newId := GetNewId()
-	DebugLocalVars.Emplace(newId,itName,aBId,asF.fileId,itm.Line.LinePos,itType.metaId)
+	DebugLocalVars.Emplace(newId,itName,aBId,asF.fileId,itm.Line.LinePos,typeMetaId)
 	return newId
 }
 

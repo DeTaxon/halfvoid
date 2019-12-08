@@ -320,6 +320,7 @@ main := !(int argc,char^^ argv) -> int
 		if DebugMode
 		{
 			PrintDebugMeta(fil)
+			PrintDebRefs(fil)
 		}
 		fil.close()
 	}else
