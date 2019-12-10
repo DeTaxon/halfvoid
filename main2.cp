@@ -6,12 +6,13 @@ tst := class
 
 Cll := !(tst hh) -> void
 {
-	printf("wow %i\n",hh.y)
+	printf("wow %i %f\n",hh.x)
 }
 
 main := !() -> int
 {
 	j := tst
+	j.x = 7
 	Cll(j)
 	return 0
 }

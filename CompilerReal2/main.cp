@@ -18,6 +18,9 @@ main := !(int argc,char^^ argv) -> int
 	zipSp := Queue.{Pair.{int,string}}()
 
 	fileSuffixes := List.{char^}()
+	fileSuffixes << ".cp"
+
+	dirChecks := List.{Tuple.{char^,int}}()
 
 	emitTree := false
 
@@ -50,7 +53,8 @@ main := !(int argc,char^^ argv) -> int
 			i += 1
 		case "-p"
 			i++
-			fileSuffixes.Push(argv[i])
+			itNm := ".cp."sbt + argv[i]
+			fileSuffixes.Push(itNm.Str())
 			
 		case "-o"
 			outputFile = argv[i+1]
@@ -74,21 +78,7 @@ main := !(int argc,char^^ argv) -> int
 			{
 				itPri := StrToInt(argv[i][2..0])
 				i++
-
-				itStb := ""sbt << argv[i] << ".cp"
-				tmp1 := itStb.Str() ; $temp
-				for k : tmp1 if k == '$' k = '*'
-				for newItm : Wildcard(tmp1)
-				{
-					codeSp.Emplace(itPri,StrCopy(newItm.itStr))
-				}
-				for suf : fileSuffixes
-				{
-					tmp2Pre := ""sbt + tmp1 +  "." + suf
-					tmp2 := tmp2Pre.Str() ; $temp
-					for newItm : Wildcard(tmp2)
-						codeSp.Emplace(itPri,StrCopy(newItm.itStr))
-				}
+				dirChecks.Emplace(argv[i][0]&,itPri)
 
 			}else{
 				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
@@ -120,6 +110,19 @@ main := !(int argc,char^^ argv) -> int
 		return 0
 	}
 
+	for toDir : dirChecks
+	{
+		itStb := ""sbt << toDir.0
+		tmp1 := itStb.Str() ; $temp
+		for k : tmp1 if k == '$' k = '*'
+		for suf : fileSuffixes
+		{
+			tmp2Pre := ""sbt + tmp1  + suf
+			tmp2 := tmp2Pre.Str() ; $temp
+			for newItm : Wildcard(tmp2)
+				codeSp.Emplace(toDir.1,StrCopy(newItm.itStr))
+		}
+	}
 	CreateStandartTypes()
 	CreateBuiltIns()
 
@@ -217,7 +220,7 @@ main := !(int argc,char^^ argv) -> int
 	for it : zipSp
 	{
 		newFiles := new Queue.{void^} ; $temp
-		LoadZipFile(Path(it.second),newFiles^)
+		LoadZipFile(Path(it.second),newFiles^,fileSuffixes)
 
 		fLibSp := ref CodeSpaces[it.first]
 		for fils : newFiles^

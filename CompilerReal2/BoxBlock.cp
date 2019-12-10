@@ -295,7 +295,7 @@ BoxFile := class extend BoxBlock
 	returnPath := Queue.{string}
 	
 	ImportingFiles := Queue.{BoxFile^}
-	borrowed := QueueSet.{BoxFile^}
+	//borrowed := QueueSet.{BoxFile^}
 	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
 	cs := CodeSpace^
@@ -363,34 +363,34 @@ BoxFile := class extend BoxBlock
 				}
 			}
 
-			toVisit := Stack.{BoxFile^}() ; $temp
-			visited := QueueSet.{BoxFile^}() ; $temp
+			//toVisit := Stack.{BoxFile^}() ; $temp
+			//visited := QueueSet.{BoxFile^}() ; $temp
 
-			visited.Push(this&)
-			toVisit.Push(ImportingFiles[^])
+			//visited.Push(this&)
+			//toVisit.Push(ImportingFiles[^])
 
-			while toVisit.NotEmpty()
-			{
-				toTest := toVisit.Pop()
+			//while toVisit.NotEmpty()
+			//{
+			//	toTest := toVisit.Pop()
 
-				if borrowed.Contain(toTest) continue
-				
-				borrowed.Push(toTest)
-				for toTest.borrowed borrowed.Push(it)
+			//	if borrowed.Contain(toTest) continue
+			//	
+			//	borrowed.Push(toTest)
+			//	for toTest.borrowed borrowed.Push(it)
 
-				for toTest.ImportingFiles
-				{
-					if not visited.Contain(it){
-						toVisit.Push(it)
-						visited.Push(it)
-					}
-				}
-				for preIt : toTest.VisibleParams 
-				for preIt
-				{
-					VisibleParams[it.MyStr].Push(it)
-				}
-			}
+			//	for toTest.ImportingFiles
+			//	{
+			//		if not visited.Contain(it){
+			//			toVisit.Push(it)
+			//			visited.Push(it)
+			//		}
+			//	}
+			//	for preIt : toTest.VisibleParams 
+			//	for preIt
+			//	{
+			//		VisibleParams[it.MyStr].Push(it)
+			//	}
+			//}
 		}
 	}
 }

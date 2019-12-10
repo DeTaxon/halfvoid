@@ -745,8 +745,32 @@ BoxClass := class extend Object
 			f <<"\n"
 			if DebugMode
 			{
+				ClassType.ComputeAlignAndDeb()
+				exZ := List.{int}() ; $temp
+				for cc : ClassType.debTable
+				{
+					newII := GetNewId()
+					f << "!" << newII << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << cc.0 << "\" , scope: !" << ClassId
+					if cc.1.Line != null
+					{
+						itrr := Up
+						while itrr.Up != null itrr = itrr.Up
+						f << " , file: !" << itrr->{BoxFile^}.fileId << " , line: " << cc.1.Line.LinePos 
+					}
+					f << " , baseType: !" << cc.1.ResultType.metaId << ", size: " << cc.3*8 << ", offset: " << cc.2*8 << ")\n"
+					//!16 = !DIDerivedType(tag: DW_TAG_member, name: "x", scope: !14, file: !1, line: 5, baseType: !12, size: 32)
+					exZ << newII
+				}
+				elmIds := GetNewId()
+				f << "!" << elmIds << " = !{"
+				for ccc,i : exZ
+				{
+					if i != 0 f << ","
+					f << "!" << ccc
+				}
+				f << "}\n"
 				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
-				f << ", elements: !{})\n"
+				f << ", elements: !"<< elmIds << ")\n"
 			}
 		}
 	}

@@ -40,7 +40,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 	Files.Push(ob->{BoxFile^})
 	return ob->{BoxFile^}
 }
-LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
+LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
 {
 	newZip := new ZipFile ; $temp
 	newZip.AnalizeFile(fullName.itStr)
@@ -48,6 +48,19 @@ LoadZipFile := !(Path fullName,Queue.{void^} res) -> void
 	{
 		if fil.realSize == 0
 			continue
+		shouldUse := false
+		for s : suf
+		{
+			sLen := StrSize(s)
+			if fil.fullName.Size() >= sLen and fil.fullName[-sLen..0] == s
+			{
+				shouldUse = true
+				break
+			}
+		}
+		if not shouldUse
+			continue
+			
 		itPtr := fil.Map()
 		itNamePre := ""sbt << fullName.itStr << "/" << fil.fullName.Str()
 		itName := itNamePre.Str()

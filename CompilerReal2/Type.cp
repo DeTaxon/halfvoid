@@ -82,9 +82,14 @@ Type := class {
 	}
 	GetAlign := virtual !() -> int
 	{
+		assert(false)
 		return 0
 	}
-
+	GetSize := virtual !() -> int
+	{
+		assert(false)
+		return 0
+	}
 }
 ParseType := !(Object^ Node) -> Type^
 {
@@ -585,6 +590,10 @@ TypeStandart := class extend Type{
 	{
 		return ItAlign
 	}
+	GetSize := virtual !() -> int
+	{
+		return ItSize
+	}
 }
 
 TypePoint := class extend Type
@@ -617,6 +626,10 @@ TypePoint := class extend Type
 	}
 	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "^" }
 	GetAlign := virtual !() -> int
+	{
+		return 8
+	}
+	GetSize := virtual !() -> int
 	{
 		return 8
 	}
@@ -871,6 +884,10 @@ TypeFuncLambda := class extend Type
 	{
 		return 8
 	}
+	GetSize := virtual !() -> int
+	{
+		return 8
+	}
 	GetType :=  virtual !() -> string
 	{
 		return "lambda"
@@ -907,6 +924,10 @@ TypeArr := class extend Type
 	{
 		return Base.GetAlign()
 	}
+	GetSize := virtual !() -> int
+	{
+		return Base.GetSize()*Size
+	}
 }
 TypeFatArr := class extend Type
 {
@@ -931,6 +952,10 @@ TypeFatArr := class extend Type
 	}
 	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[]" }
 	GetAlign := virtual !() -> int
+	{
+		return 8
+	}
+	GetSize := virtual !() -> int
 	{
 		return 8
 	}
@@ -963,20 +988,51 @@ TypeClass := class extend Type
 		}
 		return st
 	}
+	
+	itAlign := int
+	itSize := int
+	computedAlign := bool
+	debTable := List.{Tuple.{char^,MemParam^,int,int}}
+	ComputeAlignAndDeb := !() -> void
+	{
+		itAlign = 1
+		if computedAlign return void
+		computedAlign = true
+		
+		nowSize := 0
+		if not ToClass.vTable.Empty()
+			nowSize = 8
+		for it : ToClass.Params
+		{
+			sAlign := it.ResultType.GetAlign()
+			//assert(sAlign <= 16 and sAlign > 0)
+			alignMask :=  ![0,0,1,0,3,0,0,0,7,0,0,0,0,0,0,0,15][sAlign]
+			sSize := it.ResultType.GetSize()
+
+			if not ToClass.IsPacked and (nowSize and_b alignMask) != 0
+			{
+				nowSize = nowSize + alignMask
+				nowSize = nowSize - (nowSize and_b alignMask)
+			}
+			debTable.Emplace(it.ItName,it,nowSize,sSize)
+			nowSize += sSize
+			if sAlign < itAlign
+				itAlign = sAlign
+		}
+		itSize = nowSize
+		if ToClass.IsPacked
+			itAlign = 1
+	}
+
 	GetAlign := virtual !() -> int
 	{
-		maxVal := 1
-
-		iter := ToClass.Params.Start
-
-		while iter != null
-		{
-			al := iter.Data.ResultType.GetAlign()
-
-			if maxVal < al maxVal = al
-			iter = iter.Next
-		}
-		return maxVal
+		ComputeAlignAndDeb()
+		return itAlign
+	}
+	GetSize := virtual !() -> int
+	{
+		ComputeAlignAndDeb()
+		return itSize
 	}
 }
 

@@ -260,6 +260,7 @@ ObjParam := class extend Object
 							if Atter != null Down = new FakeFieldParam(MyStr,MaybeType,asCl,Atter)
 							else Down = new FieldParam(MyStr,MaybeType,asCl)
 							Down.SetUp(this&)
+							Down.Line = Line
 						}else{
 							ErrorLog.Push("Compiler bag\n")
 						}
