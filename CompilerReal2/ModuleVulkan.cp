@@ -70,6 +70,18 @@ ModuleVulkan := class extend CompilerModule
 		ParsCount = new GlobalParam(GTypeInt,null)
 		ParsNames = new GlobalParam(GTypeString.GetPoint(),null)
 
+		for xmlTree.Childs
+		{
+			if it.first
+			{
+				asNode := it.second->{TreeNode^}
+				switch(asNode.NodeName)
+				{
+				case "extensions"
+					CheckExtensions(asNode)
+				}
+			}
+		}
 
 		for xmlTree.Childs
 		{
@@ -89,6 +101,54 @@ ModuleVulkan := class extend CompilerModule
 			}
 		}
 		return true
+	}
+	CheckExtensions := !(TreeNode^ nd) -> void
+	{
+		for sN : nd.Childs
+		{
+			if not sN.first continue
+
+			asNeed := sN.second->{TreeNode^}
+			extNumberPre := asNeed.Attrs.TryFind("number")
+			if extNumberPre == null continue
+			extNumber := StrToInt(extNumberPre^)
+			extNumber -= 1
+			extNumber *= 1000
+
+			for sub : asNeed.Childs
+			{
+				if not sub.first continue
+				asN2 := sub.second->{TreeNode^}
+				if asN2.NodeName != "require" coninue
+				for itms : asN2.Childs
+				{
+					if not itms.first continue
+
+					asN2 := itms.second->{TreeNode^}
+					switch asN2.NodeName
+					{
+						case "enum"
+							itName := asN2.Attrs.TryFind("name")
+							if itName != null
+							{
+								itDir := asN2.Attrs.TryFind("dir")
+								if itDir != null assert(itDir^ == "-")
+								itOffst := asN2.Attrs.TryFind("offset")
+								if itOffst != null
+								{
+									offst := StrToInt(itOffst^)
+									offst += extNumber
+									offst += 1000000000
+									if itDir != null offst = -offst
+									ItInts[itName^] = offst
+								}else{
+								}
+							}
+						case void
+					}
+				}
+			}
+		}
 	}
 	CheckCommands := !(TreeNode^ nd) -> void
 	{
