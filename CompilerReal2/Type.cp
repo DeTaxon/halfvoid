@@ -995,9 +995,9 @@ TypeClass := class extend Type
 	debTable := List.{Tuple.{char^,MemParam^,int,int}}
 	ComputeAlignAndDeb := !() -> void
 	{
-		itAlign = 1
 		if computedAlign return void
 		computedAlign = true
+		itAlign = 1
 		
 		nowSize := 0
 		if not ToClass.vTable.Empty()
@@ -1016,7 +1016,7 @@ TypeClass := class extend Type
 			}
 			debTable.Emplace(it.ItName,it,nowSize,sSize)
 			nowSize += sSize
-			if sAlign < itAlign
+			if sAlign > itAlign
 				itAlign = sAlign
 		}
 		itSize = nowSize
