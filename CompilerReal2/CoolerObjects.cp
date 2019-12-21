@@ -106,7 +106,11 @@ UniteSkobs := !(Object^ Tree) -> Object^
 
 			if Bag.Empty() return iter
 			Old := Bag.Pop()
-			if Old.GetValue()[0] != itPair[0] return iter
+			if Old.GetValue()[0] != itPair[0] 
+			{
+				Old.EmitError("incorrect pair for " + Old.GetValue())
+				return iter
+			}
 
 			NewObj := new ObjSkobs(itPair)
 			NewObj.Line = Old.Line
@@ -127,6 +131,9 @@ UniteSkobs := !(Object^ Tree) -> Object^
 		}
 
 	}
-	//if Bag.NotEmpty() return Bag.Pop()
+	for Bag^
+	{
+		it.EmitError("pair for "+ it.GetValue() + " not found")
+	}
 	return null
 }

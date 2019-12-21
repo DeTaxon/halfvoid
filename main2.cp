@@ -1,19 +1,20 @@
-tst := class
+cc := class
 {
-	x := int
-	y := double
-}
-
-Cll := !(tst hh) -> void
-{
-	printf("wow %i %f\n",hh.x)
+	st := char^
 }
 
 main := !() -> int
 {
-	j := tst
-	j.x = 7
-	Cll(j)
+	c := cc
+	c.st = "wow"
+
+	switch c.st?
+	{
+		case "wow" 
+			printf("w\n")
+		case void
+			printf("else\n")
+	}
 	return 0
 }
 

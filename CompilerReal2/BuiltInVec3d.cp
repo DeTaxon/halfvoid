@@ -237,16 +237,16 @@ Vec4fFuncs := !() -> void
 		}}
 	}
 
-	Typs := Type^[2]
+	Typs := Type^[4]
 	Typs[0] = F4T
 	Typs[1] = GetType("quantf")
+	Typs[2] = GTypeVec3f
+	Typs[3] = GTypeVec2f
 	
-	for NTPre: Typs->len
+	for NT : Typs, siz : ![4,4,3,2]
 	{
-		NT := Typs[NTPre]
-	
-		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul " + F4N + " #1 , #2\n" + 
-			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float undef,<4 x float> %Pre##) #d\n"))
+		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul "sbt + NT.GetName() + " #1 , #2\n" + 
+			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v" + siz + "f32(float undef,<"+ siz + " x float> %Pre##) #d\n"))
 
 	}
 }
