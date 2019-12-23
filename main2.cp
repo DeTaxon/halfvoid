@@ -6,7 +6,7 @@ cc := class
 main := !() -> int
 {
 	c := cc
-	c.st = "wow"
+	c.st = "wew"
 
 	switch c.st?
 	{

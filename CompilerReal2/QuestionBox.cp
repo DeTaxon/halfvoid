@@ -12,11 +12,15 @@ QuestionBox := class extend ControlFlowBox
 	paramObject := FuncParam^
 	replObject := Object^
 	forceToBool := bool
+	jmpName := char^
+	isSimpleCheck := bool
+	passValue := bool
 	this := !(Object^ tmpObj,bool fTB) -> void
 	{
 		itId = GetNewId()
 		replObject = tmpObj
 		forceToBool = fTB
+		jmpName = "OnBad" + itId
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -33,9 +37,14 @@ QuestionBox := class extend ControlFlowBox
 			f << "%CmpRes" << itId << " = icmp ne " 
 			Down.PrintUse(f)
 			f << " , null\n"
-			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %OnBad" << itId << "\n"
+			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpName << "\n"
 			f << "OnGood" << itId << ":\n"
-			DR.PrintPre(f)
+			if DR is BoxSwitch
+			{
+				DR.PrintInBlock(f)
+			}else{
+				DR.PrintPre(f)
+			}
 			f << "br label %DownRes" << itId << "\n"
 			f << "DownRes" << itId << ":\n"
 			f << "br label %OnBad" << itId << "\n"
@@ -87,9 +96,22 @@ QuestionBox := class extend ControlFlowBox
 			}
 		}
 	}
-	GetType := virtual !() -> Type^ { return GTypeBool }
-	PrintUse := virtual !(sfile f) -> void { f << "i1 %Res" << itId }
-	GetName := virtual !() -> string { return "%Res" + itId }
+	GetType := virtual !() -> Type^ { 
+		if passValue
+			return Down.Right.GetType()
+		return GTypeBool 
+	}
+	PrintUse := virtual !(sfile f) -> void { 
+		if passValue {
+			Down.Right.PrintUse(f)
+		}else{
+			f << "i1 %Res" << itId 
+		}
+	}
+	GetName := virtual !() -> string { 
+		if passValue return Down.Right.GetName()
+		return "%Res" + itId 
+	}
 }
 
 FlowOrOrAnd := class extend ControlFlowBox

@@ -2,6 +2,7 @@ BoxSwitch := class extend Object
 {
 	id := int
 	itemCall  := MemParam^
+	addedQ := List.{QuestionBox^}
 	this := !(Object^ itm) -> void
 	{
 		Line = itm.Line
@@ -31,9 +32,8 @@ BoxSwitch := class extend Object
 			
 			if Down.GetType() != null
 			{
-
+				
 				itemCall = new RetFuncParam(Down)
-
 				while iter != null
 				{
 					if iter is BoxCase
@@ -73,6 +73,15 @@ BoxSwitch := class extend Object
 							asNeed := iter->{BoxCase^}
 							if not asNeed.IsVoid{
 								EmitError("bad case type\n")
+							}else{
+								if addedQ.Size() != 0
+								{
+									jName := "SwitchVoid" + id
+									for it : addedQ
+									{
+										it.jmpName = jName
+									}
+								}
 							}
 						}
 					}
@@ -125,6 +134,8 @@ BoxSwitch := class extend Object
 			f << "br label %SwitchEnd" << id << "\n"
 			f << "Switch" << id << "false" << i << ":\n"
 		}
+		f << "br label %SwitchVoid" << id << "\n"
+		f << "SwitchVoid" << id << ":\n"
 		if defThing != null
 		{
 			iter = defThing.Right
@@ -140,7 +151,6 @@ BoxSwitch := class extend Object
 			}
 		}
 		f << "br label %SwitchEnd" << id << "\n"
-
 		f << "SwitchEnd" << id << ":\n"
 	}
 	GetOutPath := virtual !(Object^ objs, int typ, int size) -> string

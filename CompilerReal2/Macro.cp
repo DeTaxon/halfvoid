@@ -101,17 +101,25 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 					}
 				}
 				if toDownd == itUp
+				{
 					break
+				}
 				prevNode = toDownd
 				toDownd = toDownd.Up
 			}
-			if toDownd == null{
+			if toDownd == null {
 				itUp.EmitError("problem at macro\n")
 				return null
 			}
 
 			replObject := new Object
 			qObject := new QuestionBox(replObject,forceToBool)
+			if toDownd is BoxSwitch
+			{
+				qObject.passValue = true
+				toDownd->{BoxSwitch^}.addedQ.Push(qObject)
+				WorkBag.Push(qObject,State_Start)
+			}
 			qTree := tr.Down
 			ReplaceNode(toDownd,qObject)
 			ReplaceNode(tr,replObject)
@@ -119,6 +127,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			qObject.Down.Right = toDownd
 			qObject.Down.SetUp(qObject)
 			toDownd.Left = qTree
+
 			if toDownd == itUp{
 				return qObject
 			}
