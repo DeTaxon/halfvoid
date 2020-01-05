@@ -211,10 +211,11 @@ BoxBlock := class extend Object
 					continue
 				}
 				tstNode := TryParseMacro(itr)
-				if tstNode != null{
-					itr = tstNode
-				}else{
-					itr = itr.Right
+				switch tstNode
+				{
+					case MacroRestart itr = Down
+					case null itr = itr.Right
+					case void itr = tstNode
 				}
 			}
 

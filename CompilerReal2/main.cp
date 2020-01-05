@@ -129,6 +129,8 @@ main := !(int argc,char^^ argv) -> int
 	GBoolTrue = new ObjBool(true)
 	GBoolFalse = new ObjBool(false)
 
+	MacroRestart = new Object
+
 	selfFile := new ZipFile() ; $temp
 
 	loadedLex := false

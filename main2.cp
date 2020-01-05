@@ -1,20 +1,24 @@
-cc := class
+
+FuncCall := !(int x) -> void
 {
-	st := char^
+	printf("funca a\n")
+}
+
+FuncCall := !(int x) -> void 
+{
+	printf("funca a\n")
+}
+
+CalcFunc := !() -> int
+{
+	printf("calculate\n")
+	return 3
 }
 
 main := !() -> int
 {
-	c := cc
-	c.st = "wew"
 
-	switch c.st?
-	{
-		case "wow" 
-			printf("w\n")
-		case void
-			printf("else\n")
-	}
+	FuncCall[^^](CalcFunc())
 	return 0
 }
 

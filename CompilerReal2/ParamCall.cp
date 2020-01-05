@@ -135,6 +135,7 @@ ParamNaturalCall := class extend ParamCall
 ParamFuncCall := class extend ParamCall
 {
 	OutName := string
+	MacroCreated := bool
 	this := !(string Name, ObjParam^ Par) -> void
 	{
 		BeforeName = Name

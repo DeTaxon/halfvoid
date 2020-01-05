@@ -225,7 +225,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if iter.Left.GetValue() == "(d)" or iter.Left.GetValue() == "d()"
 			{
 
-				if iter.Left.IsRef()  and iter.Left.GetType() is TypePoint
+				if (iter.Left.IsRef() or (iter.Left is ParamFuncCall and iter.Left->{ParamFuncCall^}.MacroCreated)) and iter.Left.GetType() is TypePoint
 				{
 					if iter.Left.GetType().Base is TypeFunc
 					{

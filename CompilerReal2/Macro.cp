@@ -279,6 +279,57 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 	}
 
+	if deSkob?.GetValue() == "^"
+	{
+		if not (deSkob.Up.Up.Down is ObjIndent)
+			return null
+		asInd := deSkob.Up.Up.Down->{ObjIndent^}.MyStr
+		funcs := new Queue.{BoxFunc^} ; $temp
+		tmpls := new Queue.{BoxTemplate^} ; $temp
+		sts := QueueSet.{int}()
+		CollectFuncsByName(asInd,deSkob,funcs^,tmpls^,false,false,sts,false)
+
+		walkMap := new Stack.{int} ; $temp
+		itr := deSkob.Up.Up.Down
+		while itr != itUp
+		{
+			itW := 0
+			while itr.Left != null
+			{
+				itr = itr.Left
+				itW += 1
+			}
+			itr = itr.Up
+			walkMap.Push(itW)
+		}
+
+		tmpNode := new Object ; $temp
+		ReplaceNode(itUp,tmpNode)
+		for it,i : funcs^
+		{
+			newNode := itUp.Clone()
+			newNode.Right = tmpNode.Right
+			newNode.Up = tmpNode.Up
+			tmpNode.Right = newNode
+			itr2 := newNode.Down
+			prevItr2 := Object^
+			for it2 : walkMap^
+			{
+				for it2 itr2 = itr2.Right
+				prevItr2 = itr2
+				itr2 = itr2.Down
+			}
+			itr2 = prevItr2
+			itr2 = itr2.Up
+			assert(it.Up is ObjParam)
+			itCall := new ParamFuncCall("(none)",it.Up->{ObjParam^})
+			itCall.MacroCreated = true
+			ReplaceNode(itr2,itCall)
+		}
+		PopOutNode(tmpNode)
+		return MacroRestart
+	}
+
 	tr.Down.Right = null
 	itm := tr.Down
 	PopOutNode(itm)

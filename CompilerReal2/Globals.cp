@@ -59,3 +59,6 @@ GTypeVec2f := Type^
 
 GBoolTrue := Object^
 GBoolFalse := Object^
+
+
+MacroRestart := Object^
