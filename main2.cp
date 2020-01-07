@@ -1,24 +1,17 @@
 
-FuncCall := !(int x) -> void
-{
-	printf("funca a\n")
-}
-
-FuncCall := !(int x) -> void 
-{
-	printf("funca a\n")
-}
-
-CalcFunc := !() -> int
-{
-	printf("calculate\n")
-	return 3
-}
 
 main := !() -> int
 {
+	x := 3
+	x = x + 4
+	y := 7
+	y = y + 5
+	y = y + 5
 
-	FuncCall[^^](CalcFunc())
+	for i : 13
+	{
+		z := x + y
+	}
 	return 0
 }
 

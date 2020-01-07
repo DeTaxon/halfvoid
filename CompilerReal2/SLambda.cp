@@ -24,7 +24,8 @@ SLambda := class extend ObjResult
 
 	CaptureParams := List.{Tuple.{char^,MemParam^,bool,MemParam^}}
 	CPIndexes := List.{int}
-
+	
+	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
 	{
 		ABox.ItId = GetNewId()

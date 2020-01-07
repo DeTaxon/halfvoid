@@ -158,6 +158,14 @@ Object := class{
 		if Up != null
 			Up.ApplyDeferUse(depth)
 	}
+	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	{
+		Down[^].PrintDebugDeclare(f,frc)
+	}
+	GetScope := virtual !() -> int
+	{
+		return Up.GetScope()
+	}
 }
 
 ObjLine := class 

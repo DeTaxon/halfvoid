@@ -151,6 +151,22 @@ LocalParam := class extend MemParam
 	{
 		return "Local"
 	}
+	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	{
+		assert(Up != null)
+		assert(Up is ObjParam)
+		asP := Up->{ObjParam^}
+		if asP.IsRef
+		{
+		}else{
+			outId := CreateDbgLocVar(Up,asP.ObjType,asP.MyStr)
+			newId := CreateDebugCall(Up)
+			if newId != -1 and outId != -1
+			{
+				f << "call void @llvm.dbg.declare(metadata " << asP.ObjType.GetName() << "* %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+			}
+		}
+	}
 }
 VeryLocalParam := class extend LocalParam
 {

@@ -11,20 +11,21 @@ CreateDebugCall := !(Object^ itm) -> int
 	if itm.Line == null return -1
 	if not DebugMode return -1
 
-	itr := itm
-	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
-		and not itr is SLambda  itr = itr.Up
+	//itr := itm
+	//while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
+	//	and not itr is SLambda  itr = itr.Up
 
-	if itr == null return -1
+	//if itr == null return -1
 
-	aBId := int
-	if itr is SLambda
-	{
-		aBId = itr->{SLambda^}.ABox.ItId
-	}else{
-		aBId = itr->{BoxFunc^}.ABox.ItId
-	}
+	//aBId := int
+	//if itr is SLambda
+	//{
+	//	aBId = itr->{SLambda^}.ABox.ItId
+	//}else{
+	//	aBId = itr->{BoxFunc^}.ABox.ItId
+	//}
 	itId := GetNewId()
+	aBId := itm.GetScope()
 	DebugCalls.Emplace(itId,itm.Line.LinePos,aBId)
 	return itId
 }
@@ -37,18 +38,19 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 	if itm.Line == null return -1
 
 	itr := itm->{Object^}
-	while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
-		and not itr is SLambda  itr = itr.Up
+	//while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
+	//	and not itr is SLambda  itr = itr.Up
 
-	if itr == null return -1
-	
-	aBId := int
-	if itr is SLambda
-	{
-		aBId = itr->{SLambda^}.ABox.ItId
-	}else{
-		aBId = itr->{BoxFunc^}.ABox.ItId
-	}
+	//if itr == null return -1
+	//
+	//aBId := int
+	//if itr is SLambda
+	//{
+	//	aBId = itr->{SLambda^}.ABox.ItId
+	//}else{
+	//	aBId = itr->{BoxFunc^}.ABox.ItId
+	//}
+	aBId := itm.GetScope()
 
 	while itr.Up != null itr = itr.Up
 

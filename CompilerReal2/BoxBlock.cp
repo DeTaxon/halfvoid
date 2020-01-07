@@ -82,6 +82,20 @@ BoxBlock := class extend Object
 	{
 		return "{d}"
 	}
+	GetScope := virtual !() -> int { return ItId }
+	PrintGlobal := virtual !(sfile f) -> void 
+	{
+		PrintGlobalSub(f)
+		if DebugMode
+		{
+			itr := Up
+			while itr.Up != null itr = itr.Up
+			f << "!" << ItId << " = !DILexicalBlock(scope: !" 
+			f << Up.GetScope() << ", file: !" << itr->{BoxFile^}.fileId
+			f << ")\n"
+//!20 = distinct !DILexicalBlock(scope: !16, file: !1, line: 6, column: 2)
+		}
+	}
 	PrintSomePath := !(sfile f, string PathName, int num,string OutName) -> void
 	{
 		for iter,i : Down
@@ -300,7 +314,10 @@ BoxFile := class extend BoxBlock
 	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
 	cs := CodeSpace^
-
+	GetScope := virtual !() -> int
+	{
+		return fileId
+	}
 	this := !(Path fullPath) -> void
 	{
 		fileId = GetNewId()
