@@ -3,15 +3,12 @@
 main := !() -> int
 {
 	x := 3
-	x = x + 4
-	y := 7
-	y = y + 5
-	y = y + 5
 
-	for i : 13
-	{
+	lmbd := (int y) ==> {
 		z := x + y
+		printf("heh %i\n",z)
 	}
+	lmbd(4)
 	return 0
 }
 

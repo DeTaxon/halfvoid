@@ -308,7 +308,7 @@ SLambda := class extend ObjResult
 			}
 		}
 	}
-	PrintInhers := !(sfile f,char^ startS) -> void
+	PrintInhers := !(sfile f,char^ startS,bool printDeb) -> void
 	{
 		funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
 		itrr := Up
@@ -354,6 +354,12 @@ SLambda := class extend ObjResult
 					<< itrT->{BoxClass^}.ClassType.GetName() << "** %T" << it.2.InAlloc[0] <<"\n"
 			}
 			nameIter += 1
+		}
+		if printDeb 
+		{
+			//funcsUp.Back().2.PrintDebugDeclare(f,this&)
+			if Down != null Down[^].PrintDebugDeclare(f,null)
+			//for it : StolenParams it.PrintDebugDeclare(f,this&)
 		}
 		if applyedCaptures
 		{
@@ -488,7 +494,7 @@ SLambda := class extend ObjResult
 
 				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ")\n"
 				f << "{\n"
-				PrintInhers(f,"ToCpy" + ItId)
+				PrintInhers(f,"ToCpy" + ItId,false)
 				
 				ABName := ""
 				for funcsUp
@@ -656,7 +662,7 @@ SLambda := class extend ObjResult
 			
 			if not justFunc
 			{
-				PrintInhers(f,Names[0])
+				PrintInhers(f,Names[0],DebugMode)
 			}
 			ABox.PrintAlloc(f,"%Lambda0Box")
 			for i : fastUse.ParsCount
@@ -668,7 +674,7 @@ SLambda := class extend ObjResult
 				f << fastUse.Pars[i].GetName()
 				if fastUse.ParsIsRef[i] f << "*"
 				f << "* %T" << InAlloc[i] << "\n"
-				if DebugMode
+				if DebugMode and i != 0
 				{
 					outId := CreateDbgLocVar(this&,fastUse.Pars[i],Names[i])
 					newId := CreateDebugCall(this&)
@@ -934,6 +940,9 @@ SLambda := class extend ObjResult
 	ApplyDeferUse := virtual !(int depth) -> void
 	{
 		printf("sfgasfhafg\n")
+	}
+	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	{
 	}
 }
 

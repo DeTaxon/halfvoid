@@ -32,6 +32,9 @@ MemParam := class extend ObjResult
 	{
 		return "Mem"
 	}
+	PrintDebugDeclare := virtual !(sfile f) -> void
+	{
+	}
 
 }
 ConstParam := class extend MemParam
@@ -151,16 +154,22 @@ LocalParam := class extend MemParam
 	{
 		return "Local"
 	}
-	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	PrintDebugDeclare := virtual !(sfile f,Object^ fnc) -> void
 	{
-		assert(Up != null)
-		assert(Up is ObjParam)
 		asP := Up->{ObjParam^}
 		if asP.IsRef
 		{
 		}else{
-			outId := CreateDbgLocVar(Up,asP.ObjType,asP.MyStr)
-			newId := CreateDebugCall(Up)
+			asUp := Up
+			if fnc != null 
+			{
+				asUp = fnc
+			}else{
+				assert(Up != null)
+				assert(Up is ObjParam)
+			}
+			outId := CreateDbgLocVar(asUp,asP.ObjType,asP.MyStr)
+			newId := CreateDebugCall(asUp)
 			if newId != -1 and outId != -1
 			{
 				f << "call void @llvm.dbg.declare(metadata " << asP.ObjType.GetName() << "* %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"

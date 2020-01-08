@@ -1375,7 +1375,7 @@ BoxFuncBody := class extend BoxFunc
 						f << "%ItBdPre" << ABox.ItId << " = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName"<<ABox.ItId<<", i32 0,i32 " 
 							<< asL.ABox.GetNR(asL.InAlloc[0]) << "\n"
 						f << "%ItBd  = load i8*, i8** " << "%ItBdPre" << ABox.ItId << "\n"
-						asL.PrintInhers(f,"ItBd")
+						asL.PrintInhers(f,"ItBd",false)
 					}
 					break
 				}
