@@ -1,14 +1,16 @@
 
+gtr := !(char^ tst, ...) -> void
+{
+}
+
+
+g2 := !(void^ to) -> void
+{
+}
 
 main := !() -> int
 {
-	x := 3
-
-	lmbd := (int y) ==> {
-		z := x + y
-		printf("heh %i\n",z)
-	}
-	lmbd(4)
+	g2(gtr)
 	return 0
 }
 

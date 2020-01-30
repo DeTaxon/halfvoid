@@ -164,6 +164,7 @@ Object := class{
 	}
 	GetScope := virtual !() -> int
 	{
+		if Up == null return 0
 		return Up.GetScope()
 	}
 }

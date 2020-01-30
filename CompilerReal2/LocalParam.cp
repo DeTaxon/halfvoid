@@ -157,17 +157,13 @@ LocalParam := class extend MemParam
 	PrintDebugDeclare := virtual !(sfile f,Object^ fnc) -> void
 	{
 		asP := Up->{ObjParam^}
+		if Up == null or not (Up is ObjParam)
+			return void
 		if asP.IsRef
 		{
 		}else{
 			asUp := Up
-			if fnc != null 
-			{
-				asUp = fnc
-			}else{
-				assert(Up != null)
-				assert(Up is ObjParam)
-			}
+			if fnc != null asUp = fnc
 			outId := CreateDbgLocVar(asUp,asP.ObjType,asP.MyStr)
 			newId := CreateDebugCall(asUp)
 			if newId != -1 and outId != -1

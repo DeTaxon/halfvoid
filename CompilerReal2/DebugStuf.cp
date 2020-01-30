@@ -24,8 +24,9 @@ CreateDebugCall := !(Object^ itm) -> int
 	//}else{
 	//	aBId = itr->{BoxFunc^}.ABox.ItId
 	//}
-	itId := GetNewId()
 	aBId := itm.GetScope()
+	if aBId == 0 return -1
+	itId := GetNewId()
 	DebugCalls.Emplace(itId,itm.Line.LinePos,aBId)
 	return itId
 }
@@ -51,6 +52,7 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 	//	aBId = itr->{BoxFunc^}.ABox.ItId
 	//}
 	aBId := itm.GetScope()
+	if aBId == 0 return -1
 
 	while itr.Up != null itr = itr.Up
 

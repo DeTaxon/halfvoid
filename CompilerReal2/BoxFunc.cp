@@ -166,7 +166,10 @@ IsTemplate := !(Object^ sk) -> bool
 	{
 		if iter.GetValue() == ","
 		{
-			if Counter == 1 return true
+			if Counter == 1 
+			{
+				return true
+			}
 			Counter = 0
 		} else Counter += 1
 
@@ -177,7 +180,21 @@ IsTemplate := !(Object^ sk) -> bool
 
 		if ContainTType(iter) return true //TODO: check after Syntax, not Before
 	}
-	if  Counter == 1 return true
+	if  Counter == 1 
+	{
+		
+		itr := sk.Down
+		if itr != null
+		{
+			while itr.Right != null
+			{	
+				itr = itr.Right
+			}
+			if itr.GetValue() == "..." return false
+		}
+		return true
+	}
+
 
 	if sk.Right?.GetValue() == "." and sk.Right.Right?.GetValue() == "{}"
 	{
@@ -185,6 +202,9 @@ IsTemplate := !(Object^ sk) -> bool
 		{
 			if iter.GetValue() != ","
 			{
+				if iter.GetValue() == "..."
+					return false
+
 				if not iter.IsConst 
 					if ParseType(iter) == null
 						return true

@@ -302,6 +302,10 @@ main := !(int argc,char^^ argv) -> int
 		fil << "%Vec4f = type <4 x float>\n"
 		fil << "%Vec3f = type <3 x float>\n"
 		fil << "%Vec2f = type <2 x float>\n"
+
+		fil << "declare void @llvm.va_start(i8* %a)\n"
+		fil << "declare void @llvm.va_end(i8* %a)\n"
+		fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
 		StrContainer.PrintGlobal(fil)
 
 		Classes[^].PrintStruct(fil)

@@ -359,7 +359,8 @@ SLambda := class extend ObjResult
 		{
 			//funcsUp.Back().2.PrintDebugDeclare(f,this&)
 			if Down != null Down[^].PrintDebugDeclare(f,null)
-			//for it : StolenParams it.PrintDebugDeclare(f,this&)
+			for it : StolenParams it.PrintDebugDeclare(f,this&)
+			
 		}
 		if applyedCaptures
 		{

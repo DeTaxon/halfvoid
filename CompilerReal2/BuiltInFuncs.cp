@@ -1655,6 +1655,11 @@ CreateBuiltIns := !() -> void
 	AddBuiltInFunc(new BuiltInFuncZero("internalGetCallFrame",GTypeVoidP,false,"#0 = call i8* @llvm.frameaddress(i32 0) #d\n"))
 	AddBuiltInFunc(new BuiltInFuncZero("internalStackSave",GTypeVoidP,false,"#0 = call i8* @llvm.stacksave() #d\n"))
 	AddBuiltInFunc(new BuiltInFuncUno("internalStackRestore",GTypeVoidP,false,GTypeVoid,"call i8* @llvm.stackrestore(i8* #1) #d\n"))
+
+	AddBuiltInFunc(new BuiltInFuncUno("va_start",GTypeVoidP,false,GTypeVoid,"call void @llvm.va_start(i8* #1) #d\n"))
+	AddBuiltInFunc(new BuiltInFuncUno("va_end",GTypeVoidP,false,GTypeVoid,"call void @llvm.va_end(i8* #1) #d\n"))
+	AddBuiltInFunc(new BuiltInFuncBinar("va_copy",GTypeVoidP,false,GTypeVoidP,false,GTypeVoid,"call void @llvm.va_copy(i8* #1,i8* #2) #d\n"))
+
 	RangeFuncs()
 	Vec4fFuncs()
 
