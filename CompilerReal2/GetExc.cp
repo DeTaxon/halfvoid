@@ -9,6 +9,13 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		return GetExcPointers(itemType,ToType)
 	}
 
+	if (itemType is TypePoint and ToType is TypeFuncLambda)
+		or (itemType is TypeFuncLambda and ToType is TypePoint)
+	{
+		return GetExcPointers(itemType,ToType)
+	}
+
+
 	for BuiltInExcs
 	{
 		ItType := it.MyFuncType
@@ -82,6 +89,7 @@ GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
 	if item.GetType() == null return null
+
 	if item is SLambda
 	{
 		asN := item->{SLambda^}

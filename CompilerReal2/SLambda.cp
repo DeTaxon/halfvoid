@@ -189,6 +189,7 @@ SLambda := class extend ObjResult
 			asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
 			fastUse = asFunc
 
+
 			if not isTmpl
 			{
 				if not justFunc
@@ -207,7 +208,6 @@ SLambda := class extend ObjResult
 						}
 						parms[i] = new LocalParam(it,InAlloc[i],isRf)
 					}
-
 					WorkBag.Push(Down,State_Syntax)
 				}
 				WorkBag.Push(this&,State_PrePrint)

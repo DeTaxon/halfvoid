@@ -1015,6 +1015,9 @@ NaturalCall := class extend SomeFuncCall
 				}else{
 					iter = preRet
 				}
+			}else
+			{
+				if iter is SLambda iter->{SLambda^}.ApplyFunc()
 			}
 			i += 1
 			iter = iter.Right

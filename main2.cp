@@ -1,16 +1,16 @@
 
-gtr := !(char^ tst, ...) -> void
+g2 := !(!()&->void thr) -> void^
 {
-}
-
-
-g2 := !(void^ to) -> void
-{
+	z := thr->{void^}
+	return z
 }
 
 main := !() -> int
 {
-	g2(gtr)
+	t2 := g2(() ==> {
+		printf("heh hoh\n")
+	})
+	t2->{!()&->void}()
 	return 0
 }
 
