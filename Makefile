@@ -31,7 +31,9 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.out --vk vk.xml -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+	./c.out --vk vk.xml -p posix -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+test2t: main2.cp
+	./c.out -g main2.cp  -p posix --tree -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2l: main2.cp
 	./c.out -g main2.cp  -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2n: main2.cp

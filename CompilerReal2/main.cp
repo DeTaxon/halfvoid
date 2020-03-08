@@ -245,14 +245,12 @@ main := !(int argc,char^^ argv) -> int
 	if not DeferInit2()
 	{
 		for ErrorLog printf(it)
-		printf("internal error, no defer manager\n")
-		return -1
+		printf("warning: internal error, no defer manager\n")
 	}
 	if not ExceptionInit()
 	{
 		for ErrorLog printf(it)
-		printf("internal error, no exception functions\n")
-		return -1
+		printf("warning: internal error, no exception functions\n")
 	}
 
 	endI := Ob.Down

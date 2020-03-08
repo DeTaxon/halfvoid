@@ -152,7 +152,7 @@ Stack := class .{@T}
 	}
 	"~For" := !() -> StackTypeIter.{T}
 	{
-		return StackTypeIter.{T}(Start)
+		return StackTypeIter.{T}(this.Start)
 	}
 	"<<<" := !(Stack.{T} toMove) -> void
 	{

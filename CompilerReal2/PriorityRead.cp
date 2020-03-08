@@ -20,6 +20,7 @@ PriorityBag := class
 {
 	Opers := QueueSet.{string}
 	Lines := Queue.{MiniMachineNode^}
+	LinesRaw := Queue.{char^}
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
@@ -32,28 +33,44 @@ PriorityBag := class
 		{
 			CurWords := Queue.{StringSpan}() ; $temp
 
-			j := itS
-			isLoading := false
-			while itS < mapSize and ptrChar[itS] != '\n'
+			if ptrChar[itS] == '#'
 			{
-				if isLoading
+				strtT := itS
+				while itS < mapSize and ptrChar[itS] != '\n'
 				{
-					if ptrChar[itS] == '\"'
-					{
-						CurWords.Emplace(ptrChar[j]&,itS - j)
-						isLoading = false
-					}
-				}else
+					itS++
+				}
+				nowLineQ := ptrChar[strtT..(itS - strtT)]
+				nowLine := nowLineQ.Str()
+				LinesRaw.Push(nowLine)
+				Lines.Push(MiniMachineNode^())
+				itS++
+				continue
+			}else{
+				j := itS
+				isLoading := false
+				while itS < mapSize and ptrChar[itS] != '\n'
 				{
-					if ptrChar[itS]  == '\"'
+					if isLoading
 					{
-						isLoading = true
-						j = itS + 1
+						if ptrChar[itS] == '\"'
+						{
+							CurWords.Emplace(ptrChar[j]&,itS - j)
+							isLoading = false
+						}
+					}else
+					{
+						if ptrChar[itS]  == '\"'
+						{
+							isLoading = true
+							j = itS + 1
+						}
 					}
+					itS++
 				}
 				itS++
 			}
-			itS++
+			LinesRaw.Push(char^())
 
 			if CurWords.NotEmpty()
 			{

@@ -131,11 +131,18 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 
 	GotStuff := false
 
-	iterBag := bag.Lines.Start
-	while iterBag != null
+	for iterBag : bag.Lines, iterRaw : bag.LinesRaw
 	{
-		if RuleUseSome(begin,"~d",iterBag.Data) return true
-		iterBag = iterBag.Next
+		if iterBag != null
+		{
+			if RuleUseSome(begin,"~d",iterBag) return true
+		}else{
+			switch iterRaw
+			{
+				case "#CallFunction"
+					if RuleUse(begin,"~d",RuleCallFunction) return true
+			}
+		}
 	}
 
 
@@ -306,6 +313,26 @@ RuleSLambda := !(void^ itr) -> int
 	if It.GetValue() == "{}" return siz
 	if InDataR(It) return siz
 	return 0
+}
+RuleCallFunction := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+
+	if It.Left != null
+	{
+		if It.Left.GetValue() == "." return 0
+	}
+
+	if not InDataR(It) return 0
+	
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "()" return 0
+
+	if It.Line != It.Left.Line return 0
+
+	return 2
 }
 RuleMinus := !(void^ itr) -> int
 {

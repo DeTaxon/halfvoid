@@ -1,16 +1,11 @@
 
-g2 := !(!()&->void thr) -> void^
-{
-	z := thr->{void^}
-	return z
-}
 
 main := !() -> int
 {
-	t2 := g2(() ==> {
-		printf("heh hoh\n")
-	})
-	t2->{!()&->void}()
+	//tstPre := Path("Makefile")
+	//tst := tstPre.Size()
+	tst := Path("Makefile").Size()
+	printf("pls %i\n",tst)
 	return 0
 }
 
