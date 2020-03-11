@@ -52,11 +52,11 @@ halfvoidg: cycleg TempDir/CompilerData.zip
 	clang $(MainOut) -g -ldl -o TempDir/PreHalf ; ./stable --ZipGlue TempDir/PreHalf TempDir/CompilerData.zip halfvoid; chmod 777 halfvoid
 
 Objs/Lex: LexBuilder/main.cp Priority.pr
-	./c.out  $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o Objs/Lex;
+	./c.out -p posix $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o Objs/Lex;
 Mach.m: Objs/Lex Libs/RegExpBuilder.cp
 	./Objs/Lex
 Objs/LexTester: LexBuilder/test.cp Libs/RegExpBuilder.cp
-	./stable LexBuilder/test.cp $(ForcedLibs) -o Objs/LexTester.ll; clang Objs/LexTester.ll -o Objs/LexTester
+	./stable -p posix LexBuilder/test.cp $(ForcedLibs) -o Objs/LexTester.ll; clang Objs/LexTester.ll -o Objs/LexTester
 LexTest: Objs/LexTester
 	./Objs/LexTester
 

@@ -2,10 +2,8 @@
 
 main := !() -> int
 {
-	//tstPre := Path("Makefile")
-	//tst := tstPre.Size()
-	tst := Path("Makefile").Size()
-	printf("pls %i\n",tst)
+	tst := "hello"sbt + 5 <-
+	printf("hoh %s\n",tst)
 	return 0
 }
 

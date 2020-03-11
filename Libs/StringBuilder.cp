@@ -100,6 +100,10 @@ StringBuilder := class .{@BufSize}{
 	{
 		return Str()
 	}
+	"<-" := !() -> string
+	{
+		return Str() ; $temp
+	}
 }
 
 "sbt" := !(string toAp) -> StringBuilder.{256}
