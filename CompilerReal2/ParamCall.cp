@@ -105,6 +105,17 @@ ParamNaturalCall := class extend ParamCall
 		if ToCall == null return null
 		return ToCall.GetType()
 	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		if ToCall is LocalParam
+		{
+			asLoc := ToCall->{LocalParam^}
+			if asLoc.IsRef
+			{
+				asLoc.PrintPointPre(f,TempId)
+			}
+		}
+	}
 	
 	PrintPointPre := virtual !(sfile f) -> void
 	{

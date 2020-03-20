@@ -89,6 +89,8 @@ SLambda := class extend ObjResult
 	{
 		if pri == State_Start and not parsedStart
 		{
+			AllocSetStruct(Up)
+
 			parsedStart = true
 			justFunc = Down.Right.GetValue() == "=>"
 			//WorkBag.Push(this&,State_Syntax)
@@ -337,7 +339,7 @@ SLambda := class extend ObjResult
 			f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
 			f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
 			f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
-			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box")
+			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box",this&)
 			prevLam = it.1
 			if prevLam != null
 			{
@@ -665,7 +667,7 @@ SLambda := class extend ObjResult
 			{
 				PrintInhers(f,Names[0],DebugMode)
 			}
-			ABox.PrintAlloc(f,"%Lambda0Box")
+			ABox.PrintAlloc(f,"%Lambda0Box",this&)
 			for i : fastUse.ParsCount
 			{
 				f << "store "
@@ -681,7 +683,10 @@ SLambda := class extend ObjResult
 					newId := CreateDebugCall(this&)
 					if newId != -1 and outId != -1
 					{
-						f << "call void @llvm.dbg.declare(metadata " << fastUse.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+						f << "call void @llvm.dbg.declare(metadata " << fastUse.Pars[i].GetName()
+						if fastUse.ParsIsRef[i] 
+							f << "*"
+						f <<"* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
 					}
 				}
 			}

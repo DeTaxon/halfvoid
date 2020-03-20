@@ -1336,7 +1336,7 @@ BoxFuncBody := class extend BoxFunc
 
 			f << "\n{\n"
 
-			ABox.PrintAlloc(f)
+			ABox.PrintAlloc(f,this&)
 			//f << "%ABoxSizePre" << ABox.ItId << " = getelementptr %AllocClass" << ABox.ItId << " , %AllocClass" << ABox.ItId << "* null , i32 1\n"
 			//f << "%ABoxSize" << ABox.ItId << " = ptrtoint %AllocClass" << ABox.ItId << "* %ABoxSizePre" << ABox.ItId <<" to i32\n"
 			//f << "%ABoxPoint = bitcast %AllocClass" << ABox.ItId << "* %AllocItem" << ABox.ItId << " to i8*\n" 
@@ -1388,7 +1388,7 @@ BoxFuncBody := class extend BoxFunc
 					asL := iterP->{SLambda^}
 					ABName := asL.ABox.GetClassName()
 					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
-					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,asL)
 
 					if not asL.justFunc
 					{
@@ -1406,7 +1406,7 @@ BoxFuncBody := class extend BoxFunc
 					if not asN.ABox.ItemBag.Empty()
 					{
 						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId)
+						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,asN)
 						if asN.IsMethod
 						{
 							thisId := asN.ItParams[0].inAllocId

@@ -100,7 +100,10 @@ ObjDefer := class extend Object
 	{
 		WorkBag.Push(Down,pri)
 		if Up != null
+		{
 			Up.ApplyDeferUse(1)
+			AllocSetStruct(Up)
+		}
 	}
 }
 PrintDeferDepth := !(sfile f, int SomeId, Object^ itm) -> void

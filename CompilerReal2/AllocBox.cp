@@ -3,6 +3,7 @@ AllocBox := class
 {
 	ItId := int
 	liveOnGlobal := bool
+	mustBeStruct := bool
 
 	parentAlloc := AllocBox^
 	inhAllocs := List.{AllocBox^}
@@ -53,7 +54,7 @@ AllocBox := class
 	printedGlobal := bool
 	PrintGlobal := !(sfile f) -> void
 	{
-		if printedGlobal 
+		if printedGlobal or not mustBeStruct
 			return void
 		printedGlobal = true 
 
@@ -96,18 +97,35 @@ AllocBox := class
 			return "%AllocClass"sbt + ItId + "* null"
 		return "%AllocClass"sbt + ItId + "* %AllocItem" + ItId
 	}
-	PrintAlloc := !(sfile f) -> void
+	PrintAlloc := !(sfile f,Object^ dbgObj) -> void
 	{
-		PrintAlloc(f,null->{char^})
+		PrintAlloc(f,null->{char^},dbgObj)
 	}
-	PrintAlloc := !(sfile f,char^ prntName) -> void
+	PrintAlloc := !(sfile f,char^ prntName,Object^ dbgObj) -> void
 	{
 		if not ItemBag.Empty()
 		{
+			if not mustBeStruct
+			{
+				itr2 := ItemBag.Start 
+				while itr2 != null
+				{
+					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
+					itr2 = itr2.Next
+				}
+				return void
+			}
 			if liveOnGlobal
 			{
 				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
-					<< ItId << "* @AllocObject" << ItId << ", i32 0\n"
+					<< ItId << "* @AllocObject" << ItId << ", i32 0"
+				//if DebugMode
+				//{
+				//	newId := CreateDebugCall(dbgObj)
+				//	if newId != -1
+				//		f << " , !dbg !" << newId
+				//}
+				f << "\n"
 			}else{
 				if parentAlloc != null
 				{
@@ -115,23 +133,39 @@ AllocBox := class
 					cntr := InheritNR()
 					f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << parentAlloc.ItId << " , "
 						f << " %AllocClass" << parentAlloc.ItId << "* " << prntName
-						f << ", i32 0, i32 " << cntr << "\n"
+						f << ", i32 0, i32 " << cntr 
+					//if DebugMode
+					//{
+					//	newId := CreateDebugCall(dbgObj)
+					//	if newId != -1
+					//		f << " , !dbg !" << newId
+					//}
+					f << "\n"
 				}else{
 					f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
 				}
 			}
 		}
 
-		PrintBoxItems(f,"%AllocItem" + ItId)
+		PrintBoxItems(f,"%AllocItem" + ItId,dbgObj)
 	}
-	PrintBoxItems := !(sfile f,string Name) -> void
+	PrintBoxItems := !(sfile f,string Name,Object^ dbgObj) -> void
 	{
+		if not mustBeStruct
+			return void
 		iter := ItemBag.Start
 		i := 0
 		while iter != null
 		{
 			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " + Name
-			f << " , i32 0, i32 " << i<<"\n"
+			f << " , i32 0, i32 " << i
+			if DebugMode
+			{
+				newId := CreateDebugCall(dbgObj)
+				if newId != -1
+					f << " , !dbg !" << newId
+			}
+			f << "\n"
 
 			iter = iter.Next
 			i += 1
@@ -184,4 +218,18 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 		iter = iter.Up
 	}
 	return -1
+}
+AllocSetStruct := !(Object^ start) -> void
+{
+	while start != null
+	{
+		switch start.GetValue()
+		{
+			case "!()"
+				start->{BoxFunc^}.ABox.mustBeStruct = true
+			case "x=>x"
+				start->{BoxFunc^}.ABox.mustBeStruct = true
+		}
+		start = start.Up
+	}
 }
