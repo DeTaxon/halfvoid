@@ -3,7 +3,7 @@ AllocBox := class
 {
 	ItId := int
 	liveOnGlobal := bool
-	mustBeStruct := bool
+	//mustBeStruct := bool
 
 	parentAlloc := AllocBox^
 	inhAllocs := List.{AllocBox^}
@@ -54,7 +54,7 @@ AllocBox := class
 	printedGlobal := bool
 	PrintGlobal := !(sfile f) -> void
 	{
-		if printedGlobal or not mustBeStruct
+		if printedGlobal
 			return void
 		printedGlobal = true 
 
@@ -97,24 +97,24 @@ AllocBox := class
 			return "%AllocClass"sbt + ItId + "* null"
 		return "%AllocClass"sbt + ItId + "* %AllocItem" + ItId
 	}
-	PrintAlloc := !(sfile f,Object^ dbgObj) -> void
+	PrintAlloc := !(sfile f,int debId) -> void
 	{
-		PrintAlloc(f,null->{char^},dbgObj)
+		PrintAlloc(f,null->{char^},debId)
 	}
-	PrintAlloc := !(sfile f,char^ prntName,Object^ dbgObj) -> void
+	PrintAlloc := !(sfile f,char^ prntName,debId) -> void
 	{
 		if not ItemBag.Empty()
 		{
-			if not mustBeStruct
-			{
-				itr2 := ItemBag.Start 
-				while itr2 != null
-				{
-					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
-					itr2 = itr2.Next
-				}
-				return void
-			}
+			//if not mustBeStruct
+			//{
+			//	itr2 := ItemBag.Start 
+			//	while itr2 != null
+			//	{
+			//		f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
+			//		itr2 = itr2.Next
+			//	}
+			//	return void
+			//}
 			if liveOnGlobal
 			{
 				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
@@ -147,23 +147,21 @@ AllocBox := class
 			}
 		}
 
-		PrintBoxItems(f,"%AllocItem" + ItId,dbgObj)
+		PrintBoxItems(f,"%AllocItem" + ItId,debId)
 	}
-	PrintBoxItems := !(sfile f,string Name,Object^ dbgObj) -> void
+	PrintBoxItems := !(sfile f,string Name,int debId) -> void
 	{
-		if not mustBeStruct
-			return void
+		//if not mustBeStruct
+		//	return void
 		iter := ItemBag.Start
 		i := 0
 		while iter != null
 		{
 			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " + Name
 			f << " , i32 0, i32 " << i
-			if DebugMode
+			if DebugMode and debId != -1
 			{
-				newId := CreateDebugCall(dbgObj)
-				if newId != -1
-					f << " , !dbg !" << newId
+				f << " , !dbg !" << debId
 			}
 			f << "\n"
 
@@ -219,17 +217,17 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 	}
 	return -1
 }
-AllocSetStruct := !(Object^ start) -> void
-{
-	while start != null
-	{
-		switch start.GetValue()
-		{
-			case "!()"
-				start->{BoxFunc^}.ABox.mustBeStruct = true
-			case "x=>x"
-				start->{BoxFunc^}.ABox.mustBeStruct = true
-		}
-		start = start.Up
-	}
-}
+//AllocSetStruct := !(Object^ start) -> void
+//{
+//	while start != null
+//	{
+//		switch start.GetValue()
+//		{
+//			case "!()"
+//				start->{BoxFunc^}.ABox.mustBeStruct = true
+//			case "x=>x"
+//				start->{BoxFunc^}.ABox.mustBeStruct = true
+//		}
+//		start = start.Up
+//	}
+//}

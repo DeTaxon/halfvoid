@@ -4,16 +4,16 @@ MemParam := class extend ObjResult
 	{
 		return "i:=2"
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
 	GetName := virtual !(int newInd) -> string
@@ -45,7 +45,7 @@ ConstParam := class extend MemParam
 		itName = "%" + name
 		ResultType = tp
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		f << ResultType.GetName() <<" " <<itName
 	}
@@ -85,30 +85,38 @@ LocalParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if IsRef {
 			f << "%TPre" << newInd << " = load "
 			ResultType.GetPoint().PrintType(f)
 			f << " , "
 			ResultType.GetPoint().PrintType(f)
-			f << "* %T" << inAllocId << "\n"
+			f << "* %T" << inAllocId
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 
 			f << "%T" << newInd << " = load "
 			ResultType.PrintType(f)
 			f << " , "
 			ResultType.PrintType(f)
-			f << "* %TPre" << newInd << "\n"
-			
+			f << "* %TPre" << newInd
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 		}else{
 			f << "%T" << newInd << " = load "
 			ResultType.PrintType(f)
 			f << " , "
 			ResultType.PrintType(f)
-			f << "* %T" << inAllocId << "\n"
+			f << "* %T" << inAllocId
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 		}
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -117,17 +125,20 @@ LocalParam := class extend MemParam
 	{
 		return true
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if IsRef {
 			f << "%T" << newInd << " = load "
 			ResultType.GetPoint().PrintType(f)
 			f << " , "
 			ResultType.GetPoint().PrintType(f)
-			f << "* %T" << inAllocId << "\n"
+			f << "* %T" << inAllocId
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 		}
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if IsRef{
 			ResultType.GetPoint().PrintType(f)
@@ -282,23 +293,26 @@ GlobalParam := class extend MemParam
 			f << " " << Down.GetName() << "\n"
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.GetPoint().PrintType(f)
 		f << " @T" << MainId
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		f << "%T" << newInd << " = load "
 		ResultType.PrintType(f)
 		f << " , "
 		ResultType.PrintType(f)
-		f << "* @T" << MainId << "\n"
+		f << "* @T" << MainId
+		if DebugMode and debId != -1
+			f << ", !dbg !" << debId 
+		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -348,23 +362,26 @@ GlobalFuncParam := class extend MemParam
 			f << " " << Down.GetName() << "\n"
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.GetPoint().PrintType(f)
 		f << " @T" << MainId
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		f << "%T" << newInd << " = load "
 		ResultType.PrintType(f)
 		f << " , "
 		ResultType.PrintType(f)
-		f << "* @T" << MainId << "\n"
+		f << "* @T" << MainId
+		if DebugMode and debId != -1
+			f << ", !dbg !" << debId 
+		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -411,23 +428,26 @@ ExternParam := class extend MemParam
 		ResultType.PrintType(f)
 		f << "\n"
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.GetPoint().PrintType(f)
 		f << " @" << itName
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		f << "%T" << newInd << " = load "
 		ResultType.PrintType(f)
 		f << " , "
 		ResultType.PrintType(f)
-		f << "* @" << itName << "\n"
+		f << "* @" << itName 
+		if DebugMode and debId != -1
+			f << ", !dbg !" << debId 
+		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -452,7 +472,7 @@ FuncParam := class extend MemParam
 		ItName = Name
 		IsRef = IIsRef
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if IsRef
 		{
@@ -460,13 +480,16 @@ FuncParam := class extend MemParam
 			ResultType.PrintType(f)
 			f << " , "
 			ResultType.PrintType(f)
-			f << "* %" << ItName << "\n"
+			f << "* %" << ItName
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		
 		if IsRef
@@ -475,7 +498,7 @@ FuncParam := class extend MemParam
 			f << " %" << ItName
 		}
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if IsRef
 		{
@@ -518,7 +541,7 @@ FieldParam := class extend MemParam
 	{
 		return true
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %" << ItName
@@ -567,17 +590,19 @@ RetFuncParam := class extend MemParam
 	{
 		return ToCall.IsRef()
 	}
-	PrintPre := virtual !(sfile f, int newInd) -> void
+	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		//ToCall.PrintPre(f)
 		if ToCall.IsRef()
 		{
 			f << "%T" << newInd << " = load " << ResultType.GetName() << " , " 
 			ToCall.PrintPointUse(f)
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
 			f << "\n"
 		}
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		if ToCall.IsRef()
 		{
@@ -586,11 +611,11 @@ RetFuncParam := class extend MemParam
 			ToCall.PrintUse(f)
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd) -> void
+	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		//ToCall.PrintPointPre(f)
 	}
-	PrintPointUse := virtual !(sfile f, int newInd) -> void
+	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
 		ToCall.PrintPointUse(f)
 	}

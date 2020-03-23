@@ -1336,12 +1336,19 @@ BoxFuncBody := class extend BoxFunc
 
 			f << "\n{\n"
 
-			ABox.PrintAlloc(f,this&)
+			dbgId := -1
+			if DebugMode
+				dbgId = CreateDebugCall(this&)
+
+			ABox.PrintAlloc(f,dbgId)
 			//f << "%ABoxSizePre" << ABox.ItId << " = getelementptr %AllocClass" << ABox.ItId << " , %AllocClass" << ABox.ItId << "* null , i32 1\n"
 			//f << "%ABoxSize" << ABox.ItId << " = ptrtoint %AllocClass" << ABox.ItId << "* %ABoxSizePre" << ABox.ItId <<" to i32\n"
 			//f << "%ABoxPoint = bitcast %AllocClass" << ABox.ItId << "* %AllocItem" << ABox.ItId << " to i8*\n" 
 			//f << "call void @memset(i8* %ABoxPoint" << ABox.ItId << " , i8 0, i32 %ABoxSize" << ABox.ItId << ")\n"
-			if DebugMode PrintDebugDeclare(f,null)
+			if DebugMode 
+			{
+				PrintDebugDeclare(f,null)
+			}
 
 			if InAlloc != null
 			for i : MyFuncType.ParsCount
@@ -1357,23 +1364,25 @@ BoxFuncBody := class extend BoxFunc
 				}
 					f << MyFuncType.Pars[i].GetName()
 					if MyFuncType.ParsIsRef[i] f << "*"
-					f << "* %T" << InAlloc[i] << "\n"
+					f << "* %T" << InAlloc[i]
+					if DebugMode and dbgId != -1
+						f << ", !dbg !" << dbgId
+					f << "\n"
 				if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
 				{
 					if MyFuncType.ParsIsRef[i]
 					{
 						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
 						newId := CreateDebugCall(this&)
-						if newId != -1 and outId != -1
+						if dbgId != -1 and outId != -1
 						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
 						}
 					}else{
 						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
-						newId := CreateDebugCall(this&)
-						if newId != -1 and outId != -1
+						if dbgId != -1 and outId != -1
 						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
 						}
 					}
 				}
@@ -1388,7 +1397,7 @@ BoxFuncBody := class extend BoxFunc
 					asL := iterP->{SLambda^}
 					ABName := asL.ABox.GetClassName()
 					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
-					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,asL)
+					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,-1) ; //TODO: replace with debug id
 
 					if not asL.justFunc
 					{
@@ -1406,7 +1415,7 @@ BoxFuncBody := class extend BoxFunc
 					if not asN.ABox.ItemBag.Empty()
 					{
 						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,asN)
+						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,-1) //TODO: replace with debug id
 						if asN.IsMethod
 						{
 							thisId := asN.ItParams[0].inAllocId

@@ -89,7 +89,7 @@ SLambda := class extend ObjResult
 	{
 		if pri == State_Start and not parsedStart
 		{
-			AllocSetStruct(Up)
+			//AllocSetStruct(Up)
 
 			parsedStart = true
 			justFunc = Down.Right.GetValue() == "=>"
@@ -339,7 +339,7 @@ SLambda := class extend ObjResult
 			f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
 			f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
 			f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
-			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box",this&)
+			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box",-1) //TODO: add dbg data
 			prevLam = it.1
 			if prevLam != null
 			{
@@ -607,17 +607,17 @@ SLambda := class extend ObjResult
 						{
 							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
 								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
-							it.1.PrintPointPre(f,newIdd)
+							it.1.PrintPointPre(f,newIdd,-1) //TODO: replace -1 with lambda debug id
 							f << "store "
-							it.1.PrintPointUse(f,newIdd)
+							it.1.PrintPointUse(f,newIdd,-1) //TODO: replace -1 with lambda debug id
 							f << " , " << it.1.ResultType.GetName() << "** "
 							f << "%TSt" << sii << "\n"
 						}else{
 							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
 								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
-							it.1.PrintPre(f,newIdd)
+							it.1.PrintPre(f,newIdd,-1) //TODO: replace -1 with lambda debug id
 							f << "store "
-							it.1.PrintUse(f,newIdd)
+							it.1.PrintUse(f,newIdd,-1) //TODO: replace -1 with lambda debug id
 							f << " , " << it.1.ResultType.GetName() << "* "
 							f << "%TSt" << sii << "\n"
 						}
@@ -667,7 +667,10 @@ SLambda := class extend ObjResult
 			{
 				PrintInhers(f,Names[0],DebugMode)
 			}
-			ABox.PrintAlloc(f,"%Lambda0Box",this&)
+			debId := -1
+			if DebugMode
+				debId = CreateDebugCall(this&)
+			ABox.PrintAlloc(f,"%Lambda0Box",debId)
 			for i : fastUse.ParsCount
 			{
 				f << "store "
@@ -790,9 +793,9 @@ SLambda := class extend ObjResult
 					{
 						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
 							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
-						it.3.PrintPointPre(f,nwId)
+						it.3.PrintPointPre(f,nwId,-1) //TODO: replace -1 with lambda debug id
 						f << "store "
-						it.3.PrintPointUse(f,nwId)
+						it.3.PrintPointUse(f,nwId,-1) //TODO: replace -1 with lambda debug id
 						f << " , "
 						f << it.1.ResultType.GetName() << "** "
 						f << "%StP" << nwId
@@ -800,9 +803,9 @@ SLambda := class extend ObjResult
 					}else{
 						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
 							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
-						it.3.PrintPre(f,nwId)
+						it.3.PrintPre(f,nwId,-1) //TODO: replace -1 with lambda debug id
 						f << "store "
-						it.3.PrintUse(f,nwId)
+						it.3.PrintUse(f,nwId,-1) //TODO: replace -1 with lambda debug id
 						f << " , "
 						f << it.1.ResultType.GetName() << "* "
 						f << "%StP" << nwId

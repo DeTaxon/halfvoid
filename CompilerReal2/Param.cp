@@ -55,7 +55,7 @@ ObjParam := class extend Object
 			f << "store "
 			asL.PrintUse(f)
 			f << " , "
-			itMem.PrintPointUse(f,extrId)
+			itMem.PrintPointUse(f,extrId,-1) //TODO: replace -1 with debug data
 			f << "\n"
 
 			return void
@@ -94,7 +94,7 @@ ObjParam := class extend Object
 					f << "store "
 					Down.Right.PrintUse(f)
 					f << " , "
-					asLoc.PrintPointUse(f,0)
+					asLoc.PrintPointUse(f,0,-1) //TODO: replace -1 with debug data
 					f << "\n"
 				}
 			}

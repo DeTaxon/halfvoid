@@ -86,6 +86,7 @@ ParamCall := class extend ObjResult
 ParamNaturalCall := class extend ParamCall
 {
 	TempId := int
+	debugId := int
 	ToCall := MemParam^
 	this := !(string Name , Object^ par) -> void
 	{
@@ -94,6 +95,22 @@ ParamNaturalCall := class extend ParamCall
 		
 		ToCall = par->{MemParam^}
 		inhAttrs = par.inhAttrs
+
+		if DebugMode
+		{
+			debugId = -1
+			WorkBag.Push(this&,State_PrePrint)
+		}
+	}
+	DoTheWork := virtual !(int val) -> void
+	{
+		if val == State_PrePrint
+		{
+			if DebugMode
+			{
+				debugId = CreateDebugCall(this&)
+			}
+		}
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -112,26 +129,26 @@ ParamNaturalCall := class extend ParamCall
 			asLoc := ToCall->{LocalParam^}
 			if asLoc.IsRef
 			{
-				asLoc.PrintPointPre(f,TempId)
+				asLoc.PrintPointPre(f,TempId,debugId)
 			}
 		}
 	}
 	
 	PrintPointPre := virtual !(sfile f) -> void
 	{
-		ToCall.PrintPointPre(f,TempId)
+		ToCall.PrintPointPre(f,TempId,debugId)
 	}
 	PrintPointUse := virtual !(sfile f) -> void
 	{
-		ToCall.PrintPointUse(f,TempId)
+		ToCall.PrintPointUse(f,TempId,debugId)
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		ToCall.PrintPre(f,TempId)
+		ToCall.PrintPre(f,TempId,debugId)
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		ToCall.PrintUse(f,TempId)
+		ToCall.PrintUse(f,TempId,debugId)
 	}
 	GetName := virtual !() -> string
 	{
