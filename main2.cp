@@ -1,25 +1,15 @@
 
-tst := !(int x) -> void
+tst := !(!(int)&->bool ifif) -> void
 {
-	z := 8
-	printf("tst %i\n",x)
+	for 1..10
+	{
+		if ifif(it)
+			printf("tst %i\n",it)
+	}
 }
 
 main := !() -> int
 {
-	tst(3)
+	tst(x ==> x % 2 == 0)
 	return 0
 }
-
-
-//tst := !(@T... args) -> T
-//{
-//	return 0.0
-//}
-//
-//main := !() -> int
-//{
-//	x := tst(1.0f,3.0f,4)
-//	return 0
-//}
-//

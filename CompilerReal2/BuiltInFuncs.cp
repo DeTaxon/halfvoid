@@ -311,14 +311,14 @@ BuiltInPointAddInc := class extend BoxTemplate
 		{
 			return new BuiltInFuncBinar("+=",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
 			"#0Pre = load i8* , i8** #1 #d\n"sbt
-			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #2\n"
+			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #2 #d\n"
 			<< "store i8* #0,i8** #1 #d\n")
 		}
 
 		ptrName := pars[0].first.Base.GetName()
 		return new BuiltInFuncBinar("-",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
 			"#0Pre = load "sbt << ptrName << "* , " << ptrName <<"** #1 #d\n"
-			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #2\n"
+			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #2 #d\n"
 			<< "store "<< ptrName <<"* #0," << ptrName <<"** #1 #d\n");
 	}
 }
@@ -346,12 +346,12 @@ BuiltInPointSub := class extend BoxTemplate
 		if pars[0].first.Base == GTypeVoid
 		{
 			return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
-			"%Pre## = sub i64 0,#2\n"sbt +
+			"%Pre## = sub i64 0,#2 #d\n"sbt +
 			"#0 = getelementptr i8 , i8* #1 , i64 %Pre## #d\n")
 		}
 
 		return new BuiltInFuncBinar("-",pars[0].first,false,GetType("s64"),false,pars[0].first.Base.GetPoint(),false,
-		"%Pre## = sub i64 0,#2\n"sbt +
+		"%Pre## = sub i64 0,#2 #d\n"sbt +
 		"#0 = getelementptr " + pars[0].first.Base.GetName() + " , " + pars[0].first.Base.GetName() + "* #1 ,i64 %Pre## #d\n")
 	}
 }
@@ -385,16 +385,16 @@ BuiltInPointSubDec := class extend BoxTemplate
 		{
 			return new BuiltInFuncBinar("-=",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
 			"#0Pre = load i8* , i8** #1 #d\n"sbt
-			<<"#0PreVal = sub i64 0,#2\n"
-			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #0PreVal\n"
+			<<"#0PreVal = sub i64 0,#2 #d\n"
+			<< "#0 = getelementptr i8 , i8* #0Pre , i64 #0PreVal #d\n"
 			<< "store i8* #0,i8** #1 #d\n")
 		}
 
 		ptrName := pars[0].first.Base.GetName()
 		return new BuiltInFuncBinar("-",pars[0].first,true,GetType("size_t"),false,pars[0].first.Base.GetPoint(),false,
 			"#0Pre = load "sbt << ptrName << "* , " << ptrName <<"** #1 #d\n"
-			<<"#0PreVal = sub i64 0,#2\n"
-			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #0PreVal\n"
+			<<"#0PreVal = sub i64 0,#2 #d\n"
+			<< "#0 = getelementptr "<< ptrName <<" , "<< ptrName <<"* #0Pre , i64 #0PreVal #d\n"
 			<< "store "<< ptrName <<"* #0," << ptrName <<"** #1 #d\n");
 	}
 }
@@ -448,7 +448,7 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 		asBase := toGet->{Type^}
 		if toCheck == 0 //TypeSize
 		{
-			preSet :=  "%Pre## = getelementptr "sbt + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1\n"
+			preSet :=  "%Pre## = getelementptr "sbt + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1 #d\n"
 				   + "#0 = ptrtoint " + asBase.GetName() + "* %Pre## to i32 #d\n"
 			ToExe = preSet.Str()
 		}
@@ -459,7 +459,7 @@ BuiltInFuncClassInfo := class extend BuiltInFunc
 		}
 		if toCheck == 2 //FatTypeSize
 		{
-			preSet := "%Pre## = getelementptr "sbt + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1\n"
+			preSet := "%Pre## = getelementptr "sbt + asBase.GetName() + ", " + asBase.GetName() + "* null ,i32 1 #d\n"
 				+ "#0 = ptrtoint " + asBase.GetName() + "* %Pre## to i32 #d\n"
 			ToExe = preSet.Str()
 		}
@@ -645,11 +645,11 @@ BuiltInTemplateSet := class extend BoxTemplate
 			if pars[1].first is TypeArr
 			{
 			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,true,GTypeVoid, 
-					"%TPre## = bitcast "sbt + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + "* #2 to " + pars[0].first.GetName() + " #d\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1 #d\n")
 			}else{
 			PreRet = new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
-					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + " #d\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1 #d\n")
 			}
 			return PreRet
@@ -657,7 +657,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 		if pars[0].first != pars[1].first
 		{
 			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
-					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + "\n" +
+					"%TPre## = bitcast "sbt + pars[1].first.GetName() + " #2 to " + pars[0].first.GetName() + " #d\n" +
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1 #d\n")
 		}
 		return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, "store "sbt + pars[0].first.GetName() + " #2, " + pars[0].first.GetName() +"* #1 #d\n")
@@ -828,7 +828,7 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncZero(".",retType,true,
-				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+"\n" +
+				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+pos2+" #d\n" +
 				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
@@ -948,7 +948,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 				if ToClass.ContainVirtual pos2 += 1
 				return  new BuiltInFuncUno(".",CType,true,retType,true,
-				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+"\n" +
+				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+" #d\n" +
 				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n")
 			}
 			ErrorLog.Push("Cannot find field "+Name+"\n")
@@ -1040,7 +1040,7 @@ BuiltInLenArr := class extend BoxTemplate
 
 		for i : pars.Size()
 		{
-			toCreate  + "%TPre##n" + i + " = getelementptr " + retTypeN + " , " + retTypeN + "* #0,i32 0,i32 " + i + "\n"
+			toCreate  + "%TPre##n" + i + " = getelementptr " + retTypeN + " , " + retTypeN + "* #0,i32 0,i32 " + i + " #d\n"
 			toCreate  + "store " + baseTypeN + " #" + (i + 1) + " , " + baseTypeN + "* %TPre##n" + i + " #d\n"
 		}
 
@@ -1099,15 +1099,15 @@ BuiltInTemplateNew := class extend BoxTemplate
 		if ExtraSize < 4 ExtraSize = 4
 
 		return new BuiltInFuncBinar("new",pars[0].first,false,pars[1].first,false,ResP,
-			"%PreTotalSize## = mul i32 #1,#2"sbt + "\n" +
-			"%TotalSize## = add i32 %PreTotalSize##, " + ExtraSize + "\n" +
-			"%PrePtr## = call i8*(i32)@malloc(i32 %TotalSize##)\n"+
-			"%PtrInt## = ptrtoint i8* %PrePtr## to i64\n" + 
-			"%RealPtrInt## = add i64 %PtrInt## , " + ExtraSize + "\n" +
-			"%SizePtrInt## = sub i64 %RealPtrInt## , 4 \n" +
-			"%SizePtr## = inttoptr i64 %SizePtrInt## to i32*\n" + 
-			"store i32 #2, i32* %SizePtr##\n" +
-			"#0 = inttoptr i64 %RealPtrInt## to " + ResP.GetName() + "\n")
+			"%PreTotalSize## = mul i32 #1,#2 #d"sbt + "\n" +
+			"%TotalSize## = add i32 %PreTotalSize##, " + ExtraSize + " #d\n" +
+			"%PrePtr## = call i8*(i32)@malloc(i32 %TotalSize##) #d\n"+
+			"%PtrInt## = ptrtoint i8* %PrePtr## to i64 #d\n" + 
+			"%RealPtrInt## = add i64 %PtrInt## , " + ExtraSize + " #d\n" +
+			"%SizePtrInt## = sub i64 %RealPtrInt## , 4 #d\n" +
+			"%SizePtr## = inttoptr i64 %SizePtrInt## to i32* #d\n" + 
+			"store i32 #2, i32* %SizePtr## #d\n" +
+			"#0 = inttoptr i64 %RealPtrInt## to " + ResP.GetName() + " #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1185,7 +1185,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 			}else{
 				return new BuiltInFuncUno("->",pars[0].first,false,GTypeInt,false,
 				"%PreP## = bitcast "sbt + pars[0].first.GetName() + " #1 to i32* #d\n" + 
-				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1\n" +
+				"%PreI## = getelementptr i32, i32* %PreP##,i32 -1 #d\n" +
 				"#0 = load i32 , i32 * %PreI## #d\n")
 			}
 		}
@@ -1223,8 +1223,8 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GTypeBool,false,
-			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
+			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8* #d\n" +
+			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8* #d\n" +
 			"#0 = icmp eq i8* %PreOne##,%PreTwo## #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1259,8 +1259,8 @@ BuiltInTemplateCmpPointsNE := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		return new BuiltInFuncBinar("->",pars[0].first,false,pars[1].first,false,GTypeBool,false,
-			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8*\n" +
-			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8*\n" +
+			"%PreOne## = bitcast "sbt + pars[0].first.GetName() + " #1 to i8* #d\n" +
+			"%PreTwo## = bitcast "    + pars[1].first.GetName() + " #2 to i8* #d\n" +
 			"#0 = icmp ne i8* %PreOne##,%PreTwo## #d\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -1467,7 +1467,7 @@ CreateBuiltIns := !() -> void
 			AddBuiltInFunc(new BuiltInFuncBinar("InterlockSet",PType,true,PType,false,PType,"#0 = atomicrmw xchg i"sbt + it + "* #1, i" + it + " #2 acquire #d\n"))
 
 			AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1 #d\n"
-												+"#0 = add i" + it + " #2,0\n"))
+												+"#0 = add i" + it + " #2,0 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i"sbt + it + " #1,#2 #d\n"))
@@ -1477,8 +1477,8 @@ CreateBuiltIns := !() -> void
 			AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = sub i"sbt + it + " 0,#1 #d\n"))
 			
 			AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,GTypeFloat,
-										"%Pre1## = "sbt + IsS + "itofp i" + it + " #1 to float\n" +
-										"%Pre2## = " + IsS + "itofp i" + it +" #2 to float\n" +
+										"%Pre1## = "sbt + IsS + "itofp i" + it + " #1 to float #d\n" +
+										"%Pre2## = " + IsS + "itofp i" + it +" #2 to float #d\n" +
 										"#0 = fdiv float %Pre1##,%Pre2## #d\n"))
 
 			AddBuiltInFunc(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i"sbt + it + " #1,#2 #d\n"))
@@ -1506,22 +1506,22 @@ CreateBuiltIns := !() -> void
 			BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,DoubleT,"#0 = "sbt +IsS+"itofp i"+it+" #1 to double #d\n"))
 
 			AddBuiltInFunc(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load i"sbt + it + " , i" + it + "* #1 #d\n"
-												+"#0 = add i" + it + " #2,#0pre\n"
+												+"#0 = add i" + it + " #2,#0pre #d\n"
 												+"store i"+it+" #0, i"+it+"* #1 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load i"sbt + it + " , i" + it + "* #1 #d\n"
-												+"#0 = sub i" + it + " #0pre,#2\n"
+												+"#0 = sub i" + it + " #0pre,#2 #d\n"
 												+"store i"+it+" #0, i"+it+"* #1 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load i"sbt + it + " , i" + it + "* #1 #d\n"
-												+"#0 = mul i" + it + " #2,#0pre\n"
+												+"#0 = mul i" + it + " #2,#0pre #d\n"
 												+"store i"+it+" #0, i"+it+"* #1 #d\n"))
 
 			AddBuiltInFunc(new BuiltInFuncUno("++",PType,true,PType,"#0 = load i"sbt + it + " , i" + it + "* #1 #d\n"
-												+"#0Pre = add i" + it + " 1,#0\n"
+												+"#0Pre = add i" + it + " 1,#0 #d\n"
 												+"store i"+it+" #0Pre, i"+it+"* #1 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncUno("--",PType,true,PType,"#0 = load i"sbt + it + " , i" + it + "* #1 #d\n"
-												+"#0Pre = sub i" + it + " #0,1\n"
+												+"#0Pre = sub i" + it + " #0,1 #d\n"
 												+"store i"+it+" #0Pre, i"+it+"* #1 #d\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2 #d\n"))
 		}
 		BuiltInExcs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i"sbt + it + " #1,0 #d"))
 		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("s" + it),false,GetType("s" + it),false,GetType("s" + it), "#0 = ashr i" + it + " #1,#2 #d\n"))
@@ -1531,14 +1531,14 @@ CreateBuiltIns := !() -> void
 											"br label %Start##\n"sbt +
 											"Start##:" +
 											"%First## = extractvalue %RangeTypeInt #2,0 #d\n"+
-											"%T1T## = icmp sge i32 #1,%First##\n" + 
-											"br i1 %T1T## ,label %OnNext##, label %OnEnd##\n" +
+											"%T1T## = icmp sge i32 #1,%First## #d\n" + 
+											"br i1 %T1T## ,label %OnNext##, label %OnEnd## #d\n" +
 											"OnNext##:\n"+
-											"%Second## = extractvalue %RangeTypeInt #2,1\n" +
-											"%T2T## = icmp sle i32 #1, %Second##\n" +
-											"br label %OnEnd##\n" +
+											"%Second## = extractvalue %RangeTypeInt #2,1 #d\n" +
+											"%T2T## = icmp sle i32 #1, %Second## #d\n" +
+											"br label %OnEnd## #d\n" +
 											"OnEnd##:\n" +
-											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##]\n"))
+											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##] #d\n"))
 	
 	preRes3 := string[2]
 	preRes3[0] = "float"
@@ -1548,7 +1548,7 @@ CreateBuiltIns := !() -> void
 		it := preRes3[itPre]
 		PType := GetType(it)
 		AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store "sbt + it + " #2, " + it + "* #1 #d\n"
-											+"#0 = fadd " + it + " #2,0.0\n"))
+											+"#0 = fadd " + it + " #2,0.0 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = fadd "sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = fsub "sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul "sbt + it + " #1,#2 #d\n"))
@@ -1556,16 +1556,16 @@ CreateBuiltIns := !() -> void
 		AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = fsub "sbt + it + " 0.0,#1 #d\n"))
 
 		AddBuiltInFunc(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load "sbt + it +" , "+ it +"* #1 #d\n"
-											+"#0 = fadd " + it + " #2,#0pre\n"
+											+"#0 = fadd " + it + " #2,#0pre #d\n"
 											+"store "+it+" #0, "+it+"* #1 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("-=",PType,true,PType,false,PType,"#0pre = load "sbt + it + " , " + it + "* #1 #d\n"
-											+"#0 = fsub " + it + " #0pre,#2\n"
+											+"#0 = fsub " + it + " #0pre,#2 #d\n"
 											+"store "+it+" #0, "+it+"* #1 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("*=",PType,true,PType,false,PType,"#0pre = load "sbt + it + " , " + it + "* #1 #d\n"
-											+"#0 = fmul " + it + " #2,#0pre\n"
+											+"#0 = fmul " + it + " #2,#0pre #d\n"
 											+"store "+it+" #0, "+it+"* #1 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar("/=",PType,true,PType,false,PType,"#0pre = load "sbt + it + " , " + it + "* #1 #d\n"
-											+"#0 = fdiv " + it + " #0pre,#2\n"
+											+"#0 = fdiv " + it + " #0pre,#2 #d\n"
 											+"store "+it+" #0, "+it+"* #1 #d\n"))
 
 
@@ -1586,7 +1586,7 @@ CreateBuiltIns := !() -> void
 	AddBuiltInFunc(new BuiltInFuncBinar("=",GTypeHalf,true,GTypeHalf,false,GTypeVoid,"store half #2, half* #1 #d\n"))
 
 	AddBuiltInFunc(new BuiltInFuncBinar("=",BoolT,true,BoolT,false,BoolT,"store i1 #2, i1* #1 #d\n"sbt
-										+"#0 = add i1 #2,0\n"))
+										+"#0 = add i1 #2,0 #d\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("==",BoolT,false,BoolT,false,BoolT,"#0 = icmp eq i1 #1,#2 #d\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("!=",BoolT,false,BoolT,false,BoolT,"#0 = icmp ne i1 #1,#2 #d\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("xor",BoolT,false,BoolT,false,BoolT,"#0 = xor i1 #1,#2 #d\n"))
@@ -1618,33 +1618,33 @@ CreateBuiltIns := !() -> void
 	AddBuiltInFunc( new BuiltInSuffix("L",GTypeInt,false,GetType("s64"),"#0 = sext i32 #1 to i64 #d\n"))
 	AddBuiltInFunc( new BuiltInSuffix("U",GTypeInt,false,GetType("u64"),"#0 = zext i32 #1 to i64 #d\n"))
 	AddBuiltInFunc( new BuiltInSuffix("pi",GTypeFloat,false,GTypeFloat,"%Pre## = fptrunc double 3.14159265389 to float #d\n"sbt +
-					"#0 = fmul float #1,%Pre##\n"))
+					"#0 = fmul float #1,%Pre## #d\n"))
 	AddBuiltInFunc( new BuiltInSuffix("deg",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float #d\n"sbt +
-					"#0 = fmul float #1,%Pre##\n"))
+					"#0 = fmul float #1,%Pre## #d\n"))
 	AddBuiltInFunc( new BuiltInSuffix("deg",GetType("int"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float #d\n"sbt +
-					"%PrePre## = sitofp i32 #1 to float\n" +
-					"#0 = fmul float %PrePre##,%Pre##\n"))
+					"%PrePre## = sitofp i32 #1 to float #d\n" +
+					"#0 = fmul float %PrePre##,%Pre## #d\n"))
 	AddBuiltInFunc( new BuiltInSuffix("pi",GTypeInt,false,GTypeFloat,
 					"%PrePre## = sitofp i32 #1 to float #d\n"sbt +
-					"%Pre## = fptrunc double 3.14159265389 to float\n" +
-					"#0 = fmul float %PrePre##,%Pre##\n"))
+					"%Pre## = fptrunc double 3.14159265389 to float #d\n" +
+					"#0 = fmul float %PrePre##,%Pre## #d\n"))
 
-	AddBuiltInFunc( new BuiltInSuffix("ms",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,0.001\n"))
-	AddBuiltInFunc( new BuiltInSuffix("s",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,1.0\n"))
-	AddBuiltInFunc( new BuiltInSuffix("min",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,60.0\n"))
-	AddBuiltInFunc( new BuiltInSuffix("hour",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,3600.0\n"))
+	AddBuiltInFunc( new BuiltInSuffix("ms",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,0.001 #d\n"))
+	AddBuiltInFunc( new BuiltInSuffix("s",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,1.0 #d\n"))
+	AddBuiltInFunc( new BuiltInSuffix("min",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,60.0 #d\n"))
+	AddBuiltInFunc( new BuiltInSuffix("hour",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,3600.0 #d\n"))
 
 	AddBuiltInFunc( new BuiltInFuncBinar("<",GTypeVoidP,false,GTypeVoidP,false,GTypeBool,false,"#0 = icmp ult i8* #1,#2 #d\n"))
 	AddBuiltInFunc( new BuiltInFuncBinar("<=>",GTypeVoidP,false,GTypeVoidP,false,GTypeInt,false,
 				"%PrePre1## = icmp ule i8* #1,#2 #d\n"sbt +
-				"%PrePre2## = icmp ule i8* #2,#1\n" +
-				"%Pre1## = zext i1 %PrePre1## to i32\n" + 
-				"%Pre2## = zext i1 %PrePre2## to i32\n" + 
-				"#0 = sub i32 %Pre1## , %Pre2##\n")) 
+				"%PrePre2## = icmp ule i8* #2,#1 #d\n" +
+				"%Pre1## = zext i1 %PrePre1## to i32 #d\n" + 
+				"%Pre2## = zext i1 %PrePre2## to i32 #d\n" + 
+				"#0 = sub i32 %Pre1## , %Pre2## #d\n")) 
 	AddBuiltInFunc(new BuiltInFuncBinar("-",GTypeVoidP,false,GTypeVoidP,false,GetType("size_t"),
 						"#0Pre1 = ptrtoint i8* #1 to i64 #d\n"sbt +
-						"#0Pre2 = ptrtoint i8* #2 to i64\n" +
-						"#0 = sub i64 #0Pre1,#0Pre2\n"))
+						"#0Pre2 = ptrtoint i8* #2 to i64 #d\n" +
+						"#0 = sub i64 #0Pre1,#0Pre2 #d\n"))
 
 	AddBuiltInFunc(new BuiltInFuncUno("internalSetJmp",GTypeVoidP,false,GTypeInt,"#0 = call i32 @llvm.eh.sjlj.setjmp(i8* #1) #d\n"))
 	AddBuiltInFunc(new BuiltInFuncUno("internalLongJmp",GTypeVoidP,false,GTypeVoid,"call void @llvm.eh.sjlj.longjmp(i8* #1) #d\nunreachable\n"))
@@ -1666,10 +1666,10 @@ CreateBuiltIns := !() -> void
 	if DebugMode
 	{
 		AddBuiltInFunc(new BuiltInFuncUno("assert",GTypeBool,false,GTypeVoid,
-				"br i1 #1, label %Good##, label %Bad##\n"sbt +
+				"br i1 #1, label %Good##, label %Bad## #d\n"sbt +
 				"Bad##:\n"+
 				"call void @llvm.debugtrap() #d\n" +
-				"br label %Good##\n" +
+				"br label %Good## #d\n" +
 				"Good##:\n"))
 	}else{
 		preAdd := new BuiltInFuncUno("assert",GTypeBool,false,GTypeVoid, "")
@@ -1683,7 +1683,7 @@ RangeFuncs := !() -> void
 	intType := GetType("int")
 	rangeType := TypeTable[13]
 	AddBuiltInFunc( new BuiltInFuncBinar("..",intType,false,intType,false,rangeType,"%PreR## = insertvalue %RangeTypeInt undef,i32 #1, 0 #d\n"sbt 
-												+"#0 = insertvalue %RangeTypeInt %PreR##,i32 #2,1\n"))
+												+"#0 = insertvalue %RangeTypeInt %PreR##,i32 #2,1 #d\n"))
 
 	AddBuiltInFunc( new BuiltInFuncBinar("=",rangeType,true,rangeType,false,rangeType,"store %RangeTypeInt #2, %RangeTypeInt* #1 #d\n"))
 

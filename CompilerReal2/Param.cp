@@ -48,6 +48,9 @@ ObjParam := class extend Object
 	{
 		if Down?.Right? is SLambda
 		{
+			debId := -1
+			if DebugMode 
+				debId = CreateDebugCall(this&)
 			asL := Down.Right->{SLambda^}
 			asL.PrintPre(f)
 			itMem := Down->{MemParam^}
@@ -55,7 +58,9 @@ ObjParam := class extend Object
 			f << "store "
 			asL.PrintUse(f)
 			f << " , "
-			itMem.PrintPointUse(f,extrId,-1) //TODO: replace -1 with debug data
+			itMem.PrintPointUse(f,extrId,-debId)
+			if debId != -1
+				f << ", !dbg !" << debId
 			f << "\n"
 
 			return void
@@ -79,6 +84,9 @@ ObjParam := class extend Object
 		}else{
 			if IsSetValue 
 			{
+				debId := -1
+				if DebugMode
+					debId = CreateDebugCall(this&)
 				if IsRef
 				{
 					asLoc := Down->{LocalParam^}
@@ -86,7 +94,10 @@ ObjParam := class extend Object
 					Down.Right.PrintPointPre(f)
 					f << "store " 
 					Down.Right.PrintPointUse(f)
-					f << " , " << itType.GetName() << "** %T" << asLoc.inAllocId << "\n"
+					f << " , " << itType.GetName() << "** %T" << asLoc.inAllocId 
+					if debId != -1
+						f << ", !dbg !" << debId
+					f << "\n"
 					
 				}else{
 					asLoc := Down->{LocalParam^}
@@ -94,7 +105,9 @@ ObjParam := class extend Object
 					f << "store "
 					Down.Right.PrintUse(f)
 					f << " , "
-					asLoc.PrintPointUse(f,0,-1) //TODO: replace -1 with debug data
+					asLoc.PrintPointUse(f,0,debId)
+					if debId != -1
+						f << ", !dbg !" << debId
 					f << "\n"
 				}
 			}

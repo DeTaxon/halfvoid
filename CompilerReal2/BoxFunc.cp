@@ -1345,10 +1345,6 @@ BoxFuncBody := class extend BoxFunc
 			//f << "%ABoxSize" << ABox.ItId << " = ptrtoint %AllocClass" << ABox.ItId << "* %ABoxSizePre" << ABox.ItId <<" to i32\n"
 			//f << "%ABoxPoint = bitcast %AllocClass" << ABox.ItId << "* %AllocItem" << ABox.ItId << " to i8*\n" 
 			//f << "call void @memset(i8* %ABoxPoint" << ABox.ItId << " , i8 0, i32 %ABoxSize" << ABox.ItId << ")\n"
-			if DebugMode 
-			{
-				PrintDebugDeclare(f,null)
-			}
 
 			if InAlloc != null
 			for i : MyFuncType.ParsCount
@@ -1386,6 +1382,10 @@ BoxFuncBody := class extend BoxFunc
 						}
 					}
 				}
+			}
+			if DebugMode 
+			{
+				PrintDebugDeclare(f,null)
 			}
 			
 			iterP := Up

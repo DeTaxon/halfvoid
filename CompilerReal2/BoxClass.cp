@@ -953,10 +953,10 @@ BuiltInVirtualCall := class extend BuiltInFunc
 		
 		builder := ""sbt
 	
-		builder + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0\n" 
-		builder + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
-		builder + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
-		builder + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr##\n" 
+		builder + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* #1, i32 0, i32 0 #d\n" 
+		builder + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel## #d\n"
+		builder + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + " #d\n"
+		builder + "%Func## = load " + FuncTypeName + "* , " + FuncTypeName + "** %FuncPtr## #d\n" 
 		if MyFuncType.RetType != GTypeVoid
 			builder + "#0 = "
 		builder + "call " + FuncTypeName +  "%Func##("
@@ -972,7 +972,7 @@ BuiltInVirtualCall := class extend BuiltInFunc
 			builder << "#"  << (i + 1)
 		}
 
-		builder + ")\n"
+		builder + ") #d\n"
 		ToExe = builder.Str()
 	}
 
@@ -997,9 +997,9 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 		tp := inClass.ClassType
 		classId := inClass.ClassId
 
-		preRes := "%Pre## = getelementptr "sbt + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0\n"
+		preRes := "%Pre## = getelementptr "sbt + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0 #d\n"
 		preRes << "%Tabl## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %Pre## #d\n"
-		preRes <<  "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + "\n"
+		preRes <<  "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + " #d\n"
 		ToExe = preRes.Str()
 	}
 	//GetPriority := virtual !(FuncInputBox inBox) -> int
@@ -1031,11 +1031,11 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		asCl := classType->{TypeClass^}.ToClass
 		classId := asCl.ClassId
 		return new BuiltInFuncUno("is",classType.GetPoint(),false,GetType("bool"),false,
-			"#0PrePre = getelementptr "sbt + classType.GetName() + " , " + classType.GetName() + "* #1 , i32 0, i32 0\n" +
+			"#0PrePre = getelementptr "sbt + classType.GetName() + " , " + classType.GetName() + "* #1 , i32 0, i32 0 #d\n" +
 			"#0Pre = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** #0PrePre #d\n" +
-			"#0Left = bitcast %ClassTableType" + classId + "* #0Pre to i8*\n" +
-			"#0Right = bitcast %ClassTableType" + rightCl + "* @ClassTableItem" + rightCl + " to i8*\n" +
-			"#0 = icmp eq i8* #0Left,#0Right\n")
+			"#0Left = bitcast %ClassTableType" + classId + "* #0Pre to i8* #d\n" +
+			"#0Right = bitcast %ClassTableType" + rightCl + "* @ClassTableItem" + rightCl + " to i8* #d\n" +
+			"#0 = icmp eq i8* #0Left,#0Right #d\n")
 		
 	}
 }
@@ -1163,16 +1163,16 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			a2 := a1.fType
 			a3 := a2->{Type^}
 			FuncTypeName2 := a3.GetName()
-			outBuff + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0\n" 
-			outBuff + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel##\n"
-			outBuff + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + "\n"
-			outBuff + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr##\n" 
+			outBuff + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0 #d\n" 
+			outBuff + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel## #d\n"
+			outBuff + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + " #d\n"
+			outBuff + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr## #d\n" 
 
-			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "*\n"
+			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "* #d\n"
 			//MyFuncType = itInClass.vTable[id].fType
 			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
 		}else{
-			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
+			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "* #d\n"
 		}
 
 		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"

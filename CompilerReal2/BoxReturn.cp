@@ -159,6 +159,9 @@ BoxReturn := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
+		debId := -1
+		if DebugMode
+			debId = CreateDebugCall(this&)
 		if not IsRetComplex and not IsRetVoid
 		{
 			//if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
@@ -171,7 +174,10 @@ BoxReturn := class extend Object
 			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
 			f << "store " 
 			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
-			f << " , " << retTypeName << "* %Result\n"
+			f << " , " << retTypeName << "* %Result"
+			if debId != -1
+				f << ", !dbg !" << debId
+			f << "\n"
 			
 		}else{
 			if not IsRetVoid Down.PrintInBlock(f)
@@ -179,13 +185,21 @@ BoxReturn := class extend Object
 		}
 		if IsYield
 		{
-			f << "store i32 " << YieldId << ", i32* %Yodler\n"
+			f << "store i32 " << YieldId << ", i32* %Yodler"
+			if debId != -1
+				f << ", !dbg !" << debId
+			f << "\n"
 		}
 		if ResetYield
 		{
 			f << "store i32 0,i32* %Yodler\n"
+			if debId != -1
+				f << ", !dbg !" << debId
+			f << "\n"
 		}
-		f << "br label %" << OutPathName << "\n"
+		f << "br label %" << OutPathName 
+
+		f << "\n"
 		if IsYield
 		{
 			f << "Yield" << YieldId << ":\n"
