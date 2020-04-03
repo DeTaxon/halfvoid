@@ -1079,6 +1079,8 @@ BoxFuncBody := class extend BoxFunc
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
 	
+	Yodlers := List.{BoxReturn^}
+
 	GetScope := virtual !() -> int { return ABox.ItId }
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
@@ -1320,6 +1322,11 @@ BoxFuncBody := class extend BoxFunc
 	{
 		ABox.PrintGlobal(f)
 
+		if Yodlers.Size() != 0
+		{
+			f << "@Yodler" << ABox.ItId << " = global i32 0\n"
+		}
+
 		if MyFuncType.RetType != null and parsed
 		{
 			PrintGlobalSub(f)
@@ -1386,6 +1393,16 @@ BoxFuncBody := class extend BoxFunc
 			if DebugMode 
 			{
 				PrintDebugDeclare(f,null)
+			}
+			if Yodlers.Size() != null
+			{
+				f << "%Yodler = getelementptr i32 , i32* @Yodler" << ABox.ItId << ",i32 0\n"
+				f << "%StartYield = load i32, i32* %Yodler\n"
+				f << "switch i32 %StartYield, label %Yield0 ["
+				for i : Yodlers.Size() + 1
+					f << "i32 " << i << ", label %Yield" << i << "\n"
+				f << "]\n"
+				f << "Yield0:\n"
 			}
 			
 			iterP := Up

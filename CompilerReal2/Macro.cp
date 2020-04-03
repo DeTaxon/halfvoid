@@ -22,8 +22,40 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 {
 	if tr == null return null
 	if tr.GetValue() == "{}" return null
+
+	if tr is ObjIndent and tr->{ObjIndent^}.isLambdaNum
+	{
+		prevUp := tr
+		mvUp := tr.Up
+		while mvUp != null
+		{
+			isGood := false
+			if mvUp.Right != null and IsOper(mvUp.Right.GetValue())
+			{
+				isGood = true
+			}else{
+				if mvUp.Left != null and IsOper(mvUp.Left.GetValue())
+					isGood = true
+			}
+			if not isGood
+				break
+			prevUp = mvUp
+			mvUp = mvUp.Up
+		}
+		if mvUp == null
+			return null
+		if mvUp is SLambda
+			return null
+		if mvUp.GetValue() != "~d"
+			return null
+		nL := new SLambda()
+		UNext(mvUp,nL,1)
+		MakeItBlock(nL.Down)
+		nL.boostLambda = true
+		return null
+	}
+
 	if tr.Down == null return null
-	
 		
 	if tr.GetValue() == "()" and tr.Left == null and tr.Down != null and tr.Down.Right == null
 	{
@@ -44,10 +76,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		//	}
 		//	return itUp
 		//}
-	}
-	if tr.GetValue() == "if()"
-	{
-		printf("heh\n")
 	}
 	//if tr.GetValue() == "()" and tr.Left == null
 	//{

@@ -32,8 +32,14 @@ BoxReturn := class extend Object
 				{
 					if ii is SLambda
 					{
-						ii->{SLambda^}.Yodlers.Push(this&) ; $uniq
+						ii->{SLambda^}.Yodlers.Push(this&)
 						YieldId = ii->{SLambda^}.Yodlers.Size()
+						break
+					}
+					if ii is BoxFuncBody
+					{
+						ii->{BoxFuncBody^}.Yodlers.Push(this&)
+						YieldId = ii->{BoxFuncBody^}.Yodlers.Size()
 						break
 					}
 					ii = ii.Up
@@ -65,6 +71,12 @@ BoxReturn := class extend Object
 							ResetYield = true
 						break
 					}
+					if ii is BoxFuncBody
+					{
+						if ii->{BoxFuncBody^}.Yodlers.Size() != 0
+							ResetYield = true
+						break
+					}
 					//if ii.GetValue() == "!()"
 					//{
 					//	if ii->{BoxFuncBody^}.Yodlers.Size() != 0
@@ -82,9 +94,7 @@ BoxReturn := class extend Object
 			iterF := Up
 
 			askedDefer := false
-			lazy := iterF != null
-			if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
-			while lazy
+			while iterF?.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			{
 				if iterF.GetValue() == "{d}"
 				{
@@ -92,8 +102,6 @@ BoxReturn := class extend Object
 					askedDefer = askedDefer or asBl.callDeferStuf
 				}
 				iterF = iterF.Up
-				lazy = iterF != null
-				if lazy lazy = iterF.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			}
 
 			if iterF != null

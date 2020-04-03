@@ -12,11 +12,11 @@ SLambda := class extend ObjResult
 	inAlloc := int
 	manSkob := bool
 	justFunc := bool
+	boostLambda := bool
 
 	Created := bool
 
 	Yodlers := List.{BoxReturn^}
-	YodlerState := MemParam^
 
 	StolenParams := AVLMap.{char^,LocalParam^}
 
@@ -90,181 +90,186 @@ SLambda := class extend ObjResult
 		if pri == State_Start and not parsedStart
 		{
 			//AllocSetStruct(Up)
-
-			parsedStart = true
-			justFunc = Down.Right.GetValue() == "=>"
-			//WorkBag.Push(this&,State_Syntax)
-			names := Queue.{string}() ; $temp
-
-			pars := Queue.{Type^}() ; $temp
-			isRef := Queue.{bool}() ; $temp
-
-			if not justFunc{
-				names.Push("lambdaParam" + ItId)
-				pars.Push(GTypeVoidP)
-				isRef.Push(false)
-			}
-
-			isTmpl := false
-
-			skobPos := Object^
-			skobPos = null
-			if Down.GetValue() == "()"
+			if boostLambda
 			{
-				skobPos = Down
+				MakeItBlock(Down)
 			}else{
-				if Down.GetValue() == "~d"
-				{
-					if Down.Down.GetValue() == "()"
-					{
-						skobPos = Down.Down					
-					}
-				}
-			}
 
-			if skobPos != null
-			{
-				//TrimCommas(skobPos)
-				iter := skobPos.Down
-				bag := List.{Object^}() ; $temp
-				while iter != null
-				{
-					if iter.GetValue() != ","
-					{
-						bag.Push(iter)
-					}
-					if iter.GetValue() == "," or iter.Right == null
-					{
-						switch bag.Size()
-						{
-							case 1
-								if not bag[0] is ObjIndent
-								{
-									EmitError("unknown input objecy\n")
-									return void
-								}
-								asN := bag[0]->{ObjIndent^}
-								names.Push(asN.MyStr)
-								pars.Push(null->{Type^})
-								isRef.Push(false)
-								isTmpl = true
-							case 2
-								if not bag[1] is ObjIndent
-								{
-									EmitError("unknown input object\n")
-									return void
-								}
-								asN2 := bag[1]->{ObjIndent^}
-								names.Push(asN2.MyStr)
-								itTyp := ParseType(bag[0])
-								if itTyp == null
-								{
-									EmitError("can not parse type\n")
-									return void
-								}
-								pars.Push(itTyp)
-								isRef.Push(false)
-							case 0
-							case void
-								//assert(false)
-								EmitError("incorrect input of lambda \n"sbt + bag.Size())
-						}
-						bag.Clean()
+				parsedStart = true
+				justFunc = Down.Right.GetValue() == "=>"
+				//WorkBag.Push(this&,State_Syntax)
+				names := Queue.{string}() ; $temp
 
-					}
-					iter = iter.Right
-				}
-			}else{
-				isTmpl = true
-				if Down.GetValue() == "~ind"
-				{
-					asN := Down->{ObjIndent^}
-					names.Push(asN.MyStr)
-					pars.Push(null->{Type^})
+				pars := Queue.{Type^}() ; $temp
+				isRef := Queue.{bool}() ; $temp
+
+				if not justFunc{
+					names.Push("lambdaParam" + ItId)
+					pars.Push(GTypeVoidP)
 					isRef.Push(false)
+				}
+
+				isTmpl := false
+
+				skobPos := Object^
+				skobPos = null
+				if Down.GetValue() == "()"
+				{
+					skobPos = Down
 				}else{
-					EmitError("incorrect input items of lambda\n")
-				}
-			}
-			Names = names.ToArray()
-
-			asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
-			fastUse = asFunc
-
-
-			if not isTmpl
-			{
-				if not justFunc
-				{
-					Created = true
-					parms = new LocalParam^[pars.Size()]
-					InAlloc = new int[pars.Size()]
-					for it,i : pars
+					if Down.GetValue() == "~d"
 					{
-						isRf := IsComplexType(it) 
-						isRf = isRf or isRef[i]
-						if isRf {
-							InAlloc[i] = ABox.GetAlloc(it.GetPoint())
-						}else{
-							InAlloc[i] = ABox.GetAlloc(it)
-						}
-						parms[i] = new LocalParam(it,InAlloc[i],isRf)
-					}
-					WorkBag.Push(Down,State_Syntax)
-				}
-				WorkBag.Push(this&,State_PrePrint)
-			}
-
-			if justFunc
-			{
-				ResultType = asFunc.GetPoint()
-			}else{
-				ResultType = asFunc.GetLambda()
-			}
-			PopOutNode(Down)
-			PopOutNode(Down)
-
-			if Down.GetValue() == "[]"
-			{
-				count := 0
-				for c : Down.Down
-				{
-					if c.GetValue() != ","
-					{
-						if count == 0
+						if Down.Down.GetValue() == "()"
 						{
-							if c.GetValue() == "~ind"
-							{
-								CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false,null->{MemParam^})
-								count = 1
-							}else
-							{
-								EmitError("invalid capture input")
-							}
-						}else{
-							if count == 1
-							{	
-								if c.GetValue() == "&"
-								{
-									CaptureParams.Back().2 = true
-								}else
-								{
-									EmitError("unknown object")
-								}
-							}else{
-								EmitError("too much stuf")
-							}
+							skobPos = Down.Down					
 						}
-					}else{
-						count = 0
 					}
+				}
+
+				if skobPos != null
+				{
+					//TrimCommas(skobPos)
+					iter := skobPos.Down
+					bag := List.{Object^}() ; $temp
+					while iter != null
+					{
+						if iter.GetValue() != ","
+						{
+							bag.Push(iter)
+						}
+						if iter.GetValue() == "," or iter.Right == null
+						{
+							switch bag.Size()
+							{
+								case 1
+									if not bag[0] is ObjIndent
+									{
+										EmitError("unknown input objecy\n")
+										return void
+									}
+									asN := bag[0]->{ObjIndent^}
+									names.Push(asN.MyStr)
+									pars.Push(null->{Type^})
+									isRef.Push(false)
+									isTmpl = true
+								case 2
+									if not bag[1] is ObjIndent
+									{
+										EmitError("unknown input object\n")
+										return void
+									}
+									asN2 := bag[1]->{ObjIndent^}
+									names.Push(asN2.MyStr)
+									itTyp := ParseType(bag[0])
+									if itTyp == null
+									{
+										EmitError("can not parse type\n")
+										return void
+									}
+									pars.Push(itTyp)
+									isRef.Push(false)
+								case 0
+								case void
+									//assert(false)
+									EmitError("incorrect input of lambda \n"sbt + bag.Size())
+							}
+							bag.Clean()
+
+						}
+						iter = iter.Right
+					}
+				}else{
+					isTmpl = true
+					if Down.GetValue() == "~ind"
+					{
+						asN := Down->{ObjIndent^}
+						names.Push(asN.MyStr)
+						pars.Push(null->{Type^})
+						isRef.Push(false)
+					}else{
+						EmitError("incorrect input items of lambda\n")
+					}
+				}
+				Names = names.ToArray()
+
+				asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
+				fastUse = asFunc
+
+
+				if not isTmpl
+				{
+					if not justFunc
+					{
+						Created = true
+						parms = new LocalParam^[pars.Size()]
+						InAlloc = new int[pars.Size()]
+						for it,i : pars
+						{
+							isRf := IsComplexType(it) 
+							isRf = isRf or isRef[i]
+							if isRf {
+								InAlloc[i] = ABox.GetAlloc(it.GetPoint())
+							}else{
+								InAlloc[i] = ABox.GetAlloc(it)
+							}
+							parms[i] = new LocalParam(it,InAlloc[i],isRf)
+						}
+						WorkBag.Push(Down,State_Syntax)
+					}
+					WorkBag.Push(this&,State_PrePrint)
+				}
+
+				if justFunc
+				{
+					ResultType = asFunc.GetPoint()
+				}else{
+					ResultType = asFunc.GetLambda()
 				}
 				PopOutNode(Down)
-			}
+				PopOutNode(Down)
 
-			if Down.GetValue() == "{}"
-				manSkob = true
-			MakeItBlock(Down)
+				if Down.GetValue() == "[]"
+				{
+					count := 0
+					for c : Down.Down
+					{
+						if c.GetValue() != ","
+						{
+							if count == 0
+							{
+								if c.GetValue() == "~ind"
+								{
+									CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false,null->{MemParam^})
+									count = 1
+								}else
+								{
+									EmitError("invalid capture input")
+								}
+							}else{
+								if count == 1
+								{	
+									if c.GetValue() == "&"
+									{
+										CaptureParams.Back().2 = true
+									}else
+									{
+										EmitError("unknown object")
+									}
+								}else{
+									EmitError("too much stuf")
+								}
+							}
+						}else{
+							count = 0
+						}
+					}
+					PopOutNode(Down)
+				}
+
+				if Down.GetValue() == "{}"
+					manSkob = true
+				MakeItBlock(Down)
+			}
 		}
 		if pri == State_PostGetUse
 		{
@@ -810,7 +815,6 @@ SLambda := class extend ObjResult
 						f << it.1.ResultType.GetName() << "* "
 						f << "%StP" << nwId
 						f << "\n"
-
 					}
 					k++
 				}
@@ -845,6 +849,12 @@ SLambda := class extend ObjResult
 	}
 	ApplyFunc := !(Type^ lambTyp, bool isFnc) -> void
 	{
+		if boostLambda
+		{
+			printf("hello\n")
+			return void
+		}
+
 		WorkBag.Push(this&,State_PrePrint)
 		if isFnc xor justFunc
 		{

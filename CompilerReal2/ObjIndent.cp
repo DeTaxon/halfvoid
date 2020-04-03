@@ -1,9 +1,26 @@
 ObjIndent := class extend Object
 {
 	MyStr := char^
+	isLambdaNum := bool
 	"this" := !(char^ str) -> void
 	{
 		MyStr = str
+		if str != null and str[0] == '_'
+		{
+			isLambdaNum = true
+			i := 1
+			while str[i] != 0
+			{
+				if not (str[i] in '0'..'9')
+				{
+					isLambdaNum = false
+					break
+				}
+				i += 1
+			}
+			if i == 1
+				isLambdaNum = false
+		}
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -66,6 +83,7 @@ ObjIndent := class extend Object
 	Clone := virtual !() -> Object^
 	{
 		PreRet := new ObjIndent(MyStr)
+		PreRet.isLambdaNum = isLambdaNum
 		PreRet.Line = Line
 		return PreRet
 	}

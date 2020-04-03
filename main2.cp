@@ -1,15 +1,27 @@
 
-tst := !(!(int)&->bool ifif) -> void
+//tst := !(!(int)&->bool ifif) -> void
+//{
+//	for 1..10
+//	{
+//		if ifif(it)
+//			printf("tst %i\n",it)
+//	}
+//}
+
+tst2 := !() -> void
 {
-	for 1..10
+	while true
 	{
-		if ifif(it)
-			printf("tst %i\n",it)
+		printf("ic\n")
+		yield void
+		printf("jo\n")
+		yield void
 	}
 }
-
 main := !() -> int
 {
-	tst(x ==> x % 2 == 0)
+	tst2()
+	tst2()
+	//tst(_1 % 2 == 0)
 	return 0
 }
