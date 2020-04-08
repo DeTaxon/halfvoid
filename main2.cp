@@ -8,20 +8,31 @@
 //	}
 //}
 
-tst2 := !() -> void
+tstKl := class
 {
-	while true
+	z := int
+	tst2 := !() -> void
 	{
-		printf("ic\n")
-		yield void
-		printf("jo\n")
-		yield void
+		x := 7
+		while true
+		{
+			printf("ic %i\n",x)
+			x++
+			yield void
+			printf("jo %i\n",x)
+			x++
+			yield void
+		}
 	}
 }
+
 main := !() -> int
 {
-	tst2()
-	tst2()
+	r := tstKl
+	r.tst2()
+	r.tst2()
+	r.tst2()
+	r.tst2()
 	//tst(_1 % 2 == 0)
 	return 0
 }

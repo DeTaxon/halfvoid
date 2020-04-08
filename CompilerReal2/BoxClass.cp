@@ -425,7 +425,9 @@ BoxClass := class extend Object
 		Classes.Push(this&)
 
 	}
-
+	
+	Yodlers := AVLSet.{BoxFuncBody^}
+	
 	Inherited := false
 	InheritParams := !() -> void
 	{
@@ -446,9 +448,9 @@ BoxClass := class extend Object
 				if parentTree.ContainVirtual 
 					ContainVirtual = true
 
-				//parentTree = parentTree.Parent
 				parentTree = null
 			}
+			if Yodlers.Size() != 0 printf("YES\n")
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -484,45 +486,6 @@ BoxClass := class extend Object
 
 			if Down == null return void
 			foundNotThis := false
-
-			//for iterH : Down.Down
-			//{
-			//	if iterH is ObjParam//iterH.GetValue() == "i:=1"
-			//	{
-			//		asParam := iterH->{ObjParam^}
-
-			//		if asParam.MyStr == "~this"
-			//			foundNotThis = true
-			//	}
-			//}
-
-			//if not foundNotThis
-			//{
-			//	newPrm := new ObjParam("~this",false)
-			//	newPrm.Right = Down.Down
-			//	newPrm.Up = Down
-			//	if Down.Down != null
-			//	{
-			//		newPrm.Right.Left = newPrm
-			//		Down.Down = newPrm
-			//	}else{
-			//		Down.Down = newPrm
-			//	}
-
-			//	pars := Queue.{Type^}()
-			//	pars.Push(ClassType) ; $temp
-			//	bools := true
-			//	funcT := GetFuncType(pars,bools&,GTypeVoid,false,false)
-			//	
-			//	names := new char^[1]
-			//	names[0] = "this"
-			//	newFunc := new BoxFuncBody(names,funcT,"~this",(new ObjSkobs("{}"))->{Object^},false,ClassType->{Type^},ContainVirtual)
-			//	newPrm.Down = newFunc
-			//	newPrm.Down.Up = newPrm
-
-			//	//newFunc.ParseBlock()
-			//}
-
 		}
 		if pri == State_PrePrint
 		{

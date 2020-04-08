@@ -1078,8 +1078,6 @@ BoxFuncBody := class extend BoxFunc
 	InAlloc := int[]
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
-	
-	Yodlers := List.{BoxReturn^}
 
 	GetScope := virtual !() -> int { return ABox.ItId }
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
@@ -1316,8 +1314,24 @@ BoxFuncBody := class extend BoxFunc
 			parsed = true
 			WorkBag.Push(Down,State_Start)
 			Down.Up = this&
+
 		}
 	}
+	
+	Yodlers := List.{BoxReturn^}
+	yieldInClass := int
+	YieldCheck := !() -> void
+	{
+		if MethodType == null
+		{
+			if Yodlers.Size() != 0
+				ABox.liveOnGlobal = true
+		}else{
+			bC := MethodType->{TypeClass^}.ToClass
+			bC.Yodlers.Insert(this&)
+		}
+	}
+		
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		ABox.PrintGlobal(f)
@@ -1543,6 +1557,7 @@ BoxFuncBody := class extend BoxFunc
 			//SyntaxCompress(this&,PriorityData)
 			//UnboxParams(this.Down)
 			WorkBag.Push(this&,State_ErrorCheck)
+
 		}
 		if pri == State_ErrorCheck
 		{

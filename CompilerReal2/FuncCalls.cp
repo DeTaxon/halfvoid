@@ -1241,6 +1241,7 @@ AssemblerCall := class extend NaturalCall
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
+		RealCall.PrePrintEvent()
 		PrintPreFuncName(f)
 		RefsArr := FType.ParsIsRef
 
@@ -1813,9 +1814,10 @@ ConstructCall := class extend NaturalCall
 	{
 		if ToCall.IsAssembler()
 		{
+			RealCall := ToCall->{BuiltInFunc^}
+			RealCall.PrePrintEvent()
 			PrintPreFuncName(f)
 			RefsArr := FType.ParsIsRef
-			RealCall := ToCall->{BuiltInFunc^}
 
 			if not RealCall.IsSelfPre
 				PrintParamPres(f)

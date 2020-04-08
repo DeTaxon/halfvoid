@@ -36,12 +36,14 @@ BoxReturn := class extend Object
 						YieldId = ii->{SLambda^}.Yodlers.Size()
 						break
 					}
-					if ii is BoxFuncBody
-					{
-						ii->{BoxFuncBody^}.Yodlers.Push(this&)
-						YieldId = ii->{BoxFuncBody^}.Yodlers.Size()
-						break
-					}
+					//if ii is BoxFuncBody
+					//{
+					//	asFunc := ii->{BoxFuncBody^}
+					//	asFunc.Yodlers.Push(this&)
+					//	asFunc.YieldCheck()
+					//	YieldId = asFunc.Yodlers.Size()
+					//	break
+					//}
 					ii = ii.Up
 				}
 			}
@@ -77,12 +79,6 @@ BoxReturn := class extend Object
 							ResetYield = true
 						break
 					}
-					//if ii.GetValue() == "!()"
-					//{
-					//	if ii->{BoxFuncBody^}.Yodlers.Size() != 0
-					//		ResetYield = true
-					//	break
-					//}
 					ii = ii.Up
 				}
 			}
@@ -172,10 +168,6 @@ BoxReturn := class extend Object
 			debId = CreateDebugCall(this&)
 		if not IsRetComplex and not IsRetVoid
 		{
-			//if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
-			//f << "ret "
-			//if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
-			//f << "\n"
 
 			retTypeName := Down.GetType().GetName()
 			if IsRetRef retTypeName = retTypeName + "*"

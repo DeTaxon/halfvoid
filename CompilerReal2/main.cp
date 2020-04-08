@@ -41,8 +41,6 @@ main := !(int argc,char^^ argv) -> int
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
-		case "--fatstr"
-			UseFatString = true
 		case  "--tree"
 			emitTree = true
 		case "--cci"

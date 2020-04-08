@@ -33,7 +33,6 @@ CTT := CreateTupleTemplate^
 TCT := TupleConstructorTemplate^
 
 UseDestructors := false
-UseFatString := false
 
 getTempData :=  FuncInputBox^
 workingOnObject := Object^

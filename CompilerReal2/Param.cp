@@ -13,8 +13,6 @@ ObjParam := class extend Object
 	IsRef := bool
 	IsVirtual := bool
 	IsThreadLocal := bool
-
-	DestrCall := NaturalCall^
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -127,23 +125,6 @@ ObjParam := class extend Object
 		//	}
 		//}
 	}
-	PrintDestructor := virtual !(sfile f) -> void
-	{
-		if DestrCall != null and UseDestructors
-		{
-			DestrCall.RetId = GetNewId()
-			asOb := DestrCall->{Object^}	
-			asOb.PrintInBlock(f)
-		}
-	}
-	//PrintGlobal := !(sfile f) -> void
-	//{
-	//	if not IsFunc or AskedGetUse
-	//	{
-	//		Down.PrintGlobal(f)
-	//	}
-	//}
-
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -214,7 +195,6 @@ ObjParam := class extend Object
 				}
 			}else{
 				WorkBag.Push(this&,State_CheckTypes)
-				WorkBag.Push(this&,State_DestructCheck)
 
 				iter := Down
 
@@ -398,28 +378,6 @@ ObjParam := class extend Object
 						Temp.Left = Down
 						Down.SetUp(this&)
 						IsSetValue = true
-					}
-				}
-			}
-		}
-		if pri == State_DestructCheck
-		{
-			if ObjType != null and not IsRef
-			{
-				if ObjType.GetType() == "class"
-				{	
-					asClass := ObjType->{TypeClass^}
-
-					box6 := new FuncInputBox() ; $temp
-
-					box6.itPars.Emplace(asClass,true)
-					asCl := asClass.ToClass
-					DestructFunc := asCl.GetFunc("~this",box6^,true)
-					if DestructFunc != null
-					{
-						asLoc := Down->{LocalParam^}
-						parCall := new ParamNaturalCall("",asLoc->{Object^})
-						DestrCall = MakeSimpleCall(DestructFunc,parCall)
 					}
 				}
 			}

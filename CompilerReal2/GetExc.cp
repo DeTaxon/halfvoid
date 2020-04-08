@@ -92,7 +92,7 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 
 	if item is SLambda
 	{
-		printf("LAMBDA SWAP\n")
+		//printf("LAMBDA SWAP\n")
 		asN := item->{SLambda^}
 		asN.ApplyFunc(toType,toType is TypePoint)
 		return item		

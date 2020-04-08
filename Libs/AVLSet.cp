@@ -68,6 +68,7 @@ AVLSetIterator := class .{@DATA}
 AVLSet := class .{@DATA}
 {
 	itTree := AVLTree.{DATA}
+	itSize := int
 
 	this := !() -> void
 	{
@@ -79,12 +80,14 @@ AVLSet := class .{@DATA}
 		this.Insert(data)
 		return this
 	}
+	Size := !() -> int { return itSize }
 	Insert := !(DATA dat) .{} -> void
 	{
 		resl := AVLTreeNode.{DATA}^
 		if(itTree.FindOrCreate(dat,resl&))
 		{
 			resl.data = dat
+			itSize++
 		}
 		
 	}
@@ -93,6 +96,7 @@ AVLSet := class .{@DATA}
 		resl := itTree.FindNode(dat)
 		if resl != null{
 			itTree.RemoveNode(resl)
+			itSize--
 		}
 	}
 	Contain := !(DATA dat) -> bool
