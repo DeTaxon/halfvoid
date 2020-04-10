@@ -472,8 +472,8 @@ BoxClass := class extend Object
 				Params.PushFront(Parent.Params[Size - i - 1])
 			}
 			for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
-			if Yodlers.Size() != 0 printf("YES\n")
 		}
+		if Yodlers.Size() != 0 printf("YES\n")
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

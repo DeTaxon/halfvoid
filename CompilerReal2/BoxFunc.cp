@@ -1320,12 +1320,19 @@ BoxFuncBody := class extend BoxFunc
 	
 	Yodlers := List.{BoxReturn^}
 	yieldInClass := int
+	yieldInAlloc := int
 	YieldCheck := !() -> void
 	{
+		if Yodlers.Size() != 0
+			return void
+
+		yieldInAlloc = ABox.GetAlloc(GTypeInt)
+
 		if MethodType == null
 		{
 			if Yodlers.Size() != 0
 				ABox.liveOnGlobal = true
+
 		}else{
 			bC := MethodType->{TypeClass^}.ToClass
 			bC.Yodlers.Insert(this&)
@@ -1335,11 +1342,6 @@ BoxFuncBody := class extend BoxFunc
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		ABox.PrintGlobal(f)
-
-		if Yodlers.Size() != 0
-		{
-			f << "@Yodler" << ABox.ItId << " = global i32 0\n"
-		}
 
 		if MyFuncType.RetType != null and parsed
 		{
@@ -1410,7 +1412,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 			if Yodlers.Size() != null
 			{
-				f << "%Yodler = getelementptr i32 , i32* @Yodler" << ABox.ItId << ",i32 0\n"
+				f << "%Yodler = getelementptr i32 , i32* %T" << yieldInAlloc << ",i32 0\n"
 				f << "%StartYield = load i32, i32* %Yodler\n"
 				f << "switch i32 %StartYield, label %Yield0 ["
 				for i : Yodlers.Size() + 1
