@@ -1,3 +1,77 @@
+BuiltInUnrollClass := class extend BuiltInFunc
+{
+	ToClass := BoxClass^
+	ParName := char^
+
+	this := !(string Name, BoxClass^ l, bool lRef,Type^ retV, bool RRetRef) -> void
+	{
+		ParName = Name
+		ToClass = l
+
+		FuncName = Name
+		OutputName = Name
+		IsRetRef = RRetRef
+
+		PP := Queue.{Type^}() ; $temp
+		PP.Push(l.ClassType)
+
+		IsRefs := bool[1]
+		IsRefs[0] = lRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+
+	}
+	PrePrintEvent := virtual  !() -> void
+	{
+		pos := -1
+		retType := Type^
+		if ToClass.Params[^i].ItName == ParName
+		{
+			pos = i
+			break
+		}
+
+		if pos == -1 
+		{
+			FP := FakeFieldParam^
+			FPN := char^()
+			if ToClass.FakeParams[^i].ItName == ParName
+			{
+				pos = i
+				FP = it
+				FPN = it.Atter->{ObjIndent^}.MyStr
+				break
+			}
+
+			CType := ((ToClass.ClassType)->{Type^})
+
+			pos2 := -1
+			midType := FieldParam^
+			
+			if ToClass.Params[^i].ItName == FPN
+			{
+				midType = it
+				pos2 = i
+				break
+			}
+
+			if ToClass.ContainVirtual pos2 += 1
+			
+			itSt2 := "%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CType.GetName()) + "* #1, i32 0, i32 "+pos2+" #d\n" +
+			"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n"
+			ToExe = itSt2.Str()
+			return void
+		}
+
+		usePos := pos
+		if ToClass.ContainVirtual
+			usePos = pos + 1
+		
+		clName := ToClass.ClassType.GetName()
+		itStr :=  "#0 = getelementptr "sbt + clName + " , " + clName + "* #1, i32 0, i32 "+usePos+" #d\n"
+		ToExe = itStr.Str()
+	}
+}
+
 
 BuiltInTemplateUnroll := class extend BoxTemplate
 {
@@ -29,18 +103,10 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		asStrT := (consts[0]->{ObjStr^})
 		asStr := asStrT.GetString()
+
+		if ToClass.GetFieldParam(asStr) != null
+			return 0
 		
-		for ToClass.Params
-		{
-			if it.ItName == asStr
-				return 0
-			
-		}
-		for ToClass.FakeParams
-		{
-			if it.ItName == asStr
-				return 0
-		}
 		return 255
 	}
 
@@ -56,66 +122,13 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
 
-		pos := -1
-		retType := Type^
-		for it : ToClass.Params, i : 0
-		{
-			if it.ItName == Name
-			{
-				pos = i
-				retType = it.ResultType
-			}
-		}
-		if pos == -1 
-		{
-			for it : ToClass.FakeParams, i : 0
-			{
-				if it.ItName == Name
-				{
-					pos = i
-					retType = it.ResultType
-				}
-			}
-			if pos != -1
-			{
-				CType := ((ToClass.ClassType)->{Type^})
-				CTypeP := CType.GetPoint()
+		retF := ToClass.GetFieldParam(Name)
+		retType := retF.ResultType
 
-				FP := ToClass.FakeParams[pos]
-				if FP.Atter.GetValue() != "~ind" return null //TODO: check in GetPrior and add stuff like 'array[2]'
-				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
-				pos2 := -1
-				midType := FieldParam^
-
-				for ToClass.Params.Size()
-				{
-					if ToClass.Params[it].ItName == FPN {
-						midType = ToClass.Params[it]
-						pos2 = it
-					}
-				}
-				if pos2 == -1 return null //TODO: check in GetPrior
-
-				if ToClass.ContainVirtual pos2 += 1
-				return  new BuiltInFuncUno(".",CType,true,retType,true,
-				"%Pre## = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+pos2+" #d\n" +
-				"#0 = bitcast " + midType.ResultType.GetName() + "* %Pre## to " + FP.ResultType.GetName() + "* #d\n")
-			}
-			ErrorLog.Push("Cannot find field "+Name+"\n")
-			return null
-		}
-
-		CType := ((ToClass.ClassType)->{Type^})
-		CTypeP := CType.GetPoint()
-
-		usePos := pos
-		if ToClass != null
-			if ToClass.ContainVirtual {
-				usePos = pos + 1
-			}
-		
-	return new BuiltInFuncUno(".",CType,true,retType,true,
-		"#0 = getelementptr "sbt + (CType.GetName()) + " , " + (CTypeP.GetName()) + " #1, i32 0, i32 "+usePos+" #d\n")
+		return new BuiltInUnrollClass(Name,ToClass,true,retType,true)
+	}
+	PrePrintEvent := virtual !() -> void
+	{
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -147,25 +160,18 @@ BuiltInAutoField := class extend BuiltInFunc
 		{
 
 			pos := -1
-			retType := Type^
-			for it : ToClass.Params, i : 0
+			if ToClass.Params[^i].ItName == ParName
 			{
-				if it.ItName == ParName
-				{
-					pos = i
-					//retType = it.ResultType
-				}
+				pos = i
+				break
 			}
+
 			if pos == -1
 			{
-				
-				for it : ToClass.FakeParams , i : 0
+				if ToClass.FakeParams[^i].ItName == ParName
 				{
-					if it.ItName == ParName
-					{
-						pos = i
-						//retType = it.ResultType
-					}
+					pos = i
+					break
 				}
 
 				CType := ((ToClass.ClassType)->{Type^})
@@ -177,12 +183,11 @@ BuiltInAutoField := class extend BuiltInFunc
 				pos2 := -1
 				midType := FieldParam^
 
-				for ToClass.Params.Size()
+				if ToClass.Params[^i].ItName == FPN
 				{
-					if ToClass.Params[it].ItName == FPN {
-						midType = ToClass.Params[it]
-						pos2 = it
-					}
+					pos2 = i
+					midType = it
+					break
 				}
 				assert(pos2 != -1) //TODO: check in GetPrior
 
@@ -230,29 +235,8 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		asStrT := (consts[0]->{ObjStr^})
 		asStr := asStrT.GetString()
 
-		
-		for ToClass.Params.Size()
-		{
-			if ToClass.Params[it].ItName == asStr
-				return 0			
-		}
-		for ToClass.FakeParams.Size()
-		{
-			if ToClass.FakeParams[it].ItName == asStr
-			{
-				FP := ToClass.FakeParams[it]
-				if not FP.Atter is ObjIndent return 255 
-				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
-
-				for z : ToClass.Params
-				{
-					if z.ItName == FPN
-						return 0
-				}
-
-				return 255
-			}
-		}
+		if ToClass.GetFieldParam(asStr) != null
+			return 0
 		return 255
 	}
 
@@ -268,30 +252,8 @@ BuiltInTemplateAutoField := class extend BoxTemplate
 		AsStrObj := (consts[0]->{ObjStr^})
 		Name = (AsStrObj.GetString())
 
-		pos := -1
-		retType := Type^
-		for it : ToClass.Params, i : 0
-		{
-			if it.ItName == Name
-			{
-				pos = i
-				retType = it.ResultType
-			}
-		}
-		if pos == -1 
-		{
-			for it : ToClass.FakeParams , i : 0
-			{
-				if it.ItName == Name
-				{
-					pos = i
-					retType = it.ResultType
-				}
-			}
-			assert(pos != -1)
-			
-			return  new BuiltInAutoField(retType,true,ToClass,Name,null->{char^})
-		}
+		itPr := ToClass.GetFieldParam(Name)
+		retType := itPr.ResultType
 		preRet :=  new BuiltInAutoField(retType,true,ToClass,Name,null->{char^}) //itStr)
 		return preRet
 	}

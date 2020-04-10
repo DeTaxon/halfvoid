@@ -428,28 +428,50 @@ BoxClass := class extend Object
 	
 	Yodlers := AVLSet.{BoxFuncBody^}
 	
+	GetFieldParam := !(char^ name) -> MemParam^
+	{
+		if Params[^].ItName == name
+			return it
+		if FakeParams[^].ItName == name
+			return it
+		if Parent != null
+			return Parent.GetFieldParam(name)
+		return null
+	}
+	
 	Inherited := false
 	InheritParams := !() -> void
 	{
 		if not Inherited
 		{
 			Inherited = true
-			parentTree := this.Parent
-			while parentTree != null
+			if Parent != null
 			{
-				parentTree.InheritParams()
-				Size := parentTree.Params.Size()
-				NotMineParams = Size
-				for i : Size
-				{
-					Params.PushFront(parentTree.Params[Size - i - 1])
-				}
-				for fakes : parentTree.FakeParams FakeParams.PushFront(fakes)
-				if parentTree.ContainVirtual 
+				Parent.InheritParams()
+				//InheritParams2()
+				if Parent.ContainVirtual 
 					ContainVirtual = true
+				WorkBag.Push(this&,State_PrePrint)
 
-				parentTree = null
 			}
+		}
+	}
+	Inherited2 := false	
+	InheritParams2 := !() -> void
+	{
+		if Inherited2 return void
+		Inherited2 = true
+		if Parent != null
+		{
+
+			Parent.InheritParams2()
+			Size := Parent.Params.Size()
+			NotMineParams = Size
+			for i : Size
+			{
+				Params.PushFront(Parent.Params[Size - i - 1])
+			}
+			for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
 			if Yodlers.Size() != 0 printf("YES\n")
 		}
 	}
@@ -489,6 +511,7 @@ BoxClass := class extend Object
 		}
 		if pri == State_PrePrint
 		{
+			InheritParams2()
 			ComputeVTable()		
 		}
 	}
