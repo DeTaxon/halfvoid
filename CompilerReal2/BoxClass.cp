@@ -473,7 +473,15 @@ BoxClass := class extend Object
 			}
 			for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
 		}
-		if Yodlers.Size() != 0 printf("YES\n")
+		for Yodlers
+		{
+			extrField := it.ABox.GetAsType()
+			it.yieldInClass = Params.Size()
+			it.yieldInClassType = extrField
+			if ContainVirtual
+				it.yieldInClass += 1
+			new FieldParam("yeldData"sbt + GetNewId(), extrField,this&)
+		}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

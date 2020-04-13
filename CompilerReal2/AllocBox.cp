@@ -50,6 +50,22 @@ AllocBox := class
 		return cntr
 	}
 	//ReturnAlloc := !()
+	GetAsType := !() -> Type^
+	{
+		resR := new FuncInputBox() ; $temp
+		assert(not ItemBag.Empty())
+		itR := ItemBag.Start
+		while itR != null
+		{
+			resR.itPars.Emplace(itR.Value,false)
+			itR = itR.Next
+		}
+		for inhAllocs
+		{
+			resR.itPars.Emplace(it.GetAsType(),false)
+		}
+		return GetTuple(resR).ClassType
+	}
 
 	printedGlobal := bool
 	PrintGlobal := !(sfile f) -> void

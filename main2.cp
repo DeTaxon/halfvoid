@@ -8,44 +8,42 @@
 //	}
 //}
 
-//tstKl := class
-//{
-//	z := int
-//	tst2 := !() -> void
-//	{
-//		x := 7
-//		while true
-//		{
-//			printf("ic %i\n",x)
-//			x++
-//			yield void
-//			printf("jo %i\n",x)
-//			x++
-//			yield void
-//		}
-//	}
-//}
-
-tst3 := !() -> void
+tstKl := class
 {
-	while true
+	z := int
+	tst2 := virtual  !() -> void
 	{
-		printf("hoh\n")
-		yield void
-		printf("hah\n")
-		yield void
+		x := 7
+		while true
+		{
+			printf("ic %i\n",x)
+			x++
+			yield void
+			printf("jo %i\n",x)
+			x++
+			yield void
+		}
 	}
+}
+subTest := class extend tstKl
+{
+	k := int
 }
 
 main := !() -> int
 {
-	tst3()
-	tst3()
-	//r := tstKl
-	//r.tst2()
-	//r.tst2()
-	//r.tst2()
-	//r.tst2()
+	//tst3()
+	//tst3()
+	r := tstKl
+	r2 := new subTest
+	r.tst2()
+	r2.tst2()
+	r.tst2()
+	r2.tst2()
+	r.tst2()
+	r2.tst2()
+	r.tst2()
+	r2.tst2()
 	//tst(_1 % 2 == 0)
 	return 0
 }

@@ -1320,6 +1320,7 @@ BoxFuncBody := class extend BoxFunc
 	
 	Yodlers := List.{BoxReturn^}
 	yieldInClass := int
+	yieldInClassType := Type^
 	yieldInAlloc := int
 	YieldCheck := !() -> void
 	{
@@ -1363,7 +1364,17 @@ BoxFuncBody := class extend BoxFunc
 			if DebugMode
 				dbgId = CreateDebugCall(this&)
 
-			ABox.PrintAlloc(f,dbgId)
+			if Yodlers.Size() != 0 and MethodType != null
+			{
+				cName := MethodType.GetName()
+				yName := yieldInClassType.GetName()
+				f << "%ClassYodlerPre = getelementptr " << cName << " , " << cName << "* %this , i32 0,i32 " << yieldInClass << "\n"
+				f << "%ClassYodler = bitcast " << yName << "* %ClassYodlerPre to " << ABox.GetClassName() << "*\n"
+				ABox.PrintBoxItems(f,"%ClassYodler",dbgId)
+			}else{
+				ABox.PrintAlloc(f,dbgId)
+			}
+
 			//f << "%ABoxSizePre" << ABox.ItId << " = getelementptr %AllocClass" << ABox.ItId << " , %AllocClass" << ABox.ItId << "* null , i32 1\n"
 			//f << "%ABoxSize" << ABox.ItId << " = ptrtoint %AllocClass" << ABox.ItId << "* %ABoxSizePre" << ABox.ItId <<" to i32\n"
 			//f << "%ABoxPoint = bitcast %AllocClass" << ABox.ItId << "* %AllocItem" << ABox.ItId << " to i8*\n" 
