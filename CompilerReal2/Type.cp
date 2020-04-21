@@ -844,7 +844,9 @@ TypeFuncLambda := class extend Type
 		return Base.GetName() + "**"
 		//return GetNewNamePre() + "*"
 	}
-	GetGoodName := virtual !() -> string { return GetName() }
+	GetGoodName := virtual !() -> string { 
+		return Base.GetName() + "&"
+	}
 	GetNewNamePre := virtual !() -> string
 	{
 		asB := Base->{TypeFunc^}

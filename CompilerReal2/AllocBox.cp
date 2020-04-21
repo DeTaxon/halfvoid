@@ -192,16 +192,9 @@ GetAllocNR := !(Object^ Start,int id) -> int
 	iter := Start
 	while iter != null
 	{
-		if iter.GetValue() == "!()"
-		{
-			dynCast := iter->{BoxFunc^}
-			return dynCast.ABox.GetNR(id)
-		}
-		if iter.GetValue() == "x=>x"
-		{
-			asL2 := iter->{SLambda^}
-			return asL2.ABox.GetNR(id)
-		}
+		ab := iter.GetABox()
+		if ab != null return ab.GetNR(id)
+
 		if iter.GetValue() == "{...}"
 		{
 			return -2
@@ -215,16 +208,8 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 	iter := Start
 	while iter != null
 	{
-		if iter.GetValue() == "!()"
-		{
-			dynCast := iter->{BoxFunc^}
-			return dynCast.ABox.GetAlloc(t)
-		}
-		if iter.GetValue() == "x=>x"
-		{
-			asL2 := iter->{SLambda^}
-			return asL2.ABox.GetAlloc(t)
-		}
+		ab := iter.GetABox()
+		if ab != null return ab.GetAlloc(t)
 		if iter.GetValue() == "{...}"
 		{
 			return -2

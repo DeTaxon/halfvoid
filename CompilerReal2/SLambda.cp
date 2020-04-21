@@ -1,8 +1,7 @@
-SLambda := class extend ObjResult
+SLambda := class extend BoxFuncContainer
 {
 	parsedStart := bool
 	applyed := bool
-	ABox := AllocBox
 	Names := string[]
 	parms := LocalParam^^
 	InAlloc := int^
@@ -16,15 +15,16 @@ SLambda := class extend ObjResult
 
 	Created := bool
 
-	Yodlers := List.{BoxReturn^}
-
 	StolenParams := AVLMap.{char^,LocalParam^}
 
 	tupleItem := TupleClass^
 
 	CaptureParams := List.{Tuple.{char^,MemParam^,bool,MemParam^}}
 	CPIndexes := List.{int}
+	ResultType := Type^
+	GetType := virtual !() -> Type^ { return ResultType }
 	
+	GetABox := virtual !() -> AllocBox^ { return ABox& } 
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
 	{

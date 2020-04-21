@@ -113,13 +113,35 @@ main := !(int argc,char^^ argv) -> int
 		itStb := ""sbt << toDir.0
 		tmp1 := itStb.Str() ; $temp
 		for k : tmp1 if k == '$' k = '*'
+		anyFileName := char^()
 		for suf : fileSuffixes
 		{
 			tmp2Pre := ""sbt + tmp1  + suf
 			tmp2 := tmp2Pre.Str() ; $temp
 			for newItm : Wildcard(tmp2)
-				codeSp.Emplace(toDir.1,StrCopy(newItm.itStr))
+			{
+				flName := StrCopy(newItm.itStr)
+				codeSp.Emplace(toDir.1,flName)
+				anyFileName = flName
+			}
 		}
+			
+		//if DebugMode and anyFileName != null
+		//{
+		//	pa := Path(anyFileName).FolderName()
+		//	nwName := ""sbt + pa + "/pretty.py" <-
+		//	if Path(nwName).IsExist()
+		//	{
+		//		prettyFile := fopen(nwName,"r")	
+		//		miniBuffer := char[1024]
+		//		while feof(prettyFile) == 0
+		//		{
+		//			fgets(miniBuffer,1024,prettyFile)
+		//			DebugPretty.Push(StrCopy(miniBuffer))
+		//		}
+		//		fclose(prettyFile)
+		//	}
+		//}
 	}
 	CreateStandartTypes()
 	CreateBuiltIns()

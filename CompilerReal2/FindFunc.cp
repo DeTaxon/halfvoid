@@ -231,6 +231,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,true)
 
 	func :=  GetBestFunc(itBox,Funcs,Templs)
+
 	if func != null return func
 
 	if ((not IsWord(name)) or IsMethod) and itBox.itPars.Size() != 0 // wtf if not word and size = 0

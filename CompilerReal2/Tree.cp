@@ -167,6 +167,10 @@ Object := class{
 		if Up == null return 0
 		return Up.GetScope()
 	}
+	GetABox := virtual !() -> AllocBox^
+	{
+		return null
+	}
 }
 
 ObjLine := class 
