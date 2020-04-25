@@ -24,7 +24,6 @@ SLambda := class extend BoxFuncContainer
 	ResultType := Type^
 	GetType := virtual !() -> Type^ { return ResultType }
 	
-	GetABox := virtual !() -> AllocBox^ { return ABox& } 
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
 	{
@@ -93,6 +92,9 @@ SLambda := class extend BoxFuncContainer
 			if boostLambda
 			{
 				MakeItBlock(Down)
+				empt := Queue.{Type^}()
+				asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
+				ResultType = asFunc.GetLambda()
 			}else{
 
 				parsedStart = true
@@ -198,8 +200,8 @@ SLambda := class extend BoxFuncContainer
 
 				if not isTmpl
 				{
-					if not justFunc
-					{
+					//if not justFunc
+					//{
 						Created = true
 						parms = new LocalParam^[pars.Size()]
 						InAlloc = new int[pars.Size()]
@@ -215,7 +217,7 @@ SLambda := class extend BoxFuncContainer
 							parms[i] = new LocalParam(it,InAlloc[i],isRf)
 						}
 						WorkBag.Push(Down,State_Syntax)
-					}
+					//}
 					WorkBag.Push(this&,State_PrePrint)
 				}
 
@@ -275,11 +277,6 @@ SLambda := class extend BoxFuncContainer
 		{
 			datRes := new FuncInputBox ; $temp
 			datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
-			datRes.itPars.Emplace(copyLFuncTypeP,false)
-			datRes.itPars.Emplace(deleteLFuncTypeP,false)
-			
-			if Yodlers.Size() != null
-				datRes.itPars.Emplace(GTypeInt,false)
 
 			tupleItem = GetTuple(datRes)
 			inAlloc = GetAlloc(Up,tupleItem.ClassType)
@@ -290,6 +287,8 @@ SLambda := class extend BoxFuncContainer
 			ApplyCaptures()
 			if Yodlers.Size() != 0
 			{
+				yodlerInAllocId := ABox.GetAlloc(GTypeInt)
+				yodlerInAlloc = ABox.GetNR(yodlerInAllocId)
 				if justFunc
 				{
 					ABox.liveOnGlobal = true
@@ -500,7 +499,8 @@ SLambda := class extend BoxFuncContainer
 
 				prevLambd = this&
 
-				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ")\n"
+				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ") \n"
+
 				f << "{\n"
 				PrintInhers(f,"ToCpy" + ItId,false)
 				
@@ -523,21 +523,13 @@ SLambda := class extend BoxFuncContainer
 				f << "%PreSetPoint" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 0\n"
 				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
 
-				f << "%PreSetCopy" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 1\n"
-				f << "store i8*(i8*)* @LambdaCopy"<< ItId <<", i8*(i8*)** %PreSetCopy" << ItId << "\n"
-
-				f << "%PreSetDelete" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 2\n"
-				f << "store void(i8*)* @LambdaDelete"<< ItId <<", void(i8*)** %PreSetDelete" << ItId << "\n"
-
-				if Yodlers.Size() != 0
-				{
-					upABox := funcsUp[0].0
-					f << "%Yodler = getelementptr " << upABox.GetClassName() << " , " 
-						<< upABox.GetClassName() << "* %Lambda0Box, i32 0, i32 " << ItNR << ",i32 3\n"
-					f << "%PreSetYodler" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 3\n"
-					f << "%YodlerValue = load i32 , i32* %Yodler\n"
-					f << "store i32 %YodlerValue , i32* %PreSetYodler" << ItId << "\n"
-				}
+				//if Yodlers.Size() != 0
+				//{
+				//	f << "%Yodler = getelementptr " << ABox.GetClassName() << " , " << ABox.GetAsUse() << " i32 0, i32 " << yodlerInAlloc << "\n"
+				//	f << "%PreSetYodler" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 3\n"
+				//	f << "%YodlerValue = load i32 , i32* %Yodler\n"
+				//	f << "store i32 %YodlerValue , i32* %PreSetYodler" << ItId << "\n"
+				//}
 				
 				prevL := SLambda^()
 				for fc : funcsUp, j : 0
@@ -655,11 +647,10 @@ SLambda := class extend BoxFuncContainer
 				//f << "ret i8* null\n"
 				f << "}\n"
 			}
-			if justFunc and Yodlers.Size() != 0
-			{
-				f << "@Yodler" << ABox.ItId << " = global i32 0\n"
-			}
+
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
+			if not justFunc { f << "prefix %LambdaPrefix { i8*(i8*)* @LambdaCopy" << ItId << " , void(i8*)* @LambdaDelete" << ItId << "}" }
+			f << "\n"
 
 			if DebugMode
 			{
@@ -712,14 +703,7 @@ SLambda := class extend BoxFuncContainer
 			}
 			if Yodlers.Size() != null
 			{
-				if justFunc
-				{
-					f << "%Yodler = getelementptr i32 , i32* @Yodler" << ABox.ItId << ",i32 0\n"
-				}else{
-					upABox := funcsUp[0].0
-					f << "%Yodler = getelementptr " << upABox.GetClassName() << " , " 
-						<< upABox.GetClassName() << "* %Lambda0Box, i32 0, i32 " << ItNR << ",i32 3\n"
-				}
+				f << "%Yodler = getelementptr " << ABox.GetClassName() << " , " << ABox.GetAsUse() << " , i32 0, i32 " << yodlerInAlloc << "\n" 
 				f << "%StartYield = load i32, i32* %Yodler\n"
 				f << "switch i32 %StartYield, label %Yield0 ["
 				for i : Yodlers.Size() + 1
@@ -780,11 +764,11 @@ SLambda := class extend BoxFuncContainer
 			asL := ResultType->{TypeFuncLambda^}
 			f << "%Tpl2" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 0\n"
 			f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %Tpl2" << ItId << "\n"
-			f << "%TplCnt" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 1\n"
-			f << "store i8*(i8*)* @LambdaCopy"<< ItId << ", i8*(i8*)** %TplCnt" << ItId << "\n"
+
 			if Yodlers.Size() != 0
 			{
-				f << "%TpY" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 3\n"
+				inNR := ABox.InheritNR()
+				f << "%TpY" << ItId << " = getelementptr " << ABox.parentAlloc.GetClassName() << "," << ABox.parentAlloc.GetAsUse() << " ,i32 0,i32 " << inNR <<", i32 " << yodlerInAlloc <<"\n"
 				f << "store i32 0, i32* %TpY" << ItId << "\n"
 			}
 
@@ -851,8 +835,19 @@ SLambda := class extend BoxFuncContainer
 	{
 		if boostLambda
 		{
-			printf("hello\n")
-			return void
+			nams  := Queue.{char^}() ; $temp
+
+			if not justFunc{
+				nams.Push("lambdaParam" + ItId)
+			}
+			lType := lambTyp.Base->{TypeFunc^}
+			for i : lType.ParsCount
+			{
+				if i == 0 continue
+				nams.Push("_"sbt+ i)
+			}
+			Names = nams.ToArray()
+			
 		}
 
 		WorkBag.Push(this&,State_PrePrint)
@@ -1064,105 +1059,6 @@ BuiltInLambdaCall := class extend BoxTemplate
 		return new BuiltInFuncMega("()",fun,ToSet.Str())
 	}
 }
-BuiltInLambdaCall := class extend BoxTemplate
-{
-	this := !() -> void
-	{
-		FuncName = "()"
-		IsMethod = true
-
-		pars := Queue.{Type^}()
-
-		MyFuncType = null
-	}
-	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
-	{
-		pars := ref itBox.itPars
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB :=  ((pars[0].first.Base)->{TypeFunc^})
-
-		Pars := Queue.{Type^}() ; $temp
-
-		for i : pars.Size()
-		{
-			if i == 0{
-				Pars.Push(pars[0].first)
-			}else{
-				Pars.Push(asB.Pars[i])
-			}
-		}
-		return GetFuncType(Pars,asB.ParsIsRef,asB.RetType,asB.RetRef,asB.IsVArgs)
-	}
-	GetPriority := virtual !(FuncInputBox itBox) -> int
-	{
-		pars := ref itBox.itPars
-
-		if pars.Size() == 0 return 255
-		if not pars[0].first is TypeFuncLambda return 255
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB := ((pars[0].first.Base)->{TypeFunc^})
-
-		if asB.ParsCount != pars.Size() return 255
-
-		maxCmp := 0
-		for i : pars.Size()
-		{
-			if i > 0
-			{
-				nowCmp := TypeCmp(pars[i].first,asB.Pars[i])
-				if maxCmp < nowCmp maxCmp = nowCmp					
-			}
-		}
-		return maxCmp
-	}
-	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
-	{
-		pars := ref itBox.itPars
-
-		asL := pars[0].first->{TypeFuncLambda^}
-		asB := ((pars[0].first.Base)->{TypeFunc^})
-
-		IsCompl := false
-
-		if not asB.RetRef {
-			IsCompl = IsComplexType(asB.RetType)	
-		}
-
-		ToSet := "%Wut## = bitcast "sbt+ pars[0].first.GetName() + " #1 to i8*\n"
-			+ "%Func## = load " +pars[0].first.Base.GetName() + "* , " + pars[0].first.GetName() + " #1 #d\n"
-
-
-		if IsCompl or asB.RetType == GTypeVoid{
-			ToSet << "call "
-		}else{
-			ToSet << "#0 = call " 
-		}
-		ToSet << pars[0].first.Base.GetName() << "%Func##(i8*  %Wut##"
-
-		if IsCompl
-		{
-			ToSet << " , " << asB.RetType.GetName() << "* #0"
-		}
-
-		for i : pars.Size()
-		{
-			if i != 0{
-			ToSet << " , "
-
-				ToSet << asB.Pars[i].GetName()
-				if asB.ParsIsRef[i]{
-					ToSet << "*"
-				}
-				ToSet << " #" << (i + 1)
-			}
-		}
-		ToSet << ") #d\n"
-		
-		return new BuiltInFuncMega("()",fun,ToSet.Str())
-	}
-}
 BuiltInTemplateSetLambda := class extend BoxTemplate
 {
 	this := !() -> void
@@ -1220,10 +1116,17 @@ BuiltInTemplateCaptureLambda := class extend BoxTemplate
 		pars := ref itBox.itPars
 		asPtrN := pars[0].first.Base.GetPoint().GetName()
 		return new BuiltInFuncUno(". not",pars[0].first,false,pars[0].first, 
-		"%Nxt## = getelementptr "sbt +asPtrN+ " , " + asPtrN +"*  #1 ,i32 1#d\n" +
-		"%PreCl## = load "+asPtrN+" , "+asPtrN+"* %Nxt## \n" +
-		"%AlmCl## = bitcast "+asPtrN+" %PreCl## to "+asPtrN+"*("+asPtrN+"*)*\n"+
-		"#0 = call "+asPtrN+"*%AlmCl##("+asPtrN+"* #1)\n" )
+		"%Fnc## = load "sbt + asPtrN + " , " + asPtrN + "* #1\n" +
+		"%Pref## = bitcast "sbt + asPtrN + " %Fnc## to %LambdaPrefix*\n" +
+		"%ClFuncPre## = getelementptr %LambdaPrefix , %LambdaPrefix* %Pref##, i32 -1, i32 0\n"+
+		"%ClFunc## = load i8*(i8*)*, i8*(i8*)** %ClFuncPre##\n"+
+		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
+		"%CopyRes## = call i8* %ClFunc##(i8* %LamPtr##)\n" +
+		"#0 = bitcast i8* %CopyRes## to " + asPtrN + "*\n")
+		//"%Nxt## = getelementptr "sbt +asPtrN+ " , " + asPtrN +"*  #1 ,i32 1#d\n" +
+		//"%PreCl## = load "+asPtrN+" , "+asPtrN+"* %Nxt## \n" +
+		//"%AlmCl## = bitcast "+asPtrN+" %PreCl## to "+asPtrN+"*("+asPtrN+"*)*\n"+
+		//"#0 = call "+asPtrN+"*%AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1254,11 +1157,17 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		asPtrN := pars[0].first.Base.GetPoint().GetName()
-		return new BuiltInFuncUno(". not",pars[0].first,false,GTypeVoid, 
-		"%Nxt## = getelementptr "sbt+asPtrN+" ,"+asPtrN+"*  #1 ,i32 2#d\n"sbt +
-		"%PreCl## = load "+asPtrN+" ,"+asPtrN+"* %Nxt## \n" +
-		"%AlmCl## = bitcast "+asPtrN+" %PreCl## to void("+asPtrN+"*)*\n"+
-		"call void %AlmCl##("+asPtrN+"* #1)\n" )
+		return new BuiltInFuncUno(". not",pars[0].first,false,GTypeVoid,
+		"%Fnc## = load "sbt + asPtrN + " , " + asPtrN + "* #1\n" +
+		"%Pref## = bitcast "sbt + asPtrN + " %Fnc## to %LambdaPrefix*\n" +
+		"%ClFuncPre## = getelementptr %LambdaPrefix , %LambdaPrefix* %Pref##, i32 -1, i32 1\n"+
+		"%ClFunc## = load void(i8*)*, void(i8*)** %ClFuncPre##\n"+
+		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
+		"call void %ClFunc##(i8* %LamPtr##)")
+		//"%Nxt## = getelementptr "sbt+asPtrN+" ,"+asPtrN+"*  #1 ,i32 2#d\n"sbt +
+		//"%PreCl## = load "+asPtrN+" ,"+asPtrN+"* %Nxt## \n" +
+		//"%AlmCl## = bitcast "+asPtrN+" %PreCl## to void("+asPtrN+"*)*\n"+
+		//"call void %AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1285,4 +1194,8 @@ CreateLambdaBuilts := !() -> void
 
 	deleteLFuncType = GetFuncType(inpFuncE,null,GTypeVoid,false,false)
 	deleteLFuncTypeP = deleteLFuncType.GetPoint()
+}
+PrintLambdaGlobal := !(sfile f) -> void
+{
+	f << "%LambdaPrefix = type {i8*(i8*)*,void(i8*)*}\n"
 }

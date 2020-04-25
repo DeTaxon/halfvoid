@@ -324,6 +324,7 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare void @llvm.va_start(i8* %a)\n"
 		fil << "declare void @llvm.va_end(i8* %a)\n"
 		fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+		PrintLambdaGlobal(fil)
 		StrContainer.PrintGlobal(fil)
 
 		Classes[^].PrintStruct(fil)

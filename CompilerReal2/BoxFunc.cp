@@ -130,7 +130,10 @@ ParseFuncDataR := !(Object^ item) -> Object^
 BoxFuncContainer := class extend Object
 {
 	ABox := AllocBox
+	yodlerInAlloc := int
 	Yodlers := List.{BoxReturn^}
+
+	GetABox := virtual !() -> AllocBox^ {return ABox&}
 }
 
 BoxFunc := class extend BoxFuncContainer
@@ -528,7 +531,6 @@ BoxFuncBody := class extend BoxFunc
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
 
-	GetABox := virtual !() -> AllocBox^ {return ABox&}
 	GetScope := virtual !() -> int { return ABox.ItId }
 
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
@@ -771,13 +773,12 @@ BoxFuncBody := class extend BoxFunc
 	
 	yieldInClass := int
 	yieldInClassType := Type^
-	yieldInAlloc := int
 	YieldCheck := !() -> void
 	{
 		if Yodlers.Size() != 0
 			return void
 
-		yieldInAlloc = ABox.GetAlloc(GTypeInt)
+		yodlerInAlloc = ABox.GetAlloc(GTypeInt)
 
 		if MethodType == null
 		{
@@ -873,7 +874,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 			if Yodlers.Size() != null
 			{
-				f << "%Yodler = getelementptr i32 , i32* %T" << yieldInAlloc << ",i32 0\n"
+				f << "%Yodler = getelementptr i32 , i32* %T" << yodlerInAlloc << ",i32 0\n"
 				f << "%StartYield = load i32, i32* %Yodler\n"
 				f << "switch i32 %StartYield, label %Yield0 ["
 				for i : Yodlers.Size() + 1
