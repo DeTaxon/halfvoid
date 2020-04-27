@@ -40,74 +40,55 @@ ObjData := class extend Object
 			iter := Down
 			while iter != null
 			{
-				lazy := iter.GetValue() == "."
-				lazy = lazy or iter.GetValue() == "->"
-				if lazy lazy = iter.Right is ObjIndent
-				if lazy
+
+				if iter.GetValue() in ![".","->"] and iter.Right is ObjIndent
 				{
 					iter = iter.Right
-				}else
+					iter = iter.Right
+					continue
+				}
+				if iter.GetValue() == "new"
 				{
-					if iter.GetValue() == "new"
+					SomeDown := iter.Right.Down
+					SizeTree := Object^()
+					if SomeDown != null
 					{
-						SomeDown := iter.Right.Down
-						SizeTree := Object^
-						SizeTree = null
-						if SomeDown != null
+						if SomeDown.Right?.GetValue() == "[]"
 						{
-							if SomeDown.Right != null
-							{	
-								if SomeDown.Right.GetValue() == "[]"
-								{
-									SyntaxCompress(SomeDown.Right,PriorityData)
-									SizeTree = SomeDown.Right.Down
-									SomeDown.Right.Up = null
-									SomeDown.Right.Left = null
-									SomeDown.Right = null
-									iter.Right = iter.Right.Down
-									iter.Right.Left = iter
-									iter.Right.Up = iter.Up
-									iter.Right.Right = null
-								}
-							}
-						}
-						SomeDown = iter.Right
-						if SizeTree != null
-						{
-							iter.Right.Right = SizeTree
-							SizeTree.Left = iter.Right
-							SizeTree.Up = iter.Up
-						}
-						iter = iter.Right
-					}else{
-						lazy2 := false
-						while iter is ObjIndent
-						{
-							itr2 := iter.Right
-							if itr2 == null break
-							if itr2.GetValue() != "." break
-							itr2 = itr2.Right
-							if itr2 == null break
-							lazy2 = itr2.GetValue() == "{}"
-							break
-						}
-						if lazy2
-						{
-							iter = iter.Right
-						}else{
-							ignore := false
-							if iter.GetValue() == "()" WorkBag.Push(iter,State_Syntax)
-							if iter.GetValue() == "[]" WorkBag.Push(iter,State_Syntax)
-							//if iter.GetValue() == "[]" WorkBag.Push(iter,State_PreGetUse)
-							if iter.GetValue() == "{}"
-								if iter.Left != null
-									if iter.Left.GetValue() == "." or iter.Left.GetValue() == "->"
-										ignore = true
-							if Down.GetValue() == "try" ignore = true
-							if not ignore WorkBag.Push(iter,State_Start)
+							SyntaxCompress(SomeDown.Right,PriorityData)
+							SizeTree = SomeDown.Right.Down
+							SomeDown.Right.Up = null
+							SomeDown.Right.Left = null
+							SomeDown.Right = null
+							iter.Right = iter.Right.Down
+							iter.Right.Left = iter
+							iter.Right.Up = iter.Up
+							iter.Right.Right = null
 						}
 					}
+					SomeDown = iter.Right
+					if SizeTree != null
+					{
+						iter.Right.Right = SizeTree
+						SizeTree.Left = iter.Right
+						SizeTree.Up = iter.Up
+					}
+					iter = iter.Right
+					iter = iter.Right
+					continue
 				}
+				if iter is ObjIndent and iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
+				{
+					iter = iter.Right
+					iter = iter.Right
+					continue
+				}
+				ignore := false
+				if iter.GetValue() in !["()","[]"] WorkBag.Push(iter,State_Syntax)
+				if iter.GetValue() == "{}" and iter.Left?.GetValue() in ![".","->"]
+						ignore = true
+				if Down.GetValue() == "try" ignore = true
+				if not ignore WorkBag.Push(iter,State_Start)
 				iter = iter.Right
 			}
 			WorkBag.Push(this&,State_GetUse)
@@ -149,11 +130,9 @@ ObjData := class extend Object
 		PreRet := new ObjData()
 		PreRet.Line = Line
 
-		IterD := Down
-		LineI := Object^
-		LineI = null
+		LineI := Object^()
 		
-		while IterD != null
+		for IterD : Down
 		{
 			if LineI == null
 			{
@@ -164,7 +143,6 @@ ObjData := class extend Object
 				LineI.Right.Left = LineI
 				LineI = LineI.Right
 			}
-			IterD = IterD.Right
 		}
 		if PreRet.Down != null PreRet.Down.SetUp(PreRet)
 

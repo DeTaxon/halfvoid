@@ -17,8 +17,6 @@ SLambda := class extend BoxFuncContainer
 
 	StolenParams := AVLMap.{char^,LocalParam^}
 
-	tupleItem := TupleClass^
-
 	CaptureParams := List.{Tuple.{char^,MemParam^,bool,MemParam^}}
 	CPIndexes := List.{int}
 	ResultType := Type^
@@ -275,11 +273,11 @@ SLambda := class extend BoxFuncContainer
 		}
 		if pri == State_PostGetUse
 		{
-			datRes := new FuncInputBox ; $temp
-			datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
+			//datRes := new FuncInputBox ; $temp
+			//datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
 
-			tupleItem = GetTuple(datRes)
-			inAlloc = GetAlloc(Up,tupleItem.ClassType)
+			//tupleItem = GetTuple(datRes)
+			inAlloc = GetAlloc(Up,ResultType.Base.GetPoint())
 			ItNR = GetAllocNR(Up,inAlloc)
 		}
 		if pri == State_PrePrint
@@ -338,7 +336,7 @@ SLambda := class extend BoxFuncContainer
 		for it : funcsUp
 		{
 			ABName := it.0.GetClassName()
-			f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << prevLam.ItNR << ",i32 0\n"
+			f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << prevLam.ItNR << "\n"
 			f << "%LS2" << nameIter << " = ptrtoint " << prevLam.ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
 			f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
 			f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
@@ -486,7 +484,7 @@ SLambda := class extend BoxFuncContainer
 				f << "define void @LambdaDelete" << ItId << "(i8* %ToDel" << ItId << ")\n"
 				f << "{\n"
 					ABName3 := funcsUp[0].0.GetClassName()
-					f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName3 << " , " << ABName3 << "* null ,i32 0, i32 " << prevLambd.ItNR << ",i32 0\n"
+					f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName3 << " , " << ABName3 << "* null ,i32 0, i32 " << prevLambd.ItNR << "\n"
 					f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
 					f << "%LS1" << nameIter << " = ptrtoint i8* %ToDel"<< ItId  << " to i64\n"
 					f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
@@ -520,7 +518,7 @@ SLambda := class extend BoxFuncContainer
 
 
 				asL := ResultType->{TypeFuncLambda^}
-				f << "%PreSetPoint" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 0\n"
+				f << "%PreSetPoint" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << "\n"
 				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
 
 				//if Yodlers.Size() != 0
@@ -541,11 +539,11 @@ SLambda := class extend BoxFuncContainer
 						if fc.1 != null
 						{
 							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
-								<< j << ", i32 " << fc.1.ItNR << ",i32 0\n"
+								<< j << ", i32 " << fc.1.ItNR << "\n"
 						}else{
 							prevNR := fc.2.ABox.GetNR(prevL.inAlloc)
 							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
-								<< j << ", i32 " << prevNR << ", i32 0\n"
+								<< j << ", i32 " << prevNR << "\n"
 						}
 						f << "%ToSetPT" << j << " = bitcast "+prevL.ResultType.GetName() + " %ToSetP" << j << " to i8*\n"
 						f << "store i8* %ToSetPT" << j << " , i8** %WherePut" << j << "\n"
@@ -762,7 +760,7 @@ SLambda := class extend BoxFuncContainer
 		if applyed
 		{
 			asL := ResultType->{TypeFuncLambda^}
-			f << "%Tpl2" << ItId << " = getelementptr " << tupleItem.ClassType.GetName() << "," << tupleItem.ClassType.GetName() << "* %T" << inAlloc << ", i32 0,i32 0\n"
+			f << "%Tpl2" << ItId << " = getelementptr " << ResultType.Base.GetPoint().GetName() << "," << ResultType.Base.GetPoint().GetName() << "* %T" << inAlloc << ", i32 0\n"
 			f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %Tpl2" << ItId << "\n"
 
 			if Yodlers.Size() != 0

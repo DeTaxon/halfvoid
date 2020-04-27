@@ -48,12 +48,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 				}
 				iterU = null
 			}else{
-				iterK := LastPos.Right
-				while iterK != null
-				{
-					InsertParam(name,iterK,found,Searched)
-					iterK = iterK.Right
-				}
+				InsertParam(name,LastPos.Right[^],found,Searched)
 				LastPos = iterU
 			}
 		}
@@ -81,10 +76,9 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				if iterW.GetValue() == "!()"
 				{
 					AsBoxFunc := iterW->{BoxFunc^}
-					SomeBug := IsSuffix
 					//if (AsBoxFunc.IsSuffix == SmeBug and not AsBoxFunc.IsVirtual)
 					//	found.Push(AsBoxFunc)
-					if SomeBug
+					if IsSuffix
 					{
 						if AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual
 							found.Push(AsBoxFunc) ; $temp 
@@ -99,8 +93,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 				if iterW.GetValue() == "!(){}"
 				{
 					AsBoxFunc2 :=  iterW->{BoxTemplate^}
-					SomeBug := IsSuffix
-					if SomeBug
+					if IsSuffix
 					{
 						if AsBoxFunc2.IsSuffix and AsBoxFunc2.IsVirtual
 							templates.Push(AsBoxFunc2) ; $temp
@@ -168,7 +161,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 				iterU = iterU.Up
 				LastPos = iterU
 			}
-			if iterU != null and iterU.Up != null and iterU.Up is BoxFile
+			if iterU?.Up? is BoxFile
 			{
 				asN := iterU.Up->{BoxFile^}
 				res := asN.VisibleParams.TryFind(name)
@@ -188,12 +181,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 			}else {
 				iterU = iterU.Up
 
-				iterK := LastPos.Right
-				while iterK != null
-				{
-					InsertFunc(name,iterK,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-					iterK = iterK.Right
-				}
+				InsertFunc(name,LastPos.Right[^],found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 				LastPos = iterU
 			}
 		}
@@ -237,8 +225,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	if ((not IsWord(name)) or IsMethod) and itBox.itPars.Size() != 0 // wtf if not word and size = 0
 	{
 		fT := itBox.itPars[0].first
-		if fT != null
-		if fT is TypeClass
+		if fT? is TypeClass
 		{
 			asNeed := ((fT->{TypeClass^}).ToClass)
 			funcRes := asNeed.GetFunc(name,itBox,false)

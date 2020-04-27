@@ -98,12 +98,7 @@ ObjObj := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			iterQ := Down
-			while iterQ != null
-			{
-				WorkBag.Push(iterQ,State_Start)
-				iterQ = iterQ.Right
-			}
+			WorkBag.Push(Down[^],State_Start)
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse

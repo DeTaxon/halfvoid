@@ -177,13 +177,10 @@ BoxBlock := class extend Object
 
 			gotRetPath = true
 
-			if Up != null
-			{
-				if Up.GetValue() == "!()" or Up.GetValue() == "{!()}" or Up.GetValue() == "x=>x"
-				{	
-					askedRetPath = true
-					return "PreRetPath" + ItId
-				}
+			if Up?.GetValue() in !["!()","{!()}","x=>x"]
+			{	
+				askedRetPath = true
+				return "PreRetPath" + ItId
 			}
 			return outRName
 		}
@@ -244,7 +241,7 @@ BoxBlock := class extend Object
 
 					for itr : Down
 					{
-						if itr.GetValue() == "if" and itr.Right != null and itr.Right.GetValue() == "~ind"
+						if itr.GetValue() == "if" and itr.Right?.GetValue() == "~ind"
 						{
 							if itr.Right.GetValue() == "~ind"
 							{

@@ -116,9 +116,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 
 			while toDownd != null
 			{
-				if toDownd.GetValue() == "while()" or toDownd.GetValue() == "~if()"
-					or toDownd.GetValue() == "if()"
-					or toDownd.GetValue() == "?or??"
+				if toDownd.GetValue() in !["while()","~if()","if()","?or??"]
 				{
 					if toDownd is QuestionBox
 					{
@@ -170,7 +168,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			ups := itUp
 			while ups != null
 			{
-				if ups.Up != null and ups.Up.GetValue() == "()" 
+				if ups.Up?.GetValue() == "()" 
 				{
 					if not meetBoxFunc
 						lastPreSkob = ups
@@ -255,10 +253,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		asNeed := deSkob->{ObjIndent^}
 		indName = asNeed.MyStr
 		
-		if deSkob.Right != null and deSkob.Right.GetValue() == ","
+		if deSkob.Right?.GetValue() == ","
 		{
 			deSkob = deSkob.Right.Right
-			if deSkob != null and deSkob is ObjIndent
+			if deSkob? is ObjIndent
 			{
 				asNeed := deSkob->{ObjIndent^}
 				itName = asNeed.MyStr

@@ -40,12 +40,10 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	}
 	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
 	preRes.Line = dat.Down.Line
-	if dat.Line != null
+
+	if dat.Line?.itAttrs.Size() != 0
 	{
-		if dat.Line.itAttrs.Size() != 0
-		{
-			preRes.attrs = dat.Line.itAttrs&
-		}
+		preRes.attrs = dat.Line.itAttrs&
 	}
 	return preRes
 }
@@ -124,12 +122,8 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			while TryParseMacro(Down.Right,this&) != null {}
 			WorkBag.Push(this&,State_GetUse)
-			iter := Down.Right
-			while iter != null
-			{
-				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
-			}
+
+			WorkBag.Push(Down.Right[^],State_Start)
 		}
 		if pri == State_GetUse
 		{
@@ -151,37 +145,41 @@ BoxForOldFashionMulti := class extend BoxFor
 					if Down.Right.GetType() == null
 					{
 						EmitError("can not evaluate type in for each\n")
-					}else{
-						someBox := new FuncInputBox() ; $temp
-						someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
-						if attrs != null for q,k : attrs^
-						{
-							someBox.itAttrs[k] = q
-						}
-
-						func := FindFunc("~For",this&,someBox^,false)
-						if func == null 
-							EmitError("can not load ~For func\n")
-						else{
-							if func.MyFuncType.RetType == null
-							{
-								EmitError("can not deduce return type of function ~For\n")
-							}else{
-
-								if func.MyFuncType.RetType.GetType() != "class" EmitError("~For have to return class\n")
-								else{
-									ProxyFuncs[i] = func
-
-									tmp := Down.Right
-									PopOutNode(tmp)
-									preSet := MakeSimpleCall(func,tmp)
-									preSet.Line = Line
-									preSet.Up = this&
-									Downs.Push(preSet)
-								}
-							}
-						}
+						continue
 					}
+
+					someBox := new FuncInputBox() ; $temp
+					someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
+					if attrs != null for q,k : attrs^
+					{
+						someBox.itAttrs[k] = q
+					}
+
+					func := FindFunc("~For",this&,someBox^,false)
+					if func == null 
+					{
+						EmitError("can not load ~For func\n")
+						continue
+					}
+					if func.MyFuncType.RetType == null
+					{
+						EmitError("can not deduce return type of function ~For\n")
+						continue
+					}
+
+					if func.MyFuncType.RetType.GetType() != "class" {
+						EmitError("~For have to return class\n")
+						continue
+					}
+
+					ProxyFuncs[i] = func
+
+					tmp := Down.Right
+					PopOutNode(tmp)
+					preSet := MakeSimpleCall(func,tmp)
+					preSet.Line = Line
+					preSet.Up = this&
+					Downs.Push(preSet)
 				}
 
 				iter := Down
@@ -291,9 +289,9 @@ BoxForOldFashionMulti := class extend BoxFor
 			{
 				return Params[i]
 			}
-			if IndNames[i] != null
+			if IndNames[i]? == name
 			{
-				if IndNames[i] == name return IndParams[i]
+				return IndParams[i]
 			}
 		}
 		return null

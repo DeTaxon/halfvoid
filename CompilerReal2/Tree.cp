@@ -67,7 +67,7 @@ Object := class{
 		}
 		sbtt << err
 		sbtt << "\n"
-		if workingOnObject != null and workingOnObject.Line != null
+		if workingOnObject?.Line != null
 		{
 			sbtt << "Called from <" << workingOnObject.Line.inFile.itStr << "> at <" << workingOnObject.Line.LinePos << ">\n"
 		}
@@ -79,7 +79,7 @@ Object := class{
 				break
 			itr = itr.Up
 		}
-		if itr != null and itr.Up != null and itr.Up is BoxTemplate
+		if itr?.Up? is BoxTemplate
 		{
 			asB := itr->{BoxFuncBody^}
 			sbtt << "template type " << asB.MyFuncType.GetGoodName() << "\n"
@@ -191,7 +191,7 @@ ObjLine := class
 	}
 	GetLog := !() -> string
 	{
-		return " at line " + LinePos + " in file " + inFile.itStr
+		return " at line "sbt + LinePos + " in file " + inFile.itStr
 	}
 	LoadAttrs := !(char^ str) -> void
 	{

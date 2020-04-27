@@ -14,10 +14,6 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 	newName := prePath.FullPath()
 	newPath := Path(newName)
 
-	on_exception 
-	{
-
-	}
 	return LoadFile(newPath)
 }
 LoadFile := !(Path fullName) -> BoxFile^

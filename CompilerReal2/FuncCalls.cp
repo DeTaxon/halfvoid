@@ -72,8 +72,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 	if iter.GetValue() == "!"
 	{
-		if iter.Right != null
-		if iter.Right.GetValue() == "[]"
+		if iter.Right?.GetValue() == "[]"
 		{
 			tryCmp := TryCompute(ToParse)
 			if tryCmp != null{
@@ -81,15 +80,12 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 			box := new FuncInputBox()  ; $temp
 
-			iterY := iter.Right.Down
-
-			while iterY != null
+			for iterY : iter.Right.Down
 			{
 				if iterY.GetValue() != ","
 				{
 					box.itPars.Emplace(iterY.GetType(),iterY.IsRef())
 				}
-				iterY = iterY.Right
 			}
 			f := FindFunc("![]",iter,box^,false)
 
@@ -126,12 +122,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	fastType := Type^
 	fastType = null
 	
-	if iter.Right != null
-	{
-		if iter.Right.GetValue() == "()"
-		{	
-			fastType = ParseType(iter)
-		}
+	if iter.Right?.GetValue() == "()"
+	{	
+		fastType = ParseType(iter)
 	}
 	if iter is ObjType //iter.GetValue() == "~type"
 	{
@@ -154,12 +147,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			box.itPars.Emplace(asNeed2,true) 
 			TrimCommas(iter.Right)
 
-			iter2 := iter.Right.Down
-
-			while iter2 != null
+			for iter2 : iter.Right.Down
 			{
 				box.itPars.Emplace(iter2.GetType(),iter2.IsRef())
-				iter2 = iter2.Right
 			}
 
 			func := asNeed4.GetFunc("this",box^,true)
@@ -201,14 +191,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		if asNeed2 is TypeStandart or asNeed2 is TypePoint or asNeed2 is TypeFatArr
 		{
-			if iter.Right != null
+			if iter.Right?.GetValue() == "()"
 			{
-				if iter.Right.GetValue() == "()"
-				{
-					Cs := Queue.{Object^}()
-					Cs.Push(new ObjType(asNeed2)) ; $temp 
-					return OneCall(". this",iter.Right,Cs,false)
-				}
+				Cs := Queue.{Object^}()
+				Cs.Push(new ObjType(asNeed2)) ; $temp 
+				return OneCall(". this",iter.Right,Cs,false)
 			}
 		}
 		return null
@@ -222,7 +209,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		consts := null->{Object^}
 		if iter.GetValue() == "()"
 		{
-			if iter.Left.GetValue() == "(d)" or iter.Left.GetValue() == "d()"
+			if iter.Left.GetValue() in !["(d)", "d()"]
 			{
 
 				if (iter.Left.IsRef() or (iter.Left is ParamFuncCall and iter.Left->{ParamFuncCall^}.MacroCreated)) and iter.Left.GetType() is TypePoint
@@ -239,18 +226,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					{
 						dynCast := (iter.Left)->{ParamCall^}
 						consts := null->{Object^}
-						if iter.Right != null
+						if iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
 						{
-							if iter.Right.GetValue() == "."
-							{
-								if iter.Right.Right != null
-								{
-									if iter.Right.Right.GetValue() == "{}"
-									{
-										consts = iter.Right.Right
-									}
-								}
-							}
+							consts = iter.Right.Right
 						}
 						preRet := OneCall(dynCast.BeforeName, iter,consts,true)
 						if preRet != null return preRet
@@ -260,18 +238,16 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if true
 			{
 				iterL := iterPre.Left
-				iterD := iterPre.Down
 
 				box := new FuncInputBox()  ; $temp
 				FillAttrs(box^,iter)
 
 				box.itPars.Emplace(iterPre.Left.GetType(),iterPre.Left.IsRef())
 
-				while iterD != null
+				for iterD : iterPre.Down
 				{
 					if iterD.GetValue() != ","
 						box.itPars.Emplace(iterD.GetType(),iterD.IsRef()) 
-					iterD = iterD.Right
 				}
 
 				//TODO: add consts
@@ -421,12 +397,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					}
 					
 					box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) 
-					iterK := iter.Right.Right.Down
-					while iterK != null
+					for iterK : iter.Right.Right.Down
 					{
 						if iterK.GetValue() != ","
 							box.itPars.Emplace(iterK.GetType(),iterK.IsRef())
-						iterK = iterK.Right
 					}
 
 					func := FindFunc(asName,iter,box^,true)
@@ -577,14 +551,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					itB := new FuncInputBox()  ; $temp
 					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
 					itB.itConsts.Push(new ObjType(useType)) 
-				
-
-					//if iter.Up?.Left?.GetValue() == "throw"
-					//{
-					//	printf("geg\n")
-					//	itB.itAttrs["$temp"] = new ObjBool(true)
-					//}
-					
 					
 					FillAttrs(itB^,iter)
 
@@ -612,15 +578,12 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}else{
 			if IsOper(iter.GetValue())
 			{
-				if iter.Right != null
+				if iter.Right?.Right == null
 				{
-					if iter.Right.Right == null
-					{
-						name := ". " + iter.GetValue()
-						iter = iter.Right
-						PopOutNode(iter.Left)
-						return OneCall(name,iter.Up,null->{Object^})
-					}
+					name := ". " + iter.GetValue()
+					iter = iter.Right
+					PopOutNode(iter.Left)
+					return OneCall(name,iter.Up,null->{Object^})
 				}
 			}
 		}
@@ -657,11 +620,9 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 				FillAttrs(oBox^,pars)
 
 
-				iter := pars
-				while iter != null
+				for iter : pars
 				{
 					oBox.itPars.Emplace(iter.GetType(),iter.IsRef())
-					iter = iter.Right
 				}
 
 				newPre := cls.GetFunc(oper,oBox^,true)
@@ -718,9 +679,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 
 	if constsPre != null
 	{
-		H := constsPre.Down
-
-		while H != null
+		for H : constsPre.Down
 		{
 			if H.GetValue() != ","
 			{
@@ -737,7 +696,6 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 					}
 				}
 			}
-			H = H.Right
 		}
 	}
 
@@ -1064,15 +1022,11 @@ NaturalCall := class extend SomeFuncCall
 
 	PrintParamPres := virtual !(sfile f) -> void
 	{
-		iter := Down
 		RefsArr := FType.ParsIsRef
-		i := 0
-		while iter != null
+		for iter,i : Down
 		{
 			if RefsArr[i] iter.PrintPointPre(f)
 			else iter.PrintPre(f)
-			i += 1
-			iter = iter.Right
 		}
 	}
 	PrintParamUses := virtual !(sfile f) -> void

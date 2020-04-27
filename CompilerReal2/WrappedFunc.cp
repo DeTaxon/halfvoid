@@ -56,7 +56,7 @@ WrappedFunc := class extend BoxFuncBody
 		itB := AllocBox^()
 
 		itrU := Up
-		while itrU != null and itrU.GetValue() != "!()" and itrU.GetValue() != "x=>x"
+		while itrU?.GetValue() != "!()" and itrU.GetValue() != "x=>x"
 			itrU = itrU.Up
 
 		assert(itrU != null)

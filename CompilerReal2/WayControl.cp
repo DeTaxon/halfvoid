@@ -37,11 +37,7 @@ WayControl := class extend Object
 
 			while iter != null
 			{
-				lazy := false
-				if iter.GetValue() == "~~for()" lazy = true
-				if iter.GetValue() == "~while()" lazy = true
-
-				if lazy
+				if iter.GetValue() in !["~~for()","~while()"]
 				{
 					asBl := prevNode->{BoxBlock^}
 					if asBl.callDeferStuf

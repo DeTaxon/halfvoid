@@ -48,13 +48,7 @@ ObjSkobs := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			iter := Down
-
-			while iter != null
-			{
-				WorkBag.Push(iter,State_PreGetUse)
-				iter = iter.Right
-			}
+			WorkBag.Push(Down[^],State_PreGetUse)
 		}
 	}
 	Clone := virtual !() -> Object^
@@ -62,11 +56,9 @@ ObjSkobs := class extend Object
 		PreRet := new ObjSkobs(GetValue())
 		PreRet.Line = Line
 
-		IterD := Down
-		LineI := Object^
-		LineI = null
+		LineI := Object^()
 		
-		while IterD != null
+		for IterD : Down
 		{
 			if LineI == null
 			{
@@ -77,7 +69,6 @@ ObjSkobs := class extend Object
 				LineI.Right.Left = LineI
 				LineI = LineI.Right
 			}
-			IterD = IterD.Right
 		}
 		if PreRet.Down != null PreRet.Down.SetUp(PreRet)
 

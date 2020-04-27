@@ -11,7 +11,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 	./stable -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" -g CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	./c.out -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
+	$(TimeFlags) ./c.out -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
 	./c.out -p posix -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 cyclen: $(wildcard CompilerReal2/*.cp)

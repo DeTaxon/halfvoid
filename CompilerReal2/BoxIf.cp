@@ -16,7 +16,7 @@ BoxIf := class extend Object
 		{
 			Down.SetUp(this&)
 			compRes := TryCompute(Down.Right)
-			if compRes != null and compRes is ObjBool
+			if compRes? is ObjBool
 			{
 				ForceGo = 2
 				if compRes->{ObjBool^}.MyBool
@@ -142,13 +142,7 @@ BoxWhile := class extend Object
 		}
 		if pri == State_Syntax
 		{
-			iter := Down
-
-			while iter != null
-			{
-				WorkBag.Push(iter,State_Start)
-				iter = iter.Right
-			}
+			WorkBag.Push(Down[^],State_Start)
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse

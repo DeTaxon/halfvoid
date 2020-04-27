@@ -137,13 +137,10 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 		{
 			return NodeName.GetType()
 		}
-		if NodeName.Down != null
+		if NodeName.Down?.GetValue() == "{...}"
 		{
-			if NodeName.Down.GetValue() == "{...}"
-			{
-				asCl := ((NodeName.Down)->{BoxClass^})
-				return asCl.ClassType
-			}
+			asCl := ((NodeName.Down)->{BoxClass^})
+			return asCl.ClassType
 		}
 		if NodeName is ObjType
 		{	
@@ -919,7 +916,7 @@ TypeArr := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
-		return "[" + Size + " x " + Base.GetName() + "]"
+		return "["sbt + Size + " x " + Base.GetName() + "]"
 	}
 	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[" + Size + "]" }
 	GetAlign := virtual !() -> int
