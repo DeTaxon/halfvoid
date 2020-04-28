@@ -1,21 +1,9 @@
 
-tr := class
-{
-	x := int
-	y := float
-}
-
-
-tst := !(tr tst,!(tr)&->bool unp) -> void
-{
-	if unp(tst)
-		printf("value\n")
-}
-
 main := !() -> int
 {
-	o := tr
-	o.x = 3
-	tst(o,_1.x > 0)
+	z := ![1,8,3,7,4,25,6,3,7]
+	qsort(z[0]&,0,8,(x,y) ==> x - y)
+	printf("it %i\n",z[^])
+	printf("wut %i\n", 1 <=> 6)
 	return 0
 }

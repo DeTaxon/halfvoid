@@ -3,6 +3,8 @@ BoxSwitch := class extend Object
 	id := int
 	itemCall  := MemParam^
 	addedQ := List.{QuestionBox^}
+	
+	isAllowTreeOpt := bool
 	this := !(Object^ itm) -> void
 	{
 		Line = itm.Line
@@ -28,65 +30,89 @@ BoxSwitch := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			iter := Down.Right.Down
-			
+			isAllowTreeOpt = true
 			if Down.GetType() != null
 			{
 				
 				itemCall = new RetFuncParam(Down)
-				while iter != null
+				defCase := Object^()
+				regType := Type^()
+				for iter : Down.Right.Down
 				{
-					if iter is BoxCase
+					if not (iter is BoxCase)
+						continue
+						
+					if iter.Down.GetType() != null
 					{
-						if iter.Down.GetType() != null
+						b := new FuncInputBox() ; $temp 
+
+						b.itPars.Emplace(Down.GetType(),Down.IsRef())
+						b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
+						
+						if (not iter.Down.IsConst) or regType? != iter.Down.GetType()
 						{
-							b := new FuncInputBox() ; $temp 
+							isAllowTreeOpt = false
+						}
+						
+						regType = iter.Down.GetType()
+						if regType? != GTypeInt and regType? != GTypeString
+						{
+							isAllowTreeOpt = false
+						}
 
-							b.itPars.Emplace(Down.GetType(),Down.IsRef())
-							b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
-
-							func := FindFunc("==",this&,b^,false)
+						func := BoxFunc^()
+						
+						func = FindFunc("<=>",this&,b^,false)
+						if func == null
+						{
+							isAllowTreeOpt = false
+							
+							func = FindFunc("==",this&,b^,false)
 							if func == null func = FindFunc("in",this&,b^,false)
-
-							if func != null	{
-								if func.MyFuncType.RetType != GTypeBool
-									EmitError("one of case compares is not boolean\n")
-							}
-
-							if func == null
-							{
-								EmitError("can not compare case object\n")
-							}else{
-								newCall := new ParamNaturalCall("",itemCall->{Object^})
-
-								newCall.Right = iter.Down
-								iter.Down = newCall
-								newCall.Up = iter
-
-								checkCall := MakeSimpleCall(func,iter.Down)
-								iter.Down = checkCall
-								checkCall.Line = this.Line
-								checkCall.Up = iter
-								
-							}
+	
+							if func?.MyFuncType.RetType != GTypeBool
+								EmitError("one of case compares is not boolean\n")
 						}else{
-							asNeed := iter->{BoxCase^}
-							if not asNeed.IsVoid{
-								EmitError("bad case type\n")
-							}else{
-								if addedQ.Size() != 0
-								{
-									jName := "SwitchVoid" + id
-									for it : addedQ
-									{
-										it.jmpName = jName
-									}
-								}
-							}
+							if func?.MyFuncType.RetType != GTypeInt
+								EmitError("one of case <=> compares is not int\n")
+						}
+
+						if func == null
+						{
+							EmitError("can not compare case object\n")
+						}else{
+							newCall := new ParamNaturalCall("",itemCall->{Object^})
+
+							newCall.Right = iter.Down
+							iter.Down = newCall
+							newCall.Up = iter
+
+							checkCall := MakeSimpleCall(func,iter.Down)
+							iter.Down = checkCall
+							checkCall.Line = this.Line
+							checkCall.Up = iter
+							
+						}
+					}else{
+						asNeed := iter->{BoxCase^}
+						if not asNeed.IsVoid{
+							EmitError("bad case type\n")
+						}else{
+							defCase = asNeed
 						}
 					}
-					iter = iter.Right
 				}
+				if defCase != null
+				{
+					if addedQ.Size() != 0
+					{
+						jName := "SwitchVoid" + id
+						for it : addedQ
+						{
+							it.jmpName = jName
+						}
+					}
+				}				
 			}else{
 				EmitError("can not parse item at switch input\n")
 			}
@@ -95,12 +121,11 @@ BoxSwitch := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		things := Queue.{Object^}() ; $temp
-		defThing := Object^
-		defThing = null
-		iter := Down.Right.Down
+		
+		things := List.{Object^}() ; $temp
+		defThing := Object^()
 
-		while iter != null
+		for iter : Down.Right.Down
 		{
 			if iter is BoxCase {
 				asNeed := iter->{BoxCase^}
@@ -110,26 +135,115 @@ BoxSwitch := class extend Object
 					things.Push(iter)
 				}
 			}
-			iter = iter.Right
 		}
 		Down.PrintInBlock(f)
+	
+	
+		if isAllowTreeOpt and things.Size() > 2
+		{
+			fatArr := things.ToArray() ; $temp
 
+			//TODO: replace on quick_sort
+			//for j : fatArr->len
+			//{
+			//	for i :( fatArr->len - 1)
+			//	{
+			//		if SpaceCmpConstObjs(fatArr[i].Down.Down.Right,fatArr[i+1].Down.Down.Right) > 0
+			//		{
+			//			ttmp := fatArr[i]
+			//			fatArr[i] = fatArr[i+1]
+			//			fatArr[i+1] = ttmp
+			//		}
+			//	}
+			//}
+			qsort_switch_case(fatArr,0,fatArr->len - 1)
+			//for fatArr
+			//{
+			//	it.Print(0)
+			//}
+			reqPrint := ( int start,int end) ==> {
+				myPos := (start + end) div 2
+				
+				f << "CaseStart" << id << "w" << myPos << ":\n"
+				fatArr[myPos].Down.PrintPre(f)
+				f << "%CmpTest" << id << "_" << myPos << " = icmp eq i32 " << fatArr[myPos].Down.GetName() << " , 0\n"
+				f << "br i1 %CmpTest" << id << "_" << myPos << " , label %Switch" << id << "true" << myPos
+				f << ", label %Switch" << id << "false" << myPos << "\n"
+				
+				f << "Switch" << id << "false" << myPos << ":\n"				
+				f << "%CmpGtTest" << id << "_" << myPos << " = icmp slt i32 " << fatArr[myPos].Down.GetName() << " , 0\n"				
+				f << "br i1 %CmpGtTest" << id << "_" << myPos << " "
+				
+				if start != myPos{
+					f << ", label %CaseStart" << id << "w" << ((start + myPos - 1) div 2)
+				}else{
+					f << ", label %SwitchVoid" << id 
+				}
+				
+				if end != myPos{
+					f << ", label %CaseStart" << id << "w" << ((end + myPos + 1) div 2)
+				}else{
+					f << ", label %SwitchVoid" << id 
+				}
+				f << "\n"
+				f << "Switch" << id << "true" << myPos << ":\n"
+				//fatArr[myPos].Down.PrintInBlock(f)
+				for it : fatArr[myPos].Right
+				{
+					if it.GetValue() == "~case()"
+					{
+						break
+					}
+					it.PrintInBlock(f)
+				}
+				f << "br label %SwitchEnd" << id << "\n"
+				
+				if start != myPos{
+					reqPrint(start,myPos - 1)
+				}				
+				if end != myPos{
+					reqPrint(myPos + 1,end)
+				}
+			}
+			f << "br label %CaseStart" << id << "w" << ((fatArr->len - 1) div 2) << "\n"
+			reqPrint(0,fatArr->len - 1)
+			f << "br label %SwitchVoid" << id << "\n"
+			f << "SwitchVoid" << id << ":\n"
+			if defThing != null
+			{
+				for iter : defThing.Right
+				{
+					if iter.GetValue() == "~case()"
+					{
+						break
+					}
+					iter.PrintInBlock(f)
+				}
+			}
+			f << "br label %SwitchEnd" << id << "\n"
+			f << "SwitchEnd" << id << ":\n"
+			return void
+		}
+	
 		for iter , i : things
 		{
 			iter.Down.PrintPre(f)
-			f << "br i1 " << iter.Down.GetName() << " , label %Switch" << id << "true" << i
+			if iter.Down.GetType() == GTypeInt{
+				f << "%CmpTest" << id << "_" << i << " = icmp eq i32 " << iter.Down.GetName() << " , 0\n"
+				f << "br i1 %CmpTest" << id << "_" <<i << " , label %Switch" << id << "true" << i
+			}else{
+				f << "br i1 " << iter.Down.GetName() << " , label %Switch" << id << "true" << i
+			}
 			f << " , label %Switch" << id << "false" << i << "\n"
 			f << "Switch" << id << "true" << i << ":\n"
-			iter = iter.Right
-			while iter != null
+			
+			for iter2 : iter.Right
 			{
-				if iter.GetValue() == "~case()"
+				if iter2.GetValue() == "~case()"
 				{
-					iter = null
-				}else{
-					iter.PrintInBlock(f)
-					iter = iter.Right
+					break
 				}
+				iter2.PrintInBlock(f)
 			}
 			f << "br label %SwitchEnd" << id << "\n"
 			f << "Switch" << id << "false" << i << ":\n"
@@ -138,16 +252,13 @@ BoxSwitch := class extend Object
 		f << "SwitchVoid" << id << ":\n"
 		if defThing != null
 		{
-			iter = defThing.Right
-			while iter != null
+			for iter : defThing.Right
 			{
 				if iter.GetValue() == "~case()"
 				{
-					iter = null
-				}else{
-					iter.PrintInBlock(f)
-					iter = iter.Right
+					break
 				}
+				iter.PrintInBlock(f)
 			}
 		}
 		f << "br label %SwitchEnd" << id << "\n"
@@ -161,6 +272,34 @@ BoxSwitch := class extend Object
 	{
 		return "~switch()"
 	}
+}
+qsort_switch_case := !(Object^^ arr,int low,int hi) -> void
+{
+	i := low
+	j := hi
+	piv := (low + hi) div 2
+	while i <= j
+	{
+		while SpaceCmpConstObjs(arr[i].Down.Down.Right,arr[piv].Down.Down.Right) < 0
+		{
+			i++
+		}
+			//		if SpaceCmpConstObjs(fatArr[i].Down.Down.Right,fatArr[i+1].Down.Down.Right) > 0
+		while SpaceCmpConstObjs(arr[j].Down.Down.Right,arr[piv].Down.Down.Right) > 0
+		{
+			j--
+		}
+		if i <= j
+		{
+			tmp := arr[i]
+			arr[i] = arr[j]
+			arr[j] = tmp
+			i++
+			j--
+		}
+	}
+	if j > low qsort_switch_case(arr,low,j)
+	if i < hi qsort_switch_case(arr,i,hi)
 }
 
 BoxCase := class extend Object
