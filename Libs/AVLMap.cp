@@ -29,6 +29,7 @@ AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 		part := miniStack.Front().1
 		miniStack.Pop()
 
+
 		if part
 		{
 			if $reverse
@@ -50,7 +51,7 @@ AVLMapIterator := class .{@DATA,@KEY,@VALUE}
 			nNode = nNode.Right
 		}
 		if nNode.Left != null
-			miniStack.Emplace(nNode.Left,false)
+			miniStack.Emplace(nNode.Left,true)
 	}
 	DoAMoveLeft := !() -> void
 	{

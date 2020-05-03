@@ -55,20 +55,22 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 	}
 
 	//TODO fix it
-	j := 4
-	while j >= 0
-	{
+	//j := 4
+	//while j >= 0
+	//{
+		//printf("start\n")
 		for itCodeS,i : CodeSpaces ; $reverse
 		{
-			if i !+ j continue
+			//printf("heh %i\n",i)
+			//if i !+ j continue
 			inMMap := itCodeS.codeParams.TryFind(name)
 			if inMMap != null
 			{
 				InsertParam(name,inMMap^[^], found,Searched)
 			}
 		}
-		j -= 1
-	}
+//		j -= 1
+//	}
 	
 }
 
