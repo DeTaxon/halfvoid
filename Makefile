@@ -8,14 +8,14 @@ Libs := -ldl -lpthread
 
 MainOut := $(TempFolder)/out3.ll
 repair: $(wildcard CompilerReal2/*.cp) 
-	./stable -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" -g CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	./stable -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
 cycle: $(wildcard CompilerReal2/*.cp)
 	$(TimeFlags) ./c.out -p posix -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
 	./c.out -p posix -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 cyclen: $(wildcard CompilerReal2/*.cp)
-	nemiver ./c.out -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	nemiver ./c.out -p posix -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
 MainOutW := $(TempFolder)/out3W.ll
 wcycle: $(wildcard CompilerReal2/*.cp)
@@ -31,9 +31,9 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.out --vk vk.xml -p posix -g main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+	./c.out --vk vk.xml -p posix main2.cp -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2t: main2.cp
-	./c.out -g main2.cp  -p posix --tree -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+	./c.out -g main2.cp  -p posix --tree -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2l: main2.cp
 	./c.out -g main2.cp  -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2n: main2.cp

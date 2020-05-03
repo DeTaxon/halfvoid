@@ -1263,7 +1263,7 @@ CreateBuiltIns := !() -> void
 				"%PrePre2## = icmp " + IsS + "le i" + it + " #2,#1\n" +
 				"%Pre1## = zext i1 %PrePre1## to i32\n" + 
 				"%Pre2## = zext i1 %PrePre2## to i32\n" + 
-				"#0 = sub i32 %Pre1## , %Pre2## #d\n")) 
+				"#0 = sub i32 %Pre2## , %Pre1## #d\n")) 
 
 
 			BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,BoolT,"#0 = icmp ne i"sbt +it+" #1 ,0 #d\n"))
@@ -1404,7 +1404,7 @@ CreateBuiltIns := !() -> void
 				"%PrePre2## = icmp ule i8* #2,#1 #d\n" +
 				"%Pre1## = zext i1 %PrePre1## to i32 #d\n" + 
 				"%Pre2## = zext i1 %PrePre2## to i32 #d\n" + 
-				"#0 = sub i32 %Pre1## , %Pre2## #d\n")) 
+				"#0 = sub i32 %Pre2## , %Pre1## #d\n")) 
 	AddBuiltInFunc(new BuiltInFuncBinar("-",GTypeVoidP,false,GTypeVoidP,false,GetType("size_t"),
 						"#0Pre1 = ptrtoint i8* #1 to i64 #d\n"sbt +
 						"#0Pre2 = ptrtoint i8* #2 to i64 #d\n" +

@@ -1,9 +1,19 @@
 
+
 main := !() -> int
 {
-	z := ![1,8,3,7,4,25,6,3,7]
-	qsort(z[0]&,0,8,(x,y) ==> x - y)
-	printf("it %i\n",z[^])
-	printf("wut %i\n", 1 <=> 6)
+	tst := AVLMap.{int,int}()
+
+	tst[0] = 0
+	tst[13] = 0
+	tst[7] = 0
+	tst[6] = 0
+	tst[5] = 0
+	tst[27] = 0
+	tst[28] = 0
+	for i,j : tst ; $reverse
+	{
+		printf("wut %i\n",j)
+	}
 	return 0
 }

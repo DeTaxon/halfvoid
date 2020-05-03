@@ -73,7 +73,7 @@ AVLTree := class .{@DATA}
 		{
 			cmpRes := iter.data <=> dat
 			if cmpRes == 0 return iter
-			if cmpRes == 1 {
+			if cmpRes < 0 {
 				iter = iter.Right
 			}else{
 				iter = iter.Left
@@ -101,7 +101,7 @@ AVLTree := class .{@DATA}
 			}else{
 				prev = iter
 			}
-			if  cmpRes == 1 	iter = iter.Right
+			if  cmpRes < 0	iter = iter.Right
 			else 			iter = iter.Left
 		}
 		if iter != null {
@@ -109,7 +109,7 @@ AVLTree := class .{@DATA}
 			return false
 		}
 		
-		if prev.data <=> dat == 1{
+		if prev.data <=> dat < 0{
 			prev.Right = new AVLTreeNode.{DATA}()
 			prev.Right.Up = prev
 			iter = prev.Right

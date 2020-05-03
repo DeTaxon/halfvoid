@@ -53,13 +53,21 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 			}
 		}
 	}
-	for itCodeS : CodeSpaces ; $reverse
+
+	//TODO fix it
+	j := 4
+	while j >= 0
 	{
-		inMMap := itCodeS.codeParams.TryFind(name)
-		if inMMap != null
+		for itCodeS,i : CodeSpaces ; $reverse
 		{
-			InsertParam(name,inMMap^[^], found,Searched)
+			if i !+ j continue
+			inMMap := itCodeS.codeParams.TryFind(name)
+			if inMMap != null
+			{
+				InsertParam(name,inMMap^[^], found,Searched)
+			}
 		}
+		j -= 1
 	}
 	
 }
@@ -245,24 +253,24 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	//}
 
 
-
-	for itCodeS : CodeSpaces ; $reverse
+	//TODO: fix it	
+	jj := 4
+	while jj >= 0
 	{
-		Funcs.Clean()
-		Templs.Clean()
-		inMMap := itCodeS.codeParams.TryFind(name)
-		if inMMap != null
+		for itCodeS,ii : CodeSpaces ; $reverse
 		{
-			InsertFunc(name,inMMap^[^], Funcs, Templs,IsSuffix,IsMethod,Searched,false)
+			if ii != jj continue
+			Funcs.Clean()
+			Templs.Clean()
+			inMMap := itCodeS.codeParams.TryFind(name)
+			if inMMap != null
+			{
+				InsertFunc(name,inMMap^[^], Funcs, Templs,IsSuffix,IsMethod,Searched,false)
+			}
+			func4 := GetBestFunc(itBox,Funcs,Templs)
+			if func4 != null return func4
 		}
-		//for itCodeS.codeLibs
-		//{
-		//	itUp := (it->{Object^}).Down
-		//	if it == iterr itUp = start
-		//	CollectFuncsByName(name,itUp,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-		//}
-		func4 := GetBestFunc(itBox,Funcs,Templs)
-		if func4 != null return func4
+		jj -= 1
 	}
 
 	inBuiltInMap := BuiltInFuncs.TryFind(name)
