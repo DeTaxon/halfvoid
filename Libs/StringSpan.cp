@@ -40,22 +40,30 @@ StringSpan := class{
 	"==" := !(char^ toCmp) -> bool { return this <=> toCmp == 0 }
 	"<=>" := !(char^ toCmp) -> int {
 		if toCmp == null return 1
-		for itSize {
-			if toCmp[it] != ptr[it] return toCmp[it] <=> ptr[it]
-			if toCmp[it] == 0 return -1
-			if ptr[it] == 0 return 1
-		}
-		if toCmp[itSize] == 0 return 0
-		return 1
+		stCmp := strncmp(ptr,toCmp,itSize)
+		if stCmp != 0 return stCmp
+		if toCmp[itSize] != 0 return -1
+		return 0
+		//for itSize {
+		//	if toCmp[it] != ptr[it] return toCmp[it] <=> ptr[it]
+		//	if toCmp[it] == 0 return -1
+		//	if ptr[it] == 0 return 1
+		//}
+		//if toCmp[itSize] == 0 return 0
+		//return 1
 	}
 	"<=>" := !(StringSpan toCmp) -> int {
 		if toCmp.ptr == null return 1
-		for itSize {
-			if it >= toCmp.itSize return 1
-			if toCmp.ptr[it] != ptr[it] return toCmp.ptr[it] <=> ptr[it]
-			//if toCmp.ptr[it] == 0 return -1
-			//if ptr[it] == 0 return 1
-		}
+		minV := itSize
+		if minV > toCmp.itSize minV = toCmp.itSize
+		stCmp := strncmp(ptr,toCmp.ptr,minV)
+		if stCmp != 0 return stCmp
+		//for itSize {
+		//	if it >= toCmp.itSize return 1
+		//	if toCmp.ptr[it] != ptr[it] return toCmp.ptr[it] <=> ptr[it]
+		//	//if toCmp.ptr[it] == 0 return -1
+		//	//if ptr[it] == 0 return 1
+		//}
 		return itSize <=> toCmp.itSize		
 	}
 	//"==" := !(StringSpan toCmp) -> bool {

@@ -28,17 +28,14 @@ ToString := !(float x) -> char^
 "<=>" := !(char^ a, char^ b) -> int
 {
 	if a->{int^} == b->{int^} return 0
-	if a == null return 1
-	if b == null return -1
+	if a == null return -1
+	if b == null return 1
 	//i := 0
 	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
 	//if a[i] < b[i] return -1
 	//if a[i] > b[i] return 1
 	//return 0
-	cmpRes := strcmp(a,b)
-	if cmpRes > 0 return 1
-	if cmpRes < 0 return -1
-	return 0
+	return strcmp(a,b)
 }
 "<" := !(char^ a, char^ b) -> bool
 {
@@ -54,9 +51,6 @@ StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a->{int^} == null or b->{int^} == null return false
 	if a->{int^} == b->{int^} return true
-	//i := 0
-	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
-	//return a[i] == b[i]
 	return strcmp(a,b) == 0
 }
 "==" := !(char^ a,char^ b) -> bool
@@ -65,12 +59,6 @@ StrCmp := !(char^ a,char^ b) -> bool
 }
 "!=" := !(char^ a,char^ b) -> bool
 {
-	//i := 0
-	//while a[i] != 0 and b[i] != 0 
-	//{
-	//	if a[i] != b[i] return true
-	//	i += 1
-	//}
 	return strcmp(a,b) != 0
 }
 
