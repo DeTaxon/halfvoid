@@ -24,6 +24,17 @@ sem_t := class
 
 pthread_t := type u64
 
+pthread_mutex_init := !(void^ a,void^ b) -> void declare
+pthread_mutex_lock := !(void^ a) -> void declare
+pthread_mutex_unlock := !(void^ a) -> void declare
+pthread_mutex_destroy := !(void^ a) -> void declare
+
+pthread_cond_init := !(void^ a,void^ b) -> void declare
+pthread_cond_wait := !(void^ a,void^ b) -> void declare
+pthread_cond_signal := !(void^ a) -> void declare
+pthread_cond_broadcast := !(void^ a) -> void declare
+pthread_cond_destroy := !(void^ a) -> void declare
+
 //sem_open := !(char^ name, int oflags) -> sem_t^ declare
 sem_init := !(sem_t^ semPtr,int pshared, u32 value) -> int declare
 sem_wait := !(sem_t^ semPtr) -> int declare
@@ -34,6 +45,7 @@ pthread_create := !(pthread_t^ thrPtr, void^ attrs, void^  callFunc,void^ arg) -
 pthread_join := !(pthread_t thrId,void^^ retValue) -> int declare
 
 open := !(char^ name,int flags,int mode) -> int declare
+write := !(int d,void^ toS, int size) -> int declare
 close := !(int fd) -> void declare
 
 sleep := !(int seconds) -> int declare
@@ -59,10 +71,13 @@ posixGetFileSize := !(int fd,u64^ size) -> bool
 
 realpath := !(char^ inp, char^ outp) -> char^ declare
 
+mkstemp := !(char^ ndm) -> int declare
+
+mkdir := !(char^ nm, int mode) -> int declare
 opendir := !(char^ inp) -> void^ declare
-closedir := !(void^ dirFd) ->int declare
+closedir := !(void^ dirFd) -> int declare
 readdir := !(void^ dirFd) -> void^ declare
-stat := !(char^ pth, void^ outStat) ->int declare
+stat := !(char^ pth, void^ outStat) -> int declare
 
 
 dlopen := !(char^ itName,int flgs) -> void^ declare
@@ -81,3 +96,26 @@ CloseLib := !(void^ libId) -> void
 {
 	dlclose(libId)
 }
+
+remove := !(char^ toDel) -> int declare
+
+nanosleep := !(void^ a,void^ b) -> int declare
+
+TSleep := !(double timeSleep) -> void
+{
+	tmStruct := u64[2]
+	tmStruct[0] = timeSleep->{int}
+	timeSleep -= tmStruct[0]->{int}
+	tmStruct[1] = (timeSleep*1000000000.0)->{int}
+	if tmStruct[1] >= 999999999
+		tmStruct[1] = 999999999
+	nanosleep(tmStruct[0]&,null)
+}
+
+TCreateDir := !(char^ pth) -> void
+{
+	if mkdir(pth,511) != 0
+		throw new Exception("Can not create directory")
+}
+
+c_long := type s64
