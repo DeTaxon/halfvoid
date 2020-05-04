@@ -25,7 +25,7 @@ winlinux: $(wildcard CompilerReal2/*.cp) wcycle
 	x86_64-w64-mingw32-gcc -g w.o -o c.exe
 
 ManyCycle:
-	for i in {1..30}; do make cycle; done
+	for i in {1..10}; do make cycle; done
 
 stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable

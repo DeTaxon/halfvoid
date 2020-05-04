@@ -40,6 +40,8 @@ List := class .{@T}
 	{
 		Start = null
 		End = null
+		if $keep
+			CreatedNodes = null
 		Counter = 0
 	}
 	Push := !(T toAdd) .{} -> void
@@ -48,6 +50,12 @@ List := class .{@T}
 	}
 	EmplaceFront := !(args...) -> void
 	{
+		if $uniq 
+		{
+			if this[^] == toAdd
+				return this
+		}
+
 		newNode := ListNode.{T}^()
 
 		if $keep 
@@ -65,10 +73,17 @@ List := class .{@T}
 		newNode.Data."this"(args...)
 		newNode.Next = Start
 		Start = newNode
+		if End == null End = Start
 		Counter++
 	}
-	Emplace := !(args...) -> void
+	Emplace := !(args...) -> ref T
 	{
+		if $uniq 
+		{
+			if this[^] == toAdd
+				return it
+		}
+
 		newNode := ListNode.{T}^()
 
 		if $keep 
@@ -95,6 +110,44 @@ List := class .{@T}
 		}
 
 		Counter++
+
+		return End.Data
+	}
+	DeleteAt := !(int pos) -> void
+	{
+		oldNode := ListNode.{T}^
+		if pos == 0
+		{
+			oldNode = Start
+			if Counter == 1
+			{
+				Start = null
+				End = null
+			}else{
+				Start = Start.Next
+			}
+			
+		}else{
+			itr := Start
+			for (pos-1) {
+				itr = itr.Next
+			}
+			oldNode = itr.Next
+			if End == oldNode
+			{
+				End = itr
+			}
+			itr.Next = itr.Next.Next
+		}
+		if $keep
+		{
+			oldNode.Next = CreatedNodes
+			CreatedNodes = oldNode
+		}else{
+			if not $temp
+				delete oldNode
+		}
+		Counter--
 	}
 	Front := !() -> ref T
 	{
@@ -113,7 +166,7 @@ List := class .{@T}
 		return iitt.Data
 	}
 
-	"<<" := !(T toAdd) .{} -> ref List.{T}
+	"<<" := !(T toAdd) .{} self_return
 	{
 
 		if $uniq 
@@ -196,7 +249,7 @@ List := class .{@T}
 		Start = Start.Next
 		if $keep 
 		{
-			oldNode = CreatedNodes
+			oldNode.Next = CreatedNodes
 			CreatedNodes = oldNode
 		}else{
 			if not $temp
