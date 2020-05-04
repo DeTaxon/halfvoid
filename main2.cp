@@ -2,13 +2,22 @@
 
 main2 := !() -> int
 {
+	printf("heh %i\n",1 <=> 2)
 	tst := AVLMap.{int,int}()
 
-	tst[1] = 0
 	tst[0] = 0
-	for i,j : tst ; $reverse
+	tst[16] = 0
+	tst[46] = 0
+	tst[3] = 0
+	tst[22] = 0
+	tst[10] = 0
+	tst[19] = 0
+	tst[38] = 0
+	tst[22] = 0
+
+	for j,i : tst
 	{
-		printf("wut %i\n",j)
+		printf("wut %i\n",i)
 	}
 	return 0
 }
