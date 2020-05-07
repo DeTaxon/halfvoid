@@ -397,7 +397,7 @@ ModuleVulkan := class extend CompilerModule
 			}
 		}
 		if nd.Childs.Size() == 5{
-			if not nd.Childs[0].first and nd.Childs[1].first and not nd.Childs[2].first
+			if (not nd.Childs[0].first) and nd.Childs[1].first and (not nd.Childs[2].first)
 			and nd.Childs[3].first and nd.Childs[4].first
 			{
 				mConst := nd.Childs[0].second->{string}
