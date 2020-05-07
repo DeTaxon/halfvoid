@@ -1,18 +1,19 @@
 InDataR := !(Object^ obj) -> bool
 {
-	Val := obj.GetValue()
-
-	if Val == "~null" return true
-	if Val == "~d" return true
-	if Val == "~ind" return true
-	if Val == "~double" return true
-	if Val == "~bool" return true
-	if Val == "~int" return true
-	if Val == "~str" return true
-	if Val == "~cmd" return true
-	if Val == "~{}type" return true
-	if Val == "~type" return true
-	if Val == "x=>x" return true
+	switch obj.GetValue()
+	{
+	case "~null" return true
+	case "~d" return true
+	case "~ind" return true
+	case "~double" return true
+	case "~bool" return true
+	case "~int" return true
+	case "~str" return true
+	case "~cmd" return true
+	case "~{}type" return true
+	case "~type" return true
+	case "x=>x" return true
+	}
 	//if Val == "()" return true
 	return false
 }
@@ -20,13 +21,16 @@ InDataR := !(Object^ obj) -> bool
 InBlockData := !(Object^ obj) -> bool
 {
 	if InDataR(obj) return true
-	if obj.GetValue() == "return()" return true
-	if obj.GetValue() == "if()" return true
-	if obj.GetValue() == "while()" return true
-	if obj.GetValue() == "for()" return true
-	if obj.GetValue() == "switch()" return true
-	if obj.GetValue() == "~continue" return true
-	if obj.GetValue() == "~break" return true
+	switch(obj.GetValue())
+	{
+	case  "return()" return true
+	case  "if()" return true
+	case  "while()" return true
+	case  "for()" return true
+	case  "switch()" return true
+	case  "~continue" return true
+	case  "~break" return true
+	}
 
 	return false
 }
@@ -150,6 +154,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUse(begin,"Defer()",RuleDefer) return true
 	if RuleUse(begin,"return()",RuleOneFunc) return true
 	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
+	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf) return true
 	if RuleUse(begin,"while()",RuleWhile) return true
 	if RuleUse(begin,"for()",RuleFor) return true
@@ -211,6 +216,31 @@ RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
 	return ToRet
 }
 
+
+RuleTypedefTemplate := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+	if It.Down == null return 0
+	if It.Down.Right == null return 0
+	if It.Down.Right.Right == null return 0
+	if not ( It.Down is ObjIndent ) return 0
+	if It.Down.Right.GetValue() != "." return 0
+	if It.Down.Right.Right.GetValue() != "{}" return 0
+
+	It = It.Right
+	if It == null return 0
+	if It.GetValue() != ":=" return 0
+
+	It = It.Right
+	if It == null return 0
+	if It.GetValue() != "type" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if InDataR(It) return 4
+	return 0
+}
 
 RuleParam := !(void^ itr) -> int
 {
@@ -355,11 +385,14 @@ RuleMinus := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 2
 
-	if It.GetValue() == "." return 0
-	if It.GetValue() == "()" return 0
-	if It.GetValue() == "[]" return 0
-	if It.GetValue() == "^" return 0
-	if It.GetValue() == "&" return 0
+	switch It.GetValue()
+	{
+	case "." return 0
+	case "()" return 0
+	case "[]" return 0
+	case "^" return 0
+	case "&" return 0
+	}
 
 	return 2
 }

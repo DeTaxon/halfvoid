@@ -96,6 +96,7 @@ BoxClassTemplate := class extend Object
 			PopOutNode(ClassTree.Down.Right)
 		}
 
+		SyntaxCompress(ConstTree,PriorityData)
 		MakeGoodConsts(ConstTree)
 
 		for ite : ClassTree.Down.Right.Down

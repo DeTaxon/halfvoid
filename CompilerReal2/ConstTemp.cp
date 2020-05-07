@@ -18,10 +18,7 @@ IsSameTypeObject := !(Object^ obj, Object^ toTst,Queue.{ObjConstHolder^} res, re
 
 IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
-	for it : res
-	{
-		if it == null return null
-	}
+	if res[^] == null return null
 	if obj == null {
 		resB[0] = false
 		return null
@@ -199,14 +196,11 @@ MakeGoodConsts := !(Object^ l) -> bool
 				gotIt := false
 				if iter.GetValue() == "~d"
 				{
-					if iter.Down.Right != null
+					if iter.Down.Right?.GetValue() == "in"
 					{
-						if iter.Down.Right.GetValue() == "in"
-						{
-							gotIt = true
-							cr := new InHolder(iter)
-							iter  = ReplaceNode(iter,cr)
-						}
+						gotIt = true
+						cr := new InHolder(iter)
+						iter  = ReplaceNode(iter,cr)
 					}
 				}
 				if iter.GetValue() != "~{}type" and not gotIt
@@ -227,10 +221,7 @@ MakeGoodConsts := !(Object^ l) -> bool
 
 IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> bool
 {
-	for it : itBox.itConsts
-	{
-		if it == null return false
-	}
+	if itBox.itConsts[^] == null return false
 	if l == null return false
 	re := bool
 	iter := l.Down
@@ -271,7 +262,10 @@ IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> b
 					if not found return false
 
 				}else{
-					if itBox.itConsts.Size() < i return false
+					if itBox.itConsts.Size() <= i {
+						iter.Up.Print(0)
+						return false
+					}
 					if itBox.itConsts[i].GetValue() == "~type"
 					{
 						asNeed := itBox.itConsts[i]->{ObjType^}

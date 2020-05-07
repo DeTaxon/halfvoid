@@ -53,7 +53,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 				res := GetItem2(name,notSure,Searched)
 				if res != null return res
 			}
-		}else if iter.Up != null and iter.Up is BoxClass and name[0] == '$'
+		}else if iter.Up? is BoxClass and name[0] == '$'
 		{
 			asCl := iter.Up->{BoxClass^}
 			resObj := asCl.ItAttrs.TryFind(name)
@@ -97,7 +97,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 	}
 	for SomeDef : DefsTable
 	{
-		if SomeDef != null and  SomeDef.ItName == name 
+		if SomeDef?.ItName == name 
 		{
 			return SomeDef->{Object^}
 		}

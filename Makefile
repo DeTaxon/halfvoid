@@ -43,8 +43,8 @@ test2g: main2.cp
 
 FLibs := -f FLibs/glfw.cp -f FLibs/gl.cp 
 
-TempDir/CompilerData.zip: Mach.m Priority2.pr
-	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m; zip -u TempDir/CompilerData.zip Priority2.pr
+TempDir/CompilerData.zip: Mach.m Priority.pr
+	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m; zip -u TempDir/CompilerData.zip Priority.pr
 
 halfvoid: cycle TempDir/CompilerData.zip
 	clang -s -O2 $(MainOut) -ldl -o TempDir/PreHalf ; ./stable --ZipGlue TempDir/PreHalf TempDir/CompilerData.zip halfvoid; chmod 777 halfvoid

@@ -58,6 +58,10 @@ ObjObj := class extend Object
 				NewNode := new BoxCase(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
+			case "i.{}:=0"
+				newNode := new BoxTemplateTypedef(It) 
+				ReplaceNode(this&,newNode)
+				newNode.ApplyDown(this&)
 			case "imprt"
 				asS := (Down.Right)->{ObjStr^}
 				NewNode := new ImportCmd(asS.GetString())

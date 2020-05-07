@@ -25,7 +25,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 	}
 	//printf("loading %s\n",fullName.itStr)
 	//#critical_atomic
-	ob := GetObjectsFromFile2(fullName)
+	ob := GetObjectsFromFile2(fullName)->{BoxFile^}
 
 	if ob == null 
 	{
@@ -33,8 +33,9 @@ LoadFile := !(Path fullName) -> BoxFile^
 		return null
 	}
 
-	Files.Push(ob->{BoxFile^})
-	return ob->{BoxFile^}
+	Files.Push(ob)
+	ob.cs = InfiniteCodeSpace
+	return ob
 }
 LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
 {

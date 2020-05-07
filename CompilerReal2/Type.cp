@@ -186,7 +186,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 		}
 		if lazy
 		{
-			types := Queue.{Type^}()
+			types := Queue.{Type^}() ; $temp
 			isVARR := false
 			isLambda := false
 			ptrSize := 0
@@ -261,79 +261,90 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 				return asCt.ClassType
 			}
 
+			box := new FuncInputBox() ; $temp
+			
+			iterR := Node.Down.Right.Right.Down
+			
+			while iterR != null
+			{	
+				if iterR.GetValue() != ","
+				{
+					isType := ParseType(iterR)
+					if isType == null
+					{
+						val := TryCompute(iterR)
+						if val != null box.itConsts.Push(val)
+						else 
+						{
+							//Node.EmitError("can not create class\n")
+							return null
+						}
+					}else{
+						box.itConsts.Push(new ObjType(isType))
+					}
+				}
+				iterR = iterR.Right
+			}
+			if box.itConsts.Size() == 0 return null
+
+			if toAdd != null
+			{
+				for v3,k3 : toAdd^
+				{
+					box.itAttrs[k3] = v3
+				}
+			}
+
+			if Node.Line != null
+			for value,key : Node.Line.itAttrs
+			{
+				if key[0] == '#'
+				{
+					switch key
+					{
+						case "#outer_class"
+							itrC := Node
+							while itrC != null
+							{
+								if itrC is BoxClass
+									break
+								itrC = itrC.Up
+							}
+							if itrC != null
+							{
+								asCl := itrC->{BoxClass^}
+
+								for v2,k2 : asCl.ItAttrs
+								{
+									box.itAttrs[k2] = v2
+								}
+							}
+						case void
+					}
+				}else{
+					box.itAttrs[key] = value ; $temp
+				}
+			}
+
+			for cSpace : CodeSpaces ; $reverse
+			{
+				inInf := cSpace.codeTemplateTypedefs.TryFind(itName)
+				if inInf != null
+				{
+					for itDefs : inInf^
+					{
+						itTyp := itDefs.TryGetType(box^)
+						if itTyp != null return itTyp
+					}
+				}
+			}
+
 			NodeName := GetItem(itName,Node)
 
 			if NodeName == null return null
 			if NodeName.Down.GetValue() == "!{}{...}"
 			{
 				asT := ((NodeName.Down)->{BoxClassTemplate^})
-				box := new FuncInputBox() ; $temp
-				
-				iterR := Node.Down.Right.Right.Down
-				
-				while iterR != null
-				{	
-					if iterR.GetValue() != ","
-					{
-						isType := ParseType(iterR)
-						if isType == null
-						{
-							val := TryCompute(iterR)
-							if val != null box.itConsts.Push(val)
-							else 
-							{
-								//Node.EmitError("can not create class\n")
-								return null
-							}
-						}else{
-							box.itConsts.Push(new ObjType(isType))
-						}
-					}
-					iterR = iterR.Right
-				}
-				if box.itConsts.Size() == 0 return null
-
-				//if Node.inhAttrs != null
-				//	box.itAttrs[key] = Node.inhAttrs^[^key]
-
-				if toAdd != null
-				{
-					for v3,k3 : toAdd^
-					{
-						box.itAttrs[k3] = v3
-					}
-				}
-
-				if Node.Line != null
-				for value,key : Node.Line.itAttrs
-				{
-					if key[0] == '#'
-					{
-						switch key
-						{
-							case "#outer_class"
-								itrC := Node
-								while itrC != null
-								{
-									if itrC is BoxClass
-										break
-									itrC = itrC.Up
-								}
-								if itrC != null
-								{
-									asCl := itrC->{BoxClass^}
-
-									for v2,k2 : asCl.ItAttrs
-									{
-										box.itAttrs[k2] = v2
-									}
-								}
-							case void
-						}
-					}else{
-						box.itAttrs[key] = value ; $temp
-					}
-				}
 
 
 				return asT.GetClass(box^)
