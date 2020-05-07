@@ -1008,7 +1008,7 @@ TypeClass := class extend Type
 			alignMask :=  ![0,0,1,0,3,0,0,0,7,0,0,0,0,0,0,0,15][sAlign]
 			sSize := it.ResultType.GetSize()
 
-			if not ToClass.IsPacked and (nowSize and_b alignMask) != 0
+			if (not ToClass.IsPacked) and ((nowSize and_b alignMask) != 0)
 			{
 				nowSize = nowSize + alignMask
 				nowSize = nowSize - (nowSize and_b alignMask)

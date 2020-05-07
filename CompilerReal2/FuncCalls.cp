@@ -638,15 +638,6 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 IsOper := !(string may) -> bool
 {
 	return OpersTree.Contain(may)
-	iter := PriorityData.Opers.Start
-
-	while iter != null
-	{
-		if iter.Data == may return true
-		iter = iter.Next
-	}
-	return false
-
 }
 
 TrimCommas := !(Object^ up) -> void
@@ -1057,7 +1048,7 @@ NaturalCall := class extend SomeFuncCall
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 
-		if (FType.RetType != GTypeVoid and not gotAlloc and TName != null) or ToCall.IsRetRef
+		if (FType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or ToCall.IsRetRef
 		{
 			f << TName <<" = "	
 		}

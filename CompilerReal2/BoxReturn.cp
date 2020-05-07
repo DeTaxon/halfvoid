@@ -166,7 +166,7 @@ BoxReturn := class extend Object
 		debId := -1
 		if DebugMode
 			debId = CreateDebugCall(this&)
-		if not IsRetComplex and not IsRetVoid
+		if (not IsRetComplex) and (not IsRetVoid)
 		{
 
 			retTypeName := Down.GetType().GetName()

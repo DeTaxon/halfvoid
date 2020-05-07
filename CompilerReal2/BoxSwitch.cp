@@ -144,19 +144,19 @@ BoxSwitch := class extend Object
 			fatArr := things.ToArray() ; $temp
 
 			//TODO: replace on quick_sort
-			//for j : fatArr->len
-			//{
-			//	for i :( fatArr->len - 1)
-			//	{
-			//		if SpaceCmpConstObjs(fatArr[i].Down.Down.Right,fatArr[i+1].Down.Down.Right) > 0
-			//		{
-			//			ttmp := fatArr[i]
-			//			fatArr[i] = fatArr[i+1]
-			//			fatArr[i+1] = ttmp
-			//		}
-			//	}
-			//}
-			qsort_switch_case(fatArr,0,fatArr->len - 1)
+			for j : fatArr->len
+			{
+				for i :( fatArr->len - 1)
+				{
+					if SpaceCmpConstObjs(fatArr[i].Down.Down.Right,fatArr[i+1].Down.Down.Right) > 0
+					{
+						ttmp := fatArr[i]
+						fatArr[i] = fatArr[i+1]
+						fatArr[i+1] = ttmp
+					}
+				}
+			}
+			//qsort_switch_case(fatArr,0,fatArr->len - 1)
 			//for fatArr
 			//{
 			//	it.Print(0)

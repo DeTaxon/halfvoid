@@ -204,7 +204,7 @@ ModuleVulkan := class extend CompilerModule
 				if category != null{
 					if category^ == "basetype" or category^ == "bitmask"
 					{
-						f  asNeed.Childs.Size() != 0 not asNeed.Childs[0].first and asNeed.Childs[0].second->{string} == "typedef "
+						if  asNeed.Childs.Size() != 0 and (not asNeed.Childs[0].first) and asNeed.Childs[0].second->{string} == "typedef "
 						{
 							typeStr := asNeed.GetValueString("type")
 							typeName := asNeed.GetValueString("name")

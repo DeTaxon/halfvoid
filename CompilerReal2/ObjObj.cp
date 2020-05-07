@@ -24,75 +24,46 @@ ObjObj := class extend Object
 	{
 		if pri == State_Start
 		{
-			Found := false
-			if MyStr == "if()"
+			It := this&->{Object^}
+
+			switch MyStr
 			{
-				It := this&->{Object^}
+			case  "if()"
 				NewNode := new BoxIf(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "while()"
-			{
-				It := this&->{Object^}
+			case "while()"
 				NewNode := new BoxWhile(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "return()"
-			{
-				It := this&->{Object^}
+			case "return()"
 				NewNode := new BoxReturn(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "for()"
-			{
-				It := this&->{Object^}
+			case "for()"
 				NewNode := GetBoxFor(It)->{Object^}
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "Defer()"
-			{
-				It := this&->{Object^}
+			case "Defer()"
 				preSet := It.Down.Right
 				osEx := It.Down.GetValue() == "on_exception"
 				PopOutNode(preSet)
 				NewNode := new ObjDefer(preSet,osEx)
 				ReplaceNode(this&,NewNode)
-				Found = true
-			}else
-			if MyStr == "switch()"
-			{
-				It := this&->{Object^}
+			case "switch()"
 				NewNode := new BoxSwitch(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "case()"
-			{
-				It := this&->{Object^}
+			case "case()"
 				NewNode := new BoxCase(It)
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}else
-			if MyStr == "imprt"
-			{
+			case "imprt"
 				asS := (Down.Right)->{ObjStr^}
 				NewNode := new ImportCmd(asS.GetString())
 				ReplaceNode(this&,NewNode)
 				WorkBag.Push(NewNode,State_Start)
-				Found = true
-			}
-			if not Found
-			{
+			case void
 				//WorkBag.Push(this&,State_PreGetUse)
 			}
 		}

@@ -18,13 +18,13 @@ MiniMachineNode := class
 
 PriorityBag := class
 {
-	Opers := QueueSet.{string}
+	Opers := AVLSet.{string}
 	Lines := Queue.{MiniMachineNode^}
 	LinesRaw := Queue.{char^}
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
-		Opers.Start = null
+		Opers."this"()
 		Lines.Start = null
 		
 
@@ -96,7 +96,7 @@ PriorityBag := class
 							case "[]"
 							case "{}"
 							case void
-								Opers.Push(stW)
+								Opers.Insert(stW)
 						}
 
 						k := ref machIter.WhatNext[stW]

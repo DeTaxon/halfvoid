@@ -84,7 +84,7 @@ SLambda := class extend BoxFuncContainer
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Start and not parsedStart
+		if pri == State_Start and (not parsedStart)
 		{
 			//AllocSetStruct(Up)
 			if boostLambda
@@ -620,7 +620,7 @@ SLambda := class extend BoxFuncContainer
 					}
 				}
 
-				if ABox.parentAlloc != null and not ABox.ItemBag.Empty()
+				if ABox.parentAlloc != null and (not ABox.ItemBag.Empty())
 				{
 					cntr := ABox.InheritNR()
 					nmIn := 0
@@ -865,7 +865,7 @@ SLambda := class extend BoxFuncContainer
 		{
 			isRetCm := IsComplexType(asFType.RetType)
 
-			if asFType.RetType != GTypeVoid and not isRetCm
+			if asFType.RetType != GTypeVoid and (not isRetCm)
 			{
 				UNext(Down.Down,new ObjObj("return()"),1)
 			}

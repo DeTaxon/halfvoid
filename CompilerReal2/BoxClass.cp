@@ -304,8 +304,7 @@ BoxClass := class extend Object
 
 		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
 		{
-			inTh := BoxFunc^
-			inTh = null
+			inTh := BoxFunc^()
 
 			if ThislessFuncs[^].itFunc == gotFuncsIter
 			{
@@ -407,10 +406,7 @@ BoxClass := class extend Object
 
 		this.Parent = par
 
-		if par != null 
-		{
-			if par.ContainVirtual ContainVirtual = true
-		}
+		if par?.ContainVirtual ContainVirtual = true
 		if Down != null and not ContainVirtual
 		{
 			if Down.Down[^].GetValue() == "virtual" 

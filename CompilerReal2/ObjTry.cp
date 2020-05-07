@@ -102,7 +102,7 @@ ObjTry := class extend Object
 			if objP.Down.Right == null
 				EmitError("one obj in catch not allowed, two or none")
 			exType = ParseType(objP.Down)
-			if exType == null or not exType is TypePoint
+			if exType == null or (not exType is TypePoint)
 				EmitError("can not parse type in catch, or is not point")
 			if not objP.Down.Right is ObjIndent
 				EmitError("second object in catch must be indentificator\n")

@@ -87,7 +87,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
 						if not IsWord(name) metApp = true
-						if (not AsBoxFunc.IsSuffix) and not AsBoxFunc.IsVirtual and metApp
+						if (not AsBoxFunc.IsSuffix) and (not (AsBoxFunc.IsVirtual and metApp))
 							found.Push(AsBoxFunc) ; $temp
 					}
 				}else
@@ -99,7 +99,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 						if AsBoxFunc2.IsSuffix and AsBoxFunc2.IsVirtual
 							templates.Push(AsBoxFunc2) ; $temp
 					}else{
-						if not AsBoxFunc2.IsSuffix and not AsBoxFunc2.IsVirtual and IsMethod == AsBoxFunc2.IsMethod
+						if not (AsBoxFunc2.IsSuffix and (not (AsBoxFunc2.IsVirtual and IsMethod == AsBoxFunc2.IsMethod)))
 							templates.Push(AsBoxFunc2) ; $temp
 					}
 				}

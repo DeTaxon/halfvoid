@@ -692,7 +692,7 @@ BoxFuncBody := class extend BoxFunc
 		IsSuffix = IsSuf
 		for c : FuncName
 		{
-			if not (c in 'a'..'z') and not (c in 'A'..'Z') IsSuffix = false 
+			if (not (c in 'a'..'z')) and (not (c in 'A'..'Z')) IsSuffix = false 
 		}
 
 		if metC != null {

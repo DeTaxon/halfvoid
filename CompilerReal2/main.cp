@@ -202,14 +202,14 @@ main := !(int argc,char^^ argv) -> int
 	PutConstString("return")
 	PutConstString("self_return")
 
-	PriorityData.Opers.Push(":=")
-	PriorityData.Opers.Push("=>")
-	PriorityData.Opers.Push("-->")
-	PriorityData.Opers.Push("extern")
-	PriorityData.Opers.Push("at")
-	PriorityData.Opers.Push("defer")
-	PriorityData.Opers.Push("type")
-	PriorityData.Opers.Push("virtual")
+	PriorityData.Opers.Insert(":=")
+	PriorityData.Opers.Insert("=>")
+	PriorityData.Opers.Insert("-->")
+	PriorityData.Opers.Insert("extern")
+	PriorityData.Opers.Insert("at")
+	PriorityData.Opers.Insert("defer")
+	PriorityData.Opers.Insert("type")
+	PriorityData.Opers.Insert("virtual")
 
 	OpersTree << PriorityData.Opers[^]
 
@@ -286,7 +286,7 @@ main := !(int argc,char^^ argv) -> int
 	else WorkWithBag(printWork)
 
 	//Ob.Print(0)
-	Ob.TestNodes()
+	//Ob.TestNodes()
 
 	if ErrorLog.Empty()
 	{
