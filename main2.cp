@@ -8,7 +8,6 @@
 //}
 //
 //RSet.{@A} := type Tes.{int[A]}
-
 main := !() -> int
 {
 	//k := RSet.{13}
@@ -20,5 +19,4 @@ main := !() -> int
 	z.Push(4)
 	z.Push(5)
 	for z printf("hoh %i\n",it)
-	return 0
 }

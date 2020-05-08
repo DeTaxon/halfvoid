@@ -295,6 +295,7 @@ BoxTemplate := class extend BoxFunc
 		FuncName = SomeName
 		MethodType = metC
 		NewFuncs."this"()
+		Line = inPars.Line //TODO: replace with good line
 
 		
 		if inPars != null {
@@ -536,6 +537,7 @@ BoxTemplate := class extend BoxFunc
 		if MyFuncType != null newFunc.funcUserParamsCount = MyFuncType.ParsCount
 		newFunc.vargsName = vargsName
 		newFunc.CountAttrs = true
+		newFunc.Line = Line
 
 		return newFunc	
 	}
