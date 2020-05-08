@@ -1,27 +1,24 @@
 
+//Tes := class .{@A[@B]}
+//{
+//	val := !() -> void
+//	{
+//		printf("heh %i\n",B)
+//	}
+//}
+//
+//RSet.{@A} := type Tes.{int[A]}
 
-main2 := !() -> int
-{
-	printf("heh %i\n",1 <=> 2)
-	tst := AVLMap.{int,int}()
-
-	tst[0] = 0
-	tst[16] = 0
-	tst[46] = 0
-	tst[3] = 0
-	tst[22] = 0
-	tst[10] = 0
-	tst[19] = 0
-	tst[38] = 0
-	tst[22] = 0
-
-	for j,i : tst
-	{
-		printf("wut %i\n",i)
-	}
-	return 0
-}
 main := !() -> int
 {
-	return main2()
+	//k := RSet.{13}
+	z := List.{int}() ; $temp $keep
+	z.Push(1)
+	z.Push(2)
+	z.Push(3)
+	z.Clear()
+	z.Push(4)
+	z.Push(5)
+	for z printf("hoh %i\n",it)
+	return 0
 }

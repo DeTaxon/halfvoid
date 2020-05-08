@@ -67,7 +67,7 @@ GetUpClass := !(Object^ toS) -> BoxClass^
 
 BoxClassTemplate := class extend Object
 {
-	Classes := Stack.{BoxClass^}
+	ItClasses := AVLMap.{int,Stack.{BoxClass^}}
 	ClassTree := Object^
 	ConstTree := Object^
 	ExtendTree := Object^
@@ -120,7 +120,8 @@ BoxClassTemplate := class extend Object
 	}
 	GetClass := !(FuncInputBox itBox) -> TypeClass^
 	{
-		if Classes[^].IsSameConsts(itBox)
+		itHash := itBox.GetConstsHash()
+		if ItClasses[itHash][^].IsSameConsts(itBox)
 			return it.ClassType
 
 		newConsts := Queue.{ObjConstHolder^}()
@@ -190,7 +191,7 @@ BoxClassTemplate := class extend Object
 			}
 		}
 
-		Classes.Push(newClass)
+		ItClasses[itHash].Push(newClass)
 		return newClass.ClassType
 	}
 	GetValue := virtual !() -> string

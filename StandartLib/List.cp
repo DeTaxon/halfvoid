@@ -17,7 +17,6 @@ ListNode := class .{@T}
 	}
 }
 
-
 ListIter := class .{@T}
 {
 	iter := ListNode.{T}^
@@ -36,7 +35,7 @@ List := class .{@T}
 	if $keep
 		CreatedNodes := ListNode.{T}^
 
-	this := !() -> void
+	this := !() .{} -> void
 	{
 		Start = null
 		End = null
@@ -281,11 +280,49 @@ List := class .{@T}
 		preRes[i] = this[^i]
 		return preRes
 	}
-	Clean := !() .{} -> void
+	Clear := !() .{} -> void
 	{
+		if $keep
+		{
+			if Counter != 0
+			{
+				End.Next = CreatedNodes
+				CreatedNodes = Start
+			}
+		}else{
+			Destroy()
+		}
 		Start = null
 		End = null
 		Counter = 0
+	}
+	Destroy := !() .{} -> void
+	{
+		if not $temp
+		{
+			if $keep 
+			{
+				while CreatedNodes != null
+				{
+					itNd := CreatedNodes
+					CreatedNodes = CreatedNodes.Next
+					delete itNd
+				}
+			}
+			if Counter != 0
+			{
+				while Start != null
+				{
+					itNd := Start
+					Start = Start.Next
+					delete itNd
+				}
+			}
+		}
+		Start = null
+		End = null
+		Counter = 0
+		
 	}
 	"<<<" := !(List.{T} toAdd) -> ref List.{T}
 	{

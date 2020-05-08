@@ -13,7 +13,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 cycle: $(wildcard CompilerReal2/*.cp)
 	$(TimeFlags) ./c.out -p posix $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
 cycleg: $(wildcard CompilerReal2/*.cp)
-	./c.out -p posix -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	./c.out -p posix -g $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 cyclen: $(wildcard CompilerReal2/*.cp)
 	nemiver ./c.out -p posix -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
@@ -31,13 +31,13 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.out --vk vk.xml -p posix main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+	./c.out -g --vk vk.xml -p posix main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2t: main2.cp
 	./c.out -g main2.cp  -p posix --tree -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2l: main2.cp
 	./c.out -g main2.cp  -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2n: main2.cp
-	nemiver ./c.out -g main2.cp -C0 "Libs/*" -o test2.ll
+	gdb --args ./c.out -g main2.cp $(ForcedLibs) -o test2.ll
 test2g: main2.cp
 	gdb --tui ./test2
 

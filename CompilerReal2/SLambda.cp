@@ -173,7 +173,7 @@ SLambda := class extend BoxFuncContainer
 									//assert(false)
 									EmitError("incorrect input of lambda \n"sbt + bag.Size())
 							}
-							bag.Clean()
+							bag.Clear()
 
 						}
 						iter = iter.Right

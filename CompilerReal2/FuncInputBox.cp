@@ -37,4 +37,46 @@ FuncInputBox := class
 
 		return retHash
 	}
+	Clone := !() -> FuncInputBox^
+	{
+		preRet := new FuncInputBox
+		preRet.itConsts.Push(itConsts[^])
+		preRet.itAttrs[i] = itAttrs[^i]
+		return preRet
+	}
+	"<=>" := !(FuncInputBox itBox) -> int
+	{
+		sizeCmpRes := this.itConsts.Size() <=> itBox.itConsts.Size()
+		if sizeCmpRes != 0 return sizeCmpRes
+
+		for c,i : itBox.itConsts
+		{
+			if not CmpConstObjs(c,this.itConsts[i])
+				return -1
+		}
+
+		for itr,ind : itAttrs
+		{
+			inMap := itBox.itAttrs.TryFind(ind)
+			if inMap == null {
+				if itr is ObjBool and not itr->{ObjBool^}.MyBool
+				{}else{
+					return -1
+				}
+			}
+			if not CmpConstObjs(itr,inMap^)
+				return -1
+		}
+		for itr,ind : itBox.itAttrs
+		{
+			inMap := this.itAttrs.TryFind(ind)
+			if inMap == null {
+				if itr is ObjBool and not itr->{ObjBool^}.MyBool
+				{}else{
+					return -1
+				}
+			}
+		}
+		return 0
+	}
 }
