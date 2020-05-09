@@ -77,14 +77,14 @@ StringSpan := class{
 	}
 	DivideStr := !(char^ to) . {} -> List.{StringSpan}
 	{
-		ToRet."this"()
+		result."this"()
 		i := 0
 		j := 0
 		while ptr[j] != 0 and j != itSize
 		{
 			if ptr[j] in to
 			{
-				if j != i ToRet.Emplace(ptr[i]&,j - i)
+				if j != i result.Emplace(ptr[i]&,j - i)
 				i = j+1
 				j += 1
 			} else
@@ -94,7 +94,7 @@ StringSpan := class{
 		}
 		if j - i != 0
 		{
-			ToRet.Emplace(ptr[i]&,j - i)
+			result.Emplace(ptr[i]&,j - i)
 		}		
 	}
 }

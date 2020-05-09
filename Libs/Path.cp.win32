@@ -137,7 +137,7 @@ Path := class
 	}
 	"/" := !(string pt2) -> Path
 	{
-		ToRet.itStr = this.itStr + "/" + pt2
+		result.itStr = this.itStr + "/" + pt2
 	}
 	"/" := !(Path pt2) -> Path
 	{

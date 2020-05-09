@@ -1,6 +1,6 @@
 main := !(int argc,char^^ argv) -> int 
 {
-	ReturnName = "ToRet"
+	ReturnName = "result"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
 	//BuiltInFuncs."this"()

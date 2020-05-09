@@ -233,14 +233,14 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 	if input.NodeId->len != 256 { newSize += 1 containFake = true}
 
 	for ch : 256
-		ToRet.CharToGo[ch] = newSize - 1
+		result.CharToGo[ch] = newSize - 1
 	for lt : input.NodeId , i : 0
 	{
 		posInT := totalItems.GetPos(borrow[i])
-		ToRet.CharToGo[lt] = posInT
+		result.CharToGo[lt] = posInT
 	}
-	ToRet.Table = new int[][input.IsEndNode->len]
-	for it : ToRet.Table, i : 0
+	result.Table = new int[][input.IsEndNode->len]
+	for it : result.Table, i : 0
 	{
 		it = new int[newSize]
 		for  frm : totalItems, j : 0 
@@ -252,8 +252,8 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 			it[totalItems.Size()] = -1
 		}
 	}
-	ToRet.IsEndNode = new int[input.IsEndNode->len]
-	for a : ToRet.IsEndNode, b : input.IsEndNode a = b
+	result.IsEndNode = new int[input.IsEndNode->len]
+	for a : result.IsEndNode, b : input.IsEndNode a = b
 }
 
 

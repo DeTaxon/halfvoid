@@ -108,7 +108,7 @@ StringBuilder := class .{@BufSize}{
 
 "sbt" := !(string toAp) -> StringBuilder.{256}
 {
-	ToRet."this"()
-	ToRet << toAp
+	result."this"()
+	result << toAp
 	return void
 }
