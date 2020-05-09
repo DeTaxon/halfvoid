@@ -1,23 +1,27 @@
-HybridQueueIterator := class .{@T,@ExtraSize}
+HybridQueueIterator := class .{@T}
 {
-	itPtr := HybridQueue.{T,ExtraSize}^
+	qArr := T^
+	itSize := int
 	itIntInd := int
 	itPtrItr := ListNode.{T}^
-	this := !(HybridQueue.{T,ExtraSize}^ frm) -> void
+	ExtraSize := int
+	this := !(T^ iQArr,ListNode.{T}^ iStart, int iItSize,int iExtraSize) -> void
 	{
-		itPtr = frm
+		qArr = iQArr
 		itIntInd = 0
-		itPtrItr = frm.startNode
+		itPtrItr = iStart
+		itSize = iItSize
+		ExtraSize = iExtraSize
 	}
 	"^" := !() -> ref T
 	{
 		if itIntInd < ExtraSize
 		{
-			return itPtr.qArr[itIntInd] 
+			return qArr[itIntInd] 
 		}
 		return itPtrItr.Data
 	}
-	IsEnd := !() -> bool { return itIntInd >= itPtr.itSize}
+	IsEnd := !() -> bool { return itIntInd >= itSize}
 	Inc := !() -> void
 	{
 		if itIntInd >= ExtraSize
@@ -40,11 +44,11 @@ HybridQueue := class .{@T,@ExtraSize}
 		itSize = 0
 		if $keep createdNodes = null
 	}
-	"~For" := !() -> HybridQueueIterator.{T,ExtraSize}
+	"~For" := !() -> HybridQueueIterator.{T}
 	{
-		return HybridQueueIterator.{T,ExtraSize}(this&)
+		return HybridQueueIterator.{T}(qArr[0]&,startNode,itSize,ExtraSize)
 	}
-	makeNewItem := !() -> ref T
+	makeNewItem := !() -> ref T //TODO make it template
 	{
 		if itSize < ExtraSize
 		{

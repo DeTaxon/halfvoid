@@ -15,8 +15,8 @@ main := !() -> int
 	z.Push(1)
 	z.Push(2)
 	z.Push(3)
-	z.Clear()
 	z.Push(4)
 	z.Push(5)
+	z.DeleteIf(_1 % 2 == 0)
 	for z printf("hoh %i\n",it)
 }

@@ -47,12 +47,12 @@ List := class .{@T}
 	{
 		this << toAdd
 	}
-	EmplaceFront := !(args...) -> void
+	EmplaceFront := !(args...) -> ref T
 	{
 		if $uniq 
 		{
 			if this[^] == toAdd
-				return this
+				return it
 		}
 
 		newNode := ListNode.{T}^()
@@ -74,6 +74,7 @@ List := class .{@T}
 		Start = newNode
 		if End == null End = Start
 		Counter++
+		return newNode.Data
 	}
 	Emplace := !(args...) -> ref T
 	{
@@ -111,6 +112,35 @@ List := class .{@T}
 		Counter++
 
 		return End.Data
+	}
+	DeleteIf := !(!(T)&->bool testFunc) -> void //TODO: why cant i make it template
+	{
+		if Counter == 0 return void
+
+		prevNode := ListNode.{T}^()
+		itrNode := Start
+		while itrNode != null
+		{
+			if testFunc(itrNode.Data)
+			{
+				toDel := itrNode
+				Counter -= 1
+				if prevNode == null
+				{
+					Start = itrNode.Next
+					if End == toDel End = Start
+					itrNode = Start
+				}else{
+					prevNode.Next = itrNode.Next
+					if End == toDel End = prevNode
+					itrNode = prevNode.Next
+				}
+				destroyNode(toDel)
+			}else{
+				prevNode = itrNode
+				itrNode = itrNode.Next
+			}
+		}
 	}
 	DeleteAt := !(int pos) -> void
 	{
@@ -241,19 +271,25 @@ List := class .{@T}
 
 		return void
 	}
+	destroyNode := !(ListNode.{T}^ toDest) .{} -> void
+	{
+		if $temp return void
+
+		if $keep 
+		{
+			toDest.Next = CreatedNodes
+			CreatedNodes = toDest
+		}else{
+			delete toDest
+		}
+	}
 	Pop := !()  .{} -> T
 	{
 		oldVal := Start.Data
 		oldNode := Start
 		Start = Start.Next
-		if $keep 
-		{
-			oldNode.Next = CreatedNodes
-			CreatedNodes = oldNode
-		}else{
-			if not $temp
-				delete oldNode
-		}
+		destroyNode(oldNode)
+
 		if Start == null End = null
 
 		Counter--

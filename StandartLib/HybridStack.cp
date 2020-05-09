@@ -49,7 +49,6 @@ HybridStack := class .{@T,@ExtraSize}
 	this := !() -> void
 	{
 		itSize = 0
-		startNode = null
 		if $keep createdNodes = null
 	}
 	"~For" := !() -> HybridStackIterator.{T}
