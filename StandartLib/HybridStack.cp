@@ -135,11 +135,14 @@ HybridStack := class .{@T,@ExtraSize}
 	{
 		if not $temp
 		{
-			while startNode != null
+			if itSize > ExtraSize
 			{
-				itNode := startNode
-				startNode = startNode.Next
-				delete itNode
+				while startNode != null
+				{
+					itNode := startNode
+					startNode = startNode.Next
+					delete itNode
+				}
 			}
 			if $keep
 			{

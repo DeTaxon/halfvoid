@@ -2,7 +2,7 @@ HybridQueueIterator := class .{@T,@ExtraSize}
 {
 	itPtr := HybridQueue.{T,ExtraSize}^
 	itIntInd := int
-	itPtrItr := Node.{T}^
+	itPtrItr := ListNode.{T}^
 	this := !(HybridQueue.{T,ExtraSize}^ frm) -> void
 	{
 		itPtr = frm
@@ -31,12 +31,14 @@ HybridQueueIterator := class .{@T,@ExtraSize}
 HybridQueue := class .{@T,@ExtraSize}
 {
 	qArr := T[ExtraSize]
-	startNode,endNode := Node.{T}^
+	startNode,endNode := ListNode.{T}^
 	itSize := int
+	if $keep createdNodes := ListNode.{T}^
 	
 	this := !() -> void
 	{
-		itSize = 0 
+		itSize = 0
+		if $keep createdNodes = null
 	}
 	"~For" := !() -> HybridQueueIterator.{T,ExtraSize}
 	{
@@ -49,29 +51,35 @@ HybridQueue := class .{@T,@ExtraSize}
 			itSize += 1
 			return qArr[itSize - 1]
 		}
+		newNode := ListNode.{T}^()
+		if $keep
+		{
+			if createdNodes != null
+			{
+				newNode = createdNodes
+				createdNodes = createdNodes.Next
+			}
+		}
+		if newNode == null newNode = new ListNode.{T}()
+		newNode.Next = null
 		if itSize == ExtraSize
 		{
-			startNode = new Node.{T}()
+			startNode = newNode
 			endNode = startNode
 		}else{
-			endNode.Next = new Node.{T}()
+			endNode.Next = newNode
 			endNode = endNode.Next
 		}
 		itSize += 1
 		return endNode.Data
 	}
-	Push := !(T itm) -> void
+	Push := !(T itm) .{} -> void
 	{
 		makeNewItem() = itm
 	}
-	Emplace := !(a) -> void
+	Emplace := !(args...) .{} -> void
 	{
-		makeNewItem()."this"(a)
-	}
-	Emplace := !(a,b) -> void
-	{
-		newItm := ref makeNewItem()
-		newItm."this"(a,b)
+		makeNewItem()."this"(args...)
 	}
 	"[]" := !(int ps) -> ref T
 	{
@@ -87,6 +95,45 @@ HybridQueue := class .{@T,@ExtraSize}
 			ind -= 1
 		}
 		return itr.Data
+	}
+	Clear := !() . {} -> void
+	{
+		if $keep
+		{
+			if itSize > ExtraSize
+			{
+				endNode.Next = createdNodes
+				createdNodes = startNode
+			}
+			itSize = 0
+		}else{
+			Destroy()
+		}
+	}
+	Destroy := !() .{} -> void
+	{
+		if not $temp
+		{
+			if $keep
+			{
+				while createdNodes != null
+				{
+					itNd := createdNodes.Next
+					createdNodes = createdNodes.Next
+					delete itNd
+				}
+			}
+			if itSize > ExtraSize
+			{
+				while start != null
+				{
+					itNd := startNode
+					startNode = startNode.Next
+					delete itNd
+				}
+			}
+		}
+		itSize = 0
 	}
 	Size := !() -> int
 	{

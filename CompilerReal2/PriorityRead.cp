@@ -25,7 +25,8 @@ PriorityBag := class
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
 		Opers."this"()
-		Lines.Start = null
+		Lines."this"()
+		LinesRaw."this"()
 		
 
 		itS := 0
