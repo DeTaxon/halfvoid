@@ -927,7 +927,8 @@ TypeArr := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
-		return "["sbt + Size + " x " + Base.GetName() + "]"
+		preRes :=  "["sbt + Size + " x " + Base.GetName() + "]"
+		return preRes.Str()
 	}
 	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[" + Size + "]" }
 	GetAlign := virtual !() -> int

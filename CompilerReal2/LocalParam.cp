@@ -156,7 +156,8 @@ LocalParam := class extend MemParam
 	GetPointName := virtual !(int newInd) -> string
 	{
 		if IsRef{
-			return "%T"sbt + newInd
+			resS := "%T"sbt + newInd
+			return resS.Str()
 		}
 		resS := "%T"sbt + inAllocId
 		return resS.Str() ; $temp

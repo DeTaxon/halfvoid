@@ -135,7 +135,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 
 		PP := Queue.{Type^}() ; $temp
 		PP.Push(l)

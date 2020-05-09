@@ -1,44 +1,48 @@
-StringBuilder := class .{@BufSize}{
+StringBuilderTemporary := class .{@BufSize}{
 	ptr := char^
 	inPtrSize := int
-	pages := Stack.{char^}
+	pages := List.{char^} ; $temp
 
 	this := !() -> void { ptr = null inPtrSize = 0 pages."this"()}
 
 	"+" := !(char^ adding) self_return
 	{
-		return this << adding
+		sLen := strlen(adding)
+		addObjs(adding,sLen)
+		return this
 	}
 	"<<" := !(char^ adding) self_return
 	{
 		sLen := strlen(adding)
-		return addStrSpan(adding,sLen)
+		addObjs(adding,sLen)
+		return this
 	}
 	"<<" := !(StringSpan adding) self_return
 	{
-		return addStrSpan(adding.ptr,adding.Size())
+		addObjs(adding.Get(),adding.Size())
+		return this
 	}
-	addStrSpan := !(char^ adding,int sLen) self_return
-	{
-		if sLen == 0 return this
 
-		//TODO: remove temp here
+	addObjs := !(char^ adding, int sLen) -> void
+	{
+		if sLen == 0 return void
+
 		if ptr == null ptr = new char[BufSize] ; $temp
-		
 		if sLen + inPtrSize > BufSize
 		{
 			moved := 0
 			diff := sLen + inPtrSize - BufSize
 			memcpy(ptr[inPtrSize]&,adding,sLen - diff)
 			moved += sLen - diff
-			pages.Push(ptr)
+			
+			pages.Push(ptr) ; $temp
 			while sLen - moved > BufSize {
-				preSet := new char[BufSize]
+				preSet := new char[BufSize] ; $temp
 				memcpy(preSet[0]&,adding[moved]&,BufSize)
-				pages.Push(preSet)
+				pages << preSet
 				moved += BufSize
 			}
-			ptr = new char[BufSize]
+			ptr = new char[BufSize] ; $temp
 			memcpy(ptr[0]&,adding[moved]&,sLen - moved)
 			inPtrSize = sLen - moved
 
@@ -46,14 +50,13 @@ StringBuilder := class .{@BufSize}{
 			memcpy(ptr[inPtrSize]&,adding,sLen)
 			inPtrSize += sLen
 		}
-
+	}
+	"<<" := !(int x) self_return
+	{
+		this + x
 		return this
 	}
-	"<<" := !(int x) -> ref StringBuilder.{BufSize}
-	{
-		return this + x
-	}
-	"+" := !(int x) -> ref StringBuilder.{BufSize}
+	"+" := !(int x) self_return
 	{
 		miniBuf := char[32]
 		miniBuf[31] = 0
@@ -75,38 +78,40 @@ StringBuilder := class .{@BufSize}{
 			miniBuf[k] = '-'
 			k -= 1
 		}
-		return this << miniBuf[k+1]&
+		this << miniBuf[k+1]&
+		return this
 	}
-	Str := !() -> string {
+	Str := !() .{} -> string {
 		if inPtrSize == 0{
 			return ""
 		}
-		outSize := pages.Size()*BufSize + inPtrSize
+		indItr := pages.Size()*BufSize
+		outSize := indItr + inPtrSize
 
-		indItr := outSize - inPtrSize
-		res := new char[outSize]
+		res := new char[outSize + 1]
 		res[outSize] = 0
 		memcpy(res[indItr]&,ptr,inPtrSize)
-		indItr -= BufSize
+		//indItr -= BufSize
+		indItr = 0
 
 		for pages
 		{
 			memcpy(res[indItr]&,it,BufSize)
-			indItr -= BufSize
+			indItr += BufSize
 		}
 		return res
 	}
-	"->{}" := !() .{char^} -> string
+	"->{}" := !() .{char^} -> char^
 	{
 		return Str() ; $temp
 	}
-	"<-" := !() -> string
+	"<-" := !() -> char^
 	{
 		return Str() ; $temp
 	}
 }
 
-"sbt" := !(string toAp) -> StringBuilder.{256}
+"sbt" := !(string toAp) -> StringBuilderTemporary.{512}
 {
 	result."this"()
 	result << toAp
