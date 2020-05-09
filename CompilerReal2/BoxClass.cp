@@ -271,7 +271,7 @@ BoxClass := class extend Object
 
 	GetClassOutputName := !() -> string
 	{
-		return "%Class" + ClassId
+		return StrCopy("%Class"sbt + ClassId)
 	}
 
 	ThislessFuncs := Queue.{BuiltInThislessFunc^}
@@ -989,9 +989,9 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 		tp := inClass.ClassType
 		classId := inClass.ClassId
 
-		preRes := "%Pre## = getelementptr "sbt + tp.GetName() + " , " + tp.GetName() + "* #1, i32 0,i32 0 #d\n"
-		preRes << "%Tabl## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %Pre## #d\n"
-		preRes <<  "#0 = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %Tabl##, i32 0,i32 " + j + " #d\n"
+		preRes := "%Pre## = getelementptr "sbt << tp.GetName() << " , " << tp.GetName() << "* #1, i32 0,i32 0 #d\n"
+		preRes << "%Tabl## = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %Pre## #d\n"
+		preRes <<  "#0 = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %Tabl##, i32 0,i32 " << j << " #d\n"
 		ToExe = preRes.Str()
 	}
 	//GetPriority := virtual !(FuncInputBox inBox) -> int

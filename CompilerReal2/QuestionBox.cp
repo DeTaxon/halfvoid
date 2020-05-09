@@ -20,7 +20,7 @@ QuestionBox := class extend ControlFlowBox
 		itId = GetNewId()
 		replObject = tmpObj
 		forceToBool = fTB
-		jmpName = "OnBad" + itId
+		jmpName = StrCopy("OnBad"sbt + itId)
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -75,7 +75,7 @@ QuestionBox := class extend ControlFlowBox
 				{	
 					WorkBag.Push(this&,State_GetUse)
 					WorkBag.Push(Down.Right,State_Start)
-					paramObject = new FuncParam("QTempObject" + itId,dwnType,false)
+					paramObject = new FuncParam("QTempObject"sbt + itId,dwnType,false)
 					ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
 					StepTwo = true
 				}else{
@@ -110,7 +110,7 @@ QuestionBox := class extend ControlFlowBox
 	}
 	GetName := virtual !() -> string { 
 		if passValue return Down.Right.GetName()
-		return "%Res" + itId 
+		return "%Res"sbt + itId 
 	}
 }
 
@@ -146,7 +146,7 @@ FlowOrOrAnd := class extend ControlFlowBox
 	}
 	GetType := virtual !() -> Type^ { return GTypeBool }
 	PrintUse := virtual !(sfile f) -> void { f << "i1 %Res" << itFlowId }
-	GetName := virtual !() -> string { return "%Res" + itFlowId }
+	GetName := virtual !() -> string { return "%Res"sbt + itFlowId }
 	
 }
 

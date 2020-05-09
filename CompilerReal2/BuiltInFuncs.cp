@@ -719,14 +719,14 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 		CType := ((ToClass.ClassType)->{Type^})
 		CTypeP := CType.GetPoint()
 
-		preRetCode := ""
+		preRetCode := ""sbt
 
 		if ToFunc.MyFuncType.RetType != GTypeVoid
-			preRetCode = "#0 = "
+			preRetCode << "#0 = "
 
 		asBasePre := ToFunc.MyFuncType
 		asBase := asBasePre->{Type^}
-		preRetCode = preRetCode + asBase.GetName() + "@" + ToFunc.OutputName
+		preRetCode << asBase.GetName() << "@" << ToFunc.OutputName
 
 		preRet :=  new BuiltInFuncMega(".",ToFunc.MyFuncType,preRetCode)
 		return	preRet
@@ -943,7 +943,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 			{	
 				asType := (pars[0].first)->{TypeArr^}
 				pre := new BuiltInFuncUno("->",pars[0].first,true,GTypeInt,false,
-					"#0 = add i32 0," + asType.Size + " #d\n")
+					"#0 = add i32 0,"sbt + asType.Size + " #d\n")
 				pre.IsSelfPre = true
 				return pre
 			}else{
@@ -1193,8 +1193,8 @@ CreateBuiltIns := !() -> void
 		j := preRes[jPre]
 		IsS1 := preRes2[IsS1Pre]
 		IsS2 := preRes2[IsS2Pre]
-		from := GetType(IsS1 + i)
-		to := GetType(IsS2 + j)
+		from := GetType(""sbt + IsS1 + i)
+		to := GetType(""sbt + IsS2 + j)
 		if i > j
 		{
 			BuiltInExcs.Push(new BuiltInFuncUno("->{}",from,false,to,false,"#0 = trunc "sbt + from.GetName() + " #1 to " + to.GetName() + " #d\n"))
@@ -1224,7 +1224,7 @@ CreateBuiltIns := !() -> void
 		for IsSPre : 2
 		{
 			IsS := preRes2[IsSPre]
-			PType := GetType(IsS + it) // u8 s32 ...
+			PType := GetType(""sbt + IsS + it) // u8 s32 ...
 
 			AddBuiltInFunc(new BuiltInFuncBinar("InterlockAdd",PType,true,PType,false,PType,"#0 = atomicrmw add  i"sbt + it + "* #1, i" + it + " #2 acquire #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("InterlockSub",PType,true,PType,false,PType,"#0 = atomicrmw sub  i"sbt + it + "* #1, i" + it + " #2 acquire #d\n"))
@@ -1285,11 +1285,11 @@ CreateBuiltIns := !() -> void
 			AddBuiltInFunc(new BuiltInFuncUno("--",PType,true,PType,"#0 = load i"sbt + it + " , i" + it + "* #1 #d\n"
 												+"#0Pre = sub i" + it + " #0,1 #d\n"
 												+"store i"+it+" #0Pre, i"+it+"* #1 #d\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i" + it + " #1,#2 #d\n"))
+			AddBuiltInFunc(new BuiltInFuncBinar("<<",PType,false,PType,false,PType, "#0 = shl i"sbt + it + " #1,#2 #d\n"))
 		}
-		BuiltInExcs.Push( new BuiltInFuncUno("->{}", GetType("s" + it), false,GetType("u" + it), "#0 = add i"sbt + it + " #1,0 #d"))
-		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("s" + it),false,GetType("s" + it),false,GetType("s" + it), "#0 = ashr i" + it + " #1,#2 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("u" + it),false,GetType("s" + it),false,GetType("u" + it), "#0 = lshr i" + it + " #1,#2 #d\n"))
+		BuiltInExcs.Push( new BuiltInFuncUno("->{}", GetType("s"sbt + it), false,GetType("u"sbt + it), "#0 = add i"sbt + it + " #1,0 #d"))
+		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("s"sbt + it),false,GetType("s"sbt + it),false,GetType("s"sbt + it), "#0 = ashr i"sbt + it + " #1,#2 #d\n"))
+		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("u"sbt + it),false,GetType("s"sbt + it),false,GetType("u"sbt + it), "#0 = lshr i"sbt + it + " #1,#2 #d\n"))
 	}
 	AddBuiltInFunc(new BuiltInFuncBinar("in",GTypeInt,false,TypeTable[13],false,BoolT,
 											"br label %Start##\n"sbt +

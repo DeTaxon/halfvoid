@@ -206,8 +206,7 @@ Vec4fFuncs := !() -> void
 			if i != 0 assmMulToVal << " , "
 			assmMulToVal << "i32 0"
 		}
-		assmMulToVal << ">" <<
-				"#0 = fmul " + itName + " #1 , %PreVec## #d\n"
+		assmMulToVal << ">" << "#0 = fmul " << itName << " #1 , %PreVec## #d\n"
 		AddBuiltInFunc( new BuiltInFuncBinar("*",it,false,GTypeFloat,false,it,assmMulToVal))
 
 		assmDivToVal := "%PrePreVec## = insertelement "sbt + itName + " undef , float #2,i32 0 #d\n" +
@@ -218,7 +217,7 @@ Vec4fFuncs := !() -> void
 			assmDivToVal << "i32 0"
 		}
 		assmDivToVal << ">" <<
-				"#0 = fdiv " + itName + " #1 , %PreVec## #d\n"
+				"#0 = fdiv " << itName << " #1 , %PreVec## #d\n"
 		AddBuiltInFunc( new BuiltInFuncBinar("/",it,false,GTypeFloat,false,it,assmDivToVal))
 
 		AddBuiltInFunc( new BuiltInFuncTypeTimes(". this",FT,1,it,"#0 = insertelement "sbt + itName + " zeroinitializer, float #1,i32 0 #d\n"))

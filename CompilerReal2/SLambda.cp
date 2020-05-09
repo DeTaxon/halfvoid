@@ -104,7 +104,7 @@ SLambda := class extend BoxFuncContainer
 				isRef := Queue.{bool}() ; $temp
 
 				if not justFunc{
-					names.Push("lambdaParam" + ItId)
+					names.Push(StrCopy("lambdaParam"sbt + ItId))
 					pars.Push(GTypeVoidP)
 					isRef.Push(false)
 				}
@@ -493,14 +493,14 @@ SLambda := class extend BoxFuncContainer
 				f << "ret void\n"
 				f << "}\n"
 
-				prevLName = "ToCpy" + ItId
+				prevLName = ("ToCpy"sbt + ItId <-)
 
 				prevLambd = this&
 
 				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ") \n"
 
 				f << "{\n"
-				PrintInhers(f,"ToCpy" + ItId,false)
+				PrintInhers(f,"ToCpy"sbt + ItId,false)
 				
 				ABName := ""
 				for funcsUp
@@ -545,7 +545,7 @@ SLambda := class extend BoxFuncContainer
 							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
 								<< j << ", i32 " << prevNR << "\n"
 						}
-						f << "%ToSetPT" << j << " = bitcast "+prevL.ResultType.GetName() + " %ToSetP" << j << " to i8*\n"
+						f << "%ToSetPT" << j << " = bitcast " << prevL.ResultType.GetName() << " %ToSetP" << j << " to i8*\n"
 						f << "store i8* %ToSetPT" << j << " , i8** %WherePut" << j << "\n"
 					}
 					if fc.2 != null and fc.2.IsMethod
@@ -646,7 +646,7 @@ SLambda := class extend BoxFuncContainer
 				f << "}\n"
 			}
 
-			PrintFuncBodySkobs(f,fastUse,Names,"lambda" + ItId,null->{string},ABox.ItId)
+			PrintFuncBodySkobs(f,fastUse,Names,"lambda"sbt + ItId,null->{string},ABox.ItId)
 			if not justFunc { f << "prefix %LambdaPrefix { i8*(i8*)* @LambdaCopy" << ItId << " , void(i8*)* @LambdaDelete" << ItId << "}" }
 			f << "\n"
 
@@ -720,7 +720,7 @@ SLambda := class extend BoxFuncContainer
 				f << "ret void\n"
 			}else{
 				retTypeName := fastUse.RetType.GetName()
-				if fastUse.RetRef retTypeName = retTypeName + "*"
+				if fastUse.RetRef retTypeName = (""sbt  + retTypeName + "*" <-) 
 				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
 				f << "ret " << retTypeName << " " << "%ResultItem\n"
 			}

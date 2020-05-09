@@ -180,18 +180,18 @@ BoxBlock := class extend Object
 			if Up?.GetValue() in !["!()","{!()}","x=>x"]
 			{	
 				askedRetPath = true
-				return "PreRetPath" + ItId
+				return StrCopy("PreRetPath"sbt + ItId)
 			}
 			return outRName
 		}
 		if typ == PATH_CONTINUE
 		{
-			if size == 0 return "LastContPath" + ItId 
+			if size == 0 return StrCopy("LastContPath"sbt + ItId)
 			return  Up.GetOutPath(this&,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
-			if size == 0 return "LastContPath" + ItId
+			if size == 0 return StrCopy("LastContPath"sbt + ItId)
 			return Up.GetOutPath(this&,typ,size - 1)
 		}
 		return ""

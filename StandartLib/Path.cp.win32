@@ -131,18 +131,6 @@ Path := class
 	{
 		itStr = pt
 	}
-	"/=" := !(string str) -> void
-	{
-		itStr = itStr + "/" + str
-	}
-	"/" := !(string pt2) -> Path
-	{
-		result.itStr = this.itStr + "/" + pt2
-	}
-	"/" := !(Path pt2) -> Path
-	{
-		return Path(itStr + "/" + pt2.itStr)
-	}
 	Ext := !() -> StringSpan
 	{
 		size := StrSize(itStr)
@@ -233,4 +221,28 @@ Path := class
 		if pos < 0 return itName
 		return StringSpan(itName.Get(),pos)
 	}
+	GetTime := !() -> double
+	{
+		
+		itAsW := Utf8ToUtf16(itStr)
+		hndl := CreateFileW(itAsW,0,FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,null,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,null)
+		if hndl&->{u64^}^ == not_b 0U
+			return 0
+		defer CloseHandle(hndl)
+		preRes := u64
+		preRes = 0
+		GetFileTime(hndl,null,null,preRes&)
+		printf("test %lli\n",preRes)
+		return preRes->{double}*0.001*0.001*0.1
+	}
+}
+
+TFSDelete := !(char^ toDel) -> bool
+{
+	return remove(toDel) == 0
+}
+
+TFSDelete := !(char^ toDel) -> bool
+{
+	return DeleteFileW(Utf8ToUtf16(toDel)) != 0
 }

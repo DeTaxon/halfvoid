@@ -580,7 +580,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				if iter.Right?.Right == null
 				{
-					name := ". " + iter.GetValue()
+					name := ". "sbt + iter.GetValue()
 					iter = iter.Right
 					PopOutNode(iter.Left)
 					return OneCall(name,iter.Up,null->{Object^})
@@ -721,7 +721,7 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	if SomeFunc == null 
 	{
-		if not ignoreNull ErrorLog.Push("Function <" + Name + "> not found\n") //TODO:  PointCall and closestFunc
+		if not ignoreNull ErrorLog.Push("Function <"sbt + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	}
 	else
 	{
@@ -799,22 +799,22 @@ SomeFuncCall := class extend ObjResult
 			{
 				if Up.GetValue() == "~Return()"
 				{
-					TName = "%" + ReturnName
+					TName = StrCopy("%"sbt + ReturnName)
 				}else{
 					InAlloc = GetAlloc(this&,ToCall.MyFuncType.RetType)
-					TName = "%T" + InAlloc
+					TName = StrCopy("%T"sbt + InAlloc)
 				}
-				TEName = "%TE" + RetId
+				TEName = StrCopy("%TE"sbt + RetId)
 			}else
 			{
-				TName = "%T" + RetId
-				TEName = "%TE" + RetId
+				TName = StrCopy("%T"sbt + RetId)
+				TEName = StrCopy("%TE"sbt + RetId)
 			}
 		}else{
 			if not gotAlloc
 			{
-				TName = "%T" + RetId
-				TEName = "%TE" + RetId
+				TName = StrCopy("%T"sbt + RetId)
+				TEName = StrCopy("%TE"sbt + RetId)
 			}
 		}
 	}
@@ -949,15 +949,15 @@ NaturalCall := class extend SomeFuncCall
 	
 				if preRet == null
 				{
-					msg := "compiler bug at param " + (i+1) + " "
-					msg = msg + " object " + iter.GetValue()
+					msg := "compiler bug at param "sbt + (i+1) + " "
+					msg << " object " << iter.GetValue()
 					if iter.GetType() != null{
-						msg = msg + " from " + iter.GetType().GetName()
+						msg << " from " << iter.GetType().GetName()
 					}else {
-						msg = msg + " from null "
+						msg << " from null "
 					}
 					if FType.Pars[i] != null {
-						msg = msg + " to " + FType.Pars[i].GetName()
+						msg << " to " << FType.Pars[i].GetName()
 					}
 				
 					if itLiner != null lnr.EmitError(msg + "\n")
@@ -1376,11 +1376,11 @@ NewCallOne := class extend SomeFuncCall
 	GetName := virtual !() -> string
 	{
 		//return newItm.GetName()
-		return "%Pre" + ItId
+		return "%Pre"sbt + ItId
 	}
 	GetPointName := virtual !() -> string
 	{
-		return "%Pre" + ItId
+		return "%Pre"sbt + ItId
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
@@ -1717,14 +1717,14 @@ ConstructCall := class extend NaturalCall
 				rights := Down.Right
 				itm := GetItem(ReturnName,this&)
 				ReplaceNode(Down,new ParamNaturalCall("this",itm))
-				TName = "%" + ReturnName
+				TName = StrCopy("%"sbt + ReturnName)
 			}else
 			{
 				//if not ToCall.IsRetRef wut???
 				//{
 					gotAlloc = true
 					InAlloc = GetAlloc(this&,ToCall.MyFuncType.Pars[0])
-					TName = "%T" + InAlloc
+					TName = StrCopy("%T"sbt + InAlloc)
 					//TEName = "%TE" + RetId
 				//}
 			}

@@ -298,7 +298,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			tstr = tstr.Up
 		}
 		if foundIt{
-			itName = "it" + GetNewId()
+			itName = StrCopy("it"sbt + GetNewId())
 		}
 		else {
 			itName = "it"

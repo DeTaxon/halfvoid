@@ -220,7 +220,7 @@ BoxWhile := class extend Object
 		{
 			if size == 0{
 				useContinue = true
-				return "PreContinue" + MyId
+				return StrCopy("PreContinue"sbt + MyId)
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
@@ -228,7 +228,7 @@ BoxWhile := class extend Object
 		{
 			if size == 0{
 				useBreak = true
-				return "PreEnd" + MyId
+				return StrCopy("PreEnd"sbt + MyId)
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}

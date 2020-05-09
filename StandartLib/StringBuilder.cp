@@ -7,12 +7,14 @@ StringBuilderTemporary := class .{@BufSize}{
 
 	"+" := !(char^ adding) self_return
 	{
+		if adding->{void^} == null return this
 		sLen := strlen(adding)
 		addObjs(adding,sLen)
 		return this
 	}
 	"<<" := !(char^ adding) self_return
 	{
+		if adding->{void^} == null return this
 		sLen := strlen(adding)
 		addObjs(adding,sLen)
 		return this

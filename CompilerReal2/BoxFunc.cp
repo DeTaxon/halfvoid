@@ -566,7 +566,7 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "main"
 		}else
 		{
-			OutputName = "func" + GetNewId()
+			OutputName = StrCopy("func"sbt + GetNewId())
 		}
 
 		if SomeName == "new" IsStatic = true
@@ -644,7 +644,8 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "main"
 		}else
 		{
-			OutputName = "func" + GetNewId()
+			preOName := "func"sbt + GetNewId()
+			OutputName = preOName.Str()
 		}
 		if SomeName == "new" {
 			IsStatic = true
@@ -687,7 +688,7 @@ BoxFuncBody := class extend BoxFunc
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
-		if IsInvalid inPars.EmitError("can not parse function header\n" + "func name " + FuncName + "\n")
+		if IsInvalid inPars.EmitError("can not parse function header\n"sbt + "func name " + FuncName + "\n")
 
 		IsSuffix = IsSuf
 		for c : FuncName
@@ -910,7 +911,7 @@ BoxFuncBody := class extend BoxFunc
 					if not asN.ABox.ItemBag.Empty()
 					{
 						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-						asN.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,-1) //TODO: replace with debug id
+						asN.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,-1) //TODO: replace with debug id
 						if asN.IsMethod
 						{
 							thisId := asN.ItParams[0].inAllocId
@@ -969,7 +970,7 @@ BoxFuncBody := class extend BoxFunc
 				f << "ret void\n"
 			}else{
 				retTypeName := MyFuncType.RetType.GetName()
-				if MyFuncType.RetRef retTypeName = retTypeName + "*"
+				if MyFuncType.RetRef retTypeName = (""sbt + retTypeName + "*" <-)
 				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
 				f << "ret " << retTypeName << " " << "%ResultItem\n"
 			}
@@ -1007,7 +1008,7 @@ BoxFuncBody := class extend BoxFunc
 	}
 	GetOutPath := virtual !(Object^ item, int typ,int size) ->string
 	{
-		return "OutLabel" + ABox.ItId
+		return StrCopy("OutLabel"sbt + ABox.ItId)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

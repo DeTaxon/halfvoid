@@ -300,7 +300,7 @@ ObjStr := class extend ObjConst
 	}
 	GetName := virtual !() -> string
 	{
-		return "%T" + MyTmpId
+		return "%T"sbt + MyTmpId
 	}
 	Clone := virtual !() -> Object^
 	{
@@ -394,7 +394,7 @@ ObjArray := class extend ObjConst
 	}
 	GetPointName := virtual !() -> string
 	{
-		return "@Arr" + MyTmpId
+		return "@Arr"sbt + MyTmpId
 	}
 	GetName := virtual !() -> string
 	{

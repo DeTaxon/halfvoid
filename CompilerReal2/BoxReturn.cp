@@ -170,7 +170,7 @@ BoxReturn := class extend Object
 		{
 
 			retTypeName := Down.GetType().GetName()
-			if IsRetRef retTypeName = retTypeName + "*"
+			if IsRetRef retTypeName = (""sbt + retTypeName + "*" <-)
 			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
 			f << "store " 
 			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)

@@ -8,13 +8,12 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 	while iter.Up != null iter = iter.Up
 
 	asF := iter->{BoxFile^}
-	prePath := Path(asF.filePath.itStr)
-	prePath = prePath.FolderName()
-	prePath /= name
-	newName := prePath.FullPath()
-	newPath := Path(newName)
+	prePath := ""sbt + asF.filePath.itStr
+	prePath2 := ""sbt + Path(prePath).FolderName()
+	prePath2 << "/" << name
+	newPath := Path(prePath2).FullPath()
 
-	return LoadFile(newPath)
+	return LoadFile(Path(StrCopy(newPath.Get())))
 }
 LoadFile := !(Path fullName) -> BoxFile^
 {
@@ -29,7 +28,7 @@ LoadFile := !(Path fullName) -> BoxFile^
 
 	if ob == null 
 	{
-		ErrorLog.Push("file "+ fullName.itStr +" not found\n")
+		ErrorLog.Push("file "sbt + fullName.itStr +" not found\n")
 		return null
 	}
 
@@ -91,7 +90,7 @@ ImportCmd := class extend Object
 
 			if toPoint == null
 			{
-				ErrorLog.Push("file " + toImport + " not found\n")
+				ErrorLog.Push("file "sbt + toImport + " not found\n")
 			}
 		}
 		return toPoint

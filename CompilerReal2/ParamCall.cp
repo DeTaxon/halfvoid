@@ -176,7 +176,7 @@ ParamFuncCall := class extend ParamCall
 	}
 	GetName := virtual !() -> string
 	{
-		return "@" + OutName
+		return "@"sbt + OutName
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{

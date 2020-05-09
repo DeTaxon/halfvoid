@@ -12,7 +12,7 @@ WrappedFunc := class extend BoxFuncBody
 		ABox.ItId = GetNewId()
 		
 		FuncName = "hiddenFunc"
-		OutputName = "hiddenFunc" + ABox.ItId
+		OutputName = StrCopy("hiddenFunc"sbt + ABox.ItId)
 
 		//WorkBag.Push(this&,State_GetUse)
 		MyFuncParamNames = new string[1]

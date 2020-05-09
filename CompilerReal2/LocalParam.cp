@@ -320,11 +320,11 @@ GlobalParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		return "%T" + newInd 
+		return "%T"sbt + newInd 
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
-		return "@T" + MainId
+		return "@T"sbt + MainId
 	}
 }
 GlobalFuncParam := class extend MemParam
@@ -389,11 +389,11 @@ GlobalFuncParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		return "%T" + newInd 
+		return "%T"sbt + newInd 
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
-		return "@T" + MainId
+		return "@T"sbt + MainId
 	}
 }
 ExternParam := class extend MemParam
@@ -455,11 +455,11 @@ ExternParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		return "%T" + newInd 
+		return "%T"sbt + newInd 
 	}
 	GetPointName := virtual !(int newInd) -> string
 	{
-		return "@" + itName
+		return "@"sbt + itName
 	}
 }
 
@@ -513,15 +513,15 @@ FuncParam := class extend MemParam
 	GetPointName := virtual !(int newInd) -> string
 	{
 		//assert(IsRef)
-		return "%" + ItName
+		return "%"sbt + ItName
 	}
 	GetName := virtual !(int newInd) -> string
 	{
 		if IsRef
 		{
-			return "%Tpre" + newInd
+			return "%Tpre"sbt + newInd
 		}
-		return "%" + ItName
+		return "%"sbt + ItName
 	}
 	
 }
@@ -549,7 +549,7 @@ FieldParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		return "%" + ItName
+		return "%"sbt + ItName
 	}
 }
 FakeFieldParam := class extend MemParam
@@ -576,7 +576,7 @@ FakeFieldParam := class extend MemParam
 	}
 	GetName := virtual !(int newInd) -> string
 	{
-		return "%" + ItName
+		return "%"sbt + ItName
 	}
 }
 RetFuncParam := class extend MemParam
@@ -624,7 +624,7 @@ RetFuncParam := class extend MemParam
 	{
 		if ToCall.IsRef()
 		{
-			return "%T" + newInd
+			return "%T"sbt + newInd
 		}
 		return ToCall.GetName()
 	}

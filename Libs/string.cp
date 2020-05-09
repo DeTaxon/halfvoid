@@ -47,34 +47,6 @@ StrCmp := !(char^ a,char^ b) -> bool
 	return strcmp(a,b) != 0
 }
 
-"+" := !(char^ a, char^ b) -> char^
-{
-	if a == null return b
-	if b == null return a
-	sA := StrSize(a)
-	sB := StrSize(b)
-	newStr := new char[sA + sB + 1]
-	memcpy(newStr[0]&,a,sA)
-	memcpy(newStr[sA]&,b,sB)
-	newStr[sA + sB + 1] = 0
-	return newStr
-}
-"+" := !(char^ a, int b) -> char^
-{
-	if a == null {
-		return ToString(b)
-	}
-	return a + ToString(b)
-}
-"+" := !(char^ a, float b) -> char^
-{
-	if a == null {
-		return ToString(b)
-	}
-	return a + ToString(b)
-}
-
-
 StrSize := !(char^ a) -> int
 {
 	Si := 0
@@ -88,7 +60,7 @@ Size := !(char^ this) -> int
 	return Si
 }
 
-StrCopy := !(char^ a) -> char^
+StrCopy := !(char^ a) .{} -> char^
 {
 	Si := StrSize(a)
 	Pre := new char[Si+1]

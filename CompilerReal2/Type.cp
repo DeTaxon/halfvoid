@@ -579,8 +579,8 @@ TypeStandart := class extend Type{
 		if DebugMode
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId  + " = " + mName + "\n"
-			DebugMetaData.Push(itStr)
+			itStr := "!"sbt + metaId  + " = " + mName + "\n"
+			DebugMetaData.Push(itStr.Str())
 		}
 
 		Clean()
@@ -630,9 +630,12 @@ TypePoint := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
-		return Base.GetName() + "*"
+		preRes := ""sbt + Base.GetName() + "*"
+		return preRes.Str()
 	}
-	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "^" }
+	GetGoodName := virtual !() -> string { 
+		return ""sbt + Base.GetGoodName() + "^" 
+	}
 	GetAlign := virtual !() -> int
 	{
 		return 8
@@ -763,10 +766,15 @@ TypeFunc := class extend Type
 		}
 		if (RetType is TypeArr or RetType is TypeClass) and not RetRef
 		{
-			return "void" + GetSkobs() 
+			preRes := ""sbt + "void" + GetSkobs() 
+			return preRes.Str()
 		}
-		if RetRef return RetType.GetName() + "*" + GetSkobs()
-		return RetType.GetName() + GetSkobs() 
+		if RetRef {
+			preRes := ""sbt + RetType.GetName() + "*" + GetSkobs()
+			return preRes.Str()
+		}
+		preRes2 := ""sbt + RetType.GetName() + GetSkobs() 
+		return preRes2.Str()
 	}
 	GetLambda := !() -> Type^
 	{
@@ -833,8 +841,8 @@ TypeFuncLambda := class extend Type
 		if DebugMode and asBase.metaId != 0
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + asBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
-			DebugMetaData.Push(itStr)
+			itStr := "!"sbt + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + asBase.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
+			DebugMetaData.Push(itStr.Str())
 		}
 	}
 	PrintType := virtual !(sfile f) -> void
@@ -844,16 +852,19 @@ TypeFuncLambda := class extend Type
 	GetPointName := !() -> string
 	{
 		if almostName == null
-			almostName = Base.GetName() + "*"
+		{
+			preRes := ""sbt +  Base.GetName() + "*"
+			almostName = preRes.Str()
+		}
 		return almostName
 	}
 	GetNewName := virtual !() -> string
 	{
-		return Base.GetName() + "**"
-		//return GetNewNamePre() + "*"
+		preRes := ""sbt + Base.GetName() + "**"
+		return preRes.Str()
 	}
 	GetGoodName := virtual !() -> string { 
-		return Base.GetName() + "&"
+		return ""sbt + Base.GetName() + "&"
 	}
 	GetNewNamePre := virtual !() -> string
 	{
@@ -917,8 +928,8 @@ TypeArr := class extend Type
 		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
-			DebugMetaData.Push(itStr)
+			itStr := "!"sbt + metaId + " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
+			DebugMetaData.Push(itStr.Str())
 		}
 	}
 	GetType := virtual !() -> string
@@ -930,7 +941,7 @@ TypeArr := class extend Type
 		preRes :=  "["sbt + Size + " x " + Base.GetName() + "]"
 		return preRes.Str()
 	}
-	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[" + Size + "]" }
+	GetGoodName := virtual !() -> string { return ""sbt + Base.GetGoodName() + "[" + Size + "]" }
 	GetAlign := virtual !() -> int
 	{
 		return Base.GetAlign()
@@ -949,8 +960,8 @@ TypeFatArr := class extend Type
 		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()
-			itStr := "!" + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
-			DebugMetaData.Push(itStr)
+			itStr := "!"sbt + metaId + " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" + Base.metaId + " ,size: " + archSize + ", align: " + archSize + ")\n" 
+			DebugMetaData.Push(itStr.Str())
 		}
 	}
 	GetType := virtual !() -> string
@@ -959,9 +970,10 @@ TypeFatArr := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
-		return Base.GetName() + "*"
+		preRes := ""sbt + Base.GetName() + "*"
+		return preRes.Str()
 	}
-	GetGoodName := virtual !() -> string { return Base.GetGoodName() + "[]" }
+	GetGoodName := virtual !() -> string { return ""sbt + Base.GetGoodName() + "[]" }
 	GetAlign := virtual !() -> int
 	{
 		return 8
@@ -987,17 +999,18 @@ TypeClass := class extend Type
 	}
 	GetNewName := virtual !() -> string
 	{
-		return "%Class" + ToClass.ClassId
+		preRes := "%Class"sbt + ToClass.ClassId
+		return preRes.Str()
 	}
 	GetGoodName := virtual !() -> string { 
-		st := ToClass.ClassName 
+		st := ""sbt + ToClass.ClassName 
 		if ToClass.ItAttrs.Size() != 0
 		{
-			st = st + " attrs: "
+			st << " attrs: "
 			for it,ind : ToClass.ItAttrs
-				st = st + ind + " "
+				st << ind << " "
 		}
-		return st
+		return st.Str() ; $temp
 	}
 	
 	itAlign := int

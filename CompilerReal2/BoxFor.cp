@@ -267,7 +267,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						{
 							//EmitError("Can not get index item\n")
 							EnabledIIndex = true
-							IndParams[i] = new FuncParam("ForIndex" + ItId,GTypeInt,false)
+							IndParams[i] = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
 						}else{
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
@@ -408,7 +408,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if size == 0{
 				useContinue = true
-				return "PreContinue" + ItId
+				return StrCopy("PreContinue"sbt + ItId)
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
@@ -416,7 +416,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if size == 0{
 				useBreak = true
-				return "PreEnd" + ItId
+				return StrCopy("PreEnd"sbt + ItId)
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}

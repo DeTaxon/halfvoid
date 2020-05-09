@@ -99,7 +99,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 			Old := Bag.Pop()
 			if Old.GetValue()[0] != itPair[0] 
 			{
-				Old.EmitError("incorrect pair for " + Old.GetValue())
+				Old.EmitError("incorrect pair for "sbt + Old.GetValue())
 				return iter
 			}
 
@@ -124,7 +124,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 	}
 	for Bag^
 	{
-		it.EmitError("pair for "+ it.GetValue() + " not found")
+		it.EmitError("pair for "sbt + it.GetValue() + " not found")
 	}
 	return null
 }

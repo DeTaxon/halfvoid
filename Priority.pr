@@ -27,6 +27,6 @@
 "new d" "delete d"
 "throw d" 
 "d << d" "d >> d"
+"d <-"
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d <<< d" "d >>> d"
-"d <-"

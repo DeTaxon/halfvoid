@@ -18,7 +18,7 @@ AllocBox := class
 	}
 	GetClassName := !() -> string
 	{
-		return "%AllocClass" + ItId
+		return StrCopy("%AllocClass"sbt + ItId)
 	}
 	GetNR := !(int id) -> int
 	{
@@ -163,7 +163,7 @@ AllocBox := class
 			}
 		}
 
-		PrintBoxItems(f,"%AllocItem" + ItId,debId)
+		PrintBoxItems(f,"%AllocItem"sbt + ItId,debId)
 	}
 	PrintBoxItems := !(sfile f,string Name,int debId) -> void
 	{
@@ -173,7 +173,7 @@ AllocBox := class
 		i := 0
 		while iter != null
 		{
-			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " + Name
+			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " << Name
 			f << " , i32 0, i32 " << i
 			if DebugMode and debId != -1
 			{

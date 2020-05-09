@@ -150,7 +150,7 @@ Object := class{
 	}
 	Clone := virtual !() -> Object^
 	{
-		ErrorLog.Push("Clone not defined for " + GetValue() + "\n")
+		ErrorLog.Push("Clone not defined for "sbt + GetValue() + "\n")
 		return null
 	}
 	ApplyDeferUse := virtual !(int depth) -> void

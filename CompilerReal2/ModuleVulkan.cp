@@ -724,7 +724,7 @@ InstanceArr := class extend BoxClass
 		if addedFields.Contain(name)
 			return void
 		
-		fullStr := "PFN_" + name
+		fullStr := "PFN_"sbt + name
 		inWut := itmPtr.GetModuleType(fullStr)
 		if inWut != null
 		{
@@ -734,7 +734,7 @@ InstanceArr := class extend BoxClass
 			addedFields.Insert(name)
 			addedFieldsOrder.Emplace(newStrId,name)
 		}else{
-			EmitError("cant create class field " + name)
+			EmitError("cant create class field "sbt + name)
 		}
 
 	}

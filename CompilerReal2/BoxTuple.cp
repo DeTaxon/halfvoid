@@ -437,7 +437,7 @@ TupleConstructorTemplate := class extend BoxTemplate
 
 		WorkBag.Push(itTpl,State_PreGetUse)
 
-		toEx := "call "sbt << ftB.GetName() + "@TupleCreate" << itTpl.ClassId << 
+		toEx := "call "sbt << ftB.GetName() << "@TupleCreate" << itTpl.ClassId << 
 			"(" 
 
 		for par,i : pars
