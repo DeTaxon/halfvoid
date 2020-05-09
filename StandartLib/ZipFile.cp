@@ -189,8 +189,7 @@ ZipFile := class
 	}
 	GetFile := !(char^ fileNameI) -> vZipEntry^
 	{
-		items := Queue.{char^}()
-		DivideStr(fileNameI,"\\/",items) ; $temp
+		items := DivideStr(fileNameI,"\\/") ; $temp
 		if items.Size() == 0
 			return null
 

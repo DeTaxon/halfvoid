@@ -195,13 +195,12 @@ ObjLine := class
 	}
 	LoadAttrs := !(char^ str) -> void
 	{
-		newItm := Queue.{char^}()
-		DivideStr(str,' ',newItm)
+		newItm := DivideStr(str,' ')
 		for newItm
 		{
 			if it != ";"
 			{
-				itAttrs[it] = new ObjBool(true)
+				itAttrs[it.Str()] = new ObjBool(true)
 			}
 		}
 	}

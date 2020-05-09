@@ -19,11 +19,6 @@ ToString := !(float x) -> char^
 	if a->{int^} == b->{int^} return 0
 	if a == null return -1
 	if b == null return 1
-	//i := 0
-	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
-	//if a[i] < b[i] return -1
-	//if a[i] > b[i] return 1
-	//return 0
 	return strcmp(a,b)
 }
 "<" := !(char^ a, char^ b) -> bool
@@ -105,56 +100,48 @@ ChrInStr := !(int chr,char^ str) -> bool
 	return false
 }
 
-DivideStr := !(char^ what,int to,Queue.{char^} B) .{} -> void
+DivideStr := !(char^ what,int to) . {}-> List.{StringSpan}
 {
-	Buf := char[1024]
+	result."this"()
 	i := 0
 	j := 0
 	while what[j] != 0
 	{
 		if what[j] == to
 		{
-			Buf[i] = 0 
-			if i B.Push(StrCopy(Buf))
-			i = 0
+			if j != i result.Emplace(what[i]&,j - i)
+			i = j+1
 			j += 1
 		} else
 		{
-			Buf[i] = what[j]
-			i += 1
 			j += 1
 		}
 	}
-	if i 
+	if j - i != 0
 	{
-		Buf[i] = 0
-		B.Push(StrCopy(Buf))
+		result.Emplace(what[i]&,j - i)
 	}		
 }
-DivideStr := !(char^ what,char^ to,Queue.{char^} B) .{} -> void
+DivideStr := !(char^ what,char^ to) . {} -> List.{StringSpan}
 {
-	Buf := char[1024]
+	result."this"()
 	i := 0
 	j := 0
 	while what[j] != 0
 	{
-		if ChrInStr(what[j],to)
+		if what[j] in to
 		{
-			Buf[i] = 0
-			if i B.Push(StrCopy(Buf))
-			i = 0
+			if j != i result.Emplace(what[i]&,j - i)
+			i = j+1
 			j += 1
 		} else
 		{
-			Buf[i] = what[j]
-			i += 1
 			j += 1
 		}
 	}
-	if i 
+	if j - i != 0
 	{
-		Buf[i] = 0
-		B.Push(StrCopy(Buf))
+		result.Emplace(what[i]&,j - i)
 	}		
 }
 
