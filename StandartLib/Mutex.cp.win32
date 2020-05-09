@@ -1,0 +1,58 @@
+
+InitializeCriticalSectionAndSpinCount := !(void^ lsp, int spc) -> void declare
+EnterCriticalSection := !(void^ lps) -> void declare
+LeaveCriticalSection := !(void^ lps) -> void declare
+DeleteCriticalSection := !(void^ lps) -> void declare
+
+InitializeConditionVariable := !(void^ cnv) -> void declare
+SleepConditionVariableCS := !(void^ cnv, void^ lps, u32 waitT) -> void declare
+WakeConditionVariable := !(void^ cnv) -> void declare
+WakeAllConditionVariable := !(void^ cnv) -> void declare
+
+
+Mutex := class
+{
+	itBuffer := char[1024]
+	"this" := !() -> void
+	{
+		InitializeCriticalSectionAndSpinCount(this&,0x400)
+	}
+	Lock := !() -> void
+	{
+		EnterCriticalSection(this&)
+	}
+	Unlock := !() -> void
+	{
+		LeaveCriticalSection(this&)
+	}
+	Destroy:= !() -> void
+	{
+		DeleteCriticalSection(this&)
+	}
+}
+
+ConVar := class
+{
+	itBuffer := char[1024]
+	"this" := !() -> void
+	{
+		InitializeConditionVariable(this&)
+	}
+	Wait := !(Mutex^ mtx) -> void
+	{
+		minusVar := -1
+		SleepConditionVariableCS(this&,mtx,minusVar&->{u32^}^)
+	}
+	Notify := !() -> void
+	{
+		WakeConditionVariable(this&)
+	}
+	NotifyAll := !() -> void
+	{
+		WakeAllConditionVariable(this&)
+	}
+	Destroy := !() -> void
+	{
+	}
+}
+

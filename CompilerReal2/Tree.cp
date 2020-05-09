@@ -1,4 +1,4 @@
-ObjectsPool := StupidMemoryPool.{8388608}
+ObjectsPool := AllocOnlyMP.{8388608,true}
 
 Object := class{
 	Left,Right,Down,Up := Object^
@@ -15,9 +15,9 @@ Object := class{
 	{
 		preRes := void^
 		if $temp {
-			preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align)
+			preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align,0)
 		}else{
-			preRes = ObjectsPool.GetMem(R->TypeSize,R->Align)
+			preRes = ObjectsPool.GetMem(R->TypeSize,R->Align,0)
 		}
 		return preRes
 	}
@@ -207,7 +207,7 @@ ObjLine := class
 	}
 	"new" := !() .{@R} -> void^
 	{
-		return ObjectsPool.GetMem(R->TypeSize,R->Align)
+		return ObjectsPool.GetMem(R->TypeSize,R->Align,0)
 	}
 }
 

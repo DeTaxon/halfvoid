@@ -1,4 +1,4 @@
-TypesPool := StupidMemoryPool.{16000000}
+TypesPool := AllocOnlyMP.{16000000,true}
 
 Type := class {
 	Id := int
@@ -11,7 +11,7 @@ Type := class {
 	
 	"new" := !() .{@R} -> void^
 	{
-		preRes :=  TypesPool.GetMem(R->TypeSize,R->Align)
+		preRes :=  TypesPool.GetMem(R->TypeSize,R->Align,0)
 		return preRes
 	}
 	this := !() -> void

@@ -1,0 +1,47 @@
+
+Mutex := class
+{
+	itBuffer := char[1024]
+	"this" := !() -> void
+	{
+		pthread_mutex_init(this&,null)
+	}
+	Lock := !() -> void
+	{
+		pthread_mutex_lock(this&)
+	}
+	Unlock := !() -> void
+	{
+		pthread_mutex_unlock(this&)
+	}
+	Destroy:= !() -> void
+	{
+		pthread_mutex_destroy(this&)
+	}
+}
+
+ConVar := class
+{
+	itBuffer := char[1024]
+	"this" := !() -> void
+	{
+		pthread_cond_init(this&,null)
+	}
+	Wait := !(Mutex^ mtx) -> void
+	{
+		pthread_cond_wait(this&,mtx)
+	}
+	Notify := !() -> void
+	{
+		pthread_cond_signal(this&)
+	}
+	NotifyAll := !() -> void
+	{
+		pthread_cond_broadcast(this&)
+	}
+	Destroy := !() -> void
+	{
+		pthread_cond_destroy(this&)
+	}
+}
+
