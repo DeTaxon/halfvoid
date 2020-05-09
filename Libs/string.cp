@@ -1,17 +1,6 @@
-BigBuff := char[4096]
-
-//CreatedStrs := Stack.{char^}
 sprintf := !(char^ buf,char^ frmt, ...) -> int declare
-
 strcmp := !(char^ a,char^ b) -> int declare
 
-CleanStrs := !() -> void
-{
-	while not CreatedStrs.Empty()
-	{
-		free(CreatedStrs.Pop())
-	}
-}
 
 ToString := !(int x) -> char^
 {
@@ -41,12 +30,8 @@ ToString := !(float x) -> char^
 {
 	if a == null return false
 	if b == null return false
-	//i := 0
-	//while a[i] != 0 and b[i] != 0 and a[i] == b[i] i += 1
-	//return a[i] < b[i]
 	return strcmp(a,b) < 0
 }
-//strcmp := !(char^ a,char^ b) -> int declare
 StrCmp := !(char^ a,char^ b) -> bool
 {
 	if a->{int^} == null or b->{int^} == null return false
@@ -262,7 +247,50 @@ StringIterator := class
 	"^" := !() -> ref char { return itr[ind] }
 }
 "~For" := !(char^ str) -> StringIterator { return StringIterator(str)}
-//"()" := !(char^ this,args...) -> char^ 
-//{
-//}
+
+ReplaceKeywords := !(char^ txt, char^^ keys,int keysCount,!(StringSpan,int)&->char^ cb) -> char^
+{
+	stLen := StrSize(txt)
+	return ReplaceKeywords(txt[0..stLen],keys,keysCount,cb)
+}
+ReplaceKeywords := !(StringSpan txt, char^^ keys,int keysCount,!(StringSpan,int)&->char^ cb) -> char^
+{
+	preRes := ""sbt
+	states := new Tuple.{int,int}[keysCount] ; &temp
+	
+	for i : keysCount
+	{
+		states[i].1 = StrSize(keys[i])
+	}
+
+	lastDumped := 0
+	s := 0
+	for txt.Size()
+	{
+		for st,i : states
+		{
+			if txt[s] == keys[i][st.0]
+			{
+				st.0 += 1
+				if st.0 == st.1
+				{
+					endSize := s - lastDumped - st.1 + 1
+					if endSize > 0
+						preRes << txt[lastDumped..endSize]
+					//preRes << cb(txt[(s-st.1)..st.1])
+					preRes << cb(txt[(s-st.1+1)..st.1],s)
+					lastDumped = s + 1
+				}
+			}else{
+				st.0 = 0
+			}
+		}
+		s++
+	}
+	if s != lastDumped
+	{
+		preRes << txt[lastDumped..(s - lastDumped)]
+	}
+	return preRes.Str() ; $temp
+}
 

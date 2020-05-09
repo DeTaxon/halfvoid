@@ -24,17 +24,18 @@ StringSpan := class{
 		ptr = st[startInd]&
 		itSize = endInd - startInd + 1
 	}
-	"=" := !(StringSpan toGet) -> ref StringSpan
-	{
-		ptr = toGet.ptr
-		itSize = toGet.itSize
-		return this
-	}
+	Get := !() -> char^ { return ptr }
 	Size := !() -> int { return itSize }
 	"[]" := !(int ind) -> ref char { return ptr[ind] }
 	"[]" := !(range ran) -> StringSpan
 	{
 		return StringSpan(ptr,itSize,ran)
+	}
+	"=" := !(StringSpan toGet) -> ref StringSpan
+	{
+		ptr = toGet.ptr
+		itSize = toGet.itSize
+		return this
 	}
 	"!=" := !(char^ toCmp) -> bool { return this <=> toCmp != 0 }
 	"==" := !(char^ toCmp) -> bool { return this <=> toCmp == 0 }
@@ -44,13 +45,6 @@ StringSpan := class{
 		if stCmp != 0 return stCmp
 		if toCmp[itSize] != 0 return -1
 		return 0
-		//for itSize {
-		//	if toCmp[it] != ptr[it] return toCmp[it] <=> ptr[it]
-		//	if toCmp[it] == 0 return -1
-		//	if ptr[it] == 0 return 1
-		//}
-		//if toCmp[itSize] == 0 return 0
-		//return 1
 	}
 	"<=>" := !(StringSpan toCmp) -> int {
 		if toCmp.ptr == null return 1
@@ -58,21 +52,18 @@ StringSpan := class{
 		if minV > toCmp.itSize minV = toCmp.itSize
 		stCmp := strncmp(ptr,toCmp.ptr,minV)
 		if stCmp != 0 return stCmp
-		//for itSize {
-		//	if it >= toCmp.itSize return 1
-		//	if toCmp.ptr[it] != ptr[it] return toCmp.ptr[it] <=> ptr[it]
-		//	//if toCmp.ptr[it] == 0 return -1
-		//	//if ptr[it] == 0 return 1
-		//}
 		return itSize <=> toCmp.itSize		
 	}
-	//"==" := !(StringSpan toCmp) -> bool {
-	//	if toCmp.itSize != itSize return false
-	//	return strncmp(toCmp.ptr,ptr,itSize) == 0
-	//}
 	"==" := !(StringSpan toCmp) -> bool {
 		if toCmp.itSize != itSize return false
 		return strncmp(toCmp.ptr,ptr,itSize) == 0
+	}
+	"<<" := !(StringSpan toGet) -> ref StringSpan
+	{
+		minVal := itSize
+		if toGet.itSize < minVal minVal = toGet.itSize
+		memcpy(ptr,toGet.ptr,minVal)
+		return this
 	}
 	Str := !() -> string {
 		preRet := new char[itSize+1]
@@ -80,7 +71,11 @@ StringSpan := class{
 		memcpy(preRet->{void^},ptr,itSize)
 		return preRet
 	}
-	DivideStr := !(char^ to) . {} -> Queue.{StringSpan}
+	"->{}" := !() .{char^}-> char^
+	{
+		return Str() ; $temp
+	}
+	DivideStr := !(char^ to) . {} -> List.{StringSpan}
 	{
 		ToRet."this"()
 		i := 0

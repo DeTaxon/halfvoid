@@ -59,9 +59,6 @@ internalDeferApplyExp := !(int depth) -> void
 //internalLongJmp
 //internalDebugTrap
 
-//setjmp := !(void^ jmpEnv) -> int declare
-//longjmp := !(void^ jmpEnv, int val) -> void declare
-
 IException := class
 {
 	GetId := virtual !() -> int
@@ -77,6 +74,11 @@ Exception := class extend IException
 {
 	itId := int
 	itMsg := char^
+	this := !(char^ sMsg) -> void
+	{
+		itId = 0
+		itMsg = sMsg
+	}
 	this := !(int sId, char^ sMsg) -> void
 	{
 		itId = sId
@@ -128,6 +130,7 @@ internalGetExceptPoint := !() -> void^
 	nowDat := ref intExc
 	if nowDat.depth == 0
 	{
+		printf("uncathed exception %s\n",inp->{IException^}.Msg())
 		internalDebugTrap()
 		return void
 	}

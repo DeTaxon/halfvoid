@@ -8,15 +8,12 @@
 //}
 //
 //RSet.{@A} := type Tes.{int[A]}
+
 main := !() -> int
 {
-	//k := RSet.{13}
-	z := List.{int}() ; $temp $keep
-	z.Push(1)
-	z.Push(2)
-	z.Push(3)
-	z.Push(4)
-	z.Push(5)
-	z.DeleteIf(_1 % 2 == 0)
-	for z printf("hoh %i\n",it)
+	g := HybridQueue.{int,2}()
+	g.Push(1)
+	g.Push(2)
+	g.Push(3)
+	g.Push(4)
 }

@@ -13,6 +13,48 @@
 	preRes := (a <*> c) <*>revA
 	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
 }
+"<*>" := !(vec4f a, vec4f b) -> vec4f
+{
+	preR := vec4f
+	preR.x = a.y*b.z - a.z*b.y
+	preR.y = a.z*b.x - a.x*b.z
+	preR.z = a.x*b.y - a.y*b.x
+	return preR
+}
+Length := !(vec4f this) -> float { return sqrtf(this<+>this) }
+Length := !(vec3f this) -> float { return sqrtf(this<+>this) }
+Length := !(vec2f this) -> float { return sqrtf(this<+>this) }
+
+LengthSq := !(vec4f this) -> float { return this<+>this }
+LengthSq := !(vec3f this) -> float { return this<+>this }
+LengthSq := !(vec2f this) -> float { return this<+>this }
+
+Normal := !(vec4f this) -> vec4f
+{
+	siz := this <+> this
+	if siz < 0.000001f
+		return this
+	siz = 1/sqrtf(siz)
+	preRet := this
+	preRet.x *= siz
+	preRet.y *= siz
+	preRet.z *= siz
+	return preRet
+}
+
+Distance := !(vec3f a, vec3f b) -> float
+{
+	c1 := a - b
+	c2 := c1 <+> c1
+	return sqrtf(c2)
+}
+Distance := !(vec4f a, vec4f b) -> float
+{
+	c1 := a - b
+	c2 := c1 <+> c1
+	return sqrtf(c2)
+}
+
 quantfAt := !(float x, float y, float z, float de) -> quantf
 {
 	halfAn := de * 0.5f
@@ -56,14 +98,34 @@ centf := class
 		toSet[13] = pos.y
 		toSet[14] = pos.z
 	}
+	SetPos := !(vec4f oldPos) -> void
+	{
+		pos = vec4f(oldPos.x,oldPos.y,oldPos.z,pos.w)
+	}
+	SetPos := !(float x, float y, float z) -> void
+	{
+		pos = vec4f(x,y,z,pos.w)
+	}
 	"<*>" := !(centf toAdd) -> centf
 	{
 		result.ang = ang <*> toAdd.ang
-		result.pos = (toAdd.ang * this.pos) + pos
+		result.pos = ang * toAdd.pos 
+		result.pos = result.pos + pos
+		result.pos.w = pos.w*toAdd.pos.w
 	}
 	"=" := !(centf toSet) -> void
 	{	
 		ang = toSet.ang
 		pos = toSet.pos
 	}
+	Inverse := !() -> centf
+	{
+		result.ang = quantf(-ang.x,-ang.y,-ang.z,ang.w)
+		result.pos = result.ang*pos
+		result.pos.x *= -1.0f
+		result.pos.y *= -1.0f
+		result.pos.z *= -1.0f
+		result.pos.w = 1.0f / pos.w
+	}
 }
+
