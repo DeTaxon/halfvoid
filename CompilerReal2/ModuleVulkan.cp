@@ -516,12 +516,13 @@ ModuleVulkan := class extend CompilerModule
 						"%Ptr## = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* #1 , i32 0, i32 0\n"
 						+ "store i32 " + resVal + ", i32* %Ptr##\n" )
 
-					GlobalStrs.Push("define void @"sbt + newName + "(" + itTyp.GetName() + "* %this"+newId+") \n"+
+					globalText := "define void @"sbt + newName + "(" + itTyp.GetName() + "* %this"+newId+") \n"+
 						"{\n" +
-						"%Ptr"+newId+" = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* %this"+newId+" , i32 0, i32 0\n"
+						"%Ptr"+newId+" = getelementptr " + itTyp.GetName() + " , " + itTyp.GetName() + "* %this"+newId+" , i32 0, i32 0\n"
 						+ "store i32 " + resVal + ", i32* %Ptr"+newId+"\n" 
 						+ "ret void\n"
-						+ "}\n")
+						+ "}\n"
+					GlobalStrs.Push(globalText.Str())
 
 					kindaBlock := new Object
 					kindaBlock.Down = new ObjParam("this",false)

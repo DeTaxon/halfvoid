@@ -402,7 +402,7 @@ CreateTupleTemplate := class extend BoxTemplate
 		}
 		toEx + ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx.Str())
+		return new BuiltInFuncMega("",funct,toEx)
 	}
 }
 TupleConstructorTemplate := class extend BoxTemplate
@@ -453,7 +453,7 @@ TupleConstructorTemplate := class extend BoxTemplate
 		}
 		toEx + ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx.Str())
+		return new BuiltInFuncMega("",funct,toEx)
 	}
 }
 

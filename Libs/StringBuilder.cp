@@ -98,7 +98,7 @@ StringBuilder := class .{@BufSize}{
 	}
 	"->{}" := !() .{char^} -> string
 	{
-		return Str()
+		return Str() ; $temp
 	}
 	"<-" := !() -> string
 	{

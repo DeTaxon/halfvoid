@@ -84,7 +84,7 @@ Object := class{
 			asB := itr->{BoxFuncBody^}
 			sbtt << "template type " << asB.MyFuncType.GetGoodName() << "\n"
 		}
-		ErrorLog.Push(sbtt)
+		ErrorLog.Push(sbtt.Str())
 	}
 	PrintGlobalSub := !(sfile f) -> void
 	{

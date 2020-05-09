@@ -34,7 +34,7 @@ BuiltInSuffix := class extend BuiltInFunc
 		IsSuffix = true
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 
 		PP := Queue.{Type^}() ; $temp
 		PP.Push(l)
@@ -53,7 +53,7 @@ BuiltInFuncZero := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 		IsRetRef = RRetRef
 
 		PP := Queue.{Type^}()
@@ -69,7 +69,7 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 
 		PP := Queue.{Type^}() ; $temp
 		for Count PP.Push(inType)
@@ -99,7 +99,7 @@ BuiltInFuncUno := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 		IsRetRef = RRetRef
 
 		PP := Queue.{Type^}() ; $temp
@@ -118,7 +118,7 @@ BuiltInFuncBinar := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 		IsRetRef = retRef
 
 		PP := Queue.{Type^}() ; $temp
@@ -154,7 +154,7 @@ BuiltInFuncMega := class extend BuiltInFunc
 	{
 		FuncName = Name
 		OutputName = Name
-		ToExe = code
+		ToExe = StrCopy(code)
 
 		MyFuncType = fType
 		CheckIsSelf()

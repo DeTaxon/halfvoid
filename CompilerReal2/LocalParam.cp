@@ -469,7 +469,7 @@ FuncParam := class extend MemParam
 	this := !(string Name,Type^ typ, bool IIsRef) -> void
 	{
 		ResultType = typ
-		ItName = Name
+		ItName = StrCopy(Name)
 		IsRef = IIsRef
 	}
 	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
@@ -533,7 +533,7 @@ FieldParam := class extend MemParam
 	this := !(string Name,Type^ typ, BoxClass^ pp) -> void
 	{
 		ResultType = typ
-		ItName = Name
+		ItName = StrCopy(Name)
 		ToMerge = pp
 		pp.Params.Push(this&)
 	}

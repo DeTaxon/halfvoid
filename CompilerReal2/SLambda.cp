@@ -842,7 +842,8 @@ SLambda := class extend BoxFuncContainer
 			for i : lType.ParsCount
 			{
 				if i == 0 continue
-				nams.Push("_"sbt+ i)
+				itNN := "_"sbt + i
+				nams.Push(itNN.Str())
 			}
 			Names = nams.ToArray()
 			
@@ -1054,7 +1055,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		}
 		ToSet << ") #d\n"
 		
-		return new BuiltInFuncMega("()",fun,ToSet.Str())
+		return new BuiltInFuncMega("()",fun,ToSet)
 	}
 }
 BuiltInTemplateSetLambda := class extend BoxTemplate
@@ -1115,7 +1116,7 @@ BuiltInTemplateCaptureLambda := class extend BoxTemplate
 		asPtrN := pars[0].first.Base.GetPoint().GetName()
 		return new BuiltInFuncUno(". not",pars[0].first,false,pars[0].first, 
 		"%Fnc## = load "sbt + asPtrN + " , " + asPtrN + "* #1\n" +
-		"%Pref## = bitcast "sbt + asPtrN + " %Fnc## to %LambdaPrefix*\n" +
+		"%Pref## = bitcast " + asPtrN + " %Fnc## to %LambdaPrefix*\n" +
 		"%ClFuncPre## = getelementptr %LambdaPrefix , %LambdaPrefix* %Pref##, i32 -1, i32 0\n"+
 		"%ClFunc## = load i8*(i8*)*, i8*(i8*)** %ClFuncPre##\n"+
 		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
