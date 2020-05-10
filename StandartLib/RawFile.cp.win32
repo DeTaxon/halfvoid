@@ -1,0 +1,46 @@
+
+GetTempPathW := !(int lenBuf,u16^ buffStr) -> int declare
+GetTempFileNameW := !(u16^ dirP, u16^ pref, int uniq,u16^ resBuffer) -> int declare
+
+RawFile := class
+{
+	itFd := void^
+	"this" := !() -> void
+	{
+		itFd = null
+	}
+	"this" := !(char^ itName) -> void
+	{
+		//Open(itName)
+	}
+	OpenTemp := !(char^ itName) -> char^
+	{
+		tmpPath := new u16[MAX_PATH] ; $temp
+		dwRetVal := GetTempPathW(MAX_PATH,tmpPath)
+		tmpPath[dwRetVal] = 0
+
+		forPref := Utf8ToUtf16(itName)
+		resName := new u16[MAX_PATH] ; $temp
+
+		GetTempFileNameW(tmpPath,forPref,0,resName)
+
+		itFd = CreateFileW(resName,GENERIC_WRITE,
+			FILE_SHARE_READ or_b FILE_SHARE_WRITE,null,
+			,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,null)
+
+		return Utf16ToUtf8(resName)
+	}
+	Write := !(void^ dat, u64 siz) -> void
+	{
+		res := u32
+		res2 := WriteFile(itFd,dat,siz,res&,null)
+	}
+	"=" := !(RawFile ttt) -> void
+	{
+		itFd = ttt.itFd
+	}
+	Close := !() -> void
+	{
+		CloseHandle(itFd)
+	}
+}

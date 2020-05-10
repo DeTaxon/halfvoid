@@ -11,9 +11,12 @@ sqrtf := !(float iiin) ->float declare
 time := !() -> int declare
 srand := !(int time) -> void declare
 rand := !() -> int declare
+system := !(char^ toExe) -> int declare
 
 memset := !(void^ dst, char val,int size) -> void declare
 memcpy := !(void^ dst, void^ src,int size) -> void declare
+
+strcpy := !(void^ dst,void^ src) -> void declare
 
 "~this" := !(@R[] this) -> void
 {
@@ -145,6 +148,14 @@ max := !(@A a, @B b)
 	if a > b return a
 	return b
 }
+max := !(@T a, @T b,@T c) -> float 
+{
+	r := a
+	if b > r r = b
+	if c > r r = c
+	return r
+}
+
 StrSize := !(string xs) -> int
 {
 	itSize := 0
@@ -157,3 +168,9 @@ StrSize := !(string xs) -> int
 	return itSize
 }
 
+
+abs := !(@T a)  -> T
+{
+	if a < 0 return -a
+	return a
+}

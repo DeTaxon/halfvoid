@@ -1,0 +1,32 @@
+
+RawFile := class
+{
+	itFd := int
+	"this" := !() -> void
+	{
+		itFd = 0
+	}
+	"this" := !(char^ itName) -> void
+	{
+		Open(itName)
+	}
+	OpenTemp := !(char^ itName) -> char^
+	{
+		tmpNamePre := "/tmp/"sbt + itName + "XXXXXX"
+		tmpName := tmpNamePre.Str() ; $temp
+		itFd = mkstemp(tmpName)
+		return tmpName
+	}
+	Write := !(void^ dat, u64 siz) -> void
+	{
+		write(itFd,dat,siz)	
+	}
+	"=" := !(RawFile ttt) -> void
+	{
+		itFd = ttt.itFd
+	}
+	Close := !() -> void
+	{
+		close(itFd)
+	}
+}
