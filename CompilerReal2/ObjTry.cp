@@ -109,7 +109,7 @@ ObjTry := class extend Object
 			asInd := objP.Down.Right->{ObjIndent^}
 			exName = asInd.MyStr
 
-			exParam = new FuncParam("I" + ItId,exType,false)
+			exParam = new FuncParam("I"sbt + ItId,exType,false)
 
 			MakeItBlock(Down)
 			MakeItBlock(Down.Right.Right)

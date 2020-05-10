@@ -170,20 +170,6 @@ WordDetermMachine := class
 			chStart = chEnd
 
 		}
-		//printf("test\n")
-		//for CharToGo printf("%i ",it)
-		//printf("\n")
-		//printf("maybe\n")
-		//for i : Table[0]->len
-		//{
-		//	printf("%4i ",0)
-		//	for j : IsEndNode->len
-		//	{	
-		//		printf("%4i ",Table[j][i])
-		//	}
-		//	printf("\n")
-		//}
-
 	}
 }
 
@@ -316,9 +302,9 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 			}
 		}
 	}
-	ToRet.IsEndNode = new int[NewNodes.Size()]
+	result.IsEndNode = new int[NewNodes.Size()]
 	
-	for itN : ToRet.IsEndNode,nowSet : NewNodes, i : 0
+	for itN : result.IsEndNode,nowSet : NewNodes, i : 0
 	{
 		itN = -1
 
@@ -334,8 +320,8 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 		}
 	}
 
-	ToRet.Table = new int[][NewNodes.Size()]
-	for ToRet.Table {
+	result.Table = new int[][NewNodes.Size()]
+	for result.Table {
 		it = new int[Letters.Size()]
 		for itm : it itm = -1
 	}
@@ -343,13 +329,13 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 	for move : itLines
 	{
 		chId := Letters.GetPos(move.second.second)	
-		ToRet.Table[move.first][chId] = move.second.first
+		result.Table[move.first][chId] = move.second.first
 	}
 
-	ToRet.NodeId = new int[Letters.Size()]
+	result.NodeId = new int[Letters.Size()]
 	for it : Letters , i : 0
 	{
-		ToRet.NodeId[i] = it
+		result.NodeId[i] = it
 	}
 }
 MinimizeMachine := !(DetMachine input) -> DetMachine
@@ -406,15 +392,15 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 			setCheck = 0
 		}
 	}
-	ToRet.Table = new int[][setSize]
-	for ToRet.Table
+	result.Table = new int[][setSize]
+	for result.Table
 	{
 		it = new int[input.NodeId->len]
 		for itm : it itm = -1
 	}
-	ToRet.NodeId = new int[input.NodeId->len]
-	for a : ToRet.NodeId, b : input.NodeId a = b
-	ToRet.IsEndNode = new int[setSize]
+	result.NodeId = new int[input.NodeId->len]
+	for a : result.NodeId, b : input.NodeId a = b
+	result.IsEndNode = new int[setSize]
 	transformer := new int[NodeSets->len] ; $temp
 	//defer delete transformer
 	{
@@ -439,14 +425,14 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	for i : NodeSets->len
 	{
 		fromNew := transformer[i]
-		ToRet.IsEndNode[fromNew] = input.IsEndNode[i]
+		result.IsEndNode[fromNew] = input.IsEndNode[i]
 		for j : input.NodeId->len
 		{
 			toOld := input.Table[i][j]
 			if toOld != -1
 			{
 				toNew := transformer[toOld]
-				ToRet.Table[fromNew][j] = toNew
+				result.Table[fromNew][j] = toNew
 			}
 		}
 	}

@@ -850,7 +850,7 @@ BoxClass := class extend Object
 					if this.ContainVirtual pos += 1
 					f << "%itrItm" << pos << " = getelementptr %Class" << ClassId << " , %Class" << ClassId
 					f << "* %this" <<", i32 0, i32 " << pos <<"\n"
-					classItm.ApplyConstants(f,"%itrItm" + pos)
+					classItm.ApplyConstants(f,"%itrItm"sbt + pos)
 				}
 			}
 

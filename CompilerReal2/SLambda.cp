@@ -346,7 +346,7 @@ SLambda := class extend BoxFuncContainer
 			if prevLam != null
 			{
 				f << "%NextLam" << nameIter << " = load i8* , i8** %T" << prevLam.InAlloc[0] << "\n"
-				prevLName = "NextLam" + nameIter
+				prevLName = ("NextLam"sbt + nameIter <-)
 			}
 			if it.2 != null and it.2.IsMethod
 			{
@@ -818,9 +818,9 @@ SLambda := class extend BoxFuncContainer
 	{
 		if justFunc
 		{
-			return "@lambda" + ItId
+			return "@lambda"sbt + ItId
 		}
-		return "%T" + inAlloc
+		return "%T"sbt + inAlloc
 	}
 	ApplyFunc := !() -> void
 	{
@@ -836,7 +836,8 @@ SLambda := class extend BoxFuncContainer
 			nams  := Queue.{char^}() ; $temp
 
 			if not justFunc{
-				nams.Push("lambdaParam" + ItId)
+				itNN := "lambdaParam"sbt + ItId
+				nams.Push(itNN.Str())
 			}
 			lType := lambTyp.Base->{TypeFunc^}
 			for i : lType.ParsCount
@@ -944,7 +945,7 @@ SLambda := class extend BoxFuncContainer
 
 	GetOutPath := virtual !(Object^ item, int typ,int size) ->string
 	{
-		return "OutLabel" + ABox.ItId
+		return StrCopy("OutLabel"sbt + ABox.ItId)
 	}
 	GetValue := virtual !() -> string
 	{

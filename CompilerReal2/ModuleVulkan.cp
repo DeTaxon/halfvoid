@@ -511,7 +511,7 @@ ModuleVulkan := class extend CompilerModule
 					resVal := resPre.MyInt
 					itTyp := newStruct.ClassType
 					newId := GetNewId()
-					newName := "Func" + newId
+					newName := StrCopy("Func"sbt + newId)
 					newFunc := new BuiltInFuncUno(newName,itTyp,true,GTypeVoid,false,
 						"%Ptr## = getelementptr "sbt + itTyp.GetName() + " , " + itTyp.GetName() + "* #1 , i32 0, i32 0\n"
 						+ "store i32 " + resVal + ", i32* %Ptr##\n" )

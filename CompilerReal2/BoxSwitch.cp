@@ -106,7 +106,7 @@ BoxSwitch := class extend Object
 				{
 					if addedQ.Size() != 0
 					{
-						jName := "SwitchVoid" + id
+						jName := StrCopy("SwitchVoid"sbt + id)
 						for it : addedQ
 						{
 							it.jmpName = jName

@@ -269,6 +269,7 @@ BuiltInPointAdd := class extend BoxTemplate
 		if pars.Size() != 2 return 255
 		//if pars[0].first.GetType() != "point" and pars[0].first.GetType() != "arr" and pars[0].first.GetType() != "fatarr" return 255
 		if not (pars[0].first is TypePoint or pars[0].first is TypeArr or  pars[0].first is TypeFatArr) return 255
+		if pars[0].first == GTypeString return 255
 		return TypeCmp(pars[1].first,GetType("s64"))
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^

@@ -1325,15 +1325,15 @@ TypeSizeCall := class extend SomeFuncCall
 	}
 	GetPointName := virtual !() -> string
 	{
-		return "%T" + RetId
+		return "%T"sbt + RetId
 	}
 	GetName := virtual !() -> string
 	{
-		return "%T" + RetId
+		return "%T"sbt + RetId
 	}
 	GetOutputName := virtual !() -> string
 	{
-		return "%T" + RetId
+		return StrCopy("%T"sbt + RetId)
 	}
 	GetType := virtual !() -> Type^
 	{

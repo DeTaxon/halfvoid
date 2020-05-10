@@ -893,7 +893,7 @@ BoxFuncBody := class extend BoxFunc
 					asL := iterP->{SLambda^}
 					ABName := asL.ABox.GetClassName()
 					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
-					asL.ABox.PrintBoxItems(f,"%ItHiddenName" + ABox.ItId,-1) ; //TODO: replace with debug id
+					asL.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,-1) ; //TODO: replace with debug id
 
 					if not asL.justFunc
 					{
