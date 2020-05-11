@@ -1,4 +1,4 @@
-
+//AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree.{BadPair.{KEY,VALUE},KEY,VALUE}
 AVLMap := class .{@KEY,@VALUE}
 {
 	$keep

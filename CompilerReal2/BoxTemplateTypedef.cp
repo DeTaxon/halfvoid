@@ -36,7 +36,7 @@ BoxTemplateTypedef := class extend Object
 		{
 			oldConsts := itConsts
 			itConsts = newConsts&
-			itT := ParseType(Down.Right)
+			itT := ParseType(Down.Right,itBox.itAttrs&)
 			itConsts = oldConsts
 			itHashEntry.Emplace(itBox.Clone(),itT)
 			return itT
