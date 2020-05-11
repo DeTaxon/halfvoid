@@ -102,7 +102,7 @@ ObjDefer := class extend Object
 		if Up != null
 		{
 			Up.ApplyDeferUse(1)
-			//AllocSetStruct(Up)
+			AllocSetStruct(Up)
 		}
 	}
 }

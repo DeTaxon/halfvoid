@@ -3,7 +3,7 @@ AllocBox := class
 {
 	ItId := int
 	liveOnGlobal := bool
-	//mustBeStruct := bool
+	mustBeStruct := bool
 
 	parentAlloc := AllocBox^
 	inhAllocs := List.{AllocBox^}
@@ -121,16 +121,16 @@ AllocBox := class
 	{
 		if not ItemBag.Empty()
 		{
-			//if not mustBeStruct
-			//{
-			//	itr2 := ItemBag.Start 
-			//	while itr2 != null
-			//	{
-			//		f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
-			//		itr2 = itr2.Next
-			//	}
-			//	return void
-			//}
+			if not mustBeStruct
+			{
+				itr2 := ItemBag.Start 
+				while itr2 != null
+				{
+					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
+					itr2 = itr2.Next
+				}
+				return void
+			}
 			if liveOnGlobal
 			{
 				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
@@ -167,8 +167,8 @@ AllocBox := class
 	}
 	PrintBoxItems := !(sfile f,string Name,int debId) -> void
 	{
-		//if not mustBeStruct
-		//	return void
+		if not mustBeStruct
+			return void
 		iter := ItemBag.Start
 		i := 0
 		while iter != null
@@ -218,17 +218,13 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 	}
 	return -1
 }
-//AllocSetStruct := !(Object^ start) -> void
-//{
-//	while start != null
-//	{
-//		switch start.GetValue()
-//		{
-//			case "!()"
-//				start->{BoxFunc^}.ABox.mustBeStruct = true
-//			case "x=>x"
-//				start->{BoxFunc^}.ABox.mustBeStruct = true
-//		}
-//		start = start.Up
-//	}
-//}
+AllocSetStruct := !(Object^ start) -> void
+{
+	while start != null
+	{
+		aB := start.GetABox()
+		if aB != null 
+			aB.mustBeStruct = true
+		start = start.Up
+	}
+}

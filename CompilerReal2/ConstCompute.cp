@@ -30,6 +30,8 @@ TryCompute := !(Object^ ob) -> Object^
 			return new ObjBool(false) //GBoolFalse
 		}
 		if it == null return null
+		if it is ObjConstHolder
+			return it.Down
 		if it is ConstItem
 		{
 			return it.Down

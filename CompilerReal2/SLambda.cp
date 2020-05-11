@@ -86,7 +86,7 @@ SLambda := class extend BoxFuncContainer
 	{
 		if pri == State_Start and (not parsedStart)
 		{
-			//AllocSetStruct(Up)
+			AllocSetStruct(Up)
 			if boostLambda
 			{
 				MakeItBlock(Down)

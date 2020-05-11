@@ -8,10 +8,13 @@ BoxTemplateTypedef := class extend Object
 	}
 	ApplyDown := !(Object^ toDw) -> void
 	{
-		Down = toDw
+		Down = toDw.Down
 		Down.SetUp(this&)
+		toDw.Down = null
+		PopOutNode(Down.Right)
+		PopOutNode(Down.Right)
 
-		itName := Down.Down.Down->{ObjIndent^}.MyStr
+		itName := Down.Down->{ObjIndent^}.MyStr
 
 		if Up? is BoxFile{
 			asBF := Up->{BoxFile^}
@@ -21,20 +24,22 @@ BoxTemplateTypedef := class extend Object
 			}
 		}
 	}
-	createdTemplates := AVLMap.{int,Type^}
+	createdTemplates := AVLMap.{int,List.{Tuple.{FuncInputBox^,Type^}}}
 	TryGetType := !(FuncInputBox itBox) -> Type^
 	{
-		itHash := itBox.GetConstsHash()
-		//if createdTemplates[itHash][^].createdBy^ <=> itBox == 0
-		//	return it
+		itHashEntry := ref createdTemplates[itBox.GetConstsHash()]
+		if itHashEntry[^].0^ <=> itBox == 0
+			return it.1
 		newConsts := Queue.{ObjConstHolder^}()
-		cmpRes := IsEqConsts(Down.Down.Down,itBox,newConsts)
+		cmpRes := IsEqConsts(Down.Down.Right.Right,itBox,newConsts)
 		if cmpRes 
 		{
 			oldConsts := itConsts
 			itConsts = newConsts&
-			itT := ParseType(Down.Down.Right.Right.Right)
+			itT := ParseType(Down.Right)
 			itConsts = oldConsts
+			itHashEntry.Emplace(itBox.Clone(),itT)
+			return itT
 		}
 		return null
 	}
@@ -45,10 +50,8 @@ BoxTemplateTypedef := class extend Object
 			return null
 		if itConsts^[^].ItName == itName
 		{
-			printf("tes\n")
-			return it.Down
+			return it
 		}
-			printf("no\n")
 		return null
 	}
 }

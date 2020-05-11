@@ -37,7 +37,7 @@ test2t: main2.cp
 test2l: main2.cp
 	./c.out -g main2.cp  -o test2.ll; clang test2.ll -g $(Libs) -o test2
 test2n: main2.cp
-	gdb --args ./c.out -g main2.cp $(ForcedLibs) -o test2.ll
+	gdb --tui --args ./c.out -p posix -g main2.cp $(ForcedLibs) -o test2.ll
 test2g: main2.cp
 	gdb --tui ./test2
 
