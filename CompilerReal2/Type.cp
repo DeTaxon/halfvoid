@@ -276,8 +276,23 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 						if val != null box.itConsts.Push(val)
 						else 
 						{
-							//Node.EmitError("can not create class\n")
-							return null
+							if iterR is ObjIndent
+							{
+								itN := iterR->{ObjIndent^}.MyStr
+								itmF := GetItem(itN,iterR)
+								if itmF != null
+								if itmF? is ObjParam and itmF.Down.GetValue() == "!{}{...}"
+								{
+									box.itConsts.Push(new ObjClassTemplatePointer(itmF.Down->{BoxClassTemplate^}))
+								}else
+								{
+									return null
+								}
+							}else
+							{
+								//Node.EmitError("can not create class\n")
+								return null
+							}
 						}
 					}else{
 						box.itConsts.Push(new ObjType(isType))

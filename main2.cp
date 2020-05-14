@@ -8,15 +8,14 @@ Tes := class .{@A[@B]}
 	}
 }
 
-RSet.{@A} := type Tes.{int[A]}
+Anoter := class .{@A}
+{
+	item := A.{int[13]}
+}
 
 main := !() -> int
 {
-	z := RSet.{13} ; $test
-	z.val()
-	k := RSet.{13}
-	k.val()
-	ho := RSet.{12}
-	ho.val()
+	z := Anoter.{Tes}
+	z.item.val()
 	return 0
 }

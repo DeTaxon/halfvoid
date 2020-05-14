@@ -445,6 +445,24 @@ ObjType := class extend ObjConst
 		return PreRet
 	}
 }
+ObjClassTemplatePointer := class extend ObjConst
+{
+	this := !(Object^ st) -> void
+	{
+		assert(st is BoxClassTemplate)
+		Down = st
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~type.{}"
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjClassTemplatePointer(Down)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjCmd := class extend ObjConst
 {
 	MyStr := char^
