@@ -13,6 +13,8 @@ Anoter := class .{@A}
 	item := A.{int[13]}
 }
 
+Wut.{@B} := type Anoter.{B}
+
 main := !() -> int
 {
 	z := Anoter.{Tes}

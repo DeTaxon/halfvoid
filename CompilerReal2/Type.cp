@@ -357,7 +357,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			NodeName := GetItem(itName,Node)
 
 			if NodeName == null return null
-			if NodeName.Down.GetValue() == "!{}{...}"
+			if NodeName.Down?.GetValue() == "!{}{...}"
 			{
 				asT := ((NodeName.Down)->{BoxClassTemplate^})
 
