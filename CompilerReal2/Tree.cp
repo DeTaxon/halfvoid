@@ -158,9 +158,9 @@ Object := class{
 		if Up != null
 			Up.ApplyDeferUse(depth)
 	}
-	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	PrintDebugDeclare := virtual !(sfile f ,Object^ frc,char^ forcedName) -> void
 	{
-		Down[^].PrintDebugDeclare(f,frc)
+		Down[^].PrintDebugDeclare(f,frc,null->{char^})
 	}
 	GetScope := virtual !() -> int
 	{

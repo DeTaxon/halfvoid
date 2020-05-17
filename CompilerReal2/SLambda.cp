@@ -17,7 +17,7 @@ SLambda := class extend BoxFuncContainer
 
 	StolenParams := AVLMap.{char^,LocalParam^}
 
-	CaptureParams := List.{Tuple.{char^,MemParam^,bool,MemParam^}}
+	CaptureParams := List.{Tuple.{char^,LocalParam^,bool,MemParam^,int}}
 	CPIndexes := List.{int}
 	ResultType := Type^
 	GetType := virtual !() -> Type^ { return ResultType }
@@ -27,11 +27,14 @@ SLambda := class extend BoxFuncContainer
 	{
 		ABox.ItId = GetNewId()
 		WorkBag.Push(this&,State_Start)
+		WorkBag.Push(this&,State_PrePrint)
 		ItId = GetNewId()
 		inAlloc = -1
 	}
+	IsCloned := false
 	Clone := virtual !() -> Object^
 	{
+		IsCloned = true
 		PreRet := new SLambda()
 		PreRet.Line = Line
 
@@ -84,6 +87,15 @@ SLambda := class extend BoxFuncContainer
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_PrePrint
+		{
+			if IsCloned return void
+			for it : CaptureParams
+			{
+				re := this.GetItem(it.0)
+				if re == null EmitError("Capture param "sbt + it.0 + " not found")
+			}
+		}
 		if pri == State_Start and (not parsedStart)
 		{
 			AllocSetStruct(Up)
@@ -239,7 +251,7 @@ SLambda := class extend BoxFuncContainer
 							{
 								if c.GetValue() == "~ind"
 								{
-									CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false,null->{MemParam^})
+									CaptureParams.Emplace(c->{ObjIndent^}.MyStr,null,false,null,GetNewId())
 									count = 1
 								}else
 								{
@@ -359,13 +371,6 @@ SLambda := class extend BoxFuncContainer
 			}
 			nameIter += 1
 		}
-		if printDeb 
-		{
-			//funcsUp.Back().2.PrintDebugDeclare(f,this&)
-			if Down != null Down[^].PrintDebugDeclare(f,null)
-			for it : StolenParams it.PrintDebugDeclare(f,this&)
-			
-		}
 		if applyedCaptures
 		{
 			k := 0
@@ -374,18 +379,23 @@ SLambda := class extend BoxFuncContainer
 				if it.1 == null
 					continue
 				kk := CPIndexes[k]
-				if it.2
-				{
-						f << "%TPr" << ABox.ItId << "l" << kk << " = getelementptr " << captureType.GetName() << " , "
-						 	<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "\n"
-						f << "%T" << ABox.ItId << "l" << kk << " = load "
-						f << it.1.ResultType.GetName() << "* , " << it.1.ResultType.GetName() << "** %TPr" <<ABox.ItId << "l" << kk << "\n"
-				}else{
-						f << "%T" << ABox.ItId << "l" << kk << " = getelementptr " << captureType.GetName() << " , "
-						 	<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "\n"
-				}
+				f << "%T" <<  it.4 << " = getelementptr " 
+				f << captureType.GetName() << " , " << captureType.GetName() 
+				f << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "; wut\n"
 				k++
 			}
+		}
+		if printDeb 
+		{
+			//funcsUp.Back().2.PrintDebugDeclare(f,this&)
+			if Down != null Down[^].PrintDebugDeclare(f,null,null->{char^})
+			for it : StolenParams it.PrintDebugDeclare(f,this&,null->{char^})
+			for it : CaptureParams
+			{
+				if it.1 != null
+					it.1.PrintDebugDeclare(f,this&,it.0)
+			}
+			
 		}
 	}
 	
@@ -602,17 +612,17 @@ SLambda := class extend BoxFuncContainer
 						{
 							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
 								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
-							it.1.PrintPointPre(f,newIdd,-1) //TODO: replace -1 with lambda debug id
+							it.1.PrintPointPre(f,newIdd,-1)
 							f << "store "
-							it.1.PrintPointUse(f,newIdd,-1) //TODO: replace -1 with lambda debug id
+							it.1.PrintPointUse(f,newIdd,-1)
 							f << " , " << it.1.ResultType.GetName() << "** "
 							f << "%TSt" << sii << "\n"
 						}else{
 							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
 								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
-							it.1.PrintPre(f,newIdd,-1) //TODO: replace -1 with lambda debug id
+							it.1.PrintPre(f,newIdd,-1)
 							f << "store "
-							it.1.PrintUse(f,newIdd,-1) //TODO: replace -1 with lambda debug id
+							it.1.PrintUse(f,newIdd,-1)
 							f << " , " << it.1.ResultType.GetName() << "* "
 							f << "%TSt" << sii << "\n"
 						}
@@ -769,6 +779,9 @@ SLambda := class extend BoxFuncContainer
 				f << "%TpY" << ItId << " = getelementptr " << ABox.parentAlloc.GetClassName() << "," << ABox.parentAlloc.GetAsUse() << " ,i32 0,i32 " << inNR <<", i32 " << yodlerInAlloc <<"\n"
 				f << "store i32 0, i32* %TpY" << ItId << "\n"
 			}
+			dbgId := -1
+			if DebugMode and Up != null
+				dbgId = CreateDebugCall(this.Up)
 
 			k := 0
 			for it,i : CaptureParams
@@ -780,9 +793,9 @@ SLambda := class extend BoxFuncContainer
 					{
 						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
 							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
-						it.3.PrintPointPre(f,nwId,-1) //TODO: replace -1 with lambda debug id
+						it.3.PrintPointPre(f,nwId,dbgId)
 						f << "store "
-						it.3.PrintPointUse(f,nwId,-1) //TODO: replace -1 with lambda debug id
+						it.3.PrintPointUse(f,nwId,dbgId)
 						f << " , "
 						f << it.1.ResultType.GetName() << "** "
 						f << "%StP" << nwId
@@ -790,9 +803,9 @@ SLambda := class extend BoxFuncContainer
 					}else{
 						f << "%StP" << nwId << " = getelementptr " << captureType.GetName() << " , "
 							<< captureType.GetName() << "* %T" << cptInAlloc << ", i32 0, i32 " << CPIndexes[k] << "\n"
-						it.3.PrintPre(f,nwId,-1) //TODO: replace -1 with lambda debug id
+						it.3.PrintPre(f,nwId,dbgId)
 						f << "store "
-						it.3.PrintUse(f,nwId,-1) //TODO: replace -1 with lambda debug id
+						it.3.PrintUse(f,nwId,dbgId)
 						f << " , "
 						f << it.1.ResultType.GetName() << "* "
 						f << "%StP" << nwId
@@ -889,7 +902,11 @@ SLambda := class extend BoxFuncContainer
 				if it.1 == null
 				{
 					inUp := GetItem(name,Up)
-					if (inUp? is ObjParam and inUp.Down? is LocalParam) or inUp is LocalParam or inUp is FuncParam
+					if inUp == null
+					{
+						return null
+					}
+					if (inUp is ObjParam and inUp.Down? is LocalParam) or inUp is LocalParam or inUp is FuncParam
 					{
 						itMem := MemParam^()
 						if inUp is LocalParam or inUp is FuncParam
@@ -903,12 +920,10 @@ SLambda := class extend BoxFuncContainer
 								assert(false)
 							}
 						}
-						preRet := new FuncParam("T"sbt + ABox.ItId + "l" + i,itMem.GetType(),true)
+						preRet := new LocalParam(itMem.GetType(),it.4,it.2)
 						it.1 = preRet
 						it.3 = itMem
 						return preRet
-					}else{
-						EmitError("can not capture parameter "sbt + name)
 					}
 				}
 				if it.1 != null
@@ -950,6 +965,9 @@ SLambda := class extend BoxFuncContainer
 	GetValue := virtual !() -> string
 	{
 		return "x=>x"
+	}
+	PrintDebugDeclare := virtual !(sfile f ,Object^ frc,char^ forcedName) -> void
+	{
 	}
 	ApplyDeferUse := virtual !(int depth) -> void
 	{

@@ -871,7 +871,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 			if DebugMode 
 			{
-				PrintDebugDeclare(f,null)
+				PrintDebugDeclare(f,null,null->{char^})
 			}
 			if Yodlers.Size() != null
 			{
@@ -886,14 +886,17 @@ BoxFuncBody := class extend BoxFunc
 			
 			iterP := Up
 
-			while iterP != null
+			while iterP != null //For defer reason
 			{
 				if iterP.GetValue() == "x=>x"
 				{
+					thisDbgId := -1
+					if DebugMode 
+						thisDbgId = CreateDebugCall(this&)
 					asL := iterP->{SLambda^}
 					ABName := asL.ABox.GetClassName()
 					f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
-					asL.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,-1) ; //TODO: replace with debug id
+					asL.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,thisDbgId)
 
 					if not asL.justFunc
 					{
@@ -906,12 +909,15 @@ BoxFuncBody := class extend BoxFunc
 				}
 				if iterP.GetValue() == "!()" and iterP != this&
 				{
+					thisDbgId := -1
+					if DebugMode 
+						thisDbgId = CreateDebugCall(this&)
 					asN := iterP->{BoxFuncBody^}
 					ABName := asN.ABox.GetClassName()
 					if not asN.ABox.ItemBag.Empty()
 					{
 						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-						asN.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,-1) //TODO: replace with debug id
+						asN.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,thisDbgId)
 						if asN.IsMethod
 						{
 							thisId := asN.ItParams[0].inAllocId

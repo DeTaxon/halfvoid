@@ -1,9 +1,10 @@
-
-AVLSet := class .{@DATA}
+AVLSet.{@DATA} := type ContainerCommonSet.{AVLTree,DATA}
+RBSet.{@DATA} := type ContainerCommonSet.{RBTree,DATA}
+ContainerCommonSet := class .{@TreeType,@DATA}
 {
 	$keep
 
-	itTree := AVLTree.{DATA} ; #outer_class
+	itTree := TreeType.{DATA} ; #outer_class
 	itSize := int
 
 	this := !() -> void
@@ -47,7 +48,7 @@ AVLSet := class .{@DATA}
 	Size := !() -> int { return itSize }
 }
 
-"in" := !(SetType this, AVLSet.{@SetType} bag) -> bool
+"in" := !(SetType this, ContainerCommonSet.{@TreeType,@SetType} bag) -> bool
 {
 	return bag.Contain(this)
 }

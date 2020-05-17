@@ -32,7 +32,7 @@ MemParam := class extend ObjResult
 	{
 		return "Mem"
 	}
-	PrintDebugDeclare := virtual !(sfile f) -> void
+	PrintDebugDeclare := virtual !(sfile f,Object^ to,char^ forceName) -> void
 	{
 	}
 
@@ -166,23 +166,30 @@ LocalParam := class extend MemParam
 	{
 		return "Local"
 	}
-	PrintDebugDeclare := virtual !(sfile f,Object^ fnc) -> void
+	PrintDebugDeclare := virtual !(sfile f,Object^ fnc,char^ forceName) -> void
 	{
-		asP := Up->{ObjParam^}
-		if Up == null or not (Up is ObjParam)
-			return void
-		if asP.IsRef
+		itDbgName := forceName
+		if itDbgName == null
 		{
-		}else{
+			asP := Up->{ObjParam^}
+			if Up == null or not (Up is ObjParam)
+				return void
+			itDbgName = asP.MyStr
+		}
+		//if IsRef
+		//{
+		//}else{
 			asUp := Up
 			if fnc != null asUp = fnc
-			outId := CreateDbgLocVar(asUp,asP.ObjType,asP.MyStr)
+			outId := CreateDbgLocVar(asUp,ResultType,itDbgName,IsRef)
 			newId := CreateDebugCall(asUp)
 			if newId != -1 and outId != -1
 			{
-				f << "call void @llvm.dbg.declare(metadata " << asP.ObjType.GetName() << "* %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+				f << "call void @llvm.dbg.declare(metadata " << ResultType.GetName() << "*"
+				if IsRef f << "*"
+				f << " %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
 			}
-		}
+		//}
 	}
 }
 VeryLocalParam := class extend LocalParam

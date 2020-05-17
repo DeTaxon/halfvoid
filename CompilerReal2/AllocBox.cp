@@ -126,7 +126,10 @@ AllocBox := class
 				itr2 := ItemBag.Start 
 				while itr2 != null
 				{
-					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() << "\n"
+					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() 
+					if debId != -1
+						f << ", !dbg !" << debId
+					f << "\n"
 					itr2 = itr2.Next
 				}
 				return void
@@ -158,7 +161,10 @@ AllocBox := class
 					//}
 					f << "\n"
 				}else{
-					f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId << "\n"
+					f << "%AllocItem" << ItId << " = alloca %AllocClass" << ItId
+					if debId != -1
+						f << ", !dbg !" << debId
+					f << "\n"
 				}
 			}
 		}

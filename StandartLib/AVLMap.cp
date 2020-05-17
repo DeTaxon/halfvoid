@@ -1,9 +1,11 @@
-//AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree.{BadPair.{KEY,VALUE},KEY,VALUE}
-AVLMap := class .{@KEY,@VALUE}
+AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree,KEY,VALUE}
+RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
+
+ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 {
 	$keep
 
-	itTree := AVLTree.{BadPair.{KEY,VALUE}} ; #outer_class
+	itTree := TreeType.{BadPair.{KEY,VALUE}} ; #outer_class
 	itSize := int
 
 	this := !() -> void
@@ -48,7 +50,7 @@ AVLMap := class .{@KEY,@VALUE}
 	}
 	Size := !() -> int { return itSize }
 }
-"in" := !(SetType this, AVLMap.{@SetType,@AnotherType} bag) -> bool
+"in" := !(SetType this, ContainerCommonMap.{@TreeType,@SetType,@AnotherType} bag) -> bool
 {
 	return bag.Contain(this)
 }
