@@ -77,6 +77,7 @@ PrintDebugMeta := !(sfile fil) -> void
 	fil << "!" << nm << " = !{!\"Taxon's stupid compiler\"}\n" 
 	fil << "!llvm.ident = !{!" << nm <<"}\n"
 	fil << "declare void @llvm.dbg.declare(metadata, metadata, metadata)\n"
+	fil << "declare void @llvm.dbg.value(metadata, metadata, metadata)\n"
 	fil << "declare void @llvm.dbg.addr(metadata, metadata, metadata)\n"
 
 	dwrdV := GetNewId() fil << "!" << dwrdV << " = !{i32 2, !\"Dwarf Version\", i32 4}\n"

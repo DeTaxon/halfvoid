@@ -827,11 +827,6 @@ BoxFuncBody := class extend BoxFunc
 				ABox.PrintAlloc(f,dbgId)
 			}
 
-			//f << "%ABoxSizePre" << ABox.ItId << " = getelementptr %AllocClass" << ABox.ItId << " , %AllocClass" << ABox.ItId << "* null , i32 1\n"
-			//f << "%ABoxSize" << ABox.ItId << " = ptrtoint %AllocClass" << ABox.ItId << "* %ABoxSizePre" << ABox.ItId <<" to i32\n"
-			//f << "%ABoxPoint = bitcast %AllocClass" << ABox.ItId << "* %AllocItem" << ABox.ItId << " to i8*\n" 
-			//f << "call void @memset(i8* %ABoxPoint" << ABox.ItId << " , i8 0, i32 %ABoxSize" << ABox.ItId << ")\n"
-
 			if InAlloc != null
 			for i : MyFuncType.ParsCount
 			{
@@ -850,24 +845,24 @@ BoxFuncBody := class extend BoxFunc
 					if DebugMode and dbgId != -1
 						f << ", !dbg !" << dbgId
 					f << "\n"
-				if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
-				{
-					if MyFuncType.ParsIsRef[i]
-					{
-						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
-						newId := CreateDebugCall(this&)
-						if dbgId != -1 and outId != -1
-						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
-						}
-					}else{
-						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
-						if dbgId != -1 and outId != -1
-						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
-						}
-					}
-				}
+				//if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
+				//{
+				//	if MyFuncType.ParsIsRef[i]
+				//	{
+				//		outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
+				//		newId := CreateDebugCall(this&)
+				//		if dbgId != -1 and outId != -1
+				//		{
+				//			f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+				//		}
+				//	}else{
+				//		outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
+				//		if dbgId != -1 and outId != -1
+				//		{
+				//			f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+				//		}
+				//	}
+				//}
 			}
 			if DebugMode 
 			{

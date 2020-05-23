@@ -642,4 +642,18 @@ RetFuncParam := class extend MemParam
 	{
 		return ToCall.GetPointName()
 	}
+	PrintForDebugDeclare := virtual !(sfile f,char^ forceName,Object^ ptrPos,int debId) -> void
+	{
+		if debId == -1 return void
+
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
+		if debId != -1 and outId != -1
+		{
+			f << "call void @llvm.dbg."
+			if IsRef() f << "addr" else f << "value"
+			f << "(metadata "
+			if IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)
+			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
+		}
+	}
 }

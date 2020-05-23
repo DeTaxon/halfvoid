@@ -73,6 +73,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	attrs := AttrArrayType^
 
 	EnabledIIndex := bool
+	CreatedIIndexNames := List.{char^}
 
 	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
@@ -116,6 +117,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		if pri == State_Start
 		{
+			Down.Line = Line
 			WorkBag.Push(this&,State_PreGetUse)
 		}
 		if pri == State_PreGetUse
@@ -268,6 +270,10 @@ BoxForOldFashionMulti := class extend BoxFor
 							//EmitError("Can not get index item\n")
 							EnabledIIndex = true
 							IndParams[i] = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
+							if DebugMode
+							{
+								CreatedIIndexNames.Push(IndNames[i])
+							}
 						}else{
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
@@ -302,6 +308,9 @@ BoxForOldFashionMulti := class extend BoxFor
 			PrintDeferDepth(f,ItId,this&)	
 		Down.Right[^].PrintPre(f)
 
+		debId := -1
+		if DebugMode debId = CreateDebugCall(this&)
+
 		Checks := 0
 		for itemsCount if IsInvalids[it] != null Checks += 1
 
@@ -330,10 +339,24 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "start" << ItId << ":\n"
 		}
 
+		createdIInts := List.{int}() ; $temp
+
+		if debId != -1 for it : CreatedIIndexNames
+		{
+			newRes := CreateDbgLocVar(Down,GTypeInt,it)
+			if newRes != -1
+				createdIInts.Push(newRes)
+		}
+
 		if EnabledIIndex {
 			f << "br label %ExtraStart" << ItId << "\n"
 			f << "ExtraStart" << ItId << ":\n"
 			f << "%ForIndex" << ItId << " = phi i32 [0,%start" << ItId << "] , [%FIndex" << ItId << ", %ExtraEnd" << ItId << "]\n"
+
+			for it : createdIInts
+			{
+				f << "call void @llvm.dbg.value(metadata i32 %ForIndex" << ItId << " ,metadata !" << it << ",metadata !DIExpression()), !dbg !"<<debId<<"\n" 
+			}
 		}
 		IsEndFunc.PrintPre(f)
 		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
@@ -342,6 +365,10 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		for i : itemsCount {
 			if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
+			if Params[i]? is RetFuncParam and Names[i] != null and debId != -1
+			{
+				Params[i]->{RetFuncParam^}.PrintForDebugDeclare(f,Names[i],Down,debId)
+			}
 			if IndFuncs[i] != null
 			{
 				if IndFuncs[i].IsRef()
@@ -350,6 +377,10 @@ BoxForOldFashionMulti := class extend BoxFor
 				}else{
 					IndFuncs[i].PrintPre(f)
 				}
+			}
+			if IndFuncs[i] != null and IndParams[i]? is RetFuncParam and IndNames[i] != null and debId != -1
+			{
+				IndParams[i]->{RetFuncParam^}.PrintForDebugDeclare(f,IndNames[i],Down,debId)
 			}
 		}
 		Down.PrintInBlock(f)
