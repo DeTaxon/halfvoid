@@ -346,10 +346,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					box.itConsts.Push(new ObjStr(asName))
 
 					fun := FindFunc("->",iter,box^,false)
-					iter = iter.Left
-					iter.Right.Left = null
-					iter.Right = null
-					return MakeSimpleCall(fun,iter)
+					if fun != null
+					{
+						iter = iter.Left
+						iter.Right.Left = null
+						iter.Right = null
+						return MakeSimpleCall(fun,iter)
+					}
 				}
 
 				if iter.Right.Right != null
@@ -1712,7 +1715,7 @@ ConstructCall := class extend NaturalCall
 		if pri == State_MiddleGetUse
 		{
 			
-			if Up.GetValue() == "~Return()"
+			if Up?.GetValue() == "~Return()"
 			{
 				rights := Down.Right
 				itm := GetItem(ReturnName,this&)

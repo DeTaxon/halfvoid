@@ -113,7 +113,7 @@ StringBuilderTemporary := class .{@BufSize}{
 	}
 }
 
-"sbt" := !(string toAp) -> StringBuilderTemporary.{512}
+"sbt" := !(string toAp) -> StringBuilderTemporary.{256}
 {
 	result."this"()
 	result << toAp

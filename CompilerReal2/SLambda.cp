@@ -381,7 +381,7 @@ SLambda := class extend BoxFuncContainer
 				kk := CPIndexes[k]
 				f << "%T" <<  it.4 << " = getelementptr " 
 				f << captureType.GetName() << " , " << captureType.GetName() 
-				f << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "; wut\n"
+				f << "* %T" << cptInAlloc << ", i32 0, i32 " << kk << "\n"
 				k++
 			}
 		}
@@ -475,16 +475,16 @@ SLambda := class extend BoxFuncContainer
 					itrr = itrr.Up
 				}
 				
+				realAllocs := 0
 				f << "%FatLambdaType" << ItId << " = type {"
-				io := 0
 				for bx : funcsUp
 				{
-					if io != 0
+					if realAllocs != 0
 						f << ","
 					if bx.0.parentAlloc == null
 					{
 						f << bx.0.GetClassName()
-						io += 1
+						realAllocs += 1
 					}
 				}
 				f << "}\n"
@@ -531,76 +531,82 @@ SLambda := class extend BoxFuncContainer
 				f << "%PreSetPoint" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << "\n"
 				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
 
-				//if Yodlers.Size() != 0
-				//{
-				//	f << "%Yodler = getelementptr " << ABox.GetClassName() << " , " << ABox.GetAsUse() << " i32 0, i32 " << yodlerInAlloc << "\n"
-				//	f << "%PreSetYodler" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << ", i32 3\n"
-				//	f << "%YodlerValue = load i32 , i32* %Yodler\n"
-				//	f << "store i32 %YodlerValue , i32* %PreSetYodler" << ItId << "\n"
-				//}
-				
-				prevL := SLambda^()
-				for fc : funcsUp, j : 0
-				{
-					if prevL != null
-					{
-						f << "%WherePut" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0 , i32 " << j - 1
-							<< ", i32 " << prevL.ABox.GetNR(prevL.InAlloc[0]) << "\n"
-						if fc.1 != null
-						{
-							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
-								<< j << ", i32 " << fc.1.ItNR << "\n"
-						}else{
-							prevNR := fc.2.ABox.GetNR(prevL.inAlloc)
-							f << "%ToSetP" << j << " = getelementptr %FatLambdaType"<< ItId <<", %FatLambdaType" << ItId << "* %PreApply , i32 0, i32 " 
-								<< j << ", i32 " << prevNR << "\n"
-						}
-						f << "%ToSetPT" << j << " = bitcast " << prevL.ResultType.GetName() << " %ToSetP" << j << " to i8*\n"
-						f << "store i8* %ToSetPT" << j << " , i8** %WherePut" << j << "\n"
-					}
-					if fc.2 != null and fc.2.IsMethod
-					{
-						f << "%SetThis = getelementptr %FatLambdaType"<< ItId <<" , %FatLambdaType" << ItId
-							<< "* %PreApply, i32 0, i32 " << j << ",i32 " << fc.2.ABox.GetNR(fc.2.InAlloc[0]) << "\n"
-						f << "store "<< fc.2.MyFuncType.Pars[0].GetName() <<"* %this , "
-							<< fc.2.MyFuncType.Pars[0].GetName()  <<"** %SetThis\n"
-					}
-					prevL = fc.1
-				}
 
+				prevAB := AllocBox^()
+				flt := "%FatLambdaType"sbt + ItId <-
+				nonNestedC := 0
+				funcsUpSize := funcsUp.Size()
+				revAllocIter := realAllocs - 1
+				for k : funcsUpSize
+				{
+					nowId := funcsUpSize - k - 1
+					nowR := ref funcsUp[nowId]
+					if nowR.0.parentAlloc == null
+					{
+						f << "%OldPtr" << nowId << " = getelementptr " << flt << " , " << flt << "* %PreApply, i32 0,i32 " << revAllocIter << "\n"
+						revAllocIter -= 1
+					}else{
+						prevCName := prevAB.GetClassName()
+						f << "%OldPtr" << nowId << " = getelementptr " << prevCName << " , " << prevCName << "* %OldPtr" << (nowId + 1) << " , i32 0"
+							f << ", i32 " << nowR.0.InheritNR() << "\n"
+					}
+					prevAB = nowR.0
+				}
+				
+				prevAB = null
+				for fc,k : funcsUp
+				{
+					if prevAB != null
+					{
+						nowCN := prevAB.GetClassName()
+						f << "%ToSet" << k << " = getelementptr " << nowCN << " , " << nowCN 
+						<< "* %OldPtr" << (k - 1) << ", i32 0,i32 " << funcsUp[k-1].0.GetNR(funcsUp[k-1].1.InAlloc[0]) << "\n"
+
+						f << "%OldPtrT" << k << " = bitcast " << fc.0.GetClassName() << "* %OldPtr"<< k<<" to i8*\n"
+						f << "store i8* %OldPtrT"<< k << " , i8** %ToSet" << k << "\n"
+					}
+					prevAB = fc.0
+				}
+				upABName := funcsUp[0].0.GetClassName()
+				if Yodlers.Size() != 0
+				{
+					upAB := funcsUp[0].0
+					f << "%Yodler = getelementptr " << upABName << " , " << upABName << "* %Lambda0Box, i32 0, i32 "<< ABox.InheritNR()<<",i32 " << yodlerInAlloc << "\n"
+					f << "%PreSetYodler = getelementptr " << ABName << " , " << ABName << "* %OldPtr0 , i32 0,i32 "<< ABox.InheritNR() <<",i32 "<< yodlerInAlloc << "\n"
+					f << "%YodlerValue = load i32 , i32* %Yodler\n"
+					f << "store i32 %YodlerValue , i32* %PreSetYodler\n"
+				}
 				for prS : StolenParams, L : 0
 				{
 					asMNR := -1 
-					for it : funcsUp, F : 0
+					for it,F : funcsUp
 					{
 						asMNR = it.0.GetNR(prS.inAllocId)
+
+						if asMNR == -1
+							continue
 
 						is2Ref := false
 						if prS is LocalParam and prS->{LocalParam^}.IsRef
 							is2Ref = true
 
-						if asMNR == -1
-							continue
+						aBName := it.0.GetClassName()
 						if is2Ref
 						{
-							f << "%Pre2Get" << ItId << "L" << L << " = load " << prS.ResultType.GetName() << "* , " << prS.ResultType.GetName()
+							f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << "* , " << prS.ResultType.GetName()
 								<< "** %T" << prS.inAllocId << "\n"
-							f << "%PreSet" << ItId << "L" << L << " = getelementptr %FatLambdaType"<< ItId << " , " 
-								<< "%FatLambdaType"<< ItId << "* %PreApply , i32 0, i32 " << F << ",i32 " << asMNR << "\n"
-							f << "store " << prS.ResultType.GetName() << "* %Pre2Get" << ItId << "L" << L << " , "
-								<< prS.ResultType.GetName() << "** %PreSet" << ItId << "L" << L << "\n"
+							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr0 ,i32 0, i32 "<< asMNR << "\n" 
+							f << "store " << prS.ResultType.GetName() << "* %Pre2Get" << L << " , "
+								<< prS.ResultType.GetName() << "** %PreSet" << L << "\n"
 						}else{
-							f << "%Pre2Get" << ItId << "L" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
+							f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
 								<< "* %T" << prS.inAllocId << "\n"
-							f << "%PreSet" << ItId << "L" << L << " = getelementptr %FatLambdaType"<< ItId << " , " 
-								<< "%FatLambdaType"<< ItId << "* %PreApply , i32 0, i32 " << F << ",i32 " << asMNR << "\n"
-							f << "store " << prS.ResultType.GetName() << " %Pre2Get" << ItId << "L" << L << " , "
-								<< prS.ResultType.GetName() << "* %PreSet" << ItId << "L" << L << "\n"
+							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr0 ,i32 0, i32 "<< asMNR << "\n" 
+							f << "store " << prS.ResultType.GetName() << " %Pre2Get" << L << " , "
+								<< prS.ResultType.GetName() << "* %PreSet" << L << "\n"
 						}
 					}
-
 				}
-				
 				iii := 0
 				for it,i : CaptureParams
 				{
@@ -608,18 +614,19 @@ SLambda := class extend BoxFuncContainer
 					{	
 						newIdd := GetNewId()
 						sii := CPIndexes[iii]
+						
 						if it.2 
 						{
-							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
-								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+							f << "%TSt" << sii << " = getelementptr " << upABName
+								<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
 							it.1.PrintPointPre(f,newIdd,-1)
 							f << "store "
 							it.1.PrintPointUse(f,newIdd,-1)
 							f << " , " << it.1.ResultType.GetName() << "** "
 							f << "%TSt" << sii << "\n"
 						}else{
-							f << "%TSt" << sii << " = getelementptr %FatLambdaType" << ItId
-								<< " , %FatLambdaType"<< ItId  << "* %PreApply, i32 0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+							f << "%TSt" << sii << " = getelementptr " << upABName
+								<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
 							it.1.PrintPre(f,newIdd,-1)
 							f << "store "
 							it.1.PrintUse(f,newIdd,-1)
@@ -630,25 +637,26 @@ SLambda := class extend BoxFuncContainer
 					}
 				}
 
-				if ABox.parentAlloc != null and (not ABox.ItemBag.Empty())
-				{
-					cntr := ABox.InheritNR()
-					nmIn := 0
-					for funcsUp
-					{
-						if it.0 == ABox.parentAlloc
-							break
-						nmIn += 1
-					}
-					f << "%ToSetAllc = getelementptr %FatLambdaType" << ItId << " , %FatLambdaType" << ItId
-					f << "* %PreApply, i32 0, i32 0,i32 " << cntr << "\n"
-					f << "%ItAllocPos = getelementptr " << ABox.parentAlloc.GetClassName() << " , " << ABox.parentAlloc.GetClassName() 
-						<< "* %Lambda0Box, i32 0, i32 " << cntr <<"\n" 
-					f << "%ItAlloc = load " << ABox.GetClassName() << " , " << ABox.GetClassName() 
-						<< "* %ItAllocPos\n" 
-					f << "store " << ABox.GetClassName() << " %ItAlloc,  " << ABox.GetClassName() 
-						<< "* %ToSetAllc\n"
-				}
+
+				//if ABox.parentAlloc != null and (not ABox.ItemBag.Empty())
+				//{
+				//	cntr := ABox.InheritNR()
+				//	nmIn := 0
+				//	for funcsUp
+				//	{
+				//		if it.0 == ABox.parentAlloc
+				//			break
+				//		nmIn += 1
+				//	}
+				//	f << "%ToSetAllc = getelementptr %FatLambdaType" << ItId << " , %FatLambdaType" << ItId
+				//	f << "* %PreApply, i32 0, i32 0,i32 " << cntr << "\n"
+				//	f << "%ItAllocPos = getelementptr " << ABox.parentAlloc.GetClassName() << " , " << ABox.parentAlloc.GetClassName() 
+				//		<< "* %Lambda0Box, i32 0, i32 " << cntr <<"\n" 
+				//	f << "%ItAlloc = load " << ABox.GetClassName() << " , " << ABox.GetClassName() 
+				//		<< "* %ItAllocPos\n" 
+				//	f << "store " << ABox.GetClassName() << " %ItAlloc,  " << ABox.GetClassName() 
+				//		<< "* %ToSetAllc\n"
+				//}
 				
 				f << "%RRes"<< ItId << " = bitcast "<< ResultType->{TypeFuncLambda^}.GetPointName() << "* %PreSetPoint" << ItId << " to i8*\n"
 				f << "ret i8* %RRes"<< ItId << "\n"
@@ -1044,7 +1052,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 			IsCompl = IsComplexType(asB.RetType)	
 		}
 
-		ToSet := "%Wut## = bitcast "sbt+ pars[0].first.GetName() + " #1 to i8*\n"
+		ToSet := "%Wut## = bitcast "sbt+ pars[0].first.GetName() + " #1 to i8* #d\n"
 			+ "%Func## = load " +pars[0].first.Base.GetName() + "* , " + pars[0].first.GetName() + " #1 #d\n"
 
 
