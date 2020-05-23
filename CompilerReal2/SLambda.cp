@@ -595,13 +595,13 @@ SLambda := class extend BoxFuncContainer
 						{
 							f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << "* , " << prS.ResultType.GetName()
 								<< "** %T" << prS.inAllocId << "\n"
-							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr0 ,i32 0, i32 "<< asMNR << "\n" 
+							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr" << F <<" ,i32 0, i32 "<< asMNR << "\n" 
 							f << "store " << prS.ResultType.GetName() << "* %Pre2Get" << L << " , "
 								<< prS.ResultType.GetName() << "** %PreSet" << L << "\n"
 						}else{
 							f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
 								<< "* %T" << prS.inAllocId << "\n"
-							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr0 ,i32 0, i32 "<< asMNR << "\n" 
+							f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr"<< F <<" ,i32 0, i32 "<< asMNR << "\n" 
 							f << "store " << prS.ResultType.GetName() << " %Pre2Get" << L << " , "
 								<< prS.ResultType.GetName() << "* %PreSet" << L << "\n"
 						}
