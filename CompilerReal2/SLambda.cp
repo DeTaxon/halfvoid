@@ -21,6 +21,9 @@ SLambda := class extend BoxFuncContainer
 	CPIndexes := List.{int}
 	ResultType := Type^
 	GetType := virtual !() -> Type^ { return ResultType }
+
+	newCall := Object^
+	deleteCall := Object^
 	
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
@@ -281,10 +284,27 @@ SLambda := class extend BoxFuncContainer
 				if Down.GetValue() == "{}"
 					manSkob = true
 				MakeItBlock(Down)
+
 			}
 		}
 		if pri == State_PostGetUse
 		{
+			if not justFunc
+			{
+				newCallB := new FuncInputBox ; $temp
+				newCallB.itPars.Emplace(GTypeU64,false)
+				newCallB.itConsts.Push(new ObjType(GTypeU8)) ; $temp
+				newFunc := FindFunc("new",Up,newCallB^,false)
+				newCall = MakeSimpleCall(newFunc,new ParamNaturalCall("",new FuncParam("ResLambdaSize",GTypeU64,false)))
+
+
+				delCallB := new FuncInputBox ; $temp
+				delCallB.itPars.Emplace(GTypeVoidP,false)
+				delFunc := FindFunc("delete",Up,delCallB^,false)
+				deleteCall = MakeSimpleCall(delFunc,null)
+				deleteCall = MakeSimpleCall(delFunc,new ParamNaturalCall("",new FuncParam("LambdaToDel",GTypeVoidP,false)))
+
+			}
 			//datRes := new FuncInputBox ; $temp
 			//datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
 
@@ -498,8 +518,10 @@ SLambda := class extend BoxFuncContainer
 					f << "%LS2" << nameIter << " = ptrtoint " << ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
 					f << "%LS1" << nameIter << " = ptrtoint i8* %ToDel"<< ItId  << " to i64\n"
 					f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
-					f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to i8*\n"
-					f << "call void @free(i8* %Lambda" << nameIter << "Box)\n"
+					f << "%LambdaToDel = inttoptr i64 %Lambda" << nameIter << "Pre2 to i8*\n"
+					assert(deleteCall != null)
+					deleteCall.PrintInBlock(f)
+					//f << "call void @free(i8* %LambdaToDel)\n"
 				f << "ret void\n"
 				f << "}\n"
 
@@ -521,15 +543,21 @@ SLambda := class extend BoxFuncContainer
 
 				f << "%ResSizePre" << ItId << " = getelementptr %FatLambdaType" << ItId << " , %FatLambdaType"
 					<< ItId << "* null , i32 1\n"
-				f << "%ResSize" << ItId << " = ptrtoint %FatLambdaType" << ItId << "* %ResSizePre" << ItId << " to i64\n"
-				f << "%Res" << ItId << " = call i8* @malloc(i64 %ResSize" << ItId << ")\n"
-				f << "%PreSet" << ItId << " = bitcast i8* %Res" << ItId << " to " << ABName << "*\n"
-				f << "%PreApply = bitcast i8* %Res" << ItId << " to %FatLambdaType" << ItId << "*\n"
+				f << "%ResLambdaSize = ptrtoint %FatLambdaType" << ItId << "* %ResSizePre" << ItId << " to i64\n"
+				//f << "%Res" << ItId << " = call i8* @malloc(i64 %ResSize)\n"
+				assert(newCall != null)
+				newCall.PrintPre(f)
+
+				f << "%PreSet" << ItId << " = bitcast " 
+				newCall.PrintUse(f) 
+				f << " to " << ABName << "*\n"
+
+				f << "%PreApply = bitcast "
+				newCall.PrintUse(f)
+				f <<  " to %FatLambdaType" << ItId << "*\n"
 
 
 				asL := ResultType->{TypeFuncLambda^}
-				f << "%PreSetPoint" << ItId << " = getelementptr " << ABName << " , " << ABName << "* %PreSet" << ItId << " , i32 0, i32 " << ItNR << "\n"
-				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
 
 
 				prevAB := AllocBox^()
@@ -576,6 +604,8 @@ SLambda := class extend BoxFuncContainer
 					f << "%YodlerValue = load i32 , i32* %Yodler\n"
 					f << "store i32 %YodlerValue , i32* %PreSetYodler\n"
 				}
+				f << "%PreSetPoint" << ItId << " = getelementptr " << upABName << " , " << upABName << "* %OldPtr0 , i32 0, i32 " << ItNR << "\n"
+				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
 				for prS : StolenParams, L : 0
 				{
 					asMNR := -1 
@@ -1164,7 +1194,7 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 	this := !() -> void
 	{
 		IsMethod = true
-		FuncName = "Delete"
+		FuncName = "Destroy"
 		OutputName = "error"
 
 		emptType := Queue.{Type^}() ; $temp
