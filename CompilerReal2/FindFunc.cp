@@ -437,6 +437,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if inType == GTypeDouble and funcType == GTypeInt return 2
 	if inType == TypeTable[16] and funcType is TypeFatArr  return 2
 
+	if inType == GTypeVoidP and funcType is TypeFuncLambda return 3
+
 	if inType == GTypeInt and funcType == GTypeBool return 3
 
 	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"

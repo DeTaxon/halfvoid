@@ -72,7 +72,7 @@ FindFirstFileW := !(u16^ fileNamme,WIN32_FIND_DATAW^ resDat) ->void^ declare
 FindNextFileW := !(void^ hndl, WIN32_FIND_DATAW^ resDat) -> bool declare
 FindClose := !(void^ hndl) -> bool declare
 
-CreateDirectoryW := !(void^ wchr,void^ secur) -> int
+CreateDirectoryW := !(void^ wchr,void^ secur) -> int declare
 
 FILE_MAP_ALL_ACCESS := 0xF001F
 FILE_MAP_READ := 4
@@ -131,7 +131,7 @@ TSleep := !(double timeWait) -> void
 TCreateDir := !(char^ pthName) -> void
 {
 	prS := Utf8ToUtf16(pthName)
-	if CreateDirectoryW(prS,null) == 0
+	if CreateDirectoryW(prS->{void^},null) == 0
 		throw new Exception("Can not create directory")
 }
 

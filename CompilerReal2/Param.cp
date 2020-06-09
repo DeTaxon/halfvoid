@@ -13,6 +13,7 @@ ObjParam := class extend Object
 	IsRef := bool
 	IsVirtual := bool
 	IsThreadLocal := bool
+	IsTaskLocal := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -238,6 +239,7 @@ ObjParam := class extend Object
 					else{ 
 						preRes := new GlobalParam(MaybeType,val)
 						preRes.IsThreadLocal = IsThreadLocal
+						preRes.IsTaskLocal = IsTaskLocal
 						Down = preRes 
 					}
 					IsGlobal = true

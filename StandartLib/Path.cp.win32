@@ -9,6 +9,7 @@ DirectoryIterator2 := class
 	leftToSet := int
 	this := !(char^ tu, bool isWildcard) -> void
 	{
+		isItEnd = false
 		buff = new char[1024] ; $temp
 		strL := strlen(tu)
 
@@ -42,7 +43,9 @@ DirectoryIterator2 := class
 		hndl = FindFirstFileW(Utf8ToUtf16(buff),nowEntry&)
 		if hndl&->{u64^}^ == not_b 0U
 		{
-			throw new Exception(199,"folder not found")
+			printf("bad %s\n",buff)
+			isItEnd = true
+			return void
 		}
 		putNameToBuff()
 		while (offst == "." or offst == "..") and not isItEnd
@@ -103,7 +106,8 @@ Path := class
 	}
 	IsExist := !() -> bool
 	{
-		return GetId() != 0
+		asW := Utf8ToUtf16(itStr)
+		return GetFileAttributesW(asW) != -1
 	}
 
 	FullPath := !() -> Path
@@ -232,7 +236,6 @@ Path := class
 		preRes := u64
 		preRes = 0
 		GetFileTime(hndl,null,null,preRes&)
-		printf("test %lli\n",preRes)
 		return preRes->{double}*0.001*0.001*0.1
 	}
 }

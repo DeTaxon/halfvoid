@@ -2,17 +2,17 @@ InDataR := !(Object^ obj) -> bool
 {
 	switch obj.GetValue()
 	{
-	case "~null" return true
-	case "~d" return true
-	case "~ind" return true
-	case "~double" return true
-	case "~bool" return true
-	case "~int" return true
-	case "~str" return true
-	case "~cmd" return true
-	case "~{}type" return true
-	case "~type" return true
-	case "x=>x" return true
+		case "~null" return true
+		case "~d" return true
+		case "~ind" return true
+		case "~double" return true
+		case "~bool" return true
+		case "~int" return true
+		case "~str" return true
+		case "~cmd" return true
+		case "~{}type" return true
+		case "~type" return true
+		case "x=>x" return true
 	}
 	//if Val == "()" return true
 	return false
@@ -23,13 +23,13 @@ InBlockData := !(Object^ obj) -> bool
 	if InDataR(obj) return true
 	switch(obj.GetValue())
 	{
-	case  "return()" return true
-	case  "if()" return true
-	case  "while()" return true
-	case  "for()" return true
-	case  "switch()" return true
-	case  "~continue" return true
-	case  "~break" return true
+		case  "return()" return true
+		case  "if()" return true
+		case  "while()" return true
+		case  "for()" return true
+		case  "switch()" return true
+		case  "~continue" return true
+		case  "~break" return true
 	}
 
 	return false
@@ -298,6 +298,12 @@ RuleParam := !(void^ itr) -> int
 		size += 1
 	}
 	if It.GetValue() == "thread_local"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() == "task_local"
 	{
 		It = It.Right
 		if It == null return 0

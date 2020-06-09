@@ -980,8 +980,8 @@ BuiltInTemplateCmpPoints := class extend BoxTemplate
 
 		if consts.Size() != 0 return 255
 		if pars.Size() != 2 return 255
-		if not (pars[0].first is TypePoint or pars[0].first is TypeFatArr) return 255
-		if not (pars[1].first is TypePoint or pars[1].first is TypeFatArr) return 255
+		if not (pars[0].first is TypePoint or pars[0].first is TypeFatArr or pars[0].first is TypeFuncLambda) return 255
+		if not (pars[1].first is TypePoint or pars[1].first is TypeFatArr or pars[0].first is TypeFuncLambda) return 255
 		return 0
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^

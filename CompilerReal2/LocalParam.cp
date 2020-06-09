@@ -203,6 +203,7 @@ GlobalParam := class extend MemParam
 {
 	MainId := int
 	IsThreadLocal := bool
+	IsTaskLocal := bool
 	this := !(Type^ th,Object^ toSet) -> void
 	{
 		ResultType = th
@@ -333,6 +334,128 @@ GlobalParam := class extend MemParam
 	{
 		return "@T"sbt + MainId
 	}
+}
+TaskLocalParam := class extend GlobalParam
+{
+	this := !(Type^ th,Object^ toSet) -> void
+	{
+		ResultType = th
+		Down = toSet
+		Down?.Up = this&
+		MainId = GetNewId()
+		IsThreadLocal = true
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+	}
+
+	//PrintArrData := !(sfile f, Type^ toPr) -> void
+	//{
+	//	asArr := toPr->{TypeArr^}
+
+	//	f << asArr.GetName() << " "
+	//	bs := asArr.Base
+	//	f << "["
+	//	for i : asArr.Size
+	//	{
+	//		if i != 0
+	//			f << " , "
+	//		if bs is TypeClass
+	//		{
+	//			f << bs.GetName() << " "
+	//			PrintClassData(f , bs->{TypeClass^}.ToClass)
+	//		}else{
+	//			assert(bs is TypeArr)
+	//			PrintArrData(f, bs)
+	//		}
+	//	}
+	//	f << "]"
+	//}
+	//PrintClassData := !(sfile f, BoxClass^ toPr) -> void
+	//{
+	//	addedVal := false
+	//	f << "{"
+	//	if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
+	//		f << "i8 0"
+	//	}
+	//	if toPr.ContainVirtual
+	//	{
+	//		addedVal = true
+	//		f << "%ClassTableType" << toPr.ClassId << "* @ClassTableItem" << toPr.ClassId 
+	//	}
+	//	for itPr : toPr.Params
+	//	{
+	//		if addedVal 
+	//			f << " , "
+	//		else addedVal = true
+
+	//		itCntV := TypeContainVTable(itPr.ResultType)
+	//		if itPr.ResultType is TypeClass and itCntV
+	//		{
+	//			f << itPr.ResultType.GetName() << " "
+	//			PrintClassData(f,itPr.ResultType->{TypeClass^}.ToClass)
+	//		}else{
+	//			if itCntV
+	//			{
+	//				assert(itPr.ResultType is TypeArr)
+	//				PrintArrData(f,itPr.ResultType)
+	//			}else{
+	//				f << itPr.ResultType.GetName() << " zeroinitializer"
+	//			}
+	//		}
+	//	}
+	//	f << "}\n"
+	//}
+	//PrintGlobal := virtual !(sfile f) -> void
+	//{
+	//	f << "@T" << MainId << " = "//" = dso_local "
+	//	if IsThreadLocal f << "thread_local "
+	//	f << "global "
+	//	ResultType.PrintType(f)
+	//	if Down == null
+	//	{
+	//		if TypeContainVTable(ResultType)
+	//		{
+	//			PrintClassData(f,ResultType->{TypeClass^}.ToClass)
+	//		}else{
+	//			f << " zeroinitializer\n"
+	//		}
+	//	}else{
+	//		f << " " << Down.GetName() << "\n"
+	//	}
+	//}
+	//PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	//{
+	//}
+	//PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	//{
+	//	ResultType.GetPoint().PrintType(f)
+	//	f << " @T" << MainId
+	//}
+	//PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	//{
+	//	f << "%T" << newInd << " = load "
+	//	ResultType.PrintType(f)
+	//	f << " , "
+	//	ResultType.PrintType(f)
+	//	f << "* @T" << MainId
+	//	if DebugMode and debId != -1
+	//		f << ", !dbg !" << debId 
+	//	f << "\n"
+	//}
+	//PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	//{
+	//	ResultType.PrintType(f)
+	//	f << " %T"<< newInd
+	//}
+	//GetName := virtual !(int newInd) -> string
+	//{
+	//	return "%T"sbt + newInd 
+	//}
+	//GetPointName := virtual !(int newInd) -> string
+	//{
+	//	return "@T"sbt + MainId
+	//}
 }
 GlobalFuncParam := class extend MemParam
 {

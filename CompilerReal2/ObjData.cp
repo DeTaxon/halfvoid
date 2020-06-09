@@ -37,6 +37,7 @@ ObjData := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
+
 			iter := Down
 			while iter != null
 			{

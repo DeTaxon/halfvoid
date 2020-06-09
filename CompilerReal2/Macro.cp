@@ -50,7 +50,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			return null
 		nL := new SLambda()
 		UNext(mvUp,nL,1)
-		MakeItBlock(nL.Down)
+		//MakeItBlock(nL.Down)
 		nL.boostLambda = true
 		return null
 	}

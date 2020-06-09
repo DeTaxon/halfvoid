@@ -297,36 +297,37 @@ UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
 
 IsKeyword := !(W) -> bool
 {
-	//switch W
-	//{
-		if W == "return" return true
-		if W == "for" return true
-		if W == "if" return true
-		if W == "else" return true
-		if W == "while" return true
-		if W == "do" return true
-		if W == "delete" return true
-		if W == "switch" return true
-		if W == "case" return true
-		if W == "class" return true
-		if W == "extern" return true
-		if W == "extend" return true
-		if W == "at" return true
-		if W == "defer" return true
-		if W == "type" return true
-		if W == "virtual" return true
-		if W == "new" return true
-		if W == "delete" return true
-		if W == "thread_local" return true
-		if W == "keep_name" return true
-		if W == "packed_class" return true
-		if W == "self_return" return true
-		if W == "try" return true
-		if W == "catch" return true
-		if W == "throw" return true
-		if W == "on_exception" return true
-		if W == "yield" return true
-	//}
+	switch W
+	{
+		case "return" return true
+		case "for" return true
+		case "if" return true
+		case "else" return true
+		case "while" return true
+		case "do" return true
+		case "delete" return true
+		case "switch" return true
+		case "case" return true
+		case "class" return true
+		case "extern" return true
+		case "extend" return true
+		case "at" return true
+		case "defer" return true
+		case "type" return true
+		case "virtual" return true
+		case "new" return true
+		case "delete" return true
+		case "thread_local" return true
+		case "task_local" return true
+		case "keep_name" return true
+		case "packed_class" return true
+		case "self_return" return true
+		case "try" return true
+		case "catch" return true
+		case "throw" return true
+		case "on_exception" return true
+		case "yield" return true
+	}
 
 	return false
 }

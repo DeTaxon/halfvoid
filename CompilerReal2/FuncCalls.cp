@@ -45,7 +45,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		}
 	}
 
-	if iter.Down != null and iter.Down.Right != null and iter.Down.Right.GetValue() == "is"
+	if iter.Down?.Right?.GetValue() == "is"
 	{
 		asCl1 := iter.Down.GetType()
 		if not(asCl1 == null or asCl1 is TypePoint or asCl1.Base is TypeClass) return null
@@ -611,6 +611,15 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 
 	if preRet == null
 	{
+		if oper in !["<",">","<=",">=","==","!="]
+		{
+			preRet = OneCall("<=>",pars.Up,null->{Object^},true)
+			if preRet != null 
+			{
+				spFunc := GetSpaceTransformer(oper)
+				return MakeSimpleCall(spFunc,preRet)
+			}
+		}
 		if pars.GetType() != null
 		{
 			if pars.GetType() is TypeClass
