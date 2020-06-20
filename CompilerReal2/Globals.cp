@@ -32,6 +32,8 @@ PostFuncs := Queue.{BuiltInFuncClassInfo^}
 CTT := CreateTupleTemplate^
 TCT := TupleConstructorTemplate^
 
+GlobalAttributes := AVLMap.{char^,Object^}
+
 UseDestructors := false
 
 getTempData :=  FuncInputBox^

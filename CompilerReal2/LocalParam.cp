@@ -210,6 +210,7 @@ GlobalParam := class extend MemParam
 		Down = toSet
 		Down?.Up = this&
 		MainId = GetNewId()
+		WorkBag.Push(this&,State_PrePrint)
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -224,6 +225,13 @@ GlobalParam := class extend MemParam
 		if pri == State_GetUse
 		{
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
+		}
+		if pri == State_PrePrint
+		{
+			if Up? is ObjParam
+			{
+				CreateDbgGlobalVar(Up,ResultType,Up->{ObjParam^}.MyStr,false) //TODO: global ref?
+			}
 		}
 	}
 

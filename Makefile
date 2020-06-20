@@ -1,4 +1,4 @@
-ForcedLibs := -C0 "Libs/*" -C0 "StandartLib/*" 
+ForcedLibs := -C0 "Libs/$$" -C0 "StandartLib/$$" 
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
@@ -6,9 +6,9 @@ TempFolder := /tmp/
 Libs := -ldl -lpthread
 
 
-MainOut := $(TempFolder)/out3.ll
+MainOut := ./out3.ll
 repair: $(wildcard CompilerReal2/*.cp) 
-	./stable -g --rname result -p posix $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
+	./stable -g --rname result -p posix $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.exe
 
 cycle: $(wildcard CompilerReal2/*.cp)
 	$(TimeFlags) ./c.out --rname result -p posix $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang $(MainOut) $(Libs) -o c.out
@@ -17,9 +17,9 @@ cycleg: $(wildcard CompilerReal2/*.cp)
 cyclen: $(wildcard CompilerReal2/*.cp)
 	gdb --tui --args ./c.out --rname result -p posix -g $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOut); clang -g $(MainOut) $(Libs) -o c.out
 
-MainOutW := $(TempFolder)/out3W.ll
+MainOutW := ./out3W.ll
 wcycle: $(wildcard CompilerReal2/*.cp)
-	./c.out -p win32 -g -C0 "Libs/*" -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOutW); clang -g -c $(MainOutW) $(Libs) --target=x86_64-win32-gnu -o w.o
+	./c.out -p win32 -g $(ForcedLibs) -C1 "CompilerReal2/*" CompilerReal2/main.cp -o $(MainOutW); clang -g -c $(MainOutW) $(Libs) --target=x86_64-win32-gnu -o w.o
 
 winlinux: $(wildcard CompilerReal2/*.cp) wcycle
 	x86_64-w64-mingw32-gcc -g w.o -o c.exe
@@ -31,7 +31,7 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.out -g --vk vk.xml -p posix main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
+	./c.exe -g -p win32 main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -g -o test2.exe
 test2t: main2.cp
 	./c.out -g main2.cp  -p posix --tree -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2l: main2.cp

@@ -77,13 +77,26 @@ CreateDirectoryW := !(void^ wchr,void^ secur) -> int declare
 FILE_MAP_ALL_ACCESS := 0xF001F
 FILE_MAP_READ := 4
 
-PAGE_READONLY := 2
-PAGE_READWRITE := 4
-PAGE_WRITECOPY := 8
+PAGE_EXECUTE := 0x10
+PAGE_EXECUTE_READ := 0x20
+PAGE_EXECUTE_READWRITE := 0x40
+PAGE_EXECUTE_WRITECOPY := 0x80
+PAGE_NOACCESS := 0x01
+PAGE_READONLY := 0x02
+PAGE_READWRITE := 0x04
+PAGE_WRITECOPY := 0x08
 
 CreateFileMappingW := !(void^ hndl,void^ scure,int flags,u32 sizeHi,u32 sizeLo,void^ lpName) -> void^ declare
 MapViewOfFile := !(void^ hndl, int accs, u32 offsetHi, u32 offsetLo,size_t sizeToMap) -> void^ declare
 UnmapViewOfFile := !(void^ hndl) -> void declare
+
+
+VirtualAlloc := !(void^ preferedAddr,u64 dwSize,u32 allocType,u32 protect) -> void^ declare
+VirtualProtect := !(void^ addr, u64 dwSize, u32 newProt, u32^ oldProt) -> void^ declare
+
+MEM_COMMIT := 0x1000
+MEM_RESERVE := 0x2000
+MEM_RESET := 0x80000
 
 Utf8ToUtf16 := !(char^ itStr) -> u16[]
 {
@@ -119,6 +132,8 @@ CloseLib := !(void^ libId) -> void
 {
 	FreeLibrary(libId)
 }
+
+GetLastError := !() -> u32 declare
 
 DeleteFileW := !(u16^ lName) -> int declare
 

@@ -17,7 +17,11 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 		if dynCast.MyStr[0] == '$'
 		{
-			if may == null return new ObjBool(false)
+			if may == null {
+				inGVars := GlobalAttributes.TryFind(dynCast.MyStr[1..0])
+				if inGVars != null return inGVars^
+				return new ObjBool(false)
+			}	
 			return may.Clone()
 		}
 

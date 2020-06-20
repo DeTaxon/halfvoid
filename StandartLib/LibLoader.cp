@@ -6,16 +6,29 @@ LibDBObject := class
 	hndl := void^
 	itFileName := char^
 	loadedFuncs := AVLMap.{char^,void^}
+	if $win32
+		win32DllData := win32DllLoadData^
 
 	Get := !(char^ name) -> void^
 	{
 		inMap := loadedFuncs.TryFind(name)
 		if inMap != null
 			return inMap^
+		
 
 		LibDB.itMemPool.Push()
 		defer LibDB.itMemPool.Pop()
-
+	
+		if win32DllData != null
+		{
+			inExport := win32DllData.exportFunctions.TryFind(name)
+			if inExport != null
+			{
+				loadedFuncs[StrCopy(name)] = inExport^
+				return inExport^
+			}
+		}
+	
 		newFunc := LoadFuncLib(hndl,name)
 		if newFunc  == null
 			throw new Exception(0,"Can not load function <"sbt + name + ">")
@@ -80,25 +93,33 @@ LibDatabaseType := class
 			{
 				if inFS.IsVirtual()
 				{
-					pt := inFS.Map()
-
-					itWr := RawFile()
-					tmpName := itWr.OpenTemp(name)
-					itWr.Write(pt,inFS.Size())
-					itWr.Close()
-
-					hndl = OpenLib(tmpName)
-					if hndl == null
+					if $win32
 					{
-						TFSDelete(tmpName)
-						return null
-					}
 
-					nameCpy := StrCopy(name)
-					inMap2 := ref loadedLibs[nameCpy]
-					inMap2.hndl = hndl
-					inMap2.itFileName = StrCopy(tmpName)
-					return inMap2&
+						pt := inFS.Map()
+						defer inFS.Unmap()
+
+						resLoad := win32LoadLibrary(pt,inFS.Size())
+
+						//itWr := RawFile()
+						//tmpName := itWr.OpenTemp(name)
+						//itWr.Write(pt,inFS.Size())
+						//itWr.Close()
+
+						//hndl = OpenLib(tmpName)
+						//if hndl == null
+						//{
+						//	TFSDelete(tmpName)
+						//	return null
+						//}
+
+						nameCpy := StrCopy(name)
+						inMap2 := ref loadedLibs[nameCpy]
+						inMap2.hndl = hndl
+						//inMap2.itFileName = StrCopy(tmpName)
+						inMap2.win32DllData = resLoad
+						return inMap2&
+					}
 				}else{
 					toLoad := inFS.GetPath()
 					toLoad2 := Path(toLoad)

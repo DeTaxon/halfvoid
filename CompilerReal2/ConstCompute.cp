@@ -27,6 +27,8 @@ TryCompute := !(Object^ ob) -> Object^
 
 		if it == null and asN.MyStr[0] == '$' 
 		{
+			inAtt := GlobalAttributes.TryFind(asN.MyStr[1..0])
+			if inAtt != null return inAtt^
 			return new ObjBool(false) //GBoolFalse
 		}
 		if it == null return null

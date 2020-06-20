@@ -144,11 +144,19 @@ main := !(int argc,char^^ argv) -> int
 		//}
 	}
 	InfiniteCodeSpace = CodeSpaces[2000000]&
+
 	CreateStandartTypes()
 	CreateBuiltIns()
 
 	GBoolTrue = new ObjBool(true)
 	GBoolFalse = new ObjBool(false)
+	
+
+	for it : fileSuffixes
+	{
+		if strlen(it) < 4 continue
+		GlobalAttributes[it[4..0].Str()] = GBoolTrue
+	}
 
 	MacroRestart = new Object
 

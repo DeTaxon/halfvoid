@@ -5,6 +5,7 @@ DebugMetaData := Stack.{string}
 
 DebugCalls := Stack.{Tuple.{int,int,int}}
 DebugLocalVars := Stack.{Tuple.{int,char^,int,int,int ,int}} //resId,name,scope,file,line, type
+DebugGlobalVars := Stack.{Tuple.{int,char^,int,int,int ,int}} //resId,name,scope,file,line, type
 
 DebugPretty := List.{char^}
 
@@ -35,6 +36,22 @@ CreateDebugCall := !(Object^ itm) -> int
 CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName) -> int
 {
 	return CreateDbgLocVar(itm,itType,itName,false)
+}
+CreateDbgGlobalVar := !(Object^ itm, Type^ itType,char^ itName, bool isRef) -> int
+{
+	if itm.Line == null return -1
+
+	itr := itm->{Object^}
+
+	while itr.Up != null itr = itr.Up
+
+	asF := itr->{BoxFile^}
+	
+	typeMetaId := itType.metaId
+	if isRef typeMetaId = GetDebugRef(itType) 
+	newId := GetNewId()
+	DebugGlobalVars.Emplace(newId,itName,0,asF.fileId,itm.Line.LinePos,typeMetaId)
+	return newId
 }
 CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 {
@@ -69,9 +86,10 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 
 PrintDebugMeta := !(sfile fil) -> void
 {
+	globVar := GetNewId()
 	fileId := Files.Start.Data.fileId
 	fil << "!llvm.dbg.cu = !{!"<< cuId <<"}\n"
-	fil << "!" << cuId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !{}, language: DW_LANG_C99, file: !"<< fileId <<" )\n"
+	fil << "!" << cuId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !"<< globVar <<", language: DW_LANG_C99, file: !"<< fileId <<" )\n"
 
 	nm := GetNewId()
 	fil << "!" << nm << " = !{!\"Taxon's stupid compiler\"}\n" 
@@ -90,8 +108,25 @@ PrintDebugMeta := !(sfile fil) -> void
 		fil << "!" << it.0 << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.2 << ")\n"
 	for DebugLocalVars
 		fil << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << it.2 << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ")\n"
+	for DebugGlobalVars
+		fil << "!" << it.0 << " = !DIGlobalVariable(name: \"" << it.1 << "\" , scope:!" << cuId << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ", isLocal: false, isDefinition: true)\n"
 
 	for DebugMetaData fil << it
+
+	//glbs := new List.{int}() ; $temp
+	//for DebugGlobalVars
+	//{
+	//	nId := GetNewId()
+	//	fil << "!" << nId << " = 
+	//}
+
+	fil << "!" << globVar << " = !{"
+	for it,i : DebugGlobalVars
+	{
+		if i != 0 fil << ","
+		fil << "!DIGlobalVariableExpression(var: !"<< it.0 << ", expr: !DIExpression())"
+	}
+	fil << "}\n"
 
 
 	if DebugPretty.Size() != 0
