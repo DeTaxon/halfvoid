@@ -31,7 +31,7 @@ stable:
 	clang -g $(MainOut) -s -O2 -ldl -o ./stable
 
 test2: main2.cp
-	./c.exe -g -p win32 main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -g -o test2.exe
+	./c.out -g -p posix main2.cp $(ForcedLibs) -o test2.ll; clang test2.ll -ldl -g -o test2
 test2t: main2.cp
 	./c.out -g main2.cp  -p posix --tree -C0 "Libs/*" -o test2.ll; clang test2.ll -g $(Libs) -march=native -o test2
 test2l: main2.cp

@@ -18,8 +18,8 @@ LibDBObject := class
 
 		LibDB.itMemPool.Push()
 		defer LibDB.itMemPool.Pop()
-	
-		if win32DllData != null
+
+		if $win32 if win32DllData != null
 		{
 			inExport := win32DllData.exportFunctions.TryFind(name)
 			if inExport != null
