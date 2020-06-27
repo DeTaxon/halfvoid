@@ -6,12 +6,12 @@ SLambda := class extend BoxFuncContainer
 	parms := LocalParam^^
 	InAlloc := int^
 	fastUse := TypeFunc^
-	ItId := int
 	ItNR := int
 	inAlloc := int
 	manSkob := bool
 	justFunc := bool
 	boostLambda := bool
+	ItId := int
 
 	Created := bool
 
@@ -24,6 +24,8 @@ SLambda := class extend BoxFuncContainer
 
 	newCall := Object^
 	deleteCall := Object^
+
+	thisLambda := FuncParam^
 	
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
@@ -703,6 +705,11 @@ SLambda := class extend BoxFuncContainer
 				f << " !dbg !" << ABox.ItId
 			}
 			f << "\n{\n"
+
+			if thisLambda != null
+			{
+				f << "%ThisLambda = bitcast i8* %lambdaParam" << ItId << " to " << ResultType.GetName() << "\n"
+			}
 			
 			
 			if not justFunc
@@ -969,6 +976,14 @@ SLambda := class extend BoxFuncContainer
 				break
 			}
 		}
+		if not justFunc and name == "this_lambda"
+		{
+			if thisLambda == null
+			{
+				thisLambda = new FuncParam("ThisLambda" ,ResultType,false)
+			}
+			return thisLambda
+		}
 		if fastUse != null
 		{
 			for i : fastUse.ParsCount 
@@ -1179,10 +1194,6 @@ BuiltInTemplateCaptureLambda := class extend BoxTemplate
 		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
 		"%CopyRes## = call i8* %ClFunc##(i8* %LamPtr##)\n" +
 		"#0 = bitcast i8* %CopyRes## to " + asPtrN + "*\n")
-		//"%Nxt## = getelementptr "sbt +asPtrN+ " , " + asPtrN +"*  #1 ,i32 1#d\n" +
-		//"%PreCl## = load "+asPtrN+" , "+asPtrN+"* %Nxt## \n" +
-		//"%AlmCl## = bitcast "+asPtrN+" %PreCl## to "+asPtrN+"*("+asPtrN+"*)*\n"+
-		//"#0 = call "+asPtrN+"*%AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -1220,10 +1231,6 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 		"%ClFunc## = load void(i8*)*, void(i8*)** %ClFuncPre##\n"+
 		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
 		"call void %ClFunc##(i8* %LamPtr##)")
-		//"%Nxt## = getelementptr "sbt+asPtrN+" ,"+asPtrN+"*  #1 ,i32 2#d\n"sbt +
-		//"%PreCl## = load "+asPtrN+" ,"+asPtrN+"* %Nxt## \n" +
-		//"%AlmCl## = bitcast "+asPtrN+" %PreCl## to void("+asPtrN+"*)*\n"+
-		//"call void %AlmCl##("+asPtrN+"* #1)\n" )
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

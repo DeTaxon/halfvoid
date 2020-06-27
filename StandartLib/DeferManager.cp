@@ -96,8 +96,8 @@ Exception := class extend IException
 
 intExcepFrame := class
 {
+	regsData := vec4f[16] // 16*4*4=256 data aligned to 16
 	deferDepth := int
-	regsData := char[200]
 }
 
 intExcepData := class
@@ -138,6 +138,7 @@ internalGetExceptPoint := !() -> void^
 	nowFrame := ref nowDat.frames[nowDat.depth - 1]
 	internalDeferApplyExp(nowFrame.deferDepth)
 	nowDat.expData = inp
+	//builtin_longjump(nowFrame.regsData[0]&)
 	longjmp(nowFrame.regsData[0]&,1)
 }
 

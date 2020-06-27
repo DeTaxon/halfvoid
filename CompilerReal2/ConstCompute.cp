@@ -1,4 +1,3 @@
-// TODO: это костыль, нужно заменить на оптимизатор и более умный WorkBag
 ConstItem := class extend Object
 {
 	Name := string
@@ -29,7 +28,7 @@ TryCompute := !(Object^ ob) -> Object^
 		{
 			inAtt := GlobalAttributes.TryFind(asN.MyStr[1..0])
 			if inAtt != null return inAtt^
-			return new ObjBool(false) //GBoolFalse
+			return GBoolFalse //new ObjBool(false) 
 		}
 		if it == null return null
 		if it is ObjConstHolder
@@ -46,7 +45,7 @@ TryCompute := !(Object^ ob) -> Object^
 		asSuf := ob.Down.Right->{ObjSuffix^}
 		if asSuf.MyStr == "f" and (itItm is ObjInt or itItm is ObjDouble)
 		{
-			newItm := new ObjDouble(0.0)
+			newItm := new ObjDouble(0.0) ; $temp 
 			newItm.ResultType = GTypeFloat
 			if itItm isObjInt
 			{
@@ -65,10 +64,7 @@ TryCompute := !(Object^ ob) -> Object^
 	//	
 	//}
 	//return null
-	lazy := ob  is ObjData
-	if lazy lazy = ob.Down.GetValue() == "!"
-	if lazy lazy = ob.Down.Right.GetValue() == "[]"
-	if lazy
+	if ob is ObjData and ob.Down.GetValue() == "!" and ob.Down.Right.GetValue() == "[]"
 	{
 		SyntaxCompress(ob.Down.Right,PriorityData)
 		iterR := ob.Down.Right.Down
@@ -89,7 +85,7 @@ TryCompute := !(Object^ ob) -> Object^
 
 						if start > end return null
 
-						for i : start..end Sutf.Push(new ObjInt(i))
+						for i : start..end Sutf.Push(new ObjInt(i)) ; $temp
 
 						iterR = iterR.Right.Right
 
@@ -113,7 +109,7 @@ TryCompute := !(Object^ ob) -> Object^
 
 							if start > end return null
 
-							for i : start..end Sutf.Push(new ObjInt(i))
+							for i : start..end Sutf.Push(new ObjInt(i)) ; $temp
 
 							if typ == null typ = GTypeInt
 							typ = TypeFight(typ,GTypeInt)
@@ -133,7 +129,7 @@ TryCompute := !(Object^ ob) -> Object^
 		}
 		if typ == null or Sutf.Size() == 0 return null
 		if typ == GTypeRange typ = GTypeInt
-		return new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray())
+		return new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray()) ; $temp
 	}
 
 	return null

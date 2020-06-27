@@ -415,7 +415,7 @@ ObjArray := class extend ObjConst
 	{
 		itItems := new Object^[itType.Size]
 		for i : itType.Size itItems[i] = Items[i].Clone()
-		PreRet := new ObjArray(itType,Items)
+		PreRet := new ObjArray(itType,itItems)
 		PreRet.Line = Line
 		return PreRet
 	}
@@ -483,7 +483,7 @@ ObjCmd := class extend ObjConst
 	{
 		if MyStr == "#critical_atomic"
 		{
-			ReplaceNode(this&,new CriticalAtomic())
+			//ReplaceNode(this&,new CriticalAtomic())
 		}
 	}
 	Clone := virtual !() -> Object^

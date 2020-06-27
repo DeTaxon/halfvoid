@@ -76,7 +76,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 		{
 			tryCmp := TryCompute(ToParse)
 			if tryCmp != null{
-				return tryCmp
+				return tryCmp.Clone()
 			}
 			box := new FuncInputBox()  ; $temp
 
@@ -94,7 +94,6 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				TrimCommas(iter.Right)
 				return MakeSimpleCall(f,iter.Right.Down)
 			}
-			
 		}
 		if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
 		{

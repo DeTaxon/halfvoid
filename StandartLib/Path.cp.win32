@@ -43,7 +43,6 @@ DirectoryIterator2 := class
 		hndl = FindFirstFileW(Utf8ToUtf16(buff),nowEntry&)
 		if hndl&->{u64^}^ == not_b 0U
 		{
-			printf("bad %s\n",buff)
 			isItEnd = true
 			return void
 		}

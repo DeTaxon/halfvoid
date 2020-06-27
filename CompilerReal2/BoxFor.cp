@@ -79,9 +79,11 @@ BoxForOldFashionMulti := class extend BoxFor
 	{
 		for items
 		{
+			if it.IsConst 
+				continue
 			mayb := TryCompute(it)
 			if mayb != null
-				it = mayb
+				it = mayb.Clone()
 		}
 
 		Down = itBlock

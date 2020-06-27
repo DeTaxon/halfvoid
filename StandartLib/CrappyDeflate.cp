@@ -97,7 +97,7 @@ inverseSomeBit := !(int inp,int size) -> int
 	return preRes
 }
 
-ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) .{} -> void
+ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> void
 {
 	maxSize := 0
 	for c : arrLen

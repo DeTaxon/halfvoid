@@ -311,7 +311,7 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
 		fil << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
 		fil << "declare void @llvm.debugtrap() #0\n"
-		fil << "declare i8* @llvm.frameaddress(i32 %asd) #2\n"
+		fil << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
 		fil << "declare i8* @llvm.stacksave() #1\n"
 		fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
 		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"

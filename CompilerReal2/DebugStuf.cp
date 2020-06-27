@@ -109,7 +109,7 @@ PrintDebugMeta := !(sfile fil) -> void
 	for DebugLocalVars
 		fil << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << it.2 << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ")\n"
 	for DebugGlobalVars
-		fil << "!" << it.0 << " = !DIGlobalVariable(name: \"" << it.1 << "\" , scope:!" << cuId << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ", isLocal: false, isDefinition: true)\n"
+		fil << "!" << it.0 << " = !DIGlobalVariable(name: \"" << it.1 << "\" , scope:!" << it.3 << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ", isLocal: false, isDefinition: true)\n"
 
 	for DebugMetaData fil << it
 
@@ -117,8 +117,16 @@ PrintDebugMeta := !(sfile fil) -> void
 	//for DebugGlobalVars
 	//{
 	//	nId := GetNewId()
-	//	fil << "!" << nId << " = 
+	//	fil << "!" << nId << " = !DIGlobalVariableExpression(var: !"<< it.0 << ", expr: !DIExpression())\n"
+	//	glbs^ << nId
 	//}
+	//fil << "!" << globVar << " = !{"
+	//for it,i : glbs^
+	//{
+	//	if i != 0 fil << ","
+	//	fil << "!" << it
+	//}
+	//fil << "}\n"
 
 	fil << "!" << globVar << " = !{"
 	for it,i : DebugGlobalVars

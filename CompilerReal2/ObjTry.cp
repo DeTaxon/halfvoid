@@ -137,8 +137,17 @@ ObjTry := class extend Object
 		if newId != -1 f << ", !dbg !" << newId
 		f <<"\n"
 
-		f << "%T" << ItId << " = call i32 @setjmp(i8* %E" << ItId << ")"
-		if newId != -1 f << ", !dbg !" << newId
+
+		f << "%AsArray" << ItId << " = bitcast i8* %E" << ItId << " to [20 x i8*]*\n"
+  		f << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
+		f << "%FrameStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %AsArray"<< ItId << ", i64 0, i64 0\n"
+		f << "store i8* %Frame" << ItId << ", i8** %FrameStore" << ItId << ", align 16\n"
+  		f << "%Stack" << ItId << " = call i8* @llvm.stacksave()\n"
+		f << "%StackStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %AsArray"<< ItId << ", i64 0, i64 2\n"
+  		f << "store i8* %Stack" << ItId << ", i8** %StackStore"<< ItId <<", align 16\n"
+  		f << "%T" << ItId << " = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
+		//f << "%T" << ItId << " = call i32 @setjmp(i8* %E" << ItId << ")"
+		//if newId != -1 f << ", !dbg !" << newId
 		f << "\n"
 
 		f << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"

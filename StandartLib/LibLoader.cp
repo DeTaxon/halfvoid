@@ -38,6 +38,7 @@ LibDBObject := class
 	}
 }
 
+Exdepth := 0
 LibDatabaseType := class
 {
 	loadedLibs := AVLMap.{char^,LibDBObject}
@@ -66,7 +67,7 @@ LibDatabaseType := class
 		defer itMemPool.Pop()
 
 		newObj := LibDBObject
-
+	
 		hndl := OpenLib(name)
 		
 		if hndl == null

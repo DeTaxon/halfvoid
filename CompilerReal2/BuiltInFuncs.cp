@@ -1425,6 +1425,16 @@ CreateBuiltIns := !() -> void
 	AddBuiltInFunc(new BuiltInFuncUno("va_end",GTypeVoidP,false,GTypeVoid,"call void @llvm.va_end(i8* #1) #d\n"))
 	AddBuiltInFunc(new BuiltInFuncBinar("va_copy",GTypeVoidP,false,GTypeVoidP,false,GTypeVoid,"call void @llvm.va_copy(i8* #1,i8* #2) #d\n"))
 
+	//AddBuiltInFunc(new BuiltInFuncUno("builtin_setjump",GTypeVoidP,false,GTypeVoid,
+	//		"%AsArray## = bitcast i8* #1 to [20 x i8*]*\n"sbt + 
+  	//		+ "%Frame##  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
+	//		+ "%FrameStore## = getelementptr [20 x i8*], [20 x i8*]* %AsArray## ", i64 0, i64 0\n"
+  	//		+ "%Stack## = call i8* @llvm.stacksave()\n"
+	//		+ "%StackStore## = getelementptr [20 x i8*], [20 x i8*]* %AsArray##, i64 0, i64 2\n"
+  	//		+ "store i8* %Stack##, i8** %StackStore##, align 16\n"
+  	//		+ "#0 = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
+	AddBuiltInFunc(new BuiltInFuncUno("builtin_longjump",GTypeVoidP,false,GTypeVoid,"call void @llvm.eh.sjlj.longjmp(i8* #1) #d\n"))
+
 	RangeFuncs()
 	Vec4fFuncs()
 

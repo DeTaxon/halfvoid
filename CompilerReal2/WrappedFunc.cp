@@ -30,22 +30,6 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		//if pri == State_GetUse
-		//{
-		//	iter := Up
-
-		//	while iter != null
-		//	{
-		//		if iter.GetValue() == "!()"
-		//		{
-		//			Parent = iter->{BoxFuncBody^}
-		//			iter = null
-		//		}else{
-		//			iter = iter.Up
-		//		}
-		//	}
-
-		//}
 	}
 	GetValue := virtual !() -> string
 	{
@@ -53,19 +37,14 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	PrintItCall := !(sfile f) -> void
 	{
-		itB := AllocBox^()
-
 		itrU := Up
-		while itrU?.GetValue() != "!()" and itrU.GetValue() != "x=>x"
+		while itrU != null and itrU.GetABox() == null
 			itrU = itrU.Up
 
 		assert(itrU != null)
 		if itrU == null 
 			return void
-		if itrU.GetValue() == "x=>x"
-			itB = itrU->{SLambda^}.ABox&
-		if itrU.GetValue() == "!()"
-			itB = itrU->{BoxFuncBody^}.ABox&
+		itB := itrU.GetABox()
 			
 		nId := GetNewId()
 		f << "%T" << nId << " = bitcast " << itB.GetAsUse() << " to i8*\n"

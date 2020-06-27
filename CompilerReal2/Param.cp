@@ -153,7 +153,7 @@ ObjParam := class extend Object
 				return void
 			}
 			if Line != null inhAttrs = Line.itAttrs&
-			if Up != null and Up is BoxFile
+			if Up? is BoxFile
 			{
 				asNeed := Up->{BoxFile^}
 				asNeed.VisibleParams[MyStr].Push(this&) 
@@ -161,6 +161,7 @@ ObjParam := class extend Object
 			if IsVirtual {
 				val := TryCompute(Down)
 				if val != null{
+					val = val.Clone()
 					itr := this&->{Object^}
 					while itr != null and itr.GetValue() != "{...}" itr = itr.Up
 					if itr != null{
@@ -177,17 +178,12 @@ ObjParam := class extend Object
 				asClass.Up = this&
 
 				iterB := this&->{Object^}
-				lazy := true
 
-				while lazy
+				while iterB != null
 				{
-					if iterB.GetValue() == "{d}" or iterB.GetValue() == "{d}.cp"
-					{
-						lazy = false
-					}else{
-						iterB = iterB.Up
-						lazy = iterB != null
-					}
+					if iterB.GetValue() in !["{d}","{d}.cp"]
+						break
+					iterB = iterB.Up
 				}
 				if iterB != null
 				{
@@ -197,13 +193,10 @@ ObjParam := class extend Object
 			}else{
 				WorkBag.Push(this&,State_CheckTypes)
 
-				iter := Down
-
-				while iter != null
+				for iter : Down
 				{
 					if iter.GetValue() == "()"
 						WorkBag.Push(iter,State_Syntax)
-					iter = iter.Right
 				}
 			}
 		}
@@ -213,14 +206,14 @@ ObjParam := class extend Object
 			IsExtrn := false
 			
 			MaybeType := ParseType(Down)
-			val := Object^
-			val = null
+			val := Object^()
 
 			if MaybeType == null
 			{
 				val = TryCompute(Down)
 				if val != null
 				{
+					val = val.Clone()
 					MaybeType = val.GetType()
 					Down = val
 					Down.SetUp(this&)
@@ -234,8 +227,9 @@ ObjParam := class extend Object
 				if allcId == -1
 				{
 					//TODO: Global?
-					if IsExtern
+					if IsExtern{
 						Down = new ExternParam(MaybeType,val,MyStr)
+					}
 					else{ 
 						preRes := new GlobalParam(MaybeType,val)
 						preRes.IsThreadLocal = IsThreadLocal
@@ -298,17 +292,11 @@ ObjParam := class extend Object
 						asClass.Up = this&
 
 						iterB := this&->{Object^}
-						lazy := true
-
-						while lazy
+						while iterB != null
 						{
-							if iterB.GetValue() == "{d}" or iterB.GetValue() == "{d}.cp"
-							{
-								lazy = false
-							}else{
-								iterB = iterB.Up
-								lazy = iterB != null
-							}
+							if iterB.GetValue() in !["{d}","{d}.cp"]
+								break
+							iterB = iterB.Up
 						}
 						if iterB != null
 						{

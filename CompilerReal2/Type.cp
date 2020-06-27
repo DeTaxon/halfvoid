@@ -273,7 +273,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 					if isType == null
 					{
 						val := TryCompute(iterR)
-						if val != null box.itConsts.Push(val)
+						if val != null box.itConsts.Push(val.Clone()) //TODO: maybe not clone
 						else 
 						{
 							if iterR is ObjIndent
