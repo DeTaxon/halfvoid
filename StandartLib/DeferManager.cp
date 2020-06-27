@@ -138,7 +138,7 @@ internalGetExceptPoint := !() -> void^
 	nowFrame := ref nowDat.frames[nowDat.depth - 1]
 	internalDeferApplyExp(nowFrame.deferDepth)
 	nowDat.expData = inp
-	//builtin_longjump(nowFrame.regsData[0]&)
-	longjmp(nowFrame.regsData[0]&,1)
+	builtin_longjump(nowFrame.regsData[0]&)
+	//longjmp(nowFrame.regsData[0]&,1)
 }
 
