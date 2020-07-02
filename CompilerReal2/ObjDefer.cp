@@ -66,18 +66,12 @@ ObjDefer := class extend Object
 		if onExcp
 			callAdd = deferAddDeferExcp
 		itr := Up
-		while itr.GetValue() != "!()" and itr.GetValue() != "x=>x" and itr.GetValue() != "{!()}"
+		while itr.GetABox() == null
 		{
 			itr = itr.Up
 		}
 		asWrap := Down->{WrappedFunc^}
-		funcAl := AllocBox^
-		if itr.GetValue() == "x=>x"
-		{
-			funcAl = itr->{SLambda^}.ABox&
-		}else{
-			funcAl = itr->{BoxFunc^}.ABox&
-		}
+		funcAl := itr.GetABox()
 		if funcAl.ItemBag.IsEmpty()
 		{
 			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"

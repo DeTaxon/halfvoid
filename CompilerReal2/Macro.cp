@@ -50,14 +50,13 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			return null
 		nL := new SLambda()
 		UNext(mvUp,nL,1)
-		//MakeItBlock(nL.Down)
 		nL.boostLambda = true
 		return null
 	}
 
 	if tr.Down == null return null
 		
-	if tr.GetValue() == "()" and tr.Left == null and tr.Down != null and tr.Down.Right == null
+	if tr.GetValue() == "()" and tr.Left == null and tr.Down?.Right == null
 	{
 		//if tr.Down.Right == null
 		//{

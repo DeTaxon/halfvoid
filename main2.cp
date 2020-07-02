@@ -1,13 +1,8 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	defer printf("!\n")
-	while true
-	{
-		printf("hello\n")
-		defer printf("world\n")
-		break	
-	}
-	printf("problem\n")
+	a := "Hello world"
+	b := a[0..5]
+	c := a[-5..0]
 	return 0
 }

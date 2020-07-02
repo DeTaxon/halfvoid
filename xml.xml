@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<test>
-	<a test="hello" wow="value" > 12</a> <!-- comment -->
-	<b g="7"/>
-</test>

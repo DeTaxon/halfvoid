@@ -189,31 +189,34 @@ MakeGoodConsts := !(Object^ l) -> bool
 
 	while iter != null
 	{
-		if iter.GetValue() != ","
+		if iter.GetValue() == ","
 		{
-			if not iter.IsConst 
+			iter = iter.Right
+			continue
+		}
+		if not iter.IsConst 
+		{
+			gotIt := false
+			if iter.GetValue() == "~d"
 			{
-				gotIt := false
-				if iter.GetValue() == "~d"
+				if iter.Down.Right?.GetValue() == "in"
 				{
-					if iter.Down.Right?.GetValue() == "in"
-					{
-						gotIt = true
-						cr := new InHolder(iter)
-						iter  = ReplaceNode(iter,cr)
-					}
-				}
-				if iter.GetValue() != "~{}type" and not gotIt
-				{
-					val := ParseType(iter)
-
-					if val != null
-					{
-						iter = ReplaceNode(iter,new ObjType(val))
-					}// else error
+					gotIt = true
+					cr := new InHolder(iter)
+					iter  = ReplaceNode(iter,cr)
 				}
 			}
+			if iter.GetValue() != "~{}type" and not gotIt
+			{
+				val := ParseType(iter)
+
+				if val != null
+				{
+					iter = ReplaceNode(iter,new ObjType(val))
+				}// else error
+			}
 		}
+		
 		iter = iter.Right
 	}
 	return true

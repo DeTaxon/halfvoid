@@ -235,27 +235,29 @@ BoxFunc := class extend BoxFuncContainer
 			iter := cons.Down
 			while iter != null
 			{
-				if iter.GetValue() != ","
+				if iter.GetValue() == ","
 				{
-					if iter.IsConst
+					iter = iter.Right
+					continue
+				}
+				if iter.IsConst
+				{
+					this.ItConsts.Push(iter.Clone())
+					ItConstsTT.Push(null)
+				}else{
+					typ := ParseType(iter)
+					if typ != null
 					{
-						this.ItConsts.Push(iter.Clone())
+						this.ItConsts.Push(new ObjType(typ))
 						ItConstsTT.Push(null)
 					}else{
-						typ := ParseType(iter)
-						if typ != null
+						stdL := Queue.{string}()
+						if ContainTType(iter,stdL)
 						{
-							this.ItConsts.Push(new ObjType(typ))
-							ItConstsTT.Push(null)
+							this.ItConsts.Push(null->{Object^})
+							ItConstsTT.Push(iter)
 						}else{
-							stdL := Queue.{string}()
-							if ContainTType(iter,stdL)
-							{
-								this.ItConsts.Push(null->{Object^})
-								ItConstsTT.Push(iter)
-							}else{
-								ErrorLog.Push("can not parse object in .{}\n")
-							}
+							ErrorLog.Push("can not parse object in .{}\n")
 						}
 					}
 				}
