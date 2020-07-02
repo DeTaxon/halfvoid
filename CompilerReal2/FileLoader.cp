@@ -40,6 +40,7 @@ LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
 {
 	newZip := new ZipFile ; $temp
 	newZip.AnalizeFile(fullName.itStr)
+	defer newZip.DecUser()
 	for fil : newZip^
 	{
 		if fil.realSize == 0
@@ -65,7 +66,6 @@ LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
 		ZipFiles.Push(ob)
 		fil.Unmap()
 	}
-	newZip.DecUser()
 
 }
 

@@ -78,7 +78,7 @@ ObjDefer := class extend Object
 		}else{
 			funcAl = itr->{BoxFunc^}.ABox&
 		}
-		if funcAl.ItemBag.Empty()
+		if funcAl.ItemBag.IsEmpty()
 		{
 			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
 		}else{

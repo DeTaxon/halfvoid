@@ -909,7 +909,7 @@ BoxFuncBody := class extend BoxFunc
 						thisDbgId = CreateDebugCall(this&)
 					asN := iterP->{BoxFuncBody^}
 					ABName := asN.ABox.GetClassName()
-					if not asN.ABox.ItemBag.Empty()
+					if not asN.ABox.ItemBag.IsEmpty()
 					{
 						f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
 						asN.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,thisDbgId)

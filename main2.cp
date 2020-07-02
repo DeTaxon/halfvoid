@@ -1,12 +1,13 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	try
+	defer printf("!\n")
+	while true
 	{
-		printf("good\n")
-	}catch(IException^ exp)
-	{
-		printf("bad %s\n",exp.Msg())
+		printf("hello\n")
+		defer printf("world\n")
+		break	
 	}
+	printf("problem\n")
 	return 0
 }

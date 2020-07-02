@@ -29,6 +29,10 @@ BuiltInFunc := class extend BoxFunc
 
 BuiltInSuffix := class extend BuiltInFunc
 {
+	this := !(string Name, Type^ l, bool lRef,Type^ retV, SBTType code) -> void
+	{
+		this."this"(Name,l,lRef,retV,code.Str())
+	}
 	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
 	{
 		IsSuffix = true
@@ -65,6 +69,10 @@ BuiltInFuncZero := class extend BuiltInFunc
 
 BuiltInFuncTypeTimes := class extend BuiltInFunc
 {
+	this := !(string Name,Type^ inType, int Count,Type^ retV,SBTType code) -> void
+	{
+		this."this"(Name,inType,Count,retV,code.Str())
+	}
 	this := !(string Name,Type^ inType, int Count,Type^ retV,string code) -> void
 	{
 		FuncName = Name
@@ -87,9 +95,17 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 
 BuiltInFuncUno := class extend BuiltInFunc
 {
+	this := !(string Name, Type^ l, bool lRef,Type^ retV,bool RRetRef, SBTType code) -> void
+	{
+		Init(Name,l,lRef,retV,RRetRef,code.Str())
+	}
 	this := !(string Name, Type^ l, bool lRef,Type^ retV,bool RRetRef, string code) -> void
 	{
 		Init(Name,l,lRef,retV,RRetRef,code)
+	}
+	this := !(string Name, Type^ l, bool lRef,Type^ retV, SBTType code) -> void
+	{
+		Init(Name,l,lRef,retV,false,code.Str())
 	}
 	this := !(string Name, Type^ l, bool lRef,Type^ retV, string code) -> void
 	{
@@ -114,6 +130,10 @@ BuiltInFuncUno := class extend BuiltInFunc
 }
 BuiltInFuncBinar := class extend BuiltInFunc
 {
+	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV,bool retRef, SBTType code) -> void
+	{
+		this."this"(Name,l,lRef,r,rRef,retV,retRef,code.Str())
+	}
 	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV,bool retRef, string code) -> void
 	{
 		FuncName = Name
@@ -130,6 +150,10 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		IsRefs[1] = rRef
 		MyFuncType = GetFuncType(PP,IsRefs,retV,retRef,false)
 		CheckIsSelf()
+	}
+	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV, SBTType code) -> void
+	{
+		this."this"(Name,l,lRef,r,rRef,retV,code.Str())
 	}
 	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV, string code) -> void
 	{
@@ -150,6 +174,10 @@ BuiltInFuncBinar := class extend BuiltInFunc
 }
 BuiltInFuncMega := class extend BuiltInFunc
 {
+	this := !(string Name, TypeFunc^ fType, SBTType code) -> void
+	{
+		this."this"(Name,fType,code.Str())
+	}
 	this := !(string Name, TypeFunc^ fType, string code) -> void
 	{
 		FuncName = Name

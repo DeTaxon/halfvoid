@@ -81,7 +81,7 @@ TupleClass := class extend BoxClass
 		GetNmFunc = new TupleFuncGetItem(this&)
 		cnPre := ClassType->{Type^}
 		cn := cnPre.GetName()
-		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GetType("void"),false,
+		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GTypeVoid,false,
 			"call void("sbt + cn + "*," + cn + "*)@TupleSet" + ClassId + "(" + cn + "* #1," + cn + "* #2)\n")
 
 	}

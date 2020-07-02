@@ -189,7 +189,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 
 
 	totalItems := QueueSet.{int}()
-	for i : borrow.Size() //BUG: borrow->len crashes
+	for i : borrow.Size()
 	{
 		found := i
 		for j : (0..(i-1))

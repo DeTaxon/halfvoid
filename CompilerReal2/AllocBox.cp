@@ -9,11 +9,13 @@ AllocBox := class
 	inhAllocs := List.{AllocBox^}
 
 
-	ItemBag := Map.{int,Type^}
+	ItemBag := List.{Tuple.{int,Type^}}
+	ItemNrs := AVLMap.{int,int}
 	GetAlloc := !(Type^ ToAdd) -> int
 	{
 		DaID := GetNewId()
-		ItemBag[DaID] = ToAdd
+		ItemNrs[DaID] = ItemBag.Size()
+		ItemBag.Emplace(DaID,ToAdd)
 		return DaID
 	}
 	GetClassName := !() -> string
@@ -22,14 +24,9 @@ AllocBox := class
 	}
 	GetNR := !(int id) -> int
 	{
-		i := 0
-		iter := ItemBag.Start
-		while iter != null
-		{
-			if iter.Key == id return i
-			iter = iter.Next
-			i += 1
-		}
+		inNrs := ItemNrs.TryFind(id)
+		if inNrs != null
+			return inNrs^
 		return -1
 	}
 	MoveTo := !(AllocBox^ toMv) -> void
@@ -44,7 +41,7 @@ AllocBox := class
 		{
 			if it == this&
 				break
-			if not it.ItemBag.Empty()
+			if it.ItemBag.Size() != 0
 				cntr += 1
 		}
 		return cntr
@@ -53,13 +50,8 @@ AllocBox := class
 	GetAsType := !() -> Type^
 	{
 		resR := new FuncInputBox() ; $temp
-		assert(not ItemBag.Empty())
-		itR := ItemBag.Start
-		while itR != null
-		{
-			resR.itPars.Emplace(itR.Value,false)
-			itR = itR.Next
-		}
+		assert(not ItemBag.IsEmpty())
+		resR.itPars.Emplace(ItemBag[^].1,false)
 		for inhAllocs
 		{
 			resR.itPars.Emplace(it.GetAsType(),false)
@@ -75,26 +67,25 @@ AllocBox := class
 		printedGlobal = true 
 
 		inhP := false
-		inhP = inhP or  not inhAllocs[^].ItemBag.Empty()
-		if (not ItemBag.Empty()) or inhP
+		inhP = inhP or  not inhAllocs[^].ItemBag.IsEmpty()
+		if (not ItemBag.IsEmpty()) or inhP
 		{
 			f << "%AllocClass" << ItId << " = type {"
-			
-			sIter := ItemBag.Start
-			i := 0
-
-			while sIter != null
-			{	
-				if i != 0 f << " , "
-				f << sIter.Value.GetName()
-				sIter = sIter.Next
-				i += 1
-			}
-			if not inhAllocs[^].ItemBag.Empty()
+		
+			prntDot := false
+			for it,i : ItemBag
 			{
-				if i != 0 f << " , "
+				if prntDot
+					f << " , "
+				f << it.1.GetName()
+				prntDot = true
+			}
+			if not inhAllocs[^].ItemBag.IsEmpty()
+			{
+				if prntDot 
+					f << " , "
 				f << it.GetClassName()
-				i += 1
+				prntDot = true
 			}
 
 
@@ -109,7 +100,7 @@ AllocBox := class
 	}
 	GetAsUse := !() -> string
 	{
-		if ItemBag.Empty()
+		if ItemBag.Size() == 0
 			return "%AllocClass"sbt + ItId + "* null"
 		return "%AllocClass"sbt + ItId + "* %AllocItem" + ItId
 	}
@@ -119,18 +110,16 @@ AllocBox := class
 	}
 	PrintAlloc := !(sfile f,char^ prntName,debId) -> void
 	{
-		if not ItemBag.Empty()
+		if not ItemBag.IsEmpty()
 		{
 			if not mustBeStruct
 			{
-				itr2 := ItemBag.Start 
-				while itr2 != null
+				for it : ItemBag
 				{
-					f << "%T" << itr2.Key <<" = alloca " << itr2.Value.GetName() 
+					f << "%T" << it.0 <<" = alloca " << it.1.GetName() 
 					if debId != -1
 						f << ", !dbg !" << debId
 					f << "\n"
-					itr2 = itr2.Next
 				}
 				return void
 			}
@@ -175,20 +164,16 @@ AllocBox := class
 	{
 		if not mustBeStruct
 			return void
-		iter := ItemBag.Start
-		i := 0
-		while iter != null
+
+		for it,i : ItemBag
 		{
-			f << "%T" << iter.Key <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " << Name
+			f << "%T" << it.0 <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " << Name
 			f << " , i32 0, i32 " << i
 			if DebugMode and debId != -1
 			{
 				f << " , !dbg !" << debId
 			}
 			f << "\n"
-
-			iter = iter.Next
-			i += 1
 		}
 	}
 }

@@ -481,10 +481,6 @@ ObjCmd := class extend ObjConst
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if MyStr == "#critical_atomic"
-		{
-			//ReplaceNode(this&,new CriticalAtomic())
-		}
 	}
 	Clone := virtual !() -> Object^
 	{
