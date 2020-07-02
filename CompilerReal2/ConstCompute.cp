@@ -56,12 +56,6 @@ TryCompute := !(Object^ ob) -> Object^
 			return newItm
 		}
 	}
-	//if ob.Down != null and ob.Down.IsConst and ob.Down.Right != null and ob.Down.Right.Right != null
-	//and ob.Down.Right.Right.GetValue() == ".." and ob.Down.Right.Right.IsConst and Ob.Down.GetType
-	//{
-	//	
-	//}
-	//return null
 	if ob is ObjData and ob.Down.GetValue() == "!" and ob.Down.Right.GetValue() == "[]"
 	{
 		SyntaxCompress(ob.Down.Right,PriorityData)
@@ -73,9 +67,9 @@ TryCompute := !(Object^ ob) -> Object^
 		{
 			if iterR.GetValue() != ","
 			{
-				if iterR.Right != null and iterR.Right.GetValue() == ".."
+				if iterR.Right?.GetValue() == ".."
 				{
-					if iterR.Right.Right != null and iterR.Right.Right.IsConst
+					if  iterR.Right.Right?.IsConst
 						and iterR.GetType() == GTypeInt and iterR.Right.Right.GetType() == GTypeInt
 					{
 						start := iterR->{ObjInt^}.MyInt
