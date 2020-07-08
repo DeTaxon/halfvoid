@@ -100,7 +100,7 @@ ObjTry := class extend Object
 			if objP.Down == null
 				return void
 			if objP.Down.Right == null
-				EmitError("one obj in catch not allowed, two or none")
+				EmitError("one obj in catch not allowed, try \"IException^ e\"")
 			exType = ParseType(objP.Down)
 			if exType == null or (not exType is TypePoint)
 				EmitError("can not parse type in catch, or is not point")
