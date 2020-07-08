@@ -130,6 +130,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 {
 	//iter := begin.Down
 	
+	if RuleUse(begin,"imprt",RuleImport) return true
 	if RuleUse(begin,"~d",RuleMinus) return true
 
 	GotStuff := false
@@ -576,5 +577,24 @@ RuleFor := !(void^ itr)-> int
 
 	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	return Size
+}
+
+RuleImport := !(void^ itr) -> int 
+{
+	It := itr->{Object^}
+
+	if It.GetValue() != "~cmd" return 0
+
+	asI := It->{ObjCmd^}
+
+	if asI.MyStr != "#import" return 0
+
+	It = It.Right
+
+	if It == null return 0
+
+	if It.GetValue() != "~str" return 0
+
+	return 2
 }
 
