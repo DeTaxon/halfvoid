@@ -66,7 +66,7 @@ BoxBlock := class extend Object
 	}
 	RecursMake := !() -> void
 	{
-			woot := Queue.{Object^}() ; $temp
+			woot := Queue.{Object^}()
 
 			if Down[^].GetValue() == "{}"
 				woot.Push(it)
