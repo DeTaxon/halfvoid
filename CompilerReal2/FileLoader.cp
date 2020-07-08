@@ -69,4 +69,47 @@ LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
 
 }
 
+ImportCmd := class extend Object
+{
+	toImport := string
+	toPoint := BoxFile^
+	this := !(string toAdd) ->void
+	{
+		toImport = toAdd
+		WorkBag.Push(this&,State_Load)
+	}
+	GetValue := virtual !() -> string
+	{
+		return "#import cp"
+	}
+	GetFile := !() -> BoxFile^
+	{
+		if toPoint == null
+		{
+			toPoint = LoadFile(toImport,this&)
+
+			if toPoint == null
+			{
+				ErrorLog.Push("file "sbt + toImport + " not found\n")
+			}
+		}
+		return toPoint
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if toPoint == null
+		{
+			toPoint = LoadFile(toImport,this&)
+			if toPoint != null
+			{
+				WorkBag.Push(toPoint,State_Start)
+			}
+		}
+		if Up != and Up is BoxFile{
+			asNeed := Up->{BoxFile^}
+			asNeed.ImportingFiles.Push(toPoint)
+		}
+	}
+}
+
 

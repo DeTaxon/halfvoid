@@ -26,6 +26,33 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 		{
 			asC := iter->{ConstItem^}
 			if asC.Name == name return iter
+		}else
+		if iter is ImportCmd //iter.GetValue() == "#import cp"
+		{
+			asN := iter->{ImportCmd^}
+			fl := asN.GetFile()
+			res := fl.VisibleParams.TryFind(name)
+			if res != null {
+				return res^[0]
+			}
+
+
+			Fnd := Searched.Contain(fl.fileId)
+
+			if not Fnd
+			{
+				Searched.Push(fl.fileId)
+				notSure := fl.Down
+
+				if notSure != null
+				{
+					while notSure.Right != null
+						notSure = notSure.Right
+				}
+
+				res := GetItem2(name,notSure,Searched)
+				if res != null return res
+			}
 		}else if iter.Up? is BoxClass and name[0] == '$'
 		{
 			asCl := iter.Up->{BoxClass^}
