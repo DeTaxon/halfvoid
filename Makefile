@@ -62,7 +62,7 @@ TempDir/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m Priority.pr
 
 halfvoid: stable TempDir/CompilerData.zip
-	$(TargetStable) --ZipGlue TempDir/PreHalf TempDir/CompilerData.zip $(HW)
+	$(TargetStable) --ZipGlue $(CurrentStable) TempDir/CompilerData.zip $(HW)
 
 Objs/Lex: LexBuilder/main.cp Priority.pr
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o $(CurrentLex);
