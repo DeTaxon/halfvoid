@@ -156,7 +156,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 	}
 	if Node.GetValue() == "~d"
 	{
-		if Node.Down?.GetValue() == "!" and (Node.Down.Right?.GetValue() == "{}" or Node.Down.Right?.GetValue() == "{d}")
+		if Node.Down?.GetValue() == "!" and Node.Down.Right?.GetValue() in !["{}","{d}"]
 		{
 			itBox := new FuncInputBox ; $temp
 			for nd : Node.Down.Right.Down
@@ -389,8 +389,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 					return under.GetFatArray()
 				}else
 				{
-					val := Object^
-					val = null
+					val := Object^()
 					//if Ri.Down.GetValue() == "~ind"
 					//{
 					//	asNeed := ((Ri.Down)->{ObjIndent^})

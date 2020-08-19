@@ -175,10 +175,10 @@ WordDetermMachine := class
 
 MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 {
-	kindaHashed := Vector.{int}(input.NodeId->len)
-	borrow := Vector.{int}(input.NodeId->len)
+	kindaHashed := new int[input.NodeId->len] ; $temp
+	borrow := new int[input.NodeId->len] ; $temp
 
-	for it : kindaHashed, i : 0
+	for it,i : kindaHashed
 	{
 		it = 0
 		for j : input.IsEndNode->len
@@ -189,7 +189,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 
 
 	totalItems := QueueSet.{int}()
-	for i : borrow.Size() //BUG: borrow->len crashes
+	for i : borrow->len
 	{
 		found := i
 		for j : (0..(i-1))
@@ -610,12 +610,12 @@ LexBuilder := class
 		if Nfas.Size() == 1
 		{
 			newMach := DeterminateMachine(Nfas[0])
-			printf("------------determ-------\n")
-			newMach.PrintIt()
+			//printf("------------determ-------\n")
+			//newMach.PrintIt()
 			MinMach := MinimizeMachine(newMach)
-			printf("-------------minim--------\n")
-			MinMach.PrintIt()
-			printf("-------------word--------\n")
+			//printf("-------------minim--------\n")
+			//MinMach.PrintIt()
+			//printf("-------------word--------\n")
 			return MakeWordDetermMachine(MinMach)
 		}else
 		{

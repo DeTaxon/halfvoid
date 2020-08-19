@@ -38,7 +38,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 		}else {
 			iterU = iterU.Up
 			
-			if iterU != null and iterU.Up != null and iterU.Up is BoxFile
+			if iterU?.Up? is BoxFile
 			{	
 				asN := iterU.Up->{BoxFile^}
 				res := asN.VisibleParams.TryFind(name)

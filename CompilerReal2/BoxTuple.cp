@@ -81,26 +81,23 @@ TupleClass := class extend BoxClass
 		GetNmFunc = new TupleFuncGetItem(this&)
 		cnPre := ClassType->{Type^}
 		cn := cnPre.GetName()
-		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GetType("void"),false,
+		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GTypeVoid,false,
 			"call void("sbt + cn + "*," + cn + "*)@TupleSet" + ClassId + "(" + cn + "* #1," + cn + "* #2)\n")
 
 	}
 	GetFunc := virtual !(string name,FuncInputBox itBox, bool isV) -> BoxFunc^
 	{
-		if name == "."
+		switch name
 		{
+		case "."
 			return GetNmFunc.GetFunc(itBox)
-		}
-		if name == "="
-		{
+		case "="
 			if setSimple == null
 				setSimple = new SetTupleValueSimple(this&)
 			if setSimple.GetPriority(itBox) == 255
 				return null
 			return setSimple.GetFunc(itBox)
-		}
-		if name == "this"
-		{
+		case "this"
 			if cttAsFunc == null
 			{
 				box := new FuncInputBox ; $temp
@@ -110,6 +107,8 @@ TupleClass := class extend BoxClass
 				cttAsFunc.IsMethod = true
 			}
 			return cttAsFunc
+		case void 
+			return null
 		}
 		return null->{BoxFunc^}
 	}

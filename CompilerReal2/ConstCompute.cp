@@ -55,8 +55,6 @@ TryCompute := !(Object^ ob) -> Object^
 			}
 			return newItm
 		}
-		//val := TryCheckSuffix(asStr.GetString(),asSuf.MyStr)
-		//if val != null return val
 	}
 	//if ob.Down != null and ob.Down.IsConst and ob.Down.Right != null and ob.Down.Right.Right != null
 	//and ob.Down.Right.Right.GetValue() == ".." and ob.Down.Right.Right.IsConst and Ob.Down.GetType
