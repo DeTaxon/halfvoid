@@ -118,6 +118,16 @@ centf := class
 		ang = toSet.ang
 		pos = toSet.pos
 	}
+	Apply := !(vec4f toSet) -> vec4f
+	{
+		preRes :=  (ang*toSet) + pos 
+		preRes.w = toSet.w * pos.w
+		return preRes
+	}
+	Size := !() -> float
+	{
+		return pos<+>pos
+	}
 	Inverse := !() -> centf
 	{
 		result.ang = quantf(-ang.x,-ang.y,-ang.z,ang.w)
@@ -126,6 +136,12 @@ centf := class
 		result.pos.y *= -1.0f
 		result.pos.z *= -1.0f
 		result.pos.w = 1.0f / pos.w
+	}
+	NearDistance := !(centf scnd) -> float
+	{
+		dist1 := Distance(pos.xyz , scnd.pos.xyz)
+		dist2 := ang.xyz<+>scnd.ang.xyz
+		return dist1 + dist2
 	}
 }
 
