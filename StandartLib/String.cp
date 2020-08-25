@@ -1,16 +1,28 @@
 sprintf := !(char^ buf,char^ frmt, ...) -> int declare
 strcmp := !(char^ a,char^ b) -> int declare
 
+strtol := !(char^ begin,char^^ restr,int base) -> c_long declare
+strtod := !(char^ begin, char^^ end) -> double declare
+
+ToInt := !(char^ inp) -> int
+{
+	return strtol(inp,null,0)
+}
+
+ToFloat := !(char^ inp) -> float
+{
+	return strtod(inp,null)
+}
 
 ToString := !(int x) -> char^
 {
-	toRet := new char[13]
+	toRet := new char[13] ; $temp
 	sprintf(toRet,"%i",x)
 	return toRet
 }
 ToString := !(float x) -> char^
 {
-	toRet := new char[30]
+	toRet := new char[30] ; $temp
 	sprintf(toRet,"%f",x)
 	return toRet
 }
@@ -143,57 +155,6 @@ DivideStr := !(char^ what,char^ to) . {} -> List.{StringSpan}
 	{
 		result.Emplace(what[i]&,j - i)
 	}		
-}
-
-StrToInt := !(char^ a) -> int 
-{
-	Sum := 0
-	i := 0
-	Min := false
-	if ( a[0] == '-')
-	{
-		i = 1
-		Min = true
-	}
-	while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
-	{
-		Sum *= 10
-		Sum += a[i] - '0'
-		i += 1	
-	}
-	if Min return -Sum
-	return Sum
-}
-
-StrToFloat := !(char^ a) -> float
-{
-	Sum := 0.0
-	i := 0
-	Min := false
-	if (a[0] == '-')
-	{
-		i += 1
-		Min = true
-	}
-	while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
-	{
-		Sum *= 10.0
-		Sum += a[i] - '0'
-		i += 1	
-	}
-	if (a[i] == '.')
-	{
-		i += 1
-		Q := 1.0
-		while a[i] != 0 and a[i] <= '9' and a[i] >= '0'
-		{
-			Q *= 0.1
-			Sum += Q*(a[i] - '0')
-			i += 1
-		}
-	}
-	if Min return 0.0-Sum
-	return Sum
 }
 
 StringIterator := class

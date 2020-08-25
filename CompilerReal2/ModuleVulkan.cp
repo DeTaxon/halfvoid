@@ -111,7 +111,7 @@ ModuleVulkan := class extend CompilerModule
 			asNeed := sN.second->{TreeNode^}
 			extNumberPre := asNeed.Attrs.TryFind("number")
 			if extNumberPre == null continue
-			extNumber := StrToInt(extNumberPre^)
+			extNumber := ToInt(extNumberPre^)
 			extNumber -= 1
 			extNumber *= 1000
 
@@ -136,7 +136,7 @@ ModuleVulkan := class extend CompilerModule
 								itOffst := asN2.Attrs.TryFind("offset")
 								if itOffst != null
 								{
-									offst := StrToInt(itOffst^)
+									offst := ToInt(itOffst^)
 									offst += extNumber
 									offst += 1000000000
 									if itDir != null offst = -offst

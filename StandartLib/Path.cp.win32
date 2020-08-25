@@ -241,10 +241,5 @@ Path := class
 
 TFSDelete := !(char^ toDel) -> bool
 {
-	return remove(toDel) == 0
-}
-
-TFSDelete := !(char^ toDel) -> bool
-{
 	return DeleteFileW(Utf8ToUtf16(toDel)) != 0
 }
