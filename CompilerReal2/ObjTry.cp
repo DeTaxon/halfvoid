@@ -98,14 +98,26 @@ ObjTry := class extend Object
 		{
 			objP := Down.Right
 			if objP.Down == null
+			{
+				EmitError("empty catch not allowed, try \"IException^ e\"")
 				return void
+			}
 			if objP.Down.Right == null
+			{
 				EmitError("one obj in catch not allowed, try \"IException^ e\"")
+				return void
+			}
 			exType = ParseType(objP.Down)
 			if exType == null or (not exType is TypePoint)
+			{
 				EmitError("can not parse type in catch, or is not point")
+				return void
+			}
 			if not objP.Down.Right is ObjIndent
+			{
 				EmitError("second object in catch must be indentificator\n")
+				return void
+			}
 			asInd := objP.Down.Right->{ObjIndent^}
 			exName = asInd.MyStr
 
