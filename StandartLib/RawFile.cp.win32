@@ -13,7 +13,7 @@ RawFile := class
 	{
 		//Open(itName)
 	}
-	OpenTemp := !(char^ itName) -> char^
+	OpenTemp := !(char^ itName,bool tryMem) -> char^
 	{
 		tmpPath := new u16[MAX_PATH] ; $temp
 		dwRetVal := GetTempPathW(MAX_PATH,tmpPath)

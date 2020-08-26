@@ -1,16 +1,24 @@
 
+DownFunc := !() -> void
+{
+	throw new Exception("tast")
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	lex := LexBuilder()
-	lex.ApplyReg("[0-9,]+")
-	isNum := lex.GenerateMachine()
-	
-	d := WordParser
-	strr := "123 wow 5,6"
-	d.ReadText(isNum&,strr,StrSize(strr),(a,b,c) ==>
+	try 
 	{
-		printf("%s\n",strr[b..c])
-	})
+		switch argc
+		{
+			case 2
+				return 13
+			case 1
+				DownFunc()
+		}
+	}catch()
+	{
+		printf("wut %s\n",e.Msg())
+	}
 
 	return 0
 }

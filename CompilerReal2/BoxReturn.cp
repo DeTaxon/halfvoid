@@ -160,6 +160,8 @@ BoxReturn := class extend Object
 				EmitError("error to get return path 24135\n")
 			}else{
 				OutPathName = Up.GetOutPath(this&,PATH_RETURN,0)
+				assert(OutPathName != null)
+				assert(OutPathName != "")
 			}
 		}
 	}

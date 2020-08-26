@@ -99,6 +99,8 @@ Object := class{
 	}
 	GetOutPath := virtual !(Object^ from,int typ,int size) -> string
 	{
+		if Up != null
+			return Up.GetOutPath(from,typ,size)
 		return ""
 	}
 	PrintInBlock := virtual !(sfile f) -> void

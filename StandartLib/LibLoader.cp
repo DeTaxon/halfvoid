@@ -102,24 +102,27 @@ LibDatabaseType := class
 
 						resLoad := win32LoadLibrary(pt,inFS.Size())
 
-						//itWr := RawFile()
-						//tmpName := itWr.OpenTemp(name)
-						//itWr.Write(pt,inFS.Size())
-						//itWr.Close()
-
-						//hndl = OpenLib(tmpName)
-						//if hndl == null
-						//{
-						//	TFSDelete(tmpName)
-						//	return null
-						//}
-
 						nameCpy := StrCopy(name)
 						inMap2 := ref loadedLibs[nameCpy]
 						inMap2.hndl = hndl
 						//inMap2.itFileName = StrCopy(tmpName)
 						inMap2.win32DllData = resLoad
 						return inMap2&
+					}
+					if $posix
+					{
+						pt := inFS.Map()
+						defer inFS.Unmap()
+
+						rf := RawFile()
+						newName := rf.OpenTemp(name,true)
+						rf.Write(pt,inFS.Size())
+						rf.Close()
+
+						hndl = OpenLib(newName)
+						inMap4 := ref loadedLibs[StrCopy(name)]
+						inMap4.hndl = hndl
+						return inMap4&
 					}
 				}else{
 					toLoad := inFS.GetPath()

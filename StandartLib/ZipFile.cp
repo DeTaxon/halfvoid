@@ -54,11 +54,11 @@ z_stream := class
 {
 	next_in := void^
 	avail_in := u32
-	total_in := u64
+	total_in := c_long
 
 	next_out := void^
 	avail_out := u32
-	total_out := u64
+	total_out := c_long
 
 	msg := char^
 	state := void^
@@ -68,8 +68,9 @@ z_stream := class
 	opaque := void^
 
 	data_type := int
-	adler := u64
-	reserved := u64
+
+	adler := c_long
+	reserved := c_long
 }
 
 inflateInit2_ := !(z_stream^ a,int b,char^ c,u64 d) -> int declare
