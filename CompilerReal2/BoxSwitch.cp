@@ -1,3 +1,15 @@
+ForInSwapNodes := !(Object^ onLeft) -> void
+{
+	up := onLeft.Up
+	lft := onLeft
+	rt := onLeft.Right
+	rt.Left = lft.Left
+	lft.Right = rt.Right
+	rt.Right = lft
+	lft.Left = rt
+	if up.Down == lft up.Down = rt
+}
+
 BoxSwitch := class extend Object
 {
 	id := int
@@ -37,6 +49,9 @@ BoxSwitch := class extend Object
 				itemCall = new RetFuncParam(Down)
 				defCase := Object^()
 				regType := Type^()
+
+				mustSwapNodes := false
+
 				for iter : Down.Right.Down
 				{
 					if not (iter is BoxCase)
@@ -68,7 +83,17 @@ BoxSwitch := class extend Object
 							isAllowTreeOpt = false
 							
 							func = FindFunc("==",this&,b^,false)
-							if func == null func = FindFunc("in",this&,b^,false)
+							if func == null {
+								c := new FuncInputBox() ; $temp 
+
+								c.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
+								c.itPars.Emplace(Down.GetType(),Down.IsRef())
+								func = FindFunc("in",this&,c^,false)
+								if func != null
+								{
+									mustSwapNodes = true									
+								}
+							}
 	
 							if func?.MyFuncType.RetType != GTypeBool
 								EmitError("one of case compares is not boolean\n")
@@ -87,6 +112,7 @@ BoxSwitch := class extend Object
 							iter.Down = newCall
 							newCall.Up = iter
 
+							if mustSwapNodes ForInSwapNodes(newCall)
 							checkCall := MakeSimpleCall(func,iter.Down)
 							iter.Down = checkCall
 							checkCall.Line = this.Line

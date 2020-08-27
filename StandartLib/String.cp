@@ -96,7 +96,7 @@ Find := !(char^ this,char val) -> int
 	return -1
 }
 
-"in" := !(int chr, char^ str) -> bool
+"in" := !(char^ str,int chr) -> bool
 {
 	return ChrInStr(chr,str)
 }

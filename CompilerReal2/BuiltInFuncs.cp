@@ -1320,15 +1320,15 @@ CreateBuiltIns := !() -> void
 		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("s"sbt + it),false,GetType("s"sbt + it),false,GetType("s"sbt + it), "#0 = ashr i"sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("u"sbt + it),false,GetType("s"sbt + it),false,GetType("u"sbt + it), "#0 = lshr i"sbt + it + " #1,#2 #d\n"))
 	}
-	AddBuiltInFunc(new BuiltInFuncBinar("in",GTypeInt,false,TypeTable[13],false,BoolT,
+	AddBuiltInFunc(new BuiltInFuncBinar("in",TypeTable[13],false,GTypeInt,false,BoolT,
 											"br label %Start##\n"sbt +
 											"Start##:" +
-											"%First## = extractvalue %RangeTypeInt #2,0 #d\n"+
-											"%T1T## = icmp sge i32 #1,%First## #d\n" + 
+											"%First## = extractvalue %RangeTypeInt #1,0 #d\n"+
+											"%T1T## = icmp sge i32 #2,%First## #d\n" + 
 											"br i1 %T1T## ,label %OnNext##, label %OnEnd## #d\n" +
 											"OnNext##:\n"+
-											"%Second## = extractvalue %RangeTypeInt #2,1 #d\n" +
-											"%T2T## = icmp sle i32 #1, %Second## #d\n" +
+											"%Second## = extractvalue %RangeTypeInt #1,1 #d\n" +
+											"%T2T## = icmp sle i32 #2, %Second## #d\n" +
 											"br label %OnEnd## #d\n" +
 											"OnEnd##:\n" +
 											"#0 = phi i1 [0, %Start##], [%T2T##, %OnNext##] #d\n"))

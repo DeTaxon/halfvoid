@@ -37,7 +37,7 @@ strcpy := !(void^ dst,void^ src) -> void declare
 	free(item)
 }
 
-"in" := !(int a, range b) -> bool
+"in" := !(range b,int a) -> bool
 {
 	if a < b->begin return false
 	if a > b->end return false
@@ -102,7 +102,7 @@ FixedArrayIter := class .{@Type}
 {
 	return FixedArrayIter.{Type}(item->{Type^},item->len)
 }
-"in" := !(int val, char^ str) -> bool
+"in" := !(char^ str,int val) -> bool
 {
 	if str == null return false
 	i := 0
@@ -113,7 +113,7 @@ FixedArrayIter := class .{@Type}
 	return false
 }
 
-"in" := !(SArr val, @SArr[@SSize] itArr) -> bool
+"in" := !(@SArr[@SSize] itArr,SArr val) -> bool
 {
 	for i : SSize
 	{
@@ -121,7 +121,7 @@ FixedArrayIter := class .{@Type}
 	}
 	return false
 }
-"in" := !(SArr val, @SArr[] itArr) -> bool
+"in" := !(@SArr[] itArr,SArr val) -> bool
 {
 	for i : itArr->len
 	{

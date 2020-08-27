@@ -46,9 +46,8 @@ ContainerCommonSet := class .{@TreeType,@DATA}
 		return CommonSetIterator.{DATA}(itTree.Start)
 	}
 	Size := !() -> int { return itSize }
-}
-
-"in" := !(SetType this, ContainerCommonSet.{@TreeType,@SetType} bag) -> bool
-{
-	return bag.Contain(this)
+	"in" := !(DATA val) -> bool
+	{
+		return Contain(val)
+	}
 }

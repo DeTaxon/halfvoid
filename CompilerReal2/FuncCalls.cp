@@ -524,6 +524,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if iter.GetType() != null
 				{
 					PopOutNode(iter.Left)
+					if oper == "in" and iter.Up != null
+					{
+						ForInSwapNodes(iter.Left)
+					}
 					return  OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up)
 				}
 				return null

@@ -49,8 +49,8 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 		return CommonMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
 	}
 	Size := !() -> int { return itSize }
-}
-"in" := !(SetType this, ContainerCommonMap.{@TreeType,@SetType,@AnotherType} bag) -> bool
-{
-	return bag.Contain(this)
+	"in" := !(KEY val) -> bool
+	{
+		return Contain(val)
+	}
 }
