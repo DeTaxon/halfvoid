@@ -1,24 +1,23 @@
 
-DownFunc := !() -> void
+bag := class
 {
-	throw new Exception("tast")
+	//odd := fake
+	//{
+	//	"in" := !(int x) -> bool
+	//	{
+	//		return x anb_b 1
+	//	}
+	//}
+	"in" := !(int x) -> void
+	{
+		printf("hop %i\n",x)
+	}
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	try 
-	{
-		switch argc
-		{
-			case 2
-				return 13
-			case 1
-				DownFunc()
-		}
-	}catch()
-	{
-		printf("wut %s\n",e.Msg())
-	}
-
+	tst := bag
+	13 in tst
 	return 0
 }

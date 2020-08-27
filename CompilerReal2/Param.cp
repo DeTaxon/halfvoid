@@ -130,6 +130,10 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Down?.Down?.GetValue() == "fake"
+			{
+				return void
+			}
 			if Down?.GetValue() == "x=>x"
 			{
 				Down.DoTheWork(State_Start)
