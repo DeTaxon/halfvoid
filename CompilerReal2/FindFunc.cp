@@ -202,6 +202,9 @@ FindSuffix := !(string name, Object^ start,FuncInputBox itBox) -> BoxFunc^
 }
 FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
+	if itBox.itMetaPtr != null
+		return null
+		
 	Searched := QueueSet.{int}()
 
 	iterS := start

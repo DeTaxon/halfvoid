@@ -7,11 +7,12 @@ CheckMetaBlock := !(Object^ metBl) -> void
 		{
 			if metBl.Up? is ObjParam
 			{
+				paramName := metBl.Up->{ObjParam^}.MyStr
+				
 				MakeItBlock(metBl.Down.Right)
 				WorkBag.Push(metBl.Down.Right,State_Start)
 				metBl.Down.Right->{BoxBlock^}.InClass = itrUp->{BoxClass^}
-				itrUp->{BoxClass^}.AddMetaField(metBl.Up->{ObjParam^}.MyStr
-				,metBl.Down.Right)
+				itrUp->{BoxClass^}.AddMetaField(paramName,metBl.Down.Right)
 				//SyntaxCompress(metBl.Down.Right,PriorityData)
 			}
 			itrUp = null

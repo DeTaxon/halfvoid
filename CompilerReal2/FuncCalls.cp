@@ -749,6 +749,11 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 	TrimCommas(G)
 	P := G.Down
 
+	if P? is MetaItemWrapper
+	{
+		box.itMetaPtr = P->{MetaItemWrapper^}.ptrToBlock
+	}
+
 	iterT := P
 
 	while iterT != null

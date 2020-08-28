@@ -39,12 +39,25 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	ExtraIter := item
 	while ExtraIter != null
 	{
-		if ExtraIter.GetValue() == "{...}"
+		switch ExtraIter.GetValue()
 		{
+		case "{...}"
 			ClassPtr = ExtraIter->{BoxClass^}
 			ClassType = ClassPtr.ClassType
 			ExtraIter = null
-		}else 	ExtraIter = ExtraIter.Up
+		case "fake"
+			if IsVirtual
+			{
+				item.EmitError("can not use virtual functions inside fake field")
+				return null
+			}
+			ExtraIter = ExtraIter.Up
+		case void
+			if ExtraIter.Left != null
+				ExtraIter = ExtraIter.Left
+			else
+				ExtraIter = ExtraIter.Up
+		}
 	}
 
 	iter = iter.Right

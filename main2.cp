@@ -8,9 +8,12 @@ bag := class
 			return (x and_b 1)
 		}
 	}
-	"in" := !(int x) -> bool
+	even := fake
 	{
-		return false
+		"in" := !(int x) -> bool
+		{
+			return not (x in this.odd)
+		}
 	}
 }
 
@@ -18,6 +21,6 @@ bag := class
 main := !(int argc, char^^ argv) -> int
 {
 	tst := bag
-	printf("tst %i\n",10[^] in tst.odd)
+	printf("tst %i %i\n",10[^] in tst.even, it in tst.odd)
 	return 0
 }
