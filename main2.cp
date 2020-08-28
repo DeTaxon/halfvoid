@@ -1,16 +1,16 @@
 
 bag := class
 {
-	//odd := fake
-	//{
-	//	"in" := !(int x) -> bool
-	//	{
-	//		return x anb_b 1
-	//	}
-	//}
-	"in" := !(int x) -> void
+	odd := fake
 	{
-		printf("hop %i\n",x)
+		"in" := !(int x) -> bool
+		{
+			return (x and_b 1)
+		}
+	}
+	"in" := !(int x) -> bool
+	{
+		return false
 	}
 }
 
@@ -18,6 +18,6 @@ bag := class
 main := !(int argc, char^^ argv) -> int
 {
 	tst := bag
-	13 in tst
+	printf("tst %i\n",10[^] in tst.odd)
 	return 0
 }

@@ -404,6 +404,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						if iterK.GetValue() != ","
 							box.itPars.Emplace(iterK.GetType(),iterK.IsRef())
 					}
+					if iter.Left is MetaItemWrapper
+					{
+						box.itMetaPtr = iter.Left->{MetaItemWrapper^}.ptrToBlock
+					}
 
 					func := FindFunc(asName,iter,box^,true)
 				
@@ -481,7 +485,25 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if pru == 255 
 					{
 						roll = asClass.GetVirtualParamFunc(asName)
-						if roll == null return null //TODO: check for user functions
+						if roll == null 
+						{
+							if asClass.metaFields.Contain(asName)
+							{
+								iter = iter.Left
+								if iter.GetType() is TypePoint
+								{
+									iter = new PtrToRef(iter)
+								}
+								PopOutNode(iter.Right)
+								PopOutNode(iter.Right)
+								
+							}
+							metWrapper := new MetaItemWrapper
+							metWrapper.ptrToBlock = asClass.metaFields[asName]
+							iter = UNext(iter,metWrapper,1)
+							return iter
+						}
+						//return null //TODO: check for user functions
 					}else{
 						roll =  (asClass.UnrollTemplate^.GetFunc(box2^))
 					}
@@ -634,10 +656,14 @@ OperFunc := !(string oper,Object^ pars) -> Object^
 				oBox := new FuncInputBox()  ; $temp
 				FillAttrs(oBox^,pars)
 
-
+				
 				for iter : pars
 				{
 					oBox.itPars.Emplace(iter.GetType(),iter.IsRef())
+				}
+				if pars is MetaItemWrapper
+				{
+					oBox.itMetaPtr = pars->{MetaItemWrapper^}.ptrToBlock
 				}
 
 				newPre := cls.GetFunc(oper,oBox^,true)

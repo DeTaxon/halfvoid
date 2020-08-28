@@ -203,7 +203,8 @@ BoxBlock := class extend Object
 			WorkBag.Push(this&,State_Syntax)
 			if Up != null
 			{
-				InClass =  Up.GetValue() == "{...}"
+				if not InClass
+					InClass =  Up.GetValue() == "{...}"
 			}
 			//if Up.GetValue() == "~switch()" RecursMake()
 			//if (not InClass and (Up.GetValue() == "{d}" or Up.GetValue() == "~switch()")) RecursMake()

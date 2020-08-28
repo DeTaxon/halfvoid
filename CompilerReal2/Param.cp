@@ -132,6 +132,7 @@ ObjParam := class extend Object
 		{
 			if Down?.Down?.GetValue() == "fake"
 			{
+				CheckMetaBlock(Down)	
 				return void
 			}
 			if Down?.GetValue() == "x=>x"

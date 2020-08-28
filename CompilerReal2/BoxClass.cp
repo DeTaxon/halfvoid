@@ -274,6 +274,13 @@ BoxClass := class extend Object
 		return StrCopy("%Class"sbt + ClassId)
 	}
 
+	
+	metaFields := AVLMap.{char^,Object^}
+	AddMetaField := !(char^ name, Object^ itList) -> void
+	{
+		metaFields[StrCopy(name)] = itList
+	}
+
 	ThislessFuncs := Queue.{BuiltInThislessFunc^}
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
 	GetWrappedFunc := !(string name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
@@ -565,9 +572,14 @@ BoxClass := class extend Object
 			}
 		}
 
-		if Down != null
+		downIter := Down
+		if itBox.itMetaPtr != null
 		{
-			for iterJ : Down.Down
+			downIter = itBox.itMetaPtr
+		}
+		if downIter != null
+		{
+			for iterJ : downIter.Down
 			{
 				if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
 				{
@@ -857,7 +869,11 @@ BoxClass := class extend Object
 		}
 		f << "ret void\n}\n"
 
-		for iterJ : Down.Down
+		downs := new List.{Object^}() ; $temp
+		downs.Push(Down)
+		downs.Push(metaFields[^])
+
+		for iterJ : downs^[^].Down
 		{
 			if iterJ.GetValue() == "i:=1"
 			{
