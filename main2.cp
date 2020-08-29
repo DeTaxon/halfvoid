@@ -22,5 +22,6 @@ main := !(int argc, char^^ argv) -> int
 {
 	tst := bag
 	printf("tst %i %i\n",10[^] in tst.even, it in tst.odd)
+	//printf("tst %i %i\n",10[^] in tst.odd)
 	return 0
 }

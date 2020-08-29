@@ -275,10 +275,10 @@ BoxClass := class extend Object
 	}
 
 	
-	metaFields := AVLMap.{char^,Object^}
-	AddMetaField := !(char^ name, Object^ itList) -> void
+	metaFields := AVLMap.{char^,MetaFieldBox^}
+	AddMetaField := !(char^ name, MetaFieldBox^ itMBox) -> void
 	{
-		metaFields[StrCopy(name)] = itList
+		metaFields[StrCopy(name)] = itMBox
 	}
 
 	ThislessFuncs := Queue.{BuiltInThislessFunc^}
@@ -871,7 +871,7 @@ BoxClass := class extend Object
 
 		downs := new List.{Object^}() ; $temp
 		downs.Push(Down)
-		downs.Push(metaFields[^])
+		downs.Push(metaFields[^].Down)
 
 		for iterJ : downs^[^].Down
 		{

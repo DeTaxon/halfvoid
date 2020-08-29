@@ -497,11 +497,11 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 								PopOutNode(iter.Right)
 								PopOutNode(iter.Right)
 								
+								metWrapper := new MetaItemWrapper
+								metWrapper.ptrToBlock = asClass.metaFields[asName].Down
+								iter = UNext(iter,metWrapper,1)
+								return iter
 							}
-							metWrapper := new MetaItemWrapper
-							metWrapper.ptrToBlock = asClass.metaFields[asName]
-							iter = UNext(iter,metWrapper,1)
-							return iter
 						}
 						//return null //TODO: check for user functions
 					}else{

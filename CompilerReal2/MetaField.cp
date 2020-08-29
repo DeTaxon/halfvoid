@@ -8,12 +8,19 @@ CheckMetaBlock := !(Object^ metBl) -> void
 			if metBl.Up? is ObjParam
 			{
 				paramName := metBl.Up->{ObjParam^}.MyStr
-				
-				MakeItBlock(metBl.Down.Right)
-				WorkBag.Push(metBl.Down.Right,State_Start)
-				metBl.Down.Right->{BoxBlock^}.InClass = itrUp->{BoxClass^}
-				itrUp->{BoxClass^}.AddMetaField(paramName,metBl.Down.Right)
-				//SyntaxCompress(metBl.Down.Right,PriorityData)
+			
+				blkItem := metBl.Down.Right //MEMORY
+				metWrp := ReplaceNode(metBl,new MetaFieldBox)->{MetaFieldBox^}
+				metWrp.Down = blkItem
+				blkItem.Up = metWrp
+				blkItem.Left = null
+
+				MakeItBlock(metWrp.Down)
+				WorkBag.Push(metWrp.Down,State_Start)
+
+				metWrp.Down->{BoxBlock^}.InClass = itrUp->{BoxClass^}
+				assert(metWrp is MetaFieldBox)
+				itrUp->{BoxClass^}.AddMetaField(paramName,metWrp)
 			}
 			itrUp = null
 		}else{
@@ -24,7 +31,10 @@ CheckMetaBlock := !(Object^ metBl) -> void
 
 MetaFieldBox := class extend Object
 {
-	
+	GetValue := virtual !() -> char^
+	{
+		return "~fake"
+	}
 }
 MetaItemWrapper := class extend Object
 {
@@ -45,5 +55,9 @@ MetaItemWrapper := class extend Object
 		toRet.Down = Down.Clone()
 		toRet.ptrToBlock = ptrToBlock
 		return toRet
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "(fake)"
 	}
 }
