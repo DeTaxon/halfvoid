@@ -53,4 +53,26 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	{
 		return Contain(val)
 	}
+	values := fake
+	{
+		"in" := !(VALUE val) -> bool
+		{
+			if this[^] == val
+				return true
+			return false
+		}
+		Clone := !() .{} -> VALUE[] 
+		{
+			res := new VALUE[itSize]
+			for frm : this, to : res
+			{
+				to = frm
+			}
+			return res
+		}
+		Get := !() -> VALUE[]
+		{
+			return Clone() ; $temp
+		}
+	}
 }
