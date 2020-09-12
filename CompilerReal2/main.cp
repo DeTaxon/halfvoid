@@ -376,23 +376,29 @@ main := !(int argc,char^^ argv) -> int
 workIter := int
 WorkWithBag := !(bool printW) -> void
 {
-	while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
+	try
 	{
-		FlushTempMemory()
-		prior := WorkBag.GetTopPriority()
-		it := WorkBag.Pop()
-		workingOnObject = it
-
-		if printW
+		while (not WorkBag.IsEmpty()) and ErrorLog.Empty()
 		{
-			printf("itWork %i %s\n",workIter,it.GetValue())
-			if it.Line != null {
-				printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
-				//it.Print(0)
-				}
-			workIter += 1
-		}
+			FlushTempMemory()
+			prior := WorkBag.GetTopPriority()
+			it := WorkBag.Pop()
+			workingOnObject = it
 
-		it.DoTheWork(prior)
+			if printW
+			{
+				printf("itWork %i %s\n",workIter,it.GetValue())
+				if it.Line != null {
+					printf("at %s %i\n",it.Line.inFile.itStr,it.Line.LinePos)
+					//it.Print(0)
+					}
+				workIter += 1
+			}
+
+			it.DoTheWork(prior)
+		}
+	}catch(IException^ e)
+	{
+		return void
 	}
 }
