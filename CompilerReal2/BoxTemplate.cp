@@ -435,7 +435,24 @@ BoxTemplate := class extend BoxFunc
 
 		if MyFuncType.RetType == null and CopyRet != null
 		{
-			newRet = ParseType(CopyRet)
+			if vargsName != null 
+			{
+				extrVal2 := AVLMap.{char^,Type^}()
+				bstType := Type^()
+				badType := false
+				ii := funcUserParamsCount
+				while ii < itBox.itPars.Size()
+				{
+					if bstType == null bstType = itBox.itPars[ii].first
+					else bstType = TypeFight(bstType,itBox.itPars[ii].first)
+					if bstType == null badType = true
+					ii++
+				}
+				if not badType extrVal2[vargsName] = bstType ; $temp
+				newRet = ParseType(CopyRet,null,null,extrVal2&)
+			}else{
+				newRet = ParseType(CopyRet,null,null,null)
+			}
 		}
 		if itBox.itPars.Size() > FType.ParsCount
 		{

@@ -93,15 +93,88 @@ Type := class {
 }
 ParseType := !(Object^ Node) -> Type^
 {
-	return ParseType(Node,null)
+	return ParseType(Node,null,null,null)
 }
 ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
 {
-	return ParseType(Node,toAdd,null)
+	return ParseType(Node,toAdd,null,null)
 }
-ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts) -> Type^ 
+ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts) -> Type^
+{
+	return ParseType(Node,toAdd,tempConsts,null)
+}
+ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts,AVLMap.{char^,Type^}^ extrTypes) -> Type^ 
 {
 	if Node == null return null
+	if Node.GetValue() == "~d" and Node.Down?.GetValue() == "#best"
+	{
+		srNode := Node.Down.Right
+		bestType := Type^()
+
+		for itr : srNode.Down
+		{
+			if itr.GetValue() == ","
+				continue
+			sType := ParseType(itr,toAdd,tempConsts,extrTypes)
+			if sType == null
+			{
+				if itr is ObjIndent
+				{
+					asInd := itr->{ObjIndent^}
+
+					if extrTypes?.Contain(asInd.MyStr)
+					{
+						if bestType == null
+						{
+							bestType = extrTypes^[asInd.MyStr]
+						}else{
+							bestType = TypeFight(bestType,extrTypes^[asInd.MyStr])
+						}
+						if bestType == null
+							return null
+					}else{
+						toUp := Node.Up
+						while toUp != null
+						{
+							if toUp is BoxFuncBody break
+							toUp = toUp.Up
+						}
+						if toUp == null return null
+						asBody := toUp->{BoxFuncBody^}
+						if asBody.vargsName != asInd.MyStr return null
+						fType := asBody.MyFuncType
+						ii := asBody.funcUserParamsCount
+						while ii < fType.ParsCount
+						{
+							if bestType == null
+							{
+								bestType = fType.Pars[ii]
+							}else{
+								bestType = TypeFight(bestType,fType.Pars[ii])
+							}
+							if bestType == null
+							{
+								return null
+							}
+							ii++
+						}
+					}
+				}else{
+					return null
+				}
+			}else{
+				if bestType == null
+				{
+					bestType = sType
+				}else{
+					bestType = TypeFight(bestType,sType)
+				}
+				if bestType == null
+					return null
+			}
+		}
+		return bestType
+	}
 	if Node is ObjIndent
 	{
 		indName := (Node->{ObjIndent^}).MyStr

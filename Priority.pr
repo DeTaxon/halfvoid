@@ -1,3 +1,4 @@
+"#best ()" 
 "! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}" "fake {}" 
 "packed_class {}"
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
