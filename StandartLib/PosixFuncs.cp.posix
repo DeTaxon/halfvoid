@@ -100,6 +100,7 @@ CloseLib := !(void^ libId) -> void
 remove := !(char^ toDel) -> int declare
 
 nanosleep := !(void^ a,void^ b) -> int declare
+clock_gettime := !(u64 clockType,void^ reslt) -> void declare
 
 TSleep := !(double timeSleep) -> void
 {
@@ -110,6 +111,13 @@ TSleep := !(double timeSleep) -> void
 	if tmStruct[1] >= 999999999
 		tmStruct[1] = 999999999
 	nanosleep(tmStruct[0]&,null)
+}
+TGetSteadyTime := !() -> double
+{
+	times := u64[2]
+	clock_gettime(1,times[0]&)
+	resTime := times[0]->{double}
+	return resTime + times[1]*0.001*0.001*0.001
 }
 
 TCreateDir := !(char^ pth) -> void

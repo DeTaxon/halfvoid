@@ -138,22 +138,17 @@ IsPrintable := !(int ch) -> bool
 	return false
 }
 
-min := !(@A a, @B b) 
+min := !(@A a, args...) -> #best(A,args) 
 {
-	if a > b return b
-	return a
+	mx := #best(A,args)
+	(mx = args < mx ?: args : mx)...
+	return mx
 }
-max := !(@A a, @B b) 
+max := !(@A a, args...) -> #best(A,args) 
 {
-	if a > b return a
-	return b
-}
-max := !(@T a, @T b,@T c) -> float 
-{
-	r := a
-	if b > r r = b
-	if c > r r = c
-	return r
+	mx := #best(A,args)
+	(mx = args > mx ?: args : mx)...
+	return mx
 }
 
 StrSize := !(string xs) -> int

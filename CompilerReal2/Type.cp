@@ -260,6 +260,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 		if lazy
 		{
 			types := Queue.{Type^}() ; $temp
+			refs := List.{bool}() ; $temp
 			isVARR := false
 			isLambda := false
 			ptrSize := 0
@@ -273,10 +274,20 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			{
 				if iter.GetValue() != ","
 				{
-					someType := ParseType(iter)
+					someType := Type^()
+					isRefParam := false
+					if iter.Down?.Right?.GetValue() == "&"
+					{
+						someType = ParseType(iter.Down)
+						isRefParam = true
+					}else{
+						someType = ParseType(iter)
+					}
 					if someType == null
 						return null
+					if not isRefParam isRefParam = IsComplexType(someType)
 					types.Push(someType)
+					refs.Push(isRefParam)
 				}
 				iter = iter.Right 
 			}
@@ -293,20 +304,21 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			}
 
 			iter = iter.Right
-			someType := ParseType(iter)
-			if someType == null return null
+			someTypeRet := ParseType(iter)
+			if someTypeRet == null return null
 
 			if isLambda 
 			{
 				types.PushFront(GTypeVoidP)
-				someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
-				asN := someType->{TypeFunc^}
+				refs.PushFront(false)
+				someTypeOut := GetFuncType(types,refs.ToArray(),someTypeRet,false,isVARR)
+				asN := someTypeOut->{TypeFunc^}
 				return asN.GetLambda()
 			}
 
-			someType = GetFuncType(types,null->{bool^},someType,false,isVARR)
-			for ptrSize someType = someType.GetPoint()
-			return someType
+			someTypeOut := GetFuncType(types,refs.ToArray(),someTypeRet,false,isVARR)->{Type^}
+			for ptrSize someTypeOut = someTypeOut.GetPoint()
+			return someTypeOut
 		}
 		
 		if Node.Down.GetValue() == "~ind" and Node.Down.Right?.GetValue() == "." and Node.Down.Right.Right?.GetValue() == "{}"
@@ -563,7 +575,7 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
 
-	ExtraArr := new bool[lin.Size()]
+	ExtraArr := new bool[lin.Size()] ; $temp
 	for it : lin, i : 0
 	{
 		ExtraArr[i] = false
@@ -770,16 +782,16 @@ TypeFunc := class extend Type
 		//ItName = GetNewName()
 		DoMeta()
 	}
-	this := !(Queue.{Type^} P,bool^ retsRef,Type^ retType, bool isRetRef, bool IsV) -> void
+	this := !(Queue.{Type^} P,bool^ parsIsRef,Type^ retType, bool isRetRef, bool IsV) -> void
 	{
 		RetType = retType
 		RetRef = isRetRef
 		ParsCount = P.Size()
 
-		if retsRef != null
+		if parsIsRef != null
 		{
 			ParsIsRef = new bool[ParsCount]
-			for i : ParsCount ParsIsRef[i] = retsRef[i]
+			for i : ParsCount ParsIsRef[i] = parsIsRef[i]
 		}else{
 			if ParsCount != 0
 			{
@@ -984,6 +996,7 @@ TypeFuncLambda := class extend Type
 		{
 			if i > 0 ToRet << ","
 			ToRet << asB.Pars[i].GetName()
+			if asB.ParsIsRef[i] ToRet << "*"
 		}
 		ToRet << ")*"
 		return ToRet.Str()

@@ -386,6 +386,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			return 1
 		}
 	}
+	if funcType in ![GTypeDouble,GTypeFloat] and IsInt(inType) return 1 
 
 	if inType is TypeStandart and funcType is TypeStandart
 	{
