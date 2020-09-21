@@ -1,23 +1,14 @@
-boj := !(!(int&)& -> void tstQ) -> void
-{
-	k := 0
-	tstQ(k)
-	printf("wow %i\n",k)
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	boj( x ==> x = 13)
-	y := 3
+	tst := List.{int}()
+	for i : ![3,17,9,34,7,-13]
+	{
+		j := i
+		tst.InsertBeforeIf(i,x ==> x < j)
+	}
+	printf("test %i\n",tst[^])
 	return 0
-	//tst := List.{int}()
-	//for i : ![3,17,9,34,7,-13]
-	//{
-	//	j := i
-	//	tst.InsertBeforeIf(i,x ==> x < j)
-	//}
-	//printf("test %i\n",tst[^])
-	//return 0
 	TaskTest()
 	return 0
 	

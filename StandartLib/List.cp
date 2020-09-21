@@ -195,15 +195,8 @@ List := class .{@T}
 		return iitt.Data
 	}
 
-	"<<" := !(T toAdd) .{} self_return
+	createNode := !()  -> ListNode.{T}^
 	{
-
-		if $uniq 
-		{
-			if this[^] == toAdd
-				return this
-		}
-
 		newNode := ListNode.{T}^()
 
 		if $keep
@@ -218,6 +211,18 @@ List := class .{@T}
 		{
 			newNode = new ListNode.{T}
 		}
+		return newNode
+	}
+	"<<" := !(T toAdd) .{} self_return
+	{
+
+		if $uniq 
+		{
+			if this[^] == toAdd
+				return this
+		}
+
+		newNode := this.createNode()
 
 		newNode.Data = toAdd
 		newNode.Next = null
@@ -233,6 +238,28 @@ List := class .{@T}
 		Counter++
 
 		return this
+	}
+	InsertBeforeIf := !(T newValue,!(T)&-> bool cmpTst) -> void
+	{
+		newNode := this.createNode()
+
+		prevNode := ListNode.{T}^()
+		listIter := Start
+		while listIter != null
+		{
+			if not cmpTst(listIter.Data)
+				break
+			prevNode = listIter
+			listIter = listIter.Next
+		}
+		if prevNode == null
+		{
+			PushFront(newValue)
+			return void
+		}
+		newNode.Next = prevNode.Next->{void^}
+		newNode.Data = newValue
+		prevNode.Next = newNode
 	}
 	"in" := !(T toCmp) .{} -> bool
 	{
