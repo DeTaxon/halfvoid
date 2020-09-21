@@ -8,6 +8,7 @@ boj := !(!(int&)& -> void tstQ) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	boj( x ==> x = 13)
+	y := 3
 	return 0
 	//tst := List.{int}()
 	//for i : ![3,17,9,34,7,-13]

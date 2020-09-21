@@ -318,7 +318,6 @@ BoxFunc := class extend BoxFuncContainer
 
 		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp 
 
-		IsParRef := false
 		indType := 0
 		while Stuff.NotEmpty()
 		{
@@ -335,7 +334,15 @@ BoxFunc := class extend BoxFuncContainer
 						}
 						vargsName = Pars[1]->{ObjIndent^}.MyStr
 					}else{
-						MayType := ParseType(Pars[0])
+						IsParRef := false
+						MayType := Type^()
+						if Pars[0].Down?.Right?.GetValue() == "&"
+						{
+							MayType = ParseType(Pars[0].Down)
+							IsParRef = true
+						}else{
+							MayType = ParseType(Pars[0])
+						}
 						indType += 1
 						MayName := ""
 
@@ -362,7 +369,7 @@ BoxFunc := class extend BoxFuncContainer
 							return false
 						}
 						Typs.Push(MayType)
-						TypsIsRef.Push(IsParRef) // TODO
+						TypsIsRef.Push(IsParRef)
 						TypsNams.Push(StrCopy(MayName))
 					}	
 					Pars.Clean()		
@@ -375,12 +382,11 @@ BoxFunc := class extend BoxFuncContainer
 						if Pars[0].GetValue() == "~ind"
 						{
 							Typs.Push(null->{Type^})
-							TypsIsRef.Push(IsParRef)
+							TypsIsRef.Push(false)
 							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
 						}else{
 							itr := Pars[0]
-							if itr is ObjData and itr.Down != null and itr.Down is ObjIndent
-							and itr.Down.Right != null and itr.Down.Right.GetValue() == "..."
+							if itr is ObjData and itr.Down? is ObjIndent and itr.Down.Right?.GetValue() == "..."
 							{
 								asIn := itr.Down->{ObjIndent^}
 								vargsName = asIn.MyStr
