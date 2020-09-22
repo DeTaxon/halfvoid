@@ -222,7 +222,7 @@ List := class .{@T}
 				return this
 		}
 
-		newNode := this.createNode()
+		newNode := createNode()
 
 		newNode.Data = toAdd
 		newNode.Next = null
@@ -241,7 +241,7 @@ List := class .{@T}
 	}
 	InsertBeforeIf := !(T newValue,!(T)&-> bool cmpTst) -> void
 	{
-		newNode := this.createNode()
+		newNode := createNode()
 
 		prevNode := ListNode.{T}^()
 		listIter := Start

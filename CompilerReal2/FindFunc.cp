@@ -176,7 +176,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 		if iterU != null
 		{
 			InsertFunc(name,iterU,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-			if iterU.Left != null 
+			if iterU.Left != null and iterU.GetValue() != "{...}" 
 			{
 				iterU = iterU.Left 
 			}else {

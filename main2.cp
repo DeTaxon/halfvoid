@@ -1,19 +1,14 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	tst := List.{int}()
-	for i : ![3,17,9,34,7,-13]
-	{
-		j := i
-		tst.InsertBeforeIf(i,x ==> x < j)
-	}
-	printf("test %i\n",tst[^])
+	InsertBeforeTest()
 	return 0
 	TaskTest()
 	return 0
 	
 	try
 	{
+		InsertBeforeTest()
 		BestTest()
 	}catch(IException^ e)
 	{
@@ -22,7 +17,22 @@ main := !(int argc, char^^ argv) -> int
 	return 0
 }
 
+InsertBeforeTest := !() -> void
+{
+	tst := List.{int}()
+	for i : ![3,17,9,34,7,-13]
+	{
+		j := i
+		tst.InsertBeforeIf(i,_1 < j)
+	}
+	minVal := -14
+	for i : tst
+	{
+		if i < minVal
+			throw new Exception("Not sorted correctly")
+	}
 
+}
 getcontext := !(void^ a) -> int declare
 setcontext := !(void^ a) -> int declare
 makecontext := !(void^ a,!()^->void  b,int argc,...) -> int declare

@@ -283,7 +283,7 @@ BoxClass := class extend Object
 
 	ThislessFuncs := Queue.{BuiltInThislessFunc^}
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
-	GetWrappedFunc := !(string name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
+	GetWrappedFunc := !(char^ name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
 	{
 		gotFuncs := Queue.{BoxFunc^}()
 		funcsCl := Queue.{BoxClass^}()
