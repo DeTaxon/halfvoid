@@ -20,6 +20,8 @@ Mutex := class
 	}
 }
 
+pthread_cond_timedwait := !(void^ a,void^ b,void^ c)->void declare
+
 ConVar := class
 {
 	itBuffer := char[1024]
@@ -30,6 +32,14 @@ ConVar := class
 	Wait := !(Mutex^ mtx) -> void
 	{
 		pthread_cond_wait(this&,mtx)
+	}
+	WaitFor := !(Mutex^ mtx,double waitTime) -> void
+	{
+		timSpec := u64[2]
+		timSpec[0] = waitTime->{int}
+		timSpec[1] = ((waitTime - timSpec[0]->{int})*1000000000)->{int}
+		timSpec[1] = timSpec[1] mod 100000000
+		pthread_cond_timedwait(this&,mtx,timSpec&)
 	}
 	Notify := !() -> void
 	{

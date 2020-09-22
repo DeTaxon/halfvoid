@@ -1,20 +1,5 @@
-valueTest := !(!(int)& -> void tstC) -> void
-{
-	tstC(0)
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	fatyy := AVLMap.{char^,char^}()
-	fatyy["bob"] = "weirdo"
-	fatyy["wut"] = "cippa"
-	for i,j : fatyy
-	{
-		valueTest(x ==> {printf("wow %s\n",j) })
-	}
-	return 0
-	InsertBeforeTest()
-	return 0
 	TaskTest()
 	return 0
 	
@@ -29,21 +14,6 @@ main := !(int argc, char^^ argv) -> int
 	return 0
 }
 
-InsertBeforeTest := !() -> void
-{
-	tst := List.{int}()
-	for i : ![3,17,9,34,7,-13]
-	{
-		tst.InsertBeforeIf(i,_1 < i)
-	}
-	minVal := -14
-	for i : tst
-	{
-		if i < minVal
-			throw new Exception("Not sorted correctly")
-	}
-
-}
 getcontext := !(void^ a) -> int declare
 setcontext := !(void^ a) -> int declare
 makecontext := !(void^ a,!()^->void  b,int argc,...) -> int declare
@@ -64,11 +34,21 @@ ucontextStartTask := !() -> void
 }
 TaskBox := class
 {
+	sleepTasks := List.{Tuple.{double,TaskData^}} ; $keep
 	firstRunTasks := List.{TaskData^} ; $keep
 	itStacks := List.{void^} ; $temp
 
 	stackSize := int
 	startContext := u8[1024]
+
+	itMutex := Mutex
+	itConVar := ConVar
+
+	this := !() -> void
+	{
+		itMutex."this"()
+		itConVar."this"()
+	}
 	Spawn := !(!()&->void tskToRun) -> void
 	{
 		nwTask := new TaskData
@@ -77,30 +57,64 @@ TaskBox := class
 	}
 	ASleep := !(double sleepTime) -> void
 	{
+		assert(sleepTime > 0)
+		nextTime := TGetSteadyTime() + sleepTime
+		newObj := ref sleepTasks.CreateBeforeIf(x ==> x.0 < nextTime)
+		newObj.0 = nextTime
+		newObj.1 = CurrentTask
+		swapcontext(CurrentTask.uContext&,startContext)
+	}
+	doTask := !(TaskData^ toRun) -> void
+	{
+		CurrentTask = toRun
+		swapcontext(startContext&,toRun.uContext&)
 	}
 	Run := !() -> void
 	{
 		stackSize = 8*1024
 		
 		CurrentTaskBox = this&
-		getcontext(startContext&)
 		while true
 		{
+			makeWait := false
+			waitTime := double
 			if firstRunTasks.Size() != 0
 			{
 				startTask := firstRunTasks.Pop()
-				CurrentTask = startTask
 				getcontext(startTask.uContext&)
 				startTask.uContext[24]&->{u64^}^ = 0
 				startTask.uContext[8]&->{void^^}^ = null
 				startTask.uContext[16]&->{void^^}^ = malloc(stackSize)
 				startTask.uContext[32]&->{u64^}^ = stackSize
 				makecontext(startTask.uContext&,ucontextStartTask,0)
-				swapcontext(startContext&,startTask.uContext&)
+				doTask(startTask)
+				continue
+			}
+			if sleepTasks.Size() != 0
+			{
+				nowTime := TGetSteadyTime()
+				first := ref sleepTasks.Front()
+				if first.0 < nowTime
+				{
+					itTask := first.1
+					sleepTasks.Pop()
+					doTask(itTask)
+					continue
+				}else{
+					makeWait = true
+					waitTime = first.0 - nowTime
+				}
+			}
+			if makeWait
+			{
+				itMutex.Lock()
+				itConVar.WaitFor(itMutex&,waitTime)
+				itMutex.Unlock()
 				continue
 			}
 			break
 		}
+		printf("quit\n")
 	}
 }
 CreateTaskBox := !() -> TaskBox^
@@ -115,7 +129,7 @@ TaskTest := !() -> void
 		for 5
 		{
 			printf("wow\n")
-			TSleep(1)
+			CurrentTaskBox.ASleep(1)
 		}
 		
 	})
@@ -123,7 +137,7 @@ TaskTest := !() -> void
 		for 5
 		{
 			printf("waw\n")
-			TSleep(1)
+			CurrentTaskBox.ASleep(1)
 		}
 		
 	})
@@ -138,4 +152,20 @@ BestTest := !() -> void
 	v2 := v1 - 3.5
 	if v2 < 0 v2 = -v2
 	assert(v2 < 0.1)
+}
+
+InsertBeforeTest := !() -> void
+{
+	tst := List.{int}()
+	for i : ![3,17,9,34,7,-13]
+	{
+		tst.InsertBeforeIf(i,_1 < i)
+	}
+	minVal := -14
+	for i : tst
+	{
+		if i < minVal
+			throw new Exception("Not sorted correctly")
+	}
+
 }

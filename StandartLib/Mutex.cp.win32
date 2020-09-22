@@ -43,6 +43,10 @@ ConVar := class
 		minusVar := -1
 		SleepConditionVariableCS(this&,mtx,minusVar&->{u32^}^)
 	}
+	WaitFor := !(Mutex^ mtx,double waitTime) ->void
+	{
+		SleepConditionVariableCS(this&,mtx,(waitTime*1000)->{int})
+	}
 	Notify := !() -> void
 	{
 		WakeConditionVariable(this&)

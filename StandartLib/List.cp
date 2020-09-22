@@ -239,9 +239,8 @@ List := class .{@T}
 
 		return this
 	}
-	InsertBeforeIf := !(T newValue,!(T)&-> bool cmpTst) -> void
+	CreateBeforeIf := !(!(T&)&->bool cmpTst) -> ref T
 	{
-		newNode := createNode()
 
 		prevNode := ListNode.{T}^()
 		listIter := Start
@@ -252,14 +251,22 @@ List := class .{@T}
 			prevNode = listIter
 			listIter = listIter.Next
 		}
+		newNode := createNode()
+		Counter++
 		if prevNode == null
 		{
-			PushFront(newValue)
-			return void
+			newNode.Next = Start
+			Start = newNode
+			if End == null End = Start
+			return newNode.Data
 		}
 		newNode.Next = prevNode.Next->{void^}
-		newNode.Data = newValue
 		prevNode.Next = newNode
+		return newNode.Data
+	}
+	InsertBeforeIf := !(T newValue,!(T&)&-> bool cmpTst) -> void
+	{
+		CreateBeforeIf(cmpTst) = newValue
 	}
 	"in" := !(T toCmp) .{} -> bool
 	{
