@@ -1002,9 +1002,21 @@ SLambda := class extend BoxFuncContainer
 			{
 				StolenParams[name] = inUp.Down->{LocalParam^}
 			}
-			if inUp != null and inUp is LocalParam
+			if inUp? is LocalParam
 			{
 				StolenParams[name] = inUp->{LocalParam^}
+			}
+			if inUp? is RetFuncParam and inUp.Up? is BoxForOldFashionMulti 
+			{
+				asBoxFor := inUp.Up->{BoxForOldFashionMulti^}
+				asLocal := asBoxFor.GetStackedParam(inUp->{RetFuncParam^})
+				if asLocal != null
+				{
+					StolenParams[name] = asLocal
+					return asLocal
+				}else{
+					EmitError("Compiler internal error as86ff8ads6t")
+				}
 			}
 		}
 

@@ -263,6 +263,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						IsEndFunc.Up = this&
 					}
 					Params[i] = new RetFuncParam(UnrefFuncs[i])
+					Params[i].Up = this&
 
 					if IndNames[i] != null
 					{
@@ -272,6 +273,7 @@ BoxForOldFashionMulti := class extend BoxFor
 							//EmitError("Can not get index item\n")
 							EnabledIIndex = true
 							IndParams[i] = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
+							IndParams[i].Up = this&
 							if DebugMode
 							{
 								CreatedIIndexNames.Push(IndNames[i])
@@ -280,6 +282,7 @@ BoxForOldFashionMulti := class extend BoxFor
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
 							IndParams[i] = new RetFuncParam(IndFuncs[i])
+							IndParams[i].Up = this&
 							IndFuncs[i].Line = this.Line
 							IndFuncs[i].Up = this&
 						}
@@ -365,6 +368,26 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "Next" << ItId << ":\n"
 
 
+		doFun := (Object^ resFunc,LocalParam^ setParam) ==>
+		{
+			if resFunc.IsRef()
+			{
+				f << "store " 
+				resFunc.PrintPointUse(f)
+				f << " , " 
+				f << resFunc.GetType().GetName() << "** %T"
+				f << setParam.inAllocId
+				f << "\n"
+			}else{
+				f << "store " 
+				resFunc.PrintUse(f)
+				f << " , " 
+				f << resFunc.GetType().GetName() << "* %T"
+				f << setParam.inAllocId
+				f << "\n"
+			}
+		}
+
 		for i : itemsCount {
 			if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
 			if Params[i]? is RetFuncParam and Names[i] != null and debId != -1
@@ -383,6 +406,16 @@ BoxForOldFashionMulti := class extend BoxFor
 			if IndFuncs[i] != null and IndParams[i]? is RetFuncParam and IndNames[i] != null and debId != -1
 			{
 				IndParams[i]->{RetFuncParam^}.PrintForDebugDeclare(f,IndNames[i],Down,debId)
+			}
+			if allocatedParams.Contain(Params[i]) 
+			{
+				setParam := allocatedParams[Params[i]]
+				doFun(UnrefFuncs[i],setParam)
+			}
+			if IndFuncs[i] != null and allocatedParams.Contain(IndParams[i])
+			{
+				setParam := allocatedParams[IndParams[i]]
+				doFun(IndFuncs[i],setParam)
 			}
 		}
 		Down.PrintInBlock(f)
@@ -458,6 +491,37 @@ BoxForOldFashionMulti := class extend BoxFor
 	GetValue := virtual !() -> string
 	{
 		return "~~for()"
+	}
+
+	allocatedParams := AVLMap.{MemParam^,LocalParam^}
+	GetStackedParam := !(MemParam^ parm) -> LocalParam^
+	{
+		if allocatedParams.Contain(parm)
+			return allocatedParams[parm]
+
+		retFunc := parm->{RetFuncParam^}
+		for i : itemsCount
+		{
+			if Params[i] == parm
+			{
+				resTyp := retFunc.ResultType
+				if UnrefFuncs[i].IsRef() resTyp = resTyp.GetPoint()
+				allId := GetAlloc(this&,resTyp)
+				newLocal := new LocalParam(retFunc.ResultType,allId,UnrefFuncs[i].IsRef())
+				allocatedParams[parm] = newLocal
+				return newLocal
+			}
+			if IndParams[i] == parm
+			{
+				resTyp := retFunc.ResultType
+				if IndFuncs[i].IsRef() resTyp = resTyp.GetPoint()
+				allId := GetAlloc(this&,resTyp)
+				newLocal := new LocalParam(retFunc.ResultType,allId,IndFuncs[i].IsRef())
+				allocatedParams[parm] = newLocal
+				return newLocal
+			}
+		}
+		return null
 	}
 }
 

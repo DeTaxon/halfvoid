@@ -1,6 +1,18 @@
+valueTest := !(!(int)& -> void tstC) -> void
+{
+	tstC(0)
+}
 
 main := !(int argc, char^^ argv) -> int
 {
+	fatyy := AVLMap.{char^,char^}()
+	fatyy["bob"] = "weirdo"
+	fatyy["wut"] = "cippa"
+	for i,j : fatyy
+	{
+		valueTest(x ==> {printf("wow %s\n",j) })
+	}
+	return 0
 	InsertBeforeTest()
 	return 0
 	TaskTest()
@@ -22,8 +34,7 @@ InsertBeforeTest := !() -> void
 	tst := List.{int}()
 	for i : ![3,17,9,34,7,-13]
 	{
-		j := i
-		tst.InsertBeforeIf(i,_1 < j)
+		tst.InsertBeforeIf(i,_1 < i)
 	}
 	minVal := -14
 	for i : tst
