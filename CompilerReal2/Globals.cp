@@ -33,6 +33,7 @@ CTT := CreateTupleTemplate^
 TCT := TupleConstructorTemplate^
 
 GlobalAttributes := AVLMap.{char^,Object^}
+GlobalDataBuiltins := AVLMap.{char^,Object^}
 
 UseDestructors := false
 

@@ -195,7 +195,7 @@ List := class .{@T}
 		return iitt.Data
 	}
 
-	createNode := !()  -> ListNode.{T}^
+	createNode := !() .{} -> ListNode.{T}^
 	{
 		newNode := ListNode.{T}^()
 
@@ -222,7 +222,7 @@ List := class .{@T}
 				return this
 		}
 
-		newNode := createNode()
+		newNode := this.createNode()
 
 		newNode.Data = toAdd
 		newNode.Next = null
@@ -239,7 +239,7 @@ List := class .{@T}
 
 		return this
 	}
-	CreateBeforeIf := !(!(T&)&->bool cmpTst) -> ref T
+	CreateBeforeIf := !(!(T&)&->bool cmpTst) .{} -> ref T
 	{
 
 		prevNode := ListNode.{T}^()
@@ -251,7 +251,7 @@ List := class .{@T}
 			prevNode = listIter
 			listIter = listIter.Next
 		}
-		newNode := createNode()
+		newNode := this.createNode()
 		Counter++
 		if prevNode == null
 		{
@@ -264,9 +264,9 @@ List := class .{@T}
 		prevNode.Next = newNode
 		return newNode.Data
 	}
-	InsertBeforeIf := !(T newValue,!(T&)&-> bool cmpTst) -> void
+	InsertBeforeIf := !(T newValue,!(T&)&-> bool cmpTst) .{} -> void
 	{
-		CreateBeforeIf(cmpTst) = newValue
+		this.CreateBeforeIf(cmpTst) = newValue
 	}
 	"in" := !(T toCmp) .{} -> bool
 	{

@@ -238,7 +238,7 @@ ObjParam := class extend Object
 					else{ 
 						preRes := new GlobalParam(MaybeType,val)
 						preRes.IsThreadLocal = IsThreadLocal
-						preRes.IsTaskLocal = IsTaskLocal
+						if IsTaskLocal preRes.GetTaskFieldId()
 						Down = preRes 
 					}
 					IsGlobal = true

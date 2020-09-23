@@ -115,6 +115,8 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 		inMod := it.GetItem(name)
 		if inMod != null return inMod
 	}
+	if GlobalDataBuiltins.Contain(name)
+		return GlobalDataBuiltins[name]
 	return null
 }
 

@@ -138,9 +138,20 @@ GetLastError := !() -> u32 declare
 DeleteFileW := !(u16^ lName) -> int declare
 
 Sleep := !(u32 dwMillisec) -> void declare
+GetTickCount64 := !() -> u64 declare
+
+TGetSteadyTime := !() -> double
+{
+	return GetTickCount64()*0.001
+}
 
 TSleep := !(double timeWait) -> void
 {
+	if CurrentTaskBox != null
+	{
+		CurrentTaskBox.ASleep(timeSleep)
+		return void
+	}
 	Sleep((timeWait*1000.0)->{int})
 }
 TCreateDir := !(char^ pthName) -> void

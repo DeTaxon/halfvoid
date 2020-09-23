@@ -265,6 +265,7 @@ main := !(int argc,char^^ argv) -> int
 
 	Ob := targetObjects[0]
 
+	TaskInit()
 	Modules[^].InitModule()
 	
 	WorkBag.Push(Ob,State_Start)
@@ -335,6 +336,8 @@ main := !(int argc,char^^ argv) -> int
 		fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
 		PrintLambdaGlobal(fil)
 		StrContainer.PrintGlobal(fil)
+		GlobalDataBuiltins[^].PrintGlobal(fil)
+		TaskPrint(fil)
 
 		Classes[^].PrintStruct(fil)
 		PrintTuples(fil)

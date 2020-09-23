@@ -104,6 +104,11 @@ clock_gettime := !(u64 clockType,void^ reslt) -> void declare
 
 TSleep := !(double timeSleep) -> void
 {
+	if CurrentTaskBox != null
+	{
+		CurrentTaskBox.ASleep(timeSleep)
+		return void
+	}
 	tmStruct := u64[2]
 	tmStruct[0] = timeSleep->{int}
 	timeSleep -= tmStruct[0]->{int}
