@@ -19,15 +19,17 @@ tst1 := int
 tst2 := int
 
 taskTestValue := task_local int
+gr := task_local double
 TaskTest := !() -> void
 {
+	printf("test %i\n",_getTaskStructSize())
 	tb := CreateTaskBox()
 	tb.Spawn(() ==> {
-		TaskPtr = tst1&
+		_TaskPtr = tst1&
 		taskTestValue = 0
 		for 5
 		{
-			TaskPtr = tst1&
+			_TaskPtr = tst1&
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1
 			TSleep(1)
@@ -35,11 +37,11 @@ TaskTest := !() -> void
 		
 	})
 	tb.Spawn(() ==> {
-		TaskPtr = tst2&
+		_TaskPtr = tst2&
 		taskTestValue = 100
 		for 5
 		{
-			TaskPtr = tst2&
+			_TaskPtr = tst2&
 			printf("waw %i\n",taskTestValue++)
 			TSleep(1)
 		}
@@ -63,7 +65,7 @@ InsertBeforeTest := !() -> void
 	tst := List.{int}()
 	for i : ![3,17,9,34,7,-13]
 	{
-		tst.InsertBeforeIf(i,_1 < i)
+		//tst.InsertBeforeIf(i,_1 < i)
 	}
 	minVal := -14
 	for i : tst

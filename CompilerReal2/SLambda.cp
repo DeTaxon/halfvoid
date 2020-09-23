@@ -988,7 +988,7 @@ SLambda := class extend BoxFuncContainer
 		{
 			for i : fastUse.ParsCount 
 			{
-				if Names[i] == name
+				if Names[i] == name and parms != null
 				{
 					return parms[i]
 				}
