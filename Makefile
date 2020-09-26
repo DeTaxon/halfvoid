@@ -56,7 +56,7 @@ stable:
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
-	$(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o test2.ll; clang -static test2.ll $(Libs) -g -o $(CurrentTest)
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o test2.ll; clang -static test2.ll $(Libs) -g -o $(CurrentTest)
 
 TempDir/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m Priority.pr

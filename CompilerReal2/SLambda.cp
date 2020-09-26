@@ -97,7 +97,9 @@ SLambda := class extend BoxFuncContainer
 			if IsCloned return void
 			for it : CaptureParams
 			{
-				re := this.GetItem(it.0)
+				if it.1 != null
+					continue
+				re := GetItem(it.0,Up)
 				if re == null EmitError("Capture param "sbt + it.0 + " not found")
 			}
 		}
@@ -443,18 +445,20 @@ SLambda := class extend BoxFuncContainer
 		toR := new FuncInputBox ; $temp	
 		GotCapture = false 
 
+		almI := 0
 		for it,i : CaptureParams
 		{
 			if it.1 != null
 			{
 				GotCapture = true
-				CPIndexes.Push(i)
+				CPIndexes.Push(almI)
 				if it.2
 				{
 					toR.itPars.Emplace(it.1.ResultType.GetPoint(),true)
 				}else{
 					toR.itPars.Emplace(it.1.ResultType,true)
 				}
+				almI += 1
 			}
 		}
 		if GotCapture

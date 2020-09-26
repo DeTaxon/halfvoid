@@ -22,8 +22,6 @@ sem_t := class
 	sFields := char[24]
 }
 
-pthread_t := type u64
-
 pthread_mutex_init := !(void^ a,void^ b) -> void declare
 pthread_mutex_lock := !(void^ a) -> void declare
 pthread_mutex_unlock := !(void^ a) -> void declare
@@ -40,9 +38,6 @@ sem_init := !(sem_t^ semPtr,int pshared, u32 value) -> int declare
 sem_wait := !(sem_t^ semPtr) -> int declare
 sem_post := !(sem_t^ semPtr) -> int declare
 sem_destroy := !(sem_t^ semPtr) -> int declare
-
-pthread_create := !(pthread_t^ thrPtr, void^ attrs, void^  callFunc,void^ arg) -> int declare
-pthread_join := !(pthread_t thrId,void^^ retValue) -> int declare
 
 open := !(char^ name,int flags,int mode) -> int declare
 write := !(int d,void^ toS, int size) -> int declare

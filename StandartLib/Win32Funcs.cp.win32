@@ -149,7 +149,7 @@ TSleep := !(double timeWait) -> void
 {
 	if CurrentTaskBox != null
 	{
-		CurrentTaskBox.ASleep(timeSleep)
+		CurrentTaskBox.ASleep(timeWait)
 		return void
 	}
 	Sleep((timeWait*1000.0)->{int})

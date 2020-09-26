@@ -1,5 +1,5 @@
 main := !(int argc, char^^ argv) -> int
-{
+{	
 	TaskTest()
 	return 0
 	
@@ -14,34 +14,29 @@ main := !(int argc, char^^ argv) -> int
 	return 0
 }
 
-
-tst1 := int
-tst2 := int
-
 taskTestValue := task_local int
 gr := task_local double
+
 TaskTest := !() -> void
 {
-	printf("test %i\n",_getTaskStructSize())
 	tb := CreateTaskBox()
-	tb.Spawn(() ==> {
-		_TaskPtr = tst1&
+	tb.ExpectWorkers(1)
+	tb.Spawn(() ==> [tb]{
 		taskTestValue = 0
 		for 5
 		{
-			_TaskPtr = tst1&
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1
-			TSleep(1)
+			AwaitWork(() ==> {
+				TSleep(1)
+			})
 		}
 		
 	})
 	tb.Spawn(() ==> {
-		_TaskPtr = tst2&
 		taskTestValue = 100
 		for 5
 		{
-			_TaskPtr = tst2&
 			printf("waw %i\n",taskTestValue++)
 			TSleep(1)
 		}

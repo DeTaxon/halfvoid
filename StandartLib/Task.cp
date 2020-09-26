@@ -20,16 +20,25 @@ TaskData := class
 		stackPtr := void^
 	if $win32
 		fiber := void^
+	taskLocalPtr := void^
 }
 ucontextStartTask := !(void^ fiberData) -> void
 {
 	CurrentTask.tskToRun()
 	CurrentTaskBox.onDestroyTask(CurrentTask)
-	if $posix
-		setcontext(CurrentTaskBox.startContext&)
-	if $win32
-		SwitchToFiber(CurrentTaskBox.startContext)
+	CurrentTaskBox.switchToMain()
 }
+
+AwaitWork := !(!()&->void lambd) -> void
+{
+	if CurrentTaskBox != null
+	{
+		CurrentTaskBox.AwaitWork(lambd)
+	}else{
+		lambd()
+	}
+}
+
 TaskBox := class
 {
 	sleepTasks := List.{Tuple.{double,TaskData^}} ; $keep
@@ -46,13 +55,26 @@ TaskBox := class
 	itMutex := Mutex
 	itConVar := ConVar
 
+	itWorkToDoPre := List.{Tuple.{!()&->void,TaskData^}} ; $keep
+
+	itWorkMutex := Mutex
+	itWorkConVar := ConVar
+	itWorkToDo := List.{Tuple.{!()&->void,TaskData^}} ; $keep
+	itWorkDone := List.{TaskData^} ; $keep
+	poolThread := List.{Thread^}
+
+	working := bool
+
 	this := !() -> void
 	{
 		itMutex."this"()
 		itConVar."this"()
+		itWorkMutex."this"()
+		itWorkConVar."this"()
 
 		if $win32
 			startContext = ConvertThreadToFiber(null)
+		working = true
 	}
 	Spawn := !(!()&->void tskToRun) -> void
 	{
@@ -67,6 +89,53 @@ TaskBox := class
 		newObj := ref sleepTasks.CreateBeforeIf(x ==> x.0 < nextTime)
 		newObj.0 = nextTime
 		newObj.1 = CurrentTask
+		switchToMain()
+	}
+	ExpectWorkers := !(int expects) -> void
+	{
+		diffWorks := expects - poolThread.Size()
+		if diffWorks > 0
+		{
+			for i : diffWorks
+			{
+				someThis := this&
+				newThread := new Thread(() ==> [someThis]{
+					while someThis.working
+					{
+						someThis.itWorkMutex.Lock()
+
+						if someThis.itWorkToDo.Size() != 0
+						{
+							frstWork := someThis.itWorkToDo.Front().0
+							frstTask := someThis.itWorkToDo.Front().1
+							someThis.itWorkToDo.Pop()
+							someThis.itWorkMutex.Unlock()
+							frstWork()
+							someThis.itMutex.Lock()
+							someThis.itWorkDone << frstTask
+							someThis.itConVar.Notify()
+							someThis.itMutex.Unlock()
+
+						}else{
+							someThis.itWorkConVar.Wait(someThis.itWorkMutex&)
+							someThis.itWorkMutex.Unlock()
+						}
+					}
+				})
+				poolThread << newThread
+			}
+		}
+	}
+	AwaitWork := !(!()&->void lambd) -> void
+	{
+		itMutex.Lock()
+		itWorkToDoPre.Emplace(lambd,CurrentTask)
+		itMutex.Unlock()
+		switchToMain()
+	}
+	switchToMain := !() -> void
+	{
+		_TaskPtr = null
 		if $posix
 			swapcontext(CurrentTask.uContext&,startContext)
 		if $win32
@@ -75,10 +144,12 @@ TaskBox := class
 	doTask := !(TaskData^ toRun) -> void
 	{
 		CurrentTask = toRun
+		_TaskPtr = toRun.taskLocalPtr
 		if $posix
 			swapcontext(startContext&,toRun.uContext&)
 		if $win32
 			SwitchToFiber(toRun.fiber)
+
 	}
 	onDestroyTask := !(TaskData^ toDestr) -> void
 	{
@@ -94,15 +165,45 @@ TaskBox := class
 		//TODO
 		//delete toDestr
 	}
+	Quit := !() -> void
+	{
+		working = false
+		itConVar.Notify()
+	}
 	Run := !() -> void
 	{
 		stackSize = 8*1024
 		
 		CurrentTaskBox = this&
-		while true
+		working = true
+		while working
 		{
 			makeWait := false
 			waitTime := double
+
+			itMutex.Lock()
+			if itWorkToDoPre.Size() != 0
+			{
+				itWorkMutex.Lock()
+				for it : itWorkToDoPre
+				{
+					itWorkToDo.Emplace(it.0,it.1)
+				}
+				itWorkToDoPre.Clear()
+				itWorkConVar.NotifyAll()
+				itWorkMutex.Unlock()
+			}
+			itMutex.Unlock()
+
+			itWorkMutex.Lock()
+			if itWorkDone.Size() != 0
+			{
+				ress := itWorkDone.ToArray()
+				itWorkDone.Clear()
+				doTask(ress[^])
+			}
+			itWorkMutex.Unlock()
+
 			if firstRunTasks.Size() != 0
 			{
 				startTask := firstRunTasks.Pop()
@@ -121,6 +222,7 @@ TaskBox := class
 				{
 				      startTask.fiber = CreateFiber(stackSize->{s64},ucontextStartTask,null)
 				}
+				startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
 				doTask(startTask)
 				continue
 			}

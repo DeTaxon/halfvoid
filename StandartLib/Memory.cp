@@ -1,4 +1,4 @@
-gTemporaryPool := thread_local StupidMemoryPool.{16000000}
+gTemporaryPool := task_local StupidMemoryPool.{16000000}
 FlushTempMemory := !() -> void
 {
 	gTemporaryPool.FlushMem()
@@ -47,9 +47,9 @@ prvtGetBlockId := !(void^ toPt) -> int
 	return (someVal&->{size_t^}^ >> 4) % 2048
 }
 
-hUserPoolStack := thread_local IMemoryPool^[64]
-hUserPoolCurrentPool := thread_local IMemoryPool^
-hUserPoolCount := thread_local int
+hUserPoolStack := task_local IMemoryPool^[64]
+hUserPoolCurrentPool := task_local IMemoryPool^
+hUserPoolCount := task_local int
 
 "new" := !() . {@R} -> void^ 
 {
