@@ -86,9 +86,11 @@ TaskBox := class
 	{
 		assert(sleepTime > 0)
 		nextTime := TGetSteadyTime() + sleepTime
+		itMutex.Lock()
 		newObj := ref sleepTasks.CreateBeforeIf(x ==> x.0 < nextTime)
 		newObj.0 = nextTime
 		newObj.1 = CurrentTask
+		itMutex.Unlock()
 		switchToMain()
 	}
 	ExpectWorkers := !(int expects) -> void
@@ -111,6 +113,7 @@ TaskBox := class
 							someThis.itWorkToDo.Pop()
 							someThis.itWorkMutex.Unlock()
 							frstWork()
+							FlushTempMemory()
 							someThis.itMutex.Lock()
 							someThis.itWorkDone << frstTask
 							someThis.itConVar.Notify()
@@ -122,7 +125,9 @@ TaskBox := class
 						}
 					}
 				})
+				itMutex.Lock()
 				poolThread << newThread
+				itMutex.Unlock()
 			}
 		}
 	}
@@ -180,8 +185,11 @@ TaskBox := class
 		{
 			makeWait := false
 			waitTime := double
+			toDoTask := TaskData^()
+
 
 			itMutex.Lock()
+
 			if itWorkToDoPre.Size() != 0
 			{
 				itWorkMutex.Lock()
@@ -193,65 +201,87 @@ TaskBox := class
 				itWorkConVar.NotifyAll()
 				itWorkMutex.Unlock()
 			}
-			itMutex.Unlock()
 
-			itWorkMutex.Lock()
-			if itWorkDone.Size() != 0
+			toDoTask = checkCreateTask()
+			if toDoTask == null
 			{
-				ress := itWorkDone.ToArray()
-				itWorkDone.Clear()
-				doTask(ress[^])
+				toDoTask = checkTimers(makeWait,waitTime)
+				if toDoTask == null
+				{
+					toDoTask = checkDoneWorks()
+				}
 			}
-			itWorkMutex.Unlock()
 
-			if firstRunTasks.Size() != 0
+			if toDoTask != null
 			{
-				startTask := firstRunTasks.Pop()
-
-				if $posix
-				{
-					getcontext(startTask.uContext&)
-					startTask.stackPtr = malloc(stackSize)
-					startTask.uContext[24]&->{u64^}^ = 0
-					startTask.uContext[8]&->{void^^}^ = null
-					startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
-					startTask.uContext[32]&->{u64^}^ = stackSize
-					makecontext(startTask.uContext&,ucontextStartTask,0)
-				}
-				if $win32
-				{
-				      startTask.fiber = CreateFiber(stackSize->{s64},ucontextStartTask,null)
-				}
-				startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
-				doTask(startTask)
+				itMutex.Unlock()
+				doTask(toDoTask)
 				continue
 			}
-			if sleepTasks.Size() != 0
-			{
-				nowTime := TGetSteadyTime()
-				first := ref sleepTasks.Front()
-				if first.0 < nowTime
-				{
-					itTask := first.1
-					sleepTasks.Pop()
-					doTask(itTask)
-					continue
-				}else{
-					makeWait = true
-					waitTime = first.0 - nowTime
-				}
-			}
+
+
 			if makeWait
 			{
-				itMutex.Lock()
 				itConVar.WaitFor(itMutex&,waitTime)
 				itMutex.Unlock()
 				continue
 			}
+			itMutex.Unlock()
 			break
 		}
 		CurrentTask = null
 		CurrentTaskBox = null
+
+		itWorkConVar.NotifyAll()
+		poolThread[^].Join()
+	}
+	checkDoneWorks := !() -> TaskData^
+	{
+		if itWorkDone.Size() == 0
+			return null
+
+		return itWorkDone.Pop()
+	}
+	checkTimers := !(bool& makeWait,double& waitTime) -> TaskData^
+	{
+		if sleepTasks.Size() == 0
+			return null
+		nowTime := TGetSteadyTime()
+		first := ref sleepTasks.Front()
+		if first.0 < nowTime
+		{
+			itTask := first.1
+			sleepTasks.Pop()
+			return itTask
+		}else{
+			makeWait = true
+			waitTime = first.0 - nowTime
+		}
+		return null
+	}
+	checkCreateTask := !() -> TaskData^
+	{
+		if firstRunTasks.Size() == 0
+			return null
+
+		startTask := firstRunTasks.Pop()
+
+		if $posix
+		{
+			getcontext(startTask.uContext&)
+			startTask.stackPtr = malloc(stackSize)
+			startTask.uContext[24]&->{u64^}^ = 0
+			startTask.uContext[8]&->{void^^}^ = null
+			startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
+			startTask.uContext[32]&->{u64^}^ = stackSize
+			makecontext(startTask.uContext&,ucontextStartTask,0)
+		}
+		if $win32
+		{
+		      startTask.fiber = CreateFiber(stackSize->{s64},ucontextStartTask,null)
+		}
+		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
+		return startTask
 	}
 }
 CreateTaskBox := !() -> TaskBox^

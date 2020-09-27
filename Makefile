@@ -53,7 +53,7 @@ ManyCycle:
 	for i in {1..10}; do make cycle; done
 
 stable:
-	$(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
+	$(gdb_tui) $(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
 	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o test2.ll; clang -static test2.ll $(Libs) -g -o $(CurrentTest)

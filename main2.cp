@@ -25,9 +25,11 @@ TaskTest := !() -> void
 		taskTestValue = 0
 		for 5
 		{
+			printf("test 1 %p %p\n",gTemporaryPool&,_TaskPtr)
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1
 			AwaitWork(() ==> {
+				printf("test await  %p %p\n",gTemporaryPool&,_TaskPtr)
 				TSleep(1)
 			})
 		}
@@ -37,6 +39,7 @@ TaskTest := !() -> void
 		taskTestValue = 100
 		for 5
 		{
+			printf("test 2 %p %p\n",gTemporaryPool&,_TaskPtr)
 			printf("waw %i\n",taskTestValue++)
 			TSleep(1)
 		}

@@ -1,6 +1,7 @@
 gTemporaryPool := task_local StupidMemoryPool.{16000000}
 FlushTempMemory := !() -> void
 {
+	
 	gTemporaryPool.FlushMem()
 }
 
