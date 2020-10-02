@@ -1,5 +1,5 @@
 main := !(int argc, char^^ argv) -> int
-{	
+{
 	TaskTest()
 	return 0
 	
@@ -17,19 +17,21 @@ main := !(int argc, char^^ argv) -> int
 taskTestValue := task_local int
 gr := task_local double
 
+
 TaskTest := !() -> void
 {
 	tb := CreateTaskBox()
 	tb.ExpectWorkers(1)
+	tb.Monitor(".",true,(x) ==>{
+		printf("test %s\n",x)
+	})
 	tb.Spawn(() ==> [tb]{
 		taskTestValue = 0
-		for 5
+		for 2
 		{
-			printf("test 1 %p %p\n",gTemporaryPool&,_TaskPtr)
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1
 			AwaitWork(() ==> {
-				printf("test await  %p %p\n",gTemporaryPool&,_TaskPtr)
 				TSleep(1)
 			})
 		}
@@ -37,9 +39,8 @@ TaskTest := !() -> void
 	})
 	tb.Spawn(() ==> {
 		taskTestValue = 100
-		for 5
+		for 2
 		{
-			printf("test 2 %p %p\n",gTemporaryPool&,_TaskPtr)
 			printf("waw %i\n",taskTestValue++)
 			TSleep(1)
 		}

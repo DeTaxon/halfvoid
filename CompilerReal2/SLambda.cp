@@ -599,6 +599,18 @@ SLambda := class extend BoxFuncContainer
 						f << "%OldPtrT" << k << " = bitcast " << fc.0.GetClassName() << "* %OldPtr"<< k<<" to i8*\n"
 						f << "store i8* %OldPtrT"<< k << " , i8** %ToSet" << k << "\n"
 					}
+					if fc.2 != null and fc.2.IsMethod
+					{
+						itrT := fc.2->{Object^}
+						while itrT != null and itrT.GetValue() != "{...}"
+							itrT = itrT.Up
+						clName := itrT->{BoxClass^}.ClassType.GetName()
+						allcNR := fc.0.GetNR(fc.2.InAlloc[0])
+						alName := fc.0.GetClassName()
+						f << "%SetThis = getelementptr " << alName << "," << alName <<"* " 
+						f << "%OldPtr0 , i32 0,i32 " << allcNR <<"\n"
+						f << "store " << clName << "* %this, "<< clName << "** %SetThis\n"
+					}
 					prevAB = fc.0
 				}
 				upABName := funcsUp[0].0.GetClassName()

@@ -322,7 +322,7 @@ List := class .{@T}
 		oldVal := Start.Data
 		oldNode := Start
 		Start = Start.Next
-		destroyNode(oldNode)
+		this.destroyNode(oldNode)
 
 		if Start == null End = null
 

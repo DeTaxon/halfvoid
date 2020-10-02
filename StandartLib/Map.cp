@@ -53,7 +53,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	{
 		return Contain(val)
 	}
-	values := fake
+	Values := fake
 	{
 		"in" := !(VALUE val) -> bool
 		{
