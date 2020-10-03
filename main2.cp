@@ -1,5 +1,9 @@
+
+
 main := !(int argc, char^^ argv) -> int
 {
+	//AppendClassTest()
+	//return 0
 	TaskTest()
 	return 0
 	
@@ -14,6 +18,29 @@ main := !(int argc, char^^ argv) -> int
 	return 0
 }
 
+
+ToAppendClass := class 
+{
+	getValue := !() -> int
+	{
+		return getValue2()*13
+	}
+}
+AppendClass ToAppendClass
+{
+	getValue2 := !() -> int
+	{
+		return 5
+	}
+}
+
+AppendClassTest := !() -> void
+{
+	tstObj := ToAppendClass
+	retVal := tstObj.getValue()
+	assert(retVal == 5*13)
+}
+
 taskTestValue := task_local int
 gr := task_local double
 
@@ -22,9 +49,9 @@ TaskTest := !() -> void
 {
 	tb := CreateTaskBox()
 	tb.ExpectWorkers(1)
-	tb.Monitor(".",true,(x) ==>{
-		printf("test %s\n",x)
-	})
+	//tb.Monitor(".",true,(x) ==>{
+	//	printf("test %s\n",x)
+	//})
 	tb.Spawn(() ==> [tb]{
 		taskTestValue = 0
 		for 2

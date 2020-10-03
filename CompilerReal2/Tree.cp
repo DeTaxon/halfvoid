@@ -331,6 +331,7 @@ IsKeyword := !(W) -> bool
 		case "throw" return true
 		case "on_exception" return true
 		case "yield" return true
+		case "AppendClass" return true
 	}
 
 	return false

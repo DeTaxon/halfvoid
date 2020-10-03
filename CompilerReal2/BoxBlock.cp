@@ -231,6 +231,7 @@ BoxBlock := class extend Object
 				}
 			}
 
+
 			if InClass
 			{
 				clsItm := Up->{BoxClass^}
@@ -353,6 +354,20 @@ BoxFile := class extend BoxBlock
 		{
 			SyntaxCompress(this&,PriorityData)
 			UnboxParams(this.Down)
+
+			itr := Down
+			while itr != null
+			{
+				if itr.Down?.GetValue() == "AppendClass"
+				{
+					asObj := itr.Down.Right->{ObjIndent^}
+					gAppendClass[asObj.MyStr] = itr.Down.Right.Right
+					PopOutNode(itr)
+					itr = Down
+				}else{
+					itr = itr.Right
+				}
+			}
 			WorkBag.Push(Down[^],State_Start)
 		}
 		if pri == State_BlockParamStep

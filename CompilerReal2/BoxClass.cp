@@ -54,6 +54,8 @@ ParseClass := !(Object^ ob)-> BoxClass^
 	return preRes2
 }
 
+gAppendClass := AVLMap.{char^,Object^}
+
 GetUpClass := !(Object^ toS) -> BoxClass^
 {
 	iterF := toS
@@ -400,9 +402,6 @@ BoxClass := class extend Object
 		{
 			Down.SetUp(this&)
 			Down.Left = null
-			MakeItBlock(Down)
-			Down.SetUp(this&)
-			WorkBag.Push(Down,State_Start)
 		}
 		WorkBag.Push(this&,State_PreGetUse)
 
@@ -492,12 +491,35 @@ BoxClass := class extend Object
 	{
 		if pri == State_Start
 		{
+			if ClassName != "anon"
+				return void
+
 			itr := Up
 			while itr != null and itr.GetValue() != "i:=1" itr = itr.Up
 			if itr != null{
 				asN := itr->{ObjParam^}
 				ClassName = asN.MyStr
+
+				if gAppendClass.Contain(ClassName)
+				{
+					newTree := gAppendClass[ClassName].Clone()
+					if Down == null or Down.Down == null
+					{
+						Down = newTree.Down
+						Down.SetUp(this&)
+					}else{
+						after := Down.Down
+						while after.Right != null
+							after = after.Right
+						after.Right = newTree.Down
+						after.Right.Left = after
+						after.Right.SetUp(after.Up)
+					}
+				}
 			}
+			MakeItBlock(Down)
+			Down.SetUp(this&)
+			WorkBag.Push(Down,State_Start)
 		}
 		if pri == State_CheckBaseClass
 		{
