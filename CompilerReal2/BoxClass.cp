@@ -517,9 +517,12 @@ BoxClass := class extend Object
 					}
 				}
 			}
-			MakeItBlock(Down)
-			Down.SetUp(this&)
-			WorkBag.Push(Down,State_Start)
+			if Down != null and itr != null
+			{
+				MakeItBlock(Down)
+				Down.SetUp(this&)
+				WorkBag.Push(Down,State_Start)
+			}
 		}
 		if pri == State_CheckBaseClass
 		{

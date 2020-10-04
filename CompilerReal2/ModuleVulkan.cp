@@ -524,11 +524,11 @@ ModuleVulkan := class extend CompilerModule
 						+ "}\n"
 					GlobalStrs.Push(globalText.Str())
 
-					kindaBlock := new Object
+					kindaBlock := new BoxBlock
 					kindaBlock.Down = new ObjParam("this",false)
 					kindaBlock.Down.Up = kindaBlock
 					kindaBlock.Down.Down = newFunc
-					newFunc.Up = newStruct.Down
+					newFunc.Up = kindaBlock.Down
 					newStruct.Down = kindaBlock
 					kindaBlock.Up = newStruct
 				}

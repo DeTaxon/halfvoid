@@ -22,6 +22,7 @@ PriorityStack := class .{@TVal,@TSize}
 	{
 		//oneUse.Lock()
 		//defer oneUse.Unlock()
+		assert(val != null)
 
 		Counter += 1
 		newItem := Node3.{TVal}^
