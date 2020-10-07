@@ -2,6 +2,10 @@
 
 main := !(int argc, char^^ argv) -> int
 {
+	vals := List.{Tuple.{double,int}}() ; $keep
+	tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
+	return 0
+
 	//AppendClassTest()
 	//return 0
 	TaskTest()

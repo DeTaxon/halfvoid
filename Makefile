@@ -41,6 +41,10 @@ ifeq ($(cross),win32)
 	Triplet := --target=x86_64-w64-mingw32-gnu 
 	CmplOptm := clang -g $(MainOut) $(Triplet) -c -s -O2 $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ ./Objs/mdl.o -o $(TargetStable)
 	CmplDeb := clang -g $(MainOut) $(Triplet) -c -g $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ -g ./Objs/mdl.o -o $(TargetWork)
+
+	winecmp := wine "c:\LLVM\bin\clang.exe"
+	CmplOptm := $(winecmp) -g $(MainOut) $(Triplet)  -s -O2 $(Libs) -o ./stable.exe
+	CmplDeb := $(winecmp) -g $(MainOut) $(Triplet)  -g $(Libs) -o ./c.exe 
 endif
 
 repair: $(wildcard CompilerReal2/*.cp) 

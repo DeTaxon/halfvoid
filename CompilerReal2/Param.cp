@@ -135,6 +135,11 @@ ObjParam := class extend Object
 				CheckMetaBlock(Down)	
 				return void
 			}
+			if Down != null
+			{
+				while TryParseMacro(Down) == MacroRestart {}
+			}
+
 			if Down?.GetValue() == "x=>x"
 			{
 				Down.DoTheWork(State_Start)
