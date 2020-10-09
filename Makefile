@@ -35,16 +35,18 @@ ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
 
 CmplOptm := clang -static $(MainOut) -s -O2 $(Libs) -o $(TargetStable)
 CmplDeb := clang -static -g $(MainOut) $(Libs) -o $(TargetWork)
+CmplTest := clang -static -g $(MainOut) $(Libs) -o $(CurrentTest)
 ifeq ($(cross),win32)
 	HW := ./halfvoid.exe
 	TargetPlatform := -p win32
 	Triplet := --target=x86_64-w64-mingw32-gnu 
 	CmplOptm := clang -g $(MainOut) $(Triplet) -c -s -O2 $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ ./Objs/mdl.o -o $(TargetStable)
 	CmplDeb := clang -g $(MainOut) $(Triplet) -c -g $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ -g ./Objs/mdl.o -o $(TargetWork)
+	CmplTest := clang -g $(MainOut) $(Triplet) -c -g $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ -g ./Objs/mdl.o -o ./test2.exe
 
-	winecmp := wine "c:\LLVM\bin\clang.exe"
-	CmplOptm := $(winecmp) -g $(MainOut) $(Triplet)  -s -O2 $(Libs) -o ./stable.exe
-	CmplDeb := $(winecmp) -g $(MainOut) $(Triplet)  -g $(Libs) -o ./c.exe 
+	#winecmp := wine "c:\LLVM\bin\clang.exe"
+	#CmplOptm := $(winecmp) -g $(MainOut) $(Triplet)  -s -O2 $(Libs) -o ./stable.exe
+	#CmplDeb := $(winecmp) -g $(MainOut) $(Triplet)  -g $(Libs) -o ./c.exe 
 endif
 
 repair: $(wildcard CompilerReal2/*.cp) 
@@ -60,7 +62,7 @@ stable:
 	$(gdb_tui) $(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o test2.ll; clang -static test2.ll $(Libs) -g -o $(CurrentTest)
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
 
 TempDir/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m Priority.pr
