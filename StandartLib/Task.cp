@@ -79,11 +79,6 @@ TaskBox := class
 
 	stackSize := int
 
-	if $posix
-		startContext := u8[1024]
-	if $win32
-		startContext := void^
-
 	itMutex := Mutex
 
 	itWorkToDoPre := List.{Tuple.{!()&->void,TaskData^}} ; $keep
@@ -96,16 +91,6 @@ TaskBox := class
 
 	working := bool
 
-	if $posix
-		eventFd := int
-	if $posix
-		posixPollArr := RawArray.{pollfd}
-	
-	if $win32
-		eventHandle := void^
-	if $win32
-		winPollArr := RawArray.{void^}
-
 	pollData := RawArray.{Tuple.{int}}
 
 	this := !() -> void
@@ -117,31 +102,10 @@ TaskBox := class
 		pollData."this"()
 		pollData.Reserve(10)
 
-		if $posix
-		{
-			posixPollArr."this"()
-			posixPollArr.Reserve(10)
-
-			eventFd = eventfd(0,0)
-			setPollFd := ref posixPollArr.Create()
-			setPollFd.fd = eventFd
-			setPollFd.events = 0x01
-			pollData.Create().0 = 1
-		}
-
-		if $win32
-		{
-			startContext = ConvertThreadToFiber(null)
-
-			winPollArr."this"()
-			winPollArr.Reserve(10)
-
-			eventHandle = CreateEventA(null,0,0,null->{u8^})
-			winPollArr.Create() = eventHandle
-			pollData.Create().0 = 1
-		}
+		osInit()
 		working = true
 	}
+	
 	
 	initedMonitor := bool
 	monitorBuffer := u8[]
@@ -161,40 +125,6 @@ TaskBox := class
 			setData.events = 0x01
 			newPoll := ref pollData.Create()
 			newPoll.0 = 2
-		}
-	}
-	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
-	{
-		if $posix {
-		if not initedMonitor initMonitor()
-
-		pathAdd := List.{char^}() ; $temp $keep
-
-		pathAdd << pathName
-
-		while pathAdd.Size() != 0
-		{	
-			nowPath := pathAdd.Pop()
-
-			wd := inotify_add_watch(monitorFd,nowPath,8 + 255)
-			if wd >= 0
-			{
-				setWds := ref monitorWds[wd]
-				setWds.0 = callb
-				setWds.1 = StrCopy(nowPath)
-				if isRec
-				{
-					for subFolder : Path(nowPath)
-					{
-						if not subFolder.IsFolder() 
-							continue
-						strBld := ""sbt + nowPath + "/" + subFolder.Name()
-						str := strBld.Str() ; $temp
-						pathAdd << str
-					}
-				}
-			}
-		}
 		}
 	}
 	checkMonitor := !() -> void
@@ -265,6 +195,7 @@ TaskBox := class
 							itWorkConVar.Wait(itWorkMutex&)
 							if not working
 							{
+								itWorkMutex.Unlock()
 								return void
 							}
 							itWorkMutex.Unlock()
@@ -315,19 +246,6 @@ TaskBox := class
 		}
 		//TODO
 		//delete toDestr
-	}
-	notifyMain := !() -> void
-	{
-		if $posix
-		{
-			toWrite := u64
-			toWrite = 1
-			write(eventFd,toWrite&,8)
-		}
-		if $win32
-		{
-			SetEvent(eventHandle)
-		}
 	}
 	Quit := !() -> void
 	{
@@ -460,20 +378,7 @@ TaskBox := class
 
 		startTask := firstRunTasks.Pop()
 
-		if $posix
-		{
-			getcontext(startTask.uContext&)
-			startTask.stackPtr = malloc(stackSize)
-			startTask.uContext[24]&->{u64^}^ = 0
-			startTask.uContext[8]&->{void^^}^ = null
-			startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
-			startTask.uContext[32]&->{u64^}^ = stackSize
-			makecontext(startTask.uContext&,ucontextStartTask,0)
-		}
-		if $win32
-		{
-		      startTask.fiber = CreateFiber(stackSize->{s64},ucontextStartTask,null)
-		}
+		osCreateTask(startTask)
 		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
 		return startTask
 	}

@@ -1,0 +1,29 @@
+AppendClass TaskBox
+{
+	startContext := void^
+	eventHandle := void^
+	winPollArr := RawArray.{void^}
+
+	osInit := !() -> void
+	{
+		startContext = ConvertThreadToFiber(null)
+
+		winPollArr."this"()
+		winPollArr.Reserve(10)
+
+		eventHandle = CreateEventA(null,0,0,null->{u8^})
+		winPollArr.Create() = eventHandle
+		pollData.Create().0 = 1
+	}
+	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
+	{
+	}
+	notifyMain := !() -> void
+	{
+		SetEvent(eventHandle)
+	}
+	osCreateTask := !(TaskData^ startTask) -> void
+	{
+	      startTask.fiber = CreateFiber(stackSize->{s64},ucontextStartTask,null)
+	}
+}

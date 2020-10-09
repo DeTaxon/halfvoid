@@ -1,0 +1,67 @@
+AppendClass TaskBox
+{
+	eventFd := int
+	posixPollArr := RawArray.{pollfd}
+
+	startContext := u8[1024]
+
+	osInit := !() -> void
+	{
+		posixPollArr."this"()
+		posixPollArr.Reserve(10)
+
+		eventFd = eventfd(0,0)
+		setPollFd := ref posixPollArr.Create()
+		setPollFd.fd = eventFd
+		setPollFd.events = 0x01
+		pollData.Create().0 = 1
+	}
+	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
+	{
+		if not initedMonitor initMonitor()
+
+		pathAdd := List.{char^}() ; $temp $keep
+
+		pathAdd << pathName
+
+		while pathAdd.Size() != 0
+		{	
+			nowPath := pathAdd.Pop()
+
+			wd := inotify_add_watch(monitorFd,nowPath,8 + 255)
+			if wd >= 0
+			{
+				setWds := ref monitorWds[wd]
+				setWds.0 = callb
+				setWds.1 = StrCopy(nowPath)
+				if isRec
+				{
+					for subFolder : Path(nowPath)
+					{
+						if not subFolder.IsFolder() 
+							continue
+						strBld := ""sbt + nowPath + "/" + subFolder.Name()
+						str := strBld.Str() ; $temp
+						pathAdd << str
+					}
+				}
+			}
+		}
+	}
+	notifyMain := !() -> void
+	{
+		toWrite := u64
+		toWrite = 1
+		write(eventFd,toWrite&,8)
+	}
+	osCreateTask := !(TaskData^ startTask) -> void
+	{
+		getcontext(startTask.uContext&)
+		startTask.stackPtr = malloc(stackSize)
+		startTask.uContext[24]&->{u64^}^ = 0
+		startTask.uContext[8]&->{void^^}^ = null
+		startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
+		startTask.uContext[32]&->{u64^}^ = stackSize
+		makecontext(startTask.uContext&,ucontextStartTask,0)
+	}
+}
