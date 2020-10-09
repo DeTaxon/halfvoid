@@ -58,7 +58,7 @@ TaskTest := !() -> void
 	//})
 	tb.Spawn(() ==> [tb]{
 		taskTestValue = 0
-		for 2
+		for 4
 		{
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1

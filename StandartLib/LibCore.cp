@@ -1,4 +1,5 @@
 printf := !(char^ str, ...) -> int declare
+
 calloc := !(size_t size,int sizet) -> void^ declare
 malloc := !(size_t size) -> void^ declare
 free := !(void^ point) -> void declare

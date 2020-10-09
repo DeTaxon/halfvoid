@@ -89,6 +89,8 @@ TaskBox := class
 	itWorkDone := List.{TaskData^} ; $keep
 	poolThread := List.{Thread^}
 
+	destroyTasks := List.{TaskData^} ; $keep
+
 	working := bool
 
 	pollData := RawArray.{Tuple.{int}}
@@ -192,12 +194,12 @@ TaskBox := class
 							notifyMain()
 							itMutex.Unlock()
 						}else{
-							itWorkConVar.Wait(itWorkMutex&)
 							if not working
 							{
 								itWorkMutex.Unlock()
 								return void
 							}
+							itWorkConVar.Wait(itWorkMutex&)
 							itWorkMutex.Unlock()
 						}
 					}
@@ -235,15 +237,9 @@ TaskBox := class
 	}
 	onDestroyTask := !(TaskData^ toDestr) -> void
 	{
-		toDestr.tskToRun.Destroy()
-		if $posix
-		{
-			itStacks.Push(toDestr.stackPtr)
-		}
-		if $win32
-		{
-			DeleteFiber(toDestr.fiber)
-		}
+		itMutex.Lock()
+		destroyTasks << toDestr
+		itMutex.Unlock()
 		//TODO
 		//delete toDestr
 	}
@@ -263,7 +259,6 @@ TaskBox := class
 			makeWait := false
 			waitTime := double
 			toDoTask := TaskData^()
-
 
 			itMutex.Lock()
 
@@ -288,8 +283,25 @@ TaskBox := class
 				itWorkConVar.NotifyAll()
 				itWorkMutex.Unlock()
 			}
+			if destroyTasks.Size() != 0
+			{
+				for it : destroyTasks
+				{
+					it.tskToRun.Destroy()
+					if $posix
+					{
+						itStacks.Push(it.stackPtr)
+					}
+					if $win32
+					{
+						DeleteFiber(it.fiber)
+					}
+				}
+				destroyTasks.Clear()
+			}
 
 			toDoTask = checkCreateTask()
+
 			if toDoTask == null
 			{
 				toDoTask = checkTimers(makeWait,waitTime)
@@ -306,7 +318,7 @@ TaskBox := class
 				continue
 			}
 
-
+	
 			if makeWait
 			{
 				//itConVar.WaitFor(itMutex&,waitTime)
@@ -360,7 +372,7 @@ TaskBox := class
 			return null
 		nowTime := TGetSteadyTime()
 		first := ref sleepTasks.Front()
-		if first.0 < nowTime
+		if first.0 <= nowTime
 		{
 			itTask := first.1
 			sleepTasks.Pop()
