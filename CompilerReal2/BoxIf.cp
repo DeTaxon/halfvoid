@@ -1,3 +1,17 @@
+TypeCmpForWhileIf := !(Type^ from,Type^ out) -> int
+{
+	if from == null or from.GetType() == null
+		return 255
+	extrCmp := 255
+	if from.GetType() ==  "point" extrCmp = 1
+	if from.GetType() == "fatarr" extrCmp = 1
+
+	realCmp := TypeCmp(from,out)
+	if extrCmp < realCmp
+		return extrCmp
+	return realCmp
+}
+
 BoxIf := class extend Object
 {
 	MyId := int
@@ -55,7 +69,7 @@ BoxIf := class extend Object
 		{
 			if Down.GetType() != GTypeBool
 			{
-				if TypeCmp(Down.GetType(),GTypeBool) != 255
+				if TypeCmpForWhileIf(Down.GetType(),GTypeBool) != 255
 				{
 					if BoxExc(Down,GTypeBool,false) == null
 						EmitError("compiler error: can not convert\n")
@@ -149,7 +163,7 @@ BoxWhile := class extend Object
 		{
 			if Down.GetType() != GTypeBool
 			{
-				if TypeCmp(Down.GetType(),GTypeBool) != 255
+				if TypeCmpForWhileIf(Down.GetType(),GTypeBool) != 255
 				{
 					if BoxExc(Down,GTypeBool,false) == null
 						EmitError("compiler error: can not convert\n")

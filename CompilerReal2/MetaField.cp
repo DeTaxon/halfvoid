@@ -18,7 +18,7 @@ CheckMetaBlock := !(Object^ metBl) -> void
 				MakeItBlock(metWrp.Down)
 				WorkBag.Push(metWrp.Down,State_Start)
 
-				metWrp.Down->{BoxBlock^}.InClass = itrUp->{BoxClass^}
+				metWrp.Down->{BoxBlock^}.InClass = true //itrUp->{BoxClass^}
 				assert(metWrp is MetaFieldBox)
 				itrUp->{BoxClass^}.AddMetaField(paramName,metWrp)
 			}

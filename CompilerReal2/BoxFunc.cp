@@ -886,7 +886,7 @@ BoxFuncBody := class extend BoxFunc
 			{
 				PrintDebugDeclare(f,null,null->{char^})
 			}
-			if Yodlers.Size() != null
+			if Yodlers.Size() != 0
 			{
 				f << "%Yodler = getelementptr i32 , i32* %T" << yodlerInAlloc << ",i32 0\n"
 				f << "%StartYield = load i32, i32* %Yodler\n"

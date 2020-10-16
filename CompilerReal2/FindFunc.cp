@@ -395,8 +395,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			return 2
 		}
 	}
-	if (inType is TypePoint and funcType == GTypeBool) return 1
-	if inType is TypeFatArr and funcType == GTypeBool return 1
+	//if (inType is TypePoint and funcType == GTypeBool) return 1
+	//if inType is TypeFatArr and funcType == GTypeBool return 1
 
 	if inType is TypePoint and inType.Base is TypeFunc  
 		and funcType is TypePoint and funcType.Base is TypeFunc

@@ -3,6 +3,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	itemType := item.GetType()
 	SomeBugEnd := ToType
 
+
 	if (itemType is TypePoint or itemType is TypeFatArr) 
 	and (ToType is TypePoint or ToType is TypeFatArr)
 	{
@@ -71,7 +72,8 @@ ExcPointers := AVLMap.{ Type^,AVLMap.{Type^, BoxFunc^} }
 GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
 {
 	if ExcPointers[from][to] != null
-	{
+	{	
+		assert(ExcPointers[from][to].MyFuncType.Pars[0] == from)
 		return ExcPointers[from][to]
 	}
 	

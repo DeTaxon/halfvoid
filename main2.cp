@@ -4,6 +4,18 @@ main := !(int argc, char^^ argv) -> int
 {
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
+
+	someArr := int[3]
+	ptr1 := someArr[0]&
+	ptr2 := someArr[1]&
+	printf("obj %i\n",ptr1 <=> ptr2)
+	printf("obj %i\n",ptr1 <=> ptr1)
+	printf("obj %i\n",ptr2 <=> ptr1)
+	return 0
+	//printf("hm %i\n" , false <=> false)
+	//printf("hm %i\n" , false <=> true)
+	//printf("hm %i\n" , true <=> false)
+	//printf("hm %i\n" , true <=> true)
 	//return 0
 
 	//AppendClassTest()

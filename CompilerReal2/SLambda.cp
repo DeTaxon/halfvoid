@@ -770,7 +770,7 @@ SLambda := class extend BoxFuncContainer
 				if fastUse.RetRef f << "*"
 				f << "\n"
 			}
-			if Yodlers.Size() != null
+			if Yodlers.Size() != 0
 			{
 				f << "%Yodler = getelementptr " << ABox.GetClassName() << " , " << ABox.GetAsUse() << " , i32 0, i32 " << yodlerInAlloc << "\n" 
 				f << "%StartYield = load i32, i32* %Yodler\n"
