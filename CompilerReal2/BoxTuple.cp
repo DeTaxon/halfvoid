@@ -68,6 +68,7 @@ TupleClass := class extend BoxClass
 	setSimpleNeedCheck := bool
 
 	cttAsFunc := BoxFunc^
+	tupleCmp := TupleSpaceship^
 
 
 	this := !(FuncInputBox^ typs) -> void
@@ -91,6 +92,10 @@ TupleClass := class extend BoxClass
 		{
 		case "."
 			return GetNmFunc.GetFunc(itBox)
+		case "<=>"
+			if tupleCmp == null
+				tupleCmp = new TupleSpaceship(this&)
+			return tupleCmp
 		case "="
 			if setSimple == null
 				setSimple = new SetTupleValueSimple(this&)
@@ -276,6 +281,38 @@ TupleClass := class extend BoxClass
 					}
 				}
 				askedCreate = 2
+			}
+		}
+	}
+}
+TupleSpaceship :=  class extend BuiltInFuncBinar
+{
+	origin := TupleClass^
+	exeId := int
+	funcCalls := List.{Object^}
+	this := !(TupleClass^ org) -> void
+	{
+		origin = org
+		exeId = GetNewId()
+		WorkBag.Push(this&,State_GetUse)
+		this."BuiltInFuncBinar.this"("<=>",org.ClassType,false,org.ClassType,false,GTypeInt,false,
+			"#0 = call i32 @SpaceCmpTuple"sbt + exeId + "(#T1,#T2)\n" ) //TODO: first two false -> true
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{	
+			for it,i : origin.Params
+			{
+				boxS := new FuncInputBox() ; $temp
+
+				boxS.itPars.Emplace(it.ResultType,true)
+				boxS.itPars.Emplace(it.ResultType,true)
+
+				resFunc := FindFunc("<=>",this&,boxS^,false)
+				if resFunc == null
+					this.EmitError("Can not create compare operator for class "sbt + origin.ClassType.GetGoodName())
+				funcCalls.Push(resFunc)
 			}
 		}
 	}

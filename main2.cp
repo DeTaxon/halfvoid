@@ -2,31 +2,26 @@
 
 main := !(int argc, char^^ argv) -> int
 {
+	tstCmp := Tuple.{int,int}
+	printf("res %i\n",tstCmp <=> tstCmp)
+	return 0
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
 
-	someArr := int[3]
-	ptr1 := someArr[0]&
-	ptr2 := someArr[1]&
-	printf("obj %i\n",ptr1 <=> ptr2)
-	printf("obj %i\n",ptr1 <=> ptr1)
-	printf("obj %i\n",ptr2 <=> ptr1)
-	return 0
-	//printf("hm %i\n" , false <=> false)
-	//printf("hm %i\n" , false <=> true)
-	//printf("hm %i\n" , true <=> false)
-	//printf("hm %i\n" , true <=> true)
 	//return 0
 
-	//AppendClassTest()
+	////AppendClassTest()
+	////return 0
+	//TaskTest()
 	//return 0
-	TaskTest()
-	return 0
 	
 	try
 	{
+		TestSpaceship()
 		InsertBeforeTest()
 		BestTest()
+		TaskTest() // Must be last
+		printf("all good\n")
 	}catch(IException^ e)
 	{
 		printf("Msg: %s\n",e.Msg())
@@ -34,28 +29,22 @@ main := !(int argc, char^^ argv) -> int
 	return 0
 }
 
+TestSpaceship := !() -> void
+{
+	someArr := int[3]
+	ptr1 := someArr[0]&
+	ptr2 := someArr[1]&
+	assert(ptr1 <=> ptr2 == -1)
+	assert(ptr1 <=> ptr1 == 0)
+	assert(ptr2 <=> ptr1 == 1)
+	//return 0
+	assert(false <=> false == 0 )
+	assert(false <=> true == 1)
+	assert(true <=> false == -1)
+	assert(true <=> true == 0)
+}
 
-ToAppendClass := class 
-{
-	getValue := !() -> int
-	{
-		return getValue2()*13
-	}
-}
-AppendClass ToAppendClass
-{
-	getValue2 := !() -> int
-	{
-		return 5
-	}
-}
 
-AppendClassTest := !() -> void
-{
-	tstObj := ToAppendClass
-	retVal := tstObj.getValue()
-	assert(retVal == 5*13)
-}
 
 taskTestValue := task_local int
 gr := task_local double
@@ -91,6 +80,27 @@ TaskTest := !() -> void
 	})
 	tb.Run()
 }
+ToAppendClass := class 
+{
+	getValue := !() -> int
+	{
+		return getValue2()*13
+	}
+}
+AppendClass ToAppendClass
+{
+	getValue2 := !() -> int
+	{
+		return 5
+	}
+}
+
+AppendClassTest := !() -> void
+{
+	tstObj := ToAppendClass
+	retVal := tstObj.getValue()
+	assert(retVal == 5*13)
+}
 
 BestTest := !() -> void
 {
@@ -107,7 +117,7 @@ InsertBeforeTest := !() -> void
 	tst := List.{int}()
 	for i : ![3,17,9,34,7,-13]
 	{
-		//tst.InsertBeforeIf(i,_1 < i)
+		tst.CreateBeforeIf(_1 < i) = i
 	}
 	minVal := -14
 	for i : tst

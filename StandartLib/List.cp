@@ -239,7 +239,7 @@ List := class .{@T}
 
 		return this
 	}
-	CreateBeforeIf := !(!(T&)&->bool cmpTst) -> ref T
+	CreateBeforeIf := !(!(T&)&->bool cmpTst)  -> ref T
 	{
 
 		prevNode := ListNode.{T}^()

@@ -1434,6 +1434,10 @@ CreateBuiltIns := !() -> void
 				"%Pre1## = zext i1 %PrePre1## to i32 #d\n" + 
 				"%Pre2## = zext i1 %PrePre2## to i32 #d\n" + 
 				"#0 = sub i32 %Pre2## , %Pre1## #d\n")) 
+	AddBuiltInFunc( new BuiltInFuncBinar("<=>",GTypeBool,false,GTypeBool,false,GTypeInt,false,
+				"%Pre1## = zext i1 #1 to i32 #d\n"sbt + 
+				"%Pre2## = zext i1 #2 to i32 #d\n" + 
+				"#0 = sub i32 %Pre2## , %Pre1## #d\n")) 
 	AddBuiltInFunc(new BuiltInFuncBinar("-",GTypeVoidP,false,GTypeVoidP,false,GetType("size_t"),
 						"#0Pre1 = ptrtoint i8* #1 to i64 #d\n"sbt +
 						"#0Pre2 = ptrtoint i8* #2 to i64 #d\n" +

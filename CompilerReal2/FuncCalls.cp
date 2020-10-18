@@ -1854,6 +1854,12 @@ ConstructCall := class extend NaturalCall
 					j += 1
 				}else{
 					j+= 1
+					isFullName := false
+					if AsmLine[j] == 'T'
+					{
+						isFullName = true
+						j += 1
+					}
 					if AsmLine[j] in '0'..'9'
 					{
 						num := 0
@@ -1878,11 +1884,17 @@ ConstructCall := class extend NaturalCall
 								printf("nope %s\n",RealCall.FuncName)
 							}
 
-							ToAdd := string
-							if RefsArr[num] ToAdd = miniIter.GetPointName()
-							else ToAdd = miniIter.GetName()
+							if isFullName
+							{
+								if RefsArr[num] miniIter.PrintPointPre(f)
+								else miniIter.PrintPre(f)
+							}else{
+								ToAdd := string
+								if RefsArr[num] ToAdd = miniIter.GetPointName()
+								else ToAdd = miniIter.GetName()
 
-							f << ToAdd
+								f << ToAdd
+							}
 						}
 					}
 					if AsmLine[j] == 'd'
