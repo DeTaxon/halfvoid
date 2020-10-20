@@ -1282,6 +1282,12 @@ AssemblerCall := class extend NaturalCall
 				j += 1
 			}else{
 				j+= 1
+				isFullName := false
+				if AsmLine[j] == 'T'
+				{
+					isFullName = true
+					j += 1
+				}
 				if AsmLine[j] in '0'..'9'
 				{
 					num := 0
@@ -1306,12 +1312,18 @@ AssemblerCall := class extend NaturalCall
 							printf("nope %i %s\n",num,RealCall.FuncName)
 							assert(false)
 						}
+						
+						if isFullName
+						{
+							if RefsArr[num] miniIter.PrintPointUse(f)
+							else miniIter.PrintUse(f)
+						}else{
+							ToAdd := string
+							if RefsArr[num] ToAdd = miniIter.GetPointName()
+							else ToAdd = miniIter.GetName()
 
-						ToAdd := string
-						if RefsArr[num] ToAdd = miniIter.GetPointName()
-						else ToAdd = miniIter.GetName()
-
-						f << ToAdd
+							f << ToAdd
+						}
 					}
 				}
 				if AsmLine[j] == 'd'

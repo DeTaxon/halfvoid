@@ -2,9 +2,6 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	tstCmp := Tuple.{int,int}
-	printf("res %i\n",tstCmp <=> tstCmp)
-	return 0
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
 
@@ -18,6 +15,7 @@ main := !(int argc, char^^ argv) -> int
 	try
 	{
 		TestSpaceship()
+		TestSpaceshipTuple()
 		InsertBeforeTest()
 		BestTest()
 		TaskTest() // Must be last
@@ -28,7 +26,14 @@ main := !(int argc, char^^ argv) -> int
 	}
 	return 0
 }
-
+TestSpaceshipTuple := !() -> void
+{
+	assert(!{1,1} <=> !{1,1} == 0)
+	assert(!{2,1} <=> !{1,1} == 1)
+	assert(!{1,1} <=> !{2,1} == -1)
+	assert(!{1,2} <=> !{2,1} == -1)
+	assert(!{2,1} <=> !{1,2} == 1)
+}
 TestSpaceship := !() -> void
 {
 	someArr := int[3]

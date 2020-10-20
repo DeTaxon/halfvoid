@@ -134,6 +134,8 @@ TupleClass := class extend BoxClass
 	}
 	PrintGlobalExtra := !(sfile f) -> void
 	{
+		if tupleCmp != null
+			tupleCmp.PrintAsGlobal(f)
 		if askedCreate != 0
 		{
 			//toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
@@ -295,13 +297,14 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 		origin = org
 		exeId = GetNewId()
 		WorkBag.Push(this&,State_GetUse)
-		this."BuiltInFuncBinar.this"("<=>",org.ClassType,false,org.ClassType,false,GTypeInt,false,
-			"#0 = call i32 @SpaceCmpTuple"sbt + exeId + "(#T1,#T2)\n" ) //TODO: first two false -> true
+		this."BuiltInFuncBinar.this"("<=>",org.ClassType,true,org.ClassType,true,GTypeInt,false,
+			"#0 = call i32 @SpaceCmpTuple"sbt + exeId + "(#T1,#T2)\n" ) 
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_GetUse
-		{	
+		{
+			clName := origin.ClassType.GetName()
 			for it,i : origin.Params
 			{
 				boxS := new FuncInputBox() ; $temp
@@ -312,9 +315,35 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 				resFunc := FindFunc("<=>",this&,boxS^,false)
 				if resFunc == null
 					this.EmitError("Can not create compare operator for class "sbt + origin.ClassType.GetGoodName())
-				funcCalls.Push(resFunc)
+				//par1 := new ParamNaturalCall("",new FuncParam("(getelementptr inbounds ("sbt + clName + " , " + clName + "* %Left, i32 0, i32 " + i + "))",it.ResultType,true))
+				//par2 := new ParamNaturalCall("",new FuncParam("(getelementptr inbounds ("sbt + clName + " , " + clName + "* %Righ, i32 0, i32 " + i + "))",it.ResultType,true))
+				par1 := new ParamNaturalCall("",new FuncParam("Left_"sbt + i,it.ResultType,true))
+				par2 := new ParamNaturalCall("",new FuncParam("Righ_"sbt + i,it.ResultType,true))
+				par1.Right = par2
+				par2.Left = par1
+				asCall := MakeSimpleCall(resFunc,par1)
+				funcCalls.Push(asCall)
 			}
 		}
+	}
+	PrintAsGlobal := !(sfile f) -> void
+	{
+		clName := origin.ClassType.GetName()
+		f << "define i32 @SpaceCmpTuple" << exeId <<"(" << clName << "* %Left , " << clName << "* %Righ) \n"
+		f << "{\n"
+		for it,i : funcCalls
+		{
+			f << "%Left_" << i << " = getelementptr " << clName << "," << clName << "* %Left , i32 0, i32 " << i << "\n"
+			f << "%Righ_" << i << " = getelementptr " << clName << "," << clName << "* %Righ , i32 0, i32 " << i << "\n"
+			it.PrintPre(f)
+			f << "%Cmp_" << i << " = icmp ne i32 " << it.GetName() << ", 0\n"
+			f << "br i1 %Cmp_" << i << ", label %CmpReturn_" << i << " , label %CmpContinue_" << i << "\n"
+			f << "CmpReturn_" << i << ":\n"
+			f << "ret i32 " << it.GetName() << "\n"
+			f << "CmpContinue_" << i << ":\n"
+		}
+		f << "ret i32 0\n"
+		f << "}\n"
 	}
 }
 
