@@ -63,8 +63,6 @@ TupleClass := class extend BoxClass
 
 	askedSet := char
 
-	setSimple := SetTupleValueSimple^
-
 	cttAsFunc := BoxFunc^
 
 
@@ -94,11 +92,11 @@ TupleClass := class extend BoxClass
 				CreateTupleCmp()
 			return tuplCmp
 		case "="
-			if setSimple == null
-				setSimple = new SetTupleValueSimple(this&)
-			if setSimple.GetPriority(itBox) == 255
+			if tuplSet == null
+				CreateTupleSet()
+			if tuplSet.GetPriority(itBox) == 255
 				return null
-			return setSimple.GetFunc(itBox)
+			return tuplSet.GetFunc(itBox)
 		case "this"
 			if cttAsFunc == null
 			{
@@ -128,7 +126,6 @@ TupleClass := class extend BoxClass
 			f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << "Tuple" << "\""
 			f << ", elements: !{})\n"
 		}
-		PrintCreatedFuncs(f)
 	}
 	PrintGlobalExtra := !(sfile f) -> void
 	{
@@ -157,17 +154,7 @@ TupleClass := class extend BoxClass
 			f << "}\n"
 			
 		}
-		if setSimple != null
-		{
-			funcs := setSimple.GetCreatedFuncs()->{SetTupleObj^[]}
-			if funcs != null
-			{
-				for it : funcs
-				{
-					it.PrintItFunc(f)
-				}
-			}
-		}
+		PrintCreatedFuncs(f)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -352,7 +339,7 @@ SetTupleObj := class extend BuiltInFuncMega
 SetTupleValueSimple := class extend BoxTemplate
 {
 	ptrToTuple := BoxClass^
-	this := !(TupleClass^ itt) -> void
+	this := !(BoxClass^ itt) -> void
 	{
 		ptrToTuple = itt
 	}

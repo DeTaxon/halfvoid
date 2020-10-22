@@ -810,11 +810,28 @@ BoxClass := class extend Object
 		if tuplCmp == null
 			tuplCmp = new TupleSpaceship(this&)
 	}
+	tuplSet := SetTupleValueSimple^
+	CreateTupleSet := !() -> void
+	{
+		if tuplSet == null
+			tuplSet = new SetTupleValueSimple(this&)
+	}
 
 	PrintCreatedFuncs := !(sfile f) -> void
 	{
 		if tuplCmp != null
 			tuplCmp.PrintAsGlobal(f)
+		if tuplSet != null
+		{
+			funcs := tuplSet.GetCreatedFuncs()->{SetTupleObj^[]}
+			if funcs != null
+			{
+				for it : funcs
+				{
+					it.PrintItFunc(f)
+				}
+			}
+		}
 	}
 
 	PrintGlobal := virtual !(sfile f) -> void
