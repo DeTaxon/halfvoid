@@ -145,6 +145,28 @@ BoxTemplate := class extend BoxFunc
 
 	IsVirtual := bool
 
+	GetCreatedFuncs := !() -> BoxFunc^[]
+	{
+		counter := 0
+		for it2 : NewFuncs
+		{
+			counter += it2.Size()
+		}
+		if counter == 0
+			return null->{BoxFunc^[]}
+		i := 0
+		retArr := new BoxFunc^[counter] ; $temp
+		for it2 : NewFuncs
+		{
+			for it : it2
+			{
+				retArr[i] = it.ptrToFunc
+				i += 1
+			}
+		}
+		return retArr
+	}
+
 	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res,Type^^^ resTyps) -> bool
 	{
 		extraWalk := true

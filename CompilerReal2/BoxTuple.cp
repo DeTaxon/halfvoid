@@ -64,11 +64,8 @@ TupleClass := class extend BoxClass
 	askedSet := char
 
 	setSimple := SetTupleValueSimple^
-	simpleSetters := Queue.{SimpleSetTuple}
-	setSimpleNeedCheck := bool
 
 	cttAsFunc := BoxFunc^
-	tupleCmp := TupleSpaceship^
 
 
 	this := !(FuncInputBox^ typs) -> void
@@ -93,9 +90,9 @@ TupleClass := class extend BoxClass
 		case "."
 			return GetNmFunc.GetFunc(itBox)
 		case "<=>"
-			if tupleCmp == null
-				tupleCmp = new TupleSpaceship(this&)
-			return tupleCmp
+			if tuplCmp == null
+				CreateTupleCmp()
+			return tuplCmp
 		case "="
 			if setSimple == null
 				setSimple = new SetTupleValueSimple(this&)
@@ -131,11 +128,10 @@ TupleClass := class extend BoxClass
 			f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << "Tuple" << "\""
 			f << ", elements: !{})\n"
 		}
+		PrintCreatedFuncs(f)
 	}
 	PrintGlobalExtra := !(sfile f) -> void
 	{
-		if tupleCmp != null
-			tupleCmp.PrintAsGlobal(f)
 		if askedCreate != 0
 		{
 			//toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
@@ -161,77 +157,22 @@ TupleClass := class extend BoxClass
 			f << "}\n"
 			
 		}
-		for simpleSetters
+		if setSimple != null
 		{
-			
-			f << "define void @TupleSetSimple" << it.itId << "(" 
-			f << it.inpDataFuncType.Pars[0].GetName() << "* %ToSet"
-			f << ","
-			f << it.inpDataFuncType.Pars[1].GetName() << "* %ToGet"
-			f << ")\n{\n"
-			it.setsFunc[^].PrintPre(f)
-			f << "ret void\n"
-			f << "}\n"
-
+			funcs := setSimple.GetCreatedFuncs()->{SetTupleObj^[]}
+			if funcs != null
+			{
+				for it : funcs
+				{
+					it.PrintItFunc(f)
+				}
+			}
 		}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_PreGetUse
 		{
-			if setSimpleNeedCheck
-			{
-				setSimpleNeedCheck = false
-
-				for ch : simpleSetters
-				{
-					if ch.setsFunc.Size() != 0
-						continue
-					
-					asT := ch.inpDataFuncType.Pars[1]->{TypeClass^}.ToClass->{TupleClass^}
-					i := 0
-					for par : Params, parC : asT.Params 
-					{
-						boxS := new FuncInputBox() ; $temp
-
-						boxS.itPars.Emplace(par.ResultType,true)
-
-						isRef := false
-						if parC is TypeClass isRef = true
-						if parC is TypeArr isRef = true
-						boxS.itPars.Emplace(parC.ResultType,isRef)
-
-						func := FindFunc("=",this&,boxS^,false)
-
-						if func != null
-						{
-							oneInt := new ObjInt(i)
-							box2 := new FuncInputBox() ; $temp
-							box2.itPars.Emplace(ClassType->{Type^},true)
-							box2.itConsts.Push(oneInt)
-							
-							frmPre := GetNmFunc->{BoxTemplate^}
-							frm := frmPre.GetFunc(box2^)
-
-							box3 := new FuncInputBox ; $temp
-							box3.itPars.Emplace(asT.ClassType,true)
-							box3.itConsts.Push(oneInt)
-							frmPre2 := asT.GetNmFunc->{BoxTemplate^}
-							frm2 := frmPre2.GetFunc(box3^)
-
-							partA := MakeSimpleCall(frm ,new ParamNaturalCall("",new FuncParam("ToSet",ClassType->{Type^},true)))
-							partB := MakeSimpleCall(frm2,new ParamNaturalCall("",new FuncParam("ToGet",asT.ClassType,true)))
-
-							partA.Right = partB
-							partB.Left = partA
-							ch.setsFunc.Push(MakeSimpleCall(func,partA))
-						}else{
-							EmitError("tuple = tuple, cant get operator= for parameter ."sbt + i)
-						}
-						i++
-					}
-				}
-			}
 			if askedCreate == 1
 			{
 				for itPar,i : Params
@@ -289,10 +230,10 @@ TupleClass := class extend BoxClass
 }
 TupleSpaceship :=  class extend BuiltInFuncBinar
 {
-	origin := TupleClass^
+	origin := BoxClass^
 	exeId := int
 	funcCalls := List.{Object^}
-	this := !(TupleClass^ org) -> void
+	this := !(BoxClass^ org) -> void
 	{
 		origin = org
 		exeId = GetNewId()
@@ -315,8 +256,6 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 				resFunc := FindFunc("<=>",this&,boxS^,false)
 				if resFunc == null
 					this.EmitError("Can not create compare operator for class "sbt + origin.ClassType.GetGoodName())
-				//par1 := new ParamNaturalCall("",new FuncParam("(getelementptr inbounds ("sbt + clName + " , " + clName + "* %Left, i32 0, i32 " + i + "))",it.ResultType,true))
-				//par2 := new ParamNaturalCall("",new FuncParam("(getelementptr inbounds ("sbt + clName + " , " + clName + "* %Righ, i32 0, i32 " + i + "))",it.ResultType,true))
 				par1 := new ParamNaturalCall("",new FuncParam("Left_"sbt + i,it.ResultType,true))
 				par2 := new ParamNaturalCall("",new FuncParam("Righ_"sbt + i,it.ResultType,true))
 				par1.Right = par2
@@ -347,9 +286,72 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 	}
 }
 
+
+SetTupleObj := class extend BuiltInFuncMega
+{	
+	setsFunc := List.{Object^}
+	itId := int
+	this := !(char^ operName,TypeFunc^ typ,SBTType itSb,int setId) -> void
+	{
+		this."BuiltInFuncMega.this"(operName,typ,itSb)
+		WorkBag.Push(this&,State_GetUse)
+		itId = setId
+	}
+	PrintItFunc := !(sfile f) -> void
+	{
+		prL := MyFuncType.Pars[0].GetName()
+		prR := MyFuncType.Pars[1].GetName()
+		f << "define void @TupleSetSimple" << itId << "(" 
+		f << prL << "* %ToSet"
+		f << ","
+		f << prR << "* %ToGet"
+		f << ")\n{\n"
+		for it, i : this.setsFunc
+		{
+			f << "%Left_" << i << " = getelementptr " << prL << " , " << prL << "* %ToSet, i32 0, i32 "<< i <<"\n"
+			f << "%Righ_" << i << " = getelementptr " << prR << " , " << prR << "* %ToGet, i32 0, i32 "<< i <<"\n"
+			it.PrintPre(f)
+		}
+		f << "ret void\n"
+		f << "}\n"
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			thT := MyFuncType.Pars[0]->{TypeClass^}.ToClass->{BoxClass^}
+			asT := MyFuncType.Pars[1]->{TypeClass^}.ToClass->{BoxClass^}
+			for par,i : thT.Params, parC : asT.Params 
+			{
+				boxS := new FuncInputBox() ; $temp
+
+				boxS.itPars.Emplace(par.ResultType,true)
+
+				isRef := false
+				if parC is TypeClass isRef = true
+				if parC is TypeArr isRef = true
+				boxS.itPars.Emplace(parC.ResultType,isRef)
+
+				func := FindFunc("=",this&,boxS^,false)
+
+				if func != null
+				{
+					partA := new ParamNaturalCall("",new FuncParam("Left_"sbt + i,par.ResultType,true))
+					partB := new ParamNaturalCall("",new FuncParam("Righ_"sbt + i,parC.ResultType,true))
+
+					partA.Right = partB
+					partB.Left = partA
+					setsFunc.Push(MakeSimpleCall(func,partA))
+				}else{
+					EmitError("tuple = tuple, cant get operator= for parameter ."sbt + i)
+				}
+			}
+		}
+	}
+}
 SetTupleValueSimple := class extend BoxTemplate
 {
-	ptrToTuple := TupleClass^
+	ptrToTuple := BoxClass^
 	this := !(TupleClass^ itt) -> void
 	{
 		ptrToTuple = itt
@@ -392,9 +394,6 @@ SetTupleValueSimple := class extend BoxTemplate
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		itID := GetNewId()
-		ptrToTuple.setSimpleNeedCheck = true
-		ptrToTuple.simpleSetters.Emplace(itID,funct)
-		WorkBag.Push(ptrToTuple,State_PreGetUse)
 
 		pars := ref itBox.itPars
 	
@@ -414,7 +413,7 @@ SetTupleValueSimple := class extend BoxTemplate
 		}
 		toEx << ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx)
+		return new SetTupleObj("",funct,toEx,itID)
 	}
 }
 

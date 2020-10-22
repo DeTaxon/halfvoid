@@ -2,6 +2,10 @@
 
 main := !(int argc, char^^ argv) -> int
 {
+	j := Tuple.{char,u32}
+	j = !{1,2}
+	printf("heh %i %i\n",j.0,j.1)
+	return 0
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
 

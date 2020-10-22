@@ -803,6 +803,20 @@ BoxClass := class extend Object
 			}
 		}
 	}
+
+	tuplCmp := TupleSpaceship^
+	CreateTupleCmp := !() -> void
+	{
+		if tuplCmp == null
+			tuplCmp = new TupleSpaceship(this&)
+	}
+
+	PrintCreatedFuncs := !(sfile f) -> void
+	{
+		if tuplCmp != null
+			tuplCmp.PrintAsGlobal(f)
+	}
+
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
@@ -914,6 +928,7 @@ BoxClass := class extend Object
 				}
 			}
 		}
+		PrintCreatedFuncs(f)
 	}
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{
