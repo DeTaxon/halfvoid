@@ -1,10 +1,25 @@
 
 
+TestDefClass := class
+{
+	val1 := int
+	val2 := float
+
+	this := !(int a,float b) -> void
+	{
+		val1 = a
+		val2 = b
+	}
+	"<=>" := default
+	"=" := default
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	j := Tuple.{char,u32}
-	j = !{1,2}
-	printf("heh %i %i\n",j.0->{int},j.1)
+	bo1 := TestDefClass(3,2.0)
+	bo2 := TestDefClass(3,4.0)
+	bo2 = TestDefClass(1,1.0)
+	printf("test %i\n",bo1 <=> bo2)
 	return 0
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
@@ -37,6 +52,12 @@ TestSpaceshipTuple := !() -> void
 	assert(!{1,1} <=> !{2,1} == -1)
 	assert(!{1,2} <=> !{2,1} == -1)
 	assert(!{2,1} <=> !{1,2} == 1)
+
+	assert(!{1,1} == !{1,1})
+	assert(!{2,1} > !{1,1})
+	assert(!{1,1} < !{2,1})
+	assert(!{1,2} < !{2,1})
+	assert(!{2,1} > !{1,2})
 }
 TestSpaceship := !() -> void
 {

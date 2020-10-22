@@ -130,6 +130,20 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Down?.GetValue() == "default"
+			{
+				itr := Up
+				while itr != null
+				{
+					if itr is BoxClass or itr is BoxClassTemplate
+					{
+						itr->{BoxClass^}.CreateDefault(MyStr)
+						break
+					}
+					itr = itr.Up
+				}
+				return void
+			}
 			if Down?.Down?.GetValue() == "fake"
 			{
 				CheckMetaBlock(Down)	

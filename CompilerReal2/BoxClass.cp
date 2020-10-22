@@ -271,6 +271,19 @@ BoxClass := class extend Object
 
 	ClassName := string
 
+	CreateDefault := !(char^ crtDef) -> void
+	{
+		switch crtDef
+		{
+		case "<=>"
+			CreateTupleCmp()
+		case "="
+			CreateTupleSet()
+		case void
+			EmitError("Unsupported default operator "sbt + crtDef)
+		}
+	}
+
 	GetClassOutputName := !() -> string
 	{
 		return StrCopy("%Class"sbt + ClassId)
@@ -643,6 +656,19 @@ BoxClass := class extend Object
 			if name != "new" { itBox.itPars[0].first = oldVal }
 
 			return res
+		}
+		if name == "<=>" and tuplCmp != null 
+		{
+			return tuplCmp
+		}
+		if name == "=" and tuplSet != null
+		{
+			if itBox.itPars.Size() == 2 
+				and itBox.itPars[0].first == ClassType
+				and itBox.itPars[1].first == ClassType
+			{
+				return tuplSet.GetFunc(itBox)
+			}
 		}
 
 		return bestFunc

@@ -353,13 +353,9 @@ SetTupleValueSimple := class extend BoxTemplate
 		}
 		tpA := it.itPars[0].first->{TypeClass^}.ToClass
 		tpB := it.itPars[1].first->{TypeClass^}.ToClass
-		if tpA is TupleClass and tpB is TupleClass
-		{
-		}else{
-			return 255
-		}
-		aA := tpA->{TupleClass^}
-		aB := tpB->{TupleClass^}
+
+		aA := tpA->{BoxClass^}
+		aB := tpB->{BoxClass^}
 		if aA.Params.Size() != aB.Params.Size()
 			return 255
 		maxCmp := 0

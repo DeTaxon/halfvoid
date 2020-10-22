@@ -332,6 +332,7 @@ IsKeyword := !(W) -> bool
 		case "on_exception" return true
 		case "yield" return true
 		case "AppendClass" return true
+		case "default" return true
 	}
 
 	return false
