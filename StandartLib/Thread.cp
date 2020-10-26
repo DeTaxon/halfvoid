@@ -15,7 +15,7 @@ Thread := class
 	{
 		proxyFunc := (void^ x) => 
 		{
-			_TaskPtr = null
+			_TaskPtrReset()
 			asLambd := x->{!()&->void}
 			asLambd()
 			asLambd.Destroy()

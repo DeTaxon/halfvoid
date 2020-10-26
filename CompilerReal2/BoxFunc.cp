@@ -829,7 +829,8 @@ BoxFuncBody := class extend BoxFunc
 			f << " ; " << FuncName
 
 			f << "\n{\n"
-
+			if FuncName == "main"
+				TaskPrintInit(f)
 			dbgId := -1
 			if DebugMode
 				dbgId = CreateDebugCall(this&)

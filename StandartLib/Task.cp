@@ -219,7 +219,7 @@ TaskBox := class
 	}
 	switchToMain := !() -> void
 	{
-		_TaskPtrSet(null)
+		_TaskPtrReset()
 		if $posix
 			swapcontext(CurrentTask.uContext&,startContext)
 		if $win32
