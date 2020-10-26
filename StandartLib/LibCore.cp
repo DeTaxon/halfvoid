@@ -170,3 +170,7 @@ abs := !(@T a)  -> T
 	if a < 0 return -a
 	return a
 }
+ZeroMemory := !(@T^ a) -> void
+{
+	memset(a,0,T->TypeSize)
+}

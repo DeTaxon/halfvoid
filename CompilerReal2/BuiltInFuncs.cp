@@ -798,6 +798,8 @@ BuiltInLenArr := class extend BoxTemplate
 
 		for pars
 		{
+			if it.first == null
+				return 255
 			if it.first is TypeStandart
 				continue
 			if it.first is TypePoint

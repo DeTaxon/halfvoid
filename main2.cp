@@ -16,11 +16,6 @@ TestDefClass := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	bo1 := TestDefClass(3,2.0)
-	bo2 := TestDefClass(3,4.0)
-	bo2 = TestDefClass(1,1.0)
-	printf("test %i\n",bo1 <=> bo2)
-	return 0
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
 

@@ -63,5 +63,6 @@ GTypeVec2f := Type^
 GBoolTrue := Object^
 GBoolFalse := Object^
 
+EnableGSTask := bool
 
 MacroRestart := Object^

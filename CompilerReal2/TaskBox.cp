@@ -2,7 +2,7 @@
 
 gTaskPtr := GlobalParam^
 
-
+//EnableGSTask
 
 TaskInit := !() -> void
 {
@@ -12,6 +12,8 @@ TaskInit := !() -> void
 	
 	taskSize := new BuiltInFuncZero("_getTaskStructSize",GTypeU64,false,"#0Pre = getelementptr %TaskStruct, %TaskStruct* null,i32 1\n"sbt
 							 +"#0 = ptrtoint %TaskStruct* #0Pre to i64\n")
+
+	AddBuiltInFunc(new BuiltInFuncUno("_TaskPtrSet",GTypeVoidP,false,GTypeVoid,false,"store i8* #1 , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
 	AddBuiltInFunc(taskSize)
 
 }

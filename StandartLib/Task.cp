@@ -219,7 +219,7 @@ TaskBox := class
 	}
 	switchToMain := !() -> void
 	{
-		_TaskPtr = null
+		_TaskPtrSet(null)
 		if $posix
 			swapcontext(CurrentTask.uContext&,startContext)
 		if $win32
@@ -228,7 +228,7 @@ TaskBox := class
 	doTask := !(TaskData^ toRun) -> void
 	{
 		CurrentTask = toRun
-		_TaskPtr = toRun.taskLocalPtr
+		_TaskPtrSet(toRun.taskLocalPtr)
 		if $posix
 			swapcontext(startContext&,toRun.uContext&)
 		if $win32
