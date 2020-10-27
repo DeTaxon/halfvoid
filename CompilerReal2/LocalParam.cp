@@ -327,9 +327,15 @@ GlobalParam := class extend MemParam
 			//f << "%TaskState"<< newInd << " = icmp eq i8* %TaskTPre" << newInd << " , null\n"
 			//f << "%TaskO" << newInd << " = select i1 %TaskState" << newInd << ", %TaskStruct* @DefTaskStruct , %TaskStruct* %TaskT" << newInd << "\n"
 			//f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct, %TaskStruct* %TaskO" << newInd << ", i32 0, i32 " << taskFieldId << "\n"
+			if EnableGSTask
+			{
+			f << "%TaskPre" << newInd << " = addrspacecast %TaskStruct addrspace(256)* @CurrentTaskStruct to %TaskStruct*\n"
+			f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct , %TaskStruct* %TaskPre"<< newInd <<" , i32 0, i32 " << taskFieldId << "\n"
+			}else{
 			f << "%TaskTPre" << newInd << " = load i8*, i8** " << gTaskPtr.GetPointName(0) << "\n"
 			f << "%TaskValuePtrPre" << newInd << " = bitcast i8* %TaskTPre" << newInd << " to %TaskStruct*\n"
 			f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct, %TaskStruct* %TaskValuePtrPre" << newInd << ", i32 0, i32 " << taskFieldId << "\n"
+			}
 		}
 	}
 	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void

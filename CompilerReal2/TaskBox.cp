@@ -12,12 +12,22 @@ TaskInit := !() -> void
 	
 	taskSize := new BuiltInFuncZero("_getTaskStructSize",GTypeU64,false,"#0Pre = getelementptr %TaskStruct, %TaskStruct* null,i32 1\n"sbt
 							 +"#0 = ptrtoint %TaskStruct* #0Pre to i64\n")
-
-	AddBuiltInFunc(new BuiltInFuncUno("_TaskPtrSet",GTypeVoidP,false,GTypeVoid,false,"store i8* #1 , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
-	AddBuiltInFunc(new BuiltInFuncZero("_TaskPtrReset",GTypeVoid,false,
-		"%ItStruct## = bitcast %TaskStruct* @DefTaskStruct to i8*\n"sbt +
-		"store i8* %ItStruct## , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
 	AddBuiltInFunc(taskSize)
+
+	if EnableGSTask
+	{
+		AddBuiltInFunc(new BuiltInFuncUno("_TaskPtrSet",GTypeVoidP,false,GTypeVoid,false,
+			"%ItStruct## = ptrtoint i8* #1 to i64\n"sbt +
+			"call void @llvm.x86.wrgsbase.64(i64 %ItStruct##)\n"))
+		AddBuiltInFunc(new BuiltInFuncZero("_TaskPtrReset",GTypeVoid,false,
+			"%ItStruct## = ptrtoint %TaskStruct* @DefTaskStruct to i64\n"sbt +
+			"call void @llvm.x86.wrgsbase.64(i64 %ItStruct##)\n"))
+	}else{
+		AddBuiltInFunc(new BuiltInFuncUno("_TaskPtrSet",GTypeVoidP,false,GTypeVoid,false,"store i8* #1 , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
+		AddBuiltInFunc(new BuiltInFuncZero("_TaskPtrReset",GTypeVoid,false,
+			"%ItStruct## = bitcast %TaskStruct* @DefTaskStruct to i8*\n"sbt +
+			"store i8* %ItStruct## , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
+	}
 
 }
 
@@ -31,6 +41,11 @@ GetTaskLocalId := !(Type^ crtTyp) -> int
 }
 TaskPrint := !(sfile f) -> void
 {
+	if EnableGSTask
+	{
+		f << "declare void @llvm.x86.wrgsbase.64(i64 %a)\n" 
+	}
+
 	f << "%TaskStruct = type{"
 	for it,i : taskParams
 	{
@@ -38,18 +53,26 @@ TaskPrint := !(sfile f) -> void
 		f << it.GetName()
 	}
 	f << "}\n"
-	f << "@DefTaskStruct = thread_local global %TaskStruct zeroinitializer\n"
 
 	if EnableGSTask
 	{
-		f << "@ThisTaskStruct = addrspace(256) global %TaskStruct zeroinitializer\n"
+		f << "@CurrentTaskStruct = addrspace(256) global %TaskStruct zeroinitializer\n"
+		f << "@DefTaskStruct = thread_local global %TaskStruct zeroinitializer\n"
+	}else{
+		f << "@DefTaskStruct = thread_local global %TaskStruct zeroinitializer\n"
+		gTaskPtr.PrintGlobal(f)
 	}
-	gTaskPtr.PrintGlobal(f)
 }
 TaskPrintInit := !(sfile f) -> void
 {
+	if EnableGSTask
+	{
+	f << "%ItStructObj = ptrtoint %TaskStruct* @DefTaskStruct to i64\n"
+	f << "call void @llvm.x86.wrgsbase.64(i64 %ItStructObj)\n"
+	}else{
 	f << "%ItStructObj = bitcast %TaskStruct* @DefTaskStruct to i8*\n"
 	f << "store i8* %ItStructObj , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"
+	}
 }
 
 

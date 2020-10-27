@@ -16,7 +16,6 @@ TestDefClass := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	_TaskPtrReset()
 	//vals := List.{Tuple.{double,int}}() ; $keep
 	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
 

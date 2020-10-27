@@ -29,6 +29,8 @@ main := !(int argc,char^^ argv) -> int
 	{
 		switch argv[i]
 		{
+		case "--task_gs"
+			EnableGSTask = true
 		case "--ZipGlue"
 			ZipConCat(argv[i+1],argv[i+2],argv[i+3])
 			return 0
