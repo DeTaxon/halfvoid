@@ -44,6 +44,17 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			return MakeSimpleCall(someF,null->{Object^})
 		}
 	}
+	if iter.Down?.IsConst and IsOper(iter.Down.Right?.GetValue()) and iter.Down.Right.Right?.IsConst and iter.Down.Right.Right.Right == null
+	{
+		oprStr := iter.Down.Right.GetValue()
+		if oprStr == "=="
+		{
+			if iter.Down is ObjStr  and iter.Down.Right.Right is ObjStr
+			{
+				return new ObjBool(iter.Down->{ObjStr^}.GetString() == iter.Down.Right.Right->{ObjStr^}.GetString())
+			}
+		}
+	}
 	if iter.Down? is ObjType and iter.Down.Right?.GetValue() == "->"
 	{
 		asTyp := iter.Down->{ObjType^}.MyType
@@ -55,6 +66,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				if asTyp is TypeArr
 				{
 					return new ObjInt(asTyp->{TypeArr^}.Size)
+				}
+			}
+			if asObj.MyStr == "Base"
+			{
+				if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
+				{
+					return new ObjType(asTyp.Base)
 				}
 			}
 		}

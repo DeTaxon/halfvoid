@@ -1,10 +1,16 @@
 WantIt := !(@Typ x) -> void
 {
-	printf("heh %i\n",Typ->Len)
+	y := Typ->Base
+	y = 13
+	printf("heh %i %i\n",Typ->Len,y)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
+	if "wow" == "waw"
+	{
+		bob + bob
+	}
 	val := int[15]
 	WantIt(val)	
 	return 0
