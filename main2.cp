@@ -7,13 +7,13 @@ WantIt := !(@Typ x) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	if "wow" == "waw"
-	{
-		bob + bob
-	}
-	val := int[15]
-	WantIt(val)	
-	return 0
+	//if "wow" == "wow"
+	//{
+	//	bob + bob
+	//}
+	//val := int[15]
+	//WantIt(val)	
+	//return 0
 	try
 	{
 		TestSpaceship()

@@ -56,7 +56,8 @@ BoxIf := class extend Object
 			switch ForceGo
 			{
 			case 0
-				WorkBag.Push(Down[^],State_Start)
+				//WorkBag.Push(Down[^],State_Start)
+				WorkBag.Push(Down,State_Start)
 				WorkBag.Push(this&,State_GetUse)
 			case 1
 				WorkBag.Push(Down.Right,State_Start)
@@ -67,14 +68,28 @@ BoxIf := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			if Down.GetType() != GTypeBool
+			if Down is ObjBool
 			{
-				if TypeCmpForWhileIf(Down.GetType(),GTypeBool) != 255
+				if Down->{ObjBool^}.MyBool
 				{
-					if BoxExc(Down,GTypeBool,false) == null
-						EmitError("compiler error: can not convert\n")
+					ForceGo = 1
+				     	WorkBag.Push(Down.Right,State_Start)
 				}else{
-					EmitError("can not use type as if statement\n")
+					ForceGo = 2
+					if Down.Right.Right != null
+						WorkBag.Push(Down.Right.Right,State_Start)
+				}
+			}else{
+				WorkBag.Push(Down.Right[^],State_Start)
+				if Down.GetType() != GTypeBool
+				{
+					if TypeCmpForWhileIf(Down.GetType(),GTypeBool) != 255
+					{
+						if BoxExc(Down,GTypeBool,false) == null
+							EmitError("compiler error: can not convert\n")
+					}else{
+						EmitError("can not use type as if statement\n")
+					}
 				}
 			}
 		}
