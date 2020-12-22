@@ -1,35 +1,20 @@
-
-simplTest := !(!(float)&->bool tstObj) -> void
+WantIt := !(@Typ x) -> void
 {
-	printf("test %i\n",tstObj(12))
+	printf("heh %i\n",Typ->Len)
 }
-
 
 main := !(int argc, char^^ argv) -> int
 {
-	bugTest1()
+	val := int[15]
+	WantIt(val)	
 	return 0
-	x := 10000
-	vals := List.{Tuple.{double,int}}() ; $keep
-	//simplTest(_1 > x)
-	simplTest( y ==> {
-		printf("wut %i\n",x)
-		return x > y
-	})
-
-	return 0
-
-	////AppendClassTest()
-	////return 0
-	//TaskTest()
-	//return 0
-	
 	try
 	{
 		TestSpaceship()
 		TestSpaceshipTuple()
 		InsertBeforeTest()
 		BestTest()
+		TestBugs()
 		TaskTest() // Must be last
 		printf("all good\n")
 	}catch(IException^ e)
@@ -38,14 +23,15 @@ main := !(int argc, char^^ argv) -> int
 	}
 	return 0
 }
-printBool := !(bool toPrt) -> void
+TestBugs := !() -> void
 {
-	printf("bool %i\n",toPrt)
+	bugTest1()
 }
 bugTest1 := !() -> void
 {
-	x := 3
-	printBool(x > 3 and  3 > x)
+	x := 4
+	//and did not
+	assert(x > 3 and 10 > x)
 }
 TestSpaceshipTuple := !() -> void
 {

@@ -44,6 +44,21 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			return MakeSimpleCall(someF,null->{Object^})
 		}
 	}
+	if iter.Down? is ObjType and iter.Down.Right?.GetValue() == "->"
+	{
+		asTyp := iter.Down->{ObjType^}.MyType
+		if iter.Down.Right.Right? is ObjIndent
+		{
+			asObj := iter.Down.Right.Right->{ObjIndent^}
+			if asObj.MyStr == "Len"
+			{
+				if asTyp is TypeArr
+				{
+					return new ObjInt(asTyp->{TypeArr^}.Size)
+				}
+			}
+		}
+	}
 
 	if iter.Down?.Right?.GetValue() == "is"
 	{
