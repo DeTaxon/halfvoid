@@ -125,7 +125,7 @@ Object := class{
 	{
 		ErrorLog.Push("Compiler error: PrintUse is not defined")	
 	}
-	GetName := virtual !() -> string
+	GetName := virtual !() -> char^
 	{
 		ErrorLog.Push("Compiler error: GetName is not defined")	
 		return ""

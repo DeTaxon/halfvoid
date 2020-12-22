@@ -163,7 +163,7 @@ TaskBox := class
 		assert(sleepTime > 0)
 		nextTime := TGetSteadyTime() + sleepTime
 		itMutex.Lock()
-		newObj := ref sleepTasks.CreateBeforeIf(x ==> x.0 < nextTime)
+		newObj := ref sleepTasks.CreateBeforeIf(_1.0 < nextTime)
 		newObj.0 = nextTime
 		newObj.1 = CurrentTask
 		itMutex.Unlock()

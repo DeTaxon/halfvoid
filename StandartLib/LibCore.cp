@@ -142,12 +142,14 @@ IsPrintable := !(int ch) -> bool
 min := !(@A a, args...) -> #best(A,args) 
 {
 	mx := #best(A,args)
+	mx = a
 	(mx = args < mx ?: args : mx)...
 	return mx
 }
 max := !(@A a, args...) -> #best(A,args) 
 {
 	mx := #best(A,args)
+	mx = a
 	(mx = args > mx ?: args : mx)...
 	return mx
 }

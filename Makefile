@@ -34,7 +34,7 @@ MainOut := ./Objs/out3.ll
 ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
 
 CmplOptm := clang -static $(MainOut) -s -O2 $(Libs) -o $(TargetStable)
-CmplDeb := clang -static -g $(MainOut) $(Libs) -o $(TargetWork)
+CmplDeb := clang -static -g -O0 $(MainOut) $(Libs) -o $(TargetWork)
 CmplTest := clang -static -g $(MainOut) $(Libs) -o $(CurrentTest)
 ifeq ($(cross),win32)
 	HW := ./halfvoid.exe

@@ -13,6 +13,8 @@ IMemoryPool := class
 	FreeMem := virtual !(void^ memPtr) -> void
 	{
 	}
+
+	//Not to implement
 	Push := !() -> void
 	{
 		hUserPoolStack[hUserPoolCount]  = hUserPoolCurrentPool
@@ -65,6 +67,7 @@ hUserPoolCount := task_local int
 	if usePool {
 		return hUserPoolCurrentPool.GetMem(val,R->Align,0)
 	}
+	assert(val != 0)
 	newNode :=  malloc(val)
 	memset(newNode,0,val)
 	return newNode
@@ -75,7 +78,7 @@ hUserPoolCount := task_local int
 	itSi := val*count
 	itAl := R->Align
 	if itAl < 4 itAl = 4
-	itSi += itAl + 16
+	itSi += itAl + 16 //TODO: wut?
 	newNode := null->{u8^}
 	if $temp {
 		newNode = gTemporaryPool.GetMem(itSi,itAl,0)->{u8^}

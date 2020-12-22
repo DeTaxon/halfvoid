@@ -38,7 +38,6 @@ ObjData := class extend Object
 			iter := Down
 			while iter != null
 			{
-
 				if iter.GetValue() in ![".","->"] and iter.Right is ObjIndent
 				{
 					iter = iter.Right

@@ -108,7 +108,7 @@ QuestionBox := class extend ControlFlowBox
 			f << "i1 %Res" << itId 
 		}
 	}
-	GetName := virtual !() -> string { 
+	GetName := virtual !() -> char^ {
 		if passValue return Down.Right.GetName()
 		return "%Res"sbt + itId 
 	}
@@ -137,7 +137,7 @@ FlowOrOrAnd := class extend ControlFlowBox
 				}
 			}
 			if Down.Right.GetType() != GTypeBool
-			{	
+			{
 				if TypeCmp(Down.Right.GetType(),GTypeBool) != 255
 					BoxExc(Down,GTypeBool,false)
 				else EmitError("can not use non bool type")
@@ -146,7 +146,9 @@ FlowOrOrAnd := class extend ControlFlowBox
 	}
 	GetType := virtual !() -> Type^ { return GTypeBool }
 	PrintUse := virtual !(sfile f) -> void { f << "i1 %Res" << itFlowId }
-	GetName := virtual !() -> string { return "%Res"sbt + itFlowId }
+	GetName := virtual !() -> char^ {
+		return "%Res"sbt + itFlowId 
+	}
 	
 }
 

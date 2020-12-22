@@ -1,25 +1,23 @@
 
-
-TestDefClass := class
+simplTest := !(!(float)&->bool tstObj) -> void
 {
-	val1 := int
-	val2 := float
-
-	this := !(int a,float b) -> void
-	{
-		val1 = a
-		val2 = b
-	}
-	"<=>" := default
-	"=" := default
+	printf("test %i\n",tstObj(12))
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	//vals := List.{Tuple.{double,int}}() ; $keep
-	//tst2 := ref vals.CreateBeforeIf(_1.0 > 13)
+	bugTest1()
+	return 0
+	x := 10000
+	vals := List.{Tuple.{double,int}}() ; $keep
+	//simplTest(_1 > x)
+	simplTest( y ==> {
+		printf("wut %i\n",x)
+		return x > y
+	})
 
-	//return 0
+	return 0
 
 	////AppendClassTest()
 	////return 0
@@ -39,6 +37,15 @@ main := !(int argc, char^^ argv) -> int
 		printf("Msg: %s\n",e.Msg())
 	}
 	return 0
+}
+printBool := !(bool toPrt) -> void
+{
+	printf("bool %i\n",toPrt)
+}
+bugTest1 := !() -> void
+{
+	x := 3
+	printBool(x > 3 and  3 > x)
 }
 TestSpaceshipTuple := !() -> void
 {

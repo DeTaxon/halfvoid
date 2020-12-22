@@ -48,7 +48,7 @@ ObjSkobs := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-			WorkBag.Push(Down[^],State_PreGetUse)
+			WorkBag.Push(Down[^],State_Start)
 		}
 	}
 	Clone := virtual !() -> Object^
