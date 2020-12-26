@@ -270,24 +270,43 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 
 			iter := Node.Down.Right.Down
 
+			metCommaIn := 0
 			while iter != null
 			{
 				if iter.GetValue() != ","
 				{
-					someType := Type^()
-					isRefParam := false
-					if iter.Down?.Right?.GetValue() == "&"
+					switch metCommaIn
 					{
-						someType = ParseType(iter.Down)
-						isRefParam = true
-					}else{
-						someType = ParseType(iter)
-					}
-					if someType == null
+					case 0
+						if iter.GetValue() == "..."
+						{
+							isVARR = true
+						}else{
+							someType := Type^()
+							isRefParam := false
+							if iter.Down?.Right?.GetValue() == "&"
+							{
+								someType = ParseType(iter.Down)
+								isRefParam = true
+							}else{
+								someType = ParseType(iter)
+							}
+							if someType == null
+								return null
+							if not isRefParam isRefParam = IsComplexType(someType)
+							types.Push(someType)
+							refs.Push(isRefParam)
+						}
+					case 1
+						if not (iter is ObjIndent)
+							return null
+					case 2
 						return null
-					if not isRefParam isRefParam = IsComplexType(someType)
-					types.Push(someType)
-					refs.Push(isRefParam)
+					}
+
+					metCommaIn += 1
+				}else{
+					metCommaIn = 0
 				}
 				iter = iter.Right 
 			}

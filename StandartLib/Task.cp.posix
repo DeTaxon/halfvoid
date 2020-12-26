@@ -56,7 +56,7 @@ AppendClass TaskBox
 	}
 	osCreateTask := !(TaskData^ startTask) -> void
 	{
-		getcontext(startTask.uContext&)
+		getcontext(startTask.uContext[0]&)
 		startTask.stackPtr = malloc(stackSize)
 		startTask.uContext[24]&->{u64^}^ = 0
 		startTask.uContext[8]&->{void^^}^ = null

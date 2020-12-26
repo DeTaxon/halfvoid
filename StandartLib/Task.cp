@@ -95,8 +95,9 @@ TaskBox := class
 
 	pollData := RawArray.{Tuple.{int}}
 
-	this := !() -> void
+	this := !(int sSize) -> void
 	{
+		stackSize = sSize
 		itMutex."this"()
 		itWorkMutex."this"()
 		itWorkConVar."this"()
@@ -250,7 +251,6 @@ TaskBox := class
 	}
 	Run := !() -> void
 	{
-		stackSize = 8*1024
 		
 		CurrentTaskBox = this&
 		working = true
@@ -395,7 +395,7 @@ TaskBox := class
 		return startTask
 	}
 }
-CreateTaskBox := !() -> TaskBox^
+CreateTaskBox := !(int stackSize) -> TaskBox^
 {
-	return new TaskBox()
+	return new TaskBox(stackSize)
 }

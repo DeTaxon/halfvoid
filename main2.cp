@@ -1,3 +1,5 @@
+FuncPointerWithNames := !(char^ name)^ -> void
+
 WantIt := !(@Typ x) -> void
 {
 	y := Typ->Base
@@ -76,7 +78,7 @@ gr := task_local double
 
 TaskTest := !() -> void
 {
-	tb := CreateTaskBox()
+	tb := CreateTaskBox(1024*1024)
 	tb.ExpectWorkers(1)
 	//tb.Monitor(".",true,(x) ==>{
 	//	printf("test %s\n",x)
