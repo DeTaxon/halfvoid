@@ -70,6 +70,16 @@ AwaitWork := !(!()&->void lambd) -> void
 		lambd()
 	}
 }
+PauseTask := !(int^ resId) -> void
+{
+	if CurrentTaskBox != null
+		CurrentTaskBox.PauseTask(resId)
+}
+ResumeTask := !(int taskId) -> void
+{
+	if CurrentTaskBox != null
+		CurrentTaskBox.ResumeTask(taskId)
+}
 
 TaskBox := class
 {
@@ -86,8 +96,9 @@ TaskBox := class
 	itWorkMutex := Mutex
 	itWorkConVar := ConVar
 	itWorkToDo := List.{Tuple.{!()&->void,TaskData^}} ; $keep
-	itWorkDone := List.{TaskData^} ; $keep
 	poolThread := List.{Thread^}
+
+	tasksToExe := List.{TaskData^} ; $keep
 
 	destroyTasks := List.{TaskData^} ; $keep
 
@@ -153,6 +164,26 @@ TaskBox := class
 		itMutex.Unlock()
 		notifyMain()
 	}
+
+	pausedIdIter := int
+	pausedProcesses := RBMap.{int,TaskData^} ; $keep
+	PauseTask := !(int^ resId) -> void
+	{
+		pausedIdIter += 1
+		while pausedIdIter in pausedProcesses
+			pausedIdIter += 1
+		resId^ = pausedIdIter
+		pausedProcesses[pausedIdIter] = CurrentTask
+		switchToMain()
+	}
+	ResumeTask := !(int procToken) -> void
+	{
+		if procToken in pausedProcesses
+		{
+			tasksToExe << pausedProcesses[procToken]
+			pausedProcesses.Remove(procToken)
+		}
+	}
 	Spawn := !(!()&->void tskToRun) -> void
 	{
 		nwTask := new TaskData
@@ -191,7 +222,7 @@ TaskBox := class
 							frstWork()
 							FlushTempMemory()
 							itMutex.Lock()
-							itWorkDone << frstTask
+							tasksToExe << frstTask
 							notifyMain()
 							itMutex.Unlock()
 						}else{
@@ -307,7 +338,7 @@ TaskBox := class
 				toDoTask = checkTimers(makeWait,waitTime)
 				if toDoTask == null
 				{
-					toDoTask = checkDoneWorks()
+					toDoTask = checkExeWorks()
 				}
 			}
 
@@ -359,12 +390,12 @@ TaskBox := class
 		itWorkMutex.Unlock()
 		poolThread[^].Join()
 	}
-	checkDoneWorks := !() -> TaskData^
+	checkExeWorks := !() -> TaskData^
 	{
-		if itWorkDone.Size() == 0
+		if tasksToExe.Size() == 0
 			return null
 
-		return itWorkDone.Pop()
+		return tasksToExe.Pop()
 	}
 	checkTimers := !(bool& makeWait,double& waitTime) -> TaskData^
 	{

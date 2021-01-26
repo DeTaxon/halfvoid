@@ -57,7 +57,7 @@ MappedFile := class
 	}
 	this := !(char^ fileName,int flg, u64 itSize) -> void
 	{
-		fileId = 0
+		hndl = null
 		point = null
 		Open(fileName,flg,itSize)
 	}
