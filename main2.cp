@@ -18,6 +18,7 @@ main := !(int argc, char^^ argv) -> int
 	//return 0
 	try
 	{
+		StringEndTest()
 		TestSpaceship()
 		TestSpaceshipTuple()
 		InsertBeforeTest()
@@ -31,6 +32,16 @@ main := !(int argc, char^^ argv) -> int
 	}
 	return 0
 }
+StringEndTest := !() -> void
+{
+	start := "sample text"
+	end := StringEnd(start)
+
+	assert(end <=> "text" == 0)
+	assert(end <=> "ext" == 0)
+	assert(end <=> "test" == 1)
+}
+
 TestBugs := !() -> void
 {
 	bugTest1()
