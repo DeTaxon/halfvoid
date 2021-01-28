@@ -9,6 +9,8 @@ WantIt := !(@Typ x) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	x := "wow"
+	x = "wooow"
 	//if "wow" == "wow"
 	//{
 	//	bob + bob

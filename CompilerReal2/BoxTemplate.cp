@@ -309,8 +309,9 @@ BoxTemplate := class extend BoxFunc
 			FuncsTTemps.Push(null->{Object^})
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt,bool isRetSelf) -> void
+	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt,bool isRetSelf,Object^ tempUp) -> void
 	{
+		Up = tempUp
 		IsSelfReturn = isRetSelf
 		IsRetRef = RetRef
 		IsVirtual = IsVirt

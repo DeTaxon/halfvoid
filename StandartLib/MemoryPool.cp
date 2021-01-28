@@ -2,7 +2,7 @@ AllocOnlyMP := class .{@PageSize,@CleanResult} extend IMemoryPool
 {
 	itPage := u8^
 	itLoaded := int
-	createdPages := List.{u8^} ; $no_pool
+	createdPages := List.{void^} ; $no_pool
 
 	GetPage := !() -> u8^
 	{	
