@@ -1367,6 +1367,12 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 		}
 		return A
 	}
+	if (A is TypeArr or A is TypePoint) 
+		and (B is TypeArr or B is TypePoint)
+	{
+		if A.Base == B.Base
+			return A.Base.GetPoint()
+	}
 	return null
 }
 
