@@ -44,72 +44,15 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			return MakeSimpleCall(someF,null->{Object^})
 		}
 	}
-	if iter.Down?.IsConst and IsOper(iter.Down.Right?.GetValue()) and iter.Down.Right.Right?.IsConst and iter.Down.Right.Right.Right == null
-	{
-		oprStr := iter.Down.Right.GetValue()
-		switch  oprStr
-		{
-		case "=="
-			if iter.Down is ObjStr  and iter.Down.Right.Right is ObjStr
-			{
-				return new ObjBool(iter.Down->{ObjStr^}.GetString() == iter.Down.Right.Right->{ObjStr^}.GetString())
-			}
-		case "and"
-			if iter.Down is ObjBool and iter.Down.Right.Right.GetType() == GTypeBool
-			{
-				//inA := iter.Down->{ObjBool^}.MyBool
-				//if not inA
-				//	return new ObjBool(false)
-				//return iter.Right.Right
-			}
-		case "or"
-		}
+	constCompute := FuncCallTryCompute(ToParse)
+	if constCompute != null
+		return constCompute
 
-	}
-	if iter.Down? is ObjType and iter.Down.Right?.GetValue() == "->"
-	{
-		asTyp := iter.Down->{ObjType^}.MyType
-		if iter.Down.Right.Right? is ObjIndent
-		{
-			asObj := iter.Down.Right.Right->{ObjIndent^}
-			if asObj.MyStr == "Len"
-			{
-				if asTyp is TypeArr
-				{
-					return new ObjInt(asTyp->{TypeArr^}.Size)
-				}
-			}
-			if asObj.MyStr == "Base"
-			{
-				if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
-				{
-					return new ObjType(asTyp.Base)
-				}
-			}
-		}
-	}
+	specific := FuncCallSpecific(ToParse)
+	if specific != null
+		return specific
 
-	if iter.Down?.Right?.GetValue() == "is"
-	{
-		asCl1 := iter.Down.GetType()
-		if not(asCl1 == null or asCl1 is TypePoint or asCl1.Base is TypeClass) return null
-		asCl2 := ParseType(iter.Down.Right.Right)
-		if asCl2 == null or not asCl2 is TypeClass return null
 
-		asNeed := asCl1.Base->{TypeClass^}.ToClass
-		
-		itBox := new FuncInputBox()  ; $temp
-
-		itBox.itPars.Emplace(asCl1.Base,true)
-		itBox.itConsts.Push(new ObjType(asCl2)) 
-		
-		func := asNeed.VirtualCheck.GetFunc(itBox^)
-		if func == null return null
-		PopOutNode(iter.Down.Right)
-		PopOutNode(iter.Down.Right)
-		return MakeSimpleCall(func,iter.Down)
-
-	}
 
 	iter = ToParse.Down
 	if iter == null return null
