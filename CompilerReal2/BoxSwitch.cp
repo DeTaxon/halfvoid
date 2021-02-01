@@ -109,6 +109,7 @@ BoxSwitch := class extend Object
 							newCall := new ParamNaturalCall("",itemCall->{Object^})
 
 							newCall.Right = iter.Down
+							iter.Down.Left = newCall
 							iter.Down = newCall
 							newCall.Up = iter
 

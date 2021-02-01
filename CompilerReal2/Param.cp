@@ -130,6 +130,10 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Down? is ObjStr
+			{
+				BoxExc(Down,GTypeString,false)
+			}
 			if Down?.GetValue() == "default"
 			{
 				itr := Up
@@ -238,9 +242,13 @@ ObjParam := class extend Object
 				if val != null
 				{
 					val = val.Clone()
-					MaybeType = val.GetType()
 					Down = val
 					Down.SetUp(this&)
+					if Down? is ObjStr
+					{
+						BoxExc(Down,GTypeString,false)
+					}
+					MaybeType = Down.GetType()
 				}
 			}
 

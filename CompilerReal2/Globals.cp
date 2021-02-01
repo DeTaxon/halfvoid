@@ -49,6 +49,7 @@ GTypeDouble := Type^
 GTypeFloat := Type^
 GTypeHalf := Type^
 GTypeU8 := Type^
+GTypeChar := Type^
 GTypeInt := Type^
 GTypeU64 := Type^
 GTypeRange := Type^

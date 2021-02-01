@@ -259,14 +259,26 @@ ObjStr := class extend ObjConst
 	{
 		MyTmpId = GetNewId()
 		justStr = str
-		ResultType = GTypeString
+		stSize := strlen(str)
+		if stSize == 0
+		{
+			ResultType = GTypeString
+		}else{
+			ResultType = GTypeChar.GetArray(stSize)
+		}
 		MyStrId = StrContainer.GetStringValue(str)
 	}
 	this := !(int SId,char^ str) -> void
 	{
 		MyStrId = SId
 		MyTmpId = GetNewId()
-		ResultType = GTypeString
+		stSize := strlen(str)
+		if stSize == 0
+		{
+			ResultType = GTypeString
+		}else{
+			ResultType = GTypeChar.GetArray(stSize)
+		}
 		justStr = str
 	}
 	GetString := virtual !() -> string
@@ -282,6 +294,11 @@ ObjStr := class extend ObjConst
 		for s printf("->")
 		printf("string %s\n",StrContainer.GetString(MyStrId))
 	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		StrSi := StrSize(justStr)
+		f << "%T" << MyTmpId <<" = bitcast [" << StrSi + 1<< " x i8]* @Str" << MyStrId <<" to [" << StrSi << "x i8]* \n" 
+	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		StrSi := StrSize(justStr) + 1
@@ -293,10 +310,19 @@ ObjStr := class extend ObjConst
 		asStr := "getelementptr inbounds (["sbt + StrSi + " x i8] , [" + StrSi + " x i8]* @Str" + MyStrId + ", i32 0, i32 0)"
 		return asStr.Str() ; $temp
 	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		ResultType.PrintType(f)
+		f << "* %T" << MyTmpId	
+	}
 	PrintUse := virtual !(sfile f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T" << MyTmpId	
+	}
+	GetPointName := virtual !() -> string
+	{
+		return "%T"sbt + MyTmpId
 	}
 	GetName := virtual !() -> string
 	{

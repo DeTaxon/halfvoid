@@ -245,7 +245,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 
 
 	indName := null->{string}
-	itName := "_"
+	itName := "_"->{char^} //TODO: for some reason itName does not gets compiled right
 	deSkob := tr.Down.Right.Down.Right
 	if deSkob != null and deSkob is ObjIndent
 	{

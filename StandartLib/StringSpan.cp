@@ -7,6 +7,7 @@ StringSpan := class{
 	this := !() -> void {ptr = null itSize = 0}
 	this := !(char^ st) -> void{ptr = st itSize = StrSize(st)}
 	this := !(char^ st,int si) -> void{ptr = st itSize = si}
+	this := !(char[@Size] st) -> void { ptr = st	itSize = Size }
 
 	this := !(char^ st, int si,range ran) -> void{
 		startInd := 0
@@ -36,6 +37,10 @@ StringSpan := class{
 		ptr = toGet.ptr
 		itSize = toGet.itSize
 		return this
+	}
+	"<=>" := !(char[@Size] st) -> int
+	{
+		return this <=> StringSpan(st)
 	}
 	"<=>" := !(char^ toCmp) -> int {
 		if toCmp == null return 1
