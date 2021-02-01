@@ -7,10 +7,30 @@ WantIt := !(@Typ x) -> void
 	printf("heh %i %i\n",Typ->Len,y)
 }
 
+
+globInt := int
+retrVal := !(bool retNull) -> int^
+{
+	if retNull
+		return null
+	return globInt&
+}
+TestRetQ := !() -> int^
+{
+	h := 0
+	defer assert(h == 26)
+	return retrVal(true)?
+	printf("good\n")
+	h = 26
+	return retrVal(false)?
+	printf("bad\n")
+	assert(false)
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	x := "wow"
-	x = "wooow"
+	TestRetQ()
+	return 0
 	//if "wow" == "wow"
 	//{
 	//	bob + bob

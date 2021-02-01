@@ -218,10 +218,12 @@ BoxBlock := class extend Object
 			itr := Down
 			while itr != null
 			{
-				if (not itr is ObjData) and not itr.GetValue() == "?or??"{
+				if (not itr is ObjData) and itr.GetValue() != "?or??" and itr.GetValue() != "return()"{
+				//if (not itr is ObjData) and itr.GetValue() != "?or??"{
 					itr = itr.Right
 					continue
 				}
+
 				tstNode := TryParseMacro(itr)
 				switch tstNode
 				{

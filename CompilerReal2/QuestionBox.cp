@@ -39,7 +39,7 @@ QuestionBox := class extend ControlFlowBox
 			f << " , null\n"
 			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpName << "\n"
 			f << "OnGood" << itId << ":\n"
-			if DR is BoxSwitch
+			if DR is BoxSwitch or DR is BoxReturn
 			{
 				DR.PrintInBlock(f)
 			}else{
