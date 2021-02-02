@@ -44,13 +44,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			return MakeSimpleCall(someF,null->{Object^})
 		}
 	}
-	constCompute := FuncCallTryCompute(ToParse)
-	if constCompute != null
-		return constCompute
 
-	specific := FuncCallSpecific(ToParse)
-	if specific != null
-		return specific
+	return FuncCallTryCompute(ToParse)?
+	return FuncCallSpecific(ToParse)?
 
 
 
