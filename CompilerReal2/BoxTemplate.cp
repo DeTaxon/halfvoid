@@ -6,7 +6,8 @@ ContainTType := !(Object^ toCheck) -> bool
 }
 ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 {
-	if toCheck == null return false
+	if toCheck == null 
+		return false
 	added := false
 	bag := Stack.{Object^}() ; $temp
 	bag.Push(toCheck)
@@ -343,8 +344,7 @@ BoxTemplate := class extend BoxFunc
 
 		SyntaxCompress(CopyParams.Down,PriorityData)
 		iter := CopyParams.Down
-		firstNon := Object^
-		firstNon = null
+		firstNon := Object^()
 		//FuncsTs := Queue.{Object^}() 
 
 		if FuncName != "new" and FuncName != "delete" and FuncName != "~For" and metC != null
@@ -387,12 +387,13 @@ BoxTemplate := class extend BoxFunc
 		parsCount := itBox.itPars.Size()
 		FType := MyFuncType
 
-		if itBox.itConsts.Size() != this.ItConsts.Size() return 255
+		if itBox.itConsts.Size() != ItConsts.Size() 
+			return 255
 
 		st := Queue.{ObjConstHolder^}()
-		if not CheckTypes(itBox,st,null) {
+		if not CheckTypes(itBox,st,null) 
 			return 255
-		}
+
 		//if CopyRet != null
 		//{
 		//	//printf("hoh %s\n",FuncName)
@@ -526,10 +527,8 @@ BoxTemplate := class extend BoxFunc
 		{
 			if it.simpleFuncType  == cmpFuncF
 			{
-
-				if it.ptrToFunc.IsSameConsts(itBox) {
+				if it.ptrToFunc.IsSameConsts(itBox) 
 					return it.ptrToFunc
-				} 
 			}
 			somePos += 1
 		}
@@ -540,14 +539,9 @@ BoxTemplate := class extend BoxFunc
 		if IsPassAttrs
 			newFunc.IsPassAttrs = true
 
-		for  parConsts
-		{
-			newFunc.ItVals.Push(it)
-		}
-
-		for itBox.itConsts
-			newFunc.ItConsts.Push(it)
-		for value,key : itBox.itAttrs 	{ newFunc.ItAttrs[key] = value}
+		newFunc.ItVals.Push(parConsts[^])
+		newFunc.ItConsts.Push(itBox.itConsts[^])
+		newFunc.ItAttrs[key] = itBox.itAttrs[^key]
 		
 		if newFunc == null return null
 
@@ -583,12 +577,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		iterS := Down
-		while iterS != null
-		{
-			iterS.PrintGlobal(f)
-			iterS = iterS.Right
-		}
+		Down[^].PrintGlobal(f)
 	}
 
 	DoTheWork := virtual !(int pri) -> void

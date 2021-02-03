@@ -54,6 +54,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 
 cycle: $(wildcard CompilerReal2/*.cp)
 	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+twice: repair cycle
 
 ManyCycle:
 	for i in {1..10}; do make cycle; done

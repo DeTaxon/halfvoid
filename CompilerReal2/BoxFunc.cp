@@ -117,9 +117,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	}
 	if iter.GetValue() == "{}"
 	{
-		maybeForceConsts := constsI != null 
-		if maybeForceConsts maybeForceConsts =  constsI.Down == null
-		if maybeForceConsts or IsTemplate(ParamsObj)
+		if constsI?.Down == null or IsTemplate(ParamsObj)
 		{
 			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item.Up)
 			preRes.IsSelfReturn = itsSelfRet
@@ -170,7 +168,7 @@ BoxFunc := class extend BoxFuncContainer
 
 	ItConsts := Queue.{Object^}
 	ItAttrs := AVLMap.{string,Object^}
-	ItVals := Queue.{ObjConstHolder^}
+	ItVals := List.{ObjConstHolder^}
 
 	vargsName := string
 	funcUserParamsCount := int
@@ -187,26 +185,20 @@ BoxFunc := class extend BoxFuncContainer
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
-		iter := ItVals.Start
-
-		while iter != null
-		{
-			if iter.Data.ItName == name  
-			{
-				return iter.Data.Down
-			}
-			iter = iter.Next
-		}
+		if ItVals[^].ItName == name
+			return it.Down
 		return null
 	}
 	
 	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{
-		if itBox.itConsts.Size() != this.ItConsts.Size() return false
+		if itBox.itConsts.Size() != ItConsts.Size() 
+			return false
 
 		if CountAttrs
 		{
-			if itBox.itAttrs.Size() < this.ItAttrs.Size() return false
+			if itBox.itAttrs.Size() < ItAttrs.Size() 
+				return false
 			for val,key : itBox.itAttrs
 			{
 				sRes :=  ItAttrs.TryFind(key)
@@ -227,7 +219,7 @@ BoxFunc := class extend BoxFuncContainer
 			}
 		}
 
-		for ct : itBox.itConsts , i : 0, tc : this.ItConsts
+		for ct,i : itBox.itConsts , tc : ItConsts
 		{
 			if not CmpConstObjs(ct,tc) 
 			{
@@ -242,36 +234,33 @@ BoxFunc := class extend BoxFuncContainer
 	{
 		if cons != null
 		{
-			iter := cons.Down
-			while iter != null
+			for iter : cons.Down
 			{
 				if iter.GetValue() == ","
-				{
-					iter = iter.Right
 					continue
-				}
+
 				if iter.IsConst
 				{
-					this.ItConsts.Push(iter.Clone())
+					ItConsts.Push(iter.Clone())
 					ItConstsTT.Push(null)
-				}else{
-					typ := ParseType(iter)
-					if typ != null
-					{
-						this.ItConsts.Push(new ObjType(typ))
-						ItConstsTT.Push(null)
-					}else{
-						stdL := Queue.{string}()
-						if ContainTType(iter,stdL)
-						{
-							this.ItConsts.Push(null->{Object^})
-							ItConstsTT.Push(iter)
-						}else{
-							ErrorLog.Push("can not parse object in .{}\n")
-						}
-					}
+					continue
 				}
-				iter = iter.Right
+				typ := ParseType(iter)
+				if typ != null
+				{
+					ItConsts.Push(new ObjType(typ))
+					ItConstsTT.Push(null)
+					continue
+				}
+
+				stdL := Queue.{string}()
+				if ContainTType(iter,stdL)
+				{
+					ItConsts.Push(null->{Object^})
+					ItConstsTT.Push(iter)
+				}else{
+					ErrorLog.Push("can not parse object in .{}\n")
+				}
 			}
 		}
 	}
@@ -975,13 +964,9 @@ BoxFuncBody := class extend BoxFunc
 					}
 				}
 			}
+			
+			Down[^].PrintInBlock(f)
 
-			iter := Down
-			while iter != null
-			{
-				iter.PrintInBlock(f)
-				iter = iter.Right
-			}
 			f << "br label %OutLabel" << ABox.ItId << "\n"
 			f << "OutLabel" << ABox.ItId << ":\n"
 
@@ -1061,7 +1046,7 @@ BoxFuncBody := class extend BoxFunc
 					
 			i := asC.NotMineParams
 			EndS := asC.Params.Size()
-			for nowField : asC.Params, i : 0
+			for nowField,i : asC.Params
 			{
 				sBug := nowField->{Object^}
 				itCPre := sBug.GetType()
