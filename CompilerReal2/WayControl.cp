@@ -37,7 +37,7 @@ WayControl := class extend Object
 
 			while iter != null
 			{
-				if iter.GetValue() in !["~~for()","~while()"]
+				if iter.GetValue() in !["~~for()","~while()","~switch()"]
 				{
 					asBl := prevNode->{BoxBlock^}
 					if asBl.callDeferStuf

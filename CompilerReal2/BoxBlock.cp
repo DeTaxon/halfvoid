@@ -168,7 +168,7 @@ BoxBlock := class extend Object
 		if not usePaths
 		{
 			if Up == null return ""
-			return Up.GetOutPath(this&,typ,size)
+			return Up.GetOutPath(objs,typ,size)
 		}
 
 		if typ == PATH_RETURN
@@ -187,12 +187,12 @@ BoxBlock := class extend Object
 		if typ == PATH_CONTINUE
 		{
 			if size == 0 return StrCopy("LastContPath"sbt + ItId)
-			return  Up.GetOutPath(this&,typ,size - 1)
+			return  Up.GetOutPath(objs,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
 			if size == 0 return StrCopy("LastContPath"sbt + ItId)
-			return Up.GetOutPath(this&,typ,size - 1)
+			return Up.GetOutPath(objs,typ,size - 1)
 		}
 		return ""
 	}

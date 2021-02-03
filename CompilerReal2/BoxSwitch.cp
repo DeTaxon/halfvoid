@@ -13,6 +13,7 @@ ForInSwapNodes := !(Object^ onLeft) -> void
 BoxSwitch := class extend Object
 {
 	id := int
+	caseIdIter := int
 	itemCall  := MemParam^
 	addedQ := List.{QuestionBox^}
 	
@@ -165,7 +166,6 @@ BoxSwitch := class extend Object
 		}
 		Down.PrintInBlock(f)
 	
-	
 		if isAllowTreeOpt and things.Size() > 2
 		{
 			fatArr := things.ToArray() ; $temp
@@ -190,11 +190,12 @@ BoxSwitch := class extend Object
 			//}
 			reqPrint := ( int start,int end) ==> {
 				myPos := (start + end) div 2
+				caseId := fatArr[myPos]->{BoxCase^}.caseId
 				
 				f << "CaseStart" << id << "w" << myPos << ":\n"
 				fatArr[myPos].Down.PrintPre(f)
 				f << "%CmpTest" << id << "_" << myPos << " = icmp eq i32 " << fatArr[myPos].Down.GetName() << " , 0\n"
-				f << "br i1 %CmpTest" << id << "_" << myPos << " , label %Switch" << id << "true" << myPos
+				f << "br i1 %CmpTest" << id << "_" << myPos << " , label %Switch" << id << "true" << caseId
 				f << ", label %Switch" << id << "false" << myPos << "\n"
 				
 				f << "Switch" << id << "false" << myPos << ":\n"				
@@ -213,7 +214,7 @@ BoxSwitch := class extend Object
 					f << ", label %SwitchVoid" << id 
 				}
 				f << "\n"
-				f << "Switch" << id << "true" << myPos << ":\n"
+				f << "Switch" << id << "true" << caseId << ":\n"
 				//fatArr[myPos].Down.PrintInBlock(f)
 				for it : fatArr[myPos].Right
 				{
@@ -254,15 +255,16 @@ BoxSwitch := class extend Object
 	
 		for iter , i : things
 		{
+			caseId := iter->{BoxCase^}.caseId
 			iter.Down.PrintPre(f)
 			if iter.Down.GetType() == GTypeInt{
 				f << "%CmpTest" << id << "_" << i << " = icmp eq i32 " << iter.Down.GetName() << " , 0\n"
-				f << "br i1 %CmpTest" << id << "_" <<i << " , label %Switch" << id << "true" << i
+				f << "br i1 %CmpTest" << id << "_" <<i << " , label %Switch" << id << "true" << caseId
 			}else{
-				f << "br i1 " << iter.Down.GetName() << " , label %Switch" << id << "true" << i
+				f << "br i1 " << iter.Down.GetName() << " , label %Switch" << id << "true" << caseId
 			}
 			f << " , label %Switch" << id << "false" << i << "\n"
-			f << "Switch" << id << "true" << i << ":\n"
+			f << "Switch" << id << "true" << caseId << ":\n"
 			
 			for iter2 : iter.Right
 			{
@@ -293,6 +295,31 @@ BoxSwitch := class extend Object
 	}
 	GetOutPath := virtual !(Object^ objs, int typ, int size) -> string
 	{
+		if typ == PATH_CONTINUE //TODO: use size
+		{	
+			itr := objs
+			while itr != null
+			{
+				if itr is BoxCase
+					break
+				if itr.Left != null
+					itr = itr.Left
+				else
+					itr = itr.Up
+			}
+			assert(itr != null)
+			itr = itr.Right
+			while itr != null
+			{
+				if itr is BoxCase
+					break
+				itr = itr.Right
+			}
+			assert(itr != null)
+			bs := itr->{BoxCase^}
+			res := "Switch"sbt + id + "true" + bs.caseId
+			return res.Str()
+		}
 		return Up.GetOutPath(this&,typ,size)
 	}
 	GetValue := virtual  !() -> string
@@ -332,8 +359,23 @@ qsort_switch_case := !(Object^^ arr,int low,int hi) -> void
 BoxCase := class extend Object
 {
 	IsVoid := bool
+	caseId := int
 	this := !(Object^ itm) -> void
 	{
+		itrUp := itm
+		while itrUp != null
+		{
+			if itrUp is BoxSwitch
+			{
+				bs := itrUp->{BoxSwitch^}
+				caseId = bs.caseIdIter
+				bs.caseIdIter += 1
+				break
+			}
+			itrUp = itrUp.Up
+			assert(itrUp != null) //TODO: case outside switch
+		}
+
 		Down = itm.Down
 		Down.SetUp(this&)
 		PopOutNode(Down)

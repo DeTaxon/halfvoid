@@ -130,8 +130,7 @@ SLambda := class extend BoxFuncContainer
 
 				isTmpl := false
 
-				skobPos := Object^
-				skobPos = null
+				skobPos := Object^()
 				if Down.GetValue() == "()"
 				{
 					skobPos = Down
@@ -531,7 +530,7 @@ SLambda := class extend BoxFuncContainer
 				f << "ret void\n"
 				f << "}\n"
 
-				prevLName = ("ToCpy"sbt + ItId <-)
+				prevLName = "ToCpy"sbt + ItId <-
 
 				prevLambd = this&
 

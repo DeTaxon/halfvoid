@@ -20,17 +20,26 @@ TestRetQ := !() -> int^
 	h := 0
 	defer assert(h == 26)
 	return retrVal(true)?
-	printf("good\n")
 	h = 26
 	return retrVal(false)?
-	printf("bad\n")
 	assert(false)
+}
+
+TestBiggerSwitch := !() -> void
+{
+	x := 13
+	y := 0
+	switch x
+	{
+		case 13 continue
+		case 10
+			y = 1
+	}
+	assert(y == 1)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	TestRetQ()
-	return 0
 	//if "wow" == "wow"
 	//{
 	//	bob + bob
@@ -40,6 +49,8 @@ main := !(int argc, char^^ argv) -> int
 	//return 0
 	try
 	{
+		TestBiggerSwitch()
+		TestRetQ()
 		StringEndTest()
 		TestSpaceship()
 		TestSpaceshipTuple()
