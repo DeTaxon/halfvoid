@@ -1011,7 +1011,7 @@ NaturalCall := class extend SomeFuncCall
 						msg << " from null "
 					}
 					if FType.Pars[i] != null {
-						msg << " to " << FType.Pars[i].GetName()
+						msg << " to "  <<  FType.Pars[i].GetGoodName() 
 					}
 				
 					if itLiner != null lnr.EmitError(msg + "\n")

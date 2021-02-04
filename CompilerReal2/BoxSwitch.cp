@@ -51,8 +51,6 @@ BoxSwitch := class extend Object
 				defCase := Object^()
 				regType := Type^()
 
-				mustSwapNodes := false
-
 				for iter : Down.Right.Down
 				{
 					if not (iter is BoxCase)
@@ -77,7 +75,8 @@ BoxSwitch := class extend Object
 						}
 
 						func := BoxFunc^()
-						
+					
+						mustSwapNodes := false
 						func = FindFunc("<=>",this&,b^,false)
 						if func == null
 						{
@@ -92,7 +91,7 @@ BoxSwitch := class extend Object
 								func = FindFunc("in",this&,c^,false)
 								if func != null
 								{
-									mustSwapNodes = true									
+									mustSwapNodes = true					
 								}
 							}
 	

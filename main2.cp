@@ -8,6 +8,34 @@ WantIt := !(@Typ x) -> void
 }
 
 
+
+main := !(int argc, char^^ argv) -> int
+{
+	//if "wow" == "wow"
+	//{
+	//	bob + bob
+	//}
+	//val := int[15]
+	//WantIt(val)	
+	//return 0
+	try
+	{
+		TestBiggerSwitch()
+		TestRetQ()
+		StringEndTest()
+		TestSpaceship()
+		TestSpaceshipTuple()
+		InsertBeforeTest()
+		BestTest()
+		TestBugs()
+		TaskTest() // Must be last
+		printf("all good\n")
+	}catch(IException^ e)
+	{
+		printf("Msg: %s\n",e.Msg())
+	}
+	return 0
+}
 globInt := int
 retrVal := !(bool retNull) -> int^
 {
@@ -37,34 +65,6 @@ TestBiggerSwitch := !() -> void
 	}
 	assert(y == 1)
 }
-
-main := !(int argc, char^^ argv) -> int
-{
-	//if "wow" == "wow"
-	//{
-	//	bob + bob
-	//}
-	//val := int[15]
-	//WantIt(val)	
-	//return 0
-	try
-	{
-		TestBiggerSwitch()
-		TestRetQ()
-		StringEndTest()
-		TestSpaceship()
-		TestSpaceshipTuple()
-		InsertBeforeTest()
-		BestTest()
-		TestBugs()
-		TaskTest() // Must be last
-		printf("all good\n")
-	}catch(IException^ e)
-	{
-		printf("Msg: %s\n",e.Msg())
-	}
-	return 0
-}
 StringEndTest := !() -> void
 {
 	start := "sample text"
@@ -73,6 +73,13 @@ StringEndTest := !() -> void
 	assert(end <=> "text" == 0)
 	assert(end <=> "ext" == 0)
 	assert(end <=> "test" == 1)
+	switch end
+	{
+		case "ext"
+		case !["wow","waw"]
+		case "wiw"
+		case void
+	}
 }
 
 TestBugs := !() -> void
