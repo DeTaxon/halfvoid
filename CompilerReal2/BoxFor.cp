@@ -464,7 +464,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 	}
 
-	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
+	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^
 	{
 		if typ == PATH_RETURN
 		{
@@ -474,7 +474,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if size == 0{
 				useContinue = true
-				return StrCopy("PreContinue"sbt + ItId)
+				return new BoxLabelStr("PreContinue"sbt + ItId) //TODO
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
@@ -482,11 +482,11 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if size == 0{
 				useBreak = true
-				return StrCopy("PreEnd"sbt + ItId)
+				return new BoxLabelStr("PreEnd"sbt + ItId) //TODO
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
-		return ""
+		return null
 	}
 	GetValue := virtual !() -> string
 	{

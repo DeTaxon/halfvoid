@@ -292,7 +292,7 @@ BoxSwitch := class extend Object
 		f << "br label %SwitchEnd" << id << "\n"
 		f << "SwitchEnd" << id << ":\n"
 	}
-	GetOutPath := virtual !(Object^ objs, int typ, int size) -> string
+	GetOutPath := virtual !(Object^ objs, int typ, int size) -> BoxLabel^
 	{
 		if typ == PATH_CONTINUE //TODO: use size
 		{	
@@ -317,7 +317,7 @@ BoxSwitch := class extend Object
 			assert(itr != null)
 			bs := itr->{BoxCase^}
 			res := "Switch"sbt + id + "true" + bs.caseId
-			return res.Str()
+			return new BoxLabelStr(res) //TODO
 		}
 		return Up.GetOutPath(this&,typ,size)
 	}

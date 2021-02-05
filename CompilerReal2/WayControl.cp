@@ -1,9 +1,9 @@
 WayControl := class extend Object
 {
 	itItm := string
-	toName := string
 	itType := int
 	itSize := int
+	itLabel := BoxLabel^
 	this := !(string itm) -> void
 	{
 		itType = PATH_CONTINUE
@@ -16,7 +16,7 @@ WayControl := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		f << "br label %" << toName << "\n"
+		f << "br label %" << itLabel.GetLabel() << "\n"
 	}
 	GetValue := virtual !() -> string
 	{
@@ -51,7 +51,7 @@ WayControl := class extend Object
 					iter = iter.Up
 				}
 			}
-			toName = Up.GetOutPath(this&,itType,itSize)
+			itLabel = Up.GetOutPath(this&,itType,itSize)
 		}
 	}
 }

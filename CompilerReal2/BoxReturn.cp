@@ -8,7 +8,7 @@ BoxReturn := class extend Object
 	YieldId := int
 	ResetYield := bool
 
-	OutPathName := string
+	returnLabel := BoxLabel^
 	this := !(Object^ toUse) -> void
 	{
 		IsYield = toUse.Down.GetValue() == "yield"
@@ -159,9 +159,8 @@ BoxReturn := class extend Object
 			{
 				EmitError("error to get return path 24135\n")
 			}else{
-				OutPathName = Up.GetOutPath(this&,PATH_RETURN,0)
-				assert(OutPathName != null)
-				assert(OutPathName != "")
+				returnLabel = Up.GetOutPath(this&,PATH_RETURN,0)
+				assert(returnLabel != null)
 			}
 		}
 	}
@@ -201,7 +200,7 @@ BoxReturn := class extend Object
 				f << ", !dbg !" << debId
 			f << "\n"
 		}
-		f << "br label %" << OutPathName 
+		f << "br label %" << returnLabel.GetLabel()
 
 		f << "\n"
 		if IsYield
@@ -209,7 +208,7 @@ BoxReturn := class extend Object
 			f << "Yield" << YieldId << ":\n"
 		}
 	}
-	GetOutPath := virtual !(Object^ ob, int typ, int size) -> string
+	GetOutPath := virtual !(Object^ ob, int typ, int size) -> BoxLabel^
 	{
 		return Up.GetOutPath(this&,typ,size)
 	}

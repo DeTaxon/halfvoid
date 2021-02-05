@@ -42,8 +42,7 @@ BoxBlock := class extend Object
 	
 	gotRetPath := bool
 
-	outRName := string
-	gotOutRName := bool
+	outRLabel := BoxLabel^
 
 	usePaths := bool
 
@@ -127,14 +126,14 @@ BoxBlock := class extend Object
 				f << "PreRetPath" << ItId << ":\n"
 				if callDeferStuf
 					PrintDeferApply(f,ItId,this&)
-				if gotRetPath f << "br label %" << outRName << "\n"
+				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
 				
 			}
 
 			if not InClass
 			{
 				//if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
-				if gotRetPath f << "br label %" << outRName << "\n"
+				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
 			}
 			f << "LastContPath" <<ItId << ":\n"
 			if callDeferStuf
@@ -154,20 +153,19 @@ BoxBlock := class extend Object
 	}
 	LoadOutPath := !() -> void
 	{
-		if not gotOutRName{
+		if outRLabel == null{
 			if Up != null{
-				outRName = Up.GetOutPath(this&,PATH_RETURN,1)
+				outRLabel = Up.GetOutPath(this&,PATH_RETURN,1)
 			}else{
 				EmitError("software error 311653\n")
 			}
-			gotOutRName = true
 		}
 	}
-	GetOutPath := virtual !(Object^ objs, int typ , int size) -> string
+	GetOutPath := virtual !(Object^ objs, int typ , int size) -> BoxLabel^
 	{
 		if not usePaths
 		{
-			if Up == null return ""
+			if Up == null return null
 			return Up.GetOutPath(objs,typ,size)
 		}
 
@@ -180,21 +178,21 @@ BoxBlock := class extend Object
 			if Up?.GetValue() in !["!()","{!()}","x=>x"]
 			{	
 				askedRetPath = true
-				return StrCopy("PreRetPath"sbt + ItId)
+				return new BoxLabelStr("PreRetPath"sbt + ItId) //TODO
 			}
-			return outRName
+			return outRLabel
 		}
 		if typ == PATH_CONTINUE
 		{
-			if size == 0 return StrCopy("LastContPath"sbt + ItId)
+			if size == 0 return new BoxLabelStr("LastContPath"sbt + ItId) //TODO
 			return  Up.GetOutPath(objs,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
-			if size == 0 return StrCopy("LastContPath"sbt + ItId)
+			if size == 0 return new BoxLabelStr("LastContPath"sbt + ItId) //TODO
 			return Up.GetOutPath(objs,typ,size - 1)
 		}
-		return ""
+		return null
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

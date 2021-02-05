@@ -133,13 +133,13 @@ BoxIf := class extend Object
 		}
 
 	}
-	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> string
+	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> BoxLabel^
 	{
 		if Up != null
 		{	
 			return Up.GetOutPath(this&,typ,siz)
 		}
-		return ""
+		return null
 	}
 	GetValue := virtual !() -> string
 	{
@@ -239,7 +239,7 @@ BoxWhile := class extend Object
 		}
 	}
 
-	GetOutPath := virtual !(Object^ itm, int typ, int size) -> string
+	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^
 	{
 		if typ == PATH_RETURN
 		{
@@ -249,7 +249,7 @@ BoxWhile := class extend Object
 		{
 			if size == 0{
 				useContinue = true
-				return StrCopy("PreContinue"sbt + MyId)
+				return new BoxLabelStr("PreContinue"sbt + MyId) //TODO
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
@@ -257,11 +257,11 @@ BoxWhile := class extend Object
 		{
 			if size == 0{
 				useBreak = true
-				return StrCopy("PreEnd"sbt + MyId)
+				return new BoxLabelStr("PreEnd"sbt + MyId) //TODO
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
-		return ""
+		return null
 	}
 
 	GetValue := virtual !() -> string

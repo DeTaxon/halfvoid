@@ -1011,9 +1011,9 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	GetOutPath := virtual !(Object^ item, int typ,int size) ->string
+	GetOutPath := virtual !(Object^ item, int typ,int size) -> BoxLabel^
 	{
-		return StrCopy("OutLabel"sbt + ABox.ItId)
+		return new BoxLabelStr("OutLabel"sbt + ABox.ItId) //TODO
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
