@@ -52,6 +52,7 @@ BoxBlock := class extend Object
 	}
 	this := !(Object^ toRepl) -> void
 	{
+		quitPath."this"()
 		ItId = GetNewId()
 		if toRepl.GetValue() == "{}"
 		{	
@@ -119,7 +120,7 @@ BoxBlock := class extend Object
 			iter.PrintInBlock(f)
 		}
 		if usePaths {
-			f << "br label %LastContPath" << ItId << "\n"
+			f << "br label %" << quitPath.GetLabel() << "\n"
 
 			if preRetLabel != null
 			{
@@ -135,7 +136,8 @@ BoxBlock := class extend Object
 				//if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
 				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
 			}
-			f << "LastContPath" <<ItId << ":\n"
+			//f << "LastContPath" <<ItId << ":\n"
+			quitPath.PrintLabel(f)
 			if callDeferStuf
 				PrintDeferApply(f,ItId,this&)
 		}
@@ -161,6 +163,7 @@ BoxBlock := class extend Object
 		}
 	}
 	preRetLabel := BoxLabel^
+	quitPath := BoxLabelAnon
 	GetOutPath := virtual !(Object^ objs, int typ , int size) -> BoxLabel^
 	{
 		if not usePaths
@@ -182,14 +185,11 @@ BoxBlock := class extend Object
 			}
 			return outRLabel
 		}
-		if typ == PATH_CONTINUE
+		if typ == PATH_BREAK || typ == PATH_CONTINUE
 		{
-			if size == 0 return new BoxLabelStr("LastContPath"sbt + ItId) //TODO
-			return  Up.GetOutPath(objs,typ,size - 1)
-		}
-		if typ == PATH_BREAK
-		{
-			if size == 0 return new BoxLabelStr("LastContPath"sbt + ItId) //TODO
+			if size == 0 {
+				return quitPath&
+			}
 			return Up.GetOutPath(objs,typ,size - 1)
 		}
 		return null
