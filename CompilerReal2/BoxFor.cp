@@ -434,16 +434,16 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "br label %start" << ItId << "\n"
 		}
 
-		if useContinue
+		if labelContinue != null
 		{
-			f << "PreContinue" << ItId << ":\n"
+			labelContinue.PrintLabel(f)
 			if callDeferStuf
 				PrintDeferApply(f,ItId,this&)
 			f << "br label %IncFuncs" << ItId << "\n"
 		}
-		if useBreak
+		if labelBreak != null
 		{
-			f << "PreEnd" << ItId << ":\n"
+			labelBreak.PrintLabel(f)
 			if callDeferStuf
 				PrintDeferApply(f,ItId,this&)
 			f << "br label %End" << ItId << "\n"
@@ -451,8 +451,8 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "End" << ItId << ":\n"
 	}
 
-	useContinue := bool
-	useBreak := bool
+	labelContinue := BoxLabel^
+	labelBreak := BoxLabel^
 	callDeferStuf := bool
 	ApplyDeferUse := virtual !(int depth) -> void
 	{
@@ -473,16 +473,18 @@ BoxForOldFashionMulti := class extend BoxFor
 		if typ == PATH_CONTINUE
 		{
 			if size == 0{
-				useContinue = true
-				return new BoxLabelStr("PreContinue"sbt + ItId) //TODO
+				if labelContinue == null
+					labelContinue = new BoxLabelAnon()
+				return labelContinue
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
 			if size == 0{
-				useBreak = true
-				return new BoxLabelStr("PreEnd"sbt + ItId) //TODO
+				if labelBreak == null
+					labelBreak = new BoxLabelAnon()
+				return labelBreak
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}

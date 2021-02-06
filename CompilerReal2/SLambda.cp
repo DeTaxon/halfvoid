@@ -26,11 +26,14 @@ SLambda := class extend BoxFuncContainer
 	deleteCall := Object^
 
 	thisLambda := FuncParam^
+
+	outLabel := BoxLabelAnon
 	
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
 	{
 		ABox.ItId = GetNewId()
+		outLabel."this"()
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_PrePrint)
 		ItId = GetNewId()
@@ -782,8 +785,8 @@ SLambda := class extend BoxFuncContainer
 
 			Down.PrintInBlock(f) // MAIN DATA
 
-			f << "br label %OutLabel" << ABox.ItId << "\n"
-			f << "OutLabel" << ABox.ItId << ":\n"
+			f << "br label %" << outLabel.GetLabel() << "\n"
+			outLabel.PrintLabel(f)
 
 			if fastUse.RetType == GTypeVoid or IsRetComplex
 			{
@@ -1040,7 +1043,7 @@ SLambda := class extend BoxFuncContainer
 
 	GetOutPath := virtual !(Object^ item, int typ,int size) ->BoxLabel^
 	{
-		return new BoxLabelStr("OutLabel"sbt + ABox.ItId) //TODO
+		return outLabel&
 	}
 	GetValue := virtual !() -> string
 	{

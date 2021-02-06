@@ -538,6 +538,8 @@ BoxFuncBody := class extend BoxFunc
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
 
+	outLabel := BoxLabelAnon
+
 	GetScope := virtual !() -> int { return ABox.ItId }
 
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
@@ -562,6 +564,7 @@ BoxFuncBody := class extend BoxFunc
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		ABox.ItId = GetNewId()
+		outLabel."this"()
 		IsRetRef = fType.RetRef
 		MyFuncParamNames = names
 		FuncName = SomeName
@@ -642,6 +645,7 @@ BoxFuncBody := class extend BoxFunc
 	{
 		IsSelfReturn = isRetSelf
 		ABox.ItId = GetNewId()
+		outLabel."this"()
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
@@ -967,8 +971,8 @@ BoxFuncBody := class extend BoxFunc
 			
 			Down[^].PrintInBlock(f)
 
-			f << "br label %OutLabel" << ABox.ItId << "\n"
-			f << "OutLabel" << ABox.ItId << ":\n"
+			f << "br label %" << outLabel.GetLabel() << "\n"
+			outLabel.PrintLabel(f)
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex
 			{
@@ -1013,7 +1017,7 @@ BoxFuncBody := class extend BoxFunc
 	}
 	GetOutPath := virtual !(Object^ item, int typ,int size) -> BoxLabel^
 	{
-		return new BoxLabelStr("OutLabel"sbt + ABox.ItId) //TODO
+		return outLabel&
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

@@ -121,9 +121,9 @@ BoxBlock := class extend Object
 		if usePaths {
 			f << "br label %LastContPath" << ItId << "\n"
 
-			if askedRetPath
+			if preRetLabel != null
 			{
-				f << "PreRetPath" << ItId << ":\n"
+				preRetLabel.PrintLabel(f)
 				if callDeferStuf
 					PrintDeferApply(f,ItId,this&)
 				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
@@ -141,7 +141,6 @@ BoxBlock := class extend Object
 		}
 	}
 	callDeferStuf := bool
-	askedRetPath := bool
 	ApplyDeferUse := virtual !(int depth) -> void
 	{
 		if depth != 1
@@ -161,6 +160,7 @@ BoxBlock := class extend Object
 			}
 		}
 	}
+	preRetLabel := BoxLabel^
 	GetOutPath := virtual !(Object^ objs, int typ , int size) -> BoxLabel^
 	{
 		if not usePaths
@@ -177,8 +177,8 @@ BoxBlock := class extend Object
 
 			if Up?.GetValue() in !["!()","{!()}","x=>x"]
 			{	
-				askedRetPath = true
-				return new BoxLabelStr("PreRetPath"sbt + ItId) //TODO
+				if preRetLabel == null preRetLabel = new BoxLabelAnon()
+				return preRetLabel
 			}
 			return outRLabel
 		}

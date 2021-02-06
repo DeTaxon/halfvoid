@@ -189,8 +189,8 @@ BoxWhile := class extend Object
 		}
 	}
 
-	useContinue := bool
-	useBreak := bool
+	labelContinue := BoxLabel^
+	labelBreak := BoxLabel^
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		if Down.Right.Right == null
@@ -207,17 +207,17 @@ BoxWhile := class extend Object
 			Down.Right.PrintInBlock(f)
 			f << "\nbr label %Check" << MyId << "\n"
 			
-			if useContinue
+			if labelContinue != null
 			{
-				f << "PreContinue" << MyId << ":\n"
+				labelContinue.PrintLabel(f)
 				if callDeferStuf
 					PrintDeferApply(f,MyId,this&)
 				f << "br label %Check" << MyId << "\n"
 			}
 
-			if useBreak
+			if labelBreak != null
 			{
-				f << "PreEnd" << MyId << ":\n"
+				labelBreak.PrintLabel(f)
 				if callDeferStuf
 					PrintDeferApply(f,MyId,this&)
 				f << "br label %End" << MyId << "\n"
@@ -248,16 +248,18 @@ BoxWhile := class extend Object
 		if typ == PATH_CONTINUE
 		{
 			if size == 0{
-				useContinue = true
-				return new BoxLabelStr("PreContinue"sbt + MyId) //TODO
+				if labelContinue == null
+					labelContinue = new BoxLabelAnon()
+				return labelContinue
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
 		if typ == PATH_BREAK
 		{
 			if size == 0{
-				useBreak = true
-				return new BoxLabelStr("PreEnd"sbt + MyId) //TODO
+				if labelBreak == null
+					labelBreak = new BoxLabelAnon()
+				return labelBreak
 			}
 			return Up.GetOutPath(itm,typ,size - 1)
 		}
