@@ -32,6 +32,16 @@ StringSpan := class{
 	{
 		return StringSpan(ptr,itSize,ran)
 	}
+	"=" := !(char^ toGet) -> ref StringSpan
+	{
+		this = StringSpan(toGet)
+		return this
+	}
+	"=" := !(char[@Size] toGet) -> ref StringSpan
+	{
+		this = StringSpan(toGet)
+		return this
+	}
 	"=" := !(StringSpan toGet) -> ref StringSpan
 	{
 		ptr = toGet.ptr

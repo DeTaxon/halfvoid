@@ -1,16 +1,185 @@
-FuncPointerWithNames := !(char^ name)^ -> void
 
-WantIt := !(@Typ x) -> void
+jsonTypeField := 0
+jsonTypeRecord := 1
+jsonTypeArray := 2
+jsonNode := class
 {
-	y := Typ->Base
-	y = 13
-	printf("heh %i %i\n",Typ->Len,y)
+	this := !(int setType) -> void {itType = setType}
+
+	haveName := bool
+	itType := u8
+	itKey := StringSpan
+	itValue := StringSpan
+	itSub := List.{jsonNode^}
+	
+	Print := !(int x) -> void
+	{
+		switch itType
+		{	
+			case jsonTypeField
+				for x printf(" ")
+				if haveName
+				{
+					printf("%s : %s\n",itKey,itValue)
+				}else{
+					printf("%s\n",itValue)
+				}
+			case jsonTypeRecord
+				for x printf(" ")
+				if haveName
+				{
+					printf("%s : {\n",itKey)
+				}else{
+					printf("{\n")
+				}
+				itSub[^].Print(x+1)
+				for x printf(" ")
+				printf("}\n")
+			case jsonTypeArray
+				for x printf(" ")
+				if haveName
+				{
+					printf("%s : [\n",itKey)
+				}else{
+					printf("[\n")
+				}
+				itSub[^].Print(x+1)
+				for x printf(" ")
+				printf("]\n")
+		}
+	}
+}
+
+json := class
+{
+	startNode := jsonNode^
+	tokens := List.{Tuple.{int,StringSpan}} ; $temp
+
+	ParseString := !(char^ fileData,int size) -> void
+	{
+		jsonMach := MappedFile("json.m")
+		mach := new WordDetermMachine()
+		mach.LoadFromMap(jsonMach.Get(),jsonMach.Size())
+		d := WordParser
+		tokens."this"()
+		d.ReadText(mach->{void^},fileData,size, (a,b,c) ==>
+		{
+			if a == 5
+				return void
+			ptr := fileData[b]&
+			tok := StringSpan(ptr,c)
+			tokens << !{a,tok}
+		})
+		startNode = new jsonNode
+		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != "{"
+			throw new Exception("Incorrect json")
+		tokens.Pop()
+		checkRecord(startNode)
+		startNode.itType = jsonTypeRecord
+		startNode.Print(0)
+	}
+
+		
+	checkRecord := !(jsonNode^ toCheck) -> void
+	{
+		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "}")
+		{
+			if tokens[0].0 == 4 and tokens[0].1 == ","
+				tokens.Pop()
+			toCheck.itSub << checkNode()
+		}
+		if tokens.Size() == 0
+			throw new Exception("Incorrect")
+		tokens.Pop()
+	}
+	checkArray := !(jsonNode^ toCheck) -> void
+	{
+		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "]")
+		{
+			if tokens[0].0 == 4 and tokens[0].1 == ","
+				tokens.Pop()
+			newNode := checkNode2(new jsonNode)
+			toCheck.itSub << newNode
+		}
+		if tokens.Size() == 0
+			throw new Exception("Incorrect")
+		tokens.Pop()
+	}
+	checkNode := !() -> jsonNode^
+	{
+		thisNode := new jsonNode
+
+		if tokens.Size() == 0 or tokens[0].0 != 1
+			throw new Exception("Incorrect")
+		thisNode.itKey = tokens[0].1
+		thisNode.haveName = true
+		tokens.Pop()
+
+		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != ":" 
+			throw new Exception("Incorrect")
+		tokens.Pop()
+		if tokens.Size() == 0
+			throw new Exception("Incorrect")
+		return checkNode2(thisNode)
+	}
+	checkNode2 := !(jsonNode^ thisNode) -> jsonNode^
+	{
+		switch tokens[0].0
+		{
+		case ![1,2,3]
+			thisNode.itType = jsonTypeField
+			thisNode.itValue = tokens[0].1
+			tokens.Pop()
+		case 4
+			switch tokens[0].1
+			{
+			case "["
+				thisNode.itType = jsonTypeArray
+				tokens.Pop()
+				checkArray(thisNode)
+			case "{"
+				thisNode.itType = jsonTypeRecord
+				tokens.Pop()
+				checkRecord(thisNode)
+			}
+		}
+		return thisNode
+	}
 }
 
 
 
+//libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
+	someFile := json
+	testFile := MappedFile("libjit.cxml")
+	someFile.ParseString(testFile.Get(),testFile.Size())
+	return 0
+	
+	//libjit.Open("libjit.so")
+	//jit_context_create := libjit.Get("jit_context_create")->{!()^->void^}
+	//jit_context_build_start := libjit.Get("jit_context_build_start")->{!(void^)^->void^}
+	////jit_type_ := libjit.Get("jit_type_")
+	//jit_type_void := libjit.Get("jit_type_void")->{void^^}^
+	//jit_type_int := libjit.Get("jit_type_int")->{void^^}^
+	//jit_type_void_ptr := libjit.Get("jit_type_void_ptr")->{void^^}^
+	//jit_type_create_signature := libjit.Get("jit_type_create_signature")->{!(int,void^,void^,int,int)^->void^}
+	//jit_function_create := libjit.Get("jit_function_create")->{!(void^)^->void^}
+	//jit_value_get_param := libjit.Get("jit_value_get_param")->{!(void^,int)^->void^}
+
+	//jit_abi_cdecl := 0
+
+	//ctx := jit_context_create()
+	//jit_context_build_start(ctx)
+
+	//pars := void^[2]
+	//pars[0] = jit_type_int
+	//pars[1] = jit_type_int
+	//funcptr := jit_type_create_signature(jit_abi_cdecl,jit_type_int,pars,2,1)
+
+	//f := jit_function_create(funcptr)
+	return 0
 	//if "wow" == "wow"
 	//{
 	//	bob + bob
@@ -35,6 +204,14 @@ main := !(int argc, char^^ argv) -> int
 		printf("Msg: %s\n",e.Msg())
 	}
 	return 0
+}
+FuncPointerWithNames := !(char^ name)^ -> void
+
+WantIt := !(@Typ x) -> void
+{
+	y := Typ->Base
+	y = 13
+	printf("heh %i %i\n",Typ->Len,y)
 }
 globInt := int
 retrVal := !(bool retNull) -> int^
