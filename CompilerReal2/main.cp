@@ -350,6 +350,7 @@ main := !(int argc,char^^ argv) -> int
 		TaskPrint(fil)
 
 		Classes[^].PrintStruct(fil)
+		PrintRegMachines(fil)
 		PrintTuples(fil)
 		fil << GlobalStrs[^]
 		PrintTuplesFuncs(fil)
