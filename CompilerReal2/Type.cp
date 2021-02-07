@@ -1184,7 +1184,7 @@ GetType := !(string Name) -> Type^
 	for i : DefsTable->len
 	{
 		it := ref DefsTable[i]
-		if it.ItName == Name return it.ItType
+		if it?.ItName == Name return it.ItType
 	}
 	return null
 }

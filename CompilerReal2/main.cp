@@ -127,6 +127,12 @@ main := !(int argc,char^^ argv) -> int
 				anyFileName = flName
 			}
 		}
+
+		machCheck := ""sbt + tmp1 + ".stm"
+		for machs : Wildcard(machCheck)
+		{
+			AddMachine(machs.itStr)
+		}
 			
 		//if DebugMode and anyFileName != null
 		//{
@@ -273,6 +279,8 @@ main := !(int argc,char^^ argv) -> int
 	WorkBag.Push(Ob,State_Start)
 	
 	WorkWithBag(printWork)
+
+	RegMachineInit()
 
 	if not DeferInit2()
 	{
