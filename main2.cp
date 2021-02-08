@@ -50,6 +50,20 @@ jsonNode := class
 	}
 }
 
+
+jsonRegMachine := WordDetermMachine^
+jsonLoadMachine := !() -> void
+{
+	regFile := gRepo.GetFile("hres/json.stm")
+	if regFile == null
+		throw new Exception("can not initialize json state machine")
+	ptr := regFile.Map()
+	jsonRegMachine = new WordDetermMachine
+	jsonRegMachine.LoadFromMap(ptr,regFile.Size())
+	regFile.Unmap()
+	while true yield void
+}
+
 json := class
 {
 	startNode := jsonNode^
@@ -57,12 +71,10 @@ json := class
 
 	ParseString := !(char^ fileData,int size) -> void
 	{
-		jsonMach := MappedFile("json.m")
-		mach := new WordDetermMachine()
-		mach.LoadFromMap(jsonMach.Get(),jsonMach.Size())
+		jsonLoadMachine()
 		d := WordParser
 		tokens."this"()
-		d.ReadText(mach->{void^},fileData,size, (a,b,c) ==>
+		d.ReadText(jsonRegMachine,fileData,size, (a,b,c) ==>
 		{
 			if a == 5
 				return void
@@ -152,6 +164,13 @@ json := class
 //libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
+	gRepo.Init(".")
+	gRepo.AddZipRoot(argv[0])
+	if $debug
+	{
+		gRepo.AddZipRoot("halfvoid")
+		gRepo.AddZipRoot("halfvoid.exe")
+	}
 	someFile := json
 	testFile := MappedFile("libjit.cxml")
 	someFile.ParseString(testFile.Get(),testFile.Size())

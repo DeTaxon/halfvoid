@@ -1,3 +1,4 @@
+
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -165,6 +166,10 @@ main := !(int argc,char^^ argv) -> int
 		if strlen(it) < 4 continue
 		GlobalAttributes[it[4..0].Str()] = GBoolTrue
 	}
+	if DebugMode 
+	{
+		GlobalAttributes["debug"] = GBoolTrue
+	}
 
 	MacroRestart = new Object
 
@@ -280,8 +285,6 @@ main := !(int argc,char^^ argv) -> int
 	
 	WorkWithBag(printWork)
 
-	RegMachineInit()
-
 	if not DeferInit2()
 	{
 		for ErrorLog printf(it)
@@ -350,7 +353,6 @@ main := !(int argc,char^^ argv) -> int
 		TaskPrint(fil)
 
 		Classes[^].PrintStruct(fil)
-		PrintRegMachines(fil)
 		PrintTuples(fil)
 		fil << GlobalStrs[^]
 		PrintTuplesFuncs(fil)

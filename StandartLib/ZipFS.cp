@@ -123,10 +123,15 @@ vRepo := class
 		itId := itP.GetId()
 		if itId == 0 return false
 
-		ignZip << itId
 
 		itObj := new ZipFile
-		itObj.AnalizeFile(fileName)
+		if not itObj.AnalizeFile(fileName)
+		{
+			//delete itObj
+			return false
+		}
+		itObj.DecUser()
+		ignZip << itId
 		rootFolder.subZipFolders << itObj.zipRoot&
 
 	}
