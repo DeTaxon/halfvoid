@@ -65,11 +65,14 @@ stable:
 test2: main2.cp
 	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
 
-TempDir/CompilerData.zip: Mach.m Priority.pr
-	mkdir -p TempDir;zip -u TempDir/CompilerData.zip Mach.m Priority.pr
+Objs/CompilerData.zip: Mach.m Priority.pr
+	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr
+Objs/hres.zip: $(wildcard ./hres/*)
+	zip -ur Objs/hres.zip hres
 
-halfvoid: stable TempDir/CompilerData.zip
-	$(TargetStable) --ZipGlue $(CurrentStable) TempDir/CompilerData.zip $(HW)
+halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
+	$(TargetStable) --ZipGlue $(CurrentStable) Objs/CompilerData.zip $(HW)
+	$(TargetStable) --ZipAppend $(HW) Objs/hres.zip
 
 $(CurrentLex): LexBuilder/main.cp Priority.pr
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o $(CurrentLex)

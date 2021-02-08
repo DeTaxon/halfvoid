@@ -2,6 +2,7 @@ gRepo := vRepo
 
 _main := !(int argc, char^^ argv) -> int
 {
+	_TaskPtrReset()
 	gRepo.Init(".")
 	if $debug
 	{
