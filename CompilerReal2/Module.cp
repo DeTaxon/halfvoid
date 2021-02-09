@@ -1,10 +1,13 @@
-Modules := Queue.{CompilerModule^}
+Modules := List.{CompilerModule^}
 
 CompilerModule := class
 {
 	GetItem := virtual !(string name) -> Object^
 	{
 		return null
+	}
+	GetFunc := virtual !(char^ name) -> Object^
+	{
 	}
 	GetModuleType := virtual !(string name) -> Type^
 	{
@@ -13,4 +16,5 @@ CompilerModule := class
 	InitModule := virtual !() -> bool {
 		return true
 	}
+	PrintGlobal := virtual !(sfile f) -> void {}
 }

@@ -1,6 +1,9 @@
 
+clibModule := CLibModule
+
 main := !(int argc,char^^ argv) -> int 
 {
+	gRepo.Init(".")
 	ReturnName = "result"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
@@ -24,6 +27,8 @@ main := !(int argc,char^^ argv) -> int
 	dirChecks := List.{Tuple.{char^,int}}()
 
 	emitTree := false
+
+	Modules.Push(clibModule&)
 
 	i := 1
 	while  i < argc
@@ -72,6 +77,9 @@ main := !(int argc,char^^ argv) -> int
 				printf("--vk module does not exist\n")
 				return 0
 			}
+		case "--clib"
+			i += 1
+			clibModule.AddCLib(gRepo.GetFile(argv[i]),false)
 		case "--work"
 			printWork = true
 		case void
@@ -355,6 +363,7 @@ main := !(int argc,char^^ argv) -> int
 		Classes[^].PrintStruct(fil)
 		PrintTuples(fil)
 		fil << GlobalStrs[^]
+		Modules[^].PrintGlobal(fil)
 		PrintTuplesFuncs(fil)
 
 

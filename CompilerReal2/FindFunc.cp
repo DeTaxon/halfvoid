@@ -267,6 +267,12 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	{
 		Funcs.Push(inBuiltInMap^[^])
 	}
+	for it : Modules
+	{
+		fFunc := it.GetFunc(name)
+		if fFunc != null
+			Funcs.Push(fFunc->{BoxFunc^})
+	}
 
 	if BuiltInTemplates[^].FuncName == name
 		Templs.Push(it) ; $temp

@@ -9,5 +9,6 @@ _main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid")
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
+	LibDB.SetRepo(gRepo)
 	return main(argc,argv)
 }

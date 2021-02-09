@@ -9,15 +9,9 @@ main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid")
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
-	someFile := json
-	testFile := MappedFile("libjit.cxml")
-	someFile.ParseString(testFile.Get(),testFile.Size())
-	for it : someFile["consts"]
-	{
-		it.Print(0)
-	}
-	nd := someFile["initname"]&.GetStr()
-	printf("heh %p %p\n",nd.ptr,testFile.Get())
+	libjitinit()
+	printf("mod test %i\n",JIT_TYPE_PTR)
+	printf("mod test %p\n",jit_context_create)
 	return 0
 	
 	//libjit.Open("libjit.so")
