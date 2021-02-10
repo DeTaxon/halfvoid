@@ -325,10 +325,10 @@ main := !(int argc,char^^ argv) -> int
 		return -1
 	}
 
-	fType := clibModule.CheckFuncTypeString(StringSpan("void"))
-	nFunc := new BoxFuncBodyFromString(fType," x := 13")
-	WorkWithBag(printWork)
-	nFunc.Print(0)
+	//fType := clibModule.CheckFuncTypeString(StringSpan("void"))
+	//nFunc := new BoxFuncBodyFromString(fType," x := 13")
+	//WorkWithBag(printWork)
+	//nFunc.Print(0)
 
 	printf("good to go\n")
 	for PostFuncs it.PostCreate()
@@ -368,7 +368,7 @@ main := !(int argc,char^^ argv) -> int
 	StrContainer.PrintGlobal(fil)
 	GlobalDataBuiltins[^].PrintGlobal(fil)
 	TaskPrint(fil)
-	nFunc.PrintGlobal(fil)
+	//nFunc.PrintGlobal(fil)
 
 	Classes[^].PrintStruct(fil)
 	PrintTuples(fil)

@@ -82,7 +82,11 @@ BoxBlock := class extend Object
 	{
 		return "{d}"
 	}
-	GetScope := virtual !() -> int { return ItId }
+	GetScope := virtual !() -> int { 
+		if Up == null or Up.GetScope() == -1
+			return -1
+		return ItId 
+	}
 	PrintGlobal := virtual !(sfile f) -> void 
 	{
 		PrintGlobalSub(f)
@@ -90,9 +94,12 @@ BoxBlock := class extend Object
 		{
 			itr := Up
 			while itr.Up != null itr = itr.Up
-			f << "!" << ItId << " = !DILexicalBlock(scope: !" 
-			f << Up.GetScope() << ", file: !" << itr->{BoxFile^}.fileId
-			f << ")\n"
+			if itr is BoxFile
+			{
+				f << "!" << ItId << " = !DILexicalBlock(scope: !" 
+				f << Up.GetScope() << ", file: !" << itr->{BoxFile^}.fileId
+				f << ")\n"
+			}
 //!20 = distinct !DILexicalBlock(scope: !16, file: !1, line: 6, column: 2)
 		}
 	}

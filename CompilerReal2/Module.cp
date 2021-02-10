@@ -1,6 +1,6 @@
 Modules := List.{CompilerModule^}
 
-CompilerModule := class
+CompilerModule := class extend Object
 {
 	GetItem := virtual !(string name) -> Object^
 	{

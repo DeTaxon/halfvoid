@@ -29,6 +29,7 @@ CreateDebugCall := !(Object^ itm) -> int
 	//}
 	aBId := itm.GetScope()
 	if aBId == 0 return -1
+	if aBId == -1 return -1
 	itId := GetNewId()
 	DebugCalls.Emplace(itId,itm.Line.LinePos,aBId)
 	return itId
@@ -44,6 +45,8 @@ CreateDbgGlobalVar := !(Object^ itm, Type^ itType,char^ itName, bool isRef) -> i
 	itr := itm->{Object^}
 
 	while itr.Up != null itr = itr.Up
+
+	if not (itr is BoxFile) return -1
 
 	asF := itr->{BoxFile^}
 	
@@ -74,6 +77,8 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 	if aBId == 0 return -1
 
 	while itr.Up != null itr = itr.Up
+
+	if not (itr is BoxFile) return -1
 
 	asF := itr->{BoxFile^}
 	

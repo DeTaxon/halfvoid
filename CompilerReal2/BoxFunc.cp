@@ -544,7 +544,9 @@ BoxFuncBodyFromString := class extend BoxFuncBody
 	this := !(Type^ fType,char^ strToParse) -> void
 	{
 		outLabel."this"()
+		MyFuncType = fType->{TypeFunc^}
 		OutputName = "HelloFunc"
+		FuncName = OutputName
 		GetObjectsFromMemory(Path(""),strToParse,strlen(strToParse),this&)
 		if Down != null
 		{
@@ -555,7 +557,9 @@ BoxFuncBodyFromString := class extend BoxFuncBody
 		}
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_Start)
+		parsed = true
 	}
+	GetScope := virtual !() -> int { return -1 }
 }
 
 BoxFuncBody := class extend BoxFunc
@@ -848,7 +852,11 @@ BoxFuncBody := class extend BoxFunc
 
 			f << " #0 "
 
-			if DebugMode
+			doDebug := DebugMode
+			if this& is BoxFuncBodyFromString
+				doDebug = false
+
+			if doDebug
 			{
 				f << " !dbg !" << ABox.ItId
 			}
@@ -1020,7 +1028,7 @@ BoxFuncBody := class extend BoxFunc
 
 			f << "}\n"
 
-			if DebugMode
+			if doDebug
 			{	
 				iter := Up
 				if iter != null
