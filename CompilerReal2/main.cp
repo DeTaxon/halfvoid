@@ -16,7 +16,7 @@ main := !(int argc,char^^ argv) -> int
 
 	targetFiles := Queue.{string}()
 	targetObjects := Queue.{Object^}()
-	outputFile := "out.ll"
+	outputFile := "out.ll"->{char^}
 
 	codeSp := Queue.{Pair.{int,string}}()
 	zipSp := Queue.{Pair.{int,string}}()
@@ -319,79 +319,83 @@ main := !(int argc,char^^ argv) -> int
 	//Ob.Print(0)
 	//Ob.TestNodes()
 
-	if ErrorLog.Empty()
-	{
-		printf("good to go\n")
-		for PostFuncs it.PostCreate()
-
-		fil := sfile(outputFile,"w")
-		fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
-		fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
-		fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
-		fil << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
-		fil << "declare i32 @setjmp(i8* %abc) #1\n"
-		fil << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
-		fil << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
-		fil << "declare void @llvm.debugtrap() #0\n"
-		fil << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
-		fil << "declare i8* @llvm.stacksave() #1\n"
-		fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
-		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
-		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
-		fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
-		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)\n"
-		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)\n"
-		fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)\n"
-		//fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
-		fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
-		fil << "attributes #1 = { nounwind }\n"
-		fil << "attributes #2 = { nounwind readnone}\n"
-		fil << "attributes #3 = { nounwind noreturn}\n"
-		fil << "%OpaqType = type {i1}\n"
-		fil << "%Vec4f = type <4 x float>\n"
-		fil << "%Vec3f = type <3 x float>\n"
-		fil << "%Vec2f = type <2 x float>\n"
-
-		fil << "declare void @llvm.va_start(i8* %a)\n"
-		fil << "declare void @llvm.va_end(i8* %a)\n"
-		fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
-		PrintLambdaGlobal(fil)
-		StrContainer.PrintGlobal(fil)
-		GlobalDataBuiltins[^].PrintGlobal(fil)
-		TaskPrint(fil)
-
-		Classes[^].PrintStruct(fil)
-		PrintTuples(fil)
-		fil << GlobalStrs[^]
-		Modules[^].PrintGlobal(fil)
-		PrintTuplesFuncs(fil)
-
-
-		for wutt : Files
-		{
-			FlushTempMemory()
-			if emitTree wutt.Print(0)
-			wutt.PrintGlobal(fil)
-		}
-		for wutt : ZipFiles
-		{
-			FlushTempMemory()
-			if emitTree wutt.Print(0)
-			wutt.PrintGlobal(fil)
-		}
-		if DebugMode
-		{
-			PrintDebugMeta(fil)
-			PrintDebRefs(fil)
-		}
-		fil.close()
-	}else
-	{
+	if not ErrorLog.Empty(){
 		if emitTree for Files it.Print(0)
 		for ErrorLog printf(it)
 		return -1
 	}
-	//CleanStrs() shiet
+
+	fType := clibModule.CheckFuncTypeString(StringSpan("void"))
+	nFunc := new BoxFuncBodyFromString(fType," x := 13")
+	WorkWithBag(printWork)
+	nFunc.Print(0)
+
+	printf("good to go\n")
+	for PostFuncs it.PostCreate()
+
+	fil := sfile(outputFile,"w")
+	fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
+	fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+	fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
+	fil << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
+	fil << "declare i32 @setjmp(i8* %abc) #1\n"
+	fil << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+	fil << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
+	fil << "declare void @llvm.debugtrap() #0\n"
+	fil << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
+	fil << "declare i8* @llvm.stacksave() #1\n"
+	fil << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
+	fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+	fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
+	fil << "declare float @llvm.experimental.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
+	fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)\n"
+	fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)\n"
+	fil << "declare float @llvm.experimental.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)\n"
+	//fil << "target triple=\"x86_64-pc-linux-gnu\"\n"
+	fil << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
+	fil << "attributes #1 = { nounwind }\n"
+	fil << "attributes #2 = { nounwind readnone}\n"
+	fil << "attributes #3 = { nounwind noreturn}\n"
+	fil << "%OpaqType = type {i1}\n"
+	fil << "%Vec4f = type <4 x float>\n"
+	fil << "%Vec3f = type <3 x float>\n"
+	fil << "%Vec2f = type <2 x float>\n"
+
+	fil << "declare void @llvm.va_start(i8* %a)\n"
+	fil << "declare void @llvm.va_end(i8* %a)\n"
+	fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+	PrintLambdaGlobal(fil)
+	StrContainer.PrintGlobal(fil)
+	GlobalDataBuiltins[^].PrintGlobal(fil)
+	TaskPrint(fil)
+	nFunc.PrintGlobal(fil)
+
+	Classes[^].PrintStruct(fil)
+	PrintTuples(fil)
+	fil << GlobalStrs[^]
+	Modules[^].PrintGlobal(fil)
+	PrintTuplesFuncs(fil)
+
+
+	for wutt : Files
+	{
+		FlushTempMemory()
+		if emitTree wutt.Print(0)
+		wutt.PrintGlobal(fil)
+	}
+	for wutt : ZipFiles
+	{
+		FlushTempMemory()
+		if emitTree wutt.Print(0)
+		wutt.PrintGlobal(fil)
+	}
+	if DebugMode
+	{
+		PrintDebugMeta(fil)
+		PrintDebRefs(fil)
+	}
+	fil.close()
+
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())
 	//PrintMemUse()

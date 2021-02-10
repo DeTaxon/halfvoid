@@ -32,18 +32,10 @@ BoxReturn := class extend Object
 				ii := Up
 				while ii != null
 				{
-					if ii is SLambda
+					if IsBoxFuncContainer(ii)
 					{
-						ii->{SLambda^}.Yodlers.Push(this&)
-						YieldId = ii->{SLambda^}.Yodlers.Size()
-						break
-					}
-					if ii is BoxFuncBody
-					{
-						asFunc := ii->{BoxFuncBody^}
-						asFunc.YieldCheck()
-						asFunc.Yodlers.Push(this&)
-						YieldId = asFunc.Yodlers.Size()
+						cntr := ii->{BoxFuncContainer^}
+						YieldId = cntr.AddYodler(this&)
 						break
 					}
 					ii = ii.Up

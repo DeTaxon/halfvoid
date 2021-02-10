@@ -23,7 +23,11 @@ GetObjectsFromFile2 := !(Path fileName) -> Object^
 GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 {
 	DaFile := new BoxFile(fileName)
-
+	GetObjectsFromMemory(fileName,memPtr,Siz,DaFile)
+	return DaFile
+}
+GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> Object^
+{
 	d := WordParser
 	itLine := null->{ObjLine^}
 	treeIter := null->{Object^}
@@ -207,7 +211,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 		}
 		if ns != null {
 			if treeIter == null{
-				DaFile.Down = ns
+				popul.Down = ns
 				treeIter = ns
 			}else{
 				treeIter.Right = ns
@@ -215,7 +219,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 				treeIter = ns
 			}
 			ns.Line = itLine
-			ns.Up = DaFile
+			ns.Up = popul
 		}
 		if a == 20 {
 			linePos += 1
@@ -233,7 +237,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 		}
 		prevId = a
 	})
-	UniteSkobs(DaFile.Down)
-	return DaFile
+	UniteSkobs(popul.Down)
+	return popul
 }
 

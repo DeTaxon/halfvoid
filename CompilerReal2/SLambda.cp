@@ -68,7 +68,11 @@ SLambda := class extend BoxFuncContainer
 		return PreRet
 	}
 
-
+	AddYodler := !(BoxReturn^ toAdd) -> int
+	{
+		Yodlers.Push(toAdd)
+		return Yodlers.Size()
+	}
 	ApplyParams := !(int count, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0

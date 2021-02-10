@@ -76,15 +76,7 @@ CLibModule := class extend CompilerModule
 			if spn in it.funcs
 			{
 				inFuncs := ref it.funcs[spn]
-				tList := DivideStr(inFuncs.GetStr()," ")
-				retType := CheckTypeString(tList[0])
-				nextTypes := Queue.{Type^}()
-				for it,i : tList
-				{
-					if i == 0 continue
-					nextTypes.Push(CheckTypeString(it))
-				}
-				fType := GetFuncType(nextTypes,null,retType,false,false)
+				fType := CheckFuncTypeString(inFuncs.GetStr())
 				resPar := new GlobalParam(fType.GetPoint(),null)
 				objs[inFuncs.Key()] = resPar
 
@@ -109,6 +101,18 @@ CLibModule := class extend CompilerModule
 			}
 		}
 		return null
+	}
+	CheckFuncTypeString := !(StringSpan toCheck) -> Type^
+	{
+		tList := DivideStr(toCheck," ")
+		retType := CheckTypeString(tList[0])
+		nextTypes := Queue.{Type^}()
+		for it,i : tList
+		{
+			if i == 0 continue
+			nextTypes.Push(CheckTypeString(it))
+		}
+		return GetFuncType(nextTypes,null,retType,false,false)
 	}
 	CheckTypeString := !(StringSpan toCheck) -> Type^
 	{

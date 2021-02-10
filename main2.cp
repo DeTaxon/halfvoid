@@ -9,9 +9,9 @@ main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid")
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
-	libjitinit()
-	printf("mod test %i\n",JIT_TYPE_PTR)
-	printf("mod test %p\n",jit_context_create)
+	//libjitinit()
+	//printf("mod test %i\n",JIT_TYPE_PTR)
+	//printf("mod test %p\n",jit_context_create)
 	return 0
 	
 	//libjit.Open("libjit.so")

@@ -7,10 +7,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	IsStatic := false
 	IsVirtual := false
 
-	ClassPtr := BoxClass^
-	ClassType := Type^
-	ClassPtr = null
-	ClassType = null
+	ClassPtr := BoxClass^()
+	ClassType := Type^()
 
 	RetT := Object^
 	RetT = null
@@ -134,6 +132,12 @@ ParseFuncDataR := !(Object^ item) -> Object^
 }
 
 
+IsBoxFuncContainer := !(Object^ toCheck) -> bool
+{
+	if toCheck is BoxFuncBody return true
+	if toCheck is SLambda return true
+	return false
+}
 
 BoxFuncContainer := class extend Object
 {
@@ -142,6 +146,11 @@ BoxFuncContainer := class extend Object
 	Yodlers := List.{BoxReturn^}
 
 	GetABox := virtual !() -> AllocBox^ {return ABox&}
+	AddYodler := virtual !(BoxReturn^ toAdd) -> int
+	{
+		return 0
+	}	
+
 }
 
 BoxFunc := class extend BoxFuncContainer
@@ -530,6 +539,25 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 	f << ")"
 }
 
+BoxFuncBodyFromString := class extend BoxFuncBody
+{
+	this := !(Type^ fType,char^ strToParse) -> void
+	{
+		outLabel."this"()
+		OutputName = "HelloFunc"
+		GetObjectsFromMemory(Path(""),strToParse,strlen(strToParse),this&)
+		if Down != null
+		{
+			itr := Down
+			while itr.Right != null itr = itr.Right
+			UNext(Down, new ObjSkobs("{}"),itr)
+			MakeItBlock(Down)
+		}
+		WorkBag.Push(Down,State_Start)
+		WorkBag.Push(this&,State_Start)
+	}
+}
+
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
@@ -785,6 +813,12 @@ BoxFuncBody := class extend BoxFunc
 	
 	yieldInClass := int
 	yieldInClassType := Type^
+	AddYodler := virtual !(BoxReturn^ toAdd) -> int
+	{
+		YieldCheck()
+		Yodlers.Push(toAdd)
+		return Yodlers.Size()
+	}
 	YieldCheck := !() -> void
 	{
 		if Yodlers.Size() != 0
