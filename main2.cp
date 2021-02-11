@@ -1,29 +1,9 @@
 
 
-classA := class
-{
-	x := int
-	Pt := virtual !() -> void
-	{
-		x = 13
-	}
-}
-classB := class extend classA
-{
-	Pt := virtual !() -> void
-	{
-		x = 27
-	}
-}
 
 //libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
-	j := new classA
-	j->SetType(classB)
-	j.Pt()
-	printf("heh %i\n",j.x)
-	return 0
 	gRepo.Init(".")
 	gRepo.AddZipRoot(argv[0])
 	if $debug
@@ -34,10 +14,12 @@ main := !(int argc, char^^ argv) -> int
 
 		
 	libjitinit()
+	v := Library()
+	v.Open("libjit.so")
+	sb := v.Get("jit_type_void")->{void^^}
 	printf("mod test %i\n",JIT_TYPE_PTR)
 	printf("mod test %p\n",jit_context_create)
-	jit_type_void->ptr&->{void^^}^ = argc&->{void^}
-	printf("ptr %p\n",jit_type_void->ptr&)
+	printf("ptr %p %p\n",jit_type_void,sb^)
 	return 0
 	
 	//libjit.Open("libjit.so")
@@ -80,6 +62,7 @@ main := !(int argc, char^^ argv) -> int
 		InsertBeforeTest()
 		BestTest()
 		TestBugs()
+		TestSetType()
 		TaskTest() // Must be last
 		printf("all good\n")
 	}catch(IException^ e)
@@ -88,6 +71,32 @@ main := !(int argc, char^^ argv) -> int
 	}
 	return 0
 }
+classSetTypeA := class
+{
+	x := int
+	Pt := virtual !() -> void
+	{
+		x = 13
+	}
+}
+classSetTypeB := class extend classSetTypeA
+{
+	Pt := virtual !() -> void
+	{
+		x = 27
+	}
+}
+
+TestSetType := !() -> void
+{
+	j := new classSetTypeA
+	j.Pt()
+	assert(j.x == 13)
+	j->SetType(classSetTypeB)
+	j.Pt()
+	assert(j.x == 27)
+}
+
 FuncPointerWithNames := !(char^ name)^ -> void
 
 WantIt := !(@Typ x) -> void

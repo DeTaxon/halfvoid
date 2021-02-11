@@ -83,12 +83,24 @@ ParamCall := class extend ObjResult
 	}
 }
 
+ParamNaturalUnrefCall := class extend ParamNaturalCall
+{
+	//TODO: bigger ref support
+	GetType := virtual !() -> Type^
+	{
+		if ToCall == null return null
+		return ToCall.GetType().GetPoint()
+	}
+	GetPointName := virtual !() -> string
+	{
+		return ToCall->{GlobalParam^}.GetRefPointName(TempId)
+	}
+}
 ParamNaturalCall := class extend ParamCall
 {
 	TempId := int
 	debugId := int
 	ToCall := MemParam^
-	isUnref := bool
 	this := !(string Name , Object^ par) -> void
 	{
 		BeforeName = Name
@@ -121,8 +133,6 @@ ParamNaturalCall := class extend ParamCall
 	GetType := virtual !() -> Type^
 	{
 		if ToCall == null return null
-		if isUnref 
-			return ToCall.GetType().GetPoint()
 		return ToCall.GetType()
 	}
 	PrintInBlock := virtual !(sfile f) -> void
@@ -159,10 +169,6 @@ ParamNaturalCall := class extend ParamCall
 	}
 	GetPointName := virtual !() -> string
 	{
-		if isUnref
-		{
-			return ToCall->{GlobalParam^}.GetRefPointName(TempId)
-		}
 		return ToCall.GetPointName(TempId)
 	}
 }

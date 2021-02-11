@@ -48,7 +48,8 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 				asObj := iter.Down.Right.Right->{ObjIndent^}
 				if asObj.MyStr == "ptr"
 				{
-					iter.Down->{ParamNaturalCall^}.isUnref = true
+					dwn := iter.Down
+					dwn->SetType(ParamNaturalUnrefCall)
 					iter.Down.Right = null
 					return iter.Down
 				}

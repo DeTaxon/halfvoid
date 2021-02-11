@@ -47,8 +47,9 @@ CLibModule := class extend CompilerModule
 						asGl := obj->{GlobalParam^}
 						if asGl.ResultType is TypePoint and asGl.ResultType.Base is TypeFunc
 						{
-						strData << key << "&->{void^^}^ = itLib.Get(\"" << key << "\")\n"
+							strData << key << "&->{void^^}^ = itLib.Get(\"" << key << "\")\n"
 						}else{
+							strData << key << "->ptr&->{void^^}^ = itLib.Get(\"" << key << "\")\n"
 						}
 					}
 				}
