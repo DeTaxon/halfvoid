@@ -9,6 +9,7 @@ State_PrePreGetUse := 7
 State_PreGetUse := 8
 State_MiddleGetUse := 9
 State_GetUse := 10
+State_CLib := 11
 State_PostGetUse := 11
 State_DestructCheck := 12
 State_DestructGet := 13

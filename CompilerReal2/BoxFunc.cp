@@ -541,11 +541,11 @@ PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,stri
 
 BoxFuncBodyFromString := class extend BoxFuncBody
 {
-	this := !(Type^ fType,char^ strToParse) -> void
+	this := !(char^ funcName ,Type^ fType,char^ strToParse) -> void
 	{
 		outLabel."this"()
 		MyFuncType = fType->{TypeFunc^}
-		OutputName = "HelloFunc"
+		OutputName = funcName
 		FuncName = OutputName
 		GetObjectsFromMemory(Path(""),strToParse,strlen(strToParse),this&)
 		if Down != null

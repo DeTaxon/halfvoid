@@ -4,22 +4,69 @@ OneCLib := class
 	jsonStart := jsonNode^
 
 	initFunc := StringSpan
+	dllNames := List.{StringSpan}
 
 	consts := AVLMap.{StringSpan,jsonNode^}
 	funcs := AVLMap.{StringSpan,jsonNode^}
 	vars := AVLMap.{StringSpan,jsonNode^}
 
+	objs := AVLMap.{StringSpan,Object^}
+
 	isStatic := bool
 
 	initFuncObj := Object^
+	initFuncBody := BoxFuncBodyFromString^
 }
 
 CLibModule := class extend CompilerModule
 {
 	libs := List.{OneCLib^}
-	objs := AVLMap.{StringSpan,Object^}
+
+
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_CLib
+		{
+			fType := CheckFuncTypeString(StringSpan("void"))
+			for it : libs
+			{
+				strData := "itLib := Library\n"sbt
+
+				strData << "itLib.Open("
+				for toLd,i : it.dllNames
+				{
+					if i != 0 strData << ","
+					strData << "\"" << toLd << "\""
+				}
+				strData << ")\n"
+
+				for obj,key : it.objs
+				{
+					if obj is GlobalParam
+					{
+						asGl := obj->{GlobalParam^}
+						if asGl.ResultType is TypePoint and asGl.ResultType.Base is TypeFunc
+						{
+						strData << key << "&->{void^^}^ = itLib.Get(\"" << key << "\")\n"
+						}else{
+						}
+					}
+				}
+
+				it.initFuncBody = new BoxFuncBodyFromString(it.initFunc,fType,strData)
+			}
+		}
+	}
+
+	addedWork := bool
 	AddCLib := !(vRepoFile^ libFile,bool isStatic) -> void
 	{
+		if not addedWork
+		{
+			addedWork = true
+			WorkBag.Push(this&,State_CLib)
+		}
+
 		ptr := libFile.Map()
 
 		newLib := new OneCLib
@@ -37,6 +84,11 @@ CLibModule := class extend CompilerModule
 			{
 			case "initname"
 				newLib.initFunc = part.GetStr()
+			case "libs"
+				for it : part^
+				{
+					newLib.dllNames.Push(it.GetStr())
+				}
 			case "funcs"
 				for it : part^
 				{
@@ -61,16 +113,30 @@ CLibModule := class extend CompilerModule
 	GetItem := virtual !(char^ name) -> Object^
 	{
 		spn := StringSpan(name)
-		if spn in objs
-			return objs[spn]
 
 		for it : libs
 		{
+			if spn in it.objs
+				return it.objs[spn]
+		}
+
+		for it : libs
+		{
+			if spn in it.vars
+			{
+				inVars := ref it.vars[spn]
+				itType := CheckTypeString(inVars.GetStr())
+				resPar := new GlobalParam(itType,null)
+				resPar.IsRef = true
+				it.objs[inVars.Key()] = resPar
+
+				return resPar
+			}
 			if spn in it.consts
 			{
 				inCnsts := ref it.consts[spn]
 				itInt := new ObjInt(inCnsts.GetInt())
-				objs[inCnsts.Key()] = itInt
+				it.objs[inCnsts.Key()] = itInt
 				return itInt
 			}
 			if spn in it.funcs
@@ -78,7 +144,7 @@ CLibModule := class extend CompilerModule
 				inFuncs := ref it.funcs[spn]
 				fType := CheckFuncTypeString(inFuncs.GetStr())
 				resPar := new GlobalParam(fType.GetPoint(),null)
-				objs[inFuncs.Key()] = resPar
+				it.objs[inFuncs.Key()] = resPar
 
 				return resPar
 			}
@@ -141,7 +207,7 @@ CLibModule := class extend CompilerModule
 	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
-		for it : objs
+		for it : libs[^].objs
 		{
 			if it is GlobalParam
 				it.PrintGlobal(f)
@@ -150,10 +216,7 @@ CLibModule := class extend CompilerModule
 		{
 			if lib.isStatic
 				continue
-			f << "define void @" << lib.initFunc << "()\n"
-			f << "{\n"
-			f << "ret void\n"
-			f << "}\n"
+			lib.initFuncBody.PrintGlobal(f)
 		}
 	}
 }

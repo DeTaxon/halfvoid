@@ -202,6 +202,7 @@ VeryLocalParam := class extend LocalParam
 GlobalParam := class extend MemParam
 {
 	MainId := int
+	IsRef := bool
 	IsThreadLocal := bool
 	IsTaskLocal := bool
 	taskFieldId := int
@@ -213,9 +214,9 @@ GlobalParam := class extend MemParam
 		MainId = GetNewId()
 		WorkBag.Push(this&,State_PrePrint)
 	}
-	IsRef := virtual !() -> bool
+	IsRef := virtual !() -> bool //IsRValue
 	{
-		return true
+		return true //IsRef func and IsRef bool is different 
 	}
 	GetTaskFieldId := !() -> void
 	{
@@ -305,7 +306,11 @@ GlobalParam := class extend MemParam
 		f << "@T" << MainId << " = "//" = dso_local "
 		if IsThreadLocal f << "thread_local "
 		f << "global "
-		ResultType.PrintType(f)
+		if IsRef{
+			ResultType.GetPoint().PrintType(f)
+		}else{
+			ResultType.PrintType(f)
+		}
 		if Down == null
 		{
 			if TypeContainVTable(ResultType)
@@ -336,10 +341,23 @@ GlobalParam := class extend MemParam
 			f << "%TaskValuePtrPre" << newInd << " = bitcast i8* %TaskTPre" << newInd << " to %TaskStruct*\n"
 			f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct, %TaskStruct* %TaskValuePtrPre" << newInd << ", i32 0, i32 " << taskFieldId << "\n"
 			}
+			return void
+		}
+		if IsRef {
+			f << "%TRef" << newInd << " = load "
+			ResultType.GetPoint().PrintType(f)
+			f << " , "
+			ResultType.GetPoint().GetPoint().PrintType(f)
+			f << " @T" << MainId << "\n"
 		}
 	}
 	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
 	{
+		if IsRef {
+			ResultType.GetPoint().PrintType(f)
+			f << " %TRef" << newInd
+			return void
+		}
 		if IsTaskLocal
 		{
 			ResultType.GetPoint().PrintType(f)
@@ -360,6 +378,26 @@ GlobalParam := class extend MemParam
 			PrintPointUse(f,newInd,debId)
 			f << "\n"
 
+			return void
+		}
+		if IsRef {
+			f << "%TPre" << newInd << " = load "
+			ResultType.GetPoint().PrintType(f)
+			f << " , "
+			ResultType.GetPoint().PrintType(f)
+			f << "* @T" << MainId
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
+
+			f << "%T" << newInd << " = load "
+			ResultType.PrintType(f)
+			f << " , "
+			ResultType.PrintType(f)
+			f << "* %TPre" << newInd
+			if DebugMode and debId != -1
+				f << ", !dbg !" << debId 
+			f << "\n"
 			return void
 		}
 
@@ -391,11 +429,24 @@ GlobalParam := class extend MemParam
 		return "%T"sbt + newInd 
 	}
 	GetPointName := virtual !(int newInd) -> string
-	{
+	{	
+		if IsRef {
+			return "%TRef"sbt + newInd
+		}
 		if IsTaskLocal
 		{
 			return "%TaskValuePtr"sbt + newInd
 		}
+		return "@T"sbt + MainId
+	}
+
+	PrintRefPointUse := !(sfile f) -> void
+	{
+		ResultType.GetPoint().PrintType(f)
+		f << " @T"sbt << MainId
+	}
+	GetRefPointName := !(int newInd) -> char^
+	{
 		return "@T"sbt + MainId
 	}
 }

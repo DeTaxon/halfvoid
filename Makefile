@@ -33,9 +33,13 @@ endif
 MainOut := ./Objs/out3.ll
 ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
 
-CmplOptm := clang -static $(MainOut) -s -O2 $(Libs) -o $(TargetStable)
-CmplDeb := clang -static -g -O0 $(MainOut) $(Libs) -o $(TargetWork)
-CmplTest := clang -static -g $(MainOut) $(Libs) -o $(CurrentTest)
+ifeq ($(OS),Windows_NT)
+	AddStatic := -static
+endif
+
+CmplOptm := clang $(AddStatic) $(MainOut) -s -O2 $(Libs) -o $(TargetStable)
+CmplDeb := clang $(AddStatic) -g -O0 $(MainOut) $(Libs) -o $(TargetWork)
+CmplTest := clang $(AddStatic) -g $(MainOut) $(Libs) -o $(CurrentTest)
 ifeq ($(cross),win32)
 	HW := ./halfvoid.exe
 	TargetPlatform := -p win32
@@ -63,7 +67,7 @@ stable:
 	$(gdb_tui) $(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
+	$(gdb_tui) $(CurrentWork) --clib libjit.clib -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr

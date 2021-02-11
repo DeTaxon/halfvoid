@@ -1,7 +1,29 @@
 
+
+classA := class
+{
+	x := int
+	Pt := virtual !() -> void
+	{
+		x = 13
+	}
+}
+classB := class extend classA
+{
+	Pt := virtual !() -> void
+	{
+		x = 27
+	}
+}
+
 //libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
+	j := new classA
+	j.Pt()
+	j->SetType(classB)
+	printf("heh %i\n",j.x)
+	return 0
 	gRepo.Init(".")
 	gRepo.AddZipRoot(argv[0])
 	if $debug
@@ -9,9 +31,13 @@ main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid")
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
-	//libjitinit()
-	//printf("mod test %i\n",JIT_TYPE_PTR)
-	//printf("mod test %p\n",jit_context_create)
+
+		
+	libjitinit()
+	printf("mod test %i\n",JIT_TYPE_PTR)
+	printf("mod test %p\n",jit_context_create)
+	jit_type_void->ptr&->{void^^}^ = argc&->{void^}
+	printf("ptr %p\n",jit_type_void->ptr&)
 	return 0
 	
 	//libjit.Open("libjit.so")

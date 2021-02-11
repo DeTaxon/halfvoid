@@ -1,25 +1,49 @@
 
 FuncCallSpecific := !(Object^ iter) -> Object^
 {
-	if iter.Down? is ObjType and iter.Down.Right?.GetValue() == "->"
+	if iter.Down?.Right?.GetValue() == "->"
 	{
-		asTyp := iter.Down->{ObjType^}.MyType
-		if iter.Down.Right.Right? is ObjIndent
+		if iter.Down is ObjType
 		{
-			asObj := iter.Down.Right.Right->{ObjIndent^}
-			if asObj.MyStr == "Len"
+			asTyp := iter.Down->{ObjType^}.MyType
+			if iter.Down.Right.Right? is ObjIndent
 			{
-				if asTyp is TypeArr
+				asObj := iter.Down.Right.Right->{ObjIndent^}
+				if asObj.MyStr == "Len"
 				{
-					return new ObjInt(asTyp->{TypeArr^}.Size)
+					if asTyp is TypeArr
+					{
+						return new ObjInt(asTyp->{TypeArr^}.Size)
+					}
+				}
+				if asObj.MyStr == "Base"
+				{
+					if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
+					{
+						return new ObjType(asTyp.Base)
+					}
 				}
 			}
-			if asObj.MyStr == "Base"
+		}
+		if iter.Down is ParamNaturalCall
+		{
+			if iter.Down.Right.Right? is ObjIndent
 			{
-				if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
+				asObj := iter.Down.Right.Right->{ObjIndent^}
+				if asObj.MyStr == "ptr"
 				{
-					return new ObjType(asTyp.Base)
+					iter.Down->{ParamNaturalCall^}.isUnref = true
+					iter.Down.Right = null
+					return iter.Down
 				}
+			}
+		}
+		if iter.Down.Right.Right? is ObjIndent
+		{	
+			asObj := iter.Down.Right.Right->{ObjIndent^}
+			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null
+			{
+				iter.Print(0)
 			}
 		}
 	}
