@@ -30,7 +30,7 @@ CLibModule := class extend CompilerModule
 			fType := CheckFuncTypeString(StringSpan("void"))
 			for it : libs
 			{
-				strData := "itLib := Library\n"sbt
+				strData := "itLib := Library()\n"sbt
 
 				strData << "itLib.Open("
 				for toLd,i : it.dllNames
