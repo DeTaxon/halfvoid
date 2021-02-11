@@ -20,8 +20,8 @@ classB := class extend classA
 main := !(int argc, char^^ argv) -> int
 {
 	j := new classA
-	j.Pt()
 	j->SetType(classB)
+	j.Pt()
 	printf("heh %i\n",j.x)
 	return 0
 	gRepo.Init(".")

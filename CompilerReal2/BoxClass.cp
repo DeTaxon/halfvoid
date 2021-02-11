@@ -740,6 +740,8 @@ BoxClass := class extend Object
 
 		}
 	}
+	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
+	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
 	PrintStruct := virtual !(sfile f) -> void
 	{
 		if not vTable.Empty()

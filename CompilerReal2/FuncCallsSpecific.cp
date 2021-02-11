@@ -1,4 +1,20 @@
 
+setTypeFuncs := AVLMap.{Type^,BoxFunc^}
+SetTypeToClass := !(Type^ toType) -> BoxFunc^
+{
+	if toType in setTypeFuncs
+		return setTypeFuncs[toType]
+
+	asCl := toType->{TypeClass^}.ToClass
+	newFunc := new BuiltInFuncUno("SetType",GTypeVoidP,false,GTypeVoid,false,
+	"%mdl## = bitcast i8* #1 to i8**\n"sbt +
+	"%PreSet## = bitcast " + asCl.GetVTableTypeName() + "* " + asCl.GetVTableName() + " to i8*\n" +
+	"store i8* %PreSet##, i8** %mdl##\n"
+	)
+	setTypeFuncs[toType] = newFunc
+	return newFunc
+}
+
 FuncCallSpecific := !(Object^ iter) -> Object^
 {
 	if iter.Down?.Right?.GetValue() == "->"
@@ -41,9 +57,19 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 		if iter.Down.Right.Right? is ObjIndent
 		{	
 			asObj := iter.Down.Right.Right->{ObjIndent^}
-			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null
+			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null //TODO: check is both have vtable and it is valid to set
 			{
-				iter.Print(0)
+				dt := iter.Down.GetType() 
+				tt := ParseType(iter.Down.Right.Right.Right.Down)
+				if dt? is TypePoint and tt? is TypeClass
+				{
+					setFunc := SetTypeToClass(tt)
+					if setFunc != null
+					{
+						iter.Down.Right = null
+						return MakeSimpleCall(setFunc,iter.Down)
+					}
+				}
 			}
 		}
 	}
