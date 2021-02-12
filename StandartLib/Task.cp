@@ -349,7 +349,7 @@ TaskBox := class
 				continue
 			}
 
-	
+			//TODO: wait for AwaitWork	
 			if makeWait
 			{
 				//itConVar.WaitFor(itMutex&,waitTime)
