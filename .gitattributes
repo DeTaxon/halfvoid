@@ -1,0 +1,2 @@
+stable.exe filter=lfs diff=lfs merge=lfs -text
+stable filter=lfs diff=lfs merge=lfs -text
