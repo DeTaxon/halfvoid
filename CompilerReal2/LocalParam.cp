@@ -289,7 +289,8 @@ GlobalParam := class extend MemParamCommon
 	}
 }
 TaskLocalParam := class extend GlobalParam
-{
+{ 
+	//TODO: TaskLocal does not set vtable
 	DoTheWork := virtual !(int pri) -> void  {}
 	PrintGlobal := virtual !(sfile f) -> void {}
 	GetTaskFieldId := !() -> void

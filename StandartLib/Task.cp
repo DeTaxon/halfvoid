@@ -96,6 +96,7 @@ TaskBox := class
 	itWorkMutex := Mutex
 	itWorkConVar := ConVar
 	itWorkToDo := List.{Tuple.{!()&->void,TaskData^}} ; $keep
+	itWorkCount := int
 	poolThread := List.{Thread^}
 
 	tasksToExe := List.{TaskData^} ; $keep
@@ -112,6 +113,7 @@ TaskBox := class
 		itMutex."this"()
 		itWorkMutex."this"()
 		itWorkConVar."this"()
+		itWorkCount = 0
 
 		pollData."this"()
 		pollData.Reserve(10)
@@ -245,6 +247,7 @@ TaskBox := class
 	AwaitWork := !(!()&->void lambd) -> void
 	{
 		itMutex.Lock()
+		itWorkCount += 1
 		itWorkToDoPre.Emplace(lambd,CurrentTask)
 		itMutex.Unlock()
 		switchToMain()
@@ -314,6 +317,7 @@ TaskBox := class
 				itWorkConVar.NotifyAll()
 				itWorkMutex.Unlock()
 			}
+
 			if destroyTasks.Size() != 0
 			{
 				for it : destroyTasks
@@ -339,6 +343,8 @@ TaskBox := class
 				if toDoTask == null
 				{
 					toDoTask = checkExeWorks()
+					if toDoTask != null
+						itWorkCount -= 1
 				}
 			}
 
@@ -349,7 +355,12 @@ TaskBox := class
 				continue
 			}
 
-			//TODO: wait for AwaitWork	
+			if not makeWait and itWorkCount != 0
+			{
+				makeWait = true
+				waitTime = 1
+			}
+
 			if makeWait
 			{
 				//itConVar.WaitFor(itMutex&,waitTime)
