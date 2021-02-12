@@ -10,7 +10,6 @@ SLambda := class extend BoxFuncContainer
 	inAlloc := int
 	manSkob := bool
 	justFunc := bool
-	boostLambda := bool
 	ItId := int
 
 	Created := bool
@@ -97,30 +96,8 @@ SLambda := class extend BoxFuncContainer
 			ResultType = ResultType.Base.GetPoint()
 		}
 	}
-	DoTheWork := virtual !(int pri) -> void
+	DoStateStart := virtual !(int pri) -> void
 	{
-		if pri == State_PrePrint
-		{
-			if IsCloned return void
-			for it : CaptureParams
-			{
-				if it.1 != null
-					continue
-				re := GetItem(it.0,Up)
-				if re == null EmitError("Capture param "sbt + it.0 + " not found")
-			}
-		}
-		if pri == State_Start and (not parsedStart)
-		{
-			AllocSetStruct(Up)
-			if boostLambda
-			{
-				MakeItBlock(Down)
-				empt := Queue.{Type^}()
-				asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
-				ResultType = asFunc.GetLambda()
-			}else{
-
 				parsedStart = true
 				justFunc = Down.Right.GetValue() == "=>"
 				//WorkBag.Push(this&,State_Syntax)
@@ -294,8 +271,24 @@ SLambda := class extend BoxFuncContainer
 				if Down.GetValue() == "{}"
 					manSkob = true
 				MakeItBlock(Down)
-
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_PrePrint
+		{
+			if IsCloned return void
+			for it : CaptureParams
+			{
+				if it.1 != null
+					continue
+				re := GetItem(it.0,Up)
+				if re == null EmitError("Capture param "sbt + it.0 + " not found")
 			}
+		}
+		if pri == State_Start and (not parsedStart)
+		{
+			AllocSetStruct(Up)
+			DoStateStart(pri)
 		}
 		if pri == State_PostGetUse
 		{
@@ -902,34 +895,15 @@ SLambda := class extend BoxFuncContainer
 		}
 		return "%T"sbt + inAlloc
 	}
-	ApplyFunc := !() -> void
+	ApplyFunc := virtual !() -> void
 	{
 		WorkBag.Push(this&,State_PrePrint)
 		applyed = true
 		WorkBag.Push(Down,State_Start)
 		WorkBag.Push(this&,State_PostGetUse)
 	}
-	ApplyFunc := !(Type^ lambTyp, bool isFnc) -> void
+	ApplyFunc := virtual !(Type^ lambTyp, bool isFnc) -> void
 	{
-		if boostLambda
-		{
-			nams  := Queue.{char^}() ; $temp
-
-			if not justFunc{
-				itNN := "lambdaParam"sbt + ItId
-				nams.Push(itNN.Str())
-			}
-			lType := lambTyp.Base->{TypeFunc^}
-			for i : lType.ParsCount
-			{
-				if i == 0 continue
-				itNN := "_"sbt + i
-				nams.Push(itNN.Str())
-			}
-			Names = nams.ToArray()
-			
-		}
-
 		WorkBag.Push(this&,State_PrePrint)
 		if isFnc xor justFunc
 		{
@@ -1062,6 +1036,38 @@ SLambda := class extend BoxFuncContainer
 	}
 	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
 	{
+	}
+}
+SBoostLambda := class extend SLambda
+{
+	this := !() -> void
+	{
+		this."SLambda.this"()
+	}
+	DoStateStart := virtual !(int pri) -> void
+	{
+		MakeItBlock(Down)
+		empt := Queue.{Type^}()
+		asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
+		ResultType = asFunc.GetLambda()
+	}
+	ApplyFunc := virtual !(Type^ lambTyp, bool isFnc) -> void
+	{
+		nams  := Queue.{char^}() ; $temp
+
+		if not justFunc{
+			itNN := "lambdaParam"sbt + ItId
+			nams.Push(itNN.Str())
+		}
+		lType := lambTyp.Base->{TypeFunc^}
+		for i : lType.ParsCount
+		{
+			if i == 0 continue
+			itNN := "_"sbt + i
+			nams.Push(itNN.Str())
+		}
+		Names = nams.ToArray()
+		this."SLambda.ApplyFunc"(lambTyp,isFnc)
 	}
 }
 

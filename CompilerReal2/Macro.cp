@@ -50,9 +50,8 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			return null
 		if mvUp.Up?.GetValue() == "return()"
 			return null
-		nL := new SLambda()
+		nL := new SBoostLambda()
 		UNext(mvUp,nL,1)
-		nL.boostLambda = true
 		return null
 	}
 
