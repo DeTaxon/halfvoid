@@ -33,6 +33,7 @@ endif
 MainOut := ./Objs/out3.ll
 ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
 
+AddStatic := -static
 ifeq ($(OS),Windows_NT)
 	AddStatic := -static
 endif

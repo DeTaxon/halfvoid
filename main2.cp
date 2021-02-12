@@ -13,14 +13,14 @@ main := !(int argc, char^^ argv) -> int
 	}
 
 		
-	libjitinit()
-	v := Library()
-	v.Open("libjit.so")
-	sb := v.Get("jit_type_void")->{void^^}
-	printf("mod test %i\n",JIT_TYPE_PTR)
-	printf("mod test %p\n",jit_context_create)
-	printf("ptr %p %p\n",jit_type_void,sb^)
-	return 0
+	//libjitinit()
+	//v := Library()
+	//v.Open("libjit.so")
+	//sb := v.Get("jit_type_void")->{void^^}
+	//printf("mod test %i\n",JIT_TYPE_PTR)
+	//printf("mod test %p\n",jit_context_create)
+	//printf("ptr %p %p\n",jit_type_void,sb^)
+	//return 0
 	
 	//libjit.Open("libjit.so")
 	//jit_context_create := libjit.Get("jit_context_create")->{!()^->void^}
@@ -44,7 +44,7 @@ main := !(int argc, char^^ argv) -> int
 	//funcptr := jit_type_create_signature(jit_abi_cdecl,jit_type_int,pars,2,1)
 
 	//f := jit_function_create(funcptr)
-	return 0
+	//return 0
 	//if "wow" == "wow"
 	//{
 	//	bob + bob
@@ -206,6 +206,7 @@ TaskTest := !() -> void
 				TSleep(1)
 			})
 		}
+		assert(taskTestValue == 4)
 		
 	})
 	tb.Spawn(() ==> {
@@ -215,6 +216,7 @@ TaskTest := !() -> void
 			printf("waw %i\n",taskTestValue++)
 			TSleep(1)
 		}
+		assert(taskTestValue = 100)
 		
 	})
 	tb.Run()
