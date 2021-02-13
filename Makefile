@@ -55,17 +55,17 @@ ifeq ($(cross),win32)
 endif
 
 repair: $(wildcard CompilerReal2/*.cp) 
-	$(gdb_tui) $(CurrentStable) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
+	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(gdb_tui) $(CurrentWork)  --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 twice: repair cycle
 
 ManyCycle:
 	for i in {1..10}; do make cycle; done
 
 stable:
-	$(gdb_tui) $(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
+	$(gdb_tui) $(CurrentStable) --notask  $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
 	$(gdb_tui) $(CurrentWork) --notask --clib libjit.clib -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)

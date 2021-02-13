@@ -80,6 +80,16 @@ ResumeTask := !(int taskId) -> void
 	if CurrentTaskBox != null
 		CurrentTaskBox.ResumeTask(taskId)
 }
+ExpectWorkers := !(int exp) -> void
+{
+	if CurrentTaskBox != null
+		CurrentTaskBox.ExpectWorkers(exp)
+}
+SpawnTask := !(!()&->void lmb) -> void
+{
+	assert(CurrentTaskBox != null)
+	CurrentTaskBox.Spawn(lmb)
+}
 
 TaskBox := class
 {
