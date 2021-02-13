@@ -58,7 +58,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 	$(gdb_tui) $(CurrentStable) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 twice: repair cycle
 
 ManyCycle:
@@ -68,7 +68,7 @@ stable:
 	$(gdb_tui) $(CurrentStable) $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
 
 test2: main2.cp
-	$(gdb_tui) $(CurrentWork) --clib libjit.clib -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
+	$(gdb_tui) $(CurrentWork) --notask --clib libjit.clib -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr

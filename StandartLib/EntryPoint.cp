@@ -10,5 +10,17 @@ _hvEntryPoint := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
 	LibDB.SetRepo(gRepo&)
-	return main(argc,argv)
+	if $notask or true
+	{
+		return main(argc,argv)
+	}else{
+		tb := new TaskBox
+		preRet := int
+		tb.Spawn(() ==> {
+			preRet = main(argc,argv)
+		})
+		tb.Run()
+		//delete tb
+		return preRet
+	}
 }
