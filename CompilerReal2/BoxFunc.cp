@@ -603,7 +603,7 @@ BoxFuncBody := class extend BoxFunc
 		MethodType = metC
 		IsVirtual = IsVirt
 
-		if SomeName == "main"
+		if SomeName == "_hvEntryPoint"
 		{
 			OutputName = "main"
 		}else
@@ -682,7 +682,7 @@ BoxFuncBody := class extend BoxFunc
 		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
-		if SomeName == "main"
+		if SomeName == "_hvEntryPoint"
 		{
 			OutputName = "main"
 		}else
@@ -752,7 +752,7 @@ BoxFuncBody := class extend BoxFunc
 				asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
 			}
 		}
-		if FuncName == "main"
+		if FuncName == "_hvEntryPoint"
 		{
 			ParseBlock()
 		}
@@ -864,8 +864,8 @@ BoxFuncBody := class extend BoxFunc
 			f << " ; " << FuncName
 
 			f << "\n{\n"
-			if FuncName == "main"
-				TaskPrintInit(f)
+			//if FuncName == "main"
+			//	TaskPrintInit(f)
 			dbgId := -1
 			if DebugMode
 				dbgId = CreateDebugCall(this&)

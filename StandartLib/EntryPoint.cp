@@ -1,6 +1,6 @@
 gRepo := vRepo
 
-_main := !(int argc, char^^ argv) -> int
+_hvEntryPoint := !(int argc, char^^ argv) -> int
 {
 	_TaskPtrReset()
 	gRepo.Init(".")
@@ -9,6 +9,6 @@ _main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid")
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
-	LibDB.SetRepo(gRepo)
+	LibDB.SetRepo(gRepo&)
 	return main(argc,argv)
 }

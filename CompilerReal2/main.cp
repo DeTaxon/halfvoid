@@ -3,7 +3,6 @@ clibModule := CLibModule
 
 main := !(int argc,char^^ argv) -> int 
 {
-	gRepo.Init(".")
 	ReturnName = "result"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
@@ -27,6 +26,7 @@ main := !(int argc,char^^ argv) -> int
 	dirChecks := List.{Tuple.{char^,int}}()
 
 	emitTree := false
+	disableTask := false
 
 	Modules.Push(clibModule&)
 
@@ -49,6 +49,8 @@ main := !(int argc,char^^ argv) -> int
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
+		case "--notask"
+			disableTask = true
 		case  "--tree"
 			emitTree = true
 		case "--cci"
@@ -177,6 +179,10 @@ main := !(int argc,char^^ argv) -> int
 	if DebugMode 
 	{
 		GlobalAttributes["debug"] = GBoolTrue
+	}
+	if disableTask
+	{
+		GlobalAttributes["notask"] = GBoolTrue
 	}
 
 	MacroRestart = new Object
@@ -309,10 +315,15 @@ main := !(int argc,char^^ argv) -> int
 		while endI.Right != null 
 			endI = endI.Right
 	mainFunc := GetItem("main",endI)
+	entryFunc := GetItem("_hvEntryPoint",endI)
 
 	if mainFunc != null
 		WorkBag.Push(mainFunc.Down,State_Start)
 
+	if entryFunc == null or entryFunc.Down == null or not entryFunc.Down is BoxFuncBody {
+		ErrorLog.Push("Compiler error 563462436\n")
+		return 0
+	}
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag(printWork)
 

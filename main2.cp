@@ -4,14 +4,6 @@
 //libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
-	gRepo.Init(".")
-	gRepo.AddZipRoot(argv[0])
-	if $debug
-	{
-		gRepo.AddZipRoot("halfvoid")
-		gRepo.AddZipRoot("halfvoid.exe")
-	}
-
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
