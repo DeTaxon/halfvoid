@@ -28,13 +28,12 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz) -> BoxFile^
 }
 GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> Object^
 {
-	d := WordParser
 	itLine := null->{ObjLine^}
 	treeIter := null->{Object^}
 	prevId := -1
 	linePos := 0
 	DaBuff := new char[2048] ; $temp
-	d.ReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) ==>
+	RegExpReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) ==>
 	{
 		ptr := memPtr[b]&
 

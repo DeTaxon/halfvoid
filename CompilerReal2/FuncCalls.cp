@@ -463,6 +463,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 					box2.itPars.Emplace(asClass.ClassType,true)
 					box2.itConsts.Push(new ObjStr(asName))
+					if asClass.UnrollTemplate ==null return null
 					pru := (asClass.UnrollTemplate^.GetPriority(box2^))
 					roll := null->{BoxFunc^}
 					if pru == 255 

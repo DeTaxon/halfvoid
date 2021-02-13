@@ -41,6 +41,15 @@ ContainerCommonSet := class .{@TreeType,@DATA}
 		resl := itTree.FindNode(dat)
 		return resl != null
 	}
+	"==" := !(ContainerCommonSet.{@AnType,DATA} toCmp) -> bool
+	{
+		if Size() != toCmp.Size()
+			return false
+		for it : this
+			if not toCmp.Contain(it)
+				return false
+		return true
+	}
 	"~For" := !() .{} -> CommonSetIterator.{DATA}
 	{
 		return CommonSetIterator.{DATA}(itTree.Start)

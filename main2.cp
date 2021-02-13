@@ -12,6 +12,20 @@ main := !(int argc, char^^ argv) -> int
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
 
+	//lx := new LexBuilder ; $temp
+	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
+	//m := lx.GenerateMachine()
+	m := "[a-zA-Z][a-zA-Z0-9]*"reg
+
+	tt := (char^ newSt) ==> {
+		printf("mathc <%s> %i\n",newSt,m.IsMatch(newSt))
+	}
+	tt("hello")
+	tt("he0llo")
+	tt("0hello")
+		
+	return 0
+
 		
 	//libjitinit()
 	//v := Library()

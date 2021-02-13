@@ -105,9 +105,8 @@ json := class extend jsonNode
 	{
 		jsonLoadMachine()
 		memset(this&,0,json->TypeSize)
-		d := WordParser
 		tokens."this"()
-		d.ReadText(jsonRegMachine,fileData,size, (a,b,c) ==>
+		RegExpReadText(jsonRegMachine,fileData,size, (a,b,c) ==>
 		{
 			if a == 5
 				return void
