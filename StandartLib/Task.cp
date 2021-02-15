@@ -52,6 +52,7 @@ TaskData := class
 		stackPtr := void^
 	if $win32
 		fiber := void^
+	keepStack := bool
 	taskLocalPtr := void^
 }
 ucontextStartTask := !(void^ fiberData) -> void
@@ -90,12 +91,18 @@ SpawnTask := !(!()&->void lmb) -> void
 	assert(CurrentTaskBox != null)
 	CurrentTaskBox.Spawn(lmb)
 }
+TaskKeepStackData := !() -> void
+{
+	assert(CurrentTaskBox != null)
+	CurrentTaskBox.TaskKeepStackData()
+}
 
 TaskBox := class
 {
 	sleepTasks := List.{Tuple.{double,TaskData^}} ; $keep
 	firstRunTasks := List.{TaskData^} ; $keep
 	itStacks := List.{void^} ; $keep
+	keptStacks := List.{void^} 
 
 	stackSize := int
 
@@ -152,6 +159,10 @@ TaskBox := class
 			newPoll := ref pollData.Create()
 			newPoll.0 = 2
 		}
+	}
+	TaskKeepStackData := !() -> void
+	{
+		CurrentTask?.keepStack = true
 	}
 	checkMonitor := !() -> void
 	{
@@ -332,6 +343,12 @@ TaskBox := class
 			{
 				for it : destroyTasks
 				{
+					if it.keepStack
+					{
+						if $posix keptStacks.Push(it.stackPtr)
+						if $win32 keptStacks.Push(it.fiber)
+						continue
+					}
 					it.tskToRun.Destroy()
 					if $posix
 					{

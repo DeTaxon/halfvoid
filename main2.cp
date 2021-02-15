@@ -1,7 +1,6 @@
 
 
 
-//libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
 	//lx := new LexBuilder ; $temp
@@ -17,7 +16,6 @@ main := !(int argc, char^^ argv) -> int
 	tt("0hello")
 		
 	return 0
-
 		
 	//libjitinit()
 	//v := Library()
