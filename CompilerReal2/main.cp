@@ -386,6 +386,7 @@ main := !(int argc,char^^ argv) -> int
 	fil << GlobalStrs[^]
 	Modules[^].PrintGlobal(fil)
 	PrintTuplesFuncs(fil)
+	TaskPrint2(fil)
 
 
 	for wutt : Files

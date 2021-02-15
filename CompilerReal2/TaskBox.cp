@@ -27,7 +27,11 @@ TaskInit := !() -> void
 		AddBuiltInFunc(new BuiltInFuncZero("_TaskPtrReset",GTypeVoid,false,
 			"%ItStruct## = bitcast %TaskStruct* @DefTaskStruct to i8*\n"sbt +
 			"store i8* %ItStruct## , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"))
+		AddBuiltInFunc(new BuiltInFuncZero("_TaskPtrGet",GTypeVoidP,true,"#0 = getelementptr i8*, i8** "sbt + gTaskPtr.GetPointName(0) + ", i32 0\n"))
+
 	}
+	AddBuiltInFunc(new BuiltInFuncUno("_taskInitMem",GTypeVoidP,false,GTypeVoid,false,
+							 "call void @taskInitFunc(i8* #1)\n"))
 
 }
 
@@ -62,6 +66,23 @@ TaskPrint := !(sfile f) -> void
 		f << "@DefTaskStruct = thread_local global %TaskStruct zeroinitializer\n"
 		gTaskPtr.PrintGlobal(f)
 	}
+}
+TaskPrint2 := !(sfile f) -> void
+{
+	f << "define void @taskInitFunc(i8* %ptr)\n"
+	f << "{\n"
+	f << "%TaskPtr = bitcast i8* %ptr to %TaskStruct*\n"
+	for it,i : taskParams
+	{
+		if it is TypeClass
+		{
+			clId := it->{TypeClass^}.ToClass.ClassId
+			f << "%obj"<<i<<" = getelementptr %TaskStruct, %TaskStruct* %TaskPtr, i32 0, i32 " << i << "\n"
+			f << "call void @ClassExtraConstructor" << clId
+			f << "(" << it.GetName() << "* %obj" << i << ")\n"
+		}
+	}
+	f << "ret void\n}\n"
 }
 TaskPrintInit := !(sfile f) -> void
 {

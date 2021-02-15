@@ -3,6 +3,7 @@ gRepo := vRepo
 _hvEntryPoint := !(int argc, char^^ argv) -> int
 {
 	_TaskPtrReset()
+	_taskInitMem(_TaskPtrGet())
 	gRepo.Init(".")
 	if $debug
 	{

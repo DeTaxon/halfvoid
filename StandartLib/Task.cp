@@ -461,6 +461,7 @@ TaskBox := class
 
 		osCreateTask(startTask)
 		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
+		_taskInitMem(startTask.taskLocalPtr)
 		return startTask
 	}
 }
