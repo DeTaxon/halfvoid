@@ -1189,6 +1189,8 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInPointSub())
 	BuiltInTemplates.Push(new BuiltInPointSubDec())
 
+	BuiltInTemplates.Push(new BuiltInTemplateZeroMem())
+
 	//BuiltInTemplates.Push(GlobalUnroll)
 	CreateLambdaBuilts()
 }

@@ -1,17 +1,22 @@
 
 
 
+clsWithV := class
+{
+	prt := virtual !() -> void
+	{
+		printf("yes\n")
+	}
+}
+
 //libjit := Library
 main := !(int argc, char^^ argv) -> int
 {
-	gRepo.Init(".")
-	gRepo.AddZipRoot(argv[0])
-	if $debug
-	{
-		gRepo.AddZipRoot("halfvoid")
-		gRepo.AddZipRoot("halfvoid.exe")
-	}
 
+	x := clsWithV
+	ZeroMem(x)
+	x.prt()
+	return 0
 		
 	//libjitinit()
 	//v := Library()
