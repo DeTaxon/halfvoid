@@ -422,6 +422,10 @@ List := class .{@T}
 		Counter = 0
 		
 	}
+	"=" := !(List.{T} toSet) .{} -> void
+	{
+		Push(toSet[^])
+	}
 	"<<<" := !(List.{T} toAdd) -> ref List.{T}
 	{
 		if toAdd.Counter == 0
