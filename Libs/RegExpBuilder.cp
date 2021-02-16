@@ -75,7 +75,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 	}
 
 
-	totalItems := QueueSet.{int}()
+	totalItems := List.{int}() ; $uniq
 	for i : borrow->len
 	{
 		found := i
@@ -109,7 +109,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 		result.CharToGo[ch] = newSize - 1
 	for lt : input.NodeId , i : 0
 	{
-		posInT := totalItems.GetPos(borrow[i])
+		posInT := totalItems.FindIndex(borrow[i])
 		result.CharToGo[lt] = posInT
 	}
 	result.Table = new int[][input.IsEndNode->len]

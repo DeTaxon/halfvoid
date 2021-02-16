@@ -47,6 +47,12 @@ List := class .{@T}
 	{
 		this << toAdd
 	}
+	FindIndex := !(T obj) -> int
+	{
+		if this[^i] == obj
+			return i
+		return -1
+	}
 	EmplaceFront := !(args...) -> ref T
 	{
 		if $uniq 
