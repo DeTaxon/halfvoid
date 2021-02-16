@@ -156,7 +156,7 @@ CollectMove := !(NonDetMachine input, int sId, QueueSet.{int} frm, QueueSet.{int
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
 	NewNodes := QueueSet.{QueueSet.{int}}()
-	Letters := QueueSet.{int}()
+	Letters := new List.{int} ; $uniq $temp
 	itLines := new List.{Tuple.{int,int,int}} ; $temp
 
 	for input.Lines
@@ -170,9 +170,9 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 		NewNodes <<< nowNodeValue
 	}
 
-	for itNode : NewNodes, nowId : 0
+	for itNode,nowId : NewNodes
 	{
-		for c : Letters
+		for c : Letters^
 		{
 			nowNodeValue := QueueSet.{int}()
 			CollectMove(input,c,itNode,nowNodeValue)
@@ -205,18 +205,18 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 
 	result.Table = new int[][NewNodes.Size()]
 	for result.Table {
-		it = new int[Letters.Size()]
-		for itm : it itm = -1
+		it = new int[Letters.Size()] ; $temp
+		it[^] = -1
 	}
 
 	for move : itLines^
 	{
-		chId := Letters.GetPos(move.2)	
+		chId := Letters.FindIndex(move.2)	
 		result.Table[move.0][chId] = move.1
 	}
 
 	result.NodeId = new int[Letters.Size()]
-	for it : Letters , i : 0
+	for it,i : Letters^ 
 	{
 		result.NodeId[i] = it
 	}
@@ -285,20 +285,20 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	for a : result.NodeId, b : input.NodeId a = b
 	result.IsEndNode = new int[setSize]
 	transformer := new int[NodeSets->len] ; $temp
-	//defer delete transformer
+	
 	{
 		someIter := 0
 		usedSets := QueueSet.{int}()
-		itNode := Queue.{int}()
-		for i : NodeSets->len
+		itNode := new List.{int} ; $temp
+		for it,i : NodeSets
 		{
-			if usedSets.Contain(NodeSets[i])
+			if usedSets.Contain(it)
 			{
-				ps := usedSets.GetPos(NodeSets[i])
-				transformer[i] = itNode[ps]
+				ps := usedSets.GetPos(it)
+				transformer[i] = itNode^[ps]
 			}else{
 				transformer[i] = someIter
-				usedSets.Push(NodeSets[i])
+				usedSets.Push(it)
 				itNode.Push(someIter)
 				someIter++
 			}

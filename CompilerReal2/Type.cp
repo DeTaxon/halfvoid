@@ -595,7 +595,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 {
 
 	ExtraArr := new bool[lin.Size()] ; $temp
-	for it : lin, i : 0
+	for it,i : lin
 	{
 		ExtraArr[i] = false
 		if IsRefArr != null ExtraArr[i] = IsRefArr[i]

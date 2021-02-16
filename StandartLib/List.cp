@@ -200,6 +200,28 @@ List := class .{@T}
 			iitt = iitt.Next
 		return iitt.Data
 	}
+	"<=>" := !(List.{T} toCmp) .{} -> int //TODO: why not lazy
+	{
+
+		thisIter := this."~For"()
+		toC := toCmp."~For"()
+
+		while true
+		{
+			if thisIter.IsEnd() and toC.IsEnd()
+				return 0
+			if thisIter.IsEnd()
+				return -1
+			if toC.IsEnd()
+				return 1
+			cmpRes := thisIter^ <=> toC^
+			if cmpRes != 0
+				return cmpRes
+			thisIter.Inc()
+			toC.Inc()
+		}
+		assert(false)
+	}
 
 	createNode := !() .{} -> ListNode.{T}^
 	{
