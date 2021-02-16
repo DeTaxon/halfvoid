@@ -4,14 +4,14 @@ main := !(int argc, char^^ argv) -> int
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
-	m := "[a-zA-Z][a-zA-Z0-9]*"reg
+	m := "1 2 3 2 |  1 3 3 2"reg
 
 	tt := (char^ newSt) ==> {
 		printf("mathc <%s> %i\n",newSt,m.IsMatch(newSt))
 	}
-	tt("hello")
-	tt("he0llo")
-	tt("0hello")
+	tt("1232")
+	tt("1332")
+	tt("3332")
 		
 	return 0
 		

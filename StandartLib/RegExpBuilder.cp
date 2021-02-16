@@ -130,32 +130,32 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 }
 
 
-CollectByEpsilon := !(NonDetMachine input,QueueSet.{int} OldStates) -> void
+CollectByEpsilon := !(NonDetMachine input,List.{int} OldStates) -> void
 {
 	for it : OldStates
 	{	
 		for line : input.Lines
 		{
 			if line.from == it and line.symbl == -1
-				OldStates.Push(line.to)
+				OldStates.Push(line.to) ; $temp $uniq
 		}
 	}
 }
-CollectMove := !(NonDetMachine input, int sId, QueueSet.{int} frm, QueueSet.{int} to) -> void
+CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) -> void
 {
 	for line : input.Lines
 	{
 		for fNode : frm
 		{
 			if line.from == fNode and line.symbl == sId
-				to.Push(line.to)
+				to.Push(line.to) ; $temp $uniq
 		}		
 	}
 }
 
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
-	NewNodes := QueueSet.{QueueSet.{int}}()
+	NewNodes := new List.{List.{int}^} 
 	Letters := new List.{int} ; $uniq $temp
 	itLines := new List.{Tuple.{int,int,int}} ; $temp
 
@@ -164,34 +164,46 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 		if it.symbl != -1 Letters.Push(it.symbl)
 	}
 	{
-		nowNodeValue :=  QueueSet.{int}()
+		nowNodeValue :=  new List.{int} 
 		nowNodeValue.Push(0)
-		CollectByEpsilon(input,nowNodeValue)
-		NewNodes <<< nowNodeValue
+		CollectByEpsilon(input,nowNodeValue^)
+		NewNodes.Push(nowNodeValue)
 	}
 
-	for itNode,nowId : NewNodes
+	for itNode,nowId : NewNodes^
 	{
 		for c : Letters^
 		{
-			nowNodeValue := QueueSet.{int}()
-			CollectMove(input,c,itNode,nowNodeValue)
-			CollectByEpsilon(input,nowNodeValue)
+			nowNodeValue := new List.{int}
+			CollectMove(input,c,itNode^,nowNodeValue^)
+			CollectByEpsilon(input,nowNodeValue^)
 
 			if nowNodeValue.Size() != 0
 			{
-				resId := NewNodes <<< nowNodeValue
+				resId := 0
+				found := false
+				if NewNodes^[^i]^ == nowNodeValue^
+				{
+					printf("gog %i %i\n",it.Size(),nowNodeValue.Size())
+					found = true
+					resId = i
+				}
+				if not found
+				{	
+					resId = NewNodes.Size()
+					NewNodes.Push(nowNodeValue)
+				}
 				itLines.EmplaceFront(nowId,resId,c)
 			}
 		}
 	}
 	result.IsEndNode = new int[NewNodes.Size()]
 	
-	for itN : result.IsEndNode,nowSet : NewNodes, i : 0
+	for itN,i : result.IsEndNode,nowSet : NewNodes^
 	{
 		itN = -1
 
-		for itVal : nowSet
+		for itVal : nowSet^
 		{
 			for  EndNode : input.EndNodeData
 			{
