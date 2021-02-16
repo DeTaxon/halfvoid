@@ -81,7 +81,7 @@ halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
 
 $(CurrentLex): LexBuilder/main.cp Priority.pr
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/main.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o $(CurrentLex)
-Mach.m: $(CurrentLex) Libs/RegExpBuilder.cp
+Mach.m: $(CurrentLex)
 	$(CurrentLex)
 json.m:  LexBuilder/json.cp
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/json.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o json.exe

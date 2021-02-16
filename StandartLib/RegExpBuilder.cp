@@ -184,7 +184,6 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 				found := false
 				if NewNodes^[^i]^ == nowNodeValue^
 				{
-					printf("gog %i %i\n",it.Size(),nowNodeValue.Size())
 					found = true
 					resId = i
 				}
@@ -235,13 +234,13 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 }
 MinimizeMachine := !(DetMachine input) -> DetMachine
 {
-	EndStates := QueueSet.{int}()
+	EndStates := new List.{int} ; $uniq
 	for input.IsEndNode 
 		EndStates.Push(it)
 	
 	NodeSets := new int[input.IsEndNode->len]
 	for it : input.IsEndNode, i : 0
-		NodeSets[i] = EndStates.GetPos(it)
+		NodeSets[i] = EndStates.FindIndex(it)
 
 	setCheck := 0
 	setSize := EndStates.Size()
@@ -250,13 +249,13 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	{
 		for j : input.NodeId->len
 		{
-			gotSets := QueueSet.{int}()
+			gotSets := new List.{int} ; $uniq
 			for i : input.IsEndNode->len
 				if setCheck == NodeSets[i]
 				{
 					if input.Table[i][j] != -1
 						gotSets.Push(NodeSets[input.Table[i][j]])
-					else gotSets.Push(-1)
+					else gotSets.Push(-1) 
 				}
 			if gotSets.Size() >= 2
 			{	
@@ -267,9 +266,9 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 					inSet := 0 
 					if goTo != -1
 					{
-						inSet = gotSets.GetPos(NodeSets[goTo])
+						inSet = gotSets.FindIndex(NodeSets[goTo])
 					}else{
-						inSet = gotSets.GetPos(-1)
+						inSet = gotSets.FindIndex(-1)
 					}
 					if inSet != 0
 					{
@@ -300,13 +299,13 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	
 	{
 		someIter := 0
-		usedSets := QueueSet.{int}()
+		usedSets := new List.{int} ; $uniq
 		itNode := new List.{int} ; $temp
 		for it,i : NodeSets
 		{
-			if usedSets.Contain(it)
+			if it in usedSets^
 			{
-				ps := usedSets.GetPos(it)
+				ps := usedSets.FindIndex(it)
 				transformer[i] = itNode^[ps]
 			}else{
 				transformer[i] = someIter
@@ -404,7 +403,26 @@ CheckRule := !(int[@S] rule,int res, LexTreeNode^ nowNode) -> bool
 		if not failed 
 		{
 			newNd := new LexTreeNode(res)
-			itr = UNext(itr,newNd,siz)
+			ri := itr
+			for siz - 1
+			{
+				ri = ri.Right
+			}
+			newNd.Down = itr
+			newNd.Up = itr.Up
+			if newNd.Up?.Down == itr
+				newNd.Up.Down = newNd
+			newNd.Left = itr.Left
+			newNd.Left?.Right = newNd
+			newNd.Right = ri.Right
+			newNd.Right?.Left = newNd
+			itr.Left = null
+			ri.Right = null
+			while itr != null
+			{
+				itr.Up = newNd
+				itr = itr.Right
+			}
 			gotSome = true
 		}
 		else
