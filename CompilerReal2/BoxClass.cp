@@ -92,12 +92,8 @@ FuncItem := class
 
 			for i : fType.ParsCount
 			{
-				if i == 0
-				{
-					//TODO:no need to check inherence?
-				}else{
-					//if fType.Pars[i] != Ri.fType.Pars[i] return false
-				}
+				if i == 0 continue
+				if fType.Pars[i] != Ri.fType.Pars[i] return false
 			}
 		}
 

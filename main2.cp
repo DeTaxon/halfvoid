@@ -6,16 +6,16 @@ main := !(int argc, char^^ argv) -> int
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
 
-	m := "1 2 3 2 |  1 3 3 2"reg
+	//m := "1 2 3 2 |  1 3 3 2"reg
 
-	tt := (char^ newSt) ==> {
-		printf("mathc <%s> %i\n",newSt,m.IsMatch(newSt))
-	}
-	tt("1232")
-	tt("1332")
-	tt("3332")
-		
-	return 0
+	//tt := (char^ newSt) ==> {
+	//	printf("mathc <%s> %i\n",newSt,m.IsMatch(newSt))
+	//}
+	//tt("1232")
+	//tt("1332")
+	//tt("3332")
+	//	
+	//return 0
 		
 	//libjitinit()
 	//v := Library()
