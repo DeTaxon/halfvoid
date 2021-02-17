@@ -58,18 +58,23 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 		if iter.Down.Right.Right? is ObjIndent
 		{	
 			asObj := iter.Down.Right.Right->{ObjIndent^}
-			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null //TODO: check is both have vtable and it is valid to set
+			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null
 			{
 				dt := iter.Down.GetType() 
 				tt := ParseType(iter.Down.Right.Right.Right.Down)
-				if dt? is TypePoint and tt? is TypeClass
+				if (not (dt is TypePoint)) or (not (dt.Base is TypeClass))
+					iter.EmitError("to SetType, left object must be pointer to class")
+				if tt == null or (not tt is TypeClass)
+					iter.EmitError("to SetType, new type must be class")
+				if dt.Base->{TypeClass^}.ToClass.vTypes.Size() == 0
+					iter.EmitError("can not change type of non virtual object")
+				if tt->{TypeClass^}.ToClass.vTypes.Size() == 0
+					iter.EmitError("can not change type to non virtual type")
+				setFunc := SetTypeToClass(tt)
+				if setFunc != null
 				{
-					setFunc := SetTypeToClass(tt)
-					if setFunc != null
-					{
-						iter.Down.Right = null
-						return MakeSimpleCall(setFunc,iter.Down)
-					}
+					iter.Down.Right = null
+					return MakeSimpleCall(setFunc,iter.Down)
 				}
 			}
 		}
