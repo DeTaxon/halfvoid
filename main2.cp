@@ -1,7 +1,28 @@
 
 
+bg1 := class 
+{
+	j := virtual !() -> void
+	{
+		printf("no\n")
+	}
+}
+bg2 := class extend bg1
+{
+}
+bg3 := class extend bg2
+{
+	j := virtual !() -> void
+	{
+		printf("no\n")
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
+	cc := bg3
+	cc&->{bg2^}.j()
+	return 0
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
