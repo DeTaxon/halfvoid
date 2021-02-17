@@ -199,11 +199,13 @@ GlobalParam := class extend MemParamCommon
 		}
 	}
 
-	PrintArrData := !(sfile f, Type^ toPr) -> void
+	PrintArrData := !(sfile f, Type^ toPr,bool isFirst) -> void
 	{
 		asArr := toPr->{TypeArr^}
 
-		f << asArr.GetName() << " "
+		if not isFirst
+			f << asArr.GetName() << " "
+
 		bs := asArr.Base
 		f << "["
 		for i : asArr.Size
@@ -212,17 +214,18 @@ GlobalParam := class extend MemParamCommon
 				f << " , "
 			if bs is TypeClass
 			{
-				f << bs.GetName() << " "
-				PrintClassData(f , bs->{TypeClass^}.ToClass)
+				PrintClassData(f , bs->{TypeClass^}.ToClass,false)
 			}else{
 				assert(bs is TypeArr)
-				PrintArrData(f, bs)
+				PrintArrData(f, bs,false)
 			}
 		}
-		f << "]"
+		f << "]\n"
 	}
-	PrintClassData := !(sfile f, BoxClass^ toPr) -> void
+	PrintClassData := !(sfile f, BoxClass^ toPr, bool isFirst) -> void
 	{
+		if not isFirst
+			f << toPr.ClassType.GetName() << " "
 		addedVal := false
 		f << "{"
 		if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
@@ -242,13 +245,13 @@ GlobalParam := class extend MemParamCommon
 			itCntV := TypeContainVTable(itPr.ResultType)
 			if itPr.ResultType is TypeClass and itCntV
 			{
-				f << itPr.ResultType.GetName() << " "
-				PrintClassData(f,itPr.ResultType->{TypeClass^}.ToClass)
+				//f << itPr.ResultType.GetName() << " "
+				PrintClassData(f,itPr.ResultType->{TypeClass^}.ToClass,false)
 			}else{
 				if itCntV
 				{
 					assert(itPr.ResultType is TypeArr)
-					PrintArrData(f,itPr.ResultType)
+					PrintArrData(f,itPr.ResultType,false)
 				}else{
 					f << itPr.ResultType.GetName() << " zeroinitializer"
 				}
@@ -270,7 +273,12 @@ GlobalParam := class extend MemParamCommon
 		{
 			if TypeContainVTable(ResultType)
 			{
-				PrintClassData(f,ResultType->{TypeClass^}.ToClass)
+				if ResultType is TypeClass
+				{
+					PrintClassData(f,ResultType->{TypeClass^}.ToClass,true)
+				}else{
+					PrintArrData(f,ResultType,true)
+				}
 			}else{
 				f << " zeroinitializer\n"
 			}
@@ -290,7 +298,6 @@ GlobalParam := class extend MemParamCommon
 }
 TaskLocalParam := class extend GlobalParam
 { 
-	//TODO: TaskLocal does not set vtable
 	DoTheWork := virtual !(int pri) -> void  {}
 	PrintGlobal := virtual !(sfile f) -> void {}
 	GetTaskFieldId := !() -> void

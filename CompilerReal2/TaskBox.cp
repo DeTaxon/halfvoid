@@ -81,6 +81,35 @@ TaskPrint2 := !(sfile f) -> void
 			f << "call void @ClassExtraConstructor" << clId
 			f << "(" << it.GetName() << "* %obj" << i << ")\n"
 		}
+		if it is TypeArr
+		{
+			totalSize := 1
+			typIter := it
+			while typIter is TypeArr
+			{
+				totalSize *= typIter->{TypeArr^}.Size
+				typIter = typIter.Base
+			}
+			if typIter != null and typIter is TypeClass
+			{
+				clId := typIter->{TypeClass^}.ToClass.ClassId
+				f << "%obj"<<i<<" = getelementptr %TaskStruct, %TaskStruct* %TaskPtr, i32 0, i32 " << i << "\n"
+				f << "%itr"<<i<<" = bitcast " << it.GetName() << "* %obj" << i << " to " << typIter.GetName() << "*\n"
+				f << "br label %PreStart" <<i<<"\n" 
+				f << "PreStart" <<i<<":\n" 
+				f << "br label %Start" <<i<<"\n" 
+				f << "Start"<<i<<":\n"
+				f << "%itrP"<<i<< " = phi i32 [" << totalSize << " ,%PreStart"<<i<<"],[%itrP2"<<i<<",%Next"<<i<<"]\n"
+				f << "%IsEnd"<<i<<" = icmp ne i32 %itrP"<<i<<" , 0\n"
+				f << "br i1 %IsEnd" <<i << " , label %Next"<<i<<" , label %End"<<i<< "\n"
+				f << "Next"<<i<< ":\n"
+				f << "%itrP2"<<i<< " = sub i32 %itrP" <<i<< " , 1\n"
+				f << "%ThisObj" << i << " =getelementptr " << typIter.GetName() << " , " << typIter.GetName() << "* %itr"<<i<< " , i32 %itrP2"<<i<<"\n"
+				f << "call void @ClassExtraConstructor" << clId << "(" << typIter.GetName() << "* %ThisObj"<<i<<")\n"
+				f << "br label %Start" << i << "\n"
+				f << "End"<<i<< ":\n"
+			}
+		}
 	}
 	f << "ret void\n}\n"
 }
