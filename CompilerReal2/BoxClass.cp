@@ -436,9 +436,14 @@ BoxClass := class extend Object
 
 		if not iVir
 		{
-			if vTypes[^].fName == name
+			itrF := this&
+			while itrF != null
 			{
-				Funcs.Push(it.funcWrapper) 
+				if vTypes[^].fName == name
+				{
+					Funcs.Push(it.funcWrapper) 
+				}
+				itrF = itrF.Parent
 			}
 		}
 		maybeForced := Find(name,'.')
@@ -486,6 +491,7 @@ BoxClass := class extend Object
 						if iterJ.Down.GetValue() == "!()"
 						{
 							asFunc := (iterJ.Down)->{BoxFunc^}
+
 							if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
 							{
 								Funcs.Push(asFunc)
@@ -511,7 +517,7 @@ BoxClass := class extend Object
 				oldVal = itBox.itPars[0].first
 				itBox.itPars[0].first = Parent.ClassType
 			}
-			res :=  this.Parent.GetFunc(name,itBox,true)
+			res :=  this.Parent.GetFunc(name,itBox,iVir)
 			if name != "new" { itBox.itPars[0].first = oldVal }
 
 			return res

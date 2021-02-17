@@ -650,6 +650,7 @@ BoxFuncBody := class extend BoxFunc
 			asClsT := asCls.ToClass
 			asClsT.ItMethods.Push(this&->{BoxFunc^})
 
+
 			if IsVirtual
 			{
 				ParseBlock()
