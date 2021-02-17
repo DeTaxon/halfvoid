@@ -85,15 +85,40 @@ ParamCall := class extend ObjResult
 
 ParamNaturalUnrefCall := class extend ParamNaturalCall
 {
-	//TODO: bigger ref support
 	GetType := virtual !() -> Type^
 	{
 		if ToCall == null return null
-		return ToCall.GetType().GetPoint()
+		tt := ToCall.GetType()
+		tt = tt.GetPoint()
+		return tt
 	}
-	GetPointName := virtual !() -> string
+	PrintPointPre := virtual !(sfile f) -> void
 	{
-		return ToCall->{GlobalParam^}.GetRefPointName(TempId)
+		ToCall->{MemParamCommon^}.PrepareMainPtr(f,TempId,-1)
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		f << ToCall.GetType().GetName() << "* "
+		f << ToCall->{MemParamCommon^}.GetMainPtr(TempId)
+	}
+	GetPointName := virtual !() -> char^
+	{
+		return ToCall->{MemParam^}.GetMainPtr(TempId)
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		tn := ToCall.GetType().GetName()
+		PrintPointPre(f)
+		f << "%TRes" << TempId << " = load " << tn << "* , " << tn << "** " << GetPointName() << "\n"
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << ToCall.GetType().GetName()
+		f << "* %TRes" << TempId
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%TRes"sbt + TempId
 	}
 }
 ParamNaturalCall := class extend ParamCall

@@ -36,7 +36,7 @@ MemParam := class extend ObjResult
 	{
 	}
 	PrepareMainPtr := virtual !(sfile f,int newId,int debId) -> void {}
-	GetMainPtr := virtual !(int newId) -> char^ { return ""}
+	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
 }
 
 MemParamCommon := class extend MemParam
@@ -94,6 +94,10 @@ MemParamCommon := class extend MemParam
 	GetName := virtual !(int newInd) -> char^
 	{
 		return "%TRes"sbt + newInd 
+	}
+	GetRefPointName := virtual !(int newInd) -> char^
+	{
+		return GetMainPtr(newInd)
 	}
 }
 ConstParam := class extend MemParam
@@ -285,15 +289,6 @@ GlobalParam := class extend MemParamCommon
 		}else{
 			f << " " << Down.GetName() << "\n"
 		}
-	}
-	PrintRefPointUse := !(sfile f) -> void
-	{
-		ResultType.GetPoint().PrintType(f)
-		f << " @T"sbt << MainId
-	}
-	GetRefPointName := !(int newInd) -> char^
-	{
-		return "@T"sbt + MainId
 	}
 }
 TaskLocalParam := class extend GlobalParam
