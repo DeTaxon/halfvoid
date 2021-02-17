@@ -4,6 +4,14 @@ FlushTempMemory := !() -> void
 	
 	gTemporaryPool.FlushMem()
 }
+PushTempMemPool := !() -> void
+{
+	gTemporaryPool.Push()
+}
+PopTempMemPool := !() -> void
+{
+	gTemporaryPool.Pop()
+}
 
 IMemoryPool := class
 {

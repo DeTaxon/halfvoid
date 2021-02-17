@@ -522,7 +522,7 @@ LexBuilder := class
 		if Nfas.Size() == 0 return void //TODO: assert? or throw
 		if Nfas.Size() == 1
 		{
-			//PushTempMemPool()
+			PushTempMemPool()
 			newMach := DeterminateMachine(Nfas[0])
 			//printf("------------determ-------\n")
 			//newMach.PrintIt()
@@ -530,11 +530,11 @@ LexBuilder := class
 			//printf("-------------minim--------\n")
 			//MinMach.PrintIt()
 			//printf("-------------word--------\n")
-			//PopTempMemPool()
+			PopTempMemPool()
 			return MakeWordDetermMachine(MinMach)
 		}else
 		{
-			//PushTempMemPool()
+			PushTempMemPool()
 			newLines := List.{NonDetNodeLine}()
 			newEnds := List.{Tuple.{int,int}}()
 			multiNode := NonDetMachine()
@@ -567,7 +567,7 @@ LexBuilder := class
 			multiNode.EndNodeData = newEnds.ToArray()
 			newMach := DeterminateMachine(multiNode)
 			MinMach := MinimizeMachine(newMach)
-			//PopTempMemPool()
+			PopTempMemPool()
 			return MakeWordDetermMachine(MinMach)
 		}
 		return void

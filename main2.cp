@@ -4,6 +4,10 @@ main := !(int argc, char^^ argv) -> int
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
+	return 0
+}
+oldMain := !(int argc,char^^ argv) -> int
+{
 	m := "1 2 3 2 |  1 3 3 2"reg
 
 	tt := (char^ newSt) ==> {

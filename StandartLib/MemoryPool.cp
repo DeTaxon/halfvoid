@@ -55,7 +55,7 @@ AllocOnlyMP := class .{@PageSize,@CleanResult} extend IMemoryPool
 }
 
 
-StupidMemoryPool := class .{@PageSize}
+StupidMemoryPool := class .{@PageSize} extend IMemoryPool
 {
 	itPage := u8^
 	itLoaded := int
@@ -82,7 +82,7 @@ StupidMemoryPool := class .{@PageSize}
 		memset(newPage,0,PageSize)
 		return newPage
 	}
-	GetMem := !(int size, int align, int prefix) -> void^
+	GetMem := virtual !(int size, int align, int prefix) -> void^
 	{
 		if itPage == null{
 			itPage = GetPage()
@@ -103,7 +103,7 @@ StupidMemoryPool := class .{@PageSize}
 		}
 		return itPage[newSize]&
 	}
-	FreeMem := !(void^ itm) -> void
+	FreeMem := virtual !(void^ itm) -> void
 	{
 	}
 	FlushMem := !() -> void
