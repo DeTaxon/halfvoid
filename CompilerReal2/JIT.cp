@@ -19,8 +19,8 @@ GetJITType := !(Type^ toChange) -> void^
 		newType := void^
 		switch toChange
 		{
-			case GTypeInt newType = jitLib.Get("jit_type_int")->{void^^}^
-			case GTypeVoid newType = jitLib.Get("jit_type_void")->{void^^}^
+			case GTypeInt newType = jit_type_int
+			case GTypeVoid newType = jit_type_void
 		}
 		assert(newType != null)
 		JITCachedTypes[toChange] = newType

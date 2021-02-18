@@ -29,6 +29,8 @@ main := !(int argc,char^^ argv) -> int
 
 	Modules.Push(clibModule&)
 
+	try
+	{
 	i := 1
 	while  i < argc
 	{
@@ -110,6 +112,10 @@ main := !(int argc,char^^ argv) -> int
 			}
 		}
 		i += 1
+	}
+	}catch(IException^ e) {
+		printf("exp %s\n",e.Msg())
+		return 0
 	}
 
 	if targetFiles.Size() != 1

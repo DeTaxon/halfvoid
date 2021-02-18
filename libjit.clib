@@ -1,0 +1,40 @@
+{
+	"initname" : "libjitinit",
+	"consts" : {
+		"jit_abi_cdecl" : 0,
+		"JIT_TYPE_VOID" : 0,
+		"JIT_TYPE_SBYTE" : 1,
+		"JIT_TYPE_UBYTE" : 2,
+		"JIT_TYPE_SHORT" : 3,
+		"JIT_TYPE_USHORT" : 4,
+		"JIT_TYPE_INT" : 5,
+		"JIT_TYPE_UINT" : 6,
+		"JIT_TYPE_NINT" : 7,
+		"JIT_TYPE_NUINT" : 8,
+		"JIT_TYPE_LONG" : 9,
+		"JIT_TYPE_ULONG" : 10,
+		"JIT_TYPE_FLOAT32" : 11,
+		"JIT_TYPE_FLOAT64" : 12,
+		"JIT_TYPE_NFLOAT" : 13,
+		"JIT_TYPE_STRUCT" : 14,
+		"JIT_TYPE_UNION" : 15,
+		"JIT_TYPE_SIGNATURE" : 16,
+		"JIT_TYPE_PTR" : 17,
+		"JIT_TYPE_FIRST_TAGGED" : 32
+	},
+	"libs" : [
+		"libjit.so",
+		"libjit.dll"
+	],
+	"vars" : {
+		"jit_type_void" : "void^",
+		"jit_type_int" : "void^"
+	},
+	"funcs" : {
+		"jit_context_create" : "void",
+		"jit_context_build_start" : "void,void^",
+		"jit_type_create_signature" : "void^,int,void^,void^,int,int",
+		"jit_function_create" : "void^,void^",
+		"jit_value_get_param" : "void^,void^,int"
+	}
+}
