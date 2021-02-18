@@ -1,31 +1,10 @@
-
-
-bg1 := class 
+main := !(int argc,char^^ argv) -> int
 {
-	suprName := virtual !() -> void
-	{
-		printf("no\n")
-	}
-}
-bg2 := class extend bg1
-{
-	k := !() -> void
-	{
-		suprName()
-	}
-}
-bg3 := class extend bg2
-{
-	suprName := virtual !() -> void
-	{
-		printf("yes\n")
-	}
+	return 0
 }
 
-main := !(int argc, char^^ argv) -> int
+main2 := !(int argc, char^^ argv) -> int
 {
-	cc := bg3
-	cc&->{bg2^}.k()
 	return 0
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")

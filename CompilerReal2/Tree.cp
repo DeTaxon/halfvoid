@@ -175,6 +175,10 @@ Object := class{
 	{
 		return null
 	}
+	DoJIT := virtual !() -> void^
+	{
+		assert(false)
+	}
 }
 
 ObjLine := class 

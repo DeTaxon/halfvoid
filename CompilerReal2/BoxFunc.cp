@@ -543,6 +543,7 @@ BoxFuncBodyFromString := class extend BoxFuncBody
 {
 	this := !(char^ funcName ,Type^ fType,char^ strToParse) -> void
 	{
+		ABox.ItId = GetNewId()
 		outLabel."this"()
 		MyFuncType = fType->{TypeFunc^}
 		OutputName = funcName
@@ -1128,6 +1129,14 @@ BoxFuncBody := class extend BoxFunc
 				}
 			}
 		}
+	}
+	DoJIT := virtual !() -> void^
+	{
+		jitFunc := jit_function_create(jitCTX,GetJITType(GetType()))
+		preRes := jit_value_create_nint_constant(jitFunc,GetJITType(GTypeInt),13)
+		jit_insn_return(jitFunc,preRes)
+		jit_function_compile(jitFunc)
+		return jitFunc
 	}
 }
 

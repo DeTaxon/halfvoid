@@ -84,8 +84,11 @@ jsonNode := class
 
 
 jsonRegMachine := WordDetermMachine^
+jsonLoaded := false
 jsonLoadMachine := !() -> void
 {
+	if jsonLoaded return void
+	jsonLoaded = true
 	regFile := gRepo.GetFile("hres/json.stm")
 	if regFile == null
 		throw new Exception("can not initialize json state machine")
@@ -93,7 +96,6 @@ jsonLoadMachine := !() -> void
 	jsonRegMachine = new WordDetermMachine
 	jsonRegMachine.LoadFromMap(ptr,regFile.Size())
 	regFile.Unmap()
-	while true yield void
 }
 
 json := class extend jsonNode

@@ -1,6 +1,5 @@
 
 clibModule := CLibModule
-
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -30,6 +29,8 @@ main := !(int argc,char^^ argv) -> int
 
 	Modules.Push(clibModule&)
 
+	try
+	{
 	i := 1
 	while  i < argc
 	{
@@ -67,6 +68,8 @@ main := !(int argc,char^^ argv) -> int
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
+		case "--jit"
+			JITMode = true
 		case "-g"
 			DebugMode = true	
 			cuId = GetNewId()
@@ -109,6 +112,10 @@ main := !(int argc,char^^ argv) -> int
 			}
 		}
 		i += 1
+	}
+	}catch(IException^ e) {
+		printf("exp %s\n",e.Msg())
+		return 0
 	}
 
 	if targetFiles.Size() != 1
@@ -342,6 +349,22 @@ main := !(int argc,char^^ argv) -> int
 	//nFunc.Print(0)
 
 	printf("good to go\n")
+
+	if JITMode
+	{
+		printf("doing jit\n")
+		initJIT()
+		jit_context_build_start(jitCTX)
+		tst := mainFunc.Down.DoJIT()
+		jit_context_build_end(jitCTX)
+		res := 0
+		vals := void^[2]
+		vals[0] = argc&
+		vals[1] = argv&
+		jit_function_apply(tst,vals,res&)
+		return 0
+	}
+
 	for PostFuncs it.PostCreate()
 
 	fil := sfile(outputFile,"w")

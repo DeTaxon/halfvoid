@@ -121,34 +121,40 @@ CLibModule := class extend CompilerModule
 				return it.objs[spn]
 		}
 
-		for it : libs
+		try
 		{
-			if spn in it.vars
+			for it : libs
 			{
-				inVars := ref it.vars[spn]
-				itType := CheckTypeString(inVars.GetStr())
-				resPar := new GlobalParam(itType,null)
-				resPar.IsRef = true
-				it.objs[inVars.Key()] = resPar
+				if spn in it.vars
+				{
+					inVars := ref it.vars[spn]
+					itType := CheckTypeString(inVars.GetStr())
+					resPar := new GlobalParam(itType,null)
+					resPar.IsRef = true
+					it.objs[inVars.Key()] = resPar
 
-				return resPar
-			}
-			if spn in it.consts
-			{
-				inCnsts := ref it.consts[spn]
-				itInt := new ObjInt(inCnsts.GetInt())
-				it.objs[inCnsts.Key()] = itInt
-				return itInt
-			}
-			if spn in it.funcs
-			{
-				inFuncs := ref it.funcs[spn]
-				fType := CheckFuncTypeString(inFuncs.GetStr())
-				resPar := new GlobalParam(fType.GetPoint(),null)
-				it.objs[inFuncs.Key()] = resPar
+					return resPar
+				}
+				if spn in it.consts
+				{
+					inCnsts := ref it.consts[spn]
+					itInt := new ObjInt(inCnsts.GetInt())
+					it.objs[inCnsts.Key()] = itInt
+					return itInt
+				}
+				if spn in it.funcs
+				{
+					inFuncs := ref it.funcs[spn]
+					fType := CheckFuncTypeString(inFuncs.GetStr())
+					resPar := new GlobalParam(fType.GetPoint(),null)
+					it.objs[inFuncs.Key()] = resPar
 
-				return resPar
+					return resPar
+				}
 			}
+		}catch(IException^ e)
+		{
+			return null
 		}
 
 		return null
@@ -171,13 +177,13 @@ CLibModule := class extend CompilerModule
 	}
 	CheckFuncTypeString := !(StringSpan toCheck) -> Type^
 	{
-		tList := DivideStr(toCheck," ")
+		tList := DivideStr(toCheck," ,")
 		retType := CheckTypeString(tList[0])
 		nextTypes := Queue.{Type^}()
 		for it,i : tList
 		{
 			if i == 0 continue
-			nextTypes.Push(CheckTypeString(it))
+			nextTypes.Push(CheckTypeString(it)) ; $temp
 		}
 		return GetFuncType(nextTypes,null,retType,false,false)
 	}

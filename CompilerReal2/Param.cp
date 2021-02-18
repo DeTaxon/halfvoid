@@ -45,7 +45,7 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
-		if Down?.Right? is SLambda
+		if Down?.Right? is SLambda or Down?.Right? is SFuncLambda
 		{
 			debId := -1
 			if DebugMode 
