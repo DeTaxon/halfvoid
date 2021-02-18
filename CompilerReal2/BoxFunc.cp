@@ -648,7 +648,7 @@ BoxFuncBody := class extend BoxFunc
 			
 			asCls := metC->{TypeClass^}
 			asClsT := asCls.ToClass
-			asClsT.ItMethods.Push(this&->{BoxFunc^})
+			asClsT.ItMethods[FuncName].Push(this&->{BoxFunc^})
 
 
 			if IsVirtual
@@ -744,7 +744,7 @@ BoxFuncBody := class extend BoxFunc
 			
 			asCls := metC->{TypeClass^}
 			asClsT := asCls.ToClass
-			asClsT.ItMethods.Push(this&->{BoxFunc^})
+			asClsT.ItMethods[FuncName].Push(this&->{BoxFunc^})
 
 			if IsVirtual 
 			{

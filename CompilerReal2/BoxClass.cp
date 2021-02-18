@@ -109,7 +109,7 @@ BoxClass := class extend Object
 	Params := Queue.{FieldParam^}
 	FakeParams := Queue.{FakeFieldParam^}
 
-	ItMethods := Queue.{BoxFunc^}
+	ItMethods := AVLMap.{char^,List.{BoxFunc^}}
 	ItTemplates := Queue.{BoxTemplate^}
 
 	ClassType := TypeClass^
@@ -167,7 +167,8 @@ BoxClass := class extend Object
 		iterF := this&
 		while iterF != null
 		{
-			for qIter : iterF.ItMethods 
+			if name in iterF.ItMethods
+			for qIter : iterF.ItMethods[name]
 			{
 				if qIter.FuncName == name
 				{
@@ -457,7 +458,8 @@ BoxClass := class extend Object
 				{
 					Funcs.Push(it.fItem)
 				}
-				for ItMethods
+				if funcName in ItMethods
+				for ItMethods[funcName]
 				{
 					if it.FuncName == funcName and it.IsSameConsts(itBox) and not it.IsVirtual
 					{
@@ -473,6 +475,14 @@ BoxClass := class extend Object
 				}
 			}
 		}
+				//if name in ItMethods
+				//for ItMethods[name]
+				//{
+				//	if it.IsSameConsts(itBox) and not it.IsVirtual
+				//	{
+				//		Funcs.Push(it)
+				//	}
+				//}
 
 		downIter := Down
 		if itBox.itMetaPtr != null
