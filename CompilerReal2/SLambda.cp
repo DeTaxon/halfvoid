@@ -72,7 +72,7 @@ SLambda := class extend BoxFuncContainer
 		Yodlers.Push(toAdd)
 		return Yodlers.Size()
 	}
-	ApplyParams := !(int count, Type^^ pars,bool^ isRef) -> void
+	ApplyParams := virtual !(int count, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0
 		{
@@ -91,15 +91,16 @@ SLambda := class extend BoxFuncContainer
 
 		WorkBag.Push(Down,State_Syntax)
 
-		if justFunc
-		{
-			ResultType = ResultType.Base.GetPoint()
-		}
 	}
 	DoStateStart := virtual !(int pri) -> void
 	{
 				parsedStart = true
 				justFunc = Down.Right.GetValue() == "=>"
+				if Down.Right.GetValue() == "=>"
+				{
+					ts := this&
+					ts->SetType(SFuncLambda)
+				}
 				//WorkBag.Push(this&,State_Syntax)
 				names := Queue.{string}() ; $temp
 
@@ -826,7 +827,6 @@ SLambda := class extend BoxFuncContainer
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		if justFunc return void
 		if applyed
 		{
 			asL := ResultType->{TypeFuncLambda^}
@@ -878,21 +878,11 @@ SLambda := class extend BoxFuncContainer
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{	
-		if justFunc
-		{
-			ResultType.PrintType(f)
-			f << " @lambda" << ItId
-		}else{
-			ResultType.PrintType(f)
-			f << " %Tpl2" << ItId
-		}
+		ResultType.PrintType(f)
+		f << " %Tpl2" << ItId
 	}
 	GetName := virtual !() -> string
 	{
-		if justFunc
-		{
-			return "@lambda"sbt + ItId
-		}
 		return "%T"sbt + inAlloc
 	}
 	ApplyFunc := virtual !() -> void
@@ -1038,6 +1028,26 @@ SLambda := class extend BoxFuncContainer
 	{
 	}
 }
+SFuncLambda := class extend SLambda
+{
+	PrintUse := virtual !(sfile f) -> void
+	{	
+		ResultType.PrintType(f)
+		f << " @lambda" << ItId
+	}
+	GetName := virtual !() -> string
+	{
+		return "@lambda"sbt + ItId
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+	}
+	ApplyParams := virtual !(int count, Type^^ pars,bool^ isRef) -> void
+	{
+		this."SLambda.ApplyParams"(count,pars,isRef)
+		ResultType = ResultType.Base.GetPoint()
+	}
+}
 SBoostLambda := class extend SLambda
 {
 	this := !() -> void
@@ -1055,10 +1065,9 @@ SBoostLambda := class extend SLambda
 	{
 		nams  := Queue.{char^}() ; $temp
 
-		if not justFunc{
-			itNN := "lambdaParam"sbt + ItId
-			nams.Push(itNN.Str())
-		}
+		itNN := "lambdaParam"sbt + ItId
+		nams.Push(itNN.Str())
+
 		lType := lambTyp.Base->{TypeFunc^}
 		for i : lType.ParsCount
 		{
