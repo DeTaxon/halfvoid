@@ -110,7 +110,7 @@ BoxClass := class extend Object
 	FakeParams := Queue.{FakeFieldParam^}
 
 	ItMethods := AVLMap.{char^,List.{BoxFunc^}}
-	ItTemplates := Queue.{BoxTemplate^}
+	ItTemplates := AVLMap.{char^,List.{BoxTemplate^}}
 
 	ClassType := TypeClass^
 	UnrollTemplate := BuiltInTemplateUnroll^
@@ -167,8 +167,8 @@ BoxClass := class extend Object
 		iterF := this&
 		while iterF != null
 		{
-			if name in iterF.ItMethods
-			for qIter : iterF.ItMethods[name]
+			inMt := iterF.ItMethods.TryFind(name)
+			if inMt != null for qIter : inMt^
 			{
 				if qIter.FuncName == name
 				{
@@ -176,7 +176,8 @@ BoxClass := class extend Object
 					funcsCl.Push(iterF) ; $temp
 				}
 			}
-			for tmps : iterF.ItTemplates
+			inTmp := iterF.ItTemplates.TryFind(name)
+			if inTmp != null for tmps : inTmp^
 			{
 				if tmps.FuncName == name
 				{
@@ -458,37 +459,46 @@ BoxClass := class extend Object
 				{
 					Funcs.Push(it.fItem)
 				}
-				if funcName in ItMethods
-				for ItMethods[funcName]
+
+				inMt := ItMethods.TryFind(funcName)
+				if inMt != null for inMt^
 				{
-					if it.FuncName == funcName and it.IsSameConsts(itBox) and not it.IsVirtual
+					if it.IsSameConsts(itBox) and not it.IsVirtual
 					{
 						Funcs.Push(it)
 					}
 				}
-				for ItTemplates
+				inTmp := ItTemplates.TryFind(funcName)
+				if inTmp != null for inTmp^
 				{
-					if it.FuncName == funcName
-					{
-						Templs.Push(it)
-					}
+					Templs.Push(it)
 				}
 			}
 		}
-				//if name in ItMethods
-				//for ItMethods[name]
-				//{
-				//	if it.IsSameConsts(itBox) and not it.IsVirtual
-				//	{
-				//		Funcs.Push(it)
-				//	}
-				//}
 
-		downIter := Down
-		if itBox.itMetaPtr != null
+		if itBox.itMetaPtr == null
 		{
-			downIter = itBox.itMetaPtr
+			inMt2 := ItMethods.TryFind(name)
+			if inMt2 != null for inMt2^
+			{
+				if it.IsSameConsts(itBox) and not it.IsVirtual
+				{
+					Funcs.Push(it)
+				}
+			}
+			inTmp2 := ItTemplates.TryFind(name)
+			if inTmp2 != null for inTmp2^
+			{
+				Templs.Push(it)
+			}
 		}
+
+		//downIter := Down
+		//if itBox.itMetaPtr != null
+		//{
+		//	downIter = itBox.itMetaPtr
+		//}
+		downIter := itBox.itMetaPtr
 		if downIter != null
 		{
 			for iterJ : downIter.Down

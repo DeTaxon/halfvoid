@@ -379,7 +379,7 @@ BoxTemplate := class extend BoxFunc
 		if metC != null and metC is TypeClass
 		{
 			asTC := metC->{TypeClass^}
-			asTC.ToClass.ItTemplates.Push(this&)
+			asTC.ToClass.ItTemplates[FuncName].Push(this&)
 		}
 	}
 	GetPriority :=virtual !(FuncInputBox itBox) -> int
