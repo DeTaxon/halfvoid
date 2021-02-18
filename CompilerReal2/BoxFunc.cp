@@ -543,6 +543,7 @@ BoxFuncBodyFromString := class extend BoxFuncBody
 {
 	this := !(char^ funcName ,Type^ fType,char^ strToParse) -> void
 	{
+		ABox.ItId = GetNewId()
 		outLabel."this"()
 		MyFuncType = fType->{TypeFunc^}
 		OutputName = funcName

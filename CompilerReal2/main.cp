@@ -354,6 +354,7 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("doing jit\n")
 		initJIT()
+		tst := GetJITType(GTypeVoid)
 		return 0
 	}
 

@@ -2,6 +2,8 @@
 	"initname" : "libjitinit",
 	"consts" : {
 		"jit_abi_cdecl" : 0,
+		"jit_abi_vararg" : 1,
+
 		"JIT_TYPE_VOID" : 0,
 		"JIT_TYPE_SBYTE" : 1,
 		"JIT_TYPE_UBYTE" : 2,
@@ -35,6 +37,9 @@
 		"jit_context_build_start" : "void,void^",
 		"jit_type_create_signature" : "void^,int,void^,void^,int,int",
 		"jit_function_create" : "void^,void^",
-		"jit_value_get_param" : "void^,void^,int"
+		"jit_value_get_param" : "void^,void^,int",
+
+		"jit_type_create_pointer" : "void^,void^,int"
+
 	}
 }
