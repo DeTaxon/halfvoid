@@ -1,6 +1,5 @@
 
 clibModule := CLibModule
-
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -67,6 +66,8 @@ main := !(int argc,char^^ argv) -> int
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
+		case "--jit"
+			JITMode = true
 		case "-g"
 			DebugMode = true	
 			cuId = GetNewId()
@@ -342,6 +343,14 @@ main := !(int argc,char^^ argv) -> int
 	//nFunc.Print(0)
 
 	printf("good to go\n")
+
+	if JITMode
+	{
+		printf("doing jit\n")
+		initJIT()
+		return 0
+	}
+
 	for PostFuncs it.PostCreate()
 
 	fil := sfile(outputFile,"w")

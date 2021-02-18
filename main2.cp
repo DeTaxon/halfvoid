@@ -1,6 +1,10 @@
 
+main := !(int argc,char^^ argv) -> int
+{
+	return 0
+}
 
-main := !(int argc, char^^ argv) -> int
+main2 := !(int argc, char^^ argv) -> int
 {
 	jj := () => {
 		printf("hoh\n")
