@@ -96,7 +96,7 @@ SLambda := class extend BoxFuncContainer
 	{
 				parsedStart = true
 				justFunc = Down.Right.GetValue() == "=>"
-				if Down.Right.GetValue() == "=>"
+				if justFunc 
 				{
 					ts := this&
 					ts->SetType(SFuncLambda)
