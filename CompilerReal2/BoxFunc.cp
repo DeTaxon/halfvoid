@@ -1129,6 +1129,14 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		jitFunc := jit_function_create(jitCTX,GetJITType(GetType()))
+		preRes := jit_value_create_nint_constant(jitFunc,GetJITType(GTypeInt),13)
+		jit_insn_return(jitFunc,preRes)
+		jit_function_compile(jitFunc)
+		return jitFunc
+	}
 }
 
 GetFuncBlock := !(Object^ to) -> BoxFunc^

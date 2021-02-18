@@ -33,11 +33,18 @@
 		"jit_type_int" : "void^"
 	},
 	"funcs" : {
-		"jit_context_create" : "void",
+		"jit_context_create" : "void^",
 		"jit_context_build_start" : "void,void^",
+		"jit_context_build_end" : "void,void^",
 		"jit_type_create_signature" : "void^,int,void^,void^,int,int",
-		"jit_function_create" : "void^,void^",
+		"jit_function_create" : "void^,void^,void^",
+		"jit_function_compile" : "int,void^",
+		"jit_function_apply" : "int,void^,void^^,void^^",
+
+		"jit_value_create_nint_constant" : "void^,void^,void^,int",
 		"jit_value_get_param" : "void^,void^,int",
+
+		"jit_insn_return" : "void,void^,void^",
 
 		"jit_type_create_pointer" : "void^,void^,int"
 

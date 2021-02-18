@@ -1,11 +1,11 @@
 
 JITMode := false
 
-jitLib := Library
+jitCTX := void^
 initJIT := !() -> void
 {
-	jitLib.Open("libjit.so")
-	//libjitinit()
+	libjitinit()
+	jitCTX = jit_context_create()
 }
 
 JITCachedTypes := AVLMap.{Type^,void^}

@@ -354,7 +354,14 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("doing jit\n")
 		initJIT()
-		tst := GetJITType(GTypeVoid)
+		jit_context_build_start(jitCTX)
+		tst := mainFunc.Down.DoJIT()
+		jit_context_build_end(jitCTX)
+		res := 0
+		vals := void^[2]
+		vals[0] = argc&
+		vals[1] = argv&
+		jit_function_apply(tst,vals,res&)
 		return 0
 	}
 
