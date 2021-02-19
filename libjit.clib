@@ -41,9 +41,12 @@
 		"jit_function_compile" : "int,void^",
 		"jit_function_apply" : "int,void^,void^^,void^^",
 
+		"jit_value_create" : "void^,void^,void^",
 		"jit_value_create_nint_constant" : "void^,void^,void^,int",
+		"jit_value_create_float32_constant" : "void^,void^,void^,float",
 		"jit_value_get_param" : "void^,void^,int",
 
+		"jit_insn_store" : "void,void^,void^,void^",
 		"jit_insn_return" : "void,void^,void^",
 
 		"jit_type_create_pointer" : "void^,void^,int"

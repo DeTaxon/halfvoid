@@ -61,15 +61,9 @@ BoxReturn := class extend Object
 				ii := Up
 				while ii != null
 				{
-					if ii is SLambda
+					if IsBoxFuncContainer(ii)
 					{
-						if ii->{SLambda^}.Yodlers.Size() != 0
-							ResetYield = true
-						break
-					}
-					if ii is BoxFuncBody
-					{
-						if ii->{BoxFuncBody^}.Yodlers.Size() != 0
+						if ii->{BoxFuncContainer^}.Yodlers.Size() != 0
 							ResetYield = true
 						break
 					}
@@ -207,5 +201,12 @@ BoxReturn := class extend Object
 	GetValue := virtual !() -> string
 	{
 		return "~Return()"
+	}
+	DoJIT := virtual !() -> void^
+	{
+		//JIT store goto_end yield void
+
+		dwRes := Down.DoJIT()
+		jit_insn_store(JITCFunc,JITResultStack[0],dwRes)
 	}
 }

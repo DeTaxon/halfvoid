@@ -177,6 +177,8 @@ Object := class{
 	}
 	DoJIT := virtual !() -> void^
 	{
+		printf("unsupported\n")
+		Print(0)
 		assert(false)
 	}
 }

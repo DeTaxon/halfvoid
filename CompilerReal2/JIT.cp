@@ -8,6 +8,10 @@ initJIT := !() -> void
 	jitCTX = jit_context_create()
 }
 
+JITCFunc := void^
+JITFunc := List.{void^} ; $keep
+JITResultStack := List.{void^} ; $keep
+
 JITCachedTypes := AVLMap.{Type^,void^}
 GetJITType := !(Type^ toChange) -> void^
 {

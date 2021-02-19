@@ -362,6 +362,7 @@ main := !(int argc,char^^ argv) -> int
 		vals[0] = argc&
 		vals[1] = argv&
 		jit_function_apply(tst,vals,res&)
+		printf("res %i\n",res)
 		return 0
 	}
 

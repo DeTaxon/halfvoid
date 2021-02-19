@@ -136,6 +136,7 @@ IsBoxFuncContainer := !(Object^ toCheck) -> bool
 {
 	if toCheck is BoxFuncBody return true
 	if toCheck is SLambda return true
+	if toCheck is BoxFuncBodyFromString return true
 	return false
 }
 
@@ -866,8 +867,6 @@ BoxFuncBody := class extend BoxFunc
 			f << " ; " << FuncName
 
 			f << "\n{\n"
-			//if FuncName == "main"
-			//	TaskPrintInit(f)
 			dbgId := -1
 			if DebugMode
 				dbgId = CreateDebugCall(this&)
@@ -1130,12 +1129,58 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	DoJIT := virtual !() -> void^
+
+	thisJITFunc := void^
+	DoJIT := virtual !()-> void^
 	{
+		//JIT yield virtual
+
+		if thisJITFunc != null 
+			return thisJITFunc
+
 		jitFunc := jit_function_create(jitCTX,GetJITType(GetType()))
-		preRes := jit_value_create_nint_constant(jitFunc,GetJITType(GTypeInt),13)
-		jit_insn_return(jitFunc,preRes)
+
+		thisJITFunc = jitFunc
+		JITFunc.Push(JITCFunc)
+		JITCFunc = jitFunc
+
+		if MyFuncType.RetType != GTypeVoid and not IsRetComplex
+		{
+			preRes := void^()
+			toSet := void^()
+			RT := MyFuncType.RetType
+			if MyFuncType.RetRef
+			{
+				preRes = jit_value_create(jitFunc,GetJITType(RT.GetPoint()))
+			}else{
+				preRes = jit_value_create(jitFunc,GetJITType(RT))
+				if IsInt(RT) or IsBool(RT)
+				{
+					toSet = jit_value_create_nint_constant(jitFunc,GetJITType(RT),0)
+				}else
+				if IsFloat(RT)
+				{
+					toSet = jit_value_create_float32_constant(jitFunc,GetJITType(RT),0)
+				}else
+				if RT is TypePoint or RT is TypeFatArr
+				{
+					toSet = jit_value_create_nint_constant(jitFunc,GetJITType(RT),0)
+				}
+			}
+			jit_insn_store(jitFunc,preRes,toSet)
+			JITResultStack.PushFront(preRes)
+		}
+		Down.DoJIT()
+
+		
+		if MyFuncType.RetType != GTypeVoid and not IsRetComplex
+		{
+			jit_insn_return(jitFunc,JITResultStack[0])
+			JITResultStack.Pop()
+		}
 		jit_function_compile(jitFunc)
+
+		JITCFunc = JITFunc.Pop()
 		return jitFunc
 	}
 }

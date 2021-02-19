@@ -307,6 +307,13 @@ BoxBlock := class extend Object
 		{
 		}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		for iter : Down
+		{
+			iter.DoJIT()
+		}
+	}
 }
 BoxFile := class extend BoxBlock
 {
