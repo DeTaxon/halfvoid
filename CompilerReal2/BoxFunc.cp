@@ -1141,8 +1141,9 @@ BoxFuncBody := class extend BoxFunc
 		jitFunc := jit_function_create(jitCTX,GetJITType(GetType()))
 
 		thisJITFunc = jitFunc
-		JITFunc.Push(JITCFunc)
+		JITFunc.Push(!{JITCFunc,JITCFuncH})
 		JITCFunc = jitFunc
+		JITCFuncH = this&
 
 		if MyFuncType.RetType != GTypeVoid and not IsRetComplex
 		{
@@ -1171,6 +1172,12 @@ BoxFuncBody := class extend BoxFunc
 			JITResultStack.PushFront(preRes)
 		}
 		ABox.DoJITStart()
+		for i : MyFuncType.ParsCount //JIT: ret complex
+		{
+			parVal := jit_value_get_param(jitFunc,i)
+			jit_insn_store(jitFunc,ItParams[i].DoJIT(),parVal)
+		}
+
 		Down.DoJIT()
 
 		
@@ -1181,7 +1188,9 @@ BoxFuncBody := class extend BoxFunc
 		}
 		jit_function_compile(jitFunc)
 
-		JITCFunc = JITFunc.Pop()
+		JITCFunc = JITFunc[0].0
+		JITCFuncH = JITFunc[0].1
+		JITFunc.Pop()
 		return jitFunc
 	}
 }

@@ -100,27 +100,6 @@ MemParamCommon := class extend MemParam
 		return GetMainPtr(newInd)
 	}
 }
-ConstParam := class extend MemParam
-{
-	itName := string
-	this := !(string name, Type^ tp) -> void
-	{
-		itName = "%" + name
-		ResultType = tp
-	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
-	{
-		f << ResultType.GetName() <<" " <<itName
-	}
-	GetName := virtual !(int newInd) -> string
-	{
-		return itName
-	}
-	GetName := virtual !() -> string
-	{
-		return itName
-	}
-}
 LocalParam := class extend MemParamCommon
 {
 	inAllocId := int
@@ -167,15 +146,10 @@ LocalParam := class extend MemParamCommon
 	}
 	DoJIT := virtual !() -> void^
 	{
-		itr := Up
-		while itr != null
+		ab := JITCFuncH.GetABox()
+		if ab != null
 		{
-			ab := itr.GetABox()
-			if ab != null
-			{
-				return ab.JITValues[ab.ItemNrs[inAllocId]]
-			}
-			itr = itr.Up
+			return ab.JITValues[ab.ItemNrs[inAllocId]]
 		}
 		assert(false)
 	}
@@ -200,14 +174,6 @@ GlobalParam := class extend MemParamCommon
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Start
-		{
-			//WorkBag.Push(this&,State_GetUse)
-		}
-		if pri == State_GetUse
-		{
-			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
-		}
 		if pri == State_PrePrint
 		{
 			if Up? is ObjParam

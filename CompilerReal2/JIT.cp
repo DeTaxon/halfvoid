@@ -15,7 +15,8 @@ jit_label_undefined := void^
 
 
 JITCFunc := void^
-JITFunc := List.{void^} ; $keep
+JITCFuncH := Object^
+JITFunc := List.{Tuple.{void^,Object^}} ; $keep
 JITResultStack := List.{void^} ; $keep
 
 JITCachedTypes := AVLMap.{Type^,void^}
