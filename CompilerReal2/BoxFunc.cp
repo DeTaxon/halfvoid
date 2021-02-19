@@ -643,7 +643,7 @@ BoxFuncBody := class extend BoxFunc
 		IsSuffix = IsSuf
 		if MyFuncParamNames != null
 		{
-				
+			//TODO: what is the meaning of this		
 		}
 
 		if metC != null{
@@ -1133,7 +1133,7 @@ BoxFuncBody := class extend BoxFunc
 	thisJITFunc := void^
 	DoJIT := virtual !()-> void^
 	{
-		//JIT yield virtual
+		//JIT yield virtual params
 
 		if thisJITFunc != null 
 			return thisJITFunc
@@ -1170,6 +1170,7 @@ BoxFuncBody := class extend BoxFunc
 			jit_insn_store(jitFunc,preRes,toSet)
 			JITResultStack.PushFront(preRes)
 		}
+		ABox.DoJITStart()
 		Down.DoJIT()
 
 		

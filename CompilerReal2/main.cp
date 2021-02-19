@@ -353,6 +353,7 @@ main := !(int argc,char^^ argv) -> int
 	if JITMode
 	{
 		printf("doing jit\n")
+		mainFunc.Print(0)
 		initJIT()
 		jit_context_build_start(jitCTX)
 		tst := mainFunc.Down.DoJIT()

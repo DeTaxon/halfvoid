@@ -165,6 +165,20 @@ LocalParam := class extend MemParamCommon
 			}
 		//}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		itr := Up
+		while itr != null
+		{
+			ab := itr.GetABox()
+			if ab != null
+			{
+				return ab.JITValues[ab.ItemNrs[inAllocId]]
+			}
+			itr = itr.Up
+		}
+		assert(false)
+	}
 }
 GlobalParam := class extend MemParamCommon
 {
@@ -289,6 +303,11 @@ GlobalParam := class extend MemParamCommon
 		}else{
 			f << " " << Down.GetName() << "\n"
 		}
+	}
+	DoJIT := virtual !() -> void^
+	{
+		printf("hah global\n")
+		assert(false)
 	}
 }
 TaskLocalParam := class extend GlobalParam

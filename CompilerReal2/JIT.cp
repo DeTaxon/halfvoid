@@ -6,7 +6,13 @@ initJIT := !() -> void
 {
 	libjitinit()
 	jitCTX = jit_context_create()
+
+	jit_label_undefined = null
+	jit_label_undefined&->{size_t^}^ -= 1
 }
+
+jit_label_undefined := void^
+
 
 JITCFunc := void^
 JITFunc := List.{void^} ; $keep

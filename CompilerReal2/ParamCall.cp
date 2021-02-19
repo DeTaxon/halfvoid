@@ -1,6 +1,6 @@
 ParseParamCall := !(Object^ ob) -> Object^
 {
-	if ob is ObjIndent //ob.GetValue() == "~ind"
+	if ob is ObjIndent
 	{
 		dynCast := ob->{ObjIndent^}
 
@@ -195,6 +195,10 @@ ParamNaturalCall := class extend ParamCall
 	GetPointName := virtual !() -> string
 	{
 		return ToCall.GetPointName(TempId)
+	}
+	DoJIT := virtual !() -> void^
+	{
+		return ToCall->{Object^}.DoJIT()
 	}
 }
 

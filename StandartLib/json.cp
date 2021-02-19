@@ -53,7 +53,7 @@ jsonNode := class
 	IsRecord := !() -> bool { return itType == jsonTypeRecord}
 	IsArray := !() -> bool { return itType == jsonTypeArray}
 
-	GetStr := !() -> StringSpan { if itType != jsonTypeField throw new Exception("Node is not field") result = itValue }
+	GetStr := !() -> StringSpan { result = itValue }
 	GetInt := !() -> int { if itType != jsonTypeField throw new Exception("Node is not field") return ToInt(itValue)}
 	GetFloat := !() -> float { if itType != jsonTypeField throw new Exception("Node is not field") return ToFloat(itValue)}
 

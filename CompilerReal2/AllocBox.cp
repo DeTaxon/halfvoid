@@ -176,6 +176,24 @@ AllocBox := class
 			f << "\n"
 		}
 	}
+	JITValues := void^[]
+	DoJITStart := !() -> void
+	{
+		if ItemBag.Size() == 0
+			return void
+		if mustBeStruct
+		{
+			//JIT inherited liveOnGlobal
+		}else{
+			//JIT inherited liveOnGlobal
+
+			JITValues = new void^[ItemBag.Size()] ; $temp
+			for it,i :  ItemBag
+			{
+				JITValues[i] = jit_value_create(JITCFunc,GetJITType(it.1))
+			}
+		}
+	}
 }
 
 GetAllocNR := !(Object^ Start,int id) -> int

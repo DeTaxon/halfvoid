@@ -1,6 +1,6 @@
 main := !(int argc,char^^ argv) -> int
 {
-	return 257
+	return argc
 }
 
 main2 := !(int argc, char^^ argv) -> int
