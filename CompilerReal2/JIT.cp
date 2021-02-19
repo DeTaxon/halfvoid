@@ -6,7 +6,17 @@ initJIT := !() -> void
 {
 	libjitinit()
 	jitCTX = jit_context_create()
+
+	jit_label_undefined = null
+	jit_label_undefined&->{size_t^}^ -= 1
 }
+
+jit_label_undefined := void^
+
+
+JITCFunc := void^
+JITFunc := List.{void^} ; $keep
+JITResultStack := List.{void^} ; $keep
 
 JITCachedTypes := AVLMap.{Type^,void^}
 GetJITType := !(Type^ toChange) -> void^

@@ -353,6 +353,7 @@ main := !(int argc,char^^ argv) -> int
 	if JITMode
 	{
 		printf("doing jit\n")
+		mainFunc.Print(0)
 		initJIT()
 		jit_context_build_start(jitCTX)
 		tst := mainFunc.Down.DoJIT()
@@ -362,6 +363,7 @@ main := !(int argc,char^^ argv) -> int
 		vals[0] = argc&
 		vals[1] = argv&
 		jit_function_apply(tst,vals,res&)
+		printf("res %i\n",res)
 		return 0
 	}
 

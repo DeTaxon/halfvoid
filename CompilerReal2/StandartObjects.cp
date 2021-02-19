@@ -114,6 +114,10 @@ ObjInt := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	DoJIT := virtual !() -> void^
+	{
+		return jit_value_create_nint_constant(JITCFunc,GetJITType(ResultType),MyInt)
+	}
 }
 ObjBool := class extend ObjConst
 {
