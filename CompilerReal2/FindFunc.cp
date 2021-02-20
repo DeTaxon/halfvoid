@@ -331,8 +331,9 @@ ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> vo
 {
 	for it,h : Fun
 	{
-		if it.IsSameConsts(itBox)
+		if it.IsSameConsts(itBox){
 			priors[h] = ComputePriorFunc(it.MyFuncType,itBox)
+		}
 		else priors[h] = 255
 		if priors[h] == 0 return void
 	}

@@ -797,6 +797,11 @@ BaseFuncCall := class extend ObjResult
 {
 	ToCall := BoxFunc^
 	FType := TypeFunc^
+
+	GetType := virtual !() -> Type^
+	{
+		return FType.RetType
+	}
 	ExchangeParams := !() -> void
 	{
 		itLiner := this.Line
@@ -1376,7 +1381,7 @@ AssemblerCall := class extend NaturalCall
 BuiltIn2Call := class extend BaseFuncCall
 {
 	RealCall := BuiltIn2Func^ at ToCall
-	thisId := int
+	thisClId := int
 
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
@@ -1385,11 +1390,16 @@ BuiltIn2Call := class extend BaseFuncCall
 			inhAttrs = Pars.inhAttrs
 		}
 		Down = Pars
-		thisId = GetNewId()
+		//thisClId = GetNewId() //TODO someone toching my ram
 		ToCall = func
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
+	}
+	GenId := !() -> int
+	{
+		thisClId = GetNewId()
+		return thisClId
 	}
 	PrintInBlock := virtual !(sfile f) -> void
 	{
@@ -1397,7 +1407,7 @@ BuiltIn2Call := class extend BaseFuncCall
 	}
 	PrintRes := !(sfile f) -> void
 	{
-		f << " %T" << thisId
+		f << " %T" << thisClId
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
@@ -1406,15 +1416,19 @@ BuiltIn2Call := class extend BaseFuncCall
 	}
 	GetName := virtual !() -> char^
 	{
-		return "%T"sbt + thisId
-	}
-	GetType := virtual !() -> Type^
-	{
-		return FType.RetType
+		return "%T"sbt + thisClId
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		RealCall.PrintFunc(this&,f)
+	}
+	GetValue := virtual !() -> char^
+	{
+			return "BuiltIn2Call"
+	}
+	DoJIT := virtual !() -> void^
+	{
+		return RealCall.DoJIT(this&)
 	}
 }
 TypeSizeCall := class extend SomeFuncCall

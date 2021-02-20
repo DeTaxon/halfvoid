@@ -1265,8 +1265,8 @@ CreateBuiltIns := !() -> void
 
 			AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1 #d\n"
 												+"#0 = add i" + it + " #2,0 #d\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2 #d\n"))
-			AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2 #d\n"))
+			//AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2 #d\n"))
+			//AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i"sbt + it + " #1,#2 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("div",PType,false,PType,false,PType,"#0 = "sbt + IsS + "div  i" + it + " #1,#2 #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("%",PType,false,PType,false,PType,"#0 = "sbt + IsS + "rem  i" + it + " #1,#2 #d\n"))

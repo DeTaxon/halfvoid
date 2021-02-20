@@ -172,6 +172,7 @@ main := !(int argc,char^^ argv) -> int
 	InfiniteCodeSpace = CodeSpaces[2000000]&
 
 	CreateStandartTypes()
+	InitBuiltIn2Funcs()
 	CreateBuiltIns()
 
 	GBoolTrue = new ObjBool(true)
