@@ -28,10 +28,22 @@ GetJITType := !(Type^ toChange) -> void^
 	newType := void^
 	if toChange is TypeStandart
 	{
-		switch toChange
+		found := false
+		for i : 8
 		{
-			case GTypeInt newType = jit_type_int
-			case GTypeVoid newType = jit_type_void
+			if TypeTable[i] == toChange
+			{
+				newType = jit_type_int
+				found = true
+			}
+		}
+		if not found
+		{
+			switch toChange
+			{
+				case GTypeBool newType = jit_type_int
+				case GTypeVoid newType = jit_type_void
+			}
 		}
 	}
 	if toChange is TypePoint

@@ -1,11 +1,13 @@
 main := !(int argc,char^^ argv) -> int
 {
+	x := 3
+	printf("heh %i\n",-x)
 	return argc + 2222
 }
 
 main2 := !(int argc, char^^ argv) -> int
 {
-	return 0
+	//return 0
 	//lx := new LexBuilder ; $temp
 	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
 	//m := lx.GenerateMachine()
