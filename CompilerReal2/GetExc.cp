@@ -67,30 +67,11 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	return null
 }
 
-ExcPointers := AVLMap.{ Type^,AVLMap.{Type^, BoxFunc^} }
-
-GetExcPointers := !(Type^ from, Type^ to) -> BoxFunc^
-{
-	if ExcPointers[from][to] != null
-	{	
-		assert(ExcPointers[from][to].MyFuncType.Pars[0] == from)
-		return ExcPointers[from][to]
-	}
-	
-	if from is TypeArr and to == GTypeVoidP
-	{
-		toAdd := new BuiltInFuncUno("->{}",from,true,to,"#0 = bitcast "sbt + from.GetName() + "* #1 to " + to.GetName()+"\n")
-		ExcPointers[from][to] = toAdd
-		return toAdd
-	}
-	toAdd := new BuiltInFuncUno("->{}",from,false,to,"#0 = bitcast "sbt + from.GetName() + " #1 to " + to.GetName()+"\n")
-	ExcPointers[from][to] = toAdd
-	return toAdd
-}
 
 BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 {
-	if item.GetType() == null return null
+	itType := item.GetType()
+	if itType == null return null
 
 	if item is SLambda
 	{
@@ -110,6 +91,18 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 		asN.ApplyFunc(toType,true)
 		return	item
 	}
+
+	if (itType is TypePoint or itType is TypeFatArr) 
+	and (toType is TypePoint or toType is TypeFatArr)
+	{
+		return UNext(item,new PtrExchanger(toType),1) 
+	}
+	if (itType is TypePoint and toType is TypeFuncLambda)
+		or (itType is TypeFuncLambda and toType is TypePoint)
+	{
+		return UNext(item,new PtrExchanger(toType),1) 
+	}
+
 	Exc := GetExchange(item,item,toType,isRef)
 
 	if Exc == null return null
