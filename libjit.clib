@@ -49,7 +49,8 @@
 		"jit_insn_store" : "void,void^,void^,void^",
 		"jit_insn_return" : "void,void^,void^",
 
-		"jit_type_create_pointer" : "void^,void^,int"
+		"jit_type_create_pointer" : "void^,void^,int",
+		"jit_type_create_struct" : "void^,void^^,int,int"
 
 	}
 }

@@ -792,11 +792,100 @@ MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> NaturalCall^
 	return new NaturalCall(func,pars)
 }
 
-SomeFuncCall := class extend ObjResult
+BaseFuncCall := class extend ObjResult
 {
-	RetId := int
 	ToCall := BoxFunc^
 	FType := TypeFunc^
+	ExchangeParams := !() -> void
+	{
+		itLiner := this.Line
+		lnr := this&->{Object^}
+
+		if itLiner == null{
+			wl := Down
+			while wl != null{
+				if wl.Line != null {
+					itLiner = wl.Line
+					lnr = wl
+				}
+				wl = wl.Right
+			}
+		}
+
+		iter := Down
+		//if ToCall != null 
+		//	if ToCall.IsRetComplex 
+		//		iter = iter.Right //???
+		i := 0
+
+		while iter != null and i < FType.ParsCount 
+		{
+			if iter.GetType() != FType.Pars[i]
+			{
+				RetR := false
+				if FType.ParsIsRef != null
+					RetR = FType.ParsIsRef[i]
+				preRet := BoxExc(iter,FType.Pars[i],RetR)
+	
+				if preRet == null
+				{
+					msg := "compiler bug at param "sbt + (i+1) + " "
+					msg << " object " << iter.GetValue()
+					if iter.GetType() != null{
+						msg << " from " << iter.GetType().GetName()
+					}else {
+						msg << " from null "
+					}
+					if FType.Pars[i] != null {
+						msg << " to "  <<  FType.Pars[i].GetGoodName() 
+					}
+				
+					if itLiner != null lnr.EmitError(msg + "\n")
+				}else{
+					iter = preRet
+				}
+			}else
+			{
+				if iter is SLambda iter->{SLambda^}.ApplyFunc()
+			}
+			i += 1
+			iter = iter.Right
+		}
+		while iter != null
+		{
+			itType := iter.GetType()
+			if itType != null
+			{
+				if itType == GTypeFloat or itType == GTypeHalf
+				{
+					iter = BoxExc(iter,GTypeDouble,false)
+				}
+				if itType is TypeArr
+				{
+					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
+				}
+				if itType is TypeClass
+				{
+					iter = BoxExc(iter,GTypeString,false)
+					if iter == null
+					{
+						EmitError("variadic arg can not be casted to string")
+					}
+				}
+			}else{
+				if iter.GetValue() != ","
+				{
+					EmitError("can not parse param in variadic args ")
+				}
+			}
+			iter = iter.Right
+		}
+	}
+}
+
+SomeFuncCall := class extend BaseFuncCall
+{
+	RetId := int
 
 	IsConstr := bool
 	gotAlloc := bool
@@ -971,91 +1060,7 @@ NaturalCall := class extend SomeFuncCall
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
-	ExchangeParams := !() -> void
-	{
-		itLiner := this.Line
-		lnr := this&->{Object^}
-
-		if itLiner == null{
-			wl := Down
-			while wl != null{
-				if wl.Line != null {
-					itLiner = wl.Line
-					lnr = wl
-				}
-				wl = wl.Right
-			}
-		}
-
-		iter := Down
-		//if ToCall != null 
-		//	if ToCall.IsRetComplex 
-		//		iter = iter.Right //???
-		i := 0
-
-		while iter != null and i < FType.ParsCount 
-		{
-			if iter.GetType() != FType.Pars[i]
-			{
-				RetR := false
-				if FType.ParsIsRef != null
-					RetR = FType.ParsIsRef[i]
-				preRet := BoxExc(iter,FType.Pars[i],RetR)
 	
-				if preRet == null
-				{
-					msg := "compiler bug at param "sbt + (i+1) + " "
-					msg << " object " << iter.GetValue()
-					if iter.GetType() != null{
-						msg << " from " << iter.GetType().GetName()
-					}else {
-						msg << " from null "
-					}
-					if FType.Pars[i] != null {
-						msg << " to "  <<  FType.Pars[i].GetGoodName() 
-					}
-				
-					if itLiner != null lnr.EmitError(msg + "\n")
-				}else{
-					iter = preRet
-				}
-			}else
-			{
-				if iter is SLambda iter->{SLambda^}.ApplyFunc()
-			}
-			i += 1
-			iter = iter.Right
-		}
-		while iter != null
-		{
-			itType := iter.GetType()
-			if itType != null
-			{
-				if itType == GTypeFloat or itType == GTypeHalf
-				{
-					iter = BoxExc(iter,GTypeDouble,false)
-				}
-				if itType is TypeArr
-				{
-					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
-				}
-				if itType is TypeClass
-				{
-					iter = BoxExc(iter,GTypeString,false)
-					if iter == null
-					{
-						EmitError("variadic arg can not be casted to string")
-					}
-				}
-			}else{
-				if iter.GetValue() != ","
-				{
-					EmitError("can not parse param in variadic args ")
-				}
-			}
-			iter = iter.Right
-		}
-	}
 	PrintPreFuncName := virtual !(sfile f) -> void
 	{
 

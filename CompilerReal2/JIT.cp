@@ -75,6 +75,22 @@ GetJITType := !(Type^ toChange) -> void^
 		}
 
 	}
+	if toChange is TypeClass
+	{
+		//JIT packed_class better_yodlers? virtual
+		asCl := toChange->{TypeClass^}.ToClass
+		if asCl.Params.Size() == 0
+		{
+			newType = GetJITType(GTypeChar)
+		}else{
+			flds := new void^[asCl.Params.Size()] ; $temp
+			for it,i : asCl.Params
+			{
+				flds[i] = GetJITType(it.GetType())
+			}
+			newType = jit_type_create_struct(flds,asCl.Params.Size(),1)
+		}
+	}
 	assert(newType != null)
 	JITCachedTypes[toChange] = newType
 

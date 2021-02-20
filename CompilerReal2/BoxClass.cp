@@ -351,7 +351,7 @@ BoxClass := class extend Object
 			}
 			for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
 		}
-		for Yodlers
+		for Yodlers //TODO: inherence support
 		{
 			extrField := it.ABox.GetAsType()
 			it.yieldInClass = Params.Size()
