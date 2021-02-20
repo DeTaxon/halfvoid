@@ -786,8 +786,9 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 }
 
 
-MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> NaturalCall^
+MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> BaseFuncCall^
 {
+	return func.GenerateCall(pars)?
 	if func.IsAssembler() return new AssemblerCall(func,pars)
 	return new NaturalCall(func,pars)
 }
@@ -1372,7 +1373,50 @@ AssemblerCall := class extend NaturalCall
 		}
 	}
 }
+BuiltIn2Call := class extend BaseFuncCall
+{
+	RealCall := BuiltIn2Func^ at ToCall
+	thisId := int
 
+	this := !(BoxFunc^ func, Object^ Pars) -> void 
+	{
+		if func.IsPassAttrs and Pars != null
+		{
+			inhAttrs = Pars.inhAttrs
+		}
+		Down = Pars
+		thisId = GetNewId()
+		ToCall = func
+		FType = ToCall.MyFuncType
+		if Pars != null Pars.SetUp(this&)
+		ExchangeParams()
+	}
+	PrintInBlock := virtual !(sfile f) -> void
+	{
+		PrintPre(f)
+	}
+	PrintRes := !(sfile f) -> void
+	{
+		f << " %T" << thisId
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		FType.RetType.PrintType(f)
+		PrintRes(f)
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%T"sbt + thisId
+	}
+	GetType := virtual !() -> Type^
+	{
+		return FType.RetType
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		RealCall.PrintFunc(this&,f)
+	}
+}
 TypeSizeCall := class extend SomeFuncCall
 {
 	ToCmp := Type^
@@ -1415,7 +1459,7 @@ TypeSizeCall := class extend SomeFuncCall
 
 NewCallOne := class extend SomeFuncCall
 {
-	newItm := SomeFuncCall^
+	newItm := BaseFuncCall^
 	newType := Type^
 	ItId := int
 	useConstr := bool
@@ -1654,8 +1698,8 @@ DeleteCall := class extend SomeFuncCall
 
 NewCall := class extend SomeFuncCall
 {
-	ExtraFunc := SomeFuncCall^
-	Constr := SomeFuncCall^
+	ExtraFunc := BaseFuncCall^
+	Constr := BaseFuncCall^
 	ConstrPars := Object^
 
 	this := !(Type^ toCreate) -> void
@@ -1734,7 +1778,7 @@ NewCall := class extend SomeFuncCall
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
-		ExtraFunc.UseCall(f)
+		ExtraFunc.PrintInBlock(f)
 		if ResultType.Base is TypeClass
 		{
 			asNeed := (((ResultType.Base)->{TypeClass^}).ToClass)

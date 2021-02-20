@@ -193,6 +193,10 @@ BoxFunc := class extend BoxFuncContainer
 	{
 		return false
 	}
+	GenerateCall := virtual !(Object^ pars) -> BaseFuncCall^
+	{
+		return null
+	}
 	GetItem := virtual !(string name) -> Object^
 	{
 		if ItVals[^].ItName == name
