@@ -1,13 +1,12 @@
 InitBuiltIn2Funcs := !() -> void
 {
-	funcPars1 := Queue.{Type^}() ; $temp
-	funcPars1.Push(null)
-	funcPars2 := Queue.{Type^}() ; $temp
-	funcPars2.Push(null)
-	funcPars2.Push(null)
 	funcBools := bool[2]
 	funcBools[0] = false
 	funcBools[1] = false
+
+	oneTrue := bool[2]
+	oneTrue[0] = true
+	oneTrue[1] = false
 
 	for i : 8
 	{
@@ -23,6 +22,9 @@ InitBuiltIn2Funcs := !() -> void
 		AddBuiltInFunc(new BuiltIn2IntMath("and_b",fType,"and"))
 		AddBuiltInFunc(new BuiltIn2IntMath("or_b",fType,"or"))
 		AddBuiltInFunc(new BuiltIn2IntMath("xor_b",fType,"xor"))
+
+		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,TypeTable[i],false,false)
+		AddBuiltInFunc(new BuiltIn2Store.{"add","0"}("=",fTypeSet))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 		
@@ -57,6 +59,9 @@ InitBuiltIn2Funcs := !() -> void
 		AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"fmul"))
 		AddBuiltInFunc(new BuiltIn2IntMath("/",fType,"fdiv"))
 
+		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,it,false,false)
+		AddBuiltInFunc(new BuiltIn2Store.{"fadd","0.0"}("=",fTypeSet))
+
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 
 	   	AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"fcmp ule"))
@@ -76,6 +81,34 @@ BuiltIn2Func := class extend BoxFunc
 	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {}
 }
 
+BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
+{
+	this := !(char^ fName, TypeFunc^ fType) -> void
+	{
+		FuncName = fName
+		MyFuncType = fType
+	}
+	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
+		trg.GenId()
+		trg.Down.PrintPointPre(f)
+		trg.Down.Right.PrintPre(f)
+		f << "store "
+		trg.Down.Right.PrintUse(f)
+		f << " , "
+		trg.Down.PrintPointUse(f)
+
+		trg.PrintRes(f) 
+		f << " = "<<AddOp<< " "
+		trg.Down.Right.PrintUse(f)
+		f << " , "<<Zero<<"\n"
+	}
+	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
+		par1 := trg.Down.DoJIT()
+		par2 := trg.Down.Right.DoJIT()
+		jit_insn_store(JITCFunc,par1,par2)
+		return par1
+	}
+}
 BuiltIn2IntMath := class extend BuiltIn2Func
 {
 	llvmOper := char^

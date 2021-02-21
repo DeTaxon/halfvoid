@@ -1263,8 +1263,8 @@ CreateBuiltIns := !() -> void
 			AddBuiltInFunc(new BuiltInFuncBinar("InterlockSub",PType,true,PType,false,PType,"#0 = atomicrmw sub  i"sbt + it + "* #1, i" + it + " #2 acquire #d\n"))
 			AddBuiltInFunc(new BuiltInFuncBinar("InterlockSet",PType,true,PType,false,PType,"#0 = atomicrmw xchg i"sbt + it + "* #1, i" + it + " #2 acquire #d\n"))
 
-			AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1 #d\n"
-												+"#0 = add i" + it + " #2,0 #d\n"))
+			//AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store i"sbt + it + " #2, i" + it + "* #1 #d\n"
+			//									+"#0 = add i" + it + " #2,0 #d\n"))
 			//AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = add i"sbt + it + " #1,#2 #d\n"))
 			//AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = sub i"sbt + it + " #1,#2 #d\n"))
 			//AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = mul i"sbt + it + " #1,#2 #d\n"))
@@ -1344,8 +1344,8 @@ CreateBuiltIns := !() -> void
 	{
 		it := preRes3[itPre]
 		PType := GetType(it)
-		AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store "sbt + it + " #2, " + it + "* #1 #d\n"
-											+"#0 = fadd " + it + " #2,0.0 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar("=",PType,true,PType,false,PType,"store "sbt + it + " #2, " + it + "* #1 #d\n"
+		//									+"#0 = fadd " + it + " #2,0.0 #d\n"))
 		//AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = fadd "sbt + it + " #1,#2 #d\n"))
 		//AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = fsub "sbt + it + " #1,#2 #d\n"))
 		//AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul "sbt + it + " #1,#2 #d\n"))
