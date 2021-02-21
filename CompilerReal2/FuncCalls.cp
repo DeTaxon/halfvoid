@@ -283,6 +283,18 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				typ := ParseType(iter.Right.Down)
 				if typ == null return null
 
+				lt := iter.Left.GetType()
+
+				if (lt is TypePoint or lt is TypeFatArr) and (typ is TypePoint or typ is TypePoint)
+				{
+					BoxExc(iter.Left,typ,false)
+					lObj := iter.Left
+					itUp := iter.Up
+					PopOutNode(lObj)
+					//ReplaceNode(itUp,lObj)
+					return lObj
+				}
+
 				func := GetExchange(iter.Left,iter.Left,typ,iter.Left.IsRef())
 				if func == null return null
 				iter = iter.Left
