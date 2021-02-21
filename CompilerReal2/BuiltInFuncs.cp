@@ -1273,10 +1273,10 @@ CreateBuiltIns := !() -> void
 			
 			//AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = sub i"sbt + it + " 0,#1 #d\n"))
 			
-			AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,GTypeFloat,
-										"%Pre1## = "sbt + IsS + "itofp i" + it + " #1 to float #d\n" +
-										"%Pre2## = " + IsS + "itofp i" + it +" #2 to float #d\n" +
-										"#0 = fdiv float %Pre1##,%Pre2## #d\n"))
+			//AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,GTypeFloat,
+			//							"%Pre1## = "sbt + IsS + "itofp i" + it + " #1 to float #d\n" +
+			//							"%Pre2## = " + IsS + "itofp i" + it +" #2 to float #d\n" +
+			//							"#0 = fdiv float %Pre1##,%Pre2## #d\n"))
 
 			//AddBuiltInFunc(new BuiltInFuncBinar("==",PType,false,PType,false,BoolT,"#0 = icmp eq i"sbt + it + " #1,#2 #d\n"))
 			//AddBuiltInFunc(new BuiltInFuncBinar("!=",PType,false,PType,false,BoolT,"#0 = icmp ne i"sbt + it + " #1,#2 #d\n"))
@@ -1349,7 +1349,7 @@ CreateBuiltIns := !() -> void
 		//AddBuiltInFunc(new BuiltInFuncBinar("+",PType,false,PType,false,PType,"#0 = fadd "sbt + it + " #1,#2 #d\n"))
 		//AddBuiltInFunc(new BuiltInFuncBinar("-",PType,false,PType,false,PType,"#0 = fsub "sbt + it + " #1,#2 #d\n"))
 		//AddBuiltInFunc(new BuiltInFuncBinar("*",PType,false,PType,false,PType,"#0 = fmul "sbt + it + " #1,#2 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,PType,"#0 = fdiv "sbt + it + " #1,#2 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar("/",PType,false,PType,false,PType,"#0 = fdiv "sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncUno(". -",PType,false,PType,false,"#0 = fsub "sbt + it + " 0.0,#1 #d\n"))
 
 		AddBuiltInFunc(new BuiltInFuncBinar("+=",PType,true,PType,false,PType,"#0pre = load "sbt + it +" , "+ it +"* #1 #d\n"

@@ -1,5 +1,8 @@
 main := !(int argc,char^^ argv) -> int
 {
+	x := 1
+	y := 5
+	printf("heh %f\n",x / y)
 	return argc + 2222
 }
 

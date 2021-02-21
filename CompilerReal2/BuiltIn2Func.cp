@@ -55,6 +55,7 @@ InitBuiltIn2Funcs := !() -> void
 		AddBuiltInFunc(new BuiltIn2IntMath("+",fType,"fadd"))
 		AddBuiltInFunc(new BuiltIn2IntMath("-",fType,"fsub"))
 		AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"fmul"))
+		AddBuiltInFunc(new BuiltIn2IntMath("/",fType,"fdiv"))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 
