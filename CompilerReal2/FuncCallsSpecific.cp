@@ -82,7 +82,9 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 	if iter.Down?.Right?.GetValue() == "is"
 	{
 		asCl1 := iter.Down.GetType()
-		if not(asCl1 == null or asCl1 is TypePoint or asCl1.Base is TypeClass) return null
+		if asCl1 == null return null
+		if not asCl1 is TypePoint return null
+		if not asCl1.Base is TypeClass return null
 		asCl2 := ParseType(iter.Down.Right.Right)
 		if asCl2 == null or not asCl2 is TypeClass return null
 

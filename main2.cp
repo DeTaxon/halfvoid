@@ -1,7 +1,5 @@
 main := !(int argc,char^^ argv) -> int
 {
-	x := 3
-	printf("heh %i\n",-x)
 	return argc + 2222
 }
 
