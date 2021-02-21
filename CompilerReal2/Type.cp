@@ -537,15 +537,15 @@ GetFuncTypeCount := !() -> int
 	return counter
 }
 
-ComputeFuncHash := !(Queue.{Type^} typs,bool^ isRefs, Type^ retT, bool retIsRef) -> int
+ComputeFuncHash := !(Type^^ typs,bool^ isRefs,int parsCount, Type^ retT, bool retIsRef) -> int
 {
 	res := 3
 
-	for t,i : typs
+	for i : parsCount
 	{
-		if t != null res += t.ItHash
+		if typs[i] != null res += typs[i].ItHash
 		if isRefs != null and isRefs[i] res = res xor_b 157
-		res += (t->{void^}->{u64} >> 6) % 128
+		res += (typs[i]->{void^}->{u64} >> 6) % 128
 		res = res*3
 	}
 	if retT != null
@@ -593,20 +593,31 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
+	if lin.Size() == 0
+	{
+		return GetFuncType(null,null,0,retType,retRef2,IsVArgs2)
+	}else{
+		typs := new Type^[lin.Size()]
+		typs[i] = lin[^i]
+		return GetFuncType(typs,IsRefArr,lin.Size(),retType,retRef2,IsVArgs2)
+	}
+}
+GetFuncType := !(Type^^ typs,bool^ IsRefArr,int parsCount,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
+{
 
-	ExtraArr := new bool[lin.Size()] ; $temp
-	for it,i : lin
+	ExtraArr := new bool[parsCount] ; $temp
+	for i : parsCount
 	{
 		ExtraArr[i] = false
 		if IsRefArr != null ExtraArr[i] = IsRefArr[i]
-		if it != null
+		if typs[i] != null
 		{
-			if it is TypeClass ExtraArr[i] = true
-			if it is TypeArr  ExtraArr[i] = true
+			if typs[i] is TypeClass ExtraArr[i] = true
+			if typs[i] is TypeArr  ExtraArr[i] = true
 		}
 	}
 
-	hashValue := ComputeFuncHash(lin,ExtraArr,retType,retRef2)
+	hashValue := ComputeFuncHash(typs,ExtraArr,parsCount,retType,retRef2)
 	indVal := RecomputeFuncHash(hashValue)
 
 	for itT : FuncTypeTable[indVal]
@@ -614,16 +625,16 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 		if itT.ItHash == hashValue and itT.IsVArgs == IsVArgs2 and retRef2  == itT.RetRef
 		{
 			IsFound := true
-			if itT.ParsCount == lin.Size() //VArg?
+			if itT.ParsCount == parsCount //VArg?
 			{
-				for itR : lin, i : 0
+				for i : parsCount
 				{
-					if itT.Pars[i] != itR {
+					if itT.Pars[i] != typs[i] {
 						IsFound = false
 						break
 					}
 
-					if i < lin.Size()
+					if i < parsCount
 						if itT.ParsIsRef[i] != ExtraArr[i] {
 							IsFound = false
 							break
@@ -640,7 +651,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 		}
 	}
 
-	newTypeFunc := new TypeFunc(lin,ExtraArr,retType,retRef2,IsVArgs2)
+	newTypeFunc := new TypeFunc(typs,ExtraArr,parsCount,retType,retRef2,IsVArgs2)
 	newTypeFunc.DoMeta()
 	FuncTypeTable[indVal].Push(newTypeFunc)
 	return newTypeFunc
@@ -801,11 +812,11 @@ TypeFunc := class extend Type
 		//ItName = GetNewName()
 		DoMeta()
 	}
-	this := !(Queue.{Type^} P,bool^ parsIsRef,Type^ retType, bool isRetRef, bool IsV) -> void
+	this := !(Type^^ typs,bool^ parsIsRef,int parsCount,Type^ retType, bool isRetRef, bool IsV) -> void
 	{
 		RetType = retType
 		RetRef = isRetRef
-		ParsCount = P.Size()
+		ParsCount = parsCount
 
 		if parsIsRef != null
 		{
@@ -819,10 +830,16 @@ TypeFunc := class extend Type
 			}
 		}
 		Pars = null
-		if ParsCount != 0 Pars = P.ToArray()
+		if ParsCount != 0 {
+			Pars = new Type^[parsCount]
+			for i : parsCount
+			{
+				Pars[i] = typs[i]
+			}
+		}
 		IsVArgs = IsV
 
-		ItHash = ComputeFuncHash(P,ParsIsRef,retType,isRetRef)
+		ItHash = ComputeFuncHash(typs,ParsIsRef,parsCount,retType,isRetRef)
 
 		//ItName = GetNewName()
 		DoMeta()
