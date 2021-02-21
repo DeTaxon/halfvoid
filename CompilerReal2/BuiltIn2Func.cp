@@ -33,18 +33,17 @@ InitBuiltIn2Funcs := !() -> void
 		AddBuiltInFunc(new BuiltIn2Negative(". -",fTypeNeg,"sub"))
 
 
-		continue
 		if i < 4
 		{
-	   		AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"icmp ule"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"icmp ult"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"icmp uge"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"icmp ugt"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"icmp ule"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"icmp ult"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"icmp uge"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"icmp ugt"))
 		}else{
-	   		AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"icmp sle"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"icmp slt"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"icmp sge"))
-	   		AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"icmp sgt"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"icmp sle"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"icmp slt"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"icmp sge"))
+	   		//AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"icmp sgt"))
 		}
 	}
 	for it : ![GTypeFloat,GTypeDouble]
@@ -59,11 +58,10 @@ InitBuiltIn2Funcs := !() -> void
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 
-		continue
-	   	AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"fcmp ule"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"fcmp ult"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"fcmp uge"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"fcmp ugt"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"fcmp ule"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"fcmp ult"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"fcmp uge"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"fcmp ugt"))
 	}
 }
 

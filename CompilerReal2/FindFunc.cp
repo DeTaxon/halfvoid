@@ -366,49 +366,47 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
 
 
 
+CmpSame := 0
+CmpLoseless := 1
+CmpLoselessItoF := 2 // Int to float
+CmpLose := 3
+CmpLoseFtoI := 5 // float to inr
+CmpLosePtoFP := 6
+CmpNoCmp := 255
+
 TypeCmp := !(Type^ inType, Type^ funcType) -> int
 {
 
-	if inType == null return 255
-	if funcType == null return 0
-	if inType == funcType return 0
+	if inType == null return CmpNoCmp
+	if funcType == null return CmpSame
+	if inType == funcType return CmpSame
 
-	if inType == GTypeFloat and funcType == GTypeDouble return 1
-	if inType == GTypeHalf and funcType == GTypeDouble return 1
-	if inType == GTypeHalf and funcType == GTypeFloat return 1
-	if inType == GTypeInt and funcType == GTypeHalf return 1
-	if inType == GTypeInt and funcType == GTypeDouble return 1
-	if inType == GTypeInt and funcType == GTypeFloat return 1
-	if inType is TypeFatArr  and funcType is TypePoint
+	if inType == GTypeFloat and funcType == GTypeDouble return CmpLoseless
+	if inType == GTypeHalf and funcType == GTypeDouble return CmpLoseless
+	if inType == GTypeHalf and funcType == GTypeFloat return CmpLoseless
+	if (inType is TypeFatArr or inType is TypeArr)  and funcType is TypePoint
 	{
 		if inType.Base == funcType.Base
 		{
-			return 1
+			return CmpLoseless
 		}
 	}
-	if inType is TypeArr  and funcType is TypePoint 
-	{
-		if inType.Base == funcType.Base
-		{
-			return 1
-		}
-	}
-	if funcType in ![GTypeDouble,GTypeFloat] and IsInt(inType) return 1 
+	if funcType in ![GTypeDouble,GTypeFloat] and IsInt(inType) return CmpLoselessItoF 
 
 	if inType is TypeStandart and funcType is TypeStandart
 	{
 		if IsInt(inType) and IsInt(funcType) {
-			if GetIntSize(inType) < GetIntSize(funcType) return 1
-			return 2
+			if GetIntSize(inType) < GetIntSize(funcType) return CmpLoseless
+			return CmpLose
 		}
 	}
 	//if (inType is TypePoint and funcType == GTypeBool) return 1
 	//if inType is TypeFatArr and funcType == GTypeBool return 1
 
 	if inType is TypePoint and inType.Base is TypeFunc  
-		and funcType is TypePoint and funcType.Base is TypeFunc
+		and funcType is TypePoint and funcType.Base is TypeFunc //func where?
 	{
-		return 1
+		return CmpLoseless
 	}
 	if inType is TypePoint and funcType is TypePoint
 	{
@@ -422,13 +420,13 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 
 			while asCl1 != null
 			{
-				if asCl1 == asCl2 return 1
+				if asCl1 == asCl2 return CmpLoseless
 				asCl1 = asCl1.Parent
 			}
 
 		}
-		if funcType == VoidPType return 2
-		if inType == VoidPType and funcType != GTypeString return 2
+		if funcType == VoidPType return CmpLose
+		if inType == VoidPType and funcType != GTypeString return CmpLose
 	}
 	if inType is TypeClass //inType.GetType() == "class"
 	{
@@ -437,20 +435,20 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		itFc.itConsts.Push(new ObjType(funcType)) ; $temp
 
 		asN := inType->{TypeClass^}.ToClass
-		if asN.GetFunc("->{}",itFc^,false) != null return 2
+		if asN.GetFunc("->{}",itFc^,false) != null return CmpLose
 	}
 
-	if inType is TypeArr and funcType == GTypeVoidP return 2
-	if inType == GTypeDouble and funcType == GTypeFloat return 2
-	if inType == GTypeDouble and funcType == GTypeHalf return 2
-	if inType == GTypeFloat and funcType == GTypeHalf return 2
-	if inType == GTypeFloat and funcType == GTypeInt return 2
-	if inType == GTypeDouble and funcType == GTypeInt return 2
-	if inType == TypeTable[16] and funcType is TypeFatArr  return 2
+	if inType is TypeArr and funcType == GTypeVoidP return CmpLose
+	if inType == GTypeDouble and funcType == GTypeFloat return CmpLose
+	if inType == GTypeDouble and funcType == GTypeHalf return CmpLose
+	if inType == GTypeFloat and funcType == GTypeHalf return CmpLose
+	if inType == GTypeFloat and funcType == GTypeInt return CmpLoseFtoI
+	if inType == GTypeDouble and funcType == GTypeInt return CmpLoseFtoI
+	if inType == TypeTable[16] and funcType is TypeFatArr  return CmpLose
 
-	if inType == GTypeVoidP and funcType is TypeFuncLambda return 3
+	if inType == GTypeVoidP and funcType is TypeFuncLambda return CmpLosePtoFP
 
-	if inType == GTypeInt and funcType == GTypeBool return 3
+	if inType == GTypeInt and funcType == GTypeBool return CmpLose
 
 	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
 	if inType is  TypeFuncLambda and funcType is TypeFuncLambda 
@@ -469,7 +467,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 						isGood = false
 				}
 			}
-			if isGood return 1
+			if isGood return CmpLoseless
 		}
 		
 	}
