@@ -1366,10 +1366,10 @@ CreateBuiltIns := !() -> void
 											+"store "+it+" #0, "+it+"* #1 #d\n"))
 
 
-		AddBuiltInFunc(new BuiltInFuncBinar(">=",PType,false,PType,false,BoolT,"#0 = fcmp uge "sbt + it + " #1,#2 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = fcmp ule "sbt + it + " #1,#2 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = fcmp ugt "sbt + it + " #1,#2 #d\n"))
-		AddBuiltInFunc(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = fcmp ult "sbt + it + " #1,#2 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar(">=",PType,false,PType,false,BoolT,"#0 = fcmp uge "sbt + it + " #1,#2 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar("<=",PType,false,PType,false,BoolT,"#0 = fcmp ule "sbt + it + " #1,#2 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar(">",PType,false,PType,false,BoolT,"#0 = fcmp ugt "sbt + it + " #1,#2 #d\n"))
+		//AddBuiltInFunc(new BuiltInFuncBinar("<",PType,false,PType,false,BoolT,"#0 = fcmp ult "sbt + it + " #1,#2 #d\n"))
 
 		BuiltInExcs.Push(new BuiltInFuncUno("->{}",PType,false,GTypeInt,"#0 = fptosi "sbt + it + " #1 to i32 #d\n"))
 
