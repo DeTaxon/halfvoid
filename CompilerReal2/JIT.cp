@@ -8,7 +8,10 @@ initJIT := !() -> void
 	jitCTX = jit_context_create()
 
 	jit_label_undefined = null
-	jit_label_undefined&->{size_t^}^ -= 1
+
+	intPtr := jit_label_undefined&->{size_t^}
+	intPtr^ -= 1
+	intPtr^ = intPtr^ >> 32
 }
 
 jit_label_undefined := void^

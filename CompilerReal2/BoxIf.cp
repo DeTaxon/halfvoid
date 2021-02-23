@@ -145,6 +145,43 @@ BoxIf := class extend Object
 	{
 		return "~if()"
 	}
+	DoJIT := virtual !() -> void^
+	{
+		if ForceGo != 0
+		{
+			if ForceGo == 1
+			{
+				Down.Right.DoJIT()
+			}else{
+				if Down.Right.Right != null
+					Down.Right.Right.DoJIT()
+			}
+			return null
+		}
+
+		if Down.Right.Right == null
+		{
+			onFalse := jit_label_undefined
+			chk := Down.DoJIT()
+			jit_insn_branch_if_not(JITCFunc, chk, onFalse&);
+			Down.Right.DoJIT()
+			jit_insn_label(JITCFunc,onFalse)
+
+		}else{
+			toEnd := jit_label_undefined
+			onFalse := jit_label_undefined
+			chk := Down.DoJIT()
+			jit_insn_branch_if_not(JITCFunc, chk, onFalse&);
+			Down.Right.DoJIT()
+			jit_insn_branch(JITCFunc,toEnd&)
+			jit_insn_label(JITCFunc,onFalse&)
+			Down.Right.Right.DoJIT()
+			jit_insn_label(JITCFunc,toEnd&)
+		}
+
+		
+		return null
+	}
 }
 
 BoxWhile := class extend Object

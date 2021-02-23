@@ -1,10 +1,11 @@
-minitest := !(int msg) -> void
-{
-}
-
 main := !(int argc,char^^ argv) -> int
 {
-	printf("heh %i\n",23)
+	if argc == 2546
+	{
+		printf("yes %s\n",getenv("PATH"))
+	}else{
+		printf("no %i\n",argc)
+	}
 	return 0
 }
 
