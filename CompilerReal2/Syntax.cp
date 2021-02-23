@@ -129,7 +129,6 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 {
 	//iter := begin.Down
 	
-	if RuleUse(begin,"imprt",RuleImport) return true
 	if RuleUse(begin,"~d",RuleMinus) return true
 
 	GotStuff := false
@@ -159,6 +158,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 	if RuleUse(begin,"for()",RuleFor) return true
 	if RuleUse(begin,"switch()",RuleSwitch) return true
 	if RuleUse(begin,"case()",RuleCase) return true
+	if RuleUse(begin,"imprt",RuleImport) return true
 
 	return false	
 }
@@ -384,25 +384,25 @@ RuleMinus := !(void^ itr) -> int
 		if It.Left.GetValue() == "[]" return 0
 		if It.Left.GetValue() == "()" return 0
 		if It.Left is ObjSuffix return 0 
-		if InDataR(It.Left)	return 0
+		if It.Left.IsDataR return 0
 	}
 	if It.GetValue() != "-" return 0
 
 	It = It.Right
 	if It == null return 0
 
-	if not InDataR(It) return 0
+	if not It.IsDataR return 0
 	
 	It = It.Right
 	if It == null return 2
 
 	switch It.GetValue()
 	{
-	case "." return 0
-	case "()" return 0
-	case "[]" return 0
-	case "^" return 0
-	case "&" return 0
+		case "." return 0
+		case "()" return 0
+		case "[]" return 0
+		case "^" return 0
+		case "&" return 0
 	}
 
 	return 2
