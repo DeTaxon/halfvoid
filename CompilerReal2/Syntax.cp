@@ -193,10 +193,11 @@ RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
 	{
 		if iterU == null return ToRet
 		iterVal := iterU.GetValue()
-		if InDataR(iterU) iterVal = "~d"
-		if iterNode.WhatNext.Exist(iterVal)
+		if iterU.IsDataR iterVal = "~d"
+		inWNext := iterNode.WhatNext.TryFind(iterVal)
+		if inWNext != null
 		{
-			iterNode = iterNode.WhatNext[iterVal]
+			iterNode = inWNext^
 			NowRet += 1
 			if iterNode.IsTerm 
 			{

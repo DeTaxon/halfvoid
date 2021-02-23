@@ -1,18 +1,19 @@
 
 MiniMachineNode := class 
 {
-	WhatNext := Map.{string,MiniMachineNode^}
+	WhatNext := AVLMap.{char^,MiniMachineNode^}
 	IsTerm := bool
 
 	this := !() -> void
 	{
-		WhatNext.Start = null
+		WhatNext."this"()
 		IsTerm = false
 	}
 	GetNext := !(string item) -> MiniMachineNode^
 	{
-		if not WhatNext.Exist(item) return null
-		return WhatNext[item]
+		inIt := WhatNext.TryFind(item)
+		if inIt != null return inIt^
+		return null
 	}
 }
 
