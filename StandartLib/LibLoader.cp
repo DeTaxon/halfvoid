@@ -165,6 +165,23 @@ Library := class
 		if hndl == null
 			throw new Exception(0,"can not open library, like "sbt + name)
 	}
+	Open := !(char^^ names,int count) -> void
+	{
+		for i : count
+		{
+			hndl = LibDB.GetLib(names[i])
+			if hndl != null
+			{	
+				return void
+			}
+		}
+		throw new Exception(0,"can not open library, like "sbt + names[0])
+	}
+	TryOpen := !(char^ name) -> bool
+	{
+		hndl = LibDB.GetLib(name)
+		return hndl != null
+	}
 	Get := !(char^ funcName) -> void^
 	{
 		return hndl.Get(funcName)

@@ -2,10 +2,11 @@
 	"link" : "static",
 	"initname" : "standartcinit",
 	"libs" : [
-		"libc.so",
+		"libc.so.6",
 		"msvcrt.dll"
 	],
 	"funcs" : {
-		"getenv" : "char^,char^"
+		"getenv" : "char^,char^",
+		"printf" : "int,char^,..."
 	}
 }

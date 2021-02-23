@@ -114,16 +114,12 @@ GetJITType := !(Type^ toChange) -> void^
 }
 
 
-drwFunc := !(int pr1) -> void
+JITSpecialFunc := !(NaturalCall^ toCl,void^^ res) -> bool
 {
-	printf("yies %i\n",pr1)
-}
-JITSpecialFunc := !(NaturalCall^ toCl) -> bool
-{
-	if toCl.ToCall.FuncName == "minitest"
+	asFunc := clibModule.GetPtrFunc(toCl.ToCall.FuncName)
+	if asFunc != null
 	{
 		dwns := List.{void^}() ; $temp
-		toCl.Print(0)
 		for it : toCl.Down
 		{
 			jtVal := it.DoJIT()
@@ -131,8 +127,26 @@ JITSpecialFunc := !(NaturalCall^ toCl) -> bool
 			dwns.Push(jtVal)
 		}
 		lst := dwns.ToArray() ; $temp
-		fType := GetFuncType(![GTypeInt],GTypeVoid)
-		jit_insn_call_native(JITCFunc,"printf",drwFunc,GetJITType(fType),lst,dwns.Size(),JIT_CALL_NOTHROW + JIT_CALL_NORETURN)
+		fType := toCl.ToCall.MyFuncType
+		fJITType := void^
+		if fType.IsVArgs and dwns.Size() != fType.ParsCount
+		{
+			rf := fType.GetRawFunc()
+			asArr := new void^[dwns.Size()]
+			for i : dwns.Size(), dwn : toCl.Down
+			{
+				if i < rf.Pars->len
+				{
+					asArr[i] = GetJITType(rf.Pars[i])
+				}else{
+					asArr[i] = GetJITType(dwn.GetType())
+				}
+			}
+			fJITType = jit_type_create_signature(jit_abi_vararg,GetJITType(rf.RetType),asArr,dwns.Size(),1) //TODOJIT: memleak
+		}else{
+			fJITType = GetJITType(fType)
+		}
+		res^ = jit_insn_call_native(JITCFunc,toCl.ToCall.FuncName,asFunc,fJITType,lst,dwns.Size(),JIT_CALL_NOTHROW)
 		return true
 	}
 	return false

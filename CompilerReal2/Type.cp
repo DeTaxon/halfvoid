@@ -783,6 +783,12 @@ TypePoint := class extend Type
 	}
 }
 
+TypeFuncRaw := class
+{
+	RetType := Type^
+	Pars := Type^[]
+	isVArgs := bool
+}
 
 TypeFunc := class extend Type
 {
@@ -795,6 +801,43 @@ TypeFunc := class extend Type
 
 	asLambda := Type^
 
+	GetRawFunc := !() -> TypeFuncRaw^
+	{
+		preRet := new TypeFuncRaw ; $temp
+		pc := ParsCount
+		isComplx := false
+		if ((RetType is TypeArr) or (RetType is TypeClass)) and not RetRef //TODO: allow directly set var
+			isComplx = true
+		if isComplx 
+		{
+			pc += 1
+			preRet.RetType = GTypeVoid
+		}else{
+			if RetRef
+			{
+				preRet.RetType = RetType.GetPoint()
+			}else{
+				preRet.RetType = RetType
+			}
+		}
+		preRet.Pars = new Type^[pc] ; $temp
+		i := 0
+		if isComplx
+		{
+			preRet.Pars[i++] = RetType.GetPoint()
+		}
+		for j : ParsCount
+		{
+			if ParsIsRef[j]
+			{
+				preRet.Pars[i] = Pars[j].GetPoint()
+			}else{
+				preRet.Pars[i] = Pars[j]
+			}
+			i += 1
+		}
+		return preRet
+	}
 	this := !(TypeFunc^ FType,Type^ itRetTyp) -> void
 	{
 		ItName = null

@@ -16,6 +16,8 @@ OneCLib := class
 
 	initFuncObj := Object^
 	initFuncBody := BoxFuncBodyFromString^
+
+	itLib := Library^
 }
 
 CLibModule := class extend CompilerModule
@@ -256,5 +258,31 @@ CLibModule := class extend CompilerModule
 			}
 			lib.initFuncBody.PrintGlobal(f)
 		}
+	}
+	GetPtrFunc := !(char^ name) -> void^
+	{
+		spn := StringSpan(name)
+		for it : libs
+		{
+			if spn in it.funcs
+			{
+				if it.itLib == null
+				{
+					it.itLib = new Library
+					loaded := false
+					for dll : it.dllNames
+					{
+						if it.itLib.TryOpen(dll)
+						{
+							loaded = true
+							break
+						}
+					}
+					assert(loaded) //TODOJIT: error check
+				}
+				return it.itLib.Get(name)
+			}
+		}
+		return null
 	}
 }

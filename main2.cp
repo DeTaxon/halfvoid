@@ -4,7 +4,7 @@ minitest := !(int msg) -> void
 
 main := !(int argc,char^^ argv) -> int
 {
-	printf("heh %c\n",getenv("PATH"))
+	printf("heh %i\n",23)
 	return 0
 }
 

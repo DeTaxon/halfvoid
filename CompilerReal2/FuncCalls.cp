@@ -1173,8 +1173,11 @@ NaturalCall := class extend SomeFuncCall
 	{
 		//TODOJIT: do_call
 
-		spF :=  JITSpecialFunc(this&)
-		if spF  return null
+		res := void^
+		if JITSpecialFunc(this&,res&)
+		{
+			return res
+		}
 	
 		ToCall.Print(0)
 		assert(false)
