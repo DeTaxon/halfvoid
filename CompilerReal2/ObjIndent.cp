@@ -87,6 +87,8 @@ ObjIndent := class extend Object
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjSuffix := class extend ObjConst
 {

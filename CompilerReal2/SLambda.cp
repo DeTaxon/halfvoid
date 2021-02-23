@@ -1027,6 +1027,8 @@ SLambda := class extend BoxFuncContainer
 	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
 	{
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 SFuncLambda := class extend SLambda
 {

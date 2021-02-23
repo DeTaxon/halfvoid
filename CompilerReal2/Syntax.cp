@@ -1,20 +1,20 @@
 InDataR := !(Object^ obj) -> bool
 {
-	switch obj.GetValue()
-	{
-		case "~null" return true
-		case "~d" return true
-		case "~ind" return true
-		case "~double" return true
-		case "~bool" return true
-		case "~int" return true
-		case "~str" return true
-		case "~cmd" return true
-		case "~{}type" return true
-		case "~type" return true
-		case "x=>x" return true
-	}
-	//if Val == "()" return true
+	if obj.IsDataR return true
+	//switch obj.GetValue()
+	//{
+	//	//case "~null" return true
+	//	//case "~d" return true
+	//	//case "~ind" return true
+	//	//case "~double" return true
+	//	//case "~bool" return true
+	//	//case "~int" return true
+	//	//case "~str" return true
+	//	//case "~cmd" return true
+	//	//case "~{}type" return true
+	//	//case "~type" return true
+	//	//case "x=>x" return true
+	//}
 	return false
 }
 
@@ -35,7 +35,6 @@ InBlockData := !(Object^ obj) -> bool
 	return false
 }
 
-//RuleType := type !(void^ begin)^ -> int
 RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 {
 	GotStuff := false

@@ -145,4 +145,6 @@ ObjData := class extend Object
 
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }

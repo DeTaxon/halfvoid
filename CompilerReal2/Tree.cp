@@ -181,6 +181,8 @@ Object := class{
 		Print(0)
 		assert(false)
 	}
+	IsDataR := virtual false
+	IsBlockData := virtual false
 }
 
 ObjLine := class 

@@ -79,6 +79,8 @@ ObjNULL := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjInt := class extend ObjConst
 {
@@ -118,6 +120,8 @@ ObjInt := class extend ObjConst
 	{
 		return jit_value_create_nint_constant(JITCFunc,GetJITType(ResultType),MyInt)
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjBool := class extend ObjConst
 {
@@ -153,6 +157,8 @@ ObjBool := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjDouble := class extend ObjConst
 {
@@ -216,6 +222,8 @@ ObjDouble := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 
 ObjRangeI := class extend ObjConst
@@ -343,6 +351,8 @@ ObjStr := class extend ObjConst
 		stpf := jit_value_create_nint_constant->{!(void^,void^,void^)^->void^}
 		return stpf(JITCFunc,GetJITType(GTypeString),justStr)
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 
 ObjSymbol := class extend ObjConst
@@ -479,6 +489,8 @@ ObjType := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjClassTemplatePointer := class extend ObjConst
 {
@@ -523,6 +535,8 @@ ObjCmd := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjTemplateType := class extend Object
 {
@@ -550,6 +564,8 @@ ObjTemplateType := class extend Object
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
 }
 ObjKeyword := class extend ObjConst
 {
