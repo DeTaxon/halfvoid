@@ -74,8 +74,15 @@ StringSpan := class{
 		memcpy(ptr,toGet.ptr,minVal)
 		return this
 	}
-	Str := !() -> string {
-		preRet := new char[itSize+1]
+	StrTmp := !()  -> char^ {
+		preRet := new char[itSize+1] ; $temp
+		preRet[itSize] = 0
+		memcpy(preRet->{void^},ptr,itSize)
+		return preRet
+	}
+	Str := !()  -> char^ { //TODO: put back .{}
+		//preRet := new char[itSize+1]
+		preRet := malloc(itSize+1)->{char^}
 		preRet[itSize] = 0
 		memcpy(preRet->{void^},ptr,itSize)
 		return preRet

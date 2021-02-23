@@ -55,7 +55,6 @@ prvtPtrArrayMutexes := AtomicMutex[2048]
 prvtGetBlockId := !(void^ toPt) -> int
 {
 	someVal := toPt
-	return 0
 	return (someVal&->{size_t^}^ >> 4) % 2048
 }
 
@@ -81,7 +80,7 @@ hUserPoolCount := task_local int
 	memset(newNode,0,val)
 	return newNode
 }
-k := 0
+
 "new" := !(int count) .{@R} -> R[]
 {
 	val := R->FatTypeSize

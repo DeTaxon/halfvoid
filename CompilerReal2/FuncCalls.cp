@@ -901,7 +901,7 @@ BaseFuncCall := class extend ObjResult
 	}
 }
 
-SomeFuncCall := class extend BaseFuncCall
+SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR 
 {
 	RetId := int
 
