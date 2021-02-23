@@ -4,6 +4,10 @@
 		"jit_abi_cdecl" : 0,
 		"jit_abi_vararg" : 1,
 
+		"JIT_CALL_NOTHROW" : 1,
+		"JIT_CALL_NORETURN" : 2,
+		"JIT_CALL_TAIL" : 4,
+
 		"JIT_TYPE_VOID" : 0,
 		"JIT_TYPE_SBYTE" : 1,
 		"JIT_TYPE_UBYTE" : 2,
@@ -63,9 +67,12 @@
 		"jit_insn_neg" : "void^,void^,void^",
 		"jit_insn_store" : "void,void^,void^,void^",
 		"jit_insn_return" : "void,void^,void^",
+		"jit_insn_call_native" : "void^,void^,char^,void^,void^,void^^,int,int",
 
 		"jit_type_create_pointer" : "void^,void^,int",
 		"jit_type_create_struct" : "void^,void^^,int,int"
+		"jit_type_copy" : "void^,void^"
+		"jit_type_set_size_and_alignment" : "void,void^,int,int"
 
 	}
 }

@@ -33,7 +33,8 @@ GetJITType := !(Type^ toChange) -> void^
 		{
 			if TypeTable[i] == toChange
 			{
-				newType = jit_type_int
+				newType = jit_type_copy(jit_type_int)
+				jit_type_set_size_and_alignment(newType,TypeTable[i].GetSize(),TypeTable[i].GetAlign())
 				found = true
 			}
 		}
@@ -70,11 +71,14 @@ GetJITType := !(Type^ toChange) -> void^
 		}
 		for i : asFunc.ParsCount
 		{
+			
 			if asFunc.ParsIsRef[i]
 			{
 				prs.Push(GetJITType(asFunc.Pars[i].GetPoint()))
 			}else{
-				prs.Push(GetJITType(asFunc.Pars[i]))
+				pType := GetJITType(asFunc.Pars[i])
+				assert(pType != null)
+				prs.Push(pType)
 			}
 		}
 
@@ -107,4 +111,29 @@ GetJITType := !(Type^ toChange) -> void^
 	JITCachedTypes[toChange] = newType
 
 	return newType
+}
+
+
+drwFunc := !(int pr1) -> void
+{
+	printf("yies %i\n",pr1)
+}
+JITSpecialFunc := !(NaturalCall^ toCl) -> bool
+{
+	if toCl.ToCall.FuncName == "minitest"
+	{
+		dwns := List.{void^}() ; $temp
+		toCl.Print(0)
+		for it : toCl.Down
+		{
+			jtVal := it.DoJIT()
+			assert(jtVal != null)
+			dwns.Push(jtVal)
+		}
+		lst := dwns.ToArray() ; $temp
+		fType := GetFuncType(![GTypeInt],GTypeVoid)
+		jit_insn_call_native(JITCFunc,"printf",drwFunc,GetJITType(fType),lst,dwns.Size(),JIT_CALL_NOTHROW + JIT_CALL_NORETURN)
+		return true
+	}
+	return false
 }

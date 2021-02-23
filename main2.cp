@@ -1,7 +1,11 @@
+minitest := !(int msg) -> void
+{
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	argc = 2
-	return argc + 300
+	printf("heh %c\n",getenv("PATH"))
+	return 0
 }
 
 main2 := !(int argc, char^^ argv) -> int

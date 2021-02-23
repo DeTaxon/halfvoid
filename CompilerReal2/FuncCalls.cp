@@ -285,7 +285,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 				lt := iter.Left.GetType()
 
-				if (lt is TypePoint or lt is TypeFatArr) and (typ is TypePoint or typ is TypePoint)
+				if (lt is TypePoint or lt is TypeFatArr or lt is TypeArr) and (typ is TypePoint or typ is TypePoint)
 				{
 					BoxExc(iter.Left,typ,false)
 					lObj := iter.Left
@@ -1169,6 +1169,18 @@ NaturalCall := class extend SomeFuncCall
 			CheckReturn()
 		}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		//TODOJIT: do_call
+
+		spF :=  JITSpecialFunc(this&)
+		if spF  return null
+	
+		ToCall.Print(0)
+		assert(false)
+
+		return null
+	}
 }
 
 PointFuncCall := class extend NaturalCall
@@ -1261,6 +1273,12 @@ AssemblerCall := class extend NaturalCall
 	GetType := virtual !() -> Type^
 	{
 		return FType.RetType
+	}
+	DoJIT := virtual !() -> void^
+	{
+		printf("it type %s\n",FType.GetName())
+		assert(false)
+		return null
 	}
 	UseCall := virtual !(sfile f) -> void
 	{

@@ -21,6 +21,9 @@ main := !(int argc,char^^ argv) -> int
 
 	fileSuffixes := List.{char^}()
 	fileSuffixes << ".cp"
+	sysSuf := "posix"
+	if $posix sysSuf = "posix"
+	if $win32 sysSuf = "win32"
 
 	dirChecks := List.{Tuple.{char^,int}}()
 
@@ -62,6 +65,7 @@ main := !(int argc,char^^ argv) -> int
 			i += 1
 		case "-p"
 			i++
+			sysSuf = argv[i]
 			itNm := ".cp."sbt + argv[i]
 			fileSuffixes.Push(itNm.Str())
 			
@@ -146,11 +150,17 @@ main := !(int argc,char^^ argv) -> int
 			}
 		}
 
-		machCheck := ""sbt + tmp1 + ".stm"
-		for machs : Wildcard(machCheck)
+		libCheck := ""sbt + tmp1 + ".clib"
+		for libs : Wildcard(libCheck)
 		{
-			AddMachine(machs.itStr)
+			clibModule.AddCLib(gRepo.GetFile(libs.Get()),false)
 		}
+
+		//machCheck := ""sbt + tmp1 + ".stm"
+		//for machs : Wildcard(machCheck)
+		//{
+		//	AddMachine(machs.itStr)
+		//}
 			
 		//if DebugMode and anyFileName != null
 		//{

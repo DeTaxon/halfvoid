@@ -408,4 +408,9 @@ ObjParam := class extend Object
 			}
 		}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		//JIT , set_value extra_class_construct
+		return null
+	}
 }

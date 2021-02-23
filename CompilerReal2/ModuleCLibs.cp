@@ -30,6 +30,8 @@ CLibModule := class extend CompilerModule
 			fType := CheckFuncTypeString(StringSpan("void"))
 			for it : libs
 			{
+				if it.isStatic 
+					continue
 				strData := "itLib := Library()\n"sbt
 
 				strData << "itLib.Open("
@@ -105,6 +107,8 @@ CLibModule := class extend CompilerModule
 				{
 					newLib.consts[it.Key()] = it
 				}
+			case "link"
+				isStatic = part.GetStr() == "static"
 			}
 		}
 
@@ -144,12 +148,16 @@ CLibModule := class extend CompilerModule
 				}
 				if spn in it.funcs
 				{
-					inFuncs := ref it.funcs[spn]
-					fType := CheckFuncTypeString(inFuncs.GetStr())
-					resPar := new GlobalParam(fType.GetPoint(),null)
-					it.objs[inFuncs.Key()] = resPar
+					if not it.isStatic
+					{
+						inFuncs := ref it.funcs[spn]
+						fType := CheckFuncTypeString(inFuncs.GetStr())
 
-					return resPar
+						resPar := new GlobalParam(fType.GetPoint(),null)
+						it.objs[inFuncs.Key()] = resPar
+
+						return resPar
+					}
 				}
 			}
 		}catch(IException^ e)
@@ -172,20 +180,39 @@ CLibModule := class extend CompilerModule
 					"call void@"sbt + it.initFunc + "()\n")
 				return it.initFuncObj
 			}
+			if spn in it.funcs
+			{
+				if it.isStatic
+				{
+					inFuncs := ref it.funcs[spn]
+					fType := CheckFuncTypeString(inFuncs.GetStr())
+
+					resPar := new BoxFuncDeclare(fType,spn.Str())
+					it.objs[inFuncs.Key()] = resPar
+
+					return resPar
+				}
+			}
 		}
 		return null
 	}
-	CheckFuncTypeString := !(StringSpan toCheck) -> Type^
+	CheckFuncTypeString := !(StringSpan toCheck) -> TypeFunc^
 	{
 		tList := DivideStr(toCheck," ,")
 		retType := CheckTypeString(tList[0])
 		nextTypes := Queue.{Type^}()
+		isVArg := false
 		for it,i : tList
 		{
 			if i == 0 continue
+			if it == "..." 
+			{
+				isVArg = true
+				continue
+			}
 			nextTypes.Push(CheckTypeString(it)) ; $temp
 		}
-		return GetFuncType(nextTypes,null,retType,false,false)
+		return GetFuncType(nextTypes,null,retType,false,isVArg)
 	}
 	CheckTypeString := !(StringSpan toCheck) -> Type^
 	{
@@ -218,11 +245,15 @@ CLibModule := class extend CompilerModule
 		{
 			if it is GlobalParam
 				it.PrintGlobal(f)
+			if it is BoxFuncDeclare
+				it.PrintGlobal(f)
 		}
 		for lib : libs
 		{
 			if lib.isStatic
+			{
 				continue
+			}
 			lib.initFuncBody.PrintGlobal(f)
 		}
 	}

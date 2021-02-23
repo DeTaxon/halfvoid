@@ -33,6 +33,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		box.itConsts.Push(new ObjType(ToType)) ; $temp
 		preRet :=  GlobalRefExc^.GetFunc(box^)
 		return preRet
+		//return GetExcPointers(itemType,ToType)
 	}
 
 	if itemType is TypeArr and ToType is TypePoint
@@ -101,6 +102,10 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 		or (itType is TypeFuncLambda and toType is TypePoint)
 	{
 		return UNext(item,new PtrExchanger(toType),1) 
+	}
+	if itType is TypeArr and toType is TypePoint and itType.Base == toType.Base
+	{
+		return UNext(item new ExcArrToPtr(toType),1) 
 	}
 
 	Exc := GetExchange(item,item,toType,isRef)

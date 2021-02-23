@@ -338,6 +338,11 @@ ObjStr := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
+	DoJIT := virtual !() -> void^
+	{
+		stpf := jit_value_create_nint_constant->{!(void^,void^,void^)^->void^}
+		return stpf(JITCFunc,GetJITType(GTypeString),justStr)
+	}
 }
 
 ObjSymbol := class extend ObjConst

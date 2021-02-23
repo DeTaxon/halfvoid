@@ -183,9 +183,9 @@ AllocBox := class
 			return void
 		if mustBeStruct
 		{
-			//JIT inherited liveOnGlobal
+			//TODOJIT inherited liveOnGlobal
 		}else{
-			//JIT inherited liveOnGlobal
+			//TODOJIT inherited liveOnGlobal
 
 			JITValues = new void^[ItemBag.Size()] ; $temp
 			for it,i :  ItemBag

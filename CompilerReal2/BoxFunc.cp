@@ -466,6 +466,12 @@ BoxFuncDeclare := class  extend BoxFunc
 		if IsInvalid inOutType.EmitError("can not parse function\n")
 		MethodType = null
 	}
+	this := !(TypeFunc^ fT, string SomeName) -> void
+	{
+		FuncName = SomeName
+		OutputName = SomeName
+		MyFuncType = fT
+	}
 	PrintGlobal := virtual !(sfile f) -> void
 	{
 		f << "declare "

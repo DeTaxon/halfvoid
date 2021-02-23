@@ -33,7 +33,12 @@ QuestionBox := class extend ControlFlowBox
 			Down.PrintPre(f)
 			f << "br label %Start" << itId << "\n"
 			f << "Start" << itId << ":\n"
-			f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
+			if dwnType == GTypeVoidP
+			{
+				f << "%QTempObject" << itId << " = getelementptr i8* , " Down.PrintUse(f) f << " , i32 0\n"
+			}else{
+				f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
+			}
 			f << "%CmpRes" << itId << " = icmp ne " 
 			Down.PrintUse(f)
 			f << " , null\n"

@@ -1,0 +1,11 @@
+{
+	"link" : "static",
+	"initname" : "standartcinit",
+	"libs" : [
+		"libc.so",
+		"msvcrt.dll"
+	],
+	"funcs" : {
+		"getenv" : "char^,char^"
+	}
+}
