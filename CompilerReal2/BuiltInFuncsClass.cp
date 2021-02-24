@@ -71,6 +71,97 @@ BuiltInUnrollClass := class extend BuiltInFunc
 		ToExe = itStr.Str()
 	}
 }
+BuiltIn2UnrollClass := class extend BuiltIn2Func
+{
+	ToClass := BoxClass^
+	ParName := char^
+
+	this := !(string Name, BoxClass^ l, bool lRef,Type^ retV, bool RRetRef) -> void
+	{
+		ParName = Name
+		ToClass = l
+
+		FuncName = Name
+		OutputName = Name
+		IsRetRef = RRetRef
+
+		PP := Queue.{Type^}() ; $temp
+		PP.Push(l.ClassType)
+
+		IsRefs := bool[1]
+		IsRefs[0] = lRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+	}
+	GetFieldPos := !() -> int
+	{
+		retType := Type^
+		if ToClass.Params[^i].ItName == ParName
+		{
+			return i
+		}
+		return -1
+	}
+	PrintFunc := virtual  !(BuiltIn2Call^ trg,sfile f) -> void
+	{
+		pos := GetFieldPos()
+		if pos == -1 
+		{
+			FP := FakeFieldParam^
+			FPN := char^()
+			if ToClass.FakeParams[^i].ItName == ParName
+			{
+				pos = i
+				FP = it
+				FPN = it.Atter->{ObjIndent^}.MyStr
+				break
+			}
+
+			CType := ((ToClass.ClassType)->{Type^})
+
+			pos2 := -1
+			midType := FieldParam^
+			
+			if ToClass.Params[^i].ItName == FPN
+			{
+				midType = it
+				pos2 = i
+				break
+			}
+
+			if ToClass.ContainVirtual pos2 += 1
+			
+			cn := CType.GetName()
+
+			trg.Down.PrintPointPre(f)
+			itId := trg.GenId() 
+			f << "%Pre"<<itId<<" = getelementptr " << cn << " , " << cn << "* "
+			f << trg.Down.GetPointName()
+			f << ", i32 0, i32 "<<pos2<<"\n"
+			f << "%T"<<itId<<" = bitcast " << midType.ResultType.GetName() << "* %Pre" << itId
+			f << " to " << FP.ResultType.GetName() << "*\n"
+			return void
+		}
+
+		usePos := pos
+		if ToClass.ContainVirtual
+			usePos = pos + 1
+		
+		clName := ToClass.ClassType.GetName()
+
+		trg.Down.PrintPointPre(f)
+		itId := trg.GenId() 
+		f << "%T"<< itId <<" = getelementptr " << clName << " , " << clName << "* " 
+		f << trg.Down.GetPointName()
+		f <<", i32 0, i32 " << usePos <<"\n"
+	}
+	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
+		pos := GetFieldPos()
+		assert(pos != -1)
+		sp := jit_insn_address_of(JITCFunc,trg.Down.DoJIT())
+		ip := jit_insn_convert(JITCFunc,sp,GetJITType(GTypeInt),0)
+		return jit_insn_load(JITCFunc,ip)
+	}
+}
 
 
 BuiltInTemplateUnroll := class extend BoxTemplate
@@ -125,7 +216,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		retF := ToClass.GetFieldParam(Name)
 		retType := retF.ResultType
 
-		return new BuiltInUnrollClass(Name,ToClass,true,retType,true)
+		return new BuiltIn2UnrollClass(Name,ToClass,true,retType,true)
 	}
 	PrePrintEvent := virtual !() -> void
 	{
