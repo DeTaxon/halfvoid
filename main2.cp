@@ -3,7 +3,11 @@
 main := !(int argc,char^^ argv) -> int
 {
 	x := 17
-	printf("val %i\n",x)
+	while x != 0
+	{
+		printf("val %i\n",x)
+		x = x - 1
+	}
 	return 0
 }
 

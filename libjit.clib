@@ -69,7 +69,7 @@
 		"jit_insn_branch" : "void^,void^,void^^",
 		"jit_insn_branch_if" : "void^,void^,void^,void^^",
 		"jit_insn_branch_if_not" : "void^,void^,void^,void^^",
-		"jit_insn_label" : "void^,void^,void^",
+		"jit_insn_label" : "void^,void^,void^^",
 
 		"jit_insn_store" : "void,void^,void^,void^",
 		"jit_insn_return" : "void,void^,void^",

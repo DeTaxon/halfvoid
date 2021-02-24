@@ -165,7 +165,7 @@ BoxIf := class extend Object
 			chk := Down.DoJIT()
 			jit_insn_branch_if_not(JITCFunc, chk, onFalse&);
 			Down.Right.DoJIT()
-			jit_insn_label(JITCFunc,onFalse)
+			jit_insn_label(JITCFunc,onFalse&)
 
 		}else{
 			toEnd := jit_label_undefined
@@ -264,6 +264,24 @@ BoxWhile := class extend Object
 
 		}
 
+	}
+	DoJIT := virtual !() -> void^
+	{
+
+		if Down.Right.Right == null
+		{
+			onBeg := jit_label_undefined
+			onEnd := jit_label_undefined
+			
+			jit_insn_label(JITCFunc,onBeg&)
+			chk := Down.DoJIT()
+			jit_insn_branch_if_not(JITCFunc,chk,onEnd&)
+			Down.Right.DoJIT()
+			jit_insn_branch(JITCFunc,onBeg&)
+			jit_insn_label(JITCFunc,onEnd&)
+		}
+		
+		return null
 	}
 	callDeferStuf := bool
 	ApplyDeferUse := virtual !(int depth) -> void
