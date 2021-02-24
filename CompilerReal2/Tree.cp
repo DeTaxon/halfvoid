@@ -189,6 +189,12 @@ Object := class{
 	}
 	IsDataR := virtual false
 	IsBlockData := virtual false
+
+	GetTokenId := virtual !() -> int
+	{
+		assert(false)
+		return 0
+	}
 }
 
 ObjLine := class 

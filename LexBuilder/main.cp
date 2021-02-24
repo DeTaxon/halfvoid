@@ -35,7 +35,9 @@ main := !(int argc, char^^ argv) -> int
 		buff2[k] = 0
 		itBuilder.ApplyReg(buff2,8)
 	}
-	for LexKeyWords itBuilder.ApplyReg(it,8)
+	DoKeys(x ==> {
+		itBuilder.ApplyReg(x,8)
+	})
 	itBuilder.ApplyReg("\\{ | \\} | \\. | \\( | \\) | \\[ | \\]",8)
 	itBuilder.ApplyReg("\\? | \\, | \\! | \\|",8)
 

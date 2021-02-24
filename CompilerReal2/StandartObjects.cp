@@ -358,9 +358,15 @@ ObjStr := class extend ObjConst
 ObjSymbol := class extend ObjConst
 {
 	MySymbol := char^
+	TokenId := int
 	"this" := !(char^ sym) -> void
 	{
 		MySymbol = sym
+		TokenId = 0
+	}
+	"this" := !(char^ sym,int newId) -> void
+	{
+		TokenId = newId
 	}
 	GetValue := virtual !() -> char^
 	{
@@ -376,6 +382,10 @@ ObjSymbol := class extend ObjConst
 		PreRet := new ObjSymbol(MySymbol)
 		PreRet.Line = Line
 		return PreRet
+	}
+	GetTokenId := virtual !() -> int
+	{
+		return TokenId
 	}
 }
 ObjArray := class extend ObjConst
