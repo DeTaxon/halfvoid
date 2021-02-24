@@ -1,48 +1,9 @@
-zz1 := class 
-{
-	Check := virtual !() -> char^
-	{
-		return ""
-	}
-	IsD := virtual false
-	IsB := virtual false
-}
-zz2 := class extend zz1
-{
-	Check := virtual !() -> char^
-	{
-		return "asd"
-	}
-}
-zz3 := class extend zz2
-{
-	Check := virtual !() -> char^
-	{
-		return "asd"
-	}
-	IsD := virtual true
-	IsB := virtual true
-}
-zz4 := class extend zz3
-{
-	Check := virtual !() -> char^
-	{
-		return "asd"
-	}
-}
 
 
 main := !(int argc,char^^ argv) -> int
 {
-	nwi := new zz4
-	printf("wow %i\n",nwi->{zz2^}.IsD)
-	return 0
-	if argc == 2546
-	{
-		printf("yes %s\n",getenv("PATH"))
-	}else{
-		printf("no %i\n",argc)
-	}
+	x := 17
+	printf("val %i\n",x)
 	return 0
 }
 

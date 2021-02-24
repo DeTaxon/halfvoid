@@ -126,6 +126,28 @@ ObjParam := class extend Object
 		//	}
 		//}
 	}
+	DoJIT := virtual !() -> void^
+	{
+		//TODOJIT , set_value extra_class_construc
+		if Down.Right != null
+		{
+			if IsTook
+			{
+				assert(false)
+			}else{
+				if IsRef
+				{
+					assert(false)
+				}else{
+					newVal := Down.Right.DoJIT()
+					itVar := Down.DoJIT()
+					jit_insn_store(JITCFunc,itVar,newVal)
+				}
+
+			}
+		}
+		return null
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -407,10 +429,5 @@ ObjParam := class extend Object
 				}
 			}
 		}
-	}
-	DoJIT := virtual !() -> void^
-	{
-		//JIT , set_value extra_class_construct
-		return null
 	}
 }
