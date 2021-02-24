@@ -44,7 +44,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		if mvUp == null
 			return null
-		if mvUp is SLambda
+		if IsSLambda(mvUp)
 			return null
 		if mvUp.GetValue() != "~d"
 			return null

@@ -44,6 +44,7 @@
 		"jit_function_create" : "void^,void^,void^",
 		"jit_function_compile" : "int,void^",
 		"jit_function_apply" : "int,void^,void^^,void^^",
+		"jit_function_apply_vararg" : "int,void^,void^,void^^,void^^",
 
 		"jit_value_create" : "void^,void^,void^",
 		"jit_value_create_nint_constant" : "void^,void^,void^,int",

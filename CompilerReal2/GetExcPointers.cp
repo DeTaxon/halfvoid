@@ -76,14 +76,26 @@ BuiltIn2PtrExc := class extend BuiltIn2Func
 		MyFuncType = GetFuncType(![frType],newType)
 	}
 	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
-		trg.GenId()
-		trg.Down.PrintPre(f)
-		trg.PrintRes(f)
-		f << " = bitcast "
-		trg.Down.PrintUse(f)
-		f << " to "
-		f << MyFuncType.RetType.GetName()
-		f << "\n"
+		if trg.Down.GetType() is TypeArr
+		{
+			trg.GenId()
+			trg.Down.PrintPointPre(f)
+			trg.PrintRes(f)
+			f << " = bitcast "
+			trg.Down.PrintPointUse(f)
+			f << " to "
+			f << MyFuncType.RetType.GetName()
+			f << "\n"
+		}else{
+			trg.GenId()
+			trg.Down.PrintPre(f)
+			trg.PrintRes(f)
+			f << " = bitcast "
+			trg.Down.PrintUse(f)
+			f << " to "
+			f << MyFuncType.RetType.GetName()
+			f << "\n"
+		}
 	}
 	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
 		assert(false)
@@ -112,10 +124,18 @@ PtrExchanger := class extend Object
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
-		Down.PrintPre(f)
-		f << "%T" << itId << " = bitcast "
-		Down.PrintUse(f)
-		f << " to " << toType.GetName() << "\n"
+		if Down.GetType() is TypeArr
+		{
+			Down.PrintPointPre(f)
+			f << "%T" << itId << " = bitcast "
+			Down.PrintPointUse(f)
+			f << " to " << toType.GetName() << "\n"
+		}else{
+			Down.PrintPre(f)
+			f << "%T" << itId << " = bitcast "
+			Down.PrintUse(f)
+			f << " to " << toType.GetName() << "\n"
+		}
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{

@@ -74,7 +74,7 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 	itType := item.GetType()
 	if itType == null return null
 
-	if item is SLambda
+	if IsSLambda(item)
 	{
 		asN := item->{SLambda^}
 		asN.ApplyFunc(toType,toType is TypePoint)

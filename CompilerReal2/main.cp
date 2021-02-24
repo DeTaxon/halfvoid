@@ -369,11 +369,15 @@ main := !(int argc,char^^ argv) -> int
 		tst := mainFunc.Down.DoJIT()
 		jit_context_build_end(jitCTX)
 		z := 2546
+		h := 1337
 		res := 0
-		vals := void^[2]
+		vals := void^[3]
 		vals[0] = z&
 		vals[1] = argv&
-		jit_function_apply(tst,vals,res&)
+		vals[2] = h&
+		signat := GetJITType(GetFuncType(![GTypeInt,GTypeVoidP,GTypeInt],
+			null,GTypeInt,false,true))
+		jit_function_apply_vararg(tst,signat,vals,res&)
 		printf("res %i\n",res)
 		return 0
 	}

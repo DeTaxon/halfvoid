@@ -1,3 +1,11 @@
+IsSLambda := !(Object^ ob) -> bool
+{
+	if ob is SLambda return true
+	if ob is SBoostLambda return true
+	if ob is SFuncLambda return true
+	return false
+}
+
 SLambda := class extend BoxFuncContainer
 {
 	parsedStart := bool

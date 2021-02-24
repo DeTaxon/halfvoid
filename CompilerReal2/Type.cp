@@ -597,7 +597,7 @@ GetFuncType := !(Type^[@Siz] typs,Type^ retType) -> TypeFunc^
 }
 GetFuncType := !(Type^[@Siz] typs,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
-	return GetFuncType(typs[0]->{Type^^},IsRefArr,Siz,retType,retRef2,IsVArgs2)
+	return GetFuncType(typs[0]&->{Type^^},IsRefArr,Siz,retType,retRef2,IsVArgs2)
 }
 GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {

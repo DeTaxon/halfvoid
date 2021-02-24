@@ -1,12 +1,5 @@
 
-
-main := !(int argc,char^^ argv) -> int
-{
-	x := 23
-	return argc
-}
-
-main2 := !(int argc, char^^ argv) -> int
+main := !(int argc, char^^ argv) -> int
 {
 
 	try

@@ -216,7 +216,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 		retF := ToClass.GetFieldParam(Name)
 		retType := retF.ResultType
 
-		return new BuiltIn2UnrollClass(Name,ToClass,true,retType,true)
+		return new BuiltInUnrollClass(Name,ToClass,true,retType,true)
 	}
 	PrePrintEvent := virtual !() -> void
 	{
@@ -296,6 +296,86 @@ BuiltInAutoField := class extend BuiltInFunc
 			if ToClass.ContainVirtual fatPos += 1
 			itStr := "#0 = getelementptr "sbt+ (CType.GetName()) + " , " + (CTypeP.GetName()) + " %this, i32 0, i32 "+fatPos+" #d\n"
 			ToExe = itStr.Str()
+		}
+	}
+}
+BuiltIn2AutoField := class extend BuiltIn2Func
+{
+	ToClass := BoxClass^
+	ParName := char^
+
+	this := !(Type^ l,bool lRef,BoxClass^ cl,char^ pName,char^ code) -> void
+	{
+		FuncName = "."
+		OutputName = "."
+		IsRetRef = lRef
+
+		PP := Queue.{Type^}()
+		MyFuncType = GetFuncType(PP,null->{bool^},l,lRef,false)
+
+		ToClass = cl
+		ParName = pName
+	}
+	PrintFunc := virtual  !(BuiltIn2Call^ trg,sfile f) -> void
+	{
+		if true 
+		{
+
+			pos := -1
+			if ToClass.Params[^i].ItName == ParName
+			{
+				pos = i
+				break
+			}
+
+			if pos == -1
+			{
+				if ToClass.FakeParams[^i].ItName == ParName
+				{
+					pos = i
+					break
+				}
+
+				CType := ((ToClass.ClassType)->{Type^})
+				CTypeP := CType.GetPoint()
+
+				FP := ToClass.FakeParams[pos]
+				assert(FP.Atter is ObjIndent) //TODO: check in GetPrior
+				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
+				pos2 := -1
+				midType := FieldParam^
+
+				if ToClass.Params[^i].ItName == FPN
+				{
+					pos2 = i
+					midType = it
+					break
+				}
+				assert(pos2 != -1) //TODO: check in GetPrior
+
+				if ToClass.ContainVirtual pos2 += 1
+
+				cn := CType.GetName()
+
+				itId := trg.GenId() 
+				f << "%Pre"<<itId<<" = getelementptr " << cn << " , " << cn << "* "
+				f << " %this"
+				f << ", i32 0, i32 "<<pos2<<"\n"
+				f << "%T"<<itId<<" = bitcast " << midType.ResultType.GetName() << "* %Pre" << itId
+				f << " to " << FP.ResultType.GetName() << "*\n"
+
+				return void
+			}
+
+			CType := ((ToClass.ClassType)->{Type^})
+			clName := CType.GetName()
+			fatPos := pos
+			if ToClass.ContainVirtual fatPos += 1
+
+			itId := trg.GenId() 
+			f << "%T"<< itId <<" = getelementptr " << clName << " , " << clName << "* " 
+			f << " %this"
+			f <<", i32 0, i32 " << fatPos <<"\n"
 		}
 	}
 }

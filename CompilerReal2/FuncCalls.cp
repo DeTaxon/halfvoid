@@ -814,6 +814,15 @@ BaseFuncCall := class extend ObjResult
 	{
 		return FType.RetType
 	}
+	PrintGlobal := virtual !(sfile f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+	}
 	ExchangeParams := !() -> void
 	{
 		itLiner := this.Line
@@ -864,7 +873,7 @@ BaseFuncCall := class extend ObjResult
 				}
 			}else
 			{
-				if iter is SLambda iter->{SLambda^}.ApplyFunc()
+				if IsSLambda(iter) iter->{SLambda^}.ApplyFunc()
 			}
 			i += 1
 			iter = iter.Right
@@ -930,15 +939,6 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 		}
 		if FType.RetRef return true
 		return false
-	}
-	PrintGlobal := virtual !(sfile f) -> void
-	{
-		iter := Down
-		while iter != null
-		{
-			iter.PrintGlobal(f)
-			iter = iter.Right
-		}
 	}
 
 	checkedReturn := bool

@@ -135,7 +135,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 IsBoxFuncContainer := !(Object^ toCheck) -> bool
 {
 	if toCheck is BoxFuncBody return true
-	if toCheck is SLambda return true
+	if IsSLambda(toCheck) return true
 	if toCheck is BoxFuncBodyFromString return true
 	return false
 }
@@ -1143,7 +1143,7 @@ BoxFuncBody := class extend BoxFunc
 	thisJITFunc := void^
 	DoJIT := virtual !()-> void^
 	{
-		//JIT yield virtual params
+		//TODOJIT yield virtual params c_vargs t_vargs
 
 		if thisJITFunc != null 
 			return thisJITFunc
