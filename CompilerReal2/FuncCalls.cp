@@ -1428,6 +1428,11 @@ BuiltIn2Call := class extend BaseFuncCall
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		ExchangeParams()
+		if FType.RetRef
+		{
+			cc := this&
+			cc->SetType(BuiltIn2CallRef)
+		}
 	}
 	GenId := !() -> int
 	{
@@ -1462,6 +1467,39 @@ BuiltIn2Call := class extend BaseFuncCall
 	DoJIT := virtual !() -> void^
 	{
 		return RealCall.DoJIT(this&)
+	}
+}
+BuiltIn2CallRef := class extend BuiltIn2Call
+{
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		FType.RetType.GetPoint().PrintType(f)
+		PrintRes(f)
+	}
+	GetPointName := virtual !() -> char^
+	{
+		return "%T"sbt + thisClId
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		RealCall.PrintFunc(this&,f)
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		FType.RetType.PrintType(f)
+		f << "%TR" << thisClId
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%TR"sbt + thisClId
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		PrintPointPre(f)
+		rn := FType.RetType.GetName()
+		f << "%TR" << thisClId << " = load " << rn << " , "
+		PrintPointUse(f)
+		f << "\n"
 	}
 }
 TypeSizeCall := class extend SomeFuncCall

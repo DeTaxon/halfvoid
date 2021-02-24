@@ -181,6 +181,12 @@ Object := class{
 		Print(0)
 		assert(false)
 	}
+	DoPointJIT := virtual !() -> void^
+	{
+		printf("unsupported\n")
+		Print(0)
+		assert(false)
+	}
 	IsDataR := virtual false
 	IsBlockData := virtual false
 }

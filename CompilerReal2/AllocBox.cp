@@ -176,7 +176,7 @@ AllocBox := class
 			f << "\n"
 		}
 	}
-	JITValues := void^[]
+	JITValues := Tuple.{void^,void^}[]
 	DoJITStart := !() -> void
 	{
 		if ItemBag.Size() == 0
@@ -187,10 +187,11 @@ AllocBox := class
 		}else{
 			//TODOJIT inherited liveOnGlobal
 
-			JITValues = new void^[ItemBag.Size()] ; $temp
+			JITValues = new Tuple.{void^,void^}[ItemBag.Size()] ; $temp
 			for it,i :  ItemBag
 			{
-				JITValues[i] = jit_value_create(JITCFunc,GetJITType(it.1))
+				JITValues[i].0 = jit_value_create(JITCFunc,GetJITType(it.1))
+				JITValues[i].1 = jit_insn_address_of(JITCFunc,JITValues[i].0)
 			}
 		}
 	}

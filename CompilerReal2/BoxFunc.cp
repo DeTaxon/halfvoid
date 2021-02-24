@@ -1185,7 +1185,7 @@ BoxFuncBody := class extend BoxFunc
 		for i : MyFuncType.ParsCount //JIT: ret complex
 		{
 			parVal := jit_value_get_param(jitFunc,i)
-			jit_insn_store(jitFunc,ItParams[i].DoJIT(),parVal)
+			jit_insn_store_relative(jitFunc,ItParams[i].DoPointJIT(),0,parVal)
 		}
 
 		Down.DoJIT()

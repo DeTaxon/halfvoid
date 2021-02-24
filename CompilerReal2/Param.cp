@@ -140,8 +140,8 @@ ObjParam := class extend Object
 					assert(false)
 				}else{
 					newVal := Down.Right.DoJIT()
-					itVar := Down.DoJIT()
-					jit_insn_store(JITCFunc,itVar,newVal)
+					itVar := Down.DoPointJIT()
+					jit_insn_store_relative(JITCFunc,itVar,0,newVal)
 				}
 
 			}

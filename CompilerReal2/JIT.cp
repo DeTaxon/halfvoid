@@ -45,7 +45,9 @@ GetJITType := !(Type^ toChange) -> void^
 		{
 			switch toChange
 			{
-				case GTypeBool newType = jit_type_int
+				case GTypeBool 
+				newType = jit_type_copy(jit_type_int)
+				jit_type_set_size_and_alignment(newType,1,1)
 				case GTypeVoid newType = jit_type_void
 			}
 		}

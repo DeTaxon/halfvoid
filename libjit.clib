@@ -72,8 +72,15 @@
 		"jit_insn_label" : "void^,void^,void^^",
 
 		"jit_insn_store" : "void,void^,void^,void^",
+		"jit_insn_store_relative" : "void,void^,void^,int,void^",
+		"jit_insn_store_elem" : "void,void^,void^,int,void^",
 		"jit_insn_return" : "void,void^,void^",
 		"jit_insn_call_native" : "void^,void^,char^,void^,void^,void^^,int,int",
+
+		"jit_insn_address_of" : "void^,void^,void^",
+		"jit_insn_load" : "void^,void^,void^",
+		"jit_insn_load_relative" : "void^,void^,void^,int,void^",
+		"jit_insn_convert" : "void^,void^,void^,void^,int",
 
 		"jit_type_create_pointer" : "void^,void^,int",
 		"jit_type_create_struct" : "void^,void^^,int,int"

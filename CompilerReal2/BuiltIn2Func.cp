@@ -103,9 +103,9 @@ BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
 		f << " , "<<Zero<<"\n"
 	}
 	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		par1 := trg.Down.DoJIT()
+		par1 := trg.Down.DoPointJIT()
 		par2 := trg.Down.Right.DoJIT()
-		jit_insn_store(JITCFunc,par1,par2)
+		jit_insn_store_relative(JITCFunc,par1,0,par2)
 		return par1
 	}
 }
@@ -127,6 +127,14 @@ BuiltIn2IntMath := class extend BuiltIn2Func
 		trg.Down.PrintUse(f)
 		f << " , "
 		f << trg.Down.Right.GetName()
+		if DebugMode
+		{
+			dbgId := CreateDebugCall(trg)
+			if dbgId != -1
+			{
+				f << ", !dbg !" << dbgId
+			}
+		}
 		f << "\n"
 	}
 	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
@@ -167,6 +175,14 @@ BuiltIn2Negative := class extend BuiltIn2Func
 		trg.Down.GetType().PrintType(f)
 		f << " 0, "
 		f << trg.Down.GetName()
+		if DebugMode
+		{
+			dbgId := CreateDebugCall(trg)
+			if dbgId != -1
+			{
+				f << ", !dbg !" << dbgId
+			}
+		}
 		f << "\n"
 	}
 	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {

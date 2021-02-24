@@ -2,72 +2,13 @@
 
 main := !(int argc,char^^ argv) -> int
 {
-	x := 17
-	while x != 0
-	{
-		printf("val %i\n",x)
-		x = x - 1
-	}
-	return 0
+	x := 23
+	return argc
 }
 
 main2 := !(int argc, char^^ argv) -> int
 {
-	//return 0
-	//lx := new LexBuilder ; $temp
-	//lx.ApplyReg("[a-zA-Z][a-zA-Z0-9]*")
-	//m := lx.GenerateMachine()
 
-	//m := "1 2 3 2 |  1 3 3 2"reg
-
-	//tt := (char^ newSt) ==> {
-	//	printf("mathc <%s> %i\n",newSt,m.IsMatch(newSt))
-	//}
-	//tt("1232")
-	//tt("1332")
-	//tt("3332")
-	//	
-	//return 0
-		
-	//libjitinit()
-	//v := Library()
-	//v.Open("libjit.so")
-	//sb := v.Get("jit_type_void")->{void^^}
-	//printf("mod test %i\n",JIT_TYPE_PTR)
-	//printf("mod test %p\n",jit_context_create)
-	//printf("ptr %p %p\n",jit_type_void,sb^)
-	//return 0
-	
-	//libjit.Open("libjit.so")
-	//jit_context_create := libjit.Get("jit_context_create")->{!()^->void^}
-	//jit_context_build_start := libjit.Get("jit_context_build_start")->{!(void^)^->void^}
-	////jit_type_ := libjit.Get("jit_type_")
-	//jit_type_void := libjit.Get("jit_type_void")->{void^^}^
-	//jit_type_int := libjit.Get("jit_type_int")->{void^^}^
-	//jit_type_void_ptr := libjit.Get("jit_type_void_ptr")->{void^^}^
-	//jit_type_create_signature := libjit.Get("jit_type_create_signature")->{!(int,void^,void^,int,int)^->void^}
-	//jit_function_create := libjit.Get("jit_function_create")->{!(void^)^->void^}
-	//jit_value_get_param := libjit.Get("jit_value_get_param")->{!(void^,int)^->void^}
-
-	//jit_abi_cdecl := 0
-
-	//ctx := jit_context_create()
-	//jit_context_build_start(ctx)
-
-	//pars := void^[2]
-	//pars[0] = jit_type_int
-	//pars[1] = jit_type_int
-	//funcptr := jit_type_create_signature(jit_abi_cdecl,jit_type_int,pars,2,1)
-
-	//f := jit_function_create(funcptr)
-	//return 0
-	//if "wow" == "wow"
-	//{
-	//	bob + bob
-	//}
-	//val := int[15]
-	//WantIt(val)	
-	//return 0
 	try
 	{
 		TestBiggerSwitch()

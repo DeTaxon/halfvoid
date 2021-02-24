@@ -196,6 +196,10 @@ ParamNaturalCall := class extend ParamCall
 	{
 		return ToCall.GetPointName(TempId)
 	}
+	DoPointJIT := virtual !() -> void^
+	{
+		return ToCall->{Object^}.DoPointJIT()
+	}
 	DoJIT := virtual !() -> void^
 	{
 		return ToCall->{Object^}.DoJIT()
