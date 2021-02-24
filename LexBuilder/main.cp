@@ -2,12 +2,6 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	keywords := Queue.{string}()
-	keywords.Push(":=")
-	keywords.Push("=>")
-	keywords.Push("==>")
-	keywords.Push("...")
-	keywords.Push(":")
 
 	itM := MappedFile("Priority.pr")
 	defer itM.Close()
@@ -41,7 +35,7 @@ main := !(int argc, char^^ argv) -> int
 		buff2[k] = 0
 		itBuilder.ApplyReg(buff2,8)
 	}
-	for keywords itBuilder.ApplyReg(it,8)
+	for LexKeyWords itBuilder.ApplyReg(it,8)
 	itBuilder.ApplyReg("\\{ | \\} | \\. | \\( | \\) | \\[ | \\]",8)
 	itBuilder.ApplyReg("\\? | \\, | \\! | \\|",8)
 

@@ -115,3 +115,12 @@ PriorityBag := class
 	}
 }
 
+DoKeys := !(!(char^)& -> void kvs ) -> void
+{
+	for it : ![":=","=>","==>","...",":"]
+	{
+		kvs(it)	
+	}
+}
+
+
