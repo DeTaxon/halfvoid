@@ -1,6 +1,10 @@
 
+Tst := !["abc","edf"]
+
 main := !(int argc, char^^ argv) -> int
 {
+	printf("heh %s\n",Tst[^])
+	return 0
 
 	try
 	{

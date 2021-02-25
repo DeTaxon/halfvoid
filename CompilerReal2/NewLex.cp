@@ -40,9 +40,9 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> O
 		tok := StringSpan(ptr,c)
 
 		ns := null->{Object^}
-		if a > 400
+		if a >= 400
 		{
-			ns = new ObjSymbol(GetConstString(tok)) 
+			ns = new ObjSymbol(GetConstString(tok),a) 
 		}
 		if a != 20{
 			if itLine == null {

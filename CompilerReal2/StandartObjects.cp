@@ -457,7 +457,13 @@ ObjArray := class extend ObjConst
 		for i : itType.Size
 		{
 			if i > 0 preRet << " , "
-			preRet << Items[i].GetType().GetName() << " " << Items[i].GetName()
+			if Items[i] is ObjStr
+			{
+				preRet << "i8* "
+				preRet << Items[i]->{ObjStr^}.GetConstInline()
+			}else{
+				preRet << Items[i].GetType().GetName() << " " << Items[i].GetName()
+			}
 		}
 		preRet << "]"
 		return preRet.Str() ; $temp
