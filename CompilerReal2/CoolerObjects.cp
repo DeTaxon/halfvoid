@@ -99,19 +99,23 @@ UniteSkobs := !(Object^ Tree) -> Object^
 	while iter != null
 	{
 		Value := iter.GetValue()
+		tokId := iter.GetTokenId()
 
-		if Value[0] in "{[(" 	Bag.Push(iter)
+		if tokId in 40..42 	Bag.Push(iter)
 
-		if Value[0] in "}])"
+		if tokId in 43..45
 		{
 			itPair := char^
-			if Value[0] == '\}' itPair = "{}"
-			if Value[0] == '\]' itPair = "[]"
-			if Value[0] == '\)' itPair = "()"
+			switch tokId
+			{
+				case 43 itPair = "()"
+				case 44 itPair = "{}"
+				case 45 itPair = "[]"
+			}
 
 			if Bag.Empty() return iter
 			Old := Bag.Pop()
-			if Old.GetValue()[0] != itPair[0] 
+			if tokId - Old.GetTokenId() != 3
 			{
 				Old.EmitError("incorrect pair for "sbt + Old.GetValue())
 				return iter

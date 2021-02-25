@@ -162,7 +162,7 @@ PriorityBag := class
 	}
 }
 
-LexKeyWords := ![":=","=>","==>","...",":"]
+LexKeyWords := ![":=","=>","==>","...",":",".",",","?","!",".","|"]
 AllKeyWords := !["return","for","if","else","while","do","delete","switch","case" 
 ,"class","extern" ,"extend" ,"at" 
 ,"defer" ,"type" ,"virtual" ,"new" 
