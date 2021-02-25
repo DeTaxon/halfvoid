@@ -192,7 +192,6 @@ Object := class{
 
 	GetTokenId := virtual !() -> int
 	{
-		assert(false)
 		return 0
 	}
 }

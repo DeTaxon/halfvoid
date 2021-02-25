@@ -84,7 +84,7 @@ halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
 	$(TargetStable) --ZipGlue $(CurrentStable) Objs/CompilerData.zip $(HW)
 	$(TargetStable) --ZipAppend $(HW) Objs/hres.zip
 
-$(CurrentLex): LexBuilder/main.cp Priority.pr
+$(CurrentLex): LexBuilder/main.cp Priority.pr CompilerReal2/PriorityRead.cp
 	$(CurrentStable) --notask $(TargetPlatform) $(ForcedLibs)  LexBuilder/main.cp  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
 Mach.m: $(CurrentLex)
 	$(CurrentLex)

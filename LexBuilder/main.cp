@@ -17,6 +17,8 @@ main := !(int argc, char^^ argv) -> int
 	itBuilder.ApplyReg("[0-9]+.[0-9]+",6)
 	itBuilder.ApplyReg("0x[0-9a-fA-F]+",7)
 
+	
+	allOpers := new AVLSet.{char^} ; $temp
 	for pr.Opers {
 		buff2 := char[64]
 		k := 0
@@ -34,11 +36,17 @@ main := !(int argc, char^^ argv) -> int
 		}
 		buff2[k] = 0
 		itBuilder.ApplyReg(buff2,8)
+		allOpers.Insert(StrCopy(buff2))
 	}
-	DoKeys(x ==> {
-		itBuilder.ApplyReg(x,8)
-	})
-	itBuilder.ApplyReg("\\{ | \\} | \\. | \\( | \\) | \\[ | \\]",8)
+	allOpers.Insert(LexKeyWords[^])
+	allOpers.Insert(AllKeyWords[^])
+	printf("itms %i\n",allOpers.Size())
+	for it,i : allOpers^
+	{
+		itBuilder.ApplyReg(it,40 + i)
+	}
+
+	itBuilder.ApplyReg("\\( | \\) | \\{ | \\. | \\} | \\[ | \\]",8)
 	itBuilder.ApplyReg("\\? | \\, | \\! | \\|",8)
 
 	itBuilder.ApplyReg("/ /[^\n]*",9)

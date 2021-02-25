@@ -17,11 +17,41 @@ MiniMachineNode := class
 	}
 }
 
+MiniMachineNode2 := class 
+{
+	WhatNext := AVLMap.{int,MiniMachineNode2^}
+	IsTerm := bool
+
+	this := !() -> void
+	{
+		WhatNext."this"()
+		IsTerm = false
+	}
+
+	FromMach1 := !(PriorityBag^ base,MiniMachineNode^ nd) -> void
+	{
+		IsTerm = nd.IsTerm
+		for it,ind : nd.WhatNext
+		{
+			if it == null continue
+			itId := base.StrToId[ind]
+			newNode := new MiniMachineNode2
+			WhatNext[itId] = newNode
+			newNode.FromMach1(base,it)
+		}
+	}
+}
+
 PriorityBag := class
 {
 	Opers := AVLSet.{string}
 	Lines := Queue.{MiniMachineNode^}
 	LinesRaw := Queue.{char^}
+
+	TotalOpers := AVLSet.{char^}
+	StrToId := AVLMap.{char^,int}
+
+	Lines2 := List.{MiniMachineNode2^}
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
@@ -113,14 +143,30 @@ PriorityBag := class
 			}
 		}
 	}
-}
-
-DoKeys := !(!(char^)& -> void kvs ) -> void
-{
-	for it : ![":=","=>","==>","...",":"]
+	DoStep2 := !() -> void
 	{
-		kvs(it)	
+		TotalOpers.Insert(Opers[^])
+		TotalOpers.Insert(LexKeyWords[^])
+		TotalOpers.Insert(AllKeyWords[^])
+		
+		for it : Lines
+		{
+			if it == null {
+				Lines2.Push(null)
+				continue
+			}
+			newM := new MiniMachineNode2
+			newM.FromMach1(this&,it)
+			Lines2.Push(newM)
+		}
 	}
 }
 
+LexKeyWords := ![":=","=>","==>","...",":"]
+AllKeyWords := !["return","for","if","else","while","do","delete","switch","case" 
+,"class","extern" ,"extend" ,"at" 
+,"defer" ,"type" ,"virtual" ,"new" 
+,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
+,"packed_class" ,"self_return" ,"try" ,"catch" 
+,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ]
 

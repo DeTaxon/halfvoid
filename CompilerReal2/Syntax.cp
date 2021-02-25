@@ -194,6 +194,11 @@ RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
 		if iterU == null return ToRet
 		iterVal := iterU.GetValue()
 		if iterU.IsDataR iterVal = "~d"
+
+		iterId := iterU.GetTokenId()
+		if iterU.IsDataR iterId = 1
+		//if iterId == 0 printf("wut %s\n",iterU.GetValue())
+
 		inWNext := iterNode.WhatNext.TryFind(iterVal)
 		if inWNext != null
 		{

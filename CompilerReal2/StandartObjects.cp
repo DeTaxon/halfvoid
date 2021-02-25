@@ -366,6 +366,7 @@ ObjSymbol := class extend ObjConst
 	}
 	"this" := !(char^ sym,int newId) -> void
 	{
+		MySymbol = sym
 		TokenId = newId
 	}
 	GetValue := virtual !() -> char^
@@ -379,7 +380,7 @@ ObjSymbol := class extend ObjConst
 	}
 	Clone := virtual !() -> Object^
 	{
-		PreRet := new ObjSymbol(MySymbol)
+		PreRet := new ObjSymbol(MySymbol,TokenId)
 		PreRet.Line = Line
 		return PreRet
 	}
