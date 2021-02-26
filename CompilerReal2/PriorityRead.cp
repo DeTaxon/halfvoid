@@ -21,6 +21,7 @@ MiniMachineNode2 := class
 {
 	WhatNext := MiniMachineNode2^[256]
 	Prior := int
+	Depth := int
 
 	this := !() -> void
 	{
@@ -36,10 +37,24 @@ MiniMachineNode2 := class
 			if it == null continue
 			itId := base.StrToId[ind]
 			assert(itId != 0)
-			newNode := new MiniMachineNode2
-			WhatNext[itId] = newNode
-			newNode.FromMach1(base,priVal,it)
+			if WhatNext[itId] == null WhatNext[itId] = new MiniMachineNode2
+			WhatNext[itId].FromMach1(base,priVal,it)
 		}
+	}
+	GetDepth := !() -> int
+	{
+		maxVal := 0
+		for it : WhatNext
+		{
+			if it == null continue
+			itVal := it.GetDepth()
+			if itVal > maxVal itVal = maxVal
+		}
+		return maxVal + 1
+	}
+	CheckDepth := !() -> void
+	{
+		Depth = GetDepth()
 	}
 }
 
@@ -52,7 +67,7 @@ PriorityBag := class
 	TotalOpers := AVLSet.{char^}
 	StrToId := AVLMap.{char^,int}
 
-	Lines2 := List.{MiniMachineNode2^}
+	Lines2 := List.{Tuple.{MiniMachineNode2^,char^}}
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
@@ -160,16 +175,32 @@ PriorityBag := class
 		StrToId["{}"] = 47
 		StrToId["[]"] = 48
 		StrToId["~suffix"] = 49
-		
-		for it,i : Lines
+	
+		cpMach := MiniMachineNode2^()
+		for it,i : Lines, raw : LinesRaw
 		{
 			if it == null {
-				Lines2.Push(null)
+				if cpMach != null
+				{
+					Lines2.Emplace(cpMach,null)
+					cpMach = null
+				}
+				Lines2.Emplace(null,raw)
 				continue
 			}
-			newM := new MiniMachineNode2
-			newM.FromMach1(this&,i + 1,it)
-			Lines2.Push(newM)
+			if cpMach == null
+				cpMach = new MiniMachineNode2
+			cpMach.FromMach1(this&,i + 1,it)
+
+			Lines2.Emplace(cpMach,null)
+			cpMach = null
+		}
+		if cpMach != null
+			Lines2.Emplace(cpMach,null)
+		for it : Lines2
+		{
+			if it.0 != null
+				it.0.CheckDepth()
 		}
 	}
 }

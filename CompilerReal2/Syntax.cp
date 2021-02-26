@@ -94,7 +94,7 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 	return GotStuff
 }
 
-RuleUseSome := !(Object^ Obj,char^ N,MiniMachineNode2^ MiniNode2) -> bool
+RuleUseSome := !(Object^ Obj,MiniMachineNode2^ MiniNode2) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -104,18 +104,7 @@ RuleUseSome := !(Object^ Obj,char^ N,MiniMachineNode2^ MiniNode2) -> bool
 		Try := RuleMachine(iter,MiniNode2)
 		if Try > 0
 		{
-			if N == "~d"
-			{
-				iter = UNext(iter,new ObjData(),Try) 
-			}else
-			{
-				if N == "~extra1"
-				{
-					iter = UNext(iter,new SLambda(),Try)
-				}else{
-					iter = UNext(iter,new ObjObj(N),Try) 
-				}
-			}
+			iter = UNext(iter,new ObjData(),Try) 
 			GotStuff = true
 		}else{
 			iter = iter.Right
@@ -133,13 +122,13 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 
 	GotStuff := false
 
-	for iterBag : bag.Lines2, iterRaw : bag.LinesRaw
+	for iterBag : bag.Lines2
 	{
-		if iterBag != null
+		if iterBag.0 != null
 		{
-			if RuleUseSome(begin,"~d",iterBag) return true
+			if RuleUseSome(begin,iterBag.0) return true
 		}else{
-			switch iterRaw
+			switch iterBag.1
 			{
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
@@ -182,7 +171,6 @@ SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
 	return true
 }
 
-mc := AVLSet.{char^}
 RuleMachine := !(void^ itr,MiniMachineNode2^ node2) -> int
 {
 	iterU := itr->{Object^}
