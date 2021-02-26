@@ -20,17 +20,17 @@ MiniMachineNode := class
 MiniMachineNode2 := class 
 {
 	WhatNext := MiniMachineNode2^[256]
-	IsTerm := bool
+	Prior := int
 
 	this := !() -> void
 	{
 		WhatNext."this"()
-		IsTerm = false
+		Prior = 0
 	}
 
-	FromMach1 := !(PriorityBag^ base,MiniMachineNode^ nd) -> void
+	FromMach1 := !(PriorityBag^ base,int priVal,MiniMachineNode^ nd) -> void
 	{
-		IsTerm = nd.IsTerm
+		if nd.IsTerm Prior = priVal
 		for it,ind : nd.WhatNext
 		{
 			if it == null continue
@@ -38,7 +38,7 @@ MiniMachineNode2 := class
 			assert(itId != 0)
 			newNode := new MiniMachineNode2
 			WhatNext[itId] = newNode
-			newNode.FromMach1(base,it)
+			newNode.FromMach1(base,priVal,it)
 		}
 	}
 }
@@ -161,14 +161,14 @@ PriorityBag := class
 		StrToId["[]"] = 48
 		StrToId["~suffix"] = 49
 		
-		for it : Lines
+		for it,i : Lines
 		{
 			if it == null {
 				Lines2.Push(null)
 				continue
 			}
 			newM := new MiniMachineNode2
-			newM.FromMach1(this&,it)
+			newM.FromMach1(this&,i + 1,it)
 			Lines2.Push(newM)
 		}
 	}
