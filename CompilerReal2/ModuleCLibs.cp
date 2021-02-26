@@ -36,13 +36,13 @@ CLibModule := class extend CompilerModule
 					continue
 				strData := "itLib := Library()\n"sbt
 
-				strData << "itLib.Open("
+				strData << "itLib.Open(!["
 				for toLd,i : it.dllNames
 				{
 					if i != 0 strData << ","
 					strData << "\"" << toLd << "\""
 				}
-				strData << ")\n"
+				strData << "])\n"
 
 				for obj,key : it.objs
 				{

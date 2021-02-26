@@ -1,4 +1,3 @@
-sprintf := !(char^ buf,char^ frmt, ...) -> int declare
 strcmp := !(char^ a,char^ b) -> int declare
 
 strtol := !(char^ begin,char^^ restr,int base) -> c_long declare

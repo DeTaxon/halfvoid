@@ -165,6 +165,10 @@ Library := class
 		if hndl == null
 			throw new Exception(0,"can not open library, like "sbt + name)
 	}
+	Open := !(char^[@Size] names) -> void
+	{
+		Open(names[0]&->{char^^},Size)
+	}
 	Open := !(char^^ names,int count) -> void
 	{
 		for i : count

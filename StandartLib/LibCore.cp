@@ -1,36 +1,4 @@
-calloc := !(size_t size,int sizet) -> void^ declare
-malloc := !(size_t size) -> void^ declare
-free := !(void^ point) -> void declare
 
-tanf := !(float iiin) ->float declare
-cosf := !(float iiin) ->float declare
-sinf := !(float iiin) ->float declare
-sqrtf := !(float iiin) ->float declare
-
-time := !() -> int declare
-srand := !(int time) -> void declare
-rand := !() -> int declare
-system := !(char^ toExe) -> int declare
-
-memset := !(void^ dst, char val,int size) -> void declare
-memcpy := !(void^ dst, void^ src,int size) -> void declare
-
-strcpy := !(void^ dst,void^ src) -> void declare
-
-"~this" := !(@R[] this) -> void
-{
-	for this
-	{
-		it."~this"()
-	}
-}
-"~this" := !(@R^ this) -> void
-{
-	this^."~this"()
-}
-"~this" := !(@R this) -> void
-{
-}
 "delete" := !(void^ item) .{@R} -> void
 {
 	free(item)

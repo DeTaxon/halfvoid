@@ -6,7 +6,30 @@
 		"msvcrt.dll"
 	],
 	"funcs" : {
+		
+		"malloc" : "void^,size_t",
+		"cmalloc" : "void^,size_t,size_t",
+		"free" : "void,void^",
+
+		"memset" : "void,void^,char,size_t",
+		"memcpy" : "void,void^,void^,size_t",
+
+		"strcpy" : "void,char^,char^",
+
+		"system" : "void,char^",
+
+		"tanf" : "float,float",
+		"cosf" : "float,float",
+		"sinf" : "float,float",
+		"sqrtf" : "float,float",
+
 		"getenv" : "char^,char^",
-		"printf" : "int,char^,..."
+
+		"printf" : "int,char^,...",
+		"sprintf" : "int,char^,char^,...",
+
+		"time" : "int",
+		"srand" : "void,int",
+		"rand" : "int"
 	}
 }
