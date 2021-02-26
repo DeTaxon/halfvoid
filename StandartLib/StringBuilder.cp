@@ -12,6 +12,12 @@ StringBuilderTemporary := class .{@BufSize}{
 		addObjs(adding,sLen)
 		return this
 	}
+	"+" := !(StringSpan adding) self_return
+	{
+		if adding.Get()->{void^} == null return this
+		addObjs(adding.Get(),adding.Size())
+		return this
+	}
 	"<<" := !(char^ adding) self_return
 	{
 		if adding->{void^} == null return this

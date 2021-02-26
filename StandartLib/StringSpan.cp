@@ -5,6 +5,7 @@ StringSpan := class{
 	ptr := char^
 	itSize := int
 	this := !() -> void {ptr = null itSize = 0}
+	this := !(StringSpan cpy) -> void {ptr = cpy.ptr itSize = cpy.itSize}
 	this := !(char^ st) -> void{ptr = st itSize = StrSize(st)}
 	this := !(char^ st,int si) -> void{ptr = st itSize = si}
 	this := !(char[@Size] st) -> void { ptr = st	itSize = Size }
@@ -67,6 +68,12 @@ StringSpan := class{
 		if stCmp != 0 return stCmp
 		return itSize <=> toCmp.itSize		
 	}
+	"==" := !(char[@Size] st) -> bool { return this <=> st == 0 }
+	"!=" := !(char[@Size] st) -> bool { return this <=> st != 0 }
+	"==" := !(char^ st) -> bool { return this <=> st == 0 }
+	"!=" := !(char^ st) -> bool { return this <=> st != 0 }
+	"==" := !(StringSpan st) -> bool { return this <=> st == 0 }
+	"!=" := !(StringSpan st) -> bool { return this <=> st != 0 }
 	"<<" := !(StringSpan toGet) -> ref StringSpan
 	{
 		minVal := itSize

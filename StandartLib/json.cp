@@ -54,7 +54,7 @@ jsonNode := class
 	IsArray := !() -> bool { return itType == jsonTypeArray}
 
 	GetStr := !() -> StringSpan { result = itValue }
-	GetInt := !() -> int { if itType != jsonTypeField throw new Exception("Node is not field") return ToInt(itValue)}
+	GetInt := !() -> int { if itType != jsonTypeField throw new Exception("Node is not field") return ToInt(itValue.StrTmp())} //TODO: span to int
 	GetFloat := !() -> float { if itType != jsonTypeField throw new Exception("Node is not field") return ToFloat(itValue)}
 
 	"[]" := !(char^ walkPath) -> ref jsonNode
@@ -114,7 +114,7 @@ json := class extend jsonNode
 				return void
 			ptr := fileData[b]&
 			tok := StringSpan(ptr,c)
-			tokens << !{a,tok}
+			tokens.Emplace(a,tok)
 		})
 		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != "{"
 			throw new Exception("Incorrect json")

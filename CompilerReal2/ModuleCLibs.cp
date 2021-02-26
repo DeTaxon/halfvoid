@@ -58,7 +58,7 @@ CLibModule := class extend CompilerModule
 					}
 				}
 
-				it.initFuncBody = new BoxFuncBodyFromString(it.initFunc,fType,strData)
+				it.initFuncBody = new BoxFuncBodyFromString(it.initFunc.Str(),fType,strData)
 			}
 		}
 	}
@@ -200,7 +200,7 @@ CLibModule := class extend CompilerModule
 	}
 	CheckFuncTypeString := !(StringSpan toCheck) -> TypeFunc^
 	{
-		tList := DivideStr(toCheck," ,")
+		tList := DivideStr(toCheck.StrTmp()," ,") //TODO: divide_str for string span
 		retType := CheckTypeString(tList[0])
 		nextTypes := Queue.{Type^}()
 		isVArg := false
@@ -220,7 +220,7 @@ CLibModule := class extend CompilerModule
 	{
 		i := 0
 		while toCheck[i] != '^' and i < toCheck.Size() i+= 1
-		baseType := GetType(toCheck[0..i])
+		baseType := GetType(toCheck[0..i].StrTmp())
 		if baseType == null throw new Exception("Type not found")
 		while i < toCheck.Size() {
 			switch toCheck[i]
