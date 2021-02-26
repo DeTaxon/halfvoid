@@ -19,7 +19,7 @@ MiniMachineNode := class
 
 MiniMachineNode2 := class 
 {
-	WhatNext := AVLMap.{int,MiniMachineNode2^}
+	WhatNext := MiniMachineNode2^[256]
 	IsTerm := bool
 
 	this := !() -> void
@@ -35,6 +35,7 @@ MiniMachineNode2 := class
 		{
 			if it == null continue
 			itId := base.StrToId[ind]
+			assert(itId != 0)
 			newNode := new MiniMachineNode2
 			WhatNext[itId] = newNode
 			newNode.FromMach1(base,it)
@@ -142,12 +143,23 @@ PriorityBag := class
 				Lines.Push(newMach)
 			}
 		}
+		DoStep2()
 	}
 	DoStep2 := !() -> void
 	{
 		TotalOpers.Insert(Opers[^])
 		TotalOpers.Insert(LexKeyWords[^])
 		TotalOpers.Insert(AllKeyWords[^])
+
+		for it,i : TotalOpers
+		{
+			StrToId[it] = i + 50
+		}
+		StrToId["~d"] = 39
+		StrToId["()"] = 46
+		StrToId["{}"] = 47
+		StrToId["[]"] = 48
+		StrToId["~suffix"] = 49
 		
 		for it : Lines
 		{

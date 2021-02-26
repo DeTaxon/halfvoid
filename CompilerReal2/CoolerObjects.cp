@@ -1,7 +1,3 @@
-tokenSkob1 := 0
-tokenSkob2 := 0
-tokenSkob3 := 0
-
 ObjSkobs := class extend Object
 {
 	Vers := int
@@ -22,11 +18,11 @@ ObjSkobs := class extend Object
 	{
 		switch Vers
 		{
-			case 1 return tokenSkob1
-			case 2 return tokenSkob2
-			case 3 return tokenSkob3
+			case 3 return 46 
+			case 1 return 47 
+			case 2 return 48 
 		}
-		assert(false)
+		return 0
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

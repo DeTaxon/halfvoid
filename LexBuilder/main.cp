@@ -19,14 +19,14 @@ main := !(int argc, char^^ argv) -> int
 
 
 
-	tmpArr := new List.{char^}
+	tmpArr := new AVLSet.{char^}
 	allOpers := new AVLSet.{char^} ; $temp
 
-	tmpArr.Push(pr.Opers[^])
-	tmpArr.Push(LexKeyWords[^])
-	tmpArr.Push(AllKeyWords[^])
+	tmpArr.Insert(pr.Opers[^])
+	tmpArr.Insert(LexKeyWords[^])
+	tmpArr.Insert(AllKeyWords[^])
 
-	for tmpArr^ {
+	for it,i : tmpArr^ {
 		buff2 := char[64]
 		k := 0
 		for c : it
@@ -42,14 +42,9 @@ main := !(int argc, char^^ argv) -> int
 			}
 		}
 		buff2[k] = 0
-		itBuilder.ApplyReg(buff2,8)
-		allOpers.Insert(StrCopy(buff2))
+		itBuilder.ApplyReg(buff2[0]&,50 + i)
 	}
-	printf("itms %i\n",allOpers.Size())
-	for it,i : allOpers^
-	{
-		itBuilder.ApplyReg(it,50 + i)
-	}
+	printf("itms %i\n",tmpArr.Size())
 
 	//itBuilder.ApplyReg("\\( | \\) | \\{ | \\. | \\} | \\[ | \\]",8)
 	//itBuilder.ApplyReg("\\? | \\, | \\! | \\| | \\.",8)

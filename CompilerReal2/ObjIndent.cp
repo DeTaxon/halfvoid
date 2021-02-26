@@ -125,6 +125,10 @@ ObjSuffix := class extend ObjConst
 			}
 		}
 	}
+	GetTokenId := virtual !() -> int
+	{
+		return 49
+	}
 	Clone := virtual !() -> Object^
 	{
 		PreRet := new ObjSuffix(MyStr)

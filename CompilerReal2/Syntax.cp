@@ -94,14 +94,14 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 	return GotStuff
 }
 
-RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode) -> bool
+RuleUseSome := !(Object^ Obj,char^ N, MiniMachineNode^ MiniNode, MiniMachineNode2^ MiniNode2) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
 
 	while iter != null
 	{
-		Try := RuleMachine(iter,MiniNode)
+		Try := RuleMachine(iter,MiniNode,MiniNode2)
 		if Try > 0
 		{
 			if N == "~d"
@@ -133,11 +133,11 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 
 	GotStuff := false
 
-	for iterBag : bag.Lines, iterRaw : bag.LinesRaw
+	for iterBag : bag.Lines, iterRaw : bag.LinesRaw, iter2 : bag.Lines2
 	{
 		if iterBag != null
 		{
-			if RuleUseSome(begin,"~d",iterBag) return true
+			if RuleUseSome(begin,"~d",iterBag,iter2) return true
 		}else{
 			switch iterRaw
 			{
@@ -182,33 +182,35 @@ SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
 	return true
 }
 
-RuleMachine := !(void^ itr,MiniMachineNode^ node) -> int
+mc := AVLSet.{char^}
+RuleMachine := !(void^ itr,MiniMachineNode^ node,MiniMachineNode2^ node2) -> int
 {
 	iterU := itr->{Object^}
 	iterNode := node
+	iterNode2 := node2
 	ToRet := 0
 	NowRet := 0
 
 	while iterU != null
 	{
 		if iterU == null return ToRet
-		iterVal := iterU.GetValue()
-		if iterU.IsDataR iterVal = "~d"
+		//iterVal := iterU.GetValue()
+		//if iterU.IsDataR iterVal = "~d"
 
 		iterId := iterU.GetTokenId()
-		if iterU.IsDataR iterId = 1
-		//if iterId == 0 printf("wut %s\n",iterU.GetValue())
+		if iterU.IsDataR iterId = 39
 
-		inWNext := iterNode.WhatNext.TryFind(iterVal)
+		inWNext := iterNode2.WhatNext[iterId]
 		if inWNext != null
 		{
-			iterNode = inWNext^
+			iterNode2 = inWNext
+
 			NowRet += 1
-			if iterNode.IsTerm 
+			if iterNode2.IsTerm 
 			{
 				ToRet = NowRet
 			}
-			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()"
+			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()" //????
 			{
 				return ToRet
 			}
