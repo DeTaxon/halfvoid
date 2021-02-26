@@ -1,8 +1,3 @@
-strcmp := !(char^ a,char^ b) -> int declare
-
-strtol := !(char^ begin,char^^ restr,int base) -> c_long declare
-strtod := !(char^ begin, char^^ end) -> double declare
-
 ToInt := !(char^ inp) -> int
 {
 	return strtol(inp,null,0)

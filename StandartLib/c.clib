@@ -8,13 +8,17 @@
 	"funcs" : {
 		
 		"malloc" : "void^,size_t",
-		"cmalloc" : "void^,size_t,size_t",
+		"calloc" : "void^,size_t,size_t",
 		"free" : "void,void^",
 
 		"memset" : "void,void^,char,size_t",
 		"memcpy" : "void,void^,void^,size_t",
 
 		"strcpy" : "void,char^,char^",
+		"strcmp" : "int,char^,char^",
+
+		"strtol" : "long,char^,char^^,int",
+		"strtod" : "double,char^,char^^",
 
 		"system" : "void,char^",
 
