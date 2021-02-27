@@ -117,6 +117,13 @@ StringBuilderTemporary := class .{@BufSize}{
 	{
 		return Str() ; $temp
 	}
+	"+" := !(float val) self_return
+	{
+		miniBuf := char[255]
+		sprintf(miniBuf,"%f",val)
+		this << miniBuf[0]&
+		return this
+	}
 }
 
 SBTType := type StringBuilderTemporary.{256}

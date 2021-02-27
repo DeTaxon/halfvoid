@@ -218,8 +218,8 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	iterr := start
 	if iterr != null while iterr.Up != null iterr = iterr.Up
 
-	Funcs := Queue.{BoxFunc^}()
-	Templs := Queue.{BoxTemplate^}()
+	Funcs := Queue.{BoxFunc^}() ; $temp
+	Templs := Queue.{BoxTemplate^}() ; $temp
 	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,true)
 
 	func :=  GetBestFunc(itBox,Funcs,Templs)
@@ -323,6 +323,12 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	for FoundT if templsPrior[it] == 2 return templs[it].GetFunc(itBox)
 	for FoundC if Priors[it] == 3  { funcs[it].ParseBlock() return funcs[it] }
 	for FoundT if templsPrior[it] == 3 return templs[it].GetFunc(itBox)
+	for FoundC if Priors[it] == 4  { funcs[it].ParseBlock() return funcs[it] }
+	for FoundT if templsPrior[it] == 4 return templs[it].GetFunc(itBox)
+	for FoundC if Priors[it] == 5 { funcs[it].ParseBlock() return funcs[it] }
+	for FoundT if templsPrior[it] == 5 return templs[it].GetFunc(itBox)
+	for FoundC if Priors[it] == 6  { funcs[it].ParseBlock() return funcs[it] }
+	for FoundT if templsPrior[it] == 6 return templs[it].GetFunc(itBox)
 
 	return null
 }

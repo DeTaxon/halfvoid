@@ -13,6 +13,11 @@ HW := ./halfvoid
 
 TargetPlatform := -p posix
 
+Stati := -static
+ifeq ($(nostatic),yes)
+	undefine Stati
+endif
+
 ifeq ($(OS),Windows_NT)
 	HW := ./halfvoid.exe
 	CurrentStable := ./stable.exe
@@ -36,7 +41,7 @@ endif
 MainOut := ./Objs/out3.ll
 ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
 
-AddStatic := -static
+AddStatic := $(Stati)
 ifeq ($(OS),Windows_NT)
 	AddStatic := -static
 endif

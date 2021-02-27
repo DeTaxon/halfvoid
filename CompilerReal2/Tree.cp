@@ -48,9 +48,13 @@ Object := class{
 	{
 		return "~unknown"
 	}
+	GetDebugValue := virtual !() -> char^
+	{
+		return GetValue()
+	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
-		printf("item: %s\n",GetValue())
+		printf("item: %s\n",GetDebugValue())
 		End := this.Down
 		while End != null
 		{

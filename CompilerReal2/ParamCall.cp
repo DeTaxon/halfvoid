@@ -79,6 +79,12 @@ ParamCall := class extend ObjResult
 	{
 		return "(d)"
 	}
+	GetDebugValue := virtual !() -> string
+	{
+		if GetType() != null
+			return "(d) "sbt + GetType().GetName()
+		return "(d)"
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 	}

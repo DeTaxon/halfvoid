@@ -137,6 +137,14 @@ centf := class
 		result.pos.z *= -1.0f
 		result.pos.w = 1.0f / pos.w
 	}
+	StrTmp := !() -> char^
+	{
+		return "{"sbt + pos.x +"," +  pos.y +","+ pos.z +"," + pos.w+ ":" + ang.x +"," + ang.y +"," + ang.z + "," + ang.w + "}"
+	}
+	"->{}" := !() .{char^} -> char^
+	{
+		return StrTmp()
+	}
 	NearDistance := !(centf scnd) -> float
 	{
 		dist1 := Distance(pos.xyz , scnd.pos.xyz)

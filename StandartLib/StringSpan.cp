@@ -98,7 +98,7 @@ StringSpan := class{
 	{
 		return Str() ; $temp
 	}
-	DivideStr := !(char^ to) . {} -> List.{StringSpan}
+	DivideStr := !(char^ to) -> List.{StringSpan}
 	{
 		result."this"()
 		i := 0
@@ -107,7 +107,7 @@ StringSpan := class{
 		{
 			if ptr[j] in to
 			{
-				if j != i result.Emplace(ptr[i]&,j - i)
+				if j != i result.Emplace(ptr[i]&,j - i) ; $temp
 				i = j+1
 				j += 1
 			} else
@@ -117,7 +117,7 @@ StringSpan := class{
 		}
 		if j - i != 0
 		{
-			result.Emplace(ptr[i]&,j - i)
+			result.Emplace(ptr[i]&,j - i) ; $temp
 		}		
 	}
 }

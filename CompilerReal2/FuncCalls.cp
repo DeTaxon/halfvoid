@@ -823,6 +823,10 @@ BaseFuncCall := class extend ObjResult
 			iter = iter.Right
 		}
 	}
+	GetValue := virtual !() -> string
+	{
+		return "d()"
+	}
 	ExchangeParams := !() -> void
 	{
 		itLiner := this.Line
@@ -867,7 +871,7 @@ BaseFuncCall := class extend ObjResult
 						msg << " to "  <<  FType.Pars[i].GetGoodName() 
 					}
 				
-					if itLiner != null lnr.EmitError(msg + "\n")
+					if itLiner != null lnr.EmitError(msg + "\n") else assert(false)
 				}else{
 					iter = preRet
 				}
@@ -1043,10 +1047,6 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 	PrintInBlock := virtual !(sfile f) -> void
 	{
 		PrintPre(f)
-	}
-	GetValue := virtual !() -> string
-	{
-		return "d()"
 	}
 	GetType := virtual !() -> Type^
 	{
@@ -1460,10 +1460,6 @@ BuiltIn2Call := class extend BaseFuncCall
 	{
 		RealCall.PrintFunc(this&,f)
 	}
-	GetValue := virtual !() -> char^
-	{
-			return "BuiltIn2Call"
-	}
 	DoJIT := virtual !() -> void^
 	{
 		return RealCall.DoJIT(this&)
@@ -1475,6 +1471,10 @@ BuiltIn2CallRef := class extend BuiltIn2Call
 	{
 		FType.RetType.GetPoint().PrintType(f)
 		PrintRes(f)
+	}
+	IsRef := virtual !() -> bool
+	{
+		return true
 	}
 	GetPointName := virtual !() -> char^
 	{

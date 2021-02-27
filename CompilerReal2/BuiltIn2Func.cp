@@ -14,25 +14,25 @@ InitBuiltIn2Funcs := !() -> void
 		pars2 := ![TypeTable[i],TypeTable[i]]
 		fType := GetFuncType(pars2,TypeTable[i])
 
-		AddBuiltInFunc(new BuiltIn2IntMath("+",fType,"add"))
-		AddBuiltInFunc(new BuiltIn2IntMath("-",fType,"sub"))
-		AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"mul"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("+",fType,"add"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("-",fType,"sub"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"mul"))
 		//AddBuiltInFunc(new BuiltIn2IntMath("div",fType,i >= 4 ?: "sdiv" : "udiv"))
 		//AddBuiltInFunc(new BuiltIn2IntMath("%",fType,i >= 4 ?:  "srem" : "urem"))
-		AddBuiltInFunc(new BuiltIn2IntMath("and_b",fType,"and"))
-		AddBuiltInFunc(new BuiltIn2IntMath("or_b",fType,"or"))
-		AddBuiltInFunc(new BuiltIn2IntMath("xor_b",fType,"xor"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("and_b",fType,"and"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("or_b",fType,"or"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("xor_b",fType,"xor"))
 
 		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,TypeTable[i],false,false)
-		AddBuiltInFunc(new BuiltIn2Store.{"add","0"}("=",fTypeSet))
+		//AddBuiltInFunc(new BuiltIn2Store.{"add","0"}("=",fTypeSet))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 		
-		AddBuiltInFunc(new BuiltIn2IntMath("==",fTypeBoolRes,"icmp eq"))
-		AddBuiltInFunc(new BuiltIn2IntMath("!=",fTypeBoolRes,"icmp ne"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("==",fTypeBoolRes,"icmp eq"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("!=",fTypeBoolRes,"icmp ne"))
 
 		fTypeNeg := GetFuncType(pars1,TypeTable[i])
-		AddBuiltInFunc(new BuiltIn2Negative(". -",fTypeNeg,"sub"))
+		//AddBuiltInFunc(new BuiltIn2Negative(". -",fTypeNeg,"sub"))
 
 
 		if i < 4
@@ -54,20 +54,23 @@ InitBuiltIn2Funcs := !() -> void
 		pars2 := ![it,it]
 		fType := GetFuncType(pars2,it)
 
-		AddBuiltInFunc(new BuiltIn2IntMath("+",fType,"fadd"))
-		AddBuiltInFunc(new BuiltIn2IntMath("-",fType,"fsub"))
-		AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"fmul"))
-		AddBuiltInFunc(new BuiltIn2IntMath("/",fType,"fdiv"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("+",fType,"fadd"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("-",fType,"fsub"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"fmul"))
+		//AddBuiltInFunc(new BuiltIn2IntMath("/",fType,"fdiv"))
 
 		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,it,false,false)
-		AddBuiltInFunc(new BuiltIn2Store.{"fadd","0.0"}("=",fTypeSet))
+		//AddBuiltInFunc(new BuiltIn2Store.{"fadd","0.0"}("=",fTypeSet))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
 
-	   	AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"fcmp ule"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"fcmp ult"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"fcmp uge"))
-	   	AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"fcmp ugt"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("==",fTypeBoolRes,"fcmp ueq"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("!=",fTypeBoolRes,"fcmp une"))
+
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("<=",fTypeBoolRes,"fcmp ule"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath("<",fTypeBoolRes,"fcmp ult"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath(">=",fTypeBoolRes,"fcmp uge"))
+	   	//AddBuiltInFunc(new BuiltIn2IntMath(">",fTypeBoolRes,"fcmp ugt"))
 	}
 }
 
