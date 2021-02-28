@@ -18,6 +18,10 @@ ifeq ($(nostatic),yes)
 	undefine Stati
 endif
 
+ifeq ($(callgrind),yes)
+	cg := valgrind --tool=callgrind
+endif
+
 ifeq ($(OS),Windows_NT)
 	HW := ./halfvoid.exe
 	CurrentStable := ./stable.exe
@@ -66,7 +70,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	$(TimeF) $(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(cg) $(TimeF) $(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 twice: repair cycle
 
 ManyCycle:

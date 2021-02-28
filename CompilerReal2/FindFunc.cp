@@ -118,7 +118,23 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 {
 	iterU := start
 	LastPos := start
-	FirstMetClass := true
+
+	if name == "."
+	{
+		iterUp := start
+		while iterUp != null
+		{
+			if iterUp.Up? is BoxBlock and iterUp.Up.Up? is BoxClass
+			{
+				asClass := ((iterUp.Up.Up)->{BoxClass^})
+				theTemplate := BoxTemplate^
+				templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
+				return void
+			}
+			iterUp = iterUp.Up
+		}
+		return void
+	}
 
 	if IgnoreLibs
 	{
@@ -136,55 +152,28 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 
 	while iterU != null
 	{
-		lazy := true
-		while lazy
-		{
-			lazy = iterU.Up != null
-			if lazy
-			{
-				lazy = iterU.Up is BoxBlock //TODO: refactor
-				if lazy lazy = iterU.Up.Up != null
-				if lazy lazy = iterU.Up.Up is BoxClass
-				if lazy and FirstMetClass
-				{
-					asClass := ((iterU.Up.Up)->{BoxClass^})
-					theTemplate := BoxTemplate^
-					if (name == ".") {
-						templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
-					}else{
-						//AddClassFuncs(name,asClass,found&,templates&)
-					}
-					FirstMetClass = false
-				}
-			}
-			if lazy
-			{
-				iterU = iterU.Up
-				LastPos = iterU
-			}
-			if iterU?.Up? is BoxFile
-			{
-				asN := iterU.Up->{BoxFile^}
-				res := asN.VisibleParams.TryFind(name)
-				if res != null{
-					for res^ 
-						InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-				}
-				iterU = null
-			}
-		}
 		if iterU != null
 		{
 			InsertFunc(name,iterU,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
-			if iterU.Left != null and iterU.GetValue() != "{...}" 
-			{
-				iterU = iterU.Left 
-			}else {
+			//if iterU.Left != null and iterU.GetValue() != "{...}" 
+			//{
+			//	iterU = iterU.Left 
+			//}else {
 				iterU = iterU.Up
 
-				InsertFunc(name,LastPos.Right[^],found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+				//InsertFunc(name,LastPos.Right[^],found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
 				LastPos = iterU
-			}
+				if iterU? is BoxFile
+				{
+					asN := iterU->{BoxFile^}
+					res := asN.VisibleParams.TryFind(name)
+					if res != null{
+						for res^ 
+							InsertFunc(name,it,found,templates,IsSuffix,IsMethod,Searched,IgnoreLibs)
+					}
+					iterU = null
+				}
+			//}
 		}
 	}
 
