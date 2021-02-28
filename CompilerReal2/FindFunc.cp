@@ -387,9 +387,13 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	if funcType == null return CmpSame
 	if inType == funcType return CmpSame
 
-	if inType == GTypeFloat and funcType == GTypeDouble return CmpLoseless
-	if inType == GTypeHalf and funcType == GTypeDouble return CmpLoseless
-	if inType == GTypeHalf and funcType == GTypeFloat return CmpLoseless
+	cmp2 := TypeCmp2(inType,funcType)
+	if cmp2 != 255
+		return cmp2
+
+	//if inType == GTypeFloat and funcType == GTypeDouble return CmpLoseless
+	//if inType == GTypeHalf and funcType == GTypeDouble return CmpLoseless
+	//if inType == GTypeHalf and funcType == GTypeFloat return CmpLoseless
 	if (inType is TypeFatArr or inType is TypeArr)  and funcType is TypePoint
 	{
 		if inType.Base == funcType.Base
@@ -397,17 +401,15 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			return CmpLoseless
 		}
 	}
-	if funcType in ![GTypeDouble,GTypeFloat] and IsInt(inType) return CmpLoselessItoF 
+	//if funcType in ![GTypeDouble,GTypeFloat] and IsInt(inType) return CmpLoselessItoF 
 
-	if inType is TypeStandart and funcType is TypeStandart
-	{
-		if IsInt(inType) and IsInt(funcType) {
-			if GetIntSize(inType) < GetIntSize(funcType) return CmpLoseless
-			return CmpLose
-		}
-	}
-	//if (inType is TypePoint and funcType == GTypeBool) return 1
-	//if inType is TypeFatArr and funcType == GTypeBool return 1
+	//if inType is TypeStandart and funcType is TypeStandart
+	//{
+	//	if IsInt(inType) and IsInt(funcType) {
+	//		if GetIntSize(inType) < GetIntSize(funcType) return CmpLoseless
+	//		return CmpLose
+	//	}
+	//}
 
 	if inType is TypePoint and inType.Base is TypeFunc  
 		and funcType is TypePoint and funcType.Base is TypeFunc //func where?
@@ -445,16 +447,16 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 
 	if inType is TypeArr and funcType == GTypeVoidP return CmpLose
-	if inType == GTypeDouble and funcType == GTypeFloat return CmpLose
-	if inType == GTypeDouble and funcType == GTypeHalf return CmpLose
-	if inType == GTypeFloat and funcType == GTypeHalf return CmpLose
-	if inType == GTypeFloat and funcType == GTypeInt return CmpLoseFtoI
-	if inType == GTypeDouble and funcType == GTypeInt return CmpLoseFtoI
+	//if inType == GTypeDouble and funcType == GTypeFloat return CmpLose
+	//if inType == GTypeDouble and funcType == GTypeHalf return CmpLose
+	//if inType == GTypeFloat and funcType == GTypeHalf return CmpLose
+	//if inType == GTypeFloat and funcType == GTypeInt return CmpLoseFtoI
+	//if inType == GTypeDouble and funcType == GTypeInt return CmpLoseFtoI
 	if inType == TypeTable[16] and funcType is TypeFatArr  return CmpLose
 
 	if inType == GTypeVoidP and funcType is TypeFuncLambda return CmpLosePtoFP
 
-	if inType == GTypeInt and funcType == GTypeBool return CmpLose
+	//if inType == GTypeInt and funcType == GTypeBool return CmpLose
 
 	//if inType.GetType() == "lambda" and funcType.GetType() == "lambda"
 	if inType is  TypeFuncLambda and funcType is TypeFuncLambda 
@@ -481,3 +483,55 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	return 255
 }
 
+
+cmpItems := AVLMap.{Tuple.{Type^,Type^},int}
+
+TypeCmp2 := !(Type^ frm, Type^ to) -> int
+{
+	inCmp := cmpItems.TryFind(!{frm,to})
+	if inCmp != null
+		return inCmp^
+	return 255
+}
+
+TypeCmpAdd := !(Type^ frm,Type^ to,int prior) -> void
+{
+	cmpItems[!{frm,to}] = prior
+}
+TypeCmpInit := !() -> void
+{
+	TypeCmpAdd(GTypeFloat,GTypeDouble,CmpLoseless)
+	TypeCmpAdd(GTypeHalf,GTypeDouble,CmpLoseless)
+	TypeCmpAdd(GTypeHalf,GTypeFloat,CmpLoseless)
+
+	TypeCmpAdd(GTypeDouble ,GTypeFloat , CmpLose)
+	TypeCmpAdd(GTypeDouble ,GTypeHalf  , CmpLose)
+	TypeCmpAdd(GTypeFloat  ,GTypeHalf  , CmpLose)
+	TypeCmpAdd(GTypeFloat  ,GTypeInt   , CmpLoseFtoI)
+	TypeCmpAdd(GTypeDouble ,GTypeInt   , CmpLoseFtoI)
+
+	for i : 8
+	{
+		TypeCmpAdd(TypeTable[i],GTypeFloat,CmpLoselessItoF)
+		TypeCmpAdd(TypeTable[i],GTypeDouble,CmpLoselessItoF)
+	}
+
+	TypeCmpAdd(GTypeInt ,GTypeBool   , CmpLose)
+	for i : 8
+	{
+		int1 := TypeTable[i]
+		for j : 8
+		{
+			if i == j continue
+
+			int2 := TypeTable[j]
+
+			if GetIntSize(int1) < GetIntSize(int2)
+			{
+				TypeCmpAdd(int1,int2,CmpLoseless)
+			}else{
+				TypeCmpAdd(int1,int2,CmpLose)
+			}
+		}
+	}
+}
