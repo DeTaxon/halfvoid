@@ -142,9 +142,9 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 			lazy = iterU.Up != null
 			if lazy
 			{
-				lazy = iterU.Up.GetValue() == "{d}"
+				lazy = iterU.Up is BoxBlock //TODO: refactor
 				if lazy lazy = iterU.Up.Up != null
-				if lazy lazy = iterU.Up.Up.GetValue() == "{...}"
+				if lazy lazy = iterU.Up.Up is BoxClass
 				if lazy and FirstMetClass
 				{
 					asClass := ((iterU.Up.Up)->{BoxClass^})
