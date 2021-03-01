@@ -6,27 +6,24 @@ ControlFlowBox := class extend Object
 	}
 	PrintInBlock := virtual !(sfile f) -> void { PrintPre(f)}
 }
-QuestionBox := class extend ControlFlowBox
-{	
-	itId := int
-	paramObject := FuncParam^
-	replObject := Object^
-	forceToBool := bool
-	jmpName := char^
-	isSimpleCheck := bool
-	passValue := bool
-	this := !(Object^ tmpObj,bool fTB) -> void
+
+IsQBox := !(Object^ toCmp) -> bool
+{
+	if toCmp is QuestionBox return true
+	if toCmp is QuestionBoxRef return true
+	return false
+}
+
+QAtleastBox := class ControlFlowBox
+{
+	onFalse := BoxLabel^
+	this := !() -> void
 	{
-		itId = GetNewId()
-		replObject = tmpObj
-		forceToBool = fTB
-		jmpName = StrCopy("OnBad"sbt + itId)
 	}
-	IsRef := virtual !() -> bool
-	{
-		return Down.Right.IsRef()
-	}
-	PrintPointPre := virtual !(sfile f) -> void
+}
+QuestionBoxRef := class extend QuestionBox
+{
+	PrintPre := virtual !(sfile f) -> void
 	{
 		dwnType := Down.GetType()
 		DR := Down.Right
@@ -38,7 +35,7 @@ QuestionBox := class extend ControlFlowBox
 		f << "%CmpRes" << itId << " = icmp ne " 
 		Down.PrintPointUse(f)
 		f << " , null\n"
-		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpName << "\n"
+		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
 		f << "OnGood" << itId << ":\n"
 		if DR is BoxSwitch or DR is BoxReturn
 		{
@@ -48,13 +45,36 @@ QuestionBox := class extend ControlFlowBox
 		}
 		f << "br label %DownRes" << itId << "\n"
 		f << "DownRes" << itId << ":\n"
-		f << "br label %OnBad" << itId << "\n"
-		f << "OnBad" << itId << ":\n"
+		f << "br label %" << endLabel.GetLabel() << "\n"
+		endLabel.PrintLabel(f)
 		
 		if forceToBool
 		{
 			f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
 		}
+	}
+}
+QuestionBox := class extend ControlFlowBox
+{	
+	itId := int
+	paramObject := FuncParam^
+	replObject := Object^
+	forceToBool := bool
+	isSimpleCheck := bool
+	passValue := bool
+	endLabel  := BoxLabel^
+	jmpLabel  := BoxLabel^
+	this := !(Object^ tmpObj,bool fTB) -> void
+	{
+		itId = GetNewId()
+		replObject = tmpObj
+		forceToBool = fTB
+		endLabel = new BoxLabelAnon()
+		jmpLabel = endLabel
+	}
+	IsRef := virtual !() -> bool
+	{
+		return Down.Right.IsRef()
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -76,7 +96,7 @@ QuestionBox := class extend ControlFlowBox
 			f << "%CmpRes" << itId << " = icmp ne " 
 			Down.PrintUse(f)
 			f << " , null\n"
-			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpName << "\n"
+			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
 			f << "OnGood" << itId << ":\n"
 			if DR is BoxSwitch or DR is BoxReturn
 			{
@@ -86,15 +106,13 @@ QuestionBox := class extend ControlFlowBox
 			}
 			f << "br label %DownRes" << itId << "\n"
 			f << "DownRes" << itId << ":\n"
-			f << "br label %OnBad" << itId << "\n"
-			f << "OnBad" << itId << ":\n"
+			f << "br label %" << endLabel.GetLabel() << "\n"
+			endLabel.PrintLabel(f)
 			
 			if forceToBool
 			{
 				f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
 			}
-		}else{
-			PrintPointPre(f)
 		}
 	}
 	StepTwo := bool
@@ -130,6 +148,8 @@ QuestionBox := class extend ControlFlowBox
 						paramObject = new FuncParam("QTempObject"sbt + itId,dwnType,true)
 						ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
 						StepTwo = true
+						cc := this&
+						cc->SetType(QuestionBoxRef)
 					}
 				}
 			}else{

@@ -108,6 +108,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			if tr == itUp return newNode
 			return itUp
 		}
+		if tr.Down.Right.GetValue() == "??"
+		{
+			printf("yep\n")
+		}
 		if tr.Down.Right.GetValue() == "?"
 		{
 			forceToBool := false
@@ -118,7 +122,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			{
 				if toDownd.GetValue() in !["while()","~if()","if()","?or??"]
 				{
-					if toDownd is QuestionBox
+					if IsQBox(toDownd) 
 					{
 					}else{
 						toDownd = prevNode
@@ -146,6 +150,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				toDownd->{BoxSwitch^}.addedQ.Push(qObject)
 				WorkBag.Push(qObject,State_Start)
 			}
+			//if toDownd is QAtleastBox
+			//{
+			//	qObject.passValue = true
+			//}
 			qTree := tr.Down
 			ReplaceNode(toDownd,qObject)
 			ReplaceNode(tr,replObject)

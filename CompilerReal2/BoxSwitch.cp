@@ -15,6 +15,7 @@ BoxSwitch := class extend Object
 	id := int
 	itemCall  := MemParam^
 	addedQ := List.{QuestionBox^}
+	caseVoidLabel := BoxLabel^
 	
 	isAllowTreeOpt := bool
 	this := !(Object^ itm) -> void
@@ -25,6 +26,7 @@ BoxSwitch := class extend Object
 		PopOutNode(Down)
 		MakeItBlock(Down.Right,false)
 		id = GetNewId()
+		caseVoidLabel = new BoxLabelAnon()	
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -132,10 +134,9 @@ BoxSwitch := class extend Object
 				{
 					if addedQ.Size() != 0
 					{
-						jName := StrCopy("SwitchVoid"sbt + id)
 						for it : addedQ
 						{
-							it.jmpName = jName
+							it.jmpLabel = caseVoidLabel
 						}
 					}
 				}				
@@ -204,13 +205,13 @@ BoxSwitch := class extend Object
 				if start != myPos{
 					f << ", label %CaseStart" << id << "w" << ((start + myPos - 1) div 2)
 				}else{
-					f << ", label %SwitchVoid" << id 
+					f << ", label %" << caseVoidLabel.GetLabel()
 				}
 				
 				if end != myPos{
 					f << ", label %CaseStart" << id << "w" << ((end + myPos + 1) div 2)
 				}else{
-					f << ", label %SwitchVoid" << id 
+					f << ", label %" << caseVoidLabel.GetLabel()
 				}
 				f << "\n"
 				thisLabel.PrintLabel(f)
@@ -235,8 +236,8 @@ BoxSwitch := class extend Object
 			}
 			f << "br label %CaseStart" << id << "w" << ((fatArr->len - 1) div 2) << "\n"
 			reqPrint(0,fatArr->len - 1)
-			f << "br label %SwitchVoid" << id << "\n"
-			f << "SwitchVoid" << id << ":\n"
+			f << "br label %" << caseVoidLabel.GetLabel() << "\n"
+			caseVoidLabel.PrintLabel(f)
 			if defThing != null
 			{
 				for iter : defThing.Right

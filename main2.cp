@@ -24,7 +24,7 @@ refer := !(alwTrue obj) -> int
 main := !(int argc, char^^ argv) -> int
 {
 	h := tstCl2
-	return refer(h[113]?)
+	printf("hoh %i\n", refer(h[113]?))
 	printf("nope\n")
 	return 0	
 
