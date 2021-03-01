@@ -22,6 +22,40 @@ QuestionBox := class extend ControlFlowBox
 		forceToBool = fTB
 		jmpName = StrCopy("OnBad"sbt + itId)
 	}
+	IsRef := virtual !() -> bool
+	{
+		return Down.Right.IsRef()
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		dwnType := Down.GetType()
+		DR := Down.Right
+
+		Down.PrintPointPre(f)
+		f << "br label %Start" << itId << "\n"
+		f << "Start" << itId << ":\n"
+		f << "%QTempObject" << itId << " = getelementptr "<< dwnType.GetName() << " , " Down.PrintPointUse(f) f << " , i32 0\n"
+		f << "%CmpRes" << itId << " = icmp ne " 
+		Down.PrintPointUse(f)
+		f << " , null\n"
+		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpName << "\n"
+		f << "OnGood" << itId << ":\n"
+		if DR is BoxSwitch or DR is BoxReturn
+		{
+			DR.PrintInBlock(f)
+		}else{
+			DR.PrintPre(f)
+		}
+		f << "br label %DownRes" << itId << "\n"
+		f << "DownRes" << itId << ":\n"
+		f << "br label %OnBad" << itId << "\n"
+		f << "OnBad" << itId << ":\n"
+		
+		if forceToBool
+		{
+			f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
+		}
+	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		dwnType := Down.GetType()
@@ -59,6 +93,8 @@ QuestionBox := class extend ControlFlowBox
 			{
 				f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
 			}
+		}else{
+			PrintPointPre(f)
 		}
 	}
 	StepTwo := bool
@@ -84,8 +120,17 @@ QuestionBox := class extend ControlFlowBox
 					ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
 					StepTwo = true
 				}else{
-					Down.Print(0)
-					EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
+					if not Down.IsRef()
+					{
+						Down.Print(0)
+						EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
+					}else{
+						WorkBag.Push(this&,State_GetUse)
+						WorkBag.Push(Down.Right,State_Start)
+						paramObject = new FuncParam("QTempObject"sbt + itId,dwnType,true)
+						ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
+						StepTwo = true
+					}
 				}
 			}else{
 				if Down.Right.GetType() != GTypeBool

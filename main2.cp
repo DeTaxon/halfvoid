@@ -1,24 +1,31 @@
 
-TestHashMap := !() -> void
-{
-	tst := HashAVLMap.{char^,int}()
-	tst["hello"] = 1
-	tst["world"] = 1
-	tst["azb"] = 1
-	tst["zb"] = 1
-	tst["world"] = 2
-	tst["1world"] = 2
-	tst["2world"] = 2
-	tst["2world"] = 3
-	assert(tst.Size() == 6)
 
-	kr := HashAVLMap.{char^,Queue.{int}}()
-	kr["wow"].Push(3)
+alwTrue := class
+{
+	GetBool := !() -> int
+	{
+		return 3
+	}
+}
+tstCl2 := class
+{
+	value := alwTrue
+	"[]" := !(int c) -> ref alwTrue
+	{
+		if c == 13 return value
+		return null
+	}
+}
+refer := !(alwTrue obj) -> int
+{
+	return 1
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	TestHashMap()
+	h := tstCl2
+	return refer(h[113]?)
+	printf("nope\n")
 	return 0	
 
 	try
@@ -40,6 +47,7 @@ main := !(int argc, char^^ argv) -> int
 	}
 	return 0
 }
+
 classSetTypeA := class
 {
 	x := int
@@ -56,6 +64,34 @@ classSetTypeB := class extend classSetTypeA
 	}
 }
 
+
+
+TestHashMap := !() -> void
+{
+	tst := HashAVLMap.{char^,int}()
+	tst["hello"] = 1
+	tst["world"] = 1
+	tst["azb"] = 1
+	tst["zb"] = 1
+	tst["world"] = 2
+	tst["1world"] = 2
+	tst["2world"] = 2
+	tst["2world"] = 3
+	assert(tst.Size() == 6)
+}
+TestHashMap := !() -> void
+{
+	tst := HashAVLMap.{char^,int}()
+	tst["hello"] = 1
+	tst["world"] = 1
+	tst["azb"] = 1
+	tst["zb"] = 1
+	tst["world"] = 2
+	tst["1world"] = 2
+	tst["2world"] = 2
+	tst["2world"] = 3
+	assert(tst.Size() == 6)
+}
 TestSetType := !() -> void
 {
 	j := new classSetTypeA

@@ -7,6 +7,7 @@ BoxReturn := class extend Object
 	IsYield := bool
 	YieldId := int
 	ResetYield := bool
+	RetFuncType := Type^
 
 	returnLabel := BoxLabel^
 	this := !(Object^ toUse) -> void
@@ -127,8 +128,15 @@ BoxReturn := class extend Object
 								Down = BoxExc(Down,PreType,RetFunc.RetRef)
 								Down.Up = this&
 							}else{
-								printf("from %s to %s\n",Down.GetType().GetName(),PreType.GetName())
+								if RetFunc.RetRef and Down is ObjNULL
+								{
+									//BoxExc(Down,PreType.GetPoint(),true)
+									RetFuncType = RetFunc.RetType
+
+								}else{
+									printf("from %s to %s\n",Down.GetType().GetName(),PreType.GetName())
 								EmitError("Can not return value\n")
+								}
 							}
 						}
 					}
@@ -159,10 +167,27 @@ BoxReturn := class extend Object
 		{
 
 			retTypeName := Down.GetType().GetName()
-			if IsRetRef retTypeName = (""sbt + retTypeName + "*" <-)
+			if IsRetRef 
+			{
+				if RetFuncType != null
+				{
+					retTypeName = (""sbt + RetFuncType.GetName() + "*" <-)
+				}else{
+					retTypeName = (""sbt + retTypeName + "*" <-)
+				}
+			}
 			if IsRetRef Down.PrintPointPre(f) else	Down.PrintPre(f)
 			f << "store " 
-			if IsRetRef Down.PrintPointUse(f) else Down.PrintUse(f)
+			if IsRetRef {
+				if RetFuncType != null
+				{
+					f << retTypeName << " null"
+				}else{
+					Down.PrintPointUse(f) 
+				}
+			}else {
+				Down.PrintUse(f)
+			}
 			f << " , " << retTypeName << "* %Result"
 			if debId != -1
 				f << ", !dbg !" << debId
