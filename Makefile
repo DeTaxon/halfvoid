@@ -50,7 +50,7 @@ ifeq ($(OS),Windows_NT)
 	AddStatic := -static
 endif
 
-CmplOptm := clang $(AddStatic) $(MainOut) -s -O2 $(Libs) -o $(TargetStable)
+CmplOptm := clang $(AddStatic) $(MainOut) -s -O1 $(Libs) -o $(TargetStable)
 CmplDeb := clang $(AddStatic) -g -O0 $(MainOut) $(Libs) -o $(TargetWork)
 CmplTest := clang $(AddStatic) -g $(MainOut) $(Libs) -o $(CurrentTest)
 ifeq ($(cross),win32)
