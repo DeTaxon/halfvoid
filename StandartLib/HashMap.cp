@@ -70,7 +70,7 @@ HashSomeMap := class .{@Buckets,@TreeType,@K,@V}
 	}
 	Values := fake
 	{
-		"in" := !(V val) -> bool
+		"in" := !(V val) .{} -> bool
 		{
 			if this[^] == val
 				return true

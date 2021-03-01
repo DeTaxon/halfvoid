@@ -9,7 +9,7 @@ PriorityData := PriorityBag^
 
 ErrorLog := Queue.{string}
 
-BuiltInFuncs := AVLMap.{string,Queue.{BoxFunc^}}
+BuiltInFuncs := HashAVLMap.{string,Queue.{BoxFunc^}}
 BuiltInExcs := Queue.{BoxFunc^}
 BuiltInTemplates := Queue.{BoxTemplate^}
 

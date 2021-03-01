@@ -9,10 +9,11 @@ TestHashMap := !() -> void
 	tst["world"] = 2
 	tst["1world"] = 2
 	tst["2world"] = 2
-	for it,ind : tst ; $reverse
-	{
-		printf("size %s %i\n",ind,it)
-	}
+	tst["2world"] = 3
+	assert(tst.Size() == 6)
+
+	kr := HashAVLMap.{char^,Queue.{int}}()
+	kr["wow"].Push(3)
 }
 
 main := !(int argc, char^^ argv) -> int
