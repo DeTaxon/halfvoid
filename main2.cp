@@ -1,31 +1,15 @@
 
 
-alwTrue := class
-{
-	GetBool := !() -> int
-	{
-		return 3
-	}
-}
-tstCl2 := class
-{
-	value := alwTrue
-	"[]" := !(int c) -> ref alwTrue
-	{
-		if c == 13 return value
-		return null
-	}
-}
-refer := !(alwTrue obj) -> int
-{
-	return 1
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	h := tstCl2
-	printf("hoh %i\n", refer(h[113]?))
-	printf("nope\n")
+	a1 := AVLMap.{int,int}()
+	a1[3] = 100
+	a2 := AVLMap.{int,int}()
+	for i : 10
+	{
+		printf("hoh %i\n",a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 7)
+	}
 	return 0	
 
 	try

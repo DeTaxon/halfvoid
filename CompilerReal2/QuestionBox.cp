@@ -14,11 +14,63 @@ IsQBox := !(Object^ toCmp) -> bool
 	return false
 }
 
-QAtleastBox := class ControlFlowBox
+QAtleastBox := class extend ControlFlowBox 
 {
 	onFalse := BoxLabel^
+	itId := int
 	this := !() -> void
 	{
+		onFalse = new BoxLabelAnon()
+		itId = GetNewId()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return Down.IsRef() and Down.Right.IsRef()
+	}
+	GetType := virtual !() -> Type^
+	{
+		return Down.GetType()
+	}
+	PrintPre := virtual !(sfile f) -> void
+	{
+		f << "br label %Start" << itId << "\n"
+		f << "Start" << itId << ":\n"
+		Down.PrintPre(f)
+		f << "br label %OnEnd" << itId << "\n"
+
+		onFalse.PrintLabel(f)
+		Down.Right.PrintPre(f)
+		f << "br label %OnEnd" << itId << "\n"
+
+		f << "OnEnd" << itId << ":\n"
+		f << "%Value" << itId << " = phi i32 ["<< Down.GetName() <<",%Start"<<itId<<"] , ["<< Down.Right.GetName()<<",%"<< onFalse.GetLabel() <<"]\n" 
+	}
+	PrintUse := virtual !(sfile f) -> void
+	{
+		f << "i32 %Value" << itId
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%Value"sbt + itId
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(Down,State_Start)
+			WorkBag.Push(Down.Right,State_Start)
+		}
+		if pri == State_GetUse
+		{
+			tp1 := Down.GetType()
+			tp2 := Down.Right.GetType()
+			newType := TypeFight(tp1,tp2)
+			if newType == null
+				EmitError("can not unite types")
+			if tp1 != newType BoxExc(Down,newType,false)
+			if tp2 != newType BoxExc(Down.Right,newType,false)
+		}
 	}
 }
 QuestionBoxRef := class extend QuestionBox
