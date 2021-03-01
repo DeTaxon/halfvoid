@@ -40,6 +40,15 @@ CommonMapIterator := class .{@DATA,@KEY,@VALUE}
 		}else{
 		}
 	}
+	DoAMove := !() .{} -> void
+	{
+		if $reverse
+		{
+			DoAMoveRight()
+		}else{
+			DoAMoveLeft()
+		}
+	}
 	DoAMoveRight := !() -> void
 	{
 		while nNode.Right != null
