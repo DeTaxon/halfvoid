@@ -198,6 +198,10 @@ Object := class{
 	{
 		return 0
 	}
+	GetEndLabel := virtual !() -> BoxLabel^
+	{
+		return null
+	}
 }
 
 ObjLine := class 

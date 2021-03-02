@@ -17,11 +17,17 @@ IsQBox := !(Object^ toCmp) -> bool
 QAtleastBox := class extend ControlFlowBox 
 {
 	onFalse := BoxLabel^
+	endLabel := BoxLabel^
 	itId := int
 	this := !() -> void
 	{
 		onFalse = new BoxLabelAnon()
+		endLabel = new BoxLabelAnon()
 		itId = GetNewId()
+	}
+	GetEndLabel := virtual !() -> BoxLabel^
+	{
+		return endLabel
 	}
 	IsRef := virtual !() -> bool
 	{
@@ -36,35 +42,30 @@ QAtleastBox := class extend ControlFlowBox
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
 		Down.PrintPre(f)
-		f << "br label %OnEnd" << itId << "\n"
+		f << "br label %" << endLabel.GetLabel() << "\n"
 
 		onFalse.PrintLabel(f)
 		Down.Right.PrintPre(f)
-		f << "br label %OnEnd" << itId << "\n"
+		f << "br label %" << endLabel.GetLabel() << "\n"
 
-		f << "OnEnd" << itId << ":\n"
+		endLabel.PrintLabel(f)
 		f << "%Value" << itId << " = phi "
 		Down.GetType().PrintType(f)
-		if IsQBox(Down)
+		if Down.GetEndLabel() != null
 		{
-			qId := Down->{QuestionBox^}.endLabel 
+			qId := Down.GetEndLabel()
 			f << " ["<< Down.GetName() <<",%"<<qId.GetLabel()<<"] " 		
 		}else{
-			if Down is QAtleastBox
-			{
-				qId := Down->{QAtleastBox^}.itId  //TODO REFACTOR
-				f << " ["<< Down.GetName() <<",%OnEnd"<<qId<<"]"
-			}else{
-				f << " ["<< Down.GetName() <<",%Start"<<itId<<"]" 
-			}
+			f << " ["<< Down.GetName() <<",%Start"<<itId<<"]" 
 		}
-		if IsQBox(Down.Right)
+		lstLabel := onFalse
+		if Down.Right.GetEndLabel() != null
 		{
-			qId := Down.Right->{QuestionBox^}.endLabel 
-			f <<", ["<< Down.Right.GetName()<<",%"<< qId.GetLabel() <<"]\n" 
-		}else{
-			f <<", ["<< Down.Right.GetName()<<",%"<< onFalse.GetLabel() <<"]\n" 
+			lstLabel = Down.Right.GetEndLabel()
 		}
+
+		f <<", ["<< Down.Right.GetName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
+		
 
 
 	}
@@ -151,6 +152,10 @@ QuestionBox := class extend ControlFlowBox
 		forceToBool = fTB
 		endLabel = new BoxLabelAnon()
 		jmpLabel = endLabel
+	}
+	GetEndLabel := virtual !() -> BoxLabel^
+	{
+		return endLabel
 	}
 	IsRef := virtual !() -> bool
 	{
