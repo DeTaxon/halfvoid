@@ -237,6 +237,28 @@ QuestionBox := class extend ControlFlowBox
 						cc->SetType(QuestionBoxRef)
 					}
 				}
+				if Down is NaturalCall //TODO: NaturalCallRef
+				{
+					asCall := Down->{NaturalCall^}
+					cFunc := asCall.ToCall
+					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass //TODO: in fake
+					{
+						cl := cFunc.MethodType->{TypeClass^}.ToClass
+						inMethods := cl.ItMethods.TryFind("[]?")
+						if inMethods != null
+						{
+							for it : inMethods^
+							{
+								if it.MyFuncType == cFunc.MyFuncType
+								{
+									asCall.ToCall = it
+									it.ParseBlock()
+									break
+								}
+							}
+						}
+					}
+				}
 			}else{
 				if Down.Right.GetType() != GTypeBool
 				{	

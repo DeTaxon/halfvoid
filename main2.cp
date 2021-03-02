@@ -1,17 +1,39 @@
 
 
 
+OnOddTrue := class
+{
+	x := int
+	"[]?" := !(int ind) -> ref int
+	{
+		printf("good\n")
+		if ind != 13
+			return null
+		return x
+	}
+	"[]" := !(int ind) -> ref int
+	{	
+		printf("bad\n")
+		return x
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	a1 := AVLMap.{int,int}()
 	a1[3] = 100
 	a2 := AVLMap.{int,int}()
 	a2[4] = 120
+	sum := 0
 	for i : 10
 	{
-		printf("hoh %i\n",a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 7)
-		//printf("hoh %i\n",a1.TryFind(i)?^ ?? 7)
+		sum += a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 2
 	}
+	assert(sum == 236)
+
+	tst2 := OnOddTrue
+	tst2.x = 17
+	printf("heh %i\n",tst2[13]?)
 	return 0	
 
 	try
