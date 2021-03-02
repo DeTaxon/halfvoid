@@ -6,9 +6,11 @@ main := !(int argc, char^^ argv) -> int
 	a1 := AVLMap.{int,int}()
 	a1[3] = 100
 	a2 := AVLMap.{int,int}()
+	a2[4] = 120
 	for i : 10
 	{
 		printf("hoh %i\n",a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 7)
+		//printf("hoh %i\n",a1.TryFind(i)?^ ?? 7)
 	}
 	return 0	
 

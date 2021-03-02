@@ -43,11 +43,35 @@ QAtleastBox := class extend ControlFlowBox
 		f << "br label %OnEnd" << itId << "\n"
 
 		f << "OnEnd" << itId << ":\n"
-		f << "%Value" << itId << " = phi i32 ["<< Down.GetName() <<",%Start"<<itId<<"] , ["<< Down.Right.GetName()<<",%"<< onFalse.GetLabel() <<"]\n" 
+		f << "%Value" << itId << " = phi "
+		Down.GetType().PrintType(f)
+		if IsQBox(Down)
+		{
+			qId := Down->{QuestionBox^}.endLabel 
+			f << " ["<< Down.GetName() <<",%"<<qId.GetLabel()<<"] " 		
+		}else{
+			if Down is QAtleastBox
+			{
+				qId := Down->{QAtleastBox^}.itId  //TODO REFACTOR
+				f << " ["<< Down.GetName() <<",%OnEnd"<<qId<<"]"
+			}else{
+				f << " ["<< Down.GetName() <<",%Start"<<itId<<"]" 
+			}
+		}
+		if IsQBox(Down.Right)
+		{
+			qId := Down.Right->{QuestionBox^}.endLabel 
+			f <<", ["<< Down.Right.GetName()<<",%"<< qId.GetLabel() <<"]\n" 
+		}else{
+			f <<", ["<< Down.Right.GetName()<<",%"<< onFalse.GetLabel() <<"]\n" 
+		}
+
+
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
-		f << "i32 %Value" << itId
+		Down.GetType().PrintType(f)
+		f << " %Value" << itId
 	}
 	GetName := virtual !() -> char^
 	{
@@ -71,6 +95,10 @@ QAtleastBox := class extend ControlFlowBox
 			if tp1 != newType BoxExc(Down,newType,false)
 			if tp2 != newType BoxExc(Down.Right,newType,false)
 		}
+	}
+	GetDebugValue := virtual !() -> char^
+	{
+		return "??"
 	}
 }
 QuestionBoxRef := class extend QuestionBox
@@ -233,6 +261,10 @@ QuestionBox := class extend ControlFlowBox
 	GetName := virtual !() -> char^ {
 		if passValue return Down.Right.GetName()
 		return "%Res"sbt + itId 
+	}
+	GetDebugValue := virtual !() -> char^
+	{
+		return "?"
 	}
 }
 

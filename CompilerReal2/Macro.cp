@@ -128,8 +128,11 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			{
 				if toDownd.GetValue() in !["while()","~if()","if()","?or??"]
 				{
-					if toDownd is QAtleastBox and toDownd.Down == prevNode
+					if toDownd is QAtleastBox
+					{
+						toDownd = prevNode
 						break
+					}
 					if IsQBox(toDownd) or toDownd is QAtleastBox
 					{
 					}else{
@@ -158,10 +161,27 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				toDownd->{BoxSwitch^}.addedQ.Push(qObject)
 				WorkBag.Push(qObject,State_Start)
 			}
-			if toDownd is QAtleastBox
+			if toDownd.Up? is QAtleastBox
 			{
+				prev2 := toDownd
+				itr2 := toDownd.Up
+				while itr2 != itUp
+				{
+					if itr2 is QAtleastBox and itr2.Down == prev2
+					{
+						break
+					}
+					prev2 = itr2
+					itr2 = itr2.Up
+				}
+				if itr2 is QAtleastBox
+				{
+					qObject.jmpLabel = itr2->{QAtleastBox^}.onFalse
+				}else{
+					assert(false) //TODO: x ?? y?  , all line must be skipped
+				}
+
 				qObject.passValue = true
-				qObject.jmpLabel = toDownd->{QAtleastBox^}.onFalse
 			}
 			qTree := tr.Down
 			ReplaceNode(toDownd,qObject)
