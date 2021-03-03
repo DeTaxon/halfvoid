@@ -17,6 +17,11 @@ BigObjectSet := !(BigObject x) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	for i : argc
+	{
+		printf("param %s\n",argv[i])
+	}
+	return 0
 	vls := new BigObject()
 	vls.vals = 7
 	BigObjectSet(vls?^ ?? BigObject())

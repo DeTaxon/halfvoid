@@ -33,6 +33,11 @@ CloseHandle := !(void^ hndl) -> void declare
 FILE_ATTRIBUTE_DIRECTORY := 16
 GetFileAttributesW := !(u16^ filName) -> int declare
 
+GetCommandLineW :=  !() -> u16^ declare
+CommandLineToArgvW := !(u16^ line,int^ argc) -> u16^^ declare
+
+LocalFree := !(void^ ptr) -> void declare
+
 FILETIME := class
 {
 	dwLowDateTime := u32
