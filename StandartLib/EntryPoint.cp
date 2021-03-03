@@ -11,13 +11,11 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 		gRepo.AddZipRoot("halfvoid.exe")
 	}
 
-	cleanArgv2 := false
 	argv2 := argv
 
 	if $win32
 	{
 		cmd := GetCommandLineW()
-		cleanArgv2 = true
 		argv2W := CommandLineToArgvW(cmd,argc&)
 		for i : argc
 		{
@@ -42,14 +40,10 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 	}
 	if $win32
 	{
-		if cleanArgv2
+		for i : argc
 		{
-			for i : argc
-			{
-				delete argv2[i]
-			}
+			delete argv2[i]
 		}
-
 	}
 	return preRet
 }

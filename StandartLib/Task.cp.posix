@@ -3,10 +3,15 @@ AppendClass TaskBox
 	eventFd := int
 	posixPollArr := RawArray.{pollfd}
 
+	pollData := RawArray.{Tuple.{int}}
+
 	startContext := u8[1024]
 
 	osInit := !() -> void
 	{
+		pollData."this"()
+		pollData.Reserve(10)
+
 		posixPollArr."this"()
 		posixPollArr.Reserve(10)
 
@@ -15,6 +20,45 @@ AppendClass TaskBox
 		setPollFd.fd = eventFd
 		setPollFd.events = 0x01
 		pollData.Create().0 = 1
+	}
+	initedMonitor := bool
+	monitorBuffer := u8[]
+	monitorFd := int
+	monitorWds := AVLMap.{int,Tuple.{!(char^)&->void,char^}}
+	initMonitor := !() -> void
+	{
+		initedMonitor = true
+		pollData.Create().0 = 2
+
+		if $posix
+		{
+			monitorBuffer = new u8[4096]
+			monitorFd = inotify_init()
+			setData := ref posixPollArr.Create()
+			setData.fd = monitorFd
+			setData.events = 0x01
+			newPoll := ref pollData.Create()
+			newPoll.0 = 2
+		}
+		if $win32
+		{
+			
+		}
+	}
+	checkMonitor := !() -> void
+	{
+		readRes := read(monitorFd,monitorBuffer->{void^},4096)
+		if readRes > 0
+		{
+			asStruct := monitorBuffer->{inotify_event^}
+			if monitorWds.Contain(asStruct.wd)
+			{
+				nowMon := ref monitorWds[asStruct.wd]
+				itLambd := nowMon.0
+				newName := (""sbt + nowMon.1 + "/" + asStruct.name[0]&)->{char^}
+				itLambd(newName)
+			}
+		}
 	}
 	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
 	{
@@ -63,5 +107,23 @@ AppendClass TaskBox
 		startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
 		startTask.uContext[32]&->{u64^}^ = stackSize
 		makecontext(startTask.uContext&,ucontextStartTask,0)
+	}
+	taskWaitSleep := !(double sleepTime) -> void
+	{
+		poll(posixPollArr.Data(),posixPollArr.Size(),(sleepTime*1000)->{int})
+		for itFd,i : posixPollArr, extra : pollData
+		{
+			if itFd.revents != 0
+			{
+			switch extra.0
+			{
+				case 1
+					toRd := u64
+					read(eventFd,toRd&,8)
+				case 2
+					checkMonitor()
+			}
+			}
+		}
 	}
 }

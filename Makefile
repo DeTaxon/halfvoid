@@ -82,7 +82,7 @@ stable:
 JIT: main2.cp
 	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) main2.cp $(ForcedLibs) --jit
 test2: main2.cp
-	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr

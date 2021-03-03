@@ -62,6 +62,10 @@ ucontextStartTask := !(void^ fiberData) -> void
 	CurrentTaskBox.switchToMain()
 }
 
+TMonitor := !(char^ pathName,bool recursive,!(char^)&-> void callb) -> void
+{
+	CurrentTaskBox.Monitor(pathName,recursive,callb)
+}
 AwaitWork := !(!()&->void lambd) -> void
 {
 	if CurrentTaskBox != null
@@ -122,7 +126,6 @@ TaskBox := class
 
 	working := bool
 
-	pollData := RawArray.{Tuple.{int}}
 
 	this := !(int sSize) -> void
 	{
@@ -132,52 +135,15 @@ TaskBox := class
 		itWorkConVar."this"()
 		itWorkCount = 0
 
-		pollData."this"()
-		pollData.Reserve(10)
 
 		osInit()
 		working = true
 	}
 	
 	
-	initedMonitor := bool
-	monitorBuffer := u8[]
-	monitorFd := int
-	monitorWds := AVLMap.{int,Tuple.{!(char^)&->void,char^}}
-	initMonitor := !() -> void
-	{
-		initedMonitor = true
-		pollData.Create().0 = 2
-
-		if $posix
-		{
-			monitorBuffer = new u8[4096]
-			monitorFd = inotify_init()
-			setData := ref posixPollArr.Create()
-			setData.fd = monitorFd
-			setData.events = 0x01
-			newPoll := ref pollData.Create()
-			newPoll.0 = 2
-		}
-	}
 	TaskKeepStackData := !() -> void
 	{
 		CurrentTask?.keepStack = true
-	}
-	checkMonitor := !() -> void
-	{
-		readRes := read(monitorFd,monitorBuffer->{void^},4096)
-		if readRes > 0
-		{
-			asStruct := monitorBuffer->{inotify_event^}
-			if monitorWds.Contain(asStruct.wd)
-			{
-				nowMon := ref monitorWds[asStruct.wd]
-				itLambd := nowMon.0
-				newName := (""sbt + nowMon.1 + "/" + asStruct.name[0]&)->{char^}
-				itLambd(newName)
-			}
-		}
 	}
 	monitorsToAdd := List.{Tuple.{char^,!(char^)&->void,bool}} ; $keep
 	Monitor := !(char^ pathName,bool recursive,!(char^)&-> void callb) -> void
@@ -392,28 +358,7 @@ TaskBox := class
 			{
 				//itConVar.WaitFor(itMutex&,waitTime)
 				itMutex.Unlock()
-				if $posix
-				{
-					poll(posixPollArr.Data(),posixPollArr.Size(),(waitTime*1000)->{int})
-					for itFd,i : posixPollArr, extra : pollData
-					{
-						if itFd.revents != 0
-						{
-						switch extra.0
-						{
-							case 1
-								toRd := u64
-								read(eventFd,toRd&,8)
-							case 2
-								checkMonitor()
-						}
-						}
-					}
-				}
-				if $win32
-				{
-					res := WaitForMultipleObjects(winPollArr.Size(),winPollArr.Data(),0,(waitTime*1000)->{int})
-				}
+				taskWaitSleep(waitTime)
 				continue
 			}
 			itMutex.Unlock()
