@@ -1,0 +1,16 @@
+{
+	"link" : "static",
+	"initname" : "winapiinit",
+	"libs" : [
+		"KERNEL32.dll"
+	],
+	"funcs" : {
+		
+		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
+		"WriteFile" : "int,void^,void^,u32,u32^,void^",
+		"CloseHandle" : "void,void^",
+		
+		"GetCommandLineW" : "u16^",
+		"LocalFree" : "void,void^"
+	}
+}
