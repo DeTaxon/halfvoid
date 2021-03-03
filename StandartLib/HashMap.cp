@@ -21,6 +21,13 @@ HashSomeMap := class .{@Buckets,@TreeType,@K,@V}
 		nowArr := ref nowBuck(key)
 		return nowArr.TryFind(key)
 	}
+	"[]?" := !(K key) -> ref V
+	{
+		nowArr := ref nowBuck(key)
+		fnd := nowArr.TryFind(key)
+		if fnd == null return null
+		return fnd^
+	}
 	"[]" := !(K key) .{} -> ref V
 	{
 		nowArr := ref nowBuck(key)

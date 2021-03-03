@@ -9,3 +9,7 @@ Hash := !(char^ str) -> u32
 	}
 	return initVal
 }
+Hash := !(int x) -> u32
+{
+	return x
+}

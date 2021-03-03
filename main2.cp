@@ -17,10 +17,15 @@ BigObjectSet := !(BigObject x) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	for i : argc
-	{
-		printf("param %s\n",argv[i])
-	}
+	mpTest := HashAVLMap.{char^,int}()
+	mpTest["wow"] = 3
+	mpTest["wow"] = 4
+	mpTest["waw"] = 3
+		if mpTest["wiw"]? == 4
+		{
+		}
+	printf("size %i\n",mpTest.Size())
+
 	return 0
 	vls := new BigObject()
 	vls.vals = 7

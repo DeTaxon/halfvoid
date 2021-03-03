@@ -316,6 +316,7 @@ QuestionBox := class extend ControlFlowBox
 				{
 					asCall := Down->{NaturalCall^}
 					cFunc := asCall.ToCall
+					
 					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass //TODO: in fake
 					{
 						cl := cFunc.MethodType->{TypeClass^}.ToClass

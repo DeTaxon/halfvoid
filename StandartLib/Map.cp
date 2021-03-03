@@ -13,6 +13,12 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 		itTree."this"()
 		itSize = 0
 	}
+	"[]?" := !(KEY dat) -> ref VALUE
+	{
+		resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+		if resl == null return null
+		return resl.data.second
+	}
 	"[]" := !(KEY dat) .{}  -> ref VALUE
 	{
 		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^

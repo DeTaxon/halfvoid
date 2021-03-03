@@ -572,6 +572,7 @@ BoxTemplate := class extend BoxFunc
 		newFunc.vargsName = vargsName
 		newFunc.CountAttrs = true
 		newFunc.Line = Line
+		newFunc.IsMethod = IsMethod
 
 		return newFunc	
 	}
