@@ -206,48 +206,34 @@ main := !(int argc,char^^ argv) -> int
 
 	MacroRestart = new Object
 
-	selfFile := new ZipFile() ; $temp
+	//selfFile := new ZipFile() ; $temp
 
 	loadedLex := false
 
-	if selfFile.AnalizeFile(argv[0])
+	mac := gRepo.GetFile("Mach.m")
+	if mac == null
 	{
-		defer selfFile.DecUser()
-		itMach := selfFile.GetFile("Mach.m")
-
-		itPri := selfFile.GetFile("Priority.pr")
-		if itPri == null
-			itPri = selfFile.GetFile("Priority2.pr")
-
-		if itPri !=null
-		{
-			priPtr := itPri.Map()
-			PriorityData = new PriorityBag(priPtr->{char^},itPri.realSize)
-			itPri.Unmap()
-		}
-		if itMach != null
-		{
-			loadedLex = true
-			mPoint := itMach.Map()
-			LoadLexMachine(mPoint->{char^},itMach.realSize)
-			itMach.Unmap()
-		}
+		printf("Mach.m not found\n")
+		return 1
 	}
-	if not loadedLex
+	if not mac.IsVirtual()
 	{
-		printf("lexical machine loaded from outside\n")
-		itMach := MappedFile("./Mach.m")
-		LoadLexMachine(itMach.point,itMach.Size())
-		itMach.Close()
+		printf("Mach loaded from outsize\n")
 	}
+	LoadLexMachine(mac.Map(),mac.Size()) //TODO unmap?
 
-	if PriorityData == null
+	pri := gRepo.GetFile("Priority.pr")
+	if pri == null
 	{
-		printf("priority loaded from outside\n")
-		prFile := MappedFile("./Priority.pr")
-		defer prFile.Close()
-		PriorityData = new PriorityBag(prFile.point,prFile.Size())
+		printf("Priority.pr not found\n")
+		return 1
 	}
+	if not pri.IsVirtual()
+	{
+		printf("Priority.pr loaded from outsize\n")
+	}
+	PriorityData = new PriorityBag(pri.Map(),pri.Size()) //TODO unmap?
+
 	PutConstString(":=")
 	PutConstString("for")
 	PutConstString("if")

@@ -37,6 +37,44 @@ QAtleastBox := class extend ControlFlowBox
 	{
 		return Down.GetType()
 	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		f << "br label %Start" << itId << "\n"
+		f << "Start" << itId << ":\n"
+		Down.PrintPointPre(f)
+		f << "br label %" << endLabel.GetLabel() << "\n"
+
+		onFalse.PrintLabel(f)
+		Down.Right.PrintPointPre(f)
+		f << "br label %" << endLabel.GetLabel() << "\n"
+
+		endLabel.PrintLabel(f)
+		f << "%Value" << itId << " = phi "
+		Down.GetType().GetPoint().PrintType(f)
+		if Down.GetEndLabel() != null
+		{
+			qId := Down.GetEndLabel()
+			f << " ["<< Down.GetPointName() <<",%"<<qId.GetLabel()<<"] " 		
+		}else{
+			f << " ["<< Down.GetPointName() <<",%Start"<<itId<<"]" 
+		}
+		lstLabel := onFalse
+		if Down.Right.GetEndLabel() != null
+		{
+			lstLabel = Down.Right.GetEndLabel()
+		}
+
+		f <<", ["<< Down.Right.GetPointName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
+	}
+	PrintPointUse := virtual !(sfile f) -> void
+	{
+		Down.GetType().PrintType(f)
+		f << "* %Value" << itId
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%Value"sbt + itId
+	}
 	PrintPre := virtual !(sfile f) -> void
 	{
 		f << "br label %Start" << itId << "\n"
@@ -65,9 +103,6 @@ QAtleastBox := class extend ControlFlowBox
 		}
 
 		f <<", ["<< Down.Right.GetName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
-		
-
-
 	}
 	PrintUse := virtual !(sfile f) -> void
 	{
@@ -90,9 +125,15 @@ QAtleastBox := class extend ControlFlowBox
 		{
 			tp1 := Down.GetType()
 			tp2 := Down.Right.GetType()
+			if tp1 == null
+				EmitError("Left type is null")
+			if tp2 == null
+				EmitError("Right type is null")
 			newType := TypeFight(tp1,tp2)
-			if newType == null
-				EmitError("can not unite types")
+			if newType == null{
+				Print(0)
+				EmitError("can not unite types ")
+			}
 			if tp1 != newType BoxExc(Down,newType,false)
 			if tp2 != newType BoxExc(Down.Right,newType,false)
 		}
@@ -160,6 +201,40 @@ QuestionBox := class extend ControlFlowBox
 	IsRef := virtual !() -> bool
 	{
 		return Down.Right.IsRef()
+	}
+	PrintPointPre := virtual !(sfile f) -> void
+	{
+		dwnType := Down.GetType()
+
+		if dwnType is TypePoint or dwnType is TypeFatArr
+		{
+			DR := Down.Right
+
+			Down.PrintPre(f)
+			f << "br label %Start" << itId << "\n"
+			f << "Start" << itId << ":\n"
+			f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
+			f << "%CmpRes" << itId << " = icmp ne " 
+			Down.PrintUse(f)
+			f << " , null\n"
+			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
+			f << "OnGood" << itId << ":\n"
+			if DR is BoxSwitch or DR is BoxReturn
+			{
+				DR.PrintInBlock(f)
+			}else{
+				DR.PrintPointPre(f)
+			}
+			f << "br label %DownRes" << itId << "\n"
+			f << "DownRes" << itId << ":\n"
+			f << "br label %" << endLabel.GetLabel() << "\n"
+			endLabel.PrintLabel(f)
+			
+			if forceToBool
+			{
+				f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetPointName() << ",%DownRes" << itId << "]\n"
+			}
+		}
 	}
 	PrintPre := virtual !(sfile f) -> void
 	{
@@ -277,6 +352,17 @@ QuestionBox := class extend ControlFlowBox
 		if passValue
 			return Down.Right.GetType()
 		return GTypeBool 
+	}
+	PrintPointUse := virtual !(sfile f) -> void { 
+		if passValue {
+			Down.Right.PrintPointUse(f)
+		}else{
+			f << "i1 %Res" << itId 
+		}
+	}
+	GetPointName := virtual !() -> char^ {
+		if passValue return Down.Right.GetPointName()
+		return "%Res"sbt + itId 
 	}
 	PrintUse := virtual !(sfile f) -> void { 
 		if passValue {

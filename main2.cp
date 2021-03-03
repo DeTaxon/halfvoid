@@ -1,43 +1,30 @@
 
 
-
-OnOddTrue := class
+BigObject := class
 {
-	x := int
-	"[]?" := !(int ind) -> ref int
+	vals := double
+	this := !() -> void
 	{
-		printf("good\n")
-		if ind != 13
-			return null
-		return x
-	}
-	"[]" := !(int ind) -> ref int
-	{	
-		printf("bad\n")
-		return x
+		vals = 3
+		printf("hm\n")
 	}
 }
+BigObjectSet := !(BigObject x) -> void
+{
+	printf("x %f\n",x.vals)
+}
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	a1 := AVLMap.{int,int}()
-	a1[3] = 100
-	a2 := AVLMap.{int,int}()
-	a2[4] = 120
-	sum := 0
-	for i : 10
-	{
-		sum += a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 2
-	}
-	assert(sum == 236)
-
-	tst2 := OnOddTrue
-	tst2.x = 17
-	printf("heh %i\n",tst2[13]?)
+	vls := new BigObject()
+	vls.vals = 7
+	BigObjectSet(vls?^ ?? BigObject())
 	return 0	
 
 	try
 	{
+		TestQuestion()
 		TestBiggerSwitch()
 		TestRetQ()
 		StringEndTest()
@@ -72,6 +59,41 @@ classSetTypeB := class extend classSetTypeA
 	}
 }
 
+TestQuestion := !() -> void
+{
+	a1 := AVLMap.{int,int}()
+	a1[3] = 100
+	a2 := AVLMap.{int,int}()
+	a2[4] = 120
+	sum := 0
+	for i : 10
+	{
+		sum += a1.TryFind(i)?^ ?? a2.TryFind(i)?^ ?? 2
+	}
+	assert(sum == 236)
+
+	tst2 := OnOddTrue
+	tst2.x = 17
+	assert(tst2[14] == 68)
+	assert(tst2[14]? == 0)
+	assert(tst2.x == 67)
+}
+OnOddTrue := class
+{
+	x := int
+	"[]?" := !(int ind) -> ref int
+	{
+		x = 67
+		if ind != 13
+			return null
+		return x
+	}
+	"[]" := !(int ind) -> ref int
+	{	
+		x = 68
+		return x
+	}
+}
 
 
 TestHashMap := !() -> void

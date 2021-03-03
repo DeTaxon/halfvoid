@@ -77,7 +77,7 @@ ManyCycle:
 	for i in {1..10}; do make cycle; done
 
 stable:
-	$(gdb_tui) $(CurrentStable) --notask  $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplOptm)
+	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
 JIT: main2.cp
 	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) main2.cp $(ForcedLibs) --jit
