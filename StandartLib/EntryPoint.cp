@@ -15,6 +15,9 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 
 	if $win32
 	{
+		SetConsoleOutputCP(CP_UTF8)
+		SetConsoleCP(CP_UTF8)
+		
 		cmd := GetCommandLineW()
 		argv2W := CommandLineToArgvW(cmd,argc&)
 		for i : argc

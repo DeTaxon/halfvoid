@@ -32,6 +32,9 @@ GetFullPathNameW := !(u16^ wideCh,int buffSize,u16^ ptrToBuff,u16^ plFilePart) -
 FILE_ATTRIBUTE_DIRECTORY := 16
 GetFileAttributesW := !(u16^ filName) -> int declare
 
+SetConsoleOutputCP := !(u32 cp) -> void declare
+SetConsoleCP := !(u32 cp) -> void declare
+
 //Shell32.dll
 CommandLineToArgvW := !(u16^ line,int^ argc) -> u16^^ declare
 
@@ -115,6 +118,14 @@ Utf8ToUtf16 := !(char^ itStr) -> u16[]
 	preRet := new u16[retSize + 1] ; $temp
 	MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,preRet,retSize)
 	preRet[retSize] = 0
+	return preRet
+}
+Utf16ToUtf8 := !(u16^ itStr,int count) -> char^
+{
+	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,count,null->{char^},0,null,null)
+	preRet := new char[resSize + 1] ; $temp
+	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,count,preRet,resSize,null,null)
+	preRet[resSize] = 0
 	return preRet
 }
 Utf16ToUtf8 := !(u16^ itStr) -> char^

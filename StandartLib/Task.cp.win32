@@ -1,3 +1,33 @@
+FILE_ACTION_ADDED := 1
+FILE_ACTION_REMOVED := 2
+FILE_ACTION_MODIFIED := 3
+FILE_ACTION_RENAMED_OLD_NAME := 4
+FILE_ACTION_RENAMED_NEW_NAME := 5
+
+FILE_NOTIFY_CHANGE_FILE_NAME := 0x1
+FILE_NOTIFY_CHANGE_LAST_ACCESS := 0x20
+FILE_NOTIFY_CHANGE_CREATE := 0x40
+
+FILE_NOTIFY_INFORMATION := class
+{
+	NextEntryOffset := int
+	Action := int
+	FileNameLength := int
+	//FileName := char[FileNameLength]
+}
+
+GetOverlappedResult := !(void^ hndl,void^ over,int^ red,int wait) -> int declare
+
+monitorStruct := class
+{
+	hndl := void^
+	buffer := int[1024]
+	lap := OVERLAPPED
+	recursive := int
+
+	callb := !(char^)&->void
+}
+
 AppendClass TaskBox
 {
 	startContext := void^
@@ -18,9 +48,8 @@ AppendClass TaskBox
 	initedM := bool
 	monitorEv := void^
 	monNr := 0
-	buf := char[4096] //TODO: unbuf
-	ove := OVERLAPPED
-	dirH := void^
+
+	monObjects := AVLSet.{monitorStruct^}
 	initMonitor := !() -> void
 	{
 		if initedM return void
@@ -29,21 +58,51 @@ AppendClass TaskBox
 		monitorEv = CreateEventA(null,0,0,null->{u8^})
 		monNr = winPollArr.Size()
 		winPollArr.Create() = monitorEv
-		ove.event = monitorEv
-
 	}
-	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
+	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void^
 	{
 		initMonitor()
-
-		dirH = CreateFileW(Utf8ToUtf16(pathName),GENERIC_READ ,FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE, null,OPEN_EXISTING
+		
+		strc := new monitorStruct
+		strc.lap.event = monitorEv
+		strc.callb = callb.Capture()
+		strc.recursive = isRec ?: 1 : 0
+		strc.hndl = CreateFileW(Utf8ToUtf16(pathName),GENERIC_READ ,FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE, null,OPEN_EXISTING
 		,FILE_FLAG_BACKUP_SEMANTICS or_b FILE_FLAG_OVERLAPPED,null)
-		doMonitor()
+		monObjects.Insert(strc)
+		doMonitor(strc)
+
+		return strc
 	}
-	doMonitor := !() -> void
+	checkMonitor := !() -> void
 	{
-		FILE_NOTIFY_CHANGE_LAST_ACCESS := 0x20
-		res := ReadDirectoryChangesW(dirH,buf[0]&,4096,1,FILE_NOTIFY_CHANGE_LAST_ACCESS,null,ove&,null)
+		for it : monObjects
+		{
+			red := 0
+			if GetOverlappedResult(it.hndl,it.lap&,red&,0)
+			{
+				flInf := it.buffer[0]&->{FILE_NOTIFY_INFORMATION^}
+				while true
+				{
+					fName := flInf->{u8^}[FILE_NOTIFY_INFORMATION->TypeSize]&->{u16^}
+					flName :=  Utf16ToUtf8(fName,flInf.FileNameLength div 2)
+					it.callb(""sbt + flName)
+					if flInf.NextEntryOffset == 0
+						break
+					flInf = flInf->{u8^}[flInf.NextEntryOffset]&->{FILE_NOTIFY_INFORMATION^}
+				}
+				doMonitor(it)
+			}
+		}
+	}
+	doMonitor := !(monitorStruct^ strc) -> void
+	{
+		//ZeroMem(strc.lap)
+		strc.lap.internal = 0
+		strc.lap.offset = 0
+		strc.lap.event = monitorEv
+		res := ReadDirectoryChangesW(strc.hndl,strc.buffer[0]&,strc.buffer->len*4,strc.recursive
+		,FILE_NOTIFY_CHANGE_LAST_ACCESS,null,strc.lap&,null)
 	}
 	notifyMain := !() -> void
 	{
@@ -61,8 +120,7 @@ AppendClass TaskBox
 			if res == monNr
 			{
 				ResetEvent(monitorEv)
-				printf("hello\n")
-				doMonitor()
+				checkMonitor()
 			}
 		}
 	}
