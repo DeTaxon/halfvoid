@@ -18,8 +18,8 @@ BigObjectSet := !(BigObject x) -> void
 main := !(int argc, char^^ argv) -> int
 {	
 
-	TMonitor(".",true,x ==> {
-		printf("changed %s\n",x)
+	TMonitor(".",M_CREATED + M_DELETED + M_CHANGED,true,(x,m) ==> {
+		printf("changed %s %i\n",x,m)
 	})
 	while(true)
 	{

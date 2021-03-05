@@ -8,14 +8,6 @@ inotify_init := !() -> int declare
 inotify_add_watch := !(int fd,char^ pat,int mask) -> int declare
 read := !(int fd,void^ dat,size_t sizeToRead) -> s64 declare
 
-inotify_event := class
-{
-	wd := int
-	mask := u32
-	cookie := u32
-	len := u32
-	name := u8[1]
-}
 
 eventfd := !(u64 initVal,int flags) -> int declare
 
@@ -62,9 +54,9 @@ ucontextStartTask := !(void^ fiberData) -> void
 	CurrentTaskBox.switchToMain()
 }
 
-TMonitor := !(char^ pathName,bool recursive,!(char^)&-> void callb) -> void
+TMonitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
 {
-	CurrentTaskBox.Monitor(pathName,recursive,callb)
+	CurrentTaskBox.Monitor(pathName,modes,recursive,callb)
 }
 AwaitWork := !(!()&->void lambd) -> void
 {
@@ -100,6 +92,12 @@ TaskKeepStackData := !() -> void
 	assert(CurrentTaskBox != null)
 	CurrentTaskBox.TaskKeepStackData()
 }
+
+M_CREATED := 1
+M_DELETED := 2
+M_CHANGED := 4
+
+MonitorCallback := type !(char^,int)&-> void
 
 TaskBox := class
 {
@@ -145,11 +143,11 @@ TaskBox := class
 	{
 		CurrentTask?.keepStack = true
 	}
-	monitorsToAdd := List.{Tuple.{char^,!(char^)&->void,bool}} ; $keep
-	Monitor := !(char^ pathName,bool recursive,!(char^)&-> void callb) -> void
+	monitorsToAdd := List.{Tuple.{char^,MonitorCallback,int,bool}} ; $keep
+	Monitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
 	{
 		itMutex.Lock()
-		monitorsToAdd.Emplace(pathName,callb,recursive)
+		monitorsToAdd.Emplace(pathName,callb,modes,recursive)
 		itMutex.Unlock()
 		notifyMain()
 	}
@@ -288,7 +286,7 @@ TaskBox := class
 				while monitorsToAdd.Size() != 0
 				{
 					frst := ref monitorsToAdd.Front()
-					addMonitor(frst.0,frst.1,frst.2)
+					addMonitor(frst.0,frst.1,frst.2,frst.3)
 					monitorsToAdd.Pop()
 				}				
 			}

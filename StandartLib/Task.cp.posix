@@ -1,3 +1,17 @@
+IN_CHANGE := 2
+IN_CLOSE_WRITE := 8
+IN_CREATE := 256 
+IN_DELETE := 512
+
+inotify_event := class
+{
+	wd := int
+	mask := u32
+	cookie := u32
+	len := u32
+	name := u8[1]
+}
+
 AppendClass TaskBox
 {
 	eventFd := int
@@ -24,26 +38,19 @@ AppendClass TaskBox
 	initedMonitor := bool
 	monitorBuffer := u8[]
 	monitorFd := int
-	monitorWds := AVLMap.{int,Tuple.{!(char^)&->void,char^}}
+	monitorWds := AVLMap.{int,Tuple.{MonitorCallback,char^,int}}
 	initMonitor := !() -> void
 	{
 		initedMonitor = true
 		pollData.Create().0 = 2
 
-		if $posix
-		{
-			monitorBuffer = new u8[4096]
-			monitorFd = inotify_init()
-			setData := ref posixPollArr.Create()
-			setData.fd = monitorFd
-			setData.events = 0x01
-			newPoll := ref pollData.Create()
-			newPoll.0 = 2
-		}
-		if $win32
-		{
-			
-		}
+		monitorBuffer = new u8[4096]
+		monitorFd = inotify_init()
+		setData := ref posixPollArr.Create()
+		setData.fd = monitorFd
+		setData.events = 0x01
+		newPoll := ref pollData.Create()
+		newPoll.0 = 2
 	}
 	checkMonitor := !() -> void
 	{
@@ -56,15 +63,28 @@ AppendClass TaskBox
 				nowMon := ref monitorWds[asStruct.wd]
 				itLambd := nowMon.0
 				newName := (""sbt + nowMon.1 + "/" + asStruct.name[0]&)->{char^}
-				itLambd(newName)
+				if (asStruct.mask and_b nowMon.2 ) != 0
+				{
+					newMode := 0
+					if (asStruct.mask and_b IN_CHANGE) != 0 newMode += M_CHANGED
+					if (asStruct.mask and_b IN_CREATE) != 0 newMode += M_CREATED
+					if (asStruct.mask and_b IN_DELETE) != 0 newMode += M_DELETED
+					itLambd(newName,newMode)
+				}
 			}
 		}
 	}
-	addMonitor := !(char^ pathName,!(char^)&->void callb,bool isRec) -> void
+	addMonitor := !(char^ pathName,MonitorCallback callb,int modes,bool isRec) -> void
 	{
 		if not initedMonitor initMonitor()
 
 		pathAdd := List.{char^}() ; $temp $keep
+
+
+		watchMode := 0
+		if modes and_b M_CHANGED watchMode += IN_CHANGE
+		if modes and_b M_CREATED watchMode += IN_CREATE
+		if modes and_b M_DELETED watchMode += IN_DELETE
 
 		pathAdd << pathName
 
@@ -72,12 +92,13 @@ AppendClass TaskBox
 		{	
 			nowPath := pathAdd.Pop()
 
-			wd := inotify_add_watch(monitorFd,nowPath,8 + 255)
+			wd := inotify_add_watch(monitorFd,nowPath,watchMode)
 			if wd >= 0
 			{
 				setWds := ref monitorWds[wd]
 				setWds.0 = callb
 				setWds.1 = StrCopy(nowPath)
+				setWds.2 = watchMode
 				if isRec
 				{
 					for subFolder : Path(nowPath)
@@ -115,14 +136,14 @@ AppendClass TaskBox
 		{
 			if itFd.revents != 0
 			{
-			switch extra.0
-			{
-				case 1
-					toRd := u64
-					read(eventFd,toRd&,8)
-				case 2
-					checkMonitor()
-			}
+				switch extra.0
+				{
+					case 1
+						toRd := u64
+						read(eventFd,toRd&,8)
+					case 2
+						checkMonitor()
+				}
 			}
 		}
 	}
