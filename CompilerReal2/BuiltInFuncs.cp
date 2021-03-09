@@ -1408,6 +1408,7 @@ CreateBuiltIns := !() -> void
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float #d\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = ptrtoint i8* #1 to i64 #d\n"))
+	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GetType("size_t"),false,GTypeVoidP,"#0 = inttoptr i64 #1 to i8* #d\n"))
 
 
 	AddBuiltInFunc(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1 #d\n"))

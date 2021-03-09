@@ -1,30 +1,16 @@
 
-
-BigObject := class
-{
-	vals := double
-	this := !() -> void
-	{
-		vals = 3
-		printf("hm\n")
-	}
-}
-BigObjectSet := !(BigObject x) -> void
-{
-	printf("x %f\n",x.vals)
-}
-
-
 main := !(int argc, char^^ argv) -> int
 {	
 
-	TMonitor(".",M_CREATED + M_DELETED + M_CHANGED,true,(x,m) ==> {
-		printf("changed %s %i\n",x,m)
-	})
-	while(true)
-	{
-		TSleep(1)
-	}
+	k := 78
+	tst := Rel.{int}
+	tst2 := Rel.{int}
+	y := 67
+	tst = k&
+	tst2 = y&
+	printf("heh %i %i %i\n",k,tst^,tst.val)
+	printf("heh %i %i %i\n",y,tst2^,tst2.val)
+	
 	return 0	
 
 	try
