@@ -4,6 +4,8 @@ Rel := class .{@T}
 	val := int
 	"->{}" := !() .{T^} -> T^
 	{
+		if val == 0 return null
+
 		res := this&->{void^}->{size_t}
 		if val > 0
 		{
@@ -19,6 +21,7 @@ Rel := class .{@T}
 	}
 	"=" := !(T^ newVal) -> void
 	{
+		if newVal == null val = 0
 		val1 := newVal->{void^}->{size_t}
 		val2 := this&->{void^}->{size_t}
 		if val1 > val2

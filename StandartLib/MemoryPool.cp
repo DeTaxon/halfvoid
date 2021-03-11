@@ -17,9 +17,6 @@ AllocOnlyMP := class .{@PageSize,@CleanResult} extend IMemoryPool
 	}
 	GetMem := virtual !(size_t size, int align,int prefix) -> void^
 	{
-		//preRet :=  malloc(size)
-		//if CleanResult memset(preRet,0,size)
-		//return preRet
 		if size > PageSize
 		{
 			preRe := malloc(size)

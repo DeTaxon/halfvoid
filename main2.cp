@@ -7,9 +7,12 @@ main := !(int argc, char^^ argv) -> int
 	tst2 := Rel.{int}
 	y := 67
 	tst = k&
-	tst2 = y&
+	tst2 = null
 	printf("heh %i %i %i\n",k,tst^,tst.val)
-	printf("heh %i %i %i\n",y,tst2^,tst2.val)
+	if tst2 == null
+	{
+		printf("yep\n")
+	}
 	
 	return 0	
 
