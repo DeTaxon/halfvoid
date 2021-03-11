@@ -1,3 +1,4 @@
+//TODO: reverse index
 GetBoxFor := !(Object^ dat) -> BoxFor^
 {
 

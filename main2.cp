@@ -1,18 +1,30 @@
 
-main := !(int argc, char^^ argv) -> int
-{	
 
-	k := 78
-	tst := Rel.{int}
-	tst2 := Rel.{int}
-	y := 67
-	tst = k&
-	tst2 = null
-	printf("heh %i %i %i\n",k,tst^,tst.val)
-	if tst2 == null
-	{
-		printf("yep\n")
+main := !(int argc, char^^ argv) -> int
+{
+	a := 1
+	b := 2
+	c := 3
+	lfunc := () ==> [b,c&] {
+		a = 10
+		b = 20
+		c = 30
 	}
+	lfunc.Capture()()
+	printf("%i %i %i\n",a,b,c)
+	return 0
+
+	//k := 78
+	//tst := Rel.{int}
+	//tst2 := Rel.{int}
+	//y := 67
+	//tst = k&
+	//tst2 = null
+	//printf("heh %i %i %i\n",k,tst^,tst.val)
+	//if tst2 == null
+	//{
+	//	printf("yep\n")
+	//}
 	
 	return 0	
 
