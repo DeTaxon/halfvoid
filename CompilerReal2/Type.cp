@@ -1,4 +1,4 @@
-TypesPool := AllocOnlyMP.{16000000,true}
+TypesPool := IMemoryPool^
 
 Type := class {
 	Id := int
@@ -1259,6 +1259,7 @@ GetType := !(string Name) -> Type^
 
 CreateStandartTypes := !() -> void
 {	
+	TypesPool = new AllocOnly2G()
 	//u
 	TypeTable[0] = new TypeStandart("i8" ,"!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)	
 	TypeTable[1] = new TypeStandart("i16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)	
