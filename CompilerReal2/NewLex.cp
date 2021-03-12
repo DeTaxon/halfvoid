@@ -40,14 +40,14 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> O
 		tok := StringSpan(ptr,c)
 
 		ns := null->{Object^}
-		if a >= 40
-		{
-			ns = new ObjSymbol(GetConstString(tok),a) 
-		}
 		if a != 20{
 			if itLine == null {
 				itLine = new ObjLine()
 			}
+		}
+		if a >= 40
+		{
+			ns = new ObjSymbol(GetConstString(tok),a) 
 		}
 		if a == 1 {
 			switch tok

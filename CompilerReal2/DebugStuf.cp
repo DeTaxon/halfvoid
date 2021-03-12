@@ -11,7 +11,12 @@ DebugPretty := List.{char^}
 
 CreateDebugCall := !(Object^ itm) -> int
 {
-	if itm.Line == null return -1
+	if itm.Line == null
+	{
+		//printf("cant create\n")
+		//itm.Print(0)
+		return -1
+	}
 	if not DebugMode return -1
 
 	//itr := itm

@@ -1,17 +1,11 @@
 
-
 main := !(int argc, char^^ argv) -> int
-{
-	a := 1
-	b := 2
-	c := 3
-	lfunc := () ==> [b,c&] {
-		a = 10
-		b = 20
-		c = 30
+{	
+	for i : ![2,5,7,1] 
+	    , j : 6..10 ; $reverse
+	{
+		printf("%i %i\n",i,j)
 	}
-	lfunc.Capture()()
-	printf("%i %i %i\n",a,b,c)
 	return 0
 
 	//k := 78

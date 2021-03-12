@@ -14,33 +14,49 @@
 IntIter := class 
 {
 	start,end := int
-	this := !(int a,int b) -> void
+	this := !(int a,int b) .{} -> void
 	{	
-		start = a
-		end = b
+		if $reverse
+		{
+			start = b
+			end = a
+		}else{
+			start = a
+			end = b
+		}
 	}
 	"^" := !() -> int
 	{
 		return start
 	}
-	Inc := !() -> void
+	Inc := !() .{} -> void
 	{
-		start += 1
+		if $reverse
+		{
+			start -= 1
+		}else{
+			start += 1
+		}
 	}
-	IsEnd := !() -> bool
+	IsEnd := !() .{} -> bool
 	{
-		return start >= end
+		if $reverse
+		{
+			return start < end
+		}else{
+			return start >= end
+		}
 	}
 	//IsInvalid := !() -> bool
 	//{
 	//	return false
 	//}
 }
-"~For" := !(int x) -> IntIter
+"~For" := !(int x) .{} -> IntIter
 {
 	return IntIter(0,x)
 }
-"~For" := !(range x) -> IntIter
+"~For" := !(range x)  .{} -> IntIter
 {
 	return IntIter(x->begin,x->end + 1)
 }
@@ -55,7 +71,15 @@ FixedArrayIter := class .{@Type}
 		size = si		
 		nowPos = 0
 	}
-	"^" := !() -> ref Type	{ return ptr[nowPos] }
+	"^" := !() .{} -> ref Type	
+	{ 
+		if $reverse
+		{
+			return ptr[size - nowPos - 1] 
+		}else{
+			return ptr[nowPos] 
+		}
+	}
 	Inc := !() -> void	{ nowPos += 1 }
 	IsEnd := !() -> bool	{ return nowPos >= size }
 	Ind := !() -> int { return nowPos }

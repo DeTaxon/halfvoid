@@ -120,6 +120,7 @@ BoxExc := !(Object^ item, Type^ toType, bool isRef) -> Object^
 	item.Right = null
 	item.Left = null
 	Call := MakeSimpleCall(Exc,item)
+	Call.Line = item.Line
 
 	Call.Left = oldLeft
 	Call.Up = oldUp

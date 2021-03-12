@@ -1,4 +1,3 @@
-//TODO: reverse index
 GetBoxFor := !(Object^ dat) -> BoxFor^
 {
 
@@ -155,7 +154,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					someBox := new FuncInputBox() ; $temp
 					someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
-					if attrs != null for q,k : attrs^
+					if Down.Right.Line != null for q,k : Down.Right.Line.itAttrs
 					{
 						someBox.itAttrs[k] = q
 					}
@@ -182,7 +181,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					tmp := Down.Right
 					PopOutNode(tmp)
 					preSet := MakeSimpleCall(func,tmp)
-					preSet.Line = Line
+					preSet.Line = tmp.Line
 					preSet.Up = this&
 					Downs.Push(preSet)
 				}
@@ -219,7 +218,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					emptyBox := new FuncInputBox() ; $temp
 					emptyBox.itPars.Emplace(itType,true)
-					if attrs != null for q,k : attrs^
+					if iter.Line != null for q,k : iter.Line.itAttrs
 					{
 						emptyBox.itAttrs[k] = q
 					}

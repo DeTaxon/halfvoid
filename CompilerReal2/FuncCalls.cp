@@ -41,7 +41,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 
 		if someF != null
 		{
-			return MakeSimpleCall(someF,null->{Object^})
+			return MakeSimpleCall2(someF,null->{Object^},iter)
 		}
 	}
 
@@ -75,7 +75,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			if f != null
 			{
 				TrimCommas(iter.Right)
-				return MakeSimpleCall(f,iter.Right.Down)
+				return MakeSimpleCall2(f,iter.Right.Down,iter)
 			}
 		}
 		if iter.Right.GetValue() == "{}" or iter.Right.GetValue() == "{d}"
@@ -300,7 +300,9 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				iter = iter.Left
 				iter.Right.Left = null
 				iter.Right = null
-				return MakeSimpleCall(func,iter)
+				fCall := MakeSimpleCall(func,iter)
+				fCall.Line = iter.Line
+				return fCall
 			}
 			if iter.Right is ObjInt and iter.Right.Right == null
 			{
@@ -798,6 +800,13 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 }
 
 
+MakeSimpleCall2 := !(BoxFunc^ func, Object^ pars,Object^ lineObj) -> BaseFuncCall^
+{
+	fCall := MakeSimpleCall(func,pars)
+	if lineObj != null
+		fCall.Line = lineObj.Line
+	return fCall
+}
 MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> BaseFuncCall^
 {
 	return func.GenerateCall(pars)?
