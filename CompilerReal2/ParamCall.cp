@@ -44,6 +44,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 				{
 					preRes := new ParamNaturalCall(dynCast.MyStr,may.Down)
 					preRes.inhAttrs = may.inhAttrs
+					preRes.Line = ob.Line
 					return preRes
 				}
 			}else
@@ -53,7 +54,9 @@ ParseParamCall := !(Object^ ob) -> Object^
 			}
 			if may.IsConst
 			{
-				return may.Clone()
+				newConst := may.Clone()
+				newConst.Line = ob.Line
+				return newConst
 			}
 		}else{	
 			ItPars := Queue.{ObjParam^}()

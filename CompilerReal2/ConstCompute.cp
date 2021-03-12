@@ -128,7 +128,9 @@ TryCompute := !(Object^ ob) -> Object^
 		if typ == null or Sutf.Size() == 0 return null
 		if typ == GTypeRange typ = GTypeInt
 		if typ is TypeArr and typ.Base == GTypeChar typ = GTypeString
-		return new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray()) ; $temp
+		preRet := new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray()) ; $temp
+		preRet.Line = ob.Down.Line
+		return preRet
 	}
 
 	return null

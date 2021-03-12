@@ -182,6 +182,10 @@ BoxForOldFashionMulti := class extend BoxFor
 					PopOutNode(tmp)
 					preSet := MakeSimpleCall(func,tmp)
 					preSet.Line = tmp.Line
+					if tmp.Line == null
+					{
+						tmp.Up.Print(0)
+					}
 					preSet.Up = this&
 					Downs.Push(preSet)
 				}

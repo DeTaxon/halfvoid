@@ -529,7 +529,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			{
 				iter = iter.Left
 				PopOutNode(iter.Right)
-				return OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up,true)
+				return OperFunc(oper,iter.Up.Down,iter) //OneCall(oper,iter.Up,true)
 
 			}else
 			{
@@ -568,12 +568,13 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				} 
 				if iter.GetType() != null
 				{
+					operNode := iter.Left
 					PopOutNode(iter.Left)
 					if oper == "in" and iter.Up != null
 					{
 						ForInSwapNodes(iter.Left)
 					}
-					return  OperFunc(oper,iter.Up.Down) //OneCall(oper,iter.Up)
+					return  OperFunc(oper,iter.Up.Down,operNode) //OneCall(oper,iter.Up)
 				}
 				return null
 			}
@@ -583,7 +584,10 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	{
 		if iter.GetValue() == "delete"
 		{
-			return new DeleteCall(iter.Right)
+			delCall := new DeleteCall(iter.Right)
+			delCall.Line = iter.Line
+			assert(delCall.Line != null)
+			return delCall
 		}
 		if iter.GetValue() == "new"
 		{
@@ -609,13 +613,14 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 					if func != null
 					{
 						irr.Up.Down = irr
-						itF := MakeSimpleCall(func,irr)
+						itF := MakeSimpleCall2(func,irr,iter)
 						return itF
 					}
 				}
 				if iter.Right.Right.GetValue() == "()" 
 				{
 					preRet :=  new NewCallOne(useType,iter.Right.Right) 
+					preRet.Line = iter.Line
 					preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
 					return preRet
 				}
@@ -623,6 +628,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 				//return new NewCall(useType,iter.Right.Right)
 			}else{
 				preRet := new NewCallOne(useType,null->{Object^})
+				preRet.Line = iter.Line
 				preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
 				return preRet
 			}
@@ -653,49 +659,52 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	}
 	return null
 }
-OperFunc := !(string oper,Object^ pars) -> Object^
+OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 {
+	assert(operNode != null)
 	preRet := OneCall(oper,pars.Up,null->{Object^},true)
-
-	if preRet == null
+	
+	if preRet != null
 	{
-		if oper in !["<",">","<=",">=","==","!="]
-		{
-			preRet = OneCall("<=>",pars.Up,null->{Object^},true)
-			if preRet != null 
-			{
-				spFunc := GetSpaceTransformer(oper)
-				return MakeSimpleCall(spFunc,preRet)
-			}
-		}
-		if pars.GetType() != null
-		{
-			if pars.GetType() is TypeClass
-			{
-				asNeedPre := pars.GetType()
-				asNeed := asNeedPre->{TypeClass^}
-				cls := asNeed.ToClass
-
-				oBox := new FuncInputBox()  ; $temp
-				FillAttrs(oBox^,pars)
-
-				
-				for iter : pars
-				{
-					oBox.itPars.Emplace(iter.GetType(),iter.IsRef())
-				}
-				if pars is MetaItemWrapper
-				{
-					oBox.itMetaPtr = pars->{MetaItemWrapper^}.ptrToBlock
-				}
-
-				newPre := cls.GetFunc(oper,oBox^,true)
-				if newPre == null return null
-				return MakeSimpleCall(newPre,pars)
-			}
-		}
-	}else{
+		preRet.Line = operNode.Line
 		return preRet
+	}
+
+	if oper in !["<",">","<=",">=","==","!="]
+	{
+		preRet = OneCall("<=>",pars.Up,null->{Object^},true)
+		if preRet != null 
+		{
+			preRet.Line = operNode.Line
+			spFunc := GetSpaceTransformer(oper)
+			return MakeSimpleCall(spFunc,preRet)
+		}
+	}
+	if pars.GetType() != null
+	{
+		if pars.GetType() is TypeClass
+		{
+			asNeedPre := pars.GetType()
+			asNeed := asNeedPre->{TypeClass^}
+			cls := asNeed.ToClass
+
+			oBox := new FuncInputBox()  ; $temp
+			FillAttrs(oBox^,pars)
+
+			
+			for iter : pars
+			{
+				oBox.itPars.Emplace(iter.GetType(),iter.IsRef())
+			}
+			if pars is MetaItemWrapper
+			{
+				oBox.itMetaPtr = pars->{MetaItemWrapper^}.ptrToBlock
+			}
+
+			newPre := cls.GetFunc(oper,oBox^,true)
+			if newPre == null return null
+			return MakeSimpleCall(newPre,pars)
+		}
 	}
 	return null
 }
