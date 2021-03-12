@@ -108,6 +108,7 @@ BoxSwitch := class extend Object
 							EmitError("can not compare case object\n")
 						}else{
 							newCall := new ParamNaturalCall("",itemCall->{Object^})
+							newCall.Line = iter.Line
 
 							newCall.Right = iter.Down
 							iter.Down.Left = newCall

@@ -135,7 +135,12 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 			}
 
 			func := asNeed4.GetFunc("this",box^,true)
-			if func != null return new ConstructCall(func,iter.Right.Down)
+			if func != null 
+			{
+				preRet := new ConstructCall(func,iter.Right.Down)
+				preRet.Line = iter.Line
+				return preRet
+			}
 		}
 
 
@@ -677,7 +682,7 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 		{
 			preRet.Line = operNode.Line
 			spFunc := GetSpaceTransformer(oper)
-			return MakeSimpleCall(spFunc,preRet)
+			return MakeSimpleCall2(spFunc,preRet,operNode)
 		}
 	}
 	if pars.GetType() != null
@@ -703,7 +708,7 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 
 			newPre := cls.GetFunc(oper,oBox^,true)
 			if newPre == null return null
-			return MakeSimpleCall(newPre,pars)
+			return MakeSimpleCall2(newPre,pars,operNode)
 		}
 	}
 	return null
@@ -1935,7 +1940,9 @@ ConstructCall := class extend NaturalCall
 			{
 				rights := Down.Right
 				itm := GetItem(ReturnName,this&)
-				ReplaceNode(Down,new ParamNaturalCall("this",itm))
+				parCall := new ParamNaturalCall("this",itm)
+				parCall.Line = Line
+				ReplaceNode(Down,parCall)
 				TName = StrCopy("%"sbt + ReturnName)
 			}else
 			{

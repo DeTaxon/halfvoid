@@ -217,6 +217,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					ItId2 := asNeed2.GetItAllocId()
 
 					ForItem := new LocalParam(itType,ItId2)
+					ForItem.Line = iter.Line
 					
 					asNeed := ((itType->{TypeClass^}).ToClass)
 
@@ -242,10 +243,12 @@ BoxForOldFashionMulti := class extend BoxFor
 
 
 					test := new ParamNaturalCall("",ForItem->{Object^})
+					test.Line = iter.Line
 					UnrefFuncs[i] = MakeSimpleCall(UnrefFuncP,test)
 					UnrefFuncs[i].Line = this.Line
 					UnrefFuncs[i].Up = this&
 					test = new ParamNaturalCall("",ForItem->{Object^})
+					test.Line = iter.Line
 					IncFuncs[i] = MakeSimpleCall(IncFuncP,test)
 					IncFuncs[i].Line = this.Line
 					IncFuncs[i].Up = this&
@@ -253,6 +256,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					if IsInvP != null
 					{
 						test = new ParamNaturalCall("",ForItem->{Object^})
+						test.Line = iter.Line
 						IsInvalids[i] = MakeSimpleCall(IsInvP,test)
 						IsInvalids[i].Line = this.Line
 						IsInvalids[i].Up = this&
@@ -262,6 +266,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					{
 						IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,true)
 						test = new ParamNaturalCall("",ForItem->{Object^})
+						test.Line = iter.Line
 						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
 						IsEndFunc.Line = this.Line
 						IsEndFunc.Up = this&
