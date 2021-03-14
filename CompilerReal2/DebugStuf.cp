@@ -14,7 +14,7 @@ CreateDebugCall := !(Object^ itm) -> int
 	if itm.Line == null
 	{
 		//printf("cant create\n")
-		//itm.Up?.Print(0)
+		//itm.Print(0)
 		return -1
 	}
 	if not DebugMode return -1

@@ -83,8 +83,13 @@ BoxForOldFashionMulti := class extend BoxFor
 				continue
 			mayb := TryCompute(it)
 			if mayb != null
+			{
+				oldLine := it.Line
 				it = mayb.Clone()
+				it.Line = oldLine
+			}
 		}
+
 
 		Down = itBlock
 		Down.Left = null

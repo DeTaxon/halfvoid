@@ -896,6 +896,10 @@ BaseFuncCall := class extend ObjResult
 				
 					if itLiner != null lnr.EmitError(msg + "\n") else assert(false)
 				}else{
+					//if preRet.Line == null 
+					//{
+					//	Print(0)
+					//}
 					iter = preRet
 				}
 			}else
