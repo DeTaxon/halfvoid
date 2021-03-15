@@ -74,7 +74,7 @@ TaskPrint2 := !(sfile f) -> void
 	f << "%TaskPtr = bitcast i8* %ptr to %TaskStruct*\n"
 	for it,i : taskParams
 	{
-		if it is TypeClass //TODO; if array of array ... of classes
+		if it is TypeClass
 		{
 			clId := it->{TypeClass^}.ToClass.ClassId
 			f << "%obj"<<i<<" = getelementptr %TaskStruct, %TaskStruct* %TaskPtr, i32 0, i32 " << i << "\n"
