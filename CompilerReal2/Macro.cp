@@ -161,6 +161,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				toDownd->{BoxSwitch^}.addedQ.Push(qObject)
 				WorkBag.Push(qObject,State_Start)
 			}
+			toReturn := itUp
+			if toDownd == itUp{
+				toReturn = qObject
+			}
 			if toDownd.Up? is QAtleastBox
 			{
 				prev2 := toDownd
@@ -178,7 +182,9 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				{
 					qObject.jmpLabel = itr2->{QAtleastBox^}.onFalse
 				}else{
-					assert(false) //TODO: x ?? y?  , all line must be skipped
+					jLand := new QJumpLand()
+					toReturn = UNext(itUp,jLand,1)
+					qObject.jmpLabel = jLand.GetEndLabel()
 				}
 
 				qObject.passValue = true
@@ -191,10 +197,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			qObject.Down.SetUp(qObject)
 			toDownd.Left = qTree
 
-			if toDownd == itUp{
-				return qObject
-			}
-			return itUp
+			return toReturn
 		}
 		if tr.Down.Right.GetValue() == "..."
 		{

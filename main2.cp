@@ -1,11 +1,9 @@
 
 main := !(int argc, char^^ argv) -> int
 {	
-	for i : ![2,5,7,1] 
-	    , j : 6..10 ; $reverse
-	{
-		printf("%i %i\n",i,j)
-	}
+	ptr := int^()
+	ptr2 := int^()
+	printf("heh %i\n",ptr2?^ ?? ptr?^)
 	return 0
 
 	//k := 78

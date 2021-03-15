@@ -14,6 +14,31 @@ IsQBox := !(Object^ toCmp) -> bool
 	return false
 }
 
+QJumpLand := class extend Object
+{
+	endLabel := BoxLabel^
+	this := !() -> void
+	{
+		endLabel = new BoxLabelAnon()
+	}
+	GetEndLabel := virtual !() -> BoxLabel^
+	{
+		return endLabel
+	}
+	PrintInBlock := virtual !(sfile f) -> void { 
+		Down.PrintInBlock(f)
+		f << "br label %" << endLabel.GetLabel() << "\n"
+		endLabel.PrintLabel(f)
+	}
+	PrintPre := virtual !(sfile f) -> void { 
+		Down.PrintPre(f) 
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		Down.DoTheWork(pri) //not ok but it's actualy ok
+	}
+}
+
 QAtleastBox := class extend ControlFlowBox 
 {
 	onFalse := BoxLabel^
