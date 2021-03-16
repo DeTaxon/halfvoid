@@ -1,5 +1,7 @@
 
 clibModule := CLibModule
+
+emitTree := false
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -27,7 +29,6 @@ main := !(int argc,char^^ argv) -> int
 
 	dirChecks := List.{Tuple.{char^,int}}()
 
-	emitTree := false
 	disableTask := false
 
 	Modules.Push(clibModule&)
@@ -349,6 +350,19 @@ main := !(int argc,char^^ argv) -> int
 	for PostFuncs it.PostCreate()
 
 	fil := TFile(outputFile,"w")
+	//fil := TEchoStream()
+	WriteCodeData(fil&->{TIOStream^}^)
+	fil.Close()
+	//printf("wut %s\n",fil.Str())
+
+	//if not ErrorLog.Empty() return -1
+	printf("Created func types %i\n",GetFuncTypeCount())
+	//PrintMemUse()
+	return 0
+}
+
+WriteCodeData := !(TIOStream fil) -> void
+{
 	fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 	fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
@@ -379,44 +393,39 @@ main := !(int argc,char^^ argv) -> int
 	fil << "declare void @llvm.va_start(i8* %a)\n"
 	fil << "declare void @llvm.va_end(i8* %a)\n"
 	fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
-	PrintLambdaGlobal(fil&->{TIOStream^}^)
-	StrContainer.PrintGlobal(fil&->{TIOStream^}^)
-	GlobalDataBuiltins[^].PrintGlobal(fil&->{TIOStream^}^)
-	TaskPrint(fil&->{TIOStream^}^)
+	PrintLambdaGlobal(fil)
+	StrContainer.PrintGlobal(fil)
+	GlobalDataBuiltins[^].PrintGlobal(fil)
+	TaskPrint(fil)
 	//nFunc.PrintGlobal(fil)
 
-	Classes[^].PrintStruct(fil&->{TIOStream^}^)
-	PrintTuples(fil&->{TIOStream^}^)
+	Classes[^].PrintStruct(fil)
+	PrintTuples(fil)
 	fil << GlobalStrs[^]
-	Modules[^].PrintGlobal(fil&->{TIOStream^}^)
-	PrintTuplesFuncs(fil&->{TIOStream^}^)
-	TaskPrint2(fil&->{TIOStream^}^)
+	Modules[^].PrintGlobal(fil)
+	PrintTuplesFuncs(fil)
+	TaskPrint2(fil)
 
 
 	for wutt : Files
 	{
 		FlushTempMemory()
 		if emitTree wutt.Print(0)
-		wutt.PrintGlobal(fil&->{TIOStream^}^)
+		wutt.PrintGlobal(fil)
 	}
 	for wutt : ZipFiles
 	{
 		FlushTempMemory()
 		if emitTree wutt.Print(0)
-		wutt.PrintGlobal(fil&->{TIOStream^}^)
+		wutt.PrintGlobal(fil)
 	}
 	if DebugMode
 	{
-		PrintDebugMeta(fil&->{TIOStream^}^)
-		PrintDebRefs(fil&->{TIOStream^}^)
+		PrintDebugMeta(fil)
+		PrintDebRefs(fil)
 	}
-	fil.Close()
-
-	//if not ErrorLog.Empty() return -1
-	printf("Created func types %i\n",GetFuncTypeCount())
-	//PrintMemUse()
-	return 0
 }
+
 
 workIter := int
 WorkWithBag := !(bool printW) -> void
