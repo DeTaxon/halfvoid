@@ -116,10 +116,6 @@ ObjInt := class extend ObjConst
 		PreRet.Line = Line
 		return PreRet
 	}
-	DoJIT := virtual !() -> void^
-	{
-		return jit_value_create_nint_constant(JITCFunc,GetJITType(ResultType),MyInt)
-	}
 	IsDataR := virtual true
 	IsBlockData := virtual true
 }
@@ -345,11 +341,6 @@ ObjStr := class extend ObjConst
 		PreRet := new ObjStr(MyStrId,justStr)
 		PreRet.Line = Line
 		return PreRet
-	}
-	DoJIT := virtual !() -> void^
-	{
-		stpf := jit_value_create_nint_constant->{!(void^,void^,void^)^->void^}
-		return stpf(JITCFunc,GetJITType(GTypeString),justStr)
 	}
 	IsDataR := virtual true
 	IsBlockData := virtual true

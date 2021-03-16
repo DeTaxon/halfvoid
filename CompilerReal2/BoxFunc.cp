@@ -1141,69 +1141,6 @@ BoxFuncBody := class extend BoxFunc
 		}
 	}
 
-	thisJITFunc := void^
-	DoJIT := virtual !()-> void^
-	{
-		//TODOJIT yield virtual params c_vargs t_vargs
-
-		if thisJITFunc != null 
-			return thisJITFunc
-
-		jitFunc := jit_function_create(jitCTX,GetJITType(GetType()))
-
-		thisJITFunc = jitFunc
-		JITFunc.Push(!{JITCFunc,JITCFuncH})
-		JITCFunc = jitFunc
-		JITCFuncH = this&
-
-		if MyFuncType.RetType != GTypeVoid and not IsRetComplex
-		{
-			preRes := void^()
-			toSet := void^()
-			RT := MyFuncType.RetType
-			if MyFuncType.RetRef
-			{
-				preRes = jit_value_create(jitFunc,GetJITType(RT.GetPoint()))
-			}else{
-				preRes = jit_value_create(jitFunc,GetJITType(RT))
-				if IsInt(RT) or IsBool(RT)
-				{
-					toSet = jit_value_create_nint_constant(jitFunc,GetJITType(RT),0)
-				}else
-				if IsFloat(RT)
-				{
-					toSet = jit_value_create_float32_constant(jitFunc,GetJITType(RT),0)
-				}else
-				if RT is TypePoint or RT is TypeFatArr
-				{
-					toSet = jit_value_create_nint_constant(jitFunc,GetJITType(RT),0)
-				}
-			}
-			jit_insn_store(jitFunc,preRes,toSet)
-			JITResultStack.PushFront(preRes)
-		}
-		ABox.DoJITStart()
-		for i : MyFuncType.ParsCount //JIT: ret complex
-		{
-			parVal := jit_value_get_param(jitFunc,i)
-			jit_insn_store_relative(jitFunc,ItParams[i].DoPointJIT(),0,parVal)
-		}
-
-		Down.DoJIT()
-
-		
-		if MyFuncType.RetType != GTypeVoid and not IsRetComplex
-		{
-			jit_insn_return(jitFunc,JITResultStack[0])
-			JITResultStack.Pop()
-		}
-		jit_function_compile(jitFunc)
-
-		JITCFunc = JITFunc[0].0
-		JITCFuncH = JITFunc[0].1
-		JITFunc.Pop()
-		return jitFunc
-	}
 }
 
 GetFuncBlock := !(Object^ to) -> BoxFunc^

@@ -1,5 +1,10 @@
 
 main := !(int argc, char^^ argv) -> int
+{
+	
+	return 0
+}
+main2 := !(int argc, char^^ argv) -> int
 {	
 	ptr := int^()
 	ptr2 := int^()

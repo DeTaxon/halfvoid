@@ -144,20 +144,6 @@ LocalParam := class extend MemParamCommon
 			}
 		//}
 	}
-	DoPointJIT := virtual !() -> void^
-	{
-		ab := JITCFuncH.GetABox()
-		if ab != null
-		{
-			return ab.JITValues[ab.ItemNrs[inAllocId]].1
-		}
-		assert(false)
-	}
-	DoJIT := virtual !() -> void^
-	{
-		ab := DoPointJIT()
-		return jit_insn_load_relative(JITCFunc,ab,0,GetJITType(ResultType))
-	}
 }
 GlobalParam := class extend MemParamCommon
 {
@@ -274,11 +260,6 @@ GlobalParam := class extend MemParamCommon
 		}else{
 			f << " " << Down.GetName() << "\n"
 		}
-	}
-	DoJIT := virtual !() -> void^
-	{
-		printf("hah global\n")
-		assert(false)
 	}
 }
 TaskLocalParam := class extend GlobalParam

@@ -1196,21 +1196,6 @@ NaturalCall := class extend SomeFuncCall
 			CheckReturn()
 		}
 	}
-	DoJIT := virtual !() -> void^
-	{
-		//TODOJIT: do_call
-
-		res := void^
-		if JITSpecialFunc(this&,res&)
-		{
-			return res
-		}
-	
-		ToCall.Print(0)
-		assert(false)
-
-		return null
-	}
 }
 
 PointFuncCall := class extend NaturalCall
@@ -1303,12 +1288,6 @@ AssemblerCall := class extend NaturalCall
 	GetType := virtual !() -> Type^
 	{
 		return FType.RetType
-	}
-	DoJIT := virtual !() -> void^
-	{
-		printf("it type %s\n",FType.GetName())
-		assert(false)
-		return null
 	}
 	UseCall := virtual !(sfile f) -> void
 	{
@@ -1486,10 +1465,6 @@ BuiltIn2Call := class extend BaseFuncCall
 	PrintPre := virtual !(sfile f) -> void
 	{
 		RealCall.PrintFunc(this&,f)
-	}
-	DoJIT := virtual !() -> void^
-	{
-		return RealCall.DoJIT(this&)
 	}
 }
 BuiltIn2CallRef := class extend BuiltIn2Call

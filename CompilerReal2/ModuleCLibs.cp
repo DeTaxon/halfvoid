@@ -278,7 +278,7 @@ CLibModule := class extend CompilerModule
 							break
 						}
 					}
-					assert(loaded) //TODOJIT: error check
+					assert(loaded)
 				}
 				return it.itLib.Get(name)
 			}

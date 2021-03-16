@@ -176,25 +176,6 @@ AllocBox := class
 			f << "\n"
 		}
 	}
-	JITValues := Tuple.{void^,void^}[]
-	DoJITStart := !() -> void
-	{
-		if ItemBag.Size() == 0
-			return void
-		if mustBeStruct
-		{
-			//TODOJIT inherited liveOnGlobal
-		}else{
-			//TODOJIT inherited liveOnGlobal
-
-			JITValues = new Tuple.{void^,void^}[ItemBag.Size()] ; $temp
-			for it,i :  ItemBag
-			{
-				JITValues[i].0 = jit_value_create(JITCFunc,GetJITType(it.1))
-				JITValues[i].1 = jit_insn_address_of(JITCFunc,JITValues[i].0)
-			}
-		}
-	}
 }
 
 GetAllocNR := !(Object^ Start,int id) -> int

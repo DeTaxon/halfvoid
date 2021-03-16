@@ -81,13 +81,6 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 		f << trg.Down.GetPointName()
 		f <<", i32 0, i32 " << usePos <<"\n"
 	}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		pos := GetFieldPos()
-		assert(pos != -1)
-		sp := jit_insn_address_of(JITCFunc,trg.Down.DoJIT())
-		ip := jit_insn_convert(JITCFunc,sp,GetJITType(GTypeInt),0)
-		return jit_insn_load(JITCFunc,ip)
-	}
 }
 
 

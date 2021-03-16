@@ -227,11 +227,4 @@ BoxReturn := class extend Object
 	{
 		return "~Return()"
 	}
-	DoJIT := virtual !() -> void^
-	{
-		//JIT store goto_end yield void
-
-		dwRes := Down.DoJIT()
-		jit_insn_store(JITCFunc,JITResultStack[0],dwRes)
-	}
 }

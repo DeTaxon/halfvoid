@@ -131,7 +131,6 @@ BoxIf := class extend Object
 			f << "br label %End" << MyId << "\n"
 			f << "End" << MyId << ":\n"
 		}
-
 	}
 	GetOutPath := virtual !(Object^ frm,int typ , int siz) -> BoxLabel^
 	{
@@ -144,43 +143,6 @@ BoxIf := class extend Object
 	GetValue := virtual !() -> string
 	{
 		return "~if()"
-	}
-	DoJIT := virtual !() -> void^
-	{
-		if ForceGo != 0
-		{
-			if ForceGo == 1
-			{
-				Down.Right.DoJIT()
-			}else{
-				if Down.Right.Right != null
-					Down.Right.Right.DoJIT()
-			}
-			return null
-		}
-
-		if Down.Right.Right == null
-		{
-			onFalse := jit_label_undefined
-			chk := Down.DoJIT()
-			jit_insn_branch_if_not(JITCFunc, chk, onFalse&);
-			Down.Right.DoJIT()
-			jit_insn_label(JITCFunc,onFalse&)
-
-		}else{
-			toEnd := jit_label_undefined
-			onFalse := jit_label_undefined
-			chk := Down.DoJIT()
-			jit_insn_branch_if_not(JITCFunc, chk, onFalse&);
-			Down.Right.DoJIT()
-			jit_insn_branch(JITCFunc,toEnd&)
-			jit_insn_label(JITCFunc,onFalse&)
-			Down.Right.Right.DoJIT()
-			jit_insn_label(JITCFunc,toEnd&)
-		}
-
-		
-		return null
 	}
 }
 
@@ -264,24 +226,6 @@ BoxWhile := class extend Object
 
 		}
 
-	}
-	DoJIT := virtual !() -> void^
-	{
-
-		if Down.Right.Right == null
-		{
-			onBeg := jit_label_undefined
-			onEnd := jit_label_undefined
-			
-			jit_insn_label(JITCFunc,onBeg&)
-			chk := Down.DoJIT()
-			jit_insn_branch_if_not(JITCFunc,chk,onEnd&)
-			Down.Right.DoJIT()
-			jit_insn_branch(JITCFunc,onBeg&)
-			jit_insn_label(JITCFunc,onEnd&)
-		}
-		
-		return null
 	}
 	callDeferStuf := bool
 	ApplyDeferUse := virtual !(int depth) -> void

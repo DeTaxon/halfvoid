@@ -60,9 +60,6 @@ ExcArrToPtr := class extend Object
 	{
 		return "%T"sbt + itId
 	}
-	DoJIT := virtual !() -> void^ {
-		return Down.DoJIT()
-	}
 	GetValue := virtual !() -> char^
 	{
 		return "x[]->x^"
@@ -96,9 +93,6 @@ BuiltIn2PtrExc := class extend BuiltIn2Func
 			f << MyFuncType.RetType.GetName()
 			f << "\n"
 		}
-	}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		assert(false)
 	}
 }
 

@@ -81,7 +81,6 @@ BuiltIn2Func := class extend BoxFunc
 		return new BuiltIn2Call(this&,pars)
 	}
 	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {}
 }
 
 BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
@@ -104,12 +103,6 @@ BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
 		f << " = "<<AddOp<< " "
 		trg.Down.Right.PrintUse(f)
 		f << " , "<<Zero<<"\n"
-	}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		par1 := trg.Down.DoPointJIT()
-		par2 := trg.Down.Right.DoJIT()
-		jit_insn_store_relative(JITCFunc,par1,0,par2)
-		return par1
 	}
 }
 BuiltIn2IntMath := class extend BuiltIn2Func
@@ -140,26 +133,6 @@ BuiltIn2IntMath := class extend BuiltIn2Func
 		}
 		f << "\n"
 	}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		par1 := trg.Down.DoJIT()
-		par2 := trg.Down.Right.DoJIT()
-		switch FuncName
-		{
-			case "+" return jit_insn_add(JITCFunc,par1,par2)
-			case "-" return jit_insn_sub(JITCFunc,par1,par2)
-			case "*" return jit_insn_mul(JITCFunc,par1,par2)
-			case "div" return jit_insn_div(JITCFunc,par1,par2)
-			case "/" return jit_insn_div(JITCFunc,par1,par2)
-			case "%" return jit_insn_rem(JITCFunc,par1,par2)
-			case "and_b" return jit_insn_and(JITCFunc,par1,par2)
-			case "or_b" return jit_insn_or(JITCFunc,par1,par2)
-			case "xor_b" return jit_insn_xor(JITCFunc,par1,par2)
-			case "==" return jit_insn_eq(JITCFunc,par1,par2)
-			case "!=" return jit_insn_ne(JITCFunc,par1,par2)
-			case void 
-				assert(false)
-		}
-	}
 }
 BuiltIn2Negative := class extend BuiltIn2Func
 {
@@ -187,9 +160,5 @@ BuiltIn2Negative := class extend BuiltIn2Func
 			}
 		}
 		f << "\n"
-	}
-	DoJIT := virtual !(BuiltIn2Call^ trg) -> void^ {
-		par1 := trg.Down.DoJIT()
-		return jit_insn_neg(JITCFunc,par1)
 	}
 }

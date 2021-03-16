@@ -72,8 +72,6 @@ main := !(int argc,char^^ argv) -> int
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
-		case "--jit"
-			JITMode = true
 		case "-g"
 			DebugMode = true	
 			cuId = GetNewId()
@@ -347,27 +345,6 @@ main := !(int argc,char^^ argv) -> int
 	//nFunc.Print(0)
 
 	printf("good to go\n")
-
-	if JITMode
-	{
-		printf("doing jit\n")
-		initJIT()
-		jit_context_build_start(jitCTX)
-		tst := mainFunc.Down.DoJIT()
-		jit_context_build_end(jitCTX)
-		z := 2546
-		h := 1337
-		res := 0
-		vals := void^[3]
-		vals[0] = z&
-		vals[1] = argv&
-		vals[2] = h&
-		signat := GetJITType(GetFuncType(![GTypeInt,GTypeVoidP,GTypeInt],
-			null,GTypeInt,false,true))
-		jit_function_apply_vararg(tst,signat,vals,res&)
-		printf("res %i\n",res)
-		return 0
-	}
 
 	for PostFuncs it.PostCreate()
 
