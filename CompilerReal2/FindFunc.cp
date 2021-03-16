@@ -265,6 +265,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 
 	if BuiltInTemplates[^].FuncName == name
 		Templs.Push(it) ; $temp
+	
 
 	func2 := GetBestFunc(itBox,Funcs,Templs)
 	return func2
@@ -280,14 +281,12 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 		return null
 	}
 
-	Priors := int^
-	if FoundC != 0 Priors = new int[FoundC] else Priors = null ; $temp
+	Priors := int^()
+	if FoundC != 0 Priors = new int[FoundC] ; $temp
 
-	templsPrior := int^
-	templsPrior = null
+	templsPrior := int^()
 	if not templs.Empty() 
 		templsPrior = new int[templs.Size()] ; $temp
-	else templsPrior = null
 
 	if FoundC != 0 and itBox.itPars.Size() == 0
 	{
@@ -348,7 +347,18 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
 			SomePrior := 0
 			if FuncTyp.ParsIsRef[i] 
 			{
-				if par.first != FuncTyp.Pars[i] SomePrior = 255
+				SomePrior = 255
+				if par.first == FuncTyp.Pars[i] 
+				{
+					SomePrior = CmpSame
+				}else if par.first? is TypeClass and FuncTyp.Pars[i]? is TypeClass
+				{
+					pF := par.first.GetPoint()
+					pT := FuncTyp.Pars[i].GetPoint()
+					tpF := TypeFight(pF,pT)
+					if tpF == pT
+						SomePrior = CmpLoseless
+				}
 			}else {
 				SomePrior = TypeCmp(par.first, FuncTyp.Pars[i])
 			}
@@ -379,6 +389,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	cmp2 := TypeCmp2(inType,funcType)
 	if cmp2 != 255
 		return cmp2
+
 
 	//if inType == GTypeFloat and funcType == GTypeDouble return CmpLoseless
 	//if inType == GTypeHalf and funcType == GTypeDouble return CmpLoseless

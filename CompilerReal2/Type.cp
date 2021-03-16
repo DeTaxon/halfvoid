@@ -1443,6 +1443,22 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 		if A.Base == B.Base
 			return A.Base.GetPoint()
 	}
+	if A is TypePoint and A.Base is TypeClass and B is TypePoint and B.Base is TypeClass
+	{
+		cl1 := A.Base->{TypeClass^}.ToClass
+		cl2 := B.Base->{TypeClass^}.ToClass
+		
+		//TODO: OnLeft brothers_case
+
+		cl1to2 := cl1
+		while cl1to2 != null
+		{
+			if cl1to2 == cl2
+				return B
+			cl1to2 = cl1to2.Parent
+		}
+
+	}
 	return null
 }
 
