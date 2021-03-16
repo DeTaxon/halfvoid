@@ -31,6 +31,7 @@
 
 		"printf" : "int,char^,...",
 		"sprintf" : "int,char^,char^,...",
+		"snprintf" : "int,char^,int,char^,...",
 
 		"time" : "int",
 		"srand" : "void,int",
