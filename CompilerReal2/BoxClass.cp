@@ -627,7 +627,7 @@ BoxClass := class extend Object
 	}
 	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
 	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
-	PrintStruct := virtual !(sfile f) -> void
+	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		if not vTable.Empty()
 		{
@@ -730,7 +730,7 @@ BoxClass := class extend Object
 			tuplSet = new SetTupleValueSimple(this&)
 	}
 
-	PrintCreatedFuncs := !(sfile f) -> void
+	PrintCreatedFuncs := !(TIOStream f) -> void
 	{
 		if tuplCmp != null
 			tuplCmp.PrintAsGlobal(f)
@@ -747,7 +747,7 @@ BoxClass := class extend Object
 		}
 	}
 
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
 		f << "{\n"
@@ -881,7 +881,7 @@ BoxClass := class extend Object
 
 		vTypes.Push(newItem)
 	}
-	ApplyConstants := !(sfile f,Object^ itm) -> void
+	ApplyConstants := !(TIOStream f,Object^ itm) -> void
 	{
 		if itm.GetType() is TypePoint
 		{
@@ -890,7 +890,7 @@ BoxClass := class extend Object
 			ApplyConstants(f,itm.GetPointName())
 		}
 	}
-	ApplyConstants := !(sfile f,string itm) -> void
+	ApplyConstants := !(TIOStream f,string itm) -> void
 	{
 		if TypeContainVTable(ClassType)
 		{

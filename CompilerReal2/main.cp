@@ -348,7 +348,7 @@ main := !(int argc,char^^ argv) -> int
 
 	for PostFuncs it.PostCreate()
 
-	fil := sfile(outputFile,"w")
+	fil := TFile(outputFile,"w")
 	fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 	fil << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
@@ -379,38 +379,38 @@ main := !(int argc,char^^ argv) -> int
 	fil << "declare void @llvm.va_start(i8* %a)\n"
 	fil << "declare void @llvm.va_end(i8* %a)\n"
 	fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
-	PrintLambdaGlobal(fil)
-	StrContainer.PrintGlobal(fil)
-	GlobalDataBuiltins[^].PrintGlobal(fil)
-	TaskPrint(fil)
+	PrintLambdaGlobal(fil&->{TIOStream^}^)
+	StrContainer.PrintGlobal(fil&->{TIOStream^}^)
+	GlobalDataBuiltins[^].PrintGlobal(fil&->{TIOStream^}^)
+	TaskPrint(fil&->{TIOStream^}^)
 	//nFunc.PrintGlobal(fil)
 
-	Classes[^].PrintStruct(fil)
-	PrintTuples(fil)
+	Classes[^].PrintStruct(fil&->{TIOStream^}^)
+	PrintTuples(fil&->{TIOStream^}^)
 	fil << GlobalStrs[^]
-	Modules[^].PrintGlobal(fil)
-	PrintTuplesFuncs(fil)
-	TaskPrint2(fil)
+	Modules[^].PrintGlobal(fil&->{TIOStream^}^)
+	PrintTuplesFuncs(fil&->{TIOStream^}^)
+	TaskPrint2(fil&->{TIOStream^}^)
 
 
 	for wutt : Files
 	{
 		FlushTempMemory()
 		if emitTree wutt.Print(0)
-		wutt.PrintGlobal(fil)
+		wutt.PrintGlobal(fil&->{TIOStream^}^)
 	}
 	for wutt : ZipFiles
 	{
 		FlushTempMemory()
 		if emitTree wutt.Print(0)
-		wutt.PrintGlobal(fil)
+		wutt.PrintGlobal(fil&->{TIOStream^}^)
 	}
 	if DebugMode
 	{
-		PrintDebugMeta(fil)
-		PrintDebRefs(fil)
+		PrintDebugMeta(fil&->{TIOStream^}^)
+		PrintDebRefs(fil&->{TIOStream^}^)
 	}
-	fil.close()
+	fil.Close()
 
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())

@@ -241,7 +241,7 @@ CLibModule := class extend CompilerModule
 	InitModule := virtual !() -> bool {
 		return true
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		for it : libs[^].objs
 		{

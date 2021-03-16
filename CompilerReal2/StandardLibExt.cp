@@ -14,7 +14,7 @@ RegMachineInit := !() -> void
 {
 	machineType = ParseType(new ObjIndent("WordDetermMachine"))
 }
-PrintRegMachines := !(sfile f) -> void
+PrintRegMachines := !(TIOStream f) -> void
 {
 	for it,key : regMachines
 	{

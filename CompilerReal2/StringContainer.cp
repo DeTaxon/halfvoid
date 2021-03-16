@@ -32,7 +32,7 @@ StringContainer := class
 		}
 		return ""
 	}
-	PrintGlobal := !(sfile f) -> void
+	PrintGlobal := !(TIOStream f) -> void
 	{
 		for v,key : Strs
 		{

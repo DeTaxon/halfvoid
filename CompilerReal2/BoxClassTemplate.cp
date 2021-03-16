@@ -132,7 +132,7 @@ BoxClassTemplate := class extend Object
 	{
 		return "!{}{...}"
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 	}
 }

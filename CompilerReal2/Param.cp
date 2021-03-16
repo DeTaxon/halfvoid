@@ -43,7 +43,7 @@ ObjParam := class extend Object
 	{
 		return MyStr
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if Down?.Right? is SLambda or Down?.Right? is SFuncLambda
 		{

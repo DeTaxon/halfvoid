@@ -54,7 +54,7 @@ ParseTry := !(Object^ itm) -> Object^
 //		ItId = GetNewId()
 //		Line = itm.Line
 //	}
-//	PrintInBlock := virtual !(sfile f) -> void
+//	PrintInBlock := virtual !(TIOStream f) -> void
 //	{
 //		f << "call void @" << expThrow.OutputName << "(i8* null)"
 //		if DebugMode
@@ -137,7 +137,7 @@ ObjTry := class extend Object
 		}
 		return null
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		newId := -1
 		if DebugMode

@@ -4,7 +4,7 @@ ControlFlowBox := class extend Object
 	{
 		return "?or??"
 	}
-	PrintInBlock := virtual !(sfile f) -> void { PrintPre(f)}
+	PrintInBlock := virtual !(TIOStream f) -> void { PrintPre(f)}
 }
 
 IsQBox := !(Object^ toCmp) -> bool
@@ -25,12 +25,12 @@ QJumpLand := class extend Object
 	{
 		return endLabel
 	}
-	PrintInBlock := virtual !(sfile f) -> void { 
+	PrintInBlock := virtual !(TIOStream f) -> void { 
 		Down.PrintInBlock(f)
 		f << "br label %" << endLabel.GetLabel() << "\n"
 		endLabel.PrintLabel(f)
 	}
-	PrintPre := virtual !(sfile f) -> void { 
+	PrintPre := virtual !(TIOStream f) -> void { 
 		Down.PrintPre(f) 
 	}
 	DoTheWork := virtual !(int pri) -> void
@@ -62,7 +62,7 @@ QAtleastBox := class extend ControlFlowBox
 	{
 		return Down.GetType()
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
@@ -91,7 +91,7 @@ QAtleastBox := class extend ControlFlowBox
 
 		f <<", ["<< Down.Right.GetPointName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		Down.GetType().PrintType(f)
 		f << "* %Value" << itId
@@ -100,7 +100,7 @@ QAtleastBox := class extend ControlFlowBox
 	{
 		return "%Value"sbt + itId
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
@@ -129,7 +129,7 @@ QAtleastBox := class extend ControlFlowBox
 
 		f <<", ["<< Down.Right.GetName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		Down.GetType().PrintType(f)
 		f << " %Value" << itId
@@ -170,7 +170,7 @@ QAtleastBox := class extend ControlFlowBox
 }
 QuestionBoxRef := class extend QuestionBox
 {
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		dwnType := Down.GetType()
 		DR := Down.Right
@@ -227,7 +227,7 @@ QuestionBox := class extend ControlFlowBox
 	{
 		return Down.Right.IsRef()
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		dwnType := Down.GetType()
 
@@ -261,7 +261,7 @@ QuestionBox := class extend ControlFlowBox
 			}
 		}
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		dwnType := Down.GetType()
 
@@ -379,7 +379,7 @@ QuestionBox := class extend ControlFlowBox
 			return Down.Right.GetType()
 		return GTypeBool 
 	}
-	PrintPointUse := virtual !(sfile f) -> void { 
+	PrintPointUse := virtual !(TIOStream f) -> void { 
 		if passValue {
 			Down.Right.PrintPointUse(f)
 		}else{
@@ -390,7 +390,7 @@ QuestionBox := class extend ControlFlowBox
 		if passValue return Down.Right.GetPointName()
 		return "%Res"sbt + itId 
 	}
-	PrintUse := virtual !(sfile f) -> void { 
+	PrintUse := virtual !(TIOStream f) -> void { 
 		if passValue {
 			Down.Right.PrintUse(f)
 		}else{
@@ -438,7 +438,7 @@ FlowOrOrAnd := class extend ControlFlowBox
 		}
 	}
 	GetType := virtual !() -> Type^ { return GTypeBool }
-	PrintUse := virtual !(sfile f) -> void { f << "i1 %Res" << itFlowId }
+	PrintUse := virtual !(TIOStream f) -> void { f << "i1 %Res" << itFlowId }
 	GetName := virtual !() -> char^ {
 		return "%Res"sbt + itFlowId 
 	}
@@ -451,7 +451,7 @@ FlowOr := class extend FlowOrOrAnd
 	{
 		itFlowId = GetNewId()
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 		f << "br label %Start" << itFlowId << "\n"
@@ -473,7 +473,7 @@ FlowAnd := class extend FlowOrOrAnd
 	{
 		itFlowId = GetNewId()
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 		f << "br label %Start" << itFlowId << "\n"

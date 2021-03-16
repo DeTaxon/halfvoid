@@ -28,7 +28,7 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 		}
 		return -1
 	}
-	PrintFunc := virtual  !(BuiltIn2Call^ trg,sfile f) -> void
+	PrintFunc := virtual  !(BuiltIn2Call^ trg,TIOStream f) -> void
 	{
 		pos := GetFieldPos()
 		if pos == -1 
@@ -164,7 +164,7 @@ BuiltIn2AutoField := class extend BuiltIn2Func
 		ToClass = cl
 		ParName = pName
 	}
-	PrintFunc := virtual  !(BuiltIn2Call^ trg,sfile f) -> void
+	PrintFunc := virtual  !(BuiltIn2Call^ trg,TIOStream f) -> void
 	{
 		if true 
 		{

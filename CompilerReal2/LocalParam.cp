@@ -4,16 +4,16 @@ MemParam := class extend ObjResult
 	{
 		return "i:=2"
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
 	GetName := virtual !(int newInd) -> string
@@ -32,10 +32,10 @@ MemParam := class extend ObjResult
 	{
 		return "Mem"
 	}
-	PrintDebugDeclare := virtual !(sfile f,Object^ to,char^ forceName) -> void
+	PrintDebugDeclare := virtual !(TIOStream f,Object^ to,char^ forceName) -> void
 	{
 	}
-	PrepareMainPtr := virtual !(sfile f,int newId,int debId) -> void {}
+	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
 }
 
@@ -47,7 +47,7 @@ MemParamCommon := class extend MemParam
 	{
 		return true //IsRef func and IsRef bool is different 
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		PrepareMainPtr(f,newInd,debId)
 		if IsRef {
@@ -58,7 +58,7 @@ MemParamCommon := class extend MemParam
 			f << " "<< GetMainPtr(newInd) << "\n"
 		}
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		if IsRef {
 			ResultType.GetPoint().PrintType(f)
@@ -75,7 +75,7 @@ MemParamCommon := class extend MemParam
 		}
 		return GetMainPtr(newInd)
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		PrintPointPre(f,newInd,debId)
 		f << "%TRes" << newInd << " = load "
@@ -86,7 +86,7 @@ MemParamCommon := class extend MemParam
 			f << ", !dbg !" << debId 
 		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %TRes"<< newInd
@@ -116,10 +116,10 @@ LocalParam := class extend MemParamCommon
 		IsRef = asRef
 	}
 
-	PrepareMainPtr := virtual !(sfile f,int newId,int debId) -> void {}
+	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "%T"sbt + inAllocId}
 
-	PrintDebugDeclare := virtual !(sfile f,Object^ fnc,char^ forceName) -> void
+	PrintDebugDeclare := virtual !(TIOStream f,Object^ fnc,char^ forceName) -> void
 	{
 		itDbgName := forceName
 		if itDbgName == null
@@ -152,7 +152,7 @@ GlobalParam := class extend MemParamCommon
 	taskFieldId := int
 
 
-	PrepareMainPtr := virtual !(sfile f,int newId) -> void {}
+	PrepareMainPtr := virtual !(TIOStream f,int newId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "@T"sbt + MainId}
 
 	this := !(Type^ th,Object^ toSet) -> void
@@ -174,7 +174,7 @@ GlobalParam := class extend MemParamCommon
 		}
 	}
 
-	PrintArrData := !(sfile f, Type^ toPr,bool isFirst) -> void
+	PrintArrData := !(TIOStream f, Type^ toPr,bool isFirst) -> void
 	{
 		asArr := toPr->{TypeArr^}
 
@@ -197,7 +197,7 @@ GlobalParam := class extend MemParamCommon
 		}
 		f << "]\n"
 	}
-	PrintClassData := !(sfile f, BoxClass^ toPr, bool isFirst) -> void
+	PrintClassData := !(TIOStream f, BoxClass^ toPr, bool isFirst) -> void
 	{
 		if not isFirst
 			f << toPr.ClassType.GetName() << " "
@@ -234,7 +234,7 @@ GlobalParam := class extend MemParamCommon
 		}
 		f << "}\n"
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "@T" << MainId << " = "//" = dso_local "
 		if IsThreadLocal f << "thread_local "
@@ -265,12 +265,12 @@ GlobalParam := class extend MemParamCommon
 TaskLocalParam := class extend GlobalParam
 { 
 	DoTheWork := virtual !(int pri) -> void  {}
-	PrintGlobal := virtual !(sfile f) -> void {}
+	PrintGlobal := virtual !(TIOStream f) -> void {}
 	GetTaskFieldId := !() -> void
 	{
 		taskFieldId = GetTaskLocalId(ResultType)
 	}
-	PrepareMainPtr := virtual !(sfile f,int newInd,int debId) -> void {
+	PrepareMainPtr := virtual !(TIOStream f,int newInd,int debId) -> void {
 		if EnableGSTask
 		{
 		f << "%TaskPre" << newInd << " = addrspacecast %TaskStruct addrspace(256)* @CurrentTaskStruct to %TaskStruct*\n"
@@ -307,7 +307,7 @@ GlobalFuncParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "@T" << MainId << " = "
 		f << "global "
@@ -319,15 +319,15 @@ GlobalFuncParam := class extend MemParam
 			f << " " << Down.GetName() << "\n"
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.GetPoint().PrintType(f)
 		f << " @T" << MainId
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		f << "%T" << newInd << " = load "
 		ResultType.PrintType(f)
@@ -338,7 +338,7 @@ GlobalFuncParam := class extend MemParam
 			f << ", !dbg !" << debId 
 		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -378,22 +378,22 @@ ExternParam := class extend MemParam
 			//if inAllocId == -1 inAllocId = GetAlloc(this&,ResultType)
 		}
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "@" << itName << " = "
 		f << "external global "
 		ResultType.PrintType(f)
 		f << "\n"
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.GetPoint().PrintType(f)
 		f << " @" << itName
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		f << "%T" << newInd << " = load "
 		ResultType.PrintType(f)
@@ -404,7 +404,7 @@ ExternParam := class extend MemParam
 			f << ", !dbg !" << debId 
 		f << "\n"
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T"<< newInd
@@ -429,7 +429,7 @@ FuncParam := class extend MemParam
 		ItName = StrCopy(Name)
 		IsRef = IIsRef
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		if IsRef
 		{
@@ -443,10 +443,10 @@ FuncParam := class extend MemParam
 			f << "\n"
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		
 		if IsRef
@@ -455,7 +455,7 @@ FuncParam := class extend MemParam
 			f << " %" << ItName
 		}
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		if IsRef
 		{
@@ -498,7 +498,7 @@ FieldParam := class extend MemParam
 	{
 		return true
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %" << ItName
@@ -525,7 +525,7 @@ FakeFieldParam := class extend MemParam
 	{
 		return true
 	}
-	PrintUse := virtual !(sfile f, int newInd) -> void
+	PrintUse := virtual !(TIOStream f, int newInd) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %" << ItName
@@ -547,7 +547,7 @@ RetFuncParam := class extend MemParam
 	{
 		return ToCall.IsRef()
 	}
-	PrintPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		//ToCall.PrintPre(f)
 		if ToCall.IsRef()
@@ -559,7 +559,7 @@ RetFuncParam := class extend MemParam
 			f << "\n"
 		}
 	}
-	PrintUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		if ToCall.IsRef()
 		{
@@ -568,11 +568,11 @@ RetFuncParam := class extend MemParam
 			ToCall.PrintUse(f)
 		}
 	}
-	PrintPointPre := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		//ToCall.PrintPointPre(f)
 	}
-	PrintPointUse := virtual !(sfile f, int newInd,int debId) -> void
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
 		ToCall.PrintPointUse(f)
 	}
@@ -591,7 +591,7 @@ RetFuncParam := class extend MemParam
 	{
 		return ToCall.GetPointName()
 	}
-	PrintForDebugDeclare := virtual !(sfile f,char^ forceName,Object^ ptrPos,int debId) -> void
+	PrintForDebugDeclare := virtual !(TIOStream f,char^ forceName,Object^ ptrPos,int debId) -> void
 	{
 		if debId == -1 return void
 

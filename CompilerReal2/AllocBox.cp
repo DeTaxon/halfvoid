@@ -60,7 +60,7 @@ AllocBox := class
 	}
 
 	printedGlobal := bool
-	PrintGlobal := !(sfile f) -> void
+	PrintGlobal := !(TIOStream f) -> void
 	{
 		if printedGlobal
 			return void
@@ -104,11 +104,11 @@ AllocBox := class
 			return "%AllocClass"sbt + ItId + "* null"
 		return "%AllocClass"sbt + ItId + "* %AllocItem" + ItId
 	}
-	PrintAlloc := !(sfile f,int debId) -> void
+	PrintAlloc := !(TIOStream f,int debId) -> void
 	{
 		PrintAlloc(f,null->{char^},debId)
 	}
-	PrintAlloc := !(sfile f,char^ prntName,debId) -> void
+	PrintAlloc := !(TIOStream f,char^ prntName,debId) -> void
 	{
 		if not ItemBag.IsEmpty()
 		{
@@ -160,7 +160,7 @@ AllocBox := class
 
 		PrintBoxItems(f,"%AllocItem"sbt + ItId,debId)
 	}
-	PrintBoxItems := !(sfile f,string Name,int debId) -> void
+	PrintBoxItems := !(TIOStream f,string Name,int debId) -> void
 	{
 		if not mustBeStruct
 			return void

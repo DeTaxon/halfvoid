@@ -14,7 +14,7 @@ WayControl := class extend Object
 	{
 		return new WayControl(itItm)
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		f << "br label %" << itLabel.GetLabel() << "\n"
 	}

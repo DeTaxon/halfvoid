@@ -54,12 +54,12 @@ ObjDefer := class extend Object
 		Down.SetUp(this&)
 		WorkBag.Push(this&,State_Start)
 	}
-	PrintDestructor := virtual !(sfile f) -> void
+	PrintDestructor := virtual !(TIOStream f) -> void
 	{
 		asWr := Down->{WrappedFunc^}
 		asWr.PrintItCall(f)
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 
 		callAdd := deferAddDefer
@@ -100,7 +100,7 @@ ObjDefer := class extend Object
 		}
 	}
 }
-PrintDeferDepth := !(sfile f, int SomeId, Object^ itm) -> void
+PrintDeferDepth := !(TIOStream f, int SomeId, Object^ itm) -> void
 {
 	f << "%NowDepth" << SomeId << " = call i32 @" << deferGetDepth.OutputName << "()"
 	if DebugMode
@@ -114,7 +114,7 @@ PrintDeferDepth := !(sfile f, int SomeId, Object^ itm) -> void
 	f <<"\n"
 }
 
-PrintDeferApply := !(sfile f, int SomeId, Object^ itm) -> void
+PrintDeferApply := !(TIOStream f, int SomeId, Object^ itm) -> void
 {
 	f << "call void @" << deferApply.OutputName << "(i32 %NowDepth" << SomeId << ")"
 	if DebugMode

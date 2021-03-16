@@ -1,10 +1,10 @@
 Tupls := Queue.{TupleClass^}
 
-PrintTuples := !(sfile f) -> void
+PrintTuples := !(TIOStream f) -> void
 {
 	Tupls[^].PrintGlobal(f)
 }
-PrintTuplesFuncs := !(sfile f) -> void
+PrintTuplesFuncs := !(TIOStream f) -> void
 {
 	Tupls[^].PrintGlobalExtra(f)
 }
@@ -112,7 +112,7 @@ TupleClass := class extend BoxClass
 		}
 		return null->{BoxFunc^}
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "%Class" << ClassId << " = type {"
 		for i : Params.Size()
@@ -127,7 +127,7 @@ TupleClass := class extend BoxClass
 			f << ", elements: !{})\n"
 		}
 	}
-	PrintGlobalExtra := !(sfile f) -> void
+	PrintGlobalExtra := !(TIOStream f) -> void
 	{
 		if askedCreate != 0
 		{
@@ -252,7 +252,7 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 			}
 		}
 	}
-	PrintAsGlobal := !(sfile f) -> void
+	PrintAsGlobal := !(TIOStream f) -> void
 	{
 		clName := origin.ClassType.GetName()
 		f << "define i32 @SpaceCmpTuple" << exeId <<"(" << clName << "* %Left , " << clName << "* %Righ) \n"
@@ -284,7 +284,7 @@ SetTupleObj := class extend BuiltInFuncMega
 		WorkBag.Push(this&,State_GetUse)
 		itId = setId
 	}
-	PrintItFunc := !(sfile f) -> void
+	PrintItFunc := !(TIOStream f) -> void
 	{
 		prL := MyFuncType.Pars[0].GetName()
 		prR := MyFuncType.Pars[1].GetName()
@@ -409,7 +409,7 @@ CreateTupleTemplate := class extend BoxTemplate
 	{
 		return 0
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
@@ -461,7 +461,7 @@ TupleConstructorTemplate := class extend BoxTemplate
 	{
 		return 0
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^

@@ -576,7 +576,7 @@ BoxTemplate := class extend BoxFunc
 
 		return newFunc	
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		Down[^].PrintGlobal(f)
 	}

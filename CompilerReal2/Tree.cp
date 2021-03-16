@@ -97,15 +97,15 @@ Object := class{
 		ErrorLog.Push(outRes)
 		throw new Exception(outRes)
 	}
-	PrintGlobalSub := !(sfile f) -> void
+	PrintGlobalSub := !(TIOStream f) -> void
 	{
 		Down[^].PrintGlobal(f)
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		PrintGlobalSub(f)
 	}
-	PrintDestructor := virtual !(sfile f) -> void
+	PrintDestructor := virtual !(TIOStream f) -> void
 	{
 	}
 	GetOutPath := virtual !(Object^ from,int typ,int size) -> BoxLabel^
@@ -114,23 +114,23 @@ Object := class{
 			return Up.GetOutPath(from,typ,size)
 		return null
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintInBlock is not defined")	
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintPointPre is not defined")	
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintPointUse is not defined")	
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintPre is not defined")	
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("Compiler error: PrintUse is not defined")	
 	}
@@ -171,7 +171,7 @@ Object := class{
 		if Up != null
 			Up.ApplyDeferUse(depth)
 	}
-	PrintDebugDeclare := virtual !(sfile f ,Object^ frc,char^ forcedName) -> void
+	PrintDebugDeclare := virtual !(TIOStream f ,Object^ frc,char^ forcedName) -> void
 	{
 		Down[^].PrintDebugDeclare(f,frc,null->{char^})
 	}

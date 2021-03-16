@@ -321,7 +321,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		return null
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if callDeferStuf
 			PrintDeferDepth(f,ItId,this&)	

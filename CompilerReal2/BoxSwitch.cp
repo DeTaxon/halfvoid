@@ -147,7 +147,7 @@ BoxSwitch := class extend Object
 
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		
 		things := List.{Object^}() ; $temp

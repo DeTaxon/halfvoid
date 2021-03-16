@@ -40,11 +40,11 @@ MetaItemWrapper := class extend Object
 {
 	ptrToBlock := Object^
 
-	PrintInBlock := virtual !(sfile f) -> void { Down.PrintInBlock(f) }
-	PrintPointPre := virtual !(sfile f) -> void { Down.PrintPointPre(f) }
-	PrintPointUse := virtual !(sfile f) -> void { Down.PrintPointUse(f) }
-	PrintPre := virtual !(sfile f) -> void { Down.PrintPre(f) }
-	PrintUse := virtual !(sfile f) -> void { Down.PrintUse(f) }
+	PrintInBlock := virtual !(TIOStream f) -> void { Down.PrintInBlock(f) }
+	PrintPointPre := virtual !(TIOStream f) -> void { Down.PrintPointPre(f) }
+	PrintPointUse := virtual !(TIOStream f) -> void { Down.PrintPointUse(f) }
+	PrintPre := virtual !(TIOStream f) -> void { Down.PrintPre(f) }
+	PrintUse := virtual !(TIOStream f) -> void { Down.PrintUse(f) }
 	GetName := virtual !() -> char^ { return Down.GetName() }
 	GetPointName := virtual !() -> string { return Down.GetPointName() }
 	GetItem := virtual !(char^ name) -> Object^ {	return Down.GetItem(name)}

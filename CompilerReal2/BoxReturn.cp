@@ -158,7 +158,7 @@ BoxReturn := class extend Object
 			}
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		debId := -1
 		if DebugMode

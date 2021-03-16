@@ -102,11 +102,11 @@ ParamNaturalUnrefCall := class extend ParamNaturalCall
 		tt = tt.GetPoint()
 		return tt
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		ToCall->{MemParamCommon^}.PrepareMainPtr(f,TempId,-1)
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		f << ToCall.GetType().GetName() << "* "
 		f << ToCall->{MemParamCommon^}.GetMainPtr(TempId)
@@ -115,13 +115,13 @@ ParamNaturalUnrefCall := class extend ParamNaturalCall
 	{
 		return ToCall->{MemParam^}.GetMainPtr(TempId)
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		tn := ToCall.GetType().GetName()
 		PrintPointPre(f)
 		f << "%TRes" << TempId << " = load " << tn << "* , " << tn << "** " << GetPointName() << "\n"
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << ToCall.GetType().GetName()
 		f << "* %TRes" << TempId
@@ -170,7 +170,7 @@ ParamNaturalCall := class extend ParamCall
 		if ToCall == null return null
 		return ToCall.GetType()
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if ToCall is LocalParam
 		{
@@ -182,19 +182,19 @@ ParamNaturalCall := class extend ParamCall
 		}
 	}
 	
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		ToCall.PrintPointPre(f,TempId,debugId)
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		ToCall.PrintPointUse(f,TempId,debugId)
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		ToCall.PrintPre(f,TempId,debugId)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ToCall.PrintUse(f,TempId,debugId)
 	}
@@ -226,7 +226,7 @@ ParamFuncCall := class extend ParamCall
 	{
 		return "@"sbt + OutName
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << ResultType.GetName() << " "
 		f << "@" << OutName

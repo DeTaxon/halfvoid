@@ -41,7 +41,7 @@ ExcArrToPtr := class extend Object
 		itId = GetNewId()
 		toType = newType
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPointPre(f)
 		f << "%T" << itId << " = getelementptr "
@@ -51,7 +51,7 @@ ExcArrToPtr := class extend Object
 		f << ",i32 0,i32 0\n"
 	}
 	GetType := virtual !() -> Type^ { return toType }
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		toType.PrintType(f)
 		f << " %T" << itId
@@ -72,7 +72,7 @@ BuiltIn2PtrExc := class extend BuiltIn2Func
 		FuncName = "->{}"
 		MyFuncType = GetFuncType(![frType],newType)
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
 		if trg.Down.GetType() is TypeArr
 		{
 			trg.GenId()
@@ -112,11 +112,11 @@ PtrExchanger := class extend Object
 
 	IsRef := virtual !() -> bool { return false }
 
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		if Down.GetType() is TypeArr
 		{
@@ -131,7 +131,7 @@ PtrExchanger := class extend Object
 			f << " to " << toType.GetName() << "\n"
 		}
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		toType.PrintType(f)
 		f << " %T" << itId

@@ -94,7 +94,7 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 	return newId
 }
 
-PrintDebugMeta := !(sfile fil) -> void
+PrintDebugMeta := !(TIOStream fil) -> void
 {
 	globVar := GetNewId()
 	fileId := Files.Start.Data.fileId

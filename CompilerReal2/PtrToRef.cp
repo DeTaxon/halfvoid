@@ -9,15 +9,15 @@ PtrToRef := class extend ObjResult
 		Down.Up = this&
 		inhAttrs = toReplace.inhAttrs
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		Down.PrintUse(f)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << "PtrToRef wip"
 	}

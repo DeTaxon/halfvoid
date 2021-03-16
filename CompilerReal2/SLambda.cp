@@ -356,7 +356,7 @@ SLambda := class extend BoxFuncContainer
 			}
 		}
 	}
-	PrintInhers := !(sfile f,char^ startS,bool printDeb) -> void
+	PrintInhers := !(TIOStream f,char^ startS,bool printDeb) -> void
 	{
 		funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
 		itrr := Up
@@ -478,7 +478,7 @@ SLambda := class extend BoxFuncContainer
 	}
 
 
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		if applyed
 		{
@@ -833,7 +833,7 @@ SLambda := class extend BoxFuncContainer
 			}
 		}
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		if applyed
 		{
@@ -884,7 +884,7 @@ SLambda := class extend BoxFuncContainer
 			}
 		}
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{	
 		ResultType.PrintType(f)
 		f << " %Tpl2" << ItId
@@ -1025,14 +1025,14 @@ SLambda := class extend BoxFuncContainer
 	{
 		return "x=>x"
 	}
-	PrintDebugDeclare := virtual !(sfile f ,Object^ frc,char^ forcedName) -> void
+	PrintDebugDeclare := virtual !(TIOStream f ,Object^ frc,char^ forcedName) -> void
 	{
 	}
 	ApplyDeferUse := virtual !(int depth) -> void
 	{
 		printf("sfgasfhafg\n")
 	}
-	PrintDebugDeclare := virtual !(sfile f ,Object^ frc) -> void
+	PrintDebugDeclare := virtual !(TIOStream f ,Object^ frc) -> void
 	{
 	}
 	IsDataR := virtual true
@@ -1040,7 +1040,7 @@ SLambda := class extend BoxFuncContainer
 }
 SFuncLambda := class extend SLambda
 {
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{	
 		ResultType.PrintType(f)
 		f << " @lambda" << ItId
@@ -1049,7 +1049,7 @@ SFuncLambda := class extend SLambda
 	{
 		return "@lambda"sbt + ItId
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 	}
 	ApplyParams := virtual !(int count, Type^^ pars,bool^ isRef) -> void
@@ -1317,7 +1317,7 @@ CreateLambdaBuilts := !() -> void
 	deleteLFuncType = GetFuncType(inpFuncE,null,GTypeVoid,false,false)
 	deleteLFuncTypeP = deleteLFuncType.GetPoint()
 }
-PrintLambdaGlobal := !(sfile f) -> void
+PrintLambdaGlobal := !(TIOStream f) -> void
 {
 	f << "%LambdaPrefix = type {i8*(i8*)*,void(i8*)*}\n"
 }

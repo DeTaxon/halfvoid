@@ -39,7 +39,7 @@ TrinaryOper := class extend Object
 	{
 		return isItRef
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 		f << "br i1 " << Down.GetName() << ", label %OnTrue" << itId << " , label %OnFalse" << itId << "\n"
@@ -55,12 +55,12 @@ TrinaryOper := class extend Object
 		f << "[" << Down.Right.GetPointName() << ",%OnTrue" << itId <<"],"
 		f << "[" << Down.Right.Right.GetPointName() << ",%OnFalse" << itId << "]\n"
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		f << Down.Right.GetType().GetName() 
 		f << "* %TriRes" << itId 
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 		f << "br i1 " << Down.GetName() << ", label %OnTrue" << itId << " , label %OnFalse" << itId << "\n"
@@ -76,7 +76,7 @@ TrinaryOper := class extend Object
 		f << "[" << Down.Right.GetName() << ",%OnTrue" << itId <<"],"
 		f << "[" << Down.Right.Right.GetName() << ",%OnFalse" << itId << "]\n"
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << Down.Right.GetType().GetName() 
 		f << " %TriRes" << itId 

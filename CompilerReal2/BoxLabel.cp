@@ -1,6 +1,6 @@
 BoxLabel := class extend Object
 {
-	PrintLabel := virtual !(sfile f) -> void
+	PrintLabel := virtual !(TIOStream f) -> void
 	{
 	}
 	GetLabel := virtual !() -> char^
@@ -16,7 +16,7 @@ BoxLabelStr := class extend BoxLabel
 	{
 		callStr = StrCopy(itStr)
 	}
-	PrintLabel := virtual !(sfile f) -> void
+	PrintLabel := virtual !(TIOStream f) -> void
 	{
 		f << callStr << ":\n"
 	}
@@ -34,7 +34,7 @@ BoxLabelAnon := class extend BoxLabel
 	{
 		itId = GetNewId()
 	}
-	PrintLabel := virtual !(sfile f) -> void
+	PrintLabel := virtual !(TIOStream f) -> void
 	{
 		f << "label"<< itId << ":\n"
 	}

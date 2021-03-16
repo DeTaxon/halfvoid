@@ -16,5 +16,5 @@ CompilerModule := class extend Object
 	InitModule := virtual !() -> bool {
 		return true
 	}
-	PrintGlobal := virtual !(sfile f) -> void {}
+	PrintGlobal := virtual !(TIOStream f) -> void {}
 }

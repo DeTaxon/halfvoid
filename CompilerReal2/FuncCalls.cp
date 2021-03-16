@@ -837,7 +837,7 @@ BaseFuncCall := class extend ObjResult
 	{
 		return FType.RetType
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		iter := Down
 		while iter != null
@@ -953,10 +953,10 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 	TEName := string
 
 
-	UseCall := virtual !(sfile f) -> void
+	UseCall := virtual !(TIOStream f) -> void
 	{
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		UseCall(f)
 	}
@@ -1011,7 +1011,7 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 			}
 		}
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		UseCall(f)
 		if ToCall != null //TODO: ??? ToCall can not be null 
@@ -1026,12 +1026,12 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 			}
 		}
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		FType.RetType.GetPoint().PrintType(f)
 		f << " " << TName
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		FType.RetType.PrintType(f)
 		if ToCall != null
@@ -1071,7 +1071,7 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 	{
 		return TName
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)
 	}
@@ -1106,17 +1106,17 @@ NaturalCall := class extend SomeFuncCall
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
 	
-	PrintPreFuncName := virtual !(sfile f) -> void
+	PrintPreFuncName := virtual !(TIOStream f) -> void
 	{
 
 	}
-	PrintFuncName := virtual !(sfile f) -> void
+	PrintFuncName := virtual !(TIOStream f) -> void
 	{
 		if ToCall != null
 		f << "@" << ToCall.OutputName
 	}
 
-	PrintParamPres := virtual !(sfile f) -> void
+	PrintParamPres := virtual !(TIOStream f) -> void
 	{
 		RefsArr := FType.ParsIsRef
 		for iter,i : Down
@@ -1125,7 +1125,7 @@ NaturalCall := class extend SomeFuncCall
 			else iter.PrintPre(f)
 		}
 	}
-	PrintParamUses := virtual !(sfile f) -> void
+	PrintParamUses := virtual !(TIOStream f) -> void
 	{
 		iter := Down
 		RefsArr := FType.ParsIsRef
@@ -1148,7 +1148,7 @@ NaturalCall := class extend SomeFuncCall
 		}
 	}
 
-	UseCall := virtual !(sfile f) -> void
+	UseCall := virtual !(TIOStream f) -> void
 	{
 		PrintPreFuncName(f)
 		PrintParamPres(f)
@@ -1212,11 +1212,11 @@ PointFuncCall := class extend NaturalCall
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		UseCall(f)
 	}
-	UseCall := virtual !(sfile f) -> void
+	UseCall := virtual !(TIOStream f) -> void
 	{
 		PrintPreFuncName(f)
 		PrintParamPres(f)
@@ -1281,7 +1281,7 @@ AssemblerCall := class extend NaturalCall
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)
 	}
@@ -1289,7 +1289,7 @@ AssemblerCall := class extend NaturalCall
 	{
 		return FType.RetType
 	}
-	UseCall := virtual !(sfile f) -> void
+	UseCall := virtual !(TIOStream f) -> void
 	{
 		RealCall.PrePrintEvent()
 		PrintPreFuncName(f)
@@ -1445,15 +1445,15 @@ BuiltIn2Call := class extend BaseFuncCall
 		thisClId = GetNewId()
 		return thisClId
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)
 	}
-	PrintRes := !(sfile f) -> void
+	PrintRes := !(TIOStream f) -> void
 	{
 		f << " %T" << thisClId
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		FType.RetType.PrintType(f)
 		PrintRes(f)
@@ -1462,14 +1462,14 @@ BuiltIn2Call := class extend BaseFuncCall
 	{
 		return "%T"sbt + thisClId
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		RealCall.PrintFunc(this&,f)
 	}
 }
 BuiltIn2CallRef := class extend BuiltIn2Call
 {
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		FType.RetType.GetPoint().PrintType(f)
 		PrintRes(f)
@@ -1482,11 +1482,11 @@ BuiltIn2CallRef := class extend BuiltIn2Call
 	{
 		return "%T"sbt + thisClId
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		RealCall.PrintFunc(this&,f)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		FType.RetType.PrintType(f)
 		f << "%TR" << thisClId
@@ -1495,7 +1495,7 @@ BuiltIn2CallRef := class extend BuiltIn2Call
 	{
 		return "%TR"sbt + thisClId
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		PrintPointPre(f)
 		rn := FType.RetType.GetName()
@@ -1513,16 +1513,16 @@ TypeSizeCall := class extend SomeFuncCall
 		ToCmp = toCmp
 		ResultType = GTypeInt
 	}
-	PrintPointPre := virtual !(sfile f) -> void {	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void {	}
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		f << "%TPre" << RetId << " = getelementptr "<<ToCmp.GetName()<< " , "<<ToCmp.GetPoint().GetName()<< " null, i32 1\n"
 		f << "%T" << RetId << " = ptrtoint "<<ToCmp.GetPoint().GetName() << " %TPre" <<RetId<< " to i32\n"
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << " %T" << RetId
 	}
@@ -1585,12 +1585,12 @@ NewCallOne := class extend SomeFuncCall
 	{
 		return "%Pre"sbt + ItId
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		//newItm.PrintUse(f)
 		f << ResultType.GetName() << " %Pre" << ItId
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		newItm.PrintInBlock(f)
 		f << "%Pre" << ItId << " = bitcast "
@@ -1606,7 +1606,7 @@ NewCallOne := class extend SomeFuncCall
 		if Down != null Down.PrintInBlock(f)
 
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)
 	}
@@ -1769,7 +1769,7 @@ DeleteCall := class extend SomeFuncCall
 			}
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if DeleteFuncCall != null
 		{
@@ -1863,7 +1863,7 @@ NewCall := class extend SomeFuncCall
 		ExtraFunc.Down.SetUp(ExtraFunc)
 		CheckReturn()
 	}
-	UseCall := virtual !(sfile f) -> void
+	UseCall := virtual !(TIOStream f) -> void
 	{
 		ExtraFunc.PrintInBlock(f)
 		if ResultType.Base is TypeClass
@@ -1886,7 +1886,7 @@ NewCall := class extend SomeFuncCall
 	{
 		return ""
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ExtraFunc.PrintUse(f)
 	}
@@ -1935,7 +1935,7 @@ ConstructCall := class extend NaturalCall
 			}
 		}
 	}
-	FillConsts := !(sfile f) -> void
+	FillConsts := !(TIOStream f) -> void
 	{
 		asNeed3 :=  ToCall.MyFuncType.Pars[0]
 		if asNeed3 is TypeClass
@@ -1950,17 +1950,17 @@ ConstructCall := class extend NaturalCall
 	{
 		return ToCall.MyFuncType.Pars[0]
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		FillConsts(f)
 		UseCall(f)
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		ToCall.MyFuncType.Pars[0].PrintType(f)
 		f << "* " << TName
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if ToCall.IsAssembler()
 		{
@@ -2084,11 +2084,11 @@ ConstructCall := class extend NaturalCall
 		}
 	}
 
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		ErrorLog.Push("compiler error in func call, class asked by value")
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		//ErrorLog.Push("compiler error in func call, class asked by value")
 		PrintPointUse(f) // жирный костыль
@@ -2128,17 +2128,17 @@ LinkForThis := class extend Object
 	{
 		return Link.GetValue()
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		//Link.PrintPre(f)
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		if keepClean
 		{
@@ -2147,11 +2147,11 @@ LinkForThis := class extend Object
 			Link.PrintUse(f)
 		}
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		//if keepClean Link.PrintPre(f)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		if keepClean Link.PrintUse(f)
 	}

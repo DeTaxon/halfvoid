@@ -80,7 +80,7 @@ BuiltIn2Func := class extend BoxFunc
 	{
 		return new BuiltIn2Call(this&,pars)
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {}
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {}
 }
 
 BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
@@ -90,7 +90,7 @@ BuiltIn2Store := class .{@AddOp,@Zero} extend BuiltIn2Func
 		FuncName = fName
 		MyFuncType = fType
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
 		trg.GenId()
 		trg.Down.PrintPointPre(f)
 		trg.Down.Right.PrintPre(f)
@@ -114,7 +114,7 @@ BuiltIn2IntMath := class extend BuiltIn2Func
 		MyFuncType = fType
 		llvmOper = lOp
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
 		trg.GenId()
 		trg.Down.PrintPre(f)
 		trg.Down.Right.PrintPre(f)
@@ -143,7 +143,7 @@ BuiltIn2Negative := class extend BuiltIn2Func
 		MyFuncType = fType
 		llvmOper = lOp
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,sfile f) -> void {
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
 		trg.GenId()
 		trg.Down.PrintPre(f)
 		trg.PrintRes(f)

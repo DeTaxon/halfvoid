@@ -43,7 +43,7 @@ GetTaskLocalId := !(Type^ crtTyp) -> int
 	taskParams.Push(crtTyp)
 	return oldSize
 }
-TaskPrint := !(sfile f) -> void
+TaskPrint := !(TIOStream f) -> void
 {
 	if EnableGSTask
 	{
@@ -67,7 +67,7 @@ TaskPrint := !(sfile f) -> void
 		gTaskPtr.PrintGlobal(f)
 	}
 }
-TaskPrint2 := !(sfile f) -> void
+TaskPrint2 := !(TIOStream f) -> void
 {
 	f << "define void @taskInitFunc(i8* %ptr)\n"
 	f << "{\n"
@@ -113,7 +113,7 @@ TaskPrint2 := !(sfile f) -> void
 	}
 	f << "ret void\n}\n"
 }
-TaskPrintInit := !(sfile f) -> void
+TaskPrintInit := !(TIOStream f) -> void
 {
 	if EnableGSTask
 	{

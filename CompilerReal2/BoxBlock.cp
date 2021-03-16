@@ -87,7 +87,7 @@ BoxBlock := class extend Object
 			return -1
 		return ItId 
 	}
-	PrintGlobal := virtual !(sfile f) -> void 
+	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
 		PrintGlobalSub(f)
 		if DebugMode
@@ -103,7 +103,7 @@ BoxBlock := class extend Object
 //!20 = distinct !DILexicalBlock(scope: !16, file: !1, line: 6, column: 2)
 		}
 	}
-	PrintSomePath := !(sfile f, string PathName, int num,string OutName) -> void
+	PrintSomePath := !(TIOStream f, string PathName, int num,string OutName) -> void
 	{
 		for iter,i : Down
 		{
@@ -116,7 +116,7 @@ BoxBlock := class extend Object
 			}
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if Line == null Line = Up.Line
 
@@ -335,7 +335,7 @@ BoxFile := class extend BoxBlock
 	{
 		return "{d}.cp"
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		Down[^].PrintGlobal(f)
 		if DebugMode //later
@@ -345,7 +345,7 @@ BoxFile := class extend BoxBlock
 			f <<  "/" <<"\")\n"
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		Down[^].PrintInBlock(f)
 		if DebugMode //later

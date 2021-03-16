@@ -5,7 +5,7 @@ ObjResult := class extend Object
 	{
 		return ResultType
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 	}
 }
@@ -65,7 +65,7 @@ ObjNULL := class extend ObjConst
 		for s printf("->")
 		printf("null\n")
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << "i8* null"
 	}
@@ -99,7 +99,7 @@ ObjInt := class extend ObjConst
 		for s printf("->")
 		printf("int %i\n",MyInt)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " " << MyInt
@@ -136,7 +136,7 @@ ObjBool := class extend ObjConst
 		for s printf("->")
 		printf("bool %i\n",MyBool)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " "
@@ -173,7 +173,7 @@ ObjDouble := class extend ObjConst
 		for s printf("->")
 		printf("double %f\n",MyDouble)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " " << GetName()
@@ -240,7 +240,7 @@ ObjRangeI := class extend ObjConst
 		for s printf("->")
 		printf("range %i..%i\n",beginR,endR)
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		f << " @RangeTypeInt {i32 " << beginR << " , i32 " << endR << " }"
 	}
@@ -302,12 +302,12 @@ ObjStr := class extend ObjConst
 		for s printf("->")
 		printf("string %s\n",StrContainer.GetString(MyStrId))
 	}
-	PrintPointPre := virtual !(sfile f) -> void
+	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		StrSi := StrSize(justStr)
 		f << "%T" << MyTmpId <<" = bitcast [" << StrSi + 1<< " x i8]* @Str" << MyStrId <<" to [" << StrSi << "x i8]* \n" 
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		StrSi := StrSize(justStr) + 1
 		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
@@ -318,12 +318,12 @@ ObjStr := class extend ObjConst
 		asStr := "getelementptr inbounds (["sbt + StrSi + " x i8] , [" + StrSi + " x i8]* @Str" + MyStrId + ", i32 0, i32 0)"
 		return asStr.Str() ; $temp
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << "* %T" << MyTmpId	
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %T" << MyTmpId	
@@ -395,7 +395,7 @@ ObjArray := class extend ObjConst
 	}		
 	
 
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		asBase := itType->{Type^}
 		arrItm := asBase.Base
@@ -421,7 +421,7 @@ ObjArray := class extend ObjConst
 		}
 		f << "]\n"
 	}
-	PrintPre := virtual !(sfile f) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
 		f << "%ArrTmp" << MyTmpId << " = load "
 		ResultType.PrintType(f)
@@ -429,12 +429,12 @@ ObjArray := class extend ObjConst
 		ResultType.PrintType(f)
 		f << "* @Arr" << MyTmpId << "\n"
 	}
-	PrintUse := virtual !(sfile f) -> void
+	PrintUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << " %ArrTmp"	<< MyTmpId
 	}
-	PrintPointUse := virtual !(sfile f) -> void
+	PrintPointUse := virtual !(TIOStream f) -> void
 	{
 		ResultType.PrintType(f)
 		f << "* @Arr" << MyTmpId

@@ -94,7 +94,7 @@ BoxIf := class extend Object
 			}
 		}
 	}
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if ForceGo != 0
 		{
@@ -190,7 +190,7 @@ BoxWhile := class extend Object
 
 	labelContinue := BoxLabel^
 	labelBreak := BoxLabel^
-	PrintInBlock := virtual !(sfile f) -> void
+	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if Down.Right.Right == null
 		{

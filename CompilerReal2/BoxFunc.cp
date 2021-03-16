@@ -472,7 +472,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		OutputName = SomeName
 		MyFuncType = fT
 	}
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "declare "
 		if OutCC != null{
@@ -490,7 +490,7 @@ BoxFuncDeclare := class  extend BoxFunc
 	}
 }
 
-PrintFuncBodySkobs := !(sfile f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
+PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
 {
 	f << "define " //"dso_local "
 
@@ -854,7 +854,7 @@ BoxFuncBody := class extend BoxFunc
 		}
 	}
 		
-	PrintGlobal := virtual !(sfile f) -> void
+	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		ABox.PrintGlobal(f)
 

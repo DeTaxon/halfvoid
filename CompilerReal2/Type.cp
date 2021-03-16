@@ -76,7 +76,7 @@ Type := class {
 
 	metaId := int
 
-	PrintType := virtual !(sfile f) -> void
+	PrintType := virtual !(TIOStream f) -> void
 	{
 		f << GetName()
 	}
@@ -1003,11 +1003,11 @@ TypeFunc := class extend Type
 		ToRet << ")"
 		return ToRet.Str()
 	}
-	PrintSkobs := virtual !(sfile f) -> void
+	PrintSkobs := virtual !(TIOStream f) -> void
 	{
 		f << GetSkobs()
 	}
-	PrintType := virtual !(sfile f) -> void
+	PrintType := virtual !(TIOStream f) -> void
 	{
 		f << GetName()
 	}
@@ -1031,7 +1031,7 @@ TypeFuncLambda := class extend Type
 			DebugMetaData.Push(itStr.Str())
 		}
 	}
-	PrintType := virtual !(sfile f) -> void
+	PrintType := virtual !(TIOStream f) -> void
 	{
 		f << GetName()
 	}
@@ -1473,7 +1473,7 @@ GetDebugRef := !(Type^ itTyp) -> int
 	debRefs[itTyp] = newId
 	return newId
 }
-PrintDebRefs := !(sfile f) -> void
+PrintDebRefs := !(TIOStream f) -> void
 {
 	for it,ind : debRefs
 	{

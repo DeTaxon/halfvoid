@@ -738,7 +738,7 @@ InstanceArr := class extend BoxClass
 		}
 
 	}
-	PrintStruct := virtual !(sfile s) -> void
+	PrintStruct := virtual !(TIOStream s) -> void
 	{
 		funcsCount := addedFieldsOrder.Size()
 	
