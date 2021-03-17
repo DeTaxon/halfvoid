@@ -1,14 +1,7 @@
 
-PrxTest := !(TIOStream tst) -> void
-{
-	tst << "hello\n"
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	tst := TFile("wow.txt","w")
-	PrxTest(tst)
-	tst.Close()
+	printf("yes\n")
 	return 0
 }
 main2 := !(int argc, char^^ argv) -> int

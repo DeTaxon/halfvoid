@@ -39,6 +39,11 @@ TEchoStream := class extend TIOStream
 		}
 		return sLen
 	}
+	Size := !() -> size_t
+	{
+		BufSize := 4096
+		return pages.Size()*BufSize + inPtrSize
+	}
 	Str := !()  -> char^ {
 		if inPtrSize == 0{
 			return ""

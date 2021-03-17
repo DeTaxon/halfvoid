@@ -2,6 +2,7 @@
 clibModule := CLibModule
 
 emitTree := false
+jitMode := false
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -51,6 +52,8 @@ main := !(int argc,char^^ argv) -> int
 				zL << argv[j]
 			ZipAppend(argv[i+1],zL)
 			return 0
+		case "--jit"
+			jitMode = true
 		case "--rname"
 			ReturnName = argv[i+1]
 			i += 1
@@ -348,6 +351,78 @@ main := !(int argc,char^^ argv) -> int
 	printf("good to go\n")
 
 	for PostFuncs it.PostCreate()
+
+	if jitMode
+	{
+		try{
+
+			llvmLib := Library("/lib/x86_64-linux-gnu/libLLVM-10.so.1","libLLVM.dll")
+			llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
+			llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}
+			llvmIRInContext := llvmLib.Get("LLVMParseIRInContext")->{!(void^,void^,void^^,char^^)^->int}
+			llvmGetNamedFunction := llvmLib.Get("LLVMGetNamedFunction")->{!(void^,char^)^-> void^}
+		
+			LLVMVerifyModule := llvmLib.Get("LLVMVerifyModule")->{!(void^,int,char^^)^-> void}
+			LLVMLinkInMCJIT := llvmLib.Get("LLVMLinkInMCJIT")->{!()^->void}
+			//LLVMInitializeNativeTarget := llvmLib.Get("LLVMInitializeNativeTarget")->{!()^->void}
+			LLVMCreateExecutionEngineForModule := llvmLib.Get("LLVMCreateExecutionEngineForModule")->{!(void^^,void^,char^^)^->int}
+			LLVMCreateGenericValueOfInt := llvmLib.Get("LLVMCreateGenericValueOfInt")->{!(void^,s64,int)^->void^}
+			LLVMInt32Type := llvmLib.Get("LLVMInt32Type")->{!()^->void^}
+			LLVMRunFunction := llvmLib.Get("LLVMRunFunction")->{!(void^,void^,int,void^)^->void}
+			LLVMCreateGenericValueOfPointer := llvmLib.Get("LLVMCreateGenericValueOfPointer")->{!(void^)^->void^}
+
+			LLVM_NATIVE_TARGETINFO := llvmLib.Get("LLVMInitializeX86TargetInfo")->{!()^->void}
+			LLVM_NATIVE_TARGET := llvmLib.Get("LLVMInitializeX86Target")->{!()^->void}
+			LLVM_NATIVE_TARGETMC := llvmLib.Get("LLVMInitializeX86TargetMC")->{!()^->void}
+			LLVMInitializeX86AsmPrinter := llvmLib.Get("LLVMInitializeX86AsmPrinter")->{!()^->void}
+
+			ctx := llvmCreateContext()
+			fil := TEchoStream()
+			WriteCodeData(fil&->{TIOStream^}^)
+			lines := fil.Str()
+			buf := llvmMemBuf(lines,fil.Size(),"FileData",0)
+
+			msg := char^()
+			mod := void^()
+			res := llvmIRInContext(ctx,buf,mod&,msg&)
+			if msg != null
+				printf("error %s\n",msg)
+			fName := entryFunc.Down->{BoxFunc^}.OutputName //TODO: not 100% func
+			mainFunc := llvmGetNamedFunction(mod,fName)
+
+			printf("result1 %i %p %s\n",res,mainFunc,fName)
+
+			LLVMVerifyModule(mod,0,msg&)
+			if msg != null
+				printf("error %s\n",msg)
+
+			LLVMLinkInMCJIT()
+			//LLVMInitializeNativeTarget()
+			LLVM_NATIVE_TARGETINFO()
+			LLVM_NATIVE_TARGET()
+			LLVM_NATIVE_TARGETMC()
+			LLVMInitializeX86AsmPrinter()
+
+			eng := void^()
+			res = LLVMCreateExecutionEngineForModule(eng&,mod,msg)
+			if msg != null
+				printf("error %s\n",msg)
+			printf("result2 %i\n",res)
+
+			jitArgs := void^[2]
+			jitArgs[0] = LLVMCreateGenericValueOfInt(LLVMInt32Type(),1,0)
+			jitArgs[1] = LLVMCreateGenericValueOfPointer(argv)
+		
+			LLVMRunFunction(eng,mainFunc,2,jitArgs)
+
+		}catch(IException^ e)
+		{
+			printf("error %s\n",e.Msg())
+		}
+		return 0
+		
+		return 0
+	}
 
 	fil := TFile(outputFile,"w")
 	//fil := TEchoStream()
