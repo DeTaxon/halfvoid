@@ -356,7 +356,7 @@ main := !(int argc,char^^ argv) -> int
 	{
 		try{
 
-			llvmLib := Library("/lib/x86_64-linux-gnu/libLLVM-10.so.1","libLLVM.dll")
+			llvmLib := Library("/usr/lib/x86_64-linux-gnu/libLLVM-10.so.1","/lib/x86_64-linux-gnu/libLLVM-10.so.1","libLLVM.dll")
 			llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
 			llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}
 			llvmIRInContext := llvmLib.Get("LLVMParseIRInContext")->{!(void^,void^,void^^,char^^)^->int}
@@ -366,9 +366,11 @@ main := !(int argc,char^^ argv) -> int
 			LLVMLinkInMCJIT := llvmLib.Get("LLVMLinkInMCJIT")->{!()^->void}
 			//LLVMInitializeNativeTarget := llvmLib.Get("LLVMInitializeNativeTarget")->{!()^->void}
 			LLVMCreateExecutionEngineForModule := llvmLib.Get("LLVMCreateExecutionEngineForModule")->{!(void^^,void^,char^^)^->int}
+			LLVMCreateJITCompilerForModule := llvmLib.Get("LLVMCreateJITCompilerForModule")->{!(void^^,void^,char^^)^->int}
 			LLVMCreateGenericValueOfInt := llvmLib.Get("LLVMCreateGenericValueOfInt")->{!(void^,s64,int)^->void^}
 			LLVMInt32Type := llvmLib.Get("LLVMInt32Type")->{!()^->void^}
 			LLVMRunFunction := llvmLib.Get("LLVMRunFunction")->{!(void^,void^,int,void^)^->void}
+			LLVMGetFunctionAddress := llvmLib.Get("LLVMGetFunctionAddress")->{!(void^,void^)^->void^}
 			LLVMCreateGenericValueOfPointer := llvmLib.Get("LLVMCreateGenericValueOfPointer")->{!(void^)^->void^}
 
 			LLVM_NATIVE_TARGETINFO := llvmLib.Get("LLVMInitializeX86TargetInfo")->{!()^->void}
@@ -404,16 +406,18 @@ main := !(int argc,char^^ argv) -> int
 			LLVMInitializeX86AsmPrinter()
 
 			eng := void^()
-			res = LLVMCreateExecutionEngineForModule(eng&,mod,msg)
+			res = LLVMCreateJITCompilerForModule(eng&,mod,msg)
 			if msg != null
 				printf("error %s\n",msg)
 			printf("result2 %i\n",res)
 
-			jitArgs := void^[2]
-			jitArgs[0] = LLVMCreateGenericValueOfInt(LLVMInt32Type(),1,0)
-			jitArgs[1] = LLVMCreateGenericValueOfPointer(argv)
+			//jitArgs := void^[2]
+			//jitArgs[0] = LLVMCreateGenericValueOfInt(LLVMInt32Type(),1,0)
+			//jitArgs[1] = LLVMCreateGenericValueOfPointer(argv)
 		
-			LLVMRunFunction(eng,mainFunc,2,jitArgs)
+			//LLVMRunFunction(eng,mainFunc,2,jitArgs)
+			fPoint := LLVMGetFunctionAddress(eng,fName)->{!(int,char^^)^->int}
+			fPoint(1,argv)
 
 		}catch(IException^ e)
 		{

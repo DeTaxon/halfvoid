@@ -13,7 +13,7 @@ Rel := class .{@T}
 		}else{
 			res -= -val
 		}
-		return res->{void^}->{T^}
+		return res&->{T^^}^
 	}
 	"^" := !() -> ref T
 	{
@@ -21,7 +21,7 @@ Rel := class .{@T}
 	}
 	"=" := !(T^ newVal) -> void
 	{
-		if newVal == null val = 0
+		if newVal == null { val = 0 return void }
 		val1 := newVal->{void^}->{size_t}
 		val2 := this&->{void^}->{size_t}
 		if val1 > val2

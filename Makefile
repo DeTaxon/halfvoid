@@ -17,6 +17,7 @@ Stati := -static
 ifeq ($(nostatic),yes)
 	undefine Stati
 endif
+undefine Stati
 
 ifeq ($(callgrind),yes)
 	cg := valgrind --tool=callgrind

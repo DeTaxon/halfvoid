@@ -1,37 +1,5 @@
 
-getcontext := !(void^ a) -> int declare
-setcontext := !(void^ a) -> int declare
-makecontext := !(void^ a,!()^->void  b,int argc,...) -> int declare
-swapcontext := !(void^ begin, void^ end) -> int declare
-
-inotify_init := !() -> int declare
-inotify_add_watch := !(int fd,char^ pat,int mask) -> int declare
 read := !(int fd,void^ dat,size_t sizeToRead) -> s64 declare
-
-
-eventfd := !(u64 initVal,int flags) -> int declare
-
-pollfd := class 
-{
-	fd := int
-	events := u16
-	revents := u16
-}
-poll := !(void^ pols, int count,int timeout) -> int declare
-
-ConvertThreadToFiber := !(void^ fbr) -> void^ declare
-SwitchToFiber := !(void^ fbr) -> void declare 
-CreateFiber := !(size_t stackSize,!(void^)^->void fiberFunc,void^ fiberValue) -> void^ declare
-DeleteFiber := !(void^ fbr) -> void declare
-
-CreateEventA := !(void^ security,int manualReset,int bInitState,char^ pName) -> void^ declare
-SetEvent := !(void^ evnt) -> int declare
-ResetEvent := !(void^ evnt) -> int declare
-WaitForMultipleObjects := !(u32 nCount,void^ handlers,int waitAll,u32 millicenodsTimeout) -> int declare
-WAIT_OBJECT_0 := 0
-WAIT_ABANDONED_0 := 0x80
-WAIT_TIMEOUT := 0x102
-//wait failed 0xfffffff
 
 CurrentTask := thread_local TaskData^
 CurrentTaskBox := thread_local TaskBox^
