@@ -1,14 +1,39 @@
 
-main := !(int argc, char^^ argv) -> int
+tstIter := class
 {
-	printf("yes\n")
-	return 0
+	x := int
+	this := !() -> void { x = 13}
+	Inc := !() -> void { x -= 1}
+	"^" := !() -> ref int { return x}
+	IsEnd := !() -> bool { return x < 0}
+	Destroy := !() -> void
+	{
+		printf("target %i\n",x)
+	}
 }
-main2 := !(int argc, char^^ argv) -> int
+
+tstIterClass := class
+{
+	this := !() -> void {}
+	"~For" := !() -> tstIter
+	{
+		return tstIter()
+	}
+}
+
+main := !(int argc, char^^ argv) -> int
 {	
-	ptr := int^()
-	ptr2 := int^()
-	printf("heh %i\n",ptr2?^ ?? ptr?^)
+	try
+	{
+	for i : tstIterClass()
+	{
+		printf("heh %i\n",i)
+		throw new Exception("g")
+	}
+	}catch(IException^ e)
+	{
+		
+	}
 	return 0
 
 	//k := 78

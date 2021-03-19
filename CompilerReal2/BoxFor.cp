@@ -64,6 +64,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	UnrefFuncs := Object^^
 	IndFuncs := Object^^
 	IsInvalids := Object^^
+	DestroyFunc := Object^^
 	IsEndFunc := Object^
 
 	ProxyFuncs := BoxFunc^^
@@ -145,6 +146,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				Params = new MemParam^[itemsCount]
 				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
+				DestroyFunc = new Object^[itemsCount]
 
 				for itemsCount IsInvalids[it] = null
 
@@ -236,6 +238,10 @@ BoxForOldFashionMulti := class extend BoxFor
 					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,true)
 					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,true)
 					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,true)
+					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,true)
+					if DestroyFunc[i] != null
+						callDeferStuf = true
+					
 
 					if IncFuncP == null {
 						EmitError("incorrect for iterator, need increment\n")
@@ -323,12 +329,27 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		if callDeferStuf
-			PrintDeferDepth(f,ItId,this&)	
-		Down.Right[^].PrintPre(f)
-
 		debId := -1
 		if DebugMode debId = CreateDebugCall(this&)
+		
+		if callDeferStuf
+			PrintDeferDepth(f,ItId,this&)
+		for itr,i : Down.Right
+		{
+			itr.PrintPre(f)
+			if DestroyFunc[i] != null
+			{
+				fnc := DestroyFunc[i]->{BoxFunc^}
+				f << "%Ptr" << ItId << "num" << i << " = bitcast "
+				itr.PrintPointUse(f) f << " to i8*\n"
+				f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
+				f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
+				if debId != -1
+					f << ", !dbg !" << debId
+				f << "\n"
+			}
+		}
+
 
 		Checks := 0
 		for itemsCount if IsInvalids[it] != null Checks += 1
@@ -451,18 +472,16 @@ BoxForOldFashionMulti := class extend BoxFor
 		if labelContinue != null
 		{
 			labelContinue.PrintLabel(f)
-			if callDeferStuf
-				PrintDeferApply(f,ItId,this&)
 			f << "br label %IncFuncs" << ItId << "\n"
 		}
 		if labelBreak != null
 		{
 			labelBreak.PrintLabel(f)
-			if callDeferStuf
-				PrintDeferApply(f,ItId,this&)
 			f << "br label %End" << ItId << "\n"
 		}
 		f << "End" << ItId << ":\n"
+		if callDeferStuf
+			PrintDeferApply(f,ItId,this&)
 	}
 
 	labelContinue := BoxLabel^
