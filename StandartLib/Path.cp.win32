@@ -66,13 +66,15 @@ DirectoryIterator2 := class
 		if not isItEnd
 		{
 			putNameToBuff()
-		}else{
-			FindClose(hndl)
 		}
 	}
 	IsEnd := !() -> bool
 	{
 		return isItEnd
+	}
+	Destroy := !() -> void
+	{
+		FindClose(hndl)
 	}
 }
 
