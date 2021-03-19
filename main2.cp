@@ -1,39 +1,19 @@
 
-tstIter := class
-{
-	x := int
-	this := !() -> void { x = 13}
-	Inc := !() -> void { x -= 1}
-	"^" := !() -> ref int { return x}
-	IsEnd := !() -> bool { return x < 0}
-	Destroy := !() -> void
-	{
-		printf("target %i\n",x)
-	}
-}
-
 tstIterClass := class
 {
 	this := !() -> void {}
-	"~For" := !() -> tstIter
+	hoh := !() -> int
 	{
-		return tstIter()
+		yield 1
+		yield 2
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {	
-	try
-	{
-	for i : tstIterClass()
-	{
-		printf("heh %i\n",i)
-		throw new Exception("g")
-	}
-	}catch(IException^ e)
-	{
-		
-	}
+	x := tstIterClass()
+	printf("hoh %i\n",x.hoh())
+	printf("hoh %i\n",x.hoh())
 	return 0
 
 	//k := 78

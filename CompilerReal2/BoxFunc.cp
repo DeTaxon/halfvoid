@@ -933,16 +933,6 @@ BoxFuncBody := class extend BoxFunc
 			{
 				PrintDebugDeclare(f,null,null->{char^})
 			}
-			if Yodlers.Size() != 0
-			{
-				f << "%Yodler = getelementptr i32 , i32* %T" << yodlerInAlloc << ",i32 0\n"
-				f << "%StartYield = load i32, i32* %Yodler\n"
-				f << "switch i32 %StartYield, label %Yield0 ["
-				for i : Yodlers.Size() + 1
-					f << "i32 " << i << ", label %Yield" << i << "\n"
-				f << "]\n"
-				f << "Yield0:\n"
-			}
 			
 			iterP := Up
 
@@ -1020,6 +1010,16 @@ BoxFuncBody := class extend BoxFunc
 						f << "store " << RT.GetName() << " null , " << RT.GetName() << "* %Result\n"
 					}
 				}
+			}
+			if Yodlers.Size() != 0
+			{
+				f << "%Yodler = getelementptr i32 , i32* %T" << yodlerInAlloc << ",i32 0\n"
+				f << "%StartYield = load i32, i32* %Yodler\n"
+				f << "switch i32 %StartYield, label %Yield0 ["
+				for i : Yodlers.Size() + 1
+					f << "i32 " << i << ", label %Yield" << i << "\n"
+				f << "]\n"
+				f << "Yield0:\n"
 			}
 			
 			Down[^].PrintInBlock(f)
