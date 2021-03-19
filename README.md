@@ -123,6 +123,29 @@ for container
 	//variable "it" represent item
 	it = 0
 }
+
+//to make use in cycle, class must support function "~For", and return specific class
+MyClass := class
+{
+	...
+	"~For" := !() -> MyIterator 
+	{
+		return MyIterator()
+		return MyIterator(this,x,1) //constructor
+	}
+}
+MyIterator := class
+{
+	Inc := !() -> void {} // Be next object
+	"^" := !() -> ref int { return x } //Get value of object
+	"IsEnd" := !() -> bool {return x > 0} //Is cycle ended
+	
+	"IsInvalid" := !() -> bool { return false }// Optional, should cycle even start. Created to iterate on files in folder, checks if folder exist. Probably useless.
+	"Ind" := !() -> char^ { return "key" } //Optional, get index of object.
+	"Destroy" := !() -> void {} //Optional, called after cycle finished, or exception, or break/continue. Act like c++ destructor. 
+}
+
+
 ```
 Operator  can iterate in parallel (not like threads or OpenMP)
 Every iteration you get i-n element from container 1, and i-n element from container 2 and etc

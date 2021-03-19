@@ -112,6 +112,10 @@ DirectoryIterator2 := class
 	{
 		return nowEntry == null
 	}
+	Destroy := !() -> void
+	{
+		closedir(dirFd)
+	}
 }
 
 
