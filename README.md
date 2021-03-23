@@ -194,6 +194,8 @@ Tuple support
 ```java
 x := Tuple.{int,float}(3,4.1)
 y := Tuple.{int,int}
+x.0 = 3
+x.1 = 3.14
 y = !{2,6}
 x = y
 ```

@@ -9,6 +9,10 @@ LibDBObject := class
 	if $win32
 		win32DllData := win32DllLoadData^
 
+	this := !() -> void
+	{
+		loadedFuncs."this"()
+	}
 	Get := !(char^ name) -> void^
 	{
 		inMap := loadedFuncs.TryFind(name)
@@ -66,8 +70,6 @@ LibDatabaseType := class
 		itMemPool.Push()
 		defer itMemPool.Pop()
 
-		newObj := LibDBObject
-	
 		hndl := OpenLib(name)
 		
 		if hndl == null
@@ -153,15 +155,25 @@ Library := class
 	{
 		Open(args...)
 	}
+	skipLib := !(char^ name) -> bool
+	{
+		strEnd := StringEnd(name)
+		if $posix and strEnd == ".dll" return true
+		if $win32 and strEnd != ".dll" return true
+		return false
+	}
 	Open := !(char^ name,args...) -> void
 	{
-		hndl = LibDB.GetLib(name)
+		hndl = null
+		if not skipLib(name)
+			hndl = LibDB.GetLib(name)
 		if hndl == null
 			Open(args...)
 	}
 	Open := !(char^ name) -> void
 	{
-		hndl = LibDB.GetLib(name)
+		if not skipLib(name)
+			hndl = LibDB.GetLib(name)
 		if hndl == null
 			throw new Exception(0,"can not open library, like "sbt + name)
 	}
@@ -171,8 +183,11 @@ Library := class
 	}
 	Open := !(char^^ names,int count) -> void
 	{
+		hndl = null
 		for i : count
 		{
+			if skipLib(names[i])
+				continue
 			hndl = LibDB.GetLib(names[i])
 			if hndl != null
 			{	
