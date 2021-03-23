@@ -353,10 +353,25 @@ switch StringEnd(fileName) //proxy object, cant describe
 }
 
 //centf
-//centf is pair position,quaternion and scale
+//centf is pair position,quaternion and scale(on everything,cant set x only)
 //act like matrix4x4, but perspective not supported
 
 ```
 
+ZipFS
+Same as PhysicsFS, but worse
+Support .zip only, deflate only, read only
+```java
+//gRepo - global variable that inited on "." and adds .exe as root
+gRepo.GetFile("README.md") // return file, null on error, exception in future
+gRepo.AddZipRoot("Level1Models.zip") // now files in .zip can be accesed as they wold be in "." folder
 
+modFile := gRepo.GetFile("Level1/box.ply")
+modFile.IsVirtual() // true if file inside .zip file
+
+ptr := modFile.Map()
+defer modFile.DecUser() // reference count to file, reference is incresed at Map, should be ref counted by compiler
+
+memcpy(myMem,ptr,modFile.Size())
+```
 

@@ -33,7 +33,6 @@ HashSomeMap := class .{@Buckets,@TreeType,@K,@V}
 		nowArr := ref nowBuck(key)
 		if key in nowArr
 		{
-			//TODO: mempool
 			return nowArr[key]
 		}else{
 			itSize += 1

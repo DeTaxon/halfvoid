@@ -291,4 +291,9 @@ vRepo := class
 		return null
 
 	}
+	Destroy := !() -> void
+	{
+		repoMP.Destroy()
+		delete repoMP
+	}
 }

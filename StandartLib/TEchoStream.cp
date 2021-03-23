@@ -2,6 +2,7 @@ TEchoStream := class extend TIOStream
 {
 	ptr := char^
 	inPtrSize := int
+	redData := int
 	pages := List.{char^}
 
 	this := !() -> void { ptr = null inPtrSize = 0 pages."this"()}

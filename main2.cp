@@ -1,19 +1,20 @@
 
-tstIterClass := class
+ForceDefer := !() -> void
 {
-	this := !() -> void {}
-	hoh := !() -> int
-	{
-		yield 1
-		yield 2
-	}
+}
+ForceDefer.defer := !() -> void
+{
+	
 }
 
 main := !(int argc, char^^ argv) -> int
+{
+	x := new RefCountObject()
+	return 0
+}
+
+main2 := !(int argc, char^^ argv) -> int
 {	
-	x := tstIterClass()
-	printf("hoh %i\n",x.hoh())
-	printf("hoh %i\n",x.hoh())
 	return 0
 
 	//k := 78
