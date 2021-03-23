@@ -1,4 +1,4 @@
-ForcedLibs := -C0 "Libs/$$" -C0 "StandartLib/$$" --clib libjit.clib
+ForcedLibs := -C0 "Libs/$$" -C0 "StandardLib/$$" --clib libjit.clib
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
