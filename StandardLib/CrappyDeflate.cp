@@ -252,11 +252,10 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 		if compType == 0
 		{
 		  	bw.MoveUp()
-			toCpy := bw.Get(2)
-			bw.Move(4)
+			toCpy := bw.Get(16)
+			bw.Move(32)
 			bw.CopyTo(outpPoint,toCpy)
 			outpPoint = outpPoint[toCpy]&
-			assert(false)
 		}else{
 			litsTree := NotHuffmanTree9^
 			distTree := NotHuffmanTree9^
