@@ -99,7 +99,7 @@ $(CurrentLex): LexBuilder/main.cp Priority.pr CompilerReal2/PriorityRead.cp
 Mach.m: $(CurrentLex)
 	$(CurrentLex)
 json.m:  LexBuilder/json.cp
-	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/json.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -o json.exe
+	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/json.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -ldl -lpthread -o json.exe
 	./json.exe
 
 	

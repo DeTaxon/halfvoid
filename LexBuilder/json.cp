@@ -4,6 +4,7 @@ main := !(int argc, char^^ argv) -> int
 
 	itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",1)
 	itBuilder.ApplyReg("[0-9]+(.[0-9]+)?",2)
+	itBuilder.ApplyReg("0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2)
 	itBuilder.ApplyReg(" true | false | null",3)
 	itBuilder.ApplyReg("\\{ | \\} | \\, | \\: | \\[ | \\]",4)
 	itBuilder.ApplyReg("\\ | \\t | \\n",5)
