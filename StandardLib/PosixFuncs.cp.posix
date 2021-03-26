@@ -66,6 +66,7 @@ posixGetFileSize := !(int fd,u64^ size) -> bool
 
 realpath := !(char^ inp, char^ outp) -> char^ declare
 
+mkdtemp := !(char^ ndm) -> char^ declare
 mkstemp := !(char^ ndm) -> int declare
 
 mkdir := !(char^ nm, int mode) -> int declare

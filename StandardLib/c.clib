@@ -28,6 +28,7 @@
 		"sqrtf" : "float,float",
 
 		"getenv" : "char^,char^",
+		"setenv" : "int,char^,char^,int",
 
 		"printf" : "int,char^,...",
 		"sprintf" : "int,char^,char^,...",
