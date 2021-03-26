@@ -1,15 +1,9 @@
 
-ForceDefer := !() -> void
-{
-}
-ForceDefer.defer := !() -> void
-{
-	
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	x := new RefCountObject()
+	x := many_float
+	x.x = 13
+	printf("wut %f\n",x.x)
 	return 0
 }
 

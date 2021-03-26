@@ -1,5 +1,13 @@
 {
 	"initname" : "libjitinit",
+	"structs" : {
+		"many_float" : {
+			"x" : "float",
+			"y" : "float",
+			"z" : "float",
+			"w" : "float"
+		}
+	},
 	"consts" : {
 		"jit_abi_cdecl" : 0,
 		"jit_abi_vararg" : 1,

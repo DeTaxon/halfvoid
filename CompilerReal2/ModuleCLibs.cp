@@ -7,6 +7,7 @@ OneCLib := class
 	dllNames := List.{StringSpan}
 
 	consts := AVLMap.{StringSpan,jsonNode^}
+	structs := AVLMap.{StringSpan,jsonNode^}
 	funcs := AVLMap.{StringSpan,jsonNode^}
 	vars := AVLMap.{StringSpan,jsonNode^}
 
@@ -104,6 +105,11 @@ CLibModule := class extend CompilerModule
 				{
 					newLib.vars[it.Key()] = it
 				}
+			case "structs"
+				for it : part^
+				{
+					newLib.structs[it.Key()] = it
+				}
 			case "consts"
 				for it : part^
 				{
@@ -116,6 +122,36 @@ CLibModule := class extend CompilerModule
 
 		newLib.isStatic = isStatic
 		libs.Push(newLib)
+	}
+	itTypes := AVLMap.{StringSpan,Type^}
+	GetModuleType := virtual !(char^ name) -> Type^
+	{
+		spn := StringSpan(name)
+
+		if spn in itTypes
+			return itTypes[spn]
+
+		try
+		{
+			for it : libs
+			{
+				if spn in it.structs
+				{
+					inStructs := ref it.structs[spn]
+					nClass := new BoxClass(null,null,null)
+					for field : inStructs^
+					{
+						fldType := CheckTypeString(field.GetStr())
+						new FieldParam(field.Key().Str(),fldType,nClass)
+					}
+					itTypes[inStructs.Key()] = nClass.ClassType
+					return nClass.ClassType
+				}
+			}
+		}catch(IException^ e)
+		{
+		}
+		return null
 	}
 	GetItem := virtual !(char^ name) -> Object^
 	{
@@ -233,10 +269,6 @@ CLibModule := class extend CompilerModule
 			i += 1
 		}
 		return baseType
-	}
-	GetModuleType := virtual !(char^ name) -> Type^
-	{
-		return null
 	}
 	InitModule := virtual !() -> bool {
 		return true
