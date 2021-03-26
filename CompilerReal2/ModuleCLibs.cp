@@ -138,6 +138,8 @@ CLibModule := class extend CompilerModule
 				if spn in it.structs
 				{
 					inStructs := ref it.structs[spn]
+					bc := new FuncInputBox ; temp
+
 					nClass := new BoxClass(null,null,null)
 					for field : inStructs^
 					{
