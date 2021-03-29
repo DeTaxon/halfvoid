@@ -1,4 +1,4 @@
-Tupls := Queue.{TupleClass^}
+Tupls := List.{TupleClass^}
 
 PrintTuples := !(TIOStream f) -> void
 {
@@ -53,7 +53,6 @@ SimpleSetTuple := class
 TupleClass := class extend BoxClass
 {
 	EnableSet := bool
-	GetNmFunc := TupleFuncGetItem^
 
 	FncSetVal := BuiltInFuncBinar^
 	FncSets := Queue.{Object^}
@@ -62,9 +61,6 @@ TupleClass := class extend BoxClass
 	createFunc := TypeFunc^
 
 	askedSet := char
-
-	cttAsFunc := BoxFunc^
-
 
 	this := !(FuncInputBox^ typs) -> void
 	{
@@ -98,15 +94,11 @@ TupleClass := class extend BoxClass
 				return null
 			return tuplSet.GetFunc(itBox)
 		case "this"
-			if cttAsFunc == null
+			if tuplConstr == null
 			{
-				box := new FuncInputBox ; $temp
-				box.itPars.Emplace(ClassType,false)
-				box.itPars.Emplace(Params[^].ResultType,false)
-				cttAsFunc =TCT.GetFunc(box^)
-				cttAsFunc.IsMethod = true
+				CreateTupleConstructor()
 			}
-			return cttAsFunc
+			return tuplConstr
 		case void 
 			return null
 		}
@@ -129,36 +121,12 @@ TupleClass := class extend BoxClass
 	}
 	PrintGlobalExtra := !(TIOStream f) -> void
 	{
-		if askedCreate != 0
-		{
-			//toEx := "call " + ftB.GetName() + "@TupleCreate" + itTpl.ClassId + 
-			//	"(" 
-			//toEx = toEx + ctB.GetName() + "* #0"i
-			f << "define void @TupleCreate" << ClassId << "(" << ClassType.GetName() << "* %ToSet" 
-			for par,i : Params
-			{
-				itTyp := par.ResultType
-				isRef := false
-				if itTyp is TypeClass isRef = true
-				if itTyp is TypeArr isRef = true
-				
-				f << ", "<< itTyp.GetName()
-				if isRef f << "*"
-				f << " %From" << i
-
-			}
-			f << ")\n"
-			f << "{\n"
-			FncSets[^].PrintPre(f)
-			f << "ret void\n"
-			f << "}\n"
-			
-		}
 		PrintCreatedFuncs(f)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_PreGetUse
+		this."BoxClass.DoTheWork"(pri)
+		if pri == State_PreGetUse and false //COMMENTED
 		{
 			if askedCreate == 1
 			{
@@ -449,7 +417,10 @@ CreateTupleTemplate := class extend BoxTemplate
 		}
 		toEx + ")\n"
 
-		return new BuiltInFuncMega("",funct,toEx)
+		newFunc := new BuiltInFuncMega("",funct,toEx)
+		itTpl.tuplConstr = newFunc
+		WorkBag.Push(itTpl,State_PreGetUse)
+		return newFunc
 	}
 }
 TupleConstructorTemplate := class extend BoxTemplate
@@ -507,8 +478,8 @@ TupleConstructorTemplate := class extend BoxTemplate
 
 TupleFuncGetItem := class extend BoxTemplate
 {
-	frmIn := TupleClass^
-	this := !(TupleClass^ frmOn) -> void
+	frmIn := BoxClass^
+	this := !(BoxClass^ frmOn) -> void
 	{
 		frmIn = frmOn
 		IsPassAttrs = true

@@ -1,29 +1,9 @@
 
 main := !(int argc, char^^ argv) -> int
-{
-	x := many_float
-	printf("wut %f\n",x.x)
-	return 0
-}
-
-main2 := !(int argc, char^^ argv) -> int
 {	
-	return 0
-
-	//k := 78
-	//tst := Rel.{int}
-	//tst2 := Rel.{int}
-	//y := 67
-	//tst = k&
-	//tst2 = null
-	//printf("heh %i %i %i\n",k,tst^,tst.val)
-	//if tst2 == null
-	//{
-	//	printf("yep\n")
-	//}
-	
-	return 0	
-
+	jj := many_float(1,2,3,4)
+	printf("heh %f\n",jj.x)
+	//return 0
 	try
 	{
 		TestQuestion()

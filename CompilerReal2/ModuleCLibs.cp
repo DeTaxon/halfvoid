@@ -146,6 +146,7 @@ CLibModule := class extend CompilerModule
 						fldType := CheckTypeString(field.GetStr())
 						new FieldParam(field.Key().Str(),fldType,nClass)
 					}
+					nClass.CreateTupleConstructor()
 					itTypes[inStructs.Key()] = nClass.ClassType
 					return nClass.ClassType
 				}
@@ -291,6 +292,14 @@ CLibModule := class extend CompilerModule
 				continue
 			}
 			lib.initFuncBody.PrintGlobal(f)
+		}
+		for it : itTypes
+		{
+			if it is TypeClass
+			{
+				asCls := it->{TypeClass^}.ToClass
+				asCls.PrintGlobal(f)
+			}
 		}
 	}
 	GetPtrFunc := !(char^ name) -> void^
