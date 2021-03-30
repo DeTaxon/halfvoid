@@ -1218,6 +1218,23 @@ PointFuncCall := class extend NaturalCall
 	}
 	UseCall := virtual !(TIOStream f) -> void
 	{
+		if compilerSuffix == "posix"
+		{
+			containAbi := false
+			for i : FType.ParsCount
+			{
+				if (not FType.ParsIsRef[i]) and FType.Pars[i] is TypeClass
+				{
+					containAbi = true
+					break
+				}
+			}
+			if containAbi
+			{
+				UseLinuxAbiCall(f)
+				return void
+			}
+		}
 		PrintPreFuncName(f)
 		PrintParamPres(f)
 		ParamCal.PrintPre(f)
@@ -1239,6 +1256,186 @@ PointFuncCall := class extend NaturalCall
 				f << " , !dbg !" << newId
 		}
 		f << "\n"
+	}
+	//TODO: check_if_virtual
+	UseLinuxAbiCall := virtual !(TIOStream f) -> void 
+	{
+
+		PrintPreFuncName(f)
+		needComma := false
+
+		funcTypeNameTmpl := ""sbt
+		funcTypeNameTmpl <<  FType.RetType.GetName() << "("
+
+		for it,i : Down
+		{
+			if i >= FType.ParsCount
+			{
+				it.PrintPre(f)
+				continue
+			}
+			if FType.Pars[i] is TypeClass and not FType.ParsIsRef[i]
+			{
+				asClass := FType.Pars[i]->{TypeClass^}.ToClass
+				it.PrintPointPre(f)
+				
+				allIsFloat32 := true
+				allIsIntLike := true
+				for field : asClass.Params
+				{
+					if field.ResultType == GTypeFloat continue
+					allIsFloat32 = false
+					if IsInt(field.ResultType) continue
+					allIsIntLike = false
+					break
+				}
+				if asClass.Params.Size() > 4 allIsFloat32 = false
+				if allIsFloat32
+				{
+					floats := asClass.Params.Size()
+					cr := floats
+					while cr > 0
+					{
+						if cr >= 2
+						{
+							if needComma funcTypeNameTmpl << ","
+							needComma = true
+							funcTypeNameTmpl << "<2 x float>"
+							cr -= 2
+						}else
+						{
+							if needComma funcTypeNameTmpl << ","
+							needComma = true
+							funcTypeNameTmpl << "float"
+							cr -= 1
+						}
+					}
+					if floats >= 2
+					{
+						f << "%T2Floats" << RetId << "i" << i << " = bitcast "
+						it.PrintPointUse(f)
+						f << " to [ 128 x <2 x float>]*\n"
+					}
+					cr = floats
+					j := 0
+					while cr > 0
+					{
+						if cr >= 2
+						{
+							
+							f << "%TPar" << i << "part" << j << "pre = "
+							f << "getelementptr [128 x <2 x float>] , [128 x <2 x float>]* "
+							f << "%T2Floats , i32 0, i32 " << j <<"\n"
+							f << "%TPar" << i << "part" << j << " = "
+							f << "load <2 x float>, <2 x float>* "
+							f << "%TPar" << i << "part" << j << "pre\n"
+							cr -= 2
+						}else
+						{
+							cr -= 1
+						}
+						j += 1
+					}
+					//TODO: float mod 2 == 1
+				}else if allIsIntLike
+				{
+					assert(false) //TODO
+				}else{
+					assert(false) //TODO
+				}
+
+			}else{
+				if needComma funcTypeNameTmpl << ","
+				needComma = true
+				if FType.ParsIsRef[i] {
+					funcTypeNameTmpl << FType.Pars[i].GetName() << "*"
+					it.PrintPointPre(f)
+				}else{
+					funcTypeNameTmpl << FType.Pars[i].GetName()
+					it.PrintPre(f)
+				}
+			}
+		}
+		funcTypeNameTmpl << ")*"
+		fName := funcTypeNameTmpl.Str() ; $temp
+		
+		ParamCal.PrintPre(f)
+		f << "%TId" << RetId << " = bitcast " ParamCal.PrintUse(f) f << " to " << fName << "\n"
+
+		needComma = false
+		if (FType.RetType != GTypeVoid)
+		{
+			f << "%T" << RetId <<" = "	
+		}
+		f << "call "
+		f << fName
+		f << "%TId" << RetId
+		f << "("
+		for it,i : Down
+		{
+			if i >= FType.ParsCount
+			{
+				it.PrintUse(f)
+				continue
+			}
+			if FType.Pars[i] is TypeClass and not FType.ParsIsRef[i]
+			{
+				asClass := FType.Pars[i]->{TypeClass^}.ToClass
+				
+				allIsFloat32 := true
+				allIsIntLike := true
+				for field : asClass.Params
+				{
+					if field.ResultType == GTypeFloat continue
+					allIsFloat32 = false
+					if IsInt(field.ResultType) continue
+					allIsIntLike = false
+					break
+				}
+				if asClass.Params.Size() > 4 allIsFloat32 = false
+				if allIsFloat32
+				{
+					floats := asClass.Params.Size()
+
+					j := 0
+					cr := floats
+					while cr > 0
+					{
+						if needComma f << ","
+						needComma = true
+							
+						if cr >= 2
+						{
+							f << "<2 x float> %TPar" << i << "part" << j
+							cr -= 2
+						}else
+						{
+							cr -= 1
+						}
+						j += 1
+					}
+				}else if allIsIntLike
+				{
+					assert(false) //TODO
+				}else{
+					if needComma funcTypeNameTmpl << ","
+					needComma = true
+					it.PrintPointUse(f)
+				}
+
+			}else{
+				if needComma funcTypeNameTmpl << ","
+				needComma = true
+				if FType.ParsIsRef[i] {
+					it.PrintPointUse(f)
+				}else{
+					it.PrintUse(f)
+				}
+			}
+		}
+		f << ")" //TODO: debug call
+		f << "\n"
+
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
