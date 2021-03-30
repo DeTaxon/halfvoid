@@ -478,8 +478,8 @@ TupleConstructorTemplate := class extend BoxTemplate
 
 TupleFuncGetItem := class extend BoxTemplate
 {
-	frmIn := BoxClass^
-	this := !(BoxClass^ frmOn) -> void
+	frmIn := BoxClassBase^
+	this := !(BoxClassBase^ frmOn) -> void
 	{
 		frmIn = frmOn
 		IsPassAttrs = true
