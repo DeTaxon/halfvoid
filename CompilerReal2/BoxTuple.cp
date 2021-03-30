@@ -185,10 +185,10 @@ TupleClass := class extend BoxClass
 }
 TupleSpaceship :=  class extend BuiltInFuncBinar
 {
-	origin := BoxClass^
+	origin := BoxClassBase^
 	exeId := int
 	funcCalls := List.{Object^}
-	this := !(BoxClass^ org) -> void
+	this := !(BoxClassBase^ org) -> void
 	{
 		origin = org
 		exeId = GetNewId()
@@ -306,8 +306,8 @@ SetTupleObj := class extend BuiltInFuncMega
 }
 SetTupleValueSimple := class extend BoxTemplate
 {
-	ptrToTuple := BoxClass^
-	this := !(BoxClass^ itt) -> void
+	ptrToTuple := BoxClassBase^
+	this := !(BoxClassBase^ itt) -> void
 	{
 		ptrToTuple = itt
 	}

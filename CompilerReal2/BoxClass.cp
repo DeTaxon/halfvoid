@@ -103,7 +103,6 @@ FuncItem := class
 
 BoxClass := class extend BoxClassBase
 {
-	ClassId := int
 	NotMineParams := int
 
 	FakeParams := Queue.{FakeFieldParam^}
@@ -725,59 +724,6 @@ BoxClass := class extend BoxClassBase
 	}
 
 
-	tuplCmp := TupleSpaceship^
-	CreateTupleCmp := !() -> void
-	{
-		if tuplCmp == null
-			tuplCmp = new TupleSpaceship(this&)
-	}
-	tuplSet := SetTupleValueSimple^
-	CreateTupleSet := !() -> void
-	{
-		if tuplSet == null
-			tuplSet = new SetTupleValueSimple(this&)
-	}
-
-	PrintCreatedFuncs := !(TIOStream f) -> void
-	{
-		if tuplCmp != null
-			tuplCmp.PrintAsGlobal(f)
-		PrintTupleConstruct(f) 
-		if tuplSet != null
-		{
-			funcs := tuplSet.GetCreatedFuncs()->{SetTupleObj^[]}
-			if funcs != null
-			{
-				for it : funcs
-				{
-					it.PrintItFunc(f)
-				}
-			}
-		}
-	}
-	PrintTupleConstruct := !(TIOStream f) -> void
-	{
-		if tuplConstr == null
-			return void
-		f << "define void @TupleCreate" << ClassId << "(" << ClassType.GetName() << "* %ToSet" 
-		for par,i : Params
-		{
-			itTyp := par.ResultType
-			isRef := false
-			if itTyp is TypeClass isRef = true
-			if itTyp is TypeArr isRef = true
-			
-			f << ", "<< itTyp.GetName()
-			if isRef f << "*"
-			f << " %From" << i
-
-		}
-		f << ")\n"
-		f << "{\n"
-		tuplConstrSets[^].PrintPre(f)
-		f << "ret void\n"
-		f << "}\n"
-	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		PrintCreatedFuncs(f)
