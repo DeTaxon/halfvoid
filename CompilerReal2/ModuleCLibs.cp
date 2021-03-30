@@ -253,14 +253,21 @@ CLibModule := class extend CompilerModule
 			}
 			nextTypes.Push(CheckTypeString(it)) ; $temp
 		}
-		return GetFuncType(nextTypes,null,retType,false,isVArg)
+		typs := nextTypes.ToArray() ; $temp
+		return GetFuncType(typs,null,nextTypes.Size(),retType,false,isVArg,compilerSuffix == "posix")
 	}
 	CheckTypeString := !(StringSpan toCheck) -> Type^
 	{
 		i := 0
 		while toCheck[i] != '^' and i < toCheck.Size() i+= 1
-		baseType := GetType(toCheck[0..i].StrTmp())
-		if baseType == null throw new Exception("Type not found")
+		strTmpName := toCheck[0..i].StrTmp()
+		baseType := GetType(strTmpName)
+		if baseType == null 
+		{
+			baseType = GetModuleType(strTmpName)
+			if baseType == null
+				throw new Exception("Type not found")
+		}
 		while i < toCheck.Size() {
 			switch toCheck[i]
 			{

@@ -593,7 +593,7 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 
 GetFuncType := !(Type^[@Siz] typs,Type^ retType) -> TypeFunc^
 {
-	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,false,false)
+	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,false,false,false)
 }
 GetFuncType := !(Type^[@Siz] typs,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
@@ -603,14 +603,14 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 {
 	if lin.Size() == 0
 	{
-		return GetFuncType(null,null,0,retType,retRef2,IsVArgs2)
+		return GetFuncType(null,null,0,retType,retRef2,IsVArgs2,false)
 	}else{
 		typs := new Type^[lin.Size()]
 		typs[i] = lin[^i]
-		return GetFuncType(typs,IsRefArr,lin.Size(),retType,retRef2,IsVArgs2)
+		return GetFuncType(typs,IsRefArr,lin.Size(),retType,retRef2,IsVArgs2,false)
 	}
 }
-GetFuncType := !(Type^^ typs,bool^ IsRefArr,int parsCount,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
+GetFuncType := !(Type^^ typs,bool^ IsRefArr,int parsCount,Type^ retType, bool retRef2, bool IsVArgs2,bool keepUnrefClass) -> TypeFunc^
 {
 
 	ExtraArr := new bool[parsCount] ; $temp
@@ -618,7 +618,7 @@ GetFuncType := !(Type^^ typs,bool^ IsRefArr,int parsCount,Type^ retType, bool re
 	{
 		ExtraArr[i] = false
 		if IsRefArr != null ExtraArr[i] = IsRefArr[i]
-		if typs[i] != null
+		if typs[i] != null and not keepUnrefClass
 		{
 			if typs[i] is TypeClass ExtraArr[i] = true
 			if typs[i] is TypeArr  ExtraArr[i] = true

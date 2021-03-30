@@ -23,7 +23,7 @@ InitBuiltIn2Funcs := !() -> void
 		//AddBuiltInFunc(new BuiltIn2IntMath("or_b",fType,"or"))
 		//AddBuiltInFunc(new BuiltIn2IntMath("xor_b",fType,"xor"))
 
-		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,TypeTable[i],false,false)
+		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,TypeTable[i],false,false,false)
 		//AddBuiltInFunc(new BuiltIn2Store.{"add","0"}("=",fTypeSet))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)
@@ -59,7 +59,7 @@ InitBuiltIn2Funcs := !() -> void
 		//AddBuiltInFunc(new BuiltIn2IntMath("*",fType,"fmul"))
 		//AddBuiltInFunc(new BuiltIn2IntMath("/",fType,"fdiv"))
 
-		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,it,false,false)
+		fTypeSet := GetFuncType(pars2[0]&,oneTrue,2,it,false,false,false)
 		//AddBuiltInFunc(new BuiltIn2Store.{"fadd","0.0"}("=",fTypeSet))
 
 		fTypeBoolRes := GetFuncType(pars2,GTypeBool)

@@ -2,8 +2,9 @@
 main := !(int argc, char^^ argv) -> int
 {	
 	jj := many_float(1,2,3,4)
-	printf("heh %f\n",jj.x)
-	//return 0
+	libtstinit()
+	testfunc(jj)
+	return 0
 	try
 	{
 		TestQuestion()

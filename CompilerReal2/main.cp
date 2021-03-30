@@ -1,6 +1,8 @@
 
 clibModule := CLibModule
 
+compilerSuffix :=char^ 
+
 emitTree := false
 jitMode := false
 main := !(int argc,char^^ argv) -> int 
@@ -24,9 +26,8 @@ main := !(int argc,char^^ argv) -> int
 
 	fileSuffixes := List.{char^}()
 	fileSuffixes << ".cp"
-	sysSuf := "posix"
-	if $posix sysSuf = "posix"
-	if $win32 sysSuf = "win32"
+	if $posix compilerSuffix = "posix"
+	if $win32 compilerSuffix = "win32"
 
 	dirChecks := List.{Tuple.{char^,int}}()
 
@@ -69,7 +70,7 @@ main := !(int argc,char^^ argv) -> int
 			i += 1
 		case "-p"
 			i++
-			sysSuf = argv[i]
+			compilerSuffix = argv[i]
 			itNm := ".cp."sbt + argv[i]
 			fileSuffixes.Push(itNm.Str())
 			
