@@ -1325,7 +1325,7 @@ PointFuncCall := class extend NaturalCall
 							
 							f << "%TPar" << i << "part" << j << "pre = "
 							f << "getelementptr [128 x <2 x float>] , [128 x <2 x float>]* "
-							f << "%T2Floats , i32 0, i32 " << j <<"\n"
+							f << "%T2Floats"<<RetId<<"i"<<i<<" , i32 0, i32 " << j <<"\n"
 							f << "%TPar" << i << "part" << j << " = "
 							f << "load <2 x float>, <2 x float>* "
 							f << "%TPar" << i << "part" << j << "pre\n"
@@ -1356,11 +1356,11 @@ PointFuncCall := class extend NaturalCall
 				}
 			}
 		}
-		funcTypeNameTmpl << ")*"
+		funcTypeNameTmpl << ")"
 		fName := funcTypeNameTmpl.Str() ; $temp
 		
 		ParamCal.PrintPre(f)
-		f << "%TId" << RetId << " = bitcast " ParamCal.PrintUse(f) f << " to " << fName << "\n"
+		f << "%TId" << RetId << " = bitcast " ParamCal.PrintUse(f) f << " to " << fName << "*\n"
 
 		needComma = false
 		if (FType.RetType != GTypeVoid)
