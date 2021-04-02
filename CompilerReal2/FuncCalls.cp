@@ -1418,13 +1418,13 @@ PointFuncCall := class extend NaturalCall
 				{
 					assert(false) //TODO
 				}else{
-					if needComma funcTypeNameTmpl << ","
+					if needComma f << ","
 					needComma = true
 					it.PrintPointUse(f)
 				}
 
 			}else{
-				if needComma funcTypeNameTmpl << ","
+				if needComma f << ","
 				needComma = true
 				if FType.ParsIsRef[i] {
 					it.PrintPointUse(f)
