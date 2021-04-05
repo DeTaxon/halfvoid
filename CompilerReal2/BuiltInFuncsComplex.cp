@@ -16,9 +16,9 @@ BuiltInTemplateZeroMem := class extend BoxTemplate
 		typName := itBox.itPars[0].first.GetName()
 		resStr := ""sbt
 		resStr << "%ptr## = getelementptr " << typName << " , " << typName << "* null,i32 1\n"
-		resStr << "%tSize## = ptrtoint "<< typName << "* %ptr## to i32\n"
+		resStr << "%tSize## = ptrtoint "<< typName << "* %ptr## to i64\n"
 		resStr << "%toPtr## = bitcast " << typName << "* #1 to i8*\n"
-		resStr << "call void @memset(i8* %toPtr##,i8 0, i32 %tSize##)\n"
+		resStr << "call void @memset(i8* %toPtr##,i8 0, i64 %tSize##)\n"
 		if itBox.itPars[0].first is TypeClass
 		{
 			clId := itBox.itPars[0].first->{TypeClass^}.ToClass.ClassId

@@ -5,10 +5,42 @@ TEchoStream := class extend TIOStream
 	redData := int
 	pages := List.{char^}
 
-	this := !() -> void { ptr = null inPtrSize = 0 pages."this"()}
+	this := !() -> void { 
+		ZeroMem(this) 
+	}
 	Read := virtual !(void^ data, size_t size) -> size_t
 	{
-		return 0 //TODO implement
+		pageLeft := 4096 - redData - size
+		if pages.Size() != 0
+		{
+			nxt := pages[0]
+			toRead := min(pageLeft,size)
+			memcpy(data,nxt[redData]&,toRead)
+			redData += toRead
+			if redData == 4096
+			{
+				delete nxt
+				pages.Pop()
+				redData = 0
+			}
+			if toRead < size
+			{
+				return toRead + Read(data + redData,size - toRead)
+			}
+		}else{
+			if inPtrSize == 0
+				return 0
+			toRead := min(inPtrSize,size)
+			memcpy(data,ptr[redData]&,toRead)
+			redData += toRead
+			if redData == inPtrSize
+			{
+				redData = 0
+				inPtrSize = 0
+				delete ptr
+			}
+			return toRead
+		}
 	}
 	Write := virtual !(void^ adding, size_t sLen) -> size_t
 	{

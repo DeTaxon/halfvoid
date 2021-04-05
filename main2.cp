@@ -1,9 +1,11 @@
 
 main := !(int argc, char^^ argv) -> int
 {	
-	jj := many_float(1,2,3,4)
-	libtstinit()
-	testfunc(jj)
+	tst := new TEchoStream
+	tst^ << "Helllo\n"
+	res := new char[128]
+	red := tst.Read(res->{void^},128)
+	printf("wut %i %s\n",red,res)
 	return 0
 	try
 	{
