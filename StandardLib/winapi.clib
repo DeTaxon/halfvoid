@@ -8,6 +8,7 @@
 		
 		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
 		"WriteFile" : "int,void^,void^,u32,u32^,void^",
+		"ReadFile" : "int,void^,void^,u32,u32^,void^",
 		"CloseHandle" : "void,void^",
 		
 		"GetCommandLineW" : "u16^",

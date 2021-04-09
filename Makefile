@@ -56,6 +56,8 @@ CmplDeb := clang $(AddStatic) -g -O0 $(MainOut) $(Libs) -o $(TargetWork)
 CmplTest := clang $(AddStatic) -g $(MainOut) $(Libs) -o $(CurrentTest)
 ifeq ($(cross),win32)
 	HW := ./halfvoid.exe
+	TargetStable := stable.exe
+	TargetWork := stable.exe
 	TargetPlatform := -p win32
 	Triplet := --target=x86_64-w64-mingw32-gnu 
 	CmplOptm := clang -g $(MainOut) $(Triplet) -c -s -O2 $(Libs) -o ./Objs/mdl.o ; x86_64-w64-mingw32-g++ ./Objs/mdl.o -o $(TargetStable)
@@ -91,8 +93,8 @@ Objs/hres.zip: $(wildcard ./hres/*)
 	zip -ur Objs/hres.zip hres
 
 halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
-	$(TargetStable) --ZipGlue $(CurrentStable) Objs/CompilerData.zip $(HW)
-	$(TargetStable) --ZipAppend $(HW) Objs/hres.zip
+	$(CurrentStable) --ZipGlue $(TargetStable) Objs/CompilerData.zip $(HW)
+	$(CurrentStable) --ZipAppend $(HW) Objs/hres.zip
 
 $(CurrentLex): LexBuilder/main.cp Priority.pr CompilerReal2/PriorityRead.cp
 	$(CurrentStable) --notask $(TargetPlatform) $(ForcedLibs)  LexBuilder/main.cp  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)

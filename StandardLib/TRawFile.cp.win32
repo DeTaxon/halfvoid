@@ -1,0 +1,84 @@
+TRawFile := class extend TIOStream
+{
+	//"w" write "r" read  "c" create_only "o" open_only "a" append "s" share "t" truncate
+
+	handler := void^
+
+	Open := !(char^ filaName,char^ mode) -> bool
+	{
+		wName := Utf8ToUtf16(filaName)
+		
+		crFlags := 0
+		if 'w' in mode crFlags = crFlags or_b GENERIC_WRITE
+		if 'r' in mode crFlags = crFlags or_b GENERIC_READ
+
+		shareFlags := 0
+		if 's' in mode
+		{
+			shareFlags = FILE_SHARE_READ or_b FILE_SHARE_WRITE
+		}
+
+		createFlags := OPEN_EXISTING
+		if 'w' in mode createFlags = CREATE_NEW
+		if not 'o' in mode createFlags = OPEN_EXISTING
+		if 'c' in mode createFlags = CREATE_ALWAYS
+		if 't' in mode createFlags = createFlags or_b TRUNCATE_EXISTING
+
+		errVal := u32()
+		ExpectWorkers(1)
+		AwaitWork(() ==>{
+			handler = CreateFileW(wName,crFlags,shareFlags,null,createFlags,FILE_ATTRIBUTE_NORMAL,null)
+			errVal = GetLastError()
+		})
+		resVal := handler&->{int^}
+		if resVal^ + 1 == 0
+		{
+			txt := GetWinapiErrorText(errVal)
+			throw new Exception(txt)
+		}
+		if 'a' in mode
+			SeekGlob(0,true)
+	}
+	SeekGlob := !(u32 val,bool back) -> void
+	{
+		SetFilePointer(handler,val,null,back ?: FILE_END : FILE_BEGIN)
+	}
+	Read := virtual !(void^ data, size_t size) -> size_t
+	{
+		errVal := u32()
+		red := u32
+		AwaitWork(() ==> {
+			if ReadFile(handler,data,size,red&,null) == 0
+			{
+				errVal = GetLastError()
+			}
+		})
+		if errVal != 0
+		{
+			txt := GetWinapiErrorText(errVal)
+			throw new Exception(txt)
+		}
+		return red
+	}
+	Write := virtual !(void^ data, size_t size) -> size_t
+	{
+		errVal := u32()
+		written := u32
+		AwaitWork(() ==> {
+			if WriteFile(handler,data,size,written&,null) == 0
+			{
+				errVal = GetLastError()
+			}
+		})
+		if errVal != 0
+		{
+			txt := GetWinapiErrorText(errVal)
+			throw new Exception(txt)
+		}
+		return written
+	}
+	Close := virtual !() -> void
+	{
+		CloseHandle(handler)
+	}
+}

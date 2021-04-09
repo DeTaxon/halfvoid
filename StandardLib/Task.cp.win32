@@ -113,7 +113,6 @@ AppendClass TaskBox
 					fName := flInf->{u8^}[FILE_NOTIFY_INFORMATION->TypeSize]&->{u16^}
 					flName :=  Utf16ToUtf8(fName,flInf.FileNameLength div 2)
 					it.callb(""sbt + flName,flInf.Action)
-					printf("hob %i\n",flInf.NextEntryOffset)
 					if flInf.NextEntryOffset == 0
 						break
 					flInf = flInf->{u8^}[flInf.NextEntryOffset]&->{FILE_NOTIFY_INFORMATION^}

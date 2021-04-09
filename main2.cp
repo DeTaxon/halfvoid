@@ -1,11 +1,12 @@
 
 main := !(int argc, char^^ argv) -> int
 {	
-	tst := new TEchoStream
-	tst^ << "Helllo\n"
-	res := new char[128]
-	red := tst.Read(res->{void^},128)
-	printf("wut %i %s\n",red,res)
+	tst := new TRawFile
+	tst.Open("a2.txt","ro")
+	buf := char[100]
+	red := tst.Read(buf,100)
+	buf[red] = 0
+	printf("%s\n",buf[0]&)
 	return 0
 	try
 	{

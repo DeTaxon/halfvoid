@@ -11,6 +11,8 @@ WideCharToMultiByte := !(int abc1,int flags,u16^ inpStr,int inpSize,char^ outStr
 GENERIC_READ :=  0x80000000
 GENERIC_WRITE := 0x40000000
 
+FILE_APPEND_DATA := 4
+
 FILE_SHARE_READ := 1
 FILE_SHARE_WRITE := 2
 FILE_SHARE_DELETE := 4
@@ -26,6 +28,11 @@ FILE_ATTRIBUTE_TEMPORARY := 256
 
 FILE_FLAG_OVERLAPPED := 0x40000000
 FILE_FLAG_BACKUP_SEMANTICS := 0x02000000
+
+FILE_BEGIN := 0
+FILE_CURRENT := 1
+FILE_END := 2
+SetFilePointer := !(void^ hndl,u32 low,u32^ hi, u32 method) -> void declare
 
 GetFullPathNameW := !(u16^ wideCh,int buffSize,u16^ ptrToBuff,u16^ plFilePart) -> int declare
 
@@ -135,6 +142,18 @@ Utf16ToUtf8 := !(u16^ itStr) -> char^
 	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,preRet,resSize,null,null)
 	preRet[resSize] = 0
 	return preRet
+}
+
+
+FormatMessageW := !(int a,void^ b,u32 c,int d,u16^^ e,int f,void^ g) -> int declare
+LocalFree := !(void^ mem) -> void declare
+GetWinapiErrorText := !(u32 errVal) -> char^
+{
+	msgRes := u16^()
+	FormatMessageW(0x1100 ,null,errVal,0,msgRes&,0,null)
+	res := Utf16ToUtf8(msgRes)
+	LocalFree(msgRes)
+	return res
 }
 
 LoadLibraryW := !(u16^ itNam) -> void^ declare
