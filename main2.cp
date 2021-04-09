@@ -2,11 +2,12 @@
 main := !(int argc, char^^ argv) -> int
 {	
 	tst := new TRawFile
-	tst.Open("a2.txt","ro")
-	buf := char[100]
-	red := tst.Read(buf,100)
-	buf[red] = 0
-	printf("%s\n",buf[0]&)
+	tst.Open("a.txt","r")
+	tst^ << "wow"
+	//buf := char[100]
+	//red := tst.Read(buf,100)
+	//buf[red] = 0
+	//printf("%s\n",buf[0]&)
 	return 0
 	try
 	{

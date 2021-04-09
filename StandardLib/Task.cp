@@ -1,6 +1,4 @@
 
-read := !(int fd,void^ dat,size_t sizeToRead) -> s64 declare
-
 CurrentTask := thread_local TaskData^
 CurrentTaskBox := thread_local TaskBox^
 TaskData := class

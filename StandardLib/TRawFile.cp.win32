@@ -4,6 +4,10 @@ TRawFile := class extend TIOStream
 
 	handler := void^
 
+	this := !(char^ fileName,char^ mode) -> void
+	{
+		Open(fileName,mode)
+	}
 	Open := !(char^ filaName,char^ mode) -> bool
 	{
 		wName := Utf8ToUtf16(filaName)

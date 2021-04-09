@@ -5,6 +5,7 @@ O_RDWR := 2
 
 O_APPEND := 1024
 O_CREAT := 64
+O_EXCL := 128
 O_TRUNC := 512
 O_TMPFILE := 4259840
 
@@ -40,7 +41,8 @@ sem_post := !(sem_t^ semPtr) -> int declare
 sem_destroy := !(sem_t^ semPtr) -> int declare
 
 open := !(char^ name,int flags,int mode) -> int declare
-write := !(int d,void^ toS, int size) -> int declare
+read := !(int d,void^ toS, u32 size) -> s64 declare
+write := !(int d,void^ toS, u32 size) -> s64 declare
 close := !(int fd) -> void declare
 
 sleep := !(int seconds) -> int declare

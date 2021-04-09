@@ -1,0 +1,72 @@
+TRawFile := class extend TIOStream
+{
+	//"w" write "r" read  "c" create_only "o" open_only "a" append "s" share "t" truncate
+
+	handler := int
+
+	this := !() -> void
+	{
+		handler = -1
+	}
+	this := !(char^ fileName,char^ mode) -> void
+	{
+		Open(fileName,mode)
+	}
+	Open := !(char^ fileName,char^ mode) -> bool
+	{
+		flags := 0
+		if 'w' in mode
+		{
+			if 'r' in mode 
+			{
+				flags = O_RDWR
+			}else{
+				flags = O_WRONLY
+			}
+			if not 'o' in mode flags = flags or_b O_CREAT
+		}else{
+			if 'r' in mode flags = O_RDONLY
+		}
+		if 'c' in mode flags = flags or_b O_EXCL 
+		if 'a' in mode flags = flags or_b O_APPEND
+		if 't' in mode flags = flags or_b O_TRUNC
+
+		ExpectWorkers(1)
+		AwaitWork(() ==> {
+			handler = open(fileName,flags,0777)
+		})
+		if handler == -1
+		{
+			throw new Exception("Could not open file")
+		}
+	}
+	SeekGlob := !(u32 val,bool back) -> void
+	{
+	}
+	Read := virtual !(void^ data, size_t size) -> size_t
+	{
+		res := s64
+		AwaitWork(() ==> {
+			res = read(handler,data,size)
+		})
+		if res < 0 throw new Exception("Could not read")
+		return res
+	}
+	Write := virtual !(void^ data, size_t size) -> size_t
+	{
+		res := s64
+		AwaitWork(() ==> {
+			res = write(handler,data,size)
+		})
+		if res < 0 throw new Exception("Could not write")
+		return res
+	}
+	Close := virtual !() -> void
+	{
+		if handler != -1
+		{
+			close(handler)
+			handler = -1
+		}
+	}
+}
