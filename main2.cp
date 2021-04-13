@@ -1,13 +1,21 @@
 
+GCTest := class extend TGCObject
+{
+	//TODO: relative ptr, List.{GCTest}, return new GCTest, capture returned objects
+	//TODO: MemoryPools, TemporaryPool
+	Destroy := virtual !() -> void
+	{
+		printf("yay\n")
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
-{	
-	tst := new TRawFile
-	tst.Open("a.txt","r")
-	tst^ << "wow"
-	//buf := char[100]
-	//red := tst.Read(buf,100)
-	//buf[red] = 0
-	//printf("%s\n",buf[0]&)
+{
+	//obj = null
+	//defer if obj.Count -= 1 == 0 obj.Destroy()
+	obj := new GCTest
+	//if obj != null obj.counter += 1
+
 	return 0
 	try
 	{
