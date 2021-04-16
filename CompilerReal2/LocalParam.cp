@@ -39,6 +39,12 @@ MemParam := class extend ObjResult
 	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
 }
 
+IsMemParam := !(Object^ obj) -> bool
+{
+	if obj is LocalParam return true
+	if obj is GlobalParam return true
+	return false
+}
 MemParamCommon := class extend MemParam
 {
 	IsRef := bool

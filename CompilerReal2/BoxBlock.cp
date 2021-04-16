@@ -85,23 +85,22 @@ BoxBlock := class extend Object
 			f << " null, "
 			typ.PrintType(f)
 			f << "* %T" << it << "\n"
-
-			f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
-
-			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
-			if DebugMode
-			{
-				if Line == null and Up?.Line != null
-					Line = Up.Line
-
-				cllId := CreateDebugCall(this&)
-				if cllId != -1
-				{
-					f << ", !dbg !" << cllId
-				}
-			}
-			f << "\n"
 		}
+		f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
+
+		f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
+		if DebugMode
+		{
+			if Line == null and Up?.Line != null
+				Line = Up.Line
+
+			cllId := CreateDebugCall(this&)
+			if cllId != -1
+			{
+				f << ", !dbg !" << cllId
+			}
+		}
+		f << "\n"
 	}
 
 	this := !() -> void
