@@ -29,6 +29,14 @@ AllocBox := class
 			return inNrs^
 		return -1
 	}
+	GetObjType := !(int id2) -> Type^
+	{
+		if ItemNrs.Contain(id2)
+		{
+			return ItemBag[ItemNrs[id2]].1			
+		}
+		return null
+	}
 	MoveTo := !(AllocBox^ toMv) -> void
 	{
 		toMv.inhAllocs.Push(this&) ; $uniq
@@ -160,7 +168,7 @@ AllocBox := class
 
 		PrintBoxItems(f,"%AllocItem"sbt + ItId,debId)
 	}
-	PrintBoxItems := !(TIOStream f,string Name,int debId) -> void
+	PrintBoxItems := !(TIOStream f,char^ Name,int debId) -> void
 	{
 		if not mustBeStruct
 			return void

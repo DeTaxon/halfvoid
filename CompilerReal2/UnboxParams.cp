@@ -75,6 +75,7 @@ UnboxParams := !(Object^ start) -> void
 				IsVir := false
 				IsLP := false
 				IsTaskLocal := false
+				IsWeak := false
 				iter = iter.Right
 
 				if iter.GetValue() == "extern"
@@ -102,6 +103,11 @@ UnboxParams := !(Object^ start) -> void
 					IsTaskLocal = true
 					iter = iter.Right
 				}
+				if iter.GetValue() == "weak"
+				{
+					IsWeak = true
+					iter = iter.Right
+				}
 
 				if iter.Right != null
 				{
@@ -119,6 +125,7 @@ UnboxParams := !(Object^ start) -> void
 					asPar.IsVirtual = IsVir
 					asPar.IsThreadLocal = IsLP
 					asPar.IsTaskLocal = IsTaskLocal
+					asPar.IsWeak = IsWeak
 					if IsVir WorkBag.Push(asPar,State_Start)
 					lineIter.Down = iter.Clone()
 					lineIter.Down.SetUp(lineIter)

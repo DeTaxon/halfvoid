@@ -14,6 +14,7 @@ ObjParam := class extend Object
 	IsVirtual := bool
 	IsThreadLocal := bool
 	IsTaskLocal := bool
+	IsWeak := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -205,6 +206,11 @@ ObjParam := class extend Object
 				Down = asClass
 				asClass.Up = this&
 
+				if MyStr == "TGCObject"
+				{
+					asClass.IsGC = true
+				}
+
 				iterB := this&->{Object^}
 
 				while iterB != null
@@ -305,6 +311,7 @@ ObjParam := class extend Object
 							Down.inhAttrs = inhAttrs
 							Down.SetUp(this&)
 						}
+						CheckGC(MaybeType,allcId)
 					}
 				}
 			}else
@@ -403,8 +410,23 @@ ObjParam := class extend Object
 						Temp.Left = Down
 						Down.SetUp(this&)
 						IsSetValue = true
+
+						CheckGC(ObjType,allcId)
 					}
 				}
+			}
+		}
+	}
+	CheckGC := !(Type^ ObjType,int allcId) -> void
+	{
+		if ObjType is TypePoint and ObjType.Base is TypeClass and ObjType.Base->{TypeClass^}.ToClass.IsGC
+		{
+			blk := GetBlock(this&)
+			if blk != null
+			{
+				blk.AddGC(allcId);
+				AllocSetStruct(blk)
+				blk.ApplyDeferUse(1)
 			}
 		}
 	}

@@ -32,6 +32,17 @@ MakeItBlock := !(Object^ item,bool useStuf) -> bool
 }
 
 
+GetBlock := !(Object^ obj) -> BoxBlock^
+{
+	itr := obj
+	while itr != null
+	{
+		if itr is BoxBlock
+			return itr->{BoxBlock^}
+		itr = itr.Up
+	}
+	return null
+}
 
 BoxBlock := class extend Object
 {
@@ -45,6 +56,53 @@ BoxBlock := class extend Object
 	outRLabel := BoxLabel^
 
 	usePaths := bool
+
+	gcObjects := HybridQueue.{int,8}
+	AddGC := !(int varId) -> void
+	{
+		gcObjects.Push(varId)
+	}
+	PrintCleanGC := !(TIOStream f) -> void
+	{
+		if gcObjects.Size() == 0
+			return void
+		aBox := AllocBox^()
+		itr := Up
+		while itr != null
+		{
+			aBox = itr.GetABox()
+			if aBox != null
+				break
+			itr = itr.Up
+		}
+
+		for it : gcObjects
+		{
+			typ := aBox.GetObjType(it)
+			
+			f << "store "
+			typ.PrintType(f)
+			f << " null, "
+			typ.PrintType(f)
+			f << "* %T" << it << "\n"
+
+			f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
+
+			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
+			if DebugMode
+			{
+				if Line == null and Up?.Line != null
+					Line = Up.Line
+
+				cllId := CreateDebugCall(this&)
+				if cllId != -1
+				{
+					f << ", !dbg !" << cllId
+				}
+			}
+			f << "\n"
+		}
+	}
 
 	this := !() -> void
 	{
@@ -89,6 +147,37 @@ BoxBlock := class extend Object
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
+		if gcObjects.Size() != 0
+		{
+			aBox := AllocBox^()
+			itr := Up
+			while itr != null
+			{
+				aBox = itr.GetABox()
+				if aBox != null
+					break
+				itr = itr.Up
+			}
+
+			f << "define void @BlockGCCleanUp" << ItId << "(i8* %StackObj)\n"
+			f << "{\n"
+			f << "%AllcObj = bitcast i8* %StackObj to " << aBox.GetClassName() << "*\n"
+			aBox.PrintBoxItems(f,"%AllcObj",-1)
+			for it,i : gcObjects
+			{
+				typ := aBox.GetObjType(it)
+				tn := typ.GetName()
+				f << "br label %Start" << i << "\n"
+				f << "Start" << i << ":\n"
+				f << "%LD" << it << " = load " << tn << " , " << tn << "* %T" << it << "\n"
+				f << "%AsVoidP" << i << " = bitcast " << tn << " %LD"<<it<<" to i8*\n"
+				f << "call void @" << gcDecRefFunc.OutputName << "(i8* %AsVoidP" << i << ")\n"
+				f << "store " << tn << " null, " << tn << "* %T" << it << "\n"
+				f << "br label %End" << i << "\n"
+				f << "End"<<i<<":\n"
+			}
+			f << "ret void\n}\n"
+		}
 		PrintGlobalSub(f)
 		if DebugMode
 		{
@@ -121,7 +210,9 @@ BoxBlock := class extend Object
 		if Line == null Line = Up.Line
 
 		if callDeferStuf and usePaths 
-			PrintDeferDepth(f,ItId,this&)	
+			PrintDeferDepth(f,ItId,this&)
+			
+		PrintCleanGC(f)
 		for iter : Down
 		{
 			iter.PrintInBlock(f)

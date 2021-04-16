@@ -160,11 +160,25 @@ PriorityBag := class
 		}
 		DoStep2()
 	}
+	
+	AddExtra := !(AVLSet.{char^} toAdd) -> void
+	{
+		LexKeyWords := ![":=","=>","==>","...",":",".",",","?","!",".","|"]
+		AllKeyWords := !["return","for","if","else","while","do","delete","switch","case" 
+		,"class","extern" ,"extend" ,"at" 
+		,"defer" ,"type" ,"virtual" ,"new" 
+		,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
+		,"packed_class" ,"self_return" ,"try" ,"catch" 
+		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak"]
+
+		toAdd.Insert(LexKeyWords[^])
+		toAdd.Insert(AllKeyWords[^])
+	}
 	DoStep2 := !() -> void
 	{
+
 		TotalOpers.Insert(Opers[^])
-		TotalOpers.Insert(LexKeyWords[^])
-		TotalOpers.Insert(AllKeyWords[^])
+		AddExtra(TotalOpers)
 
 		for it,i : TotalOpers
 		{
@@ -205,11 +219,4 @@ PriorityBag := class
 	}
 }
 
-LexKeyWords := ![":=","=>","==>","...",":",".",",","?","!",".","|"]
-AllKeyWords := !["return","for","if","else","while","do","delete","switch","case" 
-,"class","extern" ,"extend" ,"at" 
-,"defer" ,"type" ,"virtual" ,"new" 
-,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
-,"packed_class" ,"self_return" ,"try" ,"catch" 
-,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ]
 

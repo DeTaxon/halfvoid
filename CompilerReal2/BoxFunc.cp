@@ -150,8 +150,7 @@ BoxFuncContainer := class extend Object
 	AddYodler := virtual !(BoxReturn^ toAdd) -> int
 	{
 		return 0
-	}	
-
+	}
 }
 
 BoxFunc := class extend BoxFuncContainer

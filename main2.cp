@@ -8,15 +8,21 @@ GCTest := class extend TGCObject
 		printf("yay\n")
 	}
 }
-
+miniBad := !() -> int
+{
+	x := 13.0
+}
+miniBad2 := !() -> int
+{
+	obj := new GCTest
+	printf("test %p\n",obj)
+}
 main := !(int argc, char^^ argv) -> int
 {
-	//obj = null
-	//defer if obj.Count -= 1 == 0 obj.Destroy()
-	obj := new GCTest
-	//if obj != null obj.counter += 1
-
+	miniBad()
+	miniBad2()
 	return 0
+	
 	try
 	{
 		TestQuestion()

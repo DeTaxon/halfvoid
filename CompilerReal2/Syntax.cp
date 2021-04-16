@@ -275,6 +275,13 @@ RuleParam := !(void^ itr) -> int
 		if It == null return 0
 		size += 1
 	}
+	
+	if It.GetValue() == "weak"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
 	if It.GetValue() == "type"
 	{
 		It = It.Right

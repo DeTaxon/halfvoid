@@ -353,6 +353,7 @@ IsKeyword := !(W) -> bool
 		case "yield" return true
 		case "AppendClass" return true
 		case "default" return true
+		case "weak" return true
 	}
 
 	return false

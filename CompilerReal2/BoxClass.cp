@@ -120,6 +120,7 @@ BoxClass := class extend BoxClassBase
 	ContainVirtual  := bool
 
 	IsPacked := bool
+	IsGC := bool
 
 	ItVals := Queue.{ObjConstHolder^}
 	ItConsts := Queue.{Object^}
@@ -142,7 +143,7 @@ BoxClass := class extend BoxClassBase
 
 	GetClassOutputName := !() -> string
 	{
-		return StrCopy("%Class"sbt + ClassId)
+		return "%Class"sbt + ClassId
 	}
 
 	
@@ -322,6 +323,7 @@ BoxClass := class extend BoxClassBase
 			Inherited = true
 			if Parent != null
 			{
+				IsGC = Parent.IsGC
 				Parent.InheritParams()
 				//InheritParams2()
 				if Parent.ContainVirtual 

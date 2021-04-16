@@ -5,7 +5,7 @@ main := !(int argc, char^^ argv) -> int
 
 	itM := MappedFile("Priority.pr")
 	defer itM.Close()
-	pr := PriorityBag(itM.point,itM.Size())
+	pr := new PriorityBag(itM.point,itM.Size())
 
 	itBuilder := LexBuilder()
 
@@ -23,8 +23,7 @@ main := !(int argc, char^^ argv) -> int
 	allOpers := new AVLSet.{char^} ; $temp
 
 	tmpArr.Insert(pr.Opers[^])
-	tmpArr.Insert(LexKeyWords[^])
-	tmpArr.Insert(AllKeyWords[^])
+	pr.AddExtra(tmpArr^)
 
 	for it,i : tmpArr^ {
 		buff2 := char[64]

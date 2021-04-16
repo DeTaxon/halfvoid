@@ -317,6 +317,7 @@ main := !(int argc,char^^ argv) -> int
 		for ErrorLog printf(it)
 		printf("warning: internal error, no exception functions\n")
 	}
+	GCInit()
 
 	endI := Ob.Down
 	if endI != null
