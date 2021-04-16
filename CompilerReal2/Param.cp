@@ -109,6 +109,25 @@ ObjParam := class extend Object
 					if debId != -1
 						f << ", !dbg !" << debId
 					f << "\n"
+
+					dTyp := Down.Right.GetType()
+					if dTyp is TypePoint and dTyp.Base is TypeClass and (not IsWeak) and dTyp.Base->{TypeClass^}.ToClass.IsGC
+					{
+						itId := GetNewId()
+						f << "%AsVoid" << itId << " = bitcast "
+						Down.Right.PrintUse(f)
+						f << " to i8*\n"
+						f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
+						if DebugMode
+						{
+							dCl := CreateDebugCall(this&)
+							if dCl != -1
+							{
+								f << ", !dbg !" << dCl
+							}
+						}
+						f << "\n"
+					}
 				}
 			}
 		}
@@ -421,6 +440,8 @@ ObjParam := class extend Object
 	{
 		if ObjType is TypePoint and ObjType.Base is TypeClass and ObjType.Base->{TypeClass^}.ToClass.IsGC
 		{
+			if IsWeak
+				return void
 			blk := GetBlock(this&)
 			if blk != null
 			{

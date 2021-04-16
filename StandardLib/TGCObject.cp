@@ -17,19 +17,17 @@ internalGCIncRef := !(void^ toIncP)  -> void
 {
 	if toIncP != null
 	{
-		toInc := toIncP->{TGCObject^} ; $weak
+		toInc := weak toIncP->{TGCObject^}
 		r := toInc.GetRef() //TODO: cant access RefConterValue directly
 		toInc.SetRef(r + 1)
-		printf("added\n")
 	}
 }
 internalGCDecRef := !(void^ toDecP) -> void
 {
 	if toDecP != null{
-		toDec := toDecP->{TGCObject^} ; $weak
+		toDec := weak toDecP->{TGCObject^}
 		r := toDec.GetRef() //TODO: cant access RefConterValue directly
 		toDec.SetRef(r - 1)
-		//printf("old ref %i\n",r)
 		if r == 1
 		{
 			//TODOGC: cycle check
