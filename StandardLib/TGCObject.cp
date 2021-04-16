@@ -15,13 +15,14 @@ internalGCIncRef := !(void^ toIncP)  -> void
 	{
 		toInc := weak toIncP->{TGCObject^}
 		r := toInc._GCIncRef()
-		printf("added\n")
+		printf("added %i\n",toInc._GCRefCounterValue)
 	}
 }
 internalGCDecRef := !(void^ toDecP) -> void
 {
 	if toDecP != null{
 		toDec := weak toDecP->{TGCObject^}
+		printf("old ref val %i\n",toDec._GCRefCounterValue)
 		r := toDec._GCSubRef()
 		printf("old ref %i\n",r)
 		if r == 1

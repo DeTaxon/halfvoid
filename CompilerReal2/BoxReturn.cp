@@ -193,6 +193,18 @@ BoxReturn := class extend Object
 				f << ", !dbg !" << debId
 			f << "\n"
 			
+			tp := Down.GetType()
+			if tp is TypePoint and tp.Base is TypeClass and tp.Base->{TypeClass^}.ToClass.IsGC
+			{
+				id := GetNewId()
+				f << "%AsVoidP" << id << " = bitcast " << retTypeName << "* %Result to i8**\n"
+				f << "%AsVoid" << id << " = load  i8*,i8** %AsVoidP"<< id <<"\n"
+				f << "call void@" << gcIncRefFunc.OutputName << "(i8* %AsVoid"<< id <<")"
+				if debId != -1
+					f << ", !dbg !" << debId
+				f << "\n"
+			}
+			
 		}else{
 			if not IsRetVoid Down.PrintInBlock(f)
 			//f << "ret void\n"

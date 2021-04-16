@@ -12,12 +12,14 @@ miniBad := !() -> int
 {
 	x := 13.0
 }
+crtG := !() -> GCTest^
+{
+	return new GCTest
+}
 miniBad2 := !() -> int
 {
-	obj := new GCTest
-	obj2 := GCTest^
-	obj2 = obj
-	printf("test %p %p\n",obj,obj2)
+	obj := crtG()
+	printf("test %p\n",obj)
 }
 main := !(int argc, char^^ argv) -> int
 {

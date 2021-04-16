@@ -1797,6 +1797,18 @@ NewCallOne := class extend SomeFuncCall
 		if newType.GetType() == "class"
 		{
 			asNeed := newType->{TypeClass^}
+			if asNeed.ToClass.IsGC
+			{
+				f << "call void@" << gcIncRefFunc.OutputName << "("
+				newItm.PrintUse(f)
+				f << ")"
+				if DebugMode 
+				{
+					dId := CreateDebugCall(this&)
+					f << ", !dbg !" << dId
+				}
+				f << "\n"
+			}
 			asNeed.ToClass.ApplyConstants(f,this&)
 		}
 
