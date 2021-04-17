@@ -27,6 +27,11 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 		LocalFree(argv2W)
 	}
 
+	if $posix
+	{
+		TryInitErrno()
+	}
+
 	LibDB.SetRepo(gRepo&)
 
 	preRet := 0

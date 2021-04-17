@@ -442,13 +442,7 @@ ObjParam := class extend Object
 		{
 			if IsWeak
 				return void
-			blk := GetBlock(this&)
-			if blk != null
-			{
-				blk.AddGC(allcId);
-				AllocSetStruct(blk)
-				blk.ApplyDeferUse(1)
-			}
+			GCMakeAware(this&,allcId)
 		}
 	}
 }

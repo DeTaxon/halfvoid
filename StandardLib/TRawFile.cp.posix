@@ -31,12 +31,18 @@ TRawFile := class extend TIOStream
 		if 'a' in mode flags = flags or_b O_APPEND
 		if 't' in mode flags = flags or_b O_TRUNC
 
+		errVal := 0
 		ExpectWorkers(1)
 		AwaitWork(() ==> {
 			handler = open(fileName,flags,0777)
+			if handler == -1
+			{
+				errVal = GetErrno()
+			}
 		})
 		if handler == -1
 		{
+			printf("err %i\n",errVal)
 			throw new Exception("Could not open file")
 		}
 	}

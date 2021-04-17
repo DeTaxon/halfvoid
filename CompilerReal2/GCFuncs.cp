@@ -35,3 +35,23 @@ GCInit := !() -> void
     }
 	gcSetValueFunc.ParseBlock()
 }
+
+IsGCClass := !(Type^ toCmp) -> bool
+{
+	return toCmp is TypeClass and toCmp->{TypeClass^}.ToClass.IsGC
+}
+IsGCPtr := !(Type^ toCmp) -> bool
+{
+	return toCmp is TypePoint and toCmp.Base is TypeClass and toCmp.Base->{TypeClass^}.ToClass.IsGC
+}
+
+GCMakeAware := !(Object^ start, int allcId) -> void
+{
+	blk := GetBlock(start)
+	if blk != null
+	{
+		blk.AddGC(allcId);
+		AllocSetStruct(blk)
+		blk.ApplyDeferUse(1)
+	}
+}

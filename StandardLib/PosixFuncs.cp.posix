@@ -82,6 +82,30 @@ dlopen := !(char^ itName,int flgs) -> void^ declare
 dlsym := !(void^ modId,char^ funcName) -> void^ declare
 dlclose := !(void^ modId) -> void declare
 
+
+getErrnoInit := bool
+initedErrno := bool
+getErrnoFunc := !()^->int^
+GetErrno := !() -> int
+{
+	return getErrnoFunc()^
+}
+TryInitErrno := !() -> bool
+{
+	if getErrnoInit
+		return initedErrno
+	try
+	{
+		lib := Library("libc.so.6")
+		getErrnoFunc = lib.Get("__errno_location")->{!()^->int^}
+		initedErrno = true
+	}catch(IException^ e)
+	{
+		printf("test %s\n",e.Msg())
+	}
+	return initedErrno
+}
+
 OpenLib := !(char^ fileName) ->void^
 {
 	return dlopen(fileName,2)

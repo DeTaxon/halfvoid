@@ -1083,6 +1083,7 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 
 NaturalCall := class extend SomeFuncCall
 {
+	gcObjId := int
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		if Pars != null
@@ -1178,6 +1179,12 @@ NaturalCall := class extend SomeFuncCall
 
 		}
 		f << "\n"
+		if gcObjId > 0
+		{
+			tn := FType.RetType.GetName() 
+			f << "store " << tn << TName << " , "
+			f << tn << "* %T" << gcObjId << "\n"
+		}
 	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
@@ -1194,6 +1201,12 @@ NaturalCall := class extend SomeFuncCall
 		if pri == State_MiddleGetUse
 		{
 			CheckReturn()
+			if IsGCPtr(FType.RetType)
+			{
+				gcObjId = GetAlloc(this&,FType.RetType)
+				assert(gcObjId > 0)
+				GCMakeAware(this&,gcObjId)
+			}
 		}
 	}
 }
@@ -1748,6 +1761,8 @@ NewCallOne := class extend SomeFuncCall
 	ItId := int
 	useConstr := bool
 	appendTemp := bool
+
+	gcAllId := int
 	this := !(Type^ nT,Object^ DW) -> void
 	{
 		useConstr = DW != null
@@ -1808,6 +1823,8 @@ NewCallOne := class extend SomeFuncCall
 					f << ", !dbg !" << dId
 				}
 				f << "\n"
+				f << "store " << newType.GetName() << "* %Pre" << ItId << " , "
+				f << newType.GetName() << "** %T" << gcAllId << "\n"
 			}
 			asNeed.ToClass.ApplyConstants(f,this&)
 		}
@@ -1895,6 +1912,12 @@ NewCallOne := class extend SomeFuncCall
 							Down.Up = this&
 						}
 					}
+				}
+				if IsGCClass(newType)
+				{
+					gcAllId = GetAlloc(this&,newType.GetPoint())
+					assert(gcAllId > 0)
+					GCMakeAware(this&,gcAllId)
 				}
 			}
 		}
