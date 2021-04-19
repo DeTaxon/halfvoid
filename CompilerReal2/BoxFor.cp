@@ -602,9 +602,14 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 			{
 				MakeItBlock(it)
 			}
-			for it : Down
+			for it : Down, par : cls.Params
 			{
 				WorkBag.Push(it,State_Start)
+				if Names[0] != null and false
+				{
+					asBlock := it->{BoxBlock^}
+					asBlock.Items.Push(	new ObjHolder(Names[0],	new ObjStr(par.ItName) ) )
+				}
 			}
 		}
 	}

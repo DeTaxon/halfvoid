@@ -47,7 +47,7 @@ GetBlock := !(Object^ obj) -> BoxBlock^
 BoxBlock := class extend Object
 {
 	GetUseIter := int
-	Items := Queue.{ObjHolder^}
+	Items := List.{ObjHolder^}
 	InClass := bool
 	ItId := int
 	

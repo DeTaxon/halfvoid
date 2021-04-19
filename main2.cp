@@ -26,9 +26,9 @@ tst2 := class
 	z := void^
 	vf := poison virtual !() -> void
 	{
-		for it,name : this->Fields
+		for name : this->Fields
 		{
-			printf("heh %s\n","wow")
+			printf("heh %s\n",name)
 		}
 	}
 }
