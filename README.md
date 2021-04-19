@@ -15,7 +15,7 @@ main := !(int argc,char^^ argv) -> int
 	}
 
 	if true
-		printf("no need for {} for single call)
+		printf("no need for {} for single call")
 
 	i := 0
 	while i != 100
@@ -65,7 +65,7 @@ ManyArgs := !(args...) -> void
 	x := #best(args) // get type that could hold all value
 	//x := #best(int,args)
 	//int + float -> float
-	//int + char -> char
+	//int + char -> int
 	x = 0
 	(x += args)... //operator ... make copy of line, where args replaced with paramter
 }

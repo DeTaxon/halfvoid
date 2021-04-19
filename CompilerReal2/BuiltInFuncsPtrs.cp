@@ -32,6 +32,14 @@ BuiltInTemplateSet := class extend BoxTemplate
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
 		pars := ref itBox.itPars
+		
+		ptrA := pars[0].first
+		ptrB := pars[1].first
+		if IsGCPtr(ptrA)
+		{
+			return new BuiltIn2SetGCPtr("=",funct)
+		}
+
 		if pars[0].first is TypePoint and pars[0].first != pars[1].first 
 		{
 			PreRet := BoxFunc^
@@ -46,17 +54,6 @@ BuiltInTemplateSet := class extend BoxTemplate
 					"store " + pars[0].first.GetName() + " %TPre##, " + pars[0].first.GetName() + "* #1 #d\n")
 			}
 			return PreRet
-		}
-		ptrA := pars[0].first
-		ptrB := pars[1].first
-		if ptrA is TypePoint and ptrA.Base is TypeClass and ptrA.Base->{TypeClass^}.ToClass.IsGC
-		{
-			return new BuiltIn2SetGCPtr("=",funct)
-			return new BuiltInFuncBinar("=",pars[0].first,true,pars[1].first,false,GTypeVoid, 
-				"%Left## = bitcast "sbt + ptrA.GetName() + "* #1 to i8**\n" + 
-				"%Right## = bitcast "sbt + ptrB.GetName() + " #2 to i8*\n" + 
-				"call void@" + gcSetValueFunc.OutputName + "(i8** %Left##, i8* %Right##) #d\n"
-			)
 		}
 		if pars[0].first != pars[1].first
 		{

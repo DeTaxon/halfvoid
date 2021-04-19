@@ -1946,7 +1946,13 @@ DeleteCall := class extend SomeFuncCall
 	{
 		if pri == State_GetUse
 		{
+			if IsGCPtr(Down.GetType())
+			{
+				return void	
+			}
+
 			box := new FuncInputBox()  ; $temp
+
 
 			box.itPars.Emplace(VoidPType,false)
 			//box.itConsts.Push(new ObjType(Down.GetType())) 

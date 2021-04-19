@@ -1,29 +1,25 @@
 
 GCTest := class extend TGCObject
 {
+	nxt := TGCObject^
 	//TODO: relative ptr, List.{GCTest}, return new GCTest, capture returned objects
 	//TODO: MemoryPools, TemporaryPool
 	Destroy := virtual !() -> void
 	{
 		printf("yay\n")
 	}
-}
-miniBad := !() -> int
-{
-	x := 13.0
-}
-crtG := !() -> GCTest^
-{
-	return new GCTest
+	GCLastRef := virtual !() -> void
+	{
+		printf("wut\n")
+	}
 }
 miniBad2 := !() -> int
 {
-	obj := crtG()
-	printf("test %p\n",obj)
+	tst := new GCTest
+	tst.nxt = new GCTest
 }
 main := !(int argc, char^^ argv) -> int
 {
-	miniBad()
 	miniBad2()
 	return 0
 	
