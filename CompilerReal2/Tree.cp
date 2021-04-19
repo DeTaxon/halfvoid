@@ -354,6 +354,7 @@ IsKeyword := !(W) -> bool
 		case "AppendClass" return true
 		case "default" return true
 		case "weak" return true
+		case "poison" return true
 	}
 
 	return false

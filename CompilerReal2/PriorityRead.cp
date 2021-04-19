@@ -169,7 +169,7 @@ PriorityBag := class
 		,"defer" ,"type" ,"virtual" ,"new" 
 		,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
 		,"packed_class" ,"self_return" ,"try" ,"catch" 
-		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak"]
+		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak","poison"]
 
 		toAdd.Insert(LexKeyWords[^])
 		toAdd.Insert(AllKeyWords[^])

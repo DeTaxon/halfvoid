@@ -21,7 +21,7 @@ miniBad2 := !() -> int
 
 tst2 := class 
 {
-	vf := virtual !() -> void
+	vf := poison virtual !() -> void
 	{
 		printf("a %i\n",this->Type->TypeSize)
 	}
