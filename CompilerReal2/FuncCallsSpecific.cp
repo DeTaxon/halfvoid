@@ -77,6 +77,12 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 					return MakeSimpleCall(setFunc,iter.Down)
 				}
 			}
+			if asObj.MyStr == "Type"
+			{
+				tp := iter.Down.GetType()
+				if tp != null
+					return new ObjType(tp)
+			}
 		}
 	}
 	if iter.Down?.Right?.GetValue() == "is"

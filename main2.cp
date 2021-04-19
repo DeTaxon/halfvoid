@@ -18,9 +18,26 @@ miniBad2 := !() -> int
 	tst := new GCTest
 	tst.nxt = new GCTest
 }
+
+tst2 := class 
+{
+	vf := virtual !() -> void
+	{
+		printf("a %i\n",this->Type->TypeSize)
+	}
+}
+
+tst3 := class extend tst2
+{
+	extra := int[100]
+}
+
+
 main := !(int argc, char^^ argv) -> int
 {
-	miniBad2()
+	c := new tst3
+	//miniBad2()
+	c.vf()
 	return 0
 	
 	try

@@ -1,25 +1,21 @@
 TGCObject := class
 {
 	_GCRefCounterValue := int
-	_GCIncRef := !() -> int { return InterlockAdd(_GCRefCounterValue,1) }
-	_GCSubRef := !() -> int { return InterlockSub(_GCRefCounterValue,1) }
-	_GCGetRef := !() -> int { return _GCRefCounterValue }
-	_GCSetRef := !(int val) -> int { _GCRefCounterValue = val }
-	Destroy := virtual !() -> void
-	{
-	}
-	GCLastRef := virtual !() -> void
-	{
-
-	}
+	GCIncRef := !() -> int { return InterlockAdd(_GCRefCounterValue,1) }
+	GCSubRef := !() -> int { return InterlockSub(_GCRefCounterValue,1) }
+	GCGetRef := !() -> int { return _GCRefCounterValue }
+	GCSetRef := !(int val) -> int { _GCRefCounterValue = val }
+	GCLastRef := virtual !() -> void {}
+	Destroy := virtual !() -> void {}
 }
+internalZeroConst := 0
 internalGCIncRef := !(void^ toIncP)  -> void
 {
 	if toIncP != null
 	{
 		toInc := weak toIncP->{TGCObject^}
-		r := toInc._GCIncRef()
-		printf("added %i\n",toInc._GCRefCounterValue)
+		r := toInc.GCIncRef()
+		//printf("added %i\n",toInc._GCRefCounterValue)
 	}
 }
 internalGCDecRef := !(void^ toDecP) -> void
@@ -27,8 +23,8 @@ internalGCDecRef := !(void^ toDecP) -> void
 	if toDecP != null{
 		toDec := weak toDecP->{TGCObject^}
 		//printf("old ref val %i\n",toDec._GCRefCounterValue)
-		r := toDec._GCSubRef()
-		printf("old ref %i\n",r)
+		r := toDec.GCSubRef()
+		//printf("old ref %i\n",r)
 		switch r
 		{
 			case 2
