@@ -83,6 +83,12 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 				if tp != null
 					return new ObjType(tp)
 			}
+			if asObj.MyStr == "Fields"
+			{
+				tp := iter.Down.GetType()
+				if tp != null
+					return new FieldHolder(tp)
+			}
 		}
 	}
 	if iter.Down?.Right?.GetValue() == "is"
@@ -109,4 +115,12 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 
 	}
 	return null
+}
+
+FieldHolder := class extend ObjType
+{
+	this := !(Type^ tp) -> void
+	{
+		this."ObjType.this"(tp)
+	}
 }

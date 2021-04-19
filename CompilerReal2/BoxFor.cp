@@ -51,7 +51,6 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 BoxFor := class extend Object
 {
 }
-
 BoxForOldFashionMulti := class extend BoxFor
 {
 	ItId := int
@@ -105,7 +104,6 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		iter.Right = null
 		Down.SetUp(this&)
-		MakeItBlock(Down)
 
 		Names = names.ToArray()
 		IndNames = new string[names.Size()]
@@ -137,6 +135,14 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		if pri == State_GetUse
 		{
+			if(Down.Right is FieldHolder)
+			{
+				asPrm := this&
+				asPrm->SetType(MetaBoxForFields)
+				WorkBag.Push(this&,State_PrePrint)
+				return void
+			}
+		
 			if IsStep1
 			{
 				IncFuncs = new Object^[itemsCount]
@@ -215,6 +221,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			}else{
 				visitedWork << pri
 
+				MakeItBlock(Down)
 				WorkBag.Push(Down,State_Start)
 				iter := Down.Right
 				for i : itemsCount
@@ -560,3 +567,49 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 }
 
+
+MetaBoxForFields := class extend BoxForOldFashionMulti
+{
+	GetItem := virtual !(char^ name) -> Object^
+	{
+		return null
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_PrePrint
+		{
+			cType := Down.Right->{FieldHolder^}.MyType
+			if not cType is TypeClass
+				EmitError("Type is not class")
+			subBlocks := Object^()
+			lastBlock := Object^()
+			cls := cType->{TypeClass^}.ToClass
+			for par : cls.Params
+			{
+				newBlock := Down.Clone()
+				if subBlocks == null
+				{
+					subBlocks = newBlock
+				}else{
+					lastBlock.Right = newBlock
+					newBlock.Left = lastBlock
+				}
+				lastBlock = newBlock
+			}
+			Down = subBlocks
+			subBlocks.SetUp(this&)
+			for it : Down
+			{
+				MakeItBlock(it)
+			}
+			for it : Down
+			{
+				WorkBag.Push(it,State_Start)
+			}
+		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		Down[^].PrintInBlock(f)
+	}
+}

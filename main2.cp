@@ -21,27 +21,24 @@ miniBad2 := !() -> int
 
 tst2 := class 
 {
+	a := int
+	b := float
+	z := void^
 	vf := poison virtual !() -> void
 	{
-		printf("a %i\n",this->Type->TypeSize)
+		for it,name : this->Fields
+		{
+			printf("heh %s\n","wow")
+		}
 	}
 }
 
-tst3 := class extend tst2
-{
-	extra := int[100]
-}
-
-tst4 := class extend tst3
-{
-	extra := int[500]
-}
 
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := new tst4
+	c := new tst2
 	//miniBad2()
 	c.vf()
 	return 0

@@ -6,6 +6,7 @@ TGCObject := class
 	GCGetRef := !() -> int { return _GCRefCounterValue }
 	GCSetRef := !(int val) -> int { _GCRefCounterValue = val }
 	GCLastRef := virtual !() -> void {}
+	
 	Destroy := virtual !() -> void {}
 }
 internalZeroConst := 0
