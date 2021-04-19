@@ -76,6 +76,7 @@ UnboxParams := !(Object^ start) -> void
 				IsLP := false
 				IsTaskLocal := false
 				IsWeak := false
+				IsPoison := false
 				iter = iter.Right
 
 				if iter.GetValue() == "extern"
@@ -108,6 +109,12 @@ UnboxParams := !(Object^ start) -> void
 					IsWeak = true
 					iter = iter.Right
 				}
+				
+				if iter.GetValue() == "poison"
+				{
+					IsPoison = true
+					iter = iter.Right
+				}
 
 				if iter.Right != null
 				{
@@ -126,6 +133,7 @@ UnboxParams := !(Object^ start) -> void
 					asPar.IsThreadLocal = IsLP
 					asPar.IsTaskLocal = IsTaskLocal
 					asPar.IsWeak = IsWeak
+					asPar.IsPoison = IsPoison
 					if IsVir WorkBag.Push(asPar,State_Start)
 					lineIter.Down = iter.Clone()
 					lineIter.Down.SetUp(lineIter)

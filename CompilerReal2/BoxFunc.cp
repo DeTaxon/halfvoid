@@ -89,6 +89,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 
 	iterForName := iter.Up
+	isPoison := false
 	FName := ""
 	IsSuf := false
 
@@ -99,19 +100,35 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			dynCa := iterForName->{ObjParam^}
 			IsSuf = dynCa.IsStrName
 			FName = dynCa.MyStr
+			isPoison = dynCa.IsPoison
 
 			if FName == "![]" IsSuf = false
 			if FName == "this" IsSuf = false
 
 			if IsOper(FName) IsSuf = false
 
-			iterForName = null
+			break
 		}else	iterForName = iterForName.Up
 	}
 	if constsI != null	SyntaxCompress(constsI,PriorityData)
 	if iter.GetValue() == "declare"
 	{
 		return new BoxFuncDeclare(ParamsObj,RetT,FName)
+	}
+
+	if isPoison
+	{
+		clItr := iterForName
+		while clItr != null
+		{
+			if clItr is BoxClass
+			{
+				asCl := clItr->{BoxClass^}
+				asCl.ItPoisons[FName] = item.Clone()
+				break
+			}
+			clItr = clItr.Up
+		}
 	}
 	if iter.GetValue() == "{}"
 	{

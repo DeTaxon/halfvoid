@@ -128,6 +128,7 @@ BoxClass := class extend BoxClassBase
 
 	ClassName := string
 
+
 	CreateDefault := !(char^ crtDef) -> void
 	{
 		switch crtDef
@@ -423,12 +424,53 @@ BoxClass := class extend BoxClassBase
 				InheritParams()
 			}
 			TupleCreateWork()
-
+			CheckPoisons()
 		}
 		if pri == State_PrePrint
 		{
 			InheritParams2()
 			ComputeVTable()		
+		}
+	}
+
+	//TODO: overload
+	ItPoisons := AVLMap.{char^,Object^}
+	checkedPoisons := bool 
+	CheckPoisons := !() -> void
+	{
+		if checkedPoisons return void
+		checkedPoisons = true
+
+		addedFuncs := AVLSet.{char^}()
+		prnt := Parent
+		while prnt != null
+		{
+			for it,name : prnt.ItPoisons
+			{
+				if addedFuncs.Contain(name)
+					continue
+				if not ItMethods.Contain(name)
+				{
+					addedFuncs.Insert(name) ; $temp
+
+					newSub := new ObjParam(name,false)
+					newSub.Down = it.Clone()
+					newSub.Down.Up = newSub
+
+					if Down.Down == null
+					{
+						Down.Down = newSub
+					}else{
+						itr8 := Down.Down
+						while itr8.Right != null
+							itr8 = itr8.Right
+						itr8.Right = newSub
+					}
+					newSub.Up = Down
+					WorkBag.Push(newSub,State_Start)
+				}
+			}
+			prnt = prnt.Parent
 		}
 	}
 	GetValue := virtual !() -> string

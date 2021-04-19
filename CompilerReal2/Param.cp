@@ -15,6 +15,7 @@ ObjParam := class extend Object
 	IsThreadLocal := bool
 	IsTaskLocal := bool
 	IsWeak := bool
+	IsPoison := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{

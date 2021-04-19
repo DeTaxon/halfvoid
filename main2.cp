@@ -32,10 +32,16 @@ tst3 := class extend tst2
 	extra := int[100]
 }
 
+tst4 := class extend tst3
+{
+	extra := int[500]
+}
+
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := new tst3
+	c := new tst4
 	//miniBad2()
 	c.vf()
 	return 0
