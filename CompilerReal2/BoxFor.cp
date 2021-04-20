@@ -581,6 +581,7 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 			cType := Down.Right->{FieldHolder^}.MyType
 			if not cType is TypeClass
 				EmitError("Type is not class")
+			cntr := 0
 			subBlocks := Object^()
 			lastBlock := Object^()
 			cls := cType->{TypeClass^}.ToClass
@@ -595,20 +596,24 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 					newBlock.Left = lastBlock
 				}
 				lastBlock = newBlock
+				cntr += 1
 			}
 			Down = subBlocks
 			subBlocks.SetUp(this&)
-			for it : Down
+			for c : cntr 
 			{
-				MakeItBlock(it)
+				itr := Down
+				for c itr = itr.Right
+				MakeItBlock(itr)
 			}
 			for it : Down, par : cls.Params
 			{
 				WorkBag.Push(it,State_Start)
-				if Names[0] != null and false
+				if Names[0] != null
 				{
 					asBlock := it->{BoxBlock^}
-					asBlock.Items.Push(	new ObjHolder(Names[0],	new ObjStr(par.ItName) ) )
+					assert(asBlock is BoxBlock)
+					asBlock.Items.Push(new ObjHolder(Names[0], new ObjStr(par.ItName)))
 				}
 			}
 		}

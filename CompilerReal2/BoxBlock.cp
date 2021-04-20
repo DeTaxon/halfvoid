@@ -131,7 +131,7 @@ BoxBlock := class extend Object
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
-		if Items[^].ItName == name 
+		if Items[^].ItName == name
 			return it.Down
 		return null
 	}
