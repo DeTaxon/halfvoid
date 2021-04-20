@@ -38,6 +38,7 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 					{
 						return new ObjType(asTyp.Base)
 					}
+					return new ObjType(GTypeVoid)
 				}
 			}
 		}
@@ -123,6 +124,45 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 		PopOutNode(iter.Down.Right)
 		return MakeSimpleCall(func,iter.Down)
 
+	}
+	if iter.Down?.Right?.GetValue() == "=="
+	{
+		dw := iter.Down
+		rr := iter.Down.Right.Right
+		if rr != null
+		{
+			if dw is ObjType and rr is ObjType
+			{
+				t1 := dw->{ObjType^}.MyType
+				if t1 == null
+					return new ObjBool(false)
+				t2 := rr->{ObjType^}.MyType
+				if t2 == null
+					return new ObjBool(false)
+				return new ObjBool(t1 == t2)
+			}
+		}
+	}
+	if iter.Down?.Right?.GetValue() == ">="
+	{
+		dw := iter.Down
+		rr := iter.Down.Right.Right
+		if rr != null
+		{
+			if dw is ObjType and rr is ObjType
+			{
+				t1 := dw->{ObjType^}.MyType
+				t2 := rr->{ObjType^}.MyType
+				if t1? is TypeClass and t2? is TypeClass
+				{
+					t1 = t1.GetPoint()
+					t2 = t2.GetPoint()
+					t3 := TypeFight(t1,t2)
+					return new ObjBool(t3 == t2)
+				}
+				return new ObjBool(false)
+			}
+		}
 	}
 	return null
 }

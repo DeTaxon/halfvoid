@@ -24,11 +24,17 @@ tst2 := class
 	a := int
 	b := double
 	z := void^
+	sub := GCTest^
 	vf := poison virtual !() -> void
 	{
 		for it,name : this->Fields
 		{
-			printf("heh %s %p\n",name,it)
+			if it->Type->Base >= TGCObject
+			{
+				printf("int %s %i\n",name,it)
+			}else{
+				printf("heh %s %p\n",name,it)
+			}
 		}
 	}
 }
