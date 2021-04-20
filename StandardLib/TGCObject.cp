@@ -11,13 +11,13 @@ TGCObject := class
 
 	_GCInternalDelete := poison virtual !() -> void
 	{
-		//for it,name : this->Fields
-		//{
-		//	if it->Type->Base >= TGCObject
-		//	{
-		//		it = null
-		//	}
-		//}
+		for it,name : this->Fields
+		{
+			if it->Type->Base >= TGCObject
+			{
+				it = null
+			}
+		}
 	}
 }
 internalZeroConst := 0

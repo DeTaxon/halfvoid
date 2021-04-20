@@ -19,38 +19,12 @@ miniBad2 := !() -> int
 	tst.nxt = new GCTest
 }
 
-tst2 := class 
-{
-	a := int
-	b := double
-	z := void^
-	sub := GCTest^
-	vf := poison virtual !() -> void
-	{
-		for it,name : this->Fields
-		{
-			if it->Type->Base >= TGCObject
-			{
-				printf("int %s %i\n",name,it)
-			}else{
-				printf("heh %s %p\n",name,it)
-			}
-		}
-	}
-}
-
-tst3 := class extend tst2
-{
-	r := char
-}
 
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	h := new tst3
-	h.vf()
-	//miniBad2()
+	miniBad2()
 	return 0
 	
 	try
