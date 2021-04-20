@@ -16,4 +16,5 @@ State_DestructGet := 13
 State_Optimize := 14
 State_PostOptimize := 16
 State_ErrorCheck := 16
+State_ClassCheckParams := 16
 State_PrePrint := 17

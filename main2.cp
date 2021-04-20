@@ -39,17 +39,18 @@ tst2 := class
 	}
 }
 
+tst3 := class extend tst2
+{
+	r := char
+}
 
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := new tst2
-	c.a = 1
-	c.b = 13
-	c.z = argc&
+	h := new tst3
+	h.vf()
 	//miniBad2()
-	c.vf()
 	return 0
 	
 	try

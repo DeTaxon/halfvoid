@@ -8,6 +8,17 @@ TGCObject := class
 	GCLastRef := virtual !() -> void {}
 	
 	Destroy := virtual !() -> void {}
+
+	_GCInternalDelete := poison virtual !() -> void
+	{
+		//for it,name : this->Fields
+		//{
+		//	if it->Type->Base >= TGCObject
+		//	{
+		//		it = null
+		//	}
+		//}
+	}
 }
 internalZeroConst := 0
 internalGCIncRef := !(void^ toIncP)  -> void
@@ -33,6 +44,7 @@ internalGCDecRef := !(void^ toDecP) -> void
 			case 1
 				//TODOGC: cycle check
 				toDec.Destroy()
+				toDec._GCInternalDelete()
 				free(toDec)
 		}
 	}

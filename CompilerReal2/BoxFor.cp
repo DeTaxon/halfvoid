@@ -637,7 +637,6 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 		if holder.Down != null
 		{
 			holder.Down.PrintPointPre(f)
-
 			for par,i : cls.Params
 			{
 				if par.ItName == ""

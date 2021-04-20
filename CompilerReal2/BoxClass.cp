@@ -298,7 +298,7 @@ BoxClass := class extend BoxClassBase
 		}
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_CheckBaseClass)
-		WorkBag.Push(this&,State_PrePrint)
+		WorkBag.Push(this&,State_ClassCheckParams)
 		Classes.Push(this&)
 
 	}
@@ -426,7 +426,7 @@ BoxClass := class extend BoxClassBase
 			TupleCreateWork()
 			CheckPoisons()
 		}
-		if pri == State_PrePrint
+		if pri == State_ClassCheckParams
 		{
 			InheritParams2()
 			ComputeVTable()		
