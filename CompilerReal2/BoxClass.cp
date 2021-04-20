@@ -768,6 +768,12 @@ BoxClass := class extend BoxClassBase
 	}
 
 
+	GetParamNr := !(int x) -> int
+	{
+		if vTable.Size() != 0
+			return x + 1
+		return x
+	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		PrintCreatedFuncs(f)

@@ -75,6 +75,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	EnabledIIndex := bool
 	CreatedIIndexNames := List.{char^}
 
+	holder := Object^
+
 	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
 		for items
@@ -578,7 +580,8 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 	{
 		if pri == State_PrePrint
 		{
-			cType := Down.Right->{FieldHolder^}.MyType
+			hldr := Down.Right->{FieldHolder^}
+			cType := hldr.MyType
 			if not cType is TypeClass
 				EmitError("Type is not class")
 			cntr := 0
@@ -606,20 +609,51 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 				for c itr = itr.Right
 				MakeItBlock(itr)
 			}
-			for it : Down, par : cls.Params
+			for it,i : Down, par : cls.Params
 			{
+				if par.ItName == ""
+					continue
 				WorkBag.Push(it,State_Start)
-				if Names[0] != null
+				asBlock := it->{BoxBlock^}
+				if hldr.Down != null
 				{
-					asBlock := it->{BoxBlock^}
-					assert(asBlock is BoxBlock)
-					asBlock.Items.Push(new ObjHolder(Names[0], new ObjStr(par.ItName)))
+					asBlock.Items.Push(new ObjHolder(Names[0], new FuncParam("ForParamId"sbt + ItId + "i" + i,par.GetType(),true)))
+				}else{
+					asBlock.Items.Push(new ObjHolder(Names[0], new ObjType(par.GetType())))
+				}
+				if IndNames[0] != null
+				{
+					asBlock.Items.Push(new ObjHolder(IndNames[0], new ObjStr(par.ItName)))
 				}
 			}
+			holder = hldr
+			hldr.Up = this&
 		}
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		Down[^].PrintInBlock(f)
+		cType := holder->{FieldHolder^}.MyType
+		cls := cType->{TypeClass^}.ToClass
+		if holder.Down != null
+		{
+			holder.Down.PrintPointPre(f)
+
+			for par,i : cls.Params
+			{
+				if par.ItName == ""
+					continue
+				f << "%ForParamId" << ItId << "i" << i << " = getelementptr "
+				cType.PrintType(f)
+				f << " , "
+				holder.Down.PrintPointUse(f)
+				f << " , i32 0, i32 "<< cls.GetParamNr(i) <<"\n"
+			}
+		}
+		for it : Down, par : cls.Params
+		{
+			if par.ItName == ""
+				continue
+			it.PrintInBlock(f)
+		}
 	}
 }

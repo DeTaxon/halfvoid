@@ -22,13 +22,13 @@ miniBad2 := !() -> int
 tst2 := class 
 {
 	a := int
-	b := float
+	b := double
 	z := void^
 	vf := poison virtual !() -> void
 	{
-		for name22 : this->Fields
+		for it,name : this->Fields
 		{
-			printf("heh %s\n",name22)
+			printf("heh %s %p\n",name,it)
 		}
 	}
 }
@@ -39,6 +39,9 @@ tst2 := class
 main := !(int argc, char^^ argv) -> int
 {
 	c := new tst2
+	c.a = 1
+	c.b = 13
+	c.z = argc&
 	//miniBad2()
 	c.vf()
 	return 0

@@ -87,7 +87,17 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 			{
 				tp := iter.Down.GetType()
 				if tp != null
-					return new FieldHolder(tp)
+				{
+					res := new FieldHolder(tp)
+					if not iter.Down is ObjType
+					{
+						dataNode := iter.Down
+						PopOutNode(iter.Down)
+						res.Down = dataNode
+						dataNode.Up = res
+					}
+					return res
+				}
 			}
 		}
 	}
