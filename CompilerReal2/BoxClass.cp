@@ -322,15 +322,33 @@ BoxClass := class extend BoxClassBase
 		if not Inherited
 		{
 			Inherited = true
+
+
 			if Parent != null
 			{
-				IsGC = Parent.IsGC
 				Parent.InheritParams()
+				IsGC = Parent.IsGC
 				//InheritParams2()
 				if Parent.ContainVirtual 
 					ContainVirtual = true
 				WorkBag.Push(this&,State_PrePrint)
+			}
+			
+			for it : Params
+			{
+				tp := it.ResultType
+				if tp is TypePoint and tp.Base is TypeClass
+				{
+					cl := tp.Base->{TypeClass^}.ToClass
+					cl.InheritParams()
 
+					if cl.IsGC and not IsGC
+					{
+						if Parent != null 
+							EmitError("can not turn class to gc type")
+						Parent = gcClass
+					}
+				}
 			}
 		}
 	}

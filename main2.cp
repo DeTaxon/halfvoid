@@ -2,7 +2,7 @@
 GCTest := class extend TGCObject
 {
 	nxt := TGCObject^
-	//TODO: relative ptr, List.{GCTest}, return new GCTest, capture returned objects
+	//TODO: relative ptr, List.{GCTest}, yodlers, capture returned objects
 	//TODO: MemoryPools, TemporaryPool
 	Destroy := virtual !() -> void
 	{
@@ -15,8 +15,8 @@ GCTest := class extend TGCObject
 }
 miniBad2 := !() -> int
 {
-	tst := new GCTest
-	tst.nxt = new GCTest
+	x := new List.{GCTest^}()
+	x.Push(new GCTest)
 }
 
 
