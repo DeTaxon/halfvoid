@@ -36,14 +36,6 @@ GCInit := !() -> void
         throw new Exception("Func internalGCSetPtr not found")
     }
 	gcSetValueFunc.ParseBlock()
-
-	gTyp :=	ParseType(new ObjIndent("TGCObject"))
-	if gTyp != null and gTyp is TypeClass
-	{
-		gcClass = gTyp->{TypeClass^}.ToClass
-	}
-	if gcClass == null
-        throw new Exception("TGCObject not found")
 }
 
 IsGCClass := !(Type^ toCmp) -> bool

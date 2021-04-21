@@ -652,7 +652,9 @@ BoxFuncBody := class extend BoxFunc
 
 		if Stuf.GetValue() == "{}"
 		{
-			Down = new BoxBlock()
+			blk := new BoxBlock()
+			blk.usePaths = true
+			Down = blk
 			Down.Line = Line
 			Down.Up = this&
 			if Stuf.Down != null

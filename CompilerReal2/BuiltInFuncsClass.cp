@@ -69,9 +69,7 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 			return void
 		}
 
-		usePos := pos
-		if ToClass.ContainVirtual
-			usePos = pos + 1
+		usePos := ToClass.GetParamNr(pos)
 		
 		clName := ToClass.ClassType.GetName()
 

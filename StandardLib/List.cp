@@ -226,7 +226,6 @@ List := class .{@T}
 	createNode := !() .{} -> ListNode.{T}^
 	{
 		newNode := ListNode.{T}^()
-
 		if $keep
 		{
 			if CreatedNodes != null

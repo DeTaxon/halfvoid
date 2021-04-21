@@ -229,6 +229,7 @@ ObjParam := class extend Object
 				if MyStr == "TGCObject"
 				{
 					asClass.IsGC = true
+					gcClass = asClass
 				}
 
 				iterB := this&->{Object^}

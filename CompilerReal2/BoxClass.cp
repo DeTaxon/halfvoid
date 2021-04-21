@@ -346,7 +346,13 @@ BoxClass := class extend BoxClassBase
 					{
 						if Parent != null 
 							EmitError("can not turn class to gc type")
+						if gcClass == null
+							EmitError("internal error, no class TGCObject")
 						Parent = gcClass
+						IsGC = true
+						if Parent.ContainVirtual 
+							ContainVirtual = true
+						WorkBag.Push(this&,State_PrePrint)
 					}
 				}
 			}
