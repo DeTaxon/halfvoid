@@ -15,8 +15,8 @@ GCTest := class extend TGCObject
 }
 miniBad2 := !() -> int
 {
-	x := new AVLSet.{GCTest^}()
-	x.Insert(new GCTest)
+	x := AVLMap.{int,GCTest^}
+	x[0] = new GCTest
 }
 
 

@@ -2,6 +2,7 @@
 gcIncRefFunc := BoxFunc^
 gcDecRefFunc := BoxFunc^
 gcSetValueFunc := BoxFunc^
+gcCallDestroy := BoxFunc^
 
 gcClass := BoxClass^
 
@@ -25,6 +26,13 @@ GCInit := !() -> void
         throw new Exception("Func internalGCDecRef not found")
     }
 	gcDecRefFunc.ParseBlock()
+
+	gcCallDestroy = FindFunc("internalGCDestroyObj",dummy,box^,false)
+    if gcCallDestroy == null
+    {
+        throw new Exception("Func internalGCDestroyObj not found")
+    }
+	gcCallDestroy.ParseBlock()
 
     
 	box2 := new FuncInputBox ; $temp

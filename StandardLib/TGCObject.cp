@@ -74,3 +74,9 @@ internalGCSetPtr := !(void^^ toSet, void^ val) -> void
 	internalGCDecRef(lft^)
 	toSet^ = val
 }
+internalGCDestroyObj := !(void^ toDest) -> void //for created on stack, no dec ref
+{
+	obj := weak toDest->{TGCObject^}
+	obj._GCInternalDestroy()
+	obj._GCInternalDelete()
+}

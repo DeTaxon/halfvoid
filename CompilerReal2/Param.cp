@@ -70,7 +70,15 @@ ObjParam := class extend Object
 		{
 			asNeed2 := ObjType->{TypeClass^}
 			asNeed := asNeed2.ToClass
-			
+
+			if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
+			{
+				itId := GetNewId() //TODO: less ItId
+				f << "%AsVoid" << itId << " = bitcast "
+				Down->{LocalParam^}.PrintPointUse(f,0,-1)
+				f << " to i8*\n"
+				f << "call void @memset(i8* %AsVoid" << itId << ", i8 0, i64 "<< ObjType.GetSize() << ")\n"
+			}
 			if not IsGlobal
 			{
 				tmp := new ParamNaturalCall("_",Down)
@@ -112,11 +120,18 @@ ObjParam := class extend Object
 					f << "\n"
 
 					dTyp := Down.Right.GetType()
-					if dTyp is TypePoint and dTyp.Base is TypeClass and (not IsWeak) and dTyp.Base->{TypeClass^}.ToClass.IsGC
+					isGCPtr := IsGCPtr(dTyp)
+					//if (isGCPtr or IsGCClass(dTyp)) and (not IsWeak)
+					if isGCPtr and (not IsWeak)
 					{
 						itId := GetNewId()
 						f << "%AsVoid" << itId << " = bitcast "
-						Down.Right.PrintUse(f)
+						if isGCPtr
+						{
+							asLoc.PrintPointUse(f,0,debId)
+						}else{
+							Down.Right.PrintUse(f)
+						}
 						f << " to i8*\n"
 						f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
 						if DebugMode
@@ -131,6 +146,30 @@ ObjParam := class extend Object
 					}
 				}
 			}
+		}
+		if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
+		{
+			asLoc := Down->{LocalParam^}
+			itId := GetNewId()
+			f << "%AsVoid" << itId << " = bitcast "
+			asLoc.PrintPointUse(f,0,-1)
+			f << " to i8*\n"
+			f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
+			dCl := -1
+			if DebugMode
+			{
+				dCl = CreateDebugCall(this&)
+				if dCl != -1
+				{
+					f << ", !dbg !" << dCl
+				}
+			}
+			f << "\n"
+
+			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << gcCallDestroy.OutputName << " , i8* %AsVoid"<< itId <<" )"
+			if dCl != -1
+				f << ", !dbg !" << dCl
+			f << "\n"
 		}
 		//if Down != null and Down is LocalParam and DebugMode
 		//{
