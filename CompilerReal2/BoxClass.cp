@@ -337,9 +337,15 @@ BoxClass := class extend BoxClassBase
 			for it : Params
 			{
 				tp := it.ResultType
-				if tp is TypePoint and tp.Base is TypeClass
+				if (tp is TypePoint and tp.Base is TypeClass) or tp is TypeClass
 				{
-					cl := tp.Base->{TypeClass^}.ToClass
+					cl := BoxClass^()
+					if tp is TypeClass
+					{
+						cl = tp->{TypeClass^}.ToClass
+					}else{
+						cl = tp.Base->{TypeClass^}.ToClass
+					}
 					cl.InheritParams()
 
 					if cl.IsGC and not IsGC

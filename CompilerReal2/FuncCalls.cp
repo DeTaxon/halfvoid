@@ -1201,7 +1201,7 @@ NaturalCall := class extend SomeFuncCall
 		if pri == State_MiddleGetUse
 		{
 			CheckReturn()
-			if IsGCPtr(FType.RetType)
+			if IsGCPtr(FType.RetType) and not FType.RetRef
 			{
 				gcObjId = GetAlloc(this&,FType.RetType)
 				assert(gcObjId > 0)

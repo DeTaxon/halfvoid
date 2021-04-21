@@ -17,7 +17,22 @@ TGCObject := class
 			{
 				it = null
 			}
+			if it->Type >= TGCObject
+			{
+				it._GCInternalDelete()
+			}
 		}
+	}
+	_GCInternalDestroy := poison virtual !() -> void
+	{
+		for it : this->Fields
+		{
+			if it->Type >= TGCObject
+			{
+				it._GCInternalDestroy()
+			}
+		}
+		Destroy()
 	}
 }
 internalZeroConst := 0
@@ -43,7 +58,7 @@ internalGCDecRef := !(void^ toDecP) -> void
 				toDec.GCLastRef()
 			case 1
 				//TODOGC: cycle check
-				toDec.Destroy()
+				toDec._GCInternalDestroy()
 				toDec._GCInternalDelete()
 				free(toDec)
 		}

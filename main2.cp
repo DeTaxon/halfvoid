@@ -15,8 +15,8 @@ GCTest := class extend TGCObject
 }
 miniBad2 := !() -> int
 {
-	x := new List.{GCTest^}()
-	x.Push(new GCTest)
+	x := new AVLSet.{GCTest^}()
+	x.Insert(new GCTest)
 }
 
 
