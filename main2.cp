@@ -15,8 +15,13 @@ GCTest := class extend TGCObject
 }
 miniBad2 := !() -> int
 {
-	x := AVLMap.{int,GCTest^}
-	x[0] = new GCTest
+	ptri := u64
+	ptri = 4
+	x := s64
+	x = 23
+	y := s64
+	y = 27
+	z := min(x,y,ptri)
 }
 
 

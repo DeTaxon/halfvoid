@@ -373,10 +373,10 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
 
 CmpSame := 0
 CmpLoseless := 1
-CmpLoselessItoF := 2 // Int to float
-CmpLose := 3
-CmpLoseFtoI := 5 // float to inr
-CmpLosePtoFP := 6
+CmpLose := 2
+CmpLoselessItoF := 3 // Int to float
+CmpLoseFtoI := 4 // float to inr
+CmpLosePtoFP := 5
 CmpNoCmp := 255
 
 TypeCmp := !(Type^ inType, Type^ funcType) -> int

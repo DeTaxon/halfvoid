@@ -1354,7 +1354,7 @@ PointFuncCall := class extend NaturalCall
 				{
 					assert(false) //TODO
 				}else{
-					assert(false) //TODO
+					//assert(false) //TODO
 				}
 
 			}else{
@@ -1433,7 +1433,9 @@ PointFuncCall := class extend NaturalCall
 				}else{
 					if needComma f << ","
 					needComma = true
-					it.PrintPointUse(f)
+					cn := it.GetType().GetName()
+					f << cn << "* byval(" << cn << ") "
+					f << it.GetPointName()
 				}
 
 			}else{
