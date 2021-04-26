@@ -403,11 +403,11 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	newNode := ReplaceNode(tr,new ObjIndent(itName))
 	newNode.Line = tr.Line
 
-	nms := Queue.{string}()
+	nms := Queue.{string}() ; $temp
 	nms.Push(itName)
 	indNames := Queue.{string}()
 	indNames.Push(indName)
-	itms := Queue.{Object^}()
+	itms := Queue.{Object^}() ; $temp
 	itms.Push(itm)
 
 	tmpNode := new Object ; $temp

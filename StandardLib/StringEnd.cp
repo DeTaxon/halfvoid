@@ -19,7 +19,8 @@ StringEnd := class
 	}
 	"<=>" := !(StringSpan toCmp) -> int
 	{
-		assert(toCmp.Size() <= strSize)
+		if toCmp.Size() <= strSize
+			return -1
 		thisSpn := StringSpan(ptrToStr[strSize - toCmp.Size()]&,toCmp.Size())
 		return thisSpn <=> toCmp
 	}

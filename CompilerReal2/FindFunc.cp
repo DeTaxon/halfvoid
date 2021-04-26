@@ -128,7 +128,7 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 			{
 				asClass := ((iterUp.Up.Up)->{BoxClass^})
 				theTemplate := BoxTemplate^
-				templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^})
+				templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^}) ; $temp
 				return void
 			}
 			iterUp = iterUp.Up
@@ -373,8 +373,8 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
 
 CmpSame := 0
 CmpLoseless := 1
-CmpLose := 2
-CmpLoselessItoF := 3 // Int to float
+CmpLoselessItoF := 2 // Int to float
+CmpLose := 3
 CmpLoseFtoI := 4 // float to inr
 CmpLosePtoFP := 5
 CmpNoCmp := 255

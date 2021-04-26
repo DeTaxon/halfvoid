@@ -29,7 +29,10 @@ miniBad2 := !() -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	miniBad2()
+	//miniBad2()
+
+	tst := gRepo.GetFile("Example.ogg")
+	VorbisLoadFromMem(tst.Map(),tst.Size())
 	return 0
 	
 	try

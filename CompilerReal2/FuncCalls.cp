@@ -4,7 +4,7 @@ FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void
 		for v,k : itm.Line.itAttrs
 		{
 			//printf("adding %s\n",k)
-			itBox.itAttrs[k] = v
+			itBox.itAttrs[k] = v ; $temp
 		}
 	}
 
@@ -22,7 +22,7 @@ FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void
 	for val,key : asFunc.ItAttrs
 	{	
 		if itBox.itAttrs.TryFind(key) == null
-			itBox.itAttrs[key] = val
+			itBox.itAttrs[key] = val ; $temp
 	}
 }
 
@@ -1355,6 +1355,12 @@ PointFuncCall := class extend NaturalCall
 					assert(false) //TODO
 				}else{
 					//assert(false) //TODO
+					it.PrintPointPre(f)
+					if needComma funcTypeNameTmpl << ","
+					needComma = true
+					cn := it.GetType().GetName()
+					//funcTypeNameTmpl << cn << "* byval(" << cn << ")"
+					funcTypeNameTmpl << cn << "* "
 				}
 
 			}else{

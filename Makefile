@@ -13,6 +13,10 @@ HW := ./halfvoid
 
 TargetPlatform := -p posix
 
+ifeq ($(grind),yes)
+vgrind := valgrind --leak-check=full --log-file=grind.txt
+endif
+
 Stati := -static
 ifeq ($(nostatic),yes)
 	undefine Stati
@@ -73,7 +77,7 @@ repair: $(wildcard CompilerReal2/*.cp)
 	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	$(cg) $(TimeF) $(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 twice: repair cycle
 
 ManyCycle:

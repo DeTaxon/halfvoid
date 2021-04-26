@@ -498,7 +498,7 @@ SLambda := class extend BoxFuncContainer
 				{
 					if itrr.GetValue() == "!()"
 					{
-						funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^})
+						funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
 						break
 					}
 					if itrr is SLambda

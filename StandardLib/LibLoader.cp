@@ -19,7 +19,6 @@ LibDBObject := class
 		if inMap != null
 			return inMap^
 		
-
 		LibDB.itMemPool.Push()
 		defer LibDB.itMemPool.Pop()
 

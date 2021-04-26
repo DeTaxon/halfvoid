@@ -25,6 +25,7 @@ main := !(int argc,char^^ argv) -> int
 	zipSp := Queue.{Pair.{int,string}}()
 
 	fileSuffixes := List.{char^}()
+	defer fileSuffixes.Destroy()
 	fileSuffixes << ".cp"
 	if $posix compilerSuffix = "posix"
 	if $win32 compilerSuffix = "win32"
