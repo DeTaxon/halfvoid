@@ -405,7 +405,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 
 	nms := Queue.{string}() ; $temp
 	nms.Push(itName)
-	indNames := Queue.{string}()
+	indNames := Queue.{string}() ; $temp
 	indNames.Push(indName)
 	itms := Queue.{Object^}() ; $temp
 	itms.Push(itm)

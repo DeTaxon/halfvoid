@@ -226,7 +226,7 @@ BoxClass := class extend BoxClassBase
 					inTh.FuncName = name
 				}
 			}
-			if inTh != null templs.Push(inTh)
+			if inTh != null templs.Push(inTh) ; $temp
 		}
 
 	}
@@ -530,7 +530,7 @@ BoxClass := class extend BoxClassBase
 			clName := StringSpan(name,maybeForced)
 			if clName == ClassName
 			{
-				funcName := name[(maybeForced+1) .. 0].Str()
+				funcName := name[(maybeForced+1) .. 0].StrTmp()
 				if vTypes[^].fName == funcName
 				{
 					Funcs.Push(it.fItem)
