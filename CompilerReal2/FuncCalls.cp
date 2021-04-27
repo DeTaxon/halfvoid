@@ -388,6 +388,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						asClass = null
 					}
 
+
 					box := new FuncInputBox()  ; $temp
 					FillAttrs(box^,iter)
 
@@ -396,7 +397,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 						for v,k : LL.inhAttrs^
 						{
 							if box.itAttrs.TryFind(k) == null
-								box.itAttrs[k] = v
+								box.itAttrs[k] = v ; $temp
 						}
 					}
 					

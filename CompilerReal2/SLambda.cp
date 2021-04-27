@@ -364,13 +364,13 @@ SLambda := class extend BoxFuncContainer
 		{
 			if itrr.GetValue() == "!()"
 			{
-				funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^})
+				funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
 				break
 			}
 			if itrr is SLambda
 			{
 				asSL := itrr->{SLambda^}
-				funcsUp.Emplace(asSL.ABox&,asSL,null)
+				funcsUp.Emplace(asSL.ABox&,asSL,null) ; $temp
 			}
 			itrr = itrr.Up
 		}

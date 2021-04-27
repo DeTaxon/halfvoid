@@ -180,7 +180,7 @@ Queue := class .{@T} extend Stack.{T}
 	{
 		for toSet.Size() Push(toSet[it])
 	}
-	PushFront := !(T a) -> int
+	PushFront := !(T a) .{} -> int
 	{
 		if Start == null{
 			Start = new Node.{T}(a)
