@@ -14,7 +14,7 @@ InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int
 		AsNeed := ii->{ObjParam^}
 		if(AsNeed.GetName() == name)
 		{
-			found.Push(AsNeed) ; $temp	
+			found.Push(AsNeed) ; $temp
 		}
 	}
 }

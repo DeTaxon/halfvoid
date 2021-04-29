@@ -186,6 +186,13 @@ ObjParam := class extend Object
 		//	}
 		//}
 	}
+
+	GetInhPar := !() -> AttrArrayType^
+	{
+		if Line != null inhAttrs = Line.itAttrs&
+		while true
+			yield inhAttrs
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -240,6 +247,7 @@ ObjParam := class extend Object
 				asL.ApplyFunc()
 				return void
 			}
+			//GetInhPar()
 			if Line != null inhAttrs = Line.itAttrs&
 			if Up? is BoxFile
 			{

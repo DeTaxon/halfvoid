@@ -1115,7 +1115,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		{	
 			newBox.itPars.Emplace(it.first,it.second)
 		}
-		newBox.itConsts.Push(itBox.itConsts[^])
+		newBox.itConsts.Push(itBox.itConsts[^]) ; $temp
 		newBox.itAttrs[ind] = itBox.itAttrs[^ind]
 		return itTemplate.GetPriority(newBox^)
 	}
@@ -1128,8 +1128,8 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		{	
 			newBox.itPars.Emplace(it.first,it.second)
 		}
-		newBox.itConsts.Push(itBox.itConsts[^])
-		newBox.itAttrs[ind] =itBox.itAttrs[^ind]
+		newBox.itConsts.Push(itBox.itConsts[^]) ; $temp
+		newBox.itAttrs[ind] =itBox.itAttrs[^ind] ; $temp
 		newFunc := itTemplate.GetFunc(newBox^)
 
 		preRes := new BuiltInThislessFunc(newFunc,itClass,itInClass)

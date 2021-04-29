@@ -219,7 +219,7 @@ ObjLine := class
 	}
 	LoadAttrs := !(char^ str) -> void
 	{
-		newItm := DivideStr(str,' ')
+		newItm := DivideStr(str,"\t\n ")
 		for newItm
 		{
 			if it != ";"

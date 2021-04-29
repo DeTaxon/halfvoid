@@ -284,7 +284,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	if tr.Down.Right.Down == null return null
 	if tr.Down.Right.Down.GetValue() != "^" return null
 
-
 	indName := null->{string}
 	itName := null->{char^}
 	itName = "_"//->{char^} //TODO: for some reason itName does not gets compiled right

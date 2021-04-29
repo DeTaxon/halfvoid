@@ -1067,10 +1067,48 @@ BoxFuncBody := class extend BoxFunc
 						iter = iter.Up
 					}
 				}
+
+				resFName := ""sbt + FuncName
+				tmplVars := HybridQueue.{int,8}() ; $temp
+				for val,k : ItAttrs
+				{
+					if tmplVars.Size() == 0 resFName << ".{"
+					if tmplVars.Size() > 1 resFName << ","
+
+					if val is ObjBool
+					{
+						asBool := val->{ObjBool^}
+						nId := GetNewId()
+						f <<"!" << nId <<  " = !DITemplateValueParameter(name:\""<< k <<"\", type: !"<< GTypeBool.metaId<<",value: i8 "
+						if asBool.MyBool f << "1" else f << "0"
+						f << ")\n";
+						tmplVars.Push(nId)
+
+						resFName << k << "="
+						if asBool.MyBool resFName << "1" else resFName << "0"
+					}
+				}
+				tmplId := -1
+				if tmplVars.Size() != 0
+				{
+					resFName << "}"
+
+					tmplId = GetNewId()
+					f << "!" << tmplId << " = !{"
+					for val,i : tmplVars
+					{
+						if i > 0 f << ","
+						f << "!" << val
+					}
+					f << "}\n"
+				}
+
+
+
 				if iter != null
 				{
 					asN := iter->{BoxFile^}
-					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\"" << FuncName << "\","
+					f << "!" << ABox.ItId << " = distinct !DISubprogram(name:\"" << resFName << "\","
 					f << "linkageName:\"" << OutputName << "\","
 					f << "scope: !" << asN.fileId << " , file: !" << asN.fileId
 					f << ",type: !" << MyFuncType.metaId 
@@ -1081,6 +1119,9 @@ BoxFuncBody := class extend BoxFunc
 					}
 					f << ", unit: !" << cuId
 					f << ", flags: DIFlagPrototyped"
+					f << ", spFlags: DISPFlagDefinition"
+					if tmplId != -1
+						f << ", templateParams:!"<<tmplId
 					f << ")\n"
 
 				}
