@@ -77,8 +77,10 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	holder := Object^
 
+	endLabel := BoxLabel^
 	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
 	{
+		endLabel = new BoxLabelAnon()
 		for items
 		{
 			if it.IsConst 
@@ -177,6 +179,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					func := FindFunc("~For",this&,someBox^,false)
 					if func == null 
 					{
+						Down.Right.GetType()
 						EmitError("can not load ~For func\n")
 						continue
 					}
@@ -371,7 +374,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				{
 					
 					IsInvalids[it].PrintPre(f)
-					f << "br i1 " << IsInvalids[it].GetName() << ", label %End" << ItId
+					f << "br i1 " << IsInvalids[it].GetName() << ", label %" << endLabel.GetLabel()
 					if Checks > 1
 					{
 						f << ", label %NextCheck" << Checks << "\n"
@@ -408,7 +411,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			}
 		}
 		IsEndFunc.PrintPre(f)
-		f << "br i1 " << IsEndFunc.GetName() << " , label %End" << ItId << " , label %Next" << ItId << "\n"
+		f << "br i1 " << IsEndFunc.GetName() << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 
 
@@ -486,9 +489,9 @@ BoxForOldFashionMulti := class extend BoxFor
 		if labelBreak != null
 		{
 			labelBreak.PrintLabel(f)
-			f << "br label %End" << ItId << "\n"
+			f << "br label %" << endLabel.GetLabel() << "\n"
 		}
-		f << "End" << ItId << ":\n"
+		endLabel.PrintLabel(f)
 		if callDeferStuf
 			PrintDeferApply(f,ItId,this&)
 	}

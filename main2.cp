@@ -26,6 +26,7 @@ miniBad2 := !() -> int
 
 aa := class
 {
+	tst := List.{int}
 	">" := !(int x) -> bool
 	{
 		printf("i am bad\n")
@@ -43,8 +44,12 @@ bb := class extend aa
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := bb
-	z := c > 3
+	c := null->{aa^}
+	for r : c?.tst
+	{
+
+	}
+	printf("yep\n")
 	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)

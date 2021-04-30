@@ -126,7 +126,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 
 			while toDownd != null
 			{
-				if toDownd.GetValue() in !["while()","~if()","if()","?or??"]
+				if toDownd.GetValue() in !["while()","~if()","if()","?or??","~~for()"]
 				{
 					if toDownd is QAtleastBox
 					{
@@ -135,6 +135,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 					}
 					if IsQBox(toDownd) or toDownd is QAtleastBox
 					{
+					}else if toDownd.GetValue() == "~~for()"
+					{
+						toDownd = prevNode
+						break
 					}else{
 						toDownd = prevNode
 						forceToBool = true
@@ -155,6 +159,12 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 
 			replObject := new Object
 			qObject := new QuestionBox(replObject,forceToBool)
+			if toDownd.Up?.GetValue() == "~~for()"
+			{
+				qObject.passValue = true
+				asFor := toDownd.Up->{BoxForOldFashionMulti^}
+				qObject.jmpLabel = asFor.endLabel
+			} 
 			if toDownd is BoxSwitch
 			{
 				qObject.passValue = true
