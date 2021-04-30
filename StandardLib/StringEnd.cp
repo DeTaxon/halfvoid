@@ -19,7 +19,7 @@ StringEnd := class
 	}
 	"<=>" := !(StringSpan toCmp) -> int
 	{
-		if toCmp.Size() <= strSize
+		if strSize <= toCmp.Size()
 			return -1
 		thisSpn := StringSpan(ptrToStr[strSize - toCmp.Size()]&,toCmp.Size())
 		return thisSpn <=> toCmp

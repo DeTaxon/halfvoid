@@ -24,5 +24,13 @@ FuncCallTryCompute := !(Object^ iter) -> Object^
 		}
 
 	}
+	if iter.Down?.GetValue() == "#best"
+	{
+		asType := ParseType(iter)
+		if asType != null
+		{
+			return new ObjType(asType)
+		}
+	}
 	return null
 }

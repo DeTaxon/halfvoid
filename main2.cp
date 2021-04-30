@@ -39,11 +39,10 @@ cc := class extend aa{
 main := !(int argc, char^^ argv) -> int
 {
 	//miniBad2()
-	z := #best(cc^,bb^)
-	printf("test %s\n",z->Type->Name)
+	//printf("test %s\n",#best(cc^,bb^)->Name)
 	//tst := gRepo.GetFile("Example.ogg")
 	//VorbisLoadFromMem(tst.Map(),tst.Size())
-	return 0
+	//return 0
 	
 	try
 	{
@@ -196,7 +195,7 @@ StringEndTest := !() -> void
 {
 	start := "sample text"
 	end := StringEnd(start)
-
+	
 	assert(end <=> "text" == 0)
 	assert(end <=> "ext" == 0)
 	assert(end <=> "test" > 0)
