@@ -239,7 +239,7 @@ CLibModule := class extend CompilerModule
 	}
 	CheckFuncTypeString := !(StringSpan toCheck) -> TypeFunc^
 	{
-		tList := DivideStr(toCheck.StrTmp()," ,") //TODO: divide_str for string span
+		tList := toCheck.DivideStr(" ,")
 		retType := CheckTypeString(tList[0])
 		nextTypes := Queue.{Type^}()
 		isVArg := false

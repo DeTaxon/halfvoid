@@ -339,7 +339,7 @@ SetTupleValueSimple := class extend BoxTemplate
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
 		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first)
+		tps.Push(itBox.itPars[^].first) ; $temp
 		return GetFuncType(tps,null->{bool^},GTypeVoid,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
@@ -386,7 +386,7 @@ CreateTupleTemplate := class extend BoxTemplate
 		ct := itTpl.ClassType
 		cc := ct->{Type^}
 		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first)
+		tps.Push(itBox.itPars[^].first) ; $temp
 		return GetFuncType(tps,null->{bool^},cc,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
@@ -441,7 +441,7 @@ TupleConstructorTemplate := class extend BoxTemplate
 		ct := itTpl.ClassType
 		cc := ct->{Type^}
 		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first)
+		tps.Push(itBox.itPars[^].first) ; $temp
 		return GetFuncType(tps,null->{bool^},GTypeVoid,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^

@@ -38,11 +38,11 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		}
 		
 		if (prev.data <=> dat) < 0{
-			prev.Right = createNode()
+			prev.Right = this.createNode()
 			prev.Right.Up = prev
 			iter = prev.Right
 		}else{
-			prev.Left = createNode()
+			prev.Left = this.createNode()
 			prev.Left.Up = prev
 			iter = prev.Left
 		}

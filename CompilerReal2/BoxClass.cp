@@ -898,7 +898,7 @@ BoxClass := class extend BoxClassBase
 
 		downs := new List.{Object^}() ; $temp
 		if Down != null downs.Push(Down)
-		downs.Push(metaFields[^].Down)
+		downs.Push(metaFields[^].Down) ; $temp
 
 		for iterJ : downs^[^].Down
 		{

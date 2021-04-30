@@ -25,20 +25,21 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 			if iter.Down.Right.Right? is ObjIndent
 			{
 				asObj := iter.Down.Right.Right->{ObjIndent^}
-				if asObj.MyStr == "Len"
+				switch asObj.MyStr
 				{
-					if asTyp is TypeArr
-					{
-						return new ObjInt(asTyp->{TypeArr^}.Size)
-					}
-				}
-				if asObj.MyStr == "Base"
-				{
-					if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
-					{
-						return new ObjType(asTyp.Base)
-					}
-					return new ObjType(GTypeVoid)
+					case "Len"
+						if asTyp is TypeArr
+						{
+							return new ObjInt(asTyp->{TypeArr^}.Size)
+						}
+					case "Base"
+						if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
+						{
+							return new ObjType(asTyp.Base)
+						}
+						return new ObjType(GTypeVoid)
+					case "Name"
+						return new ObjStr(GetConstString(asTyp.GetGoodName()))
 				}
 			}
 		}

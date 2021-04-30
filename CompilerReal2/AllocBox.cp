@@ -59,7 +59,7 @@ AllocBox := class
 	{
 		resR := new FuncInputBox() ; $temp
 		assert(not ItemBag.IsEmpty())
-		resR.itPars.Emplace(ItemBag[^].1,false)
+		resR.itPars.Emplace(ItemBag[^].1,false) ; $temp
 		for inhAllocs
 		{
 			resR.itPars.Emplace(it.GetAsType(),false)

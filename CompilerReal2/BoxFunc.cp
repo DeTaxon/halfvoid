@@ -332,7 +332,7 @@ BoxFunc := class extend BoxFuncContainer
 			TypsIsRef.Push(true)
 		}
 
-		Stuff.Push(root.Down[^])
+		Stuff.Push(root.Down[^]) ; $temp
 
 
 		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp 
@@ -669,10 +669,6 @@ BoxFuncBody := class extend BoxFunc
 		if IsInvalid EmitError("can not parse function header\n")
 
 		IsSuffix = IsSuf
-		if MyFuncParamNames != null
-		{
-			//TODO: what is the meaning of this		
-		}
 
 		if metC != null{
 			

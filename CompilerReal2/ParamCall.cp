@@ -45,15 +45,15 @@ ParseParamCall := !(Object^ ob) -> Object^
 					preRes := new ParamNaturalCall(dynCast.MyStr,may.Down)
 					//preRes.inhAttrs = may->{ObjParam^}.GetInhPar()
 					preRes.inhAttrs = may.inhAttrs
-					if preRes.inhAttrs == null and may.Line?.itAttrs.Size() != 0
-					{
-						if ob.Line != null
-						{
-							printf("bad %s %i\n",ob.Line.inFile.Get(),ob.Line.LinePos)
-						}else{
-							printf("bad\n")
-						}
-					}
+					//if preRes.inhAttrs == null and may.Line?.itAttrs.Size() != 0
+					//{
+					//	if ob.Line != null
+					//	{
+					//		printf("bad %s %i\n",ob.Line.inFile.Get(),ob.Line.LinePos)
+					//	}else{
+					//		printf("bad\n")
+					//	}
+					//}
 					preRes.Line = ob.Line
 					return preRes
 				}

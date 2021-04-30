@@ -73,6 +73,11 @@ StrContainer := StringContainer^
 
 
 YStrContainer := AVLMap.{StringSpan,char^}
+
+GetConstString := !(char^ itSt) -> char^
+{
+	return GetConstString(StringSpan(itSt))
+}
 GetConstString := !(StringSpan itSt) -> char^
 {
 	inMap := YStrContainer.TryFind(itSt)

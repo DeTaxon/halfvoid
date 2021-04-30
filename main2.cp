@@ -25,14 +25,24 @@ miniBad2 := !() -> int
 }
 
 
+aa := class {
 
+}
+bb := class extend aa 
+{
+
+}
+cc := class extend aa{
+
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	//miniBad2()
-
-	tst := gRepo.GetFile("Example.ogg")
-	VorbisLoadFromMem(tst.Map(),tst.Size())
+	z := #best(cc^,bb^)
+	printf("test %s\n",z->Type->Name)
+	//tst := gRepo.GetFile("Example.ogg")
+	//VorbisLoadFromMem(tst.Map(),tst.Size())
 	return 0
 	
 	try

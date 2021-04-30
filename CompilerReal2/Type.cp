@@ -1447,15 +1447,47 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 	{
 		cl1 := A.Base->{TypeClass^}.ToClass
 		cl2 := B.Base->{TypeClass^}.ToClass
-		
-		//TODO: OnLeft brothers_case
 
+		lastCl1 := cl1
+		depth1 := 1
 		cl1to2 := cl1
 		while cl1to2 != null
 		{
 			if cl1to2 == cl2
 				return B
+			depth1 += 1
+			lastCl1 = cl1to2
 			cl1to2 = cl1to2.Parent
+		}
+
+		lastCl2 := cl2
+		depth2 := 1
+		cl2to1 := cl2
+		while cl2to1 != null
+		{
+			if cl2to1 == cl1
+				return A
+			depth2 += 1
+			lastCl2 = cl2to1
+			cl2to1 = cl2to1.Parent
+		}
+		if lastCl2 == lastCl1
+		{
+			cl1to2 = cl1
+			cl2to1 = cl2
+
+			while cl1to2 != cl2to1
+			{
+				if depth1 > depth2
+				{
+					depth1 -= 1
+					cl1to2 = cl1to2.Parent
+				}else{
+					depth2 -= 1
+					cl2to1 = cl2to1.Parent
+				}
+			}
+			return cl1to2.ClassType.GetPoint()
 		}
 
 	}
