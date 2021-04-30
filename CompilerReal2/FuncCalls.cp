@@ -53,97 +53,24 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	iter = ToParse.Down
 	if iter == null return null
 	
-	if iter.GetType() != null
+	if iter.GetType() == null
 	{
-		iter = iter.Right
-		if iter == null return null
-		iterPre := iter
-
-		return FuncCallFuncObjectCall(iterPre,iter)? // x() , where x is function pointer or class
-		return FuncCallGetArrayElement(iterPre,iter)? // x[]
-
-		return FuncCallSuffix(iter)? // 90deg , 10msec
-		return FuncCallGetFieldTypes(iterPre,iter)? // x.y x->y x.y()
-		
-		return FuncCallOperator(iter)? // x + y , z * 13 ,  a ?: b : c
-		
-	}else
-	{
-		if iter.GetValue() == "delete"
-		{
-			delCall := new DeleteCall(iter.Right)
-			delCall.Line = iter.Line
-			assert(delCall.Line != null)
-			return delCall
-		}
-		if iter.GetValue() == "new"
-		{
-			useType := ParseType(iter.Right)
-
-			if useType == null
-			{
-				ErrorLog.Push("Incorrect new type\n")
-				return null
-			}
-			if iter.Right.Right != null
-			{
-				if iter.Right.Right.GetValue() != "()"
-				{
-					irr := iter.Right.Right
-					itB := new FuncInputBox()  ; $temp
-					itB.itPars.Emplace(irr.GetType(),irr.IsRef())
-					itB.itConsts.Push(new ObjType(useType)) 
-					
-					FillAttrs(itB^,iter)
-
-					func := FindFunc("new",iter,itB^,true)
-					if func != null
-					{
-						irr.Up.Down = irr
-						itF := MakeSimpleCall2(func,irr,iter)
-						return itF
-					}
-				}
-				if iter.Right.Right.GetValue() == "()" 
-				{
-					preRet :=  new NewCallOne(useType,iter.Right.Right) 
-					preRet.Line = iter.Line
-					preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
-					return preRet
-				}
-
-				//return new NewCall(useType,iter.Right.Right)
-			}else{
-				preRet := new NewCallOne(useType,null->{Object^})
-				preRet.Line = iter.Line
-				preRet.appendTemp = iter.Up?.Left?.GetValue() == "throw"
-				return preRet
-			}
-		}else{
-			if IsOper(iter.GetValue())
-			{
-				if iter.Right?.Right == null
-				{
-					name := ". "sbt + iter.GetValue()
-					iter = iter.Right
-					PopOutNode(iter.Left)
-					return OneCall(name,iter.Up,null->{Object^})
-				}
-			}
-		}
-		if iter is ObjIndent //iter.GetValue() == "~ind"
-		{
-			if iter.Right == null return null
-
-			if iter.Right.GetValue() == "()"
-			{
-				asInd := iter->{ObjIndent^}
-				itName := asInd.MyStr
-
-				return OneCall(itName,iter.Right,null->{Object^})
-			}
-		}
+		return FuncCallPrefixOperator(iter)? // new int , delete x , -x
+		return null
 	}
+
+	iter = iter.Right
+	if iter == null return null
+	iterPre := iter
+
+	return FuncCallFuncObjectCall(iterPre,iter)? // x() , where x is function pointer or class
+	return FuncCallGetArrayElement(iterPre,iter)? // x[]
+
+	return FuncCallSuffix(iter)? // 90deg , 10msec
+	return FuncCallGetFieldTypes(iterPre,iter)? // x.y x->y x.y()
+	
+	return FuncCallOperator(iter)? // x + y , z * 13 ,  a ?: b : c   (no unary minus)
+		
 	return null
 }
 OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
