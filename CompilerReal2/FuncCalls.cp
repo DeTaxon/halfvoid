@@ -84,16 +84,6 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 		return preRet
 	}
 
-	if oper in !["<",">","<=",">=","==","!="]
-	{
-		preRet = OneCall("<=>",pars.Up,null->{Object^},true)
-		if preRet != null 
-		{
-			preRet.Line = operNode.Line
-			spFunc := GetSpaceTransformer(oper)
-			return MakeSimpleCall2(spFunc,preRet,operNode)
-		}
-	}
 	if pars.GetType() != null
 	{
 		if pars.GetType() is TypeClass
@@ -209,15 +199,44 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 	}
 	for it : consts box.itConsts.Push(it) 
 
-	SomeFunc := FindFunc(Name,G,box^,false)
+	func1 := FindFunc(Name,G,box^,false)
 
-	if SomeFunc == null 
+	if Name in !["<",">","<=",">=","==","!="]
+	{
+		func2 := FindFunc("<=>",G,box^,false)
+
+		if func1 == null
+		{
+			if func2 != null
+			{
+				preRet := MakeSimpleCall(func2,P)
+				preRet.Line = P.Line
+				spFunc := GetSpaceTransformer(Name)
+				return MakeSimpleCall2(spFunc,preRet,P)
+			}
+		}else{
+			if func2 != null
+			{
+				pri1 := ComputePriorFunc(func1.MyFuncType,box^)
+				pri2 := ComputePriorFunc(func2.MyFuncType,box^)
+				if pri2 < pri1
+				{
+					preRet := MakeSimpleCall(func2,P)
+					preRet.Line = P.Line
+					spFunc := GetSpaceTransformer(Name)
+					return MakeSimpleCall2(spFunc,preRet,P)
+				}
+			}
+		}
+	}
+
+	if func1 == null 
 	{
 		if not ignoreNull ErrorLog.Push("Function <"sbt + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	}
 	else
 	{
-		return MakeSimpleCall(SomeFunc,P)
+		return MakeSimpleCall(func1,P)
 	}
 	return null	
 }

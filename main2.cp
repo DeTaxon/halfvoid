@@ -24,20 +24,28 @@ miniBad2 := !() -> int
 	z := min(x,y,ptri)
 }
 
-
-aa := class {
-
-}
-bb := class extend aa 
+aa := class
 {
-
+	">" := !(int x) -> bool
+	{
+		printf("i am bad\n")
+		return false
+	}
 }
-cc := class extend aa{
-
+bb := class extend aa
+{
+	"<=>" := !(int x) -> int
+	{
+		printf("i am good\n")
+		return 0
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
+	c := bb
+	z := c > 3
+	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
 	//tst := gRepo.GetFile("Example.ogg")
