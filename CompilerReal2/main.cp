@@ -256,7 +256,11 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData.Opers.Insert("type")
 	PriorityData.Opers.Insert("virtual")
 
-	OpersTree << PriorityData.Opers[^]
+	for it : PriorityData.Opers
+	{
+		badOper := OpersTree&->{AVLSet.{char^}^}
+		badOper.Insert(it) //TODO BUG:  OpersTree << "" called with $temp
+	}
 
 	for targetFiles
 	{
@@ -508,6 +512,7 @@ WriteCodeData := !(TIOStream fil) -> void
 	}
 }
 
+gotBroke := false
 
 workIter := int
 WorkWithBag := !(bool printW) -> void
@@ -520,6 +525,7 @@ WorkWithBag := !(bool printW) -> void
 			prior := WorkBag.GetTopPriority()
 			it := WorkBag.Pop()
 			workingOnObject = it
+
 
 			if printW
 			{

@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "(gdb) test",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/test2",
             "args": [],
@@ -24,10 +24,10 @@
             ]
         },{
             "name": "(gdb) create test",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/c.out",
-            "args": ["-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/$\""
+            "args": ["-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/*\""
                 , "-C0", "\"StandardLib/$\""
                 ,"main2.cp" ,"-o" ,"./Objs/out3.ll"],
             "stopAtEntry": false,
