@@ -882,7 +882,13 @@ PointFuncCall := class extend NaturalCall
 				}
 			}
 		}
-		f << ")" //TODO: debug call
+		f << ")"
+		if DebugMode
+		{
+			newId := CreateDebugCall(this&)
+			if newId != -1
+				f << " , !dbg !" << newId
+		}
 		f << "\n"
 
 	}
