@@ -44,12 +44,9 @@ bb := class extend aa
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := null->{aa^}
-	for r : c?.tst
-	{
-
-	}
-	printf("yep\n")
+	libNuklearInit()
+	x := nk_rect2(1,2,3,4)
+	TestFunc2(x)
 	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
