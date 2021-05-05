@@ -32,7 +32,7 @@ TRawFile := class extend TIOStream
 		if 't' in mode flags = flags or_b O_TRUNC
 
 		errVal := 0
-		ExpectWorkers(1)
+		TExpectWorkers(1)
 		AwaitWork(() ==> {
 			handler = open(fileName,flags,0777)
 			if handler == -1

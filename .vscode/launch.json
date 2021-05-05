@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "(gdb) test",
-            "type": "lldb",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/test2",
             "args": [],
@@ -24,7 +24,7 @@
             ]
         },{
             "name": "(gdb) create test",
-            "type": "lldb",
+            "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/c.out",
             "args": ["-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/*\""

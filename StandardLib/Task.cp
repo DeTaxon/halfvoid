@@ -33,25 +33,31 @@ AwaitWork := !(!()&->void lambd) -> void
 		lambd()
 	}
 }
-PauseTask := !(int^ resId) -> void
+TPauseTask := !(int^ resId) -> void
 {
 	if CurrentTaskBox != null
 		CurrentTaskBox.PauseTask(resId)
 }
-ResumeTask := !(int taskId) -> void
+TResumeTask := !(int taskId) -> void
 {
 	if CurrentTaskBox != null
 		CurrentTaskBox.ResumeTask(taskId)
 }
-ExpectWorkers := !(int exp) -> void
+TExpectWorkers := !(int exp) -> void
 {
 	if CurrentTaskBox != null
 		CurrentTaskBox.ExpectWorkers(exp)
 }
-SpawnTask := !(!()&->void lmb) -> void
+TSpawnTask := !(!()&->void lmb) -> void
 {
 	assert(CurrentTaskBox != null)
 	CurrentTaskBox.Spawn(lmb)
+}
+
+TYield := !() -> void
+{
+	assert(CurrentTaskBox != null)
+	CurrentTaskBox.Yield()
 }
 TaskKeepStackData := !() -> void
 {
@@ -88,6 +94,7 @@ TaskBox := class
 
 	destroyTasks := List.{TaskData^} ; $keep
 
+	yieldedTasks := List.{TaskData^} ; $keep
 	working := bool
 
 
@@ -143,6 +150,12 @@ TaskBox := class
 		nwTask.tskToRun = tskToRun.Capture()
 		firstRunTasks << nwTask
 	}
+	Yield := !() -> void
+	{
+		yieldedTasks.Push(CurrentTask)
+		switchToMain()
+	}
+
 	ASleep := !(double sleepTime) -> void
 	{
 		assert(sleepTime > 0)
@@ -300,8 +313,12 @@ TaskBox := class
 				if toDoTask == null
 				{
 					toDoTask = checkExeWorks()
-					if toDoTask != null
+					if toDoTask == null
+					{
+						toDoTask = checkYields();
+					}else{
 						itWorkCount -= 1
+					}
 				}
 			}
 
@@ -372,6 +389,12 @@ TaskBox := class
 		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
 		_taskInitMem(startTask.taskLocalPtr)
 		return startTask
+	}
+	checkYields := !() -> TaskData^
+	{
+		if yieldedTasks.Size() == 0
+			return null
+		return yieldedTasks.Pop()
 	}
 }
 CreateTaskBox := !(int stackSize) -> TaskBox^

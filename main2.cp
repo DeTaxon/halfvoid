@@ -44,9 +44,20 @@ bb := class extend aa
 
 main := !(int argc, char^^ argv) -> int
 {
-	libNuklearInit()
-	x := nk_rect2(1,2,3,4)
-	TestFunc2(x)
+	TSpawnTask(() ==> {
+		for i : 5
+		{
+			printf("A\n")
+			TYield()
+		}
+	})
+	TSpawnTask(() ==> {
+		for i : 5
+		{
+			printf("B\n")
+			TYield()
+		}
+	})
 	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
