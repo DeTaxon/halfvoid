@@ -44,20 +44,12 @@ bb := class extend aa
 
 main := !(int argc, char^^ argv) -> int
 {
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("A\n")
-			TYield()
-		}
-	})
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("B\n")
-			TYield()
-		}
-	})
+	
+	for it : 100 ; $omp
+	{
+		printf("test %i\n",it)
+		TSleep(1)
+	}
 	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)

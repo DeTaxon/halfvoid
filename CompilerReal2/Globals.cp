@@ -3,8 +3,6 @@ archSize := 64
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
-WorkBag := PriorityStack.{Object^,20}
-
 PriorityData := PriorityBag^
 
 ErrorLog := Queue.{string}

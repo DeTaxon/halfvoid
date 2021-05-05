@@ -186,7 +186,7 @@ BuiltIn2AutoField := class extend BuiltIn2Func
 				CTypeP := CType.GetPoint()
 
 				FP := ToClass.FakeParams[pos]
-				assert(FP.Atter is ObjIndent) //TODO: check in GetPrior
+				assert(FP.Atter is ObjIndent)
 				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
 				pos2 := -1
 				midType := FieldParam^
@@ -197,7 +197,7 @@ BuiltIn2AutoField := class extend BuiltIn2Func
 					midType = it
 					break
 				}
-				assert(pos2 != -1) //TODO: check in GetPrior
+				assert(pos2 != -1)
 
 				if ToClass.ContainVirtual pos2 += 1
 
