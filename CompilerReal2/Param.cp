@@ -73,7 +73,7 @@ ObjParam := class extend Object
 
 			if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
 			{
-				itId := GetNewId() //TODO: less ItId
+				itId := GetNewId()
 				f << "%AsVoid" << itId << " = bitcast "
 				Down->{LocalParam^}.PrintPointUse(f,0,-1)
 				f << " to i8*\n"

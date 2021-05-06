@@ -44,7 +44,6 @@ bb := class extend aa
 
 main := !(int argc, char^^ argv) -> int
 {
-	
 	for it : 100 ; $omp
 	{
 		printf("test %i\n",it)

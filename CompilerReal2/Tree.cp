@@ -72,13 +72,13 @@ Object := class{
 		sbtt := ""sbt
 		if Line != null
 		{
-			sbtt << "Error in file <" << Line.inFile.itStr << "> at <" << Line.LinePos << ">:"
+			sbtt << "Error in " << Line.inFile.itStr << ":" << Line.LinePos << " "
 		}
 		sbtt << err
 		sbtt << "\n"
 		if workingOnObject?.Line != null
 		{
-			sbtt << "Called from <" << workingOnObject.Line.inFile.itStr << "> at <" << workingOnObject.Line.LinePos << ">\n"
+			sbtt << "Called from " << workingOnObject.Line.inFile.itStr << ":" << workingOnObject.Line.LinePos << "\n"
 		}
 
 		itr := Up
