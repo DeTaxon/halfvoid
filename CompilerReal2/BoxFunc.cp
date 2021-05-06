@@ -924,24 +924,24 @@ BoxFuncBody := class extend BoxFunc
 					if DebugMode and dbgId != -1
 						f << ", !dbg !" << dbgId
 					f << "\n"
-				//if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
-				//{
-				//	if MyFuncType.ParsIsRef[i]
-				//	{
-				//		outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
-				//		newId := CreateDebugCall(this&)
-				//		if dbgId != -1 and outId != -1
-				//		{
-				//			f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
-				//		}
-				//	}else{
-				//		outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
-				//		if dbgId != -1 and outId != -1
-				//		{
-				//			f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
-				//		}
-				//	}
-				//}
+				if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
+				{
+					if MyFuncType.ParsIsRef[i]
+					{
+						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
+						newId := CreateDebugCall(this&)
+						if dbgId != -1 and outId != -1
+						{
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+						}
+					}else{
+						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
+						if dbgId != -1 and outId != -1
+						{
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+						}
+					}
+				}
 			}
 			if DebugMode 
 			{
