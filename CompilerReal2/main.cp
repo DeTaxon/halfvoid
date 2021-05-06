@@ -225,7 +225,8 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("Mach loaded from outsize\n")
 	}
-	LoadLexMachine(mac.Map(),mac.Size()) //TODO unmap?
+	LoadLexMachine(mac.Map(),mac.Size())
+	mac.Unmap()
 
 	pri := gRepo.GetFile("Priority.pr")
 	if pri == null
@@ -237,7 +238,8 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("Priority.pr loaded from outsize\n")
 	}
-	PriorityData = new PriorityBag(pri.Map(),pri.Size()) //TODO unmap?
+	PriorityData = new PriorityBag(pri.Map(),pri.Size())
+	pri.Unmap()
 
 	PutConstString(":=")
 	PutConstString("for")

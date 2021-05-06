@@ -1311,7 +1311,6 @@ NewCallOne := class extend SomeFuncCall
 
 			if func == null 
 			{
-				//TODO: Class.Get
 				EmitError("cant create type\n")
 			}else{
 				func.Line = Line
