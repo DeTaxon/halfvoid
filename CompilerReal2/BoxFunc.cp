@@ -475,8 +475,8 @@ BoxFuncDeclare := class  extend BoxFunc
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
 		IsRetRef = false
-		FuncName = SomeName
 		OutputName = StrCopy(SomeName)
+		FuncName = OutputName
 		IsInvalid = not ParseParams(inPars,inOutType,false)
 
 		if IsInvalid inOutType.EmitError("can not parse function\n")
@@ -636,7 +636,7 @@ BoxFuncBody := class extend BoxFunc
 			OutputName = "main"
 		}else
 		{
-			OutputName = StrCopy("func"sbt + GetNewId())
+			OutputName = GetFuncMangledName(SomeName,fType)
 		}
 
 		if SomeName == "new" IsStatic = true
@@ -709,14 +709,7 @@ BoxFuncBody := class extend BoxFunc
 		IsVirtual = IsVirt
 		FuncName = SomeName
 		MethodType = metC
-		if SomeName == "_hvEntryPoint"
-		{
-			OutputName = "main"
-		}else
-		{
-			preOName := "func"sbt + GetNewId()
-			OutputName = preOName.Str()
-		}
+	
 		if SomeName == "new" {
 			IsStatic = true
 		}
@@ -744,6 +737,13 @@ BoxFuncBody := class extend BoxFunc
 		if MyFuncType != null 
 		{
 			ApplyParams(MyFuncType.ParsCount,MyFuncParamNames,MyFuncType.Pars,MyFuncType.ParsIsRef)
+		}
+		if SomeName == "_hvEntryPoint"
+		{
+			OutputName = "main"
+		}else
+		{
+			OutputName = GetFuncMangledName(FuncName,MyFuncType)
 		}
 
 		if Stuf.GetValue() == "{}"

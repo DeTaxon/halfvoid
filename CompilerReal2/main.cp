@@ -189,6 +189,7 @@ main := !(int argc,char^^ argv) -> int
 	InitBuiltIn2Funcs()
 	CreateBuiltIns()
 	TypeCmpInit()
+	mangledInit()
 
 	GBoolTrue = new ObjBool(true)
 	GBoolFalse = new ObjBool(false)
