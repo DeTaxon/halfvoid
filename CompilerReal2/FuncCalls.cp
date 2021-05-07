@@ -517,7 +517,6 @@ NaturalCall := class extend SomeFuncCall
 		if Pars != null
 		{
 			Line = Pars.Line
-			//TODO:set up line for empty params func()
 		}
 		if func.IsPassAttrs and Pars != null
 		{

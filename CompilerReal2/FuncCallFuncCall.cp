@@ -25,7 +25,12 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
                         consts = iter.Right.Right
                     }
                     preRet := OneCall(dynCast.BeforeName, iter,consts,true)
-                    if preRet != null return preRet
+                    if preRet != null 
+                    {
+                        if iter.Left.Line != null
+                            preRet.Line = iter.Left.Line
+                        return preRet
+                    }
                 }
             }
         }

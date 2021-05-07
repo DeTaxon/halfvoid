@@ -16,19 +16,12 @@ GCTest := class extend TGCObject
 
 main := !(int argc, char^^ argv) -> int
 {
-	//rr := GCTest
-	//if rr is in TGCObject
-	//{
-	//	printf("test\n")
-	//}
-
-	for i : 10
+	rr := GCTest
+	if rr is in TGCObject
 	{
-		if i not in ![1,6,7,8]
-		{
-			printf("test %i\n",i)
-		}
+		printf("test\n")
 	}
+
 	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
