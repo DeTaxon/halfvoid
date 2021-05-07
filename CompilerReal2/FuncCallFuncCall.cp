@@ -50,6 +50,27 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
             }
 
             //TODO: add consts
+            if(iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}")
+            {   
+                for H : iter.Right.Right.Down
+                {
+                    if H.GetValue() != ","
+                    {
+                        if H.IsConst
+                        {
+                            box.itConsts.Push(H)
+                        }else{
+                            tp := ParseType(H)
+                            if tp == null
+                            {
+                                ErrorLog.Push("can not parse type in .{}\n")
+                            }else{
+                                box.itConsts.Push(new ObjType(tp)) 
+                            }
+                        }
+                    }
+                }
+            }
             
             plsF := FindFunc("()",iter,box^,false)
 

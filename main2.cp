@@ -14,13 +14,18 @@ GCTest := class extend TGCObject
 	}
 }
 
+aa := class
+{
+	"()" := !() .{@x} -> void
+	{
+		printf("test %i\n",0)
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	rr := GCTest
-	if rr is in TGCObject
-	{
-		printf("test\n")
-	}
+	rr := aa
+	rr().{27}
 
 	return 0
 	//miniBad2()
