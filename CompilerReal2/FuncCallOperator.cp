@@ -40,6 +40,20 @@ FuncCallOperator := !(Object^ iter) -> Object^
 						strt.EmitError("Types can not be united for ?:")
 					return new TrinaryOper(strt,resType)
 				}
+				if iter.Left.GetValue() == "not" and iter.GetValue() == "in"
+				{
+					lft := iter.Left.Left
+					operNode := lft.Right
+					PopOutNode(lft.Right)
+					PopOutNode(lft.Right)
+					ForInSwapNodes(lft)
+					newFunc := OperFunc("in",lft.Up.Down,operNode)
+					if newFunc.GetType() == GTypeBool
+					{
+						return new NegativeNode(newFunc)
+					}
+					return null
+				}
 				iter.Up.Print(0)
 				iter.EmitError("no more then binary allowed \n")
 				return null
@@ -136,4 +150,30 @@ FuncCallPrefixOperator := !(Object^ iter) -> Object^
 		}
 	}
 	return null
+}
+
+
+NegativeNode := class extend Object
+{
+	itId := int
+	this := !(Object^ toNegate) -> void
+	{
+		itId = GetNewId()
+		Down = toNegate
+		Down.SetUp(this&)
+	}
+	GetType := virtual !() -> Type^ { return GTypeBool}
+	PrintPre := virtual !(TIOStream f) -> void
+	{
+		Down.PrintPre(f)
+		f << "%Res" << itId << " = xor i1 "<< Down.GetName() <<",1\n"
+	}
+	PrintUse := virtual !(TIOStream f) -> void
+	{
+		f << "i1 %Res" << itId 
+	}
+	GetName := virtual !() -> char^
+	{
+		return "%Res"sbt + itId 
+	}
 }

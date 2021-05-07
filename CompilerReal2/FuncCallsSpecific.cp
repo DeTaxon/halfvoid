@@ -105,26 +105,31 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 	}
 	if iter.Down?.Right?.GetValue() == "is"
 	{
-		asCl1 := iter.Down.GetType()
-		if asCl1 == null return null
-		if not asCl1 is TypePoint return null
-		if not asCl1.Base is TypeClass return null
-		asCl2 := ParseType(iter.Down.Right.Right)
-		if asCl2 == null or not asCl2 is TypeClass return null
+		opr := iter.Down.Right
+		if opr.Right?.GetValue() == "in"
+		{
+			//TODO: is in
+		}else{
+			asCl1 := iter.Down.GetType()
+			if asCl1 == null return null
+			if not asCl1 is TypePoint return null
+			if not asCl1.Base is TypeClass return null
+			asCl2 := ParseType(iter.Down.Right.Right)
+			if asCl2 == null or not asCl2 is TypeClass return null
 
-		asNeed := asCl1.Base->{TypeClass^}.ToClass
-		
-		itBox := new FuncInputBox()  ; $temp
+			asNeed := asCl1.Base->{TypeClass^}.ToClass
 
-		itBox.itPars.Emplace(asCl1.Base,true)
-		itBox.itConsts.Push(new ObjType(asCl2)) 
-		
-		func := asNeed.VirtualCheck.GetFunc(itBox^)
-		if func == null return null
-		PopOutNode(iter.Down.Right)
-		PopOutNode(iter.Down.Right)
-		return MakeSimpleCall(func,iter.Down)
+			itBox := new FuncInputBox()  ; $temp
 
+			itBox.itPars.Emplace(asCl1.Base,true)
+			itBox.itConsts.Push(new ObjType(asCl2)) 
+
+			func := asNeed.VirtualCheck.GetFunc(itBox^)
+			if func == null return null
+			PopOutNode(iter.Down.Right)
+			PopOutNode(iter.Down.Right)
+			return MakeSimpleCall(func,iter.Down)
+		}
 	}
 	if iter.Down?.Right?.GetValue() == "=="
 	{

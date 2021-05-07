@@ -13,55 +13,21 @@ GCTest := class extend TGCObject
 		printf("wut\n")
 	}
 }
-miniBad2 := !() -> int
-{
-	ptri := u64
-	ptri = 4
-	x := s64
-	x = 23
-	y := s64
-	y = 27
-	z := min(x,y,ptri)
-}
-
-aa := class
-{
-	val := int
-	"[]" := !(int x) -> ref int
-	{	
-		printf("[]\n")
-		return val
-	}
-	"[]?" := !(int x) -> ref int
-	{	
-		printf("[]?\n")
-		return val
-	}
-	Values := fake
-	{
-		"[]" := !(int x) -> ref int
-		{	
-			printf("mini[]\n")
-			return val
-		}
-		"[]?" := !(int x) -> ref int
-		{	
-			printf("mini[]?\n")
-			return val
-		}
-	}
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := aa
-	if c[13]? == 13
+	//rr := GCTest
+	//if rr is in TGCObject
+	//{
+	//	printf("test\n")
+	//}
+
+	for i : 10
 	{
-		printf("do\n")
-	}
-	if c.Values[13]? == 13
-	{
-		printf("do\n")
+		if i not in ![1,6,7,8]
+		{
+			printf("test %i\n",i)
+		}
 	}
 	return 0
 	//miniBad2()

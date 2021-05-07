@@ -8,8 +8,8 @@
 "! () ^ -> d" "! () ^ ^ -> d" "! () & -> d"
 #CallFunction
 "()"
-"d .. d" "d is d" "d ..."
-"d in d"
+"d .. d" "d is d" "d is in d" "d ..."
+"d in d" "d not in d"
 "d ++" "d --"
 "d ** d"
 "d * d" " d / d" "d % d" "d div d"
