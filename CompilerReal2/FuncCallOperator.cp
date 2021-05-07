@@ -161,6 +161,7 @@ NegativeNode := class extend Object
 		itId = GetNewId()
 		Down = toNegate
 		Down.SetUp(this&)
+		Line = toNegate.Line
 	}
 	GetType := virtual !() -> Type^ { return GTypeBool}
 	PrintPre := virtual !(TIOStream f) -> void
