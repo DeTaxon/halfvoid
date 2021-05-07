@@ -552,29 +552,29 @@ BoxClass := class extend BoxClassBase
 			}
 		}
 
-		if itBox.itMetaPtr == null
-		{
-			inMt2 := ItMethods.TryFind(name)
-			if inMt2 != null for inMt2^
-			{
-				if it.IsSameConsts(itBox) and not it.IsVirtual
-				{
-					Funcs.Push(it)
-				}
-			}
-			inTmp2 := ItTemplates.TryFind(name)
-			if inTmp2 != null for inTmp2^
-			{
-				Templs.Push(it)
-			}
-		}
-
-		//downIter := Down
-		//if itBox.itMetaPtr != null
+		//if itBox.itMetaPtr == null //ItMethods have all func, including  in fake
 		//{
-		//	downIter = itBox.itMetaPtr
+		//	inMt2 := ItMethods.TryFind(name)
+		//	if inMt2 != null for inMt2^
+		//	{
+		//		if it.IsSameConsts(itBox) and not it.IsVirtual
+		//		{
+		//			Funcs.Push(it)
+		//		}
+		//	}
+		//	inTmp2 := ItTemplates.TryFind(name)
+		//	if inTmp2 != null for inTmp2^
+		//	{
+		//		Templs.Push(it)
+		//	}
 		//}
-		downIter := itBox.itMetaPtr
+
+		downIter := Down
+		if itBox.itMetaPtr != null
+		{
+			downIter = itBox.itMetaPtr
+		}
+		//downIter := itBox.itMetaPtr
 		if downIter != null
 		{
 			for iterJ : downIter.Down

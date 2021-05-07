@@ -806,7 +806,7 @@ TypeFunc := class extend Type
 		preRet := new TypeFuncRaw ; $temp
 		pc := ParsCount
 		isComplx := false
-		if ((RetType is TypeArr) or (RetType is TypeClass)) and not RetRef //TODO: allow directly set var
+		if ((RetType is TypeArr) or (RetType is TypeClass)) and not RetRef
 			isComplx = true
 		if isComplx 
 		{

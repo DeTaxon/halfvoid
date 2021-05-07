@@ -671,7 +671,6 @@ BoxFuncBody := class extend BoxFunc
 		IsSuffix = IsSuf
 
 		if metC != null{
-			
 			asCls := metC->{TypeClass^}
 			asClsT := asCls.ToClass
 			asClsT.ItMethods[FuncName].Push(this&->{BoxFunc^})

@@ -342,20 +342,30 @@ QuestionBox := class extend ControlFlowBox
 					asCall := Down->{NaturalCall^}
 					cFunc := asCall.ToCall
 					
-					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass //TODO: in fake
+					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
 					{
-						cl := cFunc.MethodType->{TypeClass^}.ToClass
-						inMethods := cl.ItMethods.TryFind("[]?")
-						if inMethods != null
+						if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
 						{
-							for it : inMethods^
+							itr := cFunc.Up
+							while itr.Left != null itr = itr.Left
+
+							while itr != null
 							{
-								if it.MyFuncType == cFunc.MyFuncType
+								if itr is ObjParam
 								{
-									asCall.ToCall = it
-									it.ParseBlock()
-									break
+									parName := itr->{ObjParam^}.MyStr
+
+									if parName == "[]?" //TODO: Check is func
+									{
+										dAsFunc := itr.Down->{BoxFunc^}
+										if(dAsFunc.MyFuncType == cFunc.MyFuncType){
+											asCall.ToCall = dAsFunc
+											dAsFunc.ParseBlock()
+											break
+										}
+									}
 								}
+								itr = itr.Right
 							}
 						}
 					}

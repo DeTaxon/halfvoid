@@ -26,28 +26,42 @@ miniBad2 := !() -> int
 
 aa := class
 {
-	tst := List.{int}
-	">" := !(int x) -> bool
-	{
-		printf("i am bad\n")
-		return false
+	val := int
+	"[]" := !(int x) -> ref int
+	{	
+		printf("[]\n")
+		return val
 	}
-}
-bb := class extend aa
-{
-	"<=>" := !(int x) -> int
+	"[]?" := !(int x) -> ref int
+	{	
+		printf("[]?\n")
+		return val
+	}
+	Values := fake
 	{
-		printf("i am good\n")
-		return 0
+		"[]" := !(int x) -> ref int
+		{	
+			printf("mini[]\n")
+			return val
+		}
+		"[]?" := !(int x) -> ref int
+		{	
+			printf("mini[]?\n")
+			return val
+		}
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	for it : 100 ; $omp
+	c := aa
+	if c[13]? == 13
 	{
-		printf("test %i\n",it)
-		TSleep(1)
+		printf("do\n")
+	}
+	if c.Values[13]? == 13
+	{
+		printf("do\n")
 	}
 	return 0
 	//miniBad2()

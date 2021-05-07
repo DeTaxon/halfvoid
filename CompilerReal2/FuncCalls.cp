@@ -720,76 +720,11 @@ PointFuncCall := class extend NaturalCall
 				asClass := FType.Pars[i]->{TypeClass^}.ToClass
 				it.PrintPointPre(f)
 				
-				//allIsFloat32 := true
-				//allIsIntLike := true
-				//for field : asClass.Params
-				//{
-				//	if field.ResultType == GTypeFloat continue
-				//	allIsFloat32 = false
-				//	if IsInt(field.ResultType) continue
-				//	allIsIntLike = false
-				//	break
-				//}
-				//if asClass.Params.Size() > 4 allIsFloat32 = false
-				//if allIsFloat32 and false
-				//{
-				//	floats := asClass.Params.Size()
-				//	cr := floats
-				//	while cr > 0
-				//	{
-				//		if cr >= 2
-				//		{
-				//			if needComma funcTypeNameTmpl << ","
-				//			needComma = true
-				//			funcTypeNameTmpl << "<2 x float>"
-				//			cr -= 2
-				//		}else
-				//		{
-				//			if needComma funcTypeNameTmpl << ","
-				//			needComma = true
-				//			funcTypeNameTmpl << "float"
-				//			cr -= 1
-				//		}
-				//	}
-				//	if floats >= 2
-				//	{
-				//		f << "%T2Floats" << RetId << "i" << i << " = bitcast "
-				//		it.PrintPointUse(f)
-				//		f << " to [ 128 x <2 x float>]*\n"
-				//	}
-				//	cr = floats
-				//	j := 0
-				//	while cr > 0
-				//	{
-				//		if cr >= 2
-				//		{
-				//			
-				//			f << "%TPar" << i << "part" << j << "pre = "
-				//			f << "getelementptr [128 x <2 x float>] , [128 x <2 x float>]* "
-				//			f << "%T2Floats"<<RetId<<"i"<<i<<" , i32 0, i32 " << j <<"\n"
-				//			f << "%TPar" << i << "part" << j << " = "
-				//			f << "load <2 x float>, <2 x float>* "
-				//			f << "%TPar" << i << "part" << j << "pre\n"
-				//			cr -= 2
-				//		}else
-				//		{
-				//			cr -= 1
-				//		}
-				//		j += 1
-				//	}
-				//	//TODO: float mod 2 == 1
-				//}else if allIsIntLike and false
-				//{
-				//	assert(false) //TODO
-				//}else{
-					//assert(false) //TODO
-					it.PrintPointPre(f)
-					if needComma funcTypeNameTmpl << ","
-					needComma = true
-					cn := it.GetType().GetName()
-					//funcTypeNameTmpl << cn << "* byval(" << cn << ")"
-					funcTypeNameTmpl << cn << "* "
-				//}
+				if needComma funcTypeNameTmpl << ","
+				needComma = true
+				cn := it.GetType().GetName()
+				//funcTypeNameTmpl << cn << "* byval(" << cn << ")"
+				funcTypeNameTmpl << cn << "* "
 
 			}else{
 				if needComma funcTypeNameTmpl << ","
@@ -829,48 +764,11 @@ PointFuncCall := class extend NaturalCall
 			{
 				asClass := FType.Pars[i]->{TypeClass^}.ToClass
 				
-				//allIsFloat32 := true
-				//allIsIntLike := true
-				//for field : asClass.Params
-				//{
-				//	if field.ResultType == GTypeFloat continue
-				//	allIsFloat32 = false
-				//	if IsInt(field.ResultType) continue
-				//	allIsIntLike = false
-				//	break
-				//}
-				//if asClass.Params.Size() > 4 allIsFloat32 = false
-				//if allIsFloat32 and false
-				//{
-				//	floats := asClass.Params.Size()
-//
-				//	j := 0
-				//	cr := floats
-				//	while cr > 0
-				//	{
-				//		if needComma f << ","
-				//		needComma = true
-				//			
-				//		if cr >= 2
-				//		{
-				//			f << "<2 x float> %TPar" << i << "part" << j
-				//			cr -= 2
-				//		}else
-				//		{
-				//			cr -= 1
-				//		}
-				//		j += 1
-				//	}
-				//}else if allIsIntLike and false
-				//{
-				//	assert(false) //TODO
-				//}else{
-					if needComma f << ","
-					needComma = true
-					cn := it.GetType().GetName()
-					f << cn << "* byval(" << cn << ") "
-					f << it.GetPointName()
-				//}
+				if needComma f << ","
+				needComma = true
+				cn := it.GetType().GetName()
+				f << cn << "* byval(" << cn << ") "
+				f << it.GetPointName()
 
 			}else{
 				if needComma f << ","
