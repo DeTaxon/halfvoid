@@ -16,16 +16,16 @@ GCTest := class extend TGCObject
 
 aa := class
 {
-	"()" := !() .{@x} -> void
+	"()" := !(int t) .{@x}-> void
 	{
-		printf("test %i\n",0)
+		printf("test %i %i\n",t,x)
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	rr := aa
-	rr().{27}
+	rr(12).{7}
 
 	return 0
 	//miniBad2()

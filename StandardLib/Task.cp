@@ -210,6 +210,7 @@ TaskBox := class
 	}
 	AwaitWork := !(!()&->void lambd) -> void
 	{
+		ExpectWorkers(1)
 		itMutex.Lock()
 		itWorkCount += 1
 		itWorkToDoPre.Emplace(lambd,CurrentTask)

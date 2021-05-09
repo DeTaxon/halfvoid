@@ -74,10 +74,10 @@ ifeq ($(cross),win32)
 endif
 
 repair: $(wildcard CompilerReal2/*.cp) 
-	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
+	$(gdb_tui) $(CurrentStable) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
 cycle: $(wildcard CompilerReal2/*.cp)
-	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 twice: repair cycle
 
 ManyCycle:

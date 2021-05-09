@@ -1240,6 +1240,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 
 		outBuff + ") #d\n"
 		ToExe = outBuff.Str()
+		ToExe = StrCopy(ToExe) //TODO BUG: called with $temp
 	}
 }
 

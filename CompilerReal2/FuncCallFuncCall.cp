@@ -49,27 +49,9 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
                     box.itPars.Emplace(iterD.GetType(),iterD.IsRef()) 
             }
 
-            //TODO: add consts
             if(iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}")
-            {   
-                for H : iter.Right.Right.Down
-                {
-                    if H.GetValue() != ","
-                    {
-                        if H.IsConst
-                        {
-                            box.itConsts.Push(H)
-                        }else{
-                            tp := ParseType(H)
-                            if tp == null
-                            {
-                                ErrorLog.Push("can not parse type in .{}\n")
-                            }else{
-                                box.itConsts.Push(new ObjType(tp)) 
-                            }
-                        }
-                    }
-                }
+            {
+	    	CollectConsts(iter.Right.Right,box)	
             }
             
             plsF := FindFunc("()",iter,box^,false)
@@ -80,7 +62,7 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
                 {
                     iterL.Right = iter.Down
                     iter.Down.Left = iterL
-                    iter.SetUp(iterL.Up)
+		    iter = iterL.Right
                     TrimCommas(iter)
                 }else{
                     PopOutNode(iter)
