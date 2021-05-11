@@ -24,10 +24,10 @@ aa := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	rr := aa
-	rr(12).{7}
+	//rr := aa
+	//rr(12).{7}
 
-	return 0
+	//return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
 	//tst := gRepo.GetFile("Example.ogg")
@@ -238,12 +238,11 @@ gr := task_local double
 
 TaskTest := !() -> void
 {
-	tb := CreateTaskBox(1024*1024)
-	tb.ExpectWorkers(1)
+	TExpectWorkers(1)
 	//tb.Monitor(".",true,(x) ==>{
 	//	printf("test %s\n",x)
 	//})
-	tb.Spawn(() ==> [tb]{
+	TSpawnTask(() ==> []{
 		taskTestValue = 0
 		for 4
 		{
@@ -256,7 +255,7 @@ TaskTest := !() -> void
 		assert(taskTestValue == 4)
 		
 	})
-	tb.Spawn(() ==> {
+	TSpawnTask(() ==> {
 		taskTestValue = 100
 		for 2
 		{
@@ -266,7 +265,6 @@ TaskTest := !() -> void
 		assert(taskTestValue = 100)
 		
 	})
-	tb.Run()
 }
 ToAppendClass := class 
 {

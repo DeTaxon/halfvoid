@@ -1010,8 +1010,8 @@ BuiltInVirtualCall := class extend BuiltInFunc
 		builder + ") #d\n"
 		ToExe = builder.Str()
 	}
-
 }
+
 BuiltInGetVirtualParam := class extend BuiltInFunc
 {
 	inClass := BoxClass^

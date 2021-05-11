@@ -355,7 +355,7 @@ QuestionBox := class extend ControlFlowBox
 								{
 									parName := itr->{ObjParam^}.MyStr
 
-									if parName == "[]?" //TODO: Check is func
+									if parName == "[]?" and itr.Down is BoxFuncBody
 									{
 										dAsFunc := itr.Down->{BoxFunc^}
 										if(dAsFunc.MyFuncType == cFunc.MyFuncType){
