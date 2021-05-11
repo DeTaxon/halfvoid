@@ -697,7 +697,6 @@ PointFuncCall := class extend NaturalCall
 		}
 		f << "\n"
 	}
-	//TODO: check_if_virtual
 	UseLinuxAbiCall := virtual !(TIOStream f) -> void 
 	{
 

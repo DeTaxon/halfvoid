@@ -337,10 +337,16 @@ main := !(int argc,char^^ argv) -> int
 	if mainFunc != null
 		WorkBag.Push(mainFunc.Down,State_Start)
 
-	if entryFunc == null or entryFunc.Down == null or not entryFunc.Down is BoxFuncBody {
-		ErrorLog.Push("Compiler error 563462436\n")
+	if entryFunc == null{
+		printf("Compiler error, _hvEntryPoint not found\n")
 		return 0
 	}
+	if entryFunc.Down == null or not entryFunc.Down is BoxFuncBody
+	{
+		printf("Compiler error, _hvEntryPoint must be function only\n")
+		return 0
+	}
+
 	if mainFunc == null ErrorLog.Push("main function not found\n")
 	else WorkWithBag(printWork)
 
@@ -399,7 +405,7 @@ main := !(int argc,char^^ argv) -> int
 			res := llvmIRInContext(ctx,buf,mod&,msg&)
 			if msg != null
 				printf("error %s\n",msg)
-			fName := entryFunc.Down->{BoxFunc^}.OutputName //TODO: not 100% func
+			fName := entryFunc.Down->{BoxFunc^}.OutputName
 			mainFunc := llvmGetNamedFunction(mod,fName)
 
 			printf("result1 %i %p %s\n",res,mainFunc,fName)
