@@ -1188,7 +1188,7 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		{
 			if MyFuncType.RetType != null
 			{
-				isRetComp = MyFuncType.RetType is TypeArr //TODO in ["class","fixarr"]
+				isRetComp = IsComplexType(MyFuncType.RetType)
 			}
 		}
 		outBuff := ""sbt
