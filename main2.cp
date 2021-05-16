@@ -1,33 +1,43 @@
 
-GCTest := class extend TGCObject
+
+c1 := class 
 {
-	nxt := TGCObject^
-	//TODO: relative ptr, List.{GCTest}, yodlers, capture returned objects
-	//TODO: MemoryPools, TemporaryPool
-	Destroy := virtual !() -> void
+	x := int
+
+	tr := virtual !() -> void
 	{
-		printf("yay\n")
-	}
-	GCLastRef := virtual !() -> void
-	{
-		printf("wut\n")
+		printf("magic\n")
 	}
 }
 
-aa := class
+c2 := class extend c1
 {
-	"()" := !(int t) .{@x}-> void
-	{
-		printf("test %i %i\n",t,x)
-	}
 }
+
+//c3 := class extend c1,c2
+//{
+//}
+
+internalCheckClassInClass := !(@InpClass^ value) .{@ToClass} -> bool
+{
+	vTable := value->{void^^}^
+	r := new c2
+	vTable2 := r->{void^^}^
+	printf("hello %p %p %p\n",vTable,vTable2,InpClass->VTable)
+	return true
+}
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	//rr := aa
-	//rr(12).{7}
+	
+	r := new c2
 
-	//return 0
+	if r is in c2
+	{
+		printf("yep\n")
+	}
+	return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
 	//tst := gRepo.GetFile("Example.ogg")

@@ -15,6 +15,28 @@ SetTypeToClass := !(Type^ toType) -> BoxFunc^
 	return newFunc
 }
 
+BuiltIn2FuncGetVTable := class extend BuiltIn2Func
+{
+	this := !(char^ fName, TypeFunc^ fType) -> void
+	{
+		FuncName = fName
+		MyFuncType = fType
+	}
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void 
+	{
+		id := trg.GenId()
+	
+		cl := MyFuncType.Pars[0]->{TypeClass^}.ToClass
+
+		trg.PrintRes(f)
+		f << " = bitcast "
+		cl.PrintVTableTypeName(f)
+		f << "* "
+		cl.PrintVTableObject(f)
+		f << " to i8*\n"
+	}
+}
+
 FuncCallSpecific := !(Object^ iter) -> Object^
 {
 	if iter.Down?.Right?.GetValue() == "->"
@@ -40,6 +62,12 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 						return new ObjType(GTypeVoid)
 					case "Name"
 						return new ObjStr(GetConstString(asTyp.GetGoodName()))
+					case "VTable"
+						if asTyp is TypeClass
+						{
+							fType := GetFuncType(![asTyp],GTypeVoidP)
+							return MakeSimpleCall(new BuiltIn2FuncGetVTable("",fType),null)
+						}
 				}
 			}
 		}
@@ -108,7 +136,29 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 		opr := iter.Down.Right
 		if opr.Right?.GetValue() == "in"
 		{
-			//TODO: is in
+			firstType := opr.Left.GetType()
+			if firstType? is TypePoint and firstType.Base is TypeClass
+				and opr.Right.Right != null
+			{
+				scndType := ParseType(opr.Right.Right)
+				if scndType? is TypeClass //TODO: virtual classes only
+				{
+					box := new FuncInputBox ; $temp
+
+					box.itPars.Emplace(firstType,false)
+					box.itConsts.Push(new ObjType(scndType)) //TODO: temporary new
+
+					fnc := FindFunc("internalCheckClassInClass",opr,box^,false)
+					if fnc != null
+					{
+						lft := iter.Down
+						for 3 PopOutNode(lft.Right)
+						return MakeSimpleCall(fnc,iter.Down)
+					}
+				}
+			}
+
+			
 		}else{
 			asCl1 := iter.Down.GetType()
 			if asCl1 == null return null

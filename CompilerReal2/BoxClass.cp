@@ -26,8 +26,7 @@ ParseClass := !(Object^ ob)-> BoxClass^
 		return preRes->{BoxClass^}
 	}
 
-	ExtObj := Object^
-	ExtObj = null
+	ExtObj := Object^()
 	
 	if iterT.GetValue() == "extend"
 	{
@@ -116,6 +115,7 @@ BoxClass := class extend BoxClassBase
 
 	ExtendObject := Object^
 	Parent := BoxClass^
+	Childs := AVLSet.{BoxClass^}
 
 	ContainVirtual  := bool
 
@@ -285,7 +285,7 @@ BoxClass := class extend BoxClassBase
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
-		this.Parent = par
+		SetParent(par)
 
 		if par?.ContainVirtual ContainVirtual = true
 		if Down != null and not ContainVirtual
@@ -441,7 +441,7 @@ BoxClass := class extend BoxClassBase
 						EmitError("wip\n")
 					}else{
 						PreParent := newType->{TypeClass^}
-						Parent = PreParent.ToClass
+						SetParent(PreParent.ToClass)
 					}
 				}
 			}
@@ -460,6 +460,14 @@ BoxClass := class extend BoxClassBase
 		{
 			InheritParams2()
 			ComputeVTable()		
+		}
+	}
+	SetParent := !(BoxClass^ p) -> void
+	{
+		Parent = p
+		if p != null
+		{
+			p.Childs.Insert(this&)
 		}
 	}
 
@@ -638,6 +646,12 @@ BoxClass := class extend BoxClassBase
 
 		return bestFunc
 	}
+	
+
+	createDynamic := bool
+	CreateDynamicTable := !() -> void
+	{
+	}
 
 	vTypes := Queue.{FuncItem^}
 	vTable := Queue.{FuncItem^}
@@ -648,6 +662,10 @@ BoxClass := class extend BoxClassBase
 		if not computedVTable
 		{
 			computedVTable = true
+
+			tableOffset := 0
+			if createDynamic
+				tableOffset += 1
 
 			if this.Parent != null
 			{
@@ -669,12 +687,12 @@ BoxClass := class extend BoxClassBase
 						if invTypes.fConstVal != null
 						{
 							aB := invTypes.fItem->{BuiltInGetVirtualParam^}
-							aB.MakeLine(j)
+							aB.MakeLine(j + tableOffset)
 						}else{
 							invTypes.fItem.VirtualId = j
 							aS := invTypes.funcWrapper
 							aB := aS->{BuiltInVirtualCall^}
-							aB.MakeLine(j)
+							aB.MakeLine(j + tableOffset)
 						}
 						found = true
 					}
@@ -684,12 +702,12 @@ BoxClass := class extend BoxClassBase
 					aS2 := invTypes.funcWrapper
 					if invTypes.fConstVal != null{
 						aB := invTypes.fItem->{BuiltInGetVirtualParam^}
-						aB.MakeLine(vTable.Size())
+						aB.MakeLine(vTable.Size() + tableOffset)
 						vTable.Push(invTypes)
 					}else{
-						invTypes.fItem.VirtualId = vTable.Size()
+						invTypes.fItem.VirtualId = vTable.Size() + tableOffset
 						aB2 := aS2->{BuiltInVirtualCall^}
-						aB2.MakeLine(vTable.Size())
+						aB2.MakeLine(vTable.Size() + tableOffset)
 						vTable.Push(invTypes)
 					}
 				}
@@ -705,13 +723,25 @@ BoxClass := class extend BoxClassBase
 
 		}
 	}
+
+
+	PrintVTableTypeName := !(TIOStream f) -> void
+	{
+		f << "%ClassTableType" << ClassId
+	}
+	PrintVTableObject := !(TIOStream f) -> void
+	{
+		f << "@ClassTableItem" << ClassId
+	}
+
 	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
 	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		if not vTable.Empty()
 		{
-			f << "%ClassTableType" << ClassId << " = type {"
+			PrintVTableTypeName(f)
+			f << " = type {"
 			for it,i : vTable 
 			{
 				if i > 0 f << " , "
@@ -722,7 +752,10 @@ BoxClass := class extend BoxClassBase
 			}
 			f << " }\n"
 
-			f << "@ClassTableItem" << ClassId << " = global %ClassTableType" << ClassId << " {"
+			PrintVTableObject(f)
+			f <<  " = global "
+			PrintVTableTypeName(f)
+			f << " {"
 			for it,i : vTable
 			{
 				if i > 0 f << " , "

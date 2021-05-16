@@ -191,6 +191,7 @@ FindSuffix := !(string name, Object^ start,FuncInputBox itBox) -> BoxFunc^
 }
 FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
+
 	if itBox.itMetaPtr != null
 	{
 		assert(itBox.itPars[0].first is TypeClass)
