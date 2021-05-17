@@ -60,7 +60,7 @@ GetUpClass := !(Object^ toS) -> BoxClass^
 	iterF := toS
 	while iterF != null
 	{
-		if iterF.GetValue() == "{...}" return iterF->{BoxClass^}
+		if iterF is BoxClass return iterF->{BoxClass^}
 		iterF = iterF.Up
 	}
 	return null
@@ -614,6 +614,151 @@ BoxClass := class extend BoxClassBase
 		return bestFunc
 	}
 
+	vTypes := Queue.{FuncItem^}
+	vTable := Queue.{FuncItem^}
+
+	computedVTable := bool
+	PrintVTable := !(TIOStream f) -> void
+	{
+		if vTable.Empty()
+			return void
+
+		PrintVTableTypeName(f)
+		f << " = type {"
+		for it,i : vTable 
+		{
+			if i > 0 f << " , "
+			if it.fConstVal == null
+				f << it.fType.GetName() << "*"
+			else
+				f << it.fTyp.GetName()
+		}
+		f << " }\n"
+
+		PrintVTableObject(f)
+		f <<  " = global "
+		PrintVTableTypeName(f)
+		f << " {"
+		for it,i : vTable
+		{
+			if i > 0 f << " , "
+			if it.fConstVal != null
+			{
+				f << it.fTyp.GetName() << " " << it.fConstVal.GetName()
+			}else{
+				f << it.fType.GetName() << "* @" << it.fItem.OutputName
+			}
+			
+		}
+		f << "}\n"
+	}
+	ComputeVTable := !() -> void
+	{	
+		if not computedVTable
+		{
+			computedVTable = true
+
+			tableOffset := 0
+
+			if this.Parent != null
+			{
+				this.Parent.ComputeVTable()
+				for this.Parent.vTable
+				{
+					vTable.Push(it)
+				}
+			}
+
+			for invTypes : vTypes// i : 0
+			{
+				found := false
+				for invTable, j : vTable
+				{
+					if invTable.CmpItem(invTypes)
+					{
+						invTable = invTypes
+						if invTypes.fConstVal != null
+						{
+							aB := invTypes.fItem->{BuiltInGetVirtualParam^}
+							aB.MakeLine(j + tableOffset)
+						}else{
+							invTypes.fItem.VirtualId = j
+							aS := invTypes.funcWrapper
+							aB := aS->{BuiltInVirtualCall^}
+							aB.MakeLine(j + tableOffset)
+						}
+						found = true
+					}
+				}
+				if not found
+				{
+					aS2 := invTypes.funcWrapper
+					if invTypes.fConstVal != null{
+						aB := invTypes.fItem->{BuiltInGetVirtualParam^}
+						aB.MakeLine(vTable.Size() + tableOffset)
+						vTable.Push(invTypes)
+					}else{
+						invTypes.fItem.VirtualId = vTable.Size() + tableOffset
+						aB2 := aS2->{BuiltInVirtualCall^}
+						aB2.MakeLine(vTable.Size() + tableOffset)
+						vTable.Push(invTypes)
+					}
+				}
+			}
+
+			if ThislessFuncs[^].itFunc.IsVirtual
+			{
+				it.MakeLine(it.itFunc.VirtualId)
+			}else{
+				it.MakeLine(0)
+			}
+			ThislessTemplates[^].MakeLine()
+
+		}
+	}
+	
+
+	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
+	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
+	PrintVTableTypeName := !(TIOStream f) -> void
+	{
+		f << "%ClassTableType" << ClassId
+	}
+	PrintVTableObject := !(TIOStream f) -> void
+	{
+		f << "@ClassTableItem" << ClassId
+	}
+	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
+	{
+		newItem := new FuncItem
+		newItem.fName = fNam
+		newItem.fType = fTyo
+		newItem.fItem = fF
+		newItem.fConstVal = null
+		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
+
+		vTypes.Push(newItem)
+	}
+	PutVirtualParam := virtual !(string fName,Object^ cnst) -> void
+	{
+		newItem := new FuncItem
+		newItem.fName = fName
+		newItem.fTyp = cnst.GetType()
+		newItem.fConstVal = cnst
+		newItem.fItem = new BuiltInGetVirtualParam(this&,cnst.GetType())
+
+		vTypes.Push(newItem)
+	}
+	GetVirtualParamFunc := !(string name) -> BoxFunc^
+	{
+		for it : vTypes
+		{
+			if it.fName == name and it.fConstVal != null
+				return it.fItem
+		}
+		if Parent != null return Parent.GetVirtualParamFunc(name)
+		return null
+	}
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		PrintVTable(f)
