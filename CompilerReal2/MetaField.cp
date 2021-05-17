@@ -1,31 +1,26 @@
 CheckMetaBlock := !(Object^ metBl) -> void
 {
-	itrUp := metBl.Up
-	while itrUp != null
+	itrUp := GetUpClass(metBl.Up)
+
+	if itrUp == null
+		return void
+
+	if metBl.Up? is ObjParam
 	{
-		if itrUp is BoxClass
-		{
-			if metBl.Up? is ObjParam
-			{
-				paramName := metBl.Up->{ObjParam^}.MyStr
-			
-				blkItem := metBl.Down.Right //MEMORY
-				metWrp := ReplaceNode(metBl,new MetaFieldBox)->{MetaFieldBox^}
-				metWrp.Down = blkItem
-				blkItem.Up = metWrp
-				blkItem.Left = null
+		paramName := metBl.Up->{ObjParam^}.MyStr
+	
+		blkItem := metBl.Down.Right //MEMORY
+		metWrp := ReplaceNode(metBl,new MetaFieldBox)->{MetaFieldBox^}
+		metWrp.Down = blkItem
+		blkItem.Up = metWrp
+		blkItem.Left = null
 
-				MakeItBlock(metWrp.Down)
-				WorkBag.Push(metWrp.Down,State_Start)
+		MakeItBlock(metWrp.Down)
+		WorkBag.Push(metWrp.Down,State_Start)
 
-				metWrp.Down->{BoxBlock^}.InClass = true //itrUp->{BoxClass^}
-				assert(metWrp is MetaFieldBox)
-				itrUp->{BoxClass^}.AddMetaField(paramName,metWrp)
-			}
-			itrUp = null
-		}else{
-			itrUp = itrUp.Up
-		}
+		metWrp.Down->{BoxBlock^}.InClass = true //itrUp->{BoxClass^}
+		assert(metWrp is MetaFieldBox)
+		itrUp->{BoxClass^}.AddMetaField(paramName,metWrp)
 	}
 }
 

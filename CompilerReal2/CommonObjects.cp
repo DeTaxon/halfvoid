@@ -53,7 +53,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 				res := GetItem2(name,notSure,Searched)
 				if res != null return res
 			}
-		}else if iter.Up? is BoxClass and name[0] == '$'
+		}else if iter.Up? is BoxClass and name[0] == '$' //TODO maybe: work with append
 		{
 			asCl := iter.Up->{BoxClass^}
 			resObj := asCl.ItAttrs.TryFind(name)

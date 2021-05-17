@@ -31,13 +31,13 @@ internalCheckClassInClass := !(@InpClass^ value) .{@ToClass} -> bool
 main := !(int argc, char^^ argv) -> int
 {
 	
-	r := new c2
+	//r := new c2
 
-	if r is in c2
-	{
-		printf("yep\n")
-	}
-	return 0
+	//if r is in c2
+	//{
+	//	printf("yep\n")
+	//}
+	//return 0
 	//miniBad2()
 	//printf("test %s\n",#best(cc^,bb^)->Name)
 	//tst := gRepo.GetFile("Example.ogg")
@@ -46,6 +46,7 @@ main := !(int argc, char^^ argv) -> int
 	
 	try
 	{
+		AppendClassTest()
 		TestQuestion()
 		TestBiggerSwitch()
 		TestRetQ()
@@ -285,17 +286,30 @@ ToAppendClass := class
 }
 AppendClass ToAppendClass
 {
+	y := int
 	getValue2 := !() -> int
 	{
-		return 5
+		return x
+	}
+}
+
+AppendClass ToAppendClass
+{
+	x := int
+	getValue3 := !() -> int
+	{
+		return y
 	}
 }
 
 AppendClassTest := !() -> void
 {
 	tstObj := ToAppendClass
+	tstObj.x = 3
+	tstObj.y = 4
 	retVal := tstObj.getValue()
-	assert(retVal == 5*13)
+	assert(retVal == tstObj.x*13)
+	assert(tstObj.getValue3() == 4)
 }
 
 BestTest := !() -> void

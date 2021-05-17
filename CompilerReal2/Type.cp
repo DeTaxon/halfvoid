@@ -422,18 +422,10 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 					switch key
 					{
 						case "#outer_class"
-							itrC := Node
-							while itrC != null
-							{
-								if itrC is BoxClass
-									break
-								itrC = itrC.Up
-							}
+							itrC := GetUpClass(Node)
 							if itrC != null
 							{
-								asCl := itrC->{BoxClass^}
-
-								for v2,k2 : asCl.ItAttrs
+								for v2,k2 : itrC.ItAttrs
 								{
 									box.itAttrs[k2] = v2
 								}

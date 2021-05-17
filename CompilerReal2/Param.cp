@@ -206,7 +206,7 @@ ObjParam := class extend Object
 				itr := Up
 				while itr != null
 				{
-					if itr is BoxClass or itr is BoxClassTemplate
+					if itr is BoxClass or itr is BoxClassTemplate //TODO: AppendClass
 					{
 						itr->{BoxClass^}.CreateDefault(MyStr)
 						break

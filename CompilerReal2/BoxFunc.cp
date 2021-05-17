@@ -118,16 +118,10 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	if isPoison
 	{
-		clItr := iterForName
-		while clItr != null
+		asCl := GetUpClass(iterForName)
+		if asCl != null
 		{
-			if clItr is BoxClass
-			{
-				asCl := clItr->{BoxClass^}
-				asCl.ItPoisons[FName] = item.Clone()
-				break
-			}
-			clItr = clItr.Up
+			asCl.ItPoisons[FName] = item.Clone()
 		}
 	}
 	if iter.GetValue() == "{}"
