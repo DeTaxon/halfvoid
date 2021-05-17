@@ -1,5 +1,4 @@
 
-
 FuncItem := class
 {
 	fName := string
@@ -46,8 +45,6 @@ AppendClass BoxClass
 			computedVTable = true
 
 			tableOffset := 0
-			if createDynamic
-				tableOffset += 1
 
 			if this.Parent != null
 			{
@@ -116,6 +113,40 @@ AppendClass BoxClass
 	PrintVTableObject := !(TIOStream f) -> void
 	{
 		f << "@ClassTableItem" << ClassId
+	}
+	PrintVTable := !(TIOStream f) -> void
+	{
+		if vTable.Empty()
+			return void
+
+		PrintVTableTypeName(f)
+		f << " = type {"
+		for it,i : vTable 
+		{
+			if i > 0 f << " , "
+			if it.fConstVal == null
+				f << it.fType.GetName() << "*"
+			else
+				f << it.fTyp.GetName()
+		}
+		f << " }\n"
+
+		PrintVTableObject(f)
+		f <<  " = global "
+		PrintVTableTypeName(f)
+		f << " {"
+		for it,i : vTable
+		{
+			if i > 0 f << " , "
+			if it.fConstVal != null
+			{
+				f << it.fTyp.GetName() << " " << it.fConstVal.GetName()
+			}else{
+				f << it.fType.GetName() << "* @" << it.fItem.OutputName
+			}
+			
+		}
+		f << "}\n"
 	}
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{

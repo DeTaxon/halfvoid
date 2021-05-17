@@ -616,37 +616,7 @@ BoxClass := class extend BoxClassBase
 
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
-		if not vTable.Empty()
-		{
-			PrintVTableTypeName(f)
-			f << " = type {"
-			for it,i : vTable 
-			{
-				if i > 0 f << " , "
-				if it.fConstVal == null
-					f << it.fType.GetName() << "*"
-				else
-					f << it.fTyp.GetName()
-			}
-			f << " }\n"
-
-			PrintVTableObject(f)
-			f <<  " = global "
-			PrintVTableTypeName(f)
-			f << " {"
-			for it,i : vTable
-			{
-				if i > 0 f << " , "
-				if it.fConstVal != null
-				{
-					f << it.fTyp.GetName() << " " << it.fConstVal.GetName()
-				}else{
-					f << it.fType.GetName() << "* @" << it.fItem.OutputName
-				}
-				
-			}
-			f << "}\n"
-		}
+		PrintVTable(f)
 		if Params.Size() == 0
 		{
 			if vTable.Empty()
