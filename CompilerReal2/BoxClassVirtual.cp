@@ -107,6 +107,8 @@ AppendClass BoxClass
 	}
 	
 
+	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
+	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
 	PrintVTableTypeName := !(TIOStream f) -> void
 	{
 		f << "%ClassTableType" << ClassId

@@ -613,18 +613,7 @@ BoxClass := class extend BoxClassBase
 
 		return bestFunc
 	}
-	
 
-	createDynamic := bool
-	CreateDynamicTable := !() -> void
-	{
-	}
-
-	
-
-
-	GetVTableTypeName := !() -> char^ { return "%ClassTableType"sbt + ClassId }
-	GetVTableName := !() -> char^ { return "@ClassTableItem"sbt + ClassId }
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		if not vTable.Empty()
