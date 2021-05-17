@@ -114,7 +114,7 @@ AppendClass BoxClass
 	{
 		f << "@ClassTableItem" << ClassId
 	}
-	PrintVTable := !(TIOStream f) -> void
+	PrintVTable := virtual !(TIOStream f) -> void
 	{
 		if vTable.Empty()
 			return void
@@ -253,4 +253,34 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 	//	return 0		
 	//}
 	
+}
+
+BuiltInCheckVirtualType := class extend BoxTemplate
+{
+	classType := Type^
+	this := !(Type^ clss) -> void
+	{
+		classType = clss
+		FuncName = "is"
+		OutputName = "error"
+		typs := Queue.{Type^}() ; $temp
+		typs.Push(clss.GetPoint())
+		MyFuncType = GetFuncType(typs,null->{bool^},GTypeBool,false,false)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int{
+		return 0
+	}
+	GetNewFunc := virtual !(FuncInputBox itPars, TypeFunc^ funct) -> BoxFunc^
+	{
+		rightCl := itPars.itConsts[0]->{ObjType^}.MyType->{TypeClass^}.ToClass.ClassId
+		asCl := classType->{TypeClass^}.ToClass
+		classId := asCl.ClassId
+		return new BuiltInFuncUno("is",classType.GetPoint(),false,GetType("bool"),false,
+			"#0PrePre = getelementptr "sbt + classType.GetName() + " , " + classType.GetName() + "* #1 , i32 0, i32 0 #d\n" +
+			"#0Pre = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** #0PrePre #d\n" +
+			"#0Left = bitcast %ClassTableType" + classId + "* #0Pre to i8* #d\n" +
+			"#0Right = bitcast %ClassTableType" + rightCl + "* @ClassTableItem" + rightCl + " to i8* #d\n" +
+			"#0 = icmp eq i8* #0Left,#0Right #d\n")
+		
+	}
 }
