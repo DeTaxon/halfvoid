@@ -299,7 +299,7 @@ BoxBlock := class extend Object
 			if Up != null
 			{
 				if not InClass
-					InClass =  Up.GetValue() == "{...}"
+					InClass =  IsClassObj(Up)
 			}
 			//if Up.GetValue() == "~switch()" RecursMake()
 			//if (not InClass and (Up.GetValue() == "{d}" or Up.GetValue() == "~switch()")) RecursMake()
@@ -457,13 +457,12 @@ BoxFile := class extend BoxBlock
 			{
 				if itr.Down?.GetValue() == "AppendClass"
 				{
-					asObj := itr.Down.Right->{ObjIndent^}
-					gAppendClass[asObj.MyStr] = itr.Down.Right.Right
-					PopOutNode(itr)
-					itr = Down
-				}else{
-					itr = itr.Right
+					oldDown := itr.Down
+					itr = ReplaceNode(itr,new BoxClassAppend())
+					itr.Down = oldDown
+					itr.Down.SetUp(itr)
 				}
+				itr = itr.Right
 			}
 			WorkBag.Push(Down[^],State_Start)
 		}

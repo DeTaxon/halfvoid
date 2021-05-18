@@ -109,7 +109,11 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 		{
 			asC := ii->{BoxClass^}
 			asC.GetWrappedFunc(name,found,templates)
-
+		}else
+		if ii is BoxClassAppend
+		{
+			asC := ii->{BoxClassAppend^}.classPtr
+			asC.GetWrappedFunc(name,found,templates)
 		}
 }
 
@@ -191,7 +195,6 @@ FindSuffix := !(string name, Object^ start,FuncInputBox itBox) -> BoxFunc^
 }
 FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool IsMethod) -> BoxFunc^
 {
-
 	if itBox.itMetaPtr != null
 	{
 		assert(itBox.itPars[0].first is TypeClass)

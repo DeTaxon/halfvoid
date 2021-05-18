@@ -57,7 +57,7 @@ Object := class{
 		printf("item: %s",GetDebugValue())
 		if Line != null
 		{
-			printf(" at %s %i",Line.inFile.Get(),Line.LinePos)
+			printf(" at %s:%i",Line.inFile.Get(),Line.LinePos)
 		}
 		printf("\n")
 		End := this.Down

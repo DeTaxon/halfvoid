@@ -258,10 +258,8 @@ ObjParam := class extend Object
 				val := TryCompute(Down)
 				if val != null{
 					val = val.Clone()
-					itr := this&->{Object^}
-					while itr != null and itr.GetValue() != "{...}" itr = itr.Up
-					if itr != null{
-						asN := itr->{BoxClass^}
+					asN := GetUpClass(this&)
+					if asN != null{
 						asN.PutVirtualParam(MyStr,val)
 						return void
 					}

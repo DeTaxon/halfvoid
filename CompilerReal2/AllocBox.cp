@@ -194,7 +194,7 @@ GetAllocNR := !(Object^ Start,int id) -> int
 		ab := iter.GetABox()
 		if ab != null return ab.GetNR(id)
 
-		if iter.GetValue() == "{...}"
+		if IsClassObj(iter)
 		{
 			return -2
 		}
@@ -209,7 +209,7 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 	{
 		ab := iter.GetABox()
 		if ab != null return ab.GetAlloc(t)
-		if iter.GetValue() == "{...}"
+		if IsClassObj(iter)
 		{
 			return -2
 		}

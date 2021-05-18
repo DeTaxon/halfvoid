@@ -210,7 +210,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 		{
 			return NodeName.GetType()
 		}
-		if NodeName.Down?.GetValue() == "{...}"
+		if NodeName.Down? is BoxClass
 		{
 			asCl := ((NodeName.Down)->{BoxClass^})
 			return asCl.ClassType

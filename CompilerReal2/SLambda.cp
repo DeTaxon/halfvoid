@@ -394,9 +394,7 @@ SLambda := class extend BoxFuncContainer
 			}
 			if it.2 != null and it.2.IsMethod
 			{
-				itrT := it.2->{Object^}
-				while itrT != null and itrT.GetValue() != "{...}"
-					itrT = itrT.Up
+				itrT := GetUpClass(it.2)
 				
 				f << "%this = load " << itrT->{BoxClass^}.ClassType.GetName() << "* , "
 					<< itrT->{BoxClass^}.ClassType.GetName() << "** %T" << it.2.InAlloc[0] <<"\n"

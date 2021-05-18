@@ -53,13 +53,18 @@ ParseClass := !(Object^ ob)-> BoxClass^
 	return preRes2
 }
 
-gAppendClass := AVLMap.{char^,Object^}
-
+IsClassObj := !(Object^ toCmp) -> bool
+{
+	if toCmp is BoxClass return true
+	if toCmp is BoxClassAppend return true
+	return false
+}
 GetUpClass := !(Object^ toS) -> BoxClass^
 {
 	iterF := toS
 	while iterF != null
 	{
+		if iterF is BoxClassAppend return iterF->{BoxClassAppend^}.classPtr
 		if iterF is BoxClass return iterF->{BoxClass^}
 		iterF = iterF.Up
 	}
@@ -359,6 +364,8 @@ BoxClass := class extend BoxClassBase
 		}
 	}
 
+	appendObjects := List.{BoxClassAppend^}
+
 	checkedInherit := bool
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -372,23 +379,6 @@ BoxClass := class extend BoxClassBase
 			if itr != null{
 				asN := itr->{ObjParam^}
 				ClassName = asN.MyStr
-
-				if gAppendClass.Contain(ClassName)
-				{
-					newTree := gAppendClass[ClassName].Clone()
-					if Down == null or Down.Down == null
-					{
-						Down = newTree.Down
-						Down.SetUp(this&)
-					}else{
-						after := Down.Down
-						while after.Right != null
-							after = after.Right
-						after.Right = newTree.Down
-						after.Right.Left = after
-						after.Right.SetUp(after.Up)
-					}
-				}
 			}
 			if Down != null and itr != null
 			{
@@ -527,30 +517,19 @@ BoxClass := class extend BoxClassBase
 			}
 		}
 
-		//if itBox.itMetaPtr == null //ItMethods have all func, including  in fake
-		//{
-		//	inMt2 := ItMethods.TryFind(name)
-		//	if inMt2 != null for inMt2^
-		//	{
-		//		if it.IsSameConsts(itBox) and not it.IsVirtual
-		//		{
-		//			Funcs.Push(it)
-		//		}
-		//	}
-		//	inTmp2 := ItTemplates.TryFind(name)
-		//	if inTmp2 != null for inTmp2^
-		//	{
-		//		Templs.Push(it)
-		//	}
-		//}
 
+		searchList := List.{Object^}() ; $temp
 		downIter := Down
 		if itBox.itMetaPtr != null
 		{
 			downIter = itBox.itMetaPtr
+		}else{
+			searchList.Push(appendObjects[^])
 		}
-		//downIter := itBox.itMetaPtr
 		if downIter != null
+			searchList.Push(downIter)
+		//downIter := itBox.itMetaPtr
+		for sIter : searchList
 		{
 			for iterJ : downIter.Down
 			{

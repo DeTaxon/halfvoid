@@ -232,7 +232,8 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 
 	if func1 == null 
 	{
-		if not ignoreNull ErrorLog.Push("Function <"sbt + Name + "> not found\n") //TODO:  PointCall and closestFunc
+		if not ignoreNull 
+			ErrorLog.Push("Function <"sbt + Name + "> not found\n") //TODO:  PointCall and closestFunc
 	}
 	else
 	{

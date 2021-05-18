@@ -34,15 +34,18 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	if iter.GetValue() != "!" return null
 
+
+	ClassPtr := GetUpClass(item)
+	if(ClassPtr != null)
+	{
+		ClassType = ClassPtr.ClassType
+	}
+
 	ExtraIter := item
 	while ExtraIter != null
 	{
 		switch ExtraIter.GetValue()
 		{
-		case "{...}"
-			ClassPtr = ExtraIter->{BoxClass^}
-			ClassType = ClassPtr.ClassType
-			ExtraIter = null
 		case "~fake"
 			if IsVirtual
 			{

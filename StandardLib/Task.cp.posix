@@ -95,7 +95,8 @@ AppendClass TaskBox
 	}
 	addMonitor := !(char^ pathName,MonitorCallback callb,int modes,bool isRec) -> void
 	{
-		if not initedMonitor initMonitor()
+		if not initedMonitor 
+			initMonitor()
 
 		pathAdd := List.{char^}() ; $temp $keep
 
