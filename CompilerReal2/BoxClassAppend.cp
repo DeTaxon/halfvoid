@@ -6,6 +6,10 @@ BoxClassAppend := class extend Object
 	this := !() -> void
 	{
 	}
+	GetItem := virtual !(char^ name) -> Object^
+	{
+		return classPtr.GetItem(name)
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if visitedWork[pri] return void

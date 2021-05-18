@@ -80,6 +80,26 @@
                     "ignoreFailures": true
                 }
             ]
+        },{
+            "name": "(gdb) cycle llvm",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/c.out",
+            "args": ["--notask", "-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/$\""
+                , "-C0", "\"StandardLib/$\"", "-C1" 
+                ,"\"CompilerReal2/$\"" ,"CompilerReal2/main.cp" ,"-o" ,"./Objs/out3.ll"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }

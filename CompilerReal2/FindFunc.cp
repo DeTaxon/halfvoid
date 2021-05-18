@@ -125,18 +125,23 @@ CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queu
 
 	if name == "."
 	{
-		iterUp := start
-		while iterUp != null
+		cls := GetUpClass(start)
+		if cls != null
 		{
-			if iterUp.Up? is BoxBlock and iterUp.Up.Up? is BoxClass
-			{
-				asClass := ((iterUp.Up.Up)->{BoxClass^})
-				theTemplate := BoxTemplate^
-				templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^}) ; $temp
-				return void
-			}
-			iterUp = iterUp.Up
+			templates.Push(cls.AutoFieldTemplate) ; $temp
 		}
+		//iterUp := start
+		//while iterUp != null
+		//{
+		//	if iterUp.Up? is BoxBlock and iterUp.Up.Up? is BoxClass
+		//	{
+		//		asClass := ((iterUp.Up.Up)->{BoxClass^})
+		//		theTemplate := BoxTemplate^
+		//		templates.Push((asClass.AutoFieldTemplate)->{BoxTemplate^}) ; $temp
+		//		return void
+		//	}
+		//	iterUp = iterUp.Up
+		//}
 		return void
 	}
 

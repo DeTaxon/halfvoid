@@ -233,7 +233,9 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 	if func1 == null 
 	{
 		if not ignoreNull 
+		{
 			ErrorLog.Push("Function <"sbt + Name + "> not found\n") //TODO:  PointCall and closestFunc
+		}
 	}
 	else
 	{
@@ -241,7 +243,6 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 	}
 	return null	
 }
-
 
 MakeSimpleCall2 := !(BoxFunc^ func, Object^ pars,Object^ lineObj) -> BaseFuncCall^
 {
