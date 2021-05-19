@@ -523,41 +523,65 @@ BoxClass := class extend BoxClassBase
 		}
 
 
-		searchList := List.{Object^}() ; $temp
-		downIter := Down
-		if itBox.itMetaPtr != null
-		{
-			downIter = itBox.itMetaPtr
-		}else{
-			searchList.Push(appendObjects[^].Down)
-		}
-		if downIter != null
-			searchList.Push(downIter)
-		//downIter := itBox.itMetaPtr
-		for sIter : searchList
-		{
-			for iterJ : sIter.Down
-			{
-				if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
-				{
-					itName := ((iterJ->{ObjParam^}).MyStr)
-					if itName == name
-					{
-						if iterJ.Down.GetValue() == "!()"
-						{
-							asFunc := (iterJ.Down)->{BoxFunc^}
 
-							if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
-							{
-								Funcs.Push(asFunc)
-							}
-						}
-						if iterJ.Down.GetValue() == "!(){}"
-							Templs.Push((iterJ.Down)->{BoxTemplate^})
+		//if itBox.itMetaPtr != null
+		//{
+			holder := defaultFuncsHolder&
+			if itBox.itMetaPtr != null
+				holder = itBox.itMetaPtr
+
+			mtFncs := holder.methods.TryFind(name)
+			if mtFncs != null
+			{
+				for fnc : mtFncs^
+				{
+					if ((not fnc.IsVirtual) or iVir) and fnc.IsSameConsts(itBox)
+					{
+						Funcs.Push(fnc)
 					}
 				}
 			}
-		}
+			mtTmplts := holder.templates.TryFind(name)
+			if mtTmplts != null
+				Templs.Push(mtTmplts^[^])
+		
+		//if true{
+		//}else{
+		//	searchList := List.{Object^}() ; $temp
+		//	downIter := Down
+		//	if itBox.itMetaPtr != null
+		//	{
+		//		searchList.Push(appendObjects[^].Down)
+		//	}
+		//	if downIter != null
+		//		searchList.Push(downIter)
+		//	//downIter := itBox.itMetaPtr
+		//	for sIter : searchList
+		//	{
+		//		for iterJ : sIter.Down
+		//		{
+		//			if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
+		//			{
+		//				itName := ((iterJ->{ObjParam^}).MyStr)
+		//				if itName == name
+		//				{
+		//					if iterJ.Down.GetValue() == "!()"
+		//					{
+		//						asFunc := (iterJ.Down)->{BoxFunc^}
+
+		//						if ((not asFunc.IsVirtual) or iVir) and asFunc.IsSameConsts(itBox)
+		//						{
+		//							Funcs.Push(asFunc)
+		//						}
+		//					}
+		//					if iterJ.Down.GetValue() == "!(){}"
+		//						Templs.Push((iterJ.Down)->{BoxTemplate^})
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
+
 		if name == "." {
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
 		}

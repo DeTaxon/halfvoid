@@ -95,7 +95,7 @@ MetaFieldBox := class extend Object
 }
 MetaItemWrapper := class extend Object
 {
-	ptrToBlock := Object^
+	ptrToBlock := BoxClassFuncsHolder^
 
 	PrintInBlock := virtual !(TIOStream f) -> void { Down.PrintInBlock(f) }
 	PrintPointPre := virtual !(TIOStream f) -> void { Down.PrintPointPre(f) }

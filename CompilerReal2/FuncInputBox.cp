@@ -9,7 +9,7 @@ FuncInputBox := class
 	itPars := HybridQueue.{Pair.{Type^,bool},16} //FuncTypesArray
 	itConsts := HybridQueue.{Object^,16} //FuncConstsArray
 	itAttrs := AVLMap.{string,Object^} //FuncAttrsArray
-	itMetaPtr := Object^
+	itMetaPtr := BoxClassFuncsHolder^
 
 	this := !() -> void
 	{

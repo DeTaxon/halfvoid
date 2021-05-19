@@ -238,7 +238,7 @@ FuncCallGetFieldClassGetFieldByName := !(char^ asName,Object^ iterPre, Object^ i
                 PopOutNode(iter.Right)
                 
                 metWrapper := new MetaItemWrapper
-                metWrapper.ptrToBlock = asClass.metaFields[asName].Down
+                metWrapper.ptrToBlock = asClass.funcsHolders[asName]& //TODO: to funcsHolder?
                 iter = UNext(iter,metWrapper,1)
                 return iter
             }
