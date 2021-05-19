@@ -282,8 +282,8 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 
 	func2 := GetBestFunc(itBox,Funcs,Templs)
 	return func2
-
 }
+
 GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
 {
 	FoundC := funcs.Size()

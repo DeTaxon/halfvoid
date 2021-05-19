@@ -524,14 +524,18 @@ BoxClass := class extend BoxClassBase
 		{
 			downIter = itBox.itMetaPtr
 		}else{
-			searchList.Push(appendObjects[^])
+			searchList.Push(appendObjects[^].Down)
+			if name == "getValue3"
+			{
+				appendObjects[^].Print(0)
+			}
 		}
 		if downIter != null
 			searchList.Push(downIter)
 		//downIter := itBox.itMetaPtr
 		for sIter : searchList
 		{
-			for iterJ : downIter.Down
+			for iterJ : sIter.Down
 			{
 				if iterJ is ObjParam //iterJ.GetValue() == "i:=1"
 				{
@@ -553,7 +557,7 @@ BoxClass := class extend BoxClassBase
 				}
 			}
 		}
-		if name == "."{
+		if name == "." {
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
 		}
 		bestFunc := GetBestFunc(itBox,Funcs,Templs)

@@ -26,20 +26,14 @@ ObjParam := class extend Object
 	{
 		return "i:=1"
 	}
+	
+	GetDebugValue := virtual !() -> char^
+	{
+		return " Param with name "sbt + MyStr
+	}
 	GetType := virtual !() -> Type^
 	{
 		return ObjType
-	}
-	Print := virtual !(int lvl) -> void
-	{
-		for lvl printf("->")
-		printf("param i:=1\n")
-		iter := Down
-		while iter != null
-		{
-			iter.Print(lvl+1)
-			iter = iter.Right
-		}
 	}
 	GetName := virtual !() -> string
 	{

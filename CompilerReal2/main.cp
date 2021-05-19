@@ -276,7 +276,14 @@ main := !(int argc,char^^ argv) -> int
 			return 0
 		}
 	}
-	targetObjects.Push(LoadFile(Path(targetFiles[^])))
+	for target : targetFiles
+	{
+		fl := LoadFile(Path(target))
+		targetObjects.Push(fl)
+		fl.cs = InfiniteCodeSpace
+		InfiniteCodeSpace.codeLibs.Push(fl)
+		FilesInSpace.Insert(fl)
+	}
 
 	for it : codeSp
 	{
@@ -289,7 +296,6 @@ main := !(int argc,char^^ argv) -> int
 		fL.cs = fLibSp&
 		fLibSp.codeLibs.Push(fL)
 		FilesInSpace.Insert(fL)
-
 	}
 	for it : zipSp
 	{
