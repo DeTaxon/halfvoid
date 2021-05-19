@@ -78,7 +78,8 @@ BoxClass := class extend BoxClassBase
 
 	FakeParams := Queue.{FakeFieldParam^}
 
-	ItMethods := AVLMap.{char^,List.{BoxFunc^}}
+	defaultFuncsHolder := BoxClassFuncsHolder 
+	//ItMethods := AVLMap.{char^,List.{BoxFunc^}}
 	ItTemplates := AVLMap.{char^,List.{BoxTemplate^}}
 
 	UnrollTemplate := BuiltInTemplateUnroll^
@@ -138,7 +139,7 @@ BoxClass := class extend BoxClassBase
 		iterF := this&
 		while iterF != null
 		{
-			inMt := iterF.ItMethods.TryFind(name)
+			inMt := iterF.defaultFuncsHolder.methods.TryFind(name)
 			if inMt != null for qIter : inMt^
 			{
 				if qIter.FuncName == name
@@ -200,7 +201,6 @@ BoxClass := class extend BoxClassBase
 			}
 			if inTh != null templs.Push(inTh) ; $temp
 		}
-
 	}
 
 	IsSameConsts := !(FuncInputBox itBox) -> bool
@@ -444,7 +444,7 @@ BoxClass := class extend BoxClassBase
 			{
 				if addedFuncs.Contain(name)
 					continue
-				if not ItMethods.Contain(name)
+				if not defaultFuncsHolder.methods.Contain(name) //TODO: poison + fake fields
 				{
 					addedFuncs.Insert(name) ; $temp
 
@@ -501,7 +501,7 @@ BoxClass := class extend BoxClassBase
 					Funcs.Push(it.fItem)
 				}
 
-				inMt := ItMethods.TryFind(funcName)
+				inMt := defaultFuncsHolder.methods.TryFind(funcName) //TODO: forced call to namespace
 				if inMt != null for inMt^
 				{
 					if it.IsSameConsts(itBox) and not it.IsVirtual
@@ -525,10 +525,6 @@ BoxClass := class extend BoxClassBase
 			downIter = itBox.itMetaPtr
 		}else{
 			searchList.Push(appendObjects[^].Down)
-			if name == "getValue3"
-			{
-				appendObjects[^].Print(0)
-			}
 		}
 		if downIter != null
 			searchList.Push(downIter)

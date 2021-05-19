@@ -24,8 +24,31 @@ CheckMetaBlock := !(Object^ metBl) -> void
 	}
 }
 
+BoxClassFuncsHolder := class
+{
+	methods := AVLMap.{char^,List.{BoxFunc^}}
+}
+
+GetBoxClassFuncsHolder := !(Object^ start) -> BoxClassFuncsHolder^
+{
+	itr := start
+	while itr != null and not (itr is MetaFieldBox)
+		itr = itr.Up
+	if itr != null
+	{
+		return itr->{MetaFieldBox^}.ptrToHolder
+	}
+	cls := GetUpClass(start)
+	if cls != null
+	{
+		return cls.defaultFuncsHolder&
+	}
+	return null
+}
+
 MetaFieldBox := class extend Object
 {
+	ptrToHolder := BoxClassFuncsHolder^
 	GetValue := virtual !() -> char^
 	{
 		return "~fake"

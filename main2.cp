@@ -283,6 +283,18 @@ ToAppendClass := class
 	{
 		return getValue2()*13
 	}
+	extraProblem := fake
+	{
+		getValue3 := !() -> int
+		{
+			return 108
+		}
+		//recheck := poison virtual !() -> void TODO: support this test, poison + virtual
+		//{
+		//	printf("heh %s\n",this->Type->Name)
+		// 	//this."ToAppendClass.extraProblem.getValue3"() //TODO support
+		//}
+	}
 }
 AppendClass ToAppendClass
 {
@@ -310,6 +322,7 @@ AppendClassTest := !() -> void
 	retVal := tstObj.getValue()
 	assert(retVal == tstObj.x*13)
 	assert(tstObj.getValue3() == 4)
+	assert(tstObj.extraProblem.getValue3() == 108)
 }
 
 BestTest := !() -> void

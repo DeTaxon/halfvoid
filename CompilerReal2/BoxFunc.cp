@@ -136,7 +136,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			preRes.Line = itLine
 			return preRes
 		}
-		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet)
+		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item)
 		preRet.IsSelfReturn = itsSelfRet
 		preRet.Line = itLine
 		return preRet
@@ -665,20 +665,12 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if IsInvalid EmitError("can not parse function header\n")
 
-		IsSuffix = IsSuf
-
-		if metC != null{
-			asCls := metC->{TypeClass^}
-			asClsT := asCls.ToClass
-			asClsT.ItMethods[FuncName].Push(this&->{BoxFunc^})
-
-
-			if IsVirtual
-			{
-				ParseBlock()
-				asClsT.PutVirtualFunc(FuncName MyFuncType this&->{BoxFunc^})
-			}
+		if IsVirtual
+		{
+			ParseBlock()
 		}
+
+		IsSuffix = IsSuf
 	}
 	TestRet := !(Type^ t) -> void
 	{
@@ -696,7 +688,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf) -> void
+	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf, Object^ anc) -> void
 	{
 		IsSelfReturn = isRetSelf
 		ABox.ItId = GetNewId()
@@ -761,25 +753,31 @@ BoxFuncBody := class extend BoxFunc
 		{
 			if (not (c in 'a'..'z')) and (not (c in 'A'..'Z')) IsSuffix = false 
 		}
-
-		if metC != null {
-			
-			asCls := metC->{TypeClass^}
-			asClsT := asCls.ToClass
-			asClsT.ItMethods[FuncName].Push(this&->{BoxFunc^})
-
-			if IsVirtual 
-			{
-				ParseBlock()
-				asNeed := (metC->{TypeClass^}).ToClass
-				asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
-			}
+		addItselfToClass(anc)
+		if IsVirtual
+		{
+			ParseBlock()
 		}
 		if FuncName == "_hvEntryPoint"
 		{
 			ParseBlock()
 		}
 	}
+	addItselfToClass := !(Object^ ancer) -> void
+	{
+		funcsHolder := GetBoxClassFuncsHolder(ancer)
+		if funcsHolder == null
+			return void
+		funcsHolder^.methods[FuncName].Push(this&)
+
+		if IsVirtual 
+		{
+			asNeed := GetUpClass(ancer)
+			assert(asNeed != null)
+			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
+		}
+	}
+
 	AddFuncCall := !(Object^ itm) -> void
 	{
 		itr := Down.Down

@@ -530,7 +530,7 @@ ModuleVulkan := class extend CompilerModule
 					newFunc.Up = kindaBlock.Down
 					newStruct.Down = kindaBlock
 					kindaBlock.Up = newStruct
-					newStruct.ItMethods["this"].Push(newFunc)
+					newStruct.defaultFuncsHolder.methods["this"].Push(newFunc)
 				}
 			}
 
