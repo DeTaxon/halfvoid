@@ -16,7 +16,8 @@ GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 
     //if createdFuncNames.Contain(funcName)
     //{
-        newName := ""sbt + funcName + "_mngl" + mnglIter <-
+        newName := ""sbt + funcName + "_mngl" + mnglIter <- //TODO: not ram again
+	newName = Copy(newName)
         mnglIter += 1
         createdFuncNames.Insert(newName)
         return newName

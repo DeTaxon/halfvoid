@@ -215,7 +215,7 @@ ObjLine := class
 	}
 	GetLog := !() -> string
 	{
-		return " at line "sbt + LinePos + " in file " + inFile.itStr
+		return " at  "sbt + inFile.itStr + ":" + LinePos
 	}
 	LoadAttrs := !(char^ str) -> void
 	{

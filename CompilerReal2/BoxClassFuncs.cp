@@ -7,7 +7,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 	itTemplate := BoxTemplate^
 	itClass := BoxClass^
 	itInClass := BoxClass^
-	createdFuncs := Queue.{BuiltInThislessFunc^}
+	createdFuncs := Queue.{BuiltIn2ThislessFunc^}
 
 	this := !(BoxTemplate^ templ,BoxClass^ toClass, BoxClass^ inClass) -> void
 	{
@@ -59,7 +59,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		newBox.itAttrs[ind] =itBox.itAttrs[^ind] ; $temp
 		newFunc := itTemplate.GetFunc(newBox^)
 
-		preRes := new BuiltInThislessFunc(newFunc,itClass,itInClass)
+		preRes := new BuiltIn2ThislessFunc(newFunc,itClass,itInClass)
 		createdFuncs.Push(preRes)
 		return preRes
 	}
@@ -68,11 +68,48 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		createdFuncs[^].MakeLine(0)
 	}
 }
-BuiltIn2ThislessFunc := class extend BuildIn2Func
+//BuiltIn2ThislessFunc := class extend BuildIn2Func
+//{
+//	itFunc := BoxFunc^
+//	itClass := BoxClass^
+//	itInClass := BoxClass^
+//	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
+//	{
+//		toFunc.ParseBlock()
+//		itFunc = toFunc
+//		itClass = toClass
+//		itInClass = inClass
+//		FuncName = toFunc.FuncName
+//		OutputName = toFunc.OutputName
+//
+//		IsRetRef = toFunc.IsRetRef
+//
+//		newTypes := Queue.{Type^}() ; $temp
+//		itsBools := Queue.{bool}() ; $temp
+//
+//		fTyp := toFunc.MyFuncType
+//
+//		i := 1
+//		while i < fTyp.ParsCount
+//		{
+//			if fTyp.ParsIsRef == null{
+//				itsBools.Push(false)
+//			}else{
+//				itsBools.Push(fTyp.ParsIsRef[i])
+//			}
+//			newTypes.Push(fTyp.Pars[i])
+//			i += 1
+//		}
+//		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
+//		//MakeLine()
+//	}
+//}
+BuiltIn2ThislessFunc := class extend BuiltIn2Func
 {
 	itFunc := BoxFunc^
 	itClass := BoxClass^
 	itInClass := BoxClass^
+	id := int
 	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
 	{
 		toFunc.ParseBlock()
@@ -103,45 +140,9 @@ BuiltIn2ThislessFunc := class extend BuildIn2Func
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
 		//MakeLine()
 	}
-}
-BuiltInThislessFunc := class extend BuiltInFunc
-{
-	itFunc := BoxFunc^
-	itClass := BoxClass^
-	itInClass := BoxClass^
-	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
+	MakeLine := !(int inpId) -> void
 	{
-		toFunc.ParseBlock()
-		itFunc = toFunc
-		itClass = toClass
-		itInClass = inClass
-		FuncName = toFunc.FuncName
-		OutputName = toFunc.OutputName
-
-		IsRetRef = toFunc.IsRetRef
-
-		newTypes := Queue.{Type^}() ; $temp
-		itsBools := Queue.{bool}() ; $temp
-
-		fTyp := toFunc.MyFuncType
-
-		i := 1
-		while i < fTyp.ParsCount
-		{
-			if fTyp.ParsIsRef == null{
-				itsBools.Push(false)
-			}else{
-				itsBools.Push(fTyp.ParsIsRef[i])
-			}
-			newTypes.Push(fTyp.Pars[i])
-			i += 1
-		}
-		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
-		ToExe = ""
-		//MakeLine()
-	}
-	MakeLine := !(int id) -> void
-	{
+		id = inpId
 	}
 	
 	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void 
@@ -159,26 +160,41 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			}
 		}
 
+		callId := trg.GenId()
+
+		debStr := ""
+		debId := -1
+		if DebugMode
+		{
+			debId = CreateDebugCall(trg)
+			if debId != -1
+			{
+				debStr = (", !dbg !"sbt + debId)->{char^}
+			}
+		}
+
+
 		if itFunc.IsVirtual
 		{
 			a1 := itInClass.vTable[id]
 			a2 := a1.fType
 			a3 := a2->{Type^}
 			FuncTypeName2 := a3.GetName()
-			f << "%FuncTabel## = getelementptr %Class" << classId + " , %Class" << classId << "* %this, i32 0, i32 0 #d\n" 
-			f << "%PreFunc## = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel## #d\n"
-			f << "%FuncPtr## = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc##, i32 0, i32 " << id << " #d\n"
-			f << "%Func## = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr## #d\n" 
+			f << "%FuncTabel"<<callId<<" = getelementptr %Class" << classId << " , %Class" << classId << "* %this, i32 0, i32 0 " << debStr << "\n"
+			f << "%PreFunc" << callId << " = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel" << callId << debStr <<" \n"
+			f << "%FuncPtr" << callId << " = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc" << callId << ", i32 0, i32 " << id <<debStr << " \n"
+			f << "%Func" << callId << " = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr" << callId << debStr << "\n"
 
-			f << "%NewThis## = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.vTable[id].fType.Pars[0].GetName() << "* #d\n"
+			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.vTable[id].fType.Pars[0].GetName() << "* " << debStr << "\n"
 			//MyFuncType = itInClass.vTable[id].fType
 			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
 		}else{
-			f << "%NewThis## = bitcast " << itClass.GetClassOutputName() + "* %this to " << itInClass.GetClassOutputName() + "* #d\n"
+			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
 		}
 
 		
-		for i : MyFuncType.ParsCount, itr : Down
+		itr := trg.Down
+		for i : MyFuncType.ParsCount
 		{
 			if MyFuncType.ParsIsRef[i]
 			{
@@ -186,9 +202,9 @@ BuiltInThislessFunc := class extend BuiltInFunc
 			}else{
 				itr.PrintPre(f)
 			}
+			itr = itr.Right
 		}
 
-		callId := trg.GenId()
 		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if (MyFuncType.RetType != GTypeVoid and not isRetComp) or IsRetRef
 		{
@@ -201,28 +217,27 @@ BuiltInThislessFunc := class extend BuiltInFunc
 		{
 			asPre1 := itInClass.vTable[id].fType
 			asPre2 := asPre1->{Type^}
-			outBuff + "call " + asPre2.GetName()  + "%Func##("
-			outBuff + itInClass.vTable[id].fType.Pars[0].GetName() + "* %NewThis##"
+			f << "call " << asPre2.GetName()  << "%Func" << callId << "("
+			f << itInClass.vTable[id].fType.Pars[0].GetName() << "* %NewThis" << callId << ""
 		}else{
-			outBuff + "call " + fTypp2.GetName()  + "@" + OutputName + "("
-			outBuff + itInClass.GetClassOutputName() + "* %NewThis##"
+			f <<  "call " << fTypp2.GetName()  << "@" << OutputName << "("
+			f <<  itInClass.GetClassOutputName() << "* %NewThis" << callId << ""
 		}
 
+		itr = trg.Down
 		for i : MyFuncType.ParsCount
 		{
-			outBuff + " , "
+			f << ","
 			if MyFuncType.ParsIsRef[i]
 			{
-				outBuff + MyFuncType.Pars[i].GetName() + "* "
+				itr.PrintPointUse(f)
 			}else{
-				outBuff + MyFuncType.Pars[i].GetName() + " "
+				itr.PrintUse(f)
 			}
-			outBuff + "#" + (i + 1)
+			itr = itr.Right
 		}
 
-		outBuff + ") #d\n"
-		ToExe = outBuff.Str()
-		ToExe = Copy(ToExe) //TODO BUG: someone toching my ram
+		f << ")" << debStr  << "\n"
 	}
 }
 

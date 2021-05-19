@@ -127,7 +127,7 @@ BoxClass := class extend BoxClassBase
 		metaFields[StrCopy(name)] = itMBox
 	}
 
-	ThislessFuncs := Queue.{BuiltInThislessFunc^}
+	ThislessFuncs := Queue.{BuiltIn2ThislessFunc^}
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
 	GetWrappedFunc := !(char^ name ,Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
 	{
@@ -174,7 +174,7 @@ BoxClass := class extend BoxClassBase
 			{
 				toCr := gotFuncsIter
 				if not toCr.IsStatic {
-					inThPre :=  new BuiltInThislessFunc(toCr,this&->{BoxClass^},funcsClIter)
+					inThPre :=  new BuiltIn2ThislessFunc(toCr,this&->{BoxClass^},funcsClIter)
 					ThislessFuncs.Push(inThPre)
 					inTh = inThPre
 				}
