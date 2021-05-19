@@ -9,8 +9,8 @@ CheckMetaBlock := !(Object^ metBl) -> void
 	{
 		paramName := metBl.Up->{ObjParam^}.MyStr
 	
-		blkItem := metBl.Down.Right //MEMORY
-		metWrp := ReplaceNode(metBl,new MetaFieldBox)->{MetaFieldBox^}
+		blkItem := metBl.Down.Right //TODO:MEMORY
+		metWrp := ReplaceNode(metBl,new MetaFieldBox(paramName))->{MetaFieldBox^}
 		metWrp.Down = blkItem
 		blkItem.Up = metWrp
 		blkItem.Left = null
@@ -27,6 +27,7 @@ CheckMetaBlock := !(Object^ metBl) -> void
 BoxClassFuncsHolder := class
 {
 	methods := AVLMap.{char^,List.{BoxFunc^}}
+	templates := AVLMap.{char^,List.{BoxTemplate^}}
 }
 
 GetBoxClassFuncsHolder := !(Object^ start) -> BoxClassFuncsHolder^
@@ -48,10 +49,48 @@ GetBoxClassFuncsHolder := !(Object^ start) -> BoxClassFuncsHolder^
 
 MetaFieldBox := class extend Object
 {
+	className := char^
 	ptrToHolder := BoxClassFuncsHolder^
+	this := !(char^ clName) -> void
+	{
+		className = clName
+		WorkBag.Push(this&,State_Start)
+	}
 	GetValue := virtual !() -> char^
 	{
 		return "~fake"
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			names := List.{char^}() ; $temp
+			itr := this&->{Object^}
+			while itr != null
+			{
+				if itr is MetaFieldBox
+				{
+					asMt := itr->{MetaFieldBox^}
+					names.PushFront(asMt.className)
+				}else if IsClassObj(itr)
+				{
+
+					nms := ""sbt
+					for it,i : names
+					{
+						if i != 0 nms << "."
+						nms << it
+					}
+					nm := nms.Str()
+					cls := GetClassObj(itr)
+					assert(cls != null)
+					ptrToHolder = cls.funcsHolders[nm]&	
+					break
+				}
+				itr = itr.Up
+				assert(itr != null)
+			}
+		}
 	}
 }
 MetaItemWrapper := class extend Object

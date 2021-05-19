@@ -310,9 +310,9 @@ BoxTemplate := class extend BoxFunc
 			FuncsTTemps.Push(null->{Object^})
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt,bool isRetSelf,Object^ tempUp) -> void
+	this := !(Object^ inPars, Object^ inOutType, Object^ cons, bool RetRef, string SomeName, Object^ Stuf,bool IsSuf, Type^ metC, bool IsVirt,bool isRetSelf,Object^ anc) -> void
 	{
-		Up = tempUp
+		Up = anc.Up
 		IsSelfReturn = isRetSelf
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
@@ -378,8 +378,9 @@ BoxTemplate := class extend BoxFunc
 
 		if metC != null and metC is TypeClass
 		{
-			asTC := metC->{TypeClass^}
-			asTC.ToClass.ItTemplates[FuncName].Push(this&)
+			hldr := GetBoxClassFuncsHolder(anc)
+			assert(hldr != null)
+			hldr.templates[FuncName].Push(this&)
 		}
 	}
 	GetPriority :=virtual !(FuncInputBox itBox) -> int

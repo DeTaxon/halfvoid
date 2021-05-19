@@ -173,7 +173,6 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 			}
 		}
 
-
 		if itFunc.IsVirtual
 		{
 			a1 := itInClass.vTable[id]
@@ -186,8 +185,6 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 			f << "%Func" << callId << " = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr" << callId << debStr << "\n"
 
 			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.vTable[id].fType.Pars[0].GetName() << "* " << debStr << "\n"
-			//MyFuncType = itInClass.vTable[id].fType
-			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
 		}else{
 			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
 		}

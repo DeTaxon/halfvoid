@@ -131,7 +131,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	{
 		if constsI?.Down == null or IsTemplate(ParamsObj)
 		{
-			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item.Up)
+			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item)
 			preRes.IsSelfReturn = itsSelfRet
 			preRes.Line = itLine
 			return preRes

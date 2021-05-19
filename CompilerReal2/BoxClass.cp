@@ -59,6 +59,12 @@ IsClassObj := !(Object^ toCmp) -> bool
 	if toCmp is BoxClassAppend return true
 	return false
 }
+GetClassObj := !(Object^ toC) -> BoxClass^
+{
+	if toC is BoxClassAppend return toC->{BoxClassAppend^}.classPtr
+	if toC is BoxClass return toC->{BoxClass^}
+	return null
+}
 GetUpClass := !(Object^ toS) -> BoxClass^
 {
 	iterF := toS
@@ -78,9 +84,8 @@ BoxClass := class extend BoxClassBase
 
 	FakeParams := Queue.{FakeFieldParam^}
 
-	defaultFuncsHolder := BoxClassFuncsHolder 
-	//ItMethods := AVLMap.{char^,List.{BoxFunc^}}
-	ItTemplates := AVLMap.{char^,List.{BoxTemplate^}}
+	defaultFuncsHolder := BoxClassFuncsHolder
+	funcsHolders := AVLMap.{char^,BoxClassFuncsHolder}
 
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
@@ -148,7 +153,7 @@ BoxClass := class extend BoxClassBase
 					funcsCl.Push(iterF) ; $temp
 				}
 			}
-			inTmp := iterF.ItTemplates.TryFind(name)
+			inTmp := iterF.defaultFuncsHolder.templates.TryFind(name)
 			if inTmp != null for tmps : inTmp^
 			{
 				if tmps.FuncName == name
@@ -509,7 +514,7 @@ BoxClass := class extend BoxClassBase
 						Funcs.Push(it)
 					}
 				}
-				inTmp := ItTemplates.TryFind(funcName)
+				inTmp := defaultFuncsHolder.templates.TryFind(funcName)
 				if inTmp != null for inTmp^
 				{
 					Templs.Push(it)
