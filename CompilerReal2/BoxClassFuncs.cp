@@ -68,6 +68,42 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		createdFuncs[^].MakeLine(0)
 	}
 }
+BuiltIn2ThislessFunc := class extend BuildIn2Func
+{
+	itFunc := BoxFunc^
+	itClass := BoxClass^
+	itInClass := BoxClass^
+	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
+	{
+		toFunc.ParseBlock()
+		itFunc = toFunc
+		itClass = toClass
+		itInClass = inClass
+		FuncName = toFunc.FuncName
+		OutputName = toFunc.OutputName
+
+		IsRetRef = toFunc.IsRetRef
+
+		newTypes := Queue.{Type^}() ; $temp
+		itsBools := Queue.{bool}() ; $temp
+
+		fTyp := toFunc.MyFuncType
+
+		i := 1
+		while i < fTyp.ParsCount
+		{
+			if fTyp.ParsIsRef == null{
+				itsBools.Push(false)
+			}else{
+				itsBools.Push(fTyp.ParsIsRef[i])
+			}
+			newTypes.Push(fTyp.Pars[i])
+			i += 1
+		}
+		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
+		//MakeLine()
+	}
+}
 BuiltInThislessFunc := class extend BuiltInFunc
 {
 	itFunc := BoxFunc^
@@ -106,6 +142,10 @@ BuiltInThislessFunc := class extend BuiltInFunc
 	}
 	MakeLine := !(int id) -> void
 	{
+	}
+	
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void 
+	{
 		aseBase := MyFuncType->{Type^}
 		FuncTypeName := aseBase.GetName()
 		classId := itClass.ClassId
@@ -118,28 +158,43 @@ BuiltInThislessFunc := class extend BuiltInFunc
 				isRetComp = IsComplexType(MyFuncType.RetType)
 			}
 		}
-		outBuff := ""sbt
+
 		if itFunc.IsVirtual
 		{
 			a1 := itInClass.vTable[id]
 			a2 := a1.fType
 			a3 := a2->{Type^}
 			FuncTypeName2 := a3.GetName()
-			outBuff + "%FuncTabel## = getelementptr %Class" + classId + " , %Class" + classId + "* %this, i32 0, i32 0 #d\n" 
-			outBuff + "%PreFunc## = load %ClassTableType" + classId + "* , %ClassTableType" + classId + "** %FuncTabel## #d\n"
-			outBuff + "%FuncPtr## = getelementptr %ClassTableType" + classId + " , %ClassTableType" + classId + "* %PreFunc##, i32 0, i32 " + id + " #d\n"
-			outBuff + "%Func## = load " + FuncTypeName2 + "* , " + FuncTypeName2 + "** %FuncPtr## #d\n" 
+			f << "%FuncTabel## = getelementptr %Class" << classId + " , %Class" << classId << "* %this, i32 0, i32 0 #d\n" 
+			f << "%PreFunc## = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel## #d\n"
+			f << "%FuncPtr## = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc##, i32 0, i32 " << id << " #d\n"
+			f << "%Func## = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr## #d\n" 
 
-			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.vTable[id].fType.Pars[0].GetName() + "* #d\n"
+			f << "%NewThis## = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.vTable[id].fType.Pars[0].GetName() << "* #d\n"
 			//MyFuncType = itInClass.vTable[id].fType
 			//printf("fuk %i %s %s %s\n",id,itInClass.vTable[id].fName,itFunc.FuncName,FuncTypeName2)
 		}else{
-			outBuff + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "* #d\n"
+			f << "%NewThis## = bitcast " << itClass.GetClassOutputName() + "* %this to " << itInClass.GetClassOutputName() + "* #d\n"
 		}
 
+		
+		for i : MyFuncType.ParsCount, itr : Down
+		{
+			if MyFuncType.ParsIsRef[i]
+			{
+				itr.PrintPointPre(f)
+			}else{
+				itr.PrintPre(f)
+			}
+		}
+
+		callId := trg.GenId()
 		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
 		if (MyFuncType.RetType != GTypeVoid and not isRetComp) or IsRetRef
-			outBuff + "#0 = "
+		{
+			trg.PrintRes(f)
+			f << " = "
+		}
 		fTypp := itFunc.MyFuncType
 		fTypp2 := fTypp->{Type^}
 		if itFunc.IsVirtual
