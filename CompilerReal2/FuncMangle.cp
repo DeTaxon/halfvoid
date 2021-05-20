@@ -8,17 +8,34 @@ mangledInit := !() -> void
     createdFuncNames.Insert("operator")
 }
 
+IsMangleKeepWord := !(string name) -> bool
+{
+	for c : name
+	{
+		switch c
+		{
+			case 'a'..'z':
+			case 'A'..'Z':
+			case '_':
+			case '0'..'9':
+			case void 
+				return false
+		}
+	}
+	return true
+}
+
 mnglIter := 0
 GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 {
-    if not IsWord(funcName)
+    if not IsMangleKeepWord(funcName)
         funcName = "operator"
 
     //if createdFuncNames.Contain(funcName)
     //{
-        newName := ""sbt + funcName + "_mngl" + mnglIter <- //TODO: not ram again
-	newName = Copy(newName)
+        newName := ""sbt + funcName + "_mngl" + mnglIter <-
         mnglIter += 1
+		newName = Copy(newName) //TODO: bug, $temp
         createdFuncNames.Insert(newName)
         return newName
     //}

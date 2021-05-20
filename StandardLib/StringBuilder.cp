@@ -115,7 +115,7 @@ StringBuilderTemporary := class .{@BufSize}{
 	}
 	"<-" := !() -> char^
 	{
-		return Str() ; $temp
+		return Str()
 	}
 	"+" := !(float val) self_return
 	{

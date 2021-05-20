@@ -932,7 +932,7 @@ BoxClass := class extend BoxClassBase
 
 		downs := new List.{Object^}() ; $temp
 		if Down != null downs.Push(Down)
-		downs.Push(metaFields[^].Down) ; $temp
+		//downs.Push(metaFields[^].Down) ; $temp
 
 		for iterJ : downs^[^].Down
 		{
@@ -945,6 +945,10 @@ BoxClass := class extend BoxClassBase
 						iterJ.PrintGlobal(f)
 				}
 				if iterJ.Down.GetValue() == "!(){}"
+				{
+					iterJ.PrintGlobal(f)
+				}
+				if iterJ.Down is MetaFieldBox
 				{
 					iterJ.PrintGlobal(f)
 				}

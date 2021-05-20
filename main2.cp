@@ -294,6 +294,10 @@ ToAppendClass := class
 		//	printf("heh %s\n",this->Type->Name)
 		// 	//this."ToAppendClass.extraProblem.getValue3"() //TODO support
 		//}
+		"[]" := !(int indx) -> int
+		{
+			return 15
+		}
 	}
 }
 AppendClass ToAppendClass
@@ -302,6 +306,13 @@ AppendClass ToAppendClass
 	getValue2 := !() -> int
 	{
 		return x
+	}
+	extraProblem := fake
+	{
+		CheckValue := !() -> void
+		{
+			//assert(this.extraProblem.getValue3() == 108)
+		}
 	}
 }
 
@@ -323,6 +334,7 @@ AppendClassTest := !() -> void
 	assert(retVal == tstObj.x*13)
 	assert(tstObj.getValue3() == 4)
 	assert(tstObj.extraProblem.getValue3() == 108)
+	//tstObj.extraProblem.CheckValue()
 }
 
 BestTest := !() -> void

@@ -60,6 +60,29 @@ MetaFieldBox := class extend Object
 	{
 		return "~fake"
 	}
+	PrintGlobal := virtual !(TIOStream f) -> void
+	{
+		if Down != null for iterJ : Down.Down
+		{
+			if iterJ.GetValue() == "i:=1"
+			{
+				if iterJ.Down.GetValue() == "!()"
+				{
+					asFunc := iterJ.Down->{BoxFunc^}
+					if not asFunc.IsAssembler()
+						iterJ.PrintGlobal(f)
+				}
+				if iterJ.Down.GetValue() == "!(){}"
+				{
+					iterJ.PrintGlobal(f)
+				}
+			}
+			if iterJ is MetaFieldBox
+			{
+				iterJ.PrintGlobal(f)
+			}
+		}
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
