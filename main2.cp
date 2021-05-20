@@ -82,8 +82,18 @@ classSetTypeB := class extend classSetTypeA
 	}
 }
 
+TestQuestionPrt1 := !() -> void
+{
+	c := int^()
+	for i : c?^
+	{
+		assert(false)
+	}
+}
 TestQuestion := !() -> void
 {
+	TestQuestionPrt1()
+
 	a1 := AVLMap.{int,int}()
 	a1[3] = 100
 	a2 := AVLMap.{int,int}()
@@ -100,6 +110,19 @@ TestQuestion := !() -> void
 	assert(tst2[14] == 68)
 	assert(tst2[14]? == 0)
 	assert(tst2.x == 67)
+
+	a1[3] = 5
+
+	c := 0
+	//for i : a1[3]?
+	//{
+	//	c += i
+	//}
+	//assert(c == 10)
+	//for i : a1[99999]?
+	//{
+	//	assert(false)
+	//}
 }
 OnOddTrue := class
 {
@@ -118,20 +141,6 @@ OnOddTrue := class
 	}
 }
 
-
-TestHashMap := !() -> void
-{
-	tst := HashAVLMap.{char^,int}()
-	tst["hello"] = 1
-	tst["world"] = 1
-	tst["azb"] = 1
-	tst["zb"] = 1
-	tst["world"] = 2
-	tst["1world"] = 2
-	tst["2world"] = 2
-	tst["2world"] = 3
-	assert(tst.Size() == 6)
-}
 TestHashMap := !() -> void
 {
 	tst := HashAVLMap.{char^,int}()
@@ -303,6 +312,7 @@ ToAppendClass := class
 AppendClass ToAppendClass
 {
 	y := int
+	r := int
 	getValue2 := !() -> int
 	{
 		return x
@@ -311,7 +321,13 @@ AppendClass ToAppendClass
 	{
 		CheckValue := !() -> void
 		{
-			//assert(this.extraProblem.getValue3() == 108)
+			assert(this.extraProblem.getValue3() == 108)
+		}
+		
+		"[]?" := !(int indx) -> ref int
+		{
+			r = 16
+			return r
 		}
 	}
 }
@@ -334,6 +350,8 @@ AppendClassTest := !() -> void
 	assert(retVal == tstObj.x*13)
 	assert(tstObj.getValue3() == 4)
 	assert(tstObj.extraProblem.getValue3() == 108)
+	assert(tstObj.extraProblem[0] == 15)
+	assert(tstObj.extraProblem[0]? == 16)
 	//tstObj.extraProblem.CheckValue()
 }
 

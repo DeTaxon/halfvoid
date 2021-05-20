@@ -157,57 +157,65 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				return null
 			}
 
-			replObject := new Object
-			qObject := new QuestionBox(replObject,forceToBool)
 			if toDownd.Up?.GetValue() == "~~for()"
 			{
-				qObject.passValue = true
-				asFor := toDownd.Up->{BoxForOldFashionMulti^}
-				qObject.jmpLabel = asFor.endLabel
-			} 
-			if toDownd is BoxSwitch
-			{
-				qObject.passValue = true
-				toDownd->{BoxSwitch^}.addedQ.Push(qObject)
-				WorkBag.Push(qObject,State_Start)
-			}
-			toReturn := itUp
-			if toDownd == itUp{
-				toReturn = qObject
-			}
-			if toDownd.Up? is QAtleastBox
-			{
-				prev2 := toDownd
-				itr2 := toDownd.Up
-				while itr2 != itUp
+				qObject2 := new QuestionBox2()
+				if toDownd.Up?.GetValue() == "~~for()"
 				{
-					if itr2 is QAtleastBox and itr2.Down == prev2
+					asFor := toDownd.Up->{BoxForOldFashionMulti^}
+					qObject2.onBadLabel = asFor.endLabel
+				}
+				qObject2.Down = tr.Down
+				PopOutNode(tr.Down.Right)
+				ReplaceNode(tr,qObject2)
+				qObject2.Down.Up = qObject2
+				return itUp
+			}else{
+				replObject := new Object
+				qObject := new QuestionBox(replObject,forceToBool)
+				if toDownd is BoxSwitch
+				{
+					qObject.passValue = true
+					toDownd->{BoxSwitch^}.addedQ.Push(qObject)
+					WorkBag.Push(qObject,State_Start)
+				}
+				toReturn := itUp
+				if toDownd == itUp{
+					toReturn = qObject
+				}
+				if toDownd.Up? is QAtleastBox
+				{
+					prev2 := toDownd
+					itr2 := toDownd.Up
+					while itr2 != itUp
 					{
-						break
+						if itr2 is QAtleastBox and itr2.Down == prev2
+						{
+							break
+						}
+						prev2 = itr2
+						itr2 = itr2.Up
 					}
-					prev2 = itr2
-					itr2 = itr2.Up
-				}
-				if itr2 is QAtleastBox
-				{
-					qObject.jmpLabel = itr2->{QAtleastBox^}.onFalse
-				}else{
-					jLand := new QJumpLand()
-					toReturn = UNext(itUp,jLand,1)
-					qObject.jmpLabel = jLand.GetEndLabel()
-				}
+					if itr2 is QAtleastBox
+					{
+						qObject.jmpLabel = itr2->{QAtleastBox^}.onFalse
+					}else{
+						jLand := new QJumpLand()
+						toReturn = UNext(itUp,jLand,1)
+						qObject.jmpLabel = jLand.GetEndLabel()
+					}
 
-				qObject.passValue = true
+					qObject.passValue = true
+				}
+				qTree := tr.Down
+				ReplaceNode(toDownd,qObject)
+				ReplaceNode(tr,replObject)
+				qObject.Down = qTree
+				qObject.Down.Right = toDownd
+				qObject.Down.SetUp(qObject)
+				toDownd.Left = qTree
+				return toReturn
 			}
-			qTree := tr.Down
-			ReplaceNode(toDownd,qObject)
-			ReplaceNode(tr,replObject)
-			qObject.Down = qTree
-			qObject.Down.Right = toDownd
-			qObject.Down.SetUp(qObject)
-			toDownd.Left = qTree
-
-			return toReturn
 		}
 		if tr.Down.Right.GetValue() == "..."
 		{

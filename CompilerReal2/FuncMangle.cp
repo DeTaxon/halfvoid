@@ -29,7 +29,18 @@ mnglIter := 0
 GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 {
     if not IsMangleKeepWord(funcName)
-        funcName = "operator"
+	{
+		switch funcName
+		{
+		case "+" funcName = "operator_add"
+		case "-" funcName = "operator_sub"
+		case "*" funcName = "operator_mul"
+		case "/" funcName = "operator_div"
+		case "()" funcName = "operator_rb"
+		case "[]" funcName = "operator_sb"
+        case void funcName = "operator"
+		}
+	}
 
     //if createdFuncNames.Contain(funcName)
     //{

@@ -76,10 +76,10 @@ MetaFieldBox := class extend Object
 				{
 					iterJ.PrintGlobal(f)
 				}
-			}
-			if iterJ is MetaFieldBox
-			{
-				iterJ.PrintGlobal(f)
+				if iterJ.Down is MetaFieldBox
+				{
+					iterJ.PrintGlobal(f)
+				}
 			}
 		}
 	}

@@ -314,6 +314,35 @@ QuestionBox := class extend ControlFlowBox
 		{
 			if not StepTwo
 			{
+				if Down is NaturalCall //TODO: NaturalCallRef
+				{
+					asCall := Down->{NaturalCall^}
+					cFunc := asCall.ToCall
+					
+					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
+					{
+						if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
+						{
+							funcHolder := GetBoxClassFuncsHolder(cFunc)
+							assert(funcHolder != null)
+
+							inMethods := funcHolder.methods.TryFind("[]?")
+							if inMethods != null
+							{
+								for func : inMethods^
+								{
+									if(CmpFuncInputOnly(func.MyFuncType,cFunc.MyFuncType)){
+										asCall.ToCall = func
+										asCall.FType = func.MyFuncType //TODO: stupid, unite with line up
+										func.ParseBlock()
+										break
+									}
+								}
+							}
+						}
+					}
+				}
+
 				dwnType := Down.GetType()
 				if dwnType is TypeFatArr or dwnType is TypePoint
 				{	
@@ -325,7 +354,6 @@ QuestionBox := class extend ControlFlowBox
 				}else{
 					if not Down.IsRef()
 					{
-						Down.Print(0)
 						EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
 					}else{
 						WorkBag.Push(this&,State_GetUse)
@@ -337,39 +365,7 @@ QuestionBox := class extend ControlFlowBox
 						cc->SetType(QuestionBoxRef)
 					}
 				}
-				if Down is NaturalCall //TODO: NaturalCallRef
-				{
-					asCall := Down->{NaturalCall^}
-					cFunc := asCall.ToCall
-					
-					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
-					{
-						if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
-						{
-							itr := cFunc.Up
-							while itr.Left != null itr = itr.Left
-
-							while itr != null
-							{
-								if itr is ObjParam
-								{
-									parName := itr->{ObjParam^}.MyStr
-
-									if parName == "[]?" and itr.Down is BoxFuncBody
-									{
-										dAsFunc := itr.Down->{BoxFunc^}
-										if(dAsFunc.MyFuncType == cFunc.MyFuncType){
-											asCall.ToCall = dAsFunc
-											dAsFunc.ParseBlock()
-											break
-										}
-									}
-								}
-								itr = itr.Right
-							}
-						}
-					}
-				}
+				
 			}else{
 				if Down.Right.GetType() != GTypeBool
 				{	
@@ -417,6 +413,130 @@ QuestionBox := class extend ControlFlowBox
 	}
 }
 
+QuestionBox2 := class extend ControlFlowBox
+{	
+	itId := int
+	onBadLabel  := BoxLabel^
+	this := !() -> void
+	{
+		itId = GetNewId()
+	}
+	IsRef := virtual !() -> bool
+	{
+		return Down.IsRef()
+	}
+	PrintPointPre := virtual !(TIOStream f) -> void
+	{
+		dwnType := Down.GetType()
+
+		Down.PrintPointPre(f)
+		f << "br label %Start" << itId << "\n"
+		f << "Start" << itId << ":\n"
+		f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
+		f << "%CmpRes" << itId << " = icmp ne " 
+		Down.PrintPointUse(f)
+		f << " , null\n"
+		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< onBadLabel.GetLabel() << "\n"
+		f << "OnGood" << itId << ":\n"
+	}
+	PrintPre := virtual !(TIOStream f) -> void
+	{
+		dwnType := Down.GetType()
+
+		if dwnType is TypePoint or dwnType is TypeFatArr
+		{
+			Down.PrintPre(f)
+			f << "br label %Start" << itId << "\n"
+			f << "Start" << itId << ":\n"
+			if dwnType == GTypeVoidP
+			{
+				f << "%QTempObject" << itId << " = getelementptr i8* , " Down.PrintUse(f) f << " , i32 0\n"
+			}else{
+				f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
+			}
+			f << "%CmpRes" << itId << " = icmp ne " 
+			Down.PrintUse(f)
+			f << " , null\n"
+			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< onBadLabel.GetLabel() << "\n"
+			f << "OnGood" << itId << ":\n"
+		}else{
+			assert(false)
+		}
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if visitedWork[pri] return void
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_GetUse)
+			WorkBag.Push(Down,State_Start)
+			visitedWork << pri
+		}
+		if pri == State_GetUse
+		{
+			if Down is NaturalCall //TODO: NaturalCallRef
+			{
+				asCall := Down->{NaturalCall^}
+				cFunc := asCall.ToCall
+				
+				if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
+				{
+					if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
+					{
+						funcHolder := GetBoxClassFuncsHolder(cFunc)
+						assert(funcHolder != null)
+
+						inMethods := funcHolder.methods.TryFind("[]?")
+						if inMethods != null
+						{
+							for func : inMethods^
+							{
+								if(CmpFuncInputOnly(func.MyFuncType,cFunc.MyFuncType)){
+									asCall.ToCall = func
+									asCall.FType = func.MyFuncType //TODO: stupid, unite with line up
+									func.ParseBlock()
+									break
+								}
+							}
+						}
+					}
+				}
+			}
+
+			dwnType := Down.GetType()
+			if dwnType is TypeFatArr or dwnType is TypePoint
+			{	
+				//nothing
+			}else{
+				if not Down.IsRef()
+				{
+					EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
+				}
+			}
+			
+			visitedWork << pri
+		}
+	}
+	GetType := virtual !() -> Type^ {
+		return Down.GetType()
+	}
+	PrintPointUse := virtual !(TIOStream f) -> void { 
+		Down.PrintPointUse(f)
+	}
+	GetPointName := virtual !() -> char^ {
+		return Down.GetPointName()
+	}
+	PrintUse := virtual !(TIOStream f) -> void { 
+		Down.PrintUse(f)
+	}
+	GetName := virtual !() -> char^ {
+		return Down.GetName()
+	}
+	GetDebugValue := virtual !() -> char^
+	{
+		return "?"
+	}
+}
 FlowOrOrAnd := class extend ControlFlowBox
 {
 	itFlowId := int
