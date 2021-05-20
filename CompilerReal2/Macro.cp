@@ -157,10 +157,14 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				return null
 			}
 
-			if toDownd.Up?.GetValue() == "~~for()"
+			if toDownd.Up?.GetValue() in !["if()","~~for()"]
 			{
 				qObject2 := new QuestionBox2()
-				if toDownd.Up?.GetValue() == "~~for()"
+				if toDownd.Up.GetValue() == "if()"
+				{
+					qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
+				}
+				if toDownd.Up.GetValue() == "~~for()"
 				{
 					asFor := toDownd.Up->{BoxForOldFashionMulti^}
 					qObject2.onBadLabel = asFor.endLabel

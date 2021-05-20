@@ -16,10 +16,12 @@ BoxIf := class extend Object
 {
 	MyId := int
 	ForceGo := int 
+	onBadLabel := BoxLabel^
 	this := !(Object^ DaRet) -> void
 	{
 		Down = DaRet.Down
 		MyId = GetNewId()
+		onBadLabel = new BoxLabelAnon()
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -112,21 +114,21 @@ BoxIf := class extend Object
 			Down.PrintPre(f)
 			f << "br "
 			Down.PrintUse(f)
-			f << ", label %OnTrue" << MyId << " , label %End" << MyId << "\n"
+			f << ", label %OnTrue" << MyId << " , label %" << onBadLabel.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
-			f << "br label %End" << MyId << "\n"
-			f << "End" << MyId << ":\n"
+			f << "br label %" << onBadLabel.GetLabel() << "\n"
+			onBadLabel.PrintLabel(f)
 
 		}else{
 			Down.PrintPre(f)
 			f << "br "
 			Down.PrintUse(f)
-			f << ", label %OnTrue" << MyId << " , label %OnFalse" << MyId << "\n"
+			f << ", label %OnTrue" << MyId << " , label %" << onBadLabel.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
 			f << "br label %End" << MyId << "\n"
-			f << "OnFalse" << MyId << ":\n"
+			onBadLabel.PrintLabel(f)
 			Down.Right.Right.PrintInBlock(f)
 			f << "br label %End" << MyId << "\n"
 			f << "End" << MyId << ":\n"

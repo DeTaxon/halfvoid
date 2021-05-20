@@ -84,11 +84,31 @@ classSetTypeB := class extend classSetTypeA
 
 TestQuestionPrt1 := !() -> void
 {
+	v := 13
 	c := int^()
+	c2 := v&
 	for i : c?^
 	{
 		assert(false)
 	}
+
+	if c?^ == 0
+	{
+		assert(false)
+	}
+	if c?^ == 0
+	{	
+		assert(false)
+	}else{
+		v = 25
+	}
+	assert(v == 25)
+
+	if c2^ == 25
+	{
+		v = -3
+	}
+	assert(v == -3)
 }
 TestQuestion := !() -> void
 {
