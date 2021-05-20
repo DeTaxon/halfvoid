@@ -412,7 +412,22 @@ QuestionBox := class extend ControlFlowBox
 		return "?"
 	}
 }
-
+QuestionBoxRef2 := class extend QuestionBox2
+{
+	PrintPre := virtual !(TIOStream f) -> void
+	{
+		PrintPointPre(f)
+		f << "%QValue"<< itId <<" = load " << Down.GetType().GetName() << " , "
+		Down.PrintPointUse(f) 
+		f << "\n"
+	}
+	PrintUse := virtual !(TIOStream f) -> void { 
+		f << Down.GetType().GetName() << " %QValue" << itId
+	}
+	GetName := virtual !() -> char^ {
+		return "%QValue"sbt + itId
+	}
+}
 QuestionBox2 := class extend ControlFlowBox
 {	
 	itId := int
@@ -432,7 +447,6 @@ QuestionBox2 := class extend ControlFlowBox
 		Down.PrintPointPre(f)
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
-		f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
 		f << "%CmpRes" << itId << " = icmp ne " 
 		Down.PrintPointUse(f)
 		f << " , null\n"
@@ -448,12 +462,6 @@ QuestionBox2 := class extend ControlFlowBox
 			Down.PrintPre(f)
 			f << "br label %Start" << itId << "\n"
 			f << "Start" << itId << ":\n"
-			if dwnType == GTypeVoidP
-			{
-				f << "%QTempObject" << itId << " = getelementptr i8* , " Down.PrintUse(f) f << " , i32 0\n"
-			}else{
-				f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
-			}
 			f << "%CmpRes" << itId << " = icmp ne " 
 			Down.PrintUse(f)
 			f << " , null\n"
@@ -481,11 +489,10 @@ QuestionBox2 := class extend ControlFlowBox
 				
 				if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
 				{
-					if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
-					{
-						funcHolder := GetBoxClassFuncsHolder(cFunc)
-						assert(funcHolder != null)
+					funcHolder := GetBoxClassFuncsHolder(cFunc)
 
+					if funcHolder != null
+					{
 						inMethods := funcHolder.methods.TryFind("[]?")
 						if inMethods != null
 						{
@@ -511,6 +518,9 @@ QuestionBox2 := class extend ControlFlowBox
 				if not Down.IsRef()
 				{
 					EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
+				}else{
+					cc := this&
+					cc->SetType(QuestionBoxRef2)//TODO: this->SetType 
 				}
 			}
 			

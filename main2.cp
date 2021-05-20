@@ -114,15 +114,15 @@ TestQuestion := !() -> void
 	a1[3] = 5
 
 	c := 0
-	//for i : a1[3]?
-	//{
-	//	c += i
-	//}
-	//assert(c == 10)
-	//for i : a1[99999]?
-	//{
-	//	assert(false)
-	//}
+	for i : a1[3]?
+	{
+		c += i
+	}
+	assert(c == 10)
+	for i : a1[99999]?
+	{
+		assert(false)
+	}
 }
 OnOddTrue := class
 {
