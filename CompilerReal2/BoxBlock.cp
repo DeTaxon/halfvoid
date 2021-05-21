@@ -313,7 +313,7 @@ BoxBlock := class extend Object
 			itr := Down
 			while itr != null
 			{
-				if (not itr is ObjData) and itr.GetValue() != "?or??" and itr.GetValue() != "return()"{
+				if (not itr is ObjData) and itr.GetValue() != "?or??" and itr.GetValue() != "return()" and not (itr is QJumpLand){ //TODO: wut is dat
 				//if (not itr is ObjData) and itr.GetValue() != "?or??"{
 					itr = itr.Right
 					continue

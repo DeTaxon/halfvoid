@@ -67,34 +67,31 @@ QAtleastBox := class extend ControlFlowBox
 	{
 		return Down.GetType()
 	}
+	GetBadLabel := virtual !() -> BoxLabel^
+	{
+		return onFalse
+	}
 	PrintPointPre := virtual !(TIOStream f) -> void
 	{
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
 		Down.PrintPointPre(f)
+		f << "br label %StartEnd" << itId << "\n"
+		f << "StartEnd" << itId << ":\n"
 		f << "br label %" << endLabel.GetLabel() << "\n"
 
 		onFalse.PrintLabel(f)
 		Down.Right.PrintPointPre(f)
+		f << "br label %LastFalse" << itId << "\n"
+		f << "LastFalse" << itId << ":\n"
 		f << "br label %" << endLabel.GetLabel() << "\n"
 
 		endLabel.PrintLabel(f)
 		f << "%Value" << itId << " = phi "
 		Down.GetType().GetPoint().PrintType(f)
-		if Down.GetEndLabel() != null
-		{
-			qId := Down.GetEndLabel()
-			f << " ["<< Down.GetPointName() <<",%"<<qId.GetLabel()<<"] " 		
-		}else{
-			f << " ["<< Down.GetPointName() <<",%Start"<<itId<<"]" 
-		}
-		lstLabel := onFalse
-		if Down.Right.GetEndLabel() != null
-		{
-			lstLabel = Down.Right.GetEndLabel()
-		}
+		f << " ["<< Down.GetPointName() <<",%StartEnd"<<itId<<"]" 
 
-		f <<", ["<< Down.Right.GetPointName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
+		f <<", ["<< Down.Right.GetPointName()<<",%LastFalse"<< itId <<"]\n" 
 	}
 	PrintPointUse := virtual !(TIOStream f) -> void
 	{
@@ -110,29 +107,21 @@ QAtleastBox := class extend ControlFlowBox
 		f << "br label %Start" << itId << "\n"
 		f << "Start" << itId << ":\n"
 		Down.PrintPre(f)
+		f << "br label %StartEnd" << itId << "\n"
+		f << "StartEnd" << itId << ":\n"
 		f << "br label %" << endLabel.GetLabel() << "\n"
 
 		onFalse.PrintLabel(f)
 		Down.Right.PrintPre(f)
+		f << "br label %LastFalse" << itId << "\n"
+		f << "LastFalse" << itId << ":\n"
 		f << "br label %" << endLabel.GetLabel() << "\n"
 
 		endLabel.PrintLabel(f)
 		f << "%Value" << itId << " = phi "
 		Down.GetType().PrintType(f)
-		if Down.GetEndLabel() != null
-		{
-			qId := Down.GetEndLabel()
-			f << " ["<< Down.GetName() <<",%"<<qId.GetLabel()<<"] " 		
-		}else{
-			f << " ["<< Down.GetName() <<",%Start"<<itId<<"]" 
-		}
-		lstLabel := onFalse
-		if Down.Right.GetEndLabel() != null
-		{
-			lstLabel = Down.Right.GetEndLabel()
-		}
-
-		f <<", ["<< Down.Right.GetName()<<",%"<< lstLabel.GetLabel() <<"]\n" 
+		f << " ["<< Down.GetName() <<",%StartEnd"<<itId<<"]"
+		f <<", ["<< Down.Right.GetName()<<",%LastFalse"<< itId <<"]\n" 
 	}
 	PrintUse := virtual !(TIOStream f) -> void
 	{
@@ -231,6 +220,11 @@ QuestionBox := class extend ControlFlowBox
 	IsRef := virtual !() -> bool
 	{
 		return Down.Right.IsRef()
+	}
+	GetBadLabel := virtual !() -> BoxLabel^
+	{
+		assert(false)
+		return null
 	}
 	PrintPointPre := virtual !(TIOStream f) -> void
 	{
@@ -550,7 +544,7 @@ QuestionBox2 := class extend Object
 	}
 	GetValue := virtual !() -> char^
 	{
-		return "?"
+		return "d?"
 	}
 }
 FlowOrOrAnd := class extend ControlFlowBox
@@ -596,14 +590,15 @@ FlowOr := class extend FlowOrOrAnd
 	this := !() -> void
 	{
 		itFlowId = GetNewId()
+		onBadLabel = new BoxLabelAnon()
 	}
 	PrintPre := virtual !(TIOStream f) -> void
 	{
 		Down.PrintPre(f)
 		f << "br label %Start" << itFlowId << "\n"
 		f << "Start" << itFlowId << ":\n"
-		f << "br i1 " << Down.GetName() << ", label %OnGood" << itFlowId << " , label %OnBad" << itFlowId << "\n"
-		f << "OnBad" << itFlowId << ":\n"
+		f << "br i1 " << Down.GetName() << ", label %OnGood" << itFlowId << " , label %" << onBadLabel.GetLabel() << "\n"
+		onBadLabel.PrintLabel(f)
 		Down.Right.PrintPre(f)
 		f << "br label %BadFlow" << itFlowId << "\n"
 		f << "BadFlow" << itFlowId << ":\n"
@@ -611,6 +606,11 @@ FlowOr := class extend FlowOrOrAnd
 		f << "br label %OnGood" << itFlowId << "\n"
 		f << "OnGood" << itFlowId << ":\n"
 		f << "%Res" << itFlowId << " = phi i1 [1,%Start" << itFlowId << "] , [" <<Down.Right.GetName() << " , %BadFlow" << itFlowId << "]\n"
+	}
+	onBadLabel  := BoxLabel^
+	GetBadLabel := virtual !() -> BoxLabel^
+	{
+		return onBadLabel
 	}
 }
 FlowAnd := class extend FlowOrOrAnd
@@ -632,7 +632,27 @@ FlowAnd := class extend FlowOrOrAnd
 		//f << "%PreRes" << itFlowId << " = or i1 0, " << Down.Right.GetName() << "\n"
 		f << "br label %OnGood" << itFlowId << "\n"
 		f << "OnGood" << itFlowId << ":\n"
-		f << "%Res" << itFlowId << " = phi i1 [0,%Start" << itFlowId << "] , [" <<Down.Right.GetName() << " , %BadFlow" << itFlowId << "]\n"
+
+		if onBadLabel == null
+		{
+			f << "%Res" << itFlowId << " = phi i1 [0,%Start" << itFlowId << "] , [" <<Down.Right.GetName() << " , %BadFlow" << itFlowId << "]\n"
+		}else{
+			f << "%PreRes" << itFlowId << " = phi i1 [0,%Start" << itFlowId << "] , [" <<Down.Right.GetName() << " , %BadFlow" << itFlowId << "]\n"
+			f << "br label %AlmostLast" << itFlowId << "\n"
+			f << "AlmostLast" << itFlowId << ":\n"
+			f << "br label %NewLast" << itFlowId << "\n"
+			onBadLabel.PrintLabel(f);
+			f << "br label %NewLast" << itFlowId << "\n"
+			f << "NewLast" << itFlowId << ":\n"
+			f << "%Res" << itFlowId << " = phi i1 [0,%" << onBadLabel.GetLabel() << "] , [%PreRes" <<itFlowId <<" , %AlmostLast" << itFlowId << "]\n"
+		}
+	}
+	onBadLabel  := BoxLabel^
+	GetBadLabel := virtual !() -> BoxLabel^
+	{
+		if onBadLabel == null
+			onBadLabel = new BoxLabelAnon()
+		return onBadLabel
 	}
 }
 

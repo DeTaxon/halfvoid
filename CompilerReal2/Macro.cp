@@ -130,17 +130,19 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				{
 					assert(toDownd.GetValue() != "if()")
 					assert(toDownd.GetValue() != "while()")
-					if toDownd is QAtleastBox
-					{
-						toDownd = prevNode
-						break
-					}
-					if IsQBox(toDownd) or toDownd is QAtleastBox
+					if IsQBox(toDownd)
 					{
 					}else if toDownd.GetValue() == "~~for()"
 					{
 						toDownd = prevNode
 						break
+					} else if toDownd.GetValue() == "?or??"
+					{
+						if toDownd.Down == prevNode
+						{
+							toDownd = prevNode
+							break
+						}
 					}else{
 						toDownd = prevNode
 						forceToBool = true
@@ -159,23 +161,43 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				return null
 			}
 			
-			if toDownd.Up?.GetValue() in !["~if()","~~for()"] 
+			if true //toDownd.Up?.GetValue() in !["~if()","?or??","~~for()"] 
 			{
 				qObject2 := new QuestionBox2()
-				if toDownd.Up.GetValue() == "~if()"
+				toReturn := itUp
+				if toDownd.Up.GetValue() == "?or??"
+				{
+					qObject2.onBadLabel = toDownd.Up->{ControlFlowBox^}.GetBadLabel()
+				}else if toDownd.Up.GetValue() == "~if()"
 				{
 					qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
-				}
-				if toDownd.Up.GetValue() == "~~for()"
+				}else if toDownd.Up.GetValue() == "~~for()"
 				{
 					asFor := toDownd.Up->{BoxForOldFashionMulti^}
 					qObject2.onBadLabel = asFor.endLabel
+				}else 
+				{
+					assert(toDownd == itUp)
+					if itUp is QJumpLand
+					{
+						qObject2.onBadLabel = itUp->{QJumpLand^}.GetEndLabel()
+					}else{
+						newLand := new QJumpLand()
+						toReturn = newLand
+						UNext(itUp,newLand,1)
+						qObject2.onBadLabel = newLand.GetEndLabel()
+					}
+				}
+				if tr.Down.GetValue() == "return"
+				{
+					printf("oh no\n")
+					itUp.Print(0)
 				}
 				qObject2.Down = tr.Down
 				PopOutNode(tr.Down.Right)
 				ReplaceNode(tr,qObject2)
 				qObject2.Down.Up = qObject2
-				return itUp
+				return toReturn
 			}else{
 				replObject := new Object
 				qObject := new QuestionBox(replObject,forceToBool)

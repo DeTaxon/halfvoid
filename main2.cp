@@ -110,10 +110,19 @@ TestQuestionPrt1 := !() -> void
 	}
 	assert(v == -3)
 }
-TestQuestion := !() -> void
+TestQuestionPrt2 := !() -> void
 {
-	TestQuestionPrt1()
+	zero := int^()
+	x := 0
+	xp := x&
 
+	zero?^ = 0 //excet crash
+	xp?^ = 13
+	assert(x == 13)
+
+}
+TestQuestionPrt3 := !() -> void
+{
 	a1 := AVLMap.{int,int}()
 	a1[3] = 100
 	a2 := AVLMap.{int,int}()
@@ -139,10 +148,26 @@ TestQuestion := !() -> void
 		c += i
 	}
 	assert(c == 10)
+	bSize := a1.Size()
 	for i : a1[99999]?
 	{
 		assert(false)
 	}
+	assert(bSize == a1.Size())
+}
+
+
+TestQuestionPrt4 := !() -> void
+{
+	tst := List.{List.{int}}^()
+	tst?.Start?.Data.Start?.Data = 1
+}
+TestQuestion := !() -> void
+{
+	TestQuestionPrt1()
+	TestQuestionPrt2()
+	TestQuestionPrt3()
+	TestQuestionPrt4()
 }
 OnOddTrue := class
 {
