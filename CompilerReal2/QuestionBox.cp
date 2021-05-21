@@ -5,6 +5,11 @@ ControlFlowBox := class extend Object
 		return "?or??"
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void { PrintPre(f)}
+	GetBadLabel := virtual !() -> BoxLabel^
+	{
+		assert(false)
+		return null
+	}
 }
 
 IsQBox := !(Object^ toCmp) -> bool
@@ -428,7 +433,7 @@ QuestionBoxRef2 := class extend QuestionBox2
 		return "%QValue"sbt + itId
 	}
 }
-QuestionBox2 := class extend ControlFlowBox
+QuestionBox2 := class extend Object
 {	
 	itId := int
 	onBadLabel  := BoxLabel^
@@ -453,6 +458,7 @@ QuestionBox2 := class extend ControlFlowBox
 		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< onBadLabel.GetLabel() << "\n"
 		f << "OnGood" << itId << ":\n"
 	}
+	PrintInBlock := virtual !(TIOStream f) -> void { PrintPre(f)}
 	PrintPre := virtual !(TIOStream f) -> void
 	{
 		dwnType := Down.GetType()
@@ -542,7 +548,7 @@ QuestionBox2 := class extend ControlFlowBox
 	GetName := virtual !() -> char^ {
 		return Down.GetName()
 	}
-	GetDebugValue := virtual !() -> char^
+	GetValue := virtual !() -> char^
 	{
 		return "?"
 	}

@@ -128,6 +128,8 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			{
 				if toDownd.GetValue() in !["while()","~if()","if()","?or??","~~for()"]
 				{
+					assert(toDownd.GetValue() != "if()")
+					assert(toDownd.GetValue() != "while()")
 					if toDownd is QAtleastBox
 					{
 						toDownd = prevNode
@@ -156,11 +158,11 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				itUp.EmitError("problem at macro\n")
 				return null
 			}
-
-			if toDownd.Up?.GetValue() in !["if()","~~for()"]
+			
+			if toDownd.Up?.GetValue() in !["~if()","~~for()"] 
 			{
 				qObject2 := new QuestionBox2()
-				if toDownd.Up.GetValue() == "if()"
+				if toDownd.Up.GetValue() == "~if()"
 				{
 					qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
 				}
