@@ -14,7 +14,6 @@ BoxSwitch := class extend Object
 {
 	id := int
 	itemCall  := MemParam^
-	addedQ := List.{QuestionBox^}
 	caseVoidLabel := BoxLabel^
 	
 	isAllowTreeOpt := bool
@@ -27,6 +26,12 @@ BoxSwitch := class extend Object
 		MakeItBlock(Down.Right,false)
 		id = GetNewId()
 		caseVoidLabel = new BoxLabelAnon()	
+	}
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
+	{
+		if prevNode == Down
+			return caseVoidLabel
+		return null
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -131,16 +136,6 @@ BoxSwitch := class extend Object
 						}
 					}
 				}
-				if defCase != null
-				{
-					if addedQ.Size() != 0
-					{
-						for it : addedQ
-						{
-							it.jmpLabel = caseVoidLabel
-						}
-					}
-				}				
 			}else{
 				EmitError("can not parse item at switch input\n")
 			}
@@ -283,6 +278,8 @@ BoxSwitch := class extend Object
 		}
 		f << "br label %SwitchVoid" << id << "\n"
 		f << "SwitchVoid" << id << ":\n"
+		f << "br label %" << caseVoidLabel.GetLabel() << "\n"
+		caseVoidLabel.PrintLabel(f)
 		if defThing != null
 		{
 			for iter : defThing.Right

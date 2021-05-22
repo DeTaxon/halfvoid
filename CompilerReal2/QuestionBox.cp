@@ -5,7 +5,8 @@ ControlFlowBox := class extend Object
 		return "?or??"
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void { PrintPre(f)}
-	GetBadLabel := virtual !() -> BoxLabel^
+
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
 	{
 		assert(false)
 		return null
@@ -67,9 +68,11 @@ QAtleastBox := class extend ControlFlowBox
 	{
 		return Down.GetType()
 	}
-	GetBadLabel := virtual !() -> BoxLabel^
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
 	{
-		return onFalse
+		if Down == prevNode
+			return onFalse
+		return null
 	}
 	PrintPointPre := virtual !(TIOStream f) -> void
 	{
@@ -160,255 +163,6 @@ QAtleastBox := class extend ControlFlowBox
 	GetDebugValue := virtual !() -> char^
 	{
 		return "??"
-	}
-}
-QuestionBoxRef := class extend QuestionBox
-{
-	PrintPre := virtual !(TIOStream f) -> void
-	{
-		dwnType := Down.GetType()
-		DR := Down.Right
-
-		Down.PrintPointPre(f)
-		f << "br label %Start" << itId << "\n"
-		f << "Start" << itId << ":\n"
-		f << "%QTempObject" << itId << " = getelementptr "<< dwnType.GetName() << " , " Down.PrintPointUse(f) f << " , i32 0\n"
-		f << "%CmpRes" << itId << " = icmp ne " 
-		Down.PrintPointUse(f)
-		f << " , null\n"
-		f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
-		f << "OnGood" << itId << ":\n"
-		if DR is BoxSwitch or DR is BoxReturn
-		{
-			DR.PrintInBlock(f)
-		}else{
-			DR.PrintPre(f)
-		}
-		f << "br label %DownRes" << itId << "\n"
-		f << "DownRes" << itId << ":\n"
-		f << "br label %" << endLabel.GetLabel() << "\n"
-		endLabel.PrintLabel(f)
-		
-		if forceToBool
-		{
-			f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
-		}
-	}
-}
-QuestionBox := class extend ControlFlowBox
-{	
-	itId := int
-	paramObject := FuncParam^
-	replObject := Object^
-	forceToBool := bool
-	isSimpleCheck := bool
-	passValue := bool
-	endLabel  := BoxLabel^
-	jmpLabel  := BoxLabel^
-	this := !(Object^ tmpObj,bool fTB) -> void
-	{
-		itId = GetNewId()
-		replObject = tmpObj
-		forceToBool = fTB
-		endLabel = new BoxLabelAnon()
-		jmpLabel = endLabel
-	}
-	GetEndLabel := virtual !() -> BoxLabel^
-	{
-		return endLabel
-	}
-	IsRef := virtual !() -> bool
-	{
-		return Down.Right.IsRef()
-	}
-	GetBadLabel := virtual !() -> BoxLabel^
-	{
-		assert(false)
-		return null
-	}
-	PrintPointPre := virtual !(TIOStream f) -> void
-	{
-		dwnType := Down.GetType()
-
-		if dwnType is TypePoint or dwnType is TypeFatArr
-		{
-			DR := Down.Right
-
-			Down.PrintPre(f)
-			f << "br label %Start" << itId << "\n"
-			f << "Start" << itId << ":\n"
-			f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
-			f << "%CmpRes" << itId << " = icmp ne " 
-			Down.PrintUse(f)
-			f << " , null\n"
-			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
-			f << "OnGood" << itId << ":\n"
-			if DR is BoxSwitch or DR is BoxReturn
-			{
-				DR.PrintInBlock(f)
-			}else{
-				DR.PrintPointPre(f)
-			}
-			f << "br label %DownRes" << itId << "\n"
-			f << "DownRes" << itId << ":\n"
-			f << "br label %" << endLabel.GetLabel() << "\n"
-			endLabel.PrintLabel(f)
-			
-			if forceToBool
-			{
-				f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetPointName() << ",%DownRes" << itId << "]\n"
-			}
-		}
-	}
-	PrintPre := virtual !(TIOStream f) -> void
-	{
-		dwnType := Down.GetType()
-
-		if dwnType is TypePoint or dwnType is TypeFatArr
-		{
-			DR := Down.Right
-
-			Down.PrintPre(f)
-			f << "br label %Start" << itId << "\n"
-			f << "Start" << itId << ":\n"
-			if dwnType == GTypeVoidP
-			{
-				f << "%QTempObject" << itId << " = getelementptr i8* , " Down.PrintUse(f) f << " , i32 0\n"
-			}else{
-				f << "%QTempObject" << itId << " = getelementptr "<< dwnType.Base.GetName() << " , " Down.PrintUse(f) f << " , i32 0\n"
-			}
-			f << "%CmpRes" << itId << " = icmp ne " 
-			Down.PrintUse(f)
-			f << " , null\n"
-			f << "br i1 %CmpRes" << itId << ", label %OnGood" << itId <<", label %"<< jmpLabel.GetLabel() << "\n"
-			f << "OnGood" << itId << ":\n"
-			if DR is BoxSwitch or DR is BoxReturn
-			{
-				DR.PrintInBlock(f)
-			}else{
-				DR.PrintPre(f)
-			}
-			f << "br label %DownRes" << itId << "\n"
-			f << "DownRes" << itId << ":\n"
-			f << "br label %" << endLabel.GetLabel() << "\n"
-			endLabel.PrintLabel(f)
-			
-			if forceToBool
-			{
-				f << "%Res"<< itId <<"  = phi i1 [false,%Start" << itId << "] , [" << DR.GetName() << ",%DownRes" << itId << "]\n"
-			}
-		}
-	}
-	StepTwo := bool
-	DoTheWork := virtual !(int pri) -> void
-	{
-		if visitedWork[pri] return void
-		if pri == State_Start
-		{
-			WorkBag.Push(this&,State_GetUse)
-			WorkBag.Push(Down,State_Start)
-			visitedWork << pri
-		}
-		if pri == State_GetUse
-		{
-			if not StepTwo
-			{
-				if Down is NaturalCall //TODO: NaturalCallRef
-				{
-					asCall := Down->{NaturalCall^}
-					cFunc := asCall.ToCall
-					
-					if cFunc.FuncName == "[]" and cFunc.IsMethod and cFunc.MethodType? is TypeClass
-					{
-						if cFunc.Up? is ObjParam //TODO: in ObjParamFamily
-						{
-							funcHolder := GetBoxClassFuncsHolder(cFunc)
-							assert(funcHolder != null)
-
-							inMethods := funcHolder.methods.TryFind("[]?")
-							if inMethods != null
-							{
-								for func : inMethods^
-								{
-									if(CmpFuncInputOnly(func.MyFuncType,cFunc.MyFuncType)){
-										asCall.ToCall = func
-										asCall.FType = func.MyFuncType //TODO: stupid, unite with line up
-										func.ParseBlock()
-										break
-									}
-								}
-							}
-						}
-					}
-				}
-
-				dwnType := Down.GetType()
-				if dwnType is TypeFatArr or dwnType is TypePoint
-				{	
-					WorkBag.Push(this&,State_GetUse)
-					WorkBag.Push(Down.Right,State_Start)
-					paramObject = new FuncParam("QTempObject"sbt + itId,dwnType,false)
-					ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
-					StepTwo = true
-				}else{
-					if not Down.IsRef()
-					{
-						EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
-					}else{
-						WorkBag.Push(this&,State_GetUse)
-						WorkBag.Push(Down.Right,State_Start)
-						paramObject = new FuncParam("QTempObject"sbt + itId,dwnType,true)
-						ReplaceNode(replObject,new ParamNaturalCall("_",paramObject))
-						StepTwo = true
-						cc := this&
-						cc->SetType(QuestionBoxRef)
-					}
-				}
-				
-			}else{
-				if Down.Right.GetType() != GTypeBool
-				{	
-					if forceToBool
-					{
-						if TypeCmp(Down.Right.GetType(),GTypeBool) != 255
-							BoxExc(Down.Right,GTypeBool,false)
-						else EmitError("can not use non bool type")
-					}
-				}
-				visitedWork << pri
-			}
-		}
-	}
-	GetType := virtual !() -> Type^ { 
-		if passValue
-			return Down.Right.GetType()
-		return GTypeBool 
-	}
-	PrintPointUse := virtual !(TIOStream f) -> void { 
-		if passValue {
-			Down.Right.PrintPointUse(f)
-		}else{
-			f << "i1 %Res" << itId 
-		}
-	}
-	GetPointName := virtual !() -> char^ {
-		if passValue return Down.Right.GetPointName()
-		return "%Res"sbt + itId 
-	}
-	PrintUse := virtual !(TIOStream f) -> void { 
-		if passValue {
-			Down.Right.PrintUse(f)
-		}else{
-			f << "i1 %Res" << itId 
-		}
-	}
-	GetName := virtual !() -> char^ {
-		if passValue return Down.Right.GetName()
-		return "%Res"sbt + itId 
-	}
-	GetDebugValue := virtual !() -> char^
-	{
-		return "?"
 	}
 }
 QuestionBoxRef2 := class extend QuestionBox2
@@ -511,6 +265,10 @@ QuestionBox2 := class extend Object
 			}
 
 			dwnType := Down.GetType()
+			if dwnType == null
+			{
+				Print(0)
+			}
 			if dwnType is TypeFatArr or dwnType is TypePoint
 			{	
 				//nothing
@@ -608,9 +366,11 @@ FlowOr := class extend FlowOrOrAnd
 		f << "%Res" << itFlowId << " = phi i1 [1,%Start" << itFlowId << "] , [" <<Down.Right.GetName() << " , %BadFlow" << itFlowId << "]\n"
 	}
 	onBadLabel  := BoxLabel^
-	GetBadLabel := virtual !() -> BoxLabel^
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
 	{
-		return onBadLabel
+		if Down == prevNode
+			return onBadLabel
+		return null
 	}
 }
 FlowAnd := class extend FlowOrOrAnd
@@ -648,11 +408,15 @@ FlowAnd := class extend FlowOrOrAnd
 		}
 	}
 	onBadLabel  := BoxLabel^
-	GetBadLabel := virtual !() -> BoxLabel^
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
 	{
-		if onBadLabel == null
-			onBadLabel = new BoxLabelAnon()
-		return onBadLabel
+		if Down == prevNode
+		{
+			if onBadLabel == null
+				onBadLabel = new BoxLabelAnon()
+			return onBadLabel
+		}
+		return null
 	}
 }
 

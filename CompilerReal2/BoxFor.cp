@@ -535,6 +535,10 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		return null
 	}
+	GetBadLabel := !(Object^ prebNode) -> Object^
+	{
+		return endLabel
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~~for()"

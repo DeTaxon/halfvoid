@@ -195,6 +195,10 @@ Object := class{
 	{
 		return null
 	}
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
+	{
+		return null
+	}
 }
 
 ObjLine := class 

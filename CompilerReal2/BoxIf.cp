@@ -142,6 +142,10 @@ BoxIf := class extend Object
 		}
 		return null
 	}
+	GetBadLabel := virtual !(Object^ prevNode) -> BoxLabel^
+	{
+		return onBadLabel
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~if()"
@@ -155,6 +159,7 @@ BoxWhile := class extend Object
 	{
 		Down = DaRet.Down
 		MyId = GetNewId()
+		labelEnd = new BoxLabelAnon()
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -189,7 +194,8 @@ BoxWhile := class extend Object
 			}
 		}
 	}
-
+	
+	labelEnd := BoxLabel^
 	labelContinue := BoxLabel^
 	labelBreak := BoxLabel^
 	PrintInBlock := virtual !(TIOStream f) -> void
@@ -203,7 +209,7 @@ BoxWhile := class extend Object
 			Down.PrintPre(f)
 			f << "br "
 			Down.PrintUse(f)
-			f << ", label %OnTrue" << MyId << " , label %End" << MyId << "\n"
+			f << ", label %OnTrue" << MyId << " , label %" << labelEnd.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
 			Down.Right.PrintInBlock(f)
 			f << "\nbr label %Check" << MyId << "\n"
@@ -221,11 +227,10 @@ BoxWhile := class extend Object
 				labelBreak.PrintLabel(f)
 				if callDeferStuf
 					PrintDeferApply(f,MyId,this&)
-				f << "br label %End" << MyId << "\n"
+				f << "br label %" << labelEnd.GetLabel() << "\n"
 			}
 
-			f << "End" << MyId << ":\n"
-
+			labelEnd.PrintLabel(f)
 		}
 
 	}
@@ -267,6 +272,10 @@ BoxWhile := class extend Object
 		return null
 	}
 
+	GetBadLabel := virtual !(Object^ prebNode) -> BoxLabel^
+	{
+		return labelEnd
+	}
 	GetValue := virtual !() -> string
 	{
 		return "~while()"

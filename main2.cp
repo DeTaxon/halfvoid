@@ -109,6 +109,24 @@ TestQuestionPrt1 := !() -> void
 		v = -3
 	}
 	assert(v == -3)
+
+	switch c?^
+	{
+		case 0..100
+			assert(false)
+		case void
+			v = 103
+	}
+	assert(v == 103)
+
+	switch c2?^
+	{
+		case 103
+			v = 7
+		case void 
+			assert(false)
+	}
+	assert(v == 7)
 }
 TestQuestionPrt2 := !() -> void
 {

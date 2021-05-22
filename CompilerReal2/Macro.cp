@@ -120,35 +120,36 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		}
 		if tr.Down.Right.GetValue() == "?"
 		{
-			forceToBool := false
+			badLabel := BoxLabel^
 			toDownd := tr
 			prevNode := tr
 
 			while toDownd != null
 			{
-				if toDownd.GetValue() in !["while()","~if()","if()","?or??","~~for()"]
+				badLabel = toDownd.GetBadLabel(prevNode)
+				if badLabel != null
 				{
-					assert(toDownd.GetValue() != "if()")
-					assert(toDownd.GetValue() != "while()")
-					if IsQBox(toDownd)
-					{
-					}else if toDownd.GetValue() == "~~for()"
-					{
-						toDownd = prevNode
-						break
-					} else if toDownd.GetValue() == "?or??"
-					{
-						if toDownd.Down == prevNode
-						{
-							toDownd = prevNode
-							break
-						}
-					}else{
-						toDownd = prevNode
-						forceToBool = true
-						break
-					}
+					break
 				}
+				//if toDownd.GetValue() in !["~while()","~if()","?or??","~~for()"]
+				//{
+				//	if toDownd.GetValue() == "~~for()"
+				//	{
+				//		toDownd = prevNode
+				//		break
+				//	} else if toDownd.GetValue() == "?or??"
+				//	{
+				//		if toDownd.Down == prevNode
+				//		{
+				//			toDownd = prevNode
+				//			break
+				//		}
+				//	}else{
+				//		toDownd = prevNode
+				//		forceToBool = true
+				//		break
+				//	}
+				//}
 				if toDownd == itUp
 				{
 					break
@@ -161,89 +162,43 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				return null
 			}
 			
-			if true //toDownd.Up?.GetValue() in !["~if()","?or??","~~for()"] 
+			qObject2 := new QuestionBox2()
+			toReturn := itUp
+			//if toDownd.Up.GetValue() == "?or??"
+			//{
+			//	qObject2.onBadLabel = toDownd.Up->{ControlFlowBox^}.GetBadLabel()
+			//}else if toDownd.Up.GetValue() == "~if()"
+			//{
+			//	qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
+			//}else if toDownd.Up.GetValue() == "~while()"
+			//{
+			//	qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
+			//}else if toDownd.Up.GetValue() == "~~for()"
+			//{
+			//	asFor := toDownd.Up->{BoxForOldFashionMulti^}
+			//	qObject2.onBadLabel = asFor.endLabel
+			if badLabel != null
 			{
-				qObject2 := new QuestionBox2()
-				toReturn := itUp
-				if toDownd.Up.GetValue() == "?or??"
+				qObject2.onBadLabel = badLabel
+			}else 
+			{
+				assert(toDownd == itUp)
+				if itUp is QJumpLand
 				{
-					qObject2.onBadLabel = toDownd.Up->{ControlFlowBox^}.GetBadLabel()
-				}else if toDownd.Up.GetValue() == "~if()"
-				{
-					qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
-				}else if toDownd.Up.GetValue() == "~~for()"
-				{
-					asFor := toDownd.Up->{BoxForOldFashionMulti^}
-					qObject2.onBadLabel = asFor.endLabel
-				}else 
-				{
-					assert(toDownd == itUp)
-					if itUp is QJumpLand
-					{
-						qObject2.onBadLabel = itUp->{QJumpLand^}.GetEndLabel()
-					}else{
-						newLand := new QJumpLand()
-						toReturn = newLand
-						UNext(itUp,newLand,1)
-						qObject2.onBadLabel = newLand.GetEndLabel()
-					}
+					qObject2.onBadLabel = itUp->{QJumpLand^}.GetEndLabel()
+				}else{
+					newLand := new QJumpLand()
+					toReturn = newLand
+					UNext(itUp,newLand,1)
+					qObject2.onBadLabel = newLand.GetEndLabel()
 				}
-				if tr.Down.GetValue() == "return"
-				{
-					printf("oh no\n")
-					itUp.Print(0)
-				}
-				qObject2.Down = tr.Down
-				PopOutNode(tr.Down.Right)
-				ReplaceNode(tr,qObject2)
-				qObject2.Down.Up = qObject2
-				return toReturn
-			}else{
-				replObject := new Object
-				qObject := new QuestionBox(replObject,forceToBool)
-				if toDownd is BoxSwitch
-				{
-					qObject.passValue = true
-					toDownd->{BoxSwitch^}.addedQ.Push(qObject)
-					WorkBag.Push(qObject,State_Start)
-				}
-				toReturn := itUp
-				if toDownd == itUp{
-					toReturn = qObject
-				}
-				if toDownd.Up? is QAtleastBox
-				{
-					prev2 := toDownd
-					itr2 := toDownd.Up
-					while itr2 != itUp
-					{
-						if itr2 is QAtleastBox and itr2.Down == prev2
-						{
-							break
-						}
-						prev2 = itr2
-						itr2 = itr2.Up
-					}
-					if itr2 is QAtleastBox
-					{
-						qObject.jmpLabel = itr2->{QAtleastBox^}.onFalse
-					}else{
-						jLand := new QJumpLand()
-						toReturn = UNext(itUp,jLand,1)
-						qObject.jmpLabel = jLand.GetEndLabel()
-					}
-
-					qObject.passValue = true
-				}
-				qTree := tr.Down
-				ReplaceNode(toDownd,qObject)
-				ReplaceNode(tr,replObject)
-				qObject.Down = qTree
-				qObject.Down.Right = toDownd
-				qObject.Down.SetUp(qObject)
-				toDownd.Left = qTree
-				return toReturn
 			}
+			qObject2.Down = tr.Down
+			PopOutNode(tr.Down.Right)
+			ReplaceNode(tr,qObject2)
+			qObject2.Down.Up = qObject2
+			return toReturn
+			
 		}
 		if tr.Down.Right.GetValue() == "..."
 		{
