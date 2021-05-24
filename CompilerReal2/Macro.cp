@@ -131,25 +131,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				{
 					break
 				}
-				//if toDownd.GetValue() in !["~while()","~if()","?or??","~~for()"]
-				//{
-				//	if toDownd.GetValue() == "~~for()"
-				//	{
-				//		toDownd = prevNode
-				//		break
-				//	} else if toDownd.GetValue() == "?or??"
-				//	{
-				//		if toDownd.Down == prevNode
-				//		{
-				//			toDownd = prevNode
-				//			break
-				//		}
-				//	}else{
-				//		toDownd = prevNode
-				//		forceToBool = true
-				//		break
-				//	}
-				//}
 				if toDownd == itUp
 				{
 					break
@@ -164,19 +145,6 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			
 			qObject2 := new QuestionBox2()
 			toReturn := itUp
-			//if toDownd.Up.GetValue() == "?or??"
-			//{
-			//	qObject2.onBadLabel = toDownd.Up->{ControlFlowBox^}.GetBadLabel()
-			//}else if toDownd.Up.GetValue() == "~if()"
-			//{
-			//	qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
-			//}else if toDownd.Up.GetValue() == "~while()"
-			//{
-			//	qObject2.onBadLabel = toDownd.Up->{BoxIf^}.onBadLabel
-			//}else if toDownd.Up.GetValue() == "~~for()"
-			//{
-			//	asFor := toDownd.Up->{BoxForOldFashionMulti^}
-			//	qObject2.onBadLabel = asFor.endLabel
 			if badLabel != null
 			{
 				qObject2.onBadLabel = badLabel
