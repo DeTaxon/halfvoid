@@ -4,8 +4,8 @@
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
 "new d ()" "! []" "! {}"
 "d () . {}" "d . {}" "d -> d ()"
-"d ^" "d []" "d &" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s" "d -> d"
-"! () ^ -> d" "! () ^ ^ -> d" "! () & -> d"
+"d ^" "d []" "d &" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s"
+"! () ^ -> d" "! () ^ ^ -> d" "! () & -> d" "d -> d"
 #CallFunction
 "()"
 "d .. d" "d is d" "d is in d" "d ..."

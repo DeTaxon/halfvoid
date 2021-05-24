@@ -73,6 +73,10 @@ classSetTypeA := class
 	{
 		x = 13
 	}
+	pt2 := virtual !() -> void
+	{
+		this->SetType(classSetTypeB)
+	}
 }
 classSetTypeB := class extend classSetTypeA
 {
@@ -80,6 +84,25 @@ classSetTypeB := class extend classSetTypeA
 	{
 		x = 27
 	}
+	pt2 := virtual !() -> void
+	{
+		this&->SetType(classSetTypeA)
+	}
+}
+TestSetType := !() -> void
+{
+	j := new classSetTypeA
+	j.Pt()
+	assert(j.x == 13)
+	j->SetType(classSetTypeB)
+	j.Pt()
+	assert(j.x == 27)
+	j.pt2()
+	j.Pt()
+	assert(j.x == 13)
+	j.pt2()
+	j.Pt()
+	assert(j.x == 27)
 }
 
 TestQuestionPrt1 := !() -> void
@@ -216,15 +239,6 @@ TestHashMap := !() -> void
 	tst["2world"] = 2
 	tst["2world"] = 3
 	assert(tst.Size() == 6)
-}
-TestSetType := !() -> void
-{
-	j := new classSetTypeA
-	j.Pt()
-	assert(j.x == 13)
-	j->SetType(classSetTypeB)
-	j.Pt()
-	assert(j.x == 27)
 }
 
 FuncPointerWithNames := !(char^ name)^ -> void

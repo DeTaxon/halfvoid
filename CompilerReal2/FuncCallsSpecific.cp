@@ -1,18 +1,39 @@
 
-setTypeFuncs := AVLMap.{Type^,BoxFunc^}
-SetTypeToClass := !(Type^ toType) -> BoxFunc^
+setTypeFuncsPtr := AVLMap.{Type^,BoxFunc^}
+setTypeFuncsRef := AVLMap.{Type^,AVLMap.{Type^,BoxFunc^}}
+SetTypeToClass := !(Type^ fromType, Type^ toType) -> BoxFunc^
 {
-	if toType in setTypeFuncs
-		return setTypeFuncs[toType]
+	if fromType is TypePoint
+	{
+		if toType in setTypeFuncsPtr
+			return setTypeFuncsPtr[toType]
 
-	asCl := toType->{TypeClass^}.ToClass
-	newFunc := new BuiltInFuncUno("SetType",GTypeVoidP,false,GTypeVoid,false,
-	"%mdl## = bitcast i8* #1 to i8**\n"sbt +
-	"%PreSet## = bitcast " + asCl.GetVTableTypeName() + "* " + asCl.GetVTableName() + " to i8*\n" +
-	"store i8* %PreSet##, i8** %mdl##\n"
-	)
-	setTypeFuncs[toType] = newFunc
-	return newFunc
+		asCl := toType->{TypeClass^}.ToClass
+		newFunc := new BuiltInFuncUno("SetType",GTypeVoidP,false,GTypeVoid,false,
+		"%mdl## = bitcast i8* #1 to i8**\n"sbt +
+		"%PreSet## = bitcast " + asCl.GetVTableTypeName() + "* " + asCl.GetVTableName() + " to i8*\n" +
+		"store i8* %PreSet##, i8** %mdl##\n"
+		)
+		setTypeFuncsPtr[toType] = newFunc
+		return newFunc
+	}else{
+		assert(fromType is TypeClass)
+		
+		if fromType in setTypeFuncsRef
+		{
+			if toType in setTypeFuncsRef[fromType]
+				return setTypeFuncsRef[fromType][toType]
+		}
+
+		asCl := toType->{TypeClass^}.ToClass
+		newFunc := new BuiltInFuncUno("SetType",fromType,true,GTypeVoid,false,
+		"%mdl## = bitcast "sbt + fromType.GetName() + "* #1 to i8**\n" +
+		"%PreSet## = bitcast " + asCl.GetVTableTypeName() + "* " + asCl.GetVTableName() + " to i8*\n" +
+		"store i8* %PreSet##, i8** %mdl##\n"
+		)
+		setTypeFuncsRef[fromType][toType] = newFunc
+		return newFunc
+	}
 }
 
 BuiltIn2FuncGetVTable := class extend BuiltIn2Func
@@ -91,16 +112,24 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 			if asObj.MyStr == "SetType" and iter.Down.Right.Right.Right != null
 			{
 				dt := iter.Down.GetType() 
+				dtCl := TypeClass^()
+				if dt != null
+				{
+					if dt is TypeClass
+						dtCl = dt->{TypeClass^}
+					if dt is TypePoint and dt.Base is TypeClass
+						dtCl = dt.Base->{TypeClass^}
+				}
 				tt := ParseType(iter.Down.Right.Right.Right.Down)
-				if (not (dt is TypePoint)) or (not (dt.Base is TypeClass))
+				if dtCl == null
 					iter.EmitError("to SetType, left object must be pointer to class")
 				if tt == null or (not tt is TypeClass)
 					iter.EmitError("to SetType, new type must be class")
-				if dt.Base->{TypeClass^}.ToClass.vTypes.Size() == 0
+				if dtCl.ToClass.vTypes.Size() == 0
 					iter.EmitError("can not change type of non virtual object")
 				if tt->{TypeClass^}.ToClass.vTypes.Size() == 0
 					iter.EmitError("can not change type to non virtual type")
-				setFunc := SetTypeToClass(tt)
+				setFunc := SetTypeToClass(dt,tt)
 				if setFunc != null
 				{
 					iter.Down.Right = null
