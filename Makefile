@@ -78,6 +78,10 @@ repair: $(wildcard CompilerReal2/*.cp)
 
 cycle: $(wildcard CompilerReal2/*.cp)
 	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+
+unit: $(wildcard UnitTests/*.cp)
+	$(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) -C1 "UnitTests/$$" UnitTests/main.cp -o $(MainOut); clang++ -g $(MainOut) -lpthread -ldl -o unit
+
 twice: repair cycle
 
 ManyCycle:
