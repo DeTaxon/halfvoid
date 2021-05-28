@@ -202,8 +202,6 @@ BoxWhile := class extend Object
 	{
 		if Down.Right.Right == null
 		{
-			if callDeferStuf
-				PrintDeferDepth(f,MyId,this&)	
 			f << "br label %Check" << MyId << "\n"
 			f << "Check" << MyId << ":\n"
 			Down.PrintPre(f)
@@ -217,32 +215,18 @@ BoxWhile := class extend Object
 			if labelContinue != null
 			{
 				labelContinue.PrintLabel(f)
-				if callDeferStuf
-					PrintDeferApply(f,MyId,this&)
 				f << "br label %Check" << MyId << "\n"
 			}
 
 			if labelBreak != null
 			{
 				labelBreak.PrintLabel(f)
-				if callDeferStuf
-					PrintDeferApply(f,MyId,this&)
 				f << "br label %" << labelEnd.GetLabel() << "\n"
 			}
 
 			labelEnd.PrintLabel(f)
 		}
 
-	}
-	callDeferStuf := bool
-	ApplyDeferUse := virtual !(int depth) -> void
-	{
-		if depth != 1
-		{
-			Up.ApplyDeferUse(depth - 1)
-		}else{
-			callDeferStuf = true
-		}
 	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^

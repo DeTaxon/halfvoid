@@ -1,7 +1,6 @@
-deferAddDefer := BoxFunc^ // AddDefer(!()&->void,bool isException)
-deferAddDeferExcp := BoxFunc^ // AddDefer(!()&->void,bool isException)
-deferGetDepth := BoxFunc^
-deferApply := BoxFunc^
+deferAddDefer2 := BoxFunc^ // AddDefer(!()&->void,bool isException)
+deferGetDepth2 := BoxFunc^
+deferSkip2 := BoxFunc^
 
 
 DeferInit2 := !() -> bool
@@ -9,6 +8,7 @@ DeferInit2 := !() -> bool
 
 	inPars := Queue.{Type^}() ; $temp
 	inPars.Push(GTypeVoidP)
+	inPars.Push(GTypeBool)
 	defFunc := GetFuncType(inPars,null,GTypeVoid,false,false) ; $temp
 
 	dummy := new Object ; $temp
@@ -17,7 +17,7 @@ DeferInit2 := !() -> bool
 	depth := FindFunc("internalDeferGetDepth",dummy,box^,false)
 	if depth == null return false
 	depth.ParseBlock()
-	deferGetDepth = depth
+	deferGetDepth2 = depth
 
 	box.itPars.Emplace(defFunc.GetPoint(),false)
 	box.itPars.Emplace(GTypeVoidP,false)
@@ -25,25 +25,17 @@ DeferInit2 := !() -> bool
 	itFunc := FindFunc("internalDeferAdd",dummy,box^,false)
 	if itFunc == null return false
 	itFunc.ParseBlock()
-	deferAddDefer = itFunc
-
-	itFuncE := FindFunc("internalDeferExcpAdd",dummy,box^,false)
-	if itFuncE == null return false
-	itFuncE.ParseBlock()
-	deferAddDeferExcp = itFuncE
+	deferAddDefer2 = itFunc
 
 	box2 := new FuncInputBox ; $temp
 	box2.itPars.Emplace(GTypeInt,false)
-	applyFunc := FindFunc("internalDeferApply",dummy,box2^,false)
-	if applyFunc == null
+	deferSkip2 = FindFunc("internalDeferSkip",dummy,box2^,false)
+	if deferSkip2 == null
 		return false
-	applyFunc.ParseBlock()
-	
-	deferApply = applyFunc
+	deferSkip2.ParseBlock()
 
 	return true
 }
-
 ObjDefer := class extend Object
 {
 	onExcp := bool
@@ -61,34 +53,42 @@ ObjDefer := class extend Object
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
+		//TODO WORK
+		//callAdd := deferAddDefer
+		//if onExcp
+		//	callAdd = deferAddDeferExcp
+		//itr := Up
+		//while itr.GetABox() == null
+		//{
+		//	itr = itr.Up
+		//}
+		//asWrap := Down->{WrappedFunc^}
+		//funcAl := itr.GetABox()
+		//if funcAl.ItemBag.IsEmpty()
+		//{
+		//	f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
+		//}else{
+		//	neId := GetNewId()
+		//	f << "%T" << neId << " = bitcast " << funcAl.GetAsUse() << " to i8*\n"
+		//	f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
+		//}
+		//if DebugMode
+		//{
+		//	newId := CreateDebugCall(this&)
+		//	if newId != -1
+		//	{
+		//		f << ", !dbg !" << newId
+		//	}
+		//}
+		//f << "\n" 
+	}
+	GetDeferUsage := virtual !() -> int
+	{
+		return GetDeferUsageDown()
+	}
+	PrintDeferUsage := virtual !(BoxFuncBody^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
 
-		callAdd := deferAddDefer
-		if onExcp
-			callAdd = deferAddDeferExcp
-		itr := Up
-		while itr.GetABox() == null
-		{
-			itr = itr.Up
-		}
-		asWrap := Down->{WrappedFunc^}
-		funcAl := itr.GetABox()
-		if funcAl.ItemBag.IsEmpty()
-		{
-			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
-		}else{
-			neId := GetNewId()
-			f << "%T" << neId << " = bitcast " << funcAl.GetAsUse() << " to i8*\n"
-			f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
-		}
-		if DebugMode
-		{
-			newId := CreateDebugCall(this&)
-			if newId != -1
-			{
-				f << ", !dbg !" << newId
-			}
-		}
-		f << "\n" 
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -100,16 +100,21 @@ ObjDefer := class extend Object
 		}
 	}
 }
-PrintDeferDepth := !(TIOStream f, int SomeId, Object^ itm) -> void
+PrintDeferDepth := !(TIOStream f, int debId) -> void
 {
-	f << "%NowDepth" << SomeId << " = call i32 @" << deferGetDepth.OutputName << "()"
-	if DebugMode
+	f << "%NowDepth = call i32 @" << deferGetDepth2.OutputName << "()"
+	if debId != -1
 	{
-		newId := CreateDebugCall(itm)
-		if newId != -1
-		{
-			f << ", !dbg !" << newId
-		}
+		f << ", !dbg !" << debId
+	}
+	f <<"\n"
+}
+PrintDeferSkip := !(TIOStream f, int debId) -> void
+{
+	f << "%NowDepth = call i32 @" << deferGetDepth2.OutputName << "()"
+	if debId != -1
+	{
+		f << ", !dbg !" << debId
 	}
 	f <<"\n"
 }

@@ -141,30 +141,32 @@ ObjParam := class extend Object
 				}
 			}
 		}
-		if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
-		{
-			asLoc := Down->{LocalParam^}
-			itId := GetNewId()
-			f << "%AsVoid" << itId << " = bitcast "
-			asLoc.PrintPointUse(f,0,-1)
-			f << " to i8*\n"
-			f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
-			dCl := -1
-			if DebugMode
-			{
-				dCl = CreateDebugCall(this&)
-				if dCl != -1
-				{
-					f << ", !dbg !" << dCl
-				}
-			}
-			f << "\n"
+		//TODO DEFER
+		//if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
+		//{
+		//	asLoc := Down->{LocalParam^}
+		//	itId := GetNewId()
+		//	f << "%AsVoid" << itId << " = bitcast "
+		//	asLoc.PrintPointUse(f,0,-1)
+		//	f << " to i8*\n"
+		//	f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
+		//	dCl := -1
+		//	if DebugMode
+		//	{
+		//		dCl = CreateDebugCall(this&)
+		//		if dCl != -1
+		//		{
+		//			f << ", !dbg !" << dCl
+		//		}
+		//	}
+		//	f << "\n"
 
-			f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << gcCallDestroy.OutputName << " , i8* %AsVoid"<< itId <<" )"
-			if dCl != -1
-				f << ", !dbg !" << dCl
-			f << "\n"
-		}
+		//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << gcCallDestroy.OutputName << " , i8* %AsVoid"<< itId <<" )"
+		//	if dCl != -1
+		//		f << ", !dbg !" << dCl
+		//	f << "\n"
+		//}
+
 		//if Down != null and Down is LocalParam and DebugMode
 		//{
 		//	asLoc := Down->{LocalParam^}

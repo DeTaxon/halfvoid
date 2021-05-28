@@ -5,6 +5,7 @@ main := !(int argc, char^^ argv) -> int
 	try
 	{
 		AppendClassTest()
+		DeferTest()
 		TestQuestion()
 		TestBiggerSwitch()
 		TestRetQ()

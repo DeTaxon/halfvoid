@@ -146,6 +146,14 @@ BoxBlock := class extend Object
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
+		if callDeferStuf
+		{
+			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 isException)\n"
+			f << "{\n"
+			f << "	ret void\n"
+			f << "}\n"
+		}
+
 		if gcObjects.Size() != 0
 		{
 			aBox := AllocBox^()
@@ -208,8 +216,6 @@ BoxBlock := class extend Object
 	{
 		if Line == null Line = Up.Line
 
-		if callDeferStuf and usePaths 
-			PrintDeferDepth(f,ItId,this&)
 			
 		PrintCleanGC(f)
 		for iter : Down
@@ -235,8 +241,6 @@ BoxBlock := class extend Object
 			}
 			//f << "LastContPath" <<ItId << ":\n"
 			quitPath.PrintLabel(f)
-			if callDeferStuf
-				PrintDeferApply(f,ItId,this&)
 		}
 	}
 	callDeferStuf := bool

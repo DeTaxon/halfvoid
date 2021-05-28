@@ -199,6 +199,27 @@ Object := class{
 	{
 		return null
 	}
+
+	GetDeferUsageDown := !() -> int
+	{
+		mx := 0
+		itr := Down
+		while itr != null
+		{
+			c := itr->GetDeferUsage()
+			if c > mx
+				mx = c
+		}
+		return mx
+	}
+	GetDeferUsage := virtual !() -> int
+	{
+		return GetDeferUsageDown()
+	}
+	PrintDeferUsage := virtual !(BoxFuncBody^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+
+	}
 }
 
 ObjLine := class 

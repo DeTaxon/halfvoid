@@ -34,9 +34,3 @@ DeferTest := !() -> void
 {
 	DeferTest1()
 }
-
-main := !(int argc, char^^ argv) -> int
-{
-	DeferTest()
-	return 0
-}
