@@ -251,8 +251,8 @@ BoxForOldFashionMulti := class extend BoxFor
 					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,true)
 					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,true)
 					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,true)
-					if DestroyFunc[i] != null
-						callDeferStuf = true
+					//if DestroyFunc[i] != null //TODO WORK
+					//	callDeferStuf = true
 					
 
 					if IncFuncP == null {
@@ -344,22 +344,20 @@ BoxForOldFashionMulti := class extend BoxFor
 		debId := -1
 		if DebugMode debId = CreateDebugCall(this&)
 		
-		if callDeferStuf
-			PrintDeferDepth(f,ItId,this&)
 		for itr,i : Down.Right
 		{
-			itr.PrintPre(f)
-			if DestroyFunc[i] != null
-			{
-				fnc := DestroyFunc[i]->{BoxFunc^}
-				f << "%Ptr" << ItId << "num" << i << " = bitcast "
-				itr.PrintPointUse(f) f << " to i8*\n"
-				f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
-				f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
-				if debId != -1
-					f << ", !dbg !" << debId
-				f << "\n"
-			}
+			itr.PrintPre(f) //TODO WORK
+			//if DestroyFunc[i] != null
+			//{
+			//	fnc := DestroyFunc[i]->{BoxFunc^}
+			//	f << "%Ptr" << ItId << "num" << i << " = bitcast "
+			//	itr.PrintPointUse(f) f << " to i8*\n"
+			//	f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
+			//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
+			//	if debId != -1
+			//		f << ", !dbg !" << debId
+			//	f << "\n"
+			//}
 		}
 
 
@@ -492,22 +490,10 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "br label %" << endLabel.GetLabel() << "\n"
 		}
 		endLabel.PrintLabel(f)
-		if callDeferStuf
-			PrintDeferApply(f,ItId,this&)
 	}
 
 	labelContinue := BoxLabel^
 	labelBreak := BoxLabel^
-	callDeferStuf := bool
-	ApplyDeferUse := virtual !(int depth) -> void
-	{
-		if depth != 1
-		{
-			Up.ApplyDeferUse(depth - 1)
-		}else{
-			callDeferStuf = true
-		}
-	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^
 	{

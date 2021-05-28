@@ -118,17 +118,3 @@ PrintDeferSkip := !(TIOStream f, int debId) -> void
 	}
 	f <<"\n"
 }
-
-PrintDeferApply := !(TIOStream f, int SomeId, Object^ itm) -> void
-{
-	f << "call void @" << deferApply.OutputName << "(i32 %NowDepth" << SomeId << ")"
-	if DebugMode
-	{
-		newId := CreateDebugCall(itm)
-		if newId != -1
-		{
-			f << ", !dbg !" << newId
-		}
-	}
-	f <<"\n"
-}

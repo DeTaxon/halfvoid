@@ -37,6 +37,8 @@ DeferTest := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	DeferTest()
+	//DeferTest()
+	defer printf("bob\n")
+	printf("hello\n")
 	return 0
 }

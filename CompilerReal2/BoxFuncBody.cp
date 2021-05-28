@@ -314,7 +314,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			if deferUse
-				PrintDeferDepth(f,debId)
+				PrintDeferDepth(f,dbgId)
 
 			if InAlloc != null
 			for i : MyFuncType.ParsCount

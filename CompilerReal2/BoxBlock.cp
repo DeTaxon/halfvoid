@@ -62,46 +62,46 @@ BoxBlock := class extend Object
 	{
 		gcObjects.Push(varId)
 	}
-	PrintCleanGC := !(TIOStream f) -> void
-	{
-		if gcObjects.Size() == 0
-			return void
-		aBox := AllocBox^()
-		itr := Up
-		while itr != null
-		{
-			aBox = itr.GetABox()
-			if aBox != null
-				break
-			itr = itr.Up
-		}
-
-		for it : gcObjects
-		{
-			typ := aBox.GetObjType(it)
-			
-			f << "store "
-			typ.PrintType(f)
-			f << " null, "
-			typ.PrintType(f)
-			f << "* %T" << it << "\n"
-		}
-		f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
-
-		f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
-		if DebugMode
-		{
-			if Line == null and Up?.Line != null
-				Line = Up.Line
-
-			cllId := CreateDebugCall(this&)
-			if cllId != -1
-			{
-				f << ", !dbg !" << cllId
-			}
-		}
-		f << "\n"
-	}
+	//PrintCleanGC := !(TIOStream f) -> void //TODO WORK
+	//{
+	//	if gcObjects.Size() == 0
+	//		return void
+	//	aBox := AllocBox^()
+	//	itr := Up
+	//	while itr != null
+	//	{
+	//		aBox = itr.GetABox()
+	//		if aBox != null
+	//			break
+	//		itr = itr.Up
+	//	}
+//
+	//	for it : gcObjects
+	//	{
+	//		typ := aBox.GetObjType(it)
+	//		
+	//		f << "store "
+	//		typ.PrintType(f)
+	//		f << " null, "
+	//		typ.PrintType(f)
+	//		f << "* %T" << it << "\n"
+	//	}
+	//	f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
+//
+	//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
+	//	if DebugMode
+	//	{
+	//		if Line == null and Up?.Line != null
+	//			Line = Up.Line
+//
+	//		cllId := CreateDebugCall(this&)
+	//		if cllId != -1
+	//		{
+	//			f << ", !dbg !" << cllId
+	//		}
+	//	}
+	//	f << "\n"
+	//}
 
 	this := !() -> void
 	{
@@ -148,7 +148,7 @@ BoxBlock := class extend Object
 	{
 		if callDeferStuf
 		{
-			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 isException)\n"
+			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
 			f << "	ret void\n"
 			f << "}\n"
@@ -217,7 +217,7 @@ BoxBlock := class extend Object
 		if Line == null Line = Up.Line
 
 			
-		PrintCleanGC(f)
+		//PrintCleanGC(f) //TODO
 		for iter : Down
 		{
 			iter.PrintInBlock(f)
@@ -228,8 +228,6 @@ BoxBlock := class extend Object
 			if preRetLabel != null
 			{
 				preRetLabel.PrintLabel(f)
-				if callDeferStuf
-					PrintDeferApply(f,ItId,this&)
 				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
 				
 			}
