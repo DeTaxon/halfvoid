@@ -146,7 +146,7 @@ BoxBlock := class extend Object
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
-		if callDeferStuf
+		if false //TODO WORK
 		{
 			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
@@ -239,16 +239,6 @@ BoxBlock := class extend Object
 			}
 			//f << "LastContPath" <<ItId << ":\n"
 			quitPath.PrintLabel(f)
-		}
-	}
-	callDeferStuf := bool
-	ApplyDeferUse := virtual !(int depth) -> void
-	{
-		if depth != 1
-		{
-			Up.ApplyDeferUse(depth - 1)
-		}else{
-			callDeferStuf = true
 		}
 	}
 	LoadOutPath := !() -> void

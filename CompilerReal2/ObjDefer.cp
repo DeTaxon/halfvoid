@@ -34,6 +34,7 @@ DeferInit2 := !() -> bool
 		return false
 	deferSkip2.ParseBlock()
 
+
 	return true
 }
 ObjDefer := class extend Object
@@ -42,14 +43,14 @@ ObjDefer := class extend Object
 	this := !(Object^ dwn,bool iExp) -> void
 	{
 		onExcp = iExp
-		Down = new WrappedFunc(dwn)
-		Down.SetUp(this&)
-		WorkBag.Push(this&,State_Start)
+		//Down = new WrappedFunc(dwn)
+		//Down.SetUp(this&)
+		//WorkBag.Push(this&,State_Start)
 	}
 	PrintDestructor := virtual !(TIOStream f) -> void
 	{
 		asWr := Down->{WrappedFunc^}
-		asWr.PrintItCall(f)
+		//asWr.PrintItCall(f)
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
@@ -92,11 +93,9 @@ ObjDefer := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
-		WorkBag.Push(Down,pri)
+		//WorkBag.Push(Down,pri)
 		if Up != null
 		{
-			Up.ApplyDeferUse(1)
-			AllocSetStruct(Up)
 		}
 	}
 }

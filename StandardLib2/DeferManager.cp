@@ -17,9 +17,9 @@ internalDeferGetDepth := !() -> int
 {
 	return internalDeferBlock.indPoint
 }
-internalDeferApplySkip := !(int depth) -> void
+internalDeferSkip := !(int depth) -> void
 {
-	defBlock.indPoint = depth
+	internalDeferBlock.indPoint = depth
 }
 //internalDeferApply := !(int depth) -> void
 //{

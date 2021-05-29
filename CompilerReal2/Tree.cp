@@ -166,11 +166,6 @@ Object := class{
 		ErrorLog.Push("Clone not defined for "sbt + GetValue() + "\n")
 		return null
 	}
-	ApplyDeferUse := virtual !(int depth) -> void
-	{
-		if Up != null
-			Up.ApplyDeferUse(depth)
-	}
 	PrintDebugDeclare := virtual !(TIOStream f ,Object^ frc,char^ forcedName) -> void
 	{
 		Down[^].PrintDebugDeclare(f,frc,null->{char^})

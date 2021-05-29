@@ -81,11 +81,11 @@ BoxReturn := class extend Object
 			askedDefer := false
 			while iterF?.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			{
-				if iterF.GetValue() == "{d}"
-				{
-					asBl := iterF->{BoxBlock^}
-					askedDefer = askedDefer or asBl.callDeferStuf
-				}
+				//if iterF.GetValue() == "{d}" //TODO WORK wtf is dat
+				//{
+				//	asBl := iterF->{BoxBlock^}
+				//	askedDefer = askedDefer or asBl.callDeferStuf
+				//}
 				iterF = iterF.Up
 			}
 
@@ -93,11 +93,11 @@ BoxReturn := class extend Object
 			{
 				RetFunc := TypeFunc^
 
-				if askedDefer
-				{
-					toSetUse := iterF.Down->{BoxBlock^}
-					toSetUse.callDeferStuf = askedDefer
-				}
+				//if askedDefer //TODO WORK ?
+				//{
+				//	toSetUse := iterF.Down->{BoxBlock^}
+				//	toSetUse.callDeferStuf = askedDefer
+				//}
 
 				if iterF.GetValue() == "!()"{
 					asNeed := iterF->{BoxFunc^}
@@ -134,8 +134,8 @@ BoxReturn := class extend Object
 									RetFuncType = RetFunc.RetType
 
 								}else{
-									printf("from %s to %s\n",Down.GetType().GetName(),PreType.GetName())
-								EmitError("Can not return value\n")
+									printf("from %s to %p\n",Down.GetType().GetName(),PreType)
+									EmitError("Can not return value\n")
 								}
 							}
 						}

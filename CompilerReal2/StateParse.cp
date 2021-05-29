@@ -17,4 +17,5 @@ State_Optimize := 14
 State_PostOptimize := 16
 State_ErrorCheck := 16
 State_ClassCheckParams := 16
-State_PrePrint := 17
+State_CheckDefer := 17
+State_PrePrint := 18

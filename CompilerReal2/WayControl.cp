@@ -40,10 +40,10 @@ WayControl := class extend Object
 				if iter.GetValue() in !["~~for()","~while()","~switch()"]
 				{
 					asBl := prevNode->{BoxBlock^}
-					if asBl.callDeferStuf
-					{
-						iter.ApplyDeferUse(1)
-					}
+					//if asBl.callDeferStuf //TODO WORK
+					//{
+					//	iter.ApplyDeferUse(1)
+					//}
 					iter = null
 				}else{
 					if iter.GetValue() == "{d}" itSize += 1

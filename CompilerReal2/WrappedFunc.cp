@@ -37,27 +37,28 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	PrintItCall := !(TIOStream f) -> void
 	{
-		itrU := Up
-		while itrU != null and itrU.GetABox() == null
-			itrU = itrU.Up
+	 	//TODO WORK
+		//itrU := Up
+		//while itrU != null and itrU.GetABox() == null
+		//	itrU = itrU.Up
 
-		assert(itrU != null)
-		if itrU == null 
-			return void
-		itB := itrU.GetABox()
-			
-		nId := GetNewId()
-		f << "%T" << nId << " = bitcast " << itB.GetAsUse() << " to i8*\n"
-		f << "call void(i8*)@" << OutputName <<"(i8* %T" << nId<<")"
-		if DebugMode
-		{
-			newId := CreateDebugCall(Up)
-			if newId != -1
-			{
-				f << " , !dbg !" << newId 
-			}
-		}
-		f << "\n"
+		//assert(itrU != null)
+		//if itrU == null 
+		//	return void
+		//itB := itrU.GetABox()
+		//	
+		//nId := GetNewId()
+		//f << "%T" << nId << " = bitcast " << itB.GetAsUse() << " to i8*\n"
+		//f << "call void(i8*)@" << OutputName <<"(i8* %T" << nId<<")"
+		//if DebugMode
+		//{
+		//	newId := CreateDebugCall(Up)
+		//	if newId != -1
+		//	{
+		//		f << " , !dbg !" << newId 
+		//	}
+		//}
+		//f << "\n"
 
 	}
 
