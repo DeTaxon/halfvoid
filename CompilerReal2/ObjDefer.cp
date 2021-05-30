@@ -87,10 +87,14 @@ ObjDefer := class extend Object
 	{
 		return 1
 	}
+	IsDeferInUse := virtual !() -> bool
+	{
+		return true
+	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
-		labelIter^ += 1
 		curId := labelIter^
+		labelIter^ -= 1
 		f << "br label %DeferLabel" << curId << "\n"
 		f << "DeferLabel" << curId << ":\n"
 		Down.PrintInBlock(f)

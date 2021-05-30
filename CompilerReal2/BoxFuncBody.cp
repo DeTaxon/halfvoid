@@ -274,6 +274,13 @@ BoxFuncBody := class extend BoxFunc
 			bC.Yodlers.Insert(this&)
 		}
 	}
+	PrintABoxExtra := !(TIOStream f) -> void
+	{
+		if pDeferB
+		{
+			f << "%DeferStack = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" << deferStackNr << ", i32 0, i32 0\n"
+		}
+	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		ABox.PrintGlobal(f)
@@ -444,16 +451,16 @@ BoxFuncBody := class extend BoxFunc
 				f << "]\n"
 				f << "Yield0:\n"
 			}
-			
-			if pDeferB
-			{
-				f << "%DeferStack = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" << deferStackNr << ", i32 0, i32 0\n"
-			}
 
+			PrintABoxExtra(f)
+			
 			Down[^].PrintInBlock(f)
 
 			f << "br label %" << outLabel.GetLabel() << "\n"
 			outLabel.PrintLabel(f)
+
+			if pDeferB
+				Down->{BoxBlock^}.PrintBlockDeferUse(f)
 
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex

@@ -39,5 +39,6 @@ main := !(int argc, char^^ argv) -> int
 {
 	//DeferTest()
 	defer printf("bob\n")
+	defer printf("bab\n")
 	printf("hello\n")
 }

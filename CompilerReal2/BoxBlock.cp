@@ -148,6 +148,17 @@ BoxBlock := class extend Object
 	{
 		if deferDepth != 0
 		{
+			deferCount := 0
+			itrR := Down
+			while itrR.Right != null
+			{
+				if itrR.IsDeferInUse()
+					deferCount += 1
+				itrR = itrR.Right
+			}
+			if itrR.IsDeferInUse()
+				deferCount += 1
+
 			blkDepth := 0
 			itrUp := Up
 			while not itrUp is BoxFuncBody //TODO WORK Slambda
@@ -159,16 +170,27 @@ BoxBlock := class extend Object
 				itrUp = itrUp.Up
 				assert(itrUp != null)
 			}
+			deferUpDepth = blkDepth
 			cntr := itrUp->{BoxFuncContainer^}
-			val := 0
 			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
 			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
 			cntr.PrintABoxData(f,"%StackObjABox",-1)
 
-			for itr : Down
+			f << "%DeferValPtr = getelementptr i8 , i8* %DeferStack , i32 " << blkDepth << "\n"
+			f << "%DeferVal = load i8, i8* %DeferValPtr\n"
+			f << "switch i8 %DeferVal , label %DeferLabel0 [\n"
+			for i : (deferCount+1)
 			{
-				itr.PrintDeferUse(f,cntr,this&,blkDepth,val&)
+				f << "	i8 " << i << " , label %DeferLabel" << i << "\n"
+			}
+			f << "]\n"
+
+			val := deferCount
+			while itrR != null
+			{
+				itrR.PrintDeferUse(f,cntr,this&,blkDepth,val&)
+				itrR = itrR.Left
 			}
 
 			f << "br label %DeferLabel0\n"
@@ -235,20 +257,36 @@ BoxBlock := class extend Object
 			}
 		}
 	}
+	PrintBlockDeferUse := !(TIOStream f) -> void
+	{
+		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
+		f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
+	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if Line == null Line = Up.Line
 
-			
+		if deferDepth != 0
+		{
+			f << "%DeferValPtr" << ItId <<" = getelementptr i8 , i8* %DeferStack , i32 " << deferUpDepth << "\n"
+			f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
+		}
+		
+		defVal := 1
 		//PrintCleanGC(f) //TODO
 		for iter : Down
 		{
 			iter.PrintInBlock(f)
+			if iter.IsDeferInUse()
+			{
+				f << "store i8 " << defVal << " , i8* %DeferValPtr" << ItId<<"\n"
+				defVal += 1
+			}
 		}
 
 		if deferDepth != 0
 		{
-			f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
+			PrintBlockDeferUse(f)
 		}
 
 		if usePaths {
@@ -313,7 +351,7 @@ BoxBlock := class extend Object
 		return null
 	}
 	deferDepth := int
-	deferCount := 0
+	deferUpDepth := int
 	GetDeferUsage := virtual !() -> int
 	{
 		for itr : Down
@@ -321,7 +359,6 @@ BoxBlock := class extend Object
 			c := itr.GetDeferUsage()
 			if c != 0
 			{
-				deferCount += 0
 				if c > deferDepth
 					deferDepth = c
 			}

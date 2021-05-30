@@ -208,6 +208,10 @@ Object := class{
 		}
 		return mx
 	}
+	IsDeferInUse := virtual !() -> bool
+	{
+		return false
+	}
 	GetDeferUsage := virtual !() -> int
 	{
 		return GetDeferUsageDown()

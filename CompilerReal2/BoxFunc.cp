@@ -190,6 +190,7 @@ BoxFuncContainer := class extend Object
 				f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
 				f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
 			}
+			bdy.PrintABoxExtra(f)
 		}
 	}
 
