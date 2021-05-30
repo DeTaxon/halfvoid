@@ -276,12 +276,12 @@ BoxBlock := class extend Object
 		//PrintCleanGC(f) //TODO
 		for iter : Down
 		{
-			iter.PrintInBlock(f)
 			if iter.IsDeferInUse()
 			{
 				f << "store i8 " << defVal << " , i8* %DeferValPtr" << ItId<<"\n"
 				defVal += 1
 			}
+			iter.PrintInBlock(f)
 		}
 
 		if deferDepth != 0
@@ -352,6 +352,10 @@ BoxBlock := class extend Object
 	}
 	deferDepth := int
 	deferUpDepth := int
+	IsDeferInUse := virtual !() -> bool
+	{
+		return deferDepth != 0
+	}
 	GetDeferUsage := virtual !() -> int
 	{
 		for itr : Down
@@ -364,6 +368,17 @@ BoxBlock := class extend Object
 			}
 		}
 		return deferDepth + 1
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		curId := labelIter^
+		labelIter^ -= 1
+
+		f << "br label %DeferLabelSkip" <<curId << "\n"
+		f << "br label %DeferLabel" << curId << "\n"
+		f << "DeferLabel" << curId << ":\n"
+		PrintBlockDeferUse(f)
+		f << "DeferLabelSkip" << curId << ":\n"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
