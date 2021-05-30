@@ -43,9 +43,9 @@ ObjDefer := class extend Object
 	this := !(Object^ dwn,bool iExp) -> void
 	{
 		onExcp = iExp
-		//Down = new WrappedFunc(dwn)
-		//Down.SetUp(this&)
-		//WorkBag.Push(this&,State_Start)
+		Down = dwn
+		Down.SetUp(this&)
+		WorkBag.Push(this&,State_Start)
 	}
 	PrintDestructor := virtual !(TIOStream f) -> void
 	{
@@ -85,18 +85,30 @@ ObjDefer := class extend Object
 	}
 	GetDeferUsage := virtual !() -> int
 	{
-		return GetDeferUsageDown()
+		return 1
 	}
-	PrintDeferUsage := virtual !(BoxFuncBody^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
-
+		labelIter^ += 1
+		curId := labelIter^
+		f << "br label %DeferLabel" << curId << "\n"
+		f << "DeferLabel" << curId << ":\n"
+		Down.PrintInBlock(f)
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		//WorkBag.Push(Down,pri)
-		if Up != null
+
+		if pri == State_Start
 		{
+			fnc := GetFuncBody()
+			if fnc != null
+			{
+				fnc.DoDefer()
+				WorkBag.Push(Down,State_Start)
+			}
 		}
+	
 	}
 }
 PrintDeferDepth := !(TIOStream f, int debId) -> void

@@ -204,6 +204,7 @@ Object := class{
 			c := itr->GetDeferUsage()
 			if c > mx
 				mx = c
+			itr = itr.Right
 		}
 		return mx
 	}
@@ -211,9 +212,15 @@ Object := class{
 	{
 		return GetDeferUsageDown()
 	}
-	PrintDeferUsage := virtual !(BoxFuncBody^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
 
+	}
+	GetFuncBody := virtual !() -> BoxFuncContainer^
+	{
+		if Up == null
+			return null
+		return Up.GetFuncBody()
 	}
 }
 

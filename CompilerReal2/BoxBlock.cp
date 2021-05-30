@@ -146,10 +146,33 @@ BoxBlock := class extend Object
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
-		if false //TODO WORK
+		if deferDepth != 0
 		{
+			blkDepth := 0
+			itrUp := Up
+			while not itrUp is BoxFuncBody //TODO WORK Slambda
+			{
+				if itrUp is BoxBlock
+				{
+					blkDepth += 1
+				}
+				itrUp = itrUp.Up
+				assert(itrUp != null)
+			}
+			cntr := itrUp->{BoxFuncContainer^}
+			val := 0
 			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
+			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
+			cntr.PrintABoxData(f,"%StackObjABox",-1)
+
+			for itr : Down
+			{
+				itr.PrintDeferUse(f,cntr,this&,blkDepth,val&)
+			}
+
+			f << "br label %DeferLabel0\n"
+			f << "DeferLabel0:\n"
 			f << "	ret void\n"
 			f << "}\n"
 		}
@@ -222,6 +245,12 @@ BoxBlock := class extend Object
 		{
 			iter.PrintInBlock(f)
 		}
+
+		if deferDepth != 0
+		{
+			f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
+		}
+
 		if usePaths {
 			f << "br label %" << quitPath.GetLabel() << "\n"
 
@@ -282,6 +311,22 @@ BoxBlock := class extend Object
 			return Up.GetOutPath(objs,typ,size - 1)
 		}
 		return null
+	}
+	deferDepth := int
+	deferCount := 0
+	GetDeferUsage := virtual !() -> int
+	{
+		for itr : Down
+		{
+			c := itr.GetDeferUsage()
+			if c != 0
+			{
+				deferCount += 0
+				if c > deferDepth
+					deferDepth = c
+			}
+		}
+		return deferDepth + 1
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

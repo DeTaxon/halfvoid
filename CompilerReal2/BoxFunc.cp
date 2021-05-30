@@ -165,6 +165,34 @@ BoxFuncContainer := class extend Object
 	{
 		return 0
 	}
+
+	containDefer := bool
+	DoDefer := !() -> void
+	{
+		if not containDefer
+			WorkBag.Push(this&,State_CheckDefer)
+		containDefer = true
+	}
+	GetFuncBody := virtual !() -> BoxFuncContainer^
+	{
+		return this&
+	}
+	PrintABoxData := virtual !(TIOStream f, char^ objName,int debId) -> void
+	{
+		ABox.PrintBoxItems(f,objName,debId)
+		if this& is BoxFuncBody
+		{
+			bdy := this&->{BoxFuncBody^}
+			if bdy.IsMethod
+			{
+				thisId := bdy.ItParams[0].inAllocId
+				fT := bdy.MyFuncType
+				f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
+				f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+			}
+		}
+	}
+
 }
 
 BoxFunc := class extend BoxFuncContainer

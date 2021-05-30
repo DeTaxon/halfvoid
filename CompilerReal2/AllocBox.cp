@@ -163,6 +163,7 @@ AllocBox := class
 						f << ", !dbg !" << debId
 					f << "\n"
 				}
+				f << "%StackObj = bitcast %AllocClass" << ItId << "* %AllocItem" << ItId << " to i8*\n"
 			}
 		}
 

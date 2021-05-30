@@ -274,7 +274,6 @@ BoxFuncBody := class extend BoxFunc
 			bC.Yodlers.Insert(this&)
 		}
 	}
-		
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		ABox.PrintGlobal(f)
@@ -446,15 +445,16 @@ BoxFuncBody := class extend BoxFunc
 				f << "Yield0:\n"
 			}
 			
+			if pDeferB
+			{
+				f << "%DeferStack = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" << deferStackNr << ", i32 0, i32 0\n"
+			}
+
 			Down[^].PrintInBlock(f)
 
 			f << "br label %" << outLabel.GetLabel() << "\n"
 			outLabel.PrintLabel(f)
 
-			if deferUse
-			{
-				
-			}
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex
 			{
@@ -543,13 +543,27 @@ BoxFuncBody := class extend BoxFunc
 	{
 		return outLabel&
 	}
-	doDeferCheck := bool
+
+	pDeferB := bool
+	deferStackSize := int
+	deferStackNr := int
+	ParseDefer := !() -> void
+	{
+		if pDeferB
+			return void
+		pDeferB = true
+
+		deferStackSize = GetDeferUsage() - 1
+		assert(deferStackSize != 0)
+		
+		AllocSetStruct(this&)
+		deferStackNr = GetAlloc(this&,GTypeU8.GetArray(deferStackSize))
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
-			WorkBag.Push(this&,State_CheckDefer)
 		}
 
 		if pri == State_Syntax
@@ -568,6 +582,10 @@ BoxFuncBody := class extend BoxFunc
 				if MyFuncType.RetType == null
 					SetReturnType(GetType("void"))
 			}
+		}
+		if pri == State_CheckDefer
+		{
+			ParseDefer()
 		}
 		if pri == State_PrePrint
 		{
