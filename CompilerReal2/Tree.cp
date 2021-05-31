@@ -208,15 +208,19 @@ Object := class{
 		}
 		return mx
 	}
-	IsDeferInUse := virtual !() -> bool
+	GetDeferUsageVerticalSize := virtual !() -> int
 	{
-		return false
+		return 0
 	}
 	GetDeferUsage := virtual !() -> int
 	{
 		return GetDeferUsageDown()
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int idId,int^ labelSetIter) -> void
 	{
 
 	}

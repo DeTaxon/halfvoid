@@ -152,12 +152,10 @@ BoxBlock := class extend Object
 			itrR := Down
 			while itrR.Right != null
 			{
-				if itrR.IsDeferInUse()
-					deferCount += 1
+				deferCount += itrR.GetDeferUsageVerticalSize()
 				itrR = itrR.Right
 			}
-			if itrR.IsDeferInUse()
-				deferCount += 1
+			deferCount += itrR.GetDeferUsageVerticalSize()
 
 			blkDepth := 0
 			itrUp := Up
@@ -257,11 +255,6 @@ BoxBlock := class extend Object
 			}
 		}
 	}
-	PrintBlockDeferUse := !(TIOStream f) -> void
-	{
-		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
-		f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
-	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		if Line == null Line = Up.Line
@@ -276,17 +269,13 @@ BoxBlock := class extend Object
 		//PrintCleanGC(f) //TODO
 		for iter : Down
 		{
-			if iter.IsDeferInUse()
-			{
-				f << "store i8 " << defVal << " , i8* %DeferValPtr" << ItId<<"\n"
-				defVal += 1
-			}
+			iter.PrintDeferInBlock(f,ItId,defVal&)
 			iter.PrintInBlock(f)
 		}
 
 		if deferDepth != 0
 		{
-			PrintBlockDeferUse(f)
+			PrintDeferInBlockUse(f)
 		}
 
 		if usePaths {
@@ -352,9 +341,16 @@ BoxBlock := class extend Object
 	}
 	deferDepth := int
 	deferUpDepth := int
-	IsDeferInUse := virtual !() -> bool
+	GetDeferUsageVerticalSize := virtual !() -> int
 	{
-		return deferDepth != 0
+		if deferDepth != 0
+			return 1
+		return 0
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int id,int^ labelSetIter) -> void
+	{
+		f << "store i8 " << labelSetIter^ << ", i8* %DeferValPtr"<<id <<"\n"
+		labelSetIter^ += 1
 	}
 	GetDeferUsage := virtual !() -> int
 	{
@@ -369,6 +365,11 @@ BoxBlock := class extend Object
 		}
 		return deferDepth + 1
 	}
+	PrintDeferInBlockUse := !(TIOStream f) -> void
+	{
+		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
+		f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
+	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
 		curId := labelIter^
@@ -377,7 +378,8 @@ BoxBlock := class extend Object
 		f << "br label %DeferLabelSkip" <<curId << "\n"
 		f << "br label %DeferLabel" << curId << "\n"
 		f << "DeferLabel" << curId << ":\n"
-		PrintBlockDeferUse(f)
+		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n" 
+		f << "br label %DeferLabelSkip" <<curId << "\n"
 		f << "DeferLabelSkip" << curId << ":\n"
 	}
 	DoTheWork := virtual !(int pri) -> void

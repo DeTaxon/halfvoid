@@ -460,7 +460,7 @@ BoxFuncBody := class extend BoxFunc
 			outLabel.PrintLabel(f)
 
 			if pDeferB
-				Down->{BoxBlock^}.PrintBlockDeferUse(f)
+				Down->{BoxBlock^}.PrintDeferInBlockUse(f)
 
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex

@@ -40,7 +40,6 @@ main := !(int argc, char^^ argv) -> int
 	//DeferTest()
 	defer printf("bob\n")
 
-	if argc != 255
 	{
 		defer printf("bab\n")
 		printf("ye\n")
