@@ -349,6 +349,8 @@ BoxBlock := class extend Object
 	}
 	PrintDeferInBlock := virtual !(TIOStream f, int id,int^ labelSetIter) -> void
 	{
+		if deferDepth == 0
+			return void
 		f << "store i8 " << labelSetIter^ << ", i8* %DeferValPtr"<<id <<"\n"
 		labelSetIter^ += 1
 	}

@@ -8,6 +8,28 @@
 //{
 //}
 
+DeferTestIfFunc := !(bool isTrue,int^ result) -> void
+{
+	defer result^ *= 2
+	if isTrue
+	{
+		defer result^ *= 10
+		result^ = 7
+	}else{
+		defer result^ *= 100
+		result^ = 5
+	}
+	result^ += 3
+}
+DeferTestIf := !() -> void
+{
+	val := 0
+	DeferTestIfFunc(true,val&)
+	assert(val == 146)
+	DeferTestIfFunc(false,val&)
+	assert(val == 1006)
+}
+
 DeferTest1Func := !(int val,int^ result) -> void
 {
 	defer result^ += 7
@@ -37,13 +59,18 @@ DeferTest := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	DeferTestIf()
 	//DeferTest()
 	defer printf("bob\n")
 
+	if false
 	{
 		defer printf("bab\n")
 		printf("ye\n")
 		return 0
+	}else{
+		defer printf("bib\n")
+		printf("ye\n")
 	}
 	printf("hello\n")
 }

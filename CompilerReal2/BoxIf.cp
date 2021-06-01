@@ -37,6 +37,13 @@ BoxIf := class extend Object
 				ForceGo = 2
 				if compRes->{ObjBool^}.MyBool
 					ForceGo = 1
+				itIf := this&
+				if ForceGo == 1
+				{
+					itIf->SetType(BoxIfAlwaysTrue)
+				}else{
+					itIf->SetType(BoxIfAlwaysFalse)
+				}
 			}
 
 			WorkBag.Push(this&,State_Syntax)
@@ -72,14 +79,17 @@ BoxIf := class extend Object
 		{
 			if Down is ObjBool
 			{
+				itIf := this&
 				if Down->{ObjBool^}.MyBool
 				{
 					ForceGo = 1
-				     	WorkBag.Push(Down.Right,State_Start)
+				    WorkBag.Push(Down.Right,State_Start)
+					itIf->SetType(BoxIfAlwaysTrue)
 				}else{
 					ForceGo = 2
 					if Down.Right.Right != null
 						WorkBag.Push(Down.Right.Right,State_Start)
+					itIf->SetType(BoxIfAlwaysFalse)
 				}
 			}else{
 				WorkBag.Push(Down.Right[^],State_Start)
@@ -96,19 +106,39 @@ BoxIf := class extend Object
 			}
 		}
 	}
+	deferTookSize := int
+	deferVal := int
+	deferId := int
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		deferTookSize = Down.Right.GetDeferUsageVerticalSize()
+		if Down.Right.Right != null
+			deferTookSize += Down.Right.GetDeferUsageVerticalSize()
+		return deferTookSize		
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+
+		if Down.Right.Right != null
+			Down.Right.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+		Down.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+		deferVal = labelSetIter^
+		deferId = itId
+		labelSetIter^ += deferTookSize
+		if Down.Right.Right != null
+			Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
+	}
+
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		if ForceGo != 0
-		{
-			if ForceGo == 1
-			{
-				Down.Right.PrintInBlock(f)
-			}else{
-				if Down.Right.Right != null
-					Down.Right.Right.PrintInBlock(f)
-			}
-			return void
-		}
 		if Down.Right.Right == null
 		{
 			Down.PrintPre(f)
@@ -116,6 +146,7 @@ BoxIf := class extend Object
 			Down.PrintUse(f)
 			f << ", label %OnTrue" << MyId << " , label %" << onBadLabel.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
+			Down.Right.PrintDeferInBlock(f,deferId,deferVal&)
 			Down.Right.PrintInBlock(f)
 			f << "br label %" << onBadLabel.GetLabel() << "\n"
 			onBadLabel.PrintLabel(f)
@@ -126,9 +157,11 @@ BoxIf := class extend Object
 			Down.PrintUse(f)
 			f << ", label %OnTrue" << MyId << " , label %" << onBadLabel.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
+			Down.Right.PrintDeferInBlock(f,deferId,deferVal&)
 			Down.Right.PrintInBlock(f)
 			f << "br label %End" << MyId << "\n"
 			onBadLabel.PrintLabel(f)
+			Down.Right.Right.PrintDeferInBlock(f,deferId,deferVal&)
 			Down.Right.Right.PrintInBlock(f)
 			f << "br label %End" << MyId << "\n"
 			f << "End" << MyId << ":\n"
@@ -149,6 +182,50 @@ BoxIf := class extend Object
 	GetValue := virtual !() -> string
 	{
 		return "~if()"
+	}
+}
+BoxIfAlwaysTrue := class extend BoxIf
+{
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		Down.Right.PrintInBlock(f)
+	}
+	
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		return Down.Right.GetDeferUsageVerticalSize()	
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		Down.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
+	}
+}
+BoxIfAlwaysFalse := class extend BoxIf
+{
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		if Down.Right.Right != null
+			Down.Right.Right.PrintInBlock(f)
+	}
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		if Down.Right.Right == null
+			return 0
+		return Down.Right.Right.GetDeferUsageVerticalSize()	
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if Down.Right.Right != null
+			Down.Right.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if Down.Right.Right != null
+			Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
 	}
 }
 
