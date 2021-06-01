@@ -292,18 +292,33 @@ BoxWhile := class extend Object
 			if labelContinue != null
 			{
 				labelContinue.PrintLabel(f)
+				Down.Right->{BoxBlock^}.PrintDeferInBlockUse(f)
 				f << "br label %Check" << MyId << "\n"
 			}
 
 			if labelBreak != null
 			{
 				labelBreak.PrintLabel(f)
+				Down.Right->{BoxBlock^}.PrintDeferInBlockUse(f)
 				f << "br label %" << labelEnd.GetLabel() << "\n"
 			}
 
 			labelEnd.PrintLabel(f)
 		}
 
+	}
+
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		return Down.Right.GetDeferUsageVerticalSize()	
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		Down.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
 	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^

@@ -369,6 +369,8 @@ BoxBlock := class extend Object
 	}
 	PrintDeferInBlockUse := !(TIOStream f) -> void
 	{
+		if deferDepth == 0
+			return void
 		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
 		f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
 	}

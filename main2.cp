@@ -30,36 +30,43 @@ DeferTestIf := !() -> void
 	assert(val == 1006)
 }
 
-DeferTest1Func := !(int val,int^ result) -> void
+DeferWhileFunc := !(bool isTrue , int^ result) -> void
 {
-	defer result^ += 7
 	result^ = 3
-
-	on_exception result^ = 99999
-
 	defer result^ *= 2
-	if val == 0
+	while isTrue
 	{
-		defer result^ += 8
-		result^ *= 2
+		defer result^ *= 100
+		result^ = 7
+		break
 	}
 }
-DeferTest1 := !() -> void
+DeferWhile := !() -> void
 {
-	x := 13
-	DeferTest1Func(0,x&)
-	assert(x == 35)
+	val := 0
+	DeferWhileFunc(true,val&)
+	assert(val == 1400)
+	DeferWhileFunc(false,val&)
+	assert(val == 6)
 }
 
 
 DeferTest := !() -> void
 {
-	DeferTest1()
+	DeferTestIf()
+	DeferWhile()
 }
+
+//DeferFor
+//DeferAndYield
+//DeferInLambda
+//DeferTryCatch
+//DeferGC
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	DeferTestIf()
+	DeferTest()
 	//DeferTest()
 	defer printf("bob\n")
 
