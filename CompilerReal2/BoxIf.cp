@@ -286,6 +286,7 @@ BoxWhile := class extend Object
 			Down.PrintUse(f)
 			f << ", label %OnTrue" << MyId << " , label %" << labelEnd.GetLabel() << "\n"
 			f << "OnTrue" << MyId << ":\n"
+			Down.Right.PrintDeferInBlock(f,deferId,deferLabel&)
 			Down.Right.PrintInBlock(f)
 			f << "\nbr label %Check" << MyId << "\n"
 			
@@ -316,9 +317,15 @@ BoxWhile := class extend Object
 	{
 		Down.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
 	}
+
+	deferId := int
+	deferLabel := int
 	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
 	{
-		Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		//Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		deferId = itId
+		deferLabel = labelSetIter^
+		labelSetIter^ += Down.Right.GetDeferUsageVerticalSize()
 	}
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^

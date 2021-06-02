@@ -339,6 +339,25 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		return null
 	}
+	
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		return Down.GetDeferUsageVerticalSize()	
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		Down.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+
+	deferId := int
+	deferLabel := int
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		//Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		deferId = itId
+		deferLabel = labelSetIter^
+		labelSetIter^ += Down.GetDeferUsageVerticalSize()
+	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		debId := -1
@@ -463,6 +482,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				doFun(IndFuncs[i],setParam)
 			}
 		}
+		Down.PrintDeferInBlock(f,deferId,deferLabel&)
 		Down.PrintInBlock(f)
 		
 		f << "br label %IncFuncs" << ItId << "\n"
@@ -482,11 +502,13 @@ BoxForOldFashionMulti := class extend BoxFor
 		if labelContinue != null
 		{
 			labelContinue.PrintLabel(f)
+			Down->{BoxBlock^}.PrintDeferInBlockUse(f)
 			f << "br label %IncFuncs" << ItId << "\n"
 		}
 		if labelBreak != null
 		{
 			labelBreak.PrintLabel(f)
+			Down->{BoxBlock^}.PrintDeferInBlockUse(f)
 			f << "br label %" << endLabel.GetLabel() << "\n"
 		}
 		endLabel.PrintLabel(f)

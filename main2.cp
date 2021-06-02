@@ -50,14 +50,37 @@ DeferWhile := !() -> void
 	assert(val == 6)
 }
 
+DeferFor := !() -> void
+{
+	val := 0
+	for i : 4
+	{
+		defer val *= 2
+		if i == 2
+			break
+		val += 1
+	}
+	assert(val == 12)
+
+	
+	val = 0
+	for i : 4
+	{
+		defer val *= 2
+		if i == 2
+			continue
+		val += 1
+	}
+	assert(val == 26)
+}
 
 DeferTest := !() -> void
 {
 	DeferTestIf()
 	DeferWhile()
+	DeferFor()
 }
 
-//DeferFor
 //DeferAndYield
 //DeferInLambda
 //DeferTryCatch
@@ -68,16 +91,15 @@ main := !(int argc, char^^ argv) -> int
 {
 	DeferTest()
 	//DeferTest()
-	defer printf("bob\n")
 
-	if false
-	{
-		defer printf("bab\n")
-		printf("ye\n")
-		return 0
-	}else{
-		defer printf("bib\n")
-		printf("ye\n")
-	}
-	printf("hello\n")
+	//if false
+	//{
+	//	defer printf("bab\n")
+	//	printf("ye\n")
+	//	return 0
+	//}else{
+	//	defer printf("bib\n")
+	//	printf("ye\n")
+	//}
+	//printf("hello\n")
 }
