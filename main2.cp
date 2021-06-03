@@ -76,17 +76,22 @@ DeferFor := !() -> void
 
 DeferInLambda := !() -> void //TODO
 {
+	vl := 0
 	fnc := () ==> {
-		defer printf("bob\n")
+		defer vl = 14
+		defer printf("hop\n")
+		vl = 1
 		//printf("hello\n")
-		//throw new Exception("")
+		throw new Exception("")
 		return void
 	}
 	try{
 		fnc()
 	}catch(IException^ e){
-
+		vl *= 2
 	}
+	printf("bl %i\n",vl)
+	assert(vl == 28)
 }
 
 deferInTryVal := 0
@@ -132,7 +137,6 @@ DeferTest := !() -> void
 }
 
 //DeferAndYield
-//DeferInLambda
 //DeferGC
 
 

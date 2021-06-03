@@ -387,7 +387,7 @@ SLambda := class extend BoxFuncContainer
 			ABName := it.0.GetClassName()
 			f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << prevLam.ItNR << "\n"
 			f << "%LS2" << nameIter << " = ptrtoint " << prevLam.ResultType.GetName() << " %LBegin" << nameIter << "Pos to i64\n"
-			f << "%LS1" << nameIter << " = ptrtoint i8* %"<< prevLName  << " to i64\n"
+			f << "%LS1" << nameIter << " = ptrtoint i8* "<< prevLName  << " to i64\n"
 			f << "%Lambda" << nameIter << "Pre2 = sub i64 %LS1" << nameIter << " , %LS2" << nameIter << "\n"
 			f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
 			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box",-1) //TODO: add dbg data
@@ -395,7 +395,7 @@ SLambda := class extend BoxFuncContainer
 			if prevLam != null
 			{
 				f << "%NextLam" << nameIter << " = load i8* , i8** %T" << prevLam.InAlloc[0] << "\n"
-				prevLName = ("NextLam"sbt + nameIter <-)
+				prevLName = ("%NextLam"sbt + nameIter)->{char^}
 			}
 			if it.2 != null and it.2.IsMethod
 			{
@@ -549,7 +549,7 @@ SLambda := class extend BoxFuncContainer
 				f << "define i8* @LambdaCopy" << ItId << "(i8* %ToCpy" << ItId << ") \n"
 
 				f << "{\n"
-				PrintInhers(f,"ToCpy"sbt + ItId,false)
+				PrintInhers(f,"%ToCpy"sbt + ItId,false)
 				
 				ABName := ""
 				for funcsUp
@@ -739,13 +739,13 @@ SLambda := class extend BoxFuncContainer
 			}
 			
 			
-			if not justFunc
-			{
-				PrintInhers(f,Names[0],DebugMode)
-			}
 			debId := -1
 			if DebugMode
 				debId = CreateDebugCall(this&)
+			if not justFunc
+			{
+				PrintInhers(f,"%"sbt + Names[0],DebugMode)
+			}
 			ABox.PrintAlloc(f,"%Lambda0Box",debId)
 			PrintABoxExtra(f)
 			

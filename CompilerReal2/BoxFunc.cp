@@ -204,7 +204,13 @@ BoxFuncContainer := class extend Object
 		}
 		if IsSLambda(this&)
 		{
-
+			lambd := this&->{SLambda^}
+			if not lambd.justFunc
+			{
+				f << "%StackObjLm = bitcast " << ABox.GetClassName() << "* %StackObjABox to i8*\n"
+				lambd.PrintInhers(f,"%StackObjLm",DebugMode)
+			}
+			//ABox.PrintAlloc(f,"%Lambda0Box",debId)
 		}
 		if IsBoxFuncContainer(this&)
 		{

@@ -173,7 +173,7 @@ BoxBlock := class extend Object
 			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
 			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
-			cntr.PrintABoxData(f,"%StackObjABox",-1)
+			cntr.PrintABoxData(f,"%StackObjABox",-1) //TODO:debug?
 
 			f << "%DeferValPtr = getelementptr i8 , i8* %DeferStack , i32 " << blkDepth << "\n"
 			f << "%DeferVal = load i8, i8* %DeferValPtr\n"
