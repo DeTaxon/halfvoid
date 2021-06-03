@@ -121,18 +121,18 @@ ObjDefer := class extend Object
 	
 	}
 }
-PrintDeferDepth := !(TIOStream f, int debId) -> void
+PrintDeferDepth := !(TIOStream f, int itId ,int debId) -> void
 {
-	f << "%NowDepth = call i32 @" << deferGetDepth2.OutputName << "()"
+	f << "%NowDepth"<< itId <<" = call i32 @" << deferGetDepth2.OutputName << "()"
 	if debId != -1
 	{
 		f << ", !dbg !" << debId
 	}
 	f <<"\n"
 }
-PrintDeferSkip := !(TIOStream f, int debId) -> void
+PrintDeferSkip := !(TIOStream f, int itId, int debId) -> void
 {
-	f << "%NowDepth = call i32 @" << deferGetDepth2.OutputName << "()"
+	f << "call void @" << deferSkip2.OutputName << "(i32 %NowDepth"<< itId<<")"
 	if debId != -1
 	{
 		f << ", !dbg !" << debId

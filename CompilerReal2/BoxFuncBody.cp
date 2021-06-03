@@ -10,8 +10,6 @@ BoxFuncBody := class extend BoxFunc
 
 	GetScope := virtual !() -> int { return ABox.ItId }
 
-	deferUse := bool
-
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0
@@ -319,8 +317,11 @@ BoxFuncBody := class extend BoxFunc
 				ABox.PrintAlloc(f,dbgId)
 			}
 
-			if deferUse
-				PrintDeferDepth(f,dbgId)
+			if pDeferB
+			{
+				PrintDeferDepth(f,ABox.ItId,dbgId)
+				Down->{BoxBlock^}.PrintBlockAddDefer(f,dbgId)
+			}
 
 			if InAlloc != null
 			for i : MyFuncType.ParsCount
@@ -459,8 +460,10 @@ BoxFuncBody := class extend BoxFunc
 			f << "br label %" << outLabel.GetLabel() << "\n"
 			outLabel.PrintLabel(f)
 
-			if pDeferB
+			if pDeferB {
 				Down->{BoxBlock^}.PrintDeferInBlockUse(f)
+				PrintDeferSkip(f,ABox.ItId,dbgId)
+			}
 
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex

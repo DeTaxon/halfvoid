@@ -193,6 +193,7 @@ BoxBlock := class extend Object
 
 			f << "br label %DeferLabel0\n"
 			f << "DeferLabel0:\n"
+			f << "store i8 0, i8* %DeferValPtr\n"
 			f << "	ret void\n"
 			f << "}\n"
 		}
@@ -372,10 +373,11 @@ BoxBlock := class extend Object
 		if deferDepth == 0
 			return void
 		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
-		f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
+		if deferDepth == 0
+			return void
 		curId := labelIter^
 		labelIter^ -= 1
 
@@ -385,6 +387,17 @@ BoxBlock := class extend Object
 		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n" 
 		f << "br label %DeferLabelSkip" <<curId << "\n"
 		f << "DeferLabelSkip" << curId << ":\n"
+	}
+	PrintBlockAddDefer := !(TIOStream f,int debId) -> void
+	{
+		if deferDepth == 0
+			return void
+		f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* @BlockDeferCall" << ItId << ",i8* %StackObj)"
+
+		if debId{
+			f << " , !dbg !" << debId
+		}
+		f << "\n"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{

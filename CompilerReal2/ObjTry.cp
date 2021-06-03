@@ -165,6 +165,7 @@ ObjTry := class extend Object
 		f << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"
 		f << "br i1 %B" << ItId << ", label %OnGood" << ItId << " , label %OnBad" << ItId << "\n"
 		f << "OnGood" << ItId << ":\n"
+		Down.PrintDeferInBlock(f,deferId,deferVal&)
 		Down.PrintInBlock(f)
 		f << "br label %OnEnd" << ItId << "\n"
 		f << "OnBad" << ItId << ":\n"
@@ -177,6 +178,8 @@ ObjTry := class extend Object
 			f << "%I" << ItId << " = bitcast i8* %IPre" << ItId << " to " << exType.GetName() << "\n"
 		}
 
+		Down->{BoxBlock^}.PrintDeferInBlockUse(f)
+		Down.Right.Right.PrintDeferInBlock(f,deferId,deferVal&)
 		Down.Right.Right.PrintInBlock(f)
 		f << "br label %OnEnd" << ItId << "\n"
 		f << "OnEnd" << ItId << ":\n"
@@ -186,5 +189,32 @@ ObjTry := class extend Object
 			f << ", !dbg !" << newId
 		}
 		"\n"
+	}
+	deferTookSize := int
+	deferVal := int
+	deferId := int
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		deferTookSize = Down.GetDeferUsageVerticalSize()
+		deferTookSize += Down.Right.Right.GetDeferUsageVerticalSize()
+		return deferTookSize		
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+
+		Down.Right.Right.PrintDeferUse(f,bd,blk,depth,labelIter)
+		Down.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+		deferVal = labelSetIter^
+		deferId = itId
+		labelSetIter^ += deferTookSize
+		//Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		//Down.PrintDeferInBlock(f,itId,labelSetIter)
 	}
 }

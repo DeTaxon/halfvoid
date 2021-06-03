@@ -74,13 +74,52 @@ DeferFor := !() -> void
 	assert(val == 26)
 }
 
-DeferTest := !() -> void
+DeferInLambda := !() -> void //TODO
 {
-	DeferTestIf()
-	DeferWhile()
-	DeferFor()
+	fnc := () ==> void {
+		//defer printf("bob\n")
+		//printf("hello\n")
+		return void
+	}
+	fnc()
 }
 
+DeferInTryThrow := !() -> void
+{
+	throw new Exception("")
+}
+
+DeferInTry1 := !() -> void
+{
+	defer printf("CALLED\n")
+	DeferInTryThrow()
+}
+
+DeferInTry := !() -> void
+{
+	val := 13
+	
+	try{
+		defer printf("YES!\n")
+		DeferInTry1()
+	}catch(IException^ e)
+	{
+		printf("exeption\n")
+	}
+	defer printf("end\n")
+	printf("Continue\n")
+}
+
+DeferTest := !() -> void
+{
+	//DeferTestIf()
+	//DeferWhile()
+	//DeferFor()
+	//DeferInLambda()
+	DeferInTry()
+}
+
+//DeferOnException
 //DeferAndYield
 //DeferInLambda
 //DeferTryCatch
