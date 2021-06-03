@@ -153,6 +153,17 @@ IsBoxFuncContainer := !(Object^ toCheck) -> bool
 	if toCheck is BoxFuncBodyFromString return true
 	return false
 }
+GetBoxFuncContainer := !(Object^ Start) -> BoxFuncContainer^
+{
+	itr := Start
+	while itr != null
+	{
+		if IsBoxFuncContainer(itr)
+			return itr->{BoxFuncContainer^}
+		itr = itr.Up
+	}
+	return null
+}
 
 BoxFuncContainer := class extend Object
 {
@@ -190,10 +201,57 @@ BoxFuncContainer := class extend Object
 				f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
 				f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
 			}
-			bdy.PrintABoxExtra(f)
+		}
+		if IsSLambda(this&)
+		{
+
+		}
+		if IsBoxFuncContainer(this&)
+		{
+			this&->{BoxFuncBody^}.PrintABoxExtra(f)
 		}
 	}
 
+	pDeferB := bool
+	deferStackSize := int
+	deferStackNr := int
+	ParseDefer := !() -> void
+	{
+		if pDeferB
+			return void
+		pDeferB = true
+
+		deferStackSize = GetDeferUsage() - 1
+		assert(deferStackSize != 0)
+		
+		AllocSetStruct(this&)
+		deferStackNr = GetAlloc(this&,GTypeU8.GetArray(deferStackSize))
+	}
+
+	PrintABoxExtra := !(TIOStream f) -> void
+	{
+		if pDeferB
+		{
+			f << "%DeferStack = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" << deferStackNr << ", i32 0, i32 0\n"
+		}
+	}
+	DeferFuncStart := !(TIOStream f,int dbgId) -> void
+	{
+		if pDeferB
+		{
+			PrintDeferDepth(f,ABox.ItId,dbgId)
+			Down->{BoxBlock^}.PrintBlockAddDefer(f,dbgId)
+		}
+	}
+	
+	DeferFuncEnd := !(TIOStream f,int dbgId) -> void
+	{
+		if pDeferB 
+		{
+			Down->{BoxBlock^}.PrintDeferInBlockUse(f)
+			PrintDeferSkip(f,ABox.ItId,dbgId)
+		}
+	}
 }
 
 BoxFunc := class extend BoxFuncContainer

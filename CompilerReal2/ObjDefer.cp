@@ -97,7 +97,16 @@ ObjDefer := class extend Object
 		labelIter^ -= 1
 		f << "br label %DeferLabel" << curId << "\n"
 		f << "DeferLabel" << curId << ":\n"
+
+		if onExcp{
+			f << "br i1 %isException , label %DeferDo" << curId << ", label %DeferEnd" << curId << "\n"
+			f << "DeferDo" << curId << ":\n"
+		}
 		Down.PrintInBlock(f)
+		if onExcp{
+			f << "br label %DeferEnd" << curId << "\n"
+			f << "DeferEnd"<<curId<<":\n"
+		}
 	}
 	
 	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
@@ -111,7 +120,7 @@ ObjDefer := class extend Object
 
 		if pri == State_Start
 		{
-			fnc := GetFuncBody()
+			fnc := GetBoxFuncContainer(this&)
 			if fnc != null
 			{
 				fnc.DoDefer()

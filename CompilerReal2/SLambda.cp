@@ -324,6 +324,11 @@ SLambda := class extend BoxFuncContainer
 			inAlloc = GetAlloc(Up,ResultType.Base.GetPoint())
 			ItNR = GetAllocNR(Up,inAlloc)
 		}
+		
+		if pri == State_CheckDefer
+		{
+			ParseDefer()
+		}
 		if pri == State_PrePrint
 		{
 			ApplyCaptures()
@@ -742,6 +747,10 @@ SLambda := class extend BoxFuncContainer
 			if DebugMode
 				debId = CreateDebugCall(this&)
 			ABox.PrintAlloc(f,"%Lambda0Box",debId)
+			PrintABoxExtra(f)
+			
+			DeferFuncStart(f,debId)
+
 			for i : fastUse.ParsCount
 			{
 				f << "store "
@@ -791,6 +800,8 @@ SLambda := class extend BoxFuncContainer
 
 			f << "br label %" << outLabel.GetLabel() << "\n"
 			outLabel.PrintLabel(f)
+
+			DeferFuncEnd(f,debId)
 
 			if fastUse.RetType == GTypeVoid or IsRetComplex
 			{

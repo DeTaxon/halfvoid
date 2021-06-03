@@ -159,7 +159,7 @@ BoxBlock := class extend Object
 
 			blkDepth := 0
 			itrUp := Up
-			while not itrUp is BoxFuncBody //TODO WORK Slambda
+			while not IsBoxFuncContainer(itrUp)
 			{
 				if itrUp is BoxBlock
 				{
