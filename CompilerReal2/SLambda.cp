@@ -20,6 +20,8 @@ SLambda := class extend BoxFuncContainer
 	justFunc := bool
 	ItId := int
 
+	lambadOnItsFrameNr := int
+
 	Created := bool
 
 	StolenParams := AVLMap.{char^,LocalParam^}
@@ -45,6 +47,7 @@ SLambda := class extend BoxFuncContainer
 		WorkBag.Push(this&,State_PrePrint)
 		ItId = GetNewId()
 		inAlloc = -1
+		lambadOnItsFrameNr = -1
 	}
 	IsCloned := false
 	Clone := virtual !() -> Object^
@@ -222,6 +225,10 @@ SLambda := class extend BoxFuncContainer
 								InAlloc[i] = ABox.GetAlloc(it.GetPoint())
 							}else{
 								InAlloc[i] = ABox.GetAlloc(it)
+							}
+							if not justFunc and i == 0
+							{
+								lambadOnItsFrameNr = ABox.GetNR(InAlloc[0])
 							}
 							parms[i] = new LocalParam(it,InAlloc[i],isRf)
 						}

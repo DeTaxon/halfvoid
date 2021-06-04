@@ -74,12 +74,13 @@ DeferFor := !() -> void
 	assert(val == 26)
 }
 
-DeferInLambda := !() -> void //TODO
+DeferInLambda := !() -> void
 {
 	vl := 0
 	fnc := () ==> {
+		//x := 27
 		defer vl = 14
-		defer printf("hop\n")
+		//defer printf("hop %i\n",x)
 		vl = 1
 		//printf("hello\n")
 		throw new Exception("")
@@ -90,7 +91,7 @@ DeferInLambda := !() -> void //TODO
 	}catch(IException^ e){
 		vl *= 2
 	}
-	printf("bl %i\n",vl)
+	//printf("bl %i\n",vl)
 	assert(vl == 28)
 }
 

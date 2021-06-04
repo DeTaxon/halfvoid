@@ -207,7 +207,9 @@ BoxFuncContainer := class extend Object
 			lambd := this&->{SLambda^}
 			if not lambd.justFunc
 			{
-				f << "%StackObjLm = bitcast " << ABox.GetClassName() << "* %StackObjABox to i8*\n"
+				f << "%StackObjLmPtr = getelementptr " << ABox.GetClassName() << " , " 
+					<< ABox.GetClassName() << "* %StackObjABox ,i32 0, i32 " << lambd.lambadOnItsFrameNr <<"\n"
+				f << "%StackObjLm = load i8* , i8** %StackObjLmPtr\n"
 				lambd.PrintInhers(f,"%StackObjLm",DebugMode)
 			}
 			//ABox.PrintAlloc(f,"%Lambda0Box",debId)
