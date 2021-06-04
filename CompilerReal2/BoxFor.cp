@@ -72,6 +72,8 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	attrs := AttrArrayType^
 
+	destroyFuncCount := int
+
 	EnabledIIndex := bool
 	CreatedIIndexNames := List.{char^}
 
@@ -251,8 +253,8 @@ BoxForOldFashionMulti := class extend BoxFor
 					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,true)
 					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,true)
 					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,true)
-					//if DestroyFunc[i] != null //TODO WORK
-					//	callDeferStuf = true
+					if DestroyFunc[i] != null
+						destroyFuncCount += 1
 					
 
 					if IncFuncP == null {
@@ -342,13 +344,27 @@ BoxForOldFashionMulti := class extend BoxFor
 	
 	GetDeferUsageVerticalSize := virtual !() -> int
 	{
-		return Down.GetDeferUsageVerticalSize()	
+		return Down.GetDeferUsageVerticalSize()	+ destroyFuncCount
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
 		Down.PrintDeferUse(f,bd,blk,depth,labelIter)
+
+		for i : destroyFuncCount ; $reverse
+		{
+			f << "br label %DeferLabel" << labelIter^ << "\n"
+			f << "DeferLabel" << labelIter^ << ":\n"
+			labelIter^ -= 1
+		}
 	}
 
+	GetDeferUsage := virtual !() -> int
+	{
+		val := GetDeferUsageDown()
+		if destroyFuncCount != 0
+			val = max(val,1)
+		return val
+	}
 	deferId := int
 	deferLabel := int
 	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
@@ -356,7 +372,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		//Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
 		deferId = itId
 		deferLabel = labelSetIter^
-		labelSetIter^ += Down.GetDeferUsageVerticalSize()
+		labelSetIter^ += Down.GetDeferUsageVerticalSize() + destroyFuncCount
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{

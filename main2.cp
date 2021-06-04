@@ -128,22 +128,98 @@ DeferInTry := !() -> void
 	assert(deferInTryVal == 4)
 }
 
+DeferInSwitch := !(int val) -> void
+{
+	defer printf("ye\n")
+
+	{
+		defer printf("sk\n")
+	}
+	switch(val)
+	{
+		case 1:
+		{
+			defer printf("hob\n")
+			printf("heh\n")
+		}
+		case void
+	}
+}
+
 DeferTest := !() -> void
 {
 	//DeferTestIf()
 	//DeferWhile()
 	//DeferFor()
 	//DeferInTry()
-	DeferInLambda()
+	//DeferInLambda()
+	//DeferInSwitch(1)
+	//DeferInSwitch(2)
+}
+
+innerSp := class 
+{
+	start,end := int
+	this := !(int a,int b) .{} -> void
+	{		start = a
+			end = b
+	}
+	"^" := !() -> int
+	{		return start	}
+	Inc := !() .{} -> void
+	{		start += 1	}
+	IsEnd := !() .{} -> bool
+	{		return start >= end	}
+	Destroy := !() -> void
+	{
+		printf("yep\n")
+	}
+}
+
+tstCl := class
+{
+	"~For" := !() .{} -> innerSp
+	{
+		return innerSp(0,2)
+	}
 }
 
 //DeferAndYield
 //DeferGC
 
+BugTest := !() -> void
+{
+	lst := new List.{int}
+	defer lst.Destroy()
+
+	for i : 5
+	{
+		lst.Push(i)
+		if i != 255
+		{
+			lst.Push(13)
+		}
+	}
+	try{
+		printf("bad\n")
+	}catch(IException^ e){
+
+	}
+	if lst.Size() == 0
+	{
+		return void
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	DeferTest()
+	cl := tstCl
+	for i : cl
+	{
+		printf("hop\n")
+	}
+	//BugTest()
+	//DeferTest()
 	//DeferTest()
 
 	//if false
