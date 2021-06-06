@@ -254,7 +254,9 @@ BoxForOldFashionMulti := class extend BoxFor
 					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,true)
 					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,true)
 					if DestroyFunc[i] != null
+					{
 						destroyFuncCount += 1
+					}
 					
 
 					if IncFuncP == null {
@@ -323,6 +325,14 @@ BoxForOldFashionMulti := class extend BoxFor
 					}
 					iter = iter.Right
 				}
+				if destroyFuncCount != 0
+				{
+					fnc := GetBoxFuncContainer(this&)
+					if fnc != null
+					{
+						fnc.DoDefer()
+					}
+				}
 			}
 		}
 	}
@@ -350,10 +360,26 @@ BoxForOldFashionMulti := class extend BoxFor
 	{
 		Down.PrintDeferUse(f,bd,blk,depth,labelIter)
 
-		for i : destroyFuncCount ; $reverse
+		for itr,i : Down.Right
 		{
+			if DestroyFunc[i] == null
+				continue
+
+			j := destroyFuncCount - i - 1
 			f << "br label %DeferLabel" << labelIter^ << "\n"
 			f << "DeferLabel" << labelIter^ << ":\n"
+
+			itr.PrintPointPre(f)
+			fnc := DestroyFunc[i]->{BoxFunc^}
+			f << "call void @" << fnc.OutputName << "("
+			itr.PrintPointUse(f)
+			f << ")\n"
+			//f << "%Ptr" << ItId << "num" << i << " = bitcast "
+			//itr.PrintPointUse(f) f << " to i8*\n"
+			//f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
+			//f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
+			//f << "\n"
+
 			labelIter^ -= 1
 		}
 	}
@@ -362,7 +388,9 @@ BoxForOldFashionMulti := class extend BoxFor
 	{
 		val := GetDeferUsageDown()
 		if destroyFuncCount != 0
+		{
 			val = max(val,1)
+		}
 		return val
 	}
 	deferId := int
@@ -381,18 +409,12 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 		for itr,i : Down.Right
 		{
-			itr.PrintPre(f) //TODO WORK
-			//if DestroyFunc[i] != null
-			//{
-			//	fnc := DestroyFunc[i]->{BoxFunc^}
-			//	f << "%Ptr" << ItId << "num" << i << " = bitcast "
-			//	itr.PrintPointUse(f) f << " to i8*\n"
-			//	f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
-			//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
-			//	if debId != -1
-			//		f << ", !dbg !" << debId
-			//	f << "\n"
-			//}
+			itr.PrintPre(f)
+			if DestroyFunc[i] != null
+			{
+				f << "store i8 " << deferLabel << " , i8* %DeferValPtr" << deferId << "\n"
+				deferLabel += 1
+			}
 		}
 
 

@@ -113,7 +113,7 @@ BoxIf := class extend Object
 	{
 		deferTookSize = Down.Right.GetDeferUsageVerticalSize()
 		if Down.Right.Right != null
-			deferTookSize += Down.Right.GetDeferUsageVerticalSize()
+			deferTookSize += Down.Right.Right.GetDeferUsageVerticalSize()
 		return deferTookSize		
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
@@ -203,6 +203,10 @@ BoxIfAlwaysTrue := class extend BoxIf
 	{
 		Down.Right.PrintDeferInBlock(f,itId,labelSetIter)
 	}
+	GetDeferUsage := virtual !() -> int
+	{
+		return Down.Right.GetDeferUsage()
+	}
 }
 BoxIfAlwaysFalse := class extend BoxIf
 {
@@ -226,6 +230,12 @@ BoxIfAlwaysFalse := class extend BoxIf
 	{
 		if Down.Right.Right != null
 			Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
+	}
+	GetDeferUsage := virtual !() -> int
+	{
+		if Down.Right.Right == null
+			return 0
+		return Down.Right.Right.GetDeferUsage()
 	}
 }
 

@@ -49,39 +49,9 @@ ObjDefer := class extend Object
 	}
 	PrintDestructor := virtual !(TIOStream f) -> void
 	{
-		asWr := Down->{WrappedFunc^}
-		//asWr.PrintItCall(f)
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		//TODO WORK
-		//callAdd := deferAddDefer
-		//if onExcp
-		//	callAdd = deferAddDeferExcp
-		//itr := Up
-		//while itr.GetABox() == null
-		//{
-		//	itr = itr.Up
-		//}
-		//asWrap := Down->{WrappedFunc^}
-		//funcAl := itr.GetABox()
-		//if funcAl.ItemBag.IsEmpty()
-		//{
-		//	f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* null )"
-		//}else{
-		//	neId := GetNewId()
-		//	f << "%T" << neId << " = bitcast " << funcAl.GetAsUse() << " to i8*\n"
-		//	f << "call void @" << callAdd.OutputName << "(void(i8*)* @" << asWrap.OutputName << " , i8* %T"<< neId << " )"
-		//}
-		//if DebugMode
-		//{
-		//	newId := CreateDebugCall(this&)
-		//	if newId != -1
-		//	{
-		//		f << ", !dbg !" << newId
-		//	}
-		//}
-		//f << "\n" 
 	}
 	GetDeferUsage := virtual !() -> int
 	{

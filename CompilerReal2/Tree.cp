@@ -311,6 +311,25 @@ Remove := !(Object^ where ) -> void
 	}
 }
 
+TreeForAll := !(Object^ tr,!(Object^)&->void cb) -> void
+{
+	arr := List.{Object^}() ; $temp $keep
+
+	if tr != null
+		arr.Push(tr)
+
+	while arr.Size() != 0
+	{
+		c := arr.Pop()
+		cb(c)
+		if c.Right != null
+			arr.Push(c.Right)	
+		if c.Down != null
+			arr.Push(c.Down)
+	}
+
+}
+
 UNext := !(Object^ where,Object^ nObj, int count) -> Object^
 {
 	Last := where

@@ -21,7 +21,6 @@ MakeItBlock := !(Object^ item,bool useStuf) -> bool
 	item.Right = oldRight
 	item.Left = oldLeft
 
-
 	ReplaceNode(item,bloc)
 
 	item.SetUp(bloc)
@@ -366,6 +365,8 @@ BoxBlock := class extend Object
 					deferDepth = c
 			}
 		}
+		if deferDepth == 0
+			return 0
 		return deferDepth + 1
 	}
 	PrintDeferInBlockUse := !(TIOStream f) -> void

@@ -216,7 +216,9 @@ main := !(int argc, char^^ argv) -> int
 	cl := tstCl
 	for i : cl
 	{
+		defer printf("123\n")
 		printf("hop\n")
+		throw new Exception("")
 	}
 	//BugTest()
 	//DeferTest()

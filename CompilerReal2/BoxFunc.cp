@@ -230,7 +230,12 @@ BoxFuncContainer := class extend Object
 		pDeferB = true
 
 		deferStackSize = GetDeferUsage() - 1
-		assert(deferStackSize != 0)
+		if deferStackSize == 0
+		{
+			//assert(deferStackSize != 0)
+			//Print(0)
+			assert(false)
+		}
 		
 		AllocSetStruct(this&)
 		deferStackNr = GetAlloc(this&,GTypeU8.GetArray(deferStackSize))
