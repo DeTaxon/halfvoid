@@ -119,14 +119,10 @@ ObjParam := class extend Object
 					if isGCPtr and (not IsWeak)
 					{
 						itId := GetNewId()
-						f << "%AsVoid" << itId << " = bitcast "
-						if isGCPtr
-						{
-							asLoc.PrintPointUse(f,0,debId)
-						}else{
-							Down.Right.PrintUse(f)
-						}
-						f << " to i8*\n"
+						f << "%AsVoidP" << itId << " = bitcast "
+						asLoc.PrintPointUse(f,0,debId)
+						f << " to i8**\n"
+						f << "%AsVoid" << itId << " = load i8*, i8** %AsVoidP" << itId << "\n"
 						f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
 						if DebugMode
 						{
@@ -141,46 +137,42 @@ ObjParam := class extend Object
 				}
 			}
 		}
-		//TODO DEFER
-		//if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
-		//{
-		//	asLoc := Down->{LocalParam^}
-		//	itId := GetNewId()
-		//	f << "%AsVoid" << itId << " = bitcast "
-		//	asLoc.PrintPointUse(f,0,-1)
-		//	f << " to i8*\n"
-		//	f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
-		//	dCl := -1
-		//	if DebugMode
-		//	{
-		//		dCl = CreateDebugCall(this&)
-		//		if dCl != -1
-		//		{
-		//			f << ", !dbg !" << dCl
-		//		}
-		//	}
-		//	f << "\n"
+		
+		if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
+		{
+			asLoc := Down->{LocalParam^}
+			itId := GetNewId()
+			f << "%AsVoidP" << itId << " = bitcast "
+			asLoc.PrintPointUse(f,0,-1)
+			f << " to i8**\n"
+			f << "%AsVoid" << itId << " = load i8* , i8** %AsVoidP" << itId << "\n"
+			f << "call void @" << gcIncRefFunc.OutputName << "(i8* %AsVoid" << itId << ")"
+			dCl := -1
+			if DebugMode
+			{
+				dCl = CreateDebugCall(this&)
+				if dCl != -1
+				{
+					f << ", !dbg !" << dCl
+				}
+			}
+			f << "\n"
+		}
 
-		//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @" << gcCallDestroy.OutputName << " , i8* %AsVoid"<< itId <<" )"
-		//	if dCl != -1
-		//		f << ", !dbg !" << dCl
-		//	f << "\n"
-		//}
-
-		//if Down != null and Down is LocalParam and DebugMode
-		//{
-		//	asLoc := Down->{LocalParam^}
-		//	if IsRef
-		//	{
-		//	}else{
-		//		outId := CreateDbgLocVar(this&,ObjType,MyStr)
-		//		newId := CreateDebugCall(this&)
-		//		if newId != -1 and outId != -1
-		//		{
-		//			f << "call void @llvm.dbg.declare(metadata " << ObjType.GetName() << "* %T" << asLoc.inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
-		//		}
-		//	}
-		//}
+		if Down != null and Down is LocalParam and DebugMode
+		{
+			asLoc := Down->{LocalParam^}
+			if IsRef
+			{
+			}else{
+				outId := CreateDbgLocVar(this&,ObjType,MyStr)
+				newId := CreateDebugCall(this&)
+				if newId != -1 and outId != -1
+				{
+					f << "call void @llvm.dbg.declare(metadata " << ObjType.GetName() << "* %T" << asLoc.inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+				}
+			}
+		}
 	}
 
 	GetInhPar := !() -> AttrArrayType^

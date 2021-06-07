@@ -37,7 +37,6 @@ WrappedFunc := class extend BoxFuncBody
 	}
 	PrintItCall := !(TIOStream f) -> void
 	{
-	 	//TODO WORK
 		//itrU := Up
 		//while itrU != null and itrU.GetABox() == null
 		//	itrU = itrU.Up

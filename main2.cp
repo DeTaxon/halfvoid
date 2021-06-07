@@ -211,15 +211,24 @@ BugTest := !() -> void
 	}
 }
 
+gcTest := class extend TGCObject
+{
+	Destroy := virtual !() -> void
+	{
+		printf("ye\n")
+	}
+}
 main := !(int argc, char^^ argv) -> int
 {
-	cl := tstCl
-	for i : cl
-	{
-		defer printf("123\n")
-		printf("hop\n")
-		throw new Exception("")
-	}
+	defer printf("kick\n")
+	c := new gcTest
+	//cl := tstCl
+	//for i : cl
+	//{
+	//	defer printf("123\n")
+	//	printf("hop\n")
+	//	throw new Exception("")
+	//}
 	//BugTest()
 	//DeferTest()
 	//DeferTest()

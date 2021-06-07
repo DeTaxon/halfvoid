@@ -60,47 +60,16 @@ BoxBlock := class extend Object
 	AddGC := !(int varId) -> void
 	{
 		gcObjects.Push(varId)
+		if gcObjects.Size() == 1
+		{
+			fnc := GetBoxFuncContainer(this&)
+			if fnc != null
+			{
+				fnc.DoDefer()
+				WorkBag.Push(Down,State_Start)
+			}
+		}
 	}
-	//PrintCleanGC := !(TIOStream f) -> void //TODO WORK
-	//{
-	//	if gcObjects.Size() == 0
-	//		return void
-	//	aBox := AllocBox^()
-	//	itr := Up
-	//	while itr != null
-	//	{
-	//		aBox = itr.GetABox()
-	//		if aBox != null
-	//			break
-	//		itr = itr.Up
-	//	}
-//
-	//	for it : gcObjects
-	//	{
-	//		typ := aBox.GetObjType(it)
-	//		
-	//		f << "store "
-	//		typ.PrintType(f)
-	//		f << " null, "
-	//		typ.PrintType(f)
-	//		f << "* %T" << it << "\n"
-	//	}
-	//	f << "%StackObj" << ItId << " = bitcast " << aBox.GetAsUse() << " to i8*\n"
-//
-	//	f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* @BlockGCCleanUp"<<ItId <<" , i8* %StackObj"<< ItId <<" )"
-	//	if DebugMode
-	//	{
-	//		if Line == null and Up?.Line != null
-	//			Line = Up.Line
-//
-	//		cllId := CreateDebugCall(this&)
-	//		if cllId != -1
-	//		{
-	//			f << ", !dbg !" << cllId
-	//		}
-	//	}
-	//	f << "\n"
-	//}
 
 	this := !() -> void
 	{
@@ -143,60 +112,16 @@ BoxBlock := class extend Object
 			return -1
 		return ItId 
 	}
+	needDeferCall := !() -> bool
+	{
+		if gcObjects.Size() != 0
+			return true
+		if deferDepth != 0
+			return true
+		return false
+	}
 	PrintGlobal := virtual !(TIOStream f) -> void 
 	{
-		if deferDepth != 0
-		{
-			deferCount := 0
-			itrR := Down
-			while itrR.Right != null
-			{
-				deferCount += itrR.GetDeferUsageVerticalSize()
-				itrR = itrR.Right
-			}
-			deferCount += itrR.GetDeferUsageVerticalSize()
-
-			blkDepth := 0
-			itrUp := Up
-			while not IsBoxFuncContainer(itrUp)
-			{
-				if itrUp is BoxBlock
-				{
-					blkDepth += 1
-				}
-				itrUp = itrUp.Up
-				assert(itrUp != null)
-			}
-			deferUpDepth = blkDepth
-			cntr := itrUp->{BoxFuncContainer^}
-			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
-			f << "{\n"
-			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
-			cntr.PrintABoxData(f,"%StackObjABox",-1) //TODO:debug?
-
-			f << "%DeferValPtr = getelementptr i8 , i8* %DeferStack , i32 " << blkDepth << "\n"
-			f << "%DeferVal = load i8, i8* %DeferValPtr\n"
-			f << "switch i8 %DeferVal , label %DeferLabel0 [\n"
-			for i : (deferCount+1)
-			{
-				f << "	i8 " << i << " , label %DeferLabel" << i << "\n"
-			}
-			f << "]\n"
-
-			val := deferCount
-			while itrR != null
-			{
-				itrR.PrintDeferUse(f,cntr,this&,blkDepth,val&)
-				itrR = itrR.Left
-			}
-
-			f << "br label %DeferLabel0\n"
-			f << "DeferLabel0:\n"
-			f << "store i8 0, i8* %DeferValPtr\n"
-			f << "	ret void\n"
-			f << "}\n"
-		}
-
 		if gcObjects.Size() != 0
 		{
 			aBox := AllocBox^()
@@ -228,6 +153,64 @@ BoxBlock := class extend Object
 			}
 			f << "ret void\n}\n"
 		}
+
+		if needDeferCall()
+		{
+			deferCount := 0
+			itrR := Down
+			while itrR.Right != null
+			{
+				deferCount += itrR.GetDeferUsageVerticalSize()
+				itrR = itrR.Right
+			}
+			deferCount += itrR.GetDeferUsageVerticalSize()
+
+			blkDepth := 0
+			itrUp := Up
+			while not IsBoxFuncContainer(itrUp)
+			{
+				if itrUp is BoxBlock
+				{
+					blkDepth += 1
+				}
+				itrUp = itrUp.Up
+				assert(itrUp != null)
+			}
+			deferUpDepth = blkDepth
+			cntr := itrUp->{BoxFuncContainer^}
+			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
+			f << "{\n"
+			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
+			cntr.PrintABoxData(f,"%StackObjABox",-1)
+
+			f << "%DeferValPtr = getelementptr i8 , i8* %DeferStack , i32 " << blkDepth << "\n"
+			f << "%DeferVal = load i8, i8* %DeferValPtr\n"
+			f << "switch i8 %DeferVal , label %DeferLabel0 [\n"
+			for i : (deferCount+1)
+			{
+				f << "	i8 " << i << " , label %DeferLabel" << i << "\n"
+			}
+			f << "]\n"
+
+			val := deferCount
+			while itrR != null
+			{
+				itrR.PrintDeferUse(f,cntr,this&,blkDepth,val&)
+				itrR = itrR.Left
+			}
+
+			f << "br label %DeferLabel0\n"
+			f << "DeferLabel0:\n"
+			f << "store i8 0, i8* %DeferValPtr\n"
+
+			if gcObjects.Size() != 0
+				f << "call void @BlockGCCleanUp" << ItId << "(i8* %StackObj)\n"
+
+			f << "	ret void\n"
+			f << "}\n"
+		}
+
+		
 		PrintGlobalSub(f)
 		if DebugMode
 		{
@@ -259,14 +242,13 @@ BoxBlock := class extend Object
 	{
 		if Line == null Line = Up.Line
 
-		if deferDepth != 0
+		if needDeferCall()
 		{
 			f << "%DeferValPtr" << ItId <<" = getelementptr i8 , i8* %DeferStack , i32 " << deferUpDepth << "\n"
 			f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
 		}
 		
 		defVal := 1
-		//PrintCleanGC(f) //TODO
 		for iter : Down
 		{
 			iter.PrintDeferInBlock(f,ItId,defVal&)
@@ -343,13 +325,13 @@ BoxBlock := class extend Object
 	deferUpDepth := int
 	GetDeferUsageVerticalSize := virtual !() -> int
 	{
-		if deferDepth != 0
+		if needDeferCall()
 			return 1
 		return 0
 	}
 	PrintDeferInBlock := virtual !(TIOStream f, int id,int^ labelSetIter) -> void
 	{
-		if deferDepth == 0
+		if not needDeferCall()
 			return void
 		f << "store i8 " << labelSetIter^ << ", i8* %DeferValPtr"<<id <<"\n"
 		labelSetIter^ += 1
@@ -365,9 +347,14 @@ BoxBlock := class extend Object
 					deferDepth = c
 			}
 		}
-		if deferDepth == 0
+		val := deferDepth
+		if gcObjects.Size() != 0
+		{
+			val = max(val,1)
+		}
+		if val == 0
 			return 0
-		return deferDepth + 1
+		return val + 1
 	}
 	PrintDeferInBlockUse := !(TIOStream f) -> void
 	{
@@ -391,7 +378,7 @@ BoxBlock := class extend Object
 	}
 	PrintBlockAddDefer := !(TIOStream f,int debId) -> void
 	{
-		if deferDepth == 0
+		if not needDeferCall()
 			return void
 		f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* @BlockDeferCall" << ItId << ",i8* %StackObj)"
 
