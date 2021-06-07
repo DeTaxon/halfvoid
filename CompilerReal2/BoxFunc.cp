@@ -246,6 +246,11 @@ BoxFuncContainer := class extend Object
 		if pDeferB
 		{
 			f << "%DeferStack = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" << deferStackNr << ", i32 0, i32 0\n"
+			for i : deferStackSize
+			{
+				f << "%DeferStack" << i << " = getelementptr [" << deferStackSize <<" x i8], ["<< deferStackSize <<" x i8]* %T" 
+				f << deferStackNr << ", i32 0, i32 " << i <<"\n"
+			}
 		}
 	}
 	DeferFuncStart := !(TIOStream f,int dbgId) -> void

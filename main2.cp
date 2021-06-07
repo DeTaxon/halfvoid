@@ -148,11 +148,11 @@ DeferInSwitch := !(int val) -> void
 
 DeferTest := !() -> void
 {
-	//DeferTestIf()
-	//DeferWhile()
-	//DeferFor()
-	//DeferInTry()
-	//DeferInLambda()
+	DeferTestIf()
+	DeferWhile()
+	DeferFor()
+	DeferInTry()
+	DeferInLambda()
 	//DeferInSwitch(1)
 	//DeferInSwitch(2)
 }
@@ -211,40 +211,21 @@ BugTest := !() -> void
 	}
 }
 
-gcTest := class extend TGCObject
+
+DeferAndYield := !() -> void
 {
-	Destroy := virtual !() -> void
-	{
-		printf("ye\n")
-	}
+	defer printf("d\n")
+	printf("a\n")
+	yield void
+	defer printf("c\n")
+	printf("b\n")
+	return  void
 }
-fnc2 := !() -> gcTest^
-{
-	return new gcTest
-}
+
 main := !(int argc, char^^ argv) -> int
 {
-	c := fnc2()
-	printf("here\n")
-	//cl := tstCl
-	//for i : cl
-	//{
-	//	defer printf("123\n")
-	//	printf("hop\n")
-	//	throw new Exception("")
-	//}
-	//BugTest()
 	//DeferTest()
-	//DeferTest()
+	DeferAndYield()
+	DeferAndYield()
 
-	//if false
-	//{
-	//	defer printf("bab\n")
-	//	printf("ye\n")
-	//	return 0
-	//}else{
-	//	defer printf("bib\n")
-	//	printf("ye\n")
-	//}
-	//printf("hello\n")
 }

@@ -81,7 +81,7 @@ ObjDefer := class extend Object
 	
 	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
 	{
-		f << "store i8 " << labelSetIter^ << " , i8* %DeferValPtr" << itId << "\n"
+		f << "store i8 " << labelSetIter^ << " , i8* %DeferStack" << itId << "\n"
 		labelSetIter^ += 1
 	}
 	DoTheWork := virtual !(int pri) -> void

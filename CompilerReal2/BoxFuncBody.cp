@@ -382,6 +382,7 @@ BoxFuncBody := class extend BoxFunc
 					}
 				}
 			}
+			PrintABoxExtra(f)
 			if Yodlers.Size() != 0
 			{
 				f << "%Yodler = getelementptr i32 , i32* %T" << yodlerInAlloc << ",i32 0\n"
@@ -393,7 +394,6 @@ BoxFuncBody := class extend BoxFunc
 				f << "Yield0:\n"
 			}
 
-			PrintABoxExtra(f)
 			
 			Down[^].PrintInBlock(f)
 

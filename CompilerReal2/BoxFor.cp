@@ -412,7 +412,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			itr.PrintPre(f)
 			if DestroyFunc[i] != null
 			{
-				f << "store i8 " << deferLabel << " , i8* %DeferValPtr" << deferId << "\n"
+				f << "store i8 " << deferLabel << " , i8* %DeferStack" << deferId << "\n"
 				deferLabel += 1
 			}
 		}

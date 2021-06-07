@@ -244,14 +244,13 @@ BoxBlock := class extend Object
 
 		if needDeferCall()
 		{
-			f << "%DeferValPtr" << ItId <<" = getelementptr i8 , i8* %DeferStack , i32 " << deferUpDepth << "\n"
-			f << "store i8 0, i8* %DeferValPtr"<<ItId<<"\n"
+			f << "store i8 0, i8* %DeferStack"<< deferUpDepth <<"\n"
 		}
 		
 		defVal := 1
 		for iter : Down
 		{
-			iter.PrintDeferInBlock(f,ItId,defVal&)
+			iter.PrintDeferInBlock(f,deferUpDepth,defVal&)
 			iter.PrintInBlock(f)
 		}
 
@@ -333,7 +332,7 @@ BoxBlock := class extend Object
 	{
 		if not needDeferCall()
 			return void
-		f << "store i8 " << labelSetIter^ << ", i8* %DeferValPtr"<<id <<"\n"
+		f << "store i8 " << labelSetIter^ << ", i8* %DeferStack"<<id <<"\n"
 		labelSetIter^ += 1
 	}
 	GetDeferUsage := virtual !() -> int
