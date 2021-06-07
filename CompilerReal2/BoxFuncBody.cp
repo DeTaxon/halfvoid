@@ -354,55 +354,6 @@ BoxFuncBody := class extend BoxFunc
 				PrintDebugDeclare(f,null,null->{char^})
 			}
 			
-			iterP := Up
-
-			while iterP != null //For defer reason TODO WORK? refactor
-			{
-				//if iterP.GetValue() == "x=>x"
-				//{
-				//	thisDbgId := -1
-				//	if DebugMode 
-				//		thisDbgId = CreateDebugCall(this&)
-				//	asL := iterP->{SLambda^}
-				//	ABName := asL.ABox.GetClassName()
-				//	f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to "  <<ABName << "*\n"
-				//	asL.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,thisDbgId)
-
-				//	if not asL.justFunc
-				//	{
-				//		f << "%ItBdPre" << ABox.ItId << " = getelementptr " << ABName << " , " << ABName << "* %ItHiddenName"<<ABox.ItId<<", i32 0,i32 " 
-				//			<< asL.ABox.GetNR(asL.InAlloc[0]) << "\n"
-				//		f << "%ItBd  = load i8*, i8** " << "%ItBdPre" << ABox.ItId << "\n"
-				//		asL.PrintInhers(f,"ItBd",false)
-				//	}
-				//	break
-				//}
-				//if iterP.GetValue() == "!()" and iterP != this&
-				//{
-				//	thisDbgId := -1
-				//	if DebugMode 
-				//		thisDbgId = CreateDebugCall(this&)
-				//	asN := iterP->{BoxFuncBody^}
-				//	ABName := asN.ABox.GetClassName()
-				//	if not asN.ABox.ItemBag.IsEmpty()
-				//	{
-				//		f << "%ItHiddenName" << ABox.ItId << " = bitcast i8* %HiddenName to " << ABName << "*\n"
-				//		asN.ABox.PrintBoxItems(f,"%ItHiddenName"sbt + ABox.ItId,thisDbgId)
-				//		if asN.IsMethod
-				//		{
-				//			thisId := asN.ItParams[0].inAllocId
-				//			fT := asN.MyFuncType
-				//			f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
-				//			f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
-				//		}else{
-				//			//printf("nope\n")
-				//		}
-				//	}
-				//	break
-				//}
-				iterP = iterP.Up
-			}
-
 			if (not this.IsRetComplex) and (MyFuncType.RetType != GetType("void")) and (MyFuncType.RetType.GetName() != "void")
 			{
 				RT := MyFuncType.RetType

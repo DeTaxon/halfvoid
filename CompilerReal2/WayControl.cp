@@ -1,4 +1,4 @@
-WayControl := class extend Object
+WayControl := class extend Object //TODO use this when defer usese GC objects
 {
 	itItm := string
 	itType := int
@@ -40,7 +40,7 @@ WayControl := class extend Object
 				if iter.GetValue() in !["~~for()","~while()","~switch()"]
 				{
 					asBl := prevNode->{BoxBlock^}
-					//if asBl.callDeferStuf //TODO WORK
+					//if asBl.callDeferStuf
 					//{
 					//	iter.ApplyDeferUse(1)
 					//}
