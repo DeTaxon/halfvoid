@@ -1,25 +1,15 @@
 internalDeferBlock := thread_local DeferBlock.{512}
 
 DeferBlock := class .{@DeferStackSize} {
-	funcsExe := Tuple.{!(void^)^->void,void^}[DeferStackSize]
-	funcsIsExcp := bool[DeferStackSize]
+	funcsExe := Tuple.{!(void^,bool)^->void,void^}[DeferStackSize]
 	indPoint := int
 }
 
-internalDeferAdd := !(!(void^)^->void defFunc,void^ stackPoint) -> void
+internalDeferAdd := !(!(void^,bool)^->void defFunc,void^ stackPoint) -> void
 {
 	defBlock := ref internalDeferBlock
 	defBlock.funcsExe[defBlock.indPoint].0 = defFunc
 	defBlock.funcsExe[defBlock.indPoint].1 = stackPoint
-	defBlock.funcsIsExcp[defBlock.indPoint] = false
-	defBlock.indPoint++
-}
-internalDeferExcpAdd := !(!(void^)^->void defFunc,void^ stackPoint) -> void
-{
-	defBlock := ref internalDeferBlock
-	defBlock.funcsExe[defBlock.indPoint].0 = defFunc
-	defBlock.funcsExe[defBlock.indPoint].1 = stackPoint
-	defBlock.funcsIsExcp[defBlock.indPoint] = true
 	defBlock.indPoint++
 }
 
@@ -27,21 +17,21 @@ internalDeferGetDepth := !() -> int
 {
 	return internalDeferBlock.indPoint
 }
-internalDeferApply := !(int depth) -> void
+internalDeferSkip := !(int depth) -> void
 {
-	defBlock := ref internalDeferBlock
-	i := defBlock.indPoint
-	while i != depth
-	{
-		i--
-		if not defBlock.funcsIsExcp[i]
-		{
-			itFunc := defBlock.funcsExe[i].0
-			itFunc(defBlock.funcsExe[i].1)
-		}
-	}
-	defBlock.indPoint = depth
+	internalDeferBlock.indPoint = depth
 }
+//internalDeferApply := !(int depth) -> void
+//{
+//	defBlock := ref internalDeferBlock
+//	i := defBlock.indPoint
+//	while i != depth
+//	{
+//		i--
+//		itFunc := defBlock.funcsExe[i].0
+//		itFunc(defBlock.funcsExe[i].1,false)
+//	}
+//}
 internalDeferApplyExp := !(int depth) -> void
 {
 	defBlock := ref internalDeferBlock
@@ -50,15 +40,10 @@ internalDeferApplyExp := !(int depth) -> void
 	{
 		i--
 		itFunc := defBlock.funcsExe[i].0
-		itFunc(defBlock.funcsExe[i].1)
+		itFunc(defBlock.funcsExe[i].1,true)
 	}
-	defBlock.indPoint = depth
 }
 
-internalDeferApplySkip := !(int depth) -> void
-{
-	defBlock.indPoint = depth
-}
 
 //internalSetJmp
 //internalLongJmp
