@@ -218,10 +218,14 @@ gcTest := class extend TGCObject
 		printf("ye\n")
 	}
 }
+fnc2 := !() -> gcTest^
+{
+	return new gcTest
+}
 main := !(int argc, char^^ argv) -> int
 {
-	defer printf("kick\n")
-	c := new gcTest
+	c := fnc2()
+	printf("here\n")
 	//cl := tstCl
 	//for i : cl
 	//{

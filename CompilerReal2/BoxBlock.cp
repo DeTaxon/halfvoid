@@ -255,7 +255,7 @@ BoxBlock := class extend Object
 			iter.PrintInBlock(f)
 		}
 
-		if deferDepth != 0
+		if needDeferCall()
 		{
 			PrintDeferInBlockUse(f)
 		}
@@ -358,13 +358,13 @@ BoxBlock := class extend Object
 	}
 	PrintDeferInBlockUse := !(TIOStream f) -> void
 	{
-		if deferDepth == 0
+		if not needDeferCall()
 			return void
 		f << "call void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 0)\n" 
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
-		if deferDepth == 0
+		if not needDeferCall()
 			return void
 		curId := labelIter^
 		labelIter^ -= 1

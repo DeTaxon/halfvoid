@@ -78,14 +78,8 @@ BoxReturn := class extend Object
 
 			iterF := Up
 
-			askedDefer := false
 			while iterF?.GetValue() != "!()" and iterF.GetValue() != "x=>x"
 			{
-				//if iterF.GetValue() == "{d}" //TODO WORK wtf is dat
-				//{
-				//	asBl := iterF->{BoxBlock^}
-				//	askedDefer = askedDefer or asBl.callDeferStuf
-				//}
 				iterF = iterF.Up
 			}
 
@@ -93,11 +87,6 @@ BoxReturn := class extend Object
 			{
 				RetFunc := TypeFunc^
 
-				//if askedDefer //TODO WORK ?
-				//{
-				//	toSetUse := iterF.Down->{BoxBlock^}
-				//	toSetUse.callDeferStuf = askedDefer
-				//}
 
 				if iterF.GetValue() == "!()"{
 					asNeed := iterF->{BoxFunc^}

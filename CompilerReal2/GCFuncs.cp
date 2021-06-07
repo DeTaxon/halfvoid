@@ -62,6 +62,5 @@ GCMakeAware := !(Object^ start, int allcId) -> void
 	{
 		blk.AddGC(allcId);
 		AllocSetStruct(blk)
-		//blk.ApplyDeferUse(1) //TODO WORK
 	}
 }
