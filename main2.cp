@@ -228,14 +228,4 @@ main := !(int argc, char^^ argv) -> int
 	//DeferAndYield()
 	//DeferAndYield()
 
-	fnc := () ==> {
-		defer printf("bob\n")
-		printf("yep\n")
-		yield void
-		defer printf("bab\n")
-		printf("yop\n")
-	}
-	fnc()
-	fnc()
-
 }

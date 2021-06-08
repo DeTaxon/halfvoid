@@ -296,8 +296,10 @@ BoxSwitch := class extend Object
 	}
 	GetOutPath := virtual !(Object^ objs, int typ, int size) -> BoxLabel^
 	{
-		if typ == PATH_CONTINUE //TODO: use size
-		{	
+		if typ == PATH_CONTINUE
+		{
+			if size != 1
+				return Up.GetOutPath(objs,typ,size - 1)
 			itr := objs
 			while itr != null
 			{

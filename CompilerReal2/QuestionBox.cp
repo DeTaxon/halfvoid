@@ -277,8 +277,7 @@ QuestionBox2 := class extend Object
 				{
 					EmitError("question type is not a pointer, its "sbt + dwnType.GetType() + " \n")
 				}else{
-					cc := this&
-					cc->SetType(QuestionBoxRef2)//TODO: this->SetType 
+					this->SetType(QuestionBoxRef2)
 				}
 			}
 			
