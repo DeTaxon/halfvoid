@@ -970,7 +970,7 @@ TypeClass := class extend Type
 		itAlign = 1
 		
 		nowSize := 0
-		if not ToClass.vTable.Empty()
+		if ToClass.ContainVirtual
 			nowSize = 8
 		for it : ToClass.Params
 		{

@@ -368,6 +368,10 @@ List := class .{@T}
 	{
 		return Counter
 	}
+	Empty := !() -> bool
+	{
+		return Counter == 0
+	}
 	ToArray := !() .{} -> T[]
 	{
 		if Counter == 0 
