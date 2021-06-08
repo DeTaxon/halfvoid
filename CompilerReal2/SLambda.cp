@@ -37,12 +37,14 @@ SLambda := class extend BoxFuncContainer
 	thisLambda := FuncParam^
 
 	outLabel := BoxLabelAnon
+	yieldLabel := BoxLabelAnon
 	
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
 	{
 		ABox.ItId = GetNewId()
 		outLabel."this"()
+		yieldLabel."this"()
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_PrePrint)
 		ItId = GetNewId()
@@ -78,7 +80,7 @@ SLambda := class extend BoxFuncContainer
 		return PreRet
 	}
 
-	AddYodler := !(BoxReturn^ toAdd) -> int
+	AddYodler := virtual !(BoxReturn^ toAdd) -> int
 	{
 		Yodlers.Push(toAdd)
 		return Yodlers.Size()
@@ -809,6 +811,9 @@ SLambda := class extend BoxFuncContainer
 			outLabel.PrintLabel(f)
 
 			DeferFuncEnd(f,debId)
+			
+			f << "br label %" << yieldLabel.GetLabel() << "\n"
+			yieldLabel.PrintLabel(f)
 
 			if fastUse.RetType == GTypeVoid or IsRetComplex
 			{
@@ -1035,6 +1040,10 @@ SLambda := class extend BoxFuncContainer
 
 	GetOutPath := virtual !(Object^ item, int typ,int size) ->BoxLabel^
 	{
+		if typ == PATH_YIELD
+		{
+			return yieldLabel&
+		}
 		return outLabel&
 	}
 	GetValue := virtual !() -> string
