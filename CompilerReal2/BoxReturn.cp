@@ -142,7 +142,12 @@ BoxReturn := class extend Object
 			{
 				EmitError("error to get return path 24135\n")
 			}else{
-				returnLabel = Up.GetOutPath(this&,PATH_RETURN,0)
+				if IsYield
+				{
+					returnLabel = Up.GetOutPath(this&,PATH_YIELD,0)
+				}else{
+					returnLabel = Up.GetOutPath(this&,PATH_RETURN,0)
+				}
 				assert(returnLabel != null)
 			}
 		}

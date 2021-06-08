@@ -7,6 +7,7 @@ BoxFuncBody := class extend BoxFunc
 	Parent := BoxFuncBody^
 
 	outLabel := BoxLabelAnon
+	yieldLabel := BoxLabelAnon
 
 	GetScope := virtual !() -> int { return ABox.ItId }
 
@@ -33,6 +34,7 @@ BoxFuncBody := class extend BoxFunc
 	{
 		ABox.ItId = GetNewId()
 		outLabel."this"()
+		yieldLabel."this"()
 		IsRetRef = fType.RetRef
 		MyFuncParamNames = names
 		FuncName = SomeName
@@ -104,6 +106,7 @@ BoxFuncBody := class extend BoxFunc
 		IsSelfReturn = isRetSelf
 		ABox.ItId = GetNewId()
 		outLabel."this"()
+		yieldLabel."this"()
 		IsRetRef = RetRef
 		IsVirtual = IsVirt
 		FuncName = SomeName
@@ -402,6 +405,9 @@ BoxFuncBody := class extend BoxFunc
 
 			DeferFuncEnd(f,dbgId)
 
+			f << "br label %" << yieldLabel.GetLabel() << "\n"
+			yieldLabel.PrintLabel(f)
+
 
 			if MyFuncType.RetType == GTypeVoid or this.IsRetComplex
 			{
@@ -488,6 +494,10 @@ BoxFuncBody := class extend BoxFunc
 	}
 	GetOutPath := virtual !(Object^ item, int typ,int size) -> BoxLabel^
 	{
+		if typ == PATH_YIELD
+		{
+			return yieldLabel&
+		}
 		return outLabel&
 	}
 

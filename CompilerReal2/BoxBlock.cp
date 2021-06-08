@@ -297,6 +297,10 @@ BoxBlock := class extend Object
 			if Up == null return null
 			return Up.GetOutPath(objs,typ,size)
 		}
+		if typ == PATH_YIELD
+		{
+			return Up.GetOutPath(objs,typ,size)
+		}
 
 		if typ == PATH_RETURN
 		{
@@ -576,5 +580,6 @@ BoxFile := class extend BoxBlock
 }
 
 PATH_RETURN := 1
-PATH_CONTINUE := 2
-PATH_BREAK := 3 
+PATH_YIELD := 2
+PATH_CONTINUE := 3
+PATH_BREAK := 4
