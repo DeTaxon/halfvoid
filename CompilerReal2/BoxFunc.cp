@@ -148,10 +148,13 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 IsBoxFuncContainer := !(Object^ toCheck) -> bool
 {
-	if toCheck is BoxFuncBody return true
-	if IsSLambda(toCheck) return true
-	if toCheck is BoxFuncBodyFromString return true
-	return false
+	return toCheck is in BoxFuncContainer
+	//if toCheck is BoxFuncBody or IsSLambda(toCheck) 
+	//	or toCheck is BoxFuncBodyFromString
+	//{
+	//	return true
+	//}
+	//return false
 }
 GetBoxFuncContainer := !(Object^ Start) -> BoxFuncContainer^
 {

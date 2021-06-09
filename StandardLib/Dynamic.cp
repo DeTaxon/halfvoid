@@ -1,9 +1,12 @@
 
 internalCheckClassInClass := !(@FromType^ ptr).{@ToType} -> bool
 {
+	if ptr == null
+		return false
 	fTbl := FromType->VTable
 	toTable := ToType->VTable
-	tTable := fTbl->{size_t^^}^
+	tblPtr := ptr->{void^^}^
+	tTable := tblPtr->{size_t^^}^
 	if tTable == null
 		return false
 	for i : tTable^

@@ -236,7 +236,7 @@ QuestionBox2 := class extend Object
 		}
 		if pri == State_GetUse
 		{
-			if Down is NaturalCall //TODO: NaturalCallRef
+			if Down is in NaturalCall
 			{
 				asCall := Down->{NaturalCall^}
 				cFunc := asCall.ToCall

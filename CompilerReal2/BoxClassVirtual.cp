@@ -92,7 +92,7 @@ VTableTransform := class extend VTableObject
 		itr := ptrToClass
 		while itr != null
 		{
-			if itr.vTable.Empty()
+			if not itr.ContainVirtual
 				break
 			classesCount += 1
 			itr = itr.Parent
