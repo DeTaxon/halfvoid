@@ -1,35 +1,39 @@
 
 TstCl := class
 {
-
-}
-AppendClass TstCl
-{
-	fnc := virtual !() -> void
+	c := virtual !() -> void
 	{
-		printf("hey\n")
-	}	
+
+	}
 }
 Cl2 := class extend TstCl
 {
-	fnc2 := virtual !() -> void
-	{
-		c = 7
-	}
 }
-AppendClass Cl2
+Cl3 := class extend Cl2
 {
-	c := int
-	fnc := virtual !() -> void
-	{
-		printf("hop\n")
-	}	
 }
 
-
+internalCheckClassInClass := !(@FromType^ ptr).{@ToType} -> bool
+{
+	fTbl := FromType->VTable
+	toTable := ToType->VTable
+	tTable := fTbl->{size_t^^}^
+	if tTable == null
+		return false
+	for i : tTable^
+	{
+		if tTable->{void^^}[i*2 + 1] == toTable
+			return true
+	}
+	return false
+}
 main := !(int argc, char^^ argv) -> int
 {
 	r := new Cl2
-	r.fnc2()
-	printf("%i\n",r.c)
+	if r is in TstCl
+	{
+		printf("yep\n")
+	}else{
+		printf("nope\n")
+	}
 }

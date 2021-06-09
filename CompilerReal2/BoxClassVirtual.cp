@@ -4,6 +4,7 @@ VTableObject := class
 	fName := string
 	
 	CmpItem := virtual !(VTableObject^ Ri) -> bool { return false}
+	PrintGlobal := virtual !(TIOStream f) -> void {}
 	PrintType := virtual !(TIOStream f) -> void {}
 	PrintValue := virtual !(TIOStream f) -> void {}
 }
@@ -70,16 +71,67 @@ VTableParameter := class extend VTableObject
 	}
 }
 
+VTableTransform := class extend VTableObject
+{
+	ptrToClass := BoxClass^
+	this := !(BoxClass^ ptr) -> void
+	{
+		ptrToClass = ptr
+	}
+	CmpItem := virtual !(VTableObject^ Ri) -> bool
+	{
+		return Ri is VTableTransform
+	}
+	PrintType := virtual !(TIOStream f) -> void 
+	{
+		f << GTypeVoidP.GetName()
+	}
+	classesCount := int
+	PrintGlobal := virtual !(TIOStream f) -> void 
+	{
+		itr := ptrToClass
+		while itr != null
+		{
+			if itr.vTable.Empty()
+				break
+			classesCount += 1
+			itr = itr.Parent
+		}
+
+		arrName := ("["sbt + (classesCount*2 + 1) + " x i64]")->{char^}
+		f << "@TableTransform" << ptrToClass.ClassId << " = global " << arrName << " ["
+		f << "i64 " << classesCount << "\n"
+
+		itr = ptrToClass
+		for i : classesCount
+		{
+			f << ",i64 ptrtoint ("
+			itr.PrintVTableTypeName(f)
+			f << "* "
+			itr.PrintVTableObject(f)
+			f <<" to i64) , i64 0\n"
+			itr = itr.Parent
+		}
+		f << "]\n"
+	}
+	PrintValue := virtual !(TIOStream f) -> void 
+	{
+		f << GTypeVoidP.GetName() << " bitcast ( [" << (classesCount*2 + 1) << " x i64]* @TableTransform"<< ptrToClass.ClassId <<" to i8*)"
+	}
+}
+
 AppendClass BoxClass
 {
-	vTypes := Queue.{VTableObject^}
-	vTable := Queue.{VTableObject^}
+	vTypes := List.{VTableObject^}
+	vTable := List.{VTableObject^}
 
 	computedVTable := bool
 	PrintVTable := !(TIOStream f) -> void
 	{
 		if vTable.Empty()
 			return void
+
+		vTable[^].PrintGlobal(f)
 
 		PrintVTableTypeName(f)
 		f << " = type {"
@@ -115,6 +167,17 @@ AppendClass BoxClass
 				{
 					vTable.Push(it)
 				}
+			}
+
+			if vTable.Size() == 0
+			{
+				if vTypes.Size() != 0
+				{
+					vTable.Push(new VTableTransform(this&))
+				}
+			}else{
+				assert(vTable[0] is VTableTransform)
+				vTable[0] = new VTableTransform(this&)
 			}
 
 			for invTypes : vTypes// i : 0
