@@ -1,42 +1,79 @@
 
-FuncItem := class
+VTableObject := class
 {
 	fName := string
+	
+	CmpItem := virtual !(VTableObject^ Ri) -> bool { return false}
+	PrintType := virtual !(TIOStream f) -> void {}
+	PrintValue := virtual !(TIOStream f) -> void {}
+}
+
+VTableFunction := class extend VTableObject
+{
 	fType := TypeFunc^
 	fItem := BoxFunc^
-	fConstVal := Object^
-	fTyp := Type^
 
-	funcWrapper := BoxFunc^
-	wrappedFuncCall := BuiltInVirtualCall^ at funcWrapped
+	funcWrapper := BuiltInVirtualCall^
 
-	CmpItem := !(FuncItem^ Ri) -> bool
+	CmpItem := virtual !(VTableObject^ Ri) -> bool
 	{	
-		if (fConstVal != null) !=  (Ri.fConstVal != null) return false
-		if fConstVal != null {
-			if fName != Ri.fName return false
-			return fTyp == Ri.fTyp
-		}else{
-			if fName != Ri.fName return false
-			if fType.RetType != Ri.fType.RetType return false
-			if fType.ParsCount != Ri.fType.ParsCount return false
-			if fType.IsVArgs != Ri.fType.IsVArgs return false
+		if not (Ri is VTableFunction)
+			return false
+		r := Ri->{VTableFunction^}
 
-			for i : fType.ParsCount
-			{
-				if i == 0 continue
-				if fType.Pars[i] != Ri.fType.Pars[i] return false
-			}
+		if fName != r.fName return false
+		if fType.RetType != r.fType.RetType return false
+		if fType.ParsCount != r.fType.ParsCount return false
+		if fType.IsVArgs != r.fType.IsVArgs return false
+
+		for i : fType.ParsCount
+		{
+			if i == 0 continue
+			if fType.Pars[i] != r.fType.Pars[i] return false
 		}
 
 		return true
+	}
+	PrintType := virtual !(TIOStream f) -> void 
+	{
+		f << fType.GetName() << "*"
+	}
+	PrintValue := virtual !(TIOStream f) -> void 
+	{
+		f << fType.GetName() << "* @" << fItem.OutputName
+	}
+}
+VTableParameter := class extend VTableObject
+{
+	fItem := BuiltInGetVirtualParam^
+	fConstVal := Object^
+	fTyp := Type^
+
+	funcWrapper := BuiltInGetVirtualParam^
+
+	CmpItem := virtual !(VTableObject^ Ri) -> bool
+	{	
+		if not (Ri is VTableParameter)
+			return false
+		r := Ri->{VTableParameter^}
+
+		if fName != r.fName return false
+		return fTyp == r.fTyp
+	}
+	PrintType := virtual !(TIOStream f) -> void 
+	{
+		f << fTyp.GetName()
+	}
+	PrintValue := virtual !(TIOStream f) -> void 
+	{
+		f << fTyp.GetName() << " " << fConstVal.GetName()
 	}
 }
 
 AppendClass BoxClass
 {
-	vTypes := Queue.{FuncItem^}
-	vTable := Queue.{FuncItem^}
+	vTypes := Queue.{VTableObject^}
+	vTable := Queue.{VTableObject^}
 
 	computedVTable := bool
 	PrintVTable := !(TIOStream f) -> void
@@ -49,10 +86,7 @@ AppendClass BoxClass
 		for it,i : vTable 
 		{
 			if i > 0 f << " , "
-			if it.fConstVal == null
-				f << it.fType.GetName() << "*"
-			else
-				f << it.fTyp.GetName()
+			it.PrintType(f)
 		}
 		f << " }\n"
 
@@ -63,12 +97,7 @@ AppendClass BoxClass
 		for it,i : vTable
 		{
 			if i > 0 f << " , "
-			if it.fConstVal != null
-			{
-				f << it.fTyp.GetName() << " " << it.fConstVal.GetName()
-			}else{
-				f << it.fType.GetName() << "* @" << it.fItem.OutputName
-			}
+			it.PrintValue(f)
 			
 		}
 		f << "}\n"
@@ -78,8 +107,6 @@ AppendClass BoxClass
 		if not computedVTable
 		{
 			computedVTable = true
-
-			tableOffset := 0
 
 			if this.Parent != null
 			{
@@ -98,30 +125,33 @@ AppendClass BoxClass
 					if invTable.CmpItem(invTypes)
 					{
 						invTable = invTypes
-						if invTypes.fConstVal != null
+						if invTypes is VTableParameter
 						{
-							aB := invTypes.fItem->{BuiltInGetVirtualParam^}
-							aB.MakeLine(j + tableOffset)
-						}else{
-							invTypes.fItem.VirtualId = j
-							aS := invTypes.funcWrapper
-							aB := aS->{BuiltInVirtualCall^}
-							aB.MakeLine(j + tableOffset)
+							invTypes->{VTableParameter^}.fItem.MakeLine(j)
+						}
+						if invTable is VTableFunction
+						{
+							fnc := invTypes->{VTableFunction^}
+							
+							fnc.fItem.VirtualId = j
+							fnc.funcWrapper.MakeLine(j) 
 						}
 						found = true
 					}
 				}
 				if not found
 				{
-					aS2 := invTypes.funcWrapper
-					if invTypes.fConstVal != null{
-						aB := invTypes.fItem->{BuiltInGetVirtualParam^}
-						aB.MakeLine(vTable.Size() + tableOffset)
+					if invTypes is VTableParameter
+					{
+						invTypes->{VTableParameter^}.fItem.MakeLine(vTable.Size())
 						vTable.Push(invTypes)
-					}else{
-						invTypes.fItem.VirtualId = vTable.Size() + tableOffset
-						aB2 := aS2->{BuiltInVirtualCall^}
-						aB2.MakeLine(vTable.Size() + tableOffset)
+					}
+					if invTypes is VTableFunction
+					{
+						fnc := invTypes->{VTableFunction^}
+						
+						fnc.fItem.VirtualId = vTable.Size()
+						fnc.funcWrapper.MakeLine(vTable.Size()) 
 						vTable.Push(invTypes)
 					}
 				}
@@ -151,18 +181,17 @@ AppendClass BoxClass
 	}
 	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{
-		newItem := new FuncItem
+		newItem := new VTableFunction
 		newItem.fName = fNam
 		newItem.fType = fTyo
 		newItem.fItem = fF
-		newItem.fConstVal = null
 		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
 
 		vTypes.Push(newItem)
 	}
 	PutVirtualParam := virtual !(string fName,Object^ cnst) -> void
 	{
-		newItem := new FuncItem
+		newItem := new VTableParameter
 		newItem.fName = fName
 		newItem.fTyp = cnst.GetType()
 		newItem.fConstVal = cnst
@@ -174,8 +203,8 @@ AppendClass BoxClass
 	{
 		for it : vTypes
 		{
-			if it.fName == name and it.fConstVal != null
-				return it.fItem
+			if it.fName == name and it is VTableParameter
+				return it->{VTableParameter^}.fItem
 		}
 		if Parent != null return Parent.GetVirtualParamFunc(name)
 		return null

@@ -489,7 +489,7 @@ BoxClass := class extend BoxClassBase
 			{
 				if vTypes[^].fName == name
 				{
-					Funcs.Push(it.funcWrapper) 
+					Funcs.Push(it->{VTableFunction^}.funcWrapper) 
 				}
 				itrF = itrF.Parent
 			}
@@ -503,7 +503,7 @@ BoxClass := class extend BoxClassBase
 				funcName := name[(maybeForced+1) .. 0].StrTmp()
 				if vTypes[^].fName == funcName
 				{
-					Funcs.Push(it.fItem)
+					Funcs.Push(it->{VTableFunction^}.fItem)
 				}
 
 				inMt := defaultFuncsHolder.methods.TryFind(funcName) //TODO: forced call to namespace

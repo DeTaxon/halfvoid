@@ -175,16 +175,14 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 
 		if itFunc.IsVirtual
 		{
-			a1 := itInClass.vTable[id]
-			a2 := a1.fType
-			a3 := a2->{Type^}
-			FuncTypeName2 := a3.GetName()
+			fnc := itInClass.vTable[id]->{VTableFunction^}
+			FuncTypeName2 := fnc.fType.GetName()
 			f << "%FuncTabel"<<callId<<" = getelementptr %Class" << classId << " , %Class" << classId << "* %this, i32 0, i32 0 " << debStr << "\n"
 			f << "%PreFunc" << callId << " = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel" << callId << debStr <<" \n"
 			f << "%FuncPtr" << callId << " = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc" << callId << ", i32 0, i32 " << id <<debStr << " \n"
 			f << "%Func" << callId << " = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr" << callId << debStr << "\n"
 
-			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.vTable[id].fType.Pars[0].GetName() << "* " << debStr << "\n"
+			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << fnc.fType.Pars[0].GetName() << "* " << debStr << "\n"
 		}else{
 			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
 		}
@@ -212,10 +210,9 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 		fTypp2 := fTypp->{Type^}
 		if itFunc.IsVirtual
 		{
-			asPre1 := itInClass.vTable[id].fType
-			asPre2 := asPre1->{Type^}
-			f << "call " << asPre2.GetName()  << "%Func" << callId << "("
-			f << itInClass.vTable[id].fType.Pars[0].GetName() << "* %NewThis" << callId << ""
+			fnc := itInClass.vTable[id]->{VTableFunction^}
+			f << "call " << fnc.fType.GetName()  << "%Func" << callId << "("
+			f << fnc.fType.Pars[0].GetName() << "* %NewThis" << callId << ""
 		}else{
 			f <<  "call " << fTypp2.GetName()  << "@" << OutputName << "("
 			f <<  itInClass.GetClassOutputName() << "* %NewThis" << callId << ""
