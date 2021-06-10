@@ -28,7 +28,6 @@ MonitorCallback := type !(char^,int)&-> void
 
 TaskBox := class
 {
-	sleepTasks := List.{Tuple.{double,TaskData^}} ; $keep
 	firstRunTasks := List.{TaskData^} ; $keep
 	itStacks := List.{void^} ; $keep
 	keptStacks := List.{void^} 
@@ -61,14 +60,6 @@ TaskBox := class
 	{
 		CurrentTask?.keepStack = true
 	}
-	monitorsToAdd := List.{Tuple.{char^,MonitorCallback,int,bool}} ; $keep
-	Monitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
-	{
-		itMutex.Lock()
-		monitorsToAdd.Emplace(pathName,callb,modes,recursive)
-		itMutex.Unlock()
-		notifyMain()
-	}
 
 	pausedIdIter := int
 	pausedProcesses := RBMap.{int,TaskData^} ; $keep
@@ -96,17 +87,6 @@ TaskBox := class
 		firstRunTasks << nwTask
 	}
 
-	ASleep := !(double sleepTime) -> void
-	{
-		assert(sleepTime > 0)
-		nextTime := TGetSteadyTime() + sleepTime
-		itMutex.Lock()
-		newObj := ref sleepTasks.CreateBeforeIf(_1.0 < nextTime)
-		newObj.0 = nextTime
-		newObj.1 = CurrentTask
-		itMutex.Unlock()
-		switchToMain()
-	}
 	
 	switchToMain := !() -> void
 	{
@@ -145,16 +125,7 @@ TaskBox := class
 
 			itMutex.Lock()
 
-			if monitorsToAdd.Size() != 0
-			{
-				while monitorsToAdd.Size() != 0
-				{
-					frst := ref monitorsToAdd.Front()
-					addMonitor(frst.0,frst.1,frst.2,frst.3)
-					monitorsToAdd.Pop()
-				}				
-			}
-
+			monitorPushWork()
 			threadPushWork()
 
 			if destroyTasks.Size() != 0
@@ -228,23 +199,6 @@ TaskBox := class
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
 		poolThread[^].Join()
-	}
-	checkTimers := !(bool& makeWait,double& waitTime) -> TaskData^
-	{
-		if sleepTasks.Size() == 0
-			return null
-		nowTime := TGetSteadyTime()
-		first := ref sleepTasks.Front()
-		if first.0 <= nowTime
-		{
-			itTask := first.1
-			sleepTasks.Pop()
-			return itTask
-		}else{
-			makeWait = true
-			waitTime = first.0 - nowTime
-		}
-		return null
 	}
 	checkCreateTask := !() -> TaskData^
 	{
