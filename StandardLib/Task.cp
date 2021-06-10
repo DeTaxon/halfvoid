@@ -14,45 +14,6 @@ TaskData := class
 	taskLocalPtr := void^
 }
 
-TMonitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
-{
-	CurrentTaskBox.Monitor(pathName,modes,recursive,callb)
-}
-AwaitWork := !(!()&->void lambd) -> void
-{
-	if CurrentTaskBox != null
-	{
-		CurrentTaskBox.AwaitWork(lambd)
-	}else{
-		lambd()
-	}
-}
-TPauseTask := !(int^ resId) -> void
-{
-	if CurrentTaskBox != null
-		CurrentTaskBox.PauseTask(resId)
-}
-TResumeTask := !(int taskId) -> void
-{
-	if CurrentTaskBox != null
-		CurrentTaskBox.ResumeTask(taskId)
-}
-TExpectWorkers := !(int exp) -> void
-{
-	if CurrentTaskBox != null
-		CurrentTaskBox.ExpectWorkers(exp)
-}
-TSpawnTask := !(!()&->void lmb) -> void
-{
-	assert(CurrentTaskBox != null)
-	CurrentTaskBox.Spawn(lmb)
-}
-
-TYield := !() -> void
-{
-	assert(CurrentTaskBox != null)
-	CurrentTaskBox.Yield()
-}
 TaskKeepStackData := !() -> void
 {
 	assert(CurrentTaskBox != null)
@@ -161,56 +122,8 @@ TaskBox := class
 		itMutex.Unlock()
 		switchToMain()
 	}
-	ExpectWorkers := !(int expects) -> void
-	{
-		diffWorks := expects - poolThread.Size()
-		if diffWorks > 0
-		{
-			for i : diffWorks
-			{
-				newThread := new Thread(() ==> {
-					while working
-					{
-						itWorkMutex.Lock()
+	
 
-						if itWorkToDo.Size() != 0
-						{
-							frstWork := itWorkToDo.Front().0
-							frstTask := itWorkToDo.Front().1
-							itWorkToDo.Pop()
-							itWorkMutex.Unlock()
-							frstWork()
-							FlushTempMemory()
-							itMutex.Lock()
-							tasksToExe << frstTask
-							notifyMain()
-							itMutex.Unlock()
-						}else{
-							if not working
-							{
-								itWorkMutex.Unlock()
-								return void
-							}
-							itWorkConVar.Wait(itWorkMutex&)
-							itWorkMutex.Unlock()
-						}
-					}
-				})
-				itMutex.Lock()
-				poolThread << newThread
-				itMutex.Unlock()
-			}
-		}
-	}
-	AwaitWork := !(!()&->void lambd) -> void
-	{
-		ExpectWorkers(1)
-		itMutex.Lock()
-		itWorkCount += 1
-		itWorkToDoPre.Emplace(lambd,CurrentTask)
-		itMutex.Unlock()
-		switchToMain()
-	}
 	switchToMain := !() -> void
 	{
 		_TaskPtrReset()

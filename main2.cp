@@ -1,16 +1,13 @@
 
-x := 100000
+
 main := !(int argc, char^^ argv) -> int
 {
-	for r : 5 
-	{	
-		j := r
-		TSpawnTask(() ==> {
-			j2 := j
-			for i : x
-			{
-				TYield()
-			}
-		})
-	}
+	
+	work := TPushWork(() ==> {
+		for i : 500
+		{
+			TSleep(1)
+		}
+	})
+	work.Await()
 }

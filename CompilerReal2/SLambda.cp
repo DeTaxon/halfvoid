@@ -621,10 +621,9 @@ SLambda := class extend BoxFuncContainer
 					}
 					if fc.2 != null and fc.2.IsMethod
 					{
-						itrT := fc.2->{Object^}
-						while itrT != null and itrT.GetValue() != "{...}"
-							itrT = itrT.Up
-						clName := itrT->{BoxClass^}.ClassType.GetName()
+						itrT := GetUpClass(fc.2)
+						assert(itrT != null)
+						clName := itrT.ClassType.GetName()
 						allcNR := fc.0.GetNR(fc.2.InAlloc[0])
 						alName := fc.0.GetClassName()
 						f << "%SetThis = getelementptr " << alName << "," << alName <<"* " 
