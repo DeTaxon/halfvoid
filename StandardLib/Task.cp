@@ -13,12 +13,6 @@ TaskData := class
 	keepStack := bool
 	taskLocalPtr := void^
 }
-ucontextStartTask := !(void^ fiberData) -> void
-{
-	CurrentTask.tskToRun()
-	CurrentTaskBox.onDestroyTask(CurrentTask)
-	CurrentTaskBox.switchToMain()
-}
 
 TMonitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
 {
@@ -220,20 +214,13 @@ TaskBox := class
 	switchToMain := !() -> void
 	{
 		_TaskPtrReset()
-		if $posix
-			swapcontext(CurrentTask.uContext&,startContext)
-		if $win32
-			SwitchToFiber(startContext)
+		osSwitchToMain()
 	}
 	doTask := !(TaskData^ toRun) -> void
 	{
 		CurrentTask = toRun
 		_TaskPtrSet(toRun.taskLocalPtr)
-		if $posix
-			swapcontext(startContext&,toRun.uContext&)
-		if $win32
-			SwitchToFiber(toRun.fiber)
-
+		osDoTask(toRun)
 	}
 	onDestroyTask := !(TaskData^ toDestr) -> void
 	{
@@ -401,4 +388,11 @@ TaskBox := class
 CreateTaskBox := !(int stackSize) -> TaskBox^
 {
 	return new TaskBox(stackSize)
+}
+
+ucontextStartTask := !(void^ fiberData) -> void
+{
+	CurrentTask.tskToRun()
+	CurrentTaskBox.onDestroyTask(CurrentTask)
+	CurrentTaskBox.switchToMain()
 }

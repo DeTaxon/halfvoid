@@ -1,25 +1,16 @@
 
-TstCl := class
-{
-	c := virtual !() -> void
-	{
-
-	}
-}
-Cl2 := class extend TstCl
-{
-}
-Cl3 := class extend Cl2
-{
-}
-
+x := 100000
 main := !(int argc, char^^ argv) -> int
 {
-	r := new Cl2
-	if r is in TstCl
-	{
-		printf("yep\n")
-	}else{
-		printf("nope\n")
+	for r : 5 
+	{	
+		j := r
+		TSpawnTask(() ==> {
+			j2 := j
+			for i : x
+			{
+				TYield()
+			}
+		})
 	}
 }

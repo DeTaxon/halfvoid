@@ -167,4 +167,12 @@ AppendClass TaskBox
 			}
 		}
 	}
+	osSwitchToMain := !() -> void
+	{
+		swapcontext(CurrentTask.uContext&,startContext)
+	}
+	osDoTask := !(TaskData^ toRun) -> void
+	{
+		swapcontext(startContext&,toRun.uContext&)
+	}
 }

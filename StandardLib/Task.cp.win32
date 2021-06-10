@@ -150,4 +150,12 @@ AppendClass TaskBox
 			}
 		}
 	}
+	osSwitchToMain := !() -> void
+	{
+		SwitchToFiber(startContext)
+	}
+	osDoTask := !(TaskData^ toRun) -> void
+	{
+		SwitchToFiber(toRun.fiber)
+	}
 }
