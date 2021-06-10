@@ -37,19 +37,11 @@ TaskBox := class
 
 	itMutex := Mutex
 
-	itWorkToDoPre := List.{Tuple.{!()&->void,TaskData^}} ; $keep
-
-	itWorkMutex := Mutex
-	itWorkConVar := ConVar
-	itWorkToDo := List.{Tuple.{!()&->void,TaskData^}} ; $keep
-	itWorkCount := int
-	poolThread := List.{Thread^}
 
 	tasksToExe := List.{TaskData^} ; $keep
 
 	destroyTasks := List.{TaskData^} ; $keep
 
-	yieldedTasks := List.{TaskData^} ; $keep
 	working := bool
 
 
@@ -61,11 +53,9 @@ TaskBox := class
 		itWorkConVar."this"()
 		itWorkCount = 0
 
-
 		osInit()
 		working = true
 	}
-	
 	
 	TaskKeepStackData := !() -> void
 	{
@@ -105,11 +95,6 @@ TaskBox := class
 		nwTask.tskToRun = tskToRun.Capture()
 		firstRunTasks << nwTask
 	}
-	Yield := !() -> void
-	{
-		yieldedTasks.Push(CurrentTask)
-		switchToMain()
-	}
 
 	ASleep := !(double sleepTime) -> void
 	{
@@ -123,7 +108,6 @@ TaskBox := class
 		switchToMain()
 	}
 	
-
 	switchToMain := !() -> void
 	{
 		_TaskPtrReset()
@@ -171,17 +155,7 @@ TaskBox := class
 				}				
 			}
 
-			if itWorkToDoPre.Size() != 0
-			{
-				itWorkMutex.Lock()
-				for it : itWorkToDoPre
-				{
-					itWorkToDo.Emplace(it.0,it.1)
-				}
-				itWorkToDoPre.Clear()
-				itWorkConVar.NotifyAll()
-				itWorkMutex.Unlock()
-			}
+			threadPushWork()
 
 			if destroyTasks.Size() != 0
 			{
@@ -255,13 +229,6 @@ TaskBox := class
 		itWorkMutex.Unlock()
 		poolThread[^].Join()
 	}
-	checkExeWorks := !() -> TaskData^
-	{
-		if tasksToExe.Size() == 0
-			return null
-
-		return tasksToExe.Pop()
-	}
 	checkTimers := !(bool& makeWait,double& waitTime) -> TaskData^
 	{
 		if sleepTasks.Size() == 0
@@ -290,12 +257,6 @@ TaskBox := class
 		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
 		_taskInitMem(startTask.taskLocalPtr)
 		return startTask
-	}
-	checkYields := !() -> TaskData^
-	{
-		if yieldedTasks.Size() == 0
-			return null
-		return yieldedTasks.Pop()
 	}
 }
 CreateTaskBox := !(int stackSize) -> TaskBox^
