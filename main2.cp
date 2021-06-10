@@ -2,7 +2,6 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	
 	work := TPushWork(() ==> {
 		for i : 500
 		{

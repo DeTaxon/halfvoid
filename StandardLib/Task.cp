@@ -126,7 +126,6 @@ TaskBox := class
 			itMutex.Lock()
 
 			monitorPushWork()
-			threadPushWork()
 
 			if destroyTasks.Size() != 0
 			{

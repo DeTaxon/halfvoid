@@ -1,11 +1,21 @@
+TaskBoxWorkData := class
+{
+	lambda := !()&->void
+	taskData := TaskData^
+
+	this := !(!()&->void l, TaskData^ t) -> void
+	{
+		lambda = l
+		taskData = t
+	}
+	"=" := default
+}
+
 AppendClass TaskBox
 {
-
-	itWorkToDoPre := List.{Tuple.{!()&->void,TaskData^}} ; $keep
-
 	itWorkMutex := Mutex
 	itWorkConVar := ConVar
-	itWorkToDo := List.{Tuple.{!()&->void,TaskData^}} ; $keep
+	itWorkToDo := List.{TaskBoxWorkData} ; $keep
 	itWorkCount := int
 	poolThread := List.{Thread^}
 
@@ -24,14 +34,13 @@ AppendClass TaskBox
 
 					if itWorkToDo.Size() != 0
 					{
-						frstWork := itWorkToDo.Front().0
-						frstTask := itWorkToDo.Front().1
+						work := itWorkToDo.Front()
 						itWorkToDo.Pop()
 						itWorkMutex.Unlock()
-						frstWork()
+						work.lambda()
 						FlushTempMemory()
 						itMutex.Lock()
-						tasksToExe << frstTask
+						tasksToExe << work.taskData
 						notifyMain()
 						itMutex.Unlock()
 					}else{
@@ -53,26 +62,12 @@ AppendClass TaskBox
 	AwaitWork := !(!()&->void lambd) -> void
 	{
 		ExpectWorkers(1)
-		itMutex.Lock()
-		itWorkCount += 1
-		itWorkToDoPre.Emplace(lambd,CurrentTask)
-		itMutex.Unlock()
-		switchToMain()
-	}
-	threadPushWork := !() -> void
-	{
-		
-		if itWorkToDoPre.Size() == 0
-			return void
-			
 		itWorkMutex.Lock()
-		for it : itWorkToDoPre
-		{
-			itWorkToDo.Emplace(it.0,it.1)
-		}
-		itWorkToDoPre.Clear()
+		itWorkCount += 1
+		itWorkToDo.Emplace(lambd,CurrentTask)
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
+		switchToMain()
 	}
 	checkExeWorks := !() -> TaskData^
 	{
