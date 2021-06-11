@@ -7,8 +7,13 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 	gRepo.Init(".")
 	if $debug
 	{
-		gRepo.AddZipRoot("halfvoid")
-		gRepo.AddZipRoot("halfvoid.exe")
+		try
+		{
+			gRepo.AddZipRoot("halfvoid")
+			gRepo.AddZipRoot("halfvoid.exe")
+		}catch(IException^ e)
+		{
+		}
 	}
 
 	argv2 := argv

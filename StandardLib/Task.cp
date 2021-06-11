@@ -20,11 +20,6 @@ TaskKeepStackData := !() -> void
 	CurrentTaskBox.TaskKeepStackData()
 }
 
-M_CREATED := 1
-M_DELETED := 2
-M_CHANGED := 4
-
-MonitorCallback := type !(char^,int)&-> void
 
 TaskBox := class
 {
@@ -174,7 +169,7 @@ TaskBox := class
 				continue
 			}
 
-			if not makeWait and itWorkCount != 0
+			if not makeWait and (itWorkCount != 0 or monitorWds.Size() != 0)
 			{
 				makeWait = true
 				waitTime = 1

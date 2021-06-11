@@ -389,6 +389,7 @@ main := !(int argc,char^^ argv) -> int
 			//LLVMInitializeNativeTarget := llvmLib.Get("LLVMInitializeNativeTarget")->{!()^->void}
 			LLVMCreateExecutionEngineForModule := llvmLib.Get("LLVMCreateExecutionEngineForModule")->{!(void^^,void^,char^^)^->int}
 			LLVMCreateJITCompilerForModule := llvmLib.Get("LLVMCreateJITCompilerForModule")->{!(void^^,void^,char^^)^->int}
+			LLVMCreateMCJITCompilerForModule := llvmLib.Get("LLVMCreateMCJITCompilerForModule")->{!(void^^,void^,void^,u64,char^^)^->int}
 			LLVMCreateGenericValueOfInt := llvmLib.Get("LLVMCreateGenericValueOfInt")->{!(void^,s64,int)^->void^}
 			LLVMInt32Type := llvmLib.Get("LLVMInt32Type")->{!()^->void^}
 			LLVMRunFunction := llvmLib.Get("LLVMRunFunction")->{!(void^,void^,int,void^)^->void}
@@ -411,10 +412,10 @@ main := !(int argc,char^^ argv) -> int
 			res := llvmIRInContext(ctx,buf,mod&,msg&)
 			if msg != null
 				printf("error %s\n",msg)
-			fName := entryFunc.Down->{BoxFunc^}.OutputName
-			mainFunc := llvmGetNamedFunction(mod,fName)
+			fName := mainFunc.Down->{BoxFunc^}.OutputName
+			mainFunc2 := llvmGetNamedFunction(mod,fName)
 
-			printf("result1 %i %p %s\n",res,mainFunc,fName)
+			printf("result1 %i %p %s\n",res,mainFunc2,fName)
 
 			LLVMVerifyModule(mod,0,msg&)
 			if msg != null
@@ -428,7 +429,7 @@ main := !(int argc,char^^ argv) -> int
 			LLVMInitializeX86AsmPrinter()
 
 			eng := void^()
-			res = LLVMCreateJITCompilerForModule(eng&,mod,msg)
+			res = LLVMCreateMCJITCompilerForModule(eng&,mod,null,0,msg)
 			if msg != null
 				printf("error %s\n",msg)
 			printf("result2 %i\n",res)
