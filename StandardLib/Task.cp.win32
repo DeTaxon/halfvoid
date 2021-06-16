@@ -122,6 +122,10 @@ AppendClass TaskBox
 			}
 		}
 	}
+	waitOnMonitor := !() -> bool
+	{
+		return monObjects.Size() != 0
+	}
 	doMonitor := !(monitorStruct^ strc) -> void
 	{
 		//ZeroMem(strc.lap)

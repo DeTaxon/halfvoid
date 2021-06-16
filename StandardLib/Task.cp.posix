@@ -133,6 +133,10 @@ AppendClass TaskBox
 			}
 		}
 	}
+	waitOnMonitor := !() -> bool
+	{
+		return monitorWds.Size() != 0
+	}
 	notifyMain := !() -> void
 	{
 		toWrite := u64

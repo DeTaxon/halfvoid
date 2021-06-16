@@ -169,7 +169,7 @@ TaskBox := class
 				continue
 			}
 
-			if not makeWait and (itWorkCount != 0 or monitorWds.Size() != 0)
+			if not makeWait and (itWorkCount != 0 or waitOnMonitor() )
 			{
 				makeWait = true
 				waitTime = 1
