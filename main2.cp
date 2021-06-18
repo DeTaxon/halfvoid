@@ -9,7 +9,7 @@ C := class extend TGCObject
 
 main := !(int argc, char^^ argv) -> int
 {
-	r := List.{C}()
+	r := new List.{C}()
 	r.Emplace()
 	return 0
 }

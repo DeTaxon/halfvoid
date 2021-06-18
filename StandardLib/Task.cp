@@ -130,6 +130,8 @@ TaskBox := class
 					{
 						if $posix keptStacks.Push(it.stackPtr)
 						if $win32 keptStacks.Push(it.fiber)
+						delete it.taskLocalPtr
+						delete it
 						continue
 					}
 					it.tskToRun.Destroy()
@@ -141,6 +143,8 @@ TaskBox := class
 					{
 						DeleteFiber(it.fiber)
 					}
+					delete it.taskLocalPtr
+					delete it
 				}
 				destroyTasks.Clear()
 			}
@@ -205,6 +209,13 @@ TaskBox := class
 		startTask.taskLocalPtr = calloc(_getTaskStructSize(),1)
 		_taskInitMem(startTask.taskLocalPtr)
 		return startTask
+	}
+	Destroy := !() -> void
+	{
+		posixDestroy()
+		firstRunTasks.Destroy()
+		delete destroyTasks[^]
+		destroyTasks.Destroy()
 	}
 }
 CreateTaskBox := !(int stackSize) -> TaskBox^

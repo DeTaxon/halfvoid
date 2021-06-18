@@ -49,7 +49,8 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 			preRet = main(argc,argv2)
 		})
 		tb.Run()
-		//delete tb
+		tb.Destroy()
+		delete tb
 	}
 	if $win32
 	{

@@ -179,4 +179,9 @@ AppendClass TaskBox
 	{
 		swapcontext(startContext&,toRun.uContext&)
 	}
+	posixDestroy := !() -> void
+	{
+		delete itStacks[^]
+		itStacks.Destroy()
+	}
 }

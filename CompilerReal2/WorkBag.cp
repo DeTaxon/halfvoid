@@ -32,7 +32,8 @@ WorkWithBag := !(bool printW) -> void
 			}
 			TYield()
 
-			break
+			if WorkBag.IsEmpty() or not ErrorLog.Empty()
+				break
 		}
 	}catch(IException^ e)
 	{
