@@ -52,6 +52,10 @@ Object := class{
 	{
 		return GetValue()
 	}
+	GetConstValue := virtual !() -> char^
+	{
+		return ""
+	}
 	Print := virtual !(int s) -> void {
 		for s printf("->")
 		printf("item: %s",GetDebugValue())

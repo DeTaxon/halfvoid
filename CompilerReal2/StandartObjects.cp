@@ -486,6 +486,14 @@ ObjType := class extend ObjConst
 	{
 		return "~type"
 	}
+	GetConstValue := virtual !() -> char^
+	{
+		if MyType != null
+		{
+			return MyType.GetGoodName()
+		}
+		return "bad type"
+	}
 	Print := virtual !(int s) -> void
 	{
 		for s printf("->")

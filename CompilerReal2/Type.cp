@@ -950,6 +950,16 @@ TypeClass := class extend Type
 	}
 	GetGoodName := virtual !() -> string { 
 		st := ""sbt + ToClass.ClassName 
+		if ToClass.ItConsts.Size() != 0
+		{
+			st << ".{"
+			for it,i : ToClass.ItConsts
+			{
+				if i != 0 st << ","
+				st << it.GetConstValue()
+			}
+			st << "}"
+		}
 		if ToClass.ItAttrs.Size() != 0
 		{
 			st << " attrs: "

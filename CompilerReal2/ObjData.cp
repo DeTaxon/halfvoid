@@ -9,6 +9,9 @@ ObjData := class extend Object
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if visitedWork[pri] return void
+		else visitedWork << pri
+
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_PreGetUse)
@@ -111,6 +114,13 @@ ObjData := class extend Object
 							printf("item type %s\n",ir.GetType().GetGoodName())
 						}
 						ir = ir.Right
+					}
+					printf("ups\n")
+					ir := Up
+					while ir != null
+					{
+						printf("Up %s\n",ir.GetDebugValue())
+						ir = ir.Up
 					}
 					EmitError("can not parse data\n")
 				}
