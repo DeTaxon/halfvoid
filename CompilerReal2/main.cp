@@ -463,7 +463,7 @@ main := !(int argc,char^^ argv) -> int
 	return 0
 }
 
-WriteCodeData := !(TIOStream fil) -> void
+WriteCodeBuiltIn := !(TIOStream fil) -> void
 {
 	fil << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	fil << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
@@ -495,6 +495,11 @@ WriteCodeData := !(TIOStream fil) -> void
 	fil << "declare void @llvm.va_start(i8* %a)\n"
 	fil << "declare void @llvm.va_end(i8* %a)\n"
 	fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+}
+
+WriteCodeData := !(TIOStream fil) -> void
+{
+	WriteCodeBuiltIn(fil)
 	PrintLambdaGlobal(fil)
 	StrContainer.PrintGlobal(fil)
 	GlobalDataBuiltins[^].PrintGlobal(fil)
