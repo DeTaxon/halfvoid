@@ -115,13 +115,13 @@ ObjData := class extend Object
 						}
 						ir = ir.Right
 					}
-					printf("ups\n")
-					ir := Up
-					while ir != null
-					{
-						printf("Up %s\n",ir.GetDebugValue())
-						ir = ir.Up
-					}
+					//printf("ups\n")
+					//ir := Up
+					//while ir != null
+					//{
+					//	printf("Up %s\n",ir.GetDebugValue())
+					//	ir = ir.Up
+					//}
 					EmitError("can not parse data\n")
 				}
 			}

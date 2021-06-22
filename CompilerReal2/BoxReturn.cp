@@ -188,7 +188,7 @@ BoxReturn := class extend Object
 			f << "\n"
 			
 			tp := Down.GetType()
-			if tp is TypePoint and tp.Base is TypeClass and tp.Base->{TypeClass^}.ToClass.IsGC
+			if tp is TypePoint and tp.Base is TypeClass and tp.Base->{TypeClass^}.ToClass.IsGC and not IsRetRef
 			{
 				id := GetNewId()
 				f << "%AsVoidP" << id << " = bitcast " << retTypeName << "* %Result to i8**\n"
