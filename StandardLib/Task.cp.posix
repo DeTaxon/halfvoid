@@ -31,6 +31,12 @@ inotify_event := class
 	name := u8[1]
 }
 
+AppendClass TaskData
+{
+	uContext := u8[1024]
+	stackPtr := void^
+}
+
 AppendClass TaskBox
 {
 	eventFd := int

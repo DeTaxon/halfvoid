@@ -4,12 +4,6 @@ CurrentTaskBox := thread_local TaskBox^
 TaskData := class
 {
 	tskToRun := !()& -> void
-	if $posix
-		uContext := u8[1024]
-	if $posix
-		stackPtr := void^
-	if $win32
-		fiber := void^
 	keepStack := bool
 	taskLocalPtr := void^
 }

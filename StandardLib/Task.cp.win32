@@ -48,6 +48,11 @@ monitorStruct := class
 	callb := MonitorCallback
 }
 
+AppendClass TaskData
+{
+	fiber := void^
+}
+
 AppendClass TaskBox
 {
 	startContext := void^
