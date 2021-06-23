@@ -67,7 +67,7 @@ IsGCClass := !(Type^ toCmp) -> bool
 }
 IsGCAnyPtr := !(Type^ toCmp) -> bool
 {
-	if toCmp is TypeFatArr and toCmp.Base is TypeClass and toCmp.Base->{TypeClass^}.ToClass.IsGC
+	if toCmp is TypeFatGCArr
 	{
 		return true
 	}

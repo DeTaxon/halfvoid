@@ -472,7 +472,7 @@ ObjParam := class extend Object
 	}
 	CheckGC := !(Type^ ObjType,int allcId) -> void
 	{
-		if ObjType is TypePoint and ObjType.Base is TypeClass and ObjType.Base->{TypeClass^}.ToClass.IsGC
+		if IsGCAnyPtr(ObjType)
 		{
 			if IsWeak
 				return void

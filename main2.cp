@@ -10,7 +10,8 @@ Screamer := class extend TGCObject
 main := !(int argc, char^^ argv) -> int
 {
 	c := new Screamer^[13]
-	c = null
+	//if c == null
+	//	printf("nope\n")
 	printf("t %s\n",c->Type->Name)
 	return 0
 }
