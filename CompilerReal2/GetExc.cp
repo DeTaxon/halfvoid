@@ -4,7 +4,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	SomeBugEnd := ToType
 
 
-	if (itemType is TypePoint or itemType is TypeFatArr) 
+	if (itemType is TypePoint or itemType is TypeFatArr or itemType is TypeFatGCArr) 
 	and (ToType is TypePoint or ToType is TypeFatArr)
 	{
 		return GetExcPointers(itemType,ToType)

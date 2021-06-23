@@ -460,6 +460,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 
 	if inType is TypeArr and funcType == GTypeVoidP return CmpLose
+	if inType is TypeFatGCArr and funcType == GTypeVoidP return CmpLose
 	//if inType == GTypeDouble and funcType == GTypeFloat return CmpLose
 	//if inType == GTypeDouble and funcType == GTypeHalf return CmpLose
 	//if inType == GTypeFloat and funcType == GTypeHalf return CmpLose
