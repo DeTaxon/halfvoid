@@ -1103,6 +1103,7 @@ AddTemplates := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateStandartTypeConstructor())
 	BuiltInTemplates.Push(new BuiltInTemplatePointArr())
 	BuiltInTemplates.Push(new BuiltInTemplateSet())
+	BuiltInTemplates.Push(new BuiltInTemplateSetGCFatArr())
 	BuiltInTemplates.Push(new BuiltInTemplateNext())
 	//BuiltInTemplates.Push(new BuiltInTemplateStorePoint())
 	BuiltInTemplates.Push(new BuiltInTemplateGetRef())

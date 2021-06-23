@@ -35,7 +35,7 @@ BuiltInTemplateSet := class extend BoxTemplate
 		
 		ptrA := pars[0].first
 		ptrB := pars[1].first
-		if IsGCPtr(ptrA)
+		if IsGCAnyPtr(ptrA)
 		{
 			return new BuiltIn2SetGCPtr("=",funct)
 		}
@@ -66,36 +66,5 @@ BuiltInTemplateSet := class extend BoxTemplate
 	DoTheWork := virtual !(int pri) -> void
 	{
 		
-	}
-}
-BuiltIn2SetGCPtr := class extend BuiltIn2Func
-{
-	this := !(char^ fName, TypeFunc^ fType) -> void
-	{
-		FuncName = fName
-		MyFuncType = fType
-	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
-		id := trg.GenId()
-
-		trg.Down.PrintPointPre(f)
-		trg.Down.Right.PrintPre(f)
-		
-		f << "%Left" << id << " = bitcast "
-		trg.Down.PrintPointUse(f)
-		f << " to i8**\n"
-		f << "%Right"<<id<<" = bitcast "
-		trg.Down.Right.PrintUse(f) 
-		f << " to i8*\n" 
-		f << "call void@" << gcSetValueFunc.OutputName << "(i8** %Left"<<id<<", i8* %Right"<<id<<")"
-		if DebugMode
-		{
-			dbgId := CreateDebugCall(trg)
-			if dbgId != -1
-			{
-				f << ", !dbg !" << dbgId
-			}
-		}
-		f << "\n"
 	}
 }

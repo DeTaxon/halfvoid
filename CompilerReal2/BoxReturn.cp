@@ -123,7 +123,10 @@ BoxReturn := class extend Object
 									RetFuncType = RetFunc.RetType
 
 								}else{
-									printf("from %s to %p\n",Down.GetType().GetName(),PreType)
+									typName := "(null)"
+									if PreType != null
+										typName = PreType.GetGoodName()
+									printf("from %s to %s\n",Down.GetType().GetName(),typName)
 									EmitError("Can not return value\n")
 								}
 							}
@@ -188,7 +191,7 @@ BoxReturn := class extend Object
 			f << "\n"
 			
 			tp := Down.GetType()
-			if tp is TypePoint and tp.Base is TypeClass and tp.Base->{TypeClass^}.ToClass.IsGC and not IsRetRef
+			if IsGCAnyPtr(tp) and not IsRetRef
 			{
 				id := GetNewId()
 				f << "%AsVoidP" << id << " = bitcast " << retTypeName << "* %Result to i8**\n"

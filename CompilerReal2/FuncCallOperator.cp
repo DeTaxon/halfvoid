@@ -102,7 +102,14 @@ FuncCallPrefixOperator := !(Object^ iter) -> Object^
 				
 				FillAttrs(itB^,iter)
 
-				func := FindFunc("new",iter,itB^,true)
+				func := BoxFunc^()
+
+				if IsGCClass(useType) or IsGCAnyPtr(useType)
+				{
+					func = FindFunc("internalGCNewArray",iter,itB^,true)
+				}else{
+					func = FindFunc("new",iter,itB^,true)
+				}
 				if func != null
 				{
 					irr.Up.Down = irr

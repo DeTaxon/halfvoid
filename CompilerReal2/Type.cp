@@ -32,7 +32,12 @@ Type := class {
 	GetFatArray := virtual !() -> Type^
 	{
 		if AsFatArr == null{
-			AsFatArr = new TypeFatArr(this&)
+			if IsGCAnyPtr(this&)
+			{
+				AsFatArr = GCGetArrayPointer(this&) 
+			}else{
+				AsFatArr = new TypeFatArr(this&)
+			}
 		}
 		return AsFatArr
 	}

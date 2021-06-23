@@ -114,8 +114,7 @@ ObjParam := class extend Object
 					f << "\n"
 
 					dTyp := Down.Right.GetType()
-					isGCPtr := IsGCPtr(dTyp)
-					//if (isGCPtr or IsGCClass(dTyp)) and (not IsWeak)
+					isGCPtr := IsGCAnyPtr(dTyp)
 					if isGCPtr and (not IsWeak)
 					{
 						itId := GetNewId()
