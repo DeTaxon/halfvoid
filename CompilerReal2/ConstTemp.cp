@@ -68,7 +68,14 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 		if obj.Down.Right.GetValue() == "[]"
 		{
 			if itT.GetType() != "arr"{
-				if itT.GetType() == "fatarr"
+				if itT is TypeFatGCArr
+				{
+					typD2 := IsSameType(obj.Down,itT->{TypeFatGCArr^}.realBase,res,resB)
+					if typD2 != null{
+						return typD2
+					}
+				}
+				if itT is TypeFatArr
 				{
 					typD2 := IsSameType(obj.Down,itT.Base,res,resB)
 					if typD2 == null 

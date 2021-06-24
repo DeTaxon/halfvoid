@@ -313,6 +313,7 @@ BaseFuncCall := class extend ObjResult
 	
 				if preRet == null
 				{
+					iter.Up.Print(0)
 					msg := "compiler bug at param "sbt + (i+1) + " "
 					msg << " object " << iter.GetValue()
 					if iter.GetType() != null{

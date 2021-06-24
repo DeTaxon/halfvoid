@@ -108,3 +108,11 @@ TGCArray := class .{@T} extend TGCObject
 			this[i] = null
 	}
 }
+
+internalTGCArrayGetElement := !(@T[] arr,int index) -> ref T
+{
+	assert(arr != null)
+	vd := arr->{void^}
+	ptr := vd->{TGCArray.{T}^}
+	return ptr^._arrayData[index]
+}

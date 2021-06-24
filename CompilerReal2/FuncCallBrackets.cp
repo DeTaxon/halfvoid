@@ -3,8 +3,8 @@
 
 FuncCallCheckCreateArray := !(Object^ ToParse) -> Object^
 {
-    iter := ToParse.Down
-    if iter?.GetValue() == "!"
+	iter := ToParse.Down
+	if iter?.GetValue() == "!"
 	{
 		if iter.Right?.GetValue() == "[]"
 		{
@@ -62,6 +62,10 @@ FuncCallGetArrayElement := !(Object^ iterPre,Object^ iter) -> Object^
         iter.Right = iter.Right.Down
         iter.Right.Left = iter
         iter.SetUp(iter.Up)
+	if iter.GetType() is TypeFatGCArr
+	{
+        	return OneCall("internalTGCArrayGetElement",iter.Up,null->{Object^})
+	}
         return OneCall("[]",iter.Up,null->{Object^})
     }
     return null

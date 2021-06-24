@@ -58,7 +58,7 @@ GCGetArrayPointer := !(Type^ typ) -> Type^
 
 	itBox.itConsts.Push(new ObjType(typ))
 
-	return new TypeFatGCArr(gcArrayClass.GetClass(itBox^))
+	return new TypeFatGCArr(gcArrayClass.GetClass(itBox^).GetPoint(),typ)
 }
 
 IsGCClass := !(Type^ toCmp) -> bool
@@ -89,10 +89,12 @@ GCMakeAware := !(Object^ start, int allcId) -> void
 }
 TypeFatGCArr := class extend TypeFatArr
 {
-	this := !(Type^ newBase) -> void
+	realBase := Type^
+	this := !(Type^ newBase, Type^ rBase) -> void
 	{
 		ItHash = newBase.ItHash*3 + 1
 		Base = newBase
+		realBase = rBase
 		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()
@@ -110,7 +112,7 @@ TypeFatGCArr := class extend TypeFatArr
 		{
 			return ""sbt + Base.GetGoodName() + "[]"
 		}
-		cls := Base->{TypeClass^}.ToClass
+		cls := Base.Base->{TypeClass^}.ToClass
 		tp := cls.ItConsts[0]->{ObjType^}.MyType
 		return ""sbt + tp.GetGoodName() + "[]"
 	}
