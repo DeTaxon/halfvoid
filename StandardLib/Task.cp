@@ -206,7 +206,7 @@ TaskBox := class
 	}
 	Destroy := !() -> void
 	{
-		posixDestroy()
+		osDestroy()
 		firstRunTasks.Destroy()
 		delete destroyTasks[^]
 		destroyTasks.Destroy()

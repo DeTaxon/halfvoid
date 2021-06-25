@@ -47,7 +47,7 @@ GCInit := !() -> void
 	gcSetValueFunc.ParseBlock()
 }
 
-GCGetArrayPointer := !(Type^ typ) -> Type^
+GCMakeArrayPointer := !(Type^ typ) -> void
 {
 	if gcArrayClass == null
 	{
@@ -57,8 +57,9 @@ GCGetArrayPointer := !(Type^ typ) -> Type^
 	itBox := new FuncInputBox ; $temp
 
 	itBox.itConsts.Push(new ObjType(typ))
-
-	return new TypeFatGCArr(gcArrayClass.GetClass(itBox^).GetPoint(),typ)
+	newBase := gcArrayClass.GetClass(itBox^).GetPoint()
+	typ->SetType(TypeFatGCArr)
+	typ.Base = newBase
 }
 
 IsGCClass := !(Type^ toCmp) -> bool
@@ -89,7 +90,6 @@ GCMakeAware := !(Object^ start, int allcId) -> void
 }
 TypeFatGCArr := class extend TypeFatArr
 {
-	realBase := Type^
 	this := !(Type^ newBase, Type^ rBase) -> void
 	{
 		ItHash = newBase.ItHash*3 + 1

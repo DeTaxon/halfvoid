@@ -32,12 +32,7 @@ Type := class {
 	GetFatArray := virtual !() -> Type^
 	{
 		if AsFatArr == null{
-			if IsGCAnyPtr(this&)
-			{
-				AsFatArr = GCGetArrayPointer(this&) 
-			}else{
-				AsFatArr = new TypeFatArr(this&)
-			}
+			AsFatArr = new TypeFatArr(this&)
 		}
 		return AsFatArr
 	}
@@ -904,10 +899,12 @@ TypeArr := class extend Type
 }
 TypeFatArr := class extend Type
 {
+	realBase := Type^
 	this := !(Type^ B) -> void
 	{
 		ItHash = B.ItHash*3 + 1
 		Base = B
+		realBase = B
 		if DebugMode and Base.metaId != 0
 		{
 			metaId = GetNewId()

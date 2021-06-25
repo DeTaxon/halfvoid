@@ -168,4 +168,7 @@ AppendClass TaskBox
 	{
 		SwitchToFiber(toRun.fiber)
 	}
+	osDestroy := !() -> void
+	{
+	}
 }

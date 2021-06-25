@@ -43,7 +43,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 			newBox.itPars.Emplace(it.first,it.second)
 		}
 		newBox.itConsts.Push(itBox.itConsts[^]) ; $temp
-		newBox.itAttrs[ind] = itBox.itAttrs[^ind]
+		newBox.itAttrs[ind] = itBox.itAttrs[^ind] ; $temp
 		return itTemplate.GetPriority(newBox^)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox,TypeFunc^ funType) -> BoxFunc^

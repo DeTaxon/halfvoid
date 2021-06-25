@@ -92,7 +92,7 @@ internalGCNewArray := !(int count) .{@R} -> R[]
 TGCArray := class .{@T} extend TGCObject
 {
 	_arraySize := int
-	_arrayData := T[1]
+	_arrayData := T
 	this := !(int itemCounter) -> void
 	{
 		_arraySize = itemCounter
@@ -100,7 +100,7 @@ TGCArray := class .{@T} extend TGCObject
 	"[]" := !(int index) -> ref T
 	{
 		assert(index < _arraySize and index >= 0)
-		return _arrayData[index]
+		return _arrayData&[index]
 	}
 	Destroy := virtual !() -> void
 	{
@@ -114,5 +114,5 @@ internalTGCArrayGetElement := !(@T[] arr,int index) -> ref T
 	assert(arr != null)
 	vd := arr->{void^}
 	ptr := vd->{TGCArray.{T}^}
-	return ptr^._arrayData[index]
+	return ptr^[index]
 }

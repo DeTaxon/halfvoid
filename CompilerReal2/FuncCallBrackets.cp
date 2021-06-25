@@ -62,6 +62,7 @@ FuncCallGetArrayElement := !(Object^ iterPre,Object^ iter) -> Object^
         iter.Right = iter.Right.Down
         iter.Right.Left = iter
         iter.SetUp(iter.Up)
+	tp := iter.GetType()
 	if iter.GetType() is TypeFatGCArr
 	{
         	return OneCall("internalTGCArrayGetElement",iter.Up,null->{Object^})

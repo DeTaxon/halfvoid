@@ -1,4 +1,5 @@
 
+//
 getcontext := !(void^ a) -> int declare
 setcontext := !(void^ a) -> int declare
 makecontext := !(void^ a,!()^->void  b,int argc,...) -> int declare
@@ -185,7 +186,7 @@ AppendClass TaskBox
 	{
 		swapcontext(startContext&,toRun.uContext&)
 	}
-	posixDestroy := !() -> void
+	osDestroy := !() -> void
 	{
 		delete itStacks[^]
 		itStacks.Destroy()
