@@ -30,7 +30,7 @@ WorkWithBag := !(bool printW) -> void
 
 				it.DoTheWork(prior)
 			}
-			TYield()
+			//TYield()
 
 			if WorkBag.IsEmpty() or not ErrorLog.Empty()
 				break

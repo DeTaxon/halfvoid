@@ -121,7 +121,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		{
 			tSize := GetVecXTypeSize(pars[0].first)
 			return new BuiltInFuncUno(".",pars[0].first,false,GTypeFloat,false, 
-			"#0 = call float @llvm.experimental.vector.reduce.v2.fadd.f32.v"sbt + tSize +
+			"#0 = call float @llvm.vector.reduce.v2.fadd.f32.v"sbt + tSize +
 			"f32(float zeroinitializer, "+ typName + " #1)")
 		}
 		
@@ -245,7 +245,7 @@ Vec4fFuncs := !() -> void
 	for NT : Typs, siz : ![4,4,3,2]
 	{
 		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul "sbt + NT.GetName() + " #1 , #2\n" + 
-			"#0 = call fast float @llvm.experimental.vector.reduce.fadd.f32.v" + siz + "f32(float undef,<"+ siz + " x float> %Pre##) #d\n"))
+			"#0 = call fast float @llvm.vector.reduce.fadd.f32.v" + siz + "f32(float undef,<"+ siz + " x float> %Pre##) #d\n"))
 
 	}
 }

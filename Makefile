@@ -88,10 +88,10 @@ ManyCycle:
 	for i in {1..10}; do make cycle; done
 
 stable:
-	$(gdb_tui) $(CurrentStable) --notask -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
+	$(gdb_tui) $(CurrentStable)  -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
 JIT: main2.cp
-	$(gdb_tui) $(CurrentWork) --notask -g $(TargetPlatform) main2.cp $(ForcedLibs) --jit
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) --jit
 test2: main2.cp
 	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp -C0 "StandardLib/$$" -o $(MainOut); $(CmplTest)
 
