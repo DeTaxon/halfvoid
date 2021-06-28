@@ -404,6 +404,10 @@ BoxClass := class extend BoxClassBase
 					}else{
 						PreParent := newType->{TypeClass^}
 						SetParent(PreParent.ToClass)
+						if PreParent.ToClass.IsGC
+						{
+							this.IsGC = true
+						}
 					}
 				}
 			}

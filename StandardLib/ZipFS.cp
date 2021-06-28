@@ -40,7 +40,9 @@ vRepoFolder := class extend vRepoObject
 	virtualFolder := bool
 	subZipFolders := List.{vZipEntry^}
 	subFolders := List.{vRepoFolder^}
-	subFiles := List.{vRepoFile^}
+
+	subFiles := AVLMap.{char^,vRepoFile^}
+	subVirtualFiles := AVLMap.{char^,vRepoFile^}
 
 	IsVirtual := !() -> bool { return virtualFolder }
 }
@@ -103,6 +105,8 @@ vRepo := class
 	rootFolder := vRepoFolder^
 	repoMP := AllocOnlyMP.{4096,true}^
 	ignZip := AVLSet.{u64}
+	preferVirtual := bool
+
 	Init := !(char^ pathName)-> void
 	{
 		ignZip."this"()
@@ -178,7 +182,7 @@ vRepo := class
 							newObj.objName = StringSpan(newStr)
 							newObj.ptrToRepo = this&
 							newObj.fileSize = flSz
-							iterFolder.subFiles << newObj
+							iterFolder.subFiles[newStr] = newObj
 						}
 					}
 				}
@@ -212,14 +216,12 @@ vRepo := class
 			{
 				for subItm : entrs.subFolders
 				{
-					found := false
-					if iterFolder.subFiles[^].objName == subItm.objName
+					if iterFolder.subVirtualFiles.Contain(subItm.objName)
 					{
-						found = true
-						break
+						continue
 					}
-					if found continue
-
+					
+					found := false
 					if iterFolder.subFolders[^].objName == subItm.objName
 					{
 						found = true
@@ -241,7 +243,7 @@ vRepo := class
 						newObj.upFolder = iterFolder
 						newObj.objName = subItm.objName
 						newObj.ptrToRepo = this&
-						iterFolder.subFiles << newObj
+						iterFolder.subVirtualFiles[newObj.objName] = newObj
 						newObj.ptrToZip = subItm
 					}
 				}
@@ -273,11 +275,6 @@ vRepo := class
 			
 			if found continue
 
-			if iterFolder.subFiles[^].objName == cheks
-			{
-				return it
-			}
-
 			if cheks == ".."
 			{
 				iterFolder = iterFolder.upFolder
@@ -285,11 +282,27 @@ vRepo := class
 					return null
 				continue
 			}
+
+			st := cheks->{char^}
+			if preferVirtual
+			{
+				if iterFolder.subVirtualFiles.Contain(st)
+					return iterFolder.subVirtualFiles[st]
+			}
+			if iterFolder.subFiles.Contain(st)
+				return iterFolder.subFiles[st]
+			if iterFolder.subVirtualFiles.Contain(st)
+				return iterFolder.subVirtualFiles[st]
+
 			return null
 
 		}
 		return null
 
+	}
+	PreferVirtual := !(bool state) -> void
+	{
+		preferVirtual = state
 	}
 	Destroy := !() -> void
 	{
