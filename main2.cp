@@ -14,8 +14,9 @@ z := !(Screamer^[] h) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	gRepo.PreferVirtual(true)
 	gRepo.AddZipRoot("./Dlls.zip")
-	fil := gRepo.GetFile("ILU.dll")
+	fil := gRepo.GetFile("./ILU.dll")
 	printf("fil %p\n",fil)
 	printf("is virtual %i\n", fil?.IsVirtual() ?? false)
 	//c := new Screamer^[10]

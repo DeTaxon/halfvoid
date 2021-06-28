@@ -39,7 +39,8 @@ vRepoFolder := class extend vRepoObject
 	examined := bool
 	virtualFolder := bool
 	subZipFolders := List.{vZipEntry^}
-	subFolders := List.{vRepoFolder^}
+
+	subFolders := AVLMap.{char^,vRepoFolder^}
 
 	subFiles := AVLMap.{char^,vRepoFile^}
 	subVirtualFiles := AVLMap.{char^,vRepoFile^}
@@ -162,7 +163,7 @@ vRepo := class
 						newObj := new vRepoFolder
 						newObj.objName = StringSpan(newStr)
 						newObj.upFolder = iterFolder
-						iterFolder.subFolders << newObj
+						iterFolder.subFolders[newStr] = newObj
 					}else{
 						itmId := subF.GetId()
 						flSz := subF.Size()
@@ -196,17 +197,18 @@ vRepo := class
 
 					rpFld := null->{vRepoFolder^}
 
-					if iterFolder.subFolders[^].objName == itP
+					if iterFolder.subFolders.Contain(itP)
 					{
-						rpFld = it
+						rpFld = iterFolder.subFolders[itP]
 						break
 					}
 					if rpFld == null
 					{
 						rpFld = new vRepoFolder
-						rpFld.objName = StringSpan(itP[0..-4].Str())
+						newStr := itP[0..-4].Str()
+						rpFld.objName = StringSpan(newStr)
 						rpFld.virtualFolder = true
-						iterFolder.subFolders << rpFld
+						iterFolder.subFolders[newStr] = rpFld
 					}
 					rpFld.subZipFolders << tt.zipRoot&
 				}
@@ -235,15 +237,17 @@ vRepo := class
 					{
 						rpFld := new vRepoFolder
 						rpFld.objName = subItm.objName
+						newStr := subItm.objName.Str()
 						rpFld.virtualFolder = true
-						iterFolder.subFolders << rpFld 
+						iterFolder.subFolders[newStr] = rpFld 
 						rpFld.subZipFolders << subItm
 					}else{
-						newObj := new vRepoFile ; $pool
+						newObj := new vRepoFile 
 						newObj.upFolder = iterFolder
 						newObj.objName = subItm.objName
+						newStr := subItm.objName.Str()
 						newObj.ptrToRepo = this&
-						iterFolder.subVirtualFiles[newObj.objName] = newObj
+						iterFolder.subVirtualFiles[newStr] = newObj
 						newObj.ptrToZip = subItm
 					}
 				}
