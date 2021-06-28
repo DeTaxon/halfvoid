@@ -35,6 +35,8 @@ TSpawnTask := !(!()&->void lmb) -> void
 
 TYield := !() -> void
 {
-	assert(CurrentTaskBox != null)
-	CurrentTaskBox.Yield()
+	if CurrentTaskBox != null
+	{
+		CurrentTaskBox.Yield()
+	}
 }
