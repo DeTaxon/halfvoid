@@ -41,13 +41,6 @@ BoxFuncBody := class extend BoxFunc
 		MethodType = metC
 		IsVirtual = IsVirt
 
-		if SomeName == "_hvEntryPoint"
-		{
-			OutputName = "main"
-		}else
-		{
-			OutputName = GetFuncMangledName(SomeName,fType)
-		}
 
 		if SomeName == "new" IsStatic = true
 
@@ -140,13 +133,6 @@ BoxFuncBody := class extend BoxFunc
 		{
 			ApplyParams(MyFuncType.ParsCount,MyFuncParamNames,MyFuncType.Pars,MyFuncType.ParsIsRef)
 		}
-		if SomeName == "_hvEntryPoint"
-		{
-			OutputName = "main"
-		}else
-		{
-			OutputName = GetFuncMangledName(FuncName,MyFuncType)
-		}
 
 		if Stuf.GetValue() == "{}"
 		{
@@ -214,6 +200,14 @@ BoxFuncBody := class extend BoxFunc
 	{
 		if not parsed 
 		{
+			if FuncName == "_hvEntryPoint"
+			{
+				OutputName = "main"
+			}else
+			{
+				OutputName = GetFuncMangledName(FuncName,MyFuncType)
+			}
+
 			if FuncName == "~this" and MethodType != null
 			{
 				pL := new FuncParam("this",MethodType,true)

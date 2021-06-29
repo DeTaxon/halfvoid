@@ -121,8 +121,16 @@ CLibModule := class extend CompilerModule
 		}
 		if jitMode
 			isStatic = false
-
 		newLib.isStatic = isStatic
+
+		if isStatic
+		{
+			for it,key : newLib.funcs
+			{
+				res := GetFuncMangledName(key->{char^},null)
+			}
+		}
+
 		libs.Push(newLib)
 	}
 	itTypes := AVLMap.{StringSpan,Type^}

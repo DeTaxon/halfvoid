@@ -7,6 +7,7 @@ BoxFuncDeclare := class  extend BoxFunc
 		OutputName = StrCopy(SomeName)
 		FuncName = OutputName
 		IsInvalid = not ParseParams(inPars,inOutType,false)
+		OutputName = GetFuncMangledName(FuncName,null)
 
 		if IsInvalid inOutType.EmitError("can not parse function\n")
 		MethodType = null

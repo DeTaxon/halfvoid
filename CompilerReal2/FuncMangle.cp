@@ -42,15 +42,15 @@ GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 		}
 	}
 
-    //if createdFuncNames.Contain(funcName)
-    //{
-        newName := ""sbt + funcName + "_mngl" + mnglIter <-
-        mnglIter += 1
+	if createdFuncNames.Contain(funcName)
+	{
+		newName := ""sbt + funcName + "_mngl" + mnglIter <-
+		mnglIter += 1
 		newName = Copy(newName) //TODO: bug, $temp
-        createdFuncNames.Insert(newName)
-        return newName
-    //}
-    //cpStr := StrCopy(funcName)
-    //createdFuncNames.Insert(cpStr)
-    //return cpStr
+		createdFuncNames.Insert(newName)
+		return newName
+	}
+	cpStr := StrCopy(funcName)
+	createdFuncNames.Insert(cpStr)
+	return cpStr
 }
