@@ -4,7 +4,6 @@ clibModule := CLibModule
 compilerSuffix :=char^ 
 
 emitTree := false
-jitMode := false
 main := !(int argc,char^^ argv) -> int 
 {
 	ReturnName = "result"
@@ -333,6 +332,7 @@ main := !(int argc,char^^ argv) -> int
 		printf("warning: internal error, no exception functions\n")
 	}
 	GCInit()
+	JITInit()
 
 	endI := Ob.Down
 	if endI != null
@@ -378,7 +378,6 @@ main := !(int argc,char^^ argv) -> int
 	if jitMode
 	{
 		try{
-
 			llvmLib := Library("/usr/lib/x86_64-linux-gnu/libLLVM-10.so.1","/lib/x86_64-linux-gnu/libLLVM-10.so.1","libLLVM.dll")
 			llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
 			llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}

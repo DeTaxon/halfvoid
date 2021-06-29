@@ -1086,6 +1086,7 @@ CreateStandartTypes := !() -> void
 	GTypeChar = TypeTable[0]
 	GTypeInt =    TypeTable[6]
 	GTypeU64 =    TypeTable[3]
+	GTypeSizeT =    TypeTable[3]
 	GTypeRange =  TypeTable[13]
 	GTypeVoid =   TypeTable[11]
 	GTypeString = TypeTable[12]

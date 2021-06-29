@@ -50,6 +50,7 @@ GTypeU8 := Type^
 GTypeChar := Type^
 GTypeInt := Type^
 GTypeU64 := Type^
+GTypeSizeT := Type^
 GTypeRange := Type^
 GTypeVoid := Type^
 GTypeVoidP := Type^
