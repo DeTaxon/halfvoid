@@ -119,6 +119,8 @@ CLibModule := class extend CompilerModule
 				isStatic = part.GetStr() == "static"
 			}
 		}
+		if jitMode
+			isStatic = false
 
 		newLib.isStatic = isStatic
 		libs.Push(newLib)
@@ -187,6 +189,8 @@ CLibModule := class extend CompilerModule
 					it.objs[inCnsts.Key()] = itInt
 					return itInt
 				}
+				libr := Library^()
+
 				if spn in it.funcs
 				{
 					if not it.isStatic
@@ -196,6 +200,13 @@ CLibModule := class extend CompilerModule
 
 						resPar := new GlobalParam(fType.GetPoint(),null)
 						it.objs[inFuncs.Key()] = resPar
+
+						if jitMode
+						{
+							fncPtr := GetPtrFunc(name)
+							assert(fncPtr != null)
+							resPar.Down = new ObjPointer(fncPtr,fType.GetPoint())
+						}
 
 						return resPar
 					}

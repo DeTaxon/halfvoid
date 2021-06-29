@@ -11,13 +11,10 @@ z := !(Screamer^[] h) -> void
 	//h[1] = new Screamer
 }
 
-func2 := !() -> void
-{
-}
 main := !(int argc, char^^ argv) -> int
 {
-	func2()	
-	//printf("hello\n")
+	for i : 4
+		printf("hello %i\n",i)
 	//gRepo.PreferVirtual(true)
 	//gRepo.AddZipRoot("./Dlls.zip")
 	//fil := gRepo.GetFile("./ILU.dll")

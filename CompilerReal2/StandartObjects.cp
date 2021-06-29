@@ -50,6 +50,44 @@ ObjConstHolder := class extend Object
 	}
 }
 
+ObjPointer := class extend ObjConst
+{
+	pointerValue := void^
+	"this" := !(void^ val, Type^ pType) -> void
+	{
+		pointerValue = val
+		ResultType = pType
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~pointer"
+	}
+	Print := virtual !(int s) -> void
+	{
+		for s printf("->")
+		printf("%x\n",pointerValue)
+	}
+	PrintUse := virtual !(TIOStream f) -> void
+	{
+		buf := char[256]
+		sprintf(buf[0]&,"%s inttoptr(%p to %s)",pointerValue,ResultType.GetName())
+		f << buf[0]&
+	}
+	GetName := virtual !() -> string
+	{
+		buf := char[256]
+		sprintf(buf[0]&,"inttoptr (i64 %llu to %s)",pointerValue,ResultType.GetName())
+		return StrCopy(buf[0]&) ; $temp
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjPointer(pointerValue,ResultType)
+		PreRet.Line = Line
+		return PreRet
+	}
+	IsDataR := virtual true
+	IsBlockData := virtual true
+}
 ObjNULL := class extend ObjConst
 {
 	"this" := !() -> void
