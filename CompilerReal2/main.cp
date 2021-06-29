@@ -125,7 +125,7 @@ main := !(int argc,char^^ argv) -> int
 		printf("exp %s\n",e.Msg())
 		return 0
 	}
-	gRepo.PreferVirtual(true)
+	//gRepo.PreferVirtual(true)
 
 	if targetFiles.Size() != 1
 	{
