@@ -13,6 +13,7 @@ z := !(Screamer^[] h) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	printf("ye\n")
 	//gRepo.PreferVirtual(true)
 	//gRepo.AddZipRoot("./Dlls.zip")
 	//fil := gRepo.GetFile("./ILU.dll")
