@@ -30,6 +30,12 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 		}
 		return resl.data.second
 	}
+	Key := !(KEY dat) .{} -> ref KEY
+	{
+		resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+		assert(resl != null)
+		return resl.data.first
+	}
 
 	TryFind := !(KEY dat) -> VALUE^
 	{

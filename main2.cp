@@ -9,7 +9,9 @@ baseGCContainer := class extend TGCObject
 	Remove := !(StringSpan name) -> void
 	{
 		dataBase[name] = null
-		dataBase.Remove(name) //TODO: remove key
+		charPtr := dataBase.Key(name).Get()
+		dataBase.Remove(name)
+		delete charPtr
 	}
 }
 TGCContainer := class .{@V} extend baseGCContainer
@@ -17,9 +19,9 @@ TGCContainer := class .{@V} extend baseGCContainer
 	Create := !(StringSpan name) -> V^
 	{
 		result := new V
-		result.Name = name
+		result.Name = StrCopy(name)
 		result.basePointer = this&
-		dataBase[name] = result
+		dataBase[result.Name] = result
 		return result
 	}
 }
