@@ -71,7 +71,7 @@ ObjParam := class extend Object
 				f << "%AsVoid" << itId << " = bitcast "
 				Down->{LocalParam^}.PrintPointUse(f,0,-1)
 				f << " to i8*\n"
-				f << "call void " << internalMemset.OutputName 
+				f << "call void @internalGCMemClear"
 				f << "(i8* %AsVoid" << itId << ", i64 "<< ObjType.GetSize() << ")\n"
 			}
 			if not IsGlobal

@@ -242,6 +242,17 @@ BoxBlock := class extend Object
 	{
 		if Line == null Line = Up.Line
 
+		if gcObjects.Size() != 0 
+		{
+			cntr := GetBoxFuncContainer(this&)
+			aBox := cntr.GetABox()
+			for gcObj : gcObjects
+			{
+				typName := aBox.GetObjType(gcObj).GetName()
+				f << "store "<<typName<<" null, "<<typName<<"* %T" << gcObj << "\n"
+			}
+		}
+
 		if needDeferCall()
 		{
 			f << "store i8 0, i8* %DeferStack"<< deferUpDepth <<"\n"

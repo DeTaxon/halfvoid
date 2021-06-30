@@ -1,30 +1,62 @@
-Screamer := class extend TGCObject
+
+baseGCContainer := class extend TGCObject
 {
-	Destroy := virtual !() -> void
+	dataBase := RBMap.{StringSpan,TCachedGCObject^}
+	Contain := !(StringSpan name) -> bool
 	{
-		printf("TOAST\n")
+		return dataBase.Contain(name)
+	}
+	Remove := !(StringSpan name) -> void
+	{
+		dataBase[name] = null
+		dataBase.Remove(name) //TODO: remove key
+	}
+}
+TGCContainer := class .{@V} extend baseGCContainer
+{
+	Create := !(StringSpan name) -> V^
+	{
+		result := new V
+		result.Name = name
+		result.basePointer = this&
+		dataBase[name] = result
+		return result
 	}
 }
 
-z := !(Screamer^[] h) -> void
+TCachedGCObject := class extend TGCObject
 {
-	//h[1] = new Screamer
+	Name := StringSpan
+	basePointer := baseGCContainer^
+	GCLastRef := virtual !() -> void
+	{
+		basePointer.Remove(Name)
+	}
 }
 
+Screamer := class extend TCachedGCObject
+{
+	Destroy := virtual !() -> void
+	{
+		printf("AAAAAAA\n")
+	}
+}
+
+
+fnc := !() -> void
+{
+	x := u8[12]
+	x[^] = 16
+}
+fnc2 := !() -> void
+{
+	//tst := CommonTreeNode.{BadPair.{char^,Screamer^}}^
+	tstParam := Screamer^
+	printf("wow %p\n",tstParam)
+}
 main := !(int argc, char^^ argv) -> int
 {
-	printf("ye\n")
-	//gRepo.PreferVirtual(true)
-	//gRepo.AddZipRoot("./Dlls.zip")
-	//fil := gRepo.GetFile("./ILU.dll")
-	//printf("fil %p\n",fil)
-	//printf("is virtual %i\n", fil?.IsVirtual() ?? false)
-	//c := new Screamer^[10]
-	//printf("ptr %p %s\n",c,c->Type->Name)
-	//printf("hoh %p %p %p\n",c[0],c[1],c[2])
-	//internalTGCArrayGetElement(c,0) = new Screamer
-	//c[0] = null
-	//printf("hoh %p %p %p\n",c[0],c[1],c[2])
-	//z(c)
+	cnt := new TGCContainer.{Screamer}
+	val := cnt.Create(StringSpan("wow"))
 	return 0
 }

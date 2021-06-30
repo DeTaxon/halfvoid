@@ -190,6 +190,7 @@ main := !(int argc,char^^ argv) -> int
 	CreateBuiltIns()
 	TypeCmpInit()
 	mangledInit()
+	JITPreInit()
 
 	GBoolTrue = new ObjBool(true)
 	GBoolFalse = new ObjBool(false)
@@ -415,7 +416,6 @@ main := !(int argc,char^^ argv) -> int
 			fName := mainFunc.Down->{BoxFunc^}.OutputName
 			mainFunc2 := llvmGetNamedFunction(mod,fName)
 
-			printf("result1 %i %p %s\n",res,mainFunc2,fName)
 
 			LLVMVerifyModule(mod,0,msg&)
 			if msg != null
@@ -432,7 +432,6 @@ main := !(int argc,char^^ argv) -> int
 			res = LLVMCreateMCJITCompilerForModule(eng&,mod,null,0,msg)
 			if msg != null
 				printf("error %s\n",msg)
-			printf("result2 %i\n",res)
 
 			//jitArgs := void^[2]
 			//jitArgs[0] = LLVMCreateGenericValueOfInt(LLVMInt32Type(),1,0)

@@ -3,6 +3,12 @@ jitMode := false
 
 internalMemset := BoxFunc^
 
+JITPreInit := !() -> void
+{
+	if not jitMode
+		return void
+}
+
 JITInit := !() -> void
 {
 	box := new FuncInputBox ; $temp
@@ -14,5 +20,5 @@ JITInit := !() -> void
 
 	if not jitMode
 		return void
-
+	
 }

@@ -21,7 +21,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	}
 	"[]" := !(KEY dat) .{}  -> ref VALUE
 	{
-		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^
+		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^()
 		if(itTree.FindOrCreate(BadPair.{KEY,VALUE}(dat),resl&))
 		{
 			resl.data.first = dat
