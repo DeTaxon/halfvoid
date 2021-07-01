@@ -305,7 +305,7 @@ BoxFuncBody := class extend BoxFunc
 				ABox.PrintBoxItems(f,"%ClassYodler",dbgId)
 			}else{
 				ABox.PrintAlloc(f,dbgId)
-				if FuncName != "internalGCMemClear" 
+				if ABox.ItemBag.Size() > MyFuncType.ParsCount 
 					ABox.PrintCleanAlloc(f,dbgId)
 			}
 
