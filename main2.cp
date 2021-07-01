@@ -8,10 +8,9 @@ baseGCContainer := class extend TGCObject
 	}
 	Remove := !(StringSpan name) -> void
 	{
-		dataBase[name] = null
-		charPtr := dataBase.Key(name).Get()
-		dataBase.Remove(name)
-		delete charPtr
+		spn := dataBase.Key(name)
+		dataBase.Remove(spn)
+		delete spn.Get()
 	}
 }
 TGCContainer := class .{@V} extend baseGCContainer
@@ -19,7 +18,7 @@ TGCContainer := class .{@V} extend baseGCContainer
 	Create := !(StringSpan name) -> V^
 	{
 		result := new V
-		result.Name = StrCopy(name)
+		result.Name = name.Str()
 		result.basePointer = this&
 		dataBase[result.Name] = result
 		return result
@@ -40,7 +39,7 @@ Screamer := class extend TCachedGCObject
 {
 	Destroy := virtual !() -> void
 	{
-		printf("AAAAAAA\n")
+		printf("AAAAAAA %p\n",this&)
 	}
 }
 
