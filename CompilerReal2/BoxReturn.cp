@@ -28,8 +28,6 @@ BoxReturn := class extend Object
 		{
 			if IsYield
 			{
-				if Up != null 
-					AllocSetStruct(Up)
 				ii := Up
 				while ii != null
 				{

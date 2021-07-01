@@ -85,7 +85,6 @@ GCMakeAware := !(Object^ start, int allcId) -> void
 	if blk != null
 	{
 		blk.AddGC(allcId);
-		AllocSetStruct(blk)
 	}
 }
 TypeFatGCArr := class extend TypeFatArr

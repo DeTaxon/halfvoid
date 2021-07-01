@@ -52,12 +52,14 @@ fnc := !() -> void
 fnc2 := !() -> void
 {
 	//tst := CommonTreeNode.{BadPair.{char^,Screamer^}}^
-	tstParam := Screamer^
+	tstParam := int^
 	printf("wow %p\n",tstParam)
 }
 main := !(int argc, char^^ argv) -> int
 {
-	cnt := new TGCContainer.{Screamer}
-	val := cnt.Create(StringSpan("wow"))
+	fnc()
+	fnc2()
+	//cnt := new TGCContainer.{Screamer}
+	//val := cnt.Create(StringSpan("wow"))
 	return 0
 }

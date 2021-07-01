@@ -240,7 +240,6 @@ BoxFuncContainer := class extend Object
 			assert(false)
 		}
 		
-		AllocSetStruct(this&)
 		deferStackNr = GetAlloc(this&,GTypeU8.GetArray(deferStackSize))
 	}
 

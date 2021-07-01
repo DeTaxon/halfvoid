@@ -305,7 +305,6 @@ SLambda := class extend BoxFuncContainer
 		}
 		if pri == State_Start and (not parsedStart)
 		{
-			AllocSetStruct(Up)
 			DoStateStart(pri)
 		}
 		if pri == State_PostGetUse

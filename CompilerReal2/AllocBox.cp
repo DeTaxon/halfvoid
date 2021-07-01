@@ -3,7 +3,6 @@ AllocBox := class
 {
 	ItId := int
 	liveOnGlobal := bool
-	mustBeStruct := bool
 
 	parentAlloc := AllocBox^
 	inhAllocs := List.{AllocBox^}
@@ -116,21 +115,26 @@ AllocBox := class
 	{
 		PrintAlloc(f,null->{char^},debId)
 	}
+	PrintCleanAlloc := !(TIOStream f,int debId) -> void
+	{
+		if ItemBag.IsEmpty()
+			return void
+
+		f << "%AllocSizePtr" << ItId << " = getelementptr %AllocClass" << ItId
+		f << ", %AllocClass" << ItId << "* null, i32 1\n"
+		f << "%AllocSize" << ItId << " = ptrtoint %AllocClass" << ItId << "* %AllocSizePtr" << ItId << " to i64\n"
+		f << "%AllocAsVoid" << ItId << " = bitcast %AllocClass" << ItId << "* %AllocItem" << ItId << " to i8*\n"
+		f << "call void @internalGCMemClear(i8* %AllocAsVoid" << ItId << ", i64 %AllocSize" << ItId << ")"
+		if debId != -1
+		{
+			f << " , !dbg !" << debId
+		}
+		f << "\n"
+	}
 	PrintAlloc := !(TIOStream f,char^ prntName,debId) -> void
 	{
 		if not ItemBag.IsEmpty()
 		{
-			if not mustBeStruct
-			{
-				for it : ItemBag
-				{
-					f << "%T" << it.0 <<" = alloca " << it.1.GetName() 
-					if debId != -1
-						f << ", !dbg !" << debId
-					f << "\n"
-				}
-				return void
-			}
 			if liveOnGlobal
 			{
 				f << "%AllocItem" << ItId << " = getelementptr %AllocClass" << ItId << " , %AllocClass"
@@ -171,9 +175,6 @@ AllocBox := class
 	}
 	PrintBoxItems := !(TIOStream f,char^ Name,int debId) -> void
 	{
-		if not mustBeStruct
-			return void
-
 		for it,i : ItemBag
 		{
 			f << "%T" << it.0 <<" = getelementptr %AllocClass" << ItId << " , %AllocClass" << ItId << "* " << Name
@@ -217,14 +218,4 @@ GetAlloc := !(Object^ Start,Type^ t) -> int
 		iter = iter.Up
 	}
 	return -1
-}
-AllocSetStruct := !(Object^ start) -> void
-{
-	while start != null
-	{
-		aB := start.GetABox()
-		if aB != null 
-			aB.mustBeStruct = true
-		start = start.Up
-	}
 }
