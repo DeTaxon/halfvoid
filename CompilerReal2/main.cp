@@ -511,6 +511,7 @@ WriteCodeData := !(TIOStream fil) -> void
 	Modules[^].PrintGlobal(fil)
 	PrintTuplesFuncs(fil)
 	TaskPrint2(fil)
+	JITPrint(fil)
 
 
 	for wutt : Files

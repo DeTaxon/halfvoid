@@ -5,6 +5,10 @@ GetItem := !(string name, Object^ start) -> Object^
 }
 GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 {
+	if jitMode and passJITFuncs.Contain(name)
+	{
+		return passJITFuncs[name].1
+	}
 	iter := start
 
 	while iter != null
