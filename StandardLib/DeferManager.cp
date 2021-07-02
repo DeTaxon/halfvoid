@@ -1,4 +1,4 @@
-internalDeferBlock := thread_local DeferBlock.{512}
+internalDeferBlock := task_local DeferBlock.{512}
 
 DeferBlock := class .{@DeferStackSize} {
 	funcsExe := Tuple.{!(void^,bool)^->void,void^}[DeferStackSize]
@@ -96,7 +96,7 @@ intExcepData := class
 	expData := void^
 	frames := intExcepFrame[64]
 }
-intExc := thread_local intExcepData
+intExc := task_local intExcepData
 
 internalEnterTry := !() -> void^
 {

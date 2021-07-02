@@ -33,6 +33,13 @@ TIOStream := class
 		Write(intVal,len)
 		return this
 	}
+	"<<" := !(u64 value) self_return
+	{
+		intVal := char[40]
+		len := sprintf(intVal[0]&,"%lu",value)
+		Write(intVal,len)
+		return this
+	}
 	"<<" := !(double value) self_return
 	{
 		intVal := char[80]

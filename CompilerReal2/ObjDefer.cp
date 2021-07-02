@@ -100,6 +100,15 @@ ObjDefer := class extend Object
 	
 	}
 }
+PrintAddDefer := !(TIOStream f, char^ funcName,char^ ptrName,int debId) -> void
+{
+	f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* " << funcName << ",i8* "<< ptrName <<")"
+
+	if debId{
+		f << " , !dbg !" << debId
+	}
+	f << "\n"
+}
 PrintDeferDepth := !(TIOStream f, int itId ,int debId) -> void
 {
 	f << "%NowDepth"<< itId <<" = call i32 @" << deferGetDepth2.OutputName << "()"

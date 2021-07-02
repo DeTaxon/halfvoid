@@ -106,51 +106,6 @@ MemParamCommon := class extend MemParam
 		return GetMainPtr(newInd)
 	}
 }
-LocalParam := class extend MemParamCommon
-{
-	inAllocId := int
-	this := !(Type^ th,int allcId) -> void
-	{
-		ResultType = th
-		inAllocId = allcId
-		IsRef = false
-	}
-	this := !(Type^ th,int allcId,bool asRef) -> void
-	{
-		ResultType = th
-		inAllocId = allcId
-		IsRef = asRef
-	}
-
-	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
-	GetMainPtr := virtual !(int newId) -> char^ { return "%T"sbt + inAllocId}
-
-	PrintDebugDeclare := virtual !(TIOStream f,Object^ fnc,char^ forceName) -> void
-	{
-		itDbgName := forceName
-		if itDbgName == null
-		{
-			asP := Up->{ObjParam^}
-			if Up == null or not (Up is ObjParam)
-				return void
-			itDbgName = asP.MyStr
-		}
-		//if IsRef
-		//{
-		//}else{
-			asUp := Up
-			if fnc != null asUp = fnc
-			outId := CreateDbgLocVar(asUp,ResultType,itDbgName,IsRef)
-			newId := CreateDebugCall(asUp)
-			if newId != -1 and outId != -1
-			{
-				f << "call void @llvm.dbg.declare(metadata " << ResultType.GetName() << "*"
-				if IsRef f << "*"
-				f << " %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
-			}
-		//}
-	}
-}
 GlobalParam := class extend MemParamCommon
 {
 	MainId := int
@@ -268,26 +223,50 @@ GlobalParam := class extend MemParamCommon
 		}
 	}
 }
-TaskLocalParam := class extend GlobalParam
-{ 
-	DoTheWork := virtual !(int pri) -> void  {}
-	PrintGlobal := virtual !(TIOStream f) -> void {}
-	GetTaskFieldId := !() -> void
+LocalParam := class extend MemParamCommon
+{
+	inAllocId := int
+	this := !(Type^ th,int allcId) -> void
 	{
-		taskFieldId = GetTaskLocalId(ResultType)
+		ResultType = th
+		inAllocId = allcId
+		IsRef = false
 	}
-	PrepareMainPtr := virtual !(TIOStream f,int newInd,int debId) -> void {
-		if EnableGSTask
+	this := !(Type^ th,int allcId,bool asRef) -> void
+	{
+		ResultType = th
+		inAllocId = allcId
+		IsRef = asRef
+	}
+
+	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
+	GetMainPtr := virtual !(int newId) -> char^ { return "%T"sbt + inAllocId}
+
+	PrintDebugDeclare := virtual !(TIOStream f,Object^ fnc,char^ forceName) -> void
+	{
+		itDbgName := forceName
+		if itDbgName == null
 		{
-		f << "%TaskPre" << newInd << " = addrspacecast %TaskStruct addrspace(256)* @CurrentTaskStruct to %TaskStruct*\n"
-		f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct , %TaskStruct* %TaskPre"<< newInd <<" , i32 0, i32 " << taskFieldId << "\n"
-		}else{
-		f << "%TaskTPre" << newInd << " = load i8*, i8** " << gTaskPtr.GetPointName(0) << "\n"
-		f << "%TaskValuePtrPre" << newInd << " = bitcast i8* %TaskTPre" << newInd << " to %TaskStruct*\n"
-		f << "%TaskValuePtr" << newInd << " = getelementptr %TaskStruct, %TaskStruct* %TaskValuePtrPre" << newInd << ", i32 0, i32 " << taskFieldId << "\n"
+			asP := Up->{ObjParam^}
+			if Up == null or not (Up is ObjParam)
+				return void
+			itDbgName = asP.MyStr
 		}
+		//if IsRef
+		//{
+		//}else{
+			asUp := Up
+			if fnc != null asUp = fnc
+			outId := CreateDbgLocVar(asUp,ResultType,itDbgName,IsRef)
+			newId := CreateDebugCall(asUp)
+			if newId != -1 and outId != -1
+			{
+				f << "call void @llvm.dbg.declare(metadata " << ResultType.GetName() << "*"
+				if IsRef f << "*"
+				f << " %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
+			}
+		//}
 	}
-	GetMainPtr := virtual !(int newId) -> char^ { return "%TaskValuePtr"sbt + newId}
 }
 GlobalFuncParam := class extend MemParam
 {

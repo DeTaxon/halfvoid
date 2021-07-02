@@ -31,7 +31,8 @@ TCachedGCObject := class extend TGCObject
 	basePointer := baseGCContainer^
 	GCLastRef := virtual !() -> void
 	{
-		basePointer.Remove(Name)
+		if basePointer != null
+			basePointer.Remove(Name)
 	}
 }
 
@@ -44,6 +45,11 @@ Screamer := class extend TCachedGCObject
 }
 
 
+miniClass := class
+{
+	x := int
+}
+
 fnc := !() -> void
 {
 	x := u8[12]
@@ -52,7 +58,7 @@ fnc := !() -> void
 fnc2 := !() -> void
 {
 	//tst := CommonTreeNode.{BadPair.{char^,Screamer^}}^
-	tstParam := int^
+	tstParam := new Screamer
 	printf("wow %p\n",tstParam)
 }
 main := !(int argc, char^^ argv) -> int

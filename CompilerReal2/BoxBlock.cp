@@ -394,12 +394,13 @@ BoxBlock := class extend Object
 	{
 		if not needDeferCall()
 			return void
-		f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* @BlockDeferCall" << ItId << ",i8* %StackObj)"
+		PrintAddDefer(f, "@BlockDeferCall"sbt + ItId ,"%StackObj",debId)
+		//f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* @BlockDeferCall" << ItId << ",i8* %StackObj)"
 
-		if debId{
-			f << " , !dbg !" << debId
-		}
-		f << "\n"
+		//if debId{
+		//	f << " , !dbg !" << debId
+		//}
+		//f << "\n"
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
