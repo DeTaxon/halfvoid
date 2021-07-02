@@ -41,9 +41,20 @@
 		"readdir" : "void^,void^",
 		"stat" : "int,char^,void^",
 
+		"dlopen" : "void^,char^,int",
+		"dlsym" : "void^,void^,char^",
+		"dlclose" : "void,void^",
+
 		"ftruncate" : "int,int,u64",
 
 		"sleep" : "int,int",
+
+		"mmap" : "void^,void^,u64,int, int, int, void^",
+		"munmap" : "int,void^,s64",
+		"fstat" : "int,int,char^",
+		"remove" : "int,char^",
+		"nanosleep" : "int,void^,void^",
+		"clock_gettime" : "void,u64,void^",
 
 		"pthread_cond_timedwait" : "void,void^,void^,void^"
 	}
