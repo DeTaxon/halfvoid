@@ -67,6 +67,7 @@ main := !(int argc, char^^ argv) -> int
 	try
 	{
 		fnc()
+		TSleep(1)
 		fnc2()
 	}catch(IException^ e)
 	{
