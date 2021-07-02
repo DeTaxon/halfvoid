@@ -7,7 +7,43 @@
 	"funcs" : {
 
 		"pthread_create" : "int,u64^,void^,void^,void^",
-		"pthread_join" : "int,u64,void^^",
+		"pthread_join" : "int,u64,void^^"
+		
+		"pthread_mutex_init" : "void,void^,void^",
+		"pthread_mutex_lock" : "void,void^",
+		"pthread_mutex_unlock" : "void,void^",
+		"pthread_mutex_destroy" : "void,void^",
+
+		"pthread_cond_init" : "void,void^,void^",
+		"pthread_cond_wait" : "void,void^,void^",
+		"pthread_cond_signal" : "void,void^",
+		"pthread_cond_broadcast" : "void,void^",
+		"pthread_cond_destroy" : "void,void^",
+
+		"sem_init" : "int,void^,int,u32",
+		"sem_wait" : "int,void^",
+		"sem_post" : "int,void^",
+		"sem_destroy" : "int,void^",
+
+		"open"  : "int,char^,int,int",
+		"read"  : "s64,int,void^,u32",
+		"write" : "s64,int,void^,u32",
+		"close" : "void,int",
+
+		"realpath" : "char^,char^,char^",
+
+		"mkdtemp" := "char^,char^",
+		"mkstemp" := "int,char^",
+		
+		"mkdir" : "int,char^,int",
+		"opendir" : "void^,char^",
+		"closedir" : "int,void^",
+		"readdir" : "void^,void^",
+		"stat" : "int,char^,void^",
+
+		"ftruncate" : "int,int,u64",
+
+		"sleep" : "int,int",
 
 		"pthread_cond_timedwait" : "void,void^,void^,void^"
 	}

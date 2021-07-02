@@ -23,32 +23,6 @@ sem_t := class
 	sFields := char[24]
 }
 
-pthread_mutex_init := !(void^ a,void^ b) -> void declare
-pthread_mutex_lock := !(void^ a) -> void declare
-pthread_mutex_unlock := !(void^ a) -> void declare
-pthread_mutex_destroy := !(void^ a) -> void declare
-
-pthread_cond_init := !(void^ a,void^ b) -> void declare
-pthread_cond_wait := !(void^ a,void^ b) -> void declare
-pthread_cond_signal := !(void^ a) -> void declare
-pthread_cond_broadcast := !(void^ a) -> void declare
-pthread_cond_destroy := !(void^ a) -> void declare
-
-//sem_open := !(char^ name, int oflags) -> sem_t^ declare
-sem_init := !(sem_t^ semPtr,int pshared, u32 value) -> int declare
-sem_wait := !(sem_t^ semPtr) -> int declare
-sem_post := !(sem_t^ semPtr) -> int declare
-sem_destroy := !(sem_t^ semPtr) -> int declare
-
-open := !(char^ name,int flags,int mode) -> int declare
-read := !(int d,void^ toS, u32 size) -> s64 declare
-write := !(int d,void^ toS, u32 size) -> s64 declare
-close := !(int fd) -> void declare
-
-sleep := !(int seconds) -> int declare
-
-ftruncate := !(int fd,u64 size) -> int declare
-
 mmap := !(void^ addt,u64 len,int prot, int flags, int fd, void^ offset) -> void^ declare
 munmap := !(void^ addt,s64 len) -> int declare
 
@@ -66,16 +40,6 @@ posixGetFileSize := !(int fd,u64^ size) -> bool
 }
 
 
-realpath := !(char^ inp, char^ outp) -> char^ declare
-
-mkdtemp := !(char^ ndm) -> char^ declare
-mkstemp := !(char^ ndm) -> int declare
-
-mkdir := !(char^ nm, int mode) -> int declare
-opendir := !(char^ inp) -> void^ declare
-closedir := !(void^ dirFd) -> int declare
-readdir := !(void^ dirFd) -> void^ declare
-stat := !(char^ pth, void^ outStat) -> int declare
 
 
 dlopen := !(char^ itName,int flgs) -> void^ declare

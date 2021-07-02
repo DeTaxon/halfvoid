@@ -1,5 +1,3 @@
-strlen := !(char^ str) -> int declare
-strncmp := !(char^ a, char^ b, int size) -> int declare
 
 StringSpan := class{
 	ptr := char^

@@ -16,6 +16,8 @@
 
 		"strcpy" : "void,char^,char^",
 		"strcmp" : "int,char^,char^",
+		"strncmp" : "int,char^,char^,int",
+		"strlen" : "int,char^",
 
 		"strtol" : "long,char^,char^^,int",
 		"strtod" : "double,char^,char^^",
