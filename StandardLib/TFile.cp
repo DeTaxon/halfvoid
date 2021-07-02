@@ -1,12 +1,3 @@
-fopen := !(char^ Name,char^ s) -> void^ declare
-fwrite := !(void^ data, int size, int count, void^ hndl) -> size_t declare
-fread := !(void^ data, int size, int count, void^ hndl) -> size_t declare
-fclose := !(void^ hndl) -> void declare
-fgets := !(char^ buf,int Size,void^ Hnd) -> char^ declare
-fputs := !(char^ buf,void^ Hnd) -> int declare
-fprintf := !(void^ Hnd, char^ buf,...) -> int declare
-feof := !(void^ hndl) -> int declare
-
 TFile := class extend TIOStream
 {
 	handle := void^

@@ -27,6 +27,15 @@
 		"sinf" : "float,float",
 		"sqrtf" : "float,float",
 
+		"fopen" : "void^,char^,char^",
+		"fwrite" : "size_t,void^,int,int,void^",
+		"fread" : "size_t,void^,int,int,void^",
+		"fgets" : "char^,char^,int,void^",
+		"fputs" : "int,char^,void^",
+		"fprintf" : "int,void^,char^,...",
+		"feof" : "int,void^",
+		"fclose" : "void,void^",
+
 		"getenv" : "char^,char^",
 		"setenv" : "int,char^,char^,int",
 
