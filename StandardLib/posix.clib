@@ -1,0 +1,14 @@
+{
+	"link" : "static",
+	"initname" : "posixinit",
+	"libs" : [
+		"libc.so.6"
+	],
+	"funcs" : {
+
+		"pthread_create" : "int,u64^,void^,void^,void^",
+		"pthread_join" : "int,u64,void^^",
+
+		"pthread_cond_timedwait" : "void,void^,void^,void^"
+	}
+}

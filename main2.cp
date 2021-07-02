@@ -60,11 +60,18 @@ fnc2 := !() -> void
 	//tst := CommonTreeNode.{BadPair.{char^,Screamer^}}^
 	tstParam := new Screamer
 	printf("wow %p\n",tstParam)
+	throw new Exception("wow")
 }
 main := !(int argc, char^^ argv) -> int
 {
-	fnc()
-	fnc2()
+	try
+	{
+		fnc()
+		fnc2()
+	}catch(IException^ e)
+	{
+		printf("exception\n")
+	}
 	//cnt := new TGCContainer.{Screamer}
 	//val := cnt.Create(StringSpan("wow"))
 	return 0

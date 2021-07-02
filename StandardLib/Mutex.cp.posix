@@ -20,8 +20,6 @@ Mutex := class
 	}
 }
 
-pthread_cond_timedwait := !(void^ a,void^ b,void^ c)->void declare
-
 ConVar := class
 {
 	itBuffer := char[1024]
