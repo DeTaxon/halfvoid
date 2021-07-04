@@ -428,21 +428,24 @@ ObjParam := class extend Object
 						allcId := -1
 
 						//injTest
-						dwnIter := Down
-						while dwnIter != null and dwnIter.GetValue() == "d()"
+						if IsComplexType(ObjType)
 						{
-							asNeed := dwnIter->{SomeFuncCall^}
-							allcId = asNeed.GetItAllocId()
-							if allcId != -1
+							dwnIter := Down
+							while dwnIter != null and dwnIter.GetValue() == "d()"
 							{
-								IsTook = true
-								break
-							}else{
-								if asNeed.ToCall?.IsSelfReturn
+								asNeed := dwnIter->{SomeFuncCall^}
+								allcId = asNeed.GetItAllocId()
+								if allcId != -1
 								{
-									dwnIter = dwnIter.Down
-								}else{
+									IsTook = true
 									break
+								}else{
+									if asNeed.ToCall?.IsSelfReturn
+									{
+										dwnIter = dwnIter.Down
+									}else{
+										break
+									}
 								}
 							}
 						}
@@ -453,6 +456,10 @@ ObjParam := class extend Object
 						//	allcId = asNeed.GetItAllocId()
 						//	if allcId != -1 IsTook = true
 						//}
+						if MyStr == "UniqName"
+						{
+							printf("hm %i\n",allcId)
+						}
 						if allcId == -1 {
 							if IsRef
 								allcId = GetAlloc(this&,ObjType.GetPoint())

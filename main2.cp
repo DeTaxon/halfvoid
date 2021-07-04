@@ -62,8 +62,23 @@ fnc2 := !() -> void
 	printf("wow %p\n",tstParam)
 	throw new Exception("wow")
 }
+
+cls1 := class
+{
+	CreateObject := !(!(int)&->int ww) -> int
+	{
+		return ww(3)
+	}
+	Func2 := !() -> void
+	{
+		UniqName := CreateObject(x ==> x*23)
+	}
+}
 main := !(int argc, char^^ argv) -> int
 {
+	c := cls1
+	c.Func2()
+	return 0
 	try
 	{
 		fnc()
