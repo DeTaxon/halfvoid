@@ -10,10 +10,16 @@ JITPreInit := !() -> void
 	if not jitMode
 		return void
 
-	sleepType := GetFuncType(![GTypeDouble],GTypeVoid)
+	addJITFunction("TSleep",TSleep->{void^},![GTypeDouble],GTypeVoid)
+	addJITFunction("TExpectWorkers",TExpectWorkers->{void^},![GTypeInt],GTypeVoid)
+}
+
+addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void
+{
+	sleepType := GetFuncType(inps,outType)
 	sleepTypePtr := sleepType.GetPoint()
-	sleepPar := new GlobalParam(sleepTypePtr,new ObjPointer(TSleep->{void^},sleepTypePtr))
-	passJITFuncs["TSleep"] = !{GetFuncType(![GTypeDouble],GTypeVoid),sleepPar}
+	sleepPar := new GlobalParam(sleepTypePtr,new ObjPointer(fPoint->{void^},sleepTypePtr))
+	passJITFuncs[name] = !{sleepType,sleepPar}
 }
 
 
