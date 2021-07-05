@@ -456,10 +456,6 @@ ObjParam := class extend Object
 						//	allcId = asNeed.GetItAllocId()
 						//	if allcId != -1 IsTook = true
 						//}
-						if MyStr == "UniqName"
-						{
-							printf("hm %i\n",allcId)
-						}
 						if allcId == -1 {
 							if IsRef
 								allcId = GetAlloc(this&,ObjType.GetPoint())
