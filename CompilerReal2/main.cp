@@ -416,7 +416,7 @@ main := !(int argc,char^^ argv) -> int
 			if msg != null and msg != ""
 			{
 				printf("error %s\n",msg)
-				tF := TFile("test.ll","w")
+				tF := TFile("dump.ll","w")
 				tF.Write(lines,fil.Size())
 				tF.Close()
 				return 0
@@ -429,7 +429,7 @@ main := !(int argc,char^^ argv) -> int
 			if msg != null and msg != ""{
 				printf("error %s\n",msg)
 
-				tF := TFile("test.ll","w")
+				tF := TFile("dump.ll","w")
 				tF.Write(lines,fil.Size())
 				tF.Close()
 				return 0
