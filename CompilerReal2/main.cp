@@ -402,6 +402,8 @@ main := !(int argc,char^^ argv) -> int
 			LLVM_NATIVE_TARGETMC := llvmLib.Get("LLVMInitializeX86TargetMC")->{!()^->void}
 			LLVMInitializeX86AsmPrinter := llvmLib.Get("LLVMInitializeX86AsmPrinter")->{!()^->void}
 
+			LLVMPrintModuleToFile := llvmLib.Get("LLVMPrintModuleToFile")->{!(void^,char^,void^)^->void}
+
 			ctx := llvmCreateContext()
 			fil := TEchoStream()
 			WriteCodeData(fil&->{TIOStream^}^)
@@ -411,15 +413,28 @@ main := !(int argc,char^^ argv) -> int
 			msg := char^()
 			mod := void^()
 			res := llvmIRInContext(ctx,buf,mod&,msg&)
-			if msg != null
+			if msg != null and msg != ""
+			{
 				printf("error %s\n",msg)
+				tF := TFile("test.ll","w")
+				tF.Write(lines,fil.Size())
+				tF.Close()
+				return 0
+			}
 			fName := mainFunc.Down->{BoxFunc^}.OutputName
 			mainFunc2 := llvmGetNamedFunction(mod,fName)
 
 
 			LLVMVerifyModule(mod,0,msg&)
-			if msg != null
+			if msg != null and msg != ""{
 				printf("error %s\n",msg)
+
+				tF := TFile("test.ll","w")
+				tF.Write(lines,fil.Size())
+				tF.Close()
+				return 0
+			}
+
 
 			LLVMLinkInMCJIT()
 			//LLVMInitializeNativeTarget()
@@ -430,7 +445,7 @@ main := !(int argc,char^^ argv) -> int
 
 			eng := void^()
 			res = LLVMCreateMCJITCompilerForModule(eng&,mod,null,0,msg)
-			if msg != null
+			if msg != null and msg != ""
 				printf("error %s\n",msg)
 
 			//jitArgs := void^[2]

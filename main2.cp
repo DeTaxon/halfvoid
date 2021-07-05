@@ -63,24 +63,15 @@ fnc2 := !() -> void
 	throw new Exception("wow")
 }
 
-cls1 := class
-{
-	CreateObject := !(!(int)&->int ww) -> int
-	{
-		return ww(3)
-	}
-	Func2 := !() -> void
-	{
-		UniqName := CreateObject(x ==> x*23)
-	}
-}
 main := !(int argc, char^^ argv) -> int
 {
-	c := cls1
-	c.Func2()
-	return 0
 	try
 	{
+		for i : 5
+		{
+			printf("me sleep\n")
+			TSleep(1)
+		}
 		fnc()
 		TSleep(1)
 		fnc2()

@@ -6,7 +6,7 @@ GlobalParam := class extend MemParamCommon
 
 
 	PrepareMainPtr := virtual !(TIOStream f,int newId) -> void {}
-	GetMainPtr := virtual !(int newId) -> char^ { 
+	GetMainPtr := virtual !(int newId) -> char^ {
 		return "@T"sbt + MainId
 	}
 
@@ -91,9 +91,6 @@ GlobalParam := class extend MemParamCommon
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
-		if IsThreadLocal and jitMode
-			return void
-		
 		f << "@T" << MainId << " = "//" = dso_local "
 		if IsThreadLocal f << "thread_local "
 		f << "global "

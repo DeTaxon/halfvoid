@@ -9,8 +9,8 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 	{
 		return passJITFuncs[name].1
 	}
-	iter := start
 
+	iter := start
 	while iter != null
 	{
 		if iter is ObjParam //iter.GetValue() == "i:=1"
