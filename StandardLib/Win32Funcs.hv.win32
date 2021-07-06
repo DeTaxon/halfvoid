@@ -42,7 +42,6 @@ OVERLAPPED := class
 	offset := u64
 	event := void^
 }
-ReadDirectoryChangesW := !(void^ dir,void^ buf,int len,int bWathSubtree,int notFilter,void^ bReturned,void^ overl,void^ compl) -> void^ declare
 
 FILETIME := class
 {
@@ -63,7 +62,6 @@ BY_HANDLE_FILE_INFORMATION := class
 	nFileIndexLow := u32
 }
 
-GetFileInformationByHandle := !(void^ filId,BY_HANDLE_FILE_INFORMATION^ res) -> int declare
 
 WIN32_FIND_DATAW := class
 {
@@ -78,9 +76,6 @@ WIN32_FIND_DATAW := class
 	cFileName := u16[260] // 260 = MAX_PATH
 	cAlternateFileName := u16[14]
 }
-FindFirstFileW := !(u16^ fileNamme,WIN32_FIND_DATAW^ resDat) ->void^ declare
-FindNextFileW := !(void^ hndl, WIN32_FIND_DATAW^ resDat) -> bool declare
-FindClose := !(void^ hndl) -> bool declare
 
 
 FILE_MAP_ALL_ACCESS := 0xF001F
@@ -94,14 +89,6 @@ PAGE_NOACCESS := 0x01
 PAGE_READONLY := 0x02
 PAGE_READWRITE := 0x04
 PAGE_WRITECOPY := 0x08
-
-CreateFileMappingW := !(void^ hndl,void^ scure,int flags,u32 sizeHi,u32 sizeLo,void^ lpName) -> void^ declare
-MapViewOfFile := !(void^ hndl, int accs, u32 offsetHi, u32 offsetLo,size_t sizeToMap) -> void^ declare
-UnmapViewOfFile := !(void^ hndl) -> void declare
-
-
-VirtualAlloc := !(void^ preferedAddr,u64 dwSize,u32 allocType,u32 protect) -> void^ declare
-VirtualProtect := !(void^ addr, u64 dwSize, u32 newProt, u32^ oldProt) -> void^ declare
 
 MEM_COMMIT := 0x1000
 MEM_RESERVE := 0x2000
@@ -133,7 +120,6 @@ Utf16ToUtf8 := !(u16^ itStr) -> char^
 }
 
 
-FormatMessageW := !(int a,void^ b,u32 c,int d,u16^^ e,int f,void^ g) -> int declare
 GetWinapiErrorText := !(u32 errVal) -> char^
 {
 	msgRes := u16^()

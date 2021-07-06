@@ -1,13 +1,6 @@
 
-ConvertThreadToFiber := !(void^ fbr) -> void^ declare
-SwitchToFiber := !(void^ fbr) -> void declare 
-CreateFiber := !(size_t stackSize,!(void^)^->void fiberFunc,void^ fiberValue) -> void^ declare
-DeleteFiber := !(void^ fbr) -> void declare
 
-CreateEventA := !(void^ security,int manualReset,int bInitState,char^ pName) -> void^ declare
-SetEvent := !(void^ evnt) -> int declare
-ResetEvent := !(void^ evnt) -> int declare
-WaitForMultipleObjects := !(u32 nCount,void^ handlers,int waitAll,u32 millicenodsTimeout) -> int declare
+
 WAIT_OBJECT_0 := 0
 WAIT_ABANDONED_0 := 0x80
 WAIT_TIMEOUT := 0x102
@@ -35,7 +28,6 @@ FILE_ACTION_ADDED := 1
 FILE_ACTION_REMOVED := 2
 FILE_ACTION_MODIFIED := 3
 
-GetOverlappedResult := !(void^ hndl,void^ over,int^ red,int wait) -> int declare
 
 monitorStruct := class
 {

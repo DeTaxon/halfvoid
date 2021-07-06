@@ -40,6 +40,23 @@
 		"GetCommandLineW" : "u16^",
 		"LocalFree" : "void,void^",
 
+		"ReadDirectoryChangesW" : "void^,void^,void^,int,int,int,void^,void^,void^",
+
+		"CreateFileMappingW" : "void^,void^,void^,int,u32,u32,void^",
+		"MapViewOfFile" : "void^,void^,int,u32,u32,size_t",
+		"UnmapViewOfFile" : "void,void^",
+
+		"FindFirstFileW" : "void^,u16^,void^",
+		"FindNextFileW" : "bool,void^,void^",
+		"FindClose" : "bool,void^",
+
+		"GetFileInformationByHandle" : "int,void^,void^",
+
+		"FormatMessageW" : "int,int,void^,u32,int,u16^^,int,void^",
+
+		"VirtualAlloc" : "void^,void^,u64,u32,u32",
+		"VirtualProtect" : "void^,void^,u64,u32,u32^",
+
 		"InitializeCriticalSectionAndSpinCount" : "void,void^,int",
 		"EnterCriticalSection" : "void,void^",
 		"LeaveCriticalSection" : "void,void^",
@@ -48,6 +65,21 @@
 		"SleepConditionVariableCS" : "void,void^,void^, u32",
 		"WakeConditionVariable" : "void,void^",
 		"WakeAllConditionVariable" : "void,void^",
+
+		"CreateThread" : "void^,void^,size_t,void^,void^,u32,void^",
+		"WaitForSingleObject" : "void,void^,u32",
+
+		"ConvertThreadToFiber" : "void^,void^",
+		"SwitchToFiber" := "void,void^",
+		"CreateFiber" : "void^,size_t,void^,void^",
+		"DeleteFiber" : "void,void^",
+
+		"CreateEventA" : "void^,void^,int,int,char^",
+		"SetEvent" : "int,void^",
+		"ResetEvent" : "int,void^",
+		"WaitForMultipleObjects" : "int,u32,void^,int,u32",
+
+		"GetOverlappedResult" : "int,void^,void^,int^,int",
 
 		"GetTempPathW" : "int,int,u16^",
 		"GetTempFileNameW" : "int,u16^,u16^,int,u16^"
