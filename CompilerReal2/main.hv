@@ -25,7 +25,7 @@ main := !(int argc,char^^ argv) -> int
 
 	fileSuffixes := List.{char^}()
 	defer fileSuffixes.Destroy()
-	fileSuffixes << ".cp"
+	fileSuffixes << ".hv"
 	if $posix compilerSuffix = "posix"
 	if $win32 compilerSuffix = "win32"
 

@@ -48,7 +48,7 @@ ifeq ($(tui),yes)
 endif
 
 MainOut := ./Objs/out3.ll
-ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.cp
+ProgSrc := -C1 "CompilerReal2/$$" CompilerReal2/main.hv
 
 AddStatic := $(Stati)
 ifeq ($(OS),Windows_NT)
@@ -80,7 +80,7 @@ cycle: $(wildcard CompilerReal2/*.cp)
 	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
 unit: $(wildcard UnitTests/*.cp)
-	$(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) -C1 "UnitTests/$$" UnitTests/main.cp -o $(MainOut); clang++ -g $(MainOut) -lpthread -ldl -o unit
+	$(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) -C1 "UnitTests/$$" UnitTests/main.hv -o $(MainOut); clang++ -g $(MainOut) -lpthread -ldl -o unit
 
 twice: repair cycle
 
@@ -90,10 +90,10 @@ ManyCycle:
 stable:
 	$(gdb_tui) $(CurrentStable)  -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
-JIT: main2.cp
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp $(ForcedLibs) --jit
-test2: main2.cp
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.cp -C0 "StandardLib/$$" -o $(MainOut); $(CmplTest)
+JIT: main2.hv
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.hv $(ForcedLibs) --jit
+test2: main2.hv
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.hv -C0 "StandardLib/$$" -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr
