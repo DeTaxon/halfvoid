@@ -1,6 +1,4 @@
 
-GetTempPathW := !(int lenBuf,u16^ buffStr) -> int declare
-GetTempFileNameW := !(u16^ dirP, u16^ pref, int uniq,u16^ resBuffer) -> int declare
 
 RawFile := class
 {

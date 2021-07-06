@@ -10,8 +10,46 @@
 		"WriteFile" : "int,void^,void^,u32,u32^,void^",
 		"ReadFile" : "int,void^,void^,u32,u32^,void^",
 		"CloseHandle" : "void,void^",
+
+		"DeleteFileW" : "int,u16^",
+
+		"Sleep" : "void,u32",
+		"GetTickCount64" : "u64",
+
+		"LoadLibraryW" : "void^,u16^", 
+		"GetProcAddress" : "void^,void^,char^", 
+		"FreeLibrary" : "void,void^",
+
+		"MultiByteToWideChar" : "int,int,int,char^,int,u16^,int",
+		"WideCharToMultiByte" : "int,int,int,u16^,int,char^,int,void^,void^",
+
+		"SetConsoleOutputCP" : "void,u32",
+		"SetConsoleCP" : "void,u32",
+
+		"GetLastError" : "u32",
+
+		"SetFilePointer" : "void,void^,u32,u32^,u32",
+		"GetFullPathNameW" : "int,u16^,int,u16^,u16^",
+
+		"GetFileTime" : "int,void^,u64^,u64^,u64^",
+
+		"GetFileAttributesW" : "int,u16^",
+
+		"CreateDirectoryW" : "int,void^,void^",
 		
 		"GetCommandLineW" : "u16^",
-		"LocalFree" : "void,void^"
+		"LocalFree" : "void,void^",
+
+		"InitializeCriticalSectionAndSpinCount" : "void,void^,int",
+		"EnterCriticalSection" : "void,void^",
+		"LeaveCriticalSection" : "void,void^",
+		"DeleteCriticalSection" : "void,void^",
+		"InitializeConditionVariable" : "void,void^",
+		"SleepConditionVariableCS" : "void,void^,void^, u32",
+		"WakeConditionVariable" : "void,void^",
+		"WakeAllConditionVariable" : "void,void^",
+
+		"GetTempPathW" : "int,int,u16^",
+		"GetTempFileNameW" : "int,u16^,u16^,int,u16^"
 	}
 }
