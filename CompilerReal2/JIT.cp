@@ -12,6 +12,10 @@ JITPreInit := !() -> void
 
 	addJITFunction("TSleep",TSleep->{void^},![GTypeDouble],GTypeVoid)
 	addJITFunction("TExpectWorkers",TExpectWorkers->{void^},![GTypeInt],GTypeVoid)
+
+	addJITFunction("TPauseTask",TPauseTask->{void^},![GTypeInt.GetPoint()],GTypeVoid)
+	addJITFunction("TResumeTask",TResumeTask->{void^},![GTypeInt],GTypeVoid)
+	addJITFunction("TExpectWorkers",TExpectWorkers->{void^},![GTypeInt],GTypeVoid)
 	
 	lType := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
