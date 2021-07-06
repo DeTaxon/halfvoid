@@ -15,7 +15,7 @@ TaskTest := !() -> void
 		{
 			printf("wow %i\n",taskTestValue)
 			taskTestValue = taskTestValue + 1
-			AwaitWork(() ==> {
+			TAwaitWork(() ==> {
 				TSleep(1)
 			})
 		}

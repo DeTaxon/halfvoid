@@ -49,12 +49,23 @@
 
 		"sleep" : "int,int",
 
+		"getcontext" : "int,void^",
+		"setcontext" : "int,void^",
+		"makecontext" : "int,void^,void^,int,...",
+		"swapcontext" : "int,void^,void^",
+
 		"mmap" : "void^,void^,u64,int, int, int, void^",
 		"munmap" : "int,void^,s64",
 		"fstat" : "int,int,char^",
 		"remove" : "int,char^",
 		"nanosleep" : "int,void^,void^",
 		"clock_gettime" : "void,u64,void^",
+
+		"eventfd" : "int,u64,int",
+		"inotify_init" : "int",
+		"inotify_add_watch" : "int,int,char^,int",
+
+		"poll" : "int,void^,int,int",
 
 		"pthread_cond_timedwait" : "void,void^,void^,void^"
 	}

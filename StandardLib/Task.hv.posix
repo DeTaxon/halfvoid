@@ -1,14 +1,6 @@
 
 //
-getcontext := !(void^ a) -> int declare
-setcontext := !(void^ a) -> int declare
-makecontext := !(void^ a,!()^->void  b,int argc,...) -> int declare
-swapcontext := !(void^ begin, void^ end) -> int declare
 
-eventfd := !(u64 initVal,int flags) -> int declare
-
-inotify_init := !() -> int declare
-inotify_add_watch := !(int fd,char^ pat,int mask) -> int declare
 
 pollfd := class 
 {
@@ -16,7 +8,6 @@ pollfd := class
 	events := u16
 	revents := u16
 }
-poll := !(void^ pols, int count,int timeout) -> int declare
 
 IN_CHANGE := 2
 IN_CLOSE_WRITE := 8
