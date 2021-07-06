@@ -71,7 +71,7 @@ main := !(int argc,char^^ argv) -> int
 		case "-p"
 			i++
 			compilerSuffix = argv[i]
-			itNm := ".cp."sbt + argv[i]
+			itNm := ".hv."sbt + argv[i]
 			fileSuffixes.Push(itNm.Str())
 			
 		case "-o"
