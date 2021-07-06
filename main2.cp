@@ -69,7 +69,9 @@ main := !(int argc, char^^ argv) -> int
 		for i : 5
 		{
 			printf("waw\n")
-			TSleep(0.5)
+			TAwaitWork(() ==>{
+				TSleep(0.5)
+			})
 		}
 	})
 	TSpawnTask(() ==> {

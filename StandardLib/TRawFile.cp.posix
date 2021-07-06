@@ -32,14 +32,11 @@ TRawFile := class extend TIOStream
 		if 't' in mode flags = flags or_b O_TRUNC
 
 		errVal := 0
-		TExpectWorkers(1)
-		AwaitWork(() ==> {
-			handler = open(fileName,flags,0777)
-			if handler == -1
-			{
-				errVal = GetErrno()
-			}
-		})
+		handler = open(fileName,flags,0777)
+		if handler == -1
+		{
+			errVal = GetErrno()
+		}
 		if handler == -1
 		{
 			printf("err %i\n",errVal)
@@ -52,18 +49,14 @@ TRawFile := class extend TIOStream
 	Read := virtual !(void^ data, size_t size) -> size_t
 	{
 		res := s64
-		AwaitWork(() ==> {
-			res = read(handler,data,size)
-		})
+		res = read(handler,data,size)
 		if res < 0 throw new Exception("Could not read")
 		return res
 	}
 	Write := virtual !(void^ data, size_t size) -> size_t
 	{
 		res := s64
-		AwaitWork(() ==> {
-			res = write(handler,data,size)
-		})
+		res = write(handler,data,size)
 		if res < 0 throw new Exception("Could not write")
 		return res
 	}

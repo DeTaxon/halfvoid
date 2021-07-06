@@ -3,7 +3,7 @@ TMonitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> 
 {
 	CurrentTaskBox.Monitor(pathName,modes,recursive,callb)
 }
-AwaitWork := !(!()&->void lambd) -> void
+TAwaitWork := !(!()&->void lambd) -> void
 {
 	if CurrentTaskBox != null
 	{

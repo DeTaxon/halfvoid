@@ -15,6 +15,7 @@ JITPreInit := !() -> void
 	
 	lType := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
+	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
 }
 
 addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void
