@@ -12,6 +12,9 @@ JITPreInit := !() -> void
 
 	addJITFunction("TSleep",TSleep->{void^},![GTypeDouble],GTypeVoid)
 	addJITFunction("TExpectWorkers",TExpectWorkers->{void^},![GTypeInt],GTypeVoid)
+	
+	lType := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
+	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 }
 
 addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void

@@ -583,6 +583,10 @@ ExchangeFuncType := !(TypeFunc^ FType,Type^ retType) -> TypeFunc^
 	return newTypeFunc
 }
 
+GetFuncType := !(Type^ retType) -> TypeFunc^
+{
+	return GetFuncType(null,null,0,retType,false,false,false)
+}
 GetFuncType := !(Type^[@Siz] typs,Type^ retType) -> TypeFunc^
 {
 	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,false,false,false)

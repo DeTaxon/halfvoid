@@ -65,20 +65,20 @@ fnc2 := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	try
-	{
+	TSpawnTask(() ==> {
 		for i : 5
 		{
-			printf("me sleep\n")
-			TSleep(1)
+			printf("waw\n")
+			TSleep(0.5)
 		}
-		fnc()
-		TSleep(1)
-		fnc2()
-	}catch(IException^ e)
-	{
-		printf("exception\n")
-	}
+	})
+	TSpawnTask(() ==> {
+		for i : 5
+		{
+			printf("wow\n")
+			TSleep(0.5)
+		}
+	})
 	//cnt := new TGCContainer.{Screamer}
 	//val := cnt.Create(StringSpan("wow"))
 	return 0
