@@ -1,3 +1,9 @@
+FS_None := 0
+FS_Unknown := 1
+FS_File := 2
+FS_Folder := 3
+FS_SymLink := 4
+
 Wildcard := class
 {
 	toParse := char^

@@ -1,4 +1,8 @@
 
+S_IFDIR := 16384
+S_IFREG := 32768
+S_IFLINK := 40960
+
 GetDirectoryName := !(void^ dirFd) -> char^
 {
 	itAsChar := dirFd->{char^}
@@ -179,6 +183,27 @@ Path := class
 			return false
 		itflg := st1[24]&->{s32^}^
 		return ((itflg and_b 16384) != 0)
+	}
+	FSType := !(bool readSymLinks) -> int
+	{
+		st1 := char[144]
+		if readSymLinks
+		{
+			if lstat(itStr,st1[0]&) != 0
+				return FS_None
+		}else{
+			if stat(itStr,st1[0]&) != 0
+				return FS_None
+		}
+		res := FS_Unknown
+		itflg := st1[24]&->{s32^}^
+		if (itflg and_b S_IFDIR) == S_IFDIR
+			res = FS_Folder
+		if (itflg and_b S_IFREG) == S_IFREG
+			res = FS_File
+		if (itflg and_b S_IFLINK) == S_IFLINK
+			res = FS_SymLink
+		return res
 	}
 	"=" := !(Path pt) -> void
 	{

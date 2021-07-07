@@ -24,6 +24,7 @@ JITPreInit := !() -> void
 	if $posix
 	{
 		addJITFunction("stat",statFunc->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)
+		addJITFunction("lstat",lstatFunc->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)
 		addJITFunction("fstat",fstatFunc->{void^},![GTypeInt,GTypeChar.GetPoint()],GTypeInt)
 	}
 }
@@ -38,6 +39,10 @@ addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType
 statFunc := !(char^ a,void^ b) -> int //TODO: pass stat directly
 {
 	return stat(a,b)
+}
+lstatFunc := !(char^ a,void^ b) -> int //TODO: pass stat directly
+{
+	return lstat(a,b)
 }
 fstatFunc := !(int a,char^ b) -> int //TODO: pass stat directly
 {
