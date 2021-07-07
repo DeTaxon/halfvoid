@@ -44,7 +44,7 @@ LibLoaderCheckFolders := !() -> void
 		p := Path(it)
 		for file : p
 		{
-			st := file.JustName()
+			st := file.Name()
 			if st in wild
 				printf("hoh %s %i\n",file.Get(),file.FSType(true))
 		}
