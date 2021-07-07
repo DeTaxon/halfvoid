@@ -39,7 +39,6 @@ TRawFile := class extend TIOStream
 		}
 		if handler == -1
 		{
-			printf("err %i\n",errVal)
 			throw new Exception("Could not open file")
 		}
 	}
