@@ -245,7 +245,7 @@ Vec4fFuncs := !() -> void
 	for NT : Typs, siz : ![4,4,3,2]
 	{
 		AddBuiltInFunc( new BuiltInFuncBinar("<+>",NT,false,NT,false,FT,"%Pre## = fmul "sbt + NT.GetName() + " #1 , #2\n" + 
-			"#0 = call fast float @llvm.vector.reduce.fadd.f32.v" + siz + "f32(float undef,<"+ siz + " x float> %Pre##) #d\n"))
+			"#0 = call fast float @llvm.vector.reduce.fadd.f32.v" + siz + "f32(float -0.0,<"+ siz + " x float> %Pre##) #d\n"))
 
 	}
 }
