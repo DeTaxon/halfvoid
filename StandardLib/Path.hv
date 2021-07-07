@@ -1,3 +1,23 @@
+Wildcard := class
+{
+	toParse := char^
+	this := !(char^ toIt) -> void
+	{
+		toParse = toIt
+	}
+	"~For" := !() -> DirectoryIterator2
+	{
+		return DirectoryIterator2(toParse,true)
+	}
+	"in" := !(char^ val) -> bool
+	{
+		return CmpNameAndWildcard(val,toParse)
+	}
+	"in" := !(StringSpan val) -> bool
+	{
+		return CmpNameAndWildcard(val,toParse)
+	}
+}
 
 CmpNameAndWildcard := !(char^ fileName,char^ inWild) -> bool
 {
@@ -29,17 +49,3 @@ CmpNameAndWildcard := !(char^ fileName,char^ inWild) -> bool
 	}
 	return fileName[j] == 0
 }
-Wildcard := class
-{
-	toParse := char^
-	this := !(char^ toIt) -> void
-	{
-		toParse = toIt
-	}
-	"~For" := !() -> DirectoryIterator2
-	{
-		return DirectoryIterator2(toParse,true)
-	}
-
-}
-

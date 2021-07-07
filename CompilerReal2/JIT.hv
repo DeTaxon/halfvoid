@@ -20,6 +20,12 @@ JITPreInit := !() -> void
 	lType := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
+
+	if $posix
+	{
+		addJITFunction("stat",statFunc->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)
+		addJITFunction("fstat",fstatFunc->{void^},![GTypeInt,GTypeChar.GetPoint()],GTypeInt)
+	}
 }
 
 addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void
@@ -29,7 +35,14 @@ addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType
 	sleepPar := new GlobalParam(sleepTypePtr,new ObjPointer(fPoint->{void^},sleepTypePtr))
 	passJITFuncs[name] = !{sleepType,sleepPar}
 }
-
+statFunc := !(char^ a,void^ b) -> int //TODO: pass stat directly
+{
+	return stat(a,b)
+}
+fstatFunc := !(int a,char^ b) -> int //TODO: pass stat directly
+{
+	return fstat(a,b)
+}
 
 JITInit := !() -> void
 {

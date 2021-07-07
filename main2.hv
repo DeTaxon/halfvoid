@@ -65,22 +65,23 @@ fnc2 := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("waw\n")
-			TAwaitWork(() ==>{
-				TSleep(0.5)
-			})
-		}
-	})
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("wow\n")
-			TSleep(0.5)
-		}
-	})
+	LibLoaderCheckFolders()
+	//TSpawnTask(() ==> {
+	//	for i : 5
+	//	{
+	//		printf("waw\n")
+	//		TAwaitWork(() ==>{
+	//			TSleep(0.5)
+	//		})
+	//	}
+	//})
+	//TSpawnTask(() ==> {
+	//	for i : 5
+	//	{
+	//		printf("wow\n")
+	//		TSleep(0.5)
+	//	}
+	//})
 	//cnt := new TGCContainer.{Screamer}
 	//val := cnt.Create(StringSpan("wow"))
 	return 0
