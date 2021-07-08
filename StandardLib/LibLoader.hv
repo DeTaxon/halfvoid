@@ -69,24 +69,61 @@ LibDatabaseType := class
 		itMemPool.Push()
 		defer itMemPool.Pop()
 
-		hndl := OpenLib(name)
-		
-		if hndl == null
+		hndl := void^
+
+		if '*' in name
 		{
-			exTest := Path("./"sbt + name)
-			if exTest.IsExist()
+			if $posix
 			{
-				hndl = OpenLib(exTest.FullPath().Get())
+				libName := name
+				card := Wildcard(name)
+				LibLoaderCheckFolders()
+				for libFolder : _loadLibDirs
+				{
+					pt := Path(libFolder)
+					for lib : pt
+					{
+						if lib.Name() in card
+						{
+							hndl = OpenLib(lib.Get())
+							if hndl != null
+							{
+								libName = StrCopy(lib.Name().Get())
+								break
+							}
+						}
+					}
+					if hndl != null
+						break
+				}
+				if hndl != null
+				{
+					inMap2 := ref loadedLibs[libName]
+					inMap2.hndl = hndl
+					return inMap2&
+				}
+			}
+		}else{
+			hndl = OpenLib(name)
+			
+			if hndl == null
+			{
+				exTest := Path("./"sbt + name)
+				if exTest.IsExist()
+				{
+					hndl = OpenLib(exTest.FullPath().Get())
+				}
+			}
+
+			if hndl != null
+			{
+				nameCpy := StrCopy(name)
+				inMap2 := ref loadedLibs[nameCpy]
+				inMap2.hndl = hndl
+				return inMap2&
 			}
 		}
-
-		if hndl != null
-		{
-			nameCpy := StrCopy(name)
-			inMap2 := ref loadedLibs[nameCpy]
-			inMap2.hndl = hndl
-			return inMap2&
-		}
+		
 		
 		if intrRepoBrowser != null
 		{

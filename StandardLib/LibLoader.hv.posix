@@ -1,7 +1,6 @@
 
 LibLoaderFolders := List.{char^}
 
-
 _loadLibDirs := List.{char^}
 
 _loadedLibLoaderCheckFolders := false
@@ -11,6 +10,11 @@ LibLoaderCheckFolders := !() -> void
 		return void
 	_loadedLibLoaderCheckFolders = true
 
+	for it : !["/lib","/usr/lib"]
+	{
+		if Path(it).IsExist()
+			_loadLibDirs.Push(StrCopy(it))
+	}
 
 	pToConf := Path("/etc/ld.so.conf.d")
 
@@ -35,18 +39,6 @@ LibLoaderCheckFolders := !() -> void
 			}
 		}catch(IException^ e)
 		{
-		}
-	}
-
-	wild := Wildcard("*libLLVM-*.so*")
-	for it : _loadLibDirs
-	{
-		p := Path(it)
-		for file : p
-		{
-			st := file.Name()
-			if st in wild
-				printf("hoh %s %i\n",file.Get(),file.FSType(true))
 		}
 	}
 }

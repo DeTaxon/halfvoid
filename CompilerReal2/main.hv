@@ -379,7 +379,7 @@ main := !(int argc,char^^ argv) -> int
 	if jitMode
 	{
 		try{
-			llvmLib := Library("/usr/lib/x86_64-linux-gnu/libLLVM-10.so.1","/lib/x86_64-linux-gnu/libLLVM-10.so.1","libLLVM.dll")
+			llvmLib := Library("libLLVM-*.so","libLLVM.dll")
 			llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
 			llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}
 			llvmIRInContext := llvmLib.Get("LLVMParseIRInContext")->{!(void^,void^,void^^,char^^)^->int}

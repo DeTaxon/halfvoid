@@ -65,7 +65,7 @@ fnc2 := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	LibLoaderCheckFolders()
+	printf("hello\n")
 	//TSpawnTask(() ==> {
 	//	for i : 5
 	//	{
