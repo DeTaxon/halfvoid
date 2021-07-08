@@ -23,6 +23,16 @@ TGCContainer := class .{@V} extend baseGCContainer
 		dataBase[result.Name] = result
 		return result
 	}
+	Get := !(StringSpan name) -> V^
+	{
+		if dataBase.Contain(name)
+			return dataBase[name]
+		result := new V
+		result.Name = name.Str()
+		result.basePointer = this&
+		dataBase[result.Name] = result
+		return result
+	}
 }
 
 TCachedGCObject := class extend TGCObject
@@ -45,44 +55,10 @@ Screamer := class extend TCachedGCObject
 }
 
 
-miniClass := class
-{
-	x := int
-}
-
-fnc := !() -> void
-{
-	x := u8[12]
-	x[^] = 16
-}
-fnc2 := !() -> void
-{
-	//tst := CommonTreeNode.{BadPair.{char^,Screamer^}}^
-	tstParam := new Screamer
-	printf("wow %p\n",tstParam)
-	throw new Exception("wow")
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("hello\n")
-	//TSpawnTask(() ==> {
-	//	for i : 5
-	//	{
-	//		printf("waw\n")
-	//		TAwaitWork(() ==>{
-	//			TSleep(0.5)
-	//		})
-	//	}
-	//})
-	//TSpawnTask(() ==> {
-	//	for i : 5
-	//	{
-	//		printf("wow\n")
-	//		TSleep(0.5)
-	//	}
-	//})
-	//cnt := new TGCContainer.{Screamer}
-	//val := cnt.Create(StringSpan("wow"))
+	cnt := new TGCContainer.{Screamer}
+	val := cnt.Create(StringSpan("wow"))
 	return 0
 }

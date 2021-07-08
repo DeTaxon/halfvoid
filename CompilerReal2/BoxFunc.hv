@@ -257,7 +257,7 @@ BoxFuncContainer := class extend Object
 	}
 	DeferFuncStart := !(TIOStream f,int dbgId) -> void
 	{
-		if pDeferB
+		if pDeferB and Yodlers.Size() == 0
 		{
 			PrintDeferDepth(f,ABox.ItId,dbgId)
 			Down->{BoxBlock^}.PrintBlockAddDefer(f,dbgId)
@@ -266,7 +266,7 @@ BoxFuncContainer := class extend Object
 	
 	DeferFuncEnd := !(TIOStream f,int dbgId) -> void
 	{
-		if pDeferB 
+		if pDeferB and Yodlers.Size() == 0
 		{
 			Down->{BoxBlock^}.PrintDeferInBlockUse(f)
 			PrintDeferSkip(f,ABox.ItId,dbgId)
