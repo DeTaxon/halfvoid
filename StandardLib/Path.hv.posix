@@ -178,7 +178,7 @@ Path := class
 	}
 	IsFolder := !() -> bool
 	{
-		return FSType() == FS_Folder
+		return this.FSType(false) == FS_Folder
 	}
 	FSType := !(bool readSymLinks) -> int
 	{
