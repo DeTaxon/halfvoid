@@ -178,11 +178,7 @@ Path := class
 	}
 	IsFolder := !() -> bool
 	{
-		st1 := char[144]
-		if stat(itStr,st1[0]&) != 0
-			return false
-		itflg := st1[24]&->{s32^}^
-		return ((itflg and_b 16384) != 0)
+		return FSType() == FS_Folder
 	}
 	FSType := !(bool readSymLinks) -> int
 	{

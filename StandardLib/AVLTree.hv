@@ -285,7 +285,6 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 						toBal.balance++
 						return void
 					case 1
-						//TODO: rotations
 						sib := toBal.Right
 						if sib.balance == -1
 						{
