@@ -20,6 +20,9 @@
 		"pthread_cond_broadcast" : "void,void^",
 		"pthread_cond_destroy" : "void,void^",
 
+		"backtrace" : "int,void^^,int",
+		"backtrace_symbols" : "char^^,void^^,int",
+
 		"sem_init" : "int,void^,int,u32",
 		"sem_wait" : "int,void^",
 		"sem_post" : "int,void^",

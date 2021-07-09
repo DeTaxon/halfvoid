@@ -54,11 +54,26 @@ Screamer := class extend TCachedGCObject
 	}
 }
 
-
+func2 := !() -> void
+{
+	throw new Exception("yep")
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	cnt := new TGCContainer.{Screamer}
-	val := cnt.Create(StringSpan("wow"))
+	try{
+		func2()
+	}catch(IException^ e)
+	{
+		printf("exception %s\n",e.Msg())
+		c := e.Trace()
+		if c != null
+		{
+			printf("trace %s\n",c[^])
+		}
+	}
+	//printf("test %p\n",stat)
+	//cnt := new TGCContainer.{Screamer}
+	//val := cnt.Create(StringSpan("wow"))
 	return 0
 }

@@ -104,7 +104,7 @@ PrintAddDefer := !(TIOStream f, char^ funcName,char^ ptrName,int debId) -> void
 {
 	f  << "call void @" << deferAddDefer2.OutputName << "(void(i8*,i1)* " << funcName << ",i8* "<< ptrName <<")"
 
-	if debId{
+	if debId != -1{
 		f << " , !dbg !" << debId
 	}
 	f << "\n"

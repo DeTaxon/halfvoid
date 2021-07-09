@@ -1,0 +1,33 @@
+AppendClass Exception
+{
+	if $debug
+		traceData := void^[128]
+	if $debug
+		traceDataLen := int
+	osCreateTrace := !() -> void
+	{
+		if $debug
+		{
+			traceDataLen = backtrace(traceData[0]&,128)
+		}
+	}
+	Trace := virtual !() -> char^[]
+	{
+		if $debug
+		{
+			if traceDataLen == 0
+				return char^[]()
+
+			res := backtrace_symbols(traceData[0]&,traceDataLen)
+			defer free(res)
+
+			strs := new char^[traceDataLen] ; $temp
+			for i : traceDataLen, r : strs
+			{
+				r = StrCopy(res[i]) ; $temp
+			}
+			return strs
+		}
+		return char^[]()
+	}
+}

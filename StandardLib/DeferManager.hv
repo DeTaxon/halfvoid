@@ -49,40 +49,6 @@ internalDeferApplyExp := !(int depth) -> void
 //internalLongJmp
 //internalDebugTrap
 
-IException := class
-{
-	GetId := virtual !() -> int
-	{
-		return 0
-	}
-	Msg := virtual !() -> char^
-	{
-		return ""
-	}
-}
-Exception := class extend IException
-{
-	itId := int
-	itMsg := char^
-	this := !(char^ sMsg) -> void
-	{
-		itId = 0
-		itMsg = sMsg
-	}
-	this := !(int sId, char^ sMsg) -> void
-	{
-		itId = sId
-		itMsg = sMsg
-	}
-	GetId := virtual !() -> int
-	{
-		return itId
-	}
-	Msg := virtual !() -> char^
-	{
-		return itMsg
-	}
-}
 
 intExcepFrame := class
 {

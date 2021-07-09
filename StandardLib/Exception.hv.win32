@@ -1,0 +1,10 @@
+AppendClass Exception
+{
+	osCreateTrace := !() -> void
+	{
+	}
+	Trace := virtual !() -> char^[]
+	{
+		return char^[]()
+	}
+}

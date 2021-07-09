@@ -1,0 +1,41 @@
+
+IException := class
+{
+	GetId := virtual !() -> int
+	{
+		return 0
+	}
+	Msg := virtual !() -> char^
+	{
+		return ""
+	}
+	Trace := virtual !() -> char^[]
+	{
+		return char^[]()
+	}
+}
+Exception := class extend IException
+{
+	itId := int
+	itMsg := char^
+	this := !(char^ sMsg) -> void
+	{
+		itId = 0
+		itMsg = sMsg
+		osCreateTrace()
+	}
+	this := !(int sId, char^ sMsg) -> void
+	{
+		itId = sId
+		itMsg = sMsg
+		osCreateTrace()
+	}
+	GetId := virtual !() -> int
+	{
+		return itId
+	}
+	Msg := virtual !() -> char^
+	{
+		return itMsg
+	}
+}
