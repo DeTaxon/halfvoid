@@ -61,17 +61,22 @@ func2 := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	try{
-		func2()
-	}catch(IException^ e)
-	{
-		printf("exception %s\n",e.Msg())
-		c := e.Trace()
-		if c != null
-		{
-			printf("trace %s\n",c[^])
-		}
-	}
+	x := half
+	c := 1.5f
+	c = x
+	//x = c
+	printf("wut %f\n",c)
+	//try{
+	//	func2()
+	//}catch(IException^ e)
+	//{
+	//	printf("exception %s\n",e.Msg())
+	//	c := e.Trace()
+	//	if c != null
+	//	{
+	//		printf("trace %s\n",c[^])
+	//	}
+	//}
 	//printf("test %p\n",stat)
 	//cnt := new TGCContainer.{Screamer}
 	//val := cnt.Create(StringSpan("wow"))

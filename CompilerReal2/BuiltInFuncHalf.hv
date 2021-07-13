@@ -1,0 +1,38 @@
+
+BuiltInInitHalf := !() -> void
+{
+	AddBuiltInFunc(new BuiltInFuncBinar("=",GTypeHalf,true,GTypeHalf,false,GTypeVoid,"store half #2, half* #1 #d\n"))
+
+	if jitMode and false
+	{
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeHalf,
+			"%fnc## = inttoptr i64 "sbt + internalJITF32toF16->{void^}->{size_t} + " to half(float)*\n" +
+			"#0 = call half %fnc##(float #1) #d\n"
+			))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeFloat,
+			"%fnc## = inttoptr i64 "sbt + internalJITF16toF32->{void^}->{size_t} + " to float(half)*\n"+
+			"#0 = call float %fnc##(half #1) #d\n"
+			))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeHalf,
+			"%fnc## = inttoptr i64 "sbt + internalJITF32toF16->{void^}->{size_t} + " to half(float)*\n" +
+			"%Pre## = fptrunc double #1 to float #d\n" +
+			"#0 = call half %fnc##(float %Pre##) #d\n"
+			))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeDouble,
+			"%fnc## = inttoptr i64 "sbt + internalJITF16toF32->{void^}->{size_t} + " to float(half)*\n"+
+			"%Pre## = call float %fnc##(half #1) #d\n" + 
+			"#0 = fpext float %Pre## to double #d\n"
+			))
+	}else{
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeFloat,false,GTypeHalf,"#0 = fptrunc float #1 to half #d\n"))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeFloat,"#0 = fpext half #1 to float #d\n"))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeDouble,false,GTypeHalf,"#0Pre = fptrunc double #1 to float #d\n"sbt +
+											"#0 = fptrunc float #0Pre to half #d\n"))
+		BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeDouble,"#0Pre = fpext half #1 to float #d\n"sbt +
+											"#0 = fpext float #0Pre to double #d\n"))
+	}
+}
+
+internalJITF16toF32 := !(half v) -> float { return v }
+internalJITF32toF16 := !(float v) -> half { return v }
+

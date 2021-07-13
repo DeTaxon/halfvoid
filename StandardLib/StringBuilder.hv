@@ -59,6 +59,18 @@ StringBuilderTemporary := class .{@BufSize}{
 			inPtrSize += sLen
 		}
 	}
+	"<<" := !(u64 x) self_return
+	{
+		this + x
+		return this
+	}
+	"+" := !(u64 x) self_return
+	{
+		buf := char[32]
+		sprintf(buf,"%lli",x)
+		this + buf
+		return this
+	}
 	"<<" := !(int x) self_return
 	{
 		this + x
