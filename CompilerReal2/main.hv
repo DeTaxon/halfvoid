@@ -6,6 +6,7 @@ compilerSuffix :=char^
 emitTree := false
 main := !(int argc,char^^ argv) -> int 
 {
+	sLibFolder := "StandardHVLibrary"
 	ReturnName = "result"
 	StrContainer = new StringContainer()
 	WorkBag."this"()
@@ -126,15 +127,15 @@ main := !(int argc,char^^ argv) -> int
 	}
 	//gRepo.PreferVirtual(true)
 
-	if targetFiles.Size() != 1
-	{
-		printf("ERROR: must be only 1 file\n")
-		for targetFiles
-		{
-			printf("input file %s\n",it)
-		}
-		return 0
-	}
+	//if targetFiles.Size() != 1
+	//{
+	//	printf("ERROR: must be only 1 file\n")
+	//	for targetFiles
+	//	{
+	//		printf("input file %s\n",it)
+	//	}
+	//	return 0
+	//}
 
 	for toDir : dirChecks
 	{

@@ -1,4 +1,4 @@
-ForcedLibs := -C0 "Libs/$$" -C0 "StandardLib/$$"
+ForcedLibs := -C0 "Libs/$$" -C0 "StandardHVLibrary/$$"
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
@@ -93,7 +93,7 @@ stable:
 JIT: main2.hv
 	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.hv $(ForcedLibs) --jit
 test2: main2.hv
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.hv -C0 "StandardLib/$$" -o $(MainOut); $(CmplTest)
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) main2.hv -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr

@@ -140,6 +140,12 @@ vRepo := class
 		rootFolder.subZipFolders << itObj.zipRoot&
 
 	}
+	IsExist := !(char^ p) -> bool
+	{
+		if Path(path).IsExist()
+			return true
+		return false
+	}
 	GetFile := !(char^ fileName)-> vRepoFile^
 	{
 		return GetFile(fileName,rootFolder)
