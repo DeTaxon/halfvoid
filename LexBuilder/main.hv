@@ -1,9 +1,9 @@
-#import "../CompilerReal2/PriorityRead.cp"
 
 main := !(int argc, char^^ argv) -> int
 {
 
-	itM := MappedFile("Priority.pr")
+	itM := MappedFile^
+	itM = new MappedFile("Priority.pr")
 	defer itM.Close()
 	pr := new PriorityBag(itM.point,itM.Size())
 
@@ -64,9 +64,9 @@ main := !(int argc, char^^ argv) -> int
 	mSize := res.ComputeFileSize()
 	outData := new u8[mSize]
 	res.SerializeToMap(outData)
-	outFile := file("Mach.m","wb")
-	outFile.write(outData->{void^},outData->len)
-	outFile.close()
+	outFile := TFile("Mach.m","wb")
+	outFile.Write(outData->{void^},outData->len)
+	outFile.Close()
 
 	return 0
 }

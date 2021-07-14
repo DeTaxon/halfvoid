@@ -349,9 +349,9 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 	inpSize := inpFile.Size()
 	zipSize := zipFile.Size()
 	totalSize := inpSize + zipSize
-	outFile := file(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
-	defer outFile.close()
-	outFile.write(inpFile.point,inpSize)
+	outFile := TFile(outFileI,"wb")//MappedFile(outFileI,FILE_CREATE,totalSize)
+	defer outFile.Close()
+	outFile.Write(inpFile.point,inpSize)
 
 	eod := zipFile.point[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
@@ -386,13 +386,13 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 			}
 		}
 		toWrite := maxValue - startPoint
-		outFile.write(startPoint,toWrite)
+		outFile.Write(startPoint,toWrite)
 		startPoint = startPoint[toWrite]&
 		if metIgnore{
 			offstValue := startPoint->{u32^}^
 			offstValue += inpSize
 			startPoint = startPoint[4]&
-			outFile.write(offstValue&,4)
+			outFile.Write(offstValue&,4)
 		}
 	}
 }

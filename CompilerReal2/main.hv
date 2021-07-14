@@ -322,6 +322,12 @@ main := !(int argc,char^^ argv) -> int
 	
 	WorkWithBag(printWork)
 
+	if not ErrorLog.Empty(){
+		if emitTree for Files it.Print(0)
+		for ErrorLog printf(it)
+		return -1
+	}
+
 	if not DeferInit2()
 	{
 		for ErrorLog printf(it)
