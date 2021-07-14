@@ -30,6 +30,18 @@ CommonTree := class .{@DATA}
 		}
 		return itr
 	}
+	FindNode := !(!(DATA)&->int cmpFunc) -> CommonTreeNode.{DATA}^
+	{
+		itr := Start
+		while itr != null
+		{
+			stRes := cmpFunc(itr.data)
+			if stRes == 0 return itr
+			if stRes < 0 	itr = itr.Right
+			else 		itr = itr.Left
+		}
+		return itr
+	}
 	createNode := !() .{} -> CommonTreeNode.{DATA}^
 	{
 		if $keep

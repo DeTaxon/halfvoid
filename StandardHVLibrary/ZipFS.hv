@@ -142,9 +142,6 @@ vRepo := class
 	}
 	IsExist := !(char^ p) -> bool
 	{
-		if Path(path).IsExist()
-			return true
-		return false
 	}
 	GetFile := !(char^ fileName)-> vRepoFile^
 	{
@@ -152,116 +149,164 @@ vRepo := class
 	}
 	ExamineFolder := !(vRepoFolder^ iterFolder) -> void
 	{
-		if not iterFolder.examined
+		if iterFolder.examined
+			return void
+		iterFolder.examined = true
+
+		zips := List.{char^}() ; $temp
+
+		if not iterFolder.virtualFolder
 		{
-			iterFolder.examined = true
-
-			zips := List.{char^}() ; $temp
-
-			if not iterFolder.virtualFolder
+			fldPath := Path(iterFolder.GetPath())
+			for subF : fldPath
 			{
-				fldPath := Path(iterFolder.GetPath())
-				for subF : fldPath
+				if subF.IsFolder()
 				{
-					if subF.IsFolder()
-					{
-						newStr := subF.Name().Str()
-						newObj := new vRepoFolder
-						newObj.objName = StringSpan(newStr)
-						newObj.upFolder = iterFolder
-						iterFolder.subFolders[newStr] = newObj
-					}else{
-						itmId := subF.GetId()
-						flSz := subF.Size()
+					newStr := subF.Name().Str()
+					newObj := new vRepoFolder
+					newObj.objName = StringSpan(newStr)
+					newObj.upFolder = iterFolder
+					iterFolder.subFolders[newStr] = newObj
+				}else{
+					itmId := subF.GetId()
+					flSz := subF.Size()
 
-						//if itmId in ignZip
-						if ignZip.Contain(itmId)
-						{
-							continue
-						}
-						if subF.Get()[-4..0] == ".zip"
-						{
-							zips << StrCopy(subF.Get())
-						}else{
-							newStr := subF.Name().Str()
-							newObj := new vRepoFile
-							newObj.upFolder = iterFolder
-							newObj.objName = StringSpan(newStr)
-							newObj.ptrToRepo = this&
-							newObj.fileSize = flSz
-							iterFolder.subFiles[newStr] = newObj
-						}
-					}
-				}
-				for z : zips
-				{
-					tt := new ZipFile
-					tt.AnalizeFile(z)
-
-					itPP :=Path(z)
-					itP := itPP.Name()
-
-					rpFld := null->{vRepoFolder^}
-
-					if iterFolder.subFolders.Contain(itP)
-					{
-						rpFld = iterFolder.subFolders[itP]
-						break
-					}
-					if rpFld == null
-					{
-						rpFld = new vRepoFolder
-						newStr := itP[0..-4].Str()
-						rpFld.objName = StringSpan(newStr)
-						rpFld.virtualFolder = true
-						iterFolder.subFolders[newStr] = rpFld
-					}
-					rpFld.subZipFolders << tt.zipRoot&
-				}
-			}
-
-			for entrs : iterFolder.subZipFolders
-			{
-				for subItm : entrs.subFolders
-				{
-					if iterFolder.subVirtualFiles.Contain(subItm.objName)
+					//if itmId in ignZip
+					if ignZip.Contain(itmId)
 					{
 						continue
 					}
-					
-					found := false
-					if iterFolder.subFolders[^].objName == subItm.objName
+					if subF.Get()[-4..0] == ".zip"
 					{
-						found = true
-						if subItm.realSize == 0
-							it.subZipFolders << subItm
-						break
-					}
-					if found continue
-
-					if subItm.realSize == 0
-					{
-						rpFld := new vRepoFolder
-						rpFld.objName = subItm.objName
-						newStr := subItm.objName.Str()
-						rpFld.virtualFolder = true
-						iterFolder.subFolders[newStr] = rpFld 
-						rpFld.subZipFolders << subItm
+						zips << StrCopy(subF.Get())
 					}else{
-						newObj := new vRepoFile 
+						newStr := subF.Name().Str()
+						newObj := new vRepoFile
 						newObj.upFolder = iterFolder
-						newObj.objName = subItm.objName
-						newStr := subItm.objName.Str()
+						newObj.objName = StringSpan(newStr)
 						newObj.ptrToRepo = this&
-						iterFolder.subVirtualFiles[newStr] = newObj
-						newObj.ptrToZip = subItm
+						newObj.fileSize = flSz
+						iterFolder.subFiles[newStr] = newObj
 					}
+				}
+			}
+			for z : zips
+			{
+				tt := new ZipFile
+				tt.AnalizeFile(z)
+
+				itPP :=Path(z)
+				itP := itPP.Name()
+
+				rpFld := null->{vRepoFolder^}
+
+				if iterFolder.subFolders.Contain(itP)
+				{
+					rpFld = iterFolder.subFolders[itP]
+					break
+				}
+				if rpFld == null
+				{
+					rpFld = new vRepoFolder
+					newStr := itP[0..-4].Str()
+					rpFld.objName = StringSpan(newStr)
+					rpFld.virtualFolder = true
+					iterFolder.subFolders[newStr] = rpFld
+				}
+				rpFld.subZipFolders << tt.zipRoot&
+			}
+		}
+
+		for entrs : iterFolder.subZipFolders
+		{
+			for subItm : entrs.subFolders
+			{
+				if iterFolder.subVirtualFiles.Contain(subItm.objName)
+				{
+					continue
+				}
+				
+				found := false
+				if iterFolder.subFolders[^].objName == subItm.objName
+				{
+					found = true
+					if subItm.realSize == 0
+						it.subZipFolders << subItm
+					break
+				}
+				if found continue
+
+				if subItm.realSize == 0
+				{
+					rpFld := new vRepoFolder
+					rpFld.objName = subItm.objName
+					newStr := subItm.objName.Str()
+					rpFld.virtualFolder = true
+					iterFolder.subFolders[newStr] = rpFld 
+					rpFld.subZipFolders << subItm
+				}else{
+					newObj := new vRepoFile 
+					newObj.upFolder = iterFolder
+					newObj.objName = subItm.objName
+					newStr := subItm.objName.Str()
+					newObj.ptrToRepo = this&
+					iterFolder.subVirtualFiles[newStr] = newObj
+					newObj.ptrToZip = subItm
 				}
 			}
 		}
 	}
 
 	GetFile := !(char^ fileName,vRepoFolder^ rrF) -> vRepoFile^
+	{
+		repoMP.Push()
+		defer repoMP.Pop()
+		
+		itms := DivideStr(fileName,'/') ; $temp
+		iterFolder := rrF
+
+		for cheks,i : itms
+		{
+			if i == 0 and cheks == "." continue
+
+			ExamineFolder(iterFolder)
+				
+			found := false
+			if iterFolder.subFolders[^].objName == cheks
+			{
+				iterFolder = it
+				found = true
+				break
+			}
+			
+			if found continue
+
+			if cheks == ".."
+			{
+				iterFolder = iterFolder.upFolder
+				if iterFolder == null
+					return null
+				continue
+			}
+
+			st := cheks->{char^}
+			if preferVirtual
+			{
+				if iterFolder.subVirtualFiles.Contain(st)
+					return iterFolder.subVirtualFiles[st]
+			}
+			if iterFolder.subFiles.Contain(st)
+				return iterFolder.subFiles[st]
+			if iterFolder.subVirtualFiles.Contain(st)
+				return iterFolder.subVirtualFiles[st]
+
+			return null
+
+		}
+		return null
+
+	}
+	getObject := !(char^ fileName,vRepoFolder^ rrF) -> vRepoObject^
 	{
 		repoMP.Push()
 		defer repoMP.Pop()

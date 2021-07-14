@@ -61,11 +61,16 @@ func2 := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := half
-	c := 1.5f
-	c = x
+	tst := AVLSet.{int}
+	tst.Insert(1)
+	tst.Insert(3)
+	tst.Insert(7)
+	printf("test %i\n",tst.Contain(_1 <=> 2))
+	//x := half
+	//c := 1.5f
+	//c = x
 	//x = c
-	printf("wut %f\n",c)
+	//printf("wut %f\n",c)
 	//try{
 	//	func2()
 	//}catch(IException^ e)

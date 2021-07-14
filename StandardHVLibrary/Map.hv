@@ -48,6 +48,13 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 		resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
 		return resl != null
 	}
+	Contain := !(!(KEY)&->int cmpFunc) -> bool
+	{
+		resl := itTree.FindNode((x) ==> {
+			return cmpFunc(x.first)
+		})
+		return resl != null
+	}
 	Remove := !(DATA dat) .{} -> void
 	{
 		resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))

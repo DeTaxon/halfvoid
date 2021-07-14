@@ -41,6 +41,10 @@ ContainerCommonSet := class .{@TreeType,@DATA}
 		resl := itTree.FindNode(dat)
 		return resl != null
 	}
+	Contain := !(!(DATA)&->int cmpFunc) -> bool
+	{
+		return itTree.FindNode(cmpFunc) != null
+	}
 	"==" := !(ContainerCommonSet.{@AnType,DATA} toCmp) -> bool
 	{
 		if Size() != toCmp.Size()
