@@ -1393,7 +1393,7 @@ ConstructCall := class extend NaturalCall
 	PrintUse := virtual !(TIOStream f) -> void
 	{
 		//ErrorLog.Push("compiler error in func call, class asked by value")
-		PrintPointUse(f) // жирный костыль
+		PrintPointUse(f)
 	}
 	GetName := virtual !() -> string
 	{
