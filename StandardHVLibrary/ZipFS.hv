@@ -140,8 +140,20 @@ vRepo := class
 		rootFolder.subZipFolders << itObj.zipRoot&
 
 	}
-	IsExist := !(char^ p) -> bool
+	IsExist := !(StringSpan p) -> bool
 	{
+		return getObject(p,rootFolder) != null
+	}
+	ReadFolder := !(StringSpan p,!(vRepoFile^)& -> void callb) -> void
+	{
+		fil := getObject(p,rootFolder)
+		if fil == null
+			return void
+
+		rep := fil->{vRepoFolder^}
+		ExamineFolder(rep)
+
+		for rep.subFiles callb(it)
 	}
 	GetFile := !(char^ fileName)-> vRepoFile^
 	{
@@ -306,7 +318,7 @@ vRepo := class
 		return null
 
 	}
-	getObject := !(char^ fileName,vRepoFolder^ rrF) -> vRepoObject^
+	getObject := !(StringSpan fileName,vRepoFolder^ rrF) -> vRepoObject^
 	{
 		repoMP.Push()
 		defer repoMP.Pop()
@@ -319,16 +331,14 @@ vRepo := class
 			if i == 0 and cheks == "." continue
 
 			ExamineFolder(iterFolder)
-			
-			found := false
-			if iterFolder.subFolders[^].objName == cheks
+
+			partStr := cheks->{char^}
+	
+			if iterFolder.subFolders.Contain(partStr)
 			{
-				iterFolder = it
-				found = true
-				break
+				iterFolder = iterFolder.subFolders[partStr]
+				continue
 			}
-			
-			if found continue
 
 			if cheks == ".."
 			{
@@ -338,21 +348,20 @@ vRepo := class
 				continue
 			}
 
-			st := cheks->{char^}
 			if preferVirtual
 			{
-				if iterFolder.subVirtualFiles.Contain(st)
-					return iterFolder.subVirtualFiles[st]
+				if iterFolder.subVirtualFiles.Contain(partStr)
+					return iterFolder.subVirtualFiles[partStr]
 			}
-			if iterFolder.subFiles.Contain(st)
-				return iterFolder.subFiles[st]
-			if iterFolder.subVirtualFiles.Contain(st)
-				return iterFolder.subVirtualFiles[st]
+			if iterFolder.subFiles.Contain(partStr)
+				return iterFolder.subFiles[partStr]
+			if iterFolder.subVirtualFiles.Contain(partStr)
+				return iterFolder.subVirtualFiles[partStr]
 
 			return null
 
 		}
-		return null
+		return iterFolder
 
 	}
 	PreferVirtual := !(bool state) -> void
