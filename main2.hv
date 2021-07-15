@@ -12,9 +12,10 @@ func2 := !() -> void
 	throw new Exception("yep")
 }
 
+
 main := !(int argc, char^^ argv) -> int
 {
-	gRepo.ReadFolder(StringSpan("."), (x) ==> {
+	TFSReadFolder(StringSpan("."), (x) ==> {
 		printf("heh %s\n",x.GetName())
 	})
 	//x := half

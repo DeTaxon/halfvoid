@@ -1,9 +1,10 @@
-gRepo := vRepo
+gRepo := vRepo^
 
 _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 {
 	_TaskPtrReset()
 	_taskInitMem(_TaskPtrGet())
+	gRepo = new vRepo
 	gRepo.Init(".")
 	if $debug
 	{
@@ -37,7 +38,7 @@ _hvEntryPoint := !(int argc, char^^ argv,char^^ envs) -> int
 		TryInitErrno()
 	}
 
-	LibDB.SetRepo(gRepo&)
+	LibDB.SetRepo(gRepo)
 
 	preRet := 0
 	if $notask

@@ -60,7 +60,13 @@ JITInit := !() -> void
 
 	if not jitMode
 		return void
-	
+
+	rp := GetItem("gRepo",null)
+	if rp?.Down != null
+	{
+		rp.Down.Down = new ObjPointer(gRepo,rp.GetType())
+		rp.Down.Down.Up = rp.Down
+	}
 }
 JITPrint := !(TIOStream f) -> void
 {

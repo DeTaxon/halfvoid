@@ -1,0 +1,5 @@
+
+TFSReadFolder := !(StringSpan p,!(vRepoFile^)& -> void callb) -> void
+{
+	gRepo.ReadFolder(p,callb)
+}
