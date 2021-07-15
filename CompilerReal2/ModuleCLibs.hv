@@ -64,6 +64,7 @@ CLibModule := class extend CompilerModule
 		}
 	}
 
+	loadedFiles := AVLSet.{vRepoFile^}
 	addedWork := bool
 	AddCLib := !(vRepoFile^ libFile,bool isStatic) -> void
 	{
@@ -72,6 +73,10 @@ CLibModule := class extend CompilerModule
 			addedWork = true
 			WorkBag.Push(this&,State_CLib)
 		}
+
+		if loadedFiles.Contain(libFile)
+			return void
+		loadedFiles.Insert(libFile)
 
 		ptr := libFile.Map()
 

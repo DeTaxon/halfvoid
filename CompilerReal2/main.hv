@@ -32,6 +32,12 @@ main := !(int argc,char^^ argv) -> int
 
 	dirChecks := List.{Tuple.{char^,int}}()
 
+	if gRepo.IsExist(StringSpan(sLibFolder))
+	{
+		stc := ""sbt + sLibFolder + "/*"
+		dirChecks.Emplace(stc.Str(),0)
+	}
+
 	disableTask := false
 
 	Modules.Push(clibModule&)

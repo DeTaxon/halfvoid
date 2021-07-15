@@ -97,7 +97,21 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 PrintDebugMeta := !(TIOStream fil) -> void
 {
 	globVar := GetNewId()
-	fileId := Files.Start.Data.fileId
+	fileId := 0
+	for it : FilesInRepo
+	{
+		fileId = it.fileId
+		break
+	}
+	if fileId == 0
+	{
+		for it : Files
+		{
+			fileId = it.fileId
+			break
+		}
+	}
+
 	fil << "!llvm.dbg.cu = !{!"<< cuId <<"}\n"
 	fil << "!" << cuId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !"<< globVar <<", language: DW_LANG_C99, file: !"<< fileId <<" )\n"
 

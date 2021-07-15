@@ -1,6 +1,8 @@
 Files := Queue.{BoxFile^}
 ZipFiles := Queue.{BoxFile^}
 
+FilesInRepo := AVLMap.{vRepoFile^,BoxFile^}
+
 LoadFile := !(string name,Object^ start) -> BoxFile^
 {
 	if start == null return null
@@ -17,6 +19,12 @@ LoadFile := !(string name,Object^ start) -> BoxFile^
 }
 LoadFile := !(Path fullName) -> BoxFile^
 {
+	vFile := gRepo.GetFile(fullName.Get())
+	if vFile != null
+	{
+		return LoadFile(vFile)
+	}
+
 	for Files
 	{
 		if it.filePath == fullName
@@ -33,6 +41,22 @@ LoadFile := !(Path fullName) -> BoxFile^
 	}
 
 	Files.Push(ob)
+	ob.cs = InfiniteCodeSpace
+	return ob
+}
+LoadFile := !(vRepoFile^ file) -> BoxFile^
+{
+	if FilesInRepo.Contain(file)
+		return FilesInRepo[file]
+	
+	fPath := StrCopy(file.GetPath())
+	ptr := file.Map()
+	//defer file.Unmap()
+	ob := GetObjectsFromMemory(Path(fPath),ptr,file.Size())
+
+	FilesInRepo[file] = ob
+	Files.Push(ob)
+	ob.filePath = fPath
 	ob.cs = InfiniteCodeSpace
 	return ob
 }
