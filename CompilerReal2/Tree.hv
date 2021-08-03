@@ -413,6 +413,7 @@ IsKeyword := !(W) -> bool
 		case "default" return true
 		case "weak" return true
 		case "poison" return true
+		case "defer_tail" return true
 	}
 
 	return false

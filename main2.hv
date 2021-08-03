@@ -2,6 +2,14 @@
 
 //bl := int
 
+TGuard := !(void^ ptr) -> void
+{
+	TLock(ptr)
+} defer_call (void^ ptr)
+{
+	TUnlock(ptr)
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	//TExpectWorkers(6)
