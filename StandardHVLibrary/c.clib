@@ -45,6 +45,8 @@
 		"sprintf" : "int,char^,char^,...",
 		"snprintf" : "int,char^,int,char^,...",
 
+		"vprintf" : "int,char^,void^",
+
 		"time" : "int",
 		"srand" : "void,int",
 		"rand" : "int"

@@ -1,41 +1,21 @@
 
-Screamer := class extend TCachedGCObject
-{
-	Destroy := virtual !() -> void
-	{
-		printf("AAAAAAA %p\n",this&)
-	}
-}
 
-func2 := !() -> void
-{
-	throw new Exception("yep")
-}
-
+//bl := int
 
 main := !(int argc, char^^ argv) -> int
 {
-	TFSReadFolder(StringSpan("."), (x) ==> {
-		printf("heh %s\n",x.GetName())
-	})
-	//x := half
-	//c := 1.5f
-	//c = x
-	//x = c
-	//printf("wut %f\n",c)
-	//try{
-	//	func2()
-	//}catch(IException^ e)
+	//TExpectWorkers(6)
+	//for 5
 	//{
-	//	printf("exception %s\n",e.Msg())
-	//	c := e.Trace()
-	//	if c != null
-	//	{
-	//		printf("trace %s\n",c[^])
-	//	}
+	//	TSpawnTask(() ==> {
+	//		TAwaitWork(() ==> {
+	//			for 100000 
+	//			{
+	//				bl += 1
+	//			}
+	//		})
+	//		printf("wut %i\n",bl)
+	//	})
 	//}
-	//printf("test %p\n",stat)
-	//cnt := new TGCContainer.{Screamer}
-	//val := cnt.Create(StringSpan("wow"))
 	return 0
 }
