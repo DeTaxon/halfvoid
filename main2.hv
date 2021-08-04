@@ -4,14 +4,18 @@
 
 TGuard := !(void^ ptr) -> void
 {
-	TLock(ptr)
-} defer_call (void^ ptr)
+	//TLock(ptr)
+	printf("a\n")
+} defer_tail (void^ ptr)
 {
-	TUnlock(ptr)
+	//TUnlock(ptr)
+	printf("c\n")
 }
 
 main := !(int argc, char^^ argv) -> int
 {
+	TGuard(null)
+	printf("b\n")
 	//TExpectWorkers(6)
 	//for 5
 	//{

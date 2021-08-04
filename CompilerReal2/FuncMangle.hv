@@ -4,8 +4,8 @@ createdFuncNames := AVLSet.{char^}
 
 mangledInit := !() -> void
 {
-    createdFuncNames.Insert("main")
-    createdFuncNames.Insert("operator")
+	createdFuncNames.Insert("main")
+	createdFuncNames.Insert("operator")
 }
 
 IsMangleKeepWord := !(string name) -> bool
@@ -28,7 +28,7 @@ IsMangleKeepWord := !(string name) -> bool
 mnglIter := 0
 GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 {
-    if not IsMangleKeepWord(funcName)
+	if not IsMangleKeepWord(funcName)
 	{
 		switch funcName
 		{
@@ -38,7 +38,7 @@ GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 		case "/" funcName = "operator_div"
 		case "()" funcName = "operator_rb"
 		case "[]" funcName = "operator_sb"
-        case void funcName = "operator"
+		case void funcName = "operator"
 		}
 	}
 

@@ -11,6 +11,8 @@ BoxFuncBody := class extend BoxFunc
 
 	GetScope := virtual !() -> int { return ABox.ItId }
 
+	deferTail := BoxFuncBody^
+
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
 		if count != 0
@@ -200,6 +202,8 @@ BoxFuncBody := class extend BoxFunc
 	{
 		if not parsed 
 		{
+			if deferTail != null
+				deferTail.ParseBlock()
 			if FuncName == "_hvEntryPoint"
 			{
 				OutputName = "main"
@@ -273,8 +277,12 @@ BoxFuncBody := class extend BoxFunc
 	{
 		ABox.PrintGlobal(f)
 
+		if deferTail != null
+			deferTail.PrintGlobal(f)
+
 		if MyFuncType.RetType != null and parsed
 		{
+
 			PrintGlobalSub(f)
 			PrintFuncBodySkobs(f,MyFuncType,MyFuncParamNames,OutputName,null->{string},ABox.ItId)
 
@@ -342,13 +350,15 @@ BoxFuncBody := class extend BoxFunc
 						newId := CreateDebugCall(this&)
 						if dbgId != -1 and outId != -1
 						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "** %T" << InAlloc[i] 
+							f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
 						}
 					}else{
 						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
 						if dbgId != -1 and outId != -1
 						{
-							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
+							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] 
+							f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
 						}
 					}
 				}
