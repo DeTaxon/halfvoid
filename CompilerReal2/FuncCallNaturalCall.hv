@@ -2,6 +2,7 @@
 NaturalCall := class extend SomeFuncCall
 {
 	gcObjId := int
+	deferCall := BoxFuncBody^
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		if Pars != null
@@ -22,6 +23,11 @@ NaturalCall := class extend SomeFuncCall
 		if Pars != null TrimCommas(Down.Up)
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
+
+		if func is BoxFuncBody
+		{
+			deferCall = func->{BoxFuncBody^}.deferTail
+		}
 	}
 	
 	PrintPreFuncName := virtual !(TIOStream f) -> void
@@ -68,19 +74,26 @@ NaturalCall := class extend SomeFuncCall
 
 	UseCall := virtual !(TIOStream f) -> void
 	{
-		PrintPreFuncName(f)
-		PrintParamPres(f)
+		UseCallInner(f,ToCall,true)
+	}
+	UseCallInner := virtual !(TIOStream f,BoxFunc^ callFunc,bool printPres) -> void
+	{
+		if printPres
+		{
+			PrintPreFuncName(f)
+			PrintParamPres(f)
+		}
 
-		if (FType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or ToCall.IsRetRef
+		if (FType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or callFunc.IsRetRef
 		{
 			f << TName <<" = "	
 		}
 		f << "call "
-		//ToCall.MyFuncType.PrintType(f)
-		base := ToCall.MyFuncType
+		//callFunc.MyFuncType.PrintType(f)
+		base := callFunc.MyFuncType
 		base2 := base->{Type^}
 		f << base2.GetName()
-		PrintFuncName(f)
+		f << "@" << callFunc.OutputName
 		f << "("
 		PrintParamUses(f)
 		f << ")"
@@ -96,7 +109,7 @@ NaturalCall := class extend SomeFuncCall
 
 		}
 		f << "\n"
-		if gcObjId > 0
+		if gcObjId > 0 and printPres
 		{
 			tn := FType.RetType.GetName() 
 			f << "store " << tn << TName << " , "
@@ -124,6 +137,44 @@ NaturalCall := class extend SomeFuncCall
 				assert(gcObjId > 0)
 				GCMakeAware(this&,gcObjId)
 			}
+			if deferCall != null
+			{
+				
+			}
 		}
+	}
+
+	GetDeferUsage := virtual !() -> int
+	{
+		if deferCall != null
+			return 1
+		return 0
+	}
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		if deferCall != null
+			return 1 //TODO recursive collect down
+		return 0
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if deferCall == null
+			return void
+
+		curId := labelIter^
+		labelIter^ -= 1
+		f << "br label %DeferLabel" << curId << "\n"
+		f << "DeferLabel" << curId << ":\n"
+		
+		UseCallInner(f,deferCall,false) //TODO expect to not have same input count variables
+	}
+	
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if deferCall == null
+			return void
+
+		f << "store i8 " << labelSetIter^ << " , i8* %DeferStack" << itId << "\n"
+		labelSetIter^ += 1
 	}
 }
