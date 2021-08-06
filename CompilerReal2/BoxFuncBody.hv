@@ -31,6 +31,12 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
+	GenerateCall := virtual !(Object^ pars) -> BaseFuncCall^
+	{
+		if deferTail != null
+			return new NaturalCallWithDefer(this&,pars,deferTail)
+		return null
+	}
 	
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
