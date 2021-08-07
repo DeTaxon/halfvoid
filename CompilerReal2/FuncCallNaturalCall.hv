@@ -3,6 +3,8 @@ NaturalCall := class extend SomeFuncCall
 {
 	gcObjId := int
 
+	copiedInputs := AVLMap.{int,int} //TODO support refs, classes
+
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		if Pars != null
@@ -42,6 +44,27 @@ NaturalCall := class extend SomeFuncCall
 		{
 			if RefsArr[i] iter.PrintPointPre(f)
 			else iter.PrintPre(f)
+
+			if copiedInputs.Contain(i) 
+			{
+				f << "store "
+				iter.PrintUse(f)
+				f << " , "
+				iter.GetType().PrintType(f)
+				f << "* %T" << copiedInputs[i] 
+			}
+		}
+	}
+	PrintCopiedPres := virtual !(TIOStream f) -> void
+	{
+		for iter,i : Down
+		{
+			if copiedInputs.Contain(i)
+			{
+				tId := copiedInputs[i]
+				tpName := iter.GetType().GetName()
+				f << "%TL" << tId << " = load " << tpName << " , " << tpName << "* %T" << tId << "\n"
+			}
 		}
 	}
 	PrintParamUses := virtual !(TIOStream f) -> void
@@ -60,8 +83,16 @@ NaturalCall := class extend SomeFuncCall
 		while iter != null
 		{
 			if i > 0  f << " , "
-			if RefsArr[i] iter.PrintPointUse(f)
-				else iter.PrintUse(f)
+
+			if copiedInputs.Contain(i)
+			{
+				tId := copiedInputs[i]
+				tpName := iter.GetType().GetName()
+				f << tpName  << " %TL" << tId
+			}else{
+				if RefsArr[i] iter.PrintPointUse(f)
+					else iter.PrintUse(f)
+			}
 			iter = iter.Right
 			i += 1
 		}
@@ -76,6 +107,7 @@ NaturalCall := class extend SomeFuncCall
 	}
 	UseCallInner := virtual !(TIOStream f,BoxFunc^ callFunc,bool printPres) -> void
 	{
+		PrintCopiedPres(f)
 
 		if (FType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or callFunc.IsRetRef
 		{
@@ -155,6 +187,14 @@ NaturalCallWithDefer := class extend NaturalCall
 			if fnc != null
 			{
 				fnc.DoDefer()
+			}
+			for iter,i : Down
+			{
+				if not iter.IsConst
+				{
+					inAlloc := GetAlloc(this&,iter.GetType())
+					copiedInputs[i] = inAlloc
+				}
 			}
 		}
 	}

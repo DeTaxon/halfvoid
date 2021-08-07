@@ -5,17 +5,18 @@
 TGuard := !(void^ ptr) -> void
 {
 	//TLock(ptr)
-	printf("a\n")
+	printf("a %p\n",ptr)
 } defer_tail (void^ ptr)
 {
 	//TUnlock(ptr)
-	printf("c\n")
+	printf("c %p\n", ptr)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	//defer printf("d\n")
 	c := int
+	printf("start %p\n",c&)
 	TGuard(c&)
 	printf("b\n")
 	//TExpectWorkers(6)
