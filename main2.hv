@@ -1,23 +1,29 @@
 
 
 //bl := int
+rr := class
+{
+	x := int
+}
 
-TGuard := !(void^ ptr) -> void
+
+TGuard := !(rr ptr) -> void
 {
 	//TLock(ptr)
-	printf("a %p\n",ptr)
-} defer_tail (void^ ptr)
+	printf("a %i\n",ptr.x)
+} defer_tail (rr ptr)
 {
 	//TUnlock(ptr)
-	printf("c %p\n", ptr)
+	printf("c %i\n", ptr.x)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	//defer printf("d\n")
-	c := int
-	printf("start %p\n",c&)
-	TGuard(c&)
+	c := rr
+	c.x = 18
+	printf("start %p\n",c.x)
+	TGuard(c)
 	printf("b\n")
 	//TExpectWorkers(6)
 	//for 5

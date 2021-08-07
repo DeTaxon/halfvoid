@@ -3,7 +3,7 @@ NaturalCall := class extend SomeFuncCall
 {
 	gcObjId := int
 
-	copiedInputs := AVLMap.{int,int} //TODO support refs, classes
+	copiedInputs := AVLMap.{int,int}
 
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
@@ -47,11 +47,20 @@ NaturalCall := class extend SomeFuncCall
 
 			if copiedInputs.Contain(i) 
 			{
-				f << "store "
-				iter.PrintUse(f)
-				f << " , "
-				iter.GetType().PrintType(f)
-				f << "* %T" << copiedInputs[i] 
+				if ToCall.MyFuncType.ParsIsRef[i]
+				{
+					f << "store "
+					iter.PrintPointUse(f)
+					f << " , "
+					iter.GetType().PrintType(f)
+					f << "** %T" << copiedInputs[i] 
+				}else{
+					f << "store "
+					iter.PrintUse(f)
+					f << " , "
+					iter.GetType().PrintType(f)
+					f << "* %T" << copiedInputs[i] 
+				}|
 			}
 		}
 	}
@@ -63,6 +72,8 @@ NaturalCall := class extend SomeFuncCall
 			{
 				tId := copiedInputs[i]
 				tpName := iter.GetType().GetName()
+				if ToCall.MyFuncType.ParsIsRef[i]
+					tpName = iter.GetType().GetPoint().GetName()
 				f << "%TL" << tId << " = load " << tpName << " , " << tpName << "* %T" << tId << "\n"
 			}
 		}
@@ -88,6 +99,8 @@ NaturalCall := class extend SomeFuncCall
 			{
 				tId := copiedInputs[i]
 				tpName := iter.GetType().GetName()
+				if RefsArr[i]
+					tpName = iter.GetType().GetPoint().GetName()
 				f << tpName  << " %TL" << tId
 			}else{
 				if RefsArr[i] iter.PrintPointUse(f)
@@ -192,7 +205,10 @@ NaturalCallWithDefer := class extend NaturalCall
 			{
 				if not iter.IsConst
 				{
-					inAlloc := GetAlloc(this&,iter.GetType())
+					tp := iter.GetType()
+					if deferCall.MyFuncType.ParsIsRef[i]
+						tp = tp.GetPoint()
+					inAlloc := GetAlloc(this&,tp)
 					copiedInputs[i] = inAlloc
 				}
 			}
