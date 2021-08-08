@@ -147,6 +147,28 @@ DeferAndYield := !() -> void
 	//assert(DeferAndYieldCnst == 3) TODO wich one is correct?
 	//assert(DeferAndYieldCnst == 33)
 }
+
+DefTailVal := 0
+DeferTailFunc := !(int i) -> void
+{
+	DefTailVal += i	
+} defer_tail (int j)
+{
+	DefTailVal -= j	
+}
+
+DeferTailTest2 := !() -> void
+{
+	DeferTailFunc(7)
+	DefTailVal *= 3
+	assert(DefTailVal == 21)
+}
+DeferTailTest := !() -> void
+{
+	DeferTailTest2()
+	assert(DefTailVal == 14)
+}
+
 DeferTest := !() -> void
 {
 	DeferTestIf()
@@ -155,4 +177,5 @@ DeferTest := !() -> void
 	DeferInTry()
 	DeferInLambda()
 	DeferAndYield()
+	DeferTailTest()
 }
