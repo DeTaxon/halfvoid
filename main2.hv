@@ -27,7 +27,7 @@ SomeSum := !(int a, int b) -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	SomeSum(SomeSum(1,0),SomeSum(2,0))
+	printf("wut %i %i\n",SomeSum(SomeSum(1,0),SomeSum(2,0)),SomeSum(5,6))
 	//tstf(() => {
 	//	return new ForContainer
 	//})

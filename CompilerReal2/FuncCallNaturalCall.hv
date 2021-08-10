@@ -177,6 +177,41 @@ NaturalCall := class extend SomeFuncCall
 			}
 		}
 	}
+	GetDeferUsage := virtual !() -> int
+	{
+		res := 0
+		for it : Down
+			res = max(res,it.GetDeferUsage())
+		return res
+	}
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		sum := 0
+		for it : Down
+			sum += it.GetDeferUsageVerticalSize()
+		return sum
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if Down != null
+		{
+			mxR := Down
+			while mxR.Right != null
+				mxR = mxR.Right
+			while mxR != null
+			{
+				mxR.PrintDeferUse(f,bd,blk,depth,labelIter)
+				mxR = mxR.Left
+			}
+		}
+	}
+
+
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		for it : Down
+			it.PrintDeferInBlock(f,itId,labelSetIter)
+	}
 
 }
 
