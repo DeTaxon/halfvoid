@@ -122,7 +122,7 @@ NaturalCall := class extend SomeFuncCall
 	{
 		PrintCopiedPres(f)
 
-		if (FType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or callFunc.IsRetRef
+		if (callFunc.MyFuncType.RetType != GTypeVoid and (not gotAlloc) and TName != null) or callFunc.IsRetRef
 		{
 			f << TName <<" = "	
 		}
@@ -226,6 +226,7 @@ NaturalCallWithDefer := class extend NaturalCall
 		}
 
 		UseCallInner(f,ToCall,true)
+		f << "store i8 " << labelSetValue << " , i8* %DeferStack" << labelSetId << "\n"
 	}
 	GetDeferUsage := virtual !() -> int
 	{
@@ -233,21 +234,44 @@ NaturalCallWithDefer := class extend NaturalCall
 	}
 	GetDeferUsageVerticalSize := virtual !() -> int
 	{
-		return 1 //TODO recursive collect down
+		sum := 1
+		for it : Down
+			sum += it.GetDeferUsageVerticalSize()
+		return sum
 	}
 	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
 	{
+		
 		curId := labelIter^
 		labelIter^ -= 1
 		f << "br label %DeferLabel" << curId << "\n"
 		f << "DeferLabel" << curId << ":\n"
 		
 		UseCallInner(f,deferCall,false) //TODO expect to not have same input count variables
+
+		if Down != null
+		{
+			mxR := Down
+			while mxR.Right != null
+				mxR = mxR.Right
+			while mxR != null
+			{
+				mxR.PrintDeferUse(f,bd,blk,depth,labelIter)
+				mxR = mxR.Left
+			}
+		}
 	}
-	
+
+
+	labelSetId := int
+	labelSetValue := int
 	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
 	{
-		f << "store i8 " << labelSetIter^ << " , i8* %DeferStack" << itId << "\n"
+		for it : Down
+			it.PrintDeferInBlock(f,itId,labelSetIter)
+		labelSetId = itId
+		labelSetValue = labelSetIter^
+		//f << "store i8 " << labelSetIter^ << " , i8* %DeferStack" << itId << "\n"
 		labelSetIter^ += 1
 	}
 }

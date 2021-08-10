@@ -1,14 +1,42 @@
 
+//ForContainer := class extend TGCObject
+//{
+//	IsEnd := virtual !() -> bool { printf("yep\n") return true }
+//	Inc := virtual !() -> void {}
+//	DoWork := virtual !() -> void {}
+//}
+//
+//tstf := !(!()^->ForContainer^ initObj) -> void
+//{
+//	vals := initObj()
+//	while(not vals.IsEnd())
+//	{
+//		vals.DoWork()
+//		vals.Inc()
+//	}
+//}
+
+SomeSum := !(int a, int b) -> int
+{
+	printf("start %i\n",a + b)
+	return a + b
+} defer_tail (int a, int b)
+{
+	printf("end %i\n",a + b)
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	TAwaitManyWorks(3,(j) ==> {
-		for i : 3
-		{
-			TSleep(0.3)
-			printf("heh %i %i\n",i,j)
-		}
-	})
+	SomeSum(SomeSum(1,0),SomeSum(2,0))
+	//tstf(() => {
+	//	return new ForContainer
+	//})
+	//#omp
+	//for i : 15
+	//{
+	//	TSleep(0.3)
+	//	printf("heh %i %i\n",i)
+	//}
 	//TExpectWorkers(6)
 	//for 5
 	//{
