@@ -1,12 +1,16 @@
 TaskBoxWorkData := class
 {
-	lambda := !()&->void
+	lambda := !(int)&->void
 	taskData := TaskData^
+	exeTimes := int
+	numToExe := int
 
-	this := !(!()&->void l, TaskData^ t) -> void
+	this := !(!(int)&->void l, TaskData^ t,int exTm) -> void
 	{
+		numToExe = 0
 		lambda = l
 		taskData = t
+		exeTimes = exTm
 	}
 	"=" := default
 }
@@ -34,15 +38,27 @@ AppendClass TaskBox
 
 					if itWorkToDo.Size() != 0
 					{
-						work := itWorkToDo.Front()
-						itWorkToDo.Pop()
+						workRef := ref itWorkToDo.Front()
+						workRef.exeTimes -= 1
+						work := itWorkToDo.Front() 
+						workRef.numToExe += 1
+						
+						if work.exeTimes == 0
+						{
+							itWorkToDo.Pop()
+						}
+
 						itWorkMutex.Unlock()
-						work.lambda()
+						work.lambda(work.numToExe)
 						FlushTempMemory()
-						itMutex.Lock()
-						tasksToExe << work.taskData
-						notifyMain()
-						itMutex.Unlock()
+
+						if work.exeTimes == 0
+						{
+							itMutex.Lock()
+							tasksToExe << work.taskData
+							notifyMain()
+							itMutex.Unlock()
+						}
 					}else{
 						if not working
 						{
@@ -61,10 +77,14 @@ AppendClass TaskBox
 	}
 	AwaitWork := !(!()&->void lambd) -> void
 	{
+		AwaitManyWorks(1,(n) ==> { lambd() })
+	}
+	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
+	{
 		ExpectWorkers(1)
 		itWorkMutex.Lock()
 		itWorkCount += 1
-		itWorkToDo.Emplace(lambd,CurrentTask)
+		itWorkToDo.Emplace(lambd,CurrentTask,num)
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
 		switchToMain()

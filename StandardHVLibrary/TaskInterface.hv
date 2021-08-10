@@ -12,6 +12,16 @@ TAwaitWork := !(!()&->void lambd) -> void
 		lambd()
 	}
 }
+TAwaitManyWorks := !(int num,!(int)&->void lambd) -> void
+{
+	if CurrentTaskBox != null
+	{
+		CurrentTaskBox.AwaitManyWorks(num,lambd)
+	}else{
+		for i : num
+			lambd(i)
+	}
+}
 TPauseTask := !(int^ resId) -> void
 {
 	if CurrentTaskBox != null
