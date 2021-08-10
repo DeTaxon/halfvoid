@@ -80,6 +80,10 @@ NaturalCall := class extend SomeFuncCall
 	}
 	PrintParamUses := virtual !(TIOStream f) -> void
 	{
+		PrintParamUsesInner(f,null)
+	}
+	PrintParamUsesInner := virtual !(TIOStream f,TypeFunc^ inFType) -> void
+	{
 		iter := Down
 		RefsArr := FType.ParsIsRef
 
@@ -93,6 +97,8 @@ NaturalCall := class extend SomeFuncCall
 		}
 		while iter != null
 		{
+			if inFType != null and i >= inFType.ParsCount and not inFType.IsVArgs
+				break
 			if i > 0  f << " , "
 
 			if copiedInputs.Contain(i)
@@ -133,7 +139,7 @@ NaturalCall := class extend SomeFuncCall
 		f << base2.GetName()
 		f << "@" << callFunc.OutputName
 		f << "("
-		PrintParamUses(f)
+		PrintParamUsesInner(f,callFunc.MyFuncType)
 		f << ")"
 		if DebugMode {
 			newId := CreateDebugCall(this&) 
@@ -282,7 +288,7 @@ NaturalCallWithDefer := class extend NaturalCall
 		f << "br label %DeferLabel" << curId << "\n"
 		f << "DeferLabel" << curId << ":\n"
 		
-		UseCallInner(f,deferCall,false) //TODO expect to not have same input count variables
+		UseCallInner(f,deferCall,false)
 
 		if Down != null
 		{
