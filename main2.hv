@@ -20,9 +20,12 @@ tstf := !(!()&->ForContainer^ initObj) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	tstf(() ==> {
-		return new ForContainer
-	})
+	c := half
+	//c = 7.0
+	printf("test %f\n",2.0->{half})
+	//tstf(() ==> {
+	//	return new ForContainer
+	//})
 	//#omp
 	//for i : 15
 	//{

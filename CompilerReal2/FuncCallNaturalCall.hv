@@ -225,8 +225,6 @@ NaturalCallWithDefer := class extend NaturalCall
 {
 	deferCall := BoxFuncBody^
 
-	allocHoldValues := int[32] //TODO dynamic size
-
 	this := !(BoxFunc^ func, Object^ Pars,BoxFuncBody^ defTail) -> void 
 	{
 		deferCall = defTail

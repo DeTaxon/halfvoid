@@ -1333,37 +1333,16 @@ CreateBuiltIns := !() -> void
 
 	BuiltInInitHalf()
 
-	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeHalf,"#0Pre = sitofp i32 #1 to float #d\n"sbt +
-										"#0 = fptrunc float #0Pre to half #d\n"))
-	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeHalf,false,GTypeInt,"#0Pre = fpext half #1 to float #d\n"sbt +
-										"#0 = fptosi float #0Pre to double #d\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeInt,false,GTypeFloat,"#0 = sitofp i32 #1 to float #d\n"))
 
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GTypeVoidP,false,GetType("size_t"),"#0 = ptrtoint i8* #1 to i64 #d\n"))
 	BuiltInExcs.Push(new BuiltInFuncUno("->{}",GetType("size_t"),false,GTypeVoidP,"#0 = inttoptr i64 #1 to i8* #d\n"))
 
-
 	AddBuiltInFunc(new BuiltInFuncUno(". not",BoolT,false,BoolT,"#0 = xor i1 #1,1 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("f",GTypeDouble,false,GTypeFloat,"#0 = fptrunc double #1 to float #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("L",GTypeInt,false,GetType("s64"),"#0 = sext i32 #1 to i64 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("U",GTypeInt,false,GetType("u64"),"#0 = zext i32 #1 to i64 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("pi",GTypeFloat,false,GTypeFloat,"%Pre## = fptrunc double 3.14159265389 to float #d\n"sbt +
-					"#0 = fmul float #1,%Pre## #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("deg",GetType("float"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float #d\n"sbt +
-					"#0 = fmul float #1,%Pre## #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("deg",GetType("int"),false,GetType("float"),"%Pre## = fptrunc double 0.017453292521161111 to float #d\n"sbt +
-					"%PrePre## = sitofp i32 #1 to float #d\n" +
-					"#0 = fmul float %PrePre##,%Pre## #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("pi",GTypeInt,false,GTypeFloat,
-					"%PrePre## = sitofp i32 #1 to float #d\n"sbt +
-					"%Pre## = fptrunc double 3.14159265389 to float #d\n" +
-					"#0 = fmul float %PrePre##,%Pre## #d\n"))
 
-	AddBuiltInFunc( new BuiltInSuffix("ms",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,0.001 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("s",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,1.0 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("min",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,60.0 #d\n"))
-	AddBuiltInFunc( new BuiltInSuffix("hour",GTypeDouble,false,GTypeDouble,"#0 = fmul double #1,3600.0 #d\n"))
+	BuiltInSuffixes()
+
 
 	AddBuiltInFunc( new BuiltInFuncBinar("<",GTypeVoidP,false,GTypeVoidP,false,GTypeBool,false,"#0 = icmp ult i8* #1,#2 #d\n"))
 	AddBuiltInFunc( new BuiltInFuncBinar("<=>",GTypeVoidP,false,GTypeVoidP,false,GTypeInt,false,
