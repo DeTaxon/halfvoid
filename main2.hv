@@ -19,10 +19,9 @@ tstf := !(!()^->ForContainer^ initObj) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("wut %p\n",stat)
-	//tstf(() => {
-	//	return new ForContainer
-	//})
+	tstf(() => {
+		return new ForContainer
+	})
 	//#omp
 	//for i : 15
 	//{

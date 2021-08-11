@@ -569,6 +569,12 @@ PointFuncCall := class extend NaturalCall
 				f << " , !dbg !" << newId
 		}
 		f << "\n"
+		if gcObjId > 0
+		{
+			tn := FType.RetType.GetName() 
+			f << "store " << tn << TName << " , "
+			f << tn << "* %T" << gcObjId << "\n"
+		}
 	}
 	UseLinuxAbiCall := virtual !(TIOStream f) -> void 
 	{

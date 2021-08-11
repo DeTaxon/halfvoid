@@ -316,6 +316,26 @@ func := !() -> int^
 }
 ```
 
+Defer tail function
+```java
+TGuard := !(void^ ptr) -> void
+{
+	TLock(ptr)
+} defer_tail (void^ ptr) {
+	TUnlock(ptr
+}
+
+main := !() -> void
+{
+	TGuard(variable&)
+
+	//Sames as 
+	TLock(variable&)
+	defer TUnlock(variable&)
+}
+```
+
+
 Small features
 ```java
 x := ![1,2,argc,pi] //create array
