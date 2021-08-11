@@ -7,7 +7,7 @@ ForContainer := class extend TGCObject
 	Destroy := virtual !() -> void { printf("test\n")}
 }
 
-tstf := !(!()^->ForContainer^ initObj) -> void
+tstf := !(!()&->ForContainer^ initObj) -> void
 {
 	vals := initObj()
 	while(not vals.IsEnd())
@@ -17,9 +17,10 @@ tstf := !(!()^->ForContainer^ initObj) -> void
 	}
 }
 
+
 main := !(int argc, char^^ argv) -> int
 {
-	tstf(() => {
+	tstf(() ==> {
 		return new ForContainer
 	})
 	//#omp

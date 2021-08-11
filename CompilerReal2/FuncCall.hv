@@ -835,15 +835,21 @@ AssemblerCall := class extend NaturalCall
 				}
 			}
 		}
+		if gcObjId > 0
+		{
+			tn := FType.RetType.GetName() 
+			f << "store " << tn << GetOutputName() << " , "
+			f << tn << "* %T" << gcObjId << "\n"
+		}
 
 	}
-	DoTheWork := virtual !(int pri) -> void
-	{
-		if pri == State_MiddleGetUse
-		{
-			CheckReturn()
-		}
-	}
+	//DoTheWork := virtual !(int pri) -> void
+	//{
+	//	if pri == State_MiddleGetUse
+	//	{
+	//		CheckReturn()
+	//	}
+	//}
 }
 BuiltIn2Call := class extend BaseFuncCall
 {
