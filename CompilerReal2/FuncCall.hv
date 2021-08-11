@@ -445,16 +445,14 @@ SomeFuncCall := class extend BaseFuncCall //TODO TODO TODO: REFACTOR
 	PrintPre := virtual !(TIOStream f) -> void
 	{
 		UseCall(f)
-		if ToCall != null //TODO: ??? ToCall can not be null 
+		assert(ToCall != null)
+		if FType.RetRef or ToCall.IsRetRef
 		{
-			if FType.RetRef or ToCall.IsRetRef
-			{
-				f << TEName << " = load "
-				f << FType.RetType.GetName()
-				f << " , "
-				f << FType.RetType.GetPoint().GetName()
-				f << " " << TName << "\n"
-			}
+			f << TEName << " = load "
+			f << FType.RetType.GetName()
+			f << " , "
+			f << FType.RetType.GetPoint().GetName()
+			f << " " << TName << "\n"
 		}
 	}
 	PrintPointUse := virtual !(TIOStream f) -> void
@@ -677,13 +675,14 @@ PointFuncCall := class extend NaturalCall
 	{
 		return FType.RetType
 	}
-	DoTheWork := virtual !(int pri) -> void
+	PrintPre := virtual !(TIOStream f) -> void
 	{
-		if pri == State_MiddleGetUse
-		{
-			CheckReturn()
-		}
+		UseCall(f)
 	}
+	//DoTheWork := virtual !(int pri) -> void
+	//{
+	//	this."NaturalCall.DoTheWork"(pri)
+	//}
 }
 
 AssemblerCall := class extend NaturalCall
