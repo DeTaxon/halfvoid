@@ -91,7 +91,8 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 					}
 					if AsNeed2.ExtraRetParam != null
 					{
-						if AsNeed2.ExtraRetParam.ItName == name return AsNeed2.ExtraRetParam
+						if AsNeed2.ExtraRetParam.ItName == name
+							return AsNeed2.ExtraRetParam
 					}
 					trVal := AsNeed2.ItAttrs.TryFind(name)
 					if trVal != null return trVal^

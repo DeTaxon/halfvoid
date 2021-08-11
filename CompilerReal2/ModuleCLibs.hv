@@ -173,6 +173,7 @@ CLibModule := class extend CompilerModule
 	}
 	GetItem := virtual !(char^ name) -> Object^
 	{
+		GetFunc(name)
 		spn := StringSpan(name)
 
 		for it : libs
@@ -245,17 +246,30 @@ CLibModule := class extend CompilerModule
 					"call void@"sbt + it.initFunc + "()\n")
 				return it.initFuncObj
 			}
-			if spn in it.funcs
+			if spn in it.objs
 			{
-				if it.isStatic
+				objRef := ref it.objs[spn]
+				if objRef is ObjParam and objRef.Down? is BoxFuncDeclare
 				{
-					inFuncs := ref it.funcs[spn]
-					fType := CheckFuncTypeString(inFuncs.GetStr())
+					return objRef.Down
+				}
+			}else{
+				if spn in it.funcs
+				{
+					if it.isStatic
+					{
+						inFuncs := ref it.funcs[spn]
+						fType := CheckFuncTypeString(inFuncs.GetStr())
 
-					resPar := new BoxFuncDeclare(fType,spn.Str())
-					it.objs[inFuncs.Key()] = resPar
+						resPar := new BoxFuncDeclare(fType,spn.Str())
+						parObj := new ObjParam(name,false)
+						parObj.Down = resPar
+						resPar.Up = parObj
+						parObj.ObjType = fType
+						it.objs[inFuncs.Key()] = parObj
 
-					return resPar
+						return resPar
+					}
 				}
 			}
 		}
@@ -311,6 +325,8 @@ CLibModule := class extend CompilerModule
 	{
 		for it : libs[^].objs
 		{
+			if it is ObjParam
+				it.Down.PrintGlobal(f)
 			if it is GlobalParam
 				it.PrintGlobal(f)
 			if it is BoxFuncDeclare
