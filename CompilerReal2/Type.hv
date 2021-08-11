@@ -1080,7 +1080,7 @@ CreateStandartTypes := !() -> void
 	TypeTable[19] = new TypeStandart("%Vec3f","!DIBasicType(name: \"vec3f\", size: 24, align: 128,encoding: DW_ATE_float)",12,16)
 	TypeTable[20] = new TypeStandart("%Vec2f","!DIBasicType(name: \"vec2f\", size: 16, align: 128,encoding: DW_ATE_float)",8,16)
 
-	TypeTable[21] = new TypeStandart("half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
+	TypeTable[21] = new TypeStandart("i16","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
 
 	GTypeBool =   TypeTable[8]
 	GTypeHalf =   TypeTable[21]
