@@ -22,7 +22,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	c := half
 	c = 7
-	printf("test %f\n",2.0->{half})
+	printf("test %f\n",c)
 	//tstf(() ==> {
 	//	return new ForContainer
 	//})
