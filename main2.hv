@@ -21,7 +21,7 @@ tstf := !(!()&->ForContainer^ initObj) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	c := half
-	c = 7.0
+	c = 7
 	printf("test %f\n",2.0->{half})
 	//tstf(() ==> {
 	//	return new ForContainer

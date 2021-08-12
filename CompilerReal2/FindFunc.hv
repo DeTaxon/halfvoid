@@ -525,6 +525,8 @@ TypeCmpInit := !() -> void
 	TypeCmpAdd(GTypeHalf,GTypeDouble,CmpLoseless)
 	TypeCmpAdd(GTypeHalf,GTypeFloat,CmpLoseless)
 
+	TypeCmpAdd(GTypeInt,GTypeHalf,CmpLoseless) //not realy loseless
+
 	TypeCmpAdd(GTypeDouble ,GTypeFloat , CmpLose)
 	TypeCmpAdd(GTypeDouble ,GTypeHalf  , CmpLose)
 	TypeCmpAdd(GTypeFloat  ,GTypeHalf  , CmpLose)
