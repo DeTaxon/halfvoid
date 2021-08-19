@@ -1,37 +1,26 @@
 
-ForContainer := class extend TGCObject
+"for #awork" := !() -> void
 {
-	IsEnd := virtual !() -> bool { printf("yep\n") return true }
-	Inc := virtual !() -> void {}
-	DoWork := virtual !() -> void {}
-	Destroy := virtual !() -> void { printf("test\n")}
-}
-
-tstf := !(!()&->ForContainer^ initObj) -> void
-{
-	vals := initObj()
-	while(not vals.IsEnd())
-	{
-		vals.DoWork()
-		vals.Inc()
-	}
+	//forBody((C,D,N) ==> {
+	//	while(not C())
+	//	{
+	//		D()
+	//		N()
+	//	}
+	//})
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := half
-	c = 7
-	printf("test %f\n",c)
-	//tstf(() ==> {
-	//	return new ForContainer
-	//})
-	//#omp
-	//for i : 15
-	//{
-	//	TSleep(0.3)
-	//	printf("heh %i %i\n",i)
-	//}
+	#awork
+	for i : 15, j : 15
+	{
+		printf("heh %i\n",i)
+	}
+	//c := half
+	//c = 7
+	//printf("test %f\n",c)
 	//TExpectWorkers(6)
 	//for 5
 	//{

@@ -135,6 +135,14 @@ BoxForOldFashionMulti := class extend BoxFor
 		if pri == State_PreGetUse
 		{
 			while TryParseMacro(Down.Right,this&) != null {}
+
+			//if Left? is ObjCmd
+			//{
+			//	cmdName := Left->{ObjCmd^}.MyStr
+			//	itBox := new FuncInputBox
+			//	fnc := FindFunc("for "sbt + cmdName,this&,itBox^,false)
+			//}
+
 			WorkBag.Push(this&,State_GetUse)
 
 			WorkBag.Push(Down.Right[^],State_Start)
