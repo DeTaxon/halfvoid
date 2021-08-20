@@ -642,7 +642,7 @@ SLambda := class extend BoxFuncContainer
 				}
 				f << "%PreSetPoint" << ItId << " = getelementptr " << upABName << " , " << upABName << "* %OldPtr0 , i32 0, i32 " << ItNR << "\n"
 				f << "store " << asL.GetPointName() << " @lambda" << ItId << ", " << ResultType.GetName() << " %PreSetPoint" << ItId << "\n"
-				for prS : StolenParams, L : 0
+				for prS,L : StolenParams
 				{
 					asMNR := -1 
 					for it,F : funcsUp

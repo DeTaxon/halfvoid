@@ -3,7 +3,7 @@ TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memo
 
 TempFolder := /tmp/
 
-Libs := -ldl -lpthread -mf16c
+Libs := -ldl -lpthread -mf16c -lm
 
 CurrentStable := ./stable
 CurrentWork := ./c.out
