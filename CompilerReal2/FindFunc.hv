@@ -346,7 +346,7 @@ ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> vo
 	for it,h : Fun
 	{
 		if it.IsSameConsts(itBox){
-			priors[h] = ComputePriorFunc(it.MyFuncType,itBox)
+			priors[h] = ComputePriorFunc(it.MyFuncType,itBox,it)
 		}
 		else priors[h] = 255
 		if priors[h] == 0 return void
@@ -354,39 +354,54 @@ ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> vo
 }
 
 ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox) -> int
+{
+	return ComputePriorFunc(FuncTyp,itBox,null)
+}
+ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox,BoxFunc^ fnc) -> int
 {	
 	parsCount := itBox.itPars.Size()
-	if parsCount == FuncTyp.ParsCount or (FuncTyp.IsVArgs and parsCount >= FuncTyp.ParsCount)
-	{
-		IsCorrect := true
 
-		MaxPrior := 0
+	minCount := FuncTyp.ParsCount
+	maxCount := FuncTyp.ParsCount
+	if fnc != null
+		minCount -= fnc.DefaultValuesCount
 
-		for i : FuncTyp.ParsCount, par : itBox.itPars
-		{
-			SomePrior := 0
-			if FuncTyp.ParsIsRef[i] 
-			{
-				SomePrior = 255
-				if par.first == FuncTyp.Pars[i] 
-				{
-					SomePrior = CmpSame
-				}else if par.first? is TypeClass and FuncTyp.Pars[i]? is TypeClass
-				{
-					pF := par.first.GetPoint()
-					pT := FuncTyp.Pars[i].GetPoint()
-					tpF := TypeFight(pF,pT)
-					if tpF == pT
-						SomePrior = CmpLoseless
-				}
-			}else {
-				SomePrior = TypeCmp(par.first, FuncTyp.Pars[i])
-			}
-			if MaxPrior < SomePrior MaxPrior = SomePrior
-		}
-		return MaxPrior
+	if FuncTyp.IsVArgs
+	{	
+		maxCount = 10000000
 	}
-	return 255	
+	if parsCount > maxCount or parsCount < minCount
+		return 255
+
+	IsCorrect := true
+
+	MaxPrior := 0
+
+	for i : FuncTyp.ParsCount, par : itBox.itPars
+	{
+		if i >= parsCount
+			break
+		SomePrior := 0
+		if FuncTyp.ParsIsRef[i] 
+		{
+			SomePrior = 255
+			if par.first == FuncTyp.Pars[i] 
+			{
+				SomePrior = CmpSame
+			}else if par.first? is TypeClass and FuncTyp.Pars[i]? is TypeClass
+			{
+				pF := par.first.GetPoint()
+				pT := FuncTyp.Pars[i].GetPoint()
+				tpF := TypeFight(pF,pT)
+				if tpF == pT
+					SomePrior = CmpLoseless
+			}
+		}else {
+			SomePrior = TypeCmp(par.first, FuncTyp.Pars[i])
+		}
+		if MaxPrior < SomePrior MaxPrior = SomePrior
+	}
+	return MaxPrior
 }
 
 

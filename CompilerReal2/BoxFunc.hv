@@ -325,6 +325,9 @@ BoxFunc := class extend BoxFuncContainer
 	vargsName := string
 	funcUserParamsCount := int
 
+	DefaultValues := Object^[]
+	DefaultValuesCount := int
+
 	vargTypeBarrier := Object^
 
 	GetType := virtual !() -> Type^
@@ -428,9 +431,11 @@ BoxFunc := class extend BoxFuncContainer
 
 		Typs := Queue.{Type^}() ; $temp
 		TypsNams := Queue.{string}() ; $temp
+		TypsDefValues := Queue.{Object^}() ; $temp
 		TypsIsRef := Queue.{bool}() ; $temp
 		IsVargsL := false
 		ContainTT := false
+		defVals := 0
 
 		RetTyp := null->{Type^}
 		if GetValue() == "!()" RetTyp =  ParseType(outObj)
@@ -509,9 +514,17 @@ BoxFunc := class extend BoxFuncContainer
 						if Pars[1] is ObjIndent
 						{
 							MayName = (Pars[1]->{ObjIndent^}).MyStr
+							TypsDefValues.Push(null)
 						}else{
-							printf("only indentificators allowed, got %s\n",Pars[1].GetValue())
-							return false
+							if Pars[1].Down?.Right?.GetValue() == "=" and Pars[1].Down is ObjIndent
+							{
+								MayName = (Pars[1].Down->{ObjIndent^}).MyStr
+								TypsDefValues.Push(Pars[1].Down.Right.Right)
+								defVals += 1
+							}else{
+								printf("only indentificators allowed, got %s\n",Pars[1].GetValue())
+								return false
+							}
 						}
 						Typs.Push(MayType)
 						TypsIsRef.Push(IsParRef)
@@ -529,6 +542,7 @@ BoxFunc := class extend BoxFuncContainer
 							Typs.Push(null->{Type^})
 							TypsIsRef.Push(false)
 							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
+							TypsDefValues.Push(null)
 						}else{
 							itr := Pars[0]
 							if itr is ObjData and itr.Down? is ObjIndent and itr.Down.Right?.GetValue() == "..."
@@ -551,6 +565,12 @@ BoxFunc := class extend BoxFuncContainer
 		}
 		MyFuncType = null
 		MyFuncParamNames = null
+
+		DefaultValuesCount = defVals
+		if defVals != 0
+		{
+			DefaultValues = TypsDefValues.ToArray()
+		}
 
 		if Typs.Size() != 0
 		{

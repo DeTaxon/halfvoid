@@ -618,7 +618,7 @@ BoxClass := class extend BoxClassBase
 				return tuplSet.GetFunc(itBox)
 			}
 		}
-		if name == "this" and tuplConstr != null and ComputePriorFunc(tuplConstr.MyFuncType,itBox) != 255
+		if name == "this" and tuplConstr != null and ComputePriorFunc(tuplConstr.MyFuncType,itBox,null) != 255
 		{
 			return tuplConstr
 		}

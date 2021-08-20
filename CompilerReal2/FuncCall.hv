@@ -217,8 +217,8 @@ OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> O
 		}else{
 			if func2 != null
 			{
-				pri1 := ComputePriorFunc(func1.MyFuncType,box^)
-				pri2 := ComputePriorFunc(func2.MyFuncType,box^)
+				pri1 := ComputePriorFunc(func1.MyFuncType,box^,null)
+				pri2 := ComputePriorFunc(func2.MyFuncType,box^,null)
 				if pri2 < pri1
 				{
 					preRet := MakeSimpleCall(func2,P)
@@ -339,6 +339,42 @@ BaseFuncCall := class extend ObjResult
 			}
 			i += 1
 			iter = iter.Right
+		}
+		if i < FType.ParsCount
+		{
+			if ToCall?.DefaultValuesCount + i >= FType.ParsCount
+			{
+				itrAdd := Down
+				if Down != null
+					while itrAdd.Right != null
+						itrAdd = itrAdd.Right
+				defArr := ToCall.DefaultValues
+				while i < FType.ParsCount
+				{
+					newObj := Object^()
+					newObj = defArr[i].Clone()
+					newObj.Up = this&
+					if itrAdd == null
+					{
+						Down = newObj
+						itrAdd = newObj
+					}else{
+						itrAdd.Right = newObj
+						newObj.Left = itrAdd
+						itrAdd = newObj
+					}
+					if newObj.GetType() != FType.Pars[i]
+					{
+						itrAdd = BoxExc(newObj,FType.Pars[i],false)
+						if itrAdd == null
+							EmitError("Could not create default value")
+					}
+					i += 1
+				}
+
+			}else{
+				//TODO BUG: unknown delete created
+			}
 		}
 		while iter != null
 		{

@@ -675,7 +675,7 @@ BuiltInTemplateFuncWrapper := class extend BoxTemplate
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		return ComputePriorFunc(MyFuncType,itBox)
+		return ComputePriorFunc(MyFuncType,itBox,null)
 	}
 
 	GetNewFunc := virtual  !(Queue.{Type^} pars,Queue.{Object^} consts, TypeFunc^ fun) -> BoxFunc^
