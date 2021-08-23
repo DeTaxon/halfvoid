@@ -1,0 +1,149 @@
+BaseFuncCall := class extend ObjResult
+{
+	ToCall := BoxFunc^
+	FType := TypeFunc^
+
+	GetType := virtual !() -> Type^
+	{
+		return FType.RetType
+	}
+	PrintGlobal := virtual !(TIOStream f) -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			iter.PrintGlobal(f)
+			iter = iter.Right
+		}
+	}
+	GetValue := virtual !() -> string
+	{
+		return "d()"
+	}
+	ExchangeParams := !() -> void
+	{
+		itLiner := this.Line
+		lnr := this&->{Object^}
+
+		if itLiner == null{
+			wl := Down
+			while wl != null{
+				if wl.Line != null {
+					itLiner = wl.Line
+					lnr = wl
+				}
+				wl = wl.Right
+			}
+		}
+
+		iter := Down
+		//if ToCall != null 
+		//	if ToCall.IsRetComplex 
+		//		iter = iter.Right //???
+		i := 0
+
+		while iter != null and i < FType.ParsCount 
+		{
+			if iter.GetType() != FType.Pars[i]
+			{
+				RetR := false
+				if FType.ParsIsRef != null
+					RetR = FType.ParsIsRef[i]
+				preRet := BoxExc(iter,FType.Pars[i],RetR)
+	
+				if preRet == null
+				{
+					iter.Up.Print(0)
+					msg := "compiler bug at param "sbt + (i+1) + " "
+					msg << " object " << iter.GetValue()
+					if iter.GetType() != null{
+						msg << " from " << iter.GetType().GetName()
+					}else {
+						msg << " from null "
+					}
+					if FType.Pars[i] != null {
+						msg << " to "  <<  FType.Pars[i].GetGoodName() 
+					}
+				
+					if itLiner != null lnr.EmitError(msg + "\n") else assert(false)
+				}else{
+					//if preRet.Line == null 
+					//{
+					//	Print(0)
+					//}
+					iter = preRet
+				}
+			}else
+			{
+				if IsSLambda(iter) iter->{SLambda^}.ApplyFunc()
+			}
+			i += 1
+			iter = iter.Right
+		}
+		if i < FType.ParsCount
+		{
+			if ToCall?.DefaultValuesCount + i >= FType.ParsCount
+			{
+				itrAdd := Down
+				if Down != null
+					while itrAdd.Right != null
+						itrAdd = itrAdd.Right
+				defArr := ToCall.DefaultValues
+				while i < FType.ParsCount
+				{
+					newObj := Object^()
+					newObj = defArr[i].Clone()
+					newObj.Up = this&
+					if itrAdd == null
+					{
+						Down = newObj
+						itrAdd = newObj
+					}else{
+						itrAdd.Right = newObj
+						newObj.Left = itrAdd
+						itrAdd = newObj
+					}
+					if newObj.GetType() != FType.Pars[i]
+					{
+						itrAdd = BoxExc(newObj,FType.Pars[i],false)
+						if itrAdd == null
+							EmitError("Could not create default value")
+					}
+					i += 1
+				}
+
+			}else{
+				//TODO BUG: unknown delete created
+			}
+		}
+		while iter != null
+		{
+			itType := iter.GetType()
+			if itType != null
+			{
+				if itType == GTypeFloat or itType == GTypeHalf
+				{
+					iter = BoxExc(iter,GTypeDouble,false)
+				}
+				if itType is TypeArr
+				{
+					iter = BoxExc(iter,iter.GetType().Base.GetPoint(),false)
+				}
+				if itType is TypeClass
+				{
+					iter = BoxExc(iter,GTypeString,false)
+					if iter == null
+					{
+						EmitError("variadic arg can not be casted to string")
+					}
+				}
+			}else{
+				if iter.GetValue() != ","
+				{
+					EmitError("can not parse param in variadic args ")
+				}
+			}
+			iter = iter.Right
+		}
+	}
+}
