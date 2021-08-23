@@ -16,6 +16,7 @@ ObjParam := class extend Object
 	IsTaskLocal := bool
 	IsWeak := bool
 	IsPoison := bool
+	IsStatic := bool
 	
 	this := !(string ss, bool IsstName) -> void
 	{
@@ -314,7 +315,7 @@ ObjParam := class extend Object
 
 			if MaybeType != null
 			{
-				allcId := GetAlloc(this&,MaybeType)
+				allcId := GetAlloc(this&,MaybeType,IsStatic)
 				ObjType = MaybeType
 				if allcId == -1
 				{
@@ -460,7 +461,7 @@ ObjParam := class extend Object
 							if IsRef
 								allcId = GetAlloc(this&,ObjType.GetPoint())
 							else
-								allcId = GetAlloc(this&,ObjType)
+								allcId = GetAlloc(this&,ObjType,IsStatic)
 						}
 						Down = new LocalParam(ObjType,allcId,IsRef)
 						Down.Right = Temp

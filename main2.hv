@@ -12,11 +12,14 @@
 
 TstFunc := !(void^ val = #uniq_call) -> void
 {
-	printf("wut %p\n",val)
+	j := static 17
+	printf("wut %i\n",j)
+	j += 1
 }
 
 main := !(int argc, char^^ argv) -> int
 {
+	TstFunc()
 	TstFunc()
 	return 0	
 	#awork
