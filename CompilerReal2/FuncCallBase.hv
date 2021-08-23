@@ -91,8 +91,28 @@ BaseFuncCall := class extend ObjResult
 				defArr := ToCall.DefaultValues
 				while i < FType.ParsCount
 				{
+					
 					newObj := Object^()
-					newObj = defArr[i].Clone()
+
+					if defArr[i] is ObjCmd
+					{
+						cmdVal := defArr[i]->{ObjCmd^}
+						if cmdVal.MyStr == "#uniq_call"
+						{
+							if FType.Pars[i] is TypePoint
+							{
+								//TODO: static field
+								newObj = new ObjPointer(null,FType.Pars[i])
+							}else{
+								//TODO int,float?
+								EmitError("Not implemented")
+							}
+						}else{
+							EmitError("Unknown default value")
+						}
+					}else{
+						newObj = defArr[i].Clone()
+					}
 					newObj.Up = this&
 					if itrAdd == null
 					{

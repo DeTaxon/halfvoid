@@ -70,7 +70,8 @@ ObjPointer := class extend ObjConst
 	PrintUse := virtual !(TIOStream f) -> void
 	{
 		buf := char[256]
-		sprintf(buf[0]&,"%s inttoptr(%p to %s)",pointerValue,ResultType.GetName())
+		typName := ResultType.GetName()
+		sprintf(buf[0]&,"%s inttoptr(i64 %llu to %s)",typName,pointerValue,typName)
 		f << buf[0]&
 	}
 	GetName := virtual !() -> string
