@@ -133,8 +133,10 @@ DeferAndYieldCnst := 0
 DeferAndYield1 := !() -> void
 {
 	defer DeferAndYieldCnst += 3
+	printf("a\n")
 	DeferAndYieldCnst = 7
 	yield void
+	printf("b\n")
 	defer DeferAndYieldCnst *=10
 	DeferAndYieldCnst = 3
 	return  void
@@ -142,6 +144,7 @@ DeferAndYield1 := !() -> void
 DeferAndYield := !() -> void
 {
 	DeferAndYield1()
+	printf("test %i\n",DeferAndYieldCnst)
 	assert(DeferAndYieldCnst == 7)
 	DeferAndYield1()
 	//assert(DeferAndYieldCnst == 3) TODO wich one is correct?

@@ -260,21 +260,23 @@ BoxFuncBody := class extend BoxFunc
 	{
 		YieldCheck()
 		Yodlers.Push(toAdd)
+		if MethodType == null
+		{
+			ABox.liveOnGlobal = true
+		}
 		return Yodlers.Size()
 	}
 	YieldCheck := !() -> void
 	{
 		if Yodlers.Size() != 0
+		{
 			return void
+		}
 
 		yodlerInAlloc = ABox.GetAlloc(GTypeInt)
 
-		if MethodType == null
+		if MethodType != null
 		{
-			if Yodlers.Size() != 0
-				ABox.liveOnGlobal = true
-
-		}else{
 			bC := MethodType->{TypeClass^}.ToClass
 			bC.Yodlers.Insert(this&)
 		}

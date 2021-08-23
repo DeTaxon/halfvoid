@@ -20,6 +20,7 @@ TstFunc := !(void^ val = #uniq_call) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TstFunc()
+	yield 4
 	TstFunc()
 	return 0	
 	#awork

@@ -146,6 +146,7 @@ AllocBox := class
 				//		f << " , !dbg !" << newId
 				//}
 				f << "\n"
+				f << "%StackObj = bitcast %AllocClass" << ItId << "* @AllocObject" << ItId << " to i8*\n"
 			}else{
 				if parentAlloc != null
 				{
