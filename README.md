@@ -60,6 +60,15 @@ ConstFunc := !() .{@T,@Value} -> void
 	//call ConstFunc().{int,27}
 	printf("set %i\n",Value)
 }
+DefaultValues := !(int x = 13, void^ y = #uniq_call) -> void
+{
+	DefaultValues(1,null)
+	DefaultValues(1)
+	DefaultValues()
+
+	//#uniq_call means caller will create "unique value"
+	//designed for TGuard() 
+}
 ManyArgs := !(args...) -> void
 {
 	x := #best(args) // get type that could hold all value
@@ -147,6 +156,7 @@ MyIterator := class
 
 
 ```
+
 Operator  can iterate in parallel (not like threads or OpenMP)
 Every iteration you get i-n element from container 1, and i-n element from container 2 and etc
 
@@ -163,6 +173,16 @@ for item1,ind1 : container1 , item2 : container2
 for item1 : container1 ; $reverse
 {
 	
+}
+
+//openmp like launch, not implemented
+//same as TAwaitWork
+#awork
+for i : 100
+{
+	...
+	TGuard() // not implemented
+	//CriticalSection
 }
 ```
 
@@ -224,7 +244,7 @@ SomeClass := class
 }
 
 lambd := () ==> int {
-	yield 3 //state value is connected with lambda objects
+	yield 3 //state value is connected with lambda objects, generator support under question
 	// when lambda is captured, state value is copied
 }
 
@@ -322,7 +342,7 @@ TGuard := !(void^ ptr) -> void
 {
 	TLock(ptr)
 } defer_tail (void^ ptr) {
-	TUnlock(ptr
+	TUnlock(ptr)
 }
 
 main := !() -> void
@@ -335,6 +355,45 @@ main := !() -> void
 }
 ```
 
+Threads
+I stole idea from javascript: one thread , but heavy computation dumped to thread pool
+
+```java
+
+main := !(int argc, char^^ argv) -> void
+{
+	TSpawnTask(() ==> {
+		//Grean thread 1
+		while true
+		{
+			//do some
+			TSleep(1) // 1 second, async call
+		}
+	})
+	TSpawnTask(() ==> {
+		//Grean thread 2
+		while true
+		{
+			TAwaitWork( // async call, waiting until lambda function is finished
+				() ==> {
+				// this is executed in separate thread
+				TLock(ptr) // lock access to object
+				defer TUnlock(ptr)
+
+				//or
+				TGuard(ptr)
+
+				//or, using position in code as parameter (not realy)
+				// same as openmp critical section
+				TGuard()
+			})
+			//do some
+		}
+	})
+}
+
+
+```
 
 Small features
 ```java
