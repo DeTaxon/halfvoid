@@ -205,11 +205,24 @@ GetAllocNR := !(Object^ Start,int id) -> int
 	return -1
 }
 GetAlloc := !(Object^ Start,Type^ t) -> int
+{	
+	return GetAlloc(Start,t,false)
+}
+GetAlloc := !(Object^ Start,Type^ t,bool isStatic) -> int
 {
 	iter := Start
 	while iter != null
 	{
 		ab := iter.GetABox()
+		
+		if isStatic
+		{
+			if IsBoxFuncContainer(iter)
+				ab = null
+			if IsClassObj(iter)
+				ab = null
+		}
+
 		if ab != null return ab.GetAlloc(t)
 		if IsClassObj(iter)
 		{
