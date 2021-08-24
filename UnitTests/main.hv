@@ -15,6 +15,7 @@ main := !(int argc, char^^ argv) -> int
 		InsertBeforeTest()
 		BestTest()
 		TestSetType()
+		MiniTests()
 		TaskTest() // Must be last
 		printf("all good\n")
 	}catch(IException^ e)
