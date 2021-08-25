@@ -16,7 +16,8 @@ rrr := class
 	j := static 17
 	TstFunc := !() -> void
 	{
-		printf("wut %i\n",j)
+		j := static 6
+		printf("wut %i %i\n",j,this.j)
 		j += 1
 	}
 }

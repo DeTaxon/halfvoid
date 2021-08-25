@@ -345,7 +345,8 @@ ObjParam := class extend Object
 							if IsStatic
 							{
 								newParam := new GlobalParam(MaybeType,val)
-								asCl.StaticParams[MyStr] = newParam
+								if GetBoxFuncContainer(this&) == null
+									asCl.StaticParams[MyStr] = newParam
 								Down = newParam
 								Down.SetUp(this&)
 								Down.Line = Line
