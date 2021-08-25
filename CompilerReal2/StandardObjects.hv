@@ -364,8 +364,8 @@ ObjStr := class extend ObjConst
 	}
 	PrintUse := virtual !(TIOStream f) -> void
 	{
-		ResultType.PrintType(f)
-		f << " %T" << MyTmpId	
+		//ResultType.PrintType(f)
+		f << "i8* %T" << MyTmpId	
 	}
 	GetPointName := virtual !() -> string
 	{
