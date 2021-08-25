@@ -83,7 +83,7 @@ BoxClass := class extend BoxClassBase
 	NotMineParams := int
 
 	FakeParams := Queue.{FakeFieldParam^}
-	StaticParams := List.{GlobalParam^}
+	StaticParams := AVLMap.{char^,GlobalParam^}
 
 	defaultFuncsHolder := BoxClassFuncsHolder
 	funcsHolders := AVLMap.{char^,BoxClassFuncsHolder}
@@ -235,10 +235,18 @@ BoxClass := class extend BoxClassBase
 		return true
 	}
 
+	GetStaticField := virtual !(string name) -> Object^
+	{
+		if StaticParams.Contain(name)
+			return StaticParams[name]
+		return null
+	}
 	GetItem := virtual !(string name) -> Object^
 	{
 		if ItVals[^].ItName == name
 			return it.Down
+		if StaticParams.Contain(name)
+			return StaticParams[name]
 		return null
 	}
 

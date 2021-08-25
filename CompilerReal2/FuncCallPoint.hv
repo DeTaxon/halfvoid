@@ -37,12 +37,43 @@ FuncCallGetFieldTypes := !(Object^ iterPre, Object^ iter) -> Object^
         if iter.Right.Right != null {
             return FuncCallGetFieldClassFieldCall(asName,iterPre,iter)? // x.y()
         }else{
-            return FuncCallGetFieldClassGetFieldByName(asName,iterPre,iter)? // x.y()                
+            return FuncCallGetFieldClassGetFieldByName(asName,iterPre,iter)? // x.y                
         }
+	
+	return FuncCallGetStaticField(iter.Left)?
+
     }
-    
+
     return null
 }
+
+FuncCallGetStaticField := !(Object^ itPre) -> Object^
+{
+	if itPre.Right == null return null
+	if itPre.Right.GetValue() != "." return null
+	if itPre.Right.Right == null return null
+	if not ( itPre.Right.Right is ObjIndent) return null
+
+    	lt := Type^
+	if itPre is ObjType
+	{
+		lt = itPre->{ObjType^}.MyType.
+	}else{
+		lt = itPre.GetType()
+	}
+    	if lt? is TypeClass
+    	{
+		cls := lt->{TypeClass^}.ToClass
+		asName := itPre.Right.Right->{ObjIndent^}.MyStr
+		itm := cls.GetStaticField(asName)
+		if itm? is GlobalParam
+		{
+			return new ParamNaturalCall(asName,itm)
+		}
+    	}
+	return null
+}
+
 FuncCallGetFieldExchangeType := !(Object^ iterPre, Object^ iter) -> Object^
 {
     if iter.Right.GetValue() != "{}"

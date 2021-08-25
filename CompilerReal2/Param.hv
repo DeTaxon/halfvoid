@@ -345,7 +345,7 @@ ObjParam := class extend Object
 							if IsStatic
 							{
 								newParam := new GlobalParam(MaybeType,val)
-								asCl.StaticParams.Push(newParam)
+								asCl.StaticParams[MyStr] = newParam
 								Down = newParam
 								Down.SetUp(this&)
 								Down.Line = Line

@@ -28,7 +28,7 @@ main := !(int argc, char^^ argv) -> int
 	r := rrr
 	r.TstFunc()
 	r.TstFunc()
-	printf("w %i\n",rrr->TypeSize)
+	printf("w %i\n",r.j)
 	return 0	
 	#awork
 	for i : 15, j : 15

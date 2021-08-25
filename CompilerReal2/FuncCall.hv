@@ -55,6 +55,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	
 	if iter.GetType() == null
 	{
+		return FuncCallGetStaticField(iter)?
 		return FuncCallPrefixOperator(iter)? // new int , delete x , -x
 		return null
 	}
