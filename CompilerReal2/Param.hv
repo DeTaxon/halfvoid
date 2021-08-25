@@ -342,10 +342,20 @@ ObjParam := class extend Object
 						asCl := GetUpClass(this&)
 						if asCl != null
 						{
-							if Atter != null Down = new FakeFieldParam(MyStr,MaybeType,asCl,Atter)
-							else Down = new FieldParam(MyStr,MaybeType,asCl)
-							Down.SetUp(this&)
-							Down.Line = Line
+							if IsStatic
+							{
+								newParam := new GlobalParam(MaybeType,val)
+								asCl.StaticParams.Push(newParam)
+								Down = newParam
+								Down.SetUp(this&)
+								Down.Line = Line
+							}else
+							{
+								if Atter != null Down = new FakeFieldParam(MyStr,MaybeType,asCl,Atter)
+								else Down = new FieldParam(MyStr,MaybeType,asCl)
+								Down.SetUp(this&)
+								Down.Line = Line
+							}
 						}else{
 							ErrorLog.Push("Compiler bag\n")
 						}

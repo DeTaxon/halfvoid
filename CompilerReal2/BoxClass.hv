@@ -83,6 +83,7 @@ BoxClass := class extend BoxClassBase
 	NotMineParams := int
 
 	FakeParams := Queue.{FakeFieldParam^}
+	StaticParams := List.{GlobalParam^}
 
 	defaultFuncsHolder := BoxClassFuncsHolder
 	funcsHolders := AVLMap.{char^,BoxClassFuncsHolder}
@@ -701,6 +702,7 @@ BoxClass := class extend BoxClassBase
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		PrintCreatedFuncs(f)
+		StaticParams[^].PrintGlobal(f)
 		f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
 		f << "{\n"
 		if ContainVirtual

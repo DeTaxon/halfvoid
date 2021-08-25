@@ -10,17 +10,25 @@
 	//})
 }
 
-TstFunc := !(void^ val = #uniq_call) -> void
+
+rrr := class
 {
 	j := static 17
-	printf("wut %i\n",j)
-	j += 1
+	TstFunc := !() -> void
+	{
+		printf("wut %i\n",j)
+		j += 1
+	}
 }
+
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	TstFunc()
-	TstFunc()
+	r := rrr
+	r.TstFunc()
+	r.TstFunc()
+	printf("w %i\n",rrr->TypeSize)
 	return 0	
 	#awork
 	for i : 15, j : 15
