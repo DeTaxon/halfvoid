@@ -1,0 +1,19 @@
+
+StaticFieldTest1 := !() -> int
+{
+	testVal := static 18
+	testVal += 1
+	return testVal
+}
+StaticFieldTest := !() -> void
+{
+	assert(StaticFieldTest1() == 19)
+	assert(StaticFieldTest1() == 20)
+}
+
+
+MiniTests := !() -> void
+{
+	StaticFieldTest()
+}
+
