@@ -1,56 +1,14 @@
 
-"for #awork" := !() -> void
-{
-	//forBody((C,D,N) ==> {
-	//	while(not C())
-	//	{
-	//		D()
-	//		N()
-	//	}
-	//})
-}
-
-
-rrr := class
-{
-	j := static 17
-	TstFunc := !() -> void
-	{
-		j := static 6
-		printf("wut %i %i\n",j,this.j)
-		j += 1
-	}
-}
-
-
-
 main := !(int argc, char^^ argv) -> int
 {
-	r := rrr
-	r.TstFunc()
-	r.TstFunc()
-	printf("w %i\n",r.j)
-	return 0	
-	#awork
-	for i : 15, j : 15
-	{
-		printf("heh %i\n",i)
-	}
-	//c := half
-	//c = 7
-	//printf("test %f\n",c)
-	//TExpectWorkers(6)
-	//for 5
-	//{
-	//	TSpawnTask(() ==> {
-	//		TAwaitWork(() ==> {
-	//			for 100000 
-	//			{
-	//				bl += 1
-	//			}
-	//		})
-	//		printf("wut %i\n",bl)
-	//	})
-	//}
+	TExpectWorkers(4)
+	TAwaitWork(() ==> {
+		for 3
+		{
+			printf("test1 %i\n")
+			TSleep(1)
+		}
+	})
+	printf("end\n")
 	return 0
 }

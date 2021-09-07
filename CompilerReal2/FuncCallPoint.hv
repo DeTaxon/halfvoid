@@ -49,6 +49,7 @@ FuncCallGetFieldTypes := !(Object^ iterPre, Object^ iter) -> Object^
 
 FuncCallGetStaticField := !(Object^ itPre) -> Object^
 {
+	if itPre == null return null
 	if itPre.Right == null return null
 	if itPre.Right.GetValue() != "." return null
 	if itPre.Right.Right == null return null
