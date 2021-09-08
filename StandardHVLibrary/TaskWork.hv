@@ -24,6 +24,30 @@ TaskBoxSingleWork := class extend TaskBoxWorkInterface
 		b._workUnlockTask(taskData)
 	}
 }
+TaskBoxManyWork := class extend TaskBoxWorkInterface
+{
+	lambda := !(int)&->void
+	taskData := TaskData^
+	currentNum := int
+	maxNum := int
+
+	this := !(!(int)&->void l, TaskData^ d,int mn) -> void
+	{
+		lambda = l
+		taskData = d
+		maxNum = mn
+	}
+	DoJob := virtual !(Mutex^ m) -> void {
+		val := currentNum
+		currentNum += 1
+		m.Unlock()
+		lambda(val)
+	}
+	IsLast := virtual !() -> bool { return currentNum + 1 >= maxNum }
+	OnLast := virtual !(TaskBox^ b) -> void {
+		b._workUnlockTask(taskData)
+	}
+}
 
 AppendClass TaskBox
 {
@@ -82,23 +106,22 @@ AppendClass TaskBox
 	}
 	AwaitWork := !(!()&->void lambd) -> void
 	{
-		ExpectWorkers(1)
-		itWorkMutex.Lock()
-		itWorkCount += 1
-		itWorkToDo.Push(new TaskBoxSingleWork(lambd,CurrentTask))
-		itWorkConVar.NotifyAll()
-		itWorkMutex.Unlock()
+		_addWork(new TaskBoxSingleWork(lambd,CurrentTask))
 		switchToMain()
 	}
 	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
 	{
-		//ExpectWorkers(1)
-		//itWorkMutex.Lock()
-		//itWorkCount += 1
-		//itWorkToDo.Emplace(lambd,CurrentTask,num)
-		//itWorkConVar.NotifyAll()
-		//itWorkMutex.Unlock()
-		//switchToMain()
+		_addWork(new TaskBoxManyWork(lambd,CurrentTask,num))
+		switchToMain()
+	}
+	_addWork := !(TaskBoxWorkInterface^ newWork) -> void
+	{
+		ExpectWorkers(1)
+		itWorkMutex.Lock()
+		itWorkCount += 1
+		itWorkToDo.Push(newWork)
+		itWorkConVar.NotifyAll()
+		itWorkMutex.Unlock()
 	}
 	_workUnlockTask := !(TaskData^ tsk) -> void
 	{

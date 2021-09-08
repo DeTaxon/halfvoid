@@ -2,10 +2,10 @@
 main := !(int argc, char^^ argv) -> int
 {
 	TExpectWorkers(4)
-	TAwaitWork(() ==> {
-		for 3
+	TAwaitManyWorks(2,(x) ==> {
+		for i : 3
 		{
-			printf("test1 %i\n")
+			printf("test1 %i %i\n",x,i)
 			TSleep(1)
 		}
 	})
