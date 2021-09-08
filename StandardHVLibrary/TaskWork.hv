@@ -1,28 +1,38 @@
-TaskBoxWorkData := class
+TaskBoxWorkInterface := class extend TGCObject
 {
-	lambda := !(int)&->void
-	taskData := TaskData^
-	exeTimes := int
-	numToExe := int
+	DoJob := virtual !(Mutex^ m) -> void {	m.Unlock() }
+	IsLast := virtual !() -> bool { return true }
+	OnLast := virtual !(TaskBox^ b) -> void {}
+}
 
-	this := !(!(int)&->void l, TaskData^ t,int exTm) -> void
+TaskBoxSingleWork := class extend TaskBoxWorkInterface
+{
+	lambda := !()&->void
+	taskData := TaskData^
+
+	this := !(!()&->void l, TaskData^ d) -> void
 	{
-		numToExe = 0
 		lambda = l
-		taskData = t
-		exeTimes = exTm
+		taskData = d
 	}
-	"=" := default
+	DoJob := virtual !(Mutex^ m) -> void {
+		m.Unlock()
+		lambda()
+	}
+	IsLast := virtual !() -> bool { return true }
+	OnLast := virtual !(TaskBox^ b) -> void {
+		b._workUnlockTask(taskData)
+	}
 }
 
 AppendClass TaskBox
 {
 	itWorkMutex := Mutex
 	itWorkConVar := ConVar
-	itWorkToDo := List.{TaskBoxWorkData} ; $keep
+	itWorkToDo := List.{TaskBoxWorkInterface^}
 	itWorkCount := int
 	poolThread := List.{Thread^}
-
+	
 	ExpectWorkers := !(int expects) -> void
 	{
 		diffWorks := expects - poolThread.Size()
@@ -38,26 +48,21 @@ AppendClass TaskBox
 
 					if itWorkToDo.Size() != 0
 					{
-						workRef := ref itWorkToDo.Front()
-						workRef.exeTimes -= 1
-						work := itWorkToDo.Front() 
-						workRef.numToExe += 1
+						work := itWorkToDo.Front()
+						isLast := work.IsLast()
 						
-						if work.exeTimes == 0
+						if isLast
 						{
 							itWorkToDo.Pop()
 						}
 
 						itWorkMutex.Unlock()
-						work.lambda(work.numToExe)
+						work.DoJob(itWorkMutex&)
 						FlushTempMemory()
 
-						if work.exeTimes == 0
+						if isLast
 						{
-							itMutex.Lock()
-							tasksToExe << work.taskData
-							notifyMain()
-							itMutex.Unlock()
+							work.OnLast(this&)
 						}
 					}else{
 						if not working
@@ -77,18 +82,38 @@ AppendClass TaskBox
 	}
 	AwaitWork := !(!()&->void lambd) -> void
 	{
-		AwaitManyWorks(1,(n) ==> { lambd() })
-	}
-	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
-	{
 		ExpectWorkers(1)
 		itWorkMutex.Lock()
 		itWorkCount += 1
-		itWorkToDo.Emplace(lambd,CurrentTask,num)
+		itWorkToDo.Push(new TaskBoxSingleWork(lambd,CurrentTask))
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
 		switchToMain()
 	}
+	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
+	{
+		//ExpectWorkers(1)
+		//itWorkMutex.Lock()
+		//itWorkCount += 1
+		//itWorkToDo.Emplace(lambd,CurrentTask,num)
+		//itWorkConVar.NotifyAll()
+		//itWorkMutex.Unlock()
+		//switchToMain()
+	}
+	_workUnlockTask := !(TaskData^ tsk) -> void
+	{
+		itMutex.Lock()
+		tasksToExe << tsk
+		notifyMain()
+		itMutex.Unlock()
+	}
+	threadPoolStop := !() -> void
+	{
+		poolThread[^].Join()
+		delete poolThread[^]
+		poolThread.Destroy()
+	}
+
 	checkExeWorks := !() -> TaskData^
 	{
 		if tasksToExe.Size() == 0

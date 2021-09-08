@@ -15,7 +15,7 @@ TaskKeepStackData := !() -> void
 }
 
 
-TaskBox := class
+TaskBox := class extend TGCObject
 {
 	firstRunTasks := List.{TaskData^} ; $keep
 	itStacks := List.{void^} ; $keep
@@ -26,7 +26,7 @@ TaskBox := class
 	itMutex := Mutex
 
 
-	tasksToExe := List.{TaskData^} ; $keep
+	tasksToExe := List.{TaskData^}
 
 	destroyTasks := List.{TaskData^} ; $keep
 
@@ -208,6 +208,8 @@ TaskBox := class
 	{
 		osDestroy()
 		firstRunTasks.Destroy()
+		threadPoolStop()
+		tasksToExe.Destroy()
 		delete destroyTasks[^]
 		destroyTasks.Destroy()
 	}

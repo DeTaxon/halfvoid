@@ -5,7 +5,9 @@ FuncCallOperator := !(Object^ iter) -> Object^
 		oper := iter.GetValue()
 		if iter.Right == null
 		{
+			if iter.Left == null return null
 			iter = iter.Left
+				
 			PopOutNode(iter.Right)
 			return OperFunc(oper,iter.Up.Down,iter) //OneCall(oper,iter.Up,true)
 
