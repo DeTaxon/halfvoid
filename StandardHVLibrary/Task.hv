@@ -204,7 +204,7 @@ TaskBox := class extend TGCObject
 		_taskInitMem(startTask.taskLocalPtr)
 		return startTask
 	}
-	Destroy := !() -> void
+	Destroy := virtual !() -> void
 	{
 		osDestroy()
 		firstRunTasks.Destroy()
