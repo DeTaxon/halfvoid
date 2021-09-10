@@ -2,13 +2,22 @@
 main := !(int argc, char^^ argv) -> int
 {
 	TExpectWorkers(4)
-	TAwaitManyWorks(2,(x) ==> {
+	b1 := TStartWork(() ==> {
 		for i : 3
 		{
-			printf("test1 %i %i\n",x,i)
+			printf("test1 %i %i\n",i,i)
 			TSleep(1)
 		}
 	})
+	b2 := TStartWork(() ==> {
+		for i : 3
+		{
+			printf("test2 %i %i\n",i,i)
+			TSleep(1)
+		}
+	})
+	b1.AJoin()
+	b2.AJoin()
 	printf("end\n")
 	return 0
 }

@@ -206,6 +206,7 @@ TaskBox := class extend TGCObject
 	}
 	Destroy := virtual !() -> void
 	{
+		working = false
 		osDestroy()
 		firstRunTasks.Destroy()
 		threadPoolStop()

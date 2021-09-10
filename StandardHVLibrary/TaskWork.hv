@@ -132,6 +132,7 @@ AppendClass TaskBox
 	}
 	threadPoolStop := !() -> void
 	{
+		itWorkConVar.NotifyAll()
 		poolThread[^].Join()
 		delete poolThread[^]
 		poolThread.Destroy()

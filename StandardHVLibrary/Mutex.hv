@@ -123,6 +123,12 @@ TUnlock := !(void^ k) -> void
 	}
 }
 
+TGuard := !(void^ k = #uniq) -> void {
+	TLock(k)
+} defer_tail (void^ k) {
+	TUnlock(k)
+}
+
 internalBarMiniMutex := AtomicMutex
 internalBarMutex := Mutex^
 internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}} ; $no_pool $keep

@@ -21,6 +21,9 @@ JITPreInit := !() -> void
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
 
+	lType2 := GetFuncType(![GTypeVoidP,GTypeInt],GTypeVoid).GetLambda()
+	addJITFunction("TAwaitManyWorks",TAwaitManyWorks->{void^},![GTypeInt,lType],GTypeVoid)
+
 	if $posix
 	{
 		addJITFunction("stat",stat->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)

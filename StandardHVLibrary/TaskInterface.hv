@@ -22,6 +22,12 @@ TAwaitManyWorks := !(int num,!(int)&->void lambd) -> void
 			lambd(i)
 	}
 }
+TStartWork := !(!()&->void lambd) -> TaskBarrier^
+{
+	assert(CurrentTaskBox != null)
+	return CurrentTaskBox.StartWork(lambd)
+}
+
 TPauseTask := !(int^ resId) -> void
 {
 	if CurrentTaskBox != null
