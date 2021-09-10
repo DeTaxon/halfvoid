@@ -1,0 +1,73 @@
+
+TaskBarrier := class extend TGCObject
+{
+	executed := bool
+	waitedTasks := List.{TaskData^}
+	taskBox := TaskBox^
+
+	this := !(TaskBox^ tb) -> void
+	{
+		taskBox = tb
+	}
+	Emit := virtual !() -> void
+	{
+		if executed
+			return void
+		TGuard(executed&)
+		if executed
+			return void
+		executed = true
+		for waitedTasks
+		{
+			taskBox._workUnlockTask(it)
+		}
+	}
+
+	AJoin := virtual !() -> void
+	{
+		assert(CurrentTask != null)
+		//TODO outside taskш
+		if executed
+			return void
+		TLock(executed&)
+		if executed
+		{
+			TUnlock(executed&)
+			return void
+		}
+
+		waitedTasks.Push(CurrentTask)
+		TUnlock(executed&)
+		taskBox.switchToMain()
+	}
+}
+
+TaskBoxPromiseWork := class extend TaskBoxWorkInterface
+{
+	lambda := !()&->void
+	resultEvent := TaskBarrier^
+	this := !(!()&-> void la,TaskBarrier^ re) -> void
+	{
+		lambda = la.Capture()
+		resultEvent = re
+	}
+	DoJob := virtual !(Mutex^ m) -> void {
+		lambda()
+		m.Unlock()
+	}
+	IsLast := virtual !() -> bool { return true }
+	OnLast := virtual !(TaskBox^ b) -> void {
+		lambda.Destroy()
+		resultEvent.Emit()
+	}
+}
+
+AppendClass TaskBox
+{
+	StartWork := !(!()& -> void lambd) -> TaskBarrier^
+	{
+		res := new TaskBarrier(this&)
+		_addWork(new TaskBoxPromiseWork(lambd,res))
+		return res
+	}
+}
