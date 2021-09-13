@@ -42,7 +42,22 @@ TRawFile := class extend TIOStream
 			throw new Exception("Could not open file")
 		}
 	}
-	SeekGlob := !(u32 val,bool back) -> void
+	Size := !() -> u64
+	{
+		st1 := char[144]
+		if fstat(handler,st1[0]&) != 0
+			return 0
+		return st1[48]&->{u64^}^
+	}
+	SeekGlobal := !(s64 val,bool back) -> s64
+	{
+		if back {
+			return lseek(handler,val,SEEK_END)
+		}else{
+			return lseek(handler,val,SEEK_SET)
+		}
+	}
+	SeekLocal := !(s64 val) -> void
 	{
 	}
 	Read := virtual !(void^ data, size_t size) -> size_t

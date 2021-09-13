@@ -16,13 +16,11 @@ JITPreInit := !() -> void
 	addJITFunction("TPauseTask",TPauseTask->{void^},![GTypeInt.GetPoint()],GTypeVoid)
 	addJITFunction("TResumeTask",TResumeTask->{void^},![GTypeInt],GTypeVoid)
 	addJITFunction("TExpectWorkers",TExpectWorkers->{void^},![GTypeInt],GTypeVoid)
-	
+
+
 	lType := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
-
-	lType2 := GetFuncType(![GTypeVoidP,GTypeInt],GTypeVoid).GetLambda()
-	addJITFunction("TAwaitManyWorks",TAwaitManyWorks->{void^},![GTypeInt,lType],GTypeVoid)
 
 	if $posix
 	{
@@ -58,6 +56,14 @@ JITInit := !() -> void
 		rp.Down.Down = new ObjPointer(gRepo,rp.GetType())
 		rp.Down.Down.Up = rp.Down
 	}
+
+	tb := GetItem("CurrentTaskBox",null)
+	if tb?.Down != null
+	{
+		tb.Down.Down = new ObjPointer(CurrentTaskBox,tb.GetType())
+		tb.Down.Down.Up = tb.Down
+	}
+
 }
 JITPrint := !(TIOStream f) -> void
 {
