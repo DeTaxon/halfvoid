@@ -26,7 +26,9 @@ Thread := class
 	Join := !() -> void
 	{
 		if $posix
+		{
 			pthread_join(itData,null)
+		}
 		if $win32
 		{
 			infin := -1

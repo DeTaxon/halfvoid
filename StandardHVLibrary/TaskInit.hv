@@ -1,0 +1,4 @@
+TFullInit := !() -> void
+{
+	TExpectWorkers(GetCpuCount()*2)	
+}

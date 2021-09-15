@@ -1,65 +1,10 @@
 
-TReadFile := !(char^ fileName) -> u8[]
-{
-	fl := TRawFile(fileName,"r")
-	defer fl.Close()
-	
-	bfs := List.{char^}
-	defer bfs.Destroy()
-
-	bufSize := 4096
-	while true
-	{
-		subData := new u8[bufSize] ; %temp
-
-		red := fl.Read(subData->{void^},bufSize)
-
-		if red != bufSize
-		{
-			totalSize := bufSize*bfs.Size() + subData->len
-
-			res := new u8[totalSize] ; $temp
-			for it,i : bfs
-			{
-				memcpy(res[i*bufSize]&,it->{void^}, bufSize)
-			}
-			if red != 0
-				memcpy(res[bufSize*bfs.Size()]&, subData->{void^},red)
-			return res
-		}else{
-			bfs.Push(subData)
-		}
-	}
-
-}
-
-GetCpuCount := !() -> int
-{
-	if $posix
-	{
-		data := TReadFile("/proc/cpuinfo")
-		strs := DivideStr(data->{char^},"\n")
-
-		cnt := 0
-		for st : strs
-		{	
-			parts := st.DivideStr(": \t")
-			if parts.Size() > 1 and parts[0] == "processor"
-			{
-				cnt += 1
-			}
-		}
-		printf("processors %i\n",cnt)
-	}
-}
-
-TFullInit := !() -> void
-{
-	TExpectWorkers(GetCpuCount()*2)	
-}
-
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
+	TExpectWorkers(4)
+	TAwaitWork(() ==> {
+		printf("test\n")
+	})
 	return 0
 }

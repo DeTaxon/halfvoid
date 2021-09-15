@@ -190,7 +190,6 @@ TaskBox := class extend TGCObject
 		working = false
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
-		poolThread[^].Join()
 	}
 	checkCreateTask := !() -> TaskData^
 	{

@@ -312,10 +312,9 @@ vRepo := class
 			if iterFolder.subVirtualFiles.Contain(st)
 				return iterFolder.subVirtualFiles[st]
 
-			return null
-
+			throw new Exception("File not found")
 		}
-		return null
+		throw new Exception("File not found")
 
 	}
 	getObject := !(StringSpan fileName,vRepoFolder^ rrF) -> vRepoObject^
