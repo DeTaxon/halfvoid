@@ -2,9 +2,6 @@
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	TExpectWorkers(4)
-	TAwaitWork(() ==> {
-		printf("test\n")
-	})
+	printf("test\n")
 	return 0
 }

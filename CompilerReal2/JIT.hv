@@ -22,6 +22,8 @@ JITPreInit := !() -> void
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
 
+	addJITFunction("TFullInit",_blankFunc->{void^},GTypeVoid)
+
 	if $posix
 	{
 		addJITFunction("stat",stat->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)
@@ -33,6 +35,13 @@ JITPreInit := !() -> void
 addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void
 {
 	sleepType := GetFuncType(inps,outType)
+	sleepTypePtr := sleepType.GetPoint()
+	sleepPar := new GlobalParam(sleepTypePtr,new ObjPointer(fPoint->{void^},sleepTypePtr))
+	passJITFuncs[name] = !{sleepType,sleepPar}
+}
+addJITFunction := !(char^ name ,void^ fPoint,Type^ outType) -> void
+{
+	sleepType := GetFuncType(outType)
 	sleepTypePtr := sleepType.GetPoint()
 	sleepPar := new GlobalParam(sleepTypePtr,new ObjPointer(fPoint->{void^},sleepTypePtr))
 	passJITFuncs[name] = !{sleepType,sleepPar}
@@ -73,4 +82,7 @@ JITPrint := !(TIOStream f) -> void
 	{
 		it.1.PrintGlobal(f)
 	}
+}
+_blankFunc := !() -> void
+{
 }

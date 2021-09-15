@@ -62,6 +62,19 @@ WIN32_FIND_DATAW := class
 	cFileName := u16[260] // 260 = MAX_PATH
 	cAlternateFileName := u16[14]
 }
+SYSTEM_INFO := class
+{
+	dwOemId := u32
+	dwPageSize := u32
+	lpMinimumApplicationAddress := void^
+	lpMaximumApplicationAddress := void^
+	dwActiveProcessorMask := u32^
+	dwNumberOfProcessors := u32
+	dwProcessorType := u32
+	dwAllocationGranularity := u32
+	wProcessorLevel := u16
+	wProcessorRevision := u16
+}
 
 
 FILE_MAP_ALL_ACCESS := 0xF001F

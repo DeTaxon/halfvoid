@@ -97,6 +97,8 @@
 		"GetOverlappedResult" : "int,void^,void^,int^,int",
 
 		"GetTempPathW" : "int,int,u16^",
-		"GetTempFileNameW" : "int,u16^,u16^,int,u16^"
+		"GetTempFileNameW" : "int,u16^,u16^,int,u16^",
+
+		"GetSystemInfo" : "void,void^"
 	}
 }
