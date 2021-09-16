@@ -73,7 +73,15 @@ ObjParam := class extend Object
 				Down->{LocalParam^}.PrintPointUse(f,0,-1)
 				f << " to i8*\n"
 				f << "call void @internalGCMemClear"
-				f << "(i8* %AsVoid" << itId << ", i64 "<< ObjType.GetSize() << ")\n"
+				f << "(i8* %AsVoid" << itId << ", i64 "<< ObjType.GetSize() << ")"
+
+				if DebugMode
+				{
+					dId := CreateDebugCall(this&)
+					if dId != -1
+						f << ", !dbg !" << dId
+				}
+				f << "\n"
 			}
 			if not IsGlobal
 			{

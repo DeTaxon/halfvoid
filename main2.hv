@@ -1,7 +1,7 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	tst := new List.{TGCObject^}
+	tst := List.{TGCObject^}
 	//for tst
 	//{
 	//}
