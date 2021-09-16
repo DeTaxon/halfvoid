@@ -131,6 +131,9 @@ RegExpReadText := !(void^ itCorePre,char^ data,int siz, !(int,int,int)&->void to
 			}
 
 			nowChar := data[i + nowSize]
+			if nowChar >= 128
+				nowChar = 'a'
+
 			inTable := itCore.CharToGo[nowChar]
 			nowPos = itCore.Table[nowPos][inTable]
 			nowSize++

@@ -1,7 +1,9 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	TFullInit()
-	printf("test\n")
+	tst := new List.{TGCObject^}
+	//for tst
+	//{
+	//}
 	return 0
 }

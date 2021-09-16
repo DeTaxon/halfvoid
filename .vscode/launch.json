@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/test2",
             "args": [],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,

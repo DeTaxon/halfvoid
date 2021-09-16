@@ -725,9 +725,10 @@ AssemblerCall := class extend NaturalCall
 		}
 		if gcObjId > 0
 		{
-			tn := FType.RetType.GetName() 
-			f << "store " << tn << GetOutputName() << " , "
-			f << tn << "* %T" << gcObjId << "\n"
+			//tn := FType.RetType.GetName() 
+			//f << "store " << tn << GetOutputName() << " , "
+			//f << tn << "* %T" << gcObjId << "\n"
+
 		}
 
 	}

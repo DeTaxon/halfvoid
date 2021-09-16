@@ -6,6 +6,7 @@ internalGCIncRef := !(void^ toIncP)  -> void
 	toInc := weak toIncP->{TGCObject^}
 	r := toInc.GCIncRef()
 }
+
 internalGCDecRef := !(void^ toDecP) -> void
 {
 	if toDecP == null
