@@ -63,6 +63,14 @@ RawArray := class .{@T}
 	{
 		return itSize
 	}
+	Destroy := !() -> void
+	{
+		if itPtr != null
+		{
+			delete itPtr
+			itPtr = null
+		}
+	}
 	"~For" := !() -> RawArrayIter.{T}
 	{
 		return RawArrayIter.{T}(itPtr,itSize)

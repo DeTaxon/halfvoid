@@ -16,6 +16,7 @@ Thread := class
 			asLambd := x->{!()&->void}
 			asLambd()
 			asLambd.Destroy()
+			gTemporaryPool.Destroy()
 		}
 		captLambd := lambd.Capture()->{void^}
 		if $posix

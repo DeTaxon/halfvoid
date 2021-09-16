@@ -63,5 +63,8 @@ _hvEntryPoint2 := !(int argc, char^^ argv,char^^ envs) -> int
 			delete argv2[i]
 		}
 	}
+	//gRepo.Destroy()
+	//LibDB.Destroy()
+	gTemporaryPool.Destroy()
 	return preRet
 }

@@ -377,6 +377,11 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "br label %DeferLabel" << labelIter^ << "\n"
 			f << "DeferLabel" << labelIter^ << ":\n"
 
+			if DestroyFunc[i] is BoxFuncBody and DestroyFunc[i]->{BoxFunc^}.IsVirtual
+			{
+				continue
+			}
+
 			itr.PrintPointPre(f)
 			fnc := DestroyFunc[i]->{BoxFunc^}
 			f << "call void @" << fnc.OutputName << "("

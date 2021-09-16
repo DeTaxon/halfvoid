@@ -41,13 +41,12 @@ LibDBObject := class
 	}
 }
 
-Exdepth := 0
 LibDatabaseType := class
 {
 	loadedLibs := AVLMap.{char^,LibDBObject}
 	itMemPool := AllocOnlyMP.{4096,true}
 	
-	Clean := !() -> void
+	Destroy := !() -> void
 	{
 		for loadedLibs
 		{
@@ -55,6 +54,7 @@ LibDatabaseType := class
 			if it.itFileName != null
 				TFSDelete(it.itFileName)
 		}
+		itMemPool.Destroy()
 	}
 	SetRepo := !(vRepo^ toS) -> void
 	{

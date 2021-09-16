@@ -223,5 +223,6 @@ ucontextStartTask := !(void^ fiberData) -> void
 {
 	CurrentTask.tskToRun()
 	CurrentTaskBox.onDestroyTask(CurrentTask)
+	gTemporaryPool.Destroy()
 	CurrentTaskBox.switchToMain()
 }

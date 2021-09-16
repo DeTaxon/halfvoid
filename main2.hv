@@ -2,8 +2,8 @@
 main := !(int argc, char^^ argv) -> int
 {
 	tst := List.{TGCObject^}
-	//for tst
-	//{
-	//}
+	for tst
+	{
+	}
 	return 0
 }

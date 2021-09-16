@@ -45,9 +45,10 @@ AllocOnlyMP := class .{@PageSize,@CleanResult} extend IMemoryPool
 	FreeMem := virtual !(void^ memPtr) -> void
 	{
 	}
-	Clear := !() -> void
+	Destroy := !() -> void
 	{
 		free(createdPages[^])
+		createdPages.Destroy()
 	}
 }
 
@@ -66,6 +67,18 @@ StupidMemoryPool := class .{@PageSize} extend IMemoryPool
 		itLoaded = 0
 		itBusyPages."this"()
 		itFreedPages."this"()
+	}
+	Destroy := !() -> void
+	{
+		free(itBusyPages[^])
+		itBusyPages.Destroy()
+		free(itFreedPages[^])
+		itFreedPages.Destroy()
+		if itPage != null
+		{
+			free(itPage)
+			itPage = null
+		}
 	}
 	GetPage := !() -> u8^
 	{	
