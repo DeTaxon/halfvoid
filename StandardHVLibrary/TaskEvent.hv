@@ -26,7 +26,7 @@ TaskBarrier := class extend TGCObject
 	AJoin := virtual !() -> void
 	{
 		assert(CurrentTask != null)
-		//TODO outside taskш
+		//TODO outside task
 		if executed
 			return void
 		TLock(executed&)
