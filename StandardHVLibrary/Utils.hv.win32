@@ -2,8 +2,12 @@
 GetCpuCount := !() -> int
 {
 	win32InitGetSystemInfo()
-	printf("procs %i\n",win32SysInfo.dwNumberOfProcessors)
 	return win32SysInfo.dwNumberOfProcessors
+}
+GetPageSize() := !() -> int
+{
+	win32InitGetSystemInfo()
+	return win32SysInfo.dwPageSize
 }
 
 

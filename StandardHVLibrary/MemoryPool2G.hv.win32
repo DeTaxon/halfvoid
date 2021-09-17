@@ -1,5 +1,4 @@
 
-pageSize := 4096 //TODO: unconst
 AllocOnly2G := class  extend IMemoryPool
 {
 	memStart := u8^
@@ -15,6 +14,7 @@ AllocOnly2G := class  extend IMemoryPool
 	}
 	GetMem := virtual !(size_t size, int align,int prefix) -> void^
 	{
+		pageSize := GetPageSize()
 		newSize := itLoaded
 		if align > 1 {
 			newSize +=  0xFF % align
