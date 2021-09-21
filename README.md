@@ -232,11 +232,11 @@ GetRandom := !() -> int //state value is global variable
 		yield 0
 	}
 	
-	return 0 //return call reset generator
+	return 0 //return call resets generator
 }
 SomeClass := class
 {
-	funct := !() -> int //state value is part of class
+	funct := !() -> int //state value is part of class object
 	{
 		yield 1
 		return 6
@@ -289,9 +289,9 @@ switch x
 {
 	case 1
 		//at the end of case, code quits switch
-		//you must call continue to move to next case
+		//you must call continue to move to the next case
 	case 2 
-	case y // case works if one of three operators works x == y, x in y, x <=> y == 0
+	case y // case works if one of these three operators works x == y, x in y, x <=> y == 0
 	case 5..10
 	case ![9,0,123]
 	case void // if none of them worked

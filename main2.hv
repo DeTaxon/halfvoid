@@ -1,7 +1,29 @@
 
+tstGC := class extend TGCObject
+{
+	this := !() -> void
+	{
+	}
+	"^" := !() -> int { return 0 }
+	IsEnd := !() -> bool { return true }
+	Inc := !() -> void {} 
+	Destroy := virtual !() -> void
+	{
+		printf("KONO DIO DA\n")
+	}
+}
+
+TestGo := class
+{
+	"~For" := !() -> tstGC
+	{
+		return tstGC()
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	tst := List.{TGCObject^}
+	tst := TestGo
 	for tst
 	{
 	}

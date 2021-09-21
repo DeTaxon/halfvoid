@@ -377,10 +377,28 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "br label %DeferLabel" << labelIter^ << "\n"
 			f << "DeferLabel" << labelIter^ << ":\n"
 
-			if DestroyFunc[i] is BoxFuncBody and DestroyFunc[i]->{BoxFunc^}.IsVirtual
+			if DestroyFunc[i] is BoxFuncBody //TODO in BoxFunc
 			{
-				continue
+				if IsGCClass(itr.GetType())
+				{
+					itr.PrintPointPre(f)
+
+					f << "%DestrObj" << ItId << "n" << j << " = bitcast "
+					itr.PrintPointUse(f)
+					f << " to i8*\n"
+
+					f << "call void @" << gcCallDestroy.OutputName << "("
+					f << "i8* %DestrObj" << ItId << "n" << j
+					f << ")\n"
+					continue
+				}
+				if DestroyFunc[i]->{BoxFunc^}.IsVirtual
+				{
+					//TODO add virtual destructor support
+					continue
+				}
 			}
+
 
 			itr.PrintPointPre(f)
 			fnc := DestroyFunc[i]->{BoxFunc^}
