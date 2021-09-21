@@ -202,7 +202,14 @@ Library := class
 	{
 		hndl = null
 		if not skipLib(name)
-			hndl = LibDB.GetLib(name)
+		{
+			try //TODO make it pretty
+			{
+				hndl = LibDB.GetLib(name)
+			}catch(IException^ e)
+			{
+			}
+		}
 		if hndl == null
 			Open(args...)
 	}
