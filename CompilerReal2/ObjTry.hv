@@ -67,9 +67,8 @@ ParseTry := !(Object^ itm) -> Object^
 //	}
 //}
 
-ObjTry := class extend Object
+ObjTry := class extend ObjTryCommon
 {
-	ItId := int
 	exName := char^
 	exType := Type^
 	exParam := MemParam^
@@ -139,31 +138,14 @@ ObjTry := class extend Object
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		newId := -1
+		debId := -1
 		if DebugMode
 		{
-			newId = CreateDebugCall(this&)
+			debId = CreateDebugCall(this&)
 		}
 
-		f << "%E" << ItId << "=  call i8* @" << expEnter.OutputName << "()"
-		if newId != -1 f << ", !dbg !" << newId
-		f <<"\n"
+		PrintStart(f,debId)
 
-
-		f << "%AsArray" << ItId << " = bitcast i8* %E" << ItId << " to [20 x i8*]*\n"
-  		f << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
-		f << "%FrameStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %AsArray"<< ItId << ", i64 0, i64 0\n"
-		f << "store i8* %Frame" << ItId << ", i8** %FrameStore" << ItId << ", align 16\n"
-  		f << "%Stack" << ItId << " = call i8* @llvm.stacksave()\n"
-		f << "%StackStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %AsArray"<< ItId << ", i64 0, i64 2\n"
-  		f << "store i8* %Stack" << ItId << ", i8** %StackStore"<< ItId <<", align 16\n"
-  		f << "%T" << ItId << " = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
-		//f << "%T" << ItId << " = call i32 @setjmp(i8* %E" << ItId << ")"
-		//if newId != -1 f << ", !dbg !" << newId
-		f << "\n"
-
-		f << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"
-		f << "br i1 %B" << ItId << ", label %OnGood" << ItId << " , label %OnBad" << ItId << "\n"
 		f << "OnGood" << ItId << ":\n"
 		Down.PrintDeferInBlock(f,deferId,deferVal&)
 		Down.PrintInBlock(f)
@@ -173,7 +155,7 @@ ObjTry := class extend Object
 		if exName != null
 		{
 			f << "%IPre" << ItId << " = call i8* @" << expGetPoint.OutputName << "()"
-			if newId != -1 f << ", !dbg !" << newId
+			if debId != -1 f << ", !dbg !" << debId
 			f << "\n"
 			f << "%I" << ItId << " = bitcast i8* %IPre" << ItId << " to " << exType.GetName() << "\n"
 		}
@@ -184,9 +166,9 @@ ObjTry := class extend Object
 		f << "br label %OnEnd" << ItId << "\n"
 		f << "OnEnd" << ItId << ":\n"
 		f << "call void @" << expLeave.OutputName << "()"
-		if newId != -1
+		if debId != -1
 		{
-			f << ", !dbg !" << newId
+			f << ", !dbg !" << debId
 		}
 		"\n"
 	}

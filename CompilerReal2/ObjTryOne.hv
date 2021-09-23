@@ -1,0 +1,78 @@
+
+ObjTryOne := class extend ObjTryCommon
+{
+	this := !(Object^ itm) -> void
+	{
+		ItId = GetNewId()
+		PopOutNode(itm.Down)
+		Down = itm.Down
+		Down[^].Up = this&
+		WorkBag.Push(this&,State_Start)
+		Line = itm.Line
+	}
+	DoTheWork := virtual !(int st) -> void
+	{
+		if st == State_Start
+		{
+			WorkBag.Push(this&,State_Syntax)
+		}
+		if st == State_Syntax
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
+		if st == State_PreGetUse
+		{
+			MakeItBlock(Down)
+			WorkBag.Push(Down,State_Start)
+		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		debId := -1
+		if DebugMode
+		{
+			debId = CreateDebugCall(this&)
+		}
+
+		PrintStart(f,debId)
+
+		f << "OnGood" << ItId << ":\n"
+		Down.PrintDeferInBlock(f,deferId,deferVal&)
+		Down.PrintInBlock(f)
+		f << "br label %OnEnd" << ItId << "\n"
+		f << "OnBad" << ItId << ":\n"
+
+		f << "br label %OnEnd" << ItId << "\n"
+		f << "OnEnd" << ItId << ":\n"
+		f << "call void @" << expLeave.OutputName << "()"
+		if debId != -1
+		{
+			f << ", !dbg !" << debId
+		}
+		"\n"
+	}
+	deferTookSize := int
+	deferVal := int
+	deferId := int
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		return Down.GetDeferUsageVerticalSize()
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+
+		Down.PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+		deferVal = labelSetIter^
+		deferId = itId
+		labelSetIter^ += deferTookSize
+		//Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
+		//Down.PrintDeferInBlock(f,itId,labelSetIter)
+	}
+}
