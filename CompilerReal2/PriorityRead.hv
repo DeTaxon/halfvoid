@@ -1,7 +1,7 @@
 
-MiniMachineNode := class 
+MiniMachineNodeOld := class 
 {
-	WhatNext := AVLMap.{char^,MiniMachineNode^}
+	WhatNext := AVLMap.{char^,MiniMachineNodeOld^}
 	IsTerm := bool
 
 	this := !() -> void
@@ -9,7 +9,7 @@ MiniMachineNode := class
 		WhatNext."this"()
 		IsTerm = false
 	}
-	GetNext := !(string item) -> MiniMachineNode^
+	GetNext := !(string item) -> MiniMachineNodeOld^
 	{
 		inIt := WhatNext.TryFind(item)
 		if inIt != null return inIt^
@@ -29,7 +29,7 @@ MiniMachineNode2 := class
 		Prior = 0
 	}
 
-	FromMach1 := !(PriorityBag^ base,int priVal,MiniMachineNode^ nd) -> void
+	FromMach1 := !(PriorityBag^ base,int priVal,MiniMachineNodeOld^ nd) -> void
 	{
 		if nd.IsTerm Prior = priVal
 		for it,ind : nd.WhatNext
@@ -57,17 +57,11 @@ MiniMachineNode2 := class
 		Depth = GetDepth()
 	}
 }
-
-PriorityBag := class
+PriorityBagOld := class
 {
 	Opers := AVLSet.{string}
-	Lines := Queue.{MiniMachineNode^}
+	Lines := Queue.{MiniMachineNodeOld^}
 	LinesRaw := Queue.{char^}
-
-	TotalOpers := AVLSet.{char^}
-	StrToId := AVLMap.{char^,int}
-
-	Lines2 := List.{Tuple.{MiniMachineNode2^,char^}}
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{
@@ -91,7 +85,7 @@ PriorityBag := class
 				nowLineQ := ptrChar[strtT..(itS - strtT)]
 				nowLine := nowLineQ.Str()
 				LinesRaw.Push(nowLine)
-				Lines.Push(MiniMachineNode^())
+				Lines.Push(MiniMachineNodeOld^())
 				itS++
 				continue
 			}else{
@@ -122,7 +116,7 @@ PriorityBag := class
 
 			if CurWords.NotEmpty()
 			{
-				newMach := new MiniMachineNode()
+				newMach := new MiniMachineNodeOld()
 
 				for rule : CurWords
 				{
@@ -150,7 +144,109 @@ PriorityBag := class
 						k := ref machIter.WhatNext[stW]
 
 						if k == null
-							k =  new MiniMachineNode()
+							k =  new MiniMachineNodeOld()
+						machIter = k
+					}
+					machIter.IsTerm = true
+				}
+				Lines.Push(newMach)
+			}
+		}
+	}
+}
+PriorityBag := class
+{
+	Opers := AVLSet.{string}
+	Lines := Queue.{MiniMachineNodeOld^}
+	LinesRaw := Queue.{char^}
+
+	TotalOpers := AVLSet.{char^}
+	StrToId := AVLMap.{char^,int}
+
+	Lines2 := List.{Tuple.{MiniMachineNode2^,char^}}
+
+	this := !(char^ ptrChar, int mapSize) -> void
+	{
+		Opers."this"()
+		Lines."this"()
+		LinesRaw."this"()
+		
+
+		itS := 0
+		while itS < mapSize
+		{
+			CurWords := Queue.{StringSpan}() ; $temp
+
+			if ptrChar[itS] == '#'
+			{
+				strtT := itS
+				while itS < mapSize and ptrChar[itS] != '\n'
+				{
+					itS++
+				}
+				nowLineQ := ptrChar[strtT..(itS - strtT)]
+				nowLine := nowLineQ.Str()
+				LinesRaw.Push(nowLine)
+				Lines.Push(MiniMachineNodeOld^())
+				itS++
+				continue
+			}else{
+				j := itS
+				isLoading := false
+				while itS < mapSize and ptrChar[itS] != '\n'
+				{
+					if isLoading
+					{
+						if ptrChar[itS] == '\"'
+						{
+							CurWords.Emplace(ptrChar[j]&,itS - j)
+							isLoading = false
+						}
+					}else
+					{
+						if ptrChar[itS]  == '\"'
+						{
+							isLoading = true
+							j = itS + 1
+						}
+					}
+					itS++
+				}
+				itS++
+			}
+			LinesRaw.Push(char^())
+
+			if CurWords.NotEmpty()
+			{
+				newMach := new MiniMachineNodeOld()
+
+				for rule : CurWords
+				{
+					items := rule.DivideStr(" ")
+
+					machIter := newMach
+
+					//while someWord != null
+					for word : items
+					{
+						stW := word.Str()
+						switch stW
+						{
+							case "d"
+								stW = "~d"
+							case "s"
+								stW = "~suffix"
+							case "()"
+							case "[]"
+							case "{}"
+							case void
+								Opers.Insert(stW)
+						}
+
+						k := ref machIter.WhatNext[stW]
+
+						if k == null
+							k =  new MiniMachineNodeOld()
 						machIter = k
 					}
 					machIter.IsTerm = true

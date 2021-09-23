@@ -94,14 +94,14 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 	return GotStuff
 }
 
-RuleUseSome := !(Object^ Obj,MiniMachineNode2^ MiniNode2) -> bool
+RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
 
 	while iter != null
 	{
-		Try := RuleMachine(iter,MiniNode2)
+		Try := RuleMachineOld(iter,MiniNode2)
 		if Try > 0
 		{
 			iter = UNext(iter,new ObjData(),Try) 
@@ -113,8 +113,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNode2^ MiniNode2) -> bool
 	return GotStuff
 }
 
-
-StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
+StupidWhile := !(Object^ begin,PriorityBagOld^ bag ) -> bool
 {
 	//iter := begin.Down
 	
@@ -122,13 +121,13 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 
 	GotStuff := false
 
-	for iterBag : bag.Lines2
+	for iterBag : bag.Lines, iterRaw : bag.LinesRaw
 	{
-		if iterBag.0 != null
+		if iterBag != null
 		{
-			if RuleUseSome(begin,iterBag.0) return true
+			if RuleUseSome(begin,iterBag) return true
 		}else{
-			switch iterBag.1
+			switch iterRaw
 			{
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
@@ -153,7 +152,7 @@ StupidWhile := !(Object^ begin,PriorityBag^ bag ) -> bool
 }
 
 
-SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
+SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 {
 	if begin == null return true
 
@@ -171,6 +170,44 @@ SyntaxCompress := !(Object^ begin, PriorityBag^ bag) -> bool
 	return true
 }
 
+
+RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
+{
+	iterU := itr->{Object^}
+	iterNode := node
+	ToRet := 0
+	NowRet := 0
+
+	while iterU != null
+	{
+		if iterU == null return ToRet
+		iterVal := iterU.GetValue()
+		if iterU.IsDataR iterVal = "~d"
+
+		iterId := iterU.GetTokenId()
+		if iterU.IsDataR iterId = 1
+
+		inWNext := iterNode.WhatNext.TryFind(iterVal)
+		if inWNext != null
+		{
+			iterNode = inWNext^
+			NowRet += 1
+			if iterNode.IsTerm 
+			{
+				ToRet = NowRet
+			}
+			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()"
+			{
+				return ToRet
+			}
+			iterU = iterU.Right
+		}else
+		{
+			return ToRet
+		}
+	}
+	return ToRet
+}
 RuleMachine := !(void^ itr,MiniMachineNode2^ node2) -> int
 {
 	iterU := itr->{Object^}

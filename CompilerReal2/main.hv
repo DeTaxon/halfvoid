@@ -250,7 +250,7 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("Priority.pr loaded from outsize\n")
 	}
-	PriorityData = new PriorityBag(pri.Map(),pri.Size())
+	PriorityData = new PriorityBagOld(pri.Map(),pri.Size())
 	pri.Unmap()
 
 	PutConstString(":=")

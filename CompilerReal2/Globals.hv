@@ -3,7 +3,7 @@ archSize := 64
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
-PriorityData := PriorityBag^
+PriorityData := PriorityBagOld^
 
 ErrorLog := Queue.{string}
 
