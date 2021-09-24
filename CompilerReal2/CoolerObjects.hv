@@ -37,7 +37,22 @@ ObjSkobs := class extend Object
 				}else{
 					oldVal = Right
 				}
-				MakeItBlock(this&)
+				if Left? is ObjCmd
+				{
+					cmdName := (""sbt + Left->{ObjCmd^}.MyStr + " block")->{char^}
+					fBox := new FuncInputBox ; $temp
+
+					lType := GetFuncType(![GTypeVoidP,GTypeInt],GTypeVoid).GetLambda()
+					fBox.itPars.Emplace(lType,false)
+					fBox.itPars.Emplace(GTypeInt,false)
+
+					fnc  := FindFunc(cmdName,this&,fBox^,false)
+					if fnc == null
+						EmitError("Decorator not found")
+					MakeItBlock(this&)
+				}else{
+					MakeItBlock(this&)
+				}
 				if oldVal != null
 				{
 					if isLft{

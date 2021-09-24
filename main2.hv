@@ -2,50 +2,22 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	hndl := vRepoObject^
-	try_one
+	#try_one
 	{
-		hndl = gRepo.GetFile("asd")
-		hndl = gRepo.GetFile("asd2")
-		hndl = gRepo.GetFile("Priority.pr")
-		hndl = gRepo.GetFile("asd23")
+		printf("line 1\n")
+		printf("line 2\n")
+		printf("line 3\n")
+		printf("line 4\n")
 	}
-	//node := int
-	//while true
-	//{
-	//	try
-	//	{
-	//		switch node
-	//		{
-	//		case 0
-	//			node += 1
-	//			break
-	//		case 1
-	//			node += 1
-	//			break
-	//		}
-	//		break
-	//	}catch(IException^ e)
-	//	{
-	//	}
-	//}
-	//node := int
-	//while true
-	//{
-	//	try
-	//	{
-	//		switch node
-	//		{
-	//		case 0
-	//			continue
-	//		case 1
-	//			continue
-	//		}
-	//		break
-	//	}catch(IException^ e)
-	//	{
-	//	}
-	//}
 
 	return 0
+}
+
+"#try_one block" := !(fnc,num) -> void
+{
+	for i : num
+	{
+		printf("doing %i\n",i)
+		fnc(i)
+	}
 }

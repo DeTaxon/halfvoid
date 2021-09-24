@@ -80,7 +80,7 @@ FuncCallPrefixOperator := !(Object^ iter) -> Object^
 	iVal := iter.GetValue()
 	if iVal == "try_one" or iVal == "try_all"
 	{
-		return null
+		return new ObjTryOne(iter.Up)
 	}
 	if iter.GetValue() == "delete"
 	{
