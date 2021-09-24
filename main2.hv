@@ -1,8 +1,10 @@
 
 
+@once
 main := !(int argc, char^^ argv) -> int
 {
-	#try_one
+	@try_one 
+	@try_walk
 	{
 		printf("line 1\n")
 		printf("line 2\n")
@@ -10,10 +12,57 @@ main := !(int argc, char^^ argv) -> int
 		printf("line 4\n")
 	}
 
+	@once
+	{
+		GetProcessCount()
+	}
+
+	@omp(4)
+	@omp(x)
+	{
+			
+	}
+
+	@omp
+	for i : 5
+	{
+	}
+
+	@once
+	for i : 5
+	{
+	}
+
 	return 0
 }
 
-"#try_one block" := !(fnc,num) -> void
+"@once func" := !(args...) .{fnc}
+{
+	first := static true
+	if fnc->Result == void
+	{
+		if first
+			fnc(args...)
+		first = false
+		return void
+	}else{
+		oldValue := static fnc->Result
+		if first 
+			oldValue = fnc(args...)
+		first = false
+		return oldValue
+	}
+}
+
+"@once block" := !(block) .{} -> void
+{
+	block.first := static true
+	if block.first
+		block()
+	block.first = false
+}
+
+"@try_one block" := !(fnc,num) -> void
 {
 	for i : num
 	{

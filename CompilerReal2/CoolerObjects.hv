@@ -39,6 +39,7 @@ ObjSkobs := class extend Object
 				}
 				if Left? is ObjCmd
 				{
+					//TODO add support for custom blocks
 					cmdName := (""sbt + Left->{ObjCmd^}.MyStr + " block")->{char^}
 					fBox := new FuncInputBox ; $temp
 
