@@ -19,8 +19,8 @@ LibDBObject := class
 		if inMap != null
 			return inMap^
 		
-		LibDB.itMemPool.Push()
-		defer LibDB.itMemPool.Pop()
+		//LibDB.itMemPool.Push()
+		//defer LibDB.itMemPool.Pop()
 
 		if $win32 if win32DllData != null
 		{
@@ -44,7 +44,7 @@ LibDBObject := class
 LibDatabaseType := class
 {
 	loadedLibs := AVLMap.{char^,LibDBObject}
-	itMemPool := AllocOnlyMP.{4096,true}
+	//itMemPool := AllocOnlyMP.{4096,true}
 	
 	Destroy := !() -> void
 	{
@@ -66,8 +66,8 @@ LibDatabaseType := class
 		if inMap != null
 			return inMap
 
-		itMemPool.Push()
-		defer itMemPool.Pop()
+		//itMemPool.Push()
+		//defer itMemPool.Pop()
 
 		hndl := void^
 
@@ -202,7 +202,14 @@ Library := class
 	{
 		hndl = null
 		if not skipLib(name)
-			hndl = LibDB.GetLib(name)
+		{
+			try //TODO make it pretty
+			{
+				hndl = LibDB.GetLib(name)
+			}catch(IException^ e)
+			{
+			}
+		}
 		if hndl == null
 			Open(args...)
 	}
