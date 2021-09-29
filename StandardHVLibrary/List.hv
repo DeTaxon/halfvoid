@@ -61,20 +61,7 @@ List := class .{@T}
 				return it
 		}
 
-		newNode := ListNode.{T}^()
-
-		if $keep 
-		{
-			if CreatedNodes != null
-			{
-				newNode = CreatedNodes
-				CreatedNodes = CreatedNodes.Next
-			}
-		}
-		if newNode == null
-		{
-			newNode = new ListNode.{T}
-		}
+		newNode := this.createNode()
 		newNode.Data."this"(args...)
 		newNode.Next = Start
 		Start = newNode
@@ -90,20 +77,7 @@ List := class .{@T}
 				return it
 		}
 
-		newNode := ListNode.{T}^()
-
-		if $keep 
-		{
-			if CreatedNodes != null
-			{
-				newNode = CreatedNodes
-				CreatedNodes = CreatedNodes.Next
-			}
-		}
-		if newNode == null
-		{
-			newNode = new ListNode.{T}
-		}
+		newNode := this.createNode()
 		newNode.Data."this"(args...)
 		newNode.Next = null
 		if End == null
