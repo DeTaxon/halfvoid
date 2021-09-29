@@ -7,6 +7,9 @@ GetCpuCount := !() -> int
 	if first
 	{
 		first = false
+
+		TempPoolBlock()
+
 		data := TReadFile("/proc/cpuinfo")
 		strs := DivideStr(data->{char^},"\n")
 

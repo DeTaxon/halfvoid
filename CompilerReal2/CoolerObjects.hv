@@ -37,10 +37,9 @@ ObjSkobs := class extend Object
 				}else{
 					oldVal = Right
 				}
-				if Left? is ObjCmd
+				if Left? is ObjTemplateType
 				{
-					//TODO add support for custom blocks
-					cmdName := (""sbt + Left->{ObjCmd^}.MyStr + " block")->{char^}
+					cmdName := ("@"sbt + Left->{ObjTemplateType^}.MyStr + " block")->{char^}
 					fBox := new FuncInputBox ; $temp
 
 					lType := GetFuncType(![GTypeVoidP,GTypeInt],GTypeVoid).GetLambda()

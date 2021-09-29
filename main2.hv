@@ -1,72 +1,109 @@
 
+//"@do_all block" := !(func,num) -> void
+//{	
+//	printf("heh\n")
+//}
 
-@once
 main := !(int argc, char^^ argv) -> int
 {
-	@try_one 
-	@try_walk
+	TFullInit()
+	for i : 10
 	{
-		printf("line 1\n")
-		printf("line 2\n")
-		printf("line 3\n")
-		printf("line 4\n")
+		TSpawnTask(() ==> [i]{
+			for j : 10
+			{
+				TAwaitWork(() ==> {
+					TSleep(1)
+				})
+				printf("heh %i %i\n",i,j)
+			}
+		})
 	}
 
-	@once
-	{
-		GetProcessCount()
-	}
-
-	@omp(4)
-	@omp(x)
-	{
-			
-	}
-
-	@omp
-	for i : 5
-	{
-	}
-
-	@once
-	for i : 5
-	{
-	}
-
-	return 0
+	//@do_all
+	//{
+	//	printf("line 1\n")
+	//	printf("line 2\n")
+	//	printf("line 3\n")
+	//	printf("line 4\n")
+	//}
+	
 }
 
-"@once func" := !(args...) .{fnc}
-{
-	first := static true
-	if fnc->Result == void
-	{
-		if first
-			fnc(args...)
-		first = false
-		return void
-	}else{
-		oldValue := static fnc->Result
-		if first 
-			oldValue = fnc(args...)
-		first = false
-		return oldValue
-	}
-}
-
-"@once block" := !(block) .{} -> void
-{
-	block.first := static true
-	if block.first
-		block()
-	block.first = false
-}
-
-"@try_one block" := !(fnc,num) -> void
-{
-	for i : num
-	{
-		printf("doing %i\n",i)
-		fnc(i)
-	}
-}
+//@once
+//main := !(int argc, char^^ argv) -> int
+//{
+//	@try_one 
+//	@try_walk
+//	{
+//		printf("line 1\n")
+//		printf("line 2\n")
+//		printf("line 3\n")
+//		printf("line 4\n")
+//	}
+//
+//	@once
+//	{
+//		GetProcessCount()
+//	}
+//
+//	@omp(4)
+//	@omp(x)
+//	{
+//			
+//	}
+//
+//	@omp
+//	for i : 5
+//	{
+//	}
+//
+//	@once
+//	for i : 5
+//	{
+//	}
+//
+//	return 0
+//}
+//
+//"@omp block" := !(int num = 0) .{fnc} -> void
+//{
+//	if num == 0
+//		num = TWorkCount()
+//	TAwaitManyWorks(num,() ==> { fnc() })
+//}
+//
+//"@once func" := !(args...) .{fnc}
+//{
+//	first := static true
+//	if fnc->Result == void
+//	{
+//		if first
+//			fnc(args...)
+//		first = false
+//		return void
+//	}else{
+//		oldValue := static fnc->Result
+//		if first 
+//			oldValue = fnc(args...)
+//		first = false
+//		return oldValue
+//	}
+//}
+//
+//"@once block" := !(block) .{} -> void
+//{
+//	block.first := static true
+//	if block.first
+//		block()
+//	block.first = false
+//}
+//
+//"@try_one block" := !(fnc,num) -> void
+//{
+//	for i : num
+//	{
+//		printf("doing %i\n",i)
+//		fnc(i)
+//	}
+//}

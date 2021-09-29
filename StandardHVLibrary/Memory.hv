@@ -13,6 +13,14 @@ PopTempMemPool := !() -> void
 	gTemporaryPool.Pop()
 }
 
+TempPoolBlock := !() -> void
+{
+	gTemporaryPool.Push()
+}defer_tail () {
+	gTemporaryPool.Pop()
+}
+
+
 IMemoryPool := class
 {
 	GetMem := virtual !(size_t size, int align,int prefix) -> void^
@@ -163,6 +171,12 @@ hUserPoolCount := task_local int
 		toCheck.counter--
 		prvtPtrArrayMutexes[itId].Unlock()
 	}else{
-		free(item)
+		usePool := hUserPoolCount != 0
+		if usePool
+		{
+			hUserPoolCurrentPool.FreeMem(item)
+		}else{
+			free(item)
+		}
 	}
 }
