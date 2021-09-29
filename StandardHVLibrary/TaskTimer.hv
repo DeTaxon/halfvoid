@@ -29,4 +29,9 @@ AppendClass TaskBox
 		}
 		return null
 	}
+	destroyTimer := !() -> void
+	{
+		sleepTasks.Destroy()
+	}
+
 }
