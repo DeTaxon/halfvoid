@@ -4,10 +4,13 @@
 //	printf("heh\n")
 //	func(0)
 //}
-"@do_all block" := !(func) -> void
+"@do_all block" := !(func,num) -> void
 {	
 	printf("heh\n")
-	func()
+	for i : num
+	{
+		func(i)
+	}
 }
 
 main := !(int argc, char^^ argv) -> int

@@ -70,8 +70,21 @@ ObjSkobs := class extend Object
 						newCall.Line = this.Line
 						newItm.Line = this.Line
 					}else{
+						tmpObj := new Object ; $temp
+						ReplaceNode(this&,tmpObj)
+
 						//TODO magic
+						newItm := new SBoostLambda()
+						newItm.Right = new ObjInt(3) //TODO replace
+						newItm.Down = this&
+						this.Up = newItm
 						MakeItBlock(this&)
+						WorkBag.Push(newItm,State_Start)
+						newItm.ApplyFunc(lType,false)
+						newCall := MakeSimpleCall(fnc,newItm)
+						ReplaceNode(tmpObj,newCall)
+						newCall.Line = this.Line
+						newItm.Line = this.Line
 					}
 				}else{
 					MakeItBlock(this&)
