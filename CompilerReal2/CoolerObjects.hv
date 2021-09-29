@@ -48,8 +48,31 @@ ObjSkobs := class extend Object
 
 					fnc  := FindFunc(cmdName,this&,fBox^,false)
 					if fnc == null
-						EmitError("Decorator not found")
-					MakeItBlock(this&)
+					{
+						lT2 := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
+						box2 := new FuncInputBox ; $temp
+						box2.itPars.Emplace(lT2,false)
+						fnc = FindFunc(cmdName,this&,box2^,false)
+						if fnc == null
+							EmitError("Decorator not found")
+
+						tmpObj := new Object ; $temp
+						ReplaceNode(this&,tmpObj)
+
+						newItm := new SBoostLambda()
+						newItm.Down = this&
+						this.Up = newItm
+						MakeItBlock(this&)
+						WorkBag.Push(newItm,State_Start)
+						newItm.ApplyFunc(lT2,false)
+						newCall := MakeSimpleCall(fnc,newItm)
+						ReplaceNode(tmpObj,newCall)
+						newCall.Line = this.Line
+						newItm.Line = this.Line
+					}else{
+						//TODO magic
+						MakeItBlock(this&)
+					}
 				}else{
 					MakeItBlock(this&)
 				}

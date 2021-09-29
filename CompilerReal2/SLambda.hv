@@ -1090,9 +1090,13 @@ SBoostLambda := class extend SLambda
 	DoStateStart := virtual !(int pri) -> void
 	{
 		MakeItBlock(Down)
-		empt := Queue.{Type^}()
-		asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
-		ResultType = asFunc.GetLambda()
+
+		if ResultType == null
+		{
+			empt := Queue.{Type^}()
+			asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
+			ResultType = asFunc.GetLambda()
+		}
 	}
 	ApplyFunc := virtual !(Type^ lambTyp, bool isFnc) -> void
 	{

@@ -2,30 +2,24 @@
 //"@do_all block" := !(func,num) -> void
 //{	
 //	printf("heh\n")
+//	func(0)
 //}
+"@do_all block" := !(func) -> void
+{	
+	printf("heh\n")
+	func()
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	TFullInit()
-	for i : 3
-	{
-		TSpawnTask(() ==> [i]{
-			for j : 3
-			{
-				FlushTempMemory()
-				TSleep(1)
-				printf("heh %i %i\n",i,j)
-			}
-		})
-	}
 
-	//@do_all
-	//{
-	//	printf("line 1\n")
-	//	printf("line 2\n")
-	//	printf("line 3\n")
-	//	printf("line 4\n")
-	//}
+	@do_all
+	{
+		printf("line 1\n")
+		printf("line 2\n")
+		printf("line 3\n")
+		printf("line 4\n")
+	}
 	
 }
 
