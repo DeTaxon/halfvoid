@@ -101,7 +101,7 @@ StringSpan := class{
 		result."this"()
 		i := 0
 		j := 0
-		while ptr[j] != 0 and j != itSize
+		while j < itSize
 		{
 			if ptr[j] in to
 			{
