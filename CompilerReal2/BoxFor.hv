@@ -136,7 +136,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			while TryParseMacro(Down.Right,this&) != null {}
 
-			if Left? is ObjTemplateType
+			if Left? is ObjTemplateType //DECORATOR
 			{
 				cmdName := Left->{ObjTemplateType^}.MyStr
 				itBox := new FuncInputBox
@@ -160,6 +160,29 @@ BoxForOldFashionMulti := class extend BoxFor
 				lmbd.ApplyFunc(outerL,false)
 				dCall := MakeSimpleCall(fnc,lmbd)
 				ReplaceNode(tmpObj,dCall)
+
+				gotL := lmbd.GetItem("_1")
+				assert(gotL != null)
+				lCall := new ParamNaturalCall("_1",gotL)
+
+				itBx := new FuncInputBox ; $temp
+				itBx.itPars.Emplace(innerL,false)
+				itBx.itPars.Emplace(bodyL,false)
+
+				lCallFunc := GlobalLambdaCall.GetFunc(itBx^)
+				assert(lCallFunc != null)
+
+				MakeItBlock(Down)
+				bodyLambda := UNext(Down, new SBoostLambda(),1)->{SBoostLambda^}
+				bodyLambda.ApplyFunc(bodyL,false)
+
+				ReplaceNode(Down,tmpObj)
+				lCall.Right = bodyLambda
+				bodyLambda.Left = lCall
+				bodyCall := MakeSimpleCall(lCallFunc,lCall)
+				ReplaceNode(Down,bodyCall)
+				MakeItBlock(Down)
+
 			}
 
 			WorkBag.Push(this&,State_GetUse)

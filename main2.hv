@@ -36,10 +36,10 @@
 
 "@twice for" := !(func) -> void
 {
-	for 2
-	{
-		func((x) ==> { x() })
-	}
+	func((x) ==> { 
+		x() 
+		x() 
+	})
 }
 
 main := !(int argc, char^^ argv) -> int
@@ -48,7 +48,7 @@ main := !(int argc, char^^ argv) -> int
 	@twice
 	for i : 3 
 	{
-		printf("heh %i\n",i)
+		printf("heh %i\n",3)
 		//TODO continue
 		//TODO return
 	}
