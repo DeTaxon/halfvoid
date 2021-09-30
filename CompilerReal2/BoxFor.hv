@@ -136,12 +136,31 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			while TryParseMacro(Down.Right,this&) != null {}
 
-			//if Left? is ObjCmd
-			//{
-			//	cmdName := Left->{ObjCmd^}.MyStr
-			//	itBox := new FuncInputBox
-			//	fnc := FindFunc("for "sbt + cmdName,this&,itBox^,false)
-			//}
+			if Left? is ObjTemplateType
+			{
+				cmdName := Left->{ObjTemplateType^}.MyStr
+				itBox := new FuncInputBox
+				
+				bodyL := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
+				innerL := GetFuncType(![GTypeVoidP,bodyL],GTypeVoid).GetLambda()
+				outerL := GetFuncType(![GTypeVoidP,innerL],GTypeVoid).GetLambda()
+
+				itBox.itPars.Emplace(outerL,false)
+
+				fnc := FindFunc("@"sbt + cmdName + " for",this&,itBox^,false)
+
+				if fnc == null
+					EmitError("Decorator not found")
+
+				tmpObj := new Object ; $temp
+				lmbd := UNext(this&, new SBoostLambda(),1)->{SBoostLambda^}
+				ReplaceNode(lmbd,tmpObj)
+				lmbd.Down = this&
+				this.Up = lmbd
+				lmbd.ApplyFunc(outerL,false)
+				dCall := MakeSimpleCall(fnc,lmbd)
+				ReplaceNode(tmpObj,dCall)
+			}
 
 			WorkBag.Push(this&,State_GetUse)
 

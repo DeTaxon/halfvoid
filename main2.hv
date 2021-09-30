@@ -34,19 +34,36 @@
 	}
 }
 
+"@twice for" := !(func) -> void
+{
+	for 2
+	{
+		func((x) ==> { x() })
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-
-	@try_all
+	count := 3
+	@twice
+	for i : 3 
 	{
-		//defer TODO
-		// return TODO
-		throw new Exception("lol")
-		printf("line 1\n")
-		printf("line 2\n")
-		throw new Exception("lol")
-		printf("line 3\n")
+		printf("heh %i\n",i)
+		//TODO continue
+		//TODO return
 	}
+
+	//@try_all
+	//{
+	//	//defer TODO
+	//	// return TODO
+	//	//TODO check for capture
+	//	throw new Exception("lol")
+	//	printf("line 1\n")
+	//	printf("line 2\n")
+	//	throw new Exception("lol")
+	//	printf("line 3\n")
+	//}
 	
 }
 

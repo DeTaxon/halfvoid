@@ -37,7 +37,7 @@ ObjSkobs := class extend Object
 				}else{
 					oldVal = Right
 				}
-				if Left? is ObjTemplateType
+				if Left? is ObjTemplateType //DECORATOR
 				{
 					cmdName := ("@"sbt + Left->{ObjTemplateType^}.MyStr + " block")->{char^}
 					fBox := new FuncInputBox ; $temp
