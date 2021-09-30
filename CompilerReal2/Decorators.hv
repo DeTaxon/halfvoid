@@ -1,0 +1,50 @@
+
+SLambdaDecorator := class extend SBoostLambda
+{
+	this := !() -> void
+	{
+		this."SBoostLambda.this"()
+	}
+	CodeStreamOverload := virtual !(TIOStream f) -> void
+	{
+		assert(Down is BoxBlock)
+		Down->SetType(BoxBlockDecorator)
+		decBlock := Down->{BoxBlockDecorator^}
+
+		count := 0
+		for Down.Down
+			count += 1
+
+		if count == 0
+			return void
+
+		heh := GetItem("_1")
+		parCall := ParamNaturalCall("_1",heh) ; $temp
+		parCall.PrintPre(f)
+
+		f << "switch "
+		parCall.PrintUse(f)
+		f << ", label %DecYield" << decBlock.ItId << "_0 ["
+		for i : count
+			f << "i32 " << i << ", label %DecYield" << decBlock.ItId << "_" << i << "\n"
+		f << "]\n"
+		
+
+	}
+}
+
+BoxBlockDecorator := class extend BoxBlock
+{
+	CodeBeforeLineCall := virtual !(TIOStream f, int num) -> void
+	{
+		f << "DecYield" << ItId << "_" << num << ":\n"
+	}
+	CodeAfterLineCall := virtual !(TIOStream f, int num) -> void
+	{
+		assert(Up is SLambdaDecorator)
+		asL := Up->{SLambdaDecorator^}
+		f << "br label %" << asL.yieldLabel.GetLabel() << "\n"
+	}
+}
+
+

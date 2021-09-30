@@ -792,6 +792,9 @@ SLambda := class extend BoxFuncContainer
 				if fastUse.RetRef f << "*"
 				f << "\n"
 			}
+
+			CodeStreamOverload(f)
+
 			if Yodlers.Size() != 0
 			{
 				f << "%Yodler = getelementptr " << ABox.GetClassName() << " , " << ABox.GetAsUse() << " , i32 0, i32 " << yodlerInAlloc << "\n" 
@@ -851,6 +854,9 @@ SLambda := class extend BoxFuncContainer
 				}
 			}
 		}
+	}
+	CodeStreamOverload := virtual !(TIOStream f) -> void
+	{
 	}
 	PrintPre := virtual !(TIOStream f) -> void
 	{
@@ -1079,41 +1085,6 @@ SFuncLambda := class extend SLambda
 	{
 		this."SLambda.ApplyParams"(count,pars,isRef)
 		ResultType = ResultType.Base.GetPoint()
-	}
-}
-SBoostLambda := class extend SLambda
-{
-	this := !() -> void
-	{
-		this."SLambda.this"()
-	}
-	DoStateStart := virtual !(int pri) -> void
-	{
-		MakeItBlock(Down)
-
-		if ResultType == null
-		{
-			empt := Queue.{Type^}()
-			asFunc := GetFuncType(empt,null->{bool^},GTypeVoid,false,false)
-			ResultType = asFunc.GetLambda()
-		}
-	}
-	ApplyFunc := virtual !(Type^ lambTyp, bool isFnc) -> void
-	{
-		nams  := Queue.{char^}() ; $temp
-
-		itNN := "lambdaParam"sbt + ItId
-		nams.Push(itNN.Str())
-
-		lType := lambTyp.Base->{TypeFunc^}
-		for i : lType.ParsCount
-		{
-			if i == 0 continue
-			itNN := "_"sbt + i
-			nams.Push(itNN.Str())
-		}
-		Names = nams.ToArray()
-		this."SLambda.ApplyFunc"(lambTyp,isFnc)
 	}
 }
 

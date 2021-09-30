@@ -4,22 +4,45 @@
 //	printf("heh\n")
 //	func(0)
 //}
-"@do_all block" := !(func,num) -> void
+"@try_all block" := !(func,num) -> void
 {	
-	printf("heh\n")
+	printf("heh %i\n",num)
 	for i : num
 	{
-		func(i)
+		try
+		{
+			func(i)
+		}catch(IException^ e)
+		{
+			printf("here\n")
+		}
+	}
+}
+"@try_one block" := !(func,num) -> void
+{	
+	printf("heh %i\n",num)
+	for i : num
+	{
+		try
+		{
+			func(i)
+			return void
+		}catch(IException^ e)
+		{
+			printf("here\n")
+		}
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 
-	@do_all
+	@try_all
 	{
+		throw new Exception("lol")
 		printf("line 1\n")
 		printf("line 2\n")
+		throw new Exception("lol")
 		printf("line 3\n")
 		printf("line 4\n")
 	}

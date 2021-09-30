@@ -259,11 +259,14 @@ BoxBlock := class extend Object
 		}
 		
 		defVal := 1
-		for iter : Down
+		for iter,i : Down
 		{
+			CodeBeforeLineCall(f,i)
 			iter.PrintDeferInBlock(f,deferUpDepth,defVal&)
 			iter.PrintInBlock(f)
+			CodeAfterLineCall(f,1)
 		}
+
 
 		if needDeferCall()
 		{
@@ -507,6 +510,13 @@ BoxBlock := class extend Object
 		if pri == State_DestructGet
 		{
 		}
+	}
+
+	CodeBeforeLineCall := virtual !(TIOStream f, int num) -> void
+	{
+	}
+	CodeAfterLineCall := virtual !(TIOStream f, int num) -> void
+	{
 	}
 }
 

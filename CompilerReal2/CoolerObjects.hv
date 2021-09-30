@@ -74,7 +74,7 @@ ObjSkobs := class extend Object
 						ReplaceNode(this&,tmpObj)
 
 						//TODO magic
-						newItm := new SBoostLambda()
+						newItm := new SLambdaDecorator()
 						newItm.Right = new ObjInt(3) //TODO replace
 						newItm.Down = this&
 						this.Up = newItm
