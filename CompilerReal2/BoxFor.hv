@@ -231,6 +231,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				visitedWork << pri
 				if Left? is ObjTemplateType //DECORATOR
 				{
+					TType := Left
 					cmdName := Left->{ObjTemplateType^}.MyStr
 					itBox := new FuncInputBox
 					
@@ -274,7 +275,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					bodyLambda.Left = lCall
 					bodyCall := MakeSimpleCall(lCallFunc,lCall)
 					ReplaceNode(Down,bodyCall)
-					MakeItBlock(Down)
+					PopOutNode(TType)
 				}
 
 				MakeItBlock(Down)

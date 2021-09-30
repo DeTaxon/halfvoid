@@ -45,10 +45,11 @@
 main := !(int argc, char^^ argv) -> int
 {
 	count := 3
+
 	@twice
 	for i : 3 
 	{
-		printf("heh %i\n",i)
+		printf("heh %i %i\n",i,argc)
 		//TODO continue
 		//TODO return
 	}
