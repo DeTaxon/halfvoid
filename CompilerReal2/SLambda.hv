@@ -2,6 +2,7 @@ IsSLambda := !(Object^ ob) -> bool
 {
 	if ob is SLambda return true
 	if ob is SBoostLambda return true
+	if ob is SLambdaDecorator return true
 	if ob is SFuncLambda return true
 	return false
 }
@@ -380,7 +381,7 @@ SLambda := class extend BoxFuncContainer
 				funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
 				break
 			}
-			if itrr is SLambda
+			if IsSLambda(itrr)
 			{
 				asSL := itrr->{SLambda^}
 				funcsUp.Emplace(asSL.ABox&,asSL,null) ; $temp
@@ -512,7 +513,7 @@ SLambda := class extend BoxFuncContainer
 						funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
 						break
 					}
-					if itrr is SLambda
+					if IsSLambda(itrr)
 					{
 						asSL := itrr->{SLambda^}
 						funcsUp.Emplace(asSL.ABox&,asSL,null)
