@@ -18,7 +18,7 @@
 		}
 	}
 }
-"@try_one block" := !(func,num) -> void
+"@try_one block" := !(func,num) -> void //TODO #uniq
 {	
 	printf("heh %i\n",num)
 	for i : num
@@ -39,12 +39,13 @@ main := !(int argc, char^^ argv) -> int
 
 	@try_all
 	{
+		//defer TODO
+		// return TODO
 		throw new Exception("lol")
 		printf("line 1\n")
 		printf("line 2\n")
 		throw new Exception("lol")
 		printf("line 3\n")
-		printf("line 4\n")
 	}
 	
 }

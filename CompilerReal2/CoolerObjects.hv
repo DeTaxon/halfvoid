@@ -73,7 +73,6 @@ ObjSkobs := class extend Object
 						tmpObj := new Object ; $temp
 						ReplaceNode(this&,tmpObj)
 
-						//TODO magic
 						newItm := new SLambdaDecorator()
 						newItm.Right = new ObjInt(3) //TODO replace
 						newItm.Down = this&

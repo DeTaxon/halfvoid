@@ -31,6 +31,23 @@ SLambdaDecorator := class extend SBoostLambda
 		
 
 	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		this."SLambda.DoTheWork"(pri)
+
+		if pri == State_PrePrint
+		{
+			assert(Right != null)
+			assert(Right is ObjInt)
+
+			count := 0
+			for Down.Down
+				count += 1
+
+			Right->{ObjInt^}.MyInt = count
+		}
+		
+	}
 }
 
 BoxBlockDecorator := class extend BoxBlock
