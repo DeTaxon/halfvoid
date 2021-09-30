@@ -48,7 +48,7 @@ main := !(int argc, char^^ argv) -> int
 	@twice
 	for i : 3 
 	{
-		printf("heh %i\n",3)
+		printf("heh %i\n",i)
 		//TODO continue
 		//TODO return
 	}
