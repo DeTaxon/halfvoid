@@ -44,19 +44,19 @@
 	})
 }
 
-	workId := 0
+workId := 0 //TODO move to local
 "@omp for" := !(fBody) -> void
 {
-	TAwaitManyWorks(2,(tId) ==> {
+	TAwaitManyWorks(0,(tId) ==> {
 		curId := InterlockAdd(workId,1)
 		i := 0
 		fBody((x) ==> {
-			//c := i
-			//i += 1
-			//printf("wut %i %i %i\n",tId,curId,c)
-			//if curId != c
-			//	return void
-			//curId = InterlockAdd(workId,1)
+			c := i
+			if curId < c
+				curId = InterlockAdd(workId,1)
+			i += 1
+			if curId != c
+				return void
 			x()
 		})
 	})
@@ -67,10 +67,10 @@ main := !(int argc, char^^ argv) -> int
 	TFullInit()
 
 	@omp
-	for i : 10
+	for i : 3
 	{
-		printf("heh %i\n",argc)
-		TSleep(1)
+		printf("heh %i\n",i)
+		TSleep(1) //TODO cant use "i" here
 		//TODO continue
 		//TODO return
 	}

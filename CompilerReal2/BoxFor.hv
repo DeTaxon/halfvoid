@@ -122,6 +122,9 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		ItId = GetNewId()
 	}
+	useDecorator := bool
+	decLambdaCall := Object^
+	decLambdaCallFunc := BoxFunc^
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if visitedWork[pri] return void
@@ -164,6 +167,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				dCall := MakeSimpleCall(fnc,lmbd)
 				ReplaceNode(tmpObj,dCall)
 
+
 				gotL := lmbd.GetItem("_1")
 				assert(gotL != null)
 				lCall := new ParamNaturalCall("_1",gotL)
@@ -175,17 +179,10 @@ BoxForOldFashionMulti := class extend BoxFor
 				lCallFunc := GlobalLambdaCall.GetFunc(itBx^)
 				assert(lCallFunc != null)
 
-				MakeItBlock(Down)
-				bodyLambda := UNext(Down, new SBoostLambda(),1)->{SBoostLambda^}
-				bodyLambda.ApplyFunc(bodyL,false)
+				useDecorator = true
+				decLambdaCall = lCall
+				decLambdaCallFunc = lCallFunc
 
-				ReplaceNode(Down,tmpObj)
-				lCall.Right = bodyLambda
-				bodyLambda.Left = lCall
-				bodyCall := MakeSimpleCall(lCallFunc,lCall)
-				ReplaceNode(Down,bodyCall)
-				PopOutNode(TType)
-				MakeItBlock(Down)
 			}
 
 			WorkBag.Push(Down.Right[^],State_Start)
@@ -279,6 +276,23 @@ BoxForOldFashionMulti := class extend BoxFor
 			}else{
 				visitedWork << pri
 
+				if useDecorator
+				{
+					bodyL := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
+
+					MakeItBlock(Down)
+					bodyLambda := UNext(Down, new SBoostLambda(),1)->{SBoostLambda^}
+					bodyLambda.ApplyFunc(bodyL,false)
+
+					tmpObj := new Object ; $temp
+					ReplaceNode(Down,tmpObj)
+					decLambdaCall.Right = bodyLambda
+					bodyLambda.Left = decLambdaCall
+					bodyCall := MakeSimpleCall(decLambdaCallFunc,decLambdaCall)
+					ReplaceNode(Down,bodyCall)
+					//PopOutNode(TType)
+					MakeItBlock(Down)
+				}
 				MakeItBlock(Down)
 				WorkBag.Push(Down,State_Start)
 				iter := Down.Right
