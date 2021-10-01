@@ -80,7 +80,6 @@ AppendClass TaskBox
 							itWorkToDo.Pop()
 						}
 
-						itWorkMutex.Unlock()
 						work.DoJob(itWorkMutex&)
 						FlushTempMemory()
 
@@ -111,6 +110,8 @@ AppendClass TaskBox
 	}
 	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
 	{
+		if num == 0
+			num = poolThread.Size()
 		_addWork(new TaskBoxManyWork(lambd,CurrentTask,num))
 		switchToMain()
 	}
