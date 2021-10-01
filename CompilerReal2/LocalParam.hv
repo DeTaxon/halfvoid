@@ -37,6 +37,8 @@ MemParam := class extend ObjResult
 	}
 	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
+
+	NotifyPointUse := virtual !() -> void {}
 }
 
 IsMemParam := !(Object^ obj) -> bool

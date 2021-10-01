@@ -67,10 +67,10 @@ main := !(int argc, char^^ argv) -> int
 	TFullInit()
 
 	@omp
-	for i : 3
+	for goodName : 20
 	{
-		printf("heh %i\n",i)
-		TSleep(1) //TODO cant use "i" here
+		printf("heh %i\n",goodName)
+		TSleep(1) //TODO cant use "goodName" here
 		//TODO continue
 		//TODO return
 	}

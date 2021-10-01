@@ -407,10 +407,14 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if Names[i] == name 
 			{
+				if allocatedParams.Contain(Params[i]) //TODOBUG can be changed to allocated
+					return allocatedParams[Params[i]]
 				return Params[i]
 			}
 			if IndNames[i]? == name
 			{
+				if allocatedParams.Contain(IndParams[i]) //TODOBUG can be changed to allocated
+					return allocatedParams[IndParams[i]]
 				return IndParams[i]
 			}
 		}
