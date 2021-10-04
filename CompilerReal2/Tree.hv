@@ -234,6 +234,7 @@ Object := class{
 			return null
 		return Up.GetFuncBody()
 	}
+	NotifyPointUse := virtual !() -> void {}
 }
 
 ObjLine := class 

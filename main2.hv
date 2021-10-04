@@ -66,15 +66,25 @@ main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
 
+
+
+	TestArr := new int[6]
+	TestArr[^i] = i
+
 	@omp
-	for goodName : 20
+	for goodName : TestArr
 	{
 		printf("heh %i\n",goodName)
-		TSleep(1) //TODO cant use "goodName" here
+		goodName *= 10
+		printf("hoh %i\n",goodName)
+		TSleep(1)
 		//TODO continue
 		//TODO return
 	}
 	printf("here\n")
+
+	for i : TestArr
+		printf("tst %i\n",i)
 
 	//@try_all
 	//{

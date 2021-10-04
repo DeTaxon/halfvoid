@@ -38,7 +38,7 @@ MemParam := class extend ObjResult
 	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
 
-	NotifyPointUse := virtual !() -> void {}
+	DoStore := virtual !(TIOStream f) -> void {}
 }
 
 IsMemParam := !(Object^ obj) -> bool
@@ -403,76 +403,5 @@ FakeFieldParam := class extend MemParam
 	GetName := virtual !(int newInd) -> string
 	{
 		return "%"sbt + ItName
-	}
-}
-RetFuncParam := class extend MemParam
-{
-	ToCall := Object^
-	this := !(Object^ func) -> void
-	{
-		ToCall = func
-		ResultType = func.GetType()
-	}
-	IsRef := virtual !() -> bool
-	{
-		return ToCall.IsRef()
-	}
-	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
-	{
-		//ToCall.PrintPre(f)
-		if ToCall.IsRef()
-		{
-			f << "%T" << newInd << " = load " << ResultType.GetName() << " , " 
-			ToCall.PrintPointUse(f)
-			if DebugMode and debId != -1
-				f << ", !dbg !" << debId 
-			f << "\n"
-		}
-	}
-	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
-	{
-		if ToCall.IsRef()
-		{
-			f << ResultType.GetName() << " %T" << newInd << "\n"
-		}else{
-			ToCall.PrintUse(f)
-		}
-	}
-	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
-	{
-		//ToCall.PrintPointPre(f)
-	}
-	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
-	{
-		ToCall.PrintPointUse(f)
-	}
-	GetName := virtual !(int newInd) -> string
-	{
-		if ToCall.IsRef()
-		{
-			return "%T"sbt + newInd
-		}
-		return ToCall.GetName()
-	}
-	GetType := virtual !() -> Type^ { 
-		return ResultType 
-	}
-	GetPointName := virtual !(int newInd) -> string
-	{
-		return ToCall.GetPointName()
-	}
-	PrintForDebugDeclare := virtual !(TIOStream f,char^ forceName,Object^ ptrPos,int debId) -> void
-	{
-		if debId == -1 return void
-
-		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
-		if debId != -1 and outId != -1
-		{
-			f << "call void @llvm.dbg."
-			if IsRef() f << "addr" else f << "value"
-			f << "(metadata "
-			if IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)
-			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
-		}
 	}
 }
