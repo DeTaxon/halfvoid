@@ -34,30 +34,45 @@
 	}
 }
 
+"@once func" := !(func,args...) -> void //TODO
+{
+	printf("yep 1\n")
+	func(args...)	
+}
+"@once func" := !(args...) .{@func} -> void //TODO
+{
+	printf("yep 2\n")
+	func(args...)	
+}
 
-
+@once
+TestFunc := !() -> void
+{
+	printf("hello\n")
+}
 
 main := !(int argc, char^^ argv) -> int
 {
-	TFullInit()
+	TestFunc()
+	TestFunc()
 
-	TestArr := new int[6]
-	TestArr[^i] = i
+	//TestArr := new int[6]
+	//TestArr[^i] = i
 
-	@omp
-	for goodName : TestArr
-	{
-		printf("heh %i\n",goodName)
-		goodName *= 10
-		printf("hoh %i\n",goodName)
-		TSleep(1)
-		//TODO continue
-		//TODO return
-	}
-	printf("here\n")
+	//@omp
+	//for goodName : TestArr
+	//{
+	//	printf("heh %i\n",goodName)
+	//	goodName *= 10
+	//	printf("hoh %i\n",goodName)
+	//	TSleep(1)
+	//	//TODO continue
+	//	//TODO return
+	//}
+	//printf("here\n")
 
-	for i : TestArr
-		printf("tst %i\n",i)
+	//for i : TestArr
+	//	printf("tst %i\n",i)
 
 	//@try_all
 	//{
@@ -132,16 +147,21 @@ main := !(int argc, char^^ argv) -> int
 {
 }
 
-"@once func" := !() -> void
+"@once block" := !(lambd) .{} -> void
 {
+	first := static true
+	if first
+		lambd()
+	first = false
 }
-"@once block" := !(block) .{} -> void
-{
-	block.first := static true
-	if block.first
-		block()
-	block.first = false
-}
+//"@once block" := !(lambd,bool first = true) .{} -> void
+//{
+//	if first
+//	{
+//		lambd()
+//		first = false
+//	}
+//}
 
 "@try_one block" := !(fnc,num) -> void
 {

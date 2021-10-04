@@ -80,6 +80,25 @@ ManyArgs := !(args...) -> void
 }
 ```
 
+Input variables can have static modifier, that means static variable will be created in place where it was called.
+```java
+
+Func := !(static bool var = true) -> void
+{
+	//all static variables always passed by reference
+	var = false
+}
+Caller := !() -> void
+{
+	Func()
+
+	//same as
+	var := static true
+	FuncStaticless(var)
+}
+
+```
+
 Types:
 u8 u16 u32 u64 s8 s16 s32 s64 float double void
 char is u8

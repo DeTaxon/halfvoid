@@ -23,6 +23,17 @@ NaturalCall := class extend SomeFuncCall
 		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		if Pars != null TrimCommas(Down.Up)
+		
+		if ToCall.decoratorFunc != null
+		{
+			ToCall.decoratorFunc.ParseBlock()
+			assert(ToCall.Up is ObjParam)
+			if ToCall.decoratorHaveFunc
+			{
+					
+			}
+		}
+
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}

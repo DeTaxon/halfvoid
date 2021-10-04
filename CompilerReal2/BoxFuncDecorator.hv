@@ -1,0 +1,31 @@
+AppendClass BoxFunc
+{
+	decoratorFunc := BoxFunc^
+	decoratorHaveFunc := bool
+	SearchDecorator := !(char^ name) -> void
+	{
+		assert(MyFuncType != null)
+
+		fncName := ("@"sbt + name + " func")->{char^}
+		
+		itBox := new FuncInputBox() ; $temp
+		itBox.itPars.Emplace(MyFuncType.GetPoint(),false)
+		for c : MyFuncType.ParsCount
+		{
+			itBox.itPars.Emplace(
+				MyFuncType.Pars[c],
+				MyFuncType.ParsIsRef[c]
+				)
+		}
+
+		dFunc := FindFunc(fncName,this&,itBox^,false)
+
+		if dFunc != null
+		{
+			decoratorFunc = dFunc
+			decoratorHaveFunc = true
+			return void
+		}
+		EmitError("Decorator <"sbt + fncName + "> not found")
+	}
+}

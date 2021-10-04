@@ -330,6 +330,7 @@ BoxFunc := class extend BoxFuncContainer
 
 	vargTypeBarrier := Object^
 
+
 	GetType := virtual !() -> Type^
 	{
 		return MyFuncType
