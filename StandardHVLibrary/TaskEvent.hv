@@ -51,15 +51,13 @@ TaskBoxPromiseWork := class extend TaskBoxWorkInterface
 		lambda = la.Capture()
 		resultEvent = re
 	}
-	DoJob := virtual !(Mutex^ m) -> void {
+	DoJob := virtual !(Mutex^ m,TaskBox^ tb) -> void {
 		lambda()
 		m.Unlock()
-	}
-	IsLast := virtual !() -> bool { return true }
-	OnLast := virtual !(TaskBox^ b) -> void {
 		lambda.Destroy()
 		resultEvent.Emit()
 	}
+	IsLast := virtual !() -> bool { return true }
 }
 
 AppendClass TaskBox

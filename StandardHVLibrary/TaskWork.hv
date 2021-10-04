@@ -1,8 +1,7 @@
 TaskBoxWorkInterface := class extend TGCObject
 {
-	DoJob := virtual !(Mutex^ m) -> void {	m.Unlock() }
+	DoJob := virtual !(Mutex^ m,TaskBox^ tb) -> void { m.Unlock() }
 	IsLast := virtual !() -> bool { return true }
-	OnLast := virtual !(TaskBox^ b) -> void {}
 }
 
 TaskBoxSingleWork := class extend TaskBoxWorkInterface
@@ -15,14 +14,12 @@ TaskBoxSingleWork := class extend TaskBoxWorkInterface
 		lambda = l
 		taskData = d
 	}
-	DoJob := virtual !(Mutex^ m) -> void {
+	DoJob := virtual !(Mutex^ m,TaskBox^ tb) -> void {
 		m.Unlock()
 		lambda()
+		tb._workUnlockTask(taskData)
 	}
 	IsLast := virtual !() -> bool { return true }
-	OnLast := virtual !(TaskBox^ b) -> void {
-		b._workUnlockTask(taskData)
-	}
 }
 TaskBoxManyWork := class extend TaskBoxWorkInterface
 {
@@ -30,6 +27,7 @@ TaskBoxManyWork := class extend TaskBoxWorkInterface
 	taskData := TaskData^
 	currentNum := int
 	maxNum := int
+	doneNum := int
 
 	this := !(!(int)&->void l, TaskData^ d,int mn) -> void
 	{
@@ -37,16 +35,19 @@ TaskBoxManyWork := class extend TaskBoxWorkInterface
 		taskData = d
 		maxNum = mn
 	}
-	DoJob := virtual !(Mutex^ m) -> void {
+	DoJob := virtual !(Mutex^ m,TaskBox^ tb) -> void {
 		val := currentNum
 		currentNum += 1
 		m.Unlock()
 		lambda(val)
+
+		InterlockAdd(doneNum,1)
+		if doneNum == maxNum
+		{
+			tb._workUnlockTask(taskData)
+		}
 	}
 	IsLast := virtual !() -> bool { return currentNum + 1 >= maxNum }
-	OnLast := virtual !(TaskBox^ b) -> void {
-		b._workUnlockTask(taskData)
-	}
 }
 
 AppendClass TaskBox
@@ -80,13 +81,8 @@ AppendClass TaskBox
 							itWorkToDo.Pop()
 						}
 
-						work.DoJob(itWorkMutex&)
+						work.DoJob(itWorkMutex&,this&)
 						FlushTempMemory()
-
-						if isLast
-						{
-							work.OnLast(this&)
-						}
 					}else{
 						if not working
 						{
