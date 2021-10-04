@@ -1,0 +1,17 @@
+"@omp for" := !(fBody) -> void
+{
+	workId := 0
+	TAwaitManyWorks(0,(tId) ==> {
+		curId := InterlockAdd(workId,1)
+		i := 0
+		fBody((x) ==> {
+			c := i
+			if curId < c
+				curId = InterlockAdd(workId,1)
+			i += 1
+			if curId != c
+				return void
+			x()
+		})
+	})
+}

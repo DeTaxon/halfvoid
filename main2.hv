@@ -36,37 +36,10 @@
 
 
 
-"@twice for" := !(func) -> void
-{
-	func((x) ==> { 
-		x() 
-		x() 
-	})
-}
-
-workId := 0 //TODO move to local
-"@omp for" := !(fBody) -> void
-{
-	TAwaitManyWorks(0,(tId) ==> {
-		curId := InterlockAdd(workId,1)
-		i := 0
-		fBody((x) ==> {
-			c := i
-			if curId < c
-				curId = InterlockAdd(workId,1)
-			i += 1
-			if curId != c
-				return void
-			x()
-		})
-	})
-}
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-
-
 
 	TestArr := new int[6]
 	TestArr[^i] = i
@@ -90,7 +63,6 @@ main := !(int argc, char^^ argv) -> int
 	//{
 	//	//defer TODO
 	//	// return TODO
-	//	//TODO check for capture
 	//	throw new Exception("lol")
 	//	printf("line 1\n")
 	//	printf("line 2\n")
@@ -136,13 +108,6 @@ main := !(int argc, char^^ argv) -> int
 //	return 0
 //}
 //
-//"@omp block" := !(int num = 0) .{fnc} -> void
-//{
-//	if num == 0
-//		num = TWorkCount()
-//	TAwaitManyWorks(num,() ==> { fnc() })
-//}
-//
 //"@once func" := !(args...) .{fnc}
 //{
 //	first := static true
@@ -161,19 +126,28 @@ main := !(int argc, char^^ argv) -> int
 //	}
 //}
 //
-//"@once block" := !(block) .{} -> void
-//{
-//	block.first := static true
-//	if block.first
-//		block()
-//	block.first = false
-//}
-//
-//"@try_one block" := !(fnc,num) -> void
-//{
-//	for i : num
-//	{
-//		printf("doing %i\n",i)
-//		fnc(i)
-//	}
-//}
+
+
+"@once call" := !(lambd) -> void
+{
+}
+
+"@once func" := !() -> void
+{
+}
+"@once block" := !(block) .{} -> void
+{
+	block.first := static true
+	if block.first
+		block()
+	block.first = false
+}
+
+"@try_one block" := !(fnc,num) -> void
+{
+	for i : num
+	{
+		printf("doing %i\n",i)
+		fnc(i)
+	}
+}
