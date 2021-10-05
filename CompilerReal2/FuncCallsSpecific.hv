@@ -89,6 +89,11 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 							fType := GetFuncType(![asTyp],GTypeVoidP)
 							return MakeSimpleCall(new BuiltIn2FuncGetVTable("",fType),null)
 						}
+					case "ResultType"
+						if asTyp is TypePoint and asTyp.Base is TypeFunc
+						{
+							return new ObjType(asTyp.Base->{TypeFunc^}.RetType)
+						}
 				}
 			}
 		}
