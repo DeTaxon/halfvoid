@@ -20,7 +20,6 @@ NaturalCall := class extend SomeFuncCall
 		RetId = GetNewId()
 		ToCall = func
 		ToCall.ParseBlock()
-		FType = ToCall.MyFuncType
 		if Pars != null Pars.SetUp(this&)
 		if Pars != null TrimCommas(Down.Up)
 		
@@ -30,9 +29,18 @@ NaturalCall := class extend SomeFuncCall
 			assert(ToCall.Up is ObjParam)
 			if ToCall.decoratorHaveFunc
 			{
-					
+				pc := new ParamFuncCall("",ToCall.Up->{ObjParam^})
+				if Down != null
+				{
+					pc.Right = Down
+					Down.Left = pc
+				}
+				Down = pc
+				pc.Up = this&
 			}
+			ToCall = ToCall.decoratorFunc
 		}
+		FType = ToCall.MyFuncType
 
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
