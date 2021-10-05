@@ -172,16 +172,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		{
 			vargName := null->{string}
 			lastFunc := null->{BoxFuncBody^}
-			lastPreSkob := itUp
 			meetBoxFunc := false
 			ups := itUp
 			while ups != null
 			{
-				if ups.Up?.GetValue() == "()" 
-				{
-					if not meetBoxFunc
-						lastPreSkob = ups
-				}
 				if ups is BoxFuncBody
 				{
 					meetBoxFunc = true
@@ -199,15 +193,11 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			parsCount := lastFunc.MyFuncType.ParsCount - lastFunc.funcUserParamsCount
 
 			if parsCount == 0 {
-				preRes := lastPreSkob
-				PopOutNode(lastPreSkob)
-				if preRes == lastPreSkob
-				{
-					return preRes.Right
-				}else{
-					return itUp
-				}
+				PopOutNode(tr)
+				if itUp == tr
+					return MacroRestart
 				return itUp
+			
 			}else{
 				addIter := tr
 
