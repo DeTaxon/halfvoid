@@ -29,6 +29,12 @@ CmpConstObjs := !(Object^ a, Object^ b) -> bool
 		bS := b->{ObjBool^}
 		return aS.MyBool == bS.MyBool
 	}
+	if a is ObjFuncPointer and b is ObjFuncPointer
+	{
+		aS := a->{ObjFuncPointer^}
+		bS := b->{ObjFuncPointer^}
+		return aS.fncCall == bS.fncCall
+	}
 	// float, func ??
 	return false
 }

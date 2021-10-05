@@ -26,6 +26,24 @@ AppendClass BoxFunc
 			decoratorHaveFunc = true
 			return void
 		}
+
+		itBox2 := new FuncInputBox() ; $temp
+		itBox2.itConsts.Push(new ObjFuncPointer(this&)) ; $temp
+		for c : MyFuncType.ParsCount
+		{
+			itBox2.itPars.Emplace(
+				MyFuncType.Pars[c],
+				MyFuncType.ParsIsRef[c]
+				)
+		}
+		dFunc = FindFunc(fncName,this&,itBox2^,false)
+
+		if dFunc != null
+		{
+			decoratorFunc = dFunc
+			return void
+		}
+
 		EmitError("Decorator <"sbt + fncName + "> not found")
 	}
 }

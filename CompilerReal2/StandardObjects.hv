@@ -89,6 +89,34 @@ ObjPointer := class extend ObjConst
 	IsDataR := virtual true
 	IsBlockData := virtual true
 }
+ObjFuncPointer := class extend ObjConst
+{
+	fncCall := BoxFunc^
+	"this" := !(BoxFunc^ fnc) -> void
+	{
+		fncCall = fnc
+		ResultType = fnc.MyFuncType.GetPoint()
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "~func_pointer"
+	}
+	GetName := virtual !() -> char^ 
+	{
+		return "@"sbt + fncCall.OutputName
+	}
+	PrintUse := virtual !(TIOStream f) -> void
+	{
+		f << ResultType.GetName() << " "
+		f << "@" << fncCall.OutputName
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new ObjFuncPointer(fncCall)
+		PreRet.Line = Line
+		return PreRet
+	}
+}
 ObjNULL := class extend ObjConst
 {
 	"this" := !() -> void

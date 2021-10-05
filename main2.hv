@@ -1,9 +1,3 @@
-
-//"@do_all block" := !(func,num) -> void
-//{	
-//	printf("heh\n")
-//	func(0)
-//}
 "@try_all block" := !(func,num) -> void
 {	
 	printf("heh %i\n",num)
@@ -34,15 +28,14 @@
 	}
 }
 
-"@once func" := !(func,args...) -> void //TODO
-{
-	printf("yep 1\n")
-	func(args...)	
-}
 "@once func" := !(args...) .{@func} -> void //TODO
 {
-	printf("yep 2\n")
-	func(args...)	
+	called := static false
+	if called
+		return void
+	called = true
+	printf("onced\n")
+	func(args...)
 }
 
 @once
@@ -53,6 +46,7 @@ TestFunc := !() -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	TestFunc()
 	TestFunc()
 	TestFunc()
 
