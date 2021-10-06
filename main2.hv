@@ -28,28 +28,17 @@
 	}
 }
 
-"@once func" := !(args...) .{@func} -> func->Type->ResultType
-{
-	called := static false
-	res := static func->Type->ResultType
-	if called
-		return res
-	called = true
-	res = func(args...)
-	return res
-}
-
 @once
-TestFunc := !() -> void
+TestFunc := !() -> int
 {
 	printf("hello\n")
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	TestFunc()
-	TestFunc()
-	TestFunc()
+	printf("test %i\n",TestFunc())
+	printf("test %i\n",TestFunc())
+	printf("test %i\n",TestFunc())
 
 	//TestArr := new int[6]
 	//TestArr[^i] = i

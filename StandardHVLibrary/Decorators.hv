@@ -15,3 +15,14 @@
 		})
 	})
 }
+
+"@once func" := !(args...) .{@func} -> func->Type->ResultType
+{
+	called := static false
+	res := static func->Type->ResultType
+	if called
+		return res
+	called = true
+	res = func(args...)
+	return res
+}
