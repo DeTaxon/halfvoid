@@ -270,7 +270,7 @@ BoxTemplate := class extend BoxFunc
 				}
 				break
 			}
-			if failedC == expectedChecks{
+			if failedC == expectedChecks {
 				printf("status %i %i %i\n",succedC,failedC,expectedChecks)
 				return false
 			}
@@ -475,8 +475,22 @@ BoxTemplate := class extend BoxFunc
 				}
 				if not badType extrVal2[vargsName] = bstType ; $temp
 				newRet = ParseType(CopyRet,null,null,extrVal2&)
+				if newRet == null
+				{
+					cmpRes := TryCompute(CopyRet,parConsts&)
+					if cmpRes? is ObjType
+						newRet = cmpRes->{ObjType^}.MyType
+				}
+				assert(newRet != null) //TODO emit error
 			}else{
 				newRet = ParseType(CopyRet,null,null,null)
+				if newRet == null
+				{
+					cmpRes := TryCompute(CopyRet,parConsts&)
+					if cmpRes? is ObjType
+						newRet = cmpRes->{ObjType^}.MyType
+				}
+				assert(newRet != null) //TODO emit error
 			}
 		}
 		if itBox.itPars.Size() > FType.ParsCount

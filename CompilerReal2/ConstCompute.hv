@@ -15,6 +15,10 @@ ConstItem := class extend Object
 
 TryCompute := !(Object^ ob) -> Object^
 {
+	return TryCompute(ob,null)
+}
+TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
+{
 	if ob == null return null
 
 	if ob.IsConst return ob
@@ -22,7 +26,20 @@ TryCompute := !(Object^ ob) -> Object^
 	if ob is ObjIndent
 	{
 		asN := ob->{ObjIndent^}
-		it := GetItem(asN.MyStr,ob)
+		it := Object^()
+		if values != null
+		{
+			for cmpVal : values^
+			{
+				if cmpVal.ItName == asN.MyStr
+				{
+					it = cmpVal
+					break
+				}
+			}
+		}
+		if it == null
+			it = GetItem(asN.MyStr,ob)
 
 		if it == null and asN.MyStr[0] == '$' 
 		{
@@ -30,7 +47,11 @@ TryCompute := !(Object^ ob) -> Object^
 			if inAtt != null return inAtt^
 			return GBoolFalse //new ObjBool(false) 
 		}
-		if it == null return null
+		if it == null 
+		{
+			if it == null
+				return null
+		}
 		if it is ObjConstHolder
 			return it.Down
 		if it is ConstItem
@@ -56,12 +77,32 @@ TryCompute := !(Object^ ob) -> Object^
 			return newItm
 		}
 	}
-	//if ob.Down != null and ob.Down.IsConst and ob.Down.Right != null and ob.Down.Right.Right != null
-	//and ob.Down.Right.Right.GetValue() == ".." and ob.Down.Right.Right.IsConst and Ob.Down.GetType
-	//{
-	//	
-	//}
-	//return null
+	if ob.Down?.Right?.GetValue() == "->"
+	{
+		dV := TryCompute(ob.Down,values)
+		if dV == null return null
+
+		if ob.Down.Right.Right? is ObjIndent
+		{
+			metaStr := ob.Down.Right.Right->{ObjIndent^}.MyStr
+			if dV is ObjType
+			{
+				asType := dV->{ObjType^}.MyType
+				switch metaStr
+				{
+					case "ResultType"
+						if asType is TypePoint and asType.Base is TypeFunc
+							return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
+				}
+			}
+			if metaStr == "Type"
+			{
+				if dV.GetType() != null
+					return new ObjType(dV.GetType()) ; $temp
+			}
+		}
+	}
+
 	if ob is ObjData and ob.Down.GetValue() == "!" and ob.Down.Right.GetValue() == "[]"
 	{
 		SyntaxCompress(ob.Down.Right,PriorityData)
