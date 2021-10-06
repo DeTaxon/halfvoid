@@ -539,6 +539,7 @@ WriteCodeData := !(TIOStream fil) -> void
 
 	Classes[^].PrintStruct(fil)
 	PrintTuples(fil)
+	PrintGlobalVars(fil)
 	fil << GlobalStrs[^]
 	Modules[^].PrintGlobal(fil)
 	PrintTuplesFuncs(fil)

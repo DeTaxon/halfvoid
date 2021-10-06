@@ -149,3 +149,15 @@ GlobalParamVoid := class extend GlobalParam
 		return ""
 	}
 }
+
+
+globalVars := Queue.{Object^}
+AddGlobalVar := !(Object^ val) -> void
+{
+	globalVars.Push(val)
+}
+
+PrintGlobalVars := !(TIOStream f) -> void
+{
+	globalVars[^].PrintGlobal(f)
+}

@@ -28,17 +28,20 @@
 	}
 }
 
-@once
-TestFunc := !() -> int
+TstFunc := !(int first = static 3) -> void
 {
-	printf("hello\n")
+	printf("val %i\n",first)
+	first += 1
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("test %i\n",TestFunc())
-	printf("test %i\n",TestFunc())
-	printf("test %i\n",TestFunc())
+	mini := () => {
+		TstFunc()
+	}
+	mini()
+	mini()
 
 	//TestArr := new int[6]
 	//TestArr[^i] = i

@@ -42,7 +42,7 @@ NaturalCall := class extend SomeFuncCall
 		}
 		FType = ToCall.MyFuncType
 
-		ExchangeParams()
+		WorkBag.Push(this&,State_PreGetUse)
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
 	
@@ -191,6 +191,10 @@ NaturalCall := class extend SomeFuncCall
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_PreGetUse
+		{
+			ExchangeParams()
+		}
 		if pri == State_MiddleGetUse
 		{
 			CheckReturn()

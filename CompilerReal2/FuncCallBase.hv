@@ -94,9 +94,9 @@ BaseFuncCall := class extend ObjResult
 					
 					newObj := Object^()
 
-					if defArr[i] is ObjCmd
+					if defArr[i].Value is ObjCmd
 					{
-						cmdVal := defArr[i]->{ObjCmd^}
+						cmdVal := defArr[i].Value->{ObjCmd^}
 						if cmdVal.MyStr == "#uniq_call"
 						{
 							if FType.Pars[i] is TypePoint
@@ -111,7 +111,17 @@ BaseFuncCall := class extend ObjResult
 							EmitError("Unknown default value")
 						}
 					}else{
-						newObj = defArr[i].Clone()
+						if defArr[i].IsStatic
+						{
+							globVal := new GlobalParam(FType.Pars[i],null)
+							AddGlobalVar(globVal)
+							newObj = new ParamNaturalCall("",globVal)
+							assert(defArr[i].Value.IsConst)
+							globVal.Down = defArr[i].Value.Clone()
+							globVal.Down.Up = globVal
+						}else{
+							newObj = defArr[i].Value.Clone()
+						}
 					}
 					newObj.Up = this&
 					if itrAdd == null
