@@ -26,3 +26,12 @@
 	res = func(args...)
 	return res
 }
+
+"@once block" := !(!()&->void lambd,bool called = static false) -> void
+{
+	if called
+		return void
+	lambd()
+	called = true
+}
+
