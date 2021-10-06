@@ -1264,6 +1264,7 @@ CreateBuiltIns := !() -> void
 		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("s"sbt + it),false,GetType("s"sbt + it),false,GetType("s"sbt + it), "#0 = ashr i"sbt + it + " #1,#2 #d\n"))
 		AddBuiltInFunc(new BuiltInFuncBinar(">>",GetType("u"sbt + it),false,GetType("s"sbt + it),false,GetType("u"sbt + it), "#0 = lshr i"sbt + it + " #1,#2 #d\n"))
 	}
+	AddBuiltInFunc(new BuiltInFuncBinar("=",GTypeVoid,false,GTypeVoid,false,GTypeVoid,""))
 	AddBuiltInFunc(new BuiltInFuncBinar("in",TypeTable[13],false,GTypeInt,false,BoolT,
 											"br label %Start##\n"sbt +
 											"Start##:" +

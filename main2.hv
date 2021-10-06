@@ -28,7 +28,7 @@
 	}
 }
 
-"@once func" := !(args...) .{@func} -> func->Type->ResultType //TODO
+"@once func" := !(args...) .{@func} -> func->Type->ResultType
 {
 	called := static false
 	res := static func->Type->ResultType
@@ -36,15 +36,13 @@
 		return res
 	called = true
 	res = func(args...)
-	printf("onced %i\n",res)
 	return res
 }
 
 @once
-TestFunc := !() -> int
+TestFunc := !() -> void
 {
 	printf("hello\n")
-	return 7
 }
 
 main := !(int argc, char^^ argv) -> int

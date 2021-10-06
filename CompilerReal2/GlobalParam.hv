@@ -15,8 +15,15 @@ GlobalParam := class extend MemParamCommon
 		ResultType = th
 		Down = toSet
 		Down?.Up = this&
-		MainId = GetNewId()
-		WorkBag.Push(this&,State_PrePrint)
+
+		if th == GTypeVoid
+		{
+			this&->SetType(GlobalParamVoid)
+		}else
+		{
+			MainId = GetNewId()
+			WorkBag.Push(this&,State_PrePrint)
+		}
 	}
 	DoTheWork := virtual !(int pri) -> void
 	{
@@ -91,6 +98,8 @@ GlobalParam := class extend MemParamCommon
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
+		if ResultType == GTypeVoid
+			return void
 		f << "@T" << MainId << " = "//" = dso_local "
 		if IsThreadLocal f << "thread_local "
 		f << "global "
@@ -115,5 +124,28 @@ GlobalParam := class extend MemParamCommon
 		}else{
 			f << " " << Down.GetName() << "\n"
 		}
+	}
+}
+GlobalParamVoid := class extend GlobalParam
+{
+	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
+	{
+	}
+	PrintUse := virtual !(TIOStream f, int newInd,int debId) -> void
+	{
+	}
+	PrintPointPre := virtual !(TIOStream f, int newInd,int debId) -> void
+	{
+	}
+	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
+	{
+	}
+	GetName := virtual !(int newInd) -> string
+	{
+		return ""
+	}
+	GetPointName := virtual !(int newInd) -> string
+	{
+		return ""
 	}
 }
