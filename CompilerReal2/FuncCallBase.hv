@@ -93,6 +93,8 @@ BaseFuncCall := class extend ObjResult
 				{
 					
 					newObj := Object^()
+					
+					assert(defArr[i].Value != null)
 
 					if defArr[i].Value is ObjCmd
 					{

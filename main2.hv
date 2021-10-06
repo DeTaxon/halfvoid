@@ -28,20 +28,32 @@
 	}
 }
 
-TstFunc := !(int first = static 3) -> void
+"@once block" := !(!()&->void lambd,bool called = static false) -> void
+{
+	if called
+		return void
+	lambd()
+	called = true
+}
+
+TstFunc := !(int second,int first = static 3) -> void
 {
 	printf("val %i\n",first)
 	first += 1
+}
+TestFunc2 := !() -> void
+{
+	@once
+	{
+		TstFunc(3)
+	}
 }
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	mini := () => {
-		TstFunc()
-	}
-	mini()
-	mini()
+	TestFunc2()
+	TestFunc2()
 
 	//TestArr := new int[6]
 	//TestArr[^i] = i
@@ -129,18 +141,6 @@ main := !(int argc, char^^ argv) -> int
 //}
 //
 
-
-"@once call" := !(lambd) -> void
-{
-}
-
-"@once block" := !(lambd) .{} -> void
-{
-	first := static true
-	if first
-		lambd()
-	first = false
-}
 //"@once block" := !(lambd,bool first = true) .{} -> void
 //{
 //	if first
