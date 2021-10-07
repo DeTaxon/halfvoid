@@ -9,6 +9,9 @@ NonDetNodeLine := class
 		to = tt
 		symbl = s
 	}
+	this := !() -> void
+	{
+	}
 	"=" := !(NonDetNodeLine newVal) -> void
 	{
 		from = newVal.from

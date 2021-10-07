@@ -103,7 +103,6 @@ BaseFuncCall := class extend ObjResult
 						{
 							if FType.Pars[i] is TypePoint
 							{
-								//TODO: static field
 								newObj = new ObjPointer(null,FType.Pars[i])
 							}else{
 								//TODO int,float?

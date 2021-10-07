@@ -35,3 +35,24 @@
 	called = true
 }
 
+"@try_all block" := !(func,num) -> void
+{	
+	for i : num
+	{
+		try
+		{
+			func(i)
+		}catch(IException^ e) {}
+	}
+}
+"@try_one block" := !(func,num) -> void
+{	
+	for i : num
+	{
+		try
+		{
+			func(i)
+			return void
+		}catch(IException^ e) {}
+	}
+}
