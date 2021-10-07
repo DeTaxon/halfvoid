@@ -28,16 +28,16 @@
 	}
 }
 
-TstFunc := !(int second,int first = static 3) -> void
+TstFunc := !(second,int first = static 3) -> void
 {
-	printf("val %i\n",first)
+	printf("val %i %i\n",second,first)
 	first += 1
 }
 TestFunc2 := !() -> void
 {
 	@once
 	{
-		TstFunc(3)
+		TstFunc(17)
 	}
 }
 

@@ -405,7 +405,13 @@ BoxTemplate := class extend BoxFunc
 		//	}
 		//}
 		
-		if parsCount == FType.ParsCount or (FType.IsVArgs and parsCount >= FType.ParsCount) or (vargsName != null and parsCount >= FType.ParsCount)
+		minPars := FType.ParsCount
+		minPars -= DefaultValuesCount
+		maxPars := FType.ParsCount
+		if FType.IsVArgs or vargsName != null
+			maxPars = 1000000
+
+		if parsCount >= minPars and parsCount <= maxPars
 		{
 			IsCorrect := true
 
@@ -413,13 +419,16 @@ BoxTemplate := class extend BoxFunc
 
 			for i : FType.ParsCount, par : itBox.itPars
 			{
-				SomePrior := 0
+				if i >= parsCount
+					break
 			
+				SomePrior := 0
 				if FType.Pars[i] != null and (FuncsTTemps.Size() >= i or FuncsTTemps[i] == null)
 				{
 					if FType.ParsIsRef[i]
 					{
-						if par.first != FType.Pars[i] SomePrior = 255
+						if par.first != FType.Pars[i] 
+							return 255
 					}else {
 						SomePrior = TypeCmp(par.first, FType.Pars[i])
 					}
@@ -588,6 +597,8 @@ BoxTemplate := class extend BoxFunc
 		newFunc.CountAttrs = true
 		newFunc.Line = Line
 		newFunc.IsMethod = IsMethod
+		newFunc.DefaultValues = DefaultValues
+		newFunc.DefaultValuesCount = DefaultValuesCount
 
 		return newFunc	
 	}
