@@ -404,7 +404,7 @@ ObjParam := class extend Object
 					{
 						if SomeObj is BoxFuncBody or SomeObj is BoxFuncDeclare // TODO in TGCObject
 						{
-							SomeObj->{BoxFunc^}.SearchDecorator(Left->{ObjTemplateType^}.MyStr)
+							SomeObj->{BoxFunc^}.decoratorName = Left->{ObjTemplateType^}.MyStr
 						}
 					}
 				}else

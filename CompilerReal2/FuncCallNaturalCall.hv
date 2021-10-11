@@ -23,7 +23,7 @@ NaturalCall := class extend SomeFuncCall
 		if Pars != null Pars.SetUp(this&)
 		if Pars != null TrimCommas(Down.Up)
 		
-		if ToCall.decoratorFunc != null
+		if ToCall.GetDecorator() != null
 		{
 			ToCall.decoratorFunc.ParseBlock()
 			assert(ToCall.Up is ObjParam)

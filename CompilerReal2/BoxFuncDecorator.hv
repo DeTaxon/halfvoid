@@ -1,7 +1,20 @@
 AppendClass BoxFunc
 {
+	decoratorName := char^
 	decoratorFunc := BoxFunc^
 	decoratorHaveFunc := bool
+
+
+	GetDecorator := !() -> BoxFunc^
+	{
+		if decoratorName == null
+			return null
+
+
+		if decoratorFunc == null
+			SearchDecorator(decoratorName)
+		return decoratorFunc
+	}
 	SearchDecorator := !(char^ name) -> void
 	{
 		assert(MyFuncType != null)

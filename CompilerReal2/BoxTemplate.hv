@@ -538,7 +538,7 @@ BoxTemplate := class extend BoxFunc
 		TempReturnConsts = null
 
 		if newFuncType == null return null
-
+		
 		cmpFuncF := newFuncType
 		if cmpFuncF.RetType != null cmpFuncF = ExchangeFuncType(cmpFuncF,null)
 
