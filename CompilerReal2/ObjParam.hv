@@ -404,7 +404,10 @@ ObjParam := class extend Object
 					{
 						if SomeObj is BoxFuncBody or SomeObj is BoxFuncDeclare // TODO in TGCObject
 						{
-							SomeObj->{BoxFunc^}.decoratorName = Left->{ObjTemplateType^}.MyStr
+
+							obj := SomeObj->{BoxFunc^}
+							dName := Left->{ObjTemplateType^}.MyStr
+							obj.decoratorName = dName
 						}
 					}
 				}else

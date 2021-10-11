@@ -253,6 +253,7 @@ BoxFuncBody := class extend BoxFunc
 			
 			parsed = true
 			WorkBag.Push(Down,State_Start)
+			WorkBag.Push(this&,State_GetUse)
 			Down.Up = this&
 
 		}
@@ -529,6 +530,7 @@ BoxFuncBody := class extend BoxFunc
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
+			WorkBag.Push(this&,State_GetUse)
 		}
 
 		if pri == State_Syntax
@@ -547,6 +549,15 @@ BoxFuncBody := class extend BoxFunc
 				if MyFuncType.RetType == null
 					SetReturnType(GetType("void"))
 			}
+		}
+		if pri == State_GetUse
+		{
+			if GetDecorator() != null and decoratorHaveFunc
+			{
+				//TODO change it
+				assert(false)
+			}
+			
 		}
 		if pri == State_CheckDefer
 		{

@@ -1,32 +1,31 @@
 
 
+TstPre := class
+{
+	SomeFunc := virtual !() -> void
+	{
+	}
+}
 
-Tst := class
+Tst := class extend TstPre
 {
 	this := !() -> void
 	{
 		printf("hello\n")
 	}
 	@once
-	SomeFunc := !() -> void
+	SomeFunc := virtual !() -> void
 	{
 		printf("hello\n")
 	}
 }
 
-@once
-K := !(int x) -> void
-{
-	printf("hey %i\n",x)
-}
 
 main := !(int argc, char^^ argv) -> int
 {
 	r := Tst
 	r.SomeFunc()
 	r.SomeFunc()
-	K(7)
-	K(6)
 
 	//TestArr := new int[6]
 	//TestArr[^i] = i
