@@ -1,0 +1,46 @@
+DecoratorOperator := class extend Object
+{
+	this := !(Object^ toGet) -> void
+	{
+		Down = toGet.Down
+		Down?.SetUp(this&)
+
+		WorkBag.Push(this&,State_Start)
+	}
+	GetValue := virtual !() -> char^
+	{
+		return "@()"
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
+		if pri == State_PreGetUse
+		{
+			itStr := Down->{ObjTemplateType^}.MyStr
+
+			fncName := "@"sbt + itStr + " call"
+
+			itBox := new FuncInputBox() ; $temp
+
+			lLambda := GetFuncType(![GTypeVoidP],Down.Right.GetType()).GetLambda() //TODO add once
+			
+			itBox.itPars.Emplace(lLambda,false)
+
+			fnc := FindFunc(fncName,this&,itBox^,false)
+
+			if fnc == null
+				EmitError("Decorator call not found\n")
+			
+			lmbd := new SBoostLambda()
+			lmbd.Down = new BoxReturn(Down.Right)
+			lmbd.Down.Up = lmbd
+			lmbd.Line = Line
+			lmbd.ApplyFunc(lLambda,false)
+			res := MakeSimpleCall(fnc,lmbd)
+			ReplaceNode(this&,res)
+		}
+	}
+}

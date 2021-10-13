@@ -171,6 +171,7 @@ BaseFuncCall := class extend ObjResult
 			}else{
 				if iter.GetValue() != ","
 				{
+					iter.Print(0)
 					EmitError("can not parse param in variadic args ")
 				}
 			}

@@ -113,7 +113,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 	return GotStuff
 }
 
-StupidWhile := !(Object^ begin,PriorityBagOld^ bag ) -> bool
+StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
 {
 	//iter := begin.Down
 	
@@ -147,12 +147,17 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag ) -> bool
 	if RuleUse(begin,"switch()",RuleSwitch) return true
 	if RuleUse(begin,"case()",RuleCase) return true
 	if RuleUse(begin,"imprt",RuleImport) return true
+	if doTemplate and RuleUse(begin,"~d",RuleDecoratorCall) return true
 
 	return false	
 }
 
 
 SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
+{
+	SyntaxCompress(begin,bag,false)
+}
+SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag,bool doTemplate) -> bool
 {
 	if begin == null return true
 
@@ -161,11 +166,11 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 	itr := begin.Down
 	while itr != null
 	{
-		if itr.GetValue() == "()" SyntaxCompress(itr,bag)
+		if itr.GetValue() == "()" SyntaxCompress(itr,bag,doTemplate)
 		itr = itr.Right
 	}
 
-	while GotWork GotWork = StupidWhile(begin,bag)
+	while GotWork GotWork = StupidWhile(begin,bag,doTemplate)
 
 	return true
 }
@@ -182,6 +187,7 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 	{
 		if iterU == null return ToRet
 		iterVal := iterU.GetValue()
+		isTType := iterU is ObjTemplateType
 		if iterU.IsDataR iterVal = "~d"
 
 		iterId := iterU.GetTokenId()
@@ -268,6 +274,21 @@ RuleTypedefTemplate := !(void^ itr) -> int
 	if It == null return 0
 
 	if InDataR(It) return 4
+	return 0
+}
+
+RuleDecoratorCall := !(void^ itr) -> int
+{
+	It := itr->{Object^}
+	if It == null
+		return 0
+	if It.GetValue() != "~{}type"
+		return 0
+	It = It.Right
+	if It?.IsDataR
+	{
+		return  2
+	}
 	return 0
 }
 

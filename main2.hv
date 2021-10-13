@@ -20,41 +20,45 @@ Tst := class extend TstPre
 	}
 }
 
+"@awork block" := !(lambd) -> void
+{
+	printf("block\n")
+	TAwaitWork(lambd)
+}
+"@awork call" := !(lambd) -> void
+{
+	printf("oper\n")
+	lambd()
+}
+"@twice call" := !(@LType lambd) -> LType->ResultType //TODO lambd->Type
+{
+	return lambd()*2
+}
+Copy := !(int x) -> int
+{
+	return x
+}
+//"@awork oper" := !(lambd) -> lambd->Type->ResultType
+//{
+//	res := lambd->Type->ResultType
+//	TAwaitWork( () ==>
+//	{
+//		res = lambd()
+//	})
+//	return res
+//}
 
 main := !(int argc, char^^ argv) -> int
 {
 	r := Tst
-	r.SomeFunc()
-	r.SomeFunc()
+	//@awork r.SomeFunc()
+	c := int 
+	printf("test %i\n",@twice Copy(2))
 
-	//TestArr := new int[6]
-	//TestArr[^i] = i
-
-	//@omp
-	//for goodName : TestArr
+	//@awork
 	//{
-	//	printf("heh %i\n",goodName)
-	//	goodName *= 10
-	//	printf("hoh %i\n",goodName)
-	//	TSleep(1)
-	//	//TODO continue
-	//	//TODO return
+	//	r.SomeFunc()
+	//	r.SomeFunc()
 	//}
-	//printf("here\n")
-
-	//for i : TestArr
-	//	printf("tst %i\n",i)
-
-	//@try_all
-	//{
-	//	//defer TODO
-	//	// return TODO
-	//	throw new Exception("lol")
-	//	printf("line 1\n")
-	//	printf("line 2\n")
-	//	throw new Exception("lol")
-	//	printf("line 3\n")
-	//}
-	
 }
 

@@ -131,6 +131,7 @@ BoxReturn := class extend Object
 						}
 					}
 				}else{
+					Print(0)
 					EmitError("recursion detected\n")
 				}
 			}else{
