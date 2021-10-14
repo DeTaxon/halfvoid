@@ -33,11 +33,16 @@ DecoratorOperator := class extend Object
 
 			if fnc == null
 				EmitError("Decorator call not found\n")
+			PopOutNode(Down)
 			
 			lmbd := new SBoostLambda()
-			lmbd.Down = new BoxReturn(Down.Right)
-			lmbd.Down.Up = lmbd
+			lmbd.manSkob = true
+
+			lmbd.Down = Down
+			Down.Up = lmbd
 			lmbd.Line = Line
+			UNext(lmbd.Down,new BoxReturn(),1)
+			MakeItBlock(lmbd.Down)
 			lmbd.ApplyFunc(lLambda,false)
 			res := MakeSimpleCall(fnc,lmbd)
 			ReplaceNode(this&,res)

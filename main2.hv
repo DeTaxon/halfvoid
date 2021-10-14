@@ -30,14 +30,22 @@ Tst := class extend TstPre
 	printf("oper\n")
 	lambd()
 }
-"@twice call" := !(@LType lambd) -> LType->ResultType //TODO lambd->Type
+Copy2 := !(int x) -> int
 {
-	return lambd()*2
+	printf("test %i\n",x)
+	return x*100
 }
-Copy := !(int x) -> int
+
+"@once call" := !(@LType lambd,bool first = static true) -> LType->ResultType
 {
-	return x
+	res := static LType->ResultType
+	if first {
+		res = lambd()
+		first = false
+	}
+	return res
 }
+
 //"@awork oper" := !(lambd) -> lambd->Type->ResultType
 //{
 //	res := lambd->Type->ResultType
@@ -53,7 +61,11 @@ main := !(int argc, char^^ argv) -> int
 	r := Tst
 	//@awork r.SomeFunc()
 	c := int 
-	printf("test %i\n",@twice Copy(2))
+	fnc := (int x) ==> {
+		printf("test %i %i\n",@once Copy2(x), @once Copy2(x))
+	}
+	fnc(17)
+	fnc(3)
 
 	//@awork
 	//{

@@ -16,6 +16,9 @@ BoxReturn := class extend Object
 		if toUse.Down.Right != null PopOutNode(toUse.Down)
 		Down = toUse.Down
 	}
+	this := !() -> void
+	{
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
