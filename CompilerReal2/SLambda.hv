@@ -385,13 +385,15 @@ SLambda := class extend BoxFuncContainer
 			{
 				asSL := itrr->{SLambda^}
 				funcsUp.Emplace(asSL.ABox&,asSL,null) ; $temp
+				if asSL.justFunc
+					break
 			}
 			itrr = itrr.Up
 		}
 		nameIter := 0
 		prevLam := this&
 		prevLName := startS
-		for it : funcsUp
+		for it, i : funcsUp
 		{
 			ABName := it.0.GetClassName()
 			f << "%LBegin" << nameIter << "Pos = getelementptr " << ABName << " , " << ABName<< "* null ,i32 0, i32 " << prevLam.ItNR << "\n"
@@ -401,6 +403,8 @@ SLambda := class extend BoxFuncContainer
 			f << "%Lambda" << nameIter << "Box = inttoptr i64 %Lambda" << nameIter << "Pre2 to " << ABName << "*\n"
 			it.0.PrintBoxItems(f,"%Lambda"sbt + nameIter + "Box",-1) //TODO: add dbg data
 			prevLam = it.1
+			if prevLam?.justFunc
+				prevLam = null
 			if prevLam != null
 			{
 				f << "%NextLam" << nameIter << " = load i8* , i8** %T" << prevLam.InAlloc[0] << "\n"
@@ -517,6 +521,8 @@ SLambda := class extend BoxFuncContainer
 					{
 						asSL := itrr->{SLambda^}
 						funcsUp.Emplace(asSL.ABox&,asSL,null)
+						if asSL.justFunc
+							break
 					}
 					itrr = itrr.Up
 				}

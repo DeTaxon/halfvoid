@@ -1,11 +1,17 @@
 DecoratorOperator := class extend Object
 {
+	RType := Type^
 	this := !(Object^ toGet) -> void
 	{
 		Down = toGet.Down
 		Down?.SetUp(this&)
 
 		WorkBag.Push(this&,State_Start)
+		RType = Down.Right.GetType()
+	}
+	GetType := virtual !() -> Type^
+	{
+		return RType
 	}
 	GetValue := virtual !() -> char^
 	{

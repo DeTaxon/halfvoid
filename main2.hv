@@ -45,6 +45,11 @@ Copy2 := !(int x) -> int
 	}
 	return res
 }
+"@twice call" := !(@LType l) -> LType->ResultType
+{
+	l()
+	return l()
+}
 
 //"@awork oper" := !(lambd) -> lambd->Type->ResultType
 //{
@@ -61,8 +66,11 @@ main := !(int argc, char^^ argv) -> int
 	r := Tst
 	//@awork r.SomeFunc()
 	c := int 
-	fnc := (int x) ==> {
-		printf("test %i %i\n",@once Copy2(x), @once Copy2(x))
+	fnc := (float x) => {
+		r := () ==> {
+			printf("waw\n")
+		}
+		@twice r()
 	}
 	fnc(17)
 	fnc(3)
