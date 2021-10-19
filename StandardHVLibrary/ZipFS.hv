@@ -300,6 +300,8 @@ vRepo := class
 					return null
 				continue
 			}
+			
+			TempPoolBlock()
 
 			st := cheks->{char^}
 			if preferVirtual

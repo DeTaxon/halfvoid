@@ -17,8 +17,10 @@ main := !(int argc,char^^ argv) -> int
 	CTT = new CreateTupleTemplate
 	TCT = new TupleConstructorTemplate
 
-	targetFiles := Queue.{string}()
-	targetObjects := Queue.{Object^}()
+	targetFiles := List.{string}()
+	defer targetFiles.Destroy()
+	targetObjects := List.{Object^}()
+	defer targetObjects.Destroy()
 	outputFile := "out.ll"->{char^}
 
 	codeSp := Queue.{Pair.{int,string}}()
@@ -31,6 +33,7 @@ main := !(int argc,char^^ argv) -> int
 	if $win32 compilerSuffix = "win32"
 
 	dirChecks := List.{Tuple.{char^,int}}()
+	defer dirChecks.Destroy()
 
 	if gRepo.IsExist(StringSpan(sLibFolder))
 	{
