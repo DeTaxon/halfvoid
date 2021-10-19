@@ -20,71 +20,23 @@ Tst := class extend TstPre
 	}
 }
 
-"@awork block" := !(lambd) -> void
+fnc := !(float x,double y) -> float 
 {
-	printf("block\n")
-	TAwaitWork(lambd)
-}
-"@awork call" := !(lambd) -> void
-{
-	printf("oper\n")
-	lambd()
-}
-Copy2 := !(int x) -> int
-{
-	printf("test %i\n",x)
-	return x*100
-}
-
-"@once call" := !(@LType lambd,bool first = static true) -> LType->ResultType
-{
-	res := static LType->ResultType
-	if first {
-		res = lambd()
-		first = false
-	}
-	return res
-}
-"@twice call" := !(@LType l) -> LType->ResultType
-{
-	l()
-	return l()
-}
-
-//"@awork oper" := !(lambd) -> lambd->Type->ResultType
-//{
-//	res := lambd->Type->ResultType
-//	TAwaitWork( () ==>
-//	{
-//		res = lambd()
-//	})
-//	return res
-//}
-
-
-fnc := !(float x) -> float 
-{
+	TSleep(y)
 	printf("hello %f\n",x)
 	return x*10
 }
-fnc2 := !(float x) -> void
+
+TestInp := !(float a,float b) -> void
 {
-	printf("hey %f\n",@omp fnc(x))
+	printf("hey %f %f\n",a,b)
 }
+
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	r := Tst
-	//@awork r.SomeFunc()
-	c := int 
-	fnc2(5)
-	fnc2(7)
+	TestInp(@work fnc(5,1),@work fnc(6,1.5))
 
-	//@awork
-	//{
-	//	r.SomeFunc()
-	//	r.SomeFunc()
-	//}
 }
 

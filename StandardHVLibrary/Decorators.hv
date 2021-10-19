@@ -46,6 +46,15 @@
 	lambd()
 	called = true
 }
+"@once call" := !(@LType lambd,bool first = static true) -> LType->ResultType
+{
+	res := static LType->ResultType
+	if first {
+		res = lambd()
+		first = false
+	}
+	return res
+}
 
 "@try_all block" := !(func,num) -> void
 {	
