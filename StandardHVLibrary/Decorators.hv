@@ -15,6 +15,18 @@
 		})
 	})
 }
+"@omp_lines block" := !(func,num) -> void
+{
+	TAwaitManyWorks(num,(tId) ==> { func(tId) })
+}
+"@omp call" := !(@LType l) -> LType->ResultType
+{
+	res := LType->ResultType
+	TAwaitWork(() ==> {
+		res = l()
+	})
+	return res
+}
 
 "@once func" := !(args...) .{@func} -> func->Type->ResultType
 {

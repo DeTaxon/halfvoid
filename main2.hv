@@ -61,19 +61,25 @@ Copy2 := !(int x) -> int
 //	return res
 //}
 
+
+fnc := !(float x) -> float 
+{
+	printf("hello %f\n",x)
+	return x*10
+}
+fnc2 := !(float x) -> void
+{
+	printf("hey %f\n",@omp fnc(x))
+}
+
 main := !(int argc, char^^ argv) -> int
 {
+	TFullInit()
 	r := Tst
 	//@awork r.SomeFunc()
 	c := int 
-	fnc := (float x) => {
-		r := () ==> {
-			printf("waw\n")
-		}
-		@twice r()
-	}
-	fnc(17)
-	fnc(3)
+	fnc2(5)
+	fnc2(7)
 
 	//@awork
 	//{
