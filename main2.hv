@@ -32,7 +32,7 @@ TestInp := !(float a,float b) -> void
 	printf("hey %f %f\n",a,b)
 }
 
-"@defer call" := !(!()&->int l) -> void
+"@defer call" := !(l) -> void
 {
 } defer_tail (l) {
 	l()

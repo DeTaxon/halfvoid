@@ -146,6 +146,8 @@ BoxTemplate := class extend BoxFunc
 
 	IsVirtual := bool
 
+	deferTail := BoxTemplate^
+
 	GetCreatedFuncs := !() -> BoxFunc^[]
 	{
 		counter := 0
@@ -599,6 +601,12 @@ BoxTemplate := class extend BoxFunc
 		newFunc.IsMethod = IsMethod
 		newFunc.DefaultValues = DefaultValues
 		newFunc.DefaultValuesCount = DefaultValuesCount
+
+		if deferTail != null
+		{
+			tailFunc := deferTail.GetFunc(itBox)
+			newFunc.deferTail = tailFunc->{BoxFuncBody^}
+		}
 
 		return newFunc	
 	}

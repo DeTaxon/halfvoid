@@ -134,6 +134,24 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item)
 			preRes.IsSelfReturn = itsSelfRet
 			preRes.Line = itLine
+
+
+			deferPart := BoxTemplate^
+			if iter.Right != null //TODO: less hardcode, !() {} e () {} , not just that
+			{
+				assert(iter.Right.GetValue() == "defer_tail")
+
+				deferName := "DeferTail "sbt + FName
+				deferPart = new BoxTemplate(iter.Right.Right
+					,new ObjIndent("void") // TODO: fix autoget return type
+					,null,false,deferName.Str()
+					,iter.Right.Right.Right,false
+					,ClassType,false,false,item)
+
+				preRes.deferTail = deferPart
+			}
+		
+
 			return preRes
 		}
 
