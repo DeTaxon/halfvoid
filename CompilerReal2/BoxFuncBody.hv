@@ -102,7 +102,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 		}
 	}
-	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf, Object^ anc) -> void
+	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf, Object^ anc, BoxFunc^ DefTailFunc) -> void
 	{
 		IsSelfReturn = isRetSelf
 		ABox.ItId = GetNewId()
@@ -132,7 +132,11 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if inOutType != null inOutType.Up = this&
 
-		IsInvalid = not ParseParams(inPars,inOutType,false)
+
+		defFuncType := TypeFunc^()
+		if DefTailFunc != null
+			defFuncType = DefTailFunc.MyFuncType
+		IsInvalid = not ParseParams(inPars,inOutType,false,defFuncType)
 		ParseConsts(cons)
 
 		if MyFuncType != null TestRet(MyFuncType.RetType)

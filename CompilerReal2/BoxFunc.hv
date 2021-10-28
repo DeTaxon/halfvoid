@@ -138,6 +138,12 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		}
 
 
+
+		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item,null)
+		preRet.IsSelfReturn = itsSelfRet
+		preRet.Line = itLine
+
+
 		deferPart := BoxFuncBody^
 		if iter.Right != null //TODO: less hardcode, !() {} e () {} , not just that
 		{
@@ -148,18 +154,13 @@ ParseFuncDataR := !(Object^ item) -> Object^
 				,new ObjIndent("void") // TODO: fix autoget return type
 				,null,false,deferName.Str()
 				,iter.Right.Right.Right,false
-				,ClassType,false,false,item)
+				,ClassType,false,false,item,preRet)
 			deferPart.Line = itLine //TODO: not that line?
 
 		}
-
-		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item)
-		preRet.deferTail = deferPart
-		preRet.IsSelfReturn = itsSelfRet
-		preRet.Line = itLine
-
 		if deferPart != null
 			deferPart.Up = preRet
+		preRet.deferTail = deferPart
 
 		return preRet
 		
@@ -433,6 +434,10 @@ BoxFunc := class extend BoxFuncContainer
 
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl) -> bool
 	{
+		return ParseParams(root,outObj,IsTempl,null)
+	}
+	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl, TypeFunc^ parentFunc) -> bool
+	{
 		SyntaxCompress(root,PriorityData)
 		Pars := Queue.{Object^}() ; $temp
 
@@ -560,8 +565,19 @@ BoxFunc := class extend BoxFuncContainer
 					{
 						if Pars[0].GetValue() == "~ind"
 						{
-							Typs.Push(null->{Type^})
-							TypsIsRef.Push(false)
+							itType := Type^()
+							isRef := false
+							if parentFunc != null
+							{
+								tId := Typs.Size()
+								if parentFunc.ParsCount > tId
+								{
+									itType = parentFunc.Pars[tId]
+									isRef = parentFunc.ParsIsRef[tId]
+								}
+							}
+							Typs.Push(itType)
+							TypsIsRef.Push(isRef)
 							TypsNams.Push((Pars[0]->{ObjIndent^}).MyStr)
 							TypsDefValues.Push(null)
 							TypsDefValuesIsStatic.Push(false)

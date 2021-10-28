@@ -32,11 +32,18 @@ TestInp := !(float a,float b) -> void
 	printf("hey %f %f\n",a,b)
 }
 
+"@defer call" := !(!()&->int l) -> void
+{
+} defer_tail (l) {
+	l()
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	TestInp(@work fnc(5,1),@work fnc(6,1.5))
+	//TestInp(@work fnc(5,1),@work fnc(6,1.5))
+	@defer printf("b\n")
+	printf("a\n")
 
 }
 
