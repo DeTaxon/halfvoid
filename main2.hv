@@ -38,6 +38,7 @@ TestInp := !(float a,float b) -> void
 	l()
 }
 
+
 CTest := class
 {
 	r := virtual !() -> void
@@ -53,15 +54,14 @@ CTest := class
 
 BadCall := !(a,b) -> void
 {
-} defer_tail (a)
+} defer_tail (a,b)
 {
-	printf("a %i\n",a)
+	printf("nah %i %i\n",a,b)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
 	BadCall(8,9)
-
 }
 
