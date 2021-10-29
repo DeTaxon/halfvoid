@@ -38,12 +38,30 @@ TestInp := !(float a,float b) -> void
 	l()
 }
 
+CTest := class
+{
+	r := virtual !() -> void
+	{
+	}
+	b := virtual !() -> void
+	{
+	} defer_tail ()
+	{
+		printf("yes\n")
+	}
+}
+
+BadCall := !(a,b) -> void
+{
+} defer_tail (a)
+{
+	printf("a %i\n",a)
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	//TestInp(@work fnc(5,1),@work fnc(6,1.5))
-	@defer printf("b\n")
-	printf("a\n")
+	BadCall(8,9)
 
 }
 

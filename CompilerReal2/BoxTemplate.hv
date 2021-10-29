@@ -604,7 +604,23 @@ BoxTemplate := class extend BoxFunc
 
 		if deferTail != null
 		{
-			tailFunc := deferTail.GetFunc(itBox)
+			boxTail := itBox&
+			if itBox.itPars.Size() != deferTail.MyFuncType.ParsCount
+			{
+				boxTail = new FuncInputBox ; $temp
+				for i : deferTail.MyFuncType.ParsCount
+				{
+					boxTail.itPars.Emplace(itBox.itPars[i])
+				}
+				//TODO const, args
+				for it,i : itBox.itAttrs
+				{
+					boxTail.itAttrs[i] = it
+				}
+				boxTail.itMetaPtr = itBox.itMetaPtr
+			}
+
+			tailFunc := deferTail.GetFunc(boxTail^)
 			newFunc.deferTail = tailFunc->{BoxFuncBody^}
 		}
 
