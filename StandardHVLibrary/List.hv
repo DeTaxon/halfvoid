@@ -33,7 +33,7 @@ ListIterReverse := class .{@T}
 		position = s - 1
 		if s != 0
 		{
-			inverseList = new ListNode.{T}^[s]
+			inverseList = new ListNode.{T}^[s] ; $temp
 			iter := toStart
 			i := 0
 			while iter != null
