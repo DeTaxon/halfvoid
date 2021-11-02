@@ -22,7 +22,14 @@ BadCall := !(a,b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	BadCall(8,9)
-	BadCall(8,9)
+
+	t := List.{int}()
+
+	t << 1 << 4 << 6
+
+	for i : t.inverse
+	{
+		printf("wut %i\n",i)
+	}
 }
 

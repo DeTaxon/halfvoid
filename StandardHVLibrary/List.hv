@@ -25,6 +25,29 @@ ListIter := class .{@T}
 	Inc := !() -> void { iter = iter.Next }
 	IsEnd := !() -> bool { return iter == null }
 }
+ListIterReverse := class .{@T}
+{
+	inverseList := ListNode.{T}^[]
+	position := int
+	this := !(ListNode.{T}^ toStart, int s) -> void {
+		position = s - 1
+		if s != 0
+		{
+			inverseList = new ListNode.{T}^[s]
+			iter := toStart
+			i := 0
+			while iter != null
+			{
+				inverseList[i] = iter
+				iter = iter.Next
+				i += 1
+			}
+		}
+	}
+	"^" := !() -> ref T { return inverseList[position].Data }
+	Inc := !() -> void { position -= 1 }
+	IsEnd := !() -> bool { return position < 0 }
+}
 
 List := class .{@T}
 {
@@ -337,6 +360,13 @@ List := class .{@T}
 	"~For" := !() -> ListIter.{T}
 	{
 		return ListIter.{T}(Start)
+	}
+	inverse := fake
+	{
+		"~For" := !() -> ListIterReverse.{T}
+		{
+			return ListIterReverse.{T}(Start,Counter)
+		}
 	}
 	Size := !() -> int
 	{

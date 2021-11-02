@@ -225,6 +225,11 @@ BoxForOldFashionMulti := class extend BoxFor
 					{
 						someBox.itAttrs[k] = q
 					}
+					if Down.Right is MetaItemWrapper
+					{
+						someBox.itMetaPtr = Down.Right->{MetaItemWrapper^}.ptrToBlock
+					}
+
 
 					func := FindFunc("~For",this&,someBox^,false)
 					if func == null 
