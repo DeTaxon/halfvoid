@@ -156,10 +156,10 @@ CLibModule := class extend CompilerModule
 					bc := new FuncInputBox ; temp
 
 					nClass := new BoxClass(null,null,null)
-					for field : inStructs^
+					for StructField : inStructs^
 					{
-						fldType := CheckTypeString(field.GetStr())
-						new FieldParam(field.Key().Str(),fldType,nClass)
+						fldType := CheckTypeString(StructField.GetStr())
+						new FieldParam(StructField.Key().Str(),fldType,nClass)
 					}
 					nClass.CreateTupleConstructor()
 					itTypes[inStructs.Key()] = nClass.ClassType

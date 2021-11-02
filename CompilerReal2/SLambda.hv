@@ -212,7 +212,6 @@ SLambda := class extend BoxFuncContainer
 				asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
 				fastUse = asFunc
 
-
 				if not isTmpl
 				{
 					//if not justFunc

@@ -212,6 +212,10 @@ BoxTemplate := class extend BoxFunc
 					metPars = true
 					break
 				}
+				if par.first == null
+				{
+					return false
+				}
 				if MyFuncType.Pars[i] == null
 				{
 					if fT != null

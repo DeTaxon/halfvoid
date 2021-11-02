@@ -418,6 +418,7 @@ IsKeyword := !(W) -> bool
 		case "poison" return true
 		case "defer_tail" return true
 		case "static" return true
+		case "field" return true
 	}
 
 	return false

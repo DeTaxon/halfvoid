@@ -189,7 +189,7 @@ Library := class
 	hndl := LibDBObject^
 	this := !(args...) -> void
 	{
-		Open(args...)
+		this.Open(args...)
 	}
 	skipLib := !(char^ name) -> bool
 	{

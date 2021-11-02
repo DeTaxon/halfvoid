@@ -249,7 +249,7 @@ BoxFuncContainer := class extend Object
 		if IsSLambda(this&)
 		{
 			lambd := this&->{SLambda^}
-			if not lambd.justFunc
+			if not lambd.justFunc and lambd.lambadOnItsFrameNr != -1
 			{
 				f << "%StackObjLmPtr = getelementptr " << ABox.GetClassName() << " , " 
 					<< ABox.GetClassName() << "* %StackObjABox ,i32 0, i32 " << lambd.lambadOnItsFrameNr <<"\n"

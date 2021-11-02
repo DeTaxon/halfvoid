@@ -43,7 +43,6 @@ ParseClass := !(Object^ ob)-> BoxClass^
 		preRes :=  new BoxClass(iterT,null->{BoxClass^},ExtObj)
 		preRes.IsPacked = putPack
 		return preRes
-
 	}
 
 	if iterT.GetValue() != "{}" return null
@@ -305,47 +304,46 @@ BoxClass := class extend BoxClassBase
 	Inherited := false
 	InheritParams := !() -> void
 	{
-		if not Inherited
+		if Inherited
+			return void
+		Inherited = true
+
+
+		if Parent != null
 		{
-			Inherited = true
-
-
-			if Parent != null
+			Parent.InheritParams()
+			IsGC = Parent.IsGC
+			//InheritParams2()
+			if Parent.ContainVirtual 
+				ContainVirtual = true
+			WorkBag.Push(this&,State_PrePrint)
+		}
+		
+		for it : Params
+		{
+			tp := it.ResultType
+			if (tp is TypePoint and tp.Base is TypeClass) or tp is TypeClass
 			{
-				Parent.InheritParams()
-				IsGC = Parent.IsGC
-				//InheritParams2()
-				if Parent.ContainVirtual 
-					ContainVirtual = true
-				WorkBag.Push(this&,State_PrePrint)
-			}
-			
-			for it : Params
-			{
-				tp := it.ResultType
-				if (tp is TypePoint and tp.Base is TypeClass) or tp is TypeClass
+				cl := BoxClass^()
+				if tp is TypeClass
 				{
-					cl := BoxClass^()
-					if tp is TypeClass
-					{
-						cl = tp->{TypeClass^}.ToClass
-					}else{
-						cl = tp.Base->{TypeClass^}.ToClass
-					}
-					cl.InheritParams()
+					cl = tp->{TypeClass^}.ToClass
+				}else{
+					cl = tp.Base->{TypeClass^}.ToClass
+				}
+				cl.InheritParams()
 
-					if cl.IsGC and not IsGC
-					{
-						if Parent != null 
-							EmitError("can not turn class to gc type")
-						if gcClass == null
-							EmitError("internal error, no class TGCObject")
-						Parent = gcClass
-						IsGC = true
-						if Parent.ContainVirtual 
-							ContainVirtual = true
-						WorkBag.Push(this&,State_PrePrint)
-					}
+				if cl.IsGC and not IsGC
+				{
+					if Parent != null 
+						EmitError("can not turn class to gc type")
+					if gcClass == null
+						EmitError("internal error, no class TGCObject")
+					Parent = gcClass
+					IsGC = true
+					if Parent.ContainVirtual 
+						ContainVirtual = true
+					WorkBag.Push(this&,State_PrePrint)
 				}
 			}
 		}
@@ -380,7 +378,6 @@ BoxClass := class extend BoxClassBase
 
 	appendObjects := List.{BoxClassAppend^}
 
-	checkedInherit := bool
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -423,11 +420,7 @@ BoxClass := class extend BoxClassBase
 		}
 		if pri == State_PreGetUse
 		{
-			if not checkedInherit
-			{
-				checkedInherit = true
-				InheritParams()
-			}
+			InheritParams()
 			TupleCreateWork()
 			CheckPoisons()
 		}

@@ -258,6 +258,10 @@ NaturalCallWithDefer := class extend NaturalCall
 		this."NaturalCall.DoTheWork"(pri)
 		if pri == State_MiddleGetUse
 		{
+			WorkBag.Push(this&,State_PostGetUse)
+		}
+		if pri == State_PostGetUse
+		{
 			fnc := GetBoxFuncContainer(this&)
 			if fnc != null
 			{

@@ -1,36 +1,6 @@
 
 
-TstPre := class
-{
-	SomeFunc := virtual !() -> void
-	{
-	}
-}
 
-Tst := class extend TstPre
-{
-	this := !() -> void
-	{
-		printf("hello\n")
-	}
-	@once
-	SomeFunc := virtual !() -> void
-	{
-		printf("hello\n")
-	}
-}
-
-fnc := !(float x,double y) -> float 
-{
-	TSleep(y)
-	printf("hello %f\n",x)
-	return x*10
-}
-
-TestInp := !(float a,float b) -> void
-{
-	printf("hey %f %f\n",a,b)
-}
 
 "@defer call" := !(l) -> void
 {
@@ -38,22 +8,9 @@ TestInp := !(float a,float b) -> void
 	l()
 }
 
-
-CTest := class
-{
-	r := virtual !() -> void
-	{
-	}
-	b := virtual !() -> void
-	{
-	} defer_tail ()
-	{
-		printf("yes\n")
-	}
-}
-
 BadCall := !(a,b) -> void
 {
+	printf("start\n")
 } defer_tail (a,b)
 {
 	printf("nah %i %i\n",a,b)
@@ -62,6 +19,6 @@ BadCall := !(a,b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	BadCall(8,9)
+	@defer BadCall(8,9)
 }
 
