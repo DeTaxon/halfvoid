@@ -112,16 +112,30 @@ BaseFuncCall := class extend ObjResult
 							EmitError("Unknown default value")
 						}
 					}else{
-						if defArr[i].IsStatic
+						switch defArr[i].ValueModifier
 						{
-							globVal := new GlobalParam(FType.Pars[i],null)
-							AddGlobalVar(globVal)
-							newObj = new ParamNaturalCall("",globVal)
-							assert(defArr[i].Value.IsConst)
-							globVal.Down = defArr[i].Value.Clone()
-							globVal.Down.Up = globVal
-						}else{
-							newObj = defArr[i].Value.Clone()
+							case DefValueMod_Field
+							{	//TODO implement
+								globVal := new GlobalParam(FType.Pars[i],null)
+								AddGlobalVar(globVal)
+								newObj = new ParamNaturalCall("",globVal)
+								assert(defArr[i].Value.IsConst)
+								globVal.Down = defArr[i].Value.Clone()
+								globVal.Down.Up = globVal
+							}
+							case DefValueMod_Static
+							{
+								globVal := new GlobalParam(FType.Pars[i],null)
+								AddGlobalVar(globVal)
+								newObj = new ParamNaturalCall("",globVal)
+								assert(defArr[i].Value.IsConst)
+								globVal.Down = defArr[i].Value.Clone()
+								globVal.Down.Up = globVal
+							}
+							case void
+							{
+								newObj = defArr[i].Value.Clone()
+							}
 						}
 					}
 					newObj.Up = this&

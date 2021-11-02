@@ -10,7 +10,10 @@
 
 BadCall := !(a,b) -> void
 {
-	printf("start\n")
+	@once 
+	{
+		printf("start\n")
+	}
 } defer_tail (a,b)
 {
 	printf("nah %i %i\n",a,b)
@@ -19,6 +22,7 @@ BadCall := !(a,b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	@defer BadCall(8,9)
+	BadCall(8,9)
+	BadCall(8,9)
 }
 
