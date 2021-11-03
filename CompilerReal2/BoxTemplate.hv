@@ -196,20 +196,34 @@ BoxTemplate := class extend BoxFunc
 		//}
 
 		expectedChecks := FuncsTTemps.Size()
+		if DefaultValuesCount != 0
+		{
+			expectedChecks = itBox.itPars.Size()
+		}
 		if vargTypeBarrier != null
 			expectedChecks += itBox.itPars.Size() - MyFuncType.ParsCount
 		expectedChecks += checkConsts.Size()
+
+		if itBox.itPars.Size() < FuncsTTemps.Size() - DefaultValuesCount and vargsName == null
+		{
+			return false
+		}
+		
 
 		while expectedChecks != 0
 		{
 			failedC = 0
 			succedC = 0
-
 			metPars := false
-			for fT : FuncsTTemps, i: 0, par : itBox.itPars
+
+			for fT,i : FuncsTTemps, par : itBox.itPars
 			{
 				if i >= MyFuncType.ParsCount  {
 					metPars = true
+					break
+				}
+				if i >= itBox.itPars.Size() and vargsName == null
+				{
 					break
 				}
 				if par.first == null
@@ -282,7 +296,7 @@ BoxTemplate := class extend BoxFunc
 			}
 			limit -= 1
 			if limit <= 0 {
-				printf("status %i %i %i\n",succedC,failedC,expectedChecks)
+				printf("status %s %i %i %i\n",FuncName,succedC,failedC,expectedChecks)
 				printf("types\n")
 				printf("typ %s\n",itBox.itPars[^].first.GetGoodName())
 				EmitError("compiler error")
@@ -416,7 +430,6 @@ BoxTemplate := class extend BoxFunc
 		maxPars := FType.ParsCount
 		if FType.IsVArgs or vargsName != null
 			maxPars = 1000000
-
 		if parsCount >= minPars and parsCount <= maxPars
 		{
 			IsCorrect := true

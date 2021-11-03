@@ -38,7 +38,9 @@ DecoratorOperator := class extend Object
 			fnc := FindFunc(fncName,this&,itBox^,false)
 
 			if fnc == null
+			{
 				EmitError("Decorator call not found\n")
+			}
 			PopOutNode(Down)
 			
 			lmbd := new SBoostLambda()

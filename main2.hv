@@ -8,12 +8,14 @@
 	l()
 }
 
+wut := !() -> int
+{
+	printf("start\n")
+}
+
 BadCall := !(a,b) -> void
 {
-	@once 
-	{
-		printf("start\n")
-	}
+	@once wut()
 } defer_tail (a,b)
 {
 	printf("nah %i %i\n",a,b)
@@ -22,14 +24,7 @@ BadCall := !(a,b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-
-	t := List.{int}()
-
-	t << 1 << 4 << 6
-
-	for i : t.inverse
-	{
-		printf("wut %i\n",i)
-	}
+	BadCall(1,2)
+	BadCall(1,2)
 }
 
