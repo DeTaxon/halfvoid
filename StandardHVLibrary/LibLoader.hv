@@ -189,7 +189,7 @@ Library := class
 	hndl := LibDBObject^
 	this := !(args...) -> void
 	{
-		this.Open(args...)
+		Open(args...)
 	}
 	skipLib := !(char^ name) -> bool
 	{
@@ -213,6 +213,8 @@ Library := class
 		if hndl == null
 			Open(args...)
 	}
+	Open := !() -> void {}
+
 	Open := !(char^ name) -> void
 	{
 		if not skipLib(name)

@@ -23,8 +23,10 @@ main := !(int argc,char^^ argv) -> int
 	defer targetObjects.Destroy()
 	outputFile := "out.ll"->{char^}
 
-	codeSp := Queue.{Pair.{int,string}}()
-	zipSp := Queue.{Pair.{int,string}}()
+	codeSp := List.{Pair.{int,string}}()
+	defer codeSp.Destroy()
+	zipSp := List.{Pair.{int,string}}()
+	defer zipSp.Destroy()
 
 	fileSuffixes := List.{char^}()
 	defer fileSuffixes.Destroy()

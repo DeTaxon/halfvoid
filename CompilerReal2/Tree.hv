@@ -259,12 +259,12 @@ ObjLine := class
 	}
 	LoadAttrs := !(char^ str) -> void
 	{
-		newItm := DivideStr(str,"\t\n ")
+		newItm := DivideStr(str,"\t\n ") ; $temp
 		for newItm
 		{
 			if it != ";"
 			{
-				itAttrs[it.Str()] = new ObjBool(true)
+				itAttrs[StrCopy(it)] = new ObjBool(true)
 			}
 		}
 	}
