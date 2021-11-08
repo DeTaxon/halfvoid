@@ -23,8 +23,12 @@ BadCall := !(a,b) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
-	TFullInit()
-	BadCall(1,2)
-	BadCall(1,2)
+	//TFullInit()
+	//BadCall(1,2)
+	//BadCall(1,2)
+	for it : Path(".")
+	{
+		printf("wut %s\n",it.Get())
+	}
 }
 

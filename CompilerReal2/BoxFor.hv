@@ -210,7 +210,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 				for itemsCount IsInvalids[it] = null
 
-				Downs:= Queue.{Object^}()
+				Downs:= Queue.{Object^}() ; $temp
 				for i : itemsCount
 				{
 					if Down.Right.GetType() == null
@@ -462,7 +462,8 @@ BoxForOldFashionMulti := class extend BoxFor
 			}
 
 
-			itr.PrintPointPre(f)
+			//itr.PrintPointPre(f) //TODO without that works on pure luck
+			
 			fnc := DestroyFunc[i]->{BoxFunc^}
 			f << "call void @" << fnc.OutputName << "("
 			itr.PrintPointUse(f)
