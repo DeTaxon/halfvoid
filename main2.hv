@@ -24,9 +24,7 @@ BadCall := !(a,b) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	BadCall(1,2)
-	BadCall(1,2)
-
+	printf("wut %s\n",int->Group)
 
 }
 

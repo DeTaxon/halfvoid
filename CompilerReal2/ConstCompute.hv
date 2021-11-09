@@ -100,6 +100,26 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 				if dV.GetType() != null
 					return new ObjType(dV.GetType()) ; $temp
 			}
+			if metaStr == "Group"
+			{
+				if dV is ObjType
+				{
+					tp := dV->{ObjType^}.MyType
+					if tp is TypeStandart
+						return new ObjStr("prime") ; $temp
+					if tp is TypePoint
+						return new ObjStr("pointer") ; $temp
+					if tp is TypeFunc
+						return new ObjStr("func") ; $temp
+					if tp is TypeArr
+						return new ObjStr("array") ; $temp
+					if tp is TypeFuncLambda
+						return new ObjStr("lambda") ; $temp
+					if tp is TypeFatArr
+						return new ObjStr("vector") ; $temp //TODO change name
+					assert(false)
+				}
+			}
 		}
 	}
 

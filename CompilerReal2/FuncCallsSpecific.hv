@@ -60,6 +60,11 @@ BuiltIn2FuncGetVTable := class extend BuiltIn2Func
 
 FuncCallSpecific := !(Object^ iter) -> Object^
 {
+	cmpt := TryCompute(iter)
+	if cmpt != null
+	{
+		return cmpt.Clone()
+	}
 	if iter.Down?.Right?.GetValue() == "->"
 	{
 		if iter.Down is ObjType
