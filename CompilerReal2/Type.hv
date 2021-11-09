@@ -279,12 +279,14 @@ TypeDef := class extend Object
 
 TypeStandart := class extend Type{
 	IRName := string
+	ItGoodName := char^
 	ItSize  := int
-	ItAlign := int
+	ItAlign := int	
 	
-	this := !(string Name,string mName,  int siz, int Aln) -> void
+	this := !(string Name,char^ goodName,string mName,  int siz, int Aln) -> void
 	{
 		IRName = Name 
+		ItGoodName = goodName
 		ItSize = siz
 		ItAlign = Aln
 		ItHash = GetNewId()
@@ -306,7 +308,7 @@ TypeStandart := class extend Type{
 	{
 		return IRName
 	}
-	GetGoodName := virtual !() -> string { return IRName }
+	GetGoodName := virtual !() -> string { return ItGoodName }
 	GetAlign := virtual !() -> int
 	{
 		return ItAlign
@@ -616,22 +618,22 @@ CreateStandartTypes := !() -> void
 {	
 	TypesPool = new AllocOnly2G()
 	//u
-	TypeTable[0] = new TypeStandart("i8" ,"!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)	
-	TypeTable[1] = new TypeStandart("i16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)	
-	TypeTable[2] = new TypeStandart("i32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)	
-	TypeTable[3] = new TypeStandart("i64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
+	TypeTable[0] = new TypeStandart("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)	
+	TypeTable[1] = new TypeStandart("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)	
+	TypeTable[2] = new TypeStandart("i32","u32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)	
+	TypeTable[3] = new TypeStandart("i64","u64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 
 	//s
-	TypeTable[4] = new TypeStandart("i8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)	
-	TypeTable[5] = new TypeStandart("i16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)	
-	TypeTable[6] = new TypeStandart("i32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)	
-	TypeTable[7] = new TypeStandart("i64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
+	TypeTable[4] = new TypeStandart("i8","s8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)	
+	TypeTable[5] = new TypeStandart("i16","s16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)	
+	TypeTable[6] = new TypeStandart("i32","s32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)	
+	TypeTable[7] = new TypeStandart("i64","s64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
 
-	TypeTable[8] = new TypeStandart("i1","!DIBasicType(name: \"byte\", size: 8, align: 1,encoding: DW_ATE_boolean)",1,1)	// bool
+	TypeTable[8] = new TypeStandart("i1","bool","!DIBasicType(name: \"byte\", size: 8, align: 1,encoding: DW_ATE_boolean)",1,1)	// bool
 
-	TypeTable[9] = new TypeStandart("float","!DIBasicType(name: \"float\", size: 32, align: 32,encoding: DW_ATE_float)",4,4)
-	TypeTable[10] = new TypeStandart("double","!DIBasicType(name: \"double\", size: 64, align: 64,encoding: DW_ATE_float)",8,8)
-	TypeTable[11] = new TypeStandart("void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
+	TypeTable[9] = new TypeStandart("float","float","!DIBasicType(name: \"float\", size: 32, align: 32,encoding: DW_ATE_float)",4,4)
+	TypeTable[10] = new TypeStandart("double","double","!DIBasicType(name: \"double\", size: 64, align: 64,encoding: DW_ATE_float)",8,8)
+	TypeTable[11] = new TypeStandart("void","void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
 
 	TypeTable[12] = TypeTable[0].GetPoint() // char*
 
@@ -646,21 +648,21 @@ CreateStandartTypes := !() -> void
 	GlobalStrs.Push("%RangeTypeInt = type {i32,i32}\n")
 	GlobalStrs.Push("%RangeTypeFloat = type {float,float}\n")
 
-	TypeTable[13] = new TypeStandart("%RangeTypeInt","!DIBasicType(name: \"range\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
+	TypeTable[13] = new TypeStandart("%RangeTypeInt","range","!DIBasicType(name: \"range\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 	TypeTable[13].Base = TypeTable[6]
-	TypeTable[14] = new TypeStandart("%RangeTypeFloat","!DIBasicType(name: \"rangef\", size: 32, align: 64,encoding: DW_ATE_float)",8,8)
+	TypeTable[14] = new TypeStandart("%RangeTypeFloat","rangef","!DIBasicType(name: \"rangef\", size: 32, align: 64,encoding: DW_ATE_float)",8,8)
 	TypeTable[14].Base = TypeTable[9]
 
 
-	TypeTable[15] = new TypeStandart("%OpaqType","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
+	TypeTable[15] = new TypeStandart("%OpaqType","opaque","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
 
-	TypeTable[17] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
-	TypeTable[18] = new TypeStandart("%Vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+	TypeTable[17] = new TypeStandart("%Vec4f","vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+	TypeTable[18] = new TypeStandart("%Vec4f","quantf","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
 
-	TypeTable[19] = new TypeStandart("%Vec3f","!DIBasicType(name: \"vec3f\", size: 24, align: 128,encoding: DW_ATE_float)",12,16)
-	TypeTable[20] = new TypeStandart("%Vec2f","!DIBasicType(name: \"vec2f\", size: 16, align: 128,encoding: DW_ATE_float)",8,16)
+	TypeTable[19] = new TypeStandart("%Vec3f","vec3f","!DIBasicType(name: \"vec3f\", size: 24, align: 128,encoding: DW_ATE_float)",12,16)
+	TypeTable[20] = new TypeStandart("%Vec2f","vec2f","!DIBasicType(name: \"vec2f\", size: 16, align: 128,encoding: DW_ATE_float)",8,16)
 
-	TypeTable[21] = new TypeStandart("i16","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
+	TypeTable[21] = new TypeStandart("i16","half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
 
 	GTypeBool =   TypeTable[8]
 	GTypeHalf =   TypeTable[21]
