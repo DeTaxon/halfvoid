@@ -65,7 +65,7 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 	{
 		return cmpt.Clone()
 	}
-	if iter.Down?.Right?.GetValue() == "->" //TODO Move to compute
+	if iter.Down?.Right?.GetValue() == "->"
 	{
 		if iter.Down is ObjType
 		{
@@ -132,12 +132,6 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 					iter.Down.Right = null
 					return MakeSimpleCall(setFunc,iter.Down)
 				}
-			}
-			if asObj.MyStr == "Type"
-			{
-				tp := iter.Down.GetType()
-				if tp != null
-					return new ObjType(tp)
 			}
 			if asObj.MyStr == "Fields"
 			{

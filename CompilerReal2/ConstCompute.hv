@@ -77,6 +77,16 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 			return newItm
 		}
 	}
+	if ob.Down?.Right?.GetValue() == "->" and ob.Down.Right.Right? is ObjIndent
+	{	
+		asObj := ob.Down.Right.Right->{ObjIndent^}
+		if asObj.MyStr == "Type"
+		{
+			dt := ob.Down.GetType()
+			if dt != null
+				return new ObjType(dt) ; $temp
+		}
+	}
 	if ob.Down?.Right?.GetValue() == "->"
 	{
 		dV := TryCompute(ob.Down,values)
@@ -137,6 +147,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 			}
 		}
 	}
+
 
 	if ob is ObjData and ob.Down.GetValue() == "!" and ob.Down.Right.GetValue() == "[]"
 	{
