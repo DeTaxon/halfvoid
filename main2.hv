@@ -1,30 +1,52 @@
 
-
-
-
-"@defer call" := !(l) -> void
+getType := !() .{@T} -> Type^ 
 {
-} defer_tail (l) {
-	l()
-}
+	switch T->Type
+	{
+		case "prime"
+			return GetType(T->RawName)
+		case "array"
+			return GetType().{T->Base}.GetArray(T->Size)
+		case "func"
+			pars := List.{Type^}() ; $temp
+			for par : T->Params
+			{
+				par.Emplace(getType().{par->Type})
+			}
+			return GetFuncType(pars,getType().{T->ResultType})
+		case "lambda"
+		case "pointer"
+			return GetType().{T->Base}.GetPoint()
+			
+	}
 
-wut := !() -> int
-{
-	printf("start\n")
-}
+	#prolog
+	{
+		getType(T,R) :- T = int, R = GTypeInt
+		getType(T,R) :- T = float, R = GTypeFloat
+		getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
+		getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
+		getType(T,R) :- T->Type = "func",  getType(T->Params[^],B[^]),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+		getType(T,R) :- T->Type = "func",  T->Params[^]{}, getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+		getType(T,R) :- T->Type = "lambda",  getType(,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+	}
+	getType(T,result)
 
-BadCall := !(a,b) -> void
-{
-	@once wut()
-} defer_tail (a,b)
-{
-	printf("nah %i %i\n",a,b)
+	//#prolog
+	//{
+	//	TestArgs(Inp,Outp,Result) := 
+	//}
+	result = GetFuncType(![GTypeInt],GTypeVoid)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	printf("wut %s\n",int->Name)
 
+	printf("ye %s\n",int[3]->Name)
+	//for func : Thread->Funcs
+	//{
+	//	printf("tst %s %p %p\b",func->name,func,func->raw)
+	//}
 }
 

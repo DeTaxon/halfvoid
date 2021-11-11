@@ -75,19 +75,6 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 				asObj := iter.Down.Right.Right->{ObjIndent^}
 				switch asObj.MyStr
 				{
-					case "Len"
-						if asTyp is TypeArr
-						{
-							return new ObjInt(asTyp->{TypeArr^}.Size)
-						}
-					case "Base"
-						if asTyp is TypeArr or asTyp is TypePoint it asTyp is TypeFatArr
-						{
-							return new ObjType(asTyp.Base)
-						}
-						return new ObjType(GTypeVoid)
-					case "Name"
-						return new ObjStr(GetConstString(asTyp.GetGoodName()))
 					case "VTable"
 						if asTyp is TypeClass
 						{

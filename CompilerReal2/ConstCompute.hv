@@ -93,6 +93,21 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					case "ResultType"
 						if (asType is TypePoint or asType is TypeFuncLambda) and asType.Base is TypeFunc
 							return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
+					case "Base"
+						if asType.Base != null
+						{
+							return new ObjType(asType.Base) ; $temp
+						}else{
+							return new ObjType(GTypeVoid) ; $temp
+						}
+					case "Len"
+						if asType is TypeArr
+						{
+							return new ObjInt(asType->{TypeArr^}.Size)
+						}
+					case "Name"
+						return new ObjStr(GetConstString(asType.GetGoodName())) ; $temp
+
 				}
 			}
 			if metaStr == "Type"

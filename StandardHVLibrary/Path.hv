@@ -55,3 +55,4 @@ CmpNameAndWildcard := !(char^ fileName,char^ inWild) -> bool
 	}
 	return fileName[j] == 0
 }
+
