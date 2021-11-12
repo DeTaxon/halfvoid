@@ -1,49 +1,41 @@
 
-getType := !() .{@T} -> Type^ 
+getType := !(int callSize) .{@T} -> void 
 {
-	switch T->Type
+	switch T->Group
 	{
 		case "prime"
-			return GetType(T->RawName)
+			printf("%2i prime\n",callSize)
 		case "array"
-			return GetType().{T->Base}.GetArray(T->Size)
 		case "func"
-			pars := List.{Type^}() ; $temp
-			for par : T->Params
-			{
-				par.Emplace(getType().{par->Type})
-			}
-			return GetFuncType(pars,getType().{T->ResultType})
+			printf("%2i func\n",callSize)
 		case "lambda"
 		case "pointer"
-			return GetType().{T->Base}.GetPoint()
 			
 	}
 
-	#prolog
-	{
-		getType(T,R) :- T = int, R = GTypeInt
-		getType(T,R) :- T = float, R = GTypeFloat
-		getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
-		getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
-		getType(T,R) :- T->Type = "func",  getType(T->Params[^],B[^]),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-		getType(T,R) :- T->Type = "func",  T->Params[^]{}, getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-		getType(T,R) :- T->Type = "lambda",  getType(,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-	}
-	getType(T,result)
-
 	//#prolog
 	//{
-	//	TestArgs(Inp,Outp,Result) := 
+	//	getType([t | T] , [b | B]) :- t = getType(b)
+	//	getType(T,R) :- T = int, R = GTypeInt
+	//	getType(T,R) :- T = float, R = GTypeFloat
+	//	getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
+	//	getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
+	//	getType(T,R) :- T->Type = "func",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+	//	getType(T,R) :- T->Type = "lambda",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
 	//}
-	result = GetFuncType(![GTypeInt],GTypeVoid)
+	//getType(T,result)
+
+	////#prolog
+	////{
+	////	TestArgs(Inp,Outp,Result) := 
+	////}
+	//result = GetFuncType(![GTypeInt],GTypeVoid)
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-
-	printf("ye %s\n",int[3]->Name)
+	getType(1).{main->Type->Base}
 	//for func : Thread->Funcs
 	//{
 	//	printf("tst %s %p %p\b",func->name,func,func->raw)

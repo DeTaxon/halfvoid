@@ -1,6 +1,5 @@
 FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
 {
-	consts := null->{Object^}
 	if iter.GetValue() == "()"
 	{
 		if iter.Left.GetValue() in !["(d)", "d()","~func_pointer"] //TODO REFACTOR

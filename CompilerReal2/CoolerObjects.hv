@@ -28,7 +28,7 @@ ObjSkobs := class extend Object
 	{
 		if pri == State_Start
 		{
-			if Vers == 1
+			if Vers == 1 and Left?.GetValue() != "."
 			{
 				isLft := Left != null
 				oldVal := Object^

@@ -335,7 +335,7 @@ ObjStr := class extend ObjConst
 		MyTmpId = GetNewId()
 		justStr = str
 		stSize := strlen(str)
-		if stSize == 0
+		if stSize == 0 or true //TODO: maybe put back optimization
 		{
 			ResultType = GTypeString
 		}else{
@@ -348,13 +348,17 @@ ObjStr := class extend ObjConst
 		MyStrId = SId
 		MyTmpId = GetNewId()
 		stSize := strlen(str)
-		if stSize == 0
+		if stSize == 0 or true //TODO: maybe put back optimization
 		{
 			ResultType = GTypeString
 		}else{
 			ResultType = GTypeChar.GetArray(stSize)
 		}
 		justStr = str
+	}
+	DeSize := !() -> void
+	{
+		ResultType = GTypeString
 	}
 	GetString := virtual !() -> string
 	{

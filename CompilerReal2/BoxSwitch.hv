@@ -46,6 +46,11 @@ BoxSwitch := class extend Object
 			WorkBag.Push(this&,State_GetUse)
 			WorkBag.Push(Down,State_Start)
 			WorkBag.Push(Down.Right,State_Start)
+
+			if Down is ObjStr
+			{
+				Down->{ObjStr^}.DeSize()
+			}
 		}
 		if pri == State_GetUse
 		{
@@ -159,7 +164,7 @@ BoxSwitch := class extend Object
 				}
 			}
 		}
-		Down.PrintInBlock(f)
+		Down.PrintPre(f)
 	
 		if isAllowTreeOpt and things.Size() > 2
 		{

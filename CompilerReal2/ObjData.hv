@@ -85,8 +85,19 @@ ObjData := class extend Object
 				}
 				ignore := false
 				if iter.GetValue() in !["()","[]"] WorkBag.Push(iter,State_Syntax)
-				if iter.GetValue() == "{}" and iter.Left?.GetValue() in ![".","->"]
+				if iter.GetValue() == "{}" //TODO remove this ignore
+				{
+					//TODO i made it worse, non ignored {} is BoxBlock
+					if iter.Left?.GetValue() == "."
+					{
+						if iter.Left.Left?.GetValue() != "()"
+							ignore = true
+					}
+					if iter.Left?.GetValue() == "->"
+					{
 						ignore = true
+					}
+				}
 				if Down.GetValue() == "try" ignore = true
 				if not ignore WorkBag.Push(iter,State_Start)
 				iter = iter.Right
