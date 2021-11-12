@@ -196,6 +196,13 @@ BoxForOldFashionMulti := class extend BoxFor
 				WorkBag.Push(this&,State_PrePrint)
 				return void
 			}
+			if(Down.Right is MetaFuncParamsHolder)
+			{
+				asPrm := this&
+				asPrm->SetType(MetaBoxForFuncParams)
+				WorkBag.Push(this&,State_PrePrint)
+				return void
+			}
 		
 			if IsStep1
 			{
@@ -741,6 +748,81 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 		{
 			if par.ItName == ""
 				continue
+			it.PrintInBlock(f)
+		}
+	}
+}
+
+MetaBoxForFuncParams := class extend BoxForOldFashionMulti
+{
+	GetItem := virtual !(char^ name) -> Object^
+	{
+		return null
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_PrePrint
+		{
+			hldr := Down.Right->{MetaFuncParamsHolder^}
+			cType := hldr.MyType
+			if not cType is TypeFunc
+				EmitError("Type is not function")
+			cntr := 0
+			subBlocks := Object^()
+			lastBlock := Object^()
+
+			pr := cType->{TypeFunc^}
+			for i : pr.ParsCount
+			{
+				newBlock := Down.Clone()
+				if subBlocks == null
+				{
+					subBlocks = newBlock
+				}else{
+					lastBlock.Right = newBlock
+					newBlock.Left = lastBlock
+				}
+				lastBlock = newBlock
+				cntr += 1
+			}
+			Down = subBlocks
+			subBlocks.SetUp(this&)
+			for c : cntr 
+			{
+				itr := Down
+				for c itr = itr.Right
+				MakeItBlock(itr)
+			}
+			for it,i : Down
+			{
+				WorkBag.Push(it,State_Start)
+				asBlock := it->{BoxBlock^}
+				asBlock.Items.Push(new ObjHolder(Names[0], new ObjType(pr.Pars[i])))
+			}
+			holder = hldr
+			hldr.Up = this&
+		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		//cType := holder->{FieldHolder^}.MyType
+		//cls := cType->{TypeClass^}.ToClass
+		//if holder.Down != null
+		//{
+		//	holder.Down.PrintPointPre(f)
+		//	for par,i : cls.Params
+		//	{
+		//		if par.ItName == ""
+		//			continue
+		//		f << "%ForParamId" << ItId << "i" << i << " = getelementptr "
+		//		cType.PrintType(f)
+		//		f << " , "
+		//		holder.Down.PrintPointUse(f)
+		//		f << " , i32 0, i32 "<< cls.GetParamNr(i) <<"\n"
+		//	}
+		//}
+		for it : Down
+		{
 			it.PrintInBlock(f)
 		}
 	}

@@ -1,16 +1,24 @@
 
 getType := !(int callSize) .{@T} -> void 
 {
+	printf("%2i group %s\n",callSize,T->Group)
 	switch T->Group
 	{
 		case "prime"
 			printf("%2i prime\n",callSize)
 		case "array"
 		case "func"
+		if T->Group == "func"
+		{
 			printf("%2i func\n",callSize)
+			for par : T->Params
+			{
+				printf("%2i param\n",callSize)
+				getType(callSize+1).{par}
+			}
+		}
 		case "lambda"
 		case "pointer"
-			
 	}
 
 	//#prolog
@@ -35,7 +43,7 @@ getType := !(int callSize) .{@T} -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	getType(1).{main->Type->Base}
+	getType(1).{TAwaitWork->Type->Base}
 	//for func : Thread->Funcs
 	//{
 	//	printf("tst %s %p %p\b",func->name,func,func->raw)

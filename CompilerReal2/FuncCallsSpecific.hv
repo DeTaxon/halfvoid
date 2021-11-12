@@ -243,6 +243,17 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 	return null
 }
 
+MetaFuncParamsHolder := class extend ObjType
+{
+	this := !(Type^ tp) -> void
+	{
+		this."ObjType.this"(tp)
+	}
+	Clone := virtual !() -> Object^
+	{
+		return new MetaFuncParamsHolder(MyType)
+	}
+}
 FieldHolder := class extend ObjType
 {
 	this := !(Type^ tp) -> void

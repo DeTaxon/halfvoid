@@ -89,65 +89,72 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 	}
 	if ob.Down?.Right?.GetValue() == "->"
 	{
-		dV := TryCompute(ob.Down,values)
-		if dV == null return null
 
 		if ob.Down.Right.Right? is ObjIndent
 		{
+			dV := TryCompute(ob.Down,values)
 			metaStr := ob.Down.Right.Right->{ObjIndent^}.MyStr
-			if dV is ObjType
-			{
-				asType := dV->{ObjType^}.MyType
-				switch metaStr
-				{
-					case "ResultType"
-						if (asType is TypePoint or asType is TypeFuncLambda) and asType.Base is TypeFunc
-							return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
-					case "Base"
-						if asType.Base != null
-						{
-							return new ObjType(asType.Base) ; $temp
-						}else{
-							return new ObjType(GTypeVoid) ; $temp
-						}
-					case "Len"
-						if asType is TypeArr
-						{
-							return new ObjInt(asType->{TypeArr^}.Size)
-						}
-					case "Name"
-						return new ObjStr(GetConstString(asType.GetGoodName())) ; $temp
 
-				}
-			}
-			if metaStr == "Type"
+			if dV != null
 			{
-				if dV.GetType() != null
-					return new ObjType(dV.GetType()) ; $temp
-			}
-			if metaStr == "Group"
-			{
+
 				if dV is ObjType
 				{
-					tp := dV->{ObjType^}.MyType
-					if tp is TypeStandart
-						return new ObjStr("prime") ; $temp
-					if tp is TypePoint
-						return new ObjStr("pointer") ; $temp
-					if tp is TypeFunc
-						return new ObjStr("func") ; $temp
-					if tp is TypeArr
-						return new ObjStr("array") ; $temp
-					if tp is TypeFuncLambda
-						return new ObjStr("lambda") ; $temp
-					if tp is TypeFatArr
-						return new ObjStr("vector") ; $temp //TODO change name
-					assert(false)
+					asType := dV->{ObjType^}.MyType
+					switch metaStr
+					{
+						case "ResultType"
+							if (asType is TypePoint or asType is TypeFuncLambda) and asType.Base is TypeFunc
+								return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
+						case "Base"
+							if asType.Base != null
+							{
+								return new ObjType(asType.Base) ; $temp
+							}else{
+								return new ObjType(GTypeVoid) ; $temp
+							}
+						case "Len"
+							if asType is TypeArr
+							{
+								return new ObjInt(asType->{TypeArr^}.Size)
+							}
+						case "Name"
+							return new ObjStr(GetConstString(asType.GetGoodName())) ; $temp
+						case "Params"
+							if asType is TypeFunc
+							{
+								return new MetaFuncParamsHolder(asType) ; $temp
+							}
+					}
+				}
+				if metaStr == "Type"
+				{
+					if dV.GetType() != null
+						return new ObjType(dV.GetType()) ; $temp
+				}
+				if metaStr == "Group"
+				{
+					if dV is ObjType
+					{
+						tp := dV->{ObjType^}.MyType
+						if tp is TypeStandart
+							return new ObjStr("prime") ; $temp
+						if tp is TypePoint
+							return new ObjStr("pointer") ; $temp
+						if tp is TypeFunc
+							return new ObjStr("func") ; $temp
+						if tp is TypeArr
+							return new ObjStr("array") ; $temp
+						if tp is TypeFuncLambda
+							return new ObjStr("lambda") ; $temp
+						if tp is TypeFatArr
+							return new ObjStr("vector") ; $temp //TODO change name
+						assert(false)
+					}
 				}
 			}
 		}
 	}
-
 
 	if ob is ObjData and ob.Down.GetValue() == "!" and ob.Down.Right.GetValue() == "[]"
 	{
