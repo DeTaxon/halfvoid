@@ -104,6 +104,8 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					switch metaStr
 					{
 						case "ResultType"
+							if asType is TypeFunc
+								return new ObjType(asType->{TypeFunc^}.RetType) ; $temp
 							if (asType is TypePoint or asType is TypeFuncLambda) and asType.Base is TypeFunc
 								return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
 						case "Base"

@@ -22,9 +22,9 @@ JITPreInit := !() -> void
 	addJITFunction("TSpawnTask",TSpawnTask->{void^},![lType],GTypeVoid)
 	addJITFunction("TAwaitWork",TAwaitWork->{void^},![lType],GTypeVoid)
 
-	addJITFunction("TFullInit",_blankFunc->{void^},GTypeVoid)
+	//addJITFunction("TFullInit",_blankFunc->{void^},GTypeVoid)
 
-	//addJITFunc("TFullInit",_blankFunc)
+	addJITFunc("TFullInit",_blankFunc)
 
 	if $posix
 	{
@@ -43,7 +43,7 @@ getTypeJIT := !() .{@T} -> Type^
 		{
 			pars.Push(getTypeJIT().{par})
 		}
-		return GetFuncType(pars.ToArray(),null,pars.Size(),GTypeVoid,false,false,false) ; $temp
+		return GetFuncType(pars.ToArray(),null,pars.Size(),getTypeJIT().{T->ResultType},false,false,false) ; $temp
 		//return GetFuncType(GTypeVoid)
 	} else if T->Group == "prime"
 	{
@@ -53,9 +53,11 @@ getTypeJIT := !() .{@T} -> Type^
 		return GetType(T->Name).GetPoint()
 	} else if T->Group == "array"
 	{
+		404 = true
 		assert(false)
 	} else if T->Group == "class"
 	{
+		404 = true
 		assert(false)
 	}
 }
