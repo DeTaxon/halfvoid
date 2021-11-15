@@ -117,11 +117,11 @@ TaskPrintInit := !(TIOStream f) -> void
 {
 	if EnableGSTask
 	{
-	f << "%ItStructObj = ptrtoint %TaskStruct* @DefTaskStruct to i64\n"
-	f << "call void @llvm.x86.wrgsbase.64(i64 %ItStructObj)\n"
+		f << "%ItStructObj = ptrtoint %TaskStruct* @DefTaskStruct to i64\n"
+		f << "call void @llvm.x86.wrgsbase.64(i64 %ItStructObj)\n"
 	}else{
-	f << "%ItStructObj = bitcast %TaskStruct* @DefTaskStruct to i8*\n"
-	f << "store i8* %ItStructObj , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"
+		f << "%ItStructObj = bitcast %TaskStruct* @DefTaskStruct to i8*\n"
+		f << "store i8* %ItStructObj , i8** "sbt + gTaskPtr.GetPointName(0) + "\n"
 	}
 }
 

@@ -21,17 +21,30 @@ getType := !(int callSize) .{@T} -> void
 		case "pointer"
 	}
 
-	//#prolog
-	//{
-	//	getType([t | T] , [b | B]) :- t = getType(b)
-	//	getType(T,R) :- T = int, R = GTypeInt
-	//	getType(T,R) :- T = float, R = GTypeFloat
-	//	getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
-	//	getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
-	//	getType(T,R) :- T->Type = "func",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-	//	getType(T,R) :- T->Type = "lambda",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-	//}
-	//getType(T,result)
+	#prolog
+	{
+		getType([t | T] , [b | B]) :- t = getType(b)
+		getType(T,R) :- T = int, R = GTypeInt
+		getType(T,R) :- T = float, R = GTypeFloat
+		getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
+		getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
+		getType(T,R) :- T->Type = "func",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+		getType(T,R) :- T->Type = "lambda",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
+
+
+	}
+	getType(T,result)
+
+	for it : #marked(jit_pass)
+	{
+		if it->Group == "func"
+		{
+			addJITFunc(it->FuncName,it)
+		}
+		if it->Group == "class"
+		{
+		}
+	}
 
 	////#prolog
 	////{
@@ -43,6 +56,8 @@ getType := !(int callSize) .{@T} -> void
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
+
+	defer printf("hello\n")
 
 	//for func : Thread->Funcs
 	//{
