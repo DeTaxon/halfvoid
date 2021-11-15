@@ -8,34 +8,34 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
 			{
 				iter.Left->{ObjFuncPointer^}.fncCall.ParseBlock()
 			}
-		//TODO REFACTOR
-		if ((iter.Left.IsRef() or (iter.Left is ParamFuncCall and iter.Left->{ParamFuncCall^}.MacroCreated)) or (iter.Left is ObjFuncPointer)) and iter.Left.GetType() is TypePoint
-		{
-			if iter.Left.GetType().Base is TypeFunc
+			//TODO REFACTOR
+			if ((iter.Left.IsRef() or (iter.Left is ParamFuncCall and iter.Left->{ParamFuncCall^}.MacroCreated)) or (iter.Left is ObjFuncPointer)) and iter.Left.GetType() is TypePoint
 			{
-				iterL := iter.Left
-				iterLT := iterL.GetType()
-				TrimCommas(iter)
-				return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
-			}
-		}else{
-			if iter.Left.GetValue() == "(d)"
-			{
-				dynCast := (iter.Left)->{ParamCall^}
-				consts := null->{Object^}
-				if iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
+				if iter.Left.GetType().Base is TypeFunc
 				{
-					consts = iter.Right.Right
+					iterL := iter.Left
+					iterLT := iterL.GetType()
+					TrimCommas(iter)
+					return new PointFuncCall((iterLT.Base)->{TypeFunc^},iter.Down,iterL)
 				}
-				preRet := OneCall(dynCast.BeforeName, iter,consts,true)
-				if preRet != null 
+			}else{
+				if iter.Left.GetValue() == "(d)"
 				{
-					if iter.Left.Line != null
-						preRet.Line = iter.Left.Line
-					return preRet
+					dynCast := (iter.Left)->{ParamCall^}
+					consts := null->{Object^}
+					if iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
+					{
+						consts = iter.Right.Right
+					}
+					preRet := OneCall(dynCast.BeforeName, iter,consts,true)
+					if preRet != null 
+					{
+						if iter.Left.Line != null
+							preRet.Line = iter.Left.Line
+						return preRet
+					}
 				}
 			}
-		}
 		}
 		if true
 		{
@@ -54,7 +54,7 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
 
 			if(iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}")
 			{
-			CollectConsts(iter.Right.Right,box)	
+				CollectConsts(iter.Right.Right,box)	
 			}
 			
 			plsF := FindFunc("()",iter,box^,false)
