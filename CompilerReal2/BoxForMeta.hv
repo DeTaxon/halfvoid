@@ -1,5 +1,39 @@
 
-MetaBoxForFields := class extend BoxForOldFashionMulti
+MetaBoxFor := class extend BoxForOldFashionMulti
+{
+	deferTookSize := int
+	deferVal := int
+	deferId := int
+	GetDeferUsageVerticalSize := virtual !() -> int
+	{
+		deferTookSize = 0
+
+		for it : Down
+		{
+			deferTookSize += it.GetDeferUsageVerticalSize()
+		}
+
+		return deferTookSize		
+	}
+	PrintDeferUse := virtual !(TIOStream f, BoxFuncContainer^ bd,BoxBlock^ blk, int depth,int^ labelIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+
+		Down[^].PrintDeferUse(f,bd,blk,depth,labelIter)
+	}
+	PrintDeferInBlock := virtual !(TIOStream f, int itId,int^ labelSetIter) -> void
+	{
+		if deferTookSize == 0
+			return void
+		deferVal = labelSetIter^
+		deferId = itId
+		labelSetIter^ += deferTookSize
+		Down[^].PrintDeferInBlock(f,itId,labelSetIter)
+	}
+}
+
+MetaBoxForFields := class extend MetaBoxFor
 {
 	GetItem := virtual !(char^ name) -> Object^
 	{
@@ -86,7 +120,7 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 	}
 }
 
-MetaBoxForClassFuncs := class extend BoxForOldFashionMulti
+MetaBoxForClassFuncs := class extend MetaBoxFor
 {
 	GetItem := virtual !(char^ name) -> Object^
 	{
@@ -153,7 +187,7 @@ MetaBoxForClassFuncs := class extend BoxForOldFashionMulti
 		}
 	}
 }
-MetaBoxForFuncParams := class extend BoxForOldFashionMulti
+MetaBoxForFuncParams := class extend MetaBoxFor
 {
 	GetItem := virtual !(char^ name) -> Object^
 	{

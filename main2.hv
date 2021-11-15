@@ -54,13 +54,13 @@ TestClass := class
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	c := TestClass
-	for i,j : TestClass->Funcs
-	{
-		printf("func %s\n",j)
-		getType(1).{i->Type->Base}
-		i(c,3)
-	}
+	//c := TestClass
+	//for i,j : TestClass->Funcs
+	//{
+	//	printf("func %s\n",j)
+	//	getType(1).{i->Type->Base}
+	//	i(c,3)
+	//}
 
 	//for func : Thread->Funcs
 	//{

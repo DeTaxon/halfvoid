@@ -24,6 +24,8 @@ JITPreInit := !() -> void
 
 	addJITFunction("TFullInit",_blankFunc->{void^},GTypeVoid)
 
+	//addJITFunc("TFullInit",_blankFunc)
+
 	if $posix
 	{
 		addJITFunction("stat",stat->{void^},![GTypeChar.GetPoint(),GTypeVoidP],GTypeInt)
@@ -32,35 +34,39 @@ JITPreInit := !() -> void
 	}
 }
 
-//getTypeJIT := !() .{@T} -> Type^
-//{
-//	if T->Group == "func"
-//	{
-//		pars := new List.{Type^} ; $temp
-//		for par : T->Params
-//		{
-//			pars.Push(getTypeJIT().{par})
-//		}
-//		return GetFuncType(pars.ToArray(),null,pars.Size(),getTypeJIT().{T->ResultType},false,false,false)
-//	} else if T->Group == "prime"
-//	{
-//		return GetType(T->Name)
-//	} else if T->Group == "pointer"
-//	{
-//		return GetType(T->Name).GetPoint()
-//	} else if T->Group == "array"
-//	{
-//		assert(false)
-//	} else if T->Group == "class"
-//	{
-//		assert(false)
-//	}
-//}
+getTypeJIT := !() .{@T} -> Type^
+{
+	if T->Group == "func"
+	{
+		pars := new List.{Type^} ; $temp
+		for par : T->Params
+		{
+			pars.Push(getTypeJIT().{par})
+		}
+		return GetFuncType(pars.ToArray(),null,pars.Size(),GTypeVoid,false,false,false) ; $temp
+		//return GetFuncType(GTypeVoid)
+	} else if T->Group == "prime"
+	{
+		return GetType(T->Name)
+	} else if T->Group == "pointer"
+	{
+		return GetType(T->Name).GetPoint()
+	} else if T->Group == "array"
+	{
+		assert(false)
+	} else if T->Group == "class"
+	{
+		assert(false)
+	}
+}
 
-//addJITFunc := !(char^ name, @T func) -> void
-//{
-//	
-//}
+addJITFunc := !(char^ name, @T func) -> void
+{
+	funcType := getTypeJIT().{T->Base}
+	funcTypePtr := funcType.GetPoint()
+	funcPar := new GlobalParam(funcTypePtr,new ObjPointer(func->{void^},funcTypePtr))
+	passJITFuncs[name] = !{funcType,funcPar}
+}
 
 addJITFunction := !(char^ name ,void^ fPoint, Type^[@ArrSize] inps,Type^ outType) -> void
 {
@@ -115,4 +121,5 @@ JITPrint := !(TIOStream f) -> void
 }
 _blankFunc := !() -> void
 {
+	//printf("not blank\n")
 }
