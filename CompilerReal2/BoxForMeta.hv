@@ -86,6 +86,73 @@ MetaBoxForFields := class extend BoxForOldFashionMulti
 	}
 }
 
+MetaBoxForClassFuncs := class extend BoxForOldFashionMulti
+{
+	GetItem := virtual !(char^ name) -> Object^
+	{
+		return null
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_PrePrint
+		{
+			hldr := Down.Right->{MetaClassFuncsHolder^}
+			cType := hldr.MyType
+			if not cType is TypeClass
+				EmitError("Type is not class")
+			cntr := 0
+			subBlocks := Object^()
+			lastBlock := Object^()
+			cls := cType->{TypeClass^}.ToClass
+			for par : cls.defaultFuncsHolder.methods[^] //TODO + non default
+			{
+				newBlock := Down.Clone()
+				if subBlocks == null
+				{
+					subBlocks = newBlock
+				}else{
+					lastBlock.Right = newBlock
+					newBlock.Left = lastBlock
+				}
+				lastBlock = newBlock
+				cntr += 1
+			}
+			Down = subBlocks
+			subBlocks.SetUp(this&)
+			for c : cntr 
+			{
+				itr := Down
+				for c itr = itr.Right
+				MakeItBlock(itr)
+			}
+			
+			iter := Down
+			for parList, parName : cls.defaultFuncsHolder.methods
+			{
+				for par : parList
+				{
+					WorkBag.Push(iter,State_Start)
+					asBlock := iter->{BoxBlock^}
+					asBlock.Items.Push(new ObjHolder(Names[0], new ObjFuncPointer(par)))
+					if IndNames[0] != null
+					{
+						asBlock.Items.Push(new ObjHolder(IndNames[0], new ObjStr(parName)))
+					}
+					iter = iter.Right
+				}
+			}
+			holder = hldr
+			hldr.Up = this&
+		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		for it : Down
+		{
+			it.PrintInBlock(f)
+		}
+	}
+}
 MetaBoxForFuncParams := class extend BoxForOldFashionMulti
 {
 	GetItem := virtual !(char^ name) -> Object^

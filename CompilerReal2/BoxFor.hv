@@ -203,6 +203,13 @@ BoxForOldFashionMulti := class extend BoxFor
 				WorkBag.Push(this&,State_PrePrint)
 				return void
 			}
+			if(Down.Right is MetaClassFuncsHolder)
+			{
+				asPrm := this&
+				asPrm->SetType(MetaBoxForClassFuncs)
+				WorkBag.Push(this&,State_PrePrint)
+				return void
+			}
 		
 			if IsStep1
 			{

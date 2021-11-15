@@ -254,6 +254,17 @@ MetaFuncParamsHolder := class extend ObjType
 		return new MetaFuncParamsHolder(MyType)
 	}
 }
+MetaClassFuncsHolder := class extend ObjType
+{
+	this := !(Type^ tp) -> void
+	{
+		this."ObjType.this"(tp)
+	}
+	Clone := virtual !() -> Object^
+	{
+		return new MetaClassFuncsHolder(MyType)
+	}
+}
 FieldHolder := class extend ObjType
 {
 	this := !(Type^ tp) -> void

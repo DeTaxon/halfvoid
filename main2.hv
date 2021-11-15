@@ -39,11 +39,29 @@ getType := !(int callSize) .{@T} -> void
 	////}
 	//result = GetFuncType(![GTypeInt],GTypeVoid)
 }
+TestClass := class
+{
+	func1 := !(int x) -> void
+	{
+		printf("hello\n")
+	}
+	func2 := !(int x) -> void
+	{
+		printf("world\n")
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	getType(1).{TAwaitWork->Type->Base}
+	c := TestClass
+	for i,j : TestClass->Funcs
+	{
+		printf("func %s\n",j)
+		getType(1).{i->Type->Base}
+		i(c,3)
+	}
+
 	//for func : Thread->Funcs
 	//{
 	//	printf("tst %s %p %p\b",func->name,func,func->raw)

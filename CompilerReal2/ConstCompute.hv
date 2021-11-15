@@ -125,6 +125,11 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 							{
 								return new MetaFuncParamsHolder(asType) ; $temp
 							}
+						case "Funcs"
+							if asType is TypeClass
+							{
+								return new MetaClassFuncsHolder(asType) ; $temp
+							}
 					}
 				}
 				if metaStr == "Type"
@@ -139,6 +144,8 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 						tp := dV->{ObjType^}.MyType
 						if tp is TypeStandart
 							return new ObjStr("prime") ; $temp
+						if tp is TypeClass
+							return new ObjStr("class") ; $temp
 						if tp is TypePoint
 							return new ObjStr("pointer") ; $temp
 						if tp is TypeFunc

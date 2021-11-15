@@ -4,6 +4,10 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
 	{
 		if iter.Left.GetValue() in !["(d)", "d()","~func_pointer"] //TODO REFACTOR
 		{
+			if iter.Left is ObjFuncPointer
+			{
+				iter.Left->{ObjFuncPointer^}.fncCall.ParseBlock()
+			}
 		//TODO REFACTOR
 		if ((iter.Left.IsRef() or (iter.Left is ParamFuncCall and iter.Left->{ParamFuncCall^}.MacroCreated)) or (iter.Left is ObjFuncPointer)) and iter.Left.GetType() is TypePoint
 		{
