@@ -234,6 +234,7 @@ Object := class{
 			return null
 		return Up.GetFuncBody()
 	}
+	IsCmdMod := virtual !() -> bool { return false }
 	NotifyPointUse := virtual !() -> void {}
 }
 
