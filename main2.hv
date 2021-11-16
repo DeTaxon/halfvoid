@@ -1,4 +1,12 @@
 
+#mark(jit_pass) Func1 := !() -> void
+{
+	printf("hello\n")
+}
+#mark(jit_pass) Func2 := !() -> void
+{
+}
+
 getType := !(int callSize) .{@T} -> void 
 {
 	printf("%2i group %s\n",callSize,T->Group)
@@ -30,21 +38,8 @@ getType := !(int callSize) .{@T} -> void
 		getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
 		getType(T,R) :- T->Type = "func",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
 		getType(T,R) :- T->Type = "lambda",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-
-
 	}
 	getType(T,result)
-
-	for it : #marked(jit_pass)
-	{
-		if it->Group == "func"
-		{
-			addJITFunc(it->FuncName,it)
-		}
-		if it->Group == "class"
-		{
-		}
-	}
 
 	////#prolog
 	////{

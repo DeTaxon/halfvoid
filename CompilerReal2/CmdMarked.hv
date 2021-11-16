@@ -1,0 +1,17 @@
+
+
+CmdMarked := class extend Object
+{
+	marks := AVLSet.{char^} //TODO bug on 'marks := AVLSet.{char^}()'
+	this := !(Object^ item) -> void
+	{
+		for it : item.Down?
+		{
+			if it is ObjIndent
+			{
+				st := it->{ObjIndent^}.MyStr
+				marks.Insert(st)
+			}
+		}
+	}
+}

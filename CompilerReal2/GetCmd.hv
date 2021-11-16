@@ -1,0 +1,13 @@
+ParseCmdCall := !(Object^ item) -> Object^
+{
+	if item.Down? is ObjCmd
+	{
+		cmd := item.Down->{ObjCmd^}.MyStr
+
+		if cmd == "#mark" and item.Down.Right?.GetValue() == "()"
+		{
+			return new CmdMarked(item.Down.Right)
+		}
+	}
+	return null
+}

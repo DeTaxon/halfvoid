@@ -17,6 +17,8 @@ InspectDataR := !(Object^ item) -> Object^
 
 	if item.Down? is ObjTemplateType
 		return new DecoratorOperator(item)
+
+	return ParseCmdCall(item)?	
 	
 	return null
 }
