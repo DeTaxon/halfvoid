@@ -16,3 +16,21 @@ CmdMarked := class extend Object
 	}
 	IsCmdMod := virtual !() -> bool { return true }
 }
+
+
+ObjHolder := class .{@T}
+{
+	objs := List.{T^}
+	lambdas := List.{!(T^)&->void}
+
+	Add := !(T^ newObj) ->  void
+	{
+		objs << newObj
+		lambdas[^](newObj)
+	}
+	Listen := !(!(T^)&->void l) -> void
+	{
+		labmdas << l
+		l(objs[^])
+	}
+}
