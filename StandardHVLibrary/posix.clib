@@ -44,8 +44,8 @@
 
 		"realpath" : "char^,char^,char^",
 
-		"mkdtemp" := "char^,char^",
-		"mkstemp" := "int,char^",
+		"mkdtemp" : "char^,char^",
+		"mkstemp" : "int,char^",
 		
 		"mkdir" : "int,char^,int",
 		"opendir" : "void^,char^",

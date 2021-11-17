@@ -85,7 +85,7 @@
 		"WaitForSingleObject" : "void,void^,u32",
 
 		"ConvertThreadToFiber" : "void^,void^",
-		"SwitchToFiber" := "void,void^",
+		"SwitchToFiber" : "void,void^",
 		"CreateFiber" : "void^,size_t,void^,void^",
 		"DeleteFiber" : "void,void^",
 

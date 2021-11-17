@@ -144,16 +144,26 @@ vRepo := class
 	{
 		return getObject(p,rootFolder) != null
 	}
-	ReadFolder := !(StringSpan p,!(vRepoFile^)& -> void callb) -> void
+	ReadFolder := !(StringSpan p,bool recur,!(vRepoFile^)& -> void callb) -> void
 	{
 		fil := getObject(p,rootFolder)
 		if fil == null
 			return void
 
 		rep := fil->{vRepoFolder^}
+		_ReadFolder(rep,recur,callb)
+
+	}
+	_ReadFolder := !(vRepoFolder^ rep,bool recur,!(vRepoFile^)& -> void callb) -> void
+	{
 		ExamineFolder(rep)
 
 		for rep.subFiles callb(it)
+		if recur
+		{
+			for rep.subFolders
+				_ReadFolder(it,recur,callb)
+		}
 	}
 	GetFile := !(char^ fileName)-> vRepoFile^
 	{

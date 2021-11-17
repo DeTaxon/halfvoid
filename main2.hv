@@ -53,11 +53,10 @@ main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
 
-	for it, name : #marked("jit_pass")
-	{
-		printf("func %s\n",name)
-		it()
-	}
+	TFSReadFolder(StringSpan("."),true,x ==> {
+		printf("file %s\n",x.GetPath())
+	})
+
 
 	//for func : Thread->Funcs
 	//{
