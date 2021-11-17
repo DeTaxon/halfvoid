@@ -1,1 +1,2 @@
 defer does not work with GC Objects
+way for BoxTemplate math types that does not look horrible
