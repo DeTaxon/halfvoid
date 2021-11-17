@@ -160,54 +160,26 @@ main := !(int argc,char^^ argv) -> int
 
 	for toDir : dirChecks
 	{
-		itStb := ""sbt << toDir.0
-		tmp1 := itStb.Str() ; $temp
-		for k : tmp1 if k == '$' k = '*'
-		anyFileName := char^()
-		for suf : fileSuffixes
-		{
-			tmp2Pre := ""sbt + tmp1  + suf
-			tmp2 := tmp2Pre.Str() ; $temp
-			for newItm : Wildcard(tmp2)
+
+		TFSReadFolder(StringSpan(toDir.0),true, x ==> {
+			
+			se := StringEnd(x.GetName())
+			if se == ".clib"
 			{
-				flName := StrCopy(newItm.itStr)
-				codeSp.Emplace(toDir.1,flName)
-				anyFileName = flName
+				clibModule.AddCLib(x,false)
+			}else{
+				found := false
+				for suf : fileSuffixes
+				{
+					if se == suf
+					{
+						codeSp.Emplace(toDir.1,x.GetPath())
+						break
+					}
+				}
 			}
-		}
-
-		libCheck := ""sbt + tmp1 + ".clib"
-		for libs : Wildcard(libCheck)
-		{
-			clibModule.AddCLib(gRepo.GetFile(libs.Get()),false)
-		}
-
-
-		//TFSReadFolder(toDir.0[0..-1],true, x ==> {
-		//	
-		//	se := StringEnd(x.GetName())
-		//	if se == ".clib"
-		//	{
-		//		printf("lib %s\n",x.GetPath())
-		//	}else{
-		//		found := false
-		//		for suf : fileSuffixes
-		//		{
-		//			if se == suf
-		//			{
-		//				printf("good %s\n",x.GetPath())
-		//				found = true
-		//				break
-		//			}
-		//		}
-		//		if not found
-		//		{
-		//			printf("bad %s\n",x.GetPath())
-		//		}
-
-		//	}
-		//	
-		//})
+			
+		})
 
 		//machCheck := ""sbt + tmp1 + ".stm"
 		//for machs : Wildcard(machCheck)
