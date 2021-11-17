@@ -375,7 +375,7 @@ main := !() -> void
 ```
 
 Threads
-I stole idea from javascript: one thread , but heavy computation dumped to thread pool
+I took idea from javascript: one thread , but heavy computation passed to thread pool
 
 ```java
 
@@ -412,6 +412,16 @@ main := !(int argc, char^^ argv) -> void
 }
 
 
+```
+
+You can add mark to function and later iterate over all functions with that mark.
+```java
+#mark("UniqName") func := !() -> void {}
+
+for it, name : #marked("UniqName")
+{
+	it()
+}
 ```
 
 Small features
