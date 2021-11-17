@@ -1,0 +1,40 @@
+
+DefValueMod_Static := 1
+DefValueMod_Field := 2
+DefValueMod_StaticField := 3
+
+FuncDefValue := class
+{
+	Value := Object^
+	ValueModifier := int
+}
+
+IsBoxFuncContainer := !(Object^ toCheck) -> bool
+{
+	return toCheck is in BoxFuncContainer
+}
+GetBoxFuncContainer := !(Object^ Start) -> BoxFuncContainer^
+{
+	itr := Start
+	while itr != null
+	{
+		if IsBoxFuncContainer(itr)
+			return itr->{BoxFuncContainer^}
+		itr = itr.Up
+	}
+	return null
+}
+GetFuncBlock := !(Object^ to) -> BoxFunc^
+{
+	iterE := to
+
+	while iterE != null
+	{
+		if iterE.GetValue() == "!()"
+		{
+			return iterE->{BoxFunc^}
+		}
+		iterE = iterE.Up
+	}
+	return null
+}

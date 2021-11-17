@@ -1,4 +1,4 @@
-ForcedLibs := -C0 "Libs/" -C0 "StandardHVLibrary/"
+ForcedLibs := -C0 "Libs/" -C0 "StandardHVLibrary/" 
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
@@ -48,7 +48,7 @@ ifeq ($(tui),yes)
 endif
 
 MainOut := ./Objs/out3.ll
-ProgSrc := -C1 "CompilerReal2/" CompilerReal2/main.hv
+ProgSrc := -C1 "CompilerReal2/" -C1 "Source/" CompilerReal2/main.hv
 
 AddStatic := $(Stati)
 ifeq ($(OS),Windows_NT)

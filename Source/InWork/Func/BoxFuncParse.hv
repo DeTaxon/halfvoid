@@ -1,0 +1,188 @@
+
+ParseFuncDataR := !(Object^ item) -> Object^
+{
+	iter := item.Down
+
+	if iter == null return null
+
+	IsStatic := false
+	IsVirtual := false
+
+	ClassPtr := BoxClass^()
+	ClassType := Type^()
+
+	RetT := Object^
+	RetT = null
+	RetRef := false
+	itsSelfRet := false
+
+	constsI := null->{Object^}
+
+	itLine := item.Line
+
+
+	if iter.GetValue() == "virtual"
+	{
+		IsVirtual = true
+		iter = iter.Right
+	}
+	if iter.GetValue() == "static"
+	{
+		IsStatic = true
+		iter = iter.Right
+	}
+
+
+	if iter.GetValue() != "!" return null
+
+
+	ClassPtr := GetUpClass(item)
+	if(ClassPtr != null)
+	{
+		ClassType = ClassPtr.ClassType
+	}
+
+	ExtraIter := item
+	while ExtraIter != null
+	{
+		switch ExtraIter.GetValue()
+		{
+		case "~fake"
+			if IsVirtual
+			{
+				item.EmitError("can not use virtual functions inside fake field")
+				return null
+			}
+			ExtraIter = ExtraIter.Up
+		case void
+			ExtraIter = ExtraIter.Up
+		}
+	}
+
+	iter = iter.Right
+	
+	if iter.GetValue() != "()" return null
+
+	ParamsObj := iter
+	iter = iter.Right
+
+	if iter.GetValue() == "."
+	{
+		constsI = iter.Right
+		iter = constsI.Right
+	}
+
+	if iter.GetValue() == "->"
+	{
+		iter = iter.Right
+		if iter.GetValue() == "ref"
+		{
+			RetRef = true
+			iter = iter.Right
+		}
+		RetT = iter
+		iter = iter.Right
+	}
+	if iter.GetValue() == "self_return"
+	{
+		iter = iter.Right
+		itsSelfRet = true
+		if ClassType == null
+			return null
+	}
+
+
+	iterForName := iter.Up
+	isPoison := false
+	FName := ""
+	IsSuf := false
+
+	while iterForName != null
+	{
+		if iterForName.GetValue() == "i:=1"
+		{
+			dynCa := iterForName->{ObjParam^}
+			IsSuf = dynCa.IsStrName
+			FName = dynCa.MyStr
+			isPoison = dynCa.IsPoison
+
+			if FName == "![]" IsSuf = false
+			if FName == "this" IsSuf = false
+
+			if IsOper(FName) IsSuf = false
+
+			break
+		}else	iterForName = iterForName.Up
+	}
+	if constsI != null	SyntaxCompress(constsI,PriorityData)
+	if iter.GetValue() == "declare"
+	{
+		return new BoxFuncDeclare(ParamsObj,RetT,FName)
+	}
+
+	if isPoison
+	{
+		asCl := GetUpClass(iterForName)
+		if asCl != null
+		{
+			asCl.ItPoisons[FName] = item.Clone()
+		}
+	}
+	if iter.GetValue() == "{}"
+	{
+		if constsI?.Down == null or IsTemplate(ParamsObj)
+		{
+			preRes := new BoxTemplate(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item)
+			preRes.IsSelfReturn = itsSelfRet
+			preRes.Line = itLine
+
+
+			deferPart := BoxTemplate^
+			if iter.Right != null //TODO: less hardcode, !() {} e () {} , not just that
+			{
+				assert(iter.Right.GetValue() == "defer_tail")
+
+				deferName := "DeferTail "sbt + FName
+				deferPart = new BoxTemplate(iter.Right.Right
+					,new ObjIndent("void") // TODO: fix autoget return type
+					,null,false,deferName.Str()
+					,iter.Right.Right.Right,false
+					,ClassType,false,false,item)
+
+				preRes.deferTail = deferPart
+			}
+		
+
+			return preRes
+		}
+
+
+
+		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item,null)
+		preRet.IsSelfReturn = itsSelfRet
+		preRet.Line = itLine
+
+
+		deferPart := BoxFuncBody^
+		if iter.Right != null //TODO: less hardcode, !() {} e () {} , not just that
+		{
+			assert(iter.Right.GetValue() == "defer_tail")
+
+			deferName := "DeferTail "sbt + FName
+			deferPart = new BoxFuncBody(iter.Right.Right
+				,new ObjIndent("void") // TODO: fix autoget return type
+				,null,false,deferName.Str()
+				,iter.Right.Right.Right,false
+				,ClassType,false,false,item,preRet)
+			deferPart.Line = itLine //TODO: not that line?
+
+		}
+		if deferPart != null
+			deferPart.Up = preRet
+		preRet.deferTail = deferPart
+
+		return preRet
+		
+	}
+	return null
+}
