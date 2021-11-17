@@ -228,7 +228,7 @@ BoxFuncContainer := class extend Object
 			WorkBag.Push(this&,State_CheckDefer)
 		containDefer = true
 	}
-	GetFuncBody := virtual !() -> BoxFuncContainer^
+	GetFuncLastBody := virtual !() -> BoxFuncContainer^
 	{
 		return this&
 	}

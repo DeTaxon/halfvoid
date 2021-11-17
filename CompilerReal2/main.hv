@@ -33,6 +33,7 @@ main := !(int argc,char^^ argv) -> int
 	fileSuffixes << ".hv"
 	if $posix compilerSuffix = "posix"
 	if $win32 compilerSuffix = "win32"
+	noSuffixes := true
 
 	dirChecks := List.{Tuple.{char^,int}}()
 	defer dirChecks.Destroy()
@@ -85,7 +86,7 @@ main := !(int argc,char^^ argv) -> int
 			compilerSuffix = argv[i]
 			itNm := ".hv."sbt + argv[i]
 			fileSuffixes.Push(itNm.Str())
-			
+			noSuffixes = false
 		case "-o"
 			outputFile = argv[i+1]
 			i += 1
@@ -139,6 +140,11 @@ main := !(int argc,char^^ argv) -> int
 	if jitMode
 	{
 		TFullInit()
+	}
+
+	if noSuffixes
+	{
+		fileSuffixes << compilerSuffix
 	}
 	//gRepo.PreferVirtual(true)
 
