@@ -23,6 +23,8 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 
 	if ob.IsConst return ob
 
+	return ConstComputeCmdCall(ob)?
+
 	if ob is ObjIndent
 	{
 		asN := ob->{ObjIndent^}

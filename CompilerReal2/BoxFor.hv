@@ -210,6 +210,13 @@ BoxForOldFashionMulti := class extend BoxFor
 				WorkBag.Push(this&,State_PrePrint)
 				return void
 			}
+			if(Down.Right is CmdMarkedHolder)
+			{
+				asPrm := this&
+				asPrm->SetType(MetaBoxForMarked)
+				WorkBag.Push(this&,State_GetUse)
+				return void
+			}
 		
 			if IsStep1
 			{

@@ -1,10 +1,11 @@
 
-#mark(jit_pass) Func1 := !() -> void
+#mark("jit_pass") Func1 := !() -> void
 {
 	printf("hello\n")
 }
-#mark(jit_pass) Func2 := !() -> void
+#mark("jit_pass") Func245 := !() -> void
 {
+	printf("world\n")
 }
 
 getType := !(int callSize) .{@T} -> void 
@@ -52,7 +53,11 @@ main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
 
-	defer printf("hello\n")
+	for it, name : #marked("jit_pass")
+	{
+		printf("func %s\n",name)
+		it()
+	}
 
 	//for func : Thread->Funcs
 	//{

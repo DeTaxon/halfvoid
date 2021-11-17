@@ -32,7 +32,6 @@ MetaBoxFor := class extend BoxForOldFashionMulti
 		Down[^].PrintDeferInBlock(f,itId,labelSetIter)
 	}
 }
-
 MetaBoxForFields := class extend MetaBoxFor
 {
 	GetItem := virtual !(char^ name) -> Object^

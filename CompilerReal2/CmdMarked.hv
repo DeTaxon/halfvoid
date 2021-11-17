@@ -7,18 +7,37 @@ CmdMarked := class extend Object
 	{
 		for it : item.Down?
 		{
-			if it is ObjIndent
+			if it is ObjStr
 			{
-				st := it->{ObjIndent^}.MyStr
+				st := GetConstString(it->{ObjStr^}.GetString())
 				marks.Insert(st)
+				Markers[st].Add(this&)
 			}
 		}
+		
 	}
 	IsCmdMod := virtual !() -> bool { return true }
 }
 
+CmdMarkedHolder := class extend ObjConst
+{
+	param := Object^
+	this := !(Object^ item) -> void
+	{
+		assert(item != null)
+		assert(item is ObjStr)
+		param = item // TODO error check
+	}
+	Clone := virtual !() ->Object^
+	{
+		return new CmdMarkedHolder(this.param)
+	}
+}
 
-ObjHolder := class .{@T}
+Markers := AVLMap.{char^,ObjMetaHolder.{CmdMarked}}
+
+
+ObjMetaHolder := class .{@T}
 {
 	objs := List.{T^}
 	lambdas := List.{!(T^)&->void}
@@ -30,7 +49,59 @@ ObjHolder := class .{@T}
 	}
 	Listen := !(!(T^)&->void l) -> void
 	{
-		labmdas << l
+		lambdas << l.Capture()
 		l(objs[^])
+	}
+}
+
+MetaBoxForMarked := class extend MetaBoxFor
+{
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_GetUse
+		{
+			hldr := Down.Right->{CmdMarkedHolder^}
+			Down.Right = null
+			markName := GetConstString(hldr.param->{ObjStr^}.GetString())
+
+			Markers[markName].Listen(x ==> {
+				iter := x->{Object^}
+				while iter?.IsCmdMod()
+					iter = iter.Right
+				if iter == null
+					return void //TODO emit error
+				if iter is ObjParam and iter.Down is BoxFuncBody //TODO is in BoxFuncBody
+				{
+					assert(Down != null)
+
+					newNode := Down.Clone()
+					newNode.Right = Down.Right
+					Down.Right?.Left = newNode
+					Down.Right = newNode
+					newNode.Left = Down
+					newNode.Up = this&
+
+					MakeItBlock(newNode)
+					newBlock := Down.Right->{BoxBlock^}
+					
+					WorkBag.Push(newBlock,State_Start)
+					newBlock.Items.Push(new ObjHolder(Names[0],new ObjFuncPointer(iter.Down->{BoxFunc^})))
+					newBlock.Items.Push(new ObjHolder(IndNames[0]?,new ObjStr(iter->{ObjParam^}.MyStr)))
+
+				}
+
+			})
+		}
+		if pri == State_PrePrint
+		{
+			PopOutNode(Down)
+		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		for it : Down
+		{
+			it.PrintInBlock(f)
+		}
 	}
 }
