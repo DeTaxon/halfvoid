@@ -334,26 +334,14 @@ ObjStr := class extend ObjConst
 	{
 		MyTmpId = GetNewId()
 		justStr = str
-		stSize := strlen(str)
-		if stSize == 0 or true //TODO: maybe put back optimization
-		{
-			ResultType = GTypeString
-		}else{
-			ResultType = GTypeChar.GetArray(stSize)
-		}
+		ResultType = GTypeString
 		MyStrId = StrContainer.GetStringValue(str)
 	}
 	this := !(int SId,char^ str) -> void
 	{
 		MyStrId = SId
 		MyTmpId = GetNewId()
-		stSize := strlen(str)
-		if stSize == 0 or true //TODO: maybe put back optimization
-		{
-			ResultType = GTypeString
-		}else{
-			ResultType = GTypeChar.GetArray(stSize)
-		}
+		ResultType = GTypeString
 		justStr = str
 	}
 	DeSize := !() -> void

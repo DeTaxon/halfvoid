@@ -1,4 +1,4 @@
-WayControl := class extend Object //TODO use this when defer usese GC objects
+WayControl := class extend Object
 {
 	itItm := string
 	itType := int
