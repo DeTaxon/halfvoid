@@ -651,6 +651,7 @@ ObjTemplateType := class extend Object
 		PreRet.Line = Line
 		return PreRet
 	}
+	IsCmdMod := virtual !() -> bool { return true }
 	IsDataR := virtual true
 	IsBlockData := virtual true
 }
