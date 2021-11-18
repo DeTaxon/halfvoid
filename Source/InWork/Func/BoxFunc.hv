@@ -53,6 +53,7 @@ BoxFunc := class extend BoxFuncContainer
 	}
 	GetWrappedFunc := virtual !() -> BoxFunc^ 
 	{
+		return GetDecorator()?
 		return this&
 	}
 	

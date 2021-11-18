@@ -38,11 +38,6 @@ BoxFuncBody := class extend BoxFunc
 		return null
 	}
 
-	GetWrappedFunc := virtual !() -> BoxFunc^ 
-	{
-		return this&
-	}
-	
 	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		ABox.ItId = GetNewId()

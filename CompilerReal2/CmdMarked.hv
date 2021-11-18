@@ -83,11 +83,13 @@ MetaBoxForMarked := class extend MetaBoxFor
 
 					MakeItBlock(newNode)
 					newBlock := Down.Right->{BoxBlock^}
+
+					fnc := iter.Down->{BoxFunc^}
+					fnc = fnc.GetWrappedFunc()
 					
 					WorkBag.Push(newBlock,State_Start)
-					newBlock.Items.Push(new ObjHolder(Names[0],new ObjFuncPointer(iter.Down->{BoxFunc^})))
+					newBlock.Items.Push(new ObjHolder(Names[0],new ObjFuncPointer(fnc)))
 					newBlock.Items.Push(new ObjHolder(IndNames[0]?,new ObjStr(iter->{ObjParam^}.MyStr)))
-
 				}
 
 			})

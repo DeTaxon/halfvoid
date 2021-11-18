@@ -3,7 +3,7 @@
 {
 	printf("hello\n")
 }
-#mark("jit_pass") Func245 := !() -> void
+#mark("jit_pass") @once Func245 := !() -> void
 {
 	printf("world\n")
 }
@@ -53,14 +53,11 @@ main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
 
-	TFSReadFolder(StringSpan("."),true,x ==> {
-		printf("file %s\n",x.GetPath())
-	})
-
-
-	//for func : Thread->Funcs
-	//{
-	//	printf("tst %s %p %p\b",func->name,func,func->raw)
-	//}
+	for 2 for it : #marked("jit_pass")
+	{
+		it()
+	}
+	Func245()
+	Func245()
 }
 
