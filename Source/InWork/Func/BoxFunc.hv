@@ -51,11 +51,6 @@ BoxFunc := class extend BoxFuncContainer
 			return it.Down
 		return null
 	}
-	GetWrappedFunc := virtual !() -> BoxFunc^ 
-	{
-		return GetDecorator()?
-		return this&
-	}
 	
 	IsSameConsts := !(FuncInputBox itBox) -> bool
 	{

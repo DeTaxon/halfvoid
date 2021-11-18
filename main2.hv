@@ -3,9 +3,15 @@
 {
 	printf("hello\n")
 }
-#mark("jit_pass") @once Func245 := !() -> void
+#mark("jit_pass") @once @twice Func245 := !() -> void
 {
 	printf("world\n")
+}
+
+"@twice func" := !(args...).{@T} -> void 
+{
+	T(args...)
+	T(args...)
 }
 
 getType := !(int callSize) .{@T} -> void 

@@ -5,6 +5,39 @@ AppendClass BoxFunc
 	decoratorHaveFunc := bool
 
 
+	wrappedSearched := bool
+	wrappedFunc := BoxFunc^
+	GetWrappedFunc := virtual !() -> BoxFunc^
+	{
+		if wrappedSearched
+			return wrappedFunc
+		wrappedSearched = true
+		wrappedFunc = this&
+		ParseBlock()
+		
+		if Up? is ObjParam
+		{
+			iter := Up.Left
+			while iter != null
+			{
+				if not iter.IsCmdMod()
+					break
+				if iter is ObjTemplateType
+				{
+					dcName := iter->{ObjTemplateType^}.MyStr
+					wrappedFunc = wrappedFunc.SearchGetDecorator(dcName)
+
+					if wrappedFunc == null
+						EmitError("Decorator <"sbt + dcName + "> not found")
+					wrappedFunc.ParseBlock() //TODO move to FuncCall?
+				}
+				iter = iter.Left
+			}
+		}
+
+		return wrappedFunc
+	}
+
 	GetDecorator := !() -> BoxFunc^
 	{
 		if decoratorName == null
@@ -17,28 +50,35 @@ AppendClass BoxFunc
 	}
 	SearchDecorator := !(char^ name) -> void
 	{
+		decoratorFunc = SearchGetDecorator(name)
+
+		if decoratorFunc == null
+			EmitError("Decorator <"sbt + name + "> not found")
+	}
+	SearchGetDecorator := !(char^ name) -> BoxFunc^
+	{
 		assert(MyFuncType != null)
 
 		fncName := ("@"sbt + name + " func")->{char^}
 		
-		itBox := new FuncInputBox() ; $temp
-		itBox.itPars.Emplace(MyFuncType.GetPoint(),false)
-		for c : MyFuncType.ParsCount
-		{
-			itBox.itPars.Emplace(
-				MyFuncType.Pars[c],
-				MyFuncType.ParsIsRef[c]
-				)
-		}
+		//itBox := new FuncInputBox() ; $temp
+		//itBox.itPars.Emplace(MyFuncType.GetPoint(),false)
+		//for c : MyFuncType.ParsCount
+		//{
+		//	itBox.itPars.Emplace(
+		//		MyFuncType.Pars[c],
+		//		MyFuncType.ParsIsRef[c]
+		//		)
+		//}
 
-		dFunc := FindFunc(fncName,this&,itBox^,false)
+		//dFunc := FindFunc(fncName,this&,itBox^,false)
 
-		if dFunc != null
-		{
-			decoratorFunc = dFunc
-			decoratorHaveFunc = true
-			return void
-		}
+		//if dFunc != null
+		//{
+		//	decoratorFunc = dFunc
+		//	decoratorHaveFunc = true
+		//	return void
+		//}
 
 		itBox2 := new FuncInputBox() ; $temp
 		itBox2.itConsts.Push(new ObjFuncPointer(this&)) ; $temp
@@ -49,14 +89,13 @@ AppendClass BoxFunc
 				MyFuncType.ParsIsRef[c]
 				)
 		}
-		dFunc = FindFunc(fncName,this&,itBox2^,false)
+		dFunc := FindFunc(fncName,this&,itBox2^,false)
 
 		if dFunc != null
 		{
-			decoratorFunc = dFunc
-			return void
+			return dFunc
 		}
+		return null
 
-		EmitError("Decorator <"sbt + fncName + "> not found")
 	}
 }
