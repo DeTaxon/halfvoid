@@ -556,11 +556,6 @@ BoxFuncBody := class extend BoxFunc
 		}
 		if pri == State_GetUse
 		{
-			if GetDecorator() != null and decoratorHaveFunc
-			{
-				//TODO change it
-				assert(false)
-			}
 			
 		}
 		if pri == State_CheckDefer

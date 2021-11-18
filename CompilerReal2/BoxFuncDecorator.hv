@@ -1,10 +1,5 @@
 AppendClass BoxFunc
 {
-	decoratorName := char^
-	decoratorFunc := BoxFunc^
-	decoratorHaveFunc := bool
-
-
 	wrappedSearched := bool
 	wrappedFunc := BoxFunc^
 	GetWrappedFunc := virtual !() -> BoxFunc^
@@ -29,31 +24,13 @@ AppendClass BoxFunc
 
 					if wrappedFunc == null
 						EmitError("Decorator <"sbt + dcName + "> not found")
-					wrappedFunc.ParseBlock() //TODO move to FuncCall?
+					wrappedFunc.ParseBlock()
 				}
 				iter = iter.Left
 			}
 		}
 
 		return wrappedFunc
-	}
-
-	GetDecorator := !() -> BoxFunc^
-	{
-		if decoratorName == null
-			return null
-
-
-		if decoratorFunc == null
-			SearchDecorator(decoratorName)
-		return decoratorFunc
-	}
-	SearchDecorator := !(char^ name) -> void
-	{
-		decoratorFunc = SearchGetDecorator(name)
-
-		if decoratorFunc == null
-			EmitError("Decorator <"sbt + name + "> not found")
 	}
 	SearchGetDecorator := !(char^ name) -> BoxFunc^
 	{

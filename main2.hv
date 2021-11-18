@@ -55,14 +55,22 @@ getType := !(int callSize) .{@T} -> void
 	//result = GetFuncType(![GTypeInt],GTypeVoid)
 }
 
+"@twice call" := !(@LType lambd) -> LType->ResultType
+{
+	lambd()
+	lambd()
+}
+
+f1 := !() -> void
+{
+	@once @twice printf("test \n")
+}
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-
-	for 2 for it : #marked("jit_pass")
-	{
-		it()
-	}
+	//f1()
+	//f1()
+	Func245()
 	Func245()
 	Func245()
 }

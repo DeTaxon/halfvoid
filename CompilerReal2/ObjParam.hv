@@ -399,17 +399,6 @@ ObjParam := class extend Object
 					SomeObj.SetUp(this&)
 					ObjType = SomeObj.GetType()
 					//WorkBag.Push(this&,State_GetUse)
-
-					if Left != null and Left is ObjTemplateType //DECORATOR
-					{
-						if SomeObj is BoxFuncBody or SomeObj is BoxFuncDeclare // TODO in TGCObject
-						{
-
-							obj := SomeObj->{BoxFunc^}
-							dName := Left->{ObjTemplateType^}.MyStr
-							obj.decoratorName = dName
-						}
-					}
 				}else
 				{
 					asClass := ParseClass(Down)

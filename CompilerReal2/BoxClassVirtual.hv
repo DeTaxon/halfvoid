@@ -41,12 +41,7 @@ VTableFunction := class extend VTableObject
 	}
 	PrintValue := virtual !(TIOStream f) -> void 
 	{
-		if fItem.decoratorFunc != null and not fItem.decoratorHaveFunc
-		{
-			f << fType.GetName() << "* @" << fItem.decoratorFunc.OutputName
-		}else{
-			f << fType.GetName() << "* @" << fItem.OutputName
-		}
+		f << fType.GetName() << "* @" << fItem.GetWrappedFunc().OutputName //TODO ParseBlock for virtual objects before
 	}
 }
 VTableParameter := class extend VTableObject
