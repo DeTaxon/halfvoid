@@ -6,7 +6,7 @@
 #mark("jit_pass") @once @twice Func245 := !() -> void
 {
 	printf("world\n")
-}
+} 
 
 "@twice func" := !(args...).{@T} -> void 
 {

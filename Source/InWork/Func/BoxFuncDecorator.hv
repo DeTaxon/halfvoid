@@ -9,6 +9,8 @@ AppendClass BoxFunc
 		wrappedSearched = true
 		wrappedFunc = this&
 		ParseBlock()
+
+
 		
 		if Up? is ObjParam
 		{
@@ -19,6 +21,11 @@ AppendClass BoxFunc
 					break
 				if iter is ObjTemplateType
 				{
+					if wrappedFunc == this& and this& is BoxFuncBody and this&->{BoxFuncBody^}.deferTail != null
+					{
+						EmitError("Can not decorate function with defer_tail\n")
+					}
+
 					dcName := iter->{ObjTemplateType^}.MyStr
 					wrappedFunc = wrappedFunc.SearchGetDecorator(dcName)
 
