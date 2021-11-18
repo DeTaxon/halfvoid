@@ -63,15 +63,11 @@ getType := !(int callSize) .{@T} -> void
 
 f1 := !() -> void
 {
-	@once @twice printf("test \n")
+	@twice @twice @twice  printf("test \n")
 }
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	//f1()
-	//f1()
-	Func245()
-	Func245()
-	Func245()
+	f1()
 }
 

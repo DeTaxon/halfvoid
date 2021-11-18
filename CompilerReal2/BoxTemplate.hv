@@ -509,7 +509,8 @@ BoxTemplate := class extend BoxFunc
 					if cmpRes? is ObjType
 						newRet = cmpRes->{ObjType^}.MyType
 				}
-				assert(newRet != null) //TODO emit error
+				if newRet == null
+					EmitError("Could not return type\n")
 			}else{
 				newRet = ParseType(CopyRet,null,null,null)
 				if newRet == null
@@ -518,7 +519,8 @@ BoxTemplate := class extend BoxFunc
 					if cmpRes? is ObjType
 						newRet = cmpRes->{ObjType^}.MyType
 				}
-				assert(newRet != null) //TODO emit error
+				if newRet == null
+					EmitError("Could not return type\n")
 			}
 		}
 		if itBox.itPars.Size() > FType.ParsCount
