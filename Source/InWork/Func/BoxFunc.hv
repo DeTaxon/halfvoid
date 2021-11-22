@@ -10,7 +10,6 @@ BoxFunc := class extend BoxFuncContainer
 	IsRetComplex := bool
 	IsRetRef := bool
 	IsStatic := bool
-	IsInvalid := bool
 	IsSelfReturn := bool
 	IsPassAttrs := bool
 

@@ -3,14 +3,13 @@ BoxFuncDeclare := class  extend BoxFunc
 {
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
-		IsRetRef = false
 		OutputName = StrCopy(SomeName)
 		FuncName = OutputName
-		IsInvalid = not ParseParams(inPars,inOutType,false)
-		OutputName = GetFuncMangledName(FuncName,null)
 
-		if IsInvalid inOutType.EmitError("can not parse function\n")
-		MethodType = null
+		if not ParseParams(inPars,inOutType,false)
+			inOutType.EmitError("can not parse function\n")
+
+		OutputName = GetFuncMangledName(FuncName,null)
 	}
 	this := !(TypeFunc^ fT, string SomeName) -> void
 	{
