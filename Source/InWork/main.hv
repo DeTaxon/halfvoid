@@ -140,17 +140,6 @@ main := !(int argc,char^^ argv) -> int
 	{
 		fileSuffixes << compilerSuffix
 	}
-	//gRepo.PreferVirtual(true)
-
-	//if targetFiles.Size() != 1
-	//{
-	//	printf("ERROR: must be only 1 file\n")
-	//	for targetFiles
-	//	{
-	//		printf("input file %s\n",it)
-	//	}
-	//	return 0
-	//}
 
 	for toDir : dirChecks
 	{
@@ -328,12 +317,17 @@ main := !(int argc,char^^ argv) -> int
 		}
 	}
 
-	Ob := targetObjects[0]
+	for it : CodeSpaces
+	{
+		for file : it.codeLibs
+		{
+			WorkBag.Push(file,State_Start)
+		}
+	}
 
 	TaskInit()
 	Modules[^].InitModule()
 	
-	WorkBag.Push(Ob,State_Start)
 	
 	WorkWithBag(printWork)
 
@@ -356,12 +350,8 @@ main := !(int argc,char^^ argv) -> int
 	GCInit()
 	JITInit()
 
-	endI := Ob.Down
-	if endI != null
-		while endI.Right != null 
-			endI = endI.Right
-	mainFunc := GetItem("main",endI)
-	entryFunc := GetItem("_hvEntryPoint",endI)
+	mainFunc := GetItem("main",null)
+	entryFunc := GetItem("_hvEntryPoint",null)
 
 	if mainFunc != null
 		WorkBag.Push(mainFunc.Down,State_Start)
