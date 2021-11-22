@@ -1,2 +1,4 @@
 defer does not work with GC Objects
 way for BoxTemplate math types that does not look horrible
+Decorators and return class maybe dont work
+wanted variable result available for every one
