@@ -108,7 +108,7 @@ BoxReturn := class extend Object
 					if PreType == null
 					{
 						asNeed := iterF->{BoxFunc^}
-						asNeed.SetReturnType(Down.GetType())
+						asNeed.SetReturnType(Down.GetType()) //TODO auto type not working
 					}else
 					{
 						if PreType != Down.GetType()
@@ -135,7 +135,7 @@ BoxReturn := class extend Object
 					}
 				}else{
 					Print(0)
-					EmitError("recursion detected\n")
+					EmitError("Compiler error, unknow return type\n")
 				}
 			}else{
 				EmitError("impossible state\n")
