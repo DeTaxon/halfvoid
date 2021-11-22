@@ -139,7 +139,7 @@ BoxClass := class extend BoxClassBase
 		gotFuncs := Queue.{BoxFunc^}()
 		funcsCl := Queue.{BoxClass^}()
 
-		gotTempls := Queue.{Pair.{BoxTemplate^,BoxClass^}}() ; $temp
+		gotTempls := Queue.{Tuple.{BoxTemplate^,BoxClass^}}() ; $temp
 
 		iterF := this&
 		while iterF != null
@@ -190,15 +190,15 @@ BoxClass := class extend BoxClassBase
 		{
 			inTh := BoxTemplate^()
 
-			if ThislessTemplates[^].itTemplate == templ.first
+			if ThislessTemplates[^].itTemplate == templ.0
 			{
 				inTh = it
 				break
 			}
 			if inTh == null
 			{
-				if not templ.first.IsStatic{
-					inThPre := new BuiltInThislessTemplate(templ.first,this&,templ.second)
+				if not templ.0.IsStatic{
+					inThPre := new BuiltInThislessTemplate(templ.0,this&,templ.1)
 					ThislessTemplates.Push(inThPre)
 					inTh = inThPre
 					inTh.FuncName = name
