@@ -8,8 +8,6 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	IsStatic := false
 	IsVirtual := false
 
-	ClassPtr := BoxClass^()
-	ClassType := Type^()
 
 	RetT := Object^
 	RetT = null
@@ -20,15 +18,17 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 	itLine := item.Line
 
-
-	if iter.GetValue() == "virtual"
+	stopSearch := false
+	while true
 	{
-		IsVirtual = true
-		iter = iter.Right
-	}
-	if iter.GetValue() == "static"
-	{
-		IsStatic = true
+		switch iter.GetValue()
+		{
+			case "virtual" IsVirtual = true
+			case "static" IsStatic = true
+			case void stopSearch = true
+		}
+		if stopSearch
+			break
 		iter = iter.Right
 	}
 
@@ -37,7 +37,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 
 	ClassPtr := GetUpClass(item)
-	if(ClassPtr != null)
+	ClassType := Type^()
+	if ClassPtr != null
 	{
 		ClassType = ClassPtr.ClassType
 	}
@@ -50,13 +51,11 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		case "~fake"
 			if IsVirtual
 			{
-				item.EmitError("can not use virtual functions inside fake field")
+				item.EmitError("can not use virtual functions inside fake field") //TODO allow it
 				return null
 			}
-			ExtraIter = ExtraIter.Up
-		case void
-			ExtraIter = ExtraIter.Up
 		}
+		ExtraIter = ExtraIter.Up
 	}
 
 	iter = iter.Right
@@ -125,7 +124,7 @@ ParseFuncDataR := !(Object^ item) -> Object^
 		asCl := GetUpClass(iterForName)
 		if asCl != null
 		{
-			asCl.ItPoisons[FName] = item.Clone()
+			asCl.ItPoisons[FName] = item.Clone() //TODO looking bad
 		}
 	}
 	if iter.GetValue() == "{}"
