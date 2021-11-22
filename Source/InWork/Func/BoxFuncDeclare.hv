@@ -21,9 +21,6 @@ BoxFuncDeclare := class  extend BoxFunc
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		f << "declare "
-		if OutCC != null{
-			f << " " << OutCC << " "
-		}
 		MyFuncType.RetType.PrintType(f)
 		f << " @" << OutputName
 		MyFuncType.PrintSkobs(f)

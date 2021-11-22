@@ -75,12 +75,6 @@ main := !(int argc,char^^ argv) -> int
 			disableTask = true
 		case  "--tree"
 			emitTree = true
-		case "--cci"
-			InCC = argv[i+1]
-			i += 1
-		case "--cco"
-			OutCC = argv[i+1]
-			i += 1
 		case "-p"
 			i++
 			compilerSuffix = argv[i]

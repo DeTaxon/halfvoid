@@ -38,9 +38,6 @@ UseDestructors := false
 getTempData :=  FuncInputBox^
 workingOnObject := Object^
 
-InCC := char^
-OutCC := char^
-
 VoidPType := Type^
 GTypeBool := Type^
 GTypeDouble := Type^

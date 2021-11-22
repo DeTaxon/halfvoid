@@ -365,9 +365,6 @@ PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,string[] names,string fName,
 {
 	f << "define " //"dso_local "
 
-	if InCC != null
-		f << " " << InCC << " "
-
 	IsRetComplex := false
 
 	if not fType.RetRef
