@@ -3,7 +3,6 @@ BoxFuncDeclare := class  extend BoxFunc
 {
 	this := !(Object^ inPars, Object^ inOutType, string SomeName) -> void
 	{
-		OutputName = StrCopy(SomeName)
 		FuncName = OutputName
 
 		if not ParseParams(inPars,inOutType,false)

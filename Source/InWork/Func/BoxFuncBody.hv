@@ -15,20 +15,20 @@ BoxFuncBody := class extend BoxFunc
 
 	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
 	{
-		if count != 0
-		{
-			ItParams = new LocalParam^[count]
-			InAlloc = new int[count]
+		if count == 0
+			return void
 
-			for i : count
-			{
-				if isRef[i]{
-					InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
-				}else{
-					InAlloc[i] = ABox.GetAlloc(pars[i])
-				}
-				ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
+		ItParams = new LocalParam^[count]
+		InAlloc = new int[count]
+
+		for i : count
+		{
+			if isRef[i]{
+				InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
+			}else{
+				InAlloc[i] = ABox.GetAlloc(pars[i])
 			}
+			ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
 		}
 	}
 	GenerateCall := virtual !(Object^ pars) -> BaseFuncCall^
@@ -61,24 +61,19 @@ BoxFuncBody := class extend BoxFunc
 			ApplyParams(MyFuncType.ParsCount,names,MyFuncType.Pars,MyFuncType.ParsIsRef)
 		}
 
+
 		if Stuf.GetValue() == "{}"
 		{
-			blk := new BoxBlock()
+			Down = Stuf
+			Stuf.Up = this&
+			MakeItBlock(Down)
+			blk := Down->{BoxBlock^}
 			blk.usePaths = true
-			Down = blk
-			Down.Line = Line
-			Down.Up = this&
-			if Stuf.Down != null
-			{
-				Down.Down = Stuf.Down
-				Stuf.Down.SetUp(Down)
-			}
-
 		}else{
 			ErrorLog.Push("CompilerError: function with weird body\n")
 		}
 
-		if IsVirtual
+		if IsVirtual //TODO Move to class
 		{
 			ParseBlock()
 		}
@@ -87,17 +82,17 @@ BoxFuncBody := class extend BoxFunc
 	}
 	TestRet := !(Type^ t) -> void
 	{
-		if t != null
+		if t == null
+			return void
+
+		this.IsRetComplex = false
+		if t is TypeArr or t is TypeClass
 		{
-			this.IsRetComplex = false
-			if t is TypeArr or t is TypeClass
+			if not IsRetRef
 			{
-				if not IsRetRef
-				{
-					this.IsRetComplex = true
-					if ExtraRetParam == null
-						ExtraRetParam = new FuncParam(ReturnName,t,true)
-				}
+				this.IsRetComplex = true
+				if ExtraRetParam == null
+					ExtraRetParam = new FuncParam(ReturnName,t,true)
 			}
 		}
 	}
@@ -215,53 +210,24 @@ BoxFuncBody := class extend BoxFunc
 	}
 	ParseBlock := virtual !() -> void
 	{
-		if not parsed 
+		if parsed 
+			return void
+
+		if deferTail != null
+			deferTail.ParseBlock()
+		if FuncName == "_hvEntryPoint"
 		{
-			if deferTail != null
-				deferTail.ParseBlock()
-			if FuncName == "_hvEntryPoint"
-			{
-				OutputName = "main"
-			}else
-			{
-				OutputName = GetFuncMangledName(FuncName,MyFuncType)
-			}
-
-			if FuncName == "~this" and MethodType != null
-			{
-				pL := new FuncParam("this",MethodType,true)
-				if this.MethodType is TypeClass
-				{
-					asCT := MethodType->{TypeClass^}
-					asC := asCT.ToClass
-
-					if asC.Parent != null
-					{
-						box5 := new FuncInputBox() 
-						stp := asC.Parent
-						box5.itPars.Emplace(stp.ClassType,true)
-						func2 := asC.Parent.GetFunc("~this",box5^,true)
-
-						if func2 != null
-						{
-							pCall := new ParamNaturalCall("",pL->{Object^})
-							fCall := MakeSimpleCall(func2,pCall)
-							AddFuncCall(fCall)
-						}else{
-							//EmitError("compiler error 82346\n")
-						}
-					}
-					WorkBag.Push(this&,State_PrePrint)
-				}
-				
-			}
-			
-			parsed = true
-			WorkBag.Push(Down,State_Start)
-			WorkBag.Push(this&,State_GetUse)
-			Down.Up = this&
-
+			OutputName = "main"
+		}else
+		{
+			OutputName = GetFuncMangledName(FuncName,MyFuncType)
 		}
+
+		parsed = true
+		WorkBag.Push(Down,State_Start)
+		WorkBag.Push(this&,State_GetUse)
+		Down.Up = this&
+
 	}
 	
 	yieldInClass := int
@@ -279,9 +245,7 @@ BoxFuncBody := class extend BoxFunc
 	YieldCheck := !() -> void
 	{
 		if Yodlers.Size() != 0
-		{
 			return void
-		}
 
 		yodlerInAlloc = ABox.GetAlloc(GTypeInt)
 
