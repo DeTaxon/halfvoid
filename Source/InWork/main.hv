@@ -23,9 +23,9 @@ main := !(int argc,char^^ argv) -> int
 	defer targetObjects.Destroy()
 	outputFile := "out.ll"->{char^}
 
-	codeSp := List.{Pair.{int,string}}()
+	codeSp := List.{Tuple.{int,string}}()
 	defer codeSp.Destroy()
-	zipSp := List.{Pair.{int,string}}()
+	zipSp := List.{Tuple.{int,string}}()
 	defer zipSp.Destroy()
 
 	fileSuffixes := List.{char^}()
@@ -303,12 +303,12 @@ main := !(int argc,char^^ argv) -> int
 
 	for it : codeSp
 	{
-		fL := LoadFile(Path(it.second))
+		fL := LoadFile(Path(it.1))
 		if fL == null
 		{
-			printf("file %s does not exist\n",it.second)
+			printf("file %s does not exist\n",it.1)
 		}
-		fLibSp := ref CodeSpaces[it.first]
+		fLibSp := ref CodeSpaces[it.0]
 		fL.cs = fLibSp&
 		fLibSp.codeLibs.Push(fL)
 		FilesInSpace.Insert(fL)
@@ -316,9 +316,9 @@ main := !(int argc,char^^ argv) -> int
 	for it : zipSp
 	{
 		newFiles := new Queue.{void^} ; $temp
-		LoadZipFile(Path(it.second),newFiles^,fileSuffixes)
+		LoadZipFile(Path(it.1),newFiles^,fileSuffixes)
 
-		fLibSp := ref CodeSpaces[it.first]
+		fLibSp := ref CodeSpaces[it.0]
 		for fils : newFiles^
 		{
 			zFile := fils->{BoxFile^}

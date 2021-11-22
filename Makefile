@@ -48,7 +48,7 @@ ifeq ($(tui),yes)
 endif
 
 MainOut := ./Objs/out3.ll
-ProgSrc := -C1 "CompilerReal2/" -C1 "Source/" CompilerReal2/main.hv
+ProgSrc := -C1 "CompilerReal2/" -C1 "Source/" Source/InWork/main.hv
 
 AddStatic := $(Stati)
 ifeq ($(OS),Windows_NT)
