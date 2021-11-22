@@ -2,7 +2,6 @@ BoxReturn := class extend Object
 {
 	IsRetRef := bool
 	IsRetComplex := bool
-	IsRetVoid := bool
 
 	IsYield := bool
 	YieldId := int
@@ -48,13 +47,14 @@ BoxReturn := class extend Object
 			{
 				asNeed := Down->{ObjIndent^}
 				if asNeed.MyStr == "void"
-					IsRetVoid = true
+				{
+					this&->SetType(BoxReturnVoid)
+					return void
+				}
 			}
-			if not IsRetVoid
-			{
-				WorkBag.Push(Down,State_Start)
-				WorkBag.Push(this&,State_GetUse)
-			}
+
+			WorkBag.Push(Down,State_Start)
+			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_PreGetUse
 		{
@@ -157,12 +157,9 @@ BoxReturn := class extend Object
 			}
 		}
 	}
-	PrintInBlock := virtual !(TIOStream f) -> void
+	PrintDownSet := virtual !(TIOStream f,int debId) -> void
 	{
-		debId := -1
-		if DebugMode
-			debId = CreateDebugCall(this&)
-		if (not IsRetComplex) and (not IsRetVoid) and (Down?.GetType() != GTypeVoid)
+		if (not IsRetComplex) and (Down?.GetType() != GTypeVoid)
 		{
 
 			retTypeName := Down.GetType().GetName()
@@ -205,9 +202,15 @@ BoxReturn := class extend Object
 			}
 			
 		}else{
-			if not IsRetVoid Down.PrintInBlock(f)
-			//f << "ret void\n"
+			Down.PrintInBlock(f)
 		}
+	}
+	PrintInBlock := virtual !(TIOStream f) -> void
+	{
+		debId := -1
+		if DebugMode
+			debId = CreateDebugCall(this&)
+		PrintDownSet(f,debId)
 		if IsYield
 		{
 			f << "store i32 " << YieldId << ", i32* %Yodler"
@@ -237,5 +240,12 @@ BoxReturn := class extend Object
 	GetValue := virtual !() -> string
 	{
 		return "~Return()"
+	}
+}
+
+BoxReturnVoid := class extend BoxReturn
+{
+	PrintDownSet := virtual !(TIOStream f,int debId) -> void
+	{
 	}
 }
