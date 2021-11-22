@@ -1,7 +1,7 @@
 BoxFunc := class extend BoxFuncContainer
 {
 	MyFuncType := TypeFunc^
-	MyFuncParamNames := string[]
+	MyFuncParamNames := RawArray.{char^}
 	FuncName := string
 	OutputName := string
 	IsSuffix := bool
@@ -303,7 +303,6 @@ BoxFunc := class extend BoxFuncContainer
 			}
 		}
 		MyFuncType = null
-		MyFuncParamNames = null
 
 		DefaultValuesCount = defVals
 		if defVals != 0
@@ -316,9 +315,11 @@ BoxFunc := class extend BoxFuncContainer
 			}
 		}
 
-		if Typs.Size() != 0
+		if TypsNams.Size() != 0
 		{
-			MyFuncParamNames = TypsNams.ToArray()
+			MyFuncParamNames.Reserve(Typs.Size())
+			for it : TypsNams
+				MyFuncParamNames.Create() = it
 		}
 		
 
@@ -326,7 +327,7 @@ BoxFunc := class extend BoxFuncContainer
 		MyFuncType = GetFuncType(Typs,arr,RetTyp,IsRetRef,IsVargsL)
 		funcUserParamsCount = MyFuncType.ParsCount
 
-		if MyFuncParamNames != null and MyFuncType.ParsCount != 0
+		if MyFuncParamNames.Size() != 0 and MyFuncType.ParsCount != 0
 		{
 			if MyFuncParamNames[0] == "this" IsMethod = true
 		}
@@ -360,7 +361,7 @@ BoxFunc := class extend BoxFuncContainer
 	}
 }
 
-PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,string[] names,string fName,string Extra,int itId) -> void
+PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,RawArray.{char^} names,string fName,string Extra,int itId) -> void
 {
 	f << "define " //TODO "dso_local "
 
@@ -396,7 +397,7 @@ PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,string[] names,string fName,
 	for i : fType.ParsCount
 	{
 		if i > 0 f << " , "
-		if names != null and i < names->len
+		if i < names.Size()
 		{
 			if fType.ParsIsRef[i]
 				fType.Pars[i].GetPoint().PrintType(f)

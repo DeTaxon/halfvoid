@@ -11,7 +11,7 @@ SLambda := class extend BoxFuncContainer
 {
 	parsedStart := bool
 	applyed := bool
-	Names := string[]
+	Names := RawArray.{char^}
 	parms := LocalParam^^
 	InAlloc := int^
 	fastUse := TypeFunc^
@@ -207,7 +207,12 @@ SLambda := class extend BoxFuncContainer
 						EmitError("incorrect input items of lambda\n")
 					}
 				}
-				Names = names.ToArray()
+
+				Names.Resize(names.Size())
+				for nm,i : names
+				{
+					Names[i] = nm
+				}
 
 				asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
 				fastUse = asFunc

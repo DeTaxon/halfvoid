@@ -18,7 +18,7 @@ SBoostLambda := class extend SLambda
 	}
 	ApplyFunc := virtual !(Type^ lambTyp, bool isFnc) -> void
 	{
-		nams  := Queue.{char^}() ; $temp
+		nams  := List.{char^}() ; $temp
 
 		itNN := "lambdaParam"sbt + ItId
 		nams.Push(itNN.Str())
@@ -30,7 +30,9 @@ SBoostLambda := class extend SLambda
 			itNN := "_"sbt + i
 			nams.Push(itNN.Str())
 		}
-		Names = nams.ToArray()
+		Names.Reserve(nams.Size())
+		for nm,i : nams
+			Names.Create() = nm
 		this."SLambda.ApplyFunc"(lambTyp,isFnc)
 	}
 }

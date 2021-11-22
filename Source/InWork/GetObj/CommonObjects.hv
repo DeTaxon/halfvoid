@@ -86,7 +86,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 					AsNeed2 := iter->{BoxFuncBody^}
 					as2 := iter->{BoxFunc^}
 
-					if AsNeed2.ItParams != null and as2.MyFuncParamNames != null
+					if AsNeed2.ItParams != null //TODO what is that?
 					for itNames : as2.MyFuncParamNames , itParrs : AsNeed2.ItParams
 					{
 						if itNames == name 

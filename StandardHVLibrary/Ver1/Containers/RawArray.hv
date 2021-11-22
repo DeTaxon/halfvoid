@@ -41,6 +41,14 @@ RawArray := class .{@T}
 				delete oldPtr
 		}
 	}
+	"=" := !(RawArray.{T} toCopy) -> void
+	{
+		Resize(toCopy.Size())
+		for i : toCopy.Size()
+		{
+			this[i] = toCopy[i]
+		}
+	}
 	Create := !() -> ref T
 	{
 		if itPtr == null or itCapacity == itSize
@@ -76,6 +84,12 @@ RawArray := class .{@T}
 	Size := !() -> int
 	{
 		return itSize
+	}
+	"[]" := !(int idx) -> ref T
+	{
+		assert(idx >= 0)
+		assert(idx < itCapacity)
+		return itPtr[idx]
 	}
 	Destroy := !() -> void
 	{

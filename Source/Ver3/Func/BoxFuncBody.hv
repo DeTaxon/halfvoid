@@ -13,7 +13,7 @@ BoxFuncBody := class extend BoxFunc
 
 	deferTail := BoxFuncBody^
 
-	ApplyParams := !(int count,string^ names, Type^^ pars,bool^ isRef) -> void
+	ApplyParams := !(int count,RawArray.{char^} names, Type^^ pars,bool^ isRef) -> void
 	{
 		if count == 0
 			return void
@@ -38,13 +38,15 @@ BoxFuncBody := class extend BoxFunc
 		return null
 	}
 
-	this := !(string^ names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
+	this := !(RawArray.{char^} names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		ABox.ItId = GetNewId()
 		outLabel."this"()
 		yieldLabel."this"()
 		IsRetRef = fType.RetRef
+
 		MyFuncParamNames = names
+
 		FuncName = SomeName
 		MethodType = metC
 		IsVirtual = IsVirt
@@ -312,7 +314,7 @@ BoxFuncBody := class extend BoxFunc
 					f << "store "
 					f << MyFuncType.Pars[i].GetName()
 					if MyFuncType.ParsIsRef[i] f << "*"
-				if MyFuncParamNames != null and i < MyFuncParamNames->len
+				if i < MyFuncParamNames.Size()
 				{
 					f << " %" << MyFuncParamNames[i] << " , "
 				}else{
@@ -324,7 +326,7 @@ BoxFuncBody := class extend BoxFunc
 					if DebugMode and dbgId != -1
 						f << ", !dbg !" << dbgId
 					f << "\n"
-				if DebugMode and MyFuncParamNames != null and i < MyFuncParamNames->len
+				if DebugMode and i < MyFuncParamNames.Size()
 				{
 					if MyFuncType.ParsIsRef[i]
 					{
