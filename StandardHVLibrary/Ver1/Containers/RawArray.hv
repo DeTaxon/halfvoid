@@ -16,12 +16,11 @@ RawArrayIter := class.{@T}
 
 RawArray := class .{@T}
 {
-	itPtr := T[]
+	itPtr := T^
 	itSize := int
+	itCapacity := int
 	this := !() -> void
 	{
-		itPtr = null
-		itSize = 0
 	}
 	Data := !() -> T^ 
 	{
@@ -29,13 +28,14 @@ RawArray := class .{@T}
 	}
 	Reserve := !(int toResrv) -> void
 	{
-		if itPtr == null or itPtr->len < toResrv
+		if itPtr == null or itCapacity < toResrv
 		{
 			oldPtr := itPtr
 			itPtr = new T[toResrv]
-			if itSize > 0
+			itCapacity = toResrv
+			for i : itSize
 			{
-				memcpy(itPtr->{void^},oldPtr->{void^},(itSize*(T->TypeSize))->{int})
+				itPtr[i] = oldPtr[i]
 			}
 			if oldPtr != null
 				delete oldPtr
@@ -43,13 +43,13 @@ RawArray := class .{@T}
 	}
 	Create := !() -> ref T
 	{
-		if itPtr == null or itPtr->len == itSize
+		if itPtr == null or itCapacity == itSize
 		{
-			Reserve(itPtr == null ?: 12 : itPtr->len*2) //magic
+			Reserve(itPtr == null ?: 12 : itCapacity*2) //magic
 		}
 		return itPtr[itSize++]
 	}
-	Remove := !(int nr) -> void
+	FastRemove := !(int nr) -> void
 	{
 		assert(nr < itSize)
 		assert(nr >= 0)
@@ -58,6 +58,20 @@ RawArray := class .{@T}
 			memcpy(itPtr[nr]&,itPtr[itSize - 1]&,T->TypeSize)
 		}
 		itSize -= 1
+	}
+	Resize := !(int newSize) -> void
+	{
+		if newSize > itSize
+		{
+			Reserve(newSize)
+		}else{
+			//TODO GC remove
+		}
+		itSize = newSize
+	}
+	Clean := !() -> void
+	{
+		itSize = 0
 	}
 	Size := !() -> int
 	{
@@ -69,6 +83,22 @@ RawArray := class .{@T}
 		{
 			delete itPtr
 			itPtr = null
+			itSize = 0
+			itCapacity = 0
+		}
+	}
+	RemoveIf := !(!(T x)& -> bool lambd) -> void
+	{
+		deleted := 0
+		for i : itSize
+		{
+			if lambd(itPtr[i])
+			{
+				deleted += 1
+			}else{
+				if deleted != 0
+					itPtr[i - deleted] = itPtr[i]
+			}
 		}
 	}
 	"~For" := !() -> RawArrayIter.{T}

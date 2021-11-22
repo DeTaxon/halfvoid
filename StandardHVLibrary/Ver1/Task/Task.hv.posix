@@ -7,6 +7,8 @@ pollfd := class
 	fd := int
 	events := u16
 	revents := u16
+
+	"=" := default
 }
 
 IN_CHANGE := 2
