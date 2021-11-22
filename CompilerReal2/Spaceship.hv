@@ -19,7 +19,7 @@ BuiltInFuncSpaceTransformer := class extend BuiltInFunc
 
 		IsSuffix = false
 		FuncName = "<=>"
-		OutputName = "<=> transformer"
+		OutputName = "<=> converter"
 
 		PP := Queue.{Type^}() ; $temp
 		PP.Push(GTypeInt)

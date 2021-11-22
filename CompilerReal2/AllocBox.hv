@@ -7,7 +7,6 @@ AllocBox := class
 	parentAlloc := AllocBox^
 	inhAllocs := List.{AllocBox^}
 
-
 	ItemBag := List.{Tuple.{int,Type^}}
 	ItemNrs := AVLMap.{int,int}
 	GetAlloc := !(Type^ ToAdd) -> int
