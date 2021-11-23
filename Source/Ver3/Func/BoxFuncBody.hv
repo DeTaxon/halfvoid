@@ -1,8 +1,8 @@
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
-	ItParams := LocalParam^[]
-	InAlloc := int[]
+	ItParams := RawArray.{LocalParam^}
+	InAlloc := RawArray.{int}
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
 
@@ -18,8 +18,8 @@ BoxFuncBody := class extend BoxFunc
 		if count == 0
 			return void
 
-		ItParams = new LocalParam^[count]
-		InAlloc = new int[count]
+		ItParams.Resize(count)
+		InAlloc.Resize(count)
 
 		for i : count
 		{
@@ -308,9 +308,12 @@ BoxFuncBody := class extend BoxFunc
 
 			DeferFuncStart(f,dbgId)
 
-			if InAlloc != null
+			if InAlloc.Size() != 0
 			for i : MyFuncType.ParsCount
 			{
+				if i >= InAlloc.Size()
+					break
+
 					f << "store "
 					f << MyFuncType.Pars[i].GetName()
 					if MyFuncType.ParsIsRef[i] f << "*"
