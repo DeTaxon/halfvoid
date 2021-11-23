@@ -22,7 +22,7 @@ CmpFuncInputOnly := !(Type^ f1, Type^ f2) -> bool
 TypeFuncRaw := class
 {
 	RetType := Type^
-	Pars := Type^[]
+	Pars := RawArray.{Type^}
 	isVArgs := bool
 }
 
@@ -56,7 +56,7 @@ TypeFunc := class extend Type
 				preRet.RetType = RetType
 			}
 		}
-		preRet.Pars = new Type^[pc] ; $temp
+		preRet.Pars.Resize(pt) //TODO memory
 		i := 0
 		if isComplx
 		{
