@@ -2,6 +2,7 @@ ListNode := class .{@T}
 {
 	Data := T
 	Next := ListNode.{T}^
+
 	this := !() -> void
 	{
 	}
@@ -55,15 +56,13 @@ List := class .{@T}
 	End := ListNode.{T}^
 	Counter := int
 
-	if $keep
-		CreatedNodes := ListNode.{T}^
+	CreatedNodes := ListNode.{T}^
 
 	this := !() .{} -> void
 	{
 		Start = null
 		End = null
-		if $keep
-			CreatedNodes = null
+		CreatedNodes = null
 		Counter = 0
 	}
 	Push := !(T toAdd) .{} -> void
@@ -171,66 +170,58 @@ List := class .{@T}
 			}
 			itr.Next = itr.Next.Next
 		}
-		if $keep
-		{
-			oldNode.Next = CreatedNodes
-			CreatedNodes = oldNode
-		}else{
-			if not $temp
-				delete oldNode
-		}
+		this.destroyNode(oldNode)
 		Counter--
 	}
 	Front := !() -> ref T
 	{
+		assert(Counter != 0)
 		return Start.Data
 	}
 	Back := !() -> ref T
 	{
+		assert(Counter != 0)
 		return End.Data
 	}
 
 	"[]" := !(int x) -> ref T
 	{
-		iitt := Start
-		for x
-			iitt = iitt.Next
-		return iitt.Data
+		if x >= 0
+		{
+			assert(x < Counter)
+			iitt := Start
+			for x
+				iitt = iitt.Next
+			return iitt.Data
+		}else{
+			return this[Counter + x]
+		}
 	}
 	"<=>" := !(List.{T} toCmp) .{} -> int //TODO: why not lazy
 	{
 
-		thisIter := this."~For"()
-		toC := toCmp."~For"()
+		minSize := min(this.Size(),toCmp.Size())
 
-		while true
+		for i : minSizem , objLeft : this , ogjRight : toCmp
 		{
-			if thisIter.IsEnd() and toC.IsEnd()
-				return 0
-			if thisIter.IsEnd()
-				return -1
-			if toC.IsEnd()
-				return 1
-			cmpRes := thisIter^ <=> toC^
+			cmpRes := objLeft <=> objRight
 			if cmpRes != 0
 				return cmpRes
-			thisIter.Inc()
-			toC.Inc()
 		}
-		assert(false)
+
+		return 0
 	}
 
 	createNode := !() .{} -> ListNode.{T}^
 	{
 		newNode := ListNode.{T}^()
-		if $keep
+		
+		if CreatedNodes != null
 		{
-			if CreatedNodes != null
-			{
-				newNode = CreatedNodes
-				CreatedNodes = CreatedNodes.Next
-			}
+			newNode = CreatedNodes
+			CreatedNodes = CreatedNodes.Next
 		}
+		
 		if newNode == null
 		{
 			newNode = new ListNode.{T}
@@ -307,20 +298,7 @@ List := class .{@T}
 				return void
 		}
 
-		newNode := ListNode.{T}^()
-
-		if $keep
-		{
-			if CreatedNodes != null
-			{
-				newNode = CreatedNodes
-				CreatedNodes = CreatedNodes.Next
-			}
-		}
-		if newNode == null
-		{
-			newNode = new ListNode.{T}
-		}
+		newNode := createNode()
 
 		newNode.Data = toAdd
 		newNode.Next = Start
@@ -387,15 +365,10 @@ List := class .{@T}
 	}
 	Clear := !() .{} -> void
 	{
-		if $keep
+		if Counter != 0
 		{
-			if Counter != 0
-			{
-				End.Next = CreatedNodes
-				CreatedNodes = Start
-			}
-		}else{
-			Destroy()
+			End.Next = CreatedNodes
+			CreatedNodes = Start
 		}
 		Start = null
 		End = null
@@ -405,15 +378,14 @@ List := class .{@T}
 	{
 		if not $temp
 		{
-			if $keep 
+
+			while CreatedNodes != null
 			{
-				while CreatedNodes != null
-				{
-					itNd := CreatedNodes
-					CreatedNodes = CreatedNodes.Next
-					delete itNd
-				}
+				itNd := CreatedNodes
+				CreatedNodes = CreatedNodes.Next
+				delete itNd
 			}
+
 			if Counter != 0
 			{
 				while Start != null
