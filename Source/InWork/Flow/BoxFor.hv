@@ -57,8 +57,8 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsStep1 := bool
 
 	itemsCount := int
-	Names := string[]
-	IndNames := string[]
+	Names := RawArray.{char^}
+	IndNames := RawArray.{char^}
 	IncFuncs := Object^^
 	UnrefFuncs := Object^^
 	IndFuncs := Object^^
@@ -111,8 +111,11 @@ BoxForOldFashionMulti := class extend BoxFor
 		iter.Right = null
 		Down.SetUp(this&)
 
-		Names = names.ToArray()
-		IndNames = new string[names.Size()]
+		Names.Resize(names.Size())
+		for it,i : names
+			Names[i] = it
+
+		IndNames.Resize(names.Size())
 		for it : names.Size(), itInd : f_ind
 			IndNames[it] = itInd
 
