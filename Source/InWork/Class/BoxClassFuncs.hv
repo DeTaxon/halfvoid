@@ -18,10 +18,9 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		fT := templ.MyFuncType
 
 		newPars := Queue.{Type^}() ; $temp
-		newBools := bool[]
-		newBools = null
+		newBools := RawArray.{bool}()
 		if fT.ParsCount >= 2
-			newBools = new bool[fT.ParsCount - 1]
+			newBools.Resize(fT.ParsCount - 1) //TODO temp memory
 
 		for i : fT.ParsCount
 		{
@@ -30,7 +29,7 @@ BuiltInThislessTemplate := class extend BoxTemplate
 			newPars.Push(fT.Pars[i])
 			newBools[i-1] = fT.ParsIsRef[i]
 		}
-		MyFuncType = GetFuncType(newPars,newBools,fT.RetType,fT.RetRef,fT.IsVArgs)
+		MyFuncType = GetFuncType(newPars,newBools.Data(),fT.RetType,fT.RetRef,fT.IsVArgs)
 
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int

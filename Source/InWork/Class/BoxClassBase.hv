@@ -98,10 +98,10 @@ BoxClassBase := class extend Object
 		PrintTupleConstruct(f) 
 		if tuplSet != null
 		{
-			funcs := tuplSet.GetCreatedFuncs()->{SetTupleObj^[]}
+			funcs := tuplSet.GetCreatedFuncs()->{RawArray.{SetTupleObj^}^}
 			if funcs != null
 			{
-				for it : funcs
+				for it : funcs^
 				{
 					it.PrintItFunc(f)
 				}
