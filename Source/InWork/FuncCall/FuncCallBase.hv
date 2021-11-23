@@ -82,7 +82,7 @@ BaseFuncCall := class extend ObjResult
 		}
 		if i < FType.ParsCount
 		{
-			if ToCall?.DefaultValuesCount + i >= FType.ParsCount
+			if ToCall?.DefaultValues.Size() + i >= FType.ParsCount
 			{
 				itrAdd := Down
 				if Down != null

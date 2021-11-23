@@ -197,15 +197,15 @@ BoxTemplate := class extend BoxFunc
 		//}
 
 		expectedChecks := FuncsTTemps.Size()
-		if DefaultValuesCount != 0
+		if DefaultValues.Size() != 0
 		{
-			expectedChecks = itBox.itPars.Size()
+			expectedChecks = itBox.itPars.Size() //TODO whaa?
 		}
 		if vargTypeBarrier != null
 			expectedChecks += itBox.itPars.Size() - MyFuncType.ParsCount
 		expectedChecks += checkConsts.Size()
 
-		if itBox.itPars.Size() < FuncsTTemps.Size() - DefaultValuesCount and vargsName == null
+		if itBox.itPars.Size() < FuncsTTemps.Size() - DefaultValues.Size() and vargsName == null
 		{
 			return false
 		}
@@ -427,7 +427,7 @@ BoxTemplate := class extend BoxFunc
 		//}
 		
 		minPars := FType.ParsCount
-		minPars -= DefaultValuesCount
+		minPars -= DefaultValues.Size()
 		maxPars := FType.ParsCount
 		if FType.IsVArgs or vargsName != null
 			maxPars = 1000000
@@ -620,7 +620,6 @@ BoxTemplate := class extend BoxFunc
 		newFunc.Line = Line
 		newFunc.IsMethod = IsMethod
 		newFunc.DefaultValues = DefaultValues
-		newFunc.DefaultValuesCount = DefaultValuesCount
 
 		if deferTail != null
 		{

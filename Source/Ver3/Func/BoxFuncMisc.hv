@@ -7,6 +7,8 @@ FuncDefValue := class
 {
 	Value := Object^
 	ValueModifier := int
+
+	"=" := default
 }
 
 IsBoxFuncContainer := !(Object^ toCheck) -> bool

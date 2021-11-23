@@ -26,8 +26,7 @@ BoxFunc := class extend BoxFuncContainer
 	vargsName := string
 	funcUserParamsCount := int
 
-	DefaultValues := FuncDefValue[]
-	DefaultValuesCount := int
+	DefaultValues := RawArray.{FuncDefValue}
 
 	vargTypeBarrier := Object^
 
@@ -304,10 +303,9 @@ BoxFunc := class extend BoxFuncContainer
 		}
 		MyFuncType = null
 
-		DefaultValuesCount = defVals
 		if defVals != 0
 		{
-			DefaultValues = new FuncDefValue[TypsDefValues.Size()]
+			DefaultValues.Resize(defVals)
 			for toSet : DefaultValues, vl : TypsDefValues , modif : TypsDefValuesModifier
 			{
 				toSet.Value = vl
