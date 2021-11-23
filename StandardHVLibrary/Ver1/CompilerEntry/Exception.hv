@@ -9,10 +9,6 @@ IException := class
 	{
 		return ""
 	}
-	Trace := virtual !() -> char^[]
-	{
-		return char^[]()
-	}
 }
 Exception := class extend IException
 {

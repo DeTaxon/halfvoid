@@ -11,23 +11,23 @@ AppendClass Exception
 			traceDataLen = backtrace(traceData[0]&,128)
 		}
 	}
-	Trace := virtual !() -> char^[]
-	{
-		if $debug
-		{
-			if traceDataLen == 0
-				return char^[]()
+	//Trace := virtual !() 
+	//{
+	//	if $debug
+	//	{
+	//		if traceDataLen == 0
+	//			return c
+//
+	//		res := backtrace_symbols(traceData[0]&,traceDataLen)
+	//		defer free(res)
 
-			res := backtrace_symbols(traceData[0]&,traceDataLen)
-			defer free(res)
-
-			strs := new char^[traceDataLen] ; $temp
-			for i : traceDataLen, r : strs
-			{
-				r = StrCopy(res[i]) ; $temp
-			}
-			return strs
-		}
-		return char^[]()
-	}
+	//		strs := new char^[traceDataLen] ; $temp
+	//		for i : traceDataLen, r : strs
+	//		{
+	//			r = StrCopy(res[i]) ; $temp
+	//		}
+	//		return strs
+	//	}
+	//	return cha
+	//}
 }
