@@ -202,7 +202,7 @@ List := class .{@T}
 
 		minSize := min(this.Size(),toCmp.Size())
 
-		for i : minSizem , objLeft : this , ogjRight : toCmp
+		for i : minSize , objLeft : this , objRight : toCmp
 		{
 			cmpRes := objLeft <=> objRight
 			if cmpRes != 0

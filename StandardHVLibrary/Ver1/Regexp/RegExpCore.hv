@@ -106,6 +106,10 @@ WordDetermMachine := class
 		})
 		return toRet
 	}
+	"in" := !(char^ toTst) -> bool
+	{
+		return IsMatch(toTst)
+	}
 }
 
 RegExpReadText := !(void^ itCorePre,char^ data,int siz, !(int,int,int)&->void toEmit) -> void
