@@ -37,7 +37,8 @@ AllocBox := class
 	}
 	MoveTo := !(AllocBox^ toMv) -> void
 	{
-		toMv.inhAllocs.Push(this&) ; $uniq
+		if not (toMv in toMv.inhAllocs)
+			toMv.inhAllocs.Push(this&)
 		parentAlloc = toMv
 	}
 	InheritNR := !() -> int
