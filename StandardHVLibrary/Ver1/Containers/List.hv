@@ -159,30 +159,29 @@ List := class .{@T}
 	}
 	DeleteAt := !(int pos) -> void
 	{
-		oldNode := ListNode.{T}^
+		if pos < 0
+		{	
+			DeleteAt(Counter + pos)
+			return void
+		}
 		if pos == 0
 		{
-			oldNode = Start
-			if Counter == 1
-			{
-				Start = null
-				End = null
-			}else{
-				Start = Start.Next
-			}
-			
-		}else{
-			itr := Start
-			for (pos-1) {
-				itr = itr.Next
-			}
-			oldNode = itr.Next
-			if End == oldNode
-			{
-				End = itr
-			}
-			itr.Next = itr.Next.Next
+			Pop()
+			return void 
 		}
+		assert( pos < Counter)
+
+		oldNode := ListNode.{T}^
+		itr := Start
+		for (pos-1) {
+			itr = itr.Next
+		}
+		oldNode = itr.Next
+		if End == oldNode
+		{
+			End = itr
+		}
+		itr.Next = itr.Next.Next
 		this.destroyNode(oldNode)
 		Counter--
 	}
