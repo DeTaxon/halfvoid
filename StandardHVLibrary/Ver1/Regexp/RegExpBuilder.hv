@@ -78,7 +78,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 	}
 
 
-	totalItems := List.{int}() ; $uniq
+	totalItems := List.{int}()
 	for i : borrow->len
 	{
 		found := i
@@ -102,7 +102,7 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 			}
 		}
 		borrow[i] = found
-		totalItems.Push(found)
+		totalItems.PushUniq(found)
 	}
 	newSize := totalItems.Size()
 	containFake := false
@@ -140,7 +140,7 @@ CollectByEpsilon := !(NonDetMachine input,List.{int} OldStates) -> void
 		for line : input.Lines
 		{
 			if line.from == it and line.symbl == -1
-				OldStates.Push(line.to) ; $temp $uniq
+					OldStates.PushUniq(line.to) ; $temp
 		}
 	}
 }
@@ -151,7 +151,9 @@ CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) ->
 		for fNode : frm
 		{
 			if line.from == fNode and line.symbl == sId
-				to.Push(line.to) ; $temp $uniq
+			{
+				to.PushUniq(line.to) ; $temp
+			}
 		}		
 	}
 }
@@ -159,12 +161,15 @@ CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) ->
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
 	NewNodes := new List.{List.{int}^} 
-	Letters := new List.{int} ; $uniq $temp
+	Letters := new List.{int} ; $temp
 	itLines := new List.{Tuple.{int,int,int}} ; $temp
 
 	for input.Lines
 	{
-		if it.symbl != -1 Letters.Push(it.symbl)
+		if it.symbl != -1 
+		{
+			Letters.PushUniq(it.symbl)
+		}
 	}
 	{
 		nowNodeValue :=  new List.{int} 
@@ -237,9 +242,9 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 }
 MinimizeMachine := !(DetMachine input) -> DetMachine
 {
-	EndStates := new List.{int} ; $uniq
+	EndStates := new List.{int}
 	for input.IsEndNode 
-		EndStates.Push(it)
+		EndStates.PushUniq(it)
 	
 	NodeSets := new int[input.IsEndNode->len]
 	for it : input.IsEndNode, i : 0
@@ -252,13 +257,13 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	{
 		for j : input.NodeId->len
 		{
-			gotSets := new List.{int} ; $uniq
+			gotSets := new List.{int}
 			for i : input.IsEndNode->len
 				if setCheck == NodeSets[i]
 				{
 					if input.Table[i][j] != -1
-						gotSets.Push(NodeSets[input.Table[i][j]])
-					else gotSets.Push(-1) 
+						gotSets.PushUniq(NodeSets[input.Table[i][j]])
+					else gotSets.PushUniq(-1) 
 				}
 			if gotSets.Size() >= 2
 			{	
@@ -302,7 +307,7 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	
 	{
 		someIter := 0
-		usedSets := new List.{int} ; $uniq
+		usedSets := new List.{int} //TODO temp?
 		itNode := new List.{int} ; $temp
 		for it,i : NodeSets
 		{
@@ -312,7 +317,7 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 				transformer[i] = itNode^[ps]
 			}else{
 				transformer[i] = someIter
-				usedSets.Push(it)
+				usedSets.PushUniq(it)
 				itNode.Push(someIter)
 				someIter++
 			}
