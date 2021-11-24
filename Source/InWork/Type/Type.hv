@@ -9,11 +9,11 @@ Type := class {
 	AsArray := Queue.{TypeArr^}
 	ItName := string
 	
-	"new" := !() .{@R} -> void^
-	{
-		preRes :=  TypesPool.GetMem(R->TypeSize,R->Align,0)
-		return preRes
-	}
+	//"new" := !() .{@R} -> void^
+	//{
+	//	preRes :=  TypesPool.GetMem(R->TypeSize,R->Align,0)
+	//	return preRes
+	//}
 	this := !() -> void
 	{
 		Clean()

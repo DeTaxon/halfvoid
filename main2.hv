@@ -65,9 +65,19 @@ f1 := !() -> void
 {
 	@twice @twice @twice  printf("test \n")
 }
+"@temp call" := !(@LType lambd) -> LType->ResultType
+{
+	TempPoolBlock()
+	return lambd()
+}
 main := !(int argc, char^^ argv) -> int
 {
 	TFullInit()
-	f1()
+
+	tst := List.{int}^
+	tst = (@temp new List.{int})
+	tst^ << 1 << 2 << 3
+
+	printf("hi\n")
 }
 
