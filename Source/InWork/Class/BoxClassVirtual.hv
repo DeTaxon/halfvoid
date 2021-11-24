@@ -128,7 +128,7 @@ AppendClass BoxClass
 	computedVTable := bool
 	PrintVTable := !(TIOStream f) -> void
 	{
-		if vTable.Empty()
+		if vTable.IsEmpty()
 			return void
 
 		vTable[^].PrintGlobal(f)

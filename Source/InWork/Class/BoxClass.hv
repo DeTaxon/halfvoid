@@ -634,7 +634,7 @@ BoxClass := class extend BoxClassBase
 		PrintVTable(f)
 		if Params.Size() == 0
 		{
-			if vTable.Empty()
+			if vTable.IsEmpty()
 			{
 				f << "%Class" << ClassId << " = type{i1}\n"
 			}else{
@@ -649,13 +649,13 @@ BoxClass := class extend BoxClassBase
 			f << "%Class" << ClassId << " = type "
 			if IsPacked f << "<"
 			f << "{"
-			if not vTable.Empty()
+			if not vTable.IsEmpty()
 			{
 				f << "%ClassTableType" << ClassId << "*"
 			}
 			for it, i : Params
 			{
-				if i != 0 or not vTable.Empty() f <<","
+				if i != 0 or not vTable.IsEmpty() f <<","
 				f << it.ResultType.GetName()
 			}
 			f << "}"

@@ -73,7 +73,7 @@ List := class .{@T}
 	{
 		if toAdd in this
 			return void
-		Push(toAdd)
+		this << toAdd
 	}
 	FindIndex := !(T obj) -> int
 	{
@@ -81,20 +81,20 @@ List := class .{@T}
 			return i
 		return -1
 	}
-	EmplaceFront := !(args...) -> ref T
-	{
-		newNode := this.createNode()
-		newNode.Data."this"(args...)
-		newNode.Next = Start
-		Start = newNode
-		if End == null End = Start
-		Counter++
-		return newNode.Data
-	}
 	Emplace := !(args...) -> ref T
 	{
+		this._createBackNode()."this"(args...)
+		return End.Data
+	}
+	"<<" := !(T toAdd) .{} self_return
+	{
+		this._createBackNode() = toAdd
+		return this
+	}
+	_createBackNode := !() .{} -> ref T
+	{
 		newNode := this.createNode()
-		newNode.Data."this"(args...)
+
 		newNode.Next = null
 		if End == null
 		{
@@ -107,7 +107,17 @@ List := class .{@T}
 
 		Counter++
 
-		return End.Data
+		return newNode.Data
+	}
+	EmplaceFront := !(args...) -> ref T
+	{
+		newNode := this.createNode()
+		newNode.Data."this"(args...)
+		newNode.Next = Start
+		Start = newNode
+		if End == null End = Start
+		Counter++
+		return newNode.Data
 	}
 	DeleteIf := !(!(T)&->bool testFunc) -> void //TODO: why cant i make it template
 	{
@@ -222,26 +232,6 @@ List := class .{@T}
 		}
 		return newNode
 	}
-	"<<" := !(T toAdd) .{} self_return
-	{
-
-		newNode := this.createNode()
-
-		newNode.Data = toAdd
-		newNode.Next = null
-		if End == null
-		{
-			End = newNode
-			Start = newNode
-		}else{
-			End.Next = newNode
-			End = newNode
-		}
-
-		Counter++
-
-		return this
-	}
 	CreateBeforeIf := !(!(T&)&->bool cmpTst)  -> ref T
 	{
 
@@ -330,10 +320,6 @@ List := class .{@T}
 	Size := !() -> int
 	{
 		return Counter
-	}
-	Empty := !() -> bool
-	{
-		return Counter == 0
 	}
 	ToArray := !() .{} -> T[]
 	{
