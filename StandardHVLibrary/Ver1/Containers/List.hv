@@ -83,12 +83,6 @@ List := class .{@T}
 	}
 	EmplaceFront := !(args...) -> ref T
 	{
-		if $uniq 
-		{
-			if this[^] == toAdd
-				return it
-		}
-
 		newNode := this.createNode()
 		newNode.Data."this"(args...)
 		newNode.Next = Start
@@ -99,12 +93,6 @@ List := class .{@T}
 	}
 	Emplace := !(args...) -> ref T
 	{
-		if $uniq 
-		{
-			if this[^] == toAdd
-				return it
-		}
-
 		newNode := this.createNode()
 		newNode.Data."this"(args...)
 		newNode.Next = null
@@ -237,12 +225,6 @@ List := class .{@T}
 	"<<" := !(T toAdd) .{} self_return
 	{
 
-		if $uniq 
-		{
-			if this[^] == toAdd
-				return this
-		}
-
 		newNode := this.createNode()
 
 		newNode.Data = toAdd
@@ -297,13 +279,6 @@ List := class .{@T}
 	}
 	PushFront := !(T toAdd) .{} -> void
 	{
-
-		if $uniq 
-		{
-			if this[^] == toAdd
-				return void
-		}
-
 		newNode := createNode()
 
 		newNode.Data = toAdd
