@@ -111,13 +111,22 @@ List := class .{@T}
 	}
 	EmplaceFront := !(args...) -> ref T
 	{
-		newNode := this.createNode()
-		newNode.Data."this"(args...)
+		this._createFrontNode()."this"(args...)
+		return Start.Data
+	}
+	PushFront := !(T toAdd) .{} -> void
+	{
+		this._createFrontNode() = toAdd
+	}
+	_createFrontNode := !() .{} -> ref T
+	{
+		newNode := createNode()
+
 		newNode.Next = Start
 		Start = newNode
-		if End == null End = Start
 		Counter++
-		return newNode.Data
+
+		return Start.Data
 	}
 	DeleteIf := !(!(T)&->bool testFunc) -> void //TODO: why cant i make it template
 	{
@@ -266,17 +275,6 @@ List := class .{@T}
 		if this[^] == toCmp
 			return true
 		return false
-	}
-	PushFront := !(T toAdd) .{} -> void
-	{
-		newNode := createNode()
-
-		newNode.Data = toAdd
-		newNode.Next = Start
-		Start = newNode
-		Counter++
-
-		return void
 	}
 	destroyNode := !(ListNode.{T}^ toDest) .{} -> void
 	{
