@@ -57,6 +57,7 @@ List := class .{@T}
 	Counter := int
 
 	CreatedNodes := ListNode.{T}^
+	itCapacity := int
 
 	this := !() .{} -> void
 	{
@@ -232,6 +233,7 @@ List := class .{@T}
 		{
 			newNode = CreatedNodes
 			CreatedNodes = CreatedNodes.Next
+			itCapacity -= 1
 		}
 		
 		if newNode == null
@@ -239,6 +241,19 @@ List := class .{@T}
 			newNode = new ListNode.{T}
 		}
 		return newNode
+	}
+	destroyNode := !(ListNode.{T}^ toDest) .{} -> void
+	{
+		if $temp return void
+
+		if itCapacity < 5 or itCapacity < Counter
+		{
+			toDest.Next = CreatedNodes
+			CreatedNodes = toDest
+			itCapacity += 1
+		}else{
+			delete toDest
+		}
 	}
 	CreateBeforeIf := !(!(T&)&->bool cmpTst)  -> ref T
 	{
@@ -274,18 +289,6 @@ List := class .{@T}
 		if this[^] == toCmp
 			return true
 		return false
-	}
-	destroyNode := !(ListNode.{T}^ toDest) .{} -> void
-	{
-		if $temp return void
-
-		if $keep 
-		{
-			toDest.Next = CreatedNodes
-			CreatedNodes = toDest
-		}else{
-			delete toDest
-		}
 	}
 	Pop := !()  .{} -> T
 	{
