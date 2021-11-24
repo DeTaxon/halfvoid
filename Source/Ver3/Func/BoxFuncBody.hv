@@ -333,7 +333,7 @@ BoxFuncBody := class extend BoxFunc
 				{
 					if MyFuncType.ParsIsRef[i]
 					{
-						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true)
+						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],true, i + 1)
 						newId := CreateDebugCall(this&)
 						if dbgId != -1 and outId != -1
 						{
@@ -341,7 +341,7 @@ BoxFuncBody := class extend BoxFunc
 							f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << dbgId << "\n"
 						}
 					}else{
-						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i])
+						outId := CreateDbgLocVar(this&,MyFuncType.Pars[i],MyFuncParamNames[i],false,i + 1)
 						if dbgId != -1 and outId != -1
 						{
 							f << "call void @llvm.dbg.declare(metadata " << MyFuncType.Pars[i].GetName() << "* %T" << InAlloc[i] 

@@ -1,11 +1,11 @@
 
 DebugMode := false
 cuId := int
-DebugMetaData := Stack.{string}
+DebugMetaData := List.{string}
 
-DebugCalls := Stack.{Tuple.{int,int,int}}
-DebugLocalVars := Stack.{Tuple.{int,char^,int,int,int ,int}} //resId,name,scope,file,line, type
-DebugGlobalVars := Stack.{Tuple.{int,char^,int,int,int ,int}} //resId,name,scope,file,line, type
+DebugCalls := List.{Tuple.{int,int,int}}
+DebugLocalVars := List.{Tuple.{int,char^,int,int,int ,int,int}} //resId,name,scope,file,line, type, argNum
+DebugGlobalVars := List.{Tuple.{int,char^,int,int,int ,int}} //resId,name,scope,file,line, type
 
 DebugPretty := List.{char^}
 
@@ -63,6 +63,11 @@ CreateDbgGlobalVar := !(Object^ itm, Type^ itType,char^ itName, bool isRef) -> i
 }
 CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 {
+	return CreateDbgLocVar(itm,itType,itName,isRef,0)
+}
+
+CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef, int argNum) -> int
+{
 	if itm.Line == null return -1
 
 	itr := itm->{Object^}
@@ -90,7 +95,7 @@ CreateDbgLocVar := !(Object^ itm,Type^ itType,char^ itName,bool isRef) -> int
 	typeMetaId := itType.metaId
 	if isRef typeMetaId = GetDebugRef(itType) 
 	newId := GetNewId()
-	DebugLocalVars.Emplace(newId,itName,aBId,asF.fileId,itm.Line.LinePos,typeMetaId)
+	DebugLocalVars.Emplace(newId,itName,aBId,asF.fileId,itm.Line.LinePos,typeMetaId,argNum)
 	return newId
 }
 
@@ -131,7 +136,15 @@ PrintDebugMeta := !(TIOStream fil) -> void
 	for DebugCalls
 		fil << "!" << it.0 << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.2 << ")\n"
 	for DebugLocalVars
-		fil << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << it.2 << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ")\n"
+	{
+		fil << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << it.2 << " , file:!" << it.3 
+		if it.6 != 0
+		{
+			fil << ", arg: " << it.6
+		}
+		fil << ", line: " << it.4 << ", type:!" << it.5
+		fil << ")\n"
+	}
 	for DebugGlobalVars
 		fil << "!" << it.0 << " = !DIGlobalVariable(name: \"" << it.1 << "\" , scope:!" << it.3 << " , file:!" << it.3 << ", line: " << it.4 << ", type:!" << it.5 << ", isLocal: false, isDefinition: true)\n"
 
