@@ -27,5 +27,6 @@
 "throw d" 
 "d << d" "d >> d"
 "d <-"
+#CallDecoratorCall
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d <<< d" "d >>> d"

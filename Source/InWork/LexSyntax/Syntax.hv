@@ -149,7 +149,6 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
 	if RuleUse(begin,"switch()",RuleSwitch) return true
 	if RuleUse(begin,"case()",RuleCase) return true
 	if RuleUse(begin,"imprt",RuleImport) return true
-	if doTemplate and RuleUseReverse(begin,"~d",RuleDecoratorCall) return true
 
 	return false	
 }

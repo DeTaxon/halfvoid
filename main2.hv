@@ -75,7 +75,7 @@ main := !(int argc, char^^ argv) -> int
 	TFullInit()
 
 	tst := List.{int}^
-	tst = (@temp new List.{int})
+	tst = @temp new List.{int}
 	tst^ << 1 << 2 << 3
 
 	printf("hi\n")
