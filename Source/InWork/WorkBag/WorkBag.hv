@@ -30,13 +30,30 @@ WorkWithBag := !(bool printW) -> void
 
 				it.DoTheWork(prior)
 			}
-			//TYield()
+			if WorkingTasks.Size() != 0
+			{
+				TYield()
+			}
 
-			if WorkBag.IsEmpty() or not ErrorLog.Empty()
+			if (WorkBag.IsEmpty() and (WorkingTasks.Size() == 0)) or not ErrorLog.Empty()
 				break
 		}
 	}catch(IException^ e)
 	{
 		return void
 	}
+}
+
+WorkingTasks := RBSet.{void^}
+
+StartCTask := !(!()&-> void l) -> void
+{
+	l2 := l.Capture()
+
+	WorkingTasks.Insert(l2->{void^})
+	TSpawnTask(() ==> {
+		l2()
+		WorkingTasks.Remove(l2->{void^})
+		l2.Destroy()
+	})
 }

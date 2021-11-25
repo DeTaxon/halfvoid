@@ -19,8 +19,6 @@ BoxFile := class extend BoxBlock
 	{
 		fileId = GetNewId()
 		filePath.itStr = fullPath.itStr
-		WorkBag.Push(this&,State_Syntax)
-		WorkBag.Push(this&,State_BlockParamStep)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -46,27 +44,40 @@ BoxFile := class extend BoxBlock
 			f <<  "/" <<"\")\n"
 		}
 	}
+
+	startedWork := bool
+	StartWork := !() -> void
+	{
+		if startedWork
+			return void
+		startedWork = true
+		StartCTask(() ==> {
+			this.TheWork()
+		})
+	}
+	TheWork := !() -> void
+	{
+		SyntaxCompress(this&,PriorityData)
+		UnboxParams(this.Down)
+
+		itr := Down
+		while itr != null
+		{
+			if itr.Down?.GetValue() == "AppendClass"
+			{
+				oldDown := itr.Down
+				itr = ReplaceNode(itr,new BoxClassAppend())
+				itr.Down = oldDown
+				itr.Down.SetUp(itr)
+			}
+			itr = itr.Right
+		}
+		WorkBag.Push(Down[^],State_Start)
+		WorkBag.Push(this&,State_BlockParamStep)
+	}
+
 	DoTheWork := virtual !(int pri) -> void
 	{
-		if pri == State_Syntax
-		{
-			SyntaxCompress(this&,PriorityData)
-			UnboxParams(this.Down)
-
-			itr := Down
-			while itr != null
-			{
-				if itr.Down?.GetValue() == "AppendClass"
-				{
-					oldDown := itr.Down
-					itr = ReplaceNode(itr,new BoxClassAppend())
-					itr.Down = oldDown
-					itr.Down.SetUp(itr)
-				}
-				itr = itr.Right
-			}
-			WorkBag.Push(Down[^],State_Start)
-		}
 		if pri == State_BlockParamStep
 		{
 			if cs != null

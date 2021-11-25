@@ -1,83 +1,25 @@
-
-#mark("jit_pass") Func1 := !() -> void
-{
-	printf("hello\n")
-}
-#mark("jit_pass") @once @twice Func245 := !() -> void
-{
-	printf("world\n")
-} 
-
-"@twice func" := !(args...).{@T} -> void 
-{
-	T(args...)
-	T(args...)
-}
-
-getType := !(int callSize) .{@T} -> void 
-{
-	printf("%2i group %s\n",callSize,T->Group)
-	switch T->Group
-	{
-		case "prime"
-			printf("%2i prime\n",callSize)
-		case "array"
-		case "func"
-		if T->Group == "func"
-		{
-			printf("%2i func\n",callSize)
-			for par : T->Params
-			{
-				printf("%2i param\n",callSize)
-				getType(callSize+1).{par}
-			}
-		}
-		case "lambda"
-		case "pointer"
-	}
-
-	#prolog
-	{
-		getType([t | T] , [b | B]) :- t = getType(b)
-		getType(T,R) :- T = int, R = GTypeInt
-		getType(T,R) :- T = float, R = GTypeFloat
-		getType(T,R) :- T->Type = "prime", R = GetType(T->RawName)
-		getType(T,R) :- T->Type = "array", getType(T->Base,B),  R = B.GetArray(T->Len)
-		getType(T,R) :- T->Type = "func",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-		getType(T,R) :- T->Type = "lambda",  getType(T,B),getType(T->ResultType,RT),  R = GetFuncType(B,RT)
-	}
-	getType(T,result)
-
-	////#prolog
-	////{
-	////	TestArgs(Inp,Outp,Result) := 
-	////}
-	//result = GetFuncType(![GTypeInt],GTypeVoid)
-}
-
-"@twice call" := !(@LType lambd) -> LType->ResultType
-{
-	lambd()
-	lambd()
-}
-
-f1 := !() -> void
-{
-	@twice @twice @twice  printf("test \n")
-}
 "@temp call" := !(@LType lambd) -> LType->ResultType
 {
 	TempPoolBlock()
 	return lambd()
 }
+
+tst1 := class
+{
+	x := int
+	Test := poison !() -> void
+	{
+		printf("Test %s\n",this->Type->Name)
+	}
+}
+tst2 := class extend tst1
+{
+	
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	TFullInit()
-
-	tst := List.{int}^
-	tst = @temp new List.{int}
-	tst^ << 1 << 2 << 3
-
-	printf("hi\n")
+	x := tst2
+	x.Test()
 }
 
