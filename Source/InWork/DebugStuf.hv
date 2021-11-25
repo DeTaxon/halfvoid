@@ -141,6 +141,7 @@ PrintDebugMeta := !(TIOStream fil) -> void
 		if it.6 != 0
 		{
 			fil << ", arg: " << it.6
+			fil << ", flags: DIFlagArtificial"
 		}
 		fil << ", line: " << it.4 << ", type:!" << it.5
 		fil << ")\n"
