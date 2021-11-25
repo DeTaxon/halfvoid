@@ -45,17 +45,9 @@ BoxFile := class extend BoxBlock
 		}
 	}
 
-	startedWork := bool
-	StartWork := !() -> void
-	{
-		if startedWork
-			return void
-		startedWork = true
-		StartCTask(() ==> {
-			this.TheWork()
-		})
-	}
-	TheWork := !() -> void
+
+	IsWorkable := virtual !() -> bool { return true }
+	WorkCode := virtual !() -> void
 	{
 		
 		if true { //THREAD

@@ -236,6 +236,39 @@ Object := class{
 	}
 	IsCmdMod := virtual !() -> bool { return false }
 	NotifyPointUse := virtual !() -> void {}
+	
+	IsWorkable := virtual !() -> bool { return false }
+	StartWork := virtual !() -> void {}
+	DoWork := virtual !() -> void {}
+	WorkCode := virtual !() -> void {}
+}
+
+WorkObject := class extend Object
+{
+	startedWork := bool
+	busyByWork := bool
+	finishedWork := bool
+	StartWork := virtual !() -> void {
+		if startedWork
+			return void
+		startedWork = true
+		StartCTask(() ==> {
+			this.DoWork()
+		})
+	}
+	DoWork := virtual !() -> void {
+		if finishedWork
+			return void
+		while busyByWork 
+			TYield()
+		if finishedWork
+			return void
+		busyByWork = true
+		defer busyByWork = false
+		defer finishedWork = true
+
+		WorkCode()
+	}
 }
 
 ObjLine := class 

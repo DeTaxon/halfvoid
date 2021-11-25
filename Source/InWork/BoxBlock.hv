@@ -43,7 +43,7 @@ GetBlock := !(Object^ obj) -> BoxBlock^
 	return null
 }
 
-BoxBlock := class extend Object
+BoxBlock := class extend WorkObject
 {
 	GetUseIter := int
 	Items := List.{ObjHolder^}
@@ -405,6 +405,7 @@ BoxBlock := class extend Object
 		//}
 		//f << "\n"
 	}
+
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
@@ -502,13 +503,6 @@ BoxBlock := class extend Object
 			}else{
 				WorkBag.Push(this&,State_DestructCheck)
 			}
-		}
-		if pri == State_DestructCheck
-		{
-			WorkBag.Push(this&,State_DestructGet)
-		}
-		if pri == State_DestructGet
-		{
 		}
 	}
 
