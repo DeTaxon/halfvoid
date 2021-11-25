@@ -27,6 +27,10 @@
 	})
 	return res
 }
+"@omp block" := !(lambd) -> void
+{
+	TAwaitWork(lambd)
+}
 
 "@once func" := !(args...) .{@func} -> func->Type->ResultType
 {

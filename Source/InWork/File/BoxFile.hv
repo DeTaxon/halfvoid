@@ -57,20 +57,23 @@ BoxFile := class extend BoxBlock
 	}
 	TheWork := !() -> void
 	{
-		SyntaxCompress(this&,PriorityData)
-		UnboxParams(this.Down)
+		
+		if true { //THREAD
+			SyntaxCompress(this&,PriorityData)
+			UnboxParams(this.Down)
 
-		itr := Down
-		while itr != null
-		{
-			if itr.Down?.GetValue() == "AppendClass"
+			itr := Down
+			while itr != null
 			{
-				oldDown := itr.Down
-				itr = ReplaceNode(itr,new BoxClassAppend())
-				itr.Down = oldDown
-				itr.Down.SetUp(itr)
+				if itr.Down?.GetValue() == "AppendClass"
+				{
+					oldDown := itr.Down
+					itr = ReplaceNode(itr,new BoxClassAppend())
+					itr.Down = oldDown
+					itr.Down.SetUp(itr)
+				}
+				itr = itr.Right
 			}
-			itr = itr.Right
 		}
 		WorkBag.Push(Down[^],State_Start)
 		WorkBag.Push(this&,State_BlockParamStep)

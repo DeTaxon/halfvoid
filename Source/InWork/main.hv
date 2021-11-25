@@ -131,10 +131,9 @@ main := !(int argc,char^^ argv) -> int
 		printf("exp %s\n",e.Msg())
 		return 0
 	}
-	if jitMode
-	{
-		TFullInit()
-	}
+	
+	TFullInit()
+		
 
 	if noSuffixes
 	{
@@ -475,8 +474,6 @@ main := !(int argc,char^^ argv) -> int
 		{
 			printf("error %s\n",e.Msg())
 		}
-		return 0
-		
 		return 0
 	}
 

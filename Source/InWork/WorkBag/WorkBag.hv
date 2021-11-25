@@ -52,7 +52,15 @@ StartCTask := !(!()&-> void l) -> void
 
 	WorkingTasks.Insert(l2->{void^})
 	TSpawnTask(() ==> {
-		l2()
+		try
+		{
+			l2()
+		}
+		catch(IException^ e)
+		{
+			ErrorLog.Push(e.Msg())
+		}
+		
 		WorkingTasks.Remove(l2->{void^})
 		l2.Destroy()
 	})
