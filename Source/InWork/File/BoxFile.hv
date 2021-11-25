@@ -75,6 +75,7 @@ BoxFile := class extend BoxBlock
 				itr = itr.Right
 			}
 		}
+		
 		WorkBag.Push(Down[^],State_Start)
 		WorkBag.Push(this&,State_BlockParamStep)
 	}

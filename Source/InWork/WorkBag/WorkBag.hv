@@ -65,3 +65,8 @@ StartCTask := !(!()&-> void l) -> void
 		l2.Destroy()
 	})
 }
+
+ParseContext := class
+{
+	files := List.{BoxFile^}
+}

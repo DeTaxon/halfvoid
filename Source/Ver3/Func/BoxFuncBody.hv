@@ -532,47 +532,5 @@ BoxFuncBody := class extend BoxFunc
 		{
 			ParseDefer()
 		}
-		if pri == State_PrePrint
-		{
-			asCT := MethodType->{TypeClass^}
-			asC := asCT.ToClass
-					
-			i := asC.NotMineParams
-			EndS := asC.Params.Size()
-			for nowField,i : asC.Params
-			{
-				sBug := nowField->{Object^}
-				itCPre := sBug.GetType()
-				if itCPre is TypeClass
-				{
-					itC := itCPre->{TypeClass^}.ToClass
-
-					box3 := new FuncInputBox()
-
-					box3.itPars.Emplace(itCPre,true)
-					func3 := itC.GetFunc("~this",box3^,true)
-					if func3 != null
-					{
-						box4 := new FuncInputBox() 
-						box4.itConsts.Push(new ObjStr(nowField.ItName))
-						fnc := asC.AutoFieldTemplate
-						pr := fnc.GetPriority(box4^)
-						if pr == 0
-						{
-							asT := fnc->{BoxTemplate^}
-							funcCl := asT.GetFunc(box4^)
-							funcCll := MakeSimpleCall(funcCl,null->{Object^})
-
-							exF := MakeSimpleCall(func3,funcCll)
-							AddFuncCall(exF)
-						}
-						//exF := MakeSimpleCall(func3,pCall2)
-						//AddFuncCall(exF)
-					}else{
-						EmitError("compiler error 2345\n")
-					}
-				}
-			}
-		}
 	}
 }
