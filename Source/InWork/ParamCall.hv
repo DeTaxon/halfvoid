@@ -198,6 +198,8 @@ ParamNaturalCall := class extend ParamCall
 	}
 	PrintPointUse := virtual !(TIOStream f) -> void
 	{
+		if $debug and ToCall? is ConstMemParam
+			Print(0)
 		ToCall.PrintPointUse(f,TempId,debugId)
 	}
 	PrintPre := virtual !(TIOStream f) -> void
@@ -214,7 +216,15 @@ ParamNaturalCall := class extend ParamCall
 	}
 	GetPointName := virtual !() -> string
 	{
+		if $debug and ToCall? is ConstMemParam
+			Print(0)
 		return ToCall.GetPointName(TempId)
+	}
+
+	NotifyPointUse := virtual !() -> void
+	{
+		assert(ToCall != null)
+		ToCall.NotifyPointUse()
 	}
 }
 

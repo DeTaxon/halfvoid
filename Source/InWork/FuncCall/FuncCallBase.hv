@@ -44,6 +44,11 @@ BaseFuncCall := class extend ObjResult
 
 		while iter != null and i < FType.ParsCount 
 		{
+			if FType.ParsIsRef[i]
+			{
+				iter?.NotifyPointUse()
+			}
+
 			if iter.GetType() != FType.Pars[i]
 			{
 				RetR := false

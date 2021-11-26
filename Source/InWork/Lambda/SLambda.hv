@@ -848,10 +848,9 @@ SLambda := class extend BoxFuncContainer
 			{
 				StolenParams[name] = inUp->{LocalParam^}
 			}
-			if inUp? is RetFuncParamV2
-			{
-				inUp->{RetFuncParamV2^}.NotifyPointUse()
-			}
+			if inUp != null
+				inUp.NotifyPointUse()
+			
 		}
 
 		return null
