@@ -29,10 +29,13 @@ BoxFuncContainer := class extend Object
 			bdy := this&->{BoxFuncBody^}
 			if bdy.IsMethod
 			{
-				thisId := bdy.ItParams[0].inAllocId
+				nId := GetNewId()
 				fT := bdy.MyFuncType
-				f << "%thisPre = getelementptr " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %T" << thisId << " , i32 0\n"
-				f << "%this = load " << fT.Pars[0].GetName() << "* , " << fT.Pars[0].GetName() << "** %thisPre\n" 
+				bdy.ItParams[0].PrintPointPre(f,nId,-1)
+				
+				f << "%this = getelementptr " << fT.Pars[0].GetName() << " , " 
+				bdy.ItParams[0].PrintPointUse(f,nId,-1)
+				f << " ,i32 0\n"
 			}
 		}
 		if IsSLambda(this&)

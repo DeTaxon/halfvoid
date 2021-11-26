@@ -1,4 +1,4 @@
-reParseDown := !(Object^ itm, LocalParam^ prm,string vargName) -> void
+reParseDown := !(Object^ itm, MemParam^ prm,string vargName) -> void
 {
 	if itm == null return void
 	reParseDown(itm.Right,prm,vargName)
@@ -202,7 +202,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				addIter := tr
 
 				objList := Stack.{Object^}() ; $temp
-				objParms := Stack.{LocalParam^}() ; $temp
+				objParms := Stack.{MemParam^}() ; $temp
 
 				for i : parsCount
 				{

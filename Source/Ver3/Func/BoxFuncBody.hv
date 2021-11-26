@@ -1,7 +1,7 @@
 BoxFuncBody := class extend BoxFunc
 {
 	parsed := bool
-	ItParams := RawArray.{LocalParam^}
+	ItParams := RawArray.{MemParam^}
 	InAlloc := RawArray.{int}
 	ExtraRetParam := FuncParam^
 	Parent := BoxFuncBody^
