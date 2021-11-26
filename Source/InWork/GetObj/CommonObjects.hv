@@ -80,26 +80,6 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 			{
 				ItTp := iter.GetItem(name)
 				if ItTp != null return ItTp
-
-				if iter is BoxFuncBody //iter.GetValue() == "!()"
-				{
-					AsNeed2 := iter->{BoxFuncBody^}
-					as2 := iter->{BoxFunc^}
-
-					if AsNeed2.ItParams.Size() >= as2.MyFuncParamNames.Size() //TODO what is that?
-					for itNames : as2.MyFuncParamNames , itParrs : AsNeed2.ItParams
-					{
-						if itNames == name 
-							return itParrs
-					}
-					if AsNeed2.ExtraRetParam != null
-					{
-						if AsNeed2.ExtraRetParam.ItName == name
-							return AsNeed2.ExtraRetParam
-					}
-					trVal := AsNeed2.ItAttrs.TryFind(name)
-					if trVal != null return trVal^
-				}
 			}
 		}
 	}

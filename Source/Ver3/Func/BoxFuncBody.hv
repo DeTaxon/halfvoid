@@ -45,7 +45,27 @@ BoxFuncBody := class extend BoxFunc
 			return new NaturalCallWithDefer(this&,pars,deferTail)
 		return null
 	}
-
+	GetItem := virtual !(string name) -> Object^
+	{
+		fromUp := this."BoxFunc.GetItem"(name)
+		if fromUp != null
+			return fromUp
+			
+		for pName,i : MyFuncParamNames
+		{
+			if pName == name
+				return ItParams[i]
+		}
+		
+		if ExtraRetParam != null
+		{
+			if ExtraRetParam.ItName == name
+				return ExtraRetParam
+		}
+		trVal := ItAttrs.TryFind(name)
+		if trVal != null return trVal^
+		return null
+	}
 	this := !(RawArray.{char^} names, TypeFunc^ fType,string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt) -> void
 	{
 		ABox.ItId = GetNewId()
