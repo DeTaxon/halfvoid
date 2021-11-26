@@ -17,7 +17,6 @@ AppendClass Exception
 	//	{
 	//		if traceDataLen == 0
 	//			return c
-//
 	//		res := backtrace_symbols(traceData[0]&,traceDataLen)
 	//		defer free(res)
 

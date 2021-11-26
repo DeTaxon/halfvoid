@@ -13,9 +13,6 @@ tst1 := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := tst1
-	k := tst1
-	c = !{7,2.3}
-	printf("test %f %i\n",c.0,c.1)
+	c := Library()
 }
 
