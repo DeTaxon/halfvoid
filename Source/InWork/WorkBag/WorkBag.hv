@@ -14,9 +14,9 @@ WorkWithBag := !(bool printW) -> void
 			{
 				FlushTempMemory()
 				prior := WorkBag.GetTopPriority()
+
 				it := WorkBag.Pop()
 				workingOnObject = it
-
 
 				if printW
 				{
@@ -45,12 +45,15 @@ WorkWithBag := !(bool printW) -> void
 }
 
 WorkingTasks := RBSet.{void^}
+WorkingTasksMax := 0
 
 StartCTask := !(!()&-> void l) -> void
 {
 	l2 := l.Capture()
 
 	WorkingTasks.Insert(l2->{void^})
+	WorkingTasksMax = max(WorkingTasksMax,WorkingTasks.Size())
+
 	TSpawnTask(() ==> {
 		try
 		{

@@ -485,6 +485,7 @@ main := !(int argc,char^^ argv) -> int
 
 	//if not ErrorLog.Empty() return -1
 	printf("Created func types %i\n",GetFuncTypeCount())
+	printf("Task limit %i\n",WorkingTasksMax)
 	//PrintMemUse()
 	return 0
 }

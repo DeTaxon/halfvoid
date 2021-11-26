@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.cp": "cpp",
-        "typeinfo": "cpp"
-    }
+		"*.cp": "cpp",
+		"typeinfo": "cpp",
+		"limits": "cpp"
+	}
 }
