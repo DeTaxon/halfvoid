@@ -507,7 +507,6 @@ BoxClass := class extend BoxClassBase
 		{
 			if itBox.itPars.Size() == 2 
 				and itBox.itPars[0].first == ClassType
-				and itBox.itPars[1].first == ClassType
 			{
 				return tuplSet.GetFunc(itBox)
 			}
