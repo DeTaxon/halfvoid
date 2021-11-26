@@ -57,8 +57,13 @@ BoxSwitch := class extend Object
 			isAllowTreeOpt = true
 			if Down.GetType() != null
 			{
-				//Down.NotifyPointUse()
-				itemCall = new RetFuncParam(Down)
+				if Down is ParamNaturalCall
+				{
+					//Down.NotifyPointUse()
+					itemCall = Down->{ParamNaturalCall^}.ToCall
+				}else{
+					itemCall = new RetFuncParam(Down)
+				}
 				defCase := Object^()
 				regType := Type^()
 

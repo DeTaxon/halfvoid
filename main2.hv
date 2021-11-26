@@ -13,6 +13,6 @@ tst1 := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := Library()
+	printf("hello %i\n",argc)
 }
 

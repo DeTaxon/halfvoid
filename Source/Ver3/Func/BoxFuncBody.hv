@@ -23,9 +23,9 @@ BoxFuncBody := class extend BoxFunc
 
 		for i : count
 		{
-			//if false and not isRef[i] and pars[i]  is TypeStandart and i < names.Size()
+			//if not isRef[i] and pars[i]  is TypeStandart and i < names.Size()
 			//{
-			//	ItParams[i] = new ConstMemParam(Up
+			//	ItParams[i] = new ConstMemParam(this&
 			//	,StrCopy("%"sbt + names[i])
 			//	,pars[i], isRef[i])
 			//	InAlloc[i] = -1

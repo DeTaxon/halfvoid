@@ -5,6 +5,7 @@ ConstMemParam := class extend MemParam
 	paramName := char^
 	this := !(Object^ nUp , char^ paramNameIn,Type^ paramType, bool isRef) -> void
 	{
+		assert(nUp != null)
 		Up = nUp
 		ResultType = paramType
 		constIsRef = isRef
@@ -15,15 +16,37 @@ ConstMemParam := class extend MemParam
 		return true
 	}
 
+	calledNotify := bool
 	NotifyPointUse := virtual !() -> void
 	{
-		if constIsRef
+		if calledNotify
+			return void
+		calledNotify = true
+
+		WorkBag.Push(this&,State_PrePrint)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if pri == State_PrePrint
 		{
-			AllcId = GetAlloc(this&,ResultType.GetPoint())
-			this&->SetType(ConstMemParamRefedRef)
-		}else{
-			AllcId = GetAlloc(this&,ResultType)
-			this&->SetType(ConstMemParamRefed)
+			if constIsRef
+			{
+				AllcId = GetAlloc(this&,ResultType.GetPoint())
+				this&->SetType(ConstMemParamRefedRef)
+			}else{
+				AllcId = GetAlloc(this&,ResultType)
+				if $debug and AllcId == -1
+				{
+					itr := Up
+					while itr != null
+					{
+						printf("line %s\n",itr.GetValue())
+						itr = itr.Up
+					}
+					assert(AllcId != -1)
+				}
+				this&->SetType(ConstMemParamRefed)
+			}
 		}
 	}
 
