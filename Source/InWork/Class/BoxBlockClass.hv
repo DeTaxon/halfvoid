@@ -1,4 +1,49 @@
 BoxBlockClass := class extend BoxBlock
 {
-	
+	DoTheWork := virtual !(int pri) -> void
+	{
+
+		if pri == State_Syntax
+		{
+			SyntaxCompress(this&,PriorityData,true)
+			UnboxParams(this.Down)
+			WorkBag.Push(this&,State_GetUse)
+
+			clsItm := Up->{BoxClass^}
+			resvItm := true
+
+			while resvItm 
+			{
+				resvItm = false
+
+				for itr : Down
+				{
+					if itr.GetValue() == "if" and itr.Right?.GetValue() == "~ind"
+					{
+						if itr.Right.GetValue() == "~ind"
+						{
+							asInd := itr.Right->{ObjIndent^}
+							if asInd.MyStr[0] == '$'
+							{
+								inMap := TryCompute(asInd)
+								if inMap == null or (inMap is ObjBool and not inMap->{ObjBool^}.MyBool)
+								{
+									PopOutNode(itr.Right.Right)
+									PopOutNode(itr.Right)
+									PopOutNode(itr)
+								}else{
+									//PopOutNode(itr.Right.Right)
+									PopOutNode(itr.Right)
+									PopOutNode(itr)
+								}
+							}
+						}
+						resvItm = true
+						break
+					}
+				}
+			}
+			WorkBag.Push(Down[^],State_Start)
+		}
+	}
 }

@@ -47,7 +47,6 @@ BoxBlock := class extend WorkObject
 {
 	GetUseIter := int
 	Items := List.{ObjHolder^}
-	InClass := bool
 	ItId := int
 	
 	gotRetPath := bool
@@ -283,11 +282,8 @@ BoxBlock := class extend WorkObject
 				
 			}
 
-			if not InClass
-			{
 				//if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)
-				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
-			}
+			if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
 			//f << "LastContPath" <<ItId << ":\n"
 			quitPath.PrintLabel(f)
 		}
@@ -405,16 +401,18 @@ BoxBlock := class extend WorkObject
 		//}
 		//f << "\n"
 	}
-
+	SetClassBlock := !() -> void
+	{
+		this&->SetType(BoxBlockClass)
+	}
 	DoTheWork := virtual !(int pri) -> void
 	{
 		if pri == State_Start
 		{
 			WorkBag.Push(this&,State_Syntax)
-			if Up != null
+			if IsClassObj(Up?)
 			{
-				if not InClass
-					InClass =  IsClassObj(Up)
+				SetClassBlock()
 			}
 			//if Up.GetValue() == "~switch()" RecursMake()
 			//if (not InClass and (Up.GetValue() == "{d}" or Up.GetValue() == "~switch()")) RecursMake()
@@ -442,54 +440,8 @@ BoxBlock := class extend WorkObject
 					case void itr = tstNode
 				}
 			}
-
-
-			if InClass
-			{
-				clsItm := Up->{BoxClass^}
-				resvItm := true
-
-				while resvItm 
-				{
-					resvItm = false
-
-					for itr : Down
-					{
-						if itr.GetValue() == "if" and itr.Right?.GetValue() == "~ind"
-						{
-							if itr.Right.GetValue() == "~ind"
-							{
-								asInd := itr.Right->{ObjIndent^}
-								if asInd.MyStr[0] == '$'
-								{
-									inMap := TryCompute(asInd)
-									if inMap == null or (inMap is ObjBool and not inMap->{ObjBool^}.MyBool)
-									{
-										PopOutNode(itr.Right.Right)
-										PopOutNode(itr.Right)
-										PopOutNode(itr)
-									}else{
-										//PopOutNode(itr.Right.Right)
-										PopOutNode(itr.Right)
-										PopOutNode(itr)
-									}
-								}
-							}
-							resvItm = true
-							break
-						}
-					}
-				}
-				
-			}
-
-			if InClass
-			{
-				WorkBag.Push(Down[^],State_Start)
-			}
-
 		}
-		if pri == State_GetUse and not InClass
+		if pri == State_GetUse
 		{
 			iter := Down
 
