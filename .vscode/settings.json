@@ -2,6 +2,7 @@
     "files.associations": {
 		"*.cp": "cpp",
 		"typeinfo": "cpp",
-		"limits": "cpp"
+		"limits": "cpp",
+		"*.hv": "cpp"
 	}
 }

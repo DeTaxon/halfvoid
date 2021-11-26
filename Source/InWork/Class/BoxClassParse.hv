@@ -1,0 +1,77 @@
+ParseClass := !(Object^ ob)-> BoxClass^
+{
+	
+	putPack := false
+	if ob == null return null
+
+	iterT := ob.Down
+	if iterT == null return null
+
+	switch iterT.GetValue()
+	{
+		case "packed_class" putPack = true
+		case "class"
+		case void return null
+	}
+
+
+	iterT = iterT.Right
+
+	if iterT == null return null
+
+	if iterT.GetValue() == "."
+	{
+		iterT = iterT.Right.Right
+		preRes := new BoxClassTemplate(ob,null->{Object^})
+		return preRes->{BoxClass^}
+	}
+
+	ExtObj := Object^()
+	
+	if iterT.GetValue() == "extend"
+	{
+		iterT = iterT.Right
+		if iterT == null return null
+
+		ExtObj = iterT 
+
+		iterT = iterT.Right
+		if iterT == null return null
+		if iterT.GetValue() != "{}" return null
+
+		//if IsTemplate return new BoxClassTemplate(ob,ExtObj)
+		preRes :=  new BoxClass(iterT,null->{BoxClass^},ExtObj)
+		preRes.IsPacked = putPack
+		return preRes
+	}
+
+	if iterT.GetValue() != "{}" return null
+
+	preRes2 := new BoxClass(iterT,null->{BoxClass^},null->{Object^})
+	preRes2.IsPacked = putPack
+	return preRes2
+}
+
+IsClassObj := !(Object^ toCmp) -> bool
+{
+	if toCmp is BoxClass return true
+	if toCmp is BoxClassAppend return true
+	return false
+}
+GetClassObj := !(Object^ toC) -> BoxClass^
+{
+	if toC is BoxClassAppend return toC->{BoxClassAppend^}.classPtr
+	if toC is BoxClass return toC->{BoxClass^}
+	return null
+}
+GetUpClass := !(Object^ toS) -> BoxClass^
+{
+	iterF := toS
+	while iterF != null
+	{
+		if iterF is BoxClassAppend return iterF->{BoxClassAppend^}.classPtr
+		if iterF is BoxClass return iterF->{BoxClass^}
+		iterF = iterF.Up
+	}
+	return null
+}
