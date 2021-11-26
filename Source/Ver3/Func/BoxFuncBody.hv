@@ -23,20 +23,20 @@ BoxFuncBody := class extend BoxFunc
 
 		for i : count
 		{
-			//if not isRef[i] and pars[i]  is TypeStandart and i < names.Size()
-			//{
-			//	ItParams[i] = new ConstMemParam(this&
-			//	,StrCopy("%"sbt + names[i])
-			//	,pars[i], isRef[i])
-			//	InAlloc[i] = -1
-			//}else{
+			if false and not isRef[i] and pars[i]  is TypeStandart and i < names.Size()
+			{
+				ItParams[i] = new ConstMemParam(this&
+						,StrCopy("%"sbt + names[i])
+						,pars[i], isRef[i])
+				InAlloc[i] = -1
+			}else{
 				if isRef[i]{
 					InAlloc[i] = ABox.GetAlloc(pars[i].GetPoint())
 				}else{
 					InAlloc[i] = ABox.GetAlloc(pars[i])
 				}
 				ItParams[i] = new LocalParam(pars[i],InAlloc[i],isRef[i])
-			//}
+			}
 		}
 	}
 	GenerateCall := virtual !(Object^ pars) -> BaseFuncCall^

@@ -11,8 +11,21 @@ tst1 := class
 	"=" := default
 }
 
+main2 := !(int argc) -> int
+{
+
+	switch argc
+	{
+		case 0 printf("yep 0\n")
+		case 1 printf("yep 1\n")
+		case 2 printf("yep 2\n")
+		case 3 printf("yep 3\n")
+	}
+
+	printf("hello %i\n",argc)
+}
 main := !(int argc, char^^ argv) -> int
 {
-	printf("hello %i\n",argc)
+	main2(argc)
 }
 
