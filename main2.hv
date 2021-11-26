@@ -6,20 +6,15 @@
 
 tst1 := class
 {
-	x := int
-	Test := poison !() -> void
-	{
-		printf("Test %s\n",this->Type->Name)
-	}
-}
-tst2 := class extend tst1
-{
-	
+	x := float
+	t := int
+	"=" := default
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := tst2
-	x.Test()
+	c := tst1
+	c = !{1,2.3}
+	printf("test %i %i\n",c.0,c.1)
 }
 

@@ -473,6 +473,14 @@ BoxClass := class extend BoxClassBase
 				Templs.Push(mtTmplts^[^])
 
 		if name == "." {
+			if itBox.itConsts.Size() == 1 and itBox.itConsts[0] is ObjInt
+			{
+				if GetNmFunc == null
+				{
+					GetNmFunc = new TupleFuncGetItem(this&)
+				}
+				Templs.Push(GetNmFunc)
+			}
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
 		}
 		bestFunc := GetBestFunc(itBox,Funcs,Templs)

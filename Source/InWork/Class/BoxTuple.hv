@@ -68,9 +68,8 @@ TupleClass := class extend BoxClass
 		ClassType = new TypeClass(this&->{BoxClass^})
 		for tt,i : typs.itPars
 		{
-			new FieldParam("",tt.first,this&->{BoxClass^})
+			new FieldParam(GetConstString("."sbt + i),tt.first,this&->{BoxClass^})
 		}
-		GetNmFunc = new TupleFuncGetItem(this&)
 		cnPre := ClassType->{Type^}
 		cn := cnPre.GetName()
 		FncSetVal = new BuiltInFuncBinar("=",cnPre,true,cnPre,true,GTypeVoid,false,
@@ -82,7 +81,7 @@ TupleClass := class extend BoxClass
 		switch name
 		{
 		case "."
-			return GetNmFunc.GetFunc(itBox)
+			return this."BoxClass.GetFunc"(name,itBox,isV)
 		case "<=>"
 			if tuplCmp == null
 				CreateTupleCmp()
@@ -126,61 +125,6 @@ TupleClass := class extend BoxClass
 	DoTheWork := virtual !(int pri) -> void
 	{
 		this."BoxClass.DoTheWork"(pri)
-		if pri == State_PreGetUse and false //COMMENTED
-		{
-			if askedCreate == 1
-			{
-				for itPar,i : Params
-				{
-					
-					fnc := BoxFunc^()
-					if itPar.ResultType is TypeClass
-					{
-						asCl := itPar.ResultType->{TypeClass^}.ToClass
-						boxCl := new FuncInputBox() ; $temp
-						boxCl.itPars.Emplace(itPar.ResultType,true)
-						boxCl.itPars.Emplace(itPar.ResultType,true)
-						fnc = asCl.GetFunc("this",boxCl^,false)
-					}
-					if fnc == null
-					{
-						box := new FuncInputBox() ; $temp
-						box.itPars.Emplace(itPar.ResultType,true)
-
-						sbRef := false
-						if itPar is TypeArr sbRef = true
-						if itPar is TypeClass sbRef = true
-						box.itPars.Emplace(itPar.ResultType,sbRef)
-
-						fnc = FindFunc("=",this&,box^,false)
-					}
-
-					if fnc != null
-					{
-						box2 := new FuncInputBox() ; $temp
-						box2.itPars.Emplace(ClassType->{Type^},true)
-						box2.itConsts.Push(new ObjInt(i))
-						
-						frmPre := GetNmFunc->{BoxTemplate^}
-						frm := frmPre.GetFunc(box2^)
-
-						partA := MakeSimpleCall(frm,new ParamNaturalCall("",new FuncParam("ToSet",ClassType->{Type^},true)))
-
-						parBType := itPar.ResultType
-						parBIsRef := false
-						if parBType is TypeClass parBIsRef = true
-						if parBType is TypeArr parBIsRef = true
-						partB := new ParamNaturalCall("",new FuncParam("From"sbt + i,itPar.ResultType,parBIsRef))
-						partA.Right = partB
-						partB.Left = partA
-						FncSets.Push(MakeSimpleCall(fnc,partA))
-					}else{
-						EmitError("tuple, cant get operator=")
-					}
-				}
-				askedCreate = 2
-			}
-		}
 	}
 }
 TupleSpaceship :=  class extend BuiltInFuncBinar

@@ -50,83 +50,83 @@ main := !(int argc,char^^ argv) -> int
 
 	try
 	{
-	i := 1
-	while  i < argc
-	{
-		switch argv[i]
+		i := 1
+		while  i < argc
 		{
-		case "--task_gs"
-			EnableGSTask = true
-		case "--ZipGlue"
-			ZipConCat(argv[i+1],argv[i+2],argv[i+3])
-			return 0
-		case "--ZipAppend"
-			zL := List.{char^}() ; $temp
-			for j : (i+2)..(argc-1)
-				zL << argv[j]
-			ZipAppend(argv[i+1],zL)
-			return 0
-		case "--jit"
-			jitMode = true
-		case "--rname"
-			ReturnName = argv[i+1]
-			i += 1
-		case "--notask"
-			disableTask = true
-		case  "--tree"
-			emitTree = true
-		case "-p"
-			i++
-			compilerSuffix = argv[i]
-			itNm := ".hv."sbt + argv[i]
-			fileSuffixes.Push(itNm.Str())
-			noSuffixes = false
-		case "-o"
-			outputFile = argv[i+1]
-			i += 1
-		case "-g"
-			DebugMode = true	
-			cuId = GetNewId()
-		case "--vk"
-			i += 1
-			p := Path(argv[i])
-			if p.IsExist(){
-				Modules.Push(new ModuleVulkan(argv[i]))
-			}else{
-				printf("--vk module does not exist\n")
-				return 0
-			}
-		case "--clib"
-			i += 1
-			clibModule.AddCLib(gRepo.GetFile(argv[i]),false)
-		case "--work"
-			printWork = true
-		case void
-			if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-C"
+			switch argv[i]
 			{
-				itPri := StrToInt(argv[i][2..0])
+			case "--task_gs"
+				EnableGSTask = true
+			case "--ZipGlue"
+				ZipConCat(argv[i+1],argv[i+2],argv[i+3])
+				return 0
+			case "--ZipAppend"
+				zL := List.{char^}() ; $temp
+				for j : (i+2)..(argc-1)
+					zL << argv[j]
+				ZipAppend(argv[i+1],zL)
+				return 0
+			case "--jit"
+				jitMode = true
+			case "--rname"
+				ReturnName = argv[i+1]
+				i += 1
+			case "--notask"
+				disableTask = true
+			case  "--tree"
+				emitTree = true
+			case "-p"
 				i++
-				dirChecks.Emplace(argv[i][0]&,itPri)
-
-			}else{
-				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
+				compilerSuffix = argv[i]
+				itNm := ".hv."sbt + argv[i]
+				fileSuffixes.Push(itNm.Str())
+				noSuffixes = false
+			case "-o"
+				outputFile = argv[i+1]
+				i += 1
+			case "-g"
+				DebugMode = true	
+				cuId = GetNewId()
+			case "--vk"
+				i += 1
+				p := Path(argv[i])
+				if p.IsExist(){
+					Modules.Push(new ModuleVulkan(argv[i]))
+				}else{
+					printf("--vk module does not exist\n")
+					return 0
+				}
+			case "--clib"
+				i += 1
+				clibModule.AddCLib(gRepo.GetFile(argv[i]),false)
+			case "--work"
+				printWork = true
+			case void
+				if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-C"
 				{
 					itPri := StrToInt(argv[i][2..0])
-					itP := Path(argv[i+1])
-					if not itP.IsExist()
-					{
-						printf("zip file %s not found\n",argv[i+1])
-						return 0
-					}
-					zipSp.Emplace(itPri,argv[i+1])
 					i++
+					dirChecks.Emplace(argv[i][0]&,itPri)
+
 				}else{
-					targetFiles.Push(argv[i])
+					if StrSize(argv[i]) >= 3 and argv[i][0..2] == "-Z"
+					{
+						itPri := StrToInt(argv[i][2..0])
+						itP := Path(argv[i+1])
+						if not itP.IsExist()
+						{
+							printf("zip file %s not found\n",argv[i+1])
+							return 0
+						}
+						zipSp.Emplace(itPri,argv[i+1])
+						i++
+					}else{
+						targetFiles.Push(argv[i])
+					}
 				}
 			}
+			i += 1
 		}
-		i += 1
-	}
 	}catch(IException^ e) {
 		printf("exp %s\n",e.Msg())
 		return 0
