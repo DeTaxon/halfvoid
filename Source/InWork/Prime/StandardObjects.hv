@@ -375,7 +375,7 @@ ObjStr := class extend ObjConst
 	{
 		StrSi := StrSize(justStr) + 1
 		asStr := "getelementptr inbounds (["sbt + StrSi + " x i8] , [" + StrSi + " x i8]* @Str" + MyStrId + ", i32 0, i32 0)"
-		return asStr.Str() ; $temp
+		return @temp asStr.Str()
 	}
 	PrintPointUse := virtual !(TIOStream f) -> void
 	{
@@ -517,7 +517,7 @@ ObjArray := class extend ObjConst
 			}
 		}
 		preRet << "]"
-		return preRet.Str() ; $temp
+		return @temp preRet.Str()
 	}
 	GetValue := virtual !() -> string
 	{

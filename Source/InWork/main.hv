@@ -215,8 +215,6 @@ main := !(int argc,char^^ argv) -> int
 
 	MacroRestart = new Object
 
-	//selfFile := new ZipFile() ; $temp
-
 	loadedLex := false
 
 	mac := gRepo.GetFile("Mach.m")

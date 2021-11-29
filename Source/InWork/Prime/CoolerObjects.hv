@@ -56,7 +56,7 @@ ObjSkobs := class extend Object
 						if fnc == null
 							EmitError("Decorator not found")
 
-						tmpObj := new Object ; $temp
+						tmpObj := @temp new Object
 						ReplaceNode(this&,tmpObj)
 
 						newItm := new SBoostLambda()
@@ -70,7 +70,7 @@ ObjSkobs := class extend Object
 						newCall.Line = this.Line
 						newItm.Line = this.Line
 					}else{
-						tmpObj := new Object ; $temp
+						tmpObj := @temp new Object
 						ReplaceNode(this&,tmpObj)
 
 						newItm := new SLambdaDecorator()

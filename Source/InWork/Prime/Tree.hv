@@ -10,17 +10,6 @@ Object := class{
 
 
 	IsConst := virtual false
-
-	//"new" := !() .{@R} -> void^
-	//{
-	//	preRes := void^
-	//	if $temp {
-	//		preRes = gTemporaryPool.GetMem(R->TypeSize,R->Align,0)
-	//	}else{
-	//		preRes = ObjectsPool.GetMem(R->TypeSize,R->Align,0)
-	//	}
-	//	return preRes
-	//}
 	
 	TestNodes := virtual !() ->void
 	{
@@ -293,7 +282,7 @@ ObjLine := class
 	}
 	LoadAttrs := !(char^ str) -> void
 	{
-		newItm := DivideStr(str,"\t\n ") ; $temp
+		newItm := DivideStr(str,"\t\n ")
 		for newItm
 		{
 			if it != ";"
@@ -302,10 +291,6 @@ ObjLine := class
 			}
 		}
 	}
-	//"new" := !() .{@R} -> void^
-	//{
-	//	return ObjectsPool.GetMem(R->TypeSize,R->Align,0)
-	//}
 }
 
 ForIteratorOverLineInTree := class
