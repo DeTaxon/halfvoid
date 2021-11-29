@@ -61,10 +61,10 @@ main := !(int argc,char^^ argv) -> int
 				ZipConCat(argv[i+1],argv[i+2],argv[i+3])
 				return 0
 			case "--ZipAppend"
-				zL := List.{char^}() ; $temp
+				zL := @temp new List.{char^}()
 				for j : (i+2)..(argc-1)
-					zL << argv[j]
-				ZipAppend(argv[i+1],zL)
+					zL^ << argv[j]
+				ZipAppend(argv[i+1],zL^)
 				return 0
 			case "--jit"
 				jitMode = true

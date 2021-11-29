@@ -139,7 +139,7 @@ ObjSkobs := class extend Object
 
 UniteSkobs := !(Object^ Tree) -> Object^
 {
-	Bag := new Stack.{Object^} ; $temp
+	Bag := @temp new List.{Object^}
 	iter := Tree
 	
 	while iter != null
@@ -147,7 +147,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 		Value := iter.GetValue()
 		tokId := iter.GetTokenId()
 
-		if tokId in 40..42 	Bag.Push(iter)
+		if tokId in 40..42 	Bag.PushFront(iter)
 
 		if tokId in 43..45
 		{
@@ -159,7 +159,7 @@ UniteSkobs := !(Object^ Tree) -> Object^
 				case 45 itPair = "[]"
 			}
 
-			if Bag.Empty() return iter
+			if Bag.IsEmpty() return iter
 			Old := Bag.Pop()
 			if tokId - Old.GetTokenId() != 3
 			{

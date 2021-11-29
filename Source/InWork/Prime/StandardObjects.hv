@@ -78,7 +78,7 @@ ObjPointer := class extend ObjConst
 	{
 		buf := char[256]
 		sprintf(buf[0]&,"inttoptr (i64 %llu to %s)",pointerValue,ResultType.GetName())
-		return StrCopy(buf[0]&) ; $temp
+		return @temp StrCopy(buf[0]&)
 	}
 	Clone := virtual !() -> Object^
 	{

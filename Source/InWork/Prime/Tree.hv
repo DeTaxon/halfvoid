@@ -337,7 +337,7 @@ Remove := !(Object^ where ) -> void
 
 TreeForAll := !(Object^ tr,!(Object^)&->void cb) -> void
 {
-	arr := List.{Object^}() ; $temp $keep
+	arr := @temp new List.{Object^}
 
 	if tr != null
 		arr.Push(tr)

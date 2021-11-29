@@ -9,10 +9,10 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 	if toCheck == null 
 		return false
 	added := false
-	bag := Stack.{Object^}() ; $temp
+	bag := @temp new List.{Object^}
 	bag.Push(toCheck)
 
-	while bag.NotEmpty()
+	while not bag.IsEmpty()
 	{
 		item := bag.Pop()
 		if item.GetValue() == "~{}type" 
@@ -26,7 +26,7 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 		{
 			return false
 		}
-		bag.Push(item.Down[^])
+		bag.PushFront(item.Down[^])
 	}
 	return added
 }
@@ -549,8 +549,6 @@ BoxTemplate := class extend BoxFunc
 	{
 		getTempData = itBox&
 		defer getTempData = null
-
-		outT := Queue.{Type^}() ; $temp
 
 		parConsts := Queue.{ObjConstHolder^}()
 		CheckTypes(itBox,parConsts,null)
