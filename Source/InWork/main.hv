@@ -288,7 +288,7 @@ main := !(int argc,char^^ argv) -> int
 		InfiniteCodeSpace.codeLibs.Push(fl)
 		FilesInSpace.Insert(fl)
 
-		fl.StartWork()
+		fl.DoWork()
 	}
 
 	for it : codeSp
@@ -303,7 +303,7 @@ main := !(int argc,char^^ argv) -> int
 		fLibSp.codeLibs.Push(fL)
 		FilesInSpace.Insert(fL)
 
-		fL.StartWork()
+		fL.DoWork()
 	}
 	for it : zipSp
 	{

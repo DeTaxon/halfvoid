@@ -218,15 +218,16 @@ BoxBlock := class extend WorkObject
 				itr := Up
 				while itr.Up != null
 					itr = itr.Up
-				assert(itr is BoxFile)
-
-				f << "!" << ItId << " = !DILexicalBlock(scope: !" 
-				f << Up.GetScope() << ", file: !" << itr.GetScope()
-				if Line != null
+				if itr != null and itr is BoxFile
 				{
-					f << ", line: " << Line.LinePos
+					f << "!" << ItId << " = !DILexicalBlock(scope: !" 
+					f << Up.GetScope() << ", file: !" << itr.GetScope()
+					if Line != null
+					{
+						f << ", line: " << Line.LinePos
+					}
+					f << ")\n"
 				}
-				f << ")\n"
 			}
 //!20 = distinct !DILexicalBlock(scope: !16, file: !1, line: 6, column: 2)
 		}
