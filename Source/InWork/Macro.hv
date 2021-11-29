@@ -313,7 +313,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		sts := QueueSet.{int}()
 		CollectFuncsByName(asInd,deSkob,funcs^,tmpls^,false,false,sts,false)
 
-		walkMap := new Stack.{int} ; $temp
+		walkMap := @temp new List.{int}
 		itr := deSkob.Up.Up.Down
 		while itr != itUp
 		{
@@ -324,10 +324,10 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				itW += 1
 			}
 			itr = itr.Up
-			walkMap.Push(itW)
+			walkMap.PushFront(itW)
 		}
 
-		tmpNode := new Object ; $temp
+		tmpNode := @temp new Object
 		ReplaceNode(itUp,tmpNode)
 		for it,i : funcs^
 		{

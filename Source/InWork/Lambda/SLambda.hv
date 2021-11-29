@@ -147,7 +147,7 @@ SLambda := class extend BoxFuncContainer
 				{
 					//TrimCommas(skobPos)
 					iter := skobPos.Down
-					bag := List.{Object^}() ; $temp
+					bag := @temp new List.{Object^}
 					while iter != null
 					{
 						if iter.GetValue() != ","
@@ -159,25 +159,25 @@ SLambda := class extend BoxFuncContainer
 							switch bag.Size()
 							{
 								case 1
-									if not bag[0] is ObjIndent
+									if not bag^[0] is ObjIndent
 									{
 										EmitError("unknown input objecy\n")
 										return void
 									}
-									asN := bag[0]->{ObjIndent^}
+									asN := bag^[0]->{ObjIndent^}
 									names.Push(asN.MyStr)
 									pars.Push(null->{Type^})
 									isRef.Push(false)
 									isTmpl = true
 								case 2
-									if not bag[1] is ObjIndent
+									if not bag^[1] is ObjIndent
 									{
 										EmitError("unknown input object\n")
 										return void
 									}
-									asN2 := bag[1]->{ObjIndent^}
+									asN2 := bag^[1]->{ObjIndent^}
 									names.Push(asN2.MyStr)
-									itTyp := ParseType(bag[0])
+									itTyp := ParseType(bag^[0])
 									if itTyp == null
 									{
 										EmitError("can not parse type\n")
