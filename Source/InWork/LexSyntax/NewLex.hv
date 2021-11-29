@@ -32,7 +32,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> O
 	treeIter := null->{Object^}
 	prevId := -1
 	linePos := 0
-	DaBuff := new char[2048] ; $temp
+	DaBuff := @temp new char[2048]
 	RegExpReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) ==>
 	{
 		ptr := memPtr[b]&
