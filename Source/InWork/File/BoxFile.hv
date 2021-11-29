@@ -11,10 +11,7 @@ BoxFile := class extend BoxBlock
 	VisibleParams := AVLMap.{string,QueueSet.{ObjParam^}}
 
 	cs := CodeSpace^
-	GetScope := virtual !() -> int
-	{
-		return fileId
-	}
+	
 	this := !(Path fullPath) -> void
 	{
 		fileId = GetNewId()
@@ -23,6 +20,9 @@ BoxFile := class extend BoxBlock
 	GetValue := virtual !() -> string
 	{
 		return "{d}.cp"
+	}
+	GetScope := virtual !() -> int { 
+		return fileId
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{

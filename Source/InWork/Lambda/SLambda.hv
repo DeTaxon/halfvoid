@@ -875,9 +875,6 @@ SLambda := class extend BoxFuncContainer
 	{
 		printf("sfgasfhafg\n")
 	}
-	PrintDebugDeclare := virtual !(TIOStream f ,Object^ frc) -> void
-	{
-	}
 	IsDataR := virtual true
 	IsBlockData := virtual true
 }

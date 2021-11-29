@@ -19,19 +19,6 @@ CreateDebugCall := !(Object^ itm) -> int
 	}
 	if not DebugMode return -1
 
-	//itr := itm
-	//while itr != null and itr.GetValue() != "!()" and itr.GetValue() != "{!()}"  
-	//	and not itr is SLambda  itr = itr.Up
-
-	//if itr == null return -1
-
-	//aBId := int
-	//if itr is SLambda
-	//{
-	//	aBId = itr->{SLambda^}.ABox.ItId
-	//}else{
-	//	aBId = itr->{BoxFunc^}.ABox.ItId
-	//}
 	aBId := itm.GetScope()
 	if aBId == 0 return -1
 	if aBId == -1 return -1
