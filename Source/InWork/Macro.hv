@@ -201,8 +201,8 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			}else{
 				addIter := tr
 
-				objList := Stack.{Object^}() ; $temp
-				objParms := Stack.{MemParam^}() ; $temp
+				objList := @temp new List.{Object^}
+				objParms := @temp new List.{MemParam^}
 
 				for i : parsCount
 				{
@@ -213,13 +213,13 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 					newObj.Left = addIter
 					addIter.Right = newObj
 					//reParseDown(newObj,lastFunc.ItParams[i+lastFunc.funcUserParamsCount],vargName)
-					objList.Push(newObj)
-					objParms.Push(lastFunc.ItParams[i+lastFunc.funcUserParamsCount])
+					objList.PushFront(newObj)
+					objParms.PushFront(lastFunc.ItParams[i+lastFunc.funcUserParamsCount])
 
 					addIter = newObj
 				}
 
-				for a : objList, b : objParms
+				for a : objList^, b : objParms^
 				{
 					reParseDown(a,b,vargName)
 				}
