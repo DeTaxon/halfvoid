@@ -139,7 +139,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 				if metaStr == "Type"
 				{
 					if dV.GetType() != null
-						return new ObjType(dV.GetType()) ; $temp
+						return @temp new ObjType(dV.GetType())
 				}
 				if metaStr == "Group"
 				{
@@ -147,19 +147,19 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					{
 						tp := dV->{ObjType^}.MyType
 						if tp is TypeStandart
-							return new ObjStr("Prime") ; $temp
+							return @temp new ObjStr("Prime")
 						if tp is TypeClass
-							return new ObjStr("Class") ; $temp
+							return @temp new ObjStr("Class")
 						if tp is TypePoint
-							return new ObjStr("Pointer") ; $temp
+							return @temp new ObjStr("Pointer")
 						if tp is TypeFunc
-							return new ObjStr("Func") ; $temp
+							return @temp new ObjStr("Func")
 						if tp is TypeArr
-							return new ObjStr("Array") ; $temp
+							return @temp new ObjStr("Array")
 						if tp is TypeFuncLambda
-							return new ObjStr("Lambda") ; $temp
+							return @temp new ObjStr("Lambda")
 						if tp is TypeFatArr
-							return new ObjStr("Vector") ; $temp //TODO change name
+							return @temp new ObjStr("Vector") //TODO change name
 						assert(false)
 					}
 				}

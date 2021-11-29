@@ -87,7 +87,7 @@ MetaFieldBox := class extend Object
 	{
 		if pri == State_Start
 		{
-			names := List.{char^}() ; $temp
+			names := @temp new List.{char^}()
 			itr := this&->{Object^}
 			while itr != null
 			{
@@ -99,7 +99,7 @@ MetaFieldBox := class extend Object
 				{
 
 					nms := ""sbt
-					for it,i : names
+					for it,i : names^
 					{
 						if i != 0 nms << "."
 						nms << it

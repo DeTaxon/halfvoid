@@ -30,7 +30,7 @@ BoxClassAppend := class extend Object
 			MakeItBlock(Down)
 			WorkBag.Push(Down,State_Start)
 
-			prm := ParseType(new ObjIndent(className)) ; $temp //TODO: optimize
+			prm := ParseType(@temp new ObjIndent(className)) //TODO: optimize
 			if prm == null 
 				EmitError("Class with name "sbt + className + " not found")
 			if not prm is TypeClass
