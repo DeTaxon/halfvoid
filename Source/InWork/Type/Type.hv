@@ -592,6 +592,12 @@ TypeClass := class extend Type
 			itAlign = 1
 	}
 
+	GetParamOffset := virtual !(int nr) -> int
+	{
+		ComputeAlignAndDeb()
+		assert(nr < debTable.Size())
+		return debTable[nr].2
+	}
 	GetAlign := virtual !() -> int
 	{
 		ComputeAlignAndDeb()

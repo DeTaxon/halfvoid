@@ -9,6 +9,7 @@ AllocBox := class
 
 	ItemBag := List.{Tuple.{int,Type^}}
 	ItemNrs := AVLMap.{int,int}
+
 	GetAlloc := !(Type^ ToAdd) -> int
 	{
 		DaID := GetNewId()
