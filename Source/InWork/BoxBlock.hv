@@ -90,11 +90,11 @@ BoxBlock := class extend WorkObject
 	}
 	RecursMake := !() -> void
 	{
-			woot := Queue.{Object^}() ; $temp
+			woot := @temp List.{Object^}
 
 			if Down[^].GetValue() == "{}"
 				woot.Push(it)
-			MakeItBlock(woot[^])
+			MakeItBlock(woot^[^])
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
