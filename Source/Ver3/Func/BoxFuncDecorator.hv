@@ -65,7 +65,7 @@ AppendClass BoxFunc
 		//}
 
 		itBox2 := new FuncInputBox() ; $temp
-		itBox2.itConsts.Push(new ObjFuncPointer(this&)) ; $temp
+		itBox2.itConsts.Push(@temp new ObjFuncPointer(this&))
 		for c : MyFuncType.ParsCount
 		{
 			itBox2.itPars.Emplace(

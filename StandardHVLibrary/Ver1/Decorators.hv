@@ -86,7 +86,8 @@
 {
 	TempPoolBlock()
 	res := lambd()
-	_tempCallSetAllocator(res^)
+	if res->Type->Group == "Pointer"
+		_tempCallSetAllocator(res^)
 	return res
 }
 _tempCallSetAllocator := !(@T o) -> void

@@ -35,7 +35,7 @@ TypeClass := class extend Type
 			for it,ind : ToClass.ItAttrs
 				st << ind << " "
 		}
-		return st.Str() ; $temp
+		return @temp st.Str()
 	}
 	
 	itAlign := int

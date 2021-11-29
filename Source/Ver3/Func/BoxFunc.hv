@@ -151,7 +151,7 @@ BoxFunc := class extend BoxFuncContainer
 			IsRetRef = true
 		}
 
-		Stuff := Queue.{Object^}() ; $temp
+		Stuff := @temp new List.{Object^}
 
 		if RetTyp != null
 		{
@@ -169,16 +169,16 @@ BoxFunc := class extend BoxFuncContainer
 			TypsIsRef.Push(true)
 		}
 
-		Stuff.Push(root.Down[^]) ; $temp
+		Stuff.Push(root.Down[^])
 
 
-		if Stuff.Size() != 0 Stuff.Push(new ObjSymbol(",")) ; $temp 
+		if Stuff.Size() != 0 Stuff.Push(@temp new ObjSymbol(","))
 
 		indType := 0
 
-		while Stuff.NotEmpty()
+		while not Stuff.IsEmpty()
 		{
-			if Stuff[0].GetValue() == ","
+			if Stuff^[0].GetValue() == ","
 			{
 				if Pars.Size() == 2 or Pars.Size() == 5 //TODO too bad way
 				{
