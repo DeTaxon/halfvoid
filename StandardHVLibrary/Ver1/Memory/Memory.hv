@@ -19,6 +19,15 @@ TempPoolBlock := !() -> void
 }defer_tail () {
 	gTemporaryPool.Pop()
 }
+AllocPoolBlock := !(IMemoryPool^ allc) -> void
+{
+	if allc != null
+		allc.Push()
+}defer_tail (allc)
+{
+	if allc != null
+		allc.Pop()
+}
 
 
 IMemoryPool := class

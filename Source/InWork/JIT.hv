@@ -36,7 +36,7 @@ JITPreInit := !() -> void
 
 getTypeJIT := !() .{@T} -> Type^
 {
-	if T->Group == "func"
+	if T->Group == "Func"
 	{
 		pars := new List.{Type^} ; $temp
 		for par : T->Params
@@ -45,17 +45,17 @@ getTypeJIT := !() .{@T} -> Type^
 		}
 		return GetFuncType(pars.ToArray(),null,pars.Size(),getTypeJIT().{T->ResultType},false,false,false) ; $temp
 		//return GetFuncType(GTypeVoid)
-	} else if T->Group == "prime"
+	} else if T->Group == "Prime"
 	{
 		return GetType(T->Name)
-	} else if T->Group == "pointer"
+	} else if T->Group == "Pointer"
 	{
 		return GetType(T->Name).GetPoint()
-	} else if T->Group == "array"
+	} else if T->Group == "Array"
 	{
 		404 = true
 		assert(false)
-	} else if T->Group == "class"
+	} else if T->Group == "Class"
 	{
 		404 = true
 		assert(false)

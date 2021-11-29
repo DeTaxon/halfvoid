@@ -81,3 +81,29 @@
 		}catch(IException^ e) {}
 	}
 }
+
+"@temp call" := !(@LType lambd) -> LType->ResultType
+{
+	TempPoolBlock()
+	res := lambd()
+	_tempCallSetAllocator(res^)
+	return res
+}
+_tempCallSetAllocator := !(@T o) -> void
+{
+	if T->Group == "Class"
+	{
+		for it,Name : o->Fields
+		{
+			if Name == "allocator"
+			{
+				it = gTemporaryPool&
+			}else{
+				if it->Type->Group == "Class"
+				{
+					_tempCallSetAllocator(it)
+				}
+			}
+		}
+	}
+}

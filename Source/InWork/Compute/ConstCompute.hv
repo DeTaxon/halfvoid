@@ -147,19 +147,19 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					{
 						tp := dV->{ObjType^}.MyType
 						if tp is TypeStandart
-							return new ObjStr("prime") ; $temp
+							return new ObjStr("Prime") ; $temp
 						if tp is TypeClass
-							return new ObjStr("class") ; $temp
+							return new ObjStr("Class") ; $temp
 						if tp is TypePoint
-							return new ObjStr("pointer") ; $temp
+							return new ObjStr("Pointer") ; $temp
 						if tp is TypeFunc
-							return new ObjStr("func") ; $temp
+							return new ObjStr("Func") ; $temp
 						if tp is TypeArr
-							return new ObjStr("array") ; $temp
+							return new ObjStr("Array") ; $temp
 						if tp is TypeFuncLambda
-							return new ObjStr("lambda") ; $temp
+							return new ObjStr("Lambda") ; $temp
 						if tp is TypeFatArr
-							return new ObjStr("vector") ; $temp //TODO change name
+							return new ObjStr("Vector") ; $temp //TODO change name
 						assert(false)
 					}
 				}

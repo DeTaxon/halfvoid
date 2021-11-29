@@ -59,6 +59,8 @@ List := class .{@T}
 	CreatedNodes := ListNode.{T}^
 	itCapacity := int
 
+	allocator := IMemoryPool^
+
 	this := !() .{} -> void
 	{
 		Start = null
@@ -238,6 +240,7 @@ List := class .{@T}
 		
 		if newNode == null
 		{
+			AllocPoolBlock(allocator)
 			newNode = new ListNode.{T}
 		}
 		return newNode
@@ -252,6 +255,7 @@ List := class .{@T}
 			CreatedNodes = toDest
 			itCapacity += 1
 		}else{
+			AllocPoolBlock(allocator)
 			delete toDest
 		}
 	}
@@ -345,6 +349,8 @@ List := class .{@T}
 	{
 		if not $temp
 		{
+			
+			AllocPoolBlock(allocator)
 
 			while CreatedNodes != null
 			{
