@@ -10,7 +10,7 @@ ExceptionInit := !() -> bool
 
 
 	dummy := @temp new Object
-	box := new FuncInputBox ; $temp
+	box := @temp new FuncInputBox
 
 	entr := FindFunc("internalEnterTry",dummy,box^,false)
 	if entr == null return false

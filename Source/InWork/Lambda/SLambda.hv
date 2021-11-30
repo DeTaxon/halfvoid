@@ -316,9 +316,9 @@ SLambda := class extend BoxFuncContainer
 		{
 			if not justFunc
 			{
-				newCallB := new FuncInputBox ; $temp
+				newCallB := @temp new FuncInputBox
 				newCallB.itPars.Emplace(GTypeU64,false)
-				newCallB.itConsts.Push(new ObjType(GTypeU8)) ; $temp
+				newCallB.itConsts.Push(@temp new ObjType(GTypeU8))
 				newFunc := FindFunc("new",Up,newCallB^,false)
 				newCall = MakeSimpleCall(newFunc,new ParamNaturalCall("",new FuncParam("ResLambdaSize",GTypeU64,false)))
 
@@ -330,10 +330,6 @@ SLambda := class extend BoxFuncContainer
 				deleteCall = MakeSimpleCall(delFunc,new ParamNaturalCall("",new FuncParam("LambdaToDel",GTypeVoidP,false)))
 
 			}
-			//datRes := new FuncInputBox ; $temp
-			//datRes.itPars.Emplace(ResultType.Base.GetPoint(),false)
-
-			//tupleItem = GetTuple(datRes)
 			inAlloc = GetAlloc(Up,ResultType.Base.GetPoint())
 			ItNR = GetAllocNR(Up,inAlloc)
 		}

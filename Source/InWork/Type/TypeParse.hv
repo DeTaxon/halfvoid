@@ -255,7 +255,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 
 			if itName == "Tuple"
 			{
-				itms  := new FuncInputBox()  ; $temp
+				itms  := @temp new FuncInputBox
 				if Node.Down.Right.Right.Down[^].GetValue() != ","
 				{
 					isType := ParseType(it)
@@ -273,7 +273,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 				return asCt.ClassType
 			}
 
-			box := new FuncInputBox() ; $temp
+			box := @temp new FuncInputBox
 			
 			iterR := Node.Down.Right.Right.Down
 			
@@ -341,7 +341,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 						case void
 					}
 				}else{
-					box.itAttrs[key] = value ; $temp
+					box.itAttrs[key] = value
 				}
 			}
 

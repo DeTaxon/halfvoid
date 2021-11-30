@@ -45,7 +45,7 @@ AppendClass BoxFunc
 
 		fncName := ("@"sbt + name + " func")->{char^}
 		
-		//itBox := new FuncInputBox() ; $temp
+		//itBox := @temp new FuncInputBox()
 		//itBox.itPars.Emplace(MyFuncType.GetPoint(),false)
 		//for c : MyFuncType.ParsCount
 		//{
@@ -64,7 +64,7 @@ AppendClass BoxFunc
 		//	return void
 		//}
 
-		itBox2 := new FuncInputBox() ; $temp
+		itBox2 := @temp new FuncInputBox()
 		itBox2.itConsts.Push(@temp new ObjFuncPointer(this&))
 		for c : MyFuncType.ParsCount
 		{
@@ -82,4 +82,5 @@ AppendClass BoxFunc
 		return null
 
 	}
+}
 }

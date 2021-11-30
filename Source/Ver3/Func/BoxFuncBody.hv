@@ -465,7 +465,7 @@ BoxFuncBody := class extend BoxFunc
 				}
 
 				resFName := ""sbt + FuncName
-				tmplVars := HybridQueue.{int,8}() ; $temp
+				tmplVars := @temp new HybridQueue.{int,8}
 				for val,k : ItAttrs
 				{
 					if tmplVars.Size() == 0 resFName << ".{"
@@ -491,7 +491,7 @@ BoxFuncBody := class extend BoxFunc
 
 					tmplId = GetNewId()
 					f << "!" << tmplId << " = !{"
-					for val,i : tmplVars
+					for val,i : tmplVars^
 					{
 						if i > 0 f << ","
 						f << "!" << val

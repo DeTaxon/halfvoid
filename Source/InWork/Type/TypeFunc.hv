@@ -39,7 +39,7 @@ TypeFunc := class extend Type
 
 	GetRawFunc := !() -> TypeFuncRaw^
 	{
-		preRet := new TypeFuncRaw ; $temp
+		preRet := @temp new TypeFuncRaw
 		pc := ParsCount
 		isComplx := false
 		if ((RetType is TypeArr) or (RetType is TypeClass)) and not RetRef

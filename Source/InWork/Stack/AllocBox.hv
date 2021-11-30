@@ -57,9 +57,9 @@ AllocBox := class
 	//ReturnAlloc := !()
 	GetAsType := !() -> Type^
 	{
-		resR := new FuncInputBox() ; $temp
+		resR := @temp new FuncInputBox
 		assert(not ItemBag.IsEmpty())
-		resR.itPars.Emplace(ItemBag[^].1,false) ; $temp
+		resR.itPars.Emplace(ItemBag[^].1,false)
 		for inhAllocs
 		{
 			resR.itPars.Emplace(it.GetAsType(),false)

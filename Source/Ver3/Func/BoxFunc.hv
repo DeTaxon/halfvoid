@@ -137,7 +137,7 @@ BoxFunc := class extend BoxFuncContainer
 		Typs := Queue.{Type^}() ; $temp
 		TypsNams := Queue.{string}() ; $temp
 		TypsDefValues := Queue.{Object^}() ; $temp
-		TypsDefValuesModifier := List.{int}() ; $temp
+		TypsDefValuesModifier := @temp new List.{int}
 		TypsIsRef := Queue.{bool}() ; $temp
 		IsVargsL := false
 		ContainTT := false
@@ -306,7 +306,7 @@ BoxFunc := class extend BoxFuncContainer
 		if defVals != 0
 		{
 			DefaultValues.Resize(defVals)
-			for toSet : DefaultValues, vl : TypsDefValues , modif : TypsDefValuesModifier
+			for toSet : DefaultValues, vl : TypsDefValues , modif : TypsDefValuesModifier^
 			{
 				toSet.Value = vl
 				toSet.ValueModifier = modif

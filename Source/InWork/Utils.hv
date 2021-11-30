@@ -6,7 +6,7 @@ CollectConsts := !(Object^ obj , FuncInputBox^ itBox) -> void
 		{
 			if H.IsConst
 			{
-				itBox.itConsts.Push(H) ; $temp
+				itBox.itConsts.Push(H)
 			}else{
 				tp := ParseType(H)
 				if tp == null
@@ -14,7 +14,7 @@ CollectConsts := !(Object^ obj , FuncInputBox^ itBox) -> void
 					ErrorLog.Push("can not parse type in .{}\n")
 				}else{
 					constType := new ObjType(tp)
-					itBox.itConsts.Push(constType) ; $temp
+					itBox.itConsts.Push(constType)
 				}
 			}
 		}

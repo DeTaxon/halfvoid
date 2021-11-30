@@ -624,7 +624,7 @@ BoxTemplate := class extend BoxFunc
 			boxTail := itBox&
 			if itBox.itPars.Size() != deferTail.MyFuncType.ParsCount
 			{
-				boxTail = new FuncInputBox ; $temp
+				boxTail = @temp new FuncInputBox
 				for i : deferTail.MyFuncType.ParsCount
 				{
 					boxTail.itPars.Emplace(itBox.itPars[i])
