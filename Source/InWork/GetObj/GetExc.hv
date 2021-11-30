@@ -51,10 +51,10 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	}
 
 
-	b := new FuncInputBox() ; $temp 
+	b := @temp new FuncInputBox
 
 	b.itPars.Emplace(itemType,isRef)
-	b.itConsts.Push(new ObjType(ToType)) ; $temp
+	b.itConsts.Push(@temp new ObjType(ToType))
 
 	func :=  FindFunc("->{}",start,b^,true)
 	if func != null return func

@@ -36,7 +36,7 @@ GCInit := !() -> void
 	gcCallDestroy.ParseBlock()
 
     
-	box2 := new FuncInputBox ; $temp
+	box2 := @temp new FuncInputBox
 	box2.itPars.Emplace(GTypeVoidP.GetPoint(),false)
 	box2.itPars.Emplace(GTypeVoidP,false)
 	gcSetValueFunc = FindFunc("internalGCSetPtr",dummy,box2^,false)
@@ -54,9 +54,9 @@ GCMakeArrayPointer := !(Type^ typ) -> void
 		gcTmp := GetItem("TGCArray",null)
 		gcArrayClass = gcTmp.Down->{BoxClassTemplate^}
 	}
-	itBox := new FuncInputBox ; $temp
+	itBox := @temp new FuncInputBox
 
-	itBox.itConsts.Push(new ObjType(typ))
+	itBox.itConsts.Push(@temp new ObjType(typ))
 	newBase := gcArrayClass.GetClass(itBox^).GetPoint()
 	typ->SetType(TypeFatGCArr)
 	typ.Base = newBase

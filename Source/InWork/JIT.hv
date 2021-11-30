@@ -87,7 +87,7 @@ addJITFunction := !(char^ name ,void^ fPoint,Type^ outType) -> void
 
 JITInit := !() -> void
 {
-	box := new FuncInputBox ; $temp
+	box := @temp new FuncInputBox
 	box.itPars.Emplace(GTypeVoidP,false)
 	box.itPars.Emplace(GTypeSizeT,false)
 

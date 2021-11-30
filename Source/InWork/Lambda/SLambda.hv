@@ -323,7 +323,7 @@ SLambda := class extend BoxFuncContainer
 				newCall = MakeSimpleCall(newFunc,new ParamNaturalCall("",new FuncParam("ResLambdaSize",GTypeU64,false)))
 
 
-				delCallB := new FuncInputBox ; $temp
+				delCallB := @temp new FuncInputBox
 				delCallB.itPars.Emplace(GTypeVoidP,false)
 				delFunc := FindFunc("delete",Up,delCallB^,false)
 				deleteCall = MakeSimpleCall(delFunc,null)

@@ -474,9 +474,9 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 	}
 	if inType is TypeClass //inType.GetType() == "class"
 	{
-		itFc := new FuncInputBox ; $temp 
+		itFc := @temp new FuncInputBox
 		itFc.itPars.Emplace(inType,true)
-		itFc.itConsts.Push(new ObjType(funcType)) ; $temp
+		itFc.itConsts.Push(@temp new ObjType(funcType))
 
 		asN := inType->{TypeClass^}.ToClass
 		if asN.GetFunc("->{}",itFc^,false) != null return CmpLose
