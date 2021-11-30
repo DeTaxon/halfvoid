@@ -16,7 +16,10 @@ DBox := class .{@T}
 
 DBoxIterator := class .{@T}
 {
-	IsEnd := virtual !() -> bool { return true }
+	IsEnd := virtual !() -> bool {
+		printf("heh %p\n",this&)
+		 return true 
+	}
 	"^" := virtual !() -> ref T {}
 	"Inc" := virtual !() -> void {}
 }

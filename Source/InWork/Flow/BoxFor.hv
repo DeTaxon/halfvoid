@@ -67,7 +67,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsEndFunc := Object^
 
 	ProxyFuncs := BoxFunc^^
-	ProxyResults := MemParam^^
+	ProxyResults := LocalParam^^
 	Params := MemParam^^
 	IndParams := MemParam^^
 
@@ -228,7 +228,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				UnrefFuncs = new Object^[itemsCount]
 				IndFuncs = new Object^[itemsCount]
 				ProxyFuncs = new BoxFunc^[itemsCount]
-				ProxyResults = new MemParam^[itemsCount]
+				ProxyResults = new LocalParam^[itemsCount]
 				Params = new MemParam^[itemsCount]
 				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
@@ -548,7 +548,19 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 		for itr,i : Down.Right
 		{
-			itr.PrintPre(f)
+			if ProxyResults[i] == null
+			{
+				itr.PrintPre(f)
+			}else{
+				itr.PrintPre(f)
+				f << "store "
+				itr.PrintUse(f)
+				f << " , "
+				itr.GetType().PrintType(f)
+				f << "* " << ProxyResults[0].GetMainPtr(0)
+				f << "\n"
+			}
+		
 			if DestroyFunc[i] != null
 			{
 				f << "store i8 " << deferLabel << " , i8* %DeferStack" << deferId << "\n"
