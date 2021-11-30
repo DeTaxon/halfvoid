@@ -1,6 +1,7 @@
 StringContainer := class 
 {
 	Strs := AVLMap.{string,int}
+	memPool := AllocOnlyMP.{4096,true}
 
 	this := !() -> void
 	{
@@ -9,12 +10,14 @@ StringContainer := class
 
 	GetStringValue := !(string St) -> int
 	{
+		assert(St != null)
 		inMap := Strs.TryFind(St)
 		if inMap != null
 			return inMap^
+		AllocPoolBlock(memPool&)
 		//#critical_atomic
 		SomId := GetNewId()
-		Strs[St] = SomId
+		Strs[StrCopy(St)] = SomId
 		return SomId
 	}
 	GetString := !(int id) -> string
@@ -34,7 +37,7 @@ StringContainer := class
 	}
 	PrintGlobal := !(TIOStream f) -> void
 	{
-		for v,key : Strs
+		for v,key : Strs, i : 0
 		{
 			f << "@Str" << v << " = constant [" << StrSize(key) +  1 << " x i8] c\""
 			k := 0

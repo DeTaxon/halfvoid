@@ -94,6 +94,10 @@ List := class .{@T}
 		this._createBackNode() = toAdd
 		return this
 	}
+	Create := !() -> ref T
+	{
+		return _createBackNode()
+	}
 	_createBackNode := !() .{} -> ref T
 	{
 		newNode := this.createNode()

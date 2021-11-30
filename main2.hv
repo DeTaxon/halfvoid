@@ -1,7 +1,16 @@
+
+inClass := class
+{
+	rr := HybridQueue.{int,2}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	tst := @temp new List.{int}
-	tst^ << 1 << 2 << 3
-	tst.Destroy()
+	whyNot := @temp new inClass
+	whyNot.rr.Push(1)
+	whyNot.rr.Push(2)
+	whyNot.rr.Push(3)
+	whyNot.rr.Push(4)
+	return 0
 }
 

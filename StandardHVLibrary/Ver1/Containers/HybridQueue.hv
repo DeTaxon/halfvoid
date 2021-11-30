@@ -35,18 +35,15 @@ HybridQueueIterator := class .{@T}
 HybridQueue := class .{@T,@ExtraSize}
 {
 	qArr := T[ExtraSize]
-	startNode,endNode := ListNode.{T}^
 	itSize := int
-	if $keep createdNodes := ListNode.{T}^
+	subList := List.{T}
 	
 	this := !() -> void
 	{
-		itSize = 0
-		if $keep createdNodes = null
 	}
 	"~For" := !() -> HybridQueueIterator.{T}
 	{
-		return HybridQueueIterator.{T}(qArr[0]&,startNode,itSize,ExtraSize)
+		return HybridQueueIterator.{T}(qArr[0]&,subList.Start,itSize,ExtraSize)
 	}
 	makeNewItem := !() -> ref T //TODO make it template
 	{
@@ -55,27 +52,8 @@ HybridQueue := class .{@T,@ExtraSize}
 			itSize += 1
 			return qArr[itSize - 1]
 		}
-		newNode := ListNode.{T}^()
-		if $keep
-		{
-			if createdNodes != null
-			{
-				newNode = createdNodes
-				createdNodes = createdNodes.Next
-			}
-		}
-		if newNode == null newNode = new ListNode.{T}()
-		newNode.Next = null
-		if itSize == ExtraSize
-		{
-			startNode = newNode
-			endNode = startNode
-		}else{
-			endNode.Next = newNode
-			endNode = endNode.Next
-		}
 		itSize += 1
-		return endNode.Data
+		return subList.Create()
 	}
 	Push := !(T itm) .{} -> void
 	{
@@ -91,53 +69,17 @@ HybridQueue := class .{@T,@ExtraSize}
 		{
 			return qArr[ps]
 		}
-		itr := startNode
-		ind := ps - ExtraSize
-		while ind != 0
-		{
-			itr = itr.Next
-			ind -= 1
-		}
-		return itr.Data
+		return subList[ps - ExtraSize]
 	}
 	Clear := !() . {} -> void
 	{
-		if $keep
-		{
-			if itSize > ExtraSize
-			{
-				endNode.Next = createdNodes
-				createdNodes = startNode
-			}
-			itSize = 0
-		}else{
-			Destroy()
-		}
+		itSize = 0
+		subList.Clear()
 	}
 	Destroy := !() .{} -> void
 	{
-		if not $temp
-		{
-			if $keep
-			{
-				while createdNodes != null
-				{
-					itNd := createdNodes.Next
-					createdNodes = createdNodes.Next
-					delete itNd
-				}
-			}
-			if itSize > ExtraSize
-			{
-				while start != null
-				{
-					itNd := startNode
-					startNode = startNode.Next
-					delete itNd
-				}
-			}
-		}
 		itSize = 0
+		subList.Destroy() //TODO GC
 	}
 	Size := !() -> int
 	{
