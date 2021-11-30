@@ -67,6 +67,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsEndFunc := Object^
 
 	ProxyFuncs := BoxFunc^^
+	ProxyResults := MemParam^^
 	Params := MemParam^^
 	IndParams := MemParam^^
 
@@ -227,6 +228,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				UnrefFuncs = new Object^[itemsCount]
 				IndFuncs = new Object^[itemsCount]
 				ProxyFuncs = new BoxFunc^[itemsCount]
+				ProxyResults = new MemParam^[itemsCount]
 				Params = new MemParam^[itemsCount]
 				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
@@ -268,8 +270,11 @@ BoxForOldFashionMulti := class extend BoxFor
 						continue
 					}
 
-					if func.MyFuncType.RetType.GetType() != "class" {
-						EmitError("~For have to return class\n")
+					rType := func.MyFuncType.RetType
+					if (not rType is TypeClass)
+						and (not (rType is TypePoint and rType.Base is TypeClass))
+					{
+						EmitError("~For have to return class or pointer to class\n")
 						continue
 					}
 
@@ -329,24 +334,40 @@ BoxForOldFashionMulti := class extend BoxFor
 				{
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := ProxyFuncs[i].MyFuncType.RetType
-					ItId2 := asNeed2.GetItAllocId()
 
-					ForItem := new LocalParam(itType,ItId2)
+					ForItem := LocalParam^
+
+					if itType is TypeClass
+					{
+						ItId2 := asNeed2.GetItAllocId()
+						ForItem = new LocalParam(itType,ItId2)
+					}else{
+						assert(itType is TypePoint)
+						newId := GetAlloc(this&,itType)
+						ForItem = new LocalParam(itType.Base,newId,true)
+						ProxyResults[i] = ForItem
+					}
 					ForItem.Line = iter.Line
 					
-					asNeed := ((itType->{TypeClass^}).ToClass)
+					asNeed := BoxClass^
+					if itType is TypePoint
+					{
+						asNeed = itType.Base->{TypeClass^}.ToClass						
+					} else {
+						asNeed = itType->{TypeClass^}.ToClass
+					}
 
 					emptyBox := new FuncInputBox() ; $temp
-					emptyBox.itPars.Emplace(itType,true)
+					emptyBox.itPars.Emplace(asNeed.ClassType,true)
 					if iter.Line != null for q,k : iter.Line.itAttrs
 					{
 						emptyBox.itAttrs[k] = q
 					}
 
-					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,true)
-					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,true)
-					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,true)
-					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,true)
+					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,false)
+					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,false)
+					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,false)
+					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,false)
 					if DestroyFunc[i] != null
 					{
 						destroyFuncCount += 1
@@ -385,7 +406,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					if i == 0
 					{
-						IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,true)
+						IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,false)
 						test = new ParamNaturalCall("",ForItem->{Object^})
 						test.Line = iter.Line
 						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
@@ -397,7 +418,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					if IndNames[i] != null
 					{
-						itFunc4 := asNeed.GetFunc("Ind",emptyBox^,true)
+						itFunc4 := asNeed.GetFunc("Ind",emptyBox^,false)
 						if itFunc4 == null
 						{
 							//EmitError("Can not get index item\n")

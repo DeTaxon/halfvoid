@@ -4,11 +4,21 @@ DBox := class .{@T}
 {
 	Size := virtual !() -> int { return 0 }
 	"[]" := virtual !(int ind) -> ref T {}
-	//ToArrayTmp := virtual !() -> RawArray.{T}^
-	//{
-	//	
-	//	return null
-	//}
+	ToArrayTmp := virtual !() -> RawArray.{T}^
+	{
+		return null
+	}
+	"~For" := virtual !() -> DBoxIterator.{T}^
+	{
+		return new DBoxIterator.{T}
+	}
+}
+
+DBoxIterator := class .{@T}
+{
+	IsEnd := virtual !() -> bool { return true }
+	"^" := virtual !() -> ref T {}
+	"Inc" := virtual !() -> void {}
 }
 
 TestFunc := !(DBox.{int} obj) -> void
@@ -31,14 +41,20 @@ ListDBox := class .{@T} extend DBox.{T}
 
 main := !(int argc, char^^ argv) -> int
 {
-	tst := @temp new List.{int}
-	tst^ << 2 << 10 << 3 << 10
-	//TestFunc(tst^)
-	c := DBox.{int}^
-	c = new ListDBox.{int}(tst)
+	c := DBox.{int}
+	for it : c
+	{
 
-	printf("Size %i\n",c.Size())
-	printf("Size %i\n",c^[2])
+	}
+
+
+	//tst := @temp new List.{int}
+	//tst^ << 2 << 10 << 3 << 10
+	////TestFunc(tst^)
+	//c := DBox.{int}^
+	//c = new ListDBox.{int}(tst)
+	//printf("Size %i\n",c.Size())
+	//printf("Size %i\n",c^[2])
 	return 0
 }
 
