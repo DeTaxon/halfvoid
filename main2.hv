@@ -1,16 +1,44 @@
 
-inClass := class
+
+DBox := class .{@T}
 {
-	rr := AVLMap.{int,int}
+	Size := virtual !() -> int { return 0 }
+	"[]" := virtual !(int ind) -> ref T {}
+	//ToArrayTmp := virtual !() -> RawArray.{T}^
+	//{
+	//	
+	//	return null
+	//}
 }
+
+TestFunc := !(DBox.{int} obj) -> void
+{
+	for it : obj
+	{
+		printf("wut %i\n",it)
+	}
+}
+
+ListDBox := class .{@T} extend DBox.{T}
+{
+	ptrToList := List.{T}^
+	this := !(List.{T}^ ptr) -> void { ptrToList = ptr}
+	
+	Size := virtual !() -> int { return ptrToList.Size() }
+	"[]" := virtual !(int ind) -> ref T { return ptrToList^[ind]}
+}
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	whyNot := @temp new inClass
-	whyNot.rr[1] = 1
-	whyNot.rr[2] = 2
-	whyNot.rr[3] = 3
-	whyNot.rr[4] = 4
+	tst := @temp new List.{int}
+	tst^ << 2 << 10 << 3 << 10
+	//TestFunc(tst^)
+	c := DBox.{int}^
+	c = new ListDBox.{int}(tst)
+
+	printf("Size %i\n",c.Size())
+	printf("Size %i\n",c^[2])
 	return 0
 }
 

@@ -105,8 +105,11 @@ ParseFuncDataR := !(Object^ item) -> Object^
 			FName = dynCa.MyStr
 			isPoison = dynCa.IsPoison
 
+			IsVirtual = IsVirtual or dynCa.IsVirtual
+
 			if FName == "![]" IsSuf = false
 			if FName == "this" IsSuf = false
+			if FName == "[]" IsSuf = false
 
 			if IsOper(FName) IsSuf = false
 
@@ -154,8 +157,6 @@ ParseFuncDataR := !(Object^ item) -> Object^
 
 			return preRes
 		}
-
-
 
 		preRet := new BoxFuncBody(ParamsObj,RetT,constsI,RetRef,FName,iter,IsSuf,ClassType,IsVirtual,itsSelfRet,item,null)
 		preRet.IsSelfReturn = itsSelfRet

@@ -139,7 +139,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 	{
 		if Node.Down?.GetValue() == "!" and Node.Down.Right?.GetValue() in !["{}","{d}"]
 		{
-			itBox := new FuncInputBox ; $temp
+			itBox := @temp new FuncInputBox
 			for nd : Node.Down.Right.Down
 			{
 				if nd.GetValue() == ","
