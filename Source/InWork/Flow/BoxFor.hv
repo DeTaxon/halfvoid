@@ -8,9 +8,9 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 	iterY := dat.Down.Right
 
-	Names := Queue.{string}() ; $temp
-	indNames := Queue.{string}() ; $temp
-	Downs := Queue.{Object^}() ; $temp
+	Names := @temp new List.{char^}
+	indNames := @temp new List.{char^}
+	Downs := @temp new List.{Object^}
 	if iterY.Right.Right == null
 	{
 		Names.Push("it")
@@ -38,7 +38,7 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 
 		}
 	}
-	preRes :=  new BoxForOldFashionMulti(Names,indNames,Downs,iterY)
+	preRes :=  new BoxForOldFashionMulti(Names^,indNames^,Downs^,iterY)
 	preRes.Line = dat.Down.Line
 
 	if dat.Line?.itAttrs.Size() != 0
@@ -80,7 +80,7 @@ BoxForOldFashionMulti := class extend BoxFor
 	holder := Object^
 
 	endLabel := BoxLabel^
-	this := !(Queue.{string} names, Queue.{string} f_ind,Queue.{Object^} items,Object^ itBlock) -> void
+	this := !(List.{char^} names, List.{char^} f_ind,List.{Object^} items,Object^ itBlock) -> void
 	{
 		endLabel = new BoxLabelAnon()
 		for items

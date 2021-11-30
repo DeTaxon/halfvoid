@@ -360,16 +360,16 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 	newNode := ReplaceNode(tr,new ObjIndent(itName))
 	newNode.Line = tr.Line
 
-	nms := Queue.{string}() ; $temp
+	nms := @temp new List.{char^}
 	nms.Push(itName)
-	indNames := Queue.{string}() ; $temp
+	indNames := @temp new List.{char^}
 	indNames.Push(indName)
-	itms := Queue.{Object^}() ; $temp
+	itms := @temp new List.{Object^}
 	itms.Push(itm)
 
-	tmpNode := new Object ; $temp
+	tmpNode := @temp new Object
 	ReplaceNode(itUp,tmpNode)
-	fr := new BoxForOldFashionMulti(nms,indNames,itms,itUp)
+	fr := new BoxForOldFashionMulti(nms^,indNames^,itms^,itUp)
 	fr.Line = newNode.Line
 	ReplaceNode(tmpNode,fr)
 	return fr

@@ -138,21 +138,6 @@ PrintDebugMeta := !(TIOStream fil) -> void
 
 	for DebugMetaData fil << it
 
-	//glbs := new List.{int}() ; $temp
-	//for DebugGlobalVars
-	//{
-	//	nId := GetNewId()
-	//	fil << "!" << nId << " = !DIGlobalVariableExpression(var: !"<< it.0 << ", expr: !DIExpression())\n"
-	//	glbs^ << nId
-	//}
-	//fil << "!" << globVar << " = !{"
-	//for it,i : glbs^
-	//{
-	//	if i != 0 fil << ","
-	//	fil << "!" << it
-	//}
-	//fil << "}\n"
-
 	fil << "!" << globVar << " = !{"
 	for it,i : DebugGlobalVars
 	{
