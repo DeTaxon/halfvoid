@@ -1,13 +1,10 @@
 
 AVLTree := class .{@DATA} extend CommonTree.{DATA}
 {
-	$keep
-	
 	this := !() -> void
 	{
 		Start = null
-		if $keep
-			CreatedNodes = null
+		CreatedNodes = null
 	}
 	FindOrCreate := !(DATA dat,CommonTreeNode.{DATA}^^ toRet) .{} -> bool //bool isCreated
 	{

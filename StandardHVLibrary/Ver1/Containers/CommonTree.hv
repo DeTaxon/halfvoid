@@ -15,8 +15,8 @@ CommonTreeNode := class .{@DATA}
 CommonTree := class .{@DATA}
 {
 	Start := CommonTreeNode.{DATA}^
-	if $keep
-		CreatedNodes := CommonTreeNode.{DATA}^
+	CreatedNodes := CommonTreeNode.{DATA}^
+	allocator := IMemoryPool^
 	
 	FindNode := !(DATA dat) -> CommonTreeNode.{DATA}^
 	{
@@ -44,22 +44,19 @@ CommonTree := class .{@DATA}
 	}
 	createNode := !() .{} -> CommonTreeNode.{DATA}^
 	{
-		if $keep
+		if CreatedNodes != null
 		{
-			if CreatedNodes != null
-			{
-				newNode := CreatedNodes
-				CreatedNodes = CreatedNodes.Right
-				newNode.Left = null
-				newNode.Up = null
-				newNode.Right = null
-				newNode.balance = 0
-				return newNode
-			}else{
-				return new CommonTreeNode.{DATA}
-			}
-		}	
-		return new CommonTreeNode.{DATA}
+			newNode := CreatedNodes
+			CreatedNodes = CreatedNodes.Right
+			newNode.Left = null
+			newNode.Up = null
+			newNode.Right = null
+			newNode.balance = 0
+			return newNode
+		}else{
+			AllocPoolBlock(allocator)
+			return new CommonTreeNode.{DATA}
+		}
 	}
 	RotateLeft := !(CommonTreeNode.{DATA}^ toRotate) -> void
 	{
@@ -93,13 +90,8 @@ CommonTree := class .{@DATA}
 	}
 	remNode := !(CommonTreeNode.{DATA}^ toRem) .{} -> void
 	{
-		if $keep
-		{
 			toRem.Right = CreatedNodes
 			CreatedNodes = toRem
-		}else
-		{
-			delete toRem
-		}
 	}
+	//TODO Clear Destroy
 }

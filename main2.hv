@@ -1,16 +1,16 @@
 
 inClass := class
 {
-	rr := HybridQueue.{int,2}
+	rr := AVLMap.{int,int}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 	whyNot := @temp new inClass
-	whyNot.rr.Push(1)
-	whyNot.rr.Push(2)
-	whyNot.rr.Push(3)
-	whyNot.rr.Push(4)
+	whyNot.rr[1] = 1
+	whyNot.rr[2] = 2
+	whyNot.rr[3] = 3
+	whyNot.rr[4] = 4
 	return 0
 }
 

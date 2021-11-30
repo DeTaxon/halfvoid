@@ -2,8 +2,6 @@ AVLSet.{@DATA} := type ContainerCommonSet.{AVLTree,DATA}
 RBSet.{@DATA} := type ContainerCommonSet.{RBTree,DATA}
 ContainerCommonSet := class .{@TreeType,@DATA}
 {
-	$keep
-
 	itTree := TreeType.{DATA} ; #outer_class
 	itSize := int
 
