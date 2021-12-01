@@ -147,7 +147,7 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 			clName := origin.ClassType.GetName()
 			for it,i : origin.Params
 			{
-				boxS := new FuncInputBox() ; $temp
+				boxS := @temp new FuncInputBox
 
 				boxS.itPars.Emplace(it.ResultType,true)
 				boxS.itPars.Emplace(it.ResultType,true)
@@ -222,7 +222,7 @@ SetTupleObj := class extend BuiltInFuncMega
 			asT := MyFuncType.Pars[1]->{TypeClass^}.ToClass->{BoxClass^}
 			for par,i : thT.Params, parC : asT.Params 
 			{
-				boxS := new FuncInputBox() ; $temp
+				boxS := @temp new FuncInputBox
 
 				boxS.itPars.Emplace(par.ResultType,true)
 

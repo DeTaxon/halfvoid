@@ -35,7 +35,7 @@ GetFuncCall := !(Object^ ToParse) -> Object^
 	if iter is ObjIndent //iter.GetValue() == "~ind"
 	{
 		asInd := iter->{ObjIndent^}
-		box := new FuncInputBox() ; $temp 
+		box := @temp new FuncInputBox
 		box.itConsts.Push(new ObjStr(asInd.MyStr)) 
 		someF := FindFunc(".",iter,box^,true)
 
@@ -93,7 +93,7 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 			asNeed := asNeedPre->{TypeClass^}
 			cls := asNeed.ToClass
 
-			oBox := new FuncInputBox()  ; $temp
+			oBox := @temp new FuncInputBox
 			FillAttrs(oBox^,pars)
 
 			
@@ -172,7 +172,7 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 }
 OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
 {
-	box := new FuncInputBox()  ; $temp
+	box := @temp new FuncInputBox
 	FillAttrs(box^,G)
 	if G?.Down?.inhAttrs != null
 	{
@@ -895,7 +895,7 @@ DeleteCall := class extend SomeFuncCall
 				return void	
 			}
 
-			box := new FuncInputBox()  ; $temp
+			box := @temp new FuncInputBox
 
 
 			box.itPars.Emplace(VoidPType,false)
@@ -931,9 +931,9 @@ DeleteCall := class extend SomeFuncCall
 				//}else {
 				//	if Down.GetType().GetType() != "point"
 				//	{
-					if UseDestructors
+					if UseDestructors //TODO not in use
 					{
-						box2 := new FuncInputBox()  ; $temp
+						box2 := @temp new FuncInputBox
 						box2.itPars.Emplace(Down.GetType(),Down.IsRef())
 						func2 := FindFunc("~this",this&,box2^,true)
 						if func2 != null

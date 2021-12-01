@@ -34,28 +34,28 @@ BuiltInThislessTemplate := class extend BoxTemplate
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
-		newBox := new FuncInputBox ; $temp
+		newBox := @temp new FuncInputBox
 
 		newBox.itPars.Emplace(itInClass.ClassType,true)
 		for it,i : itBox.itPars
 		{	
 			newBox.itPars.Emplace(it.first,it.second)
 		}
-		newBox.itConsts.Push(itBox.itConsts[^]) ; $temp
-		newBox.itAttrs[ind] = itBox.itAttrs[^ind] ; $temp
+		newBox.itConsts.Push(itBox.itConsts[^])
+		newBox.itAttrs[ind] = itBox.itAttrs[^ind]
 		return itTemplate.GetPriority(newBox^)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox,TypeFunc^ funType) -> BoxFunc^
 	{
-		newBox := new FuncInputBox ; $temp
+		newBox := @temp new FuncInputBox
 
 		newBox.itPars.Emplace(itClass.ClassType,true)
 		for it,i : itBox.itPars
 		{	
 			newBox.itPars.Emplace(it.first,it.second)
 		}
-		newBox.itConsts.Push(itBox.itConsts[^]) ; $temp
-		newBox.itAttrs[ind] =itBox.itAttrs[^ind] ; $temp
+		newBox.itConsts.Push(itBox.itConsts[^])
+		newBox.itAttrs[ind] =itBox.itAttrs[^ind]
 		newFunc := itTemplate.GetFunc(newBox^)
 
 		preRes := new BuiltIn2ThislessFunc(newFunc,itClass,itInClass)

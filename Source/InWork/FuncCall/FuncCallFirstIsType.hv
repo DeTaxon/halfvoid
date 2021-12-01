@@ -26,7 +26,7 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 			asNeed3 := asNeed2->{TypeClass^}
 			asNeed4 := asNeed3.ToClass
 			
-			box := new FuncInputBox()  ; $temp
+			box := @temp new FuncInputBox
 			FillAttrs(box^,iter)
 			box.itPars.Emplace(asNeed2,true) 
 			TrimCommas(iter.Right)
@@ -55,7 +55,7 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 
 				if iter is ObjType
 				{
-					box := new FuncInputBox()  ; $temp
+					box := @temp new FuncInputBox
 
 					objT := iter->{ObjType^}
 
@@ -67,11 +67,11 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 					}
 				}
 
-				box := new FuncInputBox()  ; $temp
+				box := @temp new FuncInputBox
 
 
 				box.itConsts.Push(iter)
-				box.itConsts.Push(new ObjStr(asNeed.MyStr)) 
+				box.itConsts.Push(new ObjStr(asNeed.MyStr))  //TODO mem
 				
 				func := FindFunc("->", iter,box^,false)
 				if func != null return MakeSimpleCall(func,null->{Object^})

@@ -12,9 +12,9 @@ BoxClassBase := class extend Object
 	{
 		if tuplConstr == null
 		{
-			box := new FuncInputBox ; $temp
-			box.itPars.Emplace(ClassType,false) ; $temp
-			box.itPars.Emplace(Params[^].ResultType,false) ; $temp
+			box := @temp new FuncInputBox
+			box.itPars.Emplace(ClassType,false)
+			box.itPars.Emplace(Params[^].ResultType,false)
 			tuplConstr = TCT.GetFunc(box^)
 			tuplConstr.IsMethod = true
 		}
@@ -31,14 +31,14 @@ BoxClassBase := class extend Object
 				if itPar.ResultType is TypeClass
 				{
 					asCl := itPar.ResultType->{TypeClass^}.ToClass
-					boxCl := new FuncInputBox() ; $temp
+					boxCl := @temp new FuncInputBox
 					boxCl.itPars.Emplace(itPar.ResultType,true)
 					boxCl.itPars.Emplace(itPar.ResultType,true)
 					fnc = asCl.GetFunc("this",boxCl^,false)
 				}
 				if fnc == null
 				{
-					box := new FuncInputBox() ; $temp
+					box := @temp new FuncInputBox
 					box.itPars.Emplace(itPar.ResultType,true)
 
 					sbRef := false
@@ -51,7 +51,7 @@ BoxClassBase := class extend Object
 
 				if fnc != null
 				{
-					box2 := new FuncInputBox() ; $temp
+					box2 := @temp new FuncInputBox
 					box2.itPars.Emplace(ClassType->{Type^},true)
 					box2.itConsts.Push(new ObjInt(i))
 				

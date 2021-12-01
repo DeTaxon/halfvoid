@@ -29,7 +29,7 @@ DecoratorOperator := class extend Object
 
 			fncName := "@"sbt + itStr + " call"
 
-			itBox := new FuncInputBox() ; $temp
+			itBox := @temp new FuncInputBox
 
 			lLambda := GetFuncType(![GTypeVoidP],Down.Right.GetType()).GetLambda() //TODO add once
 			

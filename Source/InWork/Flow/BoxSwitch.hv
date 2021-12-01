@@ -74,7 +74,7 @@ BoxSwitch := class extend Object
 						
 					if iter.Down.GetType() != null
 					{
-						b := new FuncInputBox() ; $temp 
+						b := @temp new FuncInputBox
 
 						b.itPars.Emplace(Down.GetType(),Down.IsRef())
 						b.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
@@ -100,7 +100,7 @@ BoxSwitch := class extend Object
 							
 							func = FindFunc("==",this&,b^,false)
 							if func == null {
-								c := new FuncInputBox() ; $temp 
+								c := @temp new FuncInputBox
 
 								c.itPars.Emplace(iter.Down.GetType(),iter.Down.IsRef())
 								c.itPars.Emplace(Down.GetType(),Down.IsRef())

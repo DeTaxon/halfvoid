@@ -176,7 +176,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				assert(gotL != null)
 				lCall := new ParamNaturalCall("_1",gotL)
 
-				itBx := new FuncInputBox ; $temp
+				itBx := @temp new FuncInputBox
 				itBx.itPars.Emplace(innerL,false)
 				itBx.itPars.Emplace(bodyL,false)
 
@@ -245,7 +245,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						continue
 					}
 
-					someBox := new FuncInputBox() ; $temp
+					someBox := @temp new FuncInputBox
 					someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
 					if Down.Right.Line != null for q,k : Down.Right.Line.itAttrs
 					{
@@ -357,7 +357,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						asNeed = itType->{TypeClass^}.ToClass
 					}
 
-					emptyBox := new FuncInputBox() ; $temp
+					emptyBox := @temp new FuncInputBox
 					emptyBox.itPars.Emplace(asNeed.ClassType,true)
 					if iter.Line != null for q,k : iter.Line.itAttrs
 					{
