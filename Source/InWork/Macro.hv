@@ -309,7 +309,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			return null
 		asInd := deSkob.Up.Up.Down->{ObjIndent^}.MyStr
 		funcs := @temp new List.{BoxFunc^}
-		tmpls := new Queue.{BoxTemplate^} ; $temp
+		tmpls := @temp new List.{BoxTemplate^}
 		sts := QueueSet.{int}()
 		CollectFuncsByName(asInd,deSkob,funcs^,tmpls^,false,false,sts,false)
 

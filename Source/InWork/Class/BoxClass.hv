@@ -55,7 +55,7 @@ BoxClass := class extend BoxClassBase
 
 	ThislessFuncs := Queue.{BuiltIn2ThislessFunc^}
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
-	GetWrappedFunc := !(char^ name ,List.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> void
+	GetWrappedFunc := !(char^ name ,List.{BoxFunc^} funcs, List.{BoxTemplate^} templs) -> void
 	{
 		gotFuncs := Queue.{BoxFunc^}()
 		funcsCl := Queue.{BoxClass^}()
@@ -125,7 +125,7 @@ BoxClass := class extend BoxClassBase
 					inTh.FuncName = name
 				}
 			}
-			if inTh != null templs.Push(inTh) ; $temp
+			if inTh != null templs.Push(inTh)
 		}
 	}
 
@@ -407,7 +407,7 @@ BoxClass := class extend BoxClassBase
 	GetFunc := virtual !(string name,FuncInputBox itBox,bool iVir) -> BoxFunc^
 	{
 		Funcs := @temp new List.{BoxFunc^}
-		Templs := Queue.{BoxTemplate^}() ; $temp
+		Templs := @temp new List.{BoxTemplate^}
 
 		if not iVir
 		{
@@ -483,7 +483,7 @@ BoxClass := class extend BoxClassBase
 			}
 			Templs.Push(UnrollTemplate->{BoxTemplate^})
 		}
-		bestFunc := GetBestFunc(itBox,Funcs^,Templs)
+		bestFunc := GetBestFunc(itBox,Funcs^,Templs^)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
 		if bestFunc == null and this.Parent != null and name != "this"
