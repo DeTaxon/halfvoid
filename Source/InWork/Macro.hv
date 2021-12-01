@@ -310,8 +310,8 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 		asInd := deSkob.Up.Up.Down->{ObjIndent^}.MyStr
 		funcs := @temp new List.{BoxFunc^}
 		tmpls := @temp new List.{BoxTemplate^}
-		sts := QueueSet.{int}()
-		CollectFuncsByName(asInd,deSkob,funcs^,tmpls^,false,false,sts,false)
+		sts := @temp new List.{int}
+		CollectFuncsByName(asInd,deSkob,funcs^,tmpls^,false,false,sts^,false)
 
 		walkMap := @temp new List.{int}
 		itr := deSkob.Up.Up.Down

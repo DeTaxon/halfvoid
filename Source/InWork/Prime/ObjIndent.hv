@@ -59,8 +59,8 @@ ObjIndent := class extend Object
 			{
 				ItFuncs := @temp new List.{BoxFunc^}
 				ItTempls := @temp new List.{BoxTemplate^}
-				Searched := QueueSet.{int}()
-				CollectFuncsByName(MyStr,this&,ItFuncs^,ItTempls^,false,false,Searched,false)
+				Searched := @temp new List.{int}
+				CollectFuncsByName(MyStr,this&,ItFuncs^,ItTempls^,false,false,Searched^,false)
 				if ItFuncs.Size() == 0
 				{
 					Typ := ParseType(this&)
