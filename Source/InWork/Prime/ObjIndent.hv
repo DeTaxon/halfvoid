@@ -57,10 +57,10 @@ ObjIndent := class extend Object
 				ReplaceNode(this&,may)
 			}else
 			{
-				ItFuncs := Queue.{BoxFunc^}()
+				ItFuncs := @temp new List.{BoxFunc^}
 				ItTempls := Queue.{BoxTemplate^}()
 				Searched := QueueSet.{int}()
-				CollectFuncsByName(MyStr,this&,ItFuncs,ItTempls,false,false,Searched,false)
+				CollectFuncsByName(MyStr,this&,ItFuncs^,ItTempls,false,false,Searched,false)
 				if ItFuncs.Size() == 0
 				{
 					Typ := ParseType(this&)

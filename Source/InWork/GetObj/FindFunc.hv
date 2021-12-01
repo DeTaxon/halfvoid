@@ -66,7 +66,7 @@ CollectParamsAllByName := !(string name, Object^ start, List.{ObjParam^} found, 
 }
 
 
-InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
+InsertFunc := !(string name, Object^ ii , List.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
 {
 		if ii is ObjParam //ii.GetValue() == "i:=1"
 		{
@@ -82,13 +82,13 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 					if IsSuffix
 					{
 						if AsBoxFunc.IsSuffix and not AsBoxFunc.IsVirtual
-							found.Push(AsBoxFunc) ; $temp 
+							found.Push(AsBoxFunc) 
 					}else{
 						metApp := IsMethod == AsBoxFunc.IsMethod
 						if name == "->{}" metApp = true
 						if not IsWord(name) metApp = true
 						if (not AsBoxFunc.IsSuffix) and (not (AsBoxFunc.IsVirtual and metApp))
-							found.Push(AsBoxFunc) ; $temp
+							found.Push(AsBoxFunc)
 					}
 				}else
 				if iterW.GetValue() == "!(){}"
@@ -118,7 +118,7 @@ InsertFunc := !(string name, Object^ ii , Queue.{BoxFunc^} found, Queue.{BoxTemp
 }
 
 
-CollectFuncsByName := !(string name, Object^ start, Queue.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
+CollectFuncsByName := !(string name, Object^ start, List.{BoxFunc^} found, Queue.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,QueueSet.{int} Searched,bool IgnoreLibs) -> void
 {
 	iterU := start
 	LastPos := start
@@ -227,11 +227,11 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	iterr := start
 	if iterr != null while iterr.Up != null iterr = iterr.Up
 
-	Funcs := Queue.{BoxFunc^}() ; $temp
+	Funcs := @temp new List.{BoxFunc^}
 	Templs := Queue.{BoxTemplate^}() ; $temp
-	CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,true)
+	CollectFuncsByName(name,start,Funcs^,Templs,IsSuffix,IsMethod,Searched,true)
 
-	func :=  GetBestFunc(itBox,Funcs,Templs)
+	func :=  GetBestFunc(itBox,Funcs^,Templs)
 
 	if func != null return func
 
@@ -248,27 +248,27 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 
 
 		
-	Funcs.Clean()
+	Funcs.Clear()
 	Templs.Clean()
 	
 	//if name == "."
 	//{
-		CollectFuncsByName(name,start,Funcs,Templs,IsSuffix,IsMethod,Searched,false)
-		func3 := GetBestFunc(itBox,Funcs,Templs)
+		CollectFuncsByName(name,start,Funcs^,Templs,IsSuffix,IsMethod,Searched,false)
+		func3 := GetBestFunc(itBox,Funcs^,Templs)
 		if func3 != null return func3
 	//}
 
 
 	for itCodeS,ii : CodeSpaces ; $reverse
 	{
-		Funcs.Clean()
+		Funcs.Clear()
 		Templs.Clean()
 		inMMap := itCodeS.codeParams.TryFind(name)
 		if inMMap != null
 		{
-			InsertFunc(name,inMMap^[^], Funcs, Templs,IsSuffix,IsMethod,Searched,false)
+			InsertFunc(name,inMMap^[^], Funcs^, Templs,IsSuffix,IsMethod,Searched,false)
 		}
-		func4 := GetBestFunc(itBox,Funcs,Templs)
+		func4 := GetBestFunc(itBox,Funcs^,Templs)
 		if func4 != null return func4
 	}
 
@@ -288,11 +288,11 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 		Templs.Push(it) ; $temp
 	
 
-	func2 := GetBestFunc(itBox,Funcs,Templs)
+	func2 := GetBestFunc(itBox,Funcs^,Templs)
 	return func2
 }
 
-GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
+GetBestFunc := !(FuncInputBox itBox, List.{BoxFunc^} funcs, Queue.{BoxTemplate^} templs) -> BoxFunc^
 {
 	FoundC := funcs.Size()
 	FoundT := templs.Size()
@@ -342,7 +342,7 @@ GetBestFunc := !(FuncInputBox itBox, Queue.{BoxFunc^} funcs, Queue.{BoxTemplate^
 	return null
 }
 
-ComputePriors := !(Queue.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> void
+ComputePriors := !(List.{BoxFunc^} Fun, FuncInputBox itBox , int^ priors) -> void
 {
 	for it,h : Fun
 	{
