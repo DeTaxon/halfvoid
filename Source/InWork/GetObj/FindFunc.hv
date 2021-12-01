@@ -7,25 +7,25 @@ IsWord := !(string name) -> bool
 	return true
 }
 
-InsertParam := !(string name, Object^ ii , Queue.{ObjParam^} found,QueueSet.{int} Searched) -> void
+InsertParam := !(string name, Object^ ii , List.{ObjParam^} found,QueueSet.{int} Searched) -> void
 {
 	if ii is ObjParam
 	{
 		AsNeed := ii->{ObjParam^}
 		if(AsNeed.GetName() == name)
 		{
-			found.Push(AsNeed) ; $temp
+			found.Push(AsNeed)
 		}
 	}
 }
 
-CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found) -> void
+CollectParamsAllByName := !(string name, Object^ start, List.{ObjParam^} found) -> void
 {
 	Searched := QueueSet.{int}()
 	CollectParamsAllByName(name,start,found,Searched)
 }
 
-CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found, QueueSet.{int} Searched) -> void
+CollectParamsAllByName := !(string name, Object^ start, List.{ObjParam^} found, QueueSet.{int} Searched) -> void
 {
 	iterU := start
 	LastPos := start
@@ -44,7 +44,7 @@ CollectParamsAllByName := !(string name, Object^ start, Queue.{ObjParam^} found,
 				res := asN.VisibleParams.TryFind(name)
 				if res != null{
 					for res^ 
-						found.Push(it) ; $temp
+						found.Push(it)
 				}
 				iterU = null
 			}else{

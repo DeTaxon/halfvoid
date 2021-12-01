@@ -69,10 +69,10 @@ ParseParamCall := !(Object^ ob) -> Object^
 				return newConst
 			}
 		}else{	
-			ItPars := Queue.{ObjParam^}()
-			CollectParamsAllByName(dynCast.MyStr,ob,ItPars)
+			ItPars := @temp new List.{ObjParam^}
+			CollectParamsAllByName(dynCast.MyStr,ob,ItPars^)
 			
-			for itF : ItPars
+			for itF : ItPars^
 			{
 				itType := itF.GetType()
 				if itType? is TypeFunc

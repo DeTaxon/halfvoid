@@ -40,14 +40,12 @@ ObjIndent := class extend Object
 		if pri == State_PreGetUse
 		{
 			WorkBag.Push(this&,State_GetUse)
-			ItFuncs := Queue.{ObjParam^}()
-			CollectParamsAllByName(MyStr,this&,ItFuncs)
+			ItFuncs := @temp new List.{ObjParam^}
+			CollectParamsAllByName(MyStr,this&,ItFuncs^)
 
-			iter0 := ItFuncs.Start
-			while iter0 != null
+			for it : ItFuncs^
 			{
-				WorkBag.Push(iter0.Data,State_CheckTypes)
-				iter0 = iter0.Next
+				WorkBag.Push(it,State_CheckTypes)
 			}
 		}
 		if pri == State_GetUse
@@ -114,14 +112,12 @@ ObjSuffix := class extend ObjConst
 		}
 		if pri == State_PreGetUse
 		{
-			ItFuncs := Queue.{ObjParam^}()
-			CollectParamsAllByName(MyStr,this&,ItFuncs)
+			ItFuncs := @temp new List.{ObjParam^}
+			CollectParamsAllByName(MyStr,this&,ItFuncs^)
 
-			iter0 := ItFuncs.Start
-			while iter0 != null
+			for it : ItFuncs^
 			{
-				WorkBag.Push(iter0.Data,State_CheckTypes)
-				iter0 = iter0.Next
+				WorkBag.Push(it,State_CheckTypes)
 			}
 		}
 	}
