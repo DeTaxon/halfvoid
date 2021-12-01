@@ -11,7 +11,7 @@ GCInit := !() -> void
 {
 	dummy := new Object ; $temp
 
-	box := new FuncInputBox ; $temp
+	box := @temp new FuncInputBox
 	box.itPars.Emplace(GTypeVoidP,false)
 
 	gcIncRefFunc = FindFunc("internalGCIncRef",dummy,box^,false)

@@ -466,7 +466,7 @@ SLambda := class extend BoxFuncContainer
 			iter = iter.Up
 		}
 
-		toR := new FuncInputBox ; $temp	
+		toR := @temp new FuncInputBox
 		GotCapture = false 
 
 		almI := 0

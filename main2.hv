@@ -16,10 +16,7 @@ DBox := class .{@T}
 
 DBoxIterator := class .{@T}
 {
-	IsEnd := virtual !() -> bool {
-		printf("heh %p\n",this&)
-		 return true 
-	}
+	IsEnd := virtual !() -> bool { return true }
 	"^" := virtual !() -> ref T {}
 	"Inc" := virtual !() -> void {}
 }
@@ -40,17 +37,37 @@ ListDBox := class .{@T} extend DBox.{T}
 	Size := virtual !() -> int { return ptrToList.Size() }
 	"[]" := virtual !(int ind) -> ref T { return ptrToList^[ind]}
 }
+ListDBoxIterator := class .{@T} extend DBoxIterator.{T}
+{
+	this := !() -> void
+	{
+		
+	}
+	IsEnd := virtual !() -> bool { return true }
+	"^" := virtual !() -> ref T {}
+	"Inc" := virtual !() -> void {}
+}
+
+RandGen := class
+{
+	Step := !() -> int
+	{
+		yield 1
+		yield 7
+		yield 3
+	}
+}
 
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := DBox.{int}
-	for it : c
+	c := RandGen
+
+	for i : 5
 	{
-
+		printf("wut %p\n",c.Step.IsFinished())
+		printf("heh %i\n",c.Step())
 	}
-
-
 	//tst := @temp new List.{int}
 	//tst^ << 2 << 10 << 3 << 10
 	////TestFunc(tst^)

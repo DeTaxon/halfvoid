@@ -40,7 +40,7 @@ ObjSkobs := class extend Object
 				if Left? is ObjTemplateType //DECORATOR
 				{
 					cmdName := ("@"sbt + Left->{ObjTemplateType^}.MyStr + " block")->{char^}
-					fBox := new FuncInputBox ; $temp
+					fBox := @temp new FuncInputBox
 
 					lType := GetFuncType(![GTypeVoidP,GTypeInt],GTypeVoid).GetLambda()
 					fBox.itPars.Emplace(lType,false)
@@ -50,7 +50,7 @@ ObjSkobs := class extend Object
 					if fnc == null
 					{
 						lT2 := GetFuncType(![GTypeVoidP],GTypeVoid).GetLambda()
-						box2 := new FuncInputBox ; $temp
+						box2 := @temp new FuncInputBox
 						box2.itPars.Emplace(lT2,false)
 						fnc = FindFunc(cmdName,this&,box2^,false)
 						if fnc == null

@@ -3,7 +3,7 @@ FuncCallSuffix := !(Object^ iter) -> Object^
     if iter is ObjSuffix //iter.GetValue() == "~suffix"
     {
         if iter.Left.GetType() == null return null
-        sBox := new FuncInputBox()  ; $temp
+        sBox := @temp new FuncInputBox
 
         AsSuf := iter->{ObjSuffix^}
         sBox.itPars.Emplace(iter.Left.GetType(),false)

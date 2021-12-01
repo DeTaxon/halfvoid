@@ -103,9 +103,9 @@ FuncCallPrefixOperator := !(Object^ iter) -> Object^
 			if iter.Right.Right.GetValue() != "()"
 			{
 				irr := iter.Right.Right
-				itB := new FuncInputBox()  ; $temp
+				itB := @temp new FuncInputBox
 				itB.itPars.Emplace(irr.GetType(),irr.IsRef())
-				itB.itConsts.Push(new ObjType(useType)) 
+				itB.itConsts.Push(new ObjType(useType))  //TODO memory
 				
 				FillAttrs(itB^,iter)
 

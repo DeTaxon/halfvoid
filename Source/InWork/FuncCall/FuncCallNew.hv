@@ -85,8 +85,8 @@ NewCallOne := class extend SomeFuncCall
 	{
 		if pri == State_GetUse	
 		{
-			box := new FuncInputBox()  ; $temp
-			box.itConsts.Push(new ObjType(newType)) 
+			box := @temp new FuncInputBox
+			box.itConsts.Push(new ObjType(newType)) //TODO memory
 			FillAttrs(box^,this&)
 
 			if Line != null {
@@ -95,7 +95,7 @@ NewCallOne := class extend SomeFuncCall
 
 			if appendTemp
 			{
-				box.itAttrs["$temp"] = new ObjBool(true) //GBoolTrue
+				box.itAttrs["$temp"] = new ObjBool(true) // TODO remove
 			}
 
 			func := BoxFunc^
@@ -125,7 +125,7 @@ NewCallOne := class extend SomeFuncCall
 				{
 					if newType is TypeClass
 					{
-						box := new FuncInputBox()  ; $temp
+						box := @temp new FuncInputBox
 
 						box.itPars.Emplace(newType,true)
 						iter3 := Down
@@ -191,7 +191,7 @@ NewCall := class extend SomeFuncCall
 			
 			if toCreate is TypeClass
 			{
-				b := new FuncInputBox()  ; $temp
+				b := @temp new FuncInputBox
 				b.itPars.Emplace(toCreate,true)
 				FillAttrs(b^,toCr)
 
@@ -227,14 +227,14 @@ NewCall := class extend SomeFuncCall
 	This2 := !(Type^ toCreate,Object^ toCr) -> void
 	{
 		oldUp := toCr.Up
-		box := new FuncInputBox()  ; $temp
+		box := @temp new FuncInputBox
 		//ResultType = toCreate.GetPoint()
 		//Down = new TypeSizeCall(toCreate)
 		Down = toCr
 		Down.SetUp(this&)
 
 		box.itPars.Emplace(GTypeInt,false)
-		box.itConsts.Push(new ObjType(toCreate))
+		box.itConsts.Push(new ObjType(toCreate)) //TODO memory
 		FillAttrs(box^,oldUp)
 
 		fun := FindFunc("new",this&,box^,false)

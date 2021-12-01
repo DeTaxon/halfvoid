@@ -12,7 +12,7 @@ DeferInit2 := !() -> bool
 	defFunc := GetFuncType(inPars,null,GTypeVoid,false,false) ; $temp
 
 	dummy := @temp new Object
-	box := new FuncInputBox ; $temp
+	box := @temp new FuncInputBox
 
 	depth := FindFunc("internalDeferGetDepth",dummy,box^,false)
 	if depth == null return false
@@ -27,7 +27,7 @@ DeferInit2 := !() -> bool
 	itFunc.ParseBlock()
 	deferAddDefer2 = itFunc
 
-	box2 := new FuncInputBox ; $temp
+	box2 := @temp new FuncInputBox
 	box2.itPars.Emplace(GTypeInt,false)
 	deferSkip2 = FindFunc("internalDeferSkip",dummy,box2^,false)
 	if deferSkip2 == null

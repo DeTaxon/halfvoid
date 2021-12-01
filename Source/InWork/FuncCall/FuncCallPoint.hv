@@ -20,9 +20,9 @@ FuncCallGetFieldTypes := !(Object^ iterPre, Object^ iter) -> Object^
 
         if iter.GetValue() == "->"
         {
-            box := new FuncInputBox() ; $temp 
+            box := @temp new FuncInputBox
             box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
-            box.itConsts.Push(new ObjStr(asName))
+            box.itConsts.Push(new ObjStr(asName)) //TODO memory
 
             fun := FindFunc("->",iter,box^,false)
             if fun != null
@@ -109,7 +109,7 @@ FuncCallGetFieldClassElement := !(Object^ iterPre, Object^ iter) -> Object^
 {
     if iter.Right is ObjInt and iter.Right.Right == null
     {
-        box := new FuncInputBox() ; $temp
+        box := @temp new FuncInputBox
         box.itConsts.Push(iter.Right)
 
         box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef())
@@ -158,7 +158,7 @@ FuncCallGetFieldClassFieldCall := !(char^ asName,Object^ iterPre, Object^ iter) 
     }
 
 
-    box := new FuncInputBox()  ; $temp
+    box := @temp new FuncInputBox
     FillAttrs(box^,iter)
 
     if LL.inhAttrs != null
@@ -222,9 +222,9 @@ FuncCallGetFieldClassGetFieldByName := !(char^ asName,Object^ iterPre, Object^ i
 
     if LT is TypeStandart
     {
-        box1 := new FuncInputBox()  ; $temp
+        box1 := @temp new FuncInputBox
         box1.itPars.Emplace(LT,iter.Left.IsRef())
-        box1.itConsts.Push(new ObjStr(asName)) 
+        box1.itConsts.Push(new ObjStr(asName)) //TODO memory
         func := FindFunc(".",iter,box1^,false)
         if func == null return null
         iter = iter.Left
@@ -247,7 +247,7 @@ FuncCallGetFieldClassGetFieldByName := !(char^ asName,Object^ iterPre, Object^ i
 
     asClass.PreAskField(asName)
 
-    box2 := new FuncInputBox()  ; $temp
+    box2 := @temp new FuncInputBox
 
     box2.itPars.Emplace(asClass.ClassType,true)
     box2.itConsts.Push(new ObjStr(asName))

@@ -163,7 +163,7 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 				scndType := ParseType(opr.Right.Right)
 				if scndType? is TypeClass //TODO: virtual classes only
 				{
-					box := new FuncInputBox ; $temp
+					box := @temp new FuncInputBox
 
 					box.itPars.Emplace(firstType,false)
 					box.itConsts.Push(new ObjType(scndType)) //TODO: temporary new
@@ -189,7 +189,7 @@ FuncCallSpecific := !(Object^ iter) -> Object^
 
 			asNeed := asCl1.Base->{TypeClass^}.ToClass
 
-			itBox := new FuncInputBox()  ; $temp
+			itBox := @temp new FuncInputBox
 
 			itBox.itPars.Emplace(asCl1.Base,true)
 			itBox.itConsts.Push(new ObjType(asCl2)) 
