@@ -215,42 +215,6 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 	}
 	return ToRet
 }
-RuleMachine := !(void^ itr,MiniMachineNode2^ node2) -> int
-{
-	iterU := itr->{Object^}
-	iterNode2 := node2
-	ToRet := 0
-	NowRet := 0
-
-	while iterU != null
-	{
-		if iterU == null return ToRet
-
-		iterId := iterU.GetTokenId()
-		if iterU.IsDataR iterId = 39
-
-		inWNext := iterNode2.WhatNext[iterId]
-		if inWNext != null
-		{
-			iterNode2 = inWNext
-
-			NowRet += 1
-			if iterNode2.Prior != 0
-			{
-				ToRet = NowRet
-			}
-			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()" //????
-			{
-				return ToRet
-			}
-			iterU = iterU.Right
-		}else
-		{
-			return ToRet
-		}
-	}
-	return ToRet
-}
 
 
 RuleTypedefTemplate := !(void^ itr) -> int
