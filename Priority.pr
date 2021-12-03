@@ -1,5 +1,5 @@
 "#best ()"
-"! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}" "try_one {}" "tre_all {}"
+"! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
 "packed_class {}" "AppendClass d {}"
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
 "new d ()" "! []" "! {}"
