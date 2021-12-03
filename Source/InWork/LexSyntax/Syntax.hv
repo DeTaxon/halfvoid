@@ -99,7 +99,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 	return GotStuff
 }
 
-StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
+StupidWhile := !(Object^ begin,PriorityBagOld^ bag) -> bool
 {
 	//iter := begin.Down
 	
@@ -139,12 +139,7 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
 	return false	
 }
 
-
 SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
-{
-	SyntaxCompress(begin,bag,false)
-}
-SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag,bool doTemplate) -> bool
 {
 	if begin == null return true
 
@@ -153,11 +148,11 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag,bool doTemplate) -> bool
 	itr := begin.Down
 	while itr != null
 	{
-		if itr.GetValue() == "()" SyntaxCompress(itr,bag,doTemplate)
+		if itr.GetValue() == "()" SyntaxCompress(itr,bag)
 		itr = itr.Right
 	}
 
-	while GotWork GotWork = StupidWhile(begin,bag,doTemplate)
+	while GotWork GotWork = StupidWhile(begin,bag)
 
 	return true
 }
