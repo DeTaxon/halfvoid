@@ -4,6 +4,7 @@ TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
 PriorityData := PriorityBagOld^
+LexHVInputVars := PriorityBagOld^
 
 ErrorLog := Queue.{string}
 

@@ -118,7 +118,7 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
 				case "#CallDecoratorCall"
-					if doTemplate and RuleUseReverse(begin,"~d",RuleDecoratorCall) return true
+					if RuleUseReverse(begin,"~d",RuleDecoratorCall) return true
 			}
 		}
 	}

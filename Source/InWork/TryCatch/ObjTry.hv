@@ -90,7 +90,7 @@ ObjTry := class extend ObjTryCommon
 		}
 		if st == State_Syntax
 		{
-			SyntaxCompress(Down.Right,PriorityData)
+			SyntaxCompress(Down.Right,LexHVInputVars)
 			WorkBag.Push(this&,State_PreGetUse)
 		}
 		if st == State_PreGetUse

@@ -131,7 +131,7 @@ BoxFunc := class extend BoxFuncContainer
 	}
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl, TypeFunc^ parentFunc) -> bool
 	{
-		SyntaxCompress(root,PriorityData)
+		SyntaxCompress(root,LexHVInputVars)
 		Pars := Queue.{Object^}() ; $temp
 
 		Typs := Queue.{Type^}() ; $temp

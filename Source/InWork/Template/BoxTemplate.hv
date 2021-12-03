@@ -363,7 +363,7 @@ BoxTemplate := class extend BoxFunc
 		IsSuffix = IsSuf
 		ParseParams(CopyParams,CopyRet,true)
 
-		SyntaxCompress(CopyParams.Down,PriorityData)
+		SyntaxCompress(CopyParams.Down,LexHVInputVars)
 		iter := CopyParams.Down
 		firstNon := Object^()
 		//FuncsTs := Queue.{Object^}() 

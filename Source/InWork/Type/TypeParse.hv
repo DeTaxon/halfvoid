@@ -173,7 +173,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			isLambda := false
 			ptrSize := 0
 
-			SyntaxCompress(Node.Down.Right,PriorityData)
+			SyntaxCompress(Node.Down.Right,LexHVInputVars)
 			UnboxParams(Node.Down.Right)
 
 			iter := Node.Down.Right.Down

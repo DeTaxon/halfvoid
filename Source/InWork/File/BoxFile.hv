@@ -51,7 +51,7 @@ BoxFile := class extend BoxBlock
 	{
 		
 		if true { //THREAD
-			SyntaxCompress(this&,PriorityData)
+			SyntaxCompress(this&,LexHVInputVars)
 			UnboxParams(this.Down)
 
 			itr := Down

@@ -243,6 +243,14 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData = new PriorityBagOld(pri.Map(),pri.Size())
 	pri.Unmap()
 
+	lxInVar := gRepo.GetFile("LexHVInputVars.pr")
+	if lxInVar == null
+	{
+		printf("LexHVInputVars.pr not found\n")
+	}
+	LexHVInputVars = new PriorityBagOld(lxInVar.Map(),lxInVar.Size())
+	lxInVar.Unmap()
+
 	PutConstString(":=")
 	PutConstString("for")
 	PutConstString("if")
