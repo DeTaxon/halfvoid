@@ -1,3 +1,5 @@
+Regexp := type WordDetermMachine
+
 WordDetermMachine := class
 {
 	Table := int[][]

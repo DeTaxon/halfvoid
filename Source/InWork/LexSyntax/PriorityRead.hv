@@ -28,6 +28,17 @@ PriorityBagOld := class
 		Lines."this"()
 		LinesRaw."this"()
 		
+		//fileSpan := StringSpan(ptrChar,mapSize)
+
+		//reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
+
+		//fileSpan.DivideStr("\n",ln ==> {
+		//	
+		//	RegExpReadText(reg&,ln.ptr,ln.itSize,(a,b,c) ==> {
+		//		word := StringSpan(ln.ptr[b]&,c)
+		//		printf("obj %s\n",word)
+		//	})
+		//})
 
 		itS := 0
 		while itS < mapSize

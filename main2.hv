@@ -48,26 +48,36 @@ ListDBoxIterator := class .{@T} extend DBoxIterator.{T}
 	"Inc" := virtual !() -> void {}
 }
 
-RandGen := class
+inClass := class
 {
-	Step := !() -> int
+	func := !(StringSpan sp) -> void
 	{
-		yield 1
-		yield 7
-		yield 3
+		reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
+
+		x := 7
+		outL := (StringSpan ln) ==> {
+			l := (int a,int b,int c) ==> {
+				word := StringSpan(ln.ptr[b]&,c)
+				printf("obj %p %s % i\n",this&,word,x)
+			}
+			RegExpReadText(reg&,ln.ptr,ln.itSize,l.Capture())
+			printf("out %p\n",this&)
+		}
+
+		sp.DivideStr("\n",outL)
 	}
 }
 
-
 main := !(int argc, char^^ argv) -> int
 {
-	c := RandGen
+	file := MappedFile("Priority.pr")
+	defer file.Close()
 
-	for i : 5
-	{
-		printf("wut %p\n",c.Step.IsFinished())
-		printf("heh %i\n",c.Step())
-	}
+	fileSpan := StringSpan(file.Get(),file.Size())
+	
+	c := inClass
+	c.func(fileSpan)
+	printf("last %p\n",c&)
 	//tst := @temp new List.{int}
 	//tst^ << 2 << 10 << 3 << 10
 	////TestFunc(tst^)
