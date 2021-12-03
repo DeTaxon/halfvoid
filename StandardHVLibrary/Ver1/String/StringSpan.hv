@@ -136,7 +136,7 @@ StringSpan := class{
 		}
 		if j - i != 0
 		{
-			cb(StringSpan(ptr[i]&,j - 1))
+			cb(StringSpan(ptr[i]&,j - i))
 		}		
 	}
 	DivideStr := !(Regexp rg,!(StringSpan)&->void cb) -> void

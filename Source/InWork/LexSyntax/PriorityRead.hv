@@ -35,98 +35,44 @@ PriorityBagOld := class
 
 	this := !(char^ ptrChar, int mapSize) -> void
 	{		
-		//fileSpan := StringSpan(ptrChar,mapSize)
+		fileSpan := StringSpan(ptrChar,mapSize)
 
-		//reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
+		reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
 
-		//fileSpan.DivideStr("\n",ln ==> {
-		//	
-		//	RegExpReadText(reg&,ln.ptr,ln.itSize,(a,b,c) ==> {
-		//		word := StringSpan(ln.ptr[b]&,c)
-		//		printf("obj %s\n",word)
-		//	})
-		//})
-
-		itS := 0
-		while itS < mapSize
-		{
-			CurWords := Queue.{StringSpan}() ; $temp
-
-			if ptrChar[itS] == '#'
+		fileSpan.DivideStr("\n",ln ==> {
+			if ln.Size() == 0
+				return void
+			if ln[0] == '#'
 			{
-				strtT := itS
-				while itS < mapSize and ptrChar[itS] != '\n'
-				{
-					itS++
-				}
-				nowLineQ := ptrChar[strtT..(itS - strtT)]
-				nowLine := nowLineQ.Str()
-				Lines.Emplace(null->{MiniMachineNodeOld^},nowLine)
-				itS++
-				continue
+				Lines.Emplace(null,ln.Str())
 			}else{
-				j := itS
-				isLoading := false
-				while itS < mapSize and ptrChar[itS] != '\n'
-				{
-					if isLoading
-					{
-						if ptrChar[itS] == '\"'
-						{
-							CurWords.Emplace(ptrChar[j]&,itS - j)
-							isLoading = false
-						}
-					}else
-					{
-						if ptrChar[itS]  == '\"'
-						{
-							isLoading = true
-							j = itS + 1
-						}
-					}
-					itS++
-				}
-				itS++
-			}
-			if CurWords.NotEmpty()
-			{
-				newMach := new MiniMachineNodeOld()
+				newMach := new MiniMachineNodeOld
 
-				for rule : CurWords
-				{
-					items := rule.DivideStr(" ")
-
+				ln.DivideStr(reg,word ==> {
+					rawWord := word[1..-1]
+					
 					machIter := newMach
-
-					//while someWord != null
-					for word : items
-					{
-						stW := word.Str()
+					rawWord.DivideStr(" ",ruleWord ==> {
+						stW := ruleWord.Str()
 						switch stW
 						{
-							case "d"
-								stW = "~d"
-							case "s"
-								stW = "~suffix"
-							case "@"
-								stW = "~{}type"
-							case "()"
-							case "[]"
-							case "{}"
+							case "d" stW = "~d"
+							case "s" stW = "~suffix"
+							case "@" stW = "~{}type"
+							case "()" case "[]" case "{}"
 							case void
 								Opers.Insert(stW)
 						}
-
-						k := ref machIter.WhatNext[stW]
-
-						if k == null
-							k =  new MiniMachineNodeOld()
-						machIter = k
-					}
+						next := ref machIter.WhatNext[stW]
+						if next == null
+							next = new MiniMachineNodeOld
+						machIter = next
+					})
 					machIter.IsTerm = true
-				}
-				Lines.Emplace(newMach,null->{char^})
+				})
+
+				Lines.Emplace(newMach,ln.Str())
 			}
-		}
+		})
 	}
 }
