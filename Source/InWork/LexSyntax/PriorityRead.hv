@@ -16,18 +16,25 @@ MiniMachineNodeOld := class
 		return null
 	}
 }
+
+LexMachineInfo := class
+{
+	Machine := MiniMachineNodeOld^
+	RawLine := char^
+
+	this := !(MiniMachineNodeOld^ inM,char^ rLine) -> void
+	{
+		Machine = inM
+		RawLine = rLine
+	}
+}
 PriorityBagOld := class
 {
 	Opers := AVLSet.{string}
-	Lines := Queue.{MiniMachineNodeOld^}
-	LinesRaw := Queue.{char^}
+	Lines := List.{LexMachineInfo}
 
 	this := !(char^ ptrChar, int mapSize) -> void
-	{
-		Opers."this"()
-		Lines."this"()
-		LinesRaw."this"()
-		
+	{		
 		//fileSpan := StringSpan(ptrChar,mapSize)
 
 		//reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
@@ -54,8 +61,7 @@ PriorityBagOld := class
 				}
 				nowLineQ := ptrChar[strtT..(itS - strtT)]
 				nowLine := nowLineQ.Str()
-				LinesRaw.Push(nowLine)
-				Lines.Push(MiniMachineNodeOld^())
+				Lines.Emplace(null->{MiniMachineNodeOld^},nowLine)
 				itS++
 				continue
 			}else{
@@ -82,8 +88,6 @@ PriorityBagOld := class
 				}
 				itS++
 			}
-			LinesRaw.Push(char^())
-
 			if CurWords.NotEmpty()
 			{
 				newMach := new MiniMachineNodeOld()
@@ -121,7 +125,7 @@ PriorityBagOld := class
 					}
 					machIter.IsTerm = true
 				}
-				Lines.Push(newMach)
+				Lines.Emplace(newMach,null->{char^})
 			}
 		}
 	}

@@ -139,6 +139,13 @@ StringSpan := class{
 			cb(StringSpan(ptr[i]&,j - 1))
 		}		
 	}
+	DivideStr := !(Regexp rg,!(StringSpan)&->void cb) -> void
+	{
+		RegExpReadText(rg&,ptr,itSize,(a,b,c) ==> {
+				word := StringSpan(this.ptr[b]&,c)
+				cb(word)
+		})
+	}
 }
 
 "[]" := !(string this, range ran) -> StringSpan

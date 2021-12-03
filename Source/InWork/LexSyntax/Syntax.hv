@@ -107,13 +107,13 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag ,bool doTemplate) -> bool
 
 	GotStuff := false
 
-	for iterBag : bag.Lines, iterRaw : bag.LinesRaw
+	for iterBag : bag.Lines
 	{
-		if iterBag != null
+		if iterBag.Machine != null
 		{
-			if RuleUseSome(begin,iterBag) return true
+			if RuleUseSome(begin,iterBag.Machine) return true
 		}else{
-			switch iterRaw
+			switch iterBag.RawLine
 			{
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
