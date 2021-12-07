@@ -66,6 +66,45 @@ RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDictType tokenDict) -> bo
 	}
 	return GotStuff
 }
+RuleUse2 := !(Object^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,tokenDictType tokenDict) -> bool
+{
+	GotStuff := false
+
+	for preIter : tokenDict[keyObj]
+	{
+		iter := preIter
+
+		for c : offset
+		{
+			iter = iter.Left
+			if iter == null
+				break
+		}
+
+		if iter == null
+			continue
+
+		Try := R(iter)
+		if Try > 0
+		{
+			RemoveTokens(iter,Try,tokenDict)
+			if N == "~d"
+			{
+				iter = UNext(iter,new ObjData(),Try) 
+			}else
+			{
+				if N == "~extra1"
+				{
+					iter = UNext(iter,new SLambda(),Try)
+				}else{
+					iter = UNext(iter,new ObjObj(N),Try)
+				}
+			}
+			return true
+		}
+	}
+	return false
+}
 
 RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
 {
@@ -121,11 +160,8 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,AVLMap.{char^,AVLSet.
 StupidWhile := !(Object^ begin,PriorityBagOld^ bag , AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
 {
 	//iter := begin.Down
-	if tokenDict["-"].Size() != 0 
-		and RuleUse(begin,"~d",RuleMinus,tokenDict) 
+	if RuleUse2(begin,"~d","-",0,RuleMinus,tokenDict)
 			return true
-
-	
 
 	GotStuff := false
 
@@ -166,14 +202,12 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , AVLMap.{char^,AVLSet.{Objec
 	if RuleUse(begin,"i:=0",RuleParam,tokenDict) return true // for func 
 	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate,tokenDict) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf,tokenDict) return true
-	if RuleUse(begin,"while()",RuleWhile,tokenDict) return true
-	if tokenDict["for"].Size() != 0 
-		and RuleUse(begin,"for()",RuleFor,tokenDict) 
+	if RuleUse2(begin,"while()","while",0,RuleWhile,tokenDict) return true
+	if RuleUse2(begin,"for()","for",0,RuleFor,tokenDict) 
 			return true
-	if tokenDict["switch"].Size() != 0 
-		and RuleUse(begin,"switch()",RuleSwitch,tokenDict) 
+	if RuleUse2(begin,"switch()","switch",0,RuleSwitch,tokenDict) 
 			return true
-	if RuleUse(begin,"case()",RuleCase,tokenDict) return true
+	if RuleUse2(begin,"case()","case",0,RuleCase,tokenDict) return true
 
 	return false	
 }
