@@ -21,7 +21,22 @@ InBlockData := !(Object^ obj) -> bool
 	return false
 }
 
-RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
+tokenDictType := type AVLMap.{char^,AVLSet.{Object^}}
+
+RemoveTokens := !(Object^ iter, int n,tokenDictType tokenDict) -> void
+{
+	for i : n
+	{
+		val := iter.GetValue()
+		if tokenDict[val].Contain(iter)
+		{
+			tokenDict[val].Remove(iter)
+		}
+		iter = iter.Right
+	}
+}
+
+RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDictType tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -31,6 +46,7 @@ RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
+			RemoveTokens(iter,Try,tokenDict)
 			if N == "~d"
 			{
 				iter = UNext(iter,new ObjData(),Try) 
@@ -51,7 +67,7 @@ RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 	return GotStuff
 }
 
-RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
+RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -65,6 +81,7 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
+			RemoveTokens(iter,Try,tokenDict)
 			if N == "~d"
 			{
 				iter = UNext(iter,new ObjData(),Try) 
@@ -80,7 +97,7 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R) -> bool
 	return GotStuff
 }
 
-RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
+RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -90,6 +107,8 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 		Try := RuleMachineOld(iter,MiniNode2)
 		if Try > 0
 		{
+			RemoveTokens(iter,Try,tokenDict)
+			
 			iter = UNext(iter,new ObjData(),Try) 
 			GotStuff = true
 		}else{
@@ -99,11 +118,14 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 	return GotStuff
 }
 
-StupidWhile := !(Object^ begin,PriorityBagOld^ bag) -> bool
+StupidWhile := !(Object^ begin,PriorityBagOld^ bag , AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
 {
 	//iter := begin.Down
+	if tokenDict["-"].Size() != 0 
+		and RuleUse(begin,"~d",RuleMinus,tokenDict) 
+			return true
+
 	
-	if RuleUse(begin,"~d",RuleMinus) return true
 
 	GotStuff := false
 
@@ -111,30 +133,47 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag) -> bool
 	{
 		if iterBag.Machine != null
 		{
-			if RuleUseSome(begin,iterBag.Machine) return true
+			needCheck := true
+			if iterBag.uniqOnly
+			{
+				needCheck = false
+				for uVal : iterBag.uniqs^
+				{
+					if tokenDict.Contain(uVal) and tokenDict[uVal].Size() != 0
+					{
+						needCheck = true
+					}
+				}
+			}
+			if needCheck and RuleUseSome(begin,iterBag.Machine,tokenDict) return true
 		}else{
 			switch iterBag.RawLine
 			{
 				case "#CallFunction"
-					if RuleUse(begin,"~d",RuleCallFunction) return true
+					if RuleUse(begin,"~d",RuleCallFunction,tokenDict) return true
 				case "#CallDecoratorCall"
-					if RuleUseReverse(begin,"~d",RuleDecoratorCall) return true
+					if tokenDict["~{}type"].Size() != 0
+						and RuleUseReverse(begin,"~d",RuleDecoratorCall,tokenDict) 
+							return true
 			}
 		}
 	}
 
 
-	if RuleUse(begin,"~extra1",RuleSLambda) return true
-	if RuleUse(begin,"Defer()",RuleDefer) return true
-	if RuleUse(begin,"return()",RuleOneFunc) return true
-	if RuleUse(begin,"i:=0",RuleParam) return true // for func 
-	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
-	if RuleUseReverse(begin,"if()",RuleIf) return true
-	if RuleUse(begin,"while()",RuleWhile) return true
-	if RuleUse(begin,"for()",RuleFor) return true
-	if RuleUse(begin,"switch()",RuleSwitch) return true
-	if RuleUse(begin,"case()",RuleCase) return true
-	if RuleUse(begin,"imprt",RuleImport) return true
+	if RuleUse(begin,"~extra1",RuleSLambda,tokenDict) return true
+	if RuleUse(begin,"Defer()",RuleDefer,tokenDict) return true
+	if RuleUse(begin,"return()",RuleOneFunc,tokenDict) return true
+	if RuleUse(begin,"i:=0",RuleParam,tokenDict) return true // for func 
+	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate,tokenDict) return true // for func 
+	if RuleUseReverse(begin,"if()",RuleIf,tokenDict) return true
+	if RuleUse(begin,"while()",RuleWhile,tokenDict) return true
+	if tokenDict["for"].Size() != 0 
+		and RuleUse(begin,"for()",RuleFor,tokenDict) 
+			return true
+	if tokenDict["switch"].Size() != 0 
+		and RuleUse(begin,"switch()",RuleSwitch,tokenDict) 
+			return true
+	if RuleUse(begin,"case()",RuleCase,tokenDict) return true
 
 	return false	
 }
@@ -152,7 +191,26 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 		itr = itr.Right
 	}
 
-	while GotWork GotWork = StupidWhile(begin,bag)
+	tokenDict := @temp new AVLMap.{char^,AVLSet.{Object^}}
+	
+	for itr : begin.Down
+	{
+		val := itr.GetValue()
+
+		if val == "~{}type"
+		{
+			tokenDict^[val].Insert(itr)
+			continue
+		}
+
+		if itr.IsDataR
+			continue
+		if val in  !["()","[]","~suffix"]
+			continue
+		tokenDict^[val].Insert(itr)
+	}
+
+	while GotWork GotWork = StupidWhile(begin,bag,tokenDict^)
 
 	return true
 }
@@ -597,24 +655,5 @@ RuleFor := !(void^ itr)-> int
 
 	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	return Size
-}
-
-RuleImport := !(void^ itr) -> int 
-{
-	It := itr->{Object^}
-
-	if It.GetValue() != "~cmd" return 0
-
-	asI := It->{ObjCmd^}
-
-	if asI.MyStr != "#import" return 0
-
-	It = It.Right
-
-	if It == null return 0
-
-	if It.GetValue() != "~str" return 0
-
-	return 2
 }
 

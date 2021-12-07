@@ -25,5 +25,7 @@
 "d and d" "d or d" "d xor d"
 "new d" "delete d"
 "throw d" 
+"d << d" "d >> d"
+"d <-"
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d <<< d" "d >>> d"
