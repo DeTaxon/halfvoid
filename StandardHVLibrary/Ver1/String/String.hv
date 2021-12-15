@@ -10,13 +10,15 @@ ToFloat := !(char^ inp) -> float
 
 ToString := !(int x) -> char^
 {
-	toRet := new char[13] ; $temp
+	TempPoolBlock()
+	toRet := new char[13]
 	sprintf(toRet,"%i",x)
 	return toRet
 }
 ToString := !(float x) -> char^
 {
-	toRet := new char[30] ; $temp
+	TempPoolBlock()
+	toRet := new char[30]
 	sprintf(toRet,"%f",x)
 	return toRet
 }
@@ -169,8 +171,9 @@ ReplaceKeywords := !(char^ txt, char^^ keys,int keysCount,!(StringSpan,int)&->ch
 }
 ReplaceKeywords := !(StringSpan txt, char^^ keys,int keysCount,!(StringSpan,int)&->char^ cb) -> char^
 {
+	TempPoolBlock()
 	preRes := ""sbt
-	states := new Tuple.{int,int}[keysCount] ; &temp
+	states := new Tuple.{int,int}[keysCount]
 	
 	for i : keysCount
 	{
@@ -205,6 +208,6 @@ ReplaceKeywords := !(StringSpan txt, char^^ keys,int keysCount,!(StringSpan,int)
 	{
 		preRes << txt[lastDumped..(s - lastDumped)]
 	}
-	return preRes.Str() ; $temp
+	return preRes.Str()
 }
 

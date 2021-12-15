@@ -175,7 +175,7 @@ vRepo := class
 			return void
 		iterFolder.examined = true
 
-		zips := List.{char^}() ; $temp
+		zips := @temp new List.{char^}
 
 		if not iterFolder.virtualFolder
 		{
@@ -200,7 +200,7 @@ vRepo := class
 					}
 					if subF.Get()[-4..0] == ".zip"
 					{
-						zips << StrCopy(subF.Get())
+						zips^ << StrCopy(subF.Get())
 					}else{
 						newStr := subF.Name().Str()
 						newObj := new vRepoFile
@@ -212,7 +212,7 @@ vRepo := class
 					}
 				}
 			}
-			for z : zips
+			for z : zips^
 			{
 				tt := new ZipFile
 				tt.AnalizeFile(z)

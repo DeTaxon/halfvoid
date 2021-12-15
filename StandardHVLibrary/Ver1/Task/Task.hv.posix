@@ -98,7 +98,7 @@ AppendClass TaskBox
 		if not initedMonitor 
 			initMonitor()
 
-		pathAdd := List.{char^}() ; $temp $keep
+		pathAdd := @temp new List.{char^} ; $keep
 
 
 		watchMode := 0
@@ -106,7 +106,7 @@ AppendClass TaskBox
 		if modes and_b M_CREATED watchMode += IN_CREATE
 		if modes and_b M_DELETED watchMode += IN_DELETE
 
-		pathAdd << pathName
+		pathAdd^ << pathName
 
 		while pathAdd.Size() != 0
 		{	
@@ -127,7 +127,7 @@ AppendClass TaskBox
 							continue
 						strBld := ""sbt + nowPath + "/" + subFolder.Name()
 						str := strBld.Str() ; $temp
-						pathAdd << str
+						pathAdd^ << str
 					}
 				}
 			}

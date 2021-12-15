@@ -134,13 +134,13 @@ vZipEntry := class
 }
 zipIterator := class 
 {
-	miniStack := List.{vZipEntry^}
+	miniStack := List.{vZipEntry^}^
 
 	this := !(vZipEntry^ nd) .{} -> void
 	{
-		miniStack."this"()
+		miniStack = @temp new List.{vZipEntry^}
 		if nd != null 
-			miniStack.Push(nd) ; $temp
+			miniStack.Push(nd)
 	}
 	IsEnd := !() -> bool { return miniStack.IsEmpty() }
 	"^" := !() -> ref vZipEntry^ { return miniStack.Front() }
@@ -314,7 +314,7 @@ ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} result)-> bool
 		ptrToStr := cdTable[1]&->{char^}
 		newStr := StringSpan(ptrToStr,cdTable.fileNameLen)
 
-		result.Emplace() ; $temp
+		result.Emplace()
 		newEn := ref result.Back()
 		newEn.fileName = newStr
 		newEn.offsetToCDEntry = cdTable&->{u64^}^ - ptrToFl&->{u64^}^
@@ -399,10 +399,12 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 
 ZipAppend := !(char^ inpFile,List.{char^} toAdd) -> void
 {
+	TempPoolBlock()
+
 	ownFile := MappedFile(inpFile)
 
-	aFF := List.{MappedFile}() ; $temp
-	aFa := List.{List.{zipIntEntry}}() ; $temp
+	aFF := List.{MappedFile}()
+	aFa := List.{List.{zipIntEntry}}()
 	for it : toAdd
 	{
 		aFF.Emplace(it)
