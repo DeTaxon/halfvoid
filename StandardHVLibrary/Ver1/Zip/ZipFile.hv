@@ -427,7 +427,7 @@ ZipAppend := !(char^ inpFile,List.{char^} toAdd) -> void
 	}else{
 		for meAsZP
 		{
-			preAdd := new char[it.cdEntrySize] ; $temp
+			preAdd := new char[it.cdEntrySize]
 			memcpy(preAdd->{void^},ownFile.Get()->{u8^}[it.offsetToCDEntry]&,it.cdEntrySize)
 			oldZipCDData.Push(preAdd)
 			it.fileName = StringSpan(it.fileName.Str())

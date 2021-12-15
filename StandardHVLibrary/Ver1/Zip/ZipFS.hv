@@ -9,7 +9,8 @@ vRepoObject := class
 	GetUpFolder := !() -> vRepoFolder^ { return upFolder }
 	GetPath := !() -> char^
 	{
-		itms := List.{vRepoObject^}() ; $temp
+		TempPoolBlock()
+		itms := List.{vRepoObject^}
 
 		iterUp := this&
 
@@ -30,7 +31,7 @@ vRepoObject := class
 			}
 		}
 
-		return strB.Str() ; $temp
+		return strB.Str()
 	}
 }
 
