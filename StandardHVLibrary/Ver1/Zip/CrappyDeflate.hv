@@ -103,11 +103,11 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 	for c : arrLen
 		if maxSize < valueSizes[c]
 			maxSize = valueSizes[c]
-	blCount := new int[maxSize+1] ; $temp
+	blCount := new int[maxSize+1]
 
 	for i : arrLen
 		blCount[valueSizes[i]]++
-	blCode := new int[maxSize + 1] ; $temp
+	blCode := new int[maxSize + 1]
 	blCount[0] = 0
 	toSet.treeInfo[^].0 = -1
 
@@ -118,7 +118,7 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		code = (code + blCount[i-1]) << 1
 		blCode[i] = code
 	}
-	resCodes := new int[arrLen] ; $temp
+	resCodes := new int[arrLen]
 	for i : arrLen
 	{
 		c := valueSizes[i]
@@ -155,7 +155,7 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		for i : (S+1)..maxSize
 		{
 			if blCount[i] != 0
-				toSet.extraNodes[i] = new Tuple.{u16,u16}[blCount[i]] ; $temp
+				toSet.extraNodes[i] = new Tuple.{u16,u16}[blCount[i]]
 		}
 		for i : arrLen
 		{
@@ -243,6 +243,8 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 {
 	bw := BW(inpPoint,inpSize)
 
+	TempPoolBlock()
+
 	while true
 	{
 		isEnd := bw.GetAndMove(1)
@@ -271,21 +273,21 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 				HDIST := bw.GetAndMove(5) + 1
 				HCLEN := bw.GetAndMove(4) + 4
 
-				codeLens := new char[19] ; $temp
+				codeLens := new char[19]
 
 				for it : HCLEN
 				{
 					codeLens[codeLenTable[it]] = bw.GetAndMove(3)
 				}
 
-				newTree := new NotHuffmanTree9 ; $temp
+				newTree := new NotHuffmanTree9
 				ApplyHuffmanTree(codeLens,codeLens->len,newTree)
 
-				resultData := new u8[HLIT + HDIST] ; $temp
+				resultData := new u8[HLIT + HDIST]
 				DecodeSmallHuffmanTable(newTree,bw,resultData,resultData->len)
 
-				litsTree = new NotHuffmanTree9 ; $temp
-				distTree = new NotHuffmanTree9 ; $temp
+				litsTree = new NotHuffmanTree9
+				distTree = new NotHuffmanTree9
 				
 				ApplyHuffmanTree(resultData->{char^},HLIT,litsTree)
 				ApplyHuffmanTree(resultData[HLIT]&->{char^},HDIST,distTree)
@@ -328,105 +330,3 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 
 	return true
 }
-
-//lensSize := ![0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5]
-//DecodeHuffmanData: = !(NotHuffmanTree.{9}^ toApply, BW^ bw, void^ result) -> void
-//{
-//	while true
-//	{
-//		itValue := bw.GetValue(9)
-//		inStart := ref toApply.NotHuffmanTree[itValue]
-//		resValue := 0
-//		if inStart.1 != 0
-//		{
-//			resValue = inStart.0
-//			bw.Move(inStart.1)
-//		}
-//		else {
-//			//TODO: remake
-//			//code , size, value
-//			for it : toApply.extraNodes
-//			{
-//				if it.1 == bw.GetValue(it.1) {
-//					resValue = it.2
-//					bw.Move(it.1)
-//					break
-//				}
-//			}
-//		}
-//
-//		if( resValue == 256)
-//			return 
-//		if (resValue < 256) {
-//			result^ = resValue
-//			result++
-//		}
-//		else {
-//			distance := 0
-//			lengh := 0
-//		}
-//	}
-//}
-//
-//fixedHuffmanTree := NotHuffmanTree.{9}
-//
-//initFixedHuffmanTree := !() -> void
-//{
-//	miniData := new char[287] ; $temp
-//	for i : 0..143 miniData[i] = 9
-//	for i : 144..255 miniData[i] = 8
-//	for i : 256..279 miniData[i] = 7
-//	for i : 280..287 miniData[i] = 8
-//	ApplyHuffmanTree(miniData,fixedHuffmanTree^)
-//}
-//#run initFixedHuffmanTree
-//Inflate := !(void^ inpBuffer, int inpSize, void^ outpBuffer, int outpSize) -> bool
-//{
-//		bw := BW(inptBuffer,inpSize)
-//		outIter := outpBuffer
-//		
-//		dynTreeData := new char[319]//287 + 32
-//		subTree := new NotHuffmanTree.{7} ; $temp
-//		hufTree := new NotHuffmanTree.{9} ; $temp
-//		while true
-//		{
-//			blckInf := bw.GetInt(1)
-//			bw.Move(1)
-//			typ := bw.GetInt(2)
-//			
-//			switch typ
-//			{
-//				case 0
-//					bw.MoveToByte()
-//					itSize := bw.Get(16)
-//					bw.Move(32)
-//					memcpy(outIter,bw.GetPoint(),itSize)
-//					bw.MoveByte(itSize)
-//				case 1
-//					//???
-//				case 2
-//					wordLen := bw.GetAndMove(5)
-//					distLen := bw.GetAndMove(5)
-//					subW := bw.GetAndMove(4)
-//					
-//					shuffledLens := ![16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15]
-//					
-//					preLen := int[19]
-//					preLen[^] = 0
-//					
-//					for i : subW+4
-//					{
-//						preLen[shuffledLens[i]] = bw.GetAndMove(3)
-//					}
-//					ApplyHuffmanTree(preLen,subTree)					
-//					DecodeSmallHuffmanTable(subTree,bw&,dynTreeData,wordLen + distLen + 257 + 1)
-//					
-//					
-//			}
-//			
-//			
-//			if blckInf == 1
-//				return true
-//		}
-//		return true
-//}
