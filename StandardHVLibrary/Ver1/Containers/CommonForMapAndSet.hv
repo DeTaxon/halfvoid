@@ -1,11 +1,11 @@
 CommonMapIterator := class .{@DATA,@KEY,@VALUE}
 {
-	miniStack := List.{Tuple.{CommonTreeNode.{DATA}^,bool}}^ ; $keep $temp
+	miniStack := List.{Tuple.{CommonTreeNode.{DATA}^,bool}}^ 
 	nNode := CommonTreeNode.{DATA}^
 
 	this := !(CommonTreeNode.{DATA}^ nd) .{} -> void
 	{
-		miniStack = new List.{Tuple.{CommonTreeNode.{DATA}^,bool}} ; $temp $keep
+		miniStack = @temp new List.{Tuple.{CommonTreeNode.{DATA}^,bool}}
 		nNode = nd
 		if nd != null{
 			if $reverse
@@ -27,7 +27,7 @@ CommonMapIterator := class .{@DATA,@KEY,@VALUE}
 		}
 		nNode = miniStack.Front().0
 		part := miniStack.Front().1
-		miniStack.Pop() ; $temp
+		miniStack.Pop()
 
 		if part
 		{
@@ -54,24 +54,24 @@ CommonMapIterator := class .{@DATA,@KEY,@VALUE}
 		while nNode.Right != null
 		{
 			if nNode.Left != null
-				miniStack.EmplaceFront(nNode.Left,true) ; $temp
-			miniStack.EmplaceFront(nNode,false) ; $temp
+				miniStack.EmplaceFront(nNode.Left,true)
+			miniStack.EmplaceFront(nNode,false)
 			nNode = nNode.Right
 		}
 		if nNode.Left != null
-			miniStack.EmplaceFront(nNode.Left,false) ; $temp
+			miniStack.EmplaceFront(nNode.Left,false)
 	}
 	DoAMoveLeft := !() -> void
 	{
 		while nNode.Left != null
 		{
 			if nNode.Right != null
-				miniStack.EmplaceFront(nNode.Right,true) ; $temp
-			miniStack.EmplaceFront(nNode,false) ; $temp
+				miniStack.EmplaceFront(nNode.Right,true)
+			miniStack.EmplaceFront(nNode,false)
 			nNode = nNode.Left
 		}
 		if nNode.Right != null
-			miniStack.EmplaceFront(nNode.Right,false) ; $temp
+			miniStack.EmplaceFront(nNode.Right,false)
 	}
 }
 
@@ -89,12 +89,12 @@ BadPair := class .{@A,@B}
 }
 CommonSetIterator := class .{@DATA}
 {
-	miniStack := List.{Tuple.{CommonTreeNode.{DATA}^,bool}}^ ; $keep $temp
+	miniStack := List.{Tuple.{CommonTreeNode.{DATA}^,bool}}^
 	nNode := CommonTreeNode.{DATA}^
 
 	this := !(CommonTreeNode.{DATA}^ nd) .{} -> void
 	{
-		miniStack = new List.{Tuple.{CommonTreeNode.{DATA}^,bool}} ; $temp $keep
+		miniStack = @temp new List.{Tuple.{CommonTreeNode.{DATA}^,bool}}
 		nNode = nd
 		if nd != null{
 			if $reverse
@@ -133,23 +133,23 @@ CommonSetIterator := class .{@DATA}
 		while nNode.Right != null
 		{
 			if nNode.Left != null
-				miniStack.EmplaceFront(nNode.Left,true) ; $temp
-			miniStack.EmplaceFront(nNode,false) ; $temp
+				miniStack.EmplaceFront(nNode.Left,true)
+			miniStack.EmplaceFront(nNode,false)
 			nNode = nNode.Right
 		}
 		if nNode.Left != null
-			miniStack.EmplaceFront(nNode.Left,false) ; $temp
+			miniStack.EmplaceFront(nNode.Left,false)
 	}
 	DoAMoveLeft := !() -> void
 	{
 		while nNode.Left != null
 		{
 			if nNode.Right != null
-				miniStack.EmplaceFront(nNode.Right,true) ; $temp
-			miniStack.EmplaceFront(nNode,false) ; $temp
+				miniStack.EmplaceFront(nNode.Right,true)
+			miniStack.EmplaceFront(nNode,false)
 			nNode = nNode.Left
 		}
 		if nNode.Right != null
-			miniStack.EmplaceFront(nNode.Right,false) ; $temp
+			miniStack.EmplaceFront(nNode.Right,false)
 	}
 }

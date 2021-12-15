@@ -1,16 +1,17 @@
 
 TReadFile := !(char^ fileName) -> u8[]
 {
+	TempPoolBlock()
+
 	fl := TRawFile(fileName,"r")
 	defer fl.Close()
 	
 	bfs := List.{char^}
-	defer bfs.Destroy()
 
 	bufSize := 4096
 	while true
 	{
-		subData := new u8[bufSize] ; %temp
+		subData := new u8[bufSize]
 
 		red := fl.Read(subData->{void^},bufSize)
 
@@ -18,7 +19,7 @@ TReadFile := !(char^ fileName) -> u8[]
 		{
 			totalSize := bufSize*bfs.Size() + subData->len
 
-			res := new u8[totalSize] ; $temp
+			res := new u8[totalSize]
 
 			for it,i : bfs
 			{
