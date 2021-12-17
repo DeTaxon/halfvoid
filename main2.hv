@@ -1,4 +1,16 @@
 
+mini_class := class
+{
+	x := !()&->int 
+	this := !(i) -> void
+	{
+		x = i
+	}
+	"~For" := !() -> !()&->int
+	{
+		return x
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
@@ -12,13 +24,11 @@ main := !(int argc, char^^ argv) -> int
 		}
 	}
 
+	tmp := mini_class(t)
 
-	while true
+	for i : tmp
 	{
-		res := t()
-		if t.IsFinished()
-			break
-		printf("heh %i\n",res)
+		printf("heh %i\n",i)
 	}
 
 

@@ -65,6 +65,9 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsInvalids := Object^^
 	DestroyFunc := Object^^
 	IsEndFunc := Object^
+	LambdaCallFunc := Object^^
+	LambdaIsFinishedFunc := Object^^
+
 
 	ProxyFuncs := BoxFunc^^
 	ProxyResults := LocalParam^^
@@ -162,14 +165,14 @@ BoxForOldFashionMulti := class extend BoxFor
 				if fnc == null
 					EmitError("Decorator not found")
 
-				tmpObj := new Object ; $temp
+				tmpObj := Object
 				lmbd := UNext(this&, new SBoostLambda(),1)->{SBoostLambda^}
-				ReplaceNode(lmbd,tmpObj)
+				ReplaceNode(lmbd,tmpObj&)
 				lmbd.Down = this&
 				this.Up = lmbd
 				lmbd.ApplyFunc(outerL,false)
 				dCall := MakeSimpleCall(fnc,lmbd)
-				ReplaceNode(tmpObj,dCall)
+				ReplaceNode(tmpObj&,dCall)
 
 
 				gotL := lmbd.GetItem("_1")
@@ -233,6 +236,9 @@ BoxForOldFashionMulti := class extend BoxFor
 				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
 				DestroyFunc = new Object^[itemsCount]
+				
+				LambdaCallFunc = new Object^[itemsCount]
+				LambdaIsFinishedFunc = new Object^[itemsCount]
 
 				for itemsCount IsInvalids[it] = null
 
@@ -271,11 +277,19 @@ BoxForOldFashionMulti := class extend BoxFor
 					}
 
 					rType := func.MyFuncType.RetType
-					if (not rType is TypeClass)
-						and (not (rType is TypePoint and rType.Base is TypeClass))
+
+					if rType is TypeFuncLambda
 					{
-						EmitError("~For have to return class or pointer to class\n")
-						continue
+						asFunc := rType.Base->{TypeFunc^}
+						if asFunc.RetType == GTypeVoid
+							EmitError("Return type of lamda function can not be void")
+					}else{
+						if (not rType is TypeClass)
+							and (not (rType is TypePoint and rType.Base is TypeClass))
+						{
+							EmitError("~For have to return class or pointer to class\n")
+							continue
+						}
 					}
 
 					ProxyFuncs[i] = func
@@ -334,6 +348,20 @@ BoxForOldFashionMulti := class extend BoxFor
 				{
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := ProxyFuncs[i].MyFuncType.RetType
+
+					if itType is TypeFuncLambda
+					{
+						callFunc := @temp new FuncInputBox
+						callFunc.itPars.Emplace(itType,false)
+						LambdaCallFunc[i] = FindFunc("()",this&,callFunc^,false)
+						LambdaIsFinishedFunc[i] = FindFunc("IsFinished",this&,callFunc^,false)
+
+						assert(LambdaCallFunc[i] != null)
+						//assert(LambdaIsFinishedFunc[i] != null)
+
+						printf("ye %p\n",LambdaIsFinishedFunc[i])
+						continue
+					}
 
 					ForItem := LocalParam^
 

@@ -1109,7 +1109,7 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 		FuncName = "Destroy"
 		OutputName = "error"
 
-		MyFuncType = GetFuncType(![null->{Type^}],GTypeVoidP)
+		MyFuncType = GetFuncType(![null->{Type^}],GTypeVoid)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -1202,4 +1202,4 @@ PrintLambdaGlobal := !(TIOStream f) -> void
 {
 	f << "%LambdaPrefix = type {i8*(i8*)*,void(i8*)*,i1(i8*)*}\n"
 }
-SLambdaFinishYieldValue := 2000000
+SLambdaFinishYieldValue := 2000000000
