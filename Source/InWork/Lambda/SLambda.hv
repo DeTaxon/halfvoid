@@ -214,7 +214,17 @@ SLambda := class extend BoxFuncContainer
 					Names[i] = nm
 				}
 
-				asFunc := GetFuncType(pars,null->{bool^},GTypeVoid,false,false)
+				resType := GTypeVoid
+				cmp := Down.Right
+				if cmp.Right.GetValue() != "{}"
+				{
+					resType = ParseType(cmp.Right)
+					if resType == null
+						EmitError("can not parse return type")
+					PopOutNode(cmp.Right)
+				}
+
+				asFunc := GetFuncType(pars,null->{bool^},resType,false,false)
 				fastUse = asFunc
 
 				if not isTmpl

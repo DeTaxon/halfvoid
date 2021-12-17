@@ -1,90 +1,20 @@
 
 
-DBox := class .{@T}
-{
-	Size := virtual !() -> int { return 0 }
-	"[]" := virtual !(int ind) -> ref T {}
-	ToArrayTmp := virtual !() -> RawArray.{T}^
-	{
-		return null
-	}
-	"~For" := virtual !() -> DBoxIterator.{T}^
-	{
-		return new DBoxIterator.{T}
-	}
-}
-
-DBoxIterator := class .{@T}
-{
-	IsEnd := virtual !() -> bool { return true }
-	"^" := virtual !() -> ref T {}
-	"Inc" := virtual !() -> void {}
-}
-
-TestFunc := !(DBox.{int} obj) -> void
-{
-	for it : obj
-	{
-		printf("wut %i\n",it)
-	}
-}
-
-ListDBox := class .{@T} extend DBox.{T}
-{
-	ptrToList := List.{T}^
-	this := !(List.{T}^ ptr) -> void { ptrToList = ptr}
-	
-	Size := virtual !() -> int { return ptrToList.Size() }
-	"[]" := virtual !(int ind) -> ref T { return ptrToList^[ind]}
-}
-ListDBoxIterator := class .{@T} extend DBoxIterator.{T}
-{
-	this := !() -> void
-	{
-		
-	}
-	IsEnd := virtual !() -> bool { return true }
-	"^" := virtual !() -> ref T {}
-	"Inc" := virtual !() -> void {}
-}
-
-inClass := class
-{
-	func := !(StringSpan sp) -> void
-	{
-		reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
-
-		x := 7
-		outL := (StringSpan ln) ==> {
-			l := (int a,int b,int c) ==> {
-				word := StringSpan(ln.ptr[b]&,c)
-				printf("obj %p %s % i\n",this&,word,x)
-			}
-			RegExpReadText(reg&,ln.ptr,ln.itSize,l.Capture())
-			printf("out %p\n",this&)
-		}
-
-		sp.DivideStr("\n",outL)
-	}
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	file := MappedFile("Priority.pr")
-	defer file.Close()
+	t := () ==> int
+	{
+		i := 0
+		while i < 10
+		{
+			return i
+		}
+	}
 
-	fileSpan := StringSpan(file.Get(),file.Size())
-	
-	c := inClass
-	c.func(fileSpan)
-	printf("last %p\n",c&)
-	//tst := @temp new List.{int}
-	//tst^ << 2 << 10 << 3 << 10
-	////TestFunc(tst^)
-	//c := DBox.{int}^
-	//c = new ListDBox.{int}(tst)
-	//printf("Size %i\n",c.Size())
-	//printf("Size %i\n",c^[2])
+	printf("heh %i\n",t())
+	printf("heh %i\n",t())
+	printf("heh %i\n",t())
+
 	return 0
 }
 

@@ -21,9 +21,7 @@ InBlockData := !(Object^ obj) -> bool
 	return false
 }
 
-tokenDictType := type AVLMap.{char^,AVLSet.{Object^}}
-
-RemoveTokens := !(Object^ iter, int n,tokenDictType tokenDict) -> void
+RemoveTokens := !(Object^ iter, int n,tokenDict) -> void
 {
 	for i : n
 	{
@@ -36,7 +34,7 @@ RemoveTokens := !(Object^ iter, int n,tokenDictType tokenDict) -> void
 	}
 }
 
-RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDictType tokenDict) -> bool
+RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -66,7 +64,7 @@ RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDictType tokenDict) -> bo
 	}
 	return GotStuff
 }
-RuleUse2 := !(Object^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,tokenDictType tokenDict) -> bool
+RuleUse2 := !(Object^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,tokenDict) -> bool
 {
 	GotStuff := false
 
@@ -106,7 +104,7 @@ RuleUse2 := !(Object^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,token
 	return false
 }
 
-RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
+RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -136,7 +134,7 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,AVLMap.{char^,AVLSet.{O
 	return GotStuff
 }
 
-RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
+RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,tokenDict) -> bool
 {
 	GotStuff := false
 	iter := Obj.Down
@@ -157,7 +155,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,AVLMap.{char^,AVLSet.
 	return GotStuff
 }
 
-StupidWhile := !(Object^ begin,PriorityBagOld^ bag , AVLMap.{char^,AVLSet.{Object^}} tokenDict) -> bool
+StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 {
 	//iter := begin.Down
 	if RuleUse2(begin,"~d","-",0,RuleMinus,tokenDict)
@@ -225,7 +223,7 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 		itr = itr.Right
 	}
 
-	tokenDict := @temp new AVLMap.{char^,AVLSet.{Object^}}
+	tokenDict := @temp new RBMap.{char^,RBSet.{Object^}}
 	
 	for itr : begin.Down
 	{
@@ -450,6 +448,13 @@ RuleSLambda := !(void^ itr) -> int
 
 	It = It.Right
 	if It == null return 0
+
+	if InDataR(It)
+	{
+		It = It.Right
+		if It == null return 0
+		siz += 1
+	}
 
 	if It.GetValue() == "[]"
 	{
