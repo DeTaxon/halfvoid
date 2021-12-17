@@ -99,7 +99,7 @@ BoxWhile := class extend Object
 
 	GetOutPath := virtual !(Object^ itm, int typ, int size) -> BoxLabel^
 	{
-		if typ == PATH_RETURN
+		if typ == PATH_RETURN or typ == PATH_YIELD
 		{
 			return Up.GetOutPath(this&,typ,size) //poke
 		}

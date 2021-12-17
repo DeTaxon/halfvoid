@@ -7,13 +7,18 @@ main := !(int argc, char^^ argv) -> int
 		i := 0
 		while i < 10
 		{
-			return i
+			yield i
+			i += 1
 		}
 	}
 
-	printf("heh %i\n",t())
-	printf("heh %i\n",t())
-	printf("heh %i\n",t())
+
+	while true
+	{
+		printf("heh %i\n",t())
+		break
+	}
+
 
 	return 0
 }
