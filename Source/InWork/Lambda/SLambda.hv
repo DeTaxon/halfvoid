@@ -39,6 +39,7 @@ SLambda := class extend BoxFuncContainer
 
 	outLabel := BoxLabelAnon
 	yieldLabel := BoxLabelAnon
+	returnYieldLabel := BoxLabelAnon
 	
 	GetScope := virtual !() -> int { return ABox.ItId }
 	this := !() -> void
@@ -46,6 +47,7 @@ SLambda := class extend BoxFuncContainer
 		ABox.ItId = GetNewId()
 		outLabel."this"()
 		yieldLabel."this"()
+		returnYieldLabel."this"()
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_PrePrint)
 		ItId = GetNewId()
@@ -639,6 +641,7 @@ SLambda := class extend BoxFuncContainer
 				f << "switch i32 %StartYield, label %Yield0 ["
 				for i : Yodlers.Size() + 1
 					f << "i32 " << i << ", label %Yield" << i << "\n"
+				f << "i32 " << (SLambdaFinishYieldValue - 1) << ", label %QuitFunc\n"
 				f << "]\n"
 				f << "Yield0:\n"
 				//TODO if Finished emit error
@@ -646,8 +649,23 @@ SLambda := class extend BoxFuncContainer
 
 			Down.PrintInBlock(f) // MAIN DATA
 
+			if Yodlers.Size() != 0
+			{
+				f << "br label %QuitFunc\n"
+			}
+
 			f << "br label %" << outLabel.GetLabel() << "\n"
 			outLabel.PrintLabel(f)
+			
+			if Yodlers.Size() != 0
+			{
+				f << "store i32 " << (SLambdaFinishYieldValue - 1) << " , i32* %Yodler\n"
+				f << "br label %" << yieldLabel.GetLabel() << "\n"
+			}
+
+			f << "br label %QuitFunc\n"
+			f << "QuitFunc:\n"
+
 
 			DeferFuncEnd(f,debId)
 
