@@ -16,6 +16,8 @@ main := !(int argc, char^^ argv) -> int
 	while true
 	{
 		printf("heh %i\n",t())
+		if t.IsFinished()
+			printf("fin\n")
 		break
 	}
 

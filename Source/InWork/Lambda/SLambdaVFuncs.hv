@@ -17,6 +17,13 @@ AppendClass SLambda
 		f << "ret void\n"
 		f << "}\n"
 	}
+	IsFinishedFunc := !(TIOStream f, funcsUp,prevLambd,nameIter) -> void
+	{
+		f << "define i1 @LambdaIsFinished" << ItId << "(i8* %ToTest" << ItId << ")\n"
+		f << "{\n"
+		f << "ret i1 1\n"
+		f << "}\n"
+	}
 	CloneFunc := !(TIOStream f, funcsUp,realAllocs) -> void
 	{
 

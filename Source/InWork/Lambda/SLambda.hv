@@ -554,13 +554,21 @@ SLambda := class extend BoxFuncContainer
 
 				prevLambd := this&
 				DeleteFunc(f,funcsUp,prevLambd,nameIter)
+				IsFinishedFunc(f,funcsUp,prevLambd,nameIter)
 
 				CloneFunc(f,funcsUp,realAllocs)
 
 			}
 
 			PrintFuncBodySkobs(f,fastUse,Names,"lambda"sbt + ItId,null->{string},ABox.ItId)
-			if not justFunc { f << "prefix %LambdaPrefix { i8*(i8*)* @LambdaCopy" << ItId << " , void(i8*)* @LambdaDelete" << ItId << "}" }
+			if not justFunc 
+			{ 
+				f << "prefix %LambdaPrefix {"
+				f <<" i8*(i8*)* @LambdaCopy" << ItId 
+				f << " , void(i8*)* @LambdaDelete" << ItId 
+				f << " , i1(i8*)* @LambdaIsFinished" << ItId 
+				f << "}" 
+			}
 			f << "\n"
 
 			if DebugMode
@@ -1105,6 +1113,42 @@ BuiltInTemplateDeleteLambda := class extend BoxTemplate
 	}
 }
 
+BuiltInTemplateLambdaIsFinished := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		IsMethod = true
+		FuncName = "IsFinished"
+		OutputName = "error"
+
+		MyFuncType = GetFuncType(![null->{Type^}],GTypeBool)
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		pars := ref itBox.itPars
+		if pars.Size() != 1 return 255
+		if not pars[0].second return 255
+		if pars[0].first.GetType() != "lambda" return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+		asPtrN := pars[0].first.Base.GetPoint().GetName()
+		return new BuiltInFuncUno(". not",pars[0].first,false,GTypeBool,
+		"%Fnc## = load "sbt + asPtrN + " , " + asPtrN + "* #1\n" +
+		"%Pref## = bitcast "sbt + asPtrN + " %Fnc## to %LambdaPrefix*\n" +
+		"%ClFuncPre## = getelementptr %LambdaPrefix , %LambdaPrefix* %Pref##, i32 -1, i32 2\n"+
+		"%ClFunc## = load i1(i8*)*, i1(i8*)** %ClFuncPre##\n"+
+		"%LamPtr## = bitcast " + asPtrN + "* #1 to i8*\n"+
+		"#0 = call i1 %ClFunc##(i8* %LamPtr##)")
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
+
 GlobalLambdaCall := BuiltInLambdaCall^
 
 copyLFuncType := Type^
@@ -1119,6 +1163,7 @@ CreateLambdaBuilts := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateSetLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateCaptureLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateDeleteLambda())
+	BuiltInTemplates.Push(new BuiltInTemplateLambdaIsFinished())
 
 	inpFuncE := Queue.{Type^}() ; $temp
 	inpFuncE.Push(GTypeVoidP)
@@ -1131,5 +1176,6 @@ CreateLambdaBuilts := !() -> void
 }
 PrintLambdaGlobal := !(TIOStream f) -> void
 {
-	f << "%LambdaPrefix = type {i8*(i8*)*,void(i8*)*}\n"
+	f << "%LambdaPrefix = type {i8*(i8*)*,void(i8*)*,i1(i8*)*}\n"
 }
+SLambdaFinishYieldValue := 2000000
