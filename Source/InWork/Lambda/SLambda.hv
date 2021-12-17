@@ -641,6 +641,7 @@ SLambda := class extend BoxFuncContainer
 					f << "i32 " << i << ", label %Yield" << i << "\n"
 				f << "]\n"
 				f << "Yield0:\n"
+				//TODO if Finished emit error
 			}
 
 			Down.PrintInBlock(f) // MAIN DATA
@@ -649,7 +650,12 @@ SLambda := class extend BoxFuncContainer
 			outLabel.PrintLabel(f)
 
 			DeferFuncEnd(f,debId)
-			
+
+			if Yodlers.Size() != 0
+			{
+				f << "store i32 " << SLambdaFinishYieldValue << " , i32* %Yodler\n"
+			}
+
 			f << "br label %" << yieldLabel.GetLabel() << "\n"
 			yieldLabel.PrintLabel(f)
 

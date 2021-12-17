@@ -5,7 +5,7 @@ main := !(int argc, char^^ argv) -> int
 	t := () ==> int
 	{
 		i := 0
-		while i < 10
+		while i < 3
 		{
 			yield i
 			i += 1
@@ -15,10 +15,10 @@ main := !(int argc, char^^ argv) -> int
 
 	while true
 	{
-		printf("heh %i\n",t())
+		res := t()
 		if t.IsFinished()
-			printf("fin\n")
-		break
+			break
+		printf("heh %i\n",res)
 	}
 
 
