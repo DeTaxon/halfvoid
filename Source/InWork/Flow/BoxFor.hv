@@ -400,47 +400,14 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		for itr,i : Down.Right
 		{
-			if InputItems[i].DestroyFunc == null
+			if not InputItems[i].ContainDestroyFunc()
 				continue
 
 			j := destroyFuncCount - i - 1
 			f << "br label %DeferLabel" << labelIter^ << "\n"
 			f << "DeferLabel" << labelIter^ << ":\n"
 
-			if InputItems[i].DestroyFunc is BoxFuncBody //TODO in BoxFunc
-			{
-				if IsGCClass(itr.GetType())
-				{
-					itr.PrintPointPre(f)
-
-					f << "%DestrObj" << ItId << "n" << j << " = bitcast "
-					itr.PrintPointUse(f)
-					f << " to i8*\n"
-
-					f << "call void @" << gcCallDestroy.OutputName << "("
-					f << "i8* %DestrObj" << ItId << "n" << j
-					f << ")\n"
-					continue
-				}
-				if InputItems[i].DestroyFunc->{BoxFunc^}.IsVirtual
-				{
-					//TODO add virtual destructor support
-					continue
-				}
-			}
-
-
-			//itr.PrintPointPre(f) //TODO without that works on pure luck
-			
-			fnc := InputItems[i].DestroyFunc->{BoxFunc^}
-			f << "call void @" << fnc.OutputName << "("
-			itr.PrintPointUse(f)
-			f << ")\n"
-			//f << "%Ptr" << ItId << "num" << i << " = bitcast "
-			//itr.PrintPointUse(f) f << " to i8*\n"
-			//f << "%TFunc" << ItId << "num" << i << " = bitcast " << fnc.MyFuncType.GetName() << "* @" << fnc.OutputName << " to void(i8*)*\n"
-			//f << "call void @" << deferAddDefer.OutputName << "(void(i8*)* %TFunc" << ItId << "num" << i << " , i8* %Ptr"<<ItId<<"num"<<i<<" )"
-			//f << "\n"
+			InputItems[i].PrintDestroyFunc(this&,f,itr,j)
 
 			labelIter^ -= 1
 		}
@@ -471,24 +438,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 		for itr,i : Down.Right
 		{
-			if InputItems[i].ProxyResult == null
-			{
-				itr.PrintPre(f)
-			}else{
-				itr.PrintPre(f)
-				f << "store "
-				itr.PrintUse(f)
-				f << " , "
-				itr.GetType().PrintType(f)
-				f << "* " << InputItems[0].ProxyResult.GetMainPtr(0) //TODO why ZERO?
-				f << "\n"
-			}
-		
-			if InputItems[i].DestroyFunc != null
-			{
-				f << "store i8 " << deferLabel << " , i8* %DeferStack" << deferId << "\n"
-				deferLabel += 1
-			}
+			InputItems[i].PrintStart(this&,f,itr)
 		}
 
 
@@ -541,35 +491,17 @@ BoxForOldFashionMulti := class extend BoxFor
 			}
 		}
 
-		InputItems[0].IsEndFunc.PrintPre(f)
-		f << "br i1 " << InputItems[0].IsEndFunc.GetName() << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
+		
+		InputItems[0].PrintCheckEndPre(this&,f,null)
+		f << "br i1 " 
+		f << InputItems[0].PrintCheckEndName(this&,null) 
+		f << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 
 
 		for it,i : InputItems
 		{
-			if it.UnrefFunc.IsRef() it.UnrefFunc.PrintPointPre(f) else it.UnrefFunc.PrintPre(f)
-			if it.IndFunc != null
-			{
-				if it.IndFunc.IsRef()
-				{
-					it.IndFunc.PrintPointPre(f)
-				}else{
-					it.IndFunc.PrintPre(f)
-				}
-			}
-			if it.Param? is RetFuncParamV2 and it.Name != null and debId != -1
-			{
-				it.Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.Name,Down,debId)
-			}
-			if it.Param != null
-				it.Param.DoStore(f)
-			if it.IndFunc != null and it.IndParam? is RetFuncParamV2 and it.IndName != null and debId != -1
-			{
-				it.IndParam->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.IndName,Down,debId)
-			}
-			if it.IndParam != null
-				it.IndParam.DoStore(f)
+			it.PrintStepAfter(this&,f,null,debId)
 		}
 		Down.PrintDeferInBlock(f,deferId,deferLabel&)
 		Down.PrintInBlock(f)

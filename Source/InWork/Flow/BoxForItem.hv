@@ -21,12 +21,105 @@ BoxForItem := class
 	{
 	}
 	ContainDestroyFunc := virtual !() -> bool { return false }
-	//PrintDestroyFunc := virtual !(TIOStream f) -> void
+	PrintDestroyFunc := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int destrId) -> void {}
+	PrintStart := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void {}
+
+	PrintCheckEndPre := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void {}
+	PrintCheckEndName := virtual !(BoxForOldFashionMulti^ self,Object^ itr) -> char^ {}
+
+	PrintStepAfter := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void {}
 }
 
 BoxForItemOnClass := class extend BoxForItem
 {
 	ContainDestroyFunc := virtual !() -> bool { return DestroyFunc != null }
+
+	PrintStepAfter := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void 
+	{
+		
+		if UnrefFunc.IsRef() UnrefFunc.PrintPointPre(f) else UnrefFunc.PrintPre(f)
+		if IndFunc != null
+		{
+			if IndFunc.IsRef()
+			{
+				IndFunc.PrintPointPre(f)
+			}else{
+				IndFunc.PrintPre(f)
+			}
+		}
+		if Param? is RetFuncParamV2 and Name != null and debId != -1
+		{
+			Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,Name,self.Down,debId)
+		}
+		if Param != null
+			Param.DoStore(f)
+		if IndFunc != null and IndParam? is RetFuncParamV2 and IndName != null and debId != -1
+		{
+			IndParam->{RetFuncParamV2^}.PrintForDebugDeclare(f,IndName,self.Down,debId)
+		}
+		if IndParam != null
+			IndParam.DoStore(f)
+	}
+	PrintCheckEndPre := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void 
+	{
+		IsEndFunc.PrintPre(f)	
+	}
+	PrintCheckEndName := virtual !(BoxForOldFashionMulti^ self,Object^ itr) -> char^ 
+	{
+		return IsEndFunc.GetName()
+	}
+
+	PrintStart := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void 
+	{
+		if ProxyResult == null
+		{
+			itr.PrintPre(f)
+		}else{
+			itr.PrintPre(f)
+			f << "store "
+			itr.PrintUse(f)
+			f << " , "
+			itr.GetType().PrintType(f)
+			f << "* " << ProxyResult.GetMainPtr(0)
+			f << "\n"
+		}
+		
+		if DestroyFunc != null
+		{
+			f << "store i8 " << self.deferLabel << " , i8* %DeferStack" << self.deferId << "\n"
+			self.deferLabel += 1
+		}
+	}
+
+	PrintDestroyFunc := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int j) -> void 
+	{
+		if DestroyFunc is BoxFuncBody //TODO in BoxFunc
+		{
+			if IsGCClass(itr.GetType())
+			{
+				itr.PrintPointPre(f)
+
+				f << "%DestrObj" << self.ItId << "n" << j << " = bitcast "
+				itr.PrintPointUse(f)
+				f << " to i8*\n"
+
+				f << "call void @" << gcCallDestroy.OutputName << "("
+				f << "i8* %DestrObj" << self.ItId << "n" << j
+				f << ")\n"
+				continue
+			}
+			if DestroyFunc->{BoxFunc^}.IsVirtual
+			{
+				//TODO add virtual destructor support
+				continue
+			}
+		}
+		fnc := DestroyFunc->{BoxFunc^}
+		f << "call void @" << fnc.OutputName << "("
+		itr.PrintPointUse(f)
+		f << ")\n"
+		
+	}
 
 	Init := virtual !(BoxForOldFashionMulti^ self,Object^ iter, Type^ itType,SomeFuncCall^ asNeed2) -> void
 	{
