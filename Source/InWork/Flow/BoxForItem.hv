@@ -17,14 +17,115 @@ BoxForItem := class
 	ProxyFunc := BoxFunc^
 	ProxyResult := LocalParam^
 
-	Init := virtual !(Type^ inType) -> void
+	Init := virtual !(BoxForOldFashionMulti^ self,Object^ iter, Type^ itType,SomeFuncCall^ asNeed2) -> void
 	{
 	}
+	ContainDestroyFunc := virtual !() -> bool { return false }
+	//PrintDestroyFunc := virtual !(TIOStream f) -> void
 }
 
 BoxForItemOnClass := class extend BoxForItem
 {
-	Init := virtual !(Type^ inType) -> void
+	ContainDestroyFunc := virtual !() -> bool { return DestroyFunc != null }
+
+	Init := virtual !(BoxForOldFashionMulti^ self,Object^ iter, Type^ itType,SomeFuncCall^ asNeed2) -> void
 	{
+		ForItem := LocalParam^
+
+		if itType is TypeClass
+		{
+			ItId2 := asNeed2.GetItAllocId()
+			ForItem = new LocalParam(itType,ItId2)
+		}else{
+			assert(itType is TypePoint)
+			newId := GetAlloc(self,itType)
+			ForItem = new LocalParam(itType.Base,newId,true)
+			ProxyResult = ForItem
+		}
+		ForItem.Line = iter.Line 
+		
+		asNeed := BoxClass^
+		if itType is TypePoint
+		{
+			asNeed = itType.Base->{TypeClass^}.ToClass						
+		} else {
+			asNeed = itType->{TypeClass^}.ToClass
+		}
+
+		emptyBox := @temp new FuncInputBox
+		emptyBox.itPars.Emplace(asNeed.ClassType,true)
+		if iter.Line != null for q,k : iter.Line.itAttrs
+		{
+			emptyBox.itAttrs[k] = q
+		}
+
+		IncFuncP := asNeed.GetFunc("Inc",emptyBox^,false)
+		UnrefFuncP := asNeed.GetFunc("^",emptyBox^,false)
+		IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,false)
+		DestroyFunc = asNeed.GetFunc("Destroy",emptyBox^,false)
+
+		if IncFuncP == null {
+			self.EmitError("incorrect for iterator, need increment\n")
+			return void
+		}
+		if UnrefFuncP == null {
+			self.EmitError("incorrect for iterator, need ^\n")
+			return void
+		}
+
+
+		test := new ParamNaturalCall("",ForItem->{Object^})
+		test.Line = iter.Line
+		UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
+		UnrefFunc.Line = self.Line
+		UnrefFunc.Up = self
+		test = new ParamNaturalCall("",ForItem->{Object^})
+		test.Line = iter.Line
+		IncFunc = MakeSimpleCall(IncFuncP,test)
+		IncFunc.Line = self.Line
+		IncFunc.Up = self
+
+		if IsInvP != null
+		{
+			test = new ParamNaturalCall("",ForItem->{Object^})
+			test.Line = iter.Line
+			IsInvalid = MakeSimpleCall(IsInvP,test)
+			IsInvalid.Line = self.Line
+			IsInvalid.Up = self
+		}
+
+		IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,false)
+		test = new ParamNaturalCall("",ForItem->{Object^})
+		test.Line = iter.Line
+		IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
+		IsEndFunc.Line = self.Line
+		IsEndFunc.Up = self
+
+		Param = new RetFuncParamV2(UnrefFunc,self)
+		Param.Up = self
+
+		if IndName != null
+		{
+			itFunc4 := asNeed.GetFunc("Ind",emptyBox^,false)
+			if itFunc4 == null
+			{
+				//EmitError("Can not get index item\n")
+				self.EnabledIIndex = true
+				IndParam = new FuncParam("ForIndex"sbt + self.ItId,GTypeInt,false)
+				IndParam.Up = self
+
+				if DebugMode
+				{
+					self.CreatedIIndexNames.Push(IndName)
+				}
+			}else{
+				test = new ParamNaturalCall("",ForItem->{Object^})
+				IndFunc = MakeSimpleCall(itFunc4,test)
+				IndParam = new RetFuncParamV2(IndFunc,self)
+				IndParam.Up = self
+				IndFunc.Line = self.Line
+				IndFunc.Up = self
+			}
+		}
 	}
 }

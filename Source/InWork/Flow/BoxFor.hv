@@ -59,7 +59,6 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsStep1 := bool
 
 	itemsCount := int
-	IsEndFunc := Object^
 
 	InputItems := RawArray.{BoxForItem^}
 
@@ -362,113 +361,12 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					icl := InputItems[i]->{BoxForItemOnClass^}
 
-					ForItem := LocalParam^
+					icl.Init(this&,iter,itType,asNeed2)
 
-					if itType is TypeClass
-					{
-						ItId2 := asNeed2.GetItAllocId()
-						ForItem = new LocalParam(itType,ItId2)
-					}else{
-						assert(itType is TypePoint)
-						newId := GetAlloc(this&,itType)
-						ForItem = new LocalParam(itType.Base,newId,true)
-						InputItems[i].ProxyResult = ForItem
-					}
-					ForItem.Line = iter.Line
-					
-					asNeed := BoxClass^
-					if itType is TypePoint
-					{
-						asNeed = itType.Base->{TypeClass^}.ToClass						
-					} else {
-						asNeed = itType->{TypeClass^}.ToClass
-					}
-
-					emptyBox := @temp new FuncInputBox
-					emptyBox.itPars.Emplace(asNeed.ClassType,true)
-					if iter.Line != null for q,k : iter.Line.itAttrs
-					{
-						emptyBox.itAttrs[k] = q
-					}
-
-					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,false)
-					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,false)
-					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,false)
-					InputItems[i].DestroyFunc = asNeed.GetFunc("Destroy",emptyBox^,false)
-					if InputItems[i].DestroyFunc != null
-					{
-						destroyFuncCount += 1
-					}
-					
-
-					if IncFuncP == null {
-						EmitError("incorrect for iterator, need increment\n")
-						return void
-					}
-					if UnrefFuncP == null {
-						EmitError("incorrect for iterator, need ^\n")
-						return void
-					}
-
-
-					test := new ParamNaturalCall("",ForItem->{Object^})
-					test.Line = iter.Line
-					InputItems[i].UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
-					InputItems[i].UnrefFunc.Line = this.Line
-					InputItems[i].UnrefFunc.Up = this&
-					test = new ParamNaturalCall("",ForItem->{Object^})
-					test.Line = iter.Line
-					InputItems[i].IncFunc = MakeSimpleCall(IncFuncP,test)
-					InputItems[i].IncFunc.Line = this.Line
-					InputItems[i].IncFunc.Up = this&
-
-					if IsInvP != null
-					{
-						test = new ParamNaturalCall("",ForItem->{Object^})
-						test.Line = iter.Line
-						InputItems[i].IsInvalid = MakeSimpleCall(IsInvP,test)
-						InputItems[i].IsInvalid.Line = this.Line
-						InputItems[i].IsInvalid.Up = this&
-					}
-
-					if i == 0
-					{
-						IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,false)
-						test = new ParamNaturalCall("",ForItem->{Object^})
-						test.Line = iter.Line
-						IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
-						IsEndFunc.Line = this.Line
-						IsEndFunc.Up = this&
-					}
-
-					InputItems[i].Param = new RetFuncParamV2(InputItems[i].UnrefFunc,this&)
-					InputItems[i].Param.Up = this&
-
-					if InputItems[i].IndName != null
-					{
-						itFunc4 := asNeed.GetFunc("Ind",emptyBox^,false)
-						if itFunc4 == null
-						{
-							//EmitError("Can not get index item\n")
-							EnabledIIndex = true
-							InputItems[i].IndParam = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
-							InputItems[i].IndParam.Up = this&
-
-							if DebugMode
-							{
-								CreatedIIndexNames.Push(InputItems[i].IndName)
-							}
-						}else{
-							test = new ParamNaturalCall("",ForItem->{Object^})
-							InputItems[i].IndFunc = MakeSimpleCall(itFunc4,test)
-							InputItems[i].IndParam = new RetFuncParamV2(InputItems[i].IndFunc,this&)
-							InputItems[i].IndParam.Up = this&
-							InputItems[i].IndFunc.Line = this.Line
-							InputItems[i].IndFunc.Up = this&
-						}
-					}
 					iter = iter.Right
 				}
+				if InputItems[^].ContainDestroyFunc()
+					destroyFuncCount += 1
 				if destroyFuncCount != 0
 				{
 					fnc := GetBoxFuncContainer(this&)
@@ -643,8 +541,8 @@ BoxForOldFashionMulti := class extend BoxFor
 			}
 		}
 
-		IsEndFunc.PrintPre(f)
-		f << "br i1 " << IsEndFunc.GetName() << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
+		InputItems[0].IsEndFunc.PrintPre(f)
+		f << "br i1 " << InputItems[0].IsEndFunc.GetName() << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 
 
