@@ -59,7 +59,6 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsStep1 := bool
 
 	itemsCount := int
-	IndNames := RawArray.{char^}
 	IncFuncs := Object^^
 	UnrefFuncs := Object^^
 	IndFuncs := Object^^
@@ -71,7 +70,6 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	ProxyFuncs := BoxFunc^^
 	ProxyResults := LocalParam^^
-	IndParams := MemParam^^
 
 	attrs := AttrArrayType^
 
@@ -119,12 +117,8 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		for it,i : names
 			InputItems[i].Name = it
-
-
-
-		IndNames.Resize(names.Size())
-		for it : names.Size(), itInd : f_ind
-			IndNames[it] = itInd
+		for it,i : f_ind
+			InputItems[i].IndName = it
 
 		WorkBag.Push(this&,State_PreGetUse)
 
@@ -235,7 +229,6 @@ BoxForOldFashionMulti := class extend BoxFor
 				IndFuncs = new Object^[itemsCount]
 				ProxyFuncs = new BoxFunc^[itemsCount]
 				ProxyResults = new LocalParam^[itemsCount]
-				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
 				DestroyFunc = new Object^[itemsCount]
 				
@@ -465,24 +458,25 @@ BoxForOldFashionMulti := class extend BoxFor
 					InputItems[i].Param = new RetFuncParamV2(UnrefFuncs[i],this&)
 					InputItems[i].Param.Up = this&
 
-					if IndNames[i] != null
+					if InputItems[i].IndName != null
 					{
 						itFunc4 := asNeed.GetFunc("Ind",emptyBox^,false)
 						if itFunc4 == null
 						{
 							//EmitError("Can not get index item\n")
 							EnabledIIndex = true
-							IndParams[i] = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
-							IndParams[i].Up = this&
+							InputItems[i].IndParam = new FuncParam("ForIndex"sbt + ItId,GTypeInt,false)
+							InputItems[i].IndParam.Up = this&
+
 							if DebugMode
 							{
-								CreatedIIndexNames.Push(IndNames[i])
+								CreatedIIndexNames.Push(InputItems[i].IndName)
 							}
 						}else{
 							test = new ParamNaturalCall("",ForItem->{Object^})
 							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
-							IndParams[i] = new RetFuncParamV2(IndFuncs[i],this&)
-							IndParams[i].Up = this&
+							InputItems[i].IndParam = new RetFuncParamV2(IndFuncs[i],this&)
+							InputItems[i].IndParam.Up = this&
 							IndFuncs[i].Line = this.Line
 							IndFuncs[i].Up = this&
 						}
@@ -506,13 +500,8 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			if it.Name == name
 				return it.Param
-		}
-		for i : itemsCount
-		{
-			if IndNames[i]? == name
-			{
-				return IndParams[i]
-			}
+			if it.IndName == name
+				return it.IndParam
 		}
 		return null
 	}
@@ -683,15 +672,9 @@ BoxForOldFashionMulti := class extend BoxFor
 					IndFuncs[i].PrintPre(f)
 				}
 			}
-			if IndFuncs[i] != null and IndParams[i]? is RetFuncParamV2 and IndNames[i] != null and debId != -1
-			{
-				IndParams[i]->{RetFuncParamV2^}.PrintForDebugDeclare(f,IndNames[i],Down,debId)
-			}
-			if IndParams[i] != null
-				IndParams[i].DoStore(f)
 		}
 
-		for it : InputItems
+		for it,i : InputItems
 		{
 			if it.Param? is RetFuncParamV2 and it.Name != null and debId != -1
 			{
@@ -699,6 +682,12 @@ BoxForOldFashionMulti := class extend BoxFor
 			}
 			if it.Param != null
 				it.Param.DoStore(f)
+			if IndFuncs[i] != null and it.IndParam? is RetFuncParamV2 and it.IndName != null and debId != -1
+			{
+				it.IndParam->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.IndName,Down,debId)
+			}
+			if it.IndParam != null
+				it.IndParam.DoStore(f)
 		}
 		Down.PrintDeferInBlock(f,deferId,deferLabel&)
 		Down.PrintInBlock(f)

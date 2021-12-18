@@ -89,7 +89,7 @@ MetaBoxForMarked := class extend MetaBoxFor
 					
 					WorkBag.Push(newBlock,State_Start)
 					newBlock.Items.Push(new ObjHolder(InputItems[0].Name,new ObjFuncPointer(fnc))) //TODO remake?
-					newBlock.Items.Push(new ObjHolder(IndNames[0]?,new ObjStr(iter->{ObjParam^}.MyStr)))
+					newBlock.Items.Push(new ObjHolder(InputItems[9].IndName?,new ObjStr(iter->{ObjParam^}.MyStr)))
 				}
 
 			})

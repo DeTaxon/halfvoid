@@ -83,9 +83,9 @@ MetaBoxForFields := class extend MetaBoxFor
 				}else{
 					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjType(par.GetType())))
 				}
-				if IndNames[0] != null
+				if InputItems[0].IndName != null
 				{
-					asBlock.Items.Push(new ObjHolder(IndNames[0], new ObjStr(par.ItName)))
+					asBlock.Items.Push(new ObjHolder(InputItems[0].IndName, new ObjStr(par.ItName)))
 				}
 			}
 			holder = hldr
@@ -167,9 +167,9 @@ MetaBoxForClassFuncs := class extend MetaBoxFor
 					WorkBag.Push(iter,State_Start)
 					asBlock := iter->{BoxBlock^}
 					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjFuncPointer(par)))
-					if IndNames[0] != null
+					if InputItems[0].IndName != null
 					{
-						asBlock.Items.Push(new ObjHolder(IndNames[0], new ObjStr(parName)))
+						asBlock.Items.Push(new ObjHolder(InputItems[0].IndName, new ObjStr(parName)))
 					}
 					iter = iter.Right
 				}

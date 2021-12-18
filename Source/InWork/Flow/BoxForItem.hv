@@ -3,4 +3,7 @@ BoxForItem := class
 {
 	Name := char^
 	Param := MemParam^
+
+	IndName := char^
+	IndParam := MemParam^
 }

@@ -273,17 +273,15 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 				if tstr is BoxForOldFashionMulti
 				{
 					asNeed := tstr->{BoxForOldFashionMulti^}
-					for asNeed.InputItems
+					for asNeed.InputItems //TODO: refactor on Contain
 					{
 						if it.Name == "it"
 						{
 							foundIt = true
 							break
 						}
-					}
-					for asNeed.IndNames
-					{
-						if it == "it"{
+						if it.IndName == "it"
+						{
 							foundIt = true
 							break
 						}
