@@ -450,20 +450,20 @@ BoxForOldFashionMulti := class extend BoxFor
 		{
 			for it : InputItems
 			{
-				if it.IsInvalid != null
+				if it.IsInvalid == null
+					continue
+
+				it.IsInvalid.PrintPre(f)
+				f << "br i1 " << it.IsInvalid.GetName() << ", label %" << endLabel.GetLabel()
+				if Checks > 1
 				{
-					
-					it.IsInvalid.PrintPre(f)
-					f << "br i1 " << it.IsInvalid.GetName() << ", label %" << endLabel.GetLabel()
-					if Checks > 1
-					{
-						f << ", label %NextCheck" << Checks << "\n"
-						f << "NextCheck" << Checks << ":\n"
-					}else{
-						f << ", label %start" << ItId << "\n" // no need in standart for
-						f << "start" << ItId << ":\n"
-					}
+					f << ", label %NextCheck" << Checks << "\n"
+					f << "NextCheck" << Checks << ":\n"
+				}else{
+					f << ", label %start" << ItId << "\n" // no need in standart for
+					f << "start" << ItId << ":\n"
 				}
+
 				Checks -= 1
 			}
 		}else{
@@ -471,7 +471,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "start" << ItId << ":\n"
 		}
 
-		createdIInts := List.{int}() ; $temp
+		createdIInts := @temp new List.{int}
 
 		if debId != -1 for it : CreatedIIndexNames
 		{
@@ -485,7 +485,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			f << "ExtraStart" << ItId << ":\n"
 			f << "%ForIndex" << ItId << " = phi i32 [0,%start" << ItId << "] , [%FIndex" << ItId << ", %ExtraEnd" << ItId << "]\n"
 
-			for it : createdIInts
+			for it : createdIInts^
 			{
 				f << "call void @llvm.dbg.value(metadata i32 %ForIndex" << ItId << " ,metadata !" << it << ",metadata !DIExpression()), !dbg !"<<debId<<"\n" 
 			}
@@ -505,10 +505,12 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		Down.PrintDeferInBlock(f,deferId,deferLabel&)
 		Down.PrintInBlock(f)
+
 		
 		f << "br label %IncFuncs" << ItId << "\n"
 		f << "IncFuncs" << ItId << ":\n"
-		InputItems[^].IncFunc.PrintPre(f)
+
+		InputItems[^].PrintIncrement(this&,f,null,debId)
 
 		if EnabledIIndex
 		{

@@ -28,12 +28,17 @@ BoxForItem := class
 	PrintCheckEndName := virtual !(BoxForOldFashionMulti^ self,Object^ itr) -> char^ {}
 
 	PrintStepAfter := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void {}
+	PrintIncrement := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void {}
 }
 
 BoxForItemOnClass := class extend BoxForItem
 {
 	ContainDestroyFunc := virtual !() -> bool { return DestroyFunc != null }
 
+	PrintIncrement := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void 
+	{
+		IncFunc.PrintPre(f)
+	}
 	PrintStepAfter := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void 
 	{
 		
