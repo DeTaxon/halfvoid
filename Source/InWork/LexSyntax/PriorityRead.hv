@@ -25,10 +25,13 @@ LexMachineInfo := class
 	uniqOnly := bool
 	uniqs := AVLSet.{char^}^
 
+	uniqPos := int
+
 	this := !(MiniMachineNodeOld^ inM,char^ rLine) -> void
 	{
 		Machine = inM
 		RawLine = rLine
+		uniqPos = -1
 	}
 }
 PriorityBagOld := class
@@ -54,12 +57,17 @@ PriorityBagOld := class
 				uns := new AVLSet.{char^}
 				lineUniq := true
 
+				uPos := -2
+
 				ln.DivideStr(reg,word ==> {
 					rawWord := word[1..-1]
 					
 					wordContainUniq := false
 					machIter := newMach
-					rawWord.DivideStr(" ",ruleWord ==> {
+
+					i := -1
+					rawWord.DivideStr(" ", ruleWord ==> {
+						i += 1
 						stW := ruleWord.Str()
 						switch stW
 						{
@@ -68,6 +76,15 @@ PriorityBagOld := class
 							case "@" stW = "~{}type"
 							case "()" case "[]" case "{}"
 							case void
+								switch uPos
+								{
+									case -2 uPos = i
+									case -1
+									case i
+									case void
+										uPos = -1
+								}
+
 								wordContainUniq = true
 								uns.Insert(stW)
 								Opers.Insert(stW)
@@ -82,10 +99,14 @@ PriorityBagOld := class
 					machIter.IsTerm = true
 				})
 
+				if uPos == -2
+					uPos = -1
+
 				Lines.Emplace(newMach,ln.Str())
 				newLine := ref Lines.Back()
 				newLine.uniqs = uns
 				newLine.uniqOnly = lineUniq
+				newLine.uniqPos = uPos
 			}
 		})
 		//for it : Lines

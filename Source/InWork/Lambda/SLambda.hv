@@ -1151,7 +1151,6 @@ BuiltInTemplateLambdaIsFinished := class extend BoxTemplate
 	{
 		pars := ref itBox.itPars
 		if pars.Size() != 1 return 255
-		if not pars[0].second return 255
 		if pars[0].first.GetType() != "lambda" return 255
 		return 0
 	}

@@ -51,6 +51,8 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 BoxFor := class extend Object
 {
 }
+
+
 BoxForOldFashionMulti := class extend BoxFor
 {
 	ItId := int
@@ -65,13 +67,11 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsInvalids := Object^^
 	DestroyFunc := Object^^
 	IsEndFunc := Object^
-	LambdaCallFunc := Object^^
-	LambdaIsFinishedFunc := Object^^
 
+	InputItems := RawArray.{BoxForItem^}
 
 	ProxyFuncs := BoxFunc^^
 	ProxyResults := LocalParam^^
-	Params := MemParam^^
 	IndParams := MemParam^^
 
 	attrs := AttrArrayType^
@@ -232,13 +232,11 @@ BoxForOldFashionMulti := class extend BoxFor
 				IndFuncs = new Object^[itemsCount]
 				ProxyFuncs = new BoxFunc^[itemsCount]
 				ProxyResults = new LocalParam^[itemsCount]
-				Params = new MemParam^[itemsCount]
 				IndParams = new MemParam^[itemsCount]
 				IsInvalids = new Object^[itemsCount]
 				DestroyFunc = new Object^[itemsCount]
 				
-				LambdaCallFunc = new Object^[itemsCount]
-				LambdaIsFinishedFunc = new Object^[itemsCount]
+				InputItems.Resize(itemsCount)
 
 				for itemsCount IsInvalids[it] = null
 
@@ -349,19 +347,44 @@ BoxForOldFashionMulti := class extend BoxFor
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := ProxyFuncs[i].MyFuncType.RetType
 
-					if itType is TypeFuncLambda
-					{
-						callFunc := @temp new FuncInputBox
-						callFunc.itPars.Emplace(itType,false)
-						LambdaCallFunc[i] = FindFunc("()",this&,callFunc^,false)
-						LambdaIsFinishedFunc[i] = FindFunc("IsFinished",this&,callFunc^,false)
+					InputItems[i] = new BoxForItem
 
-						assert(LambdaCallFunc[i] != null)
-						//assert(LambdaIsFinishedFunc[i] != null)
+					InputItems[i].Name = Names[i]
 
-						printf("ye %p\n",LambdaIsFinishedFunc[i])
-						continue
-					}
+
+
+					//if itType is TypeFuncLambda
+					//{
+					//	callFunc := @temp new FuncInputBox
+					//	callFunc.itPars.Emplace(itType,false)
+					//	LambdaCallFunc[i] = FindFunc("()",this&,callFunc^,false)
+					//	LambdaIsFinishedFunc[i] = FindFunc("IsFinished",this&,callFunc^,false)
+
+					//	assert(LambdaCallFunc[i] != null)
+					//	assert(LambdaIsFinishedFunc[i] != null)
+
+					//	itmId := GetAlloc(this&,itType)
+					//	itm := new LocalParam(itType,itmId,false)
+
+					//	ProxyResults[i] = itm
+
+					//	test2 := new ParamNaturalCall("",itm)
+					//	test2.Line = iter.Line
+					//	UnrefFuncs[i] = MakeSimpleCall(LambdaCallFunc[i]->{BoxFunc^},test2)
+					//	UnrefFuncs[i].Line = this.Line
+					//	UnrefFuncs[i].Up = this&
+
+					//	Params[i] = new RetFuncParamV2(UnrefFuncs[i],this&)
+					//	Params[i].Up = this&
+
+					//	test2 = new ParamNaturalCall("",itm)
+					//	test2.Line = iter.Line
+					//	IsEndFunc = MakeSimpleCall(LambdaIsFinishedFunc[i]->{BoxFunc^},test2)
+					//	IsEndFunc.Line = this.Line
+					//	IsEndFunc.Up = this&
+
+					//	continue
+					//}
 
 					ForItem := LocalParam^
 
@@ -441,8 +464,9 @@ BoxForOldFashionMulti := class extend BoxFor
 						IsEndFunc.Line = this.Line
 						IsEndFunc.Up = this&
 					}
-					Params[i] = new RetFuncParamV2(UnrefFuncs[i],this&)
-					Params[i].Up = this&
+
+					InputItems[i].Param = new RetFuncParamV2(UnrefFuncs[i],this&)
+					InputItems[i].Param.Up = this&
 
 					if IndNames[i] != null
 					{
@@ -481,12 +505,13 @@ BoxForOldFashionMulti := class extend BoxFor
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
+		for it : InputItems
+		{
+			if it.Name == name
+				return it.Param
+		}
 		for i : itemsCount
 		{
-			if Names[i] == name 
-			{
-				return Params[i]
-			}
 			if IndNames[i]? == name
 			{
 				return IndParams[i]
@@ -644,16 +669,14 @@ BoxForOldFashionMulti := class extend BoxFor
 				f << "call void @llvm.dbg.value(metadata i32 %ForIndex" << ItId << " ,metadata !" << it << ",metadata !DIExpression()), !dbg !"<<debId<<"\n" 
 			}
 		}
+
 		IsEndFunc.PrintPre(f)
 		f << "br i1 " << IsEndFunc.GetName() << " , label %" << endLabel.GetLabel() << " , label %Next" << ItId << "\n"
 		f << "Next" << ItId << ":\n"
 
+
 		for i : itemsCount {
 			if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
-			if Params[i]? is RetFuncParamV2 and Names[i] != null and debId != -1
-			{
-				Params[i]->{RetFuncParamV2^}.PrintForDebugDeclare(f,Names[i],Down,debId)
-			}
 			if IndFuncs[i] != null
 			{
 				if IndFuncs[i].IsRef()
@@ -667,10 +690,18 @@ BoxForOldFashionMulti := class extend BoxFor
 			{
 				IndParams[i]->{RetFuncParamV2^}.PrintForDebugDeclare(f,IndNames[i],Down,debId)
 			}
-			if Params[i] != null
-				Params[i].DoStore(f)
 			if IndParams[i] != null
 				IndParams[i].DoStore(f)
+		}
+
+		for it : InputItems
+		{
+			if it.Param? is RetFuncParamV2 and it.Name != null and debId != -1
+			{
+				it.Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.Name,Down,debId)
+			}
+			if it.Param != null
+				it.Param.DoStore(f)
 		}
 		Down.PrintDeferInBlock(f,deferId,deferLabel&)
 		Down.PrintInBlock(f)
