@@ -79,9 +79,9 @@ MetaBoxForFields := class extend MetaBoxFor
 				asBlock := it->{BoxBlock^}
 				if hldr.Down != null
 				{
-					asBlock.Items.Push(new ObjHolder(Names[0], new FuncParam("ForParamId"sbt + ItId + "i" + i,par.GetType(),true)))
+					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new FuncParam("ForParamId"sbt + ItId + "i" + i,par.GetType(),true)))
 				}else{
-					asBlock.Items.Push(new ObjHolder(Names[0], new ObjType(par.GetType())))
+					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjType(par.GetType())))
 				}
 				if IndNames[0] != null
 				{
@@ -166,7 +166,7 @@ MetaBoxForClassFuncs := class extend MetaBoxFor
 				{
 					WorkBag.Push(iter,State_Start)
 					asBlock := iter->{BoxBlock^}
-					asBlock.Items.Push(new ObjHolder(Names[0], new ObjFuncPointer(par)))
+					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjFuncPointer(par)))
 					if IndNames[0] != null
 					{
 						asBlock.Items.Push(new ObjHolder(IndNames[0], new ObjStr(parName)))
@@ -230,7 +230,7 @@ MetaBoxForFuncParams := class extend MetaBoxFor
 			{
 				WorkBag.Push(it,State_Start)
 				asBlock := it->{BoxBlock^}
-				asBlock.Items.Push(new ObjHolder(Names[0], new ObjType(pr.Pars[i])))
+				asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjType(pr.Pars[i])))
 			}
 			holder = hldr
 			hldr.Up = this&

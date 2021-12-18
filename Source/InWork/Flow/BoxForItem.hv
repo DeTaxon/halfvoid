@@ -1,0 +1,6 @@
+
+BoxForItem := class
+{
+	Name := char^
+	Param := MemParam^
+}
