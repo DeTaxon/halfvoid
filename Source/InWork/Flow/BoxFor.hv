@@ -59,17 +59,9 @@ BoxForOldFashionMulti := class extend BoxFor
 	IsStep1 := bool
 
 	itemsCount := int
-	IncFuncs := Object^^
-	UnrefFuncs := Object^^
-	IndFuncs := Object^^
-	IsInvalids := Object^^
-	DestroyFunc := Object^^
 	IsEndFunc := Object^
 
 	InputItems := RawArray.{BoxForItem^}
-
-	ProxyFuncs := BoxFunc^^
-	ProxyResults := LocalParam^^
 
 	attrs := AttrArrayType^
 
@@ -224,17 +216,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 			if IsStep1
 			{
-				IncFuncs = new Object^[itemsCount]
-				UnrefFuncs = new Object^[itemsCount]
-				IndFuncs = new Object^[itemsCount]
-				ProxyFuncs = new BoxFunc^[itemsCount]
-				ProxyResults = new LocalParam^[itemsCount]
-				IsInvalids = new Object^[itemsCount]
-				DestroyFunc = new Object^[itemsCount]
-				
 				InputItems.Resize(itemsCount)
-
-				for itemsCount IsInvalids[it] = null
 
 				Downs:= Queue.{Object^}() ; $temp
 				for i : itemsCount
@@ -286,7 +268,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						}
 					}
 
-					ProxyFuncs[i] = func
+					InputItems[i].ProxyFunc = func
 
 					tmp := Down.Right
 					PopOutNode(tmp)
@@ -341,7 +323,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				for i : itemsCount
 				{
 					asNeed2 := iter->{SomeFuncCall^}
-					itType := ProxyFuncs[i].MyFuncType.RetType
+					itType := InputItems[i].ProxyFunc.MyFuncType.RetType
 
 					//if itType is TypeFuncLambda
 					//{
@@ -376,6 +358,10 @@ BoxForOldFashionMulti := class extend BoxFor
 					//	continue
 					//}
 
+					InputItems[i]->SetType(BoxForItemOnClass)
+
+					icl := InputItems[i]->{BoxForItemOnClass^}
+
 					ForItem := LocalParam^
 
 					if itType is TypeClass
@@ -386,7 +372,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						assert(itType is TypePoint)
 						newId := GetAlloc(this&,itType)
 						ForItem = new LocalParam(itType.Base,newId,true)
-						ProxyResults[i] = ForItem
+						InputItems[i].ProxyResult = ForItem
 					}
 					ForItem.Line = iter.Line
 					
@@ -408,8 +394,8 @@ BoxForOldFashionMulti := class extend BoxFor
 					IncFuncP := asNeed.GetFunc("Inc",emptyBox^,false)
 					UnrefFuncP := asNeed.GetFunc("^",emptyBox^,false)
 					IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,false)
-					DestroyFunc[i] = asNeed.GetFunc("Destroy",emptyBox^,false)
-					if DestroyFunc[i] != null
+					InputItems[i].DestroyFunc = asNeed.GetFunc("Destroy",emptyBox^,false)
+					if InputItems[i].DestroyFunc != null
 					{
 						destroyFuncCount += 1
 					}
@@ -427,22 +413,22 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					test := new ParamNaturalCall("",ForItem->{Object^})
 					test.Line = iter.Line
-					UnrefFuncs[i] = MakeSimpleCall(UnrefFuncP,test)
-					UnrefFuncs[i].Line = this.Line
-					UnrefFuncs[i].Up = this&
+					InputItems[i].UnrefFunc = MakeSimpleCall(UnrefFuncP,test)
+					InputItems[i].UnrefFunc.Line = this.Line
+					InputItems[i].UnrefFunc.Up = this&
 					test = new ParamNaturalCall("",ForItem->{Object^})
 					test.Line = iter.Line
-					IncFuncs[i] = MakeSimpleCall(IncFuncP,test)
-					IncFuncs[i].Line = this.Line
-					IncFuncs[i].Up = this&
+					InputItems[i].IncFunc = MakeSimpleCall(IncFuncP,test)
+					InputItems[i].IncFunc.Line = this.Line
+					InputItems[i].IncFunc.Up = this&
 
 					if IsInvP != null
 					{
 						test = new ParamNaturalCall("",ForItem->{Object^})
 						test.Line = iter.Line
-						IsInvalids[i] = MakeSimpleCall(IsInvP,test)
-						IsInvalids[i].Line = this.Line
-						IsInvalids[i].Up = this&
+						InputItems[i].IsInvalid = MakeSimpleCall(IsInvP,test)
+						InputItems[i].IsInvalid.Line = this.Line
+						InputItems[i].IsInvalid.Up = this&
 					}
 
 					if i == 0
@@ -455,7 +441,7 @@ BoxForOldFashionMulti := class extend BoxFor
 						IsEndFunc.Up = this&
 					}
 
-					InputItems[i].Param = new RetFuncParamV2(UnrefFuncs[i],this&)
+					InputItems[i].Param = new RetFuncParamV2(InputItems[i].UnrefFunc,this&)
 					InputItems[i].Param.Up = this&
 
 					if InputItems[i].IndName != null
@@ -474,11 +460,11 @@ BoxForOldFashionMulti := class extend BoxFor
 							}
 						}else{
 							test = new ParamNaturalCall("",ForItem->{Object^})
-							IndFuncs[i] = MakeSimpleCall(itFunc4,test)
-							InputItems[i].IndParam = new RetFuncParamV2(IndFuncs[i],this&)
+							InputItems[i].IndFunc = MakeSimpleCall(itFunc4,test)
+							InputItems[i].IndParam = new RetFuncParamV2(InputItems[i].IndFunc,this&)
 							InputItems[i].IndParam.Up = this&
-							IndFuncs[i].Line = this.Line
-							IndFuncs[i].Up = this&
+							InputItems[i].IndFunc.Line = this.Line
+							InputItems[i].IndFunc.Up = this&
 						}
 					}
 					iter = iter.Right
@@ -516,14 +502,14 @@ BoxForOldFashionMulti := class extend BoxFor
 
 		for itr,i : Down.Right
 		{
-			if DestroyFunc[i] == null
+			if InputItems[i].DestroyFunc == null
 				continue
 
 			j := destroyFuncCount - i - 1
 			f << "br label %DeferLabel" << labelIter^ << "\n"
 			f << "DeferLabel" << labelIter^ << ":\n"
 
-			if DestroyFunc[i] is BoxFuncBody //TODO in BoxFunc
+			if InputItems[i].DestroyFunc is BoxFuncBody //TODO in BoxFunc
 			{
 				if IsGCClass(itr.GetType())
 				{
@@ -538,7 +524,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					f << ")\n"
 					continue
 				}
-				if DestroyFunc[i]->{BoxFunc^}.IsVirtual
+				if InputItems[i].DestroyFunc->{BoxFunc^}.IsVirtual
 				{
 					//TODO add virtual destructor support
 					continue
@@ -548,7 +534,7 @@ BoxForOldFashionMulti := class extend BoxFor
 
 			//itr.PrintPointPre(f) //TODO without that works on pure luck
 			
-			fnc := DestroyFunc[i]->{BoxFunc^}
+			fnc := InputItems[i].DestroyFunc->{BoxFunc^}
 			f << "call void @" << fnc.OutputName << "("
 			itr.PrintPointUse(f)
 			f << ")\n"
@@ -587,7 +573,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 		for itr,i : Down.Right
 		{
-			if ProxyResults[i] == null
+			if InputItems[i].ProxyResult == null
 			{
 				itr.PrintPre(f)
 			}else{
@@ -596,11 +582,11 @@ BoxForOldFashionMulti := class extend BoxFor
 				itr.PrintUse(f)
 				f << " , "
 				itr.GetType().PrintType(f)
-				f << "* " << ProxyResults[0].GetMainPtr(0)
+				f << "* " << InputItems[0].ProxyResult.GetMainPtr(0) //TODO why ZERO?
 				f << "\n"
 			}
 		
-			if DestroyFunc[i] != null
+			if InputItems[i].DestroyFunc != null
 			{
 				f << "store i8 " << deferLabel << " , i8* %DeferStack" << deferId << "\n"
 				deferLabel += 1
@@ -609,17 +595,18 @@ BoxForOldFashionMulti := class extend BoxFor
 
 
 		Checks := 0
-		for itemsCount if IsInvalids[it] != null Checks += 1
+		if InputItems[^].IsInvalid != null //TODO Contain
+			Checks += 1
 
 		if Checks > 0
 		{
-			for itemsCount
+			for it : InputItems
 			{
-				if IsInvalids[it] != null
+				if it.IsInvalid != null
 				{
 					
-					IsInvalids[it].PrintPre(f)
-					f << "br i1 " << IsInvalids[it].GetName() << ", label %" << endLabel.GetLabel()
+					it.IsInvalid.PrintPre(f)
+					f << "br i1 " << it.IsInvalid.GetName() << ", label %" << endLabel.GetLabel()
 					if Checks > 1
 					{
 						f << ", label %NextCheck" << Checks << "\n"
@@ -661,28 +648,25 @@ BoxForOldFashionMulti := class extend BoxFor
 		f << "Next" << ItId << ":\n"
 
 
-		for i : itemsCount {
-			if UnrefFuncs[i].IsRef() UnrefFuncs[i].PrintPointPre(f) else UnrefFuncs[i].PrintPre(f)
-			if IndFuncs[i] != null
-			{
-				if IndFuncs[i].IsRef()
-				{
-					IndFuncs[i].PrintPointPre(f)
-				}else{
-					IndFuncs[i].PrintPre(f)
-				}
-			}
-		}
-
 		for it,i : InputItems
 		{
+			if it.UnrefFunc.IsRef() it.UnrefFunc.PrintPointPre(f) else it.UnrefFunc.PrintPre(f)
+			if it.IndFunc != null
+			{
+				if it.IndFunc.IsRef()
+				{
+					it.IndFunc.PrintPointPre(f)
+				}else{
+					it.IndFunc.PrintPre(f)
+				}
+			}
 			if it.Param? is RetFuncParamV2 and it.Name != null and debId != -1
 			{
 				it.Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.Name,Down,debId)
 			}
 			if it.Param != null
 				it.Param.DoStore(f)
-			if IndFuncs[i] != null and it.IndParam? is RetFuncParamV2 and it.IndName != null and debId != -1
+			if it.IndFunc != null and it.IndParam? is RetFuncParamV2 and it.IndName != null and debId != -1
 			{
 				it.IndParam->{RetFuncParamV2^}.PrintForDebugDeclare(f,it.IndName,Down,debId)
 			}
@@ -694,7 +678,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		
 		f << "br label %IncFuncs" << ItId << "\n"
 		f << "IncFuncs" << ItId << ":\n"
-		for i : itemsCount IncFuncs[i].PrintPre(f)
+		InputItems[^].IncFunc.PrintPre(f)
 
 		if EnabledIIndex
 		{

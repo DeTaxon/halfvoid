@@ -6,4 +6,25 @@ BoxForItem := class
 
 	IndName := char^
 	IndParam := MemParam^
+
+	IncFunc := Object^
+	UnrefFunc := Object^
+	IndFunc := Object^
+	IsInvalid := Object^
+	DestroyFunc := Object^
+	IsEndFunc := Object^
+
+	ProxyFunc := BoxFunc^
+	ProxyResult := LocalParam^
+
+	Init := virtual !(Type^ inType) -> void
+	{
+	}
+}
+
+BoxForItemOnClass := class extend BoxForItem
+{
+	Init := virtual !(Type^ inType) -> void
+	{
+	}
 }
