@@ -1,30 +1,28 @@
 
 mini_class := class
 {
-	x := !()&->int 
-	this := !(i) -> void
+	this := !() -> void
 	{
-		x = i
 	}
 	"~For" := !() -> !()&->int
 	{
-		return x
+		j := () ==> int 
+		{
+			i := 0
+			while i < 3
+			{
+				yield i
+				i += 1
+			}
+			
+		}
+		return j.Capture()
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	t := () ==> int
-	{
-		i := 0
-		while i < 3
-		{
-			yield i
-			i += 1
-		}
-	}
-
-	tmp := mini_class(t)
+	tmp := mini_class
 
 	for i : tmp
 	{

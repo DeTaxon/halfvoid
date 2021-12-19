@@ -324,44 +324,14 @@ BoxForOldFashionMulti := class extend BoxFor
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := InputItems[i].ProxyFunc.MyFuncType.RetType
 
-					//if itType is TypeFuncLambda
-					//{
-					//	callFunc := @temp new FuncInputBox
-					//	callFunc.itPars.Emplace(itType,false)
-					//	LambdaCallFunc[i] = FindFunc("()",this&,callFunc^,false)
-					//	LambdaIsFinishedFunc[i] = FindFunc("IsFinished",this&,callFunc^,false)
+					if itType is TypeFuncLambda
+					{
+						InputItems[i]->SetType(BoxForItemOnGenerator)
+					}else{
+						InputItems[i]->SetType(BoxForItemOnClass)
+					}
 
-					//	assert(LambdaCallFunc[i] != null)
-					//	assert(LambdaIsFinishedFunc[i] != null)
-
-					//	itmId := GetAlloc(this&,itType)
-					//	itm := new LocalParam(itType,itmId,false)
-
-					//	ProxyResults[i] = itm
-
-					//	test2 := new ParamNaturalCall("",itm)
-					//	test2.Line = iter.Line
-					//	UnrefFuncs[i] = MakeSimpleCall(LambdaCallFunc[i]->{BoxFunc^},test2)
-					//	UnrefFuncs[i].Line = this.Line
-					//	UnrefFuncs[i].Up = this&
-
-					//	Params[i] = new RetFuncParamV2(UnrefFuncs[i],this&)
-					//	Params[i].Up = this&
-
-					//	test2 = new ParamNaturalCall("",itm)
-					//	test2.Line = iter.Line
-					//	IsEndFunc = MakeSimpleCall(LambdaIsFinishedFunc[i]->{BoxFunc^},test2)
-					//	IsEndFunc.Line = this.Line
-					//	IsEndFunc.Up = this&
-
-					//	continue
-					//}
-
-					InputItems[i]->SetType(BoxForItemOnClass)
-
-					icl := InputItems[i]->{BoxForItemOnClass^}
-
-					icl.Init(this&,iter,itType,asNeed2)
+					InputItems[i].Init(this&,iter,itType,asNeed2)
 
 					iter = iter.Right
 				}
@@ -492,6 +462,11 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 
 		
+		for it,i : InputItems
+		{
+			it.PrintStepBefore(this&,f,null,debId)
+		}
+
 		InputItems[0].PrintCheckEndPre(this&,f,null)
 		f << "br i1 " 
 		f << InputItems[0].PrintCheckEndName(this&,null) 
