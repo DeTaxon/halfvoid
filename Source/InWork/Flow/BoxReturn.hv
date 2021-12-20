@@ -109,6 +109,9 @@ BoxReturn := class extend Object
 			if IsSLambda(Down) and RetFunc.RetType is TypeFuncLambda
 			{
 				Down->{SLambda^}.ApplyFunc(RetFunc.RetType,false)
+				wrap := GetReturnLambda(this&,RetFunc.RetType)
+				Down = MakeSimpleCall(wrap,Down)
+				Down.Up = this&
 			}
 
 			IsRetRef = RetFunc.RetRef
@@ -255,4 +258,19 @@ BoxReturnVoid := class extend BoxReturn
 	PrintDownSet := virtual !(TIOStream f,int debId) -> void
 	{
 	}
+}
+
+returnLambdas := AVLMap.{Type^,BoxFunc^}
+GetReturnLambda := !(Object^ search,Type^ lType) -> BoxFunc^
+{
+	if returnLambdas.Contain(lType)
+		return returnLambdas[lType]
+
+	retObj := @temp new FuncInputBox
+	retObj.itPars.Emplace(lType,false)
+	retFunc := FindFunc("internalReturnLambda",search,retObj^,false)
+
+	returnLambdas[lType] = retFunc
+	assert(retFunc != null)
+	return retFunc
 }
