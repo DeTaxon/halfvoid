@@ -1,4 +1,6 @@
 
+ttts := !(int c) -> int declare
+
 mini_class := class
 {
 	this := !() -> void
