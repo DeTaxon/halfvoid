@@ -6,7 +6,7 @@ mini_class := class
 	}
 	"~For" := !() -> !()&->int
 	{
-		j := () ==> int 
+		return () ==> int 
 		{
 			i := 0
 			while i < 3
@@ -16,7 +16,6 @@ mini_class := class
 			}
 			
 		}
-		return j.Capture()
 	}
 }
 

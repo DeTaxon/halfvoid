@@ -79,6 +79,8 @@ BoxReturn := class extend Object
 		{
 			Down.SetUp(this&)
 
+			
+
 			iterF := Up
 
 			while iterF?.GetValue() != "!()" and iterF.GetValue() != "x=>x"
@@ -86,61 +88,64 @@ BoxReturn := class extend Object
 				iterF = iterF.Up
 			}
 
-			if iterF != null
+			if iterF == null
+				EmitError("impossible state\n")
+			
+			RetFunc := TypeFunc^
+
+
+			if iterF.GetValue() == "!()"{
+				asNeed := iterF->{BoxFunc^}
+				RetFunc = asNeed.MyFuncType
+				IsRetComplex = asNeed.IsRetComplex
+			}
+			if iterF.GetValue() == "x=>x"{
+				asNeed2 := iterF->{SLambda^}
+				RetFunc = asNeed2.fastUse
+				IsRetComplex = false
+				if not RetFunc.RetRef IsRetComplex = IsComplexType(RetFunc.RetType)
+			}
+
+			if IsSLambda(Down) and RetFunc.RetType is TypeFuncLambda
 			{
-				RetFunc := TypeFunc^
+				Down->{SLambda^}.ApplyFunc(RetFunc.RetType,false)
+			}
 
-
-				if iterF.GetValue() == "!()"{
-					asNeed := iterF->{BoxFunc^}
-					RetFunc = asNeed.MyFuncType
-					IsRetComplex = asNeed.IsRetComplex
-				}
-				if iterF.GetValue() == "x=>x"{
-					asNeed2 := iterF->{SLambda^}
-					RetFunc = asNeed2.fastUse
-					IsRetComplex = false
-					if not RetFunc.RetRef IsRetComplex = IsComplexType(RetFunc.RetType)
-				}
-
-				IsRetRef = RetFunc.RetRef
-				if Down.GetType() != null
+			IsRetRef = RetFunc.RetRef
+			if Down.GetType() != null
+			{
+				PreType := RetFunc.RetType
+				if PreType == null
 				{
-					PreType := RetFunc.RetType
-					if PreType == null
+					asNeed := iterF->{BoxFunc^}
+					asNeed.SetReturnType(Down.GetType()) //TODO auto type not working
+				}else
+				{
+					if PreType != Down.GetType()
 					{
-						asNeed := iterF->{BoxFunc^}
-						asNeed.SetReturnType(Down.GetType()) //TODO auto type not working
-					}else
-					{
-						if PreType != Down.GetType()
+						if TypeCmp(Down.GetType(),PreType) != 255
 						{
-							if TypeCmp(Down.GetType(),PreType) != 255
+							Down = BoxExc(Down,PreType,RetFunc.RetRef)
+							Down.Up = this&
+						}else{
+							if RetFunc.RetRef and Down is ObjNULL
 							{
-								Down = BoxExc(Down,PreType,RetFunc.RetRef)
-								Down.Up = this&
-							}else{
-								if RetFunc.RetRef and Down is ObjNULL
-								{
-									//BoxExc(Down,PreType.GetPoint(),true)
-									RetFuncType = RetFunc.RetType
+								//BoxExc(Down,PreType.GetPoint(),true)
+								RetFuncType = RetFunc.RetType
 
-								}else{
-									typName := "(null)"
-									if PreType != null
-										typName = PreType.GetGoodName()
-									printf("from %s to %s\n",Down.GetType().GetName(),typName)
-									EmitError("Can not return value\n")
-								}
+							}else{
+								typName := "(null)"
+								if PreType != null
+									typName = PreType.GetGoodName()
+								printf("from %s to %s\n",Down.GetType().GetName(),typName)
+								EmitError("Can not return value\n")
 							}
 						}
 					}
-				}else{
-					Print(0)
-					EmitError("Compiler error, unknow return type\n")
 				}
 			}else{
-				EmitError("impossible state\n")
+				Print(0)
+				EmitError("Compiler error, unknow return type\n")
 			}
 		}
 		if pri == State_DestructGet

@@ -7,3 +7,9 @@ internalGCMemClear := !(void^ ptr,size_t s) -> void
 	memset(ptr,0,s)
 }
 
+internalReturnLambda := !(@T lmbd) -> T
+{
+	TempPoolBlock()
+	return lmbd.Capture()
+}
+
