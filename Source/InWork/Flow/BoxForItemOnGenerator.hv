@@ -46,12 +46,15 @@ BoxForItemOnGenerator := class extend BoxForItem
 	PrintStepBefore := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr,int debId) -> void
 	{
 		if UnrefFunc.IsRef() UnrefFunc.PrintPointPre(f) else UnrefFunc.PrintPre(f)
-		if Param? is RetFuncParamV2 and Name != null and debId != -1
-		{
-			Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,Name,self.Down,debId)
-		}
+				
 		if Param != null
+		{
 			Param.DoStore(f)
+			if Param is RetFuncParamV2 and Name != null and debId != -1
+			{
+				Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,Name,self.Down,debId)
+			}
+		}
 	}
 
 	PrintCheckEndPre := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void 
