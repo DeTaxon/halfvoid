@@ -384,19 +384,20 @@ SLambda := class extend BoxFuncContainer
 	}
 	PrintInhers := !(TIOStream f,char^ startS,bool printDeb) -> void
 	{
-		funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
+		funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}()
+		funcsUp.allocator = gTemporaryPool&
 		itrr := Up
 		while itrr != null
 		{
 			if itrr.GetValue() == "!()"
 			{
-				funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
+				funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^})
 				break
 			}
 			if IsSLambda(itrr)
 			{
 				asSL := itrr->{SLambda^}
-				funcsUp.Emplace(asSL.ABox&,asSL,null) ; $temp
+				funcsUp.Emplace(asSL.ABox&,asSL,null)
 				if asSL.justFunc
 					break
 			}
@@ -516,7 +517,8 @@ SLambda := class extend BoxFuncContainer
 		if applyed
 		{
 			
-			funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}() ; $temp	
+			funcsUp := List.{Tuple.{AllocBox^,SLambda^,BoxFuncBody^}}()
+			funcsUp.allocator = gTemporaryPool&
 			nameIter := 0
 			prevLName := Names[0]
 			if not justFunc
@@ -526,7 +528,7 @@ SLambda := class extend BoxFuncContainer
 				{
 					if itrr.GetValue() == "!()"
 					{
-						funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^}) ; $temp
+						funcsUp.Emplace(itrr->{BoxFuncBody^}.ABox&,null,itrr->{BoxFuncBody^})
 						break
 					}
 					if IsSLambda(itrr)

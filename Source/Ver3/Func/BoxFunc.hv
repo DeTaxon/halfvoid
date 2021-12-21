@@ -132,7 +132,8 @@ BoxFunc := class extend BoxFuncContainer
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl, TypeFunc^ parentFunc) -> bool
 	{
 		SyntaxCompress(root,LexHVInputVars)
-		Pars := Queue.{Object^}() ; $temp
+		Pars := List.{Object^}
+		Pars.allocator = gTemporaryPool&
 
 		Typs := Queue.{Type^}() ; $temp
 		TypsNams := Queue.{string}() ; $temp
@@ -256,7 +257,7 @@ BoxFunc := class extend BoxFuncContainer
 						TypsIsRef.Push(IsParRef)
 						TypsNams.Push(StrCopy(MayName))
 					}	
-					Pars.Clean()		
+					Pars.Clear()		
 				}
 				if Pars.Size() == 1
 				{
@@ -293,7 +294,7 @@ BoxFunc := class extend BoxFuncContainer
 
 						}
 					}
-					Pars.Clean()
+					Pars.Clear()
 				}
 				Stuff.Pop()
 			}else

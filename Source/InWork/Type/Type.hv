@@ -189,7 +189,7 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 GetFuncType := !(Type^^ typs,bool^ IsRefArr,int parsCount,Type^ retType, bool retRef2, bool IsVArgs2,bool keepUnrefClass) -> TypeFunc^
 {
 
-	ExtraArr := new bool[parsCount] ; $temp
+	ExtraArr := @temp new bool[parsCount]
 	for i : parsCount
 	{
 		ExtraArr[i] = false

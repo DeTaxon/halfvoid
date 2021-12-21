@@ -313,7 +313,7 @@ main := !(int argc,char^^ argv) -> int
 	}
 	for it : zipSp
 	{
-		newFiles := new Queue.{void^} ; $temp
+		newFiles := @temp new List.{void^}
 		LoadZipFile(Path(it.1),newFiles^,fileSuffixes)
 
 		fLibSp := ref CodeSpaces[it.0]

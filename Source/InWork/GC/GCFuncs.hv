@@ -9,7 +9,7 @@ gcArrayClass := BoxClassTemplate^
 
 GCInit := !() -> void
 {
-	dummy := new Object ; $temp
+	dummy := @temp new Object
 
 	box := @temp new FuncInputBox
 	box.itPars.Emplace(GTypeVoidP,false)

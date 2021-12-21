@@ -38,7 +38,7 @@ getTypeJIT := !() .{@T} -> Type^
 {
 	if T->Group == "Func"
 	{
-		pars := new List.{Type^} ; $temp
+		pars := @temp new List.{Type^}
 		for par : T->Params
 		{
 			pars.Push(getTypeJIT().{par})

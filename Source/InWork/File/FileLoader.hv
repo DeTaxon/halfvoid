@@ -60,9 +60,9 @@ LoadFile := !(vRepoFile^ file) -> BoxFile^
 	ob.cs = InfiniteCodeSpace
 	return ob
 }
-LoadZipFile := !(Path fullName,Queue.{void^} res,List.{char^} suf) -> void
+LoadZipFile := !(Path fullName,List.{void^} res,List.{char^} suf) -> void
 {
-	newZip := new ZipFile ; $temp
+	newZip := @temp new ZipFile
 	newZip.AnalizeFile(fullName.itStr)
 	defer newZip.DecUser()
 	for fil : newZip^
