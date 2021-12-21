@@ -167,8 +167,9 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 		}
 		if lazy
 		{
-			types := Queue.{Type^}() ; $temp
-			refs := List.{bool}() ; $temp
+			types := @temp new List.{Type^}
+			refs := List.{bool}
+			refs.allocator = gTemporaryPool&
 			isVARR := false
 			isLambda := false
 			ptrSize := 0
@@ -238,12 +239,12 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			{
 				types.PushFront(GTypeVoidP)
 				refs.PushFront(false)
-				someTypeOut := GetFuncType(types,refs.ToArray(),someTypeRet,false,isVARR)
+				someTypeOut := GetFuncType(types^,refs.ToArray(),someTypeRet,false,isVARR)
 				asN := someTypeOut->{TypeFunc^}
 				return asN.GetLambda()
 			}
 
-			someTypeOut := GetFuncType(types,refs.ToArray(),someTypeRet,false,isVARR)->{Type^}
+			someTypeOut := GetFuncType(types^,refs.ToArray(),someTypeRet,false,isVARR)->{Type^}
 			for ptrSize someTypeOut = someTypeOut.GetPoint()
 			return someTypeOut
 		}

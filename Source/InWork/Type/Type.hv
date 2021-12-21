@@ -171,6 +171,10 @@ GetFuncType := !(Type^[@Siz] typs,Type^ retType) -> TypeFunc^
 {
 	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,false,false,false)
 }
+GetFuncType := !(Type^[@Siz] lin,bool[@Siz2] isR,Type^ retType) -> TypeFunc^
+{
+	return GetFuncType(lin[0]&->{Type^^},isR[0]&,Siz,retType,false,false,false)
+}
 GetFuncType := !(Type^[@Siz] typs,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
 {
 	return GetFuncType(typs[0]&->{Type^^},IsRefArr,Siz,retType,retRef2,IsVArgs2)
@@ -181,7 +185,22 @@ GetFuncType := !(Queue.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, b
 	{
 		return GetFuncType(null,null,0,retType,retRef2,IsVArgs2,false)
 	}else{
-		typs := new Type^[lin.Size()]
+		typs := @temp new Type^[lin.Size()]
+		typs[i] = lin[^i]
+		return GetFuncType(typs,IsRefArr,lin.Size(),retType,retRef2,IsVArgs2,false)
+	}
+}
+GetFuncType := !(List.{Type^} lin,Type^ retType) -> TypeFunc^
+{
+	return GetFuncType(lin,null,retType,false,false)
+}
+GetFuncType := !(List.{Type^} lin,bool^ IsRefArr,Type^ retType, bool retRef2, bool IsVArgs2) -> TypeFunc^
+{
+	if lin.Size() == 0
+	{
+		return GetFuncType(null,null,0,retType,retRef2,IsVArgs2,false)
+	}else{
+		typs := @temp new Type^[lin.Size()]
 		typs[i] = lin[^i]
 		return GetFuncType(typs,IsRefArr,lin.Size(),retType,retRef2,IsVArgs2,false)
 	}

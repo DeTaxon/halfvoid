@@ -40,12 +40,7 @@ BuiltInSuffix := class extend BuiltInFunc
 		OutputName = Name
 		ToExe = StrCopy(code)
 
-		PP := Queue.{Type^}() ; $temp
-		PP.Push(l)
-
-		IsRefs := bool[1]
-		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+		MyFuncType = GetFuncType(![l],![lRef],retV)
 
 		CheckIsSelf()
 	}
@@ -79,7 +74,7 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 		OutputName = Name
 		ToExe = StrCopy(code)
 
-		PP := Queue.{Type^}() ; $temp
+		PP := @temp new List.{Type^}
 		for Count PP.Push(inType)
 
 		if Name == ". this" 
@@ -87,7 +82,7 @@ BuiltInFuncTypeTimes := class extend BuiltInFunc
 			ItConsts.Push(new ObjType(retV)) 
 		}
 
-		MyFuncType = GetFuncType(PP,null->{bool^},retV,false,false)
+		MyFuncType = GetFuncType(PP^,retV)
 
 		CheckIsSelf()
 	}
@@ -118,12 +113,12 @@ BuiltInFuncUno := class extend BuiltInFunc
 		ToExe = StrCopy(code)
 		IsRetRef = RRetRef
 
-		PP := Queue.{Type^}() ; $temp
+		PP := @temp new List.{Type^}
 		PP.Push(l)
 
 		IsRefs := bool[1]
 		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+		MyFuncType = GetFuncType(PP^,IsRefs,retV,RRetRef,false)
 
 		CheckIsSelf()
 	}
@@ -141,14 +136,14 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		ToExe = StrCopy(code)
 		IsRetRef = retRef
 
-		PP := Queue.{Type^}() ; $temp
+		PP := @temp new List.{Type^}
 		PP.Push(l)
 		PP.Push(r)
 
 		IsRefs := bool[2]
 		IsRefs[0] = lRef
 		IsRefs[1] = rRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,retRef,false)
+		MyFuncType = GetFuncType(PP^,IsRefs,retV,retRef,false)
 		CheckIsSelf()
 	}
 	this := !(string Name, Type^ l, bool lRef, Type^ r, bool rRef,Type^ retV, SBTType code) -> void
@@ -161,14 +156,14 @@ BuiltInFuncBinar := class extend BuiltInFunc
 		OutputName = Name
 		ToExe = StrCopy(code)
 
-		PP := Queue.{Type^}() ; $temp
+		PP := @temp new List.{Type^}
 		PP.Push(l)
 		PP.Push(r)
 
 		IsRefs := bool[2]
 		IsRefs[0] = lRef
 		IsRefs[1] = rRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,false,false)
+		MyFuncType = GetFuncType(PP^,IsRefs,retV,false,false)
 		CheckIsSelf()
 	}
 }
@@ -846,9 +841,7 @@ BuiltInTemplateNext := class extend BoxTemplate
 		FuncName = "->"
 		OutputName = "error"
 
-		emptType := Queue.{Type^}() ; $temp
-		emptType.Push(null->{Type^})
-		MyFuncType = GetFuncType(emptType,null->{bool^},GTypeInt,false,false)
+		MyFuncType = GetFuncType(![null->{Type^}],GTypeInt)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{

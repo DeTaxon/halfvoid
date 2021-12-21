@@ -68,7 +68,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 		asSuf := ob.Down.Right->{ObjSuffix^}
 		if asSuf.MyStr == "f" and (itItm is ObjInt or itItm is ObjDouble)
 		{
-			newItm := new ObjDouble(0.0) ; $temp 
+			newItm := new ObjDouble(0.0)
 			newItm.ResultType = GTypeFloat
 			if itItm isObjInt
 			{
@@ -86,7 +86,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 		{
 			dt := ob.Down.GetType()
 			if dt != null
-				return new ObjType(dt) ; $temp
+				return new ObjType(dt)
 		}
 	}
 	if ob.Down?.Right?.GetValue() == "->"
@@ -107,15 +107,15 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					{
 						case "ResultType"
 							if asType is TypeFunc
-								return new ObjType(asType->{TypeFunc^}.RetType) ; $temp
+								return new ObjType(asType->{TypeFunc^}.RetType)
 							if (asType is TypePoint or asType is TypeFuncLambda) and asType.Base is TypeFunc
-								return new ObjType(asType.Base->{TypeFunc^}.RetType) ; $temp
+								return new ObjType(asType.Base->{TypeFunc^}.RetType)
 						case "Base"
 							if asType.Base != null
 							{
-								return new ObjType(asType.Base) ; $temp
+								return new ObjType(asType.Base)
 							}else{
-								return new ObjType(GTypeVoid) ; $temp
+								return new ObjType(GTypeVoid)
 							}
 						case "Len"
 							if asType is TypeArr
@@ -123,23 +123,23 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 								return new ObjInt(asType->{TypeArr^}.Size)
 							}
 						case "Name"
-							return new ObjStr(GetConstString(asType.GetGoodName())) ; $temp
+							return new ObjStr(GetConstString(asType.GetGoodName()))
 						case "Params"
 							if asType is TypeFunc
 							{
-								return new MetaFuncParamsHolder(asType) ; $temp
+								return new MetaFuncParamsHolder(asType)
 							}
 						case "Funcs"
 							if asType is TypeClass
 							{
-								return new MetaClassFuncsHolder(asType) ; $temp
+								return new MetaClassFuncsHolder(asType)
 							}
 					}
 				}
 				if metaStr == "Type"
 				{
 					if dV.GetType() != null
-						return @temp new ObjType(dV.GetType())
+						return new ObjType(dV.GetType())
 				}
 				if metaStr == "Group"
 				{
@@ -147,19 +147,19 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 					{
 						tp := dV->{ObjType^}.MyType
 						if tp is TypeStandart
-							return @temp new ObjStr("Prime")
+							return new ObjStr("Prime")
 						if tp is TypeClass
-							return @temp new ObjStr("Class")
+							return new ObjStr("Class")
 						if tp is TypePoint
-							return @temp new ObjStr("Pointer")
+							return new ObjStr("Pointer")
 						if tp is TypeFunc
-							return @temp new ObjStr("Func")
+							return new ObjStr("Func")
 						if tp is TypeArr
-							return @temp new ObjStr("Array")
+							return new ObjStr("Array")
 						if tp is TypeFuncLambda
-							return @temp new ObjStr("Lambda")
+							return new ObjStr("Lambda")
 						if tp is TypeFatArr
-							return @temp new ObjStr("Vector") //TODO change name
+							return new ObjStr("Vector") //TODO change name
 						assert(false)
 					}
 				}
@@ -172,7 +172,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 		SyntaxCompress(ob.Down.Right,PriorityData)
 		iterR := ob.Down.Right.Down
 		typ := Type^()
-		Sutf := Queue.{Object^}() ; $temp
+		Sutf := Queue.{Object^}()
 		
 		while iterR != null
 		{
@@ -188,7 +188,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 
 						if start > end return null
 
-						for i : start..end Sutf.Push(new ObjInt(i)) ; $temp
+						for i : start..end Sutf.Push(new ObjInt(i))
 
 						iterR = iterR.Right.Right
 
@@ -212,7 +212,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 
 							if start > end return null
 
-							for i : start..end Sutf.Push(new ObjInt(i)) ; $temp
+							for i : start..end Sutf.Push(new ObjInt(i))
 
 							if typ == null typ = GTypeInt
 							typ = TypeFight(typ,GTypeInt)
@@ -233,7 +233,7 @@ TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
 		if typ == null or Sutf.Size() == 0 return null
 		if typ == GTypeRange typ = GTypeInt
 		if typ is TypeArr and typ.Base == GTypeChar typ = GTypeString
-		preRet := new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray()) ; $temp
+		preRet := new ObjArray(typ.GetArray(Sutf.Size()),Sutf.ToArray())
 		preRet.Line = ob.Down.Line
 		return preRet
 	}
