@@ -1,32 +1,6 @@
 
-mini_class := class
-{
-	this := !() -> void
-	{
-	}
-	"~For" := !() -> !()&->int
-	{
-		return () ==> int 
-		{
-			i := 0
-			while i < 3
-			{
-				yield i
-				i += 1
-			}
-		}
-	}
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	tmp := mini_class
-
-	for i : tmp
-	{
-		printf("heh %i\n",i)
-	}
-
 
 	return 0
 }

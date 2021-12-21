@@ -1,5 +1,0 @@
-BoxForItemGenerator := class extend BoxForItem
-{
-	LambdaCallFunc := Object^^
-	LambdaIsFinishedFunc := Object^^
-}

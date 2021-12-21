@@ -172,6 +172,23 @@ MyIterator := class
 	"Ind" := !() -> char^ { return "key" } //Optional, get index of object.
 	"Destroy" := !() -> void {} //Optional, called after cycle finished, or exception, or break/continue. Act like c++ destructor. 
 }
+//or it can return generator
+MyClass2 := class
+{
+	...
+	"~For" := !() -> !()& -> int
+	{
+		return () ==> int
+		{
+			i := 0
+			while i < 10
+			{
+				yield i
+				i += 1
+			}
+		}	
+	}
+}
 
 
 ```
@@ -241,6 +258,8 @@ x = y
 
 Generator support
 ```java
+//UNDER CONSTRUCTION
+//only lambda generators are ment to be usefull
 GetRandom := !() -> int //state value is global variable
 {
 	while true
@@ -251,7 +270,7 @@ GetRandom := !() -> int //state value is global variable
 		yield 0
 	}
 	
-	return 0 //return call resets generator
+	return 0 //return stops generator
 }
 SomeClass := class
 {
@@ -266,6 +285,13 @@ lambd := () ==> int {
 	yield 3 //state value is connected with lambda objects, generator support under question
 	// when lambda is captured, state value is copied
 }
+while true
+{
+	x := lambd()
+	if lambd.IsFinished()
+		break
+	print(x)
+}
 
 ```
 
@@ -273,7 +299,7 @@ Lambda support
 ```java
 func := !() -> void
 {
-	a := 1 //lazy capture, at start capture by reference, when cloned, by value. no preperations happens
+	a := 1 //lazy capture, at start capture by reference, when cloned, by value. Designed to be fast, nothing happens before capture.
 	b := 2 //captured by value
 	c := 3 //captured by reference
 
@@ -414,7 +440,7 @@ main := !(int argc, char^^ argv) -> void
 
 ```
 
-You can add mark to function and later iterate over all functions with that mark.
+You can add mark to a function and later iterate over all functions with that mark.
 ```java
 #mark("UniqName") func := !() -> void {}
 
@@ -449,7 +475,7 @@ Library features
 ```java
 //StringSpan
 filename := "file.txt"
-name := filename[0..4] // string is not copied, proxy class created
+name := filename[0..4] // string is not copied, instead proxy class (StringSpan) was created 
 //x..y 
 //x - offset, negative means offset from end
 //y - size , negative means how much left at the end, zero means to the end
