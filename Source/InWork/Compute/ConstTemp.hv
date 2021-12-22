@@ -145,7 +145,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 		asCl := itT->{TypeClass^}.ToClass
 		if asInd.MyStr == asCl.ClassName
 		{
-			itms := Queue.{Object^}() ; $temp
+			itms := @temp new List.{Object^}
 			for it : asInd.Right.Right.Down
 			{
 				if it.GetValue() != ","
@@ -156,7 +156,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 				resB[0] = false
 				return null
 			}
-			for inA : itms, inB : asCl.ItConsts
+			for inA : itms^, inB : asCl.ItConsts
 			{
 				if inB is ObjType
 				{
