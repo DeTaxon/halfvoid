@@ -1,9 +1,14 @@
 
 
+tst := !(int a, int b , int c) -> void
+{
+	c = a + b
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	x := 13
+	tst(1,2,3)
 	for i : 10
 	{
 		printf("wow %i\n",i)

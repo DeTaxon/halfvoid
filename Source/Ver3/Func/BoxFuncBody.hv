@@ -327,10 +327,7 @@ BoxFuncBody := class extend BoxFunc
 				ABox.PrintAlloc(f,dbgId)
 				if Yodlers.Size() == 0
 				{
-					if ABox.ItemBag.Size() > MyFuncType.ParsCount
-					{
-						ABox.PrintCleanAlloc(f,dbgId)
-					}
+					ABox.PrintCleanAlloc(f,MyFuncType.ParsCount,dbgId)
 				}
 			}
 

@@ -528,6 +528,8 @@ WriteCodeBuiltIn := !(TIOStream fil) -> void
 	fil << "declare void @llvm.va_start(i8* %a)\n"
 	fil << "declare void @llvm.va_end(i8* %a)\n"
 	fil << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+
+	fil << "declare void @llvm.memset.p0i8.i64(i8* %dest, i8 %val,i64 %len, i1 %isvolatile)\n"
 }
 
 WriteCodeData := !(TIOStream fil) -> void

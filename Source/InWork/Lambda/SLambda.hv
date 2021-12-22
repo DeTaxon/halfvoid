@@ -597,7 +597,7 @@ SLambda := class extend BoxFuncContainer
 			ABox.PrintAlloc(f,"%Lambda0Box",debId)
 			if Yodlers.Size() == 0
 			{
-				ABox.PrintCleanAlloc(f,debId)
+				ABox.PrintCleanAlloc(f,0,debId) //TODO maybe fastUse.ParsCount instead 0
 			}
 			PrintABoxExtra(f)
 			

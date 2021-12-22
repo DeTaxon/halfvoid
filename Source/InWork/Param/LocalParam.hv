@@ -129,28 +129,7 @@ LocalParam := class extend MemParamCommon
 
 	PrintDebugDeclare := virtual !(TIOStream f,Object^ fnc,char^ forceName) -> void
 	{
-		itDbgName := forceName
-		if itDbgName == null
-		{
-			asP := Up->{ObjParam^}
-			if Up == null or not (Up is ObjParam)
-				return void
-			itDbgName = asP.MyStr
-		}
-		//if IsRef
-		//{
-		//}else{
-			asUp := Up
-			if fnc != null asUp = fnc
-			outId := CreateDbgLocVar(asUp,ResultType,itDbgName,IsRef)
-			newId := CreateDebugCall(asUp)
-			if newId != -1 and outId != -1
-			{
-				f << "call void @llvm.dbg.declare(metadata " << ResultType.GetName() << "*"
-				if IsRef f << "*"
-				f << " %T" << inAllocId << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << newId << "\n"
-			}
-		//}
+
 	}
 }
 GlobalFuncParam := class extend MemParam
