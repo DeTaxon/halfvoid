@@ -145,7 +145,7 @@ RetFuncParamV2 := class extend MemParam
 	{
 		if debId == -1 return void
 
-		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false)
 		if debId != -1 and outId != -1
 		{
 			f << "call void @llvm.dbg."

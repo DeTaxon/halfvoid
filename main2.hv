@@ -3,13 +3,12 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	r := () ==> {
-		x := int
-		printf("heh %i\n",x)
-		x = 3
+	x := 13
+	for i : 10
+	{
+		printf("wow %i\n",i)
 	}
-	r()
-	r()
+
 	return 0
 }
 

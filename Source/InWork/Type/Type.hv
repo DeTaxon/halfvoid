@@ -801,7 +801,7 @@ PrintDebRefs := !(TIOStream f) -> void
 {
 	for it,ind : debRefs
 	{
-		f << "!" << it << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << ind.metaId <<", size: 64)"
+		f << "!" << it << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << ind.metaId <<", size: 64)\n" //TODO un64
 	}
 }
 
