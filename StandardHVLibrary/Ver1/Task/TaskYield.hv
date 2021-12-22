@@ -1,6 +1,6 @@
 AppendClass TaskBox
 {
-	yieldedTasks := List.{TaskData^} ; $keep
+	yieldedTasks := List.{TaskData^}
 
 	Yield := !() -> void
 	{

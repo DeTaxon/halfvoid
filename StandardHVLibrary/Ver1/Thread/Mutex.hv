@@ -13,7 +13,7 @@ AtomicMutex := class
 
 MutexCondPoolType := class
 {
-	freedMtx := List.{Mutex^} ; $keep $no_pool
+	freedMtx := List.{Mutex^} ; $no_pool
 	mutexMutex := AtomicMutex
 
 	GetMutex := !() -> Mutex^
@@ -35,7 +35,7 @@ MutexCondPoolType := class
 		freedMtx << toAdd
 	}
 
-	freedCond := List.{ConVar^} ; $keep $no_pool
+	freedCond := List.{ConVar^} ; $no_pool
 	condMutex := AtomicMutex
 	GetConVar := !() -> ConVar^
 	{
@@ -73,7 +73,7 @@ GetPointerHash13n8 := !(void^ val) -> int
 
 internalLockMiniMutex := AtomicMutex
 internalLockMutex := Mutex^[13] 
-internalLockUsing := RBMap.{void^,Tuple.{ConVar^,int,int}}[13] ; $keep $no_pool
+internalLockUsing := RBMap.{void^,Tuple.{ConVar^,int,int}}[13] ; $no_pool
 TLock := !(void^ k) -> void { TLock(k,1)}
 TLock := !(void^ k,int count) -> void
 {
@@ -131,7 +131,7 @@ TGuard := !(void^ k = #uniq) -> void {
 
 internalBarMiniMutex := AtomicMutex
 internalBarMutex := Mutex^
-internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}} ; $no_pool $keep
+internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}} ; $no_pool
 TBarrier := !(void^ k,int count) -> void
 {
 	if count <= 1 

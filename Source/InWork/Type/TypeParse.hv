@@ -326,22 +326,8 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			if Node.Line != null
 			for value,key : Node.Line.itAttrs
 			{
-				if key[0] == '#'
+				if key[0] != '#'
 				{
-					switch key
-					{
-						case "#outer_class"
-							itrC := GetUpClass(Node)
-							if itrC != null
-							{
-								for v2,k2 : itrC.ItAttrs
-								{
-									box.itAttrs[k2] = v2
-								}
-							}
-						case void
-					}
-				}else{
 					box.itAttrs[key] = value
 				}
 			}

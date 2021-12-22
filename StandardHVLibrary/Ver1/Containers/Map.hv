@@ -3,9 +3,7 @@ RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
 
 ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 {
-	$keep
-
-	itTree := TreeType.{BadPair.{KEY,VALUE}} ; #outer_class
+	itTree := TreeType.{BadPair.{KEY,VALUE}}
 	itSize := int
 
 	this := !() -> void

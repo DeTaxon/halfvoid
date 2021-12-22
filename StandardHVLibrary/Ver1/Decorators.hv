@@ -87,10 +87,10 @@
 	TempPoolBlock()
 	res := lambd()
 	if res->Type->Group == "Pointer"
-		_tempCallSetAllocator(res^)
+		_SetAllocator(res^,gTemporaryPool&)
 	return res
 }
-_tempCallSetAllocator := !(@T o) -> void
+_SetAllocator := !(@T o, IMemoryPool^ pool) -> void
 {
 	if T->Group == "Class"
 	{
@@ -98,11 +98,11 @@ _tempCallSetAllocator := !(@T o) -> void
 		{
 			if Name == "allocator"
 			{
-				it = gTemporaryPool&
+				it = pool
 			}else{
 				if it->Type->Group == "Class"
 				{
-					_tempCallSetAllocator(it)
+					_SetAllocator(it,pool)
 				}
 			}
 		}

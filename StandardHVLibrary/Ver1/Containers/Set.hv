@@ -2,7 +2,7 @@ AVLSet.{@DATA} := type ContainerCommonSet.{AVLTree,DATA}
 RBSet.{@DATA} := type ContainerCommonSet.{RBTree,DATA}
 ContainerCommonSet := class .{@TreeType,@DATA}
 {
-	itTree := TreeType.{DATA} ; #outer_class
+	itTree := TreeType.{DATA}
 	itSize := int
 
 	this := !() -> void

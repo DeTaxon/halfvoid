@@ -136,17 +136,6 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		}
 	}
 	
-	remNode := !(CommonTreeNode.{DATA}^ toRem) .{} -> void
-	{
-		if $keep
-		{
-			toRem.Right = CreatedNodes
-			CreatedNodes = toRem
-		}else
-		{
-			delete toRem
-		}
-	}
 	RemoveNode := !(CommonTreeNode.{DATA}^ toRem) .{} -> void
 	{
 		if toRem.Left == null and toRem.Right == null

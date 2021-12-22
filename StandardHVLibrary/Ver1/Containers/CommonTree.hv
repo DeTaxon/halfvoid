@@ -44,6 +44,7 @@ CommonTree := class .{@DATA}
 	}
 	createNode := !() .{} -> CommonTreeNode.{DATA}^
 	{
+		newNode := CommonTreeNode.{DATA}^
 		if CreatedNodes != null
 		{
 			newNode := CreatedNodes
@@ -52,11 +53,13 @@ CommonTree := class .{@DATA}
 			newNode.Up = null
 			newNode.Right = null
 			newNode.balance = 0
-			return newNode
+			ZeroMem(newNode)
 		}else{
 			AllocPoolBlock(allocator)
-			return new CommonTreeNode.{DATA}
+			newNode = new CommonTreeNode.{DATA}
 		}
+		_SetAllocator(newNode.data,allocator)
+		return newNode
 	}
 	RotateLeft := !(CommonTreeNode.{DATA}^ toRotate) -> void
 	{

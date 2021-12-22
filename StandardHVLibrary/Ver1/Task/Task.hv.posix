@@ -98,7 +98,7 @@ AppendClass TaskBox
 		if not initedMonitor 
 			initMonitor()
 
-		pathAdd := @temp new List.{char^} ; $keep
+		pathAdd := @temp new List.{char^}
 
 
 		watchMode := 0

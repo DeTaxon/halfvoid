@@ -1,6 +1,6 @@
 AppendClass TaskBox
 {
-	sleepTasks := List.{Tuple.{double,TaskData^}} ; $keep
+	sleepTasks := List.{Tuple.{double,TaskData^}}
 	ASleep := !(double sleepTime) -> void
 	{
 		assert(sleepTime > 0)

@@ -34,7 +34,8 @@ ListIterReverse := class .{@T}
 		position = s - 1
 		if s != 0
 		{
-			inverseList = new ListNode.{T}^[s] ; $temp
+			TempPoolBlock()
+			inverseList = new ListNode.{T}^[s]
 			iter := toStart
 			i := 0
 			while iter != null
@@ -240,6 +241,7 @@ List := class .{@T}
 			newNode = CreatedNodes
 			CreatedNodes = CreatedNodes.Next
 			itCapacity -= 1
+			ZeroMem(newNode)
 		}
 		
 		if newNode == null
@@ -247,12 +249,11 @@ List := class .{@T}
 			AllocPoolBlock(allocator)
 			newNode = new ListNode.{T}
 		}
+		_SetAllocator(newNode.Data,allocator)
 		return newNode
 	}
 	destroyNode := !(ListNode.{T}^ toDest) .{} -> void
 	{
-		if $temp return void
-
 		if itCapacity < 5 or itCapacity < Counter
 		{
 			toDest.Next = CreatedNodes
@@ -351,28 +352,25 @@ List := class .{@T}
 	}
 	Destroy := !() .{} -> void
 	{
-		if not $temp
-		{
-			
-			AllocPoolBlock(allocator)
+		AllocPoolBlock(allocator)
 
-			while CreatedNodes != null
+		while CreatedNodes != null
+		{
+			itNd := CreatedNodes
+			CreatedNodes = CreatedNodes.Next
+			delete itNd
+		}
+
+		if Counter != 0
+		{
+			while Start != null
 			{
-				itNd := CreatedNodes
-				CreatedNodes = CreatedNodes.Next
+				itNd := Start
+				Start = Start.Next
 				delete itNd
 			}
-
-			if Counter != 0
-			{
-				while Start != null
-				{
-					itNd := Start
-					Start = Start.Next
-					delete itNd
-				}
-			}
 		}
+			
 		Start = null
 		End = null
 		Counter = 0

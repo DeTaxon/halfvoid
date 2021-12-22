@@ -17,8 +17,8 @@ TaskKeepStackData := !() -> void
 
 TaskBox := class extend TGCObject
 {
-	firstRunTasks := List.{TaskData^} ; $keep
-	itStacks := List.{void^} ; $keep
+	firstRunTasks := List.{TaskData^}
+	itStacks := List.{void^}
 	keptStacks := List.{void^} 
 
 	stackSize := int
@@ -28,7 +28,7 @@ TaskBox := class extend TGCObject
 
 	tasksToExe := List.{TaskData^}
 
-	destroyTasks := List.{TaskData^} ; $keep
+	destroyTasks := List.{TaskData^}
 
 	working := bool
 
@@ -51,7 +51,7 @@ TaskBox := class extend TGCObject
 	}
 
 	pausedIdIter := int
-	pausedProcesses := RBMap.{int,TaskData^} ; $keep
+	pausedProcesses := RBMap.{int,TaskData^}
 	PauseTask := !(int^ resId) -> void
 	{
 		pausedIdIter += 1

@@ -7,7 +7,7 @@ MonitorCallback := type !(char^,int)&-> void
 
 AppendClass TaskBox
 {
-	monitorsToAdd := List.{Tuple.{char^,MonitorCallback,int,bool}} ; $keep
+	monitorsToAdd := List.{Tuple.{char^,MonitorCallback,int,bool}}
 	Monitor := !(char^ pathName,int modes,bool recursive,MonitorCallback callb) -> void
 	{
 		itMutex.Lock()
