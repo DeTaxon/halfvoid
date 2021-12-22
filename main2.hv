@@ -1,7 +1,9 @@
 
+
+
 main := !(int argc, char^^ argv) -> int
 {
-
+	printf("hello\n")
 	return 0
 }
 

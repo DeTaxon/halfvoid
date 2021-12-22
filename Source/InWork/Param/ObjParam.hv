@@ -445,7 +445,7 @@ ObjParam := class extend Object
 						if IsComplexType(ObjType)
 						{
 							dwnIter := Down
-							while dwnIter != null and dwnIter.GetValue() == "d()"
+							while dwnIter != null and dwnIter is in SomeFuncCall
 							{
 								asNeed := dwnIter->{SomeFuncCall^}
 								allcId = asNeed.GetItAllocId()

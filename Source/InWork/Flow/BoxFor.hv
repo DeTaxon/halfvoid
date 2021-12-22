@@ -72,6 +72,13 @@ BoxForOldFashionMulti := class extend BoxFor
 	holder := Object^
 
 	endLabel := BoxLabel^
+
+	//BoxForMeta
+	deferTookSize := int
+	deferVal := int
+	deferId := int
+
+
 	this := !(List.{char^} names, List.{char^} f_ind,List.{Object^} items,Object^ itBlock) -> void
 	{
 		endLabel = new BoxLabelAnon()

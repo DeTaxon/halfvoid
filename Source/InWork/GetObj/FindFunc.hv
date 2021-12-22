@@ -208,7 +208,8 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	{
 		while iterS.Up != null
 			iterS = iterS.Up
-		Searched.PushUniq(iterS->{BoxFile^}.fileId)
+		if(iterS is BoxFile)
+			Searched.PushUniq(iterS->{BoxFile^}.fileId)
 	}
 
 	iterr := start

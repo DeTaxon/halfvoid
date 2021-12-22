@@ -1,9 +1,6 @@
 
 MetaBoxFor := class extend BoxForOldFashionMulti
 {
-	deferTookSize := int
-	deferVal := int
-	deferId := int
 	GetDeferUsageVerticalSize := virtual !() -> int
 	{
 		deferTookSize = 0
