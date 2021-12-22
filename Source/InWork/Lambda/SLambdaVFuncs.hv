@@ -142,7 +142,7 @@ AppendClass SLambda
 			asMNR := -1 
 			for it,F : funcsUp
 			{
-				asMNR = it.0.GetNR(prS.inAllocId)
+				asMNR = it.0.GetNR(prS.GetAllocId())
 
 				if asMNR == -1
 					continue
@@ -150,18 +150,20 @@ AppendClass SLambda
 				is2Ref := false
 				if prS is LocalParam and prS->{LocalParam^}.IsRef
 					is2Ref = true
+				if prS is ConstMemParamRefedRef //TODO add FuncResultMem
+					is2Ref = true
 
 				aBName := it.0.GetClassName()
 				if is2Ref
 				{
 					f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << "* , " << prS.ResultType.GetName()
-						<< "** %T" << prS.inAllocId << "\n"
+						<< "** %T" << prS.GetAllocId() << "\n"
 					f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr" << F <<" ,i32 0, i32 "<< asMNR << "\n" 
 					f << "store " << prS.ResultType.GetName() << "* %Pre2Get" << L << " , "
 						<< prS.ResultType.GetName() << "** %PreSet" << L << "\n"
 				}else{
 					f << "%Pre2Get" << L << " = load " << prS.ResultType.GetName() << " , " << prS.ResultType.GetName()
-						<< "* %T" << prS.inAllocId << "\n"
+						<< "* %T" << prS.GetAllocId() << "\n"
 					f << "%PreSet" << L << " = getelementptr " << aBName << " , " << aBName << "* %OldPtr"<< F <<" ,i32 0, i32 "<< asMNR << "\n" 
 					f << "store " << prS.ResultType.GetName() << " %Pre2Get" << L << " , "
 						<< prS.ResultType.GetName() << "* %PreSet" << L << "\n"

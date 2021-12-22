@@ -8,6 +8,7 @@ tst := !(int a, int b , int c) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	x := 13
+	printf("wut %i\n",argc)
 	tst(1,2,3)
 	for i : 10
 	{

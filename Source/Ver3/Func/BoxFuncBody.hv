@@ -23,7 +23,7 @@ BoxFuncBody := class extend BoxFunc
 
 		for i : count
 		{
-			if false and not isRef[i] and pars[i]  is TypeStandart and i < names.Size()
+			if false and pars[i] == GTypeInt and not isRef[i] and i < names.Size()
 			{
 				ItParams[i] = new ConstMemParam(this&
 						,StrCopy("%"sbt + names[i])
@@ -341,7 +341,11 @@ BoxFuncBody := class extend BoxFunc
 
 				if InAlloc[i] == -1
 				{
-					ItParams[i].DoStore(f)
+					if DebugMode and (ItParams[i] is in ConstMemParam)
+					{
+						ItParams[i]->{ConstMemParam^}.PrintForDebugDeclare(f,MyFuncParamNames[i],this&,dbgId)
+					}
+					ItParams[i].DoStore(f,dbgId)
 					continue
 				}
 

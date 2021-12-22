@@ -38,7 +38,13 @@ MemParam := class extend ObjResult
 	PrepareMainPtr := virtual !(TIOStream f,int newId,int debId) -> void {}
 	GetMainPtr := virtual !(int newId) -> char^ { return "wow"}
 
-	DoStore := virtual !(TIOStream f) -> void {}
+	DoStore := virtual !(TIOStream f, int debId) -> void {}
+
+	GetAllocId := virtual !() -> int
+	{
+		assert(false)
+		return -1
+	}
 }
 
 IsMemParam := !(Object^ obj) -> bool
@@ -130,6 +136,9 @@ LocalParam := class extend MemParamCommon
 	PrintDebugDeclare := virtual !(TIOStream f,Object^ fnc,char^ forceName) -> void
 	{
 
+	}
+	GetAllocId := virtual !() -> int {
+		return inAllocId
 	}
 }
 GlobalFuncParam := class extend MemParam

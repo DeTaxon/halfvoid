@@ -25,7 +25,7 @@ SLambda := class extend BoxFuncContainer
 
 	Created := bool
 
-	StolenParams := AVLMap.{char^,LocalParam^}
+	StolenParams := AVLMap.{char^,MemParam^}
 
 	CaptureParams := List.{Tuple.{char^,LocalParam^,bool,MemParam^,int}}
 	CPIndexes := List.{int}
@@ -886,11 +886,11 @@ SLambda := class extend BoxFuncContainer
 			inUp := GetItem(name,Up)
 			if inUp? is ObjParam and inUp.Down? is LocalParam
 			{
-				StolenParams[name] = inUp.Down->{LocalParam^}
+				StolenParams[name] = inUp.Down->{MemParam^}
 			}
-			if inUp? is LocalParam
+			if inUp? is LocalParam or inUp? is in ConstMemParam
 			{
-				StolenParams[name] = inUp->{LocalParam^}
+				StolenParams[name] = inUp->{MemParam^}
 			}
 			if inUp != null
 				inUp.NotifyPointUse()

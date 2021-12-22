@@ -25,13 +25,13 @@ BoxForItemOnClass := class extend BoxForItem
 			Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,Name,self.Down,debId)
 		}
 		if Param != null
-			Param.DoStore(f)
+			Param.DoStore(f,debId)
 		if IndFunc != null and IndParam? is RetFuncParamV2 and IndName != null and debId != -1
 		{
 			IndParam->{RetFuncParamV2^}.PrintForDebugDeclare(f,IndName,self.Down,debId)
 		}
 		if IndParam != null
-			IndParam.DoStore(f)
+			IndParam.DoStore(f,debId)
 	}
 	PrintCheckEndPre := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void 
 	{

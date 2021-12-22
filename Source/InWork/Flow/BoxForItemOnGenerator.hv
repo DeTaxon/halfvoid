@@ -49,7 +49,7 @@ BoxForItemOnGenerator := class extend BoxForItem
 				
 		if Param != null
 		{
-			Param.DoStore(f)
+			Param.DoStore(f,debId)
 			if Param is RetFuncParamV2 and Name != null and debId != -1
 			{
 				Param->{RetFuncParamV2^}.PrintForDebugDeclare(f,Name,self.Down,debId)

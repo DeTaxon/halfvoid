@@ -99,28 +99,36 @@ ConstMemParam := class extend MemParam
 	{
 		if debId == -1 return void
 
-		//outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
-		//if debId != -1 and outId != -1
-		//{
-		//	f << "call void @llvm.dbg."
-		//	if ToCall.IsRef() f << "addr" else f << "value"
-		//	f << "(metadata "
-		//	if ToCall.IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)
-		//	f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
-		//}
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false) //TODO  !(int& x) <-- not working
+		if debId != -1 and outId != -1
+		{
+			f << "call void @llvm.dbg.value"
+			f << "(metadata "
+			//if ToCall.IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)  //TODO OhNo
+			PrintUse(f,0,-1) 
+			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
+		}
 	}
 }
 ConstMemParamRefed := class extend ConstMemParam
 {
 	NotifyPointUse := virtual !() -> void {}
 
-	DoStore := virtual !(TIOStream f) -> void
+	DoStore := virtual !(TIOStream f, int debId) -> void
 	{
 		rn := ResultType.GetName()
 		//ToCall.PrintPre(f)
 		f << "store "
-		f << rn << paramName
-		f << " , " << rn << "* %T" << AllcId << "\n"
+		f << rn << " " << paramName
+		f << " , " << rn << "* %T" << AllcId 
+		if debId != -1
+		{
+			f << ", !dbg !" << debId
+		}
+		f << "\n"
+	}	
+	GetAllocId := virtual !() -> int {
+		return AllcId
 	}
 	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
@@ -141,7 +149,7 @@ ConstMemParamRefed := class extend ConstMemParam
 	}
 	PrintPointUse := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
-		f << ResultType.GetName() << "* %T" << AllcId << "\n"
+		f << ResultType.GetName() << "* %T" << AllcId
 	}
 	GetName := virtual !(int newInd) -> string
 	{
@@ -158,10 +166,10 @@ ConstMemParamRefed := class extend ConstMemParam
 	{
 		if debId == -1 return void
 
-		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false)
 		if debId != -1 and outId != -1
 		{
-			f << "call void @llvm.dbg.addr"
+			f << "call void @llvm.dbg.declare"
 			f << "(metadata "
 			PrintPointUse(f,0,-1)
 			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
@@ -172,13 +180,22 @@ ConstMemParamRefedRef := class extend ConstMemParam
 {
 	NotifyPointUse := virtual !() -> void {}
 
-	DoStore := virtual !(TIOStream f) -> void
+	DoStore := virtual !(TIOStream f, int debId) -> void
 	{
 		rn := ResultType.GetName()
 		//ToCall.PrintPre(f)
 		f << "store "
 		f << rn << "* " << paramName
-		f << " , " << rn << "** %T" << AllcId << "\n"
+		f << " , " << rn << "** %T" << AllcId 
+		if debId != -1
+		{
+			f << ", !dbg !" << debId
+		}
+		f << "\n"
+	}
+	
+	GetAllocId := virtual !() -> int {
+		return AllcId
 	}
 	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
@@ -223,7 +240,7 @@ ConstMemParamRefedRef := class extend ConstMemParam
 		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,IsRef())
 		if debId != -1 and outId != -1
 		{
-			f << "call void @llvm.dbg.addr"
+			f << "call void @llvm.dbg.declare"
 			f << "(metadata "
 			PrintPointUse(f,0,-1)
 			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
