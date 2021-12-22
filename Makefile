@@ -91,9 +91,9 @@ stable:
 	$(gdb_tui) $(CurrentStable)  -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
 JIT: main2.hv
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) main2.hv $(ForcedLibs) --jit
+	$(gdb_tui) $(vgrind) $(CurrentWork) -g $(TargetPlatform) main2.hv $(ForcedLibs) --jit
 test2: main2.hv
-	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) main2.hv -o $(MainOut); $(CmplTest)
+	$(gdb_tui) $(vgrind) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) main2.hv -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m Priority.pr
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr
