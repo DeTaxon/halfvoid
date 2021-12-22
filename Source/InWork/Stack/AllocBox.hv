@@ -116,6 +116,7 @@ AllocBox := class
 	{
 		PrintAlloc(f,null->{char^},debId)
 	}
+	
 	PrintCleanAlloc := !(TIOStream f,int debId) -> void
 	{
 		if ItemBag.IsEmpty()

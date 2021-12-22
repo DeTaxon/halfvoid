@@ -3,7 +3,13 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	printf("hello\n")
+	r := () ==> {
+		x := int
+		printf("heh %i\n",x)
+		x = 3
+	}
+	r()
+	r()
 	return 0
 }
 

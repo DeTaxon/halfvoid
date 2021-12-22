@@ -595,6 +595,10 @@ SLambda := class extend BoxFuncContainer
 				PrintInhers(f,"%"sbt + Names[0],DebugMode)
 			}
 			ABox.PrintAlloc(f,"%Lambda0Box",debId)
+			if Yodlers.Size() == 0
+			{
+				ABox.PrintCleanAlloc(f,debId)
+			}
 			PrintABoxExtra(f)
 			
 			DeferFuncStart(f,debId)

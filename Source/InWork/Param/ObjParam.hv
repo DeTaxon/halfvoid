@@ -66,23 +66,6 @@ ObjParam := class extend Object
 			asNeed2 := ObjType->{TypeClass^}
 			asNeed := asNeed2.ToClass
 
-			if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
-			{
-				itId := GetNewId() //TODO do i need it, stack already clean
-				f << "%AsVoid" << itId << " = bitcast "
-				Down->{LocalParam^}.PrintPointUse(f,0,-1)
-				f << " to i8*\n"
-				f << "call void @internalGCMemClear"
-				f << "(i8* %AsVoid" << itId << ", i64 "<< ObjType.GetSize() << ")"
-
-				if DebugMode
-				{
-					dId := CreateDebugCall(this&)
-					if dId != -1
-						f << ", !dbg !" << dId
-				}
-				f << "\n"
-			}
 			if not IsGlobal
 			{
 				tmp := new ParamNaturalCall("_",Down)
