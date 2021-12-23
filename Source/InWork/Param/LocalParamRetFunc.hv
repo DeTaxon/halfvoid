@@ -145,11 +145,10 @@ RetFuncParamV2 := class extend MemParam
 	{
 		if debId == -1 return void
 
-		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false)
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,ToCall.IsRef())
 		if debId != -1 and outId != -1
 		{
-			f << "call void @llvm.dbg."
-			if ToCall.IsRef() f << "addr" else f << "value"
+			f << "call void @llvm.dbg.value"
 			f << "(metadata "
 			if ToCall.IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)
 			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
