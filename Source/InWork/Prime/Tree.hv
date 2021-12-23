@@ -225,6 +225,7 @@ Object := class{
 	}
 	IsCmdMod := virtual !() -> bool { return false }
 	NotifyPointUse := virtual !() -> void {}
+	NotifyRefUse := virtual !() -> void { this.NotifyPointUse() }
 	
 	IsWorkable := virtual !() -> bool { return false }
 	StartWork := virtual !() -> void {}
