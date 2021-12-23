@@ -226,6 +226,11 @@ ParamNaturalCall := class extend ParamCall
 		assert(ToCall != null)
 		ToCall.NotifyPointUse()
 	}
+	NotifyRefUse := virtual !() -> void
+	{
+		assert(ToCall != null)
+		ToCall.NotifyRefUse()
+	}
 }
 
 ParamFuncCall := class extend ParamCall

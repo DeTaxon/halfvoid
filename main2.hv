@@ -10,6 +10,8 @@ main := !(int argc, char^^ argv) -> int
 	for i : x
 	{
 		defer printf("heh %i\n",i)
+		//printf("heh %i\n",i)
+		i += 3
 	}
 
 	return 0

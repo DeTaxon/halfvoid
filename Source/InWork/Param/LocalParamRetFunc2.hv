@@ -24,6 +24,15 @@ RetFuncParamV2 := class extend MemParam
 			this&->SetType(RetFuncParamV2Refed)
 		}
 	}
+	NotifyRefUse := virtual !() -> void
+	{
+		if ToCall.IsRef()
+		{
+			//nothing
+		}else{
+			NotifyPointUse()
+		}
+	}
 
 	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
