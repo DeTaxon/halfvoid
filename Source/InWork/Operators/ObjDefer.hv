@@ -97,7 +97,14 @@ ObjDefer := class extend Object
 				WorkBag.Push(Down,State_Start)
 			}
 		}
+	}
 	
+	GetItem := virtual !(string name) -> Object^
+	{
+		inUp := GetItem(name,Up)
+		if inUp != null
+			inUp.NotifyPointUse()
+		return null
 	}
 }
 PrintAddDefer := !(TIOStream f, char^ funcName,char^ ptrName,int debId) -> void

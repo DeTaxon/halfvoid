@@ -9,7 +9,7 @@ main := !(int argc, char^^ argv) -> int
 
 	for i : x
 	{
-		printf("heh %i\n",i)
+		defer printf("heh %i\n",i)
 	}
 
 	return 0
