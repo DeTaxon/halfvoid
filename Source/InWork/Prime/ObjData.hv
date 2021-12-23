@@ -37,71 +37,7 @@ ObjData := class extend Object
 		}
 		if pri == State_PreGetUse
 		{
-
-			iter := Down
-			while iter != null
-			{
-				if iter.GetValue() in ![".","->"] and iter.Right is ObjIndent
-				{
-					iter = iter.Right
-					iter = iter.Right
-					continue
-				}
-				if iter.GetValue() == "new"
-				{
-					SomeDown := iter.Right.Down
-					SizeTree := Object^()
-					if SomeDown != null
-					{
-						if SomeDown.Right?.GetValue() == "[]"
-						{
-							SyntaxCompress(SomeDown.Right,PriorityData)
-							SizeTree = SomeDown.Right.Down
-							SomeDown.Right.Up = null
-							SomeDown.Right.Left = null
-							SomeDown.Right = null
-							iter.Right = iter.Right.Down
-							iter.Right.Left = iter
-							iter.Right.Up = iter.Up
-							iter.Right.Right = null
-						}
-					}
-					SomeDown = iter.Right
-					if SizeTree != null
-					{
-						iter.Right.Right = SizeTree
-						SizeTree.Left = iter.Right
-						SizeTree.Up = iter.Up
-					}
-					iter = iter.Right
-					iter = iter.Right
-					continue
-				}
-				if iter is ObjIndent and iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
-				{
-					iter = iter.Right
-					iter = iter.Right
-					continue
-				}
-				ignore := false
-				if iter.GetValue() in !["()","[]"] WorkBag.Push(iter,State_Syntax)
-				if iter.GetValue() == "{}" //TODO remove this ignore
-				{
-					//TODO i made it worse, non ignored {} is BoxBlock
-					if iter.Left?.GetValue() == "."
-					{
-						if iter.Left.Left?.GetValue() != "()"
-							ignore = true
-					}
-					if iter.Left?.GetValue() == "->"
-					{
-						ignore = true
-					}
-				}
-				if Down.GetValue() == "try" ignore = true
-				if not ignore WorkBag.Push(iter,State_Start)
-				iter = iter.Right
-			}
+			PreGetCheck()
 			WorkBag.Push(this&,State_GetUse)
 		}
 		if pri == State_GetUse
@@ -142,6 +78,73 @@ ObjData := class extend Object
 			}
 		}
 
+	}
+	PreGetCheck := !() -> void
+	{
+		iter := Down
+		while iter != null
+		{
+			if iter.GetValue() in ![".","->"] and iter.Right is ObjIndent
+			{
+				iter = iter.Right
+				iter = iter.Right
+				continue
+			}
+			if iter.GetValue() == "new"
+			{
+				SomeDown := iter.Right.Down
+				SizeTree := Object^()
+				if SomeDown != null
+				{
+					if SomeDown.Right?.GetValue() == "[]"
+					{
+						SyntaxCompress(SomeDown.Right,PriorityData)
+						SizeTree = SomeDown.Right.Down
+						SomeDown.Right.Up = null
+						SomeDown.Right.Left = null
+						SomeDown.Right = null
+						iter.Right = iter.Right.Down
+						iter.Right.Left = iter
+						iter.Right.Up = iter.Up
+						iter.Right.Right = null
+					}
+				}
+				SomeDown = iter.Right
+				if SizeTree != null
+				{
+					iter.Right.Right = SizeTree
+					SizeTree.Left = iter.Right
+					SizeTree.Up = iter.Up
+				}
+				iter = iter.Right
+				iter = iter.Right
+				continue
+			}
+			if iter is ObjIndent and iter.Right?.GetValue() == "." and iter.Right.Right?.GetValue() == "{}"
+			{
+				iter = iter.Right
+				iter = iter.Right
+				continue
+			}
+			ignore := false
+			if iter.GetValue() in !["()","[]"] WorkBag.Push(iter,State_Syntax)
+			if iter.GetValue() == "{}" //TODO remove this ignore
+			{
+				//TODO i made it worse, non ignored {} is BoxBlock
+				if iter.Left?.GetValue() == "."
+				{
+					if iter.Left.Left?.GetValue() != "()"
+						ignore = true
+				}
+				if iter.Left?.GetValue() == "->"
+				{
+					ignore = true
+				}
+			}
+			if Down.GetValue() == "try" ignore = true
+			if not ignore WorkBag.Push(iter,State_Start)
+			iter = iter.Right
+		}
 	}
 	Clone := virtual !() -> Object^
 	{

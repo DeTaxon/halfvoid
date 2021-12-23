@@ -1,0 +1,100 @@
+DecoratorHolder := class extend ObjData
+{
+	gotParams := AVLMap.{char^,MemParam^}
+
+	DoTheWork := virtual !(int pri) -> void
+	{
+		if visitedWork[pri] return void
+		else visitedWork << pri
+
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_PreGetUse)
+		}
+		
+		if pri == State_PreGetUse
+		{
+			PreGetCheck()
+			WorkBag.Push(this&,State_GetUse)
+		}
+		
+		if pri == State_GetUse
+		{
+			itStr := Down->{ObjTemplateType^}.MyStr
+
+			fncName := "@"sbt + itStr + " call"
+
+			itBox := @temp new FuncInputBox
+
+			lLambda := GetFuncType(![GTypeVoidP],Down.Right.GetType()).GetLambda() //TODO add once
+			
+			itBox.itPars.Emplace(lLambda,false)
+
+			fnc := FindFunc(fncName,this&,itBox^,false)
+
+			if fnc == null
+			{
+				EmitError("Decorator call not found\n")
+			}
+			PopOutNode(Down)
+			
+			lmbd := new SBoostLambda()
+			lmbd.manSkob = true
+
+			lmbd.Down = Down
+			Down.Up = lmbd
+			lmbd.Line = Line
+			UNext(lmbd.Down,new BoxReturn(),1)
+			MakeItBlock(lmbd.Down)
+			lmbd.ApplyFunc(lLambda,false)
+			res := MakeSimpleCall(fnc,lmbd)
+			ReplaceNode(this&,res)
+
+			for it,ind : gotParams
+			{
+				lmbd.StolenParams[ind] = it
+			}
+		}
+	}
+	GetItem := virtual !(string name) -> Object^
+	{
+		if not gotParams.Contain(name)
+		{
+			inUp := GetItem(name,Up)
+			if inUp? is ObjParam and inUp.Down? is LocalParam
+			{
+				gotParams[name] = inUp.Down->{MemParam^}
+			}
+			if inUp? is LocalParam or inUp? is in ConstMemParam
+			{
+				gotParams[name] = inUp->{MemParam^}
+			}
+			if inUp != null
+				inUp.NotifyPointUse()
+		}
+		return null
+	}
+	Clone := virtual !() -> Object^
+	{
+		PreRet := new DecoratorHolder
+		PreRet.Line = Line
+
+		LineI := Object^()
+		
+		for IterD : Down
+		{
+			if LineI == null
+			{
+				PreRet.Down = IterD.Clone()
+				LineI = PreRet.Down
+			}else{
+				LineI.Right = IterD.Clone()
+				LineI.Right.Left = LineI
+				LineI = LineI.Right
+			}
+		}
+		if PreRet.Down != null PreRet.Down.SetUp(PreRet)
+
+		return PreRet
+	}
+}

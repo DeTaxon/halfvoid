@@ -119,12 +119,14 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
 		if Try > 0
 		{
 			RemoveTokens(iter,Try,tokenDict)
-			if N == "~d"
+			switch N
 			{
-				iter = UNext(iter,new ObjData(),Try) 
-			}else
-			{
-				iter = UNext(iter,new ObjObj(N),Try) 
+				case "~d"
+					iter = UNext(iter,new ObjData(),Try)
+				case "DecObj"
+					iter = UNext(iter,new DecoratorHolder,Try)
+				case void
+					iter = UNext(iter,new ObjObj(N),Try)
 			}
 			GotStuff = true
 		}else{
@@ -187,7 +189,7 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 					if RuleUse(begin,"~d",RuleCallFunction,tokenDict) return true
 				case "#CallDecoratorCall"
 					if tokenDict["~{}type"].Size() != 0
-						and RuleUseReverse(begin,"~d",RuleDecoratorCall,tokenDict) 
+						and RuleUseReverse(begin,"DecObj",RuleDecoratorCall,tokenDict) 
 							return true
 			}
 		}
