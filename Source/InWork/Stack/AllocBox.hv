@@ -137,7 +137,16 @@ AllocBox := class
 		f << ", %AllocClass" << ItId << "* null, i32 1\n"
 		f << "%AllocSize" << ItId << " = ptrtoint %AllocClass" << ItId << "* %AllocSizePtr" << ItId << " to i64\n"
 		f << "%AllocAsVoid" << ItId << " = bitcast %AllocClass" << ItId << "* %AllocItem" << ItId << " to i8*\n"
-		f << "call void @llvm.memset.p0i8.i64(i8* %AllocAsVoid" << ItId << ",i8 0, i64 %AllocSize" << ItId << ", i1 1)" //TODO un64
+		if jitMode
+		{
+			f << "%FuncPtr" << ItId << " = inttoptr i64 " << memset->{void^}->{size_t} <<" to void(i8*,i8,i64)*\n"
+			f << "call void %FuncPtr" << ItId			
+			f <<"(i8* %AllocAsVoid" << ItId << ",i8 0, i64 %AllocSize" << ItId << ")" //TODO un64
+		}else{
+			f << "call void @llvm.memset.p0i8.i64(i8* %AllocAsVoid" << ItId << ",i8 0, i64 %AllocSize" << ItId << ", i1 1)" //TODO un64
+		}
+		//f << "call void @memset(i8* %AllocAsVoid" << ItId << ",i8 0, i64 %AllocSize" << ItId << ")" //TODO un64
+		//f << "call void @internalGCMemClear(i8* %AllocAsVoid" << ItId << ", i64 %AllocSize" << ItId << ")" //TODO un64
 		if debId != -1
 		{
 			f << " , !dbg !" << debId

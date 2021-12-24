@@ -4,6 +4,8 @@ main := !(int argc, char^^ argv) -> int
 {
 
 	x := List.{int}
+	ZeroMem(x)
+	
 	
 	x << 1 << 3 << 5 << 7
 
