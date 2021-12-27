@@ -1,21 +1,28 @@
 
+tst := class 
+{
+	t := virtual !() -> void
+	{
+		printf("wow\n")
+	}
+}
+
+ZeroMem2 := !(@T obj) -> void //TODO: int
+{
+	memset(obj&,0,T->TypeSize)
+	if T->Group == "Class"
+		ReconstructClass(obj)
+}
 
 main := !(int argc, char^^ argv) -> int
 {
+	c := tst
+	ZeroMem2(c)
+	c.t()
 
-	x := List.{int}
-	ZeroMem(x)
-	
-	
-	x << 1 << 3 << 5 << 7
-
-	for i : x
-	{
-		defer printf("heh %i\n",i)
-		//printf("heh %i\n",i)
-		i += 3
-	}
-
+	x := 14
+	ZeroMem2(x)
+	printf("x %i\n",x)
 	return 0
 }
 

@@ -5,8 +5,7 @@ TEchoStream := class extend TIOStream
 	redData := int
 	pages := List.{char^}
 
-	this := !() -> void { 
-		ZeroMem(this) 
+	this := !() -> void {
 	}
 	Read := virtual !(void^ data, size_t size) -> size_t
 	{

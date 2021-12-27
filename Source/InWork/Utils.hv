@@ -20,3 +20,18 @@ CollectConsts := !(Object^ obj , FuncInputBox^ itBox) -> void
 		}
 	}
 }
+
+
+PrintMemClear := !(TIOStream f,int ItId, char^ ptrName, char^ sizeName) -> void
+{
+	if jitMode
+	{
+		f << "%FuncPtr" << ItId << " = inttoptr i64 " << memset->{void^}->{size_t} <<" to void(i8*,i8,i64)*\n"
+		f << "call void %FuncPtr" << ItId			
+		f <<"(i8* " << ptrName << ",i8 0, i64 " << sizeName << ")" //TODO un64
+	}else{
+		f << "call void @llvm.memset.p0i8.i64(i8* " << ptrName << ",i8 0, i64 " << sizeName << ", i1 1)" //TODO un64
+	}
+	//f << "call void @memset(i8* %AllocAsVoid" << ItId << ",i8 0, i64 %AllocSize" << ItId << ")" //TODO un64
+	//f << "call void @internalGCMemClear(i8* %AllocAsVoid" << ItId << ", i64 %AllocSize" << ItId << ")" //TODO un64
+}
