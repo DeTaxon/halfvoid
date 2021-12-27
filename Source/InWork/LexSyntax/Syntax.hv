@@ -218,11 +218,14 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 
 	GotWork := true
 
-	itr := begin.Down
-	while itr != null
+	if bag == PriorityData
 	{
-		if itr.GetValue() == "()" SyntaxCompress(itr,bag)
-		itr = itr.Right
+		itr := begin.Down
+		while itr != null
+		{
+			if itr.GetValue() == "()" SyntaxCompress(itr,bag)
+			itr = itr.Right
+		}
 	}
 
 	tokenDict := @temp new RBMap.{char^,RBSet.{Object^}}

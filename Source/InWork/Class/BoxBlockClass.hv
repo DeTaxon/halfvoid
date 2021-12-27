@@ -5,7 +5,7 @@ BoxBlockClass := class extend BoxBlock
 
 		if pri == State_Syntax
 		{
-			SyntaxCompress(this&,PriorityData)
+			SyntaxCompress(this&,PriorityData) //TODO ClassSyntax
 			UnboxParams(this.Down)
 			WorkBag.Push(this&,State_GetUse)
 

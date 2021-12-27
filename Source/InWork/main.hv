@@ -243,6 +243,14 @@ main := !(int argc,char^^ argv) -> int
 	PriorityData = new PriorityBagOld(pri.Map(),pri.Size())
 	pri.Unmap()
 
+	fileRootLex := gRepo.GetFile("LexHVFileRoot.pr")
+	if fileRootLex == null
+	{
+		printf("LexHVFileRoot.pr not found\n")
+	}
+	LexHVFileRoot = new PriorityBagOld(fileRootLex.Map(),fileRootLex.Size())
+	fileRootLex.Unmap()
+
 	lxInVar := gRepo.GetFile("LexHVInputVars.pr")
 	if lxInVar == null
 	{
