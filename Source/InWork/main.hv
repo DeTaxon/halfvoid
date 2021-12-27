@@ -230,34 +230,40 @@ main := !(int argc,char^^ argv) -> int
 	LoadLexMachine(mac.Map(),mac.Size())
 	mac.Unmap()
 
-	pri := gRepo.GetFile("Priority.pr")
-	if pri == null
+	loadLex := (char^ filName,PriorityBagOld^^ res) ==> 
 	{
-		printf("Priority.pr not found\n")
-		return 1
+		pri := gRepo.GetFile(filName)
+		if pri == null
+		{
+			printf("%s not found\n",filName)
+			throw new Exception("intput error")
+		}
+		if not pri.IsVirtual()
+		{
+			printf("%s loaded from outsize\n",filName)
+		}
+		res^ = new PriorityBagOld(pri.Map(),pri.Size())
+		pri.Unmap()
 	}
-	if not pri.IsVirtual()
-	{
-		printf("Priority.pr loaded from outsize\n")
-	}
-	PriorityData = new PriorityBagOld(pri.Map(),pri.Size())
-	pri.Unmap()
+	loadLex("Priority.pr",PriorityData&)
+	loadLex("LexHVFileRoot.pr",LexHVFileRoot&)
+	loadLex("LexHVInputVars.pr",LexHVInputVars&)
 
-	fileRootLex := gRepo.GetFile("LexHVFileRoot.pr")
-	if fileRootLex == null
-	{
-		printf("LexHVFileRoot.pr not found\n")
-	}
-	LexHVFileRoot = new PriorityBagOld(fileRootLex.Map(),fileRootLex.Size())
-	fileRootLex.Unmap()
-
-	lxInVar := gRepo.GetFile("LexHVInputVars.pr")
-	if lxInVar == null
-	{
-		printf("LexHVInputVars.pr not found\n")
-	}
-	LexHVInputVars = new PriorityBagOld(lxInVar.Map(),lxInVar.Size())
-	lxInVar.Unmap()
+	//fileRootLex := gRepo.GetFile("LexHVFileRoot.pr")
+	//if fileRootLex == null
+	//{
+	//	printf("LexHVFileRoot.pr not found\n")
+	//}
+	//LexHVFileRoot = new PriorityBagOld(fileRootLex.Map(),fileRootLex.Size())
+	//fileRootLex.Unmap()
+//
+	//lxInVar := gRepo.GetFile("LexHVInputVars.pr")
+	//if lxInVar == null
+	//{
+	//	printf("LexHVInputVars.pr not found\n")
+	//}
+	//LexHVInputVars = new PriorityBagOld(lxInVar.Map(),lxInVar.Size())
+	//lxInVar.Unmap()
 
 	PutConstString(":=")
 	PutConstString("for")
