@@ -160,8 +160,6 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,tokenDict) -> bool
 StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 {
 	//iter := begin.Down
-	if RuleUse(begin,"~d",RuleMinus,tokenDict)
-			return true
 
 	GotStuff := false
 
@@ -185,6 +183,9 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 		}else{
 			switch iterBag.RawLine
 			{
+				case "#UnaryMinus"
+					if RuleUse(begin,"~d",RuleMinus,tokenDict)
+							return true
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction,tokenDict) return true
 				case "#CallDecoratorCall"

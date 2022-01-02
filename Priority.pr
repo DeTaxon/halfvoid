@@ -1,3 +1,4 @@
+#UnaryMinus
 "#best ()"
 "try {} catch () {}"
 "new d ()" "! []" "! {}"
