@@ -4,7 +4,6 @@ BoxBlockClass := class extend BoxBlock
 	{
 		if pri == State_Syntax
 		{
-			//SyntaxCompress(this&,PriorityData) //TODO ClassSyntax
 			SyntaxCompress(this&,LexHVFileRoot)
 			
 			

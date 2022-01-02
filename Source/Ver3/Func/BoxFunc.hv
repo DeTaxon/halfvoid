@@ -195,6 +195,19 @@ BoxFunc := class extend BoxFuncContainer
 		indType := 0
 
 		breakPars(() ==>{
+			if Pars.Size() >= 2 and Pars[1].GetValue() == "..."
+			{
+				if Pars.Size() == 2 and Pars[0] is ObjIndent
+				{
+					vargsName = Pars[0]->{ObjIndent^}.MyStr
+				}
+				if Pars.Size() == 3
+				{
+					assert(false) //TODO implement
+				}
+				return void
+			}
+
 			if Pars.Size() == 2 or Pars.Size() == 5 //TODO too bad way
 			{
 				if Pars[0].Down?.Right.GetValue() == "..."
