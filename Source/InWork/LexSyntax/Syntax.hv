@@ -228,6 +228,7 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 		}
 	}
 
+
 	tokenDict := @temp new RBMap.{char^,RBSet.{Object^}}
 	
 	for itr : begin.Down

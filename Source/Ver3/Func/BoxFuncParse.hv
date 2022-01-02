@@ -62,6 +62,8 @@ ParseFuncDataR := !(Object^ item) -> Object^
 	
 	if iter.GetValue() != "()" return null
 
+	SyntaxCompress(iter,LexHVFileRoot)
+
 	ParamsObj := iter
 	iter = iter.Right
 

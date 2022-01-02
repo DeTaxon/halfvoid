@@ -131,8 +131,8 @@ BoxFunc := class extend BoxFuncContainer
 	}
 	ParseParams := !(Object^ root, Object^ outObj,bool IsTempl, TypeFunc^ parentFunc) -> bool
 	{
-		//SyntaxCompress(root,LexHVInputVars)
-		SyntaxCompress(root,LexHVFileRoot)
+		SyntaxCompress(root,LexHVInputVars)
+		//SyntaxCompress(root,LexHVFileRoot)
 		Pars := List.{Object^}
 		Pars.allocator = gTemporaryPool&
 
