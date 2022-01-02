@@ -228,23 +228,26 @@ SyntaxCompress := !(Object^ begin, PriorityBagOld^ bag) -> bool
 	}
 
 
-	tokenDict := @temp new RBMap.{char^,RBSet.{Object^}}
+	tokenDict := RBMap.{char^,RBSet.{Object^}}^
 	
-	for itr : begin.Down
-	{
-		val := itr.GetValue()
-
-		if val == "~{}type"
+	if false {
+		tokenDict = @temp new RBMap.{char^,RBSet.{Object^}}
+		for itr : begin.Down
 		{
-			tokenDict^[val].Insert(itr)
-			continue
-		}
+			val := itr.GetValue()
 
-		if itr.IsDataR
-			continue
-		if val in  !["()","[]","~suffix"]
-			continue
-		tokenDict^[val].Insert(itr)
+			if val == "~{}type"
+			{
+				tokenDict^[val].Insert(itr)
+				continue
+			}
+
+			if itr.IsDataR
+				continue
+			if val in  !["()","[]","~suffix"]
+				continue
+			tokenDict^[val].Insert(itr)
+		}
 	}
 
 	while GotWork GotWork = StupidWhile(begin,bag,tokenDict^)
