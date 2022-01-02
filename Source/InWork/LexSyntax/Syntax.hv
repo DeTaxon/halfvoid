@@ -44,7 +44,7 @@ RuleUse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
-			RemoveTokens(iter,Try,tokenDict)
+			//RemoveTokens(iter,Try,tokenDict)
 			if N == "~d"
 			{
 				iter = UNext(iter,new ObjData(),Try) 
@@ -85,7 +85,7 @@ RuleUse2 := !(Object^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,token
 		Try := R(iter)
 		if Try > 0
 		{
-			RemoveTokens(iter,Try,tokenDict)
+			//RemoveTokens(iter,Try,tokenDict)
 			if N == "~d"
 			{
 				iter = UNext(iter,new ObjData(),Try) 
@@ -118,7 +118,7 @@ RuleUseReverse := !(Object^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
-			RemoveTokens(iter,Try,tokenDict)
+			//RemoveTokens(iter,Try,tokenDict)
 			switch N
 			{
 				case "~d"
@@ -146,7 +146,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,tokenDict) -> bool
 		Try := RuleMachineOld(iter,MiniNode2)
 		if Try > 0
 		{
-			RemoveTokens(iter,Try,tokenDict)
+			//RemoveTokens(iter,Try,tokenDict)
 			
 			iter = UNext(iter,new ObjData(),Try) 
 			GotStuff = true
@@ -160,7 +160,7 @@ RuleUseSome := !(Object^ Obj,MiniMachineNodeOld^ MiniNode2,tokenDict) -> bool
 StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 {
 	//iter := begin.Down
-	if RuleUse2(begin,"~d","-",0,RuleMinus,tokenDict)
+	if RuleUse(begin,"~d",RuleMinus,tokenDict)
 			return true
 
 	GotStuff := false
@@ -170,7 +170,7 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 		if iterBag.Machine != null
 		{
 			needCheck := true
-			if iterBag.uniqOnly
+			if false and iterBag.uniqOnly
 			{
 				needCheck = false
 				for uVal : iterBag.uniqs^
@@ -188,8 +188,7 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction,tokenDict) return true
 				case "#CallDecoratorCall"
-					if tokenDict["~{}type"].Size() != 0
-						and RuleUseReverse(begin,"DecObj",RuleDecoratorCall,tokenDict) 
+					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall,tokenDict) 
 							return true
 			}
 		}
@@ -202,12 +201,12 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 	if RuleUse(begin,"i:=0",RuleParam,tokenDict) return true // for func 
 	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate,tokenDict) return true // for func 
 	if RuleUseReverse(begin,"if()",RuleIf,tokenDict) return true
-	if RuleUse2(begin,"while()","while",0,RuleWhile,tokenDict) return true
-	if RuleUse2(begin,"for()","for",0,RuleFor,tokenDict) 
+	if RuleUse(begin,"while()",RuleWhile,tokenDict) return true
+	if RuleUse(begin,"for()",RuleFor,tokenDict) 
 			return true
-	if RuleUse2(begin,"switch()","switch",0,RuleSwitch,tokenDict) 
+	if RuleUse(begin,"switch()",RuleSwitch,tokenDict) 
 			return true
-	if RuleUse2(begin,"case()","case",0,RuleCase,tokenDict) return true
+	if RuleUse(begin,"case()",RuleCase,tokenDict) return true
 
 	return false	
 }
