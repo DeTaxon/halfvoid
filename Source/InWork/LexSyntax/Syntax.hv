@@ -191,23 +191,23 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 				case "#CallDecoratorCall"
 					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall,tokenDict) 
 							return true
+				case "#FlowObjects"
+					if RuleUse(begin,"~extra1",RuleSLambda,tokenDict) return true
+					if RuleUse(begin,"Defer()",RuleDefer,tokenDict) return true
+					if RuleUse(begin,"return()",RuleOneFunc,tokenDict) return true
+					if RuleUse(begin,"i:=0",RuleParam,tokenDict) return true // for func 
+					if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate,tokenDict) return true // for func 
+					if RuleUseReverse(begin,"if()",RuleIf,tokenDict) return true
+					if RuleUse(begin,"while()",RuleWhile,tokenDict) return true
+					if RuleUse(begin,"for()",RuleFor,tokenDict) 
+							return true
+					if RuleUse(begin,"switch()",RuleSwitch,tokenDict) 
+							return true
+					if RuleUse(begin,"case()",RuleCase,tokenDict) return true
 			}
 		}
 	}
 
-
-	if RuleUse(begin,"~extra1",RuleSLambda,tokenDict) return true
-	if RuleUse(begin,"Defer()",RuleDefer,tokenDict) return true
-	if RuleUse(begin,"return()",RuleOneFunc,tokenDict) return true
-	if RuleUse(begin,"i:=0",RuleParam,tokenDict) return true // for func 
-	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate,tokenDict) return true // for func 
-	if RuleUseReverse(begin,"if()",RuleIf,tokenDict) return true
-	if RuleUse(begin,"while()",RuleWhile,tokenDict) return true
-	if RuleUse(begin,"for()",RuleFor,tokenDict) 
-			return true
-	if RuleUse(begin,"switch()",RuleSwitch,tokenDict) 
-			return true
-	if RuleUse(begin,"case()",RuleCase,tokenDict) return true
 
 	return false	
 }

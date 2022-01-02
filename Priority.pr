@@ -29,3 +29,4 @@
 #CallDecoratorCall
 "d = d" "d += d" "d -= d" "d %= d" "d /= d" "d *= d"
 "d <<< d" "d >>> d"
+#FlowObjects
