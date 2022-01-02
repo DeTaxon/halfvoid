@@ -56,7 +56,7 @@ IsTemplate := !(Object^ sk) -> bool
 
 		if ContainTType(iter) return true //TODO: check after Syntax, not Before
 	}
-	if  Counter == 1 
+	if  Counter == 1
 	{
 		
 		itr := sk.Down
@@ -66,9 +66,21 @@ IsTemplate := !(Object^ sk) -> bool
 			{	
 				itr = itr.Right
 			}
-			if itr.GetValue() == "..." return false
+			if itr.GetValue() == "..." return false //TODO: c-vargs template?
 		}
 		return true
+	}
+	if Counter == 2
+	{
+		itr := sk.Down
+		if itr != null
+		{
+			while itr.Right != null
+			{	
+				itr = itr.Right
+			}
+			if itr.GetValue() == "..." return true
+		}
 	}
 
 
