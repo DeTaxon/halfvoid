@@ -116,4 +116,4 @@ json.m:  LexBuilder/json.hv
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY: clean cycle repair test2 test2g stable
+.PHONY: clean cycle repair test2 test2g stable unit

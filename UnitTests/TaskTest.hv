@@ -9,7 +9,7 @@ TaskTest := !() -> void
 	//tb.Monitor(".",true,(x) ==>{
 	//	printf("test %s\n",x)
 	//})
-	TSpawnTask(() ==> []{
+	TSpawnTask(() ==> {
 		taskTestValue = 0
 		for 4
 		{

@@ -2,6 +2,10 @@ BoxBlockClass := class extend BoxBlock
 {
 	DoTheWork := virtual !(int pri) -> void
 	{
+		if pri == State_Start
+		{
+			WorkBag.Push(this&,State_Syntax) 
+		}
 		if pri == State_Syntax
 		{
 			SyntaxCompress(this&,LexHVFileRoot)

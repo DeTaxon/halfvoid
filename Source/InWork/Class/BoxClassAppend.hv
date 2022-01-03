@@ -28,6 +28,7 @@ BoxClassAppend := class extend Object
 			PopOutNode(Down)
 			PopOutNode(Down)
 			MakeItBlock(Down)
+			Down->SetType(BoxBlockClass)
 			WorkBag.Push(Down,State_Start)
 
 			prm := ParseType(@temp new ObjIndent(className)) //TODO: optimize
