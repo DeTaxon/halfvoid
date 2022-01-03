@@ -195,6 +195,42 @@ BoxFunc := class extend BoxFuncContainer
 		indType := 0
 
 		breakPars(() ==>{
+			if Pars.Size() == 1
+			{
+				if Pars[0].GetValue() == "..."
+				{
+					IsVargsL = true
+					return void
+				}
+				if Pars[0].GetValue() == "~ind"
+				{
+					itType := Type^()
+					isRef := false
+					if parentFunc != null
+					{
+						tId := InputVars.Size()
+						if parentFunc.ParsCount > tId
+						{
+							itType = parentFunc.Pars[tId]
+							isRef = parentFunc.ParsIsRef[tId]
+						}
+					}
+
+					InputVars.Emplace((Pars[0]->{ObjIndent^}).MyStr,itType,isRef,null,0)
+					return void
+				}
+
+				itr := Pars[0]
+				if itr is ObjData and itr.Down? is ObjIndent and itr.Down.Right?.GetValue() == "..."
+				{
+					asIn := itr.Down->{ObjIndent^}
+					vargsName = asIn.MyStr
+					return void
+				}
+				
+				EmitError("unknown error\n")
+				
+			}
 			if Pars.Size() >= 2 and Pars[1].GetValue() == "..."
 			{
 				if Pars.Size() == 2 and Pars[0] is ObjIndent
@@ -275,39 +311,6 @@ BoxFunc := class extend BoxFuncContainer
 
 					InputVars.Emplace(StrCopy(MayName),MayType,IsParRef,defValue,defValueMod)
 				}	
-			}
-			if Pars.Size() == 1
-			{
-				if Pars[0].GetValue() == "..." IsVargsL = true
-				else
-				{
-					if Pars[0].GetValue() == "~ind"
-					{
-						itType := Type^()
-						isRef := false
-						if parentFunc != null
-						{
-							tId := InputVars.Size()
-							if parentFunc.ParsCount > tId
-							{
-								itType = parentFunc.Pars[tId]
-								isRef = parentFunc.ParsIsRef[tId]
-							}
-						}
-
-						InputVars.Emplace((Pars[0]->{ObjIndent^}).MyStr,itType,isRef,null,0)
-					}else{
-						itr := Pars[0]
-						if itr is ObjData and itr.Down? is ObjIndent and itr.Down.Right?.GetValue() == "..."
-						{
-							asIn := itr.Down->{ObjIndent^}
-							vargsName = asIn.MyStr
-						}else{
-							EmitError("unknown error\n")
-						}
-
-					}
-				}
 			}
 		})
 		MyFuncType = null
