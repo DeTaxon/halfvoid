@@ -317,68 +317,6 @@ BoxFunc := class extend BoxFuncContainer
 					return void
 				}
 			}
-
-			if Pars.Size() == 2 or Pars.Size() == 5 //TODO too bad way
-			{
-				IsParRef := false
-				MayType := Type^()
-				if Pars[0].Down?.Right?.GetValue() == "&"
-				{
-					MayType = ParseType(Pars[0].Down)
-					IsParRef = true
-				}else{
-					MayType = ParseType(Pars[0])
-				}
-				indType += 1
-				MayName := ""
-
-				if MayType == null and not ContainTType(Pars[0])
-				{
-					if ContainTType(Pars[0]) or ContainTT
-					{
-						ContainTT = true
-					}else
-					{
-						if not IsTempl
-						{
-							EmitError("can not parse type at "sbt + indType + "\n")
-						}
-					}
-				}
-
-				defValue := Object^
-				defValueMod := 0
-				if Pars[1] is ObjIndent
-				{
-					MayName = (Pars[1]->{ObjIndent^}).MyStr
-
-					if Pars.Size() == 5 and Pars[2].GetValue() == "="
-					{
-						assert(false)
-						assert(Pars[3].GetValue() == "static")
-						fieldType := 0
-						switch(Pars[3].GetValue())
-						{
-							case "static" fieldType = DefValueMod_Static
-							case "field" fieldType = DefValueMod_Field
-							case void assert(false)
-						}
-						defVals += 1
-						IsParRef = true
-					}
-				}else{
-					if Pars[1].Down?.Right?.GetValue() == "=" and Pars[1].Down is ObjIndent
-					{
-						MayName = (Pars[1].Down->{ObjIndent^}).MyStr
-						defVals += 1
-					}else{
-						EmitError("only indentificators allowed, got "sbt + Pars[1].GetValue() + "\n")
-					}
-				}
-				assert(false)
-
-				InputVars.Emplace(StrCopy(MayName),MayType,IsParRef,defValue,defValueMod)
-			}
 		})
 		MyFuncType = null
 
