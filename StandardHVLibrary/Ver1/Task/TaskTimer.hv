@@ -12,7 +12,7 @@ AppendClass TaskBox
 		itMutex.Unlock()
 		switchToMain()
 	}
-	checkTimers := !(bool& makeWait,double& waitTime) -> TaskData^
+	checkTimers := !(bool^ makeWait,double^ waitTime) -> TaskData^
 	{
 		if sleepTasks.Size() == 0
 			return null
@@ -24,8 +24,8 @@ AppendClass TaskBox
 			sleepTasks.Pop()
 			return itTask
 		}else{
-			makeWait = true
-			waitTime = first.0 - nowTime
+			makeWait^ = true
+			waitTime^ = first.0 - nowTime
 		}
 		return null
 	}

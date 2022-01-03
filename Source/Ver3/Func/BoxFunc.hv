@@ -247,6 +247,20 @@ BoxFunc := class extend BoxFuncContainer
 				{
 					case 2
 						parType = ParseType(Pars[0])
+
+						if parType == null and not ContainTType(Pars[0])
+						{
+							if ContainTType(Pars[0]) or ContainTT
+							{
+								ContainTT = true
+							}else
+							{
+								if not IsTempl
+								{
+									EmitError("can not parse type at "sbt + indType + "\n")
+								}
+							}
+						}
 					case 1
 						indPos = 0
 					case void 
@@ -298,7 +312,9 @@ BoxFunc := class extend BoxFuncContainer
 
 					return void
 				}else{
-					//TODO
+					checkInp(Pars.Size())
+					InputVars.Emplace(StrCopy(parName),parType,parIsRef,null,0)
+					return void
 				}
 			}
 
@@ -359,6 +375,7 @@ BoxFunc := class extend BoxFuncContainer
 						EmitError("only indentificators allowed, got "sbt + Pars[1].GetValue() + "\n")
 					}
 				}
+				assert(false)
 
 				InputVars.Emplace(StrCopy(MayName),MayType,IsParRef,defValue,defValueMod)
 			}

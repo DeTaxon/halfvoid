@@ -147,7 +147,7 @@ TaskBox := class extend TGCObject
 
 			if toDoTask == null
 			{
-				toDoTask = checkTimers(makeWait,waitTime)
+				toDoTask = checkTimers(makeWait&,waitTime&)
 				if toDoTask == null
 				{
 					toDoTask = checkExeWorks()
