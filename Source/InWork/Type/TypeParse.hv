@@ -203,14 +203,21 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 							if someType == null
 								return null
 							if not isRefParam isRefParam = IsComplexType(someType)
+							if iter.Right?.GetValue() == "&"
+								isRefParam = true
 							types.Push(someType)
 							refs.Push(isRefParam)
 						}
 					case 1
-						if not (iter is ObjIndent)
-							return null
+						if iter.GetValue() == "&"
+						{
+						}else{
+							if not (iter is ObjIndent)
+								return null
+						}
 					case 2
-						return null
+						if iter.Left.GetValue() != "&"
+							return null
 					}
 
 					metCommaIn += 1

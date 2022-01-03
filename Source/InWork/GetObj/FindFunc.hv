@@ -354,6 +354,9 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox,BoxFunc^ fnc) -> int
 	maxCount := FuncTyp.ParsCount
 	if fnc != null
 		minCount -= fnc.DefaultValues.Size()
+	
+	if minCount != maxCount
+		printf("wut %i %i\n",minCount,maxCount)
 
 	if FuncTyp.IsVArgs
 	{	
@@ -371,7 +374,7 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox,BoxFunc^ fnc) -> int
 		if i >= parsCount
 			break
 		SomePrior := 0
-		if FuncTyp.ParsIsRef[i] 
+		if FuncTyp.ParsIsRef[i]
 		{
 			SomePrior = 255
 			if par.first == FuncTyp.Pars[i] 
