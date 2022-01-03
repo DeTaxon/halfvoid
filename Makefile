@@ -80,7 +80,7 @@ cycle: $(wildcard CompilerReal2/*.hv)
 	$(vgrind) $(cg) $(TimeF) $(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
 
 unit: $(wildcard UnitTests/*.hv)
-	$(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) -C1 "UnitTests/" UnitTests/main.hv -o $(MainOut); clang++ -g $(MainOut) -lpthread -ldl -o unit
+	$(gdb_tui) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) -C1 "UnitTests/" UnitTests/main.hv -o $(MainOut); clang++ -g $(MainOut) -lpthread -ldl -o unit
 
 twice: repair cycle
 
