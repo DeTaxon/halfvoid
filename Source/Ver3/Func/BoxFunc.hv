@@ -219,14 +219,6 @@ BoxFunc := class extend BoxFuncContainer
 					InputVars.Emplace((Pars[0]->{ObjIndent^}).MyStr,itType,isRef,null,0)
 					return void
 				}
-
-				itr := Pars[0]
-				if itr is ObjData and itr.Down? is ObjIndent and itr.Down.Right?.GetValue() == "..."
-				{
-					asIn := itr.Down->{ObjIndent^}
-					vargsName = asIn.MyStr
-					return void
-				}
 				
 				EmitError("unknown error\n")
 				

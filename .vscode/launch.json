@@ -1,105 +1,159 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(gdb) test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/test2",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
         {
-            "name": "(gdb) test",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/test2",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },{
-            "name": "(gdb) create test",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/c.out",
-            "args": ["-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/*\""
-                , "-C0", "\"StandardLib/$\""
-                ,"main2.cp" ,"-o" ,"./Objs/out3.ll"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },{
-            "name": "(gdb) repair",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/c.out",
-            "args": [" -g -p posix main2.cp -C0 \"Libs/$\" -C0 \"StandardLib/$\" -o ./Objs/out3.ll"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },{
-            "name": "(gdb) cycle",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/c.out",
-            "args": ["--notask", "-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/\""
-                , "-C0", "\"StandardHVLibrary/\"", "-C1" 
-                ,"\"Source/\"" ,"-o" ,"./Objs/out3.ll"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },{
-            "name": "(gdb) cycle llvm",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/c.out",
-            "args": ["-g" ,"-p" ,"posix" ,"-C0" ,"\"Libs/\""
-                , "-C0", "\"StandardHVLibrary/\"", "-C1" 
-                ,"\"Source/\"" ,"-o" ,"./Objs/out3.ll"],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
         }
-    ]
+      ]
+    },
+    {
+      "name": "(gdb) create test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/c.out",
+      "args": [
+        "-g",
+        "-p",
+        "posix",
+        "-C0",
+        "\"Libs/*\"",
+        "-C0",
+        "\"StandardLib/$\"",
+        "main2.cp",
+        "-o",
+        "./Objs/out3.ll"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "(gdb) repair",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/c.out",
+      "args": [
+        " -g -p posix main2.cp -C0 \"Libs/$\" -C0 \"StandardLib/$\" -o ./Objs/out3.ll"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "(gdb) cycle",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/c.out",
+      "args": [
+        "--notask",
+        "-g",
+        "-p",
+        "posix",
+        "-C0",
+        "\"Libs/\"",
+        "-C0",
+        "\"StandardHVLibrary/\"",
+        "-C1",
+        "\"Source/\"",
+        "-o",
+        "./Objs/out3.ll"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "(gdb) cycle llvm",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/c.out",
+      "args": [
+        "-g",
+        "-p",
+        "posix",
+        "-C0",
+        "\"Libs/\"",
+        "-C0",
+        "\"StandardHVLibrary/\"",
+        "-C1",
+        "\"Source/\"",
+        "-o",
+        "./Objs/out3.ll"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "/home/max/Lanq2_1",
+      "environment": [],
+      "program": "/home/max/Lanq2_1/build/Debug/outDebug",
+      "internalConsoleOptions": "openOnSessionStart",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      "externalConsole": false,
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
 }
