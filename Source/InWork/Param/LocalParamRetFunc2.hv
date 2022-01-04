@@ -102,7 +102,12 @@ RetFuncParamV2Refed := class extend RetFuncParamV2
 		//ToCall.PrintPre(f)
 		f << "store "
 		ToCall.PrintUse(f)
-		f << " , " << rn << "* %T" << AllcId << "\n" //TODO DEBUGID
+		f << " , " << rn << "* %T" << AllcId
+		if debId > 0
+		{
+			f << " ,!dbg !" << debId
+		}
+		f << "\n"
 	}
 	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
@@ -160,7 +165,12 @@ RetFuncParamV2RefedRef := class extend RetFuncParamV2
 		//ToCall.PrintPre(f)
 		f << "store "
 		ToCall.PrintPointUse(f)
-		f << " , " << rn << "** %T" << AllcId << "\n" //TODO DEBUGID
+		f << " , " << rn << "** %T" << AllcId
+		if debId > 0
+		{
+			f << " ,!dbg !" << debId
+		}
+		f << "\n"
 	}
 	PrintPre := virtual !(TIOStream f, int newInd,int debId) -> void
 	{
