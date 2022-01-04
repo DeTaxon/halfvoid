@@ -28,7 +28,7 @@ PrintMemClear := !(TIOStream f,int ItId, char^ ptrName, char^ sizeName) -> void
 	{
 		f << "%FuncPtr" << ItId << " = inttoptr i64 " << memset->{void^}->{size_t} <<" to void(i8*,i8,i" << GPointerBitSize")*\n"
 		f << "call void %FuncPtr" << ItId			
-		f <<"(i8* " << ptrName << ",i8 0, i" << GPointerBitSize << " " << sizeName << ")" //TODO un64
+		f <<"(i8* " << ptrName << ",i8 0, i" << GPointerBitSize << " " << sizeName << ")"
 	}else{
 		f << "call void @llvm.memset.p0i8.i" << GPointerBitSize << "(i8* " << ptrName << ",i8 0, i"<< GPointerBitSize << " " << sizeName << ", i1 1)"
 	}
