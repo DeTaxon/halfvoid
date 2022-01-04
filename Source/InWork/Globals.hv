@@ -1,4 +1,5 @@
 archSize := 64
+GPointerBitSize := 64 
 
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
