@@ -54,7 +54,7 @@ IsTemplate := !(Object^ sk) -> bool
 			return true
 		}
 
-		if ContainTType(iter) return true //TODO: check after Syntax, not Before
+		if ContainTType(iter) return true
 	}
 	if  Counter == 1
 	{
