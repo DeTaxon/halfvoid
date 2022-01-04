@@ -353,10 +353,7 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox,BoxFunc^ fnc) -> int
 	minCount := FuncTyp.ParsCount
 	maxCount := FuncTyp.ParsCount
 	if fnc != null
-		minCount -= fnc.DefaultValues.Size()
-	
-	if minCount != maxCount
-		printf("wut %i %i\n",minCount,maxCount)
+		minCount -= fnc.DefaultValuesCount
 
 	if FuncTyp.IsVArgs
 	{	

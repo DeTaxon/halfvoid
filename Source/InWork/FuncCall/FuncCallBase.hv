@@ -87,7 +87,7 @@ BaseFuncCall := class extend ObjResult
 		}
 		if i < FType.ParsCount
 		{
-			if ToCall?.DefaultValues.Size() + i >= FType.ParsCount
+			if ToCall?.DefaultValuesCount + i >= FType.ParsCount
 			{
 				itrAdd := Down
 				if Down != null
@@ -98,7 +98,7 @@ BaseFuncCall := class extend ObjResult
 				{
 					
 					newObj := Object^()
-					
+				
 					assert(defArr[i].Value != null)
 
 					if defArr[i].Value is ObjCmd
