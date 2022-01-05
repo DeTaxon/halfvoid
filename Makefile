@@ -105,7 +105,7 @@ halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
 	$(CurrentStable) --ZipAppend $(HW) Objs/hres.zip
 
 $(CurrentLex): LexBuilder/main.hv $(wildcard *.pr)
-	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "CompilerReal2/" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
+	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "Source/" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
 Mach.m: $(CurrentLex)
 	$(CurrentLex)
 json.m:  LexBuilder/json.hv

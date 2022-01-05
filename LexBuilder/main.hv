@@ -2,10 +2,10 @@
 main := !(int argc, char^^ argv) -> int
 {
 
-	itM := MappedFile^
-	itM = new MappedFile("Priority.pr")
-	defer itM.Close()
-	pr := new PriorityBag(itM.point,itM.Size())
+	//itM := MappedFile^
+	//itM = new MappedFile("Priority.pr")
+	//defer itM.Close()
+	//pr := new PriorityBagOld(itM.point,itM.Size())
 
 	itBuilder := LexBuilder()
 
@@ -22,8 +22,16 @@ main := !(int argc, char^^ argv) -> int
 	tmpArr := new AVLSet.{char^}
 	allOpers := new AVLSet.{char^} ; $temp
 
-	tmpArr.Insert(pr.Opers[^])
-	pr.AddExtra(tmpArr^)
+	for prFile : Wildcard("*.pr")
+	{
+		mp := MappedFile^
+		mp = new MappedFile(prFile.Get())
+		pr := new PriorityBagOld(mp.point,mp.Size())
+		tmpArr.Insert(pr.Opers[^])
+		pr.AddExtre(tmpArr^)
+	}
+	//tmpArr.Insert(pr.Opers[^])
+	//pr.AddExtra(tmpArr^)
 
 	for it,i : tmpArr^ {
 		buff2 := char[64]
