@@ -134,8 +134,8 @@ BoxFunc := class extend BoxFuncContainer
 	{
 		SyntaxCompress(root,LexHVInputVars)
 		//SyntaxCompress(root,LexHVFileRoot)
-		Pars := List.{Object^}
-		Pars.allocator = gTemporaryPool&
+		Pars := HybridQueue.{Object^,12}
+		_SetAllocator(Pars,gTemporaryPool&)
 
 		InputVars := @temp new List.{Tuple.{
 			char^,  //name
