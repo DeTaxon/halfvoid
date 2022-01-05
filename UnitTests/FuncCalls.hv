@@ -1,0 +1,52 @@
+
+CallAdderToVar := !(int& x) -> void
+{
+	x += 10
+}
+
+CallWithStatic := !( int x, int y = static 3) -> int
+{
+	y += x
+	return y
+}
+
+CallWithDefault := !(int x = 3) -> int
+{
+	return x
+}
+CallWithDefault2 := !(int a, int x = 3) -> int
+{
+	return x
+}
+
+CheckVargsSumm := !() -> int
+{
+    return 0
+}
+
+CheckVargsSumm := !(int x,args...) -> int
+{
+    return CheckVargsSumm(args...) + x
+}
+
+
+CallWithStaticInnerFunc := !(int x) -> int
+{
+	return CallWithStatic(x)
+}
+
+
+CheckFuncCall := !() -> void
+{
+    assert(CheckVargsSumm(1,5,9) == 15)
+    assert(CallWithDefault() == 3)
+    assert(CallWithDefault2(10) == 3)
+
+    assert(CallWithStaticInnerFunc(0) == 3)
+    assert(CallWithStaticInnerFunc(3) == 6)
+    assert(CallWithStaticInnerFunc(6) == 12)
+
+    c := 10
+    CallAdderToVar(c)
+    assert(c == 20)
+}

@@ -95,8 +95,8 @@ JIT: main2.hv
 test2: main2.hv
 	$(gdb_tui) $(vgrind) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) main2.hv -o $(MainOut); $(CmplTest)
 
-Objs/CompilerData.zip: Mach.m Priority.pr
-	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m Priority.pr
+Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
+	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m $(wildcard *.pr)
 Objs/hres.zip: $(wildcard ./hres/*)
 	zip -ur Objs/hres.zip hres
 
@@ -104,8 +104,8 @@ halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
 	$(CurrentStable) --ZipGlue $(TargetStable) Objs/CompilerData.zip $(HW)
 	$(CurrentStable) --ZipAppend $(HW) Objs/hres.zip
 
-$(CurrentLex): LexBuilder/main.hv Priority.pr CompilerReal2/PriorityRead.hv
-	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "CompilerReal2/$$" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
+$(CurrentLex): LexBuilder/main.hv $(wildcard *.pr)
+	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "CompilerReal2/" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
 Mach.m: $(CurrentLex)
 	$(CurrentLex)
 json.m:  LexBuilder/json.hv
