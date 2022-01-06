@@ -1,0 +1,52 @@
+
+LambdaClass := class
+{
+	arr := int[5]
+	c := int
+	"~For" := !() -> !()&-> int&
+	{
+		return () ==> {
+			for i : 5
+			{
+				yield arr[i]
+			}
+		}
+	}
+}
+
+TestLambda := !() -> void
+{
+	x := 0
+	y := 0
+	z := 0
+
+	lambd1 := () ==> [x,y&]
+	{
+		x += 1
+		y += 1
+		z += 1
+	}
+
+	lambd1()
+	assert(x == 0 and y == 1 and z == 1)
+	l := lambd1.Capture()
+	l()
+	assert(x == 0 and y == 2 and z == 1)
+	l.Destroy()
+
+	c := LambdaClass
+	c.arr[^i] = i
+
+	sum := 0
+
+	for it : c
+	{
+		sum += it
+		it *= 2
+	}
+	assert(sum == 10)
+	for it,i : c.arr
+	{
+		assert(it == i*2)
+	}
+}
