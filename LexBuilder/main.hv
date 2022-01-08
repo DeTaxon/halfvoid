@@ -28,10 +28,29 @@ main := !(int argc, char^^ argv) -> int
 		mp = new MappedFile(prFile.Get())
 		pr := new PriorityBagOld(mp.point,mp.Size())
 		tmpArr.Insert(pr.Opers[^])
-		pr.AddExtre(tmpArr^)
+		//pr.AddExtre(tmpArr^)
 	}
+	tmpArr.Insert(":=")
+	tmpArr.Insert("=>")
+	tmpArr.Insert("-->")
+	tmpArr.Insert("extern")
+	tmpArr.Insert("at")
+	tmpArr.Insert("defer")
+	tmpArr.Insert("type")
+	tmpArr.Insert("virtual")
 	//tmpArr.Insert(pr.Opers[^])
 	//pr.AddExtra(tmpArr^)
+	LexKeyWords := ![":=","=>","==>","...",":",".",",","?","!",".","|"]
+	AllKeyWords := !["return","for","if","else","while","do","delete","switch","case" 
+		,"class","extern" ,"extend" ,"at" 
+		,"defer" ,"type" ,"virtual" ,"new" 
+		,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
+		,"packed_class" ,"self_return" ,"try" ,"catch" 
+		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak","poison","defer_tail"
+		,"static","field"]
+
+	tmpArr.Insert(LexKeyWords[^])
+	tmpArr.Insert(AllKeyWords[^])
 
 	for it,i : tmpArr^ {
 		buff2 := char[64]
