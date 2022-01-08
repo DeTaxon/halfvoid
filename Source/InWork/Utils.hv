@@ -26,7 +26,7 @@ PrintMemClear := !(TIOStream f,int ItId, char^ ptrName, char^ sizeName) -> void
 {
 	if jitMode
 	{
-		f << "%FuncPtr" << ItId << " = inttoptr i64 " << memset->{void^}->{size_t} <<" to void(i8*,i8,i" << GPointerBitSize")*\n"
+		f << "%FuncPtr" << ItId << " = inttoptr i64 " << memset->{void^}->{size_t} <<" to void(i8*,i8,i" << GPointerBitSize << ")*\n"
 		f << "call void %FuncPtr" << ItId			
 		f <<"(i8* " << ptrName << ",i8 0, i" << GPointerBitSize << " " << sizeName << ")"
 	}else{
