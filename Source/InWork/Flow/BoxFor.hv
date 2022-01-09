@@ -191,7 +191,7 @@ BoxForOldFashionMulti := class extend BoxFor
 		}
 		if pri == State_GetUse
 		{
-			if(Down.Right is FieldHolder)
+			if(Down.Right is FieldHolder) //TODO unify
 			{
 				asPrm := this&
 				asPrm->SetType(MetaBoxForFields)
@@ -230,6 +230,12 @@ BoxForOldFashionMulti := class extend BoxFor
 					if Down.Right.GetType() == null
 					{
 						EmitError("can not evaluate type in for each\n")
+					}
+
+					if Down.Right.GetType() is TypeFuncLambda
+					{
+						Downs.Push(Down.Right)
+						PopOutNode(Down.Right)
 						continue
 					}
 
@@ -328,6 +334,13 @@ BoxForOldFashionMulti := class extend BoxFor
 				iter := Down.Right
 				for i : itemsCount
 				{
+					if iter.GetType() is TypeFuncLambda
+					{
+						InputItems[i]->SetType(BoxForItemOnGenerator)
+						InputItems[i].Init(this&,iter,iter.GetType(),null)
+						iter = iter.Right
+						continue
+					}
 					asNeed2 := iter->{SomeFuncCall^}
 					itType := InputItems[i].ProxyFunc.MyFuncType.RetType
 

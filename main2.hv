@@ -1,28 +1,48 @@
 
-tst := class 
-{
-	t := virtual !() -> void
-	{
-		printf("wow\n")
-	}
-}
-
-ZeroMem2 := !(@T obj) -> void //TODO: int
+ZeroMem2 := !(@T& obj) -> void
 {
 	memset(obj&,0,T->TypeSize)
 	if T->Group == "Class"
 		ReconstructClass(obj)
 }
 
+res := !(int x) -> !()& -> int
+{
+	return () ==> {
+		i := 0
+		while i < x
+		{
+			yield i
+			i += 2
+		}
+	}
+}
+
+Unite := !(@T1 a, @T2 b) -> !()&->int
+{
+	return () ==> 
+	{
+		for i : a
+			yield i
+		for j : b
+			yield j
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	c := tst
-	ZeroMem2(c)
-	c.t()
+	x := List.{int}
+	x << 1 << 23 << 10 << -3
+	
+	y := AVLSet.{int}
+	y.Insert(12)
+	y.Insert(3)
+	y.Insert(100)
 
-	x := 14
-	ZeroMem2(x)
-	printf("x %i\n",x)
+	for j : Unite(x,y)
+	{
+		printf("heh %i\n",j)
+	}
 	return 0
 }
 
