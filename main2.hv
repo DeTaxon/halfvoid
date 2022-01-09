@@ -21,12 +21,14 @@ tst := !(int x ) -> !()& -> int
 
 main := !(int argc, char^^ argv) -> int
 {
-	z := List.{int}
-	z << 1 << 12 << 0
-	for i,j : tst(5)
-	//for i,j : z
+	z := HybridQueue.{int,3}
+	for i : 6
 	{
-		printf("heh %i %i\n",i,j)
+		z.Push(i*2)
+	}
+	for i : z.Size()
+	{
+		printf("heh %i\n",z[-1])
 	}
 	//tst := HybridQueue.{int,2}
 	//for i : 6

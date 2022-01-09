@@ -43,6 +43,9 @@ HybridQueue := class .{@T,@ExtraSize}
 	}
 	"[]" := !(int ps) -> ref T
 	{
+		if ps < 0
+			return this[itSize + ps]
+		assert(ps < itSize)
 		if ps < ExtraSize
 		{
 			return qArr[ps]
