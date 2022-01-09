@@ -31,6 +31,18 @@ BoxForItemOnGenerator := class extend BoxForItem
 		IsEndFunc = MakeSimpleCall(LambdaIsFinishedFunc->{BoxFunc^},test2)
 		IsEndFunc.Line = self.Line
 		IsEndFunc.Up = self
+
+		if IndName != null
+		{
+			self.EnabledIIndex = true
+			IndParam = new FuncParam("ForIndex"sbt + self.ItId,GTypeInt,false)
+			IndParam.Up = self
+
+			if DebugMode
+			{
+				self.CreatedIIndexNames.Push(IndName)
+			}
+		}
 	}
 
 	PrintStart := virtual !(BoxForOldFashionMulti^ self,TIOStream f,Object^ itr) -> void 

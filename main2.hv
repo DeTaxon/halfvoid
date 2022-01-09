@@ -6,43 +6,37 @@ ZeroMem2 := !(@T& obj) -> void
 		ReconstructClass(obj)
 }
 
-res := !(int x) -> !()& -> int
-{
-	return () ==> {
-		i := 0
-		while i < x
-		{
-			yield i
-			i += 2
-		}
-	}
-}
-
-Unite := !(@T1 a, @T2 b) -> !()&->int
+tst := !(int x ) -> !()& -> int
 {
 	return () ==> 
 	{
-		for i : a
-			yield i
-		for j : b
-			yield j
+		i := 0
+		while i < x
+		{
+			yield i*2
+			i += 1
+		}
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := List.{int}
-	x << 1 << 23 << 10 << -3
-	
-	y := AVLSet.{int}
-	y.Insert(12)
-	y.Insert(3)
-	y.Insert(100)
-
-	for j : Unite(x,y)
+	z := List.{int}
+	z << 1 << 12 << 0
+	for i,j : tst(5)
+	//for i,j : z
 	{
-		printf("heh %i\n",j)
+		printf("heh %i %i\n",i,j)
 	}
+	//tst := HybridQueue.{int,2}
+	//for i : 6
+	//	tst.Push(i*2)
+	//for j : tst
+	//{
+	//	printf("test %i\n",j)
+	//	j *= 3
+	//}
+	//printf("tst %i\n",tst[^])
 	return 0
 }
 
