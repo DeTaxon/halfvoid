@@ -1,0 +1,8 @@
+
+ZeroMem := !(@T& obj) -> void
+{
+	memset(obj&,0,T->TypeSize)
+	if T->Group == "Class"
+		ReconstructClass(obj)
+}
+

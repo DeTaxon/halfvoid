@@ -99,12 +99,11 @@ ConstMemParam := class extend MemParam
 	{
 		if debId == -1 return void
 
-		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false) //TODO  !(int& x) <-- not working
+		outId := CreateDbgLocVar(ptrPos,ResultType,forceName,false)
 		if debId != -1 and outId != -1
 		{
 			f << "call void @llvm.dbg.value"
 			f << "(metadata "
-			//if ToCall.IsRef() PrintPointUse(f,0,-1) else PrintUse(f,0,-1)  //TODO OhNo
 			PrintUse(f,0,-1) 
 			f << " , metadata !" << outId << " , metadata !DIExpression()) , !dbg !" << debId << "\n"
 		}
