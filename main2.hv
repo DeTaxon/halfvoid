@@ -1,38 +1,40 @@
 
-
-tst := !(int x ) -> !()& -> int
+MixinObject1 := class
 {
-	return () ==> 
+	Contain := poison !(!(int)&-> bool l) -> bool
 	{
-		i := 0
-		while i < x
+		if l(this[^])
+			return true
+		return false
+	}
+}
+MixinObject2 := class
+{
+	Test := poison !() -> bool
+	{
+		printf("hello\n")
+	}
+}
+
+TestClass := class extend MixinObject1 , MixinObject2
+{
+	"~For" := !() -> !()&->int
+	{
+		return () ==>
 		{
-			yield i*2
-			i += 1
+			for it : ![1,12,100,-3,16]
+				yield it			
 		}
 	}
 }
 
+
 main := !(int argc, char^^ argv) -> int
 {
-	z := HybridQueue.{int,3}
-	for i : 6
-	{
-		z.Push(i*2)
-	}
-	for i : z.Size()
-	{
-		printf("heh %i\n",z[-1])
-	}
-	//tst := HybridQueue.{int,2}
-	//for i : 6
-	//	tst.Push(i*2)
-	//for j : tst
-	//{
-	//	printf("test %i\n",j)
-	//	j *= 3
-	//}
-	//printf("tst %i\n",tst[^])
+	c := TestClass
+	printf("wow 12 %i\n",c.Contain(_1 == 12))
+	printf("wow 11 %i\n",c.Contain(_1 == 11))
+	c.Test()
 	return 0
 }
 

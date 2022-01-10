@@ -36,6 +36,12 @@ ParseClass := !(Object^ ob)-> BoxClass^
 		ExtObj = iterT 
 
 		iterT = iterT.Right
+
+		while iterT.GetValue() == ","
+		{
+			iterT = iterT.Right.Right
+		}
+
 		if iterT == null return null
 		if iterT.GetValue() != "{}" return null
 
