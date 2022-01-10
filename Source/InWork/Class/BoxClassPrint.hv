@@ -3,64 +3,71 @@ AppendClass BoxClass
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		PrintVTable(f)
+		
+		needComma := false
+		f << "%ClassParams" << ClassId << " = type{"
+		if Parent != null
+		{
+			f << "%ClassParams" << Parent.ClassId
+			needComma = true
+		}
 		if Params.Size() == 0
 		{
-			if vTable.IsEmpty()
-			{
-				f << "%Class" << ClassId << " = type{i1}\n"
-			}else{
-				f << "%Class" << ClassId << " = type{ %ClassTableType" << ClassId << "*}\n"
-			}
-			if DebugMode
-			{
-				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
-				f << ", elements: !{})\n"
-			}
+			if needComma
+				f << ","
+			f << "i1"
 		}else{
-			f << "%Class" << ClassId << " = type "
-			if IsPacked f << "<"
-			f << "{"
-			if not vTable.IsEmpty()
-			{
-				f << "%ClassTableType" << ClassId << "*"
-			}
 			for it, i : Params
 			{
-				if i != 0 or not vTable.IsEmpty() f <<","
+				if needComma f << ","
 				f << it.ResultType.GetName()
+				needComma = true
 			}
-			f << "}"
-			if IsPacked f << ">"
-			f <<"\n"
-			if DebugMode
-			{
-				ClassType.ComputeAlignAndDeb()
-				exZ := @temp new List.{int}()
-				for cc : ClassType.debTable
-				{
-					newII := GetNewId()
-					f << "!" << newII << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << cc.0 << "\" , scope: !" << ClassId
-					if cc.1.Line != null
-					{
-						itrr := Up
-						while itrr.Up != null itrr = itrr.Up
-						f << " , file: !" << itrr->{BoxFile^}.fileId << " , line: " << cc.1.Line.LinePos 
-					}
-					f << " , baseType: !" << cc.1.ResultType.metaId << ", size: " << cc.3*8 << ", offset: " << cc.2*8 << ")\n"
-					//!16 = !DIDerivedType(tag: DW_TAG_member, name: "x", scope: !14, file: !1, line: 5, baseType: !12, size: 32)
-					exZ^ << newII
-				}
-				elmIds := GetNewId()
-				f << "!" << elmIds << " = !{"
-				for ccc,i : exZ^
-				{
-					if i != 0 f << ","
-					f << "!" << ccc
-				}
-				f << "}\n"
-				f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
-				f << ", elements: !"<< elmIds << ")\n"
-			}
+		}
+		f << "}\n"
+			
+		f << "%Class" << ClassId << " = type "
+		if IsPacked f << "<"
+		f << "{"
+		if not vTable.IsEmpty()
+		{
+			f << "%ClassTableType" << ClassId << "*"
+			f << ","
+		}
+		f << "%ClassParams" << ClassId
+		f << "}"
+		if IsPacked f << ">"
+		f <<"\n"
+		if DebugMode
+		{
+			//ClassType.ComputeAlignAndDeb()
+			//exZ := @temp new List.{int}()
+			//for cc : ClassType.debTable
+			//{
+			//	newII := GetNewId()
+			//	f << "!" << newII << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << cc.0 << "\" , scope: !" << ClassId
+			//	if cc.1.Line != null
+			//	{
+			//		itrr := Up
+			//		while itrr.Up != null itrr = itrr.Up
+			//		f << " , file: !" << itrr->{BoxFile^}.fileId << " , line: " << cc.1.Line.LinePos 
+			//	}
+			//	f << " , baseType: !" << cc.1.ResultType.metaId << ", size: " << cc.3*8 << ", offset: " << cc.2*8 << ")\n"
+			//	//!16 = !DIDerivedType(tag: DW_TAG_member, name: "x", scope: !14, file: !1, line: 5, baseType: !12, size: 32)
+			//	exZ^ << newII
+			//}
+			//elmIds := GetNewId()
+			//f << "!" << elmIds << " = !{"
+			//for ccc,i : exZ^
+			//{
+			//	if i != 0 f << ","
+			//	f << "!" << ccc
+			//}
+			//f << "}\n"
+			//f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
+			//f << ", elements: !"<< elmIds << ")\n"
+			f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << ClassName << "\""
+			f << ", elements: !{})\n"
 		}
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
@@ -76,11 +83,33 @@ AppendClass BoxClass
 			f << ", i32 0, i32 0\n"
 			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
 		}
+		if Params.Size() != 0 or Parent != null
+		{
+			f << "%Tsub = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* %this , i32 0"
+			if ContainVirtual
+			{
+				f << ", i32 1\n"
+			}else{
+				f << ", i32 0\n"
+			}
+
+			f << "call void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %Tsub)\n"
+		}
+		f << "	ret void\n"
+		f << "}\n"
+
+		f << "define void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %this)\n"
+		f << "{\n"
+
+		parentCount := 0
+		if Parent != null
+			parentCount = 1
 
 		for itParm,i : this.Params
 		{
 			if not TypeContainVTable(itParm.ResultType)
 				continue
+
 
 			if itParm.ResultType is TypeArr
 			{
@@ -99,9 +128,8 @@ AppendClass BoxClass
 						break
 					}
 				}
-				inCl := i
-				if ContainVirtual 
-					inCl += 1
+				inCl := i + parentCount
+				
 				for itL,k : lays
 				{
 					
@@ -115,7 +143,7 @@ AppendClass BoxClass
 						<< "%L" << i << "itr" << k << "PreEnd]\n"
 
 				}
-				f << "%Pre" << i << "Set = getelementptr %Class" << ClassId << ", %Class" << ClassId << "* %this"
+				f << "%Pre" << i << "Set = getelementptr %ClassParams" << ClassId << ", %ClassParams" << ClassId << "* %this"
 					 << ", i32 0, i32 " << inCl
 				for itL, k : lays
 				{
@@ -145,9 +173,9 @@ AppendClass BoxClass
 				classItm := clTyp.ToClass
 				if classItm.ContainVirtual
 				{
-					pos := i
-					if this.ContainVirtual pos += 1
-					f << "%itrItm" << pos << " = getelementptr %Class" << ClassId << " , %Class" << ClassId
+					pos := i + parentCount
+					
+					f << "%itrItm" << pos << " = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId
 					f << "* %this" <<", i32 0, i32 " << pos <<"\n"
 					classItm.ApplyConstants(f,"%itrItm"sbt + pos)
 				}

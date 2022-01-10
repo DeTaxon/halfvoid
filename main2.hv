@@ -28,13 +28,60 @@ TestClass := class extend MixinObject1 , MixinObject2
 	}
 }
 
+clA := class
+{
+	x := int
+	y := char
+}
+clB := class extend clA
+{
+	z := char
+}
+
+VirtClass := class
+{
+	x := virtual !() -> int
+	{
+		return 17
+	}
+}
+subVirtClass := class
+{
+	y := VirtClass
+	z := VirtClass[4]
+}
+subVirtClassInh := class extend subVirtClass
+{
+	w := VirtClass
+}
+
+globalVClass := VirtClass
+globalVClass2 := VirtClass[2]
+globalVClass3 := subVirtClass
+globalVClass4 := subVirtClassInh
+
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := TestClass
-	printf("wow 12 %i\n",c.Contain(_1 == 12))
-	printf("wow 11 %i\n",c.Contain(_1 == 11))
-	c.Test()
+	globalVClass.x()
+	globalVClass2[0].x()
+	globalVClass3.y.x()
+	globalVClass3.z[1].x()
+	globalVClass4.z[3].x()
+
+
+
+	assert(clB->TypeSize == 12)
+
+	obj := clB
+
+	for it,ind : obj->Fields
+	{
+		printf("heh %s\n",ind)
+	} 
+	printf("test %i\n",subVirtClassInh->TypeSize)
+
+	t := @temp new List.{int}
 	return 0
 }
 

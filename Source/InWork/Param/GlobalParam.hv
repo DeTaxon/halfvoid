@@ -59,26 +59,30 @@ GlobalParam := class extend MemParamCommon
 		}
 		f << "]\n"
 	}
-	PrintClassData := !(TIOStream f, BoxClass^ toPr, bool isFirst) -> void
+	
+	PrintParameters := !(TIOStream f,BoxClass^ parClass) -> bool
 	{
-		if not isFirst
-			f << toPr.ClassType.GetName() << " "
-		addedVal := false
-		f << "{"
-		if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
-			f << "i8 0"
-		}
-		if toPr.ContainVirtual
-		{
-			addedVal = true
-			f << "%ClassTableType" << toPr.ClassId << "* @ClassTableItem" << toPr.ClassId 
-		}
-		for itPr : toPr.Params
-		{
-			if addedVal 
-				f << " , "
-			else addedVal = true
+		needComma := false
+		parentCount := 0
+		if parClass.Parent != null
+			parentCount = 1
 
+		f << "%ClassParams" << parClass.ClassId << "{"
+		if parClass.Parent != null
+		{
+			needComma = PrintParameters(f,parClass.Parent)
+		}
+		if parClass.Params.Size() == 0
+		{
+			if needComma 
+				f << " , "
+			f << "i1 0"
+		}
+		for itPr : parClass.Params
+		{
+			if needComma 
+				f << " , "
+			else needComma = true
 			itCntV := TypeContainVTable(itPr.ResultType)
 			if itPr.ResultType is TypeClass and itCntV
 			{
@@ -94,6 +98,27 @@ GlobalParam := class extend MemParamCommon
 				}
 			}
 		}
+		f << "}"
+		return true
+	}
+	PrintClassData := !(TIOStream f, BoxClass^ toPr, bool isFirst) -> void
+	{
+		if not isFirst
+			f << toPr.ClassType.GetName() << " "
+		addedVal := false
+		f << "{"
+		if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
+			f << "i8 0"
+		}
+		
+		if toPr.ContainVirtual
+		{
+			addedVal = true
+			f << "%ClassTableType" << toPr.ClassId << "* @ClassTableItem" << toPr.ClassId 
+			f << ","
+		}
+		PrintParameters(f,toPr)
+		
 		f << "}\n"
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void

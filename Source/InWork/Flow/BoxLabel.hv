@@ -14,7 +14,9 @@ BoxLabelStr := class extend BoxLabel
 
 	this := !(char^ itStr) -> void
 	{
+		assert(itStr != null)
 		callStr = StrCopy(itStr)
+		assert(callStr != null)
 	}
 	PrintLabel := virtual !(TIOStream f) -> void
 	{
@@ -22,6 +24,7 @@ BoxLabelStr := class extend BoxLabel
 	}
 	GetLabel := virtual !() -> char^
 	{
+		assert(callStr != null)
 		return callStr
 	}
 }
@@ -40,7 +43,10 @@ BoxLabelAnon := class extend BoxLabel
 	}
 	GetLabel := virtual !() -> char^
 	{
-		return "label"sbt + itId
+		res := "label"sbt + itId
+		resStr := res.Str()
+		assert(resStr != null)
+		return resStr
 	}
 }
 

@@ -105,13 +105,14 @@ TupleClass := class extend BoxClass
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
-		f << "%Class" << ClassId << " = type {"
+		f << "%ClassParam" << ClassId << " = type {"
 		for i : Params.Size()
 		{
 			if i > 0 f << ","
 			f <<  Params[i].ResultType.GetName()
 		}
 		f << "}\n"
+		f << "%Class" << ClassId << " = type {%ClassParam" << ClassId << "}\n" 
 		if DebugMode
 		{
 			f << "!" << ClassId << " = !DICompositeType(tag: DW_TAG_structure_type, name: \"" << "Tuple" << "\""
@@ -171,8 +172,8 @@ TupleSpaceship :=  class extend BuiltInFuncBinar
 		f << "{\n"
 		for it,i : funcCalls
 		{
-			f << "%Left_" << i << " = getelementptr " << clName << "," << clName << "* %Left , i32 0, i32 " << i << "\n"
-			f << "%Righ_" << i << " = getelementptr " << clName << "," << clName << "* %Righ , i32 0, i32 " << i << "\n"
+			f << "%Left_" << i << " = getelementptr " << clName << "," << clName << "* %Left , i32 0,i32 0, i32 " << i << "\n"
+			f << "%Righ_" << i << " = getelementptr " << clName << "," << clName << "* %Righ , i32 0,i32 0, i32 " << i << "\n"
 			it.PrintPre(f)
 			f << "%Cmp_" << i << " = icmp ne i32 " << it.GetName() << ", 0\n"
 			f << "br i1 %Cmp_" << i << ", label %CmpReturn_" << i << " , label %CmpContinue_" << i << "\n"
@@ -207,8 +208,8 @@ SetTupleObj := class extend BuiltInFuncMega
 		f << ")\n{\n"
 		for it, i : this.setsFunc
 		{
-			f << "%Left_" << i << " = getelementptr " << prL << " , " << prL << "* %ToSet, i32 0, i32 "<< i <<"\n"
-			f << "%Righ_" << i << " = getelementptr " << prR << " , " << prR << "* %ToGet, i32 0, i32 "<< i <<"\n"
+			f << "%Left_" << i << " = getelementptr " << prL << " , " << prL << "* %ToSet, i32 0,i32 0, i32 "<< i <<"\n"
+			f << "%Righ_" << i << " = getelementptr " << prR << " , " << prR << "* %ToGet, i32 0,i32 0, i32 "<< i <<"\n"
 			it.PrintPre(f)
 		}
 		f << "ret void\n"
@@ -464,7 +465,7 @@ TupleFuncGetItem := class extend BoxTemplate
 		itParam := frmIn.Params[ind]
 		itType := itParam.ResultType
 		preRet :=  new BuiltInFuncUno(".",pars[0].first,true,itType,true,
-			"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0, i32 " + ind + "\n")
+			"#0 = getelementptr "sbt + pars[0].first.GetName() + " , " + pars[0].first.GetName() + "* #1, i32 0,i32 0, i32 " + ind + "\n")
 		preRet.IsSelfReturn = true
 		return preRet
 	}

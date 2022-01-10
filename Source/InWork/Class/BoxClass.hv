@@ -1,7 +1,5 @@
 BoxClass := class extend BoxClassBase
 {
-	NotMineParams := int
-
 	FakeParams := Queue.{FakeFieldParam^}
 	StaticParams := AVLMap.{char^,GlobalParam^}
 
@@ -274,18 +272,16 @@ BoxClass := class extend BoxClassBase
 	{
 		if Inherited2 return void
 		Inherited2 = true
-		if Parent != null
-		{
-
-			Parent.InheritParams2()
-			Size := Parent.Params.Size()
-			NotMineParams = Size
-			for i : Size
-			{
-				Params.PushFront(Parent.Params[Size - i - 1])
-			}
-			for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
-		}
+		//if Parent != null
+		//{
+		//	Parent.InheritParams2()
+		//	Size := Parent.Params.Size()
+		//	for i : Size
+		//	{
+		//		Params.PushFront(Parent.Params[Size - i - 1])
+		//	}
+		//	for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
+		//}
 		for Yodlers
 		{
 			extrField := it.ABox.GetAsType()

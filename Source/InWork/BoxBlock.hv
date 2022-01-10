@@ -1,11 +1,11 @@
-MakeItBlock := !(Object^ item) -> bool
+MakeItBlock := !(Object^ item) -> BoxBlock^
 {
 	return MakeItBlock(item,true)
 }
-MakeItBlock := !(Object^ item,bool useStuf) -> bool
+MakeItBlock := !(Object^ item,bool useStuf) -> BoxBlock^
 {
-	if item == null return false
-	if item.GetValue() == "{d}" return true
+	if item == null return null
+	if item.GetValue() == "{d}" return item->{BoxBlock^}
 	
 	oldUp := item.Up
 	oldRight := item.Right
@@ -27,7 +27,7 @@ MakeItBlock := !(Object^ item,bool useStuf) -> bool
 
 	bloc.usePaths = useStuf
 
-	return true
+	return bloc
 }
 
 
@@ -287,7 +287,6 @@ BoxBlock := class extend WorkObject
 			{
 				preRetLabel.PrintLabel(f)
 				if gotRetPath f << "br label %" << outRLabel.GetLabel() << "\n"
-				
 			}
 
 				//if gotRetPath PrintSomePath(f,"RetPath",ItId,outRName)

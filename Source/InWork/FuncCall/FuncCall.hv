@@ -581,8 +581,6 @@ PointFuncCall := class extend NaturalCall
 
 AssemblerCall := class extend NaturalCall
 {
-	RealCall := BuiltInFunc^ at ToCall
-
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
 		if func.IsPassAttrs and Pars != null
@@ -607,6 +605,7 @@ AssemblerCall := class extend NaturalCall
 	}
 	UseCall := virtual !(TIOStream f) -> void
 	{
+		RealCall := ToCall->{BuiltInFunc^}
 		RealCall.PrePrintEvent()
 		PrintPreFuncName(f)
 		RefsArr := FType.ParsIsRef
@@ -742,7 +741,6 @@ AssemblerCall := class extend NaturalCall
 }
 BuiltIn2Call := class extend BaseFuncCall
 {
-	RealCall := BuiltIn2Func^ at ToCall
 	thisClId := int
 
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
@@ -787,6 +785,7 @@ BuiltIn2Call := class extend BaseFuncCall
 	}
 	PrintPre := virtual !(TIOStream f) -> void
 	{
+		RealCall := ToCall->{BuiltIn2Func^}
 		RealCall.PrintFunc(this&,f)
 	}
 }
@@ -807,6 +806,7 @@ BuiltIn2CallRef := class extend BuiltIn2Call
 	}
 	PrintPointPre := virtual !(TIOStream f) -> void
 	{
+		RealCall := ToCall->{BuiltIn2Func^}
 		RealCall.PrintFunc(this&,f)
 	}
 	PrintUse := virtual !(TIOStream f) -> void

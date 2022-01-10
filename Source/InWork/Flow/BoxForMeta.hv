@@ -43,13 +43,19 @@ MetaBoxForFields := class extend MetaBoxFor
 			cType := hldr.MyType
 			if not cType is TypeClass
 				EmitError("Type is not class")
-			cntr := 0
+
 			subBlocks := Object^()
 			lastBlock := Object^()
 			cls := cType->{TypeClass^}.ToClass
-			for par : cls.Params
-			{
-				newBlock := Down.Clone()
+
+			i := -1
+			cls.forEachAllParam( (stk,par) ==> {
+				if par.ItName == ""
+					return void
+				i += 1
+
+				newBlock := MakeItBlock(Down.Clone())
+
 				if subBlocks == null
 				{
 					subBlocks = newBlock
@@ -58,33 +64,23 @@ MetaBoxForFields := class extend MetaBoxFor
 					newBlock.Left = lastBlock
 				}
 				lastBlock = newBlock
-				cntr += 1
-			}
-			Down = subBlocks
-			subBlocks.SetUp(this&)
-			for c : cntr 
-			{
-				itr := Down
-				for c itr = itr.Right
-				MakeItBlock(itr)
-			}
-			for it,i : Down, par : cls.Params
-			{
-				if par.ItName == ""
-					continue
-				WorkBag.Push(it,State_Start)
-				asBlock := it->{BoxBlock^}
+
+				WorkBag.Push(newBlock,State_Start)
 				if hldr.Down != null
 				{
-					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new FuncParam("ForParamId"sbt + ItId + "i" + i,par.GetType(),true)))
+					newBlock.Items.Push(new ObjHolder(InputItems[0].Name, new FuncParam("ForParamId"sbt + ItId + "i" + i,par.GetType(),true)))
 				}else{
-					asBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjType(par.GetType())))
+					newBlock.Items.Push(new ObjHolder(InputItems[0].Name, new ObjType(par.GetType())))
 				}
 				if InputItems[0].IndName != null
 				{
-					asBlock.Items.Push(new ObjHolder(InputItems[0].IndName, new ObjStr(par.ItName)))
+					newBlock.Items.Push(new ObjHolder(InputItems[0].IndName, new ObjStr(par.ItName)))
 				}
-			}
+			})
+
+			Down = subBlocks
+			subBlocks.SetUp(this&)
+
 			holder = hldr
 			hldr.Up = this&
 		}
@@ -96,22 +92,29 @@ MetaBoxForFields := class extend MetaBoxFor
 		if holder.Down != null
 		{
 			holder.Down.PrintPointPre(f)
-			for par,i : cls.Params
-			{
+
+			i := -1
+			iter := Down
+			cls.forEachAllParam( (stk,par) ==> {
+				
 				if par.ItName == ""
-					continue
+					return void
+				i += 1
+				assert(iter != null)
+
 				f << "%ForParamId" << ItId << "i" << i << " = getelementptr "
 				cType.PrintType(f)
 				f << " , "
 				holder.Down.PrintPointUse(f)
-				f << " , i32 0, i32 "<< cls.GetParamNr(i) <<"\n"
-			}
-		}
-		for it : Down, par : cls.Params
-		{
-			if par.ItName == ""
-				continue
-			it.PrintInBlock(f)
+				f << " , i32 0"
+				for it : stk
+				{
+					f << ", i32 " << it
+				}
+				f <<"\n"
+				iter.PrintInBlock(f)
+				iter = iter.Right
+			})
 		}
 	}
 }

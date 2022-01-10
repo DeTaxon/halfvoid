@@ -906,7 +906,7 @@ SLambda := class extend BoxFuncContainer
 		{
 			return yieldLabel&
 		}
-		return outLabel&
+		return this.outLabel&
 	}
 	GetValue := virtual !() -> string
 	{

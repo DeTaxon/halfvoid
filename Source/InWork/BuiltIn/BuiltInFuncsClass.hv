@@ -1,64 +1,87 @@
+AppendClass BoxClass
+{
+	_getInherDepth := !() -> int
+	{
+		if Parent != null
+			return Parent._getInherDepth() + 1
+		return 1
+	}
+	_getParamPath := !(char^ parName) -> RawArray.{int}^
+	{
+		depth := _getInherDepth()
+		res := @temp new RawArray.{int}
+		res.Resize(depth)
+		getRes := _getParamPath2(parName,res,0)
+		assert(getRes)
+		return res
+	}
+	_getParamPath2 := !(char^ parName, RawArray.{int}^ res, int d) -> bool
+	{
+		parentCount := 0
+
+		if Parent != null
+			parentCount = 1
+
+		for it,i : Params
+		{
+			if it.ItName == parName
+			{
+				res^[d] = i + parentCount
+				res.Resize(d+1)
+				return true
+			}
+		}
+		if Parent != null
+		{
+			res^[d] = 0
+			return Parent._getParamPath2(parName,res,d+1)
+		}
+		assert(false)
+		return false
+	}
+	forEachAllParam := !( !(RawArray.{int}, FieldParam^)& -> void lambd) -> void
+	{
+		depth := _getInherDepth()
+		res := @temp new RawArray.{int}
+		res.Resize(depth)
+
+		res^[0] = 0
+		if ContainVirtual
+			res^[0] = 1
+		_forEachAllParamInner(lambd,res,1)
+	}
+	_forEachAllParamInner := !( !(RawArray.{int}, FieldParam^)& -> void lambd,RawArray.{int}^ res,int d) -> void
+	{
+		parentCount := 0
+		if Parent != null
+			parentCount = 1
+
+		if Parent != null
+		{
+			res^.Resize(d+1)
+			res^[d] = 0
+			Parent._forEachAllParamInner(lambd,res,d+1)
+		}
+		res^.Resize(d+1)
+		for itP,i : Params
+		{
+			res^[d] = parentCount + i
+			lambd(res^,itP)
+		}
+	}
+}
+
 BuiltIn2CommonUnrollClass := class extend BuiltIn2Func
 {
 	ToClass := BoxClass^
 	ParName := char^
 
-	GetFieldPos := !() -> int
-	{
-		retType := Type^
-		if ToClass.Params[^i].ItName == ParName
-		{
-			return i
-		}
-		return -1
-	}
 	PrintFuncPre :=  !(BuiltIn2Call^ trg,TIOStream f,bool isAuto) -> void
 	{
-		pos := GetFieldPos()
-		if pos == -1 
-		{
-			FP := FakeFieldParam^
-			FPN := char^()
-			if ToClass.FakeParams[^i].ItName == ParName
-			{
-				pos = i
-				FP = it
-				FPN = it.Atter->{ObjIndent^}.MyStr
-				break
-			}
+		isFake := false
 
-			CType := ((ToClass.ClassType)->{Type^})
+	 	parPath := ToClass._getParamPath(ParName)
 
-			pos2 := -1
-			midType := FieldParam^
-			
-			if ToClass.Params[^i].ItName == FPN
-			{
-				midType = it
-				pos2 = i
-				break
-			}
-
-			if ToClass.ContainVirtual pos2 += 1
-			
-			cn := CType.GetName()
-
-			itId := trg.GenId()
-			if not isAuto
-				trg.Down.PrintPointPre(f)
-			f << "%Pre"<<itId<<" = getelementptr " << cn << " , " << cn << "* "
-			if isAuto
-				f << " %this"
-			else
-				f << trg.Down.GetPointName()
-			f << ", i32 0, i32 "<<pos2<<"\n"
-			f << "%T"<<itId<<" = bitcast " << midType.ResultType.GetName() << "* %Pre" << itId
-			f << " to " << FP.ResultType.GetName() << "*\n"
-			return void
-		}
-
-		usePos := ToClass.GetParamNr(pos)
-		
 		clName := ToClass.ClassType.GetName()
 
 		itId := trg.GenId() 
@@ -69,7 +92,21 @@ BuiltIn2CommonUnrollClass := class extend BuiltIn2Func
 			f << " %this"
 		else
 			f << trg.Down.GetPointName()
-		f <<", i32 0, i32 " << usePos <<"\n"
+		f <<", i32 0"
+
+		if ToClass.ContainVirtual
+		{
+			f << ", i32 1"
+		}else{
+			f << ", i32 0"
+		}
+
+
+		for it : parPath^
+		{
+			f << ",i32 " << it
+		}
+		f <<"\n"
 	}
 }
 
