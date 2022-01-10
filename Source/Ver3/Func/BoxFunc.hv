@@ -401,7 +401,8 @@ BoxFunc := class extend BoxFuncContainer
 
 PrintFuncBodySkobs := !(TIOStream f,TypeFunc^ fType,RawArray.{char^} names,string fName,string Extra,int itId) -> void
 {
-	f << "define " //TODO "dso_local "
+	//f << "define " //TODO "dso_local "
+	f << "define dso_local "
 
 	IsRetComplex := false
 

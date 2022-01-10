@@ -177,7 +177,7 @@ BoxBlock := class extend WorkObject
 			}
 			deferUpDepth = blkDepth
 			cntr := itrUp->{BoxFuncContainer^}
-			f << "define void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
+			f << "define dso_local void @BlockDeferCall" << ItId << "(i8* %StackObj,i1 %isException)\n"
 			f << "{\n"
 			f << "%StackObjABox = bitcast i8* %StackObj to %AllocClass" << cntr.ABox.ItId << "*\n"
 			cntr.PrintABoxData(f,"%StackObjABox",-1)
