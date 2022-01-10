@@ -1,24 +1,8 @@
-BuiltIn2UnrollClass := class extend BuiltIn2Func
+BuiltIn2CommonUnrollClass := class extend BuiltIn2Func
 {
 	ToClass := BoxClass^
 	ParName := char^
 
-	this := !(string Name, BoxClass^ l, bool lRef,Type^ retV, bool RRetRef) -> void
-	{
-		ParName = Name
-		ToClass = l
-
-		FuncName = Name
-		OutputName = Name
-		IsRetRef = RRetRef
-
-		PP := Queue.{Type^}() ; $temp
-		PP.Push(l.ClassType)
-
-		IsRefs := bool[1]
-		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
-	}
 	GetFieldPos := !() -> int
 	{
 		retType := Type^
@@ -28,7 +12,7 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 		}
 		return -1
 	}
-	PrintFunc := virtual  !(BuiltIn2Call^ trg,TIOStream f) -> void
+	PrintFuncPre :=  !(BuiltIn2Call^ trg,TIOStream f,bool isAuto) -> void
 	{
 		pos := GetFieldPos()
 		if pos == -1 
@@ -59,10 +43,14 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 			
 			cn := CType.GetName()
 
-			trg.Down.PrintPointPre(f)
-			itId := trg.GenId() 
+			itId := trg.GenId()
+			if not isAuto
+				trg.Down.PrintPointPre(f)
 			f << "%Pre"<<itId<<" = getelementptr " << cn << " , " << cn << "* "
-			f << trg.Down.GetPointName()
+			if isAuto
+				f << " %this"
+			else
+				f << trg.Down.GetPointName()
 			f << ", i32 0, i32 "<<pos2<<"\n"
 			f << "%T"<<itId<<" = bitcast " << midType.ResultType.GetName() << "* %Pre" << itId
 			f << " to " << FP.ResultType.GetName() << "*\n"
@@ -73,14 +61,61 @@ BuiltIn2UnrollClass := class extend BuiltIn2Func
 		
 		clName := ToClass.ClassType.GetName()
 
-		trg.Down.PrintPointPre(f)
 		itId := trg.GenId() 
-		f << "%T"<< itId <<" = getelementptr " << clName << " , " << clName << "* " 
-		f << trg.Down.GetPointName()
+		if not isAuto
+			trg.Down.PrintPointPre(f)
+		f << "%T"<< itId <<" = getelementptr " << clName << " , " << clName << "* "
+		if isAuto
+			f << " %this"
+		else
+			f << trg.Down.GetPointName()
 		f <<", i32 0, i32 " << usePos <<"\n"
 	}
 }
 
+BuiltIn2UnrollClass := class extend BuiltIn2CommonUnrollClass
+{
+	this := !(string Name, BoxClass^ l, bool lRef,Type^ retV, bool RRetRef) -> void
+	{
+		ParName = Name
+		ToClass = l
+
+		FuncName = Name
+		OutputName = Name
+		IsRetRef = RRetRef
+
+		PP := Queue.{Type^}() ; $temp
+		PP.Push(l.ClassType)
+
+		IsRefs := bool[1]
+		IsRefs[0] = lRef
+		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+	}
+	
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void
+	{
+		PrintFuncPre(trg,f,false)
+	}
+}
+BuiltIn2AutoField := class extend BuiltIn2UnrollClass
+{
+	this := !(Type^ l,bool lRef,BoxClass^ cl,char^ pName,char^ code) -> void
+	{
+		FuncName = "."
+		OutputName = "."
+		IsRetRef = lRef
+
+		PP := Queue.{Type^}()
+		MyFuncType = GetFuncType(PP,null->{bool^},l,lRef,false)
+
+		ToClass = cl
+		ParName = pName
+	}
+	PrintFunc := virtual  !(BuiltIn2Call^ trg,TIOStream f) -> void
+	{
+		PrintFuncPre(trg,f,true)
+	}
+}
 
 BuiltInTemplateUnroll := class extend BoxTemplate
 {
@@ -145,86 +180,7 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 	}
 }
 
-BuiltIn2AutoField := class extend BuiltIn2Func
-{
-	ToClass := BoxClass^
-	ParName := char^
 
-	this := !(Type^ l,bool lRef,BoxClass^ cl,char^ pName,char^ code) -> void
-	{
-		FuncName = "."
-		OutputName = "."
-		IsRetRef = lRef
-
-		PP := Queue.{Type^}()
-		MyFuncType = GetFuncType(PP,null->{bool^},l,lRef,false)
-
-		ToClass = cl
-		ParName = pName
-	}
-	PrintFunc := virtual  !(BuiltIn2Call^ trg,TIOStream f) -> void
-	{
-		if true 
-		{
-
-			pos := -1
-			if ToClass.Params[^i].ItName == ParName
-			{
-				pos = i
-				break
-			}
-
-			if pos == -1
-			{
-				if ToClass.FakeParams[^i].ItName == ParName
-				{
-					pos = i
-					break
-				}
-
-				CType := ((ToClass.ClassType)->{Type^})
-				CTypeP := CType.GetPoint()
-
-				FP := ToClass.FakeParams[pos]
-				assert(FP.Atter is ObjIndent)
-				FPN := ((FP.Atter)->{ObjIndent^}).MyStr
-				pos2 := -1
-				midType := FieldParam^
-
-				if ToClass.Params[^i].ItName == FPN
-				{
-					pos2 = i
-					midType = it
-					break
-				}
-				assert(pos2 != -1)
-
-				if ToClass.ContainVirtual pos2 += 1
-
-				cn := CType.GetName()
-
-				itId := trg.GenId() 
-				f << "%Pre"<<itId<<" = getelementptr " << cn << " , " << cn << "* "
-				f << " %this"
-				f << ", i32 0, i32 "<<pos2<<"\n"
-				f << "%T"<<itId<<" = bitcast " << midType.ResultType.GetName() << "* %Pre" << itId
-				f << " to " << FP.ResultType.GetName() << "*\n"
-
-				return void
-			}
-
-			CType := ((ToClass.ClassType)->{Type^})
-			clName := CType.GetName()
-			fatPos := pos
-			if ToClass.ContainVirtual fatPos += 1
-
-			itId := trg.GenId() 
-			f << "%T"<< itId <<" = getelementptr " << clName << " , " << clName << "* " 
-			f << " %this"
-			f <<", i32 0, i32 " << fatPos <<"\n"
-		}
-	}
-}
 
 BuiltInTemplateAutoField := class extend BoxTemplate
 {
