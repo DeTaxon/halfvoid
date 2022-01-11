@@ -18,6 +18,7 @@ GlobalUnroll := BuiltInTemplateUnroll^
 //GlobalNew := BuiltInTemplateNew^
 GlobalUnpoint := BuiltInTemplatePoint^
 GlobalRefExc := BuiltInTemplateRefEx^
+GlobalRefExc2 := BuiltInTemplateRefEx2^
 GlobalExcArr := BuiltInTemplateExcArr^
 
 ReturnName := string

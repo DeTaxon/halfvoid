@@ -61,8 +61,30 @@ globalVClass3 := subVirtClass
 globalVClass4 := subVirtClassInh
 
 
+NonVirtualClass := class
+{
+	x := int
+	Res := !() -> int
+	{
+		return x
+	}
+}
+SomeVirtualClass := class extend NonVirtualClass
+{
+	Test := virtual !() -> void
+	{
+		x = 16
+		printf("heh %p %i\n",Res(),x)
+	}
+}
+
+
 main := !(int argc, char^^ argv) -> int
 {
+	bugTest1 := SomeVirtualClass
+	bugTest1.Test()
+	printf("heh %p %i\n",bugTest1.Res(),bugTest1.x)
+	
 	globalVClass.x()
 	globalVClass2[0].x()
 	globalVClass3.y.x()

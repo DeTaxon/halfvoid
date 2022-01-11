@@ -1008,6 +1008,7 @@ BuiltInTemplateRefEx := class extend BoxTemplate
 		pars := ref itBox.itPars
 		consts := ref itBox.itConsts
 		asType := consts[0]->{ObjType^}
+
 		return new BuiltInFuncUno("->",pars[0].first,true,asType.MyType,true,
 			"#0 = bitcast "sbt + pars[0].first.GetPoint().GetName() + " #1 to " + asType.MyType.GetPoint().GetName() + " #d\n")
 	}
@@ -1098,6 +1099,7 @@ AddTemplates := !() -> void
 	//GlobalNew = new BuiltInTemplateNew()
 	GlobalUnpoint = new BuiltInTemplatePoint()
 	GlobalRefExc = new BuiltInTemplateRefEx()
+	GlobalRefExc2 = new BuiltInTemplateRefEx2()
 	GlobalExcArr = new BuiltInTemplateExcArr()
 
 	//BuiltInTemplates.Push(new BuiltInTemplateExcFatArr())

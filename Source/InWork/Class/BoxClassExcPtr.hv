@@ -1,0 +1,59 @@
+BuiltIn2ExcPtr := class extend BuiltIn2Func
+{
+	resType := Type^
+	this := !(Type^ inType, Type^ outType, TypeFunc^ funcType) -> void
+	{
+		FuncName = "->"
+		MyFuncType = funcType
+		resType = outType
+	}
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
+		trg.GenId()
+		trg.Down.PrintPointPre(f)
+		trg.PrintRes(f)
+		f << " = bitcast "
+		trg.Down.PrintPointUse(f)
+		f << " to "
+		f << resType.GetName()
+		if DebugMode
+		{
+			dbgId := CreateDebugCall(trg)
+			if dbgId != -1
+			{
+				f << ", !dbg !" << dbgId
+			}
+		}
+		f << "\n"
+	}
+}
+
+BuiltInTemplateRefEx2 := class extend BoxTemplate
+{
+	this := !() -> void
+	{
+		FuncName = "."
+		OutputName = "error"
+
+		emptType := Queue.{Type^}() ; $temp
+		emptType.Push(null->{Type^})
+		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		IsMethod = true
+	}
+	GetPriority := virtual !(FuncInputBox itBox) -> int
+	{
+		if itBox.itPars.Size() != 1 return 255
+		return 0
+	}
+	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
+	{
+		pars := ref itBox.itPars
+		consts := ref itBox.itConsts
+		asType := consts[0]->{ObjType^}
+
+		return new BuiltIn2ExcPtr(pars[0].first,asType.MyType,fun)
+	}
+	DoTheWork := virtual !(int pri) -> void
+	{
+		
+	}
+}
