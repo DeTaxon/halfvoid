@@ -19,7 +19,7 @@ AppendClass BoxClass
 	{
 		parentCount := 0
 
-		if Parent != null
+		if Parent != null and Parent.ParamsCount() != 0
 			parentCount = 1
 
 		for it,i : Params
@@ -53,14 +53,13 @@ AppendClass BoxClass
 	_forEachAllParamInner := !( !(RawArray.{int}, FieldParam^)& -> void lambd,RawArray.{int}^ res,int d) -> void
 	{
 		parentCount := 0
-		if Parent != null
-			parentCount = 1
 
-		if Parent != null
+		if Parent != null and Parent.ParamsCount() != 0
 		{
 			res^.Resize(d+1)
-			res^[d] = 0
+			res^[d] = parentCount
 			Parent._forEachAllParamInner(lambd,res,d+1)
+			parentCount += 1
 		}
 		res^.Resize(d+1)
 		for itP,i : Params

@@ -63,20 +63,11 @@ GlobalParam := class extend MemParamCommon
 	PrintParameters := !(TIOStream f,BoxClass^ parClass) -> bool
 	{
 		needComma := false
-		parentCount := 0
-		if parClass.Parent != null
-			parentCount = 1
 
 		f << "%ClassParams" << parClass.ClassId << "{"
-		if parClass.Parent != null
+		if parClass.Parent != null and parClass.Parent.ParamsCount() != 0
 		{
 			needComma = PrintParameters(f,parClass.Parent)
-		}
-		if parClass.Params.Size() == 0
-		{
-			if needComma 
-				f << " , "
-			f << "i1 0"
 		}
 		for itPr : parClass.Params
 		{
@@ -110,14 +101,19 @@ GlobalParam := class extend MemParamCommon
 		if toPr.Params.Size() == 0 and not toPr.ContainVirtual {
 			f << "i8 0"
 		}
-		
+	
+		needComma := false
 		if toPr.ContainVirtual
 		{
 			addedVal = true
 			f << "%ClassTableType" << toPr.ClassId << "* @ClassTableItem" << toPr.ClassId 
-			f << ","
+			needComma = true
 		}
-		PrintParameters(f,toPr)
+		if toPr.ParamsCount() != 0 or not toPr.ContainVirtual
+		{
+			if needComma f << ","
+			PrintParameters(f,toPr)
+		}
 		
 		f << "}\n"
 	}
