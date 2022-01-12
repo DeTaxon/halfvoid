@@ -4,7 +4,7 @@ BuiltIn2ExcPtr := class extend BuiltIn2Func
 	this := !(Type^ inType, Type^ outType, TypeFunc^ funcType) -> void
 	{
 		FuncName = "->"
-		MyFuncType = funcType
+		MyFuncType = GetFuncType(![inType],outType,true)
 		resType = outType
 	}
 	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
@@ -14,7 +14,7 @@ BuiltIn2ExcPtr := class extend BuiltIn2Func
 		f << " = bitcast "
 		trg.Down.PrintPointUse(f)
 		f << " to "
-		f << resType.GetName()
+		f << resType.GetName() << "*"
 		if DebugMode
 		{
 			dbgId := CreateDebugCall(trg)

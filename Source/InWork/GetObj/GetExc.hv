@@ -31,7 +31,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 		box := @temp new FuncInputBox
 		box.itPars.Emplace(itemType,isRef)
 		box.itConsts.Push(@temp new ObjType(ToType))
-		preRet :=  GlobalRefExc^.GetFunc(box^)
+		preRet :=  GlobalRefExc2^.GetFunc(box^)
 		return preRet
 		//return GetExcPointers(itemType,ToType)
 	}

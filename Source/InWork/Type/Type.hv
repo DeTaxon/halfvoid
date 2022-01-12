@@ -171,6 +171,10 @@ GetFuncType := !(Type^[@Siz] typs,Type^ retType) -> TypeFunc^
 {
 	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,false,false,false)
 }
+GetFuncType := !(Type^[@Siz] typs,Type^ retType,bool retRef) -> TypeFunc^
+{
+	return GetFuncType(typs[0]&->{Type^^},null,Siz,retType,retRef,false,false)
+}
 GetFuncType := !(Type^[@Siz] lin,bool[@Siz2] isR,Type^ retType) -> TypeFunc^
 {
 	return GetFuncType(lin[0]&->{Type^^},isR[0]&,Siz,retType,false,false,false)
