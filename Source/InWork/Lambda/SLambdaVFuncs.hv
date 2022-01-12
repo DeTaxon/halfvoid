@@ -181,7 +181,7 @@ AppendClass SLambda
 				if it.2 
 				{
 					f << "%TSt" << sii << " = getelementptr " << upABName
-						<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+						<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 0,i32 " << sii << "\n"
 					it.1.PrintPointPre(f,newIdd,-1)
 					f << "store "
 					it.1.PrintPointUse(f,newIdd,-1)
@@ -189,7 +189,7 @@ AppendClass SLambda
 					f << "%TSt" << sii << "\n"
 				}else{
 					f << "%TSt" << sii << " = getelementptr " << upABName
-						<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 " << sii << "\n"
+						<< " , "<< upABName  << "* %OldPtr0,i32 0,i32 "<< cptInAllocNR <<",i32 0,i32 " << sii << "\n"
 					it.1.PrintPre(f,newIdd,-1)
 					f << "store "
 					it.1.PrintUse(f,newIdd,-1)

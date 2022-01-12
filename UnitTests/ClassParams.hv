@@ -1,0 +1,89 @@
+
+clA := class
+{
+	x := int
+	y := char
+}
+clB := class extend clA
+{
+	z := char
+}
+
+VirtClass := class
+{
+	x := virtual !() -> int
+	{
+		return 17
+	}
+}
+subVirtClass := class
+{
+	y := VirtClass
+	z := VirtClass[4]
+}
+subVirtClassInh := class extend subVirtClass
+{
+	w := VirtClass
+}
+
+globalVClass := VirtClass
+globalVClass2 := VirtClass[2]
+globalVClass3 := subVirtClass
+globalVClass4 := subVirtClassInh
+
+
+NonVirtualClass := class
+{
+	x := int
+	Res := !() -> int
+	{
+		return x
+	}
+	Res2 := !(int someVal) -> int
+	{
+		assert(someVal == 9973)
+		return x
+	}
+}
+SomeVirtualClass := class extend NonVirtualClass
+{
+	Test := virtual !() -> void
+	{
+		x = 16
+		assert(Res() == x)
+		assert(Res2(9973) == x)
+	}
+}
+
+
+TestClassParams := !() -> void
+{
+	bugTest1 := SomeVirtualClass
+	bugTest1.Test()
+	assert(bugTest1.Res() == bugTest1.x)
+	assert(bugTest1.Res2(9973) == bugTest1.x)
+	
+	globalVClass.x()
+	globalVClass2[0].x()
+	globalVClass3.y.x()
+	globalVClass3.z[1].x()
+	globalVClass4.z[3].x()
+
+
+
+	assert(clB->TypeSize == 12)
+
+	obj := clB
+
+	for it,ind : obj->Fields
+	{
+		offset := it&->{void^}->{size_t} - obj&->{void^}->{size_t}
+		switch ind
+		{
+			case "x" assert(offset == 0)
+			case "y" assert(offset == 4)
+			case "z" assert(offset == 8)
+		}
+	} 
+	assert(subVirtClassInh->TypeSize == 48)
+}
