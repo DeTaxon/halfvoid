@@ -1,7 +1,3 @@
-//AppendClass BoxClass
-//{
-//}
-
 BuiltInThislessTemplate := class extend BoxTemplate
 {
 	itTemplate := BoxTemplate^
@@ -67,42 +63,6 @@ BuiltInThislessTemplate := class extend BoxTemplate
 		createdFuncs[^].MakeLine(0)
 	}
 }
-//BuiltIn2ThislessFunc := class extend BuildIn2Func
-//{
-//	itFunc := BoxFunc^
-//	itClass := BoxClass^
-//	itInClass := BoxClass^
-//	this := !(BoxFunc^ toFunc,BoxClass^ toClass,BoxClass^ inClass) -> void
-//	{
-//		toFunc.ParseBlock()
-//		itFunc = toFunc
-//		itClass = toClass
-//		itInClass = inClass
-//		FuncName = toFunc.FuncName
-//		OutputName = toFunc.OutputName
-//
-//		IsRetRef = toFunc.IsRetRef
-//
-//		newTypes := Queue.{Type^}() ; $temp
-//		itsBools := Queue.{bool}() ; $temp
-//
-//		fTyp := toFunc.MyFuncType
-//
-//		i := 1
-//		while i < fTyp.ParsCount
-//		{
-//			if fTyp.ParsIsRef == null{
-//				itsBools.Push(false)
-//			}else{
-//				itsBools.Push(fTyp.ParsIsRef[i])
-//			}
-//			newTypes.Push(fTyp.Pars[i])
-//			i += 1
-//		}
-//		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
-//		//MakeLine()
-//	}
-//}
 BuiltIn2ThislessFunc := class extend BuiltIn2Func
 {
 	itFunc := BoxFunc^
@@ -137,7 +97,6 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 			i += 1
 		}
 		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
-		//MakeLine()
 	}
 	MakeLine := !(int inpId) -> void
 	{
@@ -183,6 +142,7 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 
 			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << fnc.fType.Pars[0].GetName() << "* " << debStr << "\n"
 		}else{
+			assert(false)
 			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
 		}
 
