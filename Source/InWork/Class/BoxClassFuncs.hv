@@ -105,92 +105,93 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 	
 	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void 
 	{
-		aseBase := MyFuncType->{Type^}
-		FuncTypeName := aseBase.GetName()
-		classId := itClass.ClassId
+		assert(false)
+		//aseBase := MyFuncType->{Type^}
+		//FuncTypeName := aseBase.GetName()
+		//classId := itClass.ClassId
 
-		isRetComp := MyFuncType.RetRef
-		if not isRetComp
-		{
-			if MyFuncType.RetType != null
-			{
-				isRetComp = IsComplexType(MyFuncType.RetType)
-			}
-		}
+		//isRetComp := MyFuncType.RetRef
+		//if not isRetComp
+		//{
+		//	if MyFuncType.RetType != null
+		//	{
+		//		isRetComp = IsComplexType(MyFuncType.RetType)
+		//	}
+		//}
 
-		callId := trg.GenId()
+		//callId := trg.GenId()
 
-		debStr := ""
-		debId := -1
-		if DebugMode
-		{
-			debId = CreateDebugCall(trg)
-			if debId != -1
-			{
-				debStr = (", !dbg !"sbt + debId)->{char^}
-			}
-		}
+		//debStr := ""
+		//debId := -1
+		//if DebugMode
+		//{
+		//	debId = CreateDebugCall(trg)
+		//	if debId != -1
+		//	{
+		//		debStr = (", !dbg !"sbt + debId)->{char^}
+		//	}
+		//}
 
-		if itFunc.IsVirtual
-		{
-			fnc := itInClass.vTable[id]->{VTableFunction^}
-			FuncTypeName2 := fnc.fType.GetName()
-			f << "%FuncTabel"<<callId<<" = getelementptr %Class" << classId << " , %Class" << classId << "* %this, i32 0, i32 0 " << debStr << "\n"
-			f << "%PreFunc" << callId << " = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel" << callId << debStr <<" \n"
-			f << "%FuncPtr" << callId << " = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc" << callId << ", i32 0, i32 " << id <<debStr << " \n"
-			f << "%Func" << callId << " = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr" << callId << debStr << "\n"
+		//if itFunc.IsVirtual
+		//{
+		//	fnc := itInClass.vTable[id]->{VTableFunction^}
+		//	FuncTypeName2 := fnc.fType.GetName()
+		//	f << "%FuncTabel"<<callId<<" = getelementptr %Class" << classId << " , %Class" << classId << "* %this, i32 0, i32 0 " << debStr << "\n"
+		//	f << "%PreFunc" << callId << " = load %ClassTableType" << classId << "* , %ClassTableType" << classId << "** %FuncTabel" << callId << debStr <<" \n"
+		//	f << "%FuncPtr" << callId << " = getelementptr %ClassTableType" << classId << " , %ClassTableType" << classId << "* %PreFunc" << callId << ", i32 0, i32 " << id <<debStr << " \n"
+		//	f << "%Func" << callId << " = load " << FuncTypeName2 << "* , " << FuncTypeName2 << "** %FuncPtr" << callId << debStr << "\n"
 
-			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << fnc.fType.Pars[0].GetName() << "* " << debStr << "\n"
-		}else{
-			assert(false)
-			f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
-		}
+		//	f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << fnc.fType.Pars[0].GetName() << "* " << debStr << "\n"
+		//}else{
+		//	assert(false)
+		//	f << "%NewThis" << callId << " = bitcast " << itClass.GetClassOutputName() << "* %this to " << itInClass.GetClassOutputName() << "* " << debStr << "\n"
+		//}
 
-		
-		itr := trg.Down
-		for i : MyFuncType.ParsCount
-		{
-			if MyFuncType.ParsIsRef[i]
-			{
-				itr.PrintPointPre(f)
-			}else{
-				itr.PrintPre(f)
-			}
-			itr = itr.Right
-		}
+		//
+		//itr := trg.Down
+		//for i : MyFuncType.ParsCount
+		//{
+		//	if MyFuncType.ParsIsRef[i]
+		//	{
+		//		itr.PrintPointPre(f)
+		//	}else{
+		//		itr.PrintPre(f)
+		//	}
+		//	itr = itr.Right
+		//}
 
-		//ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
-		if (MyFuncType.RetType != GTypeVoid and not isRetComp) or IsRetRef
-		{
-			trg.PrintRes(f)
-			f << " = "
-		}
-		fTypp := itFunc.MyFuncType
-		fTypp2 := fTypp->{Type^}
-		if itFunc.IsVirtual
-		{
-			fnc := itInClass.vTable[id]->{VTableFunction^}
-			f << "call " << fnc.fType.GetName()  << "%Func" << callId << "("
-			f << fnc.fType.Pars[0].GetName() << "* %NewThis" << callId << ""
-		}else{
-			f <<  "call " << fTypp2.GetName()  << "@" << OutputName << "("
-			f <<  itInClass.GetClassOutputName() << "* %NewThis" << callId << ""
-		}
+		////ToExe = ToExe + "%NewThis## = bitcast " + itClass.GetClassOutputName() + "* %this to " + itInClass.GetClassOutputName() + "*\n"
+		//if (MyFuncType.RetType != GTypeVoid and not isRetComp) or IsRetRef
+		//{
+		//	trg.PrintRes(f)
+		//	f << " = "
+		//}
+		//fTypp := itFunc.MyFuncType
+		//fTypp2 := fTypp->{Type^}
+		//if itFunc.IsVirtual
+		//{
+		//	fnc := itInClass.vTable[id]->{VTableFunction^}
+		//	f << "call " << fnc.fType.GetName()  << "%Func" << callId << "("
+		//	f << fnc.fType.Pars[0].GetName() << "* %NewThis" << callId << ""
+		//}else{
+		//	f <<  "call " << fTypp2.GetName()  << "@" << OutputName << "("
+		//	f <<  itInClass.GetClassOutputName() << "* %NewThis" << callId << ""
+		//}
 
-		itr = trg.Down
-		for i : MyFuncType.ParsCount
-		{
-			f << ","
-			if MyFuncType.ParsIsRef[i]
-			{
-				itr.PrintPointUse(f)
-			}else{
-				itr.PrintUse(f)
-			}
-			itr = itr.Right
-		}
+		//itr = trg.Down
+		//for i : MyFuncType.ParsCount
+		//{
+		//	f << ","
+		//	if MyFuncType.ParsIsRef[i]
+		//	{
+		//		itr.PrintPointUse(f)
+		//	}else{
+		//		itr.PrintUse(f)
+		//	}
+		//	itr = itr.Right
+		//}
 
-		f << ")" << debStr  << "\n"
+		//f << ")" << debStr  << "\n"
 	}
 }
 

@@ -257,14 +257,32 @@ MakeSimpleCall := !(BoxFunc^ func, Object^ pars) -> BaseFuncCall^
 	if func is BuiltIn2ThislessFunc
 	{	
 		func2 := func->{BuiltIn2ThislessFunc^}
-		if not func2.itFunc.IsVirtual
+		callFunc := func2.itFunc
+
+		if callFunc.IsVirtual
 		{
-			thisMemObj := new FuncParam("this",func2.itClass.ClassType,true)
-			thisObj := new ParamNaturalCall("",thisMemObj)
-			thisObj.Right = pars
-			if pars != null pars.Left = thisObj
-			return MakeSimpleCall(func2.itFunc,thisObj)
+			found := false
+			for it : func2.itInClass.vTypes
+			{
+				if not it is VTableFunction
+					continue
+				vFunc := it->{VTableFunction^}
+				if vFunc.fItem == callFunc
+				{
+					found = true
+					callFunc = vFunc.funcWrapper
+					assert(callFunc != null)
+					break
+				}
+			}
+			assert(found)
 		}
+
+		thisMemObj := new FuncParam("this",func2.itClass.ClassType,true)
+		thisObj := new ParamNaturalCall("",thisMemObj)
+		thisObj.Right = pars
+		if pars != null pars.Left = thisObj
+		return MakeSimpleCall(callFunc,thisObj)
 	}
 	return func.GenerateCall(pars)?
 	if func.IsAssembler() return new AssemblerCall(func,pars)
