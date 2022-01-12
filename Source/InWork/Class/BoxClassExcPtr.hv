@@ -1,3 +1,41 @@
+AppendClass BoxClass
+{
+	_getPathToParent := !(Type^ toType,char^^ parName,RawArray.{int} res) -> void
+	{
+		d := _getInherDepth()
+		res.Resize(d)
+
+		assert(ClassType != toType)
+
+		if ContainVirtual
+		{
+			res[0] = 1
+		}else{
+			res[0] = 0
+		}
+
+		resBool := _getPathToParentInner(toType,res,1)
+		assert(resBool)
+		id := toType->{TypeClass^}.ToClass.ClassId
+		s := "%ClassParams"sbt + id 
+		parName^ = s.Str() 
+	}
+	_getPathToParentInner := !(Type^ toType,RawArray.{int} res, int d) -> bool
+	{
+		if ClassType == toType
+		{
+			res.Resize(d)	
+			return true
+		}
+		assert(Parent.ParamsCount() != 0)
+		res[d] = 0
+		if Parent._getPathToParentInner(toType,res,d+1)
+			return true
+		return false	
+	}
+
+}
+
 BuiltIn2ExcPtr := class extend BuiltIn2Func
 {
 	resType := Type^
@@ -7,21 +45,62 @@ BuiltIn2ExcPtr := class extend BuiltIn2Func
 		MyFuncType = GetFuncType(![inType],outType,true)
 		resType = outType
 	}
-	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void {
-		trg.GenId()
+	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void 
+	{
+		id := trg.GenId()
 		trg.Down.PrintPointPre(f)
+
+		dType := trg.Down.GetType()
+
+		dbgId := -1
+		if DebugMode
+		{
+			dbgId = CreateDebugCall(trg)
+		}
+
+		if dType is TypeClass and resType is TypeClass 
+		{
+			inClass := dType->{TypeClass^}.ToClass
+			outClass := resType->{TypeClass^}.ToClass
+
+			if inClass.ContainVirtual and not outClass.ContainVirtual and outClass.ParamsCount() != 0
+			{
+				resClassName := char^
+				pth := @temp new RawArray.{int}
+				inClass._getPathToParent(resType,resClassName&,pth^)
+
+				f << "%Tmp" << id << " = getelementptr " << dType.GetName() << " , "
+				trg.Down.PrintPointUse(f)
+				f << ", i32 0"
+
+				for it : pth^
+				{
+					f << ",i32 " << it
+				}
+				f << "\n"
+
+
+				trg.PrintRes(f)
+				f << " = bitcast " << resClassName << "* %Tmp" << id 
+				f << " to "
+				f << resType.GetName() << "*"
+				if dbgId != -1
+				{
+					f << ", !dbg !" << dbgId
+				}
+				f << "\n"
+				return void
+			}
+		}
+
 		trg.PrintRes(f)
 		f << " = bitcast "
 		trg.Down.PrintPointUse(f)
 		f << " to "
 		f << resType.GetName() << "*"
-		if DebugMode
+		if dbgId != -1
 		{
-			dbgId := CreateDebugCall(trg)
-			if dbgId != -1
-			{
-				f << ", !dbg !" << dbgId
-			}
+			f << ", !dbg !" << dbgId
 		}
 		f << "\n"
 	}
