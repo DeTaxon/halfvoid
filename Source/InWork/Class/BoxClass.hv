@@ -11,7 +11,7 @@ BoxClass := class extend BoxClassBase
 	VirtualCheck := BuiltInCheckVirtualType^
 
 	ExtendObject := Object^
-	Parent := BoxClass^
+	Parents := HybridQueue.{BoxClass^,4}
 	Childs := AVLSet.{BoxClass^}
 
 	ContainVirtual  := bool
@@ -80,7 +80,10 @@ BoxClass := class extend BoxClassBase
 					gotTempls.Emplace(tmps,iterF)
 				}
 			}
-			iterF = iterF.Parent
+			if iterF.Parents.Size() == 0
+				iterF = null
+			else
+				iterF = iterF.Parents[0] //TODOPARENT
 		}
 
 		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
@@ -168,7 +171,7 @@ BoxClass := class extend BoxClassBase
 		return null
 	}
 
-	this := !(Object^ item, BoxClass^ par,Object^ extItem) -> void 
+	this := !(Object^ item,BoxClass^ par,Object^ extItem) -> void  //TODOPARENT par must be list
 	{
 		ClassName = "anon"
 		if item != null Line = item.Line	
@@ -189,7 +192,10 @@ BoxClass := class extend BoxClassBase
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
-		SetParent(par)
+		tmpList := List.{BoxClass^}
+		if par != null
+			tmpList << par
+		SetParents(tmpList)
 
 		if par?.ContainVirtual ContainVirtual = true
 		if Down != null and not ContainVirtual
@@ -215,8 +221,8 @@ BoxClass := class extend BoxClassBase
 			return it
 		if FakeParams[^].ItName == name
 			return it
-		if Parent != null
-			return Parent.GetFieldParam(name)
+		if Parents.Size() != 0
+			return Parents[0].GetFieldParam(name) //TODOPARENT
 		return null
 	}
 	
@@ -228,12 +234,12 @@ BoxClass := class extend BoxClassBase
 		Inherited = true
 
 
-		if Parent != null
+		if Parents.Size() != 0 //TODOPARENT
 		{
-			Parent.InheritParams()
-			IsGC = Parent.IsGC
+			Parents[0].InheritParams()
+			IsGC = Parents[0].IsGC
 			//InheritParams2()
-			if Parent.ContainVirtual 
+			if Parents[0].ContainVirtual 
 				ContainVirtual = true
 			WorkBag.Push(this&,State_PrePrint)
 		}
@@ -254,13 +260,13 @@ BoxClass := class extend BoxClassBase
 
 				if cl.IsGC and not IsGC
 				{
-					if Parent != null 
+					if Parents.Size() != 0 //TODOPARENT
 						EmitError("can not turn class to gc type")
 					if gcClass == null
 						EmitError("internal error, no class TGCObject")
-					Parent = gcClass
+					Parents.Push(gcClass) //TODOPARENT
 					IsGC = true
-					if Parent.ContainVirtual 
+					if Parents[0].ContainVirtual //TODOPARENT
 						ContainVirtual = true
 					WorkBag.Push(this&,State_PrePrint)
 				}
@@ -326,7 +332,9 @@ BoxClass := class extend BoxClassBase
 						EmitError("wip\n")
 					}else{
 						PreParent := newType->{TypeClass^}
-						SetParent(PreParent.ToClass)
+						tmpList := List.{BoxClass^}
+						tmpList << PreParent.ToClass
+						SetParents(tmpList) //TODOPARENT
 						if PreParent.ToClass.IsGC
 						{
 							this.IsGC = true
@@ -347,12 +355,12 @@ BoxClass := class extend BoxClassBase
 			ComputeVTable()		
 		}
 	}
-	SetParent := !(BoxClass^ p) -> void
+	SetParents := !(pList) -> void
 	{
-		Parent = p
-		if p != null
+		for par : pList
 		{
-			p.Childs.Insert(this&)
+			this.Parents.Push(par)
+			par.Childs.Insert(this&)
 		}
 	}
 
@@ -365,7 +373,10 @@ BoxClass := class extend BoxClassBase
 		checkedPoisons = true
 
 		addedFuncs := AVLSet.{char^}()
-		prnt := Parent
+		prnt := BoxClass^ //TODOPARENT
+		if Parents.Size() != 0
+			prnt = Parents[0] //TODOPARENT
+			
 		while prnt != null
 		{
 			for it,name : prnt.ItPoisons
@@ -393,7 +404,9 @@ BoxClass := class extend BoxClassBase
 					WorkBag.Push(newSub,State_Start)
 				}
 			}
-			prnt = prnt.Parent
+			if prnt.Parents.Size() != 0 //TODOPARENT
+				prnt = prnt.Parents[0]
+			else prnt = null
 		}
 	}
 	GetValue := virtual !() -> string
@@ -414,7 +427,9 @@ BoxClass := class extend BoxClassBase
 				{
 					Funcs.Push(it->{VTableFunction^}.funcWrapper) 
 				}
-				itrF = itrF.Parent
+				if itrF.Parents.Size() == 0 //TODOPARENT
+					itrF = null
+				else itrF = itrF.Parents[0]
 			}
 		}
 		maybeForced := Find(name,'.')
@@ -482,15 +497,15 @@ BoxClass := class extend BoxClassBase
 		bestFunc := GetBestFunc(itBox,Funcs^,Templs^)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
-		if bestFunc == null and this.Parent != null and name != "this"
+		if bestFunc == null and this.Parents.Size() != 0 and name != "this" //TODOPARENT
 		{
 			oldVal := Type^
 			if name != "new"
 			{
 				oldVal = itBox.itPars[0].first
-				itBox.itPars[0].first = Parent.ClassType
+				itBox.itPars[0].first = Parents[0].ClassType //TODOPARENT
 			}
-			res :=  this.Parent.GetFunc(name,itBox,iVir)
+			res :=  this.Parents[0].GetFunc(name,itBox,iVir) //TODOPARENT
 			if name != "new" { itBox.itPars[0].first = oldVal }
 
 			return res

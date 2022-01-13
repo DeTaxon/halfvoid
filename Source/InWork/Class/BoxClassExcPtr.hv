@@ -27,9 +27,9 @@ AppendClass BoxClass
 			res.Resize(d)	
 			return true
 		}
-		assert(Parent.ParamsCount() != 0)
+		assert(Parents[0].ParamsCount() != 0) //TODOPARENT
 		res[d] = 0
-		if Parent._getPathToParentInner(toType,res,d+1)
+		if Parents[0]._getPathToParentInner(toType,res,d+1)
 			return true
 		return false	
 	}

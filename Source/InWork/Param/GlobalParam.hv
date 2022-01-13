@@ -65,9 +65,9 @@ GlobalParam := class extend MemParamCommon
 		needComma := false
 
 		f << "%ClassParams" << parClass.ClassId << "{"
-		if parClass.Parent != null and parClass.Parent.ParamsCount() != 0
+		if parClass.Parents.Size() != 0 and parClass.Parents[0].ParamsCount() != 0 //TODOPARENT
 		{
-			needComma = PrintParameters(f,parClass.Parent)
+			needComma = PrintParameters(f,parClass.Parents[0])
 		}
 		for itPr : parClass.Params
 		{

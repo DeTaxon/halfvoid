@@ -3,7 +3,7 @@ AppendClass BoxClass
 	ParamsCount := !() -> int
 	{
 		sum := Params.Size()
-		if Parent != null
+		for Parent : Parents //TODOPARENT
 			sum += Parent.ParamsCount()
 		return sum
 	}
@@ -13,9 +13,9 @@ AppendClass BoxClass
 		
 		needComma := false
 		f << "%ClassParams" << ClassId << " = type{"
-		if Parent != null and Parent.ParamsCount() != 0
+		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT
 		{
-			f << "%ClassParams" << Parent.ClassId
+			f << "%ClassParams" << Parents[0].ClassId
 			needComma = true
 		}
 		if Params.Size() == 0
@@ -100,7 +100,7 @@ AppendClass BoxClass
 			f << ", i32 0, i32 0\n"
 			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
 		}
-		if Params.Size() != 0 or Parent != null
+		if Params.Size() != 0 or Parents.Size() != 0
 		{
 			f << "%Tsub = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* %this , i32 0"
 			if ContainVirtual
@@ -120,10 +120,10 @@ AppendClass BoxClass
 
 		parentCount := 0
 
-		if Parent != null and Parent.ParamsCount() != 0
+		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT
 		{
 			f << "%Parent1 = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId << "* %this, i32 0, i32 0\n"
-			f << "call void @ClassExtraConstructorParams" << Parent.ClassId << "(%ClassParams" << Parent.ClassId << "* %Parent1)\n"
+			f << "call void @ClassExtraConstructorParams" << Parents[0].ClassId << "(%ClassParams" << Parents[0].ClassId << "* %Parent1)\n"
 			parentCount += 1
 		}
 

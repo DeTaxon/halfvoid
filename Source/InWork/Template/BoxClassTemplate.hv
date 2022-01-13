@@ -110,7 +110,9 @@ BoxClassTemplate := class extend Object
 				asTmpl := clIter.Up->{BoxClassTemplate^}
 				templs.Push(asTmpl.relAttrs&)
 			}
-			clIter = clIter.Parent
+			if clIter.Parents.Size() == 0 //TODOPARENT
+				clIter = null
+			else clIter = clIter.Parents[0]
 		}
 		
 		
