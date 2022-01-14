@@ -75,6 +75,7 @@ main := !(int argc, char^^ argv) -> int
 	
 	printf("Y by func %i\n",c.ReGetY())
 	assert(c.ReGetY() == c.y)
+	assert(c.GetY() == c.y)
 	return 0
 }
 +

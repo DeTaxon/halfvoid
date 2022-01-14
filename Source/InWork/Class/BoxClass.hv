@@ -384,12 +384,8 @@ BoxClass := class extend BoxClassBase
 		if checkedPoisons return void
 		checkedPoisons = true
 
-		addedFuncs := AVLSet.{char^}()
-		prnt := BoxClass^ //TODOPARENT
-		if Parents.Size() != 0
-			prnt = Parents[0] //TODOPARENT
-			
-		while prnt != null
+		addedFuncs := AVLSet.{char^}() //TODO MEM
+		checkClass := (BoxClass^ prnt) ==> 
 		{
 			for it,name : prnt.ItPoisons
 			{
@@ -399,7 +395,7 @@ BoxClass := class extend BoxClassBase
 				{
 					addedFuncs.Insert(name) ; $temp
 
-					newSub := new ObjParam(name,false)
+					newSub := new ObjParam(name,false) //TODO it is always make copy, i want on demand
 					newSub.Down = it.Clone()
 					newSub.Down.Up = newSub
 
@@ -416,10 +412,11 @@ BoxClass := class extend BoxClassBase
 					WorkBag.Push(newSub,State_Start)
 				}
 			}
-			if prnt.Parents.Size() != 0 //TODOPARENT
-				prnt = prnt.Parents[0]
-			else prnt = null
+			for par : prnt.Parents
+				checkClass(par)
 		}
+		for par : Parents
+			checkClass(par)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -509,18 +506,22 @@ BoxClass := class extend BoxClassBase
 		bestFunc := GetBestFunc(itBox,Funcs^,Templs^)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
-		if bestFunc == null and this.Parents.Size() != 0 and name != "this" //TODOPARENT
+		if bestFunc == null and name != "this"
 		{
-			oldVal := Type^
-			if name != "new"
+			for par : Parents
 			{
-				oldVal = itBox.itPars[0].first
-				itBox.itPars[0].first = Parents[0].ClassType //TODOPARENT
-			}
-			res :=  this.Parents[0].GetFunc(name,itBox,iVir) //TODOPARENT
-			if name != "new" { itBox.itPars[0].first = oldVal }
+				oldVal := Type^
+				if name != "new"
+				{
+					oldVal = itBox.itPars[0].first
+					itBox.itPars[0].first = par.ClassType //TODOPARENT
+				}
+				res :=  par.GetFunc(name,itBox,iVir) //TODOPARENT
+				if name != "new" { itBox.itPars[0].first = oldVal }
 
-			return res
+				if res != null
+					return res
+			}
 		}
 		if name == "<=>" and tuplCmp != null 
 		{
