@@ -9,16 +9,27 @@ MixinObject1 := class
 		return false
 	}
 }
+EmptyMixin := class
+{
+	Hi := !() -> void
+	{
+		printf("Hi\n")
+	}
+}
 MixinObject2 := class
 {
 	y := int
-	Test := poison !() -> bool
+	GetY := !() -> int
+	{
+		return y
+	}
+	Test := poison !() -> void
 	{
 		printf("hello\n")
 	}
 }
 
-TestClass := class extend MixinObject1 , MixinObject2
+TestClass := class extend MixinObject1 , EmptyMixin, MixinObject2
 {
 	z := int
 	"~For" := !() -> !()&->int
@@ -29,6 +40,11 @@ TestClass := class extend MixinObject1 , MixinObject2
 				yield it			
 		}
 	}
+	ReGetY := !() -> int
+	{
+		return GetY()
+	}
+
 }
 
 
@@ -56,6 +72,9 @@ main := !(int argc, char^^ argv) -> int
 		sum += it
 	}
 	assert(sum == 12)
+	
+	printf("Y by func %i\n",c.ReGetY())
+	assert(c.ReGetY() == c.y)
 	return 0
 }
-
++

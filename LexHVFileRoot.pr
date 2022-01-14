@@ -1,7 +1,7 @@
 "#best ()"
 "! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
 "packed_class {}" "AppendClass d {}"
-"virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "class extend d , d  {}" "! () -> ref d {}" "! () . {} -> ref d {}"
+"virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare"  "class {}" "class extend d {}" "class . {} {}" "class . {} extend d {}" "class extend d , d  {}" "class extend d , d , d {}" "! () -> ref d {}" "! () . {} -> ref d {}"
 "new d ()" "! []" "! {}"
 "d () . {}" "d . {}" "d -> d ()"
 "d ^" "d []" "d &" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s"

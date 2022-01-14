@@ -60,8 +60,7 @@ BoxClass := class extend BoxClassBase
 
 		gotTempls := Queue.{Tuple.{BoxTemplate^,BoxClass^}}() ; $temp
 
-		iterF := this&
-		while iterF != null
+		checkClass := (BoxClass^ iterF) ==>
 		{
 			inMt := iterF.defaultFuncsHolder.methods.TryFind(name)
 			if inMt != null for qIter : inMt^
@@ -80,11 +79,11 @@ BoxClass := class extend BoxClassBase
 					gotTempls.Emplace(tmps,iterF)
 				}
 			}
-			if iterF.Parents.Size() == 0
-				iterF = null
-			else
-				iterF = iterF.Parents[0] //TODOPARENT
+			for par : iterF.Parents
+				checkClass(par)
 		}
+		checkClass(this&)		
+
 
 		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
 		{

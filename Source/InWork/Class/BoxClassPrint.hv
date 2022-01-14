@@ -124,10 +124,13 @@ AppendClass BoxClass
 
 		parentCount := 0
 
-		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT
+		for par : Parents
 		{
-			f << "%Parent1 = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId << "* %this, i32 0, i32 0\n"
-			f << "call void @ClassExtraConstructorParams" << Parents[0].ClassId << "(%ClassParams" << Parents[0].ClassId << "* %Parent1)\n"
+			if par.ParamsCount() == 0
+				continue
+
+			f << "%Parent"<<parentCount<<" = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId << "* %this, i32 0, i32 " << parentCount << "\n"
+			f << "call void @ClassExtraConstructorParams" << par.ClassId << "(%ClassParams" << par.ClassId << "* %Parent"<<parentCount<<")\n"
 			parentCount += 1
 		}
 
