@@ -11,8 +11,8 @@ BoxClass := class extend BoxClassBase
 	VirtualCheck := BuiltInCheckVirtualType^
 
 	ExtendObject := Object^
+	ExtendObjects2 := HybridQueue.{Object^,2}
 	Parents := HybridQueue.{BoxClass^,4}
-	Childs := AVLSet.{BoxClass^}
 
 	ContainVirtual  := bool
 
@@ -171,6 +171,12 @@ BoxClass := class extend BoxClassBase
 		return null
 	}
 
+	this := !(Object^ item, List.{Object^} exList) -> void
+	{
+		ExtendObjects2.Push(exList[^])
+		this."this"(item,null,null)
+	}
+
 	this := !(Object^ item,BoxClass^ par,Object^ extItem) -> void  //TODOPARENT par must be list
 	{
 		ClassName = "anon"
@@ -278,16 +284,6 @@ BoxClass := class extend BoxClassBase
 	{
 		if Inherited2 return void
 		Inherited2 = true
-		//if Parent != null
-		//{
-		//	Parent.InheritParams2()
-		//	Size := Parent.Params.Size()
-		//	for i : Size
-		//	{
-		//		Params.PushFront(Parent.Params[Size - i - 1])
-		//	}
-		//	for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
-		//}
 		for Yodlers
 		{
 			extrField := it.ABox.GetAsType()
@@ -323,6 +319,22 @@ BoxClass := class extend BoxClassBase
 		}
 		if pri == State_CheckBaseClass
 		{
+			for ext2,i : ExtendObjects2
+			{
+				itType := ParseType(ext2,ItAttrs&)
+				if itType == null
+					EmitError("Can not extend type with index"sbt + i)
+				if not itType is TypeClass
+				{
+					EmitError("can not extend non class type")
+				}
+				pParent := itType->{TypeClass^}.ToClass
+				if pParent.IsGC
+				{
+					this.IsGC = true
+				}
+				Parents.Push(pParent)
+			}
 			if ExtendObject != null{
 				newType := ParseType(ExtendObject,ItAttrs&)
 				if newType == null{
@@ -360,7 +372,6 @@ BoxClass := class extend BoxClassBase
 		for par : pList
 		{
 			this.Parents.Push(par)
-			par.Childs.Insert(this&)
 		}
 	}
 
