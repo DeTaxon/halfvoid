@@ -46,7 +46,10 @@ TestClass := class extend MixinObject1 , EmptyMixin, MixinObject2
 	}
 
 }
-
+TestTemplate := class .{@T} extend MixinObject1 , MixinObject2
+{
+	z := T
+}
 
 main := !(int argc, char^^ argv) -> int
 {
@@ -76,6 +79,9 @@ main := !(int argc, char^^ argv) -> int
 	printf("Y by func %i\n",c.ReGetY())
 	assert(c.ReGetY() == c.y)
 	assert(c.GetY() == c.y)
+
+	c2 := TestTemplate.{int}
+	printf("heh %i\n",c2->Type->TypeSize)
 	return 0
 }
 +

@@ -39,11 +39,11 @@ AppendClass BoxClass
 		}
 		return false	
 	}
-	_canTypeBeExchanged := !(Type^ toCheck) -> bool
+	_isItParent := !(Type^ toCheck) -> bool
 	{
 		if toCheck == ClassType
 			return true
-		if Parents[^]._canTypeBeExchanged(toCheck)
+		if Parents[^]._isItParent(toCheck)
 			return true
 		return false
 	}

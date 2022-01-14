@@ -541,12 +541,6 @@ BoxClass := class extend BoxClassBase
 
 		return bestFunc
 	}
-	GetParamNr := !(int x) -> int
-	{
-		if vTable.Size() != 0
-			return x + 1
-		return x
-	}
 	
 	ApplyConstants := !(TIOStream f,Object^ itm) -> void
 	{

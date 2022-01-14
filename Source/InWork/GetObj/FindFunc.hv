@@ -450,14 +450,8 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 			asClType2 := ((funcType.Base)->{TypeClass^})
 			asCl2 := asClType2.ToClass
 
-			while asCl1 != null
-			{
-				if asCl1 == asCl2 return CmpLoseless
-				if asCl1.Parents.Size() == 0
-					asCl1 = null
-				else asCl1 = asCl1.Parents[0] //TODOPARENT
-			}
-
+			if asCl1._isItParent(asClType2)
+				return CmpLoseless
 		}
 		if funcType == VoidPType return CmpLose
 		if inType == VoidPType and funcType != GTypeString return CmpLose
