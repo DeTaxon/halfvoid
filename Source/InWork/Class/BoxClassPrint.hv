@@ -3,7 +3,7 @@ AppendClass BoxClass
 	ParamsCount := !() -> int
 	{
 		sum := Params.Size()
-		for Parent : Parents //TODOPARENT
+		for Parent : Parents
 			sum += Parent.ParamsCount()
 		return sum
 	}
@@ -13,9 +13,13 @@ AppendClass BoxClass
 		
 		needComma := false
 		f << "%ClassParams" << ClassId << " = type{"
-		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT
+		for par : Parents
 		{
-			f << "%ClassParams" << Parents[0].ClassId
+			if par.ParamsCount() == 0
+				continue
+			if needComma
+				f << ","
+			f << "%ClassParams" << par.ClassId
 			needComma = true
 		}
 		if Params.Size() == 0

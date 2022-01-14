@@ -85,7 +85,7 @@ BoxClassTemplate := class extend Object
 		if ExtendTree != null{
 			newEx = ExtendTree.Clone()
 		}
-		newClass := new BoxClass(treeIter,inher,newEx)
+		newClass := new BoxClass(treeIter,null,newEx)
 		newClass.Up = this&
 		if newEx != null{
 			newEx.Up = newClass

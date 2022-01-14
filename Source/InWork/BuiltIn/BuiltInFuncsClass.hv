@@ -39,13 +39,16 @@ AppendClass BoxClass
 				return true
 			}
 		}
-
-		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT FIRST
+		
+		res^[d] = 0
+		for par : Parents
 		{
-			res^[d] = 0
-			return Parents[0]._getParamPath2(parName,res,d+1)
+			if par.ParamsCount() == 0
+				continue
+			if par._getParamPath2(parName,res,d+1)
+				return true
+			res^[d] += 1
 		}
-		assert(false)
 		return false
 	}
 	forEachAllParam := !( !(RawArray.{int}, FieldParam^)& -> void lambd) -> void

@@ -40,6 +40,7 @@ ParseClass := !(Object^ ob)-> BoxClass^
 
 		while iterT.GetValue() == ","
 		{
+			extObj2.Push(iterT.Right)
 			iterT = iterT.Right.Right
 		}
 

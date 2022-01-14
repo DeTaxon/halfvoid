@@ -227,8 +227,10 @@ BoxClass := class extend BoxClassBase
 			return it
 		if FakeParams[^].ItName == name
 			return it
-		if Parents.Size() != 0
-			return Parents[0].GetFieldParam(name) //TODOPARENT
+		for par : Parents
+		{
+			return par.GetFieldParam(name)?
+		}
 		return null
 	}
 	
