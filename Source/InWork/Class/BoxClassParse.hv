@@ -26,11 +26,10 @@ ParseClass := !(Object^ ob)-> BoxClass^
 		return preRes->{BoxClass^}
 	}
 
-	ExtObj := Object^()
+	extObj2 := @temp new List.{Object^}
 	
 	if iterT.GetValue() == "extend"
 	{
-		extObj2 := @temp new List.{Object^}
 		iterT = iterT.Right
 		if iterT == null return null
 
@@ -55,7 +54,7 @@ ParseClass := !(Object^ ob)-> BoxClass^
 
 	if iterT.GetValue() != "{}" return null
 
-	preRes2 := new BoxClass(iterT,null->{BoxClass^},null->{Object^})
+	preRes2 := new BoxClass(iterT,extObj2^)
 	preRes2.IsPacked = putPack
 	return preRes2
 }

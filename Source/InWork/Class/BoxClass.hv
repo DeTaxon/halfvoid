@@ -10,7 +10,6 @@ BoxClass := class extend BoxClassBase
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	VirtualCheck := BuiltInCheckVirtualType^
 
-	ExtendObject := Object^
 	ExtendObjects2 := HybridQueue.{Object^,2}
 	Parents := HybridQueue.{BoxClass^,4}
 
@@ -170,17 +169,16 @@ BoxClass := class extend BoxClassBase
 		return null
 	}
 
+	this := !(Object^ item) -> void
+	{
+		exList := List.{Object^}
+		this."this"(item,exList)
+	}
 	this := !(Object^ item, List.{Object^} exList) -> void
 	{
 		ExtendObjects2.Push(exList[^])
-		this."this"(item,null,null)
-	}
-
-	this := !(Object^ item,BoxClass^ par,Object^ extItem) -> void  //TODOPARENT par must be list
-	{
 		ClassName = "anon"
 		if item != null Line = item.Line	
-		ExtendObject = extItem
 
 		Down = item
 		if Down != null
@@ -197,19 +195,10 @@ BoxClass := class extend BoxClassBase
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
-		tmpList := List.{BoxClass^}
-		if par != null
-			tmpList << par
-		SetParents(tmpList)
-
-		if par?.ContainVirtual ContainVirtual = true
-		if Down != null and not ContainVirtual
+		if Down?.Down[^].GetValue() == "virtual" 
 		{
-			if Down.Down[^].GetValue() == "virtual" 
-			{
-				ContainVirtual = true
-				break
-			}
+			ContainVirtual = true
+			break
 		}
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_CheckBaseClass)
@@ -335,25 +324,6 @@ BoxClass := class extend BoxClassBase
 					this.IsGC = true
 				}
 				Parents.Push(pParent)
-			}
-			if ExtendObject != null{
-				newType := ParseType(ExtendObject,ItAttrs&)
-				if newType == null{
-					EmitError("Can not extend type\n")
-				}else{
-					if not newType is TypeClass{
-						EmitError("wip\n")
-					}else{
-						PreParent := newType->{TypeClass^}
-						tmpList := List.{BoxClass^}
-						tmpList << PreParent.ToClass
-						SetParents(tmpList) //TODOPARENT
-						if PreParent.ToClass.IsGC
-						{
-							this.IsGC = true
-						}
-					}
-				}
 			}
 		}
 		if pri == State_PreGetUse

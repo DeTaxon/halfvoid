@@ -462,7 +462,7 @@ ModuleVulkan := class extend CompilerModule
 		inMap := Structs.TryFind(name)
 		if inMap != null
 		{
-			newStruct := new BoxClass(null,null,null)
+			newStruct := new BoxClass(null)
 			Typedefs[name] = newStruct.ClassType
 
 			sTypVal := char^()
@@ -717,7 +717,7 @@ InstanceArr := class extend BoxClass
 	this := !(ModuleVulkan^ p) -> void
 	{	
 		itmPtr = p
-		this."BoxClass.this"(null,null,null)
+		this."BoxClass.this"(null)
 	}
 	PreAskField:= virtual !(string name) -> void 
 	{

@@ -155,7 +155,7 @@ CLibModule := class extend CompilerModule
 					inStructs := ref it.structs[spn]
 					bc := new FuncInputBox ; temp
 
-					nClass := new BoxClass(null,null,null)
+					nClass := new BoxClass(null)
 					for StructField : inStructs^
 					{
 						fldType := CheckTypeString(StructField.GetStr())
