@@ -40,11 +40,22 @@ main := !(int argc, char^^ argv) -> int
 	c.z = 5
 	printf("test %i\n",TestClass->TypeSize)
 	offset_x := c.x&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_x == 0)
 	offset_y := c.y&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_y == 4)
 	offset_z := c.z&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_z == 8)
 	printf("offset x %i\n",offset_x)
 	printf("offset y %i\n",offset_y)
 	printf("offset z %i\n",offset_z)
+	
+	sum := 0
+	for it,ind : c->Fields
+	{
+		printf("%s = %i\n",ind,it)
+		sum += it
+	}
+	assert(sum == 12)
 	return 0
 }
 

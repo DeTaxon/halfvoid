@@ -66,13 +66,16 @@ AppendClass BoxClass
 	{
 		parentCount := 0
 
-		if Parents.Size() != 0 and Parents[0].ParamsCount() != 0 //TODOPARENT
+		for par : Parents
 		{
+			if par.ParamsCount() == 0
+				continue
 			res^.Resize(d+1)
 			res^[d] = parentCount
-			Parents[0]._forEachAllParamInner(lambd,res,d+1)
+			par._forEachAllParamInner(lambd,res,d+1)
 			parentCount += 1
 		}
+
 		res^.Resize(d+1)
 		for itP,i : Params
 		{
