@@ -101,7 +101,7 @@ Objs/hres.zip: $(wildcard ./hres/*)
 	zip -ur Objs/hres.zip hres
 
 halfvoid: stable Objs/CompilerData.zip Objs/hres.zip
-	$(CurrentStable) --ZipGlue $(TargetStable) Objs/CompilerData.zip $(HW)
+	$(CurrentStable) --ZipGlue $(TargetWork) Objs/CompilerData.zip $(HW)
 	$(CurrentStable) --ZipAppend $(HW) Objs/hres.zip
 
 $(CurrentLex): LexBuilder/main.hv $(wildcard *.pr)

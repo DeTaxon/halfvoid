@@ -12,7 +12,9 @@ AppendClass BoxClass
 		PrintVTable(f)
 		
 		needComma := false
-		f << "%ClassParams" << ClassId << " = type{"
+		f << "%ClassParams" << ClassId << " = type"
+		if IsPacked f << "<"
+		f << "{"
 		if Parent != null and Parent.ParamsCount() != 0
 		{
 			f << "%ClassParams" << Parent.ClassId
@@ -28,7 +30,9 @@ AppendClass BoxClass
 				needComma = true
 			}
 		}
-		f << "}\n"
+		f << "}"
+		if IsPacked f << ">"
+		f << "\n"
 			
 		f << "%Class" << ClassId << " = type "
 		if IsPacked f << "<"

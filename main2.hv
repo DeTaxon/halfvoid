@@ -28,10 +28,17 @@ TestClass := class extend MixinObject1 , MixinObject2
 	}
 }
 
+packedClass1 := packed_class
+{
+	x := int
+	y := u8
+	z := int
+}
+
 
 main := !(int argc, char^^ argv) -> int
 {
-
+	printf("welp %i\n",packedClass1->TypeSize)
 	return 0
 }
 

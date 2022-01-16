@@ -49,10 +49,6 @@ CommonTree := class .{@DATA}
 		{
 			newNode := CreatedNodes
 			CreatedNodes = CreatedNodes.Right
-			newNode.Left = null
-			newNode.Up = null
-			newNode.Right = null
-			newNode.balance = 0
 			ZeroMem(newNode)
 		}else{
 			AllocPoolBlock(allocator)
