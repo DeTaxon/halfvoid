@@ -268,7 +268,9 @@ IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> b
 					{
 						if iterInT.ClassType
 							found  = true
-						iterInT = iterInT.Parent
+						if iterInT.Parents.Size() != 0 //TODOPARENT
+							iterInT = null
+						else iterInT = iterInT.Parents[0]
 					}
 
 					if not found return false

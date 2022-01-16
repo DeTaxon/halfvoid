@@ -753,7 +753,10 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 				return B
 			depth1 += 1
 			lastCl1 = cl1to2
-			cl1to2 = cl1to2.Parent
+
+			if cl1to2.Parents.Size() == 0
+				cl1to2 = null
+			else cl1to2 = cl1to2.Parents[0] //TODOPARENT
 		}
 
 		lastCl2 := cl2
@@ -765,7 +768,10 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 				return A
 			depth2 += 1
 			lastCl2 = cl2to1
-			cl2to1 = cl2to1.Parent
+
+			if cl2to1.Parents.Size() == 0
+				cl2to1 = null
+			else cl2to1 = cl2to1.Parents[0]
 		}
 		if lastCl2 == lastCl1
 		{
@@ -777,10 +783,10 @@ TypeFight := !(Type^ A,Type^ B) -> Type^
 				if depth1 > depth2
 				{
 					depth1 -= 1
-					cl1to2 = cl1to2.Parent
+					cl1to2 = cl1to2.Parents[0] //TODOPARENT
 				}else{
 					depth2 -= 1
-					cl2to1 = cl2to1.Parent
+					cl2to1 = cl2to1.Parents[0] //TODOPARENT
 				}
 			}
 			return cl1to2.ClassType.GetPoint()

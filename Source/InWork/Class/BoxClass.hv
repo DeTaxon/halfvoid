@@ -10,9 +10,8 @@ BoxClass := class extend BoxClassBase
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	VirtualCheck := BuiltInCheckVirtualType^
 
-	ExtendObject := Object^
-	Parent := BoxClass^
-	Childs := AVLSet.{BoxClass^}
+	ExtendObjects2 := HybridQueue.{Object^,2}
+	Parents := HybridQueue.{BoxClass^,4}
 
 	ContainVirtual  := bool
 
@@ -60,8 +59,7 @@ BoxClass := class extend BoxClassBase
 
 		gotTempls := Queue.{Tuple.{BoxTemplate^,BoxClass^}}() ; $temp
 
-		iterF := this&
-		while iterF != null
+		checkClass := (BoxClass^ iterF) ==>
 		{
 			inMt := iterF.defaultFuncsHolder.methods.TryFind(name)
 			if inMt != null for qIter : inMt^
@@ -80,8 +78,11 @@ BoxClass := class extend BoxClassBase
 					gotTempls.Emplace(tmps,iterF)
 				}
 			}
-			iterF = iterF.Parent
+			for par : iterF.Parents
+				checkClass(par)
 		}
+		checkClass(this&)		
+
 
 		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
 		{
@@ -168,11 +169,16 @@ BoxClass := class extend BoxClassBase
 		return null
 	}
 
-	this := !(Object^ item, BoxClass^ par,Object^ extItem) -> void 
+	this := !(Object^ item) -> void
 	{
+		exList := List.{Object^}
+		this."this"(item,exList)
+	}
+	this := !(Object^ item, List.{Object^} exList) -> void
+	{
+		ExtendObjects2.Push(exList[^])
 		ClassName = "anon"
 		if item != null Line = item.Line	
-		ExtendObject = extItem
 
 		Down = item
 		if Down != null
@@ -189,16 +195,10 @@ BoxClass := class extend BoxClassBase
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
-		SetParent(par)
-
-		if par?.ContainVirtual ContainVirtual = true
-		if Down != null and not ContainVirtual
+		if Down?.Down[^].GetValue() == "virtual" 
 		{
-			if Down.Down[^].GetValue() == "virtual" 
-			{
-				ContainVirtual = true
-				break
-			}
+			ContainVirtual = true
+			break
 		}
 		WorkBag.Push(this&,State_Start)
 		WorkBag.Push(this&,State_CheckBaseClass)
@@ -215,8 +215,10 @@ BoxClass := class extend BoxClassBase
 			return it
 		if FakeParams[^].ItName == name
 			return it
-		if Parent != null
-			return Parent.GetFieldParam(name)
+		for par : Parents
+		{
+			return par.GetFieldParam(name)?
+		}
 		return null
 	}
 	
@@ -228,12 +230,12 @@ BoxClass := class extend BoxClassBase
 		Inherited = true
 
 
-		if Parent != null
+		if Parents.Size() != 0 //TODOPARENT
 		{
-			Parent.InheritParams()
-			IsGC = Parent.IsGC
+			Parents[0].InheritParams()
+			IsGC = Parents[0].IsGC
 			//InheritParams2()
-			if Parent.ContainVirtual 
+			if Parents[0].ContainVirtual 
 				ContainVirtual = true
 			WorkBag.Push(this&,State_PrePrint)
 		}
@@ -254,13 +256,13 @@ BoxClass := class extend BoxClassBase
 
 				if cl.IsGC and not IsGC
 				{
-					if Parent != null 
+					if Parents.Size() != 0 //TODOPARENT
 						EmitError("can not turn class to gc type")
 					if gcClass == null
 						EmitError("internal error, no class TGCObject")
-					Parent = gcClass
+					Parents.Push(gcClass) //TODOPARENT
 					IsGC = true
-					if Parent.ContainVirtual 
+					if Parents[0].ContainVirtual //TODOPARENT
 						ContainVirtual = true
 					WorkBag.Push(this&,State_PrePrint)
 				}
@@ -272,16 +274,6 @@ BoxClass := class extend BoxClassBase
 	{
 		if Inherited2 return void
 		Inherited2 = true
-		//if Parent != null
-		//{
-		//	Parent.InheritParams2()
-		//	Size := Parent.Params.Size()
-		//	for i : Size
-		//	{
-		//		Params.PushFront(Parent.Params[Size - i - 1])
-		//	}
-		//	for fakes : Parent.FakeParams FakeParams.PushFront(fakes)
-		//}
 		for Yodlers
 		{
 			extrField := it.ABox.GetAsType()
@@ -317,22 +309,21 @@ BoxClass := class extend BoxClassBase
 		}
 		if pri == State_CheckBaseClass
 		{
-			if ExtendObject != null{
-				newType := ParseType(ExtendObject,ItAttrs&)
-				if newType == null{
-					EmitError("Can not extend type\n")
-				}else{
-					if not newType is TypeClass{
-						EmitError("wip\n")
-					}else{
-						PreParent := newType->{TypeClass^}
-						SetParent(PreParent.ToClass)
-						if PreParent.ToClass.IsGC
-						{
-							this.IsGC = true
-						}
-					}
+			for ext2,i : ExtendObjects2
+			{
+				itType := ParseType(ext2,ItAttrs&)
+				if itType == null
+					EmitError("Can not extend type with index"sbt + i)
+				if not itType is TypeClass
+				{
+					EmitError("can not extend non class type")
 				}
+				pParent := itType->{TypeClass^}.ToClass
+				if pParent.IsGC
+				{
+					this.IsGC = true
+				}
+				Parents.Push(pParent)
 			}
 		}
 		if pri == State_PreGetUse
@@ -347,12 +338,11 @@ BoxClass := class extend BoxClassBase
 			ComputeVTable()		
 		}
 	}
-	SetParent := !(BoxClass^ p) -> void
+	SetParents := !(pList) -> void
 	{
-		Parent = p
-		if p != null
+		for par : pList
 		{
-			p.Childs.Insert(this&)
+			this.Parents.Push(par)
 		}
 	}
 
@@ -364,9 +354,8 @@ BoxClass := class extend BoxClassBase
 		if checkedPoisons return void
 		checkedPoisons = true
 
-		addedFuncs := AVLSet.{char^}()
-		prnt := Parent
-		while prnt != null
+		addedFuncs := AVLSet.{char^}() //TODO MEM
+		checkClass := (BoxClass^ prnt) ==> 
 		{
 			for it,name : prnt.ItPoisons
 			{
@@ -376,7 +365,7 @@ BoxClass := class extend BoxClassBase
 				{
 					addedFuncs.Insert(name) ; $temp
 
-					newSub := new ObjParam(name,false)
+					newSub := new ObjParam(name,false) //TODO it is always make copy, i want on demand
 					newSub.Down = it.Clone()
 					newSub.Down.Up = newSub
 
@@ -393,8 +382,11 @@ BoxClass := class extend BoxClassBase
 					WorkBag.Push(newSub,State_Start)
 				}
 			}
-			prnt = prnt.Parent
+			for par : prnt.Parents
+				checkClass(par)
 		}
+		for par : Parents
+			checkClass(par)
 	}
 	GetValue := virtual !() -> string
 	{
@@ -414,7 +406,9 @@ BoxClass := class extend BoxClassBase
 				{
 					Funcs.Push(it->{VTableFunction^}.funcWrapper) 
 				}
-				itrF = itrF.Parent
+				if itrF.Parents.Size() == 0 //TODOPARENT
+					itrF = null
+				else itrF = itrF.Parents[0]
 			}
 		}
 		maybeForced := Find(name,'.')
@@ -482,18 +476,22 @@ BoxClass := class extend BoxClassBase
 		bestFunc := GetBestFunc(itBox,Funcs^,Templs^)
 		if bestFunc != null WorkBag.Push(bestFunc,State_GetUse)
 
-		if bestFunc == null and this.Parent != null and name != "this"
+		if bestFunc == null and name != "this"
 		{
-			oldVal := Type^
-			if name != "new"
+			for par : Parents
 			{
-				oldVal = itBox.itPars[0].first
-				itBox.itPars[0].first = Parent.ClassType
-			}
-			res :=  this.Parent.GetFunc(name,itBox,iVir)
-			if name != "new" { itBox.itPars[0].first = oldVal }
+				oldVal := Type^
+				if name != "new"
+				{
+					oldVal = itBox.itPars[0].first
+					itBox.itPars[0].first = par.ClassType //TODOPARENT
+				}
+				res :=  par.GetFunc(name,itBox,iVir) //TODOPARENT
+				if name != "new" { itBox.itPars[0].first = oldVal }
 
-			return res
+				if res != null
+					return res
+			}
 		}
 		if name == "<=>" and tuplCmp != null 
 		{
@@ -512,12 +510,6 @@ BoxClass := class extend BoxClassBase
 		}
 
 		return bestFunc
-	}
-	GetParamNr := !(int x) -> int
-	{
-		if vTable.Size() != 0
-			return x + 1
-		return x
 	}
 	
 	ApplyConstants := !(TIOStream f,Object^ itm) -> void

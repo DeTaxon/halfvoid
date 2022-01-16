@@ -1,6 +1,7 @@
 
 MixinObject1 := class
 {
+	x := int
 	Contain := poison !(!(int)&-> bool l) -> bool
 	{
 		if l(this[^])
@@ -8,16 +9,29 @@ MixinObject1 := class
 		return false
 	}
 }
+EmptyMixin := class
+{
+	Hi := !() -> void
+	{
+		printf("Hi\n")
+	}
+}
 MixinObject2 := class
 {
-	Test := poison !() -> bool
+	y := int
+	GetY := !() -> int
+	{
+		return y
+	}
+	Test := poison !() -> void
 	{
 		printf("hello\n")
 	}
 }
 
-TestClass := class extend MixinObject1 , MixinObject2
+TestClass := class extend MixinObject1 , EmptyMixin, MixinObject2
 {
+	z := int
 	"~For" := !() -> !()&->int
 	{
 		return () ==>
@@ -25,6 +39,10 @@ TestClass := class extend MixinObject1 , MixinObject2
 			for it : ![1,12,100,-3,16]
 				yield it			
 		}
+	}
+	ReGetY := !() -> int
+	{
+		return GetY()
 	}
 }
 
@@ -34,11 +52,44 @@ packedClass1 := packed_class
 	y := u8
 	z := int
 }
-
+TestTemplate := class .{@T} extend MixinObject1 , MixinObject2
+{
+	z := T
+}
 
 main := !(int argc, char^^ argv) -> int
 {
 	printf("welp %i\n",packedClass1->TypeSize)
+	c := TestClass
+	c.x = 3
+	c.y = 4
+	c.z = 5
+	printf("test %i\n",TestClass->TypeSize)
+	offset_x := c.x&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_x == 0)
+	offset_y := c.y&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_y == 4)
+	offset_z := c.z&->{void^}->{size_t} - c&->{void^}->{size_t}
+	assert(offset_z == 8)
+	printf("offset x %i\n",offset_x)
+	printf("offset y %i\n",offset_y)
+	printf("offset z %i\n",offset_z)
+	
+	sum := 0
+	for it,ind : c->Fields
+	{
+		printf("%s = %i\n",ind,it)
+		sum += it
+	}
+	assert(sum == 12)
+	
+	printf("Y by func %i\n",c.ReGetY())
+	assert(c.ReGetY() == c.y)
+	assert(c.GetY() == c.y)
+
+	c2 := TestTemplate.{int}
+	printf("heh %i\n",c2->Type->TypeSize)
+>>>>>>> ba939fae9e7e141abf00fe228a46986ee1ee6696
 	return 0
 }
-
++

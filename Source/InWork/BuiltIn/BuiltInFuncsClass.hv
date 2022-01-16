@@ -2,9 +2,12 @@ AppendClass BoxClass
 {
 	_getInherDepth := !() -> int
 	{
-		if Parent != null
-			return Parent._getInherDepth() + 1
-		return 1
+		maxVal := 1
+		for par : Parents
+		{
+			maxVal = max(maxVal,par._getInherDepth() + 1)
+		}
+		return maxVal
 	}
 	_getParamPath := !(char^ parName) -> RawArray.{int}^
 	{
@@ -19,8 +22,13 @@ AppendClass BoxClass
 	{
 		parentCount := 0
 
-		if Parent != null and Parent.ParamsCount() != 0
-			parentCount = 1
+		for parent : Parents
+		{
+			if parent.ParamsCount() != 0
+			{
+				parentCount += 1
+			}
+		}
 
 		for it,i : Params
 		{
@@ -31,12 +39,16 @@ AppendClass BoxClass
 				return true
 			}
 		}
-		if Parent != null
+		
+		res^[d] = 0
+		for par : Parents
 		{
-			res^[d] = 0
-			return Parent._getParamPath2(parName,res,d+1)
+			if par.ParamsCount() == 0
+				continue
+			if par._getParamPath2(parName,res,d+1)
+				return true
+			res^[d] += 1
 		}
-		assert(false)
 		return false
 	}
 	forEachAllParam := !( !(RawArray.{int}, FieldParam^)& -> void lambd) -> void
@@ -54,13 +66,16 @@ AppendClass BoxClass
 	{
 		parentCount := 0
 
-		if Parent != null and Parent.ParamsCount() != 0
+		for par : Parents
 		{
+			if par.ParamsCount() == 0
+				continue
 			res^.Resize(d+1)
 			res^[d] = parentCount
-			Parent._forEachAllParamInner(lambd,res,d+1)
+			par._forEachAllParamInner(lambd,res,d+1)
 			parentCount += 1
 		}
+
 		res^.Resize(d+1)
 		for itP,i : Params
 		{

@@ -95,7 +95,9 @@ VTableTransform := class extend VTableObject
 			if not itr.ContainVirtual
 				break
 			classesCount += 1
-			itr = itr.Parent
+			if itr.Parents.Size() == 0 //TODOPARENT
+				itr = null
+			else itr = itr.Parents[0]
 		}
 
 		arrName := ("["sbt + (classesCount*2 + 1) + " x i64]")->{char^}
@@ -110,7 +112,9 @@ VTableTransform := class extend VTableObject
 			f << "* "
 			itr.PrintVTableObject(f)
 			f <<" to i64) , i64 0\n"
-			itr = itr.Parent
+			if itr.Parents.Size() == 0 //TODOPARENT
+				itr = null
+			else itr = itr.Parents[0]
 		}
 		f << "]\n"
 	}
@@ -160,10 +164,10 @@ AppendClass BoxClass
 		{
 			computedVTable = true
 
-			if this.Parent != null
+			if this.Parents.Size() != 0 //TODOPARENT
 			{
-				this.Parent.ComputeVTable()
-				for this.Parent.vTable
+				this.Parents[0].ComputeVTable() 
+				for this.Parents[0].vTable
 				{
 					vTable.Push(it)
 				}
@@ -227,6 +231,7 @@ AppendClass BoxClass
 				it.MakeLine(0)
 			}
 			ThislessTemplates[^].MakeLine()
+			ContainVirtual = vTable.Size() != 0
 
 		}
 	}
@@ -251,6 +256,8 @@ AppendClass BoxClass
 		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
 
 		vTypes.Push(newItem)
+
+		ContainVirtual = true
 	}
 	PutVirtualParam := virtual !(string fName,Object^ cnst) -> void
 	{
@@ -261,6 +268,8 @@ AppendClass BoxClass
 		newItem.fItem = new BuiltInGetVirtualParam(this&,cnst.GetType())
 
 		vTypes.Push(newItem)
+
+		ContainVirtual = true
 	}
 	GetVirtualParamFunc := !(string name) -> BoxFunc^
 	{
@@ -269,7 +278,7 @@ AppendClass BoxClass
 			if it.fName == name and it is VTableParameter
 				return it->{VTableParameter^}.fItem
 		}
-		if Parent != null return Parent.GetVirtualParamFunc(name)
+		if Parents.Size() != 0 return Parents[0].GetVirtualParamFunc(name) //TODOPARENT
 		return null
 	}
 }

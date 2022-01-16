@@ -27,11 +27,25 @@ AppendClass BoxClass
 			res.Resize(d)	
 			return true
 		}
-		assert(Parent.ParamsCount() != 0)
-		res[d] = 0
-		if Parent._getPathToParentInner(toType,res,d+1)
-			return true
+		parentOffset := 0
+		for par : Parents
+		{
+			res[d] = parentOffset
+			if par.ParamsCount() == 0
+				continue
+			if par._getPathToParentInner(toType,res,d+1)
+				return true
+			parentOffset += 1
+		}
 		return false	
+	}
+	_isItParent := !(Type^ toCheck) -> bool
+	{
+		if toCheck == ClassType
+			return true
+		if Parents[^]._isItParent(toCheck)
+			return true
+		return false
 	}
 
 }
@@ -63,7 +77,7 @@ BuiltIn2ExcPtr := class extend BuiltIn2Func
 			inClass := dType->{TypeClass^}.ToClass
 			outClass := resType->{TypeClass^}.ToClass
 
-			if inClass.ContainVirtual and not outClass.ContainVirtual and outClass.ParamsCount() != 0
+			if not outClass.ContainVirtual and outClass.ParamsCount() != 0
 			{
 				resClassName := char^
 				pth := @temp new RawArray.{int}

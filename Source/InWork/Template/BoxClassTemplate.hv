@@ -4,9 +4,7 @@ BoxClassTemplate := class extend Object
 	ItClasses := AVLMap.{int,Stack.{BoxClass^}}
 	ClassTree := Object^
 	ConstTree := Object^
-	ExtendTree := Object^
-
-	TempConsts := Queue.{ObjConstHolder^}^
+	ExtendTree2 := HybridQueue.{Object^,4}
 
 	relAttrs := QueueSet.{string}
 
@@ -23,11 +21,16 @@ BoxClassTemplate := class extend Object
 
 		if ClassTree.Down.Right.GetValue() == "extend"
 		{
-			ExtendTree = ClassTree.Down.Right.Right.Clone()
-			ExtendTree.Up = this&
+			PopOutNode(ClassTree.Down.Right)
+			ExtendTree2.Push(ClassTree.Down.Right.Clone())
+			PopOutNode(ClassTree.Down.Right)
 
-			PopOutNode(ClassTree.Down.Right)
-			PopOutNode(ClassTree.Down.Right)
+			while ClassTree.Down.Right.GetValue() == ","
+			{
+				PopOutNode(ClassTree.Down.Right)
+				ExtendTree2.Push(ClassTree.Down.Right.Clone())
+				PopOutNode(ClassTree.Down.Right)
+			}
 		}
 
 		SyntaxCompress(ConstTree,PriorityData)
@@ -45,11 +48,6 @@ BoxClassTemplate := class extend Object
 	}
 	GetItem := virtual !(string name) -> Object^
 	{
-		if TempConsts != null
-		{
-			if TempConsts^[^].ItName == name 
-				return it.Down
-		}
 		return null
 	}
 	GetClass := !(FuncInputBox itBox) -> TypeClass^
@@ -70,25 +68,19 @@ BoxClassTemplate := class extend Object
 		inher := BoxClass^()
 
 		treeIter := newTree.Down.Right
-
-		if ExtendTree != null
-		{
-			TempConsts = newConsts&
-			inher = ParseType(ExtendTree,itBox.itAttrs&)->{BoxClass^}
-			TempConsts = null
-			if inher == null return null
-			inher = ((inher->{TypeClass^}).ToClass)
-		}
 		
-		newEx := Object^
-		newEx = null
-		if ExtendTree != null{
-			newEx = ExtendTree.Clone()
+		newEx := @temp new List.{Object^}
+
+		for exT : ExtendTree2
+		{
+			newEx.Push(exT.Clone())
 		}
-		newClass := new BoxClass(treeIter,inher,newEx)
+		newClass := new BoxClass(treeIter,newEx^)
 		newClass.Up = this&
-		if newEx != null{
-			newEx.Up = newClass
+
+		for exT : newEx^
+		{
+			exT.Up = newClass
 		}
 
 		newClass.Right = Down
@@ -101,18 +93,6 @@ BoxClassTemplate := class extend Object
 		
 		templs := Queue.{QueueSet.{string}^}() ; $temp
 		templs.Push(this.relAttrs&)
-
-		clIter := inher
-		while clIter != null
-		{
-			if clIter.Up?.GetValue() == "!{}{...}"
-			{
-				asTmpl := clIter.Up->{BoxClassTemplate^}
-				templs.Push(asTmpl.relAttrs&)
-			}
-			clIter = clIter.Parent
-		}
-		
 		
 		for itr,itrK : itBox.itAttrs
 		{
