@@ -120,6 +120,16 @@ BuiltIn2CommonUnrollClass := class extend BuiltIn2Func
 		{
 			f << ",i32 " << it
 		}
+
+		dbgId := -1
+		if DebugMode 
+		{
+			dbgId = CreateDebugCall(trg)
+		}
+		if dbgId != -1
+		{
+			f << " ,!dbg !" << dbgId
+		}
 		f <<"\n"
 	}
 }

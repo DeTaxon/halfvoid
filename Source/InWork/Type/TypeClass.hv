@@ -41,6 +41,7 @@ TypeClass := class extend Type
 	itAlign := int
 	itSize := int
 	computedAlign := bool
+	debInherTable := List.{Tuple.{char^,BoxClass^,int,int}}
 	debTable := List.{Tuple.{char^,MemParam^,int,int}}
 	ComputeAlignAndDeb := !() -> void
 	{
@@ -52,6 +53,7 @@ TypeClass := class extend Type
 		if ToClass.ContainVirtual
 			nowSize = 8 //TODOSIZE
 
+		putTypeOffset := 0
 		appendType := (Type^ typ) ==> 
 		{
 			sAlign := typ.GetAlign()
@@ -63,6 +65,7 @@ TypeClass := class extend Type
 				nowSize = nowSize + alignMask
 				nowSize = nowSize - (nowSize and_b alignMask)
 			}
+			putTypeOffset = nowSize
 			nowSize += sSize
 			if sAlign > itAlign
 				itAlign = sAlign
@@ -72,12 +75,13 @@ TypeClass := class extend Type
 		{
 			it.ClassType.ComputeAlignAndDeb()
 			appendType(it.ClassType)
+			debInherTable.Emplace(StrCopy(it.ClassType.GetGoodName()),it,putTypeOffset,it.ClassType.GetSize())
 		}
 		for it : ToClass.Params
 		{
 			sSize := it.ResultType.GetSize()
-			debTable.Emplace(it.ItName,it,nowSize,sSize)
 			appendType(it.ResultType)
+			debTable.Emplace(it.ItName,it,putTypeOffset,sSize)
 		}
 		itSize = nowSize
 		if ToClass.IsPacked
