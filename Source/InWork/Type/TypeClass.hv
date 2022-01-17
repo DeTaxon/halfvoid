@@ -50,23 +50,34 @@ TypeClass := class extend Type
 		
 		nowSize := 0
 		if ToClass.ContainVirtual
-			nowSize = 8
-		for it : ToClass.Params
+			nowSize = 8 //TODOSIZE
+
+		appendType := (Type^ typ) ==> 
 		{
-			sAlign := it.ResultType.GetAlign()
-			//assert(sAlign <= 16 and sAlign > 0)
+			sAlign := typ.GetAlign()
 			alignMask :=  ![0,0,1,0,3,0,0,0,7,0,0,0,0,0,0,0,15][sAlign]
-			sSize := it.ResultType.GetSize()
+			sSize := typ.GetSize()
 
 			if (not ToClass.IsPacked) and ((nowSize and_b alignMask) != 0)
 			{
 				nowSize = nowSize + alignMask
 				nowSize = nowSize - (nowSize and_b alignMask)
 			}
-			debTable.Emplace(it.ItName,it,nowSize,sSize)
 			nowSize += sSize
 			if sAlign > itAlign
 				itAlign = sAlign
+		}
+
+		for it : ToClass.Parents
+		{
+			it.ClassType.ComputeAlignAndDeb()
+			appendType(it.ClassType)
+		}
+		for it : ToClass.Params
+		{
+			sSize := it.ResultType.GetSize()
+			debTable.Emplace(it.ItName,it,nowSize,sSize)
+			appendType(it.ResultType)
 		}
 		itSize = nowSize
 		if ToClass.IsPacked

@@ -31,16 +31,16 @@ MixinVirtualObj := class
 }
 TestTemplate := class extend MixinObject1 , MixinObject2 
 {
-	z := TGCObject^
+	z := int
 }
 
 main := !(int argc, char^^ argv) -> int
 {
 
-	c2 := new TestTemplate
+	c2 := TestTemplate
 	c2.x = 3
 	c2.y = 4
-	//c2.z = 5
+	c2.z = 5
 	printf("heh %i\n",c2->Type->TypeSize)
 	//printf("hoh %i\n",c2.GetLen())
 	return 0
