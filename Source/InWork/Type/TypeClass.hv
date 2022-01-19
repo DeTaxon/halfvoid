@@ -51,7 +51,10 @@ TypeClass := class extend Type
 		
 		nowSize := 0
 		if ToClass.ContainVirtual
+		{
 			nowSize = 8 //TODOSIZE
+			itAlign = 8
+		}
 
 		putTypeOffset := 0
 		appendType := (Type^ typ) ==> 
