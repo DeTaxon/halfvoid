@@ -33,6 +33,17 @@ HybridQueue := class .{@T,@ExtraSize}
 		itSize += 1
 		return subList.Create()
 	}
+	PushFront := !(T itm) -> void
+	{
+		if itSize >= ExtraSize
+			subList.PushFront(qArr[ExtraSize - 1])
+		for i : itSize
+		{
+			qArr[itSize - i] = qArr[itSize - i - 1]
+		}
+		qArr[0] = itm
+		itSize += 1
+	}
 	Push := !(T itm) .{} -> void
 	{
 		makeNewItem() = itm

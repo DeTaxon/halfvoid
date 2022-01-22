@@ -63,12 +63,15 @@ PriorityBagOld := class
 					rawWord := word[1..-1]
 					
 					wordContainUniq := false
-					machIter := newMach
 
-					i := -1
-					rawWord.DivideStr(" ", ruleWord ==> {
-						i += 1
-						stW := ruleWord.Str()
+					rl := HybridQueue.{StringSpan,30}
+					defer rl.Clear()
+
+					rawWord.DivideStr(" ",x ==> { rl.Push(x)})
+
+					addRule := (MiniMachineNodeOld^ machIter , int i) ==>
+					{
+						stW := rl[i].Str()
 						switch stW
 						{
 							case "d" stW = "~d"
@@ -92,11 +95,17 @@ PriorityBagOld := class
 						next := ref machIter.WhatNext[stW]
 						if next == null
 							next = new MiniMachineNodeOld
-						machIter = next
-					})
+						if i == rl.Size() - 1
+						{
+							next.IsTerm = true
+						}else{
+							addRule(next,i+1)
+						}
+					}
+					addRule(newMach,0)
+
 					if not wordContainUniq
 						lineUniq = false
-					machIter.IsTerm = true
 				})
 
 				if uPos == -2
