@@ -157,7 +157,7 @@ ObjParam := class extend Object
 			if IsRef
 			{
 			}else{
-				outId := CreateDbgLocVar(this&,ObjType,MyStr)
+				outId := CreateDbgLocVar(this&,ObjType,MyStr,false)
 				newId := CreateDebugCall(this&)
 				if newId != -1 and outId != -1
 				{

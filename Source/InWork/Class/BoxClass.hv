@@ -229,14 +229,16 @@ BoxClass := class extend BoxClassBase
 			return void
 		Inherited = true
 
-
-		if Parents.Size() != 0 //TODOPARENT
+		
+		for par : Parents
 		{
-			Parents[0].InheritParams()
-			IsGC = Parents[0].IsGC
-			//InheritParams2()
-			if Parents[0].ContainVirtual 
-				ContainVirtual = true
+			par.InheritParams()
+
+			IsGC = IsGC or par.IsGC
+			ContainVirtual = ContainVirtual or par.ContainVirtual
+		}
+		if Parents.Size() != 0
+		{
 			WorkBag.Push(this&,State_PrePrint)
 		}
 		
@@ -256,17 +258,29 @@ BoxClass := class extend BoxClassBase
 
 				if cl.IsGC and not IsGC
 				{
-					if Parents.Size() != 0 //TODOPARENT
-						EmitError("can not turn class to gc type")
 					if gcClass == null
 						EmitError("internal error, no class TGCObject")
-					Parents.Push(gcClass) //TODOPARENT
+					Parents.PushFront(gcClass)
 					IsGC = true
-					if Parents[0].ContainVirtual //TODOPARENT
-						ContainVirtual = true
+					ContainVirtual = true
 					WorkBag.Push(this&,State_PrePrint)
 				}
 			}
+		}
+		virtCount := 0
+		for par : Parents
+		{
+			if par.ContainVirtual
+				virtCount += 1
+		}
+		switch virtCount
+		{
+			case 0
+			case 1
+				if not Parents[0].ContainVirtual
+					EmitError("Only first type in extend can be virtual")
+			case void
+				EmitError("Too many parents with virtual functions")
 		}
 	}
 	Inherited2 := false	
