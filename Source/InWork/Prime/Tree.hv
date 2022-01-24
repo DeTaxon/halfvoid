@@ -87,7 +87,7 @@ Object := class{
 			sbtt << "template type " << asB.MyFuncType.GetGoodName() << "\n"
 		}
 		outRes := sbtt.Str()
-		ErrorLog.Push(outRes)
+		//ErrorLog.Push(outRes)
 		throw new Exception(outRes)
 	}
 	PrintGlobalSub := !(TIOStream f) -> void

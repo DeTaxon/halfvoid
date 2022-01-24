@@ -29,21 +29,23 @@ MixinVirtualObj := class
 		return z
 	}
 }
-TestTemplate := class extend MixinObject1 , MixinObject2 
+ShouldBe := class 
+{
+	MulLen := poison !(T itm) -> T
+	{
+		return itm*GetY()
+	}
+}
+TestTemplate := class .{@T} extend MixinObject1 , MixinObject2 , ShouldBe
 {
 	z := TGCObject
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-
-	c2 := TestTemplate
-	c2.x = 3
-	c2.y = 4
-	printf("heh %i %i\n",c2.x, c2.y)
-	//c2.z = 5
-	printf("heh %i\n",c2->Type->TypeSize)
-	//printf("hoh %i\n",c2.GetLen())
+	c := TestTemplate.{int}
+	c.y = 13
+	printf("test %i\n",c.MulLen(10))
 	return 0
 }
 +

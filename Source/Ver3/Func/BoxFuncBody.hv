@@ -13,6 +13,8 @@ BoxFuncBody := class extend BoxFunc
 
 	deferTail := BoxFuncBody^
 
+	badInput := char^
+
 	ApplyParams := !(int count,RawArray.{char^} names, Type^^ pars,bool^ isRef) -> void
 	{
 		if count == 0
@@ -161,8 +163,17 @@ BoxFuncBody := class extend BoxFunc
 		if DefTailFunc != null
 			defFuncType = DefTailFunc.MyFuncType
 
-		if not ParseParams(inPars,inOutType,false,defFuncType)
-			inPars.EmitError("can not parse function header\n"sbt + "func name " + FuncName + "\n")
+		try{
+			if not ParseParams(inPars,inOutType,false,defFuncType)
+			{
+				badInput = StrCopy("can not parse function header\n"sbt + "func name " + FuncName + "\n")
+				return void
+			}
+		}catch(IException^ e)
+		{
+			badInput = StrCopy(e.Msg())
+			return void
+		}
 
 		ParseConsts(cons)
 
@@ -242,6 +253,10 @@ BoxFuncBody := class extend BoxFunc
 	{
 		if parsed 
 			return void
+		if badInput != null
+		{
+			EmitError(badInput)
+		}
 
 		if deferTail != null
 			deferTail.ParseBlock()
@@ -287,6 +302,8 @@ BoxFuncBody := class extend BoxFunc
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
+		if badInput != null
+			return void
 		ABox.PrintGlobal(f)
 
 		if deferTail != null
