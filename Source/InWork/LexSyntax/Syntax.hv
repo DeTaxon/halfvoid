@@ -188,6 +188,8 @@ StupidWhile := !(Object^ begin,PriorityBagOld^ bag , tokenDict) -> bool
 							return true
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction,tokenDict) return true
+				case "#ClassBlock"
+					if RuleUse(begin,"~d",RuleClass,tokenDict) return true
 				case "#CallDecoratorCall"
 					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall,tokenDict) 
 							return true
@@ -335,6 +337,59 @@ RuleDecoratorCall := !(void^ itr) -> int
 		return  2
 	}
 	return 0
+}
+
+RuleClass := !(void^ itr) -> int
+{
+
+	It := itr->{Object^}
+
+	if It.GetValue() != "class" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	size := 1
+
+	if It.GetValue() == "."
+	{
+		
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "{}" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
+	if It.GetValue() == "extend"
+	{
+		It = It.Right
+		if It == null return 0
+
+		if not It.IsDataR return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+
+		while It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
+
+			if not It.IsDataR return 0
+
+			size += 2
+		}
+	}
+
+	if It.GetValue() != "{}" return 0
+	return size + 1
 }
 
 RuleParam := !(void^ itr) -> int
