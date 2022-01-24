@@ -384,6 +384,9 @@ RuleClass := !(void^ itr) -> int
 
 			if not It.IsDataR return 0
 
+			It = It.Right
+			if It == null return 0
+
 			size += 2
 		}
 	}
