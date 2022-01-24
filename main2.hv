@@ -53,17 +53,17 @@ main := !(int argc, char^^ argv) -> int
 			try
 			{
 				throw new Exception("")
-			}catch(IException^ e)
+			}catch(e)
 			{
 				try
 				{
 					throw new Exception("")
-				}catch(IException^ e)
+				}catch(e)
 				{
 					throw new Exception("")
 				}
 			}
-		}catch(IException^ e)
+		}catch(e)
 		{
 			printf("nah? \n")
 		}

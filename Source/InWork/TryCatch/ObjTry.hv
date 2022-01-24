@@ -101,24 +101,32 @@ ObjTry := class extend ObjTryCommon
 				EmitError("empty catch not allowed, try \"IException^ e\"")
 				return void
 			}
-			if objP.Down.Right == null
+			if objP.Down.Right == null and objP.Down is ObjIndent
 			{
-				EmitError("one obj in catch not allowed, try \"IException^ e\"")
-				return void
+				exName = objP.Down->{ObjIndent^}.MyStr
+				exType = @once ParseType(new ObjIndent("IException")).GetPoint()
+				if exType == null
+					EmitError("internal error, IException not found")
+			}else{
+				if objP.Down.Right == null
+				{
+					EmitError("one obj in catch not allowed, try \"IException^ e\"")
+					return void
+				}
+				exType = ParseType(objP.Down)
+				if exType == null or (not exType is TypePoint)
+				{
+					EmitError("can not parse type in catch, or is not point")
+					return void
+				}
+				if not objP.Down.Right is ObjIndent
+				{
+					EmitError("second object in catch must be indentificator\n")
+					return void
+				}
+				asInd := objP.Down.Right->{ObjIndent^}
+				exName = asInd.MyStr
 			}
-			exType = ParseType(objP.Down)
-			if exType == null or (not exType is TypePoint)
-			{
-				EmitError("can not parse type in catch, or is not point")
-				return void
-			}
-			if not objP.Down.Right is ObjIndent
-			{
-				EmitError("second object in catch must be indentificator\n")
-				return void
-			}
-			asInd := objP.Down.Right->{ObjIndent^}
-			exName = asInd.MyStr
 
 			exParam = new FuncParam("I"sbt + ItId,exType,false)
 
