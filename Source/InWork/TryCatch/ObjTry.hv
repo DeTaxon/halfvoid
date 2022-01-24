@@ -152,6 +152,13 @@ ObjTry := class extend ObjTryCommon
 		f << "br label %OnEnd" << ItId << "\n"
 		f << "OnBad" << ItId << ":\n"
 
+		f << "call void @" << expLeave.OutputName << "()"
+		if debId != -1
+		{
+			f << ", !dbg !" << debId
+		}
+		"\n"
+
 		if exName != null
 		{
 			f << "%IPre" << ItId << " = call i8* @" << expGetPoint.OutputName << "()"
@@ -163,7 +170,8 @@ ObjTry := class extend ObjTryCommon
 		Down->{BoxBlock^}.PrintDeferInBlockUse(f)
 		Down.Right.Right.PrintDeferInBlock(f,deferId,deferVal&)
 		Down.Right.Right.PrintInBlock(f)
-		f << "br label %OnEnd" << ItId << "\n"
+		f << "br label %OnLastEnd" << ItId << "\n"
+
 		f << "OnEnd" << ItId << ":\n"
 		f << "call void @" << expLeave.OutputName << "()"
 		if debId != -1
@@ -171,6 +179,8 @@ ObjTry := class extend ObjTryCommon
 			f << ", !dbg !" << debId
 		}
 		"\n"
+		f << "br label %OnLastEnd" << ItId << "\n"
+		f << "OnLastEnd" << ItId << ":\n"
 	}
 	deferTookSize := int
 	deferVal := int

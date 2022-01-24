@@ -43,9 +43,34 @@ TestTemplate := class .{@T} extend MixinObject1 , MixinObject2 , ShouldBe
 
 main := !(int argc, char^^ argv) -> int
 {
-	c := TestTemplate.{int}
-	c.y = 13
-	printf("test %i\n",c.MulLen(10))
+	x := 0
+	while true
+	{
+		FlushTempMemory()
+
+		try
+		{
+			try
+			{
+				throw new Exception("")
+			}catch(IException^ e)
+			{
+				try
+				{
+					throw new Exception("")
+				}catch(IException^ e)
+				{
+					throw new Exception("")
+				}
+			}
+		}catch(IException^ e)
+		{
+			printf("nah? \n")
+		}
+	}
+	//c := TestTemplate.{int}
+	//c.y = 13
+	//printf("test %i\n",c.MulLen(10))
 	return 0
 }
 +
