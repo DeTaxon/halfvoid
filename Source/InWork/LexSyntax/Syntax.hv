@@ -344,7 +344,7 @@ RuleClass := !(void^ itr) -> int
 
 	It := itr->{Object^}
 
-	if It.GetValue() != "class" return 0
+	if It.GetValue() not in !["class","packed_class"]  return 0
 
 	It = It.Right
 	if It == null return 0

@@ -1,6 +1,6 @@
 "#best ()"
 "! () . {} -> d {}"  "! () . {} {}" "! () . {} self_return {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
-"packed_class {}" "AppendClass d {}"
+"AppendClass d {}"
 #ClassBlock
 "virtual ! () -> d {}" "! () -> d {}" "! () {}" "! () self_return {}" "! () -> d declare" "! () -> ref d {}" "! () . {} -> ref d {}"
 "new d ()" "! []" "! {}"
