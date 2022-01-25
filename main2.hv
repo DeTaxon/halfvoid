@@ -41,33 +41,19 @@ TestTemplate := class .{@T} extend MixinObject1 , MixinObject2 , ShouldBe
 	z := TGCObject
 }
 
+miniFunc := !(List.{int}^ tst) -> List.{int}^
+{
+	return tst
+}
+
+createList := !() -> List.{int}^
+{
+	return new List.{int}
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	x := 0
-	while true
-	{
-		FlushTempMemory()
-
-		try
-		{
-			try
-			{
-				throw new Exception("")
-			}catch(e)
-			{
-				try
-				{
-					throw new Exception("")
-				}catch(e)
-				{
-					throw new Exception("")
-				}
-			}
-		}catch(e)
-		{
-			printf("nah? \n")
-		}
-	}
+	miniFunc(@temp createList()).Size()
 	//c := TestTemplate.{int}
 	//c.y = 13
 	//printf("test %i\n",c.MulLen(10))

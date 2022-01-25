@@ -1,7 +1,6 @@
 
-expEnter := BoxFunc^ // AddDefer(!()&->void,bool isException)
+expEnter := BoxFunc^
 expLeave := BoxFunc^
-//expThrow := BoxFunc^
 expGetPoint := BoxFunc^
 
 
@@ -27,12 +26,6 @@ ExceptionInit := !() -> bool
 	getPr.ParseBlock()
 	expGetPoint = getPr
 
-	//box.itPars.Emplace(GTypeVoidP,false)
-	//thro := FindFunc("internalThrow",dummy,box^,false)
-	//if thro == null return false
-	//thro.ParseBlock()
-	//expThrow = thro
-
 	return true
 }
 
@@ -40,32 +33,10 @@ ParseTry := !(Object^ itm) -> Object^
 {
 	if itm.Down == null return null
 
-	//if itm.Down.GetValue() == "throw" return new ObjThrow(itm)
 	if itm.Down.GetValue() == "try" return new ObjTry(itm)
 
 	return null
 }
-
-//ObjThrow := class extend Object
-//{
-//	ItId := int
-//	this := !(Object^ itm) -> void
-//	{
-//		ItId = GetNewId()
-//		Line = itm.Line
-//	}
-//	PrintInBlock := virtual !(TIOStream f) -> void
-//	{
-//		f << "call void @" << expThrow.OutputName << "(i8* null)"
-//		if DebugMode
-//		{
-//			newId := CreateDebugCall(this&)
-//			if newId != -1
-//				f << ", !dbg !" << newId
-//		}
-//		f << "\n"
-//	}
-//}
 
 ObjTry := class extend ObjTryCommon
 {
@@ -104,7 +75,7 @@ ObjTry := class extend ObjTryCommon
 			if objP.Down.Right == null and objP.Down is ObjIndent
 			{
 				exName = objP.Down->{ObjIndent^}.MyStr
-				exType = @once ParseType(new ObjIndent("IException")).GetPoint()
+				exType = @once ParseType(new ObjIndent("IException")).GetPoint() //TODO @temp on indent
 				if exType == null
 					EmitError("internal error, IException not found")
 			}else{
@@ -214,7 +185,5 @@ ObjTry := class extend ObjTryCommon
 		deferVal = labelSetIter^
 		deferId = itId
 		labelSetIter^ += deferTookSize
-		//Down.Right.Right.PrintDeferInBlock(f,itId,labelSetIter)
-		//Down.PrintDeferInBlock(f,itId,labelSetIter)
 	}
 }

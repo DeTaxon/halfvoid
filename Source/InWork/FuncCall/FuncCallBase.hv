@@ -9,12 +9,7 @@ BaseFuncCall := class extend ObjResult
 	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
-		iter := Down
-		while iter != null
-		{
-			iter.PrintGlobal(f)
-			iter = iter.Right
-		}
+		PrintGlobalSub(f)
 	}
 	GetValue := virtual !() -> string
 	{
