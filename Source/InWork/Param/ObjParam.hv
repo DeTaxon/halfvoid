@@ -154,16 +154,7 @@ ObjParam := class extend Object
 		{
 			if Down?.GetValue() == "default"
 			{
-				itr := Up
-				while itr != null
-				{
-					if itr is BoxClass or itr is BoxClassTemplate //TODO: AppendClass
-					{
-						itr->{BoxClass^}.CreateDefault(MyStr)
-						break
-					}
-					itr = itr.Up
-				}
+				GetUpClass(Up)?.CreateDefault(MyStr)
 				return void
 			}
 			if Down?.Down?.GetValue() == "fake"
