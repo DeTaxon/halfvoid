@@ -42,25 +42,6 @@ ObjParam := class extend Object
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
-		if Down?.Right? is SLambda or Down?.Right? is SFuncLambda
-		{
-			debId := -1
-			if DebugMode 
-				debId = CreateDebugCall(this&)
-			asL := Down.Right->{SLambda^}
-			asL.PrintPre(f)
-			itMem := Down->{MemParam^}
-			extrId := GetNewId()
-			f << "store "
-			asL.PrintUse(f)
-			f << " , "
-			itMem.PrintPointUse(f,extrId,-debId)
-			if debId != -1
-				f << ", !dbg !" << debId
-			f << "\n"
-
-			return void
-		}
 		if ObjType is TypeClass and (not IsTook) and (not IsRef)
 		{
 			asNeed2 := ObjType->{TypeClass^}
@@ -199,28 +180,9 @@ ObjParam := class extend Object
 				while TryParseMacro(Down) == MacroRestart {}
 			}
 
-			if Down?.GetValue() == "x=>x"
-			{
-				Down.DoTheWork(State_Start)
-				asL := Down->{SLambda^}
-				ObjType = asL.ResultType
-				alId := GetAlloc(this&,ObjType)
-				newT := MemParam^()
-				if alId == -1
-				{
-					newT = new GlobalParam(asL.ResultType,null)
-					newT.Down = Down
-				}else{
-					newT = new LocalParam(asL.ResultType,alId,false)
-				}
-
-				newT.Right= Down
-				newT.Up = this&
-				Down.Left = newT
-				Down = newT
-				asL.ApplyFunc()
+			if TryObjParamLambdaInit()
 				return void
-			}
+
 			//GetInhPar()
 			if Line != null inhAttrs = Line.itAttrs&
 			if Up? is BoxFile
