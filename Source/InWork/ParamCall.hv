@@ -28,7 +28,7 @@ ParseParamCall := !(Object^ ob) -> Object^
 
 		if may != null
 		{
-			if may is ObjParam //may.GetValue() == "i:=1"
+			if may is in ObjParam
 			{
 				itType := may.GetType()
 				if itType == null	return null

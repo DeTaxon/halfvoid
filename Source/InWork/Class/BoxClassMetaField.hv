@@ -5,7 +5,7 @@ CheckMetaBlock := !(Object^ metBl) -> void
 	if itrUp == null
 		return void
 
-	if metBl.Up? is ObjParam
+	if metBl.Up? is in ObjParam
 	{
 		paramName := metBl.Up->{ObjParam^}.MyStr
 	

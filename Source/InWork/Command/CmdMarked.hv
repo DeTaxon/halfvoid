@@ -70,7 +70,7 @@ MetaBoxForMarked := class extend MetaBoxFor
 					iter = iter.Right
 				if iter == null
 					return void //TODO emit error
-				if iter is ObjParam and iter.Down is BoxFuncBody //TODO is in BoxFuncBody
+				if iter is in ObjParam and iter.Down is in BoxFuncBody
 				{
 					assert(Down != null)
 

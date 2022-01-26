@@ -9,7 +9,7 @@ IsWord := !(string name) -> bool
 
 InsertParam := !(string name, Object^ ii , List.{ObjParam^} found,List.{int} Searched) -> void
 {
-	if ii is ObjParam
+	if ii is in ObjParam
 	{
 		AsNeed := ii->{ObjParam^}
 		if(AsNeed.GetName() == name)
@@ -68,7 +68,7 @@ CollectParamsAllByName := !(string name, Object^ start, List.{ObjParam^} found, 
 
 InsertFunc := !(string name, Object^ ii , List.{BoxFunc^} found, List.{BoxTemplate^} templates, bool IsSuffix,bool IsMethod,List.{int} Searched,bool IgnoreLibs) -> void
 {
-		if ii is ObjParam //ii.GetValue() == "i:=1"
+		if ii is in ObjParam
 		{
 			AsNeed := ii->{ObjParam^}
 			if(AsNeed.GetName() == name)

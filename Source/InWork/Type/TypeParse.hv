@@ -309,7 +309,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 								itN := iterR->{ObjIndent^}.MyStr
 								itmF := GetItem(itN,iterR)
 								if itmF != null
-								if itmF? is ObjParam and itmF.Down.GetValue() == "!{}{...}"
+								if itmF? is in ObjParam and itmF.Down.GetValue() == "!{}{...}"
 								{
 									box.itConsts.Push(new ObjClassTemplatePointer(itmF.Down->{BoxClassTemplate^}))
 								}else

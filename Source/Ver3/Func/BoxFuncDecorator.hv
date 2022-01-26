@@ -12,7 +12,7 @@ AppendClass BoxFunc
 
 
 		
-		if Up? is ObjParam
+		if Up? is in ObjParam
 		{
 			iter := Up.Left
 			while iter != null

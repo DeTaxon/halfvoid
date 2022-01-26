@@ -837,7 +837,7 @@ SLambda := class extend BoxFuncContainer
 					{
 						return null
 					}
-					if (inUp is ObjParam and inUp.Down? is LocalParam) or inUp is LocalParam or inUp is FuncParam
+					if (inUp is in ObjParam and inUp.Down? is LocalParam) or inUp is LocalParam or inUp is FuncParam
 					{
 						itMem := MemParam^()
 						if inUp is LocalParam or inUp is FuncParam
@@ -884,7 +884,7 @@ SLambda := class extend BoxFuncContainer
 		if not StolenParams.Contain(name)
 		{
 			inUp := GetItem(name,Up)
-			if inUp? is ObjParam and inUp.Down? is LocalParam
+			if inUp? is in ObjParam and inUp.Down? is LocalParam
 			{
 				StolenParams[name] = inUp.Down->{MemParam^}
 			}

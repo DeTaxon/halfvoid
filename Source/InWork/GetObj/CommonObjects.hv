@@ -16,7 +16,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 	iter := start
 	while iter != null
 	{
-		if iter is ObjParam //iter.GetValue() == "i:=1"
+		if iter is in ObjParam
 		{
 			AsNeed := iter->{ObjParam^}
 			if (AsNeed.MyStr == name) {

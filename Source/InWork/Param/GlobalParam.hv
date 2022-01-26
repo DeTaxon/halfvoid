@@ -29,7 +29,7 @@ GlobalParam := class extend MemParamCommon
 	{
 		if pri == State_PrePrint
 		{
-			if Up? is ObjParam
+			if Up? is in ObjParam
 			{
 				CreateDbgGlobalVar(Up,ResultType,Up->{ObjParam^}.MyStr,false) //TODO: global ref?
 			}

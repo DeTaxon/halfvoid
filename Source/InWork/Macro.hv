@@ -345,7 +345,7 @@ TryParseMacro := !(Object^ tr ,Object^ itUp) -> Object^
 			}
 			itr2 = prevItr2
 			itr2 = itr2.Up
-			assert(it.Up is ObjParam)
+			assert(it.Up is in ObjParam)
 			itCall := new ParamFuncCall("(none)",it.Up->{ObjParam^})
 			itCall.MacroCreated = true
 			ReplaceNode(itr2,itCall)

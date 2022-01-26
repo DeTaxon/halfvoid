@@ -249,7 +249,7 @@ CLibModule := class extend CompilerModule
 			if spn in it.objs
 			{
 				objRef := ref it.objs[spn]
-				if objRef is ObjParam and objRef.Down? is BoxFuncDeclare
+				if objRef is in ObjParam and objRef.Down? is BoxFuncDeclare
 				{
 					return objRef.Down
 				}
@@ -325,7 +325,7 @@ CLibModule := class extend CompilerModule
 	{
 		for it : libs[^].objs
 		{
-			if it is ObjParam
+			if it is in ObjParam
 				it.Down.PrintGlobal(f)
 			if it is GlobalParam
 				it.PrintGlobal(f)
