@@ -168,10 +168,10 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		}
 	}
 }
-DecodeSmallHuffmanTable := !(NotHuffmanTree9^ toApply,BW bw,u8^ result,int codesCount) -> void
+DecodeSmallHuffmanTable := !(NotHuffmanTree9^ toApply,BW bw,u8^ res,int codesCount) -> void
 {
 	prevCode := 0
-	outIter := result->{u8^}
+	outIter := res->{u8^}
 	while codesCount != 0
 	{
 		itVal := toApply.GetAndMove(bw)	

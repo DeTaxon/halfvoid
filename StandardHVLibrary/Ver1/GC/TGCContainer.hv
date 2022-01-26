@@ -16,21 +16,21 @@ TGCContainer := class .{@V} extend baseGCContainer
 {
 	Create := !(StringSpan name) -> V^
 	{
-		result := new V
-		result.Name = name.Str()
-		result.basePointer = this&
-		dataBase[result.Name] = result
-		return result
+		res := new V
+		res.Name = name.Str()
+		res.basePointer = this&
+		dataBase[res.Name] = res
+		return res
 	}
 	Get := !(StringSpan name) -> V^
 	{
 		if dataBase.Contain(name)
 			return dataBase[name]
-		result := new V
-		result.Name = name.Str()
-		result.basePointer = this&
-		dataBase[result.Name] = result
-		return result
+		res := new V
+		res.Name = name.Str()
+		res.basePointer = this&
+		dataBase[result.Name] = res
+		return res
 	}
 }
 

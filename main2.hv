@@ -1,60 +1,8 @@
 
-MixinObject1 := class
-{
-	x := int
-	Contain := poison !(!(int)&-> bool l) -> bool
-	{
-		if l(this[^])
-			return true
-		return false
-	}
-}
-MixinObject2 := class
-{
-	y := int
-	GetY := !() -> int
-	{
-		return y
-	}
-	Test := poison !() -> void
-	{
-		printf("hello\n")
-	}
-}
-MixinVirtualObj := class
-{
-	z := int
-	GetLen := virtual !() -> int
-	{
-		return z
-	}
-}
-ShouldBe := class 
-{
-	MulLen := poison !(T itm) -> T
-	{
-		return itm*GetY()
-	}
-}
-TestTemplate := class .{@T} extend MixinObject1 , MixinObject2 , ShouldBe
-{
-	z := TGCObject
-}
-
-miniFunc := !(List.{int}^ tst) -> List.{int}^
-{
-	return tst
-}
-
-createList := !() -> List.{int}^
-{
-	return new List.{int}
-}
 
 main := !(int argc, char^^ argv) -> int
-{
-	c := TestTemplate.{int}
-	c.y = 13
-	printf("test %i\n",c.MulLen(10))
+{	
+	tst := @temp List.{int}()
+	tst << 13 << 100 << -1
 	return 0
 }

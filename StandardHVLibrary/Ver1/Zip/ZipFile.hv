@@ -296,7 +296,7 @@ zipIntEntry := class
 	
 	this := !() -> void {}
 }
-ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} result)-> bool
+ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} res)-> bool
 {
 	eod := ptrToFl[fileSize - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
@@ -314,8 +314,8 @@ ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} result)-> bool
 		ptrToStr := cdTable[1]&->{char^}
 		newStr := StringSpan(ptrToStr,cdTable.fileNameLen)
 
-		result.Emplace()
-		newEn := ref result.Back()
+		res.Emplace()
+		newEn := ref res.Back()
 		newEn.fileName = newStr
 		newEn.offsetToCDEntry = cdTable&->{u64^}^ - ptrToFl&->{u64^}^
 		newEn.cdEntrySize = zipCentralDirectory->TypeSize
