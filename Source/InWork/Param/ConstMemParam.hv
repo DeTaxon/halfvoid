@@ -9,7 +9,7 @@ ConstMemParam := class extend MemParam
 		Up = nUp
 		ResultType = paramType
 		constIsRef = isRef
-		paramName = paramNameIn
+		paramName = StrCopy(paramNameIn)
 	}
 	IsRef := virtual !() -> bool
 	{

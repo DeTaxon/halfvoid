@@ -53,7 +53,17 @@ createList := !() -> List.{int}^
 
 main := !(int argc, char^^ argv) -> int
 {
-	miniFunc(@temp createList()).Size()
+	try
+	{
+		throw new Exception("hello")
+	}catch(e)
+	{
+		miniLambda := () ==>
+		{
+			printf("test %s\n",e.Msg())
+		}
+		miniLambda()
+	}
 	//c := TestTemplate.{int}
 	//c.y = 13
 	//printf("test %i\n",c.MulLen(10))

@@ -74,32 +74,29 @@ ObjTry := class extend ObjTryCommon
 			}
 			if objP.Down.Right == null and objP.Down is ObjIndent
 			{
+				if not objP.Down is ObjIndent
+					objP.EmitError("can not use exception name\n")
 				exName = objP.Down->{ObjIndent^}.MyStr
 				exType = @once ParseType(@temp new ObjIndent("IException")).GetPoint()
 				if exType == null
 					EmitError("internal error, IException not found")
 			}else{
-				if objP.Down.Right == null
-				{
-					EmitError("one obj in catch not allowed, try \"IException^ e\"")
-					return void
-				}
 				exType = ParseType(objP.Down)
 				if exType == null or (not exType is TypePoint)
 				{
-					EmitError("can not parse type in catch, or is not point")
+					objP.EmitError("can not parse type in catch, or is not point")
 					return void
 				}
 				if not objP.Down.Right is ObjIndent
 				{
-					EmitError("second object in catch must be indentificator\n")
+					objP.EmitError("second object in catch must be indentificator\n")
 					return void
 				}
 				asInd := objP.Down.Right->{ObjIndent^}
 				exName = asInd.MyStr
 			}
 
-			exParam = new FuncParam("I"sbt + ItId,exType,false)
+			exParam = new ConstMemParam(this&,"%I"sbt + ItId,exType,false)
 
 			MakeItBlock(Down)
 			MakeItBlock(Down.Right.Right)
@@ -110,9 +107,7 @@ ObjTry := class extend ObjTryCommon
 	GetItem := virtual !(char^ name) -> Object^
 	{
 		if name == exName
-		{
 			return exParam
-		}
 		return null
 	}
 	PrintInBlock := virtual !(TIOStream f) -> void
@@ -143,7 +138,10 @@ ObjTry := class extend ObjTryCommon
 			f << "%IPre" << ItId << " = call i8* @" << expGetPoint.OutputName << "()"
 			if debId != -1 f << ", !dbg !" << debId
 			f << "\n"
-			f << "%I" << ItId << " = bitcast i8* %IPre" << ItId << " to " << exType.GetName() << "\n"
+			f << "%I" << ItId << " = bitcast i8* %IPre" << ItId << " to " << exType.GetName() 
+			if debId != -1 f << ", !dbg !" << debId
+			f << "\n"
+			exParam.DoStore(f,debId)
 		}
 
 		Down->{BoxBlock^}.PrintDeferInBlockUse(f)
