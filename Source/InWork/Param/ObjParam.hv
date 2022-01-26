@@ -152,10 +152,6 @@ ObjParam := class extend Object
 	{
 		if pri == State_Start
 		{
-			if Down? is ObjStr
-			{
-				BoxExc(Down,GTypeString,false)
-			}
 			if Down?.GetValue() == "default"
 			{
 				itr := Up
