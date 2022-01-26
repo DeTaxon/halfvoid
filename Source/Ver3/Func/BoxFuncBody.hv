@@ -3,7 +3,7 @@ BoxFuncBody := class extend BoxFunc
 	parsed := bool
 	ItParams := RawArray.{MemParam^}
 	InAlloc := RawArray.{int}
-	ExtraRetParam := FuncParam^
+	ExtraRetParam := MemParam^
 	Parent := BoxFuncBody^
 
 	outLabel := BoxLabelAnon
@@ -61,7 +61,7 @@ BoxFuncBody := class extend BoxFunc
 		
 		if ExtraRetParam != null
 		{
-			if ExtraRetParam.ItName == name
+			if ReturnName == name
 				return ExtraRetParam
 		}
 		trVal := ItAttrs.TryFind(name)
@@ -123,10 +123,10 @@ BoxFuncBody := class extend BoxFunc
 			if not IsRetRef
 			{
 				this.IsRetComplex = true
-				if ExtraRetParam == null
-					ExtraRetParam = new FuncParam(ReturnName,t,true)
+				//if ExtraRetParam == null
 			}
 		}
+		ExtraRetParam = new ConstMemParam(this&,"%"sbt + ReturnName,t,true)
 	}
 	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf, Object^ anc, BoxFunc^ DefTailFunc) -> void
 	{
@@ -349,6 +349,7 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			DeferFuncStart(f,dbgId)
+			ExtraRetParam.DoStore(f,-1)
 
 			if InAlloc.Size() != 0
 			for i : MyFuncType.ParsCount

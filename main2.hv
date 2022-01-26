@@ -1,8 +1,11 @@
 
+fncTest := !() -> int
+{
+	result = 100
+}
 
 main := !(int argc, char^^ argv) -> int
-{	
-	tst := @temp List.{int}()
-	tst << 13 << 100 << -1
+{		
+	printf("heh %i\n",fncTest())
 	return 0
 }
