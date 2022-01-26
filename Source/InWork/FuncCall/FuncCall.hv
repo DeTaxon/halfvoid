@@ -625,6 +625,10 @@ AssemblerCall := class extend NaturalCall
 		ExchangeParams()
 		WorkBag.Push(this&,State_MiddleGetUse)
 	}
+	PrintGlobal := virtual !(TIOStream f) -> void
+	{
+		PrintGlobalSub(f)
+	}
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		PrintPre(f)

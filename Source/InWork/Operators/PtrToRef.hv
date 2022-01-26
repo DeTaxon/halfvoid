@@ -41,4 +41,8 @@ PtrToRef := class extend ObjResult
 	{
 		return "d^->ref"
 	}
+	PrintGlobal := virtual !(TIOStream f) -> void
+	{
+		Down.PrintGlobal(f)
+	}
 }

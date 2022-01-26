@@ -75,7 +75,7 @@ ObjTry := class extend ObjTryCommon
 			if objP.Down.Right == null and objP.Down is ObjIndent
 			{
 				exName = objP.Down->{ObjIndent^}.MyStr
-				exType = @once ParseType(new ObjIndent("IException")).GetPoint() //TODO @temp on indent
+				exType = @once ParseType(@temp new ObjIndent("IException")).GetPoint()
 				if exType == null
 					EmitError("internal error, IException not found")
 			}else{
