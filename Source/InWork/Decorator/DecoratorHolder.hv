@@ -26,7 +26,7 @@ DecoratorHolder := class extend ObjData
 
 			itBox := @temp new FuncInputBox
 
-			lLambda := GetFuncType(![GTypeVoidP],Down.Right.GetType()).GetLambda()
+			lLambda := GetFuncType(![GTypeVoidP],Down.Right.GetType(),Down.Right.IsRef()).GetLambda()
 			
 			itBox.itPars.Emplace(lLambda,false)
 

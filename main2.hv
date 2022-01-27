@@ -2,20 +2,21 @@
 "@temp2 call" := !(@LType lambd) -> LType->ResultType
 {
 	TempPoolBlock()
-	result = lambd()
-	if result->Type->Group == "Pointer"
-		_SetAllocator(result^,gTemporaryPool&)
 	if result->Type->Group == "Class"
-		_SetAllocator(result,gTemporaryPool&)
-	printf("start %p %p\n",result&, result.allocator)
-	return result
+	{
+		_SetAllocator(lambd(),gTemporaryPool&)
+	} else if result->Type->Group == "Pointer"
+	{
+		_SetAllocator(lambd()^,gTemporaryPool&)
+	}else{
+		lambd()
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	tst := List.{int}
-	@temp2 tst
+	tst := @temp2 List.{int}
 	tst << 1 << 100 << 3
-	printf("tst %p %p\n",tst&, tst.allocator)
+	printf("objec %p %p\n",tst&, tst.allocator)
 	return 0
 }
