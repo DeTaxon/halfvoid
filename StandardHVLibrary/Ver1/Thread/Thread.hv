@@ -1,6 +1,22 @@
 pthread_t := type u64
 
 
+
+_threadProxyFunc := !(void^ x) -> void
+{
+	_TaskPtrReset()
+	_taskInitMem(_TaskPtrGet())
+	_threadProxyFuncInner(x)
+}
+_threadProxyFuncInner := !(void^ x) -> void
+{
+	//MallocPoolBlock()
+	asLambd := x->{!()&->void}
+	asLambd()
+	asLambd.Destroy()
+	gTemporaryPool.Destroy()
+}
+
 Thread := class
 {
 	if $posix
@@ -9,20 +25,11 @@ Thread := class
 		itData := void^
 	this := !(!()&->void lambd) ->	void
 	{
-		proxyFunc := (void^ x) => 
-		{
-			_TaskPtrReset()
-			_taskInitMem(_TaskPtrGet())
-			asLambd := x->{!()&->void}
-			asLambd()
-			asLambd.Destroy()
-			gTemporaryPool.Destroy()
-		}
 		captLambd := lambd.Capture()->{void^}
 		if $posix
-			pthread_create(itData&,null,proxyFunc,captLambd)
+			pthread_create(itData&,null,_threadProxyFunc,captLambd)
 		if $win32
-			itData = CreateThread(null,0,proxyFunc,captLambd,0,null)
+			itData = CreateThread(null,0,_threadProxyFunc,captLambd,0,null)
 	}
 	Join := !() -> void
 	{
