@@ -119,7 +119,7 @@ AppendClass BoxClass
 			f << ", i32 0, i32 0\n"
 			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
 		}
-		if Params.Size() != 0 or Parents.Size() != 0
+		if ParamsCount() != 0
 		{
 			f << "%Tsub = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* %this , i32 0"
 			if ContainVirtual
