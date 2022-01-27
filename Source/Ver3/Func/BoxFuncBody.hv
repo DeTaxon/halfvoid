@@ -126,7 +126,11 @@ BoxFuncBody := class extend BoxFunc
 				//if ExtraRetParam == null
 			}
 		}
-		ExtraRetParam = new ConstMemParam(this&,"%"sbt + ReturnName,t,true)
+		if not IsRetRef and t != GTypeVoid
+		{
+			ExtraRetParam = new ConstMemParam(this&,"%"sbt + ReturnName,t,true)
+			ExtraRetParam.NotifyPointUse()
+		}
 	}
 	this := !(Object^ inPars, Object^ inOutType,Object^ cons,bool RetRef, string SomeName, Object^ Stuf,bool IsSuf,Type^ metC,bool IsVirt,bool isRetSelf, Object^ anc, BoxFunc^ DefTailFunc) -> void
 	{
@@ -349,7 +353,6 @@ BoxFuncBody := class extend BoxFunc
 			}
 
 			DeferFuncStart(f,dbgId)
-			ExtraRetParam.DoStore(f,-1)
 
 			if InAlloc.Size() != 0
 			for i : MyFuncType.ParsCount
@@ -411,31 +414,32 @@ BoxFuncBody := class extend BoxFunc
 			if (not this.IsRetComplex) and (MyFuncType.RetType != GetType("void")) and (MyFuncType.RetType.GetName() != "void")
 			{
 				RT := MyFuncType.RetType
-				f << "%Result = alloca " << RT.GetName()
+				f << "%result = alloca " << RT.GetName()
 				if MyFuncType.RetRef f << "*"
 				f << "\n"
 				if MyFuncType.RetRef
 				{
-					f << "store " << RT.GetName() << "* null , " << RT.GetName() << "** %Result\n"
+					f << "store " << RT.GetName() << "* null , " << RT.GetName() << "** %result\n"
 				}else{
 					if IsBool(RT)
 					{
-						f << "store i1 0,i1* %Result\n"
+						f << "store i1 0,i1* %result\n"
 					}else
 					if IsInt(RT)
 					{
-						f << "store " << RT.GetName() << " 0 , " << RT.GetName() << "* %Result\n"
+						f << "store " << RT.GetName() << " 0 , " << RT.GetName() << "* %result\n"
 					}else
 					if IsFloat(RT)
 					{
-						f << "store " << RT.GetName() << " 0.0 , " << RT.GetName() << "* %Result\n"
+						f << "store " << RT.GetName() << " 0.0 , " << RT.GetName() << "* %result\n"
 					}else
 					if RT is TypePoint or RT is TypeFatArr
 					{
-						f << "store " << RT.GetName() << " null , " << RT.GetName() << "* %Result\n"
+						f << "store " << RT.GetName() << " null , " << RT.GetName() << "* %result\n"
 					}
 				}
 			}
+			ExtraRetParam?.DoStore(f,-1)
 			PrintABoxExtra(f)
 			if Yodlers.Size() != 0
 			{
@@ -466,7 +470,7 @@ BoxFuncBody := class extend BoxFunc
 			}else{
 				retTypeName := MyFuncType.RetType.GetName()
 				if MyFuncType.RetRef retTypeName = (""sbt + retTypeName + "*" <-)
-				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
+				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %result\n"
 				f << "ret " << retTypeName << " " << "%ResultItem\n"
 			}
 

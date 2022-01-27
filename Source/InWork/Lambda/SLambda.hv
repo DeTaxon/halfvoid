@@ -633,7 +633,7 @@ SLambda := class extend BoxFuncContainer
 			}
 			if (not IsRetComplex) and fastUse.RetType != GTypeVoid
 			{
-				f << "%Result = alloca " << fastUse.RetType.GetName()
+				f << "%result = alloca " << fastUse.RetType.GetName()
 				if fastUse.RetRef f << "*"
 				f << "\n"
 			}
@@ -689,7 +689,7 @@ SLambda := class extend BoxFuncContainer
 			}else{
 				retTypeName := fastUse.RetType.GetName()
 				if fastUse.RetRef retTypeName = (""sbt  + retTypeName + "*" <-) 
-				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %Result\n"
+				f << "%ResultItem = load " << retTypeName << " , " << retTypeName << "* %result\n"
 				f << "ret " << retTypeName << " " << "%ResultItem\n"
 			}
 			f << "}\n"

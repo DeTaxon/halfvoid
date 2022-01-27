@@ -194,7 +194,7 @@ BoxReturn := class extend Object
 			}else {
 				Down.PrintUse(f)
 			}
-			f << " , " << retTypeName << "* %Result"
+			f << " , " << retTypeName << "* %result"
 			if debId != -1
 				f << ", !dbg !" << debId
 			f << "\n"
@@ -203,7 +203,7 @@ BoxReturn := class extend Object
 			if IsGCAnyPtr(tp) and not IsRetRef
 			{
 				id := GetNewId()
-				f << "%AsVoidP" << id << " = bitcast " << retTypeName << "* %Result to i8**\n"
+				f << "%AsVoidP" << id << " = bitcast " << retTypeName << "* %result to i8**\n"
 				f << "%AsVoid" << id << " = load  i8*,i8** %AsVoidP"<< id <<"\n"
 				f << "call void@" << gcIncRefFunc.OutputName << "(i8* %AsVoid"<< id <<")"
 				if debId != -1
