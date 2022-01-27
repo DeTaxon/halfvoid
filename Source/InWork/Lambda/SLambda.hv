@@ -1018,12 +1018,13 @@ BuiltInLambdaCall := class extend BoxTemplate
 		}else{
 			ToSet << "#0 = call " 
 		}
-		ToSet << pars[0].first.Base.GetName() << "%Func##(i8*  %Wut##"
+		ToSet << pars[0].first.Base.GetName() << "%Func##("
 
 		if IsCompl
 		{
-			ToSet << " , " << asB.RetType.GetName() << "* #0"
+			ToSet << asB.RetType.GetName() << "* #0,"
 		}
+		ToSet << "i8*  %Wut##"
 
 		for i : pars.Size()
 		{

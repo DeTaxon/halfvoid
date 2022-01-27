@@ -1,11 +1,21 @@
 
-fncTest := !() -> int
+"@temp2 call" := !(@LType lambd) -> LType->ResultType
 {
-	result = 100
+	TempPoolBlock()
+	result = lambd()
+	if result->Type->Group == "Pointer"
+		_SetAllocator(result^,gTemporaryPool&)
+	if result->Type->Group == "Class"
+		_SetAllocator(result,gTemporaryPool&)
+	printf("start %p %p\n",result&, result.allocator)
+	return result
 }
 
 main := !(int argc, char^^ argv) -> int
-{		
-	printf("heh %i\n",fncTest())
+{
+	tst := List.{int}
+	@temp2 tst
+	tst << 1 << 100 << 3
+	printf("tst %p %p\n",tst&, tst.allocator)
 	return 0
 }
