@@ -43,7 +43,7 @@ getTypeJIT := !() .{@T} -> Type^
 		{
 			pars.Push(getTypeJIT().{par})
 		}
-		return GetFuncType(pars.ToArray(),null,pars.Size(),getTypeJIT().{T->ResultType},false,false,false) ; $temp
+		return GetFuncType(@temp pars.ToArray(),null,pars.Size(),getTypeJIT().{T->ResultType},false,false,false)
 		//return GetFuncType(GTypeVoid)
 	} else if T->Group == "Prime"
 	{

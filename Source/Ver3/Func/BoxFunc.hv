@@ -144,8 +144,6 @@ BoxFunc := class extend BoxFuncContainer
 			Object^, //DefValue
 			int // DefValue modifier
 		}}
-		TypsDefValues := Queue.{Object^}() ; $temp
-		TypsDefValuesModifier := @temp new List.{int}
 		IsVargsL := false
 		ContainTT := false
 		defVals := 0

@@ -234,7 +234,7 @@ ModuleVulkan := class extend CompilerModule
 					}
 					if category^ == "funcpointer"{
 						retType := null->{Type^}
-						funcTypes := Queue.{Type^}() ; $temp
+						funcTypes := @temp new Queue.{Type^}
 
 						if not asNeed.Childs[0].first{
 							itRet := asNeed.Childs[0].second->{string}
@@ -271,7 +271,7 @@ ModuleVulkan := class extend CompilerModule
 								}
 							}
 						}
-						funcT := GetFuncType(funcTypes,null->{bool^},retType,false,false)
+						funcT := GetFuncType(funcTypes^,null->{bool^},retType,false,false)
 						if funcT != null
 							Typedefs[asNeed.GetValueString("name")] = funcT.GetPoint()
 
