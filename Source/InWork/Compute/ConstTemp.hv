@@ -1,4 +1,4 @@
-IsSameTypeObject := !(Object^ obj, Object^ toTst,Queue.{ObjConstHolder^} res, resB) -> bool
+IsSameTypeObject := !(Object^ obj, Object^ toTst,List.{ObjConstHolder^} res, resB) -> bool
 {
 	if obj is ObjTemplateType
 	{
@@ -16,7 +16,7 @@ IsSameTypeObject := !(Object^ obj, Object^ toTst,Queue.{ObjConstHolder^} res, re
 	return true
 }
 
-IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) -> Type^
+IsSameType := !(Object^ obj,Type^ itT ,List.{ObjConstHolder^} res, bool^ resB) -> Type^
 {
 	if res[^] == null return null
 	if obj == null {
@@ -46,7 +46,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 			return itT
 		}
 		newConst := new ObjConstHolder(sNeed.MyStr,(new ObjType(itT))->{Object^})
-		res.Push(newConst) ; $temp
+		res.Push(newConst)
 		return itT
 	}else
 	if obj is ObjData
@@ -129,7 +129,7 @@ IsSameType := !(Object^ obj,Type^ itT ,Queue.{ObjConstHolder^} res, bool^ resB) 
 					if res[^].ItName == asNeedDown2.MyStr
 						return itT
 					newObj := new ObjConstHolder(asNeedDown2.MyStr,(new ObjInt(asNeedType.Size))->{Object^})
-					res.Push(newObj) ; $temp
+					res.Push(newObj)
 					return itT
 				}else{
 					resB[0] = false
@@ -231,7 +231,7 @@ MakeGoodConsts := !(Object^ l) -> bool
 	return true
 }
 
-IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> bool
+IsEqConsts := !(Object^ l, FuncInputBox itBox, List.{ObjConstHolder^} res) -> bool
 {
 	if itBox.itConsts[^] == null return false
 	if l == null return false
@@ -290,7 +290,7 @@ IsEqConsts := !(Object^ l, FuncInputBox itBox, Queue.{ObjConstHolder^} res) -> b
 						if iter.GetValue() != "~{}type" return false
 						asNeed := iter->{ObjTemplateType^}
 						newObj := new ObjConstHolder(asNeed.MyStr,itBox.itConsts[i])
-						res.Push(newObj) ; $temp
+						res.Push(newObj)
 					}
 				}
 			}else{

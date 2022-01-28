@@ -17,7 +17,7 @@ TryCompute := !(Object^ ob) -> Object^
 {
 	return TryCompute(ob,null)
 }
-TryCompute := !(Object^ ob,Queue.{ObjConstHolder^}^ values) -> Object^
+TryCompute := !(Object^ ob,List.{ObjConstHolder^}^ values) -> Object^
 {
 	if ob == null return null
 

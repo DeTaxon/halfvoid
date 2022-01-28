@@ -153,7 +153,7 @@ BoxTemplate := class extend BoxFunc
 	FuncsTTemps := Queue.{Object^}
 	TTNames := List.{char^}
 
-	TempReturnConsts := Queue.{ObjConstHolder^}^
+	TempReturnConsts := List.{ObjConstHolder^}^
 
 	IsVirtual := bool
 
@@ -182,7 +182,7 @@ BoxTemplate := class extend BoxFunc
 		return retArr
 	}
 
-	CheckTypes := !(FuncInputBox itBox,Queue.{ObjConstHolder^} res,Type^^^ resTyps) -> bool
+	CheckTypes := !(FuncInputBox itBox,List.{ObjConstHolder^} res,Type^^^ resTyps) -> bool
 	{
 		extraWalk := true
 		re := true
@@ -422,8 +422,8 @@ BoxTemplate := class extend BoxFunc
 		if itBox.itConsts.Size() != ItConsts.Size() 
 			return 255
 
-		st := Queue.{ObjConstHolder^}()
-		if not CheckTypes(itBox,st,null) 
+		st := @temp new List.{ObjConstHolder^}
+		if not CheckTypes(itBox,st^,null) 
 			return 255
 
 		//if CopyRet != null
@@ -485,8 +485,8 @@ BoxTemplate := class extend BoxFunc
 		}
 
 		resTp := Type^^
-		parConsts := Queue.{ObjConstHolder^}()
-		CheckTypes(itBox,parConsts,resTp&)
+		parConsts := @temp new List.{ObjConstHolder^}
+		CheckTypes(itBox,parConsts^,resTp&)
 
 		for it,i : outT
 		{
@@ -516,7 +516,7 @@ BoxTemplate := class extend BoxFunc
 				newRet = ParseType(CopyRet,null,null,extrVal2&)
 				if newRet == null
 				{
-					cmpRes := TryCompute(CopyRet,parConsts&)
+					cmpRes := TryCompute(CopyRet,parConsts)
 					if cmpRes? is ObjType
 						newRet = cmpRes->{ObjType^}.MyType
 				}
@@ -526,7 +526,7 @@ BoxTemplate := class extend BoxFunc
 				newRet = ParseType(CopyRet,null,null,null)
 				if newRet == null
 				{
-					cmpRes := TryCompute(CopyRet,parConsts&)
+					cmpRes := TryCompute(CopyRet,parConsts)
 					if cmpRes? is ObjType
 						newRet = cmpRes->{ObjType^}.MyType
 				}
@@ -560,10 +560,10 @@ BoxTemplate := class extend BoxFunc
 		getTempData = itBox&
 		defer getTempData = null
 
-		parConsts := Queue.{ObjConstHolder^}()
-		CheckTypes(itBox,parConsts,null)
+		parConsts := @temp new List.{ObjConstHolder^}
+		CheckTypes(itBox,parConsts^,null)
 
-		TempReturnConsts = parConsts& //TODO: replace
+		TempReturnConsts = parConsts //TODO: replace
 		newFuncType := CreateFuncPointer(itBox)
 		TempReturnConsts = null
 
@@ -593,7 +593,7 @@ BoxTemplate := class extend BoxFunc
 		if IsPassAttrs
 			newFunc.IsPassAttrs = true
 
-		newFunc.ItVals.Push(parConsts[^])
+		newFunc.ItVals.Push(parConsts^[^])
 		newFunc.ItConsts.Push(itBox.itConsts[^])
 		newFunc.ItAttrs[key] = itBox.itAttrs[^key]
 		

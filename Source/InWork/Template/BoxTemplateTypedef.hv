@@ -30,12 +30,12 @@ BoxTemplateTypedef := class extend Object
 		itHashEntry := ref createdTemplates[itBox.GetConstsHash()]
 		if itHashEntry[^].0^ <=> itBox == 0
 			return it.1
-		newConsts := Queue.{ObjConstHolder^}()
-		cmpRes := IsEqConsts(Down.Down.Right.Right,itBox,newConsts)
+		newConsts := @temp new List.{ObjConstHolder^}
+		cmpRes := IsEqConsts(Down.Down.Right.Right,itBox,newConsts^)
 		if cmpRes 
 		{
 			oldConsts := itConsts
-			itConsts = newConsts&
+			itConsts = newConsts
 			itT := ParseType(Down.Right,itBox.itAttrs&)
 			itConsts = oldConsts
 			itHashEntry.Emplace(itBox.Clone(),itT)
@@ -43,7 +43,7 @@ BoxTemplateTypedef := class extend Object
 		}
 		return null
 	}
-	itConsts := Queue.{ObjConstHolder^}^
+	itConsts := List.{ObjConstHolder^}^
 	GetItem := virtual !(char^ itName) -> Object^
 	{
 		if itConsts == null

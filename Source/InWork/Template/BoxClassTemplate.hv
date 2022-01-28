@@ -56,8 +56,8 @@ BoxClassTemplate := class extend Object
 		if ItClasses[itHash][^].IsSameConsts(itBox)
 			return it.ClassType
 
-		newConsts := Queue.{ObjConstHolder^}()
-		if not IsEqConsts(ConstTree,itBox,newConsts)
+		newConsts := @temp new List.{ObjConstHolder^}
+		if not IsEqConsts(ConstTree,itBox,newConsts^)
 		{
 			return null
 		}
@@ -89,7 +89,7 @@ BoxClassTemplate := class extend Object
 	
 
 		newClass.ItConsts.Push(itBox.itConsts[^])
-		newClass.ItVals.Push(newConsts[^])
+		newClass.ItVals.Push(newConsts^[^])
 		
 		templs := Queue.{QueueSet.{string}^}() ; $temp
 		templs.Push(this.relAttrs&)
