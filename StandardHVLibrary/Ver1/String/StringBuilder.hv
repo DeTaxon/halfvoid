@@ -1,7 +1,7 @@
 StringBuilderTemporary := class .{@BufSize}{
 	ptr := char^
 	inPtrSize := int
-	pages := List.{char^} ; $temp
+	pages := List.{char^}
 
 	this := !() -> void { ptr = null inPtrSize = 0 pages."this"()}
 
@@ -35,7 +35,9 @@ StringBuilderTemporary := class .{@BufSize}{
 	{
 		if sLen == 0 return void
 
-		if ptr == null ptr = new char[BufSize] ; $temp
+		TempPoolBlock()
+
+		if ptr == null ptr = new char[BufSize]
 		if sLen + inPtrSize > BufSize
 		{
 			moved := 0
@@ -43,14 +45,14 @@ StringBuilderTemporary := class .{@BufSize}{
 			memcpy(ptr[inPtrSize]&,adding,sLen - diff)
 			moved += sLen - diff
 			
-			pages.Push(ptr) ; $temp
+			pages.Push(ptr)
 			while sLen - moved > BufSize {
-				preSet := new char[BufSize] ; $temp
+				preSet := new char[BufSize]
 				memcpy(preSet[0]&,adding[moved]&,BufSize)
 				pages << preSet
 				moved += BufSize
 			}
-			ptr = new char[BufSize] ; $temp
+			ptr = new char[BufSize]
 			memcpy(ptr[0]&,adding[moved]&,sLen - moved)
 			inPtrSize = sLen - moved
 
@@ -123,7 +125,8 @@ StringBuilderTemporary := class .{@BufSize}{
 	}
 	"->{}" := !() .{char^} -> char^
 	{
-		return Str() ; $temp
+		TempPoolBlock()
+		return Str()
 	}
 	"<-" := !() -> char^
 	{

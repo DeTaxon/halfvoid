@@ -93,7 +93,7 @@ MEM_RESET := 0x80000
 Utf8ToUtf16 := !(char^ itStr) -> u16[]
 {
 	retSize := MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,null,0)
-	preRet := new u16[retSize + 1] ; $temp
+	preRet := @temp new u16[retSize + 1] //TODO faster?
 	MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,preRet,retSize)
 	preRet[retSize] = 0
 	return preRet
@@ -101,7 +101,7 @@ Utf8ToUtf16 := !(char^ itStr) -> u16[]
 Utf16ToUtf8 := !(u16^ itStr,int count) -> char^
 {
 	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,count,null->{char^},0,null,null)
-	preRet := new char[resSize + 1] ; $temp
+	preRet := @temp new char[resSize + 1]//TODO faster?
 	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,count,preRet,resSize,null,null)
 	preRet[resSize] = 0
 	return preRet
@@ -109,7 +109,7 @@ Utf16ToUtf8 := !(u16^ itStr,int count) -> char^
 Utf16ToUtf8 := !(u16^ itStr) -> char^
 {
 	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,null->{char^},0,null,null)
-	preRet := new char[resSize + 1] ; $temp
+	preRet := @temp new char[resSize + 1] //TODO faster?
 	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,preRet,resSize,null,null)
 	preRet[resSize] = 0
 	return preRet
