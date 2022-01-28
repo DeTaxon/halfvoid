@@ -283,9 +283,9 @@ SetTupleValueSimple := class extend BoxTemplate
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
-		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first) ; $temp
-		return GetFuncType(tps,null->{bool^},GTypeVoid,false,false)
+		tps := @temp new List.{Type^}
+		tps.Push(itBox.itPars[^].first)
+		return GetFuncType(tps.ToArray(),null->{bool^},tps.Size(),GTypeVoid,false,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
@@ -330,9 +330,9 @@ CreateTupleTemplate := class extend BoxTemplate
 		itTpl := GetTuple(itBox&)
 		ct := itTpl.ClassType
 		cc := ct->{Type^}
-		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first) ; $temp
-		return GetFuncType(tps,null->{bool^},cc,false,false)
+		tps := @temp new List.{Type^}
+		tps.Push(itBox.itPars[^].first)
+		return GetFuncType(tps.ToArray(),null->{bool^},tps.Size(),cc,false,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
@@ -385,9 +385,9 @@ TupleConstructorTemplate := class extend BoxTemplate
 		itTpl := GetTuple(itBox&)
 		ct := itTpl.ClassType
 		cc := ct->{Type^}
-		tps := Queue.{Type^}() ; $temp
-		tps.Push(itBox.itPars[^].first) ; $temp
-		return GetFuncType(tps,null->{bool^},GTypeVoid,false,false)
+		tps := @temp new List.{Type^}
+		tps.Push(itBox.itPars[^].first)
+		return GetFuncType(tps.ToArray(),null->{bool^},tps.Size(),GTypeVoid,false,false,false)
 	}
 	GetNewFunc := virtual !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
@@ -451,7 +451,7 @@ TupleFuncGetItem := class extend BoxTemplate
 		
 		itParam := frmIn.Params[ind]
 
-		typs := Queue.{Type^}() ; $temp
+		typs := Queue.{Type^}()
 		return GetFuncType(typs,null->{bool^},itParam.ResultType,false,false)
 	}
 
