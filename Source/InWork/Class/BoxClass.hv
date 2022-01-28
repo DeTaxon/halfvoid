@@ -54,10 +54,10 @@ BoxClass := class extend BoxClassBase
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
 	GetWrappedFunc := !(char^ name ,List.{BoxFunc^} funcs, List.{BoxTemplate^} templs) -> void
 	{
-		gotFuncs := Queue.{BoxFunc^}()
-		funcsCl := Queue.{BoxClass^}()
+		gotFuncs := @temp new List.{BoxFunc^}
+		funcsCl := @temp new List.{BoxClass^}
 
-		gotTempls := Queue.{Tuple.{BoxTemplate^,BoxClass^}}() ; $temp
+		gotTempls := @temp new List.{Tuple.{BoxTemplate^,BoxClass^}}
 
 		checkClass := (BoxClass^ iterF) ==>
 		{
@@ -66,8 +66,8 @@ BoxClass := class extend BoxClassBase
 			{
 				if qIter.FuncName == name
 				{
-					gotFuncs.Push(qIter) ; $temp
-					funcsCl.Push(iterF) ; $temp
+					gotFuncs.Push(qIter)
+					funcsCl.Push(iterF)
 				}
 			}
 			inTmp := iterF.defaultFuncsHolder.templates.TryFind(name)
@@ -84,7 +84,7 @@ BoxClass := class extend BoxClassBase
 		checkClass(this&)		
 
 
-		for gotFuncsIter : gotFuncs , funcsClIter : funcsCl
+		for gotFuncsIter : gotFuncs^ , funcsClIter : funcsCl^
 		{
 			inTh := BoxFunc^()
 
@@ -106,7 +106,7 @@ BoxClass := class extend BoxClassBase
 			}
 			if inTh != null funcs.Push(inTh)
 		}
-		for templ : gotTempls
+		for templ : gotTempls^
 		{
 			inTh := BoxTemplate^()
 
@@ -368,7 +368,7 @@ BoxClass := class extend BoxClassBase
 		if checkedPoisons return void
 		checkedPoisons = true
 
-		addedFuncs := AVLSet.{char^}() //TODO MEM
+		addedFuncs := @temp new AVLSet.{char^}
 		checkClass := (BoxClass^ prnt) ==> 
 		{
 			for it,name : prnt.ItPoisons
@@ -377,7 +377,7 @@ BoxClass := class extend BoxClassBase
 					continue
 				if not defaultFuncsHolder.methods.Contain(name) //TODO: poison + fake fields
 				{
-					addedFuncs.Insert(name) ; $temp
+					addedFuncs.Insert(name)
 
 					newSub := new ObjParam(name,false) //TODO it is always make copy, i want on demand
 					newSub.Down = it.Clone()

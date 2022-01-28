@@ -19,7 +19,7 @@ SLambdaDecorator := class extend SBoostLambda
 			return void
 
 		heh := GetItem("_1")
-		parCall := ParamNaturalCall("_1",heh) ; $temp
+		parCall := ParamNaturalCall("_1",heh)
 		parCall.PrintPre(f)
 
 		f << "switch "

@@ -320,7 +320,7 @@ BoxForOldFashionMulti := class extend BoxFor
 					bodyLambda := UNext(Down, new SBoostLambda(),1)->{SBoostLambda^}
 					bodyLambda.ApplyFunc(bodyL,false)
 
-					tmpObj := new Object ; $temp
+					tmpObj := @temp new Object
 					ReplaceNode(Down,tmpObj)
 					decLambdaCall.Right = bodyLambda
 					bodyLambda.Left = decLambdaCall

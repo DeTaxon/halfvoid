@@ -1,10 +1,10 @@
-FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void
+FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void //TODO remove
 {	
 	if itm != null{
 		for v,k : itm.Line.itAttrs
 		{
 			//printf("adding %s\n",k)
-			itBox.itAttrs[k] = v ; $temp
+			itBox.itAttrs[k] = v
 		}
 	}
 
