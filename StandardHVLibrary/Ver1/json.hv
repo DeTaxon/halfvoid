@@ -101,11 +101,15 @@ jsonLoadMachine := !() -> void
 json := class extend jsonNode
 {
 	startNode := jsonNode^
-	tokens := List.{Tuple.{int,StringSpan}} ; $temp
+	tokens := List.{Tuple.{int,StringSpan}}
 
 	ParseString := !(char^ fileData,int size) -> void
 	{
 		jsonLoadMachine()
+
+		_SetAllocator(tokens,gTemporaryPool&)
+		assert(tokens.allocator != null)
+
 		memset(this&,0,json->TypeSize)
 		tokens."this"()
 		RegExpReadText(jsonRegMachine,fileData,size, (a,b,c) ==>

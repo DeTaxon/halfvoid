@@ -80,10 +80,7 @@ StringSpan := class{
 		return this
 	}
 	StrTmp := !()  -> char^ {
-		preRet := new char[itSize+1] ; $temp
-		preRet[itSize] = 0
-		memcpy(preRet->{void^},ptr,itSize)
-		return preRet
+		return @temp Str()
 	}
 	Str := !()  -> char^ { //TODO: put back .{}
 		preRet := new char[itSize+1]
@@ -94,7 +91,7 @@ StringSpan := class{
 	}
 	"->{}" := !() .{char^}-> char^
 	{
-		return Str() ; $temp
+		return @temp Str()
 	}
 	DivideStr := !(char^ to) -> List.{StringSpan}
 	{

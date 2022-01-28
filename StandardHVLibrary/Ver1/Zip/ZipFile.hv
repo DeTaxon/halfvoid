@@ -355,7 +355,7 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 
 	eod := zipFile.point[zipFile.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
-	ignores := Queue.{void^}() ; $temp
+	ignores := @temp new List.{void^}
 	ignores.Push(eod.offsetToStartOfCD&)
 
 	filesCount := eod.numberOfCentralDirectoryHere
@@ -375,7 +375,7 @@ ZipConCat := !(char^ inpFileI,char^ zipFileI, char^ outFileI) -> void
 	{
 		metIgnore := false
 		maxValue := endOfPoint
-		for it : ignores
+		for it : ignores^
 		{
 			if it < startPoint
 				continue
