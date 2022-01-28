@@ -114,8 +114,7 @@ BoxFunc := class extend BoxFuncContainer
 					continue
 				}
 
-				stdL := Queue.{string}()
-				if ContainTType(iter,stdL)
+				if ContainTType(iter)
 				{
 					ItConsts.Push(null->{Object^})
 					ItConstsTT.Push(iter)

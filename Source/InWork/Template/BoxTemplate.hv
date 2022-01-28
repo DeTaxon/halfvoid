@@ -1,10 +1,9 @@
 
 ContainTType := !(Object^ toCheck) -> bool
 {
-	res := Queue.{string}()
-	return ContainTType(toCheck,res)
+	return ContainTType(toCheck,null)
 }
-ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
+ContainTType := !(Object^ toCheck,List.{char^}^ res) -> bool
 {
 	if toCheck == null 
 		return false
@@ -18,7 +17,7 @@ ContainTType := !(Object^ toCheck,Queue.{string} res) -> bool
 		if item.GetValue() == "~{}type" 
 		{
 			asNeed := item->{ObjTemplateType^}
-			res.Push(asNeed.MyStr) ; $temp
+			res?.Push(asNeed.MyStr)
 			added = true
 			//return true
 		}
@@ -152,7 +151,7 @@ BoxTemplate := class extend BoxFunc
 	NewFuncs := AVLMap.{int,Stack.{TemplateData}}
 
 	FuncsTTemps := Queue.{Object^}
-	TTNames := Queue.{string}
+	TTNames := List.{char^}
 
 	TempReturnConsts := Queue.{ObjConstHolder^}^
 
@@ -336,7 +335,7 @@ BoxTemplate := class extend BoxFunc
 	{
 		if firstNon == vargTypeBarrier?.Up or firstNon == vargTypeBarrier?.Up?.Up
 			return void
-		if ContainTType(firstNon,TTNames)
+		if ContainTType(firstNon,TTNames&)
 		{
 			FuncsTTemps.Push(firstNon)
 		}else{
