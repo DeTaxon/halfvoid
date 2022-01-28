@@ -46,7 +46,7 @@ GetFuncMangledName := !(char^ funcName, TypeFunc^ fType) -> char^
 	{
 		newName := ""sbt + funcName + "_mngl" + mnglIter <-
 		mnglIter += 1
-		newName = Copy(newName) //TODO: bug, $temp
+		newName = Copy(newName) //TODO mem?
 		createdFuncNames.Insert(newName)
 		return newName
 	}

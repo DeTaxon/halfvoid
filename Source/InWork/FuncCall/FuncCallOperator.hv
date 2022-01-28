@@ -24,7 +24,7 @@ FuncCallOperator := !(Object^ iter) -> Object^
 				{
 					oName << " " << it.GetValue()
 				}
-				bigOper := oName.Str() ; $temp
+				bigOper := @temp oName.Str()
 				if bigOper == "?: :" and iter.Right.Right != null
 				{
 					strt := iter.Left.Left
