@@ -194,7 +194,7 @@ BoxTemplate := class extend BoxFunc
 		if resTyps != null 
 			resTyps^ = @temp new Type^[itBox.itPars.Size()]
 
-		//checkConsts := List.{Tuple.{Object^,Type^}}() ; $temp  //TODO Why is it commented
+		//checkConsts := List.{Tuple.{Object^,Type^}}()   //TODO Why is it commented
 		//if ItConsts.Size() != null
 		//{
 		//	assert(ItConstsTT.Size() == itBox.itConsts.Size())
@@ -471,7 +471,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
-		outT := Queue.{Type^}() ; $temp
+		outT := Queue.{Type^}() ; $temp //TODO: later
 		FType := MyFuncType
 		
 		for it : FType.ParsCount, par : itBox.itPars
@@ -536,7 +536,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if itBox.itPars.Size() > FType.ParsCount
 		{
-			retRefArray = new bool[itBox.itPars.Size()] ; $temp 
+			retRefArray = @temp new bool[itBox.itPars.Size()] 
 			for i : itBox.itPars.Size()
 				retRefArray[i] = MyFuncType.ParsIsRef[i]
 			for it, i : itBox.itPars
