@@ -291,11 +291,11 @@ GetBestFunc := !(FuncInputBox itBox, List.{BoxFunc^} funcs, List.{BoxTemplate^} 
 	}
 
 	Priors := int^()
-	if FoundC != 0 Priors = new int[FoundC] ; $temp
+	if FoundC != 0 Priors = @temp new int[FoundC]
 
 	templsPrior := int^()
 	if not templs.IsEmpty() 
-		templsPrior = new int[templs.Size()] ; $temp
+		templsPrior = @temp new int[templs.Size()]
 
 	if FoundC != 0 and itBox.itPars.Size() == 0
 	{
