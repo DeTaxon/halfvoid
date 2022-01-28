@@ -14,49 +14,33 @@
 IntIter := class 
 {
 	start,end := int
-	this := !(int a,int b) .{} -> void
+	this := !(int a,int b) -> void
 	{	
-		if $reverse
-		{
-			start = b
-			end = a
-		}else{
-			start = a
-			end = b
-		}
+		start = a
+		end = b
 	}
 	"^" := !() -> int
 	{
 		return start
 	}
-	Inc := !() .{} -> void
+	Inc := !() -> void
 	{
-		if $reverse
-		{
-			start -= 1
-		}else{
-			start += 1
-		}
+		start += 1
 	}
-	IsEnd := !() .{} -> bool
+	IsEnd := !()  -> bool
 	{
-		if $reverse
-		{
-			return start < end
-		}else{
-			return start >= end
-		}
+		return start >= end
 	}
 	//IsInvalid := !() -> bool
 	//{
 	//	return false
 	//}
 }
-"~For" := !(int x) .{} -> IntIter
+"~For" := !(int x) -> IntIter
 {
 	return IntIter(0,x)
 }
-"~For" := !(range x)  .{} -> IntIter
+"~For" := !(range x) -> IntIter
 {
 	return IntIter(x->begin,x->end + 1)
 }
