@@ -21,7 +21,7 @@ DirectoryIterator2 := class
 	this := !(char^ tu, bool isWildcard) -> void
 	{
 		wildCard = null
-		buff = new char[1024] ; $temp
+		buff = @temp new char[1024]
 		strL := strlen(tu)
 
 		buff[u] = tu[^u]
@@ -38,7 +38,7 @@ DirectoryIterator2 := class
 		dirL++
 		if isWildcard
 		{
-			wildCard = new char[strL - dirL] ; $temp
+			wildCard = @temp new char[strL - dirL]
 			for i,j : dirL..(strL-1)
 			{
 				wildCard[j] = buff[i]
@@ -166,7 +166,7 @@ Path := class
 		newLine := realpath(itStr,null->{char^})
 		if newLine == null return Path("")
 		stSize := StrSize(newLine)
-		preRet := new char[stSize+1] ; $temp
+		preRet := @temp new char[stSize+1]
 		memcpy(preRet->{char^},newLine,stSize)
 		preRet[stSize] = 0
 		free(newLine)
@@ -280,7 +280,7 @@ Path := class
 	}
 	GetTime := !() -> double
 	{
-		buf := new char[256] ; $temp  //88
+		buf := @temp new char[256]  //88
 		dat := buf[88]&->{u64^}
 		stat(itStr,buf->{void^})
 		return dat^->{double}

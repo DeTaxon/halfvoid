@@ -20,10 +20,10 @@ AppendClass Exception
 	//		res := backtrace_symbols(traceData[0]&,traceDataLen)
 	//		defer free(res)
 
-	//		strs := new char^[traceDataLen] ; $temp
+	//		strs := new char^[traceDataLen]
 	//		for i : traceDataLen, r : strs
 	//		{
-	//			r = StrCopy(res[i]) ; $temp
+	//			r = StrCopy(res[i])
 	//		}
 	//		return strs
 	//	}

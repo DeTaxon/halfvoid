@@ -1,3 +1,4 @@
+//TODO memory leak
 NonDetNodeLine := class
 {
 	from := int
@@ -65,8 +66,8 @@ DetMachine := class
 
 MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine
 {
-	kindaHashed := new int[input.NodeId->len] ; $temp
-	borrow := new int[input.NodeId->len] ; $temp
+	kindaHashed := new int[input.NodeId->len]
+	borrow := new int[input.NodeId->len]
 
 	for it,i : kindaHashed
 	{
@@ -140,7 +141,7 @@ CollectByEpsilon := !(NonDetMachine input,List.{int} OldStates) -> void
 		for line : input.Lines
 		{
 			if line.from == it and line.symbl == -1
-					OldStates.PushUniq(line.to) ; $temp
+					OldStates.PushUniq(line.to)
 		}
 	}
 }
@@ -152,7 +153,7 @@ CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) ->
 		{
 			if line.from == fNode and line.symbl == sId
 			{
-				to.PushUniq(line.to) ; $temp
+				to.PushUniq(line.to)
 			}
 		}		
 	}
@@ -161,8 +162,8 @@ CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) ->
 DeterminateMachine := !(NonDetMachine input) -> DetMachine
 {
 	NewNodes := new List.{List.{int}^} 
-	Letters := new List.{int} ; $temp
-	itLines := new List.{Tuple.{int,int,int}} ; $temp
+	Letters := new List.{int}
+	itLines := new List.{Tuple.{int,int,int}}
 
 	for input.Lines
 	{
@@ -224,7 +225,7 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 
 	result.Table = new int[][NewNodes.Size()]
 	for result.Table {
-		it = new int[Letters.Size()] ; $temp
+		it = new int[Letters.Size()]
 		it[^] = -1
 	}
 
@@ -303,12 +304,12 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 	result.NodeId = new int[input.NodeId->len]
 	for a : result.NodeId, b : input.NodeId a = b
 	result.IsEndNode = new int[setSize]
-	transformer := new int[NodeSets->len] ; $temp
+	transformer := new int[NodeSets->len]
 	
 	{
 		someIter := 0
 		usedSets := new List.{int} //TODO temp?
-		itNode := new List.{int} ; $temp
+		itNode := new List.{int}
 		for it,i : NodeSets
 		{
 			if it in usedSets^
@@ -513,7 +514,7 @@ LexBuilder := class
 		}
 		//Words.Right.Print(0)
 
-		Nfas.EmplaceFront() ; $temp
+		Nfas.EmplaceFront()
 		nowNodes := List.{NonDetNodeLine}()
 		itrId := 1
 		mstart := int
@@ -553,7 +554,7 @@ LexBuilder := class
 				maxNodes := 0
 				for lin : itM.Lines
 				{
-					newLines.EmplaceFront() ; $temp
+					newLines.EmplaceFront()
 					newLines[0].from = lin.from
 					if lin.from != 0 newLines[0].from += nowOffset
 					newLines[0].to = lin.to
@@ -567,7 +568,7 @@ LexBuilder := class
 				}
 				for ends : itM.EndNodeData
 				{
-					newEnds.PushFront(!{ends.0 + nowOffset,ends.1}) ; $temp
+					newEnds.PushFront(!{ends.0 + nowOffset,ends.1})
 				}
 				nowOffset += maxNodes + 1
 			}
@@ -584,7 +585,7 @@ LexBuilder := class
 
 AddNodeLine := !(List.{NonDetNodeLine} lines,int frm,int toNode, int val) -> void
 {
-	lines.EmplaceFront() ; $temp
+	lines.EmplaceFront()
 	lines[0].from = frm
 	lines[0].to = toNode
 	lines[0].symbl = val
@@ -695,7 +696,7 @@ BuildPartOfNode := !(List.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ i
 
 "reg" := !(char^ rule) -> WordDetermMachine
 {	
-	lx := new LexBuilder ; $temp
+	lx := @temp new LexBuilder
 	lx.ApplyReg(rule)
 	return lx.GenerateMachine()
 }
