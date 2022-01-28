@@ -145,12 +145,7 @@ BuiltIn2UnrollClass := class extend BuiltIn2CommonUnrollClass
 		OutputName = Name
 		IsRetRef = RRetRef
 
-		PP := Queue.{Type^}() ; $temp
-		PP.Push(l.ClassType)
-
-		IsRefs := bool[1]
-		IsRefs[0] = lRef
-		MyFuncType = GetFuncType(PP,IsRefs,retV,RRetRef,false)
+		MyFuncType = GetFuncType(ToClass.ClassType&->{Type^^},lRef&,1,retV,RRetRef,false,false)
 	}
 	
 	PrintFunc := virtual !(BuiltIn2Call^ trg,TIOStream f) -> void
@@ -190,10 +185,9 @@ BuiltInTemplateUnroll := class extend BoxTemplate
 
 		ToClass = toAdd
 
-		emptType := Queue.{Type^}() ; $temp
-		emptType.Push(toAdd.ClassType)
+		
 		miniArr := true
-		MyFuncType = GetFuncType(emptType,miniArr&,null->{Type^},false,false)
+		MyFuncType = GetFuncType(toAdd.ClassType&->{Type^^},miniArr&,1,null->{Type^},false,false,false)
 		IsMethod = true
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
