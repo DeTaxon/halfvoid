@@ -279,7 +279,7 @@ CLibModule := class extend CompilerModule
 	{
 		tList := toCheck.DivideStr(" ,")
 		retType := CheckTypeString(tList[0])
-		nextTypes := Queue.{Type^}()
+		nextTypes := @temp new List.{Type^}
 		isVArg := false
 		for it,i : tList
 		{
@@ -289,10 +289,9 @@ CLibModule := class extend CompilerModule
 				isVArg = true
 				continue
 			}
-			nextTypes.Push(CheckTypeString(it)) ; $temp
+			nextTypes.Push(CheckTypeString(it))
 		}
-		typs := nextTypes.ToArray() ; $temp
-		return GetFuncType(typs,null,nextTypes.Size(),retType,false,isVArg,compilerSuffix == "posix")
+		return GetFuncType(nextTypes.ToArray(),null,nextTypes.Size(),retType,false,isVArg,compilerSuffix == "posix")
 	}
 	CheckTypeString := !(StringSpan toCheck) -> Type^
 	{

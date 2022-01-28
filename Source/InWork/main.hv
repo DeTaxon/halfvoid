@@ -286,7 +286,7 @@ main := !(int argc,char^^ argv) -> int
 	for it : PriorityData.Opers
 	{
 		badOper := OpersTree&->{AVLSet.{char^}^}
-		badOper.Insert(it) //TODO BUG:  OpersTree << "" called with $temp
+		badOper.Insert(it)
 	}
 
 	for targetFiles
