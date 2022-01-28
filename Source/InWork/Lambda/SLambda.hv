@@ -120,8 +120,8 @@ SLambda := class extend BoxFuncContainer
 				//WorkBag.Push(this&,State_Syntax)
 				names := @temp new List.{char^}
 
-				pars := Queue.{Type^}() ; $temp
-				isRef := Queue.{bool}() ; $temp
+				pars := @temp new List.{Type^}
+				isRef := @temp new List.{bool}
 
 				if not justFunc{
 					names.Push(StrCopy("lambdaParam"sbt + ItId))
@@ -226,7 +226,7 @@ SLambda := class extend BoxFuncContainer
 				//	PopOutNode(cmp.Right)
 				//}
 
-				asFunc := GetFuncType(pars,null->{bool^},resType,false,false)
+				asFunc := GetFuncType(pars.ToArray(),null->{bool^},pars.Size(),resType,false,false,false)
 				fastUse = asFunc
 
 				if not isTmpl
@@ -236,10 +236,10 @@ SLambda := class extend BoxFuncContainer
 						Created = true
 						parms = new LocalParam^[pars.Size()]
 						InAlloc = new int[pars.Size()]
-						for it,i : pars
+						for it,i : pars^
 						{
 							isRf := IsComplexType(it) 
-							isRf = isRf or isRef[i]
+							isRf = isRf or isRef^[i]
 							if isRf {
 								InAlloc[i] = ABox.GetAlloc(it.GetPoint())
 							}else{
@@ -949,9 +949,6 @@ BuiltInLambdaCall := class extend BoxTemplate
 	{
 		FuncName = "()"
 		IsMethod = true
-
-		pars := Queue.{Type^}()
-
 		MyFuncType = null
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
