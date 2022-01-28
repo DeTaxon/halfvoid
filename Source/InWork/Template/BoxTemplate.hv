@@ -169,7 +169,7 @@ BoxTemplate := class extend BoxFunc
 		if counter == 0
 			return null
 		i := 0
-		retArr := new RawArray.{BoxFunc^} ; $temp
+		retArr := @temp new RawArray.{BoxFunc^}
 		retArr.Resize(counter)
 		for it2 : NewFuncs
 		{
@@ -192,9 +192,9 @@ BoxTemplate := class extend BoxFunc
 
 		limit := 50
 		if resTyps != null 
-			resTyps^ = new Type^[itBox.itPars.Size()] ; $temp
+			resTyps^ = @temp new Type^[itBox.itPars.Size()]
 
-		checkConsts := List.{Tuple.{Object^,Type^}}() ; $temp 
+		//checkConsts := List.{Tuple.{Object^,Type^}}() ; $temp  //TODO Why is it commented
 		//if ItConsts.Size() != null
 		//{
 		//	assert(ItConstsTT.Size() == itBox.itConsts.Size())
@@ -214,7 +214,7 @@ BoxTemplate := class extend BoxFunc
 		}
 		if vargTypeBarrier != null
 			expectedChecks += itBox.itPars.Size() - MyFuncType.ParsCount
-		expectedChecks += checkConsts.Size()
+		//expectedChecks += checkConsts.Size()
 
 		if itBox.itPars.Size() < FuncsTTemps.Size() - DefaultValuesCount and vargsName == null
 		{
@@ -266,17 +266,17 @@ BoxTemplate := class extend BoxFunc
 					failedC++
 				}
 			}
-			for it : checkConsts
-			{
-				rTp := IsSameType(it.0,it.1,res,re&)
-				if not re return false
-				if rTp != null
-				{
-					succedC++
-				}else{
-					failedC++
-				}
-			}
+			//for it : checkConsts
+			//{
+			//	rTp := IsSameType(it.0,it.1,res,re&)
+			//	if not re return false
+			//	if rTp != null
+			//	{
+			//		succedC++
+			//	}else{
+			//		failedC++
+			//	}
+			//}
 			if vargTypeBarrier != null
 			{
 				for par,i : itBox.itPars
