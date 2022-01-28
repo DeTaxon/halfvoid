@@ -13,44 +13,48 @@ AtomicMutex := class
 
 MutexCondPoolType := class
 {
-	freedMtx := List.{Mutex^} ; $no_pool
+	freedMtx := List.{Mutex^}
 	mutexMutex := AtomicMutex
 
 	GetMutex := !() -> Mutex^
 	{
+		MallocPoolBlock()	
 		if freedMtx.Size() == 0 {
-			return new Mutex() $no_pool
+			return new Mutex()
 		}
 		mutexMutex.Lock()
 		defer mutexMutex.Unlock()
 		if freedMtx.Size() == 0 {
-			return new Mutex() $no_pool
+			return new Mutex()
 		}
 		return freedMtx.Pop()
 	}
 	Release := !(Mutex^ toAdd) -> void
 	{
+		MallocPoolBlock()	
 		miniMutex.Lock()
 		defer miniMutex.Unlock()
 		freedMtx << toAdd
 	}
 
-	freedCond := List.{ConVar^} ; $no_pool
+	freedCond := List.{ConVar^}
 	condMutex := AtomicMutex
 	GetConVar := !() -> ConVar^
 	{
+		MallocPoolBlock()	
 		if freedCond.Size() == 0 {
-			return new ConVar() $no_pool
+			return new ConVar()
 		}
 		condMutex.Lock()
 		defer condMutex.Unlock()
 		if freedCond.Size() == 0 {
-			return new ConVar() $no_pool
+			return new ConVar()
 		}
 		return freedCond.Pop()
 	}
 	Release := !(ConVar^ toAdd) -> void
 	{
+		MallocPoolBlock()	
 		condMutex.Lock()
 		defer condMutex.Unlock()
 		freedCond << toAdd
@@ -73,10 +77,12 @@ GetPointerHash13n8 := !(void^ val) -> int
 
 internalLockMiniMutex := AtomicMutex
 internalLockMutex := Mutex^[13] 
-internalLockUsing := RBMap.{void^,Tuple.{ConVar^,int,int}}[13] ; $no_pool
+internalLockUsing := RBMap.{void^,Tuple.{ConVar^,int,int}}[13]
 TLock := !(void^ k) -> void { TLock(k,1)}
 TLock := !(void^ k,int count) -> void
 {
+	MallocPoolBlock()
+
 	itHash := GetPointerHash13n8(k)
 
 	if internalLockMutex[itHash] == null
@@ -106,6 +112,7 @@ TLock := !(void^ k,int count) -> void
 }
 TUnlock := !(void^ k) -> void
 {
+	MallocPoolBlock()
 	itHash := GetPointerHash13n8(k)
 
 	internalLockMutex[itHash].Lock()
@@ -131,11 +138,12 @@ TGuard := !(void^ k = #uniq) -> void {
 
 internalBarMiniMutex := AtomicMutex
 internalBarMutex := Mutex^
-internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}} ; $no_pool
+internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}}
 TBarrier := !(void^ k,int count) -> void
 {
 	if count <= 1 
 		return void
+	MallocPoolBlock()
 	
 	internalBarMiniMutex.Lock()
 	if internalBarMutex == null

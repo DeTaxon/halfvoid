@@ -86,9 +86,6 @@ hUserPoolCount := task_local int
 		return gTemporaryPool.GetMem(val,R->Align,0)
 	}
 	usePool := hUserPoolCount != 0
-	if $no_pool{
-		usePool = false
-	}
 	if usePool {
 		return hUserPoolCurrentPool.GetMem(val,R->Align,0)
 	}
@@ -110,9 +107,6 @@ hUserPoolCount := task_local int
 		newNode = gTemporaryPool.GetMem(itSi,itAl,0)->{u8^}
 	}else{
 		usePool := hUserPoolCount != 0
-		if $no_pool{
-			usePool = false
-		}
 		if usePool{
 			newNode = hUserPoolCurrentPool.GetMem(itSi,itAl,0)->{u8^}
 		}else{
