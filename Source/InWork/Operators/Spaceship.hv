@@ -21,12 +21,7 @@ BuiltInFuncSpaceTransformer := class extend BuiltInFunc
 		FuncName = "<=>"
 		OutputName = "<=> converter"
 
-		PP := Queue.{Type^}() ; $temp
-		PP.Push(GTypeInt)
-
-		IsRefs := bool[1]
-		IsRefs[0] = false
-		MyFuncType = GetFuncType(PP,IsRefs,GTypeBool,false,false)
+		MyFuncType = GetFuncType(![GTypeInt],GTypeBool)
 	}
 }
 

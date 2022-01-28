@@ -224,7 +224,7 @@ BoxForOldFashionMulti := class extend BoxFor
 			{
 				InputItems.Resize(itemsCount)
 
-				Downs:= Queue.{Object^}() ; $temp
+				Downs:= @temp new List.{Object^}
 				for i : itemsCount
 				{
 					if Down.Right.GetType() == null
@@ -298,7 +298,7 @@ BoxForOldFashionMulti := class extend BoxFor
 				iter2 := Downs.Start
 				iter = Down
 				WorkBag.Push(this&,State_GetUse)
-				while iter2 != null
+				while iter2 != null //TODO BAD cycle
 				{
 					iter.Right = iter2.Data
 					iter.Right.Left = iter
