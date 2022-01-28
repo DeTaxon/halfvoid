@@ -118,7 +118,7 @@ SLambda := class extend BoxFuncContainer
 					ts->SetType(SFuncLambda)
 				}
 				//WorkBag.Push(this&,State_Syntax)
-				names := Queue.{string}() ; $temp
+				names := @temp new List.{char^}
 
 				pars := Queue.{Type^}() ; $temp
 				isRef := Queue.{bool}() ; $temp
@@ -211,7 +211,7 @@ SLambda := class extend BoxFuncContainer
 				}
 
 				Names.Resize(names.Size())
-				for nm,i : names
+				for nm,i : names^
 				{
 					Names[i] = nm
 				}

@@ -1,0 +1,14 @@
+pthread_t := type u64
+
+AppendClass Thread
+{
+	itData := pthread_t
+	_threadStart := !(!()&->void lambd) -> void
+	{
+		pthread_create(itData&,null,_threadProxyFunc,lambd->{void^})
+	}
+	Join := !() -> void
+	{
+		pthread_join(itData,null)
+	}
+}
