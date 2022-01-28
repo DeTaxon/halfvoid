@@ -26,7 +26,7 @@ ConstComputeCmdCall := !(Object^ item) -> Object^
 			switch cmd
 			{
 				case "#marked"
-					return new CmdMarkedHolder(item.Down.Right.Down) ; $temp
+					return @temp new CmdMarkedHolder(item.Down.Right.Down)
 			}
 		}
 	}
