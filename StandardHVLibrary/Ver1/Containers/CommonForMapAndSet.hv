@@ -74,6 +74,67 @@ CommonMapIterator := class .{@DATA,@KEY,@VALUE}
 			miniStack.EmplaceFront(nNode.Right,false)
 	}
 }
+CommonMapIteratorReverse := class .{@DATA,@KEY,@VALUE}
+{
+	miniStack := List.{Tuple.{CommonTreeNode.{DATA}^,bool}}^ 
+	nNode := CommonTreeNode.{DATA}^
+
+	this := !(CommonTreeNode.{DATA}^ nd) .{} -> void
+	{
+		miniStack = @temp new List.{Tuple.{CommonTreeNode.{DATA}^,bool}}
+		nNode = nd
+		if nd != null{
+			DoAMoveRight()
+		}
+	}
+	IsEnd := !() -> bool { return nNode == null }
+	"^" := !() -> ref VALUE { return nNode.data.second }
+	Ind := !() -> ref KEY { return nNode.data.first}
+	Inc := !() -> void {
+		if miniStack.IsEmpty()
+		{
+			nNode = null
+			return void
+		}
+		nNode = miniStack.Front().0
+		part := miniStack.Front().1
+		miniStack.Pop()
+
+		if part
+		{
+			DoAMoveRight()
+		}else{
+		}
+	}
+	DoAMove := !() -> void
+	{
+		DoAMoveRight()
+	}
+	DoAMoveRight := !() -> void
+	{
+		while nNode.Right != null
+		{
+			if nNode.Left != null
+				miniStack.EmplaceFront(nNode.Left,true)
+			miniStack.EmplaceFront(nNode,false)
+			nNode = nNode.Right
+		}
+		if nNode.Left != null
+			miniStack.EmplaceFront(nNode.Left,false)
+	}
+	DoAMoveLeft := !() -> void
+	{
+		while nNode.Left != null
+		{
+			if nNode.Right != null
+				miniStack.EmplaceFront(nNode.Right,true)
+			miniStack.EmplaceFront(nNode,false)
+			nNode = nNode.Left
+		}
+		if nNode.Right != null
+			miniStack.EmplaceFront(nNode.Right,false)
+	}
+}
 
 BadPair := class .{@A,@B}
 {
