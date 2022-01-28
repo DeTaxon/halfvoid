@@ -65,7 +65,7 @@ HashSomeMap := class .{@Buckets,@TreeType,@K,@V}
 					result.nNode = nStart
 					result.DoAMove()
 				}else{
-					result.miniStack.Emplace(nStart,true) ; $temp
+					result.miniStack.Emplace(nStart,true)
 				}
 			}
 		}
