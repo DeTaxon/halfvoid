@@ -330,11 +330,8 @@ BuiltInGetVirtualParam := class extend BuiltInFunc
 	{
 		inClass = frmClass
 
-		itsBools := Queue.{bool}() itsBools.Push(true) ; $temp
-		newTypes := Queue.{Type^}()
-		newTypes.Push(frmClass.ClassType) ; $temp
-
-		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),itType,true,false)
+		oneBool := true
+		MyFuncType = GetFuncType(frmClass.ClassType&->{Type^^},oneBool&,1,itType,true,false,false)
 
 		IsRetRef = true
 	}
@@ -365,9 +362,7 @@ BuiltInCheckVirtualType := class extend BoxTemplate
 		classType = clss
 		FuncName = "is"
 		OutputName = "error"
-		typs := Queue.{Type^}() ; $temp
-		typs.Push(clss.GetPoint())
-		MyFuncType = GetFuncType(typs,null->{bool^},GTypeBool,false,false)
+		MyFuncType = GetFuncType(![clss.GetPoint()],GTypeBool)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int{
 		return 0

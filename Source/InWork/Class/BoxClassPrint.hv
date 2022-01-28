@@ -157,7 +157,7 @@ AppendClass BoxClass
 
 			if itParm.ResultType is TypeArr
 			{
-				lays := Queue.{int}() ; $temp
+				lays := @temp new List.{int}
 				typeT := itParm.ResultType->{TypeArr^}
 				itBaseT := TypeClass^()
 				while true
@@ -174,7 +174,7 @@ AppendClass BoxClass
 				}
 				inCl := i + parentCount
 				
-				for itL,k : lays
+				for itL,k : lays^
 				{
 					
 					f << "br label %L" << i <<"itr" << k << "PreStart\n"
@@ -189,7 +189,7 @@ AppendClass BoxClass
 				}
 				f << "%Pre" << i << "Set = getelementptr %ClassParams" << ClassId << ", %ClassParams" << ClassId << "* %this"
 					 << ", i32 0, i32 " << inCl
-				for itL, k : lays
+				for itL, k : lays^
 				{
 					f << ",i32 %L" << i << "itr" << k << "Itr"
 				}
@@ -198,7 +198,7 @@ AppendClass BoxClass
 
 				k := lays.Size() - 1
 				while k >= 0
-				{	itL := lays[k]
+				{	itL := lays^[k]
 					f << "br label %L" << i << "itr" << k << "PreEnd\n"
 					f << "L" << i << "itr" << k << "PreEnd:\n"
 					f << "%L" << i << "itr" << k << "Itr2 = add i32 1, %L" << i << "itr" << k << "Itr\n"
@@ -228,9 +228,8 @@ AppendClass BoxClass
 		}
 		f << "ret void\n}\n"
 
-		downs := new List.{Object^}() ; $temp
+		downs := @temp new List.{Object^}
 		if Down != null downs.Push(Down)
-		//downs.Push(metaFields[^].Down) ; $temp
 
 		for iterJ : downs^[^].Down
 		{
