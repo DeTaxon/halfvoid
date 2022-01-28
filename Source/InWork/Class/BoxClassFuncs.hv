@@ -13,19 +13,19 @@ BuiltInThislessTemplate := class extend BoxTemplate
 
 		fT := templ.MyFuncType
 
-		newPars := Queue.{Type^}() ; $temp
-		newBools := RawArray.{bool}()
+		newPars := @temp new List.{Type^}
+		newBools := @temp new RawArray.{bool}
 		if fT.ParsCount >= 2
-			newBools.Resize(fT.ParsCount - 1) //TODO temp memory
+			newBools.Resize(fT.ParsCount - 1)
 
 		for i : fT.ParsCount
 		{
 			if i == 0 continue
 
 			newPars.Push(fT.Pars[i])
-			newBools[i-1] = fT.ParsIsRef[i]
+			newBools^[i-1] = fT.ParsIsRef[i]
 		}
-		MyFuncType = GetFuncType(newPars,newBools.Data(),fT.RetType,fT.RetRef,fT.IsVArgs)
+		MyFuncType = GetFuncType(@temp newPars.ToArray(),newBools.Data(),newPars.Size(),fT.RetType,fT.RetRef,fT.IsVArgs,false)
 
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
@@ -80,8 +80,8 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 
 		IsRetRef = toFunc.IsRetRef
 
-		newTypes := Queue.{Type^}() ; $temp
-		itsBools := Queue.{bool}() ; $temp
+		newTypes := @temp new List.{Type^} //TODO too many @temp, need speed up
+		itsBools := @temp new List.{bool}
 
 		fTyp := toFunc.MyFuncType
 
@@ -96,7 +96,7 @@ BuiltIn2ThislessFunc := class extend BuiltIn2Func
 			newTypes.Push(fTyp.Pars[i])
 			i += 1
 		}
-		MyFuncType = GetFuncType(newTypes,itsBools.ToArray(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs)
+		MyFuncType = GetFuncType(@temp newTypes.ToArray(),@temp itsBools.ToArray(),newTypes.Size(),fTyp.RetType,fTyp.RetRef,fTyp.IsVArgs,false)
 	}
 	MakeLine := !(int inpId) -> void
 	{

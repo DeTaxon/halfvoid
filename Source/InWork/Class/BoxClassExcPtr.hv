@@ -127,9 +127,7 @@ BuiltInTemplateRefEx2 := class extend BoxTemplate
 		FuncName = "."
 		OutputName = "error"
 
-		emptType := Queue.{Type^}() ; $temp
-		emptType.Push(null->{Type^})
-		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		MyFuncType = GetFuncType(![null->{Type^}],null->{Type^})
 		IsMethod = true
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
