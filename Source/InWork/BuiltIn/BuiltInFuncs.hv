@@ -277,10 +277,7 @@ BuiltInPointAdd := class extend BoxTemplate
 	{
 		FuncName = "+"
 		OutputName = "error"
-		emptType := Queue.{Type^}() ; $temp
-		emptType.Push(null->{Type^})
-		emptType.Push(GetType("s64"))
-		MyFuncType = GetFuncType(emptType,null->{bool^},null->{Type^},false,false)
+		MyFuncType = GetFuncType(![null->{Type^},GetType("s64")],null->{Type^})
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -310,13 +307,13 @@ BuiltInPointAddInc := class extend BoxTemplate
 	{
 		FuncName = "+="
 		OutputName = "error"
-		emptType := Queue.{Type^}() ; $temp
+		emptType := @temp new List.{Type^}
 		emptType.Push(null->{Type^})
 		emptType.Push(GetType("size_t"))
 		bols := bool[2]
 		bols[0] = true
 		bols[1] = false
-		MyFuncType = GetFuncType(emptType,bols[0]&,null->{Type^},false,false)
+		MyFuncType = GetFuncType(@temp emptType.ToArray(),bols[0]&,emptType.Size(),null->{Type^},false,false,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -382,13 +379,13 @@ BuiltInPointSubDec := class extend BoxTemplate
 	{
 		FuncName = "-="
 		OutputName = "error"
-		emptType := Queue.{Type^}() ; $temp
+		emptType := @temp new List.{Type^}
 		emptType.Push(null->{Type^})
 		emptType.Push(GetType("size_t"))
 		bols := bool[2]
 		bols[0] = true
 		bols[1] = false
-		MyFuncType = GetFuncType(emptType,bols[0]&,null->{Type^},false,false)
+		MyFuncType = GetFuncType(@temp emptType.ToArray(),bols[0]&,emptType.Size(),null->{Type^},false,false,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{

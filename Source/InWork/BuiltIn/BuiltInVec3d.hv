@@ -22,11 +22,8 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 	this := !() -> void
 	{
 		FuncName = "."
-	
-		cc := Queue.{Type^}() ; $temp
-		cc.Push(null->{Type^})
 
-		MyFuncType = GetFuncType(cc,null->{bool^},GTypeInt,false,false)
+		MyFuncType = GetFuncType(![null->{Type^}],GTypeInt)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int 
 	{
@@ -61,7 +58,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		asNeedPre := itBox.itConsts[0]->{ObjStr^}
 		asNeed := asNeedPre.GetString()
 		
-		outT := Queue.{Type^}() ; $temp
+		outT := @temp new List.{Type^}
 		FType := MyFuncType
 		
 		for it : FType.ParsCount, par : itBox.itPars
@@ -82,7 +79,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 
 		if wantRefs
 		{
-			retRefArray = new bool[MyFuncType.ParsCount] ; $temp
+			retRefArray = @temp new bool[MyFuncType.ParsCount]
 
 			for i : MyFuncType.ParsCount
 			{
@@ -105,7 +102,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 				outT.Push(it.first)
 			}
 		}
-		return GetFuncType(outT,retRefArray,newRet,wantRefs,false)
+		return GetFuncType(outT.ToArray(),retRefArray,outT.Size(),newRet,wantRefs,false,false)
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ funct) -> BoxFunc^
 	{
