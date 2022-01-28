@@ -10,7 +10,7 @@ DirectoryIterator2 := class
 	this := !(char^ tu, bool isWildcard) -> void
 	{
 		isItEnd = false
-		buff = new char[1024] ; $temp
+		buff = @temp new char[1024]
 		strL := strlen(tu)
 
 		buff[u] = tu[^u]
@@ -114,7 +114,7 @@ Path := class
 	FullPath := !() -> Path
 	{
 		asW := Utf8ToUtf16(itStr)
-		preRetW := new u16[MAX_PATH] ; $temp
+		preRetW := @temp new u16[MAX_PATH]
 		retSize := GetFullPathNameW(asW,MAX_PATH,preRetW,null)
 		preRetW[retSize] = 0
 		return Path(Utf16ToUtf8(preRetW))

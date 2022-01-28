@@ -13,12 +13,14 @@ RawFile := class
 	}
 	OpenTemp := !(char^ itName,bool tryMem) -> char^
 	{
-		tmpPath := new u16[MAX_PATH] ; $temp
+		TempPoolBlock()
+
+		tmpPath := new u16[MAX_PATH]
 		dwRetVal := GetTempPathW(MAX_PATH,tmpPath)
 		tmpPath[dwRetVal] = 0
 
 		forPref := Utf8ToUtf16(itName)
-		resName := new u16[MAX_PATH] ; $temp
+		resName := new u16[MAX_PATH]
 
 		GetTempFileNameW(tmpPath,forPref,0,resName)
 

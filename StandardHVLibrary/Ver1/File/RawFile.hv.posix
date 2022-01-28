@@ -19,7 +19,7 @@ RawFile := class
 		}else{
 			tmpNamePre + "/tmp/" + itName + "XXXXXX"
 		}
-		tmpName := tmpNamePre.Str() ; $temp
+		tmpName := @temp tmpNamePre.Str()
 		itFd = mkstemp(tmpName)
 		return tmpName
 	}

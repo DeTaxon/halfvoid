@@ -89,7 +89,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 		}
 		Get := !() -> VALUE[]
 		{
-			return Clone() ; $temp
+			return @temp Clone()
 		}
 	}
 }
