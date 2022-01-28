@@ -4,12 +4,11 @@ BuiltInTemplateReconstructClass := class extend BoxTemplate
 	{
 		FuncName = "ReconstructClass"
 
-		PP := Queue.{Type^}() ; $temp
-		PP.Push(null)
 
-		IsRefs := bool[1]
-		IsRefs[0] = true
-		MyFuncType = GetFuncType(PP,IsRefs,GTypeVoid,false,false)
+		minTyp := Type^()
+
+		IsRefs := true
+		MyFuncType = GetFuncType(minTyp&,IsRefs&,1,GTypeVoid,false,false,false)
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{

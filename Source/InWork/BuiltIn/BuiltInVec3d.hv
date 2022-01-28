@@ -93,7 +93,7 @@ BuiltInTemplateVec4fGet := class extend BoxTemplate
 		}
 		if itBox.itPars.Size() > FType.ParsCount
 		{
-			retRefArray = new bool[itBox.itPars.Size()] ; $temp 
+			retRefArray = @temp new bool[itBox.itPars.Size()]
 			for i : itBox.itPars.Size()
 				retRefArray[i] = MyFuncType.ParsIsRef[i]
 			for it, i : itBox.itPars
