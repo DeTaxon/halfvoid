@@ -958,7 +958,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 		asL := pars[0].first->{TypeFuncLambda^}
 		asB :=  ((pars[0].first.Base)->{TypeFunc^})
 
-		Pars := Queue.{Type^}() ; $temp
+		Pars := @temp new List.{Type^}
 
 		for i : pars.Size()
 		{
@@ -968,7 +968,7 @@ BuiltInLambdaCall := class extend BoxTemplate
 				Pars.Push(asB.Pars[i])
 			}
 		}
-		return GetFuncType(Pars,asB.ParsIsRef,asB.RetType,asB.RetRef,asB.IsVArgs)
+		return GetFuncType(@temp Pars.ToArray(),asB.ParsIsRef,Pars.Size(),asB.RetType,asB.RetRef,asB.IsVArgs,false)
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{
@@ -1191,14 +1191,11 @@ CreateLambdaBuilts := !() -> void
 	BuiltInTemplates.Push(new BuiltInTemplateCaptureLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateDeleteLambda())
 	BuiltInTemplates.Push(new BuiltInTemplateLambdaIsFinished())
-
-	inpFuncE := Queue.{Type^}() ; $temp
-	inpFuncE.Push(GTypeVoidP)
 	
-	copyLFuncType = GetFuncType(inpFuncE,null,GTypeVoidP,false,false)
+	copyLFuncType = GetFuncType(![GTypeVoidP],GTypeVoidP)
 	copyLFuncTypeP = copyLFuncType.GetPoint()
 
-	deleteLFuncType = GetFuncType(inpFuncE,null,GTypeVoid,false,false)
+	deleteLFuncType = GetFuncType(![GTypeVoidP],GTypeVoid)
 	deleteLFuncTypeP = deleteLFuncType.GetPoint()
 }
 PrintLambdaGlobal := !(TIOStream f) -> void
