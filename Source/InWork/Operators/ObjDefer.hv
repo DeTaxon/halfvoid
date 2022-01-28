@@ -6,10 +6,7 @@ deferSkip2 := BoxFunc^
 DeferInit2 := !() -> bool
 {
 
-	inPars := Queue.{Type^}() ; $temp
-	inPars.Push(GTypeVoidP)
-	inPars.Push(GTypeBool)
-	defFunc := GetFuncType(inPars,null,GTypeVoid,false,false) ; $temp
+	defFunc := GetFuncType(![GTypeVoidP,GTypeBool],GTypeVoid) 
 
 	dummy := @temp new Object
 	box := @temp new FuncInputBox
