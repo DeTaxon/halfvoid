@@ -6,7 +6,7 @@ BoxClassTemplate := class extend Object
 	ConstTree := Object^
 	ExtendTree2 := HybridQueue.{Object^,4}
 
-	relAttrs := QueueSet.{string}
+	relAttrs := QueueSet.{string} //TODO remove
 
 	this := !(Object^ tree,Object^ txt) -> void
 	{
@@ -91,17 +91,11 @@ BoxClassTemplate := class extend Object
 		newClass.ItConsts.Push(itBox.itConsts[^])
 		newClass.ItVals.Push(newConsts^[^])
 		
-		templs := Queue.{QueueSet.{string}^}() ; $temp
-		templs.Push(this.relAttrs&)
-		
 		for itr,itrK : itBox.itAttrs
 		{
-			for templs
+			if this.relAttrs.Contain(itrK)
 			{
-				if it.Contain(itrK)
-				{
-					newClass.ItAttrs[StrCopy(itrK)] = itr
-				}
+				newClass.ItAttrs[StrCopy(itrK)] = itr
 			}
 		}
 

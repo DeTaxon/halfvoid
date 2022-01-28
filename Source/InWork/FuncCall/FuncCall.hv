@@ -534,7 +534,7 @@ PointFuncCall := class extend NaturalCall
 			}
 		}
 		funcTypeNameTmpl << ")"
-		fName := funcTypeNameTmpl.Str() ; $temp
+		fName := @temp funcTypeNameTmpl.Str()
 		
 		ParamCal.PrintPre(f)
 		f << "%TId" << RetId << " = bitcast " ParamCal.PrintUse(f) f << " to " << fName << "*\n"

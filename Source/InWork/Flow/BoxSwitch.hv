@@ -155,7 +155,7 @@ BoxSwitch := class extend Object
 	PrintInBlock := virtual !(TIOStream f) -> void
 	{
 		
-		things := List.{Object^}() ; $temp
+		things := @temp new List.{Object^}
 		defThing := Object^()
 
 		for iter : Down.Right.Down
@@ -173,7 +173,7 @@ BoxSwitch := class extend Object
 	
 		if isAllowTreeOpt and things.Size() > 2
 		{
-			fatArr := things.ToArray() ; $temp
+			fatArr := @temp things.ToArray()
 
 			//TODO: replace on quick_sort
 			for j : fatArr->len
@@ -260,7 +260,7 @@ BoxSwitch := class extend Object
 			return void
 		}
 	
-		for iter , i : things
+		for iter , i : things^
 		{
 			thisCase := iter->{BoxCase^}
 			thisLabel := thisCase.itLabel&
