@@ -14,9 +14,15 @@
 }
 
 main := !(int argc, char^^ argv) -> int
-{
-	tst := List.{int}()
-	tst << 1 << 100 << 3
-	printf("objec %p %p\n",tst&, tst.allocator)
+{	
+	@omp
+	for i : 4
+	{
+		printf("hello\n")
+		TSleep(1)
+	}
+	//tst := List.{int}()
+	//tst << 1 << 100 << 3
+	//printf("objec %p %p\n",tst&, tst.allocator)
 	return 0
 }

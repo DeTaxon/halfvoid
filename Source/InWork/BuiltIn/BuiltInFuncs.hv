@@ -735,10 +735,10 @@ BuiltInLenArr := class extend BoxTemplate
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
 		pars := ref itBox.itPars
-		newQueue := Queue.{Type^}()
+		newQueue := @temp new List.{Type^}
 		retTyp := GetBestType(itBox)
-		for pars.Size() newQueue.Push(retTyp) ; $temp
-		return GetFuncType(newQueue,null->{bool^},retTyp.GetArray(pars.Size()),false,false)
+		for pars.Size() newQueue.Push(retTyp)
+		return GetFuncType(@temp newQueue.ToArray(),null->{bool^},newQueue.Size(),retTyp.GetArray(pars.Size()),false,false,false)
 	}
 	GetNewFunc := virtual  !(FuncInputBox itBox, TypeFunc^ fun) -> BoxFunc^
 	{

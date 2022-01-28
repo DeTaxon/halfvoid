@@ -25,6 +25,7 @@ JITPreInit := !() -> void
 	//addJITFunction("TFullInit",_blankFunc->{void^},GTypeVoid)
 
 	addJITFunc("TFullInit",_blankFunc)
+	addJITFunc("TAwaitManyWorks",TAwaitManyWorks)
 
 	if $posix
 	{
