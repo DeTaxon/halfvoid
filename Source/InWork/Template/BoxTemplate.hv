@@ -471,7 +471,7 @@ BoxTemplate := class extend BoxFunc
 	}
 	CreateFuncPointer := virtual !(FuncInputBox itBox) -> TypeFunc^
 	{
-		outT := Queue.{Type^}() ; $temp //TODO: later
+		outT := @temp new List.{Type^}
 		FType := MyFuncType
 		
 		for it : FType.ParsCount, par : itBox.itPars
@@ -488,7 +488,7 @@ BoxTemplate := class extend BoxFunc
 		parConsts := @temp new List.{ObjConstHolder^}
 		CheckTypes(itBox,parConsts^,resTp&)
 
-		for it,i : outT
+		for it,i : outT^
 		{
 			if resTp[i] != null
 				it = resTp[i]
@@ -512,7 +512,7 @@ BoxTemplate := class extend BoxFunc
 					if bstType == null badType = true
 					ii++
 				}
-				if not badType extrVal2^[vargsName] = bstType ; $temp
+				if not badType extrVal2^[vargsName] = bstType
 				newRet = ParseType(CopyRet,null,null,extrVal2)
 				if newRet == null
 				{
@@ -553,7 +553,7 @@ BoxTemplate := class extend BoxFunc
 		//	itT := ParseType(CopyRet,null,parConsts&)
 		//	newRet = itT
 		//}
-		return GetFuncType(outT,retRefArray,newRet,MyFuncType.RetRef,MyFuncType.IsVArgs)
+		return GetFuncType(@temp outT.ToArray(),retRefArray,outT.Size(),newRet,MyFuncType.RetRef,MyFuncType.IsVArgs,false)
 	}
 	GetFunc := virtual !(FuncInputBox itBox) -> BoxFunc^
 	{

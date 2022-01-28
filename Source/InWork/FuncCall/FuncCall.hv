@@ -144,7 +144,7 @@ OneCall := !(string Name, Object^ G,Object^ consts) -> Object^
 }
 OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object^
 {
-	Cs := Queue.{Object^}()
+	Cs := @temp new List.{Object^}
 
 	if constsPre != null
 	{
@@ -161,16 +161,16 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 					{
 						ErrorLog.Push("can not parse type in .{}\n")
 					}else{
-						Cs.Push(new ObjType(tp)) 
+						Cs.Push(new ObjType(tp))  //TODO mem
 					}
 				}
 			}
 		}
 	}
 
-	return OneCall(Name,G,Cs,ignoreNull)
+	return OneCall(Name,G,Cs^,ignoreNull)
 }
-OneCall := !(string Name, Object^ G,Queue.{Object^} consts,bool ignoreNull) -> Object^
+OneCall := !(string Name, Object^ G,List.{Object^} consts,bool ignoreNull) -> Object^
 {
 	box := @temp new FuncInputBox
 	FillAttrs(box^,G)

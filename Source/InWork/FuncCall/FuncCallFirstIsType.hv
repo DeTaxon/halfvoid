@@ -82,9 +82,9 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 		{
 			if iter.Right?.GetValue() == "()"
 			{
-				Cs := Queue.{Object^}()
-				Cs.Push(new ObjType(asNeed2)) ; $temp 
-				return OneCall(". this",iter.Right,Cs,false)
+				Cs := @temp new List.{Object^}
+				Cs.Push(new ObjType(asNeed2)) //TODO mem
+				return OneCall(". this",iter.Right,Cs^,false)
 			}
 		}
 		return null
