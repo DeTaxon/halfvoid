@@ -125,10 +125,10 @@ BoxForItemOnClass := class extend BoxForItem
 			emptyBox.itAttrs[k] = q
 		}
 
-		IncFuncP := asNeed.GetFunc("Inc",emptyBox^,false)
-		UnrefFuncP := asNeed.GetFunc("^",emptyBox^,false)
-		IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^,false)
-		DestroyFunc = asNeed.GetFunc("Destroy",emptyBox^,false)
+		IncFuncP := asNeed.GetFunc("Inc",emptyBox^)
+		UnrefFuncP := asNeed.GetFunc("^",emptyBox^)
+		IsInvP := asNeed.GetFunc("IsInvalid",emptyBox^)
+		DestroyFunc = asNeed.GetFunc("Destroy",emptyBox^)
 
 		if IncFuncP == null {
 			self.EmitError("incorrect for iterator, need increment\n")
@@ -160,7 +160,7 @@ BoxForItemOnClass := class extend BoxForItem
 			IsInvalid.Up = self
 		}
 
-		IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^,false)
+		IsEndFuncP := asNeed.GetFunc("IsEnd",emptyBox^)
 		test = new ParamNaturalCall("",ForItem->{Object^})
 		test.Line = iter.Line
 		IsEndFunc = MakeSimpleCall(IsEndFuncP,test)
@@ -172,7 +172,7 @@ BoxForItemOnClass := class extend BoxForItem
 
 		if IndName != null
 		{
-			itFunc4 := asNeed.GetFunc("Ind",emptyBox^,false)
+			itFunc4 := asNeed.GetFunc("Ind",emptyBox^)
 			if itFunc4 == null
 			{
 				//EmitError("Can not get index item\n")

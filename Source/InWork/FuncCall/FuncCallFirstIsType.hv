@@ -36,7 +36,7 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 				box.itPars.Emplace(iter2.GetType(),iter2.IsRef())
 			}
 
-			func := asNeed4.GetFunc("this",box^,true)
+			func := asNeed4.GetFunc("this",box^)
 			if func != null 
 			{
 				preRet := new ConstructCall(func,iter.Right.Down)

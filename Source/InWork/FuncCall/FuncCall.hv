@@ -106,7 +106,7 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 				oBox.itMetaPtr = pars->{MetaItemWrapper^}.ptrToBlock
 			}
 
-			newPre := cls.GetFunc(oper,oBox^,true)
+			newPre := cls.GetFunc(oper,oBox^)
 			if newPre == null return null
 			return MakeSimpleCall2(newPre,pars,operNode)
 		}

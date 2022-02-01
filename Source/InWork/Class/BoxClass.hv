@@ -425,25 +425,23 @@ BoxClass := class extend BoxClassBase
 	{
 		return "{...}"
 	}
-	GetFunc := virtual !(string name,FuncInputBox itBox,bool iVir) -> BoxFunc^
+	GetFunc := virtual !(string name,FuncInputBox itBox) -> BoxFunc^
 	{
 		Funcs := @temp new List.{BoxFunc^}
 		Templs := @temp new List.{BoxTemplate^}
 
-		if not iVir
+		itrF := this&
+		while itrF != null
 		{
-			itrF := this&
-			while itrF != null
+			if vTypes[^].fName == name
 			{
-				if vTypes[^].fName == name
-				{
-					Funcs.Push(it->{VTableFunction^}.funcWrapper) 
-				}
-				if itrF.Parents.Size() == 0 //TODOPARENT
-					itrF = null
-				else itrF = itrF.Parents[0]
+				Funcs.Push(it->{VTableFunction^}.funcWrapper) 
 			}
+			if itrF.Parents.Size() == 0 //TODOPARENT
+				itrF = null
+			else itrF = itrF.Parents[0]
 		}
+
 		maybeForced := Find(name,'.')
 		if maybeForced != -1
 		{
@@ -487,7 +485,7 @@ BoxClass := class extend BoxClassBase
 			{
 				for fnc : mtFncs^
 				{
-					if ((not fnc.IsVirtual) or iVir) and fnc.IsSameConsts(itBox)
+					if not fnc.IsVirtual and fnc.IsSameConsts(itBox)
 					{
 						Funcs.Push(fnc)
 					}
@@ -521,7 +519,7 @@ BoxClass := class extend BoxClassBase
 					oldVal = itBox.itPars[0].first
 					itBox.itPars[0].first = par.ClassType //TODOPARENT
 				}
-				res :=  par.GetFunc(name,itBox,iVir) //TODOPARENT
+				res :=  par.GetFunc(name,itBox) //TODOPARENT
 				if name != "new" { itBox.itPars[0].first = oldVal }
 
 				if res != null

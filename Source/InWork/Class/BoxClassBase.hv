@@ -34,7 +34,7 @@ BoxClassBase := class extend Object
 					boxCl := @temp new FuncInputBox
 					boxCl.itPars.Emplace(itPar.ResultType,true)
 					boxCl.itPars.Emplace(itPar.ResultType,true)
-					fnc = asCl.GetFunc("this",boxCl^,false)
+					fnc = asCl.GetFunc("this",boxCl^)
 				}
 				if fnc == null
 				{

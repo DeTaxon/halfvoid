@@ -22,21 +22,33 @@ Heh := class
 		{
 			return new int
 		}
+		H := virtual !() -> void
+		{
+			printf("hello\n")
+		}
 	}
 }
 Hoh := class extend Heh
 {
+	Reverse := fake
+	{
+		H := virtual !() -> void
+		{
+			printf("world\n")
+		}
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {	
 	c := Heh
-	for f,ind : c->Fields
-	{
-		printf("field %s %i\n",ind,f)
-	}
-	printf("hello\n")
-	c.Reverse.Hey()
+	c.Reverse.H()
+	//for f,ind : c->Fields
+	//{
+	//	printf("field %s %i\n",ind,f)
+	//}
+	//printf("hello\n")
+	//c.Reverse.Hey()
 	//@omp
 	//for i : 4
 	//{

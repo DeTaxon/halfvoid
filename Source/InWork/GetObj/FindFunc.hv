@@ -198,7 +198,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	{
 		assert(itBox.itPars[0].first is TypeClass)
 		classObj := itBox.itPars[0].first->{TypeClass^}.ToClass
-		return classObj.GetFunc(name,itBox,false)
+		return classObj.GetFunc(name,itBox)
 	}
 		
 	Searched := @temp new List.{int}
@@ -229,7 +229,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 		if fT? is TypeClass
 		{
 			asNeed := ((fT->{TypeClass^}).ToClass)
-			funcRes := asNeed.GetFunc(name,itBox,false)
+			funcRes := asNeed.GetFunc(name,itBox)
 			if funcRes != null return funcRes
 		}
 	}
@@ -463,7 +463,7 @@ TypeCmp := !(Type^ inType, Type^ funcType) -> int
 		itFc.itConsts.Push(@temp new ObjType(funcType))
 
 		asN := inType->{TypeClass^}.ToClass
-		if asN.GetFunc("->{}",itFc^,false) != null return CmpLose
+		if asN.GetFunc("->{}",itFc^) != null return CmpLose
 	}
 
 	if inType is TypeArr and funcType == GTypeVoidP return CmpLose

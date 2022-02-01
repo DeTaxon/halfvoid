@@ -76,12 +76,12 @@ TupleClass := class extend BoxClass
 			"call void("sbt + cn + "*," + cn + "*)@TupleSet" + ClassId + "(" + cn + "* #1," + cn + "* #2)\n")
 
 	}
-	GetFunc := virtual !(string name,FuncInputBox itBox, bool isV) -> BoxFunc^
+	GetFunc := virtual !(string name,FuncInputBox itBox) -> BoxFunc^
 	{
 		switch name
 		{
 		case "."
-			return this."BoxClass.GetFunc"(name,itBox,isV)
+			return this."BoxClass.GetFunc"(name,itBox)
 		case "<=>"
 			if tuplCmp == null
 				CreateTupleCmp()

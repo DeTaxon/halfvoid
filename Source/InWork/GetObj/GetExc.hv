@@ -62,7 +62,7 @@ GetExchange := !(Object^ item, Object^ start, Type^ ToType,bool isRef) -> BoxFun
 	if itemType is TypeClass
 	{
 		asNeed := (itemType->{TypeClass^}).ToClass
-		func = asNeed.GetFunc("->{}",b^,false)
+		func = asNeed.GetFunc("->{}",b^)
 		return func
 	}
 	return null

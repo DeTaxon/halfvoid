@@ -186,7 +186,7 @@ FuncCallGetFieldClassFieldCall := !(char^ asName,Object^ iterPre, Object^ iter) 
 	if func == null and GotClass and asClass != null
 	{
 		box.itPars[0].first = asClass.ClassType
-		func = asClass.GetFunc(asName,box^,false)
+		func = asClass.GetFunc(asName,box^)
 	}
 
 	if func != null

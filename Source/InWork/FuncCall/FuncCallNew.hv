@@ -105,7 +105,7 @@ NewCallOne := class extend SomeFuncCall
 			{
 				asTPre := newType->{TypeClass^}
 				asT := asTPre.ToClass
-				func = asT.GetFunc("new",box^,true)
+				func = asT.GetFunc("new",box^)
 			}
 
 			if func == null{
@@ -139,7 +139,7 @@ NewCallOne := class extend SomeFuncCall
 						asNeed := newType->{TypeClass^}
 
 
-						constrFunc := asNeed.ToClass.GetFunc("this",box^,false)
+						constrFunc := asNeed.ToClass.GetFunc("this",box^)
 
 						if constrFunc == null 
 						{
@@ -202,7 +202,7 @@ NewCall := class extend SomeFuncCall
 					iter = iter.Right
 				}
 				asClass := toCreate->{TypeClass^}
-				func := asClass.ToClass.GetFunc("this",b^,true)
+				func := asClass.ToClass.GetFunc("this",b^)
 				if func != null
 				{
 					Temp := ConstrPars
