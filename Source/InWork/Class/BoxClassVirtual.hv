@@ -247,7 +247,7 @@ AppendClass BoxClass
 	{
 		f << "@ClassTableItem" << ClassId
 	}
-	PutVirtualFunc := virtual !(string fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
+	PutVirtualFunc := virtual !(char^ fNam,TypeFunc^ fTyo,BoxFunc^ fF) -> void
 	{
 		newItem := new VTableFunction
 		newItem.fName = fNam
@@ -256,6 +256,13 @@ AppendClass BoxClass
 		newItem.funcWrapper = new BuiltInVirtualCall(fNam,fF,ClassId)
 
 		vTypes.Push(newItem)
+
+		bigName := GetBoxClassHolderName(fF,fNam)
+		if bigName != fNam
+		{
+			newItem.fName = StrCopy(bigName)
+			assert(bigName != null)
+		}
 
 		holder := GetBoxClassFuncsHolder(fF)
 		assert(holder != null)

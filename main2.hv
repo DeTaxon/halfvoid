@@ -27,6 +27,10 @@ Heh := class
 			printf("hello\n")
 		}
 	}
+	H := virtual !() -> void
+	{
+		printf("nah1\n")
+	}
 }
 Hoh := class extend Heh
 {
@@ -37,11 +41,16 @@ Hoh := class extend Heh
 			printf("world\n")
 		}
 	}
+	H := virtual !() -> void
+	{
+		printf("nah2\n")
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {	
-	c := Heh
+	c := Heh^
+	c = new Hoh
 	c.Reverse.H()
 	//for f,ind : c->Fields
 	//{

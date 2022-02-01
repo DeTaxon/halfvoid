@@ -47,6 +47,23 @@ GetBoxClassFuncsHolder := !(Object^ start) -> BoxClassFuncsHolder^
 	}
 	return null
 }
+GetBoxClassHolderName := !(Object^ start,char^ name) -> char^
+{
+	itr := start
+	while itr != null and not (itr is MetaFieldBox)
+		itr = itr.Up
+	if itr != null
+	{
+		return ""sbt +  itr->{MetaFieldBox^}.ptrToHolder.holderName + "." + name
+	}
+	cls := GetUpClass(start)
+	if cls != null
+	{
+		return name
+	}
+	assert(false)
+	return null->{char^}
+}
 
 MetaFieldBox := class extend Object
 {
