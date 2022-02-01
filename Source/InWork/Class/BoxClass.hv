@@ -3,9 +3,6 @@ BoxClass := class extend BoxClassBase
 	FakeParams := Queue.{FakeFieldParam^}
 	StaticParams := AVLMap.{char^,GlobalParam^}
 
-	defaultFuncsHolder := BoxClassFuncsHolder
-	funcsHolders := AVLMap.{char^,BoxClassFuncsHolder}
-
 	UnrollTemplate := BuiltInTemplateUnroll^
 	AutoFieldTemplate := BuiltInTemplateAutoField^
 	VirtualCheck := BuiltInCheckVirtualType^
@@ -44,6 +41,10 @@ BoxClass := class extend BoxClassBase
 	}
 
 	
+
+	defaultFuncsHolder := BoxClassFuncsHolder
+	funcsHolders := AVLMap.{char^,BoxClassFuncsHolder}
+
 	metaFields := AVLMap.{char^,MetaFieldBox^}
 	AddMetaField := !(char^ name, MetaFieldBox^ itMBox) -> void
 	{
@@ -53,7 +54,19 @@ BoxClass := class extend BoxClassBase
 	{
 		if metaFields.Contain(name)
 			return metaFields[name]
+		for it : Parents
+			return it.GetMetaField(name)?
 		return null
+	}
+	GetFuncsHolder := !(char^ name) -> BoxClassFuncsHolder^
+	{
+		return funcsHolders[name]?&
+
+		c := StrCopy(name)
+		fh := ref funcsHolders[c]
+		fh.thisClass = this&
+		fh.holderName = c
+		return fh&
 	}
 
 	ThislessFuncs := Queue.{BuiltIn2ThislessFunc^}
@@ -465,7 +478,9 @@ BoxClass := class extend BoxClassBase
 		//{
 			holder := defaultFuncsHolder&
 			if itBox.itMetaPtr != null
-				holder = itBox.itMetaPtr
+			{
+				holder = GetFuncsHolder(itBox.itMetaPtr.holderName)
+			}
 
 			mtFncs := holder.methods.TryFind(name)
 			if mtFncs != null

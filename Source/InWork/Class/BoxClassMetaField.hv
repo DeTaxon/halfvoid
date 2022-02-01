@@ -16,7 +16,6 @@ CheckMetaBlock := !(Object^ metBl) -> void
 		blkItem.Left = null
 
 		MakeItBlock(metWrp.Down)
-		WorkBag.Push(metWrp.Down,State_Start)
 
 		metWrp.Down->{BoxBlock^}.SetClassBlock()
 		assert(metWrp is MetaFieldBox)
@@ -26,6 +25,8 @@ CheckMetaBlock := !(Object^ metBl) -> void
 
 BoxClassFuncsHolder := class
 {
+	thisClass := BoxClass^
+	holderName := char^
 	methods := AVLMap.{char^,List.{BoxFunc^}}
 	templates := AVLMap.{char^,List.{BoxTemplate^}}
 }
@@ -87,6 +88,9 @@ MetaFieldBox := class extend Object
 	{
 		if pri == State_Start
 		{
+			if Down != null
+				WorkBag.Push(Down,State_Start)
+
 			names := @temp new List.{char^}()
 			itr := this&->{Object^}
 			while itr != null
@@ -107,7 +111,8 @@ MetaFieldBox := class extend Object
 					nm := nms.Str()
 					cls := GetClassObj(itr)
 					assert(cls != null)
-					ptrToHolder = cls.funcsHolders[nm]&
+					ptrToHolder = cls.GetFuncsHolder(nm)
+					assert(ptrToHolder != null)
 					break
 				}
 				itr = itr.Up

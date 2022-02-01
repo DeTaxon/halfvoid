@@ -13,15 +13,14 @@
 	}
 }
 
-Heh := class extend TGCObject
+Heh := class
 {
 	x := int
-	z := TGCObject^
 	Reverse := fake
 	{
-		Hey := !() -> TGCObject^
+		Hey := !() -> int^
 		{
-			return new TGCObject
+			return new int
 		}
 	}
 }
@@ -31,7 +30,7 @@ Hoh := class extend Heh
 
 main := !(int argc, char^^ argv) -> int
 {	
-	c := Hoh
+	c := Heh
 	for f,ind : c->Fields
 	{
 		printf("field %s %i\n",ind,f)
