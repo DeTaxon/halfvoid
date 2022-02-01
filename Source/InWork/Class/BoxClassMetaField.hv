@@ -107,7 +107,7 @@ MetaFieldBox := class extend Object
 					nm := nms.Str()
 					cls := GetClassObj(itr)
 					assert(cls != null)
-					ptrToHolder = cls.funcsHolders[nm]&	
+					ptrToHolder = cls.funcsHolders[nm]&
 					break
 				}
 				itr = itr.Up

@@ -49,6 +49,12 @@ BoxClass := class extend BoxClassBase
 	{
 		metaFields[StrCopy(name)] = itMBox
 	}
+	GetMetaField := !(char^ name) -> MetaFieldBox^
+	{
+		if metaFields.Contain(name)
+			return metaFields[name]
+		return null
+	}
 
 	ThislessFuncs := Queue.{BuiltIn2ThislessFunc^}
 	ThislessTemplates := Queue.{BuiltInThislessTemplate^}
