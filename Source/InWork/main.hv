@@ -447,7 +447,7 @@ main := !(int argc,char^^ argv) -> int
 			msg := char^()
 			mod := void^()
 			res := llvmIRInContext(ctx,buf,mod&,msg&)
-			if msg != null and msg != ""
+			if msg != null and msg != "" and DebugMode
 			{
 				printf("error %s\n",msg)
 				tF := TFile("dump.ll","w")

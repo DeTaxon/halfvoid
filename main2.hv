@@ -13,14 +13,37 @@
 	}
 }
 
+Heh := class extend TGCObject
+{
+	x := int
+	z := TGCObject^
+	Reverse := fake
+	{
+		Hey := !() -> TGCObject^
+		{
+			return new TGCObject
+		}
+	}
+}
+Hoh := class extend Heh
+{
+}
+
 main := !(int argc, char^^ argv) -> int
 {	
-	@omp
-	for i : 4
+	c := Hoh
+	for f,ind : c->Fields
 	{
-		printf("hello\n")
-		TSleep(1)
+		printf("field %s %i\n",ind,f)
 	}
+	printf("hello\n")
+	c.Reverse.Hey()
+	//@omp
+	//for i : 4
+	//{
+	//	printf("hello\n")
+	//	TSleep(1)
+	//}
 	//tst := List.{int}()
 	//tst << 1 << 100 << 3
 	//printf("objec %p %p\n",tst&, tst.allocator)

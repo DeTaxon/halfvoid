@@ -65,13 +65,13 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	{
 		return CommonMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
 	}
-	Reverse := fake
-	{
-		"~For" := !() -> CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}
-		{
-			return CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
-		}
-	}
+	//Reverse := fake
+	//{
+	//	"~For" := !() -> CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}
+	//	{
+	//		return CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
+	//	}
+	//}
 	Size := !() -> int { return itSize }
 	"in" := !(KEY val) -> bool
 	{
