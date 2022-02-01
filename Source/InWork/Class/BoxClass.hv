@@ -430,17 +430,17 @@ BoxClass := class extend BoxClassBase
 		Funcs := @temp new List.{BoxFunc^}
 		Templs := @temp new List.{BoxTemplate^}
 
-		itrF := this&
-		while itrF != null
-		{
-			if vTypes[^].fName == name
-			{
-				Funcs.Push(it->{VTableFunction^}.funcWrapper) 
-			}
-			if itrF.Parents.Size() == 0 //TODOPARENT
-				itrF = null
-			else itrF = itrF.Parents[0]
-		}
+		//itrF := this&
+		//while itrF != null
+		//{
+		//	if vTypes[^].fName == name
+		//	{
+		//		Funcs.Push(it->{VTableFunction^}.funcWrapper) 
+		//	}
+		//	if itrF.Parents.Size() == 0 //TODOPARENT
+		//		itrF = null
+		//	else itrF = itrF.Parents[0]
+		//}
 
 		maybeForced := Find(name,'.')
 		if maybeForced != -1
@@ -470,30 +470,26 @@ BoxClass := class extend BoxClassBase
 			}
 		}
 
+		holder := defaultFuncsHolder&
+		if itBox.itMetaPtr != null
+		{
+			holder = GetFuncsHolder(itBox.itMetaPtr.holderName)
+		}
 
-
-		//if itBox.itMetaPtr != null
-		//{
-			holder := defaultFuncsHolder&
-			if itBox.itMetaPtr != null
+		mtFncs := holder.methods.TryFind(name)
+		if mtFncs != null
+		{
+			for fnc : mtFncs^
 			{
-				holder = GetFuncsHolder(itBox.itMetaPtr.holderName)
-			}
-
-			mtFncs := holder.methods.TryFind(name)
-			if mtFncs != null
-			{
-				for fnc : mtFncs^
+				if not fnc.IsVirtual and fnc.IsSameConsts(itBox)
 				{
-					if not fnc.IsVirtual and fnc.IsSameConsts(itBox)
-					{
-						Funcs.Push(fnc)
-					}
+					Funcs.Push(fnc)
 				}
 			}
-			mtTmplts := holder.templates.TryFind(name)
-			if mtTmplts != null
-				Templs.Push(mtTmplts^[^])
+		}
+		mtTmplts := holder.templates.TryFind(name)
+		if mtTmplts != null
+			Templs.Push(mtTmplts^[^])
 
 		if name == "." {
 			if itBox.itConsts.Size() == 1 and itBox.itConsts[0] is ObjInt

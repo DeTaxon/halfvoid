@@ -231,6 +231,7 @@ BoxFuncBody := class extend BoxFunc
 		{
 			asNeed := GetUpClass(ancer)
 			assert(asNeed != null)
+			this.Up = ancer
 			asNeed.PutVirtualFunc(FuncName,MyFuncType,this&)
 		}
 	}

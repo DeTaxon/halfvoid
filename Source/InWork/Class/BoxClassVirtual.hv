@@ -257,6 +257,10 @@ AppendClass BoxClass
 
 		vTypes.Push(newItem)
 
+		holder := GetBoxClassFuncsHolder(fF)
+		assert(holder != null)
+		holder.methods[fNam].Push(newItem.funcWrapper)
+
 		ContainVirtual = true
 	}
 	PutVirtualParam := virtual !(string fName,Object^ cnst) -> void
