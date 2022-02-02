@@ -53,17 +53,26 @@ C := class
 	{
 		return (int^& x) ==>
 		{
-			val := 129
-			x = val&
-			yield 100
+			ind := 129
+			x = ind&
+
+			for i : 5
+			{
+				ind = i*3
+				yield i*2
+			}
 		}
 	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	z := C
-	for it,ind : z
+	z := AVLMap.{int,int}
+	for i : 15
+	{
+		z[i] = i
+	}
+	for it,ind : z.Reverse
 	{
 		printf("here %i %i\n",it,ind)
 	}

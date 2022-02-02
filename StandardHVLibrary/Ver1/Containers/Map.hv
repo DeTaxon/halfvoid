@@ -65,13 +65,39 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	{
 		return CommonMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
 	}
-	//Reverse := fake
-	//{
-	//	"~For" := !() -> CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}
-	//	{
-	//		return CommonMapIteratorReverse.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
-	//	}
-	//}
+	Reverse := fake
+	{
+		"~For" := !() -> !(KEY^&)& -> VALUE&
+		{
+			return (KEY^& k) ==>
+			{
+				if itSize != 0
+				{
+					bag := @temp new List.{Tuple.{CommonTreeNode.{BadPair.{KEY,VALUE}}^,bool}}
+					bag.EmplaceFront(itTree.Start,true)
+					
+					while bag.Size() != 0
+					{
+						node := ref bag.Front()
+						if node.1
+						{
+							subNode := node.0
+							bag.Pop()
+							bag.EmplaceFront(subNode.Left?,true)
+							bag.EmplaceFront(subNode,false)
+							bag.EmplaceFront(subNode.Right?,true)
+						}else{
+							subNode := node.0
+							k = subNode.data.first&
+							yield subNode.data.second
+							bag.Pop()
+						}
+						
+					}
+				}
+			}
+		}
+	}
 	Size := !() -> int { return itSize }
 	"in" := !(KEY val) -> bool
 	{
