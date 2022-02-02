@@ -235,7 +235,7 @@ GetObjectsFromMemory := !(Path fileName,char^ memPtr,int Siz,Object^ popul) -> O
 			itLine = null
 		}
 		if a == 21 {
-			if itLine != null itLine.LoadAttrs(tok.Str())
+			//TODO: replace
 			// attrs
 		}
 		prevId = a

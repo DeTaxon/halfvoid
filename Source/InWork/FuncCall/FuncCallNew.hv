@@ -88,10 +88,6 @@ NewCallOne := class extend SomeFuncCall
 			box := @temp new FuncInputBox
 			box.itConsts.Push(new ObjType(newType)) //TODO memory
 
-			if Line != null {
-				for v,k : Line.itAttrs box.itAttrs[k] = v
-			}
-
 			funcName := "new"
 
 			if appendTemp

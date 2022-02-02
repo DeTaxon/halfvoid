@@ -90,14 +90,6 @@ BoxClassTemplate := class extend Object
 
 		newClass.ItConsts.Push(itBox.itConsts[^])
 		newClass.ItVals.Push(newConsts^[^])
-		
-		for itr,itrK : itBox.itAttrs
-		{
-			if this.relAttrs.Contain(itrK)
-			{
-				newClass.ItAttrs[StrCopy(itrK)] = itr
-			}
-		}
 
 		ItClasses[itHash].Push(newClass)
 		return newClass.ClassType

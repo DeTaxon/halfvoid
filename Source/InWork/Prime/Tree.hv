@@ -265,7 +265,6 @@ ObjLine := class
 {
 	LinePos := int
 	inFile := Path
-	itAttrs := AVLMap.{string,Object^}
 	this := !() -> void
 	{
 		inFile."this"()
@@ -278,17 +277,6 @@ ObjLine := class
 	GetLog := !() -> string
 	{
 		return " at  "sbt + inFile.itStr + ":" + LinePos
-	}
-	LoadAttrs := !(char^ str) -> void
-	{
-		newItm := DivideStr(str,"\t\n ")
-		for newItm
-		{
-			if it != ";"
-			{
-				itAttrs[StrCopy(it)] = new ObjBool(true)
-			}
-		}
 	}
 }
 

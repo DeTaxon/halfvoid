@@ -5,14 +5,12 @@ FuncInputBox := class
 {	
 	itPars := HybridQueue.{Pair.{Type^,bool},16} //FuncTypesArray
 	itConsts := HybridQueue.{Object^,16} //FuncConstsArray
-	itAttrs := AVLMap.{string,Object^} //FuncAttrsArray
 	itMetaPtr := BoxClassFuncsHolder^
 
 	this := !() -> void
 	{
 		itPars."this"()
 		itConsts."this"()
-		itAttrs."this"()
 		itMetaPtr = null
 	}
 	GetConstsHash := !() -> int
@@ -38,7 +36,6 @@ FuncInputBox := class
 	{
 		preRet := new FuncInputBox
 		preRet.itConsts.Push(itConsts[^])
-		preRet.itAttrs[i] = itAttrs[^i]
 		return preRet
 	}
 	"<=>" := !(FuncInputBox itBox) -> int
@@ -50,29 +47,6 @@ FuncInputBox := class
 		{
 			if not CmpConstObjs(c,this.itConsts[i])
 				return -1
-		}
-
-		for itr,ind : itAttrs
-		{
-			inMap := itBox.itAttrs.TryFind(ind)
-			if inMap == null {
-				if itr is ObjBool and not itr->{ObjBool^}.MyBool
-				{}else{
-					return -1
-				}
-			}
-			if not CmpConstObjs(itr,inMap^)
-				return -1
-		}
-		for itr,ind : itBox.itAttrs
-		{
-			inMap := this.itAttrs.TryFind(ind)
-			if inMap == null {
-				if itr is ObjBool and not itr->{ObjBool^}.MyBool
-				{}else{
-					return -1
-				}
-			}
 		}
 		return 0
 	}
