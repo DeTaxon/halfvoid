@@ -41,10 +41,6 @@ GetBoxFor := !(Object^ dat) -> BoxFor^
 	preRes :=  new BoxForOldFashionMulti(Names^,indNames^,Downs^,iterY)
 	preRes.Line = dat.Down.Line
 
-	if dat.Line?.itAttrs.Size() != 0
-	{
-		preRes.attrs = dat.Line.itAttrs&
-	}
 	return preRes
 }
 

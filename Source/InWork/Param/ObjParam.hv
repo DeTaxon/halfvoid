@@ -171,7 +171,6 @@ ObjParam := class extend Object
 				return void
 
 			//GetInhPar()
-			if Line != null inhAttrs = Line.itAttrs&
 			if Up? is BoxFile
 			{
 				asNeed := Up->{BoxFile^}

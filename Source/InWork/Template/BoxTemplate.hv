@@ -595,7 +595,6 @@ BoxTemplate := class extend BoxFunc
 
 		newFunc.ItVals.Push(parConsts^[^])
 		newFunc.ItConsts.Push(itBox.itConsts[^])
-		newFunc.ItAttrs[key] = itBox.itAttrs[^key]
 		
 		if newFunc == null return null
 
@@ -640,10 +639,6 @@ BoxTemplate := class extend BoxFunc
 					boxTail.itPars.Emplace(itBox.itPars[i])
 				}
 				//TODO const, args
-				for it,i : itBox.itAttrs
-				{
-					boxTail.itAttrs[i] = it
-				}
 				boxTail.itMetaPtr = itBox.itMetaPtr
 			}
 

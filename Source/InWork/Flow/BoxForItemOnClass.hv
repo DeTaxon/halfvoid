@@ -120,10 +120,6 @@ BoxForItemOnClass := class extend BoxForItem
 
 		emptyBox := @temp new FuncInputBox
 		emptyBox.itPars.Emplace(asNeed.ClassType,true)
-		if iter.Line != null for q,k : iter.Line.itAttrs
-		{
-			emptyBox.itAttrs[k] = q
-		}
 
 		IncFuncP := asNeed.GetFunc("Inc",emptyBox^)
 		UnrefFuncP := asNeed.GetFunc("^",emptyBox^)
