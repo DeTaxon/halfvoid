@@ -11,10 +11,6 @@ NaturalCall := class extend SomeFuncCall
 		{
 			Line = Pars.Line
 		}
-		if func.IsPassAttrs and Pars != null
-		{
-			inhAttrs = Pars.inhAttrs
-		}
 		Down = Pars
 		
 		RetId = GetNewId()

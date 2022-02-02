@@ -27,7 +27,7 @@ FuncCallFirstIsType := !(Object^ ToParse) -> Object^
 			asNeed4 := asNeed3.ToClass
 			
 			box := @temp new FuncInputBox
-			FillAttrs(box^,iter)
+
 			box.itPars.Emplace(asNeed2,true) 
 			TrimCommas(iter.Right)
 

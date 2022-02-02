@@ -330,23 +330,6 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 			}
 			if box.itConsts.Size() == 0 return null
 
-			if toAdd != null
-			{
-				for v3,k3 : toAdd^
-				{
-					box.itAttrs[k3] = v3
-				}
-			}
-
-			if Node.Line != null
-			for value,key : Node.Line.itAttrs
-			{
-				if key[0] != '#'
-				{
-					box.itAttrs[key] = value
-				}
-			}
-
 			for cSpace : CodeSpaces.Reverse
 			{
 				inInf := cSpace.codeTemplateTypedefs.TryFind(itName)

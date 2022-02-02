@@ -1,30 +1,3 @@
-FillAttrs := !(FuncInputBox itBox,Object^ itm) -> void //TODO remove
-{	
-	if itm != null{
-		for v,k : itm.Line.itAttrs
-		{
-			//printf("adding %s\n",k)
-			itBox.itAttrs[k] = v
-		}
-	}
-
-	itr := itm
-	while itr != null
-	{
-		if itr is BoxFuncBody
-			break
-		itr = itr.Up
-	}
-	if itr == null return void
-
-	asFunc := itr->{BoxFuncBody^}
-
-	for val,key : asFunc.ItAttrs
-	{	
-		if itBox.itAttrs.TryFind(key) == null
-			itBox.itAttrs[key] = val ; $temp
-	}
-}
 
 GetFuncCall := !(Object^ ToParse) -> Object^
 {
@@ -94,8 +67,6 @@ OperFunc := !(string oper,Object^ pars,Object^ operNode) -> Object^
 			cls := asNeed.ToClass
 
 			oBox := @temp new FuncInputBox
-			FillAttrs(oBox^,pars)
-
 			
 			for iter : pars
 			{
@@ -173,15 +144,6 @@ OneCall := !(string Name, Object^ G,Object^ constsPre,bool ignoreNull) -> Object
 OneCall := !(string Name, Object^ G,List.{Object^} consts,bool ignoreNull) -> Object^
 {
 	box := @temp new FuncInputBox
-	FillAttrs(box^,G)
-	if G?.Down?.inhAttrs != null
-	{
-		for v,k : G.Down.inhAttrs^
-		{
-			if box.itAttrs.TryFind(k) == null
-				box.itAttrs[k] = v ; $temp
-		}
-	}
 
 	TrimCommas(G)
 	P := G.Down

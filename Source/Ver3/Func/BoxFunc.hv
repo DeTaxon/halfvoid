@@ -13,8 +13,6 @@ BoxFunc := class extend BoxFuncContainer
 	IsSelfReturn := bool
 	IsPassAttrs := bool
 
-	CountAttrs := bool
-
 	VirtualId := int
 
 	MethodType := Type^
@@ -55,30 +53,6 @@ BoxFunc := class extend BoxFuncContainer
 	{
 		if itBox.itConsts.Size() != ItConsts.Size() 
 			return false
-
-		if CountAttrs
-		{
-			if itBox.itAttrs.Size() < ItAttrs.Size() 
-				return false
-			for val,key : itBox.itAttrs
-			{
-				sRes :=  ItAttrs.TryFind(key)
-				if sRes != null
-				{
-					if not CmpConstObjs(val,sRes^)
-						return false
-				}else{
-					if val is ObjBool
-					{
-						asBool := val->{ObjBool^}
-						if asBool.MyBool
-							return false
-					}else{
-						return false
-					}
-				}
-			}
-		}
 
 		for ct,i : itBox.itConsts , tc : ItConsts
 		{

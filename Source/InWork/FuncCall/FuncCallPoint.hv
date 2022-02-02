@@ -159,16 +159,6 @@ FuncCallGetFieldClassFieldCall := !(char^ asName,Object^ iterPre, Object^ iter) 
 
 
 	box := @temp new FuncInputBox
-	FillAttrs(box^,iter)
-
-	if LL.inhAttrs != null
-	{
-		for v,k : LL.inhAttrs^
-		{
-			if box.itAttrs.TryFind(k) == null
-				box.itAttrs[k] = v ; $temp
-		}
-	}
 	
 	box.itPars.Emplace(iter.Left.GetType(),iter.Left.IsRef()) 
 	for iterK : iter.Right.Right.Down

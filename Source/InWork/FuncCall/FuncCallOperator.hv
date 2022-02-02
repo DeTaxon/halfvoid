@@ -102,8 +102,6 @@ FuncCallPrefixOperator := !(Object^ iter) -> Object^
 				itB := @temp new FuncInputBox
 				itB.itPars.Emplace(irr.GetType(),irr.IsRef())
 				itB.itConsts.Push(new ObjType(useType))  //TODO memory
-				
-				FillAttrs(itB^,iter)
 
 				func := BoxFunc^()
 

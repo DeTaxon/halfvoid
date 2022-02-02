@@ -624,7 +624,6 @@ BoxTemplate := class extend BoxFunc
 		newFunc.IsSelfReturn = IsSelfReturn
 		if MyFuncType != null newFunc.funcUserParamsCount = MyFuncType.ParsCount
 		newFunc.vargsName = vargsName
-		newFunc.CountAttrs = true
 		newFunc.Line = Line
 		newFunc.IsMethod = IsMethod
 		newFunc.DefaultValues = DefaultValues

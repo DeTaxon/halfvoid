@@ -42,7 +42,6 @@ FuncCallFuncObjectCall := !(Object^ iterPre, Object^ iter) -> Object^
 			iterL := iterPre.Left
 
 			box := @temp new FuncInputBox
-			FillAttrs(box^,iter)
 
 			box.itPars.Emplace(iterPre.Left.GetType(),iterPre.Left.IsRef())
 
