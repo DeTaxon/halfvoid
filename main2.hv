@@ -67,6 +67,7 @@ C := class
 
 main := !(int argc, char^^ argv) -> int
 {
+	throw new Exception("hello\n")
 	j := AVLSet.{int}
 	for i : 10
 	{

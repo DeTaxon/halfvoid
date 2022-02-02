@@ -93,9 +93,11 @@ NewCallOne := class extend SomeFuncCall
 				for v,k : Line.itAttrs box.itAttrs[k] = v
 			}
 
+			funcName := "new"
+
 			if appendTemp
 			{
-				box.itAttrs["$temp"] = new ObjBool(true) // TODO remove
+				funcName = "_new_create_temp"	
 			}
 
 			func := BoxFunc^
@@ -109,7 +111,7 @@ NewCallOne := class extend SomeFuncCall
 			}
 
 			if func == null{
-				func = FindFunc("new",this&,box^,false)
+				func = FindFunc(funcName,this&,box^,false)
 			}
 
 			if func == null 

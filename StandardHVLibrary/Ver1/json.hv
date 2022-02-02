@@ -59,7 +59,7 @@ jsonNode := class
 
 	"[]" := !(char^ walkPath) -> ref jsonNode
 	{
-		itms := DivideStr(walkPath,' ') ; $temp
+		itms := DivideStr(walkPath,' ') //TODO memory 
 		iter  := this&
 		for it : itms
 		{
