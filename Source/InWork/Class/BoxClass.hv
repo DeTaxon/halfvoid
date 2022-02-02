@@ -430,18 +430,6 @@ BoxClass := class extend BoxClassBase
 		Funcs := @temp new List.{BoxFunc^}
 		Templs := @temp new List.{BoxTemplate^}
 
-		//itrF := this&
-		//while itrF != null
-		//{
-		//	if vTypes[^].fName == name
-		//	{
-		//		Funcs.Push(it->{VTableFunction^}.funcWrapper) 
-		//	}
-		//	if itrF.Parents.Size() == 0 //TODOPARENT
-		//		itrF = null
-		//	else itrF = itrF.Parents[0]
-		//}
-
 		maybeForced := Find(name,'.')
 		if maybeForced != -1
 		{

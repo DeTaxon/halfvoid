@@ -6,11 +6,20 @@ BoxForItemOnGenerator := class extend BoxForItem
 	{
 		callFunc := @temp new FuncInputBox
 		callFunc.itPars.Emplace(itType,false)
-		LambdaCallFunc = FindFunc("()",self,callFunc^,false)
+	
 		LambdaIsFinishedFunc = FindFunc("IsFinished",self,callFunc^,false)
+		assert(LambdaIsFinishedFunc != null)
+
+		funcData := itType.Base->{TypeFunc^}
+		if funcData.ParsCount == 2 //TODO: lambda hidden param not hidden here
+		{
+			callFunc.itPars.Emplace(funcData.Pars[1],true)
+		}
+	
+
+		LambdaCallFunc = FindFunc("()",self,callFunc^,false)
 
 		assert(LambdaCallFunc != null)
-		assert(LambdaIsFinishedFunc != null)
 
 		itmId := GetAlloc(self,itType)
 		itm := new LocalParam(itType,itmId,false)
@@ -19,6 +28,20 @@ BoxForItemOnGenerator := class extend BoxForItem
 
 		test2 := new ParamNaturalCall("",itm)
 		test2.Line = iter.Line
+
+		if funcData.ParsCount == 2 //TODO
+		{
+			allcId := GetAlloc(iter,funcData.Pars[1],false)
+			indPar := new LocalParam(funcData.Pars[1],allcId)
+			indParCall := new ParamNaturalCall("",indPar)
+			test2.Right = indParCall
+			indParCall.Left = test2
+			indParCall.Up = iter
+			indParCall.Line = iter.Line
+
+			IndParam = new LocalParam(funcData.Pars[1].Base,allcId,true)
+		}
+
 		UnrefFunc = MakeSimpleCall(LambdaCallFunc->{BoxFunc^},test2)
 		UnrefFunc.Line = self.Line
 		UnrefFunc.Up = self
@@ -32,7 +55,7 @@ BoxForItemOnGenerator := class extend BoxForItem
 		IsEndFunc.Line = self.Line
 		IsEndFunc.Up = self
 
-		if IndName != null
+		if IndName != null and IndParam == null
 		{
 			self.EnabledIIndex = true
 			IndParam = new FuncParam("ForIndex"sbt + self.ItId,GTypeInt,false)

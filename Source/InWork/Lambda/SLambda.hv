@@ -149,7 +149,7 @@ SLambda := class extend BoxFuncContainer
 				{
 					//TrimCommas(skobPos)
 					iter := skobPos.Down
-					bag := @temp new List.{Object^}
+					bag := @temp new HybridQueue.{Object^,6}
 					while iter != null
 					{
 						if iter.GetValue() != ","
@@ -179,14 +179,23 @@ SLambda := class extend BoxFuncContainer
 									}
 									asN2 := bag^[1]->{ObjIndent^}
 									names.Push(asN2.MyStr)
-									itTyp := ParseType(bag^[0])
+									tpObj := bag^[0]
+									aRef := false
+									itTyp := Type^
+									if tpObj.Down?.Right?.GetValue() == "&"
+									{
+										itTyp = ParseType(tpObj.Down)
+										aRef = true
+									}else{
+										itTyp = ParseType(tpObj)
+									}
 									if itTyp == null
 									{
 										EmitError("can not parse type\n")
 										return void
 									}
 									pars.Push(itTyp)
-									isRef.Push(false)
+									isRef.Push(aRef)
 								case 0
 								case void
 									//assert(false)
@@ -226,7 +235,7 @@ SLambda := class extend BoxFuncContainer
 				//	PopOutNode(cmp.Right)
 				//}
 
-				asFunc := GetFuncType(pars.ToArray(),null->{bool^},pars.Size(),resType,false,false,false)
+				asFunc := GetFuncType(@temp pars.ToArray(),@temp isRef.ToArray(),pars.Size(),resType,false,false,false)
 				fastUse = asFunc
 
 				if not isTmpl

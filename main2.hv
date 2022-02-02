@@ -47,11 +47,29 @@ Hoh := class extend Heh
 	}
 }
 
+C := class
+{
+	"~For" := !() -> !(int^&)&->int
+	{
+		return (int^& x) ==>
+		{
+			val := 129
+			x = val&
+			yield 100
+		}
+	}
+}
+
 main := !(int argc, char^^ argv) -> int
-{	
-	c := Heh^
-	c = new Hoh
-	c.Reverse.H()
+{
+	z := C
+	for it,ind : z
+	{
+		printf("here %i %i\n",it,ind)
+	}
+	//c := Heh^
+	//c = new Hoh
+	//c.Reverse.H()
 	//for f,ind : c->Fields
 	//{
 	//	printf("field %s %i\n",ind,f)
