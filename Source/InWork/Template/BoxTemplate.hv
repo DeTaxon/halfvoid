@@ -590,8 +590,6 @@ BoxTemplate := class extend BoxFunc
 		assert(newFunc != null)
 		if IsSelfReturn
 			newFunc.IsSelfReturn = true
-		if IsPassAttrs
-			newFunc.IsPassAttrs = true
 
 		newFunc.ItVals.Push(parConsts^[^])
 		newFunc.ItConsts.Push(itBox.itConsts[^])

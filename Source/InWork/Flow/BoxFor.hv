@@ -58,8 +58,6 @@ BoxForOldFashionMulti := class extend BoxFor
 
 	InputItems := RawArray.{BoxForItem^}
 
-	attrs := AttrArrayType^
-
 	destroyFuncCount := int
 
 	EnabledIIndex := bool

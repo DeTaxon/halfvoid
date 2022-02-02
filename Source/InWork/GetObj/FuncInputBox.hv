@@ -1,6 +1,4 @@
 
-AttrArrayType := type AVLMap.{string,Object^}
-
 FuncInputBox := class
 {	
 	itPars := HybridQueue.{Pair.{Type^,bool},16} //FuncTypesArray

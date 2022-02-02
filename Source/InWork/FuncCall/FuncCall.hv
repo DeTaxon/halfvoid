@@ -575,10 +575,6 @@ AssemblerCall := class extend NaturalCall
 {
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
-		if func.IsPassAttrs and Pars != null
-		{
-			inhAttrs = Pars.inhAttrs
-		}
 		Down = Pars
 		RetId = GetNewId()
 		ToCall = func
@@ -741,10 +737,6 @@ BuiltIn2Call := class extend BaseFuncCall
 
 	this := !(BoxFunc^ func, Object^ Pars) -> void 
 	{
-		if func.IsPassAttrs and Pars != null
-		{
-			inhAttrs = Pars.inhAttrs
-		}
 		Down = Pars
 		//thisClId = GetNewId() //TODO someone toching my ram
 		ToCall = func

@@ -427,7 +427,6 @@ TupleFuncGetItem := class extend BoxTemplate
 	this := !(BoxClassBase^ frmOn) -> void
 	{
 		frmIn = frmOn
-		IsPassAttrs = true
 	}
 	GetPriority := virtual !(FuncInputBox itBox) -> int
 	{

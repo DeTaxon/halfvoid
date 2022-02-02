@@ -3,15 +3,15 @@ ParseType := !(Object^ Node) -> Type^
 {
 	return ParseType(Node,null,null,null)
 }
-ParseType := !(Object^ Node,AttrArrayType^ toAdd) -> Type^
+ParseType := !(Object^ Node,void^ toAdd) -> Type^
 {
 	return ParseType(Node,toAdd,null,null)
 }
-ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts) -> Type^
+ParseType := !(Object^ Node,void^ toAdd,Queue.{ObjConstHolder^}^ tempConsts) -> Type^
 {
 	return ParseType(Node,toAdd,tempConsts,null)
 }
-ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempConsts,AVLMap.{char^,Type^}^ extrTypes) -> Type^ 
+ParseType := !(Object^ Node,void^ toAdd,Queue.{ObjConstHolder^}^ tempConsts,AVLMap.{char^,Type^}^ extrTypes) -> Type^ 
 {
 	if Node == null return null
 	if Node.GetValue() == "~d" and Node.Down?.GetValue() == "#best"

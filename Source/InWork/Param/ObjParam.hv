@@ -298,7 +298,6 @@ ObjParam := class extend Object
 						{
 							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
-							Down.inhAttrs = inhAttrs
 							Down.Right = val
 							val.Right = null
 							val.Left = Down
@@ -307,7 +306,6 @@ ObjParam := class extend Object
 						}else{
 							if IsRef EmitError("can not use ref on type\n")
 							Down = new LocalParam(MaybeType,allcId)
-							Down.inhAttrs = inhAttrs
 							Down.SetUp(this&)
 						}
 						CheckGC(MaybeType,allcId)
