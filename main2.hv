@@ -67,7 +67,17 @@ C := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	file := gRepo.GetFile("UnitTests2/UnitTests/main.hv")
+	j := AVLSet.{int}
+	for i : 10
+	{
+		j.Insert(i*2)
+	}
+	for i : j.Reverse
+	{
+		printf("test %i\n",i)
+	}
+	//file := gRepo.GetFile("UnitTests2/UnitTests/main.hv")
+	//printf("hey %p\n",file)
 	//c := Heh^
 	//c = new Hoh
 	//c.Reverse.H()

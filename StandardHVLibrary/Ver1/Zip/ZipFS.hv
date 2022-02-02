@@ -285,10 +285,11 @@ vRepo := class
 		repoMP.Push()
 		defer repoMP.Pop()
 		
-		itms := DivideStr(fileName,'/') ; $temp
+		itms := @temp new List.{StringSpan}
 		iterFolder := rrF
-
-		for cheks,i : itms
+	
+		StringSpan(fileName).DivideStr("\\/",x ==> { itms.Push(x) })
+		for cheks,i : itms^
 		{
 			if i == 0 and cheks == "." continue
 
@@ -335,10 +336,12 @@ vRepo := class
 		repoMP.Push()
 		defer repoMP.Pop()
 		
-		itms := DivideStr(fileName,'/') ; $temp
+
+		itms := @temp new List.{StringSpan}
+		fileName.DivideStr("/",x ==> { itms.Push(x) })
 		iterFolder := rrF
 
-		for cheks,i : itms
+		for cheks,i : itms^
 		{
 			if i == 0 and cheks == "." continue
 

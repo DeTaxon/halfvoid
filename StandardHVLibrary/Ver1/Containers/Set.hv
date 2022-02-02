@@ -52,9 +52,52 @@ ContainerCommonSet := class .{@TreeType,@DATA}
 				return false
 		return true
 	}
-	"~For" := !() .{} -> CommonSetIterator.{DATA}
+	"~For" := !() -> !()&->DATA&
 	{
-		return CommonSetIterator.{DATA}(itTree.Start)
+		return _createIterator(false)
+	}
+	Reverse := fake
+	{
+		"~For" := !() -> !()& -> DATA&
+		{
+			return _createIterator(true)
+		}
+	}
+	_createIterator := !(bool reverse) -> !()&->DATA&
+	{
+		return () ==>[reverse]
+		{
+			if itSize != 0
+			{
+				bag := @temp new List.{Tuple.{CommonTreeNode.{DATA}^,bool}}
+				bag.EmplaceFront(itTree.Start,true)
+				
+				while bag.Size() != 0
+				{
+					node := ref bag.Front()
+					if node.1
+					{
+						subNode := node.0
+						bag.Pop()
+						if reverse
+						{
+							bag.EmplaceFront(subNode.Left?,true)
+							bag.EmplaceFront(subNode,false)
+							bag.EmplaceFront(subNode.Right?,true)
+						}else{
+							bag.EmplaceFront(subNode.Right?,true)
+							bag.EmplaceFront(subNode,false)
+							bag.EmplaceFront(subNode.Left?,true)
+						}
+					}else{
+						subNode := node.0
+						yield subNode.data
+						bag.Pop()
+					}
+					
+				}
+			}
+		}
 	}
 	Size := !() -> int { return itSize }
 	"in" := !(DATA val) -> bool

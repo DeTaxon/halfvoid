@@ -93,28 +93,28 @@ StringSpan := class{
 	{
 		return @temp Str()
 	}
-	DivideStr := !(char^ to) -> List.{StringSpan}
-	{
-		result."this"()
-		i := 0
-		j := 0
-		while j < itSize
-		{
-			if ptr[j] in to
-			{
-				if j != i result.Emplace(ptr[i]&,j - i) ; $temp
-				i = j+1
-				j += 1
-			} else
-			{
-				j += 1
-			}
-		}
-		if j - i != 0
-		{
-			result.Emplace(ptr[i]&,j - i) ; $temp
-		}		
-	}
+	//DivideStr := !(char^ to) -> List.{StringSpan}
+	//{
+	//	result."this"()
+	//	i := 0
+	//	j := 0
+	//	while j < itSize
+	//	{
+	//		if ptr[j] in to
+	//		{
+	//			if j != i result.Emplace(ptr[i]&,j - i) ; $temp
+	//			i = j+1
+	//			j += 1
+	//		} else
+	//		{
+	//			j += 1
+	//		}
+	//	}
+	//	if j - i != 0
+	//	{
+	//		result.Emplace(ptr[i]&,j - i) ; $temp
+	//	}		
+	//}
 	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
 	{
 		i := 0

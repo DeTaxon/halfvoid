@@ -233,10 +233,11 @@ ZipFile := class
 				]&->{zipCentralDirectory^}
 				continue
 			}
-			fldrs := newStr.DivideStr("/") ; $temp
+			fldrs := @temp new List.{StringSpan}
+			newStr.DivideStr("/", x ==> {fldrs.Push(x)})
 			itmIter := zipRoot&
 
-			for itm,j : fldrs
+			for itm,j : fldrs^
 			{	
 				found := false
 				if itmIter.subFolders[^].objName == itm
