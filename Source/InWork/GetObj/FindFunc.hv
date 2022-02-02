@@ -54,7 +54,7 @@ CollectParamsAllByName := !(string name, Object^ start, List.{ObjParam^} found, 
 		}
 	}
 
-	for itCodeS,i : CodeSpaces ; $reverse
+	for itCodeS,i : CodeSpaces.Reverse
 	{
 		inMMap := itCodeS.codeParams.TryFind(name)
 		if inMMap != null
@@ -247,7 +247,7 @@ FindStuff := !(string name, Object^ start,FuncInputBox itBox, bool IsSuffix,bool
 	//}
 
 
-	for itCodeS,ii : CodeSpaces ; $reverse
+	for itCodeS,ii : CodeSpaces.Reverse
 	{
 		Funcs.Clear()
 		Templs.Clear()

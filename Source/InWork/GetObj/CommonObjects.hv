@@ -91,7 +91,7 @@ GetItem2 := !(string name, Object^ start,QueueSet.{int} Searched) -> Object^
 		}
 	}
 
-	for itCS : CodeSpaces ; $reverse
+	for itCS : CodeSpaces.Reverse
 	{
 		for itLib : itCS.codeLibs
 		{

@@ -103,7 +103,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 				tryType := it.GetModuleType(indName)
 				if tryType != null return tryType
 			}
-			for itCodeS : CodeSpaces ; $reverse
+			for itCodeS : CodeSpaces.Reverse
 			{
 				inMMap := itCodeS.codeTypeDefs.TryFind(indName)
 				if inMMap != null
@@ -347,7 +347,7 @@ ParseType := !(Object^ Node,AttrArrayType^ toAdd,Queue.{ObjConstHolder^}^ tempCo
 				}
 			}
 
-			for cSpace : CodeSpaces ; $reverse
+			for cSpace : CodeSpaces.Reverse
 			{
 				inInf := cSpace.codeTemplateTypedefs.TryFind(itName)
 				if inInf != null
