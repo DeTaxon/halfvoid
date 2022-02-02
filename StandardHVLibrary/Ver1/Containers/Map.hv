@@ -61,43 +61,55 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 			itSize -= 1
 		}
 	}
-	"~For" := !() .{} -> CommonMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}
+	"~For" := !() -> !(KEY^&)& -> VALUE&
 	{
-		return CommonMapIterator.{BadPair.{KEY,VALUE},KEY,VALUE}(itTree.Start)
+		return _createIterator(false)
 	}
 	Reverse := fake
 	{
 		"~For" := !() -> !(KEY^&)& -> VALUE&
 		{
-			return (KEY^& k) ==>
+			return _createIterator(true)
+		}
+	}
+	_createIterator := !(bool reverse) -> !(KEY^&)& -> VALUE&
+	{
+		return (KEY^& k) ==> [reverse]
+		{
+			if itSize != 0
 			{
-				if itSize != 0
+				bag := @temp new List.{Tuple.{CommonTreeNode.{BadPair.{KEY,VALUE}}^,bool}}
+				bag.EmplaceFront(itTree.Start,true)
+				
+				while bag.Size() != 0
 				{
-					bag := @temp new List.{Tuple.{CommonTreeNode.{BadPair.{KEY,VALUE}}^,bool}}
-					bag.EmplaceFront(itTree.Start,true)
-					
-					while bag.Size() != 0
+					node := ref bag.Front()
+					if node.1
 					{
-						node := ref bag.Front()
-						if node.1
+						subNode := node.0
+						bag.Pop()
+						if reverse
 						{
-							subNode := node.0
-							bag.Pop()
 							bag.EmplaceFront(subNode.Left?,true)
 							bag.EmplaceFront(subNode,false)
 							bag.EmplaceFront(subNode.Right?,true)
 						}else{
-							subNode := node.0
-							k = subNode.data.first&
-							yield subNode.data.second
-							bag.Pop()
+							bag.EmplaceFront(subNode.Right?,true)
+							bag.EmplaceFront(subNode,false)
+							bag.EmplaceFront(subNode.Left?,true)
 						}
-						
+					}else{
+						subNode := node.0
+						k = subNode.data.first&
+						yield subNode.data.second
+						bag.Pop()
 					}
+					
 				}
 			}
 		}
 	}
+
 	Size := !() -> int { return itSize }
 	"in" := !(KEY val) -> bool
 	{

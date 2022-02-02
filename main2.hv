@@ -72,7 +72,7 @@ main := !(int argc, char^^ argv) -> int
 	{
 		z[i] = i
 	}
-	for it,ind : z.Reverse
+	for it,ind : z
 	{
 		printf("here %i %i\n",it,ind)
 	}
