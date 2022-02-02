@@ -237,10 +237,6 @@ BoxForOldFashionMulti := class extend BoxFor
 
 					someBox := @temp new FuncInputBox
 					someBox.itPars.Emplace(Down.Right.GetType(),Down.Right.IsRef())
-					if Down.Right.Line != null for q,k : Down.Right.Line.itAttrs
-					{
-						someBox.itAttrs[k] = q
-					}
 					if Down.Right is MetaItemWrapper
 					{
 						someBox.itMetaPtr = Down.Right->{MetaItemWrapper^}.ptrToBlock

@@ -269,13 +269,11 @@ ObjLine := class
 	this := !() -> void
 	{
 		inFile."this"()
-		itAttrs."this"()
 	}
 	this := !(int LP, Path IF) -> void
 	{
 		LinePos = LP
 		inFile = IF
-		itAttrs."this"()
 	}
 	GetLog := !() -> string
 	{

@@ -158,17 +158,6 @@ BoxClass := class extend BoxClassBase
 			if not CmpConstObjs(c,ItConsts[i])
 				return false
 		}
-		if Up != null and Up.GetValue() == "!{}{...}"
-		{
-			asTmp := Up->{BoxClassTemplate^}
-			for itr : asTmp.relAttrs
-			{
-				inItMap := ItAttrs.TryFind(itr)
-				inOtMap := itBox.itAttrs.TryFind(itr)
-				if inItMap == null and inOtMap != null return false
-				if inItMap != null and inOtMap == null return false
-			}
-		}
 
 		return true
 	}
