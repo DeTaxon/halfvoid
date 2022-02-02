@@ -67,15 +67,7 @@ C := class
 
 main := !(int argc, char^^ argv) -> int
 {
-	z := AVLMap.{int,int}
-	for i : 15
-	{
-		z[i] = i
-	}
-	for it,ind : z
-	{
-		printf("here %i %i\n",it,ind)
-	}
+	file := gRepo.GetFile("UnitTests2/UnitTests/main.hv")
 	//c := Heh^
 	//c = new Hoh
 	//c.Reverse.H()

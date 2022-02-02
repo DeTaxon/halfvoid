@@ -186,26 +186,19 @@ ZipFile := class
 	}
 	GetFile := !(char^ fileNameI) -> vZipEntry^
 	{
-		items := DivideStr(fileNameI,"\\/") ; $temp
-		if items.Size() == 0
-			return null
-
 		itr := zipRoot&
-		for it : items
-		{
-			found := false
+		StringSpan(fileNameI).DivideStr("\\/",x ==> {
 			for subs : itr.subFolders
 			{
 				if subs.objName == it
 				{
-					found = true
 					itr = subs
-					break
+					return void
 				}
 			}
-			if not found
-				return null
-		}
+			throw new IException("File not found")
+		})
+
 		return itr
 	}
 		
