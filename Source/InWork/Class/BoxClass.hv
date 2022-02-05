@@ -203,7 +203,7 @@ BoxClass := class extend BoxClassBase
 		AutoFieldTemplate = new BuiltInTemplateAutoField(this&)
 		VirtualCheck = new BuiltInCheckVirtualType(ClassType)
 
-		if Down?.Down[^].GetValue() == "virtual" 
+		if Down?.Down?[^].GetValue() == "virtual" 
 		{
 			ContainVirtual = true
 			break
