@@ -153,7 +153,7 @@ CLibModule := class extend CompilerModule
 				if spn in it.structs
 				{
 					inStructs := ref it.structs[spn]
-					bc := new FuncInputBox ; temp
+					bc := @temp new FuncInputBox
 
 					nClass := new BoxClass(null)
 					for StructField : inStructs^
@@ -277,11 +277,12 @@ CLibModule := class extend CompilerModule
 	}
 	CheckFuncTypeString := !(StringSpan toCheck) -> TypeFunc^
 	{
-		tList := toCheck.DivideStr(" ,")
-		retType := CheckTypeString(tList[0])
+		tList := @temp new List.{StringSpan}
+		toCheck.DivideStr(" ,",x ==> { tList^ << x})
+		retType := CheckTypeString(tList^[0])
 		nextTypes := @temp new List.{Type^}
 		isVArg := false
-		for it,i : tList
+		for it,i : tList^
 		{
 			if i == 0 continue
 			if it == "..." 
@@ -291,7 +292,7 @@ CLibModule := class extend CompilerModule
 			}
 			nextTypes.Push(CheckTypeString(it))
 		}
-		return GetFuncType(nextTypes.ToArray(),null,nextTypes.Size(),retType,false,isVArg,compilerSuffix == "posix")
+		return GetFuncType(@temp nextTypes.ToArray(),null,nextTypes.Size(),retType,false,isVArg,compilerSuffix == "posix")
 	}
 	CheckTypeString := !(StringSpan toCheck) -> Type^
 	{

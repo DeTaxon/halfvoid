@@ -88,6 +88,8 @@ hUserPoolCount := task_local int
 	}
 	assert(val != 0)
 	newNode :=  malloc(val)
+	if newNode == null
+		throw new Exception("Out of memory")
 	memset(newNode,0,val)
 	return newNode
 }
