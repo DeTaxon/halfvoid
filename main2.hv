@@ -1,100 +1,20 @@
-
-"@temp2 call" := !(@LType lambd) -> LType->ResultType
+pfunc := !(void^ v, char^ data, ...) -> void
 {
-	TempPoolBlock()
-	if result->Type->Group == "Class"
-	{
-		_SetAllocator(lambd(),gTemporaryPool&)
-	} else if result->Type->Group == "Pointer"
-	{
-		_SetAllocator(lambd()^,gTemporaryPool&)
-	}else{
-		lambd()
-	}
+	lst := char[80]
+	va_start(lst)
+	vprintf(data,lst)
 }
 
-Heh := class
-{
-	x := int
-	Reverse := fake
-	{
-		Hey := !() -> int^
-		{
-			return new int
-		}
-		H := virtual !() -> void
-		{
-			printf("hello\n")
-		}
-	}
-	H := virtual !() -> void
-	{
-		printf("nah1\n")
-	}
-}
-Hoh := class extend Heh
-{
-	Reverse := fake
-	{
-		H := virtual !() -> void
-		{
-			printf("world\n")
-		}
-	}
-	H := virtual !() -> void
-	{
-		printf("nah2\n")
-	}
-}
 
-C := class
-{
-	"~For" := !() -> !(int^&)&->int
-	{
-		return (int^& x) ==>
-		{
-			ind := 129
-			x = ind&
-
-			for i : 5
-			{
-				ind = i*3
-				yield i*2
-			}
-		}
-	}
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	j := AVLSet.{int}
-	for i : 10
-	{
-		j.Insert(i*2)
-	}
-	for i : j.Reverse
-	{
-		printf("test %i\n",i)
-	}
-	//file := gRepo.GetFile("UnitTests2/UnitTests/main.hv")
-	//printf("hey %p\n",file)
-	//c := Heh^
-	//c = new Hoh
-	//c.Reverse.H()
-	//for f,ind : c->Fields
-	//{
-	//	printf("field %s %i\n",ind,f)
-	//}
-	//printf("hello\n")
-	//c.Reverse.Hey()
-	//@omp
-	//for i : 4
-	//{
-	//	printf("hello\n")
-	//	TSleep(1)
-	//}
-	//tst := List.{int}()
-	//tst << 1 << 100 << 3
-	//printf("objec %p %p\n",tst&, tst.allocator)
+	squirrel_init()
+	tst := sq_open(1024)
+	sq_pushroottable(tst)
+	sq_setprintfunc(tst,pfunc,pfunc)
+	sqstd_seterrorhandlers(tst)
+	res := sqstd_dofile(tst,"test.nut",0,1)
+	sq_close(tst)
 	return 0
 }
