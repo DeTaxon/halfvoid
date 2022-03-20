@@ -62,7 +62,7 @@ List := class .{@T}
 
 	allocator := IMemoryPool^
 
-	this := !() .{} -> void
+	this := !() -> void
 	{
 		Start = null
 		End = null
@@ -126,7 +126,7 @@ List := class .{@T}
 	{
 		this._createFrontNode() = toAdd
 	}
-	_createFrontNode := !() .{} -> ref T
+	_createFrontNode := !() -> ref T
 	{
 		newNode := createNode()
 
@@ -136,7 +136,7 @@ List := class .{@T}
 
 		return Start.Data
 	}
-	DeleteIf := !(!(T)&->bool testFunc) -> void //TODO: why cant i make it template
+	DeleteIf := !(!(T)&->bool testFunc) -> void
 	{
 		if Counter == 0 return void
 
@@ -350,7 +350,7 @@ List := class .{@T}
 		End = null
 		Counter = 0
 	}
-	Destroy := !() .{} -> void
+	Destroy := !() -> void
 	{
 		AllocPoolBlock(allocator)
 
