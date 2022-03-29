@@ -6,33 +6,44 @@
 //}
 
 
-io_uring_prep_timeout := !(sqe_node^ sqe, void^ ts, int count,int flags) -> void
-{
-	io_uring_prep_rw(IORING_OP_TIMEOUT,sqe,-1,ts,1,count)
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	ctx := malloc(1024)
 
-	uring_init()
+	TSpawnTask(() ==> {
+		for i : 5
+		{
+			printf("hi\n")
+			TSleep(1)
+		}
+	})
+	TSpawnTask(() ==> {
+		for i : 5
+		{
+			printf("hoh\n")
+			TSleep(1)
+		}
+	})
+	//ctx := malloc(1024)
 
-	io_uring_queue_init(128,ctx,0)
+	//uring_init()
 
-	sqe := io_uring_get_sqe(ctx)->{sqe_node^}
+	//io_uring_queue_init(128,ctx,0)
 
-	
-	times := u64[2]
-	times[0] = 2
+	//sqe := io_uring_get_sqe(ctx)->{sqe_node^}
 
-	io_uring_prep_timeout(sqe,times[0]&,0,0)
+	//
+	//times := u64[2]
+	//times[0] = 2
 
-	io_uring_submit(ctx)
+	//io_uring_prep_timeout(sqe,times[0]&,0,0)
 
-	cqe := void^ 
-	io_uring_wait_cqe(ctx->{void^},cqe&)
+	//io_uring_submit(ctx)
 
-	io_uring_queue_exit(ctx)
+	//cqe := void^ 
+	//io_uring_wait_cqe(ctx->{void^},cqe&)
+
+	//io_uring_queue_exit(ctx)
 
 
 	//squirrel_init()

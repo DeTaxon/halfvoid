@@ -40,6 +40,11 @@ io_uring_prep_rw := !(int op,sqe_node^ sqe,int fd, void^ addr, int len, u64 offs
 	sqe.len = len
 }
 
+io_uring_prep_timeout := !(sqe_node^ sqe, void^ ts, int count,int flags) -> void
+{
+	io_uring_prep_rw(IORING_OP_TIMEOUT,sqe,-1,ts,1,count)
+}
+
 io_uring_prep_readv := !(sqe_node^ sqe,int fd, void^ addr, int len, u64 offset) -> int
 {
 	io_uring_prep_rw(IORING_OP_READV,sqe,fd,addr,len,offset)
