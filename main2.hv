@@ -1,20 +1,47 @@
-pfunc := !(void^ v, char^ data, ...) -> void
+//pfunc := !(void^ v, char^ data, ...) -> void
+//{
+//	lst := char[80]
+//	va_start(lst)
+//	vprintf(data,lst)
+//}
+
+
+io_uring_prep_timeout := !(sqe_node^ sqe, void^ ts, int count,int flags) -> void
 {
-	lst := char[80]
-	va_start(lst)
-	vprintf(data,lst)
+	io_uring_prep_rw(IORING_OP_TIMEOUT,sqe,-1,ts,1,count)
 }
-
-
 
 main := !(int argc, char^^ argv) -> int
 {
-	squirrel_init()
-	tst := sq_open(1024)
-	sq_pushroottable(tst)
-	sq_setprintfunc(tst,pfunc,pfunc)
-	sqstd_seterrorhandlers(tst)
-	res := sqstd_dofile(tst,"test.nut",0,1)
-	sq_close(tst)
+	ctx := malloc(1024)
+
+	uring_init()
+
+	io_uring_queue_init(128,ctx,0)
+
+	sqe := io_uring_get_sqe(ctx)->{sqe_node^}
+
+	
+	times := u64[2]
+	times[0] = 2
+
+	io_uring_prep_timeout(sqe,times[0]&,0,0)
+
+	io_uring_submit(ctx)
+
+	cqe := void^ 
+	io_uring_wait_cqe(ctx->{void^},cqe&)
+
+	io_uring_queue_exit(ctx)
+
+
+	//squirrel_init()
+	//tst := sq_open(1024)
+	//sq_pushroottable(tst)
+	//sq_setprintfunc(tst,pfunc,pfunc)
+	//sqstd_seterrorhandlers(tst)
+	//res := sqstd_dofile(tst,"test.nut",0,1)
+	//sq_close(tst)
+
 	return 0
 }

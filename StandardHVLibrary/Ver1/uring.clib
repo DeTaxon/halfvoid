@@ -1,0 +1,25 @@
+{
+	"link" : "dynamic",
+	"initname" : "uring_init",
+	"consts" :
+	{
+		"IORING_OP_NOP" : 0,	
+		"IORING_OP_READV" : 1,
+		"IORING_OP_WRITEV" : 2,
+		"IORING_OP_TIMEOUT" : 11
+	},
+	"libs" : [
+		"liburing.so"
+	],
+	"funcs" : {
+		"io_uring_queue_init" : "int,int,void^,int",
+
+		"io_uring_get_sqe" : "void^,void^",
+		"io_uring_submit" : "void,void^",
+
+		"__io_uring_get_cqe" : "int,void^,void^^,int,int,void^",
+		"__io_uring_peek_cqe" : "int,void^,void^^,void^",
+
+		"io_uring_queue_exit" : "void,void^"
+	}
+}
