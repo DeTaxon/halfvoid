@@ -1,0 +1,27 @@
+{
+	"link" : "dynamic",
+	"initname" : "uring_init",
+	"libs" : [
+		"c_lib.so"
+	],
+	"funcs" : {
+		"ur_create" : "void^",
+		"ur_init" : "void,int,void^,int",
+		"ur_exit" : "void,void^",
+		"ur_destroy" : "void,void^",
+
+		"ur_get_sqe" : "void^,void^",
+
+		"ur_sqe_timeout" : "void,void^,double,int,int,void^",
+
+		"ur_sqe_set_data" : "void,void^,void^",
+		"ur_cqe_get_data" : "void^,void^",
+
+		"ur_sqe_poll_add" : "void,void^,int,int",
+
+		"ur_submit" : "void,void^",
+
+		"ur_wait_cqe_timeout" : "int,void^,void^^,double",
+		"ur_cqe_seen" : "void,void^,void^"
+	}
+}

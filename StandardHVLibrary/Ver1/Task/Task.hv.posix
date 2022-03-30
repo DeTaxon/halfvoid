@@ -30,7 +30,6 @@ AppendClass TaskData
 	uContext := u8[1024]
 	stackPtr := void^
 }
-
 AppendClass TaskBox
 {
 	eventFd := int
@@ -39,6 +38,9 @@ AppendClass TaskBox
 	pollData := RawArray.{Tuple.{int}}
 
 	startContext := u8[1024]
+
+	ioRing := void^
+	ringEventInWork := bool
 
 	osInit := !() -> void
 	{
@@ -53,6 +55,10 @@ AppendClass TaskBox
 		setPollFd.fd = eventFd
 		setPollFd.events = 0x01
 		pollData.Create().0 = 1
+
+		uring_init()
+		ioRing = ur_create() //TODO destroy
+		ur_init(128,ioRing,0)
 	}
 	initedMonitor := bool
 	monitorBuffer := u8[]
@@ -99,7 +105,6 @@ AppendClass TaskBox
 			initMonitor()
 
 		pathAdd := @temp new List.{char^}
-
 
 		watchMode := 0
 		if modes and_b M_CHANGED watchMode += IN_CHANGE
@@ -153,23 +158,48 @@ AppendClass TaskBox
 		startTask.uContext[32]&->{u64^}^ = stackSize
 		makecontext(startTask.uContext&,ucontextStartTask,0)
 	}
+
+	waitIOCounter := int
+	waitOnIO := !(!(void^)&->void lambd) -> void
+	{
+		sqe := ur_get_sqe(ioRing)
+		lambd(sqe)
+		ur_sqe_set_data(sqe,CurrentTask)
+		waitIOCounter += 1
+		switchToMain()
+		waitIOCounter -= 1
+	}
 	taskWaitSleep := !(double sleepTime) -> void
 	{
-		poll(posixPollArr.Data(),posixPollArr.Size(),(sleepTime*1000)->{int})
-		for itFd,i : posixPollArr, extra : pollData
+		if not ringEventInWork
 		{
-			if itFd.revents != 0
-			{
-				switch extra.0
-				{
-					case 1
-						toRd := u64
-						read(eventFd,toRd&,8)
-					case 2
-						checkMonitor()
-				}
-			}
+			sqe := ur_get_sqe(ioRing)
+			ur_sqe_poll_add(sqe,eventFd,0x01) //TODO POLLIN unconst
+			ur_sqe_set_data(sqe,eventFd&)
+			ur_submit(ioRing)
+			ringEventInWork = true
 		}
+
+		cqe := void^
+		res := ur_wait_cqe_timeout(ioRing,cqe&->{void^^},sleepTime)
+
+		if res == -62 // timer expired
+			return void
+
+		data := ur_cqe_get_data(cqe)
+
+		if data == eventFd&
+		{
+			toRd := u64
+			read(eventFd,toRd&,8)
+			ringEventInWork = false
+		}else
+		{
+			tasksToExe.Push(data)
+		}
+		ur_cqe_seen(ioRing,data)
+
+		return void
 	}
 	osSwitchToMain := !() -> void
 	{

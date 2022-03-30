@@ -25,13 +25,11 @@ TaskBox := class extend TGCObject
 
 	itMutex := Mutex
 
-
 	tasksToExe := List.{TaskData^}
 
 	destroyTasks := List.{TaskData^}
 
 	working := bool
-
 
 	this := !(int sSize) -> void
 	{
@@ -154,8 +152,6 @@ TaskBox := class extend TGCObject
 					if toDoTask == null
 					{
 						toDoTask = checkYields();
-					}else{
-						itWorkCount -= 1
 					}
 				}
 			}
@@ -167,7 +163,7 @@ TaskBox := class extend TGCObject
 				continue
 			}
 
-			if not makeWait and (itWorkCount != 0 or waitOnMonitor() )
+			if not makeWait and (itWorkCount != 0 or waitOnMonitor() or waitIOCounter != 0)
 			{
 				makeWait = true
 				waitTime = 1

@@ -14,7 +14,7 @@ main := !(int argc, char^^ argv) -> int
 		for i : 5
 		{
 			printf("hi\n")
-			TSleep(1)
+			TAwaitWork( () ==> { TSleep(1) } )
 		}
 	})
 	TSpawnTask(() ==> {

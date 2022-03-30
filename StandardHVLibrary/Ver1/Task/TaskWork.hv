@@ -101,21 +101,24 @@ AppendClass TaskBox
 	}
 	AwaitWork := !(!()&->void lambd) -> void
 	{
+		itWorkCount += 1
 		_addWork(new TaskBoxSingleWork(lambd,CurrentTask))
 		switchToMain()
+		itWorkCount -= 1
 	}
 	AwaitManyWorks := !(int num,!(int)&->void lambd) -> void
 	{
 		if num == 0
 			num = poolThread.Size()
+		itWorkCount += 1
 		_addWork(new TaskBoxManyWork(lambd,CurrentTask,num))
 		switchToMain()
+		itWorkCount -= 1
 	}
 	_addWork := !(TaskBoxWorkInterface^ newWork) -> void
 	{
 		ExpectWorkers(1)
 		itWorkMutex.Lock()
-		itWorkCount += 1
 		itWorkToDo.Push(newWork)
 		itWorkConVar.NotifyAll()
 		itWorkMutex.Unlock()
