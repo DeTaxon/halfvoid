@@ -211,6 +211,9 @@ AppendClass TaskBox
 	}
 	osDestroy := !() -> void
 	{
+		ur_exit(ioRing)
+		ur_destroy(ioRing)
+
 		posixPollArr.Destroy()
 		delete itStacks[^]
 		itStacks.Destroy()
