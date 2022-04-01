@@ -67,6 +67,20 @@ TRawFile := class extend TIOStream
 		if res < 0 throw new Exception("Could not read")
 		return res
 	}
+	AReadAt := virtual !(void^ data, size_t size,int offset) -> size_t
+	{
+		assert(CurrentTask != null)
+
+		readData := rawfile_iovec
+		readData.ptr = data
+		readData.size = size
+
+		CurrentTaskBox.waitOnIO( x ==> {
+			ur_sqe_readv(x,handler,readData&,1,offset)
+		})
+		
+		return size
+	}
 	Write := virtual !(void^ data, size_t size) -> size_t
 	{
 		res := s64
@@ -82,4 +96,9 @@ TRawFile := class extend TIOStream
 			handler = -1
 		}
 	}
+}
+rawfile_iovec := class
+{
+	ptr := void^
+	size := size_t
 }

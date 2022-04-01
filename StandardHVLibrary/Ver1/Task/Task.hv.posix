@@ -165,6 +165,7 @@ AppendClass TaskBox
 		sqe := ur_get_sqe(ioRing)
 		lambd(sqe)
 		ur_sqe_set_data(sqe,CurrentTask)
+		ur_submit(ioRing)
 		waitIOCounter += 1
 		switchToMain()
 		waitIOCounter -= 1

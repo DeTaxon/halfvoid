@@ -9,7 +9,21 @@
 
 main := !(int argc, char^^ argv) -> int
 {
+	TSpawnTask(() ==> {
+		fil := TRawFile("main2.hv","r")
+		siz := fil.Size()
+		printf("size %i\n",fil.Size())
 
+		data := malloc(siz)->{u8^}
+
+		fil.AReadAt(data,20,20)
+		printf("hey %s\n",data)
+		data[20] = 0
+		fil.AReadAt(data,20,20)
+		printf("hey %s\n",data)
+		data[20] = 0
+
+	})
 	TSpawnTask(() ==> {
 		for i : 5
 		{
@@ -17,35 +31,6 @@ main := !(int argc, char^^ argv) -> int
 			TSleep(1)
 		}
 	})
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("hoh\n")
-			TSleep(1)
-		}
-	})
-	//ctx := malloc(1024)
-
-	//uring_init()
-
-	//io_uring_queue_init(128,ctx,0)
-
-	//sqe := io_uring_get_sqe(ctx)->{sqe_node^}
-
-	//
-	//times := u64[2]
-	//times[0] = 2
-
-	//io_uring_prep_timeout(sqe,times[0]&,0,0)
-
-	//io_uring_submit(ctx)
-
-	//cqe := void^ 
-	//io_uring_wait_cqe(ctx->{void^},cqe&)
-
-	//io_uring_queue_exit(ctx)
-
-
 	//squirrel_init()
 	//tst := sq_open(1024)
 	//sq_pushroottable(tst)

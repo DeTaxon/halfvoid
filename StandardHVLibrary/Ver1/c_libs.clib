@@ -14,6 +14,9 @@
 
 		"ur_sqe_timeout" : "void,void^,double,int,int,void^",
 
+		"ur_sqe_readv" : "void,void^,int,void^,int,int",
+		"ur_sqe_writev" : "void,void^,int,void^,int,int",
+
 		"ur_sqe_set_data" : "void,void^,void^",
 		"ur_cqe_get_data" : "void^,void^",
 

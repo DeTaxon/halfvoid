@@ -49,6 +49,13 @@ TSpawnTask := !(!()&->void lmb) -> void
 	CurrentTaskBox.Spawn(lmb)
 }
 
+TDoIO := !(!(void^)&->void x)
+{
+	assert(CurrentTask != null)
+	CurrentTaskBox.waitOnIO(x)
+
+}
+
 TYield := !() -> void
 {
 	if CurrentTaskBox != null

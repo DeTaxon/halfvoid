@@ -1,4 +1,4 @@
-TIOStream := class
+TIOStream := class extend TGCObject
 {
 	Read := virtual !(void^ data, size_t size) -> size_t
 	{
