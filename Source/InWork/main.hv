@@ -554,6 +554,7 @@ WriteCodeData := !(TIOStream fil) -> void
 	GlobalDataBuiltins[^].PrintGlobal(fil)
 	TaskPrint(fil)
 	//nFunc.PrintGlobal(fil)
+	PrintGlobalLambda(fil)
 
 	Classes[^].PrintStruct(fil)
 	PrintTuples(fil)

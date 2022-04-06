@@ -1,4 +1,12 @@
 
+PrintGlobalLambda := !(TIOStream f) -> void
+{
+	f << "define i1 @LambdaIsFinishedAlwaysTrue(i8* %ToTest)\n"
+	f << "{\n"
+	f << 	"ret i1 1\n"
+	f << "}\n"
+}
+
 AppendClass SLambda
 {
 	DeleteFunc := !(TIOStream f, funcsUp,prevLambd,nameIter) -> void
@@ -19,13 +27,16 @@ AppendClass SLambda
 	}
 	IsFinishedFunc := !(TIOStream f, funcsUp,prevLambd,nameIter) -> void
 	{
+		if Yodlers.Size() == 0
+			return void
+
 		f << "define i1 @LambdaIsFinished" << ItId << "(i8* %ToTest" << ItId << ")\n"
 		f << "{\n"
 
-		if Yodlers.Size() == 0
-		{
-			f << "ret i1 1\n"
-		}else{
+		//if Yodlers.Size() == 0
+		//{
+		//	f << "ret i1 1\n"
+		//}else{
 			PrintInhers(f,"%ToTest"sbt + ItId,false)
 			ABox.PrintAlloc(f,"%Lambda0Box",-1)
 
@@ -33,7 +44,7 @@ AppendClass SLambda
 			f << "%YieldValue = load i32, i32* %Yodler\n"
 			f << "%CmpResult = icmp eq i32 %YieldValue , " << SLambdaFinishYieldValue << "\n" 
 			f << "ret i1 %CmpResult\n"
-		}
+		//}
 
 		f << "}\n"
 	}

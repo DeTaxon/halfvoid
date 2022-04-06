@@ -111,7 +111,8 @@ Mach.m: $(CurrentLex)
 json.m:  LexBuilder/json.hv
 	$(CurrentStable) $(TargetPlatform) $(ForcedLibs)  LexBuilder/json.cp  -o Objs/Lex.ll; clang Objs/Lex.ll -ldl -lpthread -o json.exe
 	./json.exe
-
+SizeCheck:
+	nm --print-size --size-sort --radix=d ./c.out  | less
 	
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 

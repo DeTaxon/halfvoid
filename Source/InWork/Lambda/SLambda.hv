@@ -578,8 +578,11 @@ SLambda := class extend BoxFuncContainer
 			{ 
 				f << "prefix %LambdaPrefix {"
 				f <<" i8*(i8*)* @LambdaCopy" << ItId 
-				f << " , void(i8*)* @LambdaDelete" << ItId 
-				f << " , i1(i8*)* @LambdaIsFinished" << ItId 
+				f << " , void(i8*)* @LambdaDelete" << ItId
+
+				f << " , i1(i8*)* @LambdaIsFinished"
+				if Yodlers.Size() != 0 f << ItId else f << "AlwaysTrue"
+
 				f << "}" 
 			}
 			f << "\n"
