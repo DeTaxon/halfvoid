@@ -81,10 +81,13 @@ hUserPoolCount := task_local int
 
 "new" := !() . {@R} -> void^ 
 {
-	val := R->TypeSize
+	return _new_inner(R->TypeSize,R->Align)
+}
+_new_inner := !(int val, int typeAlign) -> void^
+{
 	usePool := hUserPoolCount != 0
 	if usePool {
-		return hUserPoolCurrentPool.GetMem(val,R->Align,0)
+		return hUserPoolCurrentPool.GetMem(val,typeAlign,0)
 	}
 	assert(val != 0)
 	newNode :=  malloc(val)

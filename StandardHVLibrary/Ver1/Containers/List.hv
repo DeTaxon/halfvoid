@@ -51,14 +51,23 @@ ListIterReverse := class .{@T}
 	IsEnd := !() -> bool { return position < 0 }
 }
 
-List := class .{@T}
+_ListInner := class 
+{
+	Counter := int
+	itCapacity := int
+
+	Size := !() -> int
+	{
+		return Counter
+	}
+}
+
+List := class .{@T} extend _ListInner
 {
 	Start := ListNode.{T}^
 	End := ListNode.{T}^
-	Counter := int
 
 	CreatedNodes := ListNode.{T}^
-	itCapacity := int
 
 	allocator := IMemoryPool^
 
@@ -325,10 +334,6 @@ List := class .{@T}
 		{
 			return ListIterReverse.{T}(Start,Counter)
 		}
-	}
-	Size := !() -> int
-	{
-		return Counter
 	}
 	ToArray := !() .{} -> T[]
 	{
