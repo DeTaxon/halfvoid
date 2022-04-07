@@ -535,7 +535,7 @@ BoxClass := class extend BoxClassBase
 	}
 	ApplyConstants := !(TIOStream f,string itm) -> void
 	{
-		if TypeContainVTable(ClassType)
+		if NeedExtraConstructor()
 		{
 			f << "call void(%Class" << ClassId << "*)@ClassExtraConstructor" << ClassId <<"(%Class" << ClassId << "* " 
 			f << itm

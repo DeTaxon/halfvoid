@@ -10,8 +10,9 @@ AppendClass BoxClass
 	PrintStruct := virtual !(TIOStream f) -> void
 	{
 		PrintVTable(f)
-		
+
 		needComma := false
+
 		f << "%ClassParams" << ClassId << " = type"
 		if IsPacked f << "<"
 		f << "{"
@@ -62,6 +63,7 @@ AppendClass BoxClass
 		}
 		f << "}"
 		if IsPacked f << ">"
+
 		f <<"\n"
 		if DebugMode
 		{
@@ -106,127 +108,150 @@ AppendClass BoxClass
 			f << ", elements: !"<< elmIds << ")\n"
 		}
 	}
+
+	NeedExtraConstructor := !() -> bool
+	{
+		if ContainVirtual
+			return true
+		for par : Parents
+		{
+			if par.NeedExtraConstructor()
+				return true
+		}
+		for itParm,i : this.Params
+		{
+			if TypeContainVTable(itParm.ResultType)
+				return true
+		}
+		return false
+	}
 	PrintGlobal := virtual !(TIOStream f) -> void
 	{
 		PrintCreatedFuncs(f)
 		StaticParams[^].PrintGlobal(f)
-		f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
-		f << "{\n"
-		if ContainVirtual
+
+		if NeedExtraConstructor()
 		{
-			f << "%TmpPt" << ClassId << " = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* "
-			f << "%this"
-			f << ", i32 0, i32 0\n"
-			f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
-		}
-		if ParamsCount() != 0
-		{
-			f << "%Tsub = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* %this , i32 0"
+			f << "define void @ClassExtraConstructor" << ClassId << "(%Class" << ClassId << "* %this)\n"
+			f << "{\n"
 			if ContainVirtual
 			{
-				f << ", i32 1\n"
-			}else{
-				f << ", i32 0\n"
+				f << "%TmpPt" << ClassId << " = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* "
+				f << "%this"
+				f << ", i32 0, i32 0\n"
+				f << "store %ClassTableType" << ClassId << "* @ClassTableItem" << ClassId <<  ", %ClassTableType" << ClassId << "** %TmpPt" << ClassId << "\n"
+			}
+			if ParamsCount() != 0
+			{
+				f << "%Tsub = getelementptr %Class" << ClassId << " , %Class" << ClassId << "* %this , i32 0"
+				if ContainVirtual
+				{
+					f << ", i32 1\n"
+				}else{
+					f << ", i32 0\n"
+				}
+
+				f << "call void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %Tsub)\n"
+			}
+			f << "	ret void\n"
+			f << "}\n"
+
+			f << "define void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %this)\n"
+			f << "{\n"
+
+			parentCount := 0
+
+			for par : Parents
+			{
+				if par.ParamsCount() == 0
+					continue
+				if par.NeedExtraConstructor()
+				{
+					f << "%Parent"<<parentCount<<" = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId << "* %this, i32 0, i32 " << parentCount << "\n"
+					f << "call void @ClassExtraConstructorParams" << par.ClassId << "(%ClassParams" << par.ClassId << "* %Parent"<<parentCount<<")\n"
+				}
+				parentCount += 1
 			}
 
-			f << "call void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %Tsub)\n"
-		}
-		f << "	ret void\n"
-		f << "}\n"
-
-		f << "define void @ClassExtraConstructorParams" << ClassId << "(%ClassParams" << ClassId << "* %this)\n"
-		f << "{\n"
-
-		parentCount := 0
-
-		for par : Parents
-		{
-			if par.ParamsCount() == 0
-				continue
-
-			f << "%Parent"<<parentCount<<" = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId << "* %this, i32 0, i32 " << parentCount << "\n"
-			f << "call void @ClassExtraConstructorParams" << par.ClassId << "(%ClassParams" << par.ClassId << "* %Parent"<<parentCount<<")\n"
-			parentCount += 1
-		}
-
-		for itParm,i : this.Params
-		{
-			if not TypeContainVTable(itParm.ResultType)
-				continue
-
-
-			if itParm.ResultType is TypeArr
+			for itParm,i : this.Params
 			{
-				lays := @temp new List.{int}
-				typeT := itParm.ResultType->{TypeArr^}
-				itBaseT := TypeClass^()
-				while true
-				{
-					lays.Push(typeT.Size)
+				if not TypeContainVTable(itParm.ResultType)
+					continue
 
-					if typeT.Base is TypeArr {
-						typeT = typeT.Base->{TypeArr^}
-					}else{
-						assert(typeT.Base is TypeClass)
-						itBaseT = typeT.Base->{TypeClass^}
-						break
+
+				if itParm.ResultType is TypeArr
+				{
+					lays := @temp new List.{int}
+					typeT := itParm.ResultType->{TypeArr^}
+					itBaseT := TypeClass^()
+					while true
+					{
+						lays.Push(typeT.Size)
+
+						if typeT.Base is TypeArr {
+							typeT = typeT.Base->{TypeArr^}
+						}else{
+							assert(typeT.Base is TypeClass)
+							itBaseT = typeT.Base->{TypeClass^}
+							break
+						}
+					}
+					inCl := i + parentCount
+					
+					for itL,k : lays^
+					{
+						
+						f << "br label %L" << i <<"itr" << k << "PreStart\n"
+						f << "L" << i << "itr" << k << "PreStart:\n"
+						f << "br label %L" << i <<"itr" << k << "Start\n"
+						f << "L" << i << "itr" << k << "Start:\n"
+						f << "%L" << i << "itr" << k << "Itr = phi i32 [0," 
+							<< "%L" << i << "itr" << k << "PreStart] ,"
+							<< "[%L" << i << "itr" << k << "Itr2, "
+							<< "%L" << i << "itr" << k << "PreEnd]\n"
+
+					}
+					f << "%Pre" << i << "Set = getelementptr %ClassParams" << ClassId << ", %ClassParams" << ClassId << "* %this"
+						 << ", i32 0, i32 " << inCl
+					for itL, k : lays^
+					{
+						f << ",i32 %L" << i << "itr" << k << "Itr"
+					}
+					f << "\n"
+					itBaseT.ToClass.ApplyConstants(f,"%Pre"sbt + i + "Set")
+
+					k := lays.Size() - 1
+					while k >= 0
+					{	itL := lays^[k]
+						f << "br label %L" << i << "itr" << k << "PreEnd\n"
+						f << "L" << i << "itr" << k << "PreEnd:\n"
+						f << "%L" << i << "itr" << k << "Itr2 = add i32 1, %L" << i << "itr" << k << "Itr\n"
+						f << "%L" << i << "itr" << k << "Test = icmp eq i32 %L" << i << "itr" << k << "Itr2 , "<< itL << "\n"
+						f << "br i1 " << "%L" << i << "itr" << k << "Test ,"
+							<<"label %L" << i << "itr" << k << "End ,"
+							<<"label %L" << i << "itr" << k << "Start\n"
+						f << "L" << i << "itr" << k << "End:\n"
+
+						k -= 1
 					}
 				}
-				inCl := i + parentCount
-				
-				for itL,k : lays^
+				if itParm.ResultType is TypeClass
 				{
-					
-					f << "br label %L" << i <<"itr" << k << "PreStart\n"
-					f << "L" << i << "itr" << k << "PreStart:\n"
-					f << "br label %L" << i <<"itr" << k << "Start\n"
-					f << "L" << i << "itr" << k << "Start:\n"
-					f << "%L" << i << "itr" << k << "Itr = phi i32 [0," 
-						<< "%L" << i << "itr" << k << "PreStart] ,"
-						<< "[%L" << i << "itr" << k << "Itr2, "
-						<< "%L" << i << "itr" << k << "PreEnd]\n"
-
+					clTyp := itParm.ResultType->{TypeClass^}
+					classItm := clTyp.ToClass
+					if classItm.ContainVirtual
+					{
+						pos := i + parentCount
+						
+						f << "%itrItm" << pos << " = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId
+						f << "* %this" <<", i32 0, i32 " << pos <<"\n"
+						classItm.ApplyConstants(f,"%itrItm"sbt + pos)
+					}
 				}
-				f << "%Pre" << i << "Set = getelementptr %ClassParams" << ClassId << ", %ClassParams" << ClassId << "* %this"
-					 << ", i32 0, i32 " << inCl
-				for itL, k : lays^
-				{
-					f << ",i32 %L" << i << "itr" << k << "Itr"
-				}
-				f << "\n"
-				itBaseT.ToClass.ApplyConstants(f,"%Pre"sbt + i + "Set")
 
-				k := lays.Size() - 1
-				while k >= 0
-				{	itL := lays^[k]
-					f << "br label %L" << i << "itr" << k << "PreEnd\n"
-					f << "L" << i << "itr" << k << "PreEnd:\n"
-					f << "%L" << i << "itr" << k << "Itr2 = add i32 1, %L" << i << "itr" << k << "Itr\n"
-					f << "%L" << i << "itr" << k << "Test = icmp eq i32 %L" << i << "itr" << k << "Itr2 , "<< itL << "\n"
-					f << "br i1 " << "%L" << i << "itr" << k << "Test ,"
-						<<"label %L" << i << "itr" << k << "End ,"
-						<<"label %L" << i << "itr" << k << "Start\n"
-					f << "L" << i << "itr" << k << "End:\n"
-
-					k -= 1
-				}
 			}
-			if itParm.ResultType is TypeClass
-			{
-				clTyp := itParm.ResultType->{TypeClass^}
-				classItm := clTyp.ToClass
-				if classItm.ContainVirtual
-				{
-					pos := i + parentCount
-					
-					f << "%itrItm" << pos << " = getelementptr %ClassParams" << ClassId << " , %ClassParams" << ClassId
-					f << "* %this" <<", i32 0, i32 " << pos <<"\n"
-					classItm.ApplyConstants(f,"%itrItm"sbt + pos)
-				}
-			}
-
+			f << "ret void\n}\n"
 		}
-		f << "ret void\n}\n"
 
 		downs := @temp new List.{Object^}
 		if Down != null downs.Push(Down)

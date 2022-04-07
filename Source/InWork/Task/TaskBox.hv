@@ -76,7 +76,12 @@ TaskPrint2 := !(TIOStream f) -> void
 	{
 		if it is TypeClass
 		{
-			clId := it->{TypeClass^}.ToClass.ClassId
+			cls := it->{TypeClass^}.ToClass
+			clId := cls.ClassId
+	
+			if not cls.NeedExtraConstructor()
+				continue
+
 			f << "%obj"<<i<<" = getelementptr %TaskStruct, %TaskStruct* %TaskPtr, i32 0, i32 " << i << "\n"
 			f << "call void @ClassExtraConstructor" << clId
 			f << "(" << it.GetName() << "* %obj" << i << ")\n"
