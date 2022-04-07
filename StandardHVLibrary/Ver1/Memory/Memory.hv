@@ -105,9 +105,11 @@ _new_create_temp := !() . {@R} -> void^
 
 "new" := !(int count) .{@R} -> R[]
 {
-	val := R->FatTypeSize
+	return _new_inner_array(count,R->TypeSize,R->Align)->{R[]}
+}
+_new_inner_array := !(int count,int val,int itAl) -> void^
+{
 	itSi := val*count
-	itAl := R->Align
 	if itAl < 4 itAl = 4
 	itSi += itAl + 16 //TODO: wut?
 	newNode := null->{u8^}
@@ -117,7 +119,7 @@ _new_create_temp := !() . {@R} -> void^
 		newNode = hUserPoolCurrentPool.GetMem(itSi,itAl,0)->{u8^}
 	}else{
 		newNode = malloc(itSi)->{u8^}
-		preRet2 := newNode[itAl]&->{R[]}
+		preRet2 := newNode[itAl]&->{void^[]}
 		itId := prvtGetBlockId(preRet2->{void^})
 		prvtPtrArrayMutexes[itId].Lock()
 		toPut := prvtPtrArray[itId]
@@ -145,7 +147,7 @@ _new_create_temp := !() . {@R} -> void^
 		memset(newNode,0,itSi)
 	}
 
-	preRet := newNode[itAl]&->{R[]}
+	preRet := newNode[itAl]&
 	preRet->{int^}[-1] = count
 	return preRet
 }
