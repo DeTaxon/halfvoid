@@ -9,28 +9,8 @@
 
 main := !(int argc, char^^ argv) -> int
 {
-	TSpawnTask(() ==> {
-		fil := TRawFile("main2.hv","r")
-		siz := fil.Size()
-		printf("size %i\n",fil.Size())
-
-		data := malloc(siz)->{u8^}
-
-		fil.AReadAt(data,20,20)
-		printf("hey %s\n",data)
-		data[20] = 0
-		fil.AReadAt(data,20,20)
-		printf("hey %s\n",data)
-		data[20] = 0
-
-	})
-	TSpawnTask(() ==> {
-		for i : 5
-		{
-			printf("hi\n")
-			TSleep(1)
-		}
-	})
+	c := List.{int}
+	y := ref c
 	//squirrel_init()
 	//tst := sq_open(1024)
 	//sq_pushroottable(tst)

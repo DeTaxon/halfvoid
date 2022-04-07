@@ -111,7 +111,7 @@ ObjParam := class extend Object
 			}
 		}
 		
-		if IsGCClass(ObjType) and (not IsWeak) and Down is LocalParam
+		if IsGCClass(ObjType) and (not IsWeak) and (not IsRef) and Down is LocalParam
 		{
 			asLoc := Down->{LocalParam^}
 			itId := GetNewId()
