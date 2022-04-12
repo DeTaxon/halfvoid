@@ -113,8 +113,11 @@ json.m:  LexBuilder/json.hv
 	./json.exe
 SizeCheck:
 	nm --print-size --size-sort --radix=d ./c.out  | less
-	
+
+ver3:
+	./c.out -p posix  $(ForcedLibs) -C1 "Ver3/" -g -o Objs/ver3.ll
+	clang++ Objs/ver3.ll -lm -ldl -o ver3
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY: clean cycle repair test2 test2g stable unit
+.PHONY: clean cycle repair test2 test2g stable unit ver3

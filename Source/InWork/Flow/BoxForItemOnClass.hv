@@ -68,19 +68,19 @@ BoxForItemOnClass := class extend BoxForItem
 	{
 		if DestroyFunc is BoxFuncBody //TODO in BoxFunc
 		{
-			if IsGCClass(itr.GetType())
-			{
-				itr.PrintPointPre(f)
+			//if IsGCAnyPtr(itr.GetType()) //TODO not working
+			//{
+			//	itr.PrintPointPre(f)
 
-				f << "%DestrObj" << self.ItId << "n" << j << " = bitcast "
-				itr.PrintPointUse(f)
-				f << " to i8*\n"
+			//	f << "%DestrObj" << self.ItId << "n" << j << " = bitcast "
+			//	itr.PrintPointUse(f)
+			//	f << " to i8*\n"
 
-				f << "call void @" << gcCallDestroy.OutputName << "("
-				f << "i8* %DestrObj" << self.ItId << "n" << j
-				f << ")\n"
-				continue
-			}
+			//	f << "call void @" << gcCallDestroy.OutputName << "("
+			//	f << "i8* %DestrObj" << self.ItId << "n" << j
+			//	f << ")\n"
+			//	continue
+			//}
 			if DestroyFunc->{BoxFunc^}.IsVirtual
 			{
 				//TODO add virtual destructor support

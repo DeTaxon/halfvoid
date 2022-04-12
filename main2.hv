@@ -1,23 +1,63 @@
-//pfunc := !(void^ v, char^ data, ...) -> void
-//{
-//	lst := char[80]
-//	va_start(lst)
-//	vprintf(data,lst)
-//}
 
 
+THatch := class
+{
+	flag := bool
+	next_wakeup := TITaskPausePoint^
 
+	Emit := !() -> void
+	{
+		flag = true
+		if next_wakeup != null
+		{
+			next_wakeup.Resume()
+		}
+	}
+	Await := !() -> void
+	{
+		if flag
+			return void
+		pt := TITaskPausePoint
+		pt.Pause(next_wakeup&)
+	}
+}
+
+
+hs := THatch[3]
 main := !(int argc, char^^ argv) -> int
 {
-	c := List.{int}
-	y := ref c
-	//squirrel_init()
-	//tst := sq_open(1024)
-	//sq_pushroottable(tst)
-	//sq_setprintfunc(tst,pfunc,pfunc)
-	//sqstd_seterrorhandlers(tst)
-	//res := sqstd_dofile(tst,"test.nut",0,1)
-	//sq_close(tst)
+	
 
+	TSpawnTask( () ==> {
+		printf("start\n")
+		for i : 3
+		{
+			TSleep(1)
+			printf("step %i\n",i)
+			hs[i].Emit()
+		}
+		
+	})
+
+	for j : 3
+	{
+		TSpawnTask( () ==> {
+			for i : 3
+			{
+				hs[i].Await()
+				printf("background %i\n",i)
+			}
+			
+		})
+	}
+	TSpawnTask(() ==> {
+		TSleep(6)
+		printf("slowpoke\n")
+		for i : 3
+		{
+			hs[i].Await()
+			printf("slow %i\n",i)
+		}
+	})
 	return 0
 }
