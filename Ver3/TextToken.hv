@@ -7,6 +7,10 @@ Token := class
 
 	Line := FileLine^
 
+	TokenId := int
+
+	IsData := virtual false
+
 	GetValue := virtual !() -> char^
 	{
 		assert(false)
@@ -16,8 +20,19 @@ Token := class
 	Print := virtual !(int x) -> void
 	{
 		assert(false)
+	}
+}
+
+TokenData := class extend Token
+{
+	IsData := virutal true
+
+	Print := virtual !(int x) -> void
+	{
 		for x printf("-")
-		printf("none")
+		printf("data object\n") //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
 	}
 }
 
@@ -52,6 +67,8 @@ TokenBool := class extend Token
 {
 	Value := StringSpan
 	Parsed := bool
+
+	IsData := virtual true
 
 	this := !(StringSpan val,bool val2) -> void
 	{
@@ -102,9 +119,10 @@ TokenSymbol := class extend Token
 {
 	Value := StringSpan
 
-	this := !(StringSpan val) -> void
+	this := !(StringSpan val, int tId) -> void
 	{
 		Value = val
+		TokenId = tId
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -118,6 +136,7 @@ TokenIndent := class extend Token
 {
 	Value := StringSpan
 	
+	IsData := virtual true
 	this := !(StringSpan val) -> void
 	{
 		Value = val
@@ -133,6 +152,7 @@ TokenIndent := class extend Token
 TokenString := class extend Token
 {
 	Value := StringSpan
+	IsData := virtual true
 	this := !(StringSpan val) -> void
 	{
 		Value = val
@@ -149,6 +169,7 @@ TokenDouble := class extend Token
 {
 	Value := StringSpan
 	Parsed := double
+	IsData := virtual true
 	this := !(StringSpan val, double val2) -> void
 	{
 		Value = val
@@ -166,6 +187,7 @@ TokenInt := class extend Token
 {
 	Value := StringSpan
 	Parsed := int
+	IsData := virtual true
 	this := !(StringSpan val, int val2) -> void
 	{
 		Value = val
