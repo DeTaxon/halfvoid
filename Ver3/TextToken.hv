@@ -1,0 +1,182 @@
+Token := class
+{
+	Up := Token^
+	Down := Token^
+	Left := Token^
+	Right := Token^
+
+	Line := FileLine^
+
+	GetValue := virtual !() -> char^
+	{
+		assert(false)
+		return ""
+	}
+
+	Print := virtual !(int x) -> void
+	{
+		assert(false)
+		for x printf("-")
+		printf("none")
+	}
+}
+
+FileLine := class
+{
+	File := char^
+	Line := int
+
+	this := !(char^ name) -> void
+	{
+		File = name
+	}
+}
+
+TokenNull := class extend Token
+{
+	Value := StringSpan
+
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("null\n") //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenBool := class extend Token
+{
+	Value := StringSpan
+	Parsed := bool
+
+	this := !(StringSpan val,bool val2) -> void
+	{
+		Value = val
+		Parsed = val2
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("bool %i\n",Parsed) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenWayControl := class extend Token
+{
+	Value := StringSpan
+
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("symbol %s\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenSuffix := class extend Token
+{
+	Value := StringSpan
+
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("suffix %s\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenSymbol := class extend Token
+{
+	Value := StringSpan
+
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("symbol %s\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenIndent := class extend Token
+{
+	Value := StringSpan
+	
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("indent %s\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenString := class extend Token
+{
+	Value := StringSpan
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("string <%s>\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenDouble := class extend Token
+{
+	Value := StringSpan
+	Parsed := double
+	this := !(StringSpan val, double val2) -> void
+	{
+		Value = val
+		Parsed = val2
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("double %s as %f\n",Value,Parsed) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenInt := class extend Token
+{
+	Value := StringSpan
+	Parsed := int
+	this := !(StringSpan val, int val2) -> void
+	{
+		Value = val
+		Parsed = val2
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("integer %s as %i\n",Value,Parsed) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+

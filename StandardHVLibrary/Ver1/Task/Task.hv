@@ -19,13 +19,34 @@ TITaskPausePoint := class
 	{
 		if CurrentTaskBox.pausePoint != null
 		{
-			itr := CurrentTaskBox.pausePoint
+			itr := next_point
 			while itr.next_point != null
 				itr = itr.next_point
-			itr.next_point.next_point = this&
-		}else{
-			CurrentTaskBox.pausePoint = this&
+			itr.next_point.next_point = CurrentTaskBox.pausePoint
 		}
+		CurrentTaskBox.pausePoint = this&
+	}
+}
+
+THatch := class
+{
+	flag := bool
+	next_wakeup := TITaskPausePoint^
+
+	Emit := !() -> void
+	{
+		flag = true
+		if next_wakeup != null
+		{
+			next_wakeup.Resume()
+		}
+	}
+	Await := !() -> void
+	{
+		if flag
+			return void
+		pt := TITaskPausePoint
+		pt.Pause(next_wakeup&)
 	}
 }
 

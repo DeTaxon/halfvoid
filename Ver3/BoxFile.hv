@@ -1,0 +1,33 @@
+BoxCodeSpace := class
+{
+	files := List.{BoxFile^}
+}
+
+
+BoxFile := class
+{
+	file := vRepoFile^
+	fileMap := void^
+	fileSize := int
+
+	loaded := THatch
+
+	this := !(vRepoFile^ inFile) -> void
+	{
+		file = inFile
+		fileMap = file.Map()
+		fileSize = file.Size()
+	}
+
+	Parse := !() -> void
+	{
+		defer loaded.Emit()
+
+		tokens := GetObjectsFromMemory("TODO:FileName",fileMap->{char^},fileSize)
+
+		if tokens == null
+			return void
+
+		tokens.Print(0)
+	}
+}

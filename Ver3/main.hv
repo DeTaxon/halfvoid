@@ -1,0 +1,72 @@
+
+CodeFiles := List.{BoxFile^}
+CodeSpaces := AVLMap.{int,BoxCodeSpace}
+
+PriorityData := PriorityBagOld^
+LexHVFileRoot := PriorityBagOld^
+LexHVInputVars := PriorityBagOld^
+
+loadLex := !(char^ filName,PriorityBagOld^^ res) -> void 
+{
+	pri := gRepo.GetFile(filName)
+	if pri == null
+	{
+		printf("%s not found\n",filName)
+		throw new Exception("intput error")
+	}
+	if not pri.IsVirtual()
+	{
+		printf("%s loaded from outsize\n",filName)
+	}
+	res^ = new PriorityBagOld(pri.Map(),pri.Size())
+	pri.Unmap()
+}
+
+main := !(int argc, char^^ argv) -> int
+{
+	files := new List.{char^}
+
+	i := 1
+	while i < argc
+	{
+		switch argv[i]
+		{
+			case void
+				if StringSpan(argv[i][0..1]) == "-C"
+				{
+					assert(false) //TODO
+					printf("here %s\n",argv[i])
+				}
+				file := gRepo.GetFile(argv[i])
+				fileBox := new BoxFile(file)
+				CodeFiles.Push(fileBox)
+				CodeSpaces[2000].files.Push(fileBox)
+		}
+		i += 1
+	}
+	
+	loadLex("Priority.pr",PriorityData&)
+	loadLex("LexHVFileRoot.pr",LexHVFileRoot&)
+	loadLex("LexHVInputVars.pr",LexHVInputVars&)
+
+	mac := gRepo.GetFile("Mach.m") //TODO Error check
+	LoadLexMachine(mac.Map(),mac.Size()) 
+
+	CreateStandardTypes()
+
+	for fil : CodeFiles
+	{
+		fil2 := fil
+		TSpawnTask(() ==> {
+			fil2.Parse()
+		})
+	}
+
+	for fil : CodeFiles
+	{
+		fil.loaded.Await()
+	}
+
+	printf("good to do\n")
+	return 0
+}

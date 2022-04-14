@@ -1,63 +1,6 @@
 
-
-THatch := class
-{
-	flag := bool
-	next_wakeup := TITaskPausePoint^
-
-	Emit := !() -> void
-	{
-		flag = true
-		if next_wakeup != null
-		{
-			next_wakeup.Resume()
-		}
-	}
-	Await := !() -> void
-	{
-		if flag
-			return void
-		pt := TITaskPausePoint
-		pt.Pause(next_wakeup&)
-	}
-}
-
-
-hs := THatch[3]
 main := !(int argc, char^^ argv) -> int
 {
-	
-
-	TSpawnTask( () ==> {
-		printf("start\n")
-		for i : 3
-		{
-			TSleep(1)
-			printf("step %i\n",i)
-			hs[i].Emit()
-		}
-		
-	})
-
-	for j : 3
-	{
-		TSpawnTask( () ==> {
-			for i : 3
-			{
-				hs[i].Await()
-				printf("background %i\n",i)
-			}
-			
-		})
-	}
-	TSpawnTask(() ==> {
-		TSleep(6)
-		printf("slowpoke\n")
-		for i : 3
-		{
-			hs[i].Await()
-			printf("slow %i\n",i)
-		}
-	})
+	printf("hello world 3!\n")
 	return 0
 }
