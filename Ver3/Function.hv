@@ -1,0 +1,162 @@
+TryParseFunction := !(Token^ obj) -> BoxFunc^
+{
+	Attr := FuncAttributes
+
+	if obj == null or obj.Down == null return null
+
+	iter := obj.Down
+
+	switch iter.GetValue() //TODO to cycle
+	{
+		case "virtual"
+			Attr.IsVirtual = true
+			iter = iter.Right
+			if iter == null
+				return null
+		case void
+	}
+
+	if iter.GetValue() != "!"
+		return null
+	
+	iter = iter.Right
+	if iter == null return null
+
+	if iter.GetValue() != "()"
+		return null
+
+	brackets := iter
+
+	iter = iter.Right
+	if iter == null return null
+
+	resultToken := Token^
+
+	if iter.GetValue() == "->" 
+	{
+		iter = iter.Right
+		if iter == null return null
+		resultToken = iter
+
+		iter = iter.Right
+		if iter == null return null
+	}
+
+	if iter.GetValue() != "{}" return null
+
+	return new BoxFuncBody(Attr,brackets,null,resultToken,iter)
+}
+
+FuncAttributes := class
+{
+	IsMethod := bool
+	IsVirtual := bool
+	IsStatic := bool
+		
+	"=" := default
+}
+
+BoxFunc := class extend BoxUnit
+{
+	WorkBody := virtual !() -> void
+	{
+	}
+	SetName := virtual !(StringSpan nm) -> void
+	{
+	}
+	ReadyState := virtual !() -> void
+	{
+	}
+}
+
+BoxFuncDeclare := class extend BoxFunc
+{
+	this := !(Type^ tp, char^ fName) -> void
+	{
+	}
+
+	PrintCode := virtual !(TIOStream f) -> void
+	{
+	}
+}
+
+BoxFuncBody := class extend BoxFunc
+{
+	headerHatch := THatch
+
+	ItType := Type^
+	ItTypeHatch := THatch
+
+	Attrs := FuncAttributes
+
+	Name := StringSpan
+
+	inps1 := Token^
+	resTyp := Token^
+	bdy := Token^
+
+	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
+	{
+		assert(brackets2 == null)//not implemented
+		Attrs = atrs
+		inps1 = brackets1
+		resTyp = resToken
+		bdy = bodyIn
+	}
+
+	GetType := !() -> Type^
+	{
+		ItTypeHatch.Await()
+		return ItType
+	}
+
+	StartedParse := bool
+	ParseBody := !() -> void
+	{
+		if StartedParse
+			return void
+		StartedParse = true
+		cls := this&
+		TSpawnTask(() ==> [cls] {
+			cls.WorkBody()
+		})
+	}
+	SetName := virtual !(StringSpan nm) -> void
+	{
+		Name = nm
+	}
+
+	Work := virtual !() -> void
+	{
+		if Name.Get() == null
+			return void
+
+		//TODO: header
+		if CurrentCodeSpace != null
+		{
+			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
+			CurrentCodeSpace.Functions[Name].Push(this&)
+			return void
+		}
+		assert(false) //TODO: not using anon functions
+	}
+
+	readyState := THatch
+	WorkBody := virtual !() -> void
+	{
+		UnitStack.PushFront(this&)
+		defer UnitStack.Pop()
+		defer readyState.Emit()
+		
+		SyntaxCompress(bdy,PriorityData)
+		bdy.Print(0)	
+	}
+	WaitReadyState := virtual !() -> void
+	{
+		readyState.Await()
+	}
+
+	PrintCode := virtual !(TIOStream f) -> void
+	{
+	}
+}

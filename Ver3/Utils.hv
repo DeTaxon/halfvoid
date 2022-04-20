@@ -1,7 +1,7 @@
 
 ConstStrings := AVLMap.{char^,StringSpan}
 
-GetConstString := !(char^ val) -> StringSpan
+GetConstString := !(char^ val) -> ref StringSpan
 {
 	if ConstStrings.Contain(val)
 		return ConstStrings[val]
@@ -9,6 +9,7 @@ GetConstString := !(char^ val) -> StringSpan
 	v2 := malloc(stSize + 1)->{char^}
 	memcpy(v2,val,stSize)
 	v2[stSize] = 0
-	result = StringSpan(v2,stSize)
-	ConstStrings[v2] = result
+	spn := StringSpan(v2,stSize)
+	ConstStrings[v2] = spn
+	return ConstStrings[val]
 }

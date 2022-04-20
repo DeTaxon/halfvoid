@@ -1,0 +1,12 @@
+
+TypeFuncParam := class
+{
+	itType := Type^
+	isRef := bool
+}
+
+TypeFunc := class extend Type
+{
+	params := HybridQueue.{TypeFuncParam,8}
+	resultType := Type^
+}

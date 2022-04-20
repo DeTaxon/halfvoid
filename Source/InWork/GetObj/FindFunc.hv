@@ -350,6 +350,9 @@ ComputePriorFunc := !(TypeFunc^ FuncTyp, FuncInputBox itBox,BoxFunc^ fnc) -> int
 {	
 	parsCount := itBox.itPars.Size()
 
+	if FuncTyp == null 
+		return 255
+
 	minCount := FuncTyp.ParsCount
 	maxCount := FuncTyp.ParsCount
 	if fnc != null

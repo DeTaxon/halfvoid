@@ -1,0 +1,53 @@
+TryParseVar := !(Token^ obj) -> BoxVar^
+{
+	if obj == null or obj.Down == null
+		return null
+
+	iter := obj.Down
+
+	if iter.Right?.GetValue() != ":="
+		return null
+
+	name := StringSpan
+	isSuffix := bool
+	if iter is TokenIndent
+	{
+		name = iter->{TokenIndent^}.Value
+	}else if iter is TokenString
+	{
+		name = iter->{TokenString^}.Value
+		isSuffix = true
+	}
+
+	if iter.Right.Right == null
+		return null
+
+	return new BoxVar(name,isSuffix,iter.Right.Right)
+}
+
+BoxVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := BoxUnit^
+	IsSuffix := bool
+
+	token := Token^
+
+	this := !(StringSpan nm, bool isSuf,Token^ obj) -> void
+	{
+		Name = nm
+		IsSuffix = isSuf
+		token = obj
+	}
+
+	Work := virtual !() -> void
+	{
+		func := TryParseFunction(token)
+
+		if func != null
+		{
+			func.SetName(Name)
+			func.Work()
+		}
+	}
+}

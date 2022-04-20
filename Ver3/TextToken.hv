@@ -11,10 +11,10 @@ Token := class
 
 	IsData := virtual false
 
-	GetValue := virtual !() -> char^
+	GetValue := virtual !() -> ref StringSpan
 	{
 		assert(false)
-		return ""
+		return emptySpn
 	}
 
 	Print := virtual !(int x) -> void
@@ -23,10 +23,36 @@ Token := class
 	}
 }
 
+emptySpn := StringSpan
+
+TokenDecor := class extend Token
+{
+	Value := StringSpan
+
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("@d")
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("decorator %s\n",Value) //TODO memory
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
 TokenData := class extend Token
 {
-	IsData := virutal true
+	IsData := virtual true
 
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~d")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -55,6 +81,10 @@ TokenNull := class extend Token
 	{
 		Value = val
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("null")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -75,6 +105,10 @@ TokenBool := class extend Token
 		Value = val
 		Parsed = val2
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("bool")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -91,6 +125,10 @@ TokenWayControl := class extend Token
 	{
 		Value = val
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~way")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -106,6 +144,10 @@ TokenSuffix := class extend Token
 	this := !(StringSpan val) -> void
 	{
 		Value = val
+	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~s")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -124,6 +166,10 @@ TokenSymbol := class extend Token
 		Value = val
 		TokenId = tId
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return Value
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -141,6 +187,10 @@ TokenIndent := class extend Token
 	{
 		Value = val
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~ind")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -156,6 +206,10 @@ TokenString := class extend Token
 	this := !(StringSpan val) -> void
 	{
 		Value = val
+	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~str")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -175,6 +229,10 @@ TokenDouble := class extend Token
 		Value = val
 		Parsed = val2
 	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~double")
+	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
@@ -192,6 +250,10 @@ TokenInt := class extend Token
 	{
 		Value = val
 		Parsed = val2
+	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("~int")
 	}
 	Print := virtual !(int x) -> void
 	{

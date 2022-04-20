@@ -40,7 +40,7 @@ main := !(int argc, char^^ argv) -> int
 				file := gRepo.GetFile(argv[i])
 				fileBox := new BoxFile(file)
 				CodeFiles.Push(fileBox)
-				CodeSpaces[2000].files.Push(fileBox)
+				CodeSpaces[2000].Files.Push(fileBox)
 		}
 		i += 1
 	}
@@ -66,6 +66,17 @@ main := !(int argc, char^^ argv) -> int
 	{
 		fil.loaded.Await()
 	}
+
+	mainFunc := BoxFuncBody^
+	GetItemGlobal(StringSpan("main"),x ==> {
+		assert(x.Size() == 1) //TODO: better main function
+		assert(x[0] is BoxFuncBody)
+		mainFunc = x[0]->{BoxFuncBody^}
+	})
+	assert(mainFunc != null)//TODO better main function
+
+	mainFunc.ParseBody()
+	mainFunc.ReadyState()
 
 	printf("good to do\n")
 	return 0

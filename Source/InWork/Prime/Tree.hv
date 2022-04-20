@@ -381,6 +381,21 @@ UNext := !(Object^ where,Object^ nObj, Object^ Last) -> void
 	}
 }
 
+PopOutNode := !(Object^ what) -> void
+{
+	if what.Left != null
+	{
+		what.Left.Right = what.Right
+		if what.Right != null	what.Right.Left = what.Left
+	}else
+	{
+		if what.Up != null what.Up.Down = what.Right
+		if what.Right != null what.Right.Left = null
+	}
+	what.Up = null
+	what.Left = null
+	what.Right = null
+}
 
 IsKeyword := !(W) -> bool
 {

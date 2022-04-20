@@ -1,0 +1,715 @@
+InDataR := !(Token^ obj) -> bool
+{
+	if obj.IsData return true
+	return false
+}
+
+//InBlockData := !(Token^ obj) -> bool
+//{
+//	if InDataR(obj) return true
+//	switch(obj.GetValue())
+//	{
+//		case  "return()" return true
+//		case  "if()" return true
+//		case  "while()" return true
+//		case  "for()" return true
+//		case  "switch()" return true
+//		case  "~continue" return true
+//		case  "~break" return true
+//	}
+//
+//	return false
+//}
+//
+//RemoveTokens := !(Token^ iter, int n,tokenDict) -> void
+//{
+//	for i : n
+//	{
+//		val := iter.GetValue()
+//		if tokenDict[val].Contain(iter)
+//		{
+//			tokenDict[val].Remove(iter)
+//		}
+//		iter = iter.Right
+//	}
+//}
+//
+RuleUse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
+{
+	GotStuff := false
+	iter := Obj.Down
+
+	while iter != null
+	{
+		Try := R(iter)
+		if Try > 0
+		{
+			i2 := iter
+			for Try-1 i2 = i2.Right
+			nObj := new TokenData
+			UNext(iter,nObj,i2)
+			iter = nObj
+			GotStuff = true
+		}else{
+			iter = iter.Right
+		}
+	}
+	return GotStuff
+}
+//RuleUse2 := !(Token^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,tokenDict) -> bool
+//{
+//	GotStuff := false
+//
+//	for preIter : tokenDict[keyObj]
+//	{
+//		iter := preIter
+//
+//		for c : offset
+//		{
+//			iter = iter.Left
+//			if iter == null
+//				break
+//		}
+//
+//		if iter == null
+//			continue
+//
+//		Try := R(iter)
+//		if Try > 0
+//		{
+//			//RemoveTokens(iter,Try,tokenDict)
+//			if N == "~d"
+//			{
+//				iter = UNext(iter,new ObjData(),Try) 
+//			}else
+//			{
+//				if N == "~extra1"
+//				{
+//					iter = UNext(iter,new SLambda(),Try)
+//				}else{
+//					iter = UNext(iter,new ObjObj(N),Try)
+//				}
+//			}
+//			return true
+//		}
+//	}
+//	return false
+//}
+//
+//RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
+//{
+//	GotStuff := false
+//	iter := Obj.Down
+//
+//	if iter == null return false
+//
+//	while iter.Right != null iter = iter.Right
+//
+//	while iter != null
+//	{
+//		Try := R(iter)
+//		if Try > 0
+//		{
+//			//RemoveTokens(iter,Try,tokenDict)
+//			switch N
+//			{
+//				case "~d"
+//					iter = UNext(iter,new ObjData(),Try)
+//				case "DecObj"
+//					iter = UNext(iter,new DecoratorHolder,Try)
+//				case void
+//					iter = UNext(iter,new ObjObj(N),Try)
+//			}
+//			GotStuff = true
+//		}else{
+//			iter = iter.Left
+//		}
+//	}
+//	return GotStuff
+//}
+
+RuleUseSome := !(Token^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
+{
+	GotStuff := false
+	iter := Obj.Down
+
+	while iter != null
+	{
+		Try := RuleMachineOld(iter,MiniNode2)
+		if Try > 0
+		{
+			i2 := iter
+			for Try-1 i2 = i2.Right
+			nObj := new TokenData
+		      	UNext(iter,nObj,i2)
+			iter = nObj
+			GotStuff = true
+		}else{
+			iter = iter.Right
+		}
+	}
+	return GotStuff
+}
+
+StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
+{
+	GotStuff := false
+
+	for iterBag : bag.Lines
+	{
+		if iterBag.Machine != null
+		{
+			if RuleUseSome(begin,iterBag.Machine) 
+				return true
+		}else{
+			switch iterBag.RawLine
+			{
+				//case "#UnaryMinus"
+				//	if RuleUse(begin,"~d",RuleMinus)
+				//			return true
+				case "#CallFunction"
+					if RuleUse(begin,"~d",RuleCallFunction) return true
+				//case "#ClassBlock"
+				//	if RuleUse(begin,"~d",RuleClass) return true
+				//case "#CallDecoratorCall"
+				//	if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
+				//			return true
+				case "#FlowObjects"
+				//	if RuleUse(begin,"~extra1",RuleSLambda) return true
+				//	if RuleUse(begin,"Defer()",RuleDefer) return true
+					if RuleUse(begin,"return()",RuleOneFunc) return true
+					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
+				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
+				//	if RuleUseReverse(begin,"if()",RuleIf) return true
+				//	if RuleUse(begin,"while()",RuleWhile) return true
+				//	if RuleUse(begin,"for()",RuleFor) 
+				//			return true
+				//	if RuleUse(begin,"switch()",RuleSwitch) 
+				//			return true
+				//	if RuleUse(begin,"case()",RuleCase) return true
+			}
+		}
+	}
+
+
+	return false	
+}
+
+SyntaxCompress := !(Token^ begin, PriorityBagOld^ bag) -> bool
+{
+	if begin == null return true
+
+	GotWork := true
+
+	//if bag == PriorityData
+	//{
+	//	itr := begin.Down
+	//	while itr != null
+	//	{
+	//		if itr.GetValue() == "()" 
+	//			SyntaxCompress(itr,bag)
+	//		itr = itr.Right
+	//	}
+	//}
+
+	while GotWork GotWork = StupidWhile(begin,bag)
+
+	return true
+}
+
+
+RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
+{
+	iterU := itr->{Token^}
+	iterNode := node
+	ToRet := 0
+	NowRet := 0
+
+	while iterU != null
+	{
+		if iterU == null return ToRet
+		iterVal := iterU.GetValue()
+		isTType := iterU is TokenDecor
+		if iterU.IsData iterVal = "~d"
+
+		inWNext := iterNode.WhatNext.TryFind(iterVal)
+		if inWNext != null
+		{
+			iterNode = inWNext^
+			NowRet += 1
+			if iterNode.IsTerm 
+			{
+				ToRet = NowRet
+			}
+			if iterU.Line != iterU.Right?.Line and iterU.Right.GetValue() == "()"
+			{
+				return ToRet
+			}
+			iterU = iterU.Right
+		}else
+		{
+			return ToRet
+		}
+	}
+	return ToRet
+}
+
+
+//RuleTypedefTemplate := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//	if It.Down == null return 0
+//	if It.Down.Right == null return 0
+//	if It.Down.Right.Right == null return 0
+//	if not ( It.Down is ObjIndent ) return 0
+//	if It.Down.Right.GetValue() != "." return 0
+//	if It.Down.Right.Right.GetValue() != "{}" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//	if It.GetValue() != ":=" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//	if It.GetValue() != "type" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if InDataR(It) return 4
+//	return 0
+//}
+//
+//RuleDecoratorCall := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//	if It == null
+//		return 0
+//	if It.GetValue() != "~{}type"
+//		return 0
+//	It = It.Right
+//	if It?.IsData
+//	{
+//		return  2
+//	}
+//	return 0
+//}
+//
+//RuleClass := !(void^ itr) -> int
+//{
+//
+//	It := itr->{Token^}
+//
+//	if It.GetValue() not in !["class","packed_class"]  return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	size := 1
+//
+//	if It.GetValue() == "."
+//	{
+//		
+//		It = It.Right
+//		if It == null return 0
+//
+//		if It.GetValue() != "{}" return 0
+//
+//		It = It.Right
+//		if It == null return 0
+//
+//		size += 2
+//	}
+//
+//	if It.GetValue() == "extend"
+//	{
+//		It = It.Right
+//		if It == null return 0
+//
+//		if not It.IsData return 0
+//
+//		It = It.Right
+//		if It == null return 0
+//
+//		size += 2
+//
+//		while It.GetValue() == ","
+//		{
+//			It = It.Right
+//			if It == null return 0
+//
+//			if not It.IsData return 0
+//
+//			It = It.Right
+//			if It == null return 0
+//
+//			size += 2
+//		}
+//	}
+//
+//	if It.GetValue() != "{}" return 0
+//	return size + 1
+//}
+//
+RuleParam := !(void^ itr) -> int
+{
+	size := 0
+
+	It := itr->{Token^}
+
+	if It.GetValue() != "~ind" and It.GetValue() != "~str" return 0
+
+	It = It.Right
+	if It == null return 0
+	size += 1
+
+	while It.GetValue() == ","
+	{
+		It = It.Right
+		if It == null return 0
+		
+		if It.GetValue() != "~ind" and It.GetValue() != "~str" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
+	if It.GetValue() != ":=" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() == "default"
+	{
+		return size + 2
+	}
+	
+	if It.GetValue() == "extern"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	
+	if It.GetValue() == "weak"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() == "static"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() == "poison"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() == "type"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+
+	if It.GetValue() == "ref"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() == "virtual"
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+	if It.GetValue() in !["thread_local","task_local"]
+	{
+		It = It.Right
+		if It == null return 0
+		size += 1
+	}
+
+	if not InDataR(It) return 0
+
+	It = It.Right
+	if It == null return size + 2
+
+	if It.GetValue() != "at" return size + 2
+
+	It = It.Right
+	if It == null return 0
+	if not InDataR(It) return 0
+
+	return size + 4
+}
+//RuleSLambda := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//
+//	siz := 3
+//
+//	if not InDataR(It) return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if It.GetValue() != "=>" and It.GetValue() != "==>" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if InDataR(It)
+//	{
+//		It = It.Right
+//		if It == null return 0
+//		siz += 1
+//	}
+//
+//	if It.GetValue() == "[]"
+//	{
+//		It = It.Right
+//		if It == null return 0
+//		siz += 1 
+//	}
+//
+//	if It.GetValue() == "{}" return siz
+//	if InDataR(It) return siz
+//	return 0
+//}
+RuleCallFunction := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+
+	if It.Left != null
+	{
+		if It.Left.GetValue() == "." return 0
+	}
+
+	if not InDataR(It) return 0
+	
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "()" return 0
+
+	if It.Line != It.Left.Line return 0
+
+	return 2
+}
+//RuleMinus := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.Left != null
+//	{
+//		if It.Left.GetValue() == "[]" return 0
+//		if It.Left.GetValue() == "()" return 0
+//		if It.Left is ObjSuffix return 0 
+//		if It.Left.IsData return 0
+//	}
+//	if It.GetValue() != "-" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not It.IsData return 0
+//	
+//	It = It.Right
+//	if It == null return 2
+//
+//	switch It.GetValue()
+//	{
+//		case "." return 0
+//		case "()" return 0
+//		case "[]" return 0
+//		case "^" return 0
+//		case "&" return 0
+//	}
+//
+//	return 2
+//}
+//RuleDefer := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.GetValue() != "defer" and It.GetValue() != "on_exception" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not InDataR(It) return 0
+//	return 2
+//}
+
+RuleOneFunc := !(void^ itr)-> int
+{
+	It := itr->{Token^}
+
+	if  It.GetValue() != "return" and It.GetValue() != "yield" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+
+	return 2
+}
+
+//RuleIf := !(void^ itr)-> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.GetValue() != "if" return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not InDataR(It) return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if It.GetValue() != "{}" and (not InBlockData(It)) and (It.GetValue() != "i:=1") return 0
+//	//if It.GetValue() != "{}" and (not InBlockData(It)) return 0
+//	It = It.Right
+//	if It == null return 3
+//
+//	if It.GetValue() != "else" return 3
+//	It = It.Right
+//	if It == null return 3
+//
+//	if It.GetValue() == "{}" or InBlockData(It)  return 5
+//
+//	return 3
+//}
+//RuleSwitch := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.GetValue() != "switch" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not InDataR(It) return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if It.GetValue() != "{}" return 0
+//
+//	return 3
+//}
+//
+//RuleCase := !(void^ itr) -> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.GetValue() != "case" return 0
+//
+//	It = It.Right
+//	if It == null return 0
+//
+//	if InDataR(It) return 2
+//	return 0
+//}
+//RuleWhile := !(void^ itr)-> int
+//{
+//	It := itr->{Token^}
+//
+//	if It.GetValue() != "while" return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not InDataR(It) return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if It.GetValue() != "{}" and not InBlockData(It) return 0
+//	return 3
+//}
+//
+//RuleFor := !(void^ itr)-> int
+//{
+//	It := itr->{Token^}
+//	Size := 3
+//
+//	if It.GetValue() != "for" return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if not InDataR(It) return 0
+//	It = It.Right
+//	if It == null return 0
+//
+//	if It.GetValue() == ","
+//	{
+//		It = It.Right
+//
+//		if It == null return 0
+//
+//		if not InDataR(It) return 0
+//
+//		It = It.Right
+//		if It == null return 0
+//		Size += 2
+//	}
+//
+//	if It.GetValue() == ":"
+//	{
+//		It = It.Right
+//		if It == null return 0
+//
+//		if not InDataR(It) return 0
+//		It = It.Right
+//		if It == null return 0
+//
+//		Size += 2
+//	}
+//
+//	if It == null return 0
+//
+//
+//	while It.GetValue() == ","
+//	{
+//		It = It.Right
+//		if It == null return 0
+//
+//		if It.GetValue() != "~ind" return 0
+//
+//		It = It.Right
+//		if It == null return 0
+//		
+//		if It.GetValue() == ","
+//		{
+//			It = It.Right
+//			if It == null return 0
+//
+//			if It.GetValue() != "~ind" return 0
+//			
+//			It = It.Right
+//			if It == null return 0
+//
+//			Size += 2
+//		}
+//			
+//		if It.GetValue() != ":" return 0
+//
+//		It = It.Right
+//		if not InDataR(It) return 0
+//		It = It.Right
+//		if It == null return 0
+//
+//		Size += 4
+//	}
+//
+//	if It.GetValue() != "{}" and not InBlockData(It) return 0
+//	return Size
+//}
+//

@@ -1,16 +1,20 @@
 BoxCodeSpace := class
 {
-	files := List.{BoxFile^}
+	Files := List.{BoxFile^}
+
+	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 }
 
 
-BoxFile := class
+BoxFile := class extend BoxUnit
 {
 	file := vRepoFile^
 	fileMap := void^
 	fileSize := int
 
 	loaded := THatch
+
+	objects := List.{BoxUnit^}
 
 	this := !(vRepoFile^ inFile) -> void
 	{
@@ -21,6 +25,23 @@ BoxFile := class
 
 	Parse := !() -> void
 	{
+		foundSpace := false
+		for spc : CodeSpaces
+		{
+			for fil : spc.Files
+			{
+				if fil == this&
+				{
+					CurrentCodeSpace = spc&
+					foundSpace = true
+					break
+				}
+			}
+			if foundSpace
+				break
+		}
+		assert(foundSpace)
+		
 		defer loaded.Emit()
 
 		tokens := GetObjectsFromMemory("TODO:FileName",fileMap->{char^},fileSize)
@@ -28,6 +49,30 @@ BoxFile := class
 		if tokens == null
 			return void
 
-		tokens.Print(0)
+		tempToken := Token
+		tempToken.Down = tokens
+		itr := tokens
+		while itr != null
+		{
+			itr.Up = tempToken&
+			itr = itr.Right
+		}
+
+		SyntaxCompress(tempToken&,LexHVFileRoot)
+
+		iter := tempToken.Down
+
+		while iter != null
+		{
+			vr := TryParseVar(iter)	
+
+			if vr != null
+			{
+				objects.Push(vr)
+				vr.Work()
+			}else{
+			}
+			iter = iter.Right
+		}
 	}
 }
