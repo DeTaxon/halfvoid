@@ -1,0 +1,4 @@
+BoxExeObj := class extend BoxUnit
+{
+	ObjType := Type^
+}

@@ -1,0 +1,28 @@
+GetType := !(Token^ obj) -> Type^
+{
+	if obj == null
+		return null
+	if obj is TokenIndent
+	{
+		asIndent := obj->{TokenIndent^}
+
+		for defs : DefsTable
+		{
+			if defs == null
+				break
+			if defs.ItName == asIndent.Value
+				return defs.ItType
+		}
+	}
+	if obj.GetValue() == "~d"
+	{
+		if obj.Down.Right?.GetValue() == "^"
+		{
+			dTyp := GetType(obj.Down)
+			if dTyp != null
+				return dTyp.GetPoint()
+		}
+	}
+
+	return null
+}
