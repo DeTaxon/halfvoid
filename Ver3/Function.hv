@@ -125,13 +125,62 @@ BoxFuncBody := class extend BoxFunc
 	{
 		Name = nm
 	}
+	
+	ParseHeader := !() -> void
+	{
+		SyntaxCompress(inps1,LexHVInputVars)
+
+		k := 0
+		args := Type^[40] //TODO: infinite args?
+		refs := bool[40]
+		isVargs := false
+
+		objs := HybridQueue.{Token^,6}
+		defer objs.Destroy()
+
+		itr := inps1.Down
+
+		checkObjs := () ==> {
+
+			if objs.Size() == 2
+			{
+				args[k] = GetType(objs[0])
+				refs[k] = false
+				assert(args[k] != null) //TODO error
+				k += 1
+			}else{
+				assert(false)
+			}
+			objs.Clear()
+		}
+
+		while itr != null
+		{
+			if itr.GetValue() == ","
+			{
+				checkObjs()
+			}else
+			{
+				objs.Push(itr)
+			}
+			itr = itr.Right
+		}
+		if objs.Size() != 0
+			checkObjs()
+		outType := GetType(resTyp)
+		resRef := false
+		//TODO ref check
+
+		ItType = GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
+	}
 
 	Work := virtual !() -> void
 	{
 		if Name.Get() == null
 			return void
 
-		//TODO: header
+		ParseHeader()
+
 		if CurrentCodeSpace != null
 		{
 			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
@@ -141,6 +190,7 @@ BoxFuncBody := class extend BoxFunc
 		assert(false) //TODO: not using anon functions
 	}
 
+	body := BoxBlock^
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
@@ -148,8 +198,8 @@ BoxFuncBody := class extend BoxFunc
 		defer UnitStack.Pop()
 		defer readyState.Emit()
 		
-		SyntaxCompress(bdy,PriorityData)
-		bdy.Print(0)	
+		body = new BoxBlock(bdy)
+		body.Work()
 	}
 	WaitReadyState := virtual !() -> void
 	{
@@ -160,3 +210,72 @@ BoxFuncBody := class extend BoxFunc
 	{
 	}
 }
+
+BoxBlock := class extend BoxUnit
+{
+	down := Token^
+	exeLines := List.{BoxUnit^} //TODO : to hybrid
+	this := !(Token^ bdy) -> void
+	{
+		down = bdy
+	}
+	Work := virtual !() -> void
+	{
+		SyntaxCompress(down,PriorityData)
+
+		iter := down.Down
+		stackAtStart := UnitStack.Size()
+
+		while iter != null
+		{
+			//TODO: check switch,if,while
+			
+			pad := new BoxExeLine
+			pad.DoLine(iter)
+			UnitStack.PushFront(pad)
+		
+			iter = iter.Right
+		}
+
+		while UnitStack.Size() > stackAtStart
+		{
+			UnitStack.Pop()
+		}
+
+		down.Print(0)
+	}
+}
+BoxExeLine := class extend BoxUnit
+{
+
+	exitLabel := BoxLabel^
+	GetLabel := !() -> BoxLabel^
+	{
+		if exitLabel == null
+			exitLabel = new BoxLabel()
+		return exitLabel
+	}
+
+	DoLine := !(Token^ itm) -> void
+	{
+	}
+
+}
+
+labelIdIterator := 1
+BoxLabel := class
+{
+	id := int
+	this := !() -> void
+	{
+		id = labelIdIterator
+		labelIdIterator += 1
+	}
+	PrintCode := virtual !(TIOStream f) -> void
+	{
+		assert(false)
+	}
+}
+
+
+

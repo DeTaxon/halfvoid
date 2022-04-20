@@ -1,12 +1,88 @@
 
 TypeFuncParam := class
 {
-	itType := Type^
-	isRef := bool
+	ItType := Type^
+	IsRef := bool
+
+	this := !(Type^ iTyp, bool iRef) -> void
+	{
+		ItType = iTyp
+		IsRef = iRef
+	}
 }
 
 TypeFunc := class extend Type
 {
-	params := HybridQueue.{TypeFuncParam,8}
-	resultType := Type^
+	Params := HybridQueue.{TypeFuncParam,8}
+	ResultType := Type^
+	ResultRef := bool
+	IsVargs := bool
+}
+
+funcTypes := List.{TypeFunc^}[1024]
+
+GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
+{
+	return GetFuncType(S,args[0]&,null,res,false,false)
+}
+
+GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
+{
+	hsh := 0
+
+	for i : count
+	{
+		hsh *= 2
+		hsh += args[i].ItHash
+	}
+
+	itList := funcTypes[hsh % 1024]&
+
+	for fnc : itList^
+	{
+		if count != fnc.Params.Size()
+			continue
+		if fnc.IsVargs != isVargs
+			continue
+		if fnc.ResultType != res
+			continue
+
+		same := true
+		for j : count
+		{
+			if fnc.Params[j].ItType != args[j]
+			{
+				same = false
+				break
+			}
+			isRef := false
+			if refs != null
+				isRef = refs[j]
+			//TODO is Class
+			if fnc.Params[j].IsRef != isRef
+			{
+				same = false
+				break
+			}
+		}
+		if not same
+			continue
+		return fnc
+	}
+
+	newFunc := new TypeFunc
+	itList.Push(newFunc)
+	
+	for i : count
+	{
+		isRef := false
+		if refs != null
+			isRef = refs[i]
+		newFunc.Params.Emplace(args[i],isRef)
+	}
+	newFunc.IsVargs = isVargs
+	newFunc.ResultType = res
+	newFunc.ResultRef = resRef
+
+	return newFunc
 }
