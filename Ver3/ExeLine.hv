@@ -94,11 +94,18 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			if priorityes[bestI] == 255
 				return false
 			callItem = x[bestI]
-			printf("got best func\n")
 			return true
 		})
 	}else{
 		assert(false)
+	}
+
+	assert(callItem != null)
+	if callItem == null
+		return null
+	if callItem is in BoxFunc
+	{
+		return new BoxFuncCall(callItem->{BoxFunc^},Objs)
 	}
 }
 CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
