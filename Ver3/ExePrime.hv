@@ -2,7 +2,12 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 {
 	if itm is TokenString
 	{
-		return new BoxExeString(itm->{TokenString^}.Value)
+		tkn := itm->{TokenString^}
+		if GlobalStrings.Contain(tkn.Value)
+			return GlobalStrings[tkn.Value]
+		newVal := new BoxExeString(tkn.Value)
+		GlobalStrings[tkn.Value] = newVal
+		return newVal
 	}
 	if itm is TokenInt
 	{
@@ -12,15 +17,49 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 }
 
 
+GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
+strIdIterator := 1
 
 BoxExeString := class extend BoxExeObj
 {
+	strId := int
+	val := StringSpan
 	this := !(StringSpan dat) -> void
 	{
+		strId = strIdIterator
+		strIdIterator += 1
+		val = dat
 		ObjType = GTypeChar.GetPoint()
 	}
-	PrintCode := virtual !(TIOStream f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		assert(false)
+		f^ << "@Str" << strId << " = constant [" << val.Size() +  1 << " x i8] c\""
+		k := 0
+		SomeBuf := char[2]
+		SomeBuf[1] = 0
+		while val[k] != 0
+		{
+			SomeBuf[0] = val[k]
+			if val[k] == "\n"[0]
+			{
+				f^ << "\\0A"
+			}else
+			{
+				if val[k] == "\""[0]
+				{
+					f^ << "\\22"
+				}else
+				{
+					if val[k] == "\\"[0]
+					{
+						f^ << "\\5C"
+					}else{
+						f^ << SomeBuf
+					}
+				}
+			}
+			k += 1
+		}
+		f^ << "\\00\"\n"
 	}
 }

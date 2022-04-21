@@ -111,12 +111,17 @@ main := !(int argc, char^^ argv) -> int
 	assert(mainFunc != null)//TODO better main function
 
 	mainFunc.ParseBody()
-	mainFunc.ReadyState()
+	mainFunc.WaitReadyState()
 
 	printf("good to do\n")
 
 	outFile := new TFile(OutputFile,"wb")
-	
+
+	printf("tst %i\n",GlobalStrings.Size())
+	for st : GlobalStrings
+	{
+		st.PrintCode(outFile)
+	}
 	for spc : CodeSpaces
 	{
 		for lb : spc.CLibs

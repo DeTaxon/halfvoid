@@ -77,7 +77,7 @@ BoxFunc := class extend BoxUnit
 	SetName := virtual !(StringSpan nm) -> void
 	{
 	}
-	ReadyState := virtual !() -> void
+	WaitReadyState := virtual !() -> void
 	{
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
