@@ -3,7 +3,7 @@ BoxUnit := class extend TGCObject
 	Work := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(TIOStream f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
 }

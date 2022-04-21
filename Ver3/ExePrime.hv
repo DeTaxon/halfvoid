@@ -1,0 +1,26 @@
+TryExePrime := !(Token^ itm) -> BoxExeObj^
+{
+	if itm is TokenString
+	{
+		return new BoxExeString(itm->{TokenString^}.Value)
+	}
+	if itm is TokenInt
+	{
+		assert(false)
+		printf("hoh\n")
+	}
+}
+
+
+
+BoxExeString := class extend BoxExeObj
+{
+	this := !(StringSpan dat) -> void
+	{
+		ObjType = GTypeChar.GetPoint()
+	}
+	PrintCode := virtual !(TIOStream f) -> void
+	{
+		assert(false)
+	}
+}

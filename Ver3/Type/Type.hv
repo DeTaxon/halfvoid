@@ -26,6 +26,9 @@ Type := class {
 		assert(false)
 		return 0
 	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+	}
 }
 
 TypeDef := class
@@ -79,6 +82,10 @@ TypeStandard := class extend Type
 	{
 		return ItSize
 	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << IRName
+	}
 }
 
 TypePoint := class extend Type
@@ -99,6 +106,11 @@ TypePoint := class extend Type
 	GetSize := virtual !() -> int
 	{
 		return 8
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintType(f)
+		f^ << "*"
 	}
 }
 

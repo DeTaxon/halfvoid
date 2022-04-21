@@ -1,0 +1,19 @@
+BoxFuncDeclare := class extend BoxFunc
+{
+	itType := Type^
+	itName := StringSpan
+	this := !(TypeFunc^ tp, StringSpan fName) -> void
+	{
+		SetType(tp)
+		itName = fName
+	}
+
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "declare "
+		PrintResultType(f)
+		f^ << " @" << itName << "("
+		PrintInputTypes(f)
+		f^ << ")\n"
+	}
+}

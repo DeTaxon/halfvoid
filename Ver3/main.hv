@@ -22,6 +22,8 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 	pri.Unmap()
 }
 
+
+OutputFile := char^
 main := !(int argc, char^^ argv) -> int
 {
 	if argc == 1
@@ -31,7 +33,9 @@ main := !(int argc, char^^ argv) -> int
 		args2[1] = "main2.hv"
 		args2[2] = "-C0"
 		args2[3] = "libs2"
-		return main(4,args2[0]&)
+		args2[4] = "-o"
+		args2[5] = "out.ll"
+		return main(6,args2[0]&)
 	}
 
 
@@ -42,6 +46,9 @@ main := !(int argc, char^^ argv) -> int
 	{
 		switch argv[i]
 		{
+			case "-o"
+				OutputFile = argv[i+1] //TODO error check
+				i += 1
 			case void
 				if StringSpan(argv[i][0..2]) == "-C"
 				{
@@ -107,5 +114,17 @@ main := !(int argc, char^^ argv) -> int
 	mainFunc.ReadyState()
 
 	printf("good to do\n")
+
+	outFile := new TFile(OutputFile,"wb")
+	
+	for spc : CodeSpaces
+	{
+		for lb : spc.CLibs
+		{	
+			lb.PrintCode(outFile)
+		}
+		spc.AllFunctions[^].PrintCode(outFile)
+	}
+
 	return 0
 }

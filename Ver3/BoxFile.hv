@@ -4,6 +4,8 @@ BoxCodeSpace := class
 
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 
+	AllFunctions := List.{BoxFunc^} //Including anon functions
+
 	CLibs := List.{CLib^}
 }
 

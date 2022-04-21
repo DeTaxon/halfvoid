@@ -80,22 +80,34 @@ BoxFunc := class extend BoxUnit
 	ReadyState := virtual !() -> void
 	{
 	}
-}
-
-BoxFuncDeclare := class extend BoxFunc
-{
-	itType := Type^
-	itName := StringSpan
-	this := !(TypeFunc^ tp, StringSpan fName) -> void
-	{
-		SetType(tp)
-		itName = fName
-	}
-
-	PrintCode := virtual !(TIOStream f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
+	PrintResultType := virtual !(TIOStream^ f) -> void
+	{
+		ItType.ResultType.PrintType(f) //TODO return class
+	}
+	PrintInputTypes := virtual !(TIOStream^ f) -> void
+	{
+		needComma := false
+		for par,i : ItType.Params
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			par.ItType.PrintType(f)
+			f^ << " %par" << i
+		}
+		if ItType.IsVargs
+		{
+			if needComma
+				f^ << ","
+			f^ << "..."
+		}
+	}
 }
+
 
 BoxFuncBody := class extend BoxFunc
 {
@@ -200,6 +212,7 @@ BoxFuncBody := class extend BoxFunc
 		{
 			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
 			CurrentCodeSpace.Functions[Name].Push(this&)
+			CurrentCodeSpace.AllFunctions.Push(this&)
 			return void
 		}
 		assert(false) //TODO: not using anon functions
@@ -221,8 +234,64 @@ BoxFuncBody := class extend BoxFunc
 		readyState.Await()
 	}
 
-	PrintCode := virtual !(TIOStream f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		f^ << "define "
+		PrintResultType(f)
+		f^ << " @" << Name << "("
+		PrintInputTypes(f)
+		f^ << ")\n"
+		f^ << "{\n"
+
+
+		rTyp := ItType.ResultType
+
+		if rTyp != GTypeVoid
+		{
+			if rTyp is TypeStandard or rTyp is TypePoint
+			{
+				f^ << "%result = alloca "
+				rTyp.PrintType(f)
+				f^ << "\n"
+				if rTyp == GTypeFloat or rTyp == GTypeDouble
+				{
+					assert(false)
+				}else if rTyp is TypeStandard {
+					f^ << "store "
+					rTyp.PrintType(f)
+					f^ << " 0, "
+					rTyp.PrintType(f)
+					f^ << "* %result\n"
+				}else if rTyp is TypePoint
+				{
+					assert(false)
+				}else{
+					assert(false)
+				}
+			}
+		}
+
+		if rTyp == GTypeVoid
+		{
+			f^ << "ret void\n"
+		}else{
+			if rTyp == GTypeFloat or rTyp == GTypeDouble
+			{
+				assert(false)
+			}else if rTyp is TypeStandard
+			{
+				f^ << "ret "
+				rTyp.PrintType(f)
+				f^ << " 0\n"
+			}else if rTyp is TypePoint
+			{
+				assert(false)
+			}
+
+		}
+			
+
+		f^ << "}\n"
 	}
 }
 
@@ -270,7 +339,7 @@ BoxLabel := class
 		id = labelIdIterator
 		labelIdIterator += 1
 	}
-	PrintCode := virtual !(TIOStream f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		assert(false)
 	}

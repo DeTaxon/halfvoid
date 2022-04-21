@@ -1,0 +1,86 @@
+CLib := class 
+{
+	textMap := StringSpan
+	libFile := vRepoFile^
+	js := json^
+
+
+	itFuncs := AVLMap.{StringSpan,BoxFuncDeclare^}
+	itPreFuncs := AVLMap.{StringSpan,StringSpan}
+
+	this := !(vRepoFile^ fil) -> void
+	{
+		libFile = fil
+	}
+	Work := !() -> void
+	{
+		textMap = StringSpan(libFile.Map(),libFile.Size())
+
+		js = new json
+		js.ParseString(textMap.Get(),textMap.Size())
+
+		for nd : js^
+		{
+			switch nd.Key()
+			{
+				case "funcs"
+					for fnc : nd^
+					{
+						itPreFuncs[fnc.Key()] = fnc.Value()
+					}
+			}
+		}
+
+		GetItem(StringSpan("printf"))
+	
+	}
+	PrintCode := !(TIOStream^ f) -> void
+	{
+		itFuncs[^].PrintCode(f)
+	}
+	
+	GetItem := !(StringSpan name) -> BoxUnit^
+	{
+		if itFuncs.Contain(name)
+			return itFuncs[name]
+
+		if not itPreFuncs.Contain(name)
+			return null
+
+		bdy := itPreFuncs[name]
+
+		c := 0
+		typs := Type^[40]
+		isVarg := false
+		bdy.DivideStr(",", x ==> {
+			points := 0
+			txt := x
+
+			if txt == "..."
+			{
+				isVarg = true
+				return void
+			}
+
+			while txt[-1..0] == "^"
+			{
+				points += 1
+				txt = txt[0..-1]
+			}
+			txtToken := TokenIndent(txt)
+			typs[c] = GetType(txtToken&)
+			for i : points
+			{
+				typs[c] = typs[c].GetPoint()
+			}
+			c += 1
+		})
+		fType := GetFuncType(c-1, typs[1]&,null,typs[0],false,isVarg)
+
+		assert(fType != null) //TODO error check
+
+		func := new BoxFuncDeclare(fType,name) //TODO: dynamic call
+		itFuncs[name] = func
+		return func
+	}
+}
