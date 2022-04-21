@@ -249,22 +249,6 @@ BoxBlock := class extend BoxUnit
 		down.Print(0)
 	}
 }
-BoxExeLine := class extend BoxUnit
-{
-
-	exitLabel := BoxLabel^
-	GetLabel := !() -> BoxLabel^
-	{
-		if exitLabel == null
-			exitLabel = new BoxLabel()
-		return exitLabel
-	}
-
-	DoLine := !(Token^ itm) -> void
-	{
-	}
-
-}
 
 labelIdIterator := 1
 BoxLabel := class

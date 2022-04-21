@@ -2,12 +2,18 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 {
 	lst := HybridQueue.{BoxUnit^,10}
 	defer lst.Destroy()
-	for spc : CodeSpaces
+	for spc : CodeSpaces.Reverse
 	{
 		lst.Clear()
 		if spc.Functions.Contain(name)
 		{
 			lst.Push(spc.Functions[name][^])
+		}
+		for cl : spc.CLibs
+		{
+			fnc := cl.GetItem(name)
+			if fnc != null
+				lst.Push(fnc)
 		}
 		if lst.Size() != 0
 		{

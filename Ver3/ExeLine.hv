@@ -1,4 +1,44 @@
+BoxExeLine := class extend BoxUnit
+{
+
+	exitLabel := BoxLabel^
+	GetLabel := !() -> BoxLabel^
+	{
+		if exitLabel == null
+			exitLabel = new BoxLabel()
+		return exitLabel
+	}
+
+	DoLine := !(Token^ itm) -> void
+	{
+		UnitStack.PushFront(this&)
+		defer UnitStack.Pop()
+
+		isFuncCall := TryCheckRegularFuncCall(itm)
+	}
+
+}
 BoxExeObj := class extend BoxUnit
 {
 	ObjType := Type^
+}
+
+TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.Right.GetValue() != "()"
+		return null
+	if itm.Down.Right.Right != null
+		return null
+
+	if itm.Down is TokenIndent
+	{
+		asInd := itm.Down->{TokenIndent^}
+		GetItemGlobal(asInd.Value, x ==>{
+			for h : x
+			{
+			}
+		})
+	}else{
+		assert(false)
+	}
 }
