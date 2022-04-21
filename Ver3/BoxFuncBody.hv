@@ -1,0 +1,186 @@
+
+BoxFuncBody := class extend BoxFunc
+{
+	headerHatch := THatch
+
+
+	Attrs := FuncAttributes
+
+	Name := StringSpan
+
+	inps1 := Token^
+	resTyp := Token^
+	bdy := Token^
+
+	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
+	{
+		assert(brackets2 == null)//not implemented
+		Attrs = atrs
+		inps1 = brackets1
+		resTyp = resToken
+		bdy = bodyIn
+	}
+
+	GetType := !() -> Type^
+	{
+		ItTypeHatch.Await()
+		return ItType
+	}
+
+	StartedParse := bool
+	ParseBody := !() -> void
+	{
+		if StartedParse
+			return void
+		StartedParse = true
+		cls := this&
+		TSpawnTask(() ==> [cls] {
+			cls.WorkBody()
+		})
+	}
+	SetName := virtual !(StringSpan nm) -> void
+	{
+		Name = nm
+	}
+	
+	ParseHeader := !() -> void
+	{
+		SyntaxCompress(inps1,LexHVInputVars)
+
+		k := 0
+		args := Type^[40] //TODO: infinite args?
+		refs := bool[40]
+		isVargs := false
+
+		objs := HybridQueue.{Token^,6}
+		defer objs.Destroy()
+
+		itr := inps1.Down
+
+		checkObjs := () ==> {
+
+			if objs.Size() == 2
+			{
+				args[k] = GetType(objs[0])
+				refs[k] = false
+				assert(args[k] != null) //TODO error
+				k += 1
+			}else{
+				assert(false)
+			}
+			objs.Clear()
+		}
+
+		while itr != null
+		{
+			if itr.GetValue() == ","
+			{
+				checkObjs()
+			}else
+			{
+				objs.Push(itr)
+			}
+			itr = itr.Right
+		}
+		if objs.Size() != 0
+			checkObjs()
+		outType := GetType(resTyp)
+		resRef := false
+		//TODO ref check
+
+		ItType = GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
+	}
+
+	Work := virtual !() -> void
+	{
+		if Name.Get() == null
+			return void
+
+		ParseHeader()
+
+		if CurrentCodeSpace != null
+		{
+			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
+			CurrentCodeSpace.Functions[Name].Push(this&)
+			CurrentCodeSpace.AllFunctions.Push(this&)
+			return void
+		}
+		assert(false) //TODO: not using anon functions
+	}
+
+	body := BoxBlock^
+	readyState := THatch
+	WorkBody := virtual !() -> void
+	{
+		UnitStack.PushFront(this&)
+		defer UnitStack.Pop()
+		defer readyState.Emit()
+		
+		body = new BoxBlock(bdy)
+		body.Work()
+	}
+	WaitReadyState := virtual !() -> void
+	{
+		readyState.Await()
+	}
+
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "define "
+		PrintResultType(f)
+		f^ << " @" << Name << "("
+		PrintInputTypes(f)
+		f^ << ")\n"
+		f^ << "{\n"
+
+
+		rTyp := ItType.ResultType
+
+		if rTyp != GTypeVoid
+		{
+			if rTyp is TypeStandard or rTyp is TypePoint
+			{
+				f^ << "%result = alloca "
+				rTyp.PrintType(f)
+				f^ << "\n"
+				if rTyp == GTypeFloat or rTyp == GTypeDouble
+				{
+					assert(false)
+				}else if rTyp is TypeStandard {
+					f^ << "store "
+					rTyp.PrintType(f)
+					f^ << " 0, "
+					rTyp.PrintType(f)
+					f^ << "* %result\n"
+				}else if rTyp is TypePoint
+				{
+					assert(false)
+				}else{
+					assert(false)
+				}
+			}
+		}
+
+		if rTyp == GTypeVoid
+		{
+			f^ << "ret void\n"
+		}else{
+			if rTyp == GTypeFloat or rTyp == GTypeDouble
+			{
+				assert(false)
+			}else if rTyp is TypeStandard
+			{
+				f^ << "ret "
+				rTyp.PrintType(f)
+				f^ << " 0\n"
+			}else if rTyp is TypePoint
+			{
+				assert(false)
+			}
+
+		}
+			
+
+		f^ << "}\n"
+	}
+}

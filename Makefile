@@ -73,6 +73,8 @@ ifeq ($(cross),win32)
 	#CmplDeb := $(winecmp) -g $(MainOut) $(Triplet)  -g $(Libs) -o ./c.exe 
 endif
 
+MainTarget: ver3
+
 repair: $(wildcard CompilerReal2/*.hv) 
 	$(gdb_tui) $(CurrentStable) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
 
