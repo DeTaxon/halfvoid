@@ -58,6 +58,19 @@ FuncAttributes := class
 
 BoxFunc := class extend BoxUnit
 {
+	ItType := TypeFunc^
+	ItTypeHatch := THatch
+
+	GetType := !() -> TypeFunc^
+	{
+		ItTypeHatch.Await()
+		return ItType
+	}
+	SetType := !(TypeFunc^ tp) -> void
+	{
+		ItType = tp
+		ItTypeHatch.Emit()
+	}
 	WorkBody := virtual !() -> void
 	{
 	}
@@ -73,9 +86,9 @@ BoxFuncDeclare := class extend BoxFunc
 {
 	itType := Type^
 	itName := StringSpan
-	this := !(Type^ tp, StringSpan fName) -> void
+	this := !(TypeFunc^ tp, StringSpan fName) -> void
 	{
-		itType = tp
+		SetType(tp)
 		itName = fName
 	}
 
@@ -88,8 +101,6 @@ BoxFuncBody := class extend BoxFunc
 {
 	headerHatch := THatch
 
-	ItType := Type^
-	ItTypeHatch := THatch
 
 	Attrs := FuncAttributes
 

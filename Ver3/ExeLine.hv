@@ -23,22 +23,90 @@ BoxExeObj := class extend BoxUnit
 	ObjType := Type^
 }
 
+TryGetExeCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null
+		return null
+
+	isFuncCall := TryCheckRegularFuncCall(itm)
+	if isFuncCall != null
+		return isFuncCall
+	
+	prm := TryExePrime(itm)
+	if prm != null
+		return prm
+
+}
+
+
+
 TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 {
+	if itm.Down == null
+		return null
 	if itm.Down?.Right.GetValue() != "()"
 		return null
 	if itm.Down.Right.Right != null
 		return null
 
+	Objs := HybridQueue.{BoxExeObj^,20}
+
+	itr := itm.Down.Right.Down
+
+	while itr != null
+	{
+		if itr.GetValue() == "," //TODO maybe 
+		{
+		}else{
+			obj := TryGetExeCall(itr)
+			assert(obj != null)
+			Objs.Push(obj)
+		}
+		itr = itr.Right
+	}
+
+	callItem := BoxUnit^
 	if itm.Down is TokenIndent
 	{
 		asInd := itm.Down->{TokenIndent^}
 		GetItemGlobal(asInd.Value, x ==>{
+			priorityes := HybridQueue.{int,13}
+			defer priorityes.Destroy()
+
 			for h : x
 			{
+				if h is in BoxFunc
+				{
+					fnc := h->{BoxFunc^}
+					cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
+					priorityes.Push(cmpRes)
+				}else{
+					assert(false)
+				}
 			}
+
+			bestI := 0
+			for i : x.Size()
+			{
+				if priorityes[i] < priorityes[bestI]
+					bestI = i
+			}
+			if priorityes[bestI] == 255
+				return false
+			callItem = x[bestI]
+			printf("got best func\n")
+			return true
 		})
 	}else{
 		assert(false)
 	}
 }
+CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
+{
+	worstCase := 0
+	//TODO, mst 255
+	return worstCase
+}
+
+
+
