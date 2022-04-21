@@ -1,11 +1,10 @@
 BoxFuncCall := class extend BoxExeObj
 {
 	callObj := BoxFunc^
-	downs := RawArray.{BoxExeObj^}
+	downs := HybridQueue.{BoxExeObj^,20}
 	this := !(BoxFunc^ fnc, HybridQueue.{BoxExeObj^,20} objs) -> void
 	{
 		callObj = fnc
-		downs.Resize(objs.Size())
-		downs[i] = objs[^i]
+		downs.Push(objs[^])
 	}
 }

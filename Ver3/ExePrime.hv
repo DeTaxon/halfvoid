@@ -11,14 +11,29 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 	}
 	if itm is TokenInt
 	{
-		assert(false)
-		printf("hoh\n")
+		val := itm->{TokenInt^}.Parsed
+		if GlobalInts.Contain(val)
+			return GlobalInts[val]
+		newObj := new BoxExeInt(val)
+		GlobalInts[val] = newObj
+		return newObj
 	}
 }
 
+GlobalInts := AVLMap.{int,BoxExeInt^}
 
 GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
 strIdIterator := 1
+
+BoxExeInt := class extend BoxExeObj
+{
+	val := int
+	this := !(int nVal) -> void
+	{
+		val = nVal
+		ObjType = GTypeInt
+	}
+}
 
 BoxExeString := class extend BoxExeObj
 {
