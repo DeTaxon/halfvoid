@@ -3,6 +3,8 @@ BoxCodeSpace := class
 	Files := List.{BoxFile^}
 
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
+
+	CLibs := List.{CLib^}
 }
 
 

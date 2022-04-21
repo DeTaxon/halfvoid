@@ -24,6 +24,17 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 
 main := !(int argc, char^^ argv) -> int
 {
+	if argc == 1
+	{
+		args2 := char^[20]
+		args2[0] = argv[0]
+		args2[1] = "main2.hv"
+		args2[2] = "-C0"
+		args2[3] = "libs2"
+		return main(4,args2[0]&)
+	}
+
+
 	files := new List.{char^}
 
 	i := 1
@@ -32,15 +43,27 @@ main := !(int argc, char^^ argv) -> int
 		switch argv[i]
 		{
 			case void
-				if StringSpan(argv[i][0..1]) == "-C"
+				if StringSpan(argv[i][0..2]) == "-C"
 				{
-					assert(false) //TODO
-					printf("here %s\n",argv[i])
+					num := StrToInt(argv[i][2..0]) //TODO: check for num and memory
+					TFSReadFolder(StringSpan(argv[i+1]),true,zFil ==> {
+						nm := zFil.GetName()
+						if nm[-3..0] == ".hv"
+						{
+							printf("here %s\n", nm[-3..0])
+						}else nm[-5..0] == ".clib"
+						{
+							spc := CodeSpaces[num]&
+							spc.CLibs.Push(new CLib(zFil))
+						}
+					})
+					i += 1
+				}else{
+					file := gRepo.GetFile(argv[i])
+					fileBox := new BoxFile(file)
+					CodeFiles.Push(fileBox)
+					CodeSpaces[2000].Files.Push(fileBox)
 				}
-				file := gRepo.GetFile(argv[i])
-				fileBox := new BoxFile(file)
-				CodeFiles.Push(fileBox)
-				CodeSpaces[2000].Files.Push(fileBox)
 		}
 		i += 1
 	}
@@ -53,6 +76,11 @@ main := !(int argc, char^^ argv) -> int
 	LoadLexMachine(mac.Map(),mac.Size()) 
 
 	CreateStandardTypes()
+
+	for spc : CodeSpaces
+	{
+		spc.CLibs[^].Work()
+	}
 
 	for fil : CodeFiles
 	{

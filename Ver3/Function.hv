@@ -71,8 +71,12 @@ BoxFunc := class extend BoxUnit
 
 BoxFuncDeclare := class extend BoxFunc
 {
-	this := !(Type^ tp, char^ fName) -> void
+	itType := Type^
+	itName := StringSpan
+	this := !(Type^ tp, StringSpan fName) -> void
 	{
+		itType = tp
+		itName = fName
 	}
 
 	PrintCode := virtual !(TIOStream f) -> void

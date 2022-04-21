@@ -13,6 +13,7 @@ jsonNode := class
 	itSub := List.{jsonNode^}
 	
 	Key := !() -> ref StringSpan { return itKey }
+	Value := !() -> ref StringSpan { return itValue }
 	Print := !(int x) -> void
 	{
 		switch itType
