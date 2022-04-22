@@ -17,6 +17,37 @@ TypeFunc := class extend Type
 	ResultType := Type^
 	ResultRef := bool
 	IsVargs := bool
+
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		ResultType.PrintType(f)
+		if ResultRef
+			f^ << "*"
+
+		f^ << "("
+		
+		needComma := false
+
+		for par : Params
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			par.ItType.PrintType(f)
+			if par.IsRef
+				f^ << "*"
+		}
+
+		if IsVargs
+		{
+			if needComma
+				f^ << ","
+			f^ << "..."
+		}
+
+		f^ << ")"
+	}
 }
 
 funcTypes := List.{TypeFunc^}[1024]

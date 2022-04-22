@@ -33,6 +33,10 @@ BoxExeInt := class extend BoxExeObj
 		val = nVal
 		ObjType = GTypeInt
 	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << val
+	}
 }
 
 BoxExeString := class extend BoxExeObj
@@ -76,5 +80,10 @@ BoxExeString := class extend BoxExeObj
 			k += 1
 		}
 		f^ << "\\00\"\n"
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		stSize := val.Size() + 1
+		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 	}
 }

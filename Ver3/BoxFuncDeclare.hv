@@ -16,4 +16,8 @@ BoxFuncDeclare := class extend BoxFunc
 		PrintInputTypes(f)
 		f^ << ")\n"
 	}
+	PrintName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "@" << itName
+	}
 }

@@ -1,6 +1,7 @@
 BoxExeLine := class extend BoxUnit
 {
-
+	
+	Down := BoxExeObj^
 	exitLabel := BoxLabel^
 	GetLabel := !() -> BoxLabel^
 	{
@@ -15,12 +16,57 @@ BoxExeLine := class extend BoxUnit
 		defer UnitStack.Pop()
 
 		isFuncCall := TryCheckRegularFuncCall(itm)
+
+		if isFuncCall != null
+		{
+			Down = isFuncCall
+			return void
+		}
+
+		assert(false)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		Down.PrintDefaultUse(f)
 	}
 
 }
+
+ExeDownList := type HybridQueue.{BoxExeObj^,8}
+
 BoxExeObj := class extend BoxUnit
 {
 	ObjType := Type^
+
+	GetType := virtual !() -> Type^
+	{
+		return ObjType
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			PrintPointPre(f)
+		}else{
+			PrintPre(f)
+		}
+	}
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+	}
 }
 
 TryGetExeCall := !(Token^ itm) -> BoxExeObj^

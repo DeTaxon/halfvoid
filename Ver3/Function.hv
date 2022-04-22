@@ -106,6 +106,9 @@ BoxFunc := class extend BoxUnit
 			f^ << "..."
 		}
 	}
+	PrintName := virtual !(TIOStream^ f) -> void
+	{
+	}
 }
 
 
@@ -132,6 +135,8 @@ BoxBlock := class extend BoxUnit
 			pad := new BoxExeLine
 			pad.DoLine(iter)
 			UnitStack.PushFront(pad)
+
+			exeLines.Push(pad)
 		
 			iter = iter.Right
 		}
@@ -140,6 +145,10 @@ BoxBlock := class extend BoxUnit
 		{
 			UnitStack.Pop()
 		}
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		exeLines[^].PrintCode(f)
 	}
 }
 

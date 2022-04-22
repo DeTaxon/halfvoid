@@ -123,6 +123,10 @@ BoxFuncBody := class extend BoxFunc
 	{
 		readyState.Await()
 	}
+	PrintName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << Name //TODO name mangling
+	}
 
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
@@ -160,6 +164,8 @@ BoxFuncBody := class extend BoxFunc
 				}
 			}
 		}
+
+		body.PrintCode(f)
 
 		if rTyp == GTypeVoid
 		{

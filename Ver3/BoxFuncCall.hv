@@ -1,10 +1,52 @@
 BoxFuncCall := class extend BoxExeObj
 {
 	callObj := BoxFunc^
-	downs := HybridQueue.{BoxExeObj^,20}
+	downs := ExeDownList
 	this := !(BoxFunc^ fnc, HybridQueue.{BoxExeObj^,20} objs) -> void
 	{
 		callObj = fnc
 		downs.Push(objs[^])
+	}
+
+	IsMem := virtual !() -> bool
+	{
+		return callObj.GetType().ResultRef
+	}
+	PrintFuncUse := !(TIOStream^ f) -> void
+	{
+		fType := callObj.GetType()
+
+		f^ << "call "
+		if fType.IsVargs
+		{
+			fType.PrintType(f)
+		}else{
+			fType.ResultType.PrintType(f)
+		}
+		callObj.PrintName(f)
+
+		f^ << "("
+		
+		needComma := false
+
+		for dwn,i : downs
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			dwn.GetType().PrintType(f)
+			f^ << " "
+			dwn.PrintUse(f)
+		}
+
+		f^ << ")\n" //TODO debug
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncUse(f)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
 	}
 }
