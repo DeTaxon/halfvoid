@@ -36,7 +36,7 @@ LexMachineInfo := class
 }
 PriorityBagOld := class
 {
-	Opers := AVLSet.{string}
+	Opers := AVLSet.{char^}
 	Lines := List.{LexMachineInfo}
 
 	this := !(char^ ptrChar, int mapSize) -> void

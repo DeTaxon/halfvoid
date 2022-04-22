@@ -78,11 +78,14 @@ main := !(int argc, char^^ argv) -> int
 	loadLex("Priority.pr",PriorityData&)
 	loadLex("LexHVFileRoot.pr",LexHVFileRoot&)
 	loadLex("LexHVInputVars.pr",LexHVInputVars&)
-
+	
+	HVOperators.Insert(StringSpan(PriorityData.Opers[^]))
+	
 	mac := gRepo.GetFile("Mach.m") //TODO Error check
 	LoadLexMachine(mac.Map(),mac.Size()) 
 
 	CreateStandardTypes()
+	CreateBuiltins()
 
 	for spc : CodeSpaces
 	{

@@ -10,7 +10,7 @@ BoxFuncCall := class extend BoxExeObj
 	callObj := BoxFunc^
 	downs := ExeDownList
 	resId := int
-	this := !(BoxFunc^ fnc, HybridQueue.{BoxExeObj^,20} objs) -> void
+	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
 		callObj = fnc
 		downs.Push(objs[^])
@@ -27,7 +27,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	PrintFuncUse := !(TIOStream^ f) -> void
 	{
-		callObj.PrintFuncCall(f,resId,0,downs&)	
+		callObj.PrintFuncCall(f,resId,0,downs)
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{

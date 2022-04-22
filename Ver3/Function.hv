@@ -56,66 +56,6 @@ FuncAttributes := class
 	"=" := default
 }
 
-BoxFunc := class extend BoxUnit
-{
-	ItType := TypeFunc^
-	ItTypeHatch := THatch
-
-	GetType := !() -> TypeFunc^
-	{
-		ItTypeHatch.Await()
-		return ItType
-	}
-	SetType := !(TypeFunc^ tp) -> void
-	{
-		ItType = tp
-		ItTypeHatch.Emit()
-	}
-	WorkBody := virtual !() -> void
-	{
-	}
-	SetName := virtual !(StringSpan nm) -> void
-	{
-	}
-	WaitReadyState := virtual !() -> void
-	{
-	}
-	PrintCode := virtual !(TIOStream^ f) -> void
-	{
-	}
-	PrintResultType := virtual !(TIOStream^ f) -> void
-	{
-		ItType.ResultType.PrintType(f) //TODO return class
-	}
-	PrintInputTypes := virtual !(TIOStream^ f) -> void
-	{
-		needComma := false
-		for par,i : ItType.Params
-		{
-			if needComma
-				f^ << ","
-			needComma = true
-
-			par.ItType.PrintType(f)
-			f^ << " %par" << i
-		}
-		if ItType.IsVargs
-		{
-			if needComma
-				f^ << ","
-			f^ << "..."
-		}
-	}
-	PrintName := virtual !(TIOStream^ f) -> void
-	{
-	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList^ lst) -> void
-	{
-	}
-}
-
-
-
 BoxBlock := class extend BoxUnit
 {
 	down := Token^

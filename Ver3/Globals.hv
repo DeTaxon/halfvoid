@@ -1,2 +1,5 @@
 UnitStack := task_local List.{BoxUnit^}
 CurrentCodeSpace := task_local BoxCodeSpace^
+
+
+HVOperators := AVLSet.{StringSpan}

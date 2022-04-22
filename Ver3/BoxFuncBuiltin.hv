@@ -1,0 +1,35 @@
+BuiltInIntBase := class extend BoxFunc
+{
+	this := !(TypeFunc^ iType) -> void
+	{
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintPre(f)
+
+		tp := GetType().ResultType
+
+		f^ << "%T" << resId << " = add " 
+		tp.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << ","
+		lst[1].PrintUse(f)
+		f^ << "\n"
+	}
+}
+
+CreateBuiltins := !() -> void
+{
+	strt := GetFuncType(![GTypeInt,GTypeInt],GTypeInt)
+
+	bSpace := CodeSpaces[-1]&
+
+	//for fnc : !["add"] 
+	//{
+		fncSpace := StringSpan("+")
+		bSpace.Functions[fncSpace].Push(new BuiltInIntBase(strt) )
+	//}
+
+}

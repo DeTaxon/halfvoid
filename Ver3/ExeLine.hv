@@ -33,6 +33,7 @@ BoxExeLine := class extend BoxUnit
 }
 
 ExeDownList := type HybridQueue.{BoxExeObj^,8}
+CheckExeDownList := type HybridQueue.{BoxExeObj^,20}
 
 BoxExeObj := class extend BoxUnit
 {
@@ -78,6 +79,10 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	if isFuncCall != null
 		return isFuncCall
 	
+	isOperCall := TryCheckMathOperatorCall(itm)
+	if isOperCall != null
+		return isOperCall
+	
 	prm := TryExePrime(itm)
 	if prm != null
 		return prm
@@ -111,41 +116,46 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		itr = itr.Right
 	}
 
-	callItem := BoxUnit^
 	if itm.Down is TokenIndent
 	{
 		asInd := itm.Down->{TokenIndent^}
-		GetItemGlobal(asInd.Value, x ==>{
-			priorityes := HybridQueue.{int,13}
-			defer priorityes.Destroy()
-
-			for h : x
-			{
-				if h is in BoxFunc
-				{
-					fnc := h->{BoxFunc^}
-					cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
-					priorityes.Push(cmpRes)
-				}else{
-					assert(false)
-				}
-			}
-
-			bestI := 0
-			for i : x.Size()
-			{
-				if priorityes[i] < priorityes[bestI]
-					bestI = i
-			}
-			if priorityes[bestI] == 255
-				return false
-			callItem = x[bestI]
-			return true
-		})
+		return CreateFuncCall(asInd.Value,Objs)
 	}else{
 		assert(false)
 	}
 
+}
+
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
+{
+	callItem := BoxUnit^
+	GetItemGlobal(name, x ==>{
+		priorityes := HybridQueue.{int,13}
+		defer priorityes.Destroy()
+
+		for h : x
+		{
+			if h is in BoxFunc
+			{
+				fnc := h->{BoxFunc^}
+				cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
+				priorityes.Push(cmpRes)
+			}else{
+				assert(false)
+			}
+		}
+
+		bestI := 0
+		for i : x.Size()
+		{
+			if priorityes[i] < priorityes[bestI]
+				bestI = i
+		}
+		if priorityes[bestI] == 255
+			return false
+		callItem = x[bestI]
+		return true
+	})
 	assert(callItem != null)
 	if callItem == null
 		return null
@@ -154,6 +164,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return new BoxFuncCall(callItem->{BoxFunc^},Objs)
 	}
 }
+
 CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
 {
 	worstCase := 0
