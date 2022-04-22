@@ -1,8 +1,10 @@
 BuiltInIntBase := class extend BoxFunc
 {
-	this := !(TypeFunc^ iType) -> void
+	llvm := char^
+	this := !(TypeFunc^ iType,char^ llvmOper) -> void
 	{
 		SetType(iType)
+		llvm = llvmOper
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
@@ -10,7 +12,7 @@ BuiltInIntBase := class extend BoxFunc
 
 		tp := GetType().ResultType
 
-		f^ << "%T" << resId << " = add " 
+		f^ << "%T" << resId << " = " << llvm << " " 
 		tp.PrintType(f)
 		f^ << " "
 		lst[0].PrintUse(f)
@@ -22,14 +24,46 @@ BuiltInIntBase := class extend BoxFunc
 
 CreateBuiltins := !() -> void
 {
-	strt := GetFuncType(![GTypeInt,GTypeInt],GTypeInt)
 
 	bSpace := CodeSpaces[-1]&
 
-	//for fnc : !["add"] 
-	//{
-		fncSpace := StringSpan("+")
-		bSpace.Functions[fncSpace].Push(new BuiltInIntBase(strt) )
-	//}
+	ForEachIntType( (x,isSigned) ==> {
+		strt := GetFuncType(![x,x],x)
+		cmpType := GetFuncType(![x,x],GTypeBool)
 
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"add") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"sub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"mul") )
+
+		bSpace.Functions[StringSpan("and_b")].Push(new BuiltInIntBase(strt,"and") )
+		bSpace.Functions[StringSpan("or_b")].Push(new BuiltInIntBase(strt,"or") )
+		bSpace.Functions[StringSpan("xor_b")].Push(new BuiltInIntBase(strt,"xor") )
+
+		if isSigned
+		{
+			bSpace.Functions[StringSpan("div")].Push(new BuiltInIntBase(strt,"sdiv") )
+			bSpace.Functions[StringSpan("mod")].Push(new BuiltInIntBase(strt,"rem") )
+		}else{
+			bSpace.Functions[StringSpan("div")].Push(new BuiltInIntBase(strt,"udiv") )
+			bSpace.Functions[StringSpan("mod")].Push(new BuiltInIntBase(strt,"urem") )
+		}
+
+		bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
+		bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+
+		if isSigned
+		{
+			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"sge") )
+			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"sle") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"sgt") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"slt") )
+		}else{
+			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"uge") )
+			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"ule") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"ugt") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"ult") )
+		}
+
+
+	})
 }

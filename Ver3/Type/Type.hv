@@ -135,6 +135,15 @@ GTypeQuantf := Type^
 GTypeVec3f := Type^
 GTypeVec2f := Type^
 
+
+ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
+{
+	for i : 8
+	{
+		cb(TypeTable[i],i >= 4)
+	}
+}
+
 CreateStandardTypes := !() -> void
 {	
 	//u
