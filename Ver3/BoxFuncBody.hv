@@ -3,7 +3,6 @@ BoxFuncBody := class extend BoxFunc
 {
 	headerHatch := THatch
 
-
 	Attrs := FuncAttributes
 
 	Name := StringSpan
