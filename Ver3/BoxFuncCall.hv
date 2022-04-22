@@ -27,40 +27,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	PrintFuncUse := !(TIOStream^ f) -> void
 	{
-		fType := callObj.GetType()
-
-		downs[^].PrintPre(f)
-
-		if fType.ResultType != GTypeVoid
-		{
-			f^ << "%T" << resId << " = "
-		}
-
-		f^ << "call "
-		if fType.IsVargs
-		{
-			fType.PrintType(f)
-		}else{
-			fType.ResultType.PrintType(f)
-		}
-		callObj.PrintName(f)
-
-		f^ << "("
-		
-		needComma := false
-
-		for dwn,i : downs
-		{
-			if needComma
-				f^ << ","
-			needComma = true
-
-			dwn.GetType().PrintType(f)
-			f^ << " "
-			dwn.PrintUse(f)
-		}
-
-		f^ << ")\n" //TODO debug
+		callObj.PrintFuncCall(f,resId,0,downs&)	
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{

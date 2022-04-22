@@ -1,6 +1,5 @@
 BoxFuncDeclare := class extend BoxFunc
 {
-	itType := Type^
 	itName := StringSpan
 	this := !(TypeFunc^ tp, StringSpan fName) -> void
 	{
@@ -19,5 +18,42 @@ BoxFuncDeclare := class extend BoxFunc
 	PrintName := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "@" << itName
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList^ lst) -> void
+	{
+		lst^[^].PrintPre(f)
+
+		itType := GetType()
+
+		if itType.ResultType != GTypeVoid
+		{
+			f^ << "%T" << resId << " = "
+		}
+
+		f^ << "call "
+		if itType.IsVargs
+		{
+			itType.PrintType(f)
+		}else{
+			itType.ResultType.PrintType(f)
+		}
+		PrintName(f)
+
+		f^ << "("
+		
+		needComma := false
+
+		for dwn,i : lst^
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			dwn.GetType().PrintType(f)
+			f^ << " "
+			dwn.PrintUse(f)
+		}
+
+		f^ << ")\n" //TODO debug
 	}
 }
