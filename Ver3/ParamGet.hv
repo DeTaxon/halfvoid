@@ -1,0 +1,26 @@
+TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm is TokenIndent 
+	{
+	}else{
+		return null
+	}
+
+	asItm := itm->{TokenIndent^}
+
+	for par : UnitStack
+	{
+		if par is MemVar
+		{
+			mv := par->{MemVar^}
+			if mv.Name == asItm.Value
+			{
+				emptyObj := CheckExeDownList
+				return new BoxFuncCall(mv.Value,emptyObj)
+			}
+		}
+	}
+
+	return null
+}

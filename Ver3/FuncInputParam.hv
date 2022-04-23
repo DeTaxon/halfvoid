@@ -1,0 +1,24 @@
+FuncInputParam := class extend BoxFuncCommon
+{
+	pNumber := int
+	isRef := bool
+	this := !(Type^ pType,bool isRef,int paramNum) -> void
+	{
+		SetType(GetFuncType(pType))
+		pNumber = paramNum
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		if ItType.ResultType != GTypeVoid
+		{
+			f^ << "%par" << pNumber
+		}
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+}
