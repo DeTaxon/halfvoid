@@ -1,5 +1,5 @@
 
-BoxFuncBody := class extend BoxFunc
+BoxFuncBody := class extend BoxFuncCommon
 {
 	headerHatch := THatch
 
@@ -47,6 +47,7 @@ BoxFuncBody := class extend BoxFunc
 		SyntaxCompress(inps1,LexHVInputVars)
 
 		k := 0
+		names := StringSpan[40]
 		args := Type^[40] //TODO: infinite args?
 		refs := bool[40]
 		isVargs := false
@@ -60,8 +61,11 @@ BoxFuncBody := class extend BoxFunc
 
 			if objs.Size() == 2
 			{
+				assert(objs[1] is TokenIndent) //TODO EmitError
+				
 				args[k] = GetType(objs[0])
 				refs[k] = false
+				names[k] = objs[1]->{TokenIndent^}.Value
 				assert(args[k] != null) //TODO error
 				k += 1
 			}else{
@@ -87,7 +91,16 @@ BoxFuncBody := class extend BoxFunc
 		resRef := false
 		//TODO ref check
 
-		ItType = GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
+		fType := GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
+		SetType(fType)
+		
+
+		for par,i : fType.Params //TODO min(Params.Size(),names.Size())
+		{
+			parObj := new FuncInputParam(par.ItType,par.IsRef,i)
+			vr := new MemVar(names[i],parObj)
+			Params.PushFront(vr)
+		}
 	}
 
 	Work := virtual !() -> void
@@ -107,13 +120,22 @@ BoxFuncBody := class extend BoxFunc
 		assert(false) //TODO: not using anon functions
 	}
 
+	Params := HybridQueue.{MemVar^,8}
+
 	body := BoxBlock^
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
+		assert(UnitStack.Size() == 0)
+		defer UnitStack.Destroy()
+
 		UnitStack.PushFront(this&)
-		defer UnitStack.Pop()
 		defer readyState.Emit()
+
+		for par : Params
+		{
+			UnitStack.Push(par)
+		}
 		
 		body = new BoxBlock(bdy)
 		body.Work()

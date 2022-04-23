@@ -1,3 +1,4 @@
+
 GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 {
 	lst := HybridQueue.{BoxUnit^,10}

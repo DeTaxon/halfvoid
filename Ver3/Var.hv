@@ -25,6 +25,18 @@ TryParseVar := !(Token^ obj) -> BoxVar^
 	return new BoxVar(name,isSuffix,iter.Right.Right)
 }
 
+MemVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := BoxFunc^
+
+	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
+	{
+		Name = vName
+		Value = clFunc
+	}
+}
+
 BoxVar := class extend BoxUnit
 {
 	Name := StringSpan
@@ -32,6 +44,7 @@ BoxVar := class extend BoxUnit
 	IsSuffix := bool
 
 	token := Token^
+	MemObj := BoxUnit^
 
 	this := !(StringSpan nm, bool isSuf,Token^ obj) -> void
 	{
@@ -39,6 +52,7 @@ BoxVar := class extend BoxUnit
 		IsSuffix = isSuf
 		token = obj
 	}
+	
 
 	Work := virtual !() -> void
 	{

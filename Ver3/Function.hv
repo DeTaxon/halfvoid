@@ -77,7 +77,6 @@ BoxBlock := class extend BoxUnit
 			
 			pad := new BoxExeLine
 			pad.DoLine(iter)
-			UnitStack.PushFront(pad)
 
 			exeLines.Push(pad)
 		

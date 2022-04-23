@@ -35,6 +35,6 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
-		f^ << "%T" << resId
+		callObj.PrintResultObj(f,resId,-1)
 	}
 }

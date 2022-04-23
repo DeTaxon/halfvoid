@@ -52,6 +52,11 @@ TypeFunc := class extend Type
 
 funcTypes := List.{TypeFunc^}[1024]
 
+
+GetFuncType := !(Type^ res) -> TypeFunc^
+{
+	return GetFuncType(0,null,null,res,false,false)
+}
 GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
 {
 	return GetFuncType(S,args[0]&,null,res,false,false)
