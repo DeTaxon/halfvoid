@@ -168,9 +168,53 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
 {
 	worstCase := 0
+
+	minArgs :=fncType.Params.Size()
+	maxArgs :=fncType.Params.Size()
+
+	if fncType.IsVargs
+		maxArgs = 20000000 //TODO INT_MAX
+
+	if objs.Size() > maxArgs or objs.Size() < minArgs
+		return 255
+
+	count := min(fncType.Params.Size(),objs.Size())
+
+	for i : count
+	{
+		worstCase = max(worstCase,TypePriorCmp(fncType.Params[i].ItType,objs[i].GetType()) )
+		if worstCase == 255
+			return 255
+	}
 	//TODO, mst 255
 	return worstCase
 }
+TypePriorCmp := !(Type^ frm, Type^ to) -> int
+{
+	if frm == to
+		return 0
+	
+	if frm is TypePoint and to == GTypeVoidP
+		return 1 //TODO TypeArr
+
+	if frm is TypeStandard and to is TypeStandard
+	{
+		f1 := frm->{TypeStandard^}
+		t1 := to->{TypeStandard^}
+
+		if IsInt(f1) and IsInt(t1)
+		{
+			if f1.GetSize() > t1.GetSize()
+				return 2
+			return 1
+		}
+	}
+
+	return 255
+}
+
+TypePriorityTable := AVLMap.{Type^,AVLMap.{Type^,int}}
+
 
 
 

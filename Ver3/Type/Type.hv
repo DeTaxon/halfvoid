@@ -144,6 +144,20 @@ ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
 	}
 }
 
+IsInt := !(Type^ obj) -> bool
+{
+	for i : 8
+		if TypeTable[i] == obj
+			return true
+	return false
+}
+IsFloat := !(Type^ obj) -> bool
+{
+	if obj == GTypeFloat return true
+	if obj == GTypeDouble return true
+	return false
+}
+
 CreateStandardTypes := !() -> void
 {	
 	//u
