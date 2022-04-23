@@ -1,4 +1,4 @@
-BuiltInIntBase := class extend BoxFunc
+BuiltInIntBase := class extend BoxFuncCommon
 {
 	llvm := char^
 	this := !(TypeFunc^ iType,char^ llvmOper) -> void
