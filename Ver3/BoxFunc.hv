@@ -13,6 +13,10 @@ BoxFunc := class extend BoxUnit
 		ItType = tp
 		ItTypeHatch.Emit()
 	}
+	IsMem := virtual !() -> bool
+	{
+		return GetType().ResultRef
+	}
 	WorkBody := virtual !() -> void
 	{
 	}
@@ -57,9 +61,6 @@ BoxFunc := class extend BoxUnit
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
-	NotifyMemUse := virtual !() -> void
-	{
-	}
 }
 
 BoxFuncCommon := class extend BoxFunc
@@ -73,9 +74,19 @@ BoxFuncCommon := class extend BoxFunc
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
-
 		itType := GetType()
+	
+
+		for itm,i : lst
+		{
+			if itType.Params.Size() > i and itType.Params[i].IsRef
+			{
+				itm.PrintPointPre(f)
+			}else{
+				itm.PrintPre(f)
+			}
+		}
+
 
 		if itType.ResultType != GTypeVoid
 		{
@@ -100,10 +111,17 @@ BoxFuncCommon := class extend BoxFunc
 			if needComma
 				f^ << ","
 			needComma = true
-
-			dwn.GetType().PrintType(f)
-			f^ << " "
-			dwn.PrintUse(f)
+			
+			if itType.Params.Size() > i and itType.Params[i].IsRef
+			{
+				dwn.GetType().PrintType(f)
+				f^ << "* "
+				dwn.PrintPointUse(f)
+			}else{
+				dwn.GetType().PrintType(f)
+				f^ << " "
+				dwn.PrintUse(f)
+			}
 		}
 
 		f^ << ")\n" //TODO debug

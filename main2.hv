@@ -1,4 +1,5 @@
 main := !(int argc, char^^ argv) -> int
 {
-	printf("hello world %i!\n",argc*100)
+	argc += 117
+	printf("hello world %i!\n",argc)
 }

@@ -22,6 +22,46 @@ BuiltInIntBase := class extend BoxFuncCommon
 	}
 }
 
+BuiltInIntEqAndOper := class extend BoxFuncCommon
+{
+	llvm := char^
+	this := !(TypeFunc^ iType,char^ llvmOper) -> void
+	{
+		SetType(iType)
+		llvm = llvmOper
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPointPre(f)
+		lst[1].PrintPre(f)
+
+		tp := GetType().ResultType
+
+		f^ << "%Temp" << resId << " = load "
+		tp.PrintType(f)
+		f^ << ","
+		tp.GetPoint().PrintType(f)
+		f^ << " "
+		lst[0].PrintPointUse(f)
+		f^ << "\n"
+
+		f^ << "%T" << resId << " = " << llvm << " " 
+		tp.PrintType(f)
+		f^ << " %Temp" << resId
+		f^ << ","
+		lst[1].PrintUse(f)
+		f^ << "\n"
+
+		f^ << "store "
+		tp.PrintType(f)
+		f^ << " %T" << resId << ","
+		tp.GetPoint().PrintType(f)
+		f^ << " "
+		lst[0].PrintPointUse(f)
+		f^ << "\n"
+	}
+}
+
 CreateBuiltins := !() -> void
 {
 
@@ -29,11 +69,16 @@ CreateBuiltins := !() -> void
 
 	ForEachIntType( (x,isSigned) ==> {
 		strt := GetFuncType(![x,x],x)
+		baseRefed := GetFuncType(![x,x],![true,false],x)
 		cmpType := GetFuncType(![x,x],GTypeBool)
 
 		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"add") )
 		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"sub") )
 		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"mul") )
+
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
+		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
 
 		bSpace.Functions[StringSpan("and_b")].Push(new BuiltInIntBase(strt,"and") )
 		bSpace.Functions[StringSpan("or_b")].Push(new BuiltInIntBase(strt,"or") )

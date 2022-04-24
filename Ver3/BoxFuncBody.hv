@@ -97,7 +97,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		for par,i : fType.Params //TODO min(Params.Size(),names.Size())
 		{
-			parObj := new FuncInputParam(par.ItType,par.IsRef,i)
+			parObj := new FuncInputParam(this&,par.ItType,par.IsRef,i)
 			vr := new MemVar(names[i],parObj)
 			Params.PushFront(vr)
 		}
@@ -186,6 +186,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			}
 		}
 
+		Params[^].Value->{FuncInputParam^}.DoStore(f)
+		
 		body.PrintCode(f)
 
 		if rTyp == GTypeVoid

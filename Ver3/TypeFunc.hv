@@ -61,6 +61,10 @@ GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
 {
 	return GetFuncType(S,args[0]&,null,res,false,false)
 }
+GetFuncType := !(Type^[@S] args,bool[@S2] isRefs,Type^ res) -> TypeFunc^
+{
+	return GetFuncType(S,args[0]&,isRefs[0]&,res,false,false)
+}
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
 {

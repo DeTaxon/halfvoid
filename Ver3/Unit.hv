@@ -6,4 +6,7 @@ BoxUnit := class extend TGCObject
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
+	NotifyMemUse := virtual !() -> void
+	{
+	}
 }

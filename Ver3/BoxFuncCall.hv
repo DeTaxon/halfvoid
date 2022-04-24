@@ -15,6 +15,18 @@ BoxFuncCall := class extend BoxExeObj
 		callObj = fnc
 		downs.Push(objs[^])
 		resId = GetNewId()
+
+		for par,i : fnc.GetType().Params
+		{
+			if par.IsRef
+			{
+				downs[i].NotifyMemUse()
+			}
+		}
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+		callObj.NotifyMemUse()
 	}
 	GetType := virtual !() -> Type^
 	{
@@ -23,18 +35,45 @@ BoxFuncCall := class extend BoxExeObj
 
 	IsMem := virtual !() -> bool
 	{
-		return callObj.GetType().ResultRef
+		return callObj.IsMem()
 	}
 	PrintFuncUse := !(TIOStream^ f) -> void
 	{
 		callObj.PrintFuncCall(f,resId,0,downs)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
 		PrintFuncUse(f)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
 		callObj.PrintResultObj(f,resId,-1)
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			rType := GetType()
+
+			PrintPointPre(f)
+			f^ << "%TUnref" << resId << " = load "
+			rType.PrintType(f)
+			f^ << ","
+			rType.PrintType(f)
+			f^ << "* "
+			PrintPointUse(f)
+			f^ << "\n"
+		}else{
+			PrintFuncUse(f)
+		}
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			f^ << "%TUnref" << resId
+		}else{
+			callObj.PrintResultObj(f,resId,-1)
+		}
 	}
 }
