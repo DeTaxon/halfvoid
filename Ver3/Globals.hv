@@ -1,5 +1,12 @@
 UnitStack := task_local List.{BoxUnit^}
 CurrentCodeSpace := task_local BoxCodeSpace^
+CurrentFile := task_local BoxFile^
 
 
 HVOperators := AVLSet.{StringSpan}
+
+DebugMode := bool
+
+
+GDebugFileId := task_local int
+GDebugFuncId := task_local int

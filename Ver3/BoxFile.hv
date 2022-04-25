@@ -4,14 +4,13 @@ BoxCodeSpace := class
 
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 
-	AllFunctions := List.{BoxFunc^} //Including anon functions
-
 	CLibs := List.{CLib^}
 }
 
 
 BoxFile := class extend BoxUnit
 {
+	fileId := int
 	file := vRepoFile^
 	fileMap := void^
 	fileSize := int
@@ -20,8 +19,11 @@ BoxFile := class extend BoxUnit
 
 	objects := List.{BoxUnit^}
 
+	AllFunctions := List.{BoxFunc^} //Including anon functions
+
 	this := !(vRepoFile^ inFile) -> void
 	{
+		fileId = GetNewId()
 		file = inFile
 		fileMap = file.Map()
 		fileSize = file.Size()
@@ -29,6 +31,7 @@ BoxFile := class extend BoxUnit
 
 	Parse := !() -> void
 	{
+		CurrentFile = this&
 		foundSpace := false
 		for spc : CodeSpaces
 		{
@@ -77,6 +80,15 @@ BoxFile := class extend BoxUnit
 			}else{
 			}
 			iter = iter.Right
+		}
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		if DebugMode //later
+		{
+			f^ << "!" << fileId  << " = !DIFile(filename: \"" 
+			f^ << file.GetName() << "\", directory: \""
+			f^ <<  "/" <<"\")\n"
 		}
 	}
 }

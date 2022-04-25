@@ -120,7 +120,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
 			CurrentCodeSpace.Functions[Name].Push(this&)
-			CurrentCodeSpace.AllFunctions.Push(this&)
+			CurrentFile.AllFunctions.Push(this&)
 			return void
 		}
 		assert(false) //TODO: not using anon functions
@@ -160,11 +160,18 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		GDebugFuncId = 0
+		if DebugMode
+			GDebugFuncId = GetNewId()
+
 		f^ << "define "
 		PrintResultType(f)
 		f^ << " @" << Name << "("
 		PrintInputTypes(f)
-		f^ << ")\n"
+		f^ << ")"
+		if DebugMode
+			f^ << " !dbg !" << GDebugFuncId
+		f^ << "\n"
 		f^ << "{\n"
 
 
@@ -196,5 +203,28 @@ BoxFuncBody := class extend BoxFuncCommon
 			
 
 		f^ << "}\n"
+
+		if DebugMode
+		{
+			f^ << "!" << GDebugFuncId << " = distinct !DISubprogram(name:\""
+			PrintName(f)
+			f^ << "\","
+			f^ << "linkageName:\""
+			PrintName(f)
+			f^ << "\","
+			f^ << "scope: !" << GDebugFileId << " , file: !" << GDebugFileId
+			f^ << ",type: !" << GetType().MetaId
+			//if Line != null
+			//{
+			//	f << ", line: " << Line.LinePos	
+			//	f << ", scopeLine: " << Line.LinePos	
+			//}
+			f^ << ", unit: !" << cuId
+			f^ << ", flags: DIFlagPrototyped"
+			f^ << ", spFlags: DISPFlagDefinition"
+			//if tmplId != -1
+			//	f << ", templateParams:!"<<tmplId
+			f^ << ")\n"
+		}
 	}
 }

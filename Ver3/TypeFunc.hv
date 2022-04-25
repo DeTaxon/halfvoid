@@ -18,6 +18,49 @@ TypeFunc := class extend Type
 	ResultRef := bool
 	IsVargs := bool
 
+	this := !() -> void
+	{
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		
+		if ResultType == null
+			return void
+		for par : Params
+		{
+			if par.ItType == null return void
+		}
+
+		subMeta := GetNewId()
+		f^ << "!" <<  subMeta << " = !{"
+		if ResultType == GTypeVoid
+		{
+			f^ << "null"
+		}else{
+			f^ << "!" << ResultType.MetaId
+		}
+		for par : Params
+		{
+			f^ << ",!" 
+			if par.IsRef
+			{
+				asP := par.ItType.GetPoint()
+				f^ << asP.MetaId
+
+			}else{
+				f^ << par.ItType.MetaId
+			}
+		}
+		
+		f^ << "}\n"
+		f^ << "!" << MetaId << " = !DISubroutineType(types: !" << subMeta << ")\n"
+	}
+
 	PrintType := virtual !(TIOStream^ f) -> void
 	{
 		ResultType.PrintType(f)
@@ -110,7 +153,7 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 		return fnc
 	}
 
-	newFunc := new TypeFunc
+	newFunc := new TypeFunc()
 	itList.Push(newFunc)
 	
 	for i : count

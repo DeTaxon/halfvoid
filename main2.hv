@@ -1,10 +1,4 @@
-subFunc := !(int arr) -> int
-{
-	arr += 2
-	result = arr*1000
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	printf("hello world %i!\n",subFunc(7))
+	printf("hello world %i!\n",argc)
 }

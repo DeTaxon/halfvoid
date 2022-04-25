@@ -1,6 +1,6 @@
 
 Type := class {
-	Id := int
+	MetaId := int
 	Base := Type^
 	AsPoint := Type^
 	ItHash := int
@@ -29,6 +29,10 @@ Type := class {
 	PrintType := virtual !(TIOStream^ f) -> void
 	{
 	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
 }
 
 TypeDef := class
@@ -52,6 +56,7 @@ TypeStandard := class extend Type
 {
 	IRName := string
 	ItGoodName := char^
+	MetaInfo := char^
 	ItSize  := int
 	ItAlign := int
 
@@ -59,11 +64,18 @@ TypeStandard := class extend Type
 	{
 		IRName = Name 
 		ItGoodName = goodName
+		MetaInfo = mName
 		ItSize = siz
 		ItAlign = Aln
 
 		ItHash = hashIdIter
 		hashIdIter += 1
+
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
 	}
 	GetType := virtual !() -> string
 	{
@@ -86,6 +98,11 @@ TypeStandard := class extend Type
 	{
 		f^ << IRName
 	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(DebugMode)
+		f^ << "!" << MetaId << " = " << MetaInfo << "\n"
+	}
 }
 
 TypePoint := class extend Type
@@ -94,6 +111,11 @@ TypePoint := class extend Type
 	{
 		Base = nBase
 		ItHash = nBase.ItHash*7
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
 	}
 	GetType := virtual !() -> string
 	{
@@ -111,6 +133,10 @@ TypePoint := class extend Type
 	{
 		Base.PrintType(f)
 		f^ << "*"
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
 	}
 }
 
