@@ -13,6 +13,10 @@ BoxFuncCall := class extend BoxExeObj
 	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
 		callObj = fnc
+
+		if callObj is BoxFuncBody
+			callObj->{BoxFuncBody^}.ParseBody()
+
 		downs.Push(objs[^])
 		resId = GetNewId()
 

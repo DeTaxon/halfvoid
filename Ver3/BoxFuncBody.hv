@@ -32,6 +32,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if StartedParse
 			return void
 		StartedParse = true
+		GFuncsInProgress.Push(this&)
 		cls := this&
 		TSpawnTask(() ==> [cls] {
 			cls.WorkBody()
@@ -154,7 +155,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	PrintName := virtual !(TIOStream^ f) -> void
 	{
-		f^ << Name //TODO name mangling
+		f^ << "@" << Name //TODO name mangling
 	}
 
 	PrintCode := virtual !(TIOStream^ f) -> void

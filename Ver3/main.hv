@@ -23,6 +23,8 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 }
 
 
+GFuncsInProgress := List.{BoxFunc^}
+
 OutputFile := char^
 main := !(int argc, char^^ argv) -> int
 {
@@ -115,6 +117,12 @@ main := !(int argc, char^^ argv) -> int
 
 	mainFunc.ParseBody()
 	mainFunc.WaitReadyState()
+
+	while GFuncsInProgress.Size() != 0
+	{
+		GFuncsInProgress[0].WaitReadyState()
+		GFuncsInProgress.Pop()
+	}
 
 	printf("good to do\n")
 
