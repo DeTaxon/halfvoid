@@ -1,4 +1,4 @@
-TryParseVar := !(Token^ obj) -> BoxVar^
+TryParseVar := !(Token^ obj) -> BoxUnit^
 {
 	if obj == null or obj.Down == null
 		return null
@@ -22,7 +22,14 @@ TryParseVar := !(Token^ obj) -> BoxVar^
 	if iter.Right.Right == null
 		return null
 
-	return new BoxVar(name,isSuffix,iter.Right.Right)
+	fnc := TryParseFunction(iter.Right.Right)
+
+	if fnc != null
+	{
+		return new FuncVar(name,isSuffix,fnc)
+	}
+	
+	return null
 }
 
 MemVar := class extend BoxUnit
@@ -37,31 +44,25 @@ MemVar := class extend BoxUnit
 	}
 }
 
-BoxVar := class extend BoxUnit
+FuncVar := class extend BoxUnit
 {
 	Name := StringSpan
 	Value := BoxUnit^
 	IsSuffix := bool
 
-	token := Token^
-	MemObj := BoxUnit^
+	MemObj := BoxFunc^
 
-	this := !(StringSpan nm, bool isSuf,Token^ obj) -> void
+	this := !(StringSpan nm, bool isSuf,BoxFunc^ obj) -> void
 	{
 		Name = nm
 		IsSuffix = isSuf
-		token = obj
+		MemObj = obj
 	}
 	
 
 	Work := virtual !() -> void
 	{
-		func := TryParseFunction(token)
-
-		if func != null
-		{
-			func.SetName(Name)
-			func.Work()
-		}
+		MemObj.SetName(Name)
+		MemObj.Work()
 	}
 }
