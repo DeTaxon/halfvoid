@@ -14,7 +14,7 @@ FuncInputParam := class extend BoxFuncCommon
 	{
 		return isMem
 	}
-	DoStore := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		if not isMem 
 			return void
@@ -56,5 +56,42 @@ FuncInputParam := class extend BoxFuncCommon
 	NotifyMemUse := virtual !() -> void
 	{
 		isMem = true
+	}
+}
+FuncLocalParam := class extend BoxFuncCommon
+{
+	pType := Type^
+	varId := int
+	this := !(Type^ tp) -> void
+	{
+		pType = tp
+		varId = GetNewId()
+		SetType(GetFuncType(0,null,null,pType,true,false))
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%V" << varId << " = alloca "
+		pType.PrintType(f)
+		f^ << "\n"
+
+		if IsInt(pType)
+		{
+			f^ << "store "
+			pType.PrintType(f)
+			f^ << " 0, "
+			pType.PrintType(f)
+			f^ << "* %V" << varId << "\n"
+		}
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		f^ << "%V" << varId 
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
 	}
 }

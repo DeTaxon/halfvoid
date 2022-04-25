@@ -74,11 +74,20 @@ BoxBlock := class extend BoxUnit
 		while iter != null
 		{
 			//TODO: check switch,if,while
-			
-			pad := new BoxExeLine
-			pad.DoLine(iter)
 
-			exeLines.Push(pad)
+			vr := TryParseVar(iter)
+
+			if vr != null
+			{
+				exeLines.Push(vr)
+				UnitStack.Push(vr)
+			}else{
+				pad := new BoxExeLine
+				pad.DoLine(iter)
+
+				exeLines.Push(pad)
+			}
+			
 		
 			iter = iter.Right
 		}

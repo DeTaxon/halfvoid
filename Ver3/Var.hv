@@ -19,10 +19,20 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		isSuffix = true
 	}
 
-	if iter.Right.Right == null
+	varToken := iter.Right.Right
+
+	if varToken == null
 		return null
 
-	fnc := TryParseFunction(iter.Right.Right)
+	varType := ParseType(varToken)
+
+	if varType != null
+	{
+		vr := new FuncLocalParam(varType)
+		return new MemVar(name,vr)
+	}
+
+	fnc := TryParseFunction(varToken)
 
 	if fnc != null
 	{
@@ -42,6 +52,11 @@ MemVar := class extend BoxUnit
 		Name = vName
 		Value = clFunc
 	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		assert(Value != null)
+		Value.PrintCode(f)
+	}
 }
 
 FuncVar := class extend BoxUnit
@@ -58,7 +73,11 @@ FuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		assert(MemObj != null)
+		MemObj.PrintCode(f)
+	}
 
 	Work := virtual !() -> void
 	{

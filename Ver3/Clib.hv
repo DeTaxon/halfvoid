@@ -68,7 +68,7 @@ CLib := class
 				txt = txt[0..-1]
 			}
 			txtToken := TokenIndent(txt)
-			typs[c] = GetType(txtToken&)
+			typs[c] = ParseType(txtToken&)
 			for i : points
 			{
 				typs[c] = typs[c].GetPoint()

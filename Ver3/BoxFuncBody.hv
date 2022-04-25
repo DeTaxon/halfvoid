@@ -63,7 +63,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			{
 				assert(objs[1] is TokenIndent) //TODO EmitError
 				
-				args[k] = GetType(objs[0])
+				args[k] = ParseType(objs[0])
 				refs[k] = false
 				names[k] = objs[1]->{TokenIndent^}.Value
 				assert(args[k] != null) //TODO error
@@ -87,7 +87,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		if objs.Size() != 0
 			checkObjs()
-		outType := GetType(resTyp)
+		outType := ParseType(resTyp)
 		resRef := false
 		//TODO ref check
 
@@ -186,7 +186,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			}
 		}
 
-		Params[^].Value->{FuncInputParam^}.DoStore(f)
+		Params[^].Value->{FuncInputParam^}.PrintCode(f)
 		
 		body.PrintCode(f)
 
