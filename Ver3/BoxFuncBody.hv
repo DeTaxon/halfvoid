@@ -101,6 +101,11 @@ BoxFuncBody := class extend BoxFuncCommon
 			vr := new MemVar(names[i],parObj)
 			Params.PushFront(vr)
 		}
+		if outType != GTypeVoid
+		{
+			rFnc := new FuncLocalParam(outType)
+			ResultVar = new MemVar(StringSpan("result"),rFnc)
+		}
 	}
 
 	Work := virtual !() -> void
@@ -121,6 +126,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 
 	Params := HybridQueue.{MemVar^,8}
+	ResultVar := MemVar^
 
 	body := BoxBlock^
 	readyState := THatch
@@ -136,6 +142,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			UnitStack.Push(par)
 		}
+		if ResultVar != null
+			UnitStack.Push(ResultVar)
 		
 		body = new BoxBlock(bdy)
 		body.Work()
@@ -161,32 +169,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		rTyp := ItType.ResultType
 
-		if rTyp != GTypeVoid
-		{
-			if rTyp is TypeStandard or rTyp is TypePoint
-			{
-				f^ << "%result = alloca "
-				rTyp.PrintType(f)
-				f^ << "\n"
-				if rTyp == GTypeFloat or rTyp == GTypeDouble
-				{
-					assert(false)
-				}else if rTyp is TypeStandard {
-					f^ << "store "
-					rTyp.PrintType(f)
-					f^ << " 0, "
-					rTyp.PrintType(f)
-					f^ << "* %result\n"
-				}else if rTyp is TypePoint
-				{
-					assert(false)
-				}else{
-					assert(false)
-				}
-			}
-		}
-
 		Params[^].Value->{FuncInputParam^}.PrintCode(f)
+		if ResultVar != null
+			ResultVar.PrintCode(f)
 		
 		body.PrintCode(f)
 
@@ -194,19 +179,18 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			f^ << "ret void\n"
 		}else{
-			if rTyp == GTypeFloat or rTyp == GTypeDouble
+			if ResultVar != null
 			{
-				assert(false)
-			}else if rTyp is TypeStandard
-			{
-				f^ << "ret "
-				rTyp.PrintType(f)
-				f^ << " 0\n"
-			}else if rTyp is TypePoint
-			{
-				assert(false)
-			}
+				tmpList := CheckExeDownList
+				cl := BoxFuncCall(ResultVar.Value,tmpList)
 
+				cl.PrintPre(f)
+				f^ << "ret "
+				cl.GetType().PrintType(f)
+				f^ << " "
+				cl.PrintUse(f)
+				f^ <<"\n"
+			}
 		}
 			
 

@@ -3,5 +3,6 @@ main := !(int argc, char^^ argv) -> int
 	x := int
 	x = 20
 	argc += 117
+	result = 100
 	printf("hello world %i %i!\n",argc,x)
 }
