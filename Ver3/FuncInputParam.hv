@@ -2,22 +2,67 @@ FuncInputParam := class extend BoxFuncCommon
 {
 	pNumber := int
 	isRef := bool
-	isMem := bool
 	parentFunc := BoxFuncBody^
-	this := !(BoxFuncBody^ pFunc,Type^ pType,bool isRef,int paramNum) -> void
+	varName := StringSpan
+	varId := int
+	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRef,int paramNum) -> void
 	{
 		parentFunc = pFunc
 		SetType(GetFuncType(0,null,null,pType,true,false))
 		pNumber = paramNum
+		varName = vName
+		if DebugMode
+			varId = GetNewId()
 	}
 	IsMem := virtual !() -> bool
 	{
-		return isMem
+		return false
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		if not isMem 
-			return void
+		if DebugMode
+		{
+			pType := GetType().ResultType
+			f^ << "call void @llvm.dbg.value(metadata "
+			pType.PrintType(f)
+			f^ << " "
+			PrintResultObj(f,0,0)
+			f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+		}
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		if ItType.ResultType != GTypeVoid
+		{
+			f^ << "%par" << pNumber
+		}
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+		this&->SetType(FuncInputParamInMem)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		rType := GetType().ResultType
+
+		f^ << "!" << varId << " = !DILocalVariable(name: \"" << varName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
+		f^ << ", arg: " << (pNumber + 1)
+		f^ << ", flags: DIFlagArtificial"
+		f^ << ", line: " << 0 << ", type:!" << rType.MetaId
+		f^ << ")\n"
+	}
+}
+FuncInputParamInMem := class extend FuncInputParam
+{
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
 		rType := GetType().ResultType
 		f^ << "%P" << pNumber << " = alloca "
 		rType.PrintType(f)
@@ -37,85 +82,21 @@ FuncInputParam := class extend BoxFuncCommon
 			f^ << "*"
 		f^ << " %P" << pNumber << "\n"
 
-	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
-	{
-		if ItType.ResultType != GTypeVoid
-		{
-			if isMem
-			{
-				f^ << "%P" << pNumber
-			}else{
-				f^ << "%par" << pNumber
-			}
-		}
-	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
-	{
-	}
-	NotifyMemUse := virtual !() -> void
-	{
-		isMem = true
-	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
-	{
-	}
-}
-FuncLocalParam := class extend BoxFuncCommon
-{
-	varName := StringSpan
-	pType := Type^
-	varId := int
-	this := !(StringSpan name,Type^ tp) -> void
-	{
-		varName = name
-		pType = tp
-		varId = GetNewId()
-		SetType(GetFuncType(0,null,null,pType,true,false))
-	}
-	IsMem := virtual !() -> bool
-	{
-		return true
-	}
-	PrintCode := virtual !(TIOStream^ f) -> void
-	{
-		f^ << "%V" << varId << " = alloca "
-		pType.PrintType(f)
-		f^ << "\n"
-
-		if IsInt(pType)
-		{
-			f^ << "store "
-			pType.PrintType(f)
-			f^ << " 0, "
-			pType.PrintType(f)
-			f^ << "* %V" << varId << "\n"
-		}
 		if DebugMode
 		{
+			pType := GetType().ResultType
 			f^ << "call void @llvm.dbg.declare(metadata "
-			pType.PrintType(f)
-			f^ << "* %V" << varId
+			rType.PrintType(f)
+			f^ << "* %P" << pNumber
 			f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 		}
 
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		f^ << "%V" << varId 
-	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
-	{
-		f^ << "!" << varId << " = !DILocalVariable(name: \"" << varName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
-		//if it.6 != 0
-		//{
-		//	f^ << ", arg: " << it.6
-		//	f^ << ", flags: DIFlagArtificial"
-		//}
-		f^ << ", line: " << 0 << ", type:!" << pType.MetaId
-		f^ << ")\n"
-	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
-	{
+		if ItType.ResultType != GTypeVoid
+		{
+			f^ << "%P" << pNumber
+		}
 	}
 }

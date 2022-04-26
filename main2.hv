@@ -1,5 +1,8 @@
 main := !(int argc, char^^ argv) -> int
 {
 	x := int
+	x = 13
+	x += 8
+	argc += 23
 	printf("hello world %i!\n",argc)
 }

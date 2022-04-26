@@ -107,7 +107,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		for par,i : fType.Params //TODO min(Params.Size(),names.Size())
 		{
-			parObj := new FuncInputParam(this&,par.ItType,par.IsRef,i)
+			parObj := new FuncInputParam(this&,names[i],par.ItType,par.IsRef,i)
 			vr := new MemVar(names[i],parObj)
 			Params.PushFront(vr)
 		}
@@ -225,6 +225,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			funcLine.PrintDebugMeta(f)
 			body.PrintDebugMeta(f)
+			Params[^].PrintDebugMeta(f)
 			ResultVar?.PrintDebugMeta(f)
 		}
 
