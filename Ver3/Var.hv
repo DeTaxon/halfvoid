@@ -28,7 +28,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if varType != null
 	{
-		vr := new FuncLocalParam(varType)
+		vr := new FuncLocalParam(name,varType)
 		return new MemVar(name,vr)
 	}
 
@@ -57,6 +57,10 @@ MemVar := class extend BoxUnit
 		assert(Value != null)
 		Value.PrintCode(f)
 	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		Value.PrintDebugMeta(f)
+	}
 }
 
 FuncVar := class extend BoxUnit
@@ -77,6 +81,10 @@ FuncVar := class extend BoxUnit
 	{
 		assert(MemObj != null)
 		MemObj.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		MemObj.PrintDebugMeta(f)
 	}
 
 	Work := virtual !() -> void

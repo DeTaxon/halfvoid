@@ -11,6 +11,8 @@ BoxFuncBody := class extend BoxFuncCommon
 	resTyp := Token^
 	bdy := Token^
 
+	funcLine := BoxExeLine^
+
 	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
 	{
 		assert(brackets2 == null)//not implemented
@@ -18,6 +20,13 @@ BoxFuncBody := class extend BoxFuncCommon
 		inps1 = brackets1
 		resTyp = resToken
 		bdy = bodyIn
+
+		if DebugMode
+		{
+			funcLine = new BoxExeLine //TODO debug only ExeLine version
+			funcLine.ItToken = bdy
+		}
+
 	}
 
 	GetType := !() -> Type^
@@ -104,8 +113,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		if outType != GTypeVoid
 		{
-			rFnc := new FuncLocalParam(outType)
-			ResultVar = new MemVar(StringSpan("result"),rFnc)
+			resSpn := StringSpan("result")
+			rFnc := new FuncLocalParam(resSpn,outType)
+			ResultVar = new MemVar(resSpn,rFnc)
 		}
 	}
 
@@ -163,7 +173,10 @@ BoxFuncBody := class extend BoxFuncCommon
 		GDebugFuncId = 0
 
 		if DebugMode
+		{
 			GDebugFuncId = GetNewId()
+			GDebugLineCallId = funcLine.MetaId
+		}
 		oldScope := GDebugScopeId
 		defer GDebugScopeId = oldScope
 		GDebugScopeId = GDebugFuncId
@@ -209,7 +222,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "}\n"
 
 		if DebugMode
+		{
+			funcLine.PrintDebugMeta(f)
 			body.PrintDebugMeta(f)
+			ResultVar?.PrintDebugMeta(f)
+		}
 
 		if DebugMode
 		{
