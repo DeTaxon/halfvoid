@@ -10,3 +10,5 @@ DebugMode := bool
 
 GDebugFileId := task_local int
 GDebugFuncId := task_local int
+GDebugScopeId := task_local int
+GDebugLineCallId := task_local int

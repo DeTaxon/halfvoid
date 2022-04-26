@@ -161,8 +161,12 @@ BoxFuncBody := class extend BoxFuncCommon
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		GDebugFuncId = 0
+
 		if DebugMode
 			GDebugFuncId = GetNewId()
+		oldScope := GDebugScopeId
+		defer GDebugScopeId = oldScope
+		GDebugScopeId = GDebugFuncId
 
 		f^ << "define "
 		PrintResultType(f)
@@ -205,6 +209,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "}\n"
 
 		if DebugMode
+			body.PrintDebugMeta(f)
+
+		if DebugMode
 		{
 			f^ << "!" << GDebugFuncId << " = distinct !DISubprogram(name:\""
 			PrintName(f)
@@ -214,11 +221,11 @@ BoxFuncBody := class extend BoxFuncCommon
 			f^ << "\","
 			f^ << "scope: !" << GDebugFileId << " , file: !" << GDebugFileId
 			f^ << ",type: !" << GetType().MetaId
-			//if Line != null
-			//{
-			//	f << ", line: " << Line.LinePos	
-			//	f << ", scopeLine: " << Line.LinePos	
-			//}
+			if bdy.Line != null
+			{
+				f^ << ", line:" << bdy.Line.Line
+				f^ << ", scopeLine:" << bdy.Line.Line
+			}
 			f^ << ", unit: !" << cuId
 			f^ << ", flags: DIFlagPrototyped"
 			f^ << ", spFlags: DISPFlagDefinition"

@@ -1,8 +1,15 @@
 BoxExeLine := class extend BoxUnit
 {
-	
+	MetaId := int
+	ItToken := Token^
 	Down := BoxExeObj^
 	exitLabel := BoxLabel^
+
+	this := !() -> void
+	{
+		if DebugMode
+			MetaId = GetNewId()
+	}
 	GetLabel := !() -> BoxLabel^
 	{
 		if exitLabel == null
@@ -14,7 +21,8 @@ BoxExeLine := class extend BoxUnit
 	{
 		UnitStack.PushFront(this&)
 		defer UnitStack.Pop()
-
+	
+		ItToken = itm
 		Down = TryGetExeCall(itm)
 		if Down != null
 			return void
@@ -24,9 +32,14 @@ BoxExeLine := class extend BoxUnit
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		GDebugLineCallId = MetaId
 		Down.PrintDefaultUse(f)
 	}
-
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(ItToken != null and ItToken.Line != null)
+		f^ << "!" << MetaId << " = !DILocation(line:" << ItToken.Line.Line << ",column:1, scope:!" << GDebugScopeId << ")\n"
+	}
 }
 
 ExeDownList := type HybridQueue.{BoxExeObj^,8}

@@ -281,7 +281,6 @@ UNext := !(Token^ where,Token^ nObj, int count) -> Object^
 	Last := where
 	for count-1 Last = Last.Right
 	UNext(where,nObj,Last)
-	nObj.Line = where.Line
 	return nObj
 }
 UNext := !(Token^ where,Token^ nObj, Token^ Last) -> void
@@ -316,6 +315,7 @@ UNext := !(Token^ where,Token^ nObj, Token^ Last) -> void
 		End.Up = nObj
 		End = End.Right
 	}
+	nObj.Line = where.Line
 }
 PopOutNode := !(Token^ what) -> void
 {

@@ -82,7 +82,7 @@ BoxBlock := class extend BoxUnit
 				exeLines.Push(vr)
 				UnitStack.Push(vr)
 			}else{
-				pad := new BoxExeLine
+				pad := new BoxExeLine()
 				pad.DoLine(iter)
 
 				exeLines.Push(pad)
@@ -100,6 +100,10 @@ BoxBlock := class extend BoxUnit
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		exeLines[^].PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		exeLines[^].PrintDebugMeta(f)
 	}
 }
 

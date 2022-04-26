@@ -124,7 +124,10 @@ BoxFuncCommon := class extend BoxFunc
 			}
 		}
 
-		f^ << ")\n" //TODO debug
+		f^ << ")"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
 	}
 }
 
