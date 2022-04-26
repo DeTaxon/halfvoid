@@ -58,11 +58,14 @@ FuncAttributes := class
 
 BoxBlock := class extend BoxUnit
 {
+	MetaId := int
 	down := Token^
 	exeLines := List.{BoxUnit^} //TODO : to hybrid
 	this := !(Token^ bdy) -> void
 	{
 		down = bdy
+		if DebugMode
+			MetaId = GetNewId()
 	}
 	Work := virtual !() -> void
 	{
@@ -79,7 +82,9 @@ BoxBlock := class extend BoxUnit
 
 			if vr != null
 			{
-				exeLines.Push(vr)
+				pad := new BoxExeLineSimple(iter,vr)
+
+				exeLines.Push(pad)
 				UnitStack.Push(vr)
 			}else{
 				pad := new BoxExeLine()
@@ -99,10 +104,27 @@ BoxBlock := class extend BoxUnit
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+
 		exeLines[^].PrintCode(f)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
+		f^ << "!" << MetaId << " = !DILexicalBlock(scope: !" 
+		f^ << GDebugScopeId << ", file: !" << GDebugFileId
+		if down?.Line != null
+		{
+			f^ << ", line: " << down.Line.Line
+		}
+		f^ << ")\n"
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+
 		exeLines[^].PrintDebugMeta(f)
 	}
 }

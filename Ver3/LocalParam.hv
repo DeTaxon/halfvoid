@@ -18,6 +18,8 @@ FuncLocalParam := class extend BoxFuncCommon
 	{
 		f^ << "%V" << varId << " = alloca "
 		pType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 		if IsInt(pType)
@@ -26,7 +28,10 @@ FuncLocalParam := class extend BoxFuncCommon
 			pType.PrintType(f)
 			f^ << " 0, "
 			pType.PrintType(f)
-			f^ << "* %V" << varId << "\n"
+			f^ << "* %V" << varId
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
 		}
 		if DebugMode
 		{

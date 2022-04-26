@@ -1,8 +1,5 @@
-BoxExeLine := class extend BoxUnit
+BoxExeLine := class extend BoxExeLineSimple
 {
-	MetaId := int
-	ItToken := Token^
-	Down := BoxExeObj^
 	exitLabel := BoxLabel^
 
 	this := !() -> void
@@ -27,17 +24,39 @@ BoxExeLine := class extend BoxUnit
 		if Down != null
 			return void
 
-
 		assert(false)
+	}
+}
+BoxExeLineSimple := class extend BoxUnit
+{
+	MetaId := int
+	ItToken := Token^
+	Down := BoxUnit^
+
+	this := !(Token^ itm,BoxUnit^ newObj) -> void
+	{
+		if DebugMode
+			MetaId = GetNewId()
+		ItToken = itm
+		Down = newObj
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
 		GDebugLineCallId = MetaId
-		Down.PrintDefaultUse(f)
+		
+		if Down is in BoxExeObj
+		{
+			Down->{BoxExeObj^}.PrintDefaultUse(f)
+		}else{
+			Down.PrintCode(f)
+		}
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 		assert(ItToken != null and ItToken.Line != null)
+		Down?.PrintDebugMeta(f)
 		f^ << "!" << MetaId << " = !DILocation(line:" << ItToken.Line.Line << ",column:1, scope:!" << GDebugScopeId << ")\n"
 	}
 }

@@ -202,7 +202,10 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if rTyp == GTypeVoid
 		{
-			f^ << "ret void\n"
+			f^ << "ret void"
+			if DebugMode
+				f^ << " , !dbg !" << GDebugLineCallId
+			f^ << "\n"
 		}else{
 			if ResultVar != null
 			{
@@ -214,6 +217,8 @@ BoxFuncBody := class extend BoxFuncCommon
 				cl.GetType().PrintType(f)
 				f^ << " "
 				cl.PrintUse(f)
+				if DebugMode
+					f^ << " , !dbg !" << GDebugLineCallId
 				f^ <<"\n"
 			}
 		}
