@@ -9,6 +9,9 @@ main := !(int argc, char^^ argv) -> int
 		y = 100
 		y += 200
 		printf("sub\n")
+	}else
+	{
+		printf("nope\n")
 	}
 	printf("hello world %i!\n",x >= 13)
 }

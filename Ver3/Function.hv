@@ -69,9 +69,13 @@ BoxLabel := class
 	{
 		f^ << "%L" << id
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintGo := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "br label %L" << id << "\n" //TODO debug
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		PrintGo(f)
 		f^ << "L" << id << ":\n"
 	}
 }

@@ -20,8 +20,15 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	tru = new BoxBlock(tryToken)
 	tru.Work()
 
+	if flsToken != null
+	{
+		fls = new BoxBlock(flsToken)
+		fls.Work()
+	}
+
 	if fls == null
-		return new BoxIfTrueOnly(cmpExe,tru)
+		return new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru)
+	return new BoxIfFull(itm.Down.Right,cmpExe,tru,fls)
 }
 
 BoxIfTrueOnly := class extend BoxUnit
@@ -30,16 +37,22 @@ BoxIfTrueOnly := class extend BoxUnit
 	OnTrue := BoxBlock^
 	TrueWorked := BoxLabel
 	TrueEndLabel := BoxLabel
+	IfLine := BoxExeLineSimple^
 
-	this := !(BoxExeObj^ val, BoxBlock^ onTrue) -> void
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue) -> void
 	{
 		Val = val
 		OnTrue = onTrue
 		TrueWorked."this"()
 		TrueEndLabel."this"()
+		IfLine = new BoxExeLineSimple(ifToken,val)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = IfLine.MetaId
+
 		Val.PrintPre(f)
 
 		f^ << "br i1 "
@@ -57,6 +70,60 @@ BoxIfTrueOnly := class extend BoxUnit
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
+		IfLine.PrintDebugMeta(f)
 		OnTrue?.PrintDebugMeta(f)
+	}
+}
+BoxIfFull := class extend BoxUnit
+{
+	Val := BoxExeObj^
+	OnTrue := BoxBlock^
+	OnFalse := BoxBlock^
+	TruePath := BoxLabel
+	FalsePath := BoxLabel
+	EndPath := BoxLabel
+	IfLine := BoxExeLineSimple^
+
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse) -> void
+	{
+		Val = val
+		OnTrue = onTrue
+		OnFalse = onFalse
+		TruePath."this"()
+		FalsePath."this"()
+		EndPath."this"()
+		IfLine = new BoxExeLineSimple(ifToken,val)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = IfLine.MetaId
+
+		Val.PrintPre(f)
+
+		f^ << "br i1 "
+		Val.PrintUse(f)
+		f^ << ", label "
+		TruePath.PrintLabel(f)
+		f^ << ", label "
+		FalsePath.PrintLabel(f)
+		f^ << "\n"
+
+		TruePath.PrintCode(f)
+		OnTrue.PrintCode(f)
+		EndPath.PrintGo(f)
+
+		FalsePath.PrintCode(f)
+		OnFalse.PrintCode(f)
+		EndPath.PrintGo(f)
+		
+		EndPath.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		IfLine.PrintDebugMeta(f)
+		OnTrue.PrintDebugMeta(f)
+		OnFalse.PrintDebugMeta(f)
 	}
 }
