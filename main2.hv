@@ -3,10 +3,12 @@ main := !(int argc, char^^ argv) -> int
 	x := int
 	x = 13
 
+	if x > 13
 	{
 		y := int
 		y = 100
 		y += 200
+		printf("sub\n")
 	}
-	printf("hello world %i!\n",x + 13)
+	printf("hello world %i!\n",x >= 13)
 }

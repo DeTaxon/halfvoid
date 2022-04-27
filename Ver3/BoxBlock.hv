@@ -26,7 +26,17 @@ BoxBlock := class extend BoxUnit
 				iter = iter.Right
 				continue
 			}
-			//TODO: check switch,if,while
+			if iter.Down?.GetValue() == "if"
+			{
+				ifObj := TryParseIf(iter)
+				if ifObj != null
+				{
+					exeLines.Push(ifObj)
+					iter = iter.Right
+					continue
+				}
+			}
+			//TODO: check switch,while
 
 			vr := TryParseVar(iter)
 

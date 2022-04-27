@@ -9,8 +9,9 @@ BuiltInIntBase := class extend BoxFuncCommon
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintPre(f)
-
-		tp := GetType().ResultType
+		
+		tFunc := GetType()
+		tp := tFunc.Params[0].ItType
 
 		f^ << "%T" << resId << " = " << llvm << " " 
 		tp.PrintType(f)
@@ -136,15 +137,15 @@ CreateBuiltins := !() -> void
 
 		if isSigned
 		{
-			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"sge") )
-			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"sle") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"sgt") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"slt") )
+			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"icmp sge") )
+			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"icmp sle") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp sgt") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp slt") )
 		}else{
-			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"uge") )
-			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"ule") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"ugt") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"ult") )
+			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"icmp uge") )
+			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"icmp ule") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp ugt") )
+			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp ult") )
 		}
 
 

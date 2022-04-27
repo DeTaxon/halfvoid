@@ -1,3 +1,62 @@
-BoxIf := class extend BoxUnit
+TryParseIf := !(Token^ itm) -> BoxUnit^
 {
+	if itm == null or itm.Down.GetValue() != "if"
+		return null
+	
+	cmpExe := TryGetExeCall(itm.Down.Right)
+
+	assert(cmpExe != null) //TODO emit error
+	//TODO cmpExe to bool
+
+	tryToken := itm.Down.Right.Right
+	flsToken := Token^
+	
+	flsToken = tryToken.Right?.Right
+
+	tru := BoxBlock^
+	fls := BoxBlock^
+
+	//TODO if without {}
+	tru = new BoxBlock(tryToken)
+	tru.Work()
+
+	if fls == null
+		return new BoxIfTrueOnly(cmpExe,tru)
+}
+
+BoxIfTrueOnly := class extend BoxUnit
+{
+	Val := BoxExeObj^
+	OnTrue := BoxBlock^
+	TrueWorked := BoxLabel
+	TrueEndLabel := BoxLabel
+
+	this := !(BoxExeObj^ val, BoxBlock^ onTrue) -> void
+	{
+		Val = val
+		OnTrue = onTrue
+		TrueWorked."this"()
+		TrueEndLabel."this"()
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		Val.PrintPre(f)
+
+		f^ << "br i1 "
+		Val.PrintUse(f)
+		f^ << ", label "
+		TrueWorked.PrintLabel(f)
+		f^ << ", label "
+		TrueEndLabel.PrintLabel(f)
+		f^ << "\n"
+
+		TrueWorked.PrintCode(f)
+
+		OnTrue.PrintCode(f)
+		TrueEndLabel.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		OnTrue?.PrintDebugMeta(f)
+	}
 }
