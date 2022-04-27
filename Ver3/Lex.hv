@@ -276,7 +276,7 @@ UniteSkobs := !(Token^ Tree) -> Object^
 	//}
 	return null
 }
-UNext := !(Token^ where,Token^ nObj, int count) -> Object^
+UNext := !(Token^ where,Token^ nObj, int count) -> Token^
 {
 	Last := where
 	for count-1 Last = Last.Right

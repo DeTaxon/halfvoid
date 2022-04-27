@@ -4,23 +4,23 @@ InDataR := !(Token^ obj) -> bool
 	return false
 }
 
-//InBlockData := !(Token^ obj) -> bool
-//{
-//	if InDataR(obj) return true
-//	switch(obj.GetValue())
-//	{
-//		case  "return()" return true
-//		case  "if()" return true
-//		case  "while()" return true
-//		case  "for()" return true
-//		case  "switch()" return true
-//		case  "~continue" return true
-//		case  "~break" return true
-//	}
-//
-//	return false
-//}
-//
+InBlockData := !(Token^ obj) -> bool
+{
+	if InDataR(obj) return true
+	switch(obj.GetValue())
+	{
+		case  "return()" return true
+		case  "if()" return true
+		case  "while()" return true
+		case  "for()" return true
+		case  "switch()" return true
+		case  "~continue" return true
+		case  "~break" return true
+	}
+
+	return false
+}
+
 //RemoveTokens := !(Token^ iter, int n,tokenDict) -> void
 //{
 //	for i : n
@@ -96,37 +96,29 @@ RuleUse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 //	return false
 //}
 //
-//RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R,tokenDict) -> bool
-//{
-//	GotStuff := false
-//	iter := Obj.Down
-//
-//	if iter == null return false
-//
-//	while iter.Right != null iter = iter.Right
-//
-//	while iter != null
-//	{
-//		Try := R(iter)
-//		if Try > 0
-//		{
-//			//RemoveTokens(iter,Try,tokenDict)
-//			switch N
-//			{
-//				case "~d"
-//					iter = UNext(iter,new ObjData(),Try)
-//				case "DecObj"
-//					iter = UNext(iter,new DecoratorHolder,Try)
-//				case void
-//					iter = UNext(iter,new ObjObj(N),Try)
-//			}
-//			GotStuff = true
-//		}else{
-//			iter = iter.Left
-//		}
-//	}
-//	return GotStuff
-//}
+RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
+{
+	GotStuff := false
+	iter := Obj.Down
+
+	if iter == null return false
+
+	while iter.Right != null iter = iter.Right
+
+	while iter != null
+	{
+		Try := R(iter)
+		if Try > 0
+		{
+			//RemoveTokens(iter,Try,tokenDict)
+			iter = UNext(iter,new TokenData,Try)
+			GotStuff = true
+		}else{
+			iter = iter.Left
+		}
+	}
+	return GotStuff
+}
 
 RuleUseSome := !(Token^ Obj,MiniMachineNodeOld^ MiniNode2) -> bool
 {
@@ -180,7 +172,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"return()",RuleOneFunc) return true
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
-				//	if RuleUseReverse(begin,"if()",RuleIf) return true
+					if RuleUseReverse(begin,"if()",RuleIf) return true
 				//	if RuleUse(begin,"while()",RuleWhile) return true
 				//	if RuleUse(begin,"for()",RuleFor) 
 				//			return true
@@ -563,31 +555,31 @@ RuleOneFunc := !(void^ itr)-> int
 	return 2
 }
 
-//RuleIf := !(void^ itr)-> int
-//{
-//	It := itr->{Token^}
-//
-//	if It.GetValue() != "if" return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if not InDataR(It) return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if It.GetValue() != "{}" and (not InBlockData(It)) and (It.GetValue() != "i:=1") return 0
-//	//if It.GetValue() != "{}" and (not InBlockData(It)) return 0
-//	It = It.Right
-//	if It == null return 3
-//
-//	if It.GetValue() != "else" return 3
-//	It = It.Right
-//	if It == null return 3
-//
-//	if It.GetValue() == "{}" or InBlockData(It)  return 5
-//
-//	return 3
-//}
+RuleIf := !(void^ itr)-> int
+{
+	It := itr->{Token^}
+
+	if It.GetValue() != "if" return 0
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" and (not InBlockData(It)) and (It.GetValue() != "i:=1") return 0
+	//if It.GetValue() != "{}" and (not InBlockData(It)) return 0
+	It = It.Right
+	if It == null return 3
+
+	if It.GetValue() != "else" return 3
+	It = It.Right
+	if It == null return 3
+
+	if It.GetValue() == "{}" or InBlockData(It)  return 5
+
+	return 3
+}
 //RuleSwitch := !(void^ itr) -> int
 //{
 //	It := itr->{Token^}

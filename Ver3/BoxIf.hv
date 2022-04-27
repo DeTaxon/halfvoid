@@ -1,0 +1,3 @@
+BoxIf := class extend BoxUnit
+{
+}

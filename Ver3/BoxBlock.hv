@@ -1,0 +1,81 @@
+BoxBlock := class extend BoxUnit
+{
+	MetaId := int
+	down := Token^
+	exeLines := List.{BoxUnit^} //TODO : to hybrid
+	this := !(Token^ bdy) -> void
+	{
+		down = bdy
+		if DebugMode
+			MetaId = GetNewId()
+	}
+	Work := virtual !() -> void
+	{
+		SyntaxCompress(down,PriorityData)
+
+		iter := down.Down
+		stackAtStart := UnitStack.Size()
+
+		while iter != null
+		{
+			if iter.GetValue() == "{}"
+			{
+				subBlock := new BoxBlock(iter)
+				exeLines.Push(subBlock)
+				subBlock.Work()
+				iter = iter.Right
+				continue
+			}
+			//TODO: check switch,if,while
+
+			vr := TryParseVar(iter)
+
+
+			if vr != null
+			{
+				pad := new BoxExeLineSimple(iter,vr)
+
+				exeLines.Push(pad)
+				UnitStack.Push(vr)
+			}else{
+				pad := new BoxExeLine()
+				pad.DoLine(iter)
+
+				exeLines.Push(pad)
+			}
+			
+		
+			iter = iter.Right
+		}
+
+		while UnitStack.Size() > stackAtStart
+		{
+			UnitStack.Pop()
+		}
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+
+		exeLines[^].PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "!" << MetaId << " = !DILexicalBlock(scope: !" 
+		f^ << GDebugScopeId << ", file: !" << GDebugFileId
+		if down?.Line != null
+		{
+			f^ << ", line: " << down.Line.Line
+		}
+		f^ << ")\n"
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+
+		exeLines[^].PrintDebugMeta(f)
+	}
+}
