@@ -3,15 +3,10 @@ main := !(int argc, char^^ argv) -> int
 	x := int
 	x = 13
 
-	if x > 13
+	while x > 0
 	{
-		y := int
-		y = 100
-		y += 200
-		printf("sub\n")
-	}else
-	{
-		printf("nope\n")
+		printf("hi\n")
+		x -= 1
 	}
 	printf("hello world %i!\n",x >= 13)
 }

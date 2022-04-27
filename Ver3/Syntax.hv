@@ -21,19 +21,6 @@ InBlockData := !(Token^ obj) -> bool
 	return false
 }
 
-//RemoveTokens := !(Token^ iter, int n,tokenDict) -> void
-//{
-//	for i : n
-//	{
-//		val := iter.GetValue()
-//		if tokenDict[val].Contain(iter)
-//		{
-//			tokenDict[val].Remove(iter)
-//		}
-//		iter = iter.Right
-//	}
-//}
-//
 RuleUse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 {
 	GotStuff := false
@@ -173,7 +160,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
 					if RuleUseReverse(begin,"if()",RuleIf) return true
-				//	if RuleUse(begin,"while()",RuleWhile) return true
+					if RuleUse(begin,"while()",RuleWhile) return true
 				//	if RuleUse(begin,"for()",RuleFor) 
 				//			return true
 				//	if RuleUse(begin,"switch()",RuleSwitch) 
@@ -611,22 +598,22 @@ RuleIf := !(void^ itr)-> int
 //	if InDataR(It) return 2
 //	return 0
 //}
-//RuleWhile := !(void^ itr)-> int
-//{
-//	It := itr->{Token^}
-//
-//	if It.GetValue() != "while" return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if not InDataR(It) return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if It.GetValue() != "{}" and not InBlockData(It) return 0
-//	return 3
-//}
-//
+RuleWhile := !(void^ itr)-> int
+{
+	It := itr->{Token^}
+
+	if It.GetValue() != "while" return 0
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" and not InBlockData(It) return 0
+	return 3
+}
+
 //RuleFor := !(void^ itr)-> int
 //{
 //	It := itr->{Token^}
