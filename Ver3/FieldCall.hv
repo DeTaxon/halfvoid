@@ -1,0 +1,28 @@
+TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right == null return null
+	if itm.Down.Right.Right.Right != null return null
+
+	if itm.Down.Right.GetValue() != "." return null
+	if not (itm.Down.Right.Right is TokenIndent) return null
+
+	val := TryGetExeCall(itm.Down)
+	name := itm.Down.Right.Right->{TokenIndent^}.Value
+
+	assert(val != null) //TODO
+
+	typ := val.GetType()
+	if typ is TypeClass
+	{
+		cls := typ->{TypeClass^}.ToClass
+		fld := cls.GetField(name)
+
+		itms := CheckExeDownList
+		itms.Push(val)
+		return new BoxFuncCall(fld,itms)
+	}
+	return null
+}

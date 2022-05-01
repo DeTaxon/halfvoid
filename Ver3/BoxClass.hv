@@ -1,0 +1,253 @@
+TryParseClass := !(Token^ itm) -> BoxClass^
+{
+	if itm == null or itm.Down == null or itm.Down.GetValue() != "class"
+		return null
+
+	
+	isPacked := bool
+	//TODO: extends
+	bdy := itm.Down.Right
+
+	if bdy == null
+		return null
+	
+	return new BoxClassBody(isPacked,bdy)
+}
+
+BoxClass := class extend BoxUnit
+{
+	ItId := int
+	ItType := Type^
+	IsPacked := bool
+	Fields := List.{FieldParam^}
+	FieldsPath := List.{FieldPath^}
+	Parents := HybridQueue.{BoxClass^,1}
+	ItName := StringSpan
+
+	CreateCommon := !() -> void
+	{
+	}
+	SetName := !(StringSpan name) -> void
+	{
+		ItName = name
+	}
+	PrintAsType := virtual !(TIOStream^ f) -> void
+	{
+		if Fields.Size() != 0
+		{
+			f^ << "%ClassThisParams" << ItId << " = type {"
+			for i : Fields.Size() //TODO wtf
+			{
+				if i > 0
+					f^ << ","
+				Fields[i].Value.PrintType(f)
+			}
+			f^ << "}\n"
+		}
+		needComma := false
+		f^ << "%Class" << ItId << " = type {"
+		if FieldsCount() == 0 //TODO and not virtual
+		{
+			f^ <<"i1"
+		}else{
+			PrintThis(f,needComma&)
+		}
+		f^ << "}\n"
+
+		if DebugMode
+		{
+			f^ << "!" << ItId
+			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
+			f^ << ItName
+			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: 64, flags: DIFlagTypePassByValue, elements: !{}, identifier: \""
+			f^ << ItName
+			f^ << "\")\n"
+		}
+	}
+	PrintThis := !(TIOStream^ f,bool^ needComma) -> void
+	{
+		Parents[^].PrintThis(f,needComma)
+		if Fields.Size() != 0
+		{
+			if needComma^
+				f^ << ","
+			needComma^ = true
+			f^ << "%ClassThisParams" << ItId
+		}
+	}
+	ParseBody := virtual !() -> void
+	{
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+	}
+	AwaitReadyState := virtual !() -> void
+	{
+		
+	}
+	FieldsCount := !() -> int
+	{
+		sum := Fields.Size()
+		sum += Parents[^].FieldsCount()
+		return sum
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+	}
+}
+TypeClass := class extend Type
+{
+	ToClass := BoxClass^
+
+	this := !(BoxClass^ ths) -> void
+	{
+		ToClass = ths
+		MetaId = ths.ItId
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%Class" << MetaId
+	}
+}
+
+BoxClassBody := class extend BoxClass
+{
+	Body := Token^
+
+	FieldsState := THatch
+
+	this := !(bool isPacked,Token^ bdy) -> void
+	{
+		ItName = "anon" //TODO
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+
+		IsPacked = isPacked
+		Body = bdy
+		CurrentFile.AllClasses.Push(this&)
+
+
+		GClassesInProgress.Push(this&)
+		cls := this&
+		TSpawnTask(() ==> [cls] {
+			cls.ParseBody()	
+		})
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+		FieldsState.Emit()
+	}
+	AwaitReadyState := virtual !() -> void
+	{
+		AwaitTypeState()
+	}
+	ParseBody := virtual !() -> void
+	{
+		GParsedAllFiles.Await()
+		SyntaxCompress(Body,LexHVFileRoot)
+
+		iter := Body.Down
+
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{
+				assert(iter.Down is TokenIndent) //TODO
+				name := iter.Down->{TokenIndent^}.Value
+
+				itm := iter.Down.Right.Right
+
+				asType := ParseType(itm)
+				if asType != null
+				{
+					newField := new FieldParam(name,asType)
+					Fields.Push(newField)
+				}
+			}
+			iter = iter.Right
+		}
+
+		//TODO parents
+
+		posOffset := 0
+
+		for fil,i : Fields
+		{
+			fPath := new FieldPath(fil.Value)
+			fPath.Field = fil
+			fPath.OuterPath = posOffset
+			fPath.InnerPath = i
+			FieldsPath.Push(fPath)
+		}
+		FieldsState.Emit()
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+	}
+}
+
+FieldParam := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := Type^
+	this := !(StringSpan name, Type^ val) -> void
+	{
+		Name = name
+		Value = val
+	}
+}
+FieldPath := class extend BoxFuncCommon
+{
+	Field := FieldParam^
+	OuterPath := int
+	InnerPath := int
+
+	this := !(Type^ res) -> void
+	{
+		SetType(GetFuncType(0,null,null,res,true,false))
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		f^ << "%T" << resId 
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		tp := lst[0].GetType()
+		lst[0].PrintPointPre(f)
+		f^ << "%T" << resId << " = getelementptr "
+		tp.PrintType(f)
+		f^ << ","
+		tp.PrintType(f)
+		f^ << "* "
+		lst[0].PrintPointUse(f)
+		f^ << " , i32 0, i32 " << OuterPath << " , i32 " << InnerPath //TODO virtual
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
