@@ -35,6 +35,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	cls := TryParseClass(varToken)
 	if cls != null
 	{
+		cls.SetName(name)
 		return new TypeVar(name,cls.ItType)	
 	}
 
