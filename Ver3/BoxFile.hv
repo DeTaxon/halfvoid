@@ -3,6 +3,7 @@ BoxCodeSpace := class
 	Files := List.{BoxFile^}
 
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
+	Globals := AVLMap.{StringSpan,List.{BoxUnit^}}
 
 	CLibs := List.{CLib^}
 }
@@ -20,6 +21,7 @@ BoxFile := class extend BoxUnit
 	objects := List.{BoxUnit^}
 
 	AllFunctions := List.{BoxFunc^} //Including anon functions
+	AllClasses := List.{BoxClass^}
 
 	this := !(vRepoFile^ inFile) -> void
 	{
@@ -75,9 +77,15 @@ BoxFile := class extend BoxUnit
 
 			if vr != null
 			{
+				if vr is TypeVar
+				{
+					CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
+				}
+
 				objects.Push(vr)
 				vr.Work()
 			}else{
+				assert(false)
 			}
 			iter = iter.Right
 		}

@@ -7,6 +7,7 @@ HVOperators := AVLSet.{StringSpan}
 
 DebugMode := bool
 
+GParsedAllFiles := THatch
 
 GDebugFileId := task_local int
 GDebugFuncId := task_local int

@@ -5,6 +5,7 @@ ParseType := !(Token^ obj) -> Type^
 	if obj is TokenIndent
 	{
 		asIndent := obj->{TokenIndent^}
+		name := asIndent.Value
 
 		for defs : DefsTable
 		{
@@ -12,6 +13,19 @@ ParseType := !(Token^ obj) -> Type^
 				break
 			if defs.ItName == asIndent.Value
 				return defs.ItType
+		}
+		for spc : CodeSpaces
+		{
+			if spc.Globals.Contain(name)
+			{
+				for glb : spc.Globals[name]
+				{
+					if glb is TypeVar
+					{
+						return glb->{TypeVar^}.Value
+					}
+				}
+			}
 		}
 	}
 	if obj.GetValue() == "~d"

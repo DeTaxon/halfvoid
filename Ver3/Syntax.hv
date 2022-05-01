@@ -7,11 +7,10 @@ InDataR := !(Token^ obj) -> bool
 InBlockData := !(Token^ obj) -> bool
 {
 	if InDataR(obj) return true
+	if obj.IsBlock return true
 	switch(obj.GetValue())
 	{
 		case  "return()" return true
-		case  "if()" return true
-		case  "while()" return true
 		case  "for()" return true
 		case  "switch()" return true
 		case  "~continue" return true
@@ -31,10 +30,14 @@ RuleUse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
-			i2 := iter
-			for Try-1 i2 = i2.Right
-			nObj := new TokenData
-			UNext(iter,nObj,i2)
+			nObj := Token^
+			if N == "Block"
+			{
+				nObj = new TokenBlockData
+			}else{
+				nObj = new TokenData
+			}
+			UNext(iter,nObj,Try)
 			iter = nObj
 			GotStuff = true
 		}else{
@@ -98,6 +101,13 @@ RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 		if Try > 0
 		{
 			//RemoveTokens(iter,Try,tokenDict)
+			nObj := Token^
+			if N == "Block"
+			{
+				nObj = new TokenBlockData
+			}else{
+				nObj = new TokenData
+			}
 			iter = UNext(iter,new TokenData,Try)
 			GotStuff = true
 		}else{
@@ -148,8 +158,8 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				//			return true
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
-				//case "#ClassBlock"
-				//	if RuleUse(begin,"~d",RuleClass) return true
+				case "#ClassBlock"
+					if RuleUse(begin,"~d",RuleClass) return true
 				//case "#CallDecoratorCall"
 				//	if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
 				//			return true
@@ -159,8 +169,8 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"return()",RuleOneFunc) return true
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
-					if RuleUseReverse(begin,"if()",RuleIf) return true
-					if RuleUse(begin,"while()",RuleWhile) return true
+					if RuleUseReverse(begin,"Block",RuleIf) return true
+					if RuleUse(begin,"Block",RuleWhile) return true
 				//	if RuleUse(begin,"for()",RuleFor) 
 				//			return true
 				//	if RuleUse(begin,"switch()",RuleSwitch) 
@@ -274,62 +284,62 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 //	return 0
 //}
 //
-//RuleClass := !(void^ itr) -> int
-//{
-//
-//	It := itr->{Token^}
-//
-//	if It.GetValue() not in !["class","packed_class"]  return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//
-//	size := 1
-//
-//	if It.GetValue() == "."
-//	{
-//		
-//		It = It.Right
-//		if It == null return 0
-//
-//		if It.GetValue() != "{}" return 0
-//
-//		It = It.Right
-//		if It == null return 0
-//
-//		size += 2
-//	}
-//
-//	if It.GetValue() == "extend"
-//	{
-//		It = It.Right
-//		if It == null return 0
-//
-//		if not It.IsData return 0
-//
-//		It = It.Right
-//		if It == null return 0
-//
-//		size += 2
-//
-//		while It.GetValue() == ","
-//		{
-//			It = It.Right
-//			if It == null return 0
-//
-//			if not It.IsData return 0
-//
-//			It = It.Right
-//			if It == null return 0
-//
-//			size += 2
-//		}
-//	}
-//
-//	if It.GetValue() != "{}" return 0
-//	return size + 1
-//}
-//
+RuleClass := !(void^ itr) -> int
+{
+
+	It := itr->{Token^}
+
+	if It.GetValue() not in !["class","packed_class"]  return 0
+
+	It = It.Right
+	if It == null return 0
+
+	size := 1
+
+	if It.GetValue() == "."
+	{
+		
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "{}" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
+	if It.GetValue() == "extend"
+	{
+		It = It.Right
+		if It == null return 0
+
+		if not It.IsData return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+
+		while It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
+
+			if not It.IsData return 0
+
+			It = It.Right
+			if It == null return 0
+
+			size += 2
+		}
+	}
+
+	if It.GetValue() != "{}" return 0
+	return size + 1
+}
+
 RuleParam := !(void^ itr) -> int
 {
 	size := 0

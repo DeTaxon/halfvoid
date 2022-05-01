@@ -1,12 +1,18 @@
+Cls := class
+{
+	x := int
+	y := int
+	z := int
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	x := int
 	x = 13
 
-	while x > 0
-	{
-		printf("hi\n")
-		x -= 1
-	}
+	if x > 1000
+		printf("hey\n")
+	y := Cls
+
 	printf("hello world %i!\n",x >= 13)
 }

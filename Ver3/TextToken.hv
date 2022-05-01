@@ -10,6 +10,7 @@ Token := class
 	TokenId := int
 
 	IsData := virtual false
+	IsBlock := virtual false
 
 	GetValue := virtual !() -> ref StringSpan
 	{
@@ -60,6 +61,10 @@ TokenData := class extend Token
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
+}
+TokenBlockData := class extend TokenData
+{
+	IsBlock := virtual true
 }
 
 FileLine := class

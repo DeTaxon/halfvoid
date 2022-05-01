@@ -25,7 +25,9 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 GArchBitSize := 64
 
 GDebugTypePrintMeta := List.{Type^}
+
 GFuncsInProgress := List.{BoxFunc^}
+GClassesInProgress := List.{BoxClass^}
 
 OutputFile := char^
 main := !(int argc, char^^ argv) -> int
@@ -107,6 +109,7 @@ main := !(int argc, char^^ argv) -> int
 			fil2.Parse()
 		})
 	}
+	GParsedAllFiles.Emit()
 
 	for fil : CodeFiles
 	{
@@ -118,18 +121,24 @@ main := !(int argc, char^^ argv) -> int
 		assert(x.Size() == 1) //TODO: better main function
 		assert(x[0] is BoxFuncBody)
 		mainFunc = x[0]->{BoxFuncBody^}
+		return true
 	})
 	assert(mainFunc != null)//TODO better main function
 
 	mainFunc.ParseBody()
 	mainFunc.WaitReadyState()
 
+	while GClassesInProgress.Size() != 0
+	{
+		GClassesInProgress[0].AwaitReadyState()
+		GClassesInProgress.Pop()
+	}
+
 	while GFuncsInProgress.Size() != 0
 	{
 		GFuncsInProgress[0].WaitReadyState()
 		GFuncsInProgress.Pop()
 	}
-
 	printf("good to do\n")
 
 	outFile := new TFile(OutputFile,"wb")
@@ -137,6 +146,14 @@ main := !(int argc, char^^ argv) -> int
 	if DebugMode
 		PrintDebugMeta(outFile)
 	
+	for spc : CodeSpaces
+	{
+		for fil : spc.Files
+		{
+			GDebugFileId = fil.fileId
+			fil.AllClasses[^].PrintAsType(outFile)
+		}
+	}
 	for spc : CodeSpaces
 	{
 		for fil : spc.Files

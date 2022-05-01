@@ -32,6 +32,12 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		return new MemVar(name,vr)
 	}
 
+	cls := TryParseClass(varToken)
+	if cls != null
+	{
+		return new TypeVar(name,cls.ItType)	
+	}
+
 	fnc := TryParseFunction(varToken)
 
 	if fnc != null
@@ -40,6 +46,18 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	}
 	
 	return null
+}
+
+TypeVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := Type^
+
+	this := !(StringSpan name, Type^ val) -> void
+	{
+		Name = name
+		Value = val
+	}
 }
 
 MemVar := class extend BoxUnit

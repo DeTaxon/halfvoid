@@ -8,10 +8,10 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	assert(cmpExe != null) //TODO emit error
 	//TODO cmpExe to bool
 
-	tryToken := itm.Down.Right.Right
+	tryToken := MakeItBlock(itm.Down.Right.Right)
 	flsToken := Token^
 	
-	flsToken = tryToken.Right?.Right
+	flsToken = MakeItBlock(tryToken.Right?.Right)
 
 	tru := BoxBlock^
 	fls := BoxBlock^
@@ -29,6 +29,17 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	if fls == null
 		return new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru)
 	return new BoxIfFull(itm.Down.Right,cmpExe,tru,fls)
+}
+
+MakeItBlock := !(Token^ itm) -> Token^
+{
+	if itm == null
+		return null
+	if itm.GetValue() != "{}"
+	{
+		return UNext(itm,new TokenSymbol(StringSpan("{}"),0),1)
+	}
+	return itm
 }
 
 BoxIfTrueOnly := class extend BoxUnit
