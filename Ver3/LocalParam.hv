@@ -32,6 +32,19 @@ FuncLocalParam := class extend BoxFuncCommon
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
+		}else //if pType is TypeClass
+		{
+			f^ << "%Void" << varId << " = bitcast "
+			pType.PrintType(f)
+			f^ << "* %V" << varId << " to i8*"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+
+			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << varId << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
 		}
 		if DebugMode
 		{

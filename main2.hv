@@ -13,6 +13,5 @@ main := !(int argc, char^^ argv) -> int
 	if x > 1000
 		printf("hey\n")
 	y := Cls
-	y.x = 4567
-	printf("hello world %i!\n",y.x)
+	printf("hello world %p!\n",y.x)
 }

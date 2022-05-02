@@ -143,6 +143,7 @@ main := !(int argc, char^^ argv) -> int
 
 	outFile := new TFile(OutputFile,"wb")
 
+	PrintDeclares(outFile)
 	if DebugMode
 		PrintDebugMeta(outFile)
 	
@@ -187,6 +188,42 @@ main := !(int argc, char^^ argv) -> int
 
 	return 0
 }
+PrintDeclares := !(TIOStream^ f) -> void
+{
+	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
+	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+	f^ << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
+	f^ << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
+	f^ << "declare i32 @setjmp(i8* %abc) #1\n"
+	f^ << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+	f^ << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
+	f^ << "declare void @llvm.debugtrap() #0\n"
+	f^ << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
+	f^ << "declare i8* @llvm.stacksave() #1\n"
+	f^ << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)\n"
+	f^ << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
+	f^ << "attributes #1 = { nounwind }\n"
+	f^ << "attributes #2 = { nounwind readnone}\n"
+	f^ << "attributes #3 = { nounwind noreturn}\n"
+	f^ << "%OpaqType = type {i1}\n"
+	f^ << "%Vec4f = type <4 x float>\n"
+	f^ << "%Vec3f = type <3 x float>\n"
+	f^ << "%Vec2f = type <2 x float>\n"
+
+	f^ << "declare void @llvm.va_start(i8* %a)\n"
+	f^ << "declare void @llvm.va_end(i8* %a)\n"
+	f^ << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+
+	f^ << "declare void @llvm.memset.p0i8.i64(i8* %dest, i8 %val,i64 %len, i1 %isvolatile)\n"
+	
+}
+
 cuId := int
 PrintDebugMeta := !(TIOStream^ fil) -> void
 {

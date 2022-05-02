@@ -121,8 +121,12 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 		return prm
 
 	isParamCall := TryCheckGetParam(itm)
-	if isParamCall
+	if isParamCall != null
 		return isParamCall
+	
+	unrefCall := TryGetUnrefObj(itm)
+	if unrefCall != null
+		return unrefCall
 
 	return null
 

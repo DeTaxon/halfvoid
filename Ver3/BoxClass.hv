@@ -115,6 +115,10 @@ TypeClass := class extend Type
 	{
 		f^ << "%Class" << MetaId
 	}
+	GetSize := virtual !() -> int
+	{
+		return 3*4
+	}
 }
 
 BoxClassBody := class extend BoxClass
