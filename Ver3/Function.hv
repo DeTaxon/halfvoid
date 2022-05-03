@@ -71,7 +71,10 @@ BoxLabel := class
 	}
 	PrintGo := virtual !(TIOStream^ f) -> void
 	{
-		f^ << "br label %L" << id << "\n" //TODO debug
+		f^ << "br label %L" << id
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

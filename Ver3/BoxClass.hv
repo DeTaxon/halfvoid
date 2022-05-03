@@ -1,18 +1,3 @@
-TryParseClass := !(Token^ itm) -> BoxClass^
-{
-	if itm == null or itm.Down == null or itm.Down.GetValue() != "class"
-		return null
-
-	
-	isPacked := bool
-	//TODO: extends
-	bdy := itm.Down.Right
-
-	if bdy == null
-		return null
-	
-	return new BoxClassBody(isPacked,bdy)
-}
 
 BoxClass := class extend BoxUnit
 {
@@ -66,7 +51,7 @@ BoxClass := class extend BoxUnit
 
 				f^ << "!" << newId << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << fld.Name << "\" , scope: !" << ItId
 				f^ << ",flags: DIFlagPublic"
-				f^ << " , baseType: !" << fld.Value.MetaId << ", size: " << fld.Value.GetSize() << ", offset: " << FieldsPath[i].MemOffset << ")\n"
+				f^ << " , baseType: !" << fld.Value.MetaId << ", size: " << fld.Value.GetSize()*8 << ", offset: " << FieldsPath[i].MemOffset*8 << ")\n"
 			}
 
 			fieldTypes := GetNewId()
@@ -82,7 +67,7 @@ BoxClass := class extend BoxUnit
 			f^ << "!" << ItId
 			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
 			f^ << ItName
-			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: 64, flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""
+			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: "<< ItSize*8 <<", flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""
 			f^ << ItName
 			f^ << "\")\n"
 		}
@@ -108,12 +93,21 @@ BoxClass := class extend BoxUnit
 		assert(FieldsPath.Size() == 0)
 		//TODO parents
 
+		Parents[^].AwaitTypeState()
+		ItAlign = max(ItAlign,Parents[^].ItAlign)
+
 		posOffset := 0
 		posMemOffset := 0
 
 		if Parents.Size() > 0
 		{
-			assert(false)
+			posMemOffset = Parents[0].ItSize
+			posOffset += Parents[0].FieldsPath.Size()
+
+			for i : Parents[0].FieldsPath.Size()
+			{
+				FieldsPath.Push(Parents[0].FieldsPath[i])
+			}
 		}
 
 		if Parents.Size() >= 2
@@ -182,78 +176,6 @@ TypeClass := class extend Type
 	}
 }
 
-BoxClassBody := class extend BoxClass
-{
-	Body := Token^
-
-	FieldsState := THatch
-
-	this := !(bool isPacked,Token^ bdy) -> void
-	{
-		ItName = "anon" //TODO
-		ItId = GetNewId()
-		ItType = new TypeClass(this&)
-
-		IsPacked = isPacked
-		Body = bdy
-		CurrentFile.AllClasses.Push(this&)
-
-
-		GClassesInProgress.Push(this&)
-		cls := this&
-		TSpawnTask(() ==> [cls] {
-			cls.ParseBody()	
-		})
-	}
-	AwaitTypeState := virtual !() -> void
-	{
-		FieldsState.Emit()
-	}
-	AwaitReadyState := virtual !() -> void
-	{
-		AwaitTypeState()
-	}
-	ParseBody := virtual !() -> void
-	{
-		GParsedAllFiles.Await()
-		SyntaxCompress(Body,LexHVFileRoot)
-
-		iter := Body.Down
-
-		while iter != null
-		{
-			if iter.Down?.Right?.GetValue() == ":="
-			{
-				assert(iter.Down is TokenIndent) //TODO
-				name := iter.Down->{TokenIndent^}.Value
-
-				itm := iter.Down.Right.Right
-
-				asType := ParseType(itm)
-				if asType != null
-				{
-					newField := new FieldParam(name,asType)
-					Fields.Push(newField)
-				}
-			}
-			iter = iter.Right
-		}
-
-		InheritStep()
-
-		FieldsState.Emit()
-	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
-	{
-		AwaitTypeState()
-
-		for it : FieldsPath
-		{
-			if it.Field.Name == val
-				return it
-		}
-	}
-}
 
 FieldParam := class extend BoxUnit
 {
