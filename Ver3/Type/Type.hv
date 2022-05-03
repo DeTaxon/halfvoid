@@ -123,11 +123,11 @@ TypePoint := class extend Type
 	}
 	GetAlign := virtual !() -> int
 	{
-		return 8
+		return GArchBitSize div 8
 	}
 	GetSize := virtual !() -> int
 	{
-		return 8
+		return GArchBitSize div 8
 	}
 	PrintType := virtual !(TIOStream^ f) -> void
 	{

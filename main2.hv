@@ -1,7 +1,7 @@
 Cls := class
 {
 	x := int
-	y := int
+	y := s64
 	z := int
 }
 
@@ -13,5 +13,8 @@ main := !(int argc, char^^ argv) -> int
 	if x > 1000
 		printf("hey\n")
 	y := Cls
+	y.x = 1
+	y.y = 2
+	y.z = 3
 	printf("hello world %p!\n",y.x)
 }

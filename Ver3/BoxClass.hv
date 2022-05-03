@@ -19,10 +19,14 @@ BoxClass := class extend BoxUnit
 	ItId := int
 	ItType := Type^
 	IsPacked := bool
-	Fields := List.{FieldParam^}
-	FieldsPath := List.{FieldPath^}
 	Parents := HybridQueue.{BoxClass^,1}
 	ItName := StringSpan
+
+	Fields := List.{FieldParam^}
+	FieldsPath := List.{FieldPath^}
+	ItSize := int
+	ItAlign := int
+
 
 	CreateCommon := !() -> void
 	{
@@ -33,46 +37,54 @@ BoxClass := class extend BoxUnit
 	}
 	PrintAsType := virtual !(TIOStream^ f) -> void
 	{
-		if Fields.Size() != 0
-		{
-			f^ << "%ClassThisParams" << ItId << " = type {"
-			for i : Fields.Size() //TODO wtf
-			{
-				if i > 0
-					f^ << ","
-				Fields[i].Value.PrintType(f)
-			}
-			f^ << "}\n"
-		}
 		needComma := false
 		f^ << "%Class" << ItId << " = type {"
-		if FieldsCount() == 0 //TODO and not virtual
+		if FieldsPath.Size() == 0 //TODO and not virtual
 		{
 			f^ <<"i1"
 		}else{
-			PrintThis(f,needComma&)
+			for i : FieldsPath.Size()
+			{
+				if needComma
+					f^ << ","
+				needComma = true
+				FieldsPath[i].Field.Value.PrintType(f)
+			}
 		}
 		f^ << "}\n"
 
 		if DebugMode
 		{
+			fieldMetas := List.{int}
+			defer fieldMetas.Destroy()
+
+			for i : FieldsPath.Size()
+			{
+				newId := GetNewId()
+				fieldMetas.Push(newId)
+				fld := FieldsPath[i].Field
+
+				f^ << "!" << newId << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << fld.Name << "\" , scope: !" << ItId
+				f^ << ",flags: DIFlagPublic"
+				f^ << " , baseType: !" << fld.Value.MetaId << ", size: " << fld.Value.GetSize() << ", offset: " << FieldsPath[i].MemOffset << ")\n"
+			}
+
+			fieldTypes := GetNewId()
+			f^ << "!" << fieldTypes << " = !{"
+			for it,i : fieldMetas
+			{
+				if i > 0
+					f^ << ","
+				f^ << "!" << it
+			}
+			f^ << "}\n"
+
 			f^ << "!" << ItId
 			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
 			f^ << ItName
-			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: 64, flags: DIFlagTypePassByValue, elements: !{}, identifier: \""
+			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: 64, flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""
 			f^ << ItName
 			f^ << "\")\n"
-		}
-	}
-	PrintThis := !(TIOStream^ f,bool^ needComma) -> void
-	{
-		Parents[^].PrintThis(f,needComma)
-		if Fields.Size() != 0
-		{
-			if needComma^
-				f^ << ","
-			needComma^ = true
-			f^ << "%ClassThisParams" << ItId
 		}
 	}
 	ParseBody := virtual !() -> void
@@ -90,6 +102,45 @@ BoxClass := class extend BoxUnit
 		sum := Fields.Size()
 		sum += Parents[^].FieldsCount()
 		return sum
+	}
+	InheritStep := !() -> void
+	{
+		assert(FieldsPath.Size() == 0)
+		//TODO parents
+
+		posOffset := 0
+		posMemOffset := 0
+
+		if Parents.Size() > 0
+		{
+			assert(false)
+		}
+
+		if Parents.Size() >= 2
+		{
+			assert(false) //TODO
+		}
+
+
+		for fil,i : Fields
+		{
+			fPath := new FieldPath(fil.Value)
+			fPath.Field = fil
+			fPath.Index = posOffset + i
+
+			unalign := posMemOffset % fil.Value.GetAlign()
+			ItAlign = max(ItAlign,fil.Value.GetAlign())
+
+			if unalign != 0
+			{
+				posMemOffset += fil.Value.GetAlign() - unalign
+			}
+			fPath.MemOffset = posMemOffset
+			posMemOffset += fil.Value.GetSize()
+
+			FieldsPath.Push(fPath)
+		}
+		ItSize = posMemOffset
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{
@@ -117,7 +168,17 @@ TypeClass := class extend Type
 	}
 	GetSize := virtual !() -> int
 	{
-		return 3*4
+		ToClass.AwaitTypeState()
+		minSize := ToClass.ItSize
+		unalign := minSize % ToClass.ItAlign
+		if unalign != 0
+			minSize += ToClass.ItAlign - unalign
+		return minSize
+	}
+	GetAlign := virtual !() -> int
+	{
+		ToClass.AwaitTypeState()
+		return ToClass.ItAlign
 	}
 }
 
@@ -178,18 +239,8 @@ BoxClassBody := class extend BoxClass
 			iter = iter.Right
 		}
 
-		//TODO parents
+		InheritStep()
 
-		posOffset := 0
-
-		for fil,i : Fields
-		{
-			fPath := new FieldPath(fil.Value)
-			fPath.Field = fil
-			fPath.OuterPath = posOffset
-			fPath.InnerPath = i
-			FieldsPath.Push(fPath)
-		}
 		FieldsState.Emit()
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
@@ -217,8 +268,8 @@ FieldParam := class extend BoxUnit
 FieldPath := class extend BoxFuncCommon
 {
 	Field := FieldParam^
-	OuterPath := int
-	InnerPath := int
+	Index := int
+	MemOffset := int
 
 	this := !(Type^ res) -> void
 	{
@@ -249,7 +300,7 @@ FieldPath := class extend BoxFuncCommon
 		tp.PrintType(f)
 		f^ << "* "
 		lst[0].PrintPointUse(f)
-		f^ << " , i32 0, i32 " << OuterPath << " , i32 " << InnerPath //TODO virtual
+		f^ << " , i32 0, i32 " << Index //TODO virtual
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
