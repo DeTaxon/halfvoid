@@ -271,6 +271,10 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 		{
 			return 1000
 		}
+		if IsFloat(f1) and IsInt(t1)
+		{
+			return 2000 //TODO warning
+		}
 	}
 
 	return CmpNoExchange
