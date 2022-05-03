@@ -150,4 +150,22 @@ CreateBuiltins := !() -> void
 
 
 	})
+	ForEachFloatType( (x) ==> {
+		strt := GetFuncType(![x,x],x)
+		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+
+		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
+
+		//bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"fadd") )
+		//bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"fsub") )
+		//bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"fmul") )
+		//bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"fmul") )
+
+		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
+		//bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
+		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+
+		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
+		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )
+	})
 }

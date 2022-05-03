@@ -6,6 +6,7 @@ CurrentFile := task_local BoxFile^
 HVOperators := AVLSet.{StringSpan}
 
 DebugMode := bool
+ErrorState := bool
 
 GParsedAllFiles := THatch
 

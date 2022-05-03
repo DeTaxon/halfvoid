@@ -2,6 +2,7 @@ BoxFunc := class extend BoxUnit
 {
 	ItType := TypeFunc^
 	ItTypeHatch := THatch
+	Constants := List.{BoxExeObj^} //todo  to Array for less memory consuption
 
 	GetType := !() -> TypeFunc^
 	{

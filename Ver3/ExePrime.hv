@@ -18,6 +18,10 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 		GlobalInts[val] = newObj
 		return newObj
 	}
+	if itm is TokenDouble
+	{	
+		return new BoxExeDouble(itm->{TokenDouble^}.Parsed)
+	}
 }
 
 GlobalInts := AVLMap.{int,BoxExeInt^}
@@ -32,6 +36,19 @@ BoxExeInt := class extend BoxExeObj
 	{
 		val = nVal
 		ObjType = GTypeInt
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << val
+	}
+}
+BoxExeDouble := class extend BoxExeObj
+{
+	val := double
+	this := !(double v) -> void
+	{
+		val = v
+		ObjType = GTypeDouble
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{

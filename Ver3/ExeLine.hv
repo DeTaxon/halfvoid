@@ -227,16 +227,21 @@ CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
 
 	for i : count
 	{
-		worstCase = max(worstCase,TypePriorCmp(objs[i].GetType(),fncType.Params[i].ItType))
+		worstCase = max(worstCase,TypePriorCmp(objs[i].GetType(),fncType.Params[i].ItType,objs[i].IsMem()))
 		if worstCase == CmpNoExchange
 			return CmpNoExchange
 	}
 	return worstCase
 }
-TypePriorCmp := !(Type^ frm, Type^ to) -> int
+TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 {
 	if frm == to
 		return 0
+
+	if isMem
+	{
+		return CmpNoExchange
+	}
 	
 	if frm is TypePoint and to == GTypeVoidP
 		return 1000 //TODO TypeArr
@@ -252,6 +257,18 @@ TypePriorCmp := !(Type^ frm, Type^ to) -> int
 			{
 				return 2000
 			}
+			return 1000
+		}
+		if IsFloat(f1) and IsFloat(t1)
+		{
+			if f1.GetSize() > t1.GetSize()
+			{
+				return 2000
+			}
+			return 1000
+		}
+		if IsInt(f1) and IsFloat(t1)
+		{
 			return 1000
 		}
 	}

@@ -22,6 +22,17 @@ Token := class
 	{
 		assert(false)
 	}
+
+	EmitError := !(char^ info) -> void
+	{
+
+		ln := "Error <"sbt << info << ">"
+		if Line != null
+		{
+			ln << " at file " << Line.File << " line: " <<Line.Line
+		}
+		throw new Exception(ln.Str()) //TODO memory
+	}
 }
 
 emptySpn := StringSpan

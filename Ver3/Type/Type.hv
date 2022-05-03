@@ -169,7 +169,19 @@ ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
 		cb(TypeTable[i],i >= 4)
 	}
 }
+ForEachFloatType := !(!(Type^)&-> void cb) -> void
+{
+	cb(GTypeFloat)
+	cb(GTypeDouble)
+}
 
+IsUInt := !(Type^ obj) -> bool
+{
+	for i : 4
+		if TypeTable[i] == obj
+			return true
+	return false
+}
 IsInt := !(Type^ obj) -> bool
 {
 	for i : 8

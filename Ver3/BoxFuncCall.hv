@@ -27,6 +27,22 @@ BoxFuncCall := class extend BoxExeObj
 				downs[i].NotifyMemUse()
 			}
 		}
+
+		for par,i : fnc.GetType().Params
+		{
+			assert( i < downs.Size())
+			if downs[i].GetType() != par.ItType
+			{
+				newObj := GetExchange(downs[i],par.ItType)
+				assert(newObj != null)
+
+				while newObj.GetType() != par.ItType
+				{
+					newObj = GetExchange(newObj,par.ItType) //TODO limit to some value
+				}
+				downs[i] = newObj
+			}
+		}
 	}
 	NotifyMemUse := virtual !() -> void
 	{
@@ -66,6 +82,8 @@ BoxFuncCall := class extend BoxExeObj
 			rType.PrintType(f)
 			f^ << "* "
 			PrintPointUse(f)
+			if DebugMode
+				f^ << ", !dgb !" << GDebugLineCallId
 			f^ << "\n"
 		}else{
 			PrintFuncUse(f)
