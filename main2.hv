@@ -16,5 +16,5 @@ main := !(int argc, char^^ argv) -> int
 	y.x = 1
 	y.y = 2
 	y.z = 3
-	printf("hello world %p!\n",y.x)
+	printf("hello world %p!\n",y.y)
 }

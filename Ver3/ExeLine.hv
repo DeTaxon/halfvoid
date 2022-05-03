@@ -194,7 +194,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 			if priorityes[i] < priorityes[bestI]
 				bestI = i
 		}
-		if priorityes[bestI] == 255
+		if priorityes[bestI] == CmpNoExchange
 			return false
 		callItem = x[bestI]
 		return true
@@ -208,6 +208,8 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 	}
 }
 
+CmpNoExchange := 999000
+
 CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
 {
 	worstCase := 0
@@ -219,17 +221,16 @@ CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
 		maxArgs = 20000000 //TODO INT_MAX
 
 	if objs.Size() > maxArgs or objs.Size() < minArgs
-		return 255
+		return CmpNoExchange
 
 	count := min(fncType.Params.Size(),objs.Size())
 
 	for i : count
 	{
-		worstCase = max(worstCase,TypePriorCmp(fncType.Params[i].ItType,objs[i].GetType()) )
-		if worstCase == 255
-			return 255
+		worstCase = max(worstCase,TypePriorCmp(objs[i].GetType(),fncType.Params[i].ItType))
+		if worstCase == CmpNoExchange
+			return CmpNoExchange
 	}
-	//TODO, mst 255
 	return worstCase
 }
 TypePriorCmp := !(Type^ frm, Type^ to) -> int
@@ -238,7 +239,7 @@ TypePriorCmp := !(Type^ frm, Type^ to) -> int
 		return 0
 	
 	if frm is TypePoint and to == GTypeVoidP
-		return 1 //TODO TypeArr
+		return 1000 //TODO TypeArr
 
 	if frm is TypeStandard and to is TypeStandard
 	{
@@ -248,12 +249,14 @@ TypePriorCmp := !(Type^ frm, Type^ to) -> int
 		if IsInt(f1) and IsInt(t1)
 		{
 			if f1.GetSize() > t1.GetSize()
-				return 2
-			return 1
+			{
+				return 2000
+			}
+			return 1000
 		}
 	}
 
-	return 255
+	return CmpNoExchange
 }
 
 TypePriorityTable := AVLMap.{Type^,AVLMap.{Type^,int}}
