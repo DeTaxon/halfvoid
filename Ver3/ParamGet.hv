@@ -20,6 +20,26 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				return new BoxFuncCall(mv.Value,emptyObj)
 			}
 		}
+		if par is in BoxFuncBody
+		{
+			fnc := par->{BoxFuncBody^}
+			if fnc.Attrs.IsMethod and asItm.Value != "this" //TODO
+			{
+				tkn1 := TokenIndent(StringSpan("this"))
+				tkn2 := TokenSymbol(StringSpan("."),0)
+				tknData := TokenData
+
+				tknData.Down = tkn1&
+				tkn1.Right = tkn2&
+				tkn2.Right = itm
+
+				tkn1.Line = itm.Line
+				tkn2.Line = itm.Line
+				tknData.Line = itm.Line
+
+				return TryGetExeCall(tknData&)
+			}
+		}
 	}
 
 	return null

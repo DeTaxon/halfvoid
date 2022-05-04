@@ -141,6 +141,8 @@ List := class .{@T} extend _ListInner
 
 		newNode.Next = Start
 		Start = newNode
+		if End == null
+			End = newNode
 		Counter++
 
 		return Start.Data
