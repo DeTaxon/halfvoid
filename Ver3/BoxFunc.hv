@@ -47,6 +47,8 @@ BoxFunc := class extend BoxUnit
 			needComma = true
 
 			par.ItType.PrintType(f)
+			if par.IsRef
+				f^ << "*"
 			f^ << " %par" << i
 		}
 		if ItType.IsVargs

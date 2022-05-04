@@ -69,6 +69,7 @@ BoxFile := class extend BoxUnit
 
 		SyntaxCompress(tempToken&,LexHVFileRoot)
 
+		CurrentScope = this&
 		iter := tempToken.Down
 
 		while iter != null

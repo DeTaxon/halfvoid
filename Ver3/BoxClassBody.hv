@@ -43,7 +43,7 @@ BoxClassBody := class extend BoxClass
 
 	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
 	{
-		ItName = "anon" //TODO
+		ItName = "anon" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 		
@@ -56,7 +56,9 @@ BoxClassBody := class extend BoxClass
 
 		GClassesInProgress.Push(this&)
 		cls := this&
-		TSpawnTask(() ==> [cls] {
+		itFile := CurrentFile
+		TSpawnTask(() ==> [cls,itFile] { //todo pass CurrentFile directly?
+			CurrentFile = itFile
 			cls.ParseBody()	
 		})
 	}
@@ -106,6 +108,7 @@ BoxClassBody := class extend BoxClass
 					{
 						Methods.Push(asFunc)
 						asFunc.SetName(name)
+						asFunc.Work()
 						asFunc.ParseBody() //TODO remove
 					}else
 					{

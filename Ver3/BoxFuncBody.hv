@@ -62,6 +62,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		refs := bool[40]
 		isVargs := false
 
+		if CurrentScope is in BoxClass //TODO not static,
+		{
+			cls := CurrentScope->{BoxClass^}
+			args[0] = cls.ItType
+			names[0] = "this"
+			refs[0] = true
+			k += 1
+		}
+
 		objs := HybridQueue.{Token^,6}
 		defer objs.Destroy()
 
@@ -101,10 +110,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		resRef := false
 		//TODO ref check
 
-		if CurrentScope is in BoxClass
-		{
-			printf("hello\n")
-		}
 
 		fType := GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
 		SetType(fType)
@@ -126,21 +131,22 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	Work := virtual !() -> void
 	{
-		printf("hey \n",Name)
 		if Name.Get() == null
 			return void
 
 		ParseHeader()
-		assert(CurrentCodeSpace != null)
+		if CurrentFile != null
+		{
+			CurrentFile.AllFunctions.Push(this&)
+		}else{
+			assert(false)
+		}
 
 		if CurrentCodeSpace != null
 		{
 			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
 			CurrentCodeSpace.Functions[Name].Push(this&)
-			CurrentFile.AllFunctions.Push(this&)
-			return void
 		}
-		assert(false) //TODO: not using anon functions
 	}
 
 	Params := HybridQueue.{MemVar^,8}
