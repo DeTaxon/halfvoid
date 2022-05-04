@@ -26,7 +26,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			funcLine = new BoxExeLine //TODO debug only ExeLine version
 			funcLine.ItToken = bdy
 		}
-
+		Work()
 	}
 
 	GetType := !() -> Type^
@@ -36,7 +36,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 
 	StartedParse := bool
-	ParseBody := !() -> void
+	ParseBody := virtual !() -> void
 	{
 		if StartedParse
 			return void
@@ -101,6 +101,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		resRef := false
 		//TODO ref check
 
+		if CurrentScope is in BoxClass
+		{
+			printf("hello\n")
+		}
+
 		fType := GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
 		SetType(fType)
 		
@@ -121,10 +126,12 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	Work := virtual !() -> void
 	{
+		printf("hey \n",Name)
 		if Name.Get() == null
 			return void
 
 		ParseHeader()
+		assert(CurrentCodeSpace != null)
 
 		if CurrentCodeSpace != null
 		{
@@ -148,6 +155,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 		defer readyState.Emit()
+		
+		CurrentScope = this&
 
 		for par : Params
 		{

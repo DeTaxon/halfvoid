@@ -9,6 +9,7 @@ BoxClass := class extend BoxUnit
 
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
+	Methods := List.{BoxFunc^}
 	ItSize := int
 	ItAlign := int
 
@@ -91,7 +92,6 @@ BoxClass := class extend BoxUnit
 	InheritStep := !() -> void
 	{
 		assert(FieldsPath.Size() == 0)
-		//TODO parents
 
 		Parents[^].AwaitTypeState()
 		ItAlign = max(ItAlign,Parents[^].ItAlign)

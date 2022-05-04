@@ -1,0 +1,133 @@
+
+TryParseClass := !(Token^ itm) -> BoxClass^
+{
+	if itm == null or itm.Down == null or itm.Down.GetValue() != "class"
+		return null
+
+	parents := HybridQueue.{Token^,2}
+
+	isPacked := bool
+	//TODO: extends
+
+	iter := itm.Down.Right
+
+	if iter.GetValue() == "extend"
+	{
+		iter = iter.Right
+		parents.Push(iter)
+		iter = iter.Right
+
+		while iter.GetValue() == ","
+		{
+			iter = iter.Right
+			parents.Push(iter)
+			iter = iter.Right
+		}
+		assert(iter.GetValue() == "{}")
+	}
+	bdy := iter
+
+	if bdy == null
+		return null
+	
+	return new BoxClassBody(isPacked,parents,bdy)
+}
+
+
+BoxClassBody := class extend BoxClass
+{
+	Body := Token^
+	ParentTokens := HybridQueue.{Token^,5}
+
+	FieldsState := THatch
+
+	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
+	{
+		ItName = "anon" //TODO
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+		
+		ParentTokens.Push(parents[^])
+
+		IsPacked = isPacked
+		Body = bdy
+		CurrentFile.AllClasses.Push(this&)
+
+
+		GClassesInProgress.Push(this&)
+		cls := this&
+		TSpawnTask(() ==> [cls] {
+			cls.ParseBody()	
+		})
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+		FieldsState.Emit()
+	}
+	AwaitReadyState := virtual !() -> void
+	{
+		AwaitTypeState()
+	}
+	ParseBody := virtual !() -> void
+	{
+		GParsedAllFiles.Await()
+		SyntaxCompress(Body,LexHVFileRoot)
+
+		for i : ParentTokens.Size()
+		{
+			inhType := ParseType(ParentTokens[i])
+			assert(inhType != null) //TODO
+			assert(inhType is TypeClass) //TODO
+			Parents.Push(inhType->{TypeClass^}.ToClass)
+		}
+
+		CurrentScope = this&
+
+		iter := Body.Down
+
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{
+				assert(iter.Down is TokenIndent) //TODO
+				name := iter.Down->{TokenIndent^}.Value
+
+				itm := iter.Down.Right.Right
+
+				asType := ParseType(itm)
+				if asType != null
+				{
+					newField := new FieldParam(name,asType)
+					Fields.Push(newField)
+				}else
+				{
+					asFunc := TryParseFunction(itm)
+					if asFunc != null
+					{
+						Methods.Push(asFunc)
+						asFunc.SetName(name)
+						asFunc.ParseBody() //TODO remove
+					}else
+					{
+						assert(false)
+					}
+				}
+			}
+			iter = iter.Right
+		}
+
+		InheritStep()
+
+		FieldsState.Emit()
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+	}
+}

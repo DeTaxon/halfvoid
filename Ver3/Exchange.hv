@@ -1,0 +1,216 @@
+GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
+{
+	inType := obj.GetType()
+
+	if IsFloat(inType) and IsFloat(expType)
+	{
+		return new FloatExchange(obj,expType)
+	}
+	if IsInt(inType) and IsInt(expType)
+	{
+		return new IntExchange(obj,expType)
+	}
+	if IsInt(inType) and IsFloat(expType)
+	{
+		return new IntToFloatExchange(obj,expType)
+	}
+	if IsFloat(inType) and IsInt(expType)
+	{
+		return new FloatToIntExchange(obj,expType)
+	}
+	if inType is TypePoint and expType is TypePoint
+	{
+		return new PtrExchange(obj,expType)
+	}
+	return null
+}
+
+PtrExchange := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPre(f)
+		f^ << "%T" << resId << " = bitcast "
+		inType.PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+FloatToIntExchange := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPre(f)
+		f^ << "%T" << resId << " = "
+		if IsUInt(ObjType)
+		{
+			f^ << "fptoui"
+		}else{
+			f^ << "fptosi"
+		}
+		f^ << " "
+		inType.PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+IntToFloatExchange := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPre(f)
+		f^ << "%T" << resId << " = "
+		if IsUInt(inType)
+		{
+			f^ << "uitofp"
+		}else{
+			f^ << "sitofp"
+		}
+		f^ << " "
+		inType.PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+IntExchange := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPre(f)
+		f^ << "%T" << resId << " = "
+		if inType.GetSize() > ObjType.GetSize()
+		{
+			f^ << "trunc"
+		}else{
+			if IsUInt(inType)
+			{
+				f^ << "zext"
+			}else{
+				f^ << "sext"
+			}
+		}
+		f^ << " "
+		inType.PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+
+FloatExchange := class extend BoxExeObj
+{	
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPre(f)
+		f^ << "%T" << resId << " = "
+		if inType.GetSize() > ObjType.GetSize()
+		{
+			f^ << "fptrunc"
+		}else{
+			f^ << "fpext"
+		}
+		f^ << " "
+		inType.PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}

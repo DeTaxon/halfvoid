@@ -1,0 +1,37 @@
+TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right != null return null
+	if itm.Down.Right.GetValue() != "&" return null
+
+	dwn := TryGetExeCall(itm.Down)
+
+	assert(dwn != null) //TODO: emit error?
+	assert(dwn.IsMem()) //TODO: emit error
+
+	return new UnrefFuncCall(dwn)
+}
+
+UnrefFuncCall := class extend BoxExeObj
+{
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj) -> void
+	{
+		Down = obj
+		ObjType = Down.GetType().GetPoint()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		Down.PrintPointPre(f)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		Down.PrintPointUse(f)
+	}
+}

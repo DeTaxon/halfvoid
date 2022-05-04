@@ -255,26 +255,30 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 		{
 			if f1.GetSize() > t1.GetSize()
 			{
-				return 2000
+				return 2000 + (100 - t1.GetSize())
 			}
-			return 1000
+			return 1000 + (100 - t1.GetSize())
 		}
 		if IsFloat(f1) and IsFloat(t1)
 		{
 			if f1.GetSize() > t1.GetSize()
 			{
-				return 2000
+				return 2000 + (100 - t1.GetSize())
 			}
-			return 1000
+			return 1000 + (100 - t1.GetSize())
 		}
 		if IsInt(f1) and IsFloat(t1)
 		{
-			return 1000
+			return 1000 + (100 - t1.GetSize())
 		}
 		if IsFloat(f1) and IsInt(t1)
 		{
-			return 2000 //TODO warning
+			return 2000 + (100 - t1.GetSize()) //TODO warning
 		}
+	}
+	if frm is TypePoint and to == GTypeVoidP
+	{
+		return 1000
 	}
 
 	return CmpNoExchange

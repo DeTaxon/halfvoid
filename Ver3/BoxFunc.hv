@@ -34,6 +34,9 @@ BoxFunc := class extend BoxUnit
 	{
 		ItType.ResultType.PrintType(f) //TODO return class
 	}
+	ParseBody := virtual !() -> void
+	{
+	}
 	PrintInputTypes := virtual !(TIOStream^ f) -> void
 	{
 		needComma := false

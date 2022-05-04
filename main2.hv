@@ -3,21 +3,18 @@ Cls := class
 	x := int
 	y := s64
 	z := int
-}
-Cls2 := class extend Cls
-{
-	w := float
+
+	check := !() -> void
+	{
+		printf("hi\n")
+	}
 }
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := int
-	x = 13
-
-	y := Cls2
-	y.x = 1.0
+	y := Cls
+	y.x = 1
 	y.y = 2
 	y.z = 3
-	y.w = 1
-	printf("hello world %p!\n",y.y)
+	//y.check()
 }
