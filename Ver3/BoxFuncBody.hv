@@ -23,7 +23,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if DebugMode
 		{
-			funcLine = new BoxExeLine //TODO debug only ExeLine version
+			funcLine = new BoxExeLine() //TODO debug only ExeLine version
 			funcLine.ItToken = bdy
 		}
 		Work()
