@@ -139,7 +139,6 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 			isRef := false
 			if refs != null
 				isRef = refs[j]
-			//TODO is Class
 			if fnc.Params[j].IsRef != isRef
 			{
 				same = false

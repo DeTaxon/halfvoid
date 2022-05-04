@@ -5,12 +5,13 @@ FuncInputParam := class extend BoxFuncCommon
 	parentFunc := BoxFuncBody^
 	varName := StringSpan
 	varId := int
-	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRef,int paramNum) -> void
+	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRefIn,int paramNum) -> void
 	{
 		parentFunc = pFunc
 		SetType(GetFuncType(0,null,null,pType,true,false))
 		pNumber = paramNum
 		varName = vName
+		isRef = isRefIn
 		if DebugMode
 			varId = GetNewId()
 	}
@@ -20,7 +21,7 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		if DebugMode
+		if DebugMode and not isRef //TODO
 		{
 			pType := GetType().ResultType
 			f^ << "call void @llvm.dbg.value(metadata "

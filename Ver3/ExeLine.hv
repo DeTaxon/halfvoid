@@ -23,7 +23,7 @@ BoxExeLine := class extend BoxExeLineSimple
 		Down = TryGetExeCall(itm)
 		if Down != null
 			return void
-
+		ItToken.Print(0)
 		assert(false)
 	}
 }
@@ -104,9 +104,8 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	if itm == null
 		return null
 
-	isFuncCall := TryCheckRegularFuncCall(itm)
-	if isFuncCall != null
-		return isFuncCall
+	return TryCheckRegularFuncCall(itm)?
+	return TryCheckMethodCall(itm)?
 	
 	fieldCall := TryGetFieldCall(itm)
 	if fieldCall != null
@@ -133,19 +132,9 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 }
 
 
-
-TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
+CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 {
-	if itm.Down == null
-		return null
-	if itm.Down?.Right.GetValue() != "()"
-		return null
-	if itm.Down.Right.Right != null
-		return null
-
-	Objs := HybridQueue.{BoxExeObj^,20}
-
-	itr := itm.Down.Right.Down
+	itr := itm.Down
 
 	while itr != null
 	{
@@ -158,6 +147,19 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		}
 		itr = itr.Right
 	}
+}
+
+TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null
+		return null
+	if itm.Down?.Right.GetValue() != "()"
+		return null
+	if itm.Down.Right.Right != null
+		return null
+
+	Objs := CheckExeDownList
+	CheckFuncCallBrackets(itm.Down.Right,Objs)
 
 	if itm.Down is TokenIndent
 	{
@@ -168,35 +170,91 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	}
 
 }
+TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+
+	iter := itm.Down
+	if iter == null return null
+
+	iter = iter.Right
+	if iter == null or iter.GetValue() != "." return null
+
+	iter = iter.Right
+	if iter == null return null
+	if not (iter is TokenIndent or iter is TokenString) return null
+
+	iter = iter.Right
+	if iter == null or iter.GetValue() != "()" return null
+	if iter.Right != null return null //TODO .{accept constants}
+
+	vr := TryGetExeCall(itm.Down)
+
+	assert(vr != null)
+	if vr == null return null
+
+	Objs := CheckExeDownList
+	Objs.Push(vr)
+	CheckFuncCallBrackets(itm.Down.Right,Objs)
+
+	mNameT := itm.Down.Right.Right->{TokenIndent^}
+	
+	if vr.GetType() is TypeClass
+	{
+		cls := vr.GetType()->{TypeClass^}.ToClass //TODO GetClass
+		callItem := BoxUnit^
+		cls.GetMethods(mNameT.Value, x ==> {
+			callItem = GetBestFunc(x,Objs)
+		})
+		if callItem != null
+		{
+			if callItem is in BoxFunc
+			{
+				return new BoxFuncCall(callItem->{BoxFunc^},Objs)
+			}
+			assert(false)
+		}
+		assert(false)
+		return null
+	}
+	assert(false)
+}
+
+GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs) -> BoxUnit^
+{
+	priorityes := HybridQueue.{int,13}
+	defer priorityes.Destroy()
+
+	for h : x
+	{
+		if h is in BoxFunc
+		{
+			fnc := h->{BoxFunc^}
+			cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
+			priorityes.Push(cmpRes)
+		}else{
+			assert(false)
+		}
+	}
+
+	bestI := 0
+	for i : x.Size()
+	{
+		if priorityes[i] < priorityes[bestI]
+			bestI = i
+	}
+	if priorityes[bestI] == CmpNoExchange
+		return null
+	return x[bestI]
+}
 
 CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 {
 	callItem := BoxUnit^
 	GetItemGlobal(name, x ==>{
-		priorityes := HybridQueue.{int,13}
-		defer priorityes.Destroy()
-
-		for h : x
-		{
-			if h is in BoxFunc
-			{
-				fnc := h->{BoxFunc^}
-				cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
-				priorityes.Push(cmpRes)
-			}else{
-				assert(false)
-			}
-		}
-
-		bestI := 0
-		for i : x.Size()
-		{
-			if priorityes[i] < priorityes[bestI]
-				bestI = i
-		}
-		if priorityes[bestI] == CmpNoExchange
+		callItem = GetBestFunc(x,Objs)
+		if callItem == null
 			return false
-		callItem = x[bestI]
 		return true
 	})
 	assert(callItem != null)

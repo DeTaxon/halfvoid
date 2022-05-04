@@ -146,6 +146,19 @@ BoxClass := class extend BoxUnit
 				return it
 		}
 	}
+	GetMethods := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{
+		objs := HybridQueue.{BoxUnit^,10}
+
+		for fnc : Methods
+		{
+			if fnc is in BoxFuncBody and fnc->{BoxFuncBody^}.Name == name
+				objs.Push(fnc)
+
+		}
+		if objs.Size() != 0
+			cb(objs)
+	}
 }
 TypeClass := class extend Type
 {

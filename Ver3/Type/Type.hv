@@ -175,6 +175,14 @@ ForEachFloatType := !(!(Type^)&-> void cb) -> void
 	cb(GTypeDouble)
 }
 
+IsComplexType := !(Type^ obj) -> bool
+{
+	if obj is TypeClass
+		return true
+	//if obj is TypeArr //TODO
+	//	return true
+	return false
+}
 IsUInt := !(Type^ obj) -> bool
 {
 	for i : 4

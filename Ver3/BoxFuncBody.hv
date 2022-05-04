@@ -85,6 +85,10 @@ BoxFuncBody := class extend BoxFuncCommon
 				args[k] = ParseType(objs[0])
 				refs[k] = false
 				names[k] = objs[1]->{TokenIndent^}.Value
+
+				if IsComplexType(args[k])
+					refs[k] = true
+
 				assert(args[k] != null) //TODO error
 				k += 1
 			}else{
