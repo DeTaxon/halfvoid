@@ -33,6 +33,14 @@ Type := class {
 	{
 		assert(false)
 	}
+	MakeDebugRef := !() -> Type^
+	{
+		if GRefTypes.Contain(this&)
+			return GRefTypes[this&]
+		nRef := new TypeDebugRef(this&)
+		GRefTypes[this&] = nRef
+		return nRef
+	}
 }
 
 TypeDef := class
@@ -137,6 +145,24 @@ TypePoint := class extend Type
 	PrintMeta := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
+	}
+}
+
+GRefTypes := AVLMap.{Type^,Type^}
+TypeDebugRef := class extend Type //FO
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "!" << MetaId << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << Base.MetaId <<", size: "<< GArchBitSize << ")\n"
 	}
 }
 

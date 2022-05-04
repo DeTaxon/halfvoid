@@ -4,9 +4,13 @@ Cls := class
 	y := s64
 	z := int
 
+	check2 := !() -> void
+	{
+		printf("hi %i\n",this.x)
+	}
 	check := !() -> void
 	{
-		printf("hi\n")
+		this.check2()
 	}
 }
 

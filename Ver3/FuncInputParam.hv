@@ -13,7 +13,11 @@ FuncInputParam := class extend BoxFuncCommon
 		varName = vName
 		isRef = isRefIn
 		if DebugMode
+		{
+			if isRef
+				pType.MakeDebugRef()
 			varId = GetNewId()
+		}
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -21,11 +25,13 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		if DebugMode and not isRef //TODO
+		if DebugMode
 		{
 			pType := GetType().ResultType
 			f^ << "call void @llvm.dbg.value(metadata "
 			pType.PrintType(f)
+			if isRef 
+				f^ << "*"
 			f^ << " "
 			PrintResultObj(f,0,0)
 			f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
@@ -43,6 +49,8 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	NotifyMemUse := virtual !() -> void
 	{
+		if isRef
+			return void
 		this&->SetType(FuncInputParamInMem)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
@@ -52,7 +60,13 @@ FuncInputParam := class extend BoxFuncCommon
 		f^ << "!" << varId << " = !DILocalVariable(name: \"" << varName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
 		//f^ << ", arg: " << (pNumber + 1)
 		//f^ << ", flags: DIFlagArtificial"
-		f^ << ", line: " << 0 << ", type:!" << rType.MetaId
+		f^ << ", line: " << 0 << ", type:!"
+		if isRef 
+		{
+			f^ <<rType.MakeDebugRef().MetaId
+		}else{
+			f^ <<rType.MetaId
+		}
 		f^ << ")\n"
 	}
 }
