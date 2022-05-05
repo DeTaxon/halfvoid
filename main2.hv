@@ -19,7 +19,7 @@ Cls2 := class extend Cls
 }
 main := !(int argc, char^^ argv) -> int
 {
-	y := Cls
+	y := Cls2
 	y.x = 1
 	y.y = 2
 	y.z = 3

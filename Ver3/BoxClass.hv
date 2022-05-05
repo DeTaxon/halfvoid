@@ -14,6 +14,9 @@ BoxClass := class extend BoxUnit
 	ItAlign := int
 
 
+	PrimeParents := HybridQueue.{Tuple.{BoxClass^,BoxClass^,int},1}
+
+
 	CreateCommon := !() -> void
 	{
 	}
@@ -135,6 +138,20 @@ BoxClass := class extend BoxUnit
 			FieldsPath.Push(fPath)
 		}
 		ItSize = posMemOffset
+
+		if Parents.Size() == 0
+		{
+			PrimeParents.Push(!{this&,this&,0})
+		}else
+		{
+			for par : Parents
+			{
+				for pp : par.PrimeParents
+				{
+					PrimeParents.Push(!{pp.0,par,pp.2 + 1}) //todo Remove duplicates
+				}
+			}
+		}
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{

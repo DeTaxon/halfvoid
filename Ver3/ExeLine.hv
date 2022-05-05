@@ -228,6 +228,12 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 
 	if isMem
 	{
+		if frm is TypeClass and to is TypeClass
+		{
+			res := TypeFight(frm,to)
+			if res == to
+				return 1000
+		}
 		return CmpNoExchange
 	}
 	
@@ -270,6 +276,43 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 	}
 
 	return CmpNoExchange
+}
+TypeFight := !(Type^ a, Type^ b) -> Type^
+{
+	if a == b
+		return a
+
+	if a is TypeClass and b is TypeClass
+	{
+		ac := a->{TypeClass^}.ToClass
+		bc := b->{TypeClass^}.ToClass
+
+		for ap : ac.PrimeParents
+		{
+			for bp : bc.PrimeParents
+			{
+				if ap.0 == bp.0
+				{
+					if ap.2 == bp.2
+					{
+						assert(a != b)
+						return TypeFight(ap.1.ItType,bp.1.ItType)
+					}else{
+						if ap.2 > bp.2
+						{
+							return TypeFight(ap.1.ItType,b)
+						}else{
+							return TypeFight(a,bp.1.ItType)
+						}
+					}
+					
+
+				}
+			}
+		}
+
+	}
+	return null
 }
 
 TypePriorityTable := AVLMap.{Type^,AVLMap.{Type^,int}}
