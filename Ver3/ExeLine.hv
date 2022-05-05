@@ -237,7 +237,13 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 	if frm == to
 		return 0
 
-	if isMem
+	if frm is TypePoint and frm.Base is TypeClass and to is TypeClass
+	{
+		if TypeFight(frm.Base,to) == to
+			return 1000 //todo rethink
+	}
+
+	if isMem //!!!!IMPORTANT PART
 	{
 		if frm is TypeClass and to is TypeClass
 		{
