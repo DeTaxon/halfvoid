@@ -9,7 +9,7 @@ BoxClass := class extend BoxUnit
 
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
-	Methods := List.{BoxFunc^}
+	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
 	ItSize := int
 	ItAlign := int
 
@@ -146,16 +146,22 @@ BoxClass := class extend BoxUnit
 				return it
 		}
 	}
+	populateMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
+	{
+		if Methods.Contain(name)
+		{
+			for fnc : Methods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
+		Parents[^].populateMethods(name,objs)
+	}
 	GetMethods := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{
 		objs := HybridQueue.{BoxUnit^,10}
+		populateMethods(name,objs)
 
-		for fnc : Methods
-		{
-			if fnc is in BoxFuncBody and fnc->{BoxFuncBody^}.Name == name
-				objs.Push(fnc)
-
-		}
 		if objs.Size() != 0
 			cb(objs)
 	}

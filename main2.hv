@@ -13,7 +13,10 @@ Cls := class
 		printf("hi %i\n",x)
 	}
 }
-
+Cls2 := class extend Cls
+{
+	w := int
+}
 main := !(int argc, char^^ argv) -> int
 {
 	y := Cls

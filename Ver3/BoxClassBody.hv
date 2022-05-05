@@ -106,7 +106,7 @@ BoxClassBody := class extend BoxClass
 					asFunc := TryParseFunction(itm)
 					if asFunc != null
 					{
-						Methods.Push(asFunc)
+						Methods[name].Push(asFunc)
 						asFunc.SetName(name)
 						asFunc.Work()
 						asFunc.ParseBody() //TODO remove
