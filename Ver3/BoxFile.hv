@@ -2,6 +2,7 @@ BoxCodeSpace := class
 {
 	Files := List.{BoxFile^}
 
+	Templates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 	Globals := AVLMap.{StringSpan,List.{BoxUnit^}}
 

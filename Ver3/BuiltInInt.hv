@@ -100,7 +100,11 @@ BuiltInPrimeStore := class extend BoxFuncCommon
 
 CreateBuiltins := !() -> void
 {
-
+	CreateBuiltinsInt()
+	CreateBuiltinsPoint()
+}
+CreateBuiltinsInt := !() -> void
+{
 	bSpace := CodeSpaces[-1]&
 
 	ForEachIntType( (x,isSigned) ==> {

@@ -10,6 +10,10 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 		{
 			lst.Push(spc.Functions[name][^])
 		}
+		if spc.Templates.Contain(name)
+		{
+			lst.Push(spc.Templates[name][^])
+		}
 		for cl : spc.CLibs
 		{
 			fnc := cl.GetItem(name)

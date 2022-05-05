@@ -162,7 +162,13 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs) -> BoxUnit^
 			fnc := h->{BoxFunc^}
 			cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
 			priorityes.Push(cmpRes)
+		}else if h is in BoxFuncTemplate{
+			tmpl := h->{BoxFuncTemplate^}
+			consts := List.{BoxExeObj^}
+			cmpRes := tmpl.GetPriority(Objs,consts)
+			priorityes.Push(cmpRes)
 		}else{
+			priorityes.Push(CmpNoExchange)
 			assert(false)
 		}
 	}
@@ -190,6 +196,11 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 	assert(callItem != null)
 	if callItem == null
 		return null
+	if callItem is in BoxFuncTemplate
+	{
+		consts := List.{BoxExeObj^}
+		callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+	}
 	if callItem is in BoxFunc
 	{
 		return new BoxFuncCall(callItem->{BoxFunc^},Objs)
@@ -198,7 +209,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 
 CmpNoExchange := 999000
 
-CmpFuncPriority := !(TypeFunc^ fncType, HybridQueue.{BoxExeObj^,20} objs) -> int
+CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 {
 	worstCase := 0
 
@@ -236,9 +247,18 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 		}
 		return CmpNoExchange
 	}
-	
-	if frm is TypePoint and to == GTypeVoidP
-		return 1000 //TODO TypeArr
+
+	if frm is TypePoint and to is TypePoint
+	{
+		if to == GTypeVoidP
+			return 1000
+		if frm.Base is TypeClass and to.Base is TypeClass
+		{
+			fgh := TypeFight(frm.Base,to.Base)
+			if fgh == to.Base
+				return 1000
+		}
+	}
 
 	if frm is TypeStandard and to is TypeStandard
 	{
