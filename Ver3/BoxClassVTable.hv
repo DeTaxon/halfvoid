@@ -1,0 +1,83 @@
+AppendClass BoxClass
+{
+	VTable := List.{VTableEntry^}
+
+	PrintVTable := virtual !(TIOStream^ f) -> void
+	{
+		if VTable.Size() == 0
+			return void
+		f^ << "%VTableType" << ItId << " = type{"
+
+		for it, i : VTable
+		{
+			if i > 0
+				f^ << ","
+			it.PrintType(f)
+		}
+		f^ << "}\n"
+
+		f^ << "@VTable" << ItId << " = global %VTableType" << ItId << " {"
+		for it, i : VTable
+		{
+			if i > 0 f^ << ","
+			it.PrintType(f)
+			f^ << " "
+			it.PrintConst(f)
+		}
+		f^ << "}\n"
+
+	}
+}
+
+VTableEntry := class
+{
+	Name := StringSpan
+
+	PrintType := virtual !(TIOStream^ f) -> void {}
+	PrintConst := virtual !(TIOStream^ f) -> void {}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
+}
+VTableFunc := class extend VTableEntry
+{
+	Value := BoxFunc^
+
+	this := !(StringSpan nm, BoxFunc^ fn) -> void
+	{
+		Name = nm
+		Value = fn
+	}
+	PrintType := virtual !(TIOStream^ f) -> void 
+	{
+		Value.GetType().PrintType(f)
+		f^ << "*"
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void 
+	{
+		Value.PrintName(f)
+	}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool 
+	{
+		if Name != cmp.Name
+			return false
+		if cmp is VTableFunc
+		{
+			f1 := Value.GetType()
+			f2 := cmp->{VTableFunc^}.Value.GetType()
+
+			if f1.Params.Size() != f2.Params.Size()
+				return false
+			for i : f1.Params.Size()
+			{
+				if i == 0
+					continue
+				if f1.Params[i].ItType != f2.Params[i].ItType
+					return false
+				if f1.Params[i].IsRef != f2.Params[i].IsRef
+					return false
+			}
+
+			return true
+		}
+		return false
+	}
+}

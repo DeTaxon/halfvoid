@@ -4,7 +4,7 @@ Cls := class
 	y := s64
 	z := int
 
-	check := !() -> void
+	check := virtual !() -> void
 	{
 		printf("nope %i\n",x)
 	}
@@ -12,7 +12,7 @@ Cls := class
 Cls2 := class extend Cls
 {
 	w := int
-	check := !() -> void
+	check := virtual !() -> void
 	{
 		printf("yep %i\n",x)
 	}

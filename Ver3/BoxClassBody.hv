@@ -85,6 +85,8 @@ BoxClassBody := class extend BoxClass
 
 		CurrentScope = this&
 
+		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
+
 		iter := Body.Down
 
 		while iter != null
@@ -106,10 +108,9 @@ BoxClassBody := class extend BoxClass
 					asFunc := TryParseFunction(itm)
 					if asFunc != null
 					{
-						Methods[name].Push(asFunc)
+						funcs.Emplace(name,asFunc)
 						asFunc.SetName(name)
 						asFunc.Work()
-						asFunc.ParseBody() //TODO remove
 					}else
 					{
 						assert(false)
@@ -121,7 +122,43 @@ BoxClassBody := class extend BoxClass
 
 		InheritStep()
 
+		if Parents.Size() != 0
+		{
+			for it,i : Parents[0].VTable
+			{
+				VTable.Push(it)
+			}
+		}
+
+		for f : funcs
+		{
+			if f.1 is BoxFuncBody and f.1->{BoxFuncBody^}.Attrs.IsVirtual
+			{
+				vFunc := new VTableFunc(f.0,f.1)
+
+				found := false
+				for it : VTable
+				{
+					if it.IsEq(vFunc)
+					{
+						it = vFunc
+						found = true
+						break
+					}
+				}
+
+				if not found
+					VTable.Push(vFunc)
+				Methods[f.0] .Push(f.1)
+				f.1.ParseBody()
+			}else
+			{
+				Methods[f.0] .Push(f.1)
+			}
+		}
+
 		FieldsState.Emit()
+
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{

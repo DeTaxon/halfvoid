@@ -26,6 +26,8 @@ BoxClass := class extend BoxUnit
 	}
 	PrintAsType := virtual !(TIOStream^ f) -> void
 	{
+		PrintVTable(f)
+
 		needComma := false
 		f^ << "%Class" << ItId << " = type {"
 		if FieldsPath.Size() == 0 //TODO and not virtual
