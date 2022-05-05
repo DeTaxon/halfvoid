@@ -151,7 +151,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 
 TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 {
-	if itm.Down == null
+	if itm.Down == null or itm.Down == null or itm.Down.Right == null
 		return null
 	if itm.Down?.Right.GetValue() != "()"
 		return null
@@ -164,6 +164,30 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down is TokenIndent
 	{
 		asInd := itm.Down->{TokenIndent^}
+		for ob : UnitStack
+		{
+			if ob is in BoxFuncBody and asInd.Value != "this" //todo optimize
+			{
+				fnc := ob->{BoxFuncBody^}
+				if fnc.Attrs.IsMethod
+				{
+					tkn1 := TokenIndent(StringSpan("this"))
+					tkn2 := TokenSymbol(StringSpan("."),0)
+					tknData := TokenData
+
+					tknData.Down = tkn1&
+					tkn1.Right = tkn2&
+					tkn2.Right = itm.Down
+					try
+					{
+						return TryGetExeCall(tknData&)?
+					}catch(IException^ e)
+					{
+					}
+				}
+			}
+		}
+
 		return CreateFuncCall(asInd.Value,Objs)
 	}else{
 		assert(false)
@@ -214,9 +238,10 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 			}
 			assert(false)
 		}
-		assert(false)
+		itm.EmitError("Method not found")
 		return null
 	}
+	itm.EmitError("Method not found")
 	assert(false)
 }
 
@@ -331,7 +356,7 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 		}
 		if IsFloat(f1) and IsInt(t1)
 		{
-			return 2000 + (100 - t1.GetSize()) //TODO warning
+			return 2000 + (100 - t1.GetSize()) //TODO warning, but not here
 		}
 	}
 	if frm is TypePoint and to == GTypeVoidP
