@@ -18,5 +18,9 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	if tmpList[0] == null or tmpList[1] == null
 		itm.EmitError("Unknown error")
 
-	return CreateFuncCall(itm.Down.Right.GetValue(),tmpList)
+	oper := itm.Down.Right.GetValue()
+
+	return CreateFuncCall(oper,tmpList)?
+
+	return null
 }
