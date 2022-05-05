@@ -1,0 +1,24 @@
+
+FuncNameDatabase := AVLSet.{StringSpan}
+FuncNameIter := int
+
+GetFuncMangle := !(StringSpan name) -> StringSpan
+{
+	if FuncNameDatabase.Contain(name)
+	{
+		itId := FuncNameIter
+		FuncNameIter += 1
+
+		buff := char[1024] //TODO unconst
+		memcpy(buff[0]&,name.Get(),name.Size())
+		sprintf(buff[name.Size()]&,"_%i",itId)
+		
+		spn := GetConstString(buff[0]&)
+		FuncNameDatabase.Insert(spn)
+		result = spn
+	}else{
+		FuncNameDatabase.Insert(name)
+		result = name
+	}
+}
+

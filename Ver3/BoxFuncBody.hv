@@ -6,6 +6,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	Attrs := FuncAttributes
 
 	Name := StringSpan
+	OutputName := StringSpan
 
 	inps1 := Token^
 	resTyp := Token^
@@ -166,6 +167,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 		defer readyState.Emit()
+
+		OutputName = GetFuncMangle(Name)
 		
 		CurrentScope = this&
 
@@ -185,7 +188,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	PrintName := virtual !(TIOStream^ f) -> void
 	{
-		f^ << "@" << Name //TODO name mangling
+		f^ << "@" << OutputName
 	}
 
 	PrintCode := virtual !(TIOStream^ f) -> void
@@ -203,7 +206,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		f^ << "define "
 		PrintResultType(f)
-		f^ << " @" << Name << "("
+		f^ << " @" << OutputName << "("
 		PrintInputTypes(f)
 		f^ << ")"
 		if DebugMode

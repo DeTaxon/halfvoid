@@ -1,0 +1,33 @@
+
+CreateBuiltinsPoint := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+
+	bSpace.Templates[StringSpan("=")].Push(new PointStoreTemplate())
+}
+
+PointStoreTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		if not objs[0].IsMem()
+			return null
+		a := objs[0].GetType()
+		if a is TypePoint
+		{
+			return GetFuncType(2,![a,a],![true,false],GTypeVoid,false,false)
+		}
+		return null
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeObj^} consts) -> BoxFunc^
+	{
+		return new BuiltInPrimeStore(tp)
+	}
+}
+
+

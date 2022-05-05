@@ -1,0 +1,60 @@
+
+BoxFuncTemplate := class extend BoxUnit
+{
+	AllFuncs := AVLMap.{Type^,List.{BoxFunc^}}
+	ItCodeSpace := BoxCodeSpace^
+
+	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeObj^} consts) -> int
+	{
+		fTyp := ToFuncType(objs,consts)
+		if fTyp == null
+			return CmpNoExchange
+		if fTyp.Params.Size() != objs.Size()
+			return CmpNoExchange
+
+		return CheckPriority(fTyp,objs,consts)
+	}
+	GetFunc := virtual !(CheckExeDownList objs, List.{BoxExeObj^} consts) -> BoxFunc^
+	{
+		fTyp := ToFuncType(objs,consts)
+
+		if AllFuncs.Contain(fTyp)
+		{
+			return AllFuncs[fTyp][0] //TODO check consts
+		}
+
+		pri := CheckPriority(fTyp,objs,consts)
+
+		if pri == CmpNoExchange
+		{
+			assert(false)
+			return null
+		}
+		newFunc := CreateFunc(fTyp,consts)
+		AllFuncs[fTyp].Push(newFunc)
+		return newFunc
+	}
+	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeObj^} consts) -> TypeFunc^
+	{
+		tps := Type^[100] //TODO unconsts?
+		refs := bool[100]
+
+		for ob,i : objs
+		{
+			tps[i] = ob.GetType()
+			if IsComplexType(tps[i])
+				refs[i] = true
+		}
+
+		return GetFuncType(objs.Size(),tps[0]&, refs[0]&,GTypeVoid,false,false)
+	}
+	CheckPriority := virtual !(TypeFunc^ tp,CheckExeDownList objs, List.{BoxExeObj^} consts) -> int
+	{
+		return CmpFuncPriority(tp,objs)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeObj^} consts) -> BoxFunc^
+	{
+		assert(false)
+		return null
+	}
+}

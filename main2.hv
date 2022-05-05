@@ -25,5 +25,5 @@ main := !(int argc, char^^ argv) -> int
 	y.z = 3
 	i := Cls^
 	i = y&
-	//i.check()
+	i.check()
 }
