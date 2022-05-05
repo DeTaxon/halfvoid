@@ -1,0 +1,62 @@
+
+TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+
+	iter := itm.Down
+	if iter == null return null
+
+	iter = iter.Right
+	if iter == null or iter.GetValue() != "." return null
+
+	iter = iter.Right
+	if iter == null return null
+	if not (iter is TokenIndent or iter is TokenString) return null
+
+	iter = iter.Right
+	if iter == null or iter.GetValue() != "()" return null
+	if iter.Right != null return null //TODO .{accept constants}
+
+	vr := TryGetExeCall(itm.Down)
+
+	assert(vr != null)
+	if vr == null return null
+
+	Objs := CheckExeDownList
+	CheckFuncCallBrackets(itm.Down.Right,Objs)
+
+	mNameT := itm.Down.Right.Right->{TokenIndent^}
+
+	fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs)
+	if fnc != null
+		return fnc
+
+	itm.EmitError("Method not found")
+	assert(false)
+}
+
+innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs) -> BoxExeObj^
+{
+	Objs := CheckExeDownList
+	Objs.Push(vr)
+	Objs.Push(sObjs[^])
+	
+	if vr.GetType() is TypeClass
+	{
+		cls := vr.GetType()->{TypeClass^}.ToClass //TODO GetClass
+		callItem := BoxUnit^
+		cls.GetMethods(name, x ==> {
+			callItem = GetBestFunc(x,Objs)
+		})
+		if callItem != null
+		{
+			if callItem is in BoxFunc
+			{
+				return new BoxFuncCall(callItem->{BoxFunc^},Objs)
+			}
+			assert(false)
+		}
+		return null
+	}
+}
+

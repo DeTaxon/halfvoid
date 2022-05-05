@@ -6,7 +6,7 @@ Cls := class
 
 	check2 := !() -> void
 	{
-		check()
+		this.check()
 	}
 	check := !() -> void
 	{

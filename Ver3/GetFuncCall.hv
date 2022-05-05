@@ -1,0 +1,46 @@
+
+TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null or itm.Down == null or itm.Down.Right == null
+		return null
+	if itm.Down?.Right.GetValue() != "()"
+		return null
+	if itm.Down.Right.Right != null
+		return null
+
+	Objs := CheckExeDownList
+	CheckFuncCallBrackets(itm.Down.Right,Objs)
+
+	if itm.Down is TokenIndent
+	{
+		asInd := itm.Down->{TokenIndent^}
+		for ob : UnitStack
+		{
+			if ob is in BoxFuncBody and asInd.Value != "this" //todo optimize
+			{
+				fnc := ob->{BoxFuncBody^}
+				if fnc.Attrs.IsMethod
+				{
+					tkn1 := TokenIndent(StringSpan("this"))
+					tkn2 := TokenSymbol(StringSpan("."),0)
+					tknData := TokenData
+
+					tknData.Down = tkn1&
+					tkn1.Right = tkn2&
+					tkn2.Right = itm.Down
+					try
+					{
+						return TryGetExeCall(tknData&)?
+					}catch(IException^ e)
+					{
+					}
+				}
+			}
+		}
+
+		return CreateFuncCall(asInd.Value,Objs)
+	}else{
+		assert(false)
+	}
+
+}
