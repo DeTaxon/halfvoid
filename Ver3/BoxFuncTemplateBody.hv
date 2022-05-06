@@ -1,0 +1,115 @@
+FuncTemplateInput := class
+{
+	Name := StringSpan
+	ItType := Type^
+	IsRef := bool
+	ItToken := Token^
+
+	this := !(StringSpan nm, Type^ typ, bool ir, Token^ tk) -> void
+	{
+		Name = nm
+		ItType = typ
+		ir = IsRef
+		ItToken = tk
+	}
+}
+
+
+BoxFuncTemplateBody := class extend BoxFuncTemplate
+{
+	Attrs := FuncAttributes
+
+	inps1 := Token^
+	resTyp := Token^
+	bdy := Token^
+
+	Name := StringSpan
+
+	Types := HybridQueue.{FuncTemplateInput,10}
+	ResultType := FuncTemplateInput 
+
+	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
+	{
+		assert(brackets2 == null)//not implemented
+		Attrs = atrs
+		inps1 = brackets1
+		resTyp = resToken
+		bdy = bodyIn
+	}
+	SetName := virtual !(StringSpan name) -> void
+	{
+		Name = name
+	}
+	Work := virtual !() -> void
+	{
+		
+		bag := HybridQueue.{Token^,10}
+		defer bag.Destroy()
+
+		iter := inps1.Down
+
+		if resTyp != null
+		{
+			ResultType.ItType = ParseType(resTyp)
+			ResultType.ItToken = resTyp
+		}
+		while iter != null
+		{
+			if iter.GetValue() == ","
+			{
+				if bag.Size() == 1
+				{
+					assert(bag[0] is TokenIndent)
+					Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+				}else if bag.Size() > 2 {
+					assert(bag[1] is TokenIndent)
+					typ := ParseType(bag[0])
+					name := bag[1]->{TokenIndent^}.Value
+					isRef := false
+					if typ != null and IsComplexType(typ)
+						isRef = true
+
+					Types.Emplace(name,typ,isRef,bag[0])
+				}else{
+					assert(false)
+				}
+				bag.Clear()
+			}else{
+				bag.Push(iter)
+			}
+			iter = iter.Right
+		}
+		
+		if Name.Get() == null
+			return void
+
+		if CurrentCodeSpace != null
+		{
+			CurrentCodeSpace.Templates[Name].Push(this&)
+		}
+	}
+	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != Types.Size()
+			return null
+
+		fInTypes := Type^[100]
+		isRefs := bool[100]
+
+		for i : objs.Size()
+		{
+			if Types[i].ItType != null
+			{
+				
+			}
+		}
+		return null 
+	}
+	
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeObj^} consts) -> BoxFunc^
+	{
+		assert(false)
+		return null
+	}
+
+}
