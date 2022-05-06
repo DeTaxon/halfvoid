@@ -46,10 +46,10 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	if iter.GetValue() != "{}" return null
 
-	if isTemplate
-	{
-		return new BoxFuncTemplateBody(Attr,brackets,null,resultToken,iter)
-	}
+	//if isTemplate
+	//{
+	//	return new BoxFuncTemplateBody(Attr,brackets,null,resultToken,iter)
+	//}
 
 	return new BoxFuncBody(Attr,brackets,null,resultToken,iter)
 }

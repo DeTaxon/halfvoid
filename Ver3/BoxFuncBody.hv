@@ -51,6 +51,18 @@ BoxFuncBody := class extend BoxFuncCommon
 	SetName := virtual !(StringSpan nm) -> void
 	{
 		Name = nm
+		if CurrentFile != null
+		{
+			CurrentFile.AllFunctions.Push(this&)
+		}else{
+			assert(false)
+		}
+
+		if CurrentCodeSpace != null
+		{
+			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
+			CurrentCodeSpace.Functions[Name].Push(this&)
+		}
 	}
 	
 	ParseHeader := !() -> void
@@ -143,18 +155,6 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 
 		ParseHeader()
-		if CurrentFile != null
-		{
-			CurrentFile.AllFunctions.Push(this&)
-		}else{
-			assert(false)
-		}
-
-		if CurrentCodeSpace != null
-		{
-			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
-			CurrentCodeSpace.Functions[Name].Push(this&)
-		}
 	}
 
 	Params := HybridQueue.{MemVar^,8}
@@ -283,10 +283,5 @@ BoxFuncBody := class extend BoxFuncCommon
 			//	f << ", templateParams:!"<<tmplId
 			f^ << ")\n"
 		}
-	}
-	Name := StringSpan
-	SetName := virtual !(StringSpan name) -> void
-	{
-		Name = name
 	}
 }
