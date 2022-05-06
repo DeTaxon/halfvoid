@@ -57,14 +57,15 @@ GetObjectsFromMemory := !(char^ fileName,char^ memPtr,int Siz) -> Token^
 					}
 			}
 		}
-		//if a == 2{
-		//	if tok[0] == '#'
-		//	{
-		//		ns = new ObjCmd(GetConstString(tok))
-		//	}else{
-		//		ns = new ObjTemplateType(tok[1..0].Str())
-		//	}
-		//}
+		if a == 2{
+			if tok[0] == '#'
+			{
+			assert(false)
+			//	ns = new ObjCmd(GetConstString(tok))
+			}else{
+				ns = new TokenTemplateType(tok)
+			}
+		}
 		if a == 3 {
 			j := 0
 			k := 1

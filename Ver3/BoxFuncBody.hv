@@ -85,8 +85,10 @@ BoxFuncBody := class extend BoxFuncCommon
 				assert(objs[1] is TokenIndent) //TODO EmitError
 				
 				args[k] = ParseType(objs[0])
+				assert(args[k] != null) //TODO EmitError
 				refs[k] = false
 				names[k] = objs[1]->{TokenIndent^}.Value
+
 
 				if IsComplexType(args[k])
 					refs[k] = true
@@ -281,5 +283,10 @@ BoxFuncBody := class extend BoxFuncCommon
 			//	f << ", templateParams:!"<<tmplId
 			f^ << ")\n"
 		}
+	}
+	Name := StringSpan
+	SetName := virtual !(StringSpan name) -> void
+	{
+		Name = name
 	}
 }

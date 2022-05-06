@@ -43,7 +43,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if fnc != null
 	{
-		return new FuncVar(name,isSuffix,fnc)
+		if fnc is in BoxFuncTemplate
+		{
+			return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
+		}
+		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
 	}
 	
 	return null
@@ -91,6 +95,37 @@ FuncVar := class extend BoxUnit
 	MemObj := BoxFunc^
 
 	this := !(StringSpan nm, bool isSuf,BoxFunc^ obj) -> void
+	{
+		Name = nm
+		IsSuffix = isSuf
+		MemObj = obj
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		assert(MemObj != null)
+		MemObj.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		MemObj.PrintDebugMeta(f)
+	}
+
+	Work := virtual !() -> void
+	{
+		MemObj.SetName(Name)
+		MemObj.Work()
+	}
+}
+
+TemplateFuncVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := BoxUnit^
+	IsSuffix := bool
+
+	MemObj := BoxFuncTemplate^
+
+	this := !(StringSpan nm, bool isSuf,BoxFuncTemplate^ obj) -> void
 	{
 		Name = nm
 		IsSuffix = isSuf

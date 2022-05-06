@@ -57,4 +57,7 @@ BoxFuncTemplate := class extend BoxUnit
 		assert(false)
 		return null
 	}
+	SetName := virtual !(StringSpan name) -> void
+	{
+	}
 }

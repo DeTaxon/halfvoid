@@ -215,6 +215,14 @@ TokenIndent := class extend Token
 		Right?.Print(x)
 	}
 }
+TokenTemplateType := class extend TokenIndent
+{
+	this := !(StringSpan val) -> void
+	{
+		Value = val
+	}
+}
+
 TokenString := class extend Token
 {
 	Value := StringSpan

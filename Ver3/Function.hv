@@ -1,4 +1,4 @@
-TryParseFunction := !(Token^ obj) -> BoxFunc^
+TryParseFunction := !(Token^ obj) -> BoxUnit^
 {
 	Attr := FuncAttributes
 
@@ -27,6 +27,8 @@ TryParseFunction := !(Token^ obj) -> BoxFunc^
 
 	brackets := iter
 
+	isTemplate := ContainTemplateObj(brackets)
+
 	iter = iter.Right
 	if iter == null return null
 
@@ -44,7 +46,26 @@ TryParseFunction := !(Token^ obj) -> BoxFunc^
 
 	if iter.GetValue() != "{}" return null
 
+	if isTemplate
+	{
+		return new BoxFuncTemplateBody(Attr,brackets,null,resultToken,iter)
+	}
+
 	return new BoxFuncBody(Attr,brackets,null,resultToken,iter)
+}
+
+ContainTemplateObj := !(Token^ itm) -> bool
+{
+	if itm is TokenTemplateType
+		return true
+	iter := itm.Down
+	while iter != null
+	{
+		if ContainTemplateObj(iter)
+			return true
+		iter = iter.Right
+	}
+	return false
 }
 
 FuncAttributes := class

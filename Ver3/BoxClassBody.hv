@@ -39,6 +39,7 @@ BoxClassBody := class extend BoxClass
 	Body := Token^
 	ParentTokens := HybridQueue.{Token^,5}
 
+	VTableState := THatch
 	FieldsState := THatch
 
 	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
@@ -108,9 +109,15 @@ BoxClassBody := class extend BoxClass
 					asFunc := TryParseFunction(itm)
 					if asFunc != null
 					{
-						funcs.Emplace(name,asFunc)
-						asFunc.SetName(name)
-						asFunc.Work()
+						if asFunc is in BoxFunc
+						{
+							f := asFunc->{BoxFunc^}
+							funcs.Emplace(name,f)
+							f.SetName(name)
+							f.Work()
+						}else{
+							assert(false) //template
+						}
 					}else
 					{
 						assert(false)
@@ -120,10 +127,9 @@ BoxClassBody := class extend BoxClass
 			iter = iter.Right
 		}
 
-		InheritStep()
-
 		if Parents.Size() != 0
 		{
+			Parents[0].AwaitVTableStep()
 			for it,i : Parents[0].VTable
 			{
 				VTable.Push(it)
@@ -156,7 +162,9 @@ BoxClassBody := class extend BoxClass
 				Methods[f.0] .Push(f.1)
 			}
 		}
+		VTableState.Emit()
 
+		InheritStep()
 		FieldsState.Emit()
 
 	}
@@ -170,4 +178,5 @@ BoxClassBody := class extend BoxClass
 				return it
 		}
 	}
+	AwaitVTableStep := virtual !() -> void { VTableState.Await() }
 }

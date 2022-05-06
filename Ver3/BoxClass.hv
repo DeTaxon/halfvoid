@@ -24,16 +24,22 @@ BoxClass := class extend BoxUnit
 	{
 		ItName = name
 	}
+	AwaitVTableStep := virtual !() -> void {}
 	PrintAsType := virtual !(TIOStream^ f) -> void
 	{
 		PrintVTable(f)
 
 		needComma := false
 		f^ << "%Class" << ItId << " = type {"
-		if FieldsPath.Size() == 0 //TODO and not virtual
+		if FieldsPath.Size() == 0 and VTable.Size() != 0
 		{
 			f^ <<"i1"
 		}else{
+			if VTable.Size() != 0
+			{
+				f^ << "%VTableType" << ItId << "*"
+				needComma = true
+			}
 			for i : FieldsPath.Size()
 			{
 				if needComma
@@ -103,6 +109,13 @@ BoxClass := class extend BoxUnit
 
 		posOffset := 0
 		posMemOffset := 0
+
+		if VTable.Size() != 0
+		{
+			posOffset += 1
+			posMemOffset = 8 //TODO unconst
+			ItAlign = max(ItAlign,8)
+		}
 
 		if Parents.Size() > 0
 		{
