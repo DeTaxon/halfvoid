@@ -57,6 +57,16 @@ BoxFuncTemplate := class extend BoxUnit
 		assert(false)
 		return null
 	}
+
+	IsOneFunc := virtual !() -> bool
+	{
+		return false
+	}
+	GetOneFunc := virtual !() -> BoxFunc^
+	{
+		assert(false)
+		return null
+	}
 	SetName := virtual !(StringSpan name) -> void
 	{
 	}

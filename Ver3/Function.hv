@@ -46,12 +46,14 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	if iter.GetValue() != "{}" return null
 
-	//if isTemplate
-	//{
-	//	return new BoxFuncTemplateBody(Attr,brackets,null,resultToken,iter)
-	//}
+	asTempl := new BoxFuncTemplateBody(Attr,brackets,null,resultToken,iter)
 
-	return new BoxFuncBody(Attr,brackets,null,resultToken,iter)
+	if asTempl.IsOneFunc()
+	{
+		return asTempl.GetOneFunc()
+	}
+	return asTempl
+
 }
 
 ContainTemplateObj := !(Token^ itm) -> bool

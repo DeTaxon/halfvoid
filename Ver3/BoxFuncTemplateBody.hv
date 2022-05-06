@@ -9,7 +9,7 @@ FuncTemplateInput := class
 	{
 		Name = nm
 		ItType = typ
-		ir = IsRef
+		IsRef = ir
 		ItToken = tk
 	}
 }
@@ -26,7 +26,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	Name := StringSpan
 
 	Types := HybridQueue.{FuncTemplateInput,10}
-	ResultType := FuncTemplateInput 
+	ResultType := FuncTemplateInput
+	IsVargs := bool
 
 	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
 	{
@@ -35,14 +36,27 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		inps1 = brackets1
 		resTyp = resToken
 		bdy = bodyIn
+		ParseHeader()
 	}
 	SetName := virtual !(StringSpan name) -> void
 	{
 		Name = name
+		if CurrentCodeSpace != null
+		{
+			CurrentCodeSpace.Templates[Name].Push(this&)
+		}
 	}
-	Work := virtual !() -> void
+	ParseHeader := virtual !() -> void
 	{
+		SyntaxCompress(inps1,LexHVInputVars)
 		
+		if CurrentScope is in BoxClass //TODO not static,
+		{
+			cls := CurrentScope->{BoxClass^}
+			Types.Emplace(StringSpan("this"),cls.ItType,true,null)
+			Attrs.IsMethod = true
+		}
+
 		bag := HybridQueue.{Token^,10}
 		defer bag.Destroy()
 
@@ -53,40 +67,38 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			ResultType.ItType = ParseType(resTyp)
 			ResultType.ItToken = resTyp
 		}
+		checkBag := () ==> {
+			if bag.Size() == 1
+			{
+				assert(bag[0] is TokenIndent)
+				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+			}else if bag.Size() >= 2 {
+				assert(bag[1] is TokenIndent)
+				typ := ParseType(bag[0])
+				name := bag[1]->{TokenIndent^}.Value
+				isRef := false
+				if typ != null and IsComplexType(typ)
+					isRef = true
+
+				Types.Emplace(name,typ,isRef,bag[0])
+			}else{
+				assert(false)
+			}
+		}
 		while iter != null
 		{
 			if iter.GetValue() == ","
 			{
-				if bag.Size() == 1
-				{
-					assert(bag[0] is TokenIndent)
-					Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
-				}else if bag.Size() > 2 {
-					assert(bag[1] is TokenIndent)
-					typ := ParseType(bag[0])
-					name := bag[1]->{TokenIndent^}.Value
-					isRef := false
-					if typ != null and IsComplexType(typ)
-						isRef = true
-
-					Types.Emplace(name,typ,isRef,bag[0])
-				}else{
-					assert(false)
-				}
+				checkBag()
 				bag.Clear()
 			}else{
 				bag.Push(iter)
 			}
 			iter = iter.Right
 		}
+		if bag.Size() != 0
+			checkBag()
 		
-		if Name.Get() == null
-			return void
-
-		if CurrentCodeSpace != null
-		{
-			CurrentCodeSpace.Templates[Name].Push(this&)
-		}
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeObj^} consts) -> TypeFunc^
 	{
@@ -110,6 +122,33 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		assert(false)
 		return null
+	}
+	IsOneFunc := virtual !() -> bool
+	{
+		for it : Types
+		{
+			if it.ItType == null
+				return false
+		}
+		if ResultType.ItType == null //todo? functions with auto return type
+			return false
+		return true
+	}
+	GetOneFunc := virtual !() -> BoxFunc^
+	{
+		fTyp := Type^[100]
+		isRef := bool[100]
+		for it,i : Types
+		{
+			fTyp[i] = it.ItType
+			isRef[i] = it.IsRef
+		}
+
+		resFuncTyp := GetFuncType(Types.Size(),fTyp[0]&,isRef[0]&,ResultType.ItType,ResultType.IsRef,IsVargs)
+
+		names := HybridQueue.{StringSpan,10}
+		names.Push(Types[^].Name)
+		return new BoxFuncBody(resFuncTyp,Attrs,names,bdy)
 	}
 
 }
