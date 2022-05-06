@@ -4,6 +4,7 @@ FuncTemplateInput := class
 	ItType := Type^
 	IsRef := bool
 	ItToken := Token^
+	IsTType := bool
 
 	this := !(StringSpan nm, Type^ typ, bool ir, Token^ tk) -> void
 	{
@@ -11,6 +12,8 @@ FuncTemplateInput := class
 		ItType = typ
 		IsRef = ir
 		ItToken = tk
+		if tk != null
+			IsTType = ContainTemplateObj(tk)
 	}
 }
 
@@ -115,14 +118,58 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				
 			}
 		}
-		return null 
+		datas := HybridQueue.{Tuple.{Type^,bool},10}
+
+		for i : objs.Size()
+		{
+			datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+		}
+		resConsts := AVLMap.{StringSpan,BoxExeObj^}
+		defer resConsts.Destroy()
+		return checkTypes(datas,consts,resConsts)
 	}
 	
 	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeObj^} consts) -> BoxFunc^
 	{
+		names := HybridQueue.{StringSpan,10}
+		names.Push(Types[^].Name)
+		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
+		return newFunc
+	}
+	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxExeObj^} consts, AVLMap.{StringSpan,BoxExeObj^} resCnsts) -> TypeFunc^
+	{
+		fTyps := Type^[100]
+		iRef := bool[100]
+		for i : objs.Size()
+		{
+			if Types[i].ItToken != null
+			{
+				fTyps[i] = checkType(objs[i].0,Types[i].ItToken,resCnsts)
+			}
+		}
+
+		for i : objs.Size()
+		{
+			if fTyps[i] == null
+				return null
+		}
+		resType := ResultType.ItType
+		if resType == null
+			resType = checkType(ResultType.ItType,ResultType.ItToken,resCnsts)
+		assert(resType != null)
+		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resType,ResultType.IsRef,IsVargs)
+	}
+	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxExeObj^} resCnsts) -> Type^
+	{
+		if tk is TokenTemplateType
+		{
+			//TODO: resConsts.Push()
+			return tp
+		}
 		assert(false)
 		return null
 	}
+
 	IsOneFunc := virtual !() -> bool
 	{
 		for it : Types

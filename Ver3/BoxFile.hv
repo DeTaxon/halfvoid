@@ -21,7 +21,6 @@ BoxFile := class extend BoxUnit
 
 	objects := List.{BoxUnit^}
 
-	AllFunctions := List.{BoxFunc^} //Including anon functions
 	AllClasses := List.{BoxClass^}
 
 	this := !(vRepoFile^ inFile) -> void

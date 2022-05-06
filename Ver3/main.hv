@@ -29,6 +29,8 @@ GDebugTypePrintMeta := List.{Type^}
 GFuncsInProgress := List.{BoxFunc^}
 GClassesInProgress := List.{BoxClass^}
 
+AllFunctions := List.{BoxFunc^}
+
 OutputFile := char^
 main := !(int argc, char^^ argv) -> int
 {
@@ -176,9 +178,9 @@ main := !(int argc, char^^ argv) -> int
 		for fil : spc.Files
 		{
 			GDebugFileId = fil.fileId
-			fil.AllFunctions[^].PrintCode(outFile)
 		}
 	}
+	AllFunctions[^].PrintCode(outFile)
 
 	while GDebugTypePrintMeta.Size() != 0
 	{

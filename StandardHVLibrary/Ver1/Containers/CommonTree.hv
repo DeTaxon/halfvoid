@@ -38,7 +38,7 @@ CommonTree := class .{@DATA}
 			stRes := cmpFunc(itr.data)
 			if stRes == 0 return itr
 			if stRes < 0 	itr = itr.Right
-			else 		itr = itr.Left
+			se 		itr = itr.Left
 		}
 		return itr
 	}
@@ -92,5 +92,23 @@ CommonTree := class .{@DATA}
 			toRem.Right = CreatedNodes
 			CreatedNodes = toRem
 	}
-	//TODO Clear Destroy
+	Destroy := !() -> void
+	{
+		destroyNode(Start)
+		destroyNode(CreatedNodes)
+	}
+	destroyNode := !(CommonTreeNode.{DATA}^ nd) -> void
+	{
+		if nd == null
+			return void
+		destroyNode(nd.Left)
+		destroyNode(nd.Right)
+		if allocator != null
+		{
+			allocator.FreeMem(nd)
+		}else{
+			delete allocator
+		}
+	}
+	//TODO Clear
 }
