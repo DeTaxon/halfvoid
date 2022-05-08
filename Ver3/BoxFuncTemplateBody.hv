@@ -213,11 +213,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if fTyps[i] == null
 				return null
 		}
-		resType := ResultType.ItType
-		if resType == null
-			resType = checkType(ResultType.ItType,ResultType.ItToken,resCnsts)
-		assert(resType != null)
-		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resType,ResultType.IsRef,IsVargs)
+		resTypeT := ResultType.ItType
+		if resTypeT == null
+			resTypeT = checkType(ResultType.ItType,ResultType.ItToken,resCnsts)
+		assert(resTypeT != null)
+		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,ResultType.IsRef,IsVargs)
 	}
 	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 	{
@@ -240,6 +240,29 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				resCnsts[nm] = new TypeVar(nm,tp)
 			}
 			return tp
+		}
+		if tk is TokenIndent
+		{
+			dwnTp := ParseType(tk)
+			if dwnTp == null
+				return null
+			if tp != null and tp != dwnTp
+				return null
+			return dwnTp
+		}
+		if tk.Down?.Right?.GetValue() == "^"
+		{
+			nxtType := Type^
+			if tp != null
+			{
+				if not (tp is TypePoint)
+					return null
+				nxtType = tp.Base
+			}
+			resTyp2 := checkType(nxtType,tk.Down,resCnsts)
+			if resTyp2 == null
+				return null
+			return resTyp2.GetPoint()
 		}
 		assert(false)
 		return null
