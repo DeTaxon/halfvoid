@@ -1,0 +1,4 @@
+TryGetConst := !(Token^ obj) -> BoxUnit^
+{
+	return null
+}
