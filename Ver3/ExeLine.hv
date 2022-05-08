@@ -148,9 +148,35 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 		itr = itr.Right
 	}
 }
+CheckFuncCallConsts := !(Token^ itm, List.{BoxUnit^} consts) -> void
+{
+	iter := itm.Down
+
+	while iter != null
+	{
+		if iter.GetValue() == ","
+		{
+		}else{
+			tp := ParseType(iter)
+			if tp != null
+			{
+				consts.Push(GetConstType(tp))
+			}else{
+				cns := TryGetExeCall(iter)
+				if cns != null
+				{
+					consts.Push(cns)
+				}else{
+					assert(false)
+				}
+			}
+		}
+		iter = iter.Right
+	}
+}
 
 
-GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs) -> BoxUnit^
+GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxUnit^} consts) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
 	defer priorityes.Destroy()
@@ -164,7 +190,6 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs) -> BoxUnit^
 			priorityes.Push(cmpRes)
 		}else if h is in BoxFuncTemplate{
 			tmpl := h->{BoxFuncTemplate^}
-			consts := List.{BoxExeObj^}
 			cmpRes := tmpl.GetPriority(Objs,consts)
 			priorityes.Push(cmpRes)
 		}else{
@@ -184,11 +209,11 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs) -> BoxUnit^
 	return x[bestI]
 }
 
-CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxUnit^} consts) -> BoxFuncCall^
 {
 	callItem := BoxUnit^
 	GetItemGlobal(name, x ==>{
-		callItem = GetBestFunc(x,Objs)
+		callItem = GetBestFunc(x,Objs,consts)
 		if callItem == null
 			return false
 		return true
@@ -198,7 +223,6 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
 		return null
 	if callItem is in BoxFuncTemplate
 	{
-		consts := List.{BoxExeObj^}
 		callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
 	}
 	if callItem is in BoxFunc

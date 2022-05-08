@@ -14,3 +14,15 @@ GDebugFileId := task_local int
 GDebugFuncId := task_local int
 GDebugScopeId := task_local int
 GDebugLineCallId := task_local int
+
+
+
+typeConsts := AVLMap.{Type^,BoxUnit^}
+GetConstType := !(Type^ tp) -> BoxUnit^
+{
+	if typeConsts.Contain(tp)
+		return typeConsts[tp]
+	newCmp := new TypeVar(StringSpan(),tp)
+	typeConsts[tp] = newCmp
+	return newCmp
+}

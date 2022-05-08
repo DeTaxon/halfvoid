@@ -5,11 +5,28 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return null
 	if itm.Down?.Right.GetValue() != "()"
 		return null
-	if itm.Down.Right.Right != null
-		return null
+	brc := itm.Down.Right
+	constsToken := brc.Right
+	if constsToken != null
+	{
+		if constsToken.GetValue() != "."
+			return null
+		constsToken = constsToken.Right
+		if constsToken == null or constsToken.GetValue() != "{}"
+			return null
+		if constsToken.Right != null
+			return null
+	}
 
 	Objs := CheckExeDownList
-	CheckFuncCallBrackets(itm.Down.Right,Objs)
+	defer Objs.Destroy()
+	CheckFuncCallBrackets(brc,Objs)
+
+	consts := List.{BoxUnit^}
+	defer consts.Destroy()
+	if constsToken != null
+		CheckFuncCallConsts(constsToken,consts)
+
 
 	if itm.Down is TokenIndent
 	{
@@ -27,7 +44,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 						tkn1.Line = itm.Line
 						vr := TryGetExeCall(tkn1&)
 
-						return innerTryGetMethodCall(asInd.Value,vr,Objs)?
+						return innerTryGetMethodCall(asInd.Value,vr,Objs,consts)?
 					}catch(IException^ e)
 					{
 					}
@@ -35,7 +52,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			}
 		}
 
-		return CreateFuncCall(asInd.Value,Objs)
+		return CreateFuncCall(asInd.Value,Objs,consts)
 	}else{
 		assert(false)
 	}

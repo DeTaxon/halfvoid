@@ -18,8 +18,10 @@
 //	}
 //}
 
-templ := !(@T x)  -> void
+templ := !(@T x) . {@Y}  -> void
 {
+	z := T
+	z2 := Y
 	printf("hi %i\n",x)
 }
 main := !(int argc, char^^ argv) -> int
@@ -31,6 +33,6 @@ main := !(int argc, char^^ argv) -> int
 	//i := Cls^
 	//i = y&
 	//i.check()
-	templ(1)
-	templ(1.0)
+	templ(1).{int}
+	templ(1.0).{int}
 }

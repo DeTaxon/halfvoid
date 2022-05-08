@@ -17,7 +17,17 @@ FuncTemplateInput := class
 	}
 }
 
+FuncTemplateConstant := class
+{
+	ItToken := Token^
+	Value := BoxUnit^
 
+	this := !(Token^ tok, BoxUnit^ val) -> void
+	{
+		ItToken = tok
+		Value = val
+	}
+}
 BoxFuncTemplateBody := class extend BoxFuncTemplate
 {
 	Attrs := FuncAttributes
@@ -25,6 +35,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	inps1 := Token^
 	resTyp := Token^
 	bdy := Token^
+	cns := Token^
 
 	Name := StringSpan
 
@@ -32,12 +43,15 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	ResultType := FuncTemplateInput
 	IsVargs := bool
 
-	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
+	Constants := List.{FuncTemplateConstant}
+
+	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2,Token^ constToken, Token^ resToken,Token^ bodyIn) -> void
 	{
 		assert(brackets2 == null)//not implemented
 		Attrs = atrs
 		inps1 = brackets1
 		resTyp = resToken
+		cns = constToken
 		bdy = bodyIn
 		ParseHeader()
 	}
@@ -101,45 +115,90 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 		if bag.Size() != 0
 			checkBag()
-		
+
+		if cns != null
+		{
+			iter = cns.Down
+			while iter != null
+			{
+				if iter.GetValue() != ","
+				{
+					cItm := TryGetConst(iter)
+					Constants.Emplace(iter,cItm)
+				}
+				iter = iter.Right
+			}
+		}
 	}
-	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxUnit^} consts) -> TypeFunc^
 	{
 		if objs.Size() != Types.Size()
+			return null
+		if consts.Size() != Constants.Size()
 			return null
 
 		fInTypes := Type^[100]
 		isRefs := bool[100]
 
-		for i : objs.Size()
-		{
-			if Types[i].ItType != null
-			{
-				
-			}
-		}
 		datas := HybridQueue.{Tuple.{Type^,bool},10}
 
 		for i : objs.Size()
 		{
 			datas.Emplace(objs[i].GetType(),objs[i].IsMem())
 		}
-		resConsts := AVLMap.{StringSpan,BoxExeObj^}
+		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		defer resConsts.Destroy()
 		return checkTypes(datas,consts,resConsts)
 	}
 	
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeObj^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxUnit^} consts) -> BoxFunc^
 	{
+		datas := HybridQueue.{Tuple.{Type^,bool},10}
+
+		for i : tp.Params.Size()
+		{
+			datas.Emplace(tp.Params[i].ItType,tp.Params[i].IsRef)
+		}
+		resConsts := AVLMap.{StringSpan,BoxUnit^}
+		defer resConsts.Destroy()
+		checkTypes(datas,consts,resConsts)
+
+
 		names := HybridQueue.{StringSpan,10}
 		names.Push(Types[^].Name)
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
+
+		for it : resConsts
+		{
+			newFunc.ConstVars.Push(it)
+		}
+
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxExeObj^} consts, AVLMap.{StringSpan,BoxExeObj^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxUnit^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
 	{
+
 		fTyps := Type^[100]
 		iRef := bool[100]
+
+		for i : consts.Size()
+		{
+			if Constants[i].Value == null
+			{
+				assert(Constants[i].ItToken is TokenTemplateType)
+				tmpl := Constants[i].ItToken->{TokenTemplateType^}
+				name := tmpl.Value[1..0]
+				if consts[i] is TypeVar
+				{
+					resCnsts[name] = new TypeVar(name,consts[i]->{TypeVar^}.Value)
+				}else{
+					resCnsts[name] = consts[i]
+				}
+			}else{
+				assert(false)
+			}
+		}
+
 		for i : objs.Size()
 		{
 			if Types[i].ItToken != null
@@ -147,6 +206,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				fTyps[i] = checkType(objs[i].0,Types[i].ItToken,resCnsts)
 			}
 		}
+
 
 		for i : objs.Size()
 		{
@@ -159,11 +219,26 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		assert(resType != null)
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resType,ResultType.IsRef,IsVargs)
 	}
-	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxExeObj^} resCnsts) -> Type^
+	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 	{
 		if tk is TokenTemplateType
 		{
+			nm := tk->{TokenTemplateType^}.Value[1..0]
 			//TODO: resConsts.Push()
+			assert(tp != null)
+			if resCnsts.Contain(nm)
+			{
+				if resCnsts[nm] is TypeVar
+				{
+					vr := resCnsts[nm]->{TypeVar^}
+					if vr.Value != tp
+					{
+						assert(false)
+					}
+				}
+			}else{
+				resCnsts[nm] = new TypeVar(nm,tp)
+			}
 			return tp
 		}
 		assert(false)

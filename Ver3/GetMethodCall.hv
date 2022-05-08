@@ -25,9 +25,11 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	Objs := CheckExeDownList
 	CheckFuncCallBrackets(itm.Down.Right,Objs)
 
+	consts := List.{BoxUnit^} //TODO
+
 	mNameT := itm.Down.Right.Right->{TokenIndent^}
 
-	fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs)
+	fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs,consts)
 	if fnc != null
 		return fnc
 
@@ -35,7 +37,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	assert(false)
 }
 
-innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs) -> BoxExeObj^
+innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs,List.{BoxUnit^} consts) -> BoxExeObj^
 {
 	Objs := CheckExeDownList
 	Objs.Push(vr)
@@ -54,7 +56,7 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 		cls := clsType->{TypeClass^}.ToClass //TODO GetClass
 		callItem := BoxUnit^
 		cls.GetMethods(name, x ==> {
-			callItem = GetBestFunc(x,Objs)
+			callItem = GetBestFunc(x,Objs,consts)
 		})
 		if callItem != null
 		{

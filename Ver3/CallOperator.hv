@@ -20,7 +20,8 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 	oper := itm.Down.Right.GetValue()
 
-	return CreateFuncCall(oper,tmpList)?
+	consts := List.{BoxUnit^}
+	return CreateFuncCall(oper,tmpList,consts)?
 
 	return null
 }

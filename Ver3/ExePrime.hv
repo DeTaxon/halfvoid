@@ -29,6 +29,30 @@ GlobalInts := AVLMap.{int,BoxExeInt^}
 GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
 strIdIterator := 1
 
+
+exeTypes := AVLMap.{Type^,BoxExeType^}
+GetExeType := !(Type^ tp) -> BoxExeType^
+{
+	if exeTypes.Contain(tp)
+		return exeTypes[tp]
+	m := new BoxExeType(tp)
+	exeTypes[tp] = m
+	return m
+}
+
+BoxExeType := class extend BoxExeObj
+{
+	Value := Type^
+	this := !(Type^ nVal) -> void
+	{
+		val = nVal
+		ObjType = GTypeVoid
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "nah"
+	}
+}
 BoxExeInt := class extend BoxExeObj
 {
 	val := int

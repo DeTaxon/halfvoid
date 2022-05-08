@@ -14,6 +14,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	funcLine := BoxExeLine^
 
+	Constants := List.{BoxUnit^}
+	ConstVars := List.{BoxUnit^}
+
 	//this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
 	//{
 	//	assert(brackets2 == null)//not implemented
@@ -176,6 +179,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 		defer readyState.Emit()
+
+		UnitStack.PushFront(ConstVars[^])
 
 		OutputName = GetFuncMangle(Name)
 		
