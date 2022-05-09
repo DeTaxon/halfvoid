@@ -20,7 +20,30 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 			if cls.VTable.Size() == 0
 				assert(false) //TODO
 			emptyObj := CheckExeDownList
-			return new BoxFuncCall(cls.VTableValue.Value,emptyObj)
+			fncCall := new BoxFuncCall(cls.VTableValue.Value,emptyObj)
+			return new UnrefFuncCall(fncCall)
+		}
+		dObj := TryGetExeCall(obj.Down)
+		if dObj != null
+		{
+			cls := dObj.GetType()
+			if cls is TypePoint //TODO
+				cls = cls.Base
+			if cls is TypeClass 
+			{
+				cls2 := cls->{TypeClass^}.ToClass
+				if cls2.VTable.Size() != 0
+				{
+					chk := CheckExeDownList
+					defer chk.Destroy() //TODO
+					chk.Push(dObj)
+					return new BoxFuncCall(cls2.VTableField,chk)
+				}else{
+					assert(false) //TODO emit , not a virtual class
+				}
+			}else{
+				assert(false) //TODO Emit, not a class
+			}
 		}
 		
 	}

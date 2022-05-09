@@ -3,6 +3,7 @@ AppendClass BoxClass
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
 	VTableValue := GlobalVar^
+	VTableField := FieldPath^
 
 	PrintVTable := virtual !(TIOStream^ f) -> void
 	{
@@ -32,6 +33,7 @@ AppendClass BoxClass
 			cnst.Value.Push(it.GetConst())
 		}
 		VTableValue.MemValue = cnst
+		VTableField = new FieldPath(VTableType.ItType.GetPoint())
 	}
 }
 
