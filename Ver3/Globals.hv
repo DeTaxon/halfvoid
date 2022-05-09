@@ -17,12 +17,20 @@ GDebugLineCallId := task_local int
 
 
 
-typeConsts := AVLMap.{Type^,BoxUnit^}
+typeConsts := AVLMap.{Type^,ConstType^}
 GetConstType := !(Type^ tp) -> BoxUnit^
 {
 	if typeConsts.Contain(tp)
 		return typeConsts[tp]
-	newCmp := new TypeVar(StringSpan(),tp)
+	newCmp := new ConstType(tp)
 	typeConsts[tp] = newCmp
 	return newCmp
+}
+ConstType := class extend BoxUnit
+{
+	Value := Type^
+	this := !(Type^ tp) -> void
+	{
+		Value = tp
+	}
 }

@@ -6,6 +6,10 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 	for spc : CodeSpaces.Reverse
 	{
 		lst.Clear()
+		if spc.Globals.Contain(name)
+		{
+			lst.Push(spc.Globals[name][^])
+		}
 		if spc.Functions.Contain(name)
 		{
 			lst.Push(spc.Functions[name][^])

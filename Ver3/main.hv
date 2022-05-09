@@ -29,6 +29,7 @@ GDebugTypePrintMeta := List.{Type^}
 GFuncsInProgress := List.{BoxFunc^}
 GClassesInProgress := List.{BoxClass^}
 
+AllClasses := List.{BoxClass^}
 AllFunctions := List.{BoxFunc^}
 
 OutputFile := char^
@@ -102,6 +103,8 @@ main := !(int argc, char^^ argv) -> int
 	for spc : CodeSpaces
 	{
 		spc.CLibs[^].Work()
+
+		GDebugFileId = spc.Files[^].fileId //TODO, remove it, is is for debug id
 	}
 
 	for fil : CodeFiles
@@ -148,7 +151,8 @@ main := !(int argc, char^^ argv) -> int
 	PrintDeclares(outFile)
 	if DebugMode
 		PrintDebugMeta(outFile)
-	
+
+	AllClasses[^].PrintAsType(outFile)
 	for spc : CodeSpaces
 	{
 		for fil : spc.Files
@@ -159,6 +163,7 @@ main := !(int argc, char^^ argv) -> int
 	}
 	for spc : CodeSpaces
 	{
+		spc.Globals[^][^].PrintCode(outFile)
 		for fil : spc.Files
 		{
 			fil.PrintCode(outFile)

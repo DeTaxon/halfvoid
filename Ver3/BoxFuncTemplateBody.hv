@@ -123,8 +123,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			{
 				if iter.GetValue() != ","
 				{
-					cItm := TryGetConst(iter)
-					Constants.Emplace(iter,cItm)
+					assert(false)
+					//cItm := TryGetConst(iter)
+					//Constants.Emplace(iter,cItm)
 				}
 				iter = iter.Right
 			}
@@ -188,9 +189,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				assert(Constants[i].ItToken is TokenTemplateType)
 				tmpl := Constants[i].ItToken->{TokenTemplateType^}
 				name := tmpl.Value[1..0]
-				if consts[i] is TypeVar
+				if consts[i] is ConstType
 				{
-					resCnsts[name] = new TypeVar(name,consts[i]->{TypeVar^}.Value)
+					resCnsts[name] = new TypeVar(name,consts[i]->{ConstType^}.Value)
 				}else{
 					resCnsts[name] = consts[i]
 				}

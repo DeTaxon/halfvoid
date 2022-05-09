@@ -82,6 +82,11 @@ BoxFile := class extend BoxUnit
 				{
 					CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
 				}
+				if vr is GlobalVar
+				{
+					glb := vr->{GlobalVar^}
+					CurrentCodeSpace.Globals[glb.Name].Push(vr)
+				}
 
 				objects.Push(vr)
 				vr.Work()

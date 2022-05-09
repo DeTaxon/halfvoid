@@ -104,6 +104,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	if itm == null
 		return null
 
+	return TryGetMetaCall(itm)?
 	return TryCheckRegularFuncCall(itm)?
 	return TryCheckMethodCall(itm)?
 	

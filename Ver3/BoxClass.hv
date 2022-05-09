@@ -37,7 +37,7 @@ BoxClass := class extend BoxUnit
 		}else{
 			if VTable.Size() != 0
 			{
-				f^ << "%VTableType" << ItId << "*"
+				VTableType.ItType.GetPoint().PrintType(f)
 				needComma = true
 			}
 			for i : FieldsPath.Size()

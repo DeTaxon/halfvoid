@@ -28,8 +28,14 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if varType != null
 	{
-		vr := new FuncLocalParam(name,varType)
-		return new MemVar(name,vr)
+		if CurrentScope is BoxFile
+		{
+			return new GlobalVar(name,varType)
+		}else{
+			assert(CurrentScope is in BoxFunc) 
+			vr := new FuncLocalParam(name,varType)
+			return new MemVar(name,vr)
+		}
 	}
 
 	cls := TryParseClass(varToken)

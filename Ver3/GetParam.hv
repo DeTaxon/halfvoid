@@ -45,6 +45,27 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			}
 		}
 	}
+	callItem := BoxUnit^
+	GetItemGlobal(asItm.Value, x ==> {
+		for it : x
+		{
+			if it is GlobalVar
+			{
+				callItem = it->{GlobalVar^}.Value
+				return true
+			}
+		}
+		return false
+	})
+	if callItem != null
+	{
+		if callItem is in BoxFunc
+		{
+			emptyObj := CheckExeDownList
+			return new BoxFuncCall(callItem->{BoxFunc^},emptyObj)
+		}
+	}
+
 	assert(false) //TODO emit error
 
 	return null

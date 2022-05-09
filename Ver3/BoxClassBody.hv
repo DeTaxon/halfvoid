@@ -162,6 +162,7 @@ BoxClassBody := class extend BoxClass
 				Methods[f.0] .Push(f.1)
 			}
 		}
+		CreateVTable()
 		VTableState.Emit()
 
 		InheritStep()

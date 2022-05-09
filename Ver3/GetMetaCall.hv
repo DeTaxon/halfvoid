@@ -1,0 +1,29 @@
+TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
+{
+	if obj.Down?.Right.GetValue() == "->" //todo add to compiler comething thats make it simple
+	{
+	}else{
+		return null
+	}
+	
+	right := obj.Down.Right.Right->{TokenIndent^}
+
+	if right.Value == "VTable"
+	{
+		typ := ParseType(obj.Down)
+		if typ != null
+		{
+			if not (typ is TypeClass)
+				assert(false) //TODO
+			cls := typ->{TypeClass^}.ToClass
+			cls.AwaitVTableStep()
+			if cls.VTable.Size() == 0
+				assert(false) //TODO
+			
+		}
+		
+	}
+	
+	assert(false)
+	return null
+}

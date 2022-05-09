@@ -1,0 +1,31 @@
+
+tplDatabase := AVLMap.{Type^,BoxClassTuple^}
+GetTuple := !(List.{Type^} types) -> BoxClass^
+{
+	typesArr := Type^[200] //TODO  to Array
+	typesArr[i] = types[^i]
+	hck := GetFuncType(types.Size(),typesArr[0]&,null,GTypeVoid,false,false)
+	if tplDatabase.Contain(hck)
+		return tplDatabase[hck]
+	newClass := new BoxClassTuple(types)
+	tplDatabase[hck] = newClass
+	AllClasses.Push(newClass)
+	return newClass
+}
+
+
+BoxClassTuple := class extend BoxClass
+{
+	this := !(List.{Type^} types) -> void
+	{
+		ItName = "anon" //todo
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+
+		for it,i : types //TODO remove i
+		{
+			Fields.Push(new FieldParam(StringSpan(""),types[i]))
+		}
+		InheritStep()
+	}
+}

@@ -1,22 +1,16 @@
 AppendClass BoxClass
 {
 	VTable := List.{VTableEntry^}
+	VTableType := BoxClass^
 
 	PrintVTable := virtual !(TIOStream^ f) -> void
 	{
 		if VTable.Size() == 0
 			return void
-		f^ << "%VTableType" << ItId << " = type{"
 
-		for it, i : VTable
-		{
-			if i > 0
-				f^ << ","
-			it.PrintType(f)
-		}
-		f^ << "}\n"
-
-		f^ << "@VTable" << ItId << " = global %VTableType" << ItId << " {"
+		f^ << "@VTable" << ItId << " = global "
+		VTableType.ItType.PrintType(f)
+		f^ << " {"
 		for it, i : VTable
 		{
 			if i > 0 f^ << ","
@@ -27,6 +21,19 @@ AppendClass BoxClass
 		f^ << "}\n"
 
 	}
+	CreateVTable := !() -> void
+	{
+		if VTable.Size() == 0
+			return void
+		tps := List.{Type^}
+		defer tps.Destroy()
+
+		for it : VTable
+		{
+			tps.Push(it.GetType())
+		}
+		VTableType = GetTuple(tps)
+	}
 }
 
 VTableEntry := class
@@ -36,6 +43,7 @@ VTableEntry := class
 	PrintType := virtual !(TIOStream^ f) -> void {}
 	PrintConst := virtual !(TIOStream^ f) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
+	GetType := virtual !() -> Type^ { return null }
 }
 VTableFunc := class extend VTableEntry
 {
@@ -45,6 +53,10 @@ VTableFunc := class extend VTableEntry
 	{
 		Name = nm
 		Value = fn
+	}
+	GetType := virtual !() -> Type^
+	{
+		return Value.GetType().GetPoint()
 	}
 	PrintType := virtual !(TIOStream^ f) -> void 
 	{

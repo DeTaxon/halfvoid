@@ -18,20 +18,25 @@
 //	}
 //}
 
-templ := !(@T^ x)  -> void
-{
-	z := T
-	printf("hi\n")
-}
+w := int
+//internalInitClass := !(@T^ x)  -> void
+//{
+//	printf("hi %p\n",x)
+//}
 main := !(int argc, char^^ argv) -> int
 {
+	w = 100
 	//y := Cls2
+	//internalInitClass(y&)
 	//y.x = 1
 	//y.y = 2
 	//y.z = 3
 	//i := Cls^
 	//i = y&
 	//i.check()
-	z := int^
-	templ(z)
+	subFunc()
+}
+subFunc := !() -> void
+{
+	printf("hi %i\n",w)
 }
