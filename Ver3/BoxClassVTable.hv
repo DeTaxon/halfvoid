@@ -43,7 +43,7 @@ VTableEntry := class
 	PrintConst := virtual !(TIOStream^ f) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
-	GetConst := virtual !() -> BoxUnit^ { return null }
+	GetConst := virtual !() -> BoxExeConstObj^ { return null }
 }
 VTableFunc := class extend VTableEntry
 {
@@ -63,9 +63,9 @@ VTableFunc := class extend VTableEntry
 		Value.GetType().PrintType(f)
 		f^ << "*"
 	}
-	GetConst := virtual !() -> BoxUnit^
+	GetConst := virtual !() -> BoxExeConstObj^
 	{
-		return Value
+		return new ConstFuncPtr(Value)
 	}
 	PrintConst := virtual !(TIOStream^ f) -> void 
 	{

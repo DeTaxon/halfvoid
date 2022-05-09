@@ -2,8 +2,8 @@ GlobalVar := class extend BoxUnit
 {
 	Name := StringSpan
 	ItType := Type^
-	Value := BoxFunc^
-	MemValue := BoxExeObj^
+	Value := GlobalVarFunc^
+	MemValue := BoxExeConstObj^
 
 	this := !(StringSpan name,Type^ tp) -> void
 	{
@@ -12,7 +12,7 @@ GlobalVar := class extend BoxUnit
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		Value.PrintCode(f)
+		Value.PrintCodeConst(f,MemValue)
 	}
 }
 
@@ -33,12 +33,17 @@ GlobalVarFunc := class extend BoxFunc
 	{
 		return true
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCodeConst := virtual !(TIOStream^ f,BoxExeConstObj^ cnst) -> void
 	{
 		f^ << "@V" << varId << " = global "
 		pType.PrintType(f)
-
-		f^ << " zeroinitializer\n"
+		if cnst != null
+		{
+			cnst.PrintConst(f)
+		}else{
+			f^ << " zeroinitializer"
+		}
+		f^ << "\n"
 
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void

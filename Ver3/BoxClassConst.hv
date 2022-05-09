@@ -1,0 +1,33 @@
+ClassConstValue := class extend BoxExeConstObj
+{
+	ItType := Type^
+	Value := List.{BoxExeConstObj^}
+
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "{"
+		for it,i : Value
+		{
+			if i > 0
+				f^ << ","
+			it.GetType().PrintType(f)
+			f^ << " "
+			it.PrintConst(f)
+		}
+		f^ << "}"
+	}
+}
+
+ConstFuncPtr := class extend BoxExeConstObj
+{
+	Func := BoxFunc^
+	this := !(BoxFunc^ fnc) -> void
+	{
+		ObjType = fnc.GetType().GetPoint()
+		Func = fnc
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		Func.PrintName(f)
+	}
+}
