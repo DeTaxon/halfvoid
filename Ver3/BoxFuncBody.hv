@@ -52,10 +52,10 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 	}
 
-	GetType := !() -> Type^
+	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
-		return ItType
+		return ObjType
 	}
 
 	StartedParse := bool
@@ -231,7 +231,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "{\n"
 
 
-		rTyp := ItType.ResultType
+		rTyp := GetType()->{TypeFunc^}.ResultType
 
 		Params[^].Value->{FuncInputParam^}.PrintCode(f)
 		if ResultVar != null

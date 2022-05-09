@@ -97,6 +97,12 @@ BoxExeObj := class extend BoxUnit
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
 	}
+
+}
+
+BoxExeConstObj := class extend BoxExeObj
+{
+	PrintConst := virtual !(TIOStream^ f) -> void {}
 }
 
 TryGetExeCall := !(Token^ itm) -> BoxExeObj^
@@ -187,7 +193,7 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxUnit
 		if h is in BoxFunc
 		{
 			fnc := h->{BoxFunc^}
-			cmpRes := CmpFuncPriority(fnc.GetType(),Objs)
+			cmpRes := CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs)
 			priorityes.Push(cmpRes)
 		}else if h is in BoxFuncTemplate{
 			tmpl := h->{BoxFuncTemplate^}

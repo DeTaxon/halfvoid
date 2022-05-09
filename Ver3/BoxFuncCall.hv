@@ -20,7 +20,7 @@ BoxFuncCall := class extend BoxExeObj
 		downs.Push(objs[^])
 		resId = GetNewId()
 
-		for par,i : fnc.GetType().Params
+		for par,i : fnc.GetType()->{TypeFunc^}.Params
 		{
 			if par.IsRef
 			{
@@ -28,7 +28,7 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
-		for par,i : fnc.GetType().Params
+		for par,i : fnc.GetType()->{TypeFunc^}.Params
 		{
 			assert( i < downs.Size())
 			if downs[i].GetType() != par.ItType
@@ -50,7 +50,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	GetType := virtual !() -> Type^
 	{
-		return callObj.GetType().ResultType
+		return callObj.GetType()->{TypeFunc^}.ResultType
 	}
 
 	IsMem := virtual !() -> bool

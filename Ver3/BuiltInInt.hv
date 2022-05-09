@@ -10,7 +10,7 @@ BuiltInIntBase := class extend BoxFuncCommon
 	{
 		lst[^].PrintPre(f)
 		
-		tFunc := GetType()
+		tFunc := GetType()->{TypeFunc^}
 		tp := tFunc.Params[0].ItType
 
 		f^ << "%T" << resId << " = " << llvm << " " 
@@ -38,7 +38,7 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		lst[0].PrintPointPre(f)
 		lst[1].PrintPre(f)
 
-		tp := GetType().ResultType
+		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%Temp" << resId << " = load "
 		tp.PrintType(f)

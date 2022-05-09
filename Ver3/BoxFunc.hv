@@ -1,22 +1,21 @@
-BoxFunc := class extend BoxUnit
+BoxFunc := class extend BoxExeConstObj
 {
-	ItType := TypeFunc^
 	ItTypeHatch := THatch
 	Constants := List.{BoxExeObj^} //todo  to Array for less memory consuption
 
-	GetType := !() -> TypeFunc^
+	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
-		return ItType
+		return ObjType
 	}
 	SetType := !(TypeFunc^ tp) -> void
 	{
-		ItType = tp
+		ObjType = tp
 		ItTypeHatch.Emit()
 	}
 	IsMem := virtual !() -> bool
 	{
-		return GetType().ResultRef
+		return GetType()->{TypeFunc^}.ResultRef
 	}
 	WorkBody := virtual !() -> void
 	{
@@ -32,7 +31,8 @@ BoxFunc := class extend BoxUnit
 	}
 	PrintResultType := virtual !(TIOStream^ f) -> void
 	{
-		ItType.ResultType.PrintType(f) //TODO return class
+		fTyp := GetType()->{TypeFunc^}
+		fTyp.ResultType.PrintType(f) //TODO return class
 	}
 	ParseBody := virtual !() -> void
 	{
@@ -40,7 +40,7 @@ BoxFunc := class extend BoxUnit
 	PrintInputTypes := virtual !(TIOStream^ f) -> void
 	{
 		needComma := false
-		for par,i : ItType.Params
+		for par,i : GetType()->{TypeFunc^}.Params
 		{
 			if needComma
 				f^ << ","
@@ -51,7 +51,7 @@ BoxFunc := class extend BoxUnit
 				f^ << "*"
 			f^ << " %par" << i
 		}
-		if ItType.IsVargs
+		if GetType()->{TypeFunc^}.IsVargs
 		{
 			if needComma
 				f^ << ","
@@ -73,14 +73,15 @@ BoxFuncCommon := class extend BoxFunc
 {
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		if ItType.ResultType != GTypeVoid
+		fTyp := GetType()->{TypeFunc^}
+		if fTyp.ResultType != GTypeVoid
 		{
 			f^ << "%T" << resId
 		}
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
-		itType := GetType()
+		itType := GetType()->{TypeFunc^}
 	
 
 		for itm,i : lst

@@ -27,7 +27,7 @@ FuncInputParam := class extend BoxFuncCommon
 	{
 		if DebugMode
 		{
-			pType := GetType().ResultType
+			pType := GetType()->{TypeFunc^}.ResultType
 			f^ << "call void @llvm.dbg.value(metadata "
 			pType.PrintType(f)
 			if isRef 
@@ -39,7 +39,7 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		if ItType.ResultType != GTypeVoid
+		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
 			f^ << "%par" << pNumber
 		}
@@ -55,7 +55,7 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
-		rType := GetType().ResultType
+		rType := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "!" << varId << " = !DILocalVariable(name: \"" << varName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
 		//f^ << ", arg: " << (pNumber + 1)
@@ -78,7 +78,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		rType := GetType().ResultType
+		rType := GetType()->{TypeFunc^}.ResultType
 		f^ << "%P" << pNumber << " = alloca "
 		rType.PrintType(f)
 		if isRef
@@ -104,7 +104,7 @@ FuncInputParamInMem := class extend FuncInputParam
 
 		if DebugMode
 		{
-			pType := GetType().ResultType
+			pType := GetType()->{TypeFunc^}.ResultType
 			f^ << "call void @llvm.dbg.declare(metadata "
 			rType.PrintType(f)
 			f^ << "* %P" << pNumber
@@ -114,7 +114,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		if ItType.ResultType != GTypeVoid
+		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
 			f^ << "%P" << pNumber
 		}

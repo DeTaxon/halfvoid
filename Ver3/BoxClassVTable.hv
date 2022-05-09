@@ -77,8 +77,8 @@ VTableFunc := class extend VTableEntry
 			return false
 		if cmp is VTableFunc
 		{
-			f1 := Value.GetType()
-			f2 := cmp->{VTableFunc^}.Value.GetType()
+			f1 := Value.GetType()->{TypeFunc^}
+			f2 := cmp->{VTableFunc^}.Value.GetType()->{TypeFunc^}
 
 			if f1.Params.Size() != f2.Params.Size()
 				return false
