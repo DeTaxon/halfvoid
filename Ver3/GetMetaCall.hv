@@ -19,7 +19,8 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
 				assert(false) //TODO
-			
+			emptyObj := CheckExeDownList
+			return new BoxFuncCall(cls.VTableValue.Value,emptyObj)
 		}
 		
 	}

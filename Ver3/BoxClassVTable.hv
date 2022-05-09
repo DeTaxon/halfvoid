@@ -2,24 +2,13 @@ AppendClass BoxClass
 {
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
+	VTableValue := GlobalVar^
 
 	PrintVTable := virtual !(TIOStream^ f) -> void
 	{
 		if VTable.Size() == 0
 			return void
-
-		f^ << "@VTable" << ItId << " = global "
-		VTableType.ItType.PrintType(f)
-		f^ << " {"
-		for it, i : VTable
-		{
-			if i > 0 f^ << ","
-			it.PrintType(f)
-			f^ << " "
-			it.PrintConst(f)
-		}
-		f^ << "}\n"
-
+		VTableValue.PrintCode(f)
 	}
 	CreateVTable := !() -> void
 	{
@@ -33,6 +22,16 @@ AppendClass BoxClass
 			tps.Push(it.GetType())
 		}
 		VTableType = GetTuple(tps)
+		VTableValue = new GlobalVar(StringSpan(""),VTableType.ItType)
+		
+		cnst := new ClassConstValue
+		cnst.ItType = VTableType.ItType
+
+		for it : VTable
+		{
+			cnst.Value.Push(it.GetConst())
+		}
+		VTableValue.MemValue = cnst
 	}
 }
 
@@ -44,6 +43,7 @@ VTableEntry := class
 	PrintConst := virtual !(TIOStream^ f) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
+	GetConst := virtual !() -> BoxUnit^ { return null }
 }
 VTableFunc := class extend VTableEntry
 {
@@ -62,6 +62,10 @@ VTableFunc := class extend VTableEntry
 	{
 		Value.GetType().PrintType(f)
 		f^ << "*"
+	}
+	GetConst := virtual !() -> BoxUnit^
+	{
+		return Value
 	}
 	PrintConst := virtual !(TIOStream^ f) -> void 
 	{

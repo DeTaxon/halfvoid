@@ -1,42 +1,34 @@
-//Cls := class
-//{
-//	x := int
-//	y := s64
-//	z := int
-//
-//	check := virtual !() -> void
-//	{
-//		printf("nope %i\n",x)
-//	}
-//}
-//Cls2 := class extend Cls
-//{
-//	w := int
-//	check := virtual !() -> void
-//	{
-//		printf("yep %i\n",x)
-//	}
-//}
+Cls := class
+{
+	x := int
+	y := s64
+	z := int
 
-w := int
-//internalInitClass := !(@T^ x)  -> void
-//{
-//	printf("hi %p\n",x)
-//}
+	check := virtual !() -> void
+	{
+		printf("nope %i\n",x)
+	}
+}
+Cls2 := class extend Cls
+{
+	w := int
+	check := virtual !() -> void
+	{
+		printf("yep %i\n",x)
+	}
+}
+internalInitClass := !(@T^ x)  -> void
+{
+	printf("hi %p\n",T->VTable&)
+}
 main := !(int argc, char^^ argv) -> int
 {
-	w = 100
-	//y := Cls2
-	//internalInitClass(y&)
-	//y.x = 1
-	//y.y = 2
-	//y.z = 3
-	//i := Cls^
-	//i = y&
-	//i.check()
-	subFunc()
-}
-subFunc := !() -> void
-{
-	printf("hi %i\n",w)
+	y := Cls2
+	internalInitClass(y&)
+	y.x = 1
+	y.y = 2
+	y.z = 3
+	i := Cls^
+	i = y&
+	i.check()
 }
