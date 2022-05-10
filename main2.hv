@@ -19,6 +19,7 @@ Cls2 := class extend Cls
 }
 internalInitClass := !(@T^ x)  -> void
 {
+	printf("hi\n")
 	x->VTable = T->VTable
 }
 main := !(int argc, char^^ argv) -> int

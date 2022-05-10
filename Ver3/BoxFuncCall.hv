@@ -34,6 +34,16 @@ BoxFuncCall := class extend BoxExeObj
 			if downs[i].GetType() != par.ItType
 			{
 				newObj := GetExchange(downs[i],par.ItType)
+				if newObj == null
+				{
+					tmpl := TEchoStream
+					tmpl << "Could not exchange type from "
+					downs[i].GetType().PrintDebugName(tmpl&)
+					tmpl << " to "
+					par.ItType.PrintDebugName(tmpl&)
+					printf("%s\n",tmpl.Str()) //TODO
+					throw new Exception(tmpl.Str())
+				}
 				assert(newObj != null)
 
 				while newObj.GetType() != par.ItType

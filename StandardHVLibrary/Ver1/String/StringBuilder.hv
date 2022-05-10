@@ -103,7 +103,7 @@ StringBuilderTemporary := class .{@BufSize}{
 		this << miniBuf[k+1]&
 		return this
 	}
-	Str := !() .{} -> string {
+	Str := !() -> string {
 		if inPtrSize == 0{
 			return ""
 		}
@@ -138,6 +138,11 @@ StringBuilderTemporary := class .{@BufSize}{
 		sprintf(miniBuf,"%f",val)
 		this << miniBuf[0]&
 		return this
+	}
+	Destroy := !() -> void
+	{
+		delete pages[^]
+		pages.Destroy()
 	}
 }
 

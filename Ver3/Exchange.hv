@@ -1,7 +1,6 @@
 GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 {
 	inType := obj.GetType()
-
 	if obj.IsMem()
 	{
 		if inType is TypeClass and expType is TypeClass
@@ -12,9 +11,13 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 
 	if inType is TypePoint and inType.Base is TypeClass and expType is TypeClass
 	{
-		if TypeFight(inType.Base,expType) == expType
+		if inType.Base == expType
 		{
 			return new PtrToRef(obj)
+		}
+		if TypeFight(inType.Base,expType) == expType
+		{
+			return GetExchange(obj,expType.GetPoint())
 		}
 	}
 

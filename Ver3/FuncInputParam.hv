@@ -21,7 +21,7 @@ FuncInputParam := class extend BoxFuncCommon
 	}
 	IsMem := virtual !() -> bool
 	{
-		return false
+		return isRef
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

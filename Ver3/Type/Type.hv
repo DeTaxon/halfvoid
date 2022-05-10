@@ -29,6 +29,10 @@ Type := class {
 	PrintType := virtual !(TIOStream^ f) -> void
 	{
 	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
 	PrintMeta := virtual !(TIOStream^ f) -> void
 	{
 		assert(false)
@@ -106,6 +110,10 @@ TypeStandard := class extend Type
 	{
 		f^ << IRName
 	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << ItGoodName
+	}
 	PrintMeta := virtual !(TIOStream^ f) -> void
 	{
 		assert(DebugMode)
@@ -141,6 +149,11 @@ TypePoint := class extend Type
 	{
 		Base.PrintType(f)
 		f^ << "*"
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintDebugName(f)
+		f^ << "^"
 	}
 	PrintMeta := virtual !(TIOStream^ f) -> void
 	{

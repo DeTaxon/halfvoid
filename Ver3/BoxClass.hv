@@ -136,7 +136,7 @@ BoxClass := class extend BoxUnit
 
 		for fil,i : Fields
 		{
-			fPath := new FieldPath(fil.Value)
+			fPath := new FieldPath(ItType,fil.Value)
 			fPath.Field = fil
 			fPath.Index = posOffset + i
 
@@ -211,6 +211,10 @@ TypeClass := class extend Type
 	{
 		f^ << "%Class" << MetaId
 	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << ToClass.ItName
+	}
 	GetSize := virtual !() -> int
 	{
 		ToClass.AwaitTypeState()
@@ -244,9 +248,9 @@ FieldPath := class extend BoxFuncCommon
 	Index := int
 	MemOffset := int
 
-	this := !(Type^ res) -> void
+	this := !(Type^ baseClass, Type^ res) -> void
 	{
-		SetType(GetFuncType(0,null,null,res,true,false))
+		SetType(GetFuncType(1,baseClass&,null,res,true,false))
 	}
 	IsMem := virtual !() -> bool
 	{

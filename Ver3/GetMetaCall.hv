@@ -27,8 +27,11 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 		if dObj != null
 		{
 			cls := dObj.GetType()
-			if cls is TypePoint //TODO
+			if cls is TypePoint and cls.Base is TypeClass
+			{
+				dObj = GetExchange(dObj,cls.Base)
 				cls = cls.Base
+			}
 			if cls is TypeClass 
 			{
 				cls2 := cls->{TypeClass^}.ToClass

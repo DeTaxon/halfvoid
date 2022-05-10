@@ -33,7 +33,7 @@ AppendClass BoxClass
 			cnst.Value.Push(it.GetConst())
 		}
 		VTableValue.MemValue = cnst
-		VTableField = new FieldPath(VTableType.ItType.GetPoint())
+		VTableField = new FieldPath(ItType,VTableType.ItType.GetPoint())
 	}
 }
 
