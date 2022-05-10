@@ -17,15 +17,13 @@ Cls2 := class extend Cls
 		printf("yep %i\n",x)
 	}
 }
-internalInitClass := !(@T^ x)  -> void
+internalHVInitClass := !(@T x)  -> void
 {
-	printf("hi\n")
 	x->VTable = T->VTable
 }
 main := !(int argc, char^^ argv) -> int
 {
 	y := Cls2
-	internalInitClass(y&)
 	y.x = 1
 	y.y = 2
 	y.z = 3

@@ -213,6 +213,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		{
 			if fTyps[i] == null
 				return null
+			if IsComplexType(fTyps[i])
+				iRef[i] = true
 		}
 		resTypeT := ResultType.ItType
 		if resTypeT == null

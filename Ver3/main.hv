@@ -130,6 +130,7 @@ main := !(int argc, char^^ argv) -> int
 	})
 	assert(mainFunc != null)//TODO better main function
 
+	InitInternals()
 	mainFunc.ParseBody()
 	mainFunc.WaitReadyState()
 
