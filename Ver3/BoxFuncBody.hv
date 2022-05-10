@@ -35,6 +35,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
 		{
+			if i >= names.Size()
+				continue
 			parObj := new FuncInputParam(this&,names[i],par.ItType,par.IsRef,i)
 			vr := new MemVar(names[i],parObj)
 			Params.Push(vr)

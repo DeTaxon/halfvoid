@@ -43,6 +43,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	ResultType := FuncTemplateInput
 	IsVargs := bool
 
+	IsVariadic := bool
+	VariadicName := StringSpan
+
 	Constants := List.{FuncTemplateConstant}
 
 	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2,Token^ constToken, Token^ resToken,Token^ bodyIn) -> void
@@ -90,14 +93,21 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				assert(bag[0] is TokenIndent)
 				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
 			}else if bag.Size() >= 2 {
-				assert(bag[1] is TokenIndent)
-				typ := ParseType(bag[0])
-				name := bag[1]->{TokenIndent^}.Value
-				isRef := false
-				if typ != null and IsComplexType(typ)
-					isRef = true
+				if bag[1].GetValue() == "..."
+				{
+					assert(bag[0] is TokenIndent) //TODO
+					IsVariadic = true
+					VariadicName = bag[0]->{TokenIndent^}.Value
+				}else{
+					assert(bag[1] is TokenIndent)
+					typ := ParseType(bag[0])
+					name := bag[1]->{TokenIndent^}.Value
+					isRef := false
+					if typ != null and IsComplexType(typ)
+						isRef = true
 
-				Types.Emplace(name,typ,isRef,bag[0])
+					Types.Emplace(name,typ,isRef,bag[0])
+				}
 			}else{
 				assert(false)
 			}
@@ -133,7 +143,13 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxUnit^} consts) -> TypeFunc^
 	{
-		if objs.Size() != Types.Size()
+		minArgs := Types.Size()
+		maxArgs := Types.Size()
+		
+		if IsVariadic
+			maxArgs = 2000000 //INT_MAX
+		
+		if objs.Size() < minArgs or objs.Size() > maxArgs
 			return null
 		if consts.Size() != Constants.Size()
 			return null
@@ -202,9 +218,15 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		for i : objs.Size()
 		{
-			if Types[i].ItToken != null
+			if i >= Types.Size()
 			{
-				fTyps[i] = checkType(objs[i].0,Types[i].ItToken,resCnsts)
+				assert(IsVariadic)
+				fTyps[i] = objs[i].0
+			}else{
+				if Types[i].ItToken != null
+				{
+					fTyps[i] = checkType(objs[i].0,Types[i].ItToken,resCnsts)
+				}
 			}
 		}
 
@@ -273,6 +295,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	IsOneFunc := virtual !() -> bool
 	{
+		if IsVariadic
+			return false
 		for it : Types
 		{
 			if it.ItType == null
