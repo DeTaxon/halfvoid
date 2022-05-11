@@ -99,3 +99,65 @@ VTableFunc := class extend VTableEntry
 		return false
 	}
 }
+
+//BoxVirtualFunc := class extend BoxFuncCommon //todo remove in more fitting way
+//{
+//	ItClass := BoxClass^
+//	Index := int
+//	this := !(TypeFunc^ fType, BoxClass^ cls,int funcIndex) -> void
+//	{
+//		SetType(fType)
+//		ItClass = cls
+//		Index = funcIndex
+//	}
+//	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+//	{
+//		fType := ObjType->{TypeFunc^}
+//
+//		for i : fType.Params.Size()
+//		{
+//			if fType.Params[i].IsRef
+//			{
+//				lst[i].PrintPointPre(f)
+//			}else{
+//				lst[i].PrintPre(f)
+//			}
+//		}
+//
+//		f^ << "%VcPtr" << resId << " = getelementptr "
+//		ItClass.ItType.PrintType(f)
+//		f^ << " , "
+//		ItClass.ItType.PrintType(f)
+//		f^ << "* "
+//		lst[0].PrintPointUse(f)
+//		f^ << " , i32 0, i32 0"
+//		if DebugMode
+//			f^ << ", !dbg !" << GDebugLineCallId
+//		f^ << "\n"
+//		f^ << "%VPtr" << resId << " = load "
+//		ItClass.VTableType.ItType.PrintType(f)
+//		f^ << "* , "
+//		ItClass.VTableType.ItType.PrintType(f)
+//		f^ << "** %VcPtr" << resId
+//		if DebugMode
+//			f^ << ", !dbg !" << GDebugLineCallId
+//		f^ << "\n"
+//
+//
+//		if fType.ResultType != GTypeVoid
+//			f^ << "%T" << resId << " = "
+//		f^ << "call %VPtr
+//		//tFunc := GetType()->{TypeFunc^}
+//		//tp := tFunc.Params[0].ItType
+//
+//		//f^ << "%T" << resId << " = " << llvm << " " 
+//		//tp.PrintType(f)
+//		//f^ << " "
+//		//lst[0].PrintUse(f)
+//		//f^ << ","
+//		//lst[1].PrintUse(f)
+//		//if DebugMode
+//		//	f^ << " , !dbg !" << GDebugLineCallId
+//		//f^ << "\n"
+//	}
+//}

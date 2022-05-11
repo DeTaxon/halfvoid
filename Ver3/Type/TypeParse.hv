@@ -39,6 +39,53 @@ ParseType := !(Token^ obj) -> Type^
 	}
 	if obj.GetValue() == "~d"
 	{
+		if obj.Down.GetValue() == "!" and obj.Down.Right.Right.GetValue() == "^"
+		{
+			k := 0
+			types := Type^[100]
+			isRef := bool[100]
+			isVargs := false
+
+			iter := obj.Down.Right.Down
+			while iter != null
+			{
+				if iter.GetValue() != ","
+				{
+					if iter.GetValue() == "..."
+					{
+						isVargs = true
+					}else{
+						types[k] = ParseType(iter)
+						if types[k] == null
+							return null
+						//isRef[k] = IsComplexType(types[k])
+						k += 1
+					}
+				}
+				iter = iter.Right
+			}
+			ptrVal := 0
+			ptrMod := obj.Down.Right.Right
+			while ptrMod.GetValue() == "^"
+			{
+				ptrVal += 1
+				ptrMod = ptrMod.Right
+			}
+			if ptrMod.GetValue() != "->"
+				return null
+			if ptrMod.Right == null
+				return null
+			resType := ParseType(ptrMod.Right)
+			if resType == null
+				return null
+
+			fType := GetFuncType(k,types[0]&,isRef[0]&,resType,false,isVargs)->{Type^}
+			if fType == null
+				return null
+			for ptrVal
+				fType = fType.GetPoint()
+			return fType
+		}
 		if obj.Down.Right?.GetValue() == "^"
 		{
 			dTyp := ParseType(obj.Down)

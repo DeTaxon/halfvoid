@@ -1,22 +1,24 @@
-//Cls := class
-//{
-//	x := int
-//	y := s64
-//	z := int
-//
-//	check := virtual !() -> void
-//	{
-//		printf("nope %i\n",x)
-//	}
-//}
-//Cls2 := class extend Cls
-//{
-//	w := int
-//	check := virtual !() -> void
-//	{
-//		printf("yep %i\n",x)
-//	}
-//}
+Cls := class
+{
+	x := int
+	y := s64
+	z := int
+
+	
+
+	check := virtual !() -> void
+	{
+		printf("nope %i\n",x)
+	}
+}
+Cls2 := class extend Cls
+{
+	w := int
+	check := virtual !() -> void
+	{
+		printf("yep %i\n",x)
+	}
+}
 internalHVInitClass := !(@T x)  -> void
 {
 	x->VTable = T->VTable
@@ -26,14 +28,24 @@ internalHVInitClass := !(@T x)  -> void
 //	this->VTable.FieldNumber(this,args...)
 //}
 
-PrintAll := !(args...) -> void
+//PrintAll := !(args...) -> void
+//{
+//	printf("test %i %i %i\n",args...)
+//}
+
+hello := !(int x) -> void
 {
-	//printf("test %i %i %i\n",args...)
-	printf("test %i %i %i\n",1,2,3,4)
+	printf("hello %i\n",x)
+}
+hi := !(int x) -> void
+{
+	printf("hi %i\n",x)
 }
 main := !(int argc, char^^ argv) -> int
 {
-	PrintAll(7,8,10)
+	z := !(int)^->void
+	//z = hi
+	//z(10)
 	//y := Cls2
 	//y.x = 1
 	//y.y = 2

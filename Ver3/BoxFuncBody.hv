@@ -17,15 +17,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	Constants := List.{BoxUnit^}
 	ConstVars := List.{BoxUnit^}
 
-	//this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2, Token^ resToken,Token^ bodyIn) -> void
-	//{
-	//	assert(brackets2 == null)//not implemented
-	//	Attrs = atrs
-	//	inps1 = brackets1
-	//	resTyp = resToken
-	//	bdy = bodyIn
-
-	//}
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
 	{
 		Name = "anon"
