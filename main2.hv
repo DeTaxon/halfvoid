@@ -44,7 +44,7 @@ hi := !(int x) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	z := !(int)^->void
-	//z = hi
+	z = hi
 	//z(10)
 	//y := Cls2
 	//y.x = 1

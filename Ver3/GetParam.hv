@@ -54,6 +54,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = it->{GlobalVar^}.Value
 				return true
 			}
+			if it is in BoxFunc
+			{
+				callItem = new FuncPointerParam(it->{BoxFunc^})
+				return true
+			}
 		}
 		return false
 	})

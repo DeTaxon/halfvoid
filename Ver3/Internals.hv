@@ -1,0 +1,16 @@
+TemplateInternalInitClass := BoxFuncTemplate^
+
+InitInternals := !() -> void
+{
+	GetItemGlobal(StringSpan("internalHVInitClass"),x ==> {
+		for itm : x
+		{
+			if itm is in BoxFuncTemplate
+			{
+				TemplateInternalInitClass = itm->{BoxFuncTemplate^}
+				return true
+			}
+		}
+	})
+	assert(TemplateInternalInitClass != null)
+}
