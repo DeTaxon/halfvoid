@@ -133,6 +133,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	unrefCall := TryGetUnrefObj(itm)
 	if unrefCall != null
 		return unrefCall
+	return TryGetPtrObj(itm)?
 
 	return null
 

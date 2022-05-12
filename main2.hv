@@ -4,8 +4,6 @@ Cls := class
 	y := s64
 	z := int
 
-	
-
 	check := virtual !() -> void
 	{
 		printf("nope %i\n",x)
@@ -44,12 +42,12 @@ hi := !(int x) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	y := Cls2
-	y.x = 1
+	y.x = 200
 	y.y = 2
 	y.z = 3
 	i := Cls^
 	i = y&
-	printf("here %p\n",y&^->VTable.0)
-	//i->VTable.0(i^)
+	//printf("here %p\n",y&^->VTable.0)
+	i->VTable.0(i^)
 	//i.check()
 }
