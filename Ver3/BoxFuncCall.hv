@@ -17,10 +17,14 @@ BoxFuncCall := class extend BoxExeObj
 		if callObj is BoxFuncBody
 			callObj->{BoxFuncBody^}.ParseBody()
 
+		CheckInputs(fnc.GetType()->{TypeFunc^},objs)
+	}
+	CheckInputs := !(TypeFunc^ fType, CheckExeDownList objs) -> void
+	{
 		downs.Push(objs[^])
 		resId = GetNewId()
 
-		for par,i : fnc.GetType()->{TypeFunc^}.Params
+		for par,i : fType.Params
 		{
 			if par.IsRef
 			{
@@ -28,7 +32,7 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
-		for par,i : fnc.GetType()->{TypeFunc^}.Params
+		for par,i : fType.Params
 		{
 			assert( i < downs.Size())
 			if downs[i].GetType() != par.ItType
@@ -67,9 +71,13 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		return callObj.IsMem()
 	}
-	PrintFuncUse := !(TIOStream^ f) -> void
+	PrintFuncUse := virtual !(TIOStream^ f) -> void
 	{
 		callObj.PrintFuncCall(f,resId,0,downs)
+	}
+	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	{
+		callObj.PrintResultObj(f,resId,-1)
 	}
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
@@ -77,7 +85,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
-		callObj.PrintResultObj(f,resId,-1)
+		PrintFuncResult(f)
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{
@@ -105,7 +113,27 @@ BoxFuncCall := class extend BoxExeObj
 		{
 			f^ << "%TUnref" << resId
 		}else{
-			callObj.PrintResultObj(f,resId,-1)
+			PrintFuncResult(f)
 		}
+	}
+}
+BoxFuncPointerCall := class extend BoxFuncCall
+{
+	ItPtrFunc := BoxExeObj^
+	this := !(BoxExeObj^ ptrVal, CheckExeDownList objs) -> void
+	{
+		ItPtrFunc = ptrVal
+		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},objs)
+	}
+	PrintFuncUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)
+	}
+	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncCallResultCommon(f,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
+	}
+	NotifyMemUse := virtual !() -> void
+	{
 	}
 }

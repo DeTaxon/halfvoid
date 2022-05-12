@@ -85,11 +85,18 @@ BoxFuncCommon := class extend BoxFunc
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
-		PrintFuncCallCommon(f,this&,resId,debId,lst)
+		PrintFuncCallCommon(f,this&,resId,lst)
 	}
 }
 
-PrintFuncCallCommon := !(TIOStream^ f,BoxExeConstObj^ fncObj,int resId,int debId,ExeDownList lst) -> void
+PrintFuncCallResultCommon := !(TIOStream^ f,TypeFunc^ fTyp,int resId) -> void
+{
+	if fTyp.ResultType != GTypeVoid
+	{
+		f^ << "%T" << resId
+	}
+}
+PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
 {
 	itType := TypeFunc^
 	if fncObj is in BoxFunc
