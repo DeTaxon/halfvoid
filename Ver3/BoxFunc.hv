@@ -37,6 +37,10 @@ BoxFunc := class extend BoxExeConstObj
 	ParseBody := virtual !() -> void
 	{
 	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintName(f)
+	}
 	PrintInputTypes := virtual !(TIOStream^ f) -> void
 	{
 		needComma := false
@@ -81,60 +85,72 @@ BoxFuncCommon := class extend BoxFunc
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
-		itType := GetType()->{TypeFunc^}
-	
-
-		for itm,i : lst
-		{
-			if itType.Params.Size() > i and itType.Params[i].IsRef
-			{
-				itm.PrintPointPre(f)
-			}else{
-				itm.PrintPre(f)
-			}
-		}
-
-
-		if itType.ResultType != GTypeVoid
-		{
-			f^ << "%T" << resId << " = "
-		}
-
-		f^ << "call "
-		if itType.IsVargs
-		{
-			itType.PrintType(f)
-		}else{
-			itType.ResultType.PrintType(f)
-		}
-		PrintName(f)
-
-		f^ << "("
-		
-		needComma := false
-
-		for dwn,i : lst
-		{
-			if needComma
-				f^ << ","
-			needComma = true
-			
-			if itType.Params.Size() > i and itType.Params[i].IsRef
-			{
-				dwn.GetType().PrintType(f)
-				f^ << "* "
-				dwn.PrintPointUse(f)
-			}else{
-				dwn.GetType().PrintType(f)
-				f^ << " "
-				dwn.PrintUse(f)
-			}
-		}
-
-		f^ << ")"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		PrintFuncCallCommon(f,this&,resId,debId,lst)
 	}
 }
 
+PrintFuncCallCommon := !(TIOStream^ f,BoxExeConstObj^ fncObj,int resId,int debId,ExeDownList lst) -> void
+{
+	itType := TypeFunc^
+	if fncObj is in BoxFunc
+	{
+		itType = fncObj.GetType()->{TypeFunc^}
+	}else{
+		tmpType := fncObj.GetType()
+		assert(tmpType is TypePoint and tmpType.Base is TypeFunc)
+		itType = tmpType.Base->{TypeFunc^}
+	}
+
+	for itm,i : lst
+	{
+		if itType.Params.Size() > i and itType.Params[i].IsRef
+		{
+			itm.PrintPointPre(f)
+		}else{
+			itm.PrintPre(f)
+		}
+	}
+	fncObj.PrintPre(f)
+
+
+	if itType.ResultType != GTypeVoid
+	{
+		f^ << "%T" << resId << " = "
+	}
+
+	f^ << "call "
+	if itType.IsVargs
+	{
+		itType.PrintType(f)
+	}else{
+		itType.ResultType.PrintType(f)
+	}
+	fncObj.PrintUse(f)
+
+	f^ << "("
+	
+	needComma := false
+
+	for dwn,i : lst
+	{
+		if needComma
+			f^ << ","
+		needComma = true
+		
+		if itType.Params.Size() > i and itType.Params[i].IsRef
+		{
+			dwn.GetType().PrintType(f)
+			f^ << "* "
+			dwn.PrintPointUse(f)
+		}else{
+			dwn.GetType().PrintType(f)
+			f^ << " "
+			dwn.PrintUse(f)
+		}
+	}
+
+	f^ << ")"
+	if DebugMode
+		f^ << ", !dbg !" << GDebugLineCallId
+	f^ << "\n"
+}
