@@ -136,4 +136,8 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	NotifyMemUse := virtual !() -> void
 	{
 	}
+	IsMem := virtual !() -> bool
+	{
+		return false //TODO if return ref
+	}
 }

@@ -225,7 +225,6 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxUnit^} const
 			return false
 		return true
 	})
-	assert(callItem != null)
 	if callItem == null
 		return null
 	if callItem is in BoxFuncTemplate
