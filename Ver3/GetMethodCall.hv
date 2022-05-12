@@ -11,7 +11,6 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	iter = iter.Right
 	if iter == null return null
-	if not (iter is TokenIndent or iter is TokenString) return null
 
 	iter = iter.Right
 	if iter == null or iter.GetValue() != "()" return null
@@ -23,15 +22,24 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	if vr == null return null
 
 	Objs := CheckExeDownList
-	CheckFuncCallBrackets(itm.Down.Right,Objs)
+	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs)
 
-	consts := List.{BoxUnit^} //TODO
+	if itm.Down.Right.Right is TokenIndent
+	{
+		consts := List.{BoxUnit^} //TODO
 
-	mNameT := itm.Down.Right.Right->{TokenIndent^}
+		mNameT := itm.Down.Right.Right->{TokenIndent^}
 
-	fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs,consts)
-	if fnc != null
-		return fnc
+		fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs,consts)
+		if fnc != null
+			return fnc
+	}
+	
+	ptrCall := innerTryGetFieldCall(vr,itm.Down.Right.Right)
+	if ptrCall != null
+	{
+		return innerTryGetPtrCall(ptrCall,Objs)?
+	}
 
 	itm.EmitError("Method not found")
 	assert(false)
@@ -49,7 +57,6 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 	{
 		clsType = clsType.Base
 	}
-
 	
 	if clsType is TypeClass
 	{

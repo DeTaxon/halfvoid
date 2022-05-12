@@ -5,24 +5,56 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down.Right == null return null
 	if itm.Down.Right.Right == null return null
 	if itm.Down.Right.Right.Right != null return null
-
 	if itm.Down.Right.GetValue() != "." return null
-	if not (itm.Down.Right.Right is TokenIndent) return null
 
 	val := TryGetExeCall(itm.Down)
-	name := itm.Down.Right.Right->{TokenIndent^}.Value
-
 	assert(val != null) //TODO
+	return innerTryGetFieldCall(val,itm.Down.Right.Right)
+}
 
-	typ := val.GetType()
-	if typ is TypeClass
+innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
+{
+	if rObj is TokenIndent
 	{
-		cls := typ->{TypeClass^}.ToClass
-		fld := cls.GetField(name)
+		name := rObj->{TokenIndent^}.Value
 
-		itms := CheckExeDownList
-		itms.Push(val)
-		return new BoxFuncCall(fld,itms)
+		typ := val.GetType()
+		if typ is TypeClass
+		{
+			cls := typ->{TypeClass^}.ToClass
+			fld := cls.GetField(name)
+			assert(fld != null) //TODO
+
+			itms := CheckExeDownList
+			itms.Push(val)
+			return new BoxFuncCall(fld,itms)
+		}
+		return null
 	}
+	rObjVal := TryGetExeCall(rObj)
+	if rObjVal is BoxExeInt
+	{
+		fieldInd := rObjVal->{BoxExeInt^}.val
+
+		typ := val.GetType()
+		if typ is TypeClass or typ.Base? is TypeClass
+		{
+			cls :=  BoxClass^
+			if typ is TypeClass
+			{
+				cls = typ->{TypeClass^}.ToClass
+			}else{
+				cls = typ.Base->{TypeClass^}.ToClass
+			}
+			
+			fld := cls.GetFieldByIndex(fieldInd)
+			assert(fld != null) //TODO
+
+			itms := CheckExeDownList
+			itms.Push(val)
+			return new BoxFuncCall(fld,itms)
+		}
+	}
+
 	return null
 }

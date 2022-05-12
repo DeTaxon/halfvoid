@@ -177,6 +177,15 @@ BoxClass := class extend BoxUnit
 			if it.Field.Name == val
 				return it
 		}
+		return null
+	}
+	GetFieldByIndex := virtual !(int val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		if val < 0 or val >= FieldsPath.Size()
+			return null
+		return FieldsPath[val]
 	}
 	populateMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
 	{

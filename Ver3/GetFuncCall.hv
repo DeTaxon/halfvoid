@@ -63,16 +63,22 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null
 	{
-		dType := dwnItem.GetType()
-		if dType is TypePoint and dType.Base is TypeFunc
-		{
-			fType := dType.Base->{TypeFunc^}
-			if CmpFuncPriority(fType,Objs) != CmpNoExchange
-			{
-				return new BoxFuncPointerCall(dwnItem,Objs)
-			}
-
-		}
+		return innerTryGetPtrCall(dwnItem,Objs)?
 	}
 	assert(false)
+}
+
+innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
+{
+	dType := dwnItem.GetType()
+	if dType is TypePoint and dType.Base is TypeFunc
+	{
+		fType := dType.Base->{TypeFunc^}
+		if CmpFuncPriority(fType,Objs) != CmpNoExchange
+		{
+			return new BoxFuncPointerCall(dwnItem,Objs)
+		}
+
+	}
+	return null
 }

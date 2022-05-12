@@ -53,7 +53,7 @@ BoxExeType := class extend BoxExeObj
 		f^ << "nah"
 	}
 }
-BoxExeInt := class extend BoxExeObj
+BoxExeInt := class extend BoxExeConstObj
 {
 	val := int
 	this := !(int nVal) -> void
@@ -66,7 +66,7 @@ BoxExeInt := class extend BoxExeObj
 		f^ << val
 	}
 }
-BoxExeDouble := class extend BoxExeObj
+BoxExeDouble := class extend BoxExeConstObj
 {
 	val := double
 	this := !(double v) -> void
@@ -80,7 +80,7 @@ BoxExeDouble := class extend BoxExeObj
 	}
 }
 
-BoxExeString := class extend BoxExeObj
+BoxExeString := class extend BoxExeConstObj
 {
 	strId := int
 	val := StringSpan
