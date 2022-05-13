@@ -11,7 +11,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxUnit^} consts) -> TypeFunc^
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 2
 			return null
@@ -24,7 +24,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 		}
 		return null
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxUnit^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return new BuiltInPrimeStore(tp)
 	}

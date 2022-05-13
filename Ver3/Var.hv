@@ -71,6 +71,17 @@ TypeVar := class extend BoxUnit
 	}
 }
 
+ConstVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := BoxExeObj^
+
+	this := !(StringSpan vName, BoxExeObj^ clFunc) -> void
+	{
+		Name = vName
+		Value = clFunc
+	}
+}
 MemVar := class extend BoxUnit
 {
 	Name := StringSpan

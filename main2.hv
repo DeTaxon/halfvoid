@@ -26,9 +26,9 @@ internalHVInitClass := !(@T x)  -> void
 //	this->VTable.FieldNumber(this,args...)
 //}
 
-PrintAll := !(args...) -> void
+PrintAll := !(args...) .{@X} -> void
 {
-	printf("test %i %i %i\n",args...)
+	printf("test %i %i %i %i\n",X,args...)
 }
 
 hello := !(int x) -> void
@@ -41,7 +41,7 @@ hi := !(int x) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	PrintAll(1,8,100)
+	PrintAll(1,8,100).{888}
 	//y := Cls2
 	//y.x = 200
 	//y.y = 2

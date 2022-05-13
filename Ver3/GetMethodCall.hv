@@ -26,7 +26,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if itm.Down.Right.Right is TokenIndent
 	{
-		consts := List.{BoxUnit^} //TODO
+		consts := List.{BoxExeConstObj^} //TODO
 
 		mNameT := itm.Down.Right.Right->{TokenIndent^}
 
@@ -45,7 +45,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	assert(false)
 }
 
-innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs,List.{BoxUnit^} consts) -> BoxExeObj^
+innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	Objs := CheckExeDownList
 	Objs.Push(vr)

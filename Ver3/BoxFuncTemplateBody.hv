@@ -133,15 +133,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			{
 				if iter.GetValue() != ","
 				{
-					assert(false)
-					//cItm := TryGetConst(iter)
-					//Constants.Emplace(iter,cItm)
+					cItm := TryGetExeCall(iter)
+					Constants.Emplace(iter,cItm)
 				}
 				iter = iter.Right
 			}
 		}
 	}
-	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxUnit^} consts) -> TypeFunc^
+	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		minArgs := Types.Size()
 		maxArgs := Types.Size()
@@ -168,7 +167,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		return checkTypes(datas,consts,resConsts)
 	}
 	
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxUnit^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		datas := HybridQueue.{Tuple.{Type^,bool},10}
 
@@ -193,7 +192,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxUnit^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxExeConstObj^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
 	{
 
 		fTyps := Type^[100]
@@ -210,7 +209,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				{
 					resCnsts[name] = new TypeVar(name,consts[i]->{ConstType^}.Value)
 				}else{
-					resCnsts[name] = consts[i]
+					resCnsts[name] = new ConstVar(name,consts[i])
 				}
 			}else{
 				assert(false)
@@ -304,6 +303,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				return false
 		}
 		if ResultType.ItType == null //todo? functions with auto return type
+			return false
+		if Constants[^].Value == null
 			return false
 		return true
 	}

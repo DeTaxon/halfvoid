@@ -11,6 +11,12 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	for par : UnitStack
 	{
+		if par is ConstVar
+		{
+			cv := par->{ConstVar^}
+			if cv.Name == asItm.Value
+				return cv.Value
+		}
 		if par is MemVar
 		{
 			mv := par->{MemVar^}

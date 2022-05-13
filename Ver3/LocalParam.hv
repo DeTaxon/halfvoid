@@ -21,7 +21,7 @@ FuncLocalParam := class extend BoxFuncCommon
 				dwns := CheckExeDownList
 				fCall := new BoxFuncCall(this&,dwns)
 				dwns.Push(fCall)
-				cnsts := List.{BoxUnit^} //TODO : to BoxExeConstObj
+				cnsts := List.{BoxExeConstObj^}
 				fnc := TemplateInternalInitClass.GetFunc(dwns,cnsts)
 				Inits.Push(new BoxFuncCall(fnc,dwns))
 			}
