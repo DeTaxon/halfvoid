@@ -163,6 +163,12 @@ BoxClassBody := class extend BoxClass
 				}
 
 				//Methods[f.0] .Push(new BoxVirtualFunc(f.1.GetType()->{TypeFunc^},this&,ind) )
+				cnsts := List.{BoxExeConstObj^}
+				defer cnsts.Destroy()
+				cnsts.Push(GetExeInt(ind))
+				vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
+				vFunc.SetName(f.0)
+				Methods[f.0].Push(vFunc)
 				f.1.ParseBody()
 			}else
 			{

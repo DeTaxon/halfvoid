@@ -91,7 +91,7 @@ BoxFile := class extend BoxUnit
 				objects.Push(vr)
 				vr.Work()
 			}else{
-				assert(false)
+				iter.EmitError("Unknown object")
 			}
 			iter = iter.Right
 		}

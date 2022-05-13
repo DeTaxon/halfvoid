@@ -1,16 +1,25 @@
 TemplateInternalInitClass := BoxFuncTemplate^
+TemplateInternalVirtualCall := BoxFuncTemplate^
 
-InitInternals := !() -> void
+
+intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
-	GetItemGlobal(StringSpan("internalHVInitClass"),x ==> {
+	res := BoxFuncTemplate^
+	GetItemGlobal(StringSpan(name),x ==> {
 		for itm : x
 		{
 			if itm is in BoxFuncTemplate
 			{
-				TemplateInternalInitClass = itm->{BoxFuncTemplate^}
+				res = itm->{BoxFuncTemplate^}
 				return true
 			}
 		}
 	})
-	assert(TemplateInternalInitClass != null)
+	assert(res != null)
+	return res
+}
+InitInternals := !() -> void
+{
+	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
+	TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
 }

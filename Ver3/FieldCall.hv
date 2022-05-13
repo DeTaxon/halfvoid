@@ -29,10 +29,9 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			itms.Push(val)
 			return new BoxFuncCall(fld,itms)
 		}
-		return null
 	}
 	rObjVal := TryGetExeCall(rObj)
-	if rObjVal is BoxExeInt
+	if rObjVal? is BoxExeInt
 	{
 		fieldInd := rObjVal->{BoxExeInt^}.val
 

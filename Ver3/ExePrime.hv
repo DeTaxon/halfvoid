@@ -12,11 +12,7 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 	if itm is TokenInt
 	{
 		val := itm->{TokenInt^}.Parsed
-		if GlobalInts.Contain(val)
-			return GlobalInts[val]
-		newObj := new BoxExeInt(val)
-		GlobalInts[val] = newObj
-		return newObj
+		return GetExeInt(val)
 	}
 	if itm is TokenDouble
 	{	
@@ -25,6 +21,14 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 }
 
 GlobalInts := AVLMap.{int,BoxExeInt^}
+GetExeInt := !(int val) -> BoxExeInt^
+{
+	if GlobalInts.Contain(val)
+		return GlobalInts[val]
+	newObj := new BoxExeInt(val)
+	GlobalInts[val] = newObj
+	return newObj
+}
 
 GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
 strIdIterator := 1

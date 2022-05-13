@@ -21,14 +21,10 @@ internalHVInitClass := !(@T x)  -> void
 {
 	x->VTable = T->VTable
 }
-//internalHVVirtualMethodCall := !(@T this, args...) -> {@FieldNumber}
-//{
-//	this->VTable.FieldNumber(this,args...)
-//}
 
-PrintAll := !(args...) .{@X} -> void
+internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void
 {
-	printf("test %i %i %i %i\n",X,args...)
+	this->VTable.FieldNumber(this,args...)
 }
 
 hello := !(int x) -> void
@@ -41,15 +37,11 @@ hi := !(int x) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	PrintAll(1,8,100).{888}
-	//y := Cls2
-	//y.x = 200
-	//y.y = 2
-	//y.z = 3
-	//i := Cls^
-	//i = y&
-	////printf("here %p\n",y&^->VTable.0)
-	//i->VTable.0(i^)
-	//i^.check()
-	////i.check()
+	y := Cls2
+	y.x = 200
+	y.y = 2
+	y.z = 3
+	i := Cls^
+	i = y&
+	i.check()
 }
