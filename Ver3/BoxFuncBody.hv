@@ -17,6 +17,9 @@ BoxFuncBody := class extend BoxFuncCommon
 	Constants := List.{BoxUnit^}
 	ConstVars := List.{BoxUnit^}
 
+	NamedParametersCount := int
+	VariadicName := StringSpan
+
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
 	{
 		Name = "anon"
@@ -24,12 +27,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		Attrs = atrs
 		bdy = bodyIn
 
+		NamedParametersCount = names.Size()
+
 		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
 		{
-			if i >= names.Size()
-				continue
-			parObj := new FuncInputParam(this&,names[i],par.ItType,par.IsRef,i)
-			vr := new MemVar(names[i],parObj)
+			name := StringSpan("")
+			if i < names.Size()
+				name = names[i]
+			parObj := new FuncInputParam(this&,name,par.ItType,par.IsRef,i)
+			vr := new MemVar(name,parObj)
 			Params.Push(vr)
 		}
 		if tp.ResultType != GTypeVoid

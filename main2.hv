@@ -26,10 +26,10 @@ internalHVInitClass := !(@T x)  -> void
 //	this->VTable.FieldNumber(this,args...)
 //}
 
-//PrintAll := !(args...) -> void
-//{
-//	printf("test %i %i %i\n",args...)
-//}
+PrintAll := !(args...) -> void
+{
+	printf("test %i %i %i\n",args...)
+}
 
 hello := !(int x) -> void
 {
@@ -41,13 +41,15 @@ hi := !(int x) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	y := Cls2
-	y.x = 200
-	y.y = 2
-	y.z = 3
-	i := Cls^
-	i = y&
-	//printf("here %p\n",y&^->VTable.0)
-	i->VTable.0(i^)
-	//i.check()
+	PrintAll(1,8,100)
+	//y := Cls2
+	//y.x = 200
+	//y.y = 2
+	//y.z = 3
+	//i := Cls^
+	//i = y&
+	////printf("here %p\n",y&^->VTable.0)
+	//i->VTable.0(i^)
+	//i^.check()
+	////i.check()
 }

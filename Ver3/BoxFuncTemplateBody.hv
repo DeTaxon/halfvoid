@@ -184,6 +184,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		names := HybridQueue.{StringSpan,10}
 		names.Push(Types[^].Name)
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
+		newFunc.VariadicName = VariadicName
 
 		for it : resConsts
 		{

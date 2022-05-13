@@ -149,9 +149,43 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 		if itr.GetValue() == "," //TODO maybe 
 		{
 		}else{
-			obj := TryGetExeCall(itr)
-			assert(obj != null)
-			Objs.Push(obj)
+			if itr.Down?.Right?.GetValue() == "..."
+			{
+				funcObj := BoxFuncBody^
+				for it : UnitStack
+				{
+					if it is BoxFuncBody
+					{
+						funcObj = it->{BoxFuncBody^}
+						break
+					}
+				}
+				assert(funcObj != null) //TODO
+				assert(funcObj.VariadicName.Size() != 0)
+
+				stackSize := UnitStack.Size()
+
+				for i : funcObj.Params.Size()
+				{
+					if i < funcObj.NamedParametersCount
+						continue
+
+					tmpVar := new MemVar(funcObj.VariadicName,funcObj.Params[i].Value)
+					UnitStack.PushFront(tmpVar)
+
+					obj := TryGetExeCall(itr.Down)
+					assert(obj != null)
+					Objs.Push(obj)
+
+					while UnitStack.Size() > stackSize
+						UnitStack.Pop()
+					
+				}
+			}else{
+				obj := TryGetExeCall(itr)
+				assert(obj != null)
+				Objs.Push(obj)
+			}
 		}
 		itr = itr.Right
 	}
