@@ -69,8 +69,10 @@ main := !(int argc, char^^ argv) -> int
 						nm := zFil.GetName()
 						if nm[-3..0] == ".hv"
 						{
-							printf("here %s\n", nm[-3..0])
-						}else nm[-5..0] == ".clib"
+							fObj := new BoxFile(zFil)
+							CodeFiles.Push(fObj)
+							CodeSpaces[num].Files.Push(fObj)
+						}else if nm[-5..0] == ".clib"
 						{
 							spc := CodeSpaces[num]&
 							spc.CLibs.Push(new CLib(zFil))

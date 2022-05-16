@@ -17,15 +17,6 @@ Cls2 := class extend Cls
 		printf("yep %i\n",x)
 	}
 }
-internalHVInitClass := !(@T x)  -> void
-{
-	x->VTable = T->VTable
-}
-
-internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void
-{
-	this->VTable.FieldNumber(this,args...)
-}
 
 hello := !(int x) -> void
 {
@@ -35,6 +26,16 @@ hi := !(int x) -> void
 {
 	printf("hi %i\n",x)
 }
+
+//internalGetDepth := !() -> int
+//{
+//}
+//internalSetDepth := !(int depth) -> void
+//{
+//}
+//internalPushGCObj := !(TGCObject^ obj) -> void
+//{
+//}
 main := !(int argc, char^^ argv) -> int
 {
 	y := Cls2
