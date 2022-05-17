@@ -9,27 +9,8 @@ ParseType := !(Token^ obj) -> Type^
 	{
 		name := obj.Down->{TokenIndent^}.Value
 		cnsts := List.{BoxExeConstObj^}
-		iter := obj.Down.Right.Right.Down
-		while iter != null
-		{
-			if iter.GetValue() != ","
-			{
-				asTyp := ParseType(iter)
-				if asTyp != null
-				{
-					cnsts.Push(GetConstType(asTyp))
-				}else{
-					asVal := TryGetExeCall(iter)
-					if asVal != null
-					{
-						assert(false)
-					}else{
-						return null
-					}
-				}
-			}
-			iter = iter.Right
-		}
+		CheckFuncCallConsts(obj.Down.Right.Right,cnsts)
+
 		checkRes := TypeGetGlobalByIndent(name)
 		if checkRes != null and checkRes is TemplateTypeVar
 		{
