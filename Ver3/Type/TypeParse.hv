@@ -2,6 +2,49 @@ ParseType := !(Token^ obj) -> Type^
 {
 	if obj == null
 		return null
+
+	if obj.Down?.Right?.Right?.GetValue() == "{}"
+		and obj.Down.Right.GetValue() == "."
+		and obj.Down is TokenIndent
+	{
+		name := obj.Down->{TokenIndent^}.Value
+		cnsts := List.{BoxExeConstObj^}
+		iter := obj.Down.Right.Right.Down
+		while iter != null
+		{
+			if iter.GetValue() != ","
+			{
+				asTyp := ParseType(iter)
+				if asTyp != null
+				{
+					cnsts.Push(GetConstType(asTyp))
+				}else{
+					asVal := TryGetExeCall(iter)
+					if asVal != null
+					{
+						assert(false)
+					}else{
+						return null
+					}
+				}
+			}
+			iter = iter.Right
+		}
+		for spc : CodeSpaces
+		{
+			if spc.Globals.Contain(name)
+			{
+				for glb : spc.Globals[name]
+				{
+					if glb is TemplateTypeVar
+					{
+						asClass := glb->{TemplateTypeVar^}.Value.GetClass(cnsts)
+						return asClass.ItType
+					}
+				}
+			}
+		}
+	}
 	if obj is TokenIndent
 	{
 		asIndent := obj->{TokenIndent^}

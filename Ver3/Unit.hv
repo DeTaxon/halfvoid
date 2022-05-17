@@ -12,4 +12,34 @@ BoxUnit := class extend TGCObject
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 	}
+
+
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return null
+	}
+
+	GetFileScope := virtual !() -> BoxFile^
+	{
+		iter := GetParentScope()
+
+		while iter != null
+		{
+			if iter is BoxFile
+				return iter->{BoxFile^}
+			iter = iter.GetParentScope()
+		}
+		assert(false)
+		return null
+	}
+	ScopePutConstants := !() -> void
+	{
+		next := GetParentScope()
+		if next != null
+			next.ScopePutConstants()
+		PutItConstants()
+	}
+	PutItConstants := virtual !() -> void
+	{
+	}
 }

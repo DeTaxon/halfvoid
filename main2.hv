@@ -1,32 +1,27 @@
-Cls := class
-{
-	x := int
-	y := s64
-	z := int
+//Cls := class
+//{
+//	x := int
+//	y := s64
+//	z := int
+//
+//	check := virtual !() -> void
+//	{
+//		printf("nope %i\n",x)
+//	}
+//}
+//Cls2 := class extend Cls
+//{
+//	w := int
+//	check := virtual !() -> void
+//	{
+//		printf("yep %i\n",x)
+//	}
+//}
 
-	check := virtual !() -> void
-	{
-		printf("nope %i\n",x)
-	}
-}
-Cls2 := class extend Cls
+Cls3 := class .{@T}
 {
-	w := int
-	check := virtual !() -> void
-	{
-		printf("yep %i\n",x)
-	}
+	z := T
 }
-
-hello := !(int x) -> void
-{
-	printf("hello %i\n",x)
-}
-hi := !(int x) -> void
-{
-	printf("hi %i\n",x)
-}
-
 //internalGetDepth := !() -> int
 //{
 //}
@@ -38,11 +33,14 @@ hi := !(int x) -> void
 //}
 main := !(int argc, char^^ argv) -> int
 {
-	y := Cls2
-	y.x = 200
-	y.y = 2
-	y.z = 3
-	i := Cls^
-	i = y&
-	i.check()
+	t := Cls3.{int}
+	t2 := Cls3.{float}
+	t3 := Cls3.{int}
+	//y := Cls2
+	//y.x = 200
+	//y.y = 2
+	//y.z = 3
+	//i := Cls^
+	//i = y&
+	//i.check()
 }

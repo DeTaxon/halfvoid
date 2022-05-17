@@ -1,15 +1,21 @@
 
-TryParseClass := !(Token^ itm) -> BoxClass^
+TryParseClass := !(Token^ itm) -> BoxUnit^
 {
 	if itm == null or itm.Down == null or itm.Down.GetValue() != "class"
 		return null
 
 	parents := HybridQueue.{Token^,2}
+	constValue := Token^
 
 	isPacked := bool
-	//TODO: extends
 
 	iter := itm.Down.Right
+
+	if iter.GetValue() == "."
+	{
+		constValue = iter.Right
+		iter = constValue.Right
+	}
 
 	if iter.GetValue() == "extend"
 	{
@@ -29,7 +35,9 @@ TryParseClass := !(Token^ itm) -> BoxClass^
 
 	if bdy == null
 		return null
-	
+
+	if constValue != null
+		return new BoxClassTemplateBody(isPacked,parents,bdy,constValue)
 	return new BoxClassBody(isPacked,parents,bdy)
 }
 
@@ -42,6 +50,15 @@ BoxClassBody := class extend BoxClass
 	VTableState := THatch
 	FieldsState := THatch
 
+	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
+	PutItConstants := virtual !() -> void
+	{
+		UnitStack.PushFront(NamedConstants[^])
+	}
+
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^ { return ParentScope }
+
 	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
 	{
 		ItName = "anon" //todo
@@ -50,14 +67,15 @@ BoxClassBody := class extend BoxClass
 		
 		ParentTokens.Push(parents[^])
 
+		ParentScope = CurrentScope
+		itFile := GetFileScope()
+
 		IsPacked = isPacked
 		Body = bdy
-		CurrentFile.AllClasses.Push(this&)
-
+		itFile.AllClasses.Push(this&)
 
 		GClassesInProgress.Push(this&)
 		cls := this&
-		itFile := CurrentFile
 		TSpawnTask(() ==> [cls,itFile] { //todo pass CurrentFile directly?
 			CurrentFile = itFile
 			cls.ParseBody()	
@@ -75,6 +93,8 @@ BoxClassBody := class extend BoxClass
 	{
 		GParsedAllFiles.Await()
 		SyntaxCompress(Body,LexHVFileRoot)
+
+		ScopePutConstants()
 
 		for i : ParentTokens.Size()
 		{

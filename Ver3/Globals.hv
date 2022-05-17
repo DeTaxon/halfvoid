@@ -14,24 +14,3 @@ GDebugFileId := task_local int
 GDebugFuncId := task_local int
 GDebugScopeId := task_local int
 GDebugLineCallId := task_local int
-
-
-
-typeConsts := AVLMap.{Type^,ConstType^}
-GetConstType := !(Type^ tp) -> BoxExeConstObj^
-{
-	if typeConsts.Contain(tp)
-		return typeConsts[tp]
-	newCmp := new ConstType(tp)
-	typeConsts[tp] = newCmp
-	return newCmp
-}
-ConstType := class extend BoxExeConstObj
-{
-	Value := Type^
-	this := !(Type^ tp) -> void
-	{
-		ObjType = GTypeVoid
-		Value = tp
-	}
-}

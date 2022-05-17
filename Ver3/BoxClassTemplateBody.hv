@@ -1,0 +1,73 @@
+BoxClassTemplate := class extend BoxUnit
+{
+	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	{
+		assert(false)
+	}
+	SetName := virtual !(StringSpan newName) -> void {}
+}
+
+BoxClassTemplateBody := class extend BoxClassTemplate
+{
+	constantsToken := Token^
+	bodyToken := Token^
+	
+	IsPacked := bool
+	ItParents := HybridQueue.{Token^,2}
+
+	ItConstsTokens := List.{Token^}
+
+	ItName := StringSpan
+
+	ParentScope := BoxUnit^
+
+	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy, Token^ cnsts) -> void
+	{
+		bodyToken = bdy
+		constantsToken = cnsts
+		IsPacked = isPacked
+		ItParents.Push(parents[^])
+
+		iter := cnsts.Down
+		while iter != null
+		{
+			if iter.GetValue() != ","
+			{
+				ItConstsTokens.Push(iter)
+			}
+			iter = iter.Right
+		}
+		ItName = "@anon"
+		ParentScope = CurrentScope
+	}
+	SetName := virtual !(StringSpan newName) -> void
+	{
+		ItName = newName
+	}
+
+	classes := List.{Tuple.{ConstantHolder^,BoxClass^}}
+	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	{
+		inConsts := new ConstantHolder
+		inConsts.Constants.Push(inpts[^])
+
+		for it : classes
+		{
+			if it.0^ == inConsts^
+				return it.1
+		}
+
+		namedConstants := AVLMap.{StringSpan,BoxUnit^}
+		TemplateCheckConstants(inpts,ItConstsTokens,namedConstants)
+
+		oldScope := CurrentScope
+		defer CurrentScope = oldScope
+		CurrentScope = ParentScope
+
+		newClass := new BoxClassBody(IsPacked,ItParents,bodyToken)
+		classes.Emplace(inConsts,newClass)
+		newClass.SetName(ItName)
+		newClass.NamedConstants[i] = namedConstants[^i]
+		return newClass
+	}
+}

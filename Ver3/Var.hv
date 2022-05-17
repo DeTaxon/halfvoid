@@ -41,8 +41,16 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	cls := TryParseClass(varToken)
 	if cls != null
 	{
-		cls.SetName(name)
-		return new TypeVar(name,cls.ItType)	
+		if cls is in BoxClass
+		{
+			cls2 := cls->{BoxClass^}
+			cls2.SetName(name)
+			return new TypeVar(name,cls2.ItType)
+		}
+		assert( cls is in BoxClassTemplate)
+		cls3 := cls->{BoxClassTemplate^}
+		cls3.SetName(name)
+		return new TemplateTypeVar(name,cls3)
 	}
 
 	fnc := TryParseFunction(varToken)
@@ -65,6 +73,17 @@ TypeVar := class extend BoxUnit
 	Value := Type^
 
 	this := !(StringSpan name, Type^ val) -> void
+	{
+		Name = name
+		Value = val
+	}
+}
+TemplateTypeVar := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := BoxClassTemplate^
+
+	this := !(StringSpan name, BoxClassTemplate^ val) -> void
 	{
 		Name = name
 		Value = val

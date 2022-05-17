@@ -78,7 +78,7 @@ BoxFile := class extend BoxUnit
 
 			if vr != null
 			{
-				if vr is TypeVar
+				if vr is TypeVar or vr is TemplateTypeVar
 				{
 					CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
 				}
