@@ -160,6 +160,13 @@ TypePoint := class extend Type
 		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
 	}
 }
+TypeVoidPoint := class extend TypePoint
+{
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "i8*"
+	}
+}
 
 GRefTypes := AVLMap.{Type^,Type^}
 TypeDebugRef := class extend Type //FO
@@ -291,7 +298,7 @@ CreateStandardTypes := !() -> void
 	GTypeVec3f = TypeTable[19]
 	GTypeVec2f = TypeTable[20]
 
-	//GTypeVoidP.ItName = "i8*"
+	GTypeVoidP->SetType(TypeVoidPoint)
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

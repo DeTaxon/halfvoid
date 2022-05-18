@@ -19,10 +19,15 @@ TITaskPausePoint := class
 	{
 		if CurrentTaskBox.pausePoint != null
 		{
-			itr := next_point
-			while itr.next_point != null
-				itr = itr.next_point
-			itr.next_point.next_point = CurrentTaskBox.pausePoint
+			if next_point == null
+			{
+				next_point = CurrentTaskBox.pausePoint
+			}else{
+				itr := next_point
+				while itr.next_point != null
+					itr = itr.next_point
+				itr.next_point.next_point = CurrentTaskBox.pausePoint
+			}
 		}
 		CurrentTaskBox.pausePoint = this&
 	}

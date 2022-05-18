@@ -18,24 +18,37 @@
 //	}
 //}
 
-Cls3 := class .{@T}
+TGCObject2 := class
 {
-	z := T
+	RefValue := int
+
+	IncRef := virtual !() -> { RefValue += 1}
+	DecRef := virtual !() -> { RefValue -= 1}
+	Destroy := virtual !() -> void {}
 }
-//internalGetDepth := !() -> int
+
+//internalNew := !() .{@T} -> T^
 //{
+//	calloc(1,16)
 //}
-//internalSetDepth := !(int depth) -> void
-//{
-//}
-//internalPushGCObj := !(TGCObject^ obj) -> void
-//{
-//}
+
+internalGetDepth := !() -> int
+{
+}
+internalSetDepth := !(int depth) -> void
+{
+}
+internalPushGCObj := !(TGCObject^ obj) -> void
+{
+}
 main := !(int argc, char^^ argv) -> int
 {
-	t := Cls3.{int}
-	t2 := Cls3.{float}
-	t3 := Cls3.{int}
+	test := calloc(1,16)
+	printf("z %p\n",test)
+	//test := new TGCObject2
+	//printf("a\n")
+	//defer printf("c\n")
+	//printf("b\n")
 	//y := Cls2
 	//y.x = 200
 	//y.y = 2
