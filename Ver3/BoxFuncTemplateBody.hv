@@ -270,6 +270,18 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		{
 			dwnTp := ParseType(tk)
 			if dwnTp == null
+			{
+				name := tk->{TokenIndent^}.Value
+				if resCnsts.Contain(name)
+				{
+					itm2 := resCnsts[name]
+					if itm2 is TypeVar
+					{
+						dwnTp = itm2->{TypeVar^}.Value
+					}
+				}
+			}
+			if dwnTp == null
 				return null
 			if tp != null and tp != dwnTp
 				return null

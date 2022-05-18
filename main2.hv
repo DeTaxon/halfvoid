@@ -27,10 +27,10 @@ TGCObject2 := class
 	Destroy := virtual !() -> void {}
 }
 
-//internalNew := !() .{@T} -> T^
-//{
-//	calloc(1,16)
-//}
+internalNew := !() .{@T} -> T^
+{
+	result = calloc(1,16)->{T^}
+}
 
 internalGetDepth := !() -> int
 {
@@ -43,8 +43,7 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := calloc(1,16)->{int^}
-	test^ = 100
+	test := internalNew().{int}
 	printf("z %p\n",test^)
 	//test := new TGCObject2
 	//printf("a\n")
