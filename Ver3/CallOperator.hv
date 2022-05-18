@@ -8,6 +8,7 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 	if not HVOperators.Contain(itm.Down.Right.GetValue())
 		return null
+	if itm.Down.Right.GetValue() == "->" return null
 
 	tmpList := CheckExeDownList
 	defer tmpList.Destroy()

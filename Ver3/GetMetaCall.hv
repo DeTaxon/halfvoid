@@ -1,11 +1,30 @@
 TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 {
-	if obj.Down?.Right.GetValue() == "->" //todo add to compiler comething thats make it simple
+	if obj.Down?.Right?.GetValue() == "->" //todo add to compiler comething thats make it simple
 	{
 	}else{
 		return null
 	}
-	
+	r := obj.Down.Right.Right
+	if r is TokenIndent
+		return TryMetaIndent(obj)
+	if r.GetValue() == "{}"
+	{
+		SyntaxCompress(r,PriorityData)
+		toType := ParseType(r.Down)
+		if toType == null
+			r.EmitError("Can not cast to unknown type")
+		lObj := TryGetExeCall(obj.Down)
+		if lObj == null
+			r.EmitError("Unknown object to case")
+		return GetExchange(lObj,toType)
+
+	}
+	return null
+
+}
+TryMetaIndent := !(Token^ obj) -> BoxExeObj^
+{	
 	right := obj.Down.Right.Right->{TokenIndent^}
 
 	if right.Value == "VTable"

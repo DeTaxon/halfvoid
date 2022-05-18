@@ -37,7 +37,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	{
 		return new FloatToIntExchange(obj,expType)
 	}
-	if inType is TypePoint and expType is TypePoint
+	if inType is in TypePoint and expType is in TypePoint
 	{
 		return new PtrExchange(obj,expType)
 	}
@@ -74,6 +74,25 @@ PtrToRef := class extend BoxExeObj
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "%T" << resId
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void //TODO remove copy of code
+	{
+		rType := ObjType
+
+		PrintPointPre(f)
+		f^ << "%TUnref" << resId << " = load "
+		rType.PrintType(f)
+		f^ << ","
+		rType.PrintType(f)
+		f^ << "* "
+		PrintPointUse(f)
+		if DebugMode
+			f^ << ", !dgb !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%TUnref" << resId
 	}
 }
 RefExchange := class extend BoxExeObj

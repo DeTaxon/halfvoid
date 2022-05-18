@@ -53,9 +53,11 @@ UnrefFuncCall := class extend BoxExeObj
 }
 PtrToRefFuncCall := class extend BoxExeObj
 {
+	resId := int
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj) -> void
 	{
+		resId = GetNewId()
 		Down = obj
 		ObjType = Down.GetType().Base
 	}
@@ -70,5 +72,24 @@ PtrToRefFuncCall := class extend BoxExeObj
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
 		Down.PrintUse(f)
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void //TODO remove copy of code
+	{
+		rType := ObjType
+
+		PrintPointPre(f)
+		f^ << "%TUnref" << resId << " = load "
+		rType.PrintType(f)
+		f^ << ","
+		rType.PrintType(f)
+		f^ << "* "
+		PrintPointUse(f)
+		if DebugMode
+			f^ << ", !dgb !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%TUnref" << resId
 	}
 }

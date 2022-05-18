@@ -43,8 +43,9 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := calloc(1,16)
-	printf("z %p\n",test)
+	test := calloc(1,16)->{int^}
+	test^ = 100
+	printf("z %p\n",test^)
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

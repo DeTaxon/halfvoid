@@ -87,7 +87,7 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		PrintFuncResult(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(TIOStream^ f) -> void //TODO remove copy of code
 	{
 		if IsMem()
 		{
