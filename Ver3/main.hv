@@ -99,6 +99,8 @@ main := !(int argc, char^^ argv) -> int
 	LoadLexMachine(mac.Map(),mac.Size()) 
 
 	CreateStandardTypes()
+	GBoolTrue = new BoxExeBool(true)
+	GBoolFalse = new BoxExeBool(false)
 	CreateBuiltins()
 	cuId = GetNewId()
 

@@ -77,6 +77,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		}
 	}
 
+	asType := ParseType(itm)
+	if asType != null
+		return GetConstType(asType)
+
 	assert(false) //TODO emit error
 
 	return null

@@ -13,6 +13,8 @@ BoxUnit := class extend TGCObject
 	{
 	}
 
+	IsConst := virtual false
+
 
 	GetParentScope := virtual !() -> BoxUnit^
 	{

@@ -21,8 +21,38 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 	oper := itm.Down.Right.GetValue()
 
+	return TryComputeOperators(oper,tmpList)?
+
 	consts := List.{BoxExeConstObj^}
 	return CreateFuncCall(oper,tmpList,consts)?
 
 	return null
+}
+
+TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
+{
+	if oper == "==" or oper == "!="
+	{
+		if objs.Size() != 2
+			return null
+		if not objs[^].IsConst
+			return null
+		c1 := objs[0]
+		c2 := objs[1]
+
+		if c1 == c2
+		{
+			if oper == "=="
+				return GBoolTrue
+			return GBoolFalse
+		}
+
+
+		if c1 is BoxExeString and c2 is BoxExeString
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+	}
 }

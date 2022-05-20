@@ -102,6 +102,7 @@ BoxExeObj := class extend BoxUnit
 
 BoxExeConstObj := class extend BoxExeObj
 {
+	IsConst := virtual true
 	PrintConst := virtual !(TIOStream^ f) -> void {}
 }
 

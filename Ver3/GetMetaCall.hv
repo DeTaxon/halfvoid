@@ -27,6 +27,22 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 {	
 	right := obj.Down.Right.Right->{TokenIndent^}
 
+	if right.Value == "TypeGroup"
+	{
+		typ := ParseType(obj.Down)
+		if typ == null
+			obj.Down.EmitError("Object for TypeGroup must be type")
+		if typ is TypeClass
+			return GetExeString(StringSpan("Class"))
+		if typ is TypeStandard
+			return GetExeString(StringSpan("Prime"))
+		if typ is in TypePoint
+			return GetExeString(StringSpan("Pointer"))
+		if typ is in TypeFunc
+			return GetExeString(StringSpan("Function"))
+		assert(false)
+		return null
+	}
 	if right.Value == "VTable"
 	{
 		typ := ParseType(obj.Down)
