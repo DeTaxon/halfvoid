@@ -8,8 +8,9 @@ BoxBlock := class extend BoxUnit
 		down = bdy
 		if DebugMode
 			MetaId = GetNewId()
+		innerWork()
 	}
-	Work := virtual !() -> void
+	innerWork := virtual !() -> void
 	{
 		SyntaxCompress(down,PriorityData)
 
@@ -22,7 +23,6 @@ BoxBlock := class extend BoxUnit
 			{
 				subBlock := new BoxBlock(iter)
 				exeLines.Push(subBlock)
-				subBlock.Work()
 				iter = iter.Right
 				continue
 			}

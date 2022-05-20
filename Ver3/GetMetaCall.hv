@@ -70,6 +70,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			if cls is TypeClass 
 			{
 				cls2 := cls->{TypeClass^}.ToClass
+				cls2.AwaitVTableStep()
 				if cls2.VTable.Size() != 0
 				{
 					chk := CheckExeDownList

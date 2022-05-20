@@ -31,8 +31,7 @@ internalNew := !() .{@T} -> T^
 {
 	result = calloc(1,16)->{T^}
 	if T->TypeGroup == "Class"
-		printf("initing class %s\n",T->TypeGroup)
-	//	//internalHVInitClass(result^)
+		internalHVInitClass(result^)
 }
 
 internalGetDepth := !() -> int
@@ -47,6 +46,7 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	test := internalNew().{TGCObject2}
+	printf("test %p\n",test->VTable)
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

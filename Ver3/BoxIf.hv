@@ -8,10 +8,27 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	assert(cmpExe != null) //TODO emit error
 	//TODO cmpExe to bool
 
+
 	tryToken := MakeItBlock(itm.Down.Right.Right)
 	flsToken := Token^
 	
 	flsToken = MakeItBlock(tryToken.Right?.Right)
+
+	if cmpExe is BoxExeBool
+	{
+		if cmpExe == GBoolTrue
+		{
+			return new BoxBlock(tryToken)
+		}else{
+			if flsToken == null
+			{
+				fakeBlock := TokenSymbol(StringSpan("{}"),0)
+				return new BoxBlock(fakeBlock&)
+			}else{
+				return new BoxBlock(flsToken)
+			}
+		}
+	}
 
 	tru := BoxBlock^
 	fls := BoxBlock^
