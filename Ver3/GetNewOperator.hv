@@ -16,4 +16,16 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		assert(fnc != null)
 		return new BoxFuncCall(fnc,objs)
 	}
+	if itm.Down.GetValue() == "delete"
+	{
+		dwn := TryGetExeCall(itm.Down.Right)
+		if dwn == null
+			return null
+
+		objs := CheckExeDownList
+		objs.Push(dwn)
+		cnsts := List.{BoxExeConstObj^}
+		fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
+		return new BoxFuncCall(fnc,objs)
+	}
 }

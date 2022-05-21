@@ -39,7 +39,7 @@ internalHVNew := !() .{@T} -> T^
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
 }
-internalDelete := !(@T^ x) -> void
+internalHVDelete := !(@T^ x) -> void
 {
 	free(x)
 }
@@ -56,7 +56,7 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	test := new SimpleClass
-	internalDelete(test)
+	delete test
 	printf("test %p\n",null)
 	//test := new TGCObject2
 	//printf("a\n")
