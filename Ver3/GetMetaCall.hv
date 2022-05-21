@@ -43,6 +43,13 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		assert(false)
 		return null
 	}
+	if right.Value == "TypeSize"
+	{
+		itType := ParseType(obj.Down)
+		if itType == null
+			return null
+		return GetExeInt(itType.GetSize())
+	}
 	if right.Value == "VTable"
 	{
 		typ := ParseType(obj.Down)

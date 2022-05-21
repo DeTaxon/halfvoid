@@ -105,6 +105,7 @@ BoxClass := class extend BoxUnit
 		assert(FieldsPath.Size() == 0)
 
 		Parents[^].AwaitTypeState()
+		ItAlign = 1
 		ItAlign = max(ItAlign,Parents[^].ItAlign)
 
 		posOffset := 0

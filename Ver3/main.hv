@@ -102,6 +102,7 @@ main := !(int argc, char^^ argv) -> int
 	GBoolTrue = new BoxExeBool(true)
 	GBoolFalse = new BoxExeBool(false)
 	GObjNone = new BoxExeNone()
+	GObjNull = new BoxExeNull()
 	CreateBuiltins()
 	cuId = GetNewId()
 

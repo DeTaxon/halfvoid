@@ -2,6 +2,8 @@ TryGetBoolOrNone := !(Token^ itm) -> BoxExeObj^
 {
 	switch itm.GetValue()
 	{
+		case "null"
+			return GObjNull
 		case "true"
 			return GBoolTrue
 		case "false"
@@ -19,4 +21,16 @@ BoxExeNone := class extend BoxExeConstObj
 		ObjType = GTypeVoid
 	}
 }
+BoxExeNull := class extend BoxExeConstObj
+{
+	this := !() -> void
+	{
+		ObjType = GTypeVoidP
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "null"
+	}
+}
 GObjNone := BoxExeNone^
+GObjNull := BoxExeNull^

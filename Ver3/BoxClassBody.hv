@@ -83,7 +83,7 @@ BoxClassBody := class extend BoxClass
 	}
 	AwaitTypeState := virtual !() -> void
 	{
-		FieldsState.Emit()
+		FieldsState.Await()
 	}
 	AwaitReadyState := virtual !() -> void
 	{
