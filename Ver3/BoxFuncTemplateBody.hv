@@ -239,8 +239,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				iRef[i] = true
 		}
 		resTypeT := ResultType.ItType
-		if resTypeT == null
-			resTypeT = checkType(ResultType.ItType,ResultType.ItToken,resCnsts)
+		//if resTypeT == null
+			resTypeT = checkType(null,ResultType.ItToken,resCnsts)
 		assert(resTypeT != null)
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,ResultType.IsRef,IsVargs)
 	}

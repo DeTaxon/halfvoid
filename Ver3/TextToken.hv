@@ -20,7 +20,7 @@ Token := class
 
 	Print := virtual !(int x) -> void
 	{
-		assert(false)
+		//assert(false)
 	}
 
 	EmitError := !(char^ info) -> void

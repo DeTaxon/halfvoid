@@ -1,6 +1,7 @@
 TemplateInternalInitClass := BoxFuncTemplate^
 TemplateInternalVirtualCall := BoxFuncTemplate^
 TemplateInternalNewOne := BoxFuncTemplate^
+TemplateInternalNewOneConstructed := BoxFuncTemplate^
 TemplateInternalDelete := BoxFuncTemplate^
 
 
@@ -25,5 +26,6 @@ InitInternals := !() -> void
 	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
 	TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
 	TemplateInternalNewOne = intGetTemplate("internalHVNew")
+	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
 	TemplateInternalDelete = intGetTemplate("internalHVDelete")
 }

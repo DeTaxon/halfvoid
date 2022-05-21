@@ -45,10 +45,10 @@ internalHVNew := !() .{@T} -> T^
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
 }
-internalHVNewConstructed := !(args...) .{@T} -> T^
+internalHVNewConstructed := !(@T^ obj, args...) -> T^
 {
-	result = internalHVNew().{T}
-	result."this"(args...)
+	result = obj
+	result.this(args...)
 }
 
 internalHVDelete := !(@T^ x) -> void
@@ -68,9 +68,7 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	test := new SimpleClass(999)
-	test^.this(100)
-	printf("hey %i\n",test^.x)
-	delete test
+	printf("test %i\n",test^.x)
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

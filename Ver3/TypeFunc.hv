@@ -166,3 +166,30 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 
 	return newFunc
 }
+
+FuncTypeSetResult := !(TypeFunc^ oldType,Type^ newResult,bool isRefResult) -> TypeFunc^
+{
+	Typs := Type^[100]
+	isRef := bool[100]
+
+	for i : oldType.Params.Size()
+	{
+		Typs[i] = oldType.Params[i].ItType
+		isRef[i] = oldType.Params[i].IsRef
+	}
+	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,newResult,isRefResult,oldType.IsVargs)
+}
+FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefParam) -> TypeFunc^
+{
+	Typs := Type^[100]
+	isRef := bool[100]
+
+	for i : oldType.Params.Size()
+	{
+		Typs[i] = oldType.Params[i].ItType
+		isRef[i] = oldType.Params[i].IsRef
+	}
+	Typs[index] = newParamType
+	isRef[index] = isRefParam
+	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+}
