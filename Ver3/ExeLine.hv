@@ -111,6 +111,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	if itm == null
 		return null
 
+	return TryGetNewDeleteOperator(itm)?
 	return TryGetBoolOrNone(itm)?
 	return TryGetMetaCall(itm)?
 	return TryCheckRegularFuncCall(itm)?

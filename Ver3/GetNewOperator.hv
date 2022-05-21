@@ -1,0 +1,19 @@
+TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null
+		return null
+
+	if itm.Down.GetValue() == "new"
+	{
+		tp := ParseType(itm.Down.Right)
+		if tp == null
+			itm.EmitError("Unknown type")
+		cnsts := List.{BoxExeConstObj^}
+		defer cnsts.Destroy()
+		cnsts.Push(GetConstType(tp))
+		objs := CheckExeDownList
+		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
+		assert(fnc != null)
+		return new BoxFuncCall(fnc,objs)
+	}
+}

@@ -33,11 +33,15 @@ TGCObject2 := class
 	Destroy := virtual !() -> void {}
 }
 
-internalNew := !() .{@T} -> T^
+internalHVNew := !() .{@T} -> T^
 {
 	result = calloc(1,T->TypeSize)->{T^}
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
+}
+internalDelete := !(@T^ x) -> void
+{
+	free(x)
 }
 
 internalGetDepth := !() -> int
@@ -51,7 +55,8 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := internalNew().{SimpleClass}
+	test := new SimpleClass
+	internalDelete(test)
 	printf("test %p\n",null)
 	//test := new TGCObject2
 	//printf("a\n")
