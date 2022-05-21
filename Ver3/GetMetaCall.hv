@@ -53,7 +53,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			cls := typ->{TypeClass^}.ToClass
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
-				assert(false) //TODO
+				return GObjNone
 			emptyObj := CheckExeDownList
 			fncCall := new BoxFuncCall(cls.VTableValue.Value,emptyObj)
 			return new UnrefFuncCall(fncCall)
@@ -78,7 +78,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 					chk.Push(dObj)
 					return new BoxFuncCall(cls2.VTableField,chk)
 				}else{
-					assert(false) //TODO emit , not a virtual class
+					return GObjNone
 				}
 			}else{
 				assert(false) //TODO Emit, not a class

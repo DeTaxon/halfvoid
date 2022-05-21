@@ -1,7 +1,8 @@
 
 internalHVInitClass := !(@T x)  -> void
 {
-	x->VTable = T->VTable
+	if x->VTable != none
+		x->VTable = T->VTable
 }
 
 internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void

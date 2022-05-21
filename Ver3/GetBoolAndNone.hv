@@ -1,0 +1,22 @@
+TryGetBoolOrNone := !(Token^ itm) -> BoxExeObj^
+{
+	switch itm.GetValue()
+	{
+		case "true"
+			return GBoolTrue
+		case "false"
+			return GBoolFalse
+		case "none"
+			return GObjNone
+	}
+	return null
+}
+
+BoxExeNone := class extend BoxExeConstObj
+{
+	this := !() -> void
+	{
+		ObjType = GTypeVoid
+	}
+}
+GObjNone := BoxExeNone^

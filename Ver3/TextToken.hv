@@ -109,6 +109,18 @@ TokenNull := class extend Token
 		Right?.Print(x)
 	}
 }
+TokenNone := class extend Token
+{
+	IsData := virtual true
+	this := !() -> void
+	{
+	}
+	GetValue := virtual !() -> ref StringSpan
+	{
+		return GetConstString("none")
+	}
+}
+
 TokenBool := class extend Token
 {
 	Value := StringSpan

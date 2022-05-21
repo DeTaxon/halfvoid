@@ -23,6 +23,7 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 			if flsToken == null
 			{
 				fakeBlock := TokenSymbol(StringSpan("{}"),0)
+				fakeBlock.Line = itm.Line
 				return new BoxBlock(fakeBlock&)
 			}else{
 				return new BoxBlock(flsToken)

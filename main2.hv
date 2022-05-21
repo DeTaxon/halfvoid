@@ -18,6 +18,12 @@
 //	}
 //}
 
+SimpleClass := class
+{
+	x := int
+	y := int
+}
+
 TGCObject2 := class
 {
 	RefValue := int
@@ -45,8 +51,8 @@ internalPushGCObj := !(TGCObject^ obj) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := internalNew().{TGCObject2}
-	printf("test %p\n",test->VTable)
+	test := internalNew().{SimpleClass}
+	//printf("test %p\n",test->VTable)
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

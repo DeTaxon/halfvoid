@@ -43,6 +43,8 @@ GetObjectsFromMemory := !(char^ fileName,char^ memPtr,int Siz) -> Token^
 					ns = new TokenWayControl(tok)
 				case "break"
 					ns = new TokenWayControl(tok)
+				case "none"
+					ns = new TokenNone()
 				case void
 					if IsKeyword(tok)
 					{
@@ -375,6 +377,7 @@ IsKeyword := !(W) -> bool
 		case "defer_tail" return true
 		case "static" return true
 		case "field" return true
+		case "none" return true
 	}
 
 	return false

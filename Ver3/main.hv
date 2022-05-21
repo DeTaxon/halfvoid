@@ -101,6 +101,7 @@ main := !(int argc, char^^ argv) -> int
 	CreateStandardTypes()
 	GBoolTrue = new BoxExeBool(true)
 	GBoolFalse = new BoxExeBool(false)
+	GObjNone = new BoxExeNone()
 	CreateBuiltins()
 	cuId = GetNewId()
 

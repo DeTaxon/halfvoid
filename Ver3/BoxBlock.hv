@@ -2,10 +2,12 @@ BoxBlock := class extend BoxUnit
 {
 	MetaId := int
 	down := Token^
+	ItLine := FileLine^
 	exeLines := List.{BoxUnit^} //TODO : to hybrid
 	this := !(Token^ bdy) -> void
 	{
 		down = bdy
+		ItLine = bdy.Line
 		if DebugMode
 			MetaId = GetNewId()
 		innerWork()
@@ -75,6 +77,8 @@ BoxBlock := class extend BoxUnit
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		if exeLines.Size() == 0
+			return void
 
 		oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
@@ -84,11 +88,13 @@ BoxBlock := class extend BoxUnit
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
+		if exeLines.Size() == 0
+			return void
 		f^ << "!" << MetaId << " = !DILexicalBlock(scope: !" 
 		f^ << GDebugScopeId << ", file: !" << GDebugFileId
-		if down?.Line != null
+		if ItLine != null
 		{
-			f^ << ", line: " << down.Line.Line
+			f^ << ", line: " << ItLine.Line
 		}
 		f^ << ")\n"
 
