@@ -22,6 +22,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 		if typ is TypeClass
 		{
 			cls := typ->{TypeClass^}.ToClass
+			cls.AwaitTypeState()
 			fld := cls.GetField(name)
 			assert(fld != null) //TODO
 

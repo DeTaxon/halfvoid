@@ -12,7 +12,15 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		defer cnsts.Destroy()
 		cnsts.Push(GetConstType(tp))
 		objs := CheckExeDownList
-		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
+
+		fnc := BoxFunc^
+		if itm.Down.Right.Right?.GetValue() == "()"
+		{
+			fnc = TemplateInternalNewOne.GetFunc(objs,cnsts)
+		}else{
+			fnc = TemplateInternalNewOne.GetFunc(objs,cnsts)
+		}
+
 		assert(fnc != null)
 		return new BoxFuncCall(fnc,objs)
 	}

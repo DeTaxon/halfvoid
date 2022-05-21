@@ -31,7 +31,9 @@ Token := class
 		{
 			ln << " at file " << Line.File << " line: " <<Line.Line
 		}
-		throw new Exception(ln.Str()) //TODO memory
+		printf("%s\n",ln.Str())
+		exit(1)
+		//throw new Exception(ln.Str()) //TODO memory
 	}
 }
 

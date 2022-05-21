@@ -201,7 +201,10 @@ BoxClass := class extend BoxUnit
 	}
 	GetMethods := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{
+		AwaitTypeState()
+
 		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
 		populateMethods(name,objs)
 
 		if objs.Size() != 0

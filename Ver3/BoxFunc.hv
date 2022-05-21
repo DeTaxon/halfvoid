@@ -1,7 +1,6 @@
 BoxFunc := class extend BoxExeConstObj
 {
 	ItTypeHatch := THatch
-	Constants := List.{BoxExeObj^} //todo  to Array for less memory consuption
 
 	GetType := virtual !() -> Type^
 	{

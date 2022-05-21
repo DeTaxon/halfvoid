@@ -37,7 +37,8 @@ internalDeferApplyExp := !(int depth) -> void
 {
 	defBlock := ref internalDeferBlock
 	i := defBlock.indPoint
-	while i != depth
+	assert(i >= depth)
+	while i > depth
 	{
 		i--
 		itFunc := defBlock.funcsExe[i].0

@@ -33,11 +33,13 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			{
 				tkn1 := TokenIndent(StringSpan("this"))
 				tkn2 := TokenSymbol(StringSpan("."),0)
+				tkn3 := TokenIndent(asItm.Value)
 				tknData := TokenData
+
 
 				tknData.Down = tkn1&
 				tkn1.Right = tkn2&
-				tkn2.Right = itm
+				tkn2.Right = tkn3&
 
 				tkn1.Line = itm.Line
 				tkn2.Line = itm.Line
@@ -45,7 +47,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 				try
 				{
-					return TryGetExeCall(tknData&)
+					return TryGetFieldCall(tknData&)?
 				}catch(IException^ e)
 				{}
 			}

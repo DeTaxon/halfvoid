@@ -47,6 +47,8 @@
 
 		"vprintf" : "int,char^,void^",
 
+		"exit" : "void,int",
+
 		"time" : "int",
 		"srand" : "void,int",
 		"rand" : "int"

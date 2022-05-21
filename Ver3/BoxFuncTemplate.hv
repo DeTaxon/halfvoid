@@ -2,6 +2,7 @@
 BoxFuncTemplate := class extend BoxUnit
 {
 	AllFuncs := AVLMap.{Type^,List.{BoxFunc^}}
+	FuncConstants := AVLMap.{BoxFunc^,List.{BoxExeConstObj^}}
 	ItCodeSpace := BoxCodeSpace^
 
 	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
@@ -18,11 +19,6 @@ BoxFuncTemplate := class extend BoxUnit
 	{
 		fTyp := ToFuncType(objs,consts)
 
-		if AllFuncs.Contain(fTyp)
-		{
-			return AllFuncs[fTyp][0] //TODO check consts
-		}
-
 		pri := CheckPriority(fTyp,objs,consts)
 
 		if pri == CmpNoExchange
@@ -30,8 +26,26 @@ BoxFuncTemplate := class extend BoxUnit
 			assert(false)
 			return null
 		}
+		return GetFuncByType(fTyp,consts)
+	}
+
+	GetFuncByType := virtual !(TypeFunc^ fTyp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		if AllFuncs.Contain(fTyp)
+		{
+			for srchF : AllFuncs[fTyp]
+			{
+				if IsEqConstants(consts,FuncConstants[srchF])
+					return srchF
+			}
+		}
+
 		newFunc := CreateFunc(fTyp,consts)
 		AllFuncs[fTyp].Push(newFunc)
+
+		cns := FuncConstants[newFunc]&
+		cns.Push(consts[^])
+
 		return newFunc
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
