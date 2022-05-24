@@ -30,7 +30,7 @@ SimpleClass := class
 	}
 }
 
-TGCObject2 := class
+TGCObject := class
 {
 	RefValue := int
 
@@ -56,19 +56,18 @@ internalHVDelete := !(@T^ x) -> void
 	free(x)
 }
 
-internalGetDepth := !() -> int
+internalHVGetDepth := !() -> int
 {
 }
-internalSetDepth := !(int depth) -> void
+internalHVSetDepth := !(int depth) -> void
 {
 }
-internalPushGCObj := !(TGCObject^ obj) -> void
+internalHVPushGCObject := !(TGCObject^ obj) -> void
 {
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := new SimpleClass(999)
-	printf("test %i\n",test^.x)
+	test := new TGCObject
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

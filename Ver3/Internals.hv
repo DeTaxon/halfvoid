@@ -4,6 +4,10 @@ TemplateInternalNewOne := BoxFuncTemplate^
 TemplateInternalNewOneConstructed := BoxFuncTemplate^
 TemplateInternalDelete := BoxFuncTemplate^
 
+GFuncGetDepth := BoxFunc^
+GFuncSetDepth := BoxFunc^
+GFuncPushGCObject := BoxFunc^
+
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
@@ -21,6 +25,22 @@ intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 	assert(res != null)
 	return res
 }
+intGetFunc := !(char^ name) -> BoxFunc^
+{
+	res := BoxFunc^
+	GetItemGlobal(StringSpan(name),x ==> {
+		for itm : x
+		{
+			if itm is in BoxFunc
+			{
+				res = itm->{BoxFunc^}
+				return true
+			}
+		}
+	})
+	assert(res != null)
+	return res
+}
 InitInternals := !() -> void
 {
 	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
@@ -28,4 +48,9 @@ InitInternals := !() -> void
 	TemplateInternalNewOne = intGetTemplate("internalHVNew")
 	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
 	TemplateInternalDelete = intGetTemplate("internalHVDelete")
+
+	GFuncGetDepth = intGetFunc("internalHVGetDepth")
+	GFuncSetDepth = intGetFunc("internalHVSetDepth")
+	GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
+
 }

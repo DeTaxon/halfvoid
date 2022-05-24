@@ -5,8 +5,15 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	
 	cmpExe := TryGetExeCall(itm.Down.Right)
 
-	assert(cmpExe != null) //TODO emit error
-	//TODO cmpExe to bool
+	if cmpExe == null
+		itm.EmitError("Could not get if statement")
+
+	if cmpExe.GetType() != GTypeBool
+	{
+		cmpExe = GetExchange(cmpExe,GTypeBool)
+		if cmpExe == null
+			itm.EmitError("If statement is not boolean")
+	}
 
 
 	tryToken := MakeItBlock(itm.Down.Right.Right)

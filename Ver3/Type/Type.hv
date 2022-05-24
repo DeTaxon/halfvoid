@@ -9,7 +9,7 @@ Type := class {
 	{
 		return ""
 	}
-	GetPoint := !() -> Type^
+	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null
 			AsPoint = new TypePoint(this&)
@@ -25,6 +25,10 @@ Type := class {
 	{
 		assert(false)
 		return 0
+	}
+	IsComplex := virtual !() -> bool
+	{
+		return false
 	}
 	PrintType := virtual !(TIOStream^ f) -> void
 	{
