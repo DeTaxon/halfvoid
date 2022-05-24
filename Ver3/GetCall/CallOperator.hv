@@ -35,8 +35,7 @@ TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 	{
 		if objs.Size() != 2
 			return null
-		if not objs[^].IsConst
-			return null
+
 		c1 := objs[0]
 		c2 := objs[1]
 
@@ -46,6 +45,15 @@ TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 				return GBoolTrue
 			return GBoolFalse
 		}
+		if c1 == GObjNone or c2 == GObjNone
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+
+		if not objs[^].IsConst //CONSTANTS CHECK ONLY NEXT
+			return null
 
 
 		if c1 is BoxExeString and c2 is BoxExeString
@@ -54,5 +62,6 @@ TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 				return GBoolFalse
 			return GBoolTrue
 		}
+
 	}
 }
