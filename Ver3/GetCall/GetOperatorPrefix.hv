@@ -1,0 +1,11 @@
+TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.GetValue() == "return"
+	{
+		fnc := GetCurrentFunc()
+		fType := fnc.GetType()->{TypeFunc^}
+
+		return new BoxReturn(fnc.GetExitLabel())
+	}
+	return null
+}

@@ -38,6 +38,11 @@ intGetFunc := !(char^ name) -> BoxFunc^
 			}
 		}
 	})
+	if res is in BoxFuncBody
+	{
+		res2 := res->{BoxFuncBody^}
+		res2.ParseBody()
+	}
 	assert(res != null)
 	return res
 }

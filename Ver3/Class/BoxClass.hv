@@ -242,7 +242,7 @@ TypeClass := class extend Type
 		ToClass.AwaitTypeState()
 		return ToClass.ItAlign
 	}
-	IsComplex := virtual !() -> bool
+	IsComplexReturn := virtual !() -> bool
 	{
 		return true
 	}
@@ -253,13 +253,13 @@ TypeClass := class extend Type
 		return AsPoint
 	}
 }
-TypePointComplexx := class extend TypePoint
+TypePointComplex := class extend TypePoint
 {
 	this := !(Type^ bs) -> void
 	{
 		this."TypePoint.this"(bs)	
 	}
-	IsComplex := virtual !() -> bool
+	IsComplexReturn := virtual !() -> bool
 	{
 		return false
 	}

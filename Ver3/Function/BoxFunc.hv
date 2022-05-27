@@ -28,6 +28,10 @@ BoxFunc := class extend BoxExeConstObj
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
+	GetExitLabel := virtual !() -> BoxLabel^
+	{
+		assert(false)
+	}
 	PrintResultType := virtual !(TIOStream^ f) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}

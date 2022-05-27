@@ -127,6 +127,8 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 			continue
 		if fnc.ResultType != res
 			continue
+		if fnc.ResultRef != resRef
+			continue
 
 		same := true
 		for j : count

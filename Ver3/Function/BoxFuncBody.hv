@@ -20,6 +20,8 @@ BoxFuncBody := class extend BoxFuncCommon
 	NamedParametersCount := int
 	VariadicName := StringSpan
 
+	ExitLabel := BoxLabel^
+
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
 	{
 		Name = "anon"
@@ -49,6 +51,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			funcLine = new BoxExeLine() //TODO debug only ExeLine version
 			funcLine.ItToken = bdy
 		}
+		ExitLabel = new BoxLabel() 
 	}
 
 	GetType := virtual !() -> Type^
@@ -79,91 +82,11 @@ BoxFuncBody := class extend BoxFuncCommon
 			CurrentCodeSpace.Functions[Name].Push(this&)
 		}
 	}
+	GetExitLabel := virtual !() -> BoxLabel^
+	{
+		return ExitLabel
+	}
 	
-	//ParseHeader := !() -> void
-	//{
-	//	SyntaxCompress(inps1,LexHVInputVars)
-
-	//	k := 0
-	//	names := StringSpan[40]
-	//	args := Type^[40] //TODO: infinite args?
-	//	refs := bool[40]
-	//	isVargs := false
-
-	//	if CurrentScope is in BoxClass //TODO not static,
-	//	{
-	//		cls := CurrentScope->{BoxClass^}
-	//		args[0] = cls.ItType
-	//		names[0] = "this"
-	//		refs[0] = true
-	//		Attrs.IsMethod = true
-	//		k += 1
-	//	}
-
-	//	objs := HybridQueue.{Token^,6}
-	//	defer objs.Destroy()
-
-	//	itr := inps1.Down
-
-	//	checkObjs := () ==> {
-
-	//		if objs.Size() == 2
-	//		{
-	//			assert(objs[1] is TokenIndent) //TODO EmitError
-	//			
-	//			args[k] = ParseType(objs[0])
-	//			assert(args[k] != null) //TODO EmitError
-	//			refs[k] = false
-	//			names[k] = objs[1]->{TokenIndent^}.Value
-
-
-	//			if IsComplexType(args[k])
-	//				refs[k] = true
-
-	//			assert(args[k] != null) //TODO error
-	//			k += 1
-	//		}else{
-	//			assert(false)
-	//		}
-	//		objs.Clear()
-	//	}
-
-	//	while itr != null
-	//	{
-	//		if itr.GetValue() == ","
-	//		{
-	//			checkObjs()
-	//		}else
-	//		{
-	//			objs.Push(itr)
-	//		}
-	//		itr = itr.Right
-	//	}
-	//	if objs.Size() != 0
-	//		checkObjs()
-	//	outType := ParseType(resTyp)
-	//	resRef := false
-	//	//TODO ref check
-
-
-	//	fType := GetFuncType(k,args[0]&,refs[0]&,outType,resRef,isVargs)
-	//	SetType(fType)
-	//	
-
-	//	for par,i : fType.Params //TODO min(Params.Size(),names.Size())
-	//	{
-	//		parObj := new FuncInputParam(this&,names[i],par.ItType,par.IsRef,i)
-	//		vr := new MemVar(names[i],parObj)
-	//		Params.PushFront(vr)
-	//	}
-	//	if outType != GTypeVoid
-	//	{
-	//		resSpn := StringSpan("result")
-	//		rFnc := new FuncLocalParam(resSpn,outType)
-	//		ResultVar = new MemVar(resSpn,rFnc)
-	//	}
-	//}
-
 	Params := HybridQueue.{MemVar^,8}
 	ResultVar := MemVar^
 
@@ -237,6 +160,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			ResultVar.PrintCode(f)
 		
 		body.PrintCode(f)
+
+		ExitLabel.PrintCode(f)
 
 		if rTyp == GTypeVoid
 		{

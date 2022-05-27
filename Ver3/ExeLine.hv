@@ -117,6 +117,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryCheckRegularFuncCall(itm)?
 	return TryGetFieldCall(itm)?
 	return TryCheckMethodCall(itm)?
+	return TryGetPrefixOperator(itm)?
 	
 	isOperCall := TryCheckMathOperatorCall(itm)
 	if isOperCall != null

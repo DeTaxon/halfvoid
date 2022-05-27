@@ -18,6 +18,7 @@ BoxBlock := class extend BoxUnit
 
 		iter := down.Down
 		stackAtStart := UnitStack.Size()
+		UnitStack.PushFront(this&)
 
 		while iter != null
 		{
@@ -80,11 +81,28 @@ BoxBlock := class extend BoxUnit
 		if exeLines.Size() == 0
 			return void
 
+		cmpId := 0 //GetNewId()
+		if cmpId != 0
+		{
+			f^ << "%T" << cmpId << " = call i32@internalHVGetDepth()"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			"\n"
+		}
+
 		oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 
 		exeLines[^].PrintCode(f)
+
+		if cmpId != 0
+		{
+			f^ << "call void@internalHVSetDepth(i32 %T" << cmpId << ")"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{

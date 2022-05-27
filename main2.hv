@@ -1,35 +1,3 @@
-//Cls := class
-//{
-//	x := int
-//	y := s64
-//	z := int
-//
-//	check := virtual !() -> void
-//	{
-//		printf("nope %i\n",x)
-//	}
-//}
-//Cls2 := class extend Cls
-//{
-//	w := int
-//	check := virtual !() -> void
-//	{
-//		printf("yep %i\n",x)
-//	}
-//}
-
-SimpleClass := class
-{
-	x := int
-	y := int
-
-	this := !(int a) -> void
-	{
-		x = a
-		y = a
-	}
-}
-
 TGCObject := class
 {
 	RefValue := int
@@ -68,6 +36,9 @@ internalHVPushGCObject := !(TGCObject^ obj) -> void
 main := !(int argc, char^^ argv) -> int
 {
 	test := new TGCObject
+	printf("hi\n")
+	return 0
+	printf("test\n")
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

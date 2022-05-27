@@ -1,0 +1,24 @@
+BoxReturn := class extend BoxExeObj
+{
+	EndLabel := BoxLabel^
+	this := !(BoxLabel^ l) -> void
+	{
+		EndLabel = l
+		ObjType = GTypeVoid
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		EndLabel.PrintGo(f)
+	}
+}
+
+GetCurrentFunc := !() -> BoxFunc^
+{
+	for it : UnitStack
+	{
+		if it is in BoxFunc
+			return it->{BoxFunc^}
+	}
+	assert(false)
+	return null
+}
