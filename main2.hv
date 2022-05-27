@@ -41,12 +41,22 @@ test2 := !(int x) -> bool
 {
 	return x < 100
 }
+test3 := !(int^ x) -> bool
+{
+	printf("hey %p\n",x)
+	return x^ == 0
+}
 main := !(int argc, char^^ argv) -> int
 {
-	test := new TGCObject
+	test := int^
 	x := 10
-	if test1(x) and test2(x)
+	if test3(test?) and test1(x)
+	{
 		printf("hi\n")
+	}else
+	{	
+		printf("nope\n")
+	}
 	return 0
 	//test := new TGCObject2
 	//printf("a\n")

@@ -44,4 +44,5 @@ BoxUnit := class extend TGCObject
 	PutItConstants := virtual !() -> void
 	{
 	}
+	GetQLabel := virtual !() -> BoxLabel^ { return null}
 }

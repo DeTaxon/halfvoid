@@ -1,0 +1,24 @@
+TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right != null return null
+
+	oper := itm.Down.Right.GetValue()
+
+	if oper == "?"
+	{
+		//TODO case x[10]?
+		cl := TryGetExeCall(itm.Down)
+		assert(cl != null)
+
+		if not (cl.GetType() is TypePoint)
+		{
+			itm.Down.Right.EmitError("Left of ? operator must be pointer")
+		}
+
+		return new BoxQuestionPointer(cl)
+	}
+	return null
+}

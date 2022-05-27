@@ -2,8 +2,15 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 {
 	if itm == null or itm.Down.GetValue() != "if"
 		return null
-	
+
+	qc := new QCatch
+	stackSize := UnitStack.Size()
+	UnitStack.PushFront(qc)
+
 	cmpExe := TryGetExeCall(itm.Down.Right)
+
+	while stackSize < UnitStack.Size()
+		UnitStack.Pop()
 
 	if cmpExe == null
 		itm.EmitError("Could not get if statement")
@@ -52,8 +59,8 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	}
 
 	if fls == null
-		return new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru)
-	return new BoxIfFull(itm.Down.Right,cmpExe,tru,fls)
+		return new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru,qc)
+	return new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
 }
 
 MakeItBlock := !(Token^ itm) -> Token^
@@ -72,16 +79,22 @@ BoxIfTrueOnly := class extend BoxUnit
 	Val := BoxExeObj^
 	OnTrue := BoxBlock^
 	TrueWorked := BoxLabel
-	TrueEndLabel := BoxLabel
+	TrueEndLabel := BoxLabel^
 	IfLine := BoxExeLineSimple^
 
-	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue) -> void
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue, QCatch^ qc) -> void
 	{
 		Val = val
 		OnTrue = onTrue
 		TrueWorked."this"()
-		TrueEndLabel."this"()
 		IfLine = new BoxExeLineSimple(ifToken,val)
+
+		if qc != null 
+		{
+			TrueEndLabel = qc.ItLabel
+		}
+		if TrueEndLabel == null
+			TrueEndLabel = new BoxLabel()
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
@@ -116,19 +129,25 @@ BoxIfFull := class extend BoxUnit
 	OnTrue := BoxBlock^
 	OnFalse := BoxBlock^
 	TruePath := BoxLabel
-	FalsePath := BoxLabel
+	FalsePath := BoxLabel^
 	EndPath := BoxLabel
 	IfLine := BoxExeLineSimple^
 
-	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse) -> void
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse,QCatch^ qc) -> void
 	{
 		Val = val
 		OnTrue = onTrue
 		OnFalse = onFalse
 		TruePath."this"()
-		FalsePath."this"()
 		EndPath."this"()
 		IfLine = new BoxExeLineSimple(ifToken,val)
+
+		if qc != null 
+		{
+			FalsePath = qc.ItLabel
+		}
+		if FalsePath == null
+			FalsePath = new BoxLabel()
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

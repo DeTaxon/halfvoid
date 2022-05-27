@@ -107,6 +107,10 @@ BoxOr := class extend BoxAndOr
 		PrintBranch(f,LeftCall,TruePath,NextPath)
 		PrintStep3(f)
 	}
+	GetQLabel := virtual !() -> BoxLabel^
+	{
+		return NextPath
+	}
 }
 PrintBranch := !(TIOStream^ f, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
 {
