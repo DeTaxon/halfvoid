@@ -33,18 +33,21 @@ internalHVSetDepth := !(int depth) -> void
 internalHVPushGCObject := !(TGCObject^ obj) -> void
 {
 }
-
-TestReturn := !() -> int
+test1 := !(int x) -> bool
 {
-	result = 100
-	return 9999
+	return x > 50
+}
+test2 := !(int x) -> bool
+{
+	return x < 100
 }
 main := !(int argc, char^^ argv) -> int
 {
 	test := new TGCObject
-	printf("hi %i\n",TestReturn())
+	x := 10
+	if test1(x) and test2(x)
+		printf("hi\n")
 	return 0
-	printf("test\n")
 	//test := new TGCObject2
 	//printf("a\n")
 	//defer printf("c\n")

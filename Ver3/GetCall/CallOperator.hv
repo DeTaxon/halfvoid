@@ -13,13 +13,19 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	tmpList := CheckExeDownList
 	defer tmpList.Destroy()
 
+	oper := itm.Down.Right.GetValue()
+
+	if oper == "or" or oper == "and"
+	{
+		return TryGetAndOrCall(itm)
+	}
+
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
 	if tmpList[0] == null or tmpList[1] == null
 		itm.EmitError("Unknown error")
 
-	oper := itm.Down.Right.GetValue()
 
 	return TryComputeOperators(oper,tmpList)?
 

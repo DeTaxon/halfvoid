@@ -114,6 +114,10 @@ BoxLabel := class
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		PrintGo(f)
+		PrintLabelCreate(f)
+	}
+	PrintLabelCreate := virtual !(TIOStream^ f) -> void
+	{
 		f^ << "L" << id << ":\n"
 	}
 }

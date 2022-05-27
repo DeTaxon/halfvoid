@@ -144,12 +144,12 @@ CreateBuiltinsInt := !() -> void
 			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"icmp sge") )
 			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"icmp sle") )
 			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp sgt") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp slt") )
+			bSpace.Functions[StringSpan("<")].Push(new BuiltInIntBase(cmpType,"icmp slt") )
 		}else{
 			bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"icmp uge") )
 			bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"icmp ule") )
 			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp ugt") )
-			bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"icmp ult") )
+			bSpace.Functions[StringSpan("<")].Push(new BuiltInIntBase(cmpType,"icmp ult") )
 		}
 
 
@@ -172,4 +172,5 @@ CreateBuiltinsInt := !() -> void
 		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
 		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )
 	})
+	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(GetFuncType(![GTypeBool,GTypeBool],![true,false],GTypeVoid) ) )
 }

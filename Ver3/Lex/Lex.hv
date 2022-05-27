@@ -364,8 +364,6 @@ IsKeyword := !(W) -> bool
 		case "packed_class" return true
 		case "self_return" return true
 		case "try" return true
-		case "try_one" return true
-		case "try_all" return true
 		case "catch" return true
 		case "throw" return true
 		case "on_exception" return true
