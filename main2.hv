@@ -50,7 +50,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	test := int^
 	x := 10
-	if test3(test?) and test1(x)
+	if test?^ == 0 or test2(x)
 	{
 		printf("hi\n")
 	}else
