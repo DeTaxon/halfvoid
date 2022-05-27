@@ -1,0 +1,122 @@
+TryGetAndOrCall := !(Token^ itm) -> BoxExeObj^
+{
+	oper := itm.Down.Right.GetValue()
+
+	resObj := BoxAndOr^
+
+	if oper == "and"
+	{
+		resObj = new BoxAnd()
+	}else{
+		resObj = new BoxOr()
+	}
+
+	UnitStack.PushFront(resObj)
+	defer UnitStack.Pop()
+
+	cl1 := TryGetExeCall(itm.Down)
+	assert(cl1 != null)
+	cl2 := TryGetExeCall(itm.Down.Right.Right)
+	assert(cl2 != null)
+
+	resObj.LeftCall = cl1
+	resObj.RightCall = cl2
+
+	return resObj
+}
+
+
+BoxAndOr := class extend BoxExeObj
+{
+	LeftCall := BoxExeObj^
+	RightCall := BoxExeObj^
+
+	resId := int
+	TruePath := BoxLabel^
+	NextPath := BoxLabel^
+	FalsePath := BoxLabel^
+	EndLabel := BoxLabel^
+
+	CommonInit := !() -> void
+	{
+		ObjType = GTypeBool
+		resId = GetNewId()
+
+		TruePath = new BoxLabel()
+		FalsePath = new BoxLabel()
+		NextPath = new BoxLabel()
+		EndLabel = new BoxLabel()
+	}
+
+	IsMem := virtual !() -> bool { return false }
+
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+	PrintStep1 := virtual !(TIOStream^ f) -> void
+	{
+		LeftCall.PrintPre(f)
+
+	}
+	PrintStep3 := virtual !(TIOStream^ f) -> void
+	{
+		NextPath.PrintLabelCreate(f)
+		RightCall.PrintPre(f)
+
+		PrintBranch(f,RightCall,TruePath,FalsePath)
+
+		TruePath.PrintLabelCreate(f)
+		EndLabel.PrintGo(f)
+		FalsePath.PrintLabelCreate(f)
+		EndLabel.PrintGo(f)
+
+		EndLabel.PrintLabelCreate(f)
+		f^ << "%T" << resId << " = phi i1 [1,"
+		TruePath.PrintLabel(f)
+		f^ << "], [0,"
+		FalsePath.PrintLabel(f)
+		f^ << "]"
+		if DebugMode 
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BoxAnd := class extend BoxAndOr
+{
+	this := !() -> void
+	{
+		CommonInit()
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		PrintStep1(f)
+		PrintBranch(f,LeftCall,NextPath,FalsePath)
+		PrintStep3(f)
+	}
+}
+BoxOr := class extend BoxAndOr
+{
+	this := !() -> void
+	{
+		CommonInit()
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		PrintStep1(f)
+		PrintBranch(f,LeftCall,TruePath,NextPath)
+		PrintStep3(f)
+	}
+}
+PrintBranch := !(TIOStream^ f, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
+{
+	f^ << "br i1 "
+	cmp.PrintUse(f)
+	f^ << ", label "
+	onTrue.PrintLabel(f)
+	f^ << ", label "
+	onFalse.PrintLabel(f)
+	if DebugMode
+		f^ << ", !dbg !" << GDebugLineCallId
+	f^ << "\n"
+}
