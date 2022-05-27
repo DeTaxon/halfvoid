@@ -7,10 +7,14 @@ BoxExeLine := class extend BoxExeLineSimple
 		if DebugMode
 			MetaId = GetNewId()
 	}
-	GetLabel := !() -> BoxLabel^
+	GetQLabel := virtual !() -> BoxLabel^
 	{
 		if exitLabel == null
 			exitLabel = new BoxLabel()
+		return exitLabel
+	}
+	eLabel := virtual !() -> BoxLabel^
+	{
 		return exitLabel
 	}
 
@@ -52,6 +56,13 @@ BoxExeLineSimple := class extend BoxUnit
 		}else{
 			Down.PrintCode(f)
 		}
+		el := eLabel()
+		if el != null
+			el.PrintCode(f)
+	}
+	eLabel := virtual !() -> BoxLabel^
+	{
+		return null
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{

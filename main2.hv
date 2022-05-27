@@ -50,13 +50,14 @@ main := !(int argc, char^^ argv) -> int
 {
 	test := int^
 	x := 10
-	if test?^ == 0 or test2(x)
-	{
-		printf("hi\n")
-	}else
-	{	
-		printf("nope\n")
-	}
+	test?^ = 0
+	//if test?^ == 0 or test2(x)
+	//{
+	//	printf("hi\n")
+	//}else
+	//{	
+	//	printf("nope\n")
+	//}
 	return 0
 	//test := new TGCObject2
 	//printf("a\n")
