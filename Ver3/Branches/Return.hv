@@ -1,13 +1,17 @@
 BoxReturn := class extend BoxExeObj
 {
 	EndLabel := BoxLabel^
-	this := !(BoxLabel^ l) -> void
+	ResultCall := BoxExeObj^
+	this := !(BoxLabel^ l,BoxExeObj^ rc) -> void
 	{
 		EndLabel = l
 		ObjType = GTypeVoid
+		ResultCall = rc
 	}
 	PrintDefaultUse := virtual !(TIOStream^ f) -> void
 	{
+		if ResultCall != null
+			ResultCall.PrintDefaultUse(f)
 		EndLabel.PrintGo(f)
 	}
 }

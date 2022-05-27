@@ -5,7 +5,25 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		fnc := GetCurrentFunc()
 		fType := fnc.GetType()->{TypeFunc^}
 
-		return new BoxReturn(fnc.GetExitLabel())
+		resultCall := BoxExeObj^
+
+		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
+		{
+		}else{
+			tkn1 := TokenIndent(StringSpan("result"))
+			tkn2 := TokenSymbol(StringSpan("="),0)
+			tknAll := TokenData
+
+			tknAll.Down = tkn1&
+			tkn1.Right = tkn2&
+			tkn2.Right = itm.Down.Right
+
+			resultCall = TryGetExeCall(tknAll&)
+
+			assert(resultCall != null)
+		}
+
+		return new BoxReturn(fnc.GetExitLabel(),resultCall)
 	}
 	return null
 }
