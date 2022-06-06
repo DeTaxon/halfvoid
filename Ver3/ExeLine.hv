@@ -306,13 +306,17 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 
 	for i : count
 	{
-		worstCase = max(worstCase,TypePriorCmp(objs[i].GetType(),fncType.Params[i].ItType,objs[i].IsMem()))
+		frmType := objs[i].GetType()
+		frmIsMem := objs[i].IsMem()
+		toType := fncType.Params[i].ItType
+		toIsMem := fncType.Params[i].IsRef
+		worstCase = max(worstCase,TypePriorCmp(frmType,frmIsMem,toType,toIsMem))
 		if worstCase == CmpNoExchange
 			return CmpNoExchange
 	}
 	return worstCase
 }
-TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
+TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 {
 	if frm == to
 		return 0
@@ -320,10 +324,10 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 	if frm is TypePoint and frm.Base is TypeClass and to is TypeClass
 	{
 		if TypeFight(frm.Base,to) == to
-			return 1000 //todo rethink
+			return 1000 //TODO rethink
 	}
 
-	if isMem //!!!!IMPORTANT PART
+	if toIsMem //!!!!IMPORTANT PART
 	{
 		if frm is TypeClass and to is TypeClass
 		{
@@ -331,10 +335,9 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 			if res == to
 				return 1000
 		}
-		return CmpNoExchange
 	}
 
-	if frm is TypePoint and to is TypePoint
+	if frm is in TypePoint and to is in TypePoint
 	{
 		if to == GTypeVoidP
 			return 1000
@@ -346,7 +349,7 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 		}
 	}
 
-	if frm is TypeStandard and to is TypeStandard
+	if frm is TypeStandard and to is TypeStandard and not toIsMem
 	{
 		f1 := frm->{TypeStandard^}
 		t1 := to->{TypeStandard^}
@@ -376,7 +379,7 @@ TypePriorCmp := !(Type^ frm, Type^ to, bool isMem) -> int
 			return 2000 + (100 - t1.GetSize()) //TODO warning, but not here
 		}
 	}
-	if frm is TypePoint and to == GTypeVoidP
+	if frm is in TypePoint and to == GTypeVoidP
 	{
 		return 1000
 	}
@@ -392,6 +395,8 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 	{
 		ac := a->{TypeClass^}.ToClass
 		bc := b->{TypeClass^}.ToClass
+		ac.AwaitTypeState()
+		bc.AwaitTypeState()
 
 		for ap : ac.PrimeParents
 		{

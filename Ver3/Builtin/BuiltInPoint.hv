@@ -4,6 +4,12 @@ CreateBuiltinsPoint := !() -> void
 	bSpace := CodeSpaces[-1]&
 
 	bSpace.Templates[StringSpan("=")].Push(new PointStoreTemplate())
+
+
+	x := GTypeVoidP
+	cmpType := GetFuncType(![x,x],GTypeBool)
+	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
+	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
 }
 
 PointStoreTemplate := class extend BoxFuncTemplate

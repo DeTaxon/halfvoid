@@ -99,10 +99,17 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 					IsVariadic = true
 					VariadicName = bag[0]->{TokenIndent^}.Value
 				}else{
-					assert(bag[1] is TokenIndent)
-					typ := ParseType(bag[0])
-					name := bag[1]->{TokenIndent^}.Value
 					isRef := false
+					indItm := bag[1]
+					if indItm.GetValue() == "&"
+					{
+						isRef = true
+						indItm = bag[2]
+						assert(bag.Size() >= 3) //TODO
+					}
+					assert(indItm is TokenIndent) //TODO
+					typ := ParseType(bag[0])
+					name := indItm->{TokenIndent^}.Value
 					if typ != null and IsComplexType(typ)
 						isRef = true
 

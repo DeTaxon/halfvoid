@@ -28,6 +28,16 @@ internalHVNewConstructed := !(@T^ obj, args...) -> T^
 	result.this(args...)
 }
 
+"=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
+{
+	itm2?.IncRef()
+	if itm1 != null
+	{
+		itm1.DecRef()
+	}
+	itm1&->{void^^}^ = itm2->{void^}
+}
+
 internalHVDelete := !(@T^ x) -> void
 {
 	free(x)
@@ -41,6 +51,9 @@ internalHVSetDepth := !(int depth) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := new TGCObject
+	//test := new TGCObject
+	x := int^
+	if x == x
+		printf("hey %p\n",null)
 	return 0
 }
