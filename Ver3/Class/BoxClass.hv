@@ -31,7 +31,7 @@ BoxClass := class extend BoxUnit
 
 		needComma := false
 		f^ << "%Class" << ItId << " = type {"
-		if FieldsPath.Size() == 0 and VTable.Size() != 0
+		if FieldsPath.Size() == 0 and VTable.Size() == 0
 		{
 			f^ <<"i1"
 		}else{

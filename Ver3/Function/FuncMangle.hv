@@ -4,21 +4,47 @@ FuncNameIter := int
 
 GetFuncMangle := !(StringSpan name) -> StringSpan
 {
-	if FuncNameDatabase.Contain(name)
-	{
-		itId := FuncNameIter
-		FuncNameIter += 1
+	buff := char[1024] //TODO unconst
 
-		buff := char[1024] //TODO unconst
-		memcpy(buff[0]&,name.Get(),name.Size())
-		sprintf(buff[name.Size()]&,"_%i",itId)
-		
+	if isRegularName(name)
+	{
+		if FuncNameDatabase.Contain(name)
+		{
+			itId := FuncNameIter
+			FuncNameIter += 1
+
+			memcpy(buff[0]&,name.Get(),name.Size())
+			sprintf(buff[name.Size()]&,"_%i",itId)
+			
+			spn := GetConstString(buff[0]&)
+			FuncNameDatabase.Insert(spn)
+			result = spn
+		}else{
+			FuncNameDatabase.Insert(name)
+			result = name
+		}
+	}else{
+		FuncNameIter += 1
+		sprintf(buff[0]&,"anon_func_%i", FuncNameIter)
+
 		spn := GetConstString(buff[0]&)
 		FuncNameDatabase.Insert(spn)
 		result = spn
-	}else{
-		FuncNameDatabase.Insert(name)
-		result = name
 	}
+}
+
+isRegularName := !(StringSpan name) -> bool
+{
+	switch name[^]
+	{
+		case 'a'..'z'
+		case 'A'..'Z'
+		case '0'..'9'
+		case '_'
+
+		case void
+			return false
+	}
+	return true
 }
 

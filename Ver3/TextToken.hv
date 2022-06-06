@@ -95,6 +95,7 @@ TokenNull := class extend Token
 {
 	Value := StringSpan
 
+	IsData := virtual true
 	this := !(StringSpan val) -> void
 	{
 		Value = val

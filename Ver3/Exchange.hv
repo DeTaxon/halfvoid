@@ -39,6 +39,8 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	}
 	if inType is in TypePoint and expType is in TypePoint
 	{
+		if obj.IsMem()
+			return new PtrRefExchange(obj,expType)
 		return new PtrExchange(obj,expType)
 	}
 	return null
@@ -99,6 +101,36 @@ RefExchange := class extend BoxExeObj
 {
 	resId := int
 	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return true }
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPointPre(f)
+		f^ << "%T" << resId << " = bitcast "
+		inType.PrintType(f)
+		f^ << "* "
+		Down.PrintPointUse(f)
+		f^ << " to "
+		ObjType.PrintType(f)
+		f^ << "*"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+PtrRefExchange := class extend PtrExchange
+{
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
 		resId = GetNewId()

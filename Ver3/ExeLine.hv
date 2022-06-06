@@ -310,9 +310,17 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 		frmIsMem := objs[i].IsMem()
 		toType := fncType.Params[i].ItType
 		toIsMem := fncType.Params[i].IsRef
-		worstCase = max(worstCase,TypePriorCmp(frmType,frmIsMem,toType,toIsMem))
+		thisCase := TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
 		if worstCase == CmpNoExchange
-			return CmpNoExchange
+		{
+			if objs[i] is BoxExeNull and toType is in TypePoint
+			{
+				thisCase = 1000
+			}else{
+				return CmpNoExchange
+			}
+		}
+		worstCase = max(worstCase,thisCase)
 	}
 	return worstCase
 }
