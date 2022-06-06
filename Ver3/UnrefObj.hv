@@ -62,7 +62,7 @@ PtrToRefFuncCall := class extend BoxExeObj
 	}
 	IsMem := virtual !() -> bool
 	{
-		return false
+		return true
 	}
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{

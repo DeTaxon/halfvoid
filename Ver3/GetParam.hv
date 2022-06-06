@@ -82,8 +82,8 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	asType := ParseType(itm)
 	if asType != null
 		return GetConstType(asType)
-
-	assert(false) //TODO emit error
+	
+	itm.EmitError("Could not get param") //TODO better explanation
 
 	return null
 }

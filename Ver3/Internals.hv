@@ -56,6 +56,6 @@ InitInternals := !() -> void
 
 	GFuncGetDepth = intGetFunc("internalHVGetDepth")
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")
-	GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
+	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
 
 }

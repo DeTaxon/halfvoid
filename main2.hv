@@ -1,17 +1,26 @@
-TGCObject := class
+TGCIObject := class
+{
+	IncRef := virtual !() -> void { }
+	DecRef := virtual !() -> void { }
+	Destroy := virtual !() -> void {}
+}
+
+TGCObject := class extend TGCIObject
 {
 	RefValue := int
 
-	IncRef := virtual !() -> { RefValue += 1}
-	DecRef := virtual !() -> { RefValue -= 1}
+	IncRef := virtual !() -> void { RefValue += 1}
+	DecRef := virtual !() -> void { RefValue -= 1}
 	Destroy := virtual !() -> void {}
 }
 
 internalHVNew := !() .{@T} -> T^
 {
-	result = calloc(1,T->TypeSize)->{T^}
+	result&->{void^^}^ = calloc(1,T->TypeSize) //weird way to bypass DecRef
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
+	if T is in TGCIObject
+		result.IncRef()
 }
 internalHVNewConstructed := !(@T^ obj, args...) -> T^
 {
@@ -30,44 +39,8 @@ internalHVGetDepth := !() -> int
 internalHVSetDepth := !(int depth) -> void
 {
 }
-internalHVPushGCObject := !(TGCObject^ obj) -> void
-{
-}
-test1 := !(int x) -> bool
-{
-	return x > 50
-}
-test2 := !(int x) -> bool
-{
-	return x < 100
-}
-test3 := !(int^ x) -> bool
-{
-	printf("hey %p\n",x)
-	return x^ == 0
-}
 main := !(int argc, char^^ argv) -> int
 {
-	test := int^
-	x := 10
-	test?^ = 0
-	//if test?^ == 0 or test2(x)
-	//{
-	//	printf("hi\n")
-	//}else
-	//{	
-	//	printf("nope\n")
-	//}
+	test := new TGCObject
 	return 0
-	//test := new TGCObject2
-	//printf("a\n")
-	//defer printf("c\n")
-	//printf("b\n")
-	//y := Cls2
-	//y.x = 200
-	//y.y = 2
-	//y.z = 3
-	//i := Cls^
-	//i = y&
-	//i.check()
 }
