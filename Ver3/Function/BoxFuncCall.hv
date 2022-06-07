@@ -21,10 +21,21 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	CheckInputs := !(TypeFunc^ fType, CheckExeDownList objs) -> void
 	{
+		itType := NormalizeFuncType(fType)
+
+		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+		{
+			resVar := CreateTempVar(fType.ResultType,false)
+			emptyDwn := CheckExeDownList
+			downs.Push(new BoxFuncCall(resVar,emptyDwn))
+
+			this&->SetType(BoxFuncComplexCall)
+		}
+
 		downs.Push(objs[^])
 		resId = GetNewId()
 
-		for par,i : fType.Params
+		for par,i : itType.Params
 		{
 			if par.IsRef
 			{
@@ -32,7 +43,7 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
-		for par,i : fType.Params
+		for par,i : itType.Params
 		{
 			assert( i < downs.Size())
 			if downs[i].GetType() != par.ItType
@@ -115,6 +126,17 @@ BoxFuncCall := class extend BoxExeObj
 		}else{
 			PrintFuncResult(f)
 		}
+	}
+}
+BoxFuncComplexCall := class extend BoxFuncCall
+{
+	IsMem := virtual !() -> bool
+	{
+		return true //TODO if return ref
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		downs[0].PrintPointUse(f)
 	}
 }
 BoxFuncPointerCall := class extend BoxFuncCall

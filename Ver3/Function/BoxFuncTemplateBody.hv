@@ -299,7 +299,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			nxtType := Type^
 			if tp != null
 			{
-				if not (tp is TypePoint)
+				if not (tp is in TypePoint)
 					return null
 				nxtType = tp.Base
 			}

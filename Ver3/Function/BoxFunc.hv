@@ -35,7 +35,12 @@ BoxFunc := class extend BoxExeConstObj
 	PrintResultType := virtual !(TIOStream^ f) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
-		fTyp.ResultType.PrintType(f) //TODO return class
+		if fTyp.ResultType.IsComplexReturn()
+		{
+			GTypeVoid.PrintType(f)
+		}else{
+			fTyp.ResultType.PrintType(f) //TODO return class
+		}
 	}
 	ParseBody := virtual !() -> void
 	{
@@ -46,8 +51,17 @@ BoxFunc := class extend BoxExeConstObj
 	}
 	PrintInputTypes := virtual !(TIOStream^ f) -> void
 	{
+		fTyp := GetType()->{TypeFunc^}
 		needComma := false
-		for par,i : GetType()->{TypeFunc^}.Params
+
+		if fTyp.ResultType.IsComplexReturn()
+		{
+			fTyp.ResultType.PrintType(f)
+			f^ << "* %result" 
+			needComma = true
+		}
+
+		for par,i : fTyp.Params
 		{
 			if needComma
 				f^ << ","
@@ -107,9 +121,12 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 		itType = fncObj.GetType()->{TypeFunc^}
 	}else{
 		tmpType := fncObj.GetType()
-		assert(tmpType is TypePoint and tmpType.Base is TypeFunc)
+		assert(tmpType is in TypePoint and tmpType.Base is TypeFunc)
 		itType = tmpType.Base->{TypeFunc^}
 	}
+
+	sType := itType
+	itType = NormalizeFuncType(itType)
 
 	for itm,i : lst
 	{
@@ -163,4 +180,32 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 	if DebugMode
 		f^ << ", !dbg !" << GDebugLineCallId
 	f^ << "\n"
+}
+
+NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
+{
+	if inp.ResultType.IsComplexReturn()
+	{
+	}else{
+		return inp
+	}
+
+	if inp.ResultRef
+		return inp
+	
+	k := 0
+	typs := Type^[100]
+	bls := bool[100]
+
+	typs[0] = inp.ResultType
+	bls[0] = true
+	k += 1
+
+	for i : inp.Params.Size()
+	{
+		typs[k] = inp.Params[i].ItType
+		bls[k] = inp.Params[i].IsRef
+		k += 1
+	}
+	return GetFuncType(k,typs[0]&,bls[0]&,GTypeVoid,false,inp.IsVargs)
 }

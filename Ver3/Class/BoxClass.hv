@@ -249,7 +249,7 @@ TypeClass := class extend Type
 	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null
-			AsPoint = new TypePoint(this&)
+			AsPoint = new TypePointComplex(this&)
 		return AsPoint
 	}
 }
@@ -261,7 +261,8 @@ TypePointComplex := class extend TypePoint
 	}
 	IsComplexReturn := virtual !() -> bool
 	{
-		return false
+		isGC := TypeFight(Base,GCType) == GCType
+		return isGC
 	}
 }
 

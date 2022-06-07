@@ -53,7 +53,7 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 
 	clsType := vr.GetType()
 
-	if clsType is TypePoint
+	if clsType is in TypePoint
 	{
 		clsType = clsType.Base
 	}

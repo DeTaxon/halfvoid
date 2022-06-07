@@ -36,15 +36,22 @@ BoxFuncBody := class extend BoxFuncCommon
 			name := StringSpan("")
 			if i < names.Size()
 				name = names[i]
-			parObj := new FuncInputParam(this&,name,par.ItType,par.IsRef,i)
+			parObj := new FuncInputParam(this&,name,par.ItType,par.IsRef,GetParSpan(i))
 			vr := new MemVar(name,parObj)
 			Params.Push(vr)
 		}
 		if tp.ResultType != GTypeVoid
 		{
 			resSpn := StringSpan("result")
-			rFnc := new FuncLocalParam(resSpn,tp.ResultType)
-			ResultVar = new MemVar(resSpn,rFnc)
+
+			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
+			{
+				rv := new FuncInputParam(this&,resSpn,tp.ResultType,true,StringSpan("%result"))
+				ResultVar = new MemVar(resSpn,rv)
+			}else{
+				rFnc := new FuncLocalParam(resSpn,tp.ResultType)
+				ResultVar = new MemVar(resSpn,rFnc)
+			}
 		}
 		if DebugMode
 		{
@@ -163,7 +170,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		ExitLabel.PrintCode(f)
 
-		if rTyp == GTypeVoid
+		if rTyp == GTypeVoid or rTyp.IsComplexReturn()
 		{
 			f^ << "ret void"
 			if DebugMode
@@ -220,4 +227,11 @@ BoxFuncBody := class extend BoxFuncCommon
 			f^ << ")\n"
 		}
 	}
+}
+
+GetParSpan := !(int i) -> StringSpan
+{
+	buff := char[100]
+	sprintf(buff[0]&,"%%par%i",i)
+	result = GetConstString(buff[0]&)
 }

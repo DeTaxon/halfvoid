@@ -1,15 +1,15 @@
 FuncInputParam := class extend BoxFuncCommon
 {
-	pNumber := int
+	pNumber := StringSpan
 	isRef := bool
 	parentFunc := BoxFuncBody^
 	varName := StringSpan
 	varId := int
-	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRefIn,int paramNum) -> void
+	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRefIn,StringSpan pVal) -> void
 	{
 		parentFunc = pFunc
 		SetType(GetFuncType(0,null,null,pType,true,false))
-		pNumber = paramNum
+		pNumber = pVal
 		varName = vName
 		isRef = isRefIn
 		if DebugMode
@@ -41,7 +41,7 @@ FuncInputParam := class extend BoxFuncCommon
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
-			f^ << "%par" << pNumber
+			f^ <<  pNumber
 		}
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
@@ -79,7 +79,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		rType := GetType()->{TypeFunc^}.ResultType
-		f^ << "%P" << pNumber << " = alloca "
+		f^ << pNumber << "Unref = alloca "
 		rType.PrintType(f)
 		if isRef
 			f^ << "*"
@@ -91,13 +91,13 @@ FuncInputParamInMem := class extend FuncInputParam
 		rType.PrintType(f)
 		if isRef
 			f^ << "*"
-		f^ << " %par" << pNumber
+		f^ << " " ,< pNumber
 		f^ << " , "
 		rType.PrintType(f)
 		f^ << "*"
 		if isRef
 			f^ << "*"
-		f^ << " %P" << pNumber
+		f^ << " " << pNumber << "Unref"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -107,7 +107,7 @@ FuncInputParamInMem := class extend FuncInputParam
 			pType := GetType()->{TypeFunc^}.ResultType
 			f^ << "call void @llvm.dbg.declare(metadata "
 			rType.PrintType(f)
-			f^ << "* %P" << pNumber
+			f^ << "* " << pNumber << "Unref"
 			f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 		}
 
@@ -116,7 +116,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
-			f^ << "%P" << pNumber
+			f^ << "" << pNumber << "Unref"
 		}
 	}
 }

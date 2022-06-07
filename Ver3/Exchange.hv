@@ -9,7 +9,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 		}
 	}
 
-	if inType is TypePoint and inType.Base is TypeClass and expType is TypeClass
+	if inType is in TypePoint and inType.Base is TypeClass and expType is TypeClass
 	{
 		if inType.Base == expType
 		{

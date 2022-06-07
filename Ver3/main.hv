@@ -151,7 +151,7 @@ main := !(int argc, char^^ argv) -> int
 		GFuncsInProgress[0].WaitReadyState()
 		GFuncsInProgress.Pop()
 	}
-	printf("good to do\n")
+	printf("good to go\n")
 
 	outFile := new TFile(OutputFile,"wb")
 

@@ -69,7 +69,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if dObj != null
 		{
 			cls := dObj.GetType()
-			if cls is TypePoint and cls.Base is TypeClass
+			if cls is in TypePoint and cls.Base is TypeClass
 			{
 				dObj = GetExchange(dObj,cls.Base)
 				cls = cls.Base

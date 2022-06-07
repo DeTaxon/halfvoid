@@ -4,6 +4,18 @@ BoxBlock := class extend BoxUnit
 	down := Token^
 	ItLine := FileLine^
 	exeLines := List.{BoxUnit^} //TODO : to hybrid
+	
+	tempVars := List.{BoxFunc^}
+
+	CreateTempVar := !(Type^ varType, bool isRef) -> BoxFunc^
+	{
+		assert(isRef == false)
+
+		newVar := new FuncLocalParam(StringSpan("HiddenParam"),varType)
+		tempVars.PushFront(newVar)
+		return newVar
+	}
+
 	this := !(Token^ bdy) -> void
 	{
 		down = bdy
@@ -94,6 +106,8 @@ BoxBlock := class extend BoxUnit
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 
+		tempVars[^].PrintCode(f)
+
 		exeLines[^].PrintCode(f)
 
 		if cmpId != 0
@@ -119,7 +133,22 @@ BoxBlock := class extend BoxUnit
 		oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
-
+		
+		tempVars[^].PrintDebugMeta(f)
 		exeLines[^].PrintDebugMeta(f)
 	}
+}
+
+CreateTempVar := !(Type^ typ, bool isRef) -> BoxFunc^
+{
+	assert(isRef == false)
+
+	for it : UnitStack
+	{
+		if it is in BoxBlock
+		{
+			return it->{BoxBlock^}.CreateTempVar(typ,isRef)
+		}
+	}
+	assert(false)
 }

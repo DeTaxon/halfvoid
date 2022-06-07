@@ -71,7 +71,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
 {
 	dType := dwnItem.GetType()
-	if dType is TypePoint and dType.Base is TypeFunc
+	if dType is in TypePoint and dType.Base is TypeFunc
 	{
 		fType := dType.Base->{TypeFunc^}
 		if CmpFuncPriority(fType,Objs) != CmpNoExchange

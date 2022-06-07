@@ -8,6 +8,8 @@ GFuncGetDepth := BoxFunc^
 GFuncSetDepth := BoxFunc^
 GFuncPushGCObject := BoxFunc^
 
+GCType := Type^
+
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
@@ -58,4 +60,6 @@ InitInternals := !() -> void
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")
 	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
 
+	cName := TokenIndent(StringSpan("TGCIObject"))
+	GCType = ParseType(cName&)
 }

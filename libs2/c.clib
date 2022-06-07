@@ -1,0 +1,54 @@
+{
+	"link" : "static",
+	"initname" : "standartcinit",
+	"libs" : [
+		"libc.so.6",
+		"msvcrt.dll"
+	],
+	"funcs" : {
+		
+		"malloc" : "void^,size_t",
+		"calloc" : "void^,size_t,size_t",
+		"free" : "void,void^",
+
+		"memset" : "void,void^,char,size_t",
+		"memcpy" : "void,void^,void^,size_t",
+
+		"strcpy" : "void,char^,char^",
+		"strcmp" : "int,char^,char^",
+		"strncmp" : "int,char^,char^,int",
+		"strlen" : "int,char^",
+
+		"strtol" : "long,char^,char^^,int",
+		"strtod" : "double,char^,char^^",
+
+		"system" : "int,char^",
+
+		"tanf" : "float,float",
+		"cosf" : "float,float",
+		"sinf" : "float,float",
+		"sqrtf" : "float,float",
+
+		"fopen" : "void^,char^,char^",
+		"fwrite" : "size_t,void^,int,int,void^",
+		"fread" : "size_t,void^,int,int,void^",
+		"fgets" : "char^,char^,int,void^",
+		"fputs" : "int,char^,void^",
+		"fprintf" : "int,void^,char^,...",
+		"feof" : "int,void^",
+		"fclose" : "void,void^",
+
+		"getenv" : "char^,char^",
+		"setenv" : "int,char^,char^,int",
+
+		"printf" : "int,char^,...",
+		"sprintf" : "int,char^,char^,...",
+		"snprintf" : "int,char^,int,char^,...",
+
+		"vprintf" : "int,char^,void^",
+
+		"time" : "int",
+		"srand" : "void,int",
+		"rand" : "int"
+	}
+}

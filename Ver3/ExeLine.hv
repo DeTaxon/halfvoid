@@ -293,6 +293,9 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 {
 	worstCase := 0
 
+	assert(fncType != null)
+	assert(fncType is TypeFunc)
+
 	minArgs :=fncType.Params.Size()
 	maxArgs :=fncType.Params.Size()
 
@@ -329,7 +332,7 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 	if frm == to
 		return 0
 
-	if frm is TypePoint and frm.Base is TypeClass and to is TypeClass
+	if frm is in TypePoint and frm.Base is TypeClass and to is TypeClass
 	{
 		if TypeFight(frm.Base,to) == to
 			return 1000 //TODO rethink

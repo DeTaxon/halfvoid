@@ -13,7 +13,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		cl := TryGetExeCall(itm.Down)
 		assert(cl != null)
 
-		if not (cl.GetType() is TypePoint)
+		if not (cl.GetType() is in TypePoint)
 		{
 			itm.Down.Right.EmitError("Left of ? operator must be pointer")
 		}
