@@ -4,9 +4,11 @@ TemplateInternalNewOne := BoxFuncTemplate^
 TemplateInternalNewOneConstructed := BoxFuncTemplate^
 TemplateInternalDelete := BoxFuncTemplate^
 
+
 GFuncGetDepth := BoxFunc^
 GFuncSetDepth := BoxFunc^
 GFuncPushGCObject := BoxFunc^
+GFuncGCSetNull := BoxFunc^
 
 GCType := Type^
 
@@ -58,6 +60,7 @@ InitInternals := !() -> void
 
 	GFuncGetDepth = intGetFunc("internalHVGetDepth")
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")
+	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
 
 	cName := TokenIndent(StringSpan("TGCIObject"))

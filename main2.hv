@@ -49,6 +49,10 @@ internalHVDelete := !(@T^ x) -> void
 {
 	free(x)
 }
+internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
+{
+	itm1 = null->{TGCIObject^}
+}
 
 internalHVGetDepth := !() -> int
 {
@@ -58,7 +62,9 @@ internalHVSetDepth := !(int depth) -> void
 }
 main := !(int argc, char^^ argv) -> int
 {
-	test := new TGCObject
-	test = null->{TGCObject^}
+	{
+		test := new TGCObject
+		test = null->{TGCObject^}
+	}
 	return 0
 }

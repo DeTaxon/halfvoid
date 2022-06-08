@@ -83,6 +83,20 @@ BoxBlock := class extend BoxUnit
 			iter = iter.Right
 		}
 
+		for it : tempVars
+		{
+			tp := it.GetType()->{TypeFunc^}.ResultType
+			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
+			{
+				dat := CheckExeDownList
+				cl := new BoxFuncCall(it,dat)
+				dat.Push(cl)
+				cl2 := new BoxFuncCall(GFuncGCSetNull,dat)
+				pad := new BoxExeLineSimple(down.Down,cl2)
+				exeLines.Push(pad)
+			}
+		}
+
 		while UnitStack.Size() > stackAtStart
 		{
 			UnitStack.Pop()
