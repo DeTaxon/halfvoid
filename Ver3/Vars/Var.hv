@@ -152,22 +152,6 @@ MemVar := class extend BoxUnit
 		Name = vName
 		Value = clFunc
 		debId = GetNewId()
-
-		tp := clFunc.GetType()->{TypeFunc^}.ResultType
-		if tp is TypeClass and clFunc is in FuncLocalParam 
-		{
-			cls := tp->{TypeClass^}.ToClass
-			cls.AwaitVTableStep()
-			if cls.VTable.Size() != 0
-			{
-				dwns := CheckExeDownList
-				fCall := new BoxFuncCall(clFunc,dwns)
-				dwns.Push(fCall)
-				cnsts := List.{BoxExeConstObj^}
-				fnc := TemplateInternalInitClass.GetFunc(dwns,cnsts)
-				Inits.Push(new BoxFuncCall(fnc,dwns))
-			}
-		}
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

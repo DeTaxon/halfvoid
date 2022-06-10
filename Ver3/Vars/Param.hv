@@ -1,3 +1,4 @@
 ParamFunc := class extend BoxFuncCommon
 {
+	Inits := List.{BoxExeObj^}
 }

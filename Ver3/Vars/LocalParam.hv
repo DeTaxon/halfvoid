@@ -11,6 +11,20 @@ FuncLocalParam := class extend ParamFunc
 		varId = GetNewId()
 		SetType(GetFuncType(0,null,null,pType,true,false))
 
+		if tp is TypeClass
+		{
+			cls := tp->{TypeClass^}.ToClass
+			cls.AwaitVTableStep()
+			if cls.VTable.Size() != 0
+			{
+				dwns := CheckExeDownList
+				fCall := new BoxFuncCall(this&,dwns)
+				dwns.Push(fCall)
+				cnsts := List.{BoxExeConstObj^}
+				fnc := TemplateInternalInitClass.GetFunc(dwns,cnsts)
+				Inits.Push(new BoxFuncCall(fnc,dwns))
+			}
+		}
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -48,7 +62,7 @@ FuncLocalParam := class extend ParamFunc
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
 		}
-		//Inits[^].PrintDefaultUse(f)
+		Inits[^].PrintDefaultUse(f)
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
