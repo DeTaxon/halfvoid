@@ -33,7 +33,14 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			return new GlobalVar(name,varType)
 		}else{
 			assert(CurrentScope is in BoxFunc) 
-			vr := new FuncLocalParam(name,varType)
+			vr := BoxFunc^
+			isGC := varType is in TypePoint and TypeFight(varType.Base,GCType) == GCType
+			if isGC
+			{
+				vr = CreateTempVar(varType,false)
+			}else{
+				vr = new FuncLocalParam(name,varType)
+			}
 			return new MemVar(name,vr)
 		}
 	}
@@ -69,8 +76,17 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	{
 		if CurrentScope is in BoxFunc
 		{
-			vr := new FuncLocalParam(name,exeObj.GetType())
-			mVar := new MemVar(name,vr)
+			vr := BoxFunc^ 
+			isGC := IsGCPtr(exeObj.GetType())
+			mVar := MemVar^
+			if isGC
+			{
+				vr = CreateTempVar(exeObj.GetType(),false)
+				mVar = new MemVarBorrowed(name,vr)
+			}else{
+				vr = new FuncLocalParam(name,exeObj.GetType())
+				mVar = new MemVar(name,vr)
+			}
 
 			objs := CheckExeDownList
 			objs2 := CheckExeDownList
@@ -80,7 +96,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			setCall := CreateFuncCall(StringSpan("="),objs2,cnsts)
 			if setCall == null
 				return null
-			vr.Inits.Push(setCall)
+			mVar.Inits.Push(setCall) //TODO
 			return mVar
 		}else{
 			assert(false)
@@ -126,22 +142,114 @@ ConstVar := class extend BoxUnit
 }
 MemVar := class extend BoxUnit
 {
+	debId := int
 	Name := StringSpan
 	Value := BoxFunc^
+	Inits := List.{BoxExeObj^}
 
 	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
 	{
 		Name = vName
 		Value = clFunc
+		debId = GetNewId()
+
+		tp := clFunc.GetType()->{TypeFunc^}.ResultType
+		if tp is TypeClass and clFunc is in FuncLocalParam 
+		{
+			cls := tp->{TypeClass^}.ToClass
+			cls.AwaitVTableStep()
+			if cls.VTable.Size() != 0
+			{
+				dwns := CheckExeDownList
+				fCall := new BoxFuncCall(clFunc,dwns)
+				dwns.Push(fCall)
+				cnsts := List.{BoxExeConstObj^}
+				fnc := TemplateInternalInitClass.GetFunc(dwns,cnsts)
+				Inits.Push(new BoxFuncCall(fnc,dwns))
+			}
+		}
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		assert(Value != null)
 		Value.PrintCode(f)
+		pDebugCode(f)
+		doInits(f)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 		Value.PrintDebugMeta(f)
+		pDebugMeta(f)
+	}
+	pDebugCode := !(TIOStream^ f) -> void
+	{
+		if Value is in FuncLocalParam
+		{
+			clr := CheckExeDownList
+			cl := BoxFuncCall(Value,clr)
+			cl.PrintPointPre(f)
+			if DebugMode
+			{
+				f^ << "call void @llvm.dbg.declare(metadata "
+				cl.GetType().PrintType(f)
+				f^ << "* " 
+				cl.PrintPointUse(f)
+				f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+			}
+		}
+	}
+	doInits := !(TIOStream^ f) -> void
+	{
+		Inits[^].PrintDefaultUse(f)
+	}
+	pDebugMeta := !(TIOStream^ f) -> void
+	{
+		if not DebugMode
+			return void
+
+		if Value is in FuncLocalParam
+		{
+			pType := Value.GetType()->{TypeFunc^}.ResultType
+			f^ << "!" << debId << " = !DILocalVariable(name: \"" << Name << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
+			//if it.6 != 0
+			//{
+			//	f^ << ", arg: " << it.6
+			//	f^ << ", flags: DIFlagArtificial"
+			//}
+			f^ << ", line: " << 0 << ", type:!" << pType.MetaId
+			f^ << ")\n"
+		}
+	}
+}
+MemVarBorrowed := class extend MemVar
+{
+	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
+	{
+		this."MemVar.this"(vName,clFunc)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		pDebugCode(f)
+		doInits(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		pDebugMeta(f)
+	}
+}
+MemVarFullBorrowed := class extend MemVar
+{
+	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
+	{
+		this."MemVar.this"(vName,clFunc)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		pDebugCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		pDebugMeta(f)
 	}
 }
 

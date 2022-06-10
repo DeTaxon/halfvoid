@@ -46,3 +46,8 @@ BoxUnit := class extend TGCObject
 	}
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
 }
+
+IsGCPtr := !(Type^ tp) -> bool
+{
+	return tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
+}

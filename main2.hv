@@ -64,6 +64,7 @@ main := !(int argc, char^^ argv) -> int
 {
 	{
 		test := new TGCObject
+		printf("hey %p\n",test)
 		test = null->{TGCObject^}
 	}
 	return 0

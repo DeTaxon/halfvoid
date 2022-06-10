@@ -17,7 +17,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			if cv.Name == asItm.Value
 				return cv.Value
 		}
-		if par is MemVar
+		if par is in MemVar
 		{
 			mv := par->{MemVar^}
 			if mv.Name == asItm.Value
