@@ -7,7 +7,7 @@ BoxBlock := class extend BoxUnit
 	
 	tempVars := List.{BoxFunc^}
 
-	CreateTempVar := !(Type^ varType, bool isRef) -> BoxFunc^
+	CreateTempVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
 		assert(isRef == false)
 
@@ -154,7 +154,7 @@ BoxBlock := class extend BoxUnit
 	}
 }
 
-CreateTempVar := !(Type^ typ, bool isRef) -> BoxFunc^
+CreateTempVar := !(Type^ typ, bool isRef) -> ParamFunc^
 {
 	assert(isRef == false)
 

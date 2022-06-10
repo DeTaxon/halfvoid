@@ -1,4 +1,4 @@
-FuncInputParam := class extend BoxFuncCommon
+FuncInputParam := class extend ParamFunc
 {
 	pNumber := StringSpan
 	isRef := bool

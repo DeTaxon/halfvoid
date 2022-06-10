@@ -1,0 +1,3 @@
+ParamFunc := class extend BoxFuncCommon
+{
+}

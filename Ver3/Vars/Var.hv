@@ -33,7 +33,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			return new GlobalVar(name,varType)
 		}else{
 			assert(CurrentScope is in BoxFunc) 
-			vr := BoxFunc^
+			vr := ParamFunc^
 			isGC := varType is in TypePoint and TypeFight(varType.Base,GCType) == GCType
 			if isGC
 			{
@@ -76,7 +76,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	{
 		if CurrentScope is in BoxFunc
 		{
-			vr := BoxFunc^ 
+			vr := ParamFunc^ 
 			isGC := IsGCPtr(exeObj.GetType())
 			mVar := MemVar^
 			if isGC
@@ -144,10 +144,10 @@ MemVar := class extend BoxUnit
 {
 	debId := int
 	Name := StringSpan
-	Value := BoxFunc^
+	Value := ParamFunc^
 	Inits := List.{BoxExeObj^}
 
-	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
+	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
 	{
 		Name = vName
 		Value = clFunc
@@ -223,7 +223,7 @@ MemVar := class extend BoxUnit
 }
 MemVarBorrowed := class extend MemVar
 {
-	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
+	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
 	{
 		this."MemVar.this"(vName,clFunc)
 	}
@@ -231,21 +231,6 @@ MemVarBorrowed := class extend MemVar
 	{
 		pDebugCode(f)
 		doInits(f)
-	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
-	{
-		pDebugMeta(f)
-	}
-}
-MemVarFullBorrowed := class extend MemVar
-{
-	this := !(StringSpan vName, BoxFunc^ clFunc) -> void
-	{
-		this."MemVar.this"(vName,clFunc)
-	}
-	PrintCode := virtual !(TIOStream^ f) -> void
-	{
-		pDebugCode(f)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
