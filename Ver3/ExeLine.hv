@@ -406,8 +406,8 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 	{
 		ac := a->{TypeClass^}.ToClass
 		bc := b->{TypeClass^}.ToClass
-		ac.AwaitTypeState()
-		bc.AwaitTypeState()
+		ac.AwaitParentStep()
+		bc.AwaitParentStep()
 
 		for ap : ac.PrimeParents
 		{

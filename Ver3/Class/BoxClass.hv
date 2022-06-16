@@ -24,6 +24,7 @@ BoxClass := class extend BoxUnit
 	{
 		ItName = name
 	}
+	AwaitParentStep := virtual !() -> void {}
 	AwaitVTableStep := virtual !() -> void {}
 	PrintAsType := virtual !(TIOStream^ f) -> void
 	{
@@ -100,6 +101,22 @@ BoxClass := class extend BoxUnit
 		sum += Parents[^].FieldsCount()
 		return sum
 	}
+	PrimeParentStep := !() -> void
+	{
+		if Parents.Size() == 0
+		{
+			PrimeParents.Push(!{this&,this&,0})
+		}else
+		{
+			for par : Parents
+			{
+				for pp : par.PrimeParents
+				{
+					PrimeParents.Push(!{pp.0,par,pp.2 + 1}) //todo Remove duplicates
+				}
+			}
+		}
+	}
 	InheritStep := !() -> void
 	{
 		assert(FieldsPath.Size() == 0)
@@ -155,19 +172,6 @@ BoxClass := class extend BoxUnit
 		}
 		ItSize = posMemOffset
 
-		if Parents.Size() == 0
-		{
-			PrimeParents.Push(!{this&,this&,0})
-		}else
-		{
-			for par : Parents
-			{
-				for pp : par.PrimeParents
-				{
-					PrimeParents.Push(!{pp.0,par,pp.2 + 1}) //todo Remove duplicates
-				}
-			}
-		}
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{

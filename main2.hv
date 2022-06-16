@@ -63,15 +63,14 @@ internalHVSetDepth := !(int depth) -> void
 
 TILambda := class extend TGCObject
 {
-	//Capture := virtual !() -> TILambda^
-	//{
-	//	assert(false)
-	//	return null
-	//}
-	//IsFinished := virtual !() -> bool
-	//{
-	//	return false
-	//}
+	Capture := virtual !() -> TILambda^
+	{
+		//assert(false)
+		//return null
+	}
+	IsFinished := virtual !() -> bool
+	{
+	}
 }
 
 //TLambda := class .{@Func} extend TILambda

@@ -47,6 +47,7 @@ BoxClassBody := class extend BoxClass
 	Body := Token^
 	ParentTokens := HybridQueue.{Token^,5}
 
+	VParentState := THatch
 	VTableState := THatch
 	FieldsState := THatch
 
@@ -101,8 +102,11 @@ BoxClassBody := class extend BoxClass
 			inhType := ParseType(ParentTokens[i])
 			assert(inhType != null) //TODO
 			assert(inhType is TypeClass) //TODO
-			Parents.Push(inhType->{TypeClass^}.ToClass)
+			asClsParent := inhType->{TypeClass^}
+			Parents.Push(asClsParent.ToClass)
 		}
+		//PrimeParentStep()
+		VParentState.Emit()
 
 		CurrentScope = this&
 
@@ -212,5 +216,6 @@ BoxClassBody := class extend BoxClass
 				return it
 		}
 	}
+	AwaitParentStep := virtual !() -> void { VParentState.Await() }
 	AwaitVTableStep := virtual !() -> void { VTableState.Await() }
 }
