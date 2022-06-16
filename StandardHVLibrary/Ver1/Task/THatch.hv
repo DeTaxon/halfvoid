@@ -1,0 +1,63 @@
+THatch := class
+{
+	flag := bool
+	next_wakeup := TITaskPausePoint^
+
+	Emit := !() -> void
+	{
+		flag = true
+		if next_wakeup != null
+		{
+			next_wakeup.Resume()
+			next_wakeup = null
+		}
+	}
+	Await := !() -> void
+	{
+		if flag
+			return void
+		pt := TITaskPausePoint
+		pt.Pause(next_wakeup&)
+	}
+}
+
+TITaskPausePoint := class
+{
+	itTask := TaskData^	
+	next_point := TITaskPausePoint^
+	Pause := !(TITaskPausePoint^^ nextPoint) -> void
+	{
+		if nextPoint^ != null
+		{
+			next_point = nextPoint^
+		}
+		nextPoint^ = this&
+		itTask = CurrentTask
+		CurrentTaskBox.switchToMain()
+		//if next_point != null
+		//	next_point.Resume()
+	}
+	Resume := !() -> void
+	{
+		if pausePoint != null
+		{
+			itr := this&
+			while itr.next_point != null
+				itr = itr.next_point
+			itr.next_point = pausePoint
+		}
+		pausePoint = this&
+	}
+}
+
+
+pausePoint := TITaskPausePoint^
+
+TaskGetHatchWork := !() -> TaskData^
+{
+	if pausePoint == null
+		return null
+	retVal := pausePoint.itTask
+	pausePoint = pausePoint.next_point
+	return retVal
+}

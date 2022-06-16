@@ -31,9 +31,9 @@ Token := class
 		{
 			ln << " at file " << Line.File << " line: " <<Line.Line
 		}
+		//throw new Exception(ln.Str()) //TODO memory
 		printf("%s\n",ln.Str())
 		exit(1)
-		//throw new Exception(ln.Str()) //TODO memory
 	}
 }
 
@@ -138,7 +138,7 @@ TokenBool := class extend Token
 	}
 	GetValue := virtual !() -> ref StringSpan
 	{
-		return GetConstString("bool")
+		return Value
 	}
 	Print := virtual !(int x) -> void
 	{

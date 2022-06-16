@@ -1,0 +1,13 @@
+
+CreateBuiltinsBool := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+
+	x := GTypeBool
+	storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+	cmpType := GetFuncType(![x,x],GTypeBool)
+
+	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
+	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
+	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+}

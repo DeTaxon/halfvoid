@@ -60,12 +60,57 @@ internalHVGetDepth := !() -> int
 internalHVSetDepth := !(int depth) -> void
 {
 }
+
+TILambda := class extend TGCObject
+{
+	//Capture := virtual !() -> TILambda^
+	//{
+	//	assert(false)
+	//	return null
+	//}
+	//IsFinished := virtual !() -> bool
+	//{
+	//	return false
+	//}
+}
+
+//TLambda := class .{@Func} extend TILambda
+//{
+//	//callFunc := Func->Type^
+//	//"()" := !(args...) -> void
+//	//{
+//	//	return this.callFunc(this&,argc...)
+//	//}
+//}
+
+//TLambdaImplementation := class .{@Captures} extend TLambda
+//{
+//	values := Captures
+//
+//	//Capture := virtual !() -> TLambda^
+//	//{
+//	//	result = new TLambdaImplementation
+//	//	result.values[^] = values[^]
+//	//}
+//}
+
+//internalHVLambdaCall := !(TLambda.{@Func}^ fncCall) -> void //void replaced with what  Func->Resutl is
+//{
+//	return fncLambda.callFunc()
+//}
+
+
 main := !(int argc, char^^ argv) -> int
 {
-	{
-		test := new TGCObject
-		printf("hey %p\n",test)
-		test = null->{TGCObject^}
-	}
+	x := true
+	//printf("hey %i\n",x == true)
+	//{
+
+	//	//l := () ==> {
+	//	//	printf("hi\n")
+	//	//}
+	//	//l()
+	//	//l()
+	//}
 	return 0
 }

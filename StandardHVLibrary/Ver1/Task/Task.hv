@@ -1,60 +1,4 @@
 
-TITaskPausePoint := class
-{
-	itTask := TaskData^	
-	next_point := TITaskPausePoint^
-	Pause := !(TITaskPausePoint^^ nextPoint) -> void
-	{
-		if nextPoint^ != null
-		{
-			next_point = nextPoint^
-		}
-		nextPoint^ = this&
-		itTask = CurrentTask
-		CurrentTaskBox.switchToMain()
-		if next_point != null
-			next_point.Resume()
-	}
-	Resume := !() -> void
-	{
-		if CurrentTaskBox.pausePoint != null
-		{
-			if next_point == null
-			{
-				next_point = CurrentTaskBox.pausePoint
-			}else{
-				itr := next_point
-				while itr.next_point != null
-					itr = itr.next_point
-				itr.next_point.next_point = CurrentTaskBox.pausePoint
-			}
-		}
-		CurrentTaskBox.pausePoint = this&
-	}
-}
-
-THatch := class
-{
-	flag := bool
-	next_wakeup := TITaskPausePoint^
-
-	Emit := !() -> void
-	{
-		flag = true
-		if next_wakeup != null
-		{
-			next_wakeup.Resume()
-		}
-	}
-	Await := !() -> void
-	{
-		if flag
-			return void
-		pt := TITaskPausePoint
-		pt.Pause(next_wakeup&)
-	}
-}
-
 CurrentTask := thread_local TaskData^
 CurrentTaskBox := thread_local TaskBox^
 TaskData := class
@@ -84,8 +28,6 @@ TaskBox := class extend TGCObject
 	tasksToExe := List.{TaskData^}
 
 	destroyTasks := List.{TaskData^}
-
-	pausePoint := TITaskPausePoint^
 
 	working := bool
 
@@ -201,10 +143,9 @@ TaskBox := class extend TGCObject
 
 			toDoTask = checkCreateTask()
 
-			if toDoTask == null and pausePoint != null
+			if toDoTask == null
 			{
-				toDoTask = pausePoint.itTask
-				pausePoint = null
+				toDoTask = TaskGetHatchWork()
 			}
 
 			if toDoTask == null

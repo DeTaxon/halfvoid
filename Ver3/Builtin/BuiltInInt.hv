@@ -102,6 +102,7 @@ CreateBuiltins := !() -> void
 {
 	CreateBuiltinsInt()
 	CreateBuiltinsPoint()
+	CreateBuiltinsBool()
 }
 CreateBuiltinsInt := !() -> void
 {
@@ -172,5 +173,4 @@ CreateBuiltinsInt := !() -> void
 		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
 		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )
 	})
-	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(GetFuncType(![GTypeBool,GTypeBool],![true,false],GTypeVoid) ) )
 }

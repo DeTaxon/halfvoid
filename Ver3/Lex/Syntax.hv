@@ -166,7 +166,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				case "#FlowObjects"
 				//	if RuleUse(begin,"~extra1",RuleSLambda) return true
 				//	if RuleUse(begin,"Defer()",RuleDefer) return true
-					if RuleUse(begin,"return()",RuleOneFunc) return true
+					if RuleUse(begin,"return()",RuleReturn) return true
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
 					if RuleUseReverse(begin,"Block",RuleIf) return true
@@ -538,7 +538,7 @@ RuleCallFunction := !(void^ itr) -> int
 //	return 2
 //}
 
-RuleOneFunc := !(void^ itr)-> int
+RuleReturn := !(void^ itr)-> int
 {
 	It := itr->{Token^}
 

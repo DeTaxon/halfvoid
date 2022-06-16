@@ -24,7 +24,9 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			cls := typ->{TypeClass^}.ToClass
 			cls.AwaitTypeState()
 			fld := cls.GetField(name)
-			assert(fld != null) //TODO
+
+			if fld == null
+				rObj.EmitError("Field not found")
 
 			itms := CheckExeDownList
 			itms.Push(val)
