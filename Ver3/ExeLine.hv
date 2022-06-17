@@ -307,6 +307,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 
 	count := min(fncType.Params.Size(),objs.Size())
 
+	yep := false
 	for i : count
 	{
 		frmType := objs[i].GetType()
@@ -314,7 +315,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 		toType := fncType.Params[i].ItType
 		toIsMem := fncType.Params[i].IsRef
 		thisCase := TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
-		if worstCase == CmpNoExchange
+
+		if thisCase == CmpNoExchange
 		{
 			if objs[i] is BoxExeNull and toType is in TypePoint
 			{
@@ -324,6 +326,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 			}
 		}
 		worstCase = max(worstCase,thisCase)
+		//if worstCase == CmpNoExchange
+		//	return worstCase
 	}
 	return worstCase
 }

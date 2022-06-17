@@ -63,11 +63,11 @@ internalHVSetDepth := !(int depth) -> void
 
 TILambda := class extend TGCObject
 {
-	Capture := virtual !() -> TILambda^
-	{
-		//assert(false)
-		//return null
-	}
+	//Capture := virtual !() -> TILambda^
+	//{
+	//	//assert(false)
+	//	//return null
+	//}
 	IsFinished := virtual !() -> bool
 	{
 	}
@@ -98,10 +98,14 @@ TILambda := class extend TGCObject
 //	return fncLambda.callFunc()
 //}
 
-
+z := !() -> int^
+{
+	return null
+}
 main := !(int argc, char^^ argv) -> int
 {
 	x := true
+	z()
 	//printf("hey %i\n",x == true)
 	//{
 
