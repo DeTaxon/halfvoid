@@ -1,0 +1,101 @@
+FuncTemplateInput := class
+{
+	Name := StringSpan
+	ItType := Type^
+	IsRef := bool
+	ItToken := Token^
+	IsTType := bool
+
+	this := !(StringSpan nm, Type^ typ, bool ir, Token^ tk) -> void
+	{
+		Name = nm
+		ItType = typ
+		IsRef = ir
+		ItToken = tk
+		if tk != null
+			IsTType = ContainTemplateObj(tk)
+	}
+}
+
+FuncTemplateConstant := class
+{
+	ItToken := Token^
+	Value := BoxUnit^
+
+	this := !(Token^ tok, BoxUnit^ val) -> void
+	{
+		ItToken = tok
+		Value = val
+	}
+}
+
+FunctionHeaderInfo := class
+{
+	Types := HybridQueue.{FuncTemplateInput,10}
+	ResultType := FuncTemplateInput
+	IsVargs := bool
+
+	IsVariadic := bool
+	VariadicName := StringSpan
+
+	ParseHeader := !(Token^ brackets, Token^ resTyp) -> void
+	{
+		SyntaxCompress(brackets,LexHVInputVars)
+
+		bag := HybridQueue.{Token^,10}
+		defer bag.Destroy()
+
+		iter := brackets.Down
+
+		if resTyp != null
+		{
+			ResultType.ItType = ParseType(resTyp)
+			ResultType.ItToken = resTyp
+		}
+		checkBag := () ==> {
+			if bag.Size() == 1
+			{
+				assert(bag[0] is TokenIndent)
+				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+			}else if bag.Size() >= 2 {
+				if bag[1].GetValue() == "..."
+				{
+					assert(bag[0] is TokenIndent) //TODO
+					IsVariadic = true
+					VariadicName = bag[0]->{TokenIndent^}.Value
+				}else{
+					isRef := false
+					indItm := bag[1]
+					if indItm.GetValue() == "&"
+					{
+						isRef = true
+						indItm = bag[2]
+						assert(bag.Size() >= 3) //TODO
+					}
+					assert(indItm is TokenIndent) //TODO
+					typ := ParseType(bag[0])
+					name := indItm->{TokenIndent^}.Value
+					if typ != null and IsComplexType(typ)
+						isRef = true
+
+					Types.Emplace(name,typ,isRef,bag[0])
+				}
+			}else{
+				assert(false)
+			}
+		}
+		while iter != null
+		{
+			if iter.GetValue() == ","
+			{
+				checkBag()
+				bag.Clear()
+			}else{
+				bag.Push(iter)
+			}
+			iter = iter.Right
+		}
+		if bag.Size() != 0
+			checkBag()
+	}
+}
