@@ -87,7 +87,7 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 	return lmb.callFunc(lmb,args...)
 }
 
-internalHVCreateLambda := !(@FuncType^ fnc,@CaptureTuple^ CaptureVars) -> void //TLambda.{FuncType^}^
+internalHVCreateLambda := !(@FuncType^ fnc,@CaptureTuple^ CaptureVars) -> TLambda.{FuncType^}^
 {
 	result = new TLambda.{FuncType^}
 	result.callFunc = fnc

@@ -68,6 +68,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 
 	StartedParse := bool
+	StartedParseForced := bool
 	ParseBody := virtual !() -> void
 	{
 		if StartedParse
@@ -76,8 +77,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		GFuncsInProgress.Push(this&)
 		cls := this&
 		TSpawnTask(() ==> [cls] {
-			cls.WorkBody()
+			cls.ParseBodyForced()
 		})
+	}
+	ParseBodyForced := virtual !() -> void
+	{
+		if StartedParseForced
+			return void
+		StartedParseForced = true
+		this.WorkBody()
 	}
 	SetName := virtual !(StringSpan nm) -> void
 	{
@@ -103,8 +111,14 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		AllFunctions.Push(this&)
 
-		assert(UnitStack.Size() == 0)
-		defer UnitStack.Destroy()
+		stackSize := UnitStack.Size()
+		getBackSize := () ==> {
+			while UnitStack.Size() > stackSize
+			{
+				UnitStack.Pop()
+			}
+		}
+		defer getBackSize()
 
 		UnitStack.PushFront(this&)
 		defer readyState.Emit()

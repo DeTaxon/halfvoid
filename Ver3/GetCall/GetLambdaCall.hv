@@ -5,5 +5,28 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	}else{
 		return null
 	}
-	return new BoxLambdaHolder(itm.Down,itm.Down.Right) 
+	res := new BoxLambdaHolder(itm.Down,itm.Down.Right.Right)
+
+	if res.IsOneFunc()
+	{
+		newFunc := res.GetOneFunc()
+		newFunc.ParseBodyForced()
+
+		fncPtr := new FuncPointerParam(newFunc)
+
+		objs := CheckExeDownList
+		objs.Push(fncPtr)
+		objs.Push(GObjNull)
+
+		//tps := Type[2]
+
+		//tps[0] = objs[0].GetType()
+		//tps[1] = objs[1].GetType()
+
+		//GetFuncType(2,tps[0]&,null,)
+
+		//TemplateInternalCreateLambda.CreateFunc()
+	}
+
+	return res
 }

@@ -38,27 +38,29 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				fnc := ob->{BoxFuncBody^}
 				if fnc.Attrs.IsMethod
 				{
+					resTryCall := BoxExeObj^
 					try
 					{
 						tkn1 := TokenIndent(StringSpan("this"))
 						tkn1.Line = itm.Line
 						vr := TryGetExeCall(tkn1&)
 
-						return innerTryGetMethodCall(asInd.Value,vr,Objs,consts)?
-					}catch(IException^ e)
-					{
-					}
+						resTryCall = innerTryGetMethodCall(asInd.Value,vr,Objs,consts)
+					}catch(IException^ e){}
+					if resTryCall != null
+						return resTryCall
 				}
 			}
 		}
 
+		resFunc := BoxExeObj^
 		try
 		{
-		resFunc := CreateFuncCall(asInd.Value,Objs,consts)
-		if resFunc != null
-			return resFunc
+			resFunc = CreateFuncCall(asInd.Value,Objs,consts)
 		}catch(IException^ e)
 		{}
+		if resFunc != null
+			return resFunc
 	}
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null

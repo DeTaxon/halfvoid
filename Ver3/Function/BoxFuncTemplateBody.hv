@@ -38,11 +38,17 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ParseHeader := virtual !() -> void
 	{
-		if CurrentScope is in BoxClass //TODO not static,
+		if Attrs.IsLambda
 		{
-			cls := CurrentScope->{BoxClass^}
-			hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null)
-			Attrs.IsMethod = true
+			hData.Types.Emplace(StringSpan(""),GTypeVoidP,false,null)
+			hData.IsAutoResult = true
+		}else{
+			if CurrentScope is in BoxClass //TODO not static,
+			{
+				cls := CurrentScope->{BoxClass^}
+				hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null)
+				Attrs.IsMethod = true
+			}
 		}
 		hData.ParseHeader(inps1,resTyp)
 
@@ -187,6 +193,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			}
 			return tp
 		}
+		if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
+		{
+			printf("here\n")
+		}
 		if tk is TokenIndent
 		{
 			dwnTp := ParseType(tk)
@@ -228,14 +238,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	IsOneFunc := virtual !() -> bool
 	{
-		if hData.IsVariadic
-			return false
-		for it : hData.Types
-		{
-			if it.ItType == null
-				return false
-		}
-		if hData.ResultType.ItType == null //todo? functions with auto return type
+		if not hData.IsOneFunc()
 			return false
 		if Constants[^].Value == null
 			return false
@@ -243,15 +246,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	GetOneFunc := virtual !() -> BoxFunc^
 	{
-		fTyp := Type^[100]
-		isRef := bool[100]
-		for it,i : hData.Types
-		{
-			fTyp[i] = it.ItType
-			isRef[i] = it.IsRef
-		}
-
-		resFuncTyp := GetFuncType(hData.Types.Size(),fTyp[0]&,isRef[0]&,hData.ResultType.ItType,hData.ResultType.IsRef,hData.IsVargs)
+		resFuncTyp := hData.CreateFuncType()
 
 		names := HybridQueue.{StringSpan,10}
 		names.Push(hData.Types[^].Name)

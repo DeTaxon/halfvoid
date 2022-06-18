@@ -87,6 +87,7 @@ FuncAttributes := class
 	IsMethod := bool
 	IsVirtual := bool
 	IsStatic := bool
+	IsLambda := bool
 		
 	"=" := default
 }

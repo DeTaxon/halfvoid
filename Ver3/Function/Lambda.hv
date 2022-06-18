@@ -4,8 +4,34 @@ BoxLambda := class extend BoxFuncBody
 
 BoxLambdaHolder := class extend BoxExeObj
 {
+	tmpl := BoxFuncTemplateBody^
+	resToken := TokenIndent
 	this := !(Token^ brackets, Token^ body) -> void
 	{
+		bPtr := Token^
+
+		if brackets.Down?.GetValue() == "()"
+		{
+			bPtr = brackets.Down
+		}else{
+			assert(false)
+		}
+
+		resToken.Value = StringSpan("void") //TODO: auto detect return type
+
+		attr := FuncAttributes
+		attr.IsLambda = true
+		
+		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,resToken&,body)
+
 		ObjType = GTypeBool //TODO : to type none
+	}
+	IsOneFunc := !() -> bool
+	{
+		return tmpl.IsOneFunc()
+	}
+	GetOneFunc := !() -> BoxFunc^
+	{
+		return tmpl.GetOneFunc()
 	}
 }

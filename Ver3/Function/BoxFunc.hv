@@ -45,6 +45,9 @@ BoxFunc := class extend BoxExeConstObj
 	ParseBody := virtual !() -> void
 	{
 	}
+	ParseBodyForced := virtual !() -> void
+	{
+	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
 		PrintName(f)
