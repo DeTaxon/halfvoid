@@ -112,9 +112,15 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 		newFunc.VariadicName = hData.VariadicName
 
-		for it : resConsts
+		for it,ind : resConsts
 		{
-			newFunc.ConstVars.Push(it)
+			if it is ConstType
+			{
+				newFunc.ConstVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
+			}else{
+				//newFunc.ConstVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
+				newFunc.ConstVars.Push(it)
+			}
 		}
 
 		return newFunc
@@ -134,7 +140,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				name := tmpl.Value[1..0]
 				if consts[i] is ConstType
 				{
-					resCnsts[name] = new TypeVar(name,consts[i]->{ConstType^}.Value)
+					resCnsts[name] = consts[i]->{ConstType^}
 				}else{
 					resCnsts[name] = new ConstVar(name,consts[i])
 				}
@@ -180,22 +186,59 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			assert(tp != null)
 			if resCnsts.Contain(nm)
 			{
-				if resCnsts[nm] is TypeVar
+				if resCnsts[nm] is ConstType
 				{
-					vr := resCnsts[nm]->{TypeVar^}
+					vr := resCnsts[nm]->{ConstType^}
 					if vr.Value != tp
 					{
 						assert(false)
 					}
 				}
 			}else{
-				resCnsts[nm] = new TypeVar(nm,tp)
+				resCnsts[nm] = GetConstType(tp)
 			}
 			return tp
 		}
 		if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
 		{
-			printf("here\n")
+			//lType := checkType(null,tk.Down,resCnsts) //TODO: do something with null, so i could use @Tepl.{@arg}
+			//if lType == null
+			//	return null
+			assert(tk.Down is TokenIndent)
+			if tp == null
+			{
+				checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
+
+				cnsts := List.{BoxExeConstObj^}
+				defer cnsts.Destroy()
+
+				assert(checkRes is TemplateTypeVar)
+
+				tmpl := checkRes->{TemplateTypeVar^}.Value
+
+				i := 0
+				itr := tk.Down.Right.Right.Down
+
+				while itr != null
+				{
+					if itr.GetValue() != ","
+					{
+						resCnst := checkConst(null,itr,resCnsts)
+						if resCnst == null
+							return null
+						cnsts.Push(resCnst)
+					}
+					i += 1
+					itr = itr.Right
+				}
+				return tmpl.GetClass(cnsts).ItType
+				
+
+			}else{
+				assert(tp is in TypeClass)
+				assert(false)
+			}
+
 		}
 		if tk is TokenIndent
 		{
@@ -206,9 +249,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				if resCnsts.Contain(name)
 				{
 					itm2 := resCnsts[name]
-					if itm2 is TypeVar
+					if itm2 is ConstType
 					{
-						dwnTp = itm2->{TypeVar^}.Value
+						dwnTp = itm2->{ConstType^}.Value
 					}
 				}
 			}
@@ -231,6 +274,20 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if resTyp2 == null
 				return null
 			return resTyp2.GetPoint()
+		}
+		assert(false)
+		return null
+	}
+	checkConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxUnit^} resCnsts) -> BoxExeConstObj^
+	{
+		if itm is TokenIndent
+		{
+			name := itm->{TokenIndent^}.Value
+
+			if resCnsts.Contain(name)
+			{
+				return resCnsts[name]->{BoxExeConstObj^}
+			}
 		}
 		assert(false)
 		return null

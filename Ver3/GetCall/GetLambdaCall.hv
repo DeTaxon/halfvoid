@@ -11,8 +11,10 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	{
 		newFunc := res.GetOneFunc()
 		newFunc.ParseBodyForced()
-
-		fncPtr := new FuncPointerParam(newFunc)
+		
+		miniObj := CheckExeDownList
+		fncFnc := new FuncPointerParam(newFunc)
+		fncPtr := new BoxFuncCall(fncFnc,miniObj) 
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)

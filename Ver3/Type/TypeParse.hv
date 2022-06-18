@@ -1,3 +1,35 @@
+GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Type^
+{
+	assert(obj is TokenIndent)
+
+	asIndent := obj->{TokenIndent^}
+	name := asIndent.Value
+
+	if resCnsts?.Contain(name)
+	{
+		itm := resCnsts^[name]
+		if itm is TypeVar
+		{
+			vr := itm->{TypeVar^}
+			return vr.Value
+		}
+	}
+
+	for defs : DefsTable
+	{
+		if defs == null
+			break
+		if defs.ItName == asIndent.Value
+			return defs.ItType
+	}
+	checkRes := TypeGetGlobalByIndent(name)
+	if checkRes != null and checkRes is TypeVar
+	{
+		return checkRes->{TypeVar^}.Value
+	}
+	return null
+}
+
 ParseType := !(Token^ obj) -> Type^
 {
 	if obj == null
@@ -21,22 +53,7 @@ ParseType := !(Token^ obj) -> Type^
 	}
 	if obj is TokenIndent
 	{
-		asIndent := obj->{TokenIndent^}
-		name := asIndent.Value
-
-		for defs : DefsTable
-		{
-			if defs == null
-				break
-			if defs.ItName == asIndent.Value
-				return defs.ItType
-		}
-		checkRes := TypeGetGlobalByIndent(name)
-		if checkRes != null and checkRes is TypeVar
-		{
-			return checkRes->{TypeVar^}.Value
-		}
-		return null
+		return GetTypeFromIndent(obj,null)
 	}
 	if obj.GetValue() == "~d"
 	{
