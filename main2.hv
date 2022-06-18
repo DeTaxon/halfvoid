@@ -63,24 +63,35 @@ internalHVSetDepth := !(int depth) -> void
 
 TILambda := class extend TGCObject
 {
-	//Capture := virtual !() -> TILambda^
-	//{
-	//	//assert(false)
-	//	//return null
-	//}
+	Capture := virtual !() -> TILambda^
+	{
+		//assert(false)
+		return null
+	}
 	IsFinished := virtual !() -> bool
 	{
+		return false
 	}
 }
 
-//TLambda := class .{@Func} extend TILambda
-//{
-//	//callFunc := Func->Type^
-//	//"()" := !(args...) -> void
-//	//{
-//	//	return this.callFunc(this&,argc...)
-//	//}
-//}
+TLambda := class .{@FuncPtr} extend TILambda
+{
+	callFunc := FuncPtr
+	//"()" := !(args...)
+	//{
+	//	return this.callFunc(this&,argc...)
+	//}
+}
+internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
+{
+	return lmb.callFunc(lmb,args...)
+}
+
+internalHVCreateLambda := !(@FuncType^ fnc,@CaptureTuple^ CaptureVars) -> void //TLambda.{FuncType^}^
+{
+	result = new TLambda.{FuncType^}
+	result.callFunc = fnc
+}
 
 //TLambdaImplementation := class .{@Captures} extend TLambda
 //{
@@ -93,19 +104,11 @@ TILambda := class extend TGCObject
 //	//}
 //}
 
-//internalHVLambdaCall := !(TLambda.{@Func}^ fncCall) -> void //void replaced with what  Func->Resutl is
-//{
-//	return fncLambda.callFunc()
-//}
-
-z := !() -> int^
-{
-	return null
-}
 main := !(int argc, char^^ argv) -> int
 {
-	x := true
-	z()
+	x := () ==> {
+		printf("hey\n")
+	}
 	//printf("hey %i\n",x == true)
 	//{
 

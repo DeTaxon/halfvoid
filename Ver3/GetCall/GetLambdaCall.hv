@@ -1,0 +1,9 @@
+TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.Right?.GetValue() == "==>"
+	{
+	}else{
+		return null
+	}
+	return new BoxLambdaHolder(itm.Down,itm.Down.Right) 
+}

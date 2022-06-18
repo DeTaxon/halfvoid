@@ -28,6 +28,14 @@ FuncTemplateConstant := class
 		Value = val
 	}
 }
+
+FunctionHeaderInfo := class
+{
+	Types := HybridQueue.{FuncTemplateInput,10}
+	ResultType := FuncTemplateInput
+	IsVargs := bool
+}
+
 BoxFuncTemplateBody := class extend BoxFuncTemplate
 {
 	Attrs := FuncAttributes
@@ -39,9 +47,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	Name := StringSpan
 
-	Types := HybridQueue.{FuncTemplateInput,10}
-	ResultType := FuncTemplateInput
-	IsVargs := bool
+	//Types := HybridQueue.{FuncTemplateInput,10}
+	//ResultType := FuncTemplateInput
+	//IsVargs := bool
+
+	hData := FunctionHeaderInfo
 
 	IsVariadic := bool
 	VariadicName := StringSpan
@@ -73,7 +83,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if CurrentScope is in BoxClass //TODO not static,
 		{
 			cls := CurrentScope->{BoxClass^}
-			Types.Emplace(StringSpan("this"),cls.ItType,true,null)
+			hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null)
 			Attrs.IsMethod = true
 		}
 
@@ -84,14 +94,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if resTyp != null
 		{
-			ResultType.ItType = ParseType(resTyp)
-			ResultType.ItToken = resTyp
+			hData.ResultType.ItType = ParseType(resTyp)
+			hData.ResultType.ItToken = resTyp
 		}
 		checkBag := () ==> {
 			if bag.Size() == 1
 			{
 				assert(bag[0] is TokenIndent)
-				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+				hData.Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
 			}else if bag.Size() >= 2 {
 				if bag[1].GetValue() == "..."
 				{
@@ -113,7 +123,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 					if typ != null and IsComplexType(typ)
 						isRef = true
 
-					Types.Emplace(name,typ,isRef,bag[0])
+					hData.Types.Emplace(name,typ,isRef,bag[0])
 				}
 			}else{
 				assert(false)
@@ -149,8 +159,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
-		minArgs := Types.Size()
-		maxArgs := Types.Size()
+		minArgs := hData.Types.Size()
+		maxArgs := hData.Types.Size()
 		
 		if IsVariadic
 			maxArgs = 2000000 //INT_MAX
@@ -188,7 +198,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 
 		names := HybridQueue.{StringSpan,10}
-		names.Push(Types[^].Name)
+		names.Push(hData.Types[^].Name)
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 		newFunc.VariadicName = VariadicName
 
@@ -225,14 +235,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		for i : objs.Size()
 		{
-			if i >= Types.Size()
+			if i >= hData.Types.Size()
 			{
 				assert(IsVariadic)
 				fTyps[i] = objs[i].0
 			}else{
-				if Types[i].ItToken != null
+				if hData.Types[i].ItToken != null
 				{
-					fTyps[i] = checkType(objs[i].0,Types[i].ItToken,resCnsts)
+					fTyps[i] = checkType(objs[i].0,hData.Types[i].ItToken,resCnsts)
 				}
 			}
 		}
@@ -245,11 +255,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if IsComplexType(fTyps[i])
 				iRef[i] = true
 		}
-		resTypeT := ResultType.ItType
+		resTypeT := hData.ResultType.ItType
 		//if resTypeT == null
-			resTypeT = checkType(null,ResultType.ItToken,resCnsts)
+			resTypeT = checkType(null,hData.ResultType.ItToken,resCnsts)
 		assert(resTypeT != null)
-		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,ResultType.IsRef,IsVargs)
+		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}
 	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 	{
@@ -316,12 +326,12 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		if IsVariadic
 			return false
-		for it : Types
+		for it : hData.Types
 		{
 			if it.ItType == null
 				return false
 		}
-		if ResultType.ItType == null //todo? functions with auto return type
+		if hData.ResultType.ItType == null //todo? functions with auto return type
 			return false
 		if Constants[^].Value == null
 			return false
@@ -331,16 +341,16 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		fTyp := Type^[100]
 		isRef := bool[100]
-		for it,i : Types
+		for it,i : hData.Types
 		{
 			fTyp[i] = it.ItType
 			isRef[i] = it.IsRef
 		}
 
-		resFuncTyp := GetFuncType(Types.Size(),fTyp[0]&,isRef[0]&,ResultType.ItType,ResultType.IsRef,IsVargs)
+		resFuncTyp := GetFuncType(hData.Types.Size(),fTyp[0]&,isRef[0]&,hData.ResultType.ItType,hData.ResultType.IsRef,hData.IsVargs)
 
 		names := HybridQueue.{StringSpan,10}
-		names.Push(Types[^].Name)
+		names.Push(hData.Types[^].Name)
 		return new BoxFuncBody(resFuncTyp,Attrs,names,bdy)
 	}
 

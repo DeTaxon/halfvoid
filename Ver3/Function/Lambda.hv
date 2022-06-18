@@ -1,0 +1,11 @@
+BoxLambda := class extend BoxFuncBody
+{
+}
+
+BoxLambdaHolder := class extend BoxExeObj
+{
+	this := !(Token^ brackets, Token^ body) -> void
+	{
+		ObjType = GTypeBool //TODO : to type none
+	}
+}

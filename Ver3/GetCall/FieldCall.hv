@@ -26,6 +26,8 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			fld := cls.GetField(name)
 
 			if fld == null
+				return null //TODO use exception path
+			if fld == null
 				rObj.EmitError("Field not found")
 
 			itms := CheckExeDownList
