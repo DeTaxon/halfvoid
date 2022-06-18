@@ -18,14 +18,12 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		objs.Push(fncPtr)
 		objs.Push(GObjNull)
 
-		//tps := Type[2]
+		lst := List.{BoxExeConstObj^}
 
-		//tps[0] = objs[0].GetType()
-		//tps[1] = objs[1].GetType()
 
-		//GetFuncType(2,tps[0]&,null,)
+		newFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 
-		//TemplateInternalCreateLambda.CreateFunc()
+		return new BoxFuncCall(newFunc,objs)
 	}
 
 	return res
