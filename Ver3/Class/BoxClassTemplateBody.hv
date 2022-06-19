@@ -56,7 +56,10 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 			if it.0^ == inConsts^
 				return it.1
 		}
-
+		return CreateClass(inConsts,inpts)
+	}
+	CreateClass := virtual !(ConstantHolder^ inConsts,List.{BoxExeConstObj^} inpts) -> BoxClass^
+	{
 		namedConstants := AVLMap.{StringSpan,BoxUnit^}
 		TemplateCheckConstants(inpts,ItConstsTokens,namedConstants)
 
