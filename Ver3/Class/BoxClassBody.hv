@@ -118,8 +118,14 @@ BoxClassBody := class extend BoxClass
 		{
 			if iter.Down?.Right?.GetValue() == ":="
 			{
-				assert(iter.Down is TokenIndent) //TODO
-				name := iter.Down->{TokenIndent^}.Value
+				assert(iter.Down is TokenIndent or iter.Down is TokenString) //TODO
+				name := StringSpan
+				if iter.Down is TokenIndent
+				{
+					name = iter.Down->{TokenIndent^}.Value
+				}else{
+					name = iter.Down->{TokenString^}.Value
+				}
 
 				itm := iter.Down.Right.Right
 

@@ -81,6 +81,10 @@ TLambda := class .{@FuncPtr} extend TILambda
 	//{
 	//	return this.callFunc(this&,argc...)
 	//}
+	"()" := !() -> void
+	{
+		this.callFunc(this)
+	}
 }
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {
@@ -109,7 +113,7 @@ main := !(int argc, char^^ argv) -> int
 	x := () ==> {
 		printf("hey\n")
 	}
-	x^.callFunc(x)
+	x()
 	//printf("hey %i\n",x == true)
 	//{
 

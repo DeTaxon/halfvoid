@@ -45,7 +45,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 						tkn1.Line = itm.Line
 						vr := TryGetExeCall(tkn1&)
 
-						resTryCall = innerTryGetMethodCall(asInd.Value,vr,Objs,consts)
+						resTryCall = innerTryGetMethodCall(asInd.Value,vr,Objs,consts) //TODO: check for recursion this.func -> func -> this.func
 					}catch(IException^ e){}
 					if resTryCall != null
 						return resTryCall
@@ -66,6 +66,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	if dwnItem != null
 	{
 		return innerTryGetPtrCall(dwnItem,Objs)?
+		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
 	assert(false)
 }
@@ -81,6 +82,36 @@ innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
 			return new BoxFuncPointerCall(dwnItem,Objs)
 		}
 
+	}
+	return null
+}
+innerTryGetSkobCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+{
+	dType := dwnItem.GetType()
+	cls := BoxClass^
+	if dType is TypeClass
+	{
+		cls = dType->{TypeClass^}.ToClass
+	}else{
+		if dType is in TypePoint and dType.Base is TypeClass
+		{
+			cls = dType.Base->{TypeClass^}.ToClass
+		}
+	}
+	if cls != null
+	{
+		Objs2 := CheckExeDownList
+		Objs2.Push(dwnItem)
+		Objs2.Push(Objs[^])
+		resFunc := BoxFunc^
+		cls.GetMethods(StringSpan("()"), x ==> {
+			resFunc = GetBestFunc(x,Objs2,consts)->{BoxFunc^}
+		})
+		if resFunc != null
+		{
+			assert(resFunc is in BoxFunc) //TODO: template
+			return new BoxFuncCall(resFunc,Objs2)
+		}
 	}
 	return null
 }
