@@ -153,6 +153,10 @@ MemVar := class extend BoxUnit
 		Value = clFunc
 		debId = GetNewId()
 	}
+	GetVarType := !() -> Type^
+	{
+		return Value.GetType()->{TypeFunc^}.ResultType
+	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		assert(Value != null)

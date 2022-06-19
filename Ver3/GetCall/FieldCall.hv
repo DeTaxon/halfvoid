@@ -18,24 +18,42 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 	{
 		name := rObj->{TokenIndent^}.Value
 
+		cls := BoxClass^
 		typ := val.GetType()
+
 		if typ is TypeClass
 		{
-			cls := typ->{TypeClass^}.ToClass
+			cls = typ->{TypeClass^}.ToClass
+		}else{
+			if typ is in TypePoint and typ.Base is TypeClass
+			{
+				cls = typ.Base->{TypeClass^}.ToClass
+			}
+		}
+		if cls != null
+		{
 			cls.AwaitTypeState()
 			fld := cls.GetField(name)
 
-			if fld == null
-				return null //TODO use exception path
-			if fld == null
-				rObj.EmitError("Field not found")
+			//if fld == null
+			//	return null //TODO use exception path
+			//if fld == null
 
-			itms := CheckExeDownList
-			itms.Push(val)
-			return new BoxFuncCall(fld,itms)
+			if fld != null
+			{
+				itms := CheckExeDownList
+				itms.Push(val)
+				return new BoxFuncCall(fld,itms)
+			}
 		}
 	}
-	rObjVal := TryGetExeCall(rObj)
+
+	rObjVal := BoxExeObj^
+
+	try{
+		rObjVal = TryGetExeCall(rObj)
+	}catch(IException^ e) {}
+
 	if rObjVal? is BoxExeInt
 	{
 		fieldInd := rObjVal->{BoxExeInt^}.val
@@ -59,6 +77,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			return new BoxFuncCall(fld,itms)
 		}
 	}
+	rObj.EmitError("Field not found")
 
 	return null
 }

@@ -31,25 +31,34 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			fnc := par->{BoxFuncBody^}
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
-				tkn1 := TokenIndent(StringSpan("this"))
-				tkn2 := TokenSymbol(StringSpan("."),0)
-				tkn3 := TokenIndent(asItm.Value)
-				tknData := TokenData
+				clsType := fnc.Params[0].GetVarType()
+				assert(clsType is TypeClass)
+				cls := clsType->{TypeClass^}.ToClass
 
-
-				tknData.Down = tkn1&
-				tkn1.Right = tkn2&
-				tkn2.Right = tkn3&
-
-				tkn1.Line = itm.Line
-				tkn2.Line = itm.Line
-				tknData.Line = itm.Line
-
-				try
+				if cls.GetField(asItm.Value) != null //todo: could use field call ifrom here
 				{
-					return TryGetFieldCall(tknData&)?
-				}catch(IException^ e)
-				{}
+					tkn1 := TokenIndent(StringSpan("this"))
+					tkn2 := TokenSymbol(StringSpan("."),0)
+					tkn3 := TokenIndent(asItm.Value)
+					tknData := TokenData
+
+
+					tknData.Down = tkn1&
+					tkn1.Right = tkn2&
+					tkn2.Right = tkn3&
+
+					tkn1.Line = itm.Line
+					tkn2.Line = itm.Line
+					tknData.Line = itm.Line
+	
+					fCall := BoxExeObj^
+					try
+					{
+						fCall = TryGetFieldCall(tknData&)
+					}catch(IException^ e)
+					{}
+					return fCall?
+				}
 			}
 		}
 	}

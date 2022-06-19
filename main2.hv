@@ -90,7 +90,7 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{FuncPtr}^
 {
 	result = new TLambda.{FuncPtr}
-	result^.callFunc = fnc
+	result.callFunc = fnc
 }
 
 //TLambdaImplementation := class .{@Captures} extend TLambda
@@ -109,6 +109,7 @@ main := !(int argc, char^^ argv) -> int
 	x := () ==> {
 		printf("hey\n")
 	}
+	x^.callFunc(x)
 	//printf("hey %i\n",x == true)
 	//{
 
