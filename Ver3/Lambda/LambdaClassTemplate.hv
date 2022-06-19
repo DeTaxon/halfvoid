@@ -12,22 +12,10 @@ LambdaClassTemplate := class extend BoxClassTemplateBody
 			assert(typ is in TypePoint and typ.Base is TypeFunc)
 
 			fType := typ.Base->{TypeFunc^}
-
-			types := Type^[100]
-			refs := bool[100]
-
-			types[0] = res.ItType
-			refs[0] = true
-
-			for i : fType.Params.Size()
-			{
-				types[i+1] = fType.Params[i].ItType
-				refs[i+1] = fType.Params[i].IsRef
-			}
-			newType := GetFuncType(fType.Params.Size() + 1, types[0]&,refs[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
+			newFType := FuncTypeSetParam(fType,0,res.ItType,true)
 
 			consts := List.{BoxExeConstObj^}
-			newFunc := TemplateInternalLambdaCall.CreateFunc(newType,consts)
+			newFunc := TemplateInternalLambdaCall.CreateFunc(newFType,consts)
 
 			res.Methods[StringSpan("()")].Push(newFunc)
 		}
