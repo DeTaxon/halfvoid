@@ -90,8 +90,7 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{FuncPtr}^
 {
 	result = new TLambda.{FuncPtr}
-	//result.callFunc = fnc
-	fnc(null)
+	result^.callFunc = fnc
 }
 
 //TLambdaImplementation := class .{@Captures} extend TLambda
