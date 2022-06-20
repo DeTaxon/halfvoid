@@ -117,5 +117,10 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 
 main := !(int argc, char^^ argv) -> int
 {
+	z := () ==> {
+		printf("wow\n")
+	}
+	z()
+	z()
 	return 0
 }
