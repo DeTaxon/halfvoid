@@ -7,6 +7,8 @@ BoxBlock := class extend BoxUnit
 	
 	tempVars := List.{BoxFunc^}
 
+	returnLabel := BoxLabel^
+
 	CreateTempVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
 		assert(isRef == false)

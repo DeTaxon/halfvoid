@@ -55,6 +55,16 @@ internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
 	printf("here\n")
 }
 
+internalHVSetArrayNull := !(TGCIObject^^ arrs, int start, int end) -> void
+{
+	i := end
+	while i >= start
+	{
+		arrs[i] = null
+		i -= 1
+	}
+}
+
 internalHVGetDepth := !() -> int
 {
 }
@@ -107,21 +117,5 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 
 main := !(int argc, char^^ argv) -> int
 {
-	//{
-	x := (int x) ==> {
-		printf("hey %i\n",x)
-	}
-	x(1)
-	x(2)
-	//}
-	//printf("hey %i\n",x == true)
-	//{
-
-	//	//l := () ==> {
-	//	//	printf("hi\n")
-	//	//}
-	//	//l()
-	//	//l()
-	//}
 	return 0
 }
