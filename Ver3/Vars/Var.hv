@@ -132,9 +132,9 @@ TemplateTypeVar := class extend BoxUnit
 ConstVar := class extend BoxUnit
 {
 	Name := StringSpan
-	Value := BoxExeObj^
+	Value := BoxExeConstObj^
 
-	this := !(StringSpan vName, BoxExeObj^ clFunc) -> void
+	this := !(StringSpan vName, BoxExeConstObj^ clFunc) -> void
 	{
 		Name = vName
 		Value = clFunc

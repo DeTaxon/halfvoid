@@ -2,9 +2,10 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 {
 	if tk is TokenTemplateType
 	{
+		if tp == null
+			return null
 		nm := tk->{TokenTemplateType^}.Value[1..0]
 		//TODO: resConsts.Push()
-		assert(tp != null)
 		if resCnsts.Contain(nm)
 		{
 			if resCnsts[nm] is ConstType
@@ -25,6 +26,11 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		//lType := checkType(null,tk.Down,resCnsts) //TODO: do something with null, so i could use @Tepl.{@arg}
 		//if lType == null
 		//	return null
+
+		if not (tk.Down is TokenIndent)
+		{
+			return null
+		}
 		assert(tk.Down is TokenIndent)
 		if tp == null
 		{
@@ -62,8 +68,8 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 	}
 	if tk is TokenIndent
-	{
-		dwnTp := ParseType(tk)
+	{	
+		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
 		if dwnTp == null
 		{
 			name := tk->{TokenIndent^}.Value
@@ -96,7 +102,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			return null
 		return resTyp2.GetPoint()
 	}
-	assert(false)
+	//assert(false)
 	return null
 }
 CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxUnit^} resCnsts) -> BoxExeConstObj^
@@ -109,7 +115,17 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		{
 			return resCnsts[name]->{BoxExeConstObj^}
 		}
+		glb := TypeGetGlobalByIndent(name)
+		if glb != null
+		{
+			if glb is ConstVar
+				return glb->{ConstVar^}.Value
+			if glb is TypeVar
+				return GetConstType(glb->{TypeVar^}.Value)
+			assert(glb is in BoxExeConstObj)
+			return glb->{BoxExeConstObj^}
+		}
 	}
-	assert(false)
+	//assert(false)
 	return null
 }
