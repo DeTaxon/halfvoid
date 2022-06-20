@@ -84,15 +84,15 @@ BoxExeBool := class extend BoxExeConstObj
 }
 BoxExeInt := class extend BoxExeConstObj
 {
-	val := int
+	Value := int
 	this := !(int nVal) -> void
 	{
-		val = nVal
+		Value = nVal
 		ObjType = GTypeInt
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
-		f^ << val
+		f^ << Value
 	}
 }
 BoxExeDouble := class extend BoxExeConstObj

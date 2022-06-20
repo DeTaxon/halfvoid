@@ -115,8 +115,6 @@ ParseType := !(Token^ obj) -> Type^
 	//			return dTyp.GetPoint()
 	//	}
 	//}
-
-	return null
 }
 
 TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^

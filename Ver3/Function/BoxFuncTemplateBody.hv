@@ -174,11 +174,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resTypeT := hData.ResultType.ItType
 		//if resTypeT == null
 			resTypeT = checkType(null,hData.ResultType.ItToken,resCnsts)
-		//if resTypeT == null
-		//{
-		//	printf("------------------------\n")
-		//	hData.ResultType.ItToken.Print(0)
-		//}
 		assert(resTypeT != null)
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}

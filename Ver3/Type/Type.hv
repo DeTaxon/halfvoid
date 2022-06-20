@@ -4,6 +4,7 @@ Type := class {
 	Base := Type^
 	AsPoint := Type^
 	ItHash := int
+	arrays := AVLMap.{int,Type^}
 
 	GetType := virtual !() -> string
 	{
@@ -14,6 +15,14 @@ Type := class {
 		if AsPoint == null
 			AsPoint = new TypePoint(this&)
 		return AsPoint
+	}
+	GetArray := virtual !(int len) -> Type^
+	{
+		if arrays.Contain(len)
+			return arrays[len]
+		newEl := new TypeArr(this&,len)
+		arrays[len] = newEl
+		return newEl
 	}
 
 	GetAlign := virtual !() -> int
@@ -128,6 +137,53 @@ TypeStandard := class extend Type
 	{
 		assert(DebugMode)
 		f^ << "!" << MetaId << " = " << MetaInfo << "\n"
+	}
+}
+
+TypeArr := class extend Type
+{
+	len := int
+	this := !(Type^ nBase,int si) -> void
+	{
+		Base = nBase
+		ItHash = nBase.ItHash*11
+		len = si
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "array"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return Base.GetAlign()
+	}
+	GetSize := virtual !() -> int
+	{
+		return Base.GetSize()*len
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "["
+		f^ << len
+		f^ << " x "
+		Base.PrintType(f)
+		f^ << "]"
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintDebugName(f)
+		f^ << "^"
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		nId := GetNewId()
+		f^ << "!" << nId << " = !DISubrange(count: " << len << ")\n"
+		f^ << "!" << MetaId << " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" << Base.MetaId << ", size: " << GetSize()*8 << ", elements: !{!" << nId << "}" << ")\n"
 	}
 }
 

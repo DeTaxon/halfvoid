@@ -56,7 +56,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 
 	if rObjVal? is BoxExeInt
 	{
-		fieldInd := rObjVal->{BoxExeInt^}.val
+		fieldInd := rObjVal->{BoxExeInt^}.Value
 
 		typ := val.GetType()
 		if typ is TypeClass or typ.Base? is TypeClass

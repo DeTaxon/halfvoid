@@ -67,6 +67,26 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		}
 
 	}
+	if tk.Down?.Right?.GetValue() == "[]"
+	{
+		dTyp := CheckTemplateType(null,tk.Down,resCnsts) //TODO: unnull
+		if dTyp == null
+			return null
+		if tk.Down.Right.Down == null //TODO: array?
+			return null
+		if tk.Down.Right.Down.Right != null
+			return null
+
+		cnstVal := CheckTemplateConst(null,tk.Down.Right.Down,resCnsts)
+		if cnstVal == null
+			return null
+		if cnstVal is BoxExeInt
+		{
+			num := cnstVal->{BoxExeInt^}.Value
+			return dTyp.GetArray(num)
+		}
+		return null
+	}
 	if tk is TokenIndent
 	{	
 		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
@@ -125,6 +145,11 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 			assert(glb is in BoxExeConstObj)
 			return glb->{BoxExeConstObj^}
 		}
+	}
+	if itm is TokenInt
+	{
+		val := itm->{TokenInt^}.Parsed
+		return GetExeInt(val)
 	}
 	//assert(false)
 	return null
