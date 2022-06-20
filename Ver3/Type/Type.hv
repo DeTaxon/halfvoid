@@ -49,6 +49,12 @@ Type := class {
 		GRefTypes[this&] = nRef
 		return nRef
 	}
+	GetBADStr := !() -> char^
+	{
+		ec := TEchoStream
+		PrintDebugName(ec&)
+		return ec.Str()
+	}
 }
 
 TypeDef := class

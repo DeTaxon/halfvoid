@@ -105,7 +105,7 @@ BoxClassBody := class extend BoxClass
 			asClsParent := inhType->{TypeClass^}
 			Parents.Push(asClsParent.ToClass)
 		}
-		//PrimeParentStep()
+		PrimeParentStep()
 		VParentState.Emit()
 
 		CurrentScope = this&

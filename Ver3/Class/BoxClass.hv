@@ -46,7 +46,9 @@ BoxClass := class extend BoxUnit
 				if needComma
 					f^ << ","
 				needComma = true
-				FieldsPath[i].Field.Value.PrintType(f)
+				typ := FieldsPath[i].Field.Value
+				typ = NormalizeType(typ)
+				typ.PrintType(f)
 			}
 		}
 		f^ << "}\n"
@@ -105,14 +107,15 @@ BoxClass := class extend BoxUnit
 	{
 		if Parents.Size() == 0
 		{
-			PrimeParents.Push(!{this&,this&,0})
+			PrimeParents.Emplace(this&,this&,0)
 		}else
 		{
 			for par : Parents
 			{
+				par.AwaitParentStep()
 				for pp : par.PrimeParents
 				{
-					PrimeParents.Push(!{pp.0,par,pp.2 + 1}) //todo Remove duplicates
+					PrimeParents.Emplace(pp.0,par,pp.2 + 1) //todo Remove duplicates
 				}
 			}
 		}

@@ -52,6 +52,7 @@ internalHVDelete := !(@T^ x) -> void
 internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
 {
 	itm1 = null->{TGCIObject^}
+	printf("here\n")
 }
 
 internalHVGetDepth := !() -> int
@@ -106,11 +107,13 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := () ==> {
-		printf("hey\n")
+	//{
+	x := (int x) ==> {
+		printf("hey %i\n",x)
 	}
-	x()
-	x()
+	x(1)
+	x(2)
+	//}
 	//printf("hey %i\n",x == true)
 	//{
 

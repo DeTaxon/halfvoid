@@ -185,6 +185,15 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 	f^ << "\n"
 }
 
+NormalizeType := !(Type^ oldType) -> Type^
+{
+	if oldType is in TypePoint and oldType.Base is TypeFunc
+	{
+		return NormalizeFuncType(oldType.Base->{TypeFunc^}).GetPoint()
+	}
+	return oldType
+}
+
 NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 {
 	if inp.ResultType.IsComplexReturn()
