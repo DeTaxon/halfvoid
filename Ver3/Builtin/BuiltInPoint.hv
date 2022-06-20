@@ -4,6 +4,7 @@ CreateBuiltinsPoint := !() -> void
 	bSpace := CodeSpaces[-1]&
 
 	bSpace.Templates[StringSpan("=")].Push(new PointStoreTemplate())
+	bSpace.Templates[StringSpan("[]")].Push(new PointArrayGetTemplate())
 
 
 	x := GTypeVoidP
@@ -36,4 +37,55 @@ PointStoreTemplate := class extend BoxFuncTemplate
 	}
 }
 
+PointArrayGetTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		a := objs[0].GetType()
+		if a is in TypePoint
+		{
+			return GetFuncType(2,![a,GTypeInt],null,a.Base,true,false)
+		}
+		return null
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return new BuiltInPointGetItem(tp)
+	}
+}
+
+BuiltInPointGetItem := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ iType) -> void
+	{
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintPre(f)
+		
+		tFunc := GetType()->{TypeFunc^}
+		tp := tFunc.Params[0].ItType
+		bs := tp.Base
+
+		f^ << "%T" << resId << " = getelementptr " 
+		bs.PrintType(f)
+		f^ << " , "
+		tp.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << " , i32 0,  "
+		lst[1].GetType().PrintType(f)
+		f^ << " "
+		lst[1].PrintUse(f)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 

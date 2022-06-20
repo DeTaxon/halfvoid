@@ -20,5 +20,18 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 
 		return new BoxQuestionPointer(cl)
 	}
+	if oper == "[]"
+	{
+		Objs := CheckExeDownList
+		
+		dObj := TryGetExeCall(itm.Down)
+		if dObj == null
+			return null
+		Objs.Push(dObj)
+		CheckFuncCallBrackets(itm.Down.Right,Objs)
+
+		return CreateFuncCall(StringSpan("[]"),Objs)
+
+	}
 	return null
 }

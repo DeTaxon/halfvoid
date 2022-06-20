@@ -166,6 +166,10 @@ TypeArr := class extend Type
 	{
 		return Base.GetSize()*len
 	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		return true
+	}
 	PrintType := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "["
