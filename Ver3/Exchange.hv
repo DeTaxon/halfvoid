@@ -7,6 +7,10 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 		{
 			return new RefExchange(obj,expType)
 		}
+		if inType is TypeArr and expType is in TypePoint
+		{
+			return new ArrToPtr(obj,expType)
+		}
 	}
 
 	if inType is in TypePoint and inType.Base is TypeClass and expType is TypeClass
@@ -155,6 +159,38 @@ PtrRefExchange := class extend PtrExchange
 
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%T" << resId
+	}
+}
+ArrToPtr := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = obj.GetType().Base.GetPoint()
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		inType := Down.GetType()
+		Down.PrintPointPre(f)
+		f^ << "%T" << resId << " = getelementptr "
+		inType.PrintType(f)
+		f^ << " , "
+		inType.GetPoint().PrintType(f)
+		f^ << " "
+		Down.PrintPointUse(f)
+		f^ << " , i32 0, i32 0"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}

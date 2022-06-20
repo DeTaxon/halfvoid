@@ -117,10 +117,6 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 
 main := !(int argc, char^^ argv) -> int
 {
-	x := int[20]
-	y := int^
-	y[0] = 13
-
 	z := () ==> {
 		printf("wow\n")
 	}

@@ -64,6 +64,7 @@ BoxFuncCall := class extend BoxExeObj
 				while newObj.GetType() != par.ItType
 				{
 					newObj = GetExchange(newObj,par.ItType) //TODO limit to some value
+					assert(newObj != null)
 				}
 				downs[i] = newObj
 			}

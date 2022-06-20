@@ -348,6 +348,11 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 			return 1000 //TODO rethink
 	}
 
+	if frm is TypeArr and to is in TypePoint and frm.Base == to.Base
+	{
+		return 1000
+	}
+
 	if toIsMem //!!!!IMPORTANT PART
 	{
 		if frm is TypeClass and to is TypeClass

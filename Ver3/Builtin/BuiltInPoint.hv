@@ -47,8 +47,9 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 		if objs.Size() != 2
 			return null
 		a := objs[0].GetType()
-		if a is in TypePoint
+		if a is in TypePoint or a is TypeArr
 		{
+			a = a.Base.GetPoint()
 			return GetFuncType(2,![a,GTypeInt],null,a.Base,true,false)
 		}
 		return null
@@ -79,7 +80,7 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 		tp.PrintType(f)
 		f^ << " "
 		lst[0].PrintUse(f)
-		f^ << " , i32 0,  "
+		f^ << " ,  "
 		lst[1].GetType().PrintType(f)
 		f^ << " "
 		lst[1].PrintUse(f)
