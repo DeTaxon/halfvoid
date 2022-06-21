@@ -1,4 +1,6 @@
-
-NotifyDeferUse := !() -> void
+IsGCPtr := !(Type^ typ) -> bool
 {
+	if typ is in TypePoint and typ.IsComplexReturn()
+		return true
+	return false
 }

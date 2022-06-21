@@ -10,6 +10,8 @@ ErrorState := bool
 
 GParsedAllFiles := THatch
 
+GCVarsInUse := task_local int
+
 GDebugFileId := task_local int
 GDebugFuncId := task_local int
 GDebugScopeId := task_local int

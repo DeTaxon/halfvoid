@@ -33,15 +33,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			return new GlobalVar(name,varType)
 		}else{
 			assert(CurrentScope is in BoxFunc) 
-			vr := ParamFunc^
-			isGC := varType is in TypePoint and TypeFight(varType.Base,GCType) == GCType
-			if isGC
-			{
-				vr = CreateTempVar(varType,false)
-			}else{
-				vr = new FuncLocalParam(name,varType)
-			}
-			return new MemVar(name,vr)
+			vr := CreateVar(varType,false)
+			return new MemVarBorrowed(name,vr)
 		}
 	}
 
@@ -79,14 +72,9 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			vr := ParamFunc^ 
 			isGC := IsGCPtr(exeObj.GetType())
 			mVar := MemVar^
-			if isGC
-			{
-				vr = CreateTempVar(exeObj.GetType(),false)
-				mVar = new MemVarBorrowed(name,vr)
-			}else{
-				vr = new FuncLocalParam(name,exeObj.GetType())
-				mVar = new MemVar(name,vr)
-			}
+
+			vr = CreateVar(exeObj.GetType(),false)
+			mVar = new MemVarBorrowed(name,vr)
 
 			objs := CheckExeDownList
 			objs2 := CheckExeDownList

@@ -1,21 +1,34 @@
 BoxBlock := class extend BoxUnit
 {
 	MetaId := int
+	GCInUseBefore := int
 	down := Token^
 	ItLine := FileLine^
 	exeLines := List.{BoxUnit^} //TODO : to hybrid
 	
-	tempVars := List.{BoxFunc^}
+	simpleVars := List.{BoxFunc^}
+	gcVars := List.{BoxFunc^}
 
 	returnLabel := BoxLabel^
 
-	CreateTempVar := !(Type^ varType, bool isRef) -> ParamFunc^
+	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
 		assert(isRef == false)
 
-		newVar := new FuncLocalParam(StringSpan("HiddenParam"),varType)
-		tempVars.PushFront(newVar)
-		return newVar
+		if IsGCPtr(varType)
+		{
+			GCVarsInUse += 1
+
+			newVar := new FuncLocalParam(StringSpan("HiddenParam"),varType)
+			gcVars.PushFront(newVar)
+			return newVar
+		}
+
+		newVar2 := new FuncLocalParam(StringSpan("HiddenParam"),varType)
+		simpleVars.PushFront(newVar2)
+		return newVar2
+
+		assert(false)
 	}
 
 	this := !(Token^ bdy) -> void
@@ -33,6 +46,10 @@ BoxBlock := class extend BoxUnit
 		iter := down.Down
 		stackAtStart := UnitStack.Size()
 		UnitStack.PushFront(this&)
+
+		GCInUseBefore = GCVarsInUse
+		defer GCVarsInUse = GCInUseBefore
+
 
 		while iter != null
 		{
@@ -85,7 +102,7 @@ BoxBlock := class extend BoxUnit
 			iter = iter.Right
 		}
 
-		for it : tempVars
+		for it : gcVars
 		{
 			tp := it.GetType()->{TypeFunc^}.ResultType
 			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
@@ -123,7 +140,8 @@ BoxBlock := class extend BoxUnit
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 
-		tempVars[^].PrintCode(f)
+		simpleVars[^].PrintCode(f)
+		gcVars[^].PrintCode(f)
 
 		exeLines[^].PrintCode(f)
 
@@ -151,12 +169,13 @@ BoxBlock := class extend BoxUnit
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 		
-		tempVars[^].PrintDebugMeta(f)
+		simpleVars[^].PrintDebugMeta(f)
+		gcVars[^].PrintDebugMeta(f)
 		exeLines[^].PrintDebugMeta(f)
 	}
 }
 
-CreateTempVar := !(Type^ typ, bool isRef) -> ParamFunc^
+CreateVar := !(Type^ typ, bool isRef) -> ParamFunc^
 {
 	assert(isRef == false)
 
@@ -164,7 +183,7 @@ CreateTempVar := !(Type^ typ, bool isRef) -> ParamFunc^
 	{
 		if it is in BoxBlock
 		{
-			return it->{BoxBlock^}.CreateTempVar(typ,isRef)
+			return it->{BoxBlock^}.CreateVar(typ,isRef)
 		}
 	}
 	assert(false)

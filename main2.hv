@@ -52,7 +52,6 @@ internalHVDelete := !(@T^ x) -> void
 internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
 {
 	itm1 = null->{TGCIObject^}
-	printf("here\n")
 }
 
 internalHVSetArrayNull := !(TGCIObject^^ arrs, int start, int end) -> void
@@ -117,6 +116,8 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 
 main := !(int argc, char^^ argv) -> int
 {
+	x := int
+	x = 0
 	z := () ==> {
 		printf("wow\n")
 	}

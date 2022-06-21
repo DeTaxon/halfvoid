@@ -25,7 +25,7 @@ BoxFuncCall := class extend BoxExeObj
 
 		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 		{
-			resVar := CreateTempVar(fType.ResultType,false)
+			resVar := CreateVar(fType.ResultType,false)
 			emptyDwn := CheckExeDownList
 			downs.Push(new BoxFuncCall(resVar,emptyDwn))
 
