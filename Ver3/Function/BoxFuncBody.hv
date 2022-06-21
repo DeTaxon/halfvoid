@@ -22,6 +22,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	ExitLabel := BoxLabel^
 
+	gcVarsCount := int
+	gcArrayVar := ParamFunc^
+
+	NotifyGCUsed := !() -> void 
+	{	
+		gcVarsCount = max(gcVarsCount,GCVarsInUse)
+	}
+
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
 	{
 		Name = "anon"
@@ -123,6 +131,10 @@ BoxFuncBody := class extend BoxFuncCommon
 		UnitStack.PushFront(this&)
 		defer readyState.Emit()
 
+		oldFunc := CurrentFunc
+		defer CurrentFunc = oldFunc
+		CurrentFunc = this&
+
 		UnitStack.PushFront(ConstVars[^])
 
 		OutputName = GetFuncMangle(Name)
@@ -138,6 +150,12 @@ BoxFuncBody := class extend BoxFuncCommon
 		
 		body = new BoxBlock(bdy)
 		body.Work()
+
+		if gcVarsCount != 0
+		{
+			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
+			x := GTypeVoidP.GetArray(gcVarsCount)
+		}
 	}
 	WaitReadyState := virtual !() -> void
 	{
@@ -173,6 +191,31 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "\n"
 		f^ << "{\n"
 
+		if gcVarsCount != 0
+		{
+			lPar := FuncLocalParam(StringSpan(""),GTypeVoidP.GetArray(gcVarsCount))
+
+			lPar.PrintCode(f)
+
+			tp := GTypeVoidP.GetArray(gcVarsCount)
+			f^ << "%GCArrayPre = getelementptr "
+			tp.PrintType(f)
+			f^ << " , "
+			tp.PrintType(f)
+			f^ << "* "
+			lPar.PrintResultObj(f,0,0)
+			f^ << " , i32 0, i32 0"
+			if DebugMode
+				f^ << " , !dbg !" << GDebugLineCallId
+			f^ <<"\n"
+
+			f^ << "%GCArray = bitcast i8** %GCArrayPre to "
+			GCType.PrintType(f)
+			f^ << "**"
+			if DebugMode
+				f^ << " , !dbg !" << GDebugLineCallId
+			f^ <<"\n"
+		}
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 

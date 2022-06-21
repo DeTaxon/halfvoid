@@ -1,0 +1,49 @@
+FuncGCLocalParam := class extend ParamFunc
+{
+	pType := Type^
+	varId := int
+	gcIndex := int
+
+	this := !(Type^ tp,int gcInd) -> void
+	{
+		gcIndex = gcInd
+		pType = tp
+		varId = GetNewId()
+		SetType(GetFuncType(0,null,null,pType,true,false))
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		gPtr := GCType.GetPoint()
+		f^ << "%VTemp" << varId << " = getelementptr "
+		gPtr.PrintType(f)
+		f^ << " , "
+		gPtr.PrintType(f)
+		f^ << "* %GCArray , i32 " << gcIndex
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "%V" << varId << " = bitcast "
+		GCType.PrintType(f)
+		f^ << "** %VTemp" << varId <<" to "
+		pType.PrintType(f)
+		f^ << "*"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		f^ << "%V" << varId 
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+}

@@ -17,9 +17,13 @@ BoxBlock := class extend BoxUnit
 
 		if IsGCPtr(varType)
 		{
+			gcIndex := GCVarsInUse
 			GCVarsInUse += 1
 
-			newVar := new FuncLocalParam(StringSpan("HiddenParam"),varType)
+			assert(CurrentFunc is BoxFuncBody)
+			CurrentFunc->{BoxFuncBody^}.NotifyGCUsed()
+
+			newVar := new FuncGCLocalParam(varType,gcIndex)
 			gcVars.PushFront(newVar)
 			return newVar
 		}
@@ -27,8 +31,6 @@ BoxBlock := class extend BoxUnit
 		newVar2 := new FuncLocalParam(StringSpan("HiddenParam"),varType)
 		simpleVars.PushFront(newVar2)
 		return newVar2
-
-		assert(false)
 	}
 
 	this := !(Token^ bdy) -> void
@@ -127,15 +129,6 @@ BoxBlock := class extend BoxUnit
 		if exeLines.Size() == 0
 			return void
 
-		cmpId := 0 //GetNewId()
-		if cmpId != 0
-		{
-			f^ << "%T" << cmpId << " = call i32@internalHVGetDepth()"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			"\n"
-		}
-
 		oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
@@ -144,14 +137,6 @@ BoxBlock := class extend BoxUnit
 		gcVars[^].PrintCode(f)
 
 		exeLines[^].PrintCode(f)
-
-		if cmpId != 0
-		{
-			f^ << "call void@internalHVSetDepth(i32 %T" << cmpId << ")"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-		}
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
