@@ -28,7 +28,7 @@ BoxBlock := class extend BoxUnit
 			return newVar
 		}
 
-		newVar2 := new FuncLocalParam(StringSpan("HiddenParam"),varType)
+		newVar2 := new FuncLocalParam(varType)
 		simpleVars.PushFront(newVar2)
 		return newVar2
 	}

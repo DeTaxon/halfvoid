@@ -1,12 +1,10 @@
 FuncLocalParam := class extend ParamFunc
 {
-	varName := StringSpan
 	pType := Type^
 	varId := int
 
-	this := !(StringSpan name,Type^ tp) -> void
+	this := !(Type^ tp) -> void
 	{
-		varName = name
 		pType = tp
 		varId = GetNewId()
 		SetType(GetFuncType(0,null,null,pType,true,false))

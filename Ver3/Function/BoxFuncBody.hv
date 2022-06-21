@@ -57,7 +57,7 @@ BoxFuncBody := class extend BoxFuncCommon
 				rv := new FuncInputParam(this&,resSpn,tp.ResultType,true,StringSpan("%result"))
 				ResultVar = new MemVar(resSpn,rv)
 			}else{
-				rFnc := new FuncLocalParam(resSpn,tp.ResultType)
+				rFnc := new FuncLocalParam(tp.ResultType)
 				ResultVar = new MemVar(resSpn,rFnc)
 			}
 		}
@@ -153,8 +153,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if gcVarsCount != 0
 		{
-			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 			x := GTypeVoidP.GetArray(gcVarsCount)
+			//gcArrayVar = new FuncLocalParam(StringSpan(""),x)
+			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
 	}
 	WaitReadyState := virtual !() -> void
@@ -193,7 +194,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if gcVarsCount != 0
 		{
-			lPar := FuncLocalParam(StringSpan(""),GTypeVoidP.GetArray(gcVarsCount))
+			lPar := FuncLocalParam(GTypeVoidP.GetArray(gcVarsCount))
 
 			lPar.PrintCode(f)
 
