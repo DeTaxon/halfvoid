@@ -22,7 +22,7 @@ FuncGCLocalParam := class extend ParamFunc
 		gPtr.PrintType(f)
 		f^ << " , "
 		gPtr.PrintType(f)
-		f^ << "* %GCArray , i32 " << gcIndex
+		f^ << "* %GCArrayPtr , i32 " << gcIndex
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"

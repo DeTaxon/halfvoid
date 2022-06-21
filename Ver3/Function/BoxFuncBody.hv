@@ -24,10 +24,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	gcVarsCount := int
 	gcArrayVar := ParamFunc^
+	gcArrayPtr := ParamFunc^
 
 	NotifyGCUsed := !() -> void 
 	{	
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
+
+		if gcArrayPtr == null
+			gcArrayPtr = new FuncInputParam(this&,StringSpan("GCArrayPtr"),GCType.GetPoint().GetPoint(),false,StringSpan("%GCArrayPtr"))
 	}
 
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
@@ -154,7 +158,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if gcVarsCount != 0
 		{
 			x := GTypeVoidP.GetArray(gcVarsCount)
-			//gcArrayVar = new FuncLocalParam(StringSpan(""),x)
+			//gcArrayVar = new FuncLocalParam(x)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
 	}
@@ -210,7 +214,7 @@ BoxFuncBody := class extend BoxFuncCommon
 				f^ << " , !dbg !" << GDebugLineCallId
 			f^ <<"\n"
 
-			f^ << "%GCArray = bitcast i8** %GCArrayPre to "
+			f^ << "%GCArrayPtr = bitcast i8** %GCArrayPre to "
 			GCType.PrintType(f)
 			f^ << "**"
 			if DebugMode

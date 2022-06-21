@@ -2,16 +2,31 @@ BoxReturn := class extend BoxExeObj
 {
 	EndLabel := BoxLabel^
 	ResultCall := BoxExeObj^
+	cleanupCall := BoxExeObj^
 	this := !(BoxLabel^ l,BoxExeObj^ rc) -> void
 	{
 		EndLabel = l
 		ObjType = GTypeVoid
 		ResultCall = rc
+
+		if GCVarsInUse != 0
+		{
+			objs := CheckExeDownList
+			gcPtr := CurrentFunc->{BoxFuncBody^}.gcArrayPtr
+			assert(gcPtr != null)
+			getGCPtr := new BoxFuncCall(gcPtr,objs)
+
+			objs.Push(getGCPtr)
+			objs.Push(GetExeInt(0))
+			objs.Push(GetExeInt(GCVarsInUse - 1))
+
+			cleanupCall = new BoxFuncCall(GFuncGCSetNullArray,objs)
+		}
 	}
 	PrintDefaultUse := virtual !(TIOStream^ f) -> void
 	{
-		if ResultCall != null
-			ResultCall.PrintDefaultUse(f)
+		ResultCall?.PrintDefaultUse(f)
+		cleanupCall?.PrintDefaultUse(f)
 		EndLabel.PrintGo(f)
 	}
 }

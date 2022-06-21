@@ -54,7 +54,7 @@ internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
 	itm1 = null->{TGCIObject^}
 }
 
-internalHVSetArrayNull := !(TGCIObject^^ arrs, int start, int end) -> void
+internalHVGCSetNullArray := !(TGCIObject^^ arrs, int start, int end) -> void
 {
 	i := end
 	while i >= start

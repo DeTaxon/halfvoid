@@ -12,6 +12,7 @@ GFuncGetDepth := BoxFunc^
 GFuncSetDepth := BoxFunc^
 GFuncPushGCObject := BoxFunc^
 GFuncGCSetNull := BoxFunc^
+GFuncGCSetNullArray := BoxFunc^
 
 GCType := Type^
 
@@ -67,6 +68,7 @@ InitInternals := !() -> void
 	GFuncGetDepth = intGetFunc("internalHVGetDepth")
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
+	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
 	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
 
 	cName := TokenIndent(StringSpan("TGCIObject"))
