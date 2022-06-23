@@ -1,13 +1,10 @@
 FuncLocalParam := class extend ParamFunc
 {
-	pType := Type^
-	varId := int
-
 	this := !(Type^ tp) -> void
 	{
-		pType = tp
-		varId = GetNewId()
-		SetType(GetFuncType(0,null,null,pType,true,false))
+		parentFunc = CurrentFunc
+		irName = GetLVarName(GetNewId())
+		SetType(GetFuncType(0,null,null,tp,true,false))
 
 		if tp is TypeClass
 		{
@@ -30,7 +27,10 @@ FuncLocalParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		f^ << "%V" << varId << " = alloca "
+
+		pType := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%" << irName << " = alloca "
 		pType.PrintType(f)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
@@ -42,20 +42,20 @@ FuncLocalParam := class extend ParamFunc
 			pType.PrintType(f)
 			f^ << " 0, "
 			pType.PrintType(f)
-			f^ << "* %V" << varId
+			f^ << "* %" << irName
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
 		}else //if pType is TypeClass
 		{
-			f^ << "%Void" << varId << " = bitcast "
+			f^ << "%Void" << irName << " = bitcast "
 			pType.PrintType(f)
-			f^ << "* %V" << varId << " to i8*"
+			f^ << "* %" << irName << " to i8*"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
 
-			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << varId << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << irName << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
@@ -64,7 +64,7 @@ FuncLocalParam := class extend ParamFunc
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		f^ << "%V" << varId 
+		f^ << "%" << irName 
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
@@ -73,3 +73,10 @@ FuncLocalParam := class extend ParamFunc
 	{
 	}
 }
+GetLVarName := !(int x) -> StringSpan
+{
+	buff := char[100]
+	sprintf(buff[0]&,"Var%i",x)
+	result = GetConstString(buff[0]&)
+}
+

@@ -31,7 +31,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
 
 		if gcArrayPtr == null
-			gcArrayPtr = new FuncInputParam(this&,StringSpan("GCArrayPtr"),GCType.GetPoint().GetPoint(),false,StringSpan("%GCArrayPtr"))
+			gcArrayPtr = new FuncInputParam(GCType.GetPoint().GetPoint(),false,StringSpan("%GCArrayPtr"))
 	}
 
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
@@ -48,7 +48,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			name := StringSpan("")
 			if i < names.Size()
 				name = names[i]
-			parObj := new FuncInputParam(this&,name,par.ItType,par.IsRef,GetParSpan(i))
+			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
 			vr := new MemVar(name,parObj)
 			Params.Push(vr)
 		}
@@ -58,7 +58,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
 			{
-				rv := new FuncInputParam(this&,resSpn,tp.ResultType,true,StringSpan("%result"))
+				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
 				ResultVar = new MemVar(resSpn,rv)
 			}else{
 				rFnc := new FuncLocalParam(tp.ResultType)

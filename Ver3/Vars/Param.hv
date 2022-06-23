@@ -2,6 +2,8 @@ ParamFunc := class extend BoxFuncCommon
 {
 	Inits := List.{BoxExeObj^}
 	isRef := bool
+	irName := StringSpan
+	parentFunc := BoxFuncBody^
 
 	NotifyCaptureUse := virtual !(BoxFunc^ fncParent) -> void
 	{

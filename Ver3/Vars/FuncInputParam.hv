@@ -1,21 +1,15 @@
 FuncInputParam := class extend ParamFunc
 {
-	pNumber := StringSpan
-	parentFunc := BoxFuncBody^
-	varName := StringSpan
-	varId := int
-	this := !(BoxFuncBody^ pFunc,StringSpan vName,Type^ pType,bool isRefIn,StringSpan pVal) -> void
+	this := !(Type^ pType,bool isRefIn,StringSpan pVal) -> void
 	{
-		parentFunc = pFunc
+		parentFunc = CurrentFunc
 		SetType(GetFuncType(0,null,null,pType,true,false))
-		pNumber = pVal
-		varName = vName
+		irName = pVal
 		isRef = isRefIn
 		if DebugMode
 		{
 			if isRef
 				pType.MakeDebugRef()
-			//varId = GetNewId()
 		}
 	}
 	IsMem := virtual !() -> bool
@@ -24,23 +18,12 @@ FuncInputParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		//if DebugMode
-		//{
-		//	pType := GetType()->{TypeFunc^}.ResultType
-		//	f^ << "call void @llvm.dbg.value(metadata "
-		//	pType.PrintType(f)
-		//	if isRef 
-		//		f^ << "*"
-		//	f^ << " "
-		//	PrintResultObj(f,0,0)
-		//	f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
-		//}
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
-			f^ <<  pNumber
+			f^ <<  irName
 		}
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
@@ -54,19 +37,6 @@ FuncInputParam := class extend ParamFunc
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
-		//rType := GetType()->{TypeFunc^}.ResultType
-//
-		//f^ << "!" << varId << " = !DILocalVariable(name: \"" << varName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
-		////f^ << ", arg: " << (pNumber + 1)
-		////f^ << ", flags: DIFlagArtificial"
-		//f^ << ", line: " << 0 << ", type:!"
-		//if isRef 
-		//{
-		//	f^ <<rType.MakeDebugRef().MetaId
-		//}else{
-		//	f^ <<rType.MetaId
-		//}
-		//f^ << ")\n"
 	}
 	IsValue := virtual !() -> bool
 	{
@@ -82,7 +52,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		rType := GetType()->{TypeFunc^}.ResultType
-		f^ << pNumber << "Unref = alloca "
+		f^ << irName << "Unref = alloca "
 		rType.PrintType(f)
 		if isRef
 			f^ << "*"
@@ -94,32 +64,22 @@ FuncInputParamInMem := class extend FuncInputParam
 		rType.PrintType(f)
 		if isRef
 			f^ << "*"
-		f^ << " " ,< pNumber
+		f^ << " " ,< irName
 		f^ << " , "
 		rType.PrintType(f)
 		f^ << "*"
 		if isRef
 			f^ << "*"
-		f^ << " " << pNumber << "Unref"
+		f^ << " " << irName << "Unref"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
-
-		//if DebugMode
-		//{
-		//	pType := GetType()->{TypeFunc^}.ResultType
-		//	f^ << "call void @llvm.dbg.declare(metadata "
-		//	rType.PrintType(f)
-		//	f^ << "* " << pNumber << "Unref"
-		//	f^ << " , metadata !" << varId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
-		//}
-
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
-			f^ << "" << pNumber << "Unref"
+			f^ << "" << irName << "Unref"
 		}
 	}
 	IsValue := virtual !() -> bool
