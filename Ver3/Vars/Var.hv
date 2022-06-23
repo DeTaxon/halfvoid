@@ -152,6 +152,28 @@ MemVar := class extend BoxUnit
 		pDebugCode(f)
 		doInits(f)
 	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+		assert(Value != null)
+		metSelf :=  false
+
+		for it : UnitStack
+		{
+			if metSelf
+			{
+				if it is in BoxFunc
+				{
+					fnc := it->{BoxFunc^}
+					Value.NotifyCaptureUse(fnc)
+					return void
+				}
+			}else{
+				if it == this&
+					metSelf = true
+			}
+		}
+		assert(false)
+	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 		Value.PrintDebugMeta(f)
@@ -159,16 +181,27 @@ MemVar := class extend BoxUnit
 	}
 	pDebugCode := !(TIOStream^ f) -> void
 	{
-		if Value is in FuncLocalParam
+		if Value is in FuncLocalParam or Value is in FuncInputParam
 		{
 			clr := CheckExeDownList
 			cl := BoxFuncCall(Value,clr)
 			cl.PrintPointPre(f)
 			if DebugMode
 			{
-				f^ << "call void @llvm.dbg.declare(metadata "
+				f^ << "call void @llvm.dbg."
+				if Value.IsValue()
+				{
+					f^ << "value"
+				}else{
+					f^ << "declare"
+				}
+				f^ << "(metadata "
 				cl.GetType().PrintType(f)
-				f^ << "* " 
+				if not Value.IsValue()
+					f^ << "*"
+				if Value.IsRef() //TODO?
+					f^ << "*"
+				f^ << " " 
 				cl.PrintPointUse(f)
 				f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 			}
@@ -183,7 +216,7 @@ MemVar := class extend BoxUnit
 		if not DebugMode
 			return void
 
-		if Value is in FuncLocalParam
+		if Value is in FuncLocalParam or Value is in FuncInputParam
 		{
 			pType := Value.GetType()->{TypeFunc^}.ResultType
 			f^ << "!" << debId << " = !DILocalVariable(name: \"" << Name << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
@@ -192,7 +225,13 @@ MemVar := class extend BoxUnit
 			//	f^ << ", arg: " << it.6
 			//	f^ << ", flags: DIFlagArtificial"
 			//}
-			f^ << ", line: " << 0 << ", type:!" << pType.MetaId
+			f^ << ", line: " << 0 << ", type:!"
+			if Value.IsRef()
+			{
+				f^ <<pType.MakeDebugRef().MetaId
+			}else{
+				f^ <<pType.MetaId
+			}
 			f^ << ")\n"
 		}
 	}

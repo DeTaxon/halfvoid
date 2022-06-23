@@ -119,6 +119,7 @@ main := !(int argc, char^^ argv) -> int
 	x := int
 	x = 0
 	z := () ==> {
+		//x = 17
 		printf("wow\n")
 	}
 	z()

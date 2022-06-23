@@ -1,4 +1,18 @@
 ParamFunc := class extend BoxFuncCommon
 {
 	Inits := List.{BoxExeObj^}
+	isRef := bool
+
+	NotifyCaptureUse := virtual !(BoxFunc^ fncParent) -> void
+	{
+	}
+
+	IsValue := virtual !() -> bool
+	{
+		return false
+	}
+	IsRef := virtual !() -> bool
+	{
+		return isRef
+	}
 }

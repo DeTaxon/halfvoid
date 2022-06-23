@@ -150,7 +150,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			UnitStack.PushFront(par)
 		}
 		if ResultVar != null
-			UnitStack.Push(ResultVar)
+			UnitStack.PushFront(ResultVar)
 		
 		body = new BoxBlock(bdy)
 		body.Work()
@@ -224,7 +224,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
-		Params[^].Value->{FuncInputParam^}.PrintCode(f)
+		Params[^].PrintCode(f)
 		if ResultVar != null
 			ResultVar.PrintCode(f)
 		

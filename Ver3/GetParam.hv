@@ -9,6 +9,8 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	asItm := itm->{TokenIndent^}
 
+	needLambdaCapture := false
+
 	for par : UnitStack
 	{
 		if par is ConstVar
@@ -22,9 +24,15 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			mv := par->{MemVar^}
 			if mv.Name == asItm.Value
 			{
+				if needLambdaCapture
+					mv.NotifyCaptureUse()
 				emptyObj := CheckExeDownList
 				return new BoxFuncCall(mv.Value,emptyObj)
 			}
+		}
+		if par is in BoxFunc
+		{
+			needLambdaCapture = true
 		}
 		if par is in BoxFuncBody
 		{
