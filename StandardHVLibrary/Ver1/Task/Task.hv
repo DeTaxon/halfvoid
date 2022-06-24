@@ -184,6 +184,14 @@ TaskBox := class extend TGCObject
 			itMutex.Unlock()
 			break
 		}
+
+		tskRes := CheckHatchError()
+
+		if tskRes != null
+		{
+			doTask(tskRes)
+		}
+
 		CurrentTask = null
 		CurrentTaskBox = null
 

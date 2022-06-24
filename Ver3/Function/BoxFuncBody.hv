@@ -115,7 +115,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		stackSize := UnitStack.Size()
 
 		UnitStack.PushFront(this&)
-		defer readyState.Emit()
 
 		tp := GetType()->{TypeFunc^}
 
@@ -167,18 +166,21 @@ BoxFuncBody := class extend BoxFuncCommon
 		if CapturedVars.Size() != 0
 		{
 			tps := List.{Type^}
-			defer tps.Destroy()
 
 			tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
 
 			tplType := GetTuple(tps).ItType
-			//CapturedVarsTuple = new FuncLocalParam(tplType)
+			//z := new FuncLocalParam(GTypeInt)
+			CapturedVarsTuple = new FuncLocalParam(tplType)
+
+			tps.Destroy()
 		}
 
 		while UnitStack.Size() > stackSize
 		{
 			UnitStack.Pop()
 		}
+		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void
 	{
@@ -194,6 +196,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if body == null
 			return void
 		GDebugFuncId = 0
+		CurrentFunc = this&
 
 		if DebugMode
 		{
@@ -244,7 +247,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		Params[^].PrintCode(f)
 		ResultVar?.PrintCode(f)
-		CapturedVarsTuple?.PrintCode(f)
+		//CapturedVarsTuple?.PrintCode(f)
 		
 		body.PrintCode(f)
 

@@ -33,7 +33,10 @@ TITaskPausePoint := class
 		}
 		nextPoint^ = this&
 		itTask = CurrentTask
+		debugTemp.Push(this&)
 		CurrentTaskBox.switchToMain()
+		debugTemp.DeleteIf(_1 == this&)
+		assert(not hatchAbandoned)
 		//if next_point != null
 		//	next_point.Resume()
 	}
@@ -50,6 +53,8 @@ TITaskPausePoint := class
 	}
 }
 
+debugTemp := List.{TITaskPausePoint^}
+hatchAbandoned := bool
 
 pausePoint := TITaskPausePoint^
 
@@ -60,4 +65,14 @@ TaskGetHatchWork := !() -> TaskData^
 	retVal := pausePoint.itTask
 	pausePoint = pausePoint.next_point
 	return retVal
+}
+
+CheckHatchError := !() -> TaskData^
+{
+	if debugTemp.Size() != 0
+	{
+		hatchAbandoned = true
+		for it : debugTemp
+			return it.itTask
+	}
 }
