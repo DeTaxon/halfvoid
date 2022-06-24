@@ -155,24 +155,8 @@ MemVar := class extend BoxUnit
 	NotifyCaptureUse := virtual !() -> void
 	{
 		assert(Value != null)
-		metSelf :=  false
-
-		for it : UnitStack
-		{
-			if metSelf
-			{
-				if it is in BoxFunc
-				{
-					fnc := it->{BoxFunc^}
-					Value.NotifyCaptureUse(fnc)
-					return void
-				}
-			}else{
-				if it == this&
-					metSelf = true
-			}
-		}
-		assert(false)
+		assert(Name != "result")
+		Value.NotifyCaptureUse()
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{

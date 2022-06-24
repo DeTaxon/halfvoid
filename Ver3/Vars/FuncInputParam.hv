@@ -43,6 +43,7 @@ FuncInputParam := class extend ParamFunc
 		return true
 	}
 }
+
 FuncInputParamInMem := class extend FuncInputParam
 {
 	IsMem := virtual !() -> bool
@@ -84,6 +85,6 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	IsValue := virtual !() -> bool
 	{
-		return true
+		return false
 	}
 }

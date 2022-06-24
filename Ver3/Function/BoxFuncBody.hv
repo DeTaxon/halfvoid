@@ -26,6 +26,11 @@ BoxFuncBody := class extend BoxFuncCommon
 	gcArrayVar := ParamFunc^
 	gcArrayPtr := ParamFunc^
 
+	CapturedVars := List.{ParamFunc^}
+	CapturedVarsTuple := ParamFunc^
+
+	InputVarNames := List.{StringSpan}
+
 	NotifyGCUsed := !() -> void 
 	{	
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
@@ -42,29 +47,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		bdy = bodyIn
 
 		NamedParametersCount = names.Size()
+		InputVarNames.Push(names[^])
 
-		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
-		{
-			name := StringSpan("")
-			if i < names.Size()
-				name = names[i]
-			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
-			vr := new MemVar(name,parObj)
-			Params.Push(vr)
-		}
-		if tp.ResultType != GTypeVoid
-		{
-			resSpn := StringSpan("result")
-
-			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
-			{
-				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
-				ResultVar = new MemVar(resSpn,rv)
-			}else{
-				rFnc := new FuncLocalParam(tp.ResultType)
-				ResultVar = new MemVar(resSpn,rFnc)
-			}
-		}
 		if DebugMode
 		{
 			funcLine = new BoxExeLine() //TODO debug only ExeLine version
@@ -121,23 +105,42 @@ BoxFuncBody := class extend BoxFuncCommon
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
-		AllFunctions.Push(this&)
-
-		stackSize := UnitStack.Size()
-		getBackSize := () ==> {
-			while UnitStack.Size() > stackSize
-			{
-				UnitStack.Pop()
-			}
-		}
-		defer getBackSize()
-
-		UnitStack.PushFront(this&)
-		defer readyState.Emit()
 
 		oldFunc := CurrentFunc
 		defer CurrentFunc = oldFunc
 		CurrentFunc = this&
+		
+		AllFunctions.Push(this&)
+
+		stackSize := UnitStack.Size()
+
+		UnitStack.PushFront(this&)
+		defer readyState.Emit()
+
+		tp := GetType()->{TypeFunc^}
+
+		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
+		{
+			name := StringSpan("")
+			if i < InputVarNames.Size()
+				name = InputVarNames[i]
+			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
+			vr := new MemVar(name,parObj)
+			Params.Push(vr)
+		}
+		if tp.ResultType != GTypeVoid
+		{
+			resSpn := StringSpan("result")
+
+			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
+			{
+				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
+				ResultVar = new MemVar(resSpn,rv)
+			}else{
+				rFnc := new FuncLocalParam(tp.ResultType)
+				ResultVar = new MemVar(resSpn,rFnc)
+			}
+		}
 
 		UnitStack.PushFront(ConstVars[^])
 
@@ -160,6 +163,21 @@ BoxFuncBody := class extend BoxFuncCommon
 			x := GTypeVoidP.GetArray(gcVarsCount)
 			//gcArrayVar = new FuncLocalParam(x)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
+		}
+		if CapturedVars.Size() != 0
+		{
+			tps := List.{Type^}
+			defer tps.Destroy()
+
+			tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
+
+			tplType := GetTuple(tps).ItType
+			//CapturedVarsTuple = new FuncLocalParam(tplType)
+		}
+
+		while UnitStack.Size() > stackSize
+		{
+			UnitStack.Pop()
 		}
 	}
 	WaitReadyState := virtual !() -> void
@@ -225,8 +243,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
 		Params[^].PrintCode(f)
-		if ResultVar != null
-			ResultVar.PrintCode(f)
+		ResultVar?.PrintCode(f)
+		CapturedVarsTuple?.PrintCode(f)
 		
 		body.PrintCode(f)
 

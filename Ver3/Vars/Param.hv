@@ -5,7 +5,7 @@ ParamFunc := class extend BoxFuncCommon
 	irName := StringSpan
 	parentFunc := BoxFuncBody^
 
-	NotifyCaptureUse := virtual !(BoxFunc^ fncParent) -> void
+	NotifyCaptureUse := virtual !() -> void
 	{
 	}
 
@@ -16,5 +16,35 @@ ParamFunc := class extend BoxFuncCommon
 	IsRef := virtual !() -> bool
 	{
 		return isRef
+	}
+
+	PrintMakeZero := !(TIOStream^ f) -> void
+	{
+		pType := GetType()->{TypeFunc^}.ResultType
+
+		if IsInt(pType)
+		{
+			f^ << "store "
+			pType.PrintType(f)
+			f^ << " 0, "
+			pType.PrintType(f)
+			f^ << "* " << irName
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}else //if pType is TypeClass
+		{
+			f^ << "%Void" << irName << " = bitcast "
+			pType.PrintType(f)
+			f^ << "* " << irName << " to i8*"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+
+			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << irName << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}
 	}
 }

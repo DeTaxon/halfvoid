@@ -2,6 +2,7 @@ FuncLocalParam := class extend ParamFunc
 {
 	this := !(Type^ tp) -> void
 	{
+		assert(CurrentFunc != null)
 		parentFunc = CurrentFunc
 		irName = GetLVarName(GetNewId())
 		SetType(GetFuncType(0,null,null,tp,true,false))
@@ -25,46 +26,28 @@ FuncLocalParam := class extend ParamFunc
 	{
 		return true
 	}
+
+	NotifyCaptureUse := virtual !() -> void
+	{
+		this&->SetType(FuncLocalParamCaptured)
+		this&->{FuncLocalParamCaptured^}.DoCapture()
+	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-
 		pType := GetType()->{TypeFunc^}.ResultType
 
-		f^ << "%" << irName << " = alloca "
+		f^ << irName << " = alloca "
 		pType.PrintType(f)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
-		if IsInt(pType)
-		{
-			f^ << "store "
-			pType.PrintType(f)
-			f^ << " 0, "
-			pType.PrintType(f)
-			f^ << "* %" << irName
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-		}else //if pType is TypeClass
-		{
-			f^ << "%Void" << irName << " = bitcast "
-			pType.PrintType(f)
-			f^ << "* %" << irName << " to i8*"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-
-			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << irName << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-		}
+		PrintMakeZero(f)
 		Inits[^].PrintDefaultUse(f)
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
-		f^ << "%" << irName 
+		f^ << irName 
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
@@ -73,10 +56,34 @@ FuncLocalParam := class extend ParamFunc
 	{
 	}
 }
+FuncLocalParamCaptured := class extend FuncLocalParam
+{
+	NotifyMemUse := virtual !() -> void
+	{
+	}
+
+	NotifyCaptureUse := virtual !() -> void
+	{
+	}
+	DoCapture := !() -> void
+	{
+		assert(parentFunc != null)
+		ind := parentFunc.CapturedVars.Size()
+		parentFunc.CapturedVars.Push(this&)
+
+		buff := char[100]
+		sprintf(buff[0]&,"%%C%i",ind)
+		irName = GetConstString(buff[0]&)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		PrintMakeZero(f)
+	}
+}
 GetLVarName := !(int x) -> StringSpan
 {
 	buff := char[100]
-	sprintf(buff[0]&,"Var%i",x)
+	sprintf(buff[0]&,"%Var%i",x)
 	result = GetConstString(buff[0]&)
 }
 

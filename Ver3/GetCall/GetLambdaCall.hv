@@ -22,7 +22,6 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 		lst := List.{BoxExeConstObj^}
 
-
 		newFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 
 		return new BoxFuncCall(newFunc,objs)
