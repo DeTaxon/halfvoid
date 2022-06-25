@@ -32,7 +32,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	InputVarNames := List.{StringSpan}
 
 	NotifyGCUsed := !() -> void 
-	{	
+	{
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
 
 		if gcArrayPtr == null
@@ -106,8 +106,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	WorkBody := virtual !() -> void
 	{
 
-		oldFunc := CurrentFunc
-		defer CurrentFunc = oldFunc
+		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
 		CurrentFunc = this&
 		
 		AllFunctions.Push(this&)
@@ -169,17 +168,32 @@ BoxFuncBody := class extend BoxFuncCommon
 
 			tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
 
-			tplType := GetTuple(tps).ItType
+			tplClass := GetTuple(tps)
 			//z := new FuncLocalParam(GTypeInt)
-			CapturedVarsTuple = new FuncLocalParam(tplType)
+			CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
 
 			tps.Destroy()
+
+
+			for  it,i : CapturedVars
+			{
+				indCall := tplClass.GetFieldByIndex(i)
+				dat := CheckExeDownList
+				varCall := new BoxFuncCall(CapturedVarsTuple,dat)
+				dat.Push(varCall)
+				cl := new BoxFuncCall(indCall,dat)
+				dat.Clear()
+
+				it.exeObj = cl
+				it->SetType(FuncResultParam)
+			}
 		}
 
 		while UnitStack.Size() > stackSize
 		{
 			UnitStack.Pop()
 		}
+		CurrentFunc = oldFunc
 		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void
@@ -245,9 +259,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
+		CapturedVarsTuple?.PrintCode(f)
 		Params[^].PrintCode(f)
 		ResultVar?.PrintCode(f)
-		//CapturedVarsTuple?.PrintCode(f)
 		
 		body.PrintCode(f)
 

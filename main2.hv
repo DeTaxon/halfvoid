@@ -117,7 +117,7 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple CaptureVars) -> TLambda.{
 main := !(int argc, char^^ argv) -> int
 {
 	x := int
-	x = 0
+	x = 60
 	
 	z := () ==> {
 		x = 17

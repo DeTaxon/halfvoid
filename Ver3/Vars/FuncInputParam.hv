@@ -65,7 +65,7 @@ FuncInputParamInMem := class extend FuncInputParam
 		rType.PrintType(f)
 		if isRef
 			f^ << "*"
-		f^ << " " ,< irName
+		f^ << " " << irName
 		f^ << " , "
 		rType.PrintType(f)
 		f^ << "*"

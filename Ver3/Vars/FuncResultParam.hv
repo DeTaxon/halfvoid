@@ -1,0 +1,11 @@
+FuncResultParam := class extend ParamFunc //TODO non ref
+{
+    PrintCode := virtual !(TIOStream^ f) -> void
+    {
+        exeObj.PrintPointPre(f)
+    }
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		exeObj.PrintPointUse(f)
+	}
+}

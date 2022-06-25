@@ -4,6 +4,7 @@ ParamFunc := class extend BoxFuncCommon
 	isRef := bool
 	irName := StringSpan
 	parentFunc := BoxFuncBody^
+	exeObj := BoxExeObj^
 
 	NotifyCaptureUse := virtual !() -> void
 	{
@@ -34,14 +35,15 @@ ParamFunc := class extend BoxFuncCommon
 			f^ << "\n"
 		}else //if pType is TypeClass
 		{
-			f^ << "%Void" << irName << " = bitcast "
+			miniId := GetNewId()
+			f^ << "%Void" << miniId << " = bitcast "
 			pType.PrintType(f)
 			f^ << "* " << irName << " to i8*"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
 
-			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << irName << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << miniId << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
