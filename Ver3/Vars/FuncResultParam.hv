@@ -8,4 +8,7 @@ FuncResultParam := class extend ParamFunc //TODO non ref
 	{
 		exeObj.PrintPointUse(f)
 	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
 }

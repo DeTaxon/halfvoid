@@ -180,9 +180,11 @@ BoxFuncBody := class extend BoxFuncCommon
 				indCall := tplClass.GetFieldByIndex(i)
 				dat := CheckExeDownList
 				varCall := new BoxFuncCall(CapturedVarsTuple,dat)
-				dat.Push(varCall)
-				cl := new BoxFuncCall(indCall,dat)
+				dat2 := CheckExeDownList
+				dat2.Push(varCall)
+				cl := new BoxFuncCall(indCall,dat2)
 				dat.Clear()
+				dat2.Clear()
 
 				it.exeObj = cl
 				it->SetType(FuncResultParam)
