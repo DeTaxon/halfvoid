@@ -28,6 +28,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	CapturedVars := List.{ParamFunc^}
 	CapturedVarsTuple := ParamFunc^
+	CapturedVarsGets := List.{ParamFunc^}
 
 	InputVarNames := List.{StringSpan}
 
@@ -56,7 +57,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		ExitLabel = new BoxLabel() 
 	}
-
 	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
@@ -164,17 +164,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		if CapturedVars.Size() != 0
 		{
-			tps := List.{Type^}
-
-			tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
-
-			tplClass := GetTuple(tps)
-			//z := new FuncLocalParam(GTypeInt)
+			tplClass := GetCaptureTuple()
 			CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
-
-			tps.Destroy()
-
-
+			
 			for  it,i : CapturedVars
 			{
 				indCall := tplClass.GetFieldByIndex(i)
@@ -189,6 +181,14 @@ BoxFuncBody := class extend BoxFuncCommon
 				it.exeObj = cl
 				it->SetType(FuncResultParam)
 			}
+
+			for it, i : CapturedVarsGets
+			{
+				emp := CheckExeDownList
+				getVar := new BoxFuncCall(CapturedVarsTuple,emp)
+				c1 := new UnrefFuncCall(getVar)
+				it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
+			}
 		}
 
 		while UnitStack.Size() > stackSize
@@ -197,6 +197,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		CurrentFunc = oldFunc
 		readyState.Emit()
+	}
+	GetCaptureTuple := !() -> BoxClass^
+	{
+		tps := List.{Type^}
+		tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
+		tplClass := GetTuple(tps)
+		tps.Destroy()
+		
+		return tplClass
 	}
 	WaitReadyState := virtual !() -> void
 	{
@@ -262,6 +271,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
 		CapturedVarsTuple?.PrintCode(f)
+		CapturedVarsGets[^].PrintCode(f)
 		Params[^].PrintCode(f)
 		ResultVar?.PrintCode(f)
 		

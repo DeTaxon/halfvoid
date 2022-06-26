@@ -9,16 +9,23 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 	if res.IsOneFunc()
 	{
-		newFunc := res.GetOneFunc()
+		newFunc := res.GetOneFunc() //Vars captured
 		newFunc.ParseBodyForced()
 		
 		miniObj := CheckExeDownList
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := new BoxFuncCall(fncFnc,miniObj) 
 
+		tplType := CurrentFunc.GetCaptureTuple().ItType
+		tplVar := new FuncResultParam(tplType.GetPoint(),false)
+
+		CurrentFunc.CapturedVarsGets.Push(tplVar)
+
+		empty := CheckExeDownList
+
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
-		objs.Push(GObjNull)
+		objs.Push(new BoxFuncCall(tplVar,empty))
 
 		lst := List.{BoxExeConstObj^}
 
