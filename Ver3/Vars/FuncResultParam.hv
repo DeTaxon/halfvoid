@@ -6,6 +6,11 @@ FuncResultParam := class extend ParamFunc //TODO non ref
 		parentFunc = CurrentFunc
 		SetType(GetFuncType(0,null,null,tp,isRef,false))
 	}
+	this := !(BoxExeObj^ obj) -> void
+	{
+		exeObj = obj
+		this."FuncResultParam.this"(obj.GetType(),obj.IsMem())
+	}
 	IsMem := virtual !() -> bool
 	{
 		return GetType()->{TypeFunc^}.ResultRef

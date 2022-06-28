@@ -53,4 +53,38 @@ AppendClass BoxFuncBody
 
 		CaptureGetCall = new BoxFuncCall(lGCall,objs3)
 	}
+
+	Yields := List.{BoxYield^}
+	YieldStart := BoxLabel^
+	YieldStateInt := ParamFunc^
+
+	PutYieldState := !(BoxYield^ yld) -> int
+	{
+		if YieldStart == null
+			YieldStart = new BoxLabel()
+
+		res := Yields.Size() + 1
+		Yields.Push(yld)
+		return res
+	}
+	GetYieldStateParam := !() -> ParamFunc^
+	{
+		if YieldStateInt == null
+		{
+			assert(CurrentFunc == this&)
+
+			empt := CheckExeDownList
+			Objs := CheckExeDownList
+			Objs.Push(new BoxFuncCall(Params[0].Value,empt))
+
+			yGet := new BoxFuncCall(TemplateInternalGetYieldState,Objs)
+
+			YieldStateInt = new FuncResultParam(yGet)
+		}
+		return YieldStateInt
+	}
+	PrintYieldCode := !(TIOStream^ f) -> void
+	{
+		YieldStateInt?.PrintCode(f)
+	}
 }

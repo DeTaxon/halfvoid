@@ -1,11 +1,17 @@
 TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 {
-	if itm.Down?.GetValue() == "return"
+	if itm.Down?.GetValue() == "return" or  itm.Down?.GetValue() == "yield"
 	{
+		isYield := false
+		if itm.Down.GetValue() == "yield"
+			isYield = true
+
 		fnc := GetCurrentFunc()
 		fType := fnc.GetType()->{TypeFunc^}
 
 		resultCall := BoxExeObj^
+
+		rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
 
 		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
 		{
@@ -29,6 +35,11 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 
 				assert(resultCall != null)
 			}
+		}
+
+		if isYield
+		{
+			return new BoxYield(fnc.GetExitLabel(),resultCall)
 		}
 
 		return new BoxReturn(fnc.GetExitLabel(),resultCall)

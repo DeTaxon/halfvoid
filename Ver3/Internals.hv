@@ -7,6 +7,7 @@ TemplateInternalDelete := BoxFuncTemplate^
 TemplateInternalCreateLambda := BoxFuncTemplate^
 TemplateInternalLambdaCall := BoxFuncTemplate^
 TemplateInternalGetCaptures := BoxFuncTemplate^
+TemplateInternalGetYieldState := BoxFunc^
 
 
 GFuncGetDepth := BoxFunc^
@@ -66,6 +67,7 @@ InitInternals := !() -> void
 	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
 	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
 	TemplateInternalGetCaptures = intGetTemplate("internalHVLambdaGetCaptures")
+	TemplateInternalGetYieldState = intGetFunc("internalHVLambdaGetYieldState")
 
 	GFuncGetDepth = intGetFunc("internalHVGetDepth")
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")

@@ -132,7 +132,10 @@ BoxFuncBody := class extend BoxFuncCommon
 				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
 				ResultVar = new MemVar(resSpn,rv)
 			}else{
-				rFnc := new FuncLocalParam(tp.ResultType)
+				rFuncType := tp.ResultType
+				if tp.ResultRef
+					rFuncType = rFuncType.GetPoint()
+				rFnc := new FuncLocalParam(rFuncType)
 				ResultVar = new MemVar(resSpn,rFnc)
 			}
 		}
@@ -257,6 +260,8 @@ BoxFuncBody := class extend BoxFuncCommon
 				f^ << " , !dbg !" << GDebugLineCallId
 			f^ <<"\n"
 		}
+
+		PrintYieldCode(f)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 

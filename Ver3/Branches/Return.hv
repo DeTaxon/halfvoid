@@ -31,6 +31,39 @@ BoxReturn := class extend BoxExeObj
 	}
 }
 
+BoxYield := class extend BoxReturn
+{
+	toThis := BoxLabel^
+	callSet := BoxExeObj^
+	this := !(BoxLabel^ l,BoxExeObj^ rc) -> void
+	{
+		this."BoxReturn.this"(l,rc)
+
+		yieldVal := CurrentFunc.PutYieldState(this&)
+		yVar := CurrentFunc.GetYieldStateParam()
+
+		empty := CheckExeDownList
+		objs := CheckExeDownList
+		objs.Push(new BoxFuncCall(yVar,empty))
+		objs.Push(GetExeInt(yieldVal))
+
+		callSet = CreateFuncCall(StringSpan("="),objs)
+		toThis = new BoxLabel()
+	}
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		ResultCall?.PrintDefaultUse(f)
+		callSet.PrintDefaultUse(f)
+		EndLabel.PrintGo(f)
+		toThis.PrintCode(f)
+	}
+	GetLabel := virtual !() -> BoxLabel^
+	{
+		return toThis
+	}
+}
+
 GetCurrentFunc := !() -> BoxFunc^
 {
 	for it : UnitStack
@@ -41,3 +74,4 @@ GetCurrentFunc := !() -> BoxFunc^
 	assert(false)
 	return null
 }
+

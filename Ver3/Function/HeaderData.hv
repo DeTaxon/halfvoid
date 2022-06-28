@@ -54,7 +54,13 @@ FunctionHeaderInfo := class
 		{
 			try
 			{
-				ResultType.ItType = ParseType(resTyp)
+				if resTyp?.Down?.Right?.GetValue() == "&"
+				{
+					ResultType.IsRef = true
+					ResultType.ItType = ParseType(resTyp.Down)
+				}else{
+					ResultType.ItType = ParseType(resTyp)
+				}
 			}catch(IException^ r) {}
 		}
 
