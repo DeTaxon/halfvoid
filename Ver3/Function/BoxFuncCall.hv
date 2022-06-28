@@ -148,6 +148,11 @@ BoxFuncPointerCall := class extend BoxFuncCall
 		ItPtrFunc = ptrVal
 		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},objs)
 	}
+	GetType := virtual !() -> Type^
+	{
+		ft := ItPtrFunc.GetType().Base->{TypeFunc^}
+		return ft.ResultType
+	}
 	PrintFuncUse := virtual !(TIOStream^ f) -> void
 	{
 		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)

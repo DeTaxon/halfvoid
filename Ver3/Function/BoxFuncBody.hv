@@ -26,10 +26,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	gcArrayVar := ParamFunc^
 	gcArrayPtr := ParamFunc^
 
-	CapturedVars := List.{ParamFunc^}
-	CapturedVarsTuple := ParamFunc^
-	CapturedVarsGets := List.{ParamFunc^}
-
 	InputVarNames := List.{StringSpan}
 
 	NotifyGCUsed := !() -> void 
@@ -107,6 +103,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 
 		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
+		ParentFunc = oldFunc
 		CurrentFunc = this&
 		
 		AllFunctions.Push(this&)
@@ -162,35 +159,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			//gcArrayVar = new FuncLocalParam(x)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
-		if CapturedVars.Size() != 0
-		{
-			tplClass := GetCaptureTuple()
-			CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
-			
-			for  it,i : CapturedVars
-			{
-				indCall := tplClass.GetFieldByIndex(i)
-				dat := CheckExeDownList
-				varCall := new BoxFuncCall(CapturedVarsTuple,dat)
-				dat2 := CheckExeDownList
-				dat2.Push(varCall)
-				cl := new BoxFuncCall(indCall,dat2)
-				dat.Clear()
-				dat2.Clear()
-
-				it.exeObj = cl
-				it->SetType(FuncResultParam)
-			}
-
-			for it, i : CapturedVarsGets
-			{
-				emp := CheckExeDownList
-				getVar := new BoxFuncCall(CapturedVarsTuple,emp)
-				c1 := new UnrefFuncCall(getVar)
-				it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
-			}
-		}
-
+		WorkBodyCaptures()
+		
 		while UnitStack.Size() > stackSize
 		{
 			UnitStack.Pop()
@@ -241,6 +211,26 @@ BoxFuncBody := class extend BoxFuncCommon
 			f^ << " !dbg !" << GDebugFuncId
 		f^ << "\n"
 		f^ << "{\n"
+
+		if ParentFunc != null
+		{
+			if CaptureGetCall != null
+			{
+				CaptureGetCall?.PrintDefaultUse(f)
+				ParentFunc.CapturedVarsTuple.PrintResultObj(f,0,0)
+				f^ << " = getelementptr "
+				ThisCaptureTupleType.PrintType(f)
+				f^ << " , "
+				ThisCaptureTupleType.PrintType(f)
+				f^ << "* "
+				CaptureGetCall.PrintUse(f)
+				f^ << ", i32 0"
+				if DebugMode
+					f^ << " , !dbg !" << GDebugLineCallId
+				f^ <<"\n"
+				ParentFunc.CapturedVars[^].PrintCode(f)
+			}
+		}
 
 		if gcVarsCount != 0
 		{

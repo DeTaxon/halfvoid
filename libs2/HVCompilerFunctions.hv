@@ -7,5 +7,5 @@ internalHVInitClass := !(@T x)  -> void
 
 internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void
 {
-	this->VTable.FieldNumber(this,args...)
+	return this->VTable.FieldNumber(this,args...)
 }

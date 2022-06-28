@@ -10,14 +10,18 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	if res.IsOneFunc()
 	{
 		newFunc := res.GetOneFunc() //Vars captured
-		newFunc.ParseBodyForced()
 		
 		miniObj := CheckExeDownList
 		fncFnc := new FuncPointerParam(newFunc)
-		fncPtr := new BoxFuncCall(fncFnc,miniObj) 
+		fncPtr := new BoxFuncCall(fncFnc,miniObj)
+		newFunc.ParseBodyForced()
+		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
 
 		tplType := CurrentFunc.GetCaptureTuple().ItType
 		tplVar := new FuncResultParam(tplType.GetPoint(),false)
+
+		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
+		newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
 
 		CurrentFunc.CapturedVarsGets.Push(tplVar)
 
@@ -29,9 +33,9 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 		lst := List.{BoxExeConstObj^}
 
-		newFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
+		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 
-		return new BoxFuncCall(newFunc,objs)
+		return new BoxFuncCall(createLambdaFunc,objs)
 	}
 
 	return res

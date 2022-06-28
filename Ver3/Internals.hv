@@ -6,6 +6,7 @@ TemplateInternalDelete := BoxFuncTemplate^
 
 TemplateInternalCreateLambda := BoxFuncTemplate^
 TemplateInternalLambdaCall := BoxFuncTemplate^
+TemplateInternalGetCaptures := BoxFuncTemplate^
 
 
 GFuncGetDepth := BoxFunc^
@@ -64,12 +65,14 @@ InitInternals := !() -> void
 
 	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
 	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
+	TemplateInternalGetCaptures = intGetTemplate("internalHVLambdaGetCaptures")
 
 	GFuncGetDepth = intGetFunc("internalHVGetDepth")
 	GFuncSetDepth = intGetFunc("internalHVSetDepth")
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
 	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
+
 
 	cName := TokenIndent(StringSpan("TGCIObject"))
 	GCType = ParseType(cName&)

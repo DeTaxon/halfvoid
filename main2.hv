@@ -82,6 +82,8 @@ TILambda := class extend TGCObject
 	{
 		return false
 	}
+
+	getCaptureVar := virtual !() -> void^ { return null }
 }
 
 TLambda := class .{@FuncPtr} extend TILambda
@@ -92,16 +94,32 @@ TLambda := class .{@FuncPtr} extend TILambda
 	//	return this.callFunc(this&,argc...)
 	//}
 }
+TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr} extend TLambda.{FuncPtr}
+{
+	capPtr := CapTypePtr
+
+	getCaptureVar := virtual !() -> void^ { 
+		result = capPtr
+	}
+}
+
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {
 	lmb.callFunc(lmb&,args...)
 }
-
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple^ CaptureVars) -> TLambda.{FuncPtr}^
+internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
 {
-	result = new TLambda.{FuncPtr}
-	result.callFunc = fnc
-	printf("tst %p",CaptureVars)
+	c0 := lmbd->{TILambda^}
+	c1 := c0.getCaptureVar()
+	return c1->{T^}
+}
+
+internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars) -> TLambda.{FuncPtr}^
+{
+	res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr}
+	res.callFunc = fnc
+	res.capPtr = CaptureVars
+	result = res
 }
 
 //TLambdaImplementation := class .{@Captures} extend TLambda
@@ -119,7 +137,6 @@ main := !(int argc, char^^ argv) -> int
 {
 	x := int
 	x = 60
-	printf("x %p\n",x&)
 	
 	z := () ==> {
 		x = 17
@@ -127,5 +144,6 @@ main := !(int argc, char^^ argv) -> int
 	}
 	z()
 	z()
+	printf("YES %i\n",x)
 	return 0
 }
