@@ -13,6 +13,8 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 
 		rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
 
+		//TODO check return type vs func result. + result ref
+
 		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
 		{
 		}else{
@@ -23,16 +25,16 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 				resultCall = dwnRes
 				assert(resultCall != null)
 			}else{
+				if rRef
+					dwnRes = new UnrefFuncCall(dwnRes)
 				tkn1 := TokenIndent(StringSpan("result"))
-				tkn2 := TokenSymbol(StringSpan("="),0)
-				tknAll := TokenData
 
-				tknAll.Down = tkn1&
-				tkn1.Right = tkn2&
-				tkn2.Right = itm.Down.Right
+				resGet := TryGetExeCall(tkn1&)
 
-				resultCall = TryGetExeCall(tknAll&)
-
+				objs := CheckExeDownList
+				objs.Push(resGet)
+				objs.Push(dwnRes)
+				resultCall = CreateFuncCall(StringSpan("="),objs)
 				assert(resultCall != null)
 			}
 		}

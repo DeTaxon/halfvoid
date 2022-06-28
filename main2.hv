@@ -137,9 +137,24 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars) -> TLambd
 //	//}
 //}
 
+w := int
+c := !() -> int
+{
+	w = 10
+	return 15
+}
+c2 := !() -> int&
+{
+	return w
+}
+
 main := !(int argc, char^^ argv) -> int
 {
 	x := int
+	x = c()
+	printf("hey %i %i\n",x,w)
+	c2() = 7
+	printf("hoy %i\n",c2())
 	
 	//z := () ==> {
 	//	printf("wow\n")

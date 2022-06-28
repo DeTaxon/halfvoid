@@ -40,6 +40,8 @@ BoxFunc := class extend BoxExeConstObj
 			GTypeVoid.PrintType(f)
 		}else{
 			fTyp.ResultType.PrintType(f) //TODO return class
+			if fTyp.ResultRef
+				f^ << "*"
 		}
 	}
 	ParseBody := virtual !() -> void
@@ -154,6 +156,8 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 		itType.PrintType(f)
 	}else{
 		itType.ResultType.PrintType(f)
+		if itType.ResultRef
+			f^ << "*"
 	}
 	fncObj.PrintUse(f)
 
