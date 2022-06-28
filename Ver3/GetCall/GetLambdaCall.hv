@@ -9,6 +9,8 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 	if res.IsOneFunc()
 	{
+		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
+
 		newFunc := res.GetOneFunc() //Vars captured
 		
 		miniObj := CheckExeDownList
@@ -17,19 +19,29 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		newFunc.ParseBodyForced()
 		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
 
-		tplType := CurrentFunc.GetCaptureTuple().ItType
-		tplVar := new FuncResultParam(tplType.GetPoint(),false)
-
-		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
-		newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
-
-		CurrentFunc.CapturedVarsGets.Push(tplVar)
 
 		empty := CheckExeDownList
 
+		getTupleVar := BoxExeObj^
+
+		tplType := CurrentFunc.GetCaptureTuple().ItType
+		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
+
+		if tplType != tplTypeBefore
+		{
+			tplVar := new FuncResultParam(tplType.GetPoint(),false)
+			newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
+			CurrentFunc.CapturedVarsGets.Push(tplVar)
+
+			getTupleVar = new BoxFuncCall(tplVar,empty)
+		}else{
+			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
+		}
+
+
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
-		objs.Push(new BoxFuncCall(tplVar,empty))
+		objs.Push(getTupleVar)
 
 		lst := List.{BoxExeConstObj^}
 

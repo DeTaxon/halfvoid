@@ -5,7 +5,7 @@ internalHVInitClass := !(@T x)  -> void
 		x->VTable = T->VTable
 }
 
-internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void
+internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void // return type ignored and replaced by compiler with T->Result
 {
 	return this->VTable.FieldNumber(this,args...)
 }
