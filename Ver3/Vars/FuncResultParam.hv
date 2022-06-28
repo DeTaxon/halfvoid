@@ -1,10 +1,10 @@
 FuncResultParam := class extend ParamFunc //TODO non ref
 {
-	this := !(Type^ tp,bool isRef) -> void
+	this := !(Type^ tp,bool isRef2) -> void
 	{
 		assert(CurrentFunc != null)
 		parentFunc = CurrentFunc
-		SetType(GetFuncType(0,null,null,tp,isRef,false))
+		SetType(GetFuncType(0,null,null,tp,isRef2,false))
 	}
 	this := !(BoxExeObj^ obj) -> void
 	{
