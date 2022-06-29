@@ -163,6 +163,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
 		WorkBodyCaptures()
+		YieldWork()
 		
 		while UnitStack.Size() > stackSize
 		{
@@ -170,15 +171,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		CurrentFunc = oldFunc
 		readyState.Emit()
-	}
-	GetCaptureTuple := !() -> BoxClass^
-	{
-		tps := List.{Type^}
-		tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
-		tplClass := GetTuple(tps)
-		tps.Destroy()
-		
-		return tplClass
 	}
 	WaitReadyState := virtual !() -> void
 	{

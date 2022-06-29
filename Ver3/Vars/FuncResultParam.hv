@@ -32,3 +32,14 @@ FuncResultParam := class extend ParamFunc //TODO non ref
 	{
 	}
 }
+
+FuncResultParamInGenerator := class extend FuncResultParam //TODO non ref
+{
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintAtStart := virtual !(TIOStream^ f) -> void
+	{
+		exeObj.PrintDefaultUse(f)
+	}
+}

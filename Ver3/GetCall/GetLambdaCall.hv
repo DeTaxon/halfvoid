@@ -11,7 +11,7 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	{
 		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
 
-		newFunc := res.GetOneFunc() //Vars captured
+		newFunc := res.GetOneFunc()->{BoxFuncBody^} //Vars captured
 		
 		miniObj := CheckExeDownList
 		fncFnc := new FuncPointerParam(newFunc)
@@ -44,8 +44,10 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		objs.Push(getTupleVar)
 
 		lst := List.{BoxExeConstObj^}
+		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
 
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
+		lst.Destroy()
 
 		return new BoxFuncCall(createLambdaFunc,objs)
 	}

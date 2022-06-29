@@ -85,6 +85,7 @@ TILambda := class extend TGCObject
 
 	getCaptureVar := virtual !() -> void^ { return null }
 	getYieldState := virtual !() -> int& {  } //TODO assert
+	getYieldVars := virtual !() -> void^ { return null }
 }
 
 TLambda := class .{@FuncPtr} extend TILambda
@@ -95,13 +96,15 @@ TLambda := class .{@FuncPtr} extend TILambda
 	//	return this.callFunc(this&,argc...)
 	//}
 }
-TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr} extend TLambda.{FuncPtr}
+TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 {
 	capPtr := CapTypePtr
 	yieldState := int
+	lambdaVars := YieldTuple
 
 	getCaptureVar := virtual !() -> void^ {  result = capPtr }
 	getYieldState := virtual !() -> int& { return yieldState }
+	getYieldVars := virtual !() -> void^ { return lambdaVars& }
 }
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
@@ -117,10 +120,15 @@ internalHVLambdaGetYieldState := !(void^ lmbd) -> int&
 	return lmbd->{TILambda^}.getYieldState()
 }
 
-
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars) -> TLambda.{FuncPtr}^
+internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVarsTuple^
 {
-	res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr}
+	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
+}
+
+
+internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambda.{FuncPtr}^
+{
+	res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr,YieldVars}
 	res.callFunc = fnc
 	res.capPtr = CaptureVars
 	result = res

@@ -30,6 +30,8 @@ BoxBlock := class extend BoxUnit
 
 		newVar2 := new FuncLocalParam(varType)
 		simpleVars.PushFront(newVar2)
+		CurrentFunc.regularVars.Push(newVar2)
+
 		return newVar2
 	}
 

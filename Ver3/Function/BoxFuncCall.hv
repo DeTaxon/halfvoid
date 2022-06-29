@@ -10,6 +10,17 @@ BoxFuncCall := class extend BoxExeObj
 	callObj := BoxFunc^
 	downs := ExeDownList
 	resId := int
+
+	this := !(BoxFunc^ fnc) -> void
+	{
+		callObj = fnc
+
+		if callObj is BoxFuncBody
+			callObj->{BoxFuncBody^}.ParseBody()
+
+		empty := CheckExeDownList
+		CheckInputs(fnc.GetType()->{TypeFunc^},empty)
+	}
 	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
 		callObj = fnc
@@ -83,6 +94,16 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		return callObj.IsMem()
 	}
+
+	PassedFuncCall := !(TIOStream^ f, int passedId)  -> void
+	{
+		callObj.PrintFuncCall(f,passedId,0,downs)
+	}
+	PassedFuncResult := !(TIOStream^ f, int passedId)  -> void
+	{
+		callObj.PrintResultObj(f,passedId,-1)
+	}
+
 	PrintFuncUse := virtual !(TIOStream^ f) -> void
 	{
 		callObj.PrintFuncCall(f,resId,0,downs)
