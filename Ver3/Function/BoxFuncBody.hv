@@ -102,6 +102,9 @@ BoxFuncBody := class extend BoxFuncCommon
 	WorkBody := virtual !() -> void
 	{
 
+		oldVarsCount := GCVarsInUse
+		GCVarsInUse = 0
+
 		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
 		ParentFunc = oldFunc
 		CurrentFunc = this&
@@ -159,7 +162,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		if gcVarsCount != 0
 		{
 			x := GTypeVoidP.GetArray(gcVarsCount)
-			//gcArrayVar = new FuncLocalParam(x)
+			gcArrayVar = new FuncLocalParam(x)
+			regularVars.Push(gcArrayVar)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
 		WorkBodyCaptures()
@@ -170,6 +174,9 @@ BoxFuncBody := class extend BoxFuncCommon
 			UnitStack.Pop()
 		}
 		CurrentFunc = oldFunc
+		GCVarsInUse = oldVarsCount
+
+
 		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void
@@ -227,11 +234,11 @@ BoxFuncBody := class extend BoxFuncCommon
 			}
 		}
 
+		PrintYieldCodeParams(f)
+
 		if gcVarsCount != 0
 		{
-			lPar := FuncLocalParam(GTypeVoidP.GetArray(gcVarsCount))
-
-			lPar.PrintCode(f)
+			gcArrayVar.PrintCode(f)
 
 			tp := GTypeVoidP.GetArray(gcVarsCount)
 			f^ << "%GCArrayPre = getelementptr "
@@ -239,7 +246,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			f^ << " , "
 			tp.PrintType(f)
 			f^ << "* "
-			lPar.PrintResultObj(f,0,0)
+			gcArrayVar.PrintResultObj(f,0,0)
 			f^ << " , i32 0, i32 0"
 			if DebugMode
 				f^ << " , !dbg !" << GDebugLineCallId
@@ -252,8 +259,8 @@ BoxFuncBody := class extend BoxFuncCommon
 				f^ << " , !dbg !" << GDebugLineCallId
 			f^ <<"\n"
 		}
-
-		PrintYieldCode(f)
+		PrintYieldCodeParamsGC(f)
+		PrintYieldCodeGo(f)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 

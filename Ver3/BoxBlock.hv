@@ -25,6 +25,7 @@ BoxBlock := class extend BoxUnit
 
 			newVar := new FuncGCLocalParam(varType,gcIndex)
 			gcVars.PushFront(newVar)
+			CurrentFunc->{BoxFuncBody^}.gcVars.Push(newVar)
 			return newVar
 		}
 

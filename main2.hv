@@ -145,6 +145,13 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 //	//}
 //}
 
+destr := class extend TGCObject
+{
+	Destroy := virtual !() -> void
+	{
+		printf("destroyed\n")
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
@@ -152,6 +159,7 @@ main := !(int argc, char^^ argv) -> int
 	z := () ==> {
 		x += 13
 		c := 3
+		j := new destr
 		printf("wow\n")
 		yield void
 		x += c

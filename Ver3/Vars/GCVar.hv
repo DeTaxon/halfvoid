@@ -17,6 +17,10 @@ FuncGCLocalParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		PrintGetGCVar(f)
+	}
+	PrintGetGCVar := virtual !(TIOStream^ f) -> void
+	{
 		gPtr := GCType.GetPoint()
 		f^ << "%VTemp" << varId << " = getelementptr "
 		gPtr.PrintType(f)
@@ -44,6 +48,12 @@ FuncGCLocalParam := class extend ParamFunc
 	{
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+}
+FuncGCLocalParamInYield := class extend FuncGCLocalParam
+{
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
 }

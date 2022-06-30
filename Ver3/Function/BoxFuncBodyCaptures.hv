@@ -69,6 +69,7 @@ AppendClass BoxFuncBody
 	YieldStateInt := ParamFunc^
 	YieldTupleVar := ParamFunc^
 
+	gcVars := List.{FuncGCLocalParam^}
 	regularVars := List.{ParamFunc^}
 
 	PutYieldState := !(BoxYield^ yld) -> int
@@ -140,8 +141,13 @@ AppendClass BoxFuncBody
 			it.exeObj = new BoxFuncCall(fCall,objs2)
 			it->SetType(FuncResultParamInGenerator)
 		}
+
+		for it,i : gcVars
+		{
+			it->SetType(FuncGCLocalParamInYield)
+		}
 	}
-	PrintYieldCode := !(TIOStream^ f) -> void
+	PrintYieldCodeParams := !(TIOStream^ f) -> void
 	{
 		if YieldStateInt == null
 			return void
@@ -150,11 +156,21 @@ AppendClass BoxFuncBody
 		regularVars[^]->{FuncResultParamInGenerator^}.PrintAtStart(f)
 
 		YieldStateInt.PrintCode(f)
+	}
+	PrintYieldCodeParamsGC := !(TIOStream^ f) -> void
+	{
+		if YieldStateInt == null
+			return void
 
-		empty := CheckExeDownList
-		cl := BoxFuncCall(YieldStateInt,empty)
+		gcVars[^]->{FuncGCLocalParamInYield^}.PrintGetGCVar(f)
+	}
+	PrintYieldCodeGo := !(TIOStream^ f) -> void
+	{
+		if YieldStateInt == null
+			return void
+
+		cl := BoxFuncCall(YieldStateInt)
 		cl.PrintPre(f)
-
 
 		f^ << "switch i32 "
 		cl.PrintUse(f)
