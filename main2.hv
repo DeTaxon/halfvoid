@@ -102,6 +102,7 @@ TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.
 	yieldState := int
 	lambdaVars := YieldTuple
 
+	IsFinished := virtual !() -> bool { return yieldState < 0 }
 	getCaptureVar := virtual !() -> void^ {  result = capPtr }
 	getYieldState := virtual !() -> int& { return yieldState }
 	getYieldVars := virtual !() -> void^ { return lambdaVars& }
@@ -166,7 +167,9 @@ main := !(int argc, char^^ argv) -> int
 		printf("waw\n")
 	}
 	z()
+	printf("state %i\n",z.IsFinished())
 	z()
+	printf("state %i\n",z.IsFinished())
 	printf("wo %i\n",x)
 	return 0
 }

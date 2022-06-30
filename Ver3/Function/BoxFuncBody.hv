@@ -271,6 +271,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		
 		body.PrintCode(f)
 
+		YieldPrintFinilize(f)
+
 		ExitLabel.PrintCode(f)
 
 		if rTyp == GTypeVoid or rTyp.IsComplexReturn()

@@ -68,6 +68,7 @@ AppendClass BoxFuncBody
 	YieldStart := BoxLabel^
 	YieldStateInt := ParamFunc^
 	YieldTupleVar := ParamFunc^
+	YieldFinilize := BoxExeObj^
 
 	gcVars := List.{FuncGCLocalParam^}
 	regularVars := List.{ParamFunc^}
@@ -146,6 +147,11 @@ AppendClass BoxFuncBody
 		{
 			it->SetType(FuncGCLocalParamInYield)
 		}
+
+		finObjs := CheckExeDownList
+		finObjs.Push(new BoxFuncCall(YieldStateInt))
+		finObjs.Push(GetExeInt(-1))
+		YieldFinilize = CreateFuncCall(StringSpan("="),finObjs)
 	}
 	PrintYieldCodeParams := !(TIOStream^ f) -> void
 	{
@@ -191,5 +197,13 @@ AppendClass BoxFuncBody
 		"\n"
 
 		YieldStart?.PrintCode(f)
+	}
+
+	YieldPrintFinilize := !(TIOStream^ f) -> void
+	{
+		if YieldStateInt == null
+			return void
+		assert(YieldFinilize != null)
+		YieldFinilize.PrintDefaultUse(f)
 	}
 }
