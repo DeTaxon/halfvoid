@@ -450,27 +450,29 @@ RuleSLambda := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "=>" and It.GetValue() != "==>" return 0
-
-	It = It.Right
-	if It == null return 0
-
-	if InDataR(It)
+	if  It.GetValue() == "==>"
 	{
 		It = It.Right
 		if It == null return 0
-		siz += 1
+
+		if InDataR(It)
+		{
+			It = It.Right
+			if It == null return 0
+			siz += 1
+		}
+
+		if It.GetValue() == "[]"
+		{
+			It = It.Right
+			if It == null return 0
+			siz += 1 
+		}
+
+		if It.GetValue() == "{}" return siz
+		return 0
 	}
 
-	if It.GetValue() == "[]"
-	{
-		It = It.Right
-		if It == null return 0
-		siz += 1 
-	}
-
-	if It.GetValue() == "{}" return siz
-	if InDataR(It) return siz
 	return 0
 }
 RuleCallFunction := !(void^ itr) -> int

@@ -93,9 +93,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		return ExitLabel
 	}
-	
-	Params := HybridQueue.{MemVar^,8}
-	ResultVar := MemVar^
 
 	body := BoxBlock^
 	readyState := THatch
@@ -139,6 +136,7 @@ BoxFuncBody := class extend BoxFuncCommon
 				if tp.ResultRef
 					rFuncType = rFuncType.GetPoint()
 				rFnc := new FuncLocalParam(rFuncType)
+				regularVars.Push(rFnc)
 				ResultVar = new MemVar(resSpn,rFnc)
 			}
 		}

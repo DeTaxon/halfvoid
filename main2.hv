@@ -110,7 +110,7 @@ TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {
-	lmb.callFunc(lmb&,args...)
+	return lmb.callFunc(lmb&,args...)
 }
 internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
 {
@@ -126,7 +126,6 @@ internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVars
 	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
 }
 
-
 internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambda.{FuncPtr}^
 {
 	res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr,YieldVars}
@@ -135,41 +134,15 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 	result = res
 }
 
-//TLambdaImplementation := class .{@Captures} extend TLambda
-//{
-//	values := Captures
-//
-//	//Capture := virtual !() -> TLambda^
-//	//{
-//	//	result = new TLambdaImplementation
-//	//	result.values[^] = values[^]
-//	//}
-//}
-
-destr := class extend TGCObject
-{
-	Destroy := virtual !() -> void
-	{
-		printf("destroyed\n")
-	}
-}
-
 main := !(int argc, char^^ argv) -> int
 {
-	x := 0
-	z := () ==> {
-		x += 13
-		c := 3
-		j := new destr
-		printf("wow\n")
-		yield void
-		x += c
-		printf("waw\n")
+	z := () ==> int {
+		yield 12
+		yield 10
+		yield 7
 	}
-	z()
-	printf("state %i\n",z.IsFinished())
-	z()
-	printf("state %i\n",z.IsFinished())
-	printf("wo %i\n",x)
+	printf("wow %i\n",z())
+	printf("wow %i\n",z())
+	printf("wow %i\n",z())
 	return 0
 }

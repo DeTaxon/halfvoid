@@ -5,7 +5,27 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	}else{
 		return null
 	}
-	res := new BoxLambdaHolder(itm.Down,itm.Down.Right.Right)
+
+	bodyToken := Token^
+	typeToken := Token^
+	captureToken := Token^
+
+	iter := itm.Down.Right.Right
+
+	while iter.GetValue() != "{}"
+	{
+		if iter.GetValue() == "[]"
+		{
+			captureToken = iter
+		}else{
+			typeToken = iter
+		}
+		iter = iter.Right
+	}
+	bodyToken = iter
+
+
+	res := new BoxLambdaHolder(itm.Down,bodyToken,typeToken,captureToken)
 
 	if res.IsOneFunc()
 	{
