@@ -32,11 +32,11 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
 
 		newFunc := res.GetOneFunc()->{BoxFuncBody^} //Vars captured
+		newFunc.ParseBodyForced()
 		
 		miniObj := CheckExeDownList
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := new BoxFuncCall(fncFnc,miniObj)
-		newFunc.ParseBodyForced()
 		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
 
 

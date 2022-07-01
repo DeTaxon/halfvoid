@@ -8,6 +8,8 @@ BoxLambdaHolder := class extend BoxExeObj
 	resToken := TokenIndent
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
+
+		attr := FuncAttributes
 		bPtr := Token^
 
 		if brackets.Down?.GetValue() == "()"
@@ -19,11 +21,11 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if typeToken == null
 		{
+			attr.IsAutoResult = true
 			resToken.Value = StringSpan("void") //TODO: auto detect return type
 			typeToken = resToken&
 		}
 
-		attr := FuncAttributes
 		attr.IsLambda = true
 		
 		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,typeToken,body)

@@ -136,7 +136,8 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 
 main := !(int argc, char^^ argv) -> int
 {
-	z := () ==> int {
+	k := 3
+	z := () ==> {
 		yield 12
 		yield 10
 		yield 7
@@ -144,5 +145,6 @@ main := !(int argc, char^^ argv) -> int
 	printf("wow %i\n",z())
 	printf("wow %i\n",z())
 	printf("wow %i\n",z())
+
 	return 0
 }

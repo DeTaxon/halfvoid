@@ -1,0 +1,121 @@
+AppendClass BoxFuncBody
+{
+    Returns := List.{ReturnHalfState^}
+
+    CheckReturnStep := !() -> void
+    {
+        assert(Attrs.IsAutoResult)
+
+        resType := GTypeVoid
+
+        for it : Returns
+        {
+            st := it.GetSetType()
+            if st == GTypeVoid
+                continue
+            if resType == GTypeVoid
+            {
+                resType = st
+            }else{
+                resType = TypeFight(resType,st)
+            }
+            assert(resType != null) //TODO: emit error
+        }
+
+        if resType != GTypeVoid
+        {
+            ObjType = FuncTypeSetResult(ObjType->{TypeFunc^},resType,false)
+        }else{
+            assert(ObjType->{TypeFunc^}.ResultType == GTypeVoid)
+        }
+
+		ResultTypeHatch.Emit()
+
+        CreateResultVar()
+        if ResultVar != null
+            UnitStack.PushFront(ResultVar)
+        
+        Returns[^].ResolveStep()
+    }
+    CreateResultVar := !() -> void
+    {
+        assert(ResultVar == null)
+
+        tp := ObjType->{TypeFunc^}
+        
+		if tp.ResultType != GTypeVoid
+		{
+			resSpn := StringSpan("result")
+			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
+			{
+				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
+				ResultVar = new MemVar(resSpn,rv)
+			}else{
+				rFuncType := tp.ResultType
+				if tp.ResultRef
+					rFuncType = rFuncType.GetPoint()
+				rFnc := new FuncLocalParam(rFuncType)
+				regularVars.Push(rFnc)
+				ResultVar = new MemVar(resSpn,rFnc)
+			}
+		}
+    }
+}
+
+ReturnHalfState := class extend BoxExeObj
+{
+    isYield := bool
+    callObj := BoxExeObj^
+    returnObj := BoxExeObj^
+    this := !(BoxExeObj^ toCall,bool iY) -> void
+    {
+        callObj = toCall
+        isYield = iY
+    }
+
+    ResolveStep := !() -> void
+    {
+        if callObj != null
+        {
+			if callObj.GetType() != GTypeVoid //TODO Auto return type
+			{
+		        rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
+
+				if rRef
+					callObj = new UnrefFuncCall(callObj)
+
+				tkn1 := TokenIndent(StringSpan("result"))
+
+				resGet := TryGetExeCall(tkn1&)
+
+				objs := CheckExeDownList
+				objs.Push(resGet)
+				objs.Push(callObj)
+				callObj = CreateFuncCall(StringSpan("="),objs)
+				assert(callObj != null)
+			}
+        }
+     
+		if isYield
+		{
+			returnObj = new BoxYield(CurrentFunc.GetExitLabel(),callObj)
+		}else{
+		    returnObj = new BoxReturn(CurrentFunc.GetExitLabel(),callObj)
+        }
+    }
+    GetReturnObj := !() -> BoxExeObj^
+    {
+        return returnObj
+    }
+    GetSetType := !() -> Type^
+    {
+        if callObj == null
+            return GTypeVoid
+        return callObj.GetType()
+    }
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+    {
+        returnObj.PrintDefaultUse(f)
+    }
+}

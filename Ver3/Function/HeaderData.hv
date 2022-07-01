@@ -134,6 +134,9 @@ FunctionHeaderInfo := class
 			fTyp[i] = it.ItType
 			isRef[i] = it.IsRef
 		}
+		resType := ResultType.ItType
+		if resType == null
+			resType = GTypeVoid
 
 		return GetFuncType(Types.Size(),fTyp[0]&,isRef[0]&,ResultType.ItType,ResultType.IsRef,IsVargs)
 	}

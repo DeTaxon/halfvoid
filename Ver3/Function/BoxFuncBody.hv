@@ -43,6 +43,12 @@ BoxFuncBody := class extend BoxFuncCommon
 		Attrs = atrs
 		bdy = bodyIn
 
+		if not Attrs.IsAutoResult
+		{
+		//printf("hey %i\n",Attrs.IsAutoResult)
+			ResultTypeHatch.Emit()
+		}
+
 		NamedParametersCount = names.Size()
 		InputVarNames.Push(names[^])
 
@@ -53,9 +59,12 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		ExitLabel = new BoxLabel() 
 	}
+
+	ResultTypeHatch := THatch
 	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
+		ResultTypeHatch.Await()
 		return ObjType
 	}
 
@@ -112,7 +121,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 
-		tp := GetType()->{TypeFunc^}
+		tp := ObjType ->{TypeFunc^}
 
 		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
 		{
@@ -123,23 +132,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			vr := new MemVar(name,parObj)
 			Params.Push(vr)
 		}
-		if tp.ResultType != GTypeVoid
-		{
-			resSpn := StringSpan("result")
-
-			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
-			{
-				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
-				ResultVar = new MemVar(resSpn,rv)
-			}else{
-				rFuncType := tp.ResultType
-				if tp.ResultRef
-					rFuncType = rFuncType.GetPoint()
-				rFnc := new FuncLocalParam(rFuncType)
-				regularVars.Push(rFnc)
-				ResultVar = new MemVar(resSpn,rFnc)
-			}
-		}
+		if not Attrs.IsAutoResult
+			CreateResultVar()
 
 		UnitStack.PushFront(ConstVars[^])
 
@@ -151,11 +145,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			UnitStack.PushFront(par)
 		}
+		
 		if ResultVar != null
 			UnitStack.PushFront(ResultVar)
 		
 		body = new BoxBlock(bdy)
 		body.Work()
+
+		if Attrs.IsAutoResult
+			CheckReturnStep()
 
 		if gcVarsCount != 0
 		{
@@ -174,7 +172,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		CurrentFunc = oldFunc
 		GCVarsInUse = oldVarsCount
 
-
+		ResultTypeHatch.Emit()
 		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void

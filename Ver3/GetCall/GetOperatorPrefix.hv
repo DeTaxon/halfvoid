@@ -6,45 +6,29 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.GetValue() == "yield"
 			isYield = true
 
-		fnc := GetCurrentFunc()
-		fType := fnc.GetType()->{TypeFunc^}
-
 		resultCall := BoxExeObj^
 
-		rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
+		preRes := ReturnHalfState^
 
 		//TODO check return type vs func result. + result ref
 
 		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
 		{
+			preRes = new ReturnHalfState(null,isYield)
 		}else{
 			dwnRes := TryGetExeCall(itm.Down.Right)
-			assert(dwnRes != null)
-			if dwnRes.GetType() == GTypeVoid //TODO Auto return type
-			{
-				resultCall = dwnRes
-				assert(resultCall != null)
-			}else{
-				if rRef
-					dwnRes = new UnrefFuncCall(dwnRes)
-				tkn1 := TokenIndent(StringSpan("result"))
-
-				resGet := TryGetExeCall(tkn1&)
-
-				objs := CheckExeDownList
-				objs.Push(resGet)
-				objs.Push(dwnRes)
-				resultCall = CreateFuncCall(StringSpan("="),objs)
-				assert(resultCall != null)
-			}
+			assert(dwnRes != null) //TODO EmitError
+			preRes = new ReturnHalfState(dwnRes,isYield)
 		}
 
-		if isYield
+		if CurrentFunc.Attrs.IsAutoResult
 		{
-			return new BoxYield(fnc.GetExitLabel(),resultCall)
+			CurrentFunc.Returns.Push(preRes)
+			return preRes
 		}
 
-		return new BoxReturn(fnc.GetExitLabel(),resultCall)
+		preRes.ResolveStep()
+		return preRes.GetReturnObj()
 	}
 	return null
 }

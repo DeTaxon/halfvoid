@@ -26,6 +26,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resTyp = resToken
 		cns = constToken
 		bdy = bodyIn
+
+		if resTyp == null
+			Attrs.IsAutoResult = true
+
 		ParseHeader()
 	}
 	SetName := virtual !(StringSpan name) -> void
@@ -38,6 +42,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ParseHeader := virtual !() -> void
 	{
+		if Attrs.IsAutoResult
+			hData.IsAutoResult = true
+		
+
 		if Attrs.IsLambda
 		{
 			hData.Types.Emplace(StringSpan(""),GTypeVoidP,false,null)

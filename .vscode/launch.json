@@ -21,7 +21,7 @@
       ]
     },{
       "name": "(gdb) ver3",
-      "type": "clangd",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/a.out",
       "args": [],
