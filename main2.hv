@@ -148,8 +148,7 @@ main := !(int argc, char^^ argv) -> int
 	}
 	for i : z
 	{
-		//printf("wow %i\n",i)
-		printf("temp\n")
+		printf("wow %i\n",i)
 		//TODO break,continue
 	}
 

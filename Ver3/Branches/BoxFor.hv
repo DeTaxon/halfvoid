@@ -60,6 +60,8 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
             forElement.GetCall = iCall
             forElement.IsFinished = iFins
             forElement.InitStep = dwnVar
+            //new FuncResultParam(iCall)
+            forElement.ValueVar = new MemVar(StringSpan(name),new FuncResultParam(iCall))
 
             resFor.values.Push(forElement)
 
@@ -69,7 +71,7 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
 
     assert(iter.GetValue() == "{}")
 
-    resFor.body = new BoxBlock(iter)
+    resFor.StepTwo(iter)
 
     return resFor
 }
@@ -81,6 +83,7 @@ ForSubObjects := class
     GetCall := BoxExeObj^
     IsFinished := BoxExeObj^
     InitStep := ParamFunc^
+    NextCheck := BoxLabel^
 
     "=" := default
 }
@@ -90,7 +93,6 @@ BoxFor := class extend BoxExeObj
     values := HybridQueue.{ForSubObjects,5}
 
     CheckStep := BoxLabel
-    BodyStep := BoxLabel
     EndLabel := BoxLabel
 
     body := BoxBlock^
@@ -98,26 +100,48 @@ BoxFor := class extend BoxExeObj
     this := !() -> void
     {
         CheckStep."this"()
-        BodyStep."this"()
         EndLabel."this"()
+    }
+    StepTwo := !(Token^ itm) -> void
+    {
+        values[^].NextCheck = new BoxLabel()
+
+        stackSize := UnitStack.Size()
+
+        for it : values
+        {
+            UnitStack.Push(it.ValueVar?)
+            UnitStack.Push(it.IndVar?)
+        }
+
+        body = new BoxBlock(itm)
+
+        while stackSize > UnitStack.Size()
+            UnitStack.Pop()
     }
 
     PrintCode := virtual !(TIOStream^ f) -> void
     {
         values[^].InitStep.PrintCode(f)
         CheckStep.PrintCode(f)
-        values[^].GetCall.PrintDefaultUse(f)
-        values[^].IsFinished.PrintPre(f)
 
-		f^ << "br i1 "
-		values[0].IsFinished.PrintUse(f) //TODO: non zero
-		f^ << ", label "
-		EndLabel.PrintLabel(f)
-		f^ << ", label "
-		BodyStep.PrintLabel(f)
-		f^ << "\n"
+        for it : values
+        {
+            it.GetCall.PrintDefaultUse(f)
+            it.IsFinished.PrintPre(f)
 
-        BodyStep.PrintCode(f)
+            f^ << "br i1 "
+            it.IsFinished.PrintUse(f) //TODO: non zero
+            f^ << ", label "
+            EndLabel.PrintLabel(f)
+            f^ << ", label "
+            it.NextCheck.PrintLabel(f)
+            if DebugMode 
+                f^ << ", !dbg !" << GDebugLineCallId
+            f^ << "\n"
+            it.NextCheck.PrintCode(f)
+        }
+
         body.PrintCode(f)
 
         CheckStep.PrintGo(f)
