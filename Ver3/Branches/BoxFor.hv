@@ -1,0 +1,130 @@
+GetForCycle := !(Token^ itm) -> BoxExeObj^
+{
+    resFor := new BoxFor()
+
+    iter := itm.Down.Right
+
+    if iter.Right.GetValue() == "{}"
+    {
+        //TODO, name only
+    }else{
+        while iter.GetValue() != "{}" //TODO non {} variant
+        {
+            if iter.GetValue() == ","
+                iter = iter.Right
+            
+            forElement := ForSubObjects
+
+            if not (iter is TokenIndent)
+                iter.EmitError("not a name for cycle element variable") //todo better error explanation
+            
+            name := iter->{TokenIndent^}.Value
+            index := StringSpan("")
+
+            iter = iter.Right
+
+            if iter.GetValue() == ","
+            {
+                iter = iter.Right
+
+                if not (iter is TokenIndent)
+                    iter.EmitError("not a name for cycle index variable") //todo better error explanation
+                
+                index = iter->{TokenIndent^}.Value
+
+                iter = iter.Right
+            }
+
+            assert(iter.GetValue() == ":")
+            iter = iter.Right
+
+            dwnRes := TryGetExeCall(iter)
+
+            if dwnRes == null
+                iter.EmitError("Could not get result for cycle over obj")
+
+            dwnVar := new FuncResultParam(dwnRes)
+            
+            cnsts := List.{BoxExeConstObj^}
+            objs := CheckExeDownList
+            iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
+
+            if iFins == null
+                iter.EmitError("iteratable object does not contain IsFinished")
+
+            iCall := innerTryGetMethodCall(StringSpan("()"),new BoxFuncCall(dwnVar),objs,cnsts)
+
+            if iCall == null
+                iter.EmitError("iteratable object is not callable, no () function")
+
+            forElement.GetCall = iCall
+            forElement.IsFinished = iFins
+            forElement.InitStep = dwnVar
+
+            resFor.values.Push(forElement)
+
+            iter = iter.Right
+        }
+    }
+
+    assert(iter.GetValue() == "{}")
+
+    resFor.body = new BoxBlock(iter)
+
+    return resFor
+}
+
+ForSubObjects := class
+{
+    ValueVar := MemVar^
+    IndVar := MemVar^
+    GetCall := BoxExeObj^
+    IsFinished := BoxExeObj^
+    InitStep := ParamFunc^
+
+    "=" := default
+}
+
+BoxFor := class extend BoxExeObj
+{
+    values := HybridQueue.{ForSubObjects,5}
+
+    CheckStep := BoxLabel
+    BodyStep := BoxLabel
+    EndLabel := BoxLabel
+
+    body := BoxBlock^
+    
+    this := !() -> void
+    {
+        CheckStep."this"()
+        BodyStep."this"()
+        EndLabel."this"()
+    }
+
+    PrintCode := virtual !(TIOStream^ f) -> void
+    {
+        values[^].InitStep.PrintCode(f)
+        CheckStep.PrintCode(f)
+        values[^].GetCall.PrintDefaultUse(f)
+        values[^].IsFinished.PrintPre(f)
+
+		f^ << "br i1 "
+		values[0].IsFinished.PrintUse(f) //TODO: non zero
+		f^ << ", label "
+		EndLabel.PrintLabel(f)
+		f^ << ", label "
+		BodyStep.PrintLabel(f)
+		f^ << "\n"
+
+        BodyStep.PrintCode(f)
+        body.PrintCode(f)
+
+        CheckStep.PrintGo(f)
+        EndLabel.PrintCode(f)
+    }
+    PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+        body.PrintDebugMeta(f)
+    }
+}

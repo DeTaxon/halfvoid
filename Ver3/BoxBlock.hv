@@ -85,7 +85,19 @@ BoxBlock := class extend BoxUnit
 					continue
 				}
 			}
-			//TODO: check switch,while
+			if iter.Down?.GetValue() == "for"
+			{
+				forObj := GetForCycle(iter)
+				assert(forObj != null)
+				if forObj != null
+				{
+					exeLines.Push(forObj)
+					iter = iter.Right
+					continue
+				}
+			}
+
+			//TODO: check switch
 
 			vr := TryParseVar(iter)
 

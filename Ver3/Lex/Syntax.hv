@@ -171,8 +171,8 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
 					if RuleUseReverse(begin,"Block",RuleIf) return true
 					if RuleUse(begin,"Block",RuleWhile) return true
-				//	if RuleUse(begin,"for()",RuleFor) 
-				//			return true
+					if RuleUse(begin,"for()",RuleFor) 
+							return true
 				//	if RuleUse(begin,"switch()",RuleSwitch) 
 				//			return true
 				//	if RuleUse(begin,"case()",RuleCase) return true
@@ -626,81 +626,81 @@ RuleWhile := !(void^ itr)-> int
 	return 3
 }
 
-//RuleFor := !(void^ itr)-> int
-//{
-//	It := itr->{Token^}
-//	Size := 3
-//
-//	if It.GetValue() != "for" return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if not InDataR(It) return 0
-//	It = It.Right
-//	if It == null return 0
-//
-//	if It.GetValue() == ","
-//	{
-//		It = It.Right
-//
-//		if It == null return 0
-//
-//		if not InDataR(It) return 0
-//
-//		It = It.Right
-//		if It == null return 0
-//		Size += 2
-//	}
-//
-//	if It.GetValue() == ":"
-//	{
-//		It = It.Right
-//		if It == null return 0
-//
-//		if not InDataR(It) return 0
-//		It = It.Right
-//		if It == null return 0
-//
-//		Size += 2
-//	}
-//
-//	if It == null return 0
-//
-//
-//	while It.GetValue() == ","
-//	{
-//		It = It.Right
-//		if It == null return 0
-//
-//		if It.GetValue() != "~ind" return 0
-//
-//		It = It.Right
-//		if It == null return 0
-//		
-//		if It.GetValue() == ","
-//		{
-//			It = It.Right
-//			if It == null return 0
-//
-//			if It.GetValue() != "~ind" return 0
-//			
-//			It = It.Right
-//			if It == null return 0
-//
-//			Size += 2
-//		}
-//			
-//		if It.GetValue() != ":" return 0
-//
-//		It = It.Right
-//		if not InDataR(It) return 0
-//		It = It.Right
-//		if It == null return 0
-//
-//		Size += 4
-//	}
-//
-//	if It.GetValue() != "{}" and not InBlockData(It) return 0
-//	return Size
-//}
-//
+RuleFor := !(void^ itr)-> int
+{
+	It := itr->{Token^}
+	Size := 3
+
+	if It.GetValue() != "for" return 0
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() == ","
+	{
+		It = It.Right
+
+		if It == null return 0
+
+		if not InDataR(It) return 0
+
+		It = It.Right
+		if It == null return 0
+		Size += 2
+	}
+
+	if It.GetValue() == ":"
+	{
+		It = It.Right
+		if It == null return 0
+
+		if not InDataR(It) return 0
+		It = It.Right
+		if It == null return 0
+
+		Size += 2
+	}
+
+	if It == null return 0
+
+
+	while It.GetValue() == ","
+	{
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "~ind" return 0
+
+		It = It.Right
+		if It == null return 0
+		
+		if It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
+
+			if It.GetValue() != "~ind" return 0
+			
+			It = It.Right
+			if It == null return 0
+
+			Size += 2
+		}
+			
+		if It.GetValue() != ":" return 0
+
+		It = It.Right
+		if not InDataR(It) return 0
+		It = It.Right
+		if It == null return 0
+
+		Size += 4
+	}
+
+	if It.GetValue() != "{}" and not InBlockData(It) return 0
+	return Size
+}
+

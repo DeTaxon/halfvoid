@@ -138,13 +138,20 @@ main := !(int argc, char^^ argv) -> int
 {
 	k := 3
 	z := () ==> {
+		printf("a\n")
 		yield 12
+		printf("b\n")
 		yield 10
+		printf("c\n")
 		yield 7
+		printf("d\n")
 	}
-	printf("wow %i\n",z())
-	printf("wow %i\n",z())
-	printf("wow %i\n",z())
+	for i : z
+	{
+		//printf("wow %i\n",i)
+		printf("temp\n")
+		//TODO break,continue
+	}
 
 	return 0
 }
