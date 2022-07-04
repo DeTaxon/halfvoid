@@ -90,10 +90,40 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			}else{
 				assert(false) //TODO Emit, not a class
 			}
-		}
-		
+		}	
 	}
+
+	if right.Value == "SetType"
+	{
+		dwnRes := TryGetExeCall(obj.Down)
+		typ := ParseType(obj.Down.Right.Right.Right.Down)
+		setCall := innerTrySetType(dwnRes,typ)
+		if setCall == null
+			obj.EmitError("Can not set type")
+		return setCall
+	}
+
 	
 	assert(false)
 	return null
+}
+
+
+innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
+{
+	if obj == null
+		return null
+	if toType == null
+		return null
+
+	cnsts := List.{BoxExeConstObj^}
+	cnsts.Push(GetConstType(toType))
+	objs := CheckExeDownList
+	objs.Push(obj)
+	fnc := GInternalSetType.GetFunc(objs,cnsts)
+	cnsts.Destroy()
+	assert(fnc != null)
+	if fnc == null
+		return null
+	return new BoxFuncCall(fnc,objs)
 }

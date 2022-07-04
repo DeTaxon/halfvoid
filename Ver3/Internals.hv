@@ -10,6 +10,7 @@ TemplateInternalGetCaptures := BoxFuncTemplate^
 TemplateInternalGetYieldState := BoxFunc^
 TemplateInternalGetYieldVars := BoxFuncTemplate^
 
+GInternalSetType := BoxFuncTemplate^
 
 GFuncGetDepth := BoxFunc^
 GFuncSetDepth := BoxFunc^
@@ -76,6 +77,8 @@ InitInternals := !() -> void
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
 	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
+
+	GInternalSetType = intGetTemplate("internalHVSetType")
 
 
 	cName := TokenIndent(StringSpan("TGCIObject"))

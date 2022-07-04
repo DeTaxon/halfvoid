@@ -60,7 +60,6 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
             forElement.GetCall = iCall
             forElement.IsFinished = iFins
             forElement.InitStep = dwnVar
-            //new FuncResultParam(iCall)
             forElement.ValueVar = new MemVar(StringSpan(name),new FuncResultParam(iCall))
 
             resFor.values.Push(forElement)

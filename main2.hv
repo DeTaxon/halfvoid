@@ -133,9 +133,20 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 	res.capPtr = CaptureVars
 	result = res
 }
+internalHVStackAllocatedGC := class .{@T} extend T
+{
+	DecRef := virtual !() -> void {
+		RefValue -= 1
+		if RefValue == 0
+		{
+			Destroy()
+		}
+	}
+}
 
 main := !(int argc, char^^ argv) -> int
 {
+	c := new internalHVStackAllocatedGC.{TILambda}
 	k := 3
 	z := () ==> {
 		printf("a\n")
@@ -151,6 +162,14 @@ main := !(int argc, char^^ argv) -> int
 		printf("wow %i\n",i)
 		//TODO break,continue
 	}
+	//z->SetType(internalStackAllocatedGC.{TILambda})
+	z->SetType(internalHVStackAllocatedGC.{TILambda})
 
 	return 0
+}
+
+internalHVSetType := !(@T^ x) .{@ToType} -> ToType^
+{
+	x->{void^}->{ToType^}->VTable = ToType->VTable
+	return x->{void^}->{ToType^} //todo recheck on dymamic check
 }
