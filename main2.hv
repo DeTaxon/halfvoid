@@ -96,7 +96,7 @@ TLambda := class .{@FuncPtr} extend TILambda
 	//	return this.callFunc(this&,argc...)
 	//}
 }
-TLambdaWithCaptures := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
+TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 {
 	capPtr := CapTypePtr
 	yieldState := int
@@ -126,12 +126,14 @@ internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVars
 	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
 }
 
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambda.{FuncPtr}^
+internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuplePtr,YieldVars}
 {
-	res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr,YieldVars}
-	res.callFunc = fnc
-	res.capPtr = CaptureVars
-	result = res
+	result.callFunc = fnc
+	result.capPtr = CaptureVars
+	//res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr,YieldVars}
+	//res.callFunc = fnc
+	//res.capPtr = CaptureVars
+	//result = res
 }
 internalHVStackAllocatedGC := class .{@T} extend T
 {
@@ -144,26 +146,32 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
+SomeBigObject := class
+{
+	x := int
+	y := int
+}
+
+resBig := !() -> SomeBigObject
+{
+	printf("hey\n")
+	result.x = 10
+	result.y = 12
+}
+
 main := !(int argc, char^^ argv) -> int
 {
-	c := new internalHVStackAllocatedGC.{TILambda}
-	k := 3
-	z := () ==> {
-		printf("a\n")
-		yield 12
-		printf("b\n")
-		yield 10
-		printf("c\n")
-		yield 7
-		printf("d\n")
-	}
-	for i : z
-	{
-		printf("wow %i\n",i)
-		//TODO break,continue
-	}
-	//z->SetType(internalStackAllocatedGC.{TILambda})
-	z->SetType(internalHVStackAllocatedGC.{TILambda})
+	rb := resBig()
+	printf("test %i %i\n",rb.x,rb.y)
+	//z := () ==> {
+	//	printf("a\n")
+	//	yield 12
+	//	printf("b\n")
+	//	yield 10
+	//	printf("c\n")
+	//	yield 7
+	//	printf("d\n")
+	//}
 
 	return 0
 }

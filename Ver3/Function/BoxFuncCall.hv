@@ -8,6 +8,7 @@ GetNewId := !() -> int
 BoxFuncCall := class extend BoxExeObj
 {
 	callObj := BoxFunc^
+	ResultVar := ParamFunc^
 	downs := ExeDownList
 	resId := int
 
@@ -36,9 +37,8 @@ BoxFuncCall := class extend BoxExeObj
 
 		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 		{
-			resVar := CreateVar(fType.ResultType,false)
-			emptyDwn := CheckExeDownList
-			downs.Push(new BoxFuncCall(resVar,emptyDwn))
+			ResultVar = CreateVar(fType.ResultType,false)
+			downs.Push(new BoxFuncCall(ResultVar))
 
 			this&->SetType(BoxFuncComplexCall)
 		}
