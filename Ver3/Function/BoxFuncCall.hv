@@ -8,9 +8,11 @@ GetNewId := !() -> int
 BoxFuncCall := class extend BoxExeObj
 {
 	callObj := BoxFunc^
-	ResultVar := ParamFunc^
 	downs := ExeDownList
 	resId := int
+
+	ResultVar := ParamFunc^
+	ExtraWork := List.{BoxExeObj^}
 
 	this := !(BoxFunc^ fnc) -> void
 	{
@@ -80,6 +82,33 @@ BoxFuncCall := class extend BoxExeObj
 				downs[i] = newObj
 			}
 		}
+
+		if ResultVar != null and fType.ResultType is TypeClass
+		{
+			if IsGCClass(fType.ResultType)
+			{
+				ptrType := fType.ResultType.GetPoint()
+				ptrVar := CreateVar(ptrType,false)
+
+				tps := List.{BoxExeConstObj^}
+				tps.Push(GetConstType(fType.ResultType))
+				newType := GCStackType.GetClass(tps).ItType
+				tps.Destroy()
+				st := innerTrySetType(new BoxFuncCall(ResultVar),newType)
+				ExtraWork.Push(st)
+
+				
+				thisCall := new BoxFuncCall(ResultVar)
+				thisCall2 := new UnrefFuncCall(thisCall)
+
+				objs := CheckExeDownList
+				objs.Push(new BoxFuncCall(ptrVar))
+				objs.Push(thisCall2)
+				setCall := CreateFuncCall(StringSpan("="),objs)
+				assert(setCall != null)
+				ExtraWork.Push(setCall)
+			}
+		}
 	}
 	NotifyMemUse := virtual !() -> void
 	{
@@ -115,6 +144,7 @@ BoxFuncCall := class extend BoxExeObj
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
 		PrintFuncUse(f)
+		ExtraWork[^].PrintDefaultUse(f)
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{

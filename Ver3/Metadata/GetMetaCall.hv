@@ -115,6 +115,9 @@ innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
 		return null
 	if toType == null
 		return null
+	
+	if obj.GetType() is TypeClass
+		obj = new UnrefFuncCall(obj)
 
 	cnsts := List.{BoxExeConstObj^}
 	cnsts.Push(GetConstType(toType))

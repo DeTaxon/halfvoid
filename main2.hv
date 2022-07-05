@@ -146,10 +146,15 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
-SomeBigObject := class
+SomeBigObject := class extend TGCObject
 {
 	x := int
 	y := int
+
+	Destroy := virtual !() -> void
+	{
+		printf("YES\n")
+	}
 }
 
 resBig := !() -> SomeBigObject

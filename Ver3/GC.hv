@@ -4,3 +4,9 @@ IsGCPtr := !(Type^ typ) -> bool
 		return true
 	return false
 }
+IsGCClass := !(Type^ typ) -> bool
+{
+	if typ is in TypeClass and TypeFight(typ,GCType) == GCType
+		return true
+	return false
+}
