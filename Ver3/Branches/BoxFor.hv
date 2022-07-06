@@ -42,8 +42,15 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
 
             if dwnRes == null
                 iter.EmitError("Could not get result for cycle over obj")
+            
+            objs7 := CheckExeDownList
+            objs7.Push(dwnRes)
+            getForCall := CreateFuncCall(StringSpan("for"),objs7)
 
-            dwnVar := new FuncResultParam(dwnRes)
+            if getForCall == null
+                iter.EmitError("Object does not have operator for")
+
+            dwnVar := new FuncResultParam(getForCall)
             
             cnsts := List.{BoxExeConstObj^}
             objs := CheckExeDownList

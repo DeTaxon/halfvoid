@@ -149,27 +149,27 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
-he := class extend TGCObject
+RangeIterator := class
 {
-	i := int
+	value := int
+	end := int
 	"()" := !() -> int
 	{
-		i += 1
-		return i
+		result = value
+		value += 1
 	}
 	IsFinished := !() -> bool
 	{
-		return i > 10
+		return value > end
 	}
-	Destroy := virtual !() -> void
-	{
-		printf("destroyed\n")
-	}
+}
+"for" := !(int this) -> RangeIterator
+{
+	result.end = this
 }
 main := !(int argc, char^^ argv) -> int
 {
-	z := he
-	for i : z
+	for i : 5
 	{
 		printf("test %i\n",i)
 	}
