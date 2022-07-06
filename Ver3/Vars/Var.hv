@@ -34,7 +34,9 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		}else{
 			assert(CurrentScope is in BoxFunc) 
 			vr := CreateVar(varType,false)
-			return new MemVarBorrowed(name,vr)
+			resVar := new MemVarBorrowed(name,vr)
+			ModifyStackAllocatedVar(vr,resVar.Inits)
+			return resVar
 		}
 	}
 

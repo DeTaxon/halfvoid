@@ -130,10 +130,6 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 {
 	result.callFunc = fnc
 	result.capPtr = CaptureVars
-	//res := new TLambdaWithCaptures.{FuncPtr,CaptureTuplePtr,YieldVars}
-	//res.callFunc = fnc
-	//res.capPtr = CaptureVars
-	//result = res
 }
 internalHVDeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
 {
@@ -153,12 +149,30 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
-
+he := class extend TGCObject
+{
+	i := int
+	"()" := !() -> int
+	{
+		i += 1
+		return i
+	}
+	IsFinished := !() -> bool
+	{
+		return i > 10
+	}
+	Destroy := virtual !() -> void
+	{
+		printf("destroyed\n")
+	}
+}
 main := !(int argc, char^^ argv) -> int
 {
-	printf("a\n")
-	defer printf("c\n")
-	printf("b\n")
+	z := he
+	for i : z
+	{
+		printf("test %i\n",i)
+	}
 	return 0
 }
 
