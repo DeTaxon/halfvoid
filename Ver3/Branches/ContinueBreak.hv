@@ -1,0 +1,62 @@
+TryGetContinueBreak := !(Token^ itm) -> BoxExeObj^
+{
+    if itm.GetValue() == "continue"
+    {
+        return new BoxContinue()
+    }
+    if itm.GetValue() == "break"
+    {
+        return new BoxBreak()
+    }
+    return null
+}
+
+BoxContinue := class extend BoxExeObj
+{
+    goLabel := BoxLabel^
+    exitCall := BoxExeObj^
+    this := !() -> void
+    {
+        for it : UnitStack
+        {
+            if it is in BoxBlockContinue
+            {
+                block := it->{BoxBlock^}
+                goLabel = block.GetQuitLabel()
+                exitCall = block.CreateGCClear()
+                break
+            }
+        }
+        assert(goLabel != null)
+    }
+    PrintDefaultUse := virtual !(TIOStream^ f) -> void
+    {
+        exitCall?.PrintDefaultUse(f)
+        goLabel.PrintGo(f)
+    }
+}
+
+BoxBreak := class extend BoxExeObj
+{
+    goLabel := BoxLabel^
+    exitCall := BoxExeObj^
+    this := !() -> void
+    {
+        for it : UnitStack
+        {
+            if it is in BoxBlockBreak
+            {
+                block := it->{BoxBlock^}
+                goLabel = block.GetQuitLabel()
+                exitCall = block.CreateGCClear()
+                break
+            }
+        }
+        assert(goLabel != null)
+    }
+    PrintDefaultUse := virtual !(TIOStream^ f) -> void
+    {
+        exitCall?.PrintDefaultUse(f)
+        goLabel.PrintGo(f)
+    }
+}

@@ -2,7 +2,6 @@ BoxBlock := class extend BoxUnit
 {
 	MetaId := int
 	GCInUseBefore := int
-	down := Token^
 	ItLine := FileLine^
 	exeLines := List.{BoxUnit^} //TODO : to hybrid
 	
@@ -11,6 +10,9 @@ BoxBlock := class extend BoxUnit
 
 	returnLabel := BoxLabel^
 	quitLabel := BoxLabel^
+
+	down := Token^
+	lambdaWay := !()&->BoxExeObj^
 
 	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
@@ -45,11 +47,18 @@ BoxBlock := class extend BoxUnit
 			MetaId = GetNewId()
 		innerWork()
 	}
+	this := !(Token^ tokenLine , !()&->BoxExeObj^ l) -> void
+	{
+		lambdaWay = l
+		ItLine = tokenLine.Line
+		if DebugMode
+			MetaId = GetNewId()
+		innerWork()
+	}
 	innerWork := virtual !() -> void
 	{
 		SyntaxCompress(down,PriorityData)
 
-		iter := down.Down
 		stackAtStart := UnitStack.Size()
 		UnitStack.PushFront(this&)
 
@@ -57,6 +66,15 @@ BoxBlock := class extend BoxUnit
 		defer GCVarsInUse = GCInUseBefore
 
 
+		iter := Token^
+		if down != null
+			iter = down.Down
+		if lambdaWay->{void^} != null
+		{
+			obj := lambdaWay()
+			if obj != null
+				exeLines.Push(obj)
+		}
 		while iter != null
 		{
 			if iter.GetValue() == "{}"
@@ -202,6 +220,22 @@ BoxBlockContinue := class extend BoxBlock
 	this := !(Token^ itm) -> void
 	{
 		this."BoxBlock.this"(itm)
+	}
+	this := !(Token^ tokenLine ,!()&->BoxExeObj^ l) -> void
+	{
+		this."BoxBlock.this"(tokenLine,l)
+	}
+}
+
+BoxBlockBreak := class extend BoxBlock
+{
+	this := !(Token^ itm) -> void
+	{
+		this."BoxBlock.this"(itm)
+	}
+	this := !(Token^ tokenLine ,!()&->BoxExeObj^ l) -> void
+	{
+		this."BoxBlock.this"(tokenLine,l)
 	}
 }
 

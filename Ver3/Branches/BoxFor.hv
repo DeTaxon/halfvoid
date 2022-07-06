@@ -1,93 +1,95 @@
-GetForCycle := !(Token^ itm) -> BoxExeObj^
+GetForCycle := !(Token^ itm) -> BoxUnit^
 {
-    resFor := new BoxFor()
+    return new BoxBlockBreak(itm, () ==> {
+        resFor := new BoxFor()
 
-    iter := itm.Down.Right
+        iter := itm.Down.Right
 
-    if iter.Right.GetValue() == "{}"
-    {
-        //TODO, name only
-    }else{
-        while iter.GetValue() != "{}" //TODO non {} variant
+        if iter.Right.GetValue() == "{}"
         {
-            if iter.GetValue() == ","
-                iter = iter.Right
-            
-            forElement := ForSubObjects
-
-            if not (iter is TokenIndent)
-                iter.EmitError("not a name for cycle element variable") //todo better error explanation
-            
-            name := iter->{TokenIndent^}.Value
-            index := StringSpan("")
-
-            iter = iter.Right
-
-            if iter.GetValue() == ","
+            //TODO, name only
+        }else{
+            while iter.GetValue() != "{}" //TODO non {} variant
             {
-                iter = iter.Right
+                if iter.GetValue() == ","
+                    iter = iter.Right
+                
+                forElement := ForSubObjects
 
                 if not (iter is TokenIndent)
-                    iter.EmitError("not a name for cycle index variable") //todo better error explanation
+                    iter.EmitError("not a name for cycle element variable") //todo better error explanation
                 
-                index = iter->{TokenIndent^}.Value
+                name := iter->{TokenIndent^}.Value
+                index := StringSpan("")
+
+                iter = iter.Right
+
+                if iter.GetValue() == ","
+                {
+                    iter = iter.Right
+
+                    if not (iter is TokenIndent)
+                        iter.EmitError("not a name for cycle index variable") //todo better error explanation
+                    
+                    index = iter->{TokenIndent^}.Value
+
+                    iter = iter.Right
+                }
+
+                assert(iter.GetValue() == ":")
+                iter = iter.Right
+
+                dwnRes := TryGetExeCall(iter)
+
+                if dwnRes == null
+                    iter.EmitError("Could not get result for cycle over obj")
+                
+                objs7 := CheckExeDownList
+                objs7.Push(dwnRes)
+                getForCall := BoxExeObj^
+                getForCall = CreateFuncCall(StringSpan("for"),objs7)
+
+                if getForCall == null
+                {
+                    empty7 := CheckExeDownList
+                    cnsts6 := List.{BoxExeConstObj^}
+                    getForCall = innerTryGetMethodCall(StringSpan("for"),dwnRes,empty7,cnsts6)
+                }
+
+                if getForCall == null
+                    iter.EmitError("Object does not have operator for")
+
+                dwnVar := new FuncResultParam(getForCall)
+                
+                cnsts := List.{BoxExeConstObj^}
+                objs := CheckExeDownList
+                iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
+
+                if iFins == null
+                    iter.EmitError("iteratable object does not contain IsFinished")
+
+                iCall := innerTryGetMethodCall(StringSpan("()"),new BoxFuncCall(dwnVar),objs,cnsts)
+
+                if iCall == null
+                    iter.EmitError("iteratable object is not callable, no () function")
+
+                forElement.GetCall = iCall
+                forElement.IsFinished = iFins
+                forElement.InitStep = dwnVar
+                forElement.ValueVar = new MemVar(StringSpan(name),new FuncResultParam(iCall))
+
+                resFor.values.Push(forElement)
 
                 iter = iter.Right
             }
-
-            assert(iter.GetValue() == ":")
-            iter = iter.Right
-
-            dwnRes := TryGetExeCall(iter)
-
-            if dwnRes == null
-                iter.EmitError("Could not get result for cycle over obj")
-            
-            objs7 := CheckExeDownList
-            objs7.Push(dwnRes)
-            getForCall := BoxExeObj^
-            getForCall = CreateFuncCall(StringSpan("for"),objs7)
-
-            if getForCall == null
-            {
-                empty7 := CheckExeDownList
-                cnsts6 := List.{BoxExeConstObj^}
-                getForCall = innerTryGetMethodCall(StringSpan("for"),dwnRes,empty7,cnsts6)
-            }
-
-            if getForCall == null
-                iter.EmitError("Object does not have operator for")
-
-            dwnVar := new FuncResultParam(getForCall)
-            
-            cnsts := List.{BoxExeConstObj^}
-            objs := CheckExeDownList
-            iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
-
-            if iFins == null
-                iter.EmitError("iteratable object does not contain IsFinished")
-
-            iCall := innerTryGetMethodCall(StringSpan("()"),new BoxFuncCall(dwnVar),objs,cnsts)
-
-            if iCall == null
-                iter.EmitError("iteratable object is not callable, no () function")
-
-            forElement.GetCall = iCall
-            forElement.IsFinished = iFins
-            forElement.InitStep = dwnVar
-            forElement.ValueVar = new MemVar(StringSpan(name),new FuncResultParam(iCall))
-
-            resFor.values.Push(forElement)
-
-            iter = iter.Right
         }
-    }
 
-    assert(iter.GetValue() == "{}")
+        assert(iter.GetValue() == "{}")
 
-    resFor.StepTwo(iter)
+        resFor.StepTwo(iter)
 
-    return resFor
+        return resFor
+    })
 }
 
 ForSubObjects := class

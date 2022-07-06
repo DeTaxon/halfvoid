@@ -180,6 +180,8 @@ main := !(int argc, char^^ argv) -> int
 	for i : 10
 	{
 		new hey
+		if i >= 7
+			break
 		if i mod 2 == 0
 			continue
 		printf("test %i\n",i)
