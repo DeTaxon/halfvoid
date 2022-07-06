@@ -135,6 +135,13 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 	//res.capPtr = CaptureVars
 	//result = res
 }
+internalHVeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
+{
+	Destroy := virtual !() -> void {
+		this()
+	}
+}
+
 internalHVStackAllocatedGC := class .{@T} extend T
 {
 	DecRef := virtual !() -> void {
@@ -146,43 +153,22 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
-SomeBigObject := class extend TGCObject
-{
-	x := int
-	y := int
-
-	Destroy := virtual !() -> void
-	{
-		printf("YES\n")
-	}
-}
-
-resBig := !() -> SomeBigObject
-{
-	printf("hey\n")
-	result.x = 10
-	result.y = 12
-}
 
 main := !(int argc, char^^ argv) -> int
 {
-	rb := resBig()
-	printf("test %i %i\n",rb.x,rb.y)
-	//z := () ==> {
-	//	printf("a\n")
-	//	yield 12
-	//	printf("b\n")
-	//	yield 10
-	//	printf("c\n")
-	//	yield 7
-	//	printf("d\n")
-	//}
-
+	xx := 0
+	printf("a\n")
+	c := () ==> int {  return 42 }
+	{
+		xx = 17
+		printf("b\n")
+		c()
+	}
 	return 0
 }
 
-internalHVSetType := !(@T^ x) .{@ToType} -> ToType^
+internalHVSetType := !(@T^ x) .{@ToType} -> void
 {
 	x->{void^}->{ToType^}->VTable = ToType->VTable
-	return x->{void^}->{ToType^} //todo recheck on dymamic check
+	//return x->{void^}->{ToType^} //todo recheck on dymamic check
 }

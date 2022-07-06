@@ -165,7 +165,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				//			return true
 				case "#FlowObjects"
 					if RuleUse(begin,"~extra1",RuleSLambda) return true
-				//	if RuleUse(begin,"Defer()",RuleDefer) return true
+					if RuleUse(begin,"Defer()",RuleDefer) return true
 					if RuleUse(begin,"return()",RuleReturn) return true
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
 				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
@@ -527,18 +527,19 @@ RuleCallFunction := !(void^ itr) -> int
 //
 //	return 2
 //}
-//RuleDefer := !(void^ itr) -> int
-//{
-//	It := itr->{Token^}
-//
-//	if It.GetValue() != "defer" and It.GetValue() != "on_exception" return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//
-//	if not InDataR(It) return 0
-//	return 2
-//}
+RuleDefer := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+
+	//if It.GetValue() != "defer" and It.GetValue() != "on_exception" return 0
+	if It.GetValue() != "defer" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if InBlockData(It) return 2
+	return 0
+}
 
 RuleReturn := !(void^ itr)-> int
 {

@@ -30,5 +30,10 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		preRes.ResolveStep()
 		return preRes.GetReturnObj()
 	}
+	if itm.Down?.GetValue() == "defer"
+	{
+		lmbd := CreateHeadlessLambda(itm.Down.Right)
+		return lmbd
+	}
 	return null
 }

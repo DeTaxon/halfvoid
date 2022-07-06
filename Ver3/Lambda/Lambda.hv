@@ -1,16 +1,21 @@
-BoxLambda := class extend BoxFuncBody
-{
-}
-
 BoxLambdaHolder := class extend BoxExeObj
 {
 	tmpl := BoxFuncTemplateBody^
 	resToken := TokenIndent
+	bracketsToken := TokenSymbol
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
 
 		attr := FuncAttributes
 		bPtr := Token^
+
+		if body.GetValue() != "{}"
+		{
+			bracketsToken."this"(StringSpan("{}"),1)
+			bracketsToken.Down = body
+			bracketsToken.Line = body.Line
+			body = bracketsToken&
+		}
 
 		if brackets.Down?.GetValue() == "()"
 		{

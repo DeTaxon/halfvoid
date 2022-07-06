@@ -96,7 +96,6 @@ BoxFuncCall := class extend BoxExeObj
 				tps.Destroy()
 				st := innerTrySetType(new BoxFuncCall(ResultVar),newType)
 				ExtraWork.Push(st)
-
 				
 				thisCall := new BoxFuncCall(ResultVar)
 				thisCall2 := new UnrefFuncCall(thisCall)
@@ -136,6 +135,7 @@ BoxFuncCall := class extend BoxExeObj
 	PrintFuncUse := virtual !(TIOStream^ f) -> void
 	{
 		callObj.PrintFuncCall(f,resId,0,downs)
+		ExtraWork[^].PrintDefaultUse(f)
 	}
 	PrintFuncResult := virtual !(TIOStream^ f) -> void
 	{
@@ -144,7 +144,6 @@ BoxFuncCall := class extend BoxExeObj
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
 		PrintFuncUse(f)
-		ExtraWork[^].PrintDefaultUse(f)
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{

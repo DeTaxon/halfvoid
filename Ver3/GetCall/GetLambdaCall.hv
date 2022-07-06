@@ -1,6 +1,6 @@
 TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 {
-	if itm.Down?.Right?.GetValue() == "==>"
+	if itm.Down?.Right?.GetValue() in !["==>","=>"]
 	{
 	}else{
 		return null
@@ -12,17 +12,22 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 	iter := itm.Down.Right.Right
 
-	while iter.GetValue() != "{}"
+	if itm.Down.Right.GetValue() == "=>"
 	{
-		if iter.GetValue() == "[]"
+		bodyToken = iter
+	}else{
+		while iter.GetValue() != "{}"
 		{
-			captureToken = iter
-		}else{
-			typeToken = iter
+			if iter.GetValue() == "[]"
+			{
+				captureToken = iter
+			}else{
+				typeToken = iter
+			}
+			iter = iter.Right
 		}
-		iter = iter.Right
+		bodyToken = iter
 	}
-	bodyToken = iter
 
 
 	res := new BoxLambdaHolder(itm.Down,bodyToken,typeToken,captureToken)
@@ -65,7 +70,7 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 		lst := List.{BoxExeConstObj^}
 		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
-
+		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 		lst.Destroy()
 
