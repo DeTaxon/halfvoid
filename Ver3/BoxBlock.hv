@@ -10,6 +10,7 @@ BoxBlock := class extend BoxUnit
 	gcVars := List.{BoxFunc^}
 
 	returnLabel := BoxLabel^
+	quitLabel := BoxLabel^
 
 	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
@@ -152,6 +153,8 @@ BoxBlock := class extend BoxUnit
 		gcVars[^].PrintCode(f)
 
 		exeLines[^].PrintCode(f)
+
+		quitLabel?.PrintCode(f)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
@@ -172,6 +175,33 @@ BoxBlock := class extend BoxUnit
 		simpleVars[^].PrintDebugMeta(f)
 		gcVars[^].PrintDebugMeta(f)
 		exeLines[^].PrintDebugMeta(f)
+	}
+	GetQuitLabel := !() -> BoxLabel^
+	{
+		if quitLabel == null
+			quitLabel = new BoxLabel()
+		return quitLabel
+	}
+	CreateGCClear := !() -> BoxExeObj^
+	{
+		if GCVarsInUse == GCInUseBefore
+			return null
+
+		assert(CurrentFunc.gcArrayPtr != null)
+
+		objs := CheckExeDownList
+		objs.Push(new BoxFuncCall(CurrentFunc.gcArrayPtr))
+		objs.Push(GetExeInt(GCInUseBefore))
+		objs.Push(GetExeInt(GCVarsInUse - 1))
+		return new BoxFuncCall(GFuncGCSetNullArray,objs)
+	}
+}
+
+BoxBlockContinue := class extend BoxBlock
+{
+	this := !(Token^ itm) -> void
+	{
+		this."BoxBlock.this"(itm)
 	}
 }
 

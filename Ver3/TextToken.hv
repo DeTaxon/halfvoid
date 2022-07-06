@@ -151,6 +151,7 @@ TokenBool := class extend Token
 TokenWayControl := class extend Token
 {
 	Value := StringSpan
+	IsBlock := virtual true
 
 	this := !(StringSpan val) -> void
 	{
@@ -158,7 +159,7 @@ TokenWayControl := class extend Token
 	}
 	GetValue := virtual !() -> ref StringSpan
 	{
-		return GetConstString("~way")
+		return Value
 	}
 	Print := virtual !(int x) -> void
 	{

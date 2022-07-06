@@ -167,15 +167,22 @@ RangeIterator := class
 {
 	result.end = this
 }
+hey := class extend TGCObject
+{
+	Destroy := virtual !() -> void
+	{
+		printf("hoy\n")
+	}
+}
 main := !(int argc, char^^ argv) -> int
 {
+	//defer printf("a\n")
 	for i : 10
 	{
+		new hey
 		if i mod 2 == 0
-		{
+			continue
 		printf("test %i\n",i)
-
-		}
 	}
 	return 0
 }

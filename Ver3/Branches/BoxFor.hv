@@ -128,7 +128,7 @@ BoxFor := class extend BoxExeObj
             UnitStack.Push(it.IndVar?)
         }
 
-        body = new BoxBlock(itm)
+        body = new BoxBlockContinue(itm)
 
         while stackSize > UnitStack.Size()
             UnitStack.Pop()
