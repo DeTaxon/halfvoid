@@ -131,7 +131,7 @@ CreateBuiltinsInt := !() -> void
 		if isSigned
 		{
 			bSpace.Functions[StringSpan("div")].Push(new BuiltInIntBase(strt,"sdiv") )
-			bSpace.Functions[StringSpan("mod")].Push(new BuiltInIntBase(strt,"rem") )
+			bSpace.Functions[StringSpan("mod")].Push(new BuiltInIntBase(strt,"srem") )
 		}else{
 			bSpace.Functions[StringSpan("div")].Push(new BuiltInIntBase(strt,"udiv") )
 			bSpace.Functions[StringSpan("mod")].Push(new BuiltInIntBase(strt,"urem") )

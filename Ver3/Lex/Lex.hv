@@ -340,6 +340,7 @@ IsKeyword := !(W) -> bool
 {
 	switch W
 	{
+		case "mod" return true
 		case "return" return true
 		case "for" return true
 		case "if" return true
