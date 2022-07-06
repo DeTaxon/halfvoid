@@ -1,0 +1,26 @@
+ModifyStackAllocatedVar := !(ParamFunc^ vr, List.{BoxExeObj^} ExtraWork) -> void
+{
+    typ := vr.GetVarType()
+    if IsGCClass(typ)
+    {
+        ptrType := typ.GetPoint()
+        ptrVar := CreateVar(ptrType,false)
+
+        tps := List.{BoxExeConstObj^}
+        tps.Push(GetConstType(typ))
+        newType := GCStackType.GetClass(tps).ItType
+        tps.Destroy()
+        st := innerTrySetType(new BoxFuncCall(vr),newType)
+        ExtraWork.Push(st)
+        
+        thisCall := new BoxFuncCall(vr)
+        thisCall2 := new UnrefFuncCall(thisCall)
+
+        objs := CheckExeDownList
+        objs.Push(new BoxFuncCall(ptrVar))
+        objs.Push(thisCall2)
+        setCall := CreateFuncCall(StringSpan("="),objs)
+        assert(setCall != null)
+        ExtraWork.Push(setCall)
+    }   
+}

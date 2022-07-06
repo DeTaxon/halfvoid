@@ -167,9 +167,17 @@ RangeIterator := class
 {
 	result.end = this
 }
+test := class
+{
+	"for" := !() -> RangeIterator
+	{
+		result.end = 15
+	}
+}
 main := !(int argc, char^^ argv) -> int
 {
-	for i : 5
+	k := test
+	for i : k
 	{
 		printf("test %i\n",i)
 	}

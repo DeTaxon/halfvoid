@@ -1,0 +1,14 @@
+CreateHeadlessLambda := !(Token^ itm) -> BoxExeObj^
+{
+    emptyBrackets := TokenData
+    emptyBrackets2 := TokenSymbol(StringSpan("()"),1)
+    setCmd := TokenSymbol(StringSpan("=>"),1)
+    tknData := TokenData
+
+    emptyBrackets.Right = setCmd&
+    emptyBrackets.Down = emptyBrackets2&
+    setCmd.Right = itm
+    tknData.Down = emptyBrackets&
+
+    return TryGetLambdaCall(tknData&)
+}
