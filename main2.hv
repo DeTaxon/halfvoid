@@ -135,7 +135,7 @@ internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVa
 	//res.capPtr = CaptureVars
 	//result = res
 }
-internalHVeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
+internalHVDeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
 {
 	Destroy := virtual !() -> void {
 		this()
@@ -156,14 +156,9 @@ internalHVStackAllocatedGC := class .{@T} extend T
 
 main := !(int argc, char^^ argv) -> int
 {
-	xx := 0
 	printf("a\n")
-	c := () ==> int {  return 42 }
-	{
-		xx = 17
-		printf("b\n")
-		c()
-	}
+	defer printf("c\n")
+	printf("b\n")
 	return 0
 }
 

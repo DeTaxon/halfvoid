@@ -21,6 +21,7 @@ GFuncGCSetNullArray := BoxFunc^
 GCType := Type^
 
 GCStackType := BoxClassTemplate^
+GCDeferLambda := BoxClassTemplate^
 
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
@@ -94,4 +95,5 @@ InitInternals := !() -> void
 	GCType = ParseType(cName&)
 
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
+	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
 }

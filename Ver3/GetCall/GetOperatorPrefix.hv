@@ -33,7 +33,13 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 	if itm.Down?.GetValue() == "defer"
 	{
 		lmbd := CreateHeadlessLambda(itm.Down.Right)
-		return lmbd
+		tp := lmbd.GetType()
+		assert(tp is TypeClass)
+		arr := List.{BoxExeConstObj^}
+		arr.Push(GetConstType(tp))
+		newType := GCDeferLambda.GetClass(arr).ItType
+		arr.Destroy()
+		return innerTrySetType(lmbd,newType)
 	}
 	return null
 }
