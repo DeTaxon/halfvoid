@@ -176,11 +176,10 @@ hey := class extend TGCObject
 }
 main := !(int argc, char^^ argv) -> int
 {
-	//defer printf("a\n")
 	for i : 10
 	{
-		new hey
-		if i >= 7
+		defer printf("a\n")
+		if i >= 8
 			break
 		if i mod 2 == 0
 			continue

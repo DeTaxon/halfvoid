@@ -56,6 +56,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			funcLine = new BoxExeLine() //TODO debug only ExeLine version
 			funcLine.ItToken = bdy
+			assert(funcLine.ItToken.Line != null)
 		}
 		ExitLabel = new BoxLabel() 
 	}

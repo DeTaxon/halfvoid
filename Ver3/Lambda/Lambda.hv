@@ -8,13 +8,13 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		attr := FuncAttributes
 		bPtr := Token^
+		itBody := body
 
-		if body.GetValue() != "{}"
+		if itBody.GetValue() != "{}"
 		{
-			bracketsToken."this"(StringSpan("{}"),1)
-			bracketsToken.Down = body
-			bracketsToken.Line = body.Line
-			body = bracketsToken&
+			itBody = new TokenSymbol(StringSpan("{}"),1)
+			itBody.Down = body
+			itBody.Line = body.Line
 		}
 
 		if brackets.Down?.GetValue() == "()"
@@ -33,7 +33,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		attr.IsLambda = true
 		
-		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,typeToken,body)
+		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,typeToken,itBody)
 
 		ObjType = GTypeBool //TODO : to type none
 	}
