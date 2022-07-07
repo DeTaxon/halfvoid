@@ -1,3 +1,25 @@
+THatchCounter := class
+{
+	counter := int
+	subHatch := THatch
+
+	Inc := !() -> void
+	{
+		counter += 1
+	}
+	Dec := !() -> void
+	{
+		counter -= 1
+		if counter == 0
+			subHatch.Emit()
+	}
+	WaitZero := !() -> void
+	{
+		if counter != 0
+			subHatch.Await()
+	}
+}
+
 THatch := class
 {
 	flag := bool

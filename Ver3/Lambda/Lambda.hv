@@ -1,8 +1,6 @@
 BoxLambdaHolder := class extend BoxExeObj
 {
 	tmpl := BoxFuncTemplateBody^
-	resToken := TokenIndent
-	bracketsToken := TokenSymbol
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
 
@@ -24,16 +22,17 @@ BoxLambdaHolder := class extend BoxExeObj
 			assert(false)
 		}
 
+		rToken := typeToken
 		if typeToken == null
 		{
+			rToken = new TokenIndent
 			attr.IsAutoResult = true
-			resToken.Value = StringSpan("void") //TODO: auto detect return type
-			typeToken = resToken&
+			rToken->{TokenIndent^}.Value = StringSpan("void") //TODO: auto detect return type
 		}
 
 		attr.IsLambda = true
 		
-		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,typeToken,itBody)
+		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,rToken,itBody)
 
 		ObjType = GTypeBool //TODO : to type none
 	}

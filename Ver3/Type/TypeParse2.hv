@@ -21,6 +21,84 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		}
 		return tp
 	}
+	if tk.Down?.GetValue() == "!" and tk.Down.Right?.GetValue() == "()"
+	{
+		skob := tk.Down.Right
+
+		if skob.Right.GetValue() in !["&","^"]
+		{}else{
+			return null
+		}
+
+		assert(tp == null)
+		k := 0
+		types := Type^[100]
+		isRefs := bool[100]
+
+		isLambda := false
+
+		if skob.Right.GetValue() == "&"
+		{
+			isLambda = true
+			types[k] = GTypeVoidP
+			isRefs[k] = false
+			k += 1
+		}
+
+		iter := skob.Down
+		while iter != null
+		{
+			while iter.GetValue() != ","
+			{
+				t := Type^
+				if iter.Down?.Right?.GetValue() == "&"
+				{
+					t = CheckTemplateType(null,iter.Down,resCnsts)
+					isRefs[k] = true
+				}else{
+					t = CheckTemplateType(null,iter,resCnsts)
+				}
+				if t == null
+					return null
+				types[k] = t
+				k += 1
+				iter = iter.Right
+			}
+		}
+
+		iter = skob.Right
+		ptrSize := 0
+
+		while iter.GetValue() != "->"
+		{
+			if iter.GetValue() == "^"
+				ptrSize += 1
+			iter = iter.Right
+		}
+		resType := CheckTemplateType(null,iter.Right,resCnsts)
+
+		if resType == null
+			return null
+		fType := GetFuncType(k,types[0]&,isRefs[0]&,resType,false,false) //TODO IsVargs, IsRetRef
+
+		if isLambda
+		{
+			args := List.{BoxExeConstObj^}
+			args.Push(GetConstType(fType.GetPoint()))
+			//InternalsHatch.Await()
+			//rl := GCLambda.GetClass(args)
+			//assert(rl != null)
+			//args.Destroy()
+			//return rl.ItType.GetPoint()
+		}
+
+		for i : ptrSize
+		{
+			resType = resType.GetPoint()
+		}
+		return resType
+
+	}
 	if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
 	{
 		//lType := checkType(null,tk.Down,resCnsts) //TODO: do something with null, so i could use @Tepl.{@arg}
@@ -65,7 +143,6 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			assert(tp is in TypeClass)
 			assert(false)
 		}
-
 	}
 	if tk.Down?.Right?.GetValue() == "[]"
 	{

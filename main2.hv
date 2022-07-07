@@ -174,17 +174,19 @@ hey := class extend TGCObject
 		printf("hoy\n")
 	}
 }
+
+//tstCall := !(!()&-> void x) -> void
+//{
+//
+//}
 main := !(int argc, char^^ argv) -> int
 {
-	for i : 10
-	{
-		defer printf("a\n")
-		if i >= 8
-			break
-		if i mod 2 == 0
-			continue
-		printf("test %i\n",i)
+	z := () ==> {
+		printf("hey\n")
 	}
+	z()
+	z()
+	//tstCall(z)
 	return 0
 }
 
