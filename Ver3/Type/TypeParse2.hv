@@ -30,7 +30,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			return null
 		}
 
-		assert(tp == null)
+		//assert(tp == null) TODO
 		k := 0
 		types := Type^[100]
 		isRefs := bool[100]
@@ -85,11 +85,11 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		{
 			args := List.{BoxExeConstObj^}
 			args.Push(GetConstType(fType.GetPoint()))
-			//InternalsHatch.Await()
-			//rl := GCLambda.GetClass(args)
-			//assert(rl != null)
-			//args.Destroy()
-			//return rl.ItType.GetPoint()
+			InternalsHatch.Await()
+			rl := GCLambda.GetClass(args)
+			assert(rl != null)
+			args.Destroy()
+			return rl.ItType.GetPoint()
 		}
 
 		for i : ptrSize

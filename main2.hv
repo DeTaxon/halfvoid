@@ -175,19 +175,19 @@ hey := class extend TGCObject
 	}
 }
 
-//tstCall := !(!()&-> void x) -> void
-//{
-//
-//}
+tstCall := !(!()&->void x) -> void
+{
+	x()
+	x()
+}
 main := !() -> int
 {
-	//z := () ==> {
-	//	printf("hey\n")
-	//}
+	z := () ==> {
+		printf("hey\n")
+	}
 	//z()
 	//z()
-	//tstCall(z)
-	printf("hey\n")
+	tstCall(z&)
 	return 0
 }
 

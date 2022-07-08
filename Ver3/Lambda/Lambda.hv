@@ -33,6 +33,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		attr.IsLambda = true
 		
 		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,rToken,itBody)
+		tmpl.SetName(StringSpan("lambda"))
 
 		ObjType = GTypeBool //TODO : to type none
 	}

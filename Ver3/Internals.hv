@@ -20,9 +20,13 @@ GFuncGCSetNullArray := BoxFunc^
 
 GCType := Type^
 
+GCLambda := BoxClassTemplate^
+
 GCStackType := BoxClassTemplate^
 GCDeferLambda := BoxClassTemplate^
 
+
+InternalsHatch := THatch
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
@@ -79,6 +83,10 @@ InitInternals := !() -> void
 	cName := TokenIndent(StringSpan("TGCIObject"))
 	GCType = ParseType(cName&)
 
+	GCLambda = intGetClassTemplate("TLambda")
+
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
 	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
+
+	InternalsHatch.Emit()
 }
