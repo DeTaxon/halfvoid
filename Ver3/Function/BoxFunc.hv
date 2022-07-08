@@ -22,6 +22,9 @@ BoxFunc := class extend BoxExeConstObj
 	SetName := virtual !(StringSpan nm) -> void
 	{
 	}
+	SetPrintName := virtual !(StringSpan nm) -> void
+	{
+	}
 	WaitReadyState := virtual !() -> void
 	{
 	}
@@ -87,6 +90,7 @@ BoxFunc := class extend BoxExeConstObj
 	PrintName := virtual !(TIOStream^ f) -> void
 	{
 	}
+
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
 	}

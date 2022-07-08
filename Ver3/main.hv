@@ -129,17 +129,22 @@ main := !(int argc, char^^ argv) -> int
 	InitLambda()
 	GParsedAllFiles.Emit()
 
-	mainFunc := BoxFuncBody^
-	GetItemGlobal(StringSpan("main"),x ==> {
-		assert(x.Size() == 1) //TODO: better main function
-		assert(x[0] is BoxFuncBody)
-		mainFunc = x[0]->{BoxFuncBody^}
-		return true
-	})
+	empt := CheckExeDownList
+	cns := List.{BoxExeConstObj^}
+	mainFunc := CreateFuncCall(StringSpan("main"),empt,cns)
+	//GetItemGlobal(StringSpan("main"),x ==> {
+	//	assert(x.Size() == 1) //TODO: better main function
+	//	assert(x[0] is BoxFuncBody)
+	//	mainFunc = x[0]->{BoxFuncBody^}
+	//	return true
+	//})
 	assert(mainFunc != null)//TODO better main function
 
-	mainFunc.ParseBody()
-	mainFunc.WaitReadyState()
+	//mainFunc.ParseBody()
+	//mainFunc.WaitReadyState()
+	assert(mainFunc is BoxFuncCall)
+	mainFunc->{BoxFuncCall^}.callObj.ParseBody()
+	mainFunc->{BoxFuncCall^}.callObj.WaitReadyState()
 
 	while GClassesInProgress.Size() != 0
 	{
@@ -200,6 +205,7 @@ main := !(int argc, char^^ argv) -> int
 		GDebugTypePrintMeta[0].PrintMeta(outFile)
 		GDebugTypePrintMeta.Pop()
 	}
+	printf("done\n")
 
 	return 0
 }

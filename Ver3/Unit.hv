@@ -1,4 +1,4 @@
-BoxUnit := class extend TGCObject
+BoxUnit := class
 {
 	Work := virtual !() -> void
 	{

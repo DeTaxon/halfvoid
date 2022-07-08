@@ -119,6 +119,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		names.Push(hData.Types[^].Name)
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 		newFunc.VariadicName = hData.VariadicName
+		newFunc.SetPrintName(Name)
 
 		for it,ind : resConsts
 		{
@@ -204,7 +205,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		names := HybridQueue.{StringSpan,10}
 		names.Push(hData.Types[^].Name)
-		return new BoxFuncBody(resFuncTyp,Attrs,names,bdy)
+		newFunc := new BoxFuncBody(resFuncTyp,Attrs,names,bdy)
+		newFunc.SetPrintName(Name)
+		return newFunc
 	}
 
 }

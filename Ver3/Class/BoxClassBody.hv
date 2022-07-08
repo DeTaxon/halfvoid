@@ -139,6 +139,10 @@ BoxClassBody := class extend BoxClass
 					asFunc := TryParseFunction(itm)
 					if asFunc != null
 					{
+						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+						{
+							asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+						}
 						if asFunc is in BoxFunc
 						{
 							f := asFunc->{BoxFunc^}

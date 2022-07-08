@@ -1,7 +1,7 @@
 
 TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 {
-	if itm.Down == null or itm.Down == null or itm.Down.Right == null
+	if itm == null or itm.Down == null or itm.Down.Right == null
 		return null
 	if itm.Down?.Right.GetValue() != "()"
 		return null

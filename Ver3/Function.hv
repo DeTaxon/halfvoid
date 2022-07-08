@@ -60,10 +60,10 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,iter)
 
-	if asTempl.IsOneFunc()
-	{
-		return asTempl.GetOneFunc()
-	}
+	//if asTempl.IsOneFunc()
+	//{
+	//	return asTempl.GetOneFunc()
+	//}
 	return asTempl
 
 }

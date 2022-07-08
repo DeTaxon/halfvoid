@@ -99,6 +99,10 @@ BoxFuncBody := class extend BoxFuncCommon
 			CurrentCodeSpace.Functions[Name].Push(this&)
 		}
 	}
+	SetPrintName := virtual !(StringSpan nm) -> void
+	{
+		Name = nm
+	}
 	GetExitLabel := virtual !() -> BoxLabel^
 	{
 		return ExitLabel

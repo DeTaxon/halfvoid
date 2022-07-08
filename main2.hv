@@ -179,14 +179,15 @@ hey := class extend TGCObject
 //{
 //
 //}
-main := !(int argc, char^^ argv) -> int
+main := !() -> int
 {
-	z := () ==> {
-		printf("hey\n")
-	}
-	z()
-	z()
+	//z := () ==> {
+	//	printf("hey\n")
+	//}
+	//z()
+	//z()
 	//tstCall(z)
+	printf("hey\n")
 	return 0
 }
 

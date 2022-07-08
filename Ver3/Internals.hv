@@ -42,24 +42,9 @@ intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 }
 intGetFunc := !(char^ name) -> BoxFunc^
 {
-	res := BoxFunc^
-	GetItemGlobal(StringSpan(name),x ==> {
-		for itm : x
-		{
-			if itm is in BoxFunc
-			{
-				res = itm->{BoxFunc^}
-				return true
-			}
-		}
-	})
-	if res is in BoxFuncBody
-	{
-		res2 := res->{BoxFuncBody^}
-		res2.ParseBody()
-	}
-	assert(res != null)
-	return res
+	res := intGetTemplate(name)
+	assert(res.IsOneFunc())
+	return res.GetOneFunc()
 }
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
