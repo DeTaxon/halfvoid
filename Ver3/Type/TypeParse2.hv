@@ -48,7 +48,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		iter := skob.Down
 		while iter != null
 		{
-			while iter.GetValue() != ","
+			if iter.GetValue() != ","
 			{
 				t := Type^
 				if iter.Down?.Right?.GetValue() == "&"
@@ -62,8 +62,8 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 					return null
 				types[k] = t
 				k += 1
-				iter = iter.Right
 			}
+			iter = iter.Right
 		}
 
 		iter = skob.Right
