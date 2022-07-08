@@ -27,7 +27,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		{
 			rToken = new TokenIndent
 			attr.IsAutoResult = true
-			rToken->{TokenIndent^}.Value = StringSpan("void") //TODO: auto detect return type
+			rToken->{TokenIndent^}.Value = StringSpan("void")
 		}
 
 		attr.IsLambda = true

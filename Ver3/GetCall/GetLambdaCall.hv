@@ -74,7 +74,17 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 		lst.Destroy()
 
-		return new BoxFuncCall(createLambdaFunc,objs)
+		step1 := new BoxFuncCall(createLambdaFunc,objs)
+		step2 := new UnrefFuncCall(step1)
+
+		cnsts := List.{BoxExeConstObj^}
+		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
+		InternalsHatch.Await()
+		lambdaType := GCLambda.GetClass(cnsts).ItType
+		cnsts.Destroy()
+		return GetExchange(step2,lambdaType.GetPoint())
+
+
 	}
 
 	return res

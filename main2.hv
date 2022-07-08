@@ -182,12 +182,9 @@ tstCall := !(!(int)&->void x) -> void
 }
 main := !() -> int
 {
-	z := (int x) ==> {
+	tstCall((int x) ==> {
 		printf("hey %i\n",x)
-	}
-	//z()
-	//z()
-	tstCall(z&)
+	})
 	return 0
 }
 
