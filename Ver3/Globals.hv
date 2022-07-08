@@ -17,3 +17,21 @@ GDebugFileId := task_local int
 GDebugFuncId := task_local int
 GDebugScopeId := task_local int
 GDebugLineCallId := task_local int
+
+
+SubWork := !(!()&->void x) -> void
+{
+    ccs := CurrentCodeSpace
+    cf := CurrentFile
+    cs := CurrentScope
+    cfunc := CurrentFunc
+    subLambda := x.Capture()
+    TSpawnTask(() ==> {
+        CurrentCodeSpace = ccs
+        CurrentScope = cs
+        CurrentFile = cf
+        CurrentFunc = cfunc
+        subLambda()
+        subLambda.Destroy()
+    })
+}

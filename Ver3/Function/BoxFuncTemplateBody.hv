@@ -8,6 +8,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	bdy := Token^
 	cns := Token^
 
+	headerCheckHatch := THatch
+
 	Name := StringSpan
 
 	//Types := HybridQueue.{FuncTemplateInput,10}
@@ -30,7 +32,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if resTyp == null
 			Attrs.IsAutoResult = true
 
-		ParseHeader()
+		ths := this&
+		SubWork(() ==> [ths] {
+			ths.ParseHeader()
+			ths.headerCheckHatch.Emit()
+		})
 	}
 	SetName := virtual !(StringSpan name) -> void
 	{
@@ -77,6 +83,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
+		headerCheckHatch.Await()
+
 		minArgs := hData.Types.Size()
 		maxArgs := hData.Types.Size()
 		
@@ -104,6 +112,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	
 	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
+		headerCheckHatch.Await()
+
 		datas := HybridQueue.{Tuple.{Type^,bool},10}
 
 		for i : tp.Params.Size()
@@ -193,6 +203,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	IsOneFunc := virtual !() -> bool
 	{
+		headerCheckHatch.Await()
+
 		if not hData.IsOneFunc()
 			return false
 		if Constants[^].Value == null
