@@ -88,6 +88,8 @@ main := !(int argc, char^^ argv) -> int
 		}
 		i += 1
 	}
+
+	GetFuncMangle(StringSpan("main"))
 	
 	loadLex("Priority.pr",PriorityData&)
 	loadLex("LexHVFileRoot.pr",LexHVFileRoot&)
@@ -129,22 +131,11 @@ main := !(int argc, char^^ argv) -> int
 	InitLambda()
 	GParsedAllFiles.Emit()
 
-	empt := CheckExeDownList
-	cns := List.{BoxExeConstObj^}
-	mainFunc := CreateFuncCall(StringSpan("main"),empt,cns)
-	//GetItemGlobal(StringSpan("main"),x ==> {
-	//	assert(x.Size() == 1) //TODO: better main function
-	//	assert(x[0] is BoxFuncBody)
-	//	mainFunc = x[0]->{BoxFuncBody^}
-	//	return true
-	//})
-	assert(mainFunc != null)//TODO better main function
-
-	//mainFunc.ParseBody()
-	//mainFunc.WaitReadyState()
-	assert(mainFunc is BoxFuncCall)
-	mainFunc->{BoxFuncCall^}.callObj.ParseBody()
-	mainFunc->{BoxFuncCall^}.callObj.WaitReadyState()
+	mainFunc := intGetFunc("internalHVEntryPoint")
+	assert(mainFunc != null)
+	mainFunc.ParseBody()
+	mainFunc.WaitReadyState()
+	mainFunc.ForceOutputName(StringSpan("main"))
 
 	while GClassesInProgress.Size() != 0
 	{

@@ -3,7 +3,7 @@ BoxBlock := class extend BoxUnit
 	MetaId := int
 	GCInUseBefore := int
 	ItLine := FileLine^
-	exeLines := List.{BoxUnit^} //TODO : to hybrid
+	exeLines := List.{BoxUnit^} //todo : to hybrid
 	
 	simpleVars := List.{BoxFunc^}
 	gcVars := List.{BoxFunc^}
@@ -144,7 +144,7 @@ BoxBlock := class extend BoxUnit
 			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
 			{
 				dat := CheckExeDownList
-				defer dat.Destroy() //TODO remove
+				defer dat.Destroy() //todo remove
 				cl := new BoxFuncCall(it,dat)
 				dat.Push(cl)
 				cl2 := new BoxFuncCall(GFuncGCSetNull,dat)

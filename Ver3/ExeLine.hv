@@ -407,7 +407,7 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 		}
 		if IsFloat(f1) and IsInt(t1)
 		{
-			return 2000 + (100 - t1.GetSize()) //TODO warning, but not here
+			return 2000 + (100 - t1.GetSize()) //todo warning, but not here
 		}
 	}
 	if frm is in TypePoint and to == GTypeVoidP

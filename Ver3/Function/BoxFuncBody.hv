@@ -103,6 +103,9 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		Name = nm
 	}
+	ForceOutputName := virtual !(StringSpan nm) -> void {
+		OutputName = nm
+	}
 	GetExitLabel := virtual !() -> BoxLabel^
 	{
 		return ExitLabel

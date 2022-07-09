@@ -8,8 +8,11 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 
 	dwn := TryGetExeCall(itm.Down)
 
-	assert(dwn != null) //TODO: emit error?
-	assert(dwn.IsMem()) //TODO: emit error
+	assert(dwn != null)
+	if dwn == null
+		EmitError("can not get pointer to error object")
+	if not dwn.IsMem()
+		EmitError("can not get pointer to object, it is not on the memory")
 
 	return new UnrefFuncCall(dwn)
 }
@@ -23,7 +26,9 @@ TryGetPtrObj := !(Token^ itm) -> BoxExeObj^
 
 	dwn := TryGetExeCall(itm.Down)
 
-	assert(dwn != null) //TODO: emit error?
+	assert(dwn != null)
+	if dwn == null
+		EmitError("can not dereference object")
 
 	if dwn.GetType() is in TypePoint
 		return new PtrToRefFuncCall(dwn)
@@ -72,7 +77,7 @@ PtrToRefFuncCall := class extend BoxExeObj
 	{
 		Down.PrintUse(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void //TODO remove copy of code
+	PrintPre := virtual !(TIOStream^ f) -> void
 	{
 		rType := ObjType
 

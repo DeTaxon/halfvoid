@@ -173,9 +173,17 @@ RangeIterator := class
 	x()
 	x()
 }
-main := !() -> int
+
+internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	defer printf("hey\n")
+	return main(argc,argv)
+}
+main := !(int argc,char^^ argv) -> int
+{
+	for i : 6
+	{
+		defer printf("hey\n")
+	}
 	return 0
 }
 

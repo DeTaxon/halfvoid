@@ -31,7 +31,7 @@ Token := class
 		{
 			ln << " at file " << Line.File << " line: " <<Line.Line
 		}
-		throw new Exception(ln.Str()) //TODO memory
+		throw new Exception(ln.Str()) //todo memory
 		//printf("%s\n",ln.Str())
 		//exit(1)
 	}
@@ -54,7 +54,7 @@ TokenDecor := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("decorator %s\n",Value) //TODO memory
+		printf("decorator %s\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -70,7 +70,7 @@ TokenData := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("data object\n") //TODO memory
+		printf("data object\n")
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -107,7 +107,7 @@ TokenNull := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("null\n") //TODO memory
+		printf("null\n")
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -143,7 +143,7 @@ TokenBool := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("bool %i\n",Parsed) //TODO memory
+		printf("bool %i\n",Parsed)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -164,7 +164,7 @@ TokenWayControl := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("symbol %s\n",Value) //TODO memory
+		printf("symbol %s\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -184,7 +184,7 @@ TokenSuffix := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("suffix %s\n",Value) //TODO memory
+		printf("suffix %s\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -205,7 +205,7 @@ TokenSymbol := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("symbol %s\n",Value) //TODO memory
+		printf("symbol %s\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -226,7 +226,7 @@ TokenIndent := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("indent %s\n",Value) //TODO memory
+		printf("indent %s\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -254,7 +254,7 @@ TokenString := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("string <%s>\n",Value) //TODO memory
+		printf("string <%s>\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -276,7 +276,7 @@ TokenDouble := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("double %s as %f\n",Value,Parsed) //TODO memory
+		printf("double %s as %f\n",Value,Parsed)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -298,7 +298,7 @@ TokenInt := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("integer %s as %i\n",Value,Parsed) //TODO memory
+		printf("integer %s as %i\n",Value,Parsed)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
