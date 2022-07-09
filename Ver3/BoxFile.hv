@@ -53,7 +53,7 @@ BoxFile := class extend BoxUnit
 		
 		defer loaded.Emit()
 
-		tokens := GetObjectsFromMemory(StringSpan("TODO:FileName"),fileMap->{char^},fileSize)
+		tokens := GetObjectsFromMemory(GetConstString(file.GetName()),fileMap->{char^},fileSize)
 
 		if tokens == null
 			return void
