@@ -2,7 +2,7 @@
 tplDatabase := AVLMap.{Type^,BoxClassTuple^}
 GetTuple := !(List.{Type^} types) -> BoxClass^
 {
-	typesArr := Type^[200] //TODO  to Array
+	typesArr := Type^[200] //todo  to Array
 	typesArr[i] = types[^i]
 	hck := GetFuncType(types.Size(),typesArr[0]&,null,GTypeVoid,false,false)
 	if tplDatabase.Contain(hck)
@@ -22,7 +22,7 @@ BoxClassTuple := class extend BoxClass
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
-		for it,i : types //TODO remove i
+		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 		}

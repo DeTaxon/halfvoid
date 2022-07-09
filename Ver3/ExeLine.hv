@@ -164,7 +164,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 
 	while itr != null
 	{
-		if itr.GetValue() == "," //TODO maybe 
+		if itr.GetValue() == "," //todo maybe check for bad written code
 		{
 		}else{
 			if itr.Down?.Right?.GetValue() == "..."
@@ -178,7 +178,10 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 						break
 					}
 				}
-				assert(funcObj != null) //TODO
+				assert(funcObj != null)
+				if funcObj == null
+					itm.EmitError("software error, compiler is broken")
+				
 				assert(funcObj.VariadicName.Size() != 0)
 
 				stackSize := UnitStack.Size()
@@ -330,7 +333,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 			if objs[i] is BoxExeNull and toType is in TypePoint
 			{
 				thisCase = 1000
-			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) { //TODO! CHECK TYPE!
+			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
 				thisCase = 0
 			} else{
 				return CmpNoExchange
@@ -350,7 +353,7 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 	if frm is in TypePoint and frm.Base is TypeClass and to is TypeClass
 	{
 		if TypeFight(frm.Base,to) == to
-			return 1000 //TODO rethink
+			return 1000 //todo rethink
 	}
 
 	if frm is TypeArr and to is in TypePoint and frm.Base == to.Base

@@ -6,7 +6,7 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	iter := obj.Down
 
-	switch iter.GetValue() //TODO to cycle
+	switch iter.GetValue() //todo to cycle
 	{
 		case "virtual"
 			Attr.IsVirtual = true
