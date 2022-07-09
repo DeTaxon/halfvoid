@@ -112,7 +112,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
-
 		oldVarsCount := GCVarsInUse
 		GCVarsInUse = 0
 

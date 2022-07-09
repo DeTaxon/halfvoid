@@ -175,7 +175,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				assert(hData.IsVariadic)
 				fTyps[i] = objs[i].0
 			}else{
-				if hData.Types[i].ItToken != null
+				iRef[i] = hData.Types[i].IsRef
+				if hData.Types[i].ItType != null
+				{
+					fTyps[i] = hData.Types[i].ItType
+				}else if hData.Types[i].ItToken != null
 				{
 					fTyps[i] = checkType(objs[i].0,hData.Types[i].ItToken,resCnsts)
 				}
@@ -213,6 +217,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	GetOneFunc := virtual !() -> BoxFunc^
 	{
+		headerCheckHatch.Await()
+			
 		resFuncTyp := hData.CreateFuncType()
 
 		names := HybridQueue.{StringSpan,10}

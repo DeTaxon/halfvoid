@@ -5,6 +5,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	iter := obj.Down
 
+	if iter.Right == null
+		return null
 	if iter.Right?.GetValue() != ":="
 		return null
 

@@ -168,14 +168,14 @@ RangeIterator := class
 	result.end = this
 }
 
-"@twice call" := !(!()&->void x) -> void
+"@twice line" := !(@T x) -> void
 {
 	x()
 	x()
 }
 main := !() -> int
 {
-	@twice printf("hey\n")
+	defer printf("hey\n")
 	return 0
 }
 

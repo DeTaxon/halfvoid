@@ -11,8 +11,14 @@ BoxLambdaHolder := class extend BoxExeObj
 		if itBody.GetValue() != "{}"
 		{
 			itBody = new TokenSymbol(StringSpan("{}"),1)
-			itBody.Down = body
+			dat := new TokenData
+			re := new TokenSymbol(StringSpan("return"),1)
+			itBody.Down = dat
+			dat.Down = re
+			re.Right = body
 			itBody.Line = body.Line
+			re.Line = body.Line
+			dat.Line = body.Line
 		}
 
 		if brackets.Down?.GetValue() == "()"
@@ -47,7 +53,7 @@ BoxLambdaHolder := class extend BoxExeObj
 	}
 	CreateOneFuncLambda := !() -> BoxExeObj^
 	{
-		createLambd(() ==> {
+		return createLambd(() ==> {
 			return this.GetOneFunc()->{BoxFuncBody^}
 		})
 	}

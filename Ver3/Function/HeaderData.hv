@@ -110,6 +110,11 @@ FunctionHeaderInfo := class
 		if bag.Size() != 0
 			checkBag()
 	}
+	IsTypeExist := !(int i) -> Type^
+	{
+		assert(i < Types.Size())
+		return Types[i].ItType != null
+	}
 	IsOneFunc := !() -> bool
 	{
 		if IsVariadic

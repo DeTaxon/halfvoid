@@ -46,46 +46,7 @@ RuleUse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 	}
 	return GotStuff
 }
-//RuleUse2 := !(Token^ Obj,char^ N,char^ keyObj,int offset,!(void^)^->int R,tokenDict) -> bool
-//{
-//	GotStuff := false
-//
-//	for preIter : tokenDict[keyObj]
-//	{
-//		iter := preIter
-//
-//		for c : offset
-//		{
-//			iter = iter.Left
-//			if iter == null
-//				break
-//		}
-//
-//		if iter == null
-//			continue
-//
-//		Try := R(iter)
-//		if Try > 0
-//		{
-//			//RemoveTokens(iter,Try,tokenDict)
-//			if N == "~d"
-//			{
-//				iter = UNext(iter,new ObjData(),Try) 
-//			}else
-//			{
-//				if N == "~extra1"
-//				{
-//					iter = UNext(iter,new SLambda(),Try)
-//				}else{
-//					iter = UNext(iter,new ObjObj(N),Try)
-//				}
-//			}
-//			return true
-//		}
-//	}
-//	return false
-//}
-//
+
 RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 {
 	GotStuff := false
@@ -100,7 +61,6 @@ RuleUseReverse := !(Token^ Obj,char^ N,!(void^)^->int R) -> bool
 		Try := R(iter)
 		if Try > 0
 		{
-			//RemoveTokens(iter,Try,tokenDict)
 			nObj := Token^
 			if N == "Block"
 			{
@@ -160,9 +120,9 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"~d",RuleCallFunction) return true
 				case "#ClassBlock"
 					if RuleUse(begin,"~d",RuleClass) return true
-				//case "#CallDecoratorCall"
-				//	if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
-				//			return true
+				case "#CallDecoratorCall"
+					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
+							return true
 				case "#FlowObjects"
 					if RuleUse(begin,"~extra1",RuleSLambda) return true
 					if RuleUse(begin,"Defer()",RuleDefer) return true
@@ -269,21 +229,24 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 //	return 0
 //}
 //
-//RuleDecoratorCall := !(void^ itr) -> int
-//{
-//	It := itr->{Token^}
-//	if It == null
-//		return 0
-//	if It.GetValue() != "~{}type"
-//		return 0
-//	It = It.Right
-//	if It?.IsData
-//	{
-//		return  2
-//	}
-//	return 0
-//}
-//
+RuleDecoratorCall := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+	if It == null
+		return 0
+	if not (It is TokenTemplateType)
+		return 0
+	It = It.Right
+	if It == null
+		return 0
+
+	if InBlockData(It)
+	{
+		return 2
+	}
+	return 0
+}
+
 RuleClass := !(void^ itr) -> int
 {
 

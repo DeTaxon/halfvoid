@@ -23,7 +23,7 @@
       "name": "(gdb) ver3",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/a.out",
+      "program": "${workspaceFolder}/ver3",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

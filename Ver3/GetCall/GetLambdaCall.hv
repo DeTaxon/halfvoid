@@ -32,10 +32,10 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 	res := new BoxLambdaHolder(itm.Down,bodyToken,typeToken,captureToken)
 
-	if res.IsOneFunc()
-	{
-		return res.CreateOneFuncLambda()
-	}
+	//if res.IsOneFunc()
+	//{
+	//	return res.CreateOneFuncLambda()
+	//}
 
 	return res
 }
