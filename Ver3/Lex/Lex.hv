@@ -6,7 +6,7 @@ LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 	lexWordMachine.LoadFromMap(ptrToChar,Si)
 }
 
-GetObjectsFromMemory := !(char^ fileName,char^ memPtr,int Siz) -> Token^
+GetObjectsFromMemory := !(StringSpan fileName,char^ memPtr,int Siz) -> Token^
 {
 	itLine := FileLine^
 	treeStart := Token^

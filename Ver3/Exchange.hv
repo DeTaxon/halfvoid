@@ -85,7 +85,7 @@ PtrToRef := class extend BoxExeObj
 	{
 		f^ << "%T" << resId
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void //todo remove copy of code, at Unref
+	PrintPre := virtual !(TIOStream^ f) -> void //todo remove copy of code, at UnrefObj.hv
 	{
 		rType := ObjType
 

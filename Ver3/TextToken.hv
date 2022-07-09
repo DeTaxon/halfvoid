@@ -82,10 +82,10 @@ TokenBlockData := class extend TokenData
 
 FileLine := class
 {
-	File := char^
+	File := StringSpan
 	Line := int
 
-	this := !(char^ name) -> void
+	this := !(StringSpan name) -> void
 	{
 		File = name
 	}

@@ -10,9 +10,9 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 
 	assert(dwn != null)
 	if dwn == null
-		EmitError("can not get pointer to error object")
+		itm.EmitError("can not get pointer to error object")
 	if not dwn.IsMem()
-		EmitError("can not get pointer to object, it is not on the memory")
+		itm.EmitError("can not get pointer to object, it is not on the memory")
 
 	return new UnrefFuncCall(dwn)
 }
@@ -28,7 +28,7 @@ TryGetPtrObj := !(Token^ itm) -> BoxExeObj^
 
 	assert(dwn != null)
 	if dwn == null
-		EmitError("can not dereference object")
+		itm.EmitError("can not dereference object")
 
 	if dwn.GetType() is in TypePoint
 		return new PtrToRefFuncCall(dwn)
