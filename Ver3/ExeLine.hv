@@ -309,7 +309,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 	maxArgs :=fncType.Params.Size()
 
 	if fncType.IsVargs
-		maxArgs = 20000000 //TODO INT_MAX
+		maxArgs = 20000000
 
 	if objs.Size() > maxArgs or objs.Size() < minArgs
 		return CmpNoExchange
