@@ -34,57 +34,7 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 
 	if res.IsOneFunc()
 	{
-		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
-
-		newFunc := res.GetOneFunc()->{BoxFuncBody^} //Vars captured
-		newFunc.ParseBodyForced()
-		
-		miniObj := CheckExeDownList
-		fncFnc := new FuncPointerParam(newFunc)
-		fncPtr := new BoxFuncCall(fncFnc,miniObj)
-		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
-
-
-		empty := CheckExeDownList
-
-		getTupleVar := BoxExeObj^
-
-		tplType := CurrentFunc.GetCaptureTuple().ItType
-		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
-
-		if tplType != tplTypeBefore
-		{
-			tplVar := new FuncResultParam(tplType.GetPoint(),false)
-			newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
-			CurrentFunc.CapturedVarsGets.Push(tplVar)
-
-			getTupleVar = new BoxFuncCall(tplVar,empty)
-		}else{
-			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
-		}
-
-
-		objs := CheckExeDownList
-		objs.Push(fncPtr)
-		objs.Push(getTupleVar)
-
-		lst := List.{BoxExeConstObj^}
-		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
-		
-		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
-		lst.Destroy()
-
-		step1 := new BoxFuncCall(createLambdaFunc,objs)
-		step2 := new UnrefFuncCall(step1)
-
-		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
-		InternalsHatch.Await()
-		lambdaType := GCLambda.GetClass(cnsts).ItType
-		cnsts.Destroy()
-		return GetExchange(step2,lambdaType.GetPoint())
-
-
+		return res.CreateOneFuncLambda()
 	}
 
 	return res

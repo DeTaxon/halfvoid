@@ -45,4 +45,95 @@ BoxLambdaHolder := class extend BoxExeObj
 	{
 		return tmpl.GetOneFunc()
 	}
+	CreateOneFuncLambda := !() -> BoxExeObj^
+	{
+		createLambd(() ==> {
+			return this.GetOneFunc()->{BoxFuncBody^}
+		})
+	}
+	CreateLambda := virtual !(Type^ toType) -> BoxExeObj^
+	{
+		if not (toType is in TypePoint)
+			return null
+		if not (toType.Base is in TypeClass)
+			return null
+
+		cls := toType.Base->{TypeClass^}.ToClass
+		if cls.Constants == null or cls.Constants.Constants.Size() != 1
+			return null
+		cnst1 := cls.Constants.Constants[0]
+		if not (cnst1 is ConstType)
+			return null
+		cnstTyp := cnst1->{ConstType^}.Value
+		if not (cnstTyp is in TypePoint)
+			return null
+		if not (cnstTyp.Base is in TypeFunc)
+			return null
+		fTyp := cnstTyp.Base->{TypeFunc^}
+		return createLambd(() ==> {
+			cnsts := List.{BoxExeConstObj^}
+			return tmpl.CreateFunc(fTyp,cnsts)->{BoxFuncBody^}
+		})
+	}
+
+	createLambd := !(!()&->BoxFuncBody^ cb) -> BoxExeObj^
+	{
+		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
+
+		newFunc := cb() //Vars captured
+		newFunc.ParseBodyForced()
+		
+		miniObj := CheckExeDownList
+		fncFnc := new FuncPointerParam(newFunc)
+		fncPtr := new BoxFuncCall(fncFnc,miniObj)
+		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
+
+
+		empty := CheckExeDownList
+
+		getTupleVar := BoxExeObj^
+
+		tplType := CurrentFunc.GetCaptureTuple().ItType
+		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
+
+		if tplType != tplTypeBefore
+		{
+			tplVar := new FuncResultParam(tplType.GetPoint(),false)
+			newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
+			CurrentFunc.CapturedVarsGets.Push(tplVar)
+
+			getTupleVar = new BoxFuncCall(tplVar,empty)
+		}else{
+			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
+		}
+
+
+		objs := CheckExeDownList
+		objs.Push(fncPtr)
+		objs.Push(getTupleVar)
+
+		lst := List.{BoxExeConstObj^}
+		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
+		
+		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
+		lst.Destroy()
+
+		step1 := new BoxFuncCall(createLambdaFunc,objs)
+		step2 := new UnrefFuncCall(step1)
+
+		cnsts := List.{BoxExeConstObj^}
+		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
+		InternalsHatch.Await()
+		lambdaType := GCLambda.GetClass(cnsts).ItType
+		cnsts.Destroy()
+		return GetExchange(step2,lambdaType.GetPoint())
+	}
+	CanBeThisType := !(Type^ tp) -> bool
+	{ //TODO: check argument count and types
+		if not (tp is in TypePoint)
+			return false
+		if TypeFight(tp.Base,GCILambda.ItType) != GCILambda.ItType
+			return false
+		return true
+	}
 }

@@ -47,6 +47,10 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 			return new PtrRefExchange(obj,expType)
 		return new PtrExchange(obj,expType)
 	}
+	if obj is BoxLambdaHolder
+	{
+		return obj->{BoxLambdaHolder^}.CreateLambda(expType)
+	}
 	return null
 }
 

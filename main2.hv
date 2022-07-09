@@ -167,24 +167,15 @@ RangeIterator := class
 {
 	result.end = this
 }
-hey := class extend TGCObject
-{
-	Destroy := virtual !() -> void
-	{
-		printf("hoy\n")
-	}
-}
 
-tstCall := !(!(int)&->void x) -> void
+"@twice call" := !(!()&->void x) -> void
 {
-	x(1)
-	x(2)
+	x()
+	x()
 }
 main := !() -> int
 {
-	tstCall((int x) ==> {
-		printf("hey %i\n",x)
-	})
+	@twice printf("hey\n")
 	return 0
 }
 

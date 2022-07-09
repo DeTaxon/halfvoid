@@ -20,6 +20,7 @@ GFuncGCSetNullArray := BoxFunc^
 
 GCType := Type^
 
+GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
 
 GCStackType := BoxClassTemplate^
@@ -49,6 +50,14 @@ intGetFunc := !(char^ name) -> BoxFunc^
 	res := intGetTemplate(name)
 	assert(res.IsOneFunc())
 	return res.GetOneFunc()
+}
+
+intGetClass := !(char^ name) -> BoxClass^
+{
+	res := TypeGetGlobalByIndent(StringSpan(name))
+	assert(res != null)
+	assert(res is in TypeVar)
+	return res->{TypeVar^}.Value->{TypeClass^}.ToClass
 }
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
@@ -83,6 +92,7 @@ InitInternals := !() -> void
 	cName := TokenIndent(StringSpan("TGCIObject"))
 	GCType = ParseType(cName&)
 
+	GCILambda = intGetClass("TILambda")
 	GCLambda = intGetClassTemplate("TLambda")
 
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")

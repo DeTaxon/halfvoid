@@ -329,7 +329,9 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 			if objs[i] is BoxExeNull and toType is in TypePoint
 			{
 				thisCase = 1000
-			}else{
+			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) { //TODO! CHECK TYPE!
+				thisCase = 0
+			} else{
 				return CmpNoExchange
 			}
 		}

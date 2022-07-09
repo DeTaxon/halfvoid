@@ -14,6 +14,7 @@ BoxClass := class extend BoxUnit
 	ItAlign := int
 
 
+	Constants := ConstantHolder^
 	PrimeParents := HybridQueue.{Tuple.{BoxClass^,BoxClass^,int},1}
 
 

@@ -68,6 +68,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		CurrentScope = ParentScope
 
 		newClass := new BoxClassBody(IsPacked,ItParents,bodyToken)
+		newClass.Constants = inConsts
 		classes.Emplace(inConsts,newClass)
 		newClass.SetName(ItName)
 		newClass.NamedConstants[i] = namedConstants[^i]
