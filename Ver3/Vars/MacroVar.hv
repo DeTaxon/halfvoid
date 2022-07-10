@@ -1,0 +1,14 @@
+MacroVar := class extend NamedVar
+{
+    lmbd := !()&->BoxExeObj^
+
+    this := !(StringSpan nm,!()&->BoxExeObj^ l) -> void
+    {
+        Name = nm
+        lmbd = l.Capture()
+    }
+    CreateCall := !() -> BoxExeObj^
+    {
+        return lmbd()
+    }
+}
