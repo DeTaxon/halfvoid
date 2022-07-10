@@ -19,15 +19,24 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			if cv.Name == asItm.Value
 				return cv.Value
 		}
-		if par is in MemVar
+		if par is in NamedVar
 		{
-			mv := par->{MemVar^}
+			mv := par->{NamedVar^}
 			if mv.Name == asItm.Value
 			{
-				if needLambdaCapture
-					mv.NotifyCaptureUse()
-				emptyObj := CheckExeDownList
-				return new BoxFuncCall(mv.Value,emptyObj)
+				if par is in MemVar
+				{
+					mv2 := mv->{MemVar^}
+					if needLambdaCapture
+						mv2.NotifyCaptureUse()
+					emptyObj := CheckExeDownList
+					return new BoxFuncCall(mv2.Value,emptyObj)
+				}else if par is MacroVar {
+					macro := par->{MacroVar^}
+					return macro.CreateCall()
+				}else{
+					assert(false)
+				}
 			}
 		}
 		if par is in BoxFunc

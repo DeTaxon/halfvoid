@@ -207,7 +207,7 @@ main := !(int argc,char^^ argv) -> int
 	z := bt
 	for i,j : z
 	{
-		printf("hey %i %i\n",i,j^)
+		printf("hey %i %i\n",i,j)
 	}
 	return 0
 }

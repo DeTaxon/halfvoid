@@ -125,7 +125,12 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 
 
                 if indVar != null and index.Size() != 0
-                    forElement.IndVar = new MemVar(index,indVar)
+                {
+                    forElement.IndVar = new MacroVar(index,() ==> [indVar] {
+                        getVar := new BoxFuncCall(indVar)
+                        return new PtrToRefFuncCall(getVar)
+                    })
+                }
                 forElement.GetCall = iCall
                 forElement.IsFinished = iFins
                 forElement.InitStep = dwnVar
@@ -148,7 +153,7 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 ForSubObjects := class
 {
     ValueVar := MemVar^
-    IndVar := MemVar^
+    IndVar := NamedVar^
     GetCall := BoxExeObj^
     IsFinished := BoxExeObj^
     InitStep := ParamFunc^

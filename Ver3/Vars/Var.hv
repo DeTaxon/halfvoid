@@ -145,10 +145,13 @@ ConstVar := class extend BoxUnit
 		Value = clFunc
 	}
 }
-MemVar := class extend BoxUnit
+NamedVar := class extend BoxUnit
+{
+	Name := StringSpan
+}
+MemVar := class extend NamedVar
 {
 	debId := int
-	Name := StringSpan
 	Value := ParamFunc^
 	Inits := List.{BoxExeObj^}
 
