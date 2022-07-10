@@ -174,15 +174,40 @@ RangeIterator := class
 	x()
 }
 
+bigTest := class
+{
+	c := int
+	c2 := int
+	"()" := !(int^& index) -> int
+	{
+		index = c2&
+		c += 1
+		c2 += 4
+		return c
+	}
+	IsFinished := !() -> bool
+	{
+		return c > 7
+	}
+}
+bt := class
+{
+	"for" := !() -> bigTest
+	{
+
+	}
+}
+
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	return main(argc,argv)
 }
 main := !(int argc,char^^ argv) -> int
 {
-	for i : 6
+	z := bt
+	for i,j : z
 	{
-		defer printf("hey\n")
+		printf("hey %i %i\n",i,j^)
 	}
 	return 0
 }
