@@ -122,6 +122,9 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			tmpl := checkRes->{TemplateTypeVar^}.Value
 
 			i := 0
+
+			SyntaxCompress(tk.Down.Right.Right,LexHVInputVars)
+
 			itr := tk.Down.Right.Right.Down
 
 			while itr != null
@@ -204,6 +207,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 }
 CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxUnit^} resCnsts) -> BoxExeConstObj^
 {
+
 	if itm is TokenIndent
 	{
 		name := itm->{TokenIndent^}.Value
@@ -228,6 +232,9 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		val := itm->{TokenInt^}.Parsed
 		return GetExeInt(val)
 	}
+	resTp := CheckTemplateType(null,itm,resCnsts) //TODO non null
+	if resTp != null
+		return GetConstType(resTp)
 	//assert(false)
 	return null
 }

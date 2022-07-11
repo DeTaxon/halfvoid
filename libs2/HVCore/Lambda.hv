@@ -35,14 +35,15 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^
 	{
-		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
-		return newLambda
+		//newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
+		//newLambda.capPtr = newLambda.thisCapturedVars&
+		//return newLambda
 	}
 }
-TLambdaImpCaptured := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambdaImp.{FuncPtr,CapTypePtr,YieldTuple}
-{
-
-}
+//TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple}
+//{
+//	thisCapturedVars := CapType
+//}
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {

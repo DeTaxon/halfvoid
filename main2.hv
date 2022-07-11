@@ -5,29 +5,35 @@ internalHVSetDepth := !(int depth) -> void
 {
 }
 
-"@twice line" := !(@T x) -> void
-{
-	x()
-	x()
-}
 
-someClass := class
+testAgain := !(@T^ x) -> void
 {
-	x := int
-	y := int
-	z := int
+	j := T
+	printf("hey %i\n",j)
 }
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	return main(argc,argv)
 }
+cls := class . {@Y}
+{
+	k := Y
+}
+
+l := class extend cls.{int^}
+{
+
+}
 main := !(int argc,char^^ argv) -> int
 {
-	x := () ==> {
-		printf("hey\n")
-	}
-	x.IsFinished()
+	c := int
+	o := l
+	testAgain(c&)
+	//x := () ==> {
+	//	printf("hey\n")
+	//}
+	//x.IsFinished()
 	//y := x.Capture()
 	//y()
 	return 0
