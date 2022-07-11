@@ -6,7 +6,7 @@ LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 	lexWordMachine.LoadFromMap(ptrToChar,Si)
 }
 
-GetObjectsFromMemory := !(StringSpan fileName,char^ memPtr,int Siz) -> Token^
+GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 {
 	itLine := FileLine^
 	treeStart := Token^
@@ -23,7 +23,7 @@ GetObjectsFromMemory := !(StringSpan fileName,char^ memPtr,int Siz) -> Token^
 		ns := Token^
 		if a != 20{
 			if itLine == null {
-				itLine = new FileLine(fileName)
+				itLine = new FileLine(fil)
 			}
 		}
 		if a >= 40

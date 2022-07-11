@@ -29,7 +29,7 @@ Token := class
 		ln := "Error <"sbt << info << ">"
 		if Line != null
 		{
-			ln << " at file " << Line.File << " line: " <<Line.Line
+			ln << " at file " << Line.File.GetName() << " line: " <<Line.Line
 		}
 		throw new Exception(ln.Str()) //todo memory
 		//printf("%s\n",ln.Str())
@@ -82,12 +82,12 @@ TokenBlockData := class extend TokenData
 
 FileLine := class
 {
-	File := StringSpan
+	File := BoxFile^
 	Line := int
 
-	this := !(StringSpan name) -> void
+	this := !(BoxFile^ fil) -> void
 	{
-		File = name
+		File = fil
 	}
 }
 

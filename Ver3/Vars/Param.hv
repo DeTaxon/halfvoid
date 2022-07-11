@@ -27,7 +27,7 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		pType := GetType()->{TypeFunc^}.ResultType
 
-		if IsInt(pType)
+		if IsInt(pType) or pType == GTypeBool
 		{
 			f^ << "store "
 			pType.PrintType(f)

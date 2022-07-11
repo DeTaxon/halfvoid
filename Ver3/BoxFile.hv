@@ -16,6 +16,7 @@ BoxFile := class extend BoxUnit
 	file := vRepoFile^
 	fileMap := void^
 	fileSize := int
+	fileName := StringSpan
 
 	loaded := THatch
 
@@ -30,9 +31,15 @@ BoxFile := class extend BoxUnit
 		fileMap = file.Map()
 		fileSize = file.Size()
 	}
+	GetName := !() -> StringSpan
+	{
+		result = fileName
+	}
 
 	Parse := !() -> void
 	{
+		fileName = GetConstString(file.GetName())
+
 		CurrentFile = this&
 		foundSpace := false
 		for spc : CodeSpaces
@@ -53,7 +60,7 @@ BoxFile := class extend BoxUnit
 		
 		defer loaded.Emit()
 
-		tokens := GetObjectsFromMemory(GetConstString(file.GetName()),fileMap->{char^},fileSize)
+		tokens := GetObjectsFromMemory(this&,fileMap->{char^},fileSize)
 
 		if tokens == null
 			return void

@@ -2,6 +2,10 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 {
     return new BoxBlockBreak(itm, () ==> {
 
+        
+        forLine := new BoxExeLine()
+        forLine.ItToken = itm.Down
+
         forItems := HybridQueue.{ForSubObjects,5}
         containMeta := false
 
@@ -168,6 +172,7 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 
         resFor := new BoxFor()
         resFor.values.Push(forItems[^])
+        resFor.HeadLine = forLine
 
         assert(iter.GetValue() == "{}")
 
@@ -203,6 +208,8 @@ BoxFor := class extend BoxExeObj
     EndLabel := BoxLabel
 
     body := BoxBlock^
+
+    HeadLine := BoxExeLine^
     
     this := !() -> void
     {
@@ -229,6 +236,9 @@ BoxFor := class extend BoxExeObj
 
     PrintCode := virtual !(TIOStream^ f) -> void
     {
+        oldLineCall := GDebugLineCallId
+        GDebugLineCallId = HeadLine.MetaId
+
         values[^].InitStep.PrintCode(f)
         CheckStep.PrintCode(f)
 
@@ -253,9 +263,12 @@ BoxFor := class extend BoxExeObj
 
         CheckStep.PrintGo(f)
         EndLabel.PrintCode(f)
+
+        GDebugLineCallId = oldLineCall
     }
     PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
+        HeadLine?.PrintDebugMeta(f)
         body.PrintDebugMeta(f)
     }
 }
