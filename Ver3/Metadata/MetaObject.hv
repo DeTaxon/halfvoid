@@ -1,0 +1,7 @@
+BoxMetaObj := class extend BoxExeObj
+{
+	IsMetaIteratable := virtual !() -> bool { return false }
+	MetaIteretableSize := virtual !() -> int { return 0}
+	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return null }
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
+}

@@ -50,6 +50,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return null
 		return GetExeInt(itType.GetSize())
 	}
+	if right.Value == "AllFields"
+	{
+		return TryGetMetaFields(obj)
+	}
 	if right.Value == "VTable"
 	{
 		typ := ParseType(obj.Down)
