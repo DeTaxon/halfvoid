@@ -145,6 +145,9 @@ BoxClassBody := class extend BoxClass
 						}
 						if asFunc is in BoxFunc
 						{
+							if asFunc is in BoxFuncBody
+								asFunc->{BoxFuncBody^}.ParentScope = this&
+
 							f := asFunc->{BoxFunc^}
 							funcs.Emplace(name,f)
 							f.SetName(name)

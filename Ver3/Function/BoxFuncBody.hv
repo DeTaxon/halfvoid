@@ -28,6 +28,12 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	InputVarNames := List.{StringSpan}
 
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return ParentScope
+	}
+
 	NotifyGCUsed := !() -> void 
 	{
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
@@ -125,6 +131,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		AllFunctions.Push(this&)
 
 		stackSize := UnitStack.Size()
+
+		if stackSize == 0 //TODO better way of readding constants
+			ScopePutConstants()
 
 		UnitStack.PushFront(this&)
 

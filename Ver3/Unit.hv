@@ -16,10 +16,6 @@ BoxUnit := class
 	IsConst := virtual false
 
 
-	GetParentScope := virtual !() -> BoxUnit^
-	{
-		return null
-	}
 
 	GetFileScope := virtual !() -> BoxFile^
 	{
@@ -34,6 +30,11 @@ BoxUnit := class
 		assert(false)
 		return null
 	}
+
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return null
+	}
 	ScopePutConstants := !() -> void
 	{
 		next := GetParentScope()
@@ -44,6 +45,7 @@ BoxUnit := class
 	PutItConstants := virtual !() -> void
 	{
 	}
+
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
 }
 

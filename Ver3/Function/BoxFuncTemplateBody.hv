@@ -38,6 +38,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			ths.headerCheckHatch.Emit()
 		})
 	}
+
+
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return ParentScope
+	}
+
 	SetName := virtual !(StringSpan name) -> void
 	{
 		Name = name
@@ -130,6 +138,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 		newFunc.VariadicName = hData.VariadicName
 		newFunc.SetPrintName(Name)
+		newFunc.ParentScope = ParentScope
 
 		for it,ind : resConsts
 		{
