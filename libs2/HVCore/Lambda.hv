@@ -1,10 +1,5 @@
 TILambda := class extend TGCObject
 {
-	Capture := virtual !() -> TILambda^
-	{
-		//assert(false)
-		return null
-	}
 	IsFinished := virtual !() -> bool
 	{
 		return false
@@ -22,6 +17,10 @@ TLambda := class .{@FuncPtr} extend TILambda
 	//{
 	//	return this.callFunc(this&,argc...)
 	//}
+	Capture := virtual !() -> TLambda.{FuncPtr}^
+	{
+		return null
+	}
 }
 TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 {
@@ -33,6 +32,16 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 	getCaptureVar := virtual !() -> void^ {  result = capPtr }
 	getYieldState := virtual !() -> int& { return yieldState }
 	getYieldVars := virtual !() -> void^ { return lambdaVars& }
+
+	//Capture := virtual !() -> TLambda.{FuncPtr}^
+	//{
+	//	newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
+	//	return newLambda
+	//}
+}
+TLambdaImpCaptured := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambdaImp.{FuncPtr,CapTypePtr,YieldTuple}
+{
+
 }
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType

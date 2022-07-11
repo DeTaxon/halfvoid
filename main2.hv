@@ -24,22 +24,11 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 }
 main := !(int argc,char^^ argv) -> int
 {
-	for i : 6..11
-	{
-		printf("wow %i\n",i)
+	x := () ==> {
+		printf("hey\n")
 	}
-
+	x.IsFinished()
+	//y := x.Capture()
+	//y()
 	return 0
-
-	//z := someClass
-	//z.x = 5
-	//z.y = 17
-	//z.z = 27
-	//k := someClass
-	//for i,j : z->AllFields, m : k->AllFields
-	//{
-	//	printf("hey %i %s\n",i,j)
-	//	m = i
-	//}
-	//return 0
 }

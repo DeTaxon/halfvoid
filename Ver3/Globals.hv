@@ -26,12 +26,20 @@ SubWork := !(!()&->void x) -> void
     cs := CurrentScope
     cfunc := CurrentFunc
     subLambda := x.Capture()
+
+    stacks := new HybridQueue.{BoxUnit^,10}
+    stacks.Push(UnitStack[^])
+
     TSpawnTask(() ==> {
         CurrentCodeSpace = ccs
         CurrentScope = cs
         CurrentFile = cf
         CurrentFunc = cfunc
+
+        UnitStack.Push(stacks^[^])
+
         subLambda()
         subLambda.Destroy()
+        delete stacks
     })
 }

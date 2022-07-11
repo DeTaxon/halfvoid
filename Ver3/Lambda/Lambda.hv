@@ -47,14 +47,10 @@ BoxLambdaHolder := class extend BoxExeObj
 	{
 		return tmpl.IsOneFunc()
 	}
-	GetOneFunc := !() -> BoxFunc^
-	{
-		return tmpl.GetOneFunc()
-	}
 	CreateOneFuncLambda := !() -> BoxExeObj^
 	{
 		return createLambd(() ==> {
-			return this.GetOneFunc()->{BoxFuncBody^}
+			return this.tmpl.GetOneFunc()->{BoxFuncBody^}
 		})
 	}
 	CreateLambda := virtual !(Type^ toType) -> BoxExeObj^

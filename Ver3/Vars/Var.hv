@@ -73,6 +73,14 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	{
 		if CurrentScope is in BoxFunc
 		{
+			if exeObj is BoxLambdaHolder
+			{
+				hldr := exeObj->{BoxLambdaHolder^}
+				if not hldr.IsOneFunc()
+					varToken.EmitError("lambda function can not be template for variable") //todo better explanation
+				exeObj = hldr.CreateOneFuncLambda()
+			}
+
 			vr := ParamFunc^
 			mVar := MemVar^
 
