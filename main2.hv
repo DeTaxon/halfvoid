@@ -192,9 +192,10 @@ main := !(int argc,char^^ argv) -> int
 	z.y = 17
 	z.z = 27
 	k := someClass
-	for i,j : z->AllFields
+	for i,j : z->AllFields, m : k->AllFields
 	{
 		printf("hey %i %s\n",i,j)
+		m = i
 	}
 	return 0
 }
