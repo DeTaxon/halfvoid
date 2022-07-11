@@ -1,0 +1,32 @@
+internalHVDeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
+{
+	Destroy := virtual !() -> void {
+		this()
+	}
+}
+
+internalHVStackAllocatedGC := class .{@T} extend T
+{
+	DecRef := virtual !() -> void {
+		RefValue -= 1
+		if RefValue == 0
+		{
+			Destroy()
+		}
+	}
+}
+
+internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
+{
+	itm1 = null->{TGCIObject^}
+}
+
+internalHVGCSetNullArray := !(TGCIObject^^ arrs, int start, int end) -> void
+{
+	i := end
+	while i >= start
+	{
+		arrs[i] = null
+		i -= 1
+	}
+}

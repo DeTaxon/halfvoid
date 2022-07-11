@@ -1,0 +1,5 @@
+internalHVSetType := !(@T^ x) .{@ToType} -> void
+{
+	x->{void^}->{ToType^}->VTable = ToType->VTable
+	//return x->{void^}->{ToType^} //todo recheck on dymamic check
+}

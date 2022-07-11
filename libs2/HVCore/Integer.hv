@@ -1,0 +1,37 @@
+
+"for" := !(int this) -> RangeIterator
+{
+	result.end = this
+}
+
+RangeIterator := class //WARNING end value not included
+{
+	value := int
+	end := int
+	"()" := !() -> int
+	{
+		result = value
+		value += 1
+	}
+	IsFinished := !() -> bool
+	{
+		return value > end
+	}
+}
+
+Range := class
+{
+	start := int
+	end := int
+
+	"for" := !() -> RangeIterator
+	{
+		result.value = start
+		result.end = end
+	}
+}
+".." := !(int s, int e) -> Range
+{
+	result.start = s
+	result.end = e + 1
+}

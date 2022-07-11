@@ -1,0 +1,60 @@
+TILambda := class extend TGCObject
+{
+	Capture := virtual !() -> TILambda^
+	{
+		//assert(false)
+		return null
+	}
+	IsFinished := virtual !() -> bool
+	{
+		return false
+	}
+
+	getCaptureVar := virtual !() -> void^ { return null }
+	getYieldState := virtual !() -> int& {  } //TODO assert
+	getYieldVars := virtual !() -> void^ { return null }
+}
+
+TLambda := class .{@FuncPtr} extend TILambda
+{
+	callFunc := FuncPtr
+	//"()" := !(args...)
+	//{
+	//	return this.callFunc(this&,argc...)
+	//}
+}
+TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
+{
+	capPtr := CapTypePtr
+	yieldState := int
+	lambdaVars := YieldTuple
+
+	IsFinished := virtual !() -> bool { return yieldState < 0 }
+	getCaptureVar := virtual !() -> void^ {  result = capPtr }
+	getYieldState := virtual !() -> int& { return yieldState }
+	getYieldVars := virtual !() -> void^ { return lambdaVars& }
+}
+
+internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
+{
+	return lmb.callFunc(lmb&,args...)
+}
+internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
+{
+	return lmbd->{TILambda^}.getCaptureVar()->{T^}
+}
+internalHVLambdaGetYieldState := !(void^ lmbd) -> int&
+{
+	return lmbd->{TILambda^}.getYieldState()
+}
+
+internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVarsTuple^
+{
+	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
+}
+
+internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuplePtr,YieldVars}
+{
+	result.callFunc = fnc
+	result.capPtr = CaptureVars
+}

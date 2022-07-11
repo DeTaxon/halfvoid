@@ -1,171 +1,8 @@
-TGCIObject := class
-{
-	IncRef := virtual !() -> void { }
-	DecRef := virtual !() -> void { }
-	Destroy := virtual !() -> void {}
-}
-
-TGCObject := class extend TGCIObject
-{
-	RefValue := int
-
-	IncRef := virtual !() -> void { RefValue += 1}
-	DecRef := virtual !() -> void {
-		RefValue -= 1
-		if RefValue == 0
-		{
-			Destroy()
-			delete this&
-		}
-	}
-	Destroy := virtual !() -> void {}
-}
-
-internalHVNew := !() .{@T} -> T^
-{
-	result&->{void^^}^ = calloc(1,T->TypeSize) //weird way to bypass DecRef
-	if T->TypeGroup == "Class"
-		internalHVInitClass(result^)
-	if T is in TGCIObject
-		result.IncRef()
-}
-internalHVNewConstructed := !(@T^ obj, args...) -> T^
-{
-	result = obj
-	result.this(args...)
-}
-
-"=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
-{
-	itm2?.IncRef()
-	if itm1 != null
-	{
-		itm1.DecRef()
-	}
-	itm1&->{void^^}^ = itm2->{void^}
-}
-
-internalHVDelete := !(@T^ x) -> void
-{
-	free(x)
-}
-internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
-{
-	itm1 = null->{TGCIObject^}
-}
-
-internalHVGCSetNullArray := !(TGCIObject^^ arrs, int start, int end) -> void
-{
-	i := end
-	while i >= start
-	{
-		arrs[i] = null
-		i -= 1
-	}
-}
-
 internalHVGetDepth := !() -> int
 {
 }
 internalHVSetDepth := !(int depth) -> void
 {
-}
-
-TILambda := class extend TGCObject
-{
-	Capture := virtual !() -> TILambda^
-	{
-		//assert(false)
-		return null
-	}
-	IsFinished := virtual !() -> bool
-	{
-		return false
-	}
-
-	getCaptureVar := virtual !() -> void^ { return null }
-	getYieldState := virtual !() -> int& {  } //TODO assert
-	getYieldVars := virtual !() -> void^ { return null }
-}
-
-TLambda := class .{@FuncPtr} extend TILambda
-{
-	callFunc := FuncPtr
-	//"()" := !(args...)
-	//{
-	//	return this.callFunc(this&,argc...)
-	//}
-}
-TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
-{
-	capPtr := CapTypePtr
-	yieldState := int
-	lambdaVars := YieldTuple
-
-	IsFinished := virtual !() -> bool { return yieldState < 0 }
-	getCaptureVar := virtual !() -> void^ {  result = capPtr }
-	getYieldState := virtual !() -> int& { return yieldState }
-	getYieldVars := virtual !() -> void^ { return lambdaVars& }
-}
-
-internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
-{
-	return lmb.callFunc(lmb&,args...)
-}
-internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
-{
-	return lmbd->{TILambda^}.getCaptureVar()->{T^}
-}
-internalHVLambdaGetYieldState := !(void^ lmbd) -> int&
-{
-	return lmbd->{TILambda^}.getYieldState()
-}
-
-internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVarsTuple^
-{
-	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
-}
-
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuplePtr,YieldVars}
-{
-	result.callFunc = fnc
-	result.capPtr = CaptureVars
-}
-internalHVDeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
-{
-	Destroy := virtual !() -> void {
-		this()
-	}
-}
-
-internalHVStackAllocatedGC := class .{@T} extend T
-{
-	DecRef := virtual !() -> void {
-		RefValue -= 1
-		if RefValue == 0
-		{
-			Destroy()
-		}
-	}
-}
-
-RangeIterator := class
-{
-	value := int
-	end := int
-	"()" := !() -> int
-	{
-		result = value
-		value += 1
-	}
-	IsFinished := !() -> bool
-	{
-		return value > end
-	}
-}
-"for" := !(int this) -> RangeIterator
-{
-	result.end = this
 }
 
 "@twice line" := !(@T x) -> void
@@ -187,21 +24,22 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 }
 main := !(int argc,char^^ argv) -> int
 {
-	z := someClass
-	z.x = 5
-	z.y = 17
-	z.z = 27
-	k := someClass
-	for i,j : z->AllFields, m : k->AllFields
+	for i : 6..11
 	{
-		printf("hey %i %s\n",i,j)
-		m = i
+		printf("wow %i\n",i)
 	}
-	return 0
-}
 
-internalHVSetType := !(@T^ x) .{@ToType} -> void
-{
-	x->{void^}->{ToType^}->VTable = ToType->VTable
-	//return x->{void^}->{ToType^} //todo recheck on dymamic check
+	return 0
+
+	//z := someClass
+	//z.x = 5
+	//z.y = 17
+	//z.z = 27
+	//k := someClass
+	//for i,j : z->AllFields, m : k->AllFields
+	//{
+	//	printf("hey %i %s\n",i,j)
+	//	m = i
+	//}
+	//return 0
 }

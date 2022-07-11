@@ -1,0 +1,32 @@
+TGCIObject := class
+{
+	IncRef := virtual !() -> void { }
+	DecRef := virtual !() -> void { }
+	Destroy := virtual !() -> void {}
+}
+
+TGCObject := class extend TGCIObject
+{
+	RefValue := int
+
+	IncRef := virtual !() -> void { RefValue += 1}
+	DecRef := virtual !() -> void {
+		RefValue -= 1
+		if RefValue == 0
+		{
+			Destroy()
+			delete this&
+		}
+	}
+	Destroy := virtual !() -> void {}
+}
+
+"=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
+{
+	itm2?.IncRef()
+	if itm1 != null
+	{
+		itm1.DecRef()
+	}
+	itm1&->{void^^}^ = itm2->{void^}
+}

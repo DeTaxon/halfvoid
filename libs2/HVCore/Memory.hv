@@ -1,0 +1,18 @@
+internalHVNew := !() .{@T} -> T^
+{
+	result&->{void^^}^ = calloc(1,T->TypeSize) //weird way to bypass DecRef
+	if T->TypeGroup == "Class"
+		internalHVInitClass(result^)
+	if T is in TGCIObject
+		result.IncRef()
+}
+internalHVNewConstructed := !(@T^ obj, args...) -> T^
+{
+	result = obj
+	result.this(args...)
+}
+
+internalHVDelete := !(@T^ x) -> void
+{
+	free(x)
+}
