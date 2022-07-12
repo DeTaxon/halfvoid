@@ -79,21 +79,28 @@ PtrToRefFuncCall := class extend BoxExeObj
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{
-		rType := ObjType
-
-		PrintPointPre(f)
-		f^ << "%TUnref" << resId << " = load "
-		rType.PrintType(f)
-		f^ << ","
-		rType.PrintType(f)
-		f^ << "* "
-		PrintPointUse(f)
-		if DebugMode
-			f^ << ", !dgb !" << GDebugLineCallId
-		f^ << "\n"
+		PrintUnrefObj(f,resId,this&)
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "%TUnref" << resId
 	}
+}
+
+
+PrintUnrefObj := !(TIOStream^ f,int id,BoxExeObj^ obj) -> void
+{
+
+	rType := NormalizeType(obj.GetType())
+
+	obj.PrintPointPre(f)
+	f^ << "%TUnref" << id << " = load "
+	rType.PrintType(f)
+	f^ << ","
+	rType.PrintType(f)
+	f^ << "* "
+	obj.PrintPointUse(f)
+	if DebugMode
+		f^ << ", !dgb !" << GDebugLineCallId
+	f^ << "\n"
 }

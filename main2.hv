@@ -16,24 +16,12 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	return main(argc,argv)
 }
-cls := class . {@Y}
-{
-	k := Y
-}
-
-l := class extend cls.{int^}
-{
-
-}
 main := !(int argc,char^^ argv) -> int
 {
-	c := int
-	o := l
-	testAgain(c&)
-	//x := () ==> {
-	//	printf("hey\n")
-	//}
-	//x.IsFinished()
+	x := () ==> {
+		printf("hey\n")
+	}
+	x.Capture()
 	//y := x.Capture()
 	//y()
 	return 0

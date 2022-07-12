@@ -70,6 +70,7 @@ ReturnHalfState := class extend BoxExeObj
     this := !(BoxExeObj^ toCall,bool iY) -> void
     {
         callObj = toCall
+        assert(callObj != null)
         isYield = iY
     }
 

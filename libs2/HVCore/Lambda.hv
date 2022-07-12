@@ -40,10 +40,10 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 		//return newLambda
 	}
 }
-//TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple}
-//{
-//	thisCapturedVars := CapType
-//}
+TLambdaImpCaptured := class .{@FuncPtr,@CapType,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType,YieldTuple}
+{
+	//thisCapturedVars := CapType
+}
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {

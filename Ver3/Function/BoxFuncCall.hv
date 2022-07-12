@@ -17,6 +17,7 @@ BoxFuncCall := class extend BoxExeObj
 	this := !(BoxFunc^ fnc) -> void
 	{
 		callObj = fnc
+		assert(callObj != null)
 
 		if callObj is BoxFuncBody
 			callObj->{BoxFuncBody^}.ParseBody()
@@ -27,6 +28,7 @@ BoxFuncCall := class extend BoxExeObj
 	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
 		callObj = fnc
+		assert(callObj != null)
 
 		if callObj is BoxFuncBody
 			callObj->{BoxFuncBody^}.ParseBody()
@@ -42,7 +44,14 @@ BoxFuncCall := class extend BoxExeObj
 			ResultVar = CreateVar(fType.ResultType,false)
 			downs.Push(new BoxFuncCall(ResultVar))
 
-			this&->SetType(BoxFuncComplexCall)
+			if this& is BoxFuncCall
+			{
+				this&->SetType(BoxFuncComplexCall)
+			}else if this& is BoxFuncPointerCall {
+				this&->SetType(BoxFuncPointerComplexCall)
+			}else{
+				assert(false)
+			}
 		}
 
 		downs.Push(objs[^])
@@ -94,6 +103,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	GetType := virtual !() -> Type^
 	{
+		assert(callObj != null)
 		return callObj.GetType()->{TypeFunc^}.ResultType
 	}
 
@@ -132,18 +142,7 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		if IsMem()
 		{
-			rType := GetType()
-
-			PrintPointPre(f)
-			f^ << "%TUnref" << resId << " = load "
-			rType.PrintType(f)
-			f^ << ","
-			rType.PrintType(f)
-			f^ << "* "
-			PrintPointUse(f)
-			if DebugMode
-				f^ << ", !dgb !" << GDebugLineCallId
-			f^ << "\n"
+			PrintUnrefObj(f,resId,this&)
 		}else{
 			PrintFuncUse(f)
 		}
@@ -196,5 +195,16 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	IsMem := virtual !() -> bool
 	{
 		return false //TODO if return ref
+	}
+}
+BoxFuncPointerComplexCall := class extend BoxFuncPointerCall
+{
+	IsMem := virtual !() -> bool
+	{
+		return true //TODO if return ref
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		downs[0].PrintPointUse(f)
 	}
 }

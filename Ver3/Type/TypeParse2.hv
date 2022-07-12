@@ -232,9 +232,16 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		val := itm->{TokenInt^}.Parsed
 		return GetExeInt(val)
 	}
-	resTp := CheckTemplateType(null,itm,resCnsts) //TODO non null
-	if resTp != null
-		return GetConstType(resTp)
+
+	if cnst == null or cnst is ConstType
+	{
+		inType := Type^
+		if cnst != null
+			inType = cnst->{ConstType^}.Value
+		resTp := CheckTemplateType(inType,itm,resCnsts)
+		if resTp != null
+			return GetConstType(resTp)
+	}
 	//assert(false)
 	return null
 }
