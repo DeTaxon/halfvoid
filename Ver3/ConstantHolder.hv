@@ -32,18 +32,25 @@ TemplateCheckConstants := !(List.{BoxExeConstObj^} cnsts, List.{Token^} cnstsTok
 {
 	if cnsts.Size() != cnstsTokens.Size()
 		return false
+
 	for cnst, i : cnsts, token : cnstsTokens
 	{
-		assert(token is TokenTemplateType)
-		tmpl := token->{TokenTemplateType^}
-		name := tmpl.Value[1..0]
-		if cnst is ConstType
-		{
-			namedConsts[name] = new TypeVar(name,cnst->{ConstType^}.Value)
-		}else{
-			namedConsts[name] = new ConstVar(name,cnst)
-		}
+		res := CheckTemplateConst(cnst,token,namedConsts)
+		if res == null
+			return false
 	}
+	//for cnst, i : cnsts, token : cnstsTokens
+	//{
+	//	assert(token is TokenTemplateType)
+	//	tmpl := token->{TokenTemplateType^}
+	//	name := tmpl.Value[1..0]
+	//	if cnst is ConstType
+	//	{
+	//		namedConsts[name] = new TypeVar(name,cnst->{ConstType^}.Value)
+	//	}else{
+	//		namedConsts[name] = new ConstVar(name,cnst)
+	//	}
+	//}
 	return true
 }
 

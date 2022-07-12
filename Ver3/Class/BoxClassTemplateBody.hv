@@ -28,6 +28,10 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		IsPacked = isPacked
 		ItParents.Push(parents[^])
 
+		if cnsts != null
+			SyntaxCompress(cnsts,LexHVInputVars)
+
+
 		iter := cnsts.Down
 		while iter != null
 		{
@@ -72,6 +76,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		classes.Emplace(inConsts,newClass)
 		newClass.SetName(ItName)
 		newClass.NamedConstants[i] = namedConstants[^i]
+		newClass.ComputeConsts()
 		return newClass
 	}
 }

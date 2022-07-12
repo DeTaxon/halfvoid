@@ -52,9 +52,23 @@ BoxClassBody := class extend BoxClass
 	FieldsState := THatch
 
 	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
+	NamedConstantsVars := List.{BoxUnit^}
+
+	ComputeConsts := !() -> void
+	{
+		for it,ind : NamedConstants
+		{
+			if it is ConstType
+			{
+				NamedConstantsVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
+			}else{
+				assert(false) //TODO
+			}
+		}
+	}
 	PutItConstants := virtual !() -> void
 	{
-		UnitStack.PushFront(NamedConstants[^])
+		UnitStack.PushFront(NamedConstantsVars[^])
 	}
 
 	ParentScope := BoxUnit^
@@ -99,7 +113,7 @@ BoxClassBody := class extend BoxClass
 
 		for i : ParentTokens.Size()
 		{
-			inhType := ParseType(ParentTokens[i])
+			inhType := CheckTemplateType(null,ParentTokens[i],NamedConstants)
 			assert(inhType != null) //TODO
 			assert(inhType is TypeClass) //TODO
 			asClsParent := inhType->{TypeClass^}

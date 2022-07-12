@@ -6,23 +6,21 @@ internalHVSetDepth := !(int depth) -> void
 }
 
 
-testAgain := !(@T^ x) -> void
-{
-	j := T
-	printf("hey %i\n",j)
-}
-
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	return main(argc,argv)
 }
+
+
 main := !(int argc,char^^ argv) -> int
 {
+	val := 12
 	x := () ==> {
-		printf("hey\n")
+		val += 2
+		printf("hey %i\n",val)
 	}
-	x.Capture()
-	//y := x.Capture()
-	//y()
+	y := x.Capture()
+	y()
+	y()
 	return 0
 }
