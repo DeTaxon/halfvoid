@@ -11,16 +11,10 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(argc,argv)
 }
 
+val := thread_local int
 
 main := !(int argc,char^^ argv) -> int
 {
-	val := 12
-	x := () ==> {
-		val += 2
-		printf("hey %i\n",val)
-	}
-	y := x.Capture()
-	y()
-	y()
+	x := val
 	return 0
 }

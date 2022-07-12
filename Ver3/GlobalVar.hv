@@ -7,15 +7,26 @@ GlobalVar := class extend BoxUnit
 
 	this := !(StringSpan name,Type^ tp) -> void
 	{
+		Init(name,tp,false)
+	}
+	this := !(StringSpan name,Type^ tp,bool isTaskLocal) -> void
+	{
+		Init(name,tp,isTaskLocal)
+	}
+
+	Init := !(StringSpan name,Type^ tp,bool isTaskLocal) -> void
+	{
 		Name = name
 		Value = new GlobalVarFunc(name,tp)
+
+		if isTaskLocal
+			Value->SetType(ThreadLocalVarFunc)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		Value.PrintCodeConst(f,MemValue)
 	}
 }
-
 
 GlobalVarFunc := class extend BoxFunc
 {
@@ -33,9 +44,15 @@ GlobalVarFunc := class extend BoxFunc
 	{
 		return true
 	}
+	PrintThreadLocal := virtual !(TIOStream^ f) -> void
+	{
+
+	}
 	PrintCodeConst := virtual !(TIOStream^ f,BoxExeConstObj^ cnst) -> void
 	{
-		f^ << "@V" << varId << " = global "
+		f^ << "@V" << varId << " = "
+		PrintThreadLocal(f)
+		f^ << " global "
 		pType.PrintType(f)
 		if cnst != null
 		{
@@ -63,5 +80,13 @@ GlobalVarFunc := class extend BoxFunc
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
+	}
+}
+
+ThreadLocalVarFunc := class extend GlobalVarFunc
+{
+	PrintThreadLocal := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "thread_local"
 	}
 }

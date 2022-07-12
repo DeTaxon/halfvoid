@@ -38,6 +38,17 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
 		newLambda.capPtr = newLambda.thisCapturedVars&
 		newLambda.callFunc = callFunc
+
+		for setField : newLambda.thisCapturedVars->AllFields , getField : this.capPtr^->AllFields
+		{
+			setField = getField
+		}
+
+		for setField : newLambda.lambdaVars->AllFields , getField : this.lambdaVars->AllFields
+		{
+			setField = getField
+		}
+
 		return newLambda
 	}
 }

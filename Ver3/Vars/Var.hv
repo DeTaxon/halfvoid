@@ -25,6 +25,22 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if varToken == null
 		return null
+	
+	if varToken?.GetValue() == "thread_local"
+	{
+		if not CurrentScope is in BoxFile
+			varToken.EmitError("task/thread local must be at the root of file")
+		
+		isThreadLocal := varToken.GetValue() == "thread_local"
+
+		varType2 := ParseType(varToken.Right)
+
+		if varType2 == null
+			varToken.Right.EmitError("Unknown type")
+
+		if isThreadLocal
+			return new GlobalVar(name,varType2,true)
+	}
 
 	varType := ParseType(varToken)
 
