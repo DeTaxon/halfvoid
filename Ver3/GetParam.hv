@@ -88,6 +88,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = it->{GlobalVar^}.Value
 				return true
 			}
+			if it is TaskLocalVar
+			{
+				callItem = it
+				return true
+			}
 			if it is in BoxFunc
 			{
 				callItem = new FuncPointerParam(it->{BoxFunc^})
@@ -98,6 +103,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	})
 	if callItem != null
 	{
+		if callItem is TaskLocalVar
+		{
+			return callItem->{TaskLocalVar^}.CreateCall()
+		}
 		if callItem is in BoxFunc
 		{
 			emptyObj := CheckExeDownList

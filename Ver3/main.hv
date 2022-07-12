@@ -106,6 +106,7 @@ main := !(int argc, char^^ argv) -> int
 	GObjNone = new BoxExeNone()
 	GObjNull = new BoxExeNull()
 	CreateBuiltins()
+	PreInitTaskLocal()
 	cuId = GetNewId()
 
 	for spc : CodeSpaces
@@ -127,6 +128,8 @@ main := !(int argc, char^^ argv) -> int
 	{
 		fil.loaded.Await()
 	}
+
+	InitTaskLocal()
 	InitInternals()
 	InitLambda()
 	GParsedAllFiles.Emit()

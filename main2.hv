@@ -11,10 +11,24 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(argc,argv)
 }
 
-val := thread_local int
+val := task_local int
 
+g := int^
+
+internalHVGetTaskLocalTuple := !() -> void^
+{
+	return g
+}
+TTask := class
+{
+	x := internalHVTaskLocalTuple
+}
 main := !(int argc,char^^ argv) -> int
 {
-	x := val
+	g1 := 12
+	g2 := 100
+	g = g2&
+
+	printf("wow %i\n",val)
 	return 0
 }
