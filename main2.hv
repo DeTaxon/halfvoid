@@ -5,30 +5,24 @@ internalHVSetDepth := !(int depth) -> void
 {
 }
 
+internalHVGetTaskLocalTuple := !() -> void^
+{
+	return g
+}
+
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	return main(argc,argv)
 }
 
-val := task_local int
-
-g := int^
-
-internalHVGetTaskLocalTuple := !() -> void^
+testFunc := !(!(int)&->int  x) -> void
 {
-	return g
+	printf("hoy %i\n",x(5))
 }
-TTask := class
-{
-	x := internalHVTaskLocalTuple
-}
+
 main := !(int argc,char^^ argv) -> int
 {
-	g1 := 12
-	g2 := 100
-	g = g2&
-
-	printf("wow %i\n",val)
+	testFunc(x => x*2)
 	return 0
 }

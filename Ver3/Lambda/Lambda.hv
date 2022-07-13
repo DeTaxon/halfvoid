@@ -25,7 +25,11 @@ BoxLambdaHolder := class extend BoxExeObj
 		{
 			bPtr = brackets.Down
 		}else{
-			assert(false)
+			if not (brackets is TokenIndent)
+				brackets.EmitError("Unknown input object for lambda") //todo better error
+			
+			bPtr = new TokenSymbol(StringSpan("()"),1)
+			bPtr.Down = new TokenIndent(brackets->{TokenIndent^}.Value)
 		}
 
 		rToken := typeToken
