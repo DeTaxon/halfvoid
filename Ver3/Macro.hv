@@ -1,0 +1,30 @@
+CheckForCycleMacro := !(Token^ itm) -> void
+{
+    if itm == null
+        return void
+
+    iter := itm.Down
+
+    while iter != null
+    {
+        CheckForCycleMacro(iter)
+        iter = iter.Right
+    }
+    
+    if itm.Down?.Right?.GetValue() == "[]" and itm.Down.Right.Down.GetValue() == "^"
+    {
+        printf("here\n")
+    }
+    return void
+}
+
+MacroCycleRemade := List.{Token^}
+
+StartMacro := !() -> void
+{
+
+}
+EndMacro := !() -> void
+{
+
+}

@@ -24,9 +24,15 @@ BoxExeLine := class extend BoxExeLineSimple
 		defer UnitStack.Pop()
 	
 		ItToken = itm
+
+		StartMacro()
+		CheckForCycleMacro(itm)
 		Down = TryGetExeCall(itm)
+		EndMacro()
+
 		if Down != null
 			return void
+
 		ItToken.Print(0)
 		assert(false)
 	}

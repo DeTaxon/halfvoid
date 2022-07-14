@@ -16,13 +16,12 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(argc,argv)
 }
 
-testFunc := !(!(int)&->int  x) -> void
-{
-	printf("hoy %i\n",x(5))
-}
-
 main := !(int argc,char^^ argv) -> int
 {
-	testFunc(x => x*2)
+	//printf("x %i\n", 6[^])
+	for i : 6
+	{
+		printf("hey %i\n",i)
+	}
 	return 0
 }
