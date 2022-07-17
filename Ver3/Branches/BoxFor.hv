@@ -1,359 +1,366 @@
 GetForCycle := !(Token^ itm) -> BoxUnit^
 {
-    return new BoxBlockBreak(itm, () ==> {
+	forItems := HybridQueue.{ForSubObjects,5}
 
-        
-        forLine := new BoxExeLine()
-        forLine.ItToken = itm.Down
+	iter := itm.Down.Right
 
-        forItems := HybridQueue.{ForSubObjects,5}
-        containMeta := false
+	if iter.Right.GetValue() == "{}"
+	{
+		//TODO, name only
+	}else{
+		while iter.GetValue() != "{}" //TODO non {} variant
+		{
+			if iter.GetValue() == ","
+				iter = iter.Right
+			
+			forElement := ForSubObjects
 
-        iter := itm.Down.Right
+			if not (iter is TokenIndent)
+				iter.EmitError("not a name for cycle element variable") //todo better error explanation
+			
+			name := iter->{TokenIndent^}.Value
+			index := StringSpan("")
 
-        if iter.Right.GetValue() == "{}"
-        {
-            //TODO, name only
-        }else{
-            while iter.GetValue() != "{}" //TODO non {} variant
-            {
-                if iter.GetValue() == ","
-                    iter = iter.Right
-                
-                forElement := ForSubObjects
+			iter = iter.Right
 
-                if not (iter is TokenIndent)
-                    iter.EmitError("not a name for cycle element variable") //todo better error explanation
-                
-                name := iter->{TokenIndent^}.Value
-                index := StringSpan("")
+			if iter.GetValue() == ","
+			{
+				iter = iter.Right
 
-                iter = iter.Right
+				if not (iter is TokenIndent)
+					iter.EmitError("not a name for cycle index variable") //todo better error explanation
+				
+				index = iter->{TokenIndent^}.Value
 
-                if iter.GetValue() == ","
-                {
-                    iter = iter.Right
+				iter = iter.Right
+			}
 
-                    if not (iter is TokenIndent)
-                        iter.EmitError("not a name for cycle index variable") //todo better error explanation
-                    
-                    index = iter->{TokenIndent^}.Value
+			assert(iter.GetValue() == ":")
+			iter = iter.Right
 
-                    iter = iter.Right
-                }
+			forElement.ValueName = name
+			forElement.IndexName = index
+			forElement.DownToken = iter
 
-                assert(iter.GetValue() == ":")
-                iter = iter.Right
+			forItems.Push(forElement)
 
-                dwnRes := TryGetExeCall(iter)
+			iter = iter.Right
+		}
+	}
+	assert(iter.GetValue() == "{}")
 
-                if dwnRes == null
-                    iter.EmitError("Could not get result for cycle over obj")
-                
+	return GetForParsed(iter,forItems)
+}
 
-                forElement.ValueName = name
-                forElement.IndexName = index
-                forElement.DownToken = iter
+GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxUnit^
+{
+	return new BoxBlockBreak(itm, () ==> {
 
-                if dwnRes is in BoxMetaObj
-                {
-                    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
+		forLine := new BoxExeLine()
+		forLine.ItToken = itm
 
-                    if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
-                        iter.EmitError("Meta object is not iteratable")
+		containMeta := false
 
-                    forElement.IsMeta = true
-                    forElement.MetaObj = dwnRes->{BoxMetaObj^}
-                    forItems.Push(forElement)
+		for it : lst
+		{
+			dwnRes := TryGetExeCall(it.DownToken)
 
-                    containMeta = true
-                }else{
-                    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REGULAR VERSION
-                    forElement.DownResult = dwnRes
-                    forItems.Push(forElement)
-                }//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<END
+			if dwnRes == null
+				it.DownToken.EmitError("Could not get result for cycle over obj")
+			
 
-                iter = iter.Right
-            }
-        }
+			if dwnRes is in BoxMetaObj
+			{
+				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
 
-        if containMeta
-        {
-            return new BoxForOverMeta(forItems,iter)
-        }
+				if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
+					it.DownToken.EmitError("Meta object is not iteratable")
 
-        resFor := new BoxFor()
-        resFor.values.Push(forItems[^])
-        resFor.HeadLine = forLine
+				it.IsMeta = true
+				it.MetaObj = dwnRes->{BoxMetaObj^}
 
-        assert(iter.GetValue() == "{}")
+				containMeta = true
+			}else{
+				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REGULAR VERSION
+				it.DownResult = dwnRes
+			}//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<END
+		}
 
-        resFor.StepTwo(iter)
+		if containMeta
+		{
+			return new BoxForOverMeta(lst,itm)
+		}
 
-        return resFor
-    })
+		resFor := new BoxFor()
+		resFor.values.Push(lst[^])
+		resFor.HeadLine = forLine
+
+		resFor.StepTwo(itm)
+
+		return resFor
+	})
 }
 
 ForSubObjects := class
 {
-    ValueName := StringSpan
-    IndexName := StringSpan
-    DownToken := Token^
+	ValueName := StringSpan
+	IndexName := StringSpan
+	DownToken := Token^
 
-    DownResult := BoxExeObj^
-    ValueVar := MemVar^
-    IndVar := NamedVar^
-    GetCall := BoxExeObj^
-    IsFinished := BoxExeObj^
-    InitStep := ParamFunc^
-    NextCheck := BoxLabel^
+	DownResult := BoxExeObj^
+	ValueVar := MemVar^
+	IndVar := NamedVar^
+	GetCall := BoxExeObj^
+	IsFinished := BoxExeObj^
+	InitStep := ParamFunc^
+	NextCheck := BoxLabel^
 
-    MetaObj := BoxMetaObj^
-    IsMeta := bool
+	MetaObj := BoxMetaObj^
+	IsMeta := bool
 
-    CheckRegularStep := !() -> void
-    {
+	CheckRegularStep := !() -> void
+	{
 
-        dwnRes := DownResult
+		dwnRes := DownResult
 
-        objs7 := CheckExeDownList
-        objs7.Push(dwnRes)
-        getForCall := BoxExeObj^
-        getForCall = CreateFuncCall(StringSpan("for"),objs7)
+		objs7 := CheckExeDownList
+		objs7.Push(dwnRes)
+		getForCall := BoxExeObj^
+		getForCall = CreateFuncCall(StringSpan("for"),objs7)
 
-        if getForCall == null
-        {
-            empty7 := CheckExeDownList
-            cnsts6 := List.{BoxExeConstObj^}
-            getForCall = innerTryGetMethodCall(StringSpan("for"),dwnRes,empty7,cnsts6)
-        }
+		if getForCall == null
+		{
+			empty7 := CheckExeDownList
+			cnsts6 := List.{BoxExeConstObj^}
+			getForCall = innerTryGetMethodCall(StringSpan("for"),dwnRes,empty7,cnsts6)
+		}
 
-        if getForCall == null
-            DownToken.EmitError("Object does not have operator for")
+		if getForCall == null
+			DownToken.EmitError("Object does not have operator for")
 
-        dwnVar := new FuncResultParam(getForCall)
-        
-        cnsts := List.{BoxExeConstObj^}
-        objs := CheckExeDownList
-        iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
+		dwnVar := new FuncResultParam(getForCall)
+		
+		cnsts := List.{BoxExeConstObj^}
+		objs := CheckExeDownList
+		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
 
-        if iFins == null
-            DownToken.EmitError("iteratable object does not contain IsFinished")
+		if iFins == null
+			DownToken.EmitError("iteratable object does not contain IsFinished")
 
-        
-        mainCall := new BoxFuncCall(dwnVar)
-        dwnType := mainCall.GetType()
+		
+		mainCall := new BoxFuncCall(dwnVar)
+		dwnType := mainCall.GetType()
 
-        cls := BoxClass^
-        if dwnType is in TypeClass
-        {
-            cls = dwnType->{TypeClass^}.ToClass
-        }
-        if dwnType is in TypePoint and dwnType.Base is in TypeClass
-        {
-            cls = dwnType.Base->{TypeClass^}.ToClass
-        }
-        
-        if cls == null
-            DownToken.EmitError("unknown iteretable result")
-        
-        objCall := BoxUnit^
-        cls.GetMethods(StringSpan("()"),x ==> {
-            if x.Size() == 1
-            {
-                objCall = x[0]
-            }
-        })
+		cls := BoxClass^
+		if dwnType is in TypeClass
+		{
+			cls = dwnType->{TypeClass^}.ToClass
+		}
+		if dwnType is in TypePoint and dwnType.Base is in TypeClass
+		{
+			cls = dwnType.Base->{TypeClass^}.ToClass
+		}
+		
+		if cls == null
+			DownToken.EmitError("unknown iteretable result")
+		
+		objCall := BoxUnit^
+		cls.GetMethods(StringSpan("()"),x ==> {
+			if x.Size() == 1
+			{
+				objCall = x[0]
+			}
+		})
 
-        if objCall == null
-            DownToken.EmitError("iteratable object must have exacly one operator ()")
-        
-        if not (objCall is in BoxFunc)
-            DownToken.EmitError("operator () is not a function")
-        
-        fncOperType := objCall->{BoxFunc^}.GetType()->{TypeFunc^}
+		if objCall == null
+			DownToken.EmitError("iteratable object must have exacly one operator ()")
+		
+		if not (objCall is in BoxFunc)
+			DownToken.EmitError("operator () is not a function")
+		
+		fncOperType := objCall->{BoxFunc^}.GetType()->{TypeFunc^}
 
-        indVar := ParamFunc^
-        if fncOperType.Params.Size() >= 3
-            DownToken.EmitError("iteretable operator have too many inputs")
-        if fncOperType.Params.Size() == 2
-        {
-            if not fncOperType.Params[1].IsRef
-                DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
-            if not (fncOperType.Params[1].ItType is in TypePoint)
-                DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
-            indVar = CreateVar(fncOperType.Params[1].ItType,false)
-        }
+		indVar := ParamFunc^
+		if fncOperType.Params.Size() >= 3
+			DownToken.EmitError("iteretable operator have too many inputs")
+		if fncOperType.Params.Size() == 2
+		{
+			if not fncOperType.Params[1].IsRef
+				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
+			if not (fncOperType.Params[1].ItType is in TypePoint)
+				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
+			indVar = CreateVar(fncOperType.Params[1].ItType,false)
+		}
 
-        objs2 := CheckExeDownList
-        objs2.Push(mainCall)
-        if indVar != null
-            objs2.Push(new BoxFuncCall(indVar))
+		objs2 := CheckExeDownList
+		objs2.Push(mainCall)
+		if indVar != null
+			objs2.Push(new BoxFuncCall(indVar))
 
-        iCall := new BoxFuncCall(objCall->{BoxFunc^},objs2)
+		iCall := new BoxFuncCall(objCall->{BoxFunc^},objs2)
 
-        if iCall == null
-            DownToken.EmitError("iteratable object is not callable, no () function")
+		if iCall == null
+			DownToken.EmitError("iteratable object is not callable, no () function")
 
 
-        if indVar != null and IndexName.Size() != 0
-        {
-            IndVar = new MacroVar(IndexName,() ==> [indVar] {
-                getVar := new BoxFuncCall(indVar)
-                return new PtrToRefFuncCall(getVar)
-            })
-        }
-        GetCall = iCall
-        IsFinished = iFins
-        InitStep = dwnVar
-        ValueVar = new MemVar(StringSpan(ValueName),new FuncResultParam(iCall))
-    }
+		if indVar != null and IndexName.Size() != 0
+		{
+			IndVar = new MacroVar(IndexName,() ==> [indVar] {
+				getVar := new BoxFuncCall(indVar)
+				return new PtrToRefFuncCall(getVar)
+			})
+		}
+		GetCall = iCall
+		IsFinished = iFins
+		InitStep = dwnVar
+		ValueVar = new MemVar(StringSpan(ValueName),new FuncResultParam(iCall))
+	}
 
-    "=" := default
+	"=" := default
 }
 
 BoxFor := class extend BoxExeObj
 {
-    values := HybridQueue.{ForSubObjects,5}
+	values := HybridQueue.{ForSubObjects,5}
 
-    CheckStep := BoxLabel
-    EndLabel := BoxLabel
+	CheckStep := BoxLabel
+	EndLabel := BoxLabel
 
-    body := BoxBlock^
+	body := BoxBlock^
 
-    HeadLine := BoxExeLine^
-    
-    this := !() -> void
-    {
-        CheckStep."this"()
-        EndLabel."this"()
-    }
-    StepTwo := !(Token^ itm) -> void
-    {
-        values[^].CheckRegularStep()
-        values[^].NextCheck = new BoxLabel()
-
-        stackSize := UnitStack.Size()
-
-        for it : values
-        {
-            UnitStack.Push(it.ValueVar?)
-            UnitStack.Push(it.IndVar?)
-        }
-
-        body = new BoxBlockContinue(itm)
-
-        while stackSize > UnitStack.Size()
-            UnitStack.Pop()
-    }
-
-    PrintCode := virtual !(TIOStream^ f) -> void
-    {
-        oldLineCall := GDebugLineCallId
-        GDebugLineCallId = HeadLine.MetaId
-
-        values[^].InitStep.PrintCode(f)
-        CheckStep.PrintCode(f)
-
-        for it : values
-        {
-            it.GetCall.PrintDefaultUse(f)
-            it.IsFinished.PrintPre(f)
-
-            f^ << "br i1 "
-            it.IsFinished.PrintUse(f) //TODO: non zero
-            f^ << ", label "
-            EndLabel.PrintLabel(f)
-            f^ << ", label "
-            it.NextCheck.PrintLabel(f)
-            if DebugMode 
-                f^ << ", !dbg !" << GDebugLineCallId
-            f^ << "\n"
-            it.NextCheck.PrintCode(f)
-        }
-
-        body.PrintCode(f)
-
-        CheckStep.PrintGo(f)
-        EndLabel.PrintCode(f)
-
-        GDebugLineCallId = oldLineCall
-    }
-    PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	HeadLine := BoxExeLine^
+	
+	this := !() -> void
 	{
-        HeadLine?.PrintDebugMeta(f)
-        body.PrintDebugMeta(f)
-    }
+		CheckStep."this"()
+		EndLabel."this"()
+	}
+	StepTwo := !(Token^ itm) -> void
+	{
+		values[^].CheckRegularStep()
+		values[^].NextCheck = new BoxLabel()
+
+		stackSize := UnitStack.Size()
+
+		for it : values
+		{
+			UnitStack.Push(it.ValueVar?)
+			UnitStack.Push(it.IndVar?)
+		}
+
+		body = new BoxBlockContinue(itm)
+
+		while stackSize > UnitStack.Size()
+			UnitStack.Pop()
+	}
+
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		oldLineCall := GDebugLineCallId
+		GDebugLineCallId = HeadLine.MetaId
+
+		values[^].InitStep.PrintCode(f)
+		CheckStep.PrintCode(f)
+
+		for it : values
+		{
+			it.GetCall.PrintDefaultUse(f)
+			it.IsFinished.PrintPre(f)
+
+			f^ << "br i1 "
+			it.IsFinished.PrintUse(f) //TODO: non zero
+			f^ << ", label "
+			EndLabel.PrintLabel(f)
+			f^ << ", label "
+			it.NextCheck.PrintLabel(f)
+			if DebugMode 
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+			it.NextCheck.PrintCode(f)
+		}
+
+		body.PrintCode(f)
+
+		CheckStep.PrintGo(f)
+		EndLabel.PrintCode(f)
+
+		GDebugLineCallId = oldLineCall
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		HeadLine?.PrintDebugMeta(f)
+		body.PrintDebugMeta(f)
+	}
 }
 
 BoxForOverMeta := class extend BoxExeObj
 {
-    blocks := List.{BoxBlock^}
-    dwnObjs := HybridQueue.{ForSubObjects,5}
+	blocks := List.{BoxBlock^}
+	dwnObjs := HybridQueue.{ForSubObjects,5}
 
-    metaCount := int
+	metaCount := int
 
-    middleVars := AVLMap.{int,List.{NamedVar^}}
+	middleVars := AVLMap.{int,List.{NamedVar^}}
 
-    this := !(HybridQueue.{ForSubObjects,5} dwns,Token^ bdy) -> void
-    {
-        if not dwns[^].IsMeta
-            bdy.EmitError("All of iteratables must be metadata")
-        k := dwns[0].MetaObj.MetaIteretableSize()
-        if k != dwns[^].MetaObj.MetaIteretableSize()
-            bdy.EmitError("All of iteretables must be same size")
-
-        dwnObjs.Push(dwns[^])
-        
-        stackSize := UnitStack.Size()
-
-        tryAddVar := (BoxExeObj^ toAdd,int num,StringSpan itName) ==> {
-            if toAdd == null
-                return void
-            
-            if toAdd is in BoxExeConstObj
-            {
-                UnitStack.PushFront(new ConstVar(itName,toAdd->{BoxExeConstObj^}))
-                return void
-            }
-            
-            fr := new FuncResultParam(toAdd)
-            newVar := new MemVar(itName,fr)
-            middleVars[num].Push(newVar)
-            UnitStack.PushFront(newVar)
-        }
-        
-        for i : k
-        {
-            for j : dwnObjs.Size()
-            {
-                tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
-
-                if dwnObjs[j].IndexName.Size() != 0
-                    tryAddVar(dwnObjs[j].MetaObj.GetMetaIterIndex(i),i,dwnObjs[j].IndexName)
-            }
-            blocks.Push(new BoxBlockContinue(bdy))
-
-            while stackSize < UnitStack.Size()
-                UnitStack.Pop()
-        }
-        metaCount = k
-    }
-    PrintCode := virtual !(TIOStream^ f) -> void
-    {
-        dwnObjs[^].MetaObj.PrintDefaultUse(f)
-
-        for i : blocks.Size()
-        {
-            if middleVars.Contain(i)
-                middleVars[i][^].PrintCode(f)
-
-            blocks[i].PrintCode(f)
-        }
-    }
-    PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	this := !(HybridQueue.{ForSubObjects,5} dwns,Token^ bdy) -> void
 	{
-        dwnObjs[^].MetaObj.PrintDebugMeta(f)
-        blocks[^].PrintDebugMeta(f)
-    }
+		if not dwns[^].IsMeta
+			bdy.EmitError("All of iteratables must be metadata")
+		k := dwns[0].MetaObj.MetaIteretableSize()
+		if k != dwns[^].MetaObj.MetaIteretableSize()
+			bdy.EmitError("All of iteretables must be same size")
+
+		dwnObjs.Push(dwns[^])
+		
+		stackSize := UnitStack.Size()
+
+		tryAddVar := (BoxExeObj^ toAdd,int num,StringSpan itName) ==> {
+			if toAdd == null
+				return void
+			
+			if toAdd is in BoxExeConstObj
+			{
+				UnitStack.PushFront(new ConstVar(itName,toAdd->{BoxExeConstObj^}))
+				return void
+			}
+			
+			fr := new FuncResultParam(toAdd)
+			newVar := new MemVar(itName,fr)
+			middleVars[num].Push(newVar)
+			UnitStack.PushFront(newVar)
+		}
+		
+		for i : k
+		{
+			for j : dwnObjs.Size()
+			{
+				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+
+				if dwnObjs[j].IndexName.Size() != 0
+					tryAddVar(dwnObjs[j].MetaObj.GetMetaIterIndex(i),i,dwnObjs[j].IndexName)
+			}
+			blocks.Push(new BoxBlockContinue(bdy))
+
+			while stackSize < UnitStack.Size()
+				UnitStack.Pop()
+		}
+		metaCount = k
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		dwnObjs[^].MetaObj.PrintDefaultUse(f)
+
+		for i : blocks.Size()
+		{
+			if middleVars.Contain(i)
+				middleVars[i][^].PrintCode(f)
+
+			blocks[i].PrintCode(f)
+		}
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		dwnObjs[^].MetaObj.PrintDebugMeta(f)
+		blocks[^].PrintDebugMeta(f)
+	}
 }

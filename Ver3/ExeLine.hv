@@ -24,11 +24,7 @@ BoxExeLine := class extend BoxExeLineSimple
 		defer UnitStack.Pop()
 	
 		ItToken = itm
-
-		StartMacro()
-		CheckForCycleMacro(itm)
-		Down = TryGetExeCall(itm)
-		EndMacro()
+		Down = GetCallWithMacro(itm)
 
 		if Down != null
 			return void
@@ -128,6 +124,8 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 {
 	if itm == null
 		return null
+
+	return TryGetMacroCall(itm)? //MUST BE FIRST
 
 	return TryGetNewDeleteOperator(itm)?
 	return TryGetBoolOrNone(itm)?
