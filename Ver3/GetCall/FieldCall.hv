@@ -8,7 +8,8 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down.Right.GetValue() != "." return null
 
 	val := TryGetExeCall(itm.Down)
-	assert(val != null) //TODO
+	if val == null
+		itm.Down.EmitError("Could not get left of . object")
 	return innerTryGetFieldCall(val,itm.Down.Right.Right)
 }
 
@@ -70,7 +71,8 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			}
 			
 			fld := cls.GetFieldByIndex(fieldInd)
-			assert(fld != null) //TODO
+			if fld == null
+				rObj.EmitError("field does not exist") //todo: better error
 
 			itms := CheckExeDownList
 			itms.Push(val)

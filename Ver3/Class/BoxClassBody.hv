@@ -114,8 +114,10 @@ BoxClassBody := class extend BoxClass
 		for i : ParentTokens.Size()
 		{
 			inhType := CheckTemplateType(null,ParentTokens[i],NamedConstants)
-			assert(inhType != null) //TODO
-			assert(inhType is TypeClass) //TODO
+			if inhType == null
+				ParentTokens[i].EmitError("can not inherit unknown class")
+			if not (inhType is TypeClass)
+				ParentTokens[i].EmitError("parent type must be class")
 			asClsParent := inhType->{TypeClass^}
 			Parents.Push(asClsParent.ToClass)
 		}
@@ -132,7 +134,7 @@ BoxClassBody := class extend BoxClass
 		{
 			if iter.Down?.Right?.GetValue() == ":="
 			{
-				assert(iter.Down is TokenIndent or iter.Down is TokenString) //TODO
+				assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
 				name := StringSpan
 				if iter.Down is TokenIndent
 				{

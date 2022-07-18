@@ -248,8 +248,7 @@ UniteSkobs := !(Token^ Tree) -> Object^
 			Old := Bag.Pop()
 			if tokId - Old.TokenId != 3
 			{
-				//TODO error
-				//Old.EmitError("incorrect pair for "sbt + Old.GetValue())
+				Old.EmitError("incorrect pair for bracket") //todo Better error
 				return iter
 			}
 
@@ -258,13 +257,13 @@ UniteSkobs := !(Token^ Tree) -> Object^
 			UNext(Old,NewObj,iter)
 
 			TIter := NewObj.Down
-			PopOutNode(TIter) //TODO memory
+			PopOutNode(TIter) //todo memory
 			TIter = NewObj.Down
 
 			if TIter.Right != null{
 				while TIter.Right != null TIter = TIter.Right
 			}
-			PopOutNode(TIter) //TODO memory
+			PopOutNode(TIter) //todo memory
 
 			iter = NewObj.Right
 		}else{
@@ -272,11 +271,10 @@ UniteSkobs := !(Token^ Tree) -> Object^
 		}
 
 	}
-	//for Bag^
-	//{
-	//	//TODO: error
-	//	//it.EmitError("pair for "sbt + it.GetValue() + " not found")
-	//}
+	for Bag
+	{
+		it.EmitError("pair for bracket not found") //todo Better error
+	}
 	return null
 }
 UNext := !(Token^ where,Token^ nObj, int count) -> Token^

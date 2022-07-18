@@ -60,7 +60,7 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 	
 	if clsType is TypeClass
 	{
-		cls := clsType->{TypeClass^}.ToClass //TODO GetClass
+		cls := clsType->{TypeClass^}.ToClass //todo GetClass
 		callItem := BoxUnit^
 		cls.GetMethods(name, x ==> {
 			callItem = GetBestFunc(x,Objs,consts)
