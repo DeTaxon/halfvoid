@@ -1,6 +1,11 @@
 CheckForCycleMacro := !(Token^ itm) -> void
 {
-	innerCheckForCycleMacro(itm)
+	if itm.Down?.GetValue() == "if"
+	{
+		innerCheckForCycleMacro(itm.Down.Right)
+	}else{
+		innerCheckForCycleMacro(itm)
+	}
 }
 
 innerCheckForCycleMacro := !(Token^ itm) -> void
@@ -26,24 +31,64 @@ innerCheckForCycleMacro := !(Token^ itm) -> void
 	
 	if itm.Down?.Right?.GetValue() == "[]" and itm.Down.Right.Down.GetValue() == "^"
 	{
-		MacroCycleRemade.Emplace(itm,GetCycleVarName(),StringSpan(""))
+		indToken := itm.Down.Right.Down.Right
+		indName := StringSpan
+		if indToken != null
+		{
+			if not (indToken is TokenIndent)
+				itm.EmitError("Unknown cycle index object")
+			indName = indToken->{TokenIndent^}.Value
+		}
+		MacroCycleRemade.Emplace(itm,GetCycleVarName(),indName)
 	}
 	return void
 }
 
 TryGetMacroCall := !(Token^ itm) -> BoxExeObj^
 {
-	if MacroCycleRemade[^].0 == itm
+	for it : MacroCycleRemade
 	{
-		//TODO:
-		return GetExeInt(10)
+		if it.0 == itm
+		{
+			ind := TokenIndent(it.1)
+			return TryGetExeCall(ind&)
+		}
 	}
 	return null
 }
 
+TryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
+{
+	if MacroCycleRemade.Size() == 0
+	{
+		CheckForCycleMacro(itm)
+		Res := BoxUnit^
+		if MacroCycleRemade.Size() != 0
+		{
+			Res = GetMacroCycledObj(itm,0) //todo VERY STUPID RECURCION CALL
+		}else{
+			Res = innerTryGetUnitCall(itm)
+		}
+
+		MacroCycleRemade.Clear()
+
+		return Res
+	}else{
+		return innerTryGetUnitCall(itm)
+	}
+}
+innerTryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
+{
+	if itm.Down?.GetValue() == "if"
+	{
+		return TryParseIf(itm)
+	}else{	
+		return new BoxExeLine(itm)
+	}
+}
+
 GetCallWithMacro := !(Token^ itm) -> BoxUnit^
 {
-
 	if MacroCycleRemade.Size() == 0
 	{
 		CheckForCycleMacro(itm)
@@ -61,20 +106,25 @@ GetCallWithMacro := !(Token^ itm) -> BoxUnit^
 	}else{
 		return TryGetExeCall(itm)
 	}
-
 }
 GetMacroCycledObj := !(Token^ itm, int i) -> BoxUnit^
 {
+	if i >= MacroCycleRemade.Size()
+		return innerTryGetUnitCall(itm)
+	
 	forItems := HybridQueue.{ForSubObjects,5}
 
 	el := ForSubObjects
 
 	el.DownToken = MacroCycleRemade[i].0.Down
-	el.ValueName = GetCycleVarName()
+	el.ValueName = MacroCycleRemade[i].1
+	el.IndexName = MacroCycleRemade[i].2
 
 	forItems.Push(el)
 
-	return GetForParsed(itm,forItems)
+	return GetForParsed(itm,forItems, () ==> {
+		return GetMacroCycledObj(itm,i+1)
+	})
 }
 
 MacroCycleRemade := List.{Tuple.{Token^,StringSpan,StringSpan}}

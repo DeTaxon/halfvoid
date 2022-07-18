@@ -7,6 +7,11 @@ BoxExeLine := class extend BoxExeLineSimple
 		if DebugMode
 			MetaId = GetNewId()
 	}
+	this := !(Token^ itm) -> void
+	{
+		this."this"()
+		DoLine(itm)
+	}
 	GetQLabel := virtual !() -> BoxLabel^
 	{
 		if exitLabel == null
@@ -20,11 +25,16 @@ BoxExeLine := class extend BoxExeLineSimple
 
 	DoLine := !(Token^ itm) -> void
 	{
+		stackAtStart := UnitStack.Size()
 		UnitStack.PushFront(this&)
-		defer UnitStack.Pop()
 	
 		ItToken = itm
-		Down = GetCallWithMacro(itm)
+
+		//Down = GetCallWithMacro(itm)
+		Down = TryGetExeCall(itm)
+
+		while stackAtStart > UnitStack.Size()
+			UnitStack.Pop()
 
 		if Down != null
 			return void
@@ -126,7 +136,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 		return null
 
 	return TryGetMacroCall(itm)? //MUST BE FIRST
-
+	
 	return TryGetNewDeleteOperator(itm)?
 	return TryGetBoolOrNone(itm)?
 	return TryGetMetaCall(itm)?

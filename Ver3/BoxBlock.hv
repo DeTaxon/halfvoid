@@ -12,7 +12,7 @@ BoxBlock := class extend BoxUnit
 	quitLabel := BoxLabel^
 
 	down := Token^
-	lambdaWay := !()&->BoxExeObj^
+	lambdaWay := !()&->BoxUnit^
 
 	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
@@ -47,7 +47,7 @@ BoxBlock := class extend BoxUnit
 			MetaId = GetNewId()
 		innerWork()
 	}
-	this := !(Token^ tokenLine , !()&->BoxExeObj^ l) -> void
+	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
 	{
 		lambdaWay = l
 		ItLine = tokenLine.Line
@@ -84,16 +84,16 @@ BoxBlock := class extend BoxUnit
 				iter = iter.Right
 				continue
 			}
-			if iter.Down?.GetValue() == "if"
-			{
-				ifObj := TryParseIf(iter)
-				if ifObj != null
-				{
-					exeLines.Push(ifObj)
-					iter = iter.Right
-					continue
-				}
-			}
+			//if iter.Down?.GetValue() == "if"
+			//{
+			//	ifObj := TryParseIf(iter)
+			//	if ifObj != null
+			//	{
+			//		exeLines.Push(ifObj)
+			//		iter = iter.Right
+			//		continue
+			//	}
+			//}
 			if iter.Down?.GetValue() == "while"
 			{
 				whileObj := TryParseWhile(iter)
@@ -128,9 +128,9 @@ BoxBlock := class extend BoxUnit
 				exeLines.Push(pad)
 				UnitStack.PushFront(vr)
 			}else{
-				pad := new BoxExeLine()
-				pad.DoLine(iter)
-
+				pad := TryGetUnitCall(iter)
+				//pad := new BoxExeLine()
+				//pad.DoLine(iter)
 				exeLines.Push(pad)
 			}
 			
@@ -157,6 +157,10 @@ BoxBlock := class extend BoxUnit
 		{
 			UnitStack.Pop()
 		}
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
@@ -221,7 +225,7 @@ BoxBlockContinue := class extend BoxBlock
 	{
 		this."BoxBlock.this"(itm)
 	}
-	this := !(Token^ tokenLine ,!()&->BoxExeObj^ l) -> void
+	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
 	{
 		this."BoxBlock.this"(tokenLine,l)
 	}
@@ -233,7 +237,7 @@ BoxBlockBreak := class extend BoxBlock
 	{
 		this."BoxBlock.this"(itm)
 	}
-	this := !(Token^ tokenLine ,!()&->BoxExeObj^ l) -> void
+	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
 	{
 		this."BoxBlock.this"(tokenLine,l)
 	}

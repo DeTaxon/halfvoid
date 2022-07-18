@@ -54,6 +54,17 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxUnit^
 {
+	return GetForParsed(itm,lst,() ==> { //TODO REFACTOR, IT'S OVERCOMPLICATED
+		if itm.GetValue() == "{}"
+			return new BoxBlock(itm)
+		
+		pad := new BoxExeLine()
+		pad.DoLine(itm)
+		return pad
+	})
+}
+GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxUnit^
+{
 	return new BoxBlockBreak(itm, () ==> {
 
 		forLine := new BoxExeLine()
@@ -95,7 +106,7 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxUnit^
 		resFor.values.Push(lst[^])
 		resFor.HeadLine = forLine
 
-		resFor.StepTwo(itm)
+		resFor.StepTwo(itm,cb)
 
 		return resFor
 	})
@@ -235,7 +246,7 @@ BoxFor := class extend BoxExeObj
 		CheckStep."this"()
 		EndLabel."this"()
 	}
-	StepTwo := !(Token^ itm) -> void
+	StepTwo := !(Token^ itm,!()&->BoxUnit^ cb) -> void
 	{
 		values[^].CheckRegularStep()
 		values[^].NextCheck = new BoxLabel()
@@ -248,7 +259,7 @@ BoxFor := class extend BoxExeObj
 			UnitStack.Push(it.IndVar?)
 		}
 
-		body = new BoxBlockContinue(itm)
+		body = new BoxBlockContinue(itm,cb)
 
 		while stackSize > UnitStack.Size()
 			UnitStack.Pop()
