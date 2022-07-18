@@ -29,12 +29,18 @@ TVector := class .{@T} extend TGCObject
 	//}
 }
 
+Twice := class
+{
+	hop := !(@T x) -> void
+	{
+		printf("yep %i %f\n",x,x)
+	}
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	i := 0
-	while  i + 5
-		i += 1
-	
-	printf("hey %i\n",i)
+	z := Twice
+	z.hop(1)
+	z.hop(1.0)
 	return 0
 }

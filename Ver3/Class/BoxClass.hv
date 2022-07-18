@@ -10,6 +10,7 @@ BoxClass := class extend BoxUnit
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
 	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
 	ItSize := int
 	ItAlign := int
 
@@ -206,6 +207,13 @@ BoxClass := class extend BoxUnit
 			for fnc : Methods[name]
 			{
 				objs.Push(fnc)
+			}
+		}
+		if MethodTemplates.Contain(name)
+		{
+			for fncTmpl : MethodTemplates[name]
+			{
+				objs.Push(fncTmpl)
 			}
 		}
 		Parents[^].populateMethods(name,objs)

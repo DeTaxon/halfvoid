@@ -166,8 +166,10 @@ BoxClassBody := class extend BoxClass
 							funcs.Emplace(name,f)
 							f.SetName(name)
 							f.Work()
-						}else{
-							assert(false) //template
+						}else {
+							tmpl := asFunc->{BoxFuncTemplate^}
+							tmpl.SetName(name)
+							MethodTemplates[name].Push(tmpl)
 						}
 					}else
 					{

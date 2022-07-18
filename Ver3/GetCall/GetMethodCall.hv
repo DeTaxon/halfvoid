@@ -71,6 +71,11 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 			{
 				return new BoxFuncCall(callItem->{BoxFunc^},Objs)
 			}
+			if callItem is in BoxFuncTemplate
+			{
+				getFunc := callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+				return new BoxFuncCall(getFunc,Objs)
+			}
 			assert(false)
 		}
 		return null
