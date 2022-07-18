@@ -36,6 +36,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		isRefs := bool[100]
 
 		isLambda := false
+		isVarg := false
 
 		if skob.Right.GetValue() == "&"
 		{
@@ -48,7 +49,12 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		iter := skob.Down
 		while iter != null
 		{
-			if iter.GetValue() != ","
+			if iter.GetValue() == "..."
+			{
+				if iter.Right != null
+					return null
+				isVarg = true
+			}else if iter.GetValue() != ","
 			{
 				t := Type^
 				if iter.Down?.Right?.GetValue() == "&"
@@ -75,11 +81,19 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				ptrSize += 1
 			iter = iter.Right
 		}
-		resType := CheckTemplateType(null,iter.Right,resCnsts)
+		resType := Type^
+		resRef := bool
+		if iter.Right.Down.Right.GetValue() == "&"
+		{
+			resRef = true
+			resType = CheckTemplateType(null,iter.Right.Down,resCnsts)
+		}else{
+			resType = CheckTemplateType(null,iter.Right,resCnsts)
+		}
 
 		if resType == null
 			return null
-		fType := GetFuncType(k,types[0]&,isRefs[0]&,resType,false,false) //TODO IsVargs, IsRetRef
+		fType := GetFuncType(k,types[0]&,isRefs[0]&,resType,resRef,isVarg)
 
 		if isLambda
 		{

@@ -16,8 +16,21 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(argc,argv)
 }
 
+TVector := class .{@T} extend TGCObject
+{
+	Size := virtual !() -> int {}
+	"[]" := virtual !(int i) -> T& {}
+	"for" := virtual !() -> !()& -> T& {}
+	//Destroy := virtual !() -> void {}
+
+	//Reverse := fake
+	//{
+	//	"[]" := virtual !(int i ) ->T& {}
+	//}
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	printf("hey %i\n",4[^]*10 + 4[^])
+	c := TVector.{int}
 	return 0
 }
