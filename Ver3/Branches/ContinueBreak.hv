@@ -2,11 +2,11 @@ TryGetContinueBreak := !(Token^ itm) -> BoxExeObj^
 {
     if itm.GetValue() == "continue"
     {
-        return new BoxContinue()
+        return new BoxContinue(itm)
     }
     if itm.GetValue() == "break"
     {
-        return new BoxBreak()
+        return new BoxBreak(itm)
     }
     return null
 }
@@ -15,7 +15,7 @@ BoxContinue := class extend BoxExeObj
 {
     goLabel := BoxLabel^
     exitCall := BoxExeObj^
-    this := !() -> void
+    this := !(Token^ itm) -> void
     {
         for it : UnitStack
         {
@@ -27,7 +27,8 @@ BoxContinue := class extend BoxExeObj
                 break
             }
         }
-        assert(goLabel != null)
+		if goLabel == null
+			itm.EmitError("continue operator used without cycle")
     }
     PrintDefaultUse := virtual !(TIOStream^ f) -> void
     {
@@ -40,7 +41,7 @@ BoxBreak := class extend BoxExeObj
 {
     goLabel := BoxLabel^
     exitCall := BoxExeObj^
-    this := !() -> void
+    this := !(Token^ itm) -> void
     {
         for it : UnitStack
         {
@@ -52,7 +53,8 @@ BoxBreak := class extend BoxExeObj
                 break
             }
         }
-        assert(goLabel != null)
+		if goLabel == null
+			itm.EmitError("break operator used without cycle")
     }
     PrintDefaultUse := virtual !(TIOStream^ f) -> void
     {

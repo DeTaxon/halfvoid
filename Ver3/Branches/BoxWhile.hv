@@ -2,18 +2,23 @@ TryParseWhile := !(Token^ itm) -> BoxUnit^
 {
 	if itm == null or itm.Down.GetValue() != "while"
 		return null
+
+	return new BoxBlockBreak(itm, () ==> {
+		cmpExe := TryGetExeCall(itm.Down.Right)
+
+		if cmpExe == null
+			itm.Down.Right.EmitError("Could not parse while statement")
+
+		if cmpExe.GetType() != GTypeBool
+			itm.EmitError("While statement is not boolean type")
+
+		token := MakeItBlock(itm.Down.Right.Right)
+		body := new BoxBlockContinue(token)
+		body.Work()
+
+		return new BoxWhile(itm.Down.Right,cmpExe,body)
+	})
 	
-	cmpExe := TryGetExeCall(itm.Down.Right)
-
-	assert(cmpExe != null) //TODO emit error
-	//TODO cmpExe to bool
-
-	//TODO while without {}
-	token := MakeItBlock(itm.Down.Right.Right)
-	body := new BoxBlock(token)
-	body.Work()
-
-	return new BoxWhile(itm.Down.Right,cmpExe,body)
 }
 
 BoxWhile := class extend BoxUnit

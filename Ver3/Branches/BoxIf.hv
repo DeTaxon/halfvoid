@@ -48,7 +48,6 @@ TryParseIf := !(Token^ itm) -> BoxUnit^
 	tru := BoxBlock^
 	fls := BoxBlock^
 
-	//TODO if without {}
 	tru = new BoxBlock(tryToken)
 	tru.Work()
 

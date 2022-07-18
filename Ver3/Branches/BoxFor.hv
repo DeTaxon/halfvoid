@@ -153,11 +153,12 @@ ForSubObjects := class
 		
 		cnsts := List.{BoxExeConstObj^}
 		objs := CheckExeDownList
-		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts) //TODO: checkType
+		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts)eckType
 
 		if iFins == null
 			DownToken.EmitError("iteratable object does not contain IsFinished")
-
+		if iFins.GetType() != GTypeBool
+			DownToken.EmitError("IsFinished return non boolean type")
 		
 		mainCall := new BoxFuncCall(dwnVar)
 		dwnType := mainCall.GetType()
@@ -279,7 +280,7 @@ BoxFor := class extend BoxExeObj
 			it.IsFinished.PrintPre(f)
 
 			f^ << "br i1 "
-			it.IsFinished.PrintUse(f) //TODO: non zero
+			it.IsFinished.PrintUse(f)
 			f^ << ", label "
 			EndLabel.PrintLabel(f)
 			f^ << ", label "
