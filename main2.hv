@@ -19,5 +19,5 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 main := !(int argc,char^^ argv) -> int
 {
 	printf("hey %i\n",4[^]*10 + 4[^])
-	//return 0
+	return 0
 }

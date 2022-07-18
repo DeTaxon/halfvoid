@@ -255,8 +255,8 @@ BoxFor := class extend BoxExeObj
 
 		for it : values
 		{
-			UnitStack.Push(it.ValueVar?)
-			UnitStack.Push(it.IndVar?)
+			UnitStack.PushFront(it.ValueVar?)
+			UnitStack.PushFront(it.IndVar?)
 		}
 
 		body = new BoxBlockContinue(itm,cb)
