@@ -3,6 +3,9 @@ CheckForCycleMacro := !(Token^ itm) -> void
 	if itm.Down?.GetValue() == "if"
 	{
 		innerCheckForCycleMacro(itm.Down.Right)
+	}else if itm.Down?.GetValue() == "while"
+	{
+		innerCheckForCycleMacro(itm.Down.Right)
 	}else{
 		innerCheckForCycleMacro(itm)
 	}
@@ -10,16 +13,11 @@ CheckForCycleMacro := !(Token^ itm) -> void
 
 innerCheckForCycleMacro := !(Token^ itm) -> void
 {
-
-	if MacroCycleRemade.Size() != 0
-		return void
-
 	if itm == null
 		return void
 
 	if itm.GetValue() == "{}"
 		return void
-
 
 	iter := itm.Down
 
@@ -65,6 +63,7 @@ TryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
 		Res := BoxUnit^
 		if MacroCycleRemade.Size() != 0
 		{
+			MacroCycleRemade[MacroCycleRemade.Size() - 1].1 = StringSpan("it")
 			Res = GetMacroCycledObj(itm,0) //todo VERY STUPID RECURCION CALL
 		}else{
 			Res = innerTryGetUnitCall(itm)
@@ -82,7 +81,9 @@ innerTryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
 	if itm.Down?.GetValue() == "if"
 	{
 		return TryParseIf(itm)
-	}else{	
+	}else if itm.Down?.GetValue() == "while" {
+		return TryParseWhile(itm)
+	}else{
 		return new BoxExeLine(itm)
 	}
 }

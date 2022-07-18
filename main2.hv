@@ -18,9 +18,6 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 
 main := !(int argc,char^^ argv) -> int
 {
-	if 10[^] mod 2 == 0
-	{
-		printf("hey\n")
-	}
-	return 0
+	printf("hey %i\n",4[^]*10 + 4[^])
+	//return 0
 }

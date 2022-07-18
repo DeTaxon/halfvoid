@@ -30,7 +30,6 @@ BoxExeLine := class extend BoxExeLineSimple
 	
 		ItToken = itm
 
-		//Down = GetCallWithMacro(itm)
 		Down = TryGetExeCall(itm)
 
 		while stackAtStart > UnitStack.Size()
