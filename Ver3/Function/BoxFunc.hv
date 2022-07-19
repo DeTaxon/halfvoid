@@ -16,6 +16,15 @@ BoxFunc := class extend BoxExeConstObj
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return 0
+	}
+	GetDefaultToken := virtual !(int i) -> Token^
+	{
+		return null
+	}
+
 	WorkBody := virtual !() -> void
 	{
 	}

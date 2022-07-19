@@ -263,7 +263,7 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 		if h is in BoxFunc
 		{
 			fnc := h->{BoxFunc^}
-			cmpRes := CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs)
+			cmpRes := CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount())
 			priorityes.Push(cmpRes)
 		}else if h is in BoxFuncTemplate{
 			tmpl := h->{BoxFuncTemplate^}
@@ -314,7 +314,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 
 CmpNoExchange := 999000
 
-CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
+CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> int
 {
 	worstCase := 0
 
@@ -323,6 +323,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs) -> int
 
 	minArgs :=fncType.Params.Size()
 	maxArgs :=fncType.Params.Size()
+
+	minArgs -= defaults
 
 	if fncType.IsVargs
 		maxArgs = 20000000

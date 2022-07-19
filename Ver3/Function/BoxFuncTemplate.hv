@@ -5,14 +5,14 @@ BoxFuncTemplate := class extend BoxUnit
 	FuncConstants := AVLMap.{BoxFunc^,List.{BoxExeConstObj^}}
 	ItCodeSpace := BoxCodeSpace^
 
+
+	GetDefaultValuesCount := virtual !() -> int { return 0 }
+
 	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
 	{
 		fTyp := ToFuncType(objs,consts)
 		if fTyp == null
 			return CmpNoExchange
-		if fTyp.Params.Size() != objs.Size()
-			return CmpNoExchange
-
 		return CheckPriority(fTyp,objs,consts)
 	}
 	GetFunc := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> BoxFunc^
@@ -64,7 +64,7 @@ BoxFuncTemplate := class extend BoxUnit
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
 	{
-		return CmpFuncPriority(tp,objs)
+		return CmpFuncPriority(tp,objs,GetDefaultValuesCount())
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
 	{

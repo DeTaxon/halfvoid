@@ -122,7 +122,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				setCall := CreateFuncCall(StringSpan("="),objs2,cnsts)
 				if setCall == null
 					return null
-				mVar.Inits.Push(setCall) //TODO
+				mVar.Inits.Push(setCall)
 			}else{
 				mVar = new MemVarBorrowed(name,vr)
 				mVar.Inits.Push(exeObj)

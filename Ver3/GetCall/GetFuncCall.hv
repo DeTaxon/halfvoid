@@ -77,7 +77,7 @@ innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
 	if dType is in TypePoint and dType.Base is TypeFunc
 	{
 		fType := dType.Base->{TypeFunc^}
-		if CmpFuncPriority(fType,Objs) != CmpNoExchange
+		if CmpFuncPriority(fType,Objs,0) != CmpNoExchange
 		{
 			return new BoxFuncPointerCall(dwnItem,Objs)
 		}

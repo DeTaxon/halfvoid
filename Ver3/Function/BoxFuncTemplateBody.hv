@@ -38,6 +38,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			ths.headerCheckHatch.Emit()
 		})
 	}
+	GetDefaultValuesCount := virtual !() -> int 
+	{
+		return hData.DefaultValues.Size() 
+	}
 
 
 	ParentScope := BoxUnit^
@@ -96,6 +100,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		minArgs := hData.Types.Size()
 		maxArgs := hData.Types.Size()
 		
+		minArgs -= GetDefaultValuesCount()
+
 		if hData.IsVariadic
 			maxArgs = 2000000 //INT_MAX
 		
@@ -109,10 +115,20 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		datas := HybridQueue.{Tuple.{Type^,bool},10}
 
-		for i : objs.Size()
+		//for i : objs.Size()
+		//{
+		//	datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+		//}
+		for i : hData.Types.Size()
 		{
-			datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+			if i < objs.Size()
+			{
+				datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+			}else{
+				datas.Emplace(hData.Types[i].ItType,hData.Types[i].IsRef)
+			}
 		}
+
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		defer resConsts.Destroy()
 		return checkTypes(datas,consts,resConsts)
@@ -138,6 +154,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 		newFunc.VariadicName = hData.VariadicName
 		newFunc.SetPrintName(Name)
+		newFunc.DefaultValues[ind] = hData.DefaultValues[^ind]
 		newFunc.ParentScope = ParentScope
 
 		for it,ind : resConsts
@@ -229,6 +246,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		headerCheckHatch.Await()
 			
 		resFuncTyp := hData.CreateFuncType()
+		//cnsts := List.{BoxExeConstObj^}
+		//return CreateFunc(resFuncTyp,cnsts)
 
 		names := HybridQueue.{StringSpan,10}
 		names.Push(hData.Types[^].Name)

@@ -23,7 +23,7 @@ BoxFuncCall := class extend BoxExeObj
 			callObj->{BoxFuncBody^}.ParseBody()
 
 		empty := CheckExeDownList
-		CheckInputs(fnc.GetType()->{TypeFunc^},empty)
+		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,empty)
 	}
 	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
@@ -33,9 +33,9 @@ BoxFuncCall := class extend BoxExeObj
 		if callObj is BoxFuncBody
 			callObj->{BoxFuncBody^}.ParseBody()
 
-		CheckInputs(fnc.GetType()->{TypeFunc^},objs)
+		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs)
 	}
-	CheckInputs := !(TypeFunc^ fType, CheckExeDownList objs) -> void
+	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, CheckExeDownList objs) -> void
 	{
 		itType := NormalizeFuncType(fType)
 
@@ -67,7 +67,17 @@ BoxFuncCall := class extend BoxExeObj
 
 		for par,i : itType.Params
 		{
-			assert( i < downs.Size())
+			if i >= downs.Size()
+			{
+				assert(fnc != null)
+				defToken := fnc.GetDefaultToken(i)
+				assert(defToken != null) //todo, emit error
+				
+				newCall := TryGetExeCall(defToken)
+				assert(newCall != null) //todo, emit error
+				downs.Push(newCall)
+				continue
+			}
 			if downs[i].GetType() != par.ItType
 			{
 				newObj := GetExchange(downs[i],par.ItType)
@@ -174,7 +184,7 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	this := !(BoxExeObj^ ptrVal, CheckExeDownList objs) -> void
 	{
 		ItPtrFunc = ptrVal
-		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},objs)
+		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},null,objs)
 	}
 	GetType := virtual !() -> Type^
 	{

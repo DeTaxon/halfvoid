@@ -20,6 +20,8 @@ BoxFuncBody := class extend BoxFuncCommon
 	NamedParametersCount := int
 	VariadicName := StringSpan
 
+	DefaultValues := AVLMap.{int,Token^}
+
 	ExitLabel := BoxLabel^
 
 	gcVarsCount := int
@@ -32,6 +34,18 @@ BoxFuncBody := class extend BoxFuncCommon
 	GetParentScope := virtual !() -> BoxUnit^
 	{
 		return ParentScope
+	}
+
+
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return DefaultValues.Size()
+	}
+	GetDefaultToken := virtual !(int i) -> Token^
+	{
+		if not DefaultValues.Contain(i)
+			return null
+		return DefaultValues[i]
 	}
 
 	NotifyGCUsed := !() -> void 
@@ -51,7 +65,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if not Attrs.IsAutoResult
 		{
-		//printf("hey %i\n",Attrs.IsAutoResult)
 			ResultTypeHatch.Emit()
 		}
 
@@ -60,7 +73,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if DebugMode
 		{
-			funcLine = new BoxExeLine() //TODO debug only ExeLine version
+			funcLine = new BoxExeLine()
 			funcLine.ItToken = bdy
 			assert(funcLine.ItToken.Line != null)
 		}
@@ -101,7 +114,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if CurrentCodeSpace != null
 		{
-			//assert(not CurrentCodeSpace.Functions[Name].Contain()) TODO
 			CurrentCodeSpace.Functions[Name].Push(this&)
 		}
 	}
@@ -132,7 +144,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		stackSize := UnitStack.Size()
 
-		if stackSize == 0 //TODO better way of readding constants
+		if stackSize == 0 //todo better way of readding constants
 			ScopePutConstants()
 
 		UnitStack.PushFront(this&)

@@ -16,7 +16,7 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(argc,argv)
 }
 
-TVector := class .{@T} extend TGCObject
+TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> T& {}
@@ -31,9 +31,9 @@ TVector := class .{@T} extend TGCObject
 
 Twice := class
 {
-	hop := !(@T x) -> void
+	hop := !(@T x, int y = 13) -> void
 	{
-		printf("yep %i %f\n",x,x)
+		printf("yep %i %f %i\n",x,x,y)
 	}
 }
 
@@ -41,6 +41,6 @@ main := !(int argc,char^^ argv) -> int
 {
 	z := Twice
 	z.hop(1)
-	z.hop(1.0)
+	z.hop(1.0,7)
 	return 0
 }

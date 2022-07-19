@@ -32,6 +32,7 @@ FuncTemplateConstant := class
 FunctionHeaderInfo := class
 {
 	Types := HybridQueue.{FuncTemplateInput,10}
+	DefaultValues := AVLMap.{int,Token^}
 	ResultType := FuncTemplateInput
 	IsAutoResult := bool
 	IsVargs := bool
@@ -89,6 +90,23 @@ FunctionHeaderInfo := class
 					name := indItm->{TokenIndent^}.Value
 					if typ != null and IsComplexType(typ)
 						isRef = true
+					
+					if bag.Size() >= 3
+					{
+						c := bag.Size() - 1
+						while c > 0
+						{
+							if bag[c].GetValue() == "="
+								break
+							c -= 1
+						}
+						if c > 0
+						{
+							if c == bag.Size() - 1
+								bag[c].EmitError("Bad function header")
+							DefaultValues[Types.Size()] = bag[c+1]
+						}
+					}
 
 					Types.Emplace(name,typ,isRef,bag[0])
 				}
