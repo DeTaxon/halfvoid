@@ -175,6 +175,7 @@ main := !(int argc, char^^ argv) -> int
 			fil.AllClasses[^].PrintAsType(outFile)
 		}
 	}
+	GlobalVars[^].PrintCode(outFile)
 	for spc : CodeSpaces
 	{
 		spc.Globals[^][^].PrintCode(outFile)

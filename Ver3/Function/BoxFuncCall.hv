@@ -59,6 +59,8 @@ BoxFuncCall := class extend BoxExeObj
 
 		for par,i : itType.Params
 		{
+			if i >= downs.Size()
+				break
 			if par.IsRef
 			{
 				downs[i].NotifyMemUse()
@@ -72,10 +74,20 @@ BoxFuncCall := class extend BoxExeObj
 				assert(fnc != null)
 				defToken := fnc.GetDefaultToken(i)
 				assert(defToken != null) //todo, emit error
+
+				if defToken.GetValue() == "static"
+				{
+					assert(par.IsRef)
+					glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
+					varCall := new BoxFuncCall(glVar)
+					downs.Push(varCall)
+					defToken = defToken.Right
+				}else{
+					newCall := TryGetExeCall(defToken)
+					assert(newCall != null) //todo, emit error
+					downs.Push(newCall)
+				}
 				
-				newCall := TryGetExeCall(defToken)
-				assert(newCall != null) //todo, emit error
-				downs.Push(newCall)
 				continue
 			}
 			if downs[i].GetType() != par.ItType
@@ -99,6 +111,20 @@ BoxFuncCall := class extend BoxExeObj
 					assert(newObj != null)
 				}
 				downs[i] = newObj
+			}
+		}
+		if downs.Size() > itType.Params.Size()
+		{
+			assert(fType.IsVargs)
+
+			for i : downs.Size()
+			{
+				if i < fType.Params.Size()
+					continue
+				if downs[i].GetType() == GTypeFloat
+				{
+					downs[i] = GetExchange(downs[i],GTypeDouble)
+				}
 			}
 		}
 

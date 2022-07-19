@@ -83,7 +83,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		}
 		resType := Type^
 		resRef := bool
-		if iter.Right.Down.Right.GetValue() == "&"
+		if iter.Right.Down?.Right?.GetValue() == "&"
 		{
 			resRef = true
 			resType = CheckTemplateType(null,iter.Right.Down,resCnsts)

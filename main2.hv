@@ -29,18 +29,36 @@ TArrayView := class .{@T} extend TGCObject
 	//}
 }
 
+"@once line" := !(!()&->void cb, bool& onc = static false) -> void
+{
+	if onc
+		return void
+	onc = true
+	cb()
+}
+"@twice line" := !(!()&->void cb) -> void
+{
+	cb()
+	cb()
+}
 Twice := class
 {
-	hop := !(@T x, int y = 13) -> void
+	hop := !(int y = 13) -> void
 	{
-		printf("yep %i %f %i\n",x,x,y)
+		@once printf("test %i\n",y)
+		printf("yep %i\n",y)
 	}
 }
+
+//main := !(char[] args) -> void
+//{
+//	
+//}
 
 main := !(int argc,char^^ argv) -> int
 {
 	z := Twice
 	z.hop(1)
-	z.hop(1.0,7)
+	z.hop(7)
 	return 0
 }

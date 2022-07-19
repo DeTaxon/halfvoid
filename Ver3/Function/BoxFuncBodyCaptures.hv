@@ -8,6 +8,11 @@ AppendClass BoxFuncBody
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{ParamFunc^}
 
+	CreateCapturedVar := virtual !(Type^ tp) -> ParamFunc^
+	{
+
+	}
+
 	WorkBodyCaptures := !() -> void
 	{
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas

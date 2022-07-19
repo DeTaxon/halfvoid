@@ -35,12 +35,28 @@ FuncInputParam := class extend ParamFunc
 			return void
 		this&->SetType(FuncInputParamInMem)
 	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+		this&->SetType(FuncInputParamCaptured)
+	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 	}
 	IsValue := virtual !() -> bool
 	{
 		return true
+	}
+}
+
+FuncInputParamCaptured := class extend FuncInputParam
+{
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+
 	}
 }
 
