@@ -14,7 +14,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		objs := CheckExeDownList
 		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
 		assert(fnc != null)
-		resCall := new BoxFuncCall(fnc,objs)
+		resCall := fnc.CreateCall(objs)
 
 		if itm.Down.Right.Right?.GetValue() == "()"
 		{
@@ -39,7 +39,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 				fnc2 := TemplateInternalNewOneConstructed.GetFuncByType(fType,zeroConsts)
 				assert(fnc2 != null)
-				resCall =  new BoxFuncCall(fnc2,objs)
+				resCall = fnc2.CreateCall(objs)
 			}else{
 				assert(false)
 			}
@@ -56,6 +56,6 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		objs.Push(dwn)
 		cnsts := List.{BoxExeConstObj^}
 		fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
-		return new BoxFuncCall(fnc,objs)
+		return fnc.CreateCall(objs)
 	}
 }

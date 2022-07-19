@@ -44,7 +44,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			{
 				itms := CheckExeDownList
 				itms.Push(val)
-				return new BoxFuncCall(fld,itms)
+				return fld.CreateCall(itms)
 			}
 		}
 	}
@@ -76,7 +76,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 
 			itms := CheckExeDownList
 			itms.Push(val)
-			return new BoxFuncCall(fld,itms)
+			return fld.CreateCall(itms)
 		}
 	}
 	rObj.EmitError("Field not found")

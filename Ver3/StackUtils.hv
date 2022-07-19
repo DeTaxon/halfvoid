@@ -10,14 +10,14 @@ ModifyStackAllocatedVar := !(ParamFunc^ vr, List.{BoxExeObj^} ExtraWork) -> void
         tps.Push(GetConstType(typ))
         newType := GCStackType.GetClass(tps).ItType
         tps.Destroy()
-        st := innerTrySetType(new BoxFuncCall(vr),newType)
+        st := innerTrySetType(vr.CreateCall(),newType)
         ExtraWork.Push(st)
         
-        thisCall := new BoxFuncCall(vr)
+        thisCall := vr.CreateCall()
         thisCall2 := new UnrefFuncCall(thisCall)
 
         objs := CheckExeDownList
-        objs.Push(new BoxFuncCall(ptrVar))
+        objs.Push(ptrVar.CreateCall())
         objs.Push(thisCall2)
         setCall := CreateFuncCall(StringSpan("="),objs)
         assert(setCall != null)

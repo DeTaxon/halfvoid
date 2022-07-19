@@ -42,7 +42,7 @@ BoxFuncCall := class extend BoxExeObj
 		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 		{
 			ResultVar = CreateVar(fType.ResultType,false)
-			downs.Push(new BoxFuncCall(ResultVar))
+			downs.Push(ResultVar.CreateCall())
 
 			if this& is BoxFuncCall
 			{
@@ -79,7 +79,7 @@ BoxFuncCall := class extend BoxExeObj
 				{
 					assert(par.IsRef)
 					glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
-					varCall := new BoxFuncCall(glVar)
+					varCall := glVar.CreateCall()
 					downs.Push(varCall)
 					defToken = defToken.Right
 				}else{

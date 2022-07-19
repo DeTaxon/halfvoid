@@ -110,7 +110,7 @@ innerTryGetSkobCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs,List.{BoxExeC
 		if resFunc != null
 		{
 			assert(resFunc is in BoxFunc) //TODO: template
-			return new BoxFuncCall(resFunc,Objs2)
+			return resFunc.CreateCall(Objs2)
 		}
 	}
 	return null

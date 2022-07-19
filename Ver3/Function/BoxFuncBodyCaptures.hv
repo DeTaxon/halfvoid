@@ -8,11 +8,6 @@ AppendClass BoxFuncBody
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{ParamFunc^}
 
-	CreateCapturedVar := virtual !(Type^ tp) -> ParamFunc^
-	{
-
-	}
-
 	WorkBodyCaptures := !() -> void
 	{
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
@@ -24,12 +19,10 @@ AppendClass BoxFuncBody
 		for  it,i : CapturedVars
 		{
 			indCall := tplClass.GetFieldByIndex(i)
-			dat := CheckExeDownList
-			varCall := new BoxFuncCall(CapturedVarsTuple,dat)
+			varCall := CapturedVarsTuple.CreateCall()
 			dat2 := CheckExeDownList
 			dat2.Push(varCall)
-			cl := new BoxFuncCall(indCall,dat2)
-			dat.Clear()
+			cl := indCall.CreateCall(dat2)
 			dat2.Clear()
 
 			it.exeObj = cl
@@ -38,24 +31,22 @@ AppendClass BoxFuncBody
 
 		for it, i : CapturedVarsGets
 		{
-			emp := CheckExeDownList
-			getVar := new BoxFuncCall(CapturedVarsTuple,emp)
+			getVar := CapturedVarsTuple.CreateCall()
 			c1 := new UnrefFuncCall(getVar)
 			it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
 		}
 	}
 	CreateGetCaptureCall := !() -> void
 	{
-		empty := CheckExeDownList
 		objs3 := CheckExeDownList
-		objs3.Push(new BoxFuncCall(Params[0].Value,empty))
+		objs3.Push(Params[0].Value.CreateCall())
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(ThisCaptureTupleType))
 		lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
 		assert(lGCall != null)
 		cnsts.Destroy()
 
-		CaptureGetCall = new BoxFuncCall(lGCall,objs3)
+		CaptureGetCall = lGCall.CreateCall(objs3)
 	}
 
 	GetCaptureTuple := !() -> BoxClass^

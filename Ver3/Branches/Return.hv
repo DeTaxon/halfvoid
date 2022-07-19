@@ -14,13 +14,13 @@ BoxReturn := class extend BoxExeObj
 			objs := CheckExeDownList
 			gcPtr := CurrentFunc->{BoxFuncBody^}.gcArrayPtr
 			assert(gcPtr != null)
-			getGCPtr := new BoxFuncCall(gcPtr,objs)
+			getGCPtr := gcPtr.CreateCall(objs)
 
 			objs.Push(getGCPtr)
 			objs.Push(GetExeInt(0))
 			objs.Push(GetExeInt(GCVarsInUse - 1))
 
-			cleanupCall = new BoxFuncCall(GFuncGCSetNullArray,objs)
+			cleanupCall = GFuncGCSetNullArray.CreateCall(objs)
 		}
 	}
 	PrintDefaultUse := virtual !(TIOStream^ f) -> void
@@ -42,9 +42,8 @@ BoxYield := class extend BoxReturn
 		yieldVal := CurrentFunc.PutYieldState(this&)
 		yVar := CurrentFunc.GetYieldStateParam()
 
-		empty := CheckExeDownList
 		objs := CheckExeDownList
-		objs.Push(new BoxFuncCall(yVar,empty))
+		objs.Push(yVar.CreateCall())
 		objs.Push(GetExeInt(yieldVal))
 
 		callSet = CreateFuncCall(StringSpan("="),objs)

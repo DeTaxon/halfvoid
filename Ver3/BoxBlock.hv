@@ -145,9 +145,9 @@ BoxBlock := class extend BoxUnit
 			{
 				dat := CheckExeDownList
 				defer dat.Destroy() //todo remove
-				cl := new BoxFuncCall(it,dat)
+				cl := it.CreateCall()
 				dat.Push(cl)
-				cl2 := new BoxFuncCall(GFuncGCSetNull,dat)
+				cl2 := GFuncGCSetNull.CreateCall(dat)
 				pad := new BoxExeLineSimple(down.Down,cl2)
 				exeLines.Push(pad)
 			}
@@ -212,10 +212,10 @@ BoxBlock := class extend BoxUnit
 		assert(CurrentFunc.gcArrayPtr != null)
 
 		objs := CheckExeDownList
-		objs.Push(new BoxFuncCall(CurrentFunc.gcArrayPtr))
+		objs.Push(CurrentFunc.gcArrayPtr.CreateCall())
 		objs.Push(GetExeInt(GCInUseBefore))
 		objs.Push(GetExeInt(GCVarsInUse - 1))
-		return new BoxFuncCall(GFuncGCSetNullArray,objs)
+		return GFuncGCSetNullArray.CreateCall(objs)
 	}
 }
 

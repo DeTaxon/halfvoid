@@ -3,7 +3,10 @@
     "*.cp": "cpp",
     "typeinfo": "cpp",
     "limits": "cpp",
-    "*.hv": "cpp"
+    "*.hv": "cpp",
+    "array": "cpp",
+    "string_view": "cpp",
+    "type_traits": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "/usr/bin/gcc",
   "C_Cpp_Runner.cppCompilerPath": "/usr/bin/g++",

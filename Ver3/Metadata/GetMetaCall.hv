@@ -65,8 +65,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
 				return GObjNone
-			emptyObj := CheckExeDownList
-			fncCall := new BoxFuncCall(cls.VTableValue.Value,emptyObj)
+			fncCall := cls.VTableValue.Value.CreateCall()
 			return new UnrefFuncCall(fncCall)
 		}
 		dObj := TryGetExeCall(obj.Down)
@@ -87,7 +86,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 					chk := CheckExeDownList
 					defer chk.Destroy() //TODO
 					chk.Push(dObj)
-					return new BoxFuncCall(cls2.VTableField,chk)
+					return cls2.VTableField.CreateCall(chk)
 				}else{
 					return GObjNone
 				}
@@ -133,5 +132,5 @@ innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
 	assert(fnc != null)
 	if fnc == null
 		return null
-	return new BoxFuncCall(fnc,objs)
+	return fnc.CreateCall(objs)
 }

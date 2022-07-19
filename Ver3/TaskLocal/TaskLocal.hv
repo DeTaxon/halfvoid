@@ -9,17 +9,17 @@ TaskLocalVar := class extend NamedVar
         itIndex = TaskLocalTypes.Size()
         TaskLocalTypes.Push(tp)
     }
-    CreateCall := !() -> BoxExeObj^
+    CreateCall := virtual !() -> BoxExeObj^
     {
         TaskLocalHatch.Await()
-        getVar := new BoxFuncCall(getTaskVarFunc)
+        getVar := getTaskVarFunc.CreateCall()
         getVarTypes := GetExchange(getVar,tupleVarType.ItType.GetPoint())
 
         funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
         objs := CheckExeDownList
         objs.Push(getVarTypes)
-        return new BoxFuncCall(funcObj,objs)
+		return funcObj.CreateCall(objs)
     }
 }
 

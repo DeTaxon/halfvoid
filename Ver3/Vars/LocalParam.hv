@@ -14,11 +14,11 @@ FuncLocalParam := class extend ParamFunc
 			if cls.VTable.Size() != 0
 			{
 				dwns := CheckExeDownList
-				fCall := new BoxFuncCall(this&,dwns)
+				fCall := this.CreateCall() //todo exception call?
 				dwns.Push(fCall)
 				cnsts := List.{BoxExeConstObj^}
 				fnc := TemplateInternalInitClass.GetFunc(dwns,cnsts)
-				Inits.Push(new BoxFuncCall(fnc,dwns))
+				Inits.Push(fnc.CreateCall(dwns))
 			}
 		}
 	}

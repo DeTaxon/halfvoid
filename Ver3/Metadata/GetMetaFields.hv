@@ -52,8 +52,8 @@ MetaFieldsHolder := class extend BoxMetaObj
     {
         indCall := classObj.GetFieldByIndex(ind)
         itms := CheckExeDownList
-        itms.Push(new BoxFuncCall(objRes))
-        return new BoxFuncCall(indCall,itms)
+        itms.Push(objRes.CreateCall())
+        return indCall.CreateCall(itms)
     }
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
     {

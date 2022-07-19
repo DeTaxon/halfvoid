@@ -29,8 +29,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 					mv2 := mv->{MemVar^}
 					if needLambdaCapture
 						mv2.NotifyCaptureUse()
-					emptyObj := CheckExeDownList
-					return new BoxFuncCall(mv2.Value,emptyObj)
+					return mv2.Value.CreateCall()
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
@@ -109,8 +108,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		}
 		if callItem is in BoxFunc
 		{
-			emptyObj := CheckExeDownList
-			return new BoxFuncCall(callItem->{BoxFunc^},emptyObj)
+			return callItem->{BoxFunc^}.CreateCall()
 		}
 	}
 

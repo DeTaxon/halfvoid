@@ -31,11 +31,10 @@ AppendClass BoxFuncBody
 		{
 			assert(CurrentFunc == this&)
 
-			empt := CheckExeDownList
 			Objs := CheckExeDownList
-			Objs.Push(new BoxFuncCall(Params[0].Value,empt))
+			Objs.Push(Params[0].Value.CreateCall())
 
-			yGet := new BoxFuncCall(TemplateInternalGetYieldState,Objs)
+			yGet := TemplateInternalGetYieldState.CreateCall(Objs)
 
 			YieldStateInt = new FuncResultParam(yGet)
 		}
@@ -63,22 +62,22 @@ AppendClass BoxFuncBody
 		yTuple := GetYieldTuple()
 
 		Objs := CheckExeDownList
-		Objs.Push(new BoxFuncCall(Params[0].Value))
+		Objs.Push(Params[0].Value.CreateCall())
 
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(yTuple.ItType))
 
 		getVars := TemplateInternalGetYieldVars.GetFunc(Objs,cnsts)
 		assert(getVars != null)
-		YieldTupleVar = new FuncResultParam(new BoxFuncCall(getVars,Objs))
+		YieldTupleVar = new FuncResultParam(getVars.CreateCall(Objs))
 
 		for it,i : regularVars
 		{
 			fCall := yTuple.GetFieldByIndex(i)
 			assert(fCall != null)
 			objs2 := CheckExeDownList
-			objs2.Push(new BoxFuncCall(YieldTupleVar))
-			it.exeObj = new BoxFuncCall(fCall,objs2)
+			objs2.Push(YieldTupleVar.CreateCall())
+			it.exeObj = fCall.CreateCall(objs2)
 			it->SetType(FuncResultParamInGenerator)
 		}
 
@@ -88,7 +87,7 @@ AppendClass BoxFuncBody
 		}
 
 		finObjs := CheckExeDownList
-		finObjs.Push(new BoxFuncCall(YieldStateInt))
+		finObjs.Push(YieldStateInt.CreateCall())
 		finObjs.Push(GetExeInt(-1))
 		YieldFinilize = CreateFuncCall(StringSpan("="),finObjs)
 	}
@@ -114,7 +113,7 @@ AppendClass BoxFuncBody
 		if YieldStateInt == null
 			return void
 
-		cl := BoxFuncCall(YieldStateInt)
+		cl := BoxFuncCall(YieldStateInt) //todo??
 		cl.PrintPre(f)
 
 		f^ << "switch i32 "

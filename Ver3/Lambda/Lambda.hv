@@ -89,13 +89,9 @@ BoxLambdaHolder := class extend BoxExeObj
 		newFunc := cb() //Vars captured
 		newFunc.ParseBodyForced()
 		
-		miniObj := CheckExeDownList
 		fncFnc := new FuncPointerParam(newFunc)
-		fncPtr := new BoxFuncCall(fncFnc,miniObj)
+		fncPtr := fncFnc.CreateCall()
 		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
-
-
-		empty := CheckExeDownList
 
 		getTupleVar := BoxExeObj^
 
@@ -108,7 +104,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
 			CurrentFunc.CapturedVarsGets.Push(tplVar)
 
-			getTupleVar = new BoxFuncCall(tplVar,empty)
+			getTupleVar = tplVar.CreateCall()
 		}else{
 			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
 		}
@@ -124,7 +120,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 		lst.Destroy()
 
-		step1 := new BoxFuncCall(createLambdaFunc,objs)
+		step1 := createLambdaFunc.CreateCall(objs)
 		step2 := new UnrefFuncCall(step1)
 
 		cnsts := List.{BoxExeConstObj^}

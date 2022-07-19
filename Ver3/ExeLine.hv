@@ -286,12 +286,12 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 	return x[bestI]
 }
 
-CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxFuncCall^
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxExeObj^
 {
 	cnsts := List.{BoxExeConstObj^}
 	return CreateFuncCall(name,Objs,cnsts)
 }
-CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxFuncCall^
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	callItem := BoxUnit^
 	GetItemGlobal(name, x ==>{
@@ -308,7 +308,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 	}
 	if callItem is in BoxFunc
 	{
-		return new BoxFuncCall(callItem->{BoxFunc^},Objs)
+		return callItem->{BoxFunc^}.CreateCall(Objs)
 	}
 }
 

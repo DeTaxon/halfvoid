@@ -153,14 +153,14 @@ ForSubObjects := class
 		
 		cnsts := List.{BoxExeConstObj^}
 		objs := CheckExeDownList
-		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),new BoxFuncCall(dwnVar),objs,cnsts)eckType
+		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),dwnVar.CreateCall(),objs,cnsts)eckType
 
 		if iFins == null
 			DownToken.EmitError("iteratable object does not contain IsFinished")
 		if iFins.GetType() != GTypeBool
 			DownToken.EmitError("IsFinished return non boolean type")
 		
-		mainCall := new BoxFuncCall(dwnVar)
+		mainCall := dwnVar.CreateCall()
 		dwnType := mainCall.GetType()
 
 		cls := BoxClass^
@@ -207,9 +207,9 @@ ForSubObjects := class
 		objs2 := CheckExeDownList
 		objs2.Push(mainCall)
 		if indVar != null
-			objs2.Push(new BoxFuncCall(indVar))
+			objs2.Push(indVar.CreateCall())
 
-		iCall := new BoxFuncCall(objCall->{BoxFunc^},objs2)
+		iCall := objCall->{BoxFunc^}.CreateCall(objs2)
 
 		if iCall == null
 			DownToken.EmitError("iteratable object is not callable, no () function")
@@ -218,7 +218,7 @@ ForSubObjects := class
 		if indVar != null and IndexName.Size() != 0
 		{
 			IndVar = new MacroVar(IndexName,() ==> [indVar] {
-				getVar := new BoxFuncCall(indVar)
+				getVar := indVar.CreateCall()
 				return new PtrToRefFuncCall(getVar)
 			})
 		}

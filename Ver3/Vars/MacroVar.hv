@@ -7,7 +7,7 @@ MacroVar := class extend NamedVar
         Name = nm
         lmbd = l.Capture()
     }
-    CreateCall := !() -> BoxExeObj^
+    CreateCall := virtual !() -> BoxExeObj^
     {
         return lmbd()
     }

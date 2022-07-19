@@ -114,9 +114,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				vr = CreateVar(exeObj.GetType(),false)
 				mVar = new MemVarBorrowed(name,vr)
 
-				objs := CheckExeDownList
 				objs2 := CheckExeDownList
-				objs2.Push(new BoxFuncCall(vr,objs))
+				objs2.Push(vr.CreateCall())
 				objs2.Push(exeObj)
 				cnsts := List.{BoxExeConstObj^}
 				setCall := CreateFuncCall(StringSpan("="),objs2,cnsts)
