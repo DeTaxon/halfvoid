@@ -44,7 +44,7 @@ AppendClass BoxFuncBody
 		lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
 		assert(lGCall != null)
 		cnsts.Destroy()
-
+		
 		CaptureGetCall = lGCall.CreateCall(objs3)
 	}
 

@@ -31,6 +31,10 @@ FuncResultParam := class extend ParamFunc //TODO non ref
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
+
+	PopulateCalls := virtual !() -> void
+	{
+	}
 }
 
 FuncResultParamInGenerator := class extend FuncResultParam //TODO non ref

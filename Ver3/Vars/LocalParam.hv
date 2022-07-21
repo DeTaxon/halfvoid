@@ -91,14 +91,9 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		assert(parentFunc != null)
 		CapturedIndex = parentFunc.CapturedVars.Size()
 		parentFunc.CapturedVars.Push(this&)
-
-		//buff := char[100]
-		//sprintf(buff[0]&,"%%C%i",ind)
-		//irName = GetConstString(buff[0]&)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		//PrintMakeZero(f)
 	}
 
 

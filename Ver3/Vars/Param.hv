@@ -24,7 +24,7 @@ ParamFunc := class extend BoxFuncCommon
 	}
 	PopulateCalls := virtual !() -> void
 	{
-		
+		assert(false)
 	}
 
 	PrintMakeZero := !(TIOStream^ f) -> void

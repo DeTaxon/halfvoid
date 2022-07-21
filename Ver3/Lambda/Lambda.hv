@@ -96,14 +96,11 @@ BoxLambdaHolder := class extend BoxExeObj
 		getTupleVar := BoxExeObj^
 
 		tplType := CurrentFunc.GetCaptureTuple().ItType
-		newFunc->{BoxFuncBody^}.ThisCaptureTupleType = tplType
 
 		if tplType != tplTypeBefore
 		{
 			tplVar := new FuncResultParam(tplType.GetPoint(),false)
-			newFunc->{BoxFuncBody^}.CreateGetCaptureCall()
 			CurrentFunc.CapturedVarsGets.Push(tplVar)
-
 			getTupleVar = tplVar.CreateCall()
 		}else{
 			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())

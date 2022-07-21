@@ -34,19 +34,25 @@ TArrayView := class .{@T} extend TGCObject
 //{
 //	
 //}
+hoh := !(!()& -> void cb) -> void
+{
+	cb()
+	cb()
+}
 
-main := !(int argc,char^^ argv) -> int
+main := !(int argc,char^^ argv,int arg2) -> int
 {
 	x := 13
 	y := 20
 
-	printf("test %i %i\n",x,y)
+	printf("test %i %i %i\n",x,y,argc)
 
-	z := () ==> {
+	h := () ==> {
 		printf("Hey %i\n",x)
-		printf("Hoy %i\n",x)
+		printf("Hoy %i\n",argc)
 		printf("Minoy %i\n",y)
 	}
-	z()
+	h()
+	h()
 	return 0
 }

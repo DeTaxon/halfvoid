@@ -2,6 +2,10 @@ FuncInputParam := class extend ParamFunc
 {
 	CapturedIndex := int
 	CreatedVarCalls := List.{ParamLoadObj^}
+	LocalParamBackup := FuncLocalParam^
+	SelfSet := BoxExeObj^
+
+	SelfAsBlank := ParamFunc^
 
 	this := !(Type^ pType,bool isRefIn,StringSpan pVal) -> void
 	{
@@ -36,10 +40,31 @@ FuncInputParam := class extend ParamFunc
 	{
 		if isRef
 			return void
+
+		SelfAsBlank = new FuncInputParam(GetVarType(),isRef,irName)
+
+		oldFnc := CurrentFunc
+		CurrentFunc = parentFunc
+		LocalParamBackup = new FuncLocalParam(GetType()->{TypeFunc^}.ResultType)
+
+		objs := CheckExeDownList
+		objs.Push(LocalParamBackup.CreateCall())
+		objs.Push(new BoxFuncCall(SelfAsBlank))
+		SelfSet = CreateFuncCall(StringSpan("="),objs)
+		assert(SelfSet != null)
+
+		parentFunc.regularVars.Push(LocalParamBackup)
+
 		this&->SetType(FuncInputParamInMem)
+
+		CurrentFunc = oldFnc
 	}
 	NotifyCaptureUse := virtual !() -> void
 	{
+		assert(not isRef)
+		
+		NotifyMemUse()
+		LocalParamBackup.NotifyCaptureUse()
 		this&->SetType(FuncInputParamCaptured)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
@@ -51,10 +76,16 @@ FuncInputParam := class extend ParamFunc
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
-		return new BoxFuncCall(this&)
-		//res := new ParamLoadObj(this&,new BoxFuncCall(this&))
-		//CreatedVarCalls.Push(res)
-		//return res
+		res := new ParamLoadObj(this&)
+		CreatedVarCalls.Push(res)
+		return res
+	}
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = new BoxFuncCall(this&)
+		}
 	}
 }
 
@@ -98,31 +129,34 @@ ParamLoadObj := class extend BoxExeObj
 	}
 }
 
-FuncInputParamCaptured := class extend FuncInputParam
+FuncInputParamCaptured := class extend FuncInputParamInMem
 {
 	IsMem := virtual !() -> bool
 	{
 		return true
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
-	{
-
-	}
+	//PrintCode := virtual !(TIOStream^ f) -> void
+	//{
+	//}
 
 	NotifyMemUse := virtual !() -> void {}
 	NotifyCaptureUse := virtual !() -> void {}
 
-	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//PopulateCalls := virtual !() -> void
 	//{
-	//	return new ParamLoadObj(this&,new BoxFuncCall(this&))
+	//	for it : CreatedVarCalls
+	//	{
+	//		it.CallObj = new BoxFuncCall(this&)
+	//	}
 	//}
 
-	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
-	//{
-	//	res := new ParamLoadObj(this&,new BoxFuncCall(this&))
-	//	CreatedVarCalls.Push(res)
-	//	return res
-	//}
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = LocalParamBackup.CreateCall()
+		}
+	}
 }
 
 FuncInputParamInMem := class extend FuncInputParam
@@ -133,39 +167,48 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		rType := GetType()->{TypeFunc^}.ResultType
-		f^ << irName << "Unref = alloca "
-		rType.PrintType(f)
-		if isRef
-			f^ << "*"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-		
-		f^ << "store "
-		rType.PrintType(f)
-		if isRef
-			f^ << "*"
-		f^ << " " << irName
-		f^ << " , "
-		rType.PrintType(f)
-		f^ << "*"
-		if isRef
-			f^ << "*"
-		f^ << " " << irName << "Unref"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		SelfSet.PrintDefaultUse(f)
+
+		//rType := GetType()->{TypeFunc^}.ResultType
+		//f^ << irName << "Unref = alloca "
+		//rType.PrintType(f)
+		//if isRef
+		//	f^ << "*"
+		//if DebugMode
+		//	f^ << " , !dbg !" << GDebugLineCallId
+		//f^ << "\n"
+		//
+		//f^ << "store "
+		//rType.PrintType(f)
+		//if isRef
+		//	f^ << "*"
+		//f^ << " " << irName
+		//f^ << " , "
+		//rType.PrintType(f)
+		//f^ << "*"
+		//if isRef
+		//	f^ << "*"
+		//f^ << " " << irName << "Unref"
+		//if DebugMode
+		//	f^ << " , !dbg !" << GDebugLineCallId
+		//f^ << "\n"
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
-	{
-		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
-		{
-			f^ << "" << irName << "Unref"
-		}
-	}
+	//PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	//{
+	//	if GetType()->{TypeFunc^}.ResultType != GTypeVoid
+	//	{
+	//		f^ << "" << irName << "Unref"
+	//	}
+	//}
 	IsValue := virtual !() -> bool
 	{
 		return false
+	}
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = LocalParamBackup.CreateCall()
+		}
 	}
 }

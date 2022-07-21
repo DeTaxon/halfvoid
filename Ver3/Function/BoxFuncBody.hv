@@ -149,6 +149,10 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 
+		tplTypeBefore := Type^
+		if Attrs.IsLambda
+			tplTypeBefore = ParentFunc.GetCaptureTuple().ItType
+
 		tp := ObjType ->{TypeFunc^}
 
 		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
@@ -191,15 +195,25 @@ BoxFuncBody := class extend BoxFuncCommon
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
 
-
 		WorkBodyCaptures()
 		YieldWork()
 
-		if regularVars[^] is ParamFunc
-			printf("YES\n")
-		regularVars[^].PopulateCalls()
+		if Attrs.IsLambda
+		{
+			newTplType := ParentFunc.GetCaptureTuple().ItType
+			if newTplType != tplTypeBefore
+			{
+				ThisCaptureTupleType = newTplType
+				CreateGetCaptureCall()
+			}
+		}
+
+		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
+		ResultVar?.Value.PopulateCalls()
+		gcArrayPtr?.PopulateCalls()
 		CapturedVarsTuple?.PopulateCalls()
 		CapturedVarsGets[^].PopulateCalls()
+		regularVars[^].PopulateCalls()
 
 		
 		while UnitStack.Size() > stackSize
@@ -220,11 +234,12 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		f^ << "@" << OutputName
 	}
-
+	
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		if body == null
 			return void
+
 		GDebugFuncId = 0
 		CurrentFunc = this&
 

@@ -59,6 +59,7 @@ AppendClass BoxFuncBody
 	{
 		if Yields.Size() == 0
 			return void
+			
 		yTuple := GetYieldTuple()
 
 		Objs := CheckExeDownList
