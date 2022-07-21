@@ -1,5 +1,8 @@
 FuncLocalParam := class extend ParamFunc
 {
+	CreatedVarCalls := List.{ParamLoadObj^}
+	CapturedIndex := int
+
 	this := !(Type^ tp) -> void
 	{
 		assert(CurrentFunc != null)
@@ -31,6 +34,7 @@ FuncLocalParam := class extend ParamFunc
 	{
 		this&->SetType(FuncLocalParamCaptured)
 		this&->{FuncLocalParamCaptured^}.DoCapture()
+		assert(this& is FuncLocalParamCaptured)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
@@ -55,7 +59,24 @@ FuncLocalParam := class extend ParamFunc
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(objs.Size() == 0)
+
+		res := new ParamLoadObj(this&)
+		CreatedVarCalls.Push(res)
+		return res 
+	}
+
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = new BoxFuncCall(this&)
+		}
+	}
 }
+
 FuncLocalParamCaptured := class extend FuncLocalParam
 {
 	NotifyMemUse := virtual !() -> void
@@ -68,16 +89,34 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 	DoCapture := !() -> void
 	{
 		assert(parentFunc != null)
-		ind := parentFunc.CapturedVars.Size()
+		CapturedIndex = parentFunc.CapturedVars.Size()
 		parentFunc.CapturedVars.Push(this&)
 
-		buff := char[100]
-		sprintf(buff[0]&,"%%C%i",ind)
-		irName = GetConstString(buff[0]&)
+		//buff := char[100]
+		//sprintf(buff[0]&,"%%C%i",ind)
+		//irName = GetConstString(buff[0]&)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		PrintMakeZero(f)
+		//PrintMakeZero(f)
+	}
+
+
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			getCall := new BoxFuncCall(parentFunc.CapturedVarsTuple)
+			callType := getCall.GetType()
+			assert(callType is in TypeClass)
+			cls := callType->{TypeClass^}.ToClass
+			fld := cls.GetFieldByIndex(CapturedIndex)
+			objs := CheckExeDownList
+			objs.Push(getCall)
+			assert(fld != null)
+			it.CallObj = new BoxFuncCall(fld,objs)
+			objs.Clear()
+		}
 	}
 }
 GetLVarName := !(int x) -> StringSpan

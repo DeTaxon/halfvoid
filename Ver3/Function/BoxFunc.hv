@@ -116,7 +116,7 @@ BoxFunc := class extend BoxExeConstObj
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
-		return new BoxFuncCall(this&,objs)
+		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 	}
 }
 

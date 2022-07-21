@@ -190,8 +190,17 @@ BoxFuncBody := class extend BoxFuncCommon
 			regularVars.Push(gcArrayVar)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
 		}
+
+
 		WorkBodyCaptures()
 		YieldWork()
+
+		if regularVars[^] is ParamFunc
+			printf("YES\n")
+		regularVars[^].PopulateCalls()
+		CapturedVarsTuple?.PopulateCalls()
+		CapturedVarsGets[^].PopulateCalls()
+
 		
 		while UnitStack.Size() > stackSize
 		{

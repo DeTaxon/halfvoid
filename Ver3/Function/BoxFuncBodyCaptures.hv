@@ -16,18 +16,17 @@ AppendClass BoxFuncBody
 		tplClass := GetCaptureTuple()
 		CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
 		
-		for  it,i : CapturedVars
-		{
-			indCall := tplClass.GetFieldByIndex(i)
-			varCall := CapturedVarsTuple.CreateCall()
-			dat2 := CheckExeDownList
-			dat2.Push(varCall)
-			cl := indCall.CreateCall(dat2)
-			dat2.Clear()
-
-			it.exeObj = cl
-			it->SetType(FuncResultParam)
-		}
+		//for  it,i : CapturedVars
+		//{
+		//	indCall := tplClass.GetFieldByIndex(i)
+		//	varCall := CapturedVarsTuple.CreateCall()
+		//	dat2 := CheckExeDownList
+		//	dat2.Push(varCall)
+		//	cl := indCall.CreateCall(dat2)
+		//	dat2.Clear()
+		//	it.exeObj = cl
+		//	it->SetType(FuncResultParam)
+		//}
 
 		for it, i : CapturedVarsGets
 		{

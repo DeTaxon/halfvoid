@@ -1,5 +1,8 @@
 FuncInputParam := class extend ParamFunc
 {
+	CapturedIndex := int
+	CreatedVarCalls := List.{ParamLoadObj^}
+
 	this := !(Type^ pType,bool isRefIn,StringSpan pVal) -> void
 	{
 		parentFunc = CurrentFunc
@@ -46,6 +49,53 @@ FuncInputParam := class extend ParamFunc
 	{
 		return true
 	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		return new BoxFuncCall(this&)
+		//res := new ParamLoadObj(this&,new BoxFuncCall(this&))
+		//CreatedVarCalls.Push(res)
+		//return res
+	}
+}
+
+ParamLoadObj := class extend BoxExeObj
+{
+	VarPtr := ParamFunc^
+	CallObj := BoxExeObj^
+
+	this := !(ParamFunc^ fnc) -> void
+	{
+		VarPtr = fnc
+		ObjType = fnc.GetType()->{TypeFunc^}.ResultType
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+		VarPtr.NotifyMemUse()
+	}
+
+	NotifyCaptureUse := virtual !() -> void { VarPtr.NotifyCaptureUse() }
+
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		CallObj.PrintPre(f)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		CallObj.PrintUse(f)
+	}
+
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+		CallObj.PrintPointPre(f)
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		CallObj.PrintPointUse(f)
+	}
 }
 
 FuncInputParamCaptured := class extend FuncInputParam
@@ -58,6 +108,21 @@ FuncInputParamCaptured := class extend FuncInputParam
 	{
 
 	}
+
+	NotifyMemUse := virtual !() -> void {}
+	NotifyCaptureUse := virtual !() -> void {}
+
+	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//{
+	//	return new ParamLoadObj(this&,new BoxFuncCall(this&))
+	//}
+
+	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//{
+	//	res := new ParamLoadObj(this&,new BoxFuncCall(this&))
+	//	CreatedVarCalls.Push(res)
+	//	return res
+	//}
 }
 
 FuncInputParamInMem := class extend FuncInputParam

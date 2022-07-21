@@ -208,6 +208,8 @@ MemVar := class extend NamedVar
 	}
 	pDebugCode := !(TIOStream^ f) -> void
 	{
+		if Value is FuncLocalParamCaptured //TODO, get debug data for captured variables
+			return void
 		if Value is in FuncLocalParam or Value is in FuncInputParam
 		{
 			clr := CheckExeDownList

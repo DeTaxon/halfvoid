@@ -22,6 +22,10 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		return GetType()->{TypeFunc^}.ResultType
 	}
+	PopulateCalls := virtual !() -> void
+	{
+		
+	}
 
 	PrintMakeZero := !(TIOStream^ f) -> void
 	{
