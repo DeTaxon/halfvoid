@@ -41,12 +41,22 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 
 		for setField : newLambda.thisCapturedVars->AllFields , getField : this.capPtr^->AllFields
 		{
-			setField = getField
+			if getField->TypeGroup == "Class"
+			{
+				assert(false) //TODO , check for operator = not implemented
+			}else{
+				setField = getField
+			}
 		}
 
 		for setField : newLambda.lambdaVars->AllFields , getField : this.lambdaVars->AllFields
 		{
-			setField = getField
+			if getField->TypeGroup == "Class"
+			{
+				assert(false) //TODO , check for operator = not implemented
+			}else{
+				setField = getField
+			}
 		}
 
 		return newLambda

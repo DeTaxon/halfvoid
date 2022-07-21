@@ -31,7 +31,13 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		typ := ParseType(obj.Down)
 		if typ == null
-			obj.Down.EmitError("Object for TypeGroup must be type")
+		{
+			dwnObj := TryGetExeCall(obj.Down)
+			if dwnObj != null
+				typ = dwnObj.GetType()
+			if typ == null
+				obj.Down.EmitError("Object for TypeGroup must be type")
+		}
 		if typ is TypeClass
 			return GetExeString(StringSpan("Class"))
 		if typ is TypeStandard

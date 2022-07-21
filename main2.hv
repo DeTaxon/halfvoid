@@ -47,7 +47,6 @@ main := !(int argc,char^^ argv) -> int
 	x := 13
 	y := 20
 
-	assert(true)
 
 	printf("test %i %i %i\n",x,y,argc)
 
@@ -55,7 +54,7 @@ main := !(int argc,char^^ argv) -> int
 		printf("Hey %i\n",x)
 		printf("Hoy %i\n",argc)
 		printf("Minoy %i\n",y)
-		//printf("y %i\n",z.x)
+		printf("y %i\n",z.x)
 	}
 	h()
 	h()
