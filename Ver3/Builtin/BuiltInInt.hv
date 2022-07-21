@@ -103,6 +103,7 @@ CreateBuiltins := !() -> void
 	CreateBuiltinsInt()
 	CreateBuiltinsPoint()
 	CreateBuiltinsBool()
+	CreateBuildInTools()
 }
 CreateBuiltinsInt := !() -> void
 {

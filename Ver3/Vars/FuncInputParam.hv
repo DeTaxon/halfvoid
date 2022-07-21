@@ -40,16 +40,37 @@ FuncInputParam := class extend ParamFunc
 	{
 		if isRef
 			return void
+		CreateMemUse()
+	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+		CreateMemUse()
+		LocalParamBackup.NotifyCaptureUse()
+		this&->SetType(FuncInputParamCaptured)
+	}
+	CreateMemUse := !() -> void
+	{
+		if SelfAsBlank != null
+			return void
+		
+		varMiddleType := GetVarType()
+		if isRef
+			varMiddleType = varMiddleType.GetPoint()
 
 		SelfAsBlank = new FuncInputParam(GetVarType(),isRef,irName)
 
 		oldFnc := CurrentFunc
 		CurrentFunc = parentFunc
-		LocalParamBackup = new FuncLocalParam(GetType()->{TypeFunc^}.ResultType)
+		LocalParamBackup = new FuncLocalParam(varMiddleType)
 
 		objs := CheckExeDownList
 		objs.Push(LocalParamBackup.CreateCall())
-		objs.Push(new BoxFuncCall(SelfAsBlank))
+		if isRef
+		{
+			objs.Push(new UnrefFuncCall(new BoxFuncCall(SelfAsBlank)))
+		}else{
+			objs.Push(new BoxFuncCall(SelfAsBlank))
+		}
 		SelfSet = CreateFuncCall(StringSpan("="),objs)
 		assert(SelfSet != null)
 
@@ -58,14 +79,6 @@ FuncInputParam := class extend ParamFunc
 		this&->SetType(FuncInputParamInMem)
 
 		CurrentFunc = oldFnc
-	}
-	NotifyCaptureUse := virtual !() -> void
-	{
-		assert(not isRef)
-		
-		NotifyMemUse()
-		LocalParamBackup.NotifyCaptureUse()
-		this&->SetType(FuncInputParamCaptured)
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
@@ -135,28 +148,10 @@ FuncInputParamCaptured := class extend FuncInputParamInMem
 	{
 		return true
 	}
-	//PrintCode := virtual !(TIOStream^ f) -> void
-	//{
-	//}
 
 	NotifyMemUse := virtual !() -> void {}
 	NotifyCaptureUse := virtual !() -> void {}
 
-	//PopulateCalls := virtual !() -> void
-	//{
-	//	for it : CreatedVarCalls
-	//	{
-	//		it.CallObj = new BoxFuncCall(this&)
-	//	}
-	//}
-
-	PopulateCalls := virtual !() -> void
-	{
-		for it : CreatedVarCalls
-		{
-			it.CallObj = LocalParamBackup.CreateCall()
-		}
-	}
 }
 
 FuncInputParamInMem := class extend FuncInputParam
@@ -168,38 +163,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		SelfSet.PrintDefaultUse(f)
-
-		//rType := GetType()->{TypeFunc^}.ResultType
-		//f^ << irName << "Unref = alloca "
-		//rType.PrintType(f)
-		//if isRef
-		//	f^ << "*"
-		//if DebugMode
-		//	f^ << " , !dbg !" << GDebugLineCallId
-		//f^ << "\n"
-		//
-		//f^ << "store "
-		//rType.PrintType(f)
-		//if isRef
-		//	f^ << "*"
-		//f^ << " " << irName
-		//f^ << " , "
-		//rType.PrintType(f)
-		//f^ << "*"
-		//if isRef
-		//	f^ << "*"
-		//f^ << " " << irName << "Unref"
-		//if DebugMode
-		//	f^ << " , !dbg !" << GDebugLineCallId
-		//f^ << "\n"
 	}
-	//PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
-	//{
-	//	if GetType()->{TypeFunc^}.ResultType != GTypeVoid
-	//	{
-	//		f^ << "" << irName << "Unref"
-	//	}
-	//}
 	IsValue := virtual !() -> bool
 	{
 		return false
@@ -208,7 +172,12 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		for it : CreatedVarCalls
 		{
-			it.CallObj = LocalParamBackup.CreateCall()
+			if isRef
+			{
+				it.CallObj = new PtrToRefFuncCall(LocalParamBackup.CreateCall())
+			}else{
+				it.CallObj = LocalParamBackup.CreateCall()
+			}
 		}
 	}
 }

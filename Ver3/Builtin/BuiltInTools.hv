@@ -1,0 +1,34 @@
+BuiltInAssert := class extend BoxFuncCommon
+{
+	trueLabel := BoxLabel^
+	falseLabel := BoxLabel^
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeBool],GTypeVoid))
+		trueLabel = new BoxLabel()
+		falseLabel = new BoxLabel()
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		if not DebugMode
+			return void
+
+		lst[0].PrintPre(f)
+		
+		PrintBranch(f,lst[0],trueLabel,falseLabel)
+		
+		falseLabel.PrintCode(f)
+		f^ << "call void @llvm.debugtrap()"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+		trueLabel.PrintCode(f)
+	}
+}
+
+
+CreateBuildInTools := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
+}
