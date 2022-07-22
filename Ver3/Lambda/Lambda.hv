@@ -91,7 +91,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := fncFnc.CreateCall()
-		newFunc->{BoxFuncBody^}.WorkBodyCaptures()
 
 		getTupleVar := BoxExeObj^
 

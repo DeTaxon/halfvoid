@@ -51,10 +51,15 @@ main := !(int argc,char^^ argv) -> int
 	printf("test %i %i %i\n",x,y,argc)
 
 	h := () ==> {
-		printf("Hey %i\n",x)
-		printf("Hoy %i\n",argc)
-		printf("Minoy %i\n",y)
-		printf("y %i\n",z.x)
+		v := 8
+		y := () ==> {
+			printf("Hey %i\n",x)
+			printf("Hoy %i\n",argc)
+			printf("Minoy %i\n",y)
+			printf("y %i\n",z.x)
+			printf("w %i\n",v)
+		}
+		y()
 	}
 	h()
 	h()

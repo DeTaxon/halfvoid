@@ -9,7 +9,8 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	asItm := itm->{TokenIndent^}
 
-	needLambdaCapture := false
+
+	metFuncs := HybridQueue.{BoxFuncBody^,4}
 
 	for par : UnitStack
 	{
@@ -27,8 +28,18 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				if par is in MemVar
 				{
 					mv2 := mv->{MemVar^}
-					if needLambdaCapture
+					if metFuncs.Size() != 0
+					{
 						mv2.NotifyCaptureUse()
+						if metFuncs.Size() >= 2
+						{
+							for it,i : metFuncs
+							{
+								if i != 0
+									it.NotifyChainCapture()
+							}
+						}
+					}
 					return mv2.Value.CreateCall()
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
@@ -38,13 +49,13 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				}
 			}
 		}
-		if par is in BoxFunc
-		{
-			needLambdaCapture = true
-		}
+		
 		if par is in BoxFuncBody
 		{
 			fnc := par->{BoxFuncBody^}
+
+			metFuncs.Push(fnc)
+			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
 				clsType := fnc.Params[0].GetVarType()

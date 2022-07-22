@@ -262,24 +262,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "\n"
 		f^ << "{\n"
 
-		if ParentFunc != null
+		if CaptureGetCall != null
 		{
-			if CaptureGetCall != null
-			{
-				CaptureGetCall?.PrintDefaultUse(f)
-				ParentFunc.CapturedVarsTuple.PrintResultObj(f,0,0)
-				f^ << " = getelementptr "
-				ThisCaptureTupleType.PrintType(f)
-				f^ << " , "
-				ThisCaptureTupleType.PrintType(f)
-				f^ << "* "
-				CaptureGetCall.PrintUse(f)
-				f^ << ", i32 0"
-				if DebugMode
-					f^ << " , !dbg !" << GDebugLineCallId
-				f^ <<"\n"
-				ParentFunc.CapturedVars[^].PrintCode(f)
-			}
+			PrintCaptureUsage(f,true)
 		}
 
 		PrintYieldCodeParams(f)

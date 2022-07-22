@@ -15,18 +15,6 @@ AppendClass BoxFuncBody
 		
 		tplClass := GetCaptureTuple()
 		CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
-		
-		//for  it,i : CapturedVars
-		//{
-		//	indCall := tplClass.GetFieldByIndex(i)
-		//	varCall := CapturedVarsTuple.CreateCall()
-		//	dat2 := CheckExeDownList
-		//	dat2.Push(varCall)
-		//	cl := indCall.CreateCall(dat2)
-		//	dat2.Clear()
-		//	it.exeObj = cl
-		//	it->SetType(FuncResultParam)
-		//}
 
 		for it, i : CapturedVarsGets
 		{
@@ -37,15 +25,25 @@ AppendClass BoxFuncBody
 	}
 	CreateGetCaptureCall := !() -> void
 	{
+		
+		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+
+		CaptureGetCall = innerGetCaptureCall(asRawPar)
+		getCaptureInLeafs = innerGetCaptureCall(Params[0].Value)
+		asRawPar.PopulateCalls()
+	}
+
+	innerGetCaptureCall := !(ParamFunc^ val) -> BoxExeObj^
+	{
 		objs3 := CheckExeDownList
-		objs3.Push(Params[0].Value.CreateCall())
+		objs3.Push(val.CreateCall())
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(ThisCaptureTupleType))
 		lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
 		assert(lGCall != null)
 		cnsts.Destroy()
 		
-		CaptureGetCall = lGCall.CreateCall(objs3)
+		return lGCall.CreateCall(objs3)
 	}
 
 	GetCaptureTuple := !() -> BoxClass^
@@ -56,5 +54,45 @@ AppendClass BoxFuncBody
 		tps.Destroy()
 		
 		return tplClass
+	}
+
+	getCaptureInLeafs := BoxExeObj^
+	inChain := bool
+	NotifyChainCapture := !() -> void
+	{
+		assert(Attrs.IsLambda)
+
+		if inChain
+			return void
+
+		Params[0].Value.NotifyCaptureUse()
+		inChain = true
+	}
+
+	PrintCaptureUsage := !(TIOStream^ f,bool isFirstCall) -> void
+	{
+		if ParentFunc == null
+			return void
+
+		assert(CaptureGetCall != null)
+
+		getThisCapture := CaptureGetCall
+		if not isFirstCall
+			getThisCapture = getCaptureInLeafs
+
+		getThisCapture.PrintDefaultUse(f)
+		ParentFunc.CapturedVarsTuple.PrintResultObj(f,0,0)
+		f^ << " = getelementptr "
+		ThisCaptureTupleType.PrintType(f)
+		f^ << " , "
+		ThisCaptureTupleType.PrintType(f)
+		f^ << "* "
+		getThisCapture.PrintUse(f)
+		f^ << ", i32 0"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ <<"\n"
+
+		ParentFunc?.PrintCaptureUsage(f,false)
 	}
 }
