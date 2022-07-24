@@ -12,9 +12,6 @@ TemplateInternalGetYieldVars := BoxFuncTemplate^
 
 GInternalSetType := BoxFuncTemplate^
 
-GFuncGetDepth := BoxFunc^
-GFuncSetDepth := BoxFunc^
-GFuncPushGCObject := BoxFunc^
 GFuncGCSetNull := BoxFunc^
 GFuncGCSetNullArray := BoxFunc^
 
@@ -25,6 +22,13 @@ GCLambda := BoxClassTemplate^
 
 GCStackType := BoxClassTemplate^
 GCDeferLambda := BoxClassTemplate^
+
+ExceptionIException := Type^
+ExceptionEnterFunc := BoxFunc^
+ExceptionLeaveFunc := BoxFunc^
+ExceptionEnterTryCatch := BoxFunc^
+ExceptionLeaveTryCatch := BoxFunc^
+ExceptionThrowException := BoxFunc^
 
 
 InternalsHatch := THatch
@@ -67,6 +71,7 @@ intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
 	assert(res is in TemplateTypeVar)
 	return res->{TemplateTypeVar^}.Value
 }
+
 InitInternals := !() -> void
 {
 	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
@@ -81,11 +86,8 @@ InitInternals := !() -> void
 	TemplateInternalGetYieldState = intGetFunc("internalHVLambdaGetYieldState")
 	TemplateInternalGetYieldVars = intGetTemplate("internalHVLambdaGetYieldTuple")
 
-	GFuncGetDepth = intGetFunc("internalHVGetDepth")
-	GFuncSetDepth = intGetFunc("internalHVSetDepth")
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
-	//GFuncPushGCObject = intGetFunc("internalHVPushGCObject")
 
 	GInternalSetType = intGetTemplate("internalHVSetType")
 
@@ -97,6 +99,15 @@ InitInternals := !() -> void
 
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
 	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
+
+
+
+	ExceptionIException = intGetClass("IException").ItType
+	ExceptionEnterFunc = intGetFunc("internalEnterGCFunction")
+	ExceptionLeaveFunc = intGetFunc("internalLeaveGCFunction")
+	ExceptionEnterTryCatch = intGetFunc("internalEnterTryCatch")
+	ExceptionLeaveTryCatch = intGetFunc("internalLeaveTryCatch")
+	ExceptionThrowException = intGetFunc("internalThrowException")
 
 	InternalsHatch.Emit()
 }

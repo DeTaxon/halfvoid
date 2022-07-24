@@ -1,0 +1,95 @@
+TryGetTryCatch := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null
+		return null
+	if itm.Down.GetValue() != "try"
+		return null
+
+	return new TryGetObj(itm)
+}
+
+TryGetObj := class extend BoxExeObj
+{
+	ItId := int
+
+	StartLabel := BoxLabel^
+	ExceptionLabel := BoxLabel^
+	ExitLabel := BoxLabel^
+
+	DownBlock := BoxBlock^
+	ExceptionBlock := BoxBlock^
+
+	EnterCall := BoxExeObj^
+	LeaveCall := BoxExeObj^
+
+	JumpFrame := FuncInputParam^
+
+	this := !(Token^ itm) -> void
+	{
+		InternalsHatch.Await()
+
+		ItId = GetNewId()
+
+		StartLabel = new BoxLabel()
+		ExceptionLabel = new BoxLabel()
+		ExitLabel = new BoxLabel()
+
+		ObjType = GTypeVoid
+
+		dwn := itm.Down.Right
+
+		JumpFrame = new FuncInputParam(GTypeVoidP,false,StringSpan("%E"sbt + ItId))
+
+		objs := CheckExeDownList
+		LeaveCall = ExceptionLeaveTryCatch.CreateCall(objs)
+		objs.Push(JumpFrame.CreateCall())
+		objs.Push(GBoolFalse)
+		objs.Push(GetExeInt(GCVarsInUse))
+		EnterCall = ExceptionEnterTryCatch.CreateCall(objs)
+		DownBlock = new BoxBlock(dwn)
+
+		ExceptionBlock = new BoxBlock(dwn.Right.Right.Right)
+
+		JumpFrame.PopulateCalls()
+	}
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%Frm" << ItId << " = alloca [20 x i8*]\n"
+
+  		f^ << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
+		f^ << "%FrameStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %Frm"<< ItId << ", i64 0, i64 0\n"
+		f^ << "store i8* %Frame" << ItId << ", i8** %FrameStore" << ItId << ", align 16\n"
+  		f^ << "%Stack" << ItId << " = call i8* @llvm.stacksave()\n"
+		f^ << "%StackStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %Frm"<< ItId << ", i64 0, i64 2\n"
+  		f^ << "store i8* %Stack" << ItId << ", i8** %StackStore"<< ItId <<", align 16\n"
+		f^ << "%E" << ItId << " = bitcast [20 x i8*]* %Frm" << ItId << " to i8*\n"
+  		f^ << "%T" << ItId << " = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
+		
+		f^ << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"
+		f^ << "br i1 %B" << ItId << ", label "
+		StartLabel.PrintLabel(f)
+		f^ << " , label "
+		ExceptionLabel.PrintLabel(f)
+		f^ << "\n"
+
+		StartLabel.PrintCode(f)
+
+		EnterCall.PrintDefaultUse(f)
+		DownBlock.PrintCode(f)
+		LeaveCall.PrintDefaultUse(f)
+		ExitLabel.PrintGo(f)
+
+		ExceptionLabel.PrintCode(f)
+		ExceptionBlock.PrintCode(f)
+		//ExitLabel.PrintGo(f)
+
+		ExitLabel.PrintCode(f)
+	}
+
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		DownBlock.PrintDebugMeta(f)
+		ExceptionBlock.PrintDebugMeta(f)
+	}
+}

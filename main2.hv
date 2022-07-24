@@ -1,9 +1,3 @@
-internalHVGetDepth := !() -> int
-{
-}
-internalHVSetDepth := !(int depth) -> void
-{
-}
 
 internalHVGetTaskLocalTuple := !() -> void^
 {
@@ -35,33 +29,48 @@ TArrayView := class .{@T} extend TGCObject
 //	
 //}
 
-TempClass := class
+internalEnterGCFunction := !(TGCIObject^ arr,int maxSize) -> void
 {
-	x := int
+
 }
+internalLeaveGCFunction := !() -> void
+{
+
+}
+
+tst := void^
+internalEnterTryCatch := !(void^ ptr,bool cleanGC,int gcInUse) -> void
+{
+	tst = ptr
+}
+internalLeaveTryCatch := !() -> void
+{
+}
+internalThrowException := !(IException^ e) -> void
+{
+}
+
+IException := class extend TGCObject
+{
+
+}
+
+Exception := class extend IException
+{
+	
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	z := TempClass
-	z.x = 99099
-
-	x := 13
-	y := 20
-
-
-	printf("test %i %i %i\n",x,y,argc)
-
-	h := () ==> {
-		v := 8
-		y := () ==> {
-			printf("Hey %i\n",x)
-			printf("Hoy %i\n",argc)
-			printf("Minoy %i\n",y)
-			printf("y %i\n",z.x)
-			printf("w %i\n",v)
-		}
-		y()
+	try
+	{
+		printf("hello\n")
+	llvmLongJump(tst)
+		printf("world\n")
+	}catch(e)
+	{
+		printf("nope\n")
 	}
-	h()
-	h()
+	
 	return 0
 }

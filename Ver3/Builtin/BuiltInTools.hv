@@ -25,10 +25,28 @@ BuiltInAssert := class extend BoxFuncCommon
 		trueLabel.PrintCode(f)
 	}
 }
-
+BuiltInLongJump := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeVoidP],GTypeVoid))
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintPre(f)
+		
+		f^ << "call void @llvm.eh.sjlj.longjmp(i8* "
+		lst[0].PrintUse(f)
+		f^ << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
 	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
+	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
 }
