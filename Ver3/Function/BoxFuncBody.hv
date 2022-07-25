@@ -28,6 +28,9 @@ BoxFuncBody := class extend BoxFuncCommon
 	gcArrayVar := ParamFunc^
 	gcArrayPtr := ParamFunc^
 
+	EnterCall := BoxExeObj^
+	LeaveCall := BoxExeObj^
+
 	InputVarNames := List.{StringSpan}
 
 	ParentScope := BoxUnit^
@@ -193,6 +196,13 @@ BoxFuncBody := class extend BoxFuncCommon
 			gcArrayVar = new FuncLocalParam(x)
 			regularVars.Push(gcArrayVar)
 			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
+
+			objs8 := CheckExeDownList
+			objs8.Push(gcArrayVar.CreateCall())
+			objs8.Push(GetExeInt(gcVarsCount))
+			InternalsHatch.Await()
+			EnterCall = ExceptionEnterFunc.CreateCall(objs8)
+			LeaveCall = ExceptionLeaveFunc.CreateCall()
 		}
 
 		WorkBodyCaptures()
@@ -291,6 +301,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			if DebugMode
 				f^ << " , !dbg !" << GDebugLineCallId
 			f^ <<"\n"
+
+			EnterCall.PrintDefaultUse(f)
 		}
 		PrintYieldCodeParamsGC(f)
 		PrintYieldCodeGo(f)
@@ -307,6 +319,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		YieldPrintFinilize(f)
 
 		ExitLabel.PrintCode(f)
+
+		LeaveCall?.PrintDefaultUse(f)
 
 		if rTyp == GTypeVoid or rTyp.IsComplexReturn()
 		{

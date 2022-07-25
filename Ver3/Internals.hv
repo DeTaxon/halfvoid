@@ -29,7 +29,7 @@ ExceptionLeaveFunc := BoxFunc^
 ExceptionEnterTryCatch := BoxFunc^
 ExceptionLeaveTryCatch := BoxFunc^
 ExceptionThrowException := BoxFunc^
-
+ExceptionGetException := BoxFunc^
 
 InternalsHatch := THatch
 
@@ -108,6 +108,7 @@ InitInternals := !() -> void
 	ExceptionEnterTryCatch = intGetFunc("internalEnterTryCatch")
 	ExceptionLeaveTryCatch = intGetFunc("internalLeaveTryCatch")
 	ExceptionThrowException = intGetFunc("internalThrowException")
+	ExceptionGetException = intGetFunc("internalGetException")
 
 	InternalsHatch.Emit()
 }

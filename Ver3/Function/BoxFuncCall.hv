@@ -60,16 +60,6 @@ BoxFuncCall := class extend BoxExeObj
 		for par,i : itType.Params
 		{
 			if i >= downs.Size()
-				break
-			if par.IsRef
-			{
-				downs[i].NotifyMemUse()
-			}
-		}
-
-		for par,i : itType.Params
-		{
-			if i >= downs.Size()
 			{
 				assert(fnc != null)
 				defToken := fnc.GetDefaultToken(i)
@@ -125,6 +115,16 @@ BoxFuncCall := class extend BoxExeObj
 				{
 					downs[i] = GetExchange(downs[i],GTypeDouble)
 				}
+			}
+		}
+
+		for par,i : itType.Params
+		{
+			if i >= downs.Size()
+				break
+			if par.IsRef
+			{
+				downs[i].NotifyMemUse()
 			}
 		}
 

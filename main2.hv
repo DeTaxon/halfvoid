@@ -29,16 +29,19 @@ TArrayView := class .{@T} extend TGCObject
 //	
 //}
 
+arFunc := void^
+arSize := int
 internalEnterGCFunction := !(TGCIObject^ arr,int maxSize) -> void
 {
-
+	arFunc = arr
+	arSize = maxSize
 }
 internalLeaveGCFunction := !() -> void
 {
-
 }
 
 tst := void^
+thisExcp := void^ //TODO IException not supported
 internalEnterTryCatch := !(void^ ptr,bool cleanGC,int gcInUse) -> void
 {
 	tst = ptr
@@ -48,6 +51,15 @@ internalLeaveTryCatch := !() -> void
 }
 internalThrowException := !(IException^ e) -> void
 {
+	printf("called throw %p\n",e)
+	thisExcp = e
+	e.IncRef()
+	internalHVGCSetNullArray(arFunc->{TGCIObject^^},0,arSize - 1)
+	llvmLongJump(tst)
+}
+internalGetException := !() -> IException^
+{
+	result = thisExcp->{IException^}
 }
 
 IException := class extend TGCObject
@@ -64,12 +76,15 @@ main := !(int argc,char^^ argv) -> int
 {
 	try
 	{
+		defer printf("nope2\n")
 		printf("hello\n")
-	llvmLongJump(tst)
+		newExp := new Exception
+		printf("EXP1 %p\n",newExp)
+		throw newExp
 		printf("world\n")
 	}catch(e)
 	{
-		printf("nope\n")
+		printf("nope %p\n",e)
 	}
 	
 	return 0
