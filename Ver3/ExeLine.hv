@@ -313,6 +313,36 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 	}
 }
 
+CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
+{
+	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
+	{
+		cls := Objs[0].GetType()->{TypeClass^}.ToClass
+
+		callItem := BoxUnit^
+		cls.GetMethods(name, x ==> {
+			callItem = GetBestFunc(x,Objs,consts)
+			if callItem == null
+				return false
+			return true
+		})
+
+		if callItem != null
+		{
+			if callItem is in BoxFuncTemplate
+			{
+				callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+			}
+			if callItem is in BoxFunc
+			{
+				return callItem->{BoxFunc^}.CreateCall(Objs)
+			}
+		}
+	}
+
+	return CreateFuncCall(name,Objs,consts)
+}
+
 CmpNoExchange := 999000
 
 CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> int

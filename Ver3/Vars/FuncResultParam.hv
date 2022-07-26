@@ -1,5 +1,7 @@
 FuncResultParam := class extend ParamFunc //TODO non ref
 {
+	CreatedVarCalls := List.{ParamLoadObj^}
+
 	this := !(Type^ tp,bool isRef2) -> void
 	{
 		assert(CurrentFunc != null)
@@ -35,6 +37,20 @@ FuncResultParam := class extend ParamFunc //TODO non ref
 	PopulateCalls := virtual !() -> void
 	{
 	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		return new BoxFuncCall(this&,objs)
+		//res := new ParamLoadObj(this&)
+		//CreatedVarCalls.Push(res)
+		//return res
+	}
+	//PopulateCalls := virtual !() -> void
+	//{
+	//	for it : CreatedVarCalls
+	//	{
+	//		it.CallObj = new BoxFuncCall(this&)
+	//	}
+	//}
 }
 
 FuncResultParamInGenerator := class extend FuncResultParam //TODO non ref
@@ -46,4 +62,16 @@ FuncResultParamInGenerator := class extend FuncResultParam //TODO non ref
 	{
 		exeObj.PrintDefaultUse(f)
 	}
+
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		return new BoxFuncCall(this&,objs)
+		//res := new ParamLoadObj(this&)
+		//CreatedVarCalls.Push(res)
+		//return res
+	}
+	//PopulateCalls := virtual !() -> void
+	//{
+	//	return new BoxFuncCall(this&)
+	//}
 }

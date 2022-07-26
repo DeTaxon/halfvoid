@@ -105,6 +105,10 @@ BoxFuncCall := class extend BoxExeObj
 		}
 		if downs.Size() > itType.Params.Size()
 		{
+			if not fType.IsVargs //todo remove
+			{
+				printf("not vargs error objs: %i  function: %i\n",downs.Size(),itType.Params.Size())
+			}
 			assert(fType.IsVargs)
 
 			for i : downs.Size()

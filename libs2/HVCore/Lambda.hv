@@ -45,7 +45,12 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 			{
 				assert(false) //TODO , check for operator = not implemented
 			}else{
-				setField = getField
+				if getField->TypeGroup == "Array"
+				{
+
+				}else{
+					setField = getField
+				}
 			}
 		}
 
@@ -55,7 +60,12 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 			{
 				assert(false) //TODO , check for operator = not implemented
 			}else{
-				setField = getField
+				if getField->TypeGroup == "Array"
+				{
+
+				}else{
+					setField = getField
+				}
 			}
 		}
 

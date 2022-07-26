@@ -221,8 +221,21 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				iRef[i] = true
 		}
 		resTypeT := hData.ResultType.ItType
-		//if resTypeT == null
-			resTypeT = checkType(null,hData.ResultType.ItToken,resCnsts)
+
+		rTokenTree := hData.ResultType.ItToken
+		if rTokenTree?.Down?.Right?.GetValue() == "&"
+		{
+			rTokenTree = rTokenTree.Down
+		}
+
+		resTypeT = checkType(null,rTokenTree,resCnsts)
+		if resTypeT == null
+		{
+			for it,ind : resCnsts
+			{
+				printf("hob %s %p\n",ind,it)
+			}
+		}
 		assert(resTypeT != null)
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}

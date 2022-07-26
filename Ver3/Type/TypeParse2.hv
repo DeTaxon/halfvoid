@@ -124,42 +124,53 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			return null
 		}
 		assert(tk.Down is TokenIndent)
-		if tp == null
+
+		cls := BoxClass^
+		if tp != null
 		{
-			checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
-
-			cnsts := List.{BoxExeConstObj^}
-			defer cnsts.Destroy()
-
-			assert(checkRes is TemplateTypeVar)
-
-			tmpl := checkRes->{TemplateTypeVar^}.Value
-
-			i := 0
-
-			SyntaxCompress(tk.Down.Right.Right,LexHVInputVars)
-
-			itr := tk.Down.Right.Right.Down
-
-			while itr != null
-			{
-				if itr.GetValue() != ","
-				{
-					resCnst := CheckTemplateConst(null,itr,resCnsts)
-					if resCnst == null
-						return null
-					cnsts.Push(resCnst)
-				}
-				i += 1
-				itr = itr.Right
-			}
-			return tmpl.GetClass(cnsts).ItType
-			
-
-		}else{
-			assert(tp is in TypeClass)
-			assert(false)
+			if not (tp is TypeClass)
+				return null
+			cls = tp->{TypeClass^}.ToClass
 		}
+
+		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
+
+		cnsts := List.{BoxExeConstObj^}
+		defer cnsts.Destroy()
+
+		assert(checkRes is TemplateTypeVar)
+
+		tmpl := checkRes->{TemplateTypeVar^}.Value
+
+		i := 0
+
+		SyntaxCompress(tk.Down.Right.Right,LexHVInputVars)
+
+		itr := tk.Down.Right.Right.Down
+
+		while itr != null
+		{
+			if itr.GetValue() != ","
+			{
+				itConst := BoxExeConstObj^
+				if cls != null
+				{
+					if cls.Constants == null or i >= cls.Constants.Constants.Size()
+						return null
+					itConst = cls.Constants.Constants[i]
+				}
+				resCnst := CheckTemplateConst(itConst,itr,resCnsts)
+				if resCnst == null
+					return null
+				cnsts.Push(resCnst)
+			}
+			i += 1
+			itr = itr.Right
+		}
+		if cls?.Constants?.Constants.Size() != cnsts.Size()
+			return null
+		return tmpl.GetClass(cnsts).ItType
+			
 	}
 	if tk.Down?.Right?.GetValue() == "[]"
 	{

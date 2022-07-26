@@ -55,7 +55,7 @@ AppendClass BoxFuncBody
 				if tp.ResultRef
 					rFuncType = rFuncType.GetPoint()
 				rFnc := new FuncLocalParam(rFuncType)
-				regularVars.Push(rFnc)
+				//regularVars.Push(rFnc)
 				ResultVar = new MemVar(resSpn,rFnc)
 			}
 		}

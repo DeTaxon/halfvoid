@@ -96,12 +96,17 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 	{
 	}
 
+	GetTupleVar := virtual !() -> BoxExeObj^
+	{
+		return new BoxFuncCall(parentFunc.CapturedVarsTuple)
+	}
+
 
 	PopulateCalls := virtual !() -> void
 	{
 		for it : CreatedVarCalls
 		{
-			getCall := new BoxFuncCall(parentFunc.CapturedVarsTuple)
+			getCall := GetTupleVar()
 			callType := getCall.GetType()
 			assert(callType is in TypeClass)
 			cls := callType->{TypeClass^}.ToClass
@@ -114,6 +119,14 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		}
 	}
 }
+FuncLocalParamInYield := class extend FuncLocalParamCaptured
+{
+	GetTupleVar := virtual !() -> BoxExeObj^
+	{
+		return new PtrToRefFuncCall(new BoxFuncCall(parentFunc.YieldTupleVar))
+	}
+}
+
 GetLVarName := !(int x) -> StringSpan
 {
 	buff := char[100]

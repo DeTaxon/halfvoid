@@ -46,6 +46,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GetExeString(StringSpan("Pointer"))
 		if typ is in TypeFunc
 			return GetExeString(StringSpan("Function"))
+		if typ is in TypeArr
+			return GetExeString(StringSpan("Array"))
 		assert(false)
 		return null
 	}

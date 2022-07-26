@@ -13,6 +13,11 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 			vr := itm->{TypeVar^}
 			return vr.Value
 		}
+		if itm is ConstType
+		{
+			vr := itm->{ConstType^}
+			return vr.Value
+		}
 	}
 
 	for defs : DefsTable

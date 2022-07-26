@@ -12,6 +12,7 @@ BoxBlock := class extend BoxUnit
 	quitLabel := BoxLabel^
 
 	down := Token^
+	infoToken := Token^
 	lambdaWay := !()&->BoxUnit^
 
 	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
@@ -42,6 +43,7 @@ BoxBlock := class extend BoxUnit
 	this := !(Token^ bdy) -> void
 	{
 		down = bdy
+		infoToken = bdy
 		ItLine = bdy.Line
 		if DebugMode
 			MetaId = GetNewId()
@@ -50,6 +52,7 @@ BoxBlock := class extend BoxUnit
 	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
 	{
 		lambdaWay = l
+		infoToken = tokenLine
 		ItLine = tokenLine.Line
 		if DebugMode
 			MetaId = GetNewId()
@@ -148,7 +151,8 @@ BoxBlock := class extend BoxUnit
 				cl := it.CreateCall()
 				dat.Push(cl)
 				cl2 := GFuncGCSetNull.CreateCall(dat)
-				pad := new BoxExeLineSimple(down.Down,cl2)
+
+				pad := new BoxExeLineSimple(infoToken,cl2)
 				exeLines.Push(pad)
 			}
 		}

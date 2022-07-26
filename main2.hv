@@ -7,14 +7,28 @@ internalHVGetTaskLocalTuple := !() -> void^
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	return main(argc,argv)
+	spn := TArraySpan.{char^}//(argv,argc)
+	spn.pointer = argv
+	spn.itSize = argc
+	return main(spn&)
 }
 
 TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
-	"[]" := virtual !(int i) -> T& {}
-	"for" := virtual !() -> !()& -> T& {}
+	"[]" := virtual !(int i) -> T& { }
+	"for" := virtual !() -> !()& -> T& {
+		c := this&
+		x := () ==> T& {
+			i := 0
+			s := c.Size()
+			while i < s
+			{
+				yield c^[i]
+			}
+		}
+		return x.Capture()
+	}
 	//Destroy := virtual !() -> void {}
 
 	//Reverse := fake
@@ -23,11 +37,41 @@ TArrayView := class .{@T} extend TGCObject
 	//}
 }
 
+TArraySpan := class .{@T} extend TArrayView.{T}
+{
+	pointer := T^
+	itSize := int
+
+	this := !(T^ p, int s) -> void
+	{
+		pointer = p
+		itSize = s
+	}
+	Size := virtual !() -> int { return itSize }
+	"[]" := virtual !(int i) -> T& { return pointer[i] }
+}
+
+"[]" := !(TArrayView.{@T}^ x,int i) -> T&
+{
+	assert(x != null)
+	return x^[i]
+}
 
 //main := !(char[] args) -> void
 //{
 //	
 //}
+
+main := !(TArrayView.{char^}^ args) -> int
+{
+	for it : args^
+	{
+		printf("arg %s\n",it)
+	}
+	return 0
+}
+
+
 
 arFunc := void^
 arSize := int
@@ -70,22 +114,4 @@ IException := class extend TGCObject
 Exception := class extend IException
 {
 	
-}
-
-main := !(int argc,char^^ argv) -> int
-{
-	try
-	{
-		defer printf("nope2\n")
-		printf("hello\n")
-		newExp := new Exception
-		printf("EXP1 %p\n",newExp)
-		throw newExp
-		printf("world\n")
-	}catch(e)
-	{
-		printf("nope %p\n",e)
-	}
-	
-	return 0
 }

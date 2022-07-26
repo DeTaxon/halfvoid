@@ -74,12 +74,20 @@ AppendClass BoxFuncBody
 
 		for it,i : regularVars
 		{
-			fCall := yTuple.GetFieldByIndex(i)
-			assert(fCall != null)
-			objs2 := CheckExeDownList
-			objs2.Push(YieldTupleVar.CreateCall())
-			it.exeObj = fCall.CreateCall(objs2)
-			it->SetType(FuncResultParamInGenerator)
+			assert(it is in FuncLocalParam)
+			//fCall := yTuple.GetFieldByIndex(i)
+			//assert(fCall != null)
+			//objs2 := CheckExeDownList
+			//objs2.Push(YieldTupleVar.CreateCall())
+			//it.exeObj = fCall.CreateCall(objs2)
+			//it->SetType(FuncResultParamInGenerator)
+			//objs2.Destroy()
+			if it is FuncLocalParamCaptured
+				continue
+
+			lcl := it->{FuncLocalParam^}
+			it->SetType(FuncLocalParamInYield)
+			lcl.CapturedIndex = i
 		}
 
 		for it,i : gcVars
@@ -98,7 +106,7 @@ AppendClass BoxFuncBody
 			return void
 
 		YieldTupleVar?.PrintCode(f)
-		regularVars[^]->{FuncResultParamInGenerator^}.PrintAtStart(f)
+		//regularVars[^]->{FuncResultParamInGenerator^}.PrintAtStart(f)
 
 		YieldStateInt.PrintCode(f)
 	}
@@ -136,6 +144,34 @@ AppendClass BoxFuncBody
 		"\n"
 
 		YieldStart?.PrintCode(f)
+	}
+
+	PrintYieldCreateVar := virtual !(TIOStream^ f) -> void
+	{
+		if gcVarsCount == 0
+			return void
+			
+		gcArrayVar.PrintCode(f)
+
+		tp := GTypeVoidP.GetArray(gcVarsCount)
+		f^ << "%GCArrayPre = getelementptr "
+		tp.PrintType(f)
+		f^ << " , "
+		tp.PrintType(f)
+		f^ << "* "
+		gcArrayVar.PrintResultObj(f,0,0)
+		f^ << " , i32 0, i32 0"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ <<"\n"
+
+		f^ << "%GCArrayPtr = bitcast i8** %GCArrayPre to "
+		GCType.PrintType(f)
+		f^ << "**"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ <<"\n"
+
 	}
 
 	YieldPrintFinilize := !(TIOStream^ f) -> void

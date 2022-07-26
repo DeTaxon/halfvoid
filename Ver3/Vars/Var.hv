@@ -212,6 +212,8 @@ MemVar := class extend NamedVar
 			return void
 		if Value is FuncInputParamCaptured //TODO, get debug data for captured variables
 			return void
+		if Value is FuncLocalParamInYield
+			return void
 		if Value is in FuncLocalParam or Value is in FuncInputParam
 		{
 			clr := CheckExeDownList

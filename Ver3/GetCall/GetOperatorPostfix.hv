@@ -30,7 +30,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		Objs.Push(dObj)
 		CheckFuncCallBrackets(itm.Down.Right,Objs)
 
-		return CreateFuncCall(StringSpan("[]"),Objs)
+		cnsts := List.{BoxExeConstObj^}
+		return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)
 
 	}
 	return null

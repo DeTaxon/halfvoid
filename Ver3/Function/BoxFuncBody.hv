@@ -272,6 +272,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "\n"
 		f^ << "{\n"
 
+
+		ResultVar?.PrintCode(f)
+
 		if CaptureGetCall != null
 		{
 			PrintCaptureUsage(f,true)
@@ -279,32 +282,11 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		PrintYieldCodeParams(f)
 
-		if gcVarsCount != 0
-		{
-			gcArrayVar.PrintCode(f)
-
-			tp := GTypeVoidP.GetArray(gcVarsCount)
-			f^ << "%GCArrayPre = getelementptr "
-			tp.PrintType(f)
-			f^ << " , "
-			tp.PrintType(f)
-			f^ << "* "
-			gcArrayVar.PrintResultObj(f,0,0)
-			f^ << " , i32 0, i32 0"
-			if DebugMode
-				f^ << " , !dbg !" << GDebugLineCallId
-			f^ <<"\n"
-
-			f^ << "%GCArrayPtr = bitcast i8** %GCArrayPre to "
-			GCType.PrintType(f)
-			f^ << "**"
-			if DebugMode
-				f^ << " , !dbg !" << GDebugLineCallId
-			f^ <<"\n"
-
-			EnterCall.PrintDefaultUse(f)
-		}
+		PrintYieldCreateVar(f)
 		PrintYieldCodeParamsGC(f)
+		if gcVarsCount != 0
+			EnterCall.PrintDefaultUse(f)
+
 		PrintYieldCodeGo(f)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
@@ -312,7 +294,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		CapturedVarsTuple?.PrintCode(f)
 		CapturedVarsGets[^].PrintCode(f)
 		Params[^].PrintCode(f)
-		ResultVar?.PrintCode(f)
 		
 		body.PrintCode(f)
 
