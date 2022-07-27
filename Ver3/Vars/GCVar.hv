@@ -4,8 +4,11 @@ FuncGCLocalParam := class extend ParamFunc
 	varId := int
 	gcIndex := int
 
+	CreatedVarCalls := List.{ParamLoadObj^}
+
 	this := !(Type^ tp,int gcInd) -> void
 	{
+		parentFunc = CurrentFunc
 		gcIndex = gcInd
 		pType = tp
 		varId = GetNewId()
@@ -17,38 +20,38 @@ FuncGCLocalParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
-		PrintGetGCVar(f)
-	}
-	PrintGetGCVar := virtual !(TIOStream^ f) -> void
-	{
-		gPtr := GCType.GetPoint()
-		f^ << "%VTemp" << varId << " = getelementptr "
-		gPtr.PrintType(f)
-		f^ << " , "
-		gPtr.PrintType(f)
-		f^ << "* %GCArrayPtr , i32 " << gcIndex
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-		f^ << "%V" << varId << " = bitcast "
-		GCType.PrintType(f)
-		f^ << "** %VTemp" << varId <<" to "
-		pType.PrintType(f)
-		f^ << "*"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
-	{
-		f^ << "%V" << varId 
-	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
-	{
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
+	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+		parentFunc.gcArrayPtr.NotifyCaptureUse()
+	}
+
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(objs.Size() == 0)
+
+		res := new ParamLoadObj(this&)
+		CreatedVarCalls.Push(res)
+		return res 
+	}
+
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			getVar := parentFunc.gcArrayPtr.CreateCall()
+			objs := CheckExeDownList
+			objs.Push(getVar)
+			objs.Push(GetExeInt(gcIndex))
+			step1 := new UnrefFuncCall(CreateFuncCall(StringSpan("[]"),objs))
+			assert(step1 != null)
+			objs.Clear()
+			step2 := GetExchange(step1,pType.GetPoint())
+			it.CallObj = new PtrToRefFuncCall(step2)
+		}
 	}
 }
 FuncGCLocalParamInYield := class extend FuncGCLocalParam

@@ -7,28 +7,28 @@ internalHVGetTaskLocalTuple := !() -> void^
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	spn := TArraySpan.{char^}//(argv,argc)
-	spn.pointer = argv
-	spn.itSize = argc
-	return main(spn&)
+	//spn := TArraySpan.{char^}//(argv,argc)
+	//spn.pointer = argv
+	//spn.itSize = argc
+	return main(argc,argv)
 }
 
 TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> T& { }
-	"for" := virtual !() -> !()& -> T& {
-		c := this&
-		x := () ==> T& {
-			i := 0
-			s := c.Size()
-			while i < s
-			{
-				yield c^[i]
-			}
-		}
-		return x.Capture()
-	}
+	//"for" := virtual !() -> !()& -> T& {
+	//	c := this&
+	//	x := () ==> T& {
+	//		i := 0
+	//		s := c.Size()
+	//		while i < s
+	//		{
+	//			yield c^[i]
+	//		}
+	//	}
+	//	return x.Capture()
+	//}
 	//Destroy := virtual !() -> void {}
 
 	//Reverse := fake
@@ -62,12 +62,21 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 //	
 //}
 
-main := !(TArrayView.{char^}^ args) -> int
+main := !(int argc,char^^ argv) -> int
 {
-	for it : args^
-	{
-		printf("arg %s\n",it)
+	//for it : args^
+	//{
+	//	printf("arg %s\n",it)
+	//}
+	j := 0
+	x := new TGCObject
+	y := new TGCObject
+	z := () ==> {
+		j += 1
+		printf("test %p %p\n",x,x&)
+		printf("test %p %p\n",y,y&)
 	}
+	z()
 	return 0
 }
 

@@ -24,10 +24,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	ExitLabel := BoxLabel^
 
-	gcVarsCount := int
-	gcArrayVar := ParamFunc^
-	gcArrayPtr := ParamFunc^
-
 	EnterCall := BoxExeObj^
 	LeaveCall := BoxExeObj^
 
@@ -51,13 +47,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		return DefaultValues[i]
 	}
 
-	NotifyGCUsed := !() -> void 
-	{
-		gcVarsCount = max(gcVarsCount,GCVarsInUse)
-
-		if gcArrayPtr == null
-			gcArrayPtr = new FuncInputParam(GCType.GetPoint().GetPoint(),false,StringSpan("%GCArrayPtr"))
-	}
 
 	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
 	{
@@ -190,20 +179,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if Attrs.IsAutoResult
 			CheckReturnStep()
 
-		if gcVarsCount != 0
-		{
-			x := GTypeVoidP.GetArray(gcVarsCount)
-			gcArrayVar = new FuncLocalParam(x)
-			regularVars.Push(gcArrayVar)
-			//gcArrayVar = body.CreateVar(GTypeVoidP.GetArray(gcVarsCount),false) //TODO
-
-			objs8 := CheckExeDownList
-			objs8.Push(gcArrayVar.CreateCall())
-			objs8.Push(GetExeInt(gcVarsCount))
-			InternalsHatch.Await()
-			EnterCall = ExceptionEnterFunc.CreateCall(objs8)
-			LeaveCall = ExceptionLeaveFunc.CreateCall()
-		}
+		WorkBodyGC()
 
 		WorkBodyCaptures()
 		YieldWork()
@@ -214,6 +190,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			if newTplType != tplTypeBefore
 			{
 				ThisCaptureTupleType = newTplType
+				printf("hob %i\n",ThisCaptureTupleType->{TypeClass^}.ToClass.Fields.Size())
 				CreateGetCaptureCall()
 			}
 		}
@@ -221,6 +198,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
 		ResultVar?.Value.PopulateCalls()
 		gcArrayPtr?.PopulateCalls()
+		gcVars[^].PopulateCalls()
 		CapturedVarsTuple?.PopulateCalls()
 		CapturedVarsGets[^].PopulateCalls()
 		regularVars[^].PopulateCalls()
@@ -292,8 +270,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
 		CapturedVarsTuple?.PrintCode(f)
+		gcArrayPtr?.PrintCode(f)
 		CapturedVarsGets[^].PrintCode(f)
 		Params[^].PrintCode(f)
+
+		gcSetPtr?.PrintDefaultUse(f)
 		
 		body.PrintCode(f)
 

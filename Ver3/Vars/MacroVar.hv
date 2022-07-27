@@ -12,3 +12,50 @@ MacroVar := class extend NamedVar
         return lmbd()
     }
 }
+
+MacroParam := class extend ParamFunc
+{	
+	pType := Type^
+
+	CreatedVarCalls := List.{ParamLoadObj^}
+
+	lmbd := !()&->BoxExeObj^
+	isItMem := bool
+
+	this := !(Type^ tp,bool isMemory,!()&->BoxExeObj^ cb) -> void
+	{
+		parentFunc = CurrentFunc
+		pType = tp
+		SetType(GetFuncType(0,null,null,pType,true,false))
+		lmbd = cb.Capture()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return isItMem
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+	NotifyCaptureUse := virtual !() -> void {}
+
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(objs.Size() == 0)
+
+		res := new ParamLoadObj(this&)
+		CreatedVarCalls.Push(res)
+		return res 
+	}
+
+	PopulateCalls := virtual !() -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = lmbd()
+		}
+	}
+}
+}

@@ -115,7 +115,6 @@ AppendClass BoxFuncBody
 		if YieldStateInt == null
 			return void
 
-		gcVars[^]->{FuncGCLocalParamInYield^}.PrintGetGCVar(f)
 	}
 	PrintYieldCodeGo := !(TIOStream^ f) -> void
 	{
@@ -152,26 +151,6 @@ AppendClass BoxFuncBody
 			return void
 			
 		gcArrayVar.PrintCode(f)
-
-		tp := GTypeVoidP.GetArray(gcVarsCount)
-		f^ << "%GCArrayPre = getelementptr "
-		tp.PrintType(f)
-		f^ << " , "
-		tp.PrintType(f)
-		f^ << "* "
-		gcArrayVar.PrintResultObj(f,0,0)
-		f^ << " , i32 0, i32 0"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ <<"\n"
-
-		f^ << "%GCArrayPtr = bitcast i8** %GCArrayPre to "
-		GCType.PrintType(f)
-		f^ << "**"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ <<"\n"
-
 	}
 
 	YieldPrintFinilize := !(TIOStream^ f) -> void
