@@ -68,14 +68,20 @@ main := !(int argc,char^^ argv) -> int
 	//{
 	//	printf("arg %s\n",it)
 	//}
-	j := 0
 	x := new TGCObject
 	y := new TGCObject
 	z := () ==> {
-		j += 1
 		printf("test %p %p\n",x,x&)
+		yield void
 		printf("test %p %p\n",y,y&)
+		yield void
+
+		k := () ==> {
+			printf("east %p %p\n",y,y&)
+		}
+		k()
 	}
+	z()
 	z()
 	return 0
 }

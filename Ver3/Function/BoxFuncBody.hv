@@ -190,7 +190,6 @@ BoxFuncBody := class extend BoxFuncCommon
 			if newTplType != tplTypeBefore
 			{
 				ThisCaptureTupleType = newTplType
-				printf("hob %i\n",ThisCaptureTupleType->{TypeClass^}.ToClass.Fields.Size())
 				CreateGetCaptureCall()
 			}
 		}
