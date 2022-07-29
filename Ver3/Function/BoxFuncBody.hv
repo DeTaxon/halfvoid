@@ -199,7 +199,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		gcArrayPtr?.PopulateCalls()
 		gcVars[^].PopulateCalls()
 		CapturedVarsTuple?.PopulateCalls()
-		CapturedVarsGets[^].PopulateCalls()
 		regularVars[^].PopulateCalls()
 
 		
@@ -266,7 +265,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
 		gcArrayPtr?.PrintCode(f)
-		CapturedVarsGets[^].PrintCode(f)
 		Params[^].PrintCode(f)
 
 		gcSetPtr?.PrintDefaultUse(f)

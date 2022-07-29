@@ -63,5 +63,12 @@ MacroParam := class extend ParamFunc
 			it.CallObj = lmbd()
 		}
 	}
-}
+
+	PopulateCalls2 := virtual !(!()&->BoxExeObj^ cb) -> void
+	{
+		for it : CreatedVarCalls
+		{
+			it.CallObj = cb()
+		}
+	}
 }

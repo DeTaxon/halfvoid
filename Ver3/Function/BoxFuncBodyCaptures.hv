@@ -6,7 +6,7 @@ AppendClass BoxFuncBody
 
 	CapturedVars := List.{ParamFunc^}
 	CapturedVarsTuple := ParamFunc^
-	CapturedVarsGets := List.{ParamFunc^}
+	CapturedVarsGets := List.{MacroParam^}
 
 	WorkBodyCaptures := !() -> void
 	{
@@ -21,9 +21,15 @@ AppendClass BoxFuncBody
 
 		for it, i : CapturedVarsGets
 		{
-			getVar := CapturedVarsTuple.CreateCall()
-			c1 := new UnrefFuncCall(getVar)
-			it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
+			it.PopulateCalls2(() ==>
+			{
+				getVar := CapturedVarsTuple.CreateCall()
+				c1 := new UnrefFuncCall(getVar)
+				return GetExchange(c1,it.GetVarType())
+			})
+			//getVar := CapturedVarsTuple.CreateCall()
+			//c1 := new UnrefFuncCall(getVar)
+			//it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
 		}
 	}
 	CreateGetCaptureCall := !() -> void
