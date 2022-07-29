@@ -32,11 +32,12 @@ AppendClass BoxFuncBody
 			assert(CurrentFunc == this&)
 
 			Objs := CheckExeDownList
-			Objs.Push(Params[0].Value.CreateCall())
+			asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+			Objs.Push(asRawPar.CreateCall())
 
 			yGet := TemplateInternalGetYieldState.CreateCall(Objs)
-
 			YieldStateInt = new FuncResultParam(yGet)
+			asRawPar.PopulateCalls()
 		}
 		return YieldStateInt
 	}
