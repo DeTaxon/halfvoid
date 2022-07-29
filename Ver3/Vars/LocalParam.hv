@@ -108,8 +108,17 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		{
 			getCall := GetTupleVar()
 			callType := getCall.GetType()
-			assert(callType is in TypeClass)
-			cls := callType->{TypeClass^}.ToClass
+			cls := BoxClass^
+			if callType is in TypeClass
+			{
+				cls = callType->{TypeClass^}.ToClass
+			}else{
+				if callType is in TypePoint and callType.Base is in TypeClass
+				{
+					cls = callType.Base->{TypeClass^}.ToClass
+				}
+			}
+			assert(cls != null)
 			fld := cls.GetFieldByIndex(CapturedIndex)
 			objs := CheckExeDownList
 			objs.Push(getCall)
@@ -119,13 +128,13 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		}
 	}
 }
-FuncLocalParamInYield := class extend FuncLocalParamCaptured
-{
-	GetTupleVar := virtual !() -> BoxExeObj^
-	{
-		return new PtrToRefFuncCall(new BoxFuncCall(parentFunc.YieldTupleVar))
-	}
-}
+//FuncLocalParamInYield := class extend FuncLocalParamCaptured
+//{
+//	GetTupleVar := virtual !() -> BoxExeObj^
+//	{
+//		return new PtrToRefFuncCall(new BoxFuncCall(parentFunc.YieldTupleVar))
+//	}
+//}
 
 GetLVarName := !(int x) -> StringSpan
 {

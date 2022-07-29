@@ -22,6 +22,12 @@ MacroParam := class extend ParamFunc
 	lmbd := !()&->BoxExeObj^
 	isItMem := bool
 
+	this := !(Type^ tp,bool isMemory) -> void
+	{
+		parentFunc = CurrentFunc
+		pType = tp
+		SetType(GetFuncType(0,null,null,pType,true,false))
+	}
 	this := !(Type^ tp,bool isMemory,!()&->BoxExeObj^ cb) -> void
 	{
 		parentFunc = CurrentFunc

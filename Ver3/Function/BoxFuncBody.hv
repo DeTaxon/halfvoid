@@ -181,8 +181,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		WorkBodyGC()
 
-		WorkBodyCaptures()
 		YieldWork()
+		WorkBodyCaptures()
 
 		if Attrs.IsLambda
 		{
@@ -252,23 +252,19 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		ResultVar?.PrintCode(f)
 
-		if CaptureGetCall != null
-		{
-			PrintCaptureUsage(f,true)
-		}
+		PrintStackData(f)
 
-		PrintYieldCodeParams(f)
 
 		PrintYieldCreateVar(f)
 		PrintYieldCodeParamsGC(f)
 		if gcVarsCount != 0
 			EnterCall.PrintDefaultUse(f)
 
+
 		PrintYieldCodeGo(f)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
-		CapturedVarsTuple?.PrintCode(f)
 		gcArrayPtr?.PrintCode(f)
 		CapturedVarsGets[^].PrintCode(f)
 		Params[^].PrintCode(f)

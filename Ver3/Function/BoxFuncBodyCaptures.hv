@@ -13,8 +13,11 @@ AppendClass BoxFuncBody
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
 			return void
 		
-		tplClass := GetCaptureTuple()
-		CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
+		if CapturedVarsTuple == null
+		{
+			tplClass := GetCaptureTuple()
+			CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
+		}
 
 		for it, i : CapturedVarsGets
 		{
@@ -25,7 +28,6 @@ AppendClass BoxFuncBody
 	}
 	CreateGetCaptureCall := !() -> void
 	{
-		
 		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
 
 		CaptureGetCall = innerGetCaptureCall(asRawPar)
@@ -69,29 +71,40 @@ AppendClass BoxFuncBody
 		inChain = true
 	}
 
+	PrintStackData := virtual !(TIOStream^ f) -> void
+	{
+		CapturedVarsTuple?.PrintCode(f)
+		PrintYieldCodeParams(f)
+		PrintCaptureUsage(f,true)
+	}
 	PrintCaptureUsage := !(TIOStream^ f,bool isFirstCall) -> void
 	{
 		if ParentFunc == null
 			return void
-
-		assert(CaptureGetCall != null)
-
 		getThisCapture := CaptureGetCall
 		if not isFirstCall
 			getThisCapture = getCaptureInLeafs
+		
+		//if not isFirstCall
+		//	return void
 
-		getThisCapture.PrintDefaultUse(f)
+		assert(ParentFunc.CapturedVarsTuple.GetVarType() is TypeClass)
+
+		getThisCapture.PrintPre(f)
+		subType := getThisCapture.GetType()
 		ParentFunc.CapturedVarsTuple.PrintResultObj(f,0,0)
-		f^ << " = getelementptr "
-		ThisCaptureTupleType.PrintType(f)
-		f^ << " , "
-		ThisCaptureTupleType.PrintType(f)
-		f^ << "* "
+		f^ << " = bitcast "
+		subType.PrintType(f)
+		f^ << " "
 		getThisCapture.PrintUse(f)
-		f^ << ", i32 0"
+		f^ << " to "
+		ParentFunc.CapturedVarsTuple.GetVarType().PrintType(f)
+		f^ << "*"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ <<"\n"
+		
+
 
 		ParentFunc?.PrintCaptureUsage(f,false)
 	}

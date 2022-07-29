@@ -3,7 +3,7 @@ AppendClass BoxFuncBody
 	Yields := List.{BoxYield^}
 	YieldStart := BoxLabel^
 	YieldStateInt := ParamFunc^
-	YieldTupleVar := ParamFunc^
+	//YieldTupleVar := ParamFunc^
 	YieldFinilize := BoxExeObj^
 
 	gcVars := List.{FuncGCLocalParam^}
@@ -59,41 +59,24 @@ AppendClass BoxFuncBody
 	{
 		if Yields.Size() == 0
 			return void
-			
-		yTuple := GetYieldTuple()
+		
+		for it : regularVars
+			it.NotifyCaptureUse()
+		
+		yTuple := GetCaptureTuple()
+		
+		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
 
 		Objs := CheckExeDownList
-		Objs.Push(Params[0].Value.CreateCall())
-
+		Objs.Push(asRawPar.CreateCall())
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(yTuple.ItType))
 
 		getVars := TemplateInternalGetYieldVars.GetFunc(Objs,cnsts)
 		assert(getVars != null)
-		YieldTupleVar = new FuncResultParam(getVars.CreateCall(Objs))
+		CapturedVarsTuple = new FuncResultParam(new PtrToRefFuncCall(getVars.CreateCall(Objs)))
+		asRawPar.PopulateCalls()
 
-		for it,i : regularVars
-		{
-			assert(it is in FuncLocalParam)
-			//fCall := yTuple.GetFieldByIndex(i)
-			//assert(fCall != null)
-			//objs2 := CheckExeDownList
-			//objs2.Push(YieldTupleVar.CreateCall())
-			//it.exeObj = fCall.CreateCall(objs2)
-			//it->SetType(FuncResultParamInGenerator)
-			//objs2.Destroy()
-			if it is FuncLocalParamCaptured
-				continue
-
-			lcl := it->{FuncLocalParam^}
-			it->SetType(FuncLocalParamInYield)
-			lcl.CapturedIndex = i
-		}
-
-		for it,i : gcVars
-		{
-			it->SetType(FuncGCLocalParamInYield)
-		}
 
 		finObjs := CheckExeDownList
 		finObjs.Push(YieldStateInt.CreateCall())
@@ -104,9 +87,6 @@ AppendClass BoxFuncBody
 	{
 		if YieldStateInt == null
 			return void
-
-		YieldTupleVar?.PrintCode(f)
-		//regularVars[^]->{FuncResultParamInGenerator^}.PrintAtStart(f)
 
 		YieldStateInt.PrintCode(f)
 	}
