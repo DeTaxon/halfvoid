@@ -64,53 +64,7 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 
 main := !(int argc,char^^ argv) -> int
 {
-	//for it : args^
-	//{
-	//	printf("arg %s\n",it)
-	//}
-	oo := 567
-	x := new TGCObject
-	y := new TGCObject
-	z := () ==> {
-		printf("test %p %p\n",x,x&)
-		yield void
-		printf("test %p %p\n",y,y&)
-		yield void
-		c := 0
-		printf("c = %i\n",c)
-		yield void
-		c += 1
-		printf("c = %i\n",c)
-		yield void
-		c += 2
-		printf("c = %i\n",c)
-		yield void
-		c += 3
-		printf("c = %i\n",c)
-		yield void
-
-		//TODO clean case not working
-		//k := () ==> {
-		//	//printf("east %p %p\n",y,y&)
-		//	printf("ost %i\n",c)
-		//}
-		//k()
-
-		k := () ==> {
-			d := 100
-			//printf("east %p %p\n",y,y&)
-			printf("ost %i\n",oo)
-		}
-		k()
-	}
-	z()
-	z()
-	z()
-	z()
-	z()
-	z()
-	z()
-	return 0
+	return 5.5
 }
 
 

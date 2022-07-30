@@ -90,7 +90,8 @@ AppendClass BoxFuncBody
 		getThisCapture := CaptureGetCall
 		if not isFirstCall
 			getThisCapture = getCaptureInLeafs
-		
+		if getThisCapture == null
+			return void //todo, too lazy way to check if lambda captured some variables
 		//if not isFirstCall
 		//	return void
 
