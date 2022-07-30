@@ -95,11 +95,20 @@ ReturnHalfState := class extend BoxExeObj
 			{
 		        rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
 
-				if callObj.GetType() != CurrentFunc.ResultVar.GetVarType()
+				callObj2 := BoxExeObj^
+				resType := callObj.GetType()
+				funcType := CurrentFunc.ResultVar.GetVarType()
+
+				if resType != funcType
 				{
 					if rRef
 					{
-						errorToken.EmitError("type not same with function, not supported for function") //TODO
+						if resType is in TypeClass and funcType is in TypeClass and TypeFight(funcType,resType) == funcType
+						{
+							callObj2 = GetExchange(new UnrefFuncCall(callObj),funcType.GetPoint())
+						}else{
+							errorToken.EmitError("result type does not compare with function result")
+						}
 					}else{
 						callObj = GetExchange(callObj,CurrentFunc.ResultVar.GetVarType())
 						if callObj == null
@@ -107,9 +116,15 @@ ReturnHalfState := class extend BoxExeObj
 					}
 				}
 
-
-				if rRef
-					callObj = new UnrefFuncCall(callObj)
+				if callObj2 == null
+				{
+					if rRef
+					{
+						callObj2 = new UnrefFuncCall(callObj)
+					}else{
+						callObj2 = callObj
+					}
+				}
 
 				tkn1 := TokenIndent(StringSpan("result"))
 
@@ -117,7 +132,7 @@ ReturnHalfState := class extend BoxExeObj
 
 				objs := CheckExeDownList
 				objs.Push(resGet)
-				objs.Push(callObj)
+				objs.Push(callObj2)
 				callObj = CreateFuncCall(StringSpan("="),objs)
 				assert(callObj != null)
 			}

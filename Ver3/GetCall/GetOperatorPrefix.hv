@@ -10,8 +10,6 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 
 		preRes := ReturnHalfState^
 
-		//TODO check return type vs func result. + result ref
-
 		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
 		{
 			preRes = new ReturnHalfState(itm.Down.Right,null,isYield)

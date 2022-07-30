@@ -19,7 +19,9 @@ AppendClass BoxFuncBody
             }else{
                 resType = TypeFight(resType,st)
             }
-            assert(resType != null) //TODO: emit error
+
+			if resType == null
+				it.errorToken.EmitError("can not create type that satisfy all return objects")
         }
 
         if resType != GTypeVoid
