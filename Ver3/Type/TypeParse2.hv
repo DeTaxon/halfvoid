@@ -177,8 +177,18 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		dTyp := CheckTemplateType(null,tk.Down,resCnsts) //TODO: unnull
 		if dTyp == null
 			return null
-		if tk.Down.Right.Down == null //TODO: array?
-			return null
+		if tk.Down.Right.Down == null
+		{
+			InternalsHatch.Await()
+			tpys := List.{BoxExeConstObj^}
+			tpys.Push(GetConstType(dTyp))
+			assert(ArrayViewTemplate != null)
+			rClass := ArrayViewTemplate.GetClass(tpys)
+			assert(rClass != null)
+			tpys.Destroy()
+
+			return rClass.ItType.GetPoint()
+		}
 		if tk.Down.Right.Down.Right != null
 			return null
 

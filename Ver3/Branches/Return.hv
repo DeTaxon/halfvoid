@@ -98,6 +98,8 @@ ReturnHalfState := class extend BoxExeObj
 				callObj2 := BoxExeObj^
 				resType := callObj.GetType()
 				funcType := CurrentFunc.ResultVar.GetVarType()
+				if rRef
+					funcType = funcType.Base
 
 				if resType != funcType
 				{

@@ -17,18 +17,18 @@ TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> T& { }
-	//"for" := virtual !() -> !()& -> T& {
-	//	c := this&
-	//	x := () ==> T& {
-	//		i := 0
-	//		s := c.Size()
-	//		while i < s
-	//		{
-	//			yield c^[i]
-	//		}
-	//	}
-	//	return x.Capture()
-	//}
+	"for" := virtual !() -> !()& -> T& {
+		c := this&
+		x := () ==> T& {
+			i := 0
+			s := c.Size()
+			while i < s
+			{
+				yield c^[i]
+			}
+		}
+		return x.Capture()
+	}
 	//Destroy := virtual !() -> void {}
 
 	//Reverse := fake
@@ -62,9 +62,24 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 //	
 //}
 
+z := !(int[] x) -> void
+{
+	for it : x
+	{
+		printf("wa %i\n",it)
+	}
+	//printf("hey %i %i\n",x[0],x.Size())
+}
+
 main := !(int argc,char^^ argv) -> int
 {
-	return 5.5
+	c := TArraySpan.{int}
+	c.pointer = malloc(4*16)->{int^}
+	c.itSize = 16
+	c[0] = 16
+	c[1] = 90
+	z(c&)
+	return 0
 }
 
 

@@ -31,6 +31,8 @@ ExceptionLeaveTryCatch := BoxFunc^
 ExceptionThrowException := BoxFunc^
 ExceptionGetException := BoxFunc^
 
+ArrayViewTemplate := BoxClassTemplate^
+
 InternalsHatch := THatch
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
@@ -100,8 +102,6 @@ InitInternals := !() -> void
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
 	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
 
-
-
 	ExceptionIException = intGetClass("IException").ItType
 	ExceptionEnterFunc = intGetFunc("internalEnterGCFunction")
 	ExceptionLeaveFunc = intGetFunc("internalLeaveGCFunction")
@@ -109,6 +109,8 @@ InitInternals := !() -> void
 	ExceptionLeaveTryCatch = intGetFunc("internalLeaveTryCatch")
 	ExceptionThrowException = intGetFunc("internalThrowException")
 	ExceptionGetException = intGetFunc("internalGetException")
+
+	ArrayViewTemplate = intGetClassTemplate("TArrayView")
 
 	InternalsHatch.Emit()
 }
