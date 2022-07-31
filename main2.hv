@@ -73,8 +73,6 @@ z := !(int[] x) -> void
 
 main := !(int argc,char^^ argv) -> int
 {
-	j := hmm.{10}
-	j.hey()
 	//c := TArraySpan.{int}
 	//c.pointer = malloc(4*16)->{int^}
 	//c.itSize = 16
@@ -83,22 +81,15 @@ main := !(int argc,char^^ argv) -> int
 	//z(c&)
 
 	//TODO capture on GC bojects not working
-	//x := new TGCObject
-	//c := () ==> {
-	//	printf("hoy %p %p\n",x&,x)
-	//}
-	//c()
-	//c2 := c.Capture()
-	//printf("hey %p %p\n",x&,x)
-	//c2()
-	return 0
-}
-hmm := class .{@GCCount}
-{
-	hey := !() -> void
-	{
-		printf("test %i\n",GCCount)
+	x := new TGCObject
+	c := () ==> {
+		printf("hoy %p %p\n",x&,x)
 	}
+	c()
+	c2 := c.Capture()
+	printf("hey %p %p\n",x&,x)
+	c2()
+	return 0
 }
 
 

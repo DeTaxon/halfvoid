@@ -111,7 +111,8 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		lst := List.{BoxExeConstObj^}
 		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
-		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
+		lst.Push(GetExeInt(GCVarsInUse))
+		assert(lst[1] is in BoxExeConstObj)
 		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 		lst.Destroy()

@@ -17,6 +17,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		if par is ConstVar
 		{
 			cv := par->{ConstVar^}
+			
 			if cv.Name == asItm.Value
 				return cv.Value
 		}

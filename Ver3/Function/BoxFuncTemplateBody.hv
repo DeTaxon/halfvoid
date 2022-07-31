@@ -163,8 +163,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			{
 				newFunc.ConstVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
 			}else{
-				//newFunc.ConstVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
-				newFunc.ConstVars.Push(it)
+				newFunc.ConstVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
 			}
 		}
 
@@ -187,7 +186,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				{
 					resCnsts[name] = consts[i]->{ConstType^}
 				}else{
-					resCnsts[name] = new ConstVar(name,consts[i])
+					resCnsts[name] = consts[i]
 				}
 			}else{
 				assert(false)

@@ -246,9 +246,10 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 	if itm is TokenIndent
 	{
 		name := itm->{TokenIndent^}.Value
-
+		
 		if resCnsts.Contain(name)
 		{
+			assert(resCnsts[name] is in BoxExeConstObj)
 			return resCnsts[name]->{BoxExeConstObj^}
 		}
 		glb := TypeGetGlobalByIndent(name)
@@ -280,24 +281,28 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 
 	if itm is TokenTemplateType
 	{
+		nm := itm->{TokenTemplateType^}.Value[1..0]
 		if cnst == null
 			return null
+
+		assert(cnst is in BoxExeConstObj)
 		if not (cnst is in BoxExeConstObj)
 			return null
-	
-		nm := itm->{TokenTemplateType^}.Value[1..0]
-		//TODO: resConsts.Push()
+		val := cnst
+
 		if resCnsts.Contain(nm)
 		{
-			if resCnsts[nm] != cnst 
+			if resCnsts[nm] != val
 			{
 				assert(false)
 				return null
 			}
 		}else{
-			resCnsts[nm] = cnst
+			assert(val != null)
+			assert(val is in BoxExeConstObj)
+			resCnsts[nm] = val
 		}
-		return cnst
+		return val
 	
 	}
 	//assert(false)

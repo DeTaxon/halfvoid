@@ -78,6 +78,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		newClass.Constants = inConsts
 		classes.Emplace(inConsts,newClass)
 		newClass.SetName(ItName)
+
 		newClass.NamedConstants[i] = namedConstants[^i]
 		newClass.ComputeConsts()
 		return newClass

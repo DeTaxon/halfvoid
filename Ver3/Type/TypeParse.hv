@@ -132,6 +132,12 @@ TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^
 				if tv.Name == name
 					return it
 			}
+			if it is ConstVar
+			{
+				tv := it->{ConstVar^}
+				if tv.Name == name
+					return it
+			}
 		}
 		for spc : CodeSpaces
 		{
