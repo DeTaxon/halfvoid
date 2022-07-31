@@ -18,16 +18,17 @@ TArrayView := class .{@T} extend TGCObject
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> T& { }
 	"for" := virtual !() -> !()& -> T& {
-		c := this&
 		x := () ==> T& {
 			i := 0
-			s := c.Size()
+			s := Size()
 			while i < s
 			{
-				yield c^[i]
+				yield this[i]
+				i += 1
 			}
 		}
-		return x.Capture()
+		preRes := x.Capture()
+		return preRes
 	}
 	//Destroy := virtual !() -> void {}
 
@@ -68,18 +69,36 @@ z := !(int[] x) -> void
 	{
 		printf("wa %i\n",it)
 	}
-	//printf("hey %i %i\n",x[0],x.Size())
 }
 
 main := !(int argc,char^^ argv) -> int
 {
-	c := TArraySpan.{int}
-	c.pointer = malloc(4*16)->{int^}
-	c.itSize = 16
-	c[0] = 16
-	c[1] = 90
-	z(c&)
+	j := hmm.{10}
+	j.hey()
+	//c := TArraySpan.{int}
+	//c.pointer = malloc(4*16)->{int^}
+	//c.itSize = 16
+	//c[0] = 16
+	//c[1] = 90
+	//z(c&)
+
+	//TODO capture on GC bojects not working
+	//x := new TGCObject
+	//c := () ==> {
+	//	printf("hoy %p %p\n",x&,x)
+	//}
+	//c()
+	//c2 := c.Capture()
+	//printf("hey %p %p\n",x&,x)
+	//c2()
 	return 0
+}
+hmm := class .{@GCCount}
+{
+	hey := !() -> void
+	{
+		printf("test %i\n",GCCount)
+	}
 }
 
 

@@ -1,9 +1,9 @@
 AppendClass BoxFuncBody
 {
-
 	gcVarsCount := int
 	gcArrayVar := ParamFunc^
-	gcArrayPtr := ParamFunc^
+	gcArrayPtr := MacroParamFunc^
+	gcArrayCaptured := bool
 
 	gcSetPtr := BoxExeObj^
 
@@ -13,12 +13,17 @@ AppendClass BoxFuncBody
 
 		if gcArrayPtr == null
 		{
-			ths := this&
 			oldFnc := CurrentFunc
 			CurrentFunc = this&
-			gcArrayPtr = new FuncLocalParam(GTypeVoidP.GetPoint())
+			gcArrayPtr = new MacroParamFunc(GTypeVoidP.GetPoint(),false)
 			CurrentFunc = oldFnc
-			regularVars.Push(gcArrayPtr)
+
+			//ths := this&
+			//oldFnc := CurrentFunc
+			//CurrentFunc = this&
+			//gcArrayPtr = new FuncLocalParam(GTypeVoidP.GetPoint())
+			//CurrentFunc = oldFnc
+			//regularVars.Push(gcArrayPtr)
 			//gcArrayPtr = new MacroParam(GTypeVoidP.GetPoint(),false,() ==>[ths]{
 			//	step1 := ths.gcArrayVar.CreateCall()
 			//	step2 := new UnrefFuncCall(step1)
@@ -43,11 +48,30 @@ AppendClass BoxFuncBody
 		EnterCall = ExceptionEnterFunc.CreateCall(objs8)
 		LeaveCall = ExceptionLeaveFunc.CreateCall()
 
-		objs9 := CheckExeDownList
-		objs9.Push(gcArrayPtr.CreateCall())
-		objs9.Push(gcArrayVar.CreateCall())
-		gcSetPtr = CreateFuncCall(StringSpan("="),objs9)
+		//objs9 := CheckExeDownList
+		//objs9.Push(gcArrayPtr.CreateCall())
+		//objs9.Push(gcArrayVar.CreateCall())
+		//gcSetPtr = CreateFuncCall(StringSpan("="),objs9)
+		//assert(gcSetPtr != null)
+		if gcArrayCaptured
+			gcArrayVar.NotifyCaptureUse()
+		//gcArrayPtr?.PopulateCalls2(() ==> {
+		//	return GetExchange(new UnrefFuncCall(gcArrayVar.CreateCall()), GTypeVoidP.GetPoint())
+		//})
 
-		assert(gcSetPtr != null)
+	}
+}
+
+MacroParamFunc := class extend MacroParam
+{
+	this := !(Type^ tp,bool isMemory) -> void
+	{
+		parentFunc = CurrentFunc
+		pType = tp
+		SetType(GetFuncType(0,null,null,pType,true,false))
+	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+		parentFunc.gcArrayCaptured = true
 	}
 }

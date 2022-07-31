@@ -8,6 +8,7 @@ TILambda := class extend TGCObject
 	getCaptureVar := virtual !() -> void^ { return null }
 	getYieldState := virtual !() -> int& {  } //TODO assert
 	getYieldVars := virtual !() -> void^ { return null }
+	getGCVars := virtual !() -> void^ { return null }
 }
 
 TLambda := class .{@FuncPtr} extend TILambda
@@ -22,9 +23,10 @@ TLambda := class .{@FuncPtr} extend TILambda
 		return null
 	}
 }
-TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
+TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple,@GCCount} extend TLambda.{FuncPtr}
 {
 	capPtr := CapTypePtr
+	gcVarsPointer := void^
 	yieldState := int
 	lambdaVars := YieldTuple
 
@@ -35,8 +37,7 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^
 	{
-		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
-		newLambda.capPtr = newLambda.thisCapturedVars&
+		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple,GCCount}
 		newLambda.callFunc = callFunc
 
 		for setField : newLambda.thisCapturedVars->AllFields , getField : this.capPtr^->AllFields
@@ -47,7 +48,6 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 			}else{
 				if getField->TypeGroup == "Array"
 				{
-
 				}else{
 					setField = getField
 				}
@@ -68,13 +68,16 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 				}
 			}
 		}
+		newLambda.capPtr = newLambda.thisCapturedVars&
+		newLambda.gcVarsPointer = gcVarsPointer
 
 		return newLambda
 	}
 }
-TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple}
+TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple,@GCCount} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple,GCCount}
 {
 	thisCapturedVars := CapType
+	getCaptureVar := virtual !() -> void^ {  result = thisCapturedVars& }
 }
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
@@ -83,7 +86,7 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 }
 internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
 {
-	return lmbd->{TILambda^}.getCaptureVar()->{T^}
+	result = lmbd->{TILambda^}.getCaptureVar()->{T^}
 }
 internalHVLambdaGetYieldState := !(void^ lmbd) -> int&
 {
@@ -95,8 +98,10 @@ internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVars
 	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
 }
 
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuplePtr,YieldVars}
+
+internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuplePtr CaptureVars, void^ gcVars).{@YieldVars,@GCCount} -> TLambdaImp.{FuncPtr,CaptureTuplePtr,YieldVars,GCCount}
 {
 	result.callFunc = fnc
 	result.capPtr = CaptureVars
+	result.gcVarsPointer = gcVars
 }

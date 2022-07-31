@@ -84,8 +84,6 @@ BoxLambdaHolder := class extend BoxExeObj
 
 	createLambd := !(!()&->BoxFuncBody^ cb) -> BoxExeObj^
 	{
-		tplTypeBefore := CurrentFunc.GetCaptureTuple().ItType
-
 		newFunc := cb() //Vars captured
 		newFunc.ParseBodyForced()
 		
@@ -96,7 +94,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		tplType := CurrentFunc.GetCaptureTuple().ItType
 
-		if tplType != tplTypeBefore
+		if newFunc.CaptureUsed
 		{
 			getTupleMacro := new MacroParam(tplType.GetPoint(),false)
 			CurrentFunc.CapturedVarsGets.Push(getTupleMacro)
@@ -109,8 +107,10 @@ BoxLambdaHolder := class extend BoxExeObj
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
 		objs.Push(getTupleVar)
+		objs.Push(GetExchange(GObjNull,GTypeVoidP.GetPoint()))
 
 		lst := List.{BoxExeConstObj^}
+		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
 		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
 		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)

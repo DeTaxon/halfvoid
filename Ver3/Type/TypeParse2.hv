@@ -277,6 +277,29 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		if resTp != null
 			return GetConstType(resTp)
 	}
+
+	if itm is TokenTemplateType
+	{
+		if cnst == null
+			return null
+		if not (cnst is in BoxExeConstObj)
+			return null
+	
+		nm := itm->{TokenTemplateType^}.Value[1..0]
+		//TODO: resConsts.Push()
+		if resCnsts.Contain(nm)
+		{
+			if resCnsts[nm] != cnst 
+			{
+				assert(false)
+				return null
+			}
+		}else{
+			resCnsts[nm] = cnst
+		}
+		return cnst
+	
+	}
 	//assert(false)
 	return null
 }

@@ -6,7 +6,8 @@
     "*.hv": "cpp",
     "array": "cpp",
     "string_view": "cpp",
-    "type_traits": "cpp"
+    "type_traits": "cpp",
+    "functional": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "/usr/bin/gcc",
   "C_Cpp_Runner.cppCompilerPath": "/usr/bin/g++",

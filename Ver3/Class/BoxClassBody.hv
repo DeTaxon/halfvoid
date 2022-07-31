@@ -62,7 +62,8 @@ BoxClassBody := class extend BoxClass
 			{
 				NamedConstantsVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
 			}else{
-				assert(false) //TODO
+				assert(it is in BoxExeConstObj)
+				NamedConstantsVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
 			}
 		}
 	}

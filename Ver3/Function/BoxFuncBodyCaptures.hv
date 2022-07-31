@@ -1,5 +1,7 @@
 AppendClass BoxFuncBody
 {
+	CaptureUsed := bool
+
 	ParentFunc := BoxFuncBody^
 	ThisCaptureTupleType := Type^
 	CaptureGetCall := BoxExeObj^
@@ -87,6 +89,7 @@ AppendClass BoxFuncBody
 	{
 		if ParentFunc == null
 			return void
+		
 		getThisCapture := CaptureGetCall
 		if not isFirstCall
 			getThisCapture = getCaptureInLeafs

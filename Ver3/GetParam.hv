@@ -39,6 +39,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 									it.NotifyChainCapture()
 							}
 						}
+						metFuncs[^].CaptureUsed = true
 					}
 					return mv2.Value.CreateCall()
 				}else if par is MacroVar {

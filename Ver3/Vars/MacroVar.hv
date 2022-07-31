@@ -69,6 +69,7 @@ MacroParam := class extend ParamFunc
 		for it : CreatedVarCalls
 		{
 			it.CallObj = cb()
+			assert(it.CallObj != null)
 		}
 	}
 }
