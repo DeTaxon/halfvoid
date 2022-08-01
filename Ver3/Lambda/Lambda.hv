@@ -121,6 +121,14 @@ BoxLambdaHolder := class extend BoxExeObj
 		InternalsHatch.Await()
 		lambdaType := GCLambda.GetClass(cnsts).ItType
 		cnsts.Destroy()
+
+		assert(step1 is in BoxFuncCall)
+		st := step1->{BoxFuncCall^}
+		for it, i : newFunc.CapturedBySomeVars
+		{
+			st.ExtraWork.Push(it.2)
+		}
+
 		return GetExchange(step2,lambdaType.GetPoint())
 	}
 	CanBeThisType := !(Type^ tp) -> bool

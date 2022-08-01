@@ -26,12 +26,14 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			mv := par->{NamedVar^}
 			if mv.Name == asItm.Value
 			{
-				if par is in MemVar
+				if par is in MemVarRef
+				{
+					assert(false)
+				}else if par is in MemVar
 				{
 					mv2 := mv->{MemVar^}
 					if metFuncs.Size() != 0
 					{
-						mv2.NotifyCaptureUse()
 						if metFuncs.Size() >= 2
 						{
 							for it,i : metFuncs
@@ -41,6 +43,44 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 							}
 						}
 						metFuncs[^].CaptureUsed = true
+
+						varType := mv2.Value.GetVarType()
+						if IsGCPtr(varType)
+						{
+							injCap := metFuncs[0]
+
+							assert(FuncStack.Size() > 1)
+							parFunc := FuncStack[1]
+							//if injCap.CapturedBySomeVars.Contain(asItm.Value)
+							//{
+							//	return new PtrToRefFuncCall(injCap.CapturedBySomeVars[asItm.Value].1)
+							//}
+							wrk := ref injCap.CapturedBySomeVars[asItm.Value]
+							wrk.0 = mv2
+
+							newVar := MemVar^
+
+							parFunc.EnterScope(() ==> {
+								lVar := new FuncLocalParam(varType.GetPoint())
+								parFunc.regularVars.Push(lVar)
+								lVar.NotifyCaptureUse()
+								newVar = new MemVarRef(asItm.Value,lVar)
+							})
+
+							wrk.1 = newVar
+
+							gt1 := new UnrefFuncCall(mv2.Value.CreateCall())
+							st1 := newVar.Value.CreateCall()
+							objsO := CheckExeDownList
+							objsO.Push(st1)
+							objsO.Push(gt1)
+							wrk.2 = CreateFuncCall(StringSpan("="),objsO)
+							assert(wrk.2 != null)
+
+							return CallFromSomeVar(newVar)
+						}
+
+						mv2.NotifyCaptureUse()
 					}
 					return mv2.Value.CreateCall()
 				}else if par is MacroVar {
@@ -57,6 +97,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			fnc := par->{BoxFuncBody^}
 
 			metFuncs.Push(fnc)
+
+			if fnc.CapturedBySomeVars.Contain(asItm.Value)
+			{
+				return CallFromSomeVar(fnc.CapturedBySomeVars[asItm.Value].1)
+			}
 			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
@@ -130,5 +175,19 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		return GetConstType(asType)
 	itm.EmitError("Could not get param "sbt + asItm.Value) //todo better explanation
 
+	return null
+}
+
+CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
+{
+	if vr is MemVarRef
+	{
+		return new PtrToRefFuncCall(vr->{MemVar^}.Value.CreateCall())
+	}
+	if vr is in MemVar
+	{
+		return vr->{MemVar^}.Value.CreateCall()
+	}
+	assert(false)
 	return null
 }

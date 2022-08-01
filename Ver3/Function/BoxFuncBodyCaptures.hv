@@ -10,6 +10,8 @@ AppendClass BoxFuncBody
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{MacroParam^}
 
+	CapturedBySomeVars := AVLMap.{StringSpan,Tuple.{NamedVar^,MemVar^,BoxExeObj^}} //By ref,value
+
 	WorkBodyCaptures := !() -> void
 	{
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
@@ -117,5 +119,12 @@ AppendClass BoxFuncBody
 
 
 		ParentFunc?.PrintCaptureUsage(f,false)
+	}
+	EnterScope := !(!()&->void cb) -> void
+	{
+		oldFunc := CurrentFunc
+		CurrentFunc = this&
+		cb()
+		CurrentFunc = oldFunc
 	}
 }

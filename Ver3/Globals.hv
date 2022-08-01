@@ -3,6 +3,7 @@ CurrentCodeSpace := task_local BoxCodeSpace^
 CurrentFile := task_local BoxFile^
 CurrentScope := task_local BoxUnit^
 CurrentFunc := task_local BoxFuncBody^
+FuncStack := task_local List.{BoxFuncBody^}
 
 HVOperators := AVLSet.{StringSpan}
 

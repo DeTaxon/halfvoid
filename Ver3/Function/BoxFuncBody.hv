@@ -130,6 +130,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
 		ParentFunc = oldFunc
+		FuncStack.PushFront(this&)
 		CurrentFunc = this&
 		
 		AllFunctions.Push(this&)
@@ -210,6 +211,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			UnitStack.Pop()
 		}
+		FuncStack.Pop()
 		CurrentFunc = oldFunc
 		GCVarsInUse = oldVarsCount
 

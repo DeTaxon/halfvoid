@@ -267,6 +267,16 @@ MemVar := class extend NamedVar
 		}
 	}
 }
+MemVarRef := class extend MemVar
+{
+	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
+	{
+		Name = vName
+		Value = clFunc
+		debId = GetNewId()
+	}
+}
+
 MemVarBorrowed := class extend MemVar
 {
 	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
