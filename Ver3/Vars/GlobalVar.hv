@@ -29,12 +29,12 @@ GlobalVar := class extend BoxUnit
 }
 
 GlobalVars := List.{GlobalVar^}
-CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> BoxFunc^
+CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar^
 {
 	mName := GetFuncMangle(name)
 	newVar := new GlobalVar(mName,tp,isThreadLocal)
 	GlobalVars.Push(newVar)
-	return newVar.Value
+	return newVar
 }
 
 GlobalVarFunc := class extend BoxFunc

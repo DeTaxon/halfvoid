@@ -7,10 +7,10 @@ internalHVGetTaskLocalTuple := !() -> void^
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	//spn := TArraySpan.{char^}//(argv,argc)
-	//spn.pointer = argv
-	//spn.itSize = argc
-	return main(argc,argv)
+	spn := TArraySpan.{char^}//(argv,argc)
+	spn.pointer = argv
+	spn.itSize = argc
+	return main(spn&)
 }
 
 TArrayView := class .{@T} extend TGCObject
@@ -71,24 +71,25 @@ z := !(int[] x) -> void
 	}
 }
 
-main := !(int argc,char^^ argv) -> int
+"![]" := !(int a,int b, int c, int d) .{@ResType} -> ResType
 {
-	//c := TArraySpan.{int}
-	//c.pointer = malloc(4*16)->{int^}
-	//c.itSize = 16
-	//c[0] = 16
-	//c[1] = 90
-	//z(c&)
+	result[0] = a
+	result[1] = b
+	result[2] = c
+	result[3] = d
+}
 
-	//TODO capture on GC bojects not working
-	x := new TGCObject
-	c := () ==> {
-		printf("hoy %p %p\n",x&,x)
+main := !(char^[] args) -> int
+{
+	for it : args
+	{
+		printf("hey %s\n",it)
 	}
-	c()
-	c2 := c.Capture()
-	printf("hey %p %p\n",x&,x)
-	c2()
+	c := ![6,17,20,7,100]&
+	d := TArraySpan.{int}
+	d.pointer = c^[0]&
+	d.itSize = 4
+	z(d&)
 	return 0
 }
 

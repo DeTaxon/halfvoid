@@ -7,7 +7,13 @@
     "array": "cpp",
     "string_view": "cpp",
     "type_traits": "cpp",
-    "functional": "cpp"
+    "functional": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "iterator": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "/usr/bin/gcc",
   "C_Cpp_Runner.cppCompilerPath": "/usr/bin/g++",

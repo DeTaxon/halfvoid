@@ -179,15 +179,17 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		{
 			if Constants[i].Value == null
 			{
-				assert(Constants[i].ItToken is TokenTemplateType)
-				tmpl := Constants[i].ItToken->{TokenTemplateType^}
-				name := tmpl.Value[1..0]
-				if consts[i] is ConstType
-				{
-					resCnsts[name] = consts[i]->{ConstType^}
-				}else{
-					resCnsts[name] = consts[i]
-				}
+				//assert(Constants[i].ItToken is TokenTemplateType)
+				//tmpl := Constants[i].ItToken->{TokenTemplateType^}
+				//name := tmpl.Value[1..0]
+				CheckTemplateConst(consts[i],Constants[i].ItToken,resCnsts)
+				//if consts[i] is ConstType
+				//{
+				//	printf("hm %s\n",name)
+				//	resCnsts[name] = consts[i]->{ConstType^}
+				//}else{
+				//	resCnsts[name] = consts[i]
+				//}
 			}else{
 				assert(false)
 			}

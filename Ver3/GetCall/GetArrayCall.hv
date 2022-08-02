@@ -1,0 +1,83 @@
+TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm?.Down?.GetValue() == "!" and itm.Down.Right?.GetValue() == "[]"
+	{
+		//continue
+	}else{
+		return null
+	}
+
+	objs := CheckExeDownList
+	allConsts := true
+	allType := Type^
+
+	itr := itm.Down.Right.Down
+	while itr != null
+	{
+		if itr.GetValue() != ","
+		{
+			o := TryGetExeCall(itr)
+			if o == null
+				itr.EmitError("could not get array element\n")
+			if not (o is in BoxExeConstObj)
+				allConsts = false
+			if allType == null
+			{
+				allType = o.GetType()
+			}else{
+				allType = TypeFight(allType,o.GetType())
+				if allType == null
+					itr.EmitError("all elements of array must be same type\n")
+			}
+			objs.Push(o)
+		}
+		itr = itr.Right
+	}
+
+	if objs.Size() == 0
+	{
+		assert(false) //TODO
+	}
+
+	if allConsts
+	{
+		arrType := allType.GetArray(objs.Size())
+		glbVar := CreateGlobalVar(StringSpan("anon"),arrType,false)
+		cnst := new BoxArrayConst(arrType)
+		cnst.dwns.Push(objs[^]->{BoxExeConstObj^})
+		glbVar.MemValue = cnst
+
+		return glbVar.Value.CreateCall()
+	}
+
+	cnsts := List.{BoxExeConstObj^}
+	cnsts.Push(GetConstType(allType.GetArray(objs.Size())))
+	resCall := CreateFuncCall(StringSpan("![]"),objs,cnsts)
+	cnsts.Destroy()
+
+	if resCall == null
+		itm.EmitError("could not create array, function ![] not found")
+	return resCall
+}
+
+BoxArrayConst := class extend BoxExeConstObj
+{
+	dwns := List.{BoxExeConstObj^} //todo Vector is better
+
+	this := !(Type^ tp) -> void
+	{
+		ObjType = tp
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "["
+		for it,i : dwns
+		{
+			if i != 0
+				f^ << ","
+			it.PrintConst(f)
+		}
+		f^ << "]"
+	}
+
+}
