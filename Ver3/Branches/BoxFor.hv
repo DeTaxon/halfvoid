@@ -349,7 +349,12 @@ BoxForOverMeta := class extend BoxExeObj
 				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
 
 				if dwnObjs[j].IndexName.Size() != 0
-					tryAddVar(dwnObjs[j].MetaObj.GetMetaIterIndex(i),i,dwnObjs[j].IndexName)
+				{
+					indConst := dwnObjs[j].MetaObj.GetMetaIterIndex(i)
+					if indConst == null
+						indConst = GetExeInt(i)
+					tryAddVar(indConst,i,dwnObjs[j].IndexName)
+				}
 			}
 			blocks.Push(new BoxBlockContinue(bdy))
 
