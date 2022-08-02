@@ -102,6 +102,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			{
 				return CallFromSomeVar(fnc.CapturedBySomeVars[asItm.Value].1)
 			}
+
+			if fnc.VariadicName == asItm.Value
+			{
+				return new MetaVargsParam(fnc)
+			}
 			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{

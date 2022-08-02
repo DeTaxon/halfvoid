@@ -71,12 +71,12 @@ z := !(int[] x) -> void
 	}
 }
 
-"![]" := !(int a,int b, int c, int d) .{@ResType} -> ResType
+"![]" := !(args...) .{@ResType} -> ResType
 {
-	result[0] = a
-	result[1] = b
-	result[2] = c
-	result[3] = d
+	for it,i : args
+	{
+		result[i] = it
+	}
 }
 
 main := !(char^[] args) -> int
@@ -85,10 +85,11 @@ main := !(char^[] args) -> int
 	{
 		printf("hey %s\n",it)
 	}
-	c := ![6,17,20,7,100]&
+	k := 999
+	c := ![6,17,k,7,100]&
 	d := TArraySpan.{int}
 	d.pointer = c^[0]&
-	d.itSize = 4
+	d.itSize = 5
 	z(d&)
 	return 0
 }

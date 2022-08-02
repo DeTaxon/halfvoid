@@ -1,4 +1,4 @@
-FuncResultParam := class extend ParamFunc //TODO non ref
+FuncResultParam := class extend ParamFunc
 {
 	CreatedVarCalls := List.{ParamLoadObj^}
 

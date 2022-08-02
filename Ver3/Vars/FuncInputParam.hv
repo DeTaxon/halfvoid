@@ -114,7 +114,7 @@ ParamLoadObj := class extend BoxExeObj
 	}
 	IsMem := virtual !() -> bool
 	{
-		return true
+		return VarPtr.IsMem()
 	}
 	NotifyMemUse := virtual !() -> void
 	{
