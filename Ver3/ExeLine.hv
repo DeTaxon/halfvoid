@@ -246,7 +246,7 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 					assert(cns is in BoxExeConstObj)
 					consts.Push(cns->{BoxExeConstObj^})
 				}else{
-					assert(false)
+					iter.EmitError("could not get constant value")
 				}
 			}
 		}
@@ -314,6 +314,18 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 	}
 }
 
+IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
+{
+	callItem := BoxUnit^
+	GetItemGlobal(name, x ==>{
+		callItem = GetBestFunc(x,Objs,consts)
+		if callItem == null
+			return false
+		return true
+	})
+	return callItem != null
+}
+
 CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
@@ -377,7 +389,18 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 
 		if thisCase == CmpNoExchange
 		{
-			if objs[i] is BoxExeNull and toType is in TypePoint
+
+			objs12 := CheckExeDownList
+			objs12.Push(objs[i])
+			cnsts12 := List.{BoxExeConstObj^}
+			cnsts12.Push(GetConstType(toType))
+			excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
+			objs12.Destroy() cnsts12.Destroy()
+
+			if excCheck
+			{
+				thisCase = 1000
+			}else if objs[i] is BoxExeNull and toType is in TypePoint
 			{
 				thisCase = 1000
 			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
@@ -464,6 +487,7 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 	{
 		return 1000
 	}
+
 
 	return CmpNoExchange
 }

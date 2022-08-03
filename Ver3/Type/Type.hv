@@ -297,8 +297,8 @@ IsComplexType := !(Type^ obj) -> bool
 {
 	if obj is TypeClass
 		return true
-	//if obj is TypeArr //TODO
-	//	return true
+	if obj is TypeArr
+		return true
 	return false
 }
 IsUInt := !(Type^ obj) -> bool

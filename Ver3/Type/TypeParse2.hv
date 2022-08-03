@@ -174,14 +174,14 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 	}
 	if tk.Down?.Right?.GetValue() == "[]"
 	{
-		dTyp := CheckTemplateType(null,tk.Down,resCnsts) //TODO: unnull
-		if dTyp == null
-			return null
 		if tk.Down.Right.Down == null
 		{
+			dTyp2 := CheckTemplateType(null,tk.Down,resCnsts) //TODO: unnull
+			if dTyp2 == null
+				return null
 			InternalsHatch.Await()
 			tpys := List.{BoxExeConstObj^}
-			tpys.Push(GetConstType(dTyp))
+			tpys.Push(GetConstType(dTyp2))
 			assert(ArrayViewTemplate != null)
 			rClass := ArrayViewTemplate.GetClass(tpys)
 			assert(rClass != null)
@@ -189,10 +189,24 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 			return rClass.ItType.GetPoint()
 		}
+
+		baseType := Type^
+		constVal := BoxExeConstObj^
+		if tp != null and tp is TypeArr
+		{
+			asArr := tp->{TypeArr^}
+			baseType = tp.Base
+			constVal = GetExeInt(asArr.len)
+		}
+
+		dTyp := CheckTemplateType(baseType,tk.Down,resCnsts) //TODO: unnull
+		if dTyp == null
+			return null
+
 		if tk.Down.Right.Down.Right != null
 			return null
 
-		cnstVal := CheckTemplateConst(null,tk.Down.Right.Down,resCnsts)
+		cnstVal := CheckTemplateConst(constVal,tk.Down.Right.Down,resCnsts)
 		if cnstVal == null
 			return null
 		if cnstVal is BoxExeInt

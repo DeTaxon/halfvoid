@@ -178,6 +178,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	asType := ParseType(itm)
 	if asType != null
 		return GetConstType(asType)
+
 	itm.EmitError("Could not get param "sbt + asItm.Value) //todo better explanation
 
 	return null

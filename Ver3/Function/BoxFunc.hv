@@ -48,7 +48,7 @@ BoxFunc := class extend BoxExeConstObj
 	PrintResultType := virtual !(TIOStream^ f) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
-		if fTyp.ResultType.IsComplexReturn()
+		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
 			GTypeVoid.PrintType(f)
 		}else{
@@ -72,7 +72,7 @@ BoxFunc := class extend BoxExeConstObj
 		fTyp := GetType()->{TypeFunc^}
 		needComma := false
 
-		if fTyp.ResultType.IsComplexReturn()
+		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
 			fTyp.ResultType.PrintType(f)
 			f^ << "* %result" 

@@ -81,12 +81,15 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if cns != null
 		{
+			SyntaxCompress(cns,LexHVInputVars)
 			iter := cns.Down
 			while iter != null
 			{
 				if iter.GetValue() != ","
 				{
-					cItm := TryGetExeCall(iter)
+					rc := AVLMap.{StringSpan,BoxUnit^}
+					cItm := CheckTemplateConst(null,iter,rc)
+					rc.Destroy()
 					Constants.Emplace(iter,cItm)
 				}
 				iter = iter.Right

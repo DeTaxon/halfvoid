@@ -284,7 +284,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		LeaveCall?.PrintDefaultUse(f)
 
-		if rTyp == GTypeVoid or rTyp.IsComplexReturn()
+		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
+
+		if rTyp == GTypeVoid or isCmplx
 		{
 			f^ << "ret void"
 			if DebugMode

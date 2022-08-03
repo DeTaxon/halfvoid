@@ -46,6 +46,15 @@ BoxFuncTemplate := class extend BoxUnit
 		cns := FuncConstants[newFunc]&
 		cns.Push(consts[^])
 
+		if FuncConstants.Size() > 40
+		{
+			if consts.Size() == 1
+			{
+				hm := this&->{BoxFuncTemplateBody^}
+				printf("hey %s %i\n",hm.Name,consts.Size())
+			}
+		}
+
 		return newFunc
 	}
 	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^

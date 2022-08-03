@@ -54,6 +54,8 @@ BoxClassBody := class extend BoxClass
 	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
 
+	TemplateParent := BoxClassTemplateBody^
+
 	ComputeConsts := !() -> void
 	{
 		for it,ind : NamedConstants

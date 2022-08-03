@@ -25,7 +25,10 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	consts := List.{BoxExeConstObj^}
 	defer consts.Destroy()
 	if constsToken != null
+	{
+		SyntaxCompress(constsToken,LexHVInputVars)
 		CheckFuncCallConsts(constsToken,consts)
+	}
 
 
 	if itm.Down is TokenIndent

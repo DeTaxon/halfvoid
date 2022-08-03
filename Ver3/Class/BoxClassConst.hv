@@ -11,8 +11,9 @@ ClassConstValue := class extend BoxExeConstObj
 			if i > 0
 				f^ << ","
 			typ := it.GetType()
-			typ = NormalizeType(typ)
-			typ.PrintType(f)
+			typ2 := NormalizeType(typ)
+
+			typ2.PrintType(f)
 			f^ << " "
 			it.PrintConst(f)
 		}

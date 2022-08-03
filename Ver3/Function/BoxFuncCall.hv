@@ -87,10 +87,12 @@ BoxFuncCall := class extend BoxExeObj
 				{
 					tmpl := TEchoStream
 					tmpl << "Could not exchange type from "
-					downs[i].GetType().PrintDebugName(tmpl&)
+					//downs[i].GetType().PrintDebugName(tmpl&)
+					tmpl << downs[i].GetType().GetBADStr()
 					tmpl << " to "
-					par.ItType.PrintDebugName(tmpl&)
-					printf("%s\n",tmpl.Str()) //TODO
+					//par.ItType.PrintDebugName(tmpl&)
+					tmpl << par.ItType.GetBADStr() //TODO Better error
+					printf("%s\n",tmpl.Str())
 					throw new Exception(tmpl.Str())
 				}
 				assert(newObj != null)

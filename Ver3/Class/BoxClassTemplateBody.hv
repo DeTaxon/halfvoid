@@ -81,6 +81,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 
 		newClass.NamedConstants[i] = namedConstants[^i]
 		newClass.ComputeConsts()
+		newClass.TemplateParent = this&
 		return newClass
 	}
 }
