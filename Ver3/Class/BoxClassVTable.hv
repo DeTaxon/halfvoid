@@ -23,6 +23,7 @@ AppendClass BoxClass
 			tps.Push(it.GetType())
 		}
 		VTableType = GetTuple(tps)
+		VTableType.StartParseBody()
 		VTableValue = new GlobalVar(StringSpan(""),VTableType.ItType)
 		
 		cnst := new ClassConstValue

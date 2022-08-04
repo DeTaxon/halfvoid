@@ -7,7 +7,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 		{
 			return new RefExchange(obj,expType)
 		}
-		if inType is TypeArr and expType is in TypePoint
+		if inType is TypeArr and expType is in TypePoint and inType.Base == expType.Base
 		{
 			return new ArrToPtr(obj,expType)
 		}
@@ -61,6 +61,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	cnsts := List.{BoxExeConstObj^}
 	cnsts.Push(GetConstType(expType))
 	resCall := CreateFuncCall(StringSpan("->{}"),objs,cnsts)
+	printf("hm %p\n",resCall)
 	objs.Destroy() cnsts.Destroy()
 	if resCall != null
 		return resCall

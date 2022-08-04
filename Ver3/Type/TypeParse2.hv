@@ -142,6 +142,11 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 		tmpl := checkRes->{TemplateTypeVar^}.Value
 
+		if cls?.TemplateParent != tmpl
+		{
+			return null
+		}
+
 		i := 0
 
 		SyntaxCompress(tk.Down.Right.Right,LexHVInputVars)
@@ -176,10 +181,19 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 	{
 		if tk.Down.Right.Down == null
 		{
-			dTyp2 := CheckTemplateType(null,tk.Down,resCnsts) //TODO: unnull
+			InternalsHatch.Await()
+
+			dwnType := Type^
+			if tp? is in TypeClass
+			{
+				tpClass := tp->{TypeClass^}.ToClass
+				if tpClass.TemplateParent != ArrayViewTemplate
+					return null
+				dwnType = tpClass.Constants?.Constants[0]->{ConstType^}.Value
+			}
+			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null
-			InternalsHatch.Await()
 			tpys := List.{BoxExeConstObj^}
 			tpys.Push(GetConstType(dTyp2))
 			assert(ArrayViewTemplate != null)

@@ -93,8 +93,8 @@ CheckHatchError := !() -> TaskData^
 {
 	if debugTemp.Size() != 0
 	{
-		//printf("abandoned count %i\n",debugTemp.Size())
+		printf("abandoned count %i\n",debugTemp.Size())
 		hatchAbandoned = true
-		return debugTemp[1].itTask
+		return debugTemp[0].itTask
 	}
 }

@@ -389,24 +389,25 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 
 		if thisCase == CmpNoExchange
 		{
-
-			objs12 := CheckExeDownList
-			objs12.Push(objs[i])
-			cnsts12 := List.{BoxExeConstObj^}
-			cnsts12.Push(GetConstType(toType))
-			excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
-			objs12.Destroy() cnsts12.Destroy()
-
-			if excCheck
-			{
-				thisCase = 1000
-			}else if objs[i] is BoxExeNull and toType is in TypePoint
+			if objs[i] is BoxExeNull and toType is in TypePoint
 			{
 				thisCase = 1000
 			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
 				thisCase = 0
 			} else{
-				return CmpNoExchange
+				objs12 := CheckExeDownList
+				objs12.Push(objs[i])
+				cnsts12 := List.{BoxExeConstObj^}
+				cnsts12.Push(GetConstType(toType))
+				
+				excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
+				objs12.Destroy() cnsts12.Destroy()
+				if excCheck
+				{
+					thisCase = 1000
+				}else{
+					return CmpNoExchange
+				}
 			}
 		}
 		worstCase = max(worstCase,thisCase)

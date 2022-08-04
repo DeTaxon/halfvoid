@@ -43,7 +43,7 @@ AppendClass BoxFuncBody
 		InternalsHatch.Await()
 
 		objs8 := CheckExeDownList
-		objs8.Push(gcArrayVar.CreateCall())
+		objs8.Push(gcArrayPtr.CreateCall())
 		objs8.Push(GetExeInt(gcVarsCount))
 		EnterCall = ExceptionEnterFunc.CreateCall(objs8)
 		LeaveCall = ExceptionLeaveFunc.CreateCall()

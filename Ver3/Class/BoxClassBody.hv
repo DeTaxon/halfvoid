@@ -54,8 +54,6 @@ BoxClassBody := class extend BoxClass
 	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
 
-	TemplateParent := BoxClassTemplateBody^
-
 	ComputeConsts := !() -> void
 	{
 		for it,ind : NamedConstants
@@ -92,19 +90,32 @@ BoxClassBody := class extend BoxClass
 		Body = bdy
 		itFile.AllClasses.Push(this&)
 
+		classFile = CurrentFile
+	}
+
+	startedParse := bool
+	classFile := BoxFile^
+	StartParseBody := virtual !() -> void
+	{
+		if startedParse
+			return void
+		startedParse = true
+
 		GClassesInProgress.Push(this&)
 		cls := this&
-		TSpawnTask(() ==> [cls,itFile] { //todo pass CurrentFile directly?
-			CurrentFile = itFile
+		TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
+			CurrentFile = cls.classFile
 			cls.ParseBody()	
 		})
 	}
 	AwaitTypeState := virtual !() -> void
 	{
+		StartParseBody()
 		FieldsState.Await()
 	}
 	AwaitReadyState := virtual !() -> void
 	{
+		StartParseBody()
 		AwaitTypeState()
 	}
 	ParseBody := virtual !() -> void
@@ -122,6 +133,7 @@ BoxClassBody := class extend BoxClass
 			if not (inhType is TypeClass)
 				ParentTokens[i].EmitError("parent type must be class")
 			asClsParent := inhType->{TypeClass^}
+			asClsParent.ToClass.StartParseBody()
 			Parents.Push(asClsParent.ToClass)
 		}
 		PrimeParentStep()
@@ -240,16 +252,6 @@ BoxClassBody := class extend BoxClass
 		FieldsState.Emit()
 
 	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
-	{
-		AwaitTypeState()
-
-		for it : FieldsPath
-		{
-			if it.Field.Name == val
-				return it
-		}
-	}
-	AwaitParentStep := virtual !() -> void { VParentState.Await() }
-	AwaitVTableStep := virtual !() -> void { VTableState.Await() }
+	AwaitParentStep := virtual !() -> void { StartParseBody() VParentState.Await() }
+	AwaitVTableStep := virtual !() -> void { StartParseBody() VTableState.Await() }
 }

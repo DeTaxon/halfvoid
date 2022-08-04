@@ -63,6 +63,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 				return it.1
 			}
 		}
+
 		return CreateClass(inConsts,inpts)
 	}
 	CreateClass := virtual !(ConstantHolder^ inConsts,List.{BoxExeConstObj^} inpts) -> BoxClass^

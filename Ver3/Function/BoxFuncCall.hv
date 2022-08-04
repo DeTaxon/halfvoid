@@ -80,30 +80,31 @@ BoxFuncCall := class extend BoxExeObj
 				
 				continue
 			}
+
+			newObj := downs[i]
 			if downs[i].GetType() != par.ItType
 			{
-				newObj := GetExchange(downs[i],par.ItType)
-				if newObj == null
-				{
-					tmpl := TEchoStream
-					tmpl << "Could not exchange type from "
-					//downs[i].GetType().PrintDebugName(tmpl&)
-					tmpl << downs[i].GetType().GetBADStr()
-					tmpl << " to "
-					//par.ItType.PrintDebugName(tmpl&)
-					tmpl << par.ItType.GetBADStr() //TODO Better error
-					printf("%s\n",tmpl.Str())
-					throw new Exception(tmpl.Str())
-				}
-				assert(newObj != null)
+				newObj = GetExchange(downs[i],par.ItType)
 
 				while newObj.GetType() != par.ItType
 				{
 					newObj = GetExchange(newObj,par.ItType) //TODO limit to some value
-					assert(newObj != null)
+					if newObj == null
+					{
+						tmpl := TEchoStream
+						tmpl << "Could not exchange type from "
+						//downs[i].GetType().PrintDebugName(tmpl&)
+						tmpl << downs[i].GetType().GetBADStr()
+						tmpl << " to "
+						//par.ItType.PrintDebugName(tmpl&)
+						tmpl << par.ItType.GetBADStr() //TODO Better error
+						printf("%s\n",tmpl.Str())
+						throw new Exception(tmpl.Str())
+					}
 				}
 				downs[i] = newObj
 			}
+			downs[i] = newObj
 		}
 		if downs.Size() > itType.Params.Size()
 		{

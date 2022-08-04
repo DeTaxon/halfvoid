@@ -62,8 +62,8 @@ Type := class {
 	{
 		ec := TEchoStream
 		PrintDebugName(ec&)
-		ec << ","
-		PrintType(ec&)
+		//ec << ","
+		//PrintType(ec&)
 		return ec.Str()
 	}
 }
@@ -183,7 +183,7 @@ TypeArr := class extend Type
 	PrintDebugName := virtual !(TIOStream^ f) -> void
 	{
 		Base.PrintDebugName(f)
-		f^ << "^"
+		f^ << "[" << len << "]"
 	}
 	PrintMeta := virtual !(TIOStream^ f) -> void
 	{

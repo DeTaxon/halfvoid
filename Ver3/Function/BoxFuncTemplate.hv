@@ -51,7 +51,8 @@ BoxFuncTemplate := class extend BoxUnit
 			if consts.Size() == 1
 			{
 				hm := this&->{BoxFuncTemplateBody^}
-				printf("hey %s %i\n",hm.Name,consts.Size())
+				tp := consts[0]->{ConstType^}
+				printf("hey %s %s\n",hm.Name,tp.Value.GetBADStr())
 			}
 		}
 
