@@ -271,7 +271,9 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 			tmpl := h->{BoxFuncTemplate^}
 			cmpRes := tmpl.GetPriority(Objs,consts)
 			priorityes.Push(cmpRes)
-		}else{
+		}else if h is in GlobalVar {
+			priorityes.Push(CmpNoExchange) //todo?
+		}else {
 			priorityes.Push(CmpNoExchange)
 			assert(false)
 		}

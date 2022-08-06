@@ -99,7 +99,9 @@ internalCreateEmptyArray := !() .{@Typ} -> TArraySpan.{Typ}
 
 main := !(char^[] args) -> int
 {
-	z(![])
+	libGlfwInit()
+	glfwInit()
+	printf("test %p\n",glfwInit)
 	return 0
 }
 

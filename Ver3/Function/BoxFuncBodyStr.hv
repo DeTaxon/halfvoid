@@ -1,0 +1,13 @@
+BoxFuncBodyStr := class extend BoxFuncBody
+{
+	this := !(TypeFunc^ fncType) -> void
+	{
+		SetType(fncType)
+	}
+
+	ParseString := !(StringSpan strData) -> void
+	{
+		
+	}
+	ParseBody := virtual !() -> void {}
+}

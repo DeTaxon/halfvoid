@@ -5,11 +5,17 @@ CLib := class
 	js := json^
 
 
-	itFuncs := AVLMap.{StringSpan,BoxFuncDeclare^}
+	itFuncs := AVLMap.{StringSpan,BoxUnit^}
 	itPreFuncs := AVLMap.{StringSpan,StringSpan}
+	itPreConsts := AVLMap.{StringSpan,StringSpan}
+
+	dlls := List.{StringSpan}
+	initFuncName := StringSpan
+	linkType := StringSpan
 
 	this := !(vRepoFile^ fil) -> void
 	{
+		linkType = StringSpan("dynamic")
 		libFile = fil
 	}
 	Work := !() -> void
@@ -28,15 +34,33 @@ CLib := class
 					{
 						itPreFuncs[fnc.Key()] = fnc.Value()
 					}
+				case "libs"
+					for lbs : nd^
+					{
+						dlls.Push(lbs.Value())
+					}
+				case "initname"
+					initFuncName = nd.Value()
+				case "consts"
+					for cns : nd^
+					{
+						itPreConsts[nd.Key()] = nd.Value()
+					}
+				case "link"
+					linkType = nd.Value()
 			}
 		}
-
-		GetItem(StringSpan("printf"))
 	
 	}
 	PrintCode := !(TIOStream^ f) -> void
 	{
-		itFuncs[^].PrintCode(f)
+		for it : itFuncs
+		{
+			if it is in BoxFuncDeclare
+			{
+				it->{BoxFuncDeclare^}.PrintCode(f)
+			}
+		}
 	}
 	
 	GetItem := !(StringSpan name) -> BoxUnit^
@@ -44,9 +68,14 @@ CLib := class
 		if itFuncs.Contain(name)
 			return itFuncs[name]
 
-		if not itPreFuncs.Contain(name)
-			return null
-
+		if itPreFuncs.Contain(name)
+		{
+			return innerGetFunc(name)
+		}
+		return null
+	}
+	innerGetFunc := !(StringSpan name) -> BoxUnit^
+	{
 		bdy := itPreFuncs[name]
 
 		c := 0
@@ -78,6 +107,13 @@ CLib := class
 		fType := GetFuncType(c-1, typs[1]&,null,typs[0],false,isVarg)
 
 		assert(fType != null) //TODO error check
+
+		if linkType == "dynamic"
+		{
+			glVar := CreateGlobalVar(name,fType.GetPoint(),false)
+			itFuncs[name] = glVar
+			return glVar
+		}
 
 		func := new BoxFuncDeclare(fType,name) //TODO: dynamic call
 		itFuncs[name] = func
