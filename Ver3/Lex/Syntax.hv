@@ -128,7 +128,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"Defer()",RuleDefer) return true
 					if RuleUse(begin,"return()",RuleReturn) return true
 					if RuleUse(begin,"i:=0",RuleParam) return true // for func 
-				//	if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
+					//if RuleUse(begin,"i.{}:=0",RuleTypedefTemplate) return true // for func 
 					if RuleUseReverse(begin,"Block",RuleIf) return true
 					if RuleUse(begin,"Block",RuleWhile) return true
 					if RuleUse(begin,"for()",RuleFor) 
@@ -203,32 +203,6 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 	return ToRet
 }
 
-
-//RuleTypedefTemplate := !(void^ itr) -> int
-//{
-//	It := itr->{Token^}
-//	if It.Down == null return 0
-//	if It.Down.Right == null return 0
-//	if It.Down.Right.Right == null return 0
-//	if not ( It.Down is ObjIndent ) return 0
-//	if It.Down.Right.GetValue() != "." return 0
-//	if It.Down.Right.Right.GetValue() != "{}" return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//	if It.GetValue() != ":=" return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//	if It.GetValue() != "type" return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//
-//	if InDataR(It) return 4
-//	return 0
-//}
-//
 RuleDecoratorCall := !(void^ itr) -> int
 {
 	It := itr->{Token^}
@@ -309,7 +283,15 @@ RuleParam := !(void^ itr) -> int
 
 	It := itr->{Token^}
 
-	if It.GetValue() != "~ind" and It.GetValue() != "~str" return 0
+	if It.GetValue() != "~ind" and It.GetValue() != "~str" 
+	{
+		if It.Down?.Right?.GetValue() == "."
+		{
+
+		}else{
+			return 0
+		}
+	}
 
 	It = It.Right
 	if It == null return 0

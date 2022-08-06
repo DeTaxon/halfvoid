@@ -10,6 +10,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	if iter.Right?.GetValue() != ":="
 		return null
 
+	if iter.Down?.Right?.GetValue() == "."
+	{
+		return TryParseTypedefTemplate(obj)
+	}
+
 	name := StringSpan
 	isSuffix := bool
 	if iter is TokenIndent

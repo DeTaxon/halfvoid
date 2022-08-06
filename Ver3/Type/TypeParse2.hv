@@ -135,14 +135,38 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
 
+		if checkRes == null
+			return null
+
 		cnsts := List.{BoxExeConstObj^}
 		defer cnsts.Destroy()
 
-		assert(checkRes is TemplateTypeVar)
+		tmpl := BoxClassTemplate^
 
-		tmpl := checkRes->{TemplateTypeVar^}.Value
+		if checkRes is TemplateTypeVar
+		{
+			tmpl = checkRes->{TemplateTypeVar^}.Value
+		}
+		if checkRes is in ConstVar 
+		{
+			vr := checkRes->{ConstVar^}
+			if vr.Value is ConstTemplateType
+			{
+				tmpl = vr.Value->{ConstTemplateType^}.Value
+			}
+		}
 
-		if cls?.TemplateParent != tmpl
+		typedefTemplate := TypedefTemplateConst^
+		if checkRes is TypedefTemplateVar
+		{
+			typedefTemplate = checkRes->{TypedefTemplateVar^}.Value
+		} 
+
+		//assert(tmpl != null)
+		if tmpl == null and typedefTemplate == null
+			return null
+
+		if cls?.TemplateParent != tmpl?
 		{
 			return null
 		}
@@ -172,9 +196,17 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			i += 1
 			itr = itr.Right
 		}
-		if cls?.Constants?.Constants.Size() != cnsts.Size()
-			return null
-		return tmpl.GetClass(cnsts).ItType
+		if tmpl != null
+		{
+			if cls?.Constants?.Constants.Size() != cnsts.Size()
+				return null
+			return tmpl.GetClass(cnsts).ItType
+		}
+		if typedefTemplate != null
+		{
+			return typedefTemplate.GetType(cnsts)
+		}
+
 			
 	}
 	if tk.Down?.Right?.GetValue() == "[]"
@@ -287,6 +319,8 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 				return glb->{ConstVar^}.Value
 			if glb is TypeVar
 				return GetConstType(glb->{TypeVar^}.Value)
+			if glb is in TemplateTypeVar
+				return GetConstTemplateType(glb->{TemplateTypeVar^}.Value)
 			assert(glb is in BoxExeConstObj)
 			return glb->{BoxExeConstObj^}
 		}

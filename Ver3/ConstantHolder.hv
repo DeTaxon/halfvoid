@@ -74,3 +74,24 @@ ConstType := class extend BoxExeConstObj
 		Value = tp
 	}
 }
+
+
+typeTemplateConsts := AVLMap.{BoxClassTemplate^,ConstTemplateType^}
+GetConstTemplateType := !(BoxClassTemplate^ tp) -> BoxExeConstObj^
+{
+	if typeTemplateConsts.Contain(tp)
+		return typeTemplateConsts[tp]
+	newCmp := new ConstTemplateType(tp)
+	typeTemplateConsts[tp] = newCmp
+	return newCmp
+}
+
+ConstTemplateType := class extend BoxExeConstObj
+{
+	Value := BoxClassTemplate^
+	this := !(BoxClassTemplate^ tp) -> void
+	{
+		ObjType = GTypeVoid
+		Value = tp
+	}
+}

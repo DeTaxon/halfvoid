@@ -11,7 +11,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down.Right.GetValue() == "->" return null
 
 	tmpList := CheckExeDownList
-	defer tmpList.Destroy()
 
 	oper := itm.Down.Right.GetValue()
 
@@ -31,6 +30,14 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 	consts := List.{BoxExeConstObj^}
 	return CreateFuncCall(oper,tmpList,consts)?
+
+	if tmpList[0].GetType() is in TypeClass
+	{
+		cnsts := List.{BoxExeConstObj^}
+		objs8 := CheckExeDownList
+		objs8.Push(tmpList[1])
+		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
+	}
 
 	return null
 }

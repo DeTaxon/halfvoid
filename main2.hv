@@ -20,15 +20,19 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 		return 0
 	if a > b
 		return 1
-	return 0 - 1
+	return -1
 }
 
 main := !(char^[] args) -> int
 {
-	
-	//lst := ContainerCommonMap.{AVLTree.{BadPair.{int,int}},int,int}
-	//lst[1] = 13
+	tst := AVLSet.{int}
 
+	tst.Insert(1)
+	tst.Insert(5)
+	tst.Insert(-10)
+	tst.Insert(5)
+
+	printf("hm %i\n",tst.Size())
 
 	return 0
 }
