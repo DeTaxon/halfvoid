@@ -1,0 +1,107 @@
+//AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree,KEY,VALUE}
+//RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
+
+ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
+{
+	itTree := TreeType //.{BadPair.{KEY,VALUE}}
+	itSize := int
+
+	this := !() -> void
+	{
+		itSize = 0
+	}
+	//"[]?" := !(KEY dat) -> ref VALUE
+	//{
+	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+	//	if resl == null return null
+	//	return resl.data.second
+	//}
+	"[]" := !(KEY dat) -> VALUE&
+	{
+		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^
+		cnst := BadPair.{KEY,VALUE}
+		cnst.first = dat
+		if itTree.FindOrCreate(cnst,resl&)
+		{
+			resl.data.first = dat
+			itSize += 1
+		}
+		return resl.data.second
+	}
+	//Key := !(KEY dat) .{} -> ref KEY
+	//{
+	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+	//	assert(resl != null)
+	//	return resl.data.first
+	//}
+	//Destroy := !() -> void
+	//{
+	//	itTree.Destroy()
+	//	itSize = 0
+	//}
+	//TryFind := !(KEY dat) -> VALUE^
+	//{
+	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+	//	if resl == null return null
+	//	return resl.data.second&
+	//}
+	//Contain := !(KEY dat) -> bool
+	//{
+	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+	//	return resl != null
+	//}
+	//Contain := !(!(KEY)&->int cmpFunc) -> bool
+	//{
+	//	resl := itTree.FindNode((x) ==> {
+	//		return cmpFunc(x.first)
+	//	})
+	//	return resl != null
+	//}
+	//Remove := !(DATA dat) .{} -> void
+	//{
+	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
+	//	if resl != null{
+	//		itTree.RemoveNode(resl)
+	//		itSize -= 1
+	//	}
+	//}
+	//"~For" := !() -> !(KEY^&)& -> VALUE&
+	//{
+	//	return _createIterator(false)
+	//}
+	//Reverse := fake
+	//{
+	//	"~For" := !() -> !(KEY^&)& -> VALUE&
+	//	{
+	//		return _createIterator(true)
+	//	}
+	//}
+
+	Size := !() -> int { return itSize }
+	//"in" := !(KEY val) -> bool
+	//{
+	//	return Contain(val)
+	//}
+	//Values := fake
+	//{
+	//	"in" := !(VALUE val) -> bool
+	//	{
+	//		if this[^] == val
+	//			return true
+	//		return false
+	//	}
+	//	Clone := !() .{} -> VALUE[] 
+	//	{
+	//		res := new VALUE[itSize]
+	//		for frm : this, to : res
+	//		{
+	//			to = frm
+	//		}
+	//		return res
+	//	}
+	//	Get := !() -> VALUE[]
+	//	{
+	//		return @temp Clone()
+	//	}
+	//}
+}

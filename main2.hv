@@ -25,11 +25,10 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 
 main := !(char^[] args) -> int
 {
-	//tst := AVLTree.{int}
-	//nd := CommonTreeNode.{int}^
-	//tst.FindOrCreate(1,nd&)
+	
+	//lst := ContainerCommonMap.{AVLTree.{BadPair.{int,int}},int,int}
+	//lst[1] = 13
 
-	printf("test %f\n",-1.5)
 
 	return 0
 }

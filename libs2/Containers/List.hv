@@ -1,0 +1,92 @@
+ListNode := class .{@T}
+{
+	data := T
+	next := ListNode.{T}^
+	prev := ListNode.{T}^
+}
+
+List := class.{@T} extend TGCObject
+{
+	start := ListNode.{T}^
+	end := ListNode.{T}^
+
+	itSize := int
+
+	Push := !(T itm) -> void
+	{
+		newNode := createNode()
+		if itSize == 0
+		{
+			start = newNode
+			end = newNode
+		}else{
+			end.next = newNode
+			newNode.prev = end
+			end = newNode
+		}
+		itSize += 1
+		newNode.data = itm
+	}
+	PushFront := !(T itm) -> void
+	{
+		newNode := createNode()
+		if itSize == 0
+		{
+			start = newNode
+			end = newNode
+		}else{
+			start.prev = newNode
+			newNode.next = start
+			start = newNode
+		}
+		itSize += 1
+		newNode.data = itm
+	}
+	Pop := !() -> T
+	{
+		assert(itSize >= 1)
+		result = start.data
+		if itSize == 1
+		{
+			destroyNode(start)
+			start = null
+			end = null
+		}else{
+			nd := start
+			start = start.next
+			destroyNode(nd)
+		}
+		itSize -= 1
+	}
+	Size := !() -> int { return itSize }
+	Destroy := virtual !() -> void
+	{
+		itr := start
+		while itr != null
+		{
+			nd := itr
+			destroyNode(nd)
+			itr = itr.next
+		}
+	}
+	"for" := !() -> !()&->T&
+	{
+		x := () ==> T& {
+			itr := start
+			while itr != null
+			{
+				yield itr.data
+				itr = itr.next
+			}
+		}
+		return x.Capture()
+	}
+	destroyNode := !(ListNode.{T}^ nd) -> void
+	{
+		delete nd
+	}
+	createNode := !() -> ListNode.{T}^
+	{
+		return new ListNode.{T}
+	}
+}
