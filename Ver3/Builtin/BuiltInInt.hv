@@ -70,6 +70,75 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 }
+
+BuiltInIntDecInc := class extend BoxFuncCommon
+{
+	llvm := char^
+	this := !(TypeFunc^ iType,char^ llvmOper) -> void
+	{
+		SetType(iType)
+		llvm = llvmOper
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPointPre(f)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = load "
+		tp.PrintType(f)
+		f^ << ","
+		tp.GetPoint().PrintType(f)
+		f^ << " "
+		lst[0].PrintPointUse(f)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "%Temp" << resId << " = " << llvm << " " 
+		tp.PrintType(f)
+		f^ << " %T" << resId
+		f^ << ", 1"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "store "
+		tp.PrintType(f)
+		f^ << " %Temp" << resId << ","
+		tp.GetPoint().PrintType(f)
+		f^ << " "
+		lst[0].PrintPointUse(f)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInIntMinus := class extend BoxFuncCommon
+{
+	llvm := char^
+	cnstVal := char^
+	this := !(TypeFunc^ iType,char^ lvm,char^ cv) -> void
+	{
+		SetType(iType)
+		llvm = lvm
+		cnstVal = cv
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = "<< llvm <<" " 
+		tp.PrintType(f)
+		f^ << " " << cnstVal << ", "
+		lst[0].PrintUse(f)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 BuiltInPrimeStore := class extend BoxFuncCommon
 {
 	this := !(TypeFunc^ iType) -> void
@@ -114,6 +183,8 @@ CreateBuiltinsInt := !() -> void
 		baseRefed := GetFuncType(![x,x],![true,false],x)
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		cmpType := GetFuncType(![x,x],GTypeBool)
+		incType := GetFuncType(![x],![true],x)
+		unarMinusType := GetFuncType(![x],x)
 
 		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"add") )
 		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"sub") )
@@ -122,6 +193,11 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+
+		bSpace.Functions[StringSpan("++")].Push(new BuiltInIntDecInc(incType,"add") )
+		bSpace.Functions[StringSpan("--")].Push(new BuiltInIntDecInc(incType,"sub") )
+
+		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"sub","0") )
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
@@ -159,6 +235,7 @@ CreateBuiltinsInt := !() -> void
 	ForEachFloatType( (x) ==> {
 		strt := GetFuncType(![x,x],x)
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		unarMinusType := GetFuncType(![x],x)
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
@@ -170,6 +247,8 @@ CreateBuiltinsInt := !() -> void
 		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		//bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
 		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+
+		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"fsub","0.0") )
 
 		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
 		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )

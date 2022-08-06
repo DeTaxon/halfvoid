@@ -13,95 +13,24 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(spn&)
 }
 
-TArrayView := class .{@T} extend TGCObject
+
+"<=>" := !(int a, int b) -> int //TODO to Buildin
 {
-	Size := virtual !() -> int {}
-	"[]" := virtual !(int i) -> T& { }
-	"for" := virtual !() -> !()& -> T& {
-		x := () ==> T& {
-			i := 0
-			s := Size()
-			while i < s
-			{
-				yield this[i]
-				i += 1
-			}
-		}
-		preRes := x.Capture()
-		return preRes
-	}
-	//Destroy := virtual !() -> void {}
-
-	//Reverse := fake
-	//{
-	//	"[]" := virtual !(int i ) ->T& {}
-	//}
+	if a == b
+		return 0
+	if a > b
+		return 1
+	return 0 - 1
 }
-
-TArraySpan := class .{@T} extend TArrayView.{T}
-{
-	pointer := T^
-	itSize := int
-
-	this := !(T^ p, int s) -> void
-	{
-		pointer = p
-		itSize = s
-	}
-	Size := virtual !() -> int { return itSize }
-	"[]" := virtual !(int i) -> T& { return pointer[i] }
-}
-
-"[]" := !(TArrayView.{@T}^ x,int i) -> T&
-{
-	assert(x != null)
-	return x^[i]
-}
-
-//main := !(char[] args) -> void
-//{
-//	
-//}
-
-z := !(int[] x) -> void
-{
-	for it : x
-	{
-		printf("wa %i\n",it)
-	}
-	printf("ye\n")
-}
-
-"![]" := !(args...) .{@ResType} -> ResType
-{
-	for it,i : args
-	{
-		result[i] = it
-	}
-}
-
-internalCreateEmptyArray := !() .{@Typ} -> TArraySpan.{Typ}
-{
-	result.itSize = 0
-}
-
-"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> TArraySpan.{Typ}
-{
-	result.pointer = itArr[0]&
-	result.itSize = Size
-}
-
-"->{}" := !(TArraySpan.{@T} x) .{T[]} -> T[]
-{
-	return x&
-}
-
 
 main := !(char^[] args) -> int
 {
-	libGlfwInit()
-	glfwInit()
-	printf("test %p\n",glfwInit)
+	//tst := AVLTree.{int}
+	//nd := CommonTreeNode.{int}^
+	//tst.FindOrCreate(1,nd&)
+
+	printf("test %f\n",-1.5)
+
 	return 0
 }
 

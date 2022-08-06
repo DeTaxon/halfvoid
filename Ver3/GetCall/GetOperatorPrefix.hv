@@ -1,6 +1,9 @@
 TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 {
-	if itm.Down?.GetValue() == "return" or  itm.Down?.GetValue() == "yield"
+	if itm.Down == null
+		return null
+
+	if itm.Down.GetValue() == "return" or itm.Down.GetValue() == "yield"
 	{
 		isYield := false
 		if itm.Down.GetValue() == "yield"
@@ -29,7 +32,7 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		preRes.ResolveStep()
 		return preRes.GetReturnObj()
 	}
-	if itm.Down?.GetValue() == "defer"
+	if itm.Down.GetValue() == "defer"
 	{
 		lmbdPre := CreateHeadlessLambda(itm.Down.Right)->{BoxLambdaHolder^}
 		assert(lmbdPre is BoxLambdaHolder)
@@ -42,6 +45,20 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		newType := GCDeferLambda.GetClass(arr).ItType
 		arr.Destroy()
 		return innerTrySetType(lmbd,newType)
+	}
+	if itm.Down.GetValue() == "-"
+	{
+		if itm.Down.Right == null
+			return null
+		if itm.Down.Right.Right != null
+			return null
+		dObj := TryGetExeCall(itm.Down.Right)
+		if dObj == null
+			return null
+
+		objs5 := CheckExeDownList
+		objs5.Push(dObj)
+		return CreateFuncCall(StringSpan(". -"),objs5)
 	}
 	return null
 }

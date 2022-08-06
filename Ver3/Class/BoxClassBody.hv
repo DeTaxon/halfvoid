@@ -190,7 +190,7 @@ BoxClassBody := class extend BoxClass
 						}
 					}else
 					{
-						assert(false)
+						itm.EmitError("Unknow object")
 					}
 				}
 			}
