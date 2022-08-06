@@ -55,13 +55,16 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	{
 		assert(false)
 	}
+	if obj is BoxArrayHolder and IsViewType(expType)
+	{
+		return obj->{BoxArrayHolder^}.CreateViewArray(expType)
+	}
 
 	objs := CheckExeDownList
 	objs.Push(obj)
 	cnsts := List.{BoxExeConstObj^}
 	cnsts.Push(GetConstType(expType))
 	resCall := CreateFuncCall(StringSpan("->{}"),objs,cnsts)
-	printf("hm %p\n",resCall)
 	objs.Destroy() cnsts.Destroy()
 	if resCall != null
 		return resCall

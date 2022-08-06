@@ -80,6 +80,11 @@ z := !(int[] x) -> void
 	}
 }
 
+internalCreateEmptyArray := !() .{@Typ} -> TArraySpan.{Typ}
+{
+	result.itSize = 0
+}
+
 "->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> TArraySpan.{Typ}
 {
 	result.pointer = itArr[0]&
@@ -94,7 +99,7 @@ z := !(int[] x) -> void
 
 main := !(char^[] args) -> int
 {
-	z(![1,2,3])
+	z(![])
 	return 0
 }
 

@@ -394,7 +394,10 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				thisCase = 1000
 			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
 				thisCase = 0
-			} else{
+			} else if objs[i] is BoxArrayHolder and IsViewType(toType)
+			{
+				thisCase = 0
+			}else{
 				objs12 := CheckExeDownList
 				objs12.Push(objs[i])
 				cnsts12 := List.{BoxExeConstObj^}

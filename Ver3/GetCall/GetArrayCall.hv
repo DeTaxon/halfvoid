@@ -36,7 +36,7 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 
 	if objs.Size() == 0
 	{
-		assert(false) //TODO
+		return new BoxArrayHolder()
 	}
 
 	if allConsts
@@ -80,4 +80,55 @@ BoxArrayConst := class extend BoxExeConstObj
 		f^ << "]"
 	}
 
+}
+
+BoxArrayHolder := class extend BoxExeObj
+{
+	vals := CheckExeDownList
+	this := !() -> void
+	{
+		ObjType = GTypeVoid
+	}
+	CreateViewArray := !(Type^ tp) -> BoxExeObj^
+	{
+		if vals.Size() == 0
+		{
+			objs := CheckExeDownList
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetConstType(GetViewBaseType(tp)))
+			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
+			cnsts.Destroy()
+			return resFunc.CreateCall()
+		}
+		assert(false)
+		return null
+	}
+}
+IsViewType := !(Type^ tp) -> bool
+{
+	if not (tp is in TypePoint)
+		return false
+	if not (tp.Base is in TypeClass)
+		return false
+	cls := tp.Base->{TypeClass^}.ToClass
+
+	InternalsHatch.Await()
+	if cls.TemplateParent != ArrayViewTemplate
+		return false
+	return true
+}
+
+GetViewBaseType := !(Type^ tp) -> Type^
+{
+	if not (tp is in TypePoint)
+		return null
+	if not (tp.Base is in TypeClass)
+		return null
+	cls := tp.Base->{TypeClass^}.ToClass
+
+	InternalsHatch.Await()
+	if cls.TemplateParent != ArrayViewTemplate
+		return null
+	return cls.Constants?.Constants[0]->{ConstType^}.Value
+	return null
 }

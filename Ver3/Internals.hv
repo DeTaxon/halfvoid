@@ -32,6 +32,7 @@ ExceptionThrowException := BoxFunc^
 ExceptionGetException := BoxFunc^
 
 ArrayViewTemplate := BoxClassTemplate^
+ArrayViewCreateEmptyArray := BoxFuncTemplate^
 
 InternalsHatch := THatch
 
@@ -111,6 +112,7 @@ InitInternals := !() -> void
 	ExceptionGetException = intGetFunc("internalGetException")
 
 	ArrayViewTemplate = intGetClassTemplate("TArrayView")
+	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
 
 	InternalsHatch.Emit()
 }

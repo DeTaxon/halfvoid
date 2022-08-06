@@ -27,7 +27,7 @@ innerCheckForCycleMacro := !(Token^ itm) -> void
 		iter = iter.Right
 	}
 	
-	if itm.Down?.Right?.GetValue() == "[]" and itm.Down.Right.Down.GetValue() == "^"
+	if itm.Down?.Right?.GetValue() == "[]" and itm.Down.Right.Down?.GetValue() == "^"
 	{
 		indToken := itm.Down.Right.Down.Right
 		indName := StringSpan
