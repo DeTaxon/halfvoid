@@ -13,26 +13,17 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	return main(spn&)
 }
 
-
-"<=>" := !(int a, int b) -> int //TODO to Buildin
-{
-	if a == b
-		return 0
-	if a > b
-		return 1
-	return -1
-}
-
 main := !(char^[] args) -> int
 {
-	tst := AVLSet.{int}
+	lib := GetLibrary("libglfw.so")
+	//printf("test %p\n",lib)
+	//glfwInit&->{void^^}^ = lib.Get("glfwInit")
+	//glfwCreateWindow&->{void^^}^ = lib.Get("glfwCreateWindow")
+	//glfwMakeContextCurrent&->{void^^}^ = lib.Get("glfwMakeContextCurrent")
 
-	tst.Insert(1)
-	tst.Insert(5)
-	tst.Insert(-10)
-	tst.Insert(5)
-
-	printf("hm %i\n",tst.Size())
+	//glfwInit()
+	//win := glfwCreateWindow(100,100,"hi",null,null)
+	//glfwMakeContextCurrent(win)
 
 	return 0
 }

@@ -199,6 +199,8 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"sub","0") )
 
+		bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
+
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
 		bSpace.Functions[StringSpan("and_b")].Push(new BuiltInIntBase(strt,"and") )

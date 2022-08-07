@@ -1,0 +1,104 @@
+{
+	"link" : "static",
+	"initname" : "winapiinit",
+	"libs" : [
+		"KERNEL32.dll"
+	],
+	"consts" : {
+		"FILE_BEGIN" : 0,
+		"FILE_CURRENT" : 1,
+		"FILE_END" : 2,
+
+		"FILE_SHARE_READ" : 1,
+		"FILE_SHARE_WRITE" : 2,
+		"FILE_SHARE_DELETE" : 4,
+
+		"CREATE_ALWAYS" : 2,
+		"CREATE_NEW" : 1,
+		"OPEN_ALWAYS" : 4,
+		"OPEN_EXISTING" : 3,
+		"TRUNCATE_EXISTING" : 5
+	},
+	"funcs" : {
+		
+		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
+		"WriteFile" : "int,void^,void^,u32,u32^,void^",
+		"ReadFile" : "int,void^,void^,u32,u32^,void^",
+		"CloseHandle" : "void,void^",
+
+		"DeleteFileW" : "int,u16^",
+
+		"Sleep" : "void,u32",
+		"GetTickCount64" : "u64",
+
+		"LoadLibraryW" : "void^,u16^", 
+		"GetProcAddress" : "void^,void^,char^", 
+		"FreeLibrary" : "void,void^",
+
+		"MultiByteToWideChar" : "int,int,int,char^,int,u16^,int",
+		"WideCharToMultiByte" : "int,int,int,u16^,int,char^,int,void^,void^",
+
+		"SetConsoleOutputCP" : "void,u32",
+		"SetConsoleCP" : "void,u32",
+
+		"GetLastError" : "u32",
+
+		"SetFilePointer" : "void,void^,u32,u32^,u32",
+		"GetFullPathNameW" : "int,u16^,int,u16^,u16^",
+
+		"GetFileTime" : "int,void^,u64^,u64^,u64^",
+
+		"GetFileAttributesW" : "int,u16^",
+
+		"CreateDirectoryW" : "int,void^,void^",
+		
+		"GetCommandLineW" : "u16^",
+		"LocalFree" : "void,void^",
+
+		"ReadDirectoryChangesW" : "void^,void^,void^,int,int,int,void^,void^,void^",
+
+		"CreateFileMappingW" : "void^,void^,void^,int,u32,u32,void^",
+		"MapViewOfFile" : "void^,void^,int,u32,u32,size_t",
+		"UnmapViewOfFile" : "void,void^",
+
+		"FindFirstFileW" : "void^,u16^,void^",
+		"FindNextFileW" : "bool,void^,void^",
+		"FindClose" : "bool,void^",
+
+		"GetFileInformationByHandle" : "int,void^,void^",
+
+		"FormatMessageW" : "int,int,void^,u32,int,u16^^,int,void^",
+
+		"VirtualAlloc" : "void^,void^,u64,u32,u32",
+		"VirtualProtect" : "void^,void^,u64,u32,u32^",
+
+		"InitializeCriticalSectionAndSpinCount" : "void,void^,int",
+		"EnterCriticalSection" : "void,void^",
+		"LeaveCriticalSection" : "void,void^",
+		"DeleteCriticalSection" : "void,void^",
+		"InitializeConditionVariable" : "void,void^",
+		"SleepConditionVariableCS" : "void,void^,void^, u32",
+		"WakeConditionVariable" : "void,void^",
+		"WakeAllConditionVariable" : "void,void^",
+
+		"CreateThread" : "void^,void^,size_t,void^,void^,u32,void^",
+		"WaitForSingleObject" : "void,void^,u32",
+
+		"ConvertThreadToFiber" : "void^,void^",
+		"SwitchToFiber" : "void,void^",
+		"CreateFiber" : "void^,size_t,void^,void^",
+		"DeleteFiber" : "void,void^",
+
+		"CreateEventA" : "void^,void^,int,int,char^",
+		"SetEvent" : "int,void^",
+		"ResetEvent" : "int,void^",
+		"WaitForMultipleObjects" : "int,u32,void^,int,u32",
+
+		"GetOverlappedResult" : "int,void^,void^,int^,int",
+
+		"GetTempPathW" : "int,int,u16^",
+		"GetTempFileNameW" : "int,u16^,u16^,int,u16^",
+
+		"GetSystemInfo" : "void,void^"
+	}
+}

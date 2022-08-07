@@ -1,5 +1,5 @@
-//AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree,KEY,VALUE}
-//RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
+AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree,KEY,VALUE}
+RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
 
 ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 {
@@ -44,12 +44,14 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	//	itTree.Destroy()
 	//	itSize = 0
 	//}
-	//TryFind := !(KEY dat) -> VALUE^
-	//{
-	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
-	//	if resl == null return null
-	//	return resl.data.second&
-	//}
+	TryFind := !(KEY dat) -> VALUE^
+	{
+		cnst := BadPair.{KEY,VALUE}
+		cnst.first = dat
+		resl := itTree.FindNode(cnst)
+		if resl == null return null
+		return resl.data.second&
+	}
 	//Contain := !(KEY dat) -> bool
 	//{
 	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))

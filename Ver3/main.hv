@@ -67,12 +67,13 @@ main := !(int argc, char^^ argv) -> int
 					num := StrToInt(argv[i][2..0]) //TODO: check for num and memory
 					TFSReadFolder(StringSpan(argv[i+1]),true,zFil ==> {
 						nm := zFil.GetName()
-						if nm[-3..0] == ".hv"
+						nmEnd := StringEnd(nm)
+						if nm[-3..0] == ".hv" or nmEnd == ".hv.posix" //TODO unconst
 						{
 							fObj := new BoxFile(zFil)
 							CodeFiles.Push(fObj)
 							CodeSpaces[num].Files.Push(fObj)
-						}else if nm[-5..0] == ".clib"
+						}else if nm[-5..0] == ".clib" or nmEnd == ".clib.posix"
 						{
 							spc := CodeSpaces[num]&
 							spc.CLibs.Push(new CLib(zFil))

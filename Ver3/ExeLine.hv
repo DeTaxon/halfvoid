@@ -257,6 +257,11 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 
 GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxUnit^
 {
+	return GetBestFunc(x,Objs,consts,false)
+}
+
+GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,bool expectExac) -> BoxUnit^
+{
 	priorityes := HybridQueue.{int,13}
 	defer priorityes.Destroy()
 
@@ -284,6 +289,11 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 	{
 		if priorityes[i] < priorityes[bestI]
 			bestI = i
+	}
+	if expectExac
+	{
+		if priorityes[bestI] != 0
+			return null
 	}
 	if priorityes[bestI] == CmpNoExchange
 		return null
@@ -316,15 +326,21 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 	}
 }
 
+oneGonnaOnly := task_local bool
 IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
 {
+	if oneGonnaOnly
+		return false
+	oneGonnaOnly = true
+
 	callItem := BoxUnit^
 	GetItemGlobal(name, x ==>{
-		callItem = GetBestFunc(x,Objs,consts)
+		callItem = GetBestFunc(x,Objs,consts,true)
 		if callItem == null
 			return false
 		return true
 	})
+	oneGonnaOnly = false
 	return callItem != null
 }
 
@@ -408,7 +424,11 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
 				objs12.Destroy() cnsts12.Destroy()
 				if excCheck
-				{
+				{	
+					if toType is in TypePoint
+					{
+						printf("hoy %s %s\n",objs[i].GetType().GetBADStr(),toType.GetBADStr())
+					}
 					thisCase = 1000
 				}else{
 					return CmpNoExchange
@@ -488,10 +508,6 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 		{
 			return 2000 + (100 - t1.GetSize()) //todo warning, but not here
 		}
-	}
-	if frm is in TypePoint and to == GTypeVoidP
-	{
-		return 1000
 	}
 
 
