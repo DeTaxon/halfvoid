@@ -1,0 +1,99 @@
+TString := class extend TGCObject
+{
+	charPtr := char^
+	itSize := int
+
+	this := !(char^ inp) -> void
+	{
+		if inp == null
+		{
+			charPtr = null
+			itSize = 0
+		}else{
+			itSize = strlen(inp)
+			charPtr = malloc(itSize + 1)->{char^}
+			memcpy(charPtr,inp,itSize)
+			charPtr[itSize] = 0
+		}
+	}
+	Destroy := virtual !() -> void
+	{
+		if charPtr == null
+			return void
+		
+		free(charPtr)
+		charPtr = null
+		itSize = 0
+	}
+	"[]" := !(int ind) -> int
+	{
+		assert(ind >= 0 and ind < itSize)
+		return charPtr[ind]
+	}
+	Str := !() -> char^
+	{
+		return charPtr
+	}
+
+	Normalize := virtual !() -> TString^
+	{
+		return this&
+	}
+	Size := !() -> int { return itSize }
+}
+
+TStringView := class extend TGCObject
+{
+	Str := virtual !() -> char^ {}
+	Size := virtual !() -> int {}
+	Normalize := virtual !() -> TString^ {}
+}
+
+
+TStringViewOnTString := class extend TStringView
+{
+	ptrBase := TString^
+	Str := virtual !() -> char^ { return ptrBase.Size()}
+	Size := virtual !() -> int { return ptrBase.Size()}
+	Normalize := virtual !() -> TString^ { return ptrBase }
+}
+
+TStringViewOnCStr := class extend TStringView
+{
+	ptrBase := char^
+	itSize := int
+	Str := virtual !() -> char^ { return ptrBase }
+	Size := virtual !() -> int { return itSize }
+	Normalize := virtual !() -> TString^ { return new TString(ptrBase) }
+}
+
+"<=>" := !(TString^ a, TString^ b) -> int
+{
+	if a->{void^} == null and b->{void^} == null
+		return 0
+	if a->{void^} == null
+		return -1
+	if b->{void^} == null
+		return 1
+	return strcmp(a.charPtr,b.charPtr)
+}
+
+
+"==" := !(TString^ a, TString^ b) -> bool
+{
+	cmp := a <=> b
+	return cmp == 0
+}
+
+"!=" := !(TString^ a, TString^ b) -> bool
+{
+	cmp := a <=> b
+	return cmp == 0
+}
+
+
+"->{}" := !(char^ obj) .{TStringView} -> TStringViewOnCStr
+{
+	result.ptrBase = obj
+	result.itSize = strlen(obj)
+}

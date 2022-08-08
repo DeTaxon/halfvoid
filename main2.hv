@@ -1,29 +1,10 @@
 
-internalHVGetTaskLocalTuple := !() -> void^
-{
-	return g
-}
-
-
-internalHVEntryPoint := !(int argc,char^^ argv) -> int
-{
-	spn := TArraySpan.{char^}//(argv,argc)
-	spn.pointer = argv
-	spn.itSize = argc
-	return main(spn&)
-}
 
 main := !(char^[] args) -> int
 {
 	libGlfwInit()
-
-	glfwInit()
-	win := glfwCreateWindow(100,100,"hi",null,null)
-	glfwMakeContextCurrent(win)
-
 	return 0
 }
-
 
 
 arFunc := void^

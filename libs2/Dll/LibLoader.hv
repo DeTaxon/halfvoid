@@ -95,14 +95,15 @@ LibDatabaseType := class
 			hndl = OpenLib(nrm.Str())
 
 			
-			//if hndl == null
-			//{
-			//	exTest := Path("./"sbt + name)
-			//	if exTest.IsExist()
-			//	{
-			//		hndl = OpenLib(exTest.FullPath().Get())
-			//	}
-			//}
+			if hndl == null
+			{
+				nameBuff := char[1024] //TODO better string support?
+				sprintf(nameBuff,"./%s",nrm.Str())
+				//if exTest.IsExist()
+				//{
+					hndl = OpenLib(nameBuff)
+				//}
+			}
 
 			if hndl != null
 			{

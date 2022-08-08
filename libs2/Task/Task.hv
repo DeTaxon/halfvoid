@@ -1,0 +1,11 @@
+TTask := class extend TGCObject
+{
+	taskLocalData := internalHVTaskLocalTuple
+}
+
+CurrentTask := thread_local TTask^
+
+internalHVGetTaskLocalTuple := !() -> void^
+{
+	return CurrentTask.taskLocalData&
+}
