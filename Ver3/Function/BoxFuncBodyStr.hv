@@ -2,12 +2,36 @@ BoxFuncBodyStr := class extend BoxFuncBody
 {
 	this := !(TypeFunc^ fncType) -> void
 	{
+
+		Name = "anon"
 		SetType(fncType)
+		readyState.Emit()
+		ResultTypeHatch.Emit()
+		ExitLabel = new BoxLabel()
+
+		if DebugMode
+		{
+			funcLine = new BoxExeLine()
+			funcLine.ItToken = GFuncGCSetNull->{BoxFuncBody^}.funcLine.ItToken //TODO better debug data
+		}
 	}
 
 	ParseString := !(StringSpan strData) -> void
 	{
-		
+
+		fl := GetAnyFile()
+		tkns := GetObjectsFromMemory(fl,strData.Str(),strData.Size())
+		bdy = new TokenSymbol(StringSpan("{}"),1)
+		bdy.Line = funcLine.ItToken.Line
+		bdy.Down = tkns
+
+		itr := tkns
+		while itr != null
+		{
+			itr.Up = bdy
+			itr = itr.Right
+		}
+		ParseBodyForced()
 	}
 	ParseBody := virtual !() -> void {}
 }

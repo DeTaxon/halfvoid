@@ -24,7 +24,7 @@ BoxBlock := class extend BoxUnit
 			gcIndex := GCVarsInUse
 			GCVarsInUse += 1
 
-			assert(CurrentFunc is BoxFuncBody)
+			assert(CurrentFunc is in BoxFuncBody)
 			CurrentFunc->{BoxFuncBody^}.NotifyGCUsed()
 
 			newVar := new FuncGCLocalParam(varType,gcIndex)

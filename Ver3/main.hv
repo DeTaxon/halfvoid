@@ -159,6 +159,25 @@ main := !(int argc, char^^ argv) -> int
 		GFuncsInProgress[0].WaitReadyState()
 		GFuncsInProgress.Pop()
 	}
+
+	for it : CodeSpaces
+	{
+		for libs : it.CLibs
+			libs.CreateInitPart()
+	}
+
+	while GClassesInProgress.Size() != 0
+	{
+		GClassesInProgress[0].AwaitReadyState()
+		GClassesInProgress.Pop()
+	}
+
+	while GFuncsInProgress.Size() != 0
+	{
+		GFuncsInProgress[0].WaitReadyState()
+		GFuncsInProgress.Pop()
+	}
+
 	printf("good to go\n")
 
 	outFile := new TFile(OutputFile,"wb")

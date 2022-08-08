@@ -235,7 +235,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		GDebugFuncId = 0
 		CurrentFunc = this&
 
-		if DebugMode
+		if DebugMode and funcLine != null
 		{
 			GDebugFuncId = GetNewId()
 			GDebugLineCallId = funcLine.MetaId

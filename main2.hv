@@ -15,15 +15,11 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 
 main := !(char^[] args) -> int
 {
-	lib := GetLibrary("libglfw.so")
-	//printf("test %p\n",lib)
-	//glfwInit&->{void^^}^ = lib.Get("glfwInit")
-	//glfwCreateWindow&->{void^^}^ = lib.Get("glfwCreateWindow")
-	//glfwMakeContextCurrent&->{void^^}^ = lib.Get("glfwMakeContextCurrent")
+	libGlfwInit()
 
-	//glfwInit()
-	//win := glfwCreateWindow(100,100,"hi",null,null)
-	//glfwMakeContextCurrent(win)
+	glfwInit()
+	win := glfwCreateWindow(100,100,"hi",null,null)
+	glfwMakeContextCurrent(win)
 
 	return 0
 }

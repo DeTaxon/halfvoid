@@ -13,6 +13,8 @@ CLib := class
 	initFuncName := StringSpan
 	linkType := StringSpan
 
+	initFunc := BoxFuncBodyStr^
+
 	this := !(vRepoFile^ fil) -> void
 	{
 		linkType = StringSpan("dynamic")
@@ -68,6 +70,14 @@ CLib := class
 		if itFuncs.Contain(name)
 			return itFuncs[name]
 
+		if name == initFuncName
+		{
+			assert(initFunc == null)
+			initFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
+			itFuncs[name] = initFunc
+			return initFunc
+		}
+
 		if itPreFuncs.Contain(name)
 		{
 			return innerGetFunc(name)
@@ -115,8 +125,41 @@ CLib := class
 			return glVar
 		}
 
-		func := new BoxFuncDeclare(fType,name) //TODO: dynamic call
+		func := new BoxFuncDeclare(fType,name)
 		itFuncs[name] = func
 		return func
 	}
+
+	CreateInitPart := !() -> void
+	{
+		if initFunc == null
+			return void
+
+		dt := TEchoStream //TODO better support, func from str look stupid
+
+		dt << "lib := GetLibrary(\"" << dlls[0] << "\")\n"
+		for it, ind : itFuncs
+		{
+			if ind == initFuncName
+				continue
+			dt << ind << "&->{void^^}^ = lib.Get(\"" << ind << "\")\n"
+		}
+
+		st := dt.Str()
+
+		blank := StringSpan(st)
+		initFunc.ParseString(blank)
+	}
+}
+
+GetAnyFile := !() -> BoxFile^
+{
+	for spc : CodeSpaces
+	{
+		for fil : spc.Files
+		{
+			return fil
+		}
+	}
+	assert(false)
 }
