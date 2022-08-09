@@ -339,6 +339,20 @@ IntExchange := class extend BoxExeObj
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
+
+		if inType.GetSize() == ObjType.GetSize()
+		{
+			f^ << "%T" << resId << " = add "
+			inType.PrintType(f)
+			f^ << " "
+			Down.PrintUse(f)
+			f^ << " , 0 "
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+			return void
+		}
+
 		f^ << "%T" << resId << " = "
 		if inType.GetSize() > ObjType.GetSize()
 		{

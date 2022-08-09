@@ -1,0 +1,18 @@
+TTaskThreadData := class extend TGCObject
+{
+	AllTasks := AVLSet.{TTask^}
+	PendingTasks := List.{TTask^}
+	DeleteTasks := List.{TTask^}
+
+	ThreadMainTask := TTask^
+
+	this := !() -> void
+	{
+	}
+
+	Destroy := virtual !() -> void
+	{
+		AllTasks.Destroy()
+		ThreadMainTask = null
+	}
+}

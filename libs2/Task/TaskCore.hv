@@ -1,6 +1,47 @@
 
 
-EnterTaskCycle := !() -> void
+EnterTaskThreadCycle := !() -> void
 {
+
+	haveWork := true
+	while haveWork
+	{
+		haveWork = false
+
+		ct := CurrentThread
+		while ct.PendingTasks.Size() != 0
+		{
+			haveWork = true
+
+			hm := ct.PendingTasks.Pop()
+			hm.switchToTask()
+		}
+
+		while ct.DeleteTasks.Size() != 0
+		{
+			haveWork = true
+
+			delTask := ct.DeleteTasks.Pop()
+			//ct.AllTasks.Remove(delTask)
+			delTask.Destroy()
+			delTask = null
+		}
+
+
+		if gTaskRingWorkCount != 0
+		{
+			haveWork = true
+
+			cqe := void^
+			ur_wait_cqe_timeout(gTaskIORing,cqe&->{void^^},10.0)
+			if cqe != null
+			{
+				dat := ur_cqe_get_data(cqe)->{TTask^}
+				ct.PendingTasks.Push(dat)
+				ur_cqe_seen(gTaskIORing,dat)
+			}
+		}
+
+	}
 
 }

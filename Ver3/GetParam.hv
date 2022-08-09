@@ -160,6 +160,15 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = new FuncPointerParam(it->{BoxFunc^})
 				return true
 			}
+			if it is in BoxFuncTemplate
+			{
+				asTmpl := it->{BoxFuncTemplate^}
+				if asTmpl.IsOneFunc()
+				{
+					callItem = new FuncPointerParam(asTmpl.GetOneFunc())
+					return true
+				}
+			}
 		}
 		return false
 	})

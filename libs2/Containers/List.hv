@@ -58,6 +58,17 @@ List := class.{@T} extend TGCObject
 		}
 		itSize -= 1
 	}
+	"[]" := !(int ind) -> T&
+	{
+		assert(ind >= 0 and ind < itSize)
+
+		itr := start
+		for i : ind
+		{
+			itr = itr.next
+		}
+		return itr.data
+	}
 	Size := !() -> int { return itSize }
 	Destroy := virtual !() -> void
 	{
@@ -69,6 +80,43 @@ List := class.{@T} extend TGCObject
 			itr = itr.next
 		}
 	}
+	//DeleteIf := !( !(T&)&->bool cb) -> void
+	//{
+	//	itr := Start
+//
+	//	while itr != null
+	//	{
+	//		if false //cb(itr.data)
+	//		{
+	//			if itSize == 1
+	//			{
+	//				destroyNode(start)
+	//				start = null
+	//				end = null
+	//				itr = null
+	//			}else if itr == start
+	//			{
+	//				start = itr.next
+	//				deleteNode(itr)
+	//				itr = start
+	//			}else if itr == end
+	//			{
+	//				end = itr.prev
+	//				deleteNode(itr)
+	//				itr = null
+	//			}else{
+	//				itNode := itr
+	//				itr = itNode.next
+	//				itNode.prev.next = itNode.next
+	//				itNode.next.prev = itNode.prev
+	//			}
+	//			itSize -= 1
+//
+	//		}else{
+	//			itr = itr.next
+	//		}
+	//	}
+	//}
 	"for" := !() -> !()&->T&
 	{
 		x := () ==> T& {
@@ -83,6 +131,10 @@ List := class.{@T} extend TGCObject
 	}
 	destroyNode := !(ListNode.{T}^ nd) -> void
 	{
+		if T->TypeGroup == "Pointer"
+		{
+			nd.data = null
+		}
 		delete nd
 	}
 	createNode := !() -> ListNode.{T}^

@@ -3,6 +3,17 @@
 main := !(char^[] args) -> int
 {
 	libGlfwInit()
+
+	for i : 2
+	{
+		TSpawnTask(() ==> {
+			for i : 1
+			{
+				printf("hi\n")
+				TSleep(1)
+			}
+		})
+	}
 	return 0
 }
 

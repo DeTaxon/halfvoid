@@ -1,0 +1,17 @@
+
+gTaskIORing := void^
+gTaskRingWorkCount := int
+
+TaskDoUring := !( !(void^)&->void cb) -> void
+{
+	gTaskRingWorkCount += 1
+
+	sqe := ur_get_sqe(gTaskIORing)
+	cb(sqe)
+	ur_sqe_set_data(sqe,CurrentTask)
+	ur_submit(gTaskIORing)
+	
+	CurrentThread.ThreadMainTask.switchToTask()
+	
+	gTaskRingWorkCount -= 1
+}

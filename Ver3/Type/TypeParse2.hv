@@ -46,6 +46,8 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			k += 1
 		}
 
+		SyntaxCompress(tk.Down.Right,LexHVInputVars)
+
 		iter := skob.Down
 		while iter != null
 		{

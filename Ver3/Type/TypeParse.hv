@@ -32,6 +32,13 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 	{
 		return checkRes->{TypeVar^}.Value
 	}
+	if checkRes? is in GlobalVar
+		return null
+	if checkRes != null
+	{
+		printf("hmm %p\n",checkRes is in GlobalVar)
+		obj.EmitError("Got object, but dont know what it is, software error")
+	}
 	assert(checkRes == null)
 	return null
 }

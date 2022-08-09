@@ -21,7 +21,11 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 	Remove := !(DATA dat) -> void
 	{
 		resl := itTree.FindNode(dat)
-		if resl != null{
+		if resl != null {
+			if DATA->TypeGroup == "Pointer"
+			{
+				//resl.data = null
+			}
 			itTree.RemoveNode(resl)
 			itSize -= 1
 		}

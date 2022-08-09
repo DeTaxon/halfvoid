@@ -1,0 +1,8 @@
+
+CurrentTask := thread_local TTask^
+CurrentThread := thread_local TTaskThreadData^
+
+internalHVGetTaskLocalTuple := !() -> void^
+{
+	return CurrentTask.taskLocalData&
+}

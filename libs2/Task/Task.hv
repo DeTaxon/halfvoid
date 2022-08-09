@@ -1,11 +1,47 @@
 TTask := class extend TGCObject
 {
 	taskLocalData := internalHVTaskLocalTuple
+
+	//OS Dependent
+	uContext := u8[1024]
+	stackPtr := void^
+
+	taskLambda := !()&->void
+
+	startTaskThread := !() -> void
+	{
+		taskLambda()
+		CurrentThread.DeleteTasks.Push(this&)
+		CurrentThread.ThreadMainTask.switchToTask()
+		//CurrentTask = null
+		//setcontext(CurrentThread.ThreadMainTask.uContext[0]&)
+	}
+
+	switchToTask := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		swapcontext(oldTask->{TTask^}.uContext[0]&,this.uContext[0]&)
+	}
+
+	Destroy := virtual !() -> void
+	{
+		if stackPtr != null
+		{
+			free(stackPtr)
+			stackPtr = null
+		}
+		taskLambda = null
+
+		for fld : this.taskLocalData->AllFields
+		{
+			printf("hm %s\n",fld->TypeGroup)
+			if fld->TypeGroup == "Pointer"
+			{
+				fld = null
+			}
+		}
+	}
 }
 
-CurrentTask := thread_local TTask^
 
-internalHVGetTaskLocalTuple := !() -> void^
-{
-	return CurrentTask.taskLocalData&
-}

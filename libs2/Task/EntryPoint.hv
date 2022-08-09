@@ -2,29 +2,72 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 { 
 	//All function expects to CurrentTask be initialized, this is not working for first function
 	//so first function MUST initialize CurrentTask
-	voidVal := malloc(TTask->TypeSize)
+	voidVal := calloc(1,TTask->TypeSize)
 	internalHVInitClass(voidVal->{TTask^}^)
 	CurrentTask = voidVal->{TTask^}
+
 	return internalHVEntryPoint2(argc,argv)
 }
 
 
-gTaskIORing := void^
+
+TSpawnTask := !(!()&-> void cb) -> void
+{
+	startTask := new TTask
+	startTask.taskLambda = cb.Capture()
+
+	getcontext(startTask.uContext[0]&)
+	stackSize := 4*1024*1024
+	startTask.stackPtr = malloc(stackSize) //TODO set stack size
+	startTask.uContext[24]&->{u64^}^ = 0
+	startTask.uContext[8]&->{void^^}^ = null
+	startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
+	startTask.uContext[32]&->{u64^}^ = stackSize
+	makecontext(startTask.uContext&,ucontextStartTask,0)
+
+	CurrentThread.AllTasks.Insert(startTask)
+	CurrentThread.PendingTasks.Push(startTask)
+	startTask = null
+}
+
+
+ucontextStartTask := !() -> void
+{
+	CurrentTask.startTaskThread()
+}
+
+TSleep := !(double timeToSleep) -> void
+{
+	hmm := u64[2]
+	TaskDoUring( (sqe) ==> {
+		ur_sqe_timeout(sqe,timeToSleep,0,0,hmm&)
+	})
+}
+
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	uring_init()
 	gTaskIORing = ur_create()
 	ur_init(128,gTaskIORing,0)
 
-	sqe := ur_get_sqe(gTaskIORing)
-	ur_sqe_timeout(sqe,1.0,1,0)
-	ur_submit(gTaskIORing)
-
-	cqe := void^
-	ur_wait_cqe_timeout(gTaskIORing,cqe&->{void^^},10000.0)
+	CurrentThread = new TTaskThreadData()
+	CurrentThread.ThreadMainTask = CurrentTask
 	
-	spn := TArraySpan.{char^}//(argv,argc) ///TODO
-	spn.pointer = argv
-	spn.itSize = argc
-	return main(spn&)
+	TSpawnTask(() ==> {	
+		spn := TArraySpan.{char^}//(argv,argc) ///TODO
+		spn.pointer = argv
+		spn.itSize = argc
+		main(spn&)
+	})
+
+	EnterTaskThreadCycle()
+
+	ur_exit(gTaskIORing)
+	ur_destroy(gTaskIORing)
+
+	CurrentThread.ThreadMainTask = null
+	CurrentThread = null
+	CurrentTask = null
 }
+
+
