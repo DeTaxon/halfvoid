@@ -11,7 +11,9 @@ TaskDoUring := !( !(void^)&->void cb) -> void
 	ur_sqe_set_data(sqe,CurrentTask)
 	ur_submit(gTaskIORing)
 	
+	CurrentTask.IncRef()
 	CurrentThread.ThreadMainTask.switchToTask()
+	CurrentTask.DecRef()
 	
 	gTaskRingWorkCount -= 1
 }
