@@ -88,8 +88,9 @@ CommonTree := class .{@DATA}
 	}
 	remNode := !(CommonTreeNode.{DATA}^ toRem) .{} -> void
 	{
-			toRem.Right = CreatedNodes
-			CreatedNodes = toRem
+		delete toRem
+		//toRem.Right = CreatedNodes
+		//CreatedNodes = toRem
 	}
 	Destroy := !() -> void
 	{

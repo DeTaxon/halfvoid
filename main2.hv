@@ -5,23 +5,15 @@ main := !(char^[] args) -> int
 	libGlfwInit()
 
 	
-	x := -3
-
-	while x < 5
+	for i : 2
 	{
-		switch x
-		{
-			case -1
-				printf("hey hoy\n")
-			case 0
-				printf("hoy\n")
+		TSpawnTask(() ==> {
+			for i : 2
+			{
 				printf("hey\n")
-			case 1
-				printf("yes\n")
-			case void
-				printf("nope\n")
-		}
-		x += 1
+				TSleep(1.0)
+			}
+		})
 	}
 	
 	return 0

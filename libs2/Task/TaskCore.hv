@@ -22,7 +22,7 @@ EnterTaskThreadCycle := !() -> void
 			haveWork = true
 
 			delTask := ct.DeleteTasks.Pop()
-			//ct.AllTasks.Remove(delTask)
+			ct.AllTasks.Remove(delTask)
 			delTask.Destroy()
 			delTask = null
 		}

@@ -254,8 +254,10 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		//Start.PrintIt(0)
 		RemoveNode(toRem)
 	}
-	RebalanceDown := !(CommonTreeNode.{DATA}^ toBal,bool leftPull) -> void
+	RebalanceDown := !(CommonTreeNode.{DATA}^ toBal2,bool leftPull2) -> void
 	{
+		leftPull := leftPull2
+		toBal := toBal2
 		while true
 		{
 			if toBal == null return void
