@@ -28,6 +28,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		if dObj == null
 			return null
 		Objs.Push(dObj)
+		SyntaxCompress(itm.Down.Right,PriorityData)
 		CheckFuncCallBrackets(itm.Down.Right,Objs)
 
 		cnsts := List.{BoxExeConstObj^}

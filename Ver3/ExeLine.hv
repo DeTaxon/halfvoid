@@ -219,7 +219,8 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 				}
 			}else{
 				obj := TryGetExeCall(itr)
-				assert(obj != null)
+				if obj == null
+					itr.EmitError("Could not compile line")
 				Objs.Push(obj)
 			}
 		}

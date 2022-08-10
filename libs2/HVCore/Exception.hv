@@ -1,0 +1,66 @@
+
+gExceptionPtrIndex := task_local int
+gExceptionStackArr := task_local void^[256]
+gExceptionStackSize := task_local int[256]
+
+internalEnterGCFunction := !(TGCIObject^ arr,int maxSize) -> void
+{
+	gExceptionStackArr[gExceptionPtrIndex] = arr
+	gExceptionStackSize[gExceptionPtrIndex] = maxSize
+	gExceptionPtrIndex += 1
+}
+internalLeaveGCFunction := !() -> void
+{
+	gExceptionPtrIndex -= 1
+}
+
+
+IException := class extend TGCObject
+{
+
+}
+
+gTryCatchInd := task_local int
+gTryCatchObj := task_local Tuple.{void^,bool,int,int}[16]
+gTryCatchException := task_local IException^
+
+internalEnterTryCatch := !(void^ ptr,bool cleanGC,int gcInUse) -> void
+{
+	gTryCatchObj[gTryCatchInd].0 = ptr
+	gTryCatchObj[gTryCatchInd].1 = cleanGC
+	gTryCatchObj[gTryCatchInd].2 = gcInUse
+	gTryCatchObj[gTryCatchInd].3 = gExceptionPtrIndex
+	gTryCatchInd += 1
+}
+internalLeaveTryCatch := !() -> void
+{
+	gTryCatchInd -= 1
+}
+internalThrowException := !(IException^ e) -> void
+{
+	assert(gTryCatchInd != 0 and gExceptionPtrIndex != 0)
+	gTryCatchException = e
+
+	nowCatch := gTryCatchObj[gTryCatchInd - 1]&
+	while gExceptionPtrIndex > nowCatch.3
+	{
+		gExceptionPtrIndex -= 1
+		internalHVGCSetNullArray(gExceptionStackArr[gExceptionPtrIndex]->{TGCIObject^^},0,gExceptionStackSize[gExceptionPtrIndex] - 1)
+	}
+	if nowCatch.1
+	{
+		ind := gExceptionPtrIndex - 1
+		internalHVGCSetNullArray(gExceptionStackArr[ind]->{TGCIObject^^},nowCatch.2,gExceptionStackSize[ind] - 1)
+	}
+	llvmLongJump(nowCatch.0)
+}
+internalGetException := !() -> IException^
+{
+	result = gTryCatchException
+}
+
+
+Exception := class extend IException
+{
+	
+}

@@ -6,7 +6,11 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	internalHVInitClass(voidVal->{TTask^}^)
 	CurrentTask = voidVal->{TTask^}
 
-	return internalHVEntryPoint2(argc,argv)
+	result = internalHVEntryPoint2(argc,argv)
+
+	CurrentThread.ThreadMainTask = null
+	CurrentThread = null
+	CurrentTask = null
 }
 
 
@@ -64,10 +68,6 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 
 	ur_exit(gTaskIORing)
 	ur_destroy(gTaskIORing)
-
-	CurrentThread.ThreadMainTask = null
-	CurrentThread = null
-	CurrentTask = null
 }
 
 

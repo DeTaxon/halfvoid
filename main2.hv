@@ -1,64 +1,26 @@
 
+c := !() -> void
+{
+	defer printf("def 1\n")
+	throw new Exception
+}
 
 main := !(char^[] args) -> int
 {
 	libGlfwInit()
 
-	
-	for i : 2
+	defer printf("hmm\n")
+	try
 	{
-		TSpawnTask(() ==> {
-			for i : 2
-			{
-				printf("hey\n")
-				TSleep(1.0)
-			}
-		})
+		defer printf("HOHO\n")
+		printf("start\n")
+		c()
+		printf("bad\n")
+	}catch(e)
+	{
+		printf("exn\n")
 	}
 	
 	return 0
 }
 
-
-arFunc := void^
-arSize := int
-internalEnterGCFunction := !(TGCIObject^ arr,int maxSize) -> void
-{
-	arFunc = arr
-	arSize = maxSize
-}
-internalLeaveGCFunction := !() -> void
-{
-}
-
-tst := void^
-thisExcp := void^ //TODO IException not supported
-internalEnterTryCatch := !(void^ ptr,bool cleanGC,int gcInUse) -> void
-{
-	tst = ptr
-}
-internalLeaveTryCatch := !() -> void
-{
-}
-internalThrowException := !(IException^ e) -> void
-{
-	printf("called throw %p\n",e)
-	thisExcp = e
-	e.IncRef()
-	internalHVGCSetNullArray(arFunc->{TGCIObject^^},0,arSize - 1)
-	llvmLongJump(tst)
-}
-internalGetException := !() -> IException^
-{
-	result = thisExcp->{IException^}
-}
-
-IException := class extend TGCObject
-{
-
-}
-
-Exception := class extend IException
-{
-	
-}

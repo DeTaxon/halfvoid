@@ -35,7 +35,6 @@ TTask := class extend TGCObject
 
 		for fld : this.taskLocalData->AllFields
 		{
-			printf("hm %s\n",fld->TypeGroup)
 			if fld->TypeGroup == "Pointer"
 			{
 				fld = null

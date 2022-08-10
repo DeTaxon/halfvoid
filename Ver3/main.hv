@@ -114,6 +114,7 @@ main := !(int argc, char^^ argv) -> int
 	GObjNone = new BoxExeNone()
 	GObjNull = new BoxExeNull()
 	CreateBuiltins()
+	TupleInit()
 	PreInitTaskLocal()
 	cuId = GetNewId()
 

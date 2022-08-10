@@ -64,10 +64,14 @@ TryGetObj := class extend BoxExeObj
 
 		JumpFrame = new FuncInputParam(GTypeVoidP,false,StringSpan(GetConstString("%E"sbt + ItId)))
 
+		isGCExist := GBoolFalse
+		if CurrentFunc.gcVarsCount != 0
+			isGCExist = GBoolTrue
+
 		objs := CheckExeDownList
 		LeaveCall = ExceptionLeaveTryCatch.CreateCall(objs)
 		objs.Push(JumpFrame.CreateCall())
-		objs.Push(GBoolFalse)
+		objs.Push(isGCExist)
 		objs.Push(GetExeInt(GCVarsInUse))
 		EnterCall = ExceptionEnterTryCatch.CreateCall(objs)
 		DownBlock = new BoxBlock(dwn)

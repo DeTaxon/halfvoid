@@ -29,3 +29,32 @@ BoxClassTuple := class extend BoxClass
 		InheritStep()
 	}
 }
+
+
+BoxClassTupleTemplate := class extend BoxClassTemplate
+{
+	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	{
+		lst := List.{Type^}
+
+		for it : inpts
+		{
+			if it is ConstType
+			{
+				lst.Push(it->{ConstType^}.Value)
+			}else{
+				return null
+			}
+		}
+		res := GetTuple(lst)
+		lst.Destroy()
+		return res
+	}
+}
+
+TupleInit := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+	nm := StringSpan("Tuple")
+	bSpace.Globals[nm].Push(new TemplateTypeVar(nm,new BoxClassTupleTemplate) )
+}
