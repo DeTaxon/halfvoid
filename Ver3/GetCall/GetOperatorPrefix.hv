@@ -46,6 +46,20 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		arr.Destroy()
 		return innerTrySetType(lmbd,newType)
 	}
+	if itm.Down.GetValue() == "not"
+	{
+		if itm.Down.Right == null
+			return null
+		if itm.Down.Right.Right != null
+			return null
+		dObj := TryGetExeCall(itm.Down.Right)
+		if dObj == null
+			return null
+
+		objs5 := CheckExeDownList
+		objs5.Push(dObj)
+		return CreateFuncCall(StringSpan(". not"),objs5)
+	}
 	if itm.Down.GetValue() == "-"
 	{
 		if itm.Down.Right == null

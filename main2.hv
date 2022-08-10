@@ -9,17 +9,19 @@ main := !(char^[] args) -> int
 {
 	libGlfwInit()
 
-	defer printf("hmm\n")
-	try
+	glfwInit()
+
+	win := glfwCreateWindow(500,500,"hi",null,null)
+
+	glfwMakeContextCurrent(win)
+
+	while not glfwWindowShouldClose(win)
 	{
-		defer printf("HOHO\n")
-		printf("start\n")
-		c()
-		printf("bad\n")
-	}catch(e)
-	{
-		printf("exn\n")
+		glfwSwapBuffers(win)
+		glfwPollEvents()
 	}
+
+	glfwTerminate()
 	
 	return 0
 }

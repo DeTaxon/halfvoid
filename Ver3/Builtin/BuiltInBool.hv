@@ -10,4 +10,28 @@ CreateBuiltinsBool := !() -> void
 	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
 	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+	bSpace.Functions[StringSpan(". not")].Push(new BuiltInBoolNot() )
+}
+BuiltInBoolNot := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeBool],GTypeBool))
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+		
+		tFunc := GetType()->{TypeFunc^}
+		tp := tFunc.Params[0].ItType
+
+		f^ << "%T" << resId << " = xor " 
+		tp.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << ", 1"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
 }
