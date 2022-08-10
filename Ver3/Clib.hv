@@ -1,4 +1,12 @@
-CLib := class 
+ModuleInterface := class
+{
+	Work := virtual !() -> void {}
+	PrintCode := virtual !(TIOStream^ f) -> void {}
+	GetItem := virtual !(StringSpan name) -> BoxUnit^ { return null}
+	CreateInitPart := virtual !() -> void {}
+}
+
+CLib := class extend ModuleInterface
 {
 	textMap := StringSpan
 	libFile := vRepoFile^
@@ -6,6 +14,7 @@ CLib := class
 
 
 	itFuncs := AVLMap.{StringSpan,BoxUnit^}
+	itConsts := AVLMap.{StringSpan,BoxUnit^}
 	itPreFuncs := AVLMap.{StringSpan,StringSpan}
 	itPreConsts := AVLMap.{StringSpan,StringSpan}
 
@@ -20,7 +29,7 @@ CLib := class
 		linkType = StringSpan("dynamic")
 		libFile = fil
 	}
-	Work := !() -> void
+	Work := virtual !() -> void
 	{
 		textMap = StringSpan(libFile.Map(),libFile.Size())
 
@@ -46,7 +55,7 @@ CLib := class
 				case "consts"
 					for cns : nd^
 					{
-						itPreConsts[nd.Key()] = nd.Value()
+						itPreConsts[cns.Key()] = cns.Value()
 					}
 				case "link"
 					linkType = nd.Value()
@@ -54,7 +63,7 @@ CLib := class
 		}
 	
 	}
-	PrintCode := !(TIOStream^ f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		for it : itFuncs
 		{
@@ -65,10 +74,13 @@ CLib := class
 		}
 	}
 	
-	GetItem := !(StringSpan name) -> BoxUnit^
+	GetItem := virtual !(StringSpan name) -> BoxUnit^
 	{
 		if itFuncs.Contain(name)
 			return itFuncs[name]
+
+		if itConsts.Contain(name)
+			return itConsts[name]
 
 		if name == initFuncName
 		{
@@ -81,6 +93,13 @@ CLib := class
 		if itPreFuncs.Contain(name)
 		{
 			return innerGetFunc(name)
+		}
+
+		if itPreConsts.Contain(name)
+		{
+			val := strtol(itPreConsts[name].Get(),null,0)
+			itConsts[name] = GetExeInt(val) //TODO add float support
+			return itConsts[name]
 		}
 		return null
 	}
@@ -130,7 +149,7 @@ CLib := class
 		return func
 	}
 
-	CreateInitPart := !() -> void
+	CreateInitPart := virtual !() -> void
 	{
 		if initFunc == null
 			return void

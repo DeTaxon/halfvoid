@@ -18,7 +18,7 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 		{
 			lst.Push(spc.Templates[name][^])
 		}
-		for cl : spc.CLibs
+		for cl : spc.Modules
 		{
 			fnc := cl.GetItem(name)
 			if fnc != null

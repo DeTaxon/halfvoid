@@ -169,6 +169,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 					return true
 				}
 			}
+			if it is in BoxExeConstObj
+			{
+				callItem = it
+				return true
+			}
 		}
 		return false
 	})
@@ -181,6 +186,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		if callItem is in BoxFunc
 		{
 			return callItem->{BoxFunc^}.CreateCall()
+		}
+		if callItem is in BoxExeConstObj
+		{
+			return callItem->{BoxExeConstObj^}
 		}
 	}
 

@@ -76,7 +76,7 @@ main := !(int argc, char^^ argv) -> int
 						}else if nm[-5..0] == ".clib" or nmEnd == ".clib.posix"
 						{
 							spc := CodeSpaces[num]&
-							spc.CLibs.Push(new CLib(zFil))
+							spc.Modules.Push(new CLib(zFil))
 						}
 					})
 					i += 1
@@ -120,7 +120,7 @@ main := !(int argc, char^^ argv) -> int
 
 	for spc : CodeSpaces
 	{
-		spc.CLibs[^].Work()
+		spc.Modules[^].Work()
 
 		GDebugFileId = spc.Files[^].fileId //TODO, remove it, is is for debug id
 	}
@@ -163,7 +163,7 @@ main := !(int argc, char^^ argv) -> int
 
 	for it : CodeSpaces
 	{
-		for libs : it.CLibs
+		for libs : it.Modules
 			libs.CreateInitPart()
 	}
 
@@ -212,7 +212,7 @@ main := !(int argc, char^^ argv) -> int
 	}
 	for spc : CodeSpaces
 	{
-		for lb : spc.CLibs
+		for lb : spc.Modules
 		{	
 			lb.PrintCode(outFile)
 		}

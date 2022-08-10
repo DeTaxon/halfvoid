@@ -1,19 +1,18 @@
 
-c := !() -> void
-{
-	defer printf("def 1\n")
-	throw new Exception
-}
-
 main := !(char^[] args) -> int
 {
 	libGlfwInit()
 
 	glfwInit()
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API)
 
 	win := glfwCreateWindow(500,500,"hi",null,null)
 
 	glfwMakeContextCurrent(win)
+
+	vk := GetLibrary("libvulkan.so")
+
+	printf("hey %p\n",vk)
 
 	while not glfwWindowShouldClose(win)
 	{

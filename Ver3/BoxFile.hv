@@ -6,7 +6,7 @@ BoxCodeSpace := class
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 	Globals := AVLMap.{StringSpan,List.{BoxUnit^}}
 
-	CLibs := List.{CLib^}
+	Modules := List.{ModuleInterface^}
 }
 
 
