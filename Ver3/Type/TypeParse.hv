@@ -28,12 +28,17 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 			return defs.ItType
 	}
 	checkRes := TypeGetGlobalByIndent(name)
-	if checkRes != null and checkRes is TypeVar
+	if checkRes == null
+		return null
+
+	if  checkRes is TypeVar
 	{
 		return checkRes->{TypeVar^}.Value
 	}
-	if checkRes? is in GlobalVar
+	if checkRes is in GlobalVar
 		return null
+	if checkRes is ConstType
+		return checkRes->{ConstType^}.Value
 	if checkRes != null
 	{
 		printf("hmm %p\n",checkRes is in GlobalVar)
@@ -155,6 +160,10 @@ TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^
 				{
 					return glb
 				}
+			}
+			for lb : spc.Modules
+			{
+				return lb.GetItem(name)?
 			}
 		}
 }

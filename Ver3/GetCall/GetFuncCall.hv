@@ -64,6 +64,16 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		{}
 		if resFunc != null
 			return resFunc
+		
+		cnstrCall := ParseType(itm.Down)
+		if cnstrCall != null
+		{
+			c := CreateVar(cnstrCall,false)
+
+			constrObj := innerTryGetMethodCall(StringSpan("this"),c.CreateCall(),Objs,consts)
+			if constrObj != null
+				return new ConstructorCallWrapper(c,constrObj)
+		}
 	}
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null
@@ -71,6 +81,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(dwnItem,Objs)?
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
+	itm.EmitError("Can not parse function call")
 	assert(false)
 }
 
@@ -117,4 +128,39 @@ innerTryGetSkobCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs,List.{BoxExeC
 		}
 	}
 	return null
+}
+
+ConstructorCallWrapper := class extend BoxExeObj
+{
+	itVar := ParamFunc^
+	itCall := BoxExeObj^
+	varCall := BoxExeObj^
+	this := !(ParamFunc^ vr, BoxExeObj^ bj) -> void
+	{
+		itVar = vr
+		itCall = bj
+		varCall = vr.CreateCall()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+		itCall.PrintDefaultUse(f)
+		varCall.PrintPointPre(f)
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		varCall.PrintPointUse(f)
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
 }

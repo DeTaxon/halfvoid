@@ -279,6 +279,10 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 			priorityes.Push(cmpRes)
 		}else if h is in GlobalVar {
 			priorityes.Push(CmpNoExchange) //todo?
+		}else if h is in ConstType {
+			priorityes.Push(CmpNoExchange) //todo?
+		}else if h is in TypeVar {
+			priorityes.Push(CmpNoExchange) //todo?
 		}else {
 			priorityes.Push(CmpNoExchange)
 			assert(false)

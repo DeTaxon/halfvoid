@@ -48,6 +48,7 @@ main := !(int argc, char^^ argv) -> int
 		return main(7,args2[0]&)
 	}
 
+	CodeSpaces[-1].Modules.Push(new ModuleVulkan("./vk.xml"))
 
 	files := new List.{char^}
 

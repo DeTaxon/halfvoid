@@ -1,6 +1,15 @@
 
+tst := class
+{
+	this := !() -> void
+	{
+		printf("yes\n")
+	}	
+}
+
 main := !(char^[] args) -> int
 {
+	c := tst()
 	libGlfwInit()
 
 	glfwInit()
@@ -12,16 +21,17 @@ main := !(char^[] args) -> int
 
 	vk := GetLibrary("libvulkan.so")
 
-	printf("hey %p\n",vk)
+	hm := VkInstanceCreateInfo()
+	printf("hey %p %i\n",vk, hm.sType)
 
-	while not glfwWindowShouldClose(win)
-	{
-		glfwSwapBuffers(win)
-		glfwPollEvents()
-	}
-
-	glfwTerminate()
+	//while not glfwWindowShouldClose(win)
+	//{
+	//	glfwSwapBuffers(win)
+	//	glfwPollEvents()
+	//}
+//
+	//glfwTerminate()
 	
-	return 0
+	//return 0
 }
 

@@ -232,6 +232,18 @@ BoxClass := class extend BoxUnit
 		if objs.Size() != 0
 			cb(objs)
 	}
+
+	enterScope := virtual !(!()&->void cb) -> void 
+	{
+		stackSize := UnitStack.Size()
+		oldScope := CurrentScope
+		CurrentScope = this&
+		ScopePutConstants()
+		cb()
+		CurrentScope = oldScope
+		while stackSize < UnitStack.Size()
+			UnitStack.Pop()
+	}
 }
 TypeClass := class extend Type
 {
