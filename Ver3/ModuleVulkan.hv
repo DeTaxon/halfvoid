@@ -1,0 +1,733 @@
+ModuleVulkan := class extend ModuleInterface
+{
+
+	xmlTree := TreeNode^
+
+	Enums := AVLMap.{char^,Tuple.{int,char^}}
+	Typedefs := AVLMap.{char^,Type^}
+	ItInts := AVLMap.{char^,int}
+
+	Commands := AVLMap.{char^,TreeNode^}
+	Structs := AVLMap.{char^,TreeNode^}
+
+	//ParsCount := GlobalParam^
+	//ParsNames := GlobalParam^
+
+	//InstClass := BoxClass^
+
+	this := !(char^ xmlName) -> void
+	{
+		xmlFile := MappedFile(xmlName)
+		xmlTree = ParseXML(xmlFile.point)
+	}
+	GetType2 := !(char^ nm) -> Type^
+	{	
+		st := StringSpan(nm)
+		tkn := TokenIndent(st)
+		return ParseType(tkn&)
+	}
+	Work := virtual !() -> void 
+	{
+
+		Typedefs["float"] = GTypeFloat
+		Typedefs["char"] = GetType2("char")
+		Typedefs["void"] = GTypeVoid
+		Typedefs["void*"] = GTypeVoidP
+		Typedefs["size_t"] = GetType2("u64")
+
+		Typedefs["uint8_t"] = GetType2("u8")
+		Typedefs["uint16_t"] = GetType2("u16")
+		Typedefs["uint32_t"] = GetType2("u32")
+		Typedefs["uint64_t"] = GetType2("u64")
+
+		Typedefs["int8_t"] = GetType2("s8")
+		Typedefs["int16_t"] = GetType2("s16")
+		Typedefs["int32_t"] = GetType2("s32")
+		Typedefs["int64_t"] = GetType2("s64")
+
+
+		for xmlTree.Childs
+		{
+			if it.first
+			{
+				asNode := it.second->{TreeNode^}
+				switch(asNode.NodeName)
+				{
+				case "extensions"
+					CheckExtensions(asNode)
+				}
+			}
+		}
+
+		for xmlTree.Childs
+		{
+			if it.first
+			{
+				asNode := it.second->{TreeNode^}
+				switch(asNode.NodeName)
+				{
+				case "enums"
+					CheckEnum(asNode)
+				case "types"
+					CheckTypes(asNode)
+				case "commands"
+					CheckCommands(asNode)
+				}
+			}else{
+			}
+		}
+	}
+
+	
+	CheckExtensions := !(TreeNode^ nd) -> void
+	{
+		for sN : nd.Childs
+		{
+			if not sN.first continue
+
+			asNeed := sN.second->{TreeNode^}
+			extNumberPre := asNeed.Attrs.TryFind("number")
+			if extNumberPre == null continue
+			extNumber := ToInt(extNumberPre^)
+			extNumber -= 1
+			extNumber *= 1000
+
+			for sub : asNeed.Childs
+			{
+				if not sub.first continue
+				asN2 := sub.second->{TreeNode^}
+				if asN2.NodeName != "require" coninue
+				for itms : asN2.Childs
+				{
+					if not itms.first continue
+
+					asN2 := itms.second->{TreeNode^}
+					switch asN2.NodeName
+					{
+						case "enum"
+							itName := asN2.Attrs.TryFind("name")
+							if itName != null
+							{
+								itDir := asN2.Attrs.TryFind("dir")
+								if itDir != null assert(itDir^ == "-")
+								itOffst := asN2.Attrs.TryFind("offset")
+								if itOffst != null
+								{
+									offst := ToInt(itOffst^)
+									offst += extNumber
+									offst += 1000000000
+									if itDir != null offst = -offst
+									ItInts[itName^] = offst
+								}else{
+								}
+							}
+						case void
+					}
+				}
+			}
+		}
+	}
+	CheckCommands := !(TreeNode^ nd) -> void
+	{
+		for sN : nd.Childs
+		{
+			if not sN.first continue
+
+			asNeed := sN.second->{TreeNode^}
+
+			if asNeed.NodeName != "command" continue
+
+			pr := asNeed.GetSubNode("proto")
+			if pr == null continue
+			itName := pr.GetValueString("name")
+
+			Commands[itName] = asNeed
+		}
+	}
+	CheckTypes := !(TreeNode^ nd) -> void
+	{
+
+		for typ : nd.Childs //structs only
+		if typ.first
+		{
+			asNeed := typ.second->{TreeNode^}
+			category := asNeed.Attrs.TryFind("category")
+			if category != null and (category^ == "struct" or category^ == "union")
+			{
+				stName := asNeed.Attrs.TryFind("name")
+				if stName != null{
+					Structs[stName^] = asNeed
+				}
+			}
+		}
+
+		for typ : nd.Childs
+		if typ.first
+		{
+			asNeed := typ.second->{TreeNode^}
+			isAlias := asNeed.Attrs.TryFind("alias")
+			if isAlias != null
+			{
+				inDefs := Typedefs.TryFind(isAlias^)
+				if inDefs != null{
+					itName := asNeed.Attrs.TryFind("name")
+					if itName != null
+					{
+						Typedefs[itName^] = inDefs^
+					}
+				}
+			}else{
+				category := asNeed.Attrs.TryFind("category")
+				if category != null{
+					if category^ == "basetype" or category^ == "bitmask"
+					{
+						if  asNeed.Childs.Size() != 0 and (not asNeed.Childs[0].first) and asNeed.Childs[0].second->{string} == "typedef "
+						{
+							typeStr := asNeed.GetValueString("type")
+							typeName := asNeed.GetValueString("name")
+							if typeStr != null and typeName != null{
+								inDefs := Typedefs.TryFind(typeStr)
+								if inDefs != null{
+									Typedefs[typeName] = inDefs^
+								}
+							}
+
+						}
+					}
+					if category^ == "handle"
+					{
+						typeName := asNeed.GetValueString("name")
+						if typeName != null
+						{
+							Typedefs[typeName] = GTypeVoid.GetPoint()
+						}
+					}
+					if category^ == "enum"
+					{
+						typeName := asNeed.Attrs.TryFind("name")
+						if typeName != null{
+							Typedefs[typeName^] = GTypeInt //????
+						}
+					}
+					if category^ == "funcpointer"{
+						retType := Type^
+						funcTypes := List.{Type^}
+
+						if not asNeed.Childs[0].first{
+							itRet := asNeed.Childs[0].second->{string}
+							switch itRet
+							{
+								case "typedef void (VKAPI_PTR *"
+									retType = GTypeVoid
+								case "typedef void* (VKAPI_PTR *"
+									retType = GTypeVoid.GetPoint()
+								case "typedef VkBool32 (VKAPI_PTR *"
+									retType = Typedefs["VkBool32"]
+								case void
+									printf("VKMODULE: cant read type %s\n",itRet)
+									return void
+							}
+						}
+						for pChild : asNeed.Childs, i : 0
+						{
+							if pChild.first {
+								ca := pChild.second->{TreeNode^}
+								if ca.NodeName == "type"
+								{
+									itTypName := ca.Childs[0].second->{char^}
+									asT := GetModuleType(itTypName)
+									if asT == null {
+										printf("VKMODULE: cant read type %s byType %s\n",asNeed.GetValueString("name"),itTypName)
+										return void
+									}
+									if  asNeed.Childs[i+1].second->{string}[0] == '*'
+									{
+										asT = asT.GetPoint()
+									}
+									funcTypes.Push(asT)
+								}
+							}
+						}
+						typs := Type^[100]
+						for it,i : funcTypes
+						{
+							typs[i] = it
+						}
+
+						funcT := GetFuncType(funcTypes.Size(),typs[0]&,null,retType,false,false)
+						funcTypes.Destroy()
+						if funcT != null
+							Typedefs[asNeed.GetValueString("name")] = funcT.GetPoint()
+
+					}
+				}else{
+				}
+			}
+		}
+	}
+	CheckEnum := !(TreeNode^ nd) -> void{
+		itType := nd.Attrs.TryFind("type")
+		if itType == null 
+		{
+			itName := nd.Attrs.TryFind("name")
+			if itName == null or itName^ != "API Constants"
+				return void
+		}
+
+		for nd.Childs
+		{
+			if it.first{
+				asNode := it.second->{TreeNode^}
+				itName := asNode.Attrs.TryFind("name")
+				itValue := asNode.Attrs.TryFind("value")
+
+				if itName != null{
+					if itValue != null
+					{
+						inTree := ref Enums[itName^]
+						inTree.0 = EnumsValue
+						inTree.1 = itValue^
+					}else{
+						itBitpos := asNode.Attrs.TryFind("bitpos")
+						if itBitpos != null{
+							inTree := ref Enums[itName^]
+							inTree.0 = EnumsBitPos
+							inTree.1 = itBitpos^
+						}
+					}
+				}
+			}
+		}		
+	}
+
+	GetModuleType := !(char^ name) -> Type^
+	{
+		inDefs := Typedefs.TryFind(name)
+		if inDefs != null return inDefs^
+
+		maybeStruct := TryGetStruct(name)
+		if maybeStruct != null return maybeStruct
+
+		maybeCommand := GetTryFuncPointer(name)
+		if maybeCommand != null return maybeCommand
+
+	}
+
+	GetTryFuncPointer := !(char^ name) -> Type^
+	{	
+		if name[0..4] != "PFN_" return null
+		smplName := name[4..0].Str()
+		inCmds := Commands.TryFind(smplName)
+
+
+		if inCmds == null return null
+
+		retType := null->{Type^}
+
+		ind := 0
+		typs := Type^[100]
+		for inCmds^.Childs
+		{
+			if it.first
+			{
+				asN := it.second->{TreeNode^}
+				switch asN.NodeName
+				{
+					case "proto"
+						retType = CheckProto(it.second->{TreeNode^})
+						if retType == null {
+							printf("VKMODULE: can not create func pointer %s ... proto\n",name)
+							return null
+						}
+					case "param"
+						resPar := CheckCommandParam(it.second->{TreeNode^})
+						if resPar == null {
+							printf("VKMODULE: can not create func pointer %s ... param %i\n",name,ind + 1)
+							return null
+						}
+						typs[ind] = resPar
+						ind += 1
+					case "implicitexternsyncparams"
+						// nothing
+					case void
+						printf("VKMODULE: can not create func pointer %s\n",name)
+						return null
+				}
+			}else{
+				printf("VKMODULE: can not create func pointer %s\n",name)
+				return null
+			}
+		}
+		itPreType := GetFuncType(ind,typs[0]&,null,retType,false,false)
+		return itPreType.GetPoint()
+		
+		if inCmds != null
+			printf("VKMODULE: can not create func pointer %s\n",name)
+		return null
+	}
+	CheckCommandParam := !(TreeNode^ nd) -> Type^
+	{
+		if nd.Childs.Size() == 2{
+			itTypeName := nd.GetValueString("type")
+			return GetModuleType(itTypeName)
+		}
+		if nd.Childs.Size() == 3{
+			if not nd.Childs[1].first
+			{
+				asSt := nd.Childs[1].second->{string}
+				if asSt == "* "{
+					asTp := GetModuleType(nd.GetValueString("type"))
+					if asTp == null return null
+					return asTp.GetPoint()
+				}
+				if asSt == "** "{
+					asTp := GetModuleType(nd.GetValueString("type"))
+					if asTp == null return null
+					return asTp.GetPoint().GetPoint()
+				}
+				
+			}
+		}
+		if nd.Childs.Size() == 4{
+			if nd.Childs[0].first
+			{
+			}else{
+				fSt := nd.Childs[0].second->{string}
+				if nd.Childs[1].first
+				{
+					sNd := nd.Childs[1].second->{TreeNode^}
+					if nd.Childs[2].first
+					{
+					}else{
+						tSt := nd.Childs[2].second->{string}
+						if nd.Childs[3].first
+						{
+							fNd := nd.Childs[3].second->{TreeNode^}
+
+							if fSt == "const " and tSt == "* "{
+								itTypeName := GetModuleType(nd.GetValueString("type"))
+								if itTypeName == null return null
+								return itTypeName.GetPoint()
+							}
+						}else{
+						}
+					}
+				}else{
+				}
+			}
+		}
+		return null
+	}
+	CheckProto := !(TreeNode^ nd) -> Type^
+	{
+		if nd.Childs.Size() == 2{
+			itTypeName := nd.GetValueString("type")
+			return GetModuleType(itTypeName)
+		}
+		return null
+	}
+	TryGetStruct := !(char^ name) -> Type^
+	{
+		inMap := Structs.TryFind(name)
+		if inMap != null
+		{
+
+			newStruct := new BoxClass
+			newStruct.ItName = StringSpan(name)
+			newStruct.ItId = GetNewId()
+			newStruct.ItType = new TypeClass(newStruct)
+			Typedefs[name] = newStruct.ItType
+
+			sTypVal := char^
+
+			for mems : inMap^.Childs
+			{
+				if mems.first{
+					asN := mems.second->{TreeNode^}
+					if asN.NodeName == "member"
+					{
+						memType := TryCheckType(asN)
+						if memType == null {
+							printf("VKMODULE: in struct %s need check %s\n",name,asN.GetValueString("name"))
+							return null 
+						}
+						fieldName := asN.GetValueString("name")
+						newStruct.Fields.Push(new FieldParam(StringSpan(fieldName),memType))
+
+						if fieldName == "sType"
+						{
+							inMapValues := asN.Attrs.TryFind("values")
+							if inMapValues != null
+							{
+								sTypVal = inMapValues^
+							}
+						}
+					}else{
+						if asN.NodeName != "comment"
+						{
+							printf("VKMODULE: need check structure %s , node %s\n",name,asN.NodeName)
+						}
+					}
+				}
+			}
+			newStruct.InheritStep()
+
+			if sTypVal != null
+			{
+				sTypeValue := GetItem(StringSpan(sTypVal))
+				if sTypeValue == null or not (sTypeValue is BoxExeInt)
+				{
+					printf("WARN: structure %s does not have create value\n",name)
+				}else{
+					intVal := sTypeValue->{BoxExeInt^}.Value
+					
+					newStruct.enterScope(() ==> {
+						strm := TEchoStream
+						strm << "\"this\" := !() -> void { \n"
+						strm << "this.sType = " << intVal << "\n"
+						strm << "}\n"
+
+						str := strm.Str()
+
+						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
+						start := TokenSymbol(StringSpan("{}"),1)
+						start.Down = token
+						tt := token
+						while tt != null
+						{
+							tt.Up = start&
+							tt = tt.Right
+						}
+
+						SyntaxCompress(start&,LexHVFileRoot)
+
+						asFunc := TryParseFunction(start.Down.Down.Right.Right)->{BoxFuncTemplate^}
+						assert(asFunc != null)
+						assert(asFunc is in BoxFuncTemplate)
+						assert(asFunc.IsOneFunc())
+						func := asFunc.GetOneFunc()
+						func.SetName(StringSpan("this"))
+						func.ParseBodyForced()
+						func->{BoxFuncBody^}.ParentScope = newStruct
+						newStruct.Methods[StringSpan("this")].Push(func)
+					})
+				}
+			}
+			AllClasses.Push(newStruct)
+			return newStruct.ItType
+		}
+		
+		return null
+	}
+	TryCheckType := !(TreeNode^ nd) -> Type^
+	{
+		itT := GetModuleType(nd.GetValueString("type"))
+		if itT == null 
+		{
+			return null
+		}
+		if nd.Childs.Size() == 2 {
+			return itT
+		}
+		if nd.Childs.Size() == 3 {
+			if IsReqList(nd,"110") //not nd.Childs[2].first
+			{
+				arrData := nd.Childs[2].second->{string}
+				if arrData == "[4]" return itT.GetArray(4)
+				if arrData == "[3]" return itT.GetArray(3)
+			}
+			if IsReqList(nd,"111") //nd.Childs[0].first and nd.Childs[1].first and nd.Childs[2].first
+			{
+				asTest := nd.Childs[2].second->{TreeNode^}
+				if asTest.NodeName != "comment" return null
+				return itT
+			}
+			if IsReqList(nd,"101")
+			{
+				postType := nd.Childs[1].second->{string}
+				if postType[0] == '*' and postType[1] == ' '{
+					return itT.GetPoint()
+				}
+				if postType == "** " return itT.GetPoint().GetPoint()
+			}
+		}
+		if nd.Childs.Size() == 4{
+			if (not nd.Childs[0].first) and not nd.Childs[2].first{
+				preType := nd.Childs[0].second->{string}
+				postType := nd.Childs[2].second->{string}
+				
+				if preType == "const " and postType[0] == '*' and postType[1] == ' '{
+					return itT.GetPoint()
+				}
+			}
+			if IsReqList(nd,"0101")
+			{
+				preType := nd.Childs[0].second->{string}
+				postType := nd.Childs[2].second->{string}
+				if preType == "const " and IsStrPointer(postType){
+					return itT.GetPoint()
+				}
+			}
+			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
+			{
+				postType := nd.Childs[1].second->{string}
+				if IsStrPointer(postType)
+				{
+					return itT.GetPoint()
+				}
+			}
+			if IsReqList(nd,"1101")
+			{
+				arrData := nd.Childs[2].second->{string}
+				if arrData == "[4]" return itT.GetArray(4)
+				if arrData == "[3]" return itT.GetArray(3)
+				if arrData == "[2]" return itT.GetArray(2)
+			}
+		}
+		if nd.Childs.Size() == 5{
+			//if (not nd.Childs[0].first) and nd.Childs[1].first and (not nd.Childs[2].first)
+			//and nd.Childs[3].first and nd.Childs[4].first
+			is IsReqList(nd,"01011")
+			{
+				mConst := nd.Childs[0].second->{string}
+				mPP := nd.Childs[2].second->{string}
+
+				if mConst == "const " and mPP == "* const*      "{
+					itTp := GetModuleType(nd.GetValueString("type"))
+					if itTp == null return null
+					return itTp.GetPoint().GetPoint()
+				}
+				if mConst == "const " and IsStrPointer(mPP){
+					itTp := GetModuleType(nd.GetValueString("type"))
+					if itTp == null return null
+					return itTp.GetPoint().GetPoint()
+				}
+			}
+			if IsReqList(nd,"11010")
+			{
+				fConst := nd.Childs[2].second->{string}
+				sConst := nd.Childs[4].second->{string}
+
+				if fConst == "[" and sConst == "]"
+				{
+					asVNod := nd.Childs[3].second->{TreeNode^}
+					if asVNod.NodeName == "enum"
+					{
+						itTp := GetModuleType(nd.GetValueString("type"))
+						itConst := nd.GetValueString("enum")
+						intRes := 0
+						if not GetFromInts(itConst,intRes&)
+							return null
+						return itTp.GetArray(intRes)
+					}
+				}
+			}
+		}
+		if nd.Childs.Size() == 6{
+			if (not nd.Childs[2].first) and (not nd.Childs[4].first) and nd.Childs[3].first
+			{
+				mbArrayPre := nd.Childs[2].second->{string}
+				mbItem := nd.Childs[3].second->{TreeNode^}
+				mbArrayPost := nd.Childs[4].second->{string}
+
+				if mbItem.NodeName == "enum" and mbArrayPre == "[" and mbArrayPost == "]"
+				{
+					itVal := mbItem.Childs[0].second->{string}
+					asInt := int
+					if not GetFromInts(itVal,asInt&)
+						return null
+					if asInt <= 0 return null
+					return itT.GetArray(asInt)
+				}
+			}
+		}
+
+		return null
+	}
+
+	GetFromInts := !(char^ name,int^ res) -> bool
+	{
+		inInts := ItInts.TryFind(name)
+		if inInts == null {
+			inEns := Enums.TryFind(name)
+			if inEns != null {
+				if not TryReadInt(inEns^.1,res)
+					return false
+				if inEns^.0 == EnumsBitPos res^ = 1 << res^
+				ItInts[name] = res^
+				return true
+			}
+			return false
+		}
+		res^ = inInts^
+		return true
+	}
+
+	innerGetType := !() -> Type^
+	{
+		return null
+	}
+
+	PrintCode := virtual !(TIOStream^ f) -> void {}
+	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
+	{
+		cnstName := GetConstString(name)
+		st := cnstName.Get()
+		intRes := int
+		if GetFromInts(st,intRes&)
+		{
+			return GetExeInt(intRes)
+		}
+
+		tp := GetModuleType(st)
+		if tp != null
+		{
+			return GetConstType(tp)
+		}
+		return null
+	}
+	CreateInitPart := virtual !() -> void {}
+}
+
+EnumsValue := 1
+EnumsBitPos := 2
+
+IsReqList := !(TreeNode^ nd, char^ str) -> bool
+{
+	for c : str, val : nd.Childs
+	{
+		if c == '0' and val.first return false
+		if c == '1' and not val.first return false
+	}
+	return true
+}
+
+IsStrPointer := !( char^ str) -> bool
+{
+	if str^ != '*' return false
+	i := 1
+	while str[i] != 0
+	{
+		if str[i] != ' ' return false
+		i++
+	}
+	return str[i] == 0
+}
+TryReadInt := !(string s, int^ res) -> bool {
+	val := 0
+	sign := s[0] == '-'
+	k := 0
+	if sign k += 1
+	while s[k] != 0
+	{
+		if s[k] in '0'..'9'{
+			val *= 10
+			val += s[k] - '0'
+		}else{
+			return false
+		}
+		k += 1
+	}
+	res^ = val
+	return true
+}
