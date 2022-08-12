@@ -1,5 +1,5 @@
 
-tst := class
+tst := class .{@T}
 {
 	this := !() -> void
 	{
@@ -7,9 +7,14 @@ tst := class
 	}	
 }
 
+//vkLoadAddr := PFN_vkGetInstanceProcAddr
+//vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProperties
+//vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
+//vkCreateInstance := PFN_vkCreateInstance
+
 main := !(char^[] args) -> int
 {
-	c := tst()
+	c := tst.{int}()
 	libGlfwInit()
 
 	glfwInit()
@@ -21,8 +26,32 @@ main := !(char^[] args) -> int
 
 	vk := GetLibrary("libvulkan.so")
 
+	vkLoadAddr := vk.Get("vkGetInstanceProcAddr")->{PFN_vkGetInstanceProcAddr}
+	vkEnumerateInstanceExtensionProperties := vkLoadAddr(null,"vkEnumerateInstanceExtensionProperties")->{PFN_vkEnumerateInstanceExtensionProperties}
+	vkEnumerateInstanceLayerProperties := vkLoadAddr(null,"vkEnumerateInstanceLayerProperties")->{PFN_vkEnumerateInstanceLayerProperties}
+	vkCreateInstance := vkLoadAddr(null,"vkCreateInstance")->{PFN_vkCreateInstance}
+
+	count := u32
+
+	vkEnumerateInstanceLayerProperties(count&,null)
+	lays := TVector.{VkLayerProperties}(count->{int})
+	vkEnumerateInstanceLayerProperties(count&,lays)
+
+	vkEnumerateInstanceExtensionProperties(null,count&,null)
+	exts := TVector.{VkExtensionProperties}(count->{int})
+	vkEnumerateInstanceExtensionProperties(null,count&,exts)
+
+	for i : lays.Size()
+	{
+		printf("%i : %s\n",i,lays[i].layerName&)
+	}
+	for i : exts.Size()
+	{
+		printf("%i : %s\n",i,exts[i].extensionName&)
+	}
+
 	hm := VkInstanceCreateInfo()
-	printf("hey %p %i\n",vk, hm.sType)
+	printf("hey %p %i %p\n",vk, hm.sType,vkLoadAddr)
 
 	//while not glfwWindowShouldClose(win)
 	//{

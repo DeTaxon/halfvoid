@@ -31,6 +31,16 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	}
 
 
+	cnstrCall := ParseType(itm.Down)
+	if cnstrCall != null
+	{
+		c := CreateVar(cnstrCall,false)
+
+		constrObj := innerTryGetMethodCall(StringSpan("this"),c.CreateCall(),Objs,consts)
+		if constrObj != null
+			return new ConstructorCallWrapper(c,constrObj)
+	}
+	
 	if itm.Down is TokenIndent
 	{
 		asInd := itm.Down->{TokenIndent^}
@@ -64,16 +74,6 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		{}
 		if resFunc != null
 			return resFunc
-		
-		cnstrCall := ParseType(itm.Down)
-		if cnstrCall != null
-		{
-			c := CreateVar(cnstrCall,false)
-
-			constrObj := innerTryGetMethodCall(StringSpan("this"),c.CreateCall(),Objs,consts)
-			if constrObj != null
-				return new ConstructorCallWrapper(c,constrObj)
-		}
 	}
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null

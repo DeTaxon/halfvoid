@@ -1,14 +1,17 @@
 ModuleVulkan := class extend ModuleInterface
 {
-
 	xmlTree := TreeNode^
 
 	Enums := AVLMap.{char^,Tuple.{int,char^}}
 	Typedefs := AVLMap.{char^,Type^}
 	ItInts := AVLMap.{char^,int}
 
+	Units := AVLMap.{char^,BoxUnit^}
+
 	Commands := AVLMap.{char^,TreeNode^}
 	Structs := AVLMap.{char^,TreeNode^}
+
+	vkInitFunc := BoxFuncBodyStr^
 
 	//ParsCount := GlobalParam^
 	//ParsNames := GlobalParam^
@@ -662,10 +665,23 @@ ModuleVulkan := class extend ModuleInterface
 		res^ = inInts^
 		return true
 	}
-
-	innerGetType := !() -> Type^
+	
+	TryGetFunc := !(char^ name) -> BoxUnit^
 	{
-		return null
+		inCmds := Commands.TryFind(name)
+		if inCmds == null
+			return null
+
+		bigName := char[256]
+		sprintf(bigName[0]&,"PFN_%s",name)
+
+		tp := GetTryFuncPointer(bigName[0]&)
+		assert(tp != null)
+		assert(tp is in TypePoint)
+
+		vr := CreateGlobalVar(StringSpan(name),tp,false)
+		Units[name] = vr
+		return vr
 	}
 
 	PrintCode := virtual !(TIOStream^ f) -> void {}
@@ -673,21 +689,30 @@ ModuleVulkan := class extend ModuleInterface
 	{
 		cnstName := GetConstString(name)
 		st := cnstName.Get()
+
+		inUnit := Units.TryFind(st)
+		if inUnit != null
+			return inUnit^
+
 		intRes := int
 		if GetFromInts(st,intRes&)
 		{
 			return GetExeInt(intRes)
 		}
 
+
 		tp := GetModuleType(st)
 		if tp != null
 		{
 			return GetConstType(tp)
 		}
+
+		return TryGetFunc(st)?
 		return null
 	}
 	CreateInitPart := virtual !() -> void {}
 }
+
 
 EnumsValue := 1
 EnumsBitPos := 2

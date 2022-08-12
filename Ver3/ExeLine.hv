@@ -429,11 +429,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
 				objs12.Destroy() cnsts12.Destroy()
 				if excCheck
-				{	
-					if toType is in TypePoint
-					{
-						printf("hoy %s %s\n",objs[i].GetType().GetBADStr(),toType.GetBADStr())
-					}
+				{
 					thisCase = 1000
 				}else{
 					return CmpNoExchange

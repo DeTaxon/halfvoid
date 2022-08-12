@@ -39,9 +39,18 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 		return null
 	if checkRes is ConstType
 		return checkRes->{ConstType^}.Value
+	if checkRes is in BoxFunc
+		return null
+	if checkRes is in BoxFuncTemplate
+		return null
+	if checkRes is TemplateTypeVar
+	{
+		assert(false)
+		return null
+	}
 	if checkRes != null
 	{
-		printf("hmm %p\n",checkRes is in GlobalVar)
+		printf("hmm %s\n",name)
 		obj.EmitError("Got object, but dont know what it is, software error")
 	}
 	assert(checkRes == null)
