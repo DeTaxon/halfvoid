@@ -1,17 +1,12 @@
 
 main := !(char^[] args) -> int
 {
-	tst := TVector.{int}(5)
-	tst[0] = 100
-	tst[1] = 2
-	tst[2] = -3
-	tst[3] = 99999
-	tst[4] = -999
+	
+	c := 15
 
-	printf("wtf\n")
-	for it,i : tst , re,j : tst
+	if (c <=> 15) == 0
 	{
-		printf("hm %i %i\n",it,i)
+		printf("yes\n")
 	}
 	return 0
 }

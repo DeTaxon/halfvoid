@@ -43,6 +43,8 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 		return null
 	if checkRes is in BoxFuncTemplate
 		return null
+	if checkRes is BoxExeInt
+		return null
 	if checkRes is TemplateTypeVar
 	{
 		assert(false)
