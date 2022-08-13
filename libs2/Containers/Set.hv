@@ -85,4 +85,15 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 	//{
 	//	return Contain(val)
 	//}
+
+	ToArray := !() -> TVector.{DATA}^
+	{
+		result = new TVector.{DATA}(Size())
+		i := 0
+		for it : this
+		{
+			result^[i] = it
+			i += 1
+		}
+	}
 }

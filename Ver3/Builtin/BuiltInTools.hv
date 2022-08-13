@@ -5,13 +5,14 @@ BuiltInAssert := class extend BoxFuncCommon
 	this := !() -> void
 	{
 		SetType(GetFuncType(![GTypeBool],GTypeVoid))
-		trueLabel = new BoxLabel()
-		falseLabel = new BoxLabel()
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		if not DebugMode
 			return void
+
+		trueLabel = new BoxLabel()
+		falseLabel = new BoxLabel()
 
 		lst[0].PrintPre(f)
 		

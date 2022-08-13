@@ -13,10 +13,8 @@ ModuleVulkan := class extend ModuleInterface
 
 	vkInitFunc := BoxFuncBodyStr^
 
-	//ParsCount := GlobalParam^
-	//ParsNames := GlobalParam^
-
-	//InstClass := BoxClass^
+	vkInst := BoxUnit^
+	vkInitFunc := BoxFuncBodyStr^
 
 	this := !(char^ xmlName) -> void
 	{
@@ -48,6 +46,8 @@ ModuleVulkan := class extend ModuleInterface
 		Typedefs["int32_t"] = GetType2("s32")
 		Typedefs["int64_t"] = GetType2("s64")
 
+
+		vkInst = CreateGlobalVar(StringSpan("vkInstance"),GTypeVoidP,false)
 
 		for xmlTree.Childs
 		{
@@ -694,6 +694,18 @@ ModuleVulkan := class extend ModuleInterface
 		if inUnit != null
 			return inUnit^
 
+		if name == "vkInstance"
+			return vkInst
+
+		if name == "vkHVInit"
+		{
+			if vkInitFunc == null
+			{
+				vkInitFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
+			}
+			return vkInitFunc
+		}
+
 		intRes := int
 		if GetFromInts(st,intRes&)
 		{
@@ -710,7 +722,31 @@ ModuleVulkan := class extend ModuleInterface
 		return TryGetFunc(st)?
 		return null
 	}
-	CreateInitPart := virtual !() -> void {}
+	CreateInitPart := virtual !() -> void 
+	{
+		if vkInitFunc == null
+			return void
+
+		dt := TEchoStream //TODO better support, func from str look stupid
+
+		for it, ind : Units
+		{
+			if ind == "vkGetInstanceProcAddr"
+				continue
+			if ind == "vkEnumerateInstanceExtensionProperties"
+				continue
+			if ind == "vkEnumerateInstanceLayerProperties"
+				continue
+			if ind == "vkCreateInstance"
+				continue
+			dt << ind << "&->{void^^}^ = vkGetInstanceProcAddr(vkInstance,\"" << ind << "\")\n"
+		}
+
+		st := dt.Str()
+
+		blank := StringSpan(st)
+		vkInitFunc.ParseString(blank)
+	}
 }
 
 

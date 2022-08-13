@@ -77,7 +77,7 @@ BoxIfTrueOnly := class extend BoxUnit
 {
 	Val := BoxExeObj^
 	OnTrue := BoxBlock^
-	TrueWorked := BoxLabel
+	TrueWorked := BoxLabel^
 	TrueEndLabel := BoxLabel^
 	IfLine := BoxExeLineSimple^
 
@@ -85,7 +85,7 @@ BoxIfTrueOnly := class extend BoxUnit
 	{
 		Val = val
 		OnTrue = onTrue
-		TrueWorked."this"()
+		TrueWorked = new BoxLabel()
 		IfLine = new BoxExeLineSimple(ifToken,val)
 
 		if qc != null 
