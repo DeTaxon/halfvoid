@@ -123,6 +123,7 @@ ForSubObjects := class
 	IndVar := NamedVar^
 	GetCall := BoxExeObj^
 	IsFinished := BoxExeObj^
+	HaveValue := BoxExeObj^
 	InitStep := ParamFunc^
 	NextCheck := BoxLabel^
 
@@ -153,12 +154,20 @@ ForSubObjects := class
 		
 		cnsts := List.{BoxExeConstObj^}
 		objs := CheckExeDownList
-		iFins := innerTryGetMethodCall(StringSpan("IsFinished"),dwnVar.CreateCall(),objs,cnsts)eckType
 
-		if iFins == null
-			DownToken.EmitError("iteratable object does not contain IsFinished")
-		if iFins.GetType() != GTypeBool
-			DownToken.EmitError("IsFinished return non boolean type")
+		haveValue := innerTryGetMethodCall(StringSpan("HaveValue"),dwnVar.CreateCall(),objs,cnsts)
+		checkFunc := haveValue
+		iFins := BoxExeObj^
+		if haveValue == null
+		{
+			iFins = innerTryGetMethodCall(StringSpan("IsFinished"),dwnVar.CreateCall(),objs,cnsts)
+			checkFunc = iFins
+		}
+
+		if checkFunc == null
+			DownToken.EmitError("iteratable object does not contain IsFinished or HaveValue")
+		if checkFunc.GetType() != GTypeBool
+			DownToken.EmitError("IsFinished or HaveValue return non boolean type")
 		
 		mainCall := dwnVar.CreateCall()
 		dwnType := mainCall.GetType()
@@ -224,6 +233,7 @@ ForSubObjects := class
 		}
 		GetCall = iCall
 		IsFinished = iFins
+		HaveValue = haveValue
 		InitStep = dwnVar
 		ValueVar = new MemVar(StringSpan(ValueName),new FuncResultParam(iCall))
 	}
@@ -276,19 +286,21 @@ BoxFor := class extend BoxExeObj
 
 		for it : values
 		{
-			it.GetCall.PrintDefaultUse(f)
-			it.IsFinished.PrintPre(f)
+			if it.HaveValue != null
+			{
+				it.HaveValue.PrintPre(f)
+				PrintBranch(f,it.HaveValue,it.NextCheck,EndLabel&)
+				it.NextCheck.PrintCode(f)
+			}
 
-			f^ << "br i1 "
-			it.IsFinished.PrintUse(f)
-			f^ << ", label "
-			EndLabel.PrintLabel(f)
-			f^ << ", label "
-			it.NextCheck.PrintLabel(f)
-			if DebugMode 
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-			it.NextCheck.PrintCode(f)
+			it.GetCall.PrintDefaultUse(f)
+
+			if it.IsFinished != null
+			{
+				it.IsFinished.PrintPre(f)
+				PrintBranch(f,it.IsFinished,EndLabel&,it.NextCheck)
+				it.NextCheck.PrintCode(f)
+			}
 		}
 
 		body.PrintCode(f)

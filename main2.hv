@@ -1,131 +1,16 @@
 
-//vkLoadAddr := PFN_vkGetInstanceProcAddr
-//vkEnumerateInstanceExtensionProperties := PFN_vkEnumerateInstanceExtensionProperties
-//vkEnumerateInstanceLayerProperties := PFN_vkEnumerateInstanceLayerProperties
-//vkCreateInstance := PFN_vkCreateInstance
-
-//vkInstance := void^
-
 main := !(char^[] args) -> int
 {
-	//libGlfwInit()
-//
-	//glfwInit()
-	//glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API)
-//
-	//win := glfwCreateWindow(500,500,"hi",null,null)
-//
-	//glfwMakeContextCurrent(win)
-
-	vk := GetLibrary("libvulkan.so")
-
-	vkGetInstanceProcAddr = vk.Get("vkGetInstanceProcAddr")->{PFN_vkGetInstanceProcAddr}
-	vkEnumerateInstanceExtensionProperties = vkGetInstanceProcAddr(null,"vkEnumerateInstanceExtensionProperties")->{PFN_vkEnumerateInstanceExtensionProperties}
-	vkEnumerateInstanceLayerProperties = vkGetInstanceProcAddr(null,"vkEnumerateInstanceLayerProperties")->{PFN_vkEnumerateInstanceLayerProperties}
-	vkCreateInstance = vkGetInstanceProcAddr(null,"vkCreateInstance")->{PFN_vkCreateInstance}
-
-	count := u32
-
-	vkEnumerateInstanceLayerProperties(count&,null)
-	lays := TVector.{VkLayerProperties}(count->{int})
-	vkEnumerateInstanceLayerProperties(count&,lays)
-
-	vkEnumerateInstanceExtensionProperties(null,count&,null)
-	exts := TVector.{VkExtensionProperties}(count->{int})
-	vkEnumerateInstanceExtensionProperties(null,count&,exts)
-
-	for i : lays.Size()
+	tst := TVector.{int}(5)
+	tst[0] = 100
+	tst[1] = 2
+	tst[2] = -3
+	tst[3] = 99999
+	tst[4] = -999
+	for it : tst
 	{
-		printf("%i : %s\n",i,lays[i].layerName&)
+		printf("hm %i\n",it)
 	}
-	for i : exts.Size()
-	{
-		printf("%i : %s\n",i,exts[i].extensionName&)
-	}
-
-
-	itLayers := AVLSet.{char^}
-	itExts := AVLSet.{char^}
-
-	addLayer := (char^ nm) ==> 
-	{
-		for i : lays.Size()
-		{
-			if lays[i].layerName[0]& == nm
-			{
-				itLayers.Insert(nm)
-			}
-		}
-	}
-	addLayer("VK_LAYER_LUNARG_standard_validation")
-	addLayer("VK_LAYER_LUNARG_standard_validation")
-	addLayer("VK_LAYER_KHRONOS_validation")
-	addLayer("VK_LAYER_LUNARG_vktrace")
-
-	addExt := (char^ nm) ==>
-	{
-		for i : exts.Size()
-		{
-			if exts[i].extensionName[0]& == nm
-			{
-				itExts.Insert(nm)
-			}
-		}
-	}
-
-	addExt("VK_EXT_debug_report")
-	addExt("VK_KHR_wayland_surface")
-	addExt("VK_KHR_xcb_surface")
-	addExt("VK_KHR_xlib_surface")
-	addExt("VK_KHR_win32_surface")
-	addExt("VK_KHR_surface")
-	addExt("VK_KHR_get_physical_device_properties2" )
-	addExt("VK_KHR_storage_buffer_storage_class")
-
-	printf("----------------------------------------------\n")
-	printf("USING\n")
-	for it : itLayers
-	{
-		printf("layer %s\n",it)
-	}
-	for it : itExts
-	{
-		printf("extension %s\n",it)
-	}
-
-	ls := itLayers.ToArray()
-	exts := itExts.ToArray()
-
-	appInfo := VkApplicationInfo()
-	appInfo.pApplicationName = "no one care"
-	appInfo.applicationVersion = 1
-	appInfo.pEngineName = "void engine"
-	appInfo.engineVersion = 1
-	appInfo.apiVersion = 4194325//(1 << 22) + (0 << 11) + 21
-
-	instCr := VkInstanceCreateInfo()
-	instCr.pApplicationInfo = appInfo&
-
-	instCr.enabledLayerCount = ls.Size()
-	instCr.ppEnabledLayerNames = ls.Get()
-	instCr.enabledExtensionCount = exts.Size()
-	instCr.ppEnabledExtensionNames = exts.Get()
-	instRes := vkCreateInstance(instCr&,null,vkInstance&)
-
-	vkHVInit()
-
-	//vkCreateDebugReportCallbackEXT = vkLoadAddr(vkInstance,"vkCreateDebugReportCallbackEXT")->{PFN_vkCreateDebugReportCallbackEXT}
-
-	printf("hey %p\n",vkCreateDebugReportCallbackEXT)
-
-	//while not glfwWindowShouldClose(win)
-	//{
-	//	glfwSwapBuffers(win)
-	//	glfwPollEvents()
-	//}
-//
-	//glfwTerminate()
-	
-	//return 0
+	return 0
 }
 
