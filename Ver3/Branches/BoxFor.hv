@@ -234,6 +234,7 @@ ForSubObjects := class
 				return new PtrToRefFuncCall(getVar)
 			})
 		}
+
 		GetCall = iCall
 		IsFinished = iFins
 		HaveValue = haveValue
@@ -254,6 +255,10 @@ BoxFor := class extend BoxExeObj
 	body := BoxBlock^
 
 	HeadLine := BoxExeLine^
+
+	CreatedIndex := ParamFunc^
+	CreatedIndexVar := MemVar^
+	CreatedIndexAdd := BoxExeObj^
 	
 	this := !() -> void
 	{
@@ -264,6 +269,24 @@ BoxFor := class extend BoxExeObj
 	{
 		values[^].CheckRegularStep()
 		values[^].NextCheck = new BoxLabel()
+
+		for it : values
+		{
+			if it.IndexName.Size() != 0 and it.IndVar == null
+			{
+				if CreatedIndex == null
+				{
+					CreatedIndex = CreateVar(GTypeInt,false)
+					objs0 := CheckExeDownList
+					objs0.Push(CreatedIndex.CreateCall())
+					CreatedIndexAdd = CreateFuncCall(StringSpan("++"),objs0)
+					assert(CreatedIndexAdd != null)
+					CreatedIndexVar = new MemVarBorrowed(it.IndexName,CreatedIndex)
+				}
+				it.IndVar = CreatedIndexVar
+			}
+		}
+
 
 		stackSize := UnitStack.Size()
 
@@ -307,6 +330,7 @@ BoxFor := class extend BoxExeObj
 		}
 
 		body.PrintCode(f)
+		CreatedIndexAdd?.PrintDefaultUse(f)
 
 		CheckStep.PrintGo(f)
 		EndLabel.PrintCode(f)

@@ -7,9 +7,11 @@ main := !(char^[] args) -> int
 	tst[2] = -3
 	tst[3] = 99999
 	tst[4] = -999
-	for it : tst
+
+	printf("wtf\n")
+	for it,i : tst , re,j : tst
 	{
-		printf("hm %i\n",it)
+		printf("hm %i %i\n",it,i)
 	}
 	return 0
 }
