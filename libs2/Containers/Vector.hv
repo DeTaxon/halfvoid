@@ -1,0 +1,106 @@
+TVector := class .{@T} extend TGCObject
+{
+	pointer := T^
+	itSize := int
+
+	this := !(int count) -> void
+	{
+		Resize(count)
+	}
+	"[]" := !(int i) -> T&
+	{
+		return pointer[i]
+	}
+	Size := !() -> int
+	{
+		return itSize
+	}
+	Resize := !(int count) -> void
+	{
+		if count == itSize
+			return void
+
+		newPointer := calloc(count,T->TypeSize)->{T^}
+
+
+		if T->TypeGroup == "Class"
+		{
+			for i : count
+			{
+				internalHVInitClass(newPointer[i])
+			}
+		}
+
+		//for i : min(itSize,count) //TODO
+		//{
+		//	newPointer[i] = pointer[i]
+		//}
+
+		pointer = newPointer
+		itSize = count
+
+	}
+
+
+	Get := !() -> T^
+	{
+		return pointer
+	}
+
+	Destroy := virtual !() -> void
+	{
+		if pointer != null
+		{
+			free(pointer)
+			pointer = null
+		}
+		itSize = 0
+	}
+
+	"for" := !() -> TVectorIterator.{T}
+	{
+		result.ptr = Get()
+		result.size = Size()
+	}
+}
+
+"for" := !(TVector.{@T} hmm) -> TVectorIterator.{T}
+{
+	result.ptr = hmm.Get()
+	result.size = hmm.Size()
+}
+// "for" := !(TVector.{@T} hmm) -> !()&->T&
+// {
+// 	c := hmm&->{void^}
+// 	x := () ==> T& {
+// 		i := 0
+// 		d := c->{TVector.{T}^}
+// 		while i < d.Size()
+// 		{
+// 			yield d.Get()[i]
+// 			i += 1
+// 		}
+// 	}
+// 	return x.Capture()
+// }
+
+TVectorIterator := class .{@T}
+{
+	ptr := T^
+	size := int
+	ind := int
+	"()" := !() -> T&
+	{
+		result = ptr[ind]&
+		ind += 1
+	}
+	HaveValue := !() -> bool
+	{
+		result = ind < size
+	}
+}
+
+"->{}" := !(TVector.{@T} ve) .{T^} -> T^
+{
+	return ve.Get()
+}
