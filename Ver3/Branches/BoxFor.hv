@@ -138,13 +138,16 @@ ForSubObjects := class
 		objs7 := CheckExeDownList
 		objs7.Push(dwnRes)
 		getForCall := BoxExeObj^
-		getForCall = CreateFuncCall(StringSpan("for"),objs7)
 
 		if getForCall == null
 		{
 			empty7 := CheckExeDownList
 			cnsts6 := List.{BoxExeConstObj^}
 			getForCall = innerTryGetMethodCall(StringSpan("for"),dwnRes,empty7,cnsts6)
+		}
+		if getForCall == null
+		{
+			getForCall = CreateFuncCall(StringSpan("for"),objs7)
 		}
 
 		if getForCall == null

@@ -64,11 +64,6 @@ TVector := class .{@T} extend TGCObject
 	}
 }
 
-"for" := !(TVector.{@T} hmm) -> TVectorIterator.{T}
-{
-	result.ptr = hmm.Get()
-	result.size = hmm.Size()
-}
 // "for" := !(TVector.{@T} hmm) -> !()&->T&
 // {
 // 	c := hmm&->{void^}
