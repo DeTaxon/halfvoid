@@ -67,7 +67,7 @@
 		"makecontext" : "int,void^,void^,int,...",
 		"swapcontext" : "int,void^,void^",
 
-		"mmap" : "void^,void^,u64,int, int, int, void^",
+		"mmap" : "void^,void^,u64,int,int,int,void^",
 		"munmap" : "int,void^,s64",
 		"fstat" : "int,int,char^",
 		"remove" : "int,char^",

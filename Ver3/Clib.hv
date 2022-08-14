@@ -127,6 +127,10 @@ CLib := class extend ModuleInterface
 			}
 			txtToken := TokenIndent(txt)
 			typs[c] = ParseType(txtToken&)
+			if typs[c] == null
+			{
+				printf("Could not parse type <%s> for function %s\n",txt,name)
+			}
 			for i : points
 			{
 				typs[c] = typs[c].GetPoint()

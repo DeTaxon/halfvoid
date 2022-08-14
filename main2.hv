@@ -8,8 +8,8 @@ tst := packed_class
 }
 main := !(char^[] args) -> int
 {
-	c := tst
-	printf("hm %i\n",tst->TypeSize)
+	fil := MappedFile("./main2.hv")
+	printf("hm %i\n",fil.Size())
 	return 0
 }
 
