@@ -83,6 +83,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		newClass.NamedConstants[i] = namedConstants[^i]
 		newClass.ComputeConsts()
 		newClass.TemplateParent = this&
+		newClass.IsPacked = IsPacked
 		return newClass
 	}
 }

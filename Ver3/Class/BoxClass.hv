@@ -36,7 +36,10 @@ BoxClass := class extend BoxUnit
 		PrintVTable(f)
 
 		needComma := false
-		f^ << "%Class" << ItId << " = type {"
+		f^ << "%Class" << ItId << " = type "
+		if IsPacked
+			f^ << "<"
+		f^ << "{"
 		if FieldsPath.Size() == 0 and VTable.Size() == 0
 		{
 			f^ <<"i1"
@@ -56,7 +59,10 @@ BoxClass := class extend BoxUnit
 				typ.PrintType(f)
 			}
 		}
-		f^ << "}\n"
+		f^ << "}"
+		if IsPacked
+			f^ << ">"
+		f^ <<"\n"
 
 		if DebugMode
 		{
@@ -169,7 +175,7 @@ BoxClass := class extend BoxUnit
 			unalign := posMemOffset % fil.Value.GetAlign()
 			ItAlign = max(ItAlign,fil.Value.GetAlign())
 
-			if unalign != 0
+			if unalign != 0 and not IsPacked
 			{
 				posMemOffset += fil.Value.GetAlign() - unalign
 			}
@@ -181,6 +187,8 @@ BoxClass := class extend BoxUnit
 
 			FieldsPath.Push(fPath)
 		}
+		if IsPacked
+			ItAlign = 1
 		ItSize = posMemOffset
 
 	}

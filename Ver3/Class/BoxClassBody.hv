@@ -1,13 +1,18 @@
 
 TryParseClass := !(Token^ itm) -> BoxUnit^
 {
-	if itm == null or itm.Down == null or itm.Down.GetValue() != "class"
+	if itm == null or itm.Down == null
 		return null
+	if  itm.Down.GetValue() != "class" and itm.Down.GetValue() != "packed_class"
+		return null
+	
 
 	parents := HybridQueue.{Token^,2}
 	constValue := Token^
 
 	isPacked := bool
+	if itm.Down.GetValue() == "packed_class"
+		isPacked = true
 
 	iter := itm.Down.Right
 

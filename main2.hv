@@ -1,15 +1,15 @@
 
 
-c := !(int x, int y) -> void
+tst := packed_class
 {
-	x += 13
-	c := y
+	x := u8
+	y := int
+	z := u8
 }
-
-
 main := !(char^[] args) -> int
 {
-	c(23,23)
+	c := tst
+	printf("hm %i\n",tst->TypeSize)
 	return 0
 }
 
