@@ -81,23 +81,41 @@ BoxFile := class extend BoxUnit
 
 		while iter != null
 		{
-			vr := TryParseVar(iter)	
+			vr := BoxUnit^
+			vr = null
+
+			try
+			{
+
+				vr = TryParseVar(iter)	
+			}catch(IException^ e)
+			{
+
+			}
+
+			if vr == null
+			{
+				if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
+				{
+					vr = new GlobalVarDelayed(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+				}
+			}
 
 			if vr != null
 			{
 				if vr is TypeVar or vr is TemplateTypeVar
 				{
 					CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
-				}
-				if vr is in NamedVar
-				{
-					v := vr->{NamedVar^}
-					CurrentCodeSpace.Globals[v.Name].Push(vr)
-				}
-				if vr is GlobalVar
+				}else if vr is in GlobalVar
 				{
 					glb := vr->{GlobalVar^}
 					CurrentCodeSpace.Globals[glb.Name].Push(vr)
+
+				}else if vr is in NamedVar
+				{
+					v := vr->{NamedVar^}
+					CurrentCodeSpace.Globals[v.Name].Push(vr)
+				}else {
 				}
 
 				objects.Push(vr)

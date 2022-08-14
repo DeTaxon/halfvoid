@@ -9,22 +9,25 @@ GlobalVar := class extend BoxUnit
 	{
 		Init(name,tp,false)
 	}
-	this := !(StringSpan name,Type^ tp,bool isTaskLocal) -> void
+	this := !(StringSpan name,Type^ tp,bool isThreadLocal) -> void
 	{
-		Init(name,tp,isTaskLocal)
+		Init(name,tp,isThreadLocal)
 	}
 
-	Init := !(StringSpan name,Type^ tp,bool isTaskLocal) -> void
+	Init := !(StringSpan name,Type^ tp,bool isThreadLocal) -> void
 	{
 		Name = name
 		Value = new GlobalVarFunc(name,tp)
 
-		if isTaskLocal
+		if isThreadLocal
 			Value->SetType(ThreadLocalVarFunc)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		Value.PrintCodeConst(f,MemValue)
+	}
+	AwaitType := virtual !() -> void
+	{
 	}
 }
 

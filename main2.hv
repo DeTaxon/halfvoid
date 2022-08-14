@@ -1,16 +1,16 @@
 
 
+c := !(int x, int y) -> void
+{
+	x += 13
+}
+
+
 main := !(char^[] args) -> int
 {
-	tst := TVector.{int}(5)
-	tst[^i] = i
-
-	if (tst[^i] and_b 1) >= 0
-	{
-		printf("yes %i\n",1 shl i)
-	}
-
-	printf("hey %i\n",tst[^])
+	libGlfwInit()
+	glfwInit()
+	c(23,23)
 	return 0
 }
 

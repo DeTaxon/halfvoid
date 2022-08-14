@@ -14,6 +14,10 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		return false
 	}
+	IsDebuggable := virtual !() -> bool
+	{
+		return false
+	}
 	IsRef := virtual !() -> bool
 	{
 		return isRef

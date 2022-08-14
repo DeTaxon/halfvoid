@@ -145,9 +145,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	GetItemGlobal(asItm.Value, x ==> {
 		for it : x
 		{
-			if it is GlobalVar
+			if it is in GlobalVar
 			{
-				callItem = it->{GlobalVar^}.Value
+				gVar := it->{GlobalVar^}
+				gVar.AwaitType()
+				callItem = gVar.Value
 				return true
 			}
 			if it is TaskLocalVar

@@ -162,6 +162,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		LocalParamBackup.PrintCode(f)
 		SelfSet.PrintDefaultUse(f)
 	}
 	IsValue := virtual !() -> bool
@@ -179,5 +180,9 @@ FuncInputParamInMem := class extend FuncInputParam
 				it.CallObj = LocalParamBackup.CreateCall()
 			}
 		}
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		LocalParamBackup.PrintPointUse(f)
 	}
 }

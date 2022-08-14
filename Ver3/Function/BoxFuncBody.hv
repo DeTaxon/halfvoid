@@ -87,8 +87,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		if StartedParse
 			return void
 		StartedParse = true
-		GFuncsInProgress.Push(this&)
 		cls := this&
+		GFuncsInProgress.Push(this&)
 		TSpawnTask(() ==> [cls] {
 			cls.ParseBodyForced()
 		})
@@ -98,6 +98,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		if StartedParseForced
 			return void
 		StartedParseForced = true
+
+		GFuncsInProgress.Push(this&)
 		this.WorkBody()
 	}
 	SetName := virtual !(StringSpan nm) -> void
@@ -225,6 +227,8 @@ BoxFuncBody := class extend BoxFuncCommon
 	PrintName := virtual !(TIOStream^ f) -> void
 	{
 		f^ << "@" << OutputName
+		if OutputName.Size() == 0
+			printf("bad\n")
 	}
 	
 	PrintCode := virtual !(TIOStream^ f) -> void

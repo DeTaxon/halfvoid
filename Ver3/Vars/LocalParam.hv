@@ -128,13 +128,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		}
 	}
 }
-//FuncLocalParamInYield := class extend FuncLocalParamCaptured
-//{
-//	GetTupleVar := virtual !() -> BoxExeObj^
-//	{
-//		return new PtrToRefFuncCall(new BoxFuncCall(parentFunc.YieldTupleVar))
-//	}
-//}
+
 
 GetLVarName := !(int x) -> StringSpan
 {

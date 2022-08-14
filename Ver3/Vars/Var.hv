@@ -234,6 +234,8 @@ MemVar := class extend NamedVar
 	}
 	pDebugCode := !(TIOStream^ f) -> void
 	{
+		if not (Value.IsDebuggable())
+			return void
 		if Value is FuncLocalParamCaptured //TODO, get debug data for captured variables
 			return void
 		if Value is FuncInputParamCaptured //TODO, get debug data for captured variables
