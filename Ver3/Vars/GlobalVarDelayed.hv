@@ -1,0 +1,45 @@
+GlobalVarDelayed := class extend GlobalVar
+{
+	downToken := Token^
+
+	awaitHatch := THatch
+
+	this := !(StringSpan sn,Token^ tkn) -> void
+	{	
+		Name = sn
+		downToken = tkn
+
+		c := this&
+		SubWork(() ==> [c] {
+			c.CheckVal()
+		})
+	}
+	CheckVal := !() -> void
+	{
+		GParsedAllFiles.Await()
+
+		if downToken.Down?.GetValue() == "thread_local" or downToken.Down?.GetValue() == "task_local"
+		{
+			assert(false)
+		}
+
+		tp := ParseType(downToken)
+
+		if tp != null
+		{
+			Value = new GlobalVarFunc(Name,tp)
+		}else{
+			downToken.EmitError("Can not get type of global variable")
+		}
+
+		awaitHatch.Emit()
+	}
+	AwaitType := virtual !() -> void
+	{
+		awaitHatch.Await()
+	}
+	Work := virtual !() -> void
+	{
+
+	}
+}
