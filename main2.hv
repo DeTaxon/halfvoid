@@ -1,11 +1,16 @@
 
-vvv := 129
 
 main := !(char^[] args) -> int
 {
-	c := 13
-	z := 16
-	printf("c %i\n", true ?: c : z)
+	tst := TVector.{int}(5)
+	tst[^i] = i
+
+	if (tst[^i] and_b 1) >= 0
+	{
+		printf("yes %i\n",1 shl i)
+	}
+
+	printf("hey %i\n",tst[^])
 	return 0
 }
 

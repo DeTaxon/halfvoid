@@ -190,6 +190,14 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"sub") )
 		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"mul") )
 
+		bSpace.Functions[StringSpan("shl")].Push(new BuiltInIntBase(strt,"shl") )
+		if isSigned
+		{
+			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"ashl") )
+		}else{
+			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"lshl") )
+		}
+
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )

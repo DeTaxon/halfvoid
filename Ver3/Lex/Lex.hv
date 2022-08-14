@@ -375,6 +375,8 @@ IsKeyword := !(W) -> bool
 		case "static" return true
 		case "field" return true
 		case "none" return true
+		case "shr" return true
+		case "shl" return true
 	}
 
 	return false

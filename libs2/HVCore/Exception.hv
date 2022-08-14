@@ -62,5 +62,8 @@ internalGetException := !() -> IException^
 
 Exception := class extend IException
 {
-	
+	this := !(char^ msg) -> void
+	{
+		
+	}
 }
