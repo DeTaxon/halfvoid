@@ -96,8 +96,9 @@ BoxExeInt := class extend BoxExeConstObj
 	}
 	PrintConst := virtual !(TIOStream^ f) -> void
 	{
-		ObjType.PrintType(f)
-		f^ << " " << Value
+		f^ << Value
+		//ObjType.PrintType(f)
+		//f^ << " " << Value
 	}
 }
 BoxExeDouble := class extend BoxExeConstObj

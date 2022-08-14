@@ -142,6 +142,18 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}
 			return mVar
 		}else{
+
+			if CurrentScope is BoxFile
+			{
+				if not (exeObj is in BoxExeConstObj)
+				{
+					varToken.EmitError("Can not create global variable out of object")
+				}
+				cnst := exeObj->{BoxExeConstObj^}
+				rVar := new GlobalVar(name,cnst.GetType())
+				rVar.MemValue = cnst
+				return rVar
+			}
 			assert(false)
 		}
 	}

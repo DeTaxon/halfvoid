@@ -435,11 +435,11 @@ ModuleVulkan := class extend ModuleInterface
 		if inMap != null
 		{
 
-			newStruct := new BoxClass
+			newStruct := new BoxClassVulkan
 			newStruct.ItName = StringSpan(name)
 			newStruct.ItId = GetNewId()
 			newStruct.ItType = new TypeClass(newStruct)
-			Typedefs[name] = newStruct.ItType
+			Typedefs[StrCopy(name)] = newStruct.ItType
 
 			sTypVal := char^
 
@@ -491,6 +491,7 @@ ModuleVulkan := class extend ModuleInterface
 						strm << "}\n"
 
 						str := strm.Str()
+						str = StrCopy(str)
 
 						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
 						start := TokenSymbol(StringSpan("{}"),1)
@@ -517,6 +518,7 @@ ModuleVulkan := class extend ModuleInterface
 				}
 			}
 			AllClasses.Push(newStruct)
+			newStruct.FinilizeCreation()
 			return newStruct.ItType
 		}
 		
@@ -749,6 +751,27 @@ ModuleVulkan := class extend ModuleInterface
 	}
 }
 
+BoxClassVulkan := class extend BoxClass
+{
+
+	finishHatch := THatch
+
+	FinilizeCreation := !() -> void
+	{
+		finishHatch.Emit()
+	}
+	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		finishHatch.Await()
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,objs)
+
+		if objs.Size() != 0
+			cb(objs)
+	}
+}
 
 EnumsValue := 1
 EnumsBitPos := 2

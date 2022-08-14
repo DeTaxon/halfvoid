@@ -65,6 +65,7 @@ GlobalVarFunc := class extend BoxFunc
 		pType.PrintType(f)
 		if cnst != null
 		{
+			f^ << " "
 			cnst.PrintConst(f)
 		}else{
 			f^ << " zeroinitializer"

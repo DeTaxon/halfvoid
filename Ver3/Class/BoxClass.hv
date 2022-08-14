@@ -221,7 +221,7 @@ BoxClass := class extend BoxUnit
 		}
 		Parents[^].populateMethods(name,objs)
 	}
-	GetMethods := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{	
 		AwaitTypeState()
 

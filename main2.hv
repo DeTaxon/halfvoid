@@ -1,13 +1,11 @@
 
+vvv := 129
+
 main := !(char^[] args) -> int
 {
-	
-	c := 15
-
-	if (c <=> 15) == 0
-	{
-		printf("yes\n")
-	}
+	c := 13
+	z := 16
+	printf("c %i\n", true ?: c : z)
 	return 0
 }
 

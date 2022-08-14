@@ -150,6 +150,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetDecoratorCall(itm)?
 	return TryGetTryCatch(itm)?
 	return TryGetArrayCall(itm)?
+	return TryGetTrinary(itm)?
 	
 	isOperCall := TryCheckMathOperatorCall(itm)
 	if isOperCall != null
