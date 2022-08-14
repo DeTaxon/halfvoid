@@ -3,13 +3,12 @@
 c := !(int x, int y) -> void
 {
 	x += 13
+	c := y
 }
 
 
 main := !(char^[] args) -> int
 {
-	libGlfwInit()
-	glfwInit()
 	c(23,23)
 	return 0
 }

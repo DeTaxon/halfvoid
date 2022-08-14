@@ -100,6 +100,15 @@ FuncInputParam := class extend ParamFunc
 			it.CallObj = new BoxFuncCall(this&)
 		}
 	}
+
+	IsDebuggable := virtual !() -> bool
+	{
+		return true
+	}
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	{
+		f^ <<  irName
+	}
 }
 
 ParamLoadObj := class extend BoxExeObj
@@ -152,6 +161,10 @@ FuncInputParamCaptured := class extend FuncInputParamInMem
 	NotifyMemUse := virtual !() -> void {}
 	NotifyCaptureUse := virtual !() -> void {}
 
+	IsDebuggable := virtual !() -> bool
+	{
+		return false
+	}
 }
 
 FuncInputParamInMem := class extend FuncInputParam
@@ -181,8 +194,12 @@ FuncInputParamInMem := class extend FuncInputParam
 			}
 		}
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	IsDebuggable := virtual !() -> bool
 	{
-		LocalParamBackup.PrintPointUse(f)
+		return LocalParamBackup.IsDebuggable()
+	}
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	{
+		LocalParamBackup.PrintDebugLine(f)
 	}
 }

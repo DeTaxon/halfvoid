@@ -236,35 +236,32 @@ MemVar := class extend NamedVar
 	{
 		if not (Value.IsDebuggable())
 			return void
-		if Value is FuncLocalParamCaptured //TODO, get debug data for captured variables
-			return void
-		if Value is FuncInputParamCaptured //TODO, get debug data for captured variables
-			return void
-		if Value is in FuncLocalParam or Value is in FuncInputParam
+		//if Value is FuncLocalParamCaptured //TODO, get debug data for captured variables
+		//	return void
+		//if Value is FuncInputParamCaptured //TODO, get debug data for captured variables
+		//	return void
+		
+		tp := Value.GetVarType()
+		if DebugMode
 		{
-			clr := CheckExeDownList
-			cl := BoxFuncCall(Value,clr)
-			cl.PrintPointPre(f)
-			if DebugMode
+			f^ << "call void @llvm.dbg."
+			if Value.IsValue()
 			{
-				f^ << "call void @llvm.dbg."
-				if Value.IsValue()
-				{
-					f^ << "value"
-				}else{
-					f^ << "declare"
-				}
-				f^ << "(metadata "
-				cl.GetType().PrintType(f)
-				if not Value.IsValue()
-					f^ << "*"
-				if Value.IsRef() //TODO?
-					f^ << "*"
-				f^ << " " 
-				cl.PrintPointUse(f)
-				f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+				f^ << "value"
+			}else{
+				f^ << "declare"
 			}
+			f^ << "(metadata "
+			tp.PrintType(f)
+			if not Value.IsValue()
+				f^ << "*"
+			if Value.IsRef() //TODO?
+				f^ << "*"
+			f^ << " " 
+			Value.PrintDebugLine(f)
+			f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 		}
+			
 	}
 	doInits := !(TIOStream^ f) -> void
 	{

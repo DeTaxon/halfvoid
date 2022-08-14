@@ -75,6 +75,15 @@ FuncLocalParam := class extend ParamFunc
 			it.CallObj = new BoxFuncCall(this&)
 		}
 	}
+	IsDebuggable := virtual !() -> bool
+	{
+		return true
+	}
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	{
+		f^ << irName
+	}
+	
 }
 
 FuncLocalParamCaptured := class extend FuncLocalParam
@@ -126,6 +135,11 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 			it.CallObj = new BoxFuncCall(fld,objs)
 			objs.Clear()
 		}
+	}
+
+	IsDebuggable := virtual !() -> bool
+	{
+		return false
 	}
 }
 

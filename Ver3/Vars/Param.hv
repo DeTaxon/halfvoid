@@ -18,6 +18,10 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		return false
 	}
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	{
+
+	}
 	IsRef := virtual !() -> bool
 	{
 		return isRef
