@@ -4,11 +4,16 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 
 	iter := itm.Down.Right
 
-	if iter.Right.GetValue() == "{}"
+	if iter.Right.GetValue() != ":" and iter.Right.GetValue() != ","
 	{
-		//TODO, name only
+		forElement := ForSubObjects
+		forElement.ValueName = StringSpan("it")
+		//forElement.IndexName
+		forElement.DownToken = iter
+		forItems.Push(forElement)
+		iter = iter.Right
 	}else{
-		while iter.GetValue() != "{}" //TODO non {} variant
+		while true
 		{
 			if iter.GetValue() == ","
 				iter = iter.Right
@@ -45,9 +50,11 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 			forItems.Push(forElement)
 
 			iter = iter.Right
+
+			if iter.GetValue() != ","
+				break
 		}
 	}
-	assert(iter.GetValue() == "{}")
 
 	return GetForParsed(iter,forItems)
 }
