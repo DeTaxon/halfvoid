@@ -1,18 +1,25 @@
 
 
+tst := class
+{
+	"in" := !(int x) -> void
+	{
+		printf("no no No\n")
+	}
+	//YES := fake
+	//{
+	//	"in" := !(int x) -> void
+	//	{
+	//		printf("YES\n")
+	//	}
+	//}
+}
+
 main := !(char^[] args) -> int
 {
-	for 5..10
-	{
-		printf("hey %i\n",it)
-		switch it
-		{
-			case in 5..7
-				printf("1\n")
-			case in 8..10
-				printf("2\n")
-		}
-	}
-
+	//k := tst
+	//c := int
+	//c in k
+	printf("test %p\n",not_b 0U)
 	return 0
 }

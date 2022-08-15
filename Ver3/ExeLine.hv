@@ -151,6 +151,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetTryCatch(itm)?
 	return TryGetArrayCall(itm)?
 	return TryGetTrinary(itm)?
+	return TryGetSuffixCall(itm)?
 	
 	isOperCall := TryCheckMathOperatorCall(itm)
 	if isOperCall != null
@@ -221,7 +222,10 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 			}else{
 				obj := TryGetExeCall(itr)
 				if obj == null
+				{
+					itr.Print(0)
 					itr.EmitError("Could not compile line")
+				}
 				Objs.Push(obj)
 			}
 		}

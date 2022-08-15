@@ -46,8 +46,11 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		arr.Destroy()
 		return innerTrySetType(lmbd,newType)
 	}
-	if itm.Down.GetValue() == "not"
+
+	if itm.Down is TokenSymbol
 	{
+		bigName := ". "sbt + itm.Down.GetValue()
+		bigNameSpan := GetConstString(bigName.Str())
 		if itm.Down.Right == null
 			return null
 		if itm.Down.Right.Right != null
@@ -58,21 +61,7 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 
 		objs5 := CheckExeDownList
 		objs5.Push(dObj)
-		return CreateFuncCall(StringSpan(". not"),objs5)
-	}
-	if itm.Down.GetValue() == "-"
-	{
-		if itm.Down.Right == null
-			return null
-		if itm.Down.Right.Right != null
-			return null
-		dObj := TryGetExeCall(itm.Down.Right)
-		if dObj == null
-			return null
-
-		objs5 := CheckExeDownList
-		objs5.Push(dObj)
-		return CreateFuncCall(StringSpan(". -"),objs5)
+		return CreateFuncCall(bigNameSpan,objs5)
 	}
 	if itm.Down.GetValue() == "()" and itm.Down.Right == null and itm.Down.Down != null
 	{

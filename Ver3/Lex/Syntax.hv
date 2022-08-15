@@ -180,6 +180,7 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 		iterVal := iterU.GetValue()
 		isTType := iterU is TokenDecor
 		if iterU.IsData iterVal = "~d"
+		if iterU is TokenSuffix iterVal = "~suffix"
 
 		inWNext := iterNode.WhatNext.TryFind(iterVal)
 		if inWNext != null
