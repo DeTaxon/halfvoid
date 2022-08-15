@@ -83,15 +83,24 @@ BoxSwitch := class extend BoxUnit
 				deafultNode = thisCaseBlock
 				return void
 			}
+			checkRes := BoxExeObj^
 
-			caseCheck := TryGetExeCall(currentCase.Down.Right)
+			caseVal := currentCase.Down.Right
+			caseCheckFuncName := StringSpan("==")
+			if caseVal.GetValue() == "in"
+			{
+				caseVal = caseVal.Right
+				caseCheckFuncName = StringSpan("in")
+			}
+
+			caseCheck := TryGetExeCall(caseVal)
 			if caseCheck == null
 				currentCase.EmitError("Could not get case object")
 			
 			objs := CheckExeDownList
 			objs.Push(mainVar.CreateCall())
 			objs.Push(caseCheck)
-			checkRes := CreateFuncCall(StringSpan("=="),objs)
+			checkRes := innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
 
 			if checkRes == null
 				currentCase.EmitError("Can not compare case object with switch statement")

@@ -18,13 +18,27 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryGetAndOrCall(itm)
 	}
-
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
-	if tmpList[0] == null or tmpList[1] == null
-		itm.EmitError("Unknown error")
+	return innerTryGetInfixCall(oper,tmpList,itm)
+}
 
+innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken)
+{
+	if lst[0] == null or lst[1] == null
+		errToken.EmitError("Unknown error")
+	assert(lst.Size() == 2)
+
+	tmpList := CheckExeDownList
+	if oper == "in"
+	{
+		tmpList.Push(lst[1])
+		tmpList.Push(lst[0])
+	}else{
+		tmpList.Push(lst[0])
+		tmpList.Push(lst[1])
+	}
 
 	return TryComputeOperators(oper,tmpList)?
 

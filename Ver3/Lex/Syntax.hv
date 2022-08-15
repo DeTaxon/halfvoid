@@ -561,7 +561,15 @@ RuleCase := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
-	if InDataR(It) return 2
+	if It.GetValue() == "in"
+	{
+		It = It.Right
+		if It == null return 0
+		
+		if InDataR(It) return 3
+	}else{
+		if InDataR(It) return 2
+	}
 	return 0
 }
 RuleWhile := !(void^ itr)-> int

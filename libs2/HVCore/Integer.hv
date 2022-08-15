@@ -27,11 +27,15 @@ Range := class
 	"for" := !() -> RangeIterator
 	{
 		result.value = start
-		result.end = end
+		result.end = end + 1
+	}
+	"in" := !(int x) -> bool
+	{
+		result = x >= start and x <= end
 	}
 }
 ".." := !(int s, int e) -> Range
 {
 	result.start = s
-	result.end = e + 1
+	result.end = e
 }

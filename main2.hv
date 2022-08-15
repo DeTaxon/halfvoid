@@ -2,8 +2,17 @@
 
 main := !(char^[] args) -> int
 {
-	for it,ind : ![1,6,12,0]
-		printf("hm %i\n",it)
+	for 5..10
+	{
+		printf("hey %i\n",it)
+		switch it
+		{
+			case in 5..7
+				printf("1\n")
+			case in 8..10
+				printf("2\n")
+		}
+	}
 
 	return 0
 }
