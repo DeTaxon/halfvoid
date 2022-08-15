@@ -95,6 +95,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	{
 		if CurrentScope is in BoxFunc
 		{
+			if exeObj is BoxArrayHolder
+			{
+				exeObj = exeObj->{BoxArrayHolder^}.CreateDefaultUse()
+				printf("YES\n")
+			}
 			if exeObj is ConstructorCallWrapper
 			{
 				objAsCnstr := exeObj->{ConstructorCallWrapper^}
@@ -145,14 +150,27 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 			if CurrentScope is BoxFile
 			{
-				if not (exeObj is in BoxExeConstObj)
+				if exeObj is BoxArrayHolder
 				{
-					varToken.EmitError("Can not create global variable out of object")
+					ah := exeObj->{BoxArrayHolder^}
+					if ah.GetArraySize() == 0
+						varToken.EmitError("Can not use empty array as global variable")
+					if not ah.IsConst()
+						varToken.EmitError("Array must be made of constants")
+					aVar := new GlobalVar(name,ah.GetArrayType())
+					aVar.MemValue = ah.GetAsConst()
+					assert(aVar.MemValue != null)
+					return aVar
+				}else{
+					if not (exeObj is in BoxExeConstObj)
+					{
+						varToken.EmitError("Can not create global variable out of object")
+					}
+					cnst := exeObj->{BoxExeConstObj^}
+					rVar := new GlobalVar(name,cnst.GetType())
+					rVar.MemValue = cnst
+					return rVar	
 				}
-				cnst := exeObj->{BoxExeConstObj^}
-				rVar := new GlobalVar(name,cnst.GetType())
-				rVar.MemValue = cnst
-				return rVar
 			}
 			assert(false)
 		}

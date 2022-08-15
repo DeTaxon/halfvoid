@@ -1,0 +1,6 @@
+
+"for" := !(@ArrType[@Size] arr) -> HVFixedArrayIterator.{ArrType}
+{
+	result.pointer = arr[0]&
+	result.size = Size
+}

@@ -34,21 +34,23 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 		itr = itr.Right
 	}
 
-	if objs.Size() == 0
-	{
-		return new BoxArrayHolder()
-	}
+	res := new BoxArrayHolder(allType,allConsts,itm)
+	res.vals.Push(objs[^])
+	return res
+	//if objs.Size() == 0
+	//{
+	//	return new BoxArrayHolder()
+	//}
 
-	if allConsts
-	{
-		arrType := allType.GetArray(objs.Size())
-		glbVar := CreateGlobalVar(StringSpan("anon"),arrType,false)
-		cnst := new BoxArrayConst(arrType)
-		cnst.dwns.Push(objs[^]->{BoxExeConstObj^})
-		glbVar.MemValue = cnst
-
-		return glbVar.Value.CreateCall()
-	}
+	//if allConsts
+	//{
+	//	arrType := allType.GetArray(objs.Size())
+	//	glbVar := CreateGlobalVar(StringSpan("anon"),arrType,false)
+	//	cnst := new BoxArrayConst(arrType)
+	//	cnst.dwns.Push(objs[^]->{BoxExeConstObj^})
+	//	glbVar.MemValue = cnst
+	//	return glbVar.Value.CreateCall()
+	//}
 
 	cnsts := List.{BoxExeConstObj^}
 	cnsts.Push(GetConstType(allType.GetArray(objs.Size())))
@@ -70,11 +72,14 @@ BoxArrayConst := class extend BoxExeConstObj
 	}
 	PrintConst := virtual !(TIOStream^ f) -> void
 	{
+		elType := dwns[0].GetType()
 		f^ << "["
 		for it,i : dwns
 		{
 			if i != 0
 				f^ << ","
+			elType.PrintType(f)
+			f^ << " "
 			it.PrintConst(f)
 		}
 		f^ << "]"
@@ -85,9 +90,35 @@ BoxArrayConst := class extend BoxExeConstObj
 BoxArrayHolder := class extend BoxExeObj
 {
 	vals := CheckExeDownList
-	this := !() -> void
+	defaultType := Type^
+	isAllConsts := bool
+	globalVar := GlobalVar^
+	debugToken := Token^
+
+	this := !(Type^ elType,bool isC,Token^ debToken) -> void
 	{
 		ObjType = GTypeVoid
+		defaultType = elType
+		isAllConsts = isC
+		debugToken = debToken
+	}
+	GetDefaultType := !() -> Type^
+	{
+		return defaultType
+	}
+	GetArrayType := !() -> Type^
+	{
+		assert(defaultType != null)
+		assert(vals.Size() != 0)
+		return defaultType.GetArray(vals.Size())
+	}
+	IsConst := !() -> bool
+	{
+		return isAllConsts
+	}
+	GetArraySize := !() -> int
+	{
+		return vals.Size()
 	}
 	CreateViewArray := !(Type^ tp) -> BoxExeObj^
 	{
@@ -103,6 +134,40 @@ BoxArrayHolder := class extend BoxExeObj
 		assert(false)
 		return null
 	}
+	CreateDefaultUse := !() -> BoxExeObj^
+	{
+		if vals.Size() == 0
+			return null
+		if isAllConsts
+		{
+			if globalVar == null
+			{
+				globalVar = CreateGlobalVar(StringSpan("anon"),GetArrayType(),false)
+				globalVar.MemValue = GetAsConst()
+			}
+			return globalVar.Value.CreateCall()
+		}
+
+		cnsts := List.{BoxExeConstObj^}
+		cnsts.Push(GetConstType(GetArrayType()))
+		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
+		cnsts.Destroy()
+
+		if resCall == null
+			debugToken.EmitError("could not create array, function ![] not found")
+		return resCall
+	}
+	GetAsConst := virtual !() -> BoxArrayConst^
+	{
+		if vals.Size() == 0
+			return null
+
+		arrType := GetArrayType()
+		cnst := new BoxArrayConst(arrType)
+		cnst.dwns.Push(vals[^]->{BoxExeConstObj^})
+		return cnst
+	}
+
 }
 IsViewType := !(Type^ tp) -> bool
 {

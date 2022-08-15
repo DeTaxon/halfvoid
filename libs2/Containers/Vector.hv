@@ -57,9 +57,9 @@ TVector := class .{@T} extend TGCObject
 		itSize = 0
 	}
 
-	"for" := !() -> TVectorIterator.{T}
+	"for" := !() -> HVFixedArrayIterator.{T}
 	{
-		result.ptr = Get()
+		result.pointer = Get()
 		result.size = Size()
 	}
 }
@@ -79,14 +79,14 @@ TVector := class .{@T} extend TGCObject
 // 	return x.Capture()
 // }
 
-TVectorIterator := class .{@T}
+HVFixedArrayIterator := class .{@T}
 {
-	ptr := T^
+	pointer := T^
 	size := int
 	ind := int
 	"()" := !() -> T&
 	{
-		result = ptr[ind]&
+		result = pointer[ind]&
 		ind += 1
 	}
 	HaveValue := !() -> bool

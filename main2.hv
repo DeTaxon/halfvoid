@@ -1,15 +1,10 @@
 
 
-tst := packed_class
-{
-	x := u8
-	y := int
-	z := u8
-}
 main := !(char^[] args) -> int
 {
-	fil := MappedFile("./main2.hv")
-	printf("hm %i\n",fil.Size())
+	for it : ![1,6,12,0]
+	{
+		printf("hm %i\n",it)
+	}
 	return 0
 }
-

@@ -76,6 +76,9 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 		{
 			dwnRes := TryGetExeCall(it.DownToken)
 
+			if dwnRes is BoxArrayHolder
+				dwnRes = dwnRes->{BoxArrayHolder^}.CreateDefaultUse()
+
 			if dwnRes == null
 				it.DownToken.EmitError("Could not get result for cycle over obj")
 			
