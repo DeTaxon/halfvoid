@@ -113,7 +113,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			obj.EmitError("Can not set type")
 		return setCall
 	}
-
+	right.EmitError("Unknown metafield")
 	
 	assert(false)
 	return null

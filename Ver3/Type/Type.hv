@@ -35,6 +35,10 @@ Type := class {
 		assert(false)
 		return 0
 	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
 	IsComplexReturn := virtual !() -> bool
 	{
 		return false
@@ -167,6 +171,10 @@ TypeArr := class extend Type
 	GetSize := virtual !() -> int
 	{
 		return Base.GetSize()*len
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
 	}
 	IsComplexReturn := virtual !() -> bool
 	{

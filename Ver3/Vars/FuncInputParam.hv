@@ -72,6 +72,10 @@ FuncInputParam := class extend ParamFunc
 			objs.Push(new BoxFuncCall(SelfAsBlank))
 		}
 		SelfSet = CreateFuncCall(StringSpan("="),objs)
+		if SelfSet == null
+		{
+			printf("Software error for type %s %s\n",varMiddleType.GetBADStr(),CurrentFunc.Name)
+		}
 		assert(SelfSet != null)
 
 		parentFunc.regularVars.Push(LocalParamBackup)

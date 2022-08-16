@@ -113,9 +113,9 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 		}else{
 			switch iterBag.RawLine
 			{
-				//case "#UnaryMinus"
-				//	if RuleUse(begin,"~d",RuleMinus)
-				//			return true
+				case "#UnaryMinus"
+					if RuleUse(begin,"~d",RuleMinus)
+							return true
 				case "#CallFunction"
 					if RuleUse(begin,"~d",RuleCallFunction) return true
 				case "#ClassBlock"
@@ -449,38 +449,39 @@ RuleCallFunction := !(void^ itr) -> int
 
 	return 2
 }
-//RuleMinus := !(void^ itr) -> int
-//{
-//	It := itr->{Token^}
-//
-//	if It.Left != null
-//	{
-//		if It.Left.GetValue() == "[]" return 0
-//		if It.Left.GetValue() == "()" return 0
-//		if It.Left is ObjSuffix return 0 
-//		if It.Left.IsData return 0
-//	}
-//	if It.GetValue() != "-" return 0
-//
-//	It = It.Right
-//	if It == null return 0
-//
-//	if not It.IsData return 0
-//	
-//	It = It.Right
-//	if It == null return 2
-//
-//	switch It.GetValue()
-//	{
-//		case "." return 0
-//		case "()" return 0
-//		case "[]" return 0
-//		case "^" return 0
-//		case "&" return 0
-//	}
-//
-//	return 2
-//}
+RuleMinus := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+
+	if It.GetValue() != "-" return 0
+
+	if It.Left != null
+	{
+		if It.Left.GetValue() == "[]" return 0
+		if It.Left.GetValue() == "()" return 0
+		if It.Left is TokenSuffix return 0 
+		if It.Left.IsData return 0
+	}
+
+	It = It.Right
+	if It == null return 0
+
+	if not It.IsData return 0
+	
+	It = It.Right
+	if It == null return 2
+
+	switch It.GetValue()
+	{
+		case "." return 0
+		case "()" return 0
+		case "[]" return 0
+		case "^" return 0
+		case "&" return 0
+	}
+
+	return 2
+}
 RuleDefer := !(void^ itr) -> int
 {
 	It := itr->{Token^}

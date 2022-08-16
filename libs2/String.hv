@@ -16,6 +16,13 @@ TString := class extend TGCObject
 			charPtr[itSize] = 0
 		}
 	}
+	this := !(char^ inp, int size) -> void
+	{
+		itSize = size
+		charPtr = malloc(itSize + 1)->{char^}
+		memcpy(charPtr,inp,itSize)
+		charPtr[itSize] = 0
+	}
 	Destroy := virtual !() -> void
 	{
 		if charPtr == null

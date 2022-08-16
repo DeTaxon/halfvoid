@@ -300,6 +300,10 @@ TypeClass := class extend Type
 		ToClass.AwaitTypeState()
 		return ToClass.ItAlign
 	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
 	IsComplexReturn := virtual !() -> bool
 	{
 		return true

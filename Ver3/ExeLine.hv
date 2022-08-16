@@ -451,6 +451,9 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 {
 	if frm == to
 		return 0
+	
+	if frm == null
+		return CmpNoExchange
 
 	if frm is in TypePoint and frm.Base is TypeClass and to is TypeClass
 	{

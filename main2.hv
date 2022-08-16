@@ -1,24 +1,16 @@
-
-
-tst := class
+hm := !(StringSpan x) -> void
 {
-	"in" := !(int x) -> void
-	{
-		printf("no no No\n")
-	}
-	YES := fake
-	{
-		"in" := !(int x) -> void
-		{
-			printf("YES\n")
-		}
-	}
+	printf("hi %s\n",x.GetString().Str())
 }
-
 main := !(char^[] args) -> int
 {
-	k := tst
-	c := int
-	c in k.YES
+	hm(StringSpan("hi")[-1..0])
+
+	// c := List.{int}
+	// c.Push(1)
+	// c.Push(5)
+	// c.Push(10)
+	// printf("c %i\n",c[^])
+
 	return 0
 }

@@ -24,6 +24,11 @@ Range := class
 	start := int
 	end := int
 
+	this := !(int s, int e) -> Range
+	{
+		start = s
+		end = e
+	}
 	"for" := !() -> RangeIterator
 	{
 		result.value = start

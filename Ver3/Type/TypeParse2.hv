@@ -69,6 +69,10 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				if t == null
 					return null
 				types[k] = t
+				if t is in TypeClass or t is in TypeArr
+				{
+					isRefs[k] = true
+				}
 				k += 1
 			}
 			iter = iter.Right

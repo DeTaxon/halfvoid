@@ -81,6 +81,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(dwnItem,Objs)?
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
+	itm.Print(0)
 	itm.EmitError("Can not parse function call")
 	assert(false)
 }
@@ -140,6 +141,7 @@ ConstructorCallWrapper := class extend BoxExeObj
 		itVar = vr
 		itCall = bj
 		varCall = vr.CreateCall()
+		ObjType = vr.GetVarType()
 	}
 	IsMem := virtual !() -> bool
 	{

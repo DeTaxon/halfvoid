@@ -60,6 +60,8 @@ List := class.{@T} extend TGCObject
 	}
 	"[]" := !(int ind) -> T&
 	{
+		if ind < 0
+			return this[itSize + ind]
 		assert(ind >= 0 and ind < itSize)
 
 		itr := start
@@ -76,8 +78,12 @@ List := class.{@T} extend TGCObject
 		while itr != null
 		{
 			nd := itr
-			destroyNode(nd)
 			itr = itr.next
+			destroyNode(nd)
+
+			start = null
+			end = null
+			itSize = 0
 		}
 	}
 	//DeleteIf := !( !(T&)&->bool cb) -> void
@@ -117,18 +123,6 @@ List := class.{@T} extend TGCObject
 	//		}
 	//	}
 	//}
-	"for" := !() -> !()&->T&
-	{
-		x := () ==> T& {
-			itr := start
-			while itr != null
-			{
-				yield itr.data
-				itr = itr.next
-			}
-		}
-		return x.Capture()
-	}
 	destroyNode := !(ListNode.{T}^ nd) -> void
 	{
 		if T->TypeGroup == "Pointer"
@@ -140,5 +134,25 @@ List := class.{@T} extend TGCObject
 	createNode := !() -> ListNode.{T}^
 	{
 		return new ListNode.{T}
+	}
+	"for" := !() -> TListIterator.{T}
+	{
+		result.iter = start
+	}
+}
+
+
+TListIterator := class .{@T}
+{
+	iter := ListNode.{T}^
+	HaveValue := !() -> bool
+	{
+		result = iter != null
+	}
+	"()" := !() -> T&
+	{
+		old := iter
+		iter = iter.next
+		return old.data
 	}
 }
