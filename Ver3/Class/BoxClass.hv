@@ -9,8 +9,10 @@ BoxClass := class extend BoxUnit
 
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
-	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
-	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
+	// Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	// MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
+	DefaultSpace := FieldSpace
+	FieldSpaces := AVLMap.{StringSpan,FieldSpace}
 	ItSize := int
 	ItAlign := int
 
@@ -213,16 +215,16 @@ BoxClass := class extend BoxUnit
 	}
 	populateMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
 	{
-		if Methods.Contain(name)
+		if DefaultSpace.Methods.Contain(name)
 		{
-			for fnc : Methods[name]
+			for fnc : DefaultSpace.Methods[name]
 			{
 				objs.Push(fnc)
 			}
 		}
-		if MethodTemplates.Contain(name)
+		if DefaultSpace.MethodTemplates.Contain(name)
 		{
-			for fncTmpl : MethodTemplates[name]
+			for fncTmpl : DefaultSpace.MethodTemplates[name]
 			{
 				objs.Push(fncTmpl)
 			}

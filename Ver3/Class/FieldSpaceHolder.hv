@@ -1,0 +1,12 @@
+FieldSpaceHolder := class extend BoxExeObj
+{
+	downObj := BoxExeObj^
+	itField := FieldSpace^
+
+	this := !(BoxExeObj^ dwn,FieldSpace^ spc) -> void
+	{
+		downObj = dwn
+		itField = spc
+		ObjType = GTypeVoid
+	}
+}

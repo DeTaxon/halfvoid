@@ -6,20 +6,19 @@ tst := class
 	{
 		printf("no no No\n")
 	}
-	//YES := fake
-	//{
-	//	"in" := !(int x) -> void
-	//	{
-	//		printf("YES\n")
-	//	}
-	//}
+	YES := fake
+	{
+		"in" := !(int x) -> void
+		{
+			printf("YES\n")
+		}
+	}
 }
 
 main := !(char^[] args) -> int
 {
-	//k := tst
-	//c := int
-	//c in k
-	printf("test %p\n",not_b 0U)
+	k := tst
+	c := int
+	c in k.YES
 	return 0
 }

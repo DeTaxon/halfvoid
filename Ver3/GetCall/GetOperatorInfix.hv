@@ -40,6 +40,36 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken)
 		tmpList.Push(lst[1])
 	}
 
+	if tmpList[0] is FieldSpaceHolder
+	{
+		holder := tmpList[0]->{FieldSpaceHolder^}
+
+		lst2 := CheckExeDownList
+		for it,i : tmpList
+		{
+			if i == 0
+			{
+				lst2.Push(holder.downObj)
+			}else{
+				lst2.Push(it)
+			}
+		}
+		
+		fncs := HybridQueue.{BoxUnit^,10}
+		holder.itField.GetMethods(oper,fncs)
+		cnsts := List.{BoxExeConstObj^}
+		resFunc := GetBestFunc(fncs,lst2,cnsts,false)
+		if resFunc == null
+			errToken.EmitError("can not get function")
+		if resFunc is in BoxFunc
+		{
+			return resFunc->{BoxFunc^}.CreateCall(lst2)
+		}else{
+			errToken.EmitError("Unknown function recived, software error")
+		}
+		assert(false)
+	}
+
 	return TryComputeOperators(oper,tmpList)?
 
 	consts := List.{BoxExeConstObj^}

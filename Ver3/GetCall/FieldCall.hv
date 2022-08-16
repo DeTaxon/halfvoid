@@ -36,15 +36,15 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			cls.AwaitTypeState()
 			fld := cls.GetField(name)
 
-			//if fld == null
-			//	return null //TODO use exception path
-			//if fld == null
-
 			if fld != null
 			{
 				itms := CheckExeDownList
 				itms.Push(val)
 				return fld.CreateCall(itms)
+			}
+			if cls.FieldSpaces.Contain(name)
+			{
+				return new FieldSpaceHolder(val,cls.FieldSpaces[name]&)
 			}
 		}
 	}

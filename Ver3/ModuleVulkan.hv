@@ -513,7 +513,7 @@ ModuleVulkan := class extend ModuleInterface
 						func.SetName(StringSpan("this"))
 						func.ParseBodyForced()
 						func->{BoxFuncBody^}.ParentScope = newStruct
-						newStruct.Methods[StringSpan("this")].Push(func)
+						newStruct.DefaultSpace.Methods[StringSpan("this")].Push(func)
 					})
 				}
 			}

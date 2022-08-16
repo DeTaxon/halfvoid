@@ -191,11 +191,17 @@ BoxClassBody := class extend BoxClass
 						}else {
 							tmpl := asFunc->{BoxFuncTemplate^}
 							tmpl.SetName(name)
-							MethodTemplates[name].Push(tmpl)
+							DefaultSpace.MethodTemplates[name].Push(tmpl)
 						}
 					}else
 					{
-						itm.EmitError("Unknow object")
+						if itm.Down?.GetValue() == "fake"
+						{
+							CheckFakeFields(iter)
+						}else{
+
+							itm.EmitError("Unknow object")
+						}
 					}
 				}
 			}
@@ -243,11 +249,11 @@ BoxClassBody := class extend BoxClass
 				cnsts.Push(GetExeInt(ind))
 				vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
 				vFunc.SetName(f.0)
-				Methods[f.0].Push(vFunc)
+				DefaultSpace.Methods[f.0].Push(vFunc)
 				f.1.ParseBody()
 			}else
 			{
-				Methods[f.0] .Push(f.1)
+				DefaultSpace.Methods[f.0] .Push(f.1)
 			}
 		}
 		CreateVTable()
@@ -256,6 +262,53 @@ BoxClassBody := class extend BoxClass
 		InheritStep()
 		FieldsState.Emit()
 
+	}
+	CheckFakeFields := !(Token^ itm) -> void
+	{
+		if not (itm.Down is TokenIndent)
+			itm.EmitError("fake field must be named by simple word")
+
+		fieldName := itm.Down->{TokenIndent^}.Value
+		
+		skob := itm.Down.Right.Right.Down.Right
+		SyntaxCompress(skob,LexHVFileRoot)
+
+		itr := skob.Down
+
+		thisField := FieldSpaces[fieldName]&
+
+		while itr != null
+		{
+			if itr.Down == null or itr.Down.Right == null or itr.Down.Right.GetValue() != ":="
+				itr.EmitError("Fake field can only contain functions")
+			name := itr.Down->{TokenIndent^}.Value //todo , str type
+
+			asFunc := TryParseFunction(itr.Down.Right.Right)
+			if asFunc != null
+			{
+				if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+				{
+					asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+				}
+				if asFunc is in BoxFunc
+				{
+					if asFunc is in BoxFuncBody
+						asFunc->{BoxFuncBody^}.ParentScope = this&
+
+					f := asFunc->{BoxFunc^}
+					thisField.Methods[name].Push(f)
+					f.SetName(name)
+					f.Work()
+				}else {
+					tmpl := asFunc->{BoxFuncTemplate^}
+					tmpl.SetName(name)
+					thisField.MethodTemplates[name].Push(tmpl)
+				}
+			}else
+			{
+			}
+			itr = itr.Right
+		}
 	}
 	AwaitParentStep := virtual !() -> void { StartParseBody() VParentState.Await() }
 	AwaitVTableStep := virtual !() -> void { StartParseBody() VTableState.Await() }
