@@ -1,0 +1,195 @@
+
+StringSpan := class{
+	ptr := char^
+	itSize := int
+	this := !() -> void {ptr = null itSize = 0}
+	this := !(StringSpan cpy) -> void {ptr = cpy.ptr itSize = cpy.itSize}
+	this := !(char^ st) -> void{ptr = st itSize = strlen(st)}
+	this := !(char^ st,int si) -> void{ptr = st itSize = si}
+
+	this := !(char^ st, int si,Range ran) -> void{
+		startInd := 0
+		if ran.start < 0 {
+			startInd = si + ran.start
+		}else{
+			startInd = ran.start
+		}
+		endInd := 0
+		if ran.end <= 0 {
+			endInd = si + ran.end - 1
+		}else{
+			endInd = startInd + ran.end - 1
+		}
+		ptr = st[startInd]&
+		itSize = endInd - startInd + 1
+	}
+	Get := !() -> char^ { return ptr }
+	Size := !() -> int { return itSize }
+	"[]" := !(int ind) -> char& { return ptr[ind] }
+	"[]" := !(Range ran) -> StringSpan
+	{
+		toGet := StringSpan(ptr,itSize,ran)
+		result.ptr = toGet.ptr
+		result.itSize = toGet.itSize
+	}
+	"=" := !(char^ toGet) -> void
+	{
+		this = StringSpan(toGet)
+	}
+	"=" := !(char[@Size] toGet) -> void
+	{
+		this = StringSpan(toGet)
+	}
+	"=" := !(StringSpan toGet) -> void
+	{
+		ptr = toGet.ptr
+		itSize = toGet.itSize
+	}
+	"<=>" := !(char[@Size] st) -> int
+	{
+		return this <=> StringSpan(st)
+	}
+	"<=>" := !(char^ toCmp) -> int {
+		if toCmp == null return 1
+		stCmp := strncmp(ptr,toCmp,itSize)
+		if stCmp != 0 return stCmp
+		if toCmp[itSize] != 0 return -1
+		return 0
+	}
+	"<=>" := !(StringSpan toCmp) -> int {
+		if toCmp.ptr == null return 1
+		minV := itSize
+		if minV > toCmp.itSize minV = toCmp.itSize
+		stCmp := strncmp(ptr,toCmp.ptr,minV)
+		if stCmp != 0 return stCmp
+		return itSize <=> toCmp.itSize		
+	}
+	"==" := !(char[@Size] st) -> bool { return this <=> st == 0 }
+	"!=" := !(char[@Size] st) -> bool { return this <=> st != 0 }
+	"==" := !(char^ st) -> bool { return this <=> st == 0 }
+	"!=" := !(char^ st) -> bool { return this <=> st != 0 }
+	"==" := !(StringSpan st) -> bool { return this <=> st == 0 }
+	"!=" := !(StringSpan st) -> bool { return this <=> st != 0 }
+	// "<<" := !(StringSpan toGet) -> ref StringSpan
+	// {
+	// 	minVal := itSize
+	// 	if toGet.itSize < minVal minVal = toGet.itSize
+	// 	memcpy(ptr,toGet.ptr,minVal)
+	// 	return this
+	// }
+	// StrTmp := !()  -> char^ {
+	// 	return @temp Str()
+	// }
+	// Str := !()  -> char^ { //TODO: put back .{}
+	// 	preRet := new char[itSize+1]
+	// 	//preRet := malloc(itSize+1)->{char^}
+	// 	preRet[itSize] = 0
+	// 	memcpy(preRet->{void^},ptr,itSize)
+	// 	return preRet
+	// }
+	// "->{}" := !() .{char^}-> char^
+	// {
+	// 	return @temp Str()
+	// }
+	//DivideStr := !(char^ to) -> List.{StringSpan}
+	//{
+	//	result."this"()
+	//	i := 0
+	//	j := 0
+	//	while j < itSize
+	//	{
+	//		if ptr[j] in to
+	//		{
+	//			if j != i result.Emplace(ptr[i]&,j - i) ; $temp
+	//			i = j+1
+	//			j += 1
+	//		} else
+	//		{
+	//			j += 1
+	//		}
+	//	}
+	//	if j - i != 0
+	//	{
+	//		result.Emplace(ptr[i]&,j - i) ; $temp
+	//	}		
+	//}
+	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
+	{
+		i := 0
+		j := 0
+		while j < itSize
+		{
+			if ptr[j] in to
+			{
+				if j != i {
+					newSpan := StringSpan(ptr[i]&,j - i)
+					cb(newSpan)
+				}
+				i = j+1
+				j += 1
+			} else
+			{
+				j += 1
+			}
+		}
+		if j - i != 0
+		{
+			newSpan := StringSpan(ptr[i]&,j - i)
+			cb(newSpan)
+		}		
+	}
+	//DivideStr := !(Regexp rg,!(StringSpan)&->void cb) -> void
+	//{
+	//	RegExpReadText(rg&,ptr,itSize,(a,b,c) ==> {
+	//			word := StringSpan(this.ptr[b]&,c)
+	//			cb(word)
+	//	})
+	//}
+	GetString := !() -> TString^
+	{
+		if itSize == 0
+			return new TString("")
+		return new TString(Get(),Size())
+	}
+}
+"in" := !(char^ k,char c) -> bool
+{
+	if k == null
+		return false
+
+	i := 0
+	while true
+	{
+		if k[i] == 0
+			return false
+		if k[i] == c
+			return true
+		i += 1
+	}
+}
+
+"[]" := !(char^ this, Range ran) -> StringSpan
+{
+	return StringSpan(this,strlen(this),ran)
+}
+
+// StrToInt := !(StringSpan strSpn) -> int 
+// {
+// 	Sum := 0
+// 	i := 0
+// 	Min := false
+// 	a := strSpn.ptr
+// 	if ( a[0] == '-')
+// 	{
+// 		i = 1
+// 		Min = true
+// 	}
+// 	while a[i] != 0 and a[i] <= '9' and a[i] >= '0' and i < strSpn.itSize
+// 	{
+// 		Sum *= 10
+// 		Sum += a[i] - '0'
+// 		i += 1	
+// 	}
+// 	if Min return -Sum
+// 	return Sum
+// }
