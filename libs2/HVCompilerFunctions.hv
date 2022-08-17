@@ -22,9 +22,9 @@ internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void // r
 }
 
 
-ZeroMem := !(@T^ x) -> void
+ZeroMem := !(@T& x) -> void
 {
-	memset(x,0,T->TypeSize)
+	memset(x&,0,T->TypeSize)
 	if T->TypeGroup == "Class"
-		internalHVInitClass(x^)
+		internalHVInitClass(x)
 }

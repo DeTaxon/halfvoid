@@ -3,6 +3,8 @@ FuncLocalParam := class extend ParamFunc
 	CreatedVarCalls := List.{ParamLoadObj^}
 	CapturedIndex := int
 
+	RezeroCall := BoxExeObj^
+
 	this := !(Type^ tp) -> void
 	{
 		assert(CurrentFunc != null)
@@ -100,9 +102,19 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		assert(parentFunc != null)
 		CapturedIndex = parentFunc.CapturedVars.Size()
 		parentFunc.CapturedVars.Push(this&)
+
+		objs := CheckExeDownList
+		objs.Push(this.CreateCall())
+		cnsts := List.{BoxExeConstObj^}
+
+		callFunc := GZeroMemTemplate.GetFunc(objs,cnsts)
+		assert(callFunc != null)
+		RezeroCall = callFunc.CreateCall(objs)
+
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		RezeroCall?.PrintDefaultUse(f)
 	}
 
 	GetTupleVar := virtual !() -> BoxExeObj^

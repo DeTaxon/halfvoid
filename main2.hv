@@ -1,16 +1,23 @@
-hm := !(StringSpan x) -> void
+hm := class extend TGCObject
 {
-	printf("hi %s\n",x.GetString().Str())
+	x := int
+	Destroy := virtual !() -> void
+	{
+		printf("destructor\n")
+	}
 }
 main := !(char^[] args) -> int
 {
-	hm(StringSpan("hi")[-1..0])
-
-	// c := List.{int}
-	// c.Push(1)
-	// c.Push(5)
-	// c.Push(10)
-	// printf("c %i\n",c[^])
+	
+	for i : 5
+	{
+		c := hm
+		l := () ==> {
+			c.x += 1
+		}
+		l()
+		printf("no %i\n",c.x)
+	}
 
 	return 0
 }
