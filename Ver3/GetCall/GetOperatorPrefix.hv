@@ -63,7 +63,16 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		objs5.Push(dObj)
 		return CreateFuncCall(bigNameSpan,objs5)
 	}
-	if itm.Down.GetValue() == "()" and itm.Down.Right == null and itm.Down.Down != null
+	if itm.Down.GetValue() == "()" and itm.Down.Right == null
+	{
+		return TryGetExeCall(itm.Down.Down)
+	}
+	return null
+}
+
+TryGetBracketsCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.GetValue() == "()" and itm.Down.Right == null
 	{
 		return TryGetExeCall(itm.Down.Down)
 	}

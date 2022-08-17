@@ -24,10 +24,13 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	return innerTryGetInfixCall(oper,tmpList,itm)
 }
 
-innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken)
+innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) -> BoxExeObj^
 {
 	if lst[0] == null or lst[1] == null
+	{
+		errToken.Print(0)
 		errToken.EmitError("Unknown error")
+	}
 	assert(lst.Size() == 2)
 
 	tmpList := CheckExeDownList

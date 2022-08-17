@@ -1,23 +1,14 @@
-hm := class extend TGCObject
-{
-	x := int
-	Destroy := virtual !() -> void
-	{
-		printf("destructor\n")
-	}
-}
+
 main := !(char^[] args) -> int
 {
 	
-	for i : 5
-	{
-		c := hm
-		l := () ==> {
-			c.x += 1
-		}
-		l()
-		printf("no %i\n",c.x)
-	}
+	zip := ZipFile
+	zip.AnalizeFile("Test.zip")
+	fil := zip.GetFile("main2.hv")
+
+	ptr := fil.Map()
+	spn := StringSpan(ptr->{char^},fil.Size())
+	printf("%s\n",spn.GetString().Str())
 
 	return 0
 }

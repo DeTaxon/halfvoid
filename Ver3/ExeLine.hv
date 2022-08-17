@@ -152,6 +152,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetArrayCall(itm)?
 	return TryGetTrinary(itm)?
 	return TryGetSuffixCall(itm)?
+	return TryGetBracketsCall(itm)?
 	
 	isOperCall := TryCheckMathOperatorCall(itm)
 	if isOperCall != null
@@ -409,10 +410,12 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 	yep := false
 	for i : count
 	{
+		toIsMem := fncType.Params[i].IsRef
+		if toIsMem
+			objs[i].NotifyMemUse()
 		frmType := objs[i].GetType()
 		frmIsMem := objs[i].IsMem()
 		toType := fncType.Params[i].ItType
-		toIsMem := fncType.Params[i].IsRef
 		thisCase := TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
 
 		if thisCase == CmpNoExchange

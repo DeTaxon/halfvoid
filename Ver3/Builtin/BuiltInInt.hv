@@ -213,9 +213,9 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions[StringSpan("shl")].Push(new BuiltInIntBase(strt,"shl") )
 		if isSigned
 		{
-			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"ashl") )
+			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"ashr") )
 		}else{
-			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"lshl") )
+			bSpace.Functions[StringSpan("shr")].Push(new BuiltInIntBase(strt,"lshr") )
 		}
 
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
