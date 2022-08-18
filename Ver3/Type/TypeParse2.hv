@@ -38,6 +38,8 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		isLambda := false
 		isVarg := false
 
+		SyntaxCompress(tk.Down.Right,LexHVInputVars)
+
 		if skob.Right.GetValue() == "&"
 		{
 			isLambda = true
@@ -46,7 +48,6 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			k += 1
 		}
 
-		SyntaxCompress(tk.Down.Right,LexHVInputVars)
 
 		iter := skob.Down
 		while iter != null
@@ -59,15 +60,16 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			}else if iter.GetValue() != ","
 			{
 				t := Type^
-				if iter.Down?.Right?.GetValue() == "&"
-				{
-					t = CheckTemplateType(null,iter.Down,resCnsts)
-					isRefs[k] = true
-				}else{
-					t = CheckTemplateType(null,iter,resCnsts)
-				}
+
+				t = CheckTemplateType(null,iter,resCnsts)
 				if t == null
 					return null
+
+				if iter.Right?.GetValue() == "&"
+				{
+					isRefs[k] = true
+					iter = iter.Right
+				}
 				types[k] = t
 				if t is in TypeClass or t is in TypeArr
 				{

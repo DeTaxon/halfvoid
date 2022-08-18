@@ -1,391 +1,389 @@
 
-// vRepoObject := class
-// {
-// 	objName := StringSpan
-// 	upFolder := vRepoFolder^
+vRepoObject := class
+{
+	objName := TString^
+	upFolder := vRepoFolder^
 
-// 	GetName := !() -> StringSpan { result = objName }
+	//GetName := !() -> StringSpan { result = objName }
 	
-// 	GetUpFolder := !() -> vRepoFolder^ { return upFolder }
-// 	GetPath := !() -> char^
-// 	{
-// 		TempPoolBlock()
-// 		itms := List.{vRepoObject^}
+	//GetUpFolder := !() -> vRepoFolder^ { return upFolder }
 
-// 		iterUp := this&
-
-// 		while iterUp != null
-// 		{
-// 			itms.PushFront(iterUp)
-// 			iterUp = iterUp.upFolder
-// 		}
-
-// 		strB := StringBuilderTemporary.{256}()
-
-// 		for it,i : itms
-// 		{
-// 			strB << it.objName
-// 			if i != itms.Size() - 1
-// 			{
-// 				strB << "/"
-// 			}
-// 		}
-
-// 		return strB.Str()
-// 	}
-// }
-
-// vRepoFolder := class extend vRepoObject
-// {
-// 	examined := bool
-// 	virtualFolder := bool
-// 	subZipFolders := List.{vZipEntry^}
-
-// 	subFolders := AVLMap.{char^,vRepoFolder^}
-
-// 	subFiles := AVLMap.{char^,vRepoFile^}
-// 	subVirtualFiles := AVLMap.{char^,vRepoFile^}
-
-// 	IsVirtual := !() -> bool { return virtualFolder }
-// }
-
-// vRepoFile := class extend vRepoObject
-// {
-// 	ptrToRepo := vRepo^
-// 	ptrToZip := vZipEntry^
-// 	mFile := MappedFile
-// 	fileSize := u64
-
-// 	this := !() -> void
-// 	{
-// 		ptrToProxy = null
-// 	}
-// 	GetFile := !(char^ fileName) -> vRepoFile^
-// 	{
-// 		return ptrToRepo.GetFile(fileName,upFolder)
-// 	}
-// 	Map := !() -> u8^
-// 	{
-// 		if ptrToZip != null
-// 		{
-// 			return ptrToZip.Map()->{u8^}
-// 		}
-
-// 		mFile.Open(GetPath())
-
-// 		return mFile.point->{u8^}
-
-// 	}
-// 	IsVirtual := !() -> bool 
-// 	{
-// 		return ptrToZip != null
-// 	}
-// 	Unmap := !() -> void
-// 	{
-// 		if ptrToZip != null
-// 		{
-// 			ptrToZip.Unmap()
-// 		}else{
-// 			mFile.Close()
-// 		}
-// 	}
-// 	Size := !() -> size_t
-// 	{
-// 		if ptrToZip != null
-// 		{
-// 			return ptrToZip.Size()
-// 		}
-// 		return fileSize
-// 	}
-// 	IsValid := !() -> bool
-// 	{
-// 	}
-// }
-
-// vRepo := class
-// {
-// 	rootFolder := vRepoFolder^
-// 	repoMP := AllocOnlyMP.{4096,true}^
-// 	ignZip := AVLSet.{u64}
-// 	preferVirtual := bool
-
-// 	Init := !(char^ pathName)-> void
-// 	{
-// 		ignZip."this"()
-// 		repoMP = new AllocOnlyMP.{4096,true}
-// 		repoMP.Push()
-// 		defer repoMP.Pop()
-// 		rootFolder = new vRepoFolder
-// 		startName := StrCopy(pathName)
-// 		rootFolder.objName = StringSpan(startName)
-// 	}
-
-// 	AddZipRoot := !(char^ fileName) -> bool
-// 	{
-// 		repoMP.Push()
-// 		defer repoMP.Pop()
-
-// 		itP := Path(fileName)
-// 		itId := itP.GetId()
-// 		if itId == 0 return false
-
-
-// 		itObj := new ZipFile
-// 		if not itObj.AnalizeFile(fileName)
-// 		{
-// 			//delete itObj
-// 			return false
-// 		}
-// 		itObj.DecUser()
-// 		ignZip << itId
-// 		rootFolder.subZipFolders << itObj.zipRoot&
-
-// 	}
-// 	IsExist := !(StringSpan p) -> bool
-// 	{
-// 		return getObject(p,rootFolder) != null
-// 	}
-// 	ReadFolder := !(StringSpan p,bool recur,!(vRepoFile^)& -> void callb) -> void
-// 	{
-// 		fil := getObject(p,rootFolder)
-// 		if fil == null
-// 			return void
-
-// 		rep := fil->{vRepoFolder^}
-// 		_ReadFolder(rep,recur,callb)
-
-// 	}
-// 	_ReadFolder := !(vRepoFolder^ rep,bool recur,!(vRepoFile^)& -> void callb) -> void
-// 	{
-// 		ExamineFolder(rep)
-
-// 		for rep.subFiles callb(it)
-// 		if recur
-// 		{
-// 			for rep.subFolders
-// 				_ReadFolder(it,recur,callb)
-// 		}
-// 	}
-// 	GetFile := !(char^ fileName)-> vRepoFile^
-// 	{
-// 		return GetFile(fileName,rootFolder)
-// 	}
-// 	ExamineFolder := !(vRepoFolder^ iterFolder) -> void
-// 	{
-// 		if iterFolder.examined
-// 			return void
-// 		iterFolder.examined = true
-
-// 		zips := @temp new List.{char^}
-
-// 		if not iterFolder.virtualFolder
-// 		{
-// 			fldPath := Path(iterFolder.GetPath())
-// 			for subF : fldPath
-// 			{
-// 				if subF.IsFolder()
-// 				{
-// 					newStr := subF.Name().Str()
-// 					newObj := new vRepoFolder
-// 					newObj.objName = StringSpan(newStr)
-// 					newObj.upFolder = iterFolder
-// 					iterFolder.subFolders[newStr] = newObj
-// 				}else{
-// 					itmId := subF.GetId()
-// 					flSz := subF.Size()
-
-// 					//if itmId in ignZip
-// 					if ignZip.Contain(itmId)
-// 					{
-// 						continue
-// 					}
-// 					if subF.Get()[-4..0] == ".zip"
-// 					{
-// 						zips^ << StrCopy(subF.Get())
-// 					}else{
-// 						newStr := subF.Name().Str()
-// 						newObj := new vRepoFile
-// 						newObj.upFolder = iterFolder
-// 						newObj.objName = StringSpan(newStr)
-// 						newObj.ptrToRepo = this&
-// 						newObj.fileSize = flSz
-// 						iterFolder.subFiles[newStr] = newObj
-// 					}
-// 				}
-// 			}
-// 			for z : zips^
-// 			{
-// 				tt := new ZipFile
-// 				tt.AnalizeFile(z)
-
-// 				itPP :=Path(z)
-// 				itP := itPP.Name()
-
-// 				rpFld := null->{vRepoFolder^}
-
-// 				if iterFolder.subFolders.Contain(itP)
-// 				{
-// 					rpFld = iterFolder.subFolders[itP]
-// 					break
-// 				}
-// 				if rpFld == null
-// 				{
-// 					rpFld = new vRepoFolder
-// 					newStr := itP[0..-4].Str()
-// 					rpFld.objName = StringSpan(newStr)
-// 					rpFld.virtualFolder = true
-// 					iterFolder.subFolders[newStr] = rpFld
-// 				}
-// 				rpFld.subZipFolders << tt.zipRoot&
-// 			}
-// 		}
-
-// 		for entrs : iterFolder.subZipFolders
-// 		{
-// 			for subItm : entrs.subFolders
-// 			{
-// 				if iterFolder.subVirtualFiles.Contain(subItm.objName)
-// 				{
-// 					continue
-// 				}
-				
-// 				found := false
-// 				if iterFolder.subFolders[^].objName == subItm.objName
-// 				{
-// 					found = true
-// 					if subItm.realSize == 0
-// 						it.subZipFolders << subItm
-// 					break
-// 				}
-// 				if found continue
-
-// 				if subItm.realSize == 0
-// 				{
-// 					rpFld := new vRepoFolder
-// 					rpFld.objName = subItm.objName
-// 					newStr := subItm.objName.Str()
-// 					rpFld.virtualFolder = true
-// 					iterFolder.subFolders[newStr] = rpFld 
-// 					rpFld.subZipFolders << subItm
-// 				}else{
-// 					newObj := new vRepoFile 
-// 					newObj.upFolder = iterFolder
-// 					newObj.objName = subItm.objName
-// 					newStr := subItm.objName.Str()
-// 					newObj.ptrToRepo = this&
-// 					iterFolder.subVirtualFiles[newStr] = newObj
-// 					newObj.ptrToZip = subItm
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	GetFile := !(char^ fileName,vRepoFolder^ rrF) -> vRepoFile^
-// 	{
-// 		repoMP.Push()
-// 		defer repoMP.Pop()
+	GetPath := !() -> TString^
+	{
 		
-// 		itms := @temp new List.{StringSpan}
-// 		iterFolder := rrF
-	
-// 		StringSpan(fileName).DivideStr("\\/",x ==> { itms.Push(x) })
-// 		for cheks,i : itms^
-// 		{
-// 			if i == 0 and cheks == "." continue
+		itms := List.{vRepoObject^}
+		iterUp := this&
+		while iterUp != null
+		{
+			itms.PushFront(iterUp)
+			iterUp = iterUp.upFolder
+		}
+		
+		strB := TEchoStream
+		for it,i : itms
+		{
+			printf("adding %s\n",it.objName.Str())
+			strB << it.objName
+			if i != itms.Size() - 1
+			{
+				strB << "/"
+			}
+		}
+		printf("hey %s %i\n",strB.GetString().Str(), strB.Size())
+		return strB.GetString()
+	}
+}
 
-// 			ExamineFolder(iterFolder)
+vRepoFolder := class extend vRepoObject
+{
+	examined := bool
+	virtualFolder := bool
+	subZipFolders := List.{vZipEntry^}
+
+	subFolders := AVLMap.{TString^,vRepoFolder^}
+
+	subFiles := AVLMap.{TString^,vRepoFile^}
+	subVirtualFiles := AVLMap.{TString^,vRepoFile^}
+
+	IsVirtual := !() -> bool { return virtualFolder }
+}
+
+vRepoFile := class extend vRepoObject
+{
+	ptrToRepo := vRepo^
+	ptrToZip := vZipEntry^
+	mFile := MappedFile
+	fileSize := u64
+
+	this := !() -> void
+	{
+		ptrToProxy = null
+	}
+	GetFile := !(char^ fileName) -> vRepoFile^
+	{
+		//return ptrToRepo.GetFile(fileName,upFolder)
+	}
+	// Map := !() -> u8^
+	// {
+	// 	if ptrToZip != null
+	// 	{
+	// 		return ptrToZip.Map()->{u8^}
+	// 	}
+
+	// 	mFile.Open(GetPath())
+
+	// 	return mFile.point->{u8^}
+
+	// }
+	IsVirtual := !() -> bool 
+	{
+		return ptrToZip != null
+	}
+	// Unmap := !() -> void
+	// {
+	// 	if ptrToZip != null
+	// 	{
+	// 		ptrToZip.Unmap()
+	// 	}else{
+	// 		mFile.Close()
+	// 	}
+	// }
+	Size := !() -> size_t
+	{
+		// if ptrToZip != null
+		// {
+		// 	return ptrToZip.Size()
+		// }
+		// return fileSize
+	}
+	IsValid := !() -> bool
+	{
+	}
+}
+
+vRepo := class
+{
+	rootFolder := vRepoFolder^
+	// ignZip := AVLSet.{u64}
+	// preferVirtual := bool
+
+	Init := !(TStringView pathName)-> void
+	{
+		rootFolder = new vRepoFolder
+		rootFolder.objName = pathName.Normalize()
+	}
+
+	// AddZipRoot := !(char^ fileName) -> bool
+	// {
+	// 	repoMP.Push()
+	// 	defer repoMP.Pop()
+
+	// 	itP := Path(fileName)
+	// 	itId := itP.GetId()
+	// 	if itId == 0 return false
+
+
+	// 	itObj := new ZipFile
+	// 	if not itObj.AnalizeFile(fileName)
+	// 	{
+	// 		//delete itObj
+	// 		return false
+	// 	}
+	// 	itObj.DecUser()
+	// 	ignZip << itId
+	// 	rootFolder.subZipFolders << itObj.zipRoot&
+
+	// }
+	// IsExist := !(StringSpan p) -> bool
+	// {
+	// 	return getObject(p,rootFolder) != null
+	// }
+	// ReadFolder := !(StringSpan p,bool recur,!(vRepoFile^)& -> void callb) -> void
+	// {
+	// 	fil := getObject(p,rootFolder)
+	// 	if fil == null
+	// 		return void
+
+	// 	rep := fil->{vRepoFolder^}
+	// 	_ReadFolder(rep,recur,callb)
+
+	// }
+	// _ReadFolder := !(vRepoFolder^ rep,bool recur,!(vRepoFile^)& -> void callb) -> void
+	// {
+	// 	ExamineFolder(rep)
+
+	// 	for rep.subFiles callb(it)
+	// 	if recur
+	// 	{
+	// 		for rep.subFolders
+	// 			_ReadFolder(it,recur,callb)
+	// 	}
+	// }
+	GetFile := !(char^ fileName)-> vRepoFile^
+	{
+		return GetFile(fileName,rootFolder)
+	}
+	ExamineFolder := !(vRepoFolder^ iterFolder) -> void
+	{
+		if iterFolder.examined
+			return void
+		iterFolder.examined = true
+
+	// 	zips := @temp new List.{char^}
+
+		if not iterFolder.virtualFolder
+		{
+			pth := iterFolder.GetPath()
+			posixReadFolder(pth.Str(),x ==> {
+				strName := x.Normalize()
+				printf("hm %i %s\n",posixIsFolder(strName.Str()),strName.Str())
+				if posixIsFolder(strName.Str())
+				{
+					newObj := new vRepoFolder
+					newObj.objName = strName
+					newObj.upFolder = iterFolder
+					iterFolder.subFolders[strName] = newObj
+				}else{
+					itmId := posixFileId(strName.Str())
+					flSz := posixFileSize(strName.Str())
+//
+					////if itmId in ignZip
+					//if ignZip.Contain(itmId)
+					//{
+					//	continue
+					//}
+					//if subF.Get()[-4..0] == ".zip"
+					//{
+					//	zips^ << StrCopy(subF.Get())
+					//}else{
+						newObj := new vRepoFile
+						newObj.upFolder = iterFolder
+						newObj.objName = strName
+						newObj.ptrToRepo = this&
+						newObj.fileSize = flSz
+						iterFolder.subFiles[strName] = newObj
+					//}
+				}
+			})
+		}
+
+	// 	if not iterFolder.virtualFolder
+	// 	{
+	// 		fldPath := Path(iterFolder.GetPath())
+	// 		for subF : fldPath
+	// 		{
+	// 		}
+	// 		for z : zips^
+	// 		{
+	// 			tt := new ZipFile
+	// 			tt.AnalizeFile(z)
+
+	// 			itPP :=Path(z)
+	// 			itP := itPP.Name()
+
+	// 			rpFld := null->{vRepoFolder^}
+
+	// 			if iterFolder.subFolders.Contain(itP)
+	// 			{
+	// 				rpFld = iterFolder.subFolders[itP]
+	// 				break
+	// 			}
+	// 			if rpFld == null
+	// 			{
+	// 				rpFld = new vRepoFolder
+	// 				newStr := itP[0..-4].Str()
+	// 				rpFld.objName = StringSpan(newStr)
+	// 				rpFld.virtualFolder = true
+	// 				iterFolder.subFolders[newStr] = rpFld
+	// 			}
+	// 			rpFld.subZipFolders << tt.zipRoot&
+	// 		}
+	// 	}
+
+	// 	for entrs : iterFolder.subZipFolders
+	// 	{
+	// 		for subItm : entrs.subFolders
+	// 		{
+	// 			if iterFolder.subVirtualFiles.Contain(subItm.objName)
+	// 			{
+	// 				continue
+	// 			}
 				
-// 			found := false
-// 			if iterFolder.subFolders[^].objName == cheks
-// 			{
-// 				iterFolder = it
-// 				found = true
-// 				break
-// 			}
+	// 			found := false
+	// 			if iterFolder.subFolders[^].objName == subItm.objName
+	// 			{
+	// 				found = true
+	// 				if subItm.realSize == 0
+	// 					it.subZipFolders << subItm
+	// 				break
+	// 			}
+	// 			if found continue
+
+	// 			if subItm.realSize == 0
+	// 			{
+	// 				rpFld := new vRepoFolder
+	// 				rpFld.objName = subItm.objName
+	// 				newStr := subItm.objName.Str()
+	// 				rpFld.virtualFolder = true
+	// 				iterFolder.subFolders[newStr] = rpFld 
+	// 				rpFld.subZipFolders << subItm
+	// 			}else{
+	// 				newObj := new vRepoFile 
+	// 				newObj.upFolder = iterFolder
+	// 				newObj.objName = subItm.objName
+	// 				newStr := subItm.objName.Str()
+	// 				newObj.ptrToRepo = this&
+	// 				iterFolder.subVirtualFiles[newStr] = newObj
+	// 				newObj.ptrToZip = subItm
+	// 			}
+	// 		}
+	// 	}
+	}
+
+	GetFile := !(char^ fileName,vRepoFolder^ rrF) -> vRepoFile^
+	{
+		itms := List.{StringSpan}
+		iterFolder := rrF
+	
+		StringSpan(fileName).DivideStr("\\/",x ==> { itms.Push(x) })
+		for cheks,i : itms
+		{
+			if i == 0 and cheks == "." continue
+
+			ExamineFolder(iterFolder)
+				
+			found := false
+			for it : iterFolder.subFolders
+			{
+				if it.objName == cheks
+				{
+					iterFolder = it
+					found = true
+					break
+				}
+			}
 			
-// 			if found continue
+			if found continue
 
-// 			if cheks == ".."
-// 			{
-// 				iterFolder = iterFolder.upFolder
-// 				if iterFolder == null
-// 					return null
-// 				continue
-// 			}
+			if cheks == ".."
+			{
+				iterFolder = iterFolder.upFolder
+				if iterFolder == null
+					return null
+				continue
+			}
 			
-// 			TempPoolBlock()
 
-// 			st := cheks->{char^}
-// 			if preferVirtual
-// 			{
-// 				if iterFolder.subVirtualFiles.Contain(st)
-// 					return iterFolder.subVirtualFiles[st]
-// 			}
-// 			if iterFolder.subFiles.Contain(st)
-// 				return iterFolder.subFiles[st]
-// 			if iterFolder.subVirtualFiles.Contain(st)
-// 				return iterFolder.subVirtualFiles[st]
+			st := cheks->{char^}
+			if preferVirtual
+			{
+				if iterFolder.subVirtualFiles.Contain(st)
+					return iterFolder.subVirtualFiles[st]
+			}
+			if iterFolder.subFiles.Contain(st)
+				return iterFolder.subFiles[st]
+			if iterFolder.subVirtualFiles.Contain(st)
+				return iterFolder.subVirtualFiles[st]
 
-// 			throw new Exception("File not found")
-// 		}
-// 		throw new Exception("File not found")
-
-// 	}
-// 	getObject := !(StringSpan fileName,vRepoFolder^ rrF) -> vRepoObject^
-// 	{
-// 		repoMP.Push()
-// 		defer repoMP.Pop()
+			throw new Exception("File not found")
+		}
+		throw new Exception("File not found")
+	}
+	// getObject := !(StringSpan fileName,vRepoFolder^ rrF) -> vRepoObject^
+	// {
+	// 	repoMP.Push()
+	// 	defer repoMP.Pop()
 		
 
-// 		itms := @temp new List.{StringSpan}
-// 		fileName.DivideStr("/",x ==> { itms.Push(x) })
-// 		iterFolder := rrF
+	// 	itms := @temp new List.{StringSpan}
+	// 	fileName.DivideStr("/",x ==> { itms.Push(x) })
+	// 	iterFolder := rrF
 
-// 		for cheks,i : itms^
-// 		{
-// 			if i == 0 and cheks == "." continue
+	// 	for cheks,i : itms^
+	// 	{
+	// 		if i == 0 and cheks == "." continue
 
-// 			ExamineFolder(iterFolder)
+	// 		ExamineFolder(iterFolder)
 
-// 			partStr := cheks->{char^}
+	// 		partStr := cheks->{char^}
 	
-// 			if iterFolder.subFolders.Contain(partStr)
-// 			{
-// 				iterFolder = iterFolder.subFolders[partStr]
-// 				continue
-// 			}
+	// 		if iterFolder.subFolders.Contain(partStr)
+	// 		{
+	// 			iterFolder = iterFolder.subFolders[partStr]
+	// 			continue
+	// 		}
 
-// 			if cheks == ".."
-// 			{
-// 				iterFolder = iterFolder.upFolder
-// 				if iterFolder == null
-// 					return null
-// 				continue
-// 			}
+	// 		if cheks == ".."
+	// 		{
+	// 			iterFolder = iterFolder.upFolder
+	// 			if iterFolder == null
+	// 				return null
+	// 			continue
+	// 		}
 
-// 			if preferVirtual
-// 			{
-// 				if iterFolder.subVirtualFiles.Contain(partStr)
-// 					return iterFolder.subVirtualFiles[partStr]
-// 			}
-// 			if iterFolder.subFiles.Contain(partStr)
-// 				return iterFolder.subFiles[partStr]
-// 			if iterFolder.subVirtualFiles.Contain(partStr)
-// 				return iterFolder.subVirtualFiles[partStr]
+	// 		if preferVirtual
+	// 		{
+	// 			if iterFolder.subVirtualFiles.Contain(partStr)
+	// 				return iterFolder.subVirtualFiles[partStr]
+	// 		}
+	// 		if iterFolder.subFiles.Contain(partStr)
+	// 			return iterFolder.subFiles[partStr]
+	// 		if iterFolder.subVirtualFiles.Contain(partStr)
+	// 			return iterFolder.subVirtualFiles[partStr]
 
-// 			return null
+	// 		return null
 
-// 		}
-// 		return iterFolder
+	// 	}
+	// 	return iterFolder
 
-// 	}
-// 	PreferVirtual := !(bool state) -> void
-// 	{
-// 		preferVirtual = state
-// 	}
-// 	Destroy := !() -> void
-// 	{
-// 		repoMP.Destroy()
-// 		delete repoMP
-// 	}
-// }
+	// }
+	// PreferVirtual := !(bool state) -> void
+	// {
+	// 	preferVirtual = state
+	// }
+	// Destroy := !() -> void
+	// {
+	// 	repoMP.Destroy()
+	// 	delete repoMP
+	// }
+}

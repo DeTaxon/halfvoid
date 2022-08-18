@@ -69,6 +69,7 @@ TStringViewOnCStr := class extend TStringView
 {
 	ptrBase := char^
 	itSize := int
+	this := !(char^ inp) -> void { ptrBase = inp  itSize = strlen(inp)}
 	Str := virtual !() -> char^ { return ptrBase }
 	Size := virtual !() -> int { return itSize }
 	Normalize := virtual !() -> TString^ { return new TString(ptrBase) }
@@ -104,6 +105,11 @@ TStringViewOnCStr := class extend TStringView
 	result.ptrBase = obj
 	result.itSize = strlen(obj)
 }
+
+//"->{}" := !(TString^ st) .{char^} -> char^
+//{
+//	return st.Str()
+//}
 
 "<=>" := !(char^ a, char^ b) -> int
 {

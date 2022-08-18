@@ -38,10 +38,12 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		assert(lmbdPre is BoxLambdaHolder)
 		//assert(lmbdPre.IsOneFunc())
 		lmbd := lmbdPre.CreateOneFuncLambda()
-		tp := lmbd.GetType()
-		assert(tp is in TypePoint and tp.Base is TypeClass)
+		assert(lmbdPre.cleanType != null)
+
+		assert(lmbdPre.cleanType is in TypeClass)
+		
 		arr := List.{BoxExeConstObj^}
-		arr.Push(GetConstType(tp.Base))
+		arr.Push(GetConstType(lmbdPre.cleanType))
 		newType := GCDeferLambda.GetClass(arr).ItType
 		arr.Destroy()
 		return innerTrySetType(lmbd,newType)
@@ -65,6 +67,7 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 	}
 	if itm.Down.GetValue() == "()" and itm.Down.Right == null
 	{
+		SyntaxCompress(itm.Down,PriorityData)
 		return TryGetExeCall(itm.Down.Down)
 	}
 	return null

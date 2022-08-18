@@ -98,7 +98,6 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			if exeObj is BoxArrayHolder
 			{
 				exeObj = exeObj->{BoxArrayHolder^}.CreateDefaultUse()
-				printf("YES\n")
 			}
 			if exeObj is ConstructorCallWrapper
 			{

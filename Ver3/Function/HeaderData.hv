@@ -64,7 +64,7 @@ FunctionHeaderInfo := class
 				}
 			}catch(IException^ r) {}
 		}
-
+		
 		checkBag := () ==> {
 			if bag.Size() == 1
 			{

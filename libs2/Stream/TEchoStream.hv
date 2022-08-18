@@ -1,0 +1,107 @@
+TEchoStream := class extend TIOStream
+{
+	ptr := char^
+	inPtrSize := int
+	redData := int
+	pages := List.{char^}
+
+	this := !() -> void {
+	}
+	Read := virtual !(void^ data, size_t size) -> size_t
+	{
+		pageLeft := 4096 - redData - size
+		if pages.Size() != 0
+		{
+			nxt := pages[0]
+			toRead := min(pageLeft,size)
+			memcpy(data,nxt[redData]&,toRead)
+			redData += toRead
+			if redData == 4096
+			{
+				delete nxt
+				pages.Pop()
+				redData = 0
+			}
+			if toRead < size
+			{
+				return toRead + Read(data[redData]&,size - toRead)
+			}
+		}else{
+			if inPtrSize == 0
+				return 0
+			toRead := min(size->{int},inPtrSize)
+			memcpy(data,ptr[redData]&,toRead)
+			redData += toRead
+			if redData == inPtrSize
+			{
+				redData = 0
+				inPtrSize = 0
+				delete ptr
+			}
+			return toRead
+		}
+	}
+	Write := virtual !(void^ adding, size_t sLen) -> size_t
+	{
+		if sLen == 0 return 0
+		
+		BufSize := 4096
+		if ptr == null ptr = malloc(BufSize)->{char^}
+		if sLen + inPtrSize > BufSize
+		{
+			moved := 0
+			diff := sLen + inPtrSize - BufSize
+			memcpy(ptr[inPtrSize]&,adding,sLen - diff)
+			moved += sLen - diff
+			
+			pages.Push(ptr)
+			while sLen - moved > BufSize {
+				preSet := malloc(BufSize)->{char^}
+				memcpy(preSet[0]&,adding->{char^}[moved]&,BufSize)
+				pages.Push(preSet)
+				moved += BufSize
+			}
+			ptr = malloc(BufSize)->{char^}
+			memcpy(ptr[0]&,adding->{char^}[moved]&,sLen - moved)
+			inPtrSize = sLen - moved
+
+		}else{
+			memcpy(ptr[inPtrSize]&,adding,sLen)
+			inPtrSize += sLen
+		}
+		return sLen
+	}
+	Size := !() -> size_t
+	{
+		BufSize := 4096
+		return pages.Size()*BufSize + inPtrSize
+	}
+	GetString := !()  -> TString^ 
+	{
+		if inPtrSize == 0{
+			return new TString("")
+		}
+		BufSize := 4096
+		indItr := pages.Size()*BufSize
+		outSize := indItr + inPtrSize
+
+		res := malloc(outSize + 1)->{char^}
+		res[outSize] = 0
+		memcpy(res[indItr]&,ptr,inPtrSize)
+		//indItr -= BufSize
+		indItr = 0
+
+		for pages
+		{
+			memcpy(res[indItr]&,it,BufSize)
+			indItr += BufSize
+		}
+		result = new TString
+		result.charPtr = res
+		result.itSize = outSize
+	}
+	Close := virtual !() -> void
+	{
+		//TODO: mem clean up
+	}
+}

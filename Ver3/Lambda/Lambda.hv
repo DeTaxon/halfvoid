@@ -1,6 +1,7 @@
 BoxLambdaHolder := class extend BoxExeObj
 {
 	tmpl := BoxFuncTemplateBody^
+	cleanType := Type^
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
 
@@ -115,6 +116,8 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		step1 := createLambdaFunc.CreateCall(objs)
 		step2 := new UnrefFuncCall(step1)
+
+		cleanType = step1.GetType()
 
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))

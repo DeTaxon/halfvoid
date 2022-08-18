@@ -136,7 +136,8 @@ ReturnHalfState := class extend BoxExeObj
 				objs.Push(resGet)
 				objs.Push(callObj2)
 				callObj = CreateFuncCall(StringSpan("="),objs)
-				assert(callObj != null)
+				if callObj == null
+					errorToken.EmitError("Can not return value, no \"=\" operator")
 			}
         }
      

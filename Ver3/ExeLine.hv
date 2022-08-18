@@ -178,6 +178,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 
 CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 {
+	SyntaxCompress(itm,PriorityData)
 	itr := itm.Down
 
 	while itr != null

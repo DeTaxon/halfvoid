@@ -100,7 +100,13 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 		
 		tFunc := GetType()->{TypeFunc^}
 		tp := tFunc.Params[0].ItType
-		bs := tp.Base
+		bs := Type^
+		if tp == GTypeVoidP
+		{
+			bs = GTypeChar
+		}else{
+			bs = tp.Base
+		}
 
 		f^ << "%T" << resId << " = getelementptr " 
 		bs.PrintType(f)

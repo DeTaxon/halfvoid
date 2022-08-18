@@ -1,14 +1,32 @@
 
+val := int
+hm := !() -> !(int^&)& -> int&
+{
+	x := (int^& y) ==> int&
+	{
+		y = val&
+		return val
+	}
+	return x.Capture()
+}
 main := !(char^[] args) -> int
 {
 	
-	zip := ZipFile
-	zip.AnalizeFile("Test.zip")
-	fil := zip.GetFile("main2.hv")
+	gRepo := new vRepo
+	gRepo.Init(".")
 
-	ptr := fil.Map()
-	spn := StringSpan(ptr->{char^},fil.Size())
-	printf("%s\n",spn.GetString().Str())
+	//gRepo.ExamineFolder(gRepo.rootFolder)
+	//fil := gRepo.GetFile("main2.hv")
+	//printf("res %p\n",fil)
+
+	c := AVLMap.{int,int}
+	c[100] = 2
+	c[200] = 3
+
+	for it,ind : c
+	{
+		printf("hm %i %i\n",it,ind)
+	}
 
 	return 0
 }

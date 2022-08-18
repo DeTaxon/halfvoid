@@ -59,7 +59,8 @@ BW := class
 
 
 
-NotHuffmanTree9 := class  {
+NotHuffmanTree9 := class  extend TGCObject
+{
 	treeInfo := Tuple.{s16,u8}[512] // character, size
 	extraNodes := TVector.{Tuple.{u16, u16}}[16] //charact,value [bitsize]
 

@@ -125,7 +125,7 @@ BoxFuncCommon := class extend BoxFunc
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
-		if fTyp.ResultType != GTypeVoid
+		if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
 		{
 			f^ << "%T" << resId
 		}
@@ -138,7 +138,7 @@ BoxFuncCommon := class extend BoxFunc
 
 PrintFuncCallResultCommon := !(TIOStream^ f,TypeFunc^ fTyp,int resId) -> void
 {
-	if fTyp.ResultType != GTypeVoid
+	if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
 	{
 		f^ << "%T" << resId
 	}

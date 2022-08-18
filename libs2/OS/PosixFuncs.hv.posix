@@ -17,6 +17,10 @@ MAP_SHARED := 1
 MAP_PRIVATE := 2
 MAP_ANON := 32
 
+S_IFDIR := 16384
+S_IFREG := 32768
+S_IFLINK := 40960
+
 posixGetFileSize := !(int fd,u64^ size) -> bool
 {
 	dataD := char[144]
@@ -26,4 +30,48 @@ posixGetFileSize := !(int fd,u64^ size) -> bool
 	asNeed2 := asNeed1->{u64^}
 	size^ = asNeed2^
 	return true
+}
+posixIsFolder := !(char^ nm) -> bool
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return false
+	itflg := st1[24]&->{s32^}^
+	if (itflg and_b S_IFDIR) == S_IFDIR
+		return true
+	return false
+}
+
+posixFileSize := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(itStr,st1[0]&) != 0
+		return 0
+	return st1[48]&->{u64^}^
+}
+posixFileId := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(itStr,st1[0]&) != 0
+		return 0
+	return st1[8]&->{u64^}^
+}
+posixReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
+{
+
+	dirFd := opendir(nm)
+	if dirFd == null
+		return void
+	
+	defer closedir(dirFd)
+
+	while true
+	{
+		nowEntry := readdir(dirFd)
+		if nowEntry == null
+			return void
+		view := TStringViewOnCStr(nowEntry->{char^}[19]&)
+		cb(view)
+	}
+
 }
