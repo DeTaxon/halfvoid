@@ -47,6 +47,7 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 		return null
 	if checkRes is TemplateTypeVar
 	{
+		obj.EmitError("Got object, but dont know what it is, software error")
 		assert(false)
 		return null
 	}

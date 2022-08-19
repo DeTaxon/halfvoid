@@ -52,11 +52,13 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 		if resl == null return null
 		return resl.data.second&
 	}
-	//Contain := !(KEY dat) -> bool
-	//{
-	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
-	//	return resl != null
-	//}
+	Contain := !(KEY dat) -> bool
+	{
+		cnst := BadPair.{KEY,VALUE}
+		cnst.first = dat
+		resl := itTree.FindNode(cnst)
+		return resl != null
+	}
 	//Contain := !(!(KEY)&->int cmpFunc) -> bool
 	//{
 	//	resl := itTree.FindNode((x) ==> {

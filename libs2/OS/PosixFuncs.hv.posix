@@ -45,14 +45,14 @@ posixIsFolder := !(char^ nm) -> bool
 posixFileSize := !(char^ nm) -> u64
 {
 	st1 := char[144]
-	if stat(itStr,st1[0]&) != 0
+	if stat(nm,st1[0]&) != 0
 		return 0
 	return st1[48]&->{u64^}^
 }
 posixFileId := !(char^ nm) -> u64
 {
 	st1 := char[144]
-	if stat(itStr,st1[0]&) != 0
+	if stat(nm,st1[0]&) != 0
 		return 0
 	return st1[8]&->{u64^}^
 }

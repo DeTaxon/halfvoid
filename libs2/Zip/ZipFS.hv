@@ -22,14 +22,12 @@ vRepoObject := class
 		strB := TEchoStream
 		for it,i : itms
 		{
-			printf("adding %s\n",it.objName.Str())
 			strB << it.objName
 			if i != itms.Size() - 1
 			{
 				strB << "/"
 			}
 		}
-		printf("hey %s %i\n",strB.GetString().Str(), strB.Size())
 		return strB.GetString()
 	}
 }
@@ -52,29 +50,25 @@ vRepoFile := class extend vRepoObject
 {
 	ptrToRepo := vRepo^
 	ptrToZip := vZipEntry^
-	mFile := MappedFile
 	fileSize := u64
 
 	this := !() -> void
 	{
 		ptrToProxy = null
 	}
-	GetFile := !(char^ fileName) -> vRepoFile^
-	{
-		//return ptrToRepo.GetFile(fileName,upFolder)
-	}
-	// Map := !() -> u8^
+	// GetFile := !(char^ fileName) -> vRepoFile^
 	// {
-	// 	if ptrToZip != null
-	// 	{
-	// 		return ptrToZip.Map()->{u8^}
-	// 	}
-
-	// 	mFile.Open(GetPath())
-
-	// 	return mFile.point->{u8^}
-
+	// 	//return ptrToRepo.GetFile(fileName,upFolder)
 	// }
+	GetMap := !() -> FileView^
+	{
+		// if ptrToZip != null
+		// {
+		// 	return ptrToZip.Map()->{u8^}
+		// }
+
+		return new ZipFSFileView(this&)
+	}
 	IsVirtual := !() -> bool 
 	{
 		return ptrToZip != null
@@ -105,7 +99,7 @@ vRepo := class
 {
 	rootFolder := vRepoFolder^
 	// ignZip := AVLSet.{u64}
-	// preferVirtual := bool
+	preferVirtual := bool
 
 	Init := !(TStringView pathName)-> void
 	{
@@ -176,7 +170,6 @@ vRepo := class
 			pth := iterFolder.GetPath()
 			posixReadFolder(pth.Str(),x ==> {
 				strName := x.Normalize()
-				printf("hm %i %s\n",posixIsFolder(strName.Str()),strName.Str())
 				if posixIsFolder(strName.Str())
 				{
 					newObj := new vRepoFolder
@@ -295,7 +288,7 @@ vRepo := class
 			found := false
 			for it : iterFolder.subFolders
 			{
-				if it.objName == cheks
+				if cheks == it.objName.Str()
 				{
 					iterFolder = it
 					found = true
@@ -314,7 +307,7 @@ vRepo := class
 			}
 			
 
-			st := cheks->{char^}
+			st := cheks.GetString()
 			if preferVirtual
 			{
 				if iterFolder.subVirtualFiles.Contain(st)

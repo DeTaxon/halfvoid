@@ -1,0 +1,20 @@
+FileView := class extend TGCObject
+{
+	Get := virtual !() -> u8^ {return null}
+	Size := virtual !() -> u64 { return 0 }
+}
+
+
+ZipFSFileView := class extend FileView
+{
+	baseFile := vRepoFile^
+	itMap := MappedFile^
+	this := !(vRepoFile^ bFile) -> void
+	{
+		baseFile = bFile
+		pth := bFile.GetPath()
+		itMap = new MappedFile(pth.Str())
+	}
+	Get := virtual !() -> u8^ {return itMap.Get()}
+	Size := virtual !() -> u64 { return baseFile.fileSize }
+}

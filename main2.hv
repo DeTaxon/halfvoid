@@ -15,18 +15,12 @@ main := !(char^[] args) -> int
 	gRepo := new vRepo
 	gRepo.Init(".")
 
-	//gRepo.ExamineFolder(gRepo.rootFolder)
-	//fil := gRepo.GetFile("main2.hv")
-	//printf("res %p\n",fil)
+	gRepo.ExamineFolder(gRepo.rootFolder)
+	fil := gRepo.GetFile("main2.hv")
+	mp := fil.GetMap()
+	spn := StringSpan(mp.Get(),mp.Size())
+	printf("res %s\n",spn.GetString().Str())
 
-	c := AVLMap.{int,int}
-	c[100] = 2
-	c[200] = 3
-
-	for it,ind : c
-	{
-		printf("hm %i %i\n",it,ind)
-	}
 
 	return 0
 }
