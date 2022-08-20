@@ -37,8 +37,9 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		c := CreateVar(cnstrCall,false)
 
 		constrObj := innerTryGetMethodCall(StringSpan("this"),c.CreateCall(),Objs,consts)
-		if constrObj != null
-			return new ConstructorCallWrapper(c,constrObj)
+		if constrObj == null
+			itm.EmitError("Constructor not found")
+		return new ConstructorCallWrapper(c,constrObj)
 	}
 	
 	if itm.Down is TokenIndent

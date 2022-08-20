@@ -189,11 +189,11 @@ ZipFile := class extend TGCObject
 	}
 		
 
-	AnalizeFile := !(char^ fileToLoad) -> bool
+	AnalizeFile := !(TStringView fileToLoad) -> bool
 	{
-		fileName = new TString(fileToLoad)
+		fileName = fileToLoad.Normalize()
 
-		asMapped.Open(fileToLoad)
+		asMapped.Open(fileName.Str())
 		ptrToFl := asMapped.point
 		eod := ptrToFl[asMapped.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 

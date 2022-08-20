@@ -170,7 +170,7 @@ StringSpan := class{
 
 "[]" := !(char^ this, Range ran) -> StringSpan
 {
-	return StringSpan(this,strlen(this),ran)
+	result = StringSpan(this,strlen(this),ran)
 }
 
 // StrToInt := !(StringSpan strSpn) -> int 

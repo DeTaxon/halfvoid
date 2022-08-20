@@ -1,25 +1,25 @@
 
-val := int
-hm := !() -> !(int^&)& -> int&
+cc := class .{@T}
 {
-	x := (int^& y) ==> int&
+	j := T
+	this := !(int i) -> void
 	{
-		y = val&
-		return val
+
 	}
-	return x.Capture()
+}
+hm := !(@T x) -> void
+{
+
 }
 main := !(char^[] args) -> int
 {
-	
 	gRepo := new vRepo
 	gRepo.Init(".")
+	//gRepo.AddZipRoot("./Test.zip")
 
-	gRepo.ExamineFolder(gRepo.rootFolder)
-	fil := gRepo.GetFile("main2.hv")
-	mp := fil.GetMap()
-	spn := StringSpan(mp.Get(),mp.Size())
-	printf("res %s\n",spn.GetString().Str())
+	gRepo.ReadFolder(".",true, x ==> {
+		printf("hm %s\n",x.GetPath().Str())
+	})
 
 
 	return 0
