@@ -1,0 +1,24 @@
+
+internalVectorConstructor1 := !(@T& val,@K a) -> void
+{
+	val.x = a
+}
+
+internalVectorConstructor2 := !(@T& val,@K a, K b) -> void
+{
+	val.x = a
+	val.y = b
+}
+internalVectorConstructor3 := !(@T& val,@K a, K b, K c) -> void
+{
+	val.x = a
+	val.y = b
+	val.z = c
+}
+internalVectorConstructor4 := !(@T& val,@K a, K b, K c, K d) -> void
+{
+	val.x = a
+	val.y = b
+	val.z = c
+	val.w = d
+}

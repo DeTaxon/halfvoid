@@ -1,4 +1,21 @@
+GetVecXTypeSize := !(Type^ itY) -> int
+{
+	if itY == GTypeVec4f return 4
+	if itY == GTypeVec3f return 3
+	if itY == GTypeVec2f return 2
+	if itY == GTypeQuantf return 4
+	return 0
+}
 
+GetVecTypeX := !(int Siz) -> Type^
+{
+	switch Siz
+	{
+		case 4 return GTypeVec4f
+		case 3 return GTypeVec3f
+		case 2 return GTypeVec2f
+	}
+}
 
 BuiltInGetVecTemplate := class extend BoxFuncTemplate
 {
@@ -11,7 +28,8 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 			return null
 		
 		a := objs[0].GetType()
-		if a != GTypeVec4f and a != GTypeQuantf
+		vecSize := GetVecXTypeSize(a)
+		if vecSize == 0
 			return null
 		
 		strVal := consts[0]->{BoxExeString^}
@@ -22,21 +40,31 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 			case "x"
 			case "y"
 			case "z"
+				if vecSize < 3
+					return null
 			case "w"
+				if vecSize < 4
+					return null
 			case void
 				if strVal.val.Size() > 4
 					return null
 				if strVal.val.Size() <= 0
 					return null
-				assert(strVal.val.Size() == 4)
 				
 				for i : strVal.val.Size()
 				{
 					if not (strVal.val[i] in "xyzw0")
 						return null
 				}
+				resType := Type^
+				if a == GTypeQuantf and strVal.val.Size() == 4
+				{
+					resType = GTypeQuantf
+				}else{
+					resType = GetVecTypeX(strVal.val.Size())
+				}
 
-				return GetFuncType(1,![a],![true],a,false,false)
+				return GetFuncType(1,![a],![true],resType,false,false)
 		}
 
 		return GetFuncType(1,![a],![true],GTypeFloat,true,false)
@@ -73,9 +101,9 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				if str[i] == 'y' inds[i] = 1
 				if str[i] == 'z' inds[i] = 2
 				if str[i] == 'w' inds[i] = 3
-				if str[i] == '0' inds[i] = str.Size()
+				if str[i] == '0' inds[i] = GetVecXTypeSize(tp.Params[0].ItType)
 			}
-			return new BuiltInVecShuffle(tp,inds[0]&,4)
+			return new BuiltInVecShuffle(tp,inds[0]&,str.Size())
 		}
 		assert(false)
 	}
@@ -152,7 +180,11 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 			return null
 		
 		a := objs[0].GetType()
-		if a != GTypeVec4f and a != GTypeQuantf
+		vecSize := GetVecXTypeSize(a)
+		if vecSize == 0
+			return null
+		inpts := objs.Size() - 1
+		if inpts > vecSize
 			return null
 		
 		typs := Type^[6]
@@ -184,11 +216,13 @@ CreateBuiltInVec:= !() -> void
 {
 	bSpace := CodeSpaces[-1]&
 
-	x := GTypeVec4f
-	storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+	for x : ![GTypeVec4f,GTypeVec3f,GTypeVec2f,GTypeQuantf]
+	{
+		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+	}
 
 	bSpace.Templates[StringSpan(".")].Push(new BuiltInGetVecTemplate())
 
-	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
 	bSpace.Templates[StringSpan(". this")].Push(new BuiltInVecConstrTemplate)
 }

@@ -1,32 +1,9 @@
 
-internalVectorConstructor1 := !(@T& val,@K a) -> void
-{
-	val.x = a
-}
-
-internalVectorConstructor2 := !(@T& val,@K a, K b) -> void
-{
-	val.x = a
-	val.y = b
-}
-internalVectorConstructor3 := !(@T& val,@K a, K b, K c) -> void
-{
-	val.x = a
-	val.y = b
-	val.z = c
-}
-internalVectorConstructor4 := !(@T& val,@K a, K b, K c, K d) -> void
-{
-	val.x = a
-	val.y = b
-	val.z = c
-	val.w = d
-}
 
 main := !(char^[] args) -> int
 {	
-	c := vec4f(1,2,4)
-	d := c.z0xw
-	printf("hm %f %f %f\n",d.x,d.y,d.z)
+	c := vec2f(1,2)
+	d := c.yx0x
+	printf("hm %f %f %f %f\n",d.x,d.y,d.z,d.w)
 	return 0
 }
