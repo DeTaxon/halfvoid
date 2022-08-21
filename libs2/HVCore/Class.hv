@@ -1,0 +1,17 @@
+internalClassDefaultSet := !(@T a, T b) -> void
+{
+	for x : a->AllFields, y : b->AllFields
+	{
+		x = y
+	}
+}
+internalClassDefaultCompare := !(@T a, T b) -> int
+{
+	for x : a->AllFields, y : b->AllFields
+	{
+		cmpRes := x <=> y
+		if cmpRes != 0
+			return cmpRes
+	}
+	return 0
+}

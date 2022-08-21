@@ -1,26 +1,22 @@
 
-cc := class .{@T}
+cc := class
 {
-	j := T
-	this := !(int i) -> void
-	{
+	x := int
+	y := int
 
-	}
+	"=" := default
+	"<=>" := default
 }
-hm := !(@T x) -> void
-{
 
-}
+
+
 main := !(char^[] args) -> int
-{
-	gRepo := new vRepo
-	gRepo.Init(".")
-	//gRepo.AddZipRoot("./Test.zip")
-
-	gRepo.ReadFolder(".",true, x ==> {
-		printf("hm %s\n",x.GetPath().Str())
-	})
-
-
+{	
+	a := cc
+	a.x = 1
+	a.y = 100
+	b := cc
+	b = a
+	printf("%i %i\n",b.x,b.y)
 	return 0
 }

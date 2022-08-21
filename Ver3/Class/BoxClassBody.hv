@@ -199,8 +199,26 @@ BoxClassBody := class extend BoxClass
 						{
 							CheckFakeFields(iter)
 						}else{
+							if itm.GetValue() == "default"
+							{
+								InternalsHatch.Await()
 
-							itm.EmitError("Unknow object")
+								setFunc := BoxFunc^
+								cnsts := List.{BoxExeConstObj^}
+								switch name
+								{
+									case "="
+										setFunc = GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+									case "<=>"
+										setFunc = GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+									case void
+										itm.EmitError("unknown default operator")
+								}
+								assert(setFunc != null)
+								DefaultSpace.Methods[name].Push(setFunc)
+							}else{
+								itm.EmitError("Unknow object")
+							}
 						}
 					}
 				}

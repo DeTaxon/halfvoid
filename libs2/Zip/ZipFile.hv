@@ -84,7 +84,7 @@ vZipEntry := class
 	fullName := StringSpan
 	comprType := int
 	subFolders := List.{vZipEntry^}
-	compressedPointer := void^
+	//compressedPointer := void^
 
 	"this" := !() -> void {}
 
@@ -101,26 +101,21 @@ vZipEntry := class
 		return fullName
 	}
 
-	Map := !() -> void^
+	GetMap := !() -> FileView^
 	{
 		if comprType == 8
 		{
-			compressedPointer = malloc(realSize)
+			compressedPointer := malloc(realSize)
 			resPtr := ptrToObj.asMapped.point[offset]&
 
 			CrappyDeflateInflate(resPtr,zipSize,compressedPointer->{u8^},realSize)
-			return compressedPointer
+			return new ZipFSFileViewZipDeflate(this&,compressedPointer->{u8^},realSize)
 		}
-		resPtr := ptrToObj.asMapped.point[offset]&
 
-		return resPtr
-	}
-	Unmap := !() -> void
-	{
-		if comprType == 8
-		{
-			free(compressedPointer)
-		}
+		assert(comprType == 0)
+
+		resPtr := ptrToObj.asMapped.point[offset]&
+		return new ZipFSFileViewZipStore(this&,resPtr,realSize)
 	}
 
 	Print := !(int de) -> void
@@ -228,11 +223,14 @@ ZipFile := class extend TGCObject
 			for itm,j : fldrs
 			{	
 				found := false
-				if itmIter.subFolders[^].objName == itm
+				for it : itmIter.subFolders
 				{
-					itmIter = it
-					found = true
-					break
+					if itm == it.objName
+					{
+						itmIter = it
+						found = true
+						break
+					}
 				}
 				if not found 
 				{

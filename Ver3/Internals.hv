@@ -34,6 +34,9 @@ ExceptionGetException := BoxFunc^
 ArrayViewTemplate := BoxClassTemplate^
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
 
+GDefautlSetTemplate := BoxFuncTemplate^
+GDefautlCompareTemplate := BoxFuncTemplate^
+
 GZeroMemTemplate := BoxFuncTemplate^
 
 InternalsHatch := THatch
@@ -117,6 +120,9 @@ InitInternals := !() -> void
 	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
+
+	GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
+	GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
 
 	InternalsHatch.Emit()
 }

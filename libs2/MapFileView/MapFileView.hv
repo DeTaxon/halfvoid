@@ -13,8 +13,49 @@ ZipFSFileView := class extend FileView
 	{
 		baseFile = bFile
 		pth := bFile.GetPath()
+		printf("test %s\n",pth.Str())
 		itMap = new MappedFile(pth.Str())
 	}
 	Get := virtual !() -> u8^ {return itMap.Get()}
 	Size := virtual !() -> u64 { return baseFile.fileSize }
 }
+ZipFSFileViewZipStore := class extend FileView
+{
+	baseEntry := vZipEntry^
+	pointer := u8^
+	size := u64
+	this := !(vZipEntry^ entry,u8^ ptr, u32 siz) -> void
+	{
+		baseEntry = entry
+
+		pointer = ptr
+		size = siz
+	}
+	Get := virtual !() -> u8^ {return pointer}
+	Size := virtual !() -> u64 { return size}
+}
+
+ZipFSFileViewZipDeflate := class extend FileView
+{
+	baseEntry := vZipEntry^
+	pointer := u8^
+	size := u64
+	this := !(vZipEntry^ entry,u8^ ptr, u32 siz) -> void
+	{
+		baseEntry = entry
+
+		pointer = ptr
+		size = siz
+	}
+	Get := virtual !() -> u8^ {return pointer}
+	Size := virtual !() -> u64 { return size}
+	Destroy := virtual !() -> void
+	{
+		if pointer != null
+		{
+			delete pointer
+			pointer = null
+		}
+	}
+}
+

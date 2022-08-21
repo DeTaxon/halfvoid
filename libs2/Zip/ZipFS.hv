@@ -62,10 +62,10 @@ vRepoFile := class extend vRepoObject
 	// }
 	GetMap := !() -> FileView^
 	{
-		// if ptrToZip != null
-		// {
-		// 	return ptrToZip.Map()->{u8^}
-		// }
+		if ptrToZip != null
+		{
+			return ptrToZip.GetMap()
+		}
 
 		return new ZipFSFileView(this&)
 	}
@@ -164,15 +164,22 @@ vRepo := class
 					return void
 
 				strName := x.Normalize()
-				if posixIsFolder(strName.Str())
+
+				bigPath := TEchoStream
+				bigPath << iterFolder.GetPath()
+				bigPath << "/"
+				bigPath << strName.Str()
+				absPath := bigPath.GetString()
+
+				if posixIsFolder(absPath.Str())
 				{
 					newObj := new vRepoFolder
 					newObj.objName = strName
 					newObj.upFolder = iterFolder
 					iterFolder.subFolders[strName] = newObj
 				}else{
-					itmId := posixFileId(strName.Str())
-					flSz := posixFileSize(strName.Str())
+					itmId := posixFileId(absPath.Str())
+					flSz := posixFileSize(absPath.Str())
 //
 					if ignZip.Contain(itmId)
 					{
@@ -182,12 +189,12 @@ vRepo := class
 					{
 						zips.Push(strName)
 					}else{
-						newObj := new vRepoFile
-						newObj.upFolder = iterFolder
-						newObj.objName = strName
-						newObj.ptrToRepo = this&
-						newObj.fileSize = flSz
-						iterFolder.subFiles[strName] = newObj
+						newObj2 := new vRepoFile
+						newObj2.upFolder = iterFolder
+						newObj2.objName = strName
+						newObj2.ptrToRepo = this&
+						newObj2.fileSize = flSz
+						iterFolder.subFiles[strName] = newObj2
 					}
 				}
 			})
@@ -234,12 +241,15 @@ vRepo := class
 				}
 				
 				found := false
-				if iterFolder.subFolders[^].objName == subItemName
+				for it : iterFolder.subFolders
 				{
-					found = true
-					if subItm.realSize == 0
-						it.subZipFolders.Push(subItm)
-					break
+					if it.objName == subItemName
+					{
+						found = true
+						if subItm.realSize == 0
+							it.subZipFolders.Push(subItm)
+						break
+					}
 				}
 				if found continue
 

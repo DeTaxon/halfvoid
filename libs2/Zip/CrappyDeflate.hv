@@ -222,8 +222,8 @@ DecodeSmallHuffmanTable := !(NotHuffmanTree9^ toApply,BW bw,u8^ res,int codesCou
 }
 
 
-fixedHuffmanLiteral := NotHuffmanTree9
-fixedHuffmanDistance := NotHuffmanTree9
+fixedHuffmanLiteral := NotHuffmanTree9^
+fixedHuffmanDistance := NotHuffmanTree9^
 
 isInitedFixed := bool
 InitFixedHuffman := !() -> void
@@ -234,11 +234,13 @@ InitFixedHuffman := !() -> void
 	for 256..279 litLens[it] = 7
 	for 280..287 litLens[it] = 8
 
-	ApplyHuffmanTree(litLens,287,fixedHuffmanLiteral&)
+	fixedHuffmanLiteral = new NotHuffmanTree9
+	ApplyHuffmanTree(litLens,287,fixedHuffmanLiteral)
 
 	dists := char[32]
 	dists[^] = 5
-	ApplyHuffmanTree(dists,32,fixedHuffmanDistance&)
+	fixedHuffmanDistance = new NotHuffmanTree9
+	ApplyHuffmanTree(dists,32,fixedHuffmanDistance)
 
 	isInitedFixed = true
 }
@@ -275,8 +277,8 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 			{
 				if not isInitedFixed
 					InitFixedHuffman()
-				litsTree = fixedHuffmanLiteral&
-				distTree = fixedHuffmanDistance&
+				litsTree = fixedHuffmanLiteral
+				distTree = fixedHuffmanDistance
 			}else{
 				HLIT := bw.GetAndMove(5) + 257
 				HDIST := bw.GetAndMove(5) + 1
@@ -297,9 +299,6 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 
 				litsTree = new NotHuffmanTree9
 				distTree = new NotHuffmanTree9
-
-				//defer delete litsTree //TODO
-				//defer delete distTree
 				
 				ApplyHuffmanTree(resultData->{char^},HLIT,litsTree)
 				ApplyHuffmanTree(resultData[HLIT]&->{char^},HDIST,distTree)
