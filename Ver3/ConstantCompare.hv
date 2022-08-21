@@ -16,6 +16,10 @@ cmpConst := !(BoxExeConstObj^ a, BoxExeConstObj^ b) -> bool
 	{
 		return a == b
 	}
+	if a is BoxExeString and b is BoxExeString
+	{
+		return a == b
+	}
 	assert(false)
 	return false
 }

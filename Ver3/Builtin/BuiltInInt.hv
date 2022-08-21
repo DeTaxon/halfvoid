@@ -207,6 +207,7 @@ CreateBuiltins := !() -> void
 	CreateBuiltinsPoint()
 	CreateBuiltinsBool()
 	CreateBuildInTools()
+	CreateBuiltInVec()
 }
 CreateBuiltinsInt := !() -> void
 {
@@ -237,7 +238,7 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
-		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
 
 		bSpace.Functions[StringSpan("++")].Push(new BuiltInIntDecInc(incType,"add") )
 		bSpace.Functions[StringSpan("--")].Push(new BuiltInIntDecInc(incType,"sub") )
@@ -285,19 +286,25 @@ CreateBuiltinsInt := !() -> void
 		strt := GetFuncType(![x,x],x)
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		unarMinusType := GetFuncType(![x],x)
+		baseRefed := GetFuncType(![x,x],![true,false],x)
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
-		//bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"fadd") )
-		//bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"fsub") )
-		//bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"fmul") )
-		//bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"fmul") )
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(strt,"fadd") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(strt,"fsub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(strt,"fmul") )
+		bSpace.Functions[StringSpan("/")].Push(new BuiltInIntBase(strt,"fdiv") )
 
-		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
-		//bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
-		//bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
+		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
+		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"fmul") )
 
 		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"fsub","0.0") )
+
+		if x == GTypeDouble
+		{
+			bSpace.Functions[StringSpan("suffix deg")].Push(new BuiltInIntMinus(unarMinusType,"fmul","0.017453292519943295") )
+		}
 
 		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
 		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )

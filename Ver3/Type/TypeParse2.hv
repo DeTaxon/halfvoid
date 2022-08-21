@@ -101,7 +101,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 		if resType == null
 			return null
-		fType := GetFuncType(k,types[0]&,isRefs[0]&,resType,resRef,isVarg)
+		fType := GetFuncType(k,types[0]&,isRefs[0]&,resType,resRef,isVarg)->{Type^}
 
 		if isLambda
 		{
@@ -116,9 +116,9 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 		for i : ptrSize
 		{
-			resType = resType.GetPoint()
+			fType = fType.GetPoint()
 		}
-		return resType
+		return fType
 
 	}
 	if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"

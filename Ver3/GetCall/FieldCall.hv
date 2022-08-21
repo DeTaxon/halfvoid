@@ -47,6 +47,16 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				return new FieldSpaceHolder(val,cls.FieldSpaces[name]&)
 			}
 		}
+
+
+		lastObj := CheckExeDownList
+		lastObj.Push(val)
+		lastConsts := List.{BoxExeConstObj^}
+		lastConsts.Push(GetExeString(GetConstString(name)))
+		lastRes := CreateFuncCall(StringSpan("."),lastObj,lastConsts)
+		lastConsts.Destroy()
+		if lastRes != null
+			return lastRes
 	}
 
 	rObjVal := BoxExeObj^
@@ -79,6 +89,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			return fld.CreateCall(itms)
 		}
 	}
+
 	rObj.EmitError("Field not found")
 
 	return null

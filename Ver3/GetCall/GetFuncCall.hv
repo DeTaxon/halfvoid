@@ -35,11 +35,19 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	if cnstrCall != null
 	{
 		c := CreateVar(cnstrCall,false)
+		cCall := c.CreateCall()
 
-		constrObj := innerTryGetMethodCall(StringSpan("this"),c.CreateCall(),Objs,consts)
-		if constrObj == null
-			itm.EmitError("Constructor not found")
-		return new ConstructorCallWrapper(c,constrObj)
+		constrObj := innerTryGetMethodCall(StringSpan("this"),cCall,Objs,consts)
+		if constrObj != null
+			return new ConstructorCallWrapper(c,constrObj)
+
+		objs22 := CheckExeDownList
+		objs22.Push(cCall)
+		objs22.Push(Objs[^])
+		check2 := CreateFuncCall(StringSpan(". this"),objs22)
+		if check2 != null
+			return new ConstructorCallWrapper(c,check2)
+		itm.EmitError("Constructor not found")
 	}
 	
 	if itm.Down is TokenIndent
@@ -82,7 +90,6 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(dwnItem,Objs)?
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
-	itm.Print(0)
 	itm.EmitError("Can not parse function call")
 	assert(false)
 }
@@ -97,7 +104,6 @@ innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
 		{
 			return new BoxFuncPointerCall(dwnItem,Objs)
 		}
-
 	}
 	return null
 }

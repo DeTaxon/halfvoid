@@ -39,6 +39,11 @@ GDefautlCompareTemplate := BoxFuncTemplate^
 
 GZeroMemTemplate := BoxFuncTemplate^
 
+GVectorConstructor1 := BoxFuncTemplate^
+GVectorConstructor2 := BoxFuncTemplate^
+GVectorConstructor3 := BoxFuncTemplate^
+GVectorConstructor4 := BoxFuncTemplate^
+
 InternalsHatch := THatch
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
@@ -123,6 +128,11 @@ InitInternals := !() -> void
 
 	GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
 	GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
+
+	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
+	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
+	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
+	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
 
 	InternalsHatch.Emit()
 }

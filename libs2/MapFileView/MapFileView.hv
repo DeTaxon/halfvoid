@@ -13,7 +13,6 @@ ZipFSFileView := class extend FileView
 	{
 		baseFile = bFile
 		pth := bFile.GetPath()
-		printf("test %s\n",pth.Str())
 		itMap = new MappedFile(pth.Str())
 	}
 	Get := virtual !() -> u8^ {return itMap.Get()}

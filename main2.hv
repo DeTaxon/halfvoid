@@ -1,22 +1,32 @@
 
-cc := class
+internalVectorConstructor1 := !(@T& val,@K a) -> void
 {
-	x := int
-	y := int
-
-	"=" := default
-	"<=>" := default
+	val.x = a
 }
 
-
+internalVectorConstructor2 := !(@T& val,@K a, K b) -> void
+{
+	val.x = a
+	val.y = b
+}
+internalVectorConstructor3 := !(@T& val,@K a, K b, K c) -> void
+{
+	val.x = a
+	val.y = b
+	val.z = c
+}
+internalVectorConstructor4 := !(@T& val,@K a, K b, K c, K d) -> void
+{
+	val.x = a
+	val.y = b
+	val.z = c
+	val.w = d
+}
 
 main := !(char^[] args) -> int
 {	
-	a := cc
-	a.x = 1
-	a.y = 100
-	b := cc
-	b = a
-	printf("%i %i\n",b.x,b.y)
+	c := vec4f(1,2,4)
+	d := c.z0xw
+	printf("hm %f %f %f\n",d.x,d.y,d.z)
 	return 0
 }
