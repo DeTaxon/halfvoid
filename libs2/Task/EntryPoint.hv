@@ -2,17 +2,25 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 { 
 	//All function expects to CurrentTask be initialized, this is not working for first function
 	//so first function MUST initialize CurrentTask
+	internalInitThread()
+
+	result = internalHVEntryPoint2(argc,argv)
+	
+	CurrentThread.ThreadMainTask = null
+	CurrentTask = null
+	internalThreadDestructor()
+}
+
+internalInitThread := !() -> void
+{
 	voidVal := calloc(1,TTask->TypeSize)
 	internalHVInitClass(voidVal->{TTask^}^)
 	CurrentTask = voidVal->{TTask^}
-
-	result = internalHVEntryPoint2(argc,argv)
-
-	CurrentThread.ThreadMainTask = null
-	CurrentThread = null
+}
+internalThreadDestructor := !() -> void
+{
 	CurrentTask = null
 }
-
 
 
 TSpawnTask := !(!()&-> void cb) -> void

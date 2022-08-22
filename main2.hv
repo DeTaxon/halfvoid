@@ -1,9 +1,21 @@
+BigClass := class
+{
+	x := int
+	y := int
+}
 
+AppendClass BigClass
+{
+	z := int
+}
 
 main := !(char^[] args) -> int
 {	
-	c := vec2f(1,2)
-	d := c.yx0x
-	printf("hm %f %f %f %f\n",d.x,d.y,d.z,d.w)
+	test := BigClass
+	//x := new Thread(() ==> {
+	//	printf("second\n")
+	//})
+	printf("hm %s\n","nopt")
+	//x.Joint()
 	return 0
 }

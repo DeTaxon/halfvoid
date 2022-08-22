@@ -287,6 +287,7 @@ CreateBuiltinsInt := !() -> void
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		unarMinusType := GetFuncType(![x],x)
 		baseRefed := GetFuncType(![x,x],![true,false],x)
+		cmpType := GetFuncType(![x,x],GTypeBool)
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
@@ -305,8 +306,12 @@ CreateBuiltinsInt := !() -> void
 		{
 			bSpace.Functions[StringSpan("suffix deg")].Push(new BuiltInIntMinus(unarMinusType,"fmul","0.017453292519943295") )
 		}
+		bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"fcmp uge") )
+		bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"fcmp ule") )
+		bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"fcmp ugt") )
+		bSpace.Functions[StringSpan("<")].Push(new BuiltInIntBase(cmpType,"fcmp ult") )
 
-		//bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp eq") )
-		//bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp ne") )
+		bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp ueq") )
+		bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp une") )
 	})
 }

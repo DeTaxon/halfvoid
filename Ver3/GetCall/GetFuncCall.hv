@@ -143,8 +143,10 @@ ConstructorCallWrapper := class extend BoxExeObj
 	itVar := ParamFunc^
 	itCall := BoxExeObj^
 	varCall := BoxExeObj^
+	extraId := int
 	this := !(ParamFunc^ vr, BoxExeObj^ bj) -> void
 	{
+		extraId = GetNewId()
 		itVar = vr
 		itCall = bj
 		varCall = vr.CreateCall()
@@ -166,10 +168,12 @@ ConstructorCallWrapper := class extend BoxExeObj
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{
-		assert(false)
+		assert(not (ObjType is in TypeClass))
+		PrintUnrefObj(f,extraId,this&)
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
 	{
-		assert(false)
+		assert(not (ObjType is in TypeClass))
+		f^ << "%TUnref" << extraId
 	}
 }

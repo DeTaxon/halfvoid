@@ -212,6 +212,33 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 	}
 }
 
+BuiltInVecScalarMult := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ tp) -> void
+	{
+		SetType(tp)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		typ := lst[0].GetType()
+		siz := GetVecXTypeSize(typ)
+		lst[^].PrintPre(f)
+
+		f^ << "%Temp" << resId << " = fmul "
+		typ.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << " , "
+		lst[1].PrintUse(f)
+		f^ << "\n"
+		f^ << "%T" << resId << " = call fast float @llvm.vector.reduce.fadd.f32.v" 
+		f^ << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << resId << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
 CreateBuiltInVec:= !() -> void
 {
 	bSpace := CodeSpaces[-1]&
@@ -219,7 +246,20 @@ CreateBuiltInVec:= !() -> void
 	for x : ![GTypeVec4f,GTypeVec3f,GTypeVec2f,GTypeQuantf]
 	{
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		baseRefed := GetFuncType(![x,x],![true,false],x)
+		baseAdd := GetFuncType(![x,x],![false,false],x)
+
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(baseAdd,"fadd") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(baseAdd,"fsub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(baseAdd,"fmul") )
+
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
+		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
+		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"fmul") )
+
+		bSpace.Functions[StringSpan("<+>")].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
 	}
 
 	bSpace.Templates[StringSpan(".")].Push(new BuiltInGetVecTemplate())
