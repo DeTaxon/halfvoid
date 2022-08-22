@@ -3,6 +3,7 @@ k := 1000000
 kk := false
 main := !(char^[] args) -> int
 {
+	// ExpectWorkers(1)
 	// TSpawnWork(() ==> {
 	// 	for i : k
 	// 	{

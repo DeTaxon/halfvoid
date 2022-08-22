@@ -6,3 +6,6 @@ internalHVGetTaskLocalTuple := !() -> void^
 {
 	return CurrentTask.taskLocalData&
 }
+
+TaskAdditionalWorkers := List.{TaskWorker^}
+TaskWorkersToDo := List.{Task^}

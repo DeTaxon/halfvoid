@@ -25,20 +25,10 @@ internalThreadDestructor := !() -> void
 
 TSpawnTask := !(!()&-> void cb) -> void
 {
-	startTask := new Task
-	startTask.taskLambda = cb.Capture()
-
-	getcontext(startTask.uContext[0]&)
-	stackSize := 4*1024*1024
-	startTask.stackPtr = malloc(stackSize) //TODO set stack size
-	startTask.uContext[24]&->{u64^}^ = 0
-	startTask.uContext[8]&->{void^^}^ = null
-	startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
-	startTask.uContext[32]&->{u64^}^ = stackSize
-	makecontext(startTask.uContext&,ucontextStartTask,0)
+	startTask := new Task(cb)
 
 	CurrentThread.AllTasks.Insert(startTask)
-	CurrentThread.PendingTasks.Push(startTask)
+	CurrentThread.CreateTasks.Push(startTask)
 	startTask = null
 }
 
@@ -58,9 +48,7 @@ TSleep := !(double timeToSleep) -> void
 
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
-	uring_init()
-	gTaskIORing = ur_create()
-	ur_init(128,gTaskIORing,0)
+	InitTaskContext()
 
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask
@@ -72,7 +60,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 		main(spn&)
 	})
 
-	EnterTaskThreadCycle()
+	EnterTaskThreadCycle(true)
 
 	ur_exit(gTaskIORing)
 	ur_destroy(gTaskIORing)

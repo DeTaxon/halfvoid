@@ -1,6 +1,7 @@
 TaskWorker := class extend TGCObject
 {
 	AllTasks := AVLSet.{Task^}
+	CreateTasks := List.{Task^}
 	PendingTasks := List.{Task^}
 	DeleteTasks := List.{Task^}
 

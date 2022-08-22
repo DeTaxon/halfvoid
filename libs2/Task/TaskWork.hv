@@ -3,3 +3,17 @@ SpawnWork := !(!()&->void lmbd) -> void
 {
 
 }
+
+ExpectWorkers := !(int x) -> void
+{
+	diff := x - TaskAdditionalWorkers.Size()
+
+	if x <= 0
+		return void
+	for i : diff
+	{
+		newWorker := new TaskWorker
+		newWorker.CreateThread()
+		TaskAdditionalWorkers.Push(newWorker)
+	}
+}

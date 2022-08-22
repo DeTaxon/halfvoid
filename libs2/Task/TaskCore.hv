@@ -1,6 +1,6 @@
 
 
-EnterTaskThreadCycle := !() -> void
+EnterTaskThreadCycle := !(bool isMainThread) -> void
 {
 
 	haveWork := true
@@ -25,6 +25,14 @@ EnterTaskThreadCycle := !() -> void
 			ct.AllTasks.Remove(delTask)
 			delTask.Destroy()
 			delTask = null
+		}
+		while ct.CreateTasks.Size() != 0
+		{
+			haveWork = true
+
+			hm := ct.CreateTasks.Pop()
+			hm.CreateStack()
+			hm.switchToTask()
 		}
 
 

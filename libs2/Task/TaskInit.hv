@@ -1,4 +1,6 @@
 InitTaskContext := !() -> void
 {
-	
+	uring_init()
+	gTaskIORing = ur_create()
+	ur_init(128,gTaskIORing,0)	
 }
