@@ -1,21 +1,26 @@
-BigClass := class
-{
-	x := int
-	y := int
-}
-
-AppendClass BigClass
-{
-	z := int
-}
-
+j := int
+k := 1000000
+mtx := Mutex^
 main := !(char^[] args) -> int
 {	
-	test := BigClass
-	//x := new Thread(() ==> {
-	//	printf("second\n")
-	//})
-	printf("hm %i\n",test.z)
-	//x.Joint()
+	mtx := new Mutex()
+
+	x := new Thread(() ==> {
+		for i : k
+		{
+			mtx.Lock()
+			j += 1
+			mtx.Unlock()
+		}
+		printf("second\n")
+	})
+	for i : k
+	{
+		mtx.Lock()
+		j += 1
+		mtx.Unlock()
+	}
+	x.Join()
+	printf("res %i\n",j)
 	return 0
 }

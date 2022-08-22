@@ -1,0 +1,14 @@
+AppendClass Thread
+{
+	itData := void^
+	_threadStart := !(!()&-> void lambd) -> void
+	{
+		itData = CreateThread(null,0,_threadProxyFunc,lambd->{void^},0,null)
+	}
+	Join := !() -> void
+	{
+		infin := -1
+		WaitForSingleObject(itData,infin&->{u32^}^)
+		CloseHandle(itData)
+	}
+}
