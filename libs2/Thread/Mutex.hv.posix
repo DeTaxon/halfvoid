@@ -2,7 +2,7 @@
 Mutex := class extend TGCObject
 {
 	itBuffer := char[1024]
-	"this" := !() -> void
+	this := !() -> void
 	{
 		pthread_mutex_init(itBuffer[0]&,null)
 	}
@@ -20,16 +20,16 @@ Mutex := class extend TGCObject
 	}
 }
 
-ConVar := class
+ConVar := class extend TGCObject
 {
 	itBuffer := char[1024]
-	"this" := !() -> void
+	this := !() -> void
 	{
-		pthread_cond_init(this&,null)
+		pthread_cond_init(itBuffer[0]&,null)
 	}
 	Wait := !(Mutex^ mtx) -> void
 	{
-		pthread_cond_wait(this&,mtx)
+		pthread_cond_wait(itBuffer[0]&,mtx)
 	}
 	WaitFor := !(Mutex^ mtx,double waitTime) -> void
 	{
@@ -37,19 +37,19 @@ ConVar := class
 		timSpec[0] = waitTime->{int}
 		timSpec[1] = ((waitTime - timSpec[0]->{int})*1000000000)->{int}
 		timSpec[1] = timSpec[1] mod 100000000
-		pthread_cond_timedwait(this&,mtx,timSpec&)
+		pthread_cond_timedwait(itBuffer[0]&,mtx,timSpec&)
 	}
 	Notify := !() -> void
 	{
-		pthread_cond_signal(this&)
+		pthread_cond_signal(itBuffer[0]&)
 	}
 	NotifyAll := !() -> void
 	{
-		pthread_cond_broadcast(this&)
+		pthread_cond_broadcast(itBuffer[0]&)
 	}
 	Destroy := !() -> void
 	{
-		pthread_cond_destroy(this&)
+		pthread_cond_destroy(itBuffer[0]&)
 	}
 }
 

@@ -1,0 +1,19 @@
+TaskWorker := class extend TGCObject
+{
+	AllTasks := AVLSet.{Task^}
+	PendingTasks := List.{Task^}
+	DeleteTasks := List.{Task^}
+
+	ThreadMainTask := Task^
+
+	this := !() -> void
+	{
+		internalHVInitClass(AllTasks)
+	}
+
+	Destroy := virtual !() -> void
+	{
+		AllTasks.Destroy()
+		ThreadMainTask = null
+	}
+}

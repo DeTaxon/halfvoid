@@ -1,26 +1,24 @@
 j := int
 k := 1000000
-mtx := Mutex^
+kk := false
 main := !(char^[] args) -> int
-{	
-	mtx := new Mutex()
-
-	x := new Thread(() ==> {
-		for i : k
-		{
-			mtx.Lock()
-			j += 1
-			mtx.Unlock()
-		}
-		printf("second\n")
-	})
+{
+	// TSpawnWork(() ==> {
+	// 	for i : k
+	// 	{
+	// 		j += 1
+	// 	}
+	// 	printf("second\n")
+	// 	kk = true
+	// })
 	for i : k
 	{
-		mtx.Lock()
 		j += 1
-		mtx.Unlock()
 	}
-	x.Join()
+	// while not kk
+	// {
+
+	// }
 	printf("res %i\n",j)
 	return 0
 }

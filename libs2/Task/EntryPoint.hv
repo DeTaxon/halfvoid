@@ -13,9 +13,9 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 
 internalInitThread := !() -> void
 {
-	voidVal := calloc(1,TTask->TypeSize)
-	internalHVInitClass(voidVal->{TTask^}^)
-	CurrentTask = voidVal->{TTask^}
+	voidVal := calloc(1,Task->TypeSize)
+	internalHVInitClass(voidVal->{Task^}^)
+	CurrentTask = voidVal->{Task^}
 }
 internalThreadDestructor := !() -> void
 {
@@ -25,7 +25,7 @@ internalThreadDestructor := !() -> void
 
 TSpawnTask := !(!()&-> void cb) -> void
 {
-	startTask := new TTask
+	startTask := new Task
 	startTask.taskLambda = cb.Capture()
 
 	getcontext(startTask.uContext[0]&)
@@ -62,7 +62,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	gTaskIORing = ur_create()
 	ur_init(128,gTaskIORing,0)
 
-	CurrentThread = new TTaskThreadData()
+	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask
 	
 	TSpawnTask(() ==> {	

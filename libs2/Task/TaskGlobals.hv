@@ -1,6 +1,6 @@
 
-CurrentTask := thread_local TTask^
-CurrentThread := thread_local TTaskThreadData^
+CurrentTask := thread_local Task^
+CurrentThread := thread_local TaskWorker^
 
 internalHVGetTaskLocalTuple := !() -> void^
 {

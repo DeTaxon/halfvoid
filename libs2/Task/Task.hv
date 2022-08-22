@@ -1,4 +1,4 @@
-TTask := class extend TGCObject
+Task := class extend TGCObject
 {
 	taskLocalData := internalHVTaskLocalTuple
 
@@ -21,7 +21,7 @@ TTask := class extend TGCObject
 	{
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
-		swapcontext(oldTask->{TTask^}.uContext[0]&,this.uContext[0]&)
+		swapcontext(oldTask->{Task^}.uContext[0]&,this.uContext[0]&)
 	}
 
 	Destroy := virtual !() -> void

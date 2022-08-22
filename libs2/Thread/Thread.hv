@@ -22,6 +22,7 @@ Thread := class extend TGCObject
 	{
 		lmb()
 	}
+	//Join := !() -> void {}
 }
 
 

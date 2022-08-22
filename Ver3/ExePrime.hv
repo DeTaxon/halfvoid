@@ -81,6 +81,16 @@ BoxExeBool := class extend BoxExeConstObj
 			f^ << "0"
 		}
 	}
+
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		if val
+		{
+			f^ << "1"
+		}else{
+			f^ << "0"
+		}
+	}
 }
 BoxExeInt := class extend BoxExeConstObj
 {
