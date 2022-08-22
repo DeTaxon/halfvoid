@@ -126,7 +126,6 @@ BoxClassBody := class extend BoxClass
 	ParseBody := virtual !() -> void
 	{
 		GParsedAllFiles.Await()
-		SyntaxCompress(Body,LexHVFileRoot)
 
 		ScopePutConstants()
 
@@ -148,7 +147,71 @@ BoxClassBody := class extend BoxClass
 
 		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
 
-		iter := Body.Down
+		checkClassBody(Body,funcs)
+		for it : Appends
+		{
+			checkClassBody(it,funcs)
+		}
+		
+		if Parents.Size() != 0
+		{
+			Parents[0].AwaitVTableStep()
+			for it,i : Parents[0].VTable
+			{
+				VTable.Push(it)
+			}
+		}
+
+		for f : funcs
+		{
+			if f.1 is BoxFuncBody and f.1->{BoxFuncBody^}.Attrs.IsVirtual
+			{
+				vFunc := new VTableFunc(f.0,f.1)
+
+				ind := 0
+
+				found := false
+				for it,i : VTable
+				{
+					if it.IsEq(vFunc)
+					{
+						it = vFunc
+						found = true
+						ind = i
+						break
+					}
+				}
+
+				if not found
+				{
+					ind = VTable.Size()
+					VTable.Push(vFunc)
+				}
+
+				//Methods[f.0] .Push(new BoxVirtualFunc(f.1.GetType()->{TypeFunc^},this&,ind) )
+				cnsts := List.{BoxExeConstObj^}
+				defer cnsts.Destroy()
+				cnsts.Push(GetExeInt(ind))
+				vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
+				vFunc.SetName(f.0)
+				DefaultSpace.Methods[f.0].Push(vFunc)
+				f.1.ParseBody()
+			}else
+			{
+				DefaultSpace.Methods[f.0] .Push(f.1)
+			}
+		}
+		CreateVTable()
+		VTableState.Emit()
+
+		InheritStep()
+		FieldsState.Emit()
+
+	}
+	checkClassBody := !(Token^ bodyVal,funcs) -> void
+	{
+		SyntaxCompress(bodyVal,LexHVFileRoot)
+		iter := bodyVal.Down
 
 		while iter != null
 		{
@@ -225,60 +288,6 @@ BoxClassBody := class extend BoxClass
 			}
 			iter = iter.Right
 		}
-
-		if Parents.Size() != 0
-		{
-			Parents[0].AwaitVTableStep()
-			for it,i : Parents[0].VTable
-			{
-				VTable.Push(it)
-			}
-		}
-
-		for f : funcs
-		{
-			if f.1 is BoxFuncBody and f.1->{BoxFuncBody^}.Attrs.IsVirtual
-			{
-				vFunc := new VTableFunc(f.0,f.1)
-
-				ind := 0
-
-				found := false
-				for it,i : VTable
-				{
-					if it.IsEq(vFunc)
-					{
-						it = vFunc
-						found = true
-						ind = i
-						break
-					}
-				}
-
-				if not found
-				{
-					ind = VTable.Size()
-					VTable.Push(vFunc)
-				}
-
-				//Methods[f.0] .Push(new BoxVirtualFunc(f.1.GetType()->{TypeFunc^},this&,ind) )
-				cnsts := List.{BoxExeConstObj^}
-				defer cnsts.Destroy()
-				cnsts.Push(GetExeInt(ind))
-				vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
-				vFunc.SetName(f.0)
-				DefaultSpace.Methods[f.0].Push(vFunc)
-				f.1.ParseBody()
-			}else
-			{
-				DefaultSpace.Methods[f.0] .Push(f.1)
-			}
-		}
-		CreateVTable()
-		VTableState.Emit()
-
-		InheritStep()
-		FieldsState.Emit()
 
 	}
 	CheckFakeFields := !(Token^ itm) -> void

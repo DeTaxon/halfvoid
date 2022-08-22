@@ -121,7 +121,12 @@ BoxFile := class extend BoxUnit
 				objects.Push(vr)
 				vr.Work()
 			}else{
-				iter.EmitError("Unknown object")
+				if iter.Down?.GetValue() == "AppendClass"
+				{
+					CheckAppendHolder(iter)
+				}else{
+					iter.EmitError("Unknown object")
+				}
 			}
 			iter = iter.Right
 		}

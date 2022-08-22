@@ -15,7 +15,7 @@ main := !(char^[] args) -> int
 	//x := new Thread(() ==> {
 	//	printf("second\n")
 	//})
-	printf("hm %s\n","nopt")
+	printf("hm %i\n",test.z)
 	//x.Joint()
 	return 0
 }
