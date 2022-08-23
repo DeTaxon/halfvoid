@@ -18,7 +18,9 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		
 		if ct.PendingTasks.Size() != 0
 		{
+			ct.itMutex.Lock()
 			hm := ct.PendingTasks.Pop()
+			ct.itMutex.Unlock()
 			hm.switchToTask()
 			continue
 		}
@@ -37,6 +39,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			{
 				hm := TaskWorkersToDo.Pop()
 				hm.CreateStack()
+				ct.AllTasks.Insert(hm)
 				hm.switchToTask()
 				continue
 			}
@@ -52,7 +55,13 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			TaskPausedWorkers += 1
 			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
 			{
-				TaskQuitProgram = true
+				cntr := TaskMainTaskWorker.AllTasks.Size()
+				for it : TaskAdditionalWorkers
+				{
+					cntr += it.AllTasks.Size()
+				}
+				if cntr == 0
+					TaskQuitProgram = true
 				TaskWaitTasksConVar.NotifyAll()
 			}else{
 				TaskWaitTasksConVar.Wait(TaskCheckMutex)

@@ -16,7 +16,7 @@ ExpectWorkers := !(int x) -> void
 		return void
 	for i : diff
 	{
-		newWorker := new TaskWorker
+		newWorker := new TaskWorker()
 		newWorker.CreateThread()
 		TaskAdditionalWorkers.Push(newWorker)
 	}

@@ -70,6 +70,39 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 }
+BuiltInInterlockOper := class extend BoxFuncCommon
+{
+	llvm := char^
+	this := !(TypeFunc^ iType,char^ llvmOper) -> void
+	{
+		SetType(iType)
+		llvm = llvmOper
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPointPre(f)
+		lst[1].PrintPre(f)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = atomicrmw " << llvm << " " 
+		tp.GetPoint().PrintType(f)
+		f^ << " "
+		lst[0].PrintPointUse(f)
+		f^ << " , "
+		tp.PrintType(f)
+		f^ << " "
+		lst[1].PrintUse(f)
+		f^ << " acquire"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 
 BuiltInIntDecInc := class extend BoxFuncCommon
 {
@@ -239,6 +272,11 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
 		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+
+
+		bSpace.Functions[StringSpan("InterlockAdd")].Push(new BuiltInInterlockOper(baseRefed,"add") )
+		bSpace.Functions[StringSpan("InterlockSub")].Push(new BuiltInInterlockOper(baseRefed,"sub") )
+		bSpace.Functions[StringSpan("InterlockSet")].Push(new BuiltInInterlockOper(baseRefed,"xchg"))
 
 		bSpace.Functions[StringSpan("++")].Push(new BuiltInIntDecInc(incType,"add") )
 		bSpace.Functions[StringSpan("--")].Push(new BuiltInIntDecInc(incType,"sub") )

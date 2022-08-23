@@ -1,14 +1,14 @@
 
 main := !(char^[] args) -> int
 {
-	// SpawnWork(() ==> {
-	// 	for i : k
-	// 	{
-	// 		j += 1
-	// 	}
-	// 	printf("second\n")
-	// 	kk = true
-	// })
+	SpawnWork(() ==> {
+		for i : 10
+		{
+			printf("second %i\n",i)
+			TSleep(1)
+		}
+		printf("----------------------------\n")
+	})
 
 	for i : 5
 	{

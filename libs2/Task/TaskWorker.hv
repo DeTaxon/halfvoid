@@ -9,15 +9,13 @@ TaskWorker := class extend TGCObject
 
 	itThread := Thread^
 
-	itWaitMutex := Mutex^
-	itWaitConVar := ConVar^
+	itMutex := Mutex^
 
 	this := !() -> void
 	{
 		internalHVInitClass(AllTasks)
 
-		itWaitMutex = new Mutex()
-		itWaitConVar = new ConVar()
+		itMutex = new Mutex()
 	}
 
 	Destroy := virtual !() -> void

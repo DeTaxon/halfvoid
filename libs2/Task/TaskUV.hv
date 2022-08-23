@@ -8,18 +8,22 @@ TaskUVInit := !() -> void
 	libUVInit()
 	uvLoop = uv_default_loop()
 	uv_async_init(uvLoop,uvAsyncCaller[0]&,uvAsyncCallback)
+	uvAsyncPendingMutex = new Mutex()
 }
 
 
 uvInProgressCount := int
 uvAsyncPending := List.{!()&->void}
+uvAsyncPendingMutex := Mutex^
 waitingTimers := AVLMap.{void^,Task^}
 
 uvAsyncCallback := !(void^ x) -> void
 {
 	while uvAsyncPending.Size() != 0
 	{
+		uvAsyncPendingMutex.Lock()
 		hm := uvAsyncPending.Pop()
+		uvAsyncPendingMutex.Unlock()
 		hm()
 	}
 }
@@ -30,8 +34,8 @@ TaskUVRunOnce := !() -> void
 
 TSleep := !(double val) -> void
 {
+	InterlockAdd(uvInProgressCount,1)
 
-	uvInProgressCount += 1
 	tmr := char[1024]
 	itTask := CurrentTask
 	pend := () ==> {
@@ -39,8 +43,10 @@ TSleep := !(double val) -> void
 		uv_timer_start(tmr[0]&,timerHandler,(val*1000)->{u64},0)
 		waitingTimers[tmr[0]&] = itTask
 	}
-
+	uvAsyncPendingMutex.Lock()
 	uvAsyncPending.Push(pend)
+	uvAsyncPendingMutex.Unlock()
+
 	uv_async_send(uvAsyncCaller[0]&)
 	CurrentThread.ThreadMainTask.switchToTask()
 }
@@ -51,9 +57,16 @@ timerHandler := !(void^ x) -> void
 }
 timerCloseHandler := !(void^ x) -> void
 {
+	TaskWaitTasksConVar.NotifyAll() //TODO better way
+
 	assert(waitingTimers.Contain(x))
 	tsk := waitingTimers[x]
+	assert(tsk.itTaskWorker.itMutex != null)
+	tsk.itTaskWorker.itMutex.Lock()
 	tsk.itTaskWorker.PendingTasks.Push(tsk)
+	tsk.itTaskWorker.itMutex.Unlock()
 	waitingTimers.Remove(x)
-	uvInProgressCount -= 1
+
+	InterlockSub(uvInProgressCount,1)
+	printf("test %i\n",uvInProgressCount)
 }
