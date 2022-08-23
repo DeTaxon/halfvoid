@@ -1,0 +1,64 @@
+TaskUVWorks := int
+
+uvLoop := void^
+uvAsyncCaller := char[1024]
+
+TaskUVInit := !() -> void
+{
+	//libUVInit()
+	//uvLoop = uv_default_loop()
+	//uv_async_init(uvLoop,uvAsyncCaller[0]&,uvAsyncCallback)
+}
+
+
+// TaskEnterUV := !(!(void^)&-> void cb) -> void
+// {
+// 	pend := () ==> {
+// 		cb(uvLoop)
+// 	}
+// 	uvAsyncPending.Push(pend)
+// 	uv_async_send(uvAsyncCaller[0]&)
+// }
+
+uvInProgressCount := int
+uvAsyncPending := List.{!()&->void}
+//waitingTimers := AVLSet.{void^,Task^}
+
+// uvAsyncCallback := !(void^ x) -> void
+// {
+// 	for it : uvAsyncPending
+// 	{
+// 		it()
+// 		uvInProgressCount += 1
+// 	}
+// 	uvAsyncPending.Destroy()
+// }
+// TaskUVRunOnce := !() -> void
+// {
+// 	uv_run(uvLoop,1)
+// }
+
+// Sleep := !(double val) -> void
+// {
+// 	tmr := char[1024]
+// 	itTask := CurrentTask
+// 	TaskEnterUV(x ==> {
+// 		uv_timer_init(x,tmr[0]&)
+// 		uv_timer_init(tmr[0]&,timerHandler,val*1000,0)
+// 		waitingTimers[tmr[0]&] = itTask
+// 	})
+// 	CurrentThread.ThreadMainTask.switchToTask()
+// }
+
+// timerHandler := !(void^ x) -> void
+// {
+// 	uv_close(x,timerCloseHandler)
+// }
+// timerCloseHandler := !(void^ x) -> void
+// {
+// 	assert(waitingTimers.Contain(x))
+// 	tsk := waitingTimers[x]
+// 	tsk.itTaskWorker.PendingTasks.Push(tsk)
+// 	waitingTimers.Remove(x)
+// 	uvInProgressCount -= 1
+// }

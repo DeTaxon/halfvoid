@@ -15,3 +15,14 @@ TaskDoUring := !( !(void^)&->void cb) -> void
 	
 	gTaskRingWorkCount -= 1
 }
+
+// Sleep := !(double val) -> void
+// {
+// 	endTime := GetSteadyTime() + val
+// 	while TaskPauseList.Contain(endTime)
+// 		endTime += 0.0001f
+// 	TaskPauseList[endTime] = CurrentTask
+// 	TaskPollWorkInProgress += 1
+// 	CurrentThread.ThreadMainTask.switchToTask()
+// 	TaskPollWorkInProgress -= 1
+// }

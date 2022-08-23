@@ -7,14 +7,36 @@ TaskWorker := class extend TGCObject
 
 	ThreadMainTask := Task^
 
+	itThread := Thread^
+
+	itWaitMutex := Mutex^
+	itWaitConVar := ConVar^
+
 	this := !() -> void
 	{
 		internalHVInitClass(AllTasks)
+
+		itWaitMutex = new Mutex()
+		itWaitConVar = new ConVar()
 	}
 
 	Destroy := virtual !() -> void
 	{
 		AllTasks.Destroy()
 		ThreadMainTask = null
+	}
+	CreateThread := !() -> void
+	{
+		itThread = new Thread(() ==> {
+			CurrentThread =  this&
+			CurrentThread.ThreadMainTask = CurrentTask
+			EnterTaskThreadCycle(false)
+		})
+	}
+	WaitForTasks := !() -> void
+	{
+		itWaitMutex.Lock()
+		itWaitConVar.Wait(itWaitMutex)
+		itWaitMutex.Unlock()
 	}
 }

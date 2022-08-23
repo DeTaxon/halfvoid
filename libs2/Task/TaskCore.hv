@@ -3,53 +3,92 @@
 EnterTaskThreadCycle := !(bool isMainThread) -> void
 {
 
-	haveWork := true
-	while haveWork
+	while true
 	{
-		haveWork = false
-
 		ct := CurrentThread
-		while ct.PendingTasks.Size() != 0
+
+		if ct.DeleteTasks.Size() != 0
 		{
-			haveWork = true
-
-			hm := ct.PendingTasks.Pop()
-			hm.switchToTask()
-		}
-
-		while ct.DeleteTasks.Size() != 0
-		{
-			haveWork = true
-
 			delTask := ct.DeleteTasks.Pop()
 			ct.AllTasks.Remove(delTask)
 			delTask.Destroy()
 			delTask = null
+			continue
 		}
-		while ct.CreateTasks.Size() != 0
+		
+		if ct.PendingTasks.Size() != 0
 		{
-			haveWork = true
+			hm := ct.PendingTasks.Pop()
+			hm.switchToTask()
+			continue
+		}
 
+		if ct.CreateTasks.Size() != 0
+		{
 			hm := ct.CreateTasks.Pop()
 			hm.CreateStack()
 			hm.switchToTask()
+			continue
 		}
 
-
-		if gTaskRingWorkCount != 0
+		if not isMainThread
 		{
-			haveWork = true
-
-			cqe := void^
-			ur_wait_cqe_timeout(gTaskIORing,cqe&->{void^^},10.0)
-			if cqe != null
+			if TaskWorkersToDo.Size() != 0
 			{
-				dat := ur_cqe_get_data(cqe)->{Task^}
-				ct.PendingTasks.Push(dat)
-				ur_cqe_seen(gTaskIORing,dat)
+				hm := TaskWorkersToDo.Pop()
+				hm.CreateStack()
+				hm.switchToTask()
+				continue
 			}
 		}
 
-	}
+		iAmOnUV := false
+		TaskCheckMutex.Lock()
+		if uvInProgressCount != 0 and not someoneOnUV
+		{
+			someoneOnUV = true
+			iAmOnUV = true
+		}else{
+			TaskPausedWorkers += 1
+			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
+			{
+				TaskQuitProgram = true
+				TaskWaitTasksConVar.NotifyAll()
+			}else{
+				TaskWaitTasksConVar.Wait(TaskCheckMutex)
+			}
+			TaskPausedWorkers -= 1
+		}
+		TaskCheckMutex.Unlock()
 
+		if iAmOnUV
+		{
+			//TaskUVRunOnce()
+		}
+
+		if TaskQuitProgram
+			break
+
+		//{
+		//	haveWork = true
+		//	cqe := void^
+		//	ur_wait_cqe_timeout(gTaskIORing,cqe&->{void^^},10.0)
+		//	if cqe != null
+		//	{
+		//		dat := ur_cqe_get_data(cqe)->{Task^}
+		//		ct.PendingTasks.Push(dat)
+		//		ur_cqe_seen(gTaskIORing,dat)
+		//	}
+		//}
+
+	}	
+
+	if isMainThread
+	{
+		for it : TaskAdditionalWorkers
+		{
+			it.itThread.Join()
+		}
+	}
 }
+someoneOnUV := bool

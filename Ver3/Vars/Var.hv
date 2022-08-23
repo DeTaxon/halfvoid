@@ -35,27 +35,21 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	{
 		if not CurrentScope is in BoxFile
 			varToken.EmitError("task/thread local must be at the root of file")
-		
-		isThreadLocal := varToken.GetValue() == "thread_local"
 
-		varType2 := ParseType(varToken.Right)
+		if varToken.GetValue() == "task_local"
+		{
+			return new TaskLocalVarDelayed(name,varToken.Right)
+		}
 
-		if varType2 == null
-			varToken.Right.EmitError("Unknown type")
-
-		if isThreadLocal
-			return new GlobalVar(name,varType2,true)
-		return new TaskLocalVar(name,varType2)
+		return new GlobalVarDelayed(name,varToken)
 	}
 
-	varType := ParseType(varToken)
-
-	if varType != null
+	if not (CurrentScope is BoxFile)
 	{
-		if CurrentScope is BoxFile
+		varType := ParseType(varToken)
+	
+		if varType != null
 		{
-			return new GlobalVar(name,varType)
-		}else{
 			assert(CurrentScope is in BoxFunc) 
 			vr := CreateVar(varType,false)
 			resVar := new MemVarBorrowed(name,vr)
@@ -90,7 +84,9 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
 	}
 
-	exeObj := TryGetExeCall(varToken)
+	exeObj := BoxExeObj^
+	if not (CurrentScope is BoxFile)
+		exeObj = TryGetExeCall(varToken)
 	if exeObj != null
 	{
 		if CurrentScope is in BoxFunc
@@ -175,6 +171,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		}
 	}
 	
+	if CurrentScope is BoxFile
+	{
+		return new GlobalVarDelayed(name,varToken)
+	}
 	return null
 }
 

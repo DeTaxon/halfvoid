@@ -152,7 +152,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = gVar.Value
 				return true
 			}
-			if it is TaskLocalVar
+			if it is TaskLocalVar or it is TaskLocalVarDelayed
 			{
 				callItem = it
 				return true
@@ -184,6 +184,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 		if callItem is TaskLocalVar
 		{
 			return callItem->{TaskLocalVar^}.CreateCall()
+		}
+		if callItem is TaskLocalVarDelayed
+		{
+			return callItem->{TaskLocalVarDelayed^}.CreateCall()
 		}
 		if callItem is in BoxFunc
 		{

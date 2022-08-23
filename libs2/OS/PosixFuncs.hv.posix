@@ -75,3 +75,20 @@ posixReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
 	}
 
 }
+
+GetSteadyTime := !() -> double
+{
+	times := u64[2]
+	clock_gettime(1,times[0]&)
+	resTime := times[0]->{double}
+	return resTime + times[1]*0.001*0.001*0.001
+}
+
+pollfd := class 
+{
+	fd := int
+	events := u16
+	revents := u16
+
+	"=" := default
+}

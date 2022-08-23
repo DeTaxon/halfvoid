@@ -7,5 +7,14 @@ internalHVGetTaskLocalTuple := !() -> void^
 	return CurrentTask.taskLocalData&
 }
 
+
+TaskCheckMutex := Mutex^
+TaskWaitTasksConVar := ConVar^
+TaskSomeoneCheckingRing := bool
+
+TaskPausedWorkers := int
+TaskQuitProgram := bool
+TaskMainTaskWorker := TaskWorker^
 TaskAdditionalWorkers := List.{TaskWorker^}
-TaskWorkersToDo := List.{Task^}
+
+TaskPauseList := AVLMap.{double,Task^}

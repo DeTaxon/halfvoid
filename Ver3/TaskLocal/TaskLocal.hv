@@ -22,6 +22,43 @@ TaskLocalVar := class extend NamedVar
 		return funcObj.CreateCall(objs)
     }
 }
+TaskLocalVarDelayed := class extend NamedVar
+{
+    itType := Type^
+    itIndex := int
+	itHatch := THatch
+	itToken := Token^
+    this := !(StringSpan name,Token^ tp) -> void
+    {
+        Name = name
+		itToken = tp
+
+		SubWork(() ==> {
+			itType = ParseType(itToken)
+			itIndex = TaskLocalTypes.Size()
+			TaskLocalTypes.Push(itType)
+			itHatch.Emit()
+		})
+    }
+
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+	}
+    CreateCall := virtual !() -> BoxExeObj^
+    {
+		itHatch.Await()
+        TaskLocalHatch.Await()
+        getVar := getTaskVarFunc.CreateCall()
+        getVarTypes := GetExchange(getVar,tupleVarType.ItType.GetPoint())
+
+        funcObj := tupleVarType.GetFieldByIndex(itIndex)
+
+        objs := CheckExeDownList
+        objs.Push(getVarTypes)
+		return funcObj.CreateCall(objs)
+    }
+}
+
 
 getTaskVarFunc := BoxFunc^
 tupleVarType := BoxClassTupleDelayed^

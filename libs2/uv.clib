@@ -1,0 +1,20 @@
+{
+	"initname" : "libUVInit",
+	"libs" : [
+		"libuv.so"
+	],
+	"funcs" : {
+		"uv_default_loop" : "void^",
+		"uv_loop_close" : "int,void^",
+		"uv_run" : "int,void^,int",
+		"uv_loop_size" : "u64",
+
+		"uv_close" : "void,void^,void^"
+
+		"uv_async_init" : "int,void^,void^,void^",
+		"uv_async_send" : "int",
+
+		"uv_timer_init" : "int,void^,void^",
+		"uv_timer_start" : "int,void^,void^,u64,u64"
+	}
+}

@@ -1,7 +1,11 @@
 
+TaskWorkersToDo := List.{Task^}
+
 SpawnWork := !(!()&->void lmbd) -> void
 {
-
+	newTask := new Task(lmbd)
+	TaskWorkersToDo.Push(newTask)
+	ExpectWorkers(1)
 }
 
 ExpectWorkers := !(int x) -> void

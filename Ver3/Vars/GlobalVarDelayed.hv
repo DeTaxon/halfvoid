@@ -23,6 +23,7 @@ GlobalVarDelayed := class extend GlobalVar
 		if downToken.GetValue() == "thread_local"
 		{
 			typeToken = downToken.Right
+			isThreadLocal = true
 		}
 		if downToken.GetValue() == "task_local"
 		{
@@ -31,8 +32,27 @@ GlobalVarDelayed := class extend GlobalVar
 
 		tp := ParseType(typeToken)
 
+		if tp == null
+		{
+			MemValue = TryGetExeCall(typeToken) ->{BoxExeConstObj^} //TODO if not Const
+			if MemValue is BoxArrayHolder
+			{
+				ah := MemValue->{BoxArrayHolder^}
+				if ah.GetArraySize() == 0
+					typeToken.EmitError("Can not use empty array as global variable")
+				if not ah.IsConst()
+					typeToken.EmitError("Array must be made of constants")
+				tp = ah.GetArrayType()
+				MemValue = ah.GetAsConst()
+			}
+			assert(tp != GTypeVoid)
+			if MemValue != null
+				tp = MemValue.GetType()
+		}
+
 		if tp != null
 		{
+			assert(tp != GTypeVoid)
 			Value = new GlobalVarFunc(Name,tp)
 			if isThreadLocal
 				Value->SetType(ThreadLocalVarFunc)

@@ -1,7 +1,7 @@
 Task := class extend TGCObject
 {
 	taskLocalData := internalHVTaskLocalTuple
-
+	itTaskWorker := TaskWorker^
 	//OS Dependent
 	uContext := u8[1024]
 	stackPtr := void^
@@ -22,6 +22,7 @@ Task := class extend TGCObject
 		uContext[16]&->{void^^}^ = stackPtr
 		uContext[32]&->{u64^}^ = stackSize
 		makecontext(uContext[0]&,ucontextStartTask,0)
+		itTaskWorker = CurrentThread
 	}
 	startTaskThread := !() -> void
 	{

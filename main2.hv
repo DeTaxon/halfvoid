@@ -1,10 +1,7 @@
-j := int
-k := 1000000
-kk := false
+
 main := !(char^[] args) -> int
 {
-	// ExpectWorkers(1)
-	// TSpawnWork(() ==> {
+	// SpawnWork(() ==> {
 	// 	for i : k
 	// 	{
 	// 		j += 1
@@ -12,14 +9,11 @@ main := !(char^[] args) -> int
 	// 	printf("second\n")
 	// 	kk = true
 	// })
-	for i : k
-	{
-		j += 1
-	}
-	// while not kk
-	// {
 
-	// }
-	printf("res %i\n",j)
+	for i : 5
+	{
+		printf("hi\n")
+		//Sleep(1)
+	}
 	return 0
 }
