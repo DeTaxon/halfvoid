@@ -8,22 +8,18 @@ TaskUVInit := !() -> void
 	libUVInit()
 	uvLoop = uv_default_loop()
 	uv_async_init(uvLoop,uvAsyncCaller[0]&,uvAsyncCallback)
-	uvAsyncPendingMutex = new Mutex()
 }
 
 
 uvInProgressCount := int
-uvAsyncPending := List.{!()&->void}
-uvAsyncPendingMutex := Mutex^
+uvAsyncPending := FixedSizeRing.{!()&->void}
 waitingTimers := AVLMap.{void^,Task^}
 
 uvAsyncCallback := !(void^ x) -> void
 {
 	while uvAsyncPending.Size() != 0
 	{
-		uvAsyncPendingMutex.Lock()
 		hm := uvAsyncPending.Pop()
-		uvAsyncPendingMutex.Unlock()
 		hm()
 	}
 }
@@ -43,9 +39,7 @@ TSleep := !(double val) -> void
 		uv_timer_start(tmr[0]&,timerHandler,(val*1000)->{u64},0)
 		waitingTimers[tmr[0]&] = itTask
 	}
-	uvAsyncPendingMutex.Lock()
 	uvAsyncPending.Push(pend)
-	uvAsyncPendingMutex.Unlock()
 
 	uv_async_send(uvAsyncCaller[0]&)
 	CurrentThread.ThreadMainTask.switchToTask()
@@ -68,5 +62,4 @@ timerCloseHandler := !(void^ x) -> void
 	waitingTimers.Remove(x)
 
 	InterlockSub(uvInProgressCount,1)
-	printf("test %i\n",uvInProgressCount)
 }
