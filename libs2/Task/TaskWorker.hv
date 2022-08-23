@@ -2,20 +2,16 @@ TaskWorker := class extend TGCObject
 {
 	AllTasks := AVLSet.{Task^}
 	CreateTasks := List.{Task^}
-	PendingTasks := List.{Task^}
+	PendingTasks := FixedSizeRing.{Task^}
 	DeleteTasks := List.{Task^}
 
 	ThreadMainTask := Task^
 
 	itThread := Thread^
 
-	itMutex := Mutex^
-
 	this := !() -> void
 	{
 		internalHVInitClass(AllTasks)
-
-		itMutex = new Mutex()
 	}
 
 	Destroy := virtual !() -> void

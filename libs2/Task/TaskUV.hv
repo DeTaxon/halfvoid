@@ -55,10 +55,7 @@ timerCloseHandler := !(void^ x) -> void
 
 	assert(waitingTimers.Contain(x))
 	tsk := waitingTimers[x]
-	assert(tsk.itTaskWorker.itMutex != null)
-	tsk.itTaskWorker.itMutex.Lock()
 	tsk.itTaskWorker.PendingTasks.Push(tsk)
-	tsk.itTaskWorker.itMutex.Unlock()
 	waitingTimers.Remove(x)
 
 	InterlockSub(uvInProgressCount,1)

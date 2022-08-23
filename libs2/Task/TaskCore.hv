@@ -18,9 +18,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		
 		if ct.PendingTasks.Size() != 0
 		{
-			ct.itMutex.Lock()
 			hm := ct.PendingTasks.Pop()
-			ct.itMutex.Unlock()
 			hm.switchToTask()
 			continue
 		}
