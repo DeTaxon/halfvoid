@@ -38,17 +38,10 @@ ucontextStartTask := !() -> void
 	CurrentTask.startTaskThread()
 }
 
-TSleep := !(double timeToSleep) -> void
-{
-	hmm := u64[2]
-	TaskDoUring( (sqe) ==> {
-		ur_sqe_timeout(sqe,timeToSleep,0,0,hmm&)
-	})
-}
-
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	InitTaskContext()
+	TaskUVInit()
 
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask

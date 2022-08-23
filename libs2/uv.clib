@@ -12,7 +12,7 @@
 		"uv_close" : "void,void^,void^"
 
 		"uv_async_init" : "int,void^,void^,void^",
-		"uv_async_send" : "int",
+		"uv_async_send" : "int,void^",
 
 		"uv_timer_init" : "int,void^,void^",
 		"uv_timer_start" : "int,void^,void^,u64,u64"

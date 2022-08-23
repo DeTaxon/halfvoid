@@ -66,14 +66,16 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	//	})
 	//	return resl != null
 	//}
-	//Remove := !(DATA dat) .{} -> void
-	//{
-	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
-	//	if resl != null{
-	//		itTree.RemoveNode(resl)
-	//		itSize -= 1
-	//	}
-	//}
+	Remove := !(KEY dat) -> void
+	{
+		cnst := BadPair.{KEY,VALUE}
+		cnst.first = dat
+		resl := itTree.FindNode(cnst)
+		if resl != null{
+			itTree.RemoveNode(resl)
+			itSize -= 1
+		}
+	}
 	//"~For" := !() -> !(KEY^&)& -> VALUE&
 	//{
 	//	return _createIterator(false)

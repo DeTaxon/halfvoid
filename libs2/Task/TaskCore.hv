@@ -63,25 +63,15 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 
 		if iAmOnUV
 		{
-			//TaskUVRunOnce()
+			TaskUVRunOnce()
+			TaskCheckMutex.Lock()
+			someoneOnUV = false
+			TaskCheckMutex.Unlock()
 		}
 
 		if TaskQuitProgram
 			break
-
-		//{
-		//	haveWork = true
-		//	cqe := void^
-		//	ur_wait_cqe_timeout(gTaskIORing,cqe&->{void^^},10.0)
-		//	if cqe != null
-		//	{
-		//		dat := ur_cqe_get_data(cqe)->{Task^}
-		//		ct.PendingTasks.Push(dat)
-		//		ur_cqe_seen(gTaskIORing,dat)
-		//	}
-		//}
-
-	}	
+	}
 
 	if isMainThread
 	{
