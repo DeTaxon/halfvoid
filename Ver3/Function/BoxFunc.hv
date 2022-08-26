@@ -160,7 +160,7 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 
 	for itm,i : lst
 	{
-		if itType.Params.Size() > i and itType.Params[i].IsRef
+		if itType.Params.Size() > i and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
 		{
 			itm.PrintPointPre(f)
 		}else{
@@ -168,7 +168,6 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 		}
 	}
 	fncObj.PrintPre(f)
-
 
 	if itType.ResultType != GTypeVoid
 	{
@@ -202,9 +201,19 @@ PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList ls
 			f^ << "* "
 			dwn.PrintPointUse(f)
 		}else{
-			dwn.GetType().PrintType(f)
-			f^ << " "
-			dwn.PrintUse(f)
+			if i < itType.Params.Size() and itType.Params[i].ItType is in TypeClass
+			{
+				tp := dwn.GetType()
+				tp.PrintType(f)
+				f^ << "* byval("
+				tp.PrintType(f)
+				f^ << ") "
+				dwn.PrintPointUse(f)
+			}else{
+				dwn.GetType().PrintType(f)
+				f^ << " "
+				dwn.PrintUse(f)
+			}
 		}
 	}
 

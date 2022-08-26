@@ -104,3 +104,11 @@ PrintUnrefObj := !(TIOStream^ f,int id,BoxExeObj^ obj) -> void
 		f^ << ", !dgb !" << GDebugLineCallId
 	f^ << "\n"
 }
+
+GetElementRetrive := !(BoxExeObj^ hm, BoxExeObj^ ind) -> BoxExeObj^
+{
+	objs := CheckExeDownList
+	objs.Push(hm)
+	objs.Push(ind)
+	return CreateFuncCall(StringSpan("[]"),objs)
+}

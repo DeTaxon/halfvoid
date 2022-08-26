@@ -76,7 +76,7 @@ TypeFunc := class extend Type
 			needComma = true
 
 			par.ItType.PrintType(f)
-			if par.IsRef
+			if par.IsRef or par.ItType is in TypeClass
 				f^ << "*"
 		}
 

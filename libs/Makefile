@@ -1,5 +1,5 @@
 
-flags :=  -O2 -m64 -D_SQ64 -fno-exceptions -fno-rtti -Wall -fno-strict-aliasing -fPIC
+flags :=  -g -m64 -D_SQ64 -fno-exceptions -fno-rtti -Wall -fno-strict-aliasing -fPIC
 
 c_lib.so: uring.cpp stb/main.cpp Nuklear.o
 	clang $(flags) -shared -lm -luring  $^ -o $@

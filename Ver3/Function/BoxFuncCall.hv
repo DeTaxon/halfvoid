@@ -135,6 +135,108 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
+		if true //TODO if targetLinux
+		{
+			leftFloats := 8
+			needRework := false
+			k := 0
+			types4 := Type^[100]
+			isRefs4 := bool[100]
+
+			newDown := ExeDownList
+			preRes := ExeDownList
+
+			for it,i : fType.Params
+			{
+				if it.IsRef
+				{
+					types4[k] = it.ItType
+					isRefs4[k] = true
+					newDown.Push(downs[i])
+					k += 1
+				}else if it.ItType is TypeClass
+				{
+					cls := it.ItType->{TypeClass^}.ToClass
+					// if callObj != null TODO , for some reason there are functions that are my but accept class by value
+					// {
+					// 	printf("WTF %s %i\n",it.ItType.GetBADStr(),callObj is in BoxFuncBody)
+					// }
+					if cls.Fields.Size() <= 4
+					{
+						floats := 0
+						others := 0
+
+						for fld : cls.Fields
+						{
+							if fld.Value == GTypeFloat
+							{
+								floats += 1
+							}else{
+								others += 1
+							}
+						}
+
+						if floats <= leftFloats and others == 0
+						{
+							needRework = true
+							leftFloats -= floats
+
+							newCall := new FuncResultParam(new UnrefFuncCall(downs[i]))
+							preRes.Push(newCall)
+							
+							oo := floats
+							fInd := 0
+							while oo >= 2
+							{
+								gt := newCall.CreateCall()
+								gt = GetExchange(gt,GTypeVec2f.GetPoint())
+								gt = GetElementRetrive(gt,GetExeInt(fInd))
+								newDown.Push(gt)
+								oo -= 2
+								types4[k] = GTypeVec2f
+								k += 1
+								fInd += 1
+							}
+							if oo != 0
+							{
+								gt := newCall.CreateCall()
+								gt = GetExchange(gt,GTypeFloat.GetPoint())
+								gt = GetElementRetrive(gt,GetExeInt(fInd*2))
+								newDown.Push(gt)
+								types4[k] = GTypeFloat
+								k += 1
+							}
+							newCall.PopulateCalls()
+						}else{
+							types4[k] = it.ItType
+							newDown.Push(downs[i])
+							k += 1
+						}
+					}
+				}else{
+					types4[k] = it.ItType
+					newDown.Push(downs[i])
+					k += 1
+				}
+			}
+			if needRework
+			{
+
+			}
+			if needRework and this& is BoxFuncPointerCall
+			{
+				assert(this& is BoxFuncPointerCall)
+
+				asPtr := this&->{BoxFuncPointerCall^}
+
+				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
+				asPtr.ItPtrFunc = GetExchange(asPtr.ItPtrFunc,newFunc.GetPoint())
+				asPtr.PreCalls.Push(preRes[^])
+				asPtr.downs.Clear()
+				asPtr.downs.Push(newDown[^])
+			}
+		}
+
 		if ResultVar != null and fType.ResultType is TypeClass
 		{
 			ModifyStackAllocatedVar(ResultVar,ExtraWork)
@@ -213,6 +315,7 @@ BoxFuncComplexCall := class extend BoxFuncCall
 }
 BoxFuncPointerCall := class extend BoxFuncCall
 {
+	PreCalls := List.{BoxExeObj^}
 	ItPtrFunc := BoxExeObj^
 	this := !(BoxExeObj^ ptrVal, CheckExeDownList objs) -> void
 	{
@@ -226,6 +329,7 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	}
 	PrintFuncUse := virtual !(TIOStream^ f) -> void
 	{
+		PreCalls[^].PrintDefaultUse(f)
 		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)
 	}
 	PrintFuncResult := virtual !(TIOStream^ f) -> void
