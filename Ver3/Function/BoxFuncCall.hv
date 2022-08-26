@@ -138,6 +138,7 @@ BoxFuncCall := class extend BoxExeObj
 		if true //TODO if targetLinux
 		{
 			leftFloats := 8
+			leftInts := 6
 			needRework := false
 			k := 0
 			types4 := Type^[100]
@@ -154,6 +155,7 @@ BoxFuncCall := class extend BoxExeObj
 					isRefs4[k] = true
 					newDown.Push(downs[i])
 					k += 1
+					leftInts -= 1
 				}else if it.ItType is TypeClass
 				{
 					cls := it.ItType->{TypeClass^}.ToClass
@@ -164,6 +166,7 @@ BoxFuncCall := class extend BoxExeObj
 					if cls.Fields.Size() <= 4
 					{
 						floats := 0
+						ints := 0
 						others := 0
 
 						for fld : cls.Fields
@@ -171,42 +174,90 @@ BoxFuncCall := class extend BoxExeObj
 							if fld.Value == GTypeFloat
 							{
 								floats += 1
+							}else if IsInt(fld.Value)
+							{
+								ints += 1
 							}else{
 								others += 1
 							}
 						}
 
-						if floats <= leftFloats and others == 0
+						if floats <= leftFloats and ints <= leftInts and others == 0
 						{
 							needRework = true
 							leftFloats -= floats
+							leftInts -= floats
 
 							newCall := new FuncResultParam(new UnrefFuncCall(downs[i]))
 							preRes.Push(newCall)
-							
-							oo := floats
-							fInd := 0
-							while oo >= 2
+
+							if floats != 0 and ints == 0
 							{
-								gt := newCall.CreateCall()
-								gt = GetExchange(gt,GTypeVec2f.GetPoint())
-								gt = GetElementRetrive(gt,GetExeInt(fInd))
-								newDown.Push(gt)
-								oo -= 2
-								types4[k] = GTypeVec2f
-								k += 1
-								fInd += 1
-							}
-							if oo != 0
+								oo := floats
+								fInd := 0
+								while oo >= 2
+								{
+									gt := newCall.CreateCall()
+									gt = GetExchange(gt,GTypeVec2f.GetPoint())
+									gt = GetElementRetrive(gt,GetExeInt(fInd))
+									newDown.Push(gt)
+									oo -= 2
+									types4[k] = GTypeVec2f
+									k += 1
+									fInd += 1
+								}
+								if oo != 0
+								{
+									gt := newCall.CreateCall()
+									gt = GetExchange(gt,GTypeFloat.GetPoint())
+									gt = GetElementRetrive(gt,GetExeInt(fInd*2))
+									newDown.Push(gt)
+									types4[k] = GTypeFloat
+									k += 1
+								}
+							}else if ints != 0 and floats == 0
 							{
-								gt := newCall.CreateCall()
-								gt = GetExchange(gt,GTypeFloat.GetPoint())
-								gt = GetElementRetrive(gt,GetExeInt(fInd*2))
-								newDown.Push(gt)
-								types4[k] = GTypeFloat
-								k += 1
+								typSize := downs[i].GetType().GetSize()
+
+								oo := typSize
+								fInd := 0
+								while oo != 0
+								{
+									if oo >= 8
+									{
+										gt := newCall.CreateCall()
+										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetElementRetrive(gt,GetExeInt(fInd))
+										gt = new UnrefFuncCall(gt)
+										gt = GetExchange(gt,GTypeU64.GetPoint())
+										gt = new PtrToRefFuncCall(gt)
+										newDown.Push(gt)
+										types4[k] = GTypeU64
+										k += 1
+										oo -= 8
+										fInd += 8
+									}else if oo >= 4 {
+										gt := newCall.CreateCall()
+										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetElementRetrive(gt,GetExeInt(fInd))
+										gt = new UnrefFuncCall(gt)
+										gt = GetExchange(gt,GTypeInt.GetPoint())
+										gt = new PtrToRefFuncCall(gt)
+										newDown.Push(gt)
+										types4[k] = GTypeInt
+										k += 1
+										oo -= 4
+										fInd += 4
+									}else {
+										assert(false)
+									}
+								}
+							}else{
+								assert(false)
 							}
+
 							newCall.PopulateCalls()
+							
 						}else{
 							types4[k] = it.ItType
 							newDown.Push(downs[i])
@@ -217,6 +268,7 @@ BoxFuncCall := class extend BoxExeObj
 					types4[k] = it.ItType
 					newDown.Push(downs[i])
 					k += 1
+					leftInts -= 1
 				}
 			}
 			if needRework //and this& is BoxFuncPointerCall

@@ -9,8 +9,8 @@ main := !(char^[] args) -> int
 	ctx := nk_rawfb_init(fb,chars,x,y,x*4,0)
 
 	tst := nk_color
-	tst.r = 0
-	tst.g = 100
+	tst.r = 128
+	tst.g = 255
 	tst.b = 0
 
 	rect := nk_rect//(10,10,100,100)
@@ -23,7 +23,7 @@ main := !(char^[] args) -> int
 		nk_label(ctx,"test",0x11)
 	}
 	nk_end(ctx)
-	nk_rawfb_render(ctx,tst,0)
+	nk_rawfb_render(ctx,tst,1)
 	
 	fl := fopen("tst.ppm","wb")
 	fwrite("P6 512 512 255",14,1,fl)
