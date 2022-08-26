@@ -15,8 +15,11 @@ CLib := class extend ModuleInterface
 
 	itFuncs := AVLMap.{StringSpan,BoxUnit^}
 	itConsts := AVLMap.{StringSpan,BoxUnit^}
+	itStructs := AVLMap.{StringSpan,BoxUnit^}
+
 	itPreFuncs := AVLMap.{StringSpan,StringSpan}
 	itPreConsts := AVLMap.{StringSpan,StringSpan}
+	itPreStructs := AVLMap.{StringSpan,jsonNode^}
 
 	dlls := List.{StringSpan}
 	initFuncName := StringSpan
@@ -59,6 +62,12 @@ CLib := class extend ModuleInterface
 					}
 				case "link"
 					linkType = nd.Value()
+				case "structs"
+					for lbs : nd^
+					{
+						itPreStructs[lbs.Key()] = lbs
+					}
+					
 			}
 		}
 	
@@ -81,6 +90,9 @@ CLib := class extend ModuleInterface
 
 		if itConsts.Contain(name)
 			return itConsts[name]
+		
+		if itStructs.Contain(name)
+			return itStructs[name]
 
 		if name == initFuncName
 		{
@@ -101,7 +113,36 @@ CLib := class extend ModuleInterface
 			itConsts[name] = GetExeInt(val) //TODO add float support
 			return itConsts[name]
 		}
+
+		if itPreStructs.Contain(name)
+		{
+			return innerMakeType(name)
+		}
 		return null
+	}
+	innerMakeType := !(StringSpan name) -> BoxUnit^
+	{
+		nd := itPreStructs[name]
+
+		newStruct := new BoxClassVulkan
+		newStruct.ItName = StringSpan(name)
+		newStruct.ItId = GetNewId()
+		newStruct.ItType = new TypeClass(newStruct)
+
+		for itm : nd^
+		{
+			ind := TokenIndent(itm.Value())
+			tp := ParseType(ind&)
+			assert(tp != null)
+			newStruct.Fields.Push(new FieldParam(itm.Key(),tp))
+		}
+		newStruct.InheritStep()
+		AllClasses.Push(newStruct)
+		newStruct.FinilizeCreation()
+
+		res := GetConstType(newStruct.ItType)
+		itStructs[name] = res
+		return res
 	}
 	innerGetFunc := !(StringSpan name) -> BoxUnit^
 	{

@@ -4,7 +4,30 @@
 	"libs" : [
 		"c_lib.so"
 	],
+	"structs" : {
+		"nk_color" : {
+			"r" : "u8",
+			"g" : "u8",
+			"b" : "u8",
+			"a" : "u8"
+		},
+		"nk_rect" : {
+			"x" : "float",
+			"y" : "float",
+			"w" : "float",
+			"h" : "float"
+		}
+	}
 	"funcs" : {
+
+		"nk_rawfb_init" : "void^,void^,void^,int,int,int,int",
+		"nk_rawfb_render" : "void,void^,nk_color,int",
+
+		"nk_begin" : "int,void^,char^,nk_rect,int",
+		"nk_end" : "void,void^",
+
+		"nk_label" : "void,void^,char^,int",
+
 		"ur_create" : "void^",
 		"ur_init" : "void,int,void^,int",
 		"ur_exit" : "void,void^",

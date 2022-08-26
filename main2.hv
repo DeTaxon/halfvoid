@@ -1,19 +1,32 @@
 
 main := !(char^[] args) -> int
 {
-	SpawnWork(() ==> {
-		for i : 10
-		{
-			printf("second %i\n",i)
-			TSleep(1)
-		}
-		printf("----------------------------\n")
-	})
+	uring_init()
+	x := 512
+	y := 512
+	fb := malloc(x*y*4)->{void^}
+	chars := malloc(512*512)->{void^}
+	ctx := nk_rawfb_init(fb,chars,x,y,x*4,1)
 
-	for i : 5
+	tst := nk_color
+
+	rect := nk_rect//(10,10,100,100)
+	rect.x = 10
+	rect.y = 10
+	rect.w = 100
+	rect.h = 100
+	if nk_begin(ctx,"HI",rect,0) != 0
 	{
-		printf("hi\n")
-		TSleep(1)
+		nk_label(ctx,"test",0x11)
 	}
+	nk_end(ctx)
+	nk_rawfb_render(ctx,tst,0)
+	
+	fl := fopen("tst.ppm","wb")
+	//fwrite(x&,4,1,fl)
+	//fwrite(y&,4,1,fl)
+	fwrite("P6 512 512 255",14,1,fl)
+	fwrite(fb,x*y*4,1,fl)
+	fclose(fl)
 	return 0
 }
