@@ -219,11 +219,7 @@ BoxFuncCall := class extend BoxExeObj
 					k += 1
 				}
 			}
-			if needRework
-			{
-
-			}
-			if needRework and this& is BoxFuncPointerCall
+			if needRework //and this& is BoxFuncPointerCall
 			{
 				assert(this& is BoxFuncPointerCall)
 

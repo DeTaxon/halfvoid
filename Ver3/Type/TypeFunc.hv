@@ -159,7 +159,14 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 	{
 		isRef := false
 		if refs != null
+		{
 			isRef = refs[i]
+		}else{
+			if args[i] is in TypeClass
+				isRef = true
+			if args[i] is in TypeArr
+				isRef = true
+		}
 		newFunc.Params.Emplace(args[i],isRef)
 	}
 	newFunc.IsVargs = isVargs

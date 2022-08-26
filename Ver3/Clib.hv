@@ -150,6 +150,7 @@ CLib := class extend ModuleInterface
 
 		c := 0
 		typs := Type^[40]
+		isRefs := bool[40]
 		isVarg := false
 		bdy.DivideStr(",", x ==> {
 			points := 0
@@ -178,7 +179,7 @@ CLib := class extend ModuleInterface
 			}
 			c += 1
 		})
-		fType := GetFuncType(c-1, typs[1]&,null,typs[0],false,isVarg)
+		fType := GetFuncType(c-1, typs[1]&,isRefs[0]&,typs[0],false,isVarg)
 
 		assert(fType != null) //TODO error check
 
