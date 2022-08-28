@@ -1,40 +1,55 @@
 
+x := 0
+y := 20
+nt := THatch[20]
 main := !(char^[] args) -> int
 {
-	uring_init()
-	x := 512
-	y := 512
-	fb := malloc(x*y*4)->{void^}
-	chars := malloc(512*512)->{void^}
-	ctx := nk_rawfb_init(fb,chars,x,y,x*4,0)
 
-	tst := nk_color
-	tst.r = 128
-	tst.g = 255
-	tst.b = 0
-
-	rect := nk_rect//(10,10,100,100)
-	rect.x = 100
-	rect.y = 100
-	rect.w = 250
-	rect.h = 250
-	if nk_begin(ctx,"HI",rect,NK_WINDOW_MOVABLE + NK_WINDOW_BORDER + NK_WINDOW_CLOSABLE) != 0
-	{
-		nk_label(ctx,"test",0x11)
-	}
-	nk_end(ctx)
-	nk_rawfb_render(ctx,tst,1)
-	
-	fl := fopen("tst.ppm","wb")
-	fwrite("P6 512 512 255",14,1,fl)
-	for i : x
-	{
-		for j : y
+	SpawnWork(() ==> {
+		for i : y
 		{
-			fwrite(fb->{int^}[i*512 + j]&,1,3,fl)
+			nt[i].Await()
+			printf("hi\n")
 		}
+		TBarrier(x&,2)
+	})
+
+	for i : y
+	{
+		nt[i].Emit()
+		TSleep(1)
 	}
-	//fwrite(fb,x*y*4,1,fl)
-	fclose(fl)
+
+	TBarrier(x&,2)
+	printf("hey %i\n",x)
+
+	// tst := nk_color
+	// tst.r = 128
+	// tst.g = 255
+	// tst.b = 0
+
+	// rect := nk_rect//(10,10,100,100)
+	// rect.x = 100
+	// rect.y = 100
+	// rect.w = 250
+	// rect.h = 250
+	// if nk_begin(ctx,"HI",rect,NK_WINDOW_MOVABLE + NK_WINDOW_BORDER + NK_WINDOW_CLOSABLE) != 0
+	// {
+	// 	nk_label(ctx,"test",0x11)
+	// }
+	// nk_end(ctx)
+	// nk_rawfb_render(ctx,tst,1)
+	
+	// fl := fopen("tst.ppm","wb")
+	// fwrite("P6 512 512 255",14,1,fl)
+	// for i : x
+	// {
+	// 	for j : y
+	// 	{
+	// 		fwrite(fb->{int^}[i*512 + j]&,1,3,fl)
+	// 	}
+	// }
+	// //fwrite(fb,x*y*4,1,fl)
+	// fclose(fl)
 	return 0
 }

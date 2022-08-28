@@ -39,6 +39,10 @@ Task := class extend TGCObject
 		CurrentTask = this&
 		swapcontext(oldTask->{Task^}.uContext[0]&,this.uContext[0]&)
 	}
+	resume := !() -> void
+	{
+		itTaskWorker.PendingTasks.Push(this&)
+	}
 
 	Destroy := virtual !() -> void
 	{

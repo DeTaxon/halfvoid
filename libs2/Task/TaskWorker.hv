@@ -33,4 +33,8 @@ TaskWorker := class extend TGCObject
 		itWaitConVar.Wait(itWaitMutex)
 		itWaitMutex.Unlock()
 	}
+	switchToMain := !() -> void
+	{
+		ThreadMainTask.switchToTask()
+	}
 }

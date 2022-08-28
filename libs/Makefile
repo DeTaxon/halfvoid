@@ -4,6 +4,9 @@ flags :=  -g -m64 -D_SQ64 -fno-exceptions -fno-rtti -Wall -fno-strict-aliasing -
 c_lib.so: uring.cpp stb/main.cpp Nuklear.o
 	clang $(flags) -shared -lm -luring  $^ -o $@
 
+NuklearGLFW.so : NuklearGLFW.c
+	clang $(flags) -shared -lm -lglfw $^ -o $@
+
 Nuklear.o : Nuklear.c
 	clang $(flags) $^ -lm -c -o $@
 

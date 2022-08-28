@@ -1,134 +1,129 @@
-// AtomicMutex := class
-// {
-// 	atmValue := u8
-// 	Lock := !() -> void
-// 	{
-// 		while InterlockSet(atmValue,1) != 0 {}
-// 	}
-// 	Unlock := !() -> void
-// 	{
-// 		InterlockSet(atmValue,0)
-// 	}
-// }
+AtomicMutex := class
+{
+	atmValue := u8
+	Lock := !() -> void
+	{
+		while InterlockSet(atmValue,1) != 0 {}
+	}
+	Unlock := !() -> void
+	{
+		InterlockSet(atmValue,0)
+	}
+}
 
-// MutexCondPoolType := class
-// {
-// 	freedMtx := List.{Mutex^}
-// 	mutexMutex := AtomicMutex
+MutexCondPoolType := class
+{
+	freedMtx := List.{Mutex^}
+	mutexMutex := AtomicMutex
 
-// 	GetMutex := !() -> Mutex^
-// 	{
-// 		MallocPoolBlock()	
-// 		if freedMtx.Size() == 0 {
-// 			return new Mutex()
-// 		}
-// 		mutexMutex.Lock()
-// 		defer mutexMutex.Unlock()
-// 		if freedMtx.Size() == 0 {
-// 			return new Mutex()
-// 		}
-// 		return freedMtx.Pop()
-// 	}
-// 	Release := !(Mutex^ toAdd) -> void
-// 	{
-// 		MallocPoolBlock()	
-// 		miniMutex.Lock()
-// 		defer miniMutex.Unlock()
-// 		freedMtx << toAdd
-// 	}
+	GetMutex := !() -> Mutex^
+	{
+		if freedMtx.Size() == 0 {
+			return new Mutex()
+		}
+		mutexMutex.Lock()
+		defer mutexMutex.Unlock()
 
-// 	freedCond := List.{ConVar^}
-// 	condMutex := AtomicMutex
-// 	GetConVar := !() -> ConVar^
-// 	{
-// 		MallocPoolBlock()	
-// 		if freedCond.Size() == 0 {
-// 			return new ConVar()
-// 		}
-// 		condMutex.Lock()
-// 		defer condMutex.Unlock()
-// 		if freedCond.Size() == 0 {
-// 			return new ConVar()
-// 		}
-// 		return freedCond.Pop()
-// 	}
-// 	Release := !(ConVar^ toAdd) -> void
-// 	{
-// 		MallocPoolBlock()	
-// 		condMutex.Lock()
-// 		defer condMutex.Unlock()
-// 		freedCond << toAdd
-// 	}
-// }
-// TLockPool := MutexCondPoolType
+		if freedMtx.Size() == 0 {
+			return new Mutex()
+		}
+		return freedMtx.Pop()
+	}
+	Release := !(Mutex^ toAdd) -> void
+	{
+		miniMutex.Lock()
+		defer miniMutex.Unlock()
+		freedMtx.Push(toAdd)
+	}
 
-// GetPointerHash13n8 := !(void^ val) -> int
-// {
-// 	itF := u64
-// 	itF&->{void^^}^ = val
-// 	res := 0
-// 	for 8
-// 	{
-// 		res += itF % 13
-// 		itF = itF div 13
-// 	}
-// 	return res % 13
-// }
+	freedCond := List.{ConVar^}
+	condMutex := AtomicMutex
+	GetConVar := !() -> ConVar^
+	{
+		if freedCond.Size() == 0 {
+			return new ConVar()
+		}
+		condMutex.Lock()
+		defer condMutex.Unlock()
+		if freedCond.Size() == 0 {
+			return new ConVar()
+		}
+		return freedCond.Pop()
+	}
+	Release := !(ConVar^ toAdd) -> void
+	{
+		condMutex.Lock()
+		defer condMutex.Unlock()
+		freedCond.Push(toAdd)
+	}
+}
+TLockPool := MutexCondPoolType
 
-// internalLockMiniMutex := AtomicMutex
-// internalLockMutex := Mutex^[13] 
-// internalLockUsing := RBMap.{void^,Tuple.{ConVar^,int,int}}[13]
-// TLock := !(void^ k) -> void { TLock(k,1)}
-// TLock := !(void^ k,int count) -> void
-// {
-// 	MallocPoolBlock()
+GetPointerHash13n8 := !(void^ val) -> int
+{
+	itF := u64
+	itF&->{void^^}^ = val
+	res := 0
+	for 8
+	{
+		res += itF mod 13
+		itF = itF div 13
+	}
+	return res mod 13
+}
 
-// 	itHash := GetPointerHash13n8(k)
+internalLockMiniMutex := AtomicMutex
+internalLockMutex := Mutex^[13] 
+internalLockUsing := AVLMap.{void^,Tuple.{ConVar^,int,int}}[13]
 
-// 	if internalLockMutex[itHash] == null
-// 	{
-// 		internalLockMiniMutex.Lock()
-// 		if internalLockMutex[itHash] == null
-// 			internalLockMutex[itHash] = TLockPool.GetMutex()
-// 		internalLockMiniMutex.Unlock()
-// 	}
+TLock := !(void^ k,int count = 1) -> void
+{
+	itHash := GetPointerHash13n8(k)
 
-// 	internalLockMutex[itHash].Lock()
-// 	defer internalLockMutex[itHash].Unlock()
+	if internalLockMutex[itHash] == null
+	{
+		internalLockMiniMutex.Lock()
+		if internalLockMutex[itHash] == null
+			internalLockMutex[itHash] = new Mutex()
+		internalLockMiniMutex.Unlock()
+	}
 
-// 	if internalLockUsing[itHash].Contain(k)
-// 	{
-// 		itEnt := ref internalLockUsing[itHash][k]
-// 		itEnt.1 += 1
-// 		while itEnt.2 == 0
-// 			itEnt.0.Wait(internalLockMutex[itHash])
-// 		itEnt.2 -= 1
-// 	}else{
-// 		newEnt := ref internalLockUsing[itHash][k]
-// 		newEnt.0 = TLockPool.GetConVar()
-// 		newEnt.1 = 1
-// 		newEnt.2 = count - 1
-// 	}
-// }
-// TUnlock := !(void^ k) -> void
-// {
-// 	MallocPoolBlock()
-// 	itHash := GetPointerHash13n8(k)
-
-// 	internalLockMutex[itHash].Lock()
-// 	defer internalLockMutex[itHash].Unlock()
+	internalLockMutex[itHash].Lock()
+	defer internalLockMutex[itHash].Unlock()
 	
-// 	itEnt := ref internalLockUsing[itHash][k]
-// 	itEnt.1 -= 1
-// 	if itEnt.1 == 0
-// 	{
-// 		internalLockUsing[itHash].Remove(k)
-// 		TLockPool.Release(itEnt.0)
-// 	}else{
-// 		itEnt.2 += 1
-// 		itEnt.0.Notify()
-// 	}
-// }
+
+	if internalLockUsing[itHash].Contain(k)
+	{
+		itEnt := internalLockUsing[itHash][k]&
+		itEnt.1 += 1
+		while itEnt.2 == 0
+			itEnt.0.Wait(internalLockMutex[itHash])
+		itEnt.2 -= 1
+	}else{
+		newEnt := internalLockUsing[itHash][k]&
+		newEnt.0 = TLockPool.GetConVar()
+		newEnt.1 = 1
+		newEnt.2 = count - 1
+	}
+}
+TUnlock := !(void^ k) -> void
+{
+	itHash := GetPointerHash13n8(k)
+
+	internalLockMutex[itHash].Lock()
+	defer internalLockMutex[itHash].Unlock()
+	
+	itEnt := internalLockUsing[itHash][k]&
+	itEnt.1 -= 1
+	if itEnt.1 == 0
+	{
+		TLockPool.Release(itEnt.0)
+		internalLockUsing[itHash].Remove(k)
+	}else{
+		itEnt.2 += 1
+		itEnt.0.Notify()
+	}
+}
 
 // TGuard := !(void^ k = #uniq) -> void {
 // 	TLock(k)
@@ -136,43 +131,42 @@
 // 	TUnlock(k)
 // }
 
-// internalBarMiniMutex := AtomicMutex
-// internalBarMutex := Mutex^
-// internalBarUsing := RBMap.{void^,Tuple.{ConVar^,int}}
-// TBarrier := !(void^ k,int count) -> void
-// {
-// 	if count <= 1 
-// 		return void
-// 	MallocPoolBlock()
+internalBarMiniMutex := AtomicMutex
+internalBarMutex := Mutex^
+internalBarUsing := AVLMap.{void^,Tuple.{ConVar^,int}}
+TBarrier := !(void^ k,int count) -> void
+{
+	if count <= 1 
+		return void
 	
-// 	internalBarMiniMutex.Lock()
-// 	if internalBarMutex == null
-// 		internalBarMutex = TLockPool.GetMutex()
-// 	internalBarMiniMutex.Unlock()
+	internalBarMiniMutex.Lock()
+	if internalBarMutex == null
+		internalBarMutex = new Mutex()
+	internalBarMiniMutex.Unlock()
 	
-// 	internalBarMutex.Lock()
-// 	defer internalBarMutex.Unlock()
+	internalBarMutex.Lock()
+	defer internalBarMutex.Unlock()
 
-// 	if internalBarUsing.Contain(k)
-// 	{
-// 		itEnt := ref internalBarUsing[k]
-// 		itEnt.1 -= 1
+	if internalBarUsing.Contain(k)
+	{
+		itEnt := internalBarUsing[k]&
+		itEnt.1 -= 1
 		
-// 		if itEnt.1 == 0
-// 		{
-// 			itEnt.0.NotifyAll()
-// 		}else{
-// 			while itEnt.1 != 0
-// 				itEnt.0.Wait(internalBarMutex)
-// 		}
-// 	}else{
-// 		newEnt := ref internalBarUsing[k]
-// 		newEnt.0 = TLockPool.GetConVar()
-// 		newEnt.1 = count - 1
+		if itEnt.1 == 0
+		{
+			itEnt.0.NotifyAll()
+		}else{
+			while itEnt.1 != 0
+				itEnt.0.Wait(internalBarMutex)
+		}
+	}else{
+		newEnt := internalBarUsing[k]&
+		newEnt.0 = TLockPool.GetConVar()
+		newEnt.1 = count - 1
 
-// 		while newEnt.1 != 0
-// 			newEnt.0.Wait(internalBarMutex)
-// 		TLockPool.Release(newEnt.0)
-// 		internalBarUsing.Remove(k)
-// 	}	
-// }
+		while newEnt.1 != 0
+			newEnt.0.Wait(internalBarMutex)
+		//TLockPool.Release(newEnt.0)
+		internalBarUsing.Remove(k)
+	}	
+}
