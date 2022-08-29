@@ -27,6 +27,25 @@ TaskWorker := class extend TGCObject
 			EnterTaskThreadCycle(false)
 		})
 	}
+	PopReadyTask := !() -> Task^
+	{
+		if PendingTasks.Size() != 0
+		{
+			return PendingTasks.Pop()
+		}
+
+		if CreateTasks.Size() != 0
+		{
+			hm := CreateTasks.Pop()
+			hm.CreateStack()
+			return hm
+		}
+		return ReciveWorkTask()
+	}
+	ReciveWorkTask := virtual !() -> Task^
+	{
+		return null
+	}
 	WaitForTasks := !() -> void
 	{
 		itWaitMutex.Lock()
@@ -36,5 +55,19 @@ TaskWorker := class extend TGCObject
 	switchToMain := !() -> void
 	{
 		ThreadMainTask.switchToTask()
+	}
+}
+TaskWorkerCreated := class extend TaskWorker
+{
+	ReciveWorkTask := virtual !() -> Task^
+	{
+		if TaskWorkersToDo.Size() != 0
+		{
+			hm := TaskWorkersToDo.Pop()
+			hm.CreateStack()
+			AllTasks.Insert(hm)
+			return hm
+		}
+		return null
 	}
 }

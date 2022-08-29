@@ -15,36 +15,19 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			delTask = null
 			continue
 		}
-		
-		if ct.PendingTasks.Size() != 0
-		{
-			hm := ct.PendingTasks.Pop()
-			hm.switchToTask()
-			continue
-		}
-
-		if ct.CreateTasks.Size() != 0
-		{
-			hm := ct.CreateTasks.Pop()
-			hm.CreateStack()
-			hm.switchToTask()
-			continue
-		}
-
-		if not isMainThread
-		{
-			if TaskWorkersToDo.Size() != 0
-			{
-				hm := TaskWorkersToDo.Pop()
-				hm.CreateStack()
-				ct.AllTasks.Insert(hm)
-				hm.switchToTask()
-				continue
-			}
-		}
 
 		iAmOnUV := false
 		TaskCheckMutex.Lock()
+
+		doTask := ct.PopReadyTask()
+
+		if doTask != null
+		{
+			TaskCheckMutex.Unlock()
+			doTask.switchToTask()
+			continue
+		}
+
 		if uvInProgressCount != 0 and not someoneOnUV
 		{
 			someoneOnUV = true

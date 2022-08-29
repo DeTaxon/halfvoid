@@ -122,34 +122,41 @@ BoxArrayHolder := class extend BoxExeObj
 	}
 	CreateViewArray := !(Type^ tp) -> BoxExeObj^
 	{
+		bs := GetViewBaseType(tp)
+
 		if vals.Size() == 0
 		{
 			objs := CheckExeDownList
 			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetConstType(GetViewBaseType(tp)))
+			cnsts.Push(GetConstType(bs))
 			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
 			cnsts.Destroy()
 			return resFunc.CreateCall()
 		}
-		assert(false)
-		return null
+		if TypeFight(defaultType,bs) != bs
+			return null
+		return createUse(bs)
 	}
 	CreateDefaultUse := !() -> BoxExeObj^
 	{
+		return createUse(defaultType)
+	}
+	createUse := !(Type^ bs) -> BoxExeObj^
+	{
 		if vals.Size() == 0
 			return null
-		if isAllConsts
+		if isAllConsts and bs == defaultType
 		{
 			if globalVar == null
 			{
-				globalVar = CreateGlobalVar(StringSpan("anon"),GetArrayType(),false)
+				globalVar = CreateGlobalVar(StringSpan("anon"),bs.GetArray(vals.Size()),false)
 				globalVar.MemValue = GetAsConst()
 			}
 			return globalVar.Value.CreateCall()
 		}
 
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(GetArrayType()))
+		cnsts.Push(GetConstType(bs.GetArray(vals.Size())))
 		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
 		cnsts.Destroy()
 

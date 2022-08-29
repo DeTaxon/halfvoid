@@ -1,28 +1,18 @@
 
-x := 0
-y := 20
-nt := THatch[20]
+
 main := !(char^[] args) -> int
 {
-
-	SpawnWork(() ==> {
-		for i : y
+	osReadFolder(".",x ==> {
+		st := x.Normalize()
+		if osIsFolder(st.Str())
 		{
-			nt[i].Await()
-			printf("hi\n")
+			printf("folder\n")
+		}else{
+			printf("file\n")
+
 		}
-		TBarrier(x&,2)
+		printf("hoy %s %i\n",st.Str(),osFileSize(st.Str()))
 	})
-
-	for i : y
-	{
-		nt[i].Emit()
-		TSleep(1)
-	}
-
-	TBarrier(x&,2)
-	printf("hey %i\n",x)
-
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255

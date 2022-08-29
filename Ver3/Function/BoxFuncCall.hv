@@ -135,7 +135,7 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
-		if true //TODO if targetLinux
+		if targetLinux
 		{
 			leftFloats := 8
 			leftInts := 6

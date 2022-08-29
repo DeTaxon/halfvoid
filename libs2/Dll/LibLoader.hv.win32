@@ -364,3 +364,11 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 	return resDat
 }
 
+OpenLib := !(char^ libName) -> void^
+{
+	return LoadLibraryA(libName)
+}
+LoadFuncLib := !(void^ hndl, char^ objName) -> void^
+{
+	return GetProcAddress(hndl,objName)
+}

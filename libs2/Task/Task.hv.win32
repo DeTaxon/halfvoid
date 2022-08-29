@@ -1,0 +1,24 @@
+AppendClass Task
+{
+	fiberHandler := void^
+	OSFirstInit := !() -> void
+	{
+		fiberHandler = ConvertThreadToFiber(null)
+	}
+	CreateStack := !() -> void
+	{
+		fiberHandler = CreateFiber(4*1024*1024,ucontextStartTask,null)
+		itTaskWorker = CurrentThread
+	}
+
+	switchToTask := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		SwitchToFiber(fiberHandler)
+	}
+
+	OSDestroy := !() -> void
+	{
+	}
+}

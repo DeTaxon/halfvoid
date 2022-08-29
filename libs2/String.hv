@@ -121,7 +121,11 @@ TStringViewOnCStr := class extend TStringView
 		return 1
 	return strcmp(a,b)
 }
-
+"!=" := !(char^ a,char^ b) -> bool
+{
+	cmp := a <=> b
+	result = cmp != 0
+}
 "==" := !(char^ a, char^ b) -> bool
 {
 	cmp := a <=> b

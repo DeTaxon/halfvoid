@@ -2,43 +2,25 @@ Task := class extend TGCObject
 {
 	taskLocalData := internalHVTaskLocalTuple
 	itTaskWorker := TaskWorker^
-	//OS Dependent
-	uContext := u8[1024]
-	stackPtr := void^
 
 	taskLambda := !()&->void
+	finishedWork := THatch
 
 	this := !(!()& -> void cb) -> void
 	{
-		taskLambda = cb.Capture()
-	}
-	CreateStack := !() -> void
-	{
-		getcontext(uContext[0]&)
-		stackSize := 4*1024*1024
-		stackPtr = malloc(stackSize) //TODO set stack size
-		uContext[24]&->{u64^}^ = 0
-		uContext[8]&->{void^^}^ = null
-		uContext[16]&->{void^^}^ = stackPtr
-		uContext[32]&->{u64^}^ = stackSize
-		makecontext(uContext[0]&,ucontextStartTask,0)
-		itTaskWorker = CurrentThread
+		taskLambda = cb
 	}
 	startTaskThread := !() -> void
 	{
 		taskLambda()
 		CurrentThread.DeleteTasks.Push(this&)
+		finishedWork.Emit()
+		taskLambda = null
 		CurrentThread.ThreadMainTask.switchToTask()
 		//CurrentTask = null
 		//setcontext(CurrentThread.ThreadMainTask.uContext[0]&)
 	}
 
-	switchToTask := !() -> void
-	{
-		oldTask := CurrentTask->{void^}
-		CurrentTask = this&
-		swapcontext(oldTask->{Task^}.uContext[0]&,this.uContext[0]&)
-	}
 	resume := !() -> void
 	{
 		itTaskWorker.PendingTasks.Push(this&)
@@ -46,11 +28,7 @@ Task := class extend TGCObject
 
 	Destroy := virtual !() -> void
 	{
-		if stackPtr != null
-		{
-			free(stackPtr)
-			stackPtr = null
-		}
+		OSDestroy()
 		taskLambda = null
 
 		for fld : this.taskLocalData->AllFields

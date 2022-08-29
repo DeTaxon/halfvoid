@@ -104,7 +104,7 @@ vRepo := class
 	{
 		pth := fileName.Normalize()
 
-		itId := posixFileId(pth.Str())
+		itId := osFileId(pth.Str())
 		if itId == 0 return false
 
 		itObj := new ZipFile
@@ -158,7 +158,7 @@ vRepo := class
 		if not iterFolder.virtualFolder
 		{
 			pth := iterFolder.GetPath()
-			posixReadFolder(pth.Str(),x ==> {
+			osReadFolder(pth.Str(),x ==> {
 
 				if x.Str() == "." or x.Str() == ".."
 					return void
@@ -171,15 +171,15 @@ vRepo := class
 				bigPath << strName.Str()
 				absPath := bigPath.GetString()
 
-				if posixIsFolder(absPath.Str())
+				if osIsFolder(absPath.Str())
 				{
 					newObj := new vRepoFolder
 					newObj.objName = strName
 					newObj.upFolder = iterFolder
 					iterFolder.subFolders[strName] = newObj
 				}else{
-					itmId := posixFileId(absPath.Str())
-					flSz := posixFileSize(absPath.Str())
+					itmId := osFileId(absPath.Str())
+					flSz := osFileSize(absPath.Str())
 //
 					if ignZip.Contain(itmId)
 					{

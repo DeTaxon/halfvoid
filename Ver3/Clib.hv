@@ -201,8 +201,14 @@ CLib := class extend ModuleInterface
 			return void
 
 		dt := TEchoStream //TODO better support, func from str look stupid
-
-		dt << "lib := GetLibrary(\"" << dlls[0] << "\")\n"
+		dt << "lib := GetLibrary(!["
+		for i : dlls.Size()
+		{
+			if i != 0
+				dt << ","
+			dt << "\"" << dlls[i] << "\""
+		}
+		dt << "])\n"
 		for it, ind : itFuncs
 		{
 			if ind == initFuncName

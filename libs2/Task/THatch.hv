@@ -31,13 +31,17 @@ THatch := class
 	Emit := !() -> void
 	{
 		THatchLock(this&)
+		TaskCheckMutex.Lock()
 		flag = true
 		itr := next_wakeup
 		while itr != null
 		{
 			itr.itTask.resume()
+			itr.itTask = null
 			itr = itr.next_point
 		}
+		TaskWaitTasksConVar.NotifyAll()
+		TaskCheckMutex.Unlock()
 		THatchUnlock(this&)
 	}
 	Await := !() -> void

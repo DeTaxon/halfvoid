@@ -21,17 +21,17 @@ S_IFDIR := 16384
 S_IFREG := 32768
 S_IFLINK := 40960
 
-posixGetFileSize := !(int fd,u64^ size) -> bool
-{
-	dataD := char[144]
-	val := fstat(fd,dataD->{char^})
-	if val == -1 return false
-	asNeed1 := dataD->{char^}[48]&
-	asNeed2 := asNeed1->{u64^}
-	size^ = asNeed2^
-	return true
-}
-posixIsFolder := !(char^ nm) -> bool
+// osGetFileSize := !(int fd,u64^ size) -> bool
+// {
+// 	dataD := char[144]
+// 	val := fstat(fd,dataD->{char^})
+// 	if val == -1 return false
+// 	asNeed1 := dataD->{char^}[48]&
+// 	asNeed2 := asNeed1->{u64^}
+// 	size^ = asNeed2^
+// 	return true
+// }
+osIsFolder := !(char^ nm) -> bool
 {
 	st1 := char[144]
 	if stat(nm,st1[0]&) != 0
@@ -42,21 +42,21 @@ posixIsFolder := !(char^ nm) -> bool
 	return false
 }
 
-posixFileSize := !(char^ nm) -> u64
+osFileSize := !(char^ nm) -> u64
 {
 	st1 := char[144]
 	if stat(nm,st1[0]&) != 0
 		return 0
 	return st1[48]&->{u64^}^
 }
-posixFileId := !(char^ nm) -> u64
+osFileId := !(char^ nm) -> u64
 {
 	st1 := char[144]
 	if stat(nm,st1[0]&) != 0
 		return 0
 	return st1[8]&->{u64^}^
 }
-posixReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
+osReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
 {
 
 	dirFd := opendir(nm)

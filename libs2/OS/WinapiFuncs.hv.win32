@@ -1,0 +1,125 @@
+
+CP_UTF8 := 65001
+MB_PRECOMPOSED := 1
+WC_COMPOSITECHECK := 512
+
+GENERIC_READ :=  0x80000000
+GENERIC_WRITE := 0x40000000
+
+FILE_APPEND_DATA := 4
+
+FILE_ATTRIBUTE_NORMAL := 128
+FILE_ATTRIBUTE_TEMPORARY := 256
+
+FILE_FLAG_OVERLAPPED := 0x40000000
+FILE_FLAG_BACKUP_SEMANTICS := 0x02000000
+
+FILE_ATTRIBUTE_DIRECTORY := 16
+
+FILETIME := class
+{
+	dwLowDateTime := u32
+	dwLowDateTime := u32
+}
+
+WIN32_FIND_DATAW := class
+{
+	dwFileAttributes := int
+	ftCreationTime := FILETIME
+	ftLastAccessTime := FILETIME
+	ftLastWriteTime := FILETIME
+	nFileSizeHigh := u32
+	nFileSizeLow := u32
+	reserved0 := u32
+	reserved1 := u32
+	cFileName := u16[260] // 260 = MAX_PATH
+	cAlternateFileName := u16[14]
+}
+BY_HANDLE_FILE_INFORMATION := class
+{
+	dwFileAttributes := u32
+	ftCreationTime := FILETIME
+	ftLastAccessTime := FILETIME
+	ftLastWriteTime := FILETIME
+	dwVolumeSerialNumber := u32
+	nFileSizeHigh := u32
+	nFileSizeLow := u32
+	nNumberOfLinks := u32
+	nFileIndexHigh := u32
+	nFileIndexLow := u32
+}
+
+Utf8ToUtf16 := !(char^ itStr) -> TVector.{u16}
+{
+	retSize := MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,null,0)
+	result.Resize(retSize + 1)
+	MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,result.Get(),retSize)
+	result[retSize] = 0
+}
+Utf16ToUtf8 := !(u16^ itStr) -> TString^
+{
+	buffer := char[1024] //TODO unconst?
+	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,null->{char^},0,null,null)
+	assert(resSize < 1024)
+	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,buffer[0]&,resSize,null,null)
+	buffer[resSize] = 0
+	return new TString(buffer[0]&)
+}
+
+osIsFolder := !(char^ nm) -> bool
+{
+	asW := Utf8ToUtf16(nm)
+	if (GetFileAttributesW(asW.Get()) and_b FILE_ATTRIBUTE_DIRECTORY) != 0
+		return true
+	return false
+}
+
+osFileSize := !(char^ itStr) -> u64
+{
+	itAsW := Utf8ToUtf16(itStr)
+	hndl := CreateFileW(itAsW.Get(),0,FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,null,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,null)
+	if hndl&->{u64^}^ == not_b 0U
+		return 0
+	flInf := BY_HANDLE_FILE_INFORMATION
+	GetFileInformationByHandle(hndl,flInf&)
+	result = flInf.nFileSizeHigh
+	result = result shl 32
+	result += flInf.nFileSizeLow
+}
+osFileId := !(char^ itStr) -> u64
+{
+	itAsW := Utf8ToUtf16(itStr)
+	hndl := CreateFileW(itAsW.Get(),0,FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,null,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,null)
+	if hndl&->{u64^}^ == not_b 0U
+		return 0
+	flInf := BY_HANDLE_FILE_INFORMATION
+	GetFileInformationByHandle(hndl,flInf&)
+	result = flInf.nFileIndexHigh
+	result = result shl 32
+	result += flInf.nFileIndexLow
+}
+osReadFolder := !(char^ inName, !(TStringView)& -> void cb) -> void
+{
+	ech := TEchoStream //TODO optimize
+	ech << inName
+	ech << "/*"
+
+	nowEntry := WIN32_FIND_DATAW
+	utf16Name := Utf8ToUtf16(ech.GetString().Str())
+	hndl := FindFirstFileW(utf16Name.Get(),nowEntry&)
+
+	if hndl&->{u64^}^ == (not_b 0U)
+		return void
+	defer FindClose(hndl)
+
+	while true
+	{
+		nm := Utf16ToUtf8(nowEntry.cFileName[0]&)
+		if nm.Str() != "." and nm.Str() != ".."
+		{
+			cb(nm.Str())
+		}
+		if not FindNextFileW(hndl,nowEntry&)
+			return void
+	}
+}

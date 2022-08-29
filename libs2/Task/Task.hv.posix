@@ -1,0 +1,39 @@
+AppendClass Task
+{
+	//OS Dependent
+	uContext := u8[1024]
+	stackPtr := void^
+
+	OSFirstInit := !() -> void
+	{
+		
+	}
+	
+	CreateStack := !() -> void
+	{
+		getcontext(uContext[0]&)
+		stackSize := 4*1024*1024
+		stackPtr = malloc(stackSize) //TODO set stack size
+		uContext[24]&->{u64^}^ = 0
+		uContext[8]&->{void^^}^ = null
+		uContext[16]&->{void^^}^ = stackPtr
+		uContext[32]&->{u64^}^ = stackSize
+		makecontext(uContext[0]&,ucontextStartTask,0)
+		itTaskWorker = CurrentThread
+	}
+
+	switchToTask := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		swapcontext(oldTask->{Task^}.uContext[0]&,this.uContext[0]&)
+	}
+	OSDestroy := !() -> void
+	{
+		if stackPtr != null
+		{
+			free(stackPtr)
+			stackPtr = null
+		}
+	}
+}

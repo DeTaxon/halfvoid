@@ -172,4 +172,9 @@ BoxExeString := class extend BoxExeConstObj
 		stSize := val.Size() + 1
 		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		stSize := val.Size() + 1
+		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+	}
 }

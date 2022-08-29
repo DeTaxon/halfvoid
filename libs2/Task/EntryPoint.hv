@@ -25,7 +25,7 @@ internalThreadDestructor := !() -> void
 
 TSpawnTask := !(!()&-> void cb) -> void
 {
-	startTask := new Task(cb)
+	startTask := new Task(cb.Capture())
 
 	CurrentThread.AllTasks.Insert(startTask)
 	CurrentThread.CreateTasks.Push(startTask)
@@ -46,6 +46,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask
 	TaskMainTaskWorker = CurrentThread
+	CurrentTask.OSFirstInit()
 
 	TSpawnTask(() ==> {	
 		spn := TArraySpan.{char^}//(argv,argc) ///TODO

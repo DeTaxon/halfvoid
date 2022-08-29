@@ -1,6 +1,7 @@
 {
 	"initname" : "libUVInit",
 	"libs" : [
+		"libuv-1.dll",
 		"libuv.so"
 	],
 	"funcs" : {

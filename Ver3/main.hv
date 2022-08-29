@@ -32,6 +32,9 @@ GClassesInProgress := List.{BoxClass^}
 AllClasses := List.{BoxClass^}
 AllFunctions := List.{BoxFunc^}
 
+targetLinux := false
+targetWindows := false
+
 OutputFile := char^
 main := !(int argc, char^^ argv) -> int
 {
@@ -39,13 +42,14 @@ main := !(int argc, char^^ argv) -> int
 	{
 		args2 := char^[20]
 		args2[0] = argv[0]
-		args2[1] = "main2.hv"
-		args2[2] = "-C0"
-		args2[3] = "libs2"
-		args2[4] = "-o"
-		args2[5] = "out.ll"
-		args2[6] = "-g"
-		return main(7,args2[0]&)
+		args2[1] = "-win32"
+		args2[2] = "main2.hv"
+		args2[3] = "-C0"
+		args2[4] = "libs2"
+		args2[5] = "-o"
+		args2[6] = "out.ll"
+		args2[7] = "-g"
+		return main(8,args2[0]&)
 		//args2[7] = "--vk"
 		//args2[8] = "./vk.xml"
 		return main(9,args2[0]&)
@@ -54,11 +58,27 @@ main := !(int argc, char^^ argv) -> int
 
 	files := new List.{char^}
 
+	targetLinux = true
+	targetWindows = false
+
+	osHVFile := ".hv.posix"
+	osCLIBFile := ".clib.posix"
+
 	i := 1
 	while i < argc
 	{
 		switch argv[i]
 		{
+			case "-linux"
+				targetLinux = true
+				targetWindows = false
+				osHVFile = ".hv.posix"
+				osCLIBFile = ".clib.posix"
+			case "-win32"
+				targetLinux = false
+				targetWindows = true
+				osHVFile = ".hv.win32"
+				osCLIBFile = ".clib.win32"
 			case "-g"
 				DebugMode = true
 			case "-o"
@@ -71,12 +91,12 @@ main := !(int argc, char^^ argv) -> int
 					TFSReadFolder(StringSpan(argv[i+1]),true,zFil ==> {
 						nm := zFil.GetName()
 						nmEnd := StringEnd(nm)
-						if nm[-3..0] == ".hv" or nmEnd == ".hv.posix" //TODO unconst
+						if nm[-3..0] == ".hv" or nmEnd == osHVFile
 						{
 							fObj := new BoxFile(zFil)
 							CodeFiles.Push(fObj)
 							CodeSpaces[num].Files.Push(fObj)
-						}else if nm[-5..0] == ".clib" or nmEnd == ".clib.posix"
+						}else if nm[-5..0] == ".clib" or nmEnd == osCLIBFile
 						{
 							spc := CodeSpaces[num]&
 							spc.Modules.Push(new CLib(zFil))

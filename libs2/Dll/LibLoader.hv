@@ -180,6 +180,17 @@ GetLibrary := !(TStringView libName) -> LibDBObject^
 	return gLibDB.GetLib(libName)
 }
 
+GetLibrary := !(char^[] lbs) -> LibDBObject^
+{
+	for i : lbs.Size()
+	{
+		lb := gLibDB.GetLib(lbs[i])
+		if lb != null
+			return lb
+	}
+	return null
+}
+
 //Library := class 
 //{
 //	hndl := LibDBObject^
