@@ -41,8 +41,7 @@ MappedFile := class extend TGCObject
 			throw new Exception("can not open file")
 		}
 	
-		if not posixGetFileSize(fileId,fileSize&)
-			throw new Exception("unknown error")
+		fileSize = osFileSize(fileName)
 	
 		mmFlgs := PROT_READ
 		if flg != FILE_READ

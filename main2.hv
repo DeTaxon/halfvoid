@@ -2,17 +2,13 @@
 
 main := !(char^[] args) -> int
 {
-	osReadFolder(".",x ==> {
-		st := x.Normalize()
-		if osIsFolder(st.Str())
-		{
-			printf("folder\n")
-		}else{
-			printf("file\n")
+	gRepo := new vRepo
+	gRepo.Init(".")
 
-		}
-		printf("hoy %s %i\n",st.Str(),osFileSize(st.Str()))
-	})
+	fil := gRepo.GetFile("./TODOS.txt")
+	mp := fil.GetMap()
+	spn := StringSpan(mp.Get(),mp.Size())
+	printf("hey %s\n",spn.GetString().Str())
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255
