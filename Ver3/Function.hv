@@ -11,10 +11,13 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 		case "virtual"
 			Attr.IsVirtual = true
 			iter = iter.Right
-			if iter == null
-				return null
+		case "poison"
+			Attr.IsVirtual = true
+			iter = iter.Right
 		case void
 	}
+	if iter == null
+		return null
 
 	if iter.GetValue() != "!"
 		return null

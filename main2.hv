@@ -1,14 +1,25 @@
 
+class1 := class
+{
+	x := int
+	Test := poison !() -> void
+	{
+		for it,ind : this->AllFields
+		{
+			printf("hoy %s %i\n",ind,it)
+		}
+	}
+}
+class2 := class extend class1
+{
+	y := int
+	z := int
+}
 
 main := !(char^[] args) -> int
 {
-	gRepo := new vRepo
-	gRepo.Init(".")
-
-	fil := gRepo.GetFile("./TODOS.txt")
-	mp := fil.GetMap()
-	spn := StringSpan(mp.Get(),mp.Size())
-	printf("hey %s\n",spn.GetString().Str())
+	k := class2
+	k.Test()
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255

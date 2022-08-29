@@ -42,7 +42,7 @@ main := !(int argc, char^^ argv) -> int
 	{
 		args2 := char^[20]
 		args2[0] = argv[0]
-		args2[1] = "-win32"
+		args2[1] = "-linux"
 		args2[2] = "main2.hv"
 		args2[3] = "-C0"
 		args2[4] = "libs2"
