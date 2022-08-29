@@ -51,6 +51,13 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		assert(false)
 		return null
 	}
+	if right.Value == "Type"
+	{
+		dwnObj := TryGetExeCall(obj.Down)
+		if dwnObj == null
+			obj.EmitError("Can not get type")
+		return GetConstType(dwnObj.GetType())
+	}
 	if right.Value == "TypeSize"
 	{
 		itType := ParseType(obj.Down)
@@ -113,11 +120,54 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			obj.EmitError("Can not set type")
 		return setCall
 	}
+
 	right.EmitError("Unknown metafield")
 	
 	assert(false)
 	return null
 }
+
+innerTryGetOperMeta := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right == null return null
+
+	if itm.Down.Right.GetValue() == ">="
+	{
+		tp1 := ParseType(itm.Down)
+		tp2 := ParseType(itm.Down.Right.Right)
+
+		if tp1 == null
+		{
+			obj1 := TryGetExeCall(itm.Down)
+			if obj1? is ConstType
+			{
+				tp1 = obj1->{ConstType^}.Value
+			}else{
+				return null
+			}
+		}
+		if tp2 == null
+		{
+			obj2 := TryGetExeCall(itm.Down)
+			if obj2? is ConstType
+			{
+				tp2 = obj2->{ConstType^}.Value
+			}else{
+				return null
+			}
+		}
+		
+		if TypeFight(tp1,tp2) == tp2
+		{
+			return GBoolTrue
+		}
+		return GBoolFalse
+	}
+
+}
+
 
 
 innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^

@@ -118,9 +118,30 @@ BoxFuncCall := class extend BoxExeObj
 			{
 				if i < fType.Params.Size()
 					continue
-				if downs[i].GetType() == GTypeFloat
+				tp := downs[i].GetType()
+				if IsInt(tp)
+				{
+					if IsUInt(tp)
+					{
+						downs[i] = GetExchange(downs[i],GTypeU64)
+					}else{
+						downs[i] = GetExchange(downs[i],GTypeS64)
+					}
+				}else if tp == GTypeFloat
 				{
 					downs[i] = GetExchange(downs[i],GTypeDouble)
+				}else if tp is in TypeClass
+				{
+					stTyp := GTypeChar.GetPoint()
+					while downs[i] != null and downs[i].GetType() != stTyp
+					{
+						downs[i] = GetExchange(downs[i],stTyp)
+					}
+					if downs[i] == null
+					{
+						printf("Passed class to c-variadic function, transfer function not found\n")
+						throw new Exception(0,"")
+					}
 				}
 			}
 		}

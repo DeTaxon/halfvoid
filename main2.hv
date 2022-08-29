@@ -6,7 +6,10 @@ class1 := class
 	{
 		for it,ind : this->AllFields
 		{
-			printf("hoy %s %i\n",ind,it)
+			hm := it->Type >= TGCObject
+			printf("hoy %s %i\n",ind,hm)
+			if it->Type >= TGCObject
+				printf("GOOD\n")
 		}
 	}
 }
@@ -14,12 +17,15 @@ class2 := class extend class1
 {
 	y := int
 	z := int
+	k := TGCObject
 }
+
 
 main := !(char^[] args) -> int
 {
 	k := class2
 	k.Test()
+	printf("hm %s\n",k)
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255

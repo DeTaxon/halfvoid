@@ -38,30 +38,6 @@ GetExeString := !(StringSpan str) -> BoxExeString^
 }
 
 
-exeTypes := AVLMap.{Type^,BoxExeType^}
-GetExeType := !(Type^ tp) -> BoxExeType^
-{
-	if exeTypes.Contain(tp)
-		return exeTypes[tp]
-	m := new BoxExeType(tp)
-	exeTypes[tp] = m
-	return m
-}
-
-BoxExeType := class extend BoxExeObj
-{
-	Value := Type^
-	this := !(Type^ nVal) -> void
-	{
-		val = nVal
-		ObjType = GTypeVoid
-	}
-	PrintUse := virtual !(TIOStream^ f) -> void
-	{
-		f^ << "nah"
-	}
-}
-
 GBoolTrue := BoxExeBool^
 GBoolFalse := BoxExeBool^
 BoxExeBool := class extend BoxExeConstObj

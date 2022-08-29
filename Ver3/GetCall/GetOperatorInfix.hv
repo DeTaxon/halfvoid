@@ -21,15 +21,17 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
-	return innerTryGetInfixCall(oper,tmpList,itm)
+	res1 := innerTryGetInfixCall(oper,tmpList,itm)
+	if res1 != null
+		return res1
+	return innerTryGetOperMeta(itm)
 }
 
 innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) -> BoxExeObj^
 {
 	if lst[0] == null or lst[1] == null
 	{
-		errToken.Print(0)
-		errToken.EmitError("Unknown error")
+		return null
 	}
 	assert(lst.Size() == 2)
 
