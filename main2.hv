@@ -6,10 +6,11 @@ class1 := class
 	{
 		for it,ind : this->AllFields
 		{
-			hm := it->Type >= TGCObject
-			printf("hoy %s %i\n",ind,hm)
+			printf("hoy %s\n",ind)
 			if it->Type >= TGCObject
-				printf("GOOD\n")
+				printf("GCObject\n")
+			if it->IsGCPointer
+				printf("GCPointer\n")
 		}
 	}
 }
@@ -18,6 +19,9 @@ class2 := class extend class1
 	y := int
 	z := int
 	k := TGCObject
+	kk := TGCObject^
+	l := int^
+	ll := TVector.{int}^
 }
 
 
@@ -25,7 +29,6 @@ main := !(char^[] args) -> int
 {
 	k := class2
 	k.Test()
-	printf("hm %s\n",k)
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255

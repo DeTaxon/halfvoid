@@ -10,3 +10,11 @@
 #define NK_RAWFB_IMPLEMENTATION
 #include "Nuklear/demo/x11_rawfb/nuklear_rawfb.h"
 
+extern int nk_context_size()
+{
+	return sizeof(struct nk_context);
+}
+extern int nk_atlas_size()
+{
+	return sizeof(struct nk_font_atlas);
+}

@@ -36,7 +36,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			if dwnObj != null
 				typ = dwnObj.GetType()
 			if typ == null
-				obj.Down.EmitError("Object for TypeGroup must be type")
+				obj.Down.EmitError("Object for TypeGroup must have a type")
 		}
 		if typ is TypeClass
 			return GetExeString(StringSpan("Class"))
@@ -50,6 +50,21 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GetExeString(StringSpan("Array"))
 		assert(false)
 		return null
+	}
+	if right.Value == "IsGCPointer"
+	{
+		typ := ParseType(obj.Down)
+		if typ == null
+		{
+			dwnObj := TryGetExeCall(obj.Down)
+			if dwnObj != null
+				typ = dwnObj.GetType()
+			if typ == null
+				obj.Down.EmitError("Object for IsGCPointer must have a type")
+		}
+		if IsGCPtr(typ)
+			return GBoolTrue
+		return GBoolFalse
 	}
 	if right.Value == "Type"
 	{

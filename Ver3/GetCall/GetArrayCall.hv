@@ -7,6 +7,8 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 		return null
 	}
 
+	SyntaxCompress(itm.Down.Right,PriorityData)
+
 	objs := CheckExeDownList
 	allConsts := true
 	allType := Type^
@@ -134,7 +136,9 @@ BoxArrayHolder := class extend BoxExeObj
 			return resFunc.CreateCall()
 		}
 		if TypeFight(defaultType,bs) != bs
+		{
 			return null
+		}
 		return createUse(bs)
 	}
 	CreateDefaultUse := !() -> BoxExeObj^

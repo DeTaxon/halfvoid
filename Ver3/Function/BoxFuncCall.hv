@@ -84,9 +84,7 @@ BoxFuncCall := class extend BoxExeObj
 			newObj := downs[i]
 			if downs[i].GetType() != par.ItType
 			{
-				newObj = GetExchange(downs[i],par.ItType)
-
-				while newObj.GetType() != par.ItType
+				while true
 				{
 					newObj = GetExchange(newObj,par.ItType) //TODO limit to some value
 					if newObj == null
@@ -101,6 +99,8 @@ BoxFuncCall := class extend BoxExeObj
 						printf("%s\n",tmpl.Str())
 						throw new Exception(tmpl.Str())
 					}
+					if newObj.GetType() == par.ItType
+						break
 				}
 				downs[i] = newObj
 			}

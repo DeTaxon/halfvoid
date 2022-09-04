@@ -26,7 +26,11 @@
 		"GLFW_CURSOR" : 0x33001,
 		"GLFW_CURSOR_NORMAL" : 0x34001,
 		"GLFW_CURSOR_HIDDEN" : 0x34002,
-		"GLFW_CURSOR_DISABLED" : 0x34003
+		"GLFW_CURSOR_DISABLED" : 0x34003,
+
+		"GLFW_MOUSE_BUTTON_LEFT" : 0,
+		"GLFW_MOUSE_BUTTON_RIGHT" : 1,
+		"GLFW_MOUSE_BUTTON_MIDDLE" : 2
 	},
 	"libs" : [
 		"libglfw.so.3",
@@ -49,6 +53,9 @@
 		"glfwSetCursorPosCallback" : "void,void^,void^",
 		"glfwSetInputMode" : "void,void^,int,int",
 		"glfwSetWindowSizeCallback" : "void,void^,void^",
-		"glfwSetWindowTitle" : "void,void^,char^"
+		"glfwSetWindowTitle" : "void,void^,char^",
+
+		"glfwGetMouseButton" : "int,void^,int",
+		"glfwGetCursorPos" : "void,void^,double^,double^"
 	}
 }

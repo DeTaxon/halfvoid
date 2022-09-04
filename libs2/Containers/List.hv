@@ -125,7 +125,7 @@ List := class.{@T} extend TGCObject
 	//}
 	destroyNode := !(ListNode.{T}^ nd) -> void
 	{
-		if T->TypeGroup == "Pointer"
+		if T->IsGCPointer
 		{
 			nd.data = null
 		}

@@ -131,6 +131,7 @@ BoxClass := class extend BoxUnit
 					PrimeParents.Emplace(pp.0,par,pp.2 + 1) //todo Remove duplicates
 				}
 			}
+			PrimeParents.Emplace(this&,this&,0)
 		}
 	}
 	InheritStep := !() -> void

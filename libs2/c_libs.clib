@@ -29,15 +29,47 @@
 		"NK_WINDOW_SCROLL_AUTO_HIDE" : "128",
 		"NK_WINDOW_BACKGROUND" : "256",
 		"NK_WINDOW_SCALE_LEFT" : "512",
-		"NK_WINDOW_NO_INPUT" : "1024"
+		"NK_WINDOW_NO_INPUT" : "1024",
+
+		"NK_FONT_ATLAS_ALPHA8" : "0",
+		"NK_FONT_ATLAS_RGBA32" : "1",
+
+		"NK_VERTEX_POSITION" : "0",
+		"NK_VERTEX_COLOR" : "1",
+		"NK_VERTEX_TEXCOORD" : "2",
+		"NK_VERTEX_ATTRIBUTE_COUNT" : "3".
+
+		"NK_FORMAT_FLOAT" : "6",
+		"NK_FORMAT_R8G8B8A8" : "11",
+		"NK_FORMAT_COUNT" : "19",
+
+		"NK_BUTTON_LEFT" : "0",
+		"NK_BUTTON_MIDDLE" : "1",
+		"NK_BUTTON_RIGHT" : "2",
+		"NK_BUTTON_DOUBLE" : "3"
 	}
 	"funcs" : {
+
+		"nk_context_size" : "int",
+		"nk_atlas_size" : "int",
+
+		"nk_init_default" : "int,void^,void^",
 
 		"nk_rawfb_init" : "void^,void^,void^,int,int,int,int",
 		"nk_rawfb_render" : "void,void^,nk_color,int",
 
 		"nk_begin" : "int,void^,char^,nk_rect,int",
 		"nk_end" : "void,void^",
+		"nk_clear" : "void,void^",
+
+		"nk_input_begin" : "void,void^",
+		"nk_input_motion" : "void,void^,int,int",
+		"nk_input_button" : "void,void^,int,int,int,bool",
+		"nk_input_end" : "void,void^",
+
+		"nk_buffer_init_default" : "void,void^",
+		"nk_buffer_init_fixed" : "void,void^,void^,size_t",
+		"nk_convert" : "void,void^,void^,void^,void^,void^",
 
 		"nk_label" : "void,void^,char^,int",
 
@@ -59,6 +91,15 @@
 		"ur_sqe_poll_add" : "void,void^,int,int",
 
 		"ur_submit" : "void,void^",
+
+		"nk_font_atlas_init_default" : "void,void^",
+		"nk_font_atlas_begin" : "void,void^",
+		"nk_font_atlas_end" : "void,void^,void^,void^",
+		"nk_font_atlas_bake" : "void^,void^,int^,int^,int",
+		"nk_font_atlas_add_from_memory" : "void^,void^,void^,u64,float,void^",
+		"nk_font_atlas_add_default" : "void^,void^,float,void^",
+
+		"nk_style_set_font" : "void,void^,void^",
 
 		"ur_wait_cqe_timeout" : "int,void^,void^^,double",
 		"ur_cqe_seen" : "void,void^,void^"

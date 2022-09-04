@@ -15,10 +15,24 @@ TGCObject := class extend TGCIObject
 		if RefValue == 0
 		{
 			Destroy()
+			postDestroy()
 			delete this&
 		}
 	}
 	Destroy := virtual !() -> void {}
+
+	postDestroy := poison !() -> void
+	{
+		for it,ind : this->AllFields
+		{
+			if it->Type >= TGCIObject
+			{
+				it.Destroy()
+			}
+			if it->IsGCPointer
+				it = null
+		}
+	}
 }
 
 "=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void

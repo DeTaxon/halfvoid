@@ -49,6 +49,8 @@
 
 		"time" : "int",
 		"srand" : "void,int",
-		"rand" : "int"
+		"rand" : "int",
+
+		"exit" : "void,int"
 	}
 }
