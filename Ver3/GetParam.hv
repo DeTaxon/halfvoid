@@ -48,7 +48,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 						if IsGCPtr(varType)
 						{
 							injCap := metFuncs[0]
-
+							
 							assert(FuncStack.Size() > 1)
 							parFunc := FuncStack[1]
 							//if injCap.CapturedBySomeVars.Contain(asItm.Value)

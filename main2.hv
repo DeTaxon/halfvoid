@@ -25,10 +25,23 @@ class2 := class extend class1
 }
 
 
+fnc := !(TGCObject^[] objs) -> void
+{
+
+}
+fnc2 := !(args...) -> TGCObject^
+{
+	for lalala : args
+	{
+		result  = lalala
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	k := class2
-	k.Test()
+	//fnc(![new TGCObject])
+	fnc2(new TGCObject)
+
 	// tst := nk_color
 	// tst.r = 128
 	// tst.g = 255

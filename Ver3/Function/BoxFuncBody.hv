@@ -150,7 +150,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			name := StringSpan("")
 			if i < InputVarNames.Size()
+			{
 				name = InputVarNames[i]
+			}else{
+				name = GetParSpan(i)
+			}
 			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
 			vr := new MemVar(name,parObj)
 			Params.Push(vr)

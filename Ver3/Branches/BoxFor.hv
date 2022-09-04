@@ -395,7 +395,15 @@ BoxForOverMeta := class extend BoxExeObj
 		{
 			for j : dwnObjs.Size()
 			{
-				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+				mtVar := dwnObjs[j].MetaObj.GetMetaIterValueParam(i)
+				if mtVar != null
+				{
+					newVar := new MemVarBorrowed(dwnObjs[j].ValueName,mtVar)
+					middleVars[i].Push(newVar)
+					UnitStack.PushFront(newVar)
+				}else{
+					tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+				}
 
 				if dwnObjs[j].IndexName.Size() != 0
 				{
@@ -426,6 +434,7 @@ BoxForOverMeta := class extend BoxExeObj
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
+		middleVars[^][^].PrintDebugMeta(f)
 		dwnObjs[^].MetaObj.PrintDebugMeta(f)
 		blocks[^].PrintDebugMeta(f)
 	}
