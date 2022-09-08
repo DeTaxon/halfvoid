@@ -28,3 +28,11 @@ ZeroMem := !(@T& x) -> void
 	if T->TypeGroup == "Class"
 		internalHVInitClass(x)
 }
+
+internalHVCreateTuple := !(args...) . {@ResType} -> ResType
+{
+	for it,i : args
+	{
+		result.i = it
+	}
+}

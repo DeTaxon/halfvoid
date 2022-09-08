@@ -1,4 +1,4 @@
-TVector := class .{@T} extend TGCObject
+Vector := class .{@T} extend TArrayView.{T}
 {
 	pointer := T^
 	itSize := int
@@ -7,11 +7,11 @@ TVector := class .{@T} extend TGCObject
 	{
 		Resize(count)
 	}
-	"[]" := !(int i) -> T&
+	"[]" := virtual !(int i) -> T&
 	{
 		return pointer[i]
 	}
-	Size := !() -> int
+	Size := virtual !() -> int
 	{
 		return itSize
 	}

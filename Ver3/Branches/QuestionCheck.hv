@@ -8,7 +8,7 @@ BoxQuestionPointer := class extend BoxExeObj
 		itDown = newDown
 		ObjType = newDown.GetType()
 		
-		continueLabel = new BoxLabel
+		continueLabel = new BoxLabel()
 		for it : UnitStack
 		{
 			quitLabel = it.GetQLabel()

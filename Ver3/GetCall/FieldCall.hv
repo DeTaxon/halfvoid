@@ -10,7 +10,10 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 	val := TryGetExeCall(itm.Down)
 	if val == null
 		itm.Down.EmitError("Could not get left of . object")
-	return innerTryGetFieldCall(val,itm.Down.Right.Right)
+	return innerTryGetFieldCall(val,itm.Down.Right.Right)?
+
+	itm.EmitError("Field not found")
+	return null
 }
 
 innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
@@ -89,8 +92,6 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			return fld.CreateCall(itms)
 		}
 	}
-
-	rObj.EmitError("Field not found")
 
 	return null
 }

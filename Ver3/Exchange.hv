@@ -55,9 +55,15 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	{
 		assert(false)
 	}
-	if obj is BoxArrayHolder and IsViewType(expType)
+	if obj is BoxArrayHolder and obj->{BoxArrayHolder^}.GetArrayType() == expType
 	{
-		return obj->{BoxArrayHolder^}.CreateViewArray(expType)
+		arr := obj->{BoxArrayHolder^}
+
+		if IsViewType(expType)
+			return arr.CreateViewArray(expType)
+
+		if arr.GetArraySize() != 0 and arr.GetArrayType() == expType
+			return arr.CreateDefaultUse()
 	}
 
 	objs := CheckExeDownList

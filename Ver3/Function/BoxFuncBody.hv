@@ -164,6 +164,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(ConstVars[^])
 
+		// for it : ConstVars
+		// {
+		// 	if it is in TypeVar
+		// 	{
+		// 		printf("heh %s\n",it->{TypeVar^}.Name)
+		// 	}
+		// }
+
 		OutputName = GetFuncMangle(Name)
 		
 		CurrentScope = this&

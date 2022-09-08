@@ -24,9 +24,10 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	Objs := CheckExeDownList
 	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs)
 
+	consts := List.{BoxExeConstObj^} //TODO
+
 	if itm.Down.Right.Right is TokenIndent
 	{
-		consts := List.{BoxExeConstObj^} //TODO
 
 		mNameT := itm.Down.Right.Right->{TokenIndent^}
 
@@ -34,12 +35,25 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		if fnc != null
 			return fnc
 	}
+
+	if itm.Down.Right.Right is TokenIndent
+	{
+		nm := itm.Down.Right.Right->{TokenIndent^}
+		objs2 := CheckExeDownList
+		objs2.Push(vr)
+		objs2.Push(Objs[^])
+
+		newFnc := CreateFuncCall(nm.Value,objs2,consts)
+		return newFnc?
+	}
 	
 	ptrCall := innerTryGetFieldCall(vr,itm.Down.Right.Right)
 	if ptrCall != null
 	{
 		return innerTryGetPtrCall(ptrCall,Objs)?
 	}
+
+
 
 	itm.EmitError("Method not found")
 	assert(false)

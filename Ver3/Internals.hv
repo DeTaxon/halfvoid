@@ -10,6 +10,8 @@ TemplateInternalGetCaptures := BoxFuncTemplate^
 TemplateInternalGetYieldState := BoxFunc^
 TemplateInternalGetYieldVars := BoxFuncTemplate^
 
+TemplateInternalCreateTuple := BoxFuncTemplate^
+
 GInternalSetType := BoxFuncTemplate^
 
 GFuncGCSetNull := BoxFunc^
@@ -98,6 +100,8 @@ InitInternals := !() -> void
 	TemplateInternalGetCaptures = intGetTemplate("internalHVLambdaGetCaptures")
 	TemplateInternalGetYieldState = intGetFunc("internalHVLambdaGetYieldState")
 	TemplateInternalGetYieldVars = intGetTemplate("internalHVLambdaGetYieldTuple")
+
+	TemplateInternalCreateTuple = intGetTemplate("internalHVCreateTuple")
 
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")

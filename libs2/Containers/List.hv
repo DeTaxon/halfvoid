@@ -5,7 +5,7 @@ ListNode := class .{@T}
 	prev := ListNode.{T}^
 }
 
-List := class.{@T} extend TGCObject
+List := class.{@T} extend TArrayView.{T}
 {
 	start := ListNode.{T}^
 	end := ListNode.{T}^
@@ -29,6 +29,17 @@ List := class.{@T} extend TGCObject
 	}
 	PushFront := !(T itm) -> void
 	{
+		newNode := createFrontNode()
+		newNode.data = itm
+	}
+	EmplaceFront := !(args...) -> void
+	{
+		newNode := createFrontNode()
+		newNode.data.this(args...)
+	}
+
+	createFrontNode := !() -> ListNode.{T}^
+	{
 		newNode := createNode()
 		if itSize == 0
 		{
@@ -40,7 +51,7 @@ List := class.{@T} extend TGCObject
 			start = newNode
 		}
 		itSize += 1
-		newNode.data = itm
+		return newNode
 	}
 	Pop := !() -> T
 	{
@@ -58,7 +69,8 @@ List := class.{@T} extend TGCObject
 		}
 		itSize -= 1
 	}
-	"[]" := !(int ind) -> T&
+
+	"[]" := virtual !(int ind) -> T&
 	{
 		if ind < 0
 			return this[itSize + ind]
@@ -71,7 +83,18 @@ List := class.{@T} extend TGCObject
 		}
 		return itr.data
 	}
-	Size := !() -> int { return itSize }
+
+	ToVector := virtual !() -> Vector.{T}^
+	{
+		nowSize := Size()
+		result = new Vector.{T}(nowSize)
+		for it,i : this
+		{
+			result^[i] = it
+		}
+	}
+
+	Size := virtual !() -> int { return itSize }
 	Destroy := virtual !() -> void
 	{
 		itr := start
@@ -89,7 +112,6 @@ List := class.{@T} extend TGCObject
 	//DeleteIf := !( !(T&)&->bool cb) -> void
 	//{
 	//	itr := Start
-//
 	//	while itr != null
 	//	{
 	//		if false //cb(itr.data)
@@ -117,7 +139,6 @@ List := class.{@T} extend TGCObject
 	//				itNode.next.prev = itNode.prev
 	//			}
 	//			itSize -= 1
-//
 	//		}else{
 	//			itr = itr.next
 	//		}

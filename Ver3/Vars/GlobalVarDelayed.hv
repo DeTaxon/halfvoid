@@ -35,7 +35,7 @@ GlobalVarDelayed := class extend GlobalVar
 		if tp == null
 		{
 			MemValue = TryGetExeCall(typeToken) ->{BoxExeConstObj^} //TODO if not Const
-			if MemValue is BoxArrayHolder
+			if MemValue? is BoxArrayHolder
 			{
 				ah := MemValue->{BoxArrayHolder^}
 				if ah.GetArraySize() == 0

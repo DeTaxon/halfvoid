@@ -16,6 +16,7 @@ GetTuple := !(List.{Type^} types) -> BoxClass^
 
 BoxClassTuple := class extend BoxClass
 {
+	mthHatch := THatch
 	this := !(List.{Type^} types) -> void
 	{
 		ItName = "anon" //todo
@@ -27,6 +28,25 @@ BoxClassTuple := class extend BoxClass
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 		}
 		InheritStep()
+
+		SubWork(() ==> {
+			InternalsHatch.Await()
+			cnsts := List.{BoxExeConstObj^}
+			setFunc := GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
+			mthHatch.Emit()
+		})
+	}
+	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		mthHatch.Await()
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,objs)
+
+		if objs.Size() != 0
+			cb(objs)
 	}
 }
 

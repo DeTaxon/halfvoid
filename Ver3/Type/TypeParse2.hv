@@ -224,12 +224,22 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			InternalsHatch.Await()
 
 			dwnType := Type^
-			if tp? is in TypeClass
+			if tp? is in TypeClass or (tp? is in TypePoint and tp?.Base is in TypeClass)
 			{
-				tpClass := tp->{TypeClass^}.ToClass
+				tpClass := BoxClass^
+				if tp is in TypeClass
+				{
+					tpClass = tp->{TypeClass^}.ToClass
+				}else{
+					tpClass = tp.Base->{TypeClass^}.ToClass
+				}
 				if tpClass.TemplateParent != ArrayViewTemplate
 					return null
 				dwnType = tpClass.Constants?.Constants[0]->{ConstType^}.Value
+			}
+			if tp? is TypeArr
+			{
+				dwnType = tp.Base
 			}
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null

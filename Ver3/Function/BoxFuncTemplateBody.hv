@@ -119,18 +119,28 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		datas := HybridQueue.{Tuple.{Type^,bool},10}
 
 
+		addObjType := (int i) ==> {
+			if objs[i] is BoxArrayHolder
+			{
+				ar := objs[i]->{BoxArrayHolder^}
+				datas.Emplace(ar.GetArrayType(),true)
+			}else{
+				datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+			}
+		}
+
 		if objs.Size() > hData.Types.Size()
 		{
 			for i : objs.Size()
 			{
-				datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+				addObjType(i)
 			}
 		}else{
 			for i : hData.Types.Size()
 			{
 				if i < objs.Size()
 				{
-					datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+					addObjType(i)
 				}else{
 					datas.Emplace(hData.Types[i].ItType,hData.Types[i].IsRef)
 				}

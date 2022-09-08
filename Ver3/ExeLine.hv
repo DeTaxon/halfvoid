@@ -39,6 +39,7 @@ BoxExeLine := class extend BoxExeLineSimple
 			return void
 
 		ItToken.Print(0)
+		itm.EmitError("Unknown error")
 		assert(false)
 	}
 }
@@ -153,6 +154,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetTrinary(itm)?
 	return TryGetSuffixCall(itm)?
 	return TryGetBracketsCall(itm)?
+	return TryGetTemplateCall(itm)?
 	
 	isOperCall := TryCheckMathOperatorCall(itm)
 	if isOperCall != null
@@ -426,7 +428,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				thisCase = 1000
 			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
 				thisCase = 0
-			} else if objs[i] is BoxArrayHolder and IsViewType(toType)
+			} else if objs[i] is BoxArrayHolder and ArrayHolderCheck(objs[i],toType)
 			{
 				thisCase = 0
 			}else{
@@ -451,6 +453,17 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 	}
 	return worstCase
 }
+
+ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
+{
+	array := ar->{BoxArrayHolder^}
+	if IsViewType(toType) //TODO
+		return true
+	if array.GetArrayType() == toType
+		return true
+	return false
+}
+
 TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 {
 	if frm == to

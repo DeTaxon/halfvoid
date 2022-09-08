@@ -15,11 +15,6 @@ TArrayView := class .{@T} extend TGCObject
 		preRes := x.Capture()
 		return preRes
 	}
-
-	//Reverse := fake
-	//{
-	//	"[]" := virtual !(int i ) ->T& {}
-	//}
 }
 
 TArraySpan := class .{@T} extend TArrayView.{T}
@@ -65,4 +60,10 @@ internalCreateEmptyArray := !() .{@Typ} -> TArraySpan.{Typ}
 "->{}" := !(TArraySpan.{@T} x) .{T[]} -> T[]
 {
 	return x&
+}
+
+ToVector := !(@WAWA[] this) -> Vector.{WAWA}^
+{
+	result = new Vector.{WAWA}(this.Size())
+	result^[i] = this[^i]
 }

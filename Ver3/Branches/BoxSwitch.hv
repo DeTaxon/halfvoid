@@ -22,7 +22,7 @@ SwitchCase := class
 		cmpCheck.PrintPre(f)
 		PrintBranch(f,cmpCheck,useNode,nopeLabel)
 		useNode.PrintCode(f)
-		caseBody.PrintCode(f)
+		caseBody?.PrintCode(f)
 		qLabel.PrintGo(f)
 		nopeLabel.PrintCode(f)
 	}
@@ -148,7 +148,7 @@ BoxSwitch := class extend BoxUnit
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 		for it : caseNodes
-			it.caseBody.PrintDebugMeta(f)
+			it.caseBody?.PrintDebugMeta(f)
 		deafultNode?.PrintDebugMeta(f)
 	}
 

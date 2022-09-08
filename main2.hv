@@ -1,74 +1,16 @@
 
-class1 := class
-{
-	x := int
-	Test := poison !() -> void
-	{
-		for it,ind : this->AllFields
-		{
-			printf("hoy %s\n",ind)
-			if it->Type >= TGCObject
-				printf("GCObject\n")
-			if it->IsGCPointer
-				printf("GCPointer\n")
-		}
-	}
-}
-class2 := class extend class1
-{
-	y := int
-	z := int
-	k := TGCObject
-	kk := TGCObject^
-	l := int^
-	ll := TVector.{int}^
-}
-
-
-fnc := !(TGCObject^[] objs) -> void
-{
-
-}
-fnc2 := !(args...) -> TGCObject^
-{
-	for lalala : args
-	{
-		result  = lalala
-	}
-}
 
 main := !(char^[] args) -> int
 {
-	//fnc(![new TGCObject])
-	fnc2(new TGCObject)
+	// test := LexBuilder
+	// test.ApplyReg("hi")
 
-	// tst := nk_color
-	// tst.r = 128
-	// tst.g = 255
-	// tst.b = 0
+	x := ![!{1,12},!{13,14}].ToVector()
 
-	// rect := nk_rect//(10,10,100,100)
-	// rect.x = 100
-	// rect.y = 100
-	// rect.w = 250
-	// rect.h = 250
-	// if nk_begin(ctx,"HI",rect,NK_WINDOW_MOVABLE + NK_WINDOW_BORDER + NK_WINDOW_CLOSABLE) != 0
-	// {
-	// 	nk_label(ctx,"test",0x11)
-	// }
-	// nk_end(ctx)
-	// nk_rawfb_render(ctx,tst,1)
-	
-	// fl := fopen("tst.ppm","wb")
-	// fwrite("P6 512 512 255",14,1,fl)
-	// for i : x
-	// {
-	// 	for j : y
-	// 	{
-	// 		fwrite(fb->{int^}[i*512 + j]&,1,3,fl)
-	// 	}
-	// }
-	// //fwrite(fb,x*y*4,1,fl)
-	// fclose(fl)
+	for it : x^
+	{
+		printf("hey %i %i\n",it.0,it.1)
+	}
+
 	return 0
 }
