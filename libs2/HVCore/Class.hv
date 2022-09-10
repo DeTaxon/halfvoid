@@ -15,3 +15,11 @@ internalClassDefaultCompare := !(@T a, T b) -> int
 	}
 	return 0
 }
+
+internalTupleConstructor := !(@Tpl this,args...) -> void
+{
+	for it,i : args
+	{
+		this.i = it
+	}
+}
