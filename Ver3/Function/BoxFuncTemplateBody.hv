@@ -239,7 +239,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 
 		resTypeT = checkType(null,rTokenTree,resCnsts)
-		assert(resTypeT != null)
+		if resTypeT == null and rTokenTree != null
+			rTokenTree.EmitError("Can not get result value")
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}
 	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^

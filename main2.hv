@@ -1,16 +1,29 @@
 
+internalTupleConstructor := !(@Tpl this,args...) -> void
+{
+	for it,i : args
+	{
+		this.i = it
+	}
+}
 
 main := !(char^[] args) -> int
 {
-	// test := LexBuilder
-	// test.ApplyReg("hi")
+	test := LexBuilder
+	test.ApplyReg("[a-zA-Z\\-\\.]+")
+	m := test.GenerateMachine()
+	m.PrintIt()
 
-	x := ![!{1,12},!{13,14}].ToVector()
+	gRepo := new vRepo
+	gRepo.Init(".")
 
-	for it : x^
-	{
-		printf("hey %i %i\n",it.0,it.1)
-	}
+	tst := gRepo.GetFile("main2.hv")
+	mp := tst.GetMap()
 
+	// m.RegExpReadText(mp.Get(),mp.Size(), (a,b,c) ==> {
+	// 	spn := StringSpan(mp.Get()[b]&,c)
+	// 	printf("hm <%s>\n",spn.GetString().Str())
+	// })
+	
 	return 0
 }

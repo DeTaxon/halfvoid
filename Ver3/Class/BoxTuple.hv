@@ -34,6 +34,25 @@ BoxClassTuple := class extend BoxClass
 			cnsts := List.{BoxExeConstObj^}
 			setFunc := GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
+
+			typs := Type^[100]
+			isRef := bool[100]
+
+			typs[0] = ItType
+			isRef[0] = true
+
+			for it,i : Fields
+			{
+				t := it.Value
+				typs[i + 1]	= t
+				if t is in TypeClass or t is in TypeArr
+					isRef[i + 1] = true
+			}
+			fType := GetFuncType(Fields.Size() + 1,typs[0]&,isRef[0]&,GTypeVoid,false,false)
+			cnstrFunc := TemplateInternalTupleConstructor.CreateFunc(fType,cnsts)
+			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
+
+
 			mthHatch.Emit()
 		})
 	}

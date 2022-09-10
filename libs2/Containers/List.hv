@@ -12,7 +12,19 @@ List := class.{@T} extend TArrayView.{T}
 
 	itSize := int
 
+
 	Push := !(T itm) -> void
+	{
+		newNode := createBackNode()
+		newNode.data = itm
+	}
+	PushUniq := !(T itm) -> void
+	{
+		if this[^] == itm
+			return void
+		Push(itm)
+	}
+	createBackNode := !() -> ListNode.{T}^
 	{
 		newNode := createNode()
 		if itSize == 0
@@ -25,7 +37,7 @@ List := class.{@T} extend TArrayView.{T}
 			end = newNode
 		}
 		itSize += 1
-		newNode.data = itm
+		return newNode
 	}
 	PushFront := !(T itm) -> void
 	{
@@ -92,6 +104,21 @@ List := class.{@T} extend TArrayView.{T}
 		{
 			result^[i] = it
 		}
+	}
+	"in" := !(T itm) -> bool
+	{
+		if this[^] == itm
+			return true
+		return false
+	}
+	FindIndex := !(T itm) -> int
+	{
+		for it,ind : this
+		{
+			if it == itm
+				return ind
+		}
+		return -1
 	}
 
 	Size := virtual !() -> int { return itSize }
@@ -172,8 +199,10 @@ TListIterator := class .{@T}
 	}
 	"()" := !() -> T&
 	{
-		old := iter
+		return iter.data
+	}
+	Inc := !() -> void
+	{
 		iter = iter.next
-		return old.data
 	}
 }

@@ -1,0 +1,139 @@
+CollectByEpsilon := !(NonDetMachine input,List.{int} OldStates) -> void
+{
+	for it : OldStates
+	{	
+		for line : input.Lines
+		{
+			if line.from == it and line.symbl == -1
+			{
+				OldStates.PushUniq(line.to)
+			}
+		}
+	}
+}
+CollectMove := !(NonDetMachine input, int sId, List.{int} frm, List.{int} to) -> void
+{
+	for line : input.Lines
+	{
+		for fNode : frm
+		{
+			if line.from == fNode and line.symbl == sId
+			{
+				to.PushUniq(line.to)
+			}
+		}		
+	}
+}
+
+DeterminateMachine := !(NonDetMachine input) -> DetMachine
+{
+	NewNodes := new List.{List.{int}^} 
+	Letters := new List.{int}
+	itLines := new List.{Tuple.{int,int,int}}
+
+
+	for input.Lines
+	{
+		if it.symbl != -1 
+		{
+			Letters.PushUniq(it.symbl)
+		}
+	}
+
+	{
+		nowNodeValue :=  new List.{int} 
+		nowNodeValue.Push(0)
+		CollectByEpsilon(input,nowNodeValue^)
+		NewNodes.Push(nowNodeValue)
+	}
+
+	listCmp := (List.{int} a, List.{int} b) ==> bool
+	{
+		if a.Size() != b.Size()
+			return false
+		for ita : a , itb : b
+		{
+			if ita != itb
+				return false
+		}
+		return true
+	}
+
+	for itNode,nowId : NewNodes^
+	{
+		for c : Letters^
+		{
+			nowNodeValue := new List.{int}
+			CollectMove(input,c,itNode^,nowNodeValue^)
+			CollectByEpsilon(input,nowNodeValue^)
+
+			if nowNodeValue.Size() != 0
+			{
+				resId := 0
+				found := false
+
+				for InNodes, i : NewNodes^
+				{
+					if listCmp(InNodes^,nowNodeValue^)
+					{
+						found = true
+						resId = i
+						break
+					}
+				}
+				if not found
+				{	
+					resId = NewNodes.Size()
+					NewNodes.Push(nowNodeValue)
+				}
+				itLines.EmplaceFront(nowId,resId,c)
+			}
+		}
+	}
+	
+	result.IsEndNode = new Vector.{int}(NewNodes.Size())
+	
+	for itN,i : result.IsEndNode,nowSet : NewNodes^
+	{
+		itN = -1
+
+		for itVal : nowSet^
+		{
+			for  EndNode : input.EndNodeData
+			{
+				if itVal == EndNode.0 and EndNode.1 > itN
+				{
+					itN = EndNode.1
+				}
+			}
+		}
+	}
+
+	result.Table = new Vector.{int[]}(NewNodes.Size())
+	for result.Table {
+		it = new Vector.{int}(Letters.Size())
+		it[^] = -1
+	}
+
+	
+
+	for move : itLines^
+	{
+		chId := -1
+		for it, i : Letters
+		{
+			if it == move.2
+			{
+				chId = i
+				break
+			}
+		}
+		result.Table[move.0][chId] = move.1
+	}
+
+	result.NodeId = new Vector.{int}(Letters.Size())
+	for it,i : Letters^ 
+	{
+		result.NodeId[i] = it
+	}
+}

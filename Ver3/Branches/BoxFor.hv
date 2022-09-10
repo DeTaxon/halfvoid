@@ -136,6 +136,7 @@ ForSubObjects := class
 	HaveValue := BoxExeObj^
 	InitStep := ParamFunc^
 	NextCheck := BoxLabel^
+	IncFunc := BoxExeObj^
 
 	MetaObj := BoxMetaObj^
 	IsMeta := bool
@@ -181,6 +182,8 @@ ForSubObjects := class
 			DownToken.EmitError("iteratable object does not contain IsFinished or HaveValue")
 		if checkFunc.GetType() != GTypeBool
 			DownToken.EmitError("IsFinished or HaveValue return non boolean type")
+		
+		IncFunc = innerTryGetMethodCall(StringSpan("Inc"),dwnVar.CreateCall(),objs,cnsts)
 		
 		mainCall := dwnVar.CreateCall()
 		dwnType := mainCall.GetType()
@@ -340,6 +343,12 @@ BoxFor := class extend BoxExeObj
 		}
 
 		body.PrintCode(f)
+
+		for it : values
+		{
+			it.IncFunc?.PrintDefaultUse(f)
+		}
+
 		CreatedIndexAdd?.PrintDefaultUse(f)
 
 		CheckStep.PrintGo(f)

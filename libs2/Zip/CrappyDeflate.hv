@@ -62,7 +62,7 @@ BW := class
 NotHuffmanTree9 := class  extend TGCObject
 {
 	treeInfo := Tuple.{s16,u8}[512] // character, size
-	extraNodes := TVector.{Tuple.{u16, u16}}[16] //charact,value [bitsize]
+	extraNodes := Vector.{Tuple.{u16, u16}}[16] //charact,value [bitsize]
 
 	GetAndMove := !(BW bw) -> int
 	{
@@ -75,7 +75,7 @@ NotHuffmanTree9 := class  extend TGCObject
 		}
 		for i : 10..15
 		{
-			if extraNodes[i] == null 
+			if extraNodes[i].Size() == 0
 				continue
 			itVal = bw.Get(i)
 			if extraNodes[i][^].0 == itVal
@@ -108,11 +108,11 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		if maxSize < valueSizes[c]
 			maxSize = valueSizes[c]
 	}
-	blCount := TVector.{int}(maxSize+1)
+	blCount := Vector.{int}(maxSize+1)
 
 	for i : arrLen
 		blCount[valueSizes[i]]++
-	blCode := TVector.{int}(maxSize + 1)
+	blCode := Vector.{int}(maxSize + 1)
 	blCount[0] = 0
 	for it : toSet.treeInfo
 		it.0 = -1
@@ -125,7 +125,7 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		code = nxCode shl 1
 		blCode[i] = code
 	}
-	resCodes := TVector.{int}(arrLen)
+	resCodes := Vector.{int}(arrLen)
 	for i : arrLen
 	{
 		c := valueSizes[i]
@@ -294,13 +294,13 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 				newTree := new NotHuffmanTree9
 				ApplyHuffmanTree(codeLens[0]&,19,newTree)
 
-				resultData := TVector.{u8}(HLIT + HDIST)
+				resultData := Vector.{u8}(HLIT + HDIST)
 				DecodeSmallHuffmanTable(newTree,bw,resultData.Get(),resultData.Size())
 
 				litsTree = new NotHuffmanTree9
 				distTree = new NotHuffmanTree9
 				
-				ApplyHuffmanTree(resultData->{char^},HLIT,litsTree)
+				ApplyHuffmanTree(resultData.Get()->{char^},HLIT,litsTree)
 				ApplyHuffmanTree(resultData[HLIT]&->{char^},HDIST,distTree)
 			}
 

@@ -29,7 +29,6 @@ BitsetIterator := class
 	"()" := !() -> int
 	{
 		result = lowIter + bigIter*8
-		Inc()
 	}
 	Inc := !() -> void
 	{
@@ -88,13 +87,18 @@ Bitset := class .{@ArraySize}
 	{
 		if x < ArraySize*8
 		{
+			b := itArray[x div 8]
 			itArray[x div 8] = itArray[x div 8] or_b (1 shl (x mod 8))
 		}
 		return this
 	}
 	"<<" := !(Range x) -> Bitset.{ArraySize}&
 	{
-		for x this << it
+		for it : x
+		{
+			printf("hm %c\n",it)
+			this << it	
+		} 
 		return this
 	}
 	Clean := !(int x) -> void
