@@ -102,5 +102,5 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 				result.Table[fromNew][j] = toNew
 			}
 		}
-	}	
+	}
 }

@@ -96,7 +96,6 @@ Bitset := class .{@ArraySize}
 	{
 		for it : x
 		{
-			printf("hm %c\n",it)
 			this << it	
 		} 
 		return this

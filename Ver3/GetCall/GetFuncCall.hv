@@ -143,6 +143,7 @@ ConstructorCallWrapper := class extend BoxExeObj
 	itVar := ParamFunc^
 	itCall := BoxExeObj^
 	varCall := BoxExeObj^
+	ExtraWork := List.{BoxExeObj^}
 	extraId := int
 	this := !(ParamFunc^ vr, BoxExeObj^ bj) -> void
 	{
@@ -151,6 +152,11 @@ ConstructorCallWrapper := class extend BoxExeObj
 		itCall = bj
 		varCall = vr.CreateCall()
 		ObjType = vr.GetVarType()
+
+		if ObjType is TypeClass
+		{
+			ModifyStackAllocatedVar(vr,ExtraWork)
+		}
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -161,6 +167,7 @@ ConstructorCallWrapper := class extend BoxExeObj
 	{
 		itCall.PrintDefaultUse(f)
 		varCall.PrintPointPre(f)
+		ExtraWork[^].PrintDefaultUse(f)
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{

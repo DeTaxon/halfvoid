@@ -1,12 +1,7 @@
 
-tst2 := class
-{
-	x := Vector.{int}[2]
-}
-test := tst2
 main := !(char^[] args) -> int
 {
-	test.x[0].Size()
+	tst := Vector.{int}(100)
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")
 	// m := test.GenerateMachine()
