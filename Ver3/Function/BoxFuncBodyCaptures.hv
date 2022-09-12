@@ -9,6 +9,7 @@ AppendClass BoxFuncBody
 	CapturedVars := List.{ParamFunc^}
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{MacroParam^}
+	CapturedVarsCleanup := BoxExeObj^
 
 	CapturedBySomeVars := AVLMap.{StringSpan,Tuple.{NamedVar^,MemVar^,BoxExeObj^}} //By ref,value
 
@@ -17,6 +18,17 @@ AppendClass BoxFuncBody
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
 			return void
 		
+		containGC := false
+		for it : CapturedVars
+		{
+			typ := it.GetVarType()
+			if IsGCPtr(typ)
+			{
+				containGC = true
+				break
+			}
+		}
+
 		if CapturedVarsTuple == null
 		{
 			tplClass := GetCaptureTuple()
@@ -34,6 +46,17 @@ AppendClass BoxFuncBody
 			//getVar := CapturedVarsTuple.CreateCall()
 			//c1 := new UnrefFuncCall(getVar)
 			//it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
+		}
+		if containGC
+		{
+			InternalsHatch.Await()
+
+			objs5 := CheckExeDownList
+			objs5.Push(CapturedVarsTuple.CreateCall())
+			cnsts := List.{BoxExeConstObj^}
+			cleanFunc := GCleanGCClass.GetFunc(objs5,cnsts)
+			assert(cleanFunc != null)
+			CapturedVarsCleanup = cleanFunc.CreateCall(objs5)
 		}
 	}
 	CreateGetCaptureCall := !() -> void

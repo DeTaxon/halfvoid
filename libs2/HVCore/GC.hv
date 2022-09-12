@@ -23,15 +23,7 @@ TGCObject := class extend TGCIObject
 
 	postDestroy := poison !() -> void
 	{
-		for it,ind : this->AllFields
-		{
-			if it->Type >= TGCIObject
-			{
-				it.Destroy()
-			}
-			if it->IsGCPointer
-				it = null
-		}
+		internalGCClearClass(this)
 	}
 }
 
@@ -43,4 +35,19 @@ TGCObject := class extend TGCIObject
 		itm1.DecRef()
 	}
 	itm1&->{void^^}^ = itm2->{void^}
+}
+
+internalGCClearClass := !(@T itm) -> void
+{
+	for it,ind : itm->AllFields
+	{
+		if it->Type >= TGCIObject
+		{
+			it.Destroy()
+		}
+		if it->IsGCPointer
+		{
+			it = null
+		}
+	}
 }

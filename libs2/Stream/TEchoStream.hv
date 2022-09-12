@@ -100,8 +100,19 @@ TEchoStream := class extend TIOStream
 		result.charPtr = res
 		result.itSize = outSize
 	}
-	Close := virtual !() -> void
+	Destroy := virtual !() -> void
 	{
-		//TODO: mem clean up
+		if pages.Size() != 0
+		{
+			for it : pages
+				free(it)
+			pages.Destroy()
+		}
+		if ptr != null
+		{
+			free(ptr)
+		}
+		inPtrSize = 0
+		redData = 0
 	}
 }

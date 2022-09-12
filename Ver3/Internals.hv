@@ -41,6 +41,7 @@ GDefautlSetTemplate := BoxFuncTemplate^
 GDefautlCompareTemplate := BoxFuncTemplate^
 
 GZeroMemTemplate := BoxFuncTemplate^
+GCleanGCClass := BoxFuncTemplate^
 
 GVectorConstructor1 := BoxFuncTemplate^
 GVectorConstructor2 := BoxFuncTemplate^
@@ -131,6 +132,7 @@ InitInternals := !() -> void
 	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
+	GCleanGCClass = intGetTemplate("internalGCClearClass")
 
 	GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
 	GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")

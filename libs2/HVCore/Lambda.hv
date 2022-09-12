@@ -71,11 +71,20 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 
 		return newLambda
 	}
+	Destroy := virtual !() -> void
+	{
+		internalGCClearClass(lambdaVars)
+	}
 }
 TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple}
 {
 	thisCapturedVars := CapType
 	getCaptureVar := virtual !() -> void^ {  result = thisCapturedVars& }
+	Destroy := virtual !() -> void
+	{
+		internalGCClearClass(thisCapturedVars)
+		internalGCClearClass(lambdaVars)
+	}
 }
 
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType

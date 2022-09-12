@@ -56,7 +56,7 @@ osFileId := !(char^ nm) -> u64
 		return 0
 	return st1[8]&->{u64^}^
 }
-osReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
+osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 {
 
 	dirFd := opendir(nm)
@@ -70,7 +70,7 @@ osReadFolder := !(char^ nm, !(TStringView)& -> void cb) -> void
 		nowEntry := readdir(dirFd)
 		if nowEntry == null
 			return void
-		view := TStringViewOnCStr(nowEntry->{char^}[19]&)
+		view := StringViewOnCStr(nowEntry->{char^}[19]&)
 		cb(view)
 	}
 

@@ -116,7 +116,7 @@ WordDetermMachine := class extend TGCObject
 // 	}
 // }
 
-	RegExpReadText := !(char^ data,int siz, !(int,int,int)&->void toEmit) -> void
+	RegExpReadText := !(char^ data,int siz, !(StringView,int)&->void toEmit) -> void
 	{
 		i := 0
 		while i < siz
@@ -147,7 +147,7 @@ WordDetermMachine := class extend TGCObject
 			}
 			if lastGoodTerm != -1
 			{
-				toEmit(lastGoodTerm,i,lastGoodSize)
+				toEmit(StringViewOnCStr(data[i]&,lastGoodSize),lastGoodTerm) //,i,lastGoodSize)
 				i += lastGoodSize
 			}else{
 				i++

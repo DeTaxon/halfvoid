@@ -184,7 +184,7 @@ ZipFile := class extend TGCObject
 	}
 		
 
-	AnalizeFile := !(TStringView fileToLoad) -> bool
+	AnalizeFile := !(StringView fileToLoad) -> bool
 	{
 		fileName = fileToLoad.Normalize()
 

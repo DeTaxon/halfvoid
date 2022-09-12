@@ -298,6 +298,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		ExitLabel.PrintCode(f)
 
+		CapturedVarsCleanup?.PrintDefaultUse(f)
 		LeaveCall?.PrintDefaultUse(f)
 
 		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef

@@ -12,6 +12,7 @@ internalHVStackAllocatedGC := class .{@T} extend T
 		if RefValue == 0
 		{
 			Destroy()
+			postDestroy()
 		}
 	}
 }

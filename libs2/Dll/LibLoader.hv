@@ -10,7 +10,7 @@ LibDBObject := class
 	this := !() -> void
 	{
 	}
-	Get := !(TStringView name) -> void^
+	Get := !(StringView name) -> void^
 	{
 		nm := name.Normalize()
 
@@ -50,7 +50,7 @@ LibDatabaseType := class
 	//	}
 	//	itMemPool.Destroy()
 	//}
-	GetLib := !(TStringView name) -> LibDBObject^
+	GetLib := !(StringView name) -> LibDBObject^
 	{
 		nrm := name.Normalize()
 		inMap := loadedLibs.TryFind(nrm)
@@ -175,7 +175,7 @@ LibDatabaseType := class
 }
 gLibDB := LibDatabaseType
 
-GetLibrary := !(TStringView libName) -> LibDBObject^
+GetLibrary := !(StringView libName) -> LibDBObject^
 {
 	return gLibDB.GetLib(libName)
 }

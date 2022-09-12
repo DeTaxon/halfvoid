@@ -94,13 +94,13 @@ vRepo := class
 
 	zipFolders := AVLSet.{ZipFile^}
 
-	Init := !(TStringView pathName)-> void
+	Init := !(StringView pathName)-> void
 	{
 		rootFolder = new vRepoFolder
 		rootFolder.objName = pathName.Normalize()
 	}
 
-	AddZipRoot := !(TStringView fileName) -> bool
+	AddZipRoot := !(StringView fileName) -> bool
 	{
 		pth := fileName.Normalize()
 
@@ -120,7 +120,7 @@ vRepo := class
 	// {
 	// 	return getObject(p,rootFolder) != null
 	// }
-	ReadFolder := !(TStringView p,bool recur,!(vRepoFile^)& -> void callb) -> void
+	ReadFolder := !(StringView p,bool recur,!(vRepoFile^)& -> void callb) -> void
 	{
 		fil := getObject(p,rootFolder)
 		if fil == null
@@ -321,7 +321,7 @@ vRepo := class
 		}
 		throw new Exception("File not found")
 	}
-	getObject := !(TStringView fileName,vRepoFolder^ rrF) -> vRepoObject^
+	getObject := !(StringView fileName,vRepoFolder^ rrF) -> vRepoObject^
 	{
 		stObj := fileName.Normalize()
 		tmpVar := StringSpan(stObj.Str())
