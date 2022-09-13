@@ -3,7 +3,9 @@ CreateBuiltinsPoint := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
 
-	bSpace.Templates[StringSpan("=")].Push(new PointStoreTemplate())
+	GPointStoreTemplate = new PointStoreTemplate()
+	bSpace.Templates[StringSpan("=")].Push(GPointStoreTemplate)
+
 	bSpace.Templates[StringSpan("[]")].Push(new PointArrayGetTemplate())
 
 
@@ -64,6 +66,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 		return new BuiltInPrimeStore(tp)
 	}
 }
+GPointStoreTemplate := PointStoreTemplate^
 
 PointArrayGetTemplate := class extend BoxFuncTemplate
 {

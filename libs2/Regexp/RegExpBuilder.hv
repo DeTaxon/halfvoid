@@ -28,7 +28,6 @@ LexTreeNode := class
 		if Down != null Down.Print(s+1)
 		if Right != null Right.Print(s)
 	}
-
 }
 
 CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
@@ -185,8 +184,19 @@ LexBuilder := class extend TGCObject
 		newMachine.EndNodeData = ![!{mend,val}].ToVector()
 		
 		Nfas.Push(newMachine)
-		
 
+		destrNodes(Words)
+		
+	}
+	destrNodes := !(LexTreeNode^ nd) -> void
+	{
+		if nd == null
+			return void
+		if nd.Down != null
+			destrNodes(nd.Down)
+		if nd.Right != null
+			destrNodes(nd.Right)
+		delete nd
 	}
 	GenerateMachine := !() -> WordDetermMachine^
 	{

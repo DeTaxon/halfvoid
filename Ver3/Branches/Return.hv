@@ -135,9 +135,18 @@ ReturnHalfState := class extend BoxExeObj
 				objs := CheckExeDownList
 				objs.Push(resGet)
 				objs.Push(callObj2)
-				callObj = CreateFuncCall(StringSpan("="),objs)
-				if callObj == null
-					errorToken.EmitError("Can not return value, no \"=\" operator")
+
+				if rRef
+				{
+					cns := List.{BoxExeConstObj^}
+					setPtrFunc := GPointStoreTemplate.GetFunc(objs,cns)
+					assert(setPtrFunc != null)
+					callObj = setPtrFunc.CreateCall(objs)
+				}else{
+					callObj = CreateFuncCall(StringSpan("="),objs)
+					if callObj == null
+						errorToken.EmitError("Can not return value, no \"=\" operator")
+				}
 			}
         }
      

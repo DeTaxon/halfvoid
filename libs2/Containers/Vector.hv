@@ -51,6 +51,13 @@ Vector := class .{@T} extend TArrayView.{T}
 	{
 		if pointer != null
 		{
+			if T->IsGCPointer
+			{
+				for i : itSize
+				{
+					pointer[i] = null
+				}
+			}
 			free(pointer)
 			pointer = null
 		}

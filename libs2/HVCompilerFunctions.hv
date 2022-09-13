@@ -3,6 +3,7 @@ internalHVInitClass := !(@T x)  -> void
 {
 	if x->VTable != none
 		x->VTable = T->VTable
+
 	if T->TypeGroup == "Class"
 	{
 		for fld : x->AllFields
@@ -11,6 +12,10 @@ internalHVInitClass := !(@T x)  -> void
 			{
 				internalHVInitClass(fld)
 			}
+		}
+		if T >= TGCIObject
+		{
+			x.IncRef()
 		}
 	}
 }

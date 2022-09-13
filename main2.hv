@@ -1,36 +1,20 @@
 
-// wha := class extend TGCObject
-// {
-// 	c := int[]
-// }
-
 main := !(char^[] args) -> int
 {
-	// j := wha
-	// j.c = new Vector.{int}(100)
-	// j.c^[0] = 15
-	// j.c^[1] = 16
-	// for it : j.c^
-	// {
-
-	// }
-	// printf("ye %i\n",j.c.RefValue)
-
-
 	test := LexBuilder
 	test.ApplyReg("[a-zA-Z\\-\\.]+")
 	m := test.GenerateMachine()
 	m.PrintIt()
 
-	// gRepo := new vRepo
-	// gRepo.Init(".")
+	gRepo := new vRepo
+	gRepo.Init(".")
 
-	// tst := gRepo.GetFile("main2.hv")
-	// mp := tst.GetMap()
+	tst := gRepo.GetFile("main2.hv")
+	mp := tst.GetMap()
 
-	// m.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
-	// 	printf("hm <%s>\n",st.Normalize().Str())
-	// })
+	m.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
+		printf("hm <%s>\n",st.Normalize().Str())
+	})
 	
 	return 0
 }
