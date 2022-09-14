@@ -19,7 +19,11 @@ ModifyStackAllocatedVar := !(ParamFunc^ vr, List.{BoxExeObj^} ExtraWork) -> void
         objs := CheckExeDownList
         objs.Push(ptrVar.CreateCall())
         objs.Push(thisCall2)
-        setCall := CreateFuncCall(StringSpan("="),objs)
+		cnsts := List.{BoxExeConstObj^}
+
+		callFunc := GPointStoreTemplate.GetFunc(objs,cnsts)
+        setCall := callFunc.CreateCall(objs) //CreateFuncCall(StringSpan("="),objs)
+
         assert(setCall != null)
         ExtraWork.Push(setCall)
     }   
