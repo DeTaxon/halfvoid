@@ -9,7 +9,7 @@ internalClassDefaultCompare := !(@T a, T b) -> int
 {
 	for x : a->AllFields, y : b->AllFields
 	{
-		result := x <=> y
+		result = x <=> y
 		if result != 0
 			return void
 	}

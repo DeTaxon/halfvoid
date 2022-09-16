@@ -1,16 +1,11 @@
 
 main := !(char^[] args) -> int
 {
-
-	x := !{1,2}
-	y := !{1,2}
-
-	printf("test %i\n",x <=> y)
-	// for i : 5
-	// {
-	// 	TSleep(1)
-	// 	printf("hi\n")
-	// }
+	for i : 5
+	{
+		TSleep(1)
+		printf("hi %f\n",GetSteadyTime())
+	}
 
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")

@@ -24,7 +24,33 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	res1 := innerTryGetInfixCall(oper,tmpList,itm)
 	if res1 != null
 		return res1
-	return innerTryGetOperMeta(itm)
+	return innerTryGetOperMeta(itm)?
+
+	if oper in ![">",">=","<","<=","==","!="]
+	{
+		mdlCall := innerTryGetInfixCall(StringSpan("<=>"),tmpList,itm)
+		if mdlCall != null
+		{
+			objs7 := CheckExeDownList
+			objs7.Push(mdlCall)
+			objs7.Push(GetExeInt(0))
+			switch oper
+			{
+				case ">"
+					return innerTryGetInfixCall(StringSpan(">"),objs7,itm)
+				case ">="
+					return innerTryGetInfixCall(StringSpan(">="),objs7,itm)
+				case "<"
+					return innerTryGetInfixCall(StringSpan("<"),objs7,itm)
+				case "<="
+					return innerTryGetInfixCall(StringSpan("<="),objs7,itm)
+				case "=="
+					return innerTryGetInfixCall(StringSpan("=="),objs7,itm)
+				case "!="
+					return innerTryGetInfixCall(StringSpan("!="),objs7,itm)
+			}
+		}
+	}
 }
 
 innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) -> BoxExeObj^
