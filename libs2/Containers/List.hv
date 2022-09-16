@@ -136,6 +136,39 @@ List := class.{@T} extend TArrayView.{T}
 			itSize = 0
 		}
 	}
+	SortedPush := !(T itm) -> void
+	{
+		if Size() == 0
+		{
+			Push(itm)
+			return void
+		}
+		itr := start
+		while itr != null
+		{
+			if itr.data > itm
+				break
+			itr = itr.next
+		}
+		if itr == null
+		{
+			Push(itm)
+			return void
+		}
+		newNode := createNode()
+		newNode.data = itm
+		if itr == start
+		{
+			newNode.next = start
+			start.prev = newNode
+			start = newNode
+		}else{
+			newNode.prev = itr.prev
+			newNode.next = itr
+			itr.prev.next = newNode
+			itr.prev = newNode
+		}
+	}
 	//DeleteIf := !( !(T&)&->bool cb) -> void
 	//{
 	//	itr := Start

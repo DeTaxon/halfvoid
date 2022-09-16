@@ -86,7 +86,7 @@ vRepoFile := class extend vRepoObject
 	}
 }
 
-vRepo := class
+vRepo := class extend TGCObject
 {
 	rootFolder := vRepoFolder^
 	ignZip := AVLSet.{u64}
