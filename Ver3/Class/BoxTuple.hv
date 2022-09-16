@@ -52,6 +52,9 @@ BoxClassTuple := class extend BoxClass
 			cnstrFunc := TemplateInternalTupleConstructor.CreateFunc(fType,cnsts)
 			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
 
+			
+			cmpFunc := GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
 
 			mthHatch.Emit()
 		})
