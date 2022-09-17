@@ -3,8 +3,8 @@ main := !(char^[] args) -> int
 {
 	for i : 5
 	{
-		TSleep(1)
 		printf("hi %f\n",GetSteadyTime())
+		TSleep(1)
 	}
 
 	// test := LexBuilder

@@ -28,22 +28,22 @@ TaskUVRunOnce := !() -> void
 	uv_run(uvLoop,1)
 }
 
-TSleep := !(double val) -> void
-{
-	InterlockAdd(uvInProgressCount,1)
+// TSleep := !(double val) -> void
+// {
+// 	InterlockAdd(uvInProgressCount,1)
 
-	tmr := char[1024]
-	itTask := CurrentTask
-	pend := () ==> {
-		uv_timer_init(uvLoop,tmr[0]&)
-		uv_timer_start(tmr[0]&,timerHandler,(val*1000)->{u64},0)
-		waitingTimers[tmr[0]&] = itTask
-	}
-	uvAsyncPending.Push(pend)
+// 	tmr := char[1024]
+// 	itTask := CurrentTask
+// 	pend := () ==> {
+// 		uv_timer_init(uvLoop,tmr[0]&)
+// 		uv_timer_start(tmr[0]&,timerHandler,(val*1000)->{u64},0)
+// 		waitingTimers[tmr[0]&] = itTask
+// 	}
+// 	uvAsyncPending.Push(pend)
 
-	uv_async_send(uvAsyncCaller[0]&)
-	CurrentThread.ThreadMainTask.switchToTask()
-}
+// 	uv_async_send(uvAsyncCaller[0]&)
+// 	CurrentThread.ThreadMainTask.switchToTask()
+// }
 
 timerHandler := !(void^ x) -> void
 {

@@ -41,7 +41,7 @@ ucontextStartTask := !() -> void
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	InitTaskContext()
-	TaskUVInit()
+	//TaskUVInit()
 
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask

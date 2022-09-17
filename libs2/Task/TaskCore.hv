@@ -53,8 +53,23 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 
 		if iAmOnUV
 		{
-			TaskUVRunOnce()
 			TaskCheckMutex.Lock()
+			waitTime := 100.0
+			if timersArray.Size() != 0
+			{
+				nowTime := GetSteadyTime()
+
+				while timersArray.Size() != 0 and timersArray[0].0 < nowTime
+				{
+					timersArray[0].1.resume()
+					timersArray.Pop()
+				}
+				if timersArray.Size() != 0
+				{
+					waitTime = timersArray[0].0 - nowTime
+				}
+			}
+			TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
 			someoneOnUV = false
 			TaskCheckMutex.Unlock()
 		}

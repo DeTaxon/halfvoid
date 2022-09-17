@@ -86,9 +86,9 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 	//	return Contain(val)
 	//}
 
-	ToArray := !() -> TVector.{DATA}^
+	ToArray := !() -> Vector.{DATA}^
 	{
-		result = new TVector.{DATA}(Size())
+		result = new Vector.{DATA}(Size())
 		i := 0
 		for it : this
 		{
