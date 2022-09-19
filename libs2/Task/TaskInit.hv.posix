@@ -1,0 +1,40 @@
+mainLoopEvent := Event^
+
+TaskOSInit := !() -> void
+{
+    mainLoopEvent = new Event()
+
+	TaskEventsArray.Resize(1)
+	TaskEventsArray[0].fd = mainLoopEvent.Get()
+	TaskEventsArray[0].events = 1
+}
+TaskOSDestroy := !() -> void
+{
+    mainLoopEvent = null
+}
+TaskOSLoop := !() -> void
+{
+	waitTime := 100.0
+	mustQuit := false
+	if TaskTimersArray.Size() != 0
+	{
+		nowTime := GetSteadyTime()
+
+        //TaskTimersMutex.Lock()
+		while TaskTimersArray.Size() != 0 and TaskTimersArray[0].0 <= nowTime
+		{
+			TaskTimersArray[0].1.resume()
+			TaskTimersArray.Pop()
+			mustQuit = true
+		}
+		if TaskTimersArray.Size() != 0
+		{
+			waitTime = TaskTimersArray[0].0 - nowTime
+		}
+        //TaskTimersMutex.Unlock()
+	}
+	if not mustQuit
+	{
+		poll(TaskEventsArray.Get(),TaskEventsArray.Size(),waitTime*1000)
+	}
+}

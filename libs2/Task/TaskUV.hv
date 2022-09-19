@@ -1,32 +1,32 @@
-TaskUVWorks := int
+// TaskUVWorks := int
 
-uvLoop := void^
-uvAsyncCaller := char[1024]
+// uvLoop := void^
+// uvAsyncCaller := char[1024]
 
-TaskUVInit := !() -> void
-{
-	libUVInit()
-	uvLoop = uv_default_loop()
-	uv_async_init(uvLoop,uvAsyncCaller[0]&,uvAsyncCallback)
-}
+// TaskUVInit := !() -> void
+// {
+// 	libUVInit()
+// 	uvLoop = uv_default_loop()
+// 	uv_async_init(uvLoop,uvAsyncCaller[0]&,uvAsyncCallback)
+// }
 
 
-uvInProgressCount := int
-uvAsyncPending := FixedSizeRing.{!()&->void}
-waitingTimers := AVLMap.{void^,Task^}
+// uvInProgressCount := int
+// uvAsyncPending := FixedSizeRing.{!()&->void}
+// waitingTimers := AVLMap.{void^,Task^}
 
-uvAsyncCallback := !(void^ x) -> void
-{
-	while uvAsyncPending.Size() != 0
-	{
-		hm := uvAsyncPending.Pop()
-		hm()
-	}
-}
-TaskUVRunOnce := !() -> void
-{
-	uv_run(uvLoop,1)
-}
+// uvAsyncCallback := !(void^ x) -> void
+// {
+// 	while uvAsyncPending.Size() != 0
+// 	{
+// 		hm := uvAsyncPending.Pop()
+// 		hm()
+// 	}
+// }
+// TaskUVRunOnce := !() -> void
+// {
+// 	uv_run(uvLoop,1)
+// }
 
 // TSleep := !(double val) -> void
 // {
@@ -45,18 +45,18 @@ TaskUVRunOnce := !() -> void
 // 	CurrentThread.ThreadMainTask.switchToTask()
 // }
 
-timerHandler := !(void^ x) -> void
-{
-	uv_close(x,timerCloseHandler)
-}
-timerCloseHandler := !(void^ x) -> void
-{
-	TaskWaitTasksConVar.NotifyAll() //TODO better way
+// timerHandler := !(void^ x) -> void
+// {
+// 	uv_close(x,timerCloseHandler)
+// }
+// timerCloseHandler := !(void^ x) -> void
+// {
+// 	TaskWaitTasksConVar.NotifyAll() //TODO better way
 
-	assert(waitingTimers.Contain(x))
-	tsk := waitingTimers[x]
-	tsk.itTaskWorker.PendingTasks.Push(tsk)
-	waitingTimers.Remove(x)
+// 	assert(waitingTimers.Contain(x))
+// 	tsk := waitingTimers[x]
+// 	tsk.itTaskWorker.PendingTasks.Push(tsk)
+// 	waitingTimers.Remove(x)
 
-	InterlockSub(uvInProgressCount,1)
-}
+// 	InterlockSub(uvInProgressCount,1)
+// }

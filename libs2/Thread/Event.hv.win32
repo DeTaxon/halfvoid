@@ -1,0 +1,30 @@
+Event := class extend TGCObject
+{
+    evId := void^
+    this := !() -> void
+    {
+        evId = CreateEventA(null,0,0,null)
+    }
+    Get := !() -> void^
+    {
+        return evId
+    }
+
+    Emit := !() -> void
+    {
+        SetEvent(evId)
+    }
+    Wait := !() -> void
+    {
+        WaitForSingleObject(evId,-1)
+    }
+    Reset := !() -> void
+    {
+        ResetEvent(evId)
+    }
+
+    Destroy := virtual !() -> void
+    {
+        CloseHandle(evId)
+    }
+}

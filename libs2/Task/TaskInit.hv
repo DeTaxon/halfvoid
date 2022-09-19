@@ -1,20 +1,15 @@
 
 InitTaskContext := !() -> void
 {
-	//uring_init()
-	//gTaskIORing = ur_create()
-	//ur_init(128,gTaskIORing,0)
-	
 	TaskCheckMutex = new Mutex()
 	TaskWaitTasksConVar = new ConVar()
+	TaskTimersMutex = new Mutex()
 
-	// TaskGotWorkEvent = eventFd(0,0)
-	// TaskPollArray[0].fd = TaskGotWorkEvent
-	// TaskPollArray[0].events = 1
+	TaskOSInit()
 }
 
 TaskContextDestructor := !() -> void
 {
-	//close(TaskGotWorkEvent)
+	TaskOSDestroy()
+	TaskTimersMutex = null
 }
-

@@ -16,7 +16,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		iAmOnUV := false
+		iAmOnLoop := false
 		TaskCheckMutex.Lock()
 
 		doTask := ct.PopReadyTask()
@@ -28,10 +28,10 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		if uvInProgressCount != 0 and not someoneOnUV
+		if TaskTimersArray.Size() != 0 and not someoneOnLoop
 		{
-			someoneOnUV = true
-			iAmOnUV = true
+			someoneOnLoop = true
+			iAmOnLoop = true
 		}else{
 			TaskPausedWorkers += 1
 			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
@@ -51,27 +51,10 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		}
 		TaskCheckMutex.Unlock()
 
-		if iAmOnUV
+		if iAmOnLoop
 		{
-			TaskCheckMutex.Lock()
-			waitTime := 100.0
-			if timersArray.Size() != 0
-			{
-				nowTime := GetSteadyTime()
-
-				while timersArray.Size() != 0 and timersArray[0].0 < nowTime
-				{
-					timersArray[0].1.resume()
-					timersArray.Pop()
-				}
-				if timersArray.Size() != 0
-				{
-					waitTime = timersArray[0].0 - nowTime
-				}
-			}
-			TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
-			someoneOnUV = false
-			TaskCheckMutex.Unlock()
+			TaskOSLoop()
+			someoneOnLoop = false
 		}
 
 		if TaskQuitProgram
@@ -86,4 +69,4 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		}
 	}
 }
-someoneOnUV := bool
+someoneOnLoop := bool

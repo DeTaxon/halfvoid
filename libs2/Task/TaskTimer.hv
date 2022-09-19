@@ -1,15 +1,12 @@
 
-
-timersArray := List.{Tuple.{double,Task^}}
+TaskTimersMutex := Mutex^
+TaskTimersArray := List.{Tuple.{double,Task^}}
 
 TSleep := !(double val) -> void
 {
-	uvInProgressCount += 1
 	endTime := GetSteadyTime() + val
-	//TaskCheckMutex.Lock()
-	timersArray.SortedPush(!{endTime,CurrentTask})
-	TaskWaitTasksConVar.NotifyAll() //TODO optimize
-	//TaskCheckMutex.Unlock()
+	//TaskTimersMutex.Lock()
+	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+	//TaskTimersMutex.Unlock()
 	CurrentThread.ThreadMainTask.switchToTask()
-	uvInProgressCount -= 1
 }
