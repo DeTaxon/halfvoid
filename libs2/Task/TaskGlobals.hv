@@ -12,7 +12,7 @@ TaskEventsArray := Vector.{pollfd}
 
 TaskCheckMutex := Mutex^
 TaskWaitTasksConVar := ConVar^
-TaskSomeoneCheckingRing := bool
+TaskSleepConVar := ConVar^
 
 TaskPausedWorkers := int
 TaskQuitProgram := bool

@@ -1,11 +1,15 @@
 
 main := !(char^[] args) -> int
 {
-	for i : 5
-	{
-		printf("hi %f\n",GetSteadyTime())
-		TSleep(1)
-	}
+	tst := void^[5]
+	llvmSetJump(tst)
+	printf("test\n")
+	llvmLongJump(tst[0]&)
+	// for i : 5
+	// {
+	// 	printf("hi %f\n",GetSteadyTime())
+	// 	TSleep(1)
+	// }
 
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")

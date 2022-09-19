@@ -35,6 +35,9 @@ TaskOSLoop := !() -> void
 	}
 	if not mustQuit
 	{
-		poll(TaskEventsArray.Get(),TaskEventsArray.Size(),waitTime*1000)
+		//poll(TaskEventsArray.Get(),TaskEventsArray.Size(),waitTime*1000)
+        TaskCheckMutex.Lock()
+        TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
+        TaskCheckMutex.Unlock()
 	}
 }

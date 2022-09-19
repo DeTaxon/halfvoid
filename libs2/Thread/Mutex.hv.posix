@@ -33,6 +33,7 @@ ConVar := class extend TGCObject
 	}
 	WaitFor := !(Mutex^ mtx,double waitTime) -> void
 	{
+		waitTime = GetRealime() + waitTime
 		timSpec := u64[2]
 		timSpec[0] = waitTime->{int}
 		timSpec[1] = waitTime*1000000000

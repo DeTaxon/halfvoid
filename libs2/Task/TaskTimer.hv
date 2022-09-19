@@ -5,8 +5,10 @@ TaskTimersArray := List.{Tuple.{double,Task^}}
 TSleep := !(double val) -> void
 {
 	endTime := GetSteadyTime() + val
-	//TaskTimersMutex.Lock()
+	TaskCheckMutex.Lock()
 	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
-	//TaskTimersMutex.Unlock()
+	if someoneOnLoop
+		TaskSleepConVar.Notify()
+	TaskCheckMutex.Unlock()
 	CurrentThread.ThreadMainTask.switchToTask()
 }

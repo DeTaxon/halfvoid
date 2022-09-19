@@ -3,7 +3,7 @@ InitTaskContext := !() -> void
 {
 	TaskCheckMutex = new Mutex()
 	TaskWaitTasksConVar = new ConVar()
-	TaskTimersMutex = new Mutex()
+	TaskSleepConVar = new ConVar()
 
 	TaskOSInit()
 }
@@ -11,5 +11,7 @@ InitTaskContext := !() -> void
 TaskContextDestructor := !() -> void
 {
 	TaskOSDestroy()
-	TaskTimersMutex = null
+	TaskCheckMutex = null
+	TaskWaitTasksConVar = null
+	TaskSleepConVar = null
 }

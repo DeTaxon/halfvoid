@@ -75,7 +75,13 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 	}
 
 }
-
+GetRealime := !() -> double
+{
+	times := u64[2]
+	clock_gettime(0,times[0]&)
+	resTime := times[0]->{double}
+	return resTime + times[1]*0.001*0.001*0.001
+}
 GetSteadyTime := !() -> double
 {
 	times := u64[2]

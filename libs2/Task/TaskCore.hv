@@ -16,7 +16,6 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		iAmOnLoop := false
 		TaskCheckMutex.Lock()
 
 		doTask := ct.PopReadyTask()
@@ -31,7 +30,20 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		if TaskTimersArray.Size() != 0 and not someoneOnLoop
 		{
 			someoneOnLoop = true
-			iAmOnLoop = true
+
+			nowTime := GetSteadyTime()
+	
+			while TaskTimersArray.Size() != 0 and TaskTimersArray[0].0 <= nowTime
+			{
+				TaskTimersArray[0].1.resume()
+				TaskTimersArray.Pop()
+			}
+			if TaskTimersArray.Size() != 0
+			{
+				waitTime := TaskTimersArray[0].0 - nowTime
+				TaskSleepConVar.WaitFor(TaskCheckMutex,waitTime)
+			}
+			someoneOnLoop = false
 		}else{
 			TaskPausedWorkers += 1
 			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
@@ -51,11 +63,6 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		}
 		TaskCheckMutex.Unlock()
 
-		if iAmOnLoop
-		{
-			TaskOSLoop()
-			someoneOnLoop = false
-		}
 
 		if TaskQuitProgram
 			break

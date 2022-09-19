@@ -101,7 +101,7 @@ TryGetObj := class extend BoxExeObj
 
 	PrintDefaultUse := virtual !(TIOStream^ f) -> void
 	{
-		f^ << "%Frm" << ItId << " = alloca [20 x i8*]\n"
+		f^ << "%Frm" << ItId << " = alloca [20 x i8*]\n" //TODO! create local var void^[5], and maybe use BuiltinSetJump
 
   		f^ << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
 		f^ << "%FrameStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %Frm"<< ItId << ", i64 0, i64 0\n"
