@@ -58,12 +58,11 @@ AppendClass BoxFuncBody
 	}
 	YieldWork := !() -> void
 	{
+		if Yields.Size() == 0
+			return void	
+
 		for it : regularVars
 			it.NotifyCaptureUse()
-			
-		if Yields.Size() == 0
-			return void
-		
 
 		yTuple := GetCaptureTuple()
 		

@@ -40,6 +40,12 @@ FuncLocalParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
+		PrintMakeZero(f)
+		Inits[^].PrintDefaultUse(f)
+	}
+
+	PrintAlloc := virtual !(TIOStream^ f) -> void
+	{
 		pType := GetType()->{TypeFunc^}.ResultType
 
 		f^ << irName << " = alloca "
@@ -47,9 +53,6 @@ FuncLocalParam := class extend ParamFunc
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
-
-		PrintMakeZero(f)
-		Inits[^].PrintDefaultUse(f)
 	}
 	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
@@ -152,6 +155,10 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 	IsDebuggable := virtual !() -> bool
 	{
 		return false
+	}
+
+	PrintAlloc := virtual !(TIOStream^ f) -> void
+	{
 	}
 }
 
