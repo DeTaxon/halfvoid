@@ -13,7 +13,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				vr := resCnsts[nm]->{ConstType^}
 				if vr.Value != tp
 				{
-					assert(false)
+					return null
 				}
 			}
 		}else{

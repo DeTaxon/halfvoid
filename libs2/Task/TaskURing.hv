@@ -1,19 +1,19 @@
 
-gTaskIORing := void^
-gTaskRingWorkCount := int
+// gTaskIORing := void^
+// gTaskRingWorkCount := int
 
 TaskDoUring := !( !(void^)&->void cb) -> void
 {
-	gTaskRingWorkCount += 1
+	// gTaskRingWorkCount += 1
 
-	sqe := ur_get_sqe(gTaskIORing)
-	cb(sqe)
-	ur_sqe_set_data(sqe,CurrentTask)
-	ur_submit(gTaskIORing)
+	// sqe := ur_get_sqe(gTaskIORing)
+	// cb(sqe)
+	// ur_sqe_set_data(sqe,CurrentTask)
+	// ur_submit(gTaskIORing)
 	
-	CurrentThread.ThreadMainTask.switchToTask()
+	// CurrentThread.ThreadMainTask.switchToTask()
 	
-	gTaskRingWorkCount -= 1
+	// gTaskRingWorkCount -= 1
 }
 
 // Sleep := !(double val) -> void

@@ -149,6 +149,7 @@ vRepo := class extend TGCObject
 	}
 	ExamineFolder := !(vRepoFolder^ iterFolder) -> void
 	{
+		assert(iterFolder != null)
 		if iterFolder.examined
 			return void
 		iterFolder.examined = true

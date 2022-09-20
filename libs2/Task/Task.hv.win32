@@ -9,6 +9,17 @@ AppendClass Task
 	{
 		fiberHandler = CreateFiber(4*1024*1024,ucontextStartTask,null)
 		itTaskWorker = CurrentThread
+
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		SwitchToFiber(fiberHandler)
+	}
+	firstStartOS := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = CurrentThread.ThreadMainTask
+		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+			SwitchToFiber(CurrentTask.fiberHandler)
 	}
 
 	switchToTask := !() -> void

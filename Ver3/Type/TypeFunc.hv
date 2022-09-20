@@ -109,7 +109,7 @@ GetFuncType := !(Type^[@S] args,bool[@S2] isRefs,Type^ res) -> TypeFunc^
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
 {
-	hsh := 0
+	hsh := u32
 
 	for i : count
 	{
@@ -121,6 +121,10 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 
 	for fnc : itList^
 	{
+		if fnc == null
+		{
+			printf("hm %i %i\n",hsh,hsh % 1024)
+		}
 		if count != fnc.Params.Size()
 			continue
 		if fnc.IsVargs != isVargs

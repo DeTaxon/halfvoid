@@ -7,9 +7,6 @@ internalHVGetTaskLocalTuple := !() -> void^
 	return CurrentTask.taskLocalData&
 }
 
-mainEventFd := int
-TaskEventsArray := Vector.{pollfd}
-
 TaskCheckMutex := Mutex^
 TaskWaitTasksConVar := ConVar^
 TaskSleepConVar := ConVar^

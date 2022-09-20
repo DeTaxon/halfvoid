@@ -6,19 +6,28 @@ Task := class extend TGCObject
 	taskLambda := !()&->void
 	finishedWork := THatch
 
+	longJumpBuf := void^[5]
+
 	this := !(!()& -> void cb) -> void
 	{
 		taskLambda = cb
 	}
 	startTaskThread := !() -> void
 	{
+		firstStartOS()
 		taskLambda()
 		CurrentThread.DeleteTasks.Push(this&)
 		finishedWork.Emit()
 		taskLambda = null
 		CurrentThread.ThreadMainTask.switchToTask()
-		//CurrentTask = null
-		//setcontext(CurrentThread.ThreadMainTask.uContext[0]&)
+	}
+
+	switchToTask := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+			llvmLongJump(this.longJumpBuf[0]&)
 	}
 
 	resume := !() -> void

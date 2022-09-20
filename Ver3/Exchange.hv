@@ -55,12 +55,21 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	{
 		assert(false)
 	}
-	if obj is BoxArrayHolder and obj->{BoxArrayHolder^}.GetArrayType() == expType
+	if obj is BoxArrayHolder 
 	{
 		arr := obj->{BoxArrayHolder^}
 
+		arrType := Type^
+		if arr.GetArraySize() != 0
+			arrType = arr.GetDefaultType()
+
 		if IsViewType(expType)
+		{
+			bsExp := GetViewBaseType(expType)
+			if arrType == null or TypeFight(bsExp,arrType) != bsExp
+				return null
 			return arr.CreateViewArray(expType)
+		}
 
 		if arr.GetArraySize() != 0 and arr.GetArrayType() == expType
 			return arr.CreateDefaultUse()
@@ -74,7 +83,6 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 	objs.Destroy() cnsts.Destroy()
 	if resCall != null
 		return resCall
-
 	return null
 }
 
