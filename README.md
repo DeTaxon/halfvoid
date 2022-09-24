@@ -32,10 +32,10 @@ main := !(int argc,char^^ argv) -> int
 	x = y->{void^} // cast type, there is no dynamic_cast
 	a = 7 / b // operator "/" always result as float(or double)
 	a = 7 div b // use div to divide as integer
-	a = 7 % b 
+	a = 7 mod b 
 	// look at Priority.pr for more operators, you can add your own operator in file, but must recompile project
 	
-	x := int // create variable winth type int
+	x := int // create variable with type int
 	y := int[3]
 	z := int[] // pointer to array that have array size (z->len) , this is a mistake, those arrays shold be allocated on temporary array only
 	w := int^ //pointer to int
@@ -60,7 +60,7 @@ ConstFunc := !() .{@T,@Value} -> void
 	//call ConstFunc().{int,27}
 	printf("set %i\n",Value)
 }
-DefaultValues := !(int x = 13, void^ y = #uniq_call) -> void
+DefaultValues := !(int x = 13, void^ y = #uniq_call) -> void // TODO not implemented
 {
 	DefaultValues(1,null)
 	DefaultValues(1)
@@ -71,19 +71,19 @@ DefaultValues := !(int x = 13, void^ y = #uniq_call) -> void
 }
 ManyArgs := !(args...) -> void
 {
-	x := #best(args) // get type that could hold all value
+	x := #best(args) // get type that could hold all value , TODO not implemented
 	//x := #best(int,args)
 	//int + float -> float
 	//int + char -> int
 	x = 0
-	(x += args)... //operator ... make copy of line, where args replaced with paramter
+	(x += args)... //operator ... make copy of line, where args replaced with paramter , TODO not implemented
 }
 ```
 
 Input variables can have static modifier, that means static variable will be created in place where it was called.
 ```java
 
-Func := !(static bool var = true) -> void
+Func := !(bool var = static true) -> void
 {
 	//all static variables always passed by reference
 	var = false
@@ -93,30 +93,31 @@ Caller := !() -> void
 	Func()
 
 	//same as
-	var := static true
+	var := static true //TODO not implemented
 	FuncStaticless(var)
 }
 
 ```
 
 Types:
-u8 u16 u32 u64 s8 s16 s32 s64 float double void
-char is u8
-short is s16
-int is s32
-long is s64
-c_long is s32 on windows and s64 on linux
-size_t is u64 , x64 bit support only
+u8 u16 u32 u64 s8 s16 s32 s64 float double void <br />
+char is u8 <br />
+short is s16 <br />
+int is s32 <br />
+long is s64 <br />
+c_long is s32 on windows and s64 on linux <br />
+size_t is u64 , x64 bit support only <br />
 
-There is a import, but should not be used 
-All files import each other
+
+All files import each other, there is no need for #include or import like calls/
 
 
 Features:
 
 Question operators:
 ```java
-if pointer?.value != 0 //same as if pointer != null and pointer.value != 0
+if pointer?.value != 0 //same as
+//if pointer != null and pointer.value != 0
 {
 	do(pointer.value)
 }
@@ -140,7 +141,7 @@ For cycle works in different way
 ```java
 for item, index : container
 {
-	//if container does not have indexes, it will be 0,1,2,3 ...
+	//if container "for" function does not provide indexes, it will be 0,1,2,3...
 }
 
 for item : container
@@ -152,11 +153,11 @@ for container
 	it = 0
 }
 
-//to make use in cycle, class must support function "~For", and return specific class
+//to make use in cycle, class must support function "for", and return specific class
 MyClass := class
 {
 	...
-	"~For" := !() -> MyIterator 
+	"for" := !() -> MyIterator 
 	{
 		return MyIterator()
 		return MyIterator(this,x,1) //constructor
@@ -164,21 +165,29 @@ MyClass := class
 }
 MyIterator := class
 {
-	Inc := !() -> void {} // Be next object
-	"^" := !() -> ref int { return x } //Get value of object
-	"IsEnd" := !() -> bool {return x > 0} //Is cycle ended
+	"()" := !() -> ref int { return x } //Get value of object
+	"()" := !(IndexType^& returnIndex) -> ref int { return x } //Get value of object and index
+
+	//two ways to check for end of iterator
+	//if both functions implemented, HaveValue is in priority
+	HaveValue := !() -> bool { return x > 0} // called before operator "()"
+	IsFinished := !() -> bool {return x > 0} //Is cycle ended, called after operator "()"
 	
-	"IsInvalid" := !() -> bool { return false }// Optional, should cycle even start. Created to iterate on files in folder, checks if folder exist. Probably useless.
-	"Ind" := !() -> char^ { return "key" } //Optional, get index of object.
-	"Destroy" := !() -> void {} //Optional, called after cycle finished, or exception, or break/continue. Act like c++ destructor. 
+	//Optional
+	Inc := !() -> void {} // called after cycle body ends
+
+	// inherit from TGCObject to have c++ destructor like function
+	Destroy := virtual !() -> void {}
 }
 //or it can return generator
 MyClass2 := class
 {
 	...
-	"~For" := !() -> !()& -> int
+
+	//All labmda functions support operator "()" and IsFinished
+	"for" := !() -> !()& -> int
 	{
-		return () ==> int
+		x := () ==> int
 		{
 			i := 0
 			while i < 10
@@ -186,7 +195,8 @@ MyClass2 := class
 				yield i
 				i += 1
 			}
-		}	
+		}
+		return x.Capture()
 	}
 }
 
@@ -204,16 +214,17 @@ for item1,ind1 : container1 , item2 : container2
 {
 	item1 = item2
 }
-//Use attributes to iterate in reverse (require iterator support)
 
-for item1 : container1 ; $reverse
+//Map List and Vector support reverse iteration (TODO, vector does not support yes)
+
+for item1 : container1.reverse
 {
 	
 }
 
-//openmp like launch, not implemented
+//openmp like launch, not implemented //TODO
 //same as TAwaitWork
-#awork
+#awork //working in version 2
 for i : 100
 {
 	...
@@ -223,7 +234,7 @@ for i : 100
 ```
 
 Operator [^]
-it is actualy macros
+it is actualy a macros
 ```java
 //this lines is same 
 container1[^] = 0
@@ -258,9 +269,8 @@ x = y
 
 Generator support
 ```java
-//UNDER CONSTRUCTION
-//only lambda generators are ment to be usefull
-GetRandom := !() -> int //state value is global variable
+//only lambda functions can be generators
+lambd := () ==> int {
 {
 	while true
 	{
@@ -270,21 +280,9 @@ GetRandom := !() -> int //state value is global variable
 		yield 0
 	}
 	
-	return 0 //return stops generator
-}
-SomeClass := class
-{
-	funct := !() -> int //state value is part of class object
-	{
-		yield 1
-		return 6
-	}
+	return 0 //return stops generator, either reaching the end of function
 }
 
-lambd := () ==> int {
-	yield 3 //state value is connected with lambda objects, generator support under question
-	// when lambda is captured, state value is copied
-}
 while true
 {
 	x := lambd()
