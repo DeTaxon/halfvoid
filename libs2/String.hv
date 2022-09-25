@@ -54,6 +54,33 @@ StringView := class extend TGCObject
 	Str := virtual !() -> char^ {}
 	Size := virtual !() -> int {}
 	Normalize := virtual !() -> TString^ {}
+	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
+	{
+		i := 0
+		j := 0
+		ptr := Str()
+		itSize := Size()
+		while j < itSize
+		{
+			if ptr[j] in to
+			{
+				if j != i {
+					newSpan := StringSpan(ptr[i]&,j - i)
+					cb(newSpan)
+				}
+				i = j+1
+				j += 1
+			} else
+			{
+				j += 1
+			}
+		}
+		if j - i != 0
+		{
+			newSpan := StringSpan(ptr[i]&,j - i)
+			cb(newSpan)
+		}
+	}
 }
 
 

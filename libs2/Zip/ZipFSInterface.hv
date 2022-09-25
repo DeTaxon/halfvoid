@@ -3,3 +3,16 @@
 //{
 //	gRepo.ReadFolder(p,recur,callb)
 //}
+
+gRepoObject := vRepo^
+FSGetFile := !(StringView inp) -> vRepoFile^
+{
+	if gRepoObject == null
+	{
+		TLock(gRepoObject&)
+		defer TUnlock(gRepoObject&)
+		gRepoObject = new vRepo
+		gRepoObject.Init(".")
+	}
+	return gRepoObject.GetFile(inp)
+}

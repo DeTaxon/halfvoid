@@ -109,7 +109,7 @@ c_long is s32 on windows and s64 on linux <br />
 size_t is u64 , x64 bit support only <br />
 
 
-All files import each other, there is no need for #include or import like calls/
+All files import each other, there is no need for #include or import like calls
 
 
 Features:
@@ -455,7 +455,7 @@ x := ![1,2,argc,pi] //create array
 
 //Standart type range
 for i : 6..10 {}
-y := range //and rangef for float
+y := Range //and rangef for float
 if x in y {}
 
 //3D vectors
@@ -487,8 +487,8 @@ switch StringEnd(fileName) //proxy object, cant describe
 }
 
 //centf
-//centf is pair position,quaternion and scale(on everything,cant set x only)
-//act like matrix4x4, but perspective not supported
+//centf is pair position,quaternion and scale(on everything,cant set x-axis only)
+//act like matrix4x4, but perspective matrix not supported
 
 ```
 

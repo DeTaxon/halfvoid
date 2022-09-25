@@ -1,22 +1,11 @@
 
 main := !(char^[] args) -> int
 {
-	gRepo := new vRepo
-	gRepo.Init(".")
-	fil := gRepo.GetFile("main2.hv")
-
-	// i := 0
-	// tst := void^[5]
-	// res := llvmSetJump(tst)
-	// printf("test %i\n",res)
-	// i += 1
-	// if i < 5
-	// 	llvmLongJump(tst[0]&)
-	// for i : 10
-	// {
-	// 	printf("hi %f\n",GetSteadyTime())
-	// 	TSleep(1)
-	// }
+	
+	defer {
+		defer printf("test\n")
+		printf("test2\n")
+	}
 
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")
