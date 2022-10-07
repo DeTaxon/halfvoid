@@ -1,4 +1,4 @@
-TryParseIf := !(Token^ itm) -> BoxUnit^
+TryParseIf := !(Token^ itm) -> BoxExeObj^
 {
 	if itm == null or itm.Down.GetValue() != "if"
 		return null
@@ -73,7 +73,7 @@ MakeItBlock := !(Token^ itm) -> Token^
 	return itm
 }
 
-BoxIfTrueOnly := class extend BoxUnit
+BoxIfTrueOnly := class extend BoxExeObj
 {
 	Val := BoxExeObj^
 	OnTrue := BoxBlock^
@@ -83,6 +83,7 @@ BoxIfTrueOnly := class extend BoxUnit
 
 	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue, QCatch^ qc) -> void
 	{
+		ObjType = GTypeVoid
 		Val = val
 		OnTrue = onTrue
 		TrueWorked = new BoxLabel()
@@ -95,7 +96,7 @@ BoxIfTrueOnly := class extend BoxUnit
 		if TrueEndLabel == null
 			TrueEndLabel = new BoxLabel()
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
@@ -122,7 +123,7 @@ BoxIfTrueOnly := class extend BoxUnit
 		OnTrue?.PrintDebugMeta(f)
 	}
 }
-BoxIfFull := class extend BoxUnit
+BoxIfFull := class extend BoxExeObj
 {
 	Val := BoxExeObj^
 	OnTrue := BoxBlock^
@@ -134,6 +135,7 @@ BoxIfFull := class extend BoxUnit
 
 	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse,QCatch^ qc) -> void
 	{
+		ObjType = GTypeVoid
 		Val = val
 		OnTrue = onTrue
 		OnFalse = onFalse
@@ -148,7 +150,7 @@ BoxIfFull := class extend BoxUnit
 		if FalsePath == null
 			FalsePath = new BoxLabel()
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine

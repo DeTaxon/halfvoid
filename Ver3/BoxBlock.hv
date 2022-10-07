@@ -1,4 +1,4 @@
-BoxBlock := class extend BoxUnit
+BoxBlock := class extend BoxExeObj
 {
 	MetaId := int
 	GCInUseBefore := int
@@ -42,6 +42,7 @@ BoxBlock := class extend BoxUnit
 
 	this := !(Token^ bdy) -> void
 	{
+		ObjType = GTypeVoid
 		down = bdy
 		infoToken = bdy
 		ItLine = bdy.Line
@@ -51,6 +52,7 @@ BoxBlock := class extend BoxUnit
 	}
 	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
 	{
+		ObjType = GTypeVoid
 		lambdaWay = l
 		infoToken = tokenLine
 		ItLine = tokenLine.Line

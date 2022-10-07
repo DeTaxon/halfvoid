@@ -1,4 +1,6 @@
 TryGetBranchCall := !(Token^ itm) -> BoxExeObj^
 {
-	
+	if itm.Down?.GetValue() == "if"
+		return TryParseIf(itm)
+	return null
 }

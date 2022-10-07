@@ -169,6 +169,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 
 	return TryGetMacroCall(itm)? //MUST BE FIRST
 	
+	return TryGetBranchCall(itm)?
 	return TryGetNewDeleteOperator(itm)?
 	return TryGetBoolOrNone(itm)?
 	return TryGetMetaCall(itm)?
