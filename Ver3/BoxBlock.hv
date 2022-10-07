@@ -90,27 +90,27 @@ BoxBlock := class extend BoxExeObj
 				iter = iter.Right
 				continue
 			}
-			if iter.Down?.GetValue() == "while"
-			{
-				whileObj := TryParseWhile(iter)
-				if whileObj != null
-				{
-					exeLines.Push(whileObj)
-					iter = iter.Right
-					continue
-				}
-			}
-			if iter.Down?.GetValue() == "for"
-			{
-				forObj := GetForCycle(iter)
-				assert(forObj != null)
-				if forObj != null
-				{
-					exeLines.Push(forObj)
-					iter = iter.Right
-					continue
-				}
-			}
+			// if iter.Down?.GetValue() == "while"
+			// {
+			// 	whileObj := TryParseWhile(iter)
+			// 	if whileObj != null
+			// 	{
+			// 		exeLines.Push(whileObj)
+			// 		iter = iter.Right
+			// 		continue
+			// 	}
+			// }
+			// if iter.Down?.GetValue() == "for"
+			// {
+			// 	forObj := GetForCycle(iter)
+			// 	assert(forObj != null)
+			// 	if forObj != null
+			// 	{
+			// 		exeLines.Push(forObj)
+			// 		iter = iter.Right
+			// 		continue
+			// 	}
+			// }
 
 			vr := TryParseVar(iter)
 

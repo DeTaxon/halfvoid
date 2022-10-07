@@ -1,4 +1,4 @@
-TryParseWhile := !(Token^ itm) -> BoxUnit^
+TryParseWhile := !(Token^ itm) -> BoxExeObj^
 {
 	if itm == null or itm.Down.GetValue() != "while"
 		return null
@@ -21,7 +21,7 @@ TryParseWhile := !(Token^ itm) -> BoxUnit^
 	
 }
 
-BoxWhile := class extend BoxUnit
+BoxWhile := class extend BoxExeObj
 {
 	Val := BoxExeObj^
 	Body := BoxBlock^
@@ -32,12 +32,17 @@ BoxWhile := class extend BoxUnit
 
 	this := !(Token^ whileToken,BoxExeObj^ val, BoxBlock^ body) -> void
 	{
+		ObjType = GTypeVoid
 		Val = val
 		Body = body
 		CycleStart."this"()
 		CycleEnd."this"()
 		CycleCheck."this"()
 		WhileLine = new BoxExeLineSimple(whileToken,val)
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

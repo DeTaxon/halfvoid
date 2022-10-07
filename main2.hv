@@ -4,9 +4,15 @@ main := !(char^[] args) -> int
 {
 	tst := int[10]
 	tst[^i] = i
-	if tst[^] >= 5
+	
+	switch tst[^]
 	{
-		printf("hm %i\n",it)
+		case 1
+			printf("it is one\n")
+		case 5
+			printf("it is five\n")
+		case void
+			printf("it is someeeee\n")
 	}
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")

@@ -1,4 +1,4 @@
-GetForCycle := !(Token^ itm) -> BoxUnit^
+GetForCycle := !(Token^ itm) -> BoxExeObj^
 {
 	forItems := HybridQueue.{ForSubObjects,5}
 
@@ -59,7 +59,7 @@ GetForCycle := !(Token^ itm) -> BoxUnit^
 	return GetForParsed(iter,forItems)
 }
 
-GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxUnit^
+GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 {
 	return GetForParsed(itm,lst,() ==> { //TODO REFACTOR, IT'S OVERCOMPLICATED
 		if itm.GetValue() == "{}"
@@ -70,7 +70,7 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxUnit^
 		return pad
 	})
 }
-GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxUnit^
+GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxExeObj^
 {
 	return new BoxBlockBreak(itm, () ==> {
 
@@ -276,6 +276,7 @@ BoxFor := class extend BoxExeObj
 	{
 		CheckStep."this"()
 		EndLabel."this"()
+		ObjType = GTypeVoid
 	}
 	StepTwo := !(Token^ itm,!()&->BoxUnit^ cb) -> void
 	{
@@ -314,6 +315,10 @@ BoxFor := class extend BoxExeObj
 			UnitStack.Pop()
 	}
 
+	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
+	{
+		PrintCode(f)
+	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		oldLineCall := GDebugLineCallId
@@ -373,6 +378,7 @@ BoxForOverMeta := class extend BoxExeObj
 
 	this := !(HybridQueue.{ForSubObjects,5} dwns,Token^ bdy) -> void
 	{
+		ObjType = GTypeVoid
 		if not dwns[^].IsMeta
 			bdy.EmitError("All of iteratables must be metadata")
 		k := dwns[0].MetaObj.MetaIteretableSize()
@@ -427,6 +433,11 @@ BoxForOverMeta := class extend BoxExeObj
 				UnitStack.Pop()
 		}
 		metaCount = k
+	}
+
+	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
+	{
+		PrintCode(f)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{

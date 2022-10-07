@@ -126,17 +126,7 @@ TryGetMacroCall := !(Token^ itm) -> BoxExeObj^
 
 TryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
 {
-	//if itm.Down?.GetValue() == "if"
-	//{
-	//	return TryParseIf(itm)
-	//}else 
-	if itm.Down?.GetValue() == "while" {
-		return TryParseWhile(itm)
-	}else if itm.Down?.GetValue() == "switch" {
-		return TryParseSwitch(itm)
-	}else{
-		return new BoxExeLine(itm)
-	}
+	return new BoxExeLine(itm)
 }
 
 // GetMacroCycledObj := !(Token^ itm, int i) -> BoxUnit^

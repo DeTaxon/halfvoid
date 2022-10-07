@@ -1,4 +1,4 @@
-TryParseSwitch := !(Token^ itm) -> BoxUnit^
+TryParseSwitch := !(Token^ itm) -> BoxExeObj^
 {
 	return new BoxSwitch(itm)
 }
@@ -27,7 +27,7 @@ SwitchCase := class
 		nopeLabel.PrintCode(f)
 	}
 }
-BoxSwitch := class extend BoxUnit
+BoxSwitch := class extend BoxExeObj
 {
 	mainCall := BoxExeObj^
 	mainVar := FuncResultParam^
@@ -39,6 +39,7 @@ BoxSwitch := class extend BoxUnit
 
 	this := !(Token^ itm) -> void
 	{
+		ObjType = GTypeVoid
 		itr := itm.Down
 		assert(itr.GetValue() == "switch")
 
@@ -133,6 +134,10 @@ BoxSwitch := class extend BoxUnit
 		{
 			checkCase()
 		}
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
