@@ -310,11 +310,6 @@ func := !() -> void
 	//dont need set type if passing to function
 	l.DeleteIf(x ==> x < 0)
 	
-	//boost.lambda
-	//in syntax tree all operators united to lambda from _X variable
-	//it is possible to use not all of the input variables, but you can't use non existing , like _9999
-	l.DeleteIf(_1 < 0)
-	
 	//Capture creates copy of lambda on heap, affected by memory poll
 	//Values captured by value are copied
 	//If lambda is a generator, all stack objects copied
@@ -335,8 +330,8 @@ switch x
 		//you must call continue to move to the next case
 	case 2 
 	case y // case works if one of these three operators works x == y, x in y, x <=> y == 0
-	case 5..10
-	case ![9,0,123]
+	case in 5..10
+	case in ![9,0,123]
 	case void // if none of them worked
 }
 
@@ -349,7 +344,7 @@ else if x == y ...
 ```
 
 Exceptions
-Implemented by longjmp (not a zero cost)
+Implemented by longjmp (not a zero cost exception)
 ```java
 try
 {
@@ -371,17 +366,12 @@ func := !() -> int^
 	{
 		defer printf("") // will be called when exiting if.true statement
 	}
-	
-	values := new int[1024]
-	on_exception delete values //same as defer, but only get called when exception is thrown
-	
-	return values
 }
 ```
 
 Defer tail function
 ```java
-TGuard := !(void^ ptr) -> void
+TGuard := !(void^ ptr) -> void //not implemented
 {
 	TLock(ptr)
 } defer_tail (void^ ptr) {

@@ -1,29 +1,9 @@
-"@twice call" := !(!()&->void cb) -> void
-{
-	cb()
-	cb()
-}
 
-hm := !(!(int)&->bool cb) -> void
-{
-	if cb(13)
-	{
-		printf("yes, it is 13\n")
-	}else{
-		printf("no, it is not 13\n")
-	}
-}
 
 main := !(char^[] args) -> int
 {
-	hm(@1 == 13)
-	hm(@1 == 12)
-	// @twice 
-	// for i : 1 {
-	// 	printf("hi\n")
-	// 	printf("why\n")
-	// }
-
+	tst := FSGetFile("main2.hv")
+	printf("here %p\n",tst)
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")
 	// m := test.GenerateMachine()

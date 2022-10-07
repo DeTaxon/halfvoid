@@ -16,10 +16,14 @@ TGCObject := class extend TGCIObject
 		{
 			Destroy()
 			postDestroy()
-			delete this&
+			SelfDelete()
 		}
 	}
 	Destroy := virtual !() -> void {}
+	SelfDelete := virtual !() -> void
+	{
+		delete this&
+	}
 
 	postDestroy := poison !() -> void
 	{
