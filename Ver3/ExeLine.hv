@@ -31,8 +31,11 @@ BoxExeLine := class extend BoxExeLineSimple
 		CurrentLine = this&
 	
 		ItToken = itm
+		assert(itm != null)
 
-		Down = TryGetExeCall(itm)
+		CheckMacroStep(itm)
+
+		Down = GetDownObject(itm,0)
 
 		while stackAtStart > UnitStack.Size()
 			UnitStack.Pop()
@@ -44,12 +47,39 @@ BoxExeLine := class extend BoxExeLineSimple
 		itm.EmitError("Unknown error")
 		assert(false)
 	}
+	GetDownObject := !(Token^ itm,int depth) -> BoxUnit^
+	{
+		if depth >= MacroCycleMacro.Size()
+		{
+			if depth != 0
+			{
+				return new BoxExeLineSimple(itm,TryGetExeCall(itm))
+			}
+			return TryGetExeCall(itm)
+		}
+	
+		forItems := HybridQueue.{ForSubObjects,5}
+
+		el := ForSubObjects
+
+		el.DownToken = MacroCycleMacro[depth].0.Down
+		el.ValueName = MacroCycleMacro[depth].1
+		el.IndexName = MacroCycleMacro[depth].2
+
+		forItems.Push(el)
+
+		return GetForParsed(itm,forItems, () ==> {
+			return GetDownObject(itm,depth+1)
+		})
+	}
 }
 BoxExeLineSimple := class extend BoxUnit
 {
 	MetaId := int
 	ItToken := Token^
 	Down := BoxUnit^
+
+	MacroCycleMacro := List.{Tuple.{Token^,StringSpan,StringSpan}}
 
 	this := !(Token^ itm,BoxUnit^ newObj) -> void
 	{

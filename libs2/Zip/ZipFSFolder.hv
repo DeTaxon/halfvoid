@@ -1,0 +1,13 @@
+vRepoFolder := class extend vRepoObject
+{
+	examined := bool
+	virtualFolder := bool
+	subZipFolders := List.{vZipEntry^}
+
+	subFolders := AVLMap.{TString^,vRepoFolder^}
+
+	subFiles := AVLMap.{TString^,vRepoFile^}
+	subVirtualFiles := AVLMap.{TString^,vRepoFile^}
+
+	IsVirtual := !() -> bool { return virtualFolder }
+}

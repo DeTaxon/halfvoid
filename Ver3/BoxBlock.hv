@@ -75,6 +75,7 @@ BoxBlock := class extend BoxUnit
 		if lambdaWay->{void^} != null
 		{
 			obj := lambdaWay()
+			assert(obj != null)
 			if obj != null
 				exeLines.Push(obj)
 		}
@@ -87,16 +88,6 @@ BoxBlock := class extend BoxUnit
 				iter = iter.Right
 				continue
 			}
-			//if iter.Down?.GetValue() == "if"
-			//{
-			//	ifObj := TryParseIf(iter)
-			//	if ifObj != null
-			//	{
-			//		exeLines.Push(ifObj)
-			//		iter = iter.Right
-			//		continue
-			//	}
-			//}
 			if iter.Down?.GetValue() == "while"
 			{
 				whileObj := TryParseWhile(iter)

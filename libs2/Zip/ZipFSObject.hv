@@ -1,0 +1,33 @@
+
+vRepoObject := class
+{
+	objName := TString^
+	upFolder := vRepoFolder^
+
+	//GetName := !() -> StringSpan { result = objName }
+	
+	//GetUpFolder := !() -> vRepoFolder^ { return upFolder }
+
+	GetPath := !() -> TString^
+	{
+		
+		itms := List.{vRepoObject^}
+		iterUp := this&
+		while iterUp != null
+		{
+			itms.PushFront(iterUp)
+			iterUp = iterUp.upFolder
+		}
+		
+		strB := TEchoStream
+		for it,i : itms
+		{
+			strB << it.objName
+			if i != itms.Size() - 1
+			{
+				strB << "/"
+			}
+		}
+		return strB.GetString()
+	}
+}

@@ -1,0 +1,39 @@
+vRepoFile := class extend vRepoObject
+{
+	ptrToRepo := vRepo^
+	ptrToZip := vZipEntry^
+	fileSize := u64
+
+	this := !() -> void
+	{
+		ptrToProxy = null
+	}
+	// GetFile := !(char^ fileName) -> vRepoFile^
+	// {
+	// 	//return ptrToRepo.GetFile(fileName,upFolder)
+	// }
+	GetMap := !() -> FileView^
+	{
+		if ptrToZip != null
+		{
+			return ptrToZip.GetMap()
+		}
+
+		return new ZipFSFileView(this&)
+	}
+	IsVirtual := !() -> bool 
+	{
+		return ptrToZip != null
+	}
+	Size := !() -> size_t
+	{
+		// if ptrToZip != null
+		// {
+		// 	return ptrToZip.Size()
+		// }
+		// return fileSize
+	}
+	IsValid := !() -> bool
+	{
+	}
+}

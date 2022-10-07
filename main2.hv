@@ -2,8 +2,12 @@
 
 main := !(char^[] args) -> int
 {
-	tst := FSGetFile("main2.hv")
-	printf("here %p\n",tst)
+	tst := int[10]
+	tst[^i] = i
+	if tst[^] >= 5
+	{
+		printf("hm %i\n",it)
+	}
 	// test := LexBuilder
 	// test.ApplyReg("[a-zA-Z\\-\\.]+")
 	// m := test.GenerateMachine()

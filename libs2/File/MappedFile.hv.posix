@@ -77,11 +77,12 @@ MappedFile := class extend TGCObject
 	}
 	Close := !() -> void
 	{
-		if point != null
-		{
-			munmap(point,fileSize)
-			close(fileId)
-			point = null
-		}
+		if point == null
+			return void
+		
+		munmap(point,fileSize)
+		close(fileId)
+		point = null
+		
 	}
 }
