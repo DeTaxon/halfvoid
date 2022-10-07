@@ -119,10 +119,7 @@ BoxBlock := class extend BoxUnit
 				}
 			}
 
-			//TODO: check switch
-
 			vr := TryParseVar(iter)
-
 
 			if vr != null
 			{

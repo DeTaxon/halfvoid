@@ -204,10 +204,9 @@ RuleDecoratorCall := !(void^ itr) -> int
 	if It == null
 		return 0
 
-	if InBlockData(It)
-	{
-		return 2
-	}
+	if InBlockData(It) return 2
+	if It.GetValue() == "{}" return 2
+	if It.Down?.GetValue() == "for" return 2
 	return 0
 }
 

@@ -1,3 +1,38 @@
+IsIntString := !(StringSpan spn) -> bool
+{
+	for c : spn
+	{
+		if not (c in '0'..'9')
+			return false
+	}
+	return true
+}
+IsOperator := !(Token^ itm) -> bool
+{
+	if itm is TokenSymbol
+	{
+		itm2 := itm->{TokenSymbol^}
+		if itm2.GetValue() == "=="
+			return true
+	}
+	return false
+}
+// MacroContainLambda := !(Token^ itm) -> bool
+// {
+// 	if itm == null
+// 		return false
+// 	if itm is TokenTemplateType
+// 	{
+// 		if IsIntString(itm->{TokenTemplateType^}.Value[1..0])
+// 			return true
+// 	}
+// 	if itm.Down?.Right?.Right?.Right == null and IsOperator(itm.Down.Right)
+// 	{
+// 		return MacroContainLambda(itm.Down) or MacroContainLambda(itm.Down.Right.Right)
+// 	}
+// 	return false
+// }
+
 CheckForCycleMacro := !(Token^ itm) -> void
 {
 	if itm.Down?.GetValue() == "if"

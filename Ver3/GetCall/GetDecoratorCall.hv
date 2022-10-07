@@ -15,7 +15,7 @@ TryGetDecoratorCall := !(Token^ itm) -> BoeExeObj^ //TODO return complex object 
     k = dn.Size()
     buff[k] = ' '
     k += 1
-    memcpy(buff[k]&,"line",4)
+    memcpy(buff[k]&,"call",4)
     k += 4
     resCall := StringSpan(buff[0]&,k)
     resCall = GetConstString(resCall)

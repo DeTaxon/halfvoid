@@ -27,6 +27,8 @@ BoxExeLine := class extend BoxExeLineSimple
 	{
 		stackAtStart := UnitStack.Size()
 		UnitStack.PushFront(this&)
+
+		CurrentLine = this&
 	
 		ItToken = itm
 
@@ -223,6 +225,8 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 						UnitStack.Pop()
 					
 				}
+			// }else if MacroContainLambda(itr)
+			// {
 			}else{
 				obj := TryGetExeCall(itr)
 				if obj == null
