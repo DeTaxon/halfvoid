@@ -2,30 +2,23 @@
 
 main := !(char^[] args) -> int
 {
-	tst := int[10]
-	tst[^i] = i
-	
-	switch tst[^]
-	{
-		case 1
-			printf("it is one\n")
-		case 5
-			printf("it is five\n")
-		case void
-			printf("it is someeeee\n")
-	}
-	// test := LexBuilder
-	// test.ApplyReg("[a-zA-Z\\-\\.]+")
-	// m := test.GenerateMachine()
-	// m.PrintIt()
 
-	// gRepo := new vRepo
-	// gRepo.Init(".")
+	itBuilder := LexBuilder
 
-	// tst := gRepo.GetFile("main2.hv")
+	itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",1)
+	itBuilder.ApplyReg("[0-9]+(.[0-9]+)?",2)
+	itBuilder.ApplyReg("0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2)
+	itBuilder.ApplyReg(" true | false | null",3)
+	itBuilder.ApplyReg("\\{ | \\} | \\, | \\: | \\[ | \\]",4)
+	itBuilder.ApplyReg("\\ | \\t | \\n",5)
+
+	res := itBuilder.GenerateMachine()
+	// res.PrintIt()
+
+	// tst := FSGetFile("test.json")
 	// mp := tst.GetMap()
 
-	// m.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
+	// res.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
 	// 	printf("hm <%s>\n",st.Normalize().Str())
 	// })
 	

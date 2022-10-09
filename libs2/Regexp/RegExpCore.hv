@@ -59,6 +59,8 @@ WordDetermMachine := class extend TGCObject
 			return true
 		if itm in 'A'..'Z'
 			return true
+		if itm in '0'..'9'
+			return true
 		return false
 	}
 	PrintIt := !() -> void

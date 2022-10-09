@@ -3,13 +3,16 @@ TryGetBranchCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down == null
 		return null
 
-	if itm.Down.GetValue() == "if"
-		return TryParseIf(itm)
-	if itm.Down.GetValue() == "for"
-		return GetForCycle(itm)
-	if itm.Down.GetValue() == "while"
-		return TryParseWhile(itm)
-	if itm.Down.GetValue() == "switch"
-		return TryParseSwitch(itm)
+	switch itm.Down.GetValue()
+	{
+		case "if"
+			return TryParseIf(itm)
+		case "for"
+			return GetForCycle(itm)
+		case "while"
+			return TryParseWhile(itm)
+		case "switch"
+			return TryParseSwitch(itm)
+	}
 	return null
 }

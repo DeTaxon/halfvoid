@@ -104,10 +104,7 @@ CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
 LexBuilder := class extend TGCObject
 {
 	Nfas := List.{NonDetMachine^}
-	this := !() -> void
-	{
-		Nfas."this"()
-	}
+	CharGroups := int[256]
 	ApplyReg := !(char^ regEx) -> void
 	{
 		ApplyReg(regEx,1)
@@ -157,6 +154,37 @@ LexBuilder := class extend TGCObject
 			i += 1
 		}
 
+		optIter := Words.Right
+
+		while optIter != null
+		{
+			if optIter.nodeType == '2'
+			{
+				valStart := optIter.nodeValue
+				valEnd := int
+				if optIter.Right?.nodeType == '-' and optIter.Right.Right?.nodeType == '2'
+				{
+					valEnd = optIter.Right.Right.nodeValue
+					optIter = optIter.Right.Right.Right
+				}else{
+					valEnd = valStart
+					optIter = optIter.Right
+				}
+				i := valStart
+				while i <= valEnd
+				{
+					CharGroups[i] += 1
+					i += 1
+				}
+				while i < 256
+				{
+					CharGroups[i] += 2
+					i += 1
+				}
+			}else{
+				optIter = optIter.Right
+			}
+		}
 
 		while true
 		{
@@ -201,8 +229,8 @@ LexBuilder := class extend TGCObject
 	GenerateMachine := !() -> WordDetermMachine^
 	{
 		if Nfas.Size() == 0 return void //TODO: assert? or throw
-		// if Nfas.Size() == 1
-		// {
+		if Nfas.Size() == 1
+		{
 			//Nfas[0].PrintIt()
 			newMach := DeterminateMachine(Nfas[0])
 			// printf("------------determ-------\n")
@@ -212,44 +240,44 @@ LexBuilder := class extend TGCObject
 			//MinMach.PrintIt()
 			//printf("-------------word--------\n")
 			return MakeWordDetermMachine(MinMach)
-		// }else
-		// {
-		// 	//PushTempMemPool()
-		// 	newLines := List.{NonDetNodeLine}()
-		// 	newEnds := List.{Tuple.{int,int}}()
-		// 	multiNode := NonDetMachine()
-		// 	nowOffset := 0
+		}else
+		{
+			//PushTempMemPool()
+			newLines := List.{NonDetNodeLine}
+			newEnds := List.{Tuple.{int,int}}
+			multiNode := NonDetMachine
+			nowOffset := 0
 
-		// 	for itM : Nfas
-		// 	{
-		// 		maxNodes := 0
-		// 		for lin : itM.Lines
-		// 		{
-		// 			newLines.EmplaceFront()
-		// 			newLines[0].from = lin.from
-		// 			if lin.from != 0 newLines[0].from += nowOffset
-		// 			newLines[0].to = lin.to
-		// 			if lin.to != 0 newLines[0].to += nowOffset
-		// 			newLines[0].symbl = lin.symbl
+			for itM : Nfas
+			{
+				maxNodes := 0
+				for lin : itM.Lines
+				{
+					newLines.EmplaceFront()
+					newLines[0].from = lin.from
+					if lin.from != 0 newLines[0].from += nowOffset
+					newLines[0].to = lin.to
+					if lin.to != 0 newLines[0].to += nowOffset
+					newLines[0].symbl = lin.symbl
 
-		// 			if maxNodes < lin.from maxNodes = lin.from
-		// 			if maxNodes < lin.to maxNodes = lin.to
-		// 			//maxNodes = max(maxNodes,lin.from)
-		// 			//maxNodes = max(maxNodes,lin.to)
-		// 		}
-		// 		for ends : itM.EndNodeData
-		// 		{
-		// 			newEnds.PushFront(!{ends.0 + nowOffset,ends.1})
-		// 		}
-		// 		nowOffset += maxNodes + 1
-		// 	}
-		// 	multiNode.Lines = newLines.ToArray()
-		// 	multiNode.EndNodeData = newEnds.ToArray()
-		// 	newMach := DeterminateMachine(multiNode)
-		// 	MinMach := MinimizeMachine(newMach)
-		// 	//PopTempMemPool()
-		// 	return MakeWordDetermMachine(MinMach)
-		// }
+					if maxNodes < lin.from maxNodes = lin.from
+					if maxNodes < lin.to maxNodes = lin.to
+					//maxNodes = max(maxNodes,lin.from)
+					//maxNodes = max(maxNodes,lin.to)
+				}
+				for ends : itM.EndNodeData
+				{
+					newEnds.PushFront(!{ends.0 + nowOffset,ends.1})
+				}
+				nowOffset += maxNodes + 1
+			}
+			multiNode.Lines = newLines.ToVector()
+			multiNode.EndNodeData = newEnds.ToVector()
+			newMach := DeterminateMachine(multiNode)
+			MinMach := MinimizeMachine(newMach)
+			//PopTempMemPool()
+			return MakeWordDetermMachine(MinMach)
+		}
 		return void
 	}
 }

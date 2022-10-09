@@ -2,18 +2,26 @@ TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> T& { }
-	"for" := virtual !() -> !()& -> T& {
-		x := () ==> T& {
-			i := 0
-			s := Size()
-			while i < s
-			{
-				yield this[i]
-				i += 1
-			}
-		}
-		preRes := x.Capture()
-		return preRes
+	"for" := !() -> ViewIterator.{T}
+	{
+		result.ViewPtr = this&
+	}
+}
+
+ViewIterator := class.{@T} extend TGCObject
+{
+	ViewPtr := T[]
+	indx := int
+
+	HaveValue := !() -> bool
+	{
+		return indx < ViewPtr.Size()
+	}
+	"()" := !() -> T&
+	{
+		i := indx
+		indx += 1
+		return ViewPtr[i]
 	}
 }
 

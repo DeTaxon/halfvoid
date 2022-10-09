@@ -21,7 +21,7 @@ NonDetNodeLine := class
 }
 NonDetMachine := class extend TGCObject
 {
-	Lines := NonDetNodeLine[]
+	Lines := Vector.{NonDetNodeLine}^
 	EndNodeData := Tuple.{int,int}[] // nodeId,resultId
 	this := !() -> void
 	{

@@ -256,8 +256,6 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 						UnitStack.Pop()
 					
 				}
-			// }else if MacroContainLambda(itr)
-			// {
 			}else{
 				obj := TryGetExeCall(itr)
 				if obj == null
