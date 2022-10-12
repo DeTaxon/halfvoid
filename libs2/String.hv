@@ -1,4 +1,4 @@
-TString := class extend TGCObject
+String := class extend StringView
 {
 	charPtr := char^
 	itSize := int
@@ -37,12 +37,16 @@ TString := class extend TGCObject
 		assert(ind >= 0 and ind < itSize)
 		return charPtr[ind]
 	}
-	Str := !() -> char^
+	Str := virtual !() -> char^
 	{
 		return charPtr
 	}
+	Size := virtual !() -> int
+	{
+		return itSize
+	}
 
-	Normalize := virtual !() -> TString^
+	GetString := virtual !() -> String^
 	{
 		return this&
 	}
@@ -53,7 +57,7 @@ StringView := class extend TGCObject
 {
 	Str := virtual !() -> char^ {}
 	Size := virtual !() -> int {}
-	Normalize := virtual !() -> TString^ {}
+	GetString := virtual !() -> String^ {}
 	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
 	{
 		i := 0
@@ -83,15 +87,6 @@ StringView := class extend TGCObject
 	}
 }
 
-
-StringViewOnTString := class extend StringView
-{
-	ptrBase := TString^
-	Str := virtual !() -> char^ { return ptrBase.Size()}
-	Size := virtual !() -> int { return ptrBase.Size()}
-	Normalize := virtual !() -> TString^ { return ptrBase }
-}
-
 StringViewOnCStr := class extend StringView
 {
 	ptrBase := char^
@@ -100,10 +95,10 @@ StringViewOnCStr := class extend StringView
 	this := !(char^ inp,int size) -> void { ptrBase = inp  itSize = size}
 	Str := virtual !() -> char^ { return ptrBase }
 	Size := virtual !() -> int { return itSize }
-	Normalize := virtual !() -> TString^ { return new TString(ptrBase,itSize) }
+	GetString := virtual !() -> String^ { return new String(ptrBase,itSize) }
 }
 
-"<=>" := !(TString^ a, TString^ b) -> int
+"<=>" := !(StringView^ a, StringView^ b) -> int
 {
 	if a->{void^} == null and b->{void^} == null
 		return 0
@@ -115,13 +110,13 @@ StringViewOnCStr := class extend StringView
 }
 
 
-"==" := !(TString^ a, TString^ b) -> bool
+"==" := !(StringView^ a, StringView^ b) -> bool
 {
 	cmp := a <=> b
 	return cmp == 0
 }
 
-"!=" := !(TString^ a, TString^ b) -> bool
+"!=" := !(StringView^ a, StringView^ b) -> bool
 {
 	cmp := a <=> b
 	return cmp == 0

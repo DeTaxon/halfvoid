@@ -38,7 +38,7 @@ LibDBObject := class
 
 LibDatabaseType := class
 {
-	loadedLibs := AVLMap.{TString^,LibDBObject^}
+	loadedLibs := AVLMap.{String^,LibDBObject^}
 	
 	//Destroy := !() -> void
 	//{
