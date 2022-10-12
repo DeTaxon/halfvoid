@@ -30,8 +30,12 @@ StringView := class extend TGCObject
 			cb(newSpan)
 		}
 	}
-}
 
+}
+"==" := !(StringView^ a,char^ b) -> bool
+{
+	return strcmp(a.Str(),b) == 0
+}
 "<=>" := !(StringView^ a, StringView^ b) -> int
 {
 	if a->{void^} == null and b->{void^} == null
@@ -40,7 +44,17 @@ StringView := class extend TGCObject
 		return -1
 	if b->{void^} == null
 		return 1
-	return strcmp(a.charPtr,b.charPtr)
+
+	minSize := min(a.Size(),b.Size())
+	result = strncmp(a.charPtr,b.charPtr,minSize)
+
+	if result != 0
+	{
+		return void
+	}
+	if minSize == a.Size()
+		return -1
+	return 1
 }
 
 

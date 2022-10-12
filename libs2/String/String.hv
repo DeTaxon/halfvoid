@@ -53,24 +53,6 @@ String := class extend StringView
 	Size := !() -> int { return itSize }
 }
 
-StringViewOnCStr := class extend StringView
-{
-	ptrBase := char^
-	itSize := int
-	this := !(char^ inp) -> void { ptrBase = inp  itSize = strlen(inp)}
-	this := !(char^ inp,int size) -> void { ptrBase = inp  itSize = size}
-	Str := virtual !() -> char^ { return ptrBase }
-	Size := virtual !() -> int { return itSize }
-	GetString := virtual !() -> String^ { return new String(ptrBase,itSize) }
-}
-
-
-"->{}" := !(char^ obj) .{StringView} -> StringViewOnCStr
-{
-	result.ptrBase = obj
-	result.itSize = strlen(obj)
-}
-
 //"->{}" := !(TString^ st) .{char^} -> char^
 //{
 //	return st.Str()
