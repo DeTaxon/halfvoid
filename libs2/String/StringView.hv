@@ -1,0 +1,57 @@
+StringView := class extend TGCObject
+{
+	Str := virtual !() -> char^ {}
+	Size := virtual !() -> int {}
+	GetString := virtual !() -> String^ {}
+	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
+	{
+		i := 0
+		j := 0
+		ptr := Str()
+		itSize := Size()
+		while j < itSize
+		{
+			if ptr[j] in to
+			{
+				if j != i {
+					newSpan := StringSpan(ptr[i]&,j - i)
+					cb(newSpan)
+				}
+				i = j+1
+				j += 1
+			} else
+			{
+				j += 1
+			}
+		}
+		if j - i != 0
+		{
+			newSpan := StringSpan(ptr[i]&,j - i)
+			cb(newSpan)
+		}
+	}
+}
+
+"<=>" := !(StringView^ a, StringView^ b) -> int
+{
+	if a->{void^} == null and b->{void^} == null
+		return 0
+	if a->{void^} == null
+		return -1
+	if b->{void^} == null
+		return 1
+	return strcmp(a.charPtr,b.charPtr)
+}
+
+
+"==" := !(StringView^ a, StringView^ b) -> bool
+{
+	cmp := a <=> b
+	return cmp == 0
+}
+
+"!=" := !(StringView^ a, StringView^ b) -> bool
+{
+	cmp := a <=> b
+	return cmp == 0
+}
