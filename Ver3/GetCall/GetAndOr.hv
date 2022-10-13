@@ -11,12 +11,15 @@ TryGetAndOrCall := !(Token^ itm) -> BoxExeObj^
 		UnitStack.PushFront(qc)
 	}
 	cl1 := TryGetExeCall(itm.Down)
-	assert(cl1 != null)
+	if cl1 == null
+		return null
+
 	while stackSize < UnitStack.Size()
 		UnitStack.Pop()
 
 	cl2 := TryGetExeCall(itm.Down.Right.Right)
-	assert(cl2 != null)
+	if cl2 == null
+		return null
 
 	if oper == "or"
 		return new BoxOr(cl1,cl2,qc)

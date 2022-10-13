@@ -94,5 +94,9 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 		}
 		return null
 	}
+	if vr is FieldSpaceHolder
+	{
+		printf("here!!!!\n")
+	}
 }
 

@@ -3,15 +3,16 @@
 main := !(char^[] args) -> int
 {
 
-	tstString := new String("hello")
+	tstString := new String("hello.bmp")
 
-	switch tstString
-	{
-		case "hello"
-			printf("yes\n")
-		case void
-			printf("not\n")
-	}
+	printf("hm %i\n",tstString->{StringView^}.End == StringSpan(".bmp"))
+	// switch tstString->{StringView^}.End
+	// {
+	// 	case "hello.bmp"
+	// 		printf("yes\n")
+	// 	case void
+	// 		printf("not\n")
+	// }
 
 	// itBuilder := LexBuilder
 

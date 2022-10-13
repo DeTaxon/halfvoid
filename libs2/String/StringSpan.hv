@@ -122,12 +122,6 @@ StringSpan := class extend StringView
 	//			cb(word)
 	//	})
 	//}
-	GetString := !() -> TString^
-	{
-		if itSize == 0
-			return new TString("")
-		return new TString(Get(),Size())
-	}
 }
 "->{}" := !(char^ obj) .{StringView} -> StringSpan
 {

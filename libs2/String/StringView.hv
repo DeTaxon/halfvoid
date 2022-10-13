@@ -30,6 +30,18 @@ StringView := class extend TGCObject
 			cb(newSpan)
 		}
 	}
+	End := fake
+	{
+		"<=>" := !(StringView toCmp) -> int
+		{
+			mySize := Size()
+			otherSize := toCmp.Size()
+			if mySize < otherSize
+				return -1 //TODO, other values?
+			newSpan := StringSpan(Str()[mySize - otherSize]&,otherSize)
+			return newSpan <=> toCmp
+		}
+	}
 
 }
 "<=>" := !(StringView^ a,char^ b) -> int
@@ -37,15 +49,8 @@ StringView := class extend TGCObject
 	vw := StringSpan(b)
 	return a <=> vw&
 }
-"<=>" := !(StringView^ a, StringView^ b) -> int
+"<=>" := !(StringView a, StringView b) -> int
 {
-	if a->{void^} == null and b->{void^} == null
-		return 0
-	if a->{void^} == null
-		return -1
-	if b->{void^} == null
-		return 1
-
 	minSize := min(a.Size(),b.Size())
 	result = strncmp(a.Str(),b.Str(),minSize)
 
