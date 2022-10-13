@@ -766,10 +766,15 @@ BoxClassVulkan := class extend BoxClass
 
 		objs := HybridQueue.{BoxUnit^,10}
 		defer objs.Destroy()
-		populateMethods(name,objs)
+		populateMethods(name,StringSpan(""),objs)
 
 		if objs.Size() != 0
 			cb(objs)
+	}
+	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{
+		finishHatch.Await()
+		assert(fieldPtr != null)
 	}
 }
 

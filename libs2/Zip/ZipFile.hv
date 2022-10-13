@@ -152,7 +152,7 @@ ZipFile := class extend TGCObject
 {
 	examined := bool
 	asMapped := MappedFile
-	fileName := TString^
+	fileName := String^
 
 	zipRoot := vZipEntry
 
@@ -186,7 +186,7 @@ ZipFile := class extend TGCObject
 
 	AnalizeFile := !(StringView fileToLoad) -> bool
 	{
-		fileName = fileToLoad.Normalize()
+		fileName = fileToLoad.GetString()
 
 		asMapped.Open(fileName.Str())
 		ptrToFl := asMapped.point

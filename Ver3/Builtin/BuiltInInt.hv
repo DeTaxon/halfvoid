@@ -249,6 +249,7 @@ CreateBuiltinsInt := !() -> void
 	bSpace.Functions[StringSpan("suffix U")].Push(new BuiltInIntSuffixU())
 	bSpace.Functions[StringSpan("suffix f")].Push(new BuiltInIntSuffixF())
 
+
 	ForEachIntType( (x,isSigned) ==> {
 		strt := GetFuncType(![x,x],x)
 		baseRefed := GetFuncType(![x,x],![true,false],x)
@@ -283,7 +284,10 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"sub","0") )
 
-		bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
+		if isSigned
+		{
+			bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
+		}
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 

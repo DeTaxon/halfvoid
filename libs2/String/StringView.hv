@@ -51,13 +51,16 @@ StringView := class extend TGCObject
 }
 "<=>" := !(StringView a, StringView b) -> int
 {
-	minSize := min(a.Size(),b.Size())
-	result = strncmp(a.Str(),b.Str(),minSize)
+	aSize := a.Size()
+	bSize := b.Size()
+	minSize := min(aSize,bSize)
+	cmpRes := strncmp(a.Str(),b.Str(),minSize)
 
-	if result == 0
-	{
-		return void
-	}
+	if cmpRes != 0
+		return cmpRes
+		
+	if aSize == bSize
+		return 0
 	if minSize == a.Size()
 		return -1
 	return 1

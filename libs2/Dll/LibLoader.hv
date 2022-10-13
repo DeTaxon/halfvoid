@@ -3,7 +3,7 @@ LibDBObject := class
 {
 	hndl := void^
 	itFileName := char^
-	loadedObjs := AVLMap.{TString^,void^}
+	loadedObjs := AVLMap.{String^,void^}
 	//if $win32
 	//	win32DllData := win32DllLoadData^
 
@@ -12,7 +12,7 @@ LibDBObject := class
 	}
 	Get := !(StringView name) -> void^
 	{
-		nm := name.Normalize()
+		nm := name.GetString()
 
 		inMap := loadedObjs.TryFind(nm)
 		if inMap != null
@@ -52,7 +52,7 @@ LibDatabaseType := class
 	//}
 	GetLib := !(StringView name) -> LibDBObject^
 	{
-		nrm := name.Normalize()
+		nrm := name.GetString()
 		inMap := loadedLibs.TryFind(nrm)
 		if inMap != null
 			return inMap^

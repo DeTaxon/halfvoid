@@ -70,7 +70,7 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 		nowEntry := readdir(dirFd)
 		if nowEntry == null
 			return void
-		view := StringViewOnCStr(nowEntry->{char^}[19]&)
+		view := StringSpan(nowEntry->{char^}[19]&)
 		cb(view)
 	}
 

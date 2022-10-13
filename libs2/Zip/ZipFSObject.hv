@@ -1,14 +1,14 @@
 
 vRepoObject := class
 {
-	objName := TString^
+	objName := String^
 	upFolder := vRepoFolder^
 
 	//GetName := !() -> StringSpan { result = objName }
 	
 	//GetUpFolder := !() -> vRepoFolder^ { return upFolder }
 
-	GetPath := !() -> TString^
+	GetPath := !() -> String^
 	{
 		
 		itms := List.{vRepoObject^}

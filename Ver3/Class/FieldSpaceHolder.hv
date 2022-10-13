@@ -3,6 +3,14 @@ FieldSpaceHolder := class extend BoxExeObj
 	downObj := BoxExeObj^
 	itField := FieldSpace^
 
+	GetObject := !() -> BoxExeObj^
+	{
+		return downObj
+	}
+	GetFieldSpace := !() -> FieldSpace^
+	{
+		return itField
+	}
 	this := !(BoxExeObj^ dwn,FieldSpace^ spc) -> void
 	{
 		downObj = dwn

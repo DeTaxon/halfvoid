@@ -214,23 +214,30 @@ BoxClass := class extend BoxUnit
 			return null
 		return FieldsPath[val]
 	}
-	populateMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
+	populateMethods := !(StringSpan name,StringSpan fieldName, HybridQueue.{BoxUnit^,10} objs) -> void
 	{
-		if DefaultSpace.Methods.Contain(name)
+		itSpace := DefaultSpace&
+		if fieldName.Size() != 0
 		{
-			for fnc : DefaultSpace.Methods[name]
+			if not FieldSpaces.Contain(fieldName)
+				return void
+			itSpace = FieldSpaces[fieldName]&
+		}
+		if itSpace.Methods.Contain(name)
+		{
+			for fnc : itSpace.Methods[name]
 			{
 				objs.Push(fnc)
 			}
 		}
-		if DefaultSpace.MethodTemplates.Contain(name)
+		if itSpace.MethodTemplates.Contain(name)
 		{
-			for fncTmpl : DefaultSpace.MethodTemplates[name]
+			for fncTmpl : itSpace.MethodTemplates[name]
 			{
 				objs.Push(fncTmpl)
 			}
 		}
-		Parents[^].populateMethods(name,objs)
+		Parents[^].populateMethods(name,fieldName,objs)
 	}
 	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{	
@@ -238,7 +245,29 @@ BoxClass := class extend BoxUnit
 
 		objs := HybridQueue.{BoxUnit^,10}
 		defer objs.Destroy()
-		populateMethods(name,objs)
+		populateMethods(name,StringSpan(""),objs)
+
+		if objs.Size() != 0
+			cb(objs)
+	}
+	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		AwaitTypeState()
+
+		fieldName := StringSpan
+		for it,ind : FieldSpaces
+		{
+			if it& == fieldPtr
+			{
+				fieldName = ind
+				break
+			}
+		}
+		assert(fieldName.Size() != 0)
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,fieldName,objs)
 
 		if objs.Size() != 0
 			cb(objs)

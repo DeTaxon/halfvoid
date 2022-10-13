@@ -296,6 +296,22 @@ ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
 		cb(TypeTable[i],i >= 4)
 	}
 }
+GetSignedInt := !(Type^ inInt) -> Type^
+{
+	for i : 8
+	{
+		if TypeTable[i] == inInt
+		{
+			if i >= 4
+			{
+				return inInt
+			}else{
+				return TypeTable[i+4]
+			}
+		}
+	}
+	return null
+}
 ForEachFloatType := !(!(Type^)&-> void cb) -> void
 {
 	cb(GTypeFloat)

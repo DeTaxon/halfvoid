@@ -1,4 +1,4 @@
-TEchoStream := class extend TIOStream
+TEchoStream := class extend Stream
 {
 	ptr := char^
 	inPtrSize := int
@@ -7,9 +7,9 @@ TEchoStream := class extend TIOStream
 
 	this := !() -> void {
 	}
-	Read := virtual !(void^ data, size_t size) -> size_t
+	Read := virtual !(void^ data, s64 size) -> s64
 	{
-		pageLeft := 4096 - redData - size
+		pageLeft := (4096 - redData - size)->{s64}
 		if pages.Size() != 0
 		{
 			nxt := pages[0]
@@ -41,7 +41,7 @@ TEchoStream := class extend TIOStream
 			return toRead
 		}
 	}
-	Write := virtual !(void^ adding, size_t sLen) -> size_t
+	Write := virtual !(void^ adding, s64 sLen) -> s64
 	{
 		if sLen == 0 return 0
 		
@@ -76,10 +76,10 @@ TEchoStream := class extend TIOStream
 		BufSize := 4096
 		return pages.Size()*BufSize + inPtrSize
 	}
-	GetString := !()  -> TString^ 
+	GetString := !()  -> String^ 
 	{
 		if inPtrSize == 0{
-			return new TString("")
+			return new String("")
 		}
 		BufSize := 4096
 		indItr := pages.Size()*BufSize
@@ -96,9 +96,7 @@ TEchoStream := class extend TIOStream
 			memcpy(res[indItr]&,it,BufSize)
 			indItr += BufSize
 		}
-		result = new TString
-		result.charPtr = res
-		result.itSize = outSize
+		result = new String(res,outSize)
 	}
 	Destroy := virtual !() -> void
 	{

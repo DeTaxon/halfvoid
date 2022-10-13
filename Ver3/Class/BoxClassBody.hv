@@ -164,6 +164,14 @@ BoxClassBody := class extend BoxClass
 			}
 		}
 
+		for par : Parents
+		{
+			for pSpace,ind : par.FieldSpaces
+			{
+				FieldSpaces[ind]
+			}
+		}
+
 		populatePoisons(Parents[^],funcs)
 
 		for f : funcs

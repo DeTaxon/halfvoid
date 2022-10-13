@@ -43,7 +43,15 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 	{
 		objs7 := CheckExeDownList
 		objs7.Push(mdlCall)
-		objs7.Push(GetExeInt(0))
+
+		zero := GetExeInt(0)->{BoxExeObj^}
+		if mdlCall.GetType() != GTypeInt
+		{
+			zero = GetExchange(zero,mdlCall.GetType())
+		}
+		if zero == null
+			return null
+		objs7.Push(zero)
 		switch oper
 		{
 			case ">"
@@ -89,16 +97,26 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 		{
 			if i == 0
 			{
-				lst2.Push(holder.downObj)
+				lst2.Push(holder.GetObject())
 			}else{
 				lst2.Push(it)
 			}
 		}
 		
-		fncs := HybridQueue.{BoxUnit^,10}
-		holder.itField.GetMethods(oper,fncs)
-		cnsts := List.{BoxExeConstObj^}
-		resFunc := GetBestFunc(fncs,lst2,cnsts,false)
+		holderType := holder.GetObject().GetType()
+		cls := BoxClass^
+		if holderType is TypeClass
+		{
+			cls = holderType->{TypeClass^}.ToClass
+		}else{
+			assert(holderType is in TypePoint and holderType.Base is TypeClass)
+			cls = holderType.Base->{TypeClass^}.ToClass
+		}
+		resFunc := BoxUnit^
+		cls.GetMethodsInFields(oper,holder.GetFieldSpace(),(fncs) ==> {
+			cnsts := List.{BoxExeConstObj^}
+			resFunc = GetBestFunc(fncs,lst2,cnsts,false)
+		})
 		if resFunc == null
 			errToken.EmitError("can not get function")
 		if resFunc is in BoxFunc

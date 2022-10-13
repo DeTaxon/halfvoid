@@ -2,17 +2,10 @@
 
 main := !(char^[] args) -> int
 {
-
-	tstString := new String("hello.bmp")
-
-	printf("hm %i\n",tstString->{StringView^}.End == StringSpan(".bmp"))
-	// switch tstString->{StringView^}.End
-	// {
-	// 	case "hello.bmp"
-	// 		printf("yes\n")
-	// 	case void
-	// 		printf("not\n")
-	// }
+	sLen := 1->{s64}
+	ptrSize := 0
+	BufSize := 4096->{s64}
+	printf("hm %i %i\n",sLen > BufSize,sLen <=> BufSize)
 
 	// itBuilder := LexBuilder
 
@@ -31,7 +24,7 @@ main := !(char^[] args) -> int
 	// mp := tst.GetMap()
 
 	// res.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
-	// 	printf("hm <%s>\n",st.Normalize().Str())
+	// 	printf("hm <%s>\n",st.GetString().Str())
 	// })
 	
 	return 0

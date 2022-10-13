@@ -330,6 +330,8 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 			assert(false)
 		}
 	}
+	if priorityes.Size() == 0
+		return null
 
 	bestI := 0
 	for i : x.Size()

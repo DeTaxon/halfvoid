@@ -10,12 +10,12 @@ vRepo := class extend TGCObject
 	Init := !(StringView pathName)-> void
 	{
 		rootFolder = new vRepoFolder
-		rootFolder.objName = pathName.Normalize()
+		rootFolder.objName = pathName.GetString()
 	}
 
 	AddZipRoot := !(StringView fileName) -> bool
 	{
-		pth := fileName.Normalize()
+		pth := fileName.GetString()
 
 		itId := osFileId(pth.Str())
 		if itId == 0 return false
@@ -67,7 +67,7 @@ vRepo := class extend TGCObject
 			return void
 		iterFolder.examined = true
 
-		zips := List.{TString^}
+		zips := List.{String^}
 
 		if not iterFolder.virtualFolder
 		{
@@ -77,7 +77,7 @@ vRepo := class extend TGCObject
 				if x.Str() == "." or x.Str() == ".."
 					return void
 
-				strName := x.Normalize()
+				strName := x.GetString()
 
 				bigPath := TEchoStream
 				bigPath << iterFolder.GetPath()

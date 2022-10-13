@@ -1,10 +1,10 @@
-TIOStream := class extend TGCObject
+Stream := class extend TGCObject
 {
-	Read := virtual !(void^ data, size_t size) -> size_t
+	Read := virtual !(void^ data, s64 size) -> s64
 	{
 		return 0
 	}
-	Write := virtual !(void^ data, size_t size) -> size_t
+	Write := virtual !(void^ data, s64 size) -> s64
 	{
 		return 0
 	}
@@ -14,12 +14,12 @@ TIOStream := class extend TGCObject
 
 
 
-	"<<" := !(char^ strData) -> TIOStream&
+	"<<" := !(char^ strData) -> Stream&
 	{
 		Write(strData,strlen(strData))
 		return this
 	}
-	"<<" := !(TString^ strData) -> TIOStream&
+	"<<" := !(String^ strData) -> Stream&
 	{
 		Write(strData.Str(),strData.Size())
 		return this
