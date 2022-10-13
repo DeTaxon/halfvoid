@@ -21,34 +21,43 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
-	res1 := innerTryGetInfixCall(oper,tmpList,itm)
-	if res1 != null
-		return res1
-	return innerTryGetOperMeta(itm)?
 
 	if oper in ![">",">=","<","<=","==","!="]
 	{
-		mdlCall := innerTryGetInfixCall(StringSpan("<=>"),tmpList,itm)
-		if mdlCall != null
+		return innertTryGetCompareOverSpaceship(oper,tmpList,itm)?
+	}
+
+	res1 := innerTryGetInfixCall(oper,tmpList,itm)
+	if res1 != null
+		return res1
+
+	return innerTryGetOperMeta(itm)?
+	
+
+}
+
+innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^
+{
+	mdlCall := innerTryGetInfixCall(StringSpan("<=>"),lst,debugItem)
+	if mdlCall != null
+	{
+		objs7 := CheckExeDownList
+		objs7.Push(mdlCall)
+		objs7.Push(GetExeInt(0))
+		switch oper
 		{
-			objs7 := CheckExeDownList
-			objs7.Push(mdlCall)
-			objs7.Push(GetExeInt(0))
-			switch oper
-			{
-				case ">"
-					return innerTryGetInfixCall(StringSpan(">"),objs7,itm)
-				case ">="
-					return innerTryGetInfixCall(StringSpan(">="),objs7,itm)
-				case "<"
-					return innerTryGetInfixCall(StringSpan("<"),objs7,itm)
-				case "<="
-					return innerTryGetInfixCall(StringSpan("<="),objs7,itm)
-				case "=="
-					return innerTryGetInfixCall(StringSpan("=="),objs7,itm)
-				case "!="
-					return innerTryGetInfixCall(StringSpan("!="),objs7,itm)
-			}
+			case ">"
+				return innerTryGetInfixCall(StringSpan(">"),objs7,debugItem)
+			case ">="
+				return innerTryGetInfixCall(StringSpan(">="),objs7,debugItem)
+			case "<"
+				return innerTryGetInfixCall(StringSpan("<"),objs7,debugItem)
+			case "<="
+				return innerTryGetInfixCall(StringSpan("<="),objs7,debugItem)
+			case "=="
+				return innerTryGetInfixCall(StringSpan("=="),objs7,debugItem)
+			case "!="
+				return innerTryGetInfixCall(StringSpan("!="),objs7,debugItem)
 		}
 	}
 }
@@ -119,7 +128,7 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 
 TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 {
-	if oper == "==" or oper == "!="
+	if oper in !["==","!="]
 	{
 		if objs.Size() != 2
 			return null
@@ -151,5 +160,32 @@ TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 			return GBoolTrue
 		}
 
+		if c1 is BoxExeInt and c2 is BoxExeInt
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+
+	}
+	if oper == "<=>"
+	{
+		if objs.Size() != 2
+			return null
+
+		c1 := objs[0]
+		c2 := objs[1]
+
+		if c1 == c2
+		{
+			return GetExeInt(0)
+		}
+		if c1.GetType() == c2.GetType()
+		{
+			if c1 is BoxExeString and c2 is BoxExeString
+			{
+				return GetExeInt(c1->{BoxExeString^}.val <=> c2->{BoxExeString^}.val)
+			}
+		}
 	}
 }

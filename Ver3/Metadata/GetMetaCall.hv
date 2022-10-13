@@ -121,7 +121,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 					return GObjNone
 				}
 			}else{
-				assert(false) //TODO Emit, not a class
+				obj.EmitError("Left of ->VTable is not a class")
 			}
 		}	
 	}

@@ -101,7 +101,15 @@ BoxSwitch := class extend BoxExeObj
 			objs := CheckExeDownList
 			objs.Push(mainVar.CreateCall())
 			objs.Push(caseCheck)
-			checkRes := innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
+			checkRes := BoxExeObj^
+			if caseCheckFuncName == "=="
+			{
+				checkRes = innertTryGetCompareOverSpaceship(caseCheckFuncName,objs,caseVal)
+			}
+			if checkRes == null
+			{
+				checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
+			}
 
 			if checkRes == null
 				currentCase.EmitError("Can not compare case object with switch statement")

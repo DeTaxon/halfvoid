@@ -1,11 +1,11 @@
 
 internalHVInitClass := !(@T x)  -> void
 {
-	if x->VTable != none
-		x->VTable = T->VTable
-
 	if T->TypeGroup == "Class"
 	{
+		if x->VTable != none
+			x->VTable = T->VTable
+		
 		for fld : x->AllFields
 		{
 			if fld->TypeGroup == "Class"
