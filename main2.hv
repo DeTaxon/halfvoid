@@ -2,30 +2,29 @@
 
 main := !(char^[] args) -> int
 {
-	sLen := 1->{s64}
-	ptrSize := 0
-	BufSize := 4096->{s64}
-	printf("hm %i %i\n",sLen > BufSize,sLen <=> BufSize)
 
-	// itBuilder := LexBuilder
+	itBuilder := LexBuilder
 
-	// itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",1)
-	// itBuilder.ApplyReg("[0-9]+(.[0-9]+)?",2)
-	// itBuilder.ApplyReg("0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2)
-	// itBuilder.ApplyReg(" true | false | null",3)
-	// itBuilder.ApplyReg("\\{ | \\} | \\, | \\: | \\[ | \\]",4)
-	// itBuilder.ApplyReg("\\ | \\t | \\n",5)
+	itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",1)
+	itBuilder.ApplyReg("[0-9]+(.[0-9]+)?",2)
+	itBuilder.ApplyReg("0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2)
+	itBuilder.ApplyReg(" true | false | null",3)
+	itBuilder.ApplyReg("\\{ | \\} | \\, | \\: | \\[ | \\]",4)
+	itBuilder.ApplyReg("\\  | \\t | \\n",5)
 
-	// res := itBuilder.GenerateMachine()
+	res := itBuilder.GenerateMachine()
 
 	// res.PrintIt()
 
-	// tst := FSGetFile("test.json")
-	// mp := tst.GetMap()
+	tst := FSGetFile("test.json")
+	mp := tst.GetMap()
 
-	// res.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
-	// 	printf("hm <%s>\n",st.GetString().Str())
-	// })
+	res.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
+		if a != 5
+		{
+			printf("hm <%s>\n",st.GetString().Str())
+		}
+	})
 	
 	return 0
 }
