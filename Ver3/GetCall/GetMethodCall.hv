@@ -61,11 +61,21 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
+
+	vrObj := vr
+	space := FieldSpace^
+	if vr is FieldSpaceHolder
+	{
+		hldr := vr->{FieldSpaceHolder^}
+		vrObj = hldr.GetObject()
+		space = hldr.GetFieldSpace()
+	}
+
 	Objs := CheckExeDownList
-	Objs.Push(vr)
+	Objs.Push(vrObj)
 	Objs.Push(sObjs[^])
 
-	clsType := vr.GetType()
+	clsType := vrObj.GetType()
 
 	if clsType is in TypePoint
 	{
@@ -76,9 +86,16 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 	{
 		cls := clsType->{TypeClass^}.ToClass //todo GetClass
 		callItem := BoxUnit^
-		cls.GetMethods(name, x ==> {
-			callItem = GetBestFunc(x,Objs,consts)
-		})
+		if space != null
+		{
+			cls.GetMethodsInFields(name,space, x ==> {
+				callItem = GetBestFunc(x,Objs,consts)
+			})
+		}else{
+			cls.GetMethods(name, x ==> {
+				callItem = GetBestFunc(x,Objs,consts)
+			})
+		}
 		if callItem != null
 		{
 			if callItem is in BoxFunc
@@ -93,10 +110,6 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, CheckExeDownList sObjs
 			assert(false)
 		}
 		return null
-	}
-	if vr is FieldSpaceHolder
-	{
-		printf("here!!!!\n")
 	}
 }
 
