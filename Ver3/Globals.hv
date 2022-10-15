@@ -20,7 +20,6 @@ GDebugFuncId := task_local int
 GDebugScopeId := task_local int
 GDebugLineCallId := task_local int
 
-
 SubWork := !(!()&->void x) -> void
 {
     ccs := CurrentCodeSpace

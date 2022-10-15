@@ -129,7 +129,8 @@ TaskBox := class extend TGCObject
 					it.tskToRun.Destroy()
 					if $posix
 					{
-						itStacks.Push(it.stackPtr)
+						//itStacks.Push(it.stackPtr)
+						free(it.stackPtr)
 					}
 					if $win32
 					{

@@ -118,7 +118,7 @@ SizeCheck:
 
 ver3:
 	./c.out -p posix  $(ForcedLibs) -C1 "Ver3/" -g -o Objs/ver3.ll
-	clang++ Objs/ver3.ll -lm -ldl -o ver3
+	clang -gdwarf-4 Objs/ver3.ll -lm -ldl -o ver3
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
