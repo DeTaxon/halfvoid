@@ -142,25 +142,23 @@ TaskBox := class extend TGCObject
 				destroyTasks.Clear()
 			}
 
-			toDoTask = checkCreateTask()
-
 			if toDoTask == null
 			{
 				toDoTask = TaskGetHatchWork()
 			}
 
 			if toDoTask == null
-			{
 				toDoTask = checkTimers(makeWait&,waitTime&)
-				if toDoTask == null
-				{
-					toDoTask = checkExeWorks()
-					if toDoTask == null
-					{
-						toDoTask = checkYields();
-					}
-				}
-			}
+
+			if toDoTask == null
+				toDoTask = checkExeWorks()
+
+			if toDoTask == null
+				toDoTask = checkYields()
+				
+
+			if toDoTask == null
+				toDoTask = checkCreateTask()
 
 			if toDoTask != null
 			{
