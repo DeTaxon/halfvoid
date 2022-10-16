@@ -35,15 +35,18 @@ GetFuncMangle := !(StringSpan name) -> StringSpan
 
 isRegularName := !(StringSpan name) -> bool
 {
-	switch name[^]
+	for i : name.Size()
 	{
-		case 'a'..'z'
-		case 'A'..'Z'
-		case '0'..'9'
-		case '_'
+		switch name[i]
+		{
+			case 'a'..'z'
+			case 'A'..'Z'
+			case '0'..'9'
+			case '_'
 
-		case void
-			return false
+			case void
+				return false
+		}
 	}
 	return true
 }

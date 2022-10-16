@@ -1,7 +1,7 @@
 
 MiniMachineNodeOld := class 
 {
-	WhatNext := AVLMap.{char^,MiniMachineNodeOld^}
+	WhatNext := AVLMap.{StringSpan,MiniMachineNodeOld^}
 	IsTerm := bool
 
 	this := !() -> void
@@ -9,12 +9,12 @@ MiniMachineNodeOld := class
 		WhatNext."this"()
 		IsTerm = false
 	}
-	GetNext := !(string item) -> MiniMachineNodeOld^
-	{
-		inIt := WhatNext.TryFind(item)
-		if inIt != null return inIt^
-		return null
-	}
+	// GetNext := !(string item) -> MiniMachineNodeOld^
+	// {
+	// 	inIt := WhatNext.TryFind(item)
+	// 	if inIt != null return inIt^
+	// 	return null
+	// }
 }
 
 LexMachineInfo := class
@@ -92,7 +92,7 @@ PriorityBagOld := class
 								uns.Insert(stW)
 								Opers.Insert(stW)
 						}
-						next := ref machIter.WhatNext[stW]
+						next := ref machIter.WhatNext[GetConstString(stW)]
 						if next == null
 							next = new MiniMachineNodeOld
 						if i == rl.Size() - 1

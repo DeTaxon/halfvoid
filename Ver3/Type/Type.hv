@@ -74,12 +74,12 @@ Type := class {
 
 TypeDef := class
 {
-	ItName := string
+	ItName := StringSpan
 	ItType := Type^
 
-	this := !(string name, Type^ T) -> void
+	this := !(char^ name, Type^ T) -> void
 	{
-		ItName = name
+		ItName = GetConstString(name)
 		ItType = T
 	}
 	GetValue := virtual !() -> string
