@@ -129,8 +129,12 @@ TaskBox := class extend TGCObject
 					it.tskToRun.Destroy()
 					if $posix
 					{
-						//itStacks.Push(it.stackPtr)
-						free(it.stackPtr)
+						if itStacks.Size() <= 5
+						{
+							itStacks.Push(it.stackPtr)
+						}else{
+							free(it.stackPtr)
+						}
 					}
 					if $win32
 					{

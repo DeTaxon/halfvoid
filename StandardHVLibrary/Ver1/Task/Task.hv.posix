@@ -150,8 +150,15 @@ AppendClass TaskBox
 	}
 	osCreateTask := !(TaskData^ startTask) -> void
 	{
+		stackPtr := void^
+		if itStacks.Size() != 0
+		{
+			stackPtr = itStacks.Pop()
+		}else{
+			stackPtr = malloc(stackSize)
+		}
 		getcontext(startTask.uContext[0]&)
-		startTask.stackPtr = malloc(stackSize)
+		startTask.stackPtr = stackPtr
 		startTask.uContext[24]&->{u64^}^ = 0
 		startTask.uContext[8]&->{void^^}^ = null
 		startTask.uContext[16]&->{void^^}^ = startTask.stackPtr
