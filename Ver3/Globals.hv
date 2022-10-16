@@ -29,7 +29,8 @@ SubWork := !(!()&->void x) -> void
     subLambda := x.Capture()
 
     stacks := new HybridQueue.{BoxUnit^,10}
-    stacks.Push(UnitStack[^])
+	if UnitStack.Size() != 0
+    	stacks.Push(UnitStack[^])
 
     TSpawnTask(() ==> {
         CurrentCodeSpace = ccs
@@ -37,7 +38,10 @@ SubWork := !(!()&->void x) -> void
         CurrentFile = cf
         CurrentFunc = cfunc
 
-        UnitStack.Push(stacks^[^])
+		if stacks.Size() != 0
+		{
+        	UnitStack.Push(stacks^[^])
+		}
 
         subLambda()
         subLambda.Destroy()
