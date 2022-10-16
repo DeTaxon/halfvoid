@@ -7,22 +7,6 @@ HybridQueue := class .{@T,@ExtraSize}
 	this := !() -> void
 	{
 	}
-	"~For" := !() -> !()&->T&
-	{
-		return () ==>
-		{
-			fixSize := min(itSize,ExtraSize)
-			if fixSize != 0
-			{
-				for i : fixSize 
-					yield qArr[i]
-			}
-			if subList.Size() != 0
-			{
-				yield subList[^]
-			}
-		}
-	}
 	makeNewItem := !() -> ref T //TODO make it template
 	{
 		if itSize < ExtraSize
@@ -77,4 +61,54 @@ HybridQueue := class .{@T,@ExtraSize}
 	{
 		return itSize
 	}
+	// "~For" := !() -> !()&->T&
+	// {
+	// 	return () ==>
+	// 	{
+	// 		fixSize := min(itSize,ExtraSize)
+	// 		if fixSize != 0
+	// 		{
+	// 			for i : fixSize 
+	// 				yield qArr[i]
+	// 		}
+	// 		if subList.Size() != 0
+	// 		{
+	// 			yield subList[^]
+	// 		}
+	// 	}
+	// }
+
+	"~For" := !() -> HybridQueueIterator.{T}
+	{
+		result.arraySize = ExtraSize
+		result.maxSize = Size()
+
+		result.arrayPtr = qArr[0]&
+		result.iter = subList.Start
+	}
+}
+
+HybridQueueIterator := class .{@T}
+{
+	arraySize := int
+	maxSize := int
+	index := int
+
+	arrayPtr := T^
+	iter := ListNode.{T}^
+
+	"^" := !() -> ref T { 
+		if index >= arraySize
+		{
+			return iter.Data
+		}else{
+			return arrayPtr[index] 
+		}
+	}
+	Inc := !() -> void { 
+		if index >= arraySize
+			iter = iter.Next
+		index += 1
+	 }
+	IsEnd := !() -> bool { return index >= maxSize }
 }
