@@ -92,7 +92,7 @@ StupidMemoryPool := class .{@PageSize} extend IMemoryPool
 			MallocPoolBlock()
 			newPage = itFreedPages.Pop()
 		}
-		memset(newPage,0,PageSize)
+		//memset(newPage,0,PageSize)
 		return newPage
 	}
 	GetMem := virtual !(size_t size, int align, int prefix) -> void^
@@ -100,6 +100,7 @@ StupidMemoryPool := class .{@PageSize} extend IMemoryPool
 		if itPage == null{
 			itPage = GetPage()
 		}
+		
 		newSize := itLoaded
 		if align > 1 {
 			newSize +=  0xFF % align
@@ -113,8 +114,11 @@ StupidMemoryPool := class .{@PageSize} extend IMemoryPool
 			itBusyPages.Push(itPage)
 			itPage = GetPage()
 			itLoaded = size
+			memset(itPage,0,size)
 			return itPage
 		}
+
+		memset(itPage[newSize]&,0,size)
 		return itPage[newSize]&
 	}
 	FreeMem := virtual !(void^ itm) -> void

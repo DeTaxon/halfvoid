@@ -58,7 +58,15 @@ WordDetermMachine := class
 		}
 
 	}
-	"=" := !(WordDetermMachine wut) -> void {}
+	"=" := !(WordDetermMachine wut) -> void 
+	{
+		Table = wut.Table
+		IsEndNode = wut.IsEndNode
+		for i : 256
+		{
+			CharToGo[i] = wut.CharToGo[i]
+		}
+	}
 	PrintIt := !() -> void
 	{
 		printf("           ")

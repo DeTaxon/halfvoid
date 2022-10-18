@@ -21,7 +21,7 @@ void ur_init(int entrys,io_uring* ring,int flags)
 }
 void ur_exit(io_uring* ring)
 {
-	io_uring_queue_exit(ring);
+	//io_uring_queue_exit(ring);
 }
 void ur_destroy(void* ptr)
 {
