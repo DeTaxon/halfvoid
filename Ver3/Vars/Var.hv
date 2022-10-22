@@ -182,12 +182,16 @@ MemVar := class extend NamedVar
 	Value := ParamFunc^
 	Inits := List.{BoxExeObj^}
 
+	debugGetValue := BoxExeObj^
+
 	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
 	{
 		Name = vName
 		Value = clFunc
 		debId = GetNewId()
 		assert(clFunc != null)
+		if DebugMode
+			debugGetValue = clFunc.CreateCall()
 	}
 	GetVarType := !() -> Type^
 	{
@@ -207,39 +211,51 @@ MemVar := class extend NamedVar
 	}
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
-		Value.PrintDebugMeta(f)
+		//Value.PrintDebugMeta(f)
 		pDebugMeta(f)
 	}
 	pDebugCode := !(TIOStream^ f) -> void
 	{
 		if not (Value.IsDebuggable())
 			return void
+		if debugGetValue == null
+			return void
 		//if Value is FuncLocalParamCaptured //TODO, get debug data for captured variables
 		//	return void
 		//if Value is FuncInputParamCaptured //TODO, get debug data for captured variables
 		//	return void
+
+		if Value.IsValue()
+		{
+			// not suppose to happen
+			debugGetValue.PrintPre(f)
+		}else{
+			debugGetValue.PrintPointPre(f)
+		}
 		
 		tp := Value.GetVarType()
-		if DebugMode
+
+		f^ << "call void @llvm.dbg."
+		if Value.IsValue()
 		{
-			f^ << "call void @llvm.dbg."
-			if Value.IsValue()
-			{
-				f^ << "value"
-			}else{
-				f^ << "declare"
-			}
-			f^ << "(metadata "
-			tp.PrintType(f)
-			if not Value.IsValue()
-				f^ << "*"
-			if Value.IsRef()
-				f^ << "*"
-			f^ << " " 
-			Value.PrintDebugLine(f)
-			f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+			f^ << "value"
+		}else{
+			f^ << "declare"
 		}
-			
+		f^ << "(metadata "
+		tp.PrintType(f)
+		if not Value.IsValue()
+			f^ << "*"
+		// if Value.IsRef()
+		// 	f^ << "*"
+		f^ << " " 
+		if Value.IsValue()
+		{
+			debugGetValue.PrintUse(f)
+		}else{
+			debugGetValue.PrintPointUse(f)
+		}
+		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 	}
 	doInits := !(TIOStream^ f) -> void
 	{
@@ -277,6 +293,10 @@ MemVarRef := class extend MemVar
 		Name = vName
 		Value = clFunc
 		debId = GetNewId()
+	}
+
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
 	}
 }
 

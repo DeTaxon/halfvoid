@@ -154,7 +154,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 
 	IsDebuggable := virtual !() -> bool
 	{
-		return false
+		return true
 	}
 
 	PrintAlloc := virtual !(TIOStream^ f) -> void

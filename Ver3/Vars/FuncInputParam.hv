@@ -89,7 +89,7 @@ FuncInputParam := class extend ParamFunc
 	}
 	IsValue := virtual !() -> bool
 	{
-		return true
+		return not isRef
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
