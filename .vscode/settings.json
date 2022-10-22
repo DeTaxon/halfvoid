@@ -1,9 +1,11 @@
 {
   "files.associations": {
+    "*.hv": "cpp",
+    "*.posix": "java",
+    "*.win32": "java",
     "*.cp": "cpp",
     "typeinfo": "cpp",
     "limits": "cpp",
-    "*.hv": "cpp",
     "array": "cpp",
     "string_view": "cpp",
     "type_traits": "cpp",
@@ -14,7 +16,8 @@
     "unordered_map": "cpp",
     "vector": "cpp",
     "iterator": "cpp",
-    "numbers": "cpp"
+    "numbers": "cpp",
+    "hash_map": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "/usr/bin/gcc",
   "C_Cpp_Runner.cppCompilerPath": "/usr/bin/g++",

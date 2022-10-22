@@ -339,6 +339,13 @@ RuleParam := !(void^ itr) -> int
 		It = It.Right
 		if It == null return 0
 		size += 1
+
+		if It.GetValue() == "." and It.Right?.GetValue() == "{}"
+		{
+			It = It.Right.Right
+			size += 2
+			if It == null return 0
+		}
 	}
 
 	if It.GetValue() == "ref"

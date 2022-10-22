@@ -81,13 +81,12 @@ BoxFile := class extend BoxUnit
 
 		while iter != null
 		{
-			vr := BoxUnit^
-			vr = null
+
+			vr := BoxUnit^()
 
 			try
 			{
-
-				vr = TryParseVar(iter)	
+				vr = TryParseVarInFile(iter)	
 			}catch(IException^ e)
 			{
 
@@ -149,4 +148,75 @@ BoxFile := class extend BoxUnit
 			}
 		}
 	}
+}
+TryParseVarInFile := !(Token^ obj) -> BoxUnit^
+{
+	if obj == null or obj.Down == null
+		return null
+
+	iter := obj.Down
+
+	if iter.Right == null
+		return null
+	if iter.Right?.GetValue() != ":="
+		return null
+
+	if iter.Right?.Right.GetValue() == "type"
+	{
+		return TryParseTypedefTemplate(obj)
+	}
+
+	name := StringSpan
+	isSuffix := bool
+	if iter is TokenIndent
+	{
+		name = iter->{TokenIndent^}.Value
+	}else if iter is TokenString
+	{
+		name = iter->{TokenString^}.Value
+		isSuffix = true
+	}
+
+	varToken := iter.Right.Right
+
+	if varToken == null
+		return null
+	
+	if varToken?.GetValue() == "thread_local"
+	{
+		return null
+	}
+	
+	if varToken?.GetValue() == "task_local"
+	{
+		return new TaskLocalVarDelayed(name,varToken.Right)
+	}
+	
+	fnc := TryParseFunction(varToken)
+
+	if fnc != null
+	{
+		if fnc is in BoxFuncTemplate
+		{
+			return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
+		}
+		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
+	}
+
+	cls := TryParseClass(varToken)
+	if cls != null
+	{
+		if cls is in BoxClass
+		{
+			cls2 := cls->{BoxClass^}
+			cls2.SetName(name)
+			return new TypeVar(name,cls2.ItType)
+		}
+		assert( cls is in BoxClassTemplate)
+		cls3 := cls->{BoxClassTemplate^}
+		cls3.SetName(name)
+		return new TemplateTypeVar(name,cls3)
+	}
+
+	return null
 }

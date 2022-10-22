@@ -46,7 +46,11 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 	if checkRes is BoxExeInt
 		return null
 	if checkRes is TypedefTemplateVar
-		return null
+	{
+		tmplVar := checkRes->{TypedefTemplateVar^}
+		cnsts6 := List.{BoxExeConstObj^}
+		return tmplVar.Value.GetType(cnsts6)
+	}
 	if checkRes is TaskLocalVarDelayed
 		return null
 	if checkRes is TemplateTypeVar

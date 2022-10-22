@@ -2,25 +2,32 @@ TryParseTypedefTemplate := !(Token^ obj) -> BoxUnit^
 {
 	iter := obj.Down
 
-	assert(iter.Down is TokenIndent) //TODO error
+	assert(iter is TokenIndent) //TODO error
 
 	res := new TypedefTemplateVar
-	res.Name = iter.Down->{TokenIndent^}.Value
+	res.Name = iter->{TokenIndent^}.Value
 
 	resConst := new TypedefTemplateConst
-	itrCnst := iter.Down.Right.Right.Down
-
-	while itrCnst != null
-	{
-		if itrCnst.GetValue() != ","
-		{
-			resConst.ItConsts.Push(itrCnst)
-		}
-		itrCnst = itrCnst.Right
-	}
 	tpIndent := iter.Right.Right 
 	assert(tpIndent.GetValue() == "type")
-	resConst.TypeToken = tpIndent.Right
+
+	typeToken := tpIndent.Right
+	if tpIndent.Right.GetValue() == "."
+	{
+		itrCnst := tpIndent.Right.Right.Down
+
+		while itrCnst != null
+		{
+			if itrCnst.GetValue() != ","
+			{
+				resConst.ItConsts.Push(itrCnst)
+			}
+			itrCnst = itrCnst.Right
+		}
+		typeToken = typeToken.Right.Right
+	}
+
+	resConst.TypeToken = typeToken
 	res.Value = resConst
 
 	return res
@@ -39,6 +46,10 @@ TypedefTemplateConst := class extend BoxExeConstObj
 	{
 		if cnsts.Size() != ItConsts.Size()
 			return null
+		if cnsts.Size() == 0
+		{
+			return ParseType(TypeToken)
+		}
 
 		resCnsts := AVLMap.{StringSpan,BoxUnit^}
 		for i : cnsts.Size()

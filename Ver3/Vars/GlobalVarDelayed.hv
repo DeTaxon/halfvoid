@@ -34,7 +34,7 @@ GlobalVarDelayed := class extend GlobalVar
 
 		if tp == null
 		{
-			MemValue = TryGetExeCall(typeToken) ->{BoxExeConstObj^} //TODO if not Const
+			MemValue = TryGetExeCall(typeToken) ->{BoxExeConstObj^}
 			if MemValue? is BoxArrayHolder
 			{
 				ah := MemValue->{BoxArrayHolder^}
@@ -44,6 +44,9 @@ GlobalVarDelayed := class extend GlobalVar
 					typeToken.EmitError("Array must be made of constants")
 				tp = ah.GetArrayType()
 				MemValue = ah.GetAsConst()
+			}else{
+				if not (MemValue is in BoxExeConstObj)
+					typeToken.EmitError("Global variable value must be a constant")
 			}
 			assert(tp != GTypeVoid)
 			if MemValue != null

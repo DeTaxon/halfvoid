@@ -1,5 +1,5 @@
-AVLMap.{@KEY,@VALUE} := type ContainerCommonMap.{AVLTree,KEY,VALUE}
-RBMap.{@KEY,@VALUE} := type ContainerCommonMap.{RBTree,KEY,VALUE}
+AVLMap := type.{@KEY,@VALUE} ContainerCommonMap.{AVLTree,KEY,VALUE}
+RBMap := type.{@KEY,@VALUE} ContainerCommonMap.{RBTree,KEY,VALUE}
 
 ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 {

@@ -1,41 +1,13 @@
 
-testIter := class
-{
-	nowIndex := int
-	last := int
-	HaveValue := !() -> bool
-	{
-		return nowIndex <= last
-	}
-	"()" := !() -> int
-	{
-		nowIndex += 1
-		return nowIndex
-	}
-}
-
-testClass := class
-{
-	"for" := !() -> testIter
-	{
-		result.last = 5
-	}
-	YES := fake
-	{
-		"for" := !() -> testIter
-		{
-			result.last = 10
-		}
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	hm := testClass
-	for i : hm.YES
-	{
-		printf("test %i\n",i)
+	x := 5
+
+	j := () ==> {
+		x = 10
+		x = 20
 	}
+	j()
 
 	// itBuilder := LexBuilder
 

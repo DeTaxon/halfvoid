@@ -10,10 +10,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	if iter.Right?.GetValue() != ":="
 		return null
 
-	if iter.Down?.Right?.GetValue() == "."
-	{
-		return TryParseTypedefTemplate(obj)
-	}
+	// if iter.Down?.Right?.GetValue() == "."
+	// {
+	// 	return TryParseTypedefTemplate(obj)
+	// }
 
 	name := StringSpan
 	isSuffix := bool
@@ -33,60 +33,48 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	
 	if varToken?.GetValue() == "thread_local" or varToken?.GetValue() == "task_local"
 	{
-		if not CurrentScope is in BoxFile
-			varToken.EmitError("task/thread local must be at the root of file")
-
-		if varToken.GetValue() == "task_local"
-		{
-			return new TaskLocalVarDelayed(name,varToken.Right)
-		}
-
-		return new GlobalVarDelayed(name,varToken)
+		varToken.EmitError("task/thread local must be at the root of file")
 	}
 
-	if not (CurrentScope is BoxFile)
+
+	varType := ParseType(varToken)
+
+	if varType != null
 	{
-		varType := ParseType(varToken)
-	
-		if varType != null
-		{
-			assert(CurrentScope is in BoxFunc) 
-			vr := CreateVar(varType,false)
-			resVar := new MemVarBorrowed(name,vr)
-			ModifyStackAllocatedVar(vr,resVar.Inits)
-			return resVar
-		}
+		assert(CurrentScope is in BoxFunc) 
+		vr := CreateVar(varType,false)
+		resVar := new MemVarBorrowed(name,vr)
+		ModifyStackAllocatedVar(vr,resVar.Inits)
+		return resVar
 	}
 
-	cls := TryParseClass(varToken)
-	if cls != null
-	{
-		if cls is in BoxClass
-		{
-			cls2 := cls->{BoxClass^}
-			cls2.SetName(name)
-			return new TypeVar(name,cls2.ItType)
-		}
-		assert( cls is in BoxClassTemplate)
-		cls3 := cls->{BoxClassTemplate^}
-		cls3.SetName(name)
-		return new TemplateTypeVar(name,cls3)
-	}
+	// cls := TryParseClass(varToken)
+	// if cls != null
+	// {
+	// 	if cls is in BoxClass
+	// 	{
+	// 		cls2 := cls->{BoxClass^}
+	// 		cls2.SetName(name)
+	// 		return new TypeVar(name,cls2.ItType)
+	// 	}
+	// 	assert( cls is in BoxClassTemplate)
+	// 	cls3 := cls->{BoxClassTemplate^}
+	// 	cls3.SetName(name)
+	// 	return new TemplateTypeVar(name,cls3)
+	// }
 
-	fnc := TryParseFunction(varToken)
+	// fnc := TryParseFunction(varToken)
 
-	if fnc != null
-	{
-		if fnc is in BoxFuncTemplate
-		{
-			return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
-		}
-		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
-	}
+	// if fnc != null
+	// {
+	// 	if fnc is in BoxFuncTemplate
+	// 	{
+	// 		return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
+	// 	}
+	// 	return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
+	// }
 
-	exeObj := BoxExeObj^
-	if not (CurrentScope is BoxFile)
-		exeObj = TryGetExeCall(varToken)
+	exeObj := TryGetExeCall(varToken)
 	if exeObj != null
 	{
 		if CurrentScope is in BoxFunc
@@ -143,39 +131,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}
 			return mVar
 		}else{
-
-			if CurrentScope is BoxFile
-			{
-				if exeObj is BoxArrayHolder
-				{
-					ah := exeObj->{BoxArrayHolder^}
-					if ah.GetArraySize() == 0
-						varToken.EmitError("Can not use empty array as global variable")
-					if not ah.IsConst()
-						varToken.EmitError("Array must be made of constants")
-					aVar := new GlobalVar(name,ah.GetArrayType())
-					aVar.MemValue = ah.GetAsConst()
-					assert(aVar.MemValue != null)
-					return aVar
-				}else{
-					if not (exeObj is in BoxExeConstObj)
-					{
-						varToken.EmitError("Can not create global variable out of object")
-					}
-					cnst := exeObj->{BoxExeConstObj^}
-					rVar := new GlobalVar(name,cnst.GetType())
-					rVar.MemValue = cnst
-					return rVar	
-				}
-			}
 			assert(false)
 		}
 	}
 	
-	if CurrentScope is BoxFile
-	{
-		return new GlobalVarDelayed(name,varToken)
-	}
 	return null
 }
 
@@ -228,6 +187,7 @@ MemVar := class extend NamedVar
 		Name = vName
 		Value = clFunc
 		debId = GetNewId()
+		assert(clFunc != null)
 	}
 	GetVarType := !() -> Type^
 	{
@@ -273,7 +233,7 @@ MemVar := class extend NamedVar
 			tp.PrintType(f)
 			if not Value.IsValue()
 				f^ << "*"
-			if Value.IsRef() //TODO?
+			if Value.IsRef()
 				f^ << "*"
 			f^ << " " 
 			Value.PrintDebugLine(f)

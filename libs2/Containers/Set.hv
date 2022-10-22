@@ -1,4 +1,4 @@
-AVLSet.{@DATA} := type ContainerCommonSet.{AVLTree,DATA}
+AVLSet := type . {@DATA} ContainerCommonSet.{AVLTree,DATA}
 //RBSet.{@DATA} := type ContainerCommonSet.{RBTree,DATA}
 ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 {

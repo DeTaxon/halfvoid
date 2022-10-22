@@ -5,7 +5,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		if tp == null
 			return null
 		nm := tk->{TokenTemplateType^}.Value[1..0]
-		//TODO: resConsts.Push()
+
 		if resCnsts.Contain(nm)
 		{
 			if resCnsts[nm] is ConstType
@@ -30,7 +30,6 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			return null
 		}
 
-		//assert(tp == null) TODO
 		k := 0
 		types := Type^[100]
 		isRefs := bool[100]
