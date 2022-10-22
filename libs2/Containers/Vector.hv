@@ -7,7 +7,7 @@ Vector := class .{@T} extend TArrayView.{T}
 	{
 		Resize(count)
 	}
-	"[]" := virtual !(int i) -> T&
+	"[]" := virtual !(int i) -> ref T
 	{
 		return pointer[i]
 	}
@@ -91,7 +91,7 @@ HVFixedArrayIterator := class .{@T}
 	pointer := T^
 	size := int
 	ind := int
-	"()" := !() -> T&
+	"()" := !() -> ref T
 	{
 		result = pointer[ind]&
 		ind += 1

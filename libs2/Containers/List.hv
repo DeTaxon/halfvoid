@@ -82,7 +82,7 @@ List := class.{@T} extend TArrayView.{T}
 		itSize -= 1
 	}
 
-	"[]" := virtual !(int ind) -> T&
+	"[]" := virtual !(int ind) -> ref T
 	{
 		if ind < 0
 			return this[itSize + ind]
@@ -230,7 +230,7 @@ TListIterator := class .{@T}
 	{
 		result = iter != null
 	}
-	"()" := !() -> T&
+	"()" := !() -> ref T
 	{
 		return iter.data
 	}

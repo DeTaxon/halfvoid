@@ -377,6 +377,7 @@ IsKeyword := !(W) -> bool
 		case "none" return true
 		case "shr" return true
 		case "shl" return true
+		case "ref" return true
 	}
 
 	return false

@@ -16,7 +16,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	//	if resl == null return null
 	//	return resl.data.second
 	//}
-	"[]" := !(KEY dat) -> VALUE&
+	"[]" := !(KEY dat) -> ref VALUE
 	{
 		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^
 		cnst := BadPair.{KEY,VALUE}

@@ -95,7 +95,7 @@ internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
 {
 	result = lmbd->{TILambda^}.getCaptureVar()->{T^}
 }
-internalHVLambdaGetYieldState := !(void^ lmbd) -> int&
+internalHVLambdaGetYieldState := !(void^ lmbd) -> ref int
 {
 	return lmbd->{TILambda^}.getYieldState()
 }

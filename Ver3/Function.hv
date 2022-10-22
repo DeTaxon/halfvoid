@@ -52,7 +52,14 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 	{
 		iter = iter.Right
 		if iter == null return null
+
 		resultToken = iter
+
+		if iter.GetValue() == "ref"
+		{
+			iter = iter.Right
+			if iter == null return null
+		}
 
 		iter = iter.Right
 		if iter == null return null
