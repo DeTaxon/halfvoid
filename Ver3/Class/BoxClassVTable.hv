@@ -1,6 +1,6 @@
 AppendClass BoxClass
 {
-	PreVTableVars := List.{VTableEntry^}
+	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
 
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
@@ -57,6 +57,26 @@ AppendClass BoxClass
 		}
 		VTableValue.MemValue = cnst
 		VTableField = new FieldPath(ItType,VTableType.ItType.GetPoint())
+	}
+
+	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
+	{
+		AwaitVTableStep()
+		
+		for it,i : VTable
+		{
+			if it is VTableVar 
+				and it->{VTableVar^}.Name == val
+			{
+				asVar := it->{VTableVar^}
+				cnsts := List.{BoxExeConstObj^}
+				cnsts.Push(GetExeInt(i))
+				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![ItType][0]&,![true][0]&,asVar.GetType(),true,false), cnsts)
+				cnsts.Destroy()
+				return res
+			}
+		}
+		return null
 	}
 }
 

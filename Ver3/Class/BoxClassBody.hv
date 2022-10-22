@@ -346,7 +346,7 @@ BoxClassBody := class extend BoxClass
 								if exeObj is in BoxExeConstObj
 								{
 									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
-									PreVTableVars.Push(newVal)
+									PreVTableVars[name] = newVal
 								}else{
 									itm.EmitError("Unknow object")
 								}

@@ -13,6 +13,8 @@ TemplateInternalGetYieldVars := BoxFuncTemplate^
 TemplateInternalCreateTuple := BoxFuncTemplate^
 TemplateInternalTupleConstructor := BoxFuncTemplate^
 
+TemplateInternalGetVTableVariable := BoxFuncTemplate^
+
 GInternalSetType := BoxFuncTemplate^
 
 GFuncGCSetNull := BoxFunc^
@@ -105,6 +107,8 @@ InitInternals := !() -> void
 
 	TemplateInternalCreateTuple = intGetTemplate("internalHVCreateTuple")
 	TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
+
+	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
 
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")

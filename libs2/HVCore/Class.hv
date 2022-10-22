@@ -23,3 +23,8 @@ internalTupleConstructor := !(@Tpl this,args...) -> void
 		this.i = it
 	}
 }
+
+internalGetVTableVariable := !(@T2 obj) .{@FieldNumber} -> void //result replaced bu compiler
+{
+	return obj->VTable.FieldNumber
+}

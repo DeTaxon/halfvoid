@@ -34,6 +34,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				cls = typ.Base->{TypeClass^}.ToClass
 			}
 		}
+		
 		if cls != null
 		{
 			cls.AwaitTypeState()
@@ -44,6 +45,13 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				itms := CheckExeDownList
 				itms.Push(val)
 				return fld.CreateCall(itms)
+			}
+			vTableGet := cls.GetFieldInVTable(name)
+			if vTableGet != null
+			{
+				itms := CheckExeDownList
+				itms.Push(val)
+				return vTableGet.CreateCall(itms)
 			}
 			if cls.FieldSpaces.Contain(name)
 			{
