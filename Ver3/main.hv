@@ -118,9 +118,9 @@ main := !(int argc, char^^ argv) -> int
 
 	GetFuncMangle(StringSpan("main"))
 	
-	loadLex("Priority.pr",PriorityData&)
-	loadLex("LexHVFileRoot.pr",LexHVFileRoot&)
-	loadLex("LexHVInputVars.pr",LexHVInputVars&)
+	loadLex("Priority2.pr",PriorityData&)
+	loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
+	loadLex("LexHVInputVars2.pr",LexHVInputVars&)
 	
 	HVOperators.Insert(StringSpan(PriorityData.Opers[^]))
 	

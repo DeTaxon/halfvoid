@@ -1,8 +1,13 @@
 
+globX := int
+hoho := !() -> ref int
+{
+	return globX
+}
+
 main := !(char^[] args) -> int
 {
-	x := 5
-
+	hoho() = 15
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20
