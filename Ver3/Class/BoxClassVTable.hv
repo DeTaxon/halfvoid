@@ -1,6 +1,7 @@
 AppendClass BoxClass
 {
 	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
+	PreVTableFuncs := AVLMap.{StringSpan,BoxFunc^}
 
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
@@ -31,6 +32,39 @@ AppendClass BoxClass
 			{
 				VTable.Push(it)
 			}
+		}
+
+		for fnc,fncName : PreVTableFuncs
+		{
+			vFunc := new VTableFunc(fncName,fnc)
+
+			ind := 0
+
+			found := false
+			for it,i : VTable
+			{
+				if it.IsEq(vFunc)
+				{
+					it = vFunc
+					found = true
+					ind = i
+					break
+				}
+			}
+
+			if not found
+			{
+				ind = VTable.Size()
+				VTable.Push(vFunc)
+			}
+
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetExeInt(ind))
+			vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
+			cnsts.Destroy()
+			vFunc.SetName(fncName)
+			DefaultSpace.Methods[fncName].Push(vFunc)
+			fnc.ParseBody()
 		}
 	}
 	CreateVTable := !() -> void

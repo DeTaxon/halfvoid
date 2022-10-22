@@ -172,47 +172,47 @@ BoxClassBody := class extend BoxClass
 			}
 		}
 
-		populatePoisons(Parents[^],funcs)
+		//populatePoisons(Parents[^],funcs)
 
-		for f : funcs
-		{
-			if f.1 is BoxFuncBody and f.1->{BoxFuncBody^}.Attrs.IsVirtual
-			{
-				vFunc := new VTableFunc(f.0,f.1)
+		// for f : funcs
+		// {
+		// 	if f.1 is BoxFuncBody and f.1->{BoxFuncBody^}.Attrs.IsVirtual
+		// 	{
+		// 		vFunc := new VTableFunc(f.0,f.1)
 
-				ind := 0
+		// 		ind := 0
 
-				found := false
-				for it,i : VTable
-				{
-					if it.IsEq(vFunc)
-					{
-						it = vFunc
-						found = true
-						ind = i
-						break
-					}
-				}
+		// 		found := false
+		// 		for it,i : VTable
+		// 		{
+		// 			if it.IsEq(vFunc)
+		// 			{
+		// 				it = vFunc
+		// 				found = true
+		// 				ind = i
+		// 				break
+		// 			}
+		// 		}
 
-				if not found
-				{
-					ind = VTable.Size()
-					VTable.Push(vFunc)
-				}
+		// 		if not found
+		// 		{
+		// 			ind = VTable.Size()
+		// 			VTable.Push(vFunc)
+		// 		}
 
-				//Methods[f.0] .Push(new BoxVirtualFunc(f.1.GetType()->{TypeFunc^},this&,ind) )
-				cnsts := List.{BoxExeConstObj^}
-				defer cnsts.Destroy()
-				cnsts.Push(GetExeInt(ind))
-				vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
-				vFunc.SetName(f.0)
-				DefaultSpace.Methods[f.0].Push(vFunc)
-				f.1.ParseBody()
-			}else
-			{
-				DefaultSpace.Methods[f.0] .Push(f.1)
-			}
-		}
+		// 		//Methods[f.0] .Push(new BoxVirtualFunc(f.1.GetType()->{TypeFunc^},this&,ind) )
+		// 		cnsts := List.{BoxExeConstObj^}
+		// 		defer cnsts.Destroy()
+		// 		cnsts.Push(GetExeInt(ind))
+		// 		vFunc := TemplateInternalVirtualCall.CreateFunc(f.1.GetType()->{TypeFunc^},cnsts)
+		// 		vFunc.SetName(f.0)
+		// 		DefaultSpace.Methods[f.0].Push(vFunc)
+		// 		f.1.ParseBody()
+		// 	}else
+		// 	{
+		// 		DefaultSpace.Methods[f.0] .Push(f.1)
+		// 	}
+		// }
 		PrepareVTable()
 		CreateVTable()
 		VTableState.Emit()
@@ -276,21 +276,31 @@ BoxClassBody := class extend BoxClass
 
 					asFunc := BoxUnit^
 					isPoison := false
+					isVirtual := false
 
-					if itm.GetValue() == "poison"
+					while true
 					{
-						isPoison = true
-						asFunc = TryParseFunction(itm.Right)
-					}else{
-						asFunc = TryParseFunction(itm)
+						switch itm.GetValue()
+						{
+							case "poison"
+								isPoison = true
+								isVirtual = true
+								itm = itm.Right
+							case "virtual"
+								isVirtual = true
+								itm = itm.Right
+							case void
+								break
+						}
 					}
+
+					asFunc = TryParseFunction(itm)
 					if asFunc != null
 					{
 						if isPoison
 						{
 							assert(asFunc is in BoxFuncTemplateBody)
 							asTmpl := asFunc->{BoxFuncTemplateBody^}
-							asTmpl.Attrs.IsVirtual = true //TODO move Virtual modifier here
 							PoisonFunctions[name] = itm.Right
 						}
 						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
@@ -303,9 +313,15 @@ BoxClassBody := class extend BoxClass
 								asFunc->{BoxFuncBody^}.ParentScope = this&
 
 							f := asFunc->{BoxFunc^}
-							funcs.Emplace(name,f)
 							f.SetName(name)
 							f.Work()
+
+							if isVirtual
+							{
+								PreVTableFuncs[name] = f
+							}else{
+								DefaultSpace.Methods[name].Push(f)
+							}
 						}else {
 							if isPoison
 								itm.EmitError("poison function can not be template")

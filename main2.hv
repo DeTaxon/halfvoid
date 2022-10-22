@@ -3,17 +3,28 @@
 
 cls1 := class extend TGCObject
 {
-	IsData := virtual false
+	// IsData := virtual false
+	Ha := virtual !() -> void
+	{
+		printf("hi\n")
+	}
 }
 cls2 := class extend cls1
 {
-	IsData := virtual true
+	// IsData := virtual true
+	
+	Ha := virtual !() -> void
+	{
+		printf("ho\n")
+	}
 }
 
 main := !(char^[] args) -> int
 {
 	hm := new cls1
-	printf("hm %i\n",hm^.IsData)
+	hm.Ha()
+	hm = new cls2
+	hm.Ha()
 
 	// j := () ==> {
 	// 	x = 10
