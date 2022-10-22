@@ -3,11 +3,11 @@ main := !(char^[] args) -> int
 {
 	x := 5
 
-	j := () ==> {
-		x = 10
-		x = 20
-	}
-	j()
+	// j := () ==> {
+	// 	x = 10
+	// 	x = 20
+	// }
+	// j()
 
 	// itBuilder := LexBuilder
 

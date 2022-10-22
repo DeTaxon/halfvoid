@@ -2,14 +2,17 @@ TryParseTypedefTemplate := !(Token^ obj) -> BoxUnit^
 {
 	iter := obj.Down
 
-	assert(iter is TokenIndent) //TODO error
+	if not (iter is TokenIndent)
+		return null
 
 	res := new TypedefTemplateVar
 	res.Name = iter->{TokenIndent^}.Value
 
 	resConst := new TypedefTemplateConst
 	tpIndent := iter.Right.Right 
-	assert(tpIndent.GetValue() == "type")
+
+	if tpIndent.GetValue() != "type"
+		return null
 
 	typeToken := tpIndent.Right
 	if tpIndent.Right.GetValue() == "."
