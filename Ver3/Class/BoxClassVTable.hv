@@ -1,5 +1,7 @@
 AppendClass BoxClass
 {
+	PreVTableVars := List.{VTableEntry^}
+
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
 	VTableValue := GlobalVar^
@@ -10,6 +12,26 @@ AppendClass BoxClass
 		if VTable.Size() == 0
 			return void
 		VTableValue.PrintCode(f)
+	}
+	PrepareVTable := !() -> void
+	{
+		for it : PreVTableVars
+		{
+			found := false
+			for inVar : VTable
+			{
+				if inVar.IsEq(it)
+				{
+					inVar = it
+					found = true
+					break
+				}
+			}
+			if not found
+			{
+				VTable.Push(it)
+			}
+		}
 	}
 	CreateVTable := !() -> void
 	{
@@ -47,6 +69,27 @@ VTableEntry := class
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
 	GetConst := virtual !() -> BoxExeConstObj^ { return null }
+}
+VTableVar := class extend VTableEntry
+{
+	ItConst := BoxExeConstObj^
+	this := !(StringSpan nm, BoxExeConstObj^ cnst) -> void
+	{
+		Name = nm
+		ItConst = cnst
+	}
+	PrintType := virtual !(TIOStream^ f) -> void { ItConst.GetType().PrintType(f) }
+	PrintConst := virtual !(TIOStream^ f) -> void { ItConst.PrintUse(f)}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool {
+		if not (cmp is VTableVar)
+			return false
+		asSameType := cmp->{VTableVar^}
+		if ItConst.GetType() != asSameType.ItConst.GetType()
+			return false
+		return true
+	}
+	GetType := virtual !() -> Type^ { return ItConst.GetType() }
+	GetConst := virtual !() -> BoxExeConstObj^ { return ItConst }
 }
 VTableFunc := class extend VTableEntry
 {

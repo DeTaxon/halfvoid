@@ -1,23 +1,19 @@
 
-globX := int
-hoho := !() -> ref int
+
+
+cls1 := class extend TGCObject
 {
-	return globX
+	IsData := virtual 3
+}
+cls2 := class extend cls1
+{
+	IsData := virtual 15
 }
 
 main := !(char^[] args) -> int
 {
-
-	j := () ==> ref int {
-		return globX
-	}
-	k := !() & -> ref int
-	k = j
-
-	printf("hoh %i\n",globX)
-	hoho() = 15
-	k() += 10
-	printf("hah %i\n",globX)
+	hm := new cls2
+	//printf("hm %i\n",cls2.IsData)
 
 	// j := () ==> {
 	// 	x = 10

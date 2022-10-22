@@ -213,6 +213,7 @@ BoxClassBody := class extend BoxClass
 				DefaultSpace.Methods[f.0] .Push(f.1)
 			}
 		}
+		PrepareVTable()
 		CreateVTable()
 		VTableState.Emit()
 
@@ -335,6 +336,20 @@ BoxClassBody := class extend BoxClass
 								}
 								assert(setFunc != null)
 								DefaultSpace.Methods[name].Push(setFunc)
+							}else if itm.GetValue() == "virtual" {
+								// typ2 := ParseType(itm.Down.Right)
+								// if typ2 == null
+								// 	itm.EmitError("Unknow object")
+								exeObj := TryGetExeCall(itm.Right)
+								if exeObj == null
+									itm.EmitError("Unknow object")	
+								if exeObj is in BoxExeConstObj
+								{
+									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
+									PreVTableVars.Push(newVal)
+								}else{
+									itm.EmitError("Unknow object")
+								}
 							}else{
 								itm.EmitError("Unknow object")
 							}
