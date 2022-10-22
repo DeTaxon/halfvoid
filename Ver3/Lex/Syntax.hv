@@ -404,6 +404,13 @@ RuleSLambda := !(void^ itr) -> int
 		It = It.Right
 		if It == null return 0
 
+		if It.GetValue() == "ref"
+		{
+			It = It.Right
+			if It == null return 0
+			siz += 1
+		}
+
 		if InDataR(It)
 		{
 			It = It.Right

@@ -115,9 +115,9 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	//		return @temp Clone()
 	//	}
 	//}
-	"for" := !() -> !(KEY^&)&->VALUE&
+	"for" := !() -> !(KEY^&)&->ref VALUE
 	{
-		x := (KEY^& k) ==> VALUE& {
+		x := (KEY^& k) ==> ref VALUE {
 			itr := itTree.Start
 			stk := List.{CommonTreeNode.{BadPair.{KEY,VALUE}}^}
 			while itr != null or stk.Size() != 0

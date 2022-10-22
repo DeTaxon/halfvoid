@@ -53,9 +53,9 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 	//			return false
 	//	return true
 	//}
-	"for" := !() -> !()&->DATA&
+	"for" := !() -> !()&-> ref DATA
 	{
-		x := () ==> DATA& {
+		x := () ==> ref DATA {
 			itr := itTree.Start
 			stk := List.{CommonTreeNode.{DATA}^}
 			while itr != null or stk.Size() != 0
@@ -86,7 +86,7 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 	//	return Contain(val)
 	//}
 
-	ToArray := !() -> Vector.{DATA}^
+	ToVector := !() -> Vector.{DATA}^
 	{
 		result = new Vector.{DATA}(Size())
 		i := 0

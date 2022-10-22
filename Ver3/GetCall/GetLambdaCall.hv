@@ -22,7 +22,8 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 			{
 				captureToken = iter
 			}else{
-				typeToken = iter
+				if typeToken == null
+					typeToken = iter
 			}
 			iter = iter.Right
 		}

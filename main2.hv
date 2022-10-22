@@ -7,9 +7,18 @@ hoho := !() -> ref int
 
 main := !(char^[] args) -> int
 {
+
+	j := () ==> ref int {
+		return globX
+	}
+	k := !() & -> ref int
+	k = j
+
 	printf("hoh %i\n",globX)
 	hoho() = 15
+	k() += 10
 	printf("hah %i\n",globX)
+
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20
