@@ -1,40 +1,15 @@
-
-
-
-cls1 := class extend TGCObject
+hmClass := class
 {
-	IsData := virtual false
-	Ha := virtual !() -> void
+	hm := !() .{@C} -> void
 	{
-		printf("hi\n")
-	}
-	PrintSize := poison !() -> void
-	{
-		for it,ind : this->AllFields
-		{
-			printf("Class %p %s\n",this&,ind)
-		}
-	}
-}
-cls2 := class extend cls1
-{
-	IsData := virtual true
-	extraValue := double
-	Ha := virtual !() -> void
-	{
-		printf("ho\n")
+		printf("hoh %i\n",299)
 	}
 }
 
 main := !(char^[] args) -> int
 {
-	hm := new cls1
-	hm.Ha()
-	hm.PrintSize()
-	hm = new cls2
-	hm.Ha()
-	hm.PrintSize()
-
+	g := hmClass
+	g.hm().{299}
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20

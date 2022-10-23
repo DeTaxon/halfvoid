@@ -13,8 +13,18 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	if iter == null return null
 
 	iter = iter.Right
+
 	if iter == null or iter.GetValue() != "()" return null
-	if iter.Right != null return null //TODO .{accept constants}
+	iter = iter.Right
+
+	consts := List.{BoxExeConstObj^}
+	constsToken := Token^
+	if iter?.GetValue() == "." and iter.Right?.GetValue() == "{}"
+	{
+		constsToken = iter.Right
+		iter = iter.Right.Right
+	}
+	if iter != null return null
 
 	vr := TryGetExeCall(itm.Down)
 
@@ -24,7 +34,11 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	Objs := CheckExeDownList
 	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs)
 
-	consts := List.{BoxExeConstObj^} //TODO
+	if constsToken != null
+	{
+		SyntaxCompress(constsToken,LexHVInputVars)
+		CheckFuncCallConsts(constsToken,consts)
+	}
 
 	if itm.Down.Right.Right is TokenIndent
 	{

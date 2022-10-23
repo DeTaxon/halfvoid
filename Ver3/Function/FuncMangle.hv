@@ -4,7 +4,7 @@ FuncNameIter := int
 
 GetFuncMangle := !(StringSpan name) -> StringSpan
 {
-	buff := char[1024] //TODO unconst
+	buff := char[1024] //todo unconst
 
 	if isRegularName(name)
 	{
