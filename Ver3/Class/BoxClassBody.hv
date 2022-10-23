@@ -172,7 +172,7 @@ BoxClassBody := class extend BoxClass
 			}
 		}
 
-		//populatePoisons(Parents[^],funcs)
+		populatePoisons(Parents[^],funcs)
 
 		// for f : funcs
 		// {
@@ -230,18 +230,20 @@ BoxClassBody := class extend BoxClass
 		cls2 := cls->{BoxClassBody^}
 		for it,ind : cls2.PoisonFunctions
 		{
-			newFunc := TryParseFunction(it)
-			assert(newFunc != null)
-			assert(newFunc is in BoxFuncTemplate)
-			newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
-			assert(newFunc2 is in BoxFuncBody)
-			newFunc2.Attrs.IsVirtual = true
+			if not PreVTableFuncs.Contain(ind)
+			{
+				newFunc := TryParseFunction(it)
+				assert(newFunc != null)
+				assert(newFunc is in BoxFuncTemplate)
+				newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
+				assert(newFunc2 is in BoxFuncBody)
 
-			newFunc2.ParentScope = this&
-			newFunc2.SetName(ind)
-			newFunc2.Work()
+				newFunc2.ParentScope = this&
+				newFunc2.SetName(ind)
+				newFunc2.Work()
 
-			funcs.Emplace(ind,newFunc2)
+				PreVTableFuncs[ind] = newFunc2
+			}
 		}
 		populatePoisons(cls2.Parents[^],funcs)
 	}
@@ -301,7 +303,7 @@ BoxClassBody := class extend BoxClass
 						{
 							assert(asFunc is in BoxFuncTemplateBody)
 							asTmpl := asFunc->{BoxFuncTemplateBody^}
-							PoisonFunctions[name] = itm.Right
+							PoisonFunctions[name] = itm
 						}
 						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
 						{
@@ -352,22 +354,20 @@ BoxClassBody := class extend BoxClass
 								}
 								assert(setFunc != null)
 								DefaultSpace.Methods[name].Push(setFunc)
-							}else if itm.GetValue() == "virtual" {
+							}else {
 								// typ2 := ParseType(itm.Down.Right)
 								// if typ2 == null
 								// 	itm.EmitError("Unknow object")
-								exeObj := TryGetExeCall(itm.Right)
+								exeObj := TryGetExeCall(itm)
 								if exeObj == null
 									itm.EmitError("Unknow object")	
-								if exeObj is in BoxExeConstObj
+								if exeObj is in BoxExeConstObj and isVirtual
 								{
 									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
 									PreVTableVars[name] = newVal
 								}else{
 									itm.EmitError("Unknow object")
 								}
-							}else{
-								itm.EmitError("Unknow object")
 							}
 						}
 					}
