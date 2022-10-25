@@ -1,5 +1,7 @@
 hmClass := class
 {
+	gg := int
+	gg2 := double
 	hm := !() .{@C} -> void
 	{
 		printf("hoh %i\n",299)
@@ -10,6 +12,7 @@ main := !(char^[] args) -> int
 {
 	g := hmClass
 	g.hm().{299}
+	printf("test %i\n",g->Type->TypeSize)
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20

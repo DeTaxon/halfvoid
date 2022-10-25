@@ -63,7 +63,7 @@ BoxFuncCall := class extend BoxExeObj
 			{
 				assert(fnc != null)
 				defToken := fnc.GetDefaultToken(i)
-				assert(defToken != null) //todo, emit error
+				assert(defToken != null)
 
 				if defToken.GetValue() == "static"
 				{
@@ -74,7 +74,8 @@ BoxFuncCall := class extend BoxExeObj
 					defToken = defToken.Right
 				}else{
 					newCall := TryGetExeCall(defToken)
-					assert(newCall != null) //todo, emit error
+					if newCall == null
+						defToken.EmitError("Could not execute default token, called function is incorrect")
 					downs.Push(newCall)
 				}
 				
@@ -84,10 +85,12 @@ BoxFuncCall := class extend BoxExeObj
 			newObj := downs[i]
 			if downs[i].GetType() != par.ItType
 			{
+				exchangeLimit := 50
 				while true
 				{
-					newObj = GetExchange(newObj,par.ItType) //TODO limit to some value
-					if newObj == null
+					newObj = GetExchange(newObj,par.ItType)
+					exchangeLimit -= 1
+					if newObj == null or exchangeLimit <= 0
 					{
 						tmpl := TEchoStream
 						tmpl << "Could not exchange type from "
@@ -95,7 +98,7 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << downs[i].GetType().GetBADStr()
 						tmpl << " to "
 						//par.ItType.PrintDebugName(tmpl&)
-						tmpl << par.ItType.GetBADStr() //TODO Better error
+						tmpl << par.ItType.GetBADStr()
 						printf("%s\n",tmpl.Str())
 						throw new Exception(tmpl.Str())
 					}
@@ -108,10 +111,6 @@ BoxFuncCall := class extend BoxExeObj
 		}
 		if downs.Size() > itType.Params.Size()
 		{
-			if not fType.IsVargs //todo remove
-			{
-				printf("not vargs error objs: %i  function: %i\n",downs.Size(),itType.Params.Size())
-			}
 			assert(fType.IsVargs)
 
 			for i : downs.Size()
@@ -180,10 +179,6 @@ BoxFuncCall := class extend BoxExeObj
 				}else if it.ItType is TypeClass
 				{
 					cls := it.ItType->{TypeClass^}.ToClass
-					// if callObj != null TODO , for some reason there are functions that are my but accept class by value
-					// {
-					// 	printf("WTF %s %i\n",it.ItType.GetBADStr(),callObj is in BoxFuncBody)
-					// }
 					if cls.Fields.Size() <= 4
 					{
 						floats := 0
@@ -352,7 +347,7 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		PrintFuncResult(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void //TODO remove copy of code
+	PrintPre := virtual !(TIOStream^ f) -> void
 	{
 		if IsMem()
 		{
@@ -375,7 +370,7 @@ BoxFuncComplexCall := class extend BoxFuncCall
 {
 	IsMem := virtual !() -> bool
 	{
-		return true //TODO if return ref
+		return true
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
@@ -410,14 +405,14 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	}
 	IsMem := virtual !() -> bool
 	{
-		return false //TODO if return ref
+		return ItPtrFunc.GetType().Base->{TypeFunc^}.ResultRef
 	}
 }
 BoxFuncPointerComplexCall := class extend BoxFuncPointerCall
 {
 	IsMem := virtual !() -> bool
 	{
-		return true //TODO if return ref
+		return true
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{

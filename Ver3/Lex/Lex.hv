@@ -167,7 +167,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			}
 			if tok[k] == 'e' 
 			{
-				//TODO: not now
+				//todo: not now
 			}
 			ns = new TokenDouble(tok,Value)
 		}
@@ -213,7 +213,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			itLine = null
 		}
 		//if a == 21 {
-		//	//TODO: replace
+		//	//todo: replace
 		//	// attrs
 		//}
 		prevId = a
