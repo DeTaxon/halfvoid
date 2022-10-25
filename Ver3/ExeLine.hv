@@ -492,7 +492,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 {
 	array := ar->{BoxArrayHolder^}
-	if IsViewType(toType) //TODO
+	if IsViewType(toType)
 		return true
 	if array.GetArrayType() == toType
 		return true

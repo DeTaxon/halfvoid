@@ -729,7 +729,7 @@ ModuleVulkan := class extend ModuleInterface
 		if vkInitFunc == null
 			return void
 
-		dt := TEchoStream //TODO better support, func from str look stupid
+		dt := TEchoStream
 
 		for it, ind : Units
 		{

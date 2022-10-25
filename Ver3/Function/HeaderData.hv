@@ -83,8 +83,10 @@ FunctionHeaderInfo := class
 					if indItm.GetValue() == "&"
 					{
 						isRef = true
-						indItm = bag[2]
-						assert(bag.Size() >= 3) //TODO
+						if bag.Size() >= 3
+						{
+							indItm = bag[2]
+						}
 					}
 					if not (indItm is TokenIndent)
 						indItm.EmitError("Incorrect name for input variable")

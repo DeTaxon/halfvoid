@@ -172,6 +172,7 @@ CLib := class extend ModuleInterface
 			if typs[c] == null
 			{
 				printf("Could not parse type <%s> for function %s\n",txt,name)
+				return null
 			}
 			for i : points
 			{
@@ -181,7 +182,11 @@ CLib := class extend ModuleInterface
 		})
 		fType := GetFuncType(c-1, typs[1]&,isRefs[0]&,typs[0],false,isVarg)
 
-		assert(fType != null) //TODO error check
+		if fType == null
+		{
+			printf("Could not create clib function %s\n",name)
+			return null
+		}
 
 		if linkType == "dynamic"
 		{
@@ -200,7 +205,7 @@ CLib := class extend ModuleInterface
 		if initFunc == null
 			return void
 
-		dt := TEchoStream //TODO better support, func from str look stupid
+		dt := TEchoStream
 		dt << "lib := GetLibrary(!["
 		for i : dlls.Size()
 		{
