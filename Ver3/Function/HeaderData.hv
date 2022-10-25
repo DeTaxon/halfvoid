@@ -73,7 +73,8 @@ FunctionHeaderInfo := class
 			}else if bag.Size() >= 2 {
 				if bag[1].GetValue() == "..."
 				{
-					assert(bag[0] is TokenIndent) //TODO
+					if not (bag[0] is TokenIndent)
+						bag[0].EmitError("Left of ... must be a name for variable")
 					IsVariadic = true
 					VariadicName = bag[0]->{TokenIndent^}.Value
 				}else{
@@ -85,7 +86,8 @@ FunctionHeaderInfo := class
 						indItm = bag[2]
 						assert(bag.Size() >= 3) //TODO
 					}
-					assert(indItm is TokenIndent) //TODO
+					if not (indItm is TokenIndent)
+						indItm.EmitError("Incorrect name for input variable")
 					typ := ParseType(bag[0])
 					name := indItm->{TokenIndent^}.Value
 					if typ != null and IsComplexType(typ)

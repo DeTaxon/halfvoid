@@ -52,7 +52,7 @@ BoxFunc := class extend BoxExeConstObj
 		{
 			GTypeVoid.PrintType(f)
 		}else{
-			fTyp.ResultType.PrintType(f) //TODO return class
+			fTyp.ResultType.PrintType(f)
 			if fTyp.ResultRef
 				f^ << "*"
 		}
