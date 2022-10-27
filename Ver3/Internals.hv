@@ -15,6 +15,9 @@ TemplateInternalTupleConstructor := BoxFuncTemplate^
 
 TemplateInternalGetVTableVariable := BoxFuncTemplate^
 
+TemplateInternalIsSameType := BoxFuncTemplate^
+TemplateInternalIsInSameType := BoxFuncTemplate^
+
 GInternalSetType := BoxFuncTemplate^
 
 GFuncGCSetNull := BoxFunc^
@@ -109,6 +112,9 @@ InitInternals := !() -> void
 	TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
 
 	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
+
+	TemplateInternalIsSameType = intGetTemplate("internalCheckIsSameType")
+	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
 
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
 	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")

@@ -172,7 +172,7 @@ CLib := class extend ModuleInterface
 			if typs[c] == null
 			{
 				printf("Could not parse type <%s> for function %s\n",txt,name)
-				return null
+				assert(false)
 			}
 			for i : points
 			{

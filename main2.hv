@@ -1,18 +1,25 @@
-hmClass := class
+cls1 := class extend TGCObject
 {
-	gg := int
-	gg2 := double
-	hm := !() .{@C} -> void
-	{
-		printf("hoh %i\n",299)
-	}
+}
+cls2 := class extend cls1
+{
+}
+
+internalCheckIsSameType := !(@T^ obj) .{@Cls} -> bool
+{
+	return obj->VTable == Cls->VTable
+}
+
+internalCheckIsInSameType := !(@T^ obj) .{@Cls} -> bool
+{
+	printf("mh\n")
+	return obj->VTable == Cls->VTable
 }
 
 main := !(char^[] args) -> int
 {
-	g := hmClass
-	g.hm().{299}
-	printf("test %i\n",g->Type->TypeSize)
+	hm := new cls2
+	printf("test %i %i\n",hm is cls1,hm is in cls2)
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20
