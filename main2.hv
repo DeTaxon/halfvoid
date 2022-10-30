@@ -4,22 +4,15 @@ cls1 := class extend TGCObject
 cls2 := class extend cls1
 {
 }
-
-internalCheckIsSameType := !(@T^ obj) .{@Cls} -> bool
+cls3 := class extend cls2
 {
-	return obj->VTable == Cls->VTable
-}
 
-internalCheckIsInSameType := !(@T^ obj) .{@Cls} -> bool
-{
-	printf("mh\n")
-	return obj->VTable == Cls->VTable
 }
 
 main := !(char^[] args) -> int
 {
-	hm := new cls2
-	printf("test %i %i\n",hm is cls1,hm is in cls2)
+	hm := new TGCObject
+	printf("test %i %i %i\n",hm is in cls1,hm is in cls2, hm is in cls3)
 	// j := () ==> {
 	// 	x = 10
 	// 	x = 20

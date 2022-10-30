@@ -77,6 +77,22 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			obj.EmitError("Can not get type")
 		return GetConstType(dwnObj.GetType())
 	}
+	if right.Value == "TypeId"
+	{
+		itType8 := ParseType(obj.Down)
+		if itType8 == null
+			obj.EmitError("Can not get type")
+		if itType8 is TypeClass
+		{
+			cls := itType8->{TypeClass^}.ToClass
+			if cls is BoxClassBody
+			{
+				cls.AwaitVTableStep()
+				return GetExeInt(cls->{BoxClassBody^}.VTableId)
+			}
+		}
+		return GetExeInt(0)
+	}
 	if right.Value == "TypeSize"
 	{
 		itType := ParseType(obj.Down)

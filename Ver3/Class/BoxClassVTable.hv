@@ -1,3 +1,5 @@
+TableIdIter := int
+
 AppendClass BoxClass
 {
 	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
@@ -8,14 +10,50 @@ AppendClass BoxClass
 	VTableValue := GlobalVar^
 	VTableField := FieldPath^
 
+	VTableId := int
+	VTableCheckTypeArray := GlobalVar^
+
 	PrintVTable := virtual !(TIOStream^ f) -> void
 	{
 		if VTable.Size() == 0
 			return void
 		VTableValue.PrintCode(f)
 	}
+	GetVTableIds := !(BoxArrayHolder dat) -> void
+	{
+		dat.vals.Push(GetExeInt(VTableId))
+		Parents[^].GetVTableIds(dat)
+	}
 	PrepareVTable := !() -> void
 	{
+		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
+		{
+			TableIdIter += 1
+			VTableId = TableIdIter
+
+			arrHolder := BoxArrayHolder(GTypeInt,true,null)
+			GetVTableIds(arrHolder)
+			arrHolder.vals.Push(GetExeInt(0))
+
+			newVar := CreateGlobalVar(StringSpan("$anon"),arrHolder.GetArrayType(),false)
+			newVar.MemValue = arrHolder.GetAsConst()
+			VTableCheckTypeArray = newVar
+
+			tiName := StringSpan("@TypeInfo")
+
+			assert(newVar != null)
+
+			newConst := new CheckInfoConst(newVar)
+			newVirtualVar := new VTableVar(tiName,newConst)
+			if VTable.Size() == 0
+			{
+				VTable.Push(newVirtualVar)
+			}else{
+				assert(VTable[0] is VTableVar and VTable[0].Name == tiName)
+				VTable[0] = newVirtualVar
+			}
+		}
+
 		for it : PreVTableVars
 		{
 			found := false
@@ -118,12 +156,31 @@ VTableEntry := class
 {
 	Name := StringSpan
 
-	PrintType := virtual !(TIOStream^ f) -> void {}
+	PrintType := virtual !(TIOStream^ f) -> void { GetType().PrintType(f) }
 	PrintConst := virtual !(TIOStream^ f) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
 	GetConst := virtual !() -> BoxExeConstObj^ { return null }
 }
+
+CheckInfoConst := class extend BoxExeConstObj
+{
+	ItGlobVar := GlobalVar^
+	this := !(GlobalVar^ gv) -> void
+	{
+		ItGlobVar = gv
+		ObjType = GTypeVoidP
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "bitcast ("
+		ItGlobVar.Value.pType.PrintType(f)
+		f^ << "* "
+		ItGlobVar.Value.PrintResultObj(f,0,0)
+		f^ << " to i8*)"
+	}
+}
+
 VTableVar := class extend VTableEntry
 {
 	ItConst := BoxExeConstObj^
