@@ -16,21 +16,12 @@ PROT_NONE := 0
 MAP_SHARED := 1
 MAP_PRIVATE := 2
 MAP_ANON := 32
+MAP_POPULATE := 32768
 
 S_IFDIR := 16384
 S_IFREG := 32768
 S_IFLINK := 40960
 
-// osGetFileSize := !(int fd,u64^ size) -> bool
-// {
-// 	dataD := char[144]
-// 	val := fstat(fd,dataD->{char^})
-// 	if val == -1 return false
-// 	asNeed1 := dataD->{char^}[48]&
-// 	asNeed2 := asNeed1->{u64^}
-// 	size^ = asNeed2^
-// 	return true
-// }
 osIsFolder := !(char^ nm) -> bool
 {
 	st1 := char[144]
@@ -42,6 +33,10 @@ osIsFolder := !(char^ nm) -> bool
 	return false
 }
 
+fsIsExist := !(char^ nm) -> bool
+{
+	return osFileId(nm) != 0
+}
 osFileSize := !(char^ nm) -> u64
 {
 	st1 := char[144]

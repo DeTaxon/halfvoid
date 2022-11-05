@@ -82,6 +82,17 @@ BuiltInLongJump := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 }
+BuiltInMemBarrier := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(0,null,null,GTypeVoid,false,false))
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		f^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {
@@ -89,4 +100,5 @@ CreateBuildInTools := !() -> void
 	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
 	bSpace.Functions[StringSpan("llvmSetJump")].Push(new BuiltInSetJump() )
 	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
+	bSpace.Functions[StringSpan("MemBarrier")].Push(new BuiltInMemBarrier() )
 }

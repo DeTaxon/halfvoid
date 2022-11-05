@@ -12,6 +12,7 @@
 		"SEEK_HOLE" : 4
 	},
 	"funcs" : {
+		"syscall" : "s64,s64,...",
 
 		"pthread_create" : "int,u64^,void^,void^,void^",
 		"pthread_join" : "int,u64,void^^"
