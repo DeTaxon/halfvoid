@@ -1,60 +1,30 @@
 
 main := !(char^[] args) -> int
 {
-	params := io_uring_params
-	res := io_uring_setup(512,params&)
-	printf("hm %i\n",res)
-
-	sring_sz := params.sq_off.array + params.sq_entries*4
-	cring_sz := params.cq_off.cqes + params.cq_entries*io_uring_cqe->TypeSize
+	for j : 3
+	{
+		TSpawnTask(() ==> {
+			for i : 4
+			{
+				printf("hi %i %f\n",i,GetSteadyTime())
+				TSleep(1)
+			}
+		})
+	}
 	
-	printf("test %p\n",params.sq_off.ring_mask)
+	//timeout := u64[2]
+	//timeout[0] = 1 //1 sec
+	//timeout[1] = 1
 
-	mp_ptr := mmap(null,cring_sz,PROT_READ + PROT_WRITE,MAP_SHARED + MAP_POPULATE,res,null)->{u8^}
+	//tst := URing()
 
-	printf("mmap %p\n",mp_ptr)
-
-	sq_array := mp_ptr[params.sq_off.array]&->{u32^}
-	cq_array := mp_ptr[params.cq_off.cqes]&->{u32^}
-
-	temp := s64
-	temp = IORING_OFF_SQES
-	sqes_ptr := mmap(null,params.sq_entries*io_uring_sqe->TypeSize,PROT_READ + PROT_WRITE,MAP_SHARED + MAP_POPULATE,res,temp&->{void^^}^)->{io_uring_sqe^}
-	printf("map2 %p %p\n",sqes_ptr,temp)
-
-
-	tail := mp_ptr[params.sq_off.tail]&->{s32^}
-
-
-	MemBarrier()
-	sIndex := tail^
-	sq_array[sIndex] = sIndex
-
-	MemBarrier()
-	timeout := u64[2]
-	timeout[0] = 1 //1 sec
-	timeout[1] = 1
-
-	MemBarrier()
-	sqe := sqes_ptr[sIndex]&
-	ZeroMem(sqe^)
-	sqe.opcode = 11 //TIMEOUT
-	sqe.addr&->{void^^}^ = timeout[0]&
-	sqe.len = 1
-	sqe.off = 1
-	sqe.fd = -1
-
-	MemBarrier()
-	tail^ += 1
-	MemBarrier()
-	printf("assert %i\n",tail^)
-	cq_head := mp_ptr[params.cq_off.head]&->{s32^}
-	cq_tail := mp_ptr[params.cq_off.tail]&->{s32^}
-	MemBarrier()
-	io_uring_enter(res,1,1,IORING_ENTER_GETEVENTS)
-	printf("res %i %i\n",cq_head^,cq_tail^)
-
-	close(res)
+	//sqe := tst.GetSQE()
+	//sqe.opcode = 11 //TIMEOUT
+	//sqe.addr&->{void^^}^ = timeout[0]&
+	//sqe.len = 1
+	//sqe.off = 1
+	//tst.Submit()
+	//tst.WaitOne()
 
 	//lb := GetLibrary("liburing.so")
 	//printf("hm %p\n",lb)
