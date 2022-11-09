@@ -2,7 +2,7 @@
 
 EnterTaskThreadCycle := !(bool isMainThread) -> void
 {
-
+	
 	while true
 	{
 		ct := CurrentThread
@@ -27,7 +27,8 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		if TaskTimersArray.Size() != 0 and not someoneOnLoop
+		//TODO prioritize least busy thread to work on event loop
+		if TaskLoopWorkCounter != 0 and not someoneOnLoop
 		{
 			someoneOnLoop = true
 
@@ -37,11 +38,16 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			{
 				TaskTimersArray[0].1.resume()
 				TaskTimersArray.Pop()
+				TaskLoopWorkCounter -= 1
 			}
+			waitTime := 1->{double}
 			if TaskTimersArray.Size() != 0
 			{
-				waitTime := TaskTimersArray[0].0 - nowTime
-				TaskSleepConVar.WaitFor(TaskCheckMutex,waitTime)
+				waitTime = TaskTimersArray[0].0 - nowTime
+			}
+			if TaskLoopWorkCounter != 0
+			{
+				TaskCodePollWork(waitTime)
 			}
 			someoneOnLoop = false
 		}else{
@@ -77,3 +83,4 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 	}
 }
 someoneOnLoop := bool
+TaskLoopWorkCounter := int

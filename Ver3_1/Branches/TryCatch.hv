@@ -1,0 +1,142 @@
+TryGetTryCatch := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null
+		return null
+	
+	if itm.Down.GetValue() == "throw"
+	{
+		dwnCall := TryGetExeCall(itm.Down.Right)
+		if dwnCall == null
+			itm.EmitError("Error compiling exception to be thrown")
+
+		InternalsHatch.Await()
+		inClass := dwnCall.GetType()
+		if inClass is in TypePoint
+			inClass = inClass.Base
+		if not (inClass is TypeClass)
+			itm.EmitError("Thrown exception object can not be casted to IException^")
+		if TypeFight(inClass,ExceptionIException) != ExceptionIException
+			itm.EmitError("Thrown exception object can not be casted to IException^")
+		
+		objs := CheckExeDownList
+		objs.Push(dwnCall)
+		return ExceptionThrowException.CreateCall(objs)
+	}
+
+	if itm.Down.GetValue() != "try"
+		return null
+
+	return new TryGetObj(itm)
+}
+
+TryGetObj := class extend BoxExeObj
+{
+	ItId := int
+
+	StartLabel := BoxLabel^
+	ExceptionLabel := BoxLabel^
+	ExitLabel := BoxLabel^
+
+	DownBlock := BoxBlock^
+	ExceptionBlock := BoxBlock^
+
+	EnterCall := BoxExeObj^
+	LeaveCall := BoxExeObj^
+
+	JumpFrame := FuncInputParam^
+
+	ExcpVarCall := FuncResultParam^
+	ExcpVar := MemVar^
+
+	this := !(Token^ itm) -> void
+	{
+		InternalsHatch.Await()
+
+		ItId = GetNewId()
+
+		StartLabel = new BoxLabel()
+		ExceptionLabel = new BoxLabel()
+		ExitLabel = new BoxLabel()
+
+		ObjType = GTypeVoid
+
+		dwn := itm.Down.Right
+
+		JumpFrame = new FuncInputParam(GTypeVoidP,false,StringSpan(GetConstString("%E"sbt + ItId)))
+
+		isGCExist := GBoolFalse
+		if CurrentFunc.gcVarsCount != 0
+			isGCExist = GBoolTrue
+
+		objs := CheckExeDownList
+		LeaveCall = ExceptionLeaveTryCatch.CreateCall(objs)
+		objs.Push(JumpFrame.CreateCall())
+		objs.Push(isGCExist)
+		objs.Push(GetExeInt(GCVarsInUse))
+		EnterCall = ExceptionEnterTryCatch.CreateCall(objs)
+		DownBlock = new BoxBlock(dwn)
+
+		stackSize := UnitStack.Size()
+
+		ctch := dwn.Right
+		if ctch.Right.Down != null
+		{
+			vrName := ctch.Right.Down
+			if not (vrName is TokenIndent)
+				ctch.EmitError("Exception must only be just name catch(e), type is WIP")
+			ExcpVarName := vrName->{TokenIndent^}.Value
+
+			ExcpVarCall = new FuncResultParam(ExceptionGetException.CreateCall())
+			ExcpVar = new MemVar(ExcpVarName,ExcpVarCall)
+			UnitStack.PushFront(ExcpVar)
+		}
+
+		ExceptionBlock = new BoxBlock(dwn.Right.Right.Right)
+
+		while stackSize > UnitStack.Size()
+			UnitStack.Pop()
+
+		JumpFrame.PopulateCalls()
+	}
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%Frm" << ItId << " = alloca [20 x i8*]\n" //TODO! create local var void^[5], and maybe use BuiltinSetJump
+
+  		f^ << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
+		f^ << "%FrameStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %Frm"<< ItId << ", i64 0, i64 0\n"
+		f^ << "store i8* %Frame" << ItId << ", i8** %FrameStore" << ItId << ", align 16\n"
+  		f^ << "%Stack" << ItId << " = call i8* @llvm.stacksave()\n"
+		f^ << "%StackStore" << ItId << " = getelementptr [20 x i8*], [20 x i8*]* %Frm"<< ItId << ", i64 0, i64 2\n"
+  		f^ << "store i8* %Stack" << ItId << ", i8** %StackStore"<< ItId <<", align 16\n"
+		f^ << "%E" << ItId << " = bitcast [20 x i8*]* %Frm" << ItId << " to i8*\n"
+  		f^ << "%T" << ItId << " = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
+		
+		f^ << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"
+		f^ << "br i1 %B" << ItId << ", label "
+		StartLabel.PrintLabel(f)
+		f^ << " , label "
+		ExceptionLabel.PrintLabel(f)
+		f^ << "\n"
+
+		StartLabel.PrintCode(f)
+
+		EnterCall.PrintDefaultUse(f)
+		DownBlock.PrintCode(f)
+		LeaveCall.PrintDefaultUse(f)
+		ExitLabel.PrintGo(f)
+
+		ExceptionLabel.PrintCode(f)
+		ExcpVarCall?.PrintCode(f)
+		ExceptionBlock.PrintCode(f)
+		//ExitLabel.PrintGo(f)
+
+		ExitLabel.PrintCode(f)
+	}
+
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		DownBlock.PrintDebugMeta(f)
+		ExceptionBlock.PrintDebugMeta(f)
+	}
+}

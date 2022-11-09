@@ -1,0 +1,390 @@
+
+TryParseClass := !(Token^ itm) -> BoxUnit^
+{
+	if itm == null or itm.Down == null
+		return null
+	if  itm.Down.GetValue() != "class" and itm.Down.GetValue() != "packed_class"
+		return null
+	
+
+	parents := HybridQueue.{Token^,2}
+	constValue := Token^
+
+	isPacked := bool
+	if itm.Down.GetValue() == "packed_class"
+		isPacked = true
+
+	iter := itm.Down.Right
+
+	if iter.GetValue() == "."
+	{
+		constValue = iter.Right
+		iter = constValue.Right
+	}
+
+	if iter.GetValue() == "extend"
+	{
+		iter = iter.Right
+		parents.Push(iter)
+		iter = iter.Right
+
+		while iter.GetValue() == ","
+		{
+			iter = iter.Right
+			parents.Push(iter)
+			iter = iter.Right
+		}
+		assert(iter.GetValue() == "{}")
+	}
+	bdy := iter
+
+	if bdy == null
+		return null
+
+	if constValue != null
+		return new BoxClassTemplateBody(isPacked,parents,bdy,constValue)
+	return new BoxClassBody(isPacked,parents,bdy)
+}
+
+
+BoxClassBody := class extend BoxClass
+{
+	Body := Token^
+	ParentTokens := HybridQueue.{Token^,5}
+
+	VParentState := THatch
+	VTableState := THatch
+	FieldsState := THatch
+
+	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
+	NamedConstantsVars := List.{BoxUnit^}
+
+	ComputeConsts := !() -> void
+	{
+		for it,ind : NamedConstants
+		{
+			if it is ConstType
+			{
+				NamedConstantsVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
+			}else{
+				assert(it is in BoxExeConstObj)
+				NamedConstantsVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
+			}
+		}
+	}
+	PutItConstants := virtual !() -> void
+	{
+		UnitStack.PushFront(NamedConstantsVars[^])
+	}
+
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^ { return ParentScope }
+
+	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
+	{
+		ItName = "anon" //todo
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+		
+		ParentTokens.Push(parents[^])
+
+		ParentScope = CurrentScope
+		itFile := GetFileScope()
+
+		IsPacked = isPacked
+		Body = bdy
+		itFile.AllClasses.Push(this&)
+
+		classFile = CurrentFile
+	}
+
+	startedParse := bool
+	classFile := BoxFile^
+	StartParseBody := virtual !() -> void
+	{
+		if startedParse
+			return void
+		startedParse = true
+
+		GClassesInProgress.Push(this&)
+		cls := this&
+		TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
+			CurrentFile = cls.classFile
+			cls.ParseBody()	
+		})
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+		StartParseBody()
+		FieldsState.Await()
+	}
+	AwaitReadyState := virtual !() -> void
+	{
+		StartParseBody()
+		AwaitTypeState()
+	}
+	ParseBody := virtual !() -> void
+	{
+		GParsedAllFiles.Await()
+
+		ScopePutConstants()
+
+		for i : ParentTokens.Size()
+		{
+			inhType := CheckTemplateType(null,ParentTokens[i],NamedConstants)
+			if inhType == null
+				ParentTokens[i].EmitError("can not inherit unknown class")
+			if not (inhType is TypeClass)
+				ParentTokens[i].EmitError("parent type must be class")
+			asClsParent := inhType->{TypeClass^}
+			asClsParent.ToClass.StartParseBody()
+			Parents.Push(asClsParent.ToClass)
+		}
+		PrimeParentStep()
+		VParentState.Emit()
+
+		CurrentScope = this&
+
+		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
+
+		checkClassBody(Body,funcs)
+		for it : Appends
+		{
+			checkClassBody(it,funcs)
+		}
+
+
+		
+		if Parents.Size() != 0
+		{
+			Parents[0].AwaitVTableStep()
+			for it,i : Parents[0].VTable
+			{
+				VTable.Push(it)
+			}
+		}
+
+		for par : Parents
+		{
+			for pSpace,ind : par.FieldSpaces
+			{
+				FieldSpaces[ind]
+			}
+		}
+
+		populatePoisons(Parents[^],funcs)
+
+		PrepareVTable()
+		CreateVTable()
+		VTableState.Emit()
+
+		InheritStep()
+		FieldsState.Emit()
+
+	}
+
+	PoisonFunctions := AVLMap.{StringSpan,Token^}
+	populatePoisons := !(BoxClass^ cls, List.{Tuple.{StringSpan,BoxFunc^}} funcs) -> void
+	{
+		if not (cls is in BoxClassBody)
+			return void
+		cls2 := cls->{BoxClassBody^}
+		for it,ind : cls2.PoisonFunctions
+		{
+			if not PreVTableFuncs.Contain(ind)
+			{
+				newFunc := TryParseFunction(it)
+				assert(newFunc != null)
+				assert(newFunc is in BoxFuncTemplate)
+				newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
+				assert(newFunc2 is in BoxFuncBody)
+
+				newFunc2.ParentScope = this&
+				newFunc2.SetName(ind)
+				newFunc2.Work()
+
+				PreVTableFuncs[ind] = newFunc2
+			}
+		}
+		populatePoisons(cls2.Parents[^],funcs)
+	}
+
+	checkClassBody := !(Token^ bodyVal,funcs) -> void
+	{
+		SyntaxCompress(bodyVal,LexHVFileRoot)
+		iter := bodyVal.Down
+
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{
+				assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
+				name := StringSpan
+				if iter.Down is TokenIndent
+				{
+					name = iter.Down->{TokenIndent^}.Value
+				}else{
+					name = iter.Down->{TokenString^}.Value
+				}
+
+				itm := iter.Down.Right.Right
+
+				asType := ParseType(itm)
+				if asType != null
+				{
+					newField := new FieldParam(name,asType)
+					Fields.Push(newField)
+				}else
+				{
+
+					asFunc := BoxUnit^
+					isPoison := false
+					isVirtual := false
+
+					while true
+					{
+						switch itm.GetValue()
+						{
+							case "poison"
+								isPoison = true
+								isVirtual = true
+								itm = itm.Right
+							case "virtual"
+								isVirtual = true
+								itm = itm.Right
+							case void
+								break
+						}
+					}
+
+					asFunc = TryParseFunction(itm)
+					if asFunc != null
+					{
+						if isPoison
+						{
+							assert(asFunc is in BoxFuncTemplateBody)
+							asTmpl := asFunc->{BoxFuncTemplateBody^}
+							PoisonFunctions[name] = itm
+						}
+						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+						{
+							asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+						}
+						if asFunc is in BoxFunc
+						{
+							if asFunc is in BoxFuncBody
+								asFunc->{BoxFuncBody^}.ParentScope = this&
+
+							f := asFunc->{BoxFunc^}
+							f.SetName(name)
+							f.Work()
+
+							if isVirtual
+							{
+								PreVTableFuncs[name] = f
+							}else{
+								DefaultSpace.Methods[name].Push(f)
+							}
+						}else {
+							if isPoison
+								itm.EmitError("poison function can not be template")
+							tmpl := asFunc->{BoxFuncTemplate^}
+							tmpl.SetName(name)
+							DefaultSpace.MethodTemplates[name].Push(tmpl)
+						}
+					}else
+					{
+						if itm.Down?.GetValue() == "fake"
+						{
+							CheckFakeFields(iter)
+						}else{
+							if itm.GetValue() == "default"
+							{
+								InternalsHatch.Await()
+
+								setFunc := BoxFunc^
+								cnsts := List.{BoxExeConstObj^}
+								switch name
+								{
+									case "="
+										setFunc = GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+									case "<=>"
+										setFunc = GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+									case void
+										itm.EmitError("unknown default operator")
+								}
+								assert(setFunc != null)
+								DefaultSpace.Methods[name].Push(setFunc)
+							}else {
+								// typ2 := ParseType(itm.Down.Right)
+								// if typ2 == null
+								// 	itm.EmitError("Unknow object")
+								exeObj := TryGetExeCall(itm)
+								if exeObj == null
+									itm.EmitError("Unknow object")	
+								if exeObj is in BoxExeConstObj and isVirtual
+								{
+									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
+									PreVTableVars[name] = newVal
+								}else{
+									itm.EmitError("Unknow object")
+								}
+							}
+						}
+					}
+				}
+			}
+			iter = iter.Right
+		}
+
+	}
+	CheckFakeFields := !(Token^ itm) -> void
+	{
+		if not (itm.Down is TokenIndent)
+			itm.EmitError("fake field must be named by simple word")
+
+		fieldName := itm.Down->{TokenIndent^}.Value
+		
+		skob := itm.Down.Right.Right.Down.Right
+		SyntaxCompress(skob,LexHVFileRoot)
+
+		itr := skob.Down
+
+		thisField := FieldSpaces[fieldName]&
+
+		while itr != null
+		{
+			if itr.Down == null or itr.Down.Right == null or itr.Down.Right.GetValue() != ":="
+				itr.EmitError("Fake field can only contain functions")
+			name := itr.Down->{TokenIndent^}.Value //todo , str type
+
+			asFunc := TryParseFunction(itr.Down.Right.Right)
+			if asFunc != null
+			{
+				if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+				{
+					asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+				}
+				if asFunc is in BoxFunc
+				{
+					if asFunc is in BoxFuncBody
+						asFunc->{BoxFuncBody^}.ParentScope = this&
+
+					f := asFunc->{BoxFunc^}
+					thisField.Methods[name].Push(f)
+					f.SetName(name)
+					f.Work()
+				}else {
+					tmpl := asFunc->{BoxFuncTemplate^}
+					tmpl.SetName(name)
+					thisField.MethodTemplates[name].Push(tmpl)
+				}
+			}else
+			{
+			}
+			itr = itr.Right
+		}
+	}
+	AwaitParentStep := virtual !() -> void { StartParseBody() VParentState.Await() }
+	AwaitVTableStep := virtual !() -> void { StartParseBody() VTableState.Await() }
+}

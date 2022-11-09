@@ -1,9 +1,9 @@
 AppendClass Thread
 {
 	itData := void^
-	_threadStart := !(!()&-> void lambd) -> void
+	threadStart := !() -> void
 	{
-		itData = CreateThread(null,0,_threadProxyFunc,lambd->{void^},0,null)
+		itData = CreateThread(null,0,_threadProxyFunc,this&->{void^},0,null)
 	}
 	Join := !() -> void
 	{

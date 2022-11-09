@@ -1,0 +1,65 @@
+AppendClass BoxFuncBody
+{
+    Returns := List.{ReturnHalfState^}
+
+    CheckReturnStep := !() -> void
+    {
+        assert(Attrs.IsAutoResult)
+
+        resType := GTypeVoid
+
+        for it : Returns
+        {
+            st := it.GetSetType()
+            if st == GTypeVoid
+                continue
+            if resType == GTypeVoid
+            {
+                resType = st
+            }else{
+                resType = TypeFight(resType,st)
+            }
+
+			if resType == null
+				it.errorToken.EmitError("can not create type that satisfy all return objects")
+        }
+
+        if resType != GTypeVoid
+        {
+            ObjType = FuncTypeSetResult(ObjType->{TypeFunc^},resType,false)
+        }else{
+            assert(ObjType->{TypeFunc^}.ResultType == GTypeVoid)
+        }
+
+		ResultTypeHatch.Emit()
+
+        CreateResultVar()
+        if ResultVar != null
+            UnitStack.PushFront(ResultVar)
+        
+        Returns[^].ResolveStep()
+    }
+    CreateResultVar := !() -> void
+    {
+        assert(ResultVar == null)
+
+        tp := ObjType->{TypeFunc^}
+        
+		if tp.ResultType != GTypeVoid
+		{
+			resSpn := StringSpan("result")
+			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
+			{
+				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
+				ResultVar = new MemVar(resSpn,rv)
+			}else{
+				rFuncType := tp.ResultType
+				if tp.ResultRef
+					rFuncType = rFuncType.GetPoint()
+				rFnc := new FuncLocalParam(rFuncType)
+				//regularVars.Push(rFnc)
+				ResultVar = new MemVar(resSpn,rFnc)
+			}
+		}
+    }
+}

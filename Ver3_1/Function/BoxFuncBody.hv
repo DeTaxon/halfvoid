@@ -1,0 +1,379 @@
+
+BoxFuncBody := class extend BoxFuncCommon
+{
+	headerHatch := THatch
+
+	Attrs := FuncAttributes
+
+	Name := StringSpan
+	OutputName := StringSpan
+
+	inps1 := Token^
+	resTyp := Token^
+	bdy := Token^
+
+	funcLine := BoxExeLine^
+
+	Constants := List.{BoxUnit^}
+	ConstVars := List.{BoxUnit^}
+
+	NamedParametersCount := int
+	VariadicName := StringSpan
+
+	DefaultValues := AVLMap.{int,Token^}
+
+	ExitLabel := BoxLabel^
+
+	EnterCall := BoxExeObj^
+	LeaveCall := BoxExeObj^
+
+	InputVarNames := List.{StringSpan}
+
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return ParentScope
+	}
+
+
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return DefaultValues.Size()
+	}
+	GetDefaultToken := virtual !(int i) -> Token^
+	{
+		if not DefaultValues.Contain(i)
+			return null
+		return DefaultValues[i]
+	}
+
+
+	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
+	{
+		Name = "anon"
+		SetType(tp)
+		Attrs = atrs
+		bdy = bodyIn
+
+		if not Attrs.IsAutoResult
+		{
+			ResultTypeHatch.Emit()
+		}
+
+		NamedParametersCount = names.Size()
+		InputVarNames.Push(names[^])
+
+		if DebugMode
+		{
+			funcLine = new BoxExeLine()
+			funcLine.ItToken = bdy
+			assert(funcLine.ItToken.Line != null)
+		}
+		ExitLabel = new BoxLabel() 
+	}
+
+	ResultTypeHatch := THatch
+	GetType := virtual !() -> Type^
+	{
+		ItTypeHatch.Await()
+		ResultTypeHatch.Await()
+		return ObjType
+	}
+
+	StartedParse := bool
+	StartedParseForced := bool
+	ParseBody := virtual !() -> void
+	{
+		if StartedParse
+			return void
+		StartedParse = true
+		cls := this&
+		GFuncsInProgress.Push(this&)
+		TSpawnTask(() ==> [cls] {
+			cls.ParseBodyForced()
+		})
+	}
+	ParseBodyForced := virtual !() -> void
+	{
+		if StartedParseForced
+			return void
+		StartedParseForced = true
+
+		GFuncsInProgress.Push(this&)
+		this.WorkBody()
+	}
+	SetName := virtual !(StringSpan nm) -> void
+	{
+		Name = nm
+
+		if CurrentCodeSpace != null
+		{
+			CurrentCodeSpace.Functions[Name].Push(this&)
+		}
+	}
+	SetPrintName := virtual !(StringSpan nm) -> void
+	{
+		Name = nm
+	}
+	ForceOutputName := virtual !(StringSpan nm) -> void {
+		OutputName = nm
+	}
+	GetExitLabel := virtual !() -> BoxLabel^
+	{
+		return ExitLabel
+	}
+
+	body := BoxBlock^
+	readyState := THatch
+	WorkBody := virtual !() -> void
+	{
+		oldVarsCount := GCVarsInUse
+		GCVarsInUse = 0
+
+		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
+		ParentFunc = oldFunc
+		FuncStack.PushFront(this&)
+		CurrentFunc = this&
+		
+		AllFunctions.Push(this&)
+
+		stackSize := UnitStack.Size()
+
+		if stackSize == 0 //todo better way of readding constants
+			ScopePutConstants()
+
+		UnitStack.PushFront(this&)
+
+		tp := ObjType ->{TypeFunc^}
+
+		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
+		{
+			name := StringSpan("")
+			if i < InputVarNames.Size()
+			{
+				name = InputVarNames[i]
+			}else{
+				name = GetParSpan(i)
+			}
+			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
+			vr := new MemVar(name,parObj)
+			Params.Push(vr)
+		}
+		if not Attrs.IsAutoResult
+			CreateResultVar()
+
+		UnitStack.PushFront(ConstVars[^])
+
+		// for it : ConstVars
+		// {
+		// 	if it is in TypeVar
+		// 	{
+		// 		printf("heh %s\n",it->{TypeVar^}.Name)
+		// 	}
+		// }
+
+		OutputName = GetFuncMangle(Name)
+		
+		CurrentScope = this&
+
+		for par : Params
+		{
+			UnitStack.PushFront(par)
+		}
+		
+		if ResultVar != null
+			UnitStack.PushFront(ResultVar)
+		
+		body = new BoxBlock(bdy)
+		body.Work()
+
+		if Attrs.IsAutoResult
+			CheckReturnStep()
+
+		WorkBodyGC()
+
+		YieldWork()
+		WorkBodyCaptures()
+
+		if Attrs.IsLambda
+		{
+			newTplType := ParentFunc.GetCaptureTuple().ItType
+			if CaptureUsed
+			{
+				ThisCaptureTupleType = newTplType
+				CreateGetCaptureCall()
+			}
+		}
+
+		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
+		ResultVar?.Value.PopulateCalls()
+		//gcArrayPtr?.PopulateCalls()
+		gcVars[^].PopulateCalls()
+		CapturedVarsTuple?.PopulateCalls()
+
+		gcArrayPtr?.PopulateCalls2(() ==> {
+			step1 := gcArrayVar.CreateCall()
+			step2 := new UnrefFuncCall(step1)
+			step3 := GetExchange(step2, GTypeVoidP.GetPoint())
+			assert(step3 != null)
+			return step3
+		})
+		regularVars[^].PopulateCalls()
+
+		
+		while UnitStack.Size() > stackSize
+		{
+			UnitStack.Pop()
+		}
+		FuncStack.Pop()
+		CurrentFunc = oldFunc
+		GCVarsInUse = oldVarsCount
+
+		ResultTypeHatch.Emit()
+		readyState.Emit()
+	}
+	WaitReadyState := virtual !() -> void
+	{
+		readyState.Await()
+	}
+	PrintName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "@" << OutputName
+		if OutputName.Size() == 0
+			printf("bad\n")
+	}
+	
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		if body == null
+			return void
+
+		GDebugFuncId = 0
+		CurrentFunc = this&
+
+		if DebugMode and funcLine != null
+		{
+			GDebugFuncId = GetNewId()
+			GDebugLineCallId = funcLine.MetaId
+		}
+		oldScope := GDebugScopeId
+		defer GDebugScopeId = oldScope
+		GDebugScopeId = GDebugFuncId
+
+		f^ << "define "
+		PrintResultType(f)
+		f^ << " @" << OutputName << "("
+		PrintInputTypes(f)
+		f^ << ")"
+		if DebugMode
+			f^ << " !dbg !" << GDebugFuncId
+		f^ << "\n"
+		f^ << "{\n"
+
+
+		CapturedVarsTuple?.PrintAlloc(f)
+		for it : regularVars
+			it.PrintAlloc(f)
+		ResultVar?.Value.PrintAlloc(f)
+		ResultVar?.PrintCode(f)
+
+		PrintStackData(f)
+
+
+		PrintYieldCreateVar(f)
+		PrintYieldCodeParamsGC(f)
+		//gcArrayVar?.PrintCode(f)
+		if gcVarsCount != 0
+			EnterCall.PrintDefaultUse(f)
+
+
+		PrintYieldCodeGo(f)
+
+		rTyp := GetType()->{TypeFunc^}.ResultType
+
+		gcArrayPtr?.PrintCode(f)
+		Params[^].PrintCode(f)
+
+		gcSetPtr?.PrintDefaultUse(f)
+		
+		body.PrintCode(f)
+
+		YieldPrintFinilize(f)
+
+		ExitLabel.PrintCode(f)
+
+		//CapturedVarsCleanup?.PrintDefaultUse(f)
+		LeaveCall?.PrintDefaultUse(f)
+
+		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
+
+		if rTyp == GTypeVoid or isCmplx
+		{
+			f^ << "ret void"
+			if DebugMode
+				f^ << " , !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}else{
+			if ResultVar != null
+			{
+				tmpList := CheckExeDownList
+				cl := BoxFuncCall(ResultVar.Value,tmpList)
+
+				cl.PrintPre(f)
+				f^ << "ret "
+				cl.GetType().PrintType(f)
+				f^ << " "
+				cl.PrintUse(f)
+				if DebugMode
+					f^ << " , !dbg !" << GDebugLineCallId
+				f^ <<"\n"
+			}
+		}
+
+		f^ << "}\n"
+
+		if DebugMode
+		{
+			oldFileId := GDebugFileId //todo fix FileId
+
+			if bdy?.Line?.File != null
+			{
+				GDebugFileId = bdy.Line.File.fileId
+			}
+
+			funcLine.PrintDebugMeta(f)
+			body.PrintDebugMeta(f)
+			Params[^].PrintDebugMeta(f)
+			ResultVar?.PrintDebugMeta(f)
+
+			f^ << "!" << GDebugFuncId << " = distinct !DISubprogram(name:\""
+			PrintName(f)
+			f^ << "\","
+			f^ << "linkageName:\""
+			PrintName(f)
+			f^ << "\","
+			f^ << "scope: !" << GDebugFileId << " , file: !" << GDebugFileId
+			f^ << ",type: !" << GetType().MetaId
+			if bdy.Line != null
+			{
+				f^ << ", line:" << bdy.Line.Line
+				f^ << ", scopeLine:" << bdy.Line.Line
+			}
+			f^ << ", unit: !" << cuId
+			f^ << ", flags: DIFlagPrototyped"
+			f^ << ", spFlags: DISPFlagDefinition"
+			//if tmplId != -1
+			//	f << ", templateParams:!"<<tmplId
+			f^ << ")\n"
+
+			GDebugFileId = oldFileId
+		}
+	}
+}
+
+GetParSpan := !(int i) -> StringSpan
+{
+	buff := char[100]
+	sprintf(buff[0]&,"%%par%i",i)
+	result = GetConstString(buff[0]&)
+}

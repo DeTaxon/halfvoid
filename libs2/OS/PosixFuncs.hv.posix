@@ -85,6 +85,11 @@ GetSteadyTime := !() -> double
 	return resTime + times[1]*0.001*0.001*0.001
 }
 
+POLLIN := 1
+POLLINI := 2
+POLLOUT := 4
+POPLLERR := 8
+
 pollfd := class 
 {
 	fd := int

@@ -1,0 +1,10 @@
+QCatch := class extend BoxUnit
+{
+	ItLabel := BoxLabel^
+	GetQLabel := virtual !() -> BoxLabel^
+	{
+		if ItLabel == null
+			ItLabel = new BoxLabel()
+		return ItLabel
+	}
+}

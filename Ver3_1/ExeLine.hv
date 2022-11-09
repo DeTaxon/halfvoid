@@ -1,0 +1,626 @@
+BoxExeLine := class extend BoxExeLineSimple
+{
+	exitLabel := BoxLabel^
+
+	this := !() -> void
+	{
+		if DebugMode
+			MetaId = GetNewId()
+	}
+	this := !(Token^ itm) -> void
+	{
+		this."this"()
+		DoLine(itm)
+	}
+	GetQLabel := virtual !() -> BoxLabel^
+	{
+		if exitLabel == null
+			exitLabel = new BoxLabel()
+		return exitLabel
+	}
+	eLabel := virtual !() -> BoxLabel^
+	{
+		return exitLabel
+	}
+
+	DoLine := !(Token^ itm) -> void
+	{
+		stackAtStart := UnitStack.Size()
+		UnitStack.PushFront(this&)
+
+		CurrentLine = this&
+	
+		ItToken = itm
+		assert(itm != null)
+
+		CheckMacroStep(itm)
+
+		Down = GetDownObject(itm,0)
+
+		while stackAtStart > UnitStack.Size()
+			UnitStack.Pop()
+
+		if Down != null
+			return void
+
+		ItToken.Print(0)
+		itm.EmitError("Unknown error")
+		assert(false)
+	}
+	GetDownObject := !(Token^ itm,int depth) -> BoxUnit^
+	{
+		if depth >= MacroCycleMacro.Size()
+		{
+			if depth != 0
+			{
+				return new BoxExeLineSimple(itm,TryGetExeCall(itm))
+			}
+			return TryGetExeCall(itm)
+		}
+	
+		forItems := HybridQueue.{ForSubObjects,5}
+
+		el := ForSubObjects
+
+		el.DownToken = MacroCycleMacro[depth].0.Down
+		el.ValueName = MacroCycleMacro[depth].1
+		el.IndexName = MacroCycleMacro[depth].2
+
+		forItems.Push(el)
+
+		return GetForParsed(itm,forItems, () ==> {
+			return GetDownObject(itm,depth+1)
+		})
+	}
+}
+BoxExeLineSimple := class extend BoxUnit
+{
+	MetaId := int
+	ItToken := Token^
+	Down := BoxUnit^
+
+	MacroCycleMacro := List.{Tuple.{Token^,StringSpan,StringSpan}}
+
+	this := !(Token^ itm,BoxUnit^ newObj) -> void
+	{
+		if DebugMode
+			MetaId = GetNewId()
+		ItToken = itm
+		Down = newObj
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = MetaId
+		
+		if Down is in BoxExeObj
+		{
+			Down->{BoxExeObj^}.PrintDefaultUse(f)
+		}else{
+			Down.PrintCode(f)
+		}
+		el := eLabel()
+		if el != null
+			el.PrintCode(f)
+	}
+	eLabel := virtual !() -> BoxLabel^
+	{
+		return null
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(ItToken != null)
+		assert(ItToken.Line != null)
+		Down?.PrintDebugMeta(f)
+		f^ << "!" << MetaId << " = !DILocation(line:" << ItToken.Line.Line << ",column:1, scope:!" << GDebugScopeId << ")\n"
+	}
+}
+
+ExeDownList := type HybridQueue.{BoxExeObj^,8}
+CheckExeDownList := type HybridQueue.{BoxExeObj^,20}
+
+BoxExeObj := class extend BoxUnit
+{
+	ObjType := Type^
+
+	GetType := virtual !() -> Type^
+	{
+		return ObjType
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			PrintPointPre(f)
+		}else{
+			PrintPre(f)
+		}
+	}
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+	}
+
+}
+
+BoxExeConstObj := class extend BoxExeObj
+{
+	IsConst := virtual true
+	PrintConst := virtual !(TIOStream^ f) -> void {}
+}
+
+TryGetExeCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null
+		return null
+
+	return TryGetMacroCall(itm)? //MUST BE FIRST
+	
+	return TryGetBranchCall(itm)?
+	return TryGetNewDeleteOperator(itm)?
+	return TryGetBoolOrNone(itm)?
+	return TryGetMetaCall(itm)?
+	return TryCheckRegularFuncCall(itm)?
+	return TryGetFieldCall(itm)?
+	return TryCheckMethodCall(itm)?
+	return TryGetPrefixOperator(itm)?
+	return TryGetPostfixOperator(itm)?
+	return TryGetIsInCall(itm)?
+	return TryGetLambdaCall(itm)?
+	return TryGetContinueBreak(itm)?
+	return TryGetDecoratorCall(itm)?
+	return TryGetTryCatch(itm)?
+	return TryGetArrayCall(itm)?
+	return TryGetTrinary(itm)?
+	return TryGetSuffixCall(itm)?
+	return TryGetBracketsCall(itm)?
+	return TryGetTemplateCall(itm)?
+	
+	isOperCall := TryCheckMathOperatorCall(itm)
+	if isOperCall != null
+		return isOperCall
+	
+	prm := TryExePrime(itm)
+	if prm != null
+		return prm
+
+	isParamCall := TryCheckGetParam(itm)
+	if isParamCall != null
+		return isParamCall
+	
+	unrefCall := TryGetUnrefObj(itm)
+	if unrefCall != null
+		return unrefCall
+	return TryGetPtrObj(itm)?
+
+	return null
+
+}
+
+
+CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
+{
+	SyntaxCompress(itm,PriorityData)
+	itr := itm.Down
+
+	while itr != null
+	{
+		if itr.GetValue() == "," //todo maybe check for bad written code
+		{
+		}else{
+			if itr.Down?.Right?.GetValue() == "..."
+			{
+				funcObj := BoxFuncBody^
+				for it : UnitStack
+				{
+					if it is BoxFuncBody
+					{
+						funcObj = it->{BoxFuncBody^}
+						break
+					}
+				}
+				assert(funcObj != null)
+				if funcObj == null
+					itm.EmitError("software error, compiler is broken")
+				
+				assert(funcObj.VariadicName.Size() != 0)
+
+				stackSize := UnitStack.Size()
+
+				for i : funcObj.Params.Size()
+				{
+					if i < funcObj.NamedParametersCount
+						continue
+
+					tmpVar := new MemVar(funcObj.VariadicName,funcObj.Params[i].Value)
+					UnitStack.PushFront(tmpVar)
+
+					obj := TryGetExeCall(itr.Down)
+					assert(obj != null)
+					Objs.Push(obj)
+
+					while UnitStack.Size() > stackSize
+						UnitStack.Pop()
+					
+				}
+			}else{
+				obj := TryGetExeCall(itr)
+				if obj == null
+				{
+					itr.Print(0)
+					itr.EmitError("Could not compile line")
+				}
+				Objs.Push(obj)
+			}
+		}
+		itr = itr.Right
+	}
+}
+CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
+{
+	iter := itm.Down
+
+	while iter != null
+	{
+		if iter.GetValue() == ","
+		{
+		}else{
+			tp := ParseType(iter)
+			if tp != null
+			{
+				consts.Push(GetConstType(tp))
+			}else{
+				cns := TryGetExeCall(iter)
+				if cns != null
+				{
+					assert(cns is in BoxExeConstObj)
+					consts.Push(cns->{BoxExeConstObj^})
+				}else{
+					iter.EmitError("could not get constant value")
+				}
+			}
+		}
+		iter = iter.Right
+	}
+}
+
+
+GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxUnit^
+{
+	return GetBestFunc(x,Objs,consts,false)
+}
+
+GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,bool expectExac) -> BoxUnit^
+{
+	priorityes := HybridQueue.{int,13}
+	defer priorityes.Destroy()
+
+	for h : x
+	{
+		if h is in BoxFunc
+		{
+			fnc := h->{BoxFunc^}
+			cmpRes := CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount())
+			priorityes.Push(cmpRes)
+		}else if h is in BoxFuncTemplate{
+			tmpl := h->{BoxFuncTemplate^}
+			cmpRes := tmpl.GetPriority(Objs,consts)
+			priorityes.Push(cmpRes)
+		}else if h is in GlobalVar {
+			priorityes.Push(CmpNoExchange) //todo?
+		}else if h is in ConstType {
+			priorityes.Push(CmpNoExchange) //todo?
+		}else if h is in TypeVar {
+			priorityes.Push(CmpNoExchange) //todo?
+		}else {
+			priorityes.Push(CmpNoExchange)
+			assert(false)
+		}
+	}
+	if priorityes.Size() == 0
+		return null
+
+	bestI := 0
+	for i : x.Size()
+	{
+		if priorityes[i] < priorityes[bestI]
+			bestI = i
+	}
+	if expectExac
+	{
+		if priorityes[bestI] != 0
+			return null
+	}
+	if priorityes[bestI] == CmpNoExchange
+		return null
+	return x[bestI]
+}
+
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxExeObj^
+{
+	cnsts := List.{BoxExeConstObj^}
+	return CreateFuncCall(name,Objs,cnsts)
+}
+CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+{
+	callItem := BoxUnit^
+	GetItemGlobal(name, x ==>{
+		callItem = GetBestFunc(x,Objs,consts)
+		if callItem == null
+			return false
+		return true
+	})
+	if callItem == null
+		return null
+	if callItem is in BoxFuncTemplate
+	{
+		callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+	}
+	if callItem is in BoxFunc
+	{
+		return callItem->{BoxFunc^}.CreateCall(Objs)
+	}
+}
+
+oneGonnaOnly := task_local bool
+IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
+{
+	if oneGonnaOnly
+		return false
+	oneGonnaOnly = true
+
+	callItem := BoxUnit^
+	GetItemGlobal(name, x ==>{
+		callItem = GetBestFunc(x,Objs,consts,true)
+		if callItem == null
+			return false
+		return true
+	})
+	oneGonnaOnly = false
+	return callItem != null
+}
+
+CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
+{
+	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
+	{
+		cls := Objs[0].GetType()->{TypeClass^}.ToClass
+
+		callItem := BoxUnit^
+		cls.GetMethods(name, x ==> {
+			callItem = GetBestFunc(x,Objs,consts)
+			if callItem == null
+				return false
+			return true
+		})
+
+		if callItem != null
+		{
+			if callItem is in BoxFuncTemplate
+			{
+				callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+			}
+			if callItem is in BoxFunc
+			{
+				return callItem->{BoxFunc^}.CreateCall(Objs)
+			}
+		}
+	}
+
+	return CreateFuncCall(name,Objs,consts)
+}
+
+CmpNoExchange := 999000
+
+CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> int
+{
+	worstCase := 0
+
+	assert(fncType != null)
+	assert(fncType is TypeFunc)
+
+	minArgs :=fncType.Params.Size()
+	maxArgs :=fncType.Params.Size()
+
+	minArgs -= defaults
+
+	if fncType.IsVargs
+		maxArgs = 20000000
+
+	if objs.Size() > maxArgs or objs.Size() < minArgs
+		return CmpNoExchange
+
+	count := min(fncType.Params.Size(),objs.Size())
+
+	yep := false
+	for i : count
+	{
+		toIsMem := fncType.Params[i].IsRef
+		if toIsMem
+			objs[i].NotifyMemUse()
+		frmType := objs[i].GetType()
+		frmIsMem := objs[i].IsMem()
+		toType := fncType.Params[i].ItType
+		thisCase := TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
+
+		if thisCase == CmpNoExchange
+		{
+			if objs[i] is BoxExeNull and toType is in TypePoint
+			{
+				thisCase = 1000
+			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
+				thisCase = 0
+			} else if objs[i] is BoxArrayHolder and ArrayHolderCheck(objs[i],toType)
+			{
+				thisCase = 0
+			}else{
+				objs12 := CheckExeDownList
+				objs12.Push(objs[i])
+				cnsts12 := List.{BoxExeConstObj^}
+				cnsts12.Push(GetConstType(toType))
+				
+				excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
+				objs12.Destroy() cnsts12.Destroy()
+				if excCheck
+				{
+					thisCase = 1000
+				}else{
+					return CmpNoExchange
+				}
+			}
+		}
+		worstCase = max(worstCase,thisCase)
+		//if worstCase == CmpNoExchange
+		//	return worstCase
+	}
+	return worstCase
+}
+
+ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
+{
+	array := ar->{BoxArrayHolder^}
+	if IsViewType(toType)
+		return true
+	if array.GetArrayType() == toType
+		return true
+	return false
+}
+
+TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
+{
+	if frm == to
+		return 0
+	
+	if frm == null
+		return CmpNoExchange
+
+	if frm is in TypePoint and frm.Base is TypeClass and to is TypeClass
+	{
+		if TypeFight(frm.Base,to) == to
+			return 1000 //todo rethink
+	}
+
+	if frm is TypeArr and to is in TypePoint and frm.Base == to.Base
+	{
+		return 1000
+	}
+
+	if toIsMem //!!!!IMPORTANT PART
+	{
+		if frm is TypeClass and to is TypeClass
+		{
+			res := TypeFight(frm,to)
+			if res == to
+				return 1000
+		}
+	}
+
+	if frm is in TypePoint and to is in TypePoint
+	{
+		if to == GTypeVoidP
+			return 1000
+		if frm.Base is TypeClass and to.Base is TypeClass
+		{
+			fgh := TypeFight(frm.Base,to.Base)
+			if fgh == to.Base
+				return 1000
+		}
+	}
+
+	if frm is TypeStandard and to is TypeStandard and not toIsMem
+	{
+		f1 := frm->{TypeStandard^}
+		t1 := to->{TypeStandard^}
+
+		if IsInt(f1) and IsInt(t1)
+		{
+			if f1.GetSize() > t1.GetSize()
+			{
+				return 2000 + (100 - t1.GetSize())
+			}
+			return 1000 + (100 - t1.GetSize())
+		}
+		if IsFloat(f1) and IsFloat(t1)
+		{
+			if f1.GetSize() > t1.GetSize()
+			{
+				return 2000 + (100 - t1.GetSize())
+			}
+			return 1000 + (100 - t1.GetSize())
+		}
+		if IsInt(f1) and IsFloat(t1)
+		{
+			return 1000 + (100 - t1.GetSize())
+		}
+		if IsFloat(f1) and IsInt(t1)
+		{
+			return 2000 + (100 - t1.GetSize()) //todo warning, but not here
+		}
+	}
+
+
+	return CmpNoExchange
+}
+TypeFight := !(Type^ a, Type^ b) -> Type^
+{
+	if a == b
+		return a
+
+	if a is in TypePoint and a.Base is TypeClass
+		and b is in TypePoint and b.Base is TypeClass
+	{
+		subTyp := TypeFight(a.Base,b.Base)	
+		if subTyp != null
+			return subTyp.GetPoint()
+	}
+
+	if a is TypeClass and b is TypeClass
+	{
+		ac := a->{TypeClass^}.ToClass
+		bc := b->{TypeClass^}.ToClass
+		ac.AwaitParentStep()
+		bc.AwaitParentStep()
+
+		for ap : ac.PrimeParents
+		{
+			for bp : bc.PrimeParents
+			{
+				if ap.0 == bp.0
+				{
+					if ap.2 == bp.2
+					{
+						return TypeFight(ap.1.ItType,bp.1.ItType)
+					}else{
+						if ap.2 > bp.2
+						{
+							return TypeFight(ap.1.ItType,bc.ItType)
+						}else{
+							return TypeFight(ac.ItType,bp.1.ItType)
+						}
+					}
+				}
+			}
+		}
+
+	}
+	return null
+}
+
+TypePriorityTable := AVLMap.{Type^,AVLMap.{Type^,int}}
+
+
+
+

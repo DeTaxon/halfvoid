@@ -1,0 +1,223 @@
+TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm is TokenIndent 
+	{
+	}else{
+		return null
+	}
+
+	asItm := itm->{TokenIndent^}
+
+
+	metFuncs := HybridQueue.{BoxFuncBody^,4}
+
+	for par : UnitStack
+	{
+		if par is ConstVar
+		{
+			cv := par->{ConstVar^}
+			
+			if cv.Name == asItm.Value
+				return cv.Value
+		}
+		if par is in NamedVar
+		{
+			mv := par->{NamedVar^}
+			if mv.Name == asItm.Value
+			{
+				if par is in MemVarRef
+				{
+					assert(false)
+				}else if par is in MemVar
+				{
+					mv2 := mv->{MemVar^}
+					if metFuncs.Size() != 0
+					{
+						if metFuncs.Size() >= 2
+						{
+							for it,i : metFuncs
+							{
+								if i != 0
+									it.NotifyChainCapture()
+							}
+						}
+						metFuncs[^].CaptureUsed = true
+
+						varType := mv2.Value.GetVarType()
+						if IsGCPtr(varType)
+						{
+							injCap := metFuncs[0]
+							
+							assert(FuncStack.Size() > 1)
+							parFunc := FuncStack[1]
+							//if injCap.CapturedBySomeVars.Contain(asItm.Value)
+							//{
+							//	return new PtrToRefFuncCall(injCap.CapturedBySomeVars[asItm.Value].1)
+							//}
+							wrk := ref injCap.CapturedBySomeVars[asItm.Value]
+							wrk.0 = mv2
+
+							newVar := MemVar^
+
+							parFunc.EnterScope(() ==> {
+								lVar := new FuncLocalParam(varType.GetPoint())
+								parFunc.regularVars.Push(lVar)
+								lVar.NotifyCaptureUse()
+								newVar = new MemVarRef(asItm.Value,lVar)
+							})
+
+							wrk.1 = newVar
+
+							gt1 := new UnrefFuncCall(mv2.Value.CreateCall())
+							st1 := newVar.Value.CreateCall()
+							objsO := CheckExeDownList
+							objsO.Push(st1)
+							objsO.Push(gt1)
+							wrk.2 = CreateFuncCall(StringSpan("="),objsO)
+							assert(wrk.2 != null)
+
+							return CallFromSomeVar(newVar)
+						}
+
+						mv2.NotifyCaptureUse()
+					}
+					return mv2.Value.CreateCall()
+				}else if par is MacroVar {
+					macro := par->{MacroVar^}
+					return macro.CreateCall()
+				}else{
+					assert(false)
+				}
+			}
+		}
+		
+		if par is in BoxFuncBody
+		{
+			fnc := par->{BoxFuncBody^}
+
+			metFuncs.Push(fnc)
+
+			if fnc.CapturedBySomeVars.Contain(asItm.Value)
+			{
+				return CallFromSomeVar(fnc.CapturedBySomeVars[asItm.Value].1)
+			}
+
+			if fnc.VariadicName == asItm.Value
+			{
+				return new MetaVargsParam(fnc)
+			}
+			
+			if fnc.Attrs.IsMethod and asItm.Value != "this"
+			{
+				clsType := fnc.Params[0].GetVarType()
+				assert(clsType is TypeClass)
+				cls := clsType->{TypeClass^}.ToClass
+
+				if cls.GetField(asItm.Value) != null //todo: could use field call ifrom here
+				{
+					tkn1 := TokenIndent(StringSpan("this"))
+					tkn2 := TokenSymbol(StringSpan("."),0)
+					tkn3 := TokenIndent(asItm.Value)
+					tknData := TokenData
+
+
+					tknData.Down = tkn1&
+					tkn1.Right = tkn2&
+					tkn2.Right = tkn3&
+
+					tkn1.Line = itm.Line
+					tkn2.Line = itm.Line
+					tknData.Line = itm.Line
+	
+					fCall := BoxExeObj^
+					try
+					{
+						fCall = TryGetFieldCall(tknData&)
+					}catch(IException^ e)
+					{}
+					return fCall?
+				}
+			}
+		}
+	}
+	callItem := BoxUnit^
+	GetItemGlobal(asItm.Value, x ==> {
+		for it : x
+		{
+			if it is in GlobalVar
+			{
+				gVar := it->{GlobalVar^}
+				gVar.AwaitType()
+				callItem = gVar.Value
+				return true
+			}
+			if it is TaskLocalVar or it is TaskLocalVarDelayed
+			{
+				callItem = it
+				return true
+			}
+			if it is in BoxFunc
+			{
+				callItem = new FuncPointerParam(it->{BoxFunc^})
+				return true
+			}
+			if it is in BoxFuncTemplate
+			{
+				asTmpl := it->{BoxFuncTemplate^}
+				if asTmpl.IsOneFunc()
+				{
+					callItem = new FuncPointerParam(asTmpl.GetOneFunc())
+					return true
+				}
+			}
+			if it is in BoxExeConstObj
+			{
+				callItem = it
+				return true
+			}
+		}
+		return false
+	})
+	if callItem != null
+	{
+		if callItem is TaskLocalVar
+		{
+			return callItem->{TaskLocalVar^}.CreateCall()
+		}
+		if callItem is TaskLocalVarDelayed
+		{
+			return callItem->{TaskLocalVarDelayed^}.CreateCall()
+		}
+		if callItem is in BoxFunc
+		{
+			return callItem->{BoxFunc^}.CreateCall()
+		}
+		if callItem is in BoxExeConstObj
+		{
+			return callItem->{BoxExeConstObj^}
+		}
+	}
+
+	asType := ParseType(itm)
+	if asType != null
+		return GetConstType(asType)
+
+	itm.EmitError("Could not get param "sbt + asItm.Value) //todo better explanation
+
+	return null
+}
+
+CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
+{
+	if vr is MemVarRef
+	{
+		return new PtrToRefFuncCall(vr->{MemVar^}.Value.CreateCall())
+	}
+	if vr is in MemVar
+	{
+		return vr->{MemVar^}.Value.CreateCall()
+	}
+	assert(false)
+	return null
+}

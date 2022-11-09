@@ -37,6 +37,11 @@ String := class extend StringView
 		assert(ind >= 0 and ind < itSize)
 		return charPtr[ind]
 	}
+	"[]" := virtual !(Range ind) -> StringSpan //TODO!! reference pointer
+	{
+		result.ptr = charPtr
+		result.itSize = itSize
+	}
 	Str := virtual !() -> char^
 	{
 		return charPtr

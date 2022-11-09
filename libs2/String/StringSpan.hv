@@ -28,7 +28,7 @@ StringSpan := class extend StringView
 	Size := virtual !() -> int { return itSize }
 	GetString := virtual !() -> String^ { return new String(ptr,itSize) }
 	"[]" := !(int ind) -> char& { return ptr[ind] }
-	"[]" := !(Range ran) -> StringSpan
+	"[]" := virtual !(Range ran) -> StringSpan
 	{
 		toGet := StringSpan(ptr,itSize,ran)
 		result.ptr = toGet.ptr
@@ -175,23 +175,23 @@ DivideStrInner := !(char^ ptr,int itSize,char^ to,!(StringSpan)&->void cb) -> vo
 	}
 }
 
-// StrToInt := !(StringSpan strSpn) -> int 
-// {
-// 	Sum := 0
-// 	i := 0
-// 	Min := false
-// 	a := strSpn.ptr
-// 	if ( a[0] == '-')
-// 	{
-// 		i = 1
-// 		Min = true
-// 	}
-// 	while a[i] != 0 and a[i] <= '9' and a[i] >= '0' and i < strSpn.itSize
-// 	{
-// 		Sum *= 10
-// 		Sum += a[i] - '0'
-// 		i += 1	
-// 	}
-// 	if Min return -Sum
-// 	return Sum
-// }
+StrToInt := !(StringSpan strSpn) -> int 
+{
+	Sum := 0
+	i := 0
+	Min := false
+	a := strSpn.ptr
+	if ( a[0] == '-')
+	{
+		i = 1
+		Min = true
+	}
+	while a[i] != 0 and a[i] <= '9' and a[i] >= '0' and i < strSpn.itSize
+	{
+		Sum *= 10
+		Sum += a[i] - '0'
+		i += 1	
+	}
+	if Min return -Sum
+	return Sum
+}

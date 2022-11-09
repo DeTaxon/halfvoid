@@ -1,0 +1,30 @@
+HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
+{
+    StaticSize := int
+    StaticArray := T[HSize]
+    ListArray := List.{T}
+
+    "[]" := virtual !(int i) -> ref T
+	{
+        if i >= HSize
+        {
+            return ListArray[i - HSize]
+        }
+		return StaticArray[i]
+	}
+	Size := virtual !() -> int
+	{
+		return StaticSize + ListArray.Size()
+	}
+
+    Push := !(@T itm) -> void
+    {
+        if StaticSize < HSize
+        {
+            StaticArray[StaticSize] = itm
+            StaticSize += 1
+        }else{
+            ListArray.Push(itm)
+        }
+    }
+}

@@ -1,0 +1,30 @@
+AllAppends := List.{Token^}
+
+RecheckAppends := !() -> void
+{
+	for it : AllAppends
+	{
+		cls := ParseType(it.Down.Right)->{Type^}
+
+		if cls == null
+			it.EmitError("AppendClass, class not found")
+		if not (cls is TypeClass)
+			it.EmitError("AppendClass, type must be class")
+		
+		cls2 := cls->{TypeClass^}.ToClass->{BoxClassBody^}
+		cls2.Appends.Push(it.Down.Right.Right)
+	}
+}
+
+CheckAppendHolder := !(Token^ itm) -> void
+{
+	assert(itm.Down != null)
+	assert(itm.Down.GetValue() == "AppendClass")
+	AllAppends.Push(itm)
+}
+
+
+AppendClass BoxClassBody
+{
+	Appends := List.{Token^}
+}

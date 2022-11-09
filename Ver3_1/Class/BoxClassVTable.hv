@@ -1,0 +1,318 @@
+TableIdIter := int
+
+AppendClass BoxClass
+{
+	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
+	PreVTableFuncs := AVLMap.{StringSpan,BoxFunc^}
+
+	VTable := List.{VTableEntry^}
+	VTableType := BoxClass^
+	VTableValue := GlobalVar^
+	VTableField := FieldPath^
+
+	VTableId := int
+	VTableCheckTypeArray := GlobalVar^
+
+	PrintVTable := virtual !(TIOStream^ f) -> void
+	{
+		if VTable.Size() == 0
+			return void
+		VTableValue.PrintCode(f)
+	}
+	GetVTableIds := !(BoxArrayHolder dat) -> void
+	{
+		dat.vals.Push(GetExeInt(VTableId))
+		Parents[^].GetVTableIds(dat)
+	}
+	PrepareVTable := !() -> void
+	{
+		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
+		{
+			TableIdIter += 1
+			VTableId = TableIdIter
+
+			arrHolder := BoxArrayHolder(GTypeInt,true,null)
+			GetVTableIds(arrHolder)
+			arrHolder.vals.Push(GetExeInt(0))
+
+			newVar := CreateGlobalVar(StringSpan("$anon"),arrHolder.GetArrayType(),false)
+			newVar.MemValue = arrHolder.GetAsConst()
+			VTableCheckTypeArray = newVar
+
+			tiName := StringSpan("@TypeInfo")
+
+			assert(newVar != null)
+
+			newConst := new CheckInfoConst(newVar)
+			newVirtualVar := new VTableVar(tiName,newConst)
+			if VTable.Size() == 0
+			{
+				VTable.Push(newVirtualVar)
+			}else{
+				assert(VTable[0] is VTableVar and VTable[0].Name == tiName)
+				VTable[0] = newVirtualVar
+			}
+		}
+
+		for it : PreVTableVars
+		{
+			found := false
+			for inVar : VTable
+			{
+				if inVar.IsEq(it)
+				{
+					inVar = it
+					found = true
+					break
+				}
+			}
+			if not found
+			{
+				VTable.Push(it)
+			}
+		}
+
+		for fnc,fncName : PreVTableFuncs
+		{
+			vFunc := new VTableFunc(fncName,fnc)
+
+			ind := 0
+
+			found := false
+			for it,i : VTable
+			{
+				if it.IsEq(vFunc)
+				{
+					it = vFunc
+					found = true
+					ind = i
+					break
+				}
+			}
+
+			if not found
+			{
+				ind = VTable.Size()
+				VTable.Push(vFunc)
+			}
+
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetExeInt(ind))
+			vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
+			cnsts.Destroy()
+			vFunc.SetName(fncName)
+			DefaultSpace.Methods[fncName].Push(vFunc)
+			fnc.ParseBody()
+		}
+	}
+	CreateVTable := !() -> void
+	{
+		if VTable.Size() == 0
+			return void
+		tps := List.{Type^}
+		defer tps.Destroy()
+
+		for it : VTable
+		{
+			tps.Push(it.GetType())
+		}
+		VTableType = GetTuple(tps)
+		VTableType.StartParseBody()
+		VTableValue = new GlobalVar(StringSpan(""),VTableType.ItType)
+		
+		cnst := new ClassConstValue
+		cnst.ItType = VTableType.ItType
+
+		for it : VTable
+		{
+			cnst.Value.Push(it.GetConst())
+		}
+		VTableValue.MemValue = cnst
+		VTableField = new FieldPath(ItType,VTableType.ItType.GetPoint())
+	}
+
+	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
+	{
+		AwaitVTableStep()
+		
+		for it,i : VTable
+		{
+			if it is VTableVar 
+				and it->{VTableVar^}.Name == val
+			{
+				asVar := it->{VTableVar^}
+				cnsts := List.{BoxExeConstObj^}
+				cnsts.Push(GetExeInt(i))
+				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![ItType][0]&,![true][0]&,asVar.GetType(),true,false), cnsts)
+				cnsts.Destroy()
+				return res
+			}
+		}
+		return null
+	}
+}
+
+VTableEntry := class
+{
+	Name := StringSpan
+
+	PrintType := virtual !(TIOStream^ f) -> void { GetType().PrintType(f) }
+	PrintConst := virtual !(TIOStream^ f) -> void {}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
+	GetType := virtual !() -> Type^ { return null }
+	GetConst := virtual !() -> BoxExeConstObj^ { return null }
+}
+
+CheckInfoConst := class extend BoxExeConstObj
+{
+	ItGlobVar := GlobalVar^
+	this := !(GlobalVar^ gv) -> void
+	{
+		ItGlobVar = gv
+		ObjType = GTypeVoidP
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "bitcast ("
+		ItGlobVar.Value.pType.PrintType(f)
+		f^ << "* "
+		ItGlobVar.Value.PrintResultObj(f,0,0)
+		f^ << " to i8*)"
+	}
+}
+
+VTableVar := class extend VTableEntry
+{
+	ItConst := BoxExeConstObj^
+	this := !(StringSpan nm, BoxExeConstObj^ cnst) -> void
+	{
+		Name = nm
+		ItConst = cnst
+	}
+	PrintType := virtual !(TIOStream^ f) -> void { ItConst.GetType().PrintType(f) }
+	PrintConst := virtual !(TIOStream^ f) -> void { ItConst.PrintUse(f)}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool {
+		if not (cmp is VTableVar)
+			return false
+		asSameType := cmp->{VTableVar^}
+		if ItConst.GetType() != asSameType.ItConst.GetType()
+			return false
+		return true
+	}
+	GetType := virtual !() -> Type^ { return ItConst.GetType() }
+	GetConst := virtual !() -> BoxExeConstObj^ { return ItConst }
+}
+VTableFunc := class extend VTableEntry
+{
+	Value := BoxFunc^
+
+	this := !(StringSpan nm, BoxFunc^ fn) -> void
+	{
+		Name = nm
+		Value = fn
+	}
+	GetType := virtual !() -> Type^
+	{
+		return Value.GetType().GetPoint()
+	}
+	PrintType := virtual !(TIOStream^ f) -> void 
+	{
+		Value.GetType().PrintType(f)
+		f^ << "*"
+	}
+	GetConst := virtual !() -> BoxExeConstObj^
+	{
+		return new ConstFuncPtr(Value)
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void 
+	{
+		Value.PrintName(f)
+	}
+	IsEq := virtual !(VTableEntry^ cmp) -> bool 
+	{
+		if Name != cmp.Name
+			return false
+		if cmp is VTableFunc
+		{
+			f1 := Value.GetType()->{TypeFunc^}
+			f2 := cmp->{VTableFunc^}.Value.GetType()->{TypeFunc^}
+
+			if f1.Params.Size() != f2.Params.Size()
+				return false
+			for i : f1.Params.Size()
+			{
+				if i == 0
+					continue
+				if f1.Params[i].ItType != f2.Params[i].ItType
+					return false
+				if f1.Params[i].IsRef != f2.Params[i].IsRef
+					return false
+			}
+
+			return true
+		}
+		return false
+	}
+}
+
+//BoxVirtualFunc := class extend BoxFuncCommon //todo remove in more fitting way
+//{
+//	ItClass := BoxClass^
+//	Index := int
+//	this := !(TypeFunc^ fType, BoxClass^ cls,int funcIndex) -> void
+//	{
+//		SetType(fType)
+//		ItClass = cls
+//		Index = funcIndex
+//	}
+//	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+//	{
+//		fType := ObjType->{TypeFunc^}
+//
+//		for i : fType.Params.Size()
+//		{
+//			if fType.Params[i].IsRef
+//			{
+//				lst[i].PrintPointPre(f)
+//			}else{
+//				lst[i].PrintPre(f)
+//			}
+//		}
+//
+//		f^ << "%VcPtr" << resId << " = getelementptr "
+//		ItClass.ItType.PrintType(f)
+//		f^ << " , "
+//		ItClass.ItType.PrintType(f)
+//		f^ << "* "
+//		lst[0].PrintPointUse(f)
+//		f^ << " , i32 0, i32 0"
+//		if DebugMode
+//			f^ << ", !dbg !" << GDebugLineCallId
+//		f^ << "\n"
+//		f^ << "%VPtr" << resId << " = load "
+//		ItClass.VTableType.ItType.PrintType(f)
+//		f^ << "* , "
+//		ItClass.VTableType.ItType.PrintType(f)
+//		f^ << "** %VcPtr" << resId
+//		if DebugMode
+//			f^ << ", !dbg !" << GDebugLineCallId
+//		f^ << "\n"
+//
+//
+//		if fType.ResultType != GTypeVoid
+//			f^ << "%T" << resId << " = "
+//		f^ << "call %VPtr
+//		//tFunc := GetType()->{TypeFunc^}
+//		//tp := tFunc.Params[0].ItType
+//
+//		//f^ << "%T" << resId << " = " << llvm << " " 
+//		//tp.PrintType(f)
+//		//f^ << " "
+//		//lst[0].PrintUse(f)
+//		//f^ << ","
+//		//lst[1].PrintUse(f)
+//		//if DebugMode
+//		//	f^ << " , !dbg !" << GDebugLineCallId
+//		//f^ << "\n"
+//	}
+//}

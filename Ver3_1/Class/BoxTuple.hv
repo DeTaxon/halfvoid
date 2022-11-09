@@ -1,0 +1,107 @@
+
+tplDatabase := AVLMap.{Type^,BoxClassTuple^}
+GetTuple := !(List.{Type^} types) -> BoxClass^
+{
+	typesArr := Type^[200] //todo  to Array
+	typesArr[i] = types[^i]
+	hck := GetFuncType(types.Size(),typesArr[0]&,null,GTypeVoid,false,false)
+	if tplDatabase.Contain(hck)
+		return tplDatabase[hck]
+	newClass := new BoxClassTuple(types)
+	tplDatabase[hck] = newClass
+	AllClasses.Push(newClass)
+	return newClass
+}
+
+
+BoxClassTuple := class extend BoxClass
+{
+	mthHatch := THatch
+	this := !(List.{Type^} types) -> void
+	{
+		ItName = "anon" //todo
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+
+		for it,i : types //todo remove i
+		{
+			Fields.Push(new FieldParam(StringSpan(""),types[i]))
+		}
+		InheritStep()
+
+		SubWork(() ==> {
+			InternalsHatch.Await()
+			cnsts := List.{BoxExeConstObj^}
+			setFunc := GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
+
+			typs := Type^[100]
+			isRef := bool[100]
+
+			typs[0] = ItType
+			isRef[0] = true
+
+			for it,i : Fields
+			{
+				t := it.Value
+				typs[i + 1]	= t
+				if t is in TypeClass or t is in TypeArr
+					isRef[i + 1] = true
+			}
+			fType := GetFuncType(Fields.Size() + 1,typs[0]&,isRef[0]&,GTypeVoid,false,false)
+			cnstrFunc := TemplateInternalTupleConstructor.CreateFunc(fType,cnsts)
+			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
+
+			
+			cmpFunc := GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
+
+			mthHatch.Emit()
+		})
+	}
+	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		mthHatch.Await()
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,StringSpan(""),objs)
+
+		if objs.Size() != 0
+			cb(objs)
+	}
+	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{
+		mthHatch.Await()
+		assert(fieldPtr != null)
+	}
+}
+
+
+BoxClassTupleTemplate := class extend BoxClassTemplate
+{
+	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	{
+		lst := List.{Type^}
+
+		for it : inpts
+		{
+			if it is ConstType
+			{
+				lst.Push(it->{ConstType^}.Value)
+			}else{
+				return null
+			}
+		}
+		res := GetTuple(lst)
+		lst.Destroy()
+		return res
+	}
+}
+
+TupleInit := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+	nm := StringSpan("Tuple")
+	bSpace.Globals[nm].Push(new TemplateTypeVar(nm,new BoxClassTupleTemplate) )
+}

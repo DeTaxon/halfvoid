@@ -42,6 +42,10 @@ StringView := class extend TGCObject
 			return newSpan <=> toCmp
 		}
 	}
+	"[]" := virtual !(Range x) -> StringSpan
+	{
+		assert(false)
+	}
 
 }
 "<=>" := !(StringView^ a,char^ b) -> int

@@ -1,0 +1,33 @@
+
+GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+{
+	lst := HybridQueue.{BoxUnit^,10}
+	defer lst.Destroy()
+	for spc : CodeSpaces.Reverse
+	{
+		lst.Clear()
+		if spc.Globals.Contain(name)
+		{
+			lst.Push(spc.Globals[name][^])
+		}
+		if spc.Functions.Contain(name)
+		{
+			lst.Push(spc.Functions[name][^])
+		}
+		if spc.Templates.Contain(name)
+		{
+			lst.Push(spc.Templates[name][^])
+		}
+		for cl : spc.Modules
+		{
+			fnc := cl.GetItem(name)
+			if fnc != null
+				lst.Push(fnc)
+		}
+		if lst.Size() != 0
+		{
+			if cb(lst)
+				return void
+		}
+	}
+}

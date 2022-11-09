@@ -1,16 +1,15 @@
 
-main := !(char^[] args) -> int
+Hm := !() -> StringSpan
 {
-	for j : 3
-	{
-		TSpawnTask(() ==> {
-			for i : 4
-			{
-				printf("hi %i %f\n",i,GetSteadyTime())
-				TSleep(1)
-			}
-		})
-	}
+	return StringSpan("hoh")
+}
+
+// main := !(char^[] args) -> int
+main := !(int argc,char^^ args) -> int
+{
+	tst := new String("Test")
+
+	c1 := Hm()
 	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec

@@ -1,0 +1,23 @@
+FieldSpace := class
+{
+	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
+
+	GetMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
+	{
+		if Methods.Contain(name)
+		{
+			for fnc : Methods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
+		if MethodTemplates.Contain(name)
+		{
+			for fncTmpl : MethodTemplates[name]
+			{
+				objs.Push(fncTmpl)
+			}
+		}
+	}
+}

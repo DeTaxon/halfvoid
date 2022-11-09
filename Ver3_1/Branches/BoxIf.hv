@@ -1,0 +1,185 @@
+TryParseIf := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null or itm.Down.GetValue() != "if"
+		return null
+
+	qc := new QCatch
+	stackSize := UnitStack.Size()
+	UnitStack.PushFront(qc)
+
+	cmpExe := TryGetExeCall(itm.Down.Right)
+
+	while stackSize < UnitStack.Size()
+		UnitStack.Pop()
+
+	if cmpExe == null
+		itm.EmitError("Could not get if statement")
+
+	if cmpExe.GetType() != GTypeBool
+	{
+		cmpExe = GetExchange(cmpExe,GTypeBool)
+		if cmpExe == null
+			itm.EmitError("If statement is not boolean")
+	}
+
+
+	tryToken := MakeItBlock(itm.Down.Right.Right)
+	flsToken := Token^
+	
+	flsToken = MakeItBlock(tryToken.Right?.Right)
+
+	if cmpExe is BoxExeBool
+	{
+		if cmpExe == GBoolTrue
+		{
+			return new BoxBlock(tryToken)
+		}else{
+			if flsToken == null
+			{
+				fakeBlock := TokenSymbol(StringSpan("{}"),0)
+				fakeBlock.Line = itm.Line
+				return new BoxBlock(fakeBlock&)
+			}else{
+				return new BoxBlock(flsToken)
+			}
+		}
+	}
+
+	tru := BoxBlock^
+	fls := BoxBlock^
+
+	tru = new BoxBlock(tryToken)
+	tru.Work()
+
+	if flsToken != null
+	{
+		fls = new BoxBlock(flsToken)
+		fls.Work()
+	}
+
+	if fls == null
+		return new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru,qc)
+	return new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
+}
+
+MakeItBlock := !(Token^ itm) -> Token^
+{
+	if itm == null
+		return null
+	if itm.GetValue() != "{}"
+	{
+		return UNext(itm,new TokenSymbol(StringSpan("{}"),0),1)
+	}
+	return itm
+}
+
+BoxIfTrueOnly := class extend BoxExeObj
+{
+	Val := BoxExeObj^
+	OnTrue := BoxBlock^
+	TrueWorked := BoxLabel^
+	TrueEndLabel := BoxLabel^
+	IfLine := BoxExeLineSimple^
+
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue, QCatch^ qc) -> void
+	{
+		ObjType = GTypeVoid
+		Val = val
+		OnTrue = onTrue
+		TrueWorked = new BoxLabel()
+		IfLine = new BoxExeLineSimple(ifToken,val)
+
+		if qc != null 
+		{
+			TrueEndLabel = qc.ItLabel
+		}
+		if TrueEndLabel == null
+			TrueEndLabel = new BoxLabel()
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = IfLine.MetaId
+
+		Val.PrintPre(f)
+
+		f^ << "br i1 "
+		Val.PrintUse(f)
+		f^ << ", label "
+		TrueWorked.PrintLabel(f)
+		f^ << ", label "
+		TrueEndLabel.PrintLabel(f)
+		f^ << "\n"
+
+		TrueWorked.PrintCode(f)
+
+		OnTrue.PrintCode(f)
+		TrueEndLabel.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		IfLine.PrintDebugMeta(f)
+		OnTrue?.PrintDebugMeta(f)
+	}
+}
+BoxIfFull := class extend BoxExeObj
+{
+	Val := BoxExeObj^
+	OnTrue := BoxBlock^
+	OnFalse := BoxBlock^
+	TruePath := BoxLabel
+	FalsePath := BoxLabel^
+	EndPath := BoxLabel
+	IfLine := BoxExeLineSimple^
+
+	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse,QCatch^ qc) -> void
+	{
+		ObjType = GTypeVoid
+		Val = val
+		OnTrue = onTrue
+		OnFalse = onFalse
+		TruePath."this"()
+		EndPath."this"()
+		IfLine = new BoxExeLineSimple(ifToken,val)
+
+		if qc != null 
+		{
+			FalsePath = qc.ItLabel
+		}
+		if FalsePath == null
+			FalsePath = new BoxLabel()
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = IfLine.MetaId
+
+		Val.PrintPre(f)
+
+		f^ << "br i1 "
+		Val.PrintUse(f)
+		f^ << ", label "
+		TruePath.PrintLabel(f)
+		f^ << ", label "
+		FalsePath.PrintLabel(f)
+		f^ << "\n"
+
+		TruePath.PrintCode(f)
+		OnTrue.PrintCode(f)
+		EndPath.PrintGo(f)
+
+		FalsePath.PrintCode(f)
+		OnFalse.PrintCode(f)
+		EndPath.PrintGo(f)
+		
+		EndPath.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		IfLine.PrintDebugMeta(f)
+		OnTrue.PrintDebugMeta(f)
+		OnFalse.PrintDebugMeta(f)
+	}
+}

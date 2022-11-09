@@ -1,0 +1,252 @@
+BoxBlock := class extend BoxExeObj
+{
+	MetaId := int
+	GCInUseBefore := int
+	ItLine := FileLine^
+	exeLines := List.{BoxUnit^} //todo : to hybrid
+	
+	simpleVars := List.{BoxFunc^}
+	gcVars := List.{BoxFunc^}
+
+	returnLabel := BoxLabel^
+	quitLabel := BoxLabel^
+
+	down := Token^
+	infoToken := Token^
+	lambdaWay := !()&->BoxUnit^
+
+	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
+	{
+		assert(isRef == false)
+
+		if IsGCPtr(varType)
+		{
+			gcIndex := GCVarsInUse
+			GCVarsInUse += 1
+
+			assert(CurrentFunc is in BoxFuncBody)
+			CurrentFunc->{BoxFuncBody^}.NotifyGCUsed()
+
+			newVar := new FuncGCLocalParam(varType,gcIndex)
+			gcVars.PushFront(newVar)
+			CurrentFunc->{BoxFuncBody^}.gcVars.Push(newVar)
+			return newVar
+		}
+
+		newVar2 := new FuncLocalParam(varType)
+		simpleVars.PushFront(newVar2)
+		CurrentFunc.regularVars.Push(newVar2)
+
+		return newVar2
+	}
+
+	this := !(Token^ bdy) -> void
+	{
+		ObjType = GTypeVoid
+		down = bdy
+		infoToken = bdy
+		ItLine = bdy.Line
+		if DebugMode
+			MetaId = GetNewId()
+		innerWork()
+	}
+	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
+	{
+		ObjType = GTypeVoid
+		lambdaWay = l
+		infoToken = tokenLine
+		ItLine = tokenLine.Line
+		if DebugMode
+			MetaId = GetNewId()
+		innerWork()
+	}
+	innerWork := virtual !() -> void
+	{
+		SyntaxCompress(down,PriorityData)
+
+		stackAtStart := UnitStack.Size()
+		UnitStack.PushFront(this&)
+
+		GCInUseBefore = GCVarsInUse
+		defer GCVarsInUse = GCInUseBefore
+
+
+		iter := Token^
+		if down != null
+			iter = down.Down
+		if lambdaWay->{void^} != null
+		{
+			obj := lambdaWay()
+			assert(obj != null)
+			if obj != null
+				exeLines.Push(obj)
+		}
+		while iter != null
+		{
+			if iter.GetValue() == "{}"
+			{
+				subBlock := new BoxBlock(iter)
+				exeLines.Push(subBlock)
+				iter = iter.Right
+				continue
+			}
+			// if iter.Down?.GetValue() == "while"
+			// {
+			// 	whileObj := TryParseWhile(iter)
+			// 	if whileObj != null
+			// 	{
+			// 		exeLines.Push(whileObj)
+			// 		iter = iter.Right
+			// 		continue
+			// 	}
+			// }
+			// if iter.Down?.GetValue() == "for"
+			// {
+			// 	forObj := GetForCycle(iter)
+			// 	assert(forObj != null)
+			// 	if forObj != null
+			// 	{
+			// 		exeLines.Push(forObj)
+			// 		iter = iter.Right
+			// 		continue
+			// 	}
+			// }
+
+			vr := TryParseVar(iter)
+
+			if vr != null
+			{
+				pad := new BoxExeLineSimple(iter,vr)
+
+				exeLines.Push(pad)
+				UnitStack.PushFront(vr)
+			}else{
+				pad := TryGetUnitCall(iter)
+				//pad := new BoxExeLine()
+				//pad.DoLine(iter)
+				exeLines.Push(pad)
+			}
+			
+		
+			iter = iter.Right
+		}
+
+		for it : gcVars
+		{
+			tp := it.GetType()->{TypeFunc^}.ResultType
+			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
+			{
+				dat := CheckExeDownList
+				defer dat.Destroy() //todo remove
+				cl := it.CreateCall()
+				dat.Push(cl)
+				cl2 := GFuncGCSetNull.CreateCall(dat)
+
+				pad := new BoxExeLineSimple(infoToken,cl2)
+				exeLines.Push(pad)
+			}
+		}
+
+		while UnitStack.Size() > stackAtStart
+		{
+			UnitStack.Pop()
+		}
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		if exeLines.Size() == 0
+			return void
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+
+		simpleVars[^].PrintCode(f)
+		gcVars[^].PrintCode(f)
+
+		exeLines[^].PrintCode(f)
+
+		quitLabel?.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		if exeLines.Size() == 0
+			return void
+		f^ << "!" << MetaId << " = !DILexicalBlock(scope: !" 
+		f^ << GDebugScopeId << ", file: !" << GDebugFileId
+		if ItLine != null
+		{
+			f^ << ", line: " << ItLine.Line
+		}
+		f^ << ")\n"
+
+		oldVal := GDebugScopeId
+		GDebugScopeId = MetaId
+		defer GDebugScopeId = oldVal
+		
+		simpleVars[^].PrintDebugMeta(f)
+		gcVars[^].PrintDebugMeta(f)
+		exeLines[^].PrintDebugMeta(f)
+	}
+	GetQuitLabel := !() -> BoxLabel^
+	{
+		if quitLabel == null
+			quitLabel = new BoxLabel()
+		return quitLabel
+	}
+	CreateGCClear := !() -> BoxExeObj^
+	{
+		if GCVarsInUse == GCInUseBefore
+			return null
+
+		assert(CurrentFunc.gcArrayPtr != null)
+
+		objs := CheckExeDownList
+		objs.Push(CurrentFunc.gcArrayPtr.CreateCall())
+		objs.Push(GetExeInt(GCInUseBefore))
+		objs.Push(GetExeInt(GCVarsInUse - 1))
+		return GFuncGCSetNullArray.CreateCall(objs)
+	}
+}
+
+BoxBlockContinue := class extend BoxBlock
+{
+	this := !(Token^ itm) -> void
+	{
+		this."BoxBlock.this"(itm)
+	}
+	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
+	{
+		this."BoxBlock.this"(tokenLine,l)
+	}
+}
+
+BoxBlockBreak := class extend BoxBlock
+{
+	this := !(Token^ itm) -> void
+	{
+		this."BoxBlock.this"(itm)
+	}
+	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
+	{
+		this."BoxBlock.this"(tokenLine,l)
+	}
+}
+
+CreateVar := !(Type^ typ, bool isRef) -> ParamFunc^
+{
+	assert(isRef == false)
+
+	for it : UnitStack
+	{
+		if it is in BoxBlock
+		{
+			return it->{BoxBlock^}.CreateVar(typ,isRef)
+		}
+	}
+	assert(false)
+}

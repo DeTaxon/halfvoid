@@ -6,6 +6,7 @@ TSleep := !(double val) -> void
 {
 	endTime := GetSteadyTime() + val
 	TaskCheckMutex.Lock()
+	TaskLoopWorkCounter += 1
 	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
 	if someoneOnLoop
 		TaskSleepConVar.Notify()

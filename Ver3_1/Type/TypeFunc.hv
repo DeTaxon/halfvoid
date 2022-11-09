@@ -1,0 +1,208 @@
+
+TypeFuncParam := class
+{
+	ItType := Type^
+	IsRef := bool
+
+	this := !(Type^ iTyp, bool iRef) -> void
+	{
+		ItType = iTyp
+		IsRef = iRef
+	}
+}
+
+TypeFunc := class extend Type
+{
+	Params := HybridQueue.{TypeFuncParam,8}
+	ResultType := Type^
+	ResultRef := bool
+	IsVargs := bool
+
+	this := !() -> void
+	{
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		
+		if ResultType == null
+			return void
+		for par : Params
+		{
+			if par.ItType == null return void
+		}
+
+		f^ << "!" << MetaId << " = !DISubroutineType(types: !{"
+		if ResultType == GTypeVoid
+		{
+			f^ << "null"
+		}else{
+			f^ << "!" << ResultType.MetaId
+		}
+		for par : Params
+		{
+			f^ << ",!" 
+			if par.IsRef
+			{
+				asP := par.ItType.GetPoint()
+				f^ << asP.MetaId
+
+			}else{
+				f^ << par.ItType.MetaId
+			}
+		}
+		
+		f^ << "})\n"
+	}
+
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		ResultType.PrintType(f)
+		if ResultRef
+			f^ << "*"
+
+		f^ << "("
+		
+		needComma := false
+
+		for par : Params
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			par.ItType.PrintType(f)
+			if par.IsRef or par.ItType is in TypeClass
+				f^ << "*"
+		}
+
+		if IsVargs
+		{
+			if needComma
+				f^ << ","
+			f^ << "..."
+		}
+
+		f^ << ")"
+	}
+}
+
+funcTypes := List.{TypeFunc^}[1024]
+
+
+GetFuncType := !(Type^ res) -> TypeFunc^
+{
+	return GetFuncType(0,null,null,res,false,false)
+}
+GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
+{
+	return GetFuncType(S,args[0]&,null,res,false,false)
+}
+GetFuncType := !(Type^[@S] args,bool[@S2] isRefs,Type^ res) -> TypeFunc^
+{
+	return GetFuncType(S,args[0]&,isRefs[0]&,res,false,false)
+}
+
+GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
+{
+	hsh := u32
+
+	for i : count
+	{
+		hsh *= 2
+		hsh += args[i].ItHash
+	}
+
+	itList := funcTypes[hsh % 1024]&
+
+	for fnc : itList^
+	{
+		if fnc == null
+		{
+			printf("hm %i %i\n",hsh,hsh % 1024)
+		}
+		if count != fnc.Params.Size()
+			continue
+		if fnc.IsVargs != isVargs
+			continue
+		if fnc.ResultType != res
+			continue
+		if fnc.ResultRef != resRef
+			continue
+
+		same := true
+		for j : count
+		{
+			if fnc.Params[j].ItType != args[j]
+			{
+				same = false
+				break
+			}
+			isRef := false
+			if refs != null
+				isRef = refs[j]
+			if fnc.Params[j].IsRef != isRef
+			{
+				same = false
+				break
+			}
+		}
+		if not same
+			continue
+		return fnc
+	}
+
+	newFunc := new TypeFunc()
+	itList.Push(newFunc)
+	
+	for i : count
+	{
+		isRef := false
+		if refs != null
+		{
+			isRef = refs[i]
+		}else{
+			if args[i] is in TypeClass
+				isRef = true
+			if args[i] is in TypeArr
+				isRef = true
+		}
+		newFunc.Params.Emplace(args[i],isRef)
+	}
+	newFunc.IsVargs = isVargs
+	newFunc.ResultType = res
+	newFunc.ResultRef = resRef
+
+	return newFunc
+}
+
+FuncTypeSetResult := !(TypeFunc^ oldType,Type^ newResult,bool isRefResult) -> TypeFunc^
+{
+	Typs := Type^[100]
+	isRef := bool[100]
+
+	for i : oldType.Params.Size()
+	{
+		Typs[i] = oldType.Params[i].ItType
+		isRef[i] = oldType.Params[i].IsRef
+	}
+	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,newResult,isRefResult,oldType.IsVargs)
+}
+FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefParam) -> TypeFunc^
+{
+	Typs := Type^[100]
+	isRef := bool[100]
+
+	for i : oldType.Params.Size()
+	{
+		Typs[i] = oldType.Params[i].ItType
+		isRef[i] = oldType.Params[i].IsRef
+	}
+	Typs[index] = newParamType
+	isRef[index] = isRefParam
+	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+}

@@ -1,0 +1,90 @@
+ClassConstValue := class extend BoxExeConstObj
+{
+	ItType := Type^
+	Value := List.{BoxExeConstObj^}
+
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "{"
+		for it,i : Value
+		{
+			if i > 0
+				f^ << ","
+			typ := it.GetType()
+			assert(typ != null)
+			typ2 := NormalizeType(typ)
+
+			typ2.PrintType(f)
+			f^ << " "
+			it.PrintConst(f)
+		}
+		f^ << "}"
+	}
+}
+
+ClassArray := class extend BoxExeConstObj
+{
+	Value := List.{BoxExeConstObj^}
+
+	this := !(Type^ tp) -> void
+	{
+		ObjType = tp
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		typ2 := NormalizeType(ObjType.Base)
+
+		f^ << "["
+		for it,i : Value
+		{
+			if i > 0
+				f^ << ","
+
+			typ2.PrintType(f)
+			f^ << " "
+			it.PrintConst(f)
+		}
+		f^ << "]"
+	}
+}
+
+ConstFuncPtr := class extend BoxExeConstObj
+{
+	Func := BoxFunc^
+	this := !(BoxFunc^ fnc) -> void
+	{
+		ObjType = fnc.GetType().GetPoint()
+		Func = fnc
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		Func.PrintName(f)
+	}
+}
+
+ClassVTablePtrConst := class extend BoxExeConstObj
+{
+
+	itClass := BoxClass^
+	this := !(BoxClassBody^ cls) -> void
+	{
+		itClass = cls
+		ObjType = cls.VTableType.ItType.GetPoint()
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		itClass.VTableValue.Value.PrintResultObj(f,0,0)
+	}
+}
+
+ZeroClassConst := class extend BoxExeConstObj
+{
+	this := !(Type^ tp) -> void
+	{
+		ObjType = tp
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "zeroinitializer"
+	}
+}

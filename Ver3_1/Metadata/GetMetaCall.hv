@@ -1,0 +1,231 @@
+TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
+{
+	if obj.Down?.Right?.GetValue() == "is"
+	{
+		return TryGetTypeCheck(obj)
+	}
+	if obj.Down?.Right?.GetValue() == "->" //todo add to compiler comething thats make it simple
+	{
+	}else{
+		return null
+	}
+	r := obj.Down.Right.Right
+	if r is TokenIndent
+		return TryMetaIndent(obj)
+	if r.GetValue() == "{}"
+	{
+		SyntaxCompress(r,PriorityData)
+		toType := ParseType(r.Down)
+		if toType == null
+			r.EmitError("Can not cast to unknown type")
+		lObj := TryGetExeCall(obj.Down)
+		if lObj == null
+			r.EmitError("Unknown object to case")
+		return GetExchange(lObj,toType)
+
+	}
+	return null
+
+}
+TryMetaIndent := !(Token^ obj) -> BoxExeObj^
+{	
+	right := obj.Down.Right.Right->{TokenIndent^}
+
+	if right.Value == "TypeGroup"
+	{
+		typ := ParseType(obj.Down)
+		if typ == null
+		{
+			dwnObj := TryGetExeCall(obj.Down)
+			if dwnObj != null
+				typ = dwnObj.GetType()
+			if typ == null
+				obj.Down.EmitError("Object for TypeGroup must have a type")
+		}
+		if typ is TypeClass
+			return GetExeString(StringSpan("Class"))
+		if typ is TypeStandard
+			return GetExeString(StringSpan("Prime"))
+		if typ is in TypePoint
+			return GetExeString(StringSpan("Pointer"))
+		if typ is in TypeFunc
+			return GetExeString(StringSpan("Function"))
+		if typ is in TypeArr
+			return GetExeString(StringSpan("Array"))
+		assert(false)
+		return null
+	}
+	if right.Value == "IsGCPointer"
+	{
+		typ := ParseType(obj.Down)
+		if typ == null
+		{
+			dwnObj := TryGetExeCall(obj.Down)
+			if dwnObj != null
+				typ = dwnObj.GetType()
+			if typ == null
+				obj.Down.EmitError("Object for IsGCPointer must have a type")
+		}
+		if IsGCPtr(typ)
+			return GBoolTrue
+		return GBoolFalse
+	}
+	if right.Value == "Type"
+	{
+		dwnObj := TryGetExeCall(obj.Down)
+		if dwnObj == null
+			obj.EmitError("Can not get type")
+		return GetConstType(dwnObj.GetType())
+	}
+	if right.Value == "TypeId"
+	{
+		itType8 := ParseType(obj.Down)
+		if itType8 == null
+			obj.EmitError("Can not get type")
+		if itType8 is TypeClass
+		{
+			cls := itType8->{TypeClass^}.ToClass
+			if cls is BoxClassBody
+			{
+				cls.AwaitVTableStep()
+				return GetExeInt(cls->{BoxClassBody^}.VTableId)
+			}
+		}
+		return GetExeInt(0)
+	}
+	if right.Value == "TypeSize"
+	{
+		itType := ParseType(obj.Down)
+		if itType != null
+			return GetExeInt(itType.GetSize())
+		exeCall := TryGetExeCall(obj.Down)
+		if exeCall != null and exeCall is ConstType
+			return GetExeInt(exeCall->{ConstType^}.Value.GetSize())
+	}
+	if right.Value == "AllFields"
+	{
+		return TryGetMetaFields(obj)
+	}
+	if right.Value == "VTable"
+	{
+		typ := ParseType(obj.Down)
+		if typ != null
+		{
+			if not (typ is TypeClass)
+				assert(false) //TODO
+			cls := typ->{TypeClass^}.ToClass
+			cls.AwaitVTableStep()
+			if cls.VTable.Size() == 0
+				return GObjNone
+			fncCall := cls.VTableValue.Value.CreateCall()
+			return new UnrefFuncCall(fncCall)
+		}
+		dObj := TryGetExeCall(obj.Down)
+		if dObj != null
+		{
+			cls := dObj.GetType()
+			if cls is in TypePoint and cls.Base is TypeClass
+			{
+				dObj = GetExchange(dObj,cls.Base)
+				cls = cls.Base
+			}
+			if cls is TypeClass 
+			{
+				cls2 := cls->{TypeClass^}.ToClass
+				cls2.AwaitVTableStep()
+				if cls2.VTable.Size() != 0
+				{
+					chk := CheckExeDownList
+					defer chk.Destroy() //TODO
+					chk.Push(dObj)
+					return cls2.VTableField.CreateCall(chk)
+				}else{
+					return GObjNone
+				}
+			}else{
+				obj.EmitError("Left of ->VTable is not a class")
+			}
+		}	
+	}
+
+	if right.Value == "SetType"
+	{
+		dwnRes := TryGetExeCall(obj.Down)
+		typ := ParseType(obj.Down.Right.Right.Right.Down)
+		setCall := innerTrySetType(dwnRes,typ)
+		if setCall == null
+			obj.EmitError("Can not set type")
+		return setCall
+	}
+
+	right.EmitError("Unknown metafield")
+	
+	assert(false)
+	return null
+}
+
+innerTryGetOperMeta := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right == null return null
+
+	if itm.Down.Right.GetValue() == ">="
+	{
+		tp1 := ParseType(itm.Down)
+		tp2 := ParseType(itm.Down.Right.Right)
+
+		if tp1 == null
+		{
+			obj1 := TryGetExeCall(itm.Down)
+			if obj1? is ConstType
+			{
+				tp1 = obj1->{ConstType^}.Value
+			}else{
+				return null
+			}
+		}
+		if tp2 == null
+		{
+			obj2 := TryGetExeCall(itm.Down)
+			if obj2? is ConstType
+			{
+				tp2 = obj2->{ConstType^}.Value
+			}else{
+				return null
+			}
+		}
+		
+		if TypeFight(tp1,tp2) == tp2
+		{
+			return GBoolTrue
+		}
+		return GBoolFalse
+	}
+
+}
+
+
+
+innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
+{
+	if obj == null
+		return null
+	if toType == null
+		return null
+	itObj := obj
+	
+	if obj.GetType() is TypeClass
+		itObj = new UnrefFuncCall(itObj)
+
+	cnsts := List.{BoxExeConstObj^}
+	cnsts.Push(GetConstType(toType))
+	objs := CheckExeDownList
+	objs.Push(itObj)
+	fnc := GInternalSetType.GetFunc(objs,cnsts)
+	cnsts.Destroy()
+	assert(fnc != null)
+	if fnc == null
+		return null
+	return fnc.CreateCall(objs)
+}

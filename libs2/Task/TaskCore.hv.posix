@@ -1,0 +1,4 @@
+TaskCodePollWork := !(double waitTime) -> void
+{
+	poll(TaskPollList[0]&,TaskPollSize,(waitTime*1000)->{int})
+}

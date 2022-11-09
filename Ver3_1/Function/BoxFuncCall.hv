@@ -1,0 +1,421 @@
+globalIdIter := 0
+GetNewId := !() -> int
+{
+	globalIdIter += 1
+	return globalIdIter
+}
+
+BoxFuncCall := class extend BoxExeObj
+{
+	callObj := BoxFunc^
+	downs := ExeDownList
+	resId := int
+
+	ResultVar := ParamFunc^
+	ExtraWork := List.{BoxExeObj^}
+
+	this := !(BoxFunc^ fnc) -> void
+	{
+		callObj = fnc
+		assert(callObj != null)
+
+		if callObj is BoxFuncBody
+			callObj->{BoxFuncBody^}.ParseBody()
+
+		empty := CheckExeDownList
+		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,empty)
+	}
+	this := !(BoxFunc^ fnc, CheckExeDownList objs) -> void
+	{
+		callObj = fnc
+		assert(callObj != null)
+
+		if callObj is BoxFuncBody
+			callObj->{BoxFuncBody^}.ParseBody()
+
+		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs)
+	}
+	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, CheckExeDownList objs) -> void
+	{
+		itType := NormalizeFuncType(fType)
+
+		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+		{
+			ResultVar = CreateVar(fType.ResultType,false)
+			downs.Push(ResultVar.CreateCall())
+
+			if this& is BoxFuncCall
+			{
+				this&->SetType(BoxFuncComplexCall)
+			}else if this& is BoxFuncPointerCall {
+				this&->SetType(BoxFuncPointerComplexCall)
+			}else{
+				assert(false)
+			}
+		}
+
+		downs.Push(objs[^])
+		resId = GetNewId()
+
+		for par,i : itType.Params
+		{
+			if i >= downs.Size()
+			{
+				assert(fnc != null)
+				defToken := fnc.GetDefaultToken(i)
+				assert(defToken != null)
+
+				if defToken.GetValue() == "static"
+				{
+					assert(par.IsRef)
+					glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
+					varCall := glVar.Value.CreateCall()
+					downs.Push(varCall)
+					defToken = defToken.Right
+				}else{
+					newCall := TryGetExeCall(defToken)
+					if newCall == null
+						defToken.EmitError("Could not execute default token, called function is incorrect")
+					downs.Push(newCall)
+				}
+				
+				continue
+			}
+
+			newObj := downs[i]
+			if downs[i].GetType() != par.ItType
+			{
+				exchangeLimit := 50
+				while true
+				{
+					newObj = GetExchange(newObj,par.ItType)
+					exchangeLimit -= 1
+					if newObj == null or exchangeLimit <= 0
+					{
+						tmpl := TEchoStream
+						tmpl << "Could not exchange type from "
+						//downs[i].GetType().PrintDebugName(tmpl&)
+						tmpl << downs[i].GetType().GetBADStr()
+						tmpl << " to "
+						//par.ItType.PrintDebugName(tmpl&)
+						tmpl << par.ItType.GetBADStr()
+						printf("%s\n",tmpl.Str())
+						throw new Exception(tmpl.Str())
+					}
+					if newObj.GetType() == par.ItType
+						break
+				}
+				downs[i] = newObj
+			}
+			downs[i] = newObj
+		}
+		if downs.Size() > itType.Params.Size()
+		{
+			assert(fType.IsVargs)
+
+			for i : downs.Size()
+			{
+				if i < fType.Params.Size()
+					continue
+				tp := downs[i].GetType()
+				if IsInt(tp)
+				{
+					if IsUInt(tp)
+					{
+						downs[i] = GetExchange(downs[i],GTypeU64)
+					}else{
+						downs[i] = GetExchange(downs[i],GTypeS64)
+					}
+				}else if tp == GTypeFloat
+				{
+					downs[i] = GetExchange(downs[i],GTypeDouble)
+				}else if tp is in TypeClass
+				{
+					stTyp := GTypeChar.GetPoint()
+					while downs[i] != null and downs[i].GetType() != stTyp
+					{
+						downs[i] = GetExchange(downs[i],stTyp)
+					}
+					if downs[i] == null
+					{
+						printf("Passed class to c-variadic function, transfer function not found\n")
+						throw new Exception(0,"")
+					}
+				}
+			}
+		}
+
+		for par,i : itType.Params
+		{
+			if i >= downs.Size()
+				break
+			if par.IsRef
+			{
+				downs[i].NotifyMemUse()
+			}
+		}
+
+		if targetLinux
+		{
+			leftFloats := 8
+			leftInts := 6
+			needRework := false
+			k := 0
+			types4 := Type^[100]
+			isRefs4 := bool[100]
+
+			newDown := ExeDownList
+			preRes := ExeDownList
+
+			for it,i : fType.Params
+			{
+				if it.IsRef
+				{
+					types4[k] = it.ItType
+					isRefs4[k] = true
+					newDown.Push(downs[i])
+					k += 1
+					leftInts -= 1
+				}else if it.ItType is TypeClass
+				{
+					cls := it.ItType->{TypeClass^}.ToClass
+					if cls.Fields.Size() <= 4
+					{
+						floats := 0
+						ints := 0
+						others := 0
+
+						for fld : cls.Fields
+						{
+							if fld.Value == GTypeFloat
+							{
+								floats += 1
+							}else if IsInt(fld.Value)
+							{
+								ints += 1
+							}else{
+								others += 1
+							}
+						}
+
+						if floats <= leftFloats and ints <= leftInts and others == 0
+						{
+							needRework = true
+							leftFloats -= floats
+							leftInts -= floats
+
+							newCall := new FuncResultParam(new UnrefFuncCall(downs[i]))
+							preRes.Push(newCall)
+
+							if floats != 0 and ints == 0
+							{
+								oo := floats
+								fInd := 0
+								while oo >= 2
+								{
+									gt := newCall.CreateCall()
+									gt = GetExchange(gt,GTypeVec2f.GetPoint())
+									gt = GetElementRetrive(gt,GetExeInt(fInd))
+									newDown.Push(gt)
+									oo -= 2
+									types4[k] = GTypeVec2f
+									k += 1
+									fInd += 1
+								}
+								if oo != 0
+								{
+									gt := newCall.CreateCall()
+									gt = GetExchange(gt,GTypeFloat.GetPoint())
+									gt = GetElementRetrive(gt,GetExeInt(fInd*2))
+									newDown.Push(gt)
+									types4[k] = GTypeFloat
+									k += 1
+								}
+							}else if ints != 0 and floats == 0
+							{
+								typSize := downs[i].GetType().GetSize()
+
+								oo := typSize
+								fInd := 0
+								while oo != 0
+								{
+									if oo >= 8
+									{
+										gt := newCall.CreateCall()
+										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetElementRetrive(gt,GetExeInt(fInd))
+										gt = new UnrefFuncCall(gt)
+										gt = GetExchange(gt,GTypeU64.GetPoint())
+										gt = new PtrToRefFuncCall(gt)
+										newDown.Push(gt)
+										types4[k] = GTypeU64
+										k += 1
+										oo -= 8
+										fInd += 8
+									}else if oo >= 4 {
+										gt := newCall.CreateCall()
+										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetElementRetrive(gt,GetExeInt(fInd))
+										gt = new UnrefFuncCall(gt)
+										gt = GetExchange(gt,GTypeInt.GetPoint())
+										gt = new PtrToRefFuncCall(gt)
+										newDown.Push(gt)
+										types4[k] = GTypeInt
+										k += 1
+										oo -= 4
+										fInd += 4
+									}else {
+										assert(false)
+									}
+								}
+							}else{
+								assert(false)
+							}
+
+							newCall.PopulateCalls()
+							
+						}else{
+							types4[k] = it.ItType
+							newDown.Push(downs[i])
+							k += 1
+						}
+					}
+				}else{
+					types4[k] = it.ItType
+					newDown.Push(downs[i])
+					k += 1
+					leftInts -= 1
+				}
+			}
+			if needRework //and this& is BoxFuncPointerCall
+			{
+				assert(this& is BoxFuncPointerCall)
+
+				asPtr := this&->{BoxFuncPointerCall^}
+
+				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
+				asPtr.ItPtrFunc = GetExchange(asPtr.ItPtrFunc,newFunc.GetPoint())
+				asPtr.PreCalls.Push(preRes[^])
+				asPtr.downs.Clear()
+				asPtr.downs.Push(newDown[^])
+			}
+		}
+
+		if ResultVar != null and fType.ResultType is TypeClass
+		{
+			ModifyStackAllocatedVar(ResultVar,ExtraWork)
+		}
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+		callObj.NotifyMemUse()
+	}
+	GetType := virtual !() -> Type^
+	{
+		assert(callObj != null)
+		return callObj.GetType()->{TypeFunc^}.ResultType
+	}
+
+	IsMem := virtual !() -> bool
+	{
+		return callObj.IsMem()
+	}
+
+	PassedFuncCall := !(TIOStream^ f, int passedId)  -> void
+	{
+		callObj.PrintFuncCall(f,passedId,0,downs)
+	}
+	PassedFuncResult := !(TIOStream^ f, int passedId)  -> void
+	{
+		callObj.PrintResultObj(f,passedId,-1)
+	}
+
+	PrintFuncUse := virtual !(TIOStream^ f) -> void
+	{
+		callObj.PrintFuncCall(f,resId,0,downs)
+		ExtraWork[^].PrintDefaultUse(f)
+	}
+	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	{
+		callObj.PrintResultObj(f,resId,-1)
+	}
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncUse(f)
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncResult(f)
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			PrintUnrefObj(f,resId,this&)
+		}else{
+			PrintFuncUse(f)
+		}
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			f^ << "%TUnref" << resId
+		}else{
+			PrintFuncResult(f)
+		}
+	}
+}
+BoxFuncComplexCall := class extend BoxFuncCall
+{
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		downs[0].PrintPointUse(f)
+	}
+}
+BoxFuncPointerCall := class extend BoxFuncCall
+{
+	PreCalls := List.{BoxExeObj^}
+	ItPtrFunc := BoxExeObj^
+	this := !(BoxExeObj^ ptrVal, CheckExeDownList objs) -> void
+	{
+		ItPtrFunc = ptrVal
+		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},null,objs)
+	}
+	GetType := virtual !() -> Type^
+	{
+		ft := ItPtrFunc.GetType().Base->{TypeFunc^}
+		return ft.ResultType
+	}
+	PrintFuncUse := virtual !(TIOStream^ f) -> void
+	{
+		PreCalls[^].PrintDefaultUse(f)
+		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)
+	}
+	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	{
+		PrintFuncCallResultCommon(f,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+	}
+	IsMem := virtual !() -> bool
+	{
+		return ItPtrFunc.GetType().Base->{TypeFunc^}.ResultRef
+	}
+}
+BoxFuncPointerComplexCall := class extend BoxFuncPointerCall
+{
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		downs[0].PrintPointUse(f)
+	}
+}

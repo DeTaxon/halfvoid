@@ -1,11 +1,18 @@
 
-//TFSReadFolder := !(StringSpan p,bool recur,!(vRepoFile^)& -> void callb) -> void
-//{
-//	gRepo.ReadFolder(p,recur,callb)
-//}
+FSReadFolder := !(StringSpan p,bool recur,!(vRepoFile^)& -> void callb) -> void
+{
+	createFSObject()
+	gRepoObject.ReadFolder(p,recur,callb)
+}
 
 gRepoObject := vRepo^
 FSGetFile := !(StringView inp) -> vRepoFile^
+{
+	createFSObject()
+	return gRepoObject.GetFile(inp)
+}
+
+createFSObject := !() -> void
 {
 	if gRepoObject == null
 	{
@@ -14,5 +21,4 @@ FSGetFile := !(StringView inp) -> vRepoFile^
 		gRepoObject = new vRepo
 		gRepoObject.Init(".")
 	}
-	return gRepoObject.GetFile(inp)
 }

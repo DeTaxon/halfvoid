@@ -4,7 +4,7 @@ vRepoObject := class
 	objName := String^
 	upFolder := vRepoFolder^
 
-	//GetName := !() -> StringSpan { result = objName }
+	GetName := !() -> String^ { return objName }
 	
 	//GetUpFolder := !() -> vRepoFolder^ { return upFolder }
 
