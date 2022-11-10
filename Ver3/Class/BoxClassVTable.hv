@@ -101,7 +101,7 @@ AppendClass BoxClass
 			vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
 			cnsts.Destroy()
 			vFunc.SetName(fncName)
-			DefaultSpace.Methods[fncName].Push(vFunc)
+			DefaultSpace.VirtualMethods[fncName].Push(vFunc)
 			fnc.ParseBody()
 		}
 	}

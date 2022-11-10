@@ -2,7 +2,7 @@
 
 class1 := class
 {
-	Test := !() -> void
+	Test := virtual !() -> void
 	{
 		printf("a\n")
 	}
@@ -10,7 +10,7 @@ class1 := class
 
 class2 := class extend class1
 {
-	Test := !() -> void
+	Test := virtual !() -> void
 	{
 		this."class1.Test"()
 		printf("b\n")

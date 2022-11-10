@@ -234,6 +234,13 @@ BoxClass := class extend BoxUnit
 				objs.Push(fnc)
 			}
 		}
+		if itSpace.VirtualMethods.Contain(name)
+		{
+			for fnc : itSpace.VirtualMethods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
 		if itSpace.MethodTemplates.Contain(name)
 		{
 			for fncTmpl : itSpace.MethodTemplates[name]
@@ -256,6 +263,13 @@ BoxClass := class extend BoxUnit
 					for fnc2 : itSpace.Methods[funcName]
 					{
 						objs.Push(fnc2)
+					}
+				}
+				if PreVTableFuncs.Contain(funcName)
+				{
+					for fnc3 : PreVTableFuncs
+					{
+						objs.Push(fnc3)
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 FieldSpace := class
 {
 	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	VirtualMethods := AVLMap.{StringSpan,List.{BoxFunc^}}
 	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
 
 	GetMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
