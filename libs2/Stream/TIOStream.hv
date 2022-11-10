@@ -14,12 +14,12 @@ Stream := class extend TGCObject
 
 
 
-	"<<" := !(char^ strData) -> Stream&
+	"<<" := !(char^ strData) -> ref Stream
 	{
 		Write(strData,strlen(strData))
 		return this
 	}
-	"<<" := !(String^ strData) -> Stream&
+	"<<" := !(String^ strData) -> ref Stream
 	{
 		Write(strData.Str(),strData.Size())
 		return this

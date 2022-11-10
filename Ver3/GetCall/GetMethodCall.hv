@@ -40,12 +40,22 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		CheckFuncCallConsts(constsToken,consts)
 	}
 
+	gotName := false
+	methodName := StringSpan
+
 	if itm.Down.Right.Right is TokenIndent
 	{
+		gotName = true
+		methodName = itm.Down.Right.Right->{TokenIndent^}.Value
+	}else if itm.Down.Right.Right is TokenString
+	{
+		gotName = true
+		methodName = itm.Down.Right.Right->{TokenString^}.Value
+	}
 
-		mNameT := itm.Down.Right.Right->{TokenIndent^}
-
-		fnc := innerTryGetMethodCall(mNameT.Value,vr,Objs,consts)
+	if gotName
+	{
+		fnc := innerTryGetMethodCall(methodName,vr,Objs,consts)
 		if fnc != null
 			return fnc
 	}

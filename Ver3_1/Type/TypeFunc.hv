@@ -118,7 +118,7 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 		hsh += args[i].ItHash
 	}
 
-	itList := funcTypes[hsh % 1024]&
+	itList := funcTypes[hsh mod 1024]&
 
 	for fnc : itList^
 	{

@@ -91,7 +91,7 @@ TypeDef := class
 hashIdIter := int
 TypeStandard := class extend Type
 {
-	IRName := string
+	IRName := char^
 	ItGoodName := char^
 	MetaInfo := char^
 	ItSize  := int
