@@ -14,6 +14,7 @@ BoxFile := class extend BoxUnit
 {
 	fileId := int
 	file := vRepoFile^
+	fileMapView := FileView^
 	fileMap := void^
 	fileSize := int
 	fileName := StringSpan
@@ -28,8 +29,9 @@ BoxFile := class extend BoxUnit
 	{
 		fileId = GetNewId()
 		file = inFile
-		fileMap = file.Map()
-		fileSize = file.Size()
+		fileMapView = file.GetMap()
+		fileMap = fileMapView.Get()
+		fileSize = fileMapView.Size()
 	}
 	GetName := !() -> StringSpan
 	{

@@ -9,6 +9,7 @@ TypeFuncParam := class
 		ItType = iTyp
 		IsRef = iRef
 	}
+	"=" := default
 }
 
 TypeFunc := class extend Type

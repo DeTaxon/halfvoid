@@ -88,15 +88,14 @@ main := !(int argc, char^^ argv) -> int
 				if StringSpan(argv[i][0..2]) == "-C"
 				{
 					num := StrToInt(argv[i][2..0]) //TODO: check for num and memory
-					TFSReadFolder(StringSpan(argv[i+1]),true,zFil ==> {
+					FSReadFolder(StringSpan(argv[i+1]),true,zFil ==> {
 						nm := zFil.GetName()
-						nmEnd := StringEnd(nm)
-						if nm[-3..0] == ".hv" or nmEnd == osHVFile
+						if nm^[-3..0] == StringSpan(".hv") or nm.End == StringSpan(osHVFile)
 						{
 							fObj := new BoxFile(zFil)
 							CodeFiles.Push(fObj)
 							CodeSpaces[num].Files.Push(fObj)
-						}else if nm[-5..0] == ".clib" or nmEnd == osCLIBFile
+						}else if nm^[-5..0] == StringSpan(".clib") or nm.End == StringSpan(osCLIBFile)
 						{
 							spc := CodeSpaces[num]&
 							spc.Modules.Push(new CLib(zFil))

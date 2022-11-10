@@ -27,6 +27,7 @@ FuncTemplateConstant := class
 		ItToken = tok
 		Value = val
 	}
+	"=" := default
 }
 
 FunctionHeaderInfo := class

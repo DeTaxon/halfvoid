@@ -33,6 +33,10 @@ LexMachineInfo := class
 		RawLine = rLine
 		uniqPos = -1
 	}
+	"=" := !(LexMachineInfo x) -> void
+	{
+		
+	}
 }
 PriorityBagOld := class
 {

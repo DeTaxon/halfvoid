@@ -31,6 +31,15 @@ Token := class
 		{
 			ln << " at file " << Line.File.GetName() << " line: " <<Line.Line
 		}
+		ln <<"\n"
+		for it : UnitStack
+		{
+			if it is TypeVar
+			{
+				cv := it->{TypeVar^}
+				ln << "var " << cv.Name << " = " << cv.Value.GetBADStr() << "\n"
+			}
+		}
 		throw new Exception(ln.Str()) //todo memory
 		//printf("%s\n",ln.Str())
 		//exit(1)

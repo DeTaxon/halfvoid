@@ -1,15 +1,9 @@
 
-Hm := !() -> StringSpan
-{
-	return StringSpan("hoh")
-}
 
 // main := !(char^[] args) -> int
 main := !(int argc,char^^ args) -> int
 {
-	tst := new String("Test")
-
-	c1 := Hm()
+	test := List.{Tuple.{int,int}}
 	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec

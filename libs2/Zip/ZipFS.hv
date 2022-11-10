@@ -237,7 +237,7 @@ vRepo := class extend TGCObject
 	}
 	getObject := !(StringView fileName,vRepoFolder^ rrF) -> vRepoObject^
 	{
-		stObj := fileName.Normalize()
+		stObj := fileName.GetString()
 		tmpVar := StringSpan(stObj.Str())
 
 		itms := List.{StringSpan}
