@@ -17,7 +17,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 		return StaticSize + ListArray.Size()
 	}
 
-    Push := !(@T itm) -> void
+    Push := !(T itm) -> void
     {
         if StaticSize < HSize
         {

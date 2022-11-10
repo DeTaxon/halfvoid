@@ -1,27 +1,10 @@
 
 
-class1 := class
-{
-	Test := virtual !() -> void
-	{
-		printf("a\n")
-	}
-}
-
-class2 := class extend class1
-{
-	Test := virtual !() -> void
-	{
-		this."class1.Test"()
-		printf("b\n")
-	}
-}
-
 // main := !(char^[] args) -> int
 main := !(int argc,char^^ args) -> int
 {
-	tst := class2
-	tst.Test()
+	tst := HybridQueue.{int,25}
+	tst.Push(13)
 	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec

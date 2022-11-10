@@ -37,6 +37,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			ths.ParseHeader()
 			ths.headerCheckHatch.Emit()
 		})
+		ParentScope = CurrentScope
 	}
 	GetDefaultValuesCount := virtual !() -> int 
 	{

@@ -74,7 +74,10 @@ BoxClassBody := class extend BoxClass
 	}
 	PutItConstants := virtual !() -> void
 	{
-		UnitStack.PushFront(NamedConstantsVars[^])
+		for it : NamedConstantsVars
+		{
+			UnitStack.PushFront(it)
+		}
 	}
 
 	ParentScope := BoxUnit^
