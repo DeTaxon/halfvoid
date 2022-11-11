@@ -52,7 +52,7 @@ WordDetermMachine := class extend TGCObject
 // 		}
 
 // 	}
-// 	"=" := !(WordDetermMachine wut) -> void {}
+	//"=" := default
 	IsPrintable := !(char itm) -> bool
 	{
 		if itm in 'a'..'z'

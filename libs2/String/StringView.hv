@@ -46,6 +46,16 @@ StringView := class extend TGCObject
 	{
 		assert(false)
 	}
+	"in" := !(int x) -> bool
+	{
+		ptr := Str()
+		for i : Size()
+		{
+			if ptr[i] == x
+				return true
+		}
+		return false
+	}
 
 }
 "<=>" := !(StringView^ a,char^ b) -> int

@@ -28,7 +28,7 @@ AppendClass BoxFuncBody
         {
             ObjType = FuncTypeSetResult(ObjType->{TypeFunc^},resType,false)
         }else{
-            assert(ObjType->{TypeFunc^}.ResultType == GTypeVoid)
+            // assert(ObjType->{TypeFunc^}.ResultType == GTypeVoid)
         }
 
 		ResultTypeHatch.Emit()

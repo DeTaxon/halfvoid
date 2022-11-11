@@ -83,7 +83,7 @@ Bitset := class .{@ArraySize}
 		}
 		return false
 	}
-	"<<" := !(int x) -> Bitset.{ArraySize}&
+	"<<" := !(int x) -> ref Bitset.{ArraySize}
 	{
 		if x < ArraySize*8
 		{
@@ -92,7 +92,7 @@ Bitset := class .{@ArraySize}
 		}
 		return this
 	}
-	"<<" := !(Range x) -> Bitset.{ArraySize}&
+	"<<" := !(Range x) -> ref Bitset.{ArraySize}
 	{
 		for it : x
 		{

@@ -198,6 +198,8 @@ VTableVar := class extend VTableEntry
 		if not (cmp is VTableVar)
 			return false
 		asSameType := cmp->{VTableVar^}
+		if asSameType.Name != Name
+			return false
 		if ItConst.GetType() != asSameType.ItConst.GetType()
 			return false
 		return true
