@@ -1,0 +1,57 @@
+
+ExchangePointerClassToBase := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if not (newType is in TypeClass)
+			return CmpNoExchange
+
+
+		frm := obj.GetType()
+		if not (frm is in TypePoint)
+			return CmpNoExchange
+		if not (frm.Base is TypeClass)
+			return CmpNoExchange
+
+		if TypeFight(frm.Base,newType) == newType
+			return 1000 //todo rethink
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		inType := obj.GetType()
+
+		if inType.Base == expType
+		{
+			return new PtrToRef(obj)
+		}
+		if TypeFight(inType.Base,expType) == expType
+		{
+			return GetExchange(obj,expType.GetPoint())
+		}
+	}
+}
+ExchangeRefClassToBase := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if not (newType is in TypeClass)
+			return CmpNoExchange
+		if not expectResultRef
+			return CmpNoExchange
+
+		frm := obj.GetType()
+		if not (frm is TypeClass)
+			return CmpNoExchange
+
+		if TypeFight(frm,newType) == newType
+		{
+			return 1000 //todo rethink
+		}
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new RefExchange(obj,expType)
+	}
+}

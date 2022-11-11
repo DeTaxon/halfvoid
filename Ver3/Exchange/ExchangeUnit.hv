@@ -22,5 +22,7 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeFloats)
 	ExchangeList.Push(new ExchangeFloatToInt)
 	ExchangeList.Push(new ExchangeIntToFloat)
+	ExchangeList.Push(new ExchangePointerClassToBase)
+	ExchangeList.Push(new ExchangeRefClassToBase)
 }
 

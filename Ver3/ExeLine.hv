@@ -528,25 +528,9 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 	if frm == null
 		return CmpNoExchange
 
-	if frm is in TypePoint and frm.Base is TypeClass and to is TypeClass
-	{
-		if TypeFight(frm.Base,to) == to
-			return 1000 //todo rethink
-	}
-
 	if frm is TypeArr and to is in TypePoint and frm.Base == to.Base
 	{
 		return 1000
-	}
-
-	if toIsMem //!!!!IMPORTANT PART
-	{
-		if frm is TypeClass and to is TypeClass
-		{
-			res := TypeFight(frm,to)
-			if res == to
-				return 1000
-		}
 	}
 
 	if frm is in TypePoint and to is in TypePoint

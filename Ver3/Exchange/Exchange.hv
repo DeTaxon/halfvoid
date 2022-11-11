@@ -1,35 +1,23 @@
 GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 {
+	return GetExchange(obj,expType,false)
+}
+GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
+{
 	inType := obj.GetType()
 	if obj.IsMem()
 	{
-		if inType is TypeClass and expType is TypeClass
-		{
-			return new RefExchange(obj,expType)
-		}
 		if inType is TypeArr and expType is in TypePoint and inType.Base == expType.Base
 		{
 			return new ArrToPtr(obj,expType)
 		}
 	}
 
-	if inType is in TypePoint and inType.Base is TypeClass and expType is TypeClass
-	{
-		if inType.Base == expType
-		{
-			return new PtrToRef(obj)
-		}
-		if TypeFight(inType.Base,expType) == expType
-		{
-			return GetExchange(obj,expType.GetPoint())
-		}
-	}
-
 	for it : ExchangeList
 	{
-		if it.GetExchangeScore(obj,expType,false) != CmpNoExchange
+		if it.GetExchangeScore(obj,expType,expctRef) != CmpNoExchange
 		{
-			return it.CreateExchange(obj,expType,false)
+			return it.CreateExchange(obj,expType,expctRef)
 		}
 	}
 	if inType is in TypePoint and expType is in TypePoint
