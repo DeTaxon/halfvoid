@@ -7,7 +7,7 @@ ExchangeUnit := class
 	{
 		assert(false)
 	}
-	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
 		assert(false)
 	}
@@ -24,5 +24,8 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeIntToFloat)
 	ExchangeList.Push(new ExchangePointerClassToBase)
 	ExchangeList.Push(new ExchangeRefClassToBase)
+	ExchangeList.Push(new ExchangeArrayToPtr)
+	//ExchangeList.Push(new ExchangePointsToVoidP)
+	//ExchangeList.Push(new ExchangePointsToPointClass)
 }
 

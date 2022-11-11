@@ -5,13 +5,6 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 {
 	inType := obj.GetType()
-	if obj.IsMem()
-	{
-		if inType is TypeArr and expType is in TypePoint and inType.Base == expType.Base
-		{
-			return new ArrToPtr(obj,expType)
-		}
-	}
 
 	for it : ExchangeList
 	{

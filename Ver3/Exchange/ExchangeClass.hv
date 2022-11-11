@@ -6,7 +6,6 @@ ExchangePointerClassToBase := class extend ExchangeUnit
 		if not (newType is in TypeClass)
 			return CmpNoExchange
 
-
 		frm := obj.GetType()
 		if not (frm is in TypePoint)
 			return CmpNoExchange
