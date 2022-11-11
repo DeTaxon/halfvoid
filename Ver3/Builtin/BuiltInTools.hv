@@ -27,6 +27,8 @@ BuiltInAssert := class extend BoxFuncCommon
 	}
 }
 
+builtInSetJump := BuiltInSetJump^
+
 BuiltInSetJump := class extend BoxFuncCommon
 {
 	this := !() -> void
@@ -98,7 +100,9 @@ CreateBuildInTools := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
 	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
-	bSpace.Functions[StringSpan("llvmSetJump")].Push(new BuiltInSetJump() )
 	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
 	bSpace.Functions[StringSpan("MemBarrier")].Push(new BuiltInMemBarrier() )
+
+	builtInSetJump = new BuiltInSetJump() 
+	bSpace.Functions[StringSpan("llvmSetJump")].Push(builtInSetJump)
 }

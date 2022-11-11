@@ -1,0 +1,26 @@
+
+
+ExchangeUnit := class
+{
+	dummyValue := int //TODO , compiler cant create zero sized classes
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		assert(false)
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		assert(false)
+	}
+}
+
+
+ExchangeList := List.{ExchangeUnit^}
+
+ExchangeInit := !() -> void
+{
+	ExchangeList.Push(new ExchangeInts)
+	ExchangeList.Push(new ExchangeFloats)
+	ExchangeList.Push(new ExchangeFloatToInt)
+	ExchangeList.Push(new ExchangeIntToFloat)
+}
+

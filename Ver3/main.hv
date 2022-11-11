@@ -140,6 +140,7 @@ main := !(int argc, char^^ argv) -> int
 	GObjNone = new BoxExeNone()
 	GObjNull = new BoxExeNull()
 	CreateBuiltins()
+	ExchangeInit()
 	TupleInit()
 	PreInitTaskLocal()
 	cuId = GetNewId()

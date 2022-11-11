@@ -1,26 +1,13 @@
-
-class1 := class
-{
-	wrk := virtual false
-	wrk2 := virtual true
-}
-class2 := class extend class1
-{
-	wrk := virtual true
-	wrk2 := virtual false
-}
-class3 := class extend class2
-{
-	wrk2 := virtual false
-}
-// main := !(char^[] args) -> int
 main := !(int argc,char^^ args) -> int
 {
-	j := new class3
-	j2 := j->{class1^}
-	j2.wrk
-	j2.wrk2
-	
+	try
+	{
+		printf("a\n")
+		throw new Exception("hi\n")
+	}catch(e)
+	{
+		printf("exception\n")
+	}
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

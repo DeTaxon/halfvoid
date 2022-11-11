@@ -454,7 +454,13 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 		frmType := objs[i].GetType()
 		frmIsMem := objs[i].IsMem()
 		toType := fncType.Params[i].ItType
-		thisCase := TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
+
+		thisCase := TypePriorCmpNew(objs[i],toType,toIsMem)
+
+		if thisCase == CmpNoExchange
+		{
+			thisCase = TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
+		}
 
 		if thisCase == CmpNoExchange
 		{
@@ -499,6 +505,21 @@ ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 	return false
 }
 
+TypePriorCmpNew := !(BoxExeObj^ obj, Type^ to, bool toIsMem) -> int
+{
+	f1 := obj.GetType()
+	if f1 == to and f1 != GTypeVoid
+		return 0
+
+	for it : ExchangeList
+	{
+		rs := it.GetExchangeScore(obj,to,toIsMem)
+		if rs != CmpNoExchange
+			return rs
+	}
+	return CmpNoExchange
+}
+
 TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 {
 	if frm == to
@@ -537,37 +558,6 @@ TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
 			fgh := TypeFight(frm.Base,to.Base)
 			if fgh == to.Base
 				return 1000
-		}
-	}
-
-	if frm is TypeStandard and to is TypeStandard and not toIsMem
-	{
-		f1 := frm->{TypeStandard^}
-		t1 := to->{TypeStandard^}
-
-		if IsInt(f1) and IsInt(t1)
-		{
-			if f1.GetSize() > t1.GetSize()
-			{
-				return 2000 + (100 - t1.GetSize())
-			}
-			return 1000 + (100 - t1.GetSize())
-		}
-		if IsFloat(f1) and IsFloat(t1)
-		{
-			if f1.GetSize() > t1.GetSize()
-			{
-				return 2000 + (100 - t1.GetSize())
-			}
-			return 1000 + (100 - t1.GetSize())
-		}
-		if IsInt(f1) and IsFloat(t1)
-		{
-			return 1000 + (100 - t1.GetSize())
-		}
-		if IsFloat(f1) and IsInt(t1)
-		{
-			return 2000 + (100 - t1.GetSize()) //todo warning, but not here
 		}
 	}
 

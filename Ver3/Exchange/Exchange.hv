@@ -25,21 +25,12 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType) -> BoxExeObj^
 		}
 	}
 
-	if IsFloat(inType) and IsFloat(expType)
+	for it : ExchangeList
 	{
-		return new FloatExchange(obj,expType)
-	}
-	if IsInt(inType) and IsInt(expType)
-	{
-		return new IntExchange(obj,expType)
-	}
-	if IsInt(inType) and IsFloat(expType)
-	{
-		return new IntToFloatExchange(obj,expType)
-	}
-	if IsFloat(inType) and IsInt(expType)
-	{
-		return new FloatToIntExchange(obj,expType)
+		if it.GetExchangeScore(obj,expType,false) != CmpNoExchange
+		{
+			return it.CreateExchange(obj,expType,false)
+		}
 	}
 	if inType is in TypePoint and expType is in TypePoint
 	{
