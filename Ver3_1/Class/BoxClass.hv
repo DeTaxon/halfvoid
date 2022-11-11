@@ -234,6 +234,13 @@ BoxClass := class extend BoxUnit
 				objs.Push(fnc)
 			}
 		}
+		if itSpace.VirtualMethods.Contain(name)
+		{
+			for fnc : itSpace.VirtualMethods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
 		if itSpace.MethodTemplates.Contain(name)
 		{
 			for fncTmpl : itSpace.MethodTemplates[name]
@@ -241,6 +248,36 @@ BoxClass := class extend BoxUnit
 				objs.Push(fncTmpl)
 			}
 		}
+		if '.' in name
+		{
+			indx := 0
+			while name[indx] != '.'
+				indx += 1
+			
+			clsName := name[0..indx]
+			funcName := name[(indx+1)..0]
+			if clsName == ItName
+			{
+				if itSpace.Methods.Contain(funcName)
+				{
+					for fnc2 : itSpace.Methods[funcName]
+					{
+						objs.Push(fnc2)
+					}
+				}
+				if PreVTableFuncs.Contain(funcName)
+				{
+					for fncList : PreVTableFuncs
+					{
+						for fnc3 : fncList
+						{
+							objs.Push(fnc3)
+						}
+					}
+				}
+			}
+		}
+		
 		Parents[^].populateMethods(name,fieldName,objs)
 	}
 	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void

@@ -267,9 +267,12 @@ BoxClass := class extend BoxUnit
 				}
 				if PreVTableFuncs.Contain(funcName)
 				{
-					for fnc3 : PreVTableFuncs
+					for fncList : PreVTableFuncs
 					{
-						objs.Push(fnc3)
+						for fnc3 : fncList
+						{
+							objs.Push(fnc3)
+						}
 					}
 				}
 			}

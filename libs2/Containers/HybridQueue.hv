@@ -27,4 +27,25 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
             ListArray.Push(itm)
         }
     }
+    Emplace := !(args...) -> void
+    {
+        if StaticSize < HSize
+        {
+			ZeroMem(StaticArray[StaticSize])
+            StaticArray[StaticSize].this(args...)
+            StaticSize += 1
+        }else{
+            ListArray.Emplace(args...)
+        }
+    }
+	Destroy := !() -> void
+	{
+		if T->IsGCPointer
+		{
+			for i : StaticSize
+				StaticArray[i] = null
+		}
+		StaticSize = 0
+		ListArray.Destroy()
+	}
 }

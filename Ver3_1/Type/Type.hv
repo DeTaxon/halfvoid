@@ -68,7 +68,7 @@ Type := class {
 		PrintDebugName(ec&)
 		//ec << ","
 		//PrintType(ec&)
-		return ec.Str()
+		return ec.GetString()
 	}
 }
 

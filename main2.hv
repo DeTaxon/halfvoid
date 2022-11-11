@@ -1,10 +1,9 @@
 
-
 // main := !(char^[] args) -> int
 main := !(int argc,char^^ args) -> int
 {
-	tst := HybridQueue.{int,25}
-	tst.Push(13)
+	printf("test %i\n",![true][0]&)
+
 	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec

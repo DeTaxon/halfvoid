@@ -22,6 +22,8 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 	pri.Unmap()
 }
 
+TIOStream := type Stream //TODO remove
+
 GArchBitSize := 64
 
 GDebugTypePrintMeta := List.{Type^}

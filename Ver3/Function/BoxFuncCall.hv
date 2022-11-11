@@ -14,6 +14,7 @@ BoxFuncCall := class extend BoxExeObj
 	ResultVar := ParamFunc^
 	ExtraWork := List.{BoxExeObj^}
 
+
 	this := !(BoxFunc^ fnc) -> void
 	{
 		callObj = fnc
@@ -99,8 +100,12 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << " to "
 						//par.ItType.PrintDebugName(tmpl&)
 						tmpl << par.ItType.GetBADStr()
-						printf("%s\n",tmpl.Str())
-						throw new Exception(tmpl.Str())
+						if CurrentLine?.ItToken != null
+						{
+							CurrentLine.ItToken.EmitError(tmpl.Str())
+						}else{
+							throw new Exception(tmpl.Str())
+						}
 					}
 					if newObj.GetType() == par.ItType
 						break
@@ -138,8 +143,14 @@ BoxFuncCall := class extend BoxExeObj
 					}
 					if downs[i] == null
 					{
-						printf("Passed class to c-variadic function, transfer function not found\n")
-						throw new Exception(0,"")
+
+						if CurrentLine?.ItToken != null
+						{
+							CurrentLine.ItToken.EmitError("Passed class to c-variadic function, transfer function not found\n")
+						}else{
+							printf("Passed class to c-variadic function, transfer function not found\n")
+							throw new Exception(0,"")
+						}
 					}
 				}
 			}

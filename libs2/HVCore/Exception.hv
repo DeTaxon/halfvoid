@@ -60,9 +60,14 @@ internalGetException := !() -> IException^
 }
 
 
-Exception := class extend IException
+Exception := class extend IException //TODO!!
 {
 	this := !(char^ msg) -> void
+	{
+		
+	}
+
+	this := !(StringView msg) -> void
 	{
 		
 	}

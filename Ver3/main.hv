@@ -164,8 +164,8 @@ main := !(int argc, char^^ argv) -> int
 		fil.loaded.Await()
 	}
 
-	InitTaskLocal()
 	InitInternals()
+	InitTaskLocal()
 	InitLambda()
 	RecheckAppends()
 	GParsedAllFiles.Emit()

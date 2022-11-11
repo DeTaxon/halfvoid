@@ -18,6 +18,12 @@ List := class.{@T} extend TArrayView.{T}
 		newNode := createBackNode()
 		newNode.data = itm
 	}
+
+	Emplace := !(args...) -> void
+	{
+		newNode := createBackNode()
+		newNode.data .this(args...)
+	}
 	PushUniq := !(T itm) -> void
 	{
 		if this[^] == itm

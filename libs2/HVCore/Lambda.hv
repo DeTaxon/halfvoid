@@ -6,7 +6,7 @@ TILambda := class extend TGCObject
 	}
 
 	getCaptureVar := virtual !() -> void^ { return null }
-	getYieldState := virtual !() -> int& {  } //TODO assert
+	getYieldState := virtual !() -> ref int {  } //TODO assert
 	getYieldVars := virtual !() -> void^ { return null }
 	getGCVars := virtual !() -> void^ { return null }
 }
@@ -31,7 +31,7 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 
 	IsFinished := virtual !() -> bool { return yieldState < 0 }
 	getCaptureVar := virtual !() -> void^ {  result = capPtr }
-	getYieldState := virtual !() -> int& { return yieldState }
+	getYieldState := virtual !() -> ref int { return yieldState }
 	getYieldVars := virtual !() -> void^ { return lambdaVars& }
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^

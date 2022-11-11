@@ -136,8 +136,8 @@ BoxFile := class extend BoxUnit
 	{
 		if DebugMode //later
 		{
-			pth := Path(file.GetPath())
-			if pth.IsExist()
+			//pth := Path(file.GetPath())
+			if false //pth.IsExist() //TODO!!!
 			{
 				pth2 := pth.FullPath()
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 

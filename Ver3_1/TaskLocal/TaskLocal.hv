@@ -33,6 +33,8 @@ TaskLocalVarDelayed := class extend NamedVar
         Name = name
 		itToken = tp
 
+		TaskLocalDelayedVars.Push(this&)
+
 		SubWork(() ==> {
 			itType = ParseType(itToken)
 			itIndex = TaskLocalTypes.Size()
@@ -53,12 +55,15 @@ TaskLocalVarDelayed := class extend NamedVar
 
         funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
+		assert(funcObj != null)
+
         objs := CheckExeDownList
         objs.Push(getVarTypes)
 		return funcObj.CreateCall(objs)
     }
 }
 
+TaskLocalDelayedVars := List.{TaskLocalVarDelayed^}
 
 getTaskVarFunc := BoxFunc^
 tupleVarType := BoxClassTupleDelayed^
@@ -81,10 +86,18 @@ PreInitTaskLocal := !() -> void
 
 InitTaskLocal := !() -> void
 {
-    getTaskVarFunc = intGetFunc("internalHVGetTaskLocalTuple")
-    //tupleVarType = GetTuple(TaskLocalTypes)
-    tupleVarType.InitTuple(TaskLocalTypes)
-    TaskLocalHatch.Emit()
+
+	SubWork(() ==> {
+		for it : TaskLocalDelayedVars
+		{
+			it.itHatch.Await()
+		}
+
+		getTaskVarFunc = intGetFunc("internalHVGetTaskLocalTuple")
+		//tupleVarType = GetTuple(TaskLocalTypes)
+		tupleVarType.InitTuple(TaskLocalTypes)
+		TaskLocalHatch.Emit()
+	})
 }
 
 BoxClassTupleDelayed := class extend BoxClass

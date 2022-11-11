@@ -3,7 +3,7 @@ TableIdIter := int
 AppendClass BoxClass
 {
 	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
-	PreVTableFuncs := AVLMap.{StringSpan,BoxFunc^}
+	PreVTableFuncs := AVLMap.{StringSpan,List.{BoxFunc^}}
 
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
@@ -72,37 +72,40 @@ AppendClass BoxClass
 			}
 		}
 
-		for fnc,fncName : PreVTableFuncs
+		for fncList,fncName : PreVTableFuncs
 		{
-			vFunc := new VTableFunc(fncName,fnc)
-
-			ind := 0
-
-			found := false
-			for it,i : VTable
+			for fnc : fncList
 			{
-				if it.IsEq(vFunc)
+				vFunc := new VTableFunc(fncName,fnc)
+
+				ind := 0
+
+				found := false
+				for it,i : VTable
 				{
-					it = vFunc
-					found = true
-					ind = i
-					break
+					if it.IsEq(vFunc)
+					{
+						it = vFunc
+						found = true
+						ind = i
+						break
+					}
 				}
-			}
 
-			if not found
-			{
-				ind = VTable.Size()
-				VTable.Push(vFunc)
-			}
+				if not found
+				{
+					ind = VTable.Size()
+					VTable.Push(vFunc)
+				}
 
-			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetExeInt(ind))
-			vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
-			cnsts.Destroy()
-			vFunc.SetName(fncName)
-			DefaultSpace.Methods[fncName].Push(vFunc)
-			fnc.ParseBody()
+				cnsts := List.{BoxExeConstObj^}
+				cnsts.Push(GetExeInt(ind))
+				vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
+				cnsts.Destroy()
+				vFunc.SetName(fncName)
+				DefaultSpace.VirtualMethods[fncName].Push(vFunc)
+				fnc.ParseBody()
+			}
 		}
 	}
 	CreateVTable := !() -> void

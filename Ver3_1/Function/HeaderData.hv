@@ -15,6 +15,7 @@ FuncTemplateInput := class
 		if tk != null
 			IsTType = ContainTemplateObj(tk)
 	}
+	"=" := default
 }
 
 FuncTemplateConstant := class

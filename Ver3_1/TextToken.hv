@@ -26,10 +26,11 @@ Token := class
 	EmitError := !(char^ info) -> void
 	{
 
-		ln := "Error <"sbt << info << ">"
+		ln := TEchoStream
+		ln << "Error <" << info << ">"
 		if Line != null
 		{
-			ln << " at file " << Line.File.GetName() << " line: " <<Line.Line
+			ln << " at file " << Line.File.GetName() << " line: " << Line.Line
 		}
 		ln <<"\n"
 		for it : UnitStack
@@ -40,7 +41,7 @@ Token := class
 				ln << "var " << cv.Name << " = " << cv.Value.GetBADStr() << "\n"
 			}
 		}
-		throw new Exception(ln.Str()) //todo memory
+		throw new Exception(ln.GetString()) //todo memory
 		//printf("%s\n",ln.Str())
 		//exit(1)
 	}
@@ -214,7 +215,7 @@ TokenSymbol := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("symbol %s\n",Value)
+		printf("symbol %s\n",Value.GetString().Str())
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -235,7 +236,7 @@ TokenIndent := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("indent %s\n",Value)
+		printf("indent %s\n",Value.GetString().Str())
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}

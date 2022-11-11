@@ -206,7 +206,7 @@ BoxClassBody := class extend BoxClass
 				newFunc2.SetName(ind)
 				newFunc2.Work()
 
-				PreVTableFuncs[ind] = newFunc2
+				PreVTableFuncs[ind].Push(newFunc2)
 			}
 		}
 		populatePoisons(cls2.Parents[^],funcs)
@@ -284,7 +284,7 @@ BoxClassBody := class extend BoxClass
 
 							if isVirtual
 							{
-								PreVTableFuncs[name] = f
+								PreVTableFuncs[name].Push(f)
 							}else{
 								DefaultSpace.Methods[name].Push(f)
 							}

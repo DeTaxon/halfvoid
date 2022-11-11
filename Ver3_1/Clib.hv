@@ -34,10 +34,12 @@ CLib := class extend ModuleInterface
 	}
 	Work := virtual !() -> void
 	{
-		textMap = StringSpan(libFile.Map(),libFile.Size())
+		lMap := libFile.GetMap()
+		textMap = StringSpan(lMap.Get(),lMap.Size())
+
 
 		js = new json
-		js.ParseString(textMap.Get(),textMap.Size())
+		js.ParseString(textMap.Str(),textMap.Size())
 
 		for nd : js^
 		{
@@ -109,7 +111,7 @@ CLib := class extend ModuleInterface
 
 		if itPreConsts.Contain(name)
 		{
-			val := strtol(itPreConsts[name].Get(),null,0)
+			val := strtol(itPreConsts[name].Str(),null,0)
 			itConsts[name] = GetExeInt(val) //TODO add float support
 			return itConsts[name]
 		}
@@ -146,7 +148,7 @@ CLib := class extend ModuleInterface
 	}
 	innerGetFunc := !(StringSpan name) -> BoxUnit^
 	{
-		bdy := itPreFuncs[name]
+		bdy := itPreFuncs[name]&
 
 		c := 0
 		typs := Type^[40]
@@ -154,7 +156,7 @@ CLib := class extend ModuleInterface
 		isVarg := false
 		bdy.DivideStr(",", x ==> {
 			points := 0
-			txt := x
+			txt := StringSpan(x.Str(),x.Size()) //TODO! lol
 
 			if txt == "..."
 			{
@@ -171,7 +173,7 @@ CLib := class extend ModuleInterface
 			typs[c] = ParseType(txtToken&)
 			if typs[c] == null
 			{
-				printf("Could not parse type <%s> for function %s\n",txt,name)
+				printf("Could not parse type <%s> for function %s\n",txt.GetString().Str(),name.GetString().Str())
 				assert(false)
 			}
 			for i : points
@@ -221,9 +223,9 @@ CLib := class extend ModuleInterface
 			dt << ind << "&->{void^^}^ = lib.Get(\"" << ind << "\")\n"
 		}
 
-		st := dt.Str()
+		st := dt.GetString()
 
-		blank := StringSpan(st)
+		blank := StringSpan(st.Str(),st.Size())
 		initFunc.ParseString(blank)
 	}
 }

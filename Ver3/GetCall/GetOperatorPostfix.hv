@@ -25,6 +25,10 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		Objs := CheckExeDownList
 		
 		dObj := TryGetExeCall(itm.Down)
+		if dObj? is BoxArrayHolder
+		{
+			dObj = dObj->{BoxArrayHolder^}.CreateDefaultUse()
+		}
 		if dObj == null
 			return null
 		Objs.Push(dObj)

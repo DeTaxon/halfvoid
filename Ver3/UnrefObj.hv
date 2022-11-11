@@ -8,7 +8,6 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 
 	dwn := TryGetExeCall(itm.Down)
 
-	assert(dwn != null)
 	if dwn == null
 		itm.EmitError("can not get pointer to error object")
 	if not dwn.IsMem()
