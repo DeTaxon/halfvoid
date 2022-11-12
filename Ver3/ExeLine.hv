@@ -455,12 +455,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 		frmIsMem := objs[i].IsMem()
 		toType := fncType.Params[i].ItType
 
-		thisCase := TypePriorCmpNew(objs[i],toType,toIsMem)
-
-		if thisCase == CmpNoExchange
-		{
-			thisCase = TypePriorCmp(frmType,frmIsMem,toType,toIsMem)
-		}
+		thisCase := TypePriorCmp(objs[i],toType,toIsMem)
 
 		if thisCase == CmpNoExchange
 		{
@@ -505,7 +500,7 @@ ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 	return false
 }
 
-TypePriorCmpNew := !(BoxExeObj^ obj, Type^ to, bool toIsMem) -> int
+TypePriorCmp := !(BoxExeObj^ obj, Type^ to, bool toIsMem) -> int
 {
 	f1 := obj.GetType()
 	if f1 == to and f1 != GTypeVoid
@@ -517,35 +512,6 @@ TypePriorCmpNew := !(BoxExeObj^ obj, Type^ to, bool toIsMem) -> int
 		if rs != CmpNoExchange
 			return rs
 	}
-	return CmpNoExchange
-}
-
-TypePriorCmp := !(Type^ frm, bool frmIsMem, Type^ to,bool toIsMem) -> int
-{
-	if frm == to
-		return 0
-	
-	if frm == null
-		return CmpNoExchange
-
-	if frm is TypeArr and to is in TypePoint and frm.Base == to.Base
-	{
-		return 1000
-	}
-
-	if frm is in TypePoint and to is in TypePoint
-	{
-		if to == GTypeVoidP
-			return 1000
-		if frm.Base is TypeClass and to.Base is TypeClass
-		{
-			fgh := TypeFight(frm.Base,to.Base)
-			if fgh == to.Base
-				return 1000
-		}
-	}
-
-
 	return CmpNoExchange
 }
 TypeFight := !(Type^ a, Type^ b) -> Type^

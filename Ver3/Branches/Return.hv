@@ -16,7 +16,7 @@ BoxReturn := class extend BoxExeObj
 			assert(gcPtr != null)
 			getGCPtr := gcPtr.CreateCall(objs)
 
-			objs.Push(getGCPtr)
+			objs.Push(GetExchange2(getGCPtr,GCType.GetPoint().GetPoint(),false))
 			objs.Push(GetExeInt(0))
 			objs.Push(GetExeInt(GCVarsInUse - 1))
 
@@ -112,9 +112,17 @@ ReturnHalfState := class extend BoxExeObj
 							errorToken.EmitError("result type does not compare with function result")
 						}
 					}else{
-						callObj = GetExchange(callObj,CurrentFunc.ResultVar.GetVarType())
-						if callObj == null
-							errorToken.EmitError("can not convert type to function result")
+						newObj := GetExchange(callObj,CurrentFunc.ResultVar.GetVarType())
+						if newObj == null
+						{
+							if callObj is BoxExeNull
+							{
+								newObj = GetExchange2(callObj,CurrentFunc.ResultVar.GetVarType(),false)
+							}else{
+								errorToken.EmitError("can not convert type to function result")
+							}
+						}
+						callObj = newObj
 					}
 				}
 

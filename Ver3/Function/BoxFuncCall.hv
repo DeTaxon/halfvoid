@@ -84,6 +84,7 @@ BoxFuncCall := class extend BoxExeObj
 			}
 
 			newObj := downs[i]
+			assert(downs[i] != null)
 			if downs[i].GetType() != par.ItType
 			{
 				exchangeLimit := 50
@@ -225,7 +226,7 @@ BoxFuncCall := class extend BoxExeObj
 								while oo >= 2
 								{
 									gt := newCall.CreateCall()
-									gt = GetExchange(gt,GTypeVec2f.GetPoint())
+									gt = GetExchange2(gt,GTypeVec2f.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd))
 									newDown.Push(gt)
 									oo -= 2
@@ -236,7 +237,7 @@ BoxFuncCall := class extend BoxExeObj
 								if oo != 0
 								{
 									gt := newCall.CreateCall()
-									gt = GetExchange(gt,GTypeFloat.GetPoint())
+									gt = GetExchange2(gt,GTypeFloat.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd*2))
 									newDown.Push(gt)
 									types4[k] = GTypeFloat
@@ -253,10 +254,10 @@ BoxFuncCall := class extend BoxExeObj
 									if oo >= 8
 									{
 										gt := newCall.CreateCall()
-										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
-										gt = GetExchange(gt,GTypeU64.GetPoint())
+										gt = GetExchange2(gt,GTypeU64.GetPoint(),false)
 										gt = new PtrToRefFuncCall(gt)
 										newDown.Push(gt)
 										types4[k] = GTypeU64
@@ -265,10 +266,10 @@ BoxFuncCall := class extend BoxExeObj
 										fInd += 8
 									}else if oo >= 4 {
 										gt := newCall.CreateCall()
-										gt = GetExchange(gt,GTypeU8.GetPoint())
+										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
-										gt = GetExchange(gt,GTypeInt.GetPoint())
+										gt = GetExchange2(gt,GTypeInt.GetPoint(),false)
 										gt = new PtrToRefFuncCall(gt)
 										newDown.Push(gt)
 										types4[k] = GTypeInt
@@ -305,7 +306,7 @@ BoxFuncCall := class extend BoxExeObj
 				asPtr := this&->{BoxFuncPointerCall^}
 
 				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
-				asPtr.ItPtrFunc = GetExchange(asPtr.ItPtrFunc,newFunc.GetPoint())
+				asPtr.ItPtrFunc = GetExchange2(asPtr.ItPtrFunc,newFunc.GetPoint(),false)
 				asPtr.PreCalls.Push(preRes[^])
 				asPtr.downs.Clear()
 				asPtr.downs.Push(newDown[^])

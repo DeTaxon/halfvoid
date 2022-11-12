@@ -49,7 +49,7 @@ FuncGCLocalParam := class extend ParamFunc
 			step1 := new UnrefFuncCall(CreateFuncCall(StringSpan("[]"),objs))
 			assert(step1 != null)
 			objs.Clear()
-			step2 := GetExchange(step1,pType.GetPoint())
+			step2 := GetExchange2(step1,pType.GetPoint(),false)
 			it.CallObj = new PtrToRefFuncCall(step2)
 		}
 	}

@@ -3,7 +3,7 @@ gExceptionPtrIndex := task_local int
 gExceptionStackArr := task_local void^[256]
 gExceptionStackSize := task_local int[256]
 
-internalEnterGCFunction := !(TGCIObject^ arr,int maxSize) -> void
+internalEnterGCFunction := !(void^^ arr,int maxSize) -> void
 {
 	gExceptionStackArr[gExceptionPtrIndex] = arr
 	gExceptionStackSize[gExceptionPtrIndex] = maxSize

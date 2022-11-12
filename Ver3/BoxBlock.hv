@@ -206,7 +206,7 @@ BoxBlock := class extend BoxExeObj
 		assert(CurrentFunc.gcArrayPtr != null)
 
 		objs := CheckExeDownList
-		objs.Push(CurrentFunc.gcArrayPtr.CreateCall())
+		objs.Push(GetExchange2(CurrentFunc.gcArrayPtr.CreateCall(),GCType.GetPoint().GetPoint(),false))
 		objs.Push(GetExeInt(GCInUseBefore))
 		objs.Push(GetExeInt(GCVarsInUse - 1))
 		return GFuncGCSetNullArray.CreateCall(objs)

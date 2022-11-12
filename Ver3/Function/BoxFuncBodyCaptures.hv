@@ -41,11 +41,8 @@ AppendClass BoxFuncBody
 			{
 				getVar := CapturedVarsTuple.CreateCall()
 				c1 := new UnrefFuncCall(getVar)
-				return GetExchange(c1,it.GetVarType())
+				return GetExchange2(c1,it.GetVarType(),false)
 			})
-			//getVar := CapturedVarsTuple.CreateCall()
-			//c1 := new UnrefFuncCall(getVar)
-			//it.exeObj = GetExchange(c1,it.GetType()->{TypeFunc^}.ResultType)
 		}
 		// if containGC
 		// {

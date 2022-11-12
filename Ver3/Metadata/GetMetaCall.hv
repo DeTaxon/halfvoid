@@ -21,7 +21,7 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 		lObj := TryGetExeCall(obj.Down)
 		if lObj == null
 			r.EmitError("Unknown object to case")
-		return GetExchange(lObj,toType)
+		return GetExchange2(lObj,toType,false)
 
 	}
 	return null

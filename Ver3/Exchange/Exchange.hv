@@ -13,12 +13,6 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 			return it.CreateExchange(obj,expType,expctRef)
 		}
 	}
-	if inType is in TypePoint and expType is in TypePoint
-	{
-		if obj.IsMem()
-			return new PtrRefExchange(obj,expType)
-		return new PtrExchange(obj,expType)
-	}
 	if obj is BoxLambdaHolder
 	{
 		return obj->{BoxLambdaHolder^}.CreateLambda(expType)
@@ -55,6 +49,23 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 	objs.Destroy() cnsts.Destroy()
 	if resCall != null
 		return resCall
+	return null
+}
+
+GetExchange2 := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
+{
+	res1 := GetExchange(obj,expType,expctRef)
+	if res1 != null
+		return res1
+
+	inType := obj.GetType()
+	if inType is in TypePoint and expType is in TypePoint
+	{
+		if obj.IsMem()
+			return new PtrRefExchange(obj,expType)
+		return new PtrExchange(obj,expType)
+	}
+
 	return null
 }
 

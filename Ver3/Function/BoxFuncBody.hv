@@ -214,7 +214,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		gcArrayPtr?.PopulateCalls2(() ==> {
 			step1 := gcArrayVar.CreateCall()
 			step2 := new UnrefFuncCall(step1)
-			step3 := GetExchange(step2, GTypeVoidP.GetPoint())
+			step3 := GetExchange2(step2, GTypeVoidP.GetPoint(),false)
 			assert(step3 != null)
 			return step3
 		})
