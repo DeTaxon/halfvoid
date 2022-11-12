@@ -4,6 +4,23 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down == null return null
 	if itm.Down.Right == null return null
 	if itm.Down.Right.Right == null return null
+
+	if itm.Down.Right.GetValue() == "not" and itm.Down.Right.Right.GetValue() == "in"
+	{
+		lst3 := CheckExeDownList
+		lst3.Push(TryGetExeCall(itm.Down))
+		lst3.Push(TryGetExeCall(itm.Down.Right.Right.Right))
+
+		res := innerTryGetInfixCall(StringSpan("in"),lst3,itm)
+		if res == null
+			return null
+
+		lst4 := CheckExeDownList
+		lst4.Push(res)
+		cnsts := List.{BoxExeConstObj^}
+		return CreateFuncCall(StringSpan(". not"),lst4,cnsts)
+	}
+
 	if itm.Down.Right.Right.Right != null return null
 
 	if not HVOperators.Contain(itm.Down.Right.GetValue())
@@ -18,6 +35,8 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryGetAndOrCall(itm)
 	}
+
+
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 

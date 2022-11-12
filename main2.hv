@@ -1,13 +1,25 @@
+
+"->{}" := !(String st) .{char^} -> char^
+{
+	return st.Str()
+}
+"->{}" := !(StringSpan spn) .{char^} -> String^
+{
+	return spn.GetString()
+}
+
+class1 := class extend TGCObject
+{
+}
+class2 := class extend class1
+{
+
+}
 main := !(int argc,char^^ args) -> int
 {
-	try
-	{
-		printf("a\n")
-		throw new Exception("hi\n")
-	}catch(e)
-	{
-		printf("exception\n")
-	}
+	if 5 in 1..10
+		printf("wut\n")
+	printf("test %i\n",5 not in 1..10)
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

@@ -41,7 +41,15 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 	}
 	assert(fnc != null)
 
-	return fnc.CreateCall(objs3)
+	resCall :=  fnc.CreateCall(objs3)
+	if makeNegative
+	{
+		objs8 := CheckExeDownList
+		objs8.Push(resCall)
+		cnsts := List.{BoxExeConstObj^}
+		resCall = CreateFuncCall(StringSpan(". not"),objs8,cnsts)
+	}
+	return resCall
 }
 
 IsVirtualClass := !(Type^ tp) -> bool
