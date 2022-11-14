@@ -1,7 +1,7 @@
 TArrayView := class .{@T} extend TGCObject
 {
 	Size := virtual !() -> int {}
-	"[]" := virtual !(int i) -> ref T { }
+	"[]" := virtual !(int i) -> ref T { assert(false) }
 	"for" := !() -> ViewIterator.{T}
 	{
 		result.ViewPtr = this&
@@ -40,7 +40,7 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 }
 
 
-"[]" := !(TArrayView.{@T}^ x,int i) -> T&
+"[]" := !(TArrayView.{@T}^ x,int i) -> ref T
 {
 	assert(x != null)
 	return x^[i]

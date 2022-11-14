@@ -83,3 +83,12 @@ String := class extend StringView
 	cmp := a <=> b
 	result = cmp == 0
 }
+
+"->{}" := !(String st) .{char^} -> char^
+{
+	return st.Str()
+}
+"->{}" := !(StringSpan spn) .{char^} -> String^
+{
+	return spn.GetString()
+}

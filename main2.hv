@@ -1,25 +1,15 @@
 
-"->{}" := !(String st) .{char^} -> char^
+gg := !(int[] xs) -> void
 {
-	return st.Str()
-}
-"->{}" := !(StringSpan spn) .{char^} -> String^
-{
-	return spn.GetString()
+	for it : xs
+	{
+		printf("heh %p\n",it)
+	}
 }
 
-class1 := class extend TGCObject
+main := !(char^[] args) -> int
 {
-}
-class2 := class extend class1
-{
-
-}
-main := !(int argc,char^^ args) -> int
-{
-	if 5 in 1..10
-		printf("wut\n")
-	printf("test %i\n",5 not in 1..10)
+	gg(![3, 15])
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

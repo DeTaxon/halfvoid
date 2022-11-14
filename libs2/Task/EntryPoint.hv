@@ -49,11 +49,10 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	CurrentTask.OSFirstInit()
 
 	TSpawnTask(() ==> {	
-		// spn := TArraySpan.{char^}//(argv,argc) ///TODO
-		// spn.pointer = argv
-		// spn.itSize = argc
-		// main(spn&)
-		main(argc,argv)
+		spn := TArraySpan.{char^}//(argv,argc)
+		spn.pointer = argv
+		spn.itSize = argc
+		main(spn&)
 	})
 
 	EnterTaskThreadCycle(true)

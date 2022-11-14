@@ -234,9 +234,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resTypeT := hData.ResultType.ItType
 
 		rTokenTree := hData.ResultType.ItToken
-		if rTokenTree?.Down?.Right?.GetValue() == "&"
+		if rTokenTree?.GetValue() == "ref"
 		{
-			rTokenTree = rTokenTree.Down
+			rTokenTree = rTokenTree.Right
 		}
 
 		resTypeT = checkType(null,rTokenTree,resCnsts)

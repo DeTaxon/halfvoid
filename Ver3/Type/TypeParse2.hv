@@ -340,6 +340,8 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 				return GetConstType(glb->{TypeVar^}.Value)
 			if glb is in TemplateTypeVar
 				return GetConstTemplateType(glb->{TemplateTypeVar^}.Value)
+			if glb is ConstType
+				return glb->{BoxExeConstObj^}
 			itm.EmitError("software error, Globals variables must use consts")
 			assert(glb is in BoxExeConstObj)
 			return glb->{BoxExeConstObj^}
