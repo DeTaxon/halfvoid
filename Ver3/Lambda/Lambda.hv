@@ -125,9 +125,16 @@ BoxLambdaHolder := class extend BoxExeObj
 			objs9.Push(it.2.CreateCall())
 			objs9.Push(it.1)
 
-			itSet := CreateFuncCall(StringSpan("="),objs9,emptyConsts)
-			if itSet == null
-				captureTokens.EmitError("Could not get operator = for capture variable")
+			itSet := BoxExeObj^
+			
+			if it.2.GetVarType() is in TypePoint
+			{
+				itSet = GPointStoreTemplate.GetFunc(objs9,emptyConsts).CreateCall(objs9) 
+			}else{
+				itSet = CreateFuncCall(StringSpan("="),objs9,emptyConsts)
+				if itSet == null
+					captureTokens.EmitError("Could not get operator = for capture variable")
+			}
 			objs9.Destroy()
 			resObj.preCalls.Push(itSet)
 

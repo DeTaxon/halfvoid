@@ -1,22 +1,15 @@
 
 main := !(char^[] args) -> int
 {
-	//r := new TGCObject
-	r := 15
-	printf("1 %p %p\n",r,r&)
-	jm := () ==> {
-		printf("2 %i %p\n",r,r&)
-		r += 10000
+	r := new TGCObject
+	//printf("1 %p %p\n",r,r&)
+	jm := () ==> [r] {
+		printf("2 %p %p\n",r,r&)
 	}
-	jm()
-	hm2 := jm.Capture()
-	jm()
-	jm()
-	r = 0
-	jm()
-	hm2()
-	hm2()
-	printf("hm2 %p %i\n",hm2,r)
+	//jm()
+	//hm2 := jm.Capture()
+	//hm2()
+	printf("ref %i\n",r.RefValue)
 
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
