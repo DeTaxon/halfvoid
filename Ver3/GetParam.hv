@@ -102,6 +102,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			{
 				return CallFromSomeVar(fnc.CapturedBySomeVars[asItm.Value].1)
 			}
+			if fnc.CapturedManualy.Contain(asItm.Value)
+			{
+				return CallFromSomeVar(fnc.CapturedManualy[asItm.Value])
+			}
 
 			if fnc.VariadicName == asItm.Value
 			{

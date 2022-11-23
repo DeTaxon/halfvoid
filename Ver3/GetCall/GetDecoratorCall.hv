@@ -1,31 +1,31 @@
 TryGetDecoratorCall := !(Token^ itm) -> BoeExeObj^ //TODO return complex object "@once new TGCObject"
 {
-    if itm.Down == null
-        return null
-    if not (itm.Down is TokenTemplateType)
-        return null
-    if itm.Down.Right == null
-        return null
-    
-    dn := itm.Down->{TokenTemplateType^}.Value
-
-    k := 0
-    buff := char[256]
-    memcpy(buff[0]&,dn.Get(),dn.Size())
-    k = dn.Size()
-    buff[k] = ' '
-    k += 1
-    memcpy(buff[k]&,"call",4)
-    k += 4
-    resCall := StringSpan(buff[0]&,k)
-    resCall = GetConstString(resCall)
-    
-    lmbd := CreateHeadlessLambda(itm.Down.Right)
-    
-    assert(lmbd != null)
-    objs := CheckExeDownList
-    objs.Push(lmbd)
-
-    cnsts := List.{BoxExeConstObj^}
-    return CreateFuncCall(resCall,objs,cnsts)
+	if itm.Down == null
+	    return null
+	if not (itm.Down is TokenTemplateType)
+	    return null
+	if itm.Down.Right == null
+	    return null
+	
+	dn := itm.Down->{TokenTemplateType^}.Value
+	
+	k := 0
+	buff := char[256]
+	memcpy(buff[0]&,dn.Get(),dn.Size())
+	k = dn.Size()
+	buff[k] = ' '
+	k += 1
+	memcpy(buff[k]&,"call",4)
+	k += 4
+	resCall := StringSpan(buff[0]&,k)
+	resCall = GetConstString(resCall)
+	
+	lmbd := CreateHeadlessLambda(itm.Down.Right)
+	
+	assert(lmbd != null)
+	objs := CheckExeDownList
+	objs.Push(lmbd)
+	
+	cnsts := List.{BoxExeConstObj^}
+	return CreateFuncCall(resCall,objs,cnsts)
 }

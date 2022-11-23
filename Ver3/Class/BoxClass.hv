@@ -183,7 +183,7 @@ BoxClass := class extend BoxUnit
 				posMemOffset += fil.Value.GetAlign() - unalign
 			}
 			fieldSize := fil.Value.GetSize()
-			if fieldSize == 0
+			if fieldSize == 0 and fil.Value is TypeClass
 				fieldSize = 1 //TODO Zero size class optimization
 			fPath.MemOffset = posMemOffset
 			posMemOffset += fieldSize

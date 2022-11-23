@@ -1,15 +1,23 @@
 
-gg := !(int[] xs) -> void
-{
-	for it : xs
-	{
-		printf("heh %p\n",it)
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	gg(![3, 15])
+	//r := new TGCObject
+	r := 15
+	printf("1 %p %p\n",r,r&)
+	jm := () ==> {
+		printf("2 %i %p\n",r,r&)
+		r += 10000
+	}
+	jm()
+	hm2 := jm.Capture()
+	jm()
+	jm()
+	r = 0
+	jm()
+	hm2()
+	hm2()
+	printf("hm2 %p %i\n",hm2,r)
+
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

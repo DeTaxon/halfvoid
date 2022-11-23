@@ -2,8 +2,10 @@ BoxLambdaHolder := class extend BoxExeObj
 {
 	tmpl := BoxFuncTemplateBody^
 	cleanType := Type^
+	captureTokens := Token^
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
+		captureTokens = capturesToken
 
 		attr := FuncAttributes
 		bPtr := Token^
@@ -86,7 +88,55 @@ BoxLambdaHolder := class extend BoxExeObj
 	createLambd := !(!()&->BoxFuncBody^ cb) -> BoxExeObj^
 	{
 		newFunc := cb() //Vars captured
+
+
+		capturedVars := List.{Tuple.{StringSpan,BoxExeObj^,FuncLocalParam^}}
+
+		if captureTokens != null
+		{
+			//TODO by ref, and get value  [r,r&,r = a + b]
+			iterC := captureTokens.Down
+			while iterC != null
+			{
+				if iterC.GetValue() != ","
+				{
+					if iterC is TokenIndent
+					{
+						par := TryCheckGetParam(iterC)
+						if par == null
+							iterC.EmitError("Could not get captured value") //todo better error
+						newVar := new FuncLocalParam(par.GetType())
+						capturedVars.Emplace(iterC->{TokenIndent^}.Value,par,newVar)
+						newVar.NotifyCaptureUse()
+						CurrentFunc.regularVars.Push(newVar)
+					}
+				}
+				iterC = iterC.Right
+			}
+		}
+
+		resObj := new PackedExeObj
+
+		emptyConsts := List.{BoxExeConstObj^}
+
+		for it : capturedVars
+		{
+			objs9 := CheckExeDownList
+			objs9.Push(it.2.CreateCall())
+			objs9.Push(it.1)
+
+			itSet := CreateFuncCall(StringSpan("="),objs9,emptyConsts)
+			if itSet == null
+				captureTokens.EmitError("Could not get operator = for capture variable")
+			objs9.Destroy()
+			resObj.preCalls.Push(itSet)
+
+			newFunc.CapturedManualy[it.0] = new MemVar(it.0,it.2)
+			newFunc.CaptureUsed = true
+		}
+		
 		newFunc.ParseBodyForced()
+
 		
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := fncFnc.CreateCall()
@@ -132,7 +182,8 @@ BoxLambdaHolder := class extend BoxExeObj
 			st.ExtraWork.Push(it.2)
 		}
 
-		return GetExchange(step2,lambdaType.GetPoint())
+		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
+		return resObj
 	}
 	CanBeThisType := !(Type^ tp) -> bool
 	{ //TODO: check argument count and types

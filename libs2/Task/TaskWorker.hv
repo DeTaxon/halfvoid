@@ -22,7 +22,7 @@ TaskWorker := class extend TGCObject
 	CreateThread := !() -> void
 	{
 		itThread = new Thread(() ==> {
-			CurrentThread =  this&
+			CurrentThread = this&
 			CurrentThread.ThreadMainTask = CurrentTask
 			EnterTaskThreadCycle(false)
 		})

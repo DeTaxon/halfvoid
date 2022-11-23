@@ -10,6 +10,7 @@ AppendClass BoxFuncBody
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{MacroParam^}
 	//CapturedVarsCleanup := BoxExeObj^
+	CapturedManualy := AVLMap.{StringSpan,MemVar^}
 
 	CapturedBySomeVars := AVLMap.{StringSpan,Tuple.{NamedVar^,MemVar^,BoxExeObj^}} //By ref,value
 

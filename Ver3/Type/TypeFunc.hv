@@ -90,6 +90,23 @@ TypeFunc := class extend Type
 
 		f^ << ")"
 	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "{!("
+		for it, i : Params
+		{
+			if i != 0
+				f^ << ","
+			if it.IsRef
+				f^ << "ref "
+			it.ItType.PrintDebugName(f)
+		}
+		f^ << ")->"
+		if ResultRef
+			f^ << "ref "
+		ResultType.PrintDebugName(f)
+		f^ << "}"
+	}
 }
 
 funcTypes := List.{TypeFunc^}[1024]

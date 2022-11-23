@@ -90,6 +90,7 @@ BoxFuncCall := class extend BoxExeObj
 				exchangeLimit := 50
 				while true
 				{
+					pre := newObj
 					newObj = GetExchange(newObj,par.ItType,par.IsRef)
 					exchangeLimit -= 1
 					if newObj == null or exchangeLimit <= 0

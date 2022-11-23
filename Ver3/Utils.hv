@@ -13,3 +13,48 @@ GetConstString := !(char^ val) -> ref StringSpan
 	ConstStrings[v2] = spn
 	return ConstStrings[val]
 }
+
+
+PackedExeObj := class extend BoxExeObj
+{
+	preCalls := List.{BoxExeObj^}
+	mainCall := BoxExeObj^	
+	postCalls := List.{BoxExeObj^}
+
+	GetType := virtual !() -> Type^
+	{
+		return mainCall.GetType()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return mainCall.IsMem()
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		if IsMem()
+		{
+			PrintPointPre(f)
+		}else{
+			PrintPre(f)
+		}
+	}
+	PrintPointPre := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
+	PrintPointUse := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		preCalls[^].PrintDefaultUse(f)
+		mainCall.PrintPre(f)
+		postCalls[^].PrintDefaultUse(f)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		mainCall.PrintUse(f)
+	}
+
+}

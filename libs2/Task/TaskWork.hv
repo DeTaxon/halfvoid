@@ -1,7 +1,22 @@
 
 TaskWorkersToDo := List.{Task^}
 
-"@work line" := !(!()&->void lmbd ) -> void
+"@work call" := !(!()&->void lmbd ) -> void
+{
+	l2 := lmbd
+	newTask := new Task(lmbd)
+	spawnWorkInner(() ==> {
+		l2()
+	})
+	newTask.finishedWork.Await()
+}
+
+SpawnWork := !(!()&->void lmbd) -> Task^
+{
+	return spawnWorkInner(lmbd.Capture())
+}
+
+spawnWorkInner := !(!()&->void lmbd) -> Task^
 {
 	newTask := new Task(lmbd)
 	TaskCheckMutex.Lock() //TODO optimize
@@ -10,18 +25,9 @@ TaskWorkersToDo := List.{Task^}
 	TaskCheckMutex.Unlock()
 	ExpectWorkers(1)
 
-	newTask.finishedWork.Await()
+	return newTask
 }
 
-SpawnWork := !(!()&->void lmbd) -> void
-{
-	newTask := new Task(lmbd.Capture())
-	TaskCheckMutex.Lock() //TODO optimize
-	TaskWorkersToDo.Push(newTask)
-	TaskWaitTasksConVar.NotifyAll()
-	TaskCheckMutex.Unlock()
-	ExpectWorkers(1)
-}
 
 ExpectWorkers := !(int x) -> void
 {
