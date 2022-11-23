@@ -94,7 +94,9 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if captureTokens != null
 		{
-			//TODO by ref, and get value  [r&,r = a + b]
+			SyntaxCompress(captureTokens,PriorityData)
+			captureTokens.Print(0)
+			//TODO by ref  [r&]
 			iterC := captureTokens.Down
 			while iterC != null
 			{
@@ -106,14 +108,20 @@ BoxLambdaHolder := class extend BoxExeObj
 
 					if iterC is TokenIndent
 					{
-						capName = iterC->{TokenIndent^}
+						capName = iterC->{TokenIndent^}.Value
 
 						par := TryCheckGetParam(iterC)
 						if par == null
 							iterC.EmitError("Could not get captured value") //todo better error
 						capCall = par
+					}else if iterC.Down?.Right?.GetValue() == "=" and iterC.Down is TokenIndent
+					{
+						capName = iterC.Down->{TokenIndent^}.Value
+						capCall = TryGetExeCall(iterC.Down.Right.Right)
+						if capCall == null
+							iterC.EmitError("Can not get result of right of operator =")
 					}
-					newVar := new FuncLocalParam(par.GetType())
+					newVar := new FuncLocalParam(capCall.GetType())
 					capturedVars.Emplace(capName,capCall,newVar)
 					newVar.NotifyCaptureUse()
 					CurrentFunc.regularVars.Push(newVar)
