@@ -1,5 +1,7 @@
 TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 {
+	return TryGetMetaGlobals(obj)?
+
 	if obj.Down?.Right?.GetValue() == "is"
 	{
 		return TryGetTypeCheck(obj)

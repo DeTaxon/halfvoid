@@ -29,6 +29,11 @@ GlobalVar := class extend BoxUnit
 	AwaitType := virtual !() -> void
 	{
 	}
+	IsThreadLocal := !() -> bool
+	{
+		AwaitType()
+		return Value is ThreadLocalVarFunc
+	}
 }
 
 GlobalVars := List.{GlobalVar^}
@@ -40,7 +45,7 @@ CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar
 	return newVar
 }
 
-GlobalVarFunc := class extend BoxFunc
+GlobalVarFunc := class extend ParamFunc
 {
 	varName := StringSpan
 	pType := Type^

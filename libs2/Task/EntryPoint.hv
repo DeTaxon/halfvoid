@@ -23,8 +23,14 @@ internalInitThread := !() -> void
 
 internalGlobalsDestroy := !() -> void
 {
-	TLockPool.Destroy()
-	internalLockMutex[^] = null
+	for it,ind : $GlobalVariables
+	{
+		if it->Type >= TGCIObject
+		{
+			it.Destroy()
+		}
+	}
+	internalLockMutex[^] = null //TODO use reflection to clean all global variables
 }
 internalThreadDestructor := !() -> void
 {

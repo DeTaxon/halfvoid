@@ -1,0 +1,16 @@
+
+
+InternalsGC := THatch
+
+GCTypeImplement := Type^
+
+InitInternalsGC := !() -> void
+{
+	SubWork(()==> {
+		
+		cNameImp := TokenIndent(StringSpan("TGCObject"))
+		GCTypeImplement = ParseType(cNameImp&)
+
+		InternalsGC.Emit()
+	})
+}
