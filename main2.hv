@@ -6,9 +6,9 @@ SomeClass := class extend TGCObject
 	Create := !() -> !()&->void
 	{
 		hm := () ==> {
-			printf("hm %i\n",3)
+			printf("hm %i %i\n",x,this.RefValue)
 		}
-		//return hm.Capture()
+		return hm.Capture()
 	}
 }
 
@@ -18,9 +18,11 @@ main := !(char^[] args) -> int
 	printf("hey %i\n",a.RefValue)
 	b := a.Create()
 	printf("hey %i\n",a.RefValue)
-	//b()
+	b()
 	//a = null
 	//b()
+	b = null
+	printf("hey %i\n",a.RefValue)
 	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec

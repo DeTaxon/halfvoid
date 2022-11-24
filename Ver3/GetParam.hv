@@ -9,11 +9,15 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	asItm := itm->{TokenIndent^}
 
-
 	metFuncs := HybridQueue.{BoxFuncBody^,4}
+	lastLambdaHolder := LambdaObject^
 
 	for par : UnitStack
 	{
+		if par is LambdaObject
+		{
+			lastLambdaHolder = par->{LambdaObject^}
+		}
 		if par is ConstVar
 		{
 			cv := par->{ConstVar^}
@@ -45,42 +49,53 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 						metFuncs[^].CaptureUsed = true
 
 						varType := mv2.Value.GetVarType()
-						if IsGCPtr(varType)
+
+						if IsGCType(varType) or IsGCPtr(varType)
 						{
-							injCap := metFuncs[0]
-							
-							assert(FuncStack.Size() > 1)
-							parFunc := FuncStack[1]
-							//if injCap.CapturedBySomeVars.Contain(asItm.Value)
-							//{
-							//	return new PtrToRefFuncCall(injCap.CapturedBySomeVars[asItm.Value].1)
-							//}
-							wrk := ref injCap.CapturedBySomeVars[asItm.Value]
-							wrk.0 = mv2
-
-							newVar := MemVar^
-
-							parFunc.EnterScope(() ==> {
-								lVar := new FuncLocalParam(varType.GetPoint())
-								parFunc.regularVars.Push(lVar)
-								lVar.NotifyCaptureUse()
-								newVar = new MemVarRef(asItm.Value,lVar)
-							})
-
-							wrk.1 = newVar
-
-							gt1 := new UnrefFuncCall(mv2.Value.CreateCall())
-							st1 := newVar.Value.CreateCall()
-							objsO := CheckExeDownList
-							objsO.Push(st1)
-							objsO.Push(gt1)
-							wrk.2 = CreateFuncCall(StringSpan("="),objsO)
-							assert(wrk.2 != null)
-
-							return CallFromSomeVar(newVar)
+							assert(lastLambdaHolder != null)
+							getVar := CallFromSomeVar(mv2)
+							resVar := lastLambdaHolder.CaptureObject(asItm.Value,new UnrefFuncCall(getVar),true,asItm)
+							return CallFromSomeVar(resVar)
+						}else {
+							mv2.NotifyCaptureUse()
 						}
 
-						mv2.NotifyCaptureUse()
+						//if IsGCPtr(varType)
+						//{
+						//	injCap := metFuncs[0]
+						//	
+						//	assert(FuncStack.Size() > 1)
+						//	parFunc := FuncStack[1]
+						//	//if injCap.CapturedBySomeVars.Contain(asItm.Value)
+						//	//{
+						//	//	return new PtrToRefFuncCall(injCap.CapturedBySomeVars[asItm.Value].1)
+						//	//}
+						//	wrk := ref injCap.CapturedBySomeVars[asItm.Value]
+						//	wrk.0 = mv2
+
+						//	newVar := MemVar^
+
+						//	parFunc.EnterScope(() ==> {
+						//		lVar := new FuncLocalParam(varType.GetPoint())
+						//		parFunc.regularVars.Push(lVar)
+						//		lVar.NotifyCaptureUse()
+						//		newVar = new MemVarRef(asItm.Value,lVar)
+						//	})
+
+						//	wrk.1 = newVar
+
+						//	gt1 := new UnrefFuncCall(mv2.Value.CreateCall())
+						//	st1 := newVar.Value.CreateCall()
+						//	objsO := CheckExeDownList
+						//	objsO.Push(st1)
+						//	objsO.Push(gt1)
+						//	wrk.2 = CreateFuncCall(StringSpan("="),objsO)
+						//	assert(wrk.2 != null)
+
+						//	return CallFromSomeVar(newVar)
+						//}
+
+						//mv2.NotifyCaptureUse()
 					}
 					return mv2.Value.CreateCall()
 				}else if par is MacroVar {
