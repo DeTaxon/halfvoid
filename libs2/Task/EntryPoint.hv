@@ -7,7 +7,6 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	result = internalHVEntryPoint2(argc,argv)
 	
 	CurrentThread.ThreadMainTask = null
-	CurrentTask = null
 	internalThreadDestructor()
 }
 
@@ -16,6 +15,7 @@ internalInitThread := !() -> void
 	voidVal := calloc(1,Task->TypeSize)
 	internalHVInitClass(voidVal->{Task^}^)
 	CurrentTask = voidVal->{Task^}
+	CurrentTask.DecRef()
 }
 internalThreadDestructor := !() -> void
 {

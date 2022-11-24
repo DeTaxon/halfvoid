@@ -166,6 +166,7 @@ main := !(int argc, char^^ argv) -> int
 	}
 
 	InitInternals()
+	SubWork(() ==> {InitInternalsGC() })
 	InitTaskLocal()
 	InitLambda()
 	RecheckAppends()

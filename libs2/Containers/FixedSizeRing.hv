@@ -18,6 +18,8 @@ FixedSizeRing := class .{@T} extend TGCObject
 		lastSize := InterlockSub(itSize,1)
 		assert(lastSize > 0)
 		result = fixedArray[myIndex]
+		if T->IsGCPointer
+			fixedArray[myIndex] = null
 		if T->TypeGroup == "Point" //TODO and IsGCPtr
 			fiexdArray[myIndex] = null
 	}

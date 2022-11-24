@@ -1,29 +1,10 @@
 
-
-SomeClass := class extend TGCObject
-{
-	x := int
-	Create := !() -> !()&->void
-	{
-		hm := () ==> {
-			printf("hm %i %i\n",x,this.RefValue)
-		}
-		return hm.Capture()
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	a := new SomeClass
-	printf("hey %i\n",a.RefValue)
-	b := a.Create()
-	printf("hey %i\n",a.RefValue)
-	b()
-	//a = null
-	//b()
-	b = null
-	printf("hey %i\n",a.RefValue)
-	
+	for i : 5
+	{
+		TSleep(0.01)
+	}
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

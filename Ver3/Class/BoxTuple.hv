@@ -23,10 +23,25 @@ BoxClassTuple := class extend BoxClass
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
+		needGC := false
+
 		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
+
+			//if IsGCPtr(it) or IsGCType(it)
+			//{
+			//	needGC = true
+			//}
 		}
+
+		//if needGC = true
+		//{
+		//	assert(false)
+		//	//InternalsGC.Await()
+		//	//Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
+		//}
+
 		InheritStep()
 
 		SubWork(() ==> {
