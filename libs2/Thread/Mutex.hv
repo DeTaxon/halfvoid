@@ -11,7 +11,7 @@ AtomicMutex := class
 	}
 }
 
-MutexCondPoolType := class
+MutexCondPoolType := class extend TGCObject
 {
 	freedMtx := List.{Mutex^}
 	mutexMutex := AtomicMutex
@@ -53,8 +53,13 @@ MutexCondPoolType := class
 	Release := !(ConVar^ toAdd) -> void
 	{
 		condMutex.Lock()
-		defer condMutex.Unlock()
 		freedCond.Push(toAdd)
+		condMutex.Unlock()
+	}
+	Destroy := virtual !() -> void
+	{
+		freedMtx.Destroy()
+		freedCond.Destroy()
 	}
 }
 TLockPool := MutexCondPoolType
@@ -118,6 +123,7 @@ TUnlock := !(void^ k) -> void
 	if itEnt.1 == 0
 	{
 		TLockPool.Release(itEnt.0)
+		itEnt.0 = null //TODO GC support for tuples
 		internalLockUsing[itHash].Remove(k)
 	}else{
 		itEnt.2 += 1

@@ -5,8 +5,11 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	internalInitThread()
 
 	result = internalHVEntryPoint2(argc,argv)
-	
+
+	internalGlobalsDestroy()
+
 	CurrentThread.ThreadMainTask = null
+	CurrentThread = null
 	internalThreadDestructor()
 }
 
@@ -16,6 +19,12 @@ internalInitThread := !() -> void
 	internalHVInitClass(voidVal->{Task^}^)
 	CurrentTask = voidVal->{Task^}
 	CurrentTask.DecRef()
+}
+
+internalGlobalsDestroy := !() -> void
+{
+	TLockPool.Destroy()
+	internalLockMutex[^] = null
 }
 internalThreadDestructor := !() -> void
 {
