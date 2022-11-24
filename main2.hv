@@ -1,13 +1,27 @@
 
+
+SomeClass := class extend TGCObject
+{
+	x := int
+	Create := !() -> !()&->void
+	{
+		hm := () ==> {
+			printf("hm %i\n",3)
+		}
+		//return hm.Capture()
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	r := 13
-	jm := () ==> [r&] {
-		r += 100
-	}
-	jm()
-	printf("test %i\n",r)
-
+	a := new SomeClass
+	printf("hey %i\n",a.RefValue)
+	b := a.Create()
+	printf("hey %i\n",a.RefValue)
+	//b()
+	//a = null
+	//b()
+	
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1

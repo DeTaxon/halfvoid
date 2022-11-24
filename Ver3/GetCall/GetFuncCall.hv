@@ -60,14 +60,25 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				fnc := ob->{BoxFuncBody^}
 				if fnc.Attrs.IsMethod
 				{
+					baseType := fnc.Params[0].GetVarType()
+
 					resTryCall := BoxExeObj^
 					try
 					{
-						tkn1 := TokenIndent(StringSpan("this"))
-						tkn1.Line = itm.Line
-						vr := TryGetExeCall(tkn1&)
+						thisObj := new PackedExeObj
+						thisObj.mainCall = new BlankObjectExe(baseType,true)
+						
 
-						resTryCall = innerTryGetMethodCall(asInd.Value,vr,Objs,consts) //TODO: check for recursion this.func -> func -> this.func
+						resTryCall = innerTryGetMethodCall(asInd.Value,thisObj,Objs,consts) //TODO: check for recursion this.func -> func -> this.func
+
+						if resTryCall != null
+						{
+							tkn1 := TokenIndent(StringSpan("this"))
+							tkn1.Line = itm.Line
+							vr := TryGetExeCall(tkn1&)
+							thisObj.mainCall = vr
+							assert(vr != null)
+						}
 					}catch(IException^ e){}
 					if resTryCall != null
 						return resTryCall

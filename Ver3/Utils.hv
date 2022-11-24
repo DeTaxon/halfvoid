@@ -40,11 +40,13 @@ PackedExeObj := class extend BoxExeObj
 	}
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
-		assert(false)
+		preCalls[^].PrintDefaultUse(f)
+		mainCall.PrintPointPre(f)
+		postCalls[^].PrintDefaultUse(f)
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
 	{
-		assert(false)
+		mainCall.PrintPointUse(f)
 	}
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{
@@ -57,4 +59,17 @@ PackedExeObj := class extend BoxExeObj
 		mainCall.PrintUse(f)
 	}
 
+}
+BlankObjectExe := class extend BoxExeObj
+{
+	IsRefObj := bool
+	this := !(Type^ tp,bool isRef) -> void
+	{
+		ObjType = tp
+		IsRefObj = isRef
+	}
+	IsMem := virtual !() -> bool
+	{
+		return IsRefObj
+	}
 }
