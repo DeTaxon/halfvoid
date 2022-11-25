@@ -39,12 +39,24 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 
 		SyntaxCompress(tk.Down.Right,LexHVInputVars)
 
+		baseFuncType := TypeFunc^
+
 		if skob.Right.GetValue() == "&"
 		{
 			isLambda = true
 			types[k] = GTypeVoidP
 			isRefs[k] = false
 			k += 1
+
+			if tp != null and tp is in TypePoint 
+				and tp.Base is TypeClass 
+				and tp.Base->{TypeClass^}.ToClass.TemplateParent == GCLambda
+			{
+				lCls := tp.Base->{TypeClass^}.ToClass
+				clsFnc := lCls.Constants.Constants[0]->{ConstType^}.Value.Base->{TypeFunc^}
+				baseFuncType = FuncTypePopFront(clsFnc)
+			}
+
 		}
 
 
@@ -64,7 +76,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				if t == null
 					return null
 
-				if iter.Right?.GetValue() == "&"
+				if iter.Right?.GetValue() == "&" //TODO switch to ref
 				{
 					isRefs[k] = true
 					iter = iter.Right
@@ -98,7 +110,13 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			resRef = true
 			iter = iter.Right
 		}
-		resType = CheckTemplateType(null,iter,resCnsts)
+		if baseFuncType != null
+		{
+			resType = CheckTemplateType(baseFuncType.ResultType,iter,resCnsts)
+		}else{
+			resType = CheckTemplateType(null,iter,resCnsts)
+		}
+
 
 		if resType == null
 			return null

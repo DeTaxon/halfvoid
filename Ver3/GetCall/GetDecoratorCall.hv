@@ -21,6 +21,9 @@ TryGetDecoratorCall := !(Token^ itm) -> BoeExeObj^ //TODO return complex object 
 	resCall = GetConstString(resCall)
 	
 	lmbd := CreateHeadlessLambda(itm.Down.Right)
+	assert(lmbd != null)
+	assert(lmbd is BoxLambdaHolder)
+	lmbd = lmbd->{BoxLambdaHolder^}.CreateOneFuncLambda()
 	
 	assert(lmbd != null)
 	objs := CheckExeDownList

@@ -1,6 +1,16 @@
 
+"@double call" := !(!()&->@T cb) -> T
+{
+	return cb()*2
+}
+
 main := !(char^[] args) -> int
 {
+	x := @double 15
+	printf("hm %i\n",x)
+	// @work {
+	// 	printf("hi\n")
+	// }
 	//timeout := u64[2]
 	//timeout[0] = 1 //1 sec
 	//timeout[1] = 1
