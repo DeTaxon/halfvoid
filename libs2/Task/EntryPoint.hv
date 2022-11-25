@@ -29,8 +29,15 @@ internalGlobalsDestroy := !() -> void
 		{
 			it.Destroy()
 		}
+		if it->TypeGroup == "Array"
+		{
+			if it->TypeBase->IsGCPointer
+			{
+				for c : it
+					c = null
+			}
+		}
 	}
-	internalLockMutex[^] = null //TODO use reflection to clean all global variables
 }
 internalThreadDestructor := !() -> void
 {

@@ -59,14 +59,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	}
 	if right.Value == "IsGCPointer"
 	{
-		typ := ParseType(obj.Down)
+		typ := getMetaDownType(obj.Down)
 		if typ == null
 		{
-			dwnObj := TryGetExeCall(obj.Down)
-			if dwnObj != null
-				typ = dwnObj.GetType()
-			if typ == null
-				obj.Down.EmitError("Object for IsGCPointer must have a type")
+			obj.Down.EmitError("Object for IsGCPointer must have a type")
 		}
 		if IsGCPtr(typ)
 			return GBoolTrue
@@ -78,6 +74,17 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if dwnObj == null
 			obj.EmitError("Can not get type")
 		return GetConstType(dwnObj.GetType())
+	}
+	if right.Value == "TypeBase"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			obj.Down.EmitError("Object for TypeBase must have a type")
+		}
+		if typ.Base == null
+			obj.Down.EmitError("Object for TypeBase does not have base class")
+		return GetConstType(typ.Base)
 	}
 	if right.Value == "TypeId"
 	{
@@ -163,6 +170,25 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	right.EmitError("Unknown metafield")
 	
 	assert(false)
+	return null
+}
+
+getMetaDownType := !(Token^ obj) -> Type^
+{
+	typ := ParseType(obj)
+	if typ != null
+		return typ
+
+	dwnObj := TryGetExeCall(obj)
+	if dwnObj != null
+	{
+		if dwnObj is ConstType
+		{
+			return dwnObj->{ConstType^}.Value
+		}
+		return dwnObj.GetType()
+	}
+
 	return null
 }
 
