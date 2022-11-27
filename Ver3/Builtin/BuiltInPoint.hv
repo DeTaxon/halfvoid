@@ -80,8 +80,15 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 		a := objs[0].GetType()
 		if a is in TypePoint or a is TypeArr
 		{
-			a = a.Base.GetPoint()
-			return GetFuncType(2,![a,GTypeInt],null,a.Base,true,false)
+			a2 := a.Base.GetPoint()
+			if a.Base is TypeClass
+			{
+				if a.Base->{TypeClass^}.ToClass.IsViewType()
+				{
+					return null
+				}
+			}
+			return GetFuncType(2,![a2,GTypeInt],null,a.Base,true,false)
 		}
 		return null
 	}

@@ -40,7 +40,24 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 }
 
 
+//"[]" := !(@T[] x,int i) -> ref T
+//TODO make some check so only one who implement ArrayView can be used
+//or any way to decline fixed array usage
+//#TemplateCheck {
+//	if not (arg[0] >= TArrayView.{@T})
+//		CancelUsage()
+//}
+//{
+//	assert(x != null)
+//	return x^[i]
+//}
+
 "[]" := !(TArrayView.{@T}^ x,int i) -> ref T
+{
+	assert(x != null)
+	return x^[i]
+}
+"[]" := !(Vector.{@T}^ x,int i) -> ref T
 {
 	assert(x != null)
 	return x^[i]

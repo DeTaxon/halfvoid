@@ -1,11 +1,10 @@
 
 TaskWorkersToDo := List.{Task^}
 
-"@work call" := !(!()&->void lmbd ) -> void
+"@work call" := !(!()&->@T lmbd ) -> T
 {
 	l2 := lmbd
-	newTask := new Task(lmbd)
-	spawnWorkInner(() ==> {
+	newTask := spawnWorkInner(() ==> {
 		l2()
 	})
 	newTask.finishedWork.Await()

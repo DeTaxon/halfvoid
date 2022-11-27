@@ -325,6 +325,20 @@ BoxClass := class extend BoxUnit
 		while stackSize < UnitStack.Size()
 			UnitStack.Pop()
 	}
+	IsViewType := !() -> bool
+	{
+		AwaitTypeState()
+		InternalsHatch.Await()
+		if TemplateParent == ArrayViewTemplate
+			return true
+
+		for it : Parents
+		{
+			if it.IsViewType()
+				return true
+		}
+		return false
+	}
 }
 TypeClass := class extend Type
 {

@@ -252,9 +252,16 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				}else{
 					tpClass = tp.Base->{TypeClass^}.ToClass
 				}
-				if tpClass.TemplateParent != ArrayViewTemplate
+				if not tpClass.IsViewType()
 					return null
-				dwnType = tpClass.Constants?.Constants[0]->{ConstType^}.Value
+
+				clItr := tpClass
+				while clItr.TemplateParent != ArrayViewTemplate
+				{
+					assert(clItr.Parents.Size() != 0)
+					clItr = clItr.Parents[0] //todo Multi inherence support
+				}
+				dwnType = clItr.Constants?.Constants[0]->{ConstType^}.Value
 			}
 			if tp? is TypeArr
 			{

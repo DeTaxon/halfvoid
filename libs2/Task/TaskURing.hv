@@ -26,3 +26,18 @@ TaskDoUring := !( !(void^)&->void cb) -> void
 // 	CurrentThread.ThreadMainTask.switchToTask()
 // 	TaskPollWorkInProgress -= 1
 // }
+
+	//example
+	//timeout := u64[2]
+	//timeout[0] = 1 //1 sec
+	//timeout[1] = 1
+
+	//tst := URing()
+
+	//sqe := tst.GetSQE()
+	//sqe.opcode = 11 //TIMEOUT
+	//sqe.addr&->{void^^}^ = timeout[0]&
+	//sqe.len = 1
+	//sqe.off = 1
+	//tst.Submit()
+	//tst.WaitOne()
