@@ -38,7 +38,7 @@ Token := class
 			{
 				cv := it->{TypeVar^}
 				ln << "var " << cv.Name << " = " << cv.Value.GetBADStr() << "\n"
-			}
+			}else
 			if it is ConstVar
 			{
 				cv := it->{ConstVar^}
@@ -48,6 +48,11 @@ Token := class
 				}else{
 					ln << "var " << cv.Name << " = unknown\n"
 				}
+			}else
+			if it is in NamedVar
+			{
+				nv := it->{NamedVar^}
+				ln << "local var " << nv.Name << " as unknown type\n" 
 			}
 		}
 		throw new Exception(ln.Str()) //todo memory

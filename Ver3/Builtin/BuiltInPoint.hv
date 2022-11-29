@@ -81,7 +81,7 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 		if a is in TypePoint or a is TypeArr
 		{
 			a2 := a.Base.GetPoint()
-			if a.Base is TypeClass
+			if a is in TypePoint and a.Base is TypeClass
 			{
 				if a.Base->{TypeClass^}.ToClass.IsViewType()
 				{

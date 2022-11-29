@@ -40,7 +40,7 @@ SubWork := !(!()&->void x) -> void
 
 		if stacks.Size() != 0
 		{
-        	UnitStack.Push(stacks^[^])
+        		UnitStack.PushFront(stacks^[^])
 		}
 
         subLambda()

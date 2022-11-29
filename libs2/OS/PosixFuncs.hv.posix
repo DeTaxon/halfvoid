@@ -60,12 +60,20 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 	
 	defer closedir(dirFd)
 
+	nowEntry := u8[1024]
+
 	while true
 	{
-		nowEntry := readdir(dirFd)
-		if nowEntry == null
+		resEntry := void^
+		readdir_r(dirFd,nowEntry[0]&,resEntry&)
+		if resEntry == null
 			return void
-		view := StringSpan(nowEntry->{char^}[19]&)
+		//nowEntry := readdir(dirFd)
+		//if nowEntry == null
+		//	return void
+		//view := StringSpan(nowEntry->{char^}[19]&)
+		view := StringSpan(nowEntry[19]&)
+		printf("hm %s\n",view.GetString().Str())
 		cb(view)
 	}
 

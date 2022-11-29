@@ -1,9 +1,16 @@
 
+hm := class
+{
+	arr := vec4f
+}
 
 main := !(char^[] args) -> int
-{	
-	k := new Vector.{int}(100)
-	k[99] = 15
+{
+	a := hm
+	b := hm
+	@work {
+		a.arr = b.arr
+	}
 	return 0
 }
 

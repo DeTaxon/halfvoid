@@ -28,7 +28,6 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	vr := TryGetExeCall(itm.Down)
 
-	assert(vr != null)
 	if vr == null return null
 
 	Objs := CheckExeDownList

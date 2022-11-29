@@ -52,6 +52,7 @@
 		"opendir" : "void^,char^",
 		"closedir" : "int,void^",
 		"readdir" : "void^,void^",
+		"readdir_r" : "int,void^,void^,void^",
 		"stat" : "int,char^,void^",
 		"lstat" : "int,char^,void^",
 

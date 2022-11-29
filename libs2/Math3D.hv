@@ -153,3 +153,11 @@ centf := class
 	}
 }
 
+
+"/" := !(vec4f x, float y) -> vec4f
+{
+	result.x = x.x / y
+	result.y = x.y / y
+	result.z = x.z / y
+	result.w = x.w / y
+}

@@ -20,6 +20,7 @@ String := class extend StringView
 	{
 		itSize = size
 		charPtr = malloc(itSize + 1)->{char^}
+		assert(charPtr != null)
 		memcpy(charPtr,inp,itSize)
 		charPtr[itSize] = 0
 	}

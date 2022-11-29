@@ -86,6 +86,15 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			obj.Down.EmitError("Object for TypeBase does not have base class")
 		return GetConstType(typ.Base)
 	}
+	if right.Value == "TypeName"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			obj.Down.EmitError("Object for TypeBase must have a type")
+		}
+		return GetExeString(GetConstString(typ.GetBADStr()))
+	}
 	if right.Value == "TypeId"
 	{
 		itType8 := ParseType(obj.Down)

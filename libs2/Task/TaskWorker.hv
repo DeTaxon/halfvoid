@@ -17,14 +17,17 @@ TaskWorker := class extend TGCObject
 	Destroy := virtual !() -> void
 	{
 		AllTasks.Destroy()
+		itThread?.Join()
 		ThreadMainTask = null
 	}
 	CreateThread := !() -> void
 	{
-		itThread = new Thread(() ==> {
-			CurrentThread = this&
+		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a wait for passing variable as weak pointer
+			CurrentThread = wk->{TaskWorker^}
 			CurrentThread.ThreadMainTask = CurrentTask
 			EnterTaskThreadCycle(false)
+			CurrentThread.ThreadMainTask = null
+			CurrentThread = null
 		})
 	}
 	PopReadyTask := !() -> Task^
