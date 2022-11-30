@@ -1,15 +1,13 @@
 
-hm := class
-{
-	arr := vec4f
-}
-
 main := !(char^[] args) -> int
 {
-	a := hm
-	b := hm
-	@work {
-		a.arr = b.arr
+	for i : 10
+	{
+		//@work 
+		{
+			TSleep(0.5)
+			printf("here\n")
+		}
 	}
 	return 0
 }

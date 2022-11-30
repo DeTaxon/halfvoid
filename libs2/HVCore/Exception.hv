@@ -5,6 +5,7 @@ gExceptionStackSize := task_local int[256]
 
 internalEnterGCFunction := !(void^^ arr,int maxSize) -> void
 {
+	assert(gExceptionPtrIndex < 256)
 	gExceptionStackArr[gExceptionPtrIndex] = arr
 	gExceptionStackSize[gExceptionPtrIndex] = maxSize
 	gExceptionPtrIndex += 1

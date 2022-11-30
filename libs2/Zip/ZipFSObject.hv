@@ -1,5 +1,5 @@
 
-vRepoObject := class
+vRepoObject := class extend TGCObject
 {
 	objName := String^
 	upFolder := vRepoFolder^

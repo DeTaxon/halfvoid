@@ -326,6 +326,7 @@ CreateBuiltinsInt := !() -> void
 	})
 	ForEachFloatType( (x) ==> {
 		strt := GetFuncType(![x,x],x)
+		strtToInt := GetFuncType(![x,x],GTypeInt)
 		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		unarMinusType := GetFuncType(![x],x)
 		baseRefed := GetFuncType(![x,x],![true,false],x)
@@ -348,6 +349,9 @@ CreateBuiltinsInt := !() -> void
 		{
 			bSpace.Functions[StringSpan("suffix deg")].Push(new BuiltInIntMinus(unarMinusType,"fmul","0.017453292519943295") )
 		}
+
+		bSpace.Functions[StringSpan("<=>")].Push(new BuiltInFloatSpaceship(strtToInt) )
+
 		bSpace.Functions[StringSpan(">=")].Push(new BuiltInIntBase(cmpType,"fcmp uge") )
 		bSpace.Functions[StringSpan("<=")].Push(new BuiltInIntBase(cmpType,"fcmp ule") )
 		bSpace.Functions[StringSpan(">")].Push(new BuiltInIntBase(cmpType,"fcmp ugt") )
@@ -356,4 +360,39 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp ueq") )
 		bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp une") )
 	})
+}
+BuiltInFloatSpaceship := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ iType) -> void
+	{
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+		lst[1].PrintPre(f)
+
+		tpFunc := GetType()->{TypeFunc^}
+		tp := tpFunc.Params[0].ItType
+
+		f^ << "%TDiff" << resId << " = fsub " 
+		tp.PrintType(f)
+		f^ << " " 
+		lst[0].PrintUse(f)
+		f^ <<  ", "
+		lst[1].PrintUse(f)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "%TIsVal" << resId << " = fcmp une " tp.PrintType(f) f^ << "%TDiff" << resId << " , 0.0\n"
+		f^ << "%TIsValInt" << resId << " = sext i1 %TIsVal" << resId << " to i32\n"
+		f^ << "%TIsNeg" << resId << " = fcmp ult " tp.PrintType(f) f^ << "%TDiff" << resId << " , 0.0\n"
+		f^ << "%TIsNegInt" << resId << " = select i1 %TIsNeg" << resId << ", i32 -1, i32 1\n"
+
+		f^ << "%T" << resId << " = and i32 %TIsNegInt" << resId << ", %TIsValInt" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
 }

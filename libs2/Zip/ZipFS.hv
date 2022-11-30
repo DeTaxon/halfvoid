@@ -29,10 +29,6 @@ vRepo := class extend TGCObject
 		zipFolders.Insert(itObj)
 		rootFolder.subZipFolders.Push(itObj.zipRoot&)
 	}
-	// IsExist := !(StringSpan p) -> bool
-	// {
-	// 	return getObject(p,rootFolder) != null
-	// }
 	ReadFolder := !(StringView p,bool recur,!(vRepoFile^)& -> void callb) -> void
 	{
 		fil := getObject(p,rootFolder)
@@ -74,16 +70,12 @@ vRepo := class extend TGCObject
 			pth := iterFolder.GetPath()
 			osReadFolder(pth.Str(),x ==> {
 
-				if x.Str() == "." or x.Str() == ".."
+				if x == "." or x == ".."
 					return void
 
 				strName := x.GetString()
 
-				bigPath := TEchoStream
-				bigPath << iterFolder.GetPath()
-				bigPath << "/"
-				bigPath << strName.Str()
-				absPath := bigPath.GetString()
+				absPath := CreateString(iterFolder.GetPath(),"/",strName)
 
 				if osIsFolder(absPath.Str())
 				{
@@ -99,7 +91,7 @@ vRepo := class extend TGCObject
 					{
 						return void
 					}
-					if strName.Str()[-4..0] == ".zip"
+					if strName^[-4..0] == ".zip"
 					{
 						zips.Push(strName)
 					}else{
@@ -117,11 +109,7 @@ vRepo := class extend TGCObject
 		strPath := iterFolder.GetPath()
 		for z : zips
 		{
-
-			echo := TEchoStream
-			echo << strPath << "/" << z
-
-			absPath := echo.GetString()
+			absPath := CreateString(strPath,"/",z)
 
 			tt := new ZipFile
 			tt.AnalizeFile(absPath.Str())
@@ -188,51 +176,9 @@ vRepo := class extend TGCObject
 
 	GetFile := !(StringView fileName,vRepoFolder^ rrF) -> vRepoFile^
 	{
-		itms := List.{StringSpan}
-		iterFolder := rrF
-	
-		fileName.DivideStr("\\/",x ==> { itms.Push(x) })
-		for cheks,i : itms
-		{
-			if i == 0 and cheks == "." continue
-
-			ExamineFolder(iterFolder)
-				
-			found := false
-			for it : iterFolder.subFolders
-			{
-				if cheks == it.objName.Str()
-				{
-					iterFolder = it
-					found = true
-					break
-				}
-			}
-			
-			if found continue
-
-			if cheks == ".."
-			{
-				iterFolder = iterFolder.upFolder
-				if iterFolder == null
-					return null
-				continue
-			}
-			
-
-			st := cheks.GetString()
-			if preferVirtual
-			{
-				if iterFolder.subVirtualFiles.Contain(st)
-					return iterFolder.subVirtualFiles[st]
-			}
-			if iterFolder.subFiles.Contain(st)
-				return iterFolder.subFiles[st]
-			if iterFolder.subVirtualFiles.Contain(st)
-				return iterFolder.subVirtualFiles[st]
-
-			throw new Exception("File not found")
-		}
+		obj := getObject(fileName,rrF)
+		if obj is vRepoFile
+			return obj->{vRepoFile^}
 		throw new Exception("File not found")
 	}
 	getObject := !(StringView fileName,vRepoFolder^ rrF) -> vRepoObject^
@@ -281,7 +227,7 @@ vRepo := class extend TGCObject
 		}
 		return iterFolder
 	}
-	// Destroy := !() -> void
-	// {
-	// }
+	//Destroy := virtual !() -> void //TODO
+	//{
+	//}
 }
