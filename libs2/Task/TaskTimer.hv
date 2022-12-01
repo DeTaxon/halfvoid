@@ -13,6 +13,6 @@ TSleep := !(double val) -> void
 	val2.1 = null //TODO  make SortedPush(!{endTime,CurrentTask}), but garbage collection is not working for tuples
 	if someoneOnLoop
 		TaskSleepConVar.Notify()
-	TaskCheckMutex.Unlock()
 	CurrentThread.ThreadMainTask.switchToTask()
+	TaskCheckMutex.Unlock()
 }

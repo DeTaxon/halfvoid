@@ -171,6 +171,8 @@ BoxClass := class extend BoxUnit
 
 		for fil,i : Fields
 		{
+			fil.Value.NotifyUse()
+
 			fPath := new FieldPath(ItType,fil.Value)
 			fPath.Field = fil
 			fPath.Index = posOffset + i
@@ -398,6 +400,10 @@ TypeClass := class extend Type
 		if AsPoint == null
 			AsPoint = new TypePointComplex(this&)
 		return AsPoint
+	}
+	NotifyUse := virtual !() -> void
+	{
+		ToClass.StartParseBody()
 	}
 }
 TypePointComplex := class extend TypePoint

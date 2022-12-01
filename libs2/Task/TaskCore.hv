@@ -2,6 +2,8 @@
 
 EnterTaskThreadCycle := !(bool isMainThread) -> void
 {
+	TaskCheckMutex.Lock()
+	defer TaskCheckMutex.Unlock()
 	
 	while true
 	{
@@ -16,13 +18,11 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		TaskCheckMutex.Lock()
 
 		doTask := ct.PopReadyTask()
 
 		if doTask != null
 		{
-			TaskCheckMutex.Unlock()
 			doTask.switchToTask()
 			continue
 		}
@@ -69,8 +69,6 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			}
 			TaskPausedWorkers -= 1
 		}
-		TaskCheckMutex.Unlock()
-
 
 		if TaskQuitProgram
 			break

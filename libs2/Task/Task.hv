@@ -14,10 +14,12 @@ Task := class extend TGCObject
 	}
 	startTaskThread := !() -> void
 	{
+		TaskCheckMutex.Unlock()
 		firstStartOS()
 		taskLambda()
+		TaskCheckMutex.Lock()
 		CurrentThread.DeleteTasks.Push(this&)
-		finishedWork.Emit()
+		finishedWork.EmitInner()
 		taskLambda = null
 		CurrentThread.ThreadMainTask.switchToTask()
 	}

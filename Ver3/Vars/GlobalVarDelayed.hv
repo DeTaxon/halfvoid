@@ -61,6 +61,7 @@ GlobalVarDelayed := class extend GlobalVar
 		if tp != null
 		{
 			assert(tp != GTypeVoid)
+			tp.NotifyUse()
 			Value = new GlobalVarFunc(Name,tp)
 			if isThreadLocal
 				Value->SetType(ThreadLocalVarFunc)
