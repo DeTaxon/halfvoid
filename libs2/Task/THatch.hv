@@ -20,9 +20,6 @@ THatchCounter := class
 	}
 }
 
-//THatchLock := !(void^ k) -> void { TLock(k) }
-//THatchUnlock := !(void^ k) -> void { TUnlock(k) }
-
 THatch := class
 {
 	flag := bool
@@ -30,7 +27,6 @@ THatch := class
 
 	Emit := !() -> void
 	{
-		THatchLock(this&)
 		TaskCheckMutex.Lock()
 		flag = true
 		itr := next_wakeup
@@ -42,11 +38,9 @@ THatch := class
 		}
 		TaskWaitTasksConVar.NotifyAll()
 		TaskCheckMutex.Unlock()
-		THatchUnlock(this&)
 	}
 	EmitInner := !() -> void
 	{
-		//THatchLock(this&)
 		flag = true
 		itr := next_wakeup
 		while itr != null
@@ -56,19 +50,16 @@ THatch := class
 			itr = itr.next_point
 		}
 		TaskWaitTasksConVar.NotifyAll()
-		//THatchUnlock(this&)
 	}
 	Await := !() -> void
 	{
 		if flag
 			return void
-		//THatchLock(this&)
 		pt := TITaskPausePoint
 		//pt.Pause(next_wakeup&)
 		pt.next_point = next_wakeup
 		next_wakeup = pt&
 		pt.itTask = CurrentTask
-		//THatchUnlock(this&)
 		CurrentThread.switchToMain()
 	}
 }

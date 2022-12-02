@@ -3,9 +3,10 @@ main := !(char^[] args) -> int
 {
 	for i : 10
 	{
+		@work
 		{
-			TSleep(0.5)
 			printf("here\n")
+			TSleep(0.5)
 		}
 	}
 	return 0

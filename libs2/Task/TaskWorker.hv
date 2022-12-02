@@ -68,7 +68,7 @@ TaskWorkerCreated := class extend TaskWorker
 		{
 			hm := TaskWorkersToDo.Pop()
 			hm.CreateStack()
-			AllTasks.Insert(hm)
+			//AllTasks.Insert(hm)
 			return hm
 		}
 		return null

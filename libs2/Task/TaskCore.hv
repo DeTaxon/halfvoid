@@ -3,7 +3,6 @@
 EnterTaskThreadCycle := !(bool isMainThread) -> void
 {
 	TaskCheckMutex.Lock()
-	defer TaskCheckMutex.Unlock()
 	
 	while true
 	{
@@ -49,7 +48,9 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			}
 			if TaskLoopWorkCounter != 0
 			{
+				TaskCheckMutex.Unlock()
 				TaskCodePollWork(waitTime)
+				TaskCheckMutex.Lock()
 			}
 			someoneOnLoop = false
 		}else{
@@ -62,8 +63,14 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 					cntr += it.AllTasks.Size()
 				}
 				if cntr == 0
+				{
 					TaskQuitProgram = true
-				TaskWaitTasksConVar.NotifyAll()
+					TaskWaitTasksConVar.NotifyAll()
+				}else{
+					if TaskMainTaskWorker.PendingTasks.Size() != 0
+						TaskWaitTasksConVar.NotifyAll()
+					TaskWaitTasksConVar.Wait(TaskCheckMutex)
+				}
 			}else{
 				TaskWaitTasksConVar.Wait(TaskCheckMutex)
 			}
@@ -73,6 +80,8 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		if TaskQuitProgram
 			break
 	}
+
+	TaskCheckMutex.Unlock()
 
 	if isMainThread
 	{

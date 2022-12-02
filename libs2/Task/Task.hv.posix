@@ -11,6 +11,9 @@ AppendClass Task
 	
 	CreateStack := !() -> void
 	{
+		if stackPtr != null
+			return void
+
 		getcontext(uContext[0]&)
 		stackSize := 4*1024*1024
 		stackPtr = malloc(stackSize) //TODO set stack size

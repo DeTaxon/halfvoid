@@ -3,11 +3,25 @@ TaskWorkersToDo := List.{Task^}
 
 "@work call" := !(!()&->@T lmbd ) -> T
 {
-	l2 := lmbd
-	newTask := spawnWorkInner(() ==> {
-		l2()
-	})
-	newTask.finishedWork.Await()
+	TaskCheckMutex.Lock() //TODO optimize
+
+	ExpectWorkers(1)
+
+	TaskWorkersToDo.Push(CurrentTask)
+	TaskWaitTasksConVar.NotifyAll()
+
+	myThread := CurrentThread->{void^}
+	CurrentThread.switchToMain()
+
+	TaskCheckMutex.Unlock()
+	lmbd()
+	TaskCheckMutex.Lock()
+
+	myThread->{TaskWorker^}.PendingTasks.Push(CurrentTask)
+	TaskWaitTasksConVar.NotifyAll()
+	CurrentThread.switchToMain()
+
+	TaskCheckMutex.Unlock()
 }
 
 SpawnWork := !(!()&->void lmbd) -> Task^
