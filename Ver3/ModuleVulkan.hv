@@ -681,6 +681,9 @@ ModuleVulkan := class extend ModuleInterface
 		assert(tp != null)
 		assert(tp is in TypePoint)
 
+		if Units.Contain(name)
+			return Units[name] //TODO vulkan module does not support multi threading, wtf
+
 		vr := CreateGlobalVar(StringSpan(name),tp,false)
 		Units[name] = vr
 		return vr
