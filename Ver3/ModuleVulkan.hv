@@ -745,10 +745,10 @@ ModuleVulkan := class extend ModuleInterface
 			if ind == "vkCreateInstance"
 				continue
 			dt << ind << "&->{void^^}^ = vkGetInstanceProcAddr(vkInstance,\"" << ind << "\")\n"
-			if DebugMode
-			{
-				dt << "printf(\" loading %p %s\\n\","<< ind << ",\"" << ind << "\")\n"
-			}
+			//if DebugMode
+			//{
+			//	dt << "printf(\" loading %p %s\\n\","<< ind << ",\"" << ind << "\")\n"
+			//}
 		}
 
 		st := dt.Str()
