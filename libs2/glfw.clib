@@ -17,6 +17,7 @@
 		"GLFW_KEY_SLASH" :    47,
 		"GLFW_KEY_SEMICOLON" :    59,
 		"GLFW_KEY_EQUAL" :    61,
+		"GLFW_KEY_ESCAPE" :    256,
 		"GLFW_FALSE"    :	0,
 		"GLFW_RELEASE"  :	0,
 		"GLFW_PRESS"    :	1,

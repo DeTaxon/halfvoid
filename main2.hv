@@ -1,14 +1,10 @@
 
 main := !(char^[] args) -> int
 {
-	test := vec4f
-	test.x = 10.0f
-	test.y = 20.0f
-	test.z = 30.0f
-	test.w = 40.0f
-
-	test = test / 20.0f
-	printf("hm %f %f %f %f\n",test.x,test.y,test.z,test.w)
+	x := 15
+	y := ref x
+	y = 100
+	printf("hey %i\n",x)
 	return 0
 }
 

@@ -47,33 +47,13 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		ModifyStackAllocatedVar(vr,resVar.Inits)
 		return resVar
 	}
-
-	// cls := TryParseClass(varToken)
-	// if cls != null
-	// {
-	// 	if cls is in BoxClass
-	// 	{
-	// 		cls2 := cls->{BoxClass^}
-	// 		cls2.SetName(name)
-	// 		return new TypeVar(name,cls2.ItType)
-	// 	}
-	// 	assert( cls is in BoxClassTemplate)
-	// 	cls3 := cls->{BoxClassTemplate^}
-	// 	cls3.SetName(name)
-	// 	return new TemplateTypeVar(name,cls3)
-	// }
-
-	// fnc := TryParseFunction(varToken)
-
-	// if fnc != null
-	// {
-	// 	if fnc is in BoxFuncTemplate
-	// 	{
-	// 		return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
-	// 	}
-	// 	return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
-	// }
-
+	
+	refVar := bool
+	if varToken.GetValue() == "ref"
+	{
+		refVar = true
+		varToken = varToken.Right
+	}
 	exeObj := TryGetExeCall(varToken)
 	if exeObj != null
 	{
@@ -109,17 +89,32 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				fc := exeObj->{BoxFuncCall^}
 				vr = fc.ResultVar
 			}
+			if refVar and not exeObj.IsMem()
+			{
+				varToken.EmitError("can not make reference")
+			}
 
 			if vr == null
 			{
 				isGC := IsGCPtr(exeObj.GetType())
 
-				vr = CreateVar(exeObj.GetType(),false)
-				mVar = new MemVarBorrowed(name,vr)
+				if refVar
+				{
+					vr = CreateVar(exeObj.GetType().GetPoint(),false)
+					mVar = new MemVarBorrowedRef(name,vr)
+				}else{
+					vr = CreateVar(exeObj.GetType(),false)
+					mVar = new MemVarBorrowed(name,vr)
+				}
 
 				objs2 := CheckExeDownList
 				objs2.Push(vr.CreateCall())
-				objs2.Push(exeObj)
+				if refVar
+				{
+					objs2.Push(new UnrefFuncCall(exeObj))
+				}else{
+					objs2.Push(exeObj)
+				}
 				setCall := innerTryGetInfixCall(StringSpan("="),objs2,varToken)
 				if setCall == null
 					return null
@@ -309,6 +304,13 @@ MemVarBorrowed := class extend MemVar
 	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 		pDebugMeta(f)
+	}
+}
+MemVarBorrowedRef := class extend MemVarBorrowed
+{
+	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
+	{
+		this."MemVar.this"(vName,clFunc)
 	}
 }
 

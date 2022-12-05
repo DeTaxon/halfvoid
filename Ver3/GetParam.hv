@@ -60,44 +60,8 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 							mv2.NotifyCaptureUse()
 						}
 
-						//if IsGCPtr(varType)
-						//{
-						//	injCap := metFuncs[0]
-						//	
-						//	assert(FuncStack.Size() > 1)
-						//	parFunc := FuncStack[1]
-						//	//if injCap.CapturedBySomeVars.Contain(asItm.Value)
-						//	//{
-						//	//	return new PtrToRefFuncCall(injCap.CapturedBySomeVars[asItm.Value].1)
-						//	//}
-						//	wrk := ref injCap.CapturedBySomeVars[asItm.Value]
-						//	wrk.0 = mv2
-
-						//	newVar := MemVar^
-
-						//	parFunc.EnterScope(() ==> {
-						//		lVar := new FuncLocalParam(varType.GetPoint())
-						//		parFunc.regularVars.Push(lVar)
-						//		lVar.NotifyCaptureUse()
-						//		newVar = new MemVarRef(asItm.Value,lVar)
-						//	})
-
-						//	wrk.1 = newVar
-
-						//	gt1 := new UnrefFuncCall(mv2.Value.CreateCall())
-						//	st1 := newVar.Value.CreateCall()
-						//	objsO := CheckExeDownList
-						//	objsO.Push(st1)
-						//	objsO.Push(gt1)
-						//	wrk.2 = CreateFuncCall(StringSpan("="),objsO)
-						//	assert(wrk.2 != null)
-
-						//	return CallFromSomeVar(newVar)
-						//}
-
-						//mv2.NotifyCaptureUse()
 					}
-					return mv2.Value.CreateCall()
+					return CallFromSomeVar(mv2)
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
@@ -229,6 +193,10 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
 {
+	if vr is MemVarBorrowedRef
+	{
+		return new PtrToRefFuncCall(vr->{MemVar^}.Value.CreateCall())
+	}
 	if vr is MemVarRef
 	{
 		return new PtrToRefFuncCall(vr->{MemVar^}.Value.CreateCall())
