@@ -1,10 +1,10 @@
 
 main := !(char^[] args) -> int
 {
-	x := 15
-	y := ref x
-	y = 100
-	printf("hey %i\n",x)
+	tst := FSGetFile("libwebp-7.dll")
+	mp := tst.GetMap()
+
+	win32LoadLibrary(mp.Get(),tst.Size())
 	return 0
 }
 
