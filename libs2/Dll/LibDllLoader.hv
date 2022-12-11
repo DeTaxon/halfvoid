@@ -160,52 +160,57 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 	sections := nt_part.OptionalHeader&->{char^}[nt_part.FileHeader.SizeOfOptionalHeader]&->{image_section_header^}
 	//TODO:Check 4GB span boundry
 	//TODO newMem := VirtualAlloc(nt_part.OptionalHeader.ImageBase,nt_part.OptionalHeader.SizeOfImage,MEM_RESERVE,PAGE_READWRITE)
+	newMem := malloc(nt_part.OptionalHeader.SizeOfImage)->{u8^}
 	//TODO: memory leak, delete on close
 
-	hdrs := malloc(mt_part.OptionalHeader.SizeOfHeaders) //VirtualAlloc(newMem,nt_part.OptionalHeader.SizeOfHeaders,MEM_COMMIT,PAGE_READWRITE)
+	hdrs := newMem //VirtualAlloc(newMem,nt_part.OptionalHeader.SizeOfHeaders,MEM_COMMIT,PAGE_READWRITE)
 
 	memcpy(hdrs,memPtr,nt_part.OptionalHeader.SizeOfHeaders)
 
-	//getSectionSize := (int sId,int^ sSize) ==> 
-	//{
-	//	sSize^ = 0
-	//	for j : nt_part.FileHeader.NumberOfSections
-	//	{
-	//		if sId == j continue
-	//		if sections[sId].VirtualAddress > sections[j].VirtualAddress continue
+	getSectionSize := (int sId,int^ sSize) ==> 
+	{
+		sSize^ = 0
+		for j : nt_part.FileHeader.NumberOfSections
+		{
+			if sId == j continue
+			if sections[sId].VirtualAddress > sections[j].VirtualAddress continue
 
-	//		sizeSec := sections[j].VirtualAddress - sections[sId].VirtualAddress
-	//		if sSize^ == 0
-	//		{
-	//			sSize^ = sizeSec
-	//		}else{
-	//			if sizeSec < sSize^ sSize^ = sizeSec
-	//		}
-	//	}
-	//}
+			sizeSec := sections[j].VirtualAddress - sections[sId].VirtualAddress
+			if sSize^ == 0
+			{
+				sSize^ = sizeSec
+			}else{
+				if sizeSec < sSize^ sSize^ = sizeSec
+			}
+		}
+	}
 
 	for i : nt_part.FileHeader.NumberOfSections
 	{
 		section := ref sections[i]
-		dest := void^()
-		//if sections[i].SizeOfRawData == 0
-		//{
-		//	sSize := 0
-		//	getSectionSize(i,sSize&)
+		dest := void^
+		if sections[i].SizeOfRawData == 0
+		{
+			sSize := 0
+			getSectionSize(i,sSize&)
 
-		//	if sSize != 0
-		//	{
-		//		dest2 := VirtualAlloc(newMem + section.VirtualAddress,sSize,MEM_COMMIT,PAGE_READWRITE)
-		//		memset(dest2,0,sSize)
-		//	}
-		//	
-		//}else{
-		//	dest = VirtualAlloc(newMem + section.VirtualAddress,section.SizeOfRawData,MEM_COMMIT,PAGE_READWRITE)
-		//}
-		//if dest != null
-		//{
-		//	memcpy(newMem + section.VirtualAddress,memPtr + section.PointerToRawData,section.SizeOfRawData)
-		//}
+			if sSize != 0
+			{
+				//TODO
+				//dest2 := VirtualAlloc(newMem + section.VirtualAddress,sSize,MEM_COMMIT,PAGE_READWRITE)
+				dest2 := newMem[section.VirtualAddress]&
+				memset(dest2,0,sSize)
+			}
+			
+		}else{
+			//TODO
+			//dest = VirtualAlloc(newMem + section.VirtualAddress,section.SizeOfRawData,MEM_COMMIT,PAGE_READWRITE)
+			dest = newMem[section.VirtualAddress]& 
+		}
+		if dest != null
+		{
+			memcpy(newMem[section.VirtualAddress]&,memPtr->{u8^}[section.PointerToRawData]&,section.SizeOfRawData)
+		}
 	}
 
 	//if newMem != nt_part.OptionalHeader.ImageBase
@@ -214,9 +219,9 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 	//	memLess := false
 	//	if newMem > nt_part.OptionalHeader.ImageBase
 	//	{
-	//		memDiff = newMem - nt_part.OptionalHeader.ImageBase
+	//		memDiff = newMem->{size_t} - nt_part.OptionalHeader.ImageBase
 	//	}else{
-	//		memDiff = nt_part.OptionalHeader.ImageBase - newMem
+	//		memDiff = nt_part.OptionalHeader.ImageBase - newMem->{size_t}
 	//		memLess = true
 	//	}
 
@@ -262,39 +267,41 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 	//	}
 	//}
 
-	//imprtDir := ref nt_part.OptionalHeader.DataDirectory[1]
-	//
-	//dirS := (newMem +imprtDir.VirtualAddress)->{image_import_descriptor^}
+	imprtDir := ref nt_part.OptionalHeader.DataDirectory[1]
+	dirS := newMem[imprtDir.VirtualAddress]&->{image_import_descriptor^}
 
-	//i := 0
-	//while true
-	//{
-	//	nowD := ref dirS[i]
-	//	if nowD.Name == 0 break
-	//	itLib := Library((newMem + nowD.Name)->{char^}) //TODO: ref count
-	//	fT2 := (newMem + nowD.FirstThunk)->{void^^}
-	//	fThunk := fT2
-	//	
-	//	if nowD.Characteristics != 0
-	//	{
-	//		fThunk = newMem + nowD.Characteristics
-	//	}
-	//	while fThunk^ != null
-	//	{
-	//		if (fThunk->{u64^}^ >> 63) != 0
-	//		{
-	//			printf("nope\n") //TODO
-	//			assert(false)
-	//		}else{
-	//			mm := (newMem + fThunk->{u64^}^)->{image_import_by_name^}
-	//			fT2^ = itLib.Get(mm.Name[0]&)
-	//		}
-	//		fThunk += 1
-	//		fT2 += 1
-	//	}
+	i := 0
+	while true
+	{
+		nowD := ref dirS[i]
+		if nowD.Name == 0 break
+		printf("hm %s\n",newMem[nowD.Name]&)
+		//itLib := Library((newMem + nowD.Name)->{char^}) //TODO: ref count
+		fT2 := newMem[nowD.FirstThunk]&->{void^^}
+		fThunk := fT2
+		
+		if nowD.Characteristics != 0
+		{
+			fThunk = newMem[nowD.Characteristics]&->{void^^}
+		}
+		while fThunk^ != null
+		{
+			if (fThunk->{u64^}^ shr 63) != 0
+			{
+				printf("nope\n") //TODO
+				assert(false)
+			}else{
+				mm := newMem[fThunk->{u64^}^]&->{image_import_by_name^}
+				printf("hey %s\n",mm.Name[0]&)
+				//fT2^ = itLib.Get(mm.Name[0]&)
+			}
+			fThunk = fThunk[1]&
+			fT2 = fT2[1]&
+		}
 
-	//	i += 1
-	//}
+		i += 1
+	}
+
 	//for i : nt_part.FileHeader.NumberOfSections
 	//{
 	//	section := ref sections[i]
