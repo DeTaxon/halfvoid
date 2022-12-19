@@ -1,16 +1,10 @@
 
-internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ filePath) -> int
-{
-	spn := StringSpan(data->{char^},fileSize)
-	printf("YES %p %i %i <%s>\n",data,fileSize,isCompressed,filePath)
-	printf("файл %s\n",spn.GetString().Str())
-	return 100
-}
-
 main := !(char^[] args) -> int
 {
 	x := #File("main2.hv")
-	printf("test %i\n",x)
+	mp := x.GetMap()
+	spn := StringSpan(mp.Get(),mp.Size())
+	printf("test %s\n",spn.GetString().Str())
 	return 0
 }
 

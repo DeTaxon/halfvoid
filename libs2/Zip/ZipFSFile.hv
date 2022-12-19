@@ -12,7 +12,7 @@ vRepoFile := class extend vRepoObject
 	// {
 	// 	//return ptrToRepo.GetFile(fileName,upFolder)
 	// }
-	GetMap := !() -> FileView^
+	GetMap := virtual !() -> FileView^
 	{
 		if ptrToZip != null
 		{

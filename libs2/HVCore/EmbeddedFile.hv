@@ -1,0 +1,20 @@
+vEmbeddedFile := class extend vRepoFile
+{
+	itData := void^
+	itSize := int
+	this := !(void^ inData, int inpSize) -> void
+	{
+		itData = inData
+		itSize = inpSize
+	}
+	GetMap := virtual !() -> FileView^
+	{
+		return new ZipFSFileViewZipStore(null,itData->{u8^},itSize)
+	}
+}
+
+
+internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ filePath) -> vEmbeddedFile^
+{
+	return new vEmbeddedFile(data,fileSize)
+}
