@@ -1,11 +1,25 @@
 
+internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ filePath) -> int
+{
+	spn := StringSpan(data->{char^},fileSize)
+	printf("YES %p %i %i <%s>\n",data,fileSize,isCompressed,filePath)
+	printf("файл %s\n",spn.GetString().Str())
+	return 100
+}
+
 main := !(char^[] args) -> int
+{
+	x := #File("main2.hv")
+	printf("test %i\n",x)
+	return 0
+}
+
+DllTest := !() -> void
 {
 	tst := FSGetFile("libwebp-7.dll")
 	mp := tst.GetMap()
 
 	win32LoadLibrary(mp.Get(),tst.Size())
-	return 0
 }
 
 RegExpTest := !() -> void

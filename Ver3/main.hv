@@ -239,6 +239,7 @@ main := !(int argc, char^^ argv) -> int
 	{
 		st.PrintCode(outFile)
 	}
+	PrintEmbeddedFiles(outFile)
 	for spc : CodeSpaces
 	{
 		for lb : spc.Modules

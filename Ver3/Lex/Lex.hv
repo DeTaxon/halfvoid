@@ -62,8 +62,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 		if a == 2{
 			if tok[0] == '#'
 			{
-			assert(false)
-			//	ns = new ObjCmd(GetConstString(tok))
+				ns = new TokenIndent(tok)
 			}else{
 				ns = new TokenTemplateType(tok)
 			}

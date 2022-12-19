@@ -18,6 +18,12 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			return null
 	}
 
+	if itm.Down is TokenIndent and itm.Down->{TokenIndent^}.Value[0] == '#'
+	{
+		return TryGetCommand(itm)
+	}
+
+
 	Objs := CheckExeDownList
 	defer Objs.Destroy()
 	CheckFuncCallBrackets(brc,Objs)

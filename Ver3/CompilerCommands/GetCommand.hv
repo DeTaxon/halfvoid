@@ -1,0 +1,10 @@
+TryGetCommand := !(Token^ itm) -> BoxExeObj^ 
+{
+	cmd := itm.Down->{TokenIndent^}.Value
+
+	if cmd == "#File"
+	{
+		return TryEmbedFile(itm)
+	}
+	itm.EmitError("Command not found")	
+}
