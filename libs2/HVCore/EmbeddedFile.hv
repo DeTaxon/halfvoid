@@ -1,4 +1,4 @@
-vEmbeddedFile := class extend vRepoFile
+vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not a already made object
 {
 	itData := void^
 	itSize := int
@@ -9,12 +9,14 @@ vEmbeddedFile := class extend vRepoFile
 	}
 	GetMap := virtual !() -> FileView^
 	{
-		return new ZipFSFileViewZipStore(null,itData->{u8^},itSize)
+		return new ZipFSFileViewRaw(itData->{u8^},itSize)
 	}
 }
 
 
 internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ filePath) -> vEmbeddedFile^
 {
+	//TODO use filePath
+	//todo compressed version
 	return new vEmbeddedFile(data,fileSize)
 }
