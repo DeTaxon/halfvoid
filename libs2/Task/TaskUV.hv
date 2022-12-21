@@ -51,7 +51,7 @@
 // }
 // timerCloseHandler := !(void^ x) -> void
 // {
-// 	TaskWaitTasksConVar.NotifyAll() //TODO better way
+// 	TaskWaitTasksConVar.NotifyAll()
 
 // 	assert(waitingTimers.Contain(x))
 // 	tsk := waitingTimers[x]

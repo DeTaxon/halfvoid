@@ -71,21 +71,6 @@ Vector := class .{@T} extend TArrayView.{T}
 	}
 }
 
-// "for" := !(TVector.{@T} hmm) -> !()&->T&
-// {
-// 	c := hmm&->{void^}
-// 	x := () ==> T& {
-// 		i := 0
-// 		d := c->{TVector.{T}^}
-// 		while i < d.Size()
-// 		{
-// 			yield d.Get()[i]
-// 			i += 1
-// 		}
-// 	}
-// 	return x.Capture()
-// }
-
 HVFixedArrayIterator := class .{@T}
 {
 	pointer := T^
