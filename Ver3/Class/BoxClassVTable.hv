@@ -26,6 +26,7 @@ AppendClass BoxClass
 	}
 	PrepareVTable := !() -> void
 	{
+
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
 			TableIdIter += 1
@@ -119,7 +120,7 @@ AppendClass BoxClass
 		{
 			tps.Push(it.GetType())
 		}
-		VTableType = GetTuple(tps)
+		VTableType = GetTuple(tps,true,true)
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar(StringSpan(""),VTableType.ItType)
 		

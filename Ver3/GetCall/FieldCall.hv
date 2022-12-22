@@ -91,7 +91,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				cls = typ.Base->{TypeClass^}.ToClass
 			}
 			
-			fld := cls.GetFieldByIndex(fieldInd)
+			fld := cls.GetFieldByIndexTuple(fieldInd)
 			if fld == null
 				rObj.EmitError("field does not exist") //todo: better error
 

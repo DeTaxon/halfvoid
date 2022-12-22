@@ -83,7 +83,7 @@ AppendClass BoxFuncBody
 	{
 		tps := List.{Type^}
 		tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
-		tplClass := GetTuple(tps)
+		tplClass := GetTuple(tps,true)
 		tps.Destroy()
 		
 		return tplClass

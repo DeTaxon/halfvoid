@@ -2,14 +2,27 @@
 tplDatabase := AVLMap.{Type^,BoxClassTuple^}
 GetTuple := !(List.{Type^} types) -> BoxClass^
 {
+	return GetTuple(types,false,false)
+}
+GetTuple := !(List.{Type^} types, bool simpleTuple) -> BoxClass^
+{
+	return GetTuple(types,simpleTuple,false)
+}
+GetTuple := !(List.{Type^} types, bool simpleTuple,bool isVTable) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
+{
 	typesArr := Type^[200] //todo  to Array
 	typesArr[i] = types[^i]
 	hck := GetFuncType(types.Size(),typesArr[0]&,null,GTypeVoid,false,false)
 	if tplDatabase.Contain(hck)
 		return tplDatabase[hck]
-	newClass := new BoxClassTuple(types)
+	newClass := new BoxClassTuple(types,simpleTuple)
 	tplDatabase[hck] = newClass
-	AllClasses.Push(newClass)
+	if isVTable
+	{
+		AllClasses.PushFront(newClass)
+	}else{
+		AllClasses.Push(newClass)
+	}
 	return newClass
 }
 
@@ -17,9 +30,9 @@ GetTuple := !(List.{Type^} types) -> BoxClass^
 BoxClassTuple := class extend BoxClass
 {
 	mthHatch := THatch
-	this := !(List.{Type^} types) -> void
+	this := !(List.{Type^} types,bool simpleTuple) -> void
 	{
-		ItName = "anon" //todo
+		ItName = "Tuple" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
@@ -29,20 +42,25 @@ BoxClassTuple := class extend BoxClass
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 
-			//if IsGCPtr(it) or IsGCType(it)
-			//{
-			//	needGC = true
-			//}
+			if not simpleTuple
+			{
+				if IsGCPtr(it) or IsGCType(it)
+				{
+					needGC = true
+				}	
+			}
+			if it == GTypeVoid
+			{
+				assert(false)
+			}
 		}
 
-		//if needGC = true
-		//{
-		//	assert(false)
-		//	//InternalsGC.Await()
-		//	//Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
-		//}
-
-		InheritStep()
+		if needGC
+		{
+			InternalsGC.Await()
+			Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
+		}
+		
 
 		SubWork(() ==> {
 			InternalsHatch.Await()
@@ -71,6 +89,22 @@ BoxClassTuple := class extend BoxClass
 			cmpFunc := GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
 
+			if Parents.Size() != 0
+			{
+				Parents[0].AwaitVTableStep()
+				for it,i : Parents[0].VTable
+				{
+					VTable.Push(it)
+				}
+			}
+
+			PrimeParentStep()
+
+			PrepareVTable()
+			CreateVTable()
+
+			InheritStep()
+
 			mthHatch.Emit()
 		})
 	}
@@ -89,6 +123,14 @@ BoxClassTuple := class extend BoxClass
 	{
 		mthHatch.Await()
 		assert(fieldPtr != null)
+	}
+	AwaitParentState := virtual !() -> void
+	{
+		mthHatch.Await()
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+		mthHatch.Await()
 	}
 }
 

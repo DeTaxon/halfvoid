@@ -9,8 +9,6 @@ BoxClass := class extend BoxUnit
 
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
-	// Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
-	// MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
 	DefaultSpace := FieldSpace
 	FieldSpaces := AVLMap.{StringSpan,FieldSpace}
 	ItSize := int
@@ -219,6 +217,16 @@ BoxClass := class extend BoxUnit
 		if val < 0 or val >= FieldsPath.Size()
 			return null
 		return FieldsPath[val]
+	}
+	GetFieldByIndexTuple := virtual !(int val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		assert(Parents.Size() <= 1)
+
+		if val < 0 or val >= Fields.Size()
+			return null
+		return FieldsPath[val + (FieldsPath.Size() - Fields.Size())]
 	}
 	populateMethods := !(StringSpan name,StringSpan fieldName, HybridQueue.{BoxUnit^,10} objs) -> void
 	{

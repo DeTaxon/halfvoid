@@ -1,11 +1,46 @@
 
+testDelete := class extend TGCObject
+{
+	Destroy := virtual !() -> void
+	{
+		printf("yes\n")
+	}
+}
+
+//AClass := class
+//{
+//	ggg := virtual int TODO Creates bug
+//	g3 := int
+//}
+AClass := class
+{
+	ggg := virtual 3
+	g3 := int
+}
+BClass := class extend AClass
+{
+	g2 := int
+}
+
 main := !(char^[] args) -> int
 {
-	x := #File("main2.hv")
-	mp := x.GetMap()
-	spn := StringSpan(mp.Get(),mp.Size())
-	printf("test %s\n",spn.GetString().Str())
+	hm := BClass
+	c1()
+	c2()
 	return 0
+}
+c1 := !() -> void
+{
+	h := u8[256]
+	h[^] = 0
+}
+c2 := !() -> void
+{
+	i := testDelete^
+	//i = new testDelete
+	g := !{i}
+	g.RefValue = 1
+	printf("hey %i\n",g.RefValue)
 }
 
 DllTest := !() -> void

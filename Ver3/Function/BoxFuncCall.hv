@@ -102,6 +102,8 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << " to "
 						//par.ItType.PrintDebugName(tmpl&)
 						tmpl << par.ItType.GetBADStr()
+						tmpl << "\n"
+						tmpl << "Expect ref " << (par.IsRef ?: "yes" : "no") << "\n"
 						if CurrentLine?.ItToken != null
 						{
 							CurrentLine.ItToken.EmitError(tmpl.Str())

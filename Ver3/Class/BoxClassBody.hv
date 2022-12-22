@@ -155,8 +155,6 @@ BoxClassBody := class extend BoxClass
 		{
 			checkClassBody(it,funcs)
 		}
-
-
 		
 		if Parents.Size() != 0
 		{

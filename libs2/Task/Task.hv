@@ -16,6 +16,7 @@ Task := class extend TGCObject
 	{
 		TaskCheckMutex.Unlock()
 		firstStartOS()
+		assert(taskLambda != null)
 		taskLambda()
 		TaskCheckMutex.Lock()
 		CurrentThread.DeleteTasks.Push(this&)
