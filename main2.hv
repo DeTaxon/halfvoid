@@ -24,26 +24,12 @@ BClass := class extend AClass
 
 main := !(char^[] args) -> int
 {
-	hm := BClass
-	TLock(hm&)
-	defer TUnlock(hm&)
-	defer printf("hi\n")
-	c1()
-	c2()
+	for i : 3
+	{
+		printf("hi\n")
+		TSleep(0.5)
+	}
 	return 0
-}
-c1 := !() -> void
-{
-	h := u8[256]
-	h[^] = 0
-}
-c2 := !() -> void
-{
-	i := testDelete^
-	//i = new testDelete
-	g := !{i}
-	g.RefValue = 1
-	printf("hey %i\n",g.RefValue)
 }
 
 DllTest := !() -> void

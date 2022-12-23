@@ -36,9 +36,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			while TaskTimersArray.Size() != 0 and TaskTimersArray[0].0 <= nowTime
 			{
 				TaskTimersArray[0].1.resume()
-				TaskTimersArray[0].1 = null //TODO GC collection,  make it automaticly somehow
-				cc := TaskTimersArray.Pop()
-				cc.1 = null //TODO GC problem, tuples does not support it
+				TaskTimersArray.Pop()
 				TaskLoopWorkCounter -= 1
 			}
 			waitTime := 1->{double}

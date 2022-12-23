@@ -75,6 +75,7 @@ List := class.{@T} extend TArrayView.{T}
 	{
 		assert(itSize >= 1)
 		result = start.data
+		containerCleanObject(start.data&)
 		if itSize == 1
 		{
 			destroyNode(start)
