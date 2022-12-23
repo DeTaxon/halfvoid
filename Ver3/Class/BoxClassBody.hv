@@ -47,7 +47,7 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 }
 
 
-BoxClassBody := class extend BoxClass
+BoxClassBody := class extend BoxClassPoison
 {
 	Body := Token^
 	ParentTokens := HybridQueue.{Token^,5}
@@ -173,7 +173,7 @@ BoxClassBody := class extend BoxClass
 			}
 		}
 
-		populatePoisons(Parents[^],funcs)
+		populatePoisons(Parents[^])
 
 		PrepareVTable()
 		CreateVTable()
@@ -182,32 +182,6 @@ BoxClassBody := class extend BoxClass
 		InheritStep()
 		FieldsState.Emit()
 
-	}
-
-	PoisonFunctions := AVLMap.{StringSpan,Token^}
-	populatePoisons := !(BoxClass^ cls, List.{Tuple.{StringSpan,BoxFunc^}} funcs) -> void
-	{
-		if not (cls is in BoxClassBody)
-			return void
-		cls2 := cls->{BoxClassBody^}
-		for it,ind : cls2.PoisonFunctions
-		{
-			if not PreVTableFuncs.Contain(ind)
-			{
-				newFunc := TryParseFunction(it)
-				assert(newFunc != null)
-				assert(newFunc is in BoxFuncTemplate)
-				newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
-				assert(newFunc2 is in BoxFuncBody)
-
-				newFunc2.ParentScope = this&
-				newFunc2.SetName(ind)
-				newFunc2.Work()
-
-				PreVTableFuncs[ind].Push(newFunc2)
-			}
-		}
-		populatePoisons(cls2.Parents[^],funcs)
 	}
 
 	checkClassBody := !(Token^ bodyVal,funcs) -> void

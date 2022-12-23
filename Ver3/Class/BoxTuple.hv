@@ -27,12 +27,12 @@ GetTuple := !(List.{Type^} types, bool simpleTuple,bool isVTable) -> BoxClass^ /
 }
 
 
-BoxClassTuple := class extend BoxClass
+BoxClassTuple := class extend BoxClassPoison
 {
 	mthHatch := THatch
 	this := !(List.{Type^} types,bool simpleTuple) -> void
 	{
-		ItName = "Tuple" //todo
+		ItName = "Tuple"
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
@@ -112,30 +112,6 @@ BoxClassTuple := class extend BoxClass
 
 			mthHatch.Emit()
 		})
-	}
-	populatePoisons := !(BoxClass^ cls) -> void
-	{
-		if not (cls is in BoxClassBody)
-			return void
-		cls2 := cls->{BoxClassBody^}
-		for it,ind : cls2.PoisonFunctions
-		{
-			if not PreVTableFuncs.Contain(ind)
-			{
-				newFunc := TryParseFunction(it)
-				assert(newFunc != null)
-				assert(newFunc is in BoxFuncTemplate)
-				newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
-				assert(newFunc2 is in BoxFuncBody)
-
-				newFunc2.ParentScope = this&
-				newFunc2.SetName(ind)
-				newFunc2.Work()
-
-				PreVTableFuncs[ind].Push(newFunc2)
-			}
-		}
-		populatePoisons(cls2.Parents[^])
 	}
 
 	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void

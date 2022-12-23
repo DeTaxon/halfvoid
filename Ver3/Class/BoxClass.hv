@@ -474,7 +474,7 @@ FieldPath := class extend BoxFuncCommon
 		tp.PrintType(f)
 		f^ << "* "
 		lst[0].PrintPointUse(f)
-		f^ << " , i32 0, i32 " << Index //TODO virtual
+		f^ << " , i32 0, i32 " << Index
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
