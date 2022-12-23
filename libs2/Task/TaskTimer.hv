@@ -7,10 +7,9 @@ TSleep := !(double val) -> void
 	endTime := GetSteadyTime() + val
 	TaskCheckMutex.Lock()
 	TaskLoopWorkCounter += 1
-	val2 := !{endTime,CurrentTask}
 
-	TaskTimersArray.SortedPush(val2)
-	val2.1 = null //TODO  make SortedPush(!{endTime,CurrentTask}), but garbage collection is not working for tuples
+	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+
 	if someoneOnLoop
 		TaskSleepConVar.Notify()
 	CurrentThread.ThreadMainTask.switchToTask()

@@ -89,6 +89,10 @@ BoxClassTuple := class extend BoxClass
 			cmpFunc := GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
 
+			ScopePutConstants()
+
+			CurrentScope = this&
+
 			if Parents.Size() != 0
 			{
 				Parents[0].AwaitVTableStep()
@@ -96,6 +100,7 @@ BoxClassTuple := class extend BoxClass
 				{
 					VTable.Push(it)
 				}
+				populatePoisons(Parents[0])
 			}
 
 			PrimeParentStep()
@@ -108,6 +113,31 @@ BoxClassTuple := class extend BoxClass
 			mthHatch.Emit()
 		})
 	}
+	populatePoisons := !(BoxClass^ cls) -> void
+	{
+		if not (cls is in BoxClassBody)
+			return void
+		cls2 := cls->{BoxClassBody^}
+		for it,ind : cls2.PoisonFunctions
+		{
+			if not PreVTableFuncs.Contain(ind)
+			{
+				newFunc := TryParseFunction(it)
+				assert(newFunc != null)
+				assert(newFunc is in BoxFuncTemplate)
+				newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
+				assert(newFunc2 is in BoxFuncBody)
+
+				newFunc2.ParentScope = this&
+				newFunc2.SetName(ind)
+				newFunc2.Work()
+
+				PreVTableFuncs[ind].Push(newFunc2)
+			}
+		}
+		populatePoisons(cls2.Parents[^])
+	}
+
 	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{	
 		mthHatch.Await()
