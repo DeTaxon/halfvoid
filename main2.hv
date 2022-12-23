@@ -25,6 +25,9 @@ BClass := class extend AClass
 main := !(char^[] args) -> int
 {
 	hm := BClass
+	TLock(hm&)
+	defer TUnlock(hm&)
+	defer printf("hi\n")
 	c1()
 	c2()
 	return 0

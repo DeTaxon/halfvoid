@@ -72,6 +72,8 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 		cnst.first = dat
 		resl := itTree.FindNode(cnst)
 		if resl != null{
+			containerCleanObject(resl.data.second&)
+			containerCleanObject(resl.data.first&)
 			itTree.RemoveNode(resl)
 			itSize -= 1
 		}

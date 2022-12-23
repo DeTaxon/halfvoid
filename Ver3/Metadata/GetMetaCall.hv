@@ -57,6 +57,17 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		assert(false)
 		return null
 	}
+	if right.Value == "IsGCClass"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			obj.Down.EmitError("Object for IsGCClass must have a type")
+		}
+		if IsGCType(typ)
+			return GBoolTrue
+		return GBoolFalse
+	}
 	if right.Value == "IsGCPointer"
 	{
 		typ := getMetaDownType(obj.Down)

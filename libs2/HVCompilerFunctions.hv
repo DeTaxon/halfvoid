@@ -36,10 +36,8 @@ ZeroMem := !(@T& x) -> void
 
 internalHVCreateTuple := !(args...) . {@ResType} -> ResType
 {
-	printf("res tuple %p %i\n",result&, ResType->TypeSize)
 	for it,i : args
 	{
-		printf("seting tuple %i %p\n",i,result.i&)
 		result.i = it
 	}
 }

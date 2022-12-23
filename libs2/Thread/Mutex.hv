@@ -123,7 +123,7 @@ TUnlock := !(void^ k) -> void
 	if itEnt.1 == 0
 	{
 		TLockPool.Release(itEnt.0)
-		itEnt.0 = null //TODO GC support for tuples
+		itEnt = null //TODO weak pointers
 		internalLockUsing[itHash].Remove(k)
 	}else{
 		itEnt.2 += 1
