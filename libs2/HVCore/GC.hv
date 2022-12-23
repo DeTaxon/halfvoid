@@ -25,7 +25,7 @@ TGCObject := class extend TGCIObject
 		delete this&
 	}
 
-	postDestroy := poison !() -> void
+	postDestroy := poison virtual !() -> void
 	{
 		internalGCClearClass(this)
 	}

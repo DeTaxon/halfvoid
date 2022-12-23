@@ -308,32 +308,19 @@ RuleParam := !(void^ itr) -> int
 	{
 		return size + 2
 	}
-	
-	if It.GetValue() == "extern"
+
+	while true
 	{
-		It = It.Right
-		if It == null return 0
-		size += 1
+		if It.GetValue() in !["weak","virtual","static","poison","ref","thread_local","task_local","extern"]
+		{
+			It = It.Right
+			if It == null return 0
+			size += 1
+		}else{
+			break
+		}
 	}
 	
-	if It.GetValue() == "weak"
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
-	}
-	if It.GetValue() == "static"
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
-	}
-	if It.GetValue() == "poison"
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
-	}
 	if It.GetValue() == "type"
 	{
 		It = It.Right
@@ -346,25 +333,6 @@ RuleParam := !(void^ itr) -> int
 			size += 2
 			if It == null return 0
 		}
-	}
-
-	if It.GetValue() == "ref"
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
-	}
-	if It.GetValue() == "virtual"
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
-	}
-	if It.GetValue() in !["thread_local","task_local"]
-	{
-		It = It.Right
-		if It == null return 0
-		size += 1
 	}
 
 	if not InDataR(It) return 0

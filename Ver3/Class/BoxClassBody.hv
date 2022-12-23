@@ -222,7 +222,6 @@ BoxClassBody := class extend BoxClassPoison
 						{
 							case "poison"
 								isPoison = true
-								isVirtual = true
 								itm = itm.Right
 							case "virtual"
 								isVirtual = true
