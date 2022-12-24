@@ -14,21 +14,22 @@ testDelete := class extend TGCObject
 //}
 AClass := class
 {
-	ggg := virtual 3
 	g3 := int
+
+	hm := poison virtual !() -> void
+	{
+		printf("test %i\n",this->Type->TypeSize)
+	}
 }
 BClass := class extend AClass
 {
-	g2 := int
+	g4 := int[100]
 }
 
 main := !(char^[] args) -> int
 {
-	for i : 3
-	{
-		printf("hi\n")
-		TSleep(0.5)
-	}
+	j := BClass
+	j&->{AClass^}.hm()
 	return 0
 }
 

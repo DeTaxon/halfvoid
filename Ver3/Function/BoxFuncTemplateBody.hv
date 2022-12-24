@@ -12,10 +12,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	Name := StringSpan
 
-	//Types := HybridQueue.{FuncTemplateInput,10}
-	//ResultType := FuncTemplateInput
-	//IsVargs := bool
-
 	hData := FunctionHeaderInfo
 
 	Constants := List.{FuncTemplateConstant}
