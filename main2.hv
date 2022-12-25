@@ -19,6 +19,18 @@ main := !(char^[] args) -> int
 
 	testVK.vkResetCommandPool
 
+	for it,ind : testVK->AllFields
+	{
+		printf("hehey %s\n",ind)
+	}
+	
+	testVK.vkCreateCommandPool
+
+
+
+	//testVK.GetList()
+	//testVK.GetListSize()
+
 	return 0
 }
 
