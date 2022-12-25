@@ -49,9 +49,9 @@ main := !(int argc, char^^ argv) -> int
 		args2[5] = "-o"
 		args2[6] = "out.ll"
 		args2[7] = "-g"
-		return main(8,args2[0]&)
-		//args2[7] = "--vk"
-		//args2[8] = "./vk.xml"
+		//return main(8,args2[0]&)
+		args2[7] = "--vk"
+		args2[8] = "./vk.xml"
 		return main(9,args2[0]&)
 	}
 

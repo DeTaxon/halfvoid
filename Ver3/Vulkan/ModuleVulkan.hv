@@ -702,6 +702,11 @@ ModuleVulkan := class extend ModuleInterface
 		if name == "vkInstance"
 			return vkInst
 
+		if name == "VulkanFunctionsClass"
+		{
+			return GetVulkanClass()
+		}
+
 		if name == "vkHVInit"
 		{
 			if vkInitFunc == null
@@ -710,7 +715,6 @@ ModuleVulkan := class extend ModuleInterface
 			}
 			return vkInitFunc
 		}
-
 		intRes := int
 		if GetFromInts(st,intRes&)
 		{

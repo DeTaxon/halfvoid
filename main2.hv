@@ -12,24 +12,22 @@ testDelete := class extend TGCObject
 //	ggg := virtual int TODO Creates bug
 //	g3 := int
 //}
-AClass := class
-{
-	g3 := int
-
-	hm := poison virtual !() -> void
-	{
-		printf("test %i\n",this->Type->TypeSize)
-	}
-}
-BClass := class extend AClass
-{
-	g4 := int[100]
-}
 
 main := !(char^[] args) -> int
 {
-	j := BClass
-	j&->{AClass^}.hm()
+	testVK := VulkanFunctionsClass
+
+	testVK.x = 100
+	testVK.wow = 99
+
+	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
+
+	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
+
+	testVK.z = 9999
+
+	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
+
 	return 0
 }
 
