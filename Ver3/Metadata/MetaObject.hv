@@ -8,3 +8,11 @@ BoxMetaObj := class extend BoxExeObj
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
 }
+
+
+BoxMetaGrowingObject := class extend BoxMetaObj
+{
+	RegisterUser := !(!(int)&->void cb) -> void
+	{
+	}
+}

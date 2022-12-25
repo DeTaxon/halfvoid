@@ -61,6 +61,46 @@ GrowableClass := class extend BoxClass
 	}
 }
 
+GrowableClassMetaFields := class extend  BoxMetaGrowingObject
+{
+	callObj := BoxExeObj^
+	objRes := ParamFunc^
+	itClass := GrowableClass^
+
+	this := !(BoxExeObj^ itm,GrowableClass^ bs) -> void
+	{
+		itClass = bs
+		callObj = itm
+		objRes = new FuncResultParam(itm)
+	}
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		objRes.PrintCode(f)
+	}
+
+	IsMetaIteratable := virtual !() -> bool { return true }
+	MetaIteretableSize := virtual !() -> int { return itClass.FieldsPath.Size() }
+
+	infoUsers := List.{!(int)&->void}
+	RegisterUser := !(!(int)&->void cb) -> void
+	{
+		infoUsers.Push(cb)
+	}
+
+	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
+	{
+		indCall := itClass.FieldsPath[ind]
+		itms := CheckExeDownList
+		itms.Push(objRes.CreateCall())
+		return indCall.CreateCall(itms)
+	}
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
+	{
+		return GetExeString(GetConstString(itClass.FieldsPath[ind].Field.Name))
+	}
+}
+
 VarIntObj := class extend BoxExeObj
 {
 	Value := BoxClass^

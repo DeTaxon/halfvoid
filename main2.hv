@@ -26,8 +26,6 @@ main := !(char^[] args) -> int
 	
 	testVK.vkCreateCommandPool
 
-
-
 	//testVK.GetList()
 	//testVK.GetListSize()
 
