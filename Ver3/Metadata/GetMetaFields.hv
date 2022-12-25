@@ -17,15 +17,8 @@ TryGetMetaFields := !(Token^ itm) -> BoxExeObj^
 	}
 	if cls == null
 		itm.EmitError("Object does not have fields")
-	
-	if cls is in GrowableClass //TODO to BoxClass.GetFieldsIterator
-	{
-		return new GrowableClassMetaFields(dwn,cls->{GrowableClass^}) 
-	}
 
-	cls.AwaitTypeState()
-
-	return new MetaFieldsHolder(dwn,cls)
+	return cls.GetFieldsIterator(dwn)
 }
 
 MetaFieldsHolder := class extend BoxMetaObj

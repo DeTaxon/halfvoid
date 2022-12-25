@@ -12,7 +12,7 @@ BoxMetaObj := class extend BoxExeObj
 
 BoxMetaGrowingObject := class extend BoxMetaObj
 {
-	RegisterUser := !(!(int)&->void cb) -> void
+	RegisterUser := virtual !(!(int)&->void cb) -> void
 	{
 	}
 }

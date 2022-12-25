@@ -49,6 +49,12 @@ GrowableClass := class extend BoxClass
 		}
 
 		ItSize += newFieldType.GetSize() //todo variable size object?
+
+		if fieldIterator != null
+		{
+			fieldIterator.ItemCreated(FieldsPath.Size() - 1)
+		}
+
 		return fPath 
 	}
 	GetNewFieldType := virtual !(StringSpan val) -> Type^
@@ -58,6 +64,14 @@ GrowableClass := class extend BoxClass
 	GetClassSize := virtual !() -> BoxExeObj^
 	{
 		return classSize
+	}
+
+	fieldIterator := GrowableClassMetaFields^
+	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		if fieldIterator == null
+			fieldIterator = new GrowableClassMetaFields(itm,this&)
+		return fieldIterator
 	}
 }
 
@@ -83,9 +97,16 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	MetaIteretableSize := virtual !() -> int { return itClass.FieldsPath.Size() }
 
 	infoUsers := List.{!(int)&->void}
-	RegisterUser := !(!(int)&->void cb) -> void
+	RegisterUser := virtual !(!(int)&->void cb) -> void
 	{
 		infoUsers.Push(cb)
+	}
+	ItemCreated := !(int ind) -> void
+	{
+		for it : infoUsers
+		{
+			it(ind)
+		}
 	}
 
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 

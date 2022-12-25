@@ -358,6 +358,11 @@ BoxClass := class extend BoxUnit
 			minSize += ItAlign - unalign
 		return GetExeInt(minSize)
 	}
+	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		AwaitTypeState()
+		return new MetaFieldsHolder(itm,this&)
+	}
 }
 TypeClass := class extend Type
 {
