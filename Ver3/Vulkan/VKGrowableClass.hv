@@ -1,0 +1,99 @@
+AppendClass ModuleVulkan
+{
+	vulkanClass := VKGrowableClass^
+	GetVulkanClass := !() -> BoxUnit^
+	{
+		if vulkanClass == null
+		{
+			vulkanClass = new VKGrowableClass(this&)
+			AllClasses.Push(vulkanClass)
+		}
+		return GetConstType(vulkanClass.ItType)
+	}
+}
+
+VKGrowableClass := class extend BoxClass
+{
+	itModule := ModuleVulkan^
+	classSize := VarIntObj^
+	this := !(ModuleVulkan^ bs) -> void
+	{
+		itModule = bs
+
+		ItName = "VulkanFunctionsClass" //todo
+		ItId = GetNewId()
+		ItType = new TypeClass(this&) //TODO remove duplicate from BoxClassBody,BoxTuple
+
+		ItAlign = 1 //TODO pointer size
+		ItSize = 0
+		classSize = new VarIntObj(this&)
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+
+		newFieldType := GetNewFieldType(val)
+
+		if newFieldType == null
+			return null
+
+		newField := new FieldParam(val,newFieldType)
+		Fields.Push(newField)
+
+		fPath := new FieldPath(ItType,newField.Value)
+		fPath.Field = newField
+		fPath.Index = FieldsPath.Size()
+
+		FieldsPath.Push(fPath)
+
+		fieldAlign := newFieldType.GetAlign()
+		ItAlign = max(ItAlign,fieldAlign)
+
+		unalign := ItSize % fieldAlign
+		if unalign != 0
+		{
+			ItSize += fieldAlign - unalign
+		}
+
+		ItSize += newFieldType.GetSize() //todo variable size object?
+		return fPath 
+	}
+	GetNewFieldType := virtual !(StringSpan val) -> Type^
+	{
+		return GTypeInt
+	}
+	GetClassSize := virtual !() -> BoxExeObj^
+	{
+		return classSize
+	}
+}
+
+VarIntObj := class extend BoxExeObj
+{
+	Value := BoxClass^
+	this := !(BoxClass^ ptr) -> void
+	{
+		Value = ptr
+		ObjType = GTypeInt
+	}
+	getVal := !() -> int
+	{
+		minSize := Value.ItSize
+		unalign := minSize % Value.ItAlign
+		if unalign != 0
+			minSize += Value.ItAlign - unalign
+		return minSize
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << getVal()
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << getVal()
+	}
+}

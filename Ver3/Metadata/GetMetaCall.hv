@@ -124,12 +124,17 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	}
 	if right.Value == "TypeSize"
 	{
-		itType := ParseType(obj.Down)
+		itType := getMetaDownType(obj.Down)
 		if itType != null
+		{
+			if itType is in TypeClass
+			{
+				return itType->{TypeClass^}.ToClass.GetClassSize()
+			}
 			return GetExeInt(itType.GetSize())
-		exeCall := TryGetExeCall(obj.Down)
-		if exeCall != null and exeCall is ConstType
-			return GetExeInt(exeCall->{ConstType^}.Value.GetSize())
+		}else{
+			obj.EmitError("Can not get TypeSize, it is not a type")
+		}
 	}
 	if right.Value == "AllFields"
 	{

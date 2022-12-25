@@ -349,6 +349,15 @@ BoxClass := class extend BoxUnit
 		}
 		return false
 	}
+	GetClassSize := virtual !() -> BoxExeObj^
+	{
+		AwaitTypeState()
+		minSize := ItSize
+		unalign := minSize % ItAlign
+		if unalign != 0
+			minSize += ItAlign - unalign
+		return GetExeInt(minSize)
+	}
 }
 TypeClass := class extend Type
 {
