@@ -31,6 +31,13 @@ VKGrowableClass := class extend GrowableClass
 	}
 	GetNewFieldType := virtual !(StringSpan val) -> Type^
 	{
-		return GTypeInt
+		if val.Size() > 1000
+			return null
+
+		buffer := char[1024]
+		strcpy(buffer[0]&,"PFN_")
+		memcpy(buffer[4]&,val.Get(),val.Size())
+		buffer[val.Size() + 5] = 0
+		return itModule.GetTryFuncPointer(buffer[0]&)
 	}
 }

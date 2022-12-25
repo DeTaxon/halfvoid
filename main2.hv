@@ -17,16 +17,7 @@ main := !(char^[] args) -> int
 {
 	testVK := VulkanFunctionsClass
 
-	testVK.x = 100
-	testVK.wow = 99
-
-	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
-
-	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
-
-	testVK.z = 9999
-
-	printf("haha %i %i size %i\n",testVK.x,testVK.wow,testVK->Type->TypeSize)
+	testVK.vkResetCommandPool
 
 	return 0
 }
