@@ -9,6 +9,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 	middleVars := AVLMap.{int,List.{NamedVar^}}
 
 	itBody := Token^
+	itStack := StackState
 
 	this := !(HybridQueue.{ForSubObjects,5} dwns,Token^ bdy) -> void
 	{
@@ -34,11 +35,20 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 		}
 		grw := dwns[0].MetaObj->{BoxMetaGrowingObject^}
 		grw.RegisterUser(lmbd.Capture())
+		itStack.Save()
 
 		metaCount = k
 	}
 	addItem := !(int i,bool swapStack) -> void
 	{
+		nowStack := StackState
+
+		if swapStack
+		{
+			nowStack.Save()
+			itStack.Load()
+		}
+
 		stackSize := UnitStack.Size()
 
 		for j : dwnObjs.Size()
@@ -65,6 +75,11 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 
 		while stackSize < UnitStack.Size()
 			UnitStack.Pop()
+
+		if swapStack
+		{
+			nowStack.Load()
+		}
 	}
 	tryAddVar := !(BoxExeObj^ toAdd,int num,StringSpan itName) -> void {
 		if toAdd == null
