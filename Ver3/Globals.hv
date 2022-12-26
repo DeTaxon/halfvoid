@@ -22,29 +22,49 @@ GDebugLineCallId := task_local int
 
 SubWork := !(!()&->void x) -> void
 {
-    ccs := CurrentCodeSpace
-    cf := CurrentFile
-    cs := CurrentScope
-    cfunc := CurrentFunc
-    subLambda := x.Capture()
+	subLambda := x.Capture()
+	
+	nowState := new StackState
+	nowState.Save()
 
-    stacks := new HybridQueue.{BoxUnit^,10}
-	if UnitStack.Size() != 0
-    	stacks.Push(UnitStack[^])
+	TSpawnTask(() ==> {
 
-    TSpawnTask(() ==> {
-        CurrentCodeSpace = ccs
-        CurrentScope = cs
-        CurrentFile = cf
-        CurrentFunc = cfunc
+		nowState.Load()
+		delete nowState
 
-		if stacks.Size() != 0
-		{
-        		UnitStack.PushFront(stacks^[^])
-		}
-
-        subLambda()
-        subLambda.Destroy()
-        delete stacks
-    })
+		subLambda()
+		subLambda.Destroy()
+	})
 }
+
+StackState := class
+{
+	itFile := BoxFile^
+	itCodeSpace := BoxCodeSpace^
+	itScope := BoxUnit^
+	itFunc := BoxFuncBody^
+
+	itStack := HybridQueue.{BoxUnit^,20}
+	Save := !() -> void
+	{
+		itFile = CurrentFile
+		itCodeSpace = CurrentCodeSpace
+		itScope = CurrentScope
+		itFunc = CurrentFunc
+
+		for it : UnitStack
+			itStack.Push(it)
+	}
+	Load := !() -> void
+	{
+		CurrentFile = itFile
+		CurrentCodeSpace = itCodeSpace
+		CurrentScope = itScope
+		CurrentFunc = itFunc
+
+		UnitStack.Clear()
+		for it : itStack
+			UnitStack.Push(it)
+	}
+}
+
