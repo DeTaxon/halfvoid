@@ -1,5 +1,5 @@
 
-LibDBObject := class
+Library := class
 {
 	hndl := void^
 	itFileName := char^
@@ -38,7 +38,7 @@ LibDBObject := class
 
 LibDatabaseType := class
 {
-	loadedLibs := AVLMap.{String^,LibDBObject^}
+	loadedLibs := AVLMap.{String^,Library^}
 	
 	//Destroy := !() -> void
 	//{
@@ -50,7 +50,7 @@ LibDatabaseType := class
 	//	}
 	//	itMemPool.Destroy()
 	//}
-	GetLib := !(StringView name) -> LibDBObject^
+	GetLib := !(StringView name) -> Library^
 	{
 		nrm := name.GetString()
 		inMap := loadedLibs.TryFind(nrm)
@@ -108,7 +108,7 @@ LibDatabaseType := class
 			if hndl != null
 			{
 
-				newObj := new LibDBObject
+				newObj := new Library
 				newObj.hndl = hndl
 				loadedLibs[nrm] = newObj
 				
@@ -175,12 +175,12 @@ LibDatabaseType := class
 }
 gLibDB := LibDatabaseType
 
-GetLibrary := !(StringView libName) -> LibDBObject^
+GetLibrary := !(StringView libName) -> Library^
 {
 	return gLibDB.GetLib(libName)
 }
 
-GetLibrary := !(char^[] lbs) -> LibDBObject^
+GetLibrary := !(char^[] lbs) -> Library^
 {
 	for i : lbs.Size()
 	{

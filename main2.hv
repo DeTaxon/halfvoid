@@ -13,18 +13,28 @@ testDelete := class extend TGCObject
 //	g3 := int
 //}
 
+hmm := class
+{
+	testVK := VulkanFunctionsClass^
+	tst := !() -> void
+	{
+		testVK = new VulkanFunctionsClass
+
+		testVK.vkResetCommandPool
+
+		for it,ind : testVK->AllFields
+		{
+			printf("hehey %s\n",ind)
+		}
+		
+		testVK.vkCreateCommandPool
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	testVK := VulkanFunctionsClass
-
-	testVK.vkResetCommandPool
-
-	for it,ind : testVK->AllFields
-	{
-		printf("hehey %s\n",ind)
-	}
-	
-	testVK.vkCreateCommandPool
+	c := hmm
+	c.tst()
 
 	//testVK.GetList()
 	//testVK.GetListSize()

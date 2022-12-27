@@ -43,17 +43,27 @@ StackState := class
 	itCodeSpace := BoxCodeSpace^
 	itScope := BoxUnit^
 	itFunc := BoxFuncBody^
+	itLine := BoxExeLine^
+
+	gcVarsInUse := int
 
 	itStack := HybridQueue.{BoxUnit^,20}
+	itFuncStack := HybridQueue.{BoxFuncBody^,10}
+
 	Save := !() -> void
 	{
 		itFile = CurrentFile
 		itCodeSpace = CurrentCodeSpace
 		itScope = CurrentScope
 		itFunc = CurrentFunc
+		itLine = CurrentLine
+
+		gcVarsInUse = GCVarsInUse
 
 		for it : UnitStack
 			itStack.Push(it)
+		for it : FuncStack
+			itFuncStack.Push(it)
 	}
 	Load := !() -> void
 	{
@@ -61,10 +71,17 @@ StackState := class
 		CurrentCodeSpace = itCodeSpace
 		CurrentScope = itScope
 		CurrentFunc = itFunc
+		CurrentLine = itLine
+
+		GCVarsInUse = gcVarsInUse
 
 		UnitStack.Clear()
 		for it : itStack
 			UnitStack.Push(it)
+
+		FuncStack.Clear()
+		for it : itFuncStack
+			FuncStack.Push(it)
 	}
 }
 

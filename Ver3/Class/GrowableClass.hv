@@ -50,9 +50,9 @@ GrowableClass := class extend BoxClass
 
 		ItSize += newFieldType.GetSize() //todo variable size object?
 
-		if fieldIterator != null
+		for it : fieldIterators
 		{
-			fieldIterator.ItemCreated(FieldsPath.Size() - 1)
+			it.ItemCreated(FieldsPath.Size() - 1)
 		}
 
 		return fPath 
@@ -66,12 +66,12 @@ GrowableClass := class extend BoxClass
 		return classSize
 	}
 
-	fieldIterator := GrowableClassMetaFields^
+	fieldIterators := List.{GrowableClassMetaFields^} //TODO already bad, can not be used frequently
 	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
 	{
-		if fieldIterator == null
-			fieldIterator = new GrowableClassMetaFields(itm,this&)
-		return fieldIterator
+		newIterator := new GrowableClassMetaFields(itm,this&)
+		fieldIterators.Push(newIterator)
+		return newIterator
 	}
 }
 
@@ -96,17 +96,14 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { return itClass.FieldsPath.Size() }
 
-	infoUsers := List.{!(int)&->void}
-	RegisterUser := virtual !(!(int)&->void cb) -> void
+	infoUser := !(int)&->void
+	RegisterUser := virtual !(!(int)&->void cb) -> void //TODO toobad, not designed for that use
 	{
-		infoUsers.Push(cb)
+		infoUser = cb
 	}
 	ItemCreated := !(int ind) -> void
 	{
-		for it : infoUsers
-		{
-			it(ind)
-		}
+		infoUser(ind) //TODO can be null
 	}
 
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
