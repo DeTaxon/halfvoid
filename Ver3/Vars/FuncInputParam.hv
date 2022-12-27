@@ -91,10 +91,18 @@ FuncInputParam := class extend ParamFunc
 	{
 		return not isRef
 	}
+
+	populateTest := bool //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! move from this type to more dynamic
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		res := new ParamLoadObj(this&)
-		CreatedVarCalls.Push(res)
+
+		if populateTest
+		{
+			res.CallObj = new BoxFuncCall(this&)
+		}else{
+			CreatedVarCalls.Push(res)
+		}
 		return res
 	}
 	PopulateCalls := virtual !() -> void
@@ -103,6 +111,7 @@ FuncInputParam := class extend ParamFunc
 		{
 			it.CallObj = new BoxFuncCall(this&)
 		}
+		populateTest = true
 	}
 
 	IsDebuggable := virtual !() -> bool
@@ -147,6 +156,11 @@ ParamLoadObj := class extend BoxExeObj
 
 	PrintPointPre := virtual !(TIOStream^ f) -> void
 	{
+		if CallObj == null
+		{
+			printf("hm %p\n",this&)
+			assert(false)
+		}
 		CallObj.PrintPointPre(f)
 	}
 	PrintPointUse := virtual !(TIOStream^ f) -> void
