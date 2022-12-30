@@ -53,6 +53,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 						if IsGCType(varType) or IsGCPtr(varType)
 						{
 							assert(lastLambdaHolder != null)
+							mv2.Value.NotifyMemUse()
 							getVar := CallFromSomeVar(mv2)
 							resVar := lastLambdaHolder.CaptureObject(asItm.Value,new UnrefFuncCall(getVar),true,asItm)
 							return CallFromSomeVar(resVar)

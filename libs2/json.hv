@@ -2,7 +2,7 @@ jsonTypeField := 0
 jsonTypeRecord := 1
 jsonTypeArray := 2
 
-jsonNode := class
+JsonNode := class
 {
 	this := !(int setType) -> void {itType = setType}
 
@@ -10,7 +10,7 @@ jsonNode := class
 	itType := u8
 	itKey := StringSpan
 	itValue := StringSpan
-	itSub := List.{jsonNode^}
+	itSub := List.{JsonNode^}
 	
 	Key := !() -> ref StringSpan { return itKey }
 	Value := !() -> ref StringSpan { return itValue }
@@ -58,9 +58,10 @@ jsonNode := class
 	GetInt := !() -> int { if itType != jsonTypeField throw new Exception("Node is not field") return ToInt(itValue.StrTmp())} //TODO: span to int
 	GetFloat := !() -> float { if itType != jsonTypeField throw new Exception("Node is not field") return ToFloat(itValue)}
 
-	"[]" := !(char^ walkPath) -> ref jsonNode
+	"[]" := !(StringView^ walkPath) -> JsonNode^
 	{
-		itms := DivideStr(walkPath,' ') //TODO memory 
+		itms := List.{StringSpan}
+		walkPath.DivideStr(" ",x ==> { itms.Push(x)}) //TODO memory 
 		iter  := this&
 		for it : itms
 		{
@@ -77,10 +78,28 @@ jsonNode := class
 			if not found 
 				throw new Exception("Path not found")
 		}
-		return iter^
+		return iter
 	}
-	
-	"for" := !() { if itType == jsonTypeField throw new Exception("Node is field") return itSub."for"() }
+	"for" := !() -> jsonNodeIterator
+	{
+		result.itNode = this&
+	}
+}
+
+jsonNodeIterator := class
+{
+	itNode := JsonNode^
+	index := int
+	HaveValue := !() -> bool
+	{
+		return index < itNode.itSub.Size()
+	}
+	"()" := !(StringSpan^& indx) -> JsonNode^
+	{
+		result = itNode.itSub[index]
+		indx = result.itKey&
+		index += 1
+	}
 }
 
 
@@ -90,13 +109,6 @@ jsonLoadMachine := !() -> void
 {
 	if jsonLoaded return void
 	jsonLoaded = true
-	// regFile := FSGetFile("hres/json.stm")
-	// if regFile == null
-	// 	throw new Exception("can not initialize json state machine")
-	// ptrMap := regFile.GetMap()
-	// jsonRegMachine = new WordDetermMachine
-	// jsonRegMachine.LoadFromMap(ptrMap.Get(),ptrMap.Size())
-	// regFile.Unmap()
 
 	itBuilder := LexBuilder
 
@@ -110,9 +122,8 @@ jsonLoadMachine := !() -> void
 	jsonRegMachine = itBuilder.GenerateMachine()
 }
 
-json := class extend jsonNode
+Json := class extend JsonNode
 {
-	startNode := jsonNode^
 	tokens := List.{Tuple.{int,StringSpan}}
 
 	ParseString := !(char^ fileData,int size) -> void
@@ -134,7 +145,7 @@ json := class extend jsonNode
 	}
 
 		
-	checkRecord := !(jsonNode^ toCheck) -> void
+	checkRecord := !(JsonNode^ toCheck) -> void
 	{
 		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "}")
 		{
@@ -146,22 +157,22 @@ json := class extend jsonNode
 			throw new Exception("Incorrect")
 		tokens.Pop()
 	}
-	checkArray := !(jsonNode^ toCheck) -> void
+	checkArray := !(JsonNode^ toCheck) -> void
 	{
 		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "]")
 		{
 			if tokens[0].0 == 4 and tokens[0].1 == ","
 				tokens.Pop()
-			newNode := checkNode2(new jsonNode)
+			newNode := checkNode2(new JsonNode)
 			toCheck.itSub.Push(newNode)
 		}
 		if tokens.Size() == 0
 			throw new Exception("Incorrect")
 		tokens.Pop()
 	}
-	checkNode := !() -> jsonNode^
+	checkNode := !() -> JsonNode^
 	{
-		thisNode := new jsonNode
+		thisNode := new JsonNode
 
 		if tokens.Size() == 0 or tokens[0].0 != 1
 			throw new Exception("Incorrect")
@@ -176,11 +187,13 @@ json := class extend jsonNode
 			throw new Exception("Incorrect")
 		return checkNode2(thisNode)
 	}
-	checkNode2 := !(jsonNode^ thisNode) -> jsonNode^
+	checkNode2 := !(JsonNode^ thisNode) -> JsonNode^
 	{
-		switch tokens[0].0
+		//switch tokens[0].0
+		//{
+		if tokens[0].0 == 1 or tokens[0].0 == 2 or tokens[0].0 == 3
 		{
-		case in ![1,2,3]
+		//case in ![1,2,3]
 			thisNode.itType = jsonTypeField
 			if tokens[0].0 == 1
 				thisNode.itValue = tokens[0].1[1..-1]
@@ -188,7 +201,9 @@ json := class extend jsonNode
 				thisNode.itValue = tokens[0].1
 			
 			tokens.Pop()
-		case 4
+		}else if tokens[0].0 == 4
+		{
+		//case 4
 			switch tokens[0].1
 			{
 			case "["

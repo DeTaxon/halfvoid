@@ -78,10 +78,6 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 			itSize -= 1
 		}
 	}
-	//"~For" := !() -> !(KEY^&)& -> VALUE&
-	//{
-	//	return _createIterator(false)
-	//}
 	Reverse := fake
 	{
 		"for" := !() -> !(KEY^&)&->ref VALUE

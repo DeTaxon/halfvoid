@@ -48,7 +48,7 @@ FuncInputParam := class extend ParamFunc
 		LocalParamBackup.NotifyCaptureUse()
 		this&->SetType(FuncInputParamCaptured)
 	}
-	CreateMemUse := !() -> void
+	CreateMemUse := virtual !() -> void
 	{
 		if SelfAsBlank != null
 			return void
@@ -200,6 +200,8 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		return false
 	}
+	NotifyMemUse := virtual !() -> void {}
+	CreateMemUse := virtual !() -> void {}
 	PopulateCalls := virtual !() -> void
 	{
 		for it : CreatedVarCalls

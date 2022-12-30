@@ -13,32 +13,17 @@ testDelete := class extend TGCObject
 //	g3 := int
 //}
 
-hmm := class
+hm := !(int x, char^[] c) -> void
 {
-	testVK := VulkanFunctionsClass^
-	tst := !() -> void
-	{
-		testVK = new VulkanFunctionsClass
-
-		testVK.vkResetCommandPool
-
-		for it,ind : testVK->AllFields
-		{
-			printf("hehey %s\n",ind)
-		}
-		
-		testVK.vkCreateCommandPool
+	hmm := () ==> {
+		printf("hm %s\n",c[0])
 	}
+	hmm()
 }
 
 main := !(char^[] args) -> int
 {
-	c := hmm
-	c.tst()
-
-	//testVK.GetList()
-	//testVK.GetListSize()
-
+	hm(10, args)
 	return 0
 }
 

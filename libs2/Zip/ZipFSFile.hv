@@ -8,10 +8,10 @@ vRepoFile := class extend vRepoObject
 	{
 		ptrToProxy = null
 	}
-	// GetFile := !(char^ fileName) -> vRepoFile^
-	// {
-	// 	//return ptrToRepo.GetFile(fileName,upFolder)
-	// }
+	GetFile := !(StringView fileName) -> vRepoFile^
+	{
+		return ptrToRepo.GetFile(fileName,upFolder)
+	}
 	GetMap := virtual !() -> FileView^
 	{
 		if ptrToZip != null
@@ -32,6 +32,7 @@ vRepoFile := class extend vRepoObject
 		// 	return ptrToZip.Size()
 		// }
 		// return fileSize
+		return fileSize
 	}
 	IsValid := !() -> bool
 	{
