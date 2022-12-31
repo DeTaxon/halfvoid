@@ -6,6 +6,7 @@ TArrayView := class .{@T} extend TGCObject
 	{
 		result.ViewPtr = this&
 	}
+	GetPointer := virtual !() -> T^ { return null }
 }
 
 ViewIterator := class.{@T} extend TGCObject
@@ -37,6 +38,8 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 	}
 	Size := virtual !() -> int { return itSize }
 	"[]" := virtual !(int i) -> ref T { return pointer[i] }
+
+	GetPointer := virtual !() -> T^ { return pointer }
 }
 
 

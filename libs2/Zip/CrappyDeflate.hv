@@ -295,12 +295,12 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 				ApplyHuffmanTree(codeLens[0]&,19,newTree)
 
 				resultData := Vector.{u8}(HLIT + HDIST)
-				DecodeSmallHuffmanTable(newTree,bw,resultData.Get(),resultData.Size())
+				DecodeSmallHuffmanTable(newTree,bw,resultData.GetPointer(),resultData.Size())
 
 				litsTree = new NotHuffmanTree9
 				distTree = new NotHuffmanTree9
 				
-				ApplyHuffmanTree(resultData.Get()->{char^},HLIT,litsTree)
+				ApplyHuffmanTree(resultData.GetPointer()->{char^},HLIT,litsTree)
 				ApplyHuffmanTree(resultData[HLIT]&->{char^},HDIST,distTree)
 			}
 
