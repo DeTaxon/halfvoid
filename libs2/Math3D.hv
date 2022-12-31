@@ -152,3 +152,7 @@ centf := class
 		return dist1 + dist2
 	}
 }
+
+"suffix x" := !(double value) -> vec3f { return vec3f(value,0,0) }
+"suffix y" := !(double value) -> vec3f { return vec3f(0,value,0) }
+"suffix z" := !(double value) -> vec3f { return vec3f(0,0,value) }
