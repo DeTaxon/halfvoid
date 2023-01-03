@@ -71,6 +71,14 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		ExitLabel = new BoxLabel() 
 	}
+	GetBaseClass := !() -> BoxClass^
+	{
+		if ParentScope == null
+			return null
+		if ParentScope is in BoxClass
+			return ParentScope->{BoxClass^}
+		return null
+	}
 
 	ResultTypeHatch := THatch
 	GetType := virtual !() -> Type^

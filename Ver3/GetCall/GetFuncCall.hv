@@ -59,6 +59,47 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down is TokenIndent
 	{
 		asInd := itm.Down->{TokenIndent^}
+
+		if asInd.Value == "super"
+		{
+			itClass := CurrentFunc.GetBaseClass()
+			if itClass == null
+				itm.EmitError("super must be called in method")
+
+			if itClass.Parents.Size() == 0
+				itm.EmitError("Class does not have parents")
+			itClass = itClass.Parents[0]
+
+			thisIndex := TokenIndent
+			thisIndex.Value = StringSpan("this")
+
+			newObjs := CheckExeDownList
+			newObjs.Push(TryGetExeCall(thisIndex&)) //todo prevent if someone make "this := x" ?
+
+			for it : Objs
+				newObjs.Push(it)
+
+			fncs := HybridQueue.{BoxUnit^,10}		
+			while true
+			{
+				if itClass.PreVTableFuncs.Contain(CurrentFunc.Name)
+				{
+					for it : itClass.PreVTableFuncs[CurrentFunc.Name]
+					{
+						fncs.Push(it)
+					}
+					resFunc := GetBestFunc(fncs,newObjs,consts,false)
+					if resFunc != null and resFunc is in BoxFunc
+						return resFunc->{BoxFunc^}.CreateCall(newObjs)
+				}
+
+				it itClass.Parents.Size() == 0
+					itm.EmitError("super function not found")
+				itClass = itClass.Parents[0]
+			}
+
+		}
+
 		for ob : UnitStack
 		{
 			if ob is in BoxFuncBody and asInd.Value != "this"

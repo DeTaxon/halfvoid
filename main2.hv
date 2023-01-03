@@ -13,17 +13,27 @@ testDelete := class extend TGCObject
 //	g3 := int
 //}
 
-hm := !(int x, char^[] c) -> void
+AClass := class
 {
-	hmm := () ==> {
-		printf("hm %s\n",c[0])
+	g := virtual !(int someVal) -> void
+	{
+		printf("hoy A %i\n",someVal)
 	}
-	hmm()
+}
+BClass := class extend AClass
+{
+	g := virtual !(int someVal) -> void
+	{
+		super(someVal)
+		printf("hoy B %i\n",someVal)
+	}
 }
 
 main := !(char^[] args) -> int
 {
-	hm(10, args)
+	c := AClass^
+	c = new BClass
+	c.g(13)
 	return 0
 }
 
