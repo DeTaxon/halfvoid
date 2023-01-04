@@ -94,6 +94,20 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			}
 			if itSpace == null
 			{
+				for itList : itClass.DefaultSpace.VirtualCleanMethods
+				{
+					for it : itList
+					{
+						it it == CurrentFunc
+						{
+							itSpace = itClass.DefaultSpace&
+							break
+						}
+					}
+				}
+			}
+			if itSpace == null
+			{
 				for spc : itClass.FieldSpaces
 				{
 					for itList : spc.Methods
@@ -128,6 +142,13 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				if itSpace.Methods.Contain(CurrentFunc.Name)
 				{
 					for it : itSpace.Methods[CurrentFunc.Name]
+					{
+						fncs.Push(it)
+					}
+				}
+				if itSpace.VirtualCleanMethods.Contain(CurrentFunc.Name)
+				{
+					for it : itSpace.VirtualCleanMethods[CurrentFunc.Name]
 					{
 						fncs.Push(it)
 					}

@@ -15,18 +15,15 @@ testDelete := class extend TGCObject
 
 AClass := class
 {
-	g := !(int someVal) -> void
+	g := virtual !(int someVal) -> void
 	{
 		printf("hoy A %i\n",someVal)
 	}
 }
 BClass := class extend AClass
 {
-	g := !(int someVal) -> void
+	g := virtual !(int someVal) -> void
 	{
-		//TODO fields
-		//TODO virtual
-
 		super(someVal)
 		printf("hoy B %i\n",someVal)
 	}
@@ -34,7 +31,8 @@ BClass := class extend AClass
 
 main := !(char^[] args) -> int
 {
-	c := new BClass
+	c := AClass^
+	c = new BClass
 	c.g(13)
 	return 0
 }
