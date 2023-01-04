@@ -82,16 +82,26 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			fncs := HybridQueue.{BoxUnit^,10}		
 			while true
 			{
+				itClass.AwaitTypeState()
 				if itClass.PreVTableFuncs.Contain(CurrentFunc.Name)
 				{
 					for it : itClass.PreVTableFuncs[CurrentFunc.Name]
 					{
 						fncs.Push(it)
 					}
-					resFunc := GetBestFunc(fncs,newObjs,consts,false)
-					if resFunc != null and resFunc is in BoxFunc
-						return resFunc->{BoxFunc^}.CreateCall(newObjs)
+
 				}
+				spc := itClass.DefaultSpace&
+				if spc.Methods.Contain(CurrentFunc.Name)
+				{
+					for it : spc.Methods[CurrentFunc.Name]
+					{
+						fncs.Push(it)
+					}
+				}
+				resFunc := GetBestFunc(fncs,newObjs,consts,false)
+				if resFunc != null and resFunc is in BoxFunc
+					return resFunc->{BoxFunc^}.CreateCall(newObjs)
 
 				it itClass.Parents.Size() == 0
 					itm.EmitError("super function not found")
