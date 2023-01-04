@@ -137,6 +137,22 @@ BoxClass := class extend BoxUnit
 		assert(FieldsPath.Size() == 0)
 
 		Parents[^].AwaitTypeState()
+
+		DefaultSpace.itClass = this&
+		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance
+		if Parents.Size() != 0
+		{
+			DefaultSpace.baseSpace = Parents[0].DefaultSpace&
+			for par : Parents //TODO move to BoxClass
+			{
+				for pSpace,ind : par.FieldSpaces
+				{
+					FieldSpaces[ind].baseSpace = pSpace&
+					FieldSpaces[ind].itClass = this&
+				}
+			}
+		}
+
 		ItAlign = 1
 		ItAlign = max(ItAlign,Parents[^].ItAlign)
 

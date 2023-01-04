@@ -68,7 +68,6 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 			if itClass.Parents.Size() == 0
 				itm.EmitError("Class does not have parents")
-			itClass = itClass.Parents[0]
 
 			thisIndex := TokenIndent
 			thisIndex.Value = StringSpan("this")
@@ -78,23 +77,57 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 			for it : Objs
 				newObjs.Push(it)
+	
+			itClass.AwaitTypeState()
+
+			itSpace := FieldSpace^
+
+			for itList : itClass.DefaultSpace.Methods
+			{
+				for it : itList
+				{
+					if it == CurrentFunc
+					{
+						itSpace = itClass.DefaultSpace&
+					}
+				}
+			}
+			if itSpace == null
+			{
+				for spc : itClass.FieldSpaces
+				{
+					for itList : spc.Methods
+					{
+						for it : itList
+						{
+							it it == CurrentFunc
+							{
+								itSpace = spc&
+								break
+							}
+						}
+						if itSpace != null
+							break
+					}
+					if itSpace != null
+						break
+				}
+			}
+			assert(itSpace != null)
+
+			itSpace = itSpace.baseSpace
+
+			if itSpace == null
+				itm.EmitError("super function can not be called")
 
 			fncs := HybridQueue.{BoxUnit^,10}		
 			while true
 			{
-				itClass.AwaitTypeState()
-				if itClass.PreVTableFuncs.Contain(CurrentFunc.Name)
-				{
-					for it : itClass.PreVTableFuncs[CurrentFunc.Name]
-					{
-						fncs.Push(it)
-					}
+				itSpace.itClass.AwaitTypeState()
 
-				}
-				spc := itClass.DefaultSpace&
-				if spc.Methods.Contain(CurrentFunc.Name)
+				if itSpace.Methods.Contain(CurrentFunc.Name)
 				{
-					for it : spc.Methods[CurrentFunc.Name]
+					for it : itSpace.Methods[CurrentFunc.Name]
 					{
 						fncs.Push(it)
 					}
@@ -103,9 +136,9 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				if resFunc != null and resFunc is in BoxFunc
 					return resFunc->{BoxFunc^}.CreateCall(newObjs)
 
-				it itClass.Parents.Size() == 0
+				it itSpace.baseSpace == null
 					itm.EmitError("super function not found")
-				itClass = itClass.Parents[0]
+				itSpace = itSpace.baseSpace
 			}
 
 		}

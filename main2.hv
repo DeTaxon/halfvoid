@@ -25,6 +25,7 @@ BClass := class extend AClass
 	g := !(int someVal) -> void
 	{
 		//TODO fields
+		//TODO virtual
 
 		super(someVal)
 		printf("hoy B %i\n",someVal)
@@ -34,7 +35,7 @@ BClass := class extend AClass
 main := !(char^[] args) -> int
 {
 	c := new BClass
-	c->{AClass^}.g(13)
+	c.g(13)
 	return 0
 }
 

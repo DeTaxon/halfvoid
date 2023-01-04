@@ -165,13 +165,7 @@ BoxClassBody := class extend BoxClassPoison
 			}
 		}
 
-		for par : Parents
-		{
-			for pSpace,ind : par.FieldSpaces
-			{
-				FieldSpaces[ind]
-			}
-		}
+
 
 		populatePoisons(Parents[^])
 
@@ -325,6 +319,8 @@ BoxClassBody := class extend BoxClassPoison
 		itr := skob.Down
 
 		thisField := FieldSpaces[fieldName]&
+
+		thisField.itClass = this&
 
 		while itr != null
 		{
