@@ -76,30 +76,35 @@ GetCurrentFunc := !() -> BoxFunc^
 
 ReturnHalfState := class extend BoxExeObj
 {
-    isYield := bool
-    callObj := BoxExeObj^
-    returnObj := BoxExeObj^
+	isYield := bool
+	callObj := BoxExeObj^
+	returnObj := BoxExeObj^
 	errorToken := Token^
-    this := !(Token^ erToken,BoxExeObj^ toCall,bool iY) -> void
-    {
+	this := !(Token^ erToken,BoxExeObj^ toCall,bool iY) -> void
+	{
 		errorToken = erToken
-        callObj = toCall
-        isYield = iY
-    }
+		callObj = toCall
+		isYield = iY
+	}
 
-    ResolveStep := !() -> void
-    {
-        if callObj != null
-        {
+	ResolveStep := !() -> void
+	{
+		if callObj != null
+		{
 			if callObj.GetType() != GTypeVoid //TODO Auto return type
 			{
-		        rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
+				rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
 
 				callObj2 := BoxExeObj^
 				resType := callObj.GetType()
 				funcType := CurrentFunc.ResultVar.GetVarType()
 				if rRef
+				{
 					funcType = funcType.Base
+
+					if not callObj.IsMem()
+						errorToken.EmitError("Can not return reference, object does not sits in memory")
+				}
 
 				if resType != funcType
 				{
@@ -156,28 +161,28 @@ ReturnHalfState := class extend BoxExeObj
 						errorToken.EmitError("Can not return value, no \"=\" operator")
 				}
 			}
-        }
-     
+		}
+	 
 		if isYield
 		{
 			returnObj = new BoxYield(CurrentFunc.GetExitLabel(),callObj)
 		}else{
-		    returnObj = new BoxReturn(CurrentFunc.GetExitLabel(),callObj)
-        }
-    }
-    GetReturnObj := !() -> BoxExeObj^
-    {
-        return returnObj
-    }
-    GetSetType := !() -> Type^
-    {
-        if callObj == null
-            return GTypeVoid
-        return callObj.GetType()
-    }
+			returnObj = new BoxReturn(CurrentFunc.GetExitLabel(),callObj)
+		}
+	}
+	GetReturnObj := !() -> BoxExeObj^
+	{
+		return returnObj
+	}
+	GetSetType := !() -> Type^
+	{
+		if callObj == null
+			return GTypeVoid
+		return callObj.GetType()
+	}
 
 	PrintDefaultUse := virtual !(TIOStream^ f) -> void
-    {
-        returnObj.PrintDefaultUse(f)
-    }
+	{
+		returnObj.PrintDefaultUse(f)
+	}
 }

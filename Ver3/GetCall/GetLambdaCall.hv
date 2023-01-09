@@ -9,6 +9,7 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 	bodyToken := Token^
 	typeToken := Token^
 	captureToken := Token^
+	resRef := false
 
 	iter := itm.Down.Right.Right
 
@@ -21,6 +22,9 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 			if iter.GetValue() == "[]"
 			{
 				captureToken = iter
+			}else if iter.GetValue() == "ref"
+			{
+				typeToken = iter
 			}else{
 				if typeToken == null
 					typeToken = iter

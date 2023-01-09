@@ -1,11 +1,4 @@
 
-testDelete := class extend TGCObject
-{
-	Destroy := virtual !() -> void
-	{
-		printf("yes\n")
-	}
-}
 
 //AClass := class
 //{
@@ -13,27 +6,22 @@ testDelete := class extend TGCObject
 //	g3 := int
 //}
 
-AClass := class
-{
-	g := virtual !(int someVal) -> void
-	{
-		printf("hoy A %i\n",someVal)
-	}
-}
-BClass := class extend AClass
-{
-	g := virtual !(int someVal) -> void
-	{
-		super(someVal)
-		printf("hoy B %i\n",someVal)
-	}
-}
 
 main := !(char^[] args) -> int
 {
-	c := AClass^
-	c = new BClass
-	c.g(13)
+
+	test := HybridQueue.{int,5}
+	test.Push(13)
+	test.Push(20)
+	for i : 10
+	{
+		test.Push(i)
+	}
+
+	for it : test
+	{
+		printf("hey %i\n",it)
+	}
 	return 0
 }
 
