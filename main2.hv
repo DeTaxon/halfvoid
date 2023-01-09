@@ -10,12 +10,12 @@
 main := !(char^[] args) -> int
 {
 
-	test := HybridQueue.{int,5}
-	test.Push(13)
-	test.Push(20)
+	test := HybridStack.{int,5}
+	test.PushFront(13)
+	test.PushFront(20)
 	for i : 10
 	{
-		test.Push(i)
+		test.PushFront(i)
 	}
 
 	for it : test
