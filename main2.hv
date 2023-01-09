@@ -9,18 +9,17 @@
 
 main := !(char^[] args) -> int
 {
-
-	test := HybridStack.{int,5}
-	test.PushFront(13)
-	test.PushFront(20)
+	test := HybridQueue.{int,5}
+	test.Push(13)
+	test.Push(20)
 	for i : 10
 	{
-		test.PushFront(i)
+		test.Push(i)
 	}
 
-	for it : test
+	for i : test.Size()
 	{
-		printf("hey %i\n",it)
+		printf("hey %i\n",test[i])
 	}
 	return 0
 }

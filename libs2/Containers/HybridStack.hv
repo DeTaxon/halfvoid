@@ -10,11 +10,26 @@ HybridStack := class .{@T,@HSize} extend TArrayView.{T}
 		{
 			return ListArray[i]
 		}
-		return StaticArray[HSize - StaticSize + i]
+		return StaticArray[HSize - StaticSize + (i - ListArray.Size())]
 	}
 	Size := virtual !() -> int
 	{
 		return StaticSize + ListArray.Size()
+	}
+
+	Pop := !() -> T
+	{
+		if ListArray.Size() != 0
+		{
+			return ListArray.Pop()
+		}else {
+			result = StaticArray[HSize - StaticSize]
+			if T->IsGCPointer
+			{
+				StaticArray[HSize - StaticSize] = null
+			}
+			StaticSize -= 1
+		}
 	}
 
 	PushFront := !(T itm) -> void
