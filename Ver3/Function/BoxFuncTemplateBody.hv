@@ -120,7 +120,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if objs[i] is BoxArrayHolder
 			{
 				ar := objs[i]->{BoxArrayHolder^}
-				datas.Emplace(ar.GetArrayType(),true)
+
+				if ar.GetArraySize() == 0
+				{
+					assert(hData.Types[i].ItType != null)
+					datas.Emplace(hData.Types[i].ItType,hData.Types[i].IsRef)
+				}else{
+					datas.Emplace(ar.GetArrayType(),true)
+				}//TODO better exchange
 			}else{
 				datas.Emplace(objs[i].GetType(),objs[i].IsMem())
 			}

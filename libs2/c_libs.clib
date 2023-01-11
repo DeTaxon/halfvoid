@@ -69,9 +69,18 @@
 
 		"nk_buffer_init_default" : "void,void^",
 		"nk_buffer_init_fixed" : "void,void^,void^,size_t",
-		"nk_convert" : "void,void^,void^,void^,void^,void^",
+		"nk_convert" : "int,void^,void^,void^,void^,void^",
+
+		"nk__draw_begin" : "void^,void^,void^",
+		"nk__draw_next" : "void^,void^,void^,void^",
 
 		"nk_label" : "void,void^,char^,int",
+
+		"nk_button_label" : "bool,void^,char^",
+
+		"nk_layout_row_static" : "void,void^,int,int,int",
+		"nk_layout_row_dynamic" : "void,void^,int,int",
+		"nk_layout_row_push" : "void,void^,int",
 
 		"ur_create" : "void^",
 		"ur_init" : "void,int,void^,int",

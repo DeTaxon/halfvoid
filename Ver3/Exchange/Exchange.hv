@@ -32,7 +32,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 		if IsViewType(expType)
 		{
 			bsExp := GetViewBaseType(expType)
-			if arrType == null or TypeFight(bsExp,arrType) != bsExp
+			if arrType != null and TypeFight(bsExp,arrType) != bsExp
 				return null
 			return arr.CreateViewArray(expType)
 		}
