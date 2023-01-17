@@ -21,13 +21,21 @@ TwiceFunc := !() -> void
 {
 }
 
+VoidFunc := !() -> void
+{
+	printf("oh hi %i\n",result)
+}
+
 main := !(char^[] args) -> int
 {
+	VoidFunc()
+
 	//TwiceFunc()
 	//TwiceFunc()
-	
-	c := @work PrintFuncInt()
-	printf("hon %i\n",c)
+
+	//@work PrintFuncVoid()
+	//c := @work PrintFuncInt()
+	//printf("hon %i\n",c)
 	return 0
 }
 
