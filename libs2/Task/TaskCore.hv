@@ -26,7 +26,6 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		//TODO prioritize least busy thread to work on event loop
 		if TaskLoopWorkCounter != 0 and not someoneOnLoop
 		{
 			someoneOnLoop = true

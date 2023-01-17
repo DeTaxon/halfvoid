@@ -18,7 +18,7 @@ BoxExeNone := class extend BoxExeConstObj
 {
 	this := !() -> void
 	{
-		ObjType = GTypeVoid
+		ObjType = GTypeNone
 	}
 }
 BoxExeNull := class extend BoxExeConstObj

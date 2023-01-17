@@ -1,7 +1,7 @@
 internalHVNew := !() .{@T} -> T^
 {
-	assert(T->TypeSize != 0)
-	result&->{void^^}^ = calloc(1,T->TypeSize) //weird way to bypass DecRef
+	//TODO maybe remove zero size creation?
+	result&->{void^^}^ = calloc(1,max(T->TypeSize,1) ) //weird way to bypass DecRef
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
 }

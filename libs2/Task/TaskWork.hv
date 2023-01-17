@@ -11,13 +11,15 @@ TaskWorkersToDo := List.{Task^}
 	TaskWaitTasksConVar.NotifyAll()
 
 	myThread := CurrentThread->{void^}
+	myTask := CurrentTask->{void^}
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()
 	lmbd()
 	TaskCheckMutex.Lock()
 
-	myThread->{TaskWorker^}.PendingTasks.Push(CurrentTask)
+	myTask->{Task^}.resume()
+	//myThread->{TaskWorker^}.PendingTasks.Push(myTask)
 	TaskWaitTasksConVar.NotifyAll()
 	CurrentThread.switchToMain()
 

@@ -99,7 +99,7 @@ BoxArrayHolder := class extend BoxExeObj
 
 	this := !(Type^ elType,bool isC,Token^ debToken) -> void
 	{
-		ObjType = GTypeVoid
+		ObjType = GTypeNone
 		defaultType = elType
 		isAllConsts = isC
 		debugToken = debToken

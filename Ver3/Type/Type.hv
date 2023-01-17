@@ -284,6 +284,7 @@ TypeDebugRef := class extend Type //FO
 TypeTable := Type^[30]
 DefsTable := TypeDef^[30]
 
+GTypeNone := Type^
 GTypeBool := Type^
 GTypeDouble := Type^
 GTypeFloat := Type^
@@ -392,6 +393,9 @@ CreateStandardTypes := !() -> void
 
 	TypeTable[21] = new TypeStandard("i16","half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
 
+	TypeTable[22] = new TypeStandard("void","void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
+
+	GTypeNone = TypeTable[22]
 	GTypeBool =   TypeTable[8]
 	GTypeHalf =   TypeTable[21]
 	GTypeFloat =  TypeTable[9]

@@ -48,7 +48,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,rToken,itBody)
 		tmpl.SetName(StringSpan("lambda"))
 
-		ObjType = GObjNone.GetType()
+		ObjType = GTypeNone
 	}
 	IsOneFunc := !() -> bool
 	{

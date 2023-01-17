@@ -16,6 +16,16 @@
 			"y" : "float",
 			"w" : "float",
 			"h" : "float"
+		},
+		"nk_recti" : {
+			"x" : "u16",
+			"y" : "u16",
+			"w" : "u16",
+			"h" : "u16"
+		},
+		"nk_vec2" : {
+			"x" : "float",
+			"y" : "float"
 		}
 	},
 	"consts" : {
@@ -108,6 +118,7 @@
 		"nk_font_atlas_add_from_memory" : "void^,void^,void^,u64,float,void^",
 		"nk_font_atlas_add_default" : "void^,void^,float,void^",
 
+		"nk_style_load_all_cursors" : "void,void^,void^",
 		"nk_style_set_font" : "void,void^,void^",
 
 		"ur_wait_cqe_timeout" : "int,void^,void^^,double",

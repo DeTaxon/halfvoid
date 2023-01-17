@@ -6,14 +6,28 @@
 //	g3 := int
 //}
 
-hoy := !(void^[] x) -> void
+
+PrintFuncInt := !() -> int
+{
+	printf("hi\n")
+	return 13
+}
+PrintFuncVoid := !() -> void
+{
+	printf("hi\n")
+}
+
+TwiceFunc := !() -> void
 {
 }
 
-
 main := !(char^[] args) -> int
 {
-	hoy(![])
+	//TwiceFunc()
+	//TwiceFunc()
+	
+	c := @work PrintFuncInt()
+	printf("hon %i\n",c)
 	return 0
 }
 
