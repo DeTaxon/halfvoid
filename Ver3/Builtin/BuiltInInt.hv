@@ -241,6 +241,7 @@ CreateBuiltins := !() -> void
 	CreateBuiltinsBool()
 	CreateBuildInTools()
 	CreateBuiltInVec()
+	CreateBuiltInVoid()
 }
 CreateBuiltinsInt := !() -> void
 {

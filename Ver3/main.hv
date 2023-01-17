@@ -139,6 +139,7 @@ main := !(int argc, char^^ argv) -> int
 	GBoolFalse = new BoxExeBool(false)
 	GObjNone = new BoxExeNone()
 	GObjNull = new BoxExeNull()
+	GObjVoid = new BoxExeVoid()
 	CreateBuiltins()
 	ExchangeInit()
 	TupleInit()

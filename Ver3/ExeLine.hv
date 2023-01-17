@@ -363,6 +363,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 			return false
 		return true
 	})
+
 	if callItem == null
 		return null
 	if callItem is in BoxFuncTemplate
@@ -503,7 +504,8 @@ ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 TypePriorCmp := !(BoxExeObj^ obj, Type^ to, bool toIsMem) -> int
 {
 	f1 := obj.GetType()
-	if f1 == to and f1 != GTypeVoid
+
+	if f1 == to
 		return 0
 
 	for it : ExchangeList

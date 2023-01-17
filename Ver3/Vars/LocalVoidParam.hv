@@ -31,7 +31,7 @@ FuncLocalVoidParam := class extend ParamFunc
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
-		return GetExeInt(999)
+		return GObjVoid
 	}
 
 	PopulateCalls := virtual !() -> void
