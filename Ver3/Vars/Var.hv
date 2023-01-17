@@ -41,11 +41,17 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if varType != null
 	{
-		assert(CurrentScope is in BoxFunc) 
-		vr := CreateVar(varType,false)
-		resVar := new MemVarBorrowed(name,vr)
-		ModifyStackAllocatedVar(vr,resVar.Inits)
-		return resVar
+		if varType == GTypeVoid
+		{
+			resVoid := new FuncLocalVoidParam()
+			return new MemVar(name,resVoid)
+		}else{
+			assert(CurrentScope is in BoxFunc) 
+			vr := CreateVar(varType,false)
+			resVar := new MemVarBorrowed(name,vr)
+			ModifyStackAllocatedVar(vr,resVar.Inits)
+			return resVar
+		}
 	}
 	
 	refVar := bool
@@ -98,27 +104,34 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			{
 				isGC := IsGCPtr(exeObj.GetType())
 
-				if refVar
+				if exeObj.GetType() == GTypeVoid
 				{
-					vr = CreateVar(exeObj.GetType().GetPoint(),false)
-					mVar = new MemVarBorrowedRef(name,vr)
+					vr = new FuncLocalVoidParam()
+					mVar = new MemVar(name,vr)
+					mVar.Inits.Push(exeObj)
 				}else{
-					vr = CreateVar(exeObj.GetType(),false)
-					mVar = new MemVarBorrowed(name,vr)
+					if refVar
+					{
+						vr = CreateVar(exeObj.GetType().GetPoint(),false)
+						mVar = new MemVarBorrowedRef(name,vr)
+					}else{
+						vr = CreateVar(exeObj.GetType(),false)
+						mVar = new MemVarBorrowed(name,vr)
+					}
+					objs2 := CheckExeDownList
+					objs2.Push(vr.CreateCall())
+					if refVar
+					{
+						objs2.Push(new UnrefFuncCall(exeObj))
+					}else{
+						objs2.Push(exeObj)
+					}
+					setCall := innerTryGetInfixCall(StringSpan("="),objs2,varToken)
+					if setCall == null
+						return null
+					mVar.Inits.Push(setCall)
 				}
 
-				objs2 := CheckExeDownList
-				objs2.Push(vr.CreateCall())
-				if refVar
-				{
-					objs2.Push(new UnrefFuncCall(exeObj))
-				}else{
-					objs2.Push(exeObj)
-				}
-				setCall := innerTryGetInfixCall(StringSpan("="),objs2,varToken)
-				if setCall == null
-					return null
-				mVar.Inits.Push(setCall)
 			}else{
 				mVar = new MemVarBorrowed(name,vr)
 				mVar.Inits.Push(exeObj)

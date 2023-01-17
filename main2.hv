@@ -27,7 +27,7 @@ VoidFunc2 := !() -> void
 }
 VoidFunc := !() -> void
 {
-	result = VoidFunc2()
+	c := VoidFunc2()
 }
 
 main := !(char^[] args) -> int
