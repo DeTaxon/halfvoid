@@ -26,14 +26,6 @@ ohCall := !(int counter = static 16) -> void
 	printf("call %i\n",counter)
 	counter += 1
 }
-//TODO
-//dynamic size class
-//field modifier
-//dynamic size works with field modifier
-//inheritance works with dynamic size
-//Module Vulkan uses Normal Class
-//x := field 10  non types not working
-// class->AllFields to work with new Fields
 
 main := !(char^[] args) -> int
 {
@@ -48,6 +40,16 @@ main := !(char^[] args) -> int
 	b.hoh()
 	return 0
 }
+
+//TODO
+//dynamic size class
+//field modifier
+//dynamic size works with field modifier
+//inheritance works with dynamic size
+//Module Vulkan uses Normal Class
+//x := field 10  non types not working
+//class->AllFields to work with new Fields
+
 
 DllTest := !() -> void
 {

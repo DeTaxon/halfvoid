@@ -50,11 +50,15 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				tp := ParseType(varToken)
 				assert(tp != null)
 
-				newName := StringSpan("hmmm")
 
-				cls.AddExtraField(newName,tp)
+				buf := char[30]
+				sprintf(buf[0]&,"hidden%i",GetNewId())
 
-				mv := new MacroVar(name,() ==> {
+				newName := GetConstString(buf[0]&)&
+
+				cls.AddExtraField(newName^,tp)
+
+				mv := new MacroVar(name,() ==> [newName] {
 					top := TokenData
 					ths := TokenIndent
 					dot := TokenSymbol
@@ -66,7 +70,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 					ths.Value = StringSpan("this")
 					dot.Value = StringSpan(".")
-					fieldName.Value = StringSpan("hmmm")
+					fieldName.Value = newName^
 
 					return TryGetExeCall(top&)
 				})
