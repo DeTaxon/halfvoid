@@ -14,7 +14,7 @@ WTFClass := class
 	
 	hoh := !() -> void
 	{
-		notStatic := field int
+		notStatic := static int
 
 		printf("test %i\n",notStatic)
 		notStatic += 1
@@ -42,13 +42,16 @@ main := !(char^[] args) -> int
 }
 
 //TODO
+//decorator function
+//@cache function, @once function/call
 //dynamic size class
-//field modifier
-//dynamic size works with field modifier
 //inheritance works with dynamic size
-//Module Vulkan uses Normal Class
 //x := field 10  non types not working
 //class->AllFields to work with new Fields
+//Allow code to be interpreted
+//interpreter support File,XML
+//Class can be created by script
+//Module Vulkan uses Normal Class and usese new API
 
 
 DllTest := !() -> void

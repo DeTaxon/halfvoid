@@ -36,6 +36,21 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		varToken.EmitError("task/thread local must be at the root of file")
 	}
 
+	if varToken?.GetValue() == "static"
+	{
+		buf := char[30]
+		sprintf(buf[0]&,"hidden%i",GetNewId())
+		newName := GetConstString(buf[0]&)
+
+		vrTable := new GlobalVarDelayed(newName,varToken.Right)
+		CodeSpaces[-1].Globals[newName].Push(vrTable)
+
+		res := new GlobalNameAlias
+		res.Name = name
+		res.Value = vrTable
+		return res
+	}
+
 	if varToken?.GetValue() == "field"
 	{
 		varToken = varToken.Right
@@ -53,7 +68,6 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 				buf := char[30]
 				sprintf(buf[0]&,"hidden%i",GetNewId())
-
 				newName := GetConstString(buf[0]&)&
 
 				cls.AddExtraField(newName^,tp)
@@ -229,6 +243,11 @@ ConstVar := class extend BoxUnit
 NamedVar := class extend BoxUnit
 {
 	Name := StringSpan
+}
+
+GlobalNameAlias := class extend NamedVar
+{
+	Value := GlobalVar^
 }
 MemVar := class extend NamedVar
 {
