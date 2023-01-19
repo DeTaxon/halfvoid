@@ -54,6 +54,23 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 				cls.AddExtraField(newName,tp)
 
+				mv := new MacroVar(name,() ==> {
+					top := TokenData
+					ths := TokenIndent
+					dot := TokenSymbol
+					fieldName := TokenIndent
+
+					top.Down = ths&
+					ths.Right = dot&
+					dot.Right = fieldName&
+
+					ths.Value = StringSpan("this")
+					dot.Value = StringSpan(".")
+					fieldName.Value = StringSpan("hmmm")
+
+					return TryGetExeCall(top&)
+				})
+				return mv
 			}else{
 				assert(false) //TODO
 			}

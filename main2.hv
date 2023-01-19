@@ -33,6 +33,7 @@ ohCall := !(int counter = static 16) -> void
 //inheritance works with dynamic size
 //Module Vulkan uses Normal Class
 //x := field 10  non types not working
+// class->AllFields to work with new Fields
 
 main := !(char^[] args) -> int
 {
