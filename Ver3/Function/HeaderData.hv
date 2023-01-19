@@ -108,6 +108,10 @@ FunctionHeaderInfo := class
 						{
 							if c == bag.Size() - 1
 								bag[c].EmitError("Bad function header")
+							if bag[c+1].GetValue() == "static"
+							{
+								isRef = true
+							}
 							DefaultValues[Types.Size()] = bag[c+1]
 						}
 					}

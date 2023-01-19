@@ -7,39 +7,44 @@
 //}
 
 
-PrintFuncInt := !() -> int
+WTFClass := class
 {
-	printf("hi\n")
-	return 13
-}
-PrintFuncVoid := !() -> void
-{
-	printf("hi\n")
+	x := int
+	y := int
+	
+	hoh := !() -> void
+	{
+		notStatic := field int
+
+		printf("test %i\n",notStatic)
+		notStatic += 1
+	}
 }
 
-TwiceFunc := !() -> void
+ohCall := !(int counter = static 16) -> void
 {
+	printf("call %i\n",counter)
+	counter += 1
 }
-
-VoidFunc2 := !() -> void
-{
-	printf("YES\n")
-}
-VoidFunc := !() -> void
-{
-	c := VoidFunc2()
-}
+//TODO
+//dynamic size class
+//field modifier
+//dynamic size works with field modifier
+//inheritance works with dynamic size
+//Module Vulkan uses Normal Class
+//x := field 10  non types not working
 
 main := !(char^[] args) -> int
 {
-	VoidFunc()
+	a := WTFClass
+	b := WTFClass
 
-	//TwiceFunc()
-	//TwiceFunc()
+	printf("size %i\n",a->TypeSize)
 
-	//@work PrintFuncVoid()
-	//c := @work PrintFuncInt()
-	//printf("hon %i\n",c)
+	a.hoh()
+	a.hoh()
+	b.hoh()
+	b.hoh()
 	return 0
 }
 

@@ -36,6 +36,32 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		varToken.EmitError("task/thread local must be at the root of file")
 	}
 
+	if varToken?.GetValue() == "field"
+	{
+		varToken = varToken.Right
+		
+		if CurrentScope is in BoxFuncBody
+		{
+			fnc := CurrentScope->{BoxFuncBody^}
+			if fnc.ParentScope is in BoxClass
+			{
+				cls := fnc.ParentScope->{BoxClass^}
+
+				tp := ParseType(varToken)
+				assert(tp != null)
+
+				newName := StringSpan("hmmm")
+
+				cls.AddExtraField(newName,tp)
+
+			}else{
+				assert(false) //TODO
+			}
+		}else{
+			assert(false) //TODO
+		}
+	}
+
 
 	varType := ParseType(varToken)
 

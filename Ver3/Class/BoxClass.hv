@@ -211,6 +211,38 @@ BoxClass := class extend BoxUnit
 		ItSize = posMemOffset
 
 	}
+	AddExtraField := !(StringSpan newName, Type^ newFieldType) -> FieldPath^
+	{
+		//TODO check for existing name
+
+		AwaitTypeState()
+		
+		posMemOffset := ItSize
+
+		newField := new FieldParam(newName,newFieldType)
+		newPath := new FieldPath(ItType,newFieldType)
+
+		newPath.Field = newField
+
+		unalign := ItSize % newFieldType.GetAlign()
+		ItAlign = max(ItAlign,newFieldType.GetAlign())
+
+		if unalign != 0 and not IsPacked
+		{
+			posMemOffset += newFieldType.GetAlign() - unalign
+		}
+		fieldSize := newFieldType.GetSize()
+		if fieldSize == 0 and newFieldType is TypeClass
+			fieldSize = 1 //TODO Zero size class optimization
+		newPath.MemOffset = posMemOffset
+		posMemOffset += fieldSize
+
+		FieldsPath.Push(newPath)
+		Fields.Push(newField)
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{
 		AwaitTypeState()
@@ -365,20 +397,22 @@ BoxClass := class extend BoxUnit
 		}
 		return false
 	}
+
+	itDynamicSize := VarIntObj^
 	GetClassSize := virtual !() -> BoxExeObj^
 	{
 		AwaitTypeState()
-		minSize := ItSize
-		unalign := minSize % ItAlign
-		if unalign != 0
-			minSize += ItAlign - unalign
-		return GetExeInt(minSize)
+		if itDynamicSize != null
+			return itDynamicSize
+		itDynamicSize = new VarIntObj(this&)
+		return itDynamicSize
 	}
 	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
 	{
 		AwaitTypeState()
 		return new MetaFieldsHolder(itm,this&)
 	}
+
 }
 TypeClass := class extend Type
 {

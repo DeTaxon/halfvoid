@@ -311,7 +311,7 @@ RuleParam := !(void^ itr) -> int
 
 	while true
 	{
-		if It.GetValue() in !["weak","virtual","static","poison","ref","thread_local","task_local","extern"]
+		if It.GetValue() in !["weak","virtual","static","poison","ref","thread_local","task_local","extern","field"]
 		{
 			It = It.Right
 			if It == null return 0
