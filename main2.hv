@@ -9,15 +9,16 @@
 
 WTFClass := class
 {
+	cc := List.{int}
 	x := int
 	y := int
 	
 	hoh := !() -> void
 	{
-		notStatic := static int
+		//notStatic := field int
 
-		printf("test %i\n",notStatic)
-		notStatic += 1
+		//printf("test %i\n",notStatic)
+		//notStatic += 1
 	}
 }
 
@@ -29,10 +30,18 @@ ohCall := !(int counter = static 16) -> void
 
 main := !(char^[] args) -> int
 {
+	js := new Json
+	js.ParseString("{}",2)
+
 	a := WTFClass
 	b := WTFClass
 
-	printf("size %i\n",a->TypeSize)
+	printf("size %i %p\n",a->TypeSize,a.cc->VTable)
+
+	for it,ind : a->AllFields
+	{
+		printf("hey %i %s %s\n",0,ind,it->TypeGroup)
+	}
 
 	a.hoh()
 	a.hoh()
@@ -46,6 +55,7 @@ main := !(char^[] args) -> int
 //@cache function, @once function/call
 //dynamic size class
 //inheritance works with dynamic size
+//default initializer for growing class, and const value as global const
 //x := field 10  non types not working
 //class->AllFields to work with new Fields
 //Allow code to be interpreted

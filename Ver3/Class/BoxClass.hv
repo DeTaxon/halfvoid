@@ -242,6 +242,18 @@ BoxClass := class extend BoxUnit
 		if IsPacked
 			ItAlign = 1
 		ItSize = posMemOffset
+
+		for it : fieldIterators
+		{
+			it.ItemCreated(FieldsPath.Size() - 1)
+		}
+	}
+	fieldIterators := List.{GrowableClassMetaFields^} //TODO already bad, can not be used frequently
+	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		newIterator := new GrowableClassMetaFields(itm,this&)
+		fieldIterators.Push(newIterator)
+		return newIterator
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{
@@ -407,11 +419,11 @@ BoxClass := class extend BoxUnit
 		itDynamicSize = new VarIntObj(this&)
 		return itDynamicSize
 	}
-	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
-	{
-		AwaitTypeState()
-		return new MetaFieldsHolder(itm,this&)
-	}
+	//GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	//{
+	//	AwaitTypeState()
+	//	return new MetaFieldsHolder(itm,this&)
+	//}
 
 }
 TypeClass := class extend Type

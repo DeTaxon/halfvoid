@@ -43,7 +43,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		newName := GetConstString(buf[0]&)
 
 		vrTable := new GlobalVarDelayed(newName,varToken.Right)
-		CodeSpaces[-1].Globals[newName].Push(vrTable)
+		CodeSpaces[-1].Globals[newName].Push(vrTable) //todo Optimize, codespace can have spetial place for unque names
 
 		res := new GlobalNameAlias
 		res.Name = name

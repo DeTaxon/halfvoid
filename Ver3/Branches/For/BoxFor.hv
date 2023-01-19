@@ -89,14 +89,6 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 			if dwnRes is BoxArrayHolder
 				dwnRes = dwnRes->{BoxArrayHolder^}.CreateDefaultUse()
 
-			if dwnRes is in BoxMetaGrowingObject
-			{
-				assert(lst.Size() == 1) //TODO emit error
-				it.IsMeta = true
-				it.MetaObj = dwnRes->{BoxMetaObj^}
-				return new BoxForOverGrowableMeta(lst,itm)
-			}
-
 			if dwnRes is in BoxMetaObj
 			{
 				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
@@ -116,7 +108,8 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 
 		if containMeta
 		{
-			return new BoxForOverMeta(lst,itm)
+			//return new BoxForOverMeta(lst,itm)
+			return new BoxForOverGrowableMeta(lst,itm)
 		}
 
 		resFor := new BoxFor()

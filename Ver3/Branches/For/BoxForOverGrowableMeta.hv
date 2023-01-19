@@ -4,7 +4,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 	blocks := List.{BoxBlock^}
 	dwnObjs := HybridQueue.{ForSubObjects,5}
 
-	metaCount := int
+	metaUsedCount := int
 
 	middleVars := AVLMap.{int,List.{NamedVar^}}
 
@@ -16,7 +16,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 		ObjType = GTypeVoid
 		if not dwns[^].IsMeta
 			bdy.EmitError("All of iteratables must be metadata")
-		k := dwns[0].MetaObj.MetaIteretableSize()
+		k := dwns[0].MetaObj.MetaIteretableSize() //TODO check all dwns
 		if k != dwns[^].MetaObj.MetaIteretableSize()
 			bdy.EmitError("All of iteretables must be same size")
 
@@ -29,17 +29,29 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 		{
 			addItem(i,false)
 		}
-		
-
-		assert(dwns.Size() == 1)
 
 		lmbd := (int ind) ==> {
+			if ind < metaUsedCount
+				return void
+			for it : dwnObjs
+			{
+				if ind >= it.MetaObj.MetaIteretableSize()
+					return void
+			}
 			addItem(ind,true)
+			metaUsedCount += 1
 		}
-		grw := dwns[0].MetaObj->{BoxMetaGrowingObject^}
-		grw.RegisterUser(lmbd.Capture())
 
-		metaCount = k
+		for it : dwns
+		{
+			if it.MetaObj is in BoxMetaGrowingObject
+			{
+				grw := it.MetaObj->{BoxMetaGrowingObject^}
+				grw.RegisterUser(lmbd.Capture())
+			}
+		}
+
+		metaUsedCount = k
 	}
 	addItem := !(int i,bool swapStack) -> void
 	{
