@@ -276,6 +276,14 @@ RuleFunctionBody := !(void^ itr) -> int
 
 	if It == null return 0
 
+	while It is TokenTemplateType
+	{
+		It = It.Right
+		if It == null return 0
+
+		size += 1
+	}
+
 	if It.GetValue() != "!" return 0
 
 	It = It.Right

@@ -9,13 +9,18 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 	switch iter.GetValue() //todo to cycle
 	{
 		case "virtual"
-			Attr.IsVirtual = true
-			iter = iter.Right
+			assert(false)
 		case "poison"
-			Attr.IsVirtual = true
-			iter = iter.Right
+			assert(false)
 		case void
 	}
+	
+	while iter is TokenTemplateType
+	{
+		iter = iter.Right
+		if iter == null return null
+	}
+
 	if iter == null
 		return null
 

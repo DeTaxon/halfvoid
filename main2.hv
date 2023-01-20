@@ -22,7 +22,8 @@ someCls := class
 
 main := !(char^[] args) -> int
 {
-	
+	cls := someCls
+	cls.hoh()
 	return 0
 }
 
