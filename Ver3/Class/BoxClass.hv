@@ -28,6 +28,23 @@ BoxClass := class extend BoxUnit
 		ItName = name
 	}
 
+	printFieldsPath := !(TIOStream^ f, bool^ needComma) -> void
+	{
+		for it : Parents
+		{
+			it.printFieldsPath(f,needComma)
+		}
+		for it : FieldsPath
+		{
+			if needComma^
+				f^ << ","
+			needComma^ = true
+			typ := it.Field.Value
+			typ = NormalizeType(typ)
+			typ.PrintType(f)
+		}
+	}
+
 	StartParseBody := virtual !() -> void {} 
 	AwaitParentStep := virtual !() -> void {}
 	AwaitVTableStep := virtual !() -> void {}
@@ -40,7 +57,7 @@ BoxClass := class extend BoxUnit
 		if IsPacked
 			f^ << "<"
 		f^ << "{"
-		if FieldsPath.Size() == 0 and VTable.Size() == 0
+		if GetFieldsCount() == 0 and VTable.Size() == 0
 		{
 			f^ <<"i1"
 		}else{
@@ -49,15 +66,7 @@ BoxClass := class extend BoxUnit
 				VTableType.ItType.GetPoint().PrintType(f)
 				needComma = true
 			}
-			for i : FieldsPath.Size()
-			{
-				if needComma
-					f^ << ","
-				needComma = true
-				typ := FieldsPath[i].Field.Value
-				typ = NormalizeType(typ)
-				typ.PrintType(f)
-			}
+			printFieldsPath(f,needComma&)
 		}
 		f^ << "}"
 		if IsPacked
@@ -131,39 +140,6 @@ BoxClass := class extend BoxUnit
 			}
 			PrimeParents.Emplace(this&,this&,0)
 		}
-	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
-	{
-		AwaitTypeState()
-
-		for it : FieldsPath
-		{
-			if it.Field.Name == val
-				return it
-		}
-		return null
-	}
-	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
-	{
-		return null
-	}
-	GetFieldByIndex := virtual !(int val) -> FieldPath^
-	{
-		AwaitTypeState()
-
-		if val < 0 or val >= FieldsPath.Size()
-			return null
-		return FieldsPath[val]
-	}
-	GetFieldByIndexTuple := virtual !(int val) -> FieldPath^
-	{
-		AwaitTypeState()
-
-		assert(Parents.Size() <= 1)
-
-		if val < 0 or val >= Fields.Size()
-			return null
-		return FieldsPath[val + (FieldsPath.Size() - Fields.Size())]
 	}
 	populateMethods := !(StringSpan name,StringSpan fieldName, HybridQueue.{BoxUnit^,10} objs) -> void
 	{

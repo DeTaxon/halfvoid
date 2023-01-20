@@ -94,7 +94,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
-	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.FieldsPath.Size() }
+	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.GetFieldsCount() }
 
 	infoUser := !(int)&->void
 	RegisterUser := virtual !(!(int)&->void cb) -> void //TODO toobad, not designed for that use
@@ -109,7 +109,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
 	{
 		itClass.AwaitTypeState()
-		indCall := itClass.FieldsPath[ind]
+		indCall := itClass.GetFieldByIndex(ind)
 		itms := CheckExeDownList
 		itms.Push(objRes.CreateCall())
 		return indCall.CreateCall(itms)
@@ -117,7 +117,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
 	{
 		itClass.AwaitTypeState()
-		return GetExeString(GetConstString(itClass.FieldsPath[ind].Field.Name))
+		return GetExeString(GetConstString(itClass.GetFieldByIndex(ind).Field.Name))
 	}
 }
 
