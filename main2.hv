@@ -15,11 +15,14 @@ WTFClass := class
 	
 	hoh := !() -> void
 	{
-		//notStatic := field int
+		notStatic := field int
 
-		//printf("test %i\n",notStatic)
-		//notStatic += 1
+		printf("test %i\n",notStatic)
+		notStatic += 1
 	}
+}
+WTF2Class := class extend WTFClass
+{
 }
 
 ohCall := !(int counter = static 16) -> void
@@ -33,7 +36,7 @@ main := !(char^[] args) -> int
 	js := new Json
 	js.ParseString("{}",2)
 
-	a := WTFClass
+	a := WTF2Class
 	b := WTFClass
 
 	printf("size %i %p\n",a->TypeSize,a.cc->VTable)

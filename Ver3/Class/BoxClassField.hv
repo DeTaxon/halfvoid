@@ -1,0 +1,201 @@
+AppendClass BoxClass
+{
+	InheritStep := !() -> void
+	{
+		assert(FieldsPath.Size() == 0)
+
+		Parents[^].AwaitTypeState()
+
+		DefaultSpace.itClass = this&
+		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance
+		if Parents.Size() != 0
+		{
+			DefaultSpace.baseSpace = Parents[0].DefaultSpace&
+			for par : Parents //TODO move to BoxClass
+			{
+				for pSpace,ind : par.FieldSpaces
+				{
+					FieldSpaces[ind].baseSpace = pSpace&
+					FieldSpaces[ind].itClass = this&
+				}
+			}
+		}
+
+		ItAlign = 1
+		ItAlign = max(ItAlign,Parents[^].ItAlign)
+
+		posOffset := 0
+		posMemOffset := 0
+
+		if VTable.Size() != 0
+		{
+			posOffset += 1
+			posMemOffset = 8 //TODO unconst
+			ItAlign = max(ItAlign,8)
+		}
+
+		assert(Parents.Size() <= 1)
+		if Parents.Size() > 0
+		{
+			posMemOffset = Parents[0].ItSize
+			posOffset += Parents[0].FieldsPath.Size()
+
+			for i : Parents[0].FieldsPath.Size()
+			{
+				FieldsPath.Push(Parents[0].FieldsPath[i])
+			}
+
+			//cb := (BoxClass^ cls, int id) ==> {
+
+			//	assert(id != 0) //TODO
+			//	c := FieldsPath(id - 1)
+
+			//	printf("hey %i\n",id)
+			//}
+			//Parents[0].AddDependsOnGrow(cb.Capture())
+		}
+
+		if Parents.Size() >= 2
+		{
+			assert(false) //TODO
+		}
+
+
+		for fil,i : Fields
+		{
+			fil.Value.NotifyUse()
+
+			fPath := new FieldPath(ItType,fil.Value)
+			fPath.Field = fil
+			fPath.Index = posOffset + i
+
+			unalign := posMemOffset % fil.Value.GetAlign()
+			ItAlign = max(ItAlign,fil.Value.GetAlign())
+
+			if unalign != 0 and not IsPacked
+			{
+				posMemOffset += fil.Value.GetAlign() - unalign
+			}
+			fieldSize := fil.Value.GetSize()
+			if fieldSize == 0 and fil.Value is TypeClass
+				fieldSize = 1 //TODO Zero size class optimization
+			fPath.MemOffset = posMemOffset
+			posMemOffset += fieldSize
+
+			FieldsPath.Push(fPath)
+		}
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+
+	}
+	AddExtraField := !(StringSpan newName, Type^ newFieldType) -> FieldPath^
+	{
+		//TODO check for existing name
+
+		AwaitTypeState()
+		
+		posMemOffset := ItSize
+
+		newField := new FieldParam(newName,newFieldType)
+		newPath := new FieldPath(ItType,newFieldType)
+		newPath.Index = FieldsPath.Size()
+
+		newPath.Field = newField
+
+		unalign := ItSize % newFieldType.GetAlign()
+		ItAlign = max(ItAlign,newFieldType.GetAlign())
+
+		if unalign != 0 and not IsPacked
+		{
+			posMemOffset += newFieldType.GetAlign() - unalign
+		}
+		fieldSize := newFieldType.GetSize()
+		if fieldSize == 0 and newFieldType is TypeClass
+			fieldSize = 1 //TODO Zero size class optimization
+		newPath.MemOffset = posMemOffset
+		posMemOffset += fieldSize
+
+		FieldsPath.Push(newPath)
+		Fields.Push(newField)
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+
+		newFieldId := FieldsPath.Size() - 1
+
+		for it : fieldIterators
+		{
+			it.ItemCreated(newFieldId)
+		}
+
+		for it : dependentsOnGrow
+		{
+			it(this&,newFieldId)
+		}
+	}
+	fieldIterators := List.{GrowableClassMetaFields^} //TODO already bad, can not be used frequently
+	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		newIterator := new GrowableClassMetaFields(itm,this&)
+		fieldIterators.Push(newIterator)
+		return newIterator
+	}
+
+	dependentsOnGrow := List.{!(BoxClass^,int)&->void}
+	AddDependsOnGrow := !(!(BoxClass^,int)&-> void cb) -> void
+	{
+		dependentsOnGrow.Push(cb)
+	}
+}
+FieldParam := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := Type^
+	this := !(StringSpan name, Type^ val) -> void
+	{
+		Name = name
+		Value = val
+	}
+}
+FieldPath := class extend BoxFuncCommon
+{
+	Field := FieldParam^
+	Index := int
+	MemOffset := int
+
+	this := !(Type^ baseClass, Type^ res) -> void
+	{
+		SetType(GetFuncType(1,baseClass&,null,res,true,false))
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		f^ << "%T" << resId 
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		tp := lst[0].GetType()
+		lst[0].PrintPointPre(f)
+		f^ << "%T" << resId << " = getelementptr "
+		tp.PrintType(f)
+		f^ << ","
+		tp.PrintType(f)
+		f^ << "* "
+		lst[0].PrintPointUse(f)
+		f^ << " , i32 0, i32 " << Index
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
