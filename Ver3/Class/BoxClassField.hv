@@ -43,19 +43,17 @@ AppendClass BoxClass
 			posMemOffset = Parents[0].ItSize
 			posOffset += Parents[0].GetFieldsCount()
 
-			//for i : Parents[0].FieldsPath.Size()
-			//{
-			//	FieldsPath.Push(Parents[0].FieldsPath[i])
-			//}
+			cb := (BoxClass^ cls, int id) ==> {
 
-			//cb := (BoxClass^ cls, int id) ==> {
+				assert(id != 0) //TODO
+				oldSize := ItSize
+				RecalculateSize()
 
-			//	assert(id != 0) //TODO
-			//	c := FieldsPath(id - 1)
-
-			//	printf("hey %i\n",id)
-			//}
-			//Parents[0].AddDependsOnGrow(cb.Capture())
+				dependentsOnGrow[^](cls,id) //todo cls or this?
+				fieldIterators[^].ItemCreated(id)
+				
+			}
+			Parents[0].AddDependsOnGrow(cb.Capture())
 		}
 
 		if Parents.Size() >= 2
@@ -203,6 +201,53 @@ AppendClass BoxClass
 	AddDependsOnGrow := !(!(BoxClass^,int)&-> void cb) -> void
 	{
 		dependentsOnGrow.Push(cb)
+	}
+	RecalculateSize := !() -> void
+	{
+		Parents[^].AwaitTypeState()
+
+		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance
+
+		ItAlign = 1
+		ItAlign = max(ItAlign,Parents[^].ItAlign)
+
+		posOffset := 0
+		posMemOffset := 0
+
+		if VTable.Size() != 0
+		{
+			posOffset += 1
+			posMemOffset = 8 //TODO unconst
+			ItAlign = max(ItAlign,8)
+		}
+
+		assert(Parents.Size() <= 1)
+		if Parents.Size() > 0
+		{
+			assert(Parents.Size() <= 1) //WARNING, posMemOfsset sets to ItSize in line below
+			posMemOffset = Parents[0].ItSize
+			posOffset += Parents[0].GetFieldsCount()
+		}
+
+		for fil,i : Fields
+		{
+			unalign := posMemOffset % fil.Value.GetAlign()
+			ItAlign = max(ItAlign,fil.Value.GetAlign())
+
+			if unalign != 0 and not IsPacked
+			{
+				posMemOffset += fil.Value.GetAlign() - unalign
+			}
+			fieldSize := fil.Value.GetSize()
+			if fieldSize == 0 and fil.Value is TypeClass
+				fieldSize = 1 //TODO Zero size class optimization
+			FieldsPath[i].MemOffset = posMemOffset
+			posMemOffset += fieldSize
+		}
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+		fieldsOffset = posOffset
 	}
 }
 FieldParam := class extend BoxUnit

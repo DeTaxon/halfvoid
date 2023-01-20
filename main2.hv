@@ -39,7 +39,7 @@ main := !(char^[] args) -> int
 	a := WTF2Class
 	b := WTFClass
 
-	printf("size %i %p\n",a->TypeSize,a.cc->VTable)
+	printf("sizes %i %i\n",a->TypeSize,b->TypeSize)
 
 	for it,ind : a->AllFields
 	{
