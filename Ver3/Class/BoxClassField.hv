@@ -44,9 +44,6 @@ AppendClass BoxClass
 			posOffset += Parents[0].GetFieldsCount()
 
 			cb := (BoxClass^ cls, int id) ==> {
-
-				assert(id != 0) //TODO
-				oldSize := ItSize
 				RecalculateSize()
 
 				dependentsOnGrow[^](cls,id) //todo cls or this?
@@ -60,6 +57,13 @@ AppendClass BoxClass
 		{
 			assert(false) //TODO
 		}
+
+		fieldCB := (BoxClass^ cls, int id) ==>
+		{
+			RecalculateSize()
+			dependentsOnGrow[^](cls,id) //todo cls or this?
+		}
+		fieldCBCaptured := !(BoxClass^,int)&->void
 
 
 		for fil,i : Fields
@@ -84,6 +88,16 @@ AppendClass BoxClass
 			posMemOffset += fieldSize
 
 			FieldsPath.Push(fPath)
+
+			if fil.Value is in TypeClass
+			{
+				if fieldCBCaptured == null
+				{
+					fieldCBCaptured = fieldCB.Capture()
+				}
+				fldClass := fil.Value->{TypeClass^}.ToClass
+				fldClass.AddDependsOnGrow(fieldCBCaptured)
+			}
 		}
 		if IsPacked
 			ItAlign = 1
@@ -143,6 +157,17 @@ AppendClass BoxClass
 		for it : dependentsOnGrow
 		{
 			it(this&,newFieldId)
+		}
+
+		fieldCB := (BoxClass^ cls, int id) ==>
+		{
+			RecalculateSize()
+			dependentsOnGrow[^](cls,id) //todo cls or this?
+		}
+		if newFieldType is in TypeClass
+		{
+			fldClass := newFieldType->{TypeClass^}.ToClass
+			fldClass.AddDependsOnGrow(fieldCB.Capture())
 		}
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^

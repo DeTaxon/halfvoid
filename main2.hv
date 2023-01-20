@@ -24,6 +24,10 @@ WTFClass := class
 WTF2Class := class extend WTFClass
 {
 }
+WTF3Class := class
+{
+	hoho := WTF2Class
+}
 
 ohCall := !(int counter = static 16) -> void
 {
@@ -38,8 +42,9 @@ main := !(char^[] args) -> int
 
 	a := WTF2Class
 	b := WTFClass
+	c := WTF3Class
 
-	printf("sizes %i %i\n",a->TypeSize,b->TypeSize)
+	printf("sizes %i %i %i\n",a->TypeSize,b->TypeSize,c->TypeSize)
 
 	for it,ind : a->AllFields
 	{
