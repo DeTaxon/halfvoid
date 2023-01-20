@@ -123,6 +123,9 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				case "#CallDecoratorCall"
 					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
 							return true
+				case "#FunctionBody"
+					if RuleUse(begin,"~d",RuleFunctionBody)
+						return true
 				case "#FlowObjects"
 					if RuleUse(begin,"~extra1",RuleSLambda) return true
 					if RuleUse(begin,"Defer()",RuleDefer) return true
@@ -266,6 +269,64 @@ RuleClass := !(void^ itr) -> int
 	return size + 1
 }
 
+RuleFunctionBody := !(void^ itr) -> int
+{
+	size := 0
+	It := itr->{Token^}
+
+	if It == null return 0
+
+	if It.GetValue() != "!" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "()" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() == "."
+	{
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "{}" return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 1
+	}
+
+	size += 2
+
+	if It.GetValue() == "->"
+	{
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() == "ref"
+		{
+			size += 1
+			It = It.Right
+			if It == null return 0
+		}
+
+		if not InDataR(It) return 0
+		
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
+	if It.GetValue() == "{}" return size + 1
+	if It.GetValue() == "declare" return size + 1
+
+	return 0
+
+}
 RuleParam := !(void^ itr) -> int
 {
 	size := 0

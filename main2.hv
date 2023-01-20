@@ -6,64 +6,32 @@
 //	g3 := int
 //}
 
-
-WTFClass := class
+someCls := class
 {
-	cc := List.{int}
 	x := int
-	y := int
-	
-	hoh := !() -> void
+	hoh := @once !() -> void
 	{
-		notStatic := field int
-
-		printf("test %i\n",notStatic)
-		notStatic += 1
+		printf("HOHO %p\n",this&)
 	}
 }
-WTF2Class := class extend WTFClass
-{
-}
-WTF3Class := class
-{
-	hoho := WTF2Class
-}
 
-ohCall := !(int counter = static 16) -> void
+"@once func" := !(args...) .{@T} -> void
 {
-	printf("call %i\n",counter)
-	counter += 1
+	printf("called once\n")
 }
 
 main := !(char^[] args) -> int
 {
-	js := new Json
-	js.ParseString("{}",2)
-
-	a := WTF2Class
-	b := WTFClass
-	c := WTF3Class
-
-	printf("sizes %i %i %i\n",a->TypeSize,b->TypeSize,c->TypeSize)
-
-	for it,ind : a->AllFields
-	{
-		printf("hey %i %s %s\n",0,ind,it->TypeGroup)
-	}
-
-	a.hoh()
-	a.hoh()
-	b.hoh()
-	b.hoh()
+	
 	return 0
 }
 
 //TODO
 //decorator function
 //@cache function, @once function/call
-//dynamic size class
-//inheritance works with dynamic size
 //default initializer for growing class, and const value as global const
+//field becomes static if it is not inside class
+//zero size class optimizations
 //x := field 10  non types not working
 //class->AllFields to work with new Fields
 //Allow code to be interpreted

@@ -2,7 +2,7 @@
 "! () . {} -> d {}"  "! () . {} {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
 "AppendClass d {}"
 #ClassBlock
-"! () -> d {}" "! () {}" "! () -> d declare" "! () -> ref d {}" "! () . {} -> ref d {}"
+#FunctionBody
 "new d ()" "! []" "! {}"
 "d () . {}" "d . {}" "d -> d ()"
 "d ^" "d []" "d &" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s"
