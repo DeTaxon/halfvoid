@@ -14,9 +14,13 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 			assert(false)
 		case void
 	}
+
+	decorators := HybridQueue.{TokenTemplateType^,10}
 	
 	while iter is TokenTemplateType
 	{
+		decorators.Push(iter->{TokenTemplateType^})
+
 		iter = iter.Right
 		if iter == null return null
 	}
@@ -73,12 +77,13 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	if iter.GetValue() != "{}" return null
 
-	asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,iter)
+	asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,iter)->{BoxFuncTemplate^}
 
-	//if asTempl.IsOneFunc()
-	//{
-	//	return asTempl.GetOneFunc()
-	//}
+	for it : decorators
+	{
+		asTempl = new BoxFuncTemplateDecorator(asTempl,it)
+	}
+
 	return asTempl
 
 }

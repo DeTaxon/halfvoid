@@ -9,7 +9,7 @@
 someCls := class
 {
 	x := int
-	hoh := @once !() -> void
+	hoh := @once !(@T x) -> void
 	{
 		printf("HOHO %p\n",this&)
 	}
@@ -18,18 +18,20 @@ someCls := class
 "@once func" := !(args...) .{@T} -> void
 {
 	printf("called once\n")
+	T(args...)
 }
 
 main := !(char^[] args) -> int
 {
 	cls := someCls
-	cls.hoh()
+	cls.hoh(13)
 	return 0
 }
 
 //TODO
 //decorator function
 //@cache function, @once function/call
+//decorator func pass constants?
 //default initializer for growing class, and const value as global const
 //field becomes static if it is not inside class
 //zero size class optimizations

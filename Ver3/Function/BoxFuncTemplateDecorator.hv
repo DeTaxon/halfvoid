@@ -1,0 +1,60 @@
+
+BoxFuncTemplateDecorator := class extend BoxFuncTemplate
+{
+	baseTemplate := BoxFuncTemplate^
+	decoratorToken := TokenTemplateType^
+
+	this := !(BoxFuncTemplate^ inBase,TokenTemplateType^ tkn) -> void
+	{
+		baseTemplate = inBase
+		decoratorToken = tkn
+	}
+	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	{
+		return baseTemplate.GetPriority(objs,consts)
+	}
+	GetFunc := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return baseTemplate.GetFunc(objs,consts)
+	}
+
+	GetFuncByType := virtual !(TypeFunc^ fTyp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return baseTemplate.GetFuncByType(fTyp,consts)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return baseTemplate.CreateFunc(tp,consts)
+	}
+
+	IsOneFunc := virtual !() -> bool
+	{
+		return baseTemplate.IsOneFunc()
+	}
+	GetOneFunc := virtual !() -> BoxFunc^
+	{
+		return baseTemplate.GetOneFunc()
+	}
+	SetName := virtual !(StringSpan name) -> void
+	{
+		baseTemplate.SetName(name)
+	}
+	CreateFuncCall := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+	{
+		buf := char[256]
+		memcpy(buf[0]&,decoratorToken.Value.Get(),decoratorToken.Value.Size())
+		sprintf(buf[decoratorToken.Value.Size()]&," func")
+
+		consts2 := List.{BoxExeConstObj^}
+		consts2.Push(new BoxFuncTemplateConst(baseTemplate)) //TODO memory leak
+		
+		resCall := CreateFuncCall(StringSpan(buf[0]&),objs,consts2)
+
+		consts2.Destroy()
+
+		if resCall == null
+			decoratorToken.EmitError("Could not create decorator") //TODO emit at caller
+
+		return resCall
+	}
+}

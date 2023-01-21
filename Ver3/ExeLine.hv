@@ -325,7 +325,18 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 			priorityes.Push(CmpNoExchange) //todo?
 		}else if h is in TypeVar {
 			priorityes.Push(CmpNoExchange) //todo?
-		}else {
+		}else if h is ConstVar{
+			cn := h->{ConstVar^}
+
+			if cn.Value is BoxFuncTemplateConst
+			{
+				tmpl := cn.Value->{BoxFuncTemplateConst^}.Value
+				cmpRes := tmpl.GetPriority(Objs,consts)
+				priorityes.Push(cmpRes)
+			}else{
+				priorityes.Push(CmpNoExchange)
+			}
+		}else{
 			priorityes.Push(CmpNoExchange)
 			assert(false)
 		}
@@ -357,18 +368,34 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxExeObj^
 CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	callItem := BoxUnit^
-	GetItemGlobal(name, x ==>{
+
+	GetItemLocal(name, x ==> {
 		callItem = GetBestFunc(x,Objs,consts)
-		if callItem == null
-			return false
-		return true
 	})
 
 	if callItem == null
+	{
+		GetItemGlobal(name, x ==>{
+			callItem = GetBestFunc(x,Objs,consts)
+			if callItem == null
+				return false
+			return true
+		})
+	}
+
+	if callItem == null
 		return null
+	if callItem is ConstVar
+	{
+		cn := callItem->{ConstVar^}
+		if cn.Value is BoxFuncTemplateConst
+		{
+			callItem = cn.Value->{BoxFuncTemplateConst^}.Value
+		}
+	}
 	if callItem is in BoxFuncTemplate
 	{
-		callItem = callItem->{BoxFuncTemplate^}.GetFunc(Objs,consts)
+		return callItem->{BoxFuncTemplate^}.CreateFuncCall(Objs,consts)
 	}
 	if callItem is in BoxFunc
 	{
