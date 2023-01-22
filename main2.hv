@@ -17,14 +17,17 @@ someCls := class
 
 "@once func" := !(args...) .{@T} -> void
 {
-	printf("called once\n")
+	z := field int
+	printf("called once %i\n",z)
 	T(args...)
 }
 
 main := !(char^[] args) -> int
 {
 	cls := someCls
+	printf("hey %i\n",cls->TypeSize)
 	cls.hoh(13)
+	printf("hey %i\n",cls->TypeSize)
 	return 0
 }
 

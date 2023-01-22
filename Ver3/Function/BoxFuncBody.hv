@@ -152,7 +152,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(this&)
 
-		tp := ObjType ->{TypeFunc^}
+		tp := ObjType->{TypeFunc^}
 
 		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
 		{
@@ -161,7 +161,12 @@ BoxFuncBody := class extend BoxFuncCommon
 			{
 				name = InputVarNames[i]
 			}else{
-				name = GetParSpan(i)
+				if i == 0 and ParentScope? is in BoxClass //TODO Check for static somehow
+				{
+					name = StringSpan("this")
+				}else{
+					name = GetParSpan(i)
+				}
 			}
 			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
 			vr := new MemVar(name,parObj)

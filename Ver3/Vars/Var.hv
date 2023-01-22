@@ -51,13 +51,17 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		return res
 	}
 
-	if varToken?.GetValue() == "field"
+	if varToken?.GetValue() == "field" //TODO check if i am inside static function?
 	{
 		varToken = varToken.Right
 		
 		if CurrentScope is in BoxFuncBody
 		{
 			fnc := CurrentScope->{BoxFuncBody^}
+			
+			cls := BoxClass^
+			printf("hm %p\n",fnc)
+
 			if fnc.ParentScope is in BoxClass
 			{
 				cls := fnc.ParentScope->{BoxClass^}
