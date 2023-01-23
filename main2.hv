@@ -21,13 +21,21 @@ someCls := class
 	printf("called once %i\n",z)
 	T(args...)
 }
+someCall := !() -> void
+{
+	@once {
+		printf("hey\n")
+	}
+}
 
 main := !(char^[] args) -> int
 {
-	cls := someCls
-	printf("hey %i\n",cls->TypeSize)
-	cls.hoh(13)
-	printf("hey %i\n",cls->TypeSize)
+	someCall()
+	someCall()
+	//cls := someCls
+	//printf("hey %i\n",cls->TypeSize)
+	//cls.hoh(13)
+	//printf("hey %i\n",cls->TypeSize)
 	return 0
 }
 
