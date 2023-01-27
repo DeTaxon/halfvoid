@@ -88,8 +88,8 @@
 
 		"nk_button_label" : "bool,void^,char^",
 
-		"nk_layout_row_static" : "void,void^,int,int,int",
-		"nk_layout_row_dynamic" : "void,void^,int,int",
+		"nk_layout_row_static" : "void,void^,float,int,int",
+		"nk_layout_row_dynamic" : "void,void^,float,int",
 		"nk_layout_row_push" : "void,void^,int",
 
 		"ur_create" : "void^",

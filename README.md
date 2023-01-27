@@ -2,7 +2,7 @@ Stolen programming language
 supports x64 only, windows and linux
 
 
-Standard support for compiler
+Standard support for language
 ```java
 //create function, name := !(arguments) -> return type
 main := !(int argc,char^^ argv) -> int
@@ -22,9 +22,12 @@ main := !(int argc,char^^ argv) -> int
 	{
 		printf("value %i\n",i)
 		i += 1
+
+		if i == 55
+			break
 	}
 
-	for i : 100
+	for i : 100 // more on foreach cycle below
 	{
 		printf("value %i\n",i)
 	}
@@ -32,12 +35,11 @@ main := !(int argc,char^^ argv) -> int
 	x = y->{void^} // cast type, there is no dynamic_cast
 	a = 7 / b // operator "/" always result as float(or double)
 	a = 7 div b // use div to divide as integer
-	a = 7 mod b 
-	// look at Priority.pr for more operators, you can add your own operator in file, but must recompile project
+	a = 7 mod b  // to take remainder
 	
 	x := int // create variable with type int
 	y := int[3]
-	z := int[] // pointer to array that have array size (z->len) , this is a mistake, those arrays shold be allocated on temporary array only
+	z := int[] // pointer to ArraiView of type int, it could be pointer to Vector,ArraySpan,List,HybridQueue or anything else that inherits ArrayView
 	w := int^ //pointer to int
 	xyzw := int^[3] // array of 3 poiters to int
 	
@@ -57,7 +59,7 @@ StrZero := !(char[@Size] chr) -> void
 ConstFunc := !() .{@T,@Value} -> void
 {
 	//pass type and integer as constants
-	//call ConstFunc().{int,27}
+	//called like that ConstFunc().{int,27}
 	printf("set %i\n",Value)
 }
 DefaultValues := !(int x = 13, void^ y = #uniq_call) -> void // TODO not implemented
@@ -76,7 +78,11 @@ ManyArgs := !(args...) -> void
 	//int + float -> float
 	//int + char -> int
 	x = 0
-	(x += args)... //operator ... make copy of line, where args replaced with paramter , TODO not implemented
+	for it : args // variadic inputs can be iterated, cycle acts here as a macros
+	{
+		if it > x
+			x = it
+	}
 }
 ```
 
@@ -123,12 +129,12 @@ if pointer?.value != 0 //same as
 }
 
 do(pointer?.value ?? 0) //pass 0 if pointer == null
-do(pointer != null ?: pointer.value : 0) // trinary operator
+do(pointer != null ?: pointer.value : 0) // can be used in trinary operator. half way implemented, only supported on left side of ?:
 
 do(point1?.value ?? point2?.value ?? 0)
 do(point1?.value ?? point2?.value) //function "do" will not be called at all if both pointers are null
 
-Question operator works with references (reference could be null, for this case)
+Question operator works with references (reference could be null, for this case) // not implemented, it's need rework
 Function call "[]" replaced with "[]?"
 
 For example AVLMap uses change behavior
@@ -137,7 +143,7 @@ if Animals["lion"].type != "cat" // if "lion" does not exist, entry will be crea
 if Animals["lion"]?.type != "cat" // if "lion" does not exist, if statement evaluate to false, no entry created
 ```
 
-For cycle works in different way
+Foreach cycle is overcomplicated
 ```java
 for item, index : container
 {
@@ -200,7 +206,19 @@ MyClass2 := class
 	}
 }
 
+Cycle can also work as a macros for weird cases (there are only 2 right now)
+Body of cycle will be copy-pasted for all elements (so don't put static variable here).
 
+First use showed in variadic variables.
+
+Second use is to iterate all elements of structure.
+for field, filed_name : struct->AllFields // field_name have type of char^
+{
+	if field->Type == int
+	{
+		printf("Class have integer with name %s and value %i\n",field_name,field)
+	}
+}
 ```
 
 Operator  can iterate in parallel (not like threads or OpenMP)
@@ -256,6 +274,62 @@ matr1[^i][^j] = 0
 matr1[^i][^j] += matr2[i][^k]*matr3[k][j] // probably not correct way to multiply
 ```
 
+Classes have they own weirdness
+```java
+WayBiggerThenExpectedClass := class
+{
+	a := int
+	b := int
+
+	Method := !() -> void
+	{
+		aCalculated := field int
+		//aCalculated is gonna be a field in class, it's designed for decorators
+	}
+
+	CalculateSome := @cache !(int x) -> int
+	{
+		//@cache decorator makes cache data...
+		//so if function is called with same data twice or more, only first call is calculated, other call retrived from cache
+		//for that to work decorator adds field Map.{Tuple.{int},int}
+		return x**13 + x*3 - x + something else that makes calculation longer
+	}
+}
+
+//Namespaces are way to have class with multiple identical functions, like operator ==
+Namespaces := class
+{
+	SomeMethod := !() -> void
+	{
+		printf("hello\n")
+	}
+
+	ExtraSpace := fake // maybe in future will be renamed to namespace
+	{
+		//right now namespaces only works with methods
+		SomeMethod := !() -> void
+		{
+			printf("world\n")
+		}
+	}
+}
+
+var := Namespaces
+var.SomeMethod()
+var.ExtraSpace.SomeMethods()
+
+for example String have namespace End
+
+file_name == ".bmp" //regular string equality check
+file_name.End == ".bmp" // since ".bmp" is 4 letter long, last 4 letters of file_name will be compared to ".bmp"
+
+Right now only first element can be used with namespaces, 2 lines below will fail to compile
+".bmp" == file_name.End
+file_name.End == file_name.Start
+
+```
+
+
 
 Tuple support
 ```java
@@ -265,6 +339,35 @@ x.0 = 3
 x.1 = 3.14
 y = !{2,6}
 x = y
+```
+
+Lambda support
+```java
+func := !() -> void
+{
+	a := 1 //lazy capture, at start capture by reference, when cloned, by value. Designed to be fast, nothing happens before capture.
+	b := 2 //captured by value
+	c := 3 //captured by reference
+
+	lfunc := (int x,int y) ==> [b,c&,d = a + b]{ //variable d will be calculated here, not at caputure
+		c := a + b + c + x + y
+	}
+
+	l := List.{int}()
+
+	//dont need set type if passing to function that have description for lambda type
+	l.DeleteIf(x ==> x < 0)
+	
+	//Capture creates copy of lambda on heap
+	//Values captured by value are copied
+	//If lambda is a generator, all stack objects copied, and execution state
+	lfunc2 := lfunc.Capture()
+	lfunc3 := lfunc2.Capture() //you can make as many copies as you want
+	
+	//Lambdas are reference counted (inherits TGCObject), so to release memory you must remove all references
+	lfunc3 = null //this will release emmory
+	//lfunc3 will be released anyway because life of the variable ends as we quit function
+}
 ```
 
 Generator support
@@ -280,7 +383,8 @@ lambd := () ==> int {
 		yield 0
 	}
 	
-	return 0 //return stops generator, either reaching the end of function
+	return 0 //return stops generator, either reaching the end of function, IsFinished will return true
+	//it's a bug, returned value will not be used, in the future only "return void" will be allowed in generators
 }
 
 while true
@@ -291,34 +395,6 @@ while true
 	print(x)
 }
 
-```
-
-Lambda support
-```java
-func := !() -> void
-{
-	a := 1 //lazy capture, at start capture by reference, when cloned, by value. Designed to be fast, nothing happens before capture.
-	b := 2 //captured by value
-	c := 3 //captured by reference
-
-	lfunc := (int x,int y) ==> [b,c&]{
-		c := a + b + c + x + y
-	}
-
-	l := List.{int}()
-
-	//dont need set type if passing to function
-	l.DeleteIf(x ==> x < 0)
-	
-	//Capture creates copy of lambda on heap, affected by memory poll
-	//Values captured by value are copied
-	//If lambda is a generator, all stack objects copied
-	lfunc2 := lfunc.Capture()
-	lfunc3 := lfunc2.Capture() //you can make as many copies as you want
-	
-	//Release memory
-	lfunc2.Destroy()
-}
 ```
 
 Switch is different
@@ -371,7 +447,8 @@ func := !() -> int^
 
 Defer tail function
 ```java
-TGuard := !(void^ ptr) -> void //not implemented
+//this is outdated version
+TGuard := !(void^ ptr) -> void //TODO, not implemented
 {
 	TLock(ptr)
 } defer_tail (void^ ptr) {
@@ -386,14 +463,26 @@ main := !() -> void
 	TLock(variable&)
 	defer TUnlock(variable&)
 }
+
+//right not it's just a concept
+//defer_tail should act as continuation of a function, so all local variables are reacheble for bottom
+
+OpenFile := !(char^ name) -> void^
+{
+	handle := fopen(name,"rb")
+	return handle
+} defer_tail {
+	fclose(handle)
+}
+
 ```
 
 Threads
-I took idea from javascript: one thread , but heavy computation passed to thread pool
+Inspired by javascript: one thread , but heavy computation passed to thread pool
 
 ```java
 
-main := !(int argc, char^^ argv) -> void
+main := !(char^[] args) -> void
 {
 	TSpawnTask(() ==> {
 		//Grean thread 1
@@ -401,6 +490,8 @@ main := !(int argc, char^^ argv) -> void
 		{
 			//do some
 			TSleep(1) // 1 second, async call
+
+			x := @work HeavyComputation() //Heavy computation happens on different thread, this task is paused until function call is over
 		}
 	})
 	TSpawnTask(() ==> {
@@ -428,24 +519,15 @@ main := !(int argc, char^^ argv) -> void
 
 ```
 
-You can add mark to a function and later iterate over all functions with that mark.
-```java
-#mark("UniqName") func := !() -> void {}
-
-for it, name : #marked("UniqName")
-{
-	it()
-}
-```
 
 Small features
 ```java
-x := ![1,2,argc,pi] //create array
-//if all values are constant and primitive(numbers or char^), array will be created at compile time
+x := ![1,2,argc,pi] //creates array
+//if all values are constant and primitive(numbers or "constant strings"), array will be created at compile time as global variable
 
 //Standart type range
 for i : 6..10 {}
-y := Range //and rangef for float
+y := Range
 if x in y {}
 
 //3D vectors
@@ -463,13 +545,11 @@ Library features
 ```java
 //StringSpan
 filename := "file.txt"
-name := filename[0..4] // string is not copied, instead proxy class (StringSpan) was created 
+name := filename[0..4] // string is not copied, instead proxy class (StringSpan) is created 
 //x..y 
 //x - offset, negative means offset from end
 //y - size , negative means how much left at the end, zero means to the end
-name.Str() // make copy
-//if passed to function that accepts char^, StringSpan make a copy in temporary memory
-switch StringEnd(fileName) //proxy object, cant describe
+switch fileName.End
 {
 	case ".txt"
 	case ".webp"
@@ -486,16 +566,13 @@ ZipFS
 Same as PhysicsFS, but worse
 Support .zip only, deflate only, read only
 ```java
-//gRepo - global variable that inited on "." and adds .exe as root
-gRepo.GetFile("README.md") // return file, null on error, exception in future
-gRepo.AddZipRoot("Level1Models.zip") // now files in .zip can be accesed as they wold be in "." folder
+FSGetFile("README.md") // return file, null on error, exception in future
 
-modFile := gRepo.GetFile("Level1/box.ply")
+modFile := FSGetFile("Level1/box.ply")
 modFile.IsVirtual() // true if file inside .zip file
 
-ptr := modFile.Map()
-defer modFile.DecUser() // reference count to file, reference is incresed at Map, should be ref counted by compiler
+fileMem := modFile.GetMap()
 
-memcpy(myMem,ptr,modFile.Size())
+memcpy(myMem,fileMem.Get(),fileMem.Size())
 ```
 
