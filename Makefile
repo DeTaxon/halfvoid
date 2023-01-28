@@ -73,7 +73,7 @@ ifeq ($(cross),win32)
 	#CmplDeb := $(winecmp) -g $(MainOut) $(Triplet)  -g $(Libs) -o ./c.exe 
 endif
 
-MainTarget: ver3
+MainTarget: ver3_2
 
 repair: $(wildcard CompilerReal2/*.hv) 
 	$(gdb_tui) $(CurrentStable) -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut);$(CmplDeb)
@@ -91,11 +91,6 @@ ManyCycle:
 
 stable:
 	$(gdb_tui) $(CurrentStable)  -g $(TargetPlatform) $(ForcedLibs) $(ProgSrc) -o $(MainOut); $(CmplDeb)
-
-JIT: main2.hv
-	$(gdb_tui) $(vgrind) $(CurrentWork) -g $(TargetPlatform) main2.hv $(ForcedLibs) --jit
-test2: main2.hv
-	$(gdb_tui) $(vgrind) $(CurrentWork) -g $(TargetPlatform) $(ForcedLibs) main2.hv -o $(MainOut); $(CmplTest)
 
 Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m $(wildcard *.pr)
@@ -119,6 +114,11 @@ SizeCheck:
 ver3:
 	./c.out -p posix  $(ForcedLibs) -C1 "Ver3/" -g -o Objs/ver3.ll
 	clang -gdwarf-4 Objs/ver3.ll -lm -ldl -o ver3
+ver3_2:
+	./c.out -p posix  $(ForcedLibs) -C1 "Ver3/" -g -o Objs/ver3.ll
+	clang -gdwarf-4 Objs/ver3.ll -lm -ldl -o ver3
+	./ver3 -C0 libs2/ -C1 Ver3_2/ -o out.ll
+	clang -gdwarf-4 out.ll -lm -ldl -o ver3_2
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 

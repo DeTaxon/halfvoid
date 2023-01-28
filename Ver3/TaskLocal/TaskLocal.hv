@@ -1,36 +1,36 @@
 TaskLocalVar := class extend NamedVar
 {
-    itType := Type^
-    itIndex := int
-    this := !(StringSpan name,Type^ tp) -> void
-    {
-        Name = name
-        itType = tp
-        itIndex = TaskLocalTypes.Size()
-        TaskLocalTypes.Push(tp)
-    }
-    CreateCall := virtual !() -> BoxExeObj^
-    {
-        TaskLocalHatch.Await()
-        getVar := getTaskVarFunc.CreateCall()
-        getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
+	itType := Type^
+	itIndex := int
+	this := !(StringSpan name,Type^ tp) -> void
+	{
+		Name = name
+		itType = tp
+		itIndex = TaskLocalTypes.Size()
+		TaskLocalTypes.Push(tp)
+	}
+	CreateCall := virtual !() -> BoxExeObj^
+	{
+		TaskLocalHatch.Await()
+		getVar := getTaskVarFunc.CreateCall()
+		getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
 
-        funcObj := tupleVarType.GetFieldByIndex(itIndex)
+		funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
-        objs := CheckExeDownList
-        objs.Push(getVarTypes)
+		objs := CheckExeDownList
+		objs.Push(getVarTypes)
 		return funcObj.CreateCall(objs)
-    }
+	}
 }
 TaskLocalVarDelayed := class extend NamedVar
 {
-    itType := Type^
-    itIndex := int
+	itType := Type^
+	itIndex := int
 	itHatch := THatch
 	itToken := Token^
-    this := !(StringSpan name,Token^ tp) -> void
-    {
-        Name = name
+	this := !(StringSpan name,Token^ tp) -> void
+	{
+		Name = name
 		itToken = tp
 
 		TaskLocalDelayedVars.Push(this&)
@@ -41,26 +41,26 @@ TaskLocalVarDelayed := class extend NamedVar
 			TaskLocalTypes.Push(itType)
 			itHatch.Emit()
 		})
-    }
+	}
 
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 	}
-    CreateCall := virtual !() -> BoxExeObj^
-    {
+	CreateCall := virtual !() -> BoxExeObj^
+	{
 		itHatch.Await()
-        TaskLocalHatch.Await()
-        getVar := getTaskVarFunc.CreateCall()
-        getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
+		TaskLocalHatch.Await()
+		getVar := getTaskVarFunc.CreateCall()
+		getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
 
-        funcObj := tupleVarType.GetFieldByIndex(itIndex)
+		funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
 		assert(funcObj != null)
 
-        objs := CheckExeDownList
-        objs.Push(getVarTypes)
+		objs := CheckExeDownList
+		objs.Push(getVarTypes)
 		return funcObj.CreateCall(objs)
-    }
+	}
 }
 
 TaskLocalDelayedVars := List.{TaskLocalVarDelayed^}
@@ -74,14 +74,14 @@ TaskLocalTypes := List.{Type^}
 
 PreInitTaskLocal := !() -> void
 {
-    tupleVarType = new BoxClassTupleDelayed()
+	tupleVarType = new BoxClassTupleDelayed()
 
-    AllClasses.Push(tupleVarType)
+	AllClasses.Push(tupleVarType)
 
 	bSpace := CodeSpaces[-1]&
 
-    varName := StringSpan("internalHVTaskLocalTuple")
-    bSpace.Globals[varName].Push(new TypeVar(varName,tupleVarType.ItType))
+	varName := StringSpan("internalHVTaskLocalTuple")
+	bSpace.Globals[varName].Push(new TypeVar(varName,tupleVarType.ItType))
 }
 
 InitTaskLocal := !() -> void
@@ -102,18 +102,24 @@ InitTaskLocal := !() -> void
 
 BoxClassTupleDelayed := class extend BoxClass
 {
-    this := !() -> void
+	fieldsHatch := THatch
+	this := !() -> void
 	{
 		ItName = "anon" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 	}
-    InitTuple := !(List.{Type^} types) -> void
-    {
+	InitTuple := !(List.{Type^} types) -> void
+	{
 		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 		}
 		InheritStep()
-    }
+		fieldsHatch.Emit()
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+		fieldsHatch.Await()
+	}
 }

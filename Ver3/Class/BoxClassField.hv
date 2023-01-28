@@ -103,6 +103,7 @@ AppendClass BoxClass
 			ItAlign = 1
 		ItSize = posMemOffset
 		fieldsOffset = posOffset
+	
 
 	}
 	GetFieldsCount := !() -> int
