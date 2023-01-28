@@ -27,7 +27,7 @@ TypeFunc := class extend Type
 			GDebugTypePrintMeta.Push(this&)
 		}
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		
 		if ResultType == null
@@ -60,7 +60,7 @@ TypeFunc := class extend Type
 		f^ << "})\n"
 	}
 
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		ResultType.PrintType(f)
 		if ResultRef
@@ -90,7 +90,7 @@ TypeFunc := class extend Type
 
 		f^ << ")"
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		f^ << "{!("
 		for it, i : Params

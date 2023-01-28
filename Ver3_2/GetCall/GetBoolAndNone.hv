@@ -27,7 +27,7 @@ BoxExeNull := class extend BoxExeConstObj
 	{
 		ObjType = GTypeVoidP
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "null"
 	}
@@ -38,7 +38,7 @@ BoxExeVoid := class extend BoxExeConstObj
 	{
 		ObjType = GTypeVoid
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 	}
 }

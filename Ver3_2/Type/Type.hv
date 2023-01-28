@@ -43,14 +43,14 @@ Type := class {
 	{
 		return false
 	}
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		//assert(false)
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		assert(false)
 	}
@@ -68,7 +68,9 @@ Type := class {
 		PrintDebugName(ec&)
 		//ec << ","
 		//PrintType(ec&)
-		return ec.Str()
+		st := ec.GetString()
+		st.IncRef() //TODO memory leak
+		return st.Str()
 	}
 	IsMetaReady := virtual !() -> bool
 	{
@@ -138,7 +140,7 @@ TypeStandard := class extend Type
 	{
 		return ItSize
 	}
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		f^ << IRName
 	}
@@ -146,7 +148,7 @@ TypeStandard := class extend Type
 	{
 		f^ << ItGoodName
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		assert(DebugMode)
 		f^ << "!" << MetaId << " = " << MetaInfo << "\n"
@@ -187,7 +189,7 @@ TypeArr := class extend Type
 	{
 		return true
 	}
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		f^ << "["
 		f^ << len
@@ -195,12 +197,12 @@ TypeArr := class extend Type
 		Base.PrintType(f)
 		f^ << "]"
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		Base.PrintDebugName(f)
 		f^ << "[" << len << "]"
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		nId := GetNewId()
 		f^ << "!" << nId << " = !DISubrange(count: " << len << ")\n"
@@ -236,17 +238,17 @@ TypePoint := class extend Type
 	{
 		return GArchBitSize div 8
 	}
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		Base.PrintType(f)
 		f^ << "*"
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		Base.PrintDebugName(f)
 		f^ << "^"
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
 	}
@@ -257,7 +259,7 @@ TypePoint := class extend Type
 }
 TypeVoidPoint := class extend TypePoint
 {
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		f^ << "i8*"
 	}
@@ -275,7 +277,7 @@ TypeDebugRef := class extend Type //FO
 			GDebugTypePrintMeta.Push(this&)
 		}
 	}
-	PrintMeta := virtual !(TIOStream^ f) -> void
+	PrintMeta := virtual !(Stream^ f) -> void
 	{
 		f^ << "!" << MetaId << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << Base.MetaId <<", size: "<< GArchBitSize << ")\n"
 	}

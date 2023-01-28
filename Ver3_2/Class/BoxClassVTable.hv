@@ -13,7 +13,7 @@ AppendClass BoxClass
 	VTableId := int
 	VTableCheckTypeArray := GlobalVar^
 
-	PrintVTable := virtual !(TIOStream^ f) -> void
+	PrintVTable := virtual !(Stream^ f) -> void
 	{
 		if VTable.Size() == 0
 			return void
@@ -161,8 +161,8 @@ VTableEntry := class
 {
 	Name := StringSpan
 
-	PrintType := virtual !(TIOStream^ f) -> void { GetType().PrintType(f) }
-	PrintConst := virtual !(TIOStream^ f) -> void {}
+	PrintType := virtual !(Stream^ f) -> void { GetType().PrintType(f) }
+	PrintConst := virtual !(Stream^ f) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
 	GetConst := virtual !() -> BoxExeConstObj^ { return null }
@@ -176,7 +176,7 @@ CheckInfoConst := class extend BoxExeConstObj
 		ItGlobVar = gv
 		ObjType = GTypeVoidP
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		f^ << "bitcast ("
 		ItGlobVar.Value.pType.PrintType(f)
@@ -194,8 +194,8 @@ VTableVar := class extend VTableEntry
 		Name = nm
 		ItConst = cnst
 	}
-	PrintType := virtual !(TIOStream^ f) -> void { ItConst.GetType().PrintType(f) }
-	PrintConst := virtual !(TIOStream^ f) -> void { ItConst.PrintUse(f)}
+	PrintType := virtual !(Stream^ f) -> void { ItConst.GetType().PrintType(f) }
+	PrintConst := virtual !(Stream^ f) -> void { ItConst.PrintUse(f)}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {
 		if not (cmp is VTableVar)
 			return false
@@ -222,7 +222,7 @@ VTableFunc := class extend VTableEntry
 	{
 		return Value.GetType().GetPoint()
 	}
-	PrintType := virtual !(TIOStream^ f) -> void 
+	PrintType := virtual !(Stream^ f) -> void 
 	{
 		Value.GetType().PrintType(f)
 		f^ << "*"
@@ -231,7 +231,7 @@ VTableFunc := class extend VTableEntry
 	{
 		return new ConstFuncPtr(Value)
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void 
+	PrintConst := virtual !(Stream^ f) -> void 
 	{
 		Value.PrintName(f)
 	}
@@ -272,7 +272,7 @@ VTableFunc := class extend VTableEntry
 //		ItClass = cls
 //		Index = funcIndex
 //	}
-//	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+//	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 //	{
 //		fType := ObjType->{TypeFunc^}
 //

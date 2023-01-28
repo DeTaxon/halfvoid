@@ -115,7 +115,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 	{
 		PrintCode(f)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		dwnObjs[^].MetaObj.PrintDefaultUse(f)
 
@@ -127,7 +127,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 			blocks[i].PrintCode(f)
 		}
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		middleVars[^][^].PrintDebugMeta(f)
 		dwnObjs[^].MetaObj.PrintDebugMeta(f)

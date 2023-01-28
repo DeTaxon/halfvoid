@@ -19,7 +19,7 @@ BoxQuestionPointer := class extend BoxExeObj
 	}
 	IsMem := virtual !() -> bool { return false }
 
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		resId := GetNewId()
 
@@ -43,7 +43,7 @@ BoxQuestionPointer := class extend BoxExeObj
 
 		continueLabel.PrintLabelCreate(f)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		itDown.PrintUse(f)
 	}

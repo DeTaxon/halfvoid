@@ -689,7 +689,7 @@ ModuleVulkan := class extend ModuleInterface
 		return vr
 	}
 
-	PrintCode := virtual !(TIOStream^ f) -> void {}
+	PrintCode := virtual !(Stream^ f) -> void {}
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
 	{
 		cnstName := GetConstString(name)

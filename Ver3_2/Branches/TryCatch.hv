@@ -99,7 +99,7 @@ TryGetObj := class extend BoxExeObj
 		JumpFrame.PopulateCalls()
 	}
 
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%Frm" << ItId << " = alloca [5 x i8*]\n" //todo! create local var void^[5], and maybe use BuiltinSetJump
 
@@ -134,7 +134,7 @@ TryGetObj := class extend BoxExeObj
 		ExitLabel.PrintCode(f)
 	}
 
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		DownBlock.PrintDebugMeta(f)
 		ExceptionBlock.PrintDebugMeta(f)

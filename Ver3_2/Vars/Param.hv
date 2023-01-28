@@ -18,11 +18,11 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		return false
 	}
-	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	PrintDebugLine := virtual !(Stream^ f) -> void
 	{
 
 	}
-	PrintAlloc := virtual !(TIOStream^ f) -> void
+	PrintAlloc := virtual !(Stream^ f) -> void
 	{
 
 	}
@@ -39,7 +39,7 @@ ParamFunc := class extend BoxFuncCommon
 		assert(false)
 	}
 
-	PrintMakeZero := !(TIOStream^ f) -> void
+	PrintMakeZero := !(Stream^ f) -> void
 	{
 		pType := GetType()->{TypeFunc^}.ResultType
 

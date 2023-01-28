@@ -28,7 +28,7 @@ BoxClass := class extend BoxUnit
 		ItName = name
 	}
 
-	printFieldsPath := !(TIOStream^ f, bool^ needComma) -> void
+	printFieldsPath := !(Stream^ f, bool^ needComma) -> void
 	{
 		for it : Parents
 		{
@@ -48,7 +48,7 @@ BoxClass := class extend BoxUnit
 	StartParseBody := virtual !() -> void {} 
 	AwaitParentStep := virtual !() -> void {}
 	AwaitVTableStep := virtual !() -> void {}
-	PrintAsType := virtual !(TIOStream^ f) -> void
+	PrintAsType := virtual !(Stream^ f) -> void
 	{
 		PrintVTable(f)
 
@@ -288,11 +288,11 @@ TypeClass := class extend Type
 		ToClass = ths
 		MetaId = ths.ItId
 	}
-	PrintType := virtual !(TIOStream^ f) -> void
+	PrintType := virtual !(Stream^ f) -> void
 	{
 		f^ << "%Class" << MetaId
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		f^ << ToClass.ItName
 		if ToClass.Constants?.Constants.Size() != 0

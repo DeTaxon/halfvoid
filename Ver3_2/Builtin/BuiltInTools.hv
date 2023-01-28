@@ -6,7 +6,7 @@ BuiltInAssert := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeBool],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		if not DebugMode
 			return void
@@ -35,7 +35,7 @@ BuiltInSetJump := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP.GetArray(5)],GTypeInt))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		ItId := GetNewId()
 
@@ -72,7 +72,7 @@ BuiltInLongJump := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintPre(f)
 		
@@ -90,7 +90,7 @@ BuiltInMemBarrier := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(0,null,null,GTypeVoid,false,false))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		f^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
 	}

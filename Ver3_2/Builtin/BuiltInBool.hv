@@ -18,7 +18,7 @@ BuiltInBoolNot := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeBool],GTypeBool))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPre(f)
 		

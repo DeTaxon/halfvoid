@@ -23,7 +23,7 @@ BoxReturn := class extend BoxExeObj
 			cleanupCall = GFuncGCSetNullArray.CreateCall(objs)
 		}
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		ResultCall?.PrintDefaultUse(f)
 		cleanupCall?.PrintDefaultUse(f)
@@ -50,7 +50,7 @@ BoxYield := class extend BoxReturn
 		toThis = new BoxLabel()
 	}
 
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		ResultCall?.PrintDefaultUse(f)
 		callSet.PrintDefaultUse(f)
@@ -181,7 +181,7 @@ ReturnHalfState := class extend BoxExeObj
 		return callObj.GetType()
 	}
 
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		returnObj.PrintDefaultUse(f)
 	}

@@ -30,7 +30,7 @@ BoxContinue := class extend BoxExeObj
 		if goLabel == null
 			itm.EmitError("continue operator used without cycle")
     }
-    PrintDefaultUse := virtual !(TIOStream^ f) -> void
+    PrintDefaultUse := virtual !(Stream^ f) -> void
     {
         exitCall?.PrintDefaultUse(f)
         goLabel.PrintGo(f)
@@ -56,7 +56,7 @@ BoxBreak := class extend BoxExeObj
 		if goLabel == null
 			itm.EmitError("break operator used without cycle")
     }
-    PrintDefaultUse := virtual !(TIOStream^ f) -> void
+    PrintDefaultUse := virtual !(Stream^ f) -> void
     {
         exitCall?.PrintDefaultUse(f)
         goLabel.PrintGo(f)

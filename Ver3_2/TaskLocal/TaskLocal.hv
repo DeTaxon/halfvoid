@@ -43,7 +43,7 @@ TaskLocalVarDelayed := class extend NamedVar
 		})
 	}
 
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
 	CreateCall := virtual !() -> BoxExeObj^

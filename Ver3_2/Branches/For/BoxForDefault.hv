@@ -60,7 +60,7 @@ BoxFor := class extend BoxExeObj
 	{
 		PrintCode(f)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		oldLineCall := GDebugLineCallId
 		GDebugLineCallId = HeadLine.MetaId
@@ -101,7 +101,7 @@ BoxFor := class extend BoxExeObj
 
 		GDebugLineCallId = oldLineCall
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		HeadLine?.PrintDebugMeta(f)
 		body.PrintDebugMeta(f)

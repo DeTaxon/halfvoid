@@ -7,7 +7,7 @@ BoxFuncDeclare := class extend BoxFuncCommon
 		itName = fName
 	}
 
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		f^ << "declare "
 		PrintResultType(f)
@@ -15,7 +15,7 @@ BoxFuncDeclare := class extend BoxFuncCommon
 		PrintInputTypes(f)
 		f^ << ")\n"
 	}
-	PrintName := virtual !(TIOStream^ f) -> void
+	PrintName := virtual !(Stream^ f) -> void
 	{
 		f^ << "@" << itName
 	}

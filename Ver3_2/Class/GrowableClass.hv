@@ -88,7 +88,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 		objRes = new FuncResultParam(itm)
 	}
 
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		objRes.PrintCode(f)
 	}
@@ -137,11 +137,11 @@ VarIntObj := class extend BoxExeObj
 			minSize += Value.ItAlign - unalign
 		return minSize
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << getVal()
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		f^ << getVal()
 	}

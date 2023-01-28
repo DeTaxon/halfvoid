@@ -102,13 +102,13 @@ AppendClass BoxFuncBody
 		inChain = true
 	}
 
-	PrintStackData := virtual !(TIOStream^ f) -> void
+	PrintStackData := virtual !(Stream^ f) -> void
 	{
 		CapturedVarsTuple?.PrintCode(f)
 		PrintYieldCodeParams(f)
 		PrintCaptureUsage(f,true)
 	}
-	PrintCaptureUsage := !(TIOStream^ f,bool isFirstCall) -> void
+	PrintCaptureUsage := !(Stream^ f,bool isFirstCall) -> void
 	{
 		if ParentFunc == null
 			return void

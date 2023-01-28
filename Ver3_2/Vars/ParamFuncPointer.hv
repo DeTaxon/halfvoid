@@ -12,14 +12,14 @@ FuncPointerParam := class extend BoxFuncCommon
 	{
 		return false
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		func.PrintName(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 }

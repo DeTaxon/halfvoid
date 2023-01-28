@@ -3,7 +3,7 @@ ClassConstValue := class extend BoxExeConstObj
 	ItType := Type^
 	Value := List.{BoxExeConstObj^}
 
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		f^ << "{"
 		for it,i : Value
@@ -30,7 +30,7 @@ ClassArray := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		typ2 := NormalizeType(ObjType.Base)
 
@@ -56,7 +56,7 @@ ConstFuncPtr := class extend BoxExeConstObj
 		ObjType = fnc.GetType().GetPoint()
 		Func = fnc
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		Func.PrintName(f)
 	}
@@ -71,7 +71,7 @@ ClassVTablePtrConst := class extend BoxExeConstObj
 		itClass = cls
 		ObjType = cls.VTableType.ItType.GetPoint()
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		itClass.VTableValue.Value.PrintResultObj(f,0,0)
 	}
@@ -83,7 +83,7 @@ ZeroClassConst := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		f^ << "zeroinitializer"
 	}

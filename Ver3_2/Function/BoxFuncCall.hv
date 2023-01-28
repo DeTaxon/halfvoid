@@ -336,33 +336,33 @@ BoxFuncCall := class extend BoxExeObj
 		return callObj.IsMem()
 	}
 
-	PassedFuncCall := !(TIOStream^ f, int passedId)  -> void
+	PassedFuncCall := !(Stream^ f, int passedId)  -> void
 	{
 		callObj.PrintFuncCall(f,passedId,0,downs)
 	}
-	PassedFuncResult := !(TIOStream^ f, int passedId)  -> void
+	PassedFuncResult := !(Stream^ f, int passedId)  -> void
 	{
 		callObj.PrintResultObj(f,passedId,-1)
 	}
 
-	PrintFuncUse := virtual !(TIOStream^ f) -> void
+	PrintFuncUse := virtual !(Stream^ f) -> void
 	{
 		callObj.PrintFuncCall(f,resId,0,downs)
 		ExtraWork[^].PrintDefaultUse(f)
 	}
-	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	PrintFuncResult := virtual !(Stream^ f) -> void
 	{
 		callObj.PrintResultObj(f,resId,-1)
 	}
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		PrintFuncUse(f)
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		PrintFuncResult(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		if IsMem()
 		{
@@ -371,7 +371,7 @@ BoxFuncCall := class extend BoxExeObj
 			PrintFuncUse(f)
 		}
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		if IsMem()
 		{
@@ -387,7 +387,7 @@ BoxFuncComplexCall := class extend BoxFuncCall
 	{
 		return true
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		downs[0].PrintPointUse(f)
 	}
@@ -406,12 +406,12 @@ BoxFuncPointerCall := class extend BoxFuncCall
 		ft := ItPtrFunc.GetType().Base->{TypeFunc^}
 		return ft.ResultType
 	}
-	PrintFuncUse := virtual !(TIOStream^ f) -> void
+	PrintFuncUse := virtual !(Stream^ f) -> void
 	{
 		PreCalls[^].PrintDefaultUse(f)
 		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)
 	}
-	PrintFuncResult := virtual !(TIOStream^ f) -> void
+	PrintFuncResult := virtual !(Stream^ f) -> void
 	{
 		PrintFuncCallResultCommon(f,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
 	}
@@ -429,7 +429,7 @@ BoxFuncPointerComplexCall := class extend BoxFuncPointerCall
 	{
 		return true
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		downs[0].PrintPointUse(f)
 	}

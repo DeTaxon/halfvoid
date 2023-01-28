@@ -80,7 +80,7 @@ PtrToRef := class extend BoxExeObj
 		ObjType = obj.GetType().Base
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -96,11 +96,11 @@ PtrToRef := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void //todo remove copy of code, at UnrefObj.hv
+	PrintPre := virtual !(Stream^ f) -> void //todo remove copy of code, at UnrefObj.hv
 	{
 		rType := ObjType
 
@@ -115,7 +115,7 @@ PtrToRef := class extend BoxExeObj
 			f^ << ", !dgb !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%TUnref" << resId
 	}
@@ -131,7 +131,7 @@ RefExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPointPre(f)
@@ -147,7 +147,7 @@ RefExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -161,7 +161,7 @@ PtrRefExchange := class extend PtrExchange
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPointPre(f)
@@ -177,7 +177,7 @@ PtrRefExchange := class extend PtrExchange
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -193,7 +193,7 @@ ArrToPtr := class extend BoxExeObj
 		ObjType = obj.GetType().Base.GetPoint()
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPointPre(f)
@@ -209,7 +209,7 @@ ArrToPtr := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -225,7 +225,7 @@ PtrExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -240,7 +240,7 @@ PtrExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -256,7 +256,7 @@ FloatToIntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -278,7 +278,7 @@ FloatToIntExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -294,7 +294,7 @@ IntToFloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -316,7 +316,7 @@ IntToFloatExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -332,7 +332,7 @@ IntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -373,7 +373,7 @@ IntExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
@@ -390,7 +390,7 @@ FloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		inType := Down.GetType()
 		Down.PrintPre(f)
@@ -412,7 +412,7 @@ FloatExchange := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}

@@ -38,13 +38,13 @@ FuncLocalParam := class extend ParamFunc
 		this&->{FuncLocalParamCaptured^}.DoCapture()
 		assert(this& is FuncLocalParamCaptured)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		PrintMakeZero(f)
 		Inits[^].PrintDefaultUse(f)
 	}
 
-	PrintAlloc := virtual !(TIOStream^ f) -> void
+	PrintAlloc := virtual !(Stream^ f) -> void
 	{
 		pType := GetType()->{TypeFunc^}.ResultType
 
@@ -54,14 +54,14 @@ FuncLocalParam := class extend ParamFunc
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		f^ << irName 
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -84,7 +84,7 @@ FuncLocalParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	PrintDebugLine := virtual !(Stream^ f) -> void
 	{
 		f^ << irName
 	}
@@ -115,7 +115,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		RezeroCall = callFunc.CreateCall(objs)
 
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		RezeroCall?.PrintDefaultUse(f)
 	}
@@ -157,7 +157,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		return true
 	}
 
-	PrintAlloc := virtual !(TIOStream^ f) -> void
+	PrintAlloc := virtual !(Stream^ f) -> void
 	{
 	}
 }

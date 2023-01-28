@@ -5,7 +5,7 @@ BuiltInVoidStore := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoid,GTypeVoid],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintDefaultUse(f)
 	}

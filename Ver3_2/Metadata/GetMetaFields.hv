@@ -34,7 +34,7 @@ MetaFieldsHolder := class extend BoxMetaObj
 		ObjType = GTypeVoid
 	}
 
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		objRes.PrintCode(f)
 	}

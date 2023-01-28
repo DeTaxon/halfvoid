@@ -274,7 +274,7 @@ MemVar := class extend NamedVar
 	{
 		return Value.GetType()->{TypeFunc^}.ResultType
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		assert(Value != null)
 		Value.PrintCode(f)
@@ -286,12 +286,12 @@ MemVar := class extend NamedVar
 		assert(Value != null)
 		Value.NotifyCaptureUse()
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		//Value.PrintDebugMeta(f)
 		pDebugMeta(f)
 	}
-	pDebugCode := !(TIOStream^ f) -> void
+	pDebugCode := !(Stream^ f) -> void
 	{
 		if not (Value.IsDebuggable())
 			return void
@@ -330,11 +330,11 @@ MemVar := class extend NamedVar
 		}
 		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 	}
-	doInits := !(TIOStream^ f) -> void
+	doInits := !(Stream^ f) -> void
 	{
 		Inits[^].PrintDefaultUse(f)
 	}
-	pDebugMeta := !(TIOStream^ f) -> void
+	pDebugMeta := !(Stream^ f) -> void
 	{
 		if not DebugMode
 			return void
@@ -368,7 +368,7 @@ MemVarRef := class extend MemVar
 		debId = GetNewId()
 	}
 
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 	}
 }
@@ -379,12 +379,12 @@ MemVarBorrowed := class extend MemVar
 	{
 		this."MemVar.this"(vName,clFunc)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		pDebugCode(f)
 		doInits(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		pDebugMeta(f)
 	}
@@ -411,12 +411,12 @@ FuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		assert(MemObj != null)
 		MemObj.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		MemObj.PrintDebugMeta(f)
 	}
@@ -442,12 +442,12 @@ TemplateFuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		assert(MemObj != null)
 		MemObj.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		MemObj.PrintDebugMeta(f)
 	}

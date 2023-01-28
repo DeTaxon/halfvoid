@@ -17,11 +17,11 @@ FuncResultParam := class extend ParamFunc
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		exeObj.PrintDefaultUse(f)
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		if exeObj.IsMem()
 		{
@@ -30,7 +30,7 @@ FuncResultParam := class extend ParamFunc
 			exeObj.PrintUse(f)
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -55,10 +55,10 @@ FuncResultParam := class extend ParamFunc
 
 FuncResultParamInGenerator := class extend FuncResultParam //TODO non ref
 {
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintAtStart := virtual !(TIOStream^ f) -> void
+	PrintAtStart := virtual !(Stream^ f) -> void
 	{
 		exeObj.PrintDefaultUse(f)
 	}

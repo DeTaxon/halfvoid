@@ -134,12 +134,12 @@ BoxFile := class extend BoxUnit
 	{
 		if DebugMode //later
 		{
-			pth := Path(file.GetPath())
-			if pth.IsExist()
+			pth := file.GetPath()
+			if fsIsExist(pth.Str()) //TODO to something better
 			{
-				pth2 := pth.FullPath()
+				pth2 := pth//.FullPath() //TODO hm
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
-				f^ << pth2.Get() << "\", directory: \""
+				f^ << pth2.Str() << "\", directory: \""
 				f^ <<  "/" <<"\")\n"
 			}else{
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 

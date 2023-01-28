@@ -65,7 +65,7 @@ BoxRawData := class extend BoxExeObj
 			memcpy(Value,data,siz)
 		}
 	}
-	PrintGlobal := virtual !(TIOStream^ f) -> void
+	PrintGlobal := virtual !(Stream^ f) -> void
 	{
 		f^ << "@File" << ItId << " = global [" << ValueSize << " x i8] ["
 		for i : ValueSize
@@ -76,10 +76,10 @@ BoxRawData := class extend BoxExeObj
 		}
 		f^ << "]\n"
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "getelementptr inbounds ([" << ValueSize << " x i8] , [ " << ValueSize << " x i8]* @File" << ItId <<" , i32 0, i32 0)"
 	}
@@ -107,13 +107,13 @@ EmbFile := class
 	{
 		return data.GetSize()
 	}
-	PrintGlobal := !(TIOStream^ f) -> void
+	PrintGlobal := !(Stream^ f) -> void
 	{
 		data.PrintGlobal(f)
 	}
 }
 
-PrintEmbeddedFiles := !(TIOStream^ f) -> void
+PrintEmbeddedFiles := !(Stream^ f) -> void
 {
 	for it : embeddedFiles
 	{

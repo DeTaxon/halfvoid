@@ -24,7 +24,7 @@ BuiltInPointSpaceship := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeS64)) //TODO arch 
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintPre(f)
 
@@ -104,7 +104,7 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintPre(f)
 		

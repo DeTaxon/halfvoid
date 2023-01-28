@@ -17,7 +17,7 @@ SwitchCase := class
 		nopeLabel = new BoxLabel()
 	}
 
-	PrintIt := !(TIOStream^ f , BoxLabel^ qLabel) -> void
+	PrintIt := !(Stream^ f , BoxLabel^ qLabel) -> void
 	{
 		cmpCheck.PrintPre(f)
 		PrintBranch(f,cmpCheck,useNode,nopeLabel)
@@ -146,11 +146,11 @@ BoxSwitch := class extend BoxExeObj
 			checkCase()
 		}
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		PrintCode(f)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		mainVar.PrintCode(f)
 
@@ -161,7 +161,7 @@ BoxSwitch := class extend BoxExeObj
 		deafultNode?.PrintCode(f)
 		quitNode.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		for it : caseNodes
 			it.caseBody?.PrintDebugMeta(f)

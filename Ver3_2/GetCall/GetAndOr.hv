@@ -55,16 +55,16 @@ BoxAndOr := class extend BoxExeObj
 
 	IsMem := virtual !() -> bool { return false }
 
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
 	}
-	PrintStep1 := virtual !(TIOStream^ f) -> void
+	PrintStep1 := virtual !(Stream^ f) -> void
 	{
 		LeftCall.PrintPre(f)
 
 	}
-	PrintStep3 := virtual !(TIOStream^ f) -> void
+	PrintStep3 := virtual !(Stream^ f) -> void
 	{
 		NextPath.PrintLabelCreate(f)
 		RightCall.PrintPre(f)
@@ -93,7 +93,7 @@ BoxAnd := class extend BoxAndOr
 	{
 		CommonInit(cl1,cl2)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		PrintStep1(f)
 		PrintBranch(f,LeftCall,NextPath,FalsePath)
@@ -108,14 +108,14 @@ BoxOr := class extend BoxAndOr
 			NextPath = qc.ItLabel
 		CommonInit(cl1,cl2)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		PrintStep1(f)
 		PrintBranch(f,LeftCall,TruePath,NextPath)
 		PrintStep3(f)
 	}
 }
-PrintBranch := !(TIOStream^ f, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
+PrintBranch := !(Stream^ f, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
 {
 	f^ << "br i1 "
 	cmp.PrintUse(f)

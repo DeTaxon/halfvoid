@@ -84,20 +84,20 @@ AppendClass BoxFuncBody
 		finObjs.Push(GetExeInt(-1))
 		YieldFinilize = CreateFuncCall(StringSpan("="),finObjs)
 	}
-	PrintYieldCodeParams := !(TIOStream^ f) -> void
+	PrintYieldCodeParams := !(Stream^ f) -> void
 	{
 		if YieldStateInt == null
 			return void
 
 		YieldStateInt.PrintCode(f)
 	}
-	PrintYieldCodeParamsGC := !(TIOStream^ f) -> void
+	PrintYieldCodeParamsGC := !(Stream^ f) -> void
 	{
 		if YieldStateInt == null
 			return void
 
 	}
-	PrintYieldCodeGo := !(TIOStream^ f) -> void
+	PrintYieldCodeGo := !(Stream^ f) -> void
 	{
 		if YieldStateInt == null
 			return void
@@ -126,7 +126,7 @@ AppendClass BoxFuncBody
 		YieldStart?.PrintCode(f)
 	}
 
-	PrintYieldCreateVar := virtual !(TIOStream^ f) -> void
+	PrintYieldCreateVar := virtual !(Stream^ f) -> void
 	{
 		if gcVarsCount == 0
 			return void
@@ -134,7 +134,7 @@ AppendClass BoxFuncBody
 		gcArrayVar.PrintCode(f)
 	}
 
-	YieldPrintFinilize := !(TIOStream^ f) -> void
+	YieldPrintFinilize := !(Stream^ f) -> void
 	{
 		if YieldStateInt == null
 			return void

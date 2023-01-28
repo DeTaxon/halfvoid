@@ -78,7 +78,7 @@ TrinaryOper := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		tp := onTrue.GetType()
 
@@ -119,7 +119,7 @@ TrinaryOper := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << ItId
 	}
@@ -157,7 +157,7 @@ TrinaryOperMem := class extend BoxExeObj
 	{
 		return true
 	}
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		tp := onTrue.GetType()
 
@@ -199,16 +199,16 @@ TrinaryOperMem := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << ItId
 	}
 
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		PrintUnrefObj(f,ItId,this&)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%TUnref" << ItId
 	}

@@ -38,14 +38,14 @@ BoxFunc := class extend BoxExeConstObj
 	WaitReadyState := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
 	GetExitLabel := virtual !() -> BoxLabel^
 	{
 		assert(false)
 	}
-	PrintResultType := virtual !(TIOStream^ f) -> void
+	PrintResultType := virtual !(Stream^ f) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
 		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
@@ -63,11 +63,11 @@ BoxFunc := class extend BoxExeConstObj
 	ParseBodyForced := virtual !() -> void
 	{
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		PrintName(f)
 	}
-	PrintInputTypes := virtual !(TIOStream^ f) -> void
+	PrintInputTypes := virtual !(Stream^ f) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
 		needComma := false
@@ -97,14 +97,14 @@ BoxFunc := class extend BoxExeConstObj
 			f^ << "..."
 		}
 	}
-	PrintName := virtual !(TIOStream^ f) -> void
+	PrintName := virtual !(Stream^ f) -> void
 	{
 	}
 
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -122,7 +122,7 @@ BoxFunc := class extend BoxExeConstObj
 
 BoxFuncCommon := class extend BoxFunc
 {
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
 		if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
@@ -130,20 +130,20 @@ BoxFuncCommon := class extend BoxFunc
 			f^ << "%T" << resId
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		PrintFuncCallCommon(f,this&,resId,lst)
 	}
 }
 
-PrintFuncCallResultCommon := !(TIOStream^ f,TypeFunc^ fTyp,int resId) -> void
+PrintFuncCallResultCommon := !(Stream^ f,TypeFunc^ fTyp,int resId) -> void
 {
 	if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
 	{
 		f^ << "%T" << resId
 	}
 }
-PrintFuncCallCommon := !(TIOStream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
+PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
 {
 	itType := TypeFunc^
 	if fncObj is in BoxFunc

@@ -249,14 +249,14 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		readyState.Await()
 	}
-	PrintName := virtual !(TIOStream^ f) -> void
+	PrintName := virtual !(Stream^ f) -> void
 	{
 		f^ << "@" << OutputName
 		if OutputName.Size() == 0
 			printf("bad\n")
 	}
 	
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		if body == null
 			return void

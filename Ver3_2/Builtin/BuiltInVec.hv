@@ -116,7 +116,7 @@ BuiltInVecElementRef := class extend BoxFuncCommon
 		SetType(tp)
 		vecInd = ind
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		typ := lst[0].GetType()
 		lst[0].PrintPointPre(f)
@@ -146,7 +146,7 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 			vecSize = vs
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		typ := lst[0].GetType()
 		lst[0].PrintPre(f)
@@ -218,7 +218,7 @@ BuiltInVecScalarMult := class extend BoxFuncCommon
 	{
 		SetType(tp)
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		typ := lst[0].GetType()
 		siz := GetVecXTypeSize(typ)
@@ -247,7 +247,7 @@ BuiltInVecOperOnFloat := class extend BoxFuncCommon
 		llvmOper = itOper
 		SetType(tp)
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		typ := lst[0].GetType()
 		typBase := lst[1].GetType()

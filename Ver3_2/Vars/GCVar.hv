@@ -18,10 +18,10 @@ FuncGCLocalParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	NotifyCaptureUse := virtual !() -> void
@@ -56,7 +56,7 @@ FuncGCLocalParam := class extend ParamFunc
 }
 FuncGCLocalParamInYield := class extend FuncGCLocalParam
 {
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
 }

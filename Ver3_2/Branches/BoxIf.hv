@@ -96,7 +96,7 @@ BoxIfTrueOnly := class extend BoxExeObj
 		if TrueEndLabel == null
 			TrueEndLabel = new BoxLabel()
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
@@ -117,7 +117,7 @@ BoxIfTrueOnly := class extend BoxExeObj
 		OnTrue.PrintCode(f)
 		TrueEndLabel.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		IfLine.PrintDebugMeta(f)
 		OnTrue?.PrintDebugMeta(f)
@@ -150,7 +150,7 @@ BoxIfFull := class extend BoxExeObj
 		if FalsePath == null
 			FalsePath = new BoxLabel()
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
@@ -176,7 +176,7 @@ BoxIfFull := class extend BoxExeObj
 		
 		EndPath.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		IfLine.PrintDebugMeta(f)
 		OnTrue.PrintDebugMeta(f)

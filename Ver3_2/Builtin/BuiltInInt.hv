@@ -6,7 +6,7 @@ BuiltInIntBase := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[^].PrintPre(f)
 		
@@ -33,7 +33,7 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPointPre(f)
 		lst[1].PrintPre(f)
@@ -78,7 +78,7 @@ BuiltInInterlockOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPointPre(f)
 		lst[1].PrintPre(f)
@@ -112,7 +112,7 @@ BuiltInIntDecInc := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPointPre(f)
 
@@ -157,7 +157,7 @@ BuiltInIntMinus := class extend BoxFuncCommon
 		llvm = lvm
 		cnstVal = cv
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPre(f)
 
@@ -178,7 +178,7 @@ BuiltInPrimeStore := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPointPre(f)
 		lst[1].PrintPre(f)
@@ -207,7 +207,7 @@ BuiltInIntSuffixU := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeInt],GTypeU64))
 	}
-	//PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	//PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	//{
 	//}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -223,7 +223,7 @@ BuiltInIntSuffixF := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeDouble],GTypeFloat))
 	}
-	//PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	//PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	//{
 	//}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -368,7 +368,7 @@ BuiltInFloatSpaceship := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 		lst[0].PrintPre(f)
 		lst[1].PrintPre(f)

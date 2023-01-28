@@ -72,7 +72,7 @@ BoxArrayConst := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		elType := dwns[0].GetType()
 		f^ << "["
