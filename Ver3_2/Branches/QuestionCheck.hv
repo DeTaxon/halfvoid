@@ -1,0 +1,50 @@
+BoxQuestionPointer := class extend BoxExeObj
+{
+	itDown := BoxExeObj^
+	quitLabel := BoxLabel^
+	continueLabel := BoxLabel^
+	this := !(BoxExeObj^ newDown) -> void
+	{
+		itDown = newDown
+		ObjType = newDown.GetType()
+		
+		continueLabel = new BoxLabel()
+		for it : UnitStack
+		{
+			quitLabel = it.GetQLabel()
+			if quitLabel != null
+				break
+		}
+
+	}
+	IsMem := virtual !() -> bool { return false }
+
+	PrintPre := virtual !(TIOStream^ f) -> void
+	{
+		resId := GetNewId()
+
+		itDown.PrintPre(f)
+		
+		f^ << "%T" << resId << " = icmp eq "
+		ObjType.PrintType(f)
+		f^ << " "
+		itDown.PrintUse(f)
+		f^ << " , null"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+		f^ << "br i1 %T" << resId << " , label "
+		quitLabel.PrintLabel(f)
+		f^ << " ,  label "
+		continueLabel.PrintLabel(f)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		continueLabel.PrintLabelCreate(f)
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		itDown.PrintUse(f)
+	}
+}

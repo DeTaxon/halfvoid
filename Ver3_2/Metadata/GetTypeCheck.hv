@@ -1,0 +1,65 @@
+TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
+{
+	assert(obj.Down.Right.GetValue() == "is")
+
+	makeNegative := false
+	makeInCheck := false
+
+	iter := obj.Down.Right.Right
+	if iter.GetValue() == "not"
+	{
+		makeNegative = true
+		iter = iter.Right
+	}
+	if iter.GetValue() == "in"
+	{
+		makeInCheck = true
+		iter = iter.Right
+	}
+
+	expType := ParseType(iter)
+	if expType == null
+		iter.EmitError("Can not get type")
+	if not IsVirtualClass(expType)
+		iter.EmitError("Type on right of is must be a virtual class")
+	checkObj := TryGetExeCall(obj.Down)
+	if checkObj == null
+		return null
+	if not IsVirtualClass(checkObj.GetType().Base)
+		obj.Down.EmitError("Object on left of is must have type of a pointer to virtual class")
+
+	objs3 := CheckExeDownList
+	objs3.Push(checkObj)
+	cnsts := List.{BoxExeConstObj^}
+	cnsts.Push(GetConstType(expType))
+	fnc := BoxFunc^ 
+	if makeInCheck
+	{
+		fnc = TemplateInternalIsInSameType.GetFunc(objs3,cnsts)
+	}else{
+		fnc = TemplateInternalIsSameType.GetFunc(objs3,cnsts)
+	}
+	assert(fnc != null)
+
+	resCall :=  fnc.CreateCall(objs3)
+	if makeNegative
+	{
+		objs8 := CheckExeDownList
+		objs8.Push(resCall)
+		cnsts := List.{BoxExeConstObj^}
+		resCall = CreateFuncCall(StringSpan(". not"),objs8,cnsts)
+	}
+	return resCall
+}
+
+IsVirtualClass := !(Type^ tp) -> bool
+{
+	if tp == null
+		return false
+	if not (tp is TypeClass)
+		return false
+	asClass := tp->{TypeClass^}.ToClass
+
+	asClass.AwaitVTableStep()
+	return asClass.VTable.Size() != 0	
+}

@@ -1,0 +1,19 @@
+
+BuiltInVoidStore := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeVoid,GTypeVoid],GTypeVoid))
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintDefaultUse(f)
+	}
+}
+
+CreateBuiltInVoid := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+
+	bSpace.Functions[StringSpan("=")].Push(new BuiltInVoidStore())
+}

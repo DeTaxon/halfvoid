@@ -1,0 +1,345 @@
+AppendClass BoxClass
+{
+
+	fieldsOffset := int
+
+	InheritStep := !() -> void
+	{
+		assert(FieldsPath.Size() == 0)
+
+		Parents[^].AwaitTypeState()
+
+		DefaultSpace.itClass = this&
+		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance
+		if Parents.Size() != 0
+		{
+			DefaultSpace.baseSpace = Parents[0].DefaultSpace&
+			for par : Parents //TODO move to BoxClass
+			{
+				for pSpace,ind : par.FieldSpaces
+				{
+					FieldSpaces[ind].baseSpace = pSpace&
+					FieldSpaces[ind].itClass = this&
+				}
+			}
+		}
+
+		ItAlign = 1
+		ItAlign = max(ItAlign,Parents[^].ItAlign)
+
+		posOffset := 0
+		posMemOffset := 0
+
+		if VTable.Size() != 0
+		{
+			posOffset += 1
+			posMemOffset = 8 //TODO unconst
+			ItAlign = max(ItAlign,8)
+		}
+
+		assert(Parents.Size() <= 1)
+		if Parents.Size() > 0
+		{
+			posMemOffset = Parents[0].ItSize
+			posOffset += Parents[0].GetFieldsCount()
+
+			cb := (BoxClass^ cls, int id) ==> {
+				RecalculateSize()
+
+				dependentsOnGrow[^](cls,id) //todo cls or this?
+				fieldIterators[^].ItemCreated(id)
+				
+			}
+			Parents[0].AddDependsOnGrow(cb.Capture())
+		}
+
+		if Parents.Size() >= 2
+		{
+			assert(false) //TODO
+		}
+
+		fieldCB := (BoxClass^ cls, int id) ==>
+		{
+			RecalculateSize()
+			dependentsOnGrow[^](cls,id) //todo cls or this?
+		}
+		fieldCBCaptured := !(BoxClass^,int)&->void
+
+
+		for fil,i : Fields
+		{
+			fil.Value.NotifyUse()
+
+			fPath := new FieldPath(ItType,fil.Value)
+			fPath.Field = fil
+			fPath.Index = i
+
+			unalign := posMemOffset % fil.Value.GetAlign()
+			ItAlign = max(ItAlign,fil.Value.GetAlign())
+
+			if unalign != 0 and not IsPacked
+			{
+				posMemOffset += fil.Value.GetAlign() - unalign
+			}
+			fieldSize := fil.Value.GetSize()
+			if fieldSize == 0 and fil.Value is TypeClass
+				fieldSize = 1 //TODO Zero size class optimization
+			fPath.MemOffset = posMemOffset
+			posMemOffset += fieldSize
+
+			FieldsPath.Push(fPath)
+
+			if fil.Value is in TypeClass
+			{
+				if fieldCBCaptured == null
+				{
+					fieldCBCaptured = fieldCB.Capture()
+				}
+				fldClass := fil.Value->{TypeClass^}.ToClass
+				fldClass.AddDependsOnGrow(fieldCBCaptured)
+			}
+		}
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+		fieldsOffset = posOffset
+
+	}
+	GetFieldsCount := !() -> int
+	{
+		sum := 0
+		for it : Parents
+			sum += it.GetFieldsCount()
+		sum += Fields.Size()
+		return sum
+	}
+
+	AddExtraField := !(StringSpan newName, Type^ newFieldType) -> FieldPath^
+	{
+		//TODO check for existing name
+
+		AwaitTypeState()
+		
+		posMemOffset := ItSize
+
+		newField := new FieldParam(newName,newFieldType)
+		newPath := new FieldPath(ItType,newFieldType)
+		newPath.Index = FieldsPath.Size()
+
+		newPath.Field = newField
+
+		unalign := ItSize % newFieldType.GetAlign()
+		ItAlign = max(ItAlign,newFieldType.GetAlign())
+
+		if unalign != 0 and not IsPacked
+		{
+			posMemOffset += newFieldType.GetAlign() - unalign
+		}
+		fieldSize := newFieldType.GetSize()
+		if fieldSize == 0 and newFieldType is TypeClass
+			fieldSize = 1 //TODO Zero size class optimization
+		newPath.MemOffset = posMemOffset
+		posMemOffset += fieldSize
+
+		FieldsPath.Push(newPath)
+		Fields.Push(newField)
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+
+		newFieldId := GetFieldsCount() - 1
+
+		for it : fieldIterators
+		{
+			it.ItemCreated(newFieldId)
+		}
+
+		for it : dependentsOnGrow
+		{
+			it(this&,newFieldId)
+		}
+
+		fieldCB := (BoxClass^ cls, int id) ==>
+		{
+			RecalculateSize()
+			dependentsOnGrow[^](cls,id) //todo cls or this?
+		}
+		if newFieldType is in TypeClass
+		{
+			fldClass := newFieldType->{TypeClass^}.ToClass
+			fldClass.AddDependsOnGrow(fieldCB.Capture())
+		}
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+		for it : Parents
+		{
+			return it.GetField(val)
+		}
+		return null
+	}
+	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
+	{
+		return null
+	}
+	GetFieldByIndex := virtual !(int val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		assert(Parents.Size() <= 1)
+
+		totalCount := GetFieldsCount()
+		offsetCount := totalCount - Fields.Size()
+
+		if val < 0 or val >= totalCount
+			return null
+		if val < offsetCount
+			return Parents[0].GetFieldByIndex(val)
+		return FieldsPath[val - offsetCount]
+	}
+	GetFieldByIndexTuple := virtual !(int val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		assert(Parents.Size() <= 1)
+
+		if val < 0 or val >= FieldsPath.Size()
+			return null
+		return FieldsPath[val]
+	}
+	fieldIterators := List.{GrowableClassMetaFields^} //TODO already bad, can not be used frequently
+	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		newIterator := new GrowableClassMetaFields(itm,this&)
+		fieldIterators.Push(newIterator)
+		return newIterator
+	}
+
+	dependentsOnGrow := List.{!(BoxClass^,int)&->void}
+	AddDependsOnGrow := !(!(BoxClass^,int)&-> void cb) -> void
+	{
+		dependentsOnGrow.Push(cb)
+	}
+	RecalculateSize := !() -> void
+	{
+		Parents[^].AwaitTypeState()
+
+		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance
+
+		ItAlign = 1
+		ItAlign = max(ItAlign,Parents[^].ItAlign)
+
+		posOffset := 0
+		posMemOffset := 0
+
+		if VTable.Size() != 0
+		{
+			posOffset += 1
+			posMemOffset = 8 //TODO unconst
+			ItAlign = max(ItAlign,8)
+		}
+
+		assert(Parents.Size() <= 1)
+		if Parents.Size() > 0
+		{
+			assert(Parents.Size() <= 1) //WARNING, posMemOfsset sets to ItSize in line below
+			posMemOffset = Parents[0].ItSize
+			posOffset += Parents[0].GetFieldsCount()
+		}
+
+		for fil,i : Fields
+		{
+			unalign := posMemOffset % fil.Value.GetAlign()
+			ItAlign = max(ItAlign,fil.Value.GetAlign())
+
+			if unalign != 0 and not IsPacked
+			{
+				posMemOffset += fil.Value.GetAlign() - unalign
+			}
+			fieldSize := fil.Value.GetSize()
+			if fieldSize == 0 and fil.Value is TypeClass
+				fieldSize = 1 //TODO Zero size class optimization
+			FieldsPath[i].MemOffset = posMemOffset
+			posMemOffset += fieldSize
+		}
+		if IsPacked
+			ItAlign = 1
+		ItSize = posMemOffset
+		fieldsOffset = posOffset
+	}
+}
+FieldParam := class extend BoxUnit
+{
+	Name := StringSpan
+	Value := Type^
+	this := !(StringSpan name, Type^ val) -> void
+	{
+		Name = name
+		Value = val
+	}
+}
+FieldPath := class extend BoxFuncCommon
+{
+	Field := FieldParam^
+	Index := int
+	MemOffset := int
+
+	this := !(Type^ baseClass, Type^ res) -> void
+	{
+		SetType(GetFuncType(1,baseClass&,null,res,true,false))
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+
+	}
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	{
+		f^ << "%T" << resId 
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		tp := lst[0].GetType()
+		assert(tp is TypeClass)
+		cls := tp->{TypeClass^}.ToClass
+		lst[0].PrintPointPre(f)
+		f^ << "%T" << resId << " = getelementptr "
+		tp.PrintType(f)
+		f^ << ","
+		tp.PrintType(f)
+		f^ << "* "
+		lst[0].PrintPointUse(f)
+		f^ << " , i32 0, i32 " << GetIndex(cls)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	GetIndex := virtual !(BoxClass^ cls) -> int
+	{
+		return cls.fieldsOffset + Index
+	}
+}
+FieldPathAbs := class extend FieldPath
+{
+	this := !(Type^ baseClass, Type^ res) -> void
+	{
+		SetType(GetFuncType(1,baseClass&,null,res,true,false))
+	}
+	GetIndex := virtual !(BoxClass^ cls) -> int
+	{
+		return Index
+	}
+}

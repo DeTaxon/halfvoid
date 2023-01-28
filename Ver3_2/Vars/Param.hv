@@ -1,0 +1,72 @@
+ParamFunc := class extend BoxFuncCommon
+{
+	Inits := List.{BoxExeObj^}
+	isRef := bool
+	irName := StringSpan
+	parentFunc := BoxFuncBody^
+	exeObj := BoxExeObj^
+
+	NotifyCaptureUse := virtual !() -> void
+	{
+	}
+
+	IsValue := virtual !() -> bool
+	{
+		return false
+	}
+	IsDebuggable := virtual !() -> bool
+	{
+		return false
+	}
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	{
+
+	}
+	PrintAlloc := virtual !(TIOStream^ f) -> void
+	{
+
+	}
+	IsRef := virtual !() -> bool
+	{
+		return isRef
+	}
+	GetVarType := virtual !() -> Type^
+	{
+		return GetType()->{TypeFunc^}.ResultType
+	}
+	PopulateCalls := virtual !() -> void
+	{
+		assert(false)
+	}
+
+	PrintMakeZero := !(TIOStream^ f) -> void
+	{
+		pType := GetType()->{TypeFunc^}.ResultType
+
+		if IsInt(pType) or pType == GTypeBool
+		{
+			f^ << "store "
+			pType.PrintType(f)
+			f^ << " 0, "
+			pType.PrintType(f)
+			f^ << "* " << irName
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}else //if pType is TypeClass
+		{
+			miniId := GetNewId()
+			f^ << "%Void" << miniId << " = bitcast "
+			pType.PrintType(f)
+			f^ << "* " << irName << " to i8*"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+
+			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << miniId << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			if DebugMode
+				f^ << ", !dbg !" << GDebugLineCallId
+			f^ << "\n"
+		}
+	}
+}

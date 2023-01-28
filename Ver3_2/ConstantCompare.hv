@@ -1,0 +1,25 @@
+IsEqConstants := !(List.{BoxExeConstObj^} a, List.{BoxExeConstObj^} b) -> bool
+{
+	if a.Size() != b.Size()
+		return false
+	for i : a.Size()
+	{
+		if not cmpConst(a[i],b[i])
+			return false
+	}
+	return true
+}
+
+cmpConst := !(BoxExeConstObj^ a, BoxExeConstObj^ b) -> bool
+{
+	if a is ConstType and b is ConstType
+	{
+		return a == b
+	}
+	if a is BoxExeString and b is BoxExeString
+	{
+		return a == b
+	}
+	assert(false)
+	return false
+}

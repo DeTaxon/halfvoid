@@ -1,0 +1,28 @@
+FieldSpace := class
+{
+	itClass := BoxClass^
+	baseSpace := FieldSpace^ //TODO multiple FieldBases as for multiple inheritance
+
+	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	VirtualMethods := AVLMap.{StringSpan,List.{BoxFunc^}}
+	VirtualCleanMethods := AVLMap.{StringSpan,List.{BoxFunc^}} // skips virtual table
+	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
+
+	GetMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
+	{
+		if Methods.Contain(name)
+		{
+			for fnc : Methods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
+		if MethodTemplates.Contain(name)
+		{
+			for fncTmpl : MethodTemplates[name]
+			{
+				objs.Push(fncTmpl)
+			}
+		}
+	}
+}

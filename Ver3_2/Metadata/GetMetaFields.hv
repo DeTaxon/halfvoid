@@ -1,0 +1,61 @@
+TryGetMetaFields := !(Token^ itm) -> BoxExeObj^
+{
+	dwn := TryGetExeCall(itm.Down)
+
+	assert(dwn != null)
+	dwnType := dwn.GetType()
+
+	cls := BoxClass^
+	if dwnType is in TypeClass
+	{
+		cls = dwnType->{TypeClass^}.ToClass
+	}
+	if dwnType is in TypePoint and dwnType.Base is in TypeClass
+	{
+		cls = dwnType.Base->{TypeClass^}.ToClass
+		dwn = new PtrToRefFuncCall(dwn)
+	}
+	if cls == null
+		itm.EmitError("Object does not have fields")
+
+	return cls.GetFieldsIterator(dwn)
+}
+
+MetaFieldsHolder := class extend BoxMetaObj
+{
+	callObj := BoxExeObj^
+	objRes := ParamFunc^
+	classObj := BoxClass^
+	this := !(BoxExeObj^ itm,BoxClass^ cl) -> void
+	{
+		callObj = itm
+		classObj = cl
+		objRes = new FuncResultParam(itm)
+		ObjType = GTypeVoid
+	}
+
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		objRes.PrintCode(f)
+	}
+
+	IsMetaIteratable := virtual !() -> bool 
+	{ 
+		return true
+	}
+	MetaIteretableSize := virtual !() -> int 
+	{ 
+		return classObj.FieldsPath.Size()
+	}
+	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
+	{
+		indCall := classObj.GetFieldByIndex(ind)
+		itms := CheckExeDownList
+		itms.Push(objRes.CreateCall())
+		return indCall.CreateCall(itms)
+	}
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
+	{
+		return GetExeString(GetConstString(classObj.FieldsPath[ind].Field.Name))
+	}
+}

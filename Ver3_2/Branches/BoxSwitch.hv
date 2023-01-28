@@ -1,0 +1,171 @@
+TryParseSwitch := !(Token^ itm) -> BoxExeObj^
+{
+	return new BoxSwitch(itm)
+}
+
+
+SwitchCase := class
+{
+	cmpCheck := BoxExeObj^
+	caseBody := BoxBlock^
+	useNode := BoxLabel^
+	nopeLabel := BoxLabel^
+
+	this := !() -> void
+	{
+		useNode = new BoxLabel()
+		nopeLabel = new BoxLabel()
+	}
+
+	PrintIt := !(TIOStream^ f , BoxLabel^ qLabel) -> void
+	{
+		cmpCheck.PrintPre(f)
+		PrintBranch(f,cmpCheck,useNode,nopeLabel)
+		useNode.PrintCode(f)
+		caseBody?.PrintCode(f)
+		qLabel.PrintGo(f)
+		nopeLabel.PrintCode(f)
+	}
+}
+BoxSwitch := class extend BoxExeObj
+{
+	mainCall := BoxExeObj^
+	mainVar := FuncResultParam^
+
+	quitNode := BoxLabel^
+
+	caseNodes := List.{SwitchCase^}
+	deafultNode := BoxBlock^
+
+	this := !(Token^ itm) -> void
+	{
+		ObjType = GTypeVoid
+		itr := itm.Down
+		assert(itr.GetValue() == "switch")
+
+		itr = itr.Right
+
+		mainCall = TryGetExeCall(itr)
+
+		if mainCall == null
+			itr.EmitError("could not get switch satatement") //todo
+		
+		mainVar = new FuncResultParam(mainCall)
+
+		itr = itr.Right
+
+		assert(itr.GetValue() == "{}")
+
+		SyntaxCompress(itr,PriorityData)
+		itr = itr.Down
+		
+		currentCase := Token^
+		startNode := Token^
+		startNodeCount := int
+
+		checkCase := () ==> {
+			if currentCase == null
+				return void
+
+			thisCaseBlock := BoxBlock^
+
+			if startNode != null
+			{
+				if startNodeCount != 1 or startNode.GetValue() != "{}"
+				{
+					startNode = UNext(startNode,new TokenSymbol(StringSpan("{}"),1) ,startNodeCount)
+				}
+				thisCaseBlock = new BoxBlock(startNode)
+			}
+			
+			if currentCase.Down.Right is TokenIndent and currentCase.Down.Right->{TokenIndent^}.Value == "void"
+			{
+				//todo if too much default cases
+				deafultNode = thisCaseBlock
+				return void
+			}
+			checkRes := BoxExeObj^
+
+			caseVal := currentCase.Down.Right
+			caseCheckFuncName := StringSpan("==")
+			if caseVal.GetValue() == "in"
+			{
+				caseVal = caseVal.Right
+				caseCheckFuncName = StringSpan("in")
+			}
+
+			caseCheck := TryGetExeCall(caseVal)
+			if caseCheck == null
+				currentCase.EmitError("Could not get case object")
+			
+			objs := CheckExeDownList
+			objs.Push(mainVar.CreateCall())
+			objs.Push(caseCheck)
+			checkRes := BoxExeObj^
+			if caseCheckFuncName == "=="
+			{
+				checkRes = innertTryGetCompareOverSpaceship(caseCheckFuncName,objs,caseVal)
+			}
+			if checkRes == null
+			{
+				checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
+			}
+
+			if checkRes == null
+			{
+				printf("TEST %i\n",objs[1] is FieldSpaceHolder)
+				currentCase.EmitError("Can not compare case object with switch statement")
+			}
+
+			newNode := new SwitchCase()
+			newNode.caseBody = thisCaseBlock
+			newNode.cmpCheck = checkRes
+
+			caseNodes.Push(newNode)
+
+			quitNode = new BoxLabel()
+		}
+
+		while itr != null
+		{
+			if itr.Down?.GetValue() == "case"
+			{
+				checkCase()
+				currentCase = itr
+				startNode = null
+				startNodeCount = 0
+			}else{
+				if startNode == null
+					startNode = itr
+				startNodeCount += 1
+			}
+			itr = itr.Right
+		}
+		if currentCase != null
+		{
+			checkCase()
+		}
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		mainVar.PrintCode(f)
+
+		for it : caseNodes
+		{
+			it.PrintIt(f,quitNode)
+		}
+		deafultNode?.PrintCode(f)
+		quitNode.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		for it : caseNodes
+			it.caseBody?.PrintDebugMeta(f)
+		deafultNode?.PrintDebugMeta(f)
+	}
+
+}

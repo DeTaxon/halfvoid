@@ -1,0 +1,39 @@
+BoxClassPoison := class extend BoxClass
+{
+	PoisonFunctions := AVLMap.{StringSpan,Tuple.{Token^,bool}} //bool isVirtual
+	populatePoisons := !(BoxClass^ cls) -> void
+	{
+		if not (cls is in BoxClassBody)
+			return void
+		cls2 := cls->{BoxClassBody^}
+		for it,ind : cls2.PoisonFunctions
+		{
+			if not it.1
+			{
+				newFunc := TryParseFunction(it.0)
+				assert(newFunc != null) //TODO error
+				assert(newFunc is in BoxFuncTemplateBody)
+				asTmpl := newFunc->{BoxFuncTemplateBody^}
+				asTmpl.SetName(ind)
+				asTmpl.ParentScope = this&
+				DefaultSpace.MethodTemplates[ind].Push(asTmpl)
+			}else{
+				if not PreVTableFuncs.Contain(ind)
+				{
+					newFunc := TryParseFunction(it.0)
+					assert(newFunc != null) //TODO error
+					assert(newFunc is in BoxFuncTemplate)
+					newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
+					assert(newFunc2 is in BoxFuncBody)
+
+					newFunc2.ParentScope = this&
+					newFunc2.SetName(ind)
+					newFunc2.Work()
+
+					PreVTableFuncs[ind].Push(newFunc2)
+				}
+			}
+		}
+		populatePoisons(cls2.Parents[^])
+	}
+}

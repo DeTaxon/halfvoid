@@ -1,0 +1,259 @@
+BoxLambdaHolder := class extend BoxExeObj
+{
+	tmpl := BoxFuncTemplateBody^
+	cleanType := Type^
+	captureTokens := Token^
+	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
+	{
+		captureTokens = capturesToken
+
+		attr := FuncAttributes
+		bPtr := Token^
+		itBody := body
+
+		if itBody.GetValue() != "{}"
+		{
+			itBody = new TokenSymbol(StringSpan("{}"),1)
+			dat := new TokenData
+			re := new TokenSymbol(StringSpan("return"),1)
+			itBody.Down = dat
+			dat.Down = re
+			re.Right = body
+			itBody.Line = body.Line
+			re.Line = body.Line
+			dat.Line = body.Line
+		}
+
+		if brackets.Down?.GetValue() == "()"
+		{
+			bPtr = brackets.Down
+		}else{
+			if not (brackets is TokenIndent)
+				brackets.EmitError("Unknown input object for lambda") //todo better error
+			
+			bPtr = new TokenSymbol(StringSpan("()"),1)
+			bPtr.Down = new TokenIndent(brackets->{TokenIndent^}.Value)
+		}
+
+		rToken := typeToken
+		if typeToken == null
+		{
+			rToken = new TokenIndent
+			attr.IsAutoResult = true
+			rToken->{TokenIndent^}.Value = StringSpan("void")
+		}
+
+		attr.IsLambda = true
+		
+		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,rToken,itBody)
+		tmpl.SetName(StringSpan("lambda"))
+
+		ObjType = GTypeNone
+	}
+	IsOneFunc := !() -> bool
+	{
+		return tmpl.IsOneFunc()
+	}
+	CreateOneFuncLambda := !() -> BoxExeObj^
+	{
+		return createLambd(() ==> {
+			return this.tmpl.GetOneFunc()->{BoxFuncBody^}
+		})
+	}
+	CreateLambda := virtual !(Type^ toType) -> BoxExeObj^
+	{
+		if not (toType is in TypePoint)
+			return null
+		if not (toType.Base is in TypeClass)
+			return null
+
+		cls := toType.Base->{TypeClass^}.ToClass
+		if cls.Constants == null or cls.Constants.Constants.Size() != 1
+			return null
+		cnst1 := cls.Constants.Constants[0]
+		if not (cnst1 is ConstType)
+			return null
+		cnstTyp := cnst1->{ConstType^}.Value
+		if not (cnstTyp is in TypePoint)
+			return null
+		if not (cnstTyp.Base is in TypeFunc)
+			return null
+		fTyp := cnstTyp.Base->{TypeFunc^}
+		return createLambd(() ==> {
+			cnsts := List.{BoxExeConstObj^}
+			return tmpl.CreateFunc(fTyp,cnsts)->{BoxFuncBody^}
+		})
+	}
+
+	createLambd := !(!()&->BoxFuncBody^ cb) -> BoxExeObj^
+	{
+		stackSize := UnitStack.Size()
+
+		newFunc := cb() //Vars captured
+
+		capturedVars := List.{Tuple.{StringSpan,BoxExeObj^,bool}}
+
+		if captureTokens != null
+		{
+			SyntaxCompress(captureTokens,PriorityData)
+
+			iterC := captureTokens.Down
+			while iterC != null
+			{
+				if iterC.GetValue() != ","
+				{
+					capName := StringSpan
+					capCall := BoxExeObj^
+					isRef := false
+
+					if iterC is TokenIndent
+					{
+						capName = iterC->{TokenIndent^}.Value
+
+						capCall = TryCheckGetParam(iterC)
+						if capCall == null
+							iterC.EmitError("Could not get captured value") //todo better error
+					}else if iterC.Down?.Right?.GetValue() == "&" and iterC.Down is TokenIndent
+					{
+						capName = iterC.Down->{TokenIndent^}.Value
+
+						capCall = TryCheckGetParam(iterC.Down)
+						if capCall == null
+							iterC.EmitError("Could not get captured value") //todo better error
+						isRef = true
+						capCall = new UnrefFuncCall(capCall)
+					}else if iterC.Down?.Right?.GetValue() == "=" and iterC.Down is TokenIndent
+					{
+						capName = iterC.Down->{TokenIndent^}.Value
+						capCall = TryGetExeCall(iterC.Down.Right.Right)
+						if capCall == null
+							iterC.EmitError("Can not get result of right of operator =")
+					}
+					capturedVars.Emplace(capName,capCall,isRef)
+				}
+				iterC = iterC.Right
+			}
+		}
+
+		resObj := new LambdaObject
+		resObj.baseFunc = CurrentFunc
+		resObj.lambdaFunc = newFunc
+
+		emptyConsts := List.{BoxExeConstObj^}
+
+		for it : capturedVars
+		{
+			resObj.CaptureObject(it.0,it.1,it.2,captureTokens)
+		}
+	
+		UnitStack.PushFront(resObj)
+		newFunc.ParseBodyForced()
+
+		
+		fncFnc := new FuncPointerParam(newFunc)
+		fncPtr := fncFnc.CreateCall()
+
+		getTupleVar := BoxExeObj^
+
+		tplType := CurrentFunc.GetCaptureTuple().ItType
+
+		if newFunc.CaptureUsed
+		{
+			getTupleMacro := new MacroParam(tplType.GetPoint(),false)
+			CurrentFunc.CapturedVarsGets.Push(getTupleMacro)
+			getTupleVar = getTupleMacro.CreateCall()
+		}else{
+			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
+		}
+
+		objs := CheckExeDownList
+		objs.Push(fncPtr)
+		objs.Push(getTupleVar)
+
+		lst := List.{BoxExeConstObj^}
+		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
+		
+		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
+		lst.Destroy()
+
+		step1 := createLambdaFunc.CreateCall(objs)
+		step2 := new UnrefFuncCall(step1)
+
+		cleanType = step1.GetType()
+
+		cnsts := List.{BoxExeConstObj^}
+		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
+		InternalsHatch.Await()
+		lambdaType := GCLambda.GetClass(cnsts).ItType
+		cnsts.Destroy()
+
+		assert(step1 is in BoxFuncCall)
+		st := step1->{BoxFuncCall^}
+		for it, i : newFunc.CapturedBySomeVars
+		{
+			st.ExtraWork.Push(it.2)
+		}
+
+		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
+
+		while UnitStack.Size() > stackSize
+			UnitStack.Pop()
+
+		return resObj
+	}
+	CanBeThisType := !(Type^ tp) -> bool
+	{ //TODO: check argument count and types
+		if not (tp is in TypePoint)
+			return false
+		if TypeFight(tp.Base,GCILambda.ItType) != GCILambda.ItType
+			return false
+		return true
+	}
+}
+
+LambdaObject := class extend PackedExeObj
+{
+	baseFunc := BoxFuncBody^
+	lambdaFunc := BoxFuncBody^
+
+	CaptureObject := !(StringSpan name,BoxExeObj^ obj,bool isRef,Token^ errorToken) -> MemVar^
+	{
+		emptyConsts := List.{BoxExeConstObj^}
+
+		locVar := FuncLocalParam^
+		baseFunc.EnterScope(() ==> {
+			locVar = new FuncLocalParam(obj.GetType())
+			CurrentFunc.regularVars.Push(locVar)
+			locVar.NotifyCaptureUse()
+		})
+
+		objs9 := CheckExeDownList
+		objs9.Push(locVar.CreateCall())
+		objs9.Push(obj)
+
+		itSet := BoxExeObj^
+		
+		if obj.GetType() is in TypePoint
+		{
+			itSet = GPointStoreTemplate.GetFunc(objs9,emptyConsts).CreateCall(objs9) 
+		}else{
+			itSet = CreateFuncCall(StringSpan("="),objs9,emptyConsts)
+			if itSet == null
+				errorToken.EmitError("Could not get operator = for capture variable")
+		}
+		objs9.Destroy()
+		preCalls.Push(itSet)
+
+
+		itMemVar := MemVar^
+		if isRef
+		{
+			itMemVar = new MemVarRef(name,locVar)
+		}else{
+			itMemVar = new MemVar(name,locVar)
+		}
+		lambdaFunc.CapturedManualy[name] = itMemVar
+		lambdaFunc.CaptureUsed = true
+		return itMemVar
+	}
+}

@@ -1,0 +1,456 @@
+
+Type := class {
+	MetaId := int
+	Base := Type^
+	AsPoint := Type^
+	ItHash := int
+	arrays := AVLMap.{int,Type^}
+
+	GetType := virtual !() -> string
+	{
+		return ""
+	}
+	GetPoint := virtual !() -> Type^
+	{
+		if AsPoint == null
+			AsPoint = new TypePoint(this&)
+		return AsPoint
+	}
+	GetArray := virtual !(int len) -> Type^
+	{
+		if arrays.Contain(len)
+			return arrays[len]
+		newEl := new TypeArr(this&,len)
+		arrays[len] = newEl
+		return newEl
+	}
+
+	GetAlign := virtual !() -> int
+	{
+		assert(false)
+		return 0
+	}
+	GetSize := virtual !() -> int
+	{
+		assert(false)
+		return 0
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		return false
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		//assert(false)
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(false)
+	}
+	MakeDebugRef := !() -> Type^
+	{
+		if GRefTypes.Contain(this&)
+			return GRefTypes[this&]
+		nRef := new TypeDebugRef(this&)
+		GRefTypes[this&] = nRef
+		return nRef
+	}
+	GetBADStr := !() -> char^
+	{
+		ec := TEchoStream
+		PrintDebugName(ec&)
+		//ec << ","
+		//PrintType(ec&)
+		return ec.Str()
+	}
+	IsMetaReady := virtual !() -> bool
+	{
+		return true
+	}
+	NotifyUse := virtual !() -> void
+	{
+	}
+}
+
+TypeDef := class
+{
+	ItName := StringSpan
+	ItType := Type^
+
+	this := !(char^ name, Type^ T) -> void
+	{
+		ItName = GetConstString(name)
+		ItType = T
+	}
+	GetValue := virtual !() -> string
+	{
+		return ":=type"
+	}
+}
+
+hashIdIter := int
+TypeStandard := class extend Type
+{
+	IRName := string
+	ItGoodName := char^
+	MetaInfo := char^
+	ItSize  := int
+	ItAlign := int
+
+	this := !(char^ Name,char^ goodName,char^ mName,  int siz, int Aln) -> void
+	{
+		IRName = Name 
+		ItGoodName = goodName
+		MetaInfo = mName
+		ItSize = siz
+		ItAlign = Aln
+
+		ItHash = hashIdIter
+		hashIdIter += 1
+
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "standart"
+	}
+	GetName := virtual !() -> string
+	{
+		return IRName
+	}
+	GetGoodName := virtual !() -> char^ { return ItGoodName }
+	GetAlign := virtual !() -> int
+	{
+		return ItAlign
+	}
+	GetSize := virtual !() -> int
+	{
+		return ItSize
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << IRName
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << ItGoodName
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		assert(DebugMode)
+		f^ << "!" << MetaId << " = " << MetaInfo << "\n"
+	}
+}
+
+TypeArr := class extend Type
+{
+	len := int
+	this := !(Type^ nBase,int si) -> void
+	{
+		Base = nBase
+		ItHash = nBase.ItHash*11
+		len = si
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "array"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return Base.GetAlign()
+	}
+	GetSize := virtual !() -> int
+	{
+		return Base.GetSize()*len
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		return true
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "["
+		f^ << len
+		f^ << " x "
+		Base.PrintType(f)
+		f^ << "]"
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintDebugName(f)
+		f^ << "[" << len << "]"
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		nId := GetNewId()
+		f^ << "!" << nId << " = !DISubrange(count: " << len << ")\n"
+		f^ << "!" << MetaId << " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" << Base.MetaId << ", size: " << GetSize()*8 << ", elements: !{!" << nId << "}" << ")\n"
+	}
+	NotifyUse := virtual !() -> void
+	{
+		Base.NotifyUse()
+	}
+}
+
+TypePoint := class extend Type
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+		ItHash = nBase.ItHash*7
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "point"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return GArchBitSize div 8
+	}
+	GetSize := virtual !() -> int
+	{
+		return GArchBitSize div 8
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintType(f)
+		f^ << "*"
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		Base.PrintDebugName(f)
+		f^ << "^"
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
+	}
+	NotifyUse := virtual !() -> void
+	{
+		Base.NotifyUse()
+	}
+}
+TypeVoidPoint := class extend TypePoint
+{
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "i8*"
+	}
+}
+
+GRefTypes := AVLMap.{Type^,Type^}
+TypeDebugRef := class extend Type //FO
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	PrintMeta := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "!" << MetaId << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << Base.MetaId <<", size: "<< GArchBitSize << ")\n"
+	}
+}
+
+TypeTable := Type^[30]
+DefsTable := TypeDef^[30]
+
+GTypeNone := Type^
+GTypeBool := Type^
+GTypeDouble := Type^
+GTypeFloat := Type^
+GTypeHalf := Type^
+GTypeU8 := Type^
+GTypeChar := Type^
+GTypeInt := Type^
+GTypeU64 := Type^
+GTypeS64 := Type^
+GTypeSizeT := Type^
+GTypeRange := Type^
+GTypeVoid := Type^
+GTypeVoidP := Type^
+GTypeString := Type^
+GTypeVec4f := Type^
+GTypeQuantf := Type^
+GTypeVec3f := Type^
+GTypeVec2f := Type^
+
+
+ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
+{
+	for i : 8
+	{
+		cb(TypeTable[i],i >= 4)
+	}
+}
+GetSignedInt := !(Type^ inInt) -> Type^
+{
+	for i : 8
+	{
+		if TypeTable[i] == inInt
+		{
+			if i >= 4
+			{
+				return inInt
+			}else{
+				return TypeTable[i+4]
+			}
+		}
+	}
+	return null
+}
+ForEachFloatType := !(!(Type^)&-> void cb) -> void
+{
+	cb(GTypeFloat)
+	cb(GTypeDouble)
+}
+
+IsComplexType := !(Type^ obj) -> bool
+{
+	if obj is TypeClass
+		return true
+	if obj is TypeArr
+		return true
+	return false
+}
+IsUInt := !(Type^ obj) -> bool
+{
+	for i : 4
+		if TypeTable[i] == obj
+			return true
+	return false
+}
+IsInt := !(Type^ obj) -> bool
+{
+	for i : 8
+		if TypeTable[i] == obj
+			return true
+	return false
+}
+IsFloat := !(Type^ obj) -> bool
+{
+	if obj == GTypeFloat return true
+	if obj == GTypeDouble return true
+	return false
+}
+
+CreateStandardTypes := !() -> void
+{	
+	//u
+	TypeTable[0] = new TypeStandard("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)
+	TypeTable[1] = new TypeStandard("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)
+	TypeTable[2] = new TypeStandard("i32","u32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)
+	TypeTable[3] = new TypeStandard("i64","u64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
+
+	//s
+	TypeTable[4] = new TypeStandard("i8","s8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
+	TypeTable[5] = new TypeStandard("i16","s16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)
+	TypeTable[6] = new TypeStandard("i32","s32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
+	TypeTable[7] = new TypeStandard("i64","s64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
+
+	TypeTable[8] = new TypeStandard("i1","bool","!DIBasicType(name: \"boolean\", size: 8, align: 1,encoding: DW_ATE_boolean)",1,1)
+
+	TypeTable[9] = new TypeStandard("float","float","!DIBasicType(name: \"float\", size: 32, align: 32,encoding: DW_ATE_float)",4,4)
+	TypeTable[10] = new TypeStandard("double","double","!DIBasicType(name: \"double\", size: 64, align: 64,encoding: DW_ATE_float)",8,8)
+	TypeTable[11] = new TypeStandard("void","void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
+
+	TypeTable[15] = new TypeStandard("%OpaqType","opaque","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
+
+	TypeTable[17] = new TypeStandard("%Vec4f","vec4f","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+	TypeTable[18] = new TypeStandard("%Vec4f","quantf","!DIBasicType(name: \"vec4f\", size: 32, align: 128,encoding: DW_ATE_float)",16,16)
+
+	TypeTable[19] = new TypeStandard("%Vec3f","vec3f","!DIBasicType(name: \"vec3f\", size: 24, align: 128,encoding: DW_ATE_float)",12,16)
+	TypeTable[20] = new TypeStandard("%Vec2f","vec2f","!DIBasicType(name: \"vec2f\", size: 16, align: 128,encoding: DW_ATE_float)",8,16)
+
+	TypeTable[21] = new TypeStandard("i16","half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
+
+	TypeTable[22] = new TypeStandard("void","void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
+
+	GTypeNone = TypeTable[22]
+	GTypeBool =   TypeTable[8]
+	GTypeHalf =   TypeTable[21]
+	GTypeFloat =  TypeTable[9]
+	GTypeDouble = TypeTable[10]
+	GTypeU8 =    TypeTable[0]
+	GTypeChar = TypeTable[0]
+	GTypeInt =    TypeTable[6]
+	GTypeU64 =    TypeTable[3]
+	GTypeS64 =    TypeTable[7]
+	GTypeSizeT =    TypeTable[3]
+	GTypeRange =  TypeTable[13]
+	GTypeVoid =   TypeTable[11]
+	GTypeString = TypeTable[12]
+	GTypeVoidP =  GTypeVoid.GetPoint()
+	GTypeVec4f = TypeTable[17]
+	GTypeQuantf = TypeTable[18]
+	GTypeVec3f = TypeTable[19]
+	GTypeVec2f = TypeTable[20]
+
+	GTypeVoidP->SetType(TypeVoidPoint)
+
+	DefsTable[0] = new TypeDef("u8",TypeTable[0])
+	DefsTable[1] = new TypeDef("u16",TypeTable[1])
+	DefsTable[2] = new TypeDef("u32",TypeTable[2])
+	DefsTable[3] = new TypeDef("u64",TypeTable[3])
+
+	DefsTable[4] = new TypeDef("s8",TypeTable[4])
+	DefsTable[5] = new TypeDef("s16",TypeTable[5])
+	DefsTable[6] = new TypeDef("s32",TypeTable[6])
+	DefsTable[7] = new TypeDef("s64",TypeTable[7])
+
+	DefsTable[8] = new TypeDef("bool",TypeTable[8])
+	DefsTable[9] = new TypeDef("char",TypeTable[0])
+	DefsTable[10] = new TypeDef("short",TypeTable[5])
+	DefsTable[11] = new TypeDef("int",TypeTable[6])
+	DefsTable[12] = new TypeDef("long",TypeTable[7])
+	DefsTable[13] = new TypeDef("float",TypeTable[9])
+	DefsTable[14] = new TypeDef("double",TypeTable[10])
+
+	DefsTable[15] = new TypeDef("void",TypeTable[11])
+	
+	DefsTable[16] = new TypeDef("string",TypeTable[12])
+
+	DefsTable[17] = new TypeDef("opaque",TypeTable[15])
+
+	DefsTable[18] = new TypeDef("range",TypeTable[13])
+	DefsTable[19] = new TypeDef("rangef",TypeTable[14])
+
+	DefsTable[20] = new TypeDef("vec4f",TypeTable[17])
+	DefsTable[21] = new TypeDef("quantf",TypeTable[18])
+
+	DefsTable[22] = new TypeDef("size_t",TypeTable[3])
+	DefsTable[23] = new TypeDef("half",TypeTable[21])
+
+	DefsTable[24] = new TypeDef("vec3f",GTypeVec3f)
+	DefsTable[25] = new TypeDef("vec2f",GTypeVec2f)
+}
+

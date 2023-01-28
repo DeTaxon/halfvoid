@@ -1,0 +1,92 @@
+
+BoxFuncTemplate := class extend BoxUnit
+{
+	AllFuncs := AVLMap.{Type^,List.{BoxFunc^}}
+	FuncConstants := AVLMap.{BoxFunc^,List.{BoxExeConstObj^}}
+	ItCodeSpace := BoxCodeSpace^
+
+
+	GetDefaultValuesCount := virtual !() -> int { return 0 }
+
+	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	{
+		fTyp := ToFuncType(objs,consts)
+		if fTyp == null
+			return CmpNoExchange
+		return CheckPriority(fTyp,objs,consts)
+	}
+	GetFunc := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		fTyp := ToFuncType(objs,consts)
+
+		pri := CheckPriority(fTyp,objs,consts)
+
+		if pri == CmpNoExchange
+		{
+			assert(false)
+			return null
+		}
+		return GetFuncByType(fTyp,consts)
+	}
+
+	GetFuncByType := virtual !(TypeFunc^ fTyp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		if AllFuncs.Contain(fTyp)
+		{
+			for srchF : AllFuncs[fTyp]
+			{
+				if IsEqConstants(consts,FuncConstants[srchF])
+					return srchF
+			}
+		}
+
+		newFunc := CreateFunc(fTyp,consts)
+		AllFuncs[fTyp].Push(newFunc)
+
+		cns := FuncConstants[newFunc]&
+		cns.Push(consts[^])
+
+		return newFunc
+	}
+	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		tps := Type^[100] //TODO unconsts?
+		refs := bool[100]
+
+		for ob,i : objs
+		{
+			tps[i] = ob.GetType()
+			if IsComplexType(tps[i])
+				refs[i] = true
+		}
+
+		return GetFuncType(objs.Size(),tps[0]&, refs[0]&,GTypeVoid,false,false)
+	}
+	CheckPriority := virtual !(TypeFunc^ tp,CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	{
+		return CmpFuncPriority(tp,objs,GetDefaultValuesCount())
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		assert(false)
+		return null
+	}
+
+	IsOneFunc := virtual !() -> bool
+	{
+		return false
+	}
+	GetOneFunc := virtual !() -> BoxFunc^
+	{
+		assert(false)
+		return null
+	}
+	SetName := virtual !(StringSpan name) -> void
+	{
+	}
+	CreateFuncCall := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+	{
+		fnc := GetFunc(objs,consts)
+		return fnc.CreateCall(objs)
+	}
+}

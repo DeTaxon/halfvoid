@@ -1,0 +1,24 @@
+TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.Right? is TokenSuffix
+	{
+	}else{
+		return null
+	}
+
+	downVal := TryGetExeCall(itm.Down)
+	if downVal == null
+		return null
+
+	suffixName := itm.Down.Right->{TokenSuffix^}.Value
+	
+	stTemp := "suffix "sbt << suffixName
+
+	st := GetConstString(stTemp.Str())
+	objs := CheckExeDownList
+	objs.Push(downVal)
+	resFunc := CreateFuncCall(st,objs)
+	if resFunc == null
+		itm.EmitError("suffix call not found")
+	return resFunc
+}

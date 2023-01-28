@@ -1,0 +1,59 @@
+BoxUnit := class
+{
+	Work := virtual !() -> void
+	{
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+	}
+	NotifyMemUse := virtual !() -> void
+	{
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+	}
+
+	IsConst := virtual false
+
+
+
+	GetFileScope := virtual !() -> BoxFile^
+	{
+		iter := GetParentScope()
+
+		while iter != null
+		{
+			if iter is BoxFile
+				return iter->{BoxFile^}
+			iter = iter.GetParentScope()
+		}
+		assert(false)
+		return null
+	}
+
+	GetParentScope := virtual !() -> BoxUnit^
+	{
+		return null
+	}
+	ScopePutConstants := !() -> void
+	{
+		next := GetParentScope()
+		if next != null
+			next.ScopePutConstants()
+		PutItConstants()
+	}
+	PutItConstants := virtual !() -> void
+	{
+	}
+
+	GetQLabel := virtual !() -> BoxLabel^ { return null}
+}
+
+IsGCPtr := !(Type^ tp) -> bool
+{
+	return tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
+}
+IsGCType := !(Type^ tp) -> bool
+{
+	return tp is in TypeClass and TypeFight(tp,GCType) == GCType
+}

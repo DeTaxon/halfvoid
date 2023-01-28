@@ -1,0 +1,37 @@
+TryGetTemplateCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down?.GetValue() == "!" and itm.Down.Right.GetValue() == "{}"
+	{}else { return null}
+
+	SyntaxCompress(itm.Down.Right,PriorityData)
+
+	itr := itm.Down.Right.Down
+
+	objs := CheckExeDownList
+
+	while itr != null
+	{
+		if itr.GetValue() != ","
+		{
+			dObj := TryGetExeCall(itr)
+			if dObj == null
+				return null
+			objs.Push(dObj)
+		}
+		itr = itr.Right
+	}
+
+	tps := List.{Type^}
+	tps.Push(objs[^].GetType())
+	tplType := GetTuple(tps).ItType
+	tps.Destroy()
+
+	cnsts := List.{BoxExeConstObj^}
+	cnsts.Push(GetConstType(tplType))
+
+	InternalsHatch.Await()
+	itFunc := TemplateInternalCreateTuple.GetFunc(objs,cnsts)
+	cnsts.Destroy()
+
+	return itFunc.CreateCall(objs)
+}

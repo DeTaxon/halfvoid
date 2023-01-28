@@ -1,0 +1,370 @@
+
+CodeFiles := List.{BoxFile^}
+CodeSpaces := AVLMap.{int,BoxCodeSpace}
+
+PriorityData := PriorityBagOld^
+LexHVFileRoot := PriorityBagOld^
+LexHVInputVars := PriorityBagOld^
+
+loadLex := !(char^ filName,PriorityBagOld^^ res) -> void 
+{
+	pri := gRepo.GetFile(filName)
+	if pri == null
+	{
+		printf("%s not found\n",filName)
+		throw new Exception("intput error")
+	}
+	if not pri.IsVirtual()
+	{
+		printf("%s loaded from outsize\n",filName)
+	}
+	res^ = new PriorityBagOld(pri.Map(),pri.Size())
+	pri.Unmap()
+}
+
+GArchBitSize := 64
+
+GDebugTypePrintMeta := List.{Type^}
+
+GFuncsInProgress := List.{BoxFunc^}
+GClassesInProgress := List.{BoxClass^}
+
+AllClasses := List.{BoxClass^}
+AllFunctions := List.{BoxFunc^}
+
+targetLinux := false
+targetWindows := false
+
+OutputFile := char^
+main := !(char^[] args) -> int
+{
+
+	files := new List.{char^}
+
+	targetLinux = true
+	targetWindows = false
+
+	osHVFile := ".hv.posix"
+	osCLIBFile := ".clib.posix"
+
+	i := 1
+	while i < args.Size()
+	{
+		switch args[i]
+		{
+			case "-linux"
+				targetLinux = true
+				targetWindows = false
+				osHVFile = ".hv.posix"
+				osCLIBFile = ".clib.posix"
+			case "-win32"
+				targetLinux = false
+				targetWindows = true
+				osHVFile = ".hv.win32"
+				osCLIBFile = ".clib.win32"
+			case "-g"
+				DebugMode = true
+			case "-o"
+				OutputFile = args[i+1] //TODO error check
+				i += 1
+			case void
+				if StringSpan(args[i][0..2]) == "-C"
+				{
+					num := StrToInt(args[i][2..0]) //TODO: check for num and memory
+					FSReadFolder(StringSpan(args[i+1]),true,zFil ==> {
+						nm := zFil.GetName()
+						if nm.End == ".hv" or nm.End == osHVFile
+						{
+							fObj := new BoxFile(zFil)
+							CodeFiles.Push(fObj)
+							CodeSpaces[num].Files.Push(fObj)
+						}else if nm.End == ".clib" or nm.End == osCLIBFile
+						{
+							spc := CodeSpaces[num]&
+							spc.Modules.Push(new CLib(zFil))
+						}
+					})
+					i += 1
+				}else if args[i] == "--vk" {
+					i += 1
+					CodeSpaces[-1].Modules.Push(new ModuleVulkan(args[i]))
+				}else{
+					file := gRepo.GetFile(args[i])
+					fileBox := new BoxFile(file)
+					CodeFiles.Push(fileBox)
+					CodeSpaces[2000].Files.Push(fileBox)
+				}
+		}
+		i += 1
+	}
+
+	GetFuncMangle(StringSpan("main"))
+	
+	loadLex("Priority2.pr",PriorityData&)
+	loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
+	loadLex("LexHVInputVars2.pr",LexHVInputVars&)
+	
+	HVOperators.Insert(StringSpan(PriorityData.Opers[^]))
+	
+	mac := gRepo.GetFile("Mach.m")
+
+	if mac == null //todo: mac is emiting exception?
+	{
+		printf("File Mach.m not fount")
+		return -1
+	}
+
+	LoadLexMachine(mac.Map(),mac.Size()) 
+
+	CreateStandardTypes()
+	GBoolTrue = new BoxExeBool(true)
+	GBoolFalse = new BoxExeBool(false)
+	GObjNone = new BoxExeNone()
+	GObjNull = new BoxExeNull()
+	GObjVoid = new BoxExeVoid()
+	CreateBuiltins()
+	ExchangeInit()
+	TupleInit()
+	PreInitTaskLocal()
+	cuId = GetNewId()
+
+	for spc : CodeSpaces
+	{
+		spc.Modules[^].Work()
+
+		GDebugFileId = spc.Files[^].fileId //todo, remove it, is is for debug id
+	}
+
+	for fil : CodeFiles
+	{
+		fil2 := fil
+		TSpawnTask(() ==> {
+			fil2.Parse()
+		})
+	}
+
+	for fil : CodeFiles
+	{
+		fil.loaded.Await()
+	}
+
+	InitInternals()
+	SubWork(() ==> {InitInternalsGC() })
+	InitTaskLocal()
+	InitLambda()
+	RecheckAppends()
+	GParsedAllFiles.Emit()
+
+	mainFunc := intGetFunc("internalHVEntryPoint")
+	assert(mainFunc != null)
+	mainFunc.ParseBody()
+	mainFunc.WaitReadyState()
+	mainFunc.ForceOutputName(StringSpan("main"))
+
+	while GClassesInProgress.Size() != 0
+	{
+		GClassesInProgress[0].AwaitReadyState()
+		GClassesInProgress.Pop()
+	}
+
+	while GFuncsInProgress.Size() != 0
+	{
+		GFuncsInProgress[0].WaitReadyState()
+		GFuncsInProgress.Pop()
+	}
+
+	for it : CodeSpaces
+	{
+		for libs : it.Modules
+			libs.CreateInitPart()
+	}
+
+	while GClassesInProgress.Size() != 0
+	{
+		GClassesInProgress[0].AwaitReadyState()
+		GClassesInProgress.Pop()
+	}
+
+	while GFuncsInProgress.Size() != 0
+	{
+		GFuncsInProgress[0].WaitReadyState()
+		GFuncsInProgress.Pop()
+	}
+
+	printf("good to go\n")
+
+	outFile := new TFile(OutputFile,"wb")
+
+	PrintDeclares(outFile)
+	if DebugMode
+		PrintDebugMeta(outFile)
+
+	AllClasses[^].PrintAsType(outFile)
+	for spc : CodeSpaces
+	{
+		for fil : spc.Files
+		{
+			GDebugFileId = fil.fileId
+			fil.AllClasses[^].PrintAsType(outFile)
+		}
+	}
+	GlobalVars[^].PrintCode(outFile)
+	for spc : CodeSpaces
+	{
+		spc.Globals[^][^].PrintCode(outFile)
+		for fil : spc.Files
+		{
+			fil.PrintCode(outFile)
+		}
+	}
+
+	for st : GlobalStrings
+	{
+		st.PrintCode(outFile)
+	}
+	PrintEmbeddedFiles(outFile)
+	for spc : CodeSpaces
+	{
+		for lb : spc.Modules
+		{	
+			lb.PrintCode(outFile)
+		}
+		for fil : spc.Files
+		{
+			GDebugFileId = fil.fileId
+		}
+	}
+	AllFunctions[^].PrintCode(outFile)
+
+	while GDebugTypePrintMeta.Size() != 0
+	{
+		GDebugTypePrintMeta[0].PrintMeta(outFile)
+		GDebugTypePrintMeta.Pop()
+	}
+	printf("done\n")
+
+	return 0
+}
+PrintDeclares := !(TIOStream^ f) -> void
+{
+	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
+	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+	f^ << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
+	f^ << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
+	f^ << "declare i32 @setjmp(i8* %abc) #1\n"
+	f^ << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+	f^ << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
+	f^ << "declare void @llvm.debugtrap() #0\n"
+	f^ << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
+	f^ << "declare i8* @llvm.stacksave() #1\n"
+	f^ << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)\n"
+	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)\n"
+	f^ << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
+	f^ << "attributes #1 = { nounwind }\n"
+	f^ << "attributes #2 = { nounwind readnone}\n"
+	f^ << "attributes #3 = { nounwind noreturn}\n"
+	f^ << "%OpaqType = type {i1}\n"
+	f^ << "%Vec4f = type <4 x float>\n"
+	f^ << "%Vec3f = type <3 x float>\n"
+	f^ << "%Vec2f = type <2 x float>\n"
+
+	f^ << "declare void @llvm.va_start(i8* %a)\n"
+	f^ << "declare void @llvm.va_end(i8* %a)\n"
+	f^ << "declare void @llvm.va_copy(i8* %a,i8* %b)\n"
+
+	f^ << "declare void @llvm.memset.p0i8.i64(i8* %dest, i8 %val,i64 %len, i1 %isvolatile)\n"
+	
+}
+
+cuId := int
+PrintDebugMeta := !(TIOStream^ fil) -> void
+{
+	globVar := GetNewId()
+
+	fileId := 0
+
+	for spc : CodeSpaces
+	{
+		for fil : spc.Files
+		{
+			fileId = fil.fileId
+		}
+		if fileId != 0
+			break
+	}
+
+
+	fil^ << "!llvm.dbg.cu = !{!"<< cuId <<"}\n"
+	fil^ << "!" << cuId << "= distinct !DICompileUnit(producer: \"max\", isOptimized: false, runtimeVersion: 0,emissionKind: FullDebug, enums: !{},globals: !"<< globVar <<", language: DW_LANG_C99,file: !"<< fileId <<")\n"
+
+	nm := GetNewId()
+	fil^ << "!" << nm << " = !{!\"Taxon's stupid compiler\"}\n" 
+	fil^ << "!llvm.ident = !{!" << nm <<"}\n"
+	fil^ << "declare void @llvm.dbg.declare(metadata, metadata, metadata)\n"
+	fil^ << "declare void @llvm.dbg.value(metadata, metadata, metadata)\n"
+	fil^ << "declare void @llvm.dbg.addr(metadata, metadata, metadata)\n"
+
+	dwrdV := GetNewId() fil^ << "!" << dwrdV << " = !{i32 2, !\"Dwarf Version\", i32 4}\n"
+	DbgInf := GetNewId() fil^ << "!" << DbgInf << " = !{i32 2, !\"Debug Info Version\",i32 3}\n"
+	WchSize := GetNewId() fil^ << "!" << WchSize << " = !{i32 1, !\"wchar_size\",i32 4}\n"
+	PicLevel := GetNewId() fil^ << "!" << PicLevel << " = !{i32 7, !\"PIC Level\", i32 2}\n"
+	PieLevel := GetNewId() fil^ << "!" << PieLevel << " = !{i32 7, !\"PIE Level\", i32 2}\n"
+	fil^ << "!llvm.module.flags = !{!" << dwrdV << ",!" << DbgInf << ",!" << WchSize << ",!" << PicLevel << ",!" << PieLevel << "}\n"
+
+	fil^ << "!" << globVar << " = !{"
+	fil^ << "}\n"
+
+
+	//if DebugPretty.Size() != 0
+	//{
+	//	fattyPrint := (char^ pStr) ==> {
+	//		miniBuff := char[1024]
+	//		c := 0
+	//		i := 0
+	//		while pStr[i] != 0
+	//		{
+	//			if pStr[i] in "\"\n"
+	//			{
+	//				switch pStr[i]
+	//				{
+	//					case '\"'
+	//						miniBuff[c++] = '\\'
+	//						miniBuff[c++] = '5'
+	//						miniBuff[c++] = 'C'
+	//						miniBuff[c++] = '\\'
+	//						miniBuff[c++] = '2'
+	//						miniBuff[c++] = '2'
+	//					case '\n'
+	//						miniBuff[c++] = '\\'
+	//						miniBuff[c++] = '5'
+	//						miniBuff[c++] = 'C'
+	//				}
+	//				if pStr[i] == '\n' and pStr[i+1] == 0
+	//				{
+	//					c -= 3
+	//				}
+	//			}else{
+	//				miniBuff[c++] = pStr[i]
+	//			}
+	//			i += 1
+	//		}
+	//		miniBuff[c] = 0
+	//		fil << miniBuff[0]&
+	//	}
+	//	fil << "module asm \".pushsection \\22.debug_gdb_scripts\\22, \\22MS\\22, @progbits,1\"\n"
+	//	fil << "module asm \".byte 4\"\n"
+	//	for DebugPretty
+	//	{
+	//		fil << "module asm \".asciz \\22"
+	//		fattyPrint(it)
+	//		fil << "\\5Cn\\22\"\n"
+	//	}
+	//	fil << "module asm \".byte 0\"\n"
+	//	fil << "module asm \".popsection\"\n"
+	//}
+}

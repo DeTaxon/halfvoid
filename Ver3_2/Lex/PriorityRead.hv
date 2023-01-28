@@ -1,0 +1,127 @@
+
+MiniMachineNodeOld := class 
+{
+	WhatNext := AVLMap.{StringSpan,MiniMachineNodeOld^}
+	IsTerm := bool
+
+	this := !() -> void
+	{
+		WhatNext."this"()
+		IsTerm = false
+	}
+	// GetNext := !(string item) -> MiniMachineNodeOld^
+	// {
+	// 	inIt := WhatNext.TryFind(item)
+	// 	if inIt != null return inIt^
+	// 	return null
+	// }
+}
+
+LexMachineInfo := class
+{
+	Machine := MiniMachineNodeOld^
+	RawLine := char^
+
+	uniqOnly := bool
+	uniqs := AVLSet.{char^}^
+
+	uniqPos := int
+
+	this := !(MiniMachineNodeOld^ inM,char^ rLine) -> void
+	{
+		Machine = inM
+		RawLine = rLine
+		uniqPos = -1
+	}
+
+	"=" := !(LexMachineInfo inp) -> void
+	{
+		assert(false) //TODO remove
+	}
+}
+PriorityBagOld := class
+{
+	Opers := AVLSet.{char^}
+	Lines := List.{LexMachineInfo}
+
+	this := !(char^ ptrChar, int mapSize) -> void
+	{		
+		fileSpan := StringSpan(ptrChar,mapSize)
+
+		reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
+
+		fileSpan.DivideStr("\n",ln ==> {
+			if ln.Size() == 0
+				return void
+			if ln[0] == '#'
+			{
+				Lines.Emplace(null,ln.Str())
+			}else{
+				newMach := new MiniMachineNodeOld
+
+				uns := new AVLSet.{char^}
+				lineUniq := true
+
+				uPos := -2
+
+				ln.DivideStr(reg,word ==> {
+					rawWord := word[1..-1]
+					
+					wordContainUniq := false
+
+					rl := HybridQueue.{StringSpan,30}
+					defer rl.Clear()
+
+					rawWord.DivideStr(" ",x ==> { rl.Push(x)})
+
+					addRule := (MiniMachineNodeOld^ machIter , int i) ==>
+					{
+						stW := rl[i].Str()
+						switch stW
+						{
+							case "d" stW = "~d"
+							case "s" stW = "~suffix"
+							case "@" stW = "~{}type"
+							case "()" case "[]" case "{}"
+							case void
+								switch uPos
+								{
+									case -2 uPos = i
+									case -1
+									case i
+									case void
+										uPos = -1
+								}
+
+								wordContainUniq = true
+								uns.Insert(stW)
+								Opers.Insert(stW)
+						}
+						next := ref machIter.WhatNext[GetConstString(stW)]
+						if next == null
+							next = new MiniMachineNodeOld
+						if i == rl.Size() - 1
+						{
+							next.IsTerm = true
+						}else{
+							addRule(next,i+1)
+						}
+					}
+					addRule(newMach,0)
+
+					if not wordContainUniq
+						lineUniq = false
+				})
+
+				if uPos == -2
+					uPos = -1
+
+				Lines.Emplace(newMach,ln.Str())
+				newLine := ref Lines.Back()
+				newLine.uniqs = uns
+				newLine.uniqOnly = lineUniq
+				newLine.uniqPos = uPos
+			}
+		})
+	}
+}

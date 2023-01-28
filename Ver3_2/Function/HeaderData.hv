@@ -1,0 +1,174 @@
+FuncTemplateInput := class
+{
+	Name := StringSpan
+	ItType := Type^
+	IsRef := bool
+	ItToken := Token^
+	IsTType := bool
+
+	this := !(StringSpan nm, Type^ typ, bool ir, Token^ tk) -> void
+	{
+		Name = nm
+		ItType = typ
+		IsRef = ir
+		ItToken = tk
+		if tk != null
+			IsTType = ContainTemplateObj(tk)
+	}
+}
+
+FuncTemplateConstant := class
+{
+	ItToken := Token^
+	Value := BoxUnit^
+
+	this := !(Token^ tok, BoxUnit^ val) -> void
+	{
+		ItToken = tok
+		Value = val
+	}
+}
+
+FunctionHeaderInfo := class
+{
+	Types := HybridQueue.{FuncTemplateInput,10}
+	DefaultValues := AVLMap.{int,Token^}
+	ResultType := FuncTemplateInput
+	IsAutoResult := bool
+	IsVargs := bool
+
+	IsVariadic := bool
+	VariadicName := StringSpan
+
+	ParseHeader := !(Token^ brackets, Token^ resTyp) -> void
+	{
+		SyntaxCompress(brackets,LexHVInputVars)
+
+		bag := HybridQueue.{Token^,10}
+		defer bag.Destroy()
+
+		iter := brackets.Down
+
+		needCheckResult := false
+		ResultType.ItToken = resTyp
+		if resTyp != null
+		{
+			try
+			{
+				resToken2 := resTyp
+				if resToken2.GetValue() == "ref"
+				{
+					ResultType.IsRef = true
+					resToken2 = resToken2.Right
+				}
+				ResultType.ItType = ParseType(resToken2)
+			}catch(IException^ r) {}
+		}
+		
+		checkBag := () ==> {
+			if bag.Size() == 1
+			{
+				assert(bag[0] is TokenIndent)
+				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+			}else if bag.Size() >= 2 {
+				if bag[1].GetValue() == "..."
+				{
+					if not (bag[0] is TokenIndent)
+						bag[0].EmitError("Left of ... must be a name for variable")
+					IsVariadic = true
+					VariadicName = bag[0]->{TokenIndent^}.Value
+				}else{
+					isRef := false
+					indItm := bag[1]
+					if indItm.GetValue() == "&"
+					{
+						isRef = true
+						if bag.Size() >= 3
+						{
+							indItm = bag[2]
+						}
+					}
+					if not (indItm is TokenIndent)
+						indItm.EmitError("Incorrect name for input variable")
+					typ := ParseType(bag[0])
+					name := indItm->{TokenIndent^}.Value
+					if typ != null and IsComplexType(typ)
+						isRef = true
+					
+					if bag.Size() >= 3
+					{
+						c := bag.Size() - 1
+						while c > 0
+						{
+							if bag[c].GetValue() == "="
+								break
+							c -= 1
+						}
+						if c > 0
+						{
+							if c == bag.Size() - 1
+								bag[c].EmitError("Bad function header")
+							if bag[c+1].GetValue() == "static"
+							{
+								isRef = true
+							}
+							DefaultValues[Types.Size()] = bag[c+1]
+						}
+					}
+
+					Types.Emplace(name,typ,isRef,bag[0])
+				}
+			}else{
+				assert(false)
+			}
+		}
+		while iter != null
+		{
+			if iter.GetValue() == ","
+			{
+				checkBag()
+				bag.Clear()
+			}else{
+				bag.Push(iter)
+			}
+			iter = iter.Right
+		}
+		if bag.Size() != 0
+			checkBag()
+	}
+	IsTypeExist := !(int i) -> Type^
+	{
+		assert(i < Types.Size())
+		return Types[i].ItType != null
+	}
+	IsOneFunc := !() -> bool
+	{
+		if IsVariadic
+			return false
+		for it : Types
+		{
+			if it.ItType == null
+				return false
+		}
+		if not IsAutoResult and ResultType.ItType == null //todo? functions with auto return type
+			return false
+		return true
+	}
+	CreateFuncType := !() -> TypeFunc^
+	{
+		assert(IsOneFunc())
+
+		fTyp := Type^[100]
+		isRef := bool[100]
+		for it,i : Types
+		{
+			fTyp[i] = it.ItType
+			isRef[i] = it.IsRef
+		}
+		resType := ResultType.ItType
+		if resType == null
+			resType = GTypeVoid
+
+		return GetFuncType(Types.Size(),fTyp[0]&,isRef[0]&,ResultType.ItType,ResultType.IsRef,IsVargs)
+	}
+}

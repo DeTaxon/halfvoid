@@ -1,0 +1,11 @@
+
+"in" := !(char^[] strs, char^ value) -> bool
+{
+	for it : strs
+	{
+		if strcmp(it,value) == 0
+			return true
+	}
+	return false
+}
+

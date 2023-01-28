@@ -1,0 +1,156 @@
+TryExePrime := !(Token^ itm) -> BoxExeObj^
+{
+	if itm is TokenString
+	{
+		tkn := itm->{TokenString^}
+		return GetExeString(tkn.Value)
+	}
+	if itm is TokenInt
+	{
+		val := itm->{TokenInt^}.Parsed
+		return GetExeInt(val)
+	}
+	if itm is TokenDouble
+	{	
+		return new BoxExeDouble(itm->{TokenDouble^}.Parsed)
+	}
+}
+
+GlobalInts := AVLMap.{int,BoxExeInt^}
+GetExeInt := !(int val) -> BoxExeInt^
+{
+	if GlobalInts.Contain(val)
+		return GlobalInts[val]
+	newObj := new BoxExeInt(val)
+	GlobalInts[val] = newObj
+	return newObj
+}
+
+GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
+strIdIterator := 1
+GetExeString := !(StringSpan str) -> BoxExeString^
+{
+	if GlobalStrings.Contain(str)
+		return GlobalStrings[str]
+	newVal := new BoxExeString(str)
+	GlobalStrings[str] = newVal
+	return newVal
+}
+
+
+GBoolTrue := BoxExeBool^
+GBoolFalse := BoxExeBool^
+BoxExeBool := class extend BoxExeConstObj
+{
+	val := bool
+	this := !(bool nVal) -> void
+	{
+		val = nVal
+		ObjType = GTypeBool
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		if val 
+		{
+			f^ << "1"
+		}else{
+			f^ << "0"
+		}
+	}
+
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		if val
+		{
+			f^ << "1"
+		}else{
+			f^ << "0"
+		}
+	}
+}
+BoxExeInt := class extend BoxExeConstObj
+{
+	Value := int
+	this := !(int nVal) -> void
+	{
+		Value = nVal
+		ObjType = GTypeInt
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << Value
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		f^ << Value
+		//ObjType.PrintType(f)
+		//f^ << " " << Value
+	}
+}
+BoxExeDouble := class extend BoxExeConstObj
+{
+	val := double
+	this := !(double v) -> void
+	{
+		val = v
+		ObjType = GTypeDouble
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		f^ << val
+	}
+}
+
+BoxExeString := class extend BoxExeConstObj
+{
+	strId := int
+	val := StringSpan
+	this := !(StringSpan dat) -> void
+	{
+		strId = strIdIterator
+		strIdIterator += 1
+		val = dat
+		ObjType = GTypeChar.GetPoint()
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "@Str" << strId << " = constant [" << val.Size() +  1 << " x i8] c\""
+		k := 0
+		SomeBuf := char[2]
+		SomeBuf[1] = 0
+		while val[k] != 0
+		{
+			SomeBuf[0] = val[k]
+			if val[k] == "\n"[0]
+			{
+				f^ << "\\0A"
+			}else
+			{
+				if val[k] == "\""[0]
+				{
+					f^ << "\\22"
+				}else
+				{
+					if val[k] == "\\"[0]
+					{
+						f^ << "\\5C"
+					}else{
+						f^ << SomeBuf
+					}
+				}
+			}
+			k += 1
+		}
+		f^ << "\\00\"\n"
+	}
+	PrintUse := virtual !(TIOStream^ f) -> void
+	{
+		stSize := val.Size() + 1
+		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+	}
+	PrintConst := virtual !(TIOStream^ f) -> void
+	{
+		stSize := val.Size() + 1
+		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+	}
+}

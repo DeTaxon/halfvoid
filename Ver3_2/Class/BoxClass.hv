@@ -1,0 +1,360 @@
+
+BoxClass := class extend BoxUnit
+{
+	ItId := int
+	ItType := Type^
+	IsPacked := bool
+	Parents := HybridQueue.{BoxClass^,1}
+	ItName := StringSpan
+
+	Fields := List.{FieldParam^}
+	FieldsPath := List.{FieldPath^}
+	DefaultSpace := FieldSpace
+	FieldSpaces := AVLMap.{StringSpan,FieldSpace}
+	ItSize := int
+	ItAlign := int
+
+
+	Constants := ConstantHolder^
+	PrimeParents := HybridQueue.{Tuple.{BoxClass^,BoxClass^,int},1}
+
+	TemplateParent := BoxClassTemplate^
+
+	CreateCommon := !() -> void
+	{
+	}
+	SetName := !(StringSpan name) -> void
+	{
+		ItName = name
+	}
+
+	printFieldsPath := !(TIOStream^ f, bool^ needComma) -> void
+	{
+		for it : Parents
+		{
+			it.printFieldsPath(f,needComma)
+		}
+		for it : FieldsPath
+		{
+			if needComma^
+				f^ << ","
+			needComma^ = true
+			typ := it.Field.Value
+			typ = NormalizeType(typ)
+			typ.PrintType(f)
+		}
+	}
+
+	StartParseBody := virtual !() -> void {} 
+	AwaitParentStep := virtual !() -> void {}
+	AwaitVTableStep := virtual !() -> void {}
+	PrintAsType := virtual !(TIOStream^ f) -> void
+	{
+		PrintVTable(f)
+
+		needComma := false
+		f^ << "%Class" << ItId << " = type "
+		if IsPacked
+			f^ << "<"
+		f^ << "{"
+		if GetFieldsCount() == 0 and VTable.Size() == 0
+		{
+			f^ <<"i1"
+		}else{
+			if VTable.Size() != 0
+			{
+				VTableType.ItType.GetPoint().PrintType(f)
+				needComma = true
+			}
+			printFieldsPath(f,needComma&)
+		}
+		f^ << "}"
+		if IsPacked
+			f^ << ">"
+		f^ <<"\n"
+
+		if DebugMode
+		{
+			fieldMetas := List.{int}
+			defer fieldMetas.Destroy()
+
+			for i : FieldsPath.Size()
+			{
+				newId := GetNewId()
+				fieldMetas.Push(newId)
+				fld := FieldsPath[i].Field
+
+				f^ << "!" << newId << " = !DIDerivedType(tag: DW_TAG_member, name: \"" << fld.Name << "\" , scope: !" << ItId
+				f^ << ",flags: DIFlagPublic"
+				f^ << " , baseType: !" << fld.Value.MetaId << ", size: " << fld.Value.GetSize()*8 << ", offset: " << FieldsPath[i].MemOffset*8 << ")\n"
+			}
+
+			fieldTypes := GetNewId()
+			f^ << "!" << fieldTypes << " = !{"
+			for it,i : fieldMetas
+			{
+				if i > 0
+					f^ << ","
+				f^ << "!" << it
+			}
+			f^ << "}\n"
+
+			f^ << "!" << ItId
+			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
+			f^ << ItName
+			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: "<< ItSize*8 <<", flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""
+			f^ << ItName
+			f^ << "\")\n"
+		}
+	}
+	ParseBody := virtual !() -> void
+	{
+	}
+	AwaitTypeState := virtual !() -> void
+	{
+	}
+	AwaitReadyState := virtual !() -> void
+	{
+		
+	}
+	FieldsCount := !() -> int
+	{
+		sum := Fields.Size()
+		sum += Parents[^].FieldsCount()
+		return sum
+	}
+	PrimeParentStep := !() -> void
+	{
+		if Parents.Size() == 0
+		{
+			PrimeParents.Emplace(this&,this&,0)
+		}else
+		{
+			for par : Parents
+			{
+				par.AwaitParentStep()
+				for pp : par.PrimeParents
+				{
+					PrimeParents.Emplace(pp.0,par,pp.2 + 1) //todo Remove duplicates
+				}
+			}
+			PrimeParents.Emplace(this&,this&,0)
+		}
+	}
+	populateMethods := !(StringSpan name,StringSpan fieldName, HybridQueue.{BoxUnit^,10} objs) -> void
+	{
+		itSpace := DefaultSpace&
+		if fieldName.Size() != 0
+		{
+			if not FieldSpaces.Contain(fieldName)
+				return void
+			itSpace = FieldSpaces[fieldName]&
+		}
+		if itSpace.Methods.Contain(name)
+		{
+			for fnc : itSpace.Methods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
+		if itSpace.VirtualMethods.Contain(name)
+		{
+			for fnc : itSpace.VirtualMethods[name]
+			{
+				objs.Push(fnc)
+			}
+		}
+		if itSpace.MethodTemplates.Contain(name)
+		{
+			for fncTmpl : itSpace.MethodTemplates[name]
+			{
+				objs.Push(fncTmpl)
+			}
+		}
+		if '.' in name
+		{
+			indx := 0
+			while name[indx] != '.'
+				indx += 1
+			
+			clsName := name[0..indx]
+			funcName := name[(indx+1)..0]
+			if clsName == ItName
+			{
+				if itSpace.Methods.Contain(funcName)
+				{
+					for fnc2 : itSpace.Methods[funcName]
+					{
+						objs.Push(fnc2)
+					}
+				}
+				if PreVTableFuncs.Contain(funcName)
+				{
+					for fncList : PreVTableFuncs
+					{
+						for fnc3 : fncList
+						{
+							objs.Push(fnc3)
+						}
+					}
+				}
+			}
+		}
+		
+		Parents[^].populateMethods(name,fieldName,objs)
+	}
+	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		AwaitTypeState()
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,StringSpan(""),objs)
+
+		if objs.Size() != 0
+			cb(objs)
+	}
+	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	{	
+		AwaitTypeState()
+
+		fieldName := StringSpan
+		for it,ind : FieldSpaces
+		{
+			if it& == fieldPtr
+			{
+				fieldName = ind
+				break
+			}
+		}
+		assert(fieldName.Size() != 0)
+
+		objs := HybridQueue.{BoxUnit^,10}
+		defer objs.Destroy()
+		populateMethods(name,fieldName,objs)
+
+		if objs.Size() != 0
+			cb(objs)
+	}
+
+	enterScope := virtual !(!()&->void cb) -> void 
+	{
+		stackSize := UnitStack.Size()
+		oldScope := CurrentScope
+		CurrentScope = this&
+		ScopePutConstants()
+		cb()
+		CurrentScope = oldScope
+		while stackSize < UnitStack.Size()
+			UnitStack.Pop()
+	}
+	IsViewType := !() -> bool
+	{
+		AwaitTypeState()
+		InternalsHatch.Await()
+		if TemplateParent == ArrayViewTemplate
+			return true
+
+		for it : Parents
+		{
+			if it.IsViewType()
+				return true
+		}
+		return false
+	}
+
+	itDynamicSize := VarIntObj^
+	GetClassSize := virtual !() -> BoxExeObj^
+	{
+		AwaitTypeState()
+		if itDynamicSize != null
+			return itDynamicSize
+		itDynamicSize = new VarIntObj(this&)
+		return itDynamicSize
+	}
+	//GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	//{
+	//	AwaitTypeState()
+	//	return new MetaFieldsHolder(itm,this&)
+	//}
+
+}
+TypeClass := class extend Type
+{
+	ToClass := BoxClass^
+
+	this := !(BoxClass^ ths) -> void
+	{
+		ToClass = ths
+		MetaId = ths.ItId
+	}
+	PrintType := virtual !(TIOStream^ f) -> void
+	{
+		f^ << "%Class" << MetaId
+	}
+	PrintDebugName := virtual !(TIOStream^ f) -> void
+	{
+		f^ << ToClass.ItName
+		if ToClass.Constants?.Constants.Size() != 0
+		{
+			f^ << "{"
+			for it,i : ToClass.Constants.Constants
+			{
+				if i != 0
+					f^ << ","
+				if it is ConstType
+				{
+					it->{ConstType^}.Value.PrintDebugName(f)
+				}
+			}
+			f^ << "}"
+		}
+	}
+	GetSize := virtual !() -> int
+	{
+		ToClass.AwaitTypeState()
+		minSize := ToClass.ItSize
+		unalign := minSize % ToClass.ItAlign
+		if unalign != 0
+			minSize += ToClass.ItAlign - unalign
+		return minSize
+	}
+	GetAlign := virtual !() -> int
+	{
+		ToClass.AwaitTypeState()
+		return ToClass.ItAlign
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		return true
+	}
+	GetPoint := virtual !() -> Type^
+	{
+		if AsPoint == null
+			AsPoint = new TypePointComplex(this&)
+		return AsPoint
+	}
+	NotifyUse := virtual !() -> void
+	{
+		ToClass.StartParseBody()
+	}
+}
+TypePointComplex := class extend TypePoint
+{
+	this := !(Type^ bs) -> void
+	{
+		this."TypePoint.this"(bs)	
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		InternalsHatch.Await()
+		isGC := TypeFight(Base,GCType) == GCType
+		return isGC
+	}
+}
+
+

@@ -1,0 +1,325 @@
+GetVecXTypeSize := !(Type^ itY) -> int
+{
+	if itY == GTypeVec4f return 4
+	if itY == GTypeVec3f return 3
+	if itY == GTypeVec2f return 2
+	if itY == GTypeQuantf return 4
+	return 0
+}
+
+GetVecTypeX := !(int Siz) -> Type^
+{
+	switch Siz
+	{
+		case 4 return GTypeVec4f
+		case 3 return GTypeVec3f
+		case 2 return GTypeVec2f
+	}
+}
+
+BuiltInGetVecTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 1 or consts.Size() != 1
+			return null
+		
+		a := objs[0].GetType()
+		vecSize := GetVecXTypeSize(a)
+		if vecSize == 0
+			return null
+		
+		strVal := consts[0]->{BoxExeString^}
+		if not (strVal is BoxExeString)
+			return null
+		switch strVal.val
+		{
+			case "x"
+			case "y"
+			case "z"
+				if vecSize < 3
+					return null
+			case "w"
+				if vecSize < 4
+					return null
+			case void
+				if strVal.val.Size() > 4
+					return null
+				if strVal.val.Size() <= 0
+					return null
+				
+				for i : strVal.val.Size()
+				{
+					if not (strVal.val[i] in "xyzw0")
+						return null
+				}
+				resType := Type^
+				if a == GTypeQuantf and strVal.val.Size() == 4
+				{
+					resType = GTypeQuantf
+				}else{
+					resType = GetVecTypeX(strVal.val.Size())
+				}
+
+				return GetFuncType(1,![a],![true],resType,false,false)
+		}
+
+		return GetFuncType(1,![a],![true],GTypeFloat,true,false)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		str := consts[0]->{BoxExeString^}.val
+		vecInd := 0
+		simpleGet := true
+		switch str
+		{
+			case "x"
+				vecInd = 0
+			case "y"
+				vecInd = 1
+			case "z"
+				vecInd = 2
+			case "w"
+				vecInd = 3
+			case void
+				simpleGet = false
+		}
+		if simpleGet
+		{
+			if tp.Params[0].IsRef
+			{
+				return new BuiltInVecElementRef(tp,vecInd)
+			}
+		}else{
+			inds := int[4]
+			for i : str.Size()
+			{
+				if str[i] == 'x' inds[i] = 0
+				if str[i] == 'y' inds[i] = 1
+				if str[i] == 'z' inds[i] = 2
+				if str[i] == 'w' inds[i] = 3
+				if str[i] == '0' inds[i] = GetVecXTypeSize(tp.Params[0].ItType)
+			}
+			return new BuiltInVecShuffle(tp,inds[0]&,str.Size())
+		}
+		assert(false)
+	}
+}
+BuiltInVecElementRef := class extend BoxFuncCommon
+{
+	vecInd := int
+	this := !(TypeFunc^ tp,int ind) -> void
+	{
+		SetType(tp)
+		vecInd = ind
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		typ := lst[0].GetType()
+		lst[0].PrintPointPre(f)
+
+		f^ << "%T" << resId << " = getelementptr "
+		typ.PrintType(f)
+		f^ << " , "
+		typ.PrintType(f)
+		f^ << "* "
+		lst[0].PrintPointUse(f)
+		f^ << " , i32 0, i32 " << vecInd
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInVecShuffle := class extend BoxFuncCommon
+{
+	indexes := int[4]
+	vecSize := int
+	this := !(TypeFunc^ tp,int^ inds,int vs) -> void
+	{
+		SetType(tp)
+		for i : vs
+		{
+			indexes[i] = inds[i]
+			vecSize = vs
+		}
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		typ := lst[0].GetType()
+		lst[0].PrintPre(f)
+
+		f^ << "%T" << resId << " = shufflevector "
+		typ.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << " , "
+		typ.PrintType(f)
+		f^ << " zeroinitializer ," 
+		f^ << "<" << vecSize << " x i32 > <"
+		for i : vecSize
+		{
+			if i != 0
+				f^ << ","
+			f^ << "i32 " << indexes[i]
+		}
+		f^ << ">"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
+BuiltInVecConstrTemplate := class extend BoxFuncTemplate
+{
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() > 5 or objs.Size() < 2
+			return null
+		
+		a := objs[0].GetType()
+		vecSize := GetVecXTypeSize(a)
+		if vecSize == 0
+			return null
+		inpts := objs.Size() - 1
+		if inpts > vecSize
+			return null
+		
+		typs := Type^[6]
+		for i : objs.Size()
+		{
+			typs[i] = objs[i].GetType()
+		}
+		isRefs := bool[6]
+		isRefs[0] = true
+		
+		return GetFuncType(objs.Size(),typs[0]&,isRefs[0]&,GTypeVoid,false,false)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		InternalsHatch.Await()
+		if tp.Params.Size() == 5
+			return GVectorConstructor4.CreateFunc(tp,consts)
+		if tp.Params.Size() == 4
+			return GVectorConstructor3.CreateFunc(tp,consts)
+		if tp.Params.Size() == 3
+			return GVectorConstructor2.CreateFunc(tp,consts)
+		if tp.Params.Size() == 2
+			return GVectorConstructor1.CreateFunc(tp,consts)
+		assert(false)
+	}
+}
+
+BuiltInVecScalarMult := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ tp) -> void
+	{
+		SetType(tp)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		typ := lst[0].GetType()
+		siz := GetVecXTypeSize(typ)
+		lst[^].PrintPre(f)
+
+		f^ << "%Temp" << resId << " = fmul "
+		typ.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << " , "
+		lst[1].PrintUse(f)
+		f^ << "\n"
+		f^ << "%T" << resId << " = call fast float @llvm.vector.reduce.fadd.f32.v" 
+		f^ << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << resId << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
+BuiltInVecOperOnFloat := class extend BoxFuncCommon
+{
+	llvmOper := char^
+	this := !(TypeFunc^ tp, char^ itOper) -> void
+	{
+		llvmOper = itOper
+		SetType(tp)
+	}
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		typ := lst[0].GetType()
+		typBase := lst[1].GetType()
+		siz := GetVecXTypeSize(typ)
+		lst[^].PrintPre(f)
+
+		f^ << "%TempT" << resId << " =  insertelement "
+		typ.PrintType(f)
+		f^ << " undef, "
+		typBase.PrintType(f)
+		f^ << " "
+		lst[1].PrintUse(f)
+		f^ << " , i32 0"
+		f^ << "\n"
+
+		f^ << "%Temp" << resId << " = shufflevector "
+		typ.PrintType(f)
+		f^ << " %TempT" << resId
+		f^ << ", "
+		typ.PrintType(f)
+		f^ << " undef , <" << siz << " x i32> <"
+		for i : siz
+		{
+			if i != 0
+				f^ << ","
+			f^ << "i32 0"
+		}
+		f^ << ">\n"
+
+		f^ << "%T" << resId << " = " << llvmOper << " "
+		typ.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << " , " << "%Temp" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
+CreateBuiltInVec:= !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+
+	baseOfVec := GTypeFloat
+	for x : ![GTypeVec4f,GTypeVec3f,GTypeVec2f,GTypeQuantf]
+	{
+		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		baseRefed := GetFuncType(![x,x],![true,false],x)
+		baseAdd := GetFuncType(![x,x],![false,false],x)
+		operOnFloat := GetFuncType(![x,baseOfVec],![false,false],x)
+
+		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(baseAdd,"fadd") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(baseAdd,"fsub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(baseAdd,"fmul") )
+
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
+		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
+		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"fmul") )
+		bSpace.Functions[StringSpan("/=")].Push(new BuiltInIntEqAndOper(baseRefed,"fdiv") )
+
+		bSpace.Functions[StringSpan("<+>")].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
+
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fadd") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fsub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fmul") )
+		bSpace.Functions[StringSpan("/")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fdiv") )
+	}
+
+	bSpace.Templates[StringSpan(".")].Push(new BuiltInGetVecTemplate())
+
+	bSpace.Templates[StringSpan(". this")].Push(new BuiltInVecConstrTemplate)
+}

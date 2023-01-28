@@ -1,0 +1,61 @@
+TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down == null
+		return null
+
+	if itm.Down.GetValue() == "new"
+	{
+		tp := ParseType(itm.Down.Right)
+		if tp == null
+			itm.EmitError("Unknown type")
+		cnsts := List.{BoxExeConstObj^}
+		defer cnsts.Destroy()
+		cnsts.Push(GetConstType(tp))
+		objs := CheckExeDownList
+		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
+		assert(fnc != null)
+		resCall := fnc.CreateCall(objs)
+
+		if itm.Down.Right.Right?.GetValue() == "()"
+		{
+			objs.Push(resCall)
+			CheckFuncCallBrackets(itm.Down.Right.Right,objs)
+
+			if tp is TypeClass
+			{
+				cls := tp->{TypeClass^}.ToClass
+				callFunc := BoxUnit^
+				zeroConsts := List.{BoxExeConstObj^}
+				cls.GetMethods(StringSpan("this"),x ==> {
+					callFunc = GetBestFunc(x,objs,zeroConsts)
+				})
+				if callFunc == null
+					itm.EmitError("Constructor not found")
+				assert(callFunc is in BoxFunc)
+
+				fType := callFunc->{BoxFunc^}.GetType()->{TypeFunc^}
+				fType = FuncTypeSetParam(fType,0,tp.GetPoint(),false)
+				fType = FuncTypeSetResult(fType,tp.GetPoint(),false)
+
+				fnc2 := TemplateInternalNewOneConstructed.GetFuncByType(fType,zeroConsts)
+				assert(fnc2 != null)
+				resCall = fnc2.CreateCall(objs)
+			}else{
+				assert(false)
+			}
+		}
+		return resCall
+	}
+	if itm.Down.GetValue() == "delete"
+	{
+		dwn := TryGetExeCall(itm.Down.Right)
+		if dwn == null
+			return null
+
+		objs := CheckExeDownList
+		objs.Push(dwn)
+		cnsts := List.{BoxExeConstObj^}
+		fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
+		return fnc.CreateCall(objs)
+	}
+}

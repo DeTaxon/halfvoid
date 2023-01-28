@@ -1,0 +1,74 @@
+TryParseWhile := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null or itm.Down.GetValue() != "while"
+		return null
+
+	return new BoxBlockBreak(itm, () ==> {
+		cmpExe := TryGetExeCall(itm.Down.Right)
+
+		if cmpExe == null
+			itm.Down.Right.EmitError("Could not parse while statement")
+
+		if cmpExe.GetType() != GTypeBool
+			itm.EmitError("While statement is not boolean type")
+
+		token := MakeItBlock(itm.Down.Right.Right)
+		body := new BoxBlockContinue(token)
+		body.Work()
+
+		return new BoxWhile(itm.Down.Right,cmpExe,body)
+	})
+	
+}
+
+BoxWhile := class extend BoxExeObj
+{
+	Val := BoxExeObj^
+	Body := BoxBlock^
+	CycleCheck := BoxLabel
+	CycleStart := BoxLabel
+	CycleEnd := BoxLabel
+	WhileLine := BoxExeLineSimple^
+
+	this := !(Token^ whileToken,BoxExeObj^ val, BoxBlock^ body) -> void
+	{
+		ObjType = GTypeVoid
+		Val = val
+		Body = body
+		CycleStart."this"()
+		CycleEnd."this"()
+		CycleCheck."this"()
+		WhileLine = new BoxExeLineSimple(whileToken,val)
+	}
+	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	{
+		PrintCode(f)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		oldLine := GDebugLineCallId
+		defer GDebugLineCallId = oldLine
+		GDebugLineCallId = WhileLine.MetaId
+
+		CycleCheck.PrintCode(f)
+
+		Val.PrintPre(f)
+		f^ << "br i1 "
+		Val.PrintUse(f)
+		f^ << ", label "
+		CycleStart.PrintLabel(f)
+		f^ << ", label "
+		CycleEnd.PrintLabel(f)
+		f^ << "\n"
+
+		CycleStart.PrintCode(f)
+		Body.PrintCode(f)
+		CycleCheck.PrintGo(f)
+		CycleEnd.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		WhileLine.PrintDebugMeta(f)
+		Body.PrintDebugMeta(f)
+	}
+}

@@ -1,0 +1,136 @@
+
+BoxForOverGrowableMeta := class extend BoxExeObj
+{
+	blocks := List.{BoxBlock^}
+	dwnObjs := HybridQueue.{ForSubObjects,5}
+
+	metaUsedCount := int
+
+	middleVars := AVLMap.{int,List.{NamedVar^}}
+
+	itBody := Token^
+	itStack := StackState
+
+	this := !(HybridQueue.{ForSubObjects,5} dwns,Token^ bdy) -> void
+	{
+		ObjType = GTypeVoid
+		if not dwns[^].IsMeta
+			bdy.EmitError("All of iteratables must be metadata")
+		k := dwns[0].MetaObj.MetaIteretableSize() //TODO check all dwns
+		if k != dwns[^].MetaObj.MetaIteretableSize()
+			bdy.EmitError("All of iteretables must be same size")
+
+		dwnObjs.Push(dwns[^])
+	
+		itBody = bdy
+		itStack.Save()
+
+		for i : k
+		{
+			addItem(i,false)
+		}
+
+		lmbd := (int ind) ==> {
+			if ind < metaUsedCount
+				return void
+			for it : dwnObjs
+			{
+				if ind >= it.MetaObj.MetaIteretableSize()
+					return void
+			}
+			addItem(ind,true)
+			metaUsedCount += 1
+		}
+
+		for it : dwns
+		{
+			if it.MetaObj is in BoxMetaGrowingObject
+			{
+				grw := it.MetaObj->{BoxMetaGrowingObject^}
+				grw.RegisterUser(lmbd.Capture())
+			}
+		}
+
+		metaUsedCount = k
+	}
+	addItem := !(int i,bool swapStack) -> void
+	{
+		nowStack := StackState
+
+		if swapStack
+		{
+			nowStack.Save()
+			itStack.Load()
+		}
+
+		stackSize := UnitStack.Size()
+
+		for j : dwnObjs.Size()
+		{
+			mtVar := dwnObjs[j].MetaObj.GetMetaIterValueParam(i)
+			if mtVar != null
+			{
+				newVar := new MemVarBorrowed(dwnObjs[j].ValueName,mtVar)
+				middleVars[i].Push(newVar)
+				UnitStack.PushFront(newVar)
+			}else{
+				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+			}
+
+			if dwnObjs[j].IndexName.Size() != 0
+			{
+				indConst := dwnObjs[j].MetaObj.GetMetaIterIndex(i)
+				if indConst == null
+					indConst = GetExeInt(i)
+				tryAddVar(indConst,i,dwnObjs[j].IndexName)
+			}
+		}
+		blocks.Push(new BoxBlockContinue(itBody))
+
+		while stackSize < UnitStack.Size()
+			UnitStack.Pop()
+
+		if swapStack
+		{
+			nowStack.Load()
+		}
+	}
+	tryAddVar := !(BoxExeObj^ toAdd,int num,StringSpan itName) -> void {
+		if toAdd == null
+			return void
+		
+		if toAdd is in BoxExeConstObj
+		{
+			UnitStack.PushFront(new ConstVar(itName,toAdd->{BoxExeConstObj^}))
+			return void
+		}
+		
+		fr := new FuncResultParam(toAdd)
+		newVar := new MemVar(itName,fr)
+		middleVars[num].Push(newVar)
+		UnitStack.PushFront(newVar)
+	}
+
+	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
+	{
+		PrintCode(f)
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		dwnObjs[^].MetaObj.PrintDefaultUse(f)
+
+		for i : blocks.Size()
+		{
+			if middleVars.Contain(i)
+				middleVars[i][^].PrintCode(f)
+
+			blocks[i].PrintCode(f)
+		}
+	}
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	{
+		middleVars[^][^].PrintDebugMeta(f)
+		dwnObjs[^].MetaObj.PrintDebugMeta(f)
+		blocks[^].PrintDebugMeta(f)
+	}
+}

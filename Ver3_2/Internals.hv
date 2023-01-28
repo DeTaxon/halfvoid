@@ -1,0 +1,156 @@
+TemplateInternalInitClass := BoxFuncTemplate^
+TemplateInternalVirtualCall := BoxFuncTemplate^
+TemplateInternalNewOne := BoxFuncTemplate^
+TemplateInternalNewOneConstructed := BoxFuncTemplate^
+TemplateInternalDelete := BoxFuncTemplate^
+
+TemplateInternalCreateLambda := BoxFuncTemplate^
+TemplateInternalLambdaCall := BoxFuncTemplate^
+TemplateInternalGetCaptures := BoxFuncTemplate^
+TemplateInternalGetYieldState := BoxFunc^
+TemplateInternalGetYieldVars := BoxFuncTemplate^
+
+TemplateInternalCreateTuple := BoxFuncTemplate^
+TemplateInternalTupleConstructor := BoxFuncTemplate^
+
+TemplateInternalGetVTableVariable := BoxFuncTemplate^
+
+TemplateInternalIsSameType := BoxFuncTemplate^
+TemplateInternalIsInSameType := BoxFuncTemplate^
+
+GInternalSetType := BoxFuncTemplate^
+
+GFuncGCSetNull := BoxFunc^
+GFuncGCSetNullArray := BoxFunc^
+
+GCType := Type^
+
+GCILambda := BoxClass^
+GCLambda := BoxClassTemplate^
+
+GCStackType := BoxClassTemplate^
+GCDeferLambda := BoxClassTemplate^
+
+ExceptionIException := Type^
+ExceptionEnterFunc := BoxFunc^
+ExceptionLeaveFunc := BoxFunc^
+ExceptionEnterTryCatch := BoxFunc^
+ExceptionLeaveTryCatch := BoxFunc^
+ExceptionThrowException := BoxFunc^
+ExceptionGetException := BoxFunc^
+
+ArrayViewTemplate := BoxClassTemplate^
+ArrayViewCreateEmptyArray := BoxFuncTemplate^
+
+GDefautlSetTemplate := BoxFuncTemplate^
+GDefautlCompareTemplate := BoxFuncTemplate^
+
+GZeroMemTemplate := BoxFuncTemplate^
+GCleanGCClass := BoxFuncTemplate^
+
+GVectorConstructor1 := BoxFuncTemplate^
+GVectorConstructor2 := BoxFuncTemplate^
+GVectorConstructor3 := BoxFuncTemplate^
+GVectorConstructor4 := BoxFuncTemplate^
+
+InternalsHatch := THatch
+
+intGetTemplate := !(char^ name) -> BoxFuncTemplate^
+{
+	res := BoxFuncTemplate^
+	GetItemGlobal(StringSpan(name),x ==> {
+		for itm : x
+		{
+			if itm is in BoxFuncTemplate
+			{
+				res = itm->{BoxFuncTemplate^}
+				return true
+			}
+		}
+	})
+	assert(res != null)
+	return res
+}
+intGetFunc := !(char^ name) -> BoxFunc^
+{
+	res := intGetTemplate(name)
+	assert(res.IsOneFunc())
+	return res.GetOneFunc()
+}
+
+intGetClass := !(char^ name) -> BoxClass^
+{
+	res := TypeGetGlobalByIndent(StringSpan(name))
+	assert(res != null)
+	assert(res is in TypeVar)
+	return res->{TypeVar^}.Value->{TypeClass^}.ToClass
+}
+
+intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
+{
+	res := TypeGetGlobalByIndent(StringSpan(name))
+	assert(res != null)
+	assert(res is in TemplateTypeVar)
+	return res->{TemplateTypeVar^}.Value
+}
+
+InitInternals := !() -> void
+{
+	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
+	TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
+	TemplateInternalNewOne = intGetTemplate("internalHVNew")
+	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
+	TemplateInternalDelete = intGetTemplate("internalHVDelete")
+
+	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
+	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
+	TemplateInternalGetCaptures = intGetTemplate("internalHVLambdaGetCaptures")
+	TemplateInternalGetYieldState = intGetFunc("internalHVLambdaGetYieldState")
+	TemplateInternalGetYieldVars = intGetTemplate("internalHVLambdaGetYieldTuple")
+
+	TemplateInternalCreateTuple = intGetTemplate("internalHVCreateTuple")
+	TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
+
+	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
+
+	TemplateInternalIsSameType = intGetTemplate("internalCheckIsSameType")
+	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
+
+	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
+	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
+
+	GInternalSetType = intGetTemplate("internalHVSetType")
+
+	cName := TokenIndent(StringSpan("TGCIObject"))
+	GCType = ParseType(cName&)
+
+	GCILambda = intGetClass("TILambda")
+	GCLambda = intGetClassTemplate("TLambda")
+
+	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
+	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
+
+	ExceptionIException = intGetClass("IException").ItType
+	ExceptionEnterFunc = intGetFunc("internalEnterGCFunction")
+	ExceptionLeaveFunc = intGetFunc("internalLeaveGCFunction")
+	ExceptionEnterTryCatch = intGetFunc("internalEnterTryCatch")
+	ExceptionLeaveTryCatch = intGetFunc("internalLeaveTryCatch")
+	ExceptionThrowException = intGetFunc("internalThrowException")
+	ExceptionGetException = intGetFunc("internalGetException")
+
+	ArrayViewTemplate = intGetClassTemplate("TArrayView")
+	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
+
+	GZeroMemTemplate = intGetTemplate("ZeroMem")
+	GCleanGCClass = intGetTemplate("internalGCClearClass")
+
+	GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
+	GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
+
+	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
+	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
+	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
+	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
+
+	InternalsHatch.Emit()
+}

@@ -1,0 +1,140 @@
+GlobalVarDelayed := class extend GlobalVar
+{
+	downToken := Token^
+
+	awaitHatch := THatch
+
+	this := !(StringSpan sn,Token^ tkn) -> void
+	{	
+		Name = sn
+		downToken = tkn
+
+		c := this&
+		SubWork(() ==> [c] {
+			c.CheckVal()
+		})
+	}
+	CheckVal := !() -> void
+	{
+		GParsedAllFiles.Await()
+
+		typeToken := downToken
+		isThreadLocal := false
+		if downToken.GetValue() == "thread_local"
+		{
+			typeToken = downToken.Right
+			isThreadLocal = true
+		}
+		if downToken.GetValue() == "task_local"
+		{
+			assert(false)
+		}
+
+		tp := ParseType(typeToken)
+
+		if tp == null
+		{
+			MemValue = TryGetExeCall(typeToken) ->{BoxExeConstObj^}
+			if MemValue? is BoxArrayHolder
+			{
+				ah := MemValue->{BoxArrayHolder^}
+				if ah.GetArraySize() == 0
+					typeToken.EmitError("Can not use empty array as global variable")
+				if not ah.IsConst()
+					typeToken.EmitError("Array must be made of constants")
+				tp = ah.GetArrayType()
+				MemValue = ah.GetAsConst()
+			}else{
+				if not (MemValue is in BoxExeConstObj)
+					typeToken.EmitError("Global variable value must be a constant")
+			}
+			assert(tp != GTypeVoid)
+			if MemValue != null
+				tp = MemValue.GetType()
+		}else{
+			if tp is TypeClass
+			{
+				MemValue = createConstType(tp)
+			}
+		}
+
+		if tp != null
+		{
+			assert(tp != GTypeVoid)
+			tp.NotifyUse()
+			Value = new GlobalVarFunc(Name,tp)
+			if isThreadLocal
+				Value->SetType(ThreadLocalVarFunc)
+		}else{
+			downToken.EmitError("Can not get type of global variable")
+		}
+
+		awaitHatch.Emit()
+	}
+	createConstType := !(Type^ tp) -> BoxExeConstObj^
+	{
+		if tp is in TypeClass
+			return createConstTypeClass(tp)
+		if tp is TypeArr
+			return createConstTypeArray(tp)
+		return null
+	}
+	createConstTypeArray := !(Type^ tp) -> BoxExeConstObj^
+	{
+		ta := tp->{TypeArr^}
+		assert(ta.len != 0)
+
+		oneObj := createConstType(ta.Base)
+		
+		res := new ClassArray(ta)
+		for i : ta.len
+		{
+			res.Value.Push(oneObj)
+		}
+		return res
+	}
+	createConstTypeClass := !(Type^ tp) -> BoxExeConstObj^
+	{
+		dwn := new ClassConstValue
+
+		cls := tp->{TypeClass^}.ToClass
+		cls.AwaitTypeState()
+
+		if cls is in BoxClassBody
+		{
+			bd := cls->{BoxClassBody^}
+			if bd.VTableField != null
+			{
+				dwn.Value.Push(new ClassVTablePtrConst(bd))
+			}
+		}
+		createConstTypeClass2(dwn,cls)
+
+		dwn.ItType = cls.ItType
+		dwn.ObjType = cls.ItType
+		return dwn
+	}
+	createConstTypeClass2 := !(ClassConstValue^ dwn,BoxClass^ cls) -> void
+	{
+		for it : cls.Parents
+		createConstTypeClass2(dwn,it)
+
+		for it,i : cls.Fields
+		{
+			if it.Value is TypeClass or (it.Value is TypeArr and it.Value.Base is TypeClass)
+			{
+				dwn.Value.Push(createConstType(it.Value))
+			}else{
+				dwn.Value.Push(new ZeroClassConst(it.Value))
+			}
+		}
+	}
+	AwaitType := virtual !() -> void
+	{
+		awaitHatch.Await()
+	}
+	Work := virtual !() -> void
+	{
+
+	}
+}
