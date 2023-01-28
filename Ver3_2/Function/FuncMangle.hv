@@ -13,7 +13,7 @@ GetFuncMangle := !(StringSpan name) -> StringSpan
 			itId := FuncNameIter
 			FuncNameIter += 1
 
-			memcpy(buff[0]&,name.Get(),name.Size())
+			memcpy(buff[0]&,name.Str(),name.Size())
 			sprintf(buff[name.Size()]&,"_%i",itId)
 			
 			spn := GetConstString(buff[0]&)

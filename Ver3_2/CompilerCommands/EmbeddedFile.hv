@@ -12,7 +12,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	 
 	fileName := skb.Down->{TokenString^}.Value
 
-	itFile := gRepo.GetFile(fileName.Str()) //todo exceptions?
+	itFile := FSGetFile(fileName.Str()) //todo exceptions?
 
 	if itFile == null
 		itm.EmitError("File not found")
@@ -61,7 +61,7 @@ BoxRawData := class extend BoxExeObj
 		ValueSize = siz
 		if siz != 0
 		{
-			Value = malloc(siz)
+			Value = malloc(siz)->{u8^}
 			memcpy(Value,data,siz)
 		}
 	}
@@ -94,14 +94,15 @@ BoxRawData := class extend BoxExeObj
 EmbFile := class
 {
 	itFile := vRepoFile^
+	fileMap := FileView^
 	data := BoxRawData^
 
 	this := !(vRepoFile^ inFile) -> void
 	{
 		itFile = inFile
 
-		mp := inFile.Map()
-		data = new BoxRawData(mp,inFile.Size())
+		fileMap = inFile.GetMap()
+		data = new BoxRawData(fileMap.Get(),inFile.Size())
 	}
 	GetSize := !() -> int 
 	{
