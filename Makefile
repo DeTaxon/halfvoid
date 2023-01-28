@@ -115,7 +115,7 @@ ver3:
 	./c.out -p posix  $(ForcedLibs) -C1 "Ver3/" -g -o Objs/ver3.ll
 	clang -gdwarf-4 Objs/ver3.ll -lm -ldl -o ver3
 ver3_2:
-	$(TimeFlags) ./ver3 -C0 libs2/ -C1 Ver3_2/ -o out.ll
+	$(TimeFlags) ./ver3 -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o ver3_2
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
