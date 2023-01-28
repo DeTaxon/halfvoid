@@ -10,6 +10,7 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 
 	if dwn == null
 		itm.EmitError("can not get pointer to error object")
+	dwn.NotifyMemUse()
 	if not dwn.IsMem()
 		itm.EmitError("can not get pointer to object, it is not on the memory")
 

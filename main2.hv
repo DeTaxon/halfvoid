@@ -12,6 +12,7 @@ why := class
 	this := !(int y) -> void
 	{
 		x = y
+		y&
 	}
 }
 
