@@ -42,7 +42,7 @@ GrowableClass := class extend BoxClass
 		fieldAlign := newFieldType.GetAlign()
 		ItAlign = max(ItAlign,fieldAlign)
 
-		unalign := ItSize % fieldAlign
+		unalign := ItSize mod fieldAlign
 		if unalign != 0
 		{
 			ItSize += fieldAlign - unalign

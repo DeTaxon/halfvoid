@@ -1,4 +1,4 @@
-// Regexp := type WordDetermMachine
+Regexp := type WordDetermMachine
 
 WordDetermMachine := class extend TGCObject
 {
@@ -27,31 +27,31 @@ WordDetermMachine := class extend TGCObject
 // 			itr = itr[lineSize]&
 // 		}
 // 	}
-// 	LoadFromMap := !(u8^ data, int size) -> void
-// 	{
-// 		asInt := data->{int^}
-// 		states := asInt[0]
-// 		lines := asInt[1]
-// 		itr := data[8]&
-		
-// 		memcpy(CharToGo[0]&,itr,256)
-// 		itr = itr[256]&
+ 	LoadFromMap := !(u8^ data, int size) -> void
+ 	{
+ 		asInt := data->{int^}
+ 		states := asInt[0]
+ 		lines := asInt[1]
+ 		itr := data[8]&
+      	
+ 		memcpy(CharToGo[0]&,itr,256)
+ 		itr = itr[256]&
 
-// 		lineSize := states*4
-// 		IsEndNode = new int[states]
-// 		memcpy(IsEndNode->{void^},itr,lineSize)
-// 		itr = itr[lineSize]&
-// 		lineSize = lines*4
+ 		lineSize := states*4
+ 		IsEndNode = new Vector.{int}(states)
+ 		memcpy(IsEndNode.GetPointer(),itr,lineSize)
+ 		itr = itr[lineSize]&
+ 		lineSize = lines*4
 
-// 		Table = new int[][states]
-// 		for tb : Table
-// 		{
-// 			tb = new int[lines]
-// 			memcpy(tb->{void^},itr,lineSize)
-// 			itr = itr[lineSize]&
-// 		}
+ 		Table = new Vector.{int[]}(states)
+ 		for tb : Table
+ 		{
+ 			tb = new Vector.{int}(lines)
+ 			memcpy(tb.GetPointer(),itr,lineSize)
+ 			itr = itr[lineSize]&
+ 		}
 
-// 	}
+ 	}
 	//"=" := default
 	IsPrintable := !(char itm) -> bool
 	{

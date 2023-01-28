@@ -38,7 +38,7 @@ BoxFile := class extend BoxUnit
 
 	Parse := !() -> void
 	{
-		fileName = GetConstString(file.GetName())
+		fileName = GetConstString(file.GetName().Str())
 
 		CurrentFile = this&
 		foundSpace := false
@@ -82,12 +82,12 @@ BoxFile := class extend BoxUnit
 		while iter != null
 		{
 
-			vr := BoxUnit^()
+			vr := BoxUnit^
 
 			try
 			{
 				vr = TryParseVarInFile(iter)	
-			}catch(IException^ e)
+			}catch(e)
 			{
 
 			}

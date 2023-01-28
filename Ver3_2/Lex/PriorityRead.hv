@@ -55,7 +55,7 @@ PriorityBagOld := class
 				return void
 			if ln[0] == '#'
 			{
-				Lines.Emplace(null,ln.Str())
+				Lines.Emplace(null->{MiniMachineNodeOld^},ln.Str())
 			}else{
 				newMach := new MiniMachineNodeOld
 
@@ -64,16 +64,17 @@ PriorityBagOld := class
 
 				uPos := -2
 
-				ln.DivideStr(reg,word ==> {
+				ln.DivideStr(reg,word ==> void {
 					rawWord := word[1..-1]
 					
 					wordContainUniq := false
 
 					rl := HybridQueue.{StringSpan,30}
-					defer rl.Clear()
+					defer rl.Destroy()
 
 					rawWord.DivideStr(" ",x ==> { rl.Push(x)})
 
+					lAddRule := !(MiniMachineNodeOld^,int)&-> void
 					addRule := (MiniMachineNodeOld^ machIter , int i) ==>
 					{
 						stW := rl[i].Str()
@@ -104,9 +105,10 @@ PriorityBagOld := class
 						{
 							next.IsTerm = true
 						}else{
-							addRule(next,i+1)
+							lAddRule(next,i+1)
 						}
 					}
+					lAddRule = addRule
 					addRule(newMach,0)
 
 					if not wordContainUniq
@@ -117,7 +119,7 @@ PriorityBagOld := class
 					uPos = -1
 
 				Lines.Emplace(newMach,ln.Str())
-				newLine := ref Lines.Back()
+				newLine := ref Lines[Lines.Size() - 1]
 				newLine.uniqs = uns
 				newLine.uniqOnly = lineUniq
 				newLine.uniqPos = uPos
