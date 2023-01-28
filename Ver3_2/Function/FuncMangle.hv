@@ -39,9 +39,9 @@ isRegularName := !(StringSpan name) -> bool
 	{
 		switch name[i]
 		{
-			case 'a'..'z'
-			case 'A'..'Z'
-			case '0'..'9'
+			case in 'a'..'z'
+			case in 'A'..'Z'
+			case in '0'..'9'
 			case '_'
 
 			case void

@@ -62,7 +62,9 @@ TryGetObj := class extend BoxExeObj
 
 		dwn := itm.Down.Right
 
-		JumpFrame = new FuncInputParam(GTypeVoidP,false,StringSpan(GetConstString("%E"sbt + ItId)))
+		buff := char[256]
+		sprintf(buff[0]&,"%%E%i",ItId)
+		JumpFrame = new FuncInputParam(GTypeVoidP,false,StringSpan(GetConstString(buff[0]&)))
 
 		isGCExist := GBoolFalse
 		if CurrentFunc.gcVarsCount != 0

@@ -104,11 +104,13 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << par.ItType.GetBADStr()
 						tmpl << "\n"
 						tmpl << "Expect ref " << (par.IsRef ?: "yes" : "no") << "\n"
+						c := tmpl.GetString()
+						c.IncRef() //TODO memory leak
 						if CurrentLine?.ItToken != null
 						{
-							CurrentLine.ItToken.EmitError(tmpl.Str())
+							CurrentLine.ItToken.EmitError(c.Str())
 						}else{
-							throw new Exception(tmpl.Str())
+							throw new Exception(c.Str())
 						}
 					}
 					if newObj.GetType() == par.ItType
@@ -153,7 +155,7 @@ BoxFuncCall := class extend BoxExeObj
 							CurrentLine.ItToken.EmitError("Passed class to c-variadic function, transfer function not found\n")
 						}else{
 							printf("Passed class to c-variadic function, transfer function not found\n")
-							throw new Exception(0,"")
+							throw new Exception("")
 						}
 					}
 				}
