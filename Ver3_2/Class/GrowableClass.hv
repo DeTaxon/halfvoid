@@ -132,7 +132,7 @@ VarIntObj := class extend BoxExeObj
 	getVal := !() -> int
 	{
 		minSize := Value.ItSize
-		unalign := minSize % Value.ItAlign
+		unalign := minSize mod Value.ItAlign
 		if unalign != 0
 			minSize += Value.ItAlign - unalign
 		return minSize

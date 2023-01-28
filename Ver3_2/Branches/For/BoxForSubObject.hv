@@ -118,7 +118,7 @@ ForSubObjects := class
 
 		if indVar != null and IndexName.Size() != 0
 		{
-			IndVar = new MacroVar(IndexName,() ==> [indVar] {
+			IndVar = new MacroVar(IndexName,() ==> BoxUnit^ {
 				getVar := indVar.CreateCall()
 				return new PtrToRefFuncCall(getVar)
 			})

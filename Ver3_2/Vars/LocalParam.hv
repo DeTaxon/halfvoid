@@ -148,7 +148,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 			objs.Push(getCall)
 			assert(fld != null)
 			it.CallObj = new BoxFuncCall(fld,objs)
-			objs.Clear()
+			objs.Destroy()
 		}
 	}
 

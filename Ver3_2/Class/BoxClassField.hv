@@ -74,7 +74,7 @@ AppendClass BoxClass
 			fPath.Field = fil
 			fPath.Index = i
 
-			unalign := posMemOffset % fil.Value.GetAlign()
+			unalign := posMemOffset mod fil.Value.GetAlign()
 			ItAlign = max(ItAlign,fil.Value.GetAlign())
 
 			if unalign != 0 and not IsPacked
@@ -256,7 +256,7 @@ AppendClass BoxClass
 
 		for fil,i : Fields
 		{
-			unalign := posMemOffset % fil.Value.GetAlign()
+			unalign := posMemOffset mod fil.Value.GetAlign()
 			ItAlign = max(ItAlign,fil.Value.GetAlign())
 
 			if unalign != 0 and not IsPacked
@@ -293,7 +293,8 @@ FieldPath := class extend BoxFuncCommon
 
 	this := !(Type^ baseClass, Type^ res) -> void
 	{
-		SetType(GetFuncType(1,baseClass&,null,res,true,false))
+		bsClass := baseClass //TODO
+		SetType(GetFuncType(1,bsClass&,null,res,true,false))
 	}
 	IsMem := virtual !() -> bool
 	{

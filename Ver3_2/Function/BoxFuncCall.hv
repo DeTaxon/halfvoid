@@ -313,7 +313,7 @@ BoxFuncCall := class extend BoxExeObj
 				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
 				asPtr.ItPtrFunc = GetExchange2(asPtr.ItPtrFunc,newFunc.GetPoint(),false)
 				asPtr.PreCalls.Push(preRes[^])
-				asPtr.downs.Clear()
+				asPtr.downs.Destroy()
 				asPtr.downs.Push(newDown[^])
 			}
 		}

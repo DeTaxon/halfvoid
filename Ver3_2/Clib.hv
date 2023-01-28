@@ -10,6 +10,7 @@ CLib := class extend ModuleInterface
 {
 	textMap := StringSpan
 	libFile := vRepoFile^
+	fileMap := FileView^
 	js := Json^
 
 
@@ -30,14 +31,15 @@ CLib := class extend ModuleInterface
 	this := !(vRepoFile^ fil) -> void
 	{
 		linkType = StringSpan("dynamic")
+		fileMap = fil.GetMap()
 		libFile = fil
 	}
 	Work := virtual !() -> void
 	{
-		textMap = StringSpan(libFile.Map(),libFile.Size())
+		textMap = StringSpan(fileMap.Get(),libFile.Size())
 
-		js = new json
-		js.ParseString(textMap.Get(),textMap.Size())
+		js = new Json
+		js.ParseString(fileMap.Get()->{char^},textMap.Size())
 
 		for nd : js^
 		{
@@ -221,9 +223,10 @@ CLib := class extend ModuleInterface
 			dt << ind << "&->{void^^}^ = lib.Get(\"" << ind << "\")\n"
 		}
 
-		st := dt.Str()
+		st := dt.GetString()
+		st.IncRef() //TODO memory leak
 
-		blank := StringSpan(st)
+		blank := StringSpan(st.Str())
 		initFunc.ParseString(blank)
 	}
 }

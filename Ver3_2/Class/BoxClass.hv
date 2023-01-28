@@ -314,7 +314,7 @@ TypeClass := class extend Type
 	{
 		ToClass.AwaitTypeState()
 		minSize := ToClass.ItSize
-		unalign := minSize % ToClass.ItAlign
+		unalign := minSize mod ToClass.ItAlign
 		if unalign != 0
 			minSize += ToClass.ItAlign - unalign
 		return minSize

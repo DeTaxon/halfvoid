@@ -72,7 +72,7 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 }
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxExeObj^
 {
-	return new BoxBlockBreak(itm, () ==> {
+	return new BoxBlockBreak(itm, () ==> BoxUnit^ {
 
 		forLine := new BoxExeLine()
 		forLine.ItToken = itm

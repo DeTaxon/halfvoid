@@ -70,7 +70,7 @@ FunctionHeaderInfo := class
 					resToken2 = resToken2.Right
 				}
 				ResultType.ItType = ParseType(resToken2)
-			}catch(IException^ r) {}
+			}catch(r) {}
 		}
 		
 		checkBag := () ==> {
@@ -135,7 +135,7 @@ FunctionHeaderInfo := class
 			if iter.GetValue() == ","
 			{
 				checkBag()
-				bag.Clear()
+				bag.Destroy()
 			}else{
 				bag.Push(iter)
 			}
