@@ -75,11 +75,11 @@ StackState := class
 
 		GCVarsInUse = gcVarsInUse
 
-		UnitStack.Clear()
+		UnitStack.Destroy()
 		for it : itStack
 			UnitStack.Push(it)
 
-		FuncStack.Clear()
+		FuncStack.Destroy()
 		for it : itFuncStack
 			FuncStack.Push(it)
 	}

@@ -63,13 +63,13 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if Attrs.IsLambda
 		{
-			hData.Types.Emplace(StringSpan(""),GTypeVoidP,false,null)
+			hData.Types.Emplace(StringSpan(""),GTypeVoidP,false,null->{Token^})
 			hData.IsAutoResult = true
 		}else{
 			if CurrentScope is in BoxClass //TODO allow static functions
 			{
 				cls := CurrentScope->{BoxClass^}
-				hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null)
+				hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null->{Token^})
 				Attrs.IsMethod = true
 			}
 		}

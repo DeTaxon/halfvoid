@@ -15,6 +15,10 @@ FuncTemplateInput := class
 		if tk != null
 			IsTType = ContainTemplateObj(tk)
 	}
+	"=" := !(FuncTemplateInput inp) -> void
+	{
+		assert(false)
+	}
 }
 
 FuncTemplateConstant := class
@@ -26,6 +30,10 @@ FuncTemplateConstant := class
 	{
 		ItToken = tok
 		Value = val
+	}
+	"=" := !(FuncTemplateConstant inp) -> void
+	{
+		assert(false)
 	}
 }
 
@@ -69,7 +77,7 @@ FunctionHeaderInfo := class
 			if bag.Size() == 1
 			{
 				assert(bag[0] is TokenIndent)
-				Types.Emplace(bag[0]->{TokenIndent^}.Value,null,false,null)
+				Types.Emplace(bag[0]->{TokenIndent^}.Value,null->{Type^},false,null->{Token^})
 			}else if bag.Size() >= 2 {
 				if bag[1].GetValue() == "..."
 				{
@@ -116,7 +124,7 @@ FunctionHeaderInfo := class
 						}
 					}
 
-					Types.Emplace(name,typ,isRef,bag[0])
+					Types.Emplace(name,typ,isRef,bag[0]->{Token^})
 				}
 			}else{
 				assert(false)

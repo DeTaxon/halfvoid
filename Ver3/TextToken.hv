@@ -52,7 +52,14 @@ Token := class
 			if it is in NamedVar
 			{
 				nv := it->{NamedVar^}
-				ln << "local var " << nv.Name << " as unknown type\n" 
+				ln << "local var " << nv.Name << " as "
+				if it is in MemVar
+				{
+					ln << nv->{MemVar^}.GetVarType().GetBADStr()
+				}else{
+					ln << "unknown"
+				}
+				ln << " type\n" 
 			}
 		}
 		throw new Exception(ln.Str()) //todo memory

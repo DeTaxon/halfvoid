@@ -6,15 +6,19 @@
 //	g3 := int
 //}
 
+why := class
+{
+	x := int
+	this := !(int y) -> void
+	{
+		x = y
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	hmm := AVLMap.{int,AVLMap.{int,int}}
-
-	a := int
-	for itt : hmm
-	{
-		itt[^] = 0
-	}
+	g := why
+	g.this(13)
 	//cls := someCls
 	//printf("hey %i\n",cls->TypeSize)
 	//cls.hoh(13)
