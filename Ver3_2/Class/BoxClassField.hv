@@ -128,7 +128,7 @@ AppendClass BoxClass
 
 		newPath.Field = newField
 
-		unalign := ItSize % newFieldType.GetAlign()
+		unalign := ItSize mod newFieldType.GetAlign()
 		ItAlign = max(ItAlign,newFieldType.GetAlign())
 
 		if unalign != 0 and not IsPacked

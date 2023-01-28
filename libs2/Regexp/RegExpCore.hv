@@ -118,7 +118,7 @@ WordDetermMachine := class extend TGCObject
 // 	}
 // }
 
-	RegExpReadText := !(char^ data,int siz, !(StringView,int)&->void toEmit) -> void
+	RegExpReadText := !(char^ data,int siz, !(StringSpan,int)&->void toEmit) -> void
 	{
 		i := 0
 		while i < siz

@@ -157,7 +157,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				if resFunc != null and resFunc is in BoxFunc
 					return resFunc->{BoxFunc^}.CreateCall(newObjs)
 
-				it itSpace.baseSpace == null
+				if itSpace.baseSpace == null
 					itm.EmitError("super function not found")
 				itSpace = itSpace.baseSpace
 			}
@@ -190,7 +190,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 							thisObj.mainCall = vr
 							assert(vr != null)
 						}
-					}catch(IException^ e){}
+					}catch(e){}
 					if resTryCall != null
 						return resTryCall
 				}
@@ -201,7 +201,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		try
 		{
 			resFunc = CreateFuncCall(asInd.Value,Objs,consts)
-		}catch(IException^ e)
+		}catch(e)
 		{}
 		if resFunc != null
 			return resFunc

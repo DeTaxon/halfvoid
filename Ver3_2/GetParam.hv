@@ -122,7 +122,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 					try
 					{
 						fCall = TryGetFieldCall(tknData&)
-					}catch(IException^ e)
+					}catch(e)
 					{}
 					return fCall?
 				}
@@ -191,7 +191,11 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	if asType != null
 		return GetConstType(asType)
 
-	itm.EmitError("Could not get param "sbt + asItm.Value) //todo better explanation
+	c := TEchoStream
+	c << "Could not get param " << asItm.Value
+	c2 := c.GetString()
+	c2.IncRef()
+	itm.EmitError(c2.Str()) //todo better explanation
 
 	return null
 }

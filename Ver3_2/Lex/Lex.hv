@@ -14,12 +14,8 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 	prevId := -1
 	linePos := 0
 	DaBuff := char[2048]
-	RegExpReadText(lexWordMachine->{void^},memPtr,Siz, (a,b,c) ==>
+	lexWordMachine.RegExpReadText(memPtr,Siz, (tok,a) ==>
 	{
-		ptr := memPtr[b]&
-
-		tok := StringSpan(ptr,c)
-
 		ns := Token^
 		if a != 20{
 			if itLine == null {
@@ -82,21 +78,21 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 							numM := 0
 							switch tok[k+1]
 							{
-								case '0'..'9'
+								case in '0'..'9'
 									numM = tok[k+1] - '0'
-								case 'a'..'f'
+								case in 'a'..'f'
 									numM = tok[k+1] - 'a' + 10
-								case 'A'..'F'
+								case in 'A'..'F'
 									numM = tok[k+1] - 'A' + 10
 							}
 							numM *= 16
 							switch tok[k+2]
 							{
-								case '0'..'9'
+								case in '0'..'9'
 									numM += tok[k+2] - '0'
-								case 'a'..'f'
+								case in 'a'..'f'
 									numM += tok[k+2] - 'a' + 10
-								case 'A'..'F'
+								case in 'A'..'F'
 									numM += tok[k+2] - 'A' + 10
 							}
 							DaBuff[j] = numM
@@ -221,7 +217,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 	return treeStart
 }
 
-UniteSkobs := !(Token^ Tree) -> Object^
+UniteSkobs := !(Token^ Tree) -> Token^
 {
 	Bag := List.{Token^}
 	defer Bag.Destroy()
@@ -243,7 +239,7 @@ UniteSkobs := !(Token^ Tree) -> Object^
 				case 45 itPair = "[]"
 			}
 
-			if Bag.IsEmpty() return iter
+			if Bag.Size() == 0 return iter
 			Old := Bag.Pop()
 			if tokId - Old.TokenId != 3
 			{
@@ -333,7 +329,7 @@ PopOutNode := !(Token^ what) -> void
 	what.Right = null
 }
 
-IsKeyword := !(W) -> bool
+IsKeyword := !(@TT W) -> bool
 {
 	switch W
 	{

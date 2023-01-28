@@ -54,7 +54,7 @@ ModuleVulkan := class extend ModuleInterface
 			if it.first
 			{
 				asNode := it.second->{TreeNode^}
-				switch(asNode.NodeName)
+				switch asNode.NodeName
 				{
 				case "extensions"
 					CheckExtensions(asNode)
@@ -99,7 +99,7 @@ ModuleVulkan := class extend ModuleInterface
 			{
 				if not sub.first continue
 				asN2 := sub.second->{TreeNode^}
-				if asN2.NodeName != "require" coninue
+				if asN2.NodeName != "require" continue
 				for itms : asN2.Childs
 				{
 					if not itms.first continue
@@ -184,7 +184,7 @@ ModuleVulkan := class extend ModuleInterface
 				if category != null{
 					if category^ == "basetype" or category^ == "bitmask"
 					{
-						if  asNeed.Childs.Size() != 0 and (not asNeed.Childs[0].first) and asNeed.Childs[0].second->{string} == "typedef "
+						if  asNeed.Childs.Size() != 0 and (not asNeed.Childs[0].first) and asNeed.Childs[0].second->{char^} == "typedef "
 						{
 							typeStr := asNeed.GetValueString("type")
 							typeName := asNeed.GetValueString("name")
@@ -217,7 +217,7 @@ ModuleVulkan := class extend ModuleInterface
 						funcTypes := List.{Type^}
 
 						if not asNeed.Childs[0].first{
-							itRet := asNeed.Childs[0].second->{string}
+							itRet := asNeed.Childs[0].second->{char^}
 							switch itRet
 							{
 								case "typedef void (VKAPI_PTR *"
@@ -243,7 +243,7 @@ ModuleVulkan := class extend ModuleInterface
 										printf("VKMODULE: cant read type %s byType %s\n",asNeed.GetValueString("name"),itTypName)
 										return void
 									}
-									if  asNeed.Childs[i+1].second->{string}[0] == '*'
+									if  asNeed.Childs[i+1].second->{char^}[0] == '*'
 									{
 										asT = asT.GetPoint()
 									}
@@ -377,7 +377,7 @@ ModuleVulkan := class extend ModuleInterface
 		if nd.Childs.Size() == 3{
 			if not nd.Childs[1].first
 			{
-				asSt := nd.Childs[1].second->{string}
+				asSt := nd.Childs[1].second->{char^}
 				if asSt == "* "{
 					asTp := GetModuleType(nd.GetValueString("type"))
 					if asTp == null return null
@@ -395,14 +395,14 @@ ModuleVulkan := class extend ModuleInterface
 			if nd.Childs[0].first
 			{
 			}else{
-				fSt := nd.Childs[0].second->{string}
+				fSt := nd.Childs[0].second->{char^}
 				if nd.Childs[1].first
 				{
 					sNd := nd.Childs[1].second->{TreeNode^}
 					if nd.Childs[2].first
 					{
 					}else{
-						tSt := nd.Childs[2].second->{string}
+						tSt := nd.Childs[2].second->{char^}
 						if nd.Childs[3].first
 						{
 							fNd := nd.Childs[3].second->{TreeNode^}
@@ -490,8 +490,7 @@ ModuleVulkan := class extend ModuleInterface
 						strm << "this.sType = " << intVal << "\n"
 						strm << "}\n"
 
-						str := strm.Str()
-						str = StrCopy(str)
+						str := StrCopy(strm.GetString().Str())
 
 						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
 						start := TokenSymbol(StringSpan("{}"),1)
@@ -537,7 +536,7 @@ ModuleVulkan := class extend ModuleInterface
 		if nd.Childs.Size() == 3 {
 			if IsReqList(nd,"110") //not nd.Childs[2].first
 			{
-				arrData := nd.Childs[2].second->{string}
+				arrData := nd.Childs[2].second->{char^}
 				if arrData == "[4]" return itT.GetArray(4)
 				if arrData == "[3]" return itT.GetArray(3)
 			}
@@ -549,7 +548,7 @@ ModuleVulkan := class extend ModuleInterface
 			}
 			if IsReqList(nd,"101")
 			{
-				postType := nd.Childs[1].second->{string}
+				postType := nd.Childs[1].second->{char^}
 				if postType[0] == '*' and postType[1] == ' '{
 					return itT.GetPoint()
 				}
@@ -558,8 +557,8 @@ ModuleVulkan := class extend ModuleInterface
 		}
 		if nd.Childs.Size() == 4{
 			if (not nd.Childs[0].first) and not nd.Childs[2].first{
-				preType := nd.Childs[0].second->{string}
-				postType := nd.Childs[2].second->{string}
+				preType := nd.Childs[0].second->{char^}
+				postType := nd.Childs[2].second->{char^}
 				
 				if preType == "const " and postType[0] == '*' and postType[1] == ' '{
 					return itT.GetPoint()
@@ -567,15 +566,15 @@ ModuleVulkan := class extend ModuleInterface
 			}
 			if IsReqList(nd,"0101")
 			{
-				preType := nd.Childs[0].second->{string}
-				postType := nd.Childs[2].second->{string}
+				preType := nd.Childs[0].second->{char^}
+				postType := nd.Childs[2].second->{char^}
 				if preType == "const " and IsStrPointer(postType){
 					return itT.GetPoint()
 				}
 			}
 			if nd.Childs[0].first and (not nd.Childs[1].first) and nd.Childs[2].first and nd.Childs[3].first
 			{
-				postType := nd.Childs[1].second->{string}
+				postType := nd.Childs[1].second->{char^}
 				if IsStrPointer(postType)
 				{
 					return itT.GetPoint()
@@ -583,7 +582,7 @@ ModuleVulkan := class extend ModuleInterface
 			}
 			if IsReqList(nd,"1101")
 			{
-				arrData := nd.Childs[2].second->{string}
+				arrData := nd.Childs[2].second->{char^}
 				if arrData == "[4]" return itT.GetArray(4)
 				if arrData == "[3]" return itT.GetArray(3)
 				if arrData == "[2]" return itT.GetArray(2)
@@ -592,10 +591,10 @@ ModuleVulkan := class extend ModuleInterface
 		if nd.Childs.Size() == 5{
 			//if (not nd.Childs[0].first) and nd.Childs[1].first and (not nd.Childs[2].first)
 			//and nd.Childs[3].first and nd.Childs[4].first
-			is IsReqList(nd,"01011")
+			if IsReqList(nd,"01011")
 			{
-				mConst := nd.Childs[0].second->{string}
-				mPP := nd.Childs[2].second->{string}
+				mConst := nd.Childs[0].second->{char^}
+				mPP := nd.Childs[2].second->{char^}
 
 				if mConst == "const " and mPP == "* const*      "{
 					itTp := GetModuleType(nd.GetValueString("type"))
@@ -610,8 +609,8 @@ ModuleVulkan := class extend ModuleInterface
 			}
 			if IsReqList(nd,"11010")
 			{
-				fConst := nd.Childs[2].second->{string}
-				sConst := nd.Childs[4].second->{string}
+				fConst := nd.Childs[2].second->{char^}
+				sConst := nd.Childs[4].second->{char^}
 
 				if fConst == "[" and sConst == "]"
 				{
@@ -631,13 +630,13 @@ ModuleVulkan := class extend ModuleInterface
 		if nd.Childs.Size() == 6{
 			if (not nd.Childs[2].first) and (not nd.Childs[4].first) and nd.Childs[3].first
 			{
-				mbArrayPre := nd.Childs[2].second->{string}
+				mbArrayPre := nd.Childs[2].second->{char^}
 				mbItem := nd.Childs[3].second->{TreeNode^}
-				mbArrayPost := nd.Childs[4].second->{string}
+				mbArrayPost := nd.Childs[4].second->{char^}
 
 				if mbItem.NodeName == "enum" and mbArrayPre == "[" and mbArrayPost == "]"
 				{
-					itVal := mbItem.Childs[0].second->{string}
+					itVal := mbItem.Childs[0].second->{char^}
 					asInt := int
 					if not GetFromInts(itVal,asInt&)
 						return null
@@ -658,7 +657,7 @@ ModuleVulkan := class extend ModuleInterface
 			if inEns != null {
 				if not TryReadInt(inEns^.1,res)
 					return false
-				if inEns^.0 == EnumsBitPos res^ = 1 << res^
+				if inEns^.0 == EnumsBitPos res^ = 1 shl res^
 				ItInts[name] = res^
 				return true
 			}
@@ -693,7 +692,7 @@ ModuleVulkan := class extend ModuleInterface
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
 	{
 		cnstName := GetConstString(name)
-		st := cnstName.Get()
+		st := cnstName.Str()
 
 		inUnit := Units.TryFind(st)
 		if inUnit != null
@@ -755,9 +754,10 @@ ModuleVulkan := class extend ModuleInterface
 			//}
 		}
 
-		st := dt.Str()
+		st := dt.GetString()
+		st.IncRef()
 
-		blank := StringSpan(st)
+		blank := StringSpan(st.Str())
 		vkInitFunc.ParseString(blank)
 	}
 }
@@ -794,10 +794,12 @@ EnumsBitPos := 2
 
 IsReqList := !(TreeNode^ nd, char^ str) -> bool
 {
-	for c : str, val : nd.Childs
+	i := 0
+	for val : nd.Childs
 	{
-		if c == '0' and val.first return false
-		if c == '1' and not val.first return false
+		if str[i] == '0' and val.first return false
+		if str[i] == '1' and not val.first return false
+		i += 1
 	}
 	return true
 }
@@ -813,7 +815,7 @@ IsStrPointer := !( char^ str) -> bool
 	}
 	return str[i] == 0
 }
-TryReadInt := !(string s, int^ res) -> bool {
+TryReadInt := !(char^ s, int^ res) -> bool {
 	val := 0
 	sign := s[0] == '-'
 	k := 0

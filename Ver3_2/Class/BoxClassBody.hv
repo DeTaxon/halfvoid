@@ -178,7 +178,7 @@ BoxClassBody := class extend BoxClassPoison
 
 	}
 
-	checkClassBody := !(Token^ bodyVal,funcs) -> void
+	checkClassBody := !(Token^ bodyVal,@TT funcs) -> void
 	{
 		SyntaxCompress(bodyVal,LexHVFileRoot)
 		iter := bodyVal.Down

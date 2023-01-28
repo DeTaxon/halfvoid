@@ -15,3 +15,22 @@ StrSize := !(char^ a) -> int
 	while a[Si] != 0 Si += 1
 	return Si
 }
+ToInt := !(char^ inp) -> int
+{
+	return strtol(inp,null,0)
+}
+
+ToFloat := !(char^ inp) -> float
+{
+	return strtod(inp,null)
+}
+
+StrCopy := !(char^ a) -> char^
+{
+	Si := StrSize(a)
+	Pre := malloc(Si+1)->{char^}
+	memcpy(Pre->{void^},a,Si)
+	Pre[Si] = 0
+
+	return Pre
+}

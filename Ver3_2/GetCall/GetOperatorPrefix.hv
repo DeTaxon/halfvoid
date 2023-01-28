@@ -51,8 +51,9 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 
 	if itm.Down is TokenSymbol
 	{
-		bigName := ". "sbt + itm.Down.GetValue()
-		bigNameSpan := GetConstString(bigName.Str())
+		bigName := TEchoStream
+		bigName << ". " << itm.Down.GetValue()
+		bigNameSpan := GetConstString(bigName.GetString().Str())
 		if itm.Down.Right == null
 			return null
 		if itm.Down.Right.Right != null

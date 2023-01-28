@@ -8,7 +8,7 @@ LexHVInputVars := PriorityBagOld^
 
 loadLex := !(char^ filName,PriorityBagOld^^ res) -> void 
 {
-	pri := gRepo.GetFile(filName)
+	pri := FSGetFile(filName)
 	if pri == null
 	{
 		printf("%s not found\n",filName)
@@ -18,8 +18,8 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 	{
 		printf("%s loaded from outsize\n",filName)
 	}
-	res^ = new PriorityBagOld(pri.Map(),pri.Size())
-	pri.Unmap()
+	fileMap := pri.GetMap()
+	res^ = new PriorityBagOld(fileMap.Get(),pri.Size())
 }
 
 GArchBitSize := 64
@@ -89,7 +89,7 @@ main := !(char^[] args) -> int
 					i += 1
 					CodeSpaces[-1].Modules.Push(new ModuleVulkan(args[i]))
 				}else{
-					file := gRepo.GetFile(args[i])
+					file := FSGetFile(args[i])
 					fileBox := new BoxFile(file)
 					CodeFiles.Push(fileBox)
 					CodeSpaces[2000].Files.Push(fileBox)
@@ -106,15 +106,16 @@ main := !(char^[] args) -> int
 	
 	HVOperators.Insert(StringSpan(PriorityData.Opers[^]))
 	
-	mac := gRepo.GetFile("Mach.m")
+	mac := FSGetFile("Mach.m")
 
 	if mac == null //todo: mac is emiting exception?
 	{
 		printf("File Mach.m not fount")
 		return -1
 	}
-
-	LoadLexMachine(mac.Map(),mac.Size()) 
+	
+	macMap := mac.GetMap()
+	LoadLexMachine(macMap.Get(),mac.Size()) 
 
 	CreateStandardTypes()
 	GBoolTrue = new BoxExeBool(true)
