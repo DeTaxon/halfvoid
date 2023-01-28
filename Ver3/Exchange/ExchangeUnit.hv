@@ -28,5 +28,6 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangePointsToVoidP)
 	ExchangeList.Push(new ExchangePointsToPointClass)
 	ExchangeList.Push(new ExchangeNullToPtr)
+	ExchangeList.Push(new ExchangeLambdaFromHolder)
 }
 

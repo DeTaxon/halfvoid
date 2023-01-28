@@ -3,7 +3,7 @@ TryParseWhile := !(Token^ itm) -> BoxExeObj^
 	if itm == null or itm.Down.GetValue() != "while"
 		return null
 
-	return new BoxBlockBreak(itm, () ==> {
+	return new BoxBlockBreak(itm, () ==> BoxUnit^ {
 		cmpExe := TryGetExeCall(itm.Down.Right)
 
 		if cmpExe == null
