@@ -25,8 +25,9 @@ Token := class
 
 	EmitError := !(char^ info) -> void
 	{
+		ln := TEchoStream
 
-		ln := "Error <"sbt << info << ">"
+		ln << "Error <" << info << ">"
 		if Line != null
 		{
 			ln << " at file " << Line.File.GetName() << " line: " <<Line.Line
@@ -55,7 +56,7 @@ Token := class
 				ln << "local var " << nv.Name << " as unknown type\n" 
 			}
 		}
-		throw new Exception(ln.Str()) //todo memory
+		throw new Exception(ln.GetString()) //todo memory
 		//printf("%s\n",ln.Str())
 		//exit(1)
 	}

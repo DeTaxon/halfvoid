@@ -130,7 +130,7 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		if DebugMode //later
 		{

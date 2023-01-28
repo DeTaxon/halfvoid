@@ -1,7 +1,7 @@
 ModuleInterface := class
 {
 	Work := virtual !() -> void {}
-	PrintCode := virtual !(TIOStream^ f) -> void {}
+	PrintCode := virtual !(Stream^ f) -> void {}
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ { return null}
 	CreateInitPart := virtual !() -> void {}
 }
@@ -10,7 +10,7 @@ CLib := class extend ModuleInterface
 {
 	textMap := StringSpan
 	libFile := vRepoFile^
-	js := json^
+	js := Json^
 
 
 	itFuncs := AVLMap.{StringSpan,BoxUnit^}
@@ -19,7 +19,7 @@ CLib := class extend ModuleInterface
 
 	itPreFuncs := AVLMap.{StringSpan,StringSpan}
 	itPreConsts := AVLMap.{StringSpan,StringSpan}
-	itPreStructs := AVLMap.{StringSpan,jsonNode^}
+	itPreStructs := AVLMap.{StringSpan,JsonNode^}
 
 	dlls := List.{StringSpan}
 	initFuncName := StringSpan
@@ -72,7 +72,7 @@ CLib := class extend ModuleInterface
 		}
 	
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		for it : itFuncs
 		{

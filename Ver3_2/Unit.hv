@@ -3,13 +3,13 @@ BoxUnit := class
 	Work := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 	}
 

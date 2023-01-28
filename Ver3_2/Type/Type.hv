@@ -142,7 +142,7 @@ TypeStandard := class extend Type
 	{
 		f^ << IRName
 	}
-	PrintDebugName := virtual !(TIOStream^ f) -> void
+	PrintDebugName := virtual !(Stream^ f) -> void
 	{
 		f^ << ItGoodName
 	}

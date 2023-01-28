@@ -29,7 +29,7 @@ PackedExeObj := class extend BoxExeObj
 	{
 		return mainCall.IsMem()
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		if IsMem()
 		{
@@ -38,23 +38,23 @@ PackedExeObj := class extend BoxExeObj
 			PrintPre(f)
 		}
 	}
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		preCalls[^].PrintDefaultUse(f)
 		mainCall.PrintPointPre(f)
 		postCalls[^].PrintDefaultUse(f)
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		mainCall.PrintPointUse(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		preCalls[^].PrintDefaultUse(f)
 		mainCall.PrintPre(f)
 		postCalls[^].PrintDefaultUse(f)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		mainCall.PrintUse(f)
 	}

@@ -8,7 +8,7 @@
 // 	{
 // 		return ResultType
 // 	}
-// 	PrintGlobal := virtual !(TIOStream f) -> void
+// 	PrintGlobal := virtual !(Stream f) -> void
 // 	{
 // 	}
 // }
@@ -70,7 +70,7 @@
 // 		for s printf("->")
 // 		printf("%x\n",pointerValue)
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		buf := char[256]
 // 		typName := ResultType.GetName()
@@ -108,7 +108,7 @@
 // 	{
 // 		return "@"sbt + fncCall.OutputName
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		f << ResultType.GetName() << " "
 // 		f << "@" << fncCall.OutputName
@@ -135,7 +135,7 @@
 // 		for s printf("->")
 // 		printf("null\n")
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		f << "i8* null"
 // 	}
@@ -169,7 +169,7 @@
 // 		for s printf("->")
 // 		printf("int %i\n",MyInt)
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << " " << MyInt
@@ -206,7 +206,7 @@
 // 		for s printf("->")
 // 		printf("bool %i\n",MyBool)
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << " "
@@ -243,7 +243,7 @@
 // 		for s printf("->")
 // 		printf("double %f\n",MyDouble)
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << " " << GetName()
@@ -310,7 +310,7 @@
 // 		for s printf("->")
 // 		printf("range %i..%i\n",beginR,endR)
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		f << " @RangeTypeInt {i32 " << beginR << " , i32 " << endR << " }"
 // 	}
@@ -364,12 +364,12 @@
 // 		for s printf("->")
 // 		printf("string %s\n",StrContainer.GetString(MyStrId))
 // 	}
-// 	PrintPointPre := virtual !(TIOStream f) -> void
+// 	PrintPointPre := virtual !(Stream f) -> void
 // 	{
 // 		StrSi := StrSize(justStr)
 // 		f << "%T" << MyTmpId <<" = bitcast [" << StrSi + 1<< " x i8]* @Str" << MyStrId <<" to [" << StrSi << "x i8]* \n" 
 // 	}
-// 	PrintPre := virtual !(TIOStream f) -> void
+// 	PrintPre := virtual !(Stream f) -> void
 // 	{
 // 		StrSi := StrSize(justStr) + 1
 // 		f << "%T" << MyTmpId <<" = getelementptr ["<< StrSi << " x i8] , [" << StrSi << " x i8]* @Str" << MyStrId <<", i32 0,i32 0\n" 
@@ -380,12 +380,12 @@
 // 		asStr := "getelementptr inbounds (["sbt + StrSi + " x i8] , [" + StrSi + " x i8]* @Str" + MyStrId + ", i32 0, i32 0)"
 // 		return @temp asStr.Str()
 // 	}
-// 	PrintPointUse := virtual !(TIOStream f) -> void
+// 	PrintPointUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << "* %T" << MyTmpId	
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		//ResultType.PrintType(f)
 // 		f << "i8* %T" << MyTmpId	
@@ -457,7 +457,7 @@
 // 	}		
 	
 
-// 	PrintGlobal := virtual !(TIOStream f) -> void
+// 	PrintGlobal := virtual !(Stream f) -> void
 // 	{
 // 		asBase := itType->{Type^}
 // 		arrItm := asBase.Base
@@ -483,7 +483,7 @@
 // 		}
 // 		f << "]\n"
 // 	}
-// 	PrintPre := virtual !(TIOStream f) -> void
+// 	PrintPre := virtual !(Stream f) -> void
 // 	{
 // 		f << "%ArrTmp" << MyTmpId << " = load "
 // 		ResultType.PrintType(f)
@@ -491,12 +491,12 @@
 // 		ResultType.PrintType(f)
 // 		f << "* @Arr" << MyTmpId << "\n"
 // 	}
-// 	PrintUse := virtual !(TIOStream f) -> void
+// 	PrintUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << " %ArrTmp"	<< MyTmpId
 // 	}
-// 	PrintPointUse := virtual !(TIOStream f) -> void
+// 	PrintPointUse := virtual !(Stream f) -> void
 // 	{
 // 		ResultType.PrintType(f)
 // 		f << "* @Arr" << MyTmpId

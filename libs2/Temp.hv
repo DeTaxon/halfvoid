@@ -9,3 +9,9 @@
 	return false
 }
 
+StrSize := !(char^ a) -> int
+{
+	Si := 0
+	while a[Si] != 0 Si += 1
+	return Si
+}

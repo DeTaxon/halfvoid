@@ -11,10 +11,11 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 		return null
 
 	suffixName := itm.Down.Right->{TokenSuffix^}.Value
-	
-	stTemp := "suffix "sbt << suffixName
 
-	st := GetConstString(stTemp.Str())
+	stt := TEchoStream
+	stt << "suffix " << suffixName
+
+	st := GetConstString(stt.GetString().Str())
 	objs := CheckExeDownList
 	objs.Push(downVal)
 	resFunc := CreateFuncCall(st,objs)

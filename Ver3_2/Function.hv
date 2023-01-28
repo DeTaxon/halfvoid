@@ -122,23 +122,23 @@ BoxLabel := class
 		id = labelIdIterator
 		labelIdIterator += 1
 	}
-	PrintLabel := virtual !(TIOStream^ f) -> void
+	PrintLabel := virtual !(Stream^ f) -> void
 	{
 		f^ << "%L" << id
 	}
-	PrintGo := virtual !(TIOStream^ f) -> void
+	PrintGo := virtual !(Stream^ f) -> void
 	{
 		f^ << "br label %L" << id
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		PrintGo(f)
 		PrintLabelCreate(f)
 	}
-	PrintLabelCreate := virtual !(TIOStream^ f) -> void
+	PrintLabelCreate := virtual !(Stream^ f) -> void
 	{
 		f^ << "L" << id << ":\n"
 	}

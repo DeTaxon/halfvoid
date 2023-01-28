@@ -48,7 +48,7 @@ BoxExeBool := class extend BoxExeConstObj
 		val = nVal
 		ObjType = GTypeBool
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		if val 
 		{
@@ -58,7 +58,7 @@ BoxExeBool := class extend BoxExeConstObj
 		}
 	}
 
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		if val
 		{
@@ -76,11 +76,11 @@ BoxExeInt := class extend BoxExeConstObj
 		Value = nVal
 		ObjType = GTypeInt
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << Value
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		f^ << Value
 		//ObjType.PrintType(f)
@@ -95,7 +95,7 @@ BoxExeDouble := class extend BoxExeConstObj
 		val = v
 		ObjType = GTypeDouble
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << val
 	}
@@ -112,7 +112,7 @@ BoxExeString := class extend BoxExeConstObj
 		val = dat
 		ObjType = GTypeChar.GetPoint()
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		f^ << "@Str" << strId << " = constant [" << val.Size() +  1 << " x i8] c\""
 		k := 0
@@ -143,12 +143,12 @@ BoxExeString := class extend BoxExeConstObj
 		}
 		f^ << "\\00\"\n"
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		stSize := val.Size() + 1
 		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 	}
-	PrintConst := virtual !(TIOStream^ f) -> void
+	PrintConst := virtual !(Stream^ f) -> void
 	{
 		stSize := val.Size() + 1
 		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"

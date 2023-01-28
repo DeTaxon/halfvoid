@@ -45,11 +45,11 @@ UnrefFuncCall := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		Down.PrintPointPre(f)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		Down.PrintPointUse(f)
 	}
@@ -68,26 +68,26 @@ PtrToRefFuncCall := class extend BoxExeObj
 	{
 		return true
 	}
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		Down.PrintPre(f)
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		Down.PrintUse(f)
 	}
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		PrintUnrefObj(f,resId,this&)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%TUnref" << resId
 	}
 }
 
 
-PrintUnrefObj := !(TIOStream^ f,int id,BoxExeObj^ obj) -> void
+PrintUnrefObj := !(Stream^ f,int id,BoxExeObj^ obj) -> void
 {
 
 	rType := NormalizeType(obj.GetType())

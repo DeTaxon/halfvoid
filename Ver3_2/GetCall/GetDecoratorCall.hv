@@ -1,4 +1,4 @@
-TryGetDecoratorCall := !(Token^ itm) -> BoeExeObj^ //TODO return complex object "@once new TGCObject"
+TryGetDecoratorCall := !(Token^ itm) -> BoxExeObj^ //TODO return complex object "@once new TGCObject"
 {
 	if itm.Down == null
 	    return null
@@ -11,7 +11,7 @@ TryGetDecoratorCall := !(Token^ itm) -> BoeExeObj^ //TODO return complex object 
 	
 	k := 0
 	buff := char[256]
-	memcpy(buff[0]&,dn.Get(),dn.Size())
+	memcpy(buff[0]&,dn.Str(),dn.Size())
 	k = dn.Size()
 	buff[k] = ' '
 	k += 1

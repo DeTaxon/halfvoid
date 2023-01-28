@@ -245,7 +245,7 @@ main := !(char^[] args) -> int
 
 	return 0
 }
-PrintDeclares := !(TIOStream^ f) -> void
+PrintDeclares := !(Stream^ f) -> void
 {
 	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
@@ -282,7 +282,7 @@ PrintDeclares := !(TIOStream^ f) -> void
 }
 
 cuId := int
-PrintDebugMeta := !(TIOStream^ fil) -> void
+PrintDebugMeta := !(Stream^ fil) -> void
 {
 	globVar := GetNewId()
 
