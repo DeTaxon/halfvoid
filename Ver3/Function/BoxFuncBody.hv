@@ -197,7 +197,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		if ResultVar != null
 			UnitStack.PushFront(ResultVar)
 		
-		body = new BoxBlock(bdy)
+		body = new BoxBlock//(bdy)
+		body."this"(bdy)
 		body.Work()
 
 		if Attrs.IsAutoResult

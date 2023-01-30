@@ -14,8 +14,15 @@ AppendClass BoxFuncBody
 
 	CapturedBySomeVars := AVLMap.{StringSpan,Tuple.{NamedVar^,MemVar^,BoxExeObj^}} //By ref,value
 
+	FunctionResultVars := List.{FuncResultParam2^}
+
 	WorkBodyCaptures := !() -> void
 	{
+		for it : FunctionResultVars
+		{
+			it.PopulateCalls()
+		}
+
 		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
 			return void
 		

@@ -77,7 +77,8 @@ BoxFor := class extend BoxExeObj
 				it.NextCheck.PrintCode(f)
 			}
 
-			it.GetCall.PrintDefaultUse(f)
+			//it.GetCall.PrintDefaultUse(f)
+			it.ValueVar.PrintCode(f)
 
 			if it.IsFinished != null
 			{

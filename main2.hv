@@ -6,24 +6,34 @@
 //	g3 := int
 //}
 
-why := class
+invoke := !(!()&->void cb) -> void
 {
-	x := int
-	this := !(int y) -> void
-	{
-		x = y
-		y&
-	}
+	cb()
 }
 
 main := !(char^[] args) -> int
 {
-	g := why
-	g.this(13)
-	//cls := someCls
-	//printf("hey %i\n",cls->TypeSize)
-	//cls.hoh(13)
-	//printf("hey %i\n",cls->TypeSize)
+	for i : 20
+	{
+		i += 13
+
+		invoke(() ==> void
+		{
+			printf("hey %i\n",i)
+		})
+	}
+	//lst := List.{int}
+	//lst.Push(13)
+	//lst.Push(7)
+	//lst.Push(20)
+
+	//for it : lst
+	//{
+	//	lmbd := () ==> {
+	//		printf("test %i\n",it)
+	//	}
+	//	lmbd()
+	//}
 	return 0
 }
 

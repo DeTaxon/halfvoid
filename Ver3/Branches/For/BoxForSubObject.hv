@@ -19,7 +19,6 @@ ForSubObjects := class
 
 	CheckRegularStep := !() -> void
 	{
-
 		dwnRes := DownResult
 
 		objs7 := CheckExeDownList
@@ -41,6 +40,7 @@ ForSubObjects := class
 			DownToken.EmitError("Object does not have operator for")
 
 		dwnVar := new FuncResultParam(getForCall)
+
 		
 		cnsts := List.{BoxExeConstObj^}
 		objs := CheckExeDownList
@@ -128,7 +128,10 @@ ForSubObjects := class
 		IsFinished = iFins
 		HaveValue = haveValue
 		InitStep = dwnVar
-		ValueVar = new MemVar(StringSpan(ValueName),new FuncResultParam(iCall))
+
+		valueVarParam := new FuncResultParam2(iCall)
+		CurrentFunc.FunctionResultVars.Push(valueVarParam)
+		ValueVar = new MemVar(StringSpan(ValueName),valueVarParam)
 	}
 
 	"=" := default
