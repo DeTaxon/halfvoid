@@ -63,31 +63,64 @@ FuncResultParam2 := class extend FuncResultParam
 		assert(exeObj != null)
 		if exeObj.IsMem()
 			return void
-
+		makeBackupVar()
+	}
+	makeBackupVar := !() -> void
+	{
 		assert(parentFunc.body != null)
 
-		fallbackVar = parentFunc.body.CreateVar(exeObj.GetType(),false)
+		refPath := exeObj.IsMem()
+
+		varType := exeObj.GetType()
+		if refPath
+			varType = varType.GetPoint()
+
+		oldF := CurrentFunc
+		CurrentFunc = parentFunc
+		fallbackVar = parentFunc.body.CreateVar(varType,false)
+		CurrentFunc = oldF
 
 		dwns := CheckExeDownList
 		dwns.Push(fallbackVar.CreateCall())
-		dwns.Push(exeObj)
+
+		if refPath
+		{
+			dwns.Push(new UnrefFuncCall(exeObj))
+		}else{
+			dwns.Push(exeObj)
+		}
 
 		setVar = CreateFuncCall(StringSpan("="),dwns)
 		assert(setVar != null)
 
 		assert(fallbackVar is in FuncLocalParam)
 		sv := fallbackVar->{FuncLocalParam^}
-		for it : CreatedVarCalls
+
+		mpty := CheckExeDownList
+		if refPath
 		{
-			sv.CreatedVarCalls.Push(it)
+			for it : CreatedVarCalls
+			{
+				it.CallObj = new PtrToRefFuncCall(fallbackVar.CreateCall(mpty))
+			}
+		}else{
+			for it : CreatedVarCalls
+			{
+				sv.CreatedVarCalls.Push(it)
+			}
 		}
 		CreatedVarCalls.Clear()
 
-		this&->SetType(FuncResultParam2OnMem)
+		if refPath
+		{
+			this&->SetType(FuncResultParam2OnMemRef)
+		}else{
+			this&->SetType(FuncResultParam2OnMem)
+		}
 	}
 	NotifyCaptureUse := virtual !() -> void
 	{
-		NotifyMemUse()
+		makeBackupVar()
 		fallbackVar.NotifyCaptureUse()
 	}
 	IsMem := virtual !() -> bool
@@ -108,10 +141,6 @@ FuncResultParam2 := class extend FuncResultParam
 		}
 	}
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
-	{
-	}
-
-	PopulateCalls := virtual !() -> void
 	{
 	}
 
@@ -146,6 +175,24 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	{
 		assert(CreatedVarCalls.Size() == 0)
 		return fallbackVar.CreateCall(objs)
+	}
+	PopulateCalls := virtual !() -> void
+	{
+	}
+}
+FuncResultParam2OnMemRef := class extend FuncResultParam2
+{
+	NotifyMemUse := virtual !() -> void
+	{
+	}
+	PrintCode := virtual !(TIOStream^ f) -> void
+	{
+		setVar.PrintDefaultUse(f)
+	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(CreatedVarCalls.Size() == 0)
+		return new PtrToRefFuncCall(fallbackVar.CreateCall(objs))
 	}
 	PopulateCalls := virtual !() -> void
 	{

@@ -14,14 +14,20 @@ invoke := !(!()&->void cb) -> void
 main := !(char^[] args) -> int
 {
 	c := TGCObject^
-	for i : 20
+
+	hm := List.{float}
+	hm.Push(13)
+	hm.Push(7)
+	hm.Push(200)
+
+	for i : hm
 	{
 		i += 13
 
 		invoke(() ==> void
 		{
 			c = null
-			printf("hey %i\n",i)
+			printf("hey %f\n",i)
 		})
 	}
 	//lst := List.{int}

@@ -15,9 +15,12 @@ BoxBlock := class extend BoxExeObj
 	infoToken := Token^
 	lambdaWay := !()&->BoxUnit^
 
+	ParentFunc := BoxFuncBody^
+
 	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
 	{
 		assert(isRef == false)
+		assert(ParentFunc != null)
 
 		if IsGCPtr(varType)
 		{
@@ -25,17 +28,17 @@ BoxBlock := class extend BoxExeObj
 			GCVarsInUse += 1
 
 			assert(CurrentFunc is in BoxFuncBody)
-			CurrentFunc->{BoxFuncBody^}.NotifyGCUsed()
+			ParentFunc.NotifyGCUsed()
 
 			newVar := new FuncGCLocalParam(varType,gcIndex)
 			gcVars.PushFront(newVar)
-			CurrentFunc->{BoxFuncBody^}.gcVars.Push(newVar)
+			ParentFunc.gcVars.Push(newVar)
 			return newVar
 		}
 
 		newVar2 := new FuncLocalParam(varType)
 		simpleVars.PushFront(newVar2)
-		CurrentFunc.regularVars.Push(newVar2)
+		ParentFunc.regularVars.Push(newVar2)
 
 		return newVar2
 	}
@@ -48,6 +51,7 @@ BoxBlock := class extend BoxExeObj
 		ItLine = bdy.Line
 		if DebugMode
 			MetaId = GetNewId()
+		ParentFunc = CurrentFunc
 		innerWork()
 	}
 	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
@@ -58,6 +62,7 @@ BoxBlock := class extend BoxExeObj
 		ItLine = tokenLine.Line
 		if DebugMode
 			MetaId = GetNewId()
+		ParentFunc = CurrentFunc
 		innerWork()
 	}
 	innerWork := virtual !() -> void
