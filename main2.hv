@@ -13,12 +13,14 @@ invoke := !(!()&->void cb) -> void
 
 main := !(char^[] args) -> int
 {
+	c := TGCObject^
 	for i : 20
 	{
 		i += 13
 
 		invoke(() ==> void
 		{
+			c = null
 			printf("hey %i\n",i)
 		})
 	}

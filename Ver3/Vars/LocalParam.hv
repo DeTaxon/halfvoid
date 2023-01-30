@@ -64,9 +64,12 @@ FuncLocalParam := class extend ParamFunc
 	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
+
+	populated := bool
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
+		assert(not populated)
 
 		res := new ParamLoadObj(this&)
 		CreatedVarCalls.Push(res)
@@ -75,6 +78,7 @@ FuncLocalParam := class extend ParamFunc
 
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			it.CallObj = new BoxFuncCall(this&)
@@ -128,6 +132,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			getCall := GetTupleVar()

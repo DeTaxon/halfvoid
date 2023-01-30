@@ -29,9 +29,11 @@ FuncGCLocalParam := class extend ParamFunc
 		parentFunc.gcArrayPtr.NotifyCaptureUse()
 	}
 
+	populated := bool
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
+		assert(not populated)
 
 		res := new ParamLoadObj(this&)
 		CreatedVarCalls.Push(res)
@@ -40,6 +42,7 @@ FuncGCLocalParam := class extend ParamFunc
 
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			getVar := parentFunc.gcArrayPtr.CreateCall()

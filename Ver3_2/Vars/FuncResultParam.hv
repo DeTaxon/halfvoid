@@ -87,6 +87,8 @@ FuncResultParam2 := class extend FuncResultParam
 	}
 	NotifyCaptureUse := virtual !() -> void
 	{
+		NotifyMemUse()
+		fallbackVar.NotifyCaptureUse()
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -112,16 +114,19 @@ FuncResultParam2 := class extend FuncResultParam
 	PopulateCalls := virtual !() -> void
 	{
 	}
-	
+
+	populated := bool
 	CreatedVarCalls := List.{ParamLoadObj^}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
+		assert(not populated)
 		res := new ParamLoadObj(this&)
 		CreatedVarCalls.Push(res)
 		return res
 	}
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			it.CallObj = new BoxFuncCall(this&)
@@ -139,6 +144,7 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
+		assert(CreatedVarCalls.Size() == 0)
 		return fallbackVar.CreateCall(objs)
 	}
 	PopulateCalls := virtual !() -> void

@@ -38,13 +38,13 @@ FuncLocalParam := class extend ParamFunc
 		this&->{FuncLocalParamCaptured^}.DoCapture()
 		assert(this& is FuncLocalParamCaptured)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		PrintMakeZero(f)
 		Inits[^].PrintDefaultUse(f)
 	}
 
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(TIOStream^ f) -> void
 	{
 		pType := GetType()->{TypeFunc^}.ResultType
 
@@ -54,19 +54,22 @@ FuncLocalParam := class extend ParamFunc
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
 	{
 		f^ << irName 
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(TIOStream^ f) -> void
 	{
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
+
+	populated := bool
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
+		assert(not populated)
 
 		res := new ParamLoadObj(this&)
 		CreatedVarCalls.Push(res)
@@ -75,6 +78,7 @@ FuncLocalParam := class extend ParamFunc
 
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			it.CallObj = new BoxFuncCall(this&)
@@ -84,7 +88,7 @@ FuncLocalParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(TIOStream^ f) -> void
 	{
 		f^ << irName
 	}
@@ -115,7 +119,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		RezeroCall = callFunc.CreateCall(objs)
 
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		RezeroCall?.PrintDefaultUse(f)
 	}
@@ -128,6 +132,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 
 	PopulateCalls := virtual !() -> void
 	{
+		populated = true
 		for it : CreatedVarCalls
 		{
 			getCall := GetTupleVar()
@@ -148,7 +153,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 			objs.Push(getCall)
 			assert(fld != null)
 			it.CallObj = new BoxFuncCall(fld,objs)
-			objs.Destroy()
+			objs.Clear()
 		}
 	}
 
@@ -157,7 +162,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		return true
 	}
 
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(TIOStream^ f) -> void
 	{
 	}
 }

@@ -147,6 +147,10 @@ ParamLoadObj := class extend BoxExeObj
 
 	PrintPre := virtual !(TIOStream^ f) -> void
 	{
+		if CallObj == null
+		{
+			printf("hey %s\n",VarPtr.GetVarType().GetBADStr())
+		}
 		CallObj.PrintPre(f)
 	}
 	PrintUse := virtual !(TIOStream^ f) -> void
