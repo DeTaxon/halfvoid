@@ -117,7 +117,10 @@ ver3:
 ver3_2:
 	$(TimeFlags) ./ver3 -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o ver3_2
+same:
+	$(TimeFlags) ./ver3_2 -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
+	clang -gdwarf-4 out.ll -lm -ldl -o ver3_2
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY: clean cycle repair test2 test2g stable unit ver3
+.PHONY: clean cycle repair test2 test2g stable unit ver3 same ver3_2

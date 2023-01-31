@@ -21,6 +21,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 	{
 		if StaticSize < HSize
 		{
+			ZeroMem(StaticArray[StaticSize])
 			StaticArray[StaticSize] = itm
 			StaticSize += 1
 		}else{
