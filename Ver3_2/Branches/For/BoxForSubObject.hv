@@ -39,7 +39,8 @@ ForSubObjects := class
 		if getForCall == null
 			DownToken.EmitError("Object does not have operator for")
 
-		dwnVar := new FuncResultParam(getForCall)
+		dwnVar := new FuncResultParam2(getForCall)
+		CurrentFunc.FunctionResultVars.Push(dwnVar)
 
 		
 		cnsts := List.{BoxExeConstObj^}
