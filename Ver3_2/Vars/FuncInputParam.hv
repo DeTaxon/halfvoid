@@ -23,17 +23,17 @@ FuncInputParam := class extend ParamFunc
 	{
 		return isRef
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
 			f^ <<  irName
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	NotifyMemUse := virtual !() -> void
@@ -84,7 +84,7 @@ FuncInputParam := class extend ParamFunc
 
 		CurrentFunc = oldFnc
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 	}
 	IsValue := virtual !() -> bool
@@ -118,7 +118,7 @@ FuncInputParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	PrintDebugLine := virtual !(Stream^ f) -> void
 	{
 		f^ <<  irName
 	}
@@ -145,16 +145,16 @@ ParamLoadObj := class extend BoxExeObj
 
 	NotifyCaptureUse := virtual !() -> void { VarPtr.NotifyCaptureUse() }
 
-	PrintPre := virtual !(TIOStream^ f) -> void
+	PrintPre := virtual !(Stream^ f) -> void
 	{
 		CallObj.PrintPre(f)
 	}
-	PrintUse := virtual !(TIOStream^ f) -> void
+	PrintUse := virtual !(Stream^ f) -> void
 	{
 		CallObj.PrintUse(f)
 	}
 
-	PrintPointPre := virtual !(TIOStream^ f) -> void
+	PrintPointPre := virtual !(Stream^ f) -> void
 	{
 		if CallObj == null
 		{
@@ -163,7 +163,7 @@ ParamLoadObj := class extend BoxExeObj
 		}
 		CallObj.PrintPointPre(f)
 	}
-	PrintPointUse := virtual !(TIOStream^ f) -> void
+	PrintPointUse := virtual !(Stream^ f) -> void
 	{
 		CallObj.PrintPointUse(f)
 	}
@@ -191,7 +191,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		return true
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		LocalParamBackup.PrintCode(f)
 		SelfSet.PrintDefaultUse(f)
@@ -218,7 +218,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		return LocalParamBackup.IsDebuggable()
 	}
-	PrintDebugLine := virtual !(TIOStream^ f) -> void
+	PrintDebugLine := virtual !(Stream^ f) -> void
 	{
 		LocalParamBackup.PrintDebugLine(f)
 	}

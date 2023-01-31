@@ -17,11 +17,11 @@ FuncResultParam := class extend ParamFunc
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		exeObj.PrintDefaultUse(f)
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		if exeObj.IsMem()
 		{
@@ -30,7 +30,7 @@ FuncResultParam := class extend ParamFunc
 			exeObj.PrintUse(f)
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -93,9 +93,6 @@ FuncResultParam2 := class extend FuncResultParam
 		setVar = CreateFuncCall(StringSpan("="),dwns)
 		assert(setVar != null)
 
-		assert(fallbackVar is in FuncLocalParam)
-		sv := fallbackVar->{FuncLocalParam^}
-
 		mpty := CheckExeDownList
 		if refPath
 		{
@@ -106,10 +103,10 @@ FuncResultParam2 := class extend FuncResultParam
 		}else{
 			for it : CreatedVarCalls
 			{
-				sv.CreatedVarCalls.Push(it)
+				it.CallObj = fallbackVar.CreateCall(mpty)
 			}
 		}
-		CreatedVarCalls.Clear()
+		CreatedVarCalls.Destroy()
 
 		if refPath
 		{
@@ -127,11 +124,11 @@ FuncResultParam2 := class extend FuncResultParam
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		exeObj.PrintDefaultUse(f)
 	}
-	PrintResultObj := virtual !(TIOStream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
 	{
 		if exeObj.IsMem()
 		{
@@ -140,7 +137,7 @@ FuncResultParam2 := class extend FuncResultParam
 			exeObj.PrintUse(f)
 		}
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -167,7 +164,7 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		setVar.PrintDefaultUse(f)
 	}
@@ -185,7 +182,7 @@ FuncResultParam2OnMemRef := class extend FuncResultParam2
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		setVar.PrintDefaultUse(f)
 	}

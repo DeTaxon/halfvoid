@@ -157,11 +157,11 @@ BoxBlock := class extend BoxExeObj
 			UnitStack.Pop()
 		}
 	}
-	PrintDefaultUse := virtual !(TIOStream^ f) -> void
+	PrintDefaultUse := virtual !(Stream^ f) -> void
 	{
 		PrintCode(f)
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 		if exeLines.Size() == 0
 			return void
@@ -177,7 +177,7 @@ BoxBlock := class extend BoxExeObj
 
 		quitLabel?.PrintCode(f)
 	}
-	PrintDebugMeta := virtual !(TIOStream^ f) -> void
+	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
 		if exeLines.Size() == 0
 			return void

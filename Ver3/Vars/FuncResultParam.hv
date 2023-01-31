@@ -93,9 +93,6 @@ FuncResultParam2 := class extend FuncResultParam
 		setVar = CreateFuncCall(StringSpan("="),dwns)
 		assert(setVar != null)
 
-		assert(fallbackVar is in FuncLocalParam)
-		sv := fallbackVar->{FuncLocalParam^}
-
 		mpty := CheckExeDownList
 		if refPath
 		{
@@ -106,7 +103,7 @@ FuncResultParam2 := class extend FuncResultParam
 		}else{
 			for it : CreatedVarCalls
 			{
-				sv.CreatedVarCalls.Push(it)
+				it.CallObj = fallbackVar.CreateCall(mpty)
 			}
 		}
 		CreatedVarCalls.Clear()

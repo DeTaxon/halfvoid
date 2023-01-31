@@ -13,8 +13,6 @@ invoke := !(!()&->void cb) -> void
 
 main := !(char^[] args) -> int
 {
-	c := TGCObject^
-
 	hm := List.{float}
 	hm.Push(13)
 	hm.Push(7)
@@ -26,7 +24,6 @@ main := !(char^[] args) -> int
 
 		invoke(() ==> void
 		{
-			c = null
 			printf("hey %f\n",i)
 		})
 	}

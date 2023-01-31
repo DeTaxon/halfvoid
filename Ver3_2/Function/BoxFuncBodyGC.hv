@@ -7,9 +7,13 @@ AppendClass BoxFuncBody
 
 	gcSetPtr := BoxExeObj^
 
+	passedGC := bool
+
 	NotifyGCUsed := !() -> void 
 	{
 		gcVarsCount = max(gcVarsCount,GCVarsInUse)
+
+		assert(not passedGC)
 
 		if gcArrayPtr == null
 		{
@@ -33,6 +37,7 @@ AppendClass BoxFuncBody
 	}
 	WorkBodyGC := !() -> void
 	{
+		passedGC = true
 		if gcVarsCount == 0
 			return void
 		

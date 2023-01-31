@@ -18,10 +18,10 @@ FuncGCLocalParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
-	PrintFuncCall := virtual !(TIOStream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	NotifyCaptureUse := virtual !() -> void
@@ -51,7 +51,7 @@ FuncGCLocalParam := class extend ParamFunc
 			objs.Push(GetExeInt(gcIndex))
 			step1 := new UnrefFuncCall(CreateFuncCall(StringSpan("[]"),objs))
 			assert(step1 != null)
-			objs.Clear()
+			objs.Destroy()
 			step2 := GetExchange2(step1,pType.GetPoint(),false)
 			it.CallObj = new PtrToRefFuncCall(step2)
 		}
@@ -59,7 +59,7 @@ FuncGCLocalParam := class extend ParamFunc
 }
 FuncGCLocalParamInYield := class extend FuncGCLocalParam
 {
-	PrintCode := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
 	}
 }

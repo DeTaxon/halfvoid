@@ -61,9 +61,6 @@ AppendClass BoxFuncBody
 		if Yields.Size() == 0
 			return void	
 
-		for it : regularVars
-			it.NotifyCaptureUse()
-
 		yTuple := GetCaptureTuple()
 		
 		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad

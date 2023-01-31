@@ -197,11 +197,22 @@ BoxFuncBody := class extend BoxFuncCommon
 		if ResultVar != null
 			UnitStack.PushFront(ResultVar)
 		
-		body = new BoxBlock(bdy)
+		body = new BoxBlock//(bdy)
+		body."this"(bdy)
 		body.Work()
 
 		if Attrs.IsAutoResult
 			CheckReturnStep()
+
+
+		if Yields.Size() != 0
+		{
+			for it : regularVars
+				it.NotifyCaptureUse()
+
+			for it : FunctionResultVars
+				it.NotifyCaptureUse()
+		}
 
 		WorkBodyGC()
 
@@ -225,6 +236,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		CapturedVarsTuple?.PopulateCalls()
 
 		gcArrayPtr?.PopulateCalls2(() ==> {
+			assert(gcArrayVar != null)
 			step1 := gcArrayVar.CreateCall()
 			step2 := new UnrefFuncCall(step1)
 			step3 := GetExchange2(step2, GTypeVoidP.GetPoint(),false)

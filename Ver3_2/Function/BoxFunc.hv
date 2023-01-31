@@ -1,393 +1,261 @@
-
-BoxFuncBody := class extend BoxFuncCommon
+BoxFunc := class extend BoxExeConstObj
 {
-	headerHatch := THatch
+	ItTypeHatch := THatch
 
-	Attrs := FuncAttributes
-
-	Name := StringSpan
-	OutputName := StringSpan
-
-	inps1 := Token^
-	resTyp := Token^
-	bdy := Token^
-
-	funcLine := BoxExeLine^
-
-	Constants := List.{BoxUnit^}
-	ConstVars := List.{BoxUnit^}
-
-	NamedParametersCount := int
-	VariadicName := StringSpan
-
-	DefaultValues := AVLMap.{int,Token^}
-
-	ExitLabel := BoxLabel^
-
-	EnterCall := BoxExeObj^
-	LeaveCall := BoxExeObj^
-
-	InputVarNames := List.{StringSpan}
-
-	ParentScope := BoxUnit^
-	GetParentScope := virtual !() -> BoxUnit^
-	{
-		return ParentScope
-	}
-
-
-	GetDefaultValuesCount := virtual !() -> int
-	{
-		return DefaultValues.Size()
-	}
-	GetDefaultToken := virtual !(int i) -> Token^
-	{
-		if not DefaultValues.Contain(i)
-			return null
-		return DefaultValues[i]
-	}
-
-
-	this := !(TypeFunc^ tp, FuncAttributes atrs, HybridQueue.{StringSpan,10} names, Token^ bodyIn) -> void
-	{
-		Name = "anon"
-		SetType(tp)
-		Attrs = atrs
-		bdy = bodyIn
-
-		if not Attrs.IsAutoResult
-		{
-			ResultTypeHatch.Emit()
-		}
-
-		NamedParametersCount = names.Size()
-		InputVarNames.Push(names[^])
-
-		if DebugMode
-		{
-			funcLine = new BoxExeLine()
-			funcLine.ItToken = bdy
-			assert(funcLine.ItToken.Line != null)
-		}
-		ExitLabel = new BoxLabel() 
-	}
-	GetBaseClass := !() -> BoxClass^
-	{
-		if ParentScope == null
-			return null
-		if ParentScope is in BoxClass
-			return ParentScope->{BoxClass^}
-		return null
-	}
-
-	ResultTypeHatch := THatch
 	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
-		ResultTypeHatch.Await()
 		return ObjType
 	}
-
-	StartedParse := bool
-	StartedParseForced := bool
-	ParseBody := virtual !() -> void
+	SetType := !(TypeFunc^ tp) -> void
 	{
-		if StartedParse
-			return void
-		StartedParse = true
-		cls := this&
-		GFuncsInProgress.Push(this&)
-		TSpawnTask(() ==> [cls] {
-			cls.ParseBodyForced()
-		})
+		ObjType = tp
+		ItTypeHatch.Emit()
 	}
-	ParseBodyForced := virtual !() -> void
+	IsMem := virtual !() -> bool
 	{
-		if StartedParseForced
-			return void
-		StartedParseForced = true
+		return GetType()->{TypeFunc^}.ResultRef
+	}
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return 0
+	}
+	GetDefaultToken := virtual !(int i) -> Token^
+	{
+		return null
+	}
 
-		GFuncsInProgress.Push(this&)
-		this.WorkBody()
+	WorkBody := virtual !() -> void
+	{
 	}
 	SetName := virtual !(StringSpan nm) -> void
 	{
-		Name = nm
-
-		if CurrentCodeSpace != null
-		{
-			CurrentCodeSpace.Functions[Name].Push(this&)
-		}
 	}
+	ForceOutputName := virtual !(StringSpan nm) -> void {}
 	SetPrintName := virtual !(StringSpan nm) -> void
 	{
-		Name = nm
-	}
-	ForceOutputName := virtual !(StringSpan nm) -> void {
-		OutputName = nm
-	}
-	GetExitLabel := virtual !() -> BoxLabel^
-	{
-		return ExitLabel
-	}
-
-	body := BoxBlock^
-	readyState := THatch
-	WorkBody := virtual !() -> void
-	{
-		oldVarsCount := GCVarsInUse
-		GCVarsInUse = 0
-
-		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
-		ParentFunc = oldFunc
-		FuncStack.PushFront(this&)
-		CurrentFunc = this&
-		
-		AllFunctions.Push(this&)
-
-		stackSize := UnitStack.Size()
-
-		if stackSize == 0 //todo better way of readding constants
-			ScopePutConstants()
-
-		UnitStack.PushFront(this&)
-
-		tp := ObjType->{TypeFunc^}
-
-		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
-		{
-			name := StringSpan("")
-			if i < InputVarNames.Size()
-			{
-				name = InputVarNames[i]
-			}else{
-				if i == 0 and ParentScope? is in BoxClass //TODO Check for static somehow
-				{
-					name = StringSpan("this")
-				}else{
-					name = GetParSpan(i)
-				}
-			}
-			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
-			vr := new MemVar(name,parObj)
-			Params.Push(vr)
-		}
-		if not Attrs.IsAutoResult
-			CreateResultVar()
-
-		UnitStack.PushFront(ConstVars[^])
-
-		// for it : ConstVars
-		// {
-		// 	if it is in TypeVar
-		// 	{
-		// 		printf("heh %s\n",it->{TypeVar^}.Name)
-		// 	}
-		// }
-
-		OutputName = GetFuncMangle(Name)
-		
-		CurrentScope = this&
-
-		for par : Params
-		{
-			UnitStack.PushFront(par)
-		}
-		
-		if ResultVar != null
-			UnitStack.PushFront(ResultVar)
-		
-		body = new BoxBlock//(bdy)
-		body."this"(bdy)
-		body.Work()
-
-		if Attrs.IsAutoResult
-			CheckReturnStep()
-
-		WorkBodyGC()
-
-		YieldWork()
-		WorkBodyCaptures()
-
-		if Attrs.IsLambda
-		{
-			newTplType := ParentFunc.GetCaptureTuple().ItType
-			if CaptureUsed
-			{
-				ThisCaptureTupleType = newTplType
-				CreateGetCaptureCall()
-			}
-		}
-
-		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
-		ResultVar?.Value.PopulateCalls()
-		//gcArrayPtr?.PopulateCalls()
-		gcVars[^].PopulateCalls()
-		CapturedVarsTuple?.PopulateCalls()
-
-		gcArrayPtr?.PopulateCalls2(() ==> {
-			step1 := gcArrayVar.CreateCall()
-			step2 := new UnrefFuncCall(step1)
-			step3 := GetExchange2(step2, GTypeVoidP.GetPoint(),false)
-			assert(step3 != null)
-			return step3
-		})
-		regularVars[^].PopulateCalls()
-
-		
-		while UnitStack.Size() > stackSize
-		{
-			UnitStack.Pop()
-		}
-		FuncStack.Pop()
-		CurrentFunc = oldFunc
-		GCVarsInUse = oldVarsCount
-
-		ResultTypeHatch.Emit()
-		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void
 	{
-		readyState.Await()
 	}
-	PrintName := virtual !(TIOStream^ f) -> void
+	PrintCode := virtual !(Stream^ f) -> void
 	{
-		f^ << "@" << OutputName
-		if OutputName.Size() == 0
-			printf("bad\n")
 	}
-	
-	PrintCode := virtual !(TIOStream^ f) -> void
+	GetExitLabel := virtual !() -> BoxLabel^
 	{
-		if body == null
-			return void
-
-		GDebugFuncId = 0
-		CurrentFunc = this&
-
-		if DebugMode and funcLine != null
+		assert(false)
+	}
+	PrintResultType := virtual !(Stream^ f) -> void
+	{
+		fTyp := GetType()->{TypeFunc^}
+		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
-			GDebugFuncId = GetNewId()
-			GDebugLineCallId = funcLine.MetaId
-		}
-		oldScope := GDebugScopeId
-		defer GDebugScopeId = oldScope
-		GDebugScopeId = GDebugFuncId
-
-		f^ << "define "
-		PrintResultType(f)
-		f^ << " @" << OutputName << "("
-		PrintInputTypes(f)
-		f^ << ")"
-		if DebugMode
-			f^ << " !dbg !" << GDebugFuncId
-		f^ << "\n"
-		f^ << "{\n"
-
-
-		CapturedVarsTuple?.PrintAlloc(f)
-		for it : regularVars
-			it.PrintAlloc(f)
-		ResultVar?.Value.PrintAlloc(f)
-		ResultVar?.PrintCode(f)
-
-		PrintStackData(f)
-
-
-		PrintYieldCreateVar(f)
-		PrintYieldCodeParamsGC(f)
-		//gcArrayVar?.PrintCode(f)
-		if gcVarsCount != 0
-			EnterCall.PrintDefaultUse(f)
-
-
-		PrintYieldCodeGo(f)
-
-		rTyp := GetType()->{TypeFunc^}.ResultType
-
-		gcArrayPtr?.PrintCode(f)
-		Params[^].PrintCode(f)
-
-		gcSetPtr?.PrintDefaultUse(f)
-		
-		body.PrintCode(f)
-
-		YieldPrintFinilize(f)
-
-		ExitLabel.PrintCode(f)
-
-		//CapturedVarsCleanup?.PrintDefaultUse(f)
-		LeaveCall?.PrintDefaultUse(f)
-
-		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
-
-		if rTyp == GTypeVoid or isCmplx
-		{
-			f^ << "ret void"
-			if DebugMode
-				f^ << " , !dbg !" << GDebugLineCallId
-			f^ << "\n"
+			GTypeVoid.PrintType(f)
 		}else{
-			if ResultVar != null
-			{
-				tmpList := CheckExeDownList
-				cl := BoxFuncCall(ResultVar.Value,tmpList)
-
-				cl.PrintPre(f)
-				f^ << "ret "
-				cl.GetType().PrintType(f)
-				f^ << " "
-				cl.PrintUse(f)
-				if DebugMode
-					f^ << " , !dbg !" << GDebugLineCallId
-				f^ <<"\n"
-			}
+			fTyp.ResultType.PrintType(f)
+			if fTyp.ResultRef
+				f^ << "*"
 		}
+	}
+	ParseBody := virtual !() -> void
+	{
+	}
+	ParseBodyForced := virtual !() -> void
+	{
+	}
+	PrintUse := virtual !(Stream^ f) -> void
+	{
+		PrintName(f)
+	}
+	PrintInputTypes := virtual !(Stream^ f) -> void
+	{
+		fTyp := GetType()->{TypeFunc^}
+		needComma := false
 
-		f^ << "}\n"
-
-		if DebugMode
+		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
-			oldFileId := GDebugFileId //todo fix FileId
-
-			if bdy?.Line?.File != null
-			{
-				GDebugFileId = bdy.Line.File.fileId
-			}
-
-			funcLine.PrintDebugMeta(f)
-			body.PrintDebugMeta(f)
-			Params[^].PrintDebugMeta(f)
-			ResultVar?.PrintDebugMeta(f)
-
-			f^ << "!" << GDebugFuncId << " = distinct !DISubprogram(name:\""
-			PrintName(f)
-			f^ << "\","
-			f^ << "linkageName:\""
-			PrintName(f)
-			f^ << "\","
-			f^ << "scope: !" << GDebugFileId << " , file: !" << GDebugFileId
-			f^ << ",type: !" << GetType().MetaId
-			if bdy.Line != null
-			{
-				f^ << ", line:" << bdy.Line.Line
-				f^ << ", scopeLine:" << bdy.Line.Line
-			}
-			f^ << ", unit: !" << cuId
-			f^ << ", flags: DIFlagPrototyped"
-			f^ << ", spFlags: DISPFlagDefinition"
-			//if tmplId != -1
-			//	f << ", templateParams:!"<<tmplId
-			f^ << ")\n"
-
-			GDebugFileId = oldFileId
+			fTyp.ResultType.PrintType(f)
+			f^ << "* %result" 
+			needComma = true
 		}
+
+		for par,i : fTyp.Params
+		{
+			if needComma
+				f^ << ","
+			needComma = true
+
+			par.ItType.PrintType(f)
+			if par.IsRef
+				f^ << "*"
+			f^ << " %par" << i
+		}
+		if GetType()->{TypeFunc^}.IsVargs
+		{
+			if needComma
+				f^ << ","
+			f^ << "..."
+		}
+	}
+	PrintName := virtual !(Stream^ f) -> void
+	{
+	}
+
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	{
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+	}
+
+
+	CreateCall := virtual !() -> BoxExeObj^
+	{
+		empty := CheckExeDownList
+		return CreateCall(empty)
+	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 	}
 }
 
-GetParSpan := !(int i) -> StringSpan
+BoxFuncCommon := class extend BoxFunc
 {
-	buff := char[100]
-	sprintf(buff[0]&,"%%par%i",i)
-	result = GetConstString(buff[0]&)
+	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	{
+		fTyp := GetType()->{TypeFunc^}
+		if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
+		{
+			f^ << "%T" << resId
+		}
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		PrintFuncCallCommon(f,this&,resId,lst)
+	}
+}
+
+PrintFuncCallResultCommon := !(Stream^ f,TypeFunc^ fTyp,int resId) -> void
+{
+	if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
+	{
+		f^ << "%T" << resId
+	}
+}
+PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
+{
+	itType := TypeFunc^
+	if fncObj is in BoxFunc
+	{
+		itType = fncObj.GetType()->{TypeFunc^}
+	}else{
+		tmpType := fncObj.GetType()
+		assert(tmpType is in TypePoint and tmpType.Base is TypeFunc)
+		itType = tmpType.Base->{TypeFunc^}
+	}
+
+	sType := itType
+	itType = NormalizeFuncType(itType)
+
+	for itm,i : lst
+	{
+		if itType.Params.Size() > i and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
+		{
+			itm.PrintPointPre(f)
+		}else{
+			itm.PrintPre(f)
+		}
+	}
+	fncObj.PrintPre(f)
+
+	if itType.ResultType != GTypeVoid
+	{
+		f^ << "%T" << resId << " = "
+	}
+
+	f^ << "call "
+	if itType.IsVargs
+	{
+		itType.PrintType(f)
+	}else{
+		itType.ResultType.PrintType(f)
+		if itType.ResultRef
+			f^ << "*"
+	}
+	fncObj.PrintUse(f)
+
+	f^ << "("
+	
+	needComma := false
+
+	for dwn,i : lst
+	{
+		if needComma
+			f^ << ","
+		needComma = true
+		
+		if itType.Params.Size() > i and itType.Params[i].IsRef
+		{
+			dwn.GetType().PrintType(f)
+			f^ << "* "
+			dwn.PrintPointUse(f)
+		}else{
+			if i < itType.Params.Size() and itType.Params[i].ItType is in TypeClass
+			{
+				tp := dwn.GetType()
+				tp.PrintType(f)
+				f^ << "* byval("
+				tp.PrintType(f)
+				f^ << ") "
+				dwn.PrintPointUse(f)
+			}else{
+				dwn.GetType().PrintType(f)
+				f^ << " "
+				dwn.PrintUse(f)
+			}
+		}
+	}
+
+	f^ << ")"
+	if DebugMode
+		f^ << ", !dbg !" << GDebugLineCallId
+	f^ << "\n"
+}
+
+NormalizeType := !(Type^ oldType) -> Type^
+{
+	if oldType is in TypePoint and oldType.Base is TypeFunc
+	{
+		return NormalizeFuncType(oldType.Base->{TypeFunc^}).GetPoint()
+	}
+	return oldType
+}
+
+NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
+{
+	if inp.ResultType.IsComplexReturn()
+	{
+	}else{
+		return inp
+	}
+
+	if inp.ResultRef
+		return inp
+	
+	k := 0
+	typs := Type^[100]
+	bls := bool[100]
+
+	typs[0] = inp.ResultType
+	bls[0] = true
+	k += 1
+
+	for i : inp.Params.Size()
+	{
+		typs[k] = inp.Params[i].ItType
+		bls[k] = inp.Params[i].IsRef
+		k += 1
+	}
+	return GetFuncType(k,typs[0]&,bls[0]&,GTypeVoid,false,inp.IsVargs)
 }
