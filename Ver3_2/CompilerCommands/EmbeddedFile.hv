@@ -12,7 +12,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	 
 	fileName := skb.Down->{TokenString^}.Value
 
-	itFile := FSGetFile(fileName.Str()) //todo exceptions?
+	itFile := FSGetFile(fileName) //todo exceptions?
 
 	if itFile == null
 		itm.EmitError("File not found")

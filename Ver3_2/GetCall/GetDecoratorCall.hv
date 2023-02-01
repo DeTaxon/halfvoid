@@ -11,7 +11,7 @@ TryGetDecoratorCall := !(Token^ itm) -> BoxExeObj^ //TODO return complex object 
 	
 	k := 0
 	buff := char[256]
-	memcpy(buff[0]&,dn.Str(),dn.Size())
+	memcpy(buff[0]&,dn.NonNullStr(),dn.Size())
 	k = dn.Size()
 	buff[k] = ' '
 	k += 1

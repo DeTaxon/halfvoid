@@ -36,7 +36,7 @@ VKGrowableClass := class extend GrowableClass
 
 		buffer := char[1024]
 		strcpy(buffer[0]&,"PFN_")
-		memcpy(buffer[4]&,val.Str(),val.Size())
+		memcpy(buffer[4]&,val.NonNullStr(),val.Size())
 		buffer[val.Size() + 5] = 0
 		return itModule.GetTryFuncPointer(buffer[0]&)
 	}

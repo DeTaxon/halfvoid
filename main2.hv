@@ -6,39 +6,11 @@
 //	g3 := int
 //}
 
-invoke := !(!()&->void cb) -> void
-{
-	cb()
-}
-
 main := !(char^[] args) -> int
 {
-	hm := List.{float}
-	hm.Push(13)
-	hm.Push(7)
-	hm.Push(200)
-
-	for i : hm
-	{
-		i += 13
-
-		invoke(() ==> void
-		{
-			printf("hey %f\n",i)
-		})
-	}
-	//lst := List.{int}
-	//lst.Push(13)
-	//lst.Push(7)
-	//lst.Push(20)
-
-	//for it : lst
-	//{
-	//	lmbd := () ==> {
-	//		printf("test %i\n",it)
-	//	}
-	//	lmbd()
-	//}
+	c1 := StringSpan("hi\n")
+	c2 := StringSpan("hi\n")
+	c1 == c2
 	return 0
 }
 

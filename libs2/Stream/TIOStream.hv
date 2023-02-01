@@ -21,7 +21,7 @@ Stream := class extend TGCObject
 	}
 	"<<" := !(StringView strData) -> ref Stream
 	{
-		Write(strData.Str(),strData.Size())
+		Write(strData.GetString().Str(),strData.Size())
 		return this
 	}
 	"<<" := !(int value) -> ref Stream

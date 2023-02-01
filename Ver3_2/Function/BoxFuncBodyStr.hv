@@ -20,7 +20,7 @@ BoxFuncBodyStr := class extend BoxFuncBody
 	{
 
 		fl := GetAnyFile()
-		tkns := GetObjectsFromMemory(fl,strData.Str(),strData.Size())
+		tkns := GetObjectsFromMemory(fl,strData.NonNullStr(),strData.Size())
 		bdy = new TokenSymbol(StringSpan("{}"),1)
 		bdy.Line = funcLine.ItToken.Line
 		bdy.Down = tkns

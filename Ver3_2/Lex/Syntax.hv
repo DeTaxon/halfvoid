@@ -153,7 +153,10 @@ SyntaxCompress := !(Token^ begin, PriorityBagOld^ bag) -> bool
 
 	GotWork := true
 
-	while GotWork GotWork = StupidWhile(begin,bag)
+	while GotWork 
+	{
+		GotWork = StupidWhile(begin,bag)
+	}
 
 	return true
 }
@@ -169,7 +172,8 @@ RuleMachineOld := !(void^ itr,MiniMachineNodeOld^ node) -> int
 	while iterU != null
 	{
 		if iterU == null return ToRet
-		iterVal := iterU.GetValue()
+		iterVal := StringSpan
+		iterVal = iterU.GetValue()
 		isTType := iterU is TokenDecor
 		if iterU.IsData iterVal = "~d"
 		if iterU is TokenSuffix iterVal = "~suffix"
@@ -304,7 +308,7 @@ RuleFunctionBody := !(void^ itr) -> int
 		It = It.Right
 		if It == null return 0
 
-		size += 1
+		size += 2
 	}
 
 	size += 2
@@ -369,6 +373,7 @@ RuleParam := !(void^ itr) -> int
 	}
 
 	if It.GetValue() != ":=" return 0
+
 
 	It = It.Right
 	if It == null return 0

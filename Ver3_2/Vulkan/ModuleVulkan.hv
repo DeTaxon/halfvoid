@@ -319,8 +319,8 @@ ModuleVulkan := class extend ModuleInterface
 	GetTryFuncPointer := !(char^ name) -> Type^
 	{	
 		if name[0..4] != "PFN_" return null
-		smplName := name[4..0].Str()
-		inCmds := Commands.TryFind(smplName)
+		smplName := name[4..0].GetString()
+		inCmds := Commands.TryFind(smplName.Str())
 
 
 		if inCmds == null return null
@@ -691,8 +691,8 @@ ModuleVulkan := class extend ModuleInterface
 	PrintCode := virtual !(Stream^ f) -> void {}
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
 	{
-		cnstName := GetConstString(name)
-		st := cnstName.Str()
+		cnstName := GetConstString(name.GetString().Str())
+		st := cnstName.NonNullStr()
 
 		inUnit := Units.TryFind(st)
 		if inUnit != null

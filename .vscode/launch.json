@@ -38,6 +38,30 @@
           "ignoreFailures": true
         }
       ]
+    },{
+      "name": "(gdb) same",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/ver3_2",
+      "args": [ "-g",
+      "-C0",
+      "libs2/",
+      "-C1",
+      "Ver3_2/",
+      "-o",
+      "out3.ll"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
     },
     {
       "name": "(gdb) create test",

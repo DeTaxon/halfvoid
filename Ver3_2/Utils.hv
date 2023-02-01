@@ -1,6 +1,10 @@
 
 ConstStrings := AVLMap.{char^,StringSpan}
 
+GetConstStringSpan := !(StringSpan val) -> ref StringSpan
+{
+	return GetConstString(val.GetString().Str())
+}
 GetConstString := !(char^ val) -> ref StringSpan
 {
 	if ConstStrings.Contain(val)

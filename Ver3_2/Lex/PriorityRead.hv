@@ -20,14 +20,14 @@ MiniMachineNodeOld := class
 LexMachineInfo := class
 {
 	Machine := MiniMachineNodeOld^
-	RawLine := char^
+	RawLine := StringSpan
 
 	uniqOnly := bool
-	uniqs := AVLSet.{char^}^
+	uniqs := AVLSet.{StringSpan}^
 
 	uniqPos := int
 
-	this := !(MiniMachineNodeOld^ inM,char^ rLine) -> void
+	this := !(MiniMachineNodeOld^ inM,StringSpan rLine) -> void
 	{
 		Machine = inM
 		RawLine = rLine
@@ -41,7 +41,7 @@ LexMachineInfo := class
 }
 PriorityBagOld := class
 {
-	Opers := AVLSet.{char^}
+	Opers := AVLSet.{StringSpan}
 	Lines := List.{LexMachineInfo}
 
 	this := !(char^ ptrChar, int mapSize) -> void
@@ -55,11 +55,11 @@ PriorityBagOld := class
 				return void
 			if ln[0] == '#'
 			{
-				Lines.Emplace(null->{MiniMachineNodeOld^},ln.Str())
+				Lines.Emplace(null->{MiniMachineNodeOld^},ln)
 			}else{
 				newMach := new MiniMachineNodeOld
 
-				uns := new AVLSet.{char^}
+				uns := new AVLSet.{StringSpan}
 				lineUniq := true
 
 				uPos := -2
@@ -72,12 +72,12 @@ PriorityBagOld := class
 					rl := HybridQueue.{StringSpan,30}
 					defer rl.Destroy()
 
-					rawWord.DivideStr(" ",x ==> { rl.Push(x)})
+					rawWord.DivideStr(" ",x ==> { rl.Push(x) })
 
 					lAddRule := !(MiniMachineNodeOld^,int)&-> void
 					addRule := (MiniMachineNodeOld^ machIter , int i) ==>
 					{
-						stW := rl[i].Str()
+						stW := GetConstStringSpan(rl[i])
 						switch stW
 						{
 							case "d" stW = "~d"
@@ -98,7 +98,7 @@ PriorityBagOld := class
 								uns.Insert(stW)
 								Opers.Insert(stW)
 						}
-						next := ref machIter.WhatNext[GetConstString(stW)]
+						next := ref machIter.WhatNext[stW]
 						if next == null
 							next = new MiniMachineNodeOld
 						if i == rl.Size() - 1
@@ -118,7 +118,7 @@ PriorityBagOld := class
 				if uPos == -2
 					uPos = -1
 
-				Lines.Emplace(newMach,ln.Str())
+				Lines.Emplace(newMach,ln)
 				newLine := ref Lines[Lines.Size() - 1]
 				newLine.uniqs = uns
 				newLine.uniqOnly = lineUniq

@@ -1,13 +1,12 @@
 StringView := class extend TGCObject
 {
-	Str := virtual !() -> char^ {}
 	Size := virtual !() -> int {}
 	GetString := virtual !() -> String^ {}
 	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
 	{
 		i := 0
 		j := 0
-		ptr := Str()
+		ptr := NonNullStr()
 		itSize := Size()
 		while j < itSize
 		{
@@ -38,7 +37,7 @@ StringView := class extend TGCObject
 			otherSize := toCmp.Size()
 			if mySize < otherSize
 				return -1 //TODO, other values?
-			newSpan := StringSpan(Str()[mySize - otherSize]&,otherSize)
+			newSpan := StringSpan(NonNullStr()[mySize - otherSize]&,otherSize)
 			return newSpan <=> toCmp
 		}
 	}
@@ -56,7 +55,7 @@ StringView := class extend TGCObject
 		}
 		return false
 	}
-
+	NonNullStr := virtual !() -> char^ { assert(false) }
 }
 "<=>" := !(StringView^ a,char^ b) -> int
 {
@@ -68,7 +67,7 @@ StringView := class extend TGCObject
 	aSize := a.Size()
 	bSize := b.Size()
 	minSize := min(aSize,bSize)
-	cmpRes := strncmp(a.Str(),b.Str(),minSize)
+	cmpRes := strncmp(a.NonNullStr(),b.NonNullStr(),minSize)
 
 	if cmpRes != 0
 		return cmpRes

@@ -57,6 +57,7 @@ String := class extend StringView
 		return this&
 	}
 	Size := !() -> int { return itSize }
+	NonNullStr := virtual !() -> char^ { return charPtr }
 }
 
 //"->{}" := !(TString^ st) .{char^} -> char^

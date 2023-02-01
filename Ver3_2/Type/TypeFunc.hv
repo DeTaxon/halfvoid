@@ -126,7 +126,13 @@ GetFuncType := !(Type^[@S] args,bool[@S2] isRefs,Type^ res) -> TypeFunc^
 }
 GetFuncType := !(int count,Type^[] args,bool[] refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
 {
-	return GetFuncType(count,args.GetPointer(),refs.GetPointer(),res,resRef,isVargs)
+	aArr := Type^^
+	if args != null
+		aArr = args.GetPointer()
+	rArr := bool^
+	if refs != null
+		rArr = refs.GetPointer()
+	return GetFuncType(count,aArr,rArr,res,resRef,isVargs)
 }
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^

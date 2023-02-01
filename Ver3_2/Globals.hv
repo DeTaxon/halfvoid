@@ -27,7 +27,9 @@ SubWork := !(!()&->void x) -> void
 	nowState := new StackState
 	nowState.Save()
 
-	TSpawnTask(() ==> {
+	TSpawnTask(() ==> [nowState] {
+
+		assert(nowState != null)
 
 		nowState.Load()
 		delete nowState

@@ -130,11 +130,10 @@ Json := class extend JsonNode
 	{
 		jsonLoadMachine()
 
-		jsonRegMachine.RegExpReadText(fileData,size, (View,c) ==>
+		jsonRegMachine.RegExpReadText(fileData,size, (tok,c) ==>
 		{
 			if c == 5
 				return void
-			tok := StringSpan(View.Str(),View.Size())
 			tokens.Emplace(c,tok)
 		})
 		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != "{"

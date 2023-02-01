@@ -30,7 +30,8 @@ Token := class
 		ln << "Error <" << info << ">"
 		if Line != null
 		{
-			ln << " at file " << Line.File.GetName() << " line: " <<Line.Line
+			ln << " at file " << Line.File.GetName() << " line: "
+			ln << Line.Line
 		}
 		ln <<"\n"
 		for it : UnitStack

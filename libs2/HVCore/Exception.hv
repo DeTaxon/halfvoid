@@ -18,7 +18,10 @@ internalLeaveGCFunction := !() -> void
 
 IException := class extend TGCObject
 {
-
+	GetMessage := virtual !() -> String^
+	{
+		assert(false)
+	}
 }
 
 gTryCatchInd := task_local int
@@ -39,6 +42,12 @@ internalLeaveTryCatch := !() -> void
 }
 internalThrowException := !(IException^ e) -> void
 {
+	if gTryCatchInd == 0
+	{
+		printf("Exception %s\n",e.GetMessage().Str()) //TODO make it better
+		assert(false)
+		exit(0)
+	}
 	assert(gTryCatchInd != 0 and gExceptionPtrIndex != 0)
 	gTryCatchException = e
 
@@ -63,13 +72,18 @@ internalGetException := !() -> IException^
 
 Exception := class extend IException //TODO!!
 {
+	thisMsg := String^
 	this := !(char^ msg) -> void
 	{
-		
+		thisMsg = new String(msg)
 	}
 
 	this := !(StringView msg) -> void
 	{
-		
+		thisMsg = msg.GetString()
+	}
+	GetMessage := virtual !() -> String^
+	{
+		return thisMsg
 	}
 }

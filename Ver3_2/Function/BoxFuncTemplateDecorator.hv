@@ -44,7 +44,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	CreateFuncCall := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 	{
 		buf := char[256]
-		memcpy(buf[0]&,decoratorToken.Value.Str(),decoratorToken.Value.Size())
+		memcpy(buf[0]&,decoratorToken.Value.NonNullStr(),decoratorToken.Value.Size())
 		sprintf(buf[decoratorToken.Value.Size()]&," func")
 
 		consts2 := List.{BoxExeConstObj^}
