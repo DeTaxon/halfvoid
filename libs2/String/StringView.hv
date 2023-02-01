@@ -47,7 +47,7 @@ StringView := class extend TGCObject
 	}
 	"in" := !(int x) -> bool
 	{
-		ptr := Str()
+		ptr := NonNullStr()
 		for i : Size()
 		{
 			if ptr[i] == x

@@ -27,7 +27,7 @@ SubWork := !(!()&->void x) -> void
 	nowState := new StackState
 	nowState.Save()
 
-	TSpawnTask(() ==> [nowState] {
+	TSpawnTask(() ==> [nowState,subLambda] {
 
 		assert(nowState != null)
 
@@ -35,7 +35,6 @@ SubWork := !(!()&->void x) -> void
 		delete nowState
 
 		subLambda()
-		subLambda.Destroy()
 	})
 }
 

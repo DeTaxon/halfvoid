@@ -147,11 +147,6 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 		assert(false)
 	}
 
-	return TryComputeOperators(oper,tmpList)?
-
-	consts := List.{BoxExeConstObj^}
-	return CreateFuncCall(oper,tmpList,consts)?
-
 	if tmpList[0].GetType() is in TypeClass
 	{
 		cnsts := List.{BoxExeConstObj^}
@@ -159,6 +154,11 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 		objs8.Push(tmpList[1])
 		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
 	}
+	return TryComputeOperators(oper,tmpList)?
+
+	consts := List.{BoxExeConstObj^}
+	return CreateFuncCall(oper,tmpList,consts)?
+
 
 	return null
 }
