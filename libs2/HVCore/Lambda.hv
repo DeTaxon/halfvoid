@@ -39,6 +39,23 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
 		newLambda.callFunc = callFunc
 
+		if capPtr == null
+		{
+			i := 0
+			for it : newLambda.thisCapturedVars->AllFields
+			{
+				i += 1
+			}
+			if i != 0
+			{
+				printf("wow %s\n",CapTypePtr->TypeName)
+				for it : newLambda.thisCapturedVars->AllFields
+				{
+					printf("hah %s\n",it->TypeName)
+				}
+				assert(capPtr != null)
+			}
+		}
 		for setField : newLambda.thisCapturedVars->AllFields , getField : this.capPtr^->AllFields
 		{
 			if getField->TypeGroup == "Class"

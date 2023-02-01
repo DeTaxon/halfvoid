@@ -52,9 +52,9 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 	"for" := !() -> !()&->ref T
 	{
 		lmbd := () ==> ref T{
-			for i : StaticSize
+			for iVal : StaticSize
 			{
-				yield StaticArray[i]
+				yield StaticArray[iVal]
 			}
 			if ListArray.Size() != 0
 			{

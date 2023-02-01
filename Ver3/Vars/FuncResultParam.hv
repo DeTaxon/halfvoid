@@ -164,6 +164,9 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	NotifyMemUse := virtual !() -> void
 	{
 	}
+	NotifyCaptureUse := virtual !() -> void
+	{
+	}
 	PrintCode := virtual !(TIOStream^ f) -> void
 	{
 		setVar.PrintDefaultUse(f)
@@ -180,6 +183,9 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 FuncResultParam2OnMemRef := class extend FuncResultParam2
 {
 	NotifyMemUse := virtual !() -> void
+	{
+	}
+	NotifyCaptureUse := virtual !() -> void
 	{
 	}
 	PrintCode := virtual !(TIOStream^ f) -> void
