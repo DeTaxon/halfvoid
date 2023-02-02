@@ -149,7 +149,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		UnitStack.PushFront(resObj)
 		newFunc.ParseBodyForced()
 
-		
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := fncFnc.CreateCall()
 
@@ -163,7 +162,11 @@ BoxLambdaHolder := class extend BoxExeObj
 			CurrentFunc.CapturedVarsGets.Push(getTupleMacro)
 			getTupleVar = getTupleMacro.CreateCall()
 		}else{
+			mptyTuple := List.{Type^}
+			tplType = GetTuple(mptyTuple).ItType
+
 			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
+
 		}
 
 		objs := CheckExeDownList

@@ -7,6 +7,10 @@ TArrayView := class .{@T} extend TGCObject
 		result.ViewPtr = this&
 	}
 	GetPointer := virtual !() -> T^ { return null }
+	Clear := virtual !() -> void
+	{
+		Destroy()
+	}
 }
 
 ViewIterator := class.{@T} extend TGCObject

@@ -8,35 +8,6 @@
 
 main := !(char^[] args) -> int
 {
-	test := HybridQueue.{int,5}
-	for i : 10
-	{
-		test.Push(i*100)
-	}
-	printf("hoy %i\n",test[1])
-	for it : test
-	{
-		printf("hm %i\n",it)
-	}
-
-	//hop := () ==>
-	//{
-	//	for i : 100
-	//	{
-	//		yield i
-	//	}
-	//	for i : 100
-	//	{
-	//		yield i
-	//	}
-	//}
-	//hop2 := hop.Capture()
-
-	//printf("hop %i\n",hop2())
-	//printf("hop %i\n",hop2())
-	//printf("hop %i\n",hop2())
-	//printf("hop %i\n",hop2())
-
 	return 0
 }
 
