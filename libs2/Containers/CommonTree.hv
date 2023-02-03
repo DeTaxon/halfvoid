@@ -96,6 +96,9 @@ CommonTree := class .{@DATA}
 	{
 		destroyNode(Start)
 		destroyNode(CreatedNodes)
+
+		Start = null
+		CreatedNodes = null
 	}
 	destroyNode := !(CommonTreeNode.{DATA}^ nd) -> void
 	{

@@ -144,14 +144,14 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 		hsh *= 2
 		hsh += args[i].ItHash
 	}
-
-	itList := funcTypes[hsh div 1024]&
+	
+	itList := funcTypes[hsh mod 1024]&
 
 	for fnc : itList^
 	{
 		if fnc == null
 		{
-			printf("hm %i %i\n",hsh,hsh div 1024)
+			printf("hm %i %i\n",hsh,hsh mod 1024)
 		}
 		if count != fnc.Params.Size()
 			continue

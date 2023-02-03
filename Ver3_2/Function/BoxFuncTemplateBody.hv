@@ -167,7 +167,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			datas.Emplace(tp.Params[i].ItType,tp.Params[i].IsRef)
 		}
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
-		defer resConsts.Destroy()
 		checkTypes(datas,consts,resConsts)
 
 

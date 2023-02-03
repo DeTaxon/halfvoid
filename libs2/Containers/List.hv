@@ -137,11 +137,10 @@ List := class.{@T} extend TArrayView.{T}
 			nd := itr
 			itr = itr.next
 			destroyNode(nd)
-
-			start = null
-			end = null
-			itSize = 0
 		}
+		start = null
+		end = null
+		itSize = 0
 	}
 	SortedPush := !(T itm) -> void
 	{

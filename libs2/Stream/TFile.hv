@@ -12,11 +12,11 @@ TFile := class extend Stream
 		handle = fopen(fileName,flags)
 		return handle != null
 	}
-	Read := virtual !(void^ data, size_t size) -> size_t
+	Read := virtual !(void^ data, s64 size) -> s64
 	{
 		return fread(data,1,size,handle) 
 	}
-	Write := virtual !(void^ data, size_t size) -> size_t
+	Write := virtual !(void^ data, s64 size) -> s64
 	{
 		return fwrite(data,1,size,handle)
 	}

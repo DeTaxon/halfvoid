@@ -38,8 +38,8 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 				if ind >= it.MetaObj.MetaIteretableSize()
 					return void
 			}
-			addItem(ind,true)
 			metaUsedCount += 1
+			addItem(ind,true)
 		}
 
 		for it : dwns
@@ -122,7 +122,12 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 		for i : blocks.Size()
 		{
 			if middleVars.Contain(i)
-				middleVars[i][^].PrintCode(f)
+			{
+				for it : middleVars[i]
+				{
+					it.PrintCode(f)
+				}
+			}
 
 			blocks[i].PrintCode(f)
 		}

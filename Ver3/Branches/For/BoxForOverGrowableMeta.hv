@@ -38,8 +38,8 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 				if ind >= it.MetaObj.MetaIteretableSize()
 					return void
 			}
-			addItem(ind,true)
 			metaUsedCount += 1
+			addItem(ind,true)
 		}
 
 		for it : dwns

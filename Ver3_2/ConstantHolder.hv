@@ -1,4 +1,4 @@
-ConstantHolder := class extend TGCObject
+ConstantHolder := class
 {
 	Constants := List.{BoxExeConstObj^}
 

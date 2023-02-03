@@ -149,6 +149,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 				}
 			}
 		}
-		return x.Capture()
+		result = x.Capture()
+		result.IncRef() //TODO clean memory
 	}
 }

@@ -252,6 +252,7 @@ main := !(char^[] args) -> int
 		GDebugTypePrintMeta.Pop()
 	}
 	printf("done\n")
+	outFile.Close()
 
 	return 0
 }
