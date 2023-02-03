@@ -123,7 +123,6 @@ FunctionHeaderInfo := class
 							DefaultValues[Types.Size()] = bag[c+1]
 						}
 					}
-
 					Types.Emplace(name,typ,isRef,bag[0]->{Token^})
 				}
 			}else{

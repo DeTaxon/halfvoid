@@ -8,6 +8,26 @@
 
 main := !(char^[] args) -> int
 {
+	c := HybridQueue.{int,10}
+
+	c.Push(1)
+	c.Push(5)
+	c.Push(7)
+	c.Push(11)
+
+	printf("test %i\n",c[^])
+
+	printf("hoy %i\n",c[0])
+	printf("hoy %i\n",c[1])
+	printf("hoy %i\n",c[2])
+	printf("hoy %i\n",c[3])
+
+	for i : 4
+	{
+		printf("toy %i\n",i)
+	}
+
+	printf("hi\n")
 	return 0
 }
 

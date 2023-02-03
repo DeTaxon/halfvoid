@@ -65,9 +65,22 @@ FuncResultParam2 := class extend FuncResultParam
 			return void
 		makeBackupVar()
 	}
+
+	someoneOnMake := bool
+	onMake := THatch
+
 	makeBackupVar := !() -> void
 	{
 		assert(parentFunc.body != null)
+
+		if someoneOnMake
+		{
+			onMake.Await()
+			return void
+		}else{
+			someoneOnMake = true
+		}
+		defer onMake.Emit()
 
 		refPath := exeObj.IsMem()
 
