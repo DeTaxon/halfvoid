@@ -1,6 +1,7 @@
 HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 {
 	StaticSize := int
+	FullSize := int
 	StaticArray := T[HSize]
 	ListArray := List.{T}
 
@@ -14,7 +15,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 	}
 	Size := virtual !() -> int
 	{
-		return StaticSize + ListArray.Size()
+		return FullSize
 	}
 
 	Push := !(T itm) -> void
@@ -27,6 +28,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 		}else{
 			ListArray.Push(itm)
 		}
+		FullSize += 1
 	}
 	Emplace := !(args...) -> void
 	{
@@ -38,6 +40,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 		}else{
 			ListArray.Emplace(args...)
 		}
+		FullSize += 1
 	}
 	Destroy := virtual !() -> void
 	{
@@ -47,23 +50,24 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 				StaticArray[i] = null
 		}
 		StaticSize = 0
+		FullSize = 0
 		ListArray.Destroy()
 	}
-	"for" := !() -> !()&->ref T
-	{
-		lmbd := () ==> ref T{
-			for iVal : StaticSize
-			{
-				yield StaticArray[iVal]
-			}
-			if ListArray.Size() != 0
-			{
-				for it : ListArray
-				{
-					yield it
-				}
-			}
-		}
-		return lmbd.Capture()
-	}
+	//"for" := !() -> !()&->ref T
+	//{
+	//	lmbd := () ==> ref T{
+	//		for iVal : StaticSize
+	//		{
+	//			yield StaticArray[iVal]
+	//		}
+	//		if ListArray.Size() != 0
+	//		{
+	//			for it : ListArray
+	//			{
+	//				yield it
+	//			}
+	//		}
+	//	}
+	//	return lmbd.Capture()
+	//}
 }
