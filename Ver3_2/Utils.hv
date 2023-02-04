@@ -9,7 +9,7 @@ GetConstString := !(char^ val) -> ref StringSpan
 {
 	if ConstStrings.Contain(val)
 		return ConstStrings[val]
-	stSize := StrSize(val)
+	stSize := strlen(val)
 	v2 := malloc(stSize + 1)->{char^}
 	memcpy(v2,val,stSize)
 	v2[stSize] = 0

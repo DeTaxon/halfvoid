@@ -12,7 +12,7 @@ Token := class
 	IsData := virtual false
 	IsBlock := virtual false
 
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
 		assert(false)
 		return emptySpn
@@ -73,9 +73,9 @@ TokenDecor := class extend Token
 	{
 		Value = val
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("@d")
+		return StringSpan("@d")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -89,9 +89,9 @@ TokenData := class extend Token
 {
 	IsData := virtual true
 
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("~d")
+		return StringSpan("~d")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -126,9 +126,9 @@ TokenNull := class extend Token
 	{
 		Value = val
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("null")
+		return StringSpan("null")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -144,9 +144,9 @@ TokenNone := class extend Token
 	this := !() -> void
 	{
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("none")
+		return StringSpan("none")
 	}
 }
 
@@ -162,7 +162,7 @@ TokenBool := class extend Token
 		Value = val
 		Parsed = val2
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
 		return Value
 	}
@@ -183,7 +183,7 @@ TokenWayControl := class extend Token
 	{
 		Value = val
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
 		return Value
 	}
@@ -205,7 +205,7 @@ TokenSuffix := class extend Token
 	}
 	GetValue := virtual !() -> ref StringSpan
 	{
-		return GetConstString("~s")
+		return StringSpan("~s")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -224,7 +224,7 @@ TokenSymbol := class extend Token
 		Value = val
 		TokenId = tId
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
 		return Value
 	}
@@ -245,9 +245,9 @@ TokenIndent := class extend Token
 	{
 		Value = val
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("~ind")
+		return StringSpan("~ind")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -273,9 +273,9 @@ TokenString := class extend Token
 	{
 		Value = val
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("~str")
+		return StringSpan("~str")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -295,9 +295,9 @@ TokenDouble := class extend Token
 		Value = val
 		Parsed = val2
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("~double")
+		return StringSpan("~double")
 	}
 	Print := virtual !(int x) -> void
 	{
@@ -317,9 +317,9 @@ TokenInt := class extend Token
 		Value = val
 		Parsed = val2
 	}
-	GetValue := virtual !() -> ref StringSpan
+	GetValue := virtual !() -> StringSpan
 	{
-		return GetConstString("~int")
+		return StringSpan("~int")
 	}
 	Print := virtual !(int x) -> void
 	{
