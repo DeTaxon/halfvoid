@@ -41,7 +41,7 @@ OutputFile := char^
 main := !(char^[] args) -> int
 {
 
-	for i : 1024
+	for i : 9973
 	{
 		ZeroMem(funcTypes[i])
 	}
@@ -254,6 +254,11 @@ main := !(char^[] args) -> int
 	printf("done\n")
 	outFile.Close()
 
+	// for i : 9973
+	// {
+	// 	printf("%i ",funcTypes[i].Size())
+	// }
+	// printf("\n")
 	return 0
 }
 PrintDeclares := !(Stream^ f) -> void

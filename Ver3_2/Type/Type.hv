@@ -1,5 +1,8 @@
 
-Type := class {
+typeHashIterator := 1
+
+Type := class 
+{
 	MetaId := int
 	Base := Type^
 	AsPoint := Type^
@@ -97,7 +100,6 @@ TypeDef := class
 	}
 }
 
-hashIdIter := int
 TypeStandard := class extend Type
 {
 	IRName := char^
@@ -114,8 +116,8 @@ TypeStandard := class extend Type
 		ItSize = siz
 		ItAlign = Aln
 
-		ItHash = hashIdIter
-		hashIdIter += 1
+		ItHash = typeHashIterator
+		typeHashIterator += 1
 
 		if DebugMode
 		{
@@ -161,7 +163,10 @@ TypeArr := class extend Type
 	this := !(Type^ nBase,int si) -> void
 	{
 		Base = nBase
-		ItHash = nBase.ItHash*11
+
+		ItHash = typeHashIterator
+		typeHashIterator += 1
+
 		len = si
 		if DebugMode
 		{
@@ -219,7 +224,8 @@ TypePoint := class extend Type
 	this := !(Type^ nBase) -> void
 	{
 		Base = nBase
-		ItHash = nBase.ItHash*7
+		ItHash = typeHashIterator
+		typeHashIterator += 1
 		if DebugMode
 		{
 			MetaId = GetNewId()

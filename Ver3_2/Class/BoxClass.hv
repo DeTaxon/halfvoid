@@ -279,6 +279,7 @@ BoxClass := class extend BoxUnit
 	//}
 
 }
+
 TypeClass := class extend Type
 {
 	ToClass := BoxClass^
@@ -287,6 +288,9 @@ TypeClass := class extend Type
 	{
 		ToClass = ths
 		MetaId = ths.ItId
+
+		ItHash = typeHashIterator
+		typeHashIterator += 1
 	}
 	PrintType := virtual !(Stream^ f) -> void
 	{
@@ -347,7 +351,7 @@ TypePointComplex := class extend TypePoint
 {
 	this := !(Type^ bs) -> void
 	{
-		this."TypePoint.this"(bs)	
+		this."TypePoint.this"(bs)
 	}
 	IsComplexReturn := virtual !() -> bool
 	{
