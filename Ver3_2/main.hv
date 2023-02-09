@@ -23,6 +23,13 @@ loadLex := !(char^ filName,PriorityBagOld^^ res) -> void
 	pri.IncRef()
 	res^ = new PriorityBagOld(fileMap.Get(),pri.Size())
 }
+loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void 
+{
+	fileMap := pri.GetMap()
+	fileMap.IncRef() //TODO unref
+	pri.IncRef()
+	res^ = new PriorityBagOld(fileMap.Get(),pri.Size())
+}
 
 GArchBitSize := 64
 
@@ -112,6 +119,10 @@ main := !(char^[] args) -> int
 	loadLex("Priority2.pr",PriorityData&)
 	loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
 	loadLex("LexHVInputVars2.pr",LexHVInputVars&)
+
+	//loadLex2(#File("Priority2.pr"),PriorityData&)
+	//loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)
+	//loadLex2(#File("LexHVInputVars2.pr"),LexHVInputVars&)
 	
 	HVOperators.Insert(PriorityData.Opers[^])
 	

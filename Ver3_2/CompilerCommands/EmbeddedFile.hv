@@ -72,7 +72,7 @@ BoxRawData := class extend BoxExeObj
 		{
 			if i != 0
 				f^ << ","
-			f^ << "i8 " << Value[i]
+			f^ << "i8 " << Value[i]->{int}
 		}
 		f^ << "]\n"
 	}

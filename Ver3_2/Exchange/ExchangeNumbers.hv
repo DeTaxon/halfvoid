@@ -15,9 +15,9 @@ ExchangeInts := class extend ExchangeUnit
 
 		if f1.GetSize() > newType.GetSize()
 		{
-			return 2000 + (100 - newType.GetSize())
+			return 1995 + (100 - newType.GetSize())
 		}
-		return 1000 + (100 - newType.GetSize())
+		return 995 + (100 - newType.GetSize())
 
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
@@ -41,9 +41,9 @@ ExchangeFloats := class extend ExchangeUnit
 
 		if f1.GetSize() > newType.GetSize()
 		{
-			return 2000 + (100 - newType.GetSize())
+			return 2005 + (100 - newType.GetSize())
 		}
-		return 1000 + (100 - newType.GetSize())
+		return 1005 + (100 - newType.GetSize())
 
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
@@ -87,7 +87,7 @@ ExchangeIntToFloat := class extend ExchangeUnit
 		if not IsInt(f1)
 			return CmpNoExchange
 
-		return 1000
+		return 1005
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
