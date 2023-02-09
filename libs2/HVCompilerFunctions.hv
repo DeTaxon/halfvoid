@@ -29,7 +29,8 @@ internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void // r
 
 ZeroMem := !(@T& x) -> void
 {
-	memset(x&,0,T->TypeSize)
+	//memset(x&,0,T->TypeSize)
+	llvmMemsetInlineInt(x&,0,T->TypeSize,false)
 	if T->TypeGroup == "Class"
 		internalHVInitClass(x)
 }

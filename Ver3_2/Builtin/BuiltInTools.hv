@@ -95,6 +95,27 @@ BuiltInMemBarrier := class extend BoxFuncCommon
 		f^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
 	}
 }
+BuiltInMemsetInlineInt := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(4,![GTypeVoidP,GTypeU8,GTypeInt,GTypeBool],null,GTypeVoid,false,false))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintPre(f)
+		f^ << "call void @llvm.memset.inline.p0.p0i8.i32("
+		f^ << "i8* "
+		lst[0].PrintUse(f)
+		f^ << ", i8 "
+		lst[1].PrintUse(f)
+		f^ << ", i32 "
+		lst[2].PrintUse(f)
+		f^ << ",i1 "
+		lst[3].PrintUse(f)
+		f^ << ")\n"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {
@@ -102,6 +123,7 @@ CreateBuildInTools := !() -> void
 	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
 	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
 	bSpace.Functions[StringSpan("MemBarrier")].Push(new BuiltInMemBarrier() )
+	bSpace.Functions[StringSpan("llvmMemsetInlineInt")].Push(new BuiltInMemsetInlineInt() )
 
 	builtInSetJump = new BuiltInSetJump() 
 	bSpace.Functions[StringSpan("llvmSetJump")].Push(builtInSetJump)

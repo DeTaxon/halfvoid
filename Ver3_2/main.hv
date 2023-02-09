@@ -280,6 +280,7 @@ PrintDeclares := !(Stream^ f) -> void
 	f^ << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
 	f^ << "declare i32 @setjmp(i8* %abc) #1\n"
 	f^ << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
+	f^ << "declare void @llvm.memset.inline.p0.p0i8.i32(i8* %ptr,i8 %val,i32 %len,i1 %isVolatile) #3\n"
 	f^ << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
 	f^ << "declare void @llvm.debugtrap() #0\n"
 	f^ << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
