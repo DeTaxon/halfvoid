@@ -1,9 +1,0 @@
-BoxFuncTemplateConst := class extend BoxExeConstObj
-{
-	Value := BoxFuncTemplate^
-	this := !(BoxFuncTemplate^ tmpl) -> void
-	{
-		ObjType = GTypeNone
-		Value = tmpl
-	}
-}

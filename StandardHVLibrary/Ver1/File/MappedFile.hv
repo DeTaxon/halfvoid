@@ -1,6 +1,0 @@
-FILE_READ := 1
-FILE_WRITE := 2
-FILE_CREATE := 3
-
-
-
