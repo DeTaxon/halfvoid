@@ -47,7 +47,7 @@ StringSpan := class extend StringView
 		itSize = toGet.itSize
 	}
 	"<=>" := !(StringSpan toCmp) -> int {
-		if toCmp.ptr == null return 1
+		if toCmp.ptr->{void^} == null return 1
 		minV := itSize
 		if minV > toCmp.itSize minV = toCmp.itSize
 		stCmp := strncmp(ptr,toCmp.ptr,minV)

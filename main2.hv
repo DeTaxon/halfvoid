@@ -16,6 +16,8 @@ main := !(char^[] args) -> int
 		printf("hey %p\n",it)
 	}
 
+	c := #File("main2.hv")
+
 	printf("hi\n")
 	return 0
 }
