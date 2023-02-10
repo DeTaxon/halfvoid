@@ -63,7 +63,7 @@ ParamFunc := class extend BoxFuncCommon
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
 
-			f^ << "call  void @llvm.memset.p0i8.i64(i8* %Void" << miniId << ", i8 0, i64 " << pType.GetSize() << ",i1 false)"
+			f^ << "call  void @llvm.memset.inline.p0.p0i8.i32(i8* %Void" << miniId << ", i8 0, i32 " << pType.GetSize() << ",i1 false)"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"

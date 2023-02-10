@@ -2,7 +2,6 @@
 GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 {
 	lst := HybridQueue.{BoxUnit^,10}
-	defer lst.Destroy()
 	for spc : CodeSpaces.Reverse
 	{
 		lst.Destroy()
@@ -18,6 +17,15 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 		{
 			lst.Push(spc.Templates[name][^])
 		}
+		if lst.Size() != 0
+		{
+			if cb(lst)
+				return void
+		}
+	}
+	for spc : CodeSpaces.Reverse
+	{
+		lst.Destroy()
 		for cl : spc.Modules
 		{
 			fnc := cl.GetItem(name)
