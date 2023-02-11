@@ -422,6 +422,22 @@ IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxE
 	oneGonnaOnly = false
 	return callItem != null
 }
+IsGonnaWorkExchange := !(CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
+{
+	if oneGonnaOnly
+		return false
+	oneGonnaOnly = true
+
+	callItem := BoxUnit^
+	GetItemGlobalFunc(StringSpan("->{}"), x ==>{
+		callItem = GetBestFunc(x,Objs,consts,true)
+		if callItem == null
+			return false
+		return true
+	})
+	oneGonnaOnly = false
+	return callItem != null
+}
 
 CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
@@ -503,7 +519,7 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				cnsts12 := List.{BoxExeConstObj^}
 				cnsts12.Push(GetConstType(toType))
 				
-				excCheck := IsGonnaWorkCreateFuncCall(StringSpan("->{}"),objs12,cnsts12)
+				excCheck := IsGonnaWorkExchange(objs12,cnsts12)
 				objs12.Destroy() cnsts12.Destroy()
 				if excCheck
 				{

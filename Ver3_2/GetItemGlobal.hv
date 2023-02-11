@@ -39,3 +39,25 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 		}
 	}
 }
+
+GetItemGlobalFunc := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+{
+	lst := HybridQueue.{BoxUnit^,10}
+	for spc : CodeSpaces.Reverse
+	{
+		lst.Destroy()
+		if spc.Functions.Contain(name)
+		{
+			lst.Push(spc.Functions[name][^])
+		}
+		if spc.Templates.Contain(name)
+		{
+			lst.Push(spc.Templates[name][^])
+		}
+		if lst.Size() != 0
+		{
+			if cb(lst)
+				return void
+		}
+	}
+}
