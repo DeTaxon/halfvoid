@@ -8,17 +8,6 @@
 
 main := !(char^[] args) -> int
 {
-	test := int[13]
-	llvmMemsetInlineInt(test[0]&->{void^},13->{u8},13,false)
-
-	for it : test
-	{
-		printf("hey %p\n",it)
-	}
-
-	c := #File("main2.hv")
-
-	printf("hi\n")
 	return 0
 }
 

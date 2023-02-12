@@ -48,9 +48,9 @@ halfvoid:
 	$(TimeF) ./ver3_2_stable -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 cycle:
-	$(TimeFlags) $(cg) ./halfvoid -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
+	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Ver3_2/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test
+.PHONY:  cycle ver3_2 test halfvoid
