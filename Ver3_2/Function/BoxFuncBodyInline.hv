@@ -6,23 +6,40 @@ FuncInlineWrapper := class extend BoxExeObj
 	vars := HybridQueue.{FuncResultParam2^,5}
 	nameVars := HybridQueue.{MemVar^,5}
 
+	groupVars := VarGroup^
+
 	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
 		ObjType = GTypeVoid
 
 		stackSize := UnitStack.Size()
 
-		assert(itms.Size() == fnc.InputVarNames.Size())
+		assert(itms.Size() >= fnc.InputVarNames.Size())
+
+		vSize := fnc.InputVarNames.Size()
 		for i : itms.Size()
 		{
 			vr := new FuncResultParam2(itms[i])
 			vars.Push(vr)
-			nVr := new MemVar(fnc.InputVarNames[i],vr)
-			nameVars.Push(nVr)
 			CurrentFunc.FunctionResultVars.Push(vr)
 
-			UnitStack.PushFront(nVr)
+			if i >= vSize
+			{
+				if groupVars == null
+				{
+					groupVars = new VarGroup
+					groupVars.Name = fnc.VariadicName
+				}
+				groupVars.Vars.Push(vr)
+			}else{
+				nVr := new MemVar(fnc.InputVarNames[i],vr)
+				nameVars.Push(nVr)
+				UnitStack.PushFront(nVr)
+			}
+
 		}
+		if groupVars != null
+			UnitStack.PushFront(groupVars)
 
 		body = new BoxBlock(fnc.bdy)
 		body.Work()

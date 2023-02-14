@@ -9,17 +9,18 @@
 
 
 //inline roead
-//input variadic variables
+//input variadic variables C
+//input reference variable !!! how?
 //return value
 //debug data for functions in different files
-testCall := inline !(int x) -> void
+testCall := inline !(int x,args...) -> void
 {
-	printf("hello world %i\n",x)
+	printf("hello world %i %i %i\n",x,args...)
 }
 
 main := !(char^[] args) -> int
 {
-	testCall(74)
+	testCall(74,15,-100)
 	return 0
 }
 
