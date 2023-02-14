@@ -373,6 +373,7 @@ IsKeyword := !(@TT W) -> bool
 		case "shr" return true
 		case "shl" return true
 		case "ref" return true
+		case "inline" return true
 	}
 
 	return false

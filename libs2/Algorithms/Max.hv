@@ -1,3 +1,11 @@
+
+max := !(int x,int y) -> int
+{
+    if x > y
+        return x
+    return y
+}
+
 max := !(@T x, T y) -> T
 {
     if x > y

@@ -6,15 +6,6 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	iter := obj.Down
 
-	switch iter.GetValue() //todo to cycle
-	{
-		case "virtual"
-			assert(false)
-		case "poison"
-			assert(false)
-		case void
-	}
-
 	decorators := HybridQueue.{TokenTemplateType^,10}
 	
 	while iter is TokenTemplateType
@@ -27,6 +18,13 @@ TryParseFunction := !(Token^ obj) -> BoxUnit^
 
 	if iter == null
 		return null
+
+	if iter.GetValue() == "inline"
+	{
+		iter = iter.Right
+		Attr.IsInline = true
+		assert(iter != null)
+	}
 
 	if iter.GetValue() != "!"
 		return null
@@ -109,6 +107,7 @@ FuncAttributes := class
 	IsStatic := bool
 	IsLambda := bool
 	IsAutoResult := bool
+	IsInline := bool
 		
 	"=" := default
 }

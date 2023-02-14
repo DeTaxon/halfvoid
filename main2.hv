@@ -8,6 +8,8 @@
 
 main := !(char^[] args) -> int
 {
+	test := max(3,4)
+	test2 := max(5.0,6.0)
 	return 0
 }
 
