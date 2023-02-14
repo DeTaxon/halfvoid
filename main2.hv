@@ -6,10 +6,21 @@
 //	g3 := int
 //}
 
+
+
+//inline roead
+//inline function
+//input variables
+//return value
+//debug data for functions in different files
+testCall := inline !() -> void
+{
+	printf("hello world\n")
+}
+
 main := !(char^[] args) -> int
 {
-	test := max(3,4)
-	test2 := max(5.0,6.0)
+	testCall()
 	return 0
 }
 

@@ -1,0 +1,27 @@
+
+FuncInlineWrapper := class extend BoxExeObj
+{
+	body := BoxBlock^
+
+	this := !(Token^ bdy) -> void
+	{
+		ObjType = GTypeVoid
+		body = new BoxBlock(bdy)
+		body.Work()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPointPre := virtual !(Stream^ f) -> void
+	{
+	}
+	PrintPre := virtual !(Stream^ f) -> void
+	{
+		body.PrintCode(f)
+	}
+	PrintDebugMeta := virtual !(Stream^ f) -> void
+	{
+		body.PrintDebugMeta(f)
+	}
+}

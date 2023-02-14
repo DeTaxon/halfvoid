@@ -197,7 +197,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if ResultVar != null
 			UnitStack.PushFront(ResultVar)
 		
-		body = new BoxBlock//(bdy)
+		body = new BoxBlock
 		body."this"(bdy)
 		body.Work()
 
@@ -393,6 +393,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 			GDebugFileId = oldFileId
 		}
+	}
+	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		if Attrs.IsInline and CurrentFunc != this&
+		{
+			return new FuncInlineWrapper(bdy)
+		}
+		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 	}
 }
 
