@@ -396,11 +396,19 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
-		if Attrs.IsInline and CurrentFunc != this&
+		if Attrs.IsInline
 		{
-			return new FuncInlineWrapper(bdy)
+			try
+			{
+				return new FuncInlineWrapper(this&,objs)
+			}catch(e) //TODO remove, some try_catch eats error from body of function, somewhere there is try_catch that needs to be removed
+			{
+				printf(e.GetMessage().Str())
+				exit(-1)
+			}
+		}else{
+			return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 		}
-		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 	}
 }
 

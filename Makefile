@@ -29,7 +29,7 @@ endif
 MainTarget: test
 
 test:
-	./halfvoid -g -C0 libs2 main2.hv -o out.ll
+	$(gdb_tui) ./halfvoid -g -C0 libs2 main2.hv -o out.ll
 	clang -g out.ll -o test
 
 Objs/CompilerData.zip: Mach.m $(wildcard *.pr)

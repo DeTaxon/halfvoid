@@ -3,11 +3,32 @@ FuncInlineWrapper := class extend BoxExeObj
 {
 	body := BoxBlock^
 
-	this := !(Token^ bdy) -> void
+	vars := HybridQueue.{FuncResultParam2^,5}
+	nameVars := HybridQueue.{MemVar^,5}
+
+	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
 		ObjType = GTypeVoid
-		body = new BoxBlock(bdy)
+
+		stackSize := UnitStack.Size()
+
+		assert(itms.Size() == fnc.InputVarNames.Size())
+		for i : itms.Size()
+		{
+			vr := new FuncResultParam2(itms[i])
+			vars.Push(vr)
+			nVr := new MemVar(fnc.InputVarNames[i],vr)
+			nameVars.Push(nVr)
+			CurrentFunc.FunctionResultVars.Push(vr)
+
+			UnitStack.PushFront(nVr)
+		}
+
+		body = new BoxBlock(fnc.bdy)
 		body.Work()
+
+		while stackSize > UnitStack.Size()
+			UnitStack.Pop()
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -18,10 +39,18 @@ FuncInlineWrapper := class extend BoxExeObj
 	}
 	PrintPre := virtual !(Stream^ f) -> void
 	{
+		for it : vars
+		{
+			it.PrintCode(f)
+		}
 		body.PrintCode(f)
 	}
 	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
+		//for it : vars
+		//{
+		//	it.PrintDebugMeta(f)
+		//}
 		body.PrintDebugMeta(f)
 	}
 }

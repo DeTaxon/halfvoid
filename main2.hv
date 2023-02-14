@@ -9,18 +9,17 @@
 
 
 //inline roead
-//inline function
-//input variables
+//input variadic variables
 //return value
 //debug data for functions in different files
-testCall := inline !() -> void
+testCall := inline !(int x) -> void
 {
-	printf("hello world\n")
+	printf("hello world %i\n",x)
 }
 
 main := !(char^[] args) -> int
 {
-	testCall()
+	testCall(74)
 	return 0
 }
 
