@@ -17,9 +17,22 @@ FuncInlineWrapper := class extend BoxExeObj
 		assert(itms.Size() >= fnc.InputVarNames.Size())
 
 		vSize := fnc.InputVarNames.Size()
+		fTyp := fnc.GetType()->{TypeFunc^}
+
+		assert(fTyp.Params.Size() == itms.Size())
+
 		for i : itms.Size()
 		{
-			vr := new FuncResultParam2(itms[i])
+			vr := FuncResultParam2^
+
+			if (not fTyp.Params[i].IsRef) and itms[i].IsMem()
+			{
+				vr = new FuncResultParam2(new StripMem(itms[i]))
+			}else{
+				vr = new FuncResultParam2(itms[i])
+			}
+
+
 			vars.Push(vr)
 			CurrentFunc.FunctionResultVars.Push(vr)
 

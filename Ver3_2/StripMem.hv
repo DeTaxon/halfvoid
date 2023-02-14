@@ -1,0 +1,19 @@
+StripMem := class extend BoxExeObj
+{
+	callObj := BoxExeObj^
+	this := !(BoxExeObj^ p) -> void
+	{
+		callObj = p
+
+		ObjType = callObj.GetType()
+	}
+	IsMem := virtual !() -> bool { return false }
+
+	PrintPre := virtual !(Stream^ f) -> void { callObj.PrintPre(f) }
+	PrintUse := virtual !(Stream^ f) -> void { callObj.PrintUse(f) }
+
+	PrintDebugMeta := virtual !(Stream^ f) -> void
+	{
+		callObj.PrintDebugMeta(f)
+	}
+}

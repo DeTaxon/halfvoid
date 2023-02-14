@@ -8,19 +8,24 @@
 
 
 
-//inline roead
-//input variadic variables C
-//input reference variable !!! how?
+//inline road
+//static variables stays in one function
+//input variadic variables C //do i need it?
+//input constants
 //return value
 //debug data for functions in different files
 testCall := inline !(int x,args...) -> void
 {
 	printf("hello world %i %i %i\n",x,args...)
+	x = 99999
+	printf("hello world %i %i %i\n",x,args...)
 }
 
 main := !(char^[] args) -> int
 {
-	testCall(74,15,-100)
+	x := 74
+	testCall(x,15,-100)
+	printf("after %i\n",x)
 	return 0
 }
 
