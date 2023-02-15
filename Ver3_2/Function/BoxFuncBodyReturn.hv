@@ -7,42 +7,13 @@ AppendClass BoxFuncBody
 	{
 		assert(Attrs.IsAutoResult)
 
-		resType := GTypeNone
-
-		for it : returnHolder.Returns
-		{
-			st := it.GetSetType()
-
-			if resType == GTypeNone
-			{
-				resType = st
-			}else{
-				if resType == GTypeVoid
-				{
-					resType = st
-				}else{
-					resType = TypeFight(resType,st)
-				}
-			}
-
-			if resType == null
-				it.errorToken.EmitError("can not create type that satisfy all return objects")
-		}
-
-		if resType != GTypeNone
-		{
-			ObjType = FuncTypeSetResult(ObjType->{TypeFunc^},resType,false)
-		}
+		ObjType = returnHolder.CheckReturnStep(ObjType->{TypeFunc^})
 
 		ResultTypeHatch.Emit()
-
-		CreateResultVar()
-		if ResultVar != null
-			UnitStack.PushFront(ResultVar)
 	}
 	ResolveReturnVars := !() -> void
 	{
-		returnHolder.Returns[^].ResolveStep()
+		returnHolder.ResolveReturnVars()
 	}
 	CreateResultVar := !() -> void
 	{
@@ -83,4 +54,40 @@ ReturnsHolder := class extend BoxUnit
 
 	ReturnBlock := BoxBlock^
 	ExitLabel := BoxLabel^
+
+	CheckReturnStep := !(TypeFunc^ fncType) -> TypeFunc^
+	{
+		resType := GTypeNone
+
+		for it : Returns
+		{
+			st := it.GetSetType()
+
+			if resType == GTypeNone
+			{
+				resType = st
+			}else{
+				if resType == GTypeVoid
+				{
+					resType = st
+				}else{
+					resType = TypeFight(resType,st)
+				}
+			}
+
+			if resType == null
+				it.errorToken.EmitError("can not create type that satisfy all return objects")
+		}
+	
+		result = fncType
+		if resType != GTypeNone
+		{
+			result = FuncTypeSetResult(fncType,resType,false)
+		}
+		ResultType = resType
+	}
+	ResolveReturnVars := !() -> void
+	{
+		Returns[^].ResolveStep()
+	}
 }

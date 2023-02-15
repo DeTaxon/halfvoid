@@ -213,11 +213,15 @@ BoxFuncBody := class extend BoxFuncCommon
 		if Attrs.IsAutoResult
 		{
 			CheckReturnStep()
+			CreateResultVar()
 
 			fTy := this.GetType()->{TypeFunc^}
 			returnHolder.ResultRef = fTy.ResultRef
 			returnHolder.ResultType = fTy.ResultType
-			returnHolder.ResultVar = ResultVar 
+			returnHolder.ResultVar = ResultVar
+
+			if ResultVar != null
+				UnitStack.PushFront(ResultVar)
 
 			ResolveReturnVars()
 		}
