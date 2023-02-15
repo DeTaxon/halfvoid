@@ -4,6 +4,7 @@ CurrentFile := task_local BoxFile^
 CurrentScope := task_local BoxUnit^
 CurrentFunc := task_local BoxFuncBody^
 CurrentLine := task_local BoxExeLine^
+CurrentReturns := task_local ReturnsHolder^
 FuncStack := task_local List.{BoxFuncBody^}
 
 HVOperators := AVLSet.{StringSpan}
@@ -45,6 +46,7 @@ StackState := class
 	itScope := BoxUnit^
 	itFunc := BoxFuncBody^
 	itLine := BoxExeLine^
+	itReturns := ReturnsHolder^
 
 	gcVarsInUse := int
 
@@ -58,6 +60,7 @@ StackState := class
 		itScope = CurrentScope
 		itFunc = CurrentFunc
 		itLine = CurrentLine
+		itReturns = CurrentReturns
 
 		gcVarsInUse = GCVarsInUse
 
@@ -73,6 +76,7 @@ StackState := class
 		CurrentScope = itScope
 		CurrentFunc = itFunc
 		CurrentLine = itLine
+		CurrentReturns = itReturns
 
 		GCVarsInUse = gcVarsInUse
 

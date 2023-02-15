@@ -63,17 +63,6 @@ BoxYield := class extend BoxReturn
 	}
 }
 
-GetCurrentFunc := !() -> BoxFunc^
-{
-	for it : UnitStack
-	{
-		if it is in BoxFunc
-			return it->{BoxFunc^}
-	}
-	assert(false)
-	return null
-}
-
 ReturnHalfState := class extend BoxExeObj
 {
 	isYield := bool

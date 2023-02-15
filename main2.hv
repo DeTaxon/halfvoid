@@ -13,6 +13,8 @@
 //input variadic variables C //do i need it?
 //input constants
 //return value
+//complex return, with autodeduction type
+//deducting type by returns
 //debug data for functions in different files
 testCall := inline !(int x,args...) -> void
 {

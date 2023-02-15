@@ -23,9 +23,9 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 			preRes = new ReturnHalfState(itm.Down.Right,dwnRes,isYield)
 		}
 
-		if CurrentFunc.Attrs.IsAutoResult
+		if CurrentReturns.IsAutoResult
 		{
-			CurrentFunc.Returns.Push(preRes)
+			CurrentReturns.Returns.Push(preRes)
 			return preRes
 		}
 

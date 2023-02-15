@@ -1,6 +1,6 @@
 AppendClass BoxFuncBody
 {
-	Returns := List.{ReturnHalfState^}
+	returnHolder := ReturnsHolder
 
 	CheckReturnStep := !() -> void
 	{
@@ -8,7 +8,7 @@ AppendClass BoxFuncBody
 
 		resType := GTypeNone
 
-		for it : Returns
+		for it : returnHolder.Returns
 		{
 			st := it.GetSetType()
 
@@ -40,8 +40,10 @@ AppendClass BoxFuncBody
 		CreateResultVar()
 		if ResultVar != null
 			UnitStack.PushFront(ResultVar)
-		
-		Returns[^].ResolveStep()
+	}
+	ResolveReturnVars := !() -> void
+	{
+		returnHolder.Returns[^].ResolveStep()
 	}
 	CreateResultVar := !() -> void
 	{
@@ -71,4 +73,12 @@ AppendClass BoxFuncBody
 			ResultVar = new MemVar(resSpn,resVoid)
 		}
 	}
+}
+ReturnsHolder := class extend BoxUnit
+{
+	IsAutoResult := bool
+	ResultRef := bool
+	ResultType := Type^
+	Returns := HybridQueue.{ReturnHalfState^,4}
+	ReturnBlock := BoxBlock^
 }

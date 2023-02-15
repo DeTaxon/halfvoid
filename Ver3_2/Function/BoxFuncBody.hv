@@ -142,7 +142,19 @@ BoxFuncBody := class extend BoxFuncCommon
 		ParentFunc = oldFunc
 		FuncStack.PushFront(this&)
 		CurrentFunc = this&
+
+		oldReturns := CurrentReturns
+		CurrentReturns = returnHolder&
 		
+		CurrentReturns.IsAutoResult = Attrs.IsAutoResult
+
+		if not Attrs.IsAutoResult
+		{
+			fTy := this.GetType()->{TypeFunc^}
+			returnHolder.ResultRef = fTy.ResultRef
+			returnHolder.ResultType = fTy.ResultType
+		}
+
 		AllFunctions.Push(this&)
 
 		stackSize := UnitStack.Size()
@@ -177,14 +189,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		UnitStack.PushFront(ConstVars[^])
 
-		// for it : ConstVars
-		// {
-		// 	if it is in TypeVar
-		// 	{
-		// 		printf("heh %s\n",it->{TypeVar^}.Name)
-		// 	}
-		// }
-
 		OutputName = GetFuncMangle(Name)
 		
 		CurrentScope = this&
@@ -198,11 +202,20 @@ BoxFuncBody := class extend BoxFuncCommon
 			UnitStack.PushFront(ResultVar)
 		
 		body = new BoxBlock
+		returnHolder.ReturnBlock = body
 		body."this"(bdy)
 		body.Work()
 
 		if Attrs.IsAutoResult
+		{
 			CheckReturnStep()
+
+			fTy := this.GetType()->{TypeFunc^}
+			returnHolder.ResultRef = fTy.ResultRef
+			returnHolder.ResultType = fTy.ResultType
+
+			ResolveReturnVars()
+		}
 
 
 		if Yields.Size() != 0
@@ -251,6 +264,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			UnitStack.Pop()
 		}
 		FuncStack.Pop()
+		
+		CurrentReturns = oldReturns
 		CurrentFunc = oldFunc
 		GCVarsInUse = oldVarsCount
 
