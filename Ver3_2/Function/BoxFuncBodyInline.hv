@@ -9,10 +9,11 @@ FuncInlineWrapper := class extend BoxExeObj
 	groupVars := VarGroup^
 
 	thisReturns := ReturnsHolder
+	resultCall := BoxExeObj^
 
 	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
-		ObjType = GTypeVoid
+		CurrentFunc.inlineFunctions.Push(this&)
 
 		stackSize := UnitStack.Size()
 
@@ -78,16 +79,31 @@ FuncInlineWrapper := class extend BoxExeObj
 		body."this"(fnc.bdy)
 		body.Work()
 
+		ObjType = thisReturns.ResultType
+
+		if ObjType != GTypeVoid
+		{
+			resultCall = thisReturns.ResultVar.Value.CreateCall()
+		}else{
+			assert(false)
+		}
+
 		while stackSize > UnitStack.Size()
 			UnitStack.Pop()
 		CurrentReturns = oldReturns
 	}
 	IsMem := virtual !() -> bool
 	{
-		return false
+		return thisReturns.ResultRef
 	}
 	PrintPointPre := virtual !(Stream^ f) -> void
 	{
+		for it : vars
+		{
+			it.PrintCode(f)
+		}
+		body.PrintCode(f)
+		resultCall?.PrintPointPre(f)
 	}
 	PrintPre := virtual !(Stream^ f) -> void
 	{
@@ -96,6 +112,15 @@ FuncInlineWrapper := class extend BoxExeObj
 			it.PrintCode(f)
 		}
 		body.PrintCode(f)
+		resultCall?.PrintPre(f)
+	}
+	PrintPointUse := virtual !(Stream^ f) -> void
+	{
+		resultCall.PrintPointUse(f)
+	}
+	PrintUse := virtual !(Stream^ f) -> void
+	{
+		resultCall.PrintUse(f)
 	}
 	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{

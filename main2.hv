@@ -27,8 +27,8 @@ testCall := inline !(int x,args...) -> int
 main := !(char^[] args) -> int
 {
 	x := 74
-	testCall(x,15,-100)
-	printf("after %i\n",x)
+	c := testCall(x,15,-100)
+	printf("after %i %i\n",x,c)
 	return 0
 }
 

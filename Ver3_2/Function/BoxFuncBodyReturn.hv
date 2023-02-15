@@ -1,6 +1,7 @@
 AppendClass BoxFuncBody
 {
 	returnHolder := ReturnsHolder
+	inlineFunctions := List.{FuncInlineWrapper^}
 
 	CheckReturnStep := !() -> void
 	{

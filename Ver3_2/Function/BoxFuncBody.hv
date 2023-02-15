@@ -411,6 +411,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			//	f << ", templateParams:!"<<tmplId
 			f^ << ")\n"
 
+			inlineFunctions[^].PrintDebugMeta(f)
+
 			GDebugFileId = oldFileId
 		}
 	}
