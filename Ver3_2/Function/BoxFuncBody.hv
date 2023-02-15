@@ -29,6 +29,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	InputVarNames := List.{StringSpan}
 
+	classUnroll := ClassUnroll
+
 	ParentScope := BoxUnit^
 	GetParentScope := virtual !() -> BoxUnit^
 	{
@@ -190,6 +192,15 @@ BoxFuncBody := class extend BoxFuncCommon
 			CreateResultVar()
 			returnHolder.ResultVar = ResultVar 
 		}
+		if Attrs.IsMethod
+		{
+			classUnroll.methodObj = Params[0].Value
+			classUnroll.baseClass = ObjType->{TypeFunc^}.Params[0].ItType->{TypeClass^}.ToClass
+			assert(classUnroll.baseClass is in BoxClass)
+
+			UnitStack.PushFront(classUnroll&)
+		}
+
 
 		UnitStack.PushFront(ConstVars[^])
 

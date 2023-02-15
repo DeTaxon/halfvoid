@@ -76,8 +76,6 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(ptrCall,Objs)?
 	}
 
-
-
 	itm.EmitError("Method not found")
 	assert(false)
 }
