@@ -8,6 +8,8 @@ FuncInlineWrapper := class extend BoxExeObj
 
 	groupVars := VarGroup^
 
+	thisReturns := ReturnsHolder
+
 	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
 		ObjType = GTypeVoid
@@ -16,8 +18,23 @@ FuncInlineWrapper := class extend BoxExeObj
 
 		assert(itms.Size() >= fnc.InputVarNames.Size())
 
+		oldReturns := CurrentReturns
+		CurrentReturns = thisReturns&
+
+
 		vSize := fnc.InputVarNames.Size()
 		fTyp := fnc.GetType()->{TypeFunc^}
+
+		assert(not fnc.Attrs.IsAutoResult)
+		thisReturns.ResultRef = fTyp.ResultRef
+		thisReturns.ResultType = fTyp.ResultType
+
+		rFnc := new FuncLocalParam(thisReturns.ResultType)
+		thisReturns.ResultVar = new MemVar(StringSpan("result"),rFnc)
+
+		CurrentFunc.regularVars.Push(rFnc)
+
+		UnitStack.PushFront(thisReturns.ResultVar)
 
 		assert(fTyp.Params.Size() == itms.Size())
 
@@ -54,11 +71,16 @@ FuncInlineWrapper := class extend BoxExeObj
 		if groupVars != null
 			UnitStack.PushFront(groupVars)
 
-		body = new BoxBlock(fnc.bdy)
+		body = new BoxBlock
+
+		CurrentReturns.ExitLabel = body.GetQuitLabel()
+
+		body."this"(fnc.bdy)
 		body.Work()
 
 		while stackSize > UnitStack.Size()
 			UnitStack.Pop()
+		CurrentReturns = oldReturns
 	}
 	IsMem := virtual !() -> bool
 	{

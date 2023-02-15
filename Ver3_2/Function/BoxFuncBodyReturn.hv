@@ -28,11 +28,9 @@ AppendClass BoxFuncBody
 				it.errorToken.EmitError("can not create type that satisfy all return objects")
 		}
 
-		if resType == GTypeNone
+		if resType != GTypeNone
 		{
-		}else{
 			ObjType = FuncTypeSetResult(ObjType->{TypeFunc^},resType,false)
-			// assert(ObjType->{TypeFunc^}.ResultType == GTypeVoid)
 		}
 
 		ResultTypeHatch.Emit()
@@ -81,5 +79,7 @@ ReturnsHolder := class extend BoxUnit
 	ResultType := Type^
 	ResultVar := MemVar^
 	Returns := HybridQueue.{ReturnHalfState^,4}
+
 	ReturnBlock := BoxBlock^
+	ExitLabel := BoxLabel^
 }

@@ -16,11 +16,12 @@
 //complex return, with autodeduction type
 //deducting type by returns
 //debug data for functions in different files
-testCall := inline !(int x,args...) -> void
+testCall := inline !(int x,args...) -> int
 {
 	printf("hello world %i %i %i\n",x,args...)
 	x = 99999
 	printf("hello world %i %i %i\n",x,args...)
+	return 47
 }
 
 main := !(char^[] args) -> int

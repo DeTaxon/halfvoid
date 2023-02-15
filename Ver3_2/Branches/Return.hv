@@ -148,9 +148,9 @@ ReturnHalfState := class extend BoxExeObj
 	 
 		if isYield
 		{
-			returnObj = new BoxYield(CurrentFunc.GetExitLabel(),callObj)
+			returnObj = new BoxYield(CurrentReturns.ExitLabel,callObj)
 		}else{
-			returnObj = new BoxReturn(CurrentFunc.GetExitLabel(),callObj)
+			returnObj = new BoxReturn(CurrentReturns.ExitLabel,callObj)
 		}
 	}
 	GetReturnObj := !() -> BoxExeObj^

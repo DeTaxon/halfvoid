@@ -147,6 +147,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		CurrentReturns = returnHolder&
 		
 		CurrentReturns.IsAutoResult = Attrs.IsAutoResult
+		CurrentReturns.ExitLabel = GetExitLabel()
 
 		if not Attrs.IsAutoResult
 		{

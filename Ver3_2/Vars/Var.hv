@@ -60,7 +60,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			fnc := CurrentScope->{BoxFuncBody^}
 			
 			cls := BoxClass^
-			printf("hm %p\n",fnc)
+			printf("hm2 %p\n",fnc)
 
 			if fnc.ParentScope is in BoxClass
 			{
