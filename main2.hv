@@ -16,7 +16,7 @@
 //complex return, with autodeduction type
 //deducting type by returns
 //debug data for functions in different files
-testCall := inline !(int cmplxName,args...) -> int
+testCall := !(int cmplxName,args...)
 {
 	printf("hello world %i %i %i\n",cmplxName,args...)
 	cmplxName = 1313
