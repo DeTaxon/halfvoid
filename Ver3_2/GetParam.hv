@@ -75,6 +75,27 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 				}
 			}
 		}
+
+		if par is ClassUnroll and asItm.Value != "this"
+		{
+			unroll := par->{ClassUnroll^}
+			cls := unroll.BaseClass
+			obj := unroll.MethodObj
+
+			fld := cls.GetField(asItm.Value)
+
+			if metFuncs.Size() != 0
+			{
+				assert(false)
+			}
+
+			if fld != null
+			{
+				itms := CheckExeDownList
+				itms.Push(unroll.MethodObj.CreateCall())
+				return fld.CreateCall(itms)
+			}
+		}
 		
 		if par is in BoxFuncBody
 		{

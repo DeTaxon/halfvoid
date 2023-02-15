@@ -1,0 +1,6 @@
+
+ClassUnroll := class extend BoxUnit
+{
+	MethodObj := ParamFunc^
+	BaseClass := BoxClass^
+}

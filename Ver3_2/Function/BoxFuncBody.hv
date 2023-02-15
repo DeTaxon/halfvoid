@@ -192,14 +192,13 @@ BoxFuncBody := class extend BoxFuncCommon
 			CreateResultVar()
 			returnHolder.ResultVar = ResultVar 
 		}
-		if Attrs.IsMethod
-		{
-			classUnroll.methodObj = Params[0].Value
-			classUnroll.baseClass = ObjType->{TypeFunc^}.Params[0].ItType->{TypeClass^}.ToClass
-			assert(classUnroll.baseClass is in BoxClass)
-
-			UnitStack.PushFront(classUnroll&)
-		}
+		//if Attrs.IsMethod
+		//{
+		//	classUnroll.MethodObj = Params[0].Value
+		//	classUnroll.BaseClass = ObjType->{TypeFunc^}.Params[0].ItType->{TypeClass^}.ToClass
+		//	assert(classUnroll.BaseClass is in BoxClass)
+		//	UnitStack.PushFront(classUnroll&)
+		//}
 
 
 		UnitStack.PushFront(ConstVars[^])
