@@ -11,23 +11,21 @@
 //inline road
 //static variables stays in one function
 //input variadic variables C //do i need it?
-//input constants
-//return value
-//complex return, with autodeduction type
 //deducting type by returns
 //debug data for functions in different files
-testCall := !(int cmplxName,args...)
+testCall := inline !(int cmplxName,args...) .{@HH} -> int
 {
 	printf("hello world %i %i %i\n",cmplxName,args...)
 	cmplxName = 1313
 	printf("hello world %i %i %i\n",cmplxName,args...)
+	printf("wut %i\n",HH)
 	return 47
 }
 
 main := !(char^[] args) -> int
 {
 	x := 74
-	c := testCall(x,15,-100)
+	c := testCall(x,15,-100).{477}
 	printf("after %i %i\n",x,c)
 	return 0
 }

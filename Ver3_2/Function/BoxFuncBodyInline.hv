@@ -17,6 +17,8 @@ FuncInlineWrapper := class extend BoxExeObj
 
 		stackSize := UnitStack.Size()
 
+		UnitStack.PushFront(fnc.ConstVars[^])
+
 		assert(itms.Size() >= fnc.InputVarNames.Size())
 
 		oldReturns := CurrentReturns

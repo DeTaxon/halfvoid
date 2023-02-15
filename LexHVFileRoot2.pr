@@ -1,5 +1,5 @@
 "#best ()"
-"! () . {} -> d {}"  "! () . {} {}" "try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
+"try {} catch () {}" "fake {}" "! () -> d {} defer_tail () {}"
 "AppendClass d {}"
 #ClassBlock
 #FunctionBody
