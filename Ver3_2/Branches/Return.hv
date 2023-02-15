@@ -82,15 +82,13 @@ ReturnHalfState := class extend BoxExeObj
 		{
 			if callObj.GetType() != GTypeVoid //TODO Auto return type
 			{
-				rRef := CurrentFunc.GetType()->{TypeFunc^}.ResultRef
+				rRef := CurrentReturns.ResultRef
 
 				callObj2 := BoxExeObj^
 				resType := callObj.GetType()
-				funcType := CurrentFunc.ResultVar.GetVarType()
+				funcType := CurrentReturns.ResultType
 				if rRef
 				{
-					funcType = funcType.Base
-
 					if not callObj.IsMem()
 						errorToken.EmitError("Can not return reference, object does not sits in memory")
 				}
@@ -130,12 +128,8 @@ ReturnHalfState := class extend BoxExeObj
 					}
 				}
 
-				tkn1 := TokenIndent(StringSpan("result"))
-
-				resGet := TryGetExeCall(tkn1&)
-
 				objs := CheckExeDownList
-				objs.Push(resGet)
+				objs.Push(CurrentReturns.ResultVar.Value.CreateCall())
 				objs.Push(callObj2)
 
 				if rRef

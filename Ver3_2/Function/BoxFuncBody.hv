@@ -185,7 +185,10 @@ BoxFuncBody := class extend BoxFuncCommon
 			Params.Push(vr)
 		}
 		if not Attrs.IsAutoResult
+		{
 			CreateResultVar()
+			returnHolder.ResultVar = ResultVar 
+		}
 
 		UnitStack.PushFront(ConstVars[^])
 
@@ -213,6 +216,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			fTy := this.GetType()->{TypeFunc^}
 			returnHolder.ResultRef = fTy.ResultRef
 			returnHolder.ResultType = fTy.ResultType
+			returnHolder.ResultVar = ResultVar 
 
 			ResolveReturnVars()
 		}

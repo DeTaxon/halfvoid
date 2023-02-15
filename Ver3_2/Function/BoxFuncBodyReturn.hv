@@ -79,6 +79,7 @@ ReturnsHolder := class extend BoxUnit
 	IsAutoResult := bool
 	ResultRef := bool
 	ResultType := Type^
+	ResultVar := MemVar^
 	Returns := HybridQueue.{ReturnHalfState^,4}
 	ReturnBlock := BoxBlock^
 }
