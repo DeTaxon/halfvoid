@@ -26,6 +26,7 @@ main := !(char^[] args) -> int
 {
 	x := 74
 	c := testCall(x,15,-100).{477}
+	c.test()
 	printf("after %i %i\n",x,c)
 	return 0
 }
