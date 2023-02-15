@@ -6,6 +6,29 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	}else{
 		return null
 	}
+	res := innerTryGetParam(itm)
+
+	if res == null
+	{
+		asItm := itm->{TokenIndent^}
+
+		c := TEchoStream
+		c << "Could not get param " << asItm.Value
+		c2 := c.GetString()
+		c2.IncRef()
+		itm.EmitError(c2.Str()) //todo better explanation
+	}
+	return res
+}
+
+innerTryGetParam := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm is TokenIndent 
+	{
+	}else{
+		return null
+	}
 
 	asItm := itm->{TokenIndent^}
 
@@ -200,11 +223,6 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 	if asType != null
 		return GetConstType(asType)
 
-	c := TEchoStream
-	c << "Could not get param " << asItm.Value
-	c2 := c.GetString()
-	c2.IncRef()
-	itm.EmitError(c2.Str()) //todo better explanation
 
 	return null
 }

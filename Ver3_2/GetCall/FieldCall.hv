@@ -72,9 +72,13 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 
 	rObjVal := BoxExeObj^
 
-	try{
-		rObjVal = TryGetExeCall(rObj)
-	}catch(e) {}
+	if rObj is TokenIndent
+	{
+		rObjVal = innerTryGetParam(rObj)
+	}else if rObj is TokenInt
+	{
+		rObjVal = GetExeInt(rObj->{TokenInt^}.Parsed)
+	}
 
 	if rObjVal? is BoxExeInt
 	{
