@@ -81,15 +81,7 @@ BoxFile := class extend BoxUnit
 
 		while iter != null
 		{
-			vr := BoxUnit^
-
-			try
-			{
-				vr = TryParseVarInFile(iter)	
-			}catch(e)
-			{
-
-			}
+			vr := TryParseVarInFile(iter)	
 
 			if vr == null
 			{

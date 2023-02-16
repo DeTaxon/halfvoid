@@ -61,16 +61,13 @@ FunctionHeaderInfo := class
 		ResultType.ItToken = resTyp
 		if resTyp != null
 		{
-			try
+			resToken2 := resTyp
+			if resToken2.GetValue() == "ref"
 			{
-				resToken2 := resTyp
-				if resToken2.GetValue() == "ref"
-				{
-					ResultType.IsRef = true
-					resToken2 = resToken2.Right
-				}
-				ResultType.ItType = ParseType(resToken2)
-			}catch(r) {}
+				ResultType.IsRef = true
+				resToken2 = resToken2.Right
+			}
+			ResultType.ItType = ParseType(resToken2)
 		}
 		
 		checkBag := () ==> {

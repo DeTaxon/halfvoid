@@ -434,14 +434,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		if Attrs.IsInline
 		{
-			try
-			{
-				return new FuncInlineWrapper(this&,objs)
-			}catch(e) //TODO remove, some try_catch eats error from body of function, somewhere there is try_catch that needs to be removed
-			{
-				printf(e.GetMessage().Str())
-				exit(-1)
-			}
+			return new FuncInlineWrapper(this&,objs)
 		}else{
 			return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 		}
