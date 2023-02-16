@@ -9,7 +9,7 @@ TGCObject := class extend TGCIObject
 {
 	RefValue := int
 
-	IncRef := virtual !() -> void { RefValue += 1}
+	IncRef := virtual !() -> void { RefValue += 1 }
 	DecRef := virtual !() -> void {
 		RefValue -= 1
 		if RefValue == 0

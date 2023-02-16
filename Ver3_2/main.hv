@@ -6,23 +6,6 @@ PriorityData := PriorityBagOld^
 LexHVFileRoot := PriorityBagOld^
 LexHVInputVars := PriorityBagOld^
 
-loadLex := !(char^ filName,PriorityBagOld^^ res) -> void 
-{
-	pri := FSGetFile(filName)
-	if pri == null
-	{
-		printf("%s not found\n",filName)
-		throw new Exception("intput error")
-	}
-	if not pri.IsVirtual()
-	{
-		printf("%s loaded from outsize\n",filName)
-	}
-	fileMap := pri.GetMap()
-	fileMap.IncRef() //TODO unref
-	pri.IncRef()
-	res^ = new PriorityBagOld(fileMap.Get(),pri.Size())
-}
 loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void 
 {
 	fileMap := pri.GetMap()
@@ -115,10 +98,6 @@ main := !(char^[] args) -> int
 	}
 
 	GetFuncMangle(StringSpan("main"))
-	
-	//loadLex("Priority2.pr",PriorityData&)
-	//loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
-	//loadLex("LexHVInputVars2.pr",LexHVInputVars&)
 
 	loadLex2(#File("Priority2.pr"),PriorityData&)
 	loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)

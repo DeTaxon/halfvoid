@@ -12,6 +12,8 @@
 //static variables stays in one function
 //input variadic variables C //do i need it?
 //deducting type by returns
+//check for methods, and fields
+//captured values, and defer does not work
 //debug data for functions in different files
 testCall := inline !(int cmplxName,args...) .{@HH} -> int
 {
@@ -23,45 +25,12 @@ testCall := inline !(int cmplxName,args...) .{@HH} -> int
 }
 
 
-testFile := !(vRepoFile^ fl,char^ fName) -> void
-{
-	mp1 := fl.GetMap()
-
-	fl2 := FSGetFile(fName)
-	mp2 := fl2.GetMap()
-
-	printf("hm %i %i\n",mp1.Size(),mp2.Size())
-	printf("hm2 %i %i\n",fl.Size(),fl2.Size())
-
-	for i : mp2.Size()
-	{
-		if mp1.Get()[i] != mp2.Get()[i]
-		{
-			printf("diff at %i %i %i\n",i,mp1.Get()[i],mp2.Get()[i])
-		}
-	}
-	printf("wtf %i\n",memcmp(mp1.Get(),mp2.Get(),mp1.Size()-1))
-}
-printFile := !(vRepoFile^ hm) -> void
-{
-	mp := hm.GetMap()
-	spn := StringSpan(mp.Get(),mp.Size())
-	printf("hey <%s>\n",spn)
-}
-
 main := !(char^[] args) -> int
 {
-	testFile(#File("Priority2.pr"),"Priority2.pr")
-	testFile(#File("LexHVInputVars2.pr"),"LexHVInputVars2.pr")
-	testFile(#File("LexHVFileRoot2.pr"),"LexHVFileRoot2.pr")
-
-	//printFile(#File("Priority2.pr"))
-	//printFile(#File("LexHVInputVars2.pr"))
-	//printFile(#File("LexHVFileRoot2.pr"))
-	//x := 74
-	//c := testCall(x,15,-100).{477}
-	//c.test()
-	//printf("after %i %i\n",x,c)
+	x := 74
+	c := testCall(x,15,-100).{477}
+	c.test()
+	printf("after %i %i\n",x,c)
 	return 0
 }
 
