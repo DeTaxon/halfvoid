@@ -1,0 +1,11 @@
+DummyThis := class extend BoxExeObj
+{
+	this := !(Type^ tp) -> void
+	{
+		ObjType  = tp
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+}
