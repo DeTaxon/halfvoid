@@ -28,7 +28,7 @@ loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void
 	fileMap := pri.GetMap()
 	fileMap.IncRef() //TODO unref
 	pri.IncRef()
-	res^ = new PriorityBagOld(fileMap.Get(),pri.Size())
+	res^ = new PriorityBagOld(fileMap.Get(),fileMap.Size())
 }
 
 GArchBitSize := 64
@@ -116,24 +116,17 @@ main := !(char^[] args) -> int
 
 	GetFuncMangle(StringSpan("main"))
 	
-	loadLex("Priority2.pr",PriorityData&)
-	loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
-	loadLex("LexHVInputVars2.pr",LexHVInputVars&)
+	//loadLex("Priority2.pr",PriorityData&)
+	//loadLex("LexHVFileRoot2.pr",LexHVFileRoot&)
+	//loadLex("LexHVInputVars2.pr",LexHVInputVars&)
 
-	//loadLex2(#File("Priority2.pr"),PriorityData&)
-	//loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)
-	//loadLex2(#File("LexHVInputVars2.pr"),LexHVInputVars&)
+	loadLex2(#File("Priority2.pr"),PriorityData&)
+	loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)
+	loadLex2(#File("LexHVInputVars2.pr"),LexHVInputVars&)
 	
 	HVOperators.Insert(PriorityData.Opers[^])
 	
-	mac := FSGetFile("Mach.m")
-
-	if mac == null //todo: mac is emiting exception?
-	{
-		printf("File Mach.m not fount")
-		return -1
-	}
-	
+	mac := #File("Mach.m")
 	macMap := mac.GetMap()
 	LoadLexMachine(macMap.Get(),mac.Size()) 
 

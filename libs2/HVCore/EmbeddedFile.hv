@@ -1,15 +1,14 @@
 vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already made object
 {
 	itData := void^
-	itSize := int
 	this := !(void^ inData, int inpSize) -> void
 	{
 		itData = inData
-		itSize = inpSize
+		fileSize = inpSize
 	}
 	GetMap := virtual !() -> FileView^
 	{
-		return new ZipFSFileViewRaw(itData->{u8^},itSize)
+		return new ZipFSFileViewRaw(itData->{u8^},fileSize)
 	}
 }
 

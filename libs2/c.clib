@@ -13,6 +13,7 @@
 
 		"memset" : "void,void^,char,size_t",
 		"memcpy" : "void,void^,void^,size_t",
+		"memcmp" : "int,void^,void^,size_t",
 
 		"strcpy" : "void,char^,char^",
 		"strcmp" : "int,char^,char^",
