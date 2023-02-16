@@ -166,6 +166,42 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 		for ob : UnitStack
 		{
+			if ob is ClassUnroll
+			{
+				unroll := ob->{ClassUnroll^}
+				cls := unroll.BaseClass
+
+				extraObjs := CheckExeDownList
+				dummyThis := DummyThis(cls.ItType)
+
+				extraObjs.Push(dummyThis&)
+				extraObjs.Push(Objs[^])
+
+				callItem := BoxUnit^
+				cls.GetMethods(asInd.Value,fncs ==> {
+					callItem = GetBestFunc(fncs,extraObjs,consts,false)
+				})
+				if callItem != null
+				{
+					tkn1 := TokenIndent(StringSpan("this")) //TODO
+					tkn1.Line = itm.Line
+					vr := TryGetExeCall(tkn1&)
+
+					extraObjs[0] = vr
+
+					if callItem is in BoxFuncTemplate //TODO: i nedd some function for callItem to Use transformation
+					{
+						return callItem->{BoxFuncTemplate^}.CreateFuncCall(extraObjs,consts)
+					} else if callItem is in BoxFunc
+					{
+						return callItem->{BoxFunc^}.CreateCall(extraObjs)
+					}else{
+						assert(false)
+					}
+
+				}
+			}
+
 			if ob is in BoxFuncBody and asInd.Value != "this"
 			{
 				fnc := ob->{BoxFuncBody^}

@@ -10,6 +10,7 @@ FuncInlineWrapper := class extend BoxExeObj
 
 	thisReturns := ReturnsHolder
 	resultCall := BoxExeObj^
+	classUnroll := ClassUnroll
 
 	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
@@ -74,6 +75,14 @@ FuncInlineWrapper := class extend BoxExeObj
 		}
 		if groupVars != null
 			UnitStack.PushFront(groupVars)
+
+		if fnc.Attrs.IsMethod
+		{
+			classUnroll.MethodObj = vars[0]
+			classUnroll.BaseClass = fTyp.Params[0].ItType->{TypeClass^}.ToClass
+			assert(classUnroll.BaseClass is in BoxClass)
+			UnitStack.PushFront(classUnroll&)
+		}
 
 		body = new BoxBlock
 

@@ -15,21 +15,31 @@
 //check for methods, and fields
 //captured values, and defer does not work
 //debug data for functions in different files
-testCall := inline !(int cmplxName,args...) .{@HH} -> int
-{
-	printf("hello world %i %i %i\n",cmplxName,args...)
-	cmplxName = 1313
-	printf("hello world %i %i %i\n",cmplxName,args...)
-	printf("wut %i\n",HH)
-	return 47
-}
 
+SomeClass44 := class
+{
+	xx := int
+	testCall := inline !(int cmplxName,args...) .{@HH} -> int
+	{
+		printf("hello world %i %i %i\n",cmplxName,args...)
+		cmplxName = 1313
+		printf("hello world %i %i %i\n",cmplxName,args...)
+		printf("wut %i %i %i\n",HH,xx,test2())
+		return 47
+	}
+	test2 := !() -> int
+	{
+		return 1734 + xx
+	}
+}
 
 main := !(char^[] args) -> int
 {
+	y := SomeClass44
+	y.xx = 109
+
 	x := 74
-	c := testCall(x,15,-100).{477}
-	c.test()
+	c := y.testCall(x,15,-100).{477}
 	printf("after %i %i\n",x,c)
 	return 0
 }
