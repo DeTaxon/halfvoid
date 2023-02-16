@@ -12,8 +12,11 @@ FuncInlineWrapper := class extend BoxExeObj
 	resultCall := BoxExeObj^
 	classUnroll := ClassUnroll
 
+	bodyToken := Token^
+
 	this := !(BoxFuncBody^ fnc,CheckExeDownList itms) -> void
 	{
+		bodyToken = fnc.bdy
 		CurrentFunc.inlineFunctions.Push(this&)
 
 		stackSize := UnitStack.Size()
@@ -148,10 +151,18 @@ FuncInlineWrapper := class extend BoxExeObj
 	}
 	PrintDebugMeta := virtual !(Stream^ f) -> void
 	{
+
+		oldId := GDebugFileId
+		if bodyToken?.Line?.File != null
+		{
+			GDebugFileId = bodyToken.Line.File.fileId
+		}
 		//for it : vars
 		//{
 		//	it.PrintDebugMeta(f)
 		//}
 		body.PrintDebugMeta(f)
+
+		GDebugFileId = oldId
 	}
 }

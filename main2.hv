@@ -12,10 +12,8 @@
 //static variables stays in one function
 //input variadic variables C //do i need it?
 //deducting type by returns
-//check for methods, and fields
 //captured values, and defer does not work
 //debug data for functions in different files
-
 SomeClass44 := class
 {
 	xx := int
@@ -35,12 +33,13 @@ SomeClass44 := class
 
 main := !(char^[] args) -> int
 {
-	y := SomeClass44
-	y.xx = 109
+	d := min(15,17)
+	//y := SomeClass44
+	//y.xx = 109
 
-	x := 74
-	c := y.testCall(x,15,-100).{477}
-	printf("after %i %i\n",x,c)
+	//x := 74
+	//c := y.testCall(x,15,-100).{477}
+	//printf("after %i %i\n",x,c)
 	return 0
 }
 
