@@ -50,6 +50,8 @@ TryGetObj := class extend BoxExeObj
 
 	this := !(Token^ itm) -> void
 	{
+		TryCatchUsed = true
+
 		InternalsHatch.Await()
 
 		ItId = GetNewId()

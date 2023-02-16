@@ -9,6 +9,10 @@ FuncStack := task_local List.{BoxFuncBody^}
 
 HVOperators := AVLSet.{StringSpan}
 
+
+TryCatchUsed := bool
+
+
 DebugMode := bool
 ErrorState := bool
 

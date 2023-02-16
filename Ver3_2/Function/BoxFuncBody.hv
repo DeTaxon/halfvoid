@@ -342,7 +342,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		PrintYieldCreateVar(f)
 		PrintYieldCodeParamsGC(f)
 		//gcArrayVar?.PrintCode(f)
-		if gcVarsCount != 0
+		if gcVarsCount != 0 and TryCatchUsed
 			EnterCall.PrintDefaultUse(f)
 
 
@@ -362,7 +362,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		ExitLabel.PrintCode(f)
 
 		//CapturedVarsCleanup?.PrintDefaultUse(f)
-		LeaveCall?.PrintDefaultUse(f)
+
+		if TryCatchUsed
+			LeaveCall?.PrintDefaultUse(f)
 
 		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
 
