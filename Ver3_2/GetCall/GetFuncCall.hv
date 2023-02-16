@@ -172,37 +172,45 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				if fnc.Attrs.IsMethod
 				{
 					baseType := fnc.Params[0].GetVarType()
+					assert(baseType is TypeClass)
+					cls := baseType->{TypeClass^}.ToClass
 
-					resTryCall := BoxExeObj^
-					try
+
+					extraObjs := CheckExeDownList
+					dummyThis := DummyThis(baseType)
+
+					extraObjs.Push(dummyThis&)
+					extraObjs.Push(Objs[^])
+
+					callItem := BoxUnit^
+					cls.GetMethods(asInd.Value,fncs ==> {
+						callItem = GetBestFunc(fncs,extraObjs,consts,false)
+					})
+					if callItem != null
 					{
-						thisObj := new PackedExeObj
-						thisObj.mainCall = new BlankObjectExe(baseType,true)
-						
+						tkn1 := TokenIndent(StringSpan("this"))
+						tkn1.Line = itm.Line
+						vr := TryGetExeCall(tkn1&)
 
-						resTryCall = innerTryGetMethodCall(asInd.Value,thisObj,Objs,consts) //TODO: check for recursion this.func -> func -> this.func
+						extraObjs[0] = vr
 
-						if resTryCall != null
+						if callItem is in BoxFuncTemplate //TODO: i nedd some function for callItem to Use transformation
 						{
-							tkn1 := TokenIndent(StringSpan("this"))
-							tkn1.Line = itm.Line
-							vr := TryGetExeCall(tkn1&)
-							thisObj.mainCall = vr
-							assert(vr != null)
+							return callItem->{BoxFuncTemplate^}.CreateFuncCall(extraObjs,consts)
+						} else if callItem is in BoxFunc
+						{
+							return callItem->{BoxFunc^}.CreateCall(extraObjs)
+						}else{
+							assert(false)
 						}
-					}catch(e){}
-					if resTryCall != null
-						return resTryCall
+
+					}
 				}
 			}
 		}
 
 		resFunc := BoxExeObj^
-		try
-		{
-			resFunc = CreateFuncCall(asInd.Value,Objs,consts)
-		}catch(e)
-		{}
+		resFunc = CreateFuncCall(asInd.Value,Objs,consts)
 		if resFunc != null
 			return resFunc
 	}
