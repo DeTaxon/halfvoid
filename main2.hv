@@ -34,12 +34,17 @@ SomeClass44 := class
 	}
 }
 
+testPtrFunc := !( !(int[])&->void cb) -> void
+{
+	hey := Vector.{int}(13)
+	printf("hey %i\n",hey.RefValue)
+	cb(hey&)
+	printf("hey %i\n",hey.RefValue)
+}
+
 main := !(char^[] args) -> int
 {
-	y := SomeClass44
-	y.xx = 109
-
-	y.someBug()
+	testPtrFunc(x ==> {})
 
 	//x := 74
 	//c := y.testCall(x,15,-100).{477}

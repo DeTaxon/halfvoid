@@ -49,6 +49,7 @@ CLib := class extend ModuleInterface
 					for fnc : nd^
 					{
 						itPreFuncs[fnc.Key()] = fnc.Value()
+						GetFuncMangle(fnc.Key())
 					}
 				case "libs"
 					for lbs : nd^

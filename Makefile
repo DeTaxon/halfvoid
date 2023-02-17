@@ -31,6 +31,9 @@ MainTarget: test
 test:
 	$(gdb_tui) ./halfvoid -g -C0 libs2 main2.hv -o out.ll
 	clang -g out.ll -o test
+win.exe:
+	$(gdb_tui) ./halfvoid -win32 -g -C0 libs2 main2.hv -o out.ll
+	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe
 
 Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m $(wildcard *.pr)

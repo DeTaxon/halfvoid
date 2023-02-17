@@ -51,7 +51,7 @@ MappedFile := class extend TGCObject
 			fFlg = CREATE_NEW
 		}
 		asW := Utf8ToUtf16(fileName)
-		hndl = CreateFileW(asW,opTyp,fS,null,fFlg,FILE_ATTRIBUTE_NORMAL,null)
+		hndl = CreateFileW(asW.GetPointer(),opTyp,fS,null,fFlg,FILE_ATTRIBUTE_NORMAL,null)
 		if hndl&->{u64^}^ == not_b 0U
 		{
 			throw new Exception("can not open file")

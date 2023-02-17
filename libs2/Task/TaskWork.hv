@@ -19,6 +19,7 @@ TaskWorkersToDo := List.{Task^}
 
 	myTask->{Task^}.resume()
 	TaskWaitTasksConVar.NotifyAll()
+	TaskMainEvent.Emit()
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()
