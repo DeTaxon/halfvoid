@@ -71,7 +71,13 @@ FuncInputParam := class extend ParamFunc
 		}else{
 			objs.Push(new BoxFuncCall(SelfAsBlank))
 		}
-		SelfSet = CreateFuncCall(StringSpan("="),objs)
+		if varMiddleType is in TypePoint
+		{
+			cnsts := List.{BoxExeConstObj^}
+			SelfSet = GPointStoreTemplate.GetFunc(objs,cnsts).CreateCall(objs)
+		}else{
+			SelfSet = CreateFuncCall(StringSpan("="),objs)
+		}
 		if SelfSet == null
 		{
 			printf("Software error for type %s %s\n",varMiddleType.GetBADStr(),CurrentFunc.Name)
