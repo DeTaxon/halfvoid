@@ -29,13 +29,17 @@ SomeClass44 := class
 	{
 		return 1734 + xx
 	}
+	someBug := !(int j = 13) -> void
+	{
+	}
 }
 
 main := !(char^[] args) -> int
 {
-	d := min(15,17)
-	//y := SomeClass44
-	//y.xx = 109
+	y := SomeClass44
+	y.xx = 109
+
+	y.someBug()
 
 	//x := 74
 	//c := y.testCall(x,15,-100).{477}

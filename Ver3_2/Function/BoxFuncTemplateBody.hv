@@ -266,14 +266,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		headerCheckHatch.Await()
 			
 		resFuncTyp := hData.CreateFuncType()
-		//cnsts := List.{BoxExeConstObj^}
-		//return CreateFunc(resFuncTyp,cnsts)
-
-		names := HybridQueue.{StringSpan,10}
-		names.Push(hData.Types[^].Name)
-		newFunc := new BoxFuncBody(resFuncTyp,Attrs,names,bdy)
-		newFunc.SetPrintName(Name)
-		return newFunc
+		cnsts := List.{BoxExeConstObj^}
+		return CreateFunc(resFuncTyp,cnsts)
 	}
 
 }
