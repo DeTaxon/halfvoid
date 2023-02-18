@@ -1,8 +1,8 @@
 {
 	"link" : "dynamic",
-	"initname" : "uring_init",
+	"initname" : "Nuklear_init",
 	"libs" : [
-		"c_lib.so"
+		"Nuklear.so"
 	],
 	"structs" : {
 		"nk_color" : {
@@ -79,6 +79,8 @@
 
 		"nk_buffer_init_default" : "void,void^",
 		"nk_buffer_init_fixed" : "void,void^,void^,size_t",
+		"nk_buffer_free" : "void,void^",
+
 		"nk_convert" : "int,void^,void^,void^,void^,void^",
 
 		"nk__draw_begin" : "void^,void^,void^",
@@ -92,25 +94,6 @@
 		"nk_layout_row_dynamic" : "void,void^,float,int",
 		"nk_layout_row_push" : "void,void^,int",
 
-		"ur_create" : "void^",
-		"ur_init" : "void,int,void^,int",
-		"ur_exit" : "void,void^",
-		"ur_destroy" : "void,void^",
-
-		"ur_get_sqe" : "void^,void^",
-
-		"ur_sqe_timeout" : "void,void^,double,int,int,void^",
-
-		"ur_sqe_readv" : "void,void^,int,void^,int,int",
-		"ur_sqe_writev" : "void,void^,int,void^,int,int",
-
-		"ur_sqe_set_data" : "void,void^,void^",
-		"ur_cqe_get_data" : "void^,void^",
-
-		"ur_sqe_poll_add" : "void,void^,int,int",
-
-		"ur_submit" : "void,void^",
-
 		"nk_font_atlas_init_default" : "void,void^",
 		"nk_font_atlas_begin" : "void,void^",
 		"nk_font_atlas_end" : "void,void^,void^,void^",
@@ -119,9 +102,6 @@
 		"nk_font_atlas_add_default" : "void^,void^,float,void^",
 
 		"nk_style_load_all_cursors" : "void,void^,void^",
-		"nk_style_set_font" : "void,void^,void^",
-
-		"ur_wait_cqe_timeout" : "int,void^,void^^,double",
-		"ur_cqe_seen" : "void,void^,void^"
+		"nk_style_set_font" : "void,void^,void^"
 	}
 }

@@ -8,8 +8,8 @@ c_lib.so: uring.cpp stb/main.cpp Nuklear.o
 NuklearGLFW.so : NuklearGLFW.c
 	clang $(flags) -shared -lm -lglfw $^ -o $@
 
-Nuklear.o : Nuklear.c
-	clang $(flags) $^ -lm -c -o $@
+Nuklear.so : Nuklear.c
+	clang $(flags) $^ -lm -shared -o $@
 
 download:
 	mkdir stb
