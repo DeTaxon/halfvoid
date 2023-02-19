@@ -1,11 +1,15 @@
 
+main := !(char^[] args) -> int
+{
+	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
+	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
+	//itFile >> ImageDecoder >> ImageToBuffer >> BufferCopy(ResultBuffer)
 
-//AClass := class
-//{
-//	ggg := virtual int TODO Creates bug
-//	g3 := int
-//}
+	//flw := TFlow(InfStream.{int}(),Uniq,File("w"))
+	//flw.Push(13)
 
+	return 0
+}
 
 
 //inline road
@@ -34,22 +38,11 @@ SomeClass44 := class
 	}
 }
 
-testPtrFunc := !( !(int[])&->void cb) -> void
+inlineBugs := !() -> void
 {
-	hey := Vector.{int}(13)
-	printf("hey %i\n",hey.RefValue)
-	cb(hey&)
-	printf("hey %i\n",hey.RefValue)
-}
-
-main := !(char^[] args) -> int
-{
-	testPtrFunc(x ==> {})
-
-	//x := 74
-	//c := y.testCall(x,15,-100).{477}
-	//printf("after %i %i\n",x,c)
-	return 0
+	x := 74
+	c := y.testCall(x,15,-100).{477}
+	printf("after %i %i\n",x,c)
 }
 
 //TODO
@@ -100,3 +93,10 @@ RegExpTest := !() -> void
 		}
 	})
 }
+
+//AClass := class
+//{
+//	ggg := virtual int TODO Creates bug
+//	g3 := int
+//}
+
