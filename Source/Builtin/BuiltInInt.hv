@@ -233,16 +233,6 @@ BuiltInIntSuffixF := class extend BoxFuncCommon
 		return GetExchange(objs[0],GTypeFloat)
 	}
 }
-
-CreateBuiltins := !() -> void
-{
-	CreateBuiltinsInt()
-	CreateBuiltinsPoint()
-	CreateBuiltinsBool()
-	CreateBuildInTools()
-	CreateBuiltInVec()
-	CreateBuiltInVoid()
-}
 CreateBuiltinsInt := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
