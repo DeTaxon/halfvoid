@@ -12,7 +12,7 @@ AppendClass ModuleVulkan
 	}
 }
 
-VKGrowableClass := class extend GrowableClass
+VKGrowableClass := class extend BoxClass
 {
 	itModule := ModuleVulkan^
 	classSize := VarIntObj^
@@ -26,8 +26,6 @@ VKGrowableClass := class extend GrowableClass
 
 		ItAlign = 1 //TODO pointer size
 		ItSize = 0
-
-		growableInit()
 	}
 	GetNewFieldType := virtual !(StringSpan val) -> Type^
 	{
@@ -39,5 +37,45 @@ VKGrowableClass := class extend GrowableClass
 		memcpy(buffer[4]&,val.NonNullStr(),val.Size())
 		buffer[val.Size() + 5] = 0
 		return itModule.GetTryFuncPointer(buffer[0]&)
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+				return it
+		}
+
+		newFieldType := GetNewFieldType(val)
+
+		if newFieldType == null
+			return null
+
+		newField := new FieldParam(val,newFieldType)
+		Fields.Push(newField)
+
+		fPath := new FieldPath(ItType,newField.Value)
+		fPath.Field = newField
+		fPath.Index = FieldsPath.Size()
+
+		FieldsPath.Push(fPath)
+
+		fieldAlign := newFieldType.GetAlign()
+		ItAlign = max(ItAlign,fieldAlign)
+
+		unalign := ItSize mod fieldAlign
+		if unalign != 0
+		{
+			ItSize += fieldAlign - unalign
+		}
+
+		ItSize += newFieldType.GetSize() //todo variable size object?
+
+		for it : fieldIterators
+		{
+			it.ItemCreated(FieldsPath.Size() - 1)
+		}
+
+		return fPath 
 	}
 }
