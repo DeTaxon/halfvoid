@@ -146,7 +146,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if typ != null
 		{
 			if not (typ is TypeClass)
-				assert(false) //TODO
+				obj.Down.EmitError("Item is not a class")
 			cls := typ->{TypeClass^}.ToClass
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
@@ -170,7 +170,6 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 				if cls2.VTable.Size() != 0
 				{
 					chk := CheckExeDownList
-					defer chk.Destroy() //TODO
 					chk.Push(dObj)
 					return cls2.VTableField.CreateCall(chk)
 				}else{
@@ -179,7 +178,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			}else{
 				obj.EmitError("Left of ->VTable is not a class")
 			}
-		}	
+		}
+		obj.Down.EmitError("Compiler error. How did you get there?")
 	}
 
 	if right.Value == "SetType"
