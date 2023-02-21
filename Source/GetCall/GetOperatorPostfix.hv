@@ -9,7 +9,40 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 
 	if oper == "?"
 	{
-		//TODO case x[10]?
+		dwn := itm.Down
+		if dwn.Down?.Right?.GetValue() == "[]" and dwn.Down.Right.Right == null
+		{
+			cl := TryGetExeCall(dwn.Down)
+			assert(cl != null)
+
+			objs := CheckExeDownList
+			objs.Push(cl)
+			CheckFuncCallBrackets(dwn.Down.Right,objs)
+
+			cnsts := List.{BoxExeConstObj^}
+
+			cl2 := CreateFuncCallOperator(StringSpan("[]?"),objs,cnsts)
+			if cl2 == null
+			{
+				cl2 = CreateFuncCallOperator(StringSpan("[]"),objs,cnsts)
+				if cl2 == null
+				{
+					dwn.EmitError("Could not create function call []? or []\n")
+				}
+			}
+			if cl2.IsMem()
+			{
+				cl2 = new UnrefFuncCall(cl2)
+				cl2 = new BoxQuestionPointer(cl2)
+				cl2 = new PtrToRefFuncCall(cl2)
+			}
+			if cl2.GetType() is in TypePoint
+			{
+				cl2 = new BoxQuestionPointer(cl2)
+			}
+			return cl2
+		}
+
 		cl := TryGetExeCall(itm.Down)
 		assert(cl != null)
 

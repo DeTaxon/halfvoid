@@ -10,12 +10,16 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	{
 		itSize = 0
 	}
-	//"[]?" := !(KEY dat) -> ref VALUE
-	//{
-	//	resl := itTree.FindNode(BadPair.{KEY,VALUE}(dat))
-	//	if resl == null return null
-	//	return resl.data.second
-	//}
+	"[]?" := !(KEY dat) -> ref VALUE
+	{
+		cnst := BadPair.{KEY,VALUE}
+		cnst.first = dat
+		resl := itTree.FindNode(cnst)
+		if resl != null
+		{
+			return resl.data.second
+		}
+	}
 	"[]" := !(KEY dat) -> ref VALUE
 	{
 		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^

@@ -186,7 +186,7 @@ TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
 			return GBoolTrue
 		}
 
-		if not objs[^].IsConst //TODO: CONSTANTS CHECK ONLY NEXT
+		if not objs[^].IsConst
 			return null
 
 
