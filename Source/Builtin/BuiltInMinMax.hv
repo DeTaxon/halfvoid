@@ -1,0 +1,51 @@
+
+
+BuiltInMinInt := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeInt,GTypeInt],GTypeInt))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+		lst[1].PrintPre(f)
+		
+		f^ << "%T" << resId << " = call i32 @llvm.smin.i32(i32 "
+		lst[0].PrintUse(f)
+		f^ << ",i32 "
+		lst[1].PrintUse(f)
+		f^ << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInMaxInt := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeInt,GTypeInt],GTypeInt))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+		lst[1].PrintPre(f)
+		
+		f^ << "%T" << resId << " = call i32 @llvm.smax.i32(i32 "
+		lst[0].PrintUse(f)
+		f^ << ",i32 "
+		lst[1].PrintUse(f)
+		f^ << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
+CreateBuiltInMinMax := !() -> void
+{
+	bSpace := CodeSpaces[0]& //TODO maybe move to -1 when it is fully here, and not partly in Min.hv
+	bSpace.Functions[StringSpan("min")].Push(new BuiltInMinInt())
+	bSpace.Functions[StringSpan("max")].Push(new BuiltInMaxInt())
+}

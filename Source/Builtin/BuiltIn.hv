@@ -1,0 +1,11 @@
+
+CreateBuiltins := !() -> void
+{
+	CreateBuiltInMinMax()
+	CreateBuiltinsInt()
+	CreateBuiltinsPoint()
+	CreateBuiltinsBool()
+	CreateBuildInTools()
+	CreateBuiltInVec()
+	CreateBuiltInVoid()
+}
