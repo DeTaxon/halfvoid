@@ -51,16 +51,18 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		return res
 	}
 
-	if varToken?.GetValue() == "field" //TODO check if i am inside static function?
+	if varToken?.GetValue() == "field"
 	{
 		varToken = varToken.Right
 		
 		if CurrentScope is in BoxFuncBody
 		{
 			fnc := CurrentScope->{BoxFuncBody^}
+
+			if not fnc.Attrs.IsMethod
+				varToken.EmitError("Function must be a method")
 			
 			cls := BoxClass^
-			printf("hm2 %p\n",fnc)
 
 			if fnc.ParentScope is in BoxClass
 			{
@@ -94,10 +96,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				})
 				return mv
 			}else{
-				assert(false) //TODO
+				varToken.EmitError("Compiler error, could not get class")
 			}
 		}else{
-			assert(false) //TODO
+			varToken.EmitError("Field variable must be inside method")
 		}
 	}
 

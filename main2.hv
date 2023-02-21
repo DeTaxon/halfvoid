@@ -12,6 +12,16 @@ main := !(char^[] args) -> int
 	return 0
 }
 
+//#Module
+//{
+//	xml := XMLFile(#File("vk.xml"))
+//	cls := #CreateClass("VKFuncs")
+//
+//	#Callback(cls,"FieldMissed") (name)
+//	{
+//		
+//	}
+//}
 
 //inline road
 //static variables stays in one function
