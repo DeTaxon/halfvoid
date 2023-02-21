@@ -36,7 +36,7 @@ LexMachineInfo := class
 
 	"=" := !(LexMachineInfo inp) -> void
 	{
-		assert(false) //TODO remove
+		assert(false)
 	}
 }
 PriorityBagOld := class

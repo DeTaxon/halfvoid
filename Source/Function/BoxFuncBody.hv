@@ -169,7 +169,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		tp := ObjType->{TypeFunc^}
 
-		for par,i : tp.Params //TODO min(Params.Size(),names.Size())
+		for par,i : tp.Params
 		{
 			name := StringSpan("")
 			if i < InputVarNames.Size()

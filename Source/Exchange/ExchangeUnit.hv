@@ -2,7 +2,6 @@
 
 ExchangeUnit := class
 {
-	dummyValue := int //TODO , compiler cant create zero sized classes
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
 	{
 		assert(false)

@@ -58,8 +58,6 @@ Token := class
 			}
 		}
 		throw new Exception(ln.GetString()) //todo memory
-		//printf("%s\n",ln.GetString().Str()) //TODO wtf?
-		//exit(-1)
 	}
 }
 
