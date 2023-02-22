@@ -11,11 +11,6 @@ ModuleVulkan := class extend ModuleInterface
 	Commands := AVLMap.{char^,TreeNode^}
 	Structs := AVLMap.{char^,TreeNode^}
 
-	vkInitFunc := BoxFuncBodyStr^
-
-	vkInst := BoxUnit^
-	vkInitFunc := BoxFuncBodyStr^
-
 	this := !(char^ xmlName) -> void
 	{
 		xmlFile := MappedFile(xmlName)
@@ -45,9 +40,6 @@ ModuleVulkan := class extend ModuleInterface
 		Typedefs["int16_t"] = GetType2("s16")
 		Typedefs["int32_t"] = GetType2("s32")
 		Typedefs["int64_t"] = GetType2("s64")
-
-
-		vkInst = CreateGlobalVar(StringSpan("vkInstance"),GTypeVoidP,false)
 
 		for xmlTree.Childs
 		{
@@ -667,26 +659,6 @@ ModuleVulkan := class extend ModuleInterface
 		return true
 	}
 	
-	TryGetFunc := !(char^ name) -> BoxUnit^
-	{
-		inCmds := Commands.TryFind(name)
-		if inCmds == null
-			return null
-
-		bigName := char[256]
-		sprintf(bigName[0]&,"PFN_%s",name)
-
-		tp := GetTryFuncPointer(bigName[0]&)
-		assert(tp != null)
-		assert(tp is in TypePoint)
-
-		if Units.Contain(name)
-			return Units[name] //TODO vulkan module does not support multi threading, wtf
-
-		vr := CreateGlobalVar(StringSpan(name),tp,false)
-		Units[name] = vr
-		return vr
-	}
 
 	PrintCode := virtual !(Stream^ f) -> void {}
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
@@ -698,22 +670,11 @@ ModuleVulkan := class extend ModuleInterface
 		if inUnit != null
 			return inUnit^
 
-		if name == "vkInstance"
-			return vkInst
-
 		if name == "VulkanFunctionsClass"
 		{
 			return GetVulkanClass()
 		}
 
-		if name == "vkHVInit"
-		{
-			if vkInitFunc == null
-			{
-				vkInitFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
-			}
-			return vkInitFunc
-		}
 		intRes := int
 		if GetFromInts(st,intRes&)
 		{
@@ -727,38 +688,7 @@ ModuleVulkan := class extend ModuleInterface
 			return GetConstType(tp)
 		}
 
-		return TryGetFunc(st)?
 		return null
-	}
-	CreateInitPart := virtual !() -> void 
-	{
-		if vkInitFunc == null
-			return void
-
-		dt := TEchoStream
-
-		for it, ind : Units
-		{
-			if ind == "vkGetInstanceProcAddr"
-				continue
-			if ind == "vkEnumerateInstanceExtensionProperties"
-				continue
-			if ind == "vkEnumerateInstanceLayerProperties"
-				continue
-			if ind == "vkCreateInstance"
-				continue
-			dt << ind << "&->{void^^}^ = vkGetInstanceProcAddr(vkInstance,\"" << ind << "\")\n"
-			//if DebugMode
-			//{
-			//	dt << "printf(\" loading %p %s\\n\","<< ind << ",\"" << ind << "\")\n"
-			//}
-		}
-
-		st := dt.GetString()
-		st.IncRef()
-
-		blank := StringSpan(st.Str())
-		vkInitFunc.ParseString(blank)
 	}
 }
 

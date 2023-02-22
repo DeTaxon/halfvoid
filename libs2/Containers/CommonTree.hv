@@ -1,10 +1,10 @@
 CommonTreeNode := class .{@DATA}
 {
-	data := DATA
-	balance := s8
 	Left := CommonTreeNode.{DATA}^
 	Right := CommonTreeNode.{DATA}^
 	Up := CommonTreeNode.{DATA}^
+	balance := s8
+	data := DATA
 	this := !() -> void
 	{
 		Left = null
