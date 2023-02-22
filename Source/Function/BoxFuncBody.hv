@@ -438,7 +438,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		{
 			return new FuncInlineWrapper(this&,objs)
 		}else{
-			return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
+			return super(objs)
 		}
 	}
 }

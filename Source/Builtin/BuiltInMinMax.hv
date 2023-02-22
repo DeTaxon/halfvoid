@@ -20,6 +20,16 @@ BuiltInMinInt := class extend BoxFuncCommon
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
+	IsExecutable := virtual true
+	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(objs[0] is BoxExeInt)
+		assert(objs[1] is BoxExeInt)
+
+		int1 := objs[0]->{BoxExeInt^}.Value
+		int2 := objs[1]->{BoxExeInt^}.Value
+		return GetExeInt(min(int1,int2))
+	}
 }
 BuiltInMaxInt := class extend BoxFuncCommon
 {
@@ -40,6 +50,16 @@ BuiltInMaxInt := class extend BoxFuncCommon
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
+	}
+	IsExecutable := virtual true
+	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(objs[0] is BoxExeInt)
+		assert(objs[1] is BoxExeInt)
+
+		int1 := objs[0]->{BoxExeInt^}.Value
+		int2 := objs[1]->{BoxExeInt^}.Value
+		return GetExeInt(max(int1,int2))
 	}
 }
 

@@ -116,8 +116,31 @@ BoxFunc := class extend BoxExeConstObj
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
+		if this.IsExecutable
+		{
+			check := true
+			for it : objs
+			{
+				if not it.IsConst
+				{
+					check = false
+					break
+				}
+			}
+			if check
+			{
+				return Execute(objs)
+			}
+		}
 		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
 	}
+
+	IsExecutable := virtual false
+	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(false)
+	}
+
 }
 
 BoxFuncCommon := class extend BoxFunc

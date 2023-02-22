@@ -1,6 +1,6 @@
 main := !(char^[] args) -> int
 {
-	//test := max(14,15)
+	test := max(14,15)
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
 	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
 	//itFile >> ImageDecoder >> ImageToBuffer >> BufferCopy(ResultBuffer)
