@@ -14,7 +14,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 	prevId := -1
 	linePos := 0
 	DaBuff := char[2048]
-	lexWordMachine.RegExpReadText(memPtr,Siz, (tok,a) ==>
+	lexWordMachine.RegExpReadText(StringSpan(memPtr,Siz), (tok,a) ==>
 	{
 		ns := Token^
 		if a != 20{

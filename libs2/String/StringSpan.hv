@@ -115,7 +115,7 @@ StringSpan := class extend StringView
 	//}
 	DivideStr := !(Regexp rg,!(StringSpan)&->void cb) -> void
 	{
-		rg.RegExpReadText(ptr,itSize,(word,c) ==> {
+		rg.RegExpReadText(this,(word,c) ==> {
 				cb(word)
 		})
 	}

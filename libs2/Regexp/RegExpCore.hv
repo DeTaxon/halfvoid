@@ -118,8 +118,10 @@ WordDetermMachine := class extend TGCObject
 // 	}
 // }
 
-	RegExpReadText := !(char^ data,int siz, !(StringSpan,int)&->void toEmit) -> void
+	RegExpReadText := !(StringView text, !(StringSpan,int)&->void toEmit) -> void
 	{
+		data := text.NonNullStr()
+		siz := text.Size()
 		i := 0
 		while i < siz
 		{
