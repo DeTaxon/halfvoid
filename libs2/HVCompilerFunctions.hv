@@ -22,7 +22,6 @@ internalHVInitClass := !(@T x)  -> void
 
 internalHVVirtualMethodCall := !(@T this, args...) . {@FieldNumber} -> void // return type ignored and replaced by compiler with T->Result
 {
-	assert(this->VTable != null)
 	return this->VTable.FieldNumber(this,args...)
 }
 

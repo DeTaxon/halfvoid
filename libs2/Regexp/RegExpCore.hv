@@ -1,4 +1,10 @@
-Regexp := type WordDetermMachine
+Regexp := class extend TGCObject
+{
+	RegExpReadText := virtual !(StringView text, !(StringSpan,int)&->void toEmit) -> void
+	{
+		assert(false)
+	}
+}
 
 WordDetermMachine := class extend TGCObject
 {
@@ -118,7 +124,7 @@ WordDetermMachine := class extend TGCObject
 // 	}
 // }
 
-	RegExpReadText := !(StringView text, !(StringSpan,int)&->void toEmit) -> void
+	RegExpReadText := virtual !(StringView text, !(StringSpan,int)&->void toEmit) -> void
 	{
 		data := text.NonNullStr()
 		siz := text.Size()
