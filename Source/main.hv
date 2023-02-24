@@ -27,6 +27,8 @@ AllFunctions := List.{BoxFunc^}
 targetLinux := false
 targetWindows := false
 
+DisableScary := false
+
 OutputFile := char^
 main := !(char^[] args) -> int
 {
@@ -50,6 +52,8 @@ main := !(char^[] args) -> int
 	{
 		switch args[i]
 		{
+			vase "-scary"
+				DisableScary = true
 			case "-linux"
 				targetLinux = true
 				targetWindows = false

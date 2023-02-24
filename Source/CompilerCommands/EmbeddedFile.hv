@@ -40,7 +40,8 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 
 
 
-embeddedFiles := AVLMap.{vRepoFile^,EmbFile^} 
+embeddedFiles := AVLMap.{vRepoFile^,EmbFile^}
+blobDatas := List.{BoxRawData^}
 
 BoxRawData := class extend BoxExeObj
 {
@@ -117,6 +118,10 @@ EmbFile := class
 PrintEmbeddedFiles := !(Stream^ f) -> void
 {
 	for it : embeddedFiles
+	{
+		it.PrintGlobal(f)
+	}
+	for it : blobDatas
 	{
 		it.PrintGlobal(f)
 	}

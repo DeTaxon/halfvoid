@@ -12,6 +12,43 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 
 	suffixName := itm.Down.Right->{TokenSuffix^}.Value
 
+	if suffixName == "reg" and downVal is BoxExeString and not DisableScary//todo make it possible to create Blobs in library
+	{
+		
+		regBlob := BoxRawData^
+		regBlobSize := int
+
+		if not RegexpBlobs.Contain(suffixName)
+		{
+			lx := LexBuilder
+			stName := downVal->{BoxExeString^}.val.GetString()
+			lx.ApplyReg(stName.Str())
+			machine :=  lx.GenerateMachine() //TODO_CACHE
+
+			blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
+			newBlobVoid := malloc(blobSize)
+			ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
+			machine.SerializeToMap(newBlobVoid->{RegexpAsBlob^}.blobData[0]&)
+
+			regBlob = new BoxRawData(newBlobVoid->{u8^},blobSize)
+			blobDatas.Push(regBlob)
+
+			RegexpBlobs[suffixName] = !{regBlob,regBlobSize}
+		}else{
+			regBlob = RegexpBlobs[suffixName].0
+			regBlobSize = RegexpBlobs[suffixName].1
+		}
+
+
+		objs := CheckExeDownList
+		objs.Push(regBlob)
+		objs.Push(GetExeInt(regBlobSize))
+		cnsts := List.{BoxExeConstObj^}
+		res := CreateFuncCall(StringSpan("internalRegexpRetrive"),objs,cnsts)
+		assert(res != null)
+		return res
+	}
+
 	stt := TEchoStream
 	stt << "suffix " << suffixName
 
@@ -23,3 +60,5 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 		itm.EmitError("suffix call not found")
 	return resFunc
 }
+
+RegexpBlobs := AVLMap.{StringSpan,Tuple.{BoxRawData^,int}}

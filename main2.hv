@@ -3,6 +3,7 @@
 main := !(char^[] args) -> int
 {
 	hm := "[a-zA-Z][a-zA-Z0-9]+"reg
+	hm2 := "[a-zA-Z][a-zA-Z0-9]+"reg2
 
 	newBlobVoid := malloc(RegexpAsBlob->TypeSize + hm.ComputeBlobSize())
 	ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
@@ -15,12 +16,14 @@ main := !(char^[] args) -> int
 	printf("--------------------------------\n")
 	newBlob.PrintIt()
 	printf("--------------------------------\n")
+	hm2.PrintIt()
+	printf("--------------------------------\n")
 
 	js := FSGetFile("test.json")
 	mp := js.GetMap()
 	sp := StringSpan(mp.Get(),mp.Size())
 
-	sp.DivideStr(hm, (pc) ==> {
+	sp.DivideStr(hm2, (pc) ==> {
 		printf("test %s\n",pc)
 	})
 

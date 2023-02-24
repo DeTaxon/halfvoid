@@ -393,10 +393,3 @@ BuildPartOfNode := !(List.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ i
 	return true	
 }
 
-"suffix reg" := !(char^ rule) -> WordDetermMachine^
-{	
-	lx := LexBuilder
-	lx.ApplyReg(rule)
-	return lx.GenerateMachine()
-}
-
