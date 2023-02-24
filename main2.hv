@@ -1,5 +1,31 @@
+
+
 main := !(char^[] args) -> int
 {
+	hm := "[a-zA-Z][a-zA-Z0-9]+"reg
+
+	newBlobVoid := malloc(RegexpAsBlob->TypeSize + hm.ComputeBlobSize())
+	ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
+	newBlob := newBlobVoid->{RegexpAsBlob^}
+
+	hm.SerializeToMap(newBlob.blobData[0]&)
+
+	printf("--------------------------------\n")
+	hm.PrintIt()
+	printf("--------------------------------\n")
+	newBlob.PrintIt()
+	printf("--------------------------------\n")
+
+	js := FSGetFile("test.json")
+	mp := js.GetMap()
+	sp := StringSpan(mp.Get(),mp.Size())
+
+	sp.DivideStr(hm, (pc) ==> {
+		printf("test %s\n",pc)
+	})
+
+
+
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
 	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
 	//itFile >> ImageDecoder >> ImageToBuffer >> BufferCopy(ResultBuffer)
