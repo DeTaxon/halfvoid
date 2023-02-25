@@ -114,6 +114,8 @@ main := !(char^[] args) -> int
 	LoadLexMachine(macMap.Get(),mac.Size()) 
 
 	CreateStandardTypes()
+	TypeDatabaseInitDefaults()
+
 	GBoolTrue = new BoxExeBool(true)
 	GBoolFalse = new BoxExeBool(false)
 	GObjNone = new BoxExeNone()

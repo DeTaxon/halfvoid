@@ -1,0 +1,56 @@
+
+TypesDatabase := AVLMap.{StringSpan,BoxUnit^}
+
+GetTypeByName := !(StringSpan name) -> Type^
+{
+	for it : UnitStack
+	{
+		if it is TypeVar
+		{
+			tv := it->{TypeVar^}
+			if tv.Name == name
+				return tv.Value
+		}
+		if it is ConstVar
+		{
+			tv := it->{ConstVar^}
+			if tv.Name == name
+			{
+				vl := tv.Value
+				assert(vl is ConstType)
+				return vl->{ConstType^}.Value
+			}
+		}
+	}
+
+	if TypesDatabase.Contain(name)
+	{
+		itm := TypesDatabase[name]
+		if itm is ConstType
+		{
+			return itm->{ConstType^}.Value
+		}else if itm is TypeVar
+		{
+			return itm->{TypeVar^}.Value
+		}else if itm is TemplateTypeVar
+		{
+			return null
+		}else if itm is in BoxClass 
+		{
+			assert(false)
+		}else{
+			assert(false)
+		}
+	}
+}
+
+TypeDatabaseInitDefaults := !() -> void
+{
+	for defs : DefsTable
+	{
+		if defs == null
+			break
+		TypesDatabase[defs.ItName] = GetConstType(defs.ItType)
+	}
+}
+

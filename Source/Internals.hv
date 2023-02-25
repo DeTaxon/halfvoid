@@ -80,10 +80,10 @@ intGetFunc := !(char^ name) -> BoxFunc^
 
 intGetClass := !(char^ name) -> BoxClass^
 {
-	res := TypeGetGlobalByIndent(StringSpan(name))
+	res := GetTypeByName(StringSpan(name))
 	assert(res != null)
-	assert(res is in TypeVar)
-	return res->{TypeVar^}.Value->{TypeClass^}.ToClass
+	assert(res is in TypeClass)
+	return res->{TypeClass^}.ToClass
 }
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^

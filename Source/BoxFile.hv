@@ -95,7 +95,13 @@ BoxFile := class extend BoxUnit
 			{
 				if vr is TypeVar or vr is TemplateTypeVar
 				{
-					CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
+					if vr is TypeVar
+					{
+						TypesDatabase[vr->{TypeVar^}.Name] = vr->{TypeVar^}
+					}else{
+						CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
+						//TypesDatabase[vr->{TemplateTypeVar^}.Name] = vr->{TemplateTypeVar^}
+					}
 				}else if vr is in GlobalVar
 				{
 					glb := vr->{GlobalVar^}
