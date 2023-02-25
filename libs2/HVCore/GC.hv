@@ -1,16 +1,15 @@
+
+//Yes, it is not an interface but started as one
+//It made it that way so IncRef and DecRef would not be  virtual functions for extra 2% perfomance
 TGCIObject := class
 {
-	IncRef := virtual !() -> void { }
-	DecRef := virtual !() -> void { }
-	Destroy := virtual !() -> void {}
-}
-
-TGCObject := class extend TGCIObject
-{
+	//IncRef := virtual !() -> void { }
+	//DecRef := virtual !() -> void { }
+	//Destroy := virtual !() -> void {}
 	RefValue := int
 
-	IncRef := virtual !() -> void { RefValue += 1 }
-	DecRef := virtual !() -> void {
+	IncRef := !() -> void { RefValue += 1 }
+	DecRef := !() -> void {
 		RefValue -= 1
 		if RefValue == 0
 		{
@@ -29,6 +28,10 @@ TGCObject := class extend TGCIObject
 	{
 		internalGCClearClass(this)
 	}
+}
+
+TGCObject := class extend TGCIObject
+{
 }
 
 "=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
