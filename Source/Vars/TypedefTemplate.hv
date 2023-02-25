@@ -59,9 +59,7 @@ TypedefTemplateConst := class extend BoxExeConstObj
 		{
 			CheckTemplateConst(cnsts[i],ItConsts[i],resCnsts)
 		}
-		resType :=  CheckTemplateType(null,TypeToken,resCnsts)
-		resCnsts.Destroy()
-		return resType
+		return CheckTemplateType(null,TypeToken,resCnsts)
 	}
 
 }

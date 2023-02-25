@@ -189,7 +189,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		if checkRes is TypedefTemplateVar
 		{
 			typedefTemplate = checkRes->{TypedefTemplateVar^}.Value
-		} 
+		}
 
 		//assert(tmpl != null)
 		if tmpl == null and typedefTemplate == null
@@ -219,7 +219,9 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 				}
 				resCnst := CheckTemplateConst(itConst,itr,resCnsts)
 				if resCnst == null
+				{
 					return null
+				}
 				cnsts.Push(resCnst)
 			}
 			i += 1
@@ -358,7 +360,12 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 			assert(resCnsts[name] is in BoxExeConstObj)
 			return resCnsts[name]->{BoxExeConstObj^}
 		}
-		glb := TypeGetGlobalByIndent(name)
+		//glb := TypeGetGlobalByIndent(name)
+		//if glb == null
+		//	glb = GetTypeObjByName(name)
+		glb := GetTypeObjByName(name)
+		if glb == null
+			glb = TypeGetGlobalByIndent(name)
 		if glb != null
 		{
 			if glb is ConstVar

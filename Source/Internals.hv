@@ -88,7 +88,7 @@ intGetClass := !(char^ name) -> BoxClass^
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
 {
-	res := TypeGetGlobalByIndent(StringSpan(name))
+	res := GetTypeObjByName(StringSpan(name))
 	assert(res != null)
 	assert(res is in TemplateTypeVar)
 	return res->{TemplateTypeVar^}.Value

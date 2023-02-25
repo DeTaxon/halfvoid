@@ -97,10 +97,10 @@ BoxFile := class extend BoxUnit
 				{
 					if vr is TypeVar
 					{
-						TypesDatabase[vr->{TypeVar^}.Name] = vr->{TypeVar^}
+						TypesDatabase[vr->{TypeVar^}.Name] = vr
 					}else{
-						CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
-						//TypesDatabase[vr->{TemplateTypeVar^}.Name] = vr->{TemplateTypeVar^}
+						//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
+						TypesDatabase[vr->{TemplateTypeVar^}.Name] = vr
 					}
 				}else if vr is in GlobalVar
 				{
@@ -110,7 +110,6 @@ BoxFile := class extend BoxUnit
 				}else if vr is in TypedefTemplateVar
 				{
 					TypesDatabase[vr->{TypedefTemplateVar^}.Name] = vr
-					
 				}else if vr is in NamedVar
 				{
 					v := vr->{NamedVar^}

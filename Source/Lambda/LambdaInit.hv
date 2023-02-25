@@ -1,7 +1,7 @@
 InitLambda := !() -> void
 {
 	ind := TokenIndent(StringSpan("TLambda"))
-	lTemplate := TypeGetGlobalByIndent(StringSpan("TLambda"))
+	lTemplate := GetTypeObjByName(StringSpan("TLambda"))
 	assert(lTemplate != null and lTemplate is in TemplateTypeVar)
 	tlamb := lTemplate->{TemplateTypeVar^}.Value
 	assert(tlamb is in BoxClassTemplateBody)

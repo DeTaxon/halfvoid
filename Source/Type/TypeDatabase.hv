@@ -35,8 +35,8 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 			if tv.Name == name
 			{
 				vl := tv.Value
-				assert(vl is ConstType)
-				return vl->{ConstType^}
+				if vl is ConstType
+					return vl->{ConstType^}
 			}
 		}
 	}
@@ -52,7 +52,7 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 			return itm
 		}else if itm is TemplateTypeVar
 		{
-			return null
+			return itm
 		}else if itm is TypedefTemplateVar
 		{
 			return itm
