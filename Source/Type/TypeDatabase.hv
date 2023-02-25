@@ -3,13 +3,31 @@ TypesDatabase := AVLMap.{StringSpan,BoxUnit^}
 
 GetTypeByName := !(StringSpan name) -> Type^
 {
+	res := GetTypeObjByName(name)
+	if res != null
+		return TypeObjToType(res)
+	return null
+}
+TypeObjToType := !(BoxUnit^ res) -> Type^
+{
+	if res == null
+		return null
+	if res is TypeVar
+		return res->{TypeVar^}.Value
+	if res is ConstType
+		return res->{ConstType^}.Value
+	return null
+}
+
+GetTypeObjByName := !(StringSpan name) -> BoxUnit^
+{
 	for it : UnitStack
 	{
 		if it is TypeVar
 		{
 			tv := it->{TypeVar^}
 			if tv.Name == name
-				return tv.Value
+				return tv
 		}
 		if it is ConstVar
 		{
@@ -18,7 +36,7 @@ GetTypeByName := !(StringSpan name) -> Type^
 			{
 				vl := tv.Value
 				assert(vl is ConstType)
-				return vl->{ConstType^}.Value
+				return vl->{ConstType^}
 			}
 		}
 	}
@@ -28,13 +46,16 @@ GetTypeByName := !(StringSpan name) -> Type^
 		itm := TypesDatabase[name]
 		if itm is ConstType
 		{
-			return itm->{ConstType^}.Value
+			return itm
 		}else if itm is TypeVar
 		{
-			return itm->{TypeVar^}.Value
+			return itm
 		}else if itm is TemplateTypeVar
 		{
 			return null
+		}else if itm is TypedefTemplateVar
+		{
+			return itm
 		}else if itm is in BoxClass 
 		{
 			assert(false)
@@ -42,6 +63,7 @@ GetTypeByName := !(StringSpan name) -> Type^
 			assert(false)
 		}
 	}
+	return null
 }
 
 TypeDatabaseInitDefaults := !() -> void

@@ -163,10 +163,12 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
 
 		if checkRes == null
+			checkRes = GetTypeObjByName(tk.Down->{TokenIndent^}.Value)
+
+		if checkRes == null
 			return null
 
 		cnsts := List.{BoxExeConstObj^}
-		defer cnsts.Destroy()
 
 		tmpl := BoxClassTemplate^
 
