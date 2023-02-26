@@ -29,6 +29,48 @@ ZipRWFile := class extend TGCObject
 			endOfMainData = max(endOfMainData,itEnd)
 		}
 
+		BusyPages := List.{Tuple.{u64,u64}} //TODO optimize to RangeSetClass
+		for it : fileData
+		{
+			tpl := Tuple.{u64,u64}
+			tpl.0 = it.offsetToFileHeader
+			tpl.1 = it.offsetToFileHeader + it.fileName.Size() + zipFileHeader->TypeSize
+			BusyPages.SortedPush(tpl)
+		}
+		freePages := List.{Tuple.{u64,u64}}
+
+		if BusyPages.Size() != 0 and BusyPages[0].0 != 0
+		{
+			freePages.Emplace(0,BusyPages[0].0)
+		}
+
+		for i : (fileData.Size() - 1)
+		{
+			maybeFree := !{BusyPages[i].1,BusyPages[i+1].0}
+			if maybeFree.0 != maybeFree.1
+				freePages.Push(maybeFree)
+		}
+
+		reqSize := zipFileHeader->TypeSize + fileName.Size() + data.Size()
+		foundPos := false
+		writeRange := Tuple.{u64,u64}
+		for it : freePages
+		{
+			if it.1 - it.0 >= reqSize
+			{
+				foundPos = true
+				writeRange = it
+				break
+			}
+		}
+
+		if not foundPos
+		{
+			writeRange.0 = endOfMainData
+			writeRange.1 = endOfMainData + reqSize
+			endOfMainData += reqSize
+		}
+
 		//dataList := List.{Range}
 		//dataList.Push(Range(0..endOfMainData))
 
@@ -36,16 +78,12 @@ ZipRWFile := class extend TGCObject
 		fileData.Emplace()
 		newField := ref fileData[fileData.Size() - 1]
 
-		newField.offsetToFileHeader = endOfMainData
-		newField.offsetToData = endOfMainData + fileName.Size() + zipFileHeader->TypeSize
+		newField.offsetToFileHeader = writeRange.0
+		newField.offsetToData = writeRange.0 + fileName.Size() + zipFileHeader->TypeSize
 		newField.fileName = fileName.GetString()
 		newField.dataSize = data.Size()
 		
 		newSize := endOfMainData
-		newSize += zipFileHeader->TypeSize
-		newSize += fileName.Size()
-		newSize += data.Size()
-		//newSize += exitraFields
 
 		for it : fileData
 		{
@@ -65,9 +103,9 @@ ZipRWFile := class extend TGCObject
 		
 		ptr := fileMap.Get()->{u8^}
 
-		ptr = ptr[endOfMainData]&
+		fileWritePtr := ptr[writeRange.0]&
 
-		fileHeader := ptr->{zipFileHeader^}
+		fileHeader := fileWritePtr->{zipFileHeader^}
 		ZeroMem(fileHeader^)
 	
 		fileHeader.signature = 0x04034b50
@@ -75,20 +113,20 @@ ZipRWFile := class extend TGCObject
 		fileHeader.realSize = data.Size()
 		fileHeader.fileNameLen = fileName.Size()
 
-		ptr = ptr[zipFileHeader->TypeSize]&
+		fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
 		
-		memcpy(ptr,fileName.NonNullStr(),fileName.Size())
+		memcpy(fileWritePtr,fileName.NonNullStr(),fileName.Size())
 
-		ptr = ptr[fileName.Size()]&
+		fileWritePtr = fileWritePtr[fileName.Size()]&
 
 		assert(data.GetPointer() != null)
-		memcpy(ptr,data.GetPointer(),data.Size())
+		memcpy(fileWritePtr,data.GetPointer(),data.Size())
 
-		ptr = ptr[data.Size()]&
+		ptr = ptr[endOfMainData]&
 
 		cdSize := 0
 
-		offsetToCD := endOfMainData + zipFileHeader->TypeSize + fileName.Size() + data.Size()
+		offsetToCD := endOfMainData
 
 		for it : fileData
 		{
