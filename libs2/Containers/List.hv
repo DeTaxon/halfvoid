@@ -175,41 +175,41 @@ List := class.{@T} extend TArrayView.{T}
 			itr.prev = newNode
 		}
 	}
-	//DeleteIf := !( !(T&)&->bool cb) -> void
-	//{
-	//	itr := Start
-	//	while itr != null
-	//	{
-	//		if false //cb(itr.data)
-	//		{
-	//			if itSize == 1
-	//			{
-	//				destroyNode(start)
-	//				start = null
-	//				end = null
-	//				itr = null
-	//			}else if itr == start
-	//			{
-	//				start = itr.next
-	//				deleteNode(itr)
-	//				itr = start
-	//			}else if itr == end
-	//			{
-	//				end = itr.prev
-	//				deleteNode(itr)
-	//				itr = null
-	//			}else{
-	//				itNode := itr
-	//				itr = itNode.next
-	//				itNode.prev.next = itNode.next
-	//				itNode.next.prev = itNode.prev
-	//			}
-	//			itSize -= 1
-	//		}else{
-	//			itr = itr.next
-	//		}
-	//	}
-	//}
+	DeleteIf := !( !(T&)&->bool cb) -> void
+	{
+		itr := start
+		while itr != null
+		{
+			if cb(itr.data)
+			{
+				if itSize == 1
+				{
+					destroyNode(start)
+					start = null
+					end = null
+					itr = null
+				}else if itr == start
+				{
+					start = itr.next
+					destroyNode(itr)
+					itr = start
+				}else if itr == end
+				{
+					end = itr.prev
+					destroyNode(itr)
+					itr = null
+				}else{
+					itNode := itr
+					itr = itNode.next
+					itNode.prev.next = itNode.next
+					itNode.next.prev = itNode.prev
+				}
+				itSize -= 1
+			}else{
+				itr = itr.next
+			}
+		}
+	}
 	destroyNode := !(ListNode.{T}^ nd) -> void
 	{
 		if T->IsGCPointer

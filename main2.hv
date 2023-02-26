@@ -1,11 +1,5 @@
 
 
-//Zip file
-//crc32
-//deflate
-//zip -v check
-//if file already exists
-
 main := !(char^[] args) -> int
 {
 
@@ -15,11 +9,11 @@ main := !(char^[] args) -> int
 	{
 		TestData := Vector.{u8}(5)
 		memcpy(TestData.GetPointer(),"world",5)
-		fl.WriteFile(StringSpan("test2.txt"),TestData&)
+		fl.WriteFile(StringSpan("Regexp/test2.txt"),TestData&)
 	}else{
 		TestData := Vector.{u8}(5)
 		memcpy(TestData.GetPointer(),"hello",5)
-		fl.WriteFile(StringSpan("test.txt"),TestData&)
+		fl.WriteFile(StringSpan("Regexp/test.txt"),TestData&)
 	}
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
@@ -31,6 +25,14 @@ main := !(char^[] args) -> int
 
 	return 0
 }
+
+//Zip file
+//crc32
+//deflate
+//zip -v check
+//if file already exists
+//throw exceptions when file cannot be created, no space on disk, incorrect file format
+
 
 //#Module
 //{

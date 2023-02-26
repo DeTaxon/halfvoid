@@ -21,11 +21,16 @@ ZipRWFile := class extend TGCObject
 
 		endOfMainData := u64
 		
+		fileData.DeleteIf(x => x.fileName == fileName)
+		
 		for it : fileData
 		{
 			itEnd := it.offsetToData + it.dataSize
 			endOfMainData = max(endOfMainData,itEnd)
 		}
+
+		//dataList := List.{Range}
+		//dataList.Push(Range(0..endOfMainData))
 
 		//TODO check if file exists
 		fileData.Emplace()
