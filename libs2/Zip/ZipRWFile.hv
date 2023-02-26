@@ -5,29 +5,38 @@ ZipRWFile := class extend TGCObject
 	fileExists := bool
 	fileData := List.{zipIntEntry}
 	fileMap := MappedFile^
-	mainDataSize := u64
 
 	this := !(StringView inFileName) -> void
 	{
 		fileZipName = inFileName.GetString()
 		if fsIsExist(fileZipName.Str())
 		{
-			assert(false)
 			fileExists = true
-			fileMap := new MappedFile(fileZipName.Str(),FILE_READ and_b FILE_WRITE)
+			fileMap = new MappedFile(fileZipName.Str(),FILE_READ and_b FILE_WRITE)
+			ZipParse(fileMap.Get(),fileMap.Size(),fileData)
 		}
 	}
 	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
 	{
+
+		endOfMainData := u64
+		
+		for it : fileData
+		{
+			itEnd := it.offsetToData + it.dataSize
+			endOfMainData = max(endOfMainData,itEnd)
+		}
+
 		//TODO check if file exists
 		fileData.Emplace()
 		newField := ref fileData[fileData.Size() - 1]
 
-		newField.offsetToData = mainDataSize
+		newField.offsetToFileHeader = endOfMainData
+		newField.offsetToData = endOfMainData + fileName.Size() + zipFileHeader->TypeSize
 		newField.fileName = fileName.GetString()
 		newField.dataSize = data.Size()
 		
-		newSize := mainDataSize
+		newSize := endOfMainData
 		newSize += zipFileHeader->TypeSize
 		newSize += fileName.Size()
 		newSize += data.Size()
@@ -51,7 +60,7 @@ ZipRWFile := class extend TGCObject
 		
 		ptr := fileMap.Get()->{u8^}
 
-		ptr = ptr[mainDataSize]&
+		ptr = ptr[endOfMainData]&
 
 		fileHeader := ptr->{zipFileHeader^}
 		ZeroMem(fileHeader^)
@@ -74,7 +83,7 @@ ZipRWFile := class extend TGCObject
 
 		cdSize := 0
 
-		offsetToCD := mainDataSize + zipFileHeader->TypeSize + fileName.Size() + data.Size()
+		offsetToCD := endOfMainData + zipFileHeader->TypeSize + fileName.Size() + data.Size()
 
 		for it : fileData
 		{
@@ -84,12 +93,13 @@ ZipRWFile := class extend TGCObject
 			cdEntry.compressedSize = it.dataSize
 			cdEntry.realSize = it.dataSize
 			cdEntry.fileNameLen = it.fileName.Size()
+			cdEntry.offsetToFileHeader = it.offsetToFileHeader
 
 			ptr = ptr[zipCentralDirectory->TypeSize]&
 
 			memcpy(ptr,it.fileName.Str(),it.fileName.Size())
 
-			ptr = ptr[fileName.Size()]&
+			ptr = ptr[it.fileName.Size()]&
 
 			newSize += it.fileName.Size()
 			//comments,extra fields
@@ -102,7 +112,7 @@ ZipRWFile := class extend TGCObject
 		end.diskNumber = 0
 		end.centrDirStartDisk = 0
 		end.numberOfCentralDirectoryHere = fileData.Size()
-		end.totalNumberOfCentralDirectory = 1
+		end.totalNumberOfCentralDirectory = fileData.Size()
 		end.sizeOfCentralDirectoryBytes = cdSize
 		end.offsetToStartOfCD = offsetToCD
 	}
@@ -125,8 +135,8 @@ ZipRWFile := class extend TGCObject
 			newStr := StringSpan(ptrToStr,cdTable.fileNameLen)
 	
 			res.Emplace()
-			newEn := ref res.Back()
-			newEn.fileName = newStr
+			newEn := ref res[res.Size() - 1]
+			newEn.fileName = newStr.GetString()
 			newEn.offsetToCDEntry = cdTable&->{u64^}^ - ptrToFl&->{u64^}^
 			newEn.cdEntrySize = zipCentralDirectory->TypeSize
 						+ cdTable.fileNameLen 

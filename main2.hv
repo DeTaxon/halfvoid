@@ -1,13 +1,26 @@
 
 
+//Zip file
+//crc32
+//deflate
+//zip -v check
+//if file already exists
+
 main := !(char^[] args) -> int
 {
 
-	TestData := Vector.{u8}(5)
-	memcpy(TestData.GetPointer(),"hello",5)
 	fl := new ZipRWFile(StringSpan("zip.zip"))
 
-	fl.WriteFile(StringSpan("test.txt"),TestData&)
+	if args.Size() == 2
+	{
+		TestData := Vector.{u8}(5)
+		memcpy(TestData.GetPointer(),"world",5)
+		fl.WriteFile(StringSpan("test2.txt"),TestData&)
+	}else{
+		TestData := Vector.{u8}(5)
+		memcpy(TestData.GetPointer(),"hello",5)
+		fl.WriteFile(StringSpan("test.txt"),TestData&)
+	}
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
 	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
