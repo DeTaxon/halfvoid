@@ -1,0 +1,164 @@
+
+ZipRWFile := class extend TGCObject
+{
+	fileZipName := String^
+	fileExists := bool
+	fileData := List.{zipIntEntry}
+	fileMap := MappedFile^
+	mainDataSize := u64
+
+	this := !(StringView inFileName) -> void
+	{
+		fileZipName = inFileName.GetString()
+		if fsIsExist(fileZipName.Str())
+		{
+			assert(false)
+			fileExists = true
+			fileMap := new MappedFile(fileZipName.Str(),FILE_READ and_b FILE_WRITE)
+		}
+	}
+	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
+	{
+		//TODO check if file exists
+		fileData.Emplace()
+		newField := ref fileData[fileData.Size() - 1]
+
+		newField.offsetToData = mainDataSize
+		newField.fileName = fileName.GetString()
+		newField.dataSize = data.Size()
+		
+		newSize := mainDataSize
+		newSize += zipFileHeader->TypeSize
+		newSize += fileName.Size()
+		newSize += data.Size()
+		//newSize += exitraFields
+
+		for it : fileData
+		{
+			newSize += zipCentralDirectory->TypeSize
+			newSize += it.fileName.Size()
+			//comments,extra fields
+		}
+
+		newSize += zipEndOfDirectory->TypeSize
+
+		if not fileExists
+		{
+			fileMap = new MappedFile(fileZipName.Str(),FILE_READ + FILE_WRITE,newSize)
+		}else{
+			fileMap.ResizeFile(newSize)
+		}
+		
+		ptr := fileMap.Get()->{u8^}
+
+		ptr = ptr[mainDataSize]&
+
+		fileHeader := ptr->{zipFileHeader^}
+		ZeroMem(fileHeader^)
+	
+		fileHeader.signature = 0x04034b50
+		fileHeader.compressedSize = data.Size()
+		fileHeader.realSize = data.Size()
+		fileHeader.fileNameLen = fileName.Size()
+
+		ptr = ptr[zipFileHeader->TypeSize]&
+		
+		memcpy(ptr,fileName.NonNullStr(),fileName.Size())
+
+		ptr = ptr[fileName.Size()]&
+
+		assert(data.GetPointer() != null)
+		memcpy(ptr,data.GetPointer(),data.Size())
+
+		ptr = ptr[data.Size()]&
+
+		cdSize := 0
+
+		offsetToCD := mainDataSize + zipFileHeader->TypeSize + fileName.Size() + data.Size()
+
+		for it : fileData
+		{
+			cdEntry := ptr->{zipCentralDirectory^}
+			ZeroMem(cdEntry^)
+			cdEntry.signature = 0x02014b50
+			cdEntry.compressedSize = it.dataSize
+			cdEntry.realSize = it.dataSize
+			cdEntry.fileNameLen = it.fileName.Size()
+
+			ptr = ptr[zipCentralDirectory->TypeSize]&
+
+			memcpy(ptr,it.fileName.Str(),it.fileName.Size())
+
+			ptr = ptr[fileName.Size()]&
+
+			newSize += it.fileName.Size()
+			//comments,extra fields
+
+			cdSize += zipCentralDirectory->TypeSize + it.fileName.Size()
+		}
+		end := ptr->{zipEndOfDirectory^}
+		ZeroMem(end^)
+		end.signature = 0x06054b50
+		end.diskNumber = 0
+		end.centrDirStartDisk = 0
+		end.numberOfCentralDirectoryHere = fileData.Size()
+		end.totalNumberOfCentralDirectory = 1
+		end.sizeOfCentralDirectoryBytes = cdSize
+		end.offsetToStartOfCD = offsetToCD
+	}
+	ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} res)-> bool
+	{
+		eod := ptrToFl[fileSize - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
+	
+		if eod.signature != 0x06054b50
+		{
+			return false
+		}
+	
+		tableCount := eod.numberOfCentralDirectoryHere
+		cdTable := ptrToFl[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+		
+	
+		for i : tableCount
+		{	
+			ptrToStr := cdTable[1]&->{char^}
+			newStr := StringSpan(ptrToStr,cdTable.fileNameLen)
+	
+			res.Emplace()
+			newEn := ref res.Back()
+			newEn.fileName = newStr
+			newEn.offsetToCDEntry = cdTable&->{u64^}^ - ptrToFl&->{u64^}^
+			newEn.cdEntrySize = zipCentralDirectory->TypeSize
+						+ cdTable.fileNameLen 
+						+ cdTable.extraFieldsLen
+						+ cdTable.commentLen
+			if newStr[-1..0] != "/"
+			{
+				ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
+				newEn.fhSize = zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
+				dataStart := ptTH->{u8^}[newEn.fhSize]&
+				newEn.offsetToData = dataStart&->{u64^}^ - ptrToFl&->{u64^}^
+				newEn.offsetToFileHeader = ptTH&->{u64^}^ - ptrToFl&->{u64^}^
+				newEn.dataSize = cdTable.compressedSize
+			}else{
+				newEn.offsetToData = 0
+			}
+	
+			cdTable = cdTable->{u8^}[newEn.cdEntrySize]&->{zipCentralDirectory^}
+		}
+		return true
+	}
+}
+zipIntEntry := class
+{
+	offsetToData := u64
+	dataSize := u64
+	offsetToFileHeader := u64
+	fhSize := int
+	offsetToCDEntry := u64
+	cdEntrySize := int
+	fileName := String^
+	
+	this := !() -> void {}
+	"=" := default
+}

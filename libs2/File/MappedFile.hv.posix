@@ -62,6 +62,12 @@ MappedFile := class extend TGCObject
 		}
 		point = mmRes->{u8^}
 	}
+	ResizeFile := !(u64 newSize) -> void //TODO error check
+	{
+		if ftruncate(fileId,newSize)  == -1
+			throw new Exception("can not resize file")
+		fileSize = newSize
+	}
 	Get := !() -> u8^
 	{
 		return point
