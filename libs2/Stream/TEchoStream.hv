@@ -9,22 +9,23 @@ TEchoStream := class extend Stream
 	}
 	Read := virtual !(void^ data, s64 size) -> s64
 	{
-		pageLeft := (4096 - redData - size)->{s64}
 		if pages.Size() != 0
 		{
+			pageLeft := (4096 - redData)->{s64}
+
 			nxt := pages[0]
 			toRead := min(pageLeft,size)
 			memcpy(data,nxt[redData]&,toRead)
 			redData += toRead
 			if redData == 4096
 			{
-				delete nxt
+				free(nxt)
 				pages.Pop()
 				redData = 0
 			}
 			if toRead < size
 			{
-				return toRead + Read(data[redData]&,size - toRead)
+				return toRead + Read(data->{u8^}[toRead]&,size - toRead)
 			}
 		}else{
 			if inPtrSize == 0
@@ -36,7 +37,8 @@ TEchoStream := class extend Stream
 			{
 				redData = 0
 				inPtrSize = 0
-				delete ptr
+				free(ptr)
+				ptr = null
 			}
 			return toRead
 		}
@@ -109,6 +111,7 @@ TEchoStream := class extend Stream
 		if ptr != null
 		{
 			free(ptr)
+			ptr = null
 		}
 		inPtrSize = 0
 		redData = 0

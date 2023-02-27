@@ -123,14 +123,14 @@ FinilizeCache := !() -> void
 			if it.changed
 			{
 				vl := TArraySpan.{u8}(it.value.Value,it.value.ValueSize)
-				GCacheFile.WriteFile(it.fileName,vl&)
+				GCacheFile.WriteFileOld(it.fileName,vl&)
 			}
 			MetaCache << it.key << "\n" << it.fileName << "\n"
 		}
 		metaData := MetaCache.GetString()
 		
 		vl := TArraySpan.{u8}(metaData.Str()->{u8^},metaData.Size())
-		GCacheFile.WriteFile("BlobCache.txt",vl)
+		GCacheFile.WriteFileOld("BlobCache.txt",vl)
 	}
 
 	for it : CodeSpaces

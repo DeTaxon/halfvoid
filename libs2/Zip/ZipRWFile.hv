@@ -33,18 +33,21 @@ ZipRWFile := class extend TGCObject
 		}
 		return null
 	}
-	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
+	WriteFileOld := !(StringView fileName, u8[] data) -> void //TODO remove it
+	{
+		newBlob := new BlobOnVector(data.Size())
+		if data.Size() != 0
+			memcpy(newBlob.GetPointer(),data.GetPointer(),data.Size())
+		WriteFile(fileName,newBlob)
+	}
+	WriteFile := !(StringView fileName, Blob^ data) -> void //TODO folder support
 	{
 		fileData.DeleteIf(x => x.fileName == fileName)
 
 		fileUnsavedData.Emplace()
 		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
 		newEntry.fileName = fileName.GetString()
-
-		newBlob := new BlobOnVector(data.Size())
-		if data.Size() != 0
-			memcpy(newBlob.GetPointer(),data.GetPointer(),data.Size())
-		newEntry.fileData = newBlob
+		newEntry.fileData = data
 	}
 	Flush := !() -> void
 	{

@@ -1,4 +1,5 @@
-
+//TODO
+// after new stable version, in winapi.clib make it back to WriteLine
 
 main := !(char^[] args) -> int
 {
@@ -11,11 +12,11 @@ main := !(char^[] args) -> int
 	{
 		TestData := Vector.{u8}(5)
 		memcpy(TestData.GetPointer(),"world",5)
-		fl.WriteFile(StringSpan("Regexp/test2.txt"),TestData&)
+		fl.WriteFileOld(StringSpan("Regexp/test2.txt"),TestData&)
 	}else{
 		TestData := Vector.{u8}(5)
 		memcpy(TestData.GetPointer(),"hello",5)
-		fl.WriteFile(StringSpan("Regexp/test.txt"),TestData&)
+		fl.WriteFileOld(StringSpan("Regexp/test.txt"),TestData&)
 	}
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }

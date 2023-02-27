@@ -6,15 +6,15 @@ SerializeTokens := !(StringView fName,Token^ tkn) -> void
 
 	if tkn == null
 	{
-		dat := TArraySpan.{u8}(null,0)
+		dat := new BlobOnVector(0)
 		GCacheFile.WriteFile(fName,dat)
 	}else{
 		echo := TEchoStream
 		SerializeTokenInner(echo&,tkn,streamedLine)
 
-		wackyData := echo.GetString()
-		dat := TArraySpan.{u8}(wackyData.NonNullStr()->{u8^},wackyData.Size())
-		GCacheFile.WriteFile(fName,dat)
+		data := new BlobOnVector(echo.Size())
+		echo.Read(data.GetPointer()->{char^},data.Size())
+		GCacheFile.WriteFile(fName,data)
 	}
 
 }
