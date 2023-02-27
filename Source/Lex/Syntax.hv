@@ -151,11 +151,19 @@ SyntaxCompress := !(Token^ begin, PriorityBagOld^ bag) -> bool
 {
 	if begin == null return true
 
+	metChange := bool
 	GotWork := true
 
 	while GotWork 
 	{
 		GotWork = StupidWhile(begin,bag)
+		if GotWork
+			metChange = true
+	}
+
+	if metChange
+	{
+		begin.Line?.File?.tokensChanged = true
 	}
 
 	return true

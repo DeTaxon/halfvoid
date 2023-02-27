@@ -25,6 +25,7 @@ BoxFile := class extend BoxUnit
 	AllClasses := List.{BoxClass^}
 
 	fileTokens := Token^
+	tokensChanged := bool
 
 	this := !(vRepoFile^ inFile) -> void
 	{
@@ -67,11 +68,10 @@ BoxFile := class extend BoxUnit
 		blb := TryGetCacheOfFile(file)
 		if blb != null
 		{
-			if blb.Size() != 0
-			{
-				s := StreamReadBlob(blb.GetPointer(),blb.Size())
-				fileTokens = LoadCachedTokens(s&,this&)
-			}
+			if blb.Size() == 0
+				return void
+			s := StreamReadBlob(blb.GetPointer(),blb.Size())
+			fileTokens = LoadCachedTokens(s&,this&)
 		}
 		if fileTokens == null
 		{
@@ -79,6 +79,7 @@ BoxFile := class extend BoxUnit
 
 			if tokens == null
 				return void
+			tokensChanged = true
 
 			fileTokens = new Token
 

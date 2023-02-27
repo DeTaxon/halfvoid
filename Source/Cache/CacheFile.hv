@@ -160,8 +160,11 @@ FinilizeCache := !() -> void
 	{
 		for fl : it.Files
 		{
-			itPath := fl.file.GetPath()
-			SerializeTokens(itPath,fl.fileTokens)
+			if fl.tokensChanged
+			{
+				itPath := fl.file.GetPath()
+				SerializeTokens(itPath,fl.fileTokens)
+			}
 		}
 	}
 	GCacheFile.Flush()
