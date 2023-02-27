@@ -1,0 +1,136 @@
+
+GUsingCacheFile := bool
+GCacheFile := ZipRWFile^
+
+OpenCacheFile := !(char^ fileName) -> void
+{
+	GUsingCacheFile = true
+	GCacheFile = new ZipRWFile(fileName)
+	
+	
+	blobCacheMeta := GCacheFile.TryGetFile("BlobCache.txt")
+	if blobCacheMeta != null
+	{
+		mp := blobCacheMeta.GetMap()
+
+		spn := StringSpan(mp.Get()->{char^},mp.Size())
+
+		spn.DivideStr("\n", x ==> {
+			while true
+			{
+				val := x
+				yield void
+				CacheBlobList.Emplace()
+				newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
+				newEntry.key = val.GetString()
+				newEntry.fileName = x.GetString()
+				yield void
+			}
+		})
+	}
+}
+
+
+BlobCacheData := class
+{
+	key := String^
+	fileName := String^
+	value := BoxRawData^
+	changed := bool
+	loaded := bool
+
+	this := !() -> void {}
+	"=" := default
+}
+
+CacheChangedBlobData := bool
+CacheBlobList  := List.{BlobCacheData} //TODO Optimize
+
+CacheBlobByStringReg := !(StringView value, !()&-> BoxRawData^ cb) -> BoxRawData^
+{
+	if not GUsingCacheFile
+		return cb()
+
+	for it : CacheBlobList
+	{
+		if it.key == value
+		{
+			if not it.loaded
+			{
+				fileInZip := GCacheFile.TryGetFile(it.fileName)
+				assert( fileInZip != null)
+				if fileInZip != null
+				{
+					mp := fileInZip.GetMap()//TODO case of empty file
+					cpyData := malloc(mp.Size()) //TODO memory leak?
+					memcpy(cpyData,mp.Get(),mp.Size())
+					newBlob := new BoxRawData(cpyData->{u8^},mp.Size())
+					it.loaded = true
+					return newBlob
+				}
+			}
+		}
+	}
+
+	CacheChangedBlobData = true
+	newBlob := cb()
+
+	newId := 0
+	buf := char[255]
+	while true
+	{
+		found := false
+		sprintf(buf[0]&,"CacheBlob%i",newId)
+		for it : CacheBlobList
+		{
+			if it.fileName == buf
+			{
+				found = true
+				break
+			}
+		}
+		if found
+		{
+			newId += 1
+		}else{
+			break
+		}
+	}
+
+	CacheBlobList.Emplace()
+	newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
+	newEntry.key = value.GetString()
+
+	newEntry.fileName = new String(buf[0]&)
+	newEntry.value = newBlob
+	newEntry.changed = true
+	newEntry.loaded = true
+
+	return newBlob
+}
+FinilizeCache := !() -> void
+{
+	if not GUsingCacheFile
+		return void
+	
+	if CacheChangedBlobData
+	{
+		assert(CacheBlobList.Size() != 0)
+
+		MetaCache := TEchoStream
+		for it : CacheBlobList
+		{
+			if it.changed
+			{
+				vl := TArraySpan.{u8}(it.value.Value,it.value.ValueSize)
+				GCacheFile.WriteFile(it.fileName,vl&)
+			}
+			MetaCache << it.key << "\n" << it.fileName << "\n"
+		}
+		metaData := MetaCache.GetString()
+		
+		vl := TArraySpan.{u8}(metaData.Str()->{u8^},metaData.Size())
+		GCacheFile.WriteFile("BlobCache.txt",vl)
+	}
+}
+

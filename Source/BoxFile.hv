@@ -60,6 +60,8 @@ BoxFile := class extend BoxUnit
 		
 		defer loaded.Emit()
 
+		printf("hm %s\n",file.GetPath().Str())
+
 		tokens := GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
 
 		if tokens == null
