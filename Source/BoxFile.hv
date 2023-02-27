@@ -62,20 +62,14 @@ BoxFile := class extend BoxUnit
 		
 		defer loaded.Emit()
 
-		//printf("hm %s\n",file.GetPath().Str())
-
 		tokens := Token^
 
-		if GUsingCacheFile
+		blb := TryGetCacheOfFile(file)
+		if blb != null
 		{
-			fl := GCacheFile.TryGetFile(file.GetPath())
-			if fl != null
+			if blb.Size() != 0
 			{
-				mp := fl.GetMap()
-				if mp.Size() == 0
-					return void
-				s := StreamReadBlob(mp.Get(),mp.Size())
-
+				s := StreamReadBlob(blb.GetPointer(),blb.Size())
 				fileTokens = LoadCachedTokens(s&,this&)
 			}
 		}

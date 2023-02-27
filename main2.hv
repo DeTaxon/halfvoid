@@ -3,6 +3,8 @@
 
 main := !(char^[] args) -> int
 {
+	printf("extra test\n")
+	return 0
 	a := "abc"reg
 	b := "abd"reg
 

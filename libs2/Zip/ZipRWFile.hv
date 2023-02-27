@@ -27,6 +27,7 @@ ZipRWFile := class extend TGCObject
 				result = new vZipEntry2 //TODO memory leak
 				result.zipSize = it.dataSize
 				result.realSize = it.dataSize
+				result.timeModified = it.timeModified
 				result.ptrToObj = fileMap.Get()->{u8^}[it.offsetToData]&
 				return void
 			}
@@ -48,7 +49,7 @@ ZipRWFile := class extend TGCObject
 		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
 		newEntry.fileName = fileName.GetString()
 		newEntry.fileData = data
-		newEntry.timeModified = time()
+		newEntry.timeModified = time(null) //GetRealTimeU64Seconds()
 	}
 	Flush := !() -> void
 	{
@@ -257,6 +258,7 @@ ZipRWFile := class extend TGCObject
 				newEn.offsetToData = dataStart&->{u64^}^ - ptrToFl&->{u64^}^
 				newEn.offsetToFileHeader = ptTH&->{u64^}^ - ptrToFl&->{u64^}^
 				newEn.dataSize = cdTable.compressedSize
+				newEn.timeModified = loadTime(ptTH.lastModifTime,ptTH.lastModifDate)
 			}else{
 				newEn.offsetToData = 0
 			}
@@ -267,17 +269,32 @@ ZipRWFile := class extend TGCObject
 	}
 	decomposeTime := !(u64 seconds) -> u32
 	{
-		return 0
 		buf := char[1024]
-		sc := buf[0]&->{u64^}
-		sc^ = seconds
-		res := localtime(sc)->{tm^}
+		res := buf[0]&->{tm^}
+		localtime_r(seconds&,res)
 
 		res.tm_year -= 80
 
 		mSeconds := (res.tm_sec div 2) + 32 * res.tm_min + 2048*res.tm_hour
-		mDay := res.tm_mday + 32*res.tm_mon + 512*res.tm_year
+		mDay := res.tm_mday + 32*(res.tm_mon + 1) + 512*res.tm_year
 		return mDay*65536 + mSeconds
+	}
+	loadTime := !(u32 seconds, u32 day) -> u64
+	{
+		buf := char[1024]
+		res := buf[0]&->{tm^}
+
+		res.tm_sec = (seconds and_b 31) * 2
+		res.tm_min = (seconds div 32) and_b 63
+		res.tm_hour = seconds div 2048
+
+		res.tm_mday = day and_b 31
+		res.tm_mon = (day div 32) and_b 15
+		res.tm_mon -= 1
+		res.tm_year = day div 512
+		res.tm_year += 80
+
+		return mktime(res)
 	}
 	Destroy := virtual !() -> void
 	{
@@ -293,6 +310,7 @@ vZipEntry2 := class
 	objName := StringSpan
 	fullName := StringSpan
 	comprType := int
+	timeModified := u64
 	//subFolders := List.{vZipEntry^}
 	//compressedPointer := void^
 
@@ -326,6 +344,11 @@ vZipEntry2 := class
 		assert(comprType == 0)
 
 		return new ZipFSFileViewZipStore(null,ptrToObj,realSize) //TODO make it non null
+	}
+
+	GetModificationTime := !() -> u64
+	{
+		return timeModified
 	}
 
 	Print := !(int de) -> void

@@ -48,7 +48,8 @@
 
 		"vprintf" : "int,char^,void^",
 
-		"time" : "u64",
+		"time" : "u64,void^",
+		"mktime" : "u64,void^",
 		"localtime" : "void^,u64^",
 		"localtime_r" : "void^,u64^,void^",
 

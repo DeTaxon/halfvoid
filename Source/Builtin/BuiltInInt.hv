@@ -278,6 +278,8 @@ CreateBuiltinsInt := !() -> void
 		if isSigned
 		{
 			bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
+		}else{
+			bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
 		}
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )

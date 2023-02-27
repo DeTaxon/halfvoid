@@ -21,6 +21,11 @@ vRepoFile := class extend vRepoObject
 
 		return new ZipFSFileView(this&)
 	}
+	GetModificationTime := !() -> u64
+	{
+		assert(ptrToZip == null)
+		return fsGetModificationTime(GetPath().Str())
+	}
 	IsVirtual := !() -> bool 
 	{
 		return ptrToZip != null
