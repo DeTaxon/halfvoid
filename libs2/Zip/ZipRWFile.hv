@@ -16,6 +16,21 @@ ZipRWFile := class extend TGCObject
 			ZipParse(fileMap.Get(),fileMap.Size(),fileData)
 		}
 	}
+	TryGetFile := !(StringView fileName) -> vZipEntry2^ 
+	{
+		for it : fileData
+		{
+			if it.fileName == fileName
+			{
+				result = new vZipEntry2 //TODO memory leak
+				result.zipSize = it.dataSize
+				result.realSize = it.dataSize
+				result.ptrToObj = fileMap.Get()->{u8^}[it.offsetToData]&
+				return void
+			}
+		}
+		return null
+	}
 	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
 	{
 
@@ -200,6 +215,58 @@ ZipRWFile := class extend TGCObject
 			cdTable = cdTable->{u8^}[newEn.cdEntrySize]&->{zipCentralDirectory^}
 		}
 		return true
+	}
+}
+vZipEntry2 := class
+{
+	ptrToObj := u8^
+	offset := int
+	realSize := u32
+	zipSize := u32
+	objName := StringSpan
+	fullName := StringSpan
+	comprType := int
+	//subFolders := List.{vZipEntry^}
+	//compressedPointer := void^
+
+	"this" := !() -> void {}
+
+	Size := !() -> size_t
+	{
+		return realSize
+	}
+	Name := !() -> StringSpan
+	{
+		return objName
+	}
+	Path := !() -> StringSpan
+	{
+		return fullName
+	}
+
+	GetMap := !() -> FileView^
+	{
+		if comprType == 8
+		{
+			assert(false)
+		//	compressedPointer := malloc(realSize)
+		//	resPtr := ptrToObj.asMapped.point[offset]&
+
+		//	CrappyDeflateInflate(resPtr,zipSize,compressedPointer->{u8^},realSize)
+		//	return new ZipFSFileViewZipDeflate(this&,compressedPointer->{u8^},realSize)
+		}
+
+		assert(comprType == 0)
+
+		return new ZipFSFileViewZipStore(null,ptrToObj,realSize) //TODO make it non null
+	}
+
+	Print := !(int de) -> void
+	{
+		for i : de printf("-")
+
+		printf("%s %i %i %i\n",objName.GetString().Str(),realSize,zipSize,comprType)
+		subFolders[^].Print(de+1)
 	}
 }
 zipIntEntry := class

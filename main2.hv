@@ -2,6 +2,8 @@
 
 main := !(char^[] args) -> int
 {
+	a := "abc"reg
+	b := "abd"reg
 
 	fl := new ZipRWFile(StringSpan("zip.zip"))
 

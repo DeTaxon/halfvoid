@@ -18,25 +18,29 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 		regBlob := BoxRawData^
 		regBlobSize := int
 
-		if not RegexpBlobs.Contain(suffixName)
+
+		stName := downVal->{BoxExeString^}.val.GetString()
+
+		if not RegexpBlobs.Contain(stName)
 		{
-			lx := LexBuilder
-			stName := downVal->{BoxExeString^}.val.GetString()
-			lx.ApplyReg(stName.Str())
-			machine :=  lx.GenerateMachine() //TODO_CACHE
+			regBlob = CacheBlobByStringReg(stName, x ==> {
+				lx := LexBuilder
+				lx.ApplyReg(stName.Str())
+				machine :=  lx.GenerateMachine() //TODO_CACHE
 
-			blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
-			newBlobVoid := malloc(blobSize)
-			ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
-			machine.SerializeToMap(newBlobVoid->{RegexpAsBlob^}.blobData[0]&)
+				blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
+				newBlobVoid := malloc(blobSize)
+				ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
+				machine.SerializeToMap(newBlobVoid->{RegexpAsBlob^}.blobData[0]&)
 
-			regBlob = new BoxRawData(newBlobVoid->{u8^},blobSize)
+				return new BoxRawData(newBlobVoid->{u8^},blobSize)
+			})
+			
 			blobDatas.Push(regBlob)
-
-			RegexpBlobs[suffixName] = !{regBlob,regBlobSize}
+			RegexpBlobs[stName] = !{regBlob,regBlobSize}
 		}else{
-			regBlob = RegexpBlobs[suffixName].0
-			regBlobSize = RegexpBlobs[suffixName].1
+			regBlob = RegexpBlobs[stName].0
+			regBlobSize = RegexpBlobs[stName].1
 		}
 
 
@@ -61,4 +65,4 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 	return resFunc
 }
 
-RegexpBlobs := AVLMap.{StringSpan,Tuple.{BoxRawData^,int}}
+RegexpBlobs := AVLMap.{String^,Tuple.{BoxRawData^,int}}

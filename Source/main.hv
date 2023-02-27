@@ -52,7 +52,10 @@ main := !(char^[] args) -> int
 	{
 		switch args[i]
 		{
-			vase "-scary"
+			case "-cache"
+				i += 1
+				OpenCacheFile(args[i]) //TODO args check
+			case "-scary"
 				DisableScary = true
 			case "-linux"
 				targetLinux = true
@@ -242,6 +245,8 @@ main := !(char^[] args) -> int
 	}
 	printf("done\n")
 	outFile.Close()
+
+	FinilizeCache()
 
 	// for i : 9973
 	// {
