@@ -191,11 +191,13 @@ List := class.{@T} extend TArrayView.{T}
 				}else if itr == start
 				{
 					start = itr.next
+					start.prev = null
 					destroyNode(itr)
 					itr = start
 				}else if itr == end
 				{
 					end = itr.prev
+					end.next = null
 					destroyNode(itr)
 					itr = null
 				}else{

@@ -141,6 +141,7 @@ FinilizeCache := !() -> void
 			SerializeTokens(itPath,fl.fileTokens)
 		}
 	}
+	GCacheFile.Flush()
 }
 
 

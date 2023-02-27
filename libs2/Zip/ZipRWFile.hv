@@ -3,8 +3,10 @@ ZipRWFile := class extend TGCObject
 {
 	fileZipName := String^
 	fileExists := bool
-	fileData := List.{zipIntEntry}
 	fileMap := MappedFile^
+
+	fileData := List.{zipIntEntry}
+	fileUnsavedData := List.{zipRWUnsavedData}
 
 	this := !(StringView inFileName) -> void
 	{
@@ -33,9 +35,23 @@ ZipRWFile := class extend TGCObject
 	}
 	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
 	{
-		endOfMainData := u64
-	
 		fileData.DeleteIf(x => x.fileName == fileName)
+
+		fileUnsavedData.Emplace()
+		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
+		newEntry.fileName = fileName.GetString()
+
+		newBlob := new BlobOnVector(data.Size())
+		if data.Size() != 0
+			memcpy(newBlob.GetPointer(),data.GetPointer(),data.Size())
+		newEntry.fileData = newBlob
+	}
+	Flush := !() -> void
+	{
+		if fileUnsavedData.Size() == 0
+			return void
+
+		endOfMainData := u64
 		
 		for it : fileData
 		{
@@ -68,37 +84,39 @@ ZipRWFile := class extend TGCObject
 			}
 		}
 
-		reqSize := zipFileHeader->TypeSize + fileName.Size() + data.Size()
-		foundPos := false
-		writeRange := Tuple.{u64,u64}
-		for it : freePages
+		for it : fileUnsavedData
 		{
-			if it.1 - it.0 >= reqSize
+			reqSize := zipFileHeader->TypeSize + it.fileName.Size() + it.fileData.Size()
+
+			foundPos := false
+			for page : freePages
 			{
-				foundPos = true
-				writeRange = it
-				break
+				if page.1 - page.0 >= reqSize
+				{
+					foundPos = true
+					it.assignedRange = page
+					page.0 += reqSize
+					break
+				}
 			}
-		}
 
-		if not foundPos
-		{
-			writeRange.0 = endOfMainData
-			writeRange.1 = endOfMainData + reqSize
-			endOfMainData += reqSize
-		}
+			if not foundPos
+			{
+				it.assignedRange.0 = endOfMainData
+				it.assignedRange.1 = endOfMainData + reqSize
+				endOfMainData += reqSize
+			}
 
-		//dataList := List.{Range}
-		//dataList.Push(Range(0..endOfMainData))
+			fileData.Emplace()
+			newField := ref fileData[fileData.Size() - 1]
+
+			newField.offsetToFileHeader = it.assignedRange.0
+			newField.offsetToData = it.assignedRange.0 + it.fileName.Size() + zipFileHeader->TypeSize
+			newField.fileName = it.fileName.GetString()
+			newField.dataSize = it.fileData.Size()
+		}
 
 		//TODO check if file exists
-		fileData.Emplace()
-		newField := ref fileData[fileData.Size() - 1]
-
-		newField.offsetToFileHeader = writeRange.0
-		newField.offsetToData = writeRange.0 + fileName.Size() + zipFileHeader->TypeSize
-		newField.fileName = fileName.GetString()
-		newField.dataSize = data.Size()
 		
 		newSize := endOfMainData
 
@@ -123,27 +141,34 @@ ZipRWFile := class extend TGCObject
 		
 		ptr := fileMap.Get()->{u8^}
 
-		fileWritePtr := ptr[writeRange.0]&
-
-		fileHeader := fileWritePtr->{zipFileHeader^}
-		ZeroMem(fileHeader^)
-	
-		fileHeader.signature = 0x04034b50
-		fileHeader.compressedSize = data.Size()
-		fileHeader.realSize = data.Size()
-		fileHeader.fileNameLen = fileName.Size()
-
-		fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
-		
-		memcpy(fileWritePtr,fileName.NonNullStr(),fileName.Size())
-
-		fileWritePtr = fileWritePtr[fileName.Size()]&
-
-		if data.Size() != 0
+		for it : fileUnsavedData
 		{
-			assert(data.GetPointer() != null)
-			memcpy(fileWritePtr,data.GetPointer(),data.Size())
+			fileWritePtr := ptr[it.assignedRange.0]&
+
+			fileHeader := fileWritePtr->{zipFileHeader^}
+			ZeroMem(fileHeader^)
+	
+			fileHeader.signature = 0x04034b50
+			fileHeader.compressedSize = it.fileData.Size()
+			fileHeader.realSize = it.fileData.Size()
+			fileHeader.fileNameLen = it.fileName.Size()
+
+			fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
+			
+			memcpy(fileWritePtr,it.fileName.NonNullStr(),it.fileName.Size())
+
+			fileWritePtr = fileWritePtr[it.fileName.Size()]&
+
+			if it.fileData.Size() != 0
+			{
+				memcpy(fileWritePtr,it.fileData.GetPointer(),it.fileData.Size())
+			}
+
+			it.fileData = null
 		}
+
+		fileUnsavedData.Destroy()
+
 
 		ptr = ptr[endOfMainData]&
 
@@ -186,6 +211,7 @@ ZipRWFile := class extend TGCObject
 		end.totalNumberOfCentralDirectory = fileData.Size()
 		end.sizeOfCentralDirectoryBytes = cdSize
 		end.offsetToStartOfCD = offsetToCD
+		
 	}
 	ZipParse := !(u8^ ptrToFl,u64 fileSize,List.{zipIntEntry} res)-> bool
 	{
@@ -228,6 +254,10 @@ ZipRWFile := class extend TGCObject
 			cdTable = cdTable->{u8^}[newEn.cdEntrySize]&->{zipCentralDirectory^}
 		}
 		return true
+	}
+	Destroy := virtual !() -> void
+	{
+		Flush()
 	}
 }
 vZipEntry2 := class
@@ -281,6 +311,15 @@ vZipEntry2 := class
 		printf("%s %i %i %i\n",objName.GetString().Str(),realSize,zipSize,comprType)
 		subFolders[^].Print(de+1)
 	}
+}
+zipRWUnsavedData := class
+{
+	fileName := String^
+	fileData := Blob^
+	assignedRange := Tuple.{u64,u64}
+	
+	this := !() -> void {}
+	"=" := default
 }
 zipIntEntry := class
 {

@@ -1,0 +1,27 @@
+Blob := class extend TGCObject
+{
+	GetPointer := virtual !() -> u8^ { assert(false)}
+	Size := virtual !() -> s64 { assert(false) }
+}
+
+BlobOnVector := class extend Blob
+{
+	itData := void^
+	itSize := s64
+	this := !(s64 setSize) -> void
+	{
+		if setSize != 0
+			itData = malloc(setSize)
+		itSize = setSize
+	}
+	GetPointer := virtual !() -> u8^ { return itData->{u8^} }
+	Size := virtual !() -> s64 { return itSize }
+
+	Destroy := !() -> void
+	{
+		if itData != null
+			free(itData)
+		itData = null
+		itSize = 0
+	}
+}
