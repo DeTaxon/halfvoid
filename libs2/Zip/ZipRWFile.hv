@@ -59,7 +59,7 @@ ZipRWFile := class extend TGCObject
 			freePages.Emplace(0,BusyPages[0].0)
 		}
 
-		for i : (fileData.Size() - 1)
+		for i : (freePages.Size() - 1)
 		{
 			maybeFree := !{BusyPages[i].1,BusyPages[i+1].0}
 			if maybeFree.0 != maybeFree.1
@@ -134,8 +134,11 @@ ZipRWFile := class extend TGCObject
 
 		fileWritePtr = fileWritePtr[fileName.Size()]&
 
-		assert(data.GetPointer() != null)
-		memcpy(fileWritePtr,data.GetPointer(),data.Size())
+		if data.Size() != 0
+		{
+			assert(data.GetPointer() != null)
+			memcpy(fileWritePtr,data.GetPointer(),data.Size())
+		}
 
 		ptr = ptr[endOfMainData]&
 
@@ -148,6 +151,8 @@ ZipRWFile := class extend TGCObject
 			cdEntry := ptr->{zipCentralDirectory^}
 			ZeroMem(cdEntry^)
 			cdEntry.signature = 0x02014b50
+			cdEntry.madeWithVersion = 20
+			cdEntry.versionNeedToExtract = 20
 			cdEntry.compressedSize = it.dataSize
 			cdEntry.realSize = it.dataSize
 			cdEntry.fileNameLen = it.fileName.Size()

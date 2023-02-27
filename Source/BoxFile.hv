@@ -24,6 +24,8 @@ BoxFile := class extend BoxUnit
 
 	AllClasses := List.{BoxClass^}
 
+	fileTokens := Token^
+
 	this := !(vRepoFile^ inFile) -> void
 	{
 		fileId = GetNewId()
@@ -60,26 +62,27 @@ BoxFile := class extend BoxUnit
 		
 		defer loaded.Emit()
 
-		printf("hm %s\n",file.GetPath().Str())
+		//printf("hm %s\n",file.GetPath().Str())
 
 		tokens := GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
 
 		if tokens == null
 			return void
 
-		tempToken := Token
-		tempToken.Down = tokens
+		fileTokens = new Token
+
+		fileTokens.Down = tokens
 		itr := tokens
 		while itr != null
 		{
-			itr.Up = tempToken&
+			itr.Up = fileTokens
 			itr = itr.Right
 		}
 
-		SyntaxCompress(tempToken&,LexHVFileRoot)
+		SyntaxCompress(fileTokens,LexHVFileRoot)
 
 		CurrentScope = this&
-		iter := tempToken.Down
+		iter := fileTokens.Down
 
 		while iter != null
 		{
