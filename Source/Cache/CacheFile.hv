@@ -31,6 +31,16 @@ OpenCacheFile := !(char^ fileName) -> void
 }
 
 
+//TryGetCacheFile := !(vRepoFile^ fl) -> Blob^
+//{
+//	if not GUsingCacheFile
+//		return null
+//	filePath := fl.GetPath()
+//
+//
+//}
+
+
 BlobCacheData := class
 {
 	key := String^

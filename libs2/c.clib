@@ -48,7 +48,11 @@
 
 		"vprintf" : "int,char^,void^",
 
-		"time" : "int",
+		"time" : "u64",
+		"localtime" : "void^,u64^",
+		"localtime_r" : "void^,u64^,void^",
+
+
 		"srand" : "void,int",
 		"rand" : "int",
 

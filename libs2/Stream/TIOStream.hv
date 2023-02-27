@@ -28,7 +28,7 @@ Stream := class extend TGCObject
 	}
 	"<<" := !(int value) -> ref Stream
 	{
-		intVal := char[16]
+		intVal := char[64]
 		len := sprintf(intVal[0]&,"%i",value)
 		Write(intVal[0]&,len)
 		return this

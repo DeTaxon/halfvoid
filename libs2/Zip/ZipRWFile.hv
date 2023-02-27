@@ -38,7 +38,7 @@ ZipRWFile := class extend TGCObject
 		newBlob := new BlobOnVector(data.Size())
 		if data.Size() != 0
 			memcpy(newBlob.GetPointer(),data.GetPointer(),data.Size())
-		WriteFile(fileName,newBlob)
+		this.WriteFile(fileName,newBlob)
 	}
 	WriteFile := !(StringView fileName, Blob^ data) -> void //TODO folder support
 	{
@@ -48,6 +48,7 @@ ZipRWFile := class extend TGCObject
 		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
 		newEntry.fileName = fileName.GetString()
 		newEntry.fileData = data
+		newEntry.timeModified = time()
 	}
 	Flush := !() -> void
 	{
@@ -89,7 +90,9 @@ ZipRWFile := class extend TGCObject
 
 		for it : fileUnsavedData
 		{
-			reqSize := zipFileHeader->TypeSize + it.fileName.Size() + it.fileData.Size()
+			reqSize := zipFileHeader->TypeSize 
+			reqSize += it.fileName.Size() 
+			reqSize += it.fileData.Size()
 
 			foundPos := false
 			for page : freePages
@@ -115,8 +118,9 @@ ZipRWFile := class extend TGCObject
 
 			newField.offsetToFileHeader = it.assignedRange.0
 			newField.offsetToData = it.assignedRange.0 + it.fileName.Size() + zipFileHeader->TypeSize
-			newField.fileName = it.fileName.GetString()
+			newField.fileName = it.fileName
 			newField.dataSize = it.fileData.Size()
+			newField.timeModified = it.timeModified
 		}
 
 		//TODO check if file exists
@@ -155,6 +159,7 @@ ZipRWFile := class extend TGCObject
 			fileHeader.compressedSize = it.fileData.Size()
 			fileHeader.realSize = it.fileData.Size()
 			fileHeader.fileNameLen = it.fileName.Size()
+			fileHeader.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
 
 			fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
 			
@@ -190,6 +195,8 @@ ZipRWFile := class extend TGCObject
 			cdEntry.realSize = it.dataSize
 			cdEntry.fileNameLen = it.fileName.Size()
 			cdEntry.offsetToFileHeader = it.offsetToFileHeader
+
+			cdEntry.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
 
 			ptr = ptr[zipCentralDirectory->TypeSize]&
 
@@ -258,6 +265,20 @@ ZipRWFile := class extend TGCObject
 		}
 		return true
 	}
+	decomposeTime := !(u64 seconds) -> u32
+	{
+		return 0
+		buf := char[1024]
+		sc := buf[0]&->{u64^}
+		sc^ = seconds
+		res := localtime(sc)->{tm^}
+
+		res.tm_year -= 80
+
+		mSeconds := (res.tm_sec div 2) + 32 * res.tm_min + 2048*res.tm_hour
+		mDay := res.tm_mday + 32*res.tm_mon + 512*res.tm_year
+		return mDay*65536 + mSeconds
+	}
 	Destroy := virtual !() -> void
 	{
 		Flush()
@@ -319,8 +340,9 @@ zipRWUnsavedData := class
 {
 	fileName := String^
 	fileData := Blob^
+	timeModified := u64
 	assignedRange := Tuple.{u64,u64}
-	
+
 	this := !() -> void {}
 	"=" := default
 }
@@ -333,6 +355,8 @@ zipIntEntry := class
 	offsetToCDEntry := u64
 	cdEntrySize := int
 	fileName := String^
+	
+	timeModified := u64
 	
 	this := !() -> void {}
 	"=" := default

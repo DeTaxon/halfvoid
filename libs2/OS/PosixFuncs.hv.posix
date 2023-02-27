@@ -22,6 +22,19 @@ S_IFDIR := 16384
 S_IFREG := 32768
 S_IFLINK := 40960
 
+tm := class
+{
+	tm_sec := int
+	tm_min := int
+	tm_hour := int
+	tm_mday:= int
+	tm_mon := int
+	tm_year := int
+	tm_wday := int
+	tm_yday := int
+	tm_isdst := int
+}
+
 osIsFolder := !(char^ nm) -> bool
 {
 	st1 := char[144]
@@ -70,12 +83,11 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 	}
 
 }
-GetRealime := !() -> double
+GetRealTimeU64Seconds := !() -> u64
 {
 	times := u64[2]
 	clock_gettime(0,times[0]&)
-	resTime := times[0]->{double}
-	return resTime + times[1]*0.001*0.001*0.001
+	return times[0]
 }
 GetSteadyTime := !() -> double
 {
