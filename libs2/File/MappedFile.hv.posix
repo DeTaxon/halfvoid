@@ -5,6 +5,7 @@ MappedFile := class extend TGCObject
 	fileSize  := u64
 	mapId := u64
 	point := u8^
+	fileFlag := int
 	this := !(char^ fileName) -> void
 	{
 		fileId = 0
@@ -53,6 +54,7 @@ MappedFile := class extend TGCObject
 				throw new Exception("can not resize file")
 			fileSize = itSize
 		}
+		fileFlag = mmFlgs
 		mmRes := mmap(null,fileSize,mmFlgs,MAP_SHARED,fileId,null)
 		//if mmRes&->{u64^}^ == not_b 0U //TODO
 		if mmRes&->{u64^}^ + 1 == 0
@@ -64,9 +66,23 @@ MappedFile := class extend TGCObject
 	}
 	ResizeFile := !(u64 newSize) -> void //TODO error check
 	{
+		oldSize := fileSize
 		if ftruncate(fileId,newSize)  == -1
 			throw new Exception("can not resize file")
 		fileSize = newSize
+
+		if newSize > oldSize
+		{
+			munmap(point,oldSize)
+			mmRes := mmap(null,newSize,fileFlag,MAP_SHARED,fileId,null)
+			//if mmRes&->{u64^}^ == not_b 0U //TODO
+			if mmRes&->{u64^}^ + 1 == 0
+			{
+				close(fileId)
+				throw new Exception("can not map file")
+			}
+			point = mmRes->{u8^}
+		}
 	}
 	Get := !() -> u8^
 	{

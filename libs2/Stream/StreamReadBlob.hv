@@ -1,0 +1,18 @@
+StreamReadBlob := class extend Stream
+{
+	blobPointer := u8^
+	blobSize := s64
+	blobIndex := s64
+	this := !(void^ ptr, s64 size) -> void
+	{
+		blobPointer = ptr->{u8^}
+		blobSize = size
+	}
+	Read := virtual !(void^ data, s64 size) -> s64
+	{
+		assert(blobIndex + size <= blobSize)
+		memcpy(data,blobPointer[blobIndex]&,size)
+		blobIndex += size
+		return 0
+	}
+}

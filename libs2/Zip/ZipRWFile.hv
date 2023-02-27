@@ -33,9 +33,8 @@ ZipRWFile := class extend TGCObject
 	}
 	WriteFile := !(StringView fileName, u8[] data) -> void //TODO folder support
 	{
-
 		endOfMainData := u64
-		
+	
 		fileData.DeleteIf(x => x.fileName == fileName)
 		
 		for it : fileData
@@ -49,7 +48,7 @@ ZipRWFile := class extend TGCObject
 		{
 			tpl := Tuple.{u64,u64}
 			tpl.0 = it.offsetToFileHeader
-			tpl.1 = it.offsetToFileHeader + it.fileName.Size() + zipFileHeader->TypeSize
+			tpl.1 = it.offsetToFileHeader + it.dataSize + it.fileName.Size() + zipFileHeader->TypeSize
 			BusyPages.SortedPush(tpl)
 		}
 		freePages := List.{Tuple.{u64,u64}}
@@ -59,11 +58,14 @@ ZipRWFile := class extend TGCObject
 			freePages.Emplace(0,BusyPages[0].0)
 		}
 
-		for i : (freePages.Size() - 1)
+		if BusyPages.Size() >= 2
 		{
-			maybeFree := !{BusyPages[i].1,BusyPages[i+1].0}
-			if maybeFree.0 != maybeFree.1
-				freePages.Push(maybeFree)
+			for i : (BusyPages.Size() - 1)
+			{
+				maybeFree := !{BusyPages[i].1,BusyPages[i+1].0}
+				if maybeFree.0 != maybeFree.1
+					freePages.Push(maybeFree)
+			}
 		}
 
 		reqSize := zipFileHeader->TypeSize + fileName.Size() + data.Size()
@@ -113,7 +115,10 @@ ZipRWFile := class extend TGCObject
 		{
 			fileMap = new MappedFile(fileZipName.Str(),FILE_READ + FILE_WRITE,newSize)
 		}else{
-			fileMap.ResizeFile(newSize)
+			if newSize != fileMap.Size()
+			{
+				fileMap.ResizeFile(newSize)
+			}
 		}
 		
 		ptr := fileMap.Get()->{u8^}
@@ -159,6 +164,9 @@ ZipRWFile := class extend TGCObject
 			cdEntry.offsetToFileHeader = it.offsetToFileHeader
 
 			ptr = ptr[zipCentralDirectory->TypeSize]&
+
+			for i : it.fileName.Size()
+				it.fileName.Str()[i]
 
 			memcpy(ptr,it.fileName.Str(),it.fileName.Size())
 

@@ -536,7 +536,6 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 				cnsts12.Push(GetConstType(toType))
 				
 				excCheck := IsGonnaWorkExchange(objs12,cnsts12)
-				objs12.Destroy() cnsts12.Destroy()
 				if excCheck
 				{
 					thisCase = 1000

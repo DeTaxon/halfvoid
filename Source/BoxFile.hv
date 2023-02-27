@@ -64,22 +64,40 @@ BoxFile := class extend BoxUnit
 
 		//printf("hm %s\n",file.GetPath().Str())
 
-		tokens := GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
+		tokens := Token^
 
-		if tokens == null
-			return void
-
-		fileTokens = new Token
-
-		fileTokens.Down = tokens
-		itr := tokens
-		while itr != null
+		if GUsingCacheFile
 		{
-			itr.Up = fileTokens
-			itr = itr.Right
-		}
+			fl := GCacheFile.TryGetFile(file.GetPath())
+			if fl != null
+			{
+				mp := fl.GetMap()
+				if mp.Size() == 0
+					return void
+				s := StreamReadBlob(mp.Get(),mp.Size())
 
-		SyntaxCompress(fileTokens,LexHVFileRoot)
+				fileTokens = LoadCachedTokens(s&,this&)
+			}
+		}
+		if fileTokens == null
+		{
+			tokens = GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
+
+			if tokens == null
+				return void
+
+			fileTokens = new Token
+
+			fileTokens.Down = tokens
+			itr := tokens
+			while itr != null
+			{
+				itr.Up = fileTokens
+				itr = itr.Right
+			}
+
+			SyntaxCompress(fileTokens,LexHVFileRoot)
+		}
 
 		CurrentScope = this&
 		iter := fileTokens.Down

@@ -1,0 +1,286 @@
+
+
+SerializeTokens := !(StringView fName,Token^ tkn) -> void
+{
+	streamedLine := FileLine^
+
+	if tkn == null
+	{
+		dat := TArraySpan.{u8}(null,0)
+		GCacheFile.WriteFile(fName,dat)
+	}else{
+		echo := TEchoStream
+		SerializeTokenInner(echo&,tkn,streamedLine)
+
+		wackyData := echo.GetString()
+		dat := TArraySpan.{u8}(wackyData.NonNullStr()->{u8^},wackyData.Size())
+		GCacheFile.WriteFile(fName,dat)
+	}
+
+}
+
+LoadCachedTokens :=  !(Stream^ strm, BoxFile^ setFile) -> Token^
+{
+	nowLine := FileLine^
+	buf := char[4096]
+	return LoadCachedTokensInner(strm,setFile,nowLine,buf[0]&)
+}
+
+LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char^ buf) -> Token^
+{
+	x := s32
+
+	strm.Read(x&,4)
+
+	if x == 1
+	{
+		strm.Read(x&,4)
+		nowLine = new FileLine(setFile)
+		nowLine.Line = x
+		strm.Read(x&,4)
+	}
+
+	resToken := Token^
+
+	stSize := s32
+	spn := StringSpan
+	dbl := double
+
+	switch x
+	{
+		case 100
+			resToken = new Token
+		case 101
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenDecor(spn)
+		case 102
+			resToken = new TokenData
+		case 103
+			resToken = new TokenBlockData
+		case 104
+			resToken = new TokenNull
+		case 105
+			resToken = new TokenNone
+		case 106
+			strm.Read(stSize&,4)
+			if stSize == 1
+			{
+				resToken = new TokenBool(StringSpan("true"),true)
+			}else{
+				resToken = new TokenBool(StringSpan("false"),false)
+			}
+		case 107
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenWayControl(spn)
+		case 108
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenSuffix(spn)
+		case 109
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			strm.Read(stSize&,4)
+			resToken = new TokenSymbol(spn,stSize)
+		case 110
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenIndent(spn)
+		case 111
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenTemplateType(spn)
+		case 112
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenString(spn)
+		case 113
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			strm.Read(dbl&,8)
+			resToken = new TokenDouble(spn,dbl)
+		case 114
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			strm.Read(stSize&,4)
+			resToken = new TokenInt(spn,stSize)
+		case void
+			printf("hm %i\n",x)
+			assert(false)
+			
+	}
+	subs := s32
+	strm.Read(subs&,4)
+
+
+	resToken.Line = nowLine
+
+	subTokens := HybridQueue.{Token^,40}
+	for i : subs
+	{
+		subToken := LoadCachedTokensInner(strm,setFile,nowLine,buf)
+		subTokens.Push(subToken)
+		subToken.Up = resToken
+	}
+
+	if subs != 0
+	{
+		resToken.Down = subTokens[0]
+		for i : (subs - 1)
+		{
+			subTokens[i].Right = subTokens[i+1]
+			subTokens[i+1].Left = subTokens[i]
+		}
+	}
+	return resToken
+}
+
+SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -> void
+{
+	assert(itToken != null)
+	x := s32
+	if streamedLine != itToken.Line
+	{
+		streamedLine = itToken.Line
+		c := 1
+		strm.Write(c&,4)
+		strm.Write(itToken.Line.Line&,4)
+	}
+	subs := s32
+	itr := itToken.Down
+	while itr != null
+	{
+		subs += 1
+		itr = itr.Right
+	}
+	
+	if itToken is Token
+	{
+		x = 100
+		strm.Write(x&,4)
+	}else if itToken is TokenDecor
+	{
+		decor := itToken->{TokenDecor^}
+		x = 101
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenData
+	{
+		x = 102
+		strm.Write(x&,4)
+	}else if itToken is TokenBlockData
+	{
+		x = 103
+		strm.Write(x&,4)
+	}else if itToken is TokenNull
+	{
+		x = 104
+		strm.Write(x&,4)
+	}else if itToken is TokenNone
+	{
+		x = 105
+		strm.Write(x&,4)
+	}else if itToken is TokenBool
+	{
+		x = 106
+		strm.Write(x&,4)
+		if itToken->{TokenBool^}.Parsed
+		{
+			x = 1
+		}else{
+			x = 0
+		}
+		strm.Write(x&,4)
+	}else if itToken is TokenWayControl
+	{
+		decor := itToken->{TokenWayControl^}
+		x = 107
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenSuffix
+	{
+		decor := itToken->{TokenSuffix^}
+		x = 108
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenSymbol
+	{
+		decor := itToken->{TokenSymbol^}
+		x = 109
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+		x = itToken.TokenId
+		strm.Write(x&,4)
+	}else if itToken is TokenIndent
+	{
+		decor := itToken->{TokenIndent^}
+		x = 110
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenTemplateType
+	{
+		decor := itToken->{TokenTemplateType^}
+		x = 111
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenString
+	{
+		decor := itToken->{TokenString^}
+		x = 112
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+	}else if itToken is TokenDouble
+	{
+		decor := itToken->{TokenDouble^}
+		x = 113
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+		strm.Write(decor.Parsed&,8)
+	}else if itToken is TokenInt
+	{
+		decor := itToken->{TokenInt^}
+		x = 114
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+		strm.Write(decor.Parsed&,4)
+	} else {
+		printf("hm %s\n",itToken.GetValue())
+		assert(false)
+	}
+	strm.Write(subs&,4)
+
+	itr = itToken.Down
+	while itr != null
+	{
+		SerializeTokenInner(strm,itr,streamedLine)
+		itr = itr.Right
+	}
+}

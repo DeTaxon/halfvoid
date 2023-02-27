@@ -29,7 +29,7 @@ endif
 MainTarget: test
 
 test:
-	$(gdb_tui) ./halfvoid -g -C0 libs2 main2.hv -o out.ll -cache TestCache.zip
+	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -g -C0 libs2 main2.hv -o out.ll -cache /tmp/TestCache.zip
 	clang -g out.ll -o test
 win.exe:
 	$(gdb_tui) ./halfvoid -win32 -g -C0 libs2 main2.hv -o out.ll
@@ -51,7 +51,7 @@ halfvoid:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 libs2/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o out.ll -cache HVCache.zip
+	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o out.ll -cache /tmp/HVCache.zip
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
