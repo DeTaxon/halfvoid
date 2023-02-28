@@ -42,11 +42,11 @@ CacheBlobByStringReg := !(StringView value, !()&-> BoxRawData^ cb) -> BoxRawData
 
 	cb2 := cb
 	resBlob := BoxRawData^
-	blb := CFile.CacheBlobByString(value,(res) ==> {
+	blb := CFile.CacheBlobByString(value,() ==> {
 		resBlob = cb2()
 		bl := new BlobOnVector(resBlob.ValueSize)
 		memcpy(bl.GetPointer(),resBlob.Value,bl.Size())
-		res = bl->{Blob^}
+		return bl->{Blob^}
 	})
 	
 	if resBlob != null

@@ -30,7 +30,7 @@ CacheFile := class extend TGCObject
 
 	CacheChangedBlobData := bool
 	CacheBlobList  := List.{BlobCacheData} //TODO Optimize
-	CacheBlobByString := !(StringView value, !(Blob^&)&->void  cb) -> Blob^ //TODO change lambda to normal !()&->Blob^, now i cant due to bag
+	CacheBlobByString := !(StringView value, !()&->Blob^  cb) -> Blob^
 	{
 		for it : CacheBlobList
 		{
@@ -56,8 +56,7 @@ CacheFile := class extend TGCObject
 		}
 	
 		CacheChangedBlobData = true
-		newBlob := Blob^
-		cb(newBlob)
+		newBlob :=cb()
 	
 		newId := 0
 		buf := char[255]
