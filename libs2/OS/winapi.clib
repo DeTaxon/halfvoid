@@ -22,7 +22,7 @@
 	"funcs" : {
 		
 		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
-		"WriteFileREMOVEITPART" : "int,void^,void^,u32,u32^,void^",
+		"WriteFile" : "int,void^,void^,u32,u32^,void^",
 		"ReadFile" : "int,void^,void^,u32,u32^,void^",
 		"CloseHandle" : "void,void^",
 
