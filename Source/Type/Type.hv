@@ -460,3 +460,9 @@ CreateStandardTypes := !() -> void
 	DefsTable[24] = new TypeDef("vec2f",GTypeVec2f)
 }
 
+
+PrintTypeNormalized := !(Stream^ f, Type^ tp) -> void
+{
+	tp = NormalizeType(tp)
+	tp.PrintType(f)
+}

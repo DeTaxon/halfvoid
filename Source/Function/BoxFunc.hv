@@ -85,7 +85,10 @@ BoxFunc := class extend BoxExeConstObj
 				f^ << ","
 			needComma = true
 
-			par.ItType.PrintType(f)
+			inType := par.ItType
+			if not par.IsRef
+				inType = NormalizeType(inType)
+			inType.PrintType(f)
 			if par.IsRef
 				f^ << "*"
 			f^ << " %par" << i
@@ -218,12 +221,14 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 			f^ << ","
 		needComma = true
 		
-		if itType.Params.Size() > i and itType.Params[i].IsRef
+		if i < itType.Params.Size() and itType.Params[i].IsRef
 		{
-			dwn.GetType().PrintType(f)
+			inType := dwn.GetType()
+			inType = NormalizeType(inType)
+			inType.PrintType(f)
 			f^ << "* "
 			dwn.PrintPointUse(f)
-		}else{
+		}else{'
 			if i < itType.Params.Size() and itType.Params[i].ItType is in TypeClass
 			{
 				tp := dwn.GetType()
@@ -233,7 +238,9 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 				f^ << ") "
 				dwn.PrintPointUse(f)
 			}else{
-				dwn.GetType().PrintType(f)
+				inType := dwn.GetType()
+				inType = NormalizeType(inType)
+				inType.PrintType(f)
 				f^ << " "
 				dwn.PrintUse(f)
 			}

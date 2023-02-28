@@ -318,7 +318,9 @@ MemVar := class extend NamedVar
 			f^ << "declare"
 		}
 		f^ << "(metadata "
-		tp.PrintType(f)
+		inType := tp
+		inType = NormalizeType(inType)
+		inType.PrintType(f)
 		if not Value.IsValue()
 			f^ << "*"
 		// if Value.IsRef()

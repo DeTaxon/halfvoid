@@ -187,11 +187,11 @@ BuiltInPrimeStore := class extend BoxFuncCommon
 		tp := bs->{TypeFunc^}.Params[0].ItType
 
 		f^ << "store "
-		tp.PrintType(f)
+		PrintTypeNormalized(f,tp)
 		f^ << " "
 		lst[1].PrintUse(f)
 		f^ << ","
-		tp.PrintType(f)
+		PrintTypeNormalized(f,tp)
 		f^ << "* "
 		lst[0].PrintPointUse(f)
 		if DebugMode

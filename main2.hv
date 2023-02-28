@@ -3,7 +3,11 @@
 
 main := !(char^[] args) -> int
 {
-	x := #Regexp("test",1,"hello",2)
+	cb := () ==>
+	{
+		return new Blob
+	}
+	cb()
 	return 0
 	a := "abc"reg
 	b := "abd"reg

@@ -289,6 +289,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		GCVarsInUse = oldVarsCount
 
 		ResultTypeHatch.Emit()
+
+		assert(GetType() != null and GetType()->{TypeFunc^}.ResultType != null)
+		NormalizeType(GetType().GetPoint())
 		readyState.Emit()
 	}
 	WaitReadyState := virtual !() -> void
