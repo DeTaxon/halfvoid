@@ -1,0 +1,60 @@
+CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
+{
+	dwns := CheckExeDownList
+
+	CheckFuncCallBrackets(itm.Down.Right,dwns)
+
+	assert(dwns.Size() != 0 and dwns.Size() mod 2 == 0) //TODO emit error
+
+	echo := TEchoStream
+
+	for i : (dwns.Size() div 2)
+	{
+		v1 := dwns[2*i]
+		v2 := dwns[2*i + 1]
+		assert(v1 is BoxExeString)
+		assert(v2 is BoxExeInt)
+
+		echo <<  v1->{BoxExeString^}.val << v2->{BoxExeInt^}.Value
+	}
+	resSt := echo.GetString()
+
+	regBlob := CacheBlobByStringReg(resSt, x ==> {
+		lx := LexBuilder
+
+		names := HybridQueue.{String^,20} //TODO it can be removed, needed for memeory readons
+		
+		for i : (dwns.Size() div 2)
+		{
+			v1 := dwns[2*i]->{BoxExeString^}.val.GetString()
+			v2 := dwns[2*i + 1]->{BoxExeInt^}.Value
+
+			names.Push(v1)
+
+			lx.ApplyReg(v1.Str(),v2)
+		}
+		machine :=  lx.GenerateMachine()
+
+		blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
+		newBlobVoid := malloc(blobSize)
+		ZeroMem(newBlobVoid->{RegexpAsBlob^}^)
+		machine.SerializeToMap(newBlobVoid->{RegexpAsBlob^}.blobData[0]&)
+
+		return new BoxRawData(newBlobVoid->{u8^},blobSize)
+	})
+
+	if not RegexpBlobs.Contain(resSt)
+	{
+		newEntry := ref RegexpBlobs[resSt]
+		newEntry.0 = regBlob
+		blobDatas.Push(regBlob)
+	}
+
+	objs := CheckExeDownList
+	objs.Push(regBlob)
+	objs.Push(GetExeInt(0)) //TODO do i need it?
+	cnsts := List.{BoxExeConstObj^}
+	res := CreateFuncCall(StringSpan("internalRegexpRetrive"),objs,cnsts)
+	assert(res != null)
+	return res
+}

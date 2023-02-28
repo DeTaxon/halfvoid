@@ -26,7 +26,7 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 			regBlob = CacheBlobByStringReg(stName, x ==> {
 				lx := LexBuilder
 				lx.ApplyReg(stName.Str())
-				machine :=  lx.GenerateMachine() //TODO_CACHE
+				machine :=  lx.GenerateMachine()
 
 				blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
 				newBlobVoid := malloc(blobSize)

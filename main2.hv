@@ -3,7 +3,7 @@
 
 main := !(char^[] args) -> int
 {
-	printf("extra test\n")
+	x := #Regexp("test",1,"hello",2)
 	return 0
 	a := "abc"reg
 	b := "abd"reg

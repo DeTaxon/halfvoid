@@ -6,5 +6,9 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryEmbedFile(itm)
 	}
+	if cmd == "#Regexp"
+	{
+		return CommandGetRegexp(itm)	
+	}
 	itm.EmitError("Command not found")	
 }
