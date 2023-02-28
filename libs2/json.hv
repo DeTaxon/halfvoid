@@ -128,9 +128,17 @@ Json := class extend JsonNode
 
 	ParseString := !(char^ fileData,int size) -> void
 	{
-		jsonLoadMachine()
+		//jsonLoadMachine()
+		jMachine := #Regexp(
+			"\"((\\\\ [^]) | [^\"\\\\])*\"",1,
+			"[0-9]+(.[0-9]+)?",2,
+			"0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2,
+			" true | false | null",3,
+			"\\{ | \\} | \\, | \\: | \\[ | \\]",4,
+			"\\ | \\t | \\n",5
+		)
 
-		jsonRegMachine.RegExpReadText(StringSpan(fileData,size), (tok,c) ==>
+		jMachine.RegExpReadText(StringSpan(fileData,size), (tok,c) ==>
 		{
 			if c == 5
 				return void
