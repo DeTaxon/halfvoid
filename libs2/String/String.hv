@@ -94,3 +94,15 @@ String := class extend StringView
 {
 	return spn.GetString()
 }
+
+
+StringConcat := !(args...) -> String^
+{
+	echo := TEchoStream
+
+	for it : args
+	{
+		echo << it
+	}
+	return echo.GetString()
+}

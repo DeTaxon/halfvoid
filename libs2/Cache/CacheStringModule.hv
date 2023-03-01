@@ -20,7 +20,7 @@ CacheStringModule := class extend TGCObject
 			{
 				if not it.loaded
 				{
-					fileInZip := base.zipFile.TryGetFile(it.fileName)
+					fileInZip := base.zipFile.TryGetFile(StringConcat(moduleName,"/",it.fileName))
 					assert( fileInZip != null)
 					if fileInZip != null
 					{
@@ -75,7 +75,7 @@ CacheStringModule := class extend TGCObject
 	}
 	LoadMeta := !() -> void
 	{
-		blobCacheMeta := base.zipFile.TryGetFile("BlobCache.txt")
+		blobCacheMeta := base.zipFile.TryGetFile(StringConcat(moduleName,"/BlobCache.txt"))
 		if blobCacheMeta != null
 		{
 			mp := blobCacheMeta.GetMap()
@@ -107,7 +107,7 @@ CacheStringModule := class extend TGCObject
 			{
 				if it.changed
 				{
-					base.zipFile.WriteFile(it.fileName,it.value)
+					base.zipFile.WriteFile(StringConcat(moduleName,"/",it.fileName),it.value)
 				}
 				MetaCache << it.key << "\n" << it.fileName << "\n"
 			}
@@ -115,7 +115,7 @@ CacheStringModule := class extend TGCObject
 			tempBlob := new BlobOnVector(MetaCache.Size())
 			MetaCache.Read(tempBlob.GetPointer(),tempBlob.Size())
 			
-			base.zipFile.WriteFile("BlobCache.txt",tempBlob)
+			base.zipFile.WriteFile(StringConcat(moduleName,"/BlobCache.txt"),tempBlob)
 		}
 	}
 }
