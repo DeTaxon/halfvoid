@@ -114,6 +114,30 @@ CacheFile := class extend TGCObject
 			zipFile.WriteFile("BlobCache.txt",tempBlob)
 		}
 	}
+	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
+	{
+		inRep := zipFile.TryGetFile(fl.GetPath())
+		if inRep == null
+			return null
+		fileTime := fl.GetModificationTime()
+		cacheTime := inRep.GetModificationTime()
+
+		if (fileTime - cacheTime)->{s64} > 0 //TODO fileTime > cacheTime does not work
+		{
+			return null
+		}else{
+			mp := inRep.GetMap()
+			resBlob := new BlobOnVector(mp.Size())
+			if mp.Size() != 0
+				memcpy(resBlob.GetPointer(),mp.Get(),mp.Size())
+			return resBlob
+		}
+	}
+	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
+	{
+		itPath := fl.GetPath()
+		zipFile.WriteFile(itPath,data)
+	}
 
 }
 

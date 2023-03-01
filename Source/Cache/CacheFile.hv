@@ -71,8 +71,7 @@ FinilizeCache := !() -> void
 		{
 			if fl.tokensChanged
 			{
-				itPath := fl.file.GetPath()
-				SerializeTokens(itPath,fl.fileTokens)
+				SerializeTokens(fl.file,fl.fileTokens)
 			}
 		}
 	}

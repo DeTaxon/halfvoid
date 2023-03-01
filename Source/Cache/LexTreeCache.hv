@@ -1,20 +1,20 @@
 
 
-SerializeTokens := !(StringView fName,Token^ tkn) -> void
+SerializeTokens := !(vRepoFile^ fil,Token^ tkn) -> void
 {
 	streamedLine := FileLine^
 
 	if tkn == null
 	{
-		dat := new BlobOnVector(0)
-		GCacheFile.WriteFile(fName,dat)
+		data := new BlobOnVector(0)
+		CFile.WriteCacheOfFile(fil,data)
 	}else{
 		echo := TEchoStream
 		SerializeTokenInner(echo&,tkn,streamedLine)
 
 		data := new BlobOnVector(echo.Size())
 		echo.Read(data.GetPointer()->{char^},data.Size())
-		GCacheFile.WriteFile(fName,data)
+		CFile.WriteCacheOfFile(fil,data)
 	}
 
 }
