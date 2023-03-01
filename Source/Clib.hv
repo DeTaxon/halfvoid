@@ -2,6 +2,7 @@ ModuleInterface := class
 {
 	Work := virtual !() -> void {}
 	PrintCode := virtual !(Stream^ f) -> void {}
+	GetType := virtual !(StringSpan name) -> Type^ { return null }
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ { return null}
 	CreateInitPart := virtual !() -> void {}
 }
@@ -122,6 +123,21 @@ CLib := class extend ModuleInterface
 			return innerMakeType(name)
 		}
 		return null
+	}
+	GetType := virtual !(StringSpan name) -> Type^ 
+	{ 
+		if itStructs.Contain(name)
+		{
+			assert(itStructs[name] is ConstType)
+			return itStructs[name]->{ConstType^}.Value
+		}
+		if itPreStructs.Contain(name)
+		{
+			tp := innerMakeType(name)
+			assert(tp is ConstType)
+			return tp->{ConstType^}.Value
+		}
+		return null 
 	}
 	innerMakeType := !(StringSpan name) -> BoxUnit^
 	{

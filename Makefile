@@ -1,6 +1,7 @@
 TimeFlags := time -f "time results: real - %E , user - %U user,system - %S ,memory %M KiB"
 
 TempFolder := /tmp/
+TempFile := /tmp/out.ll
 
 Libs := -ldl -lpthread -mf16c -lm
 
@@ -51,8 +52,8 @@ halfvoid:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 libs2/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o out.ll -cache /tmp/HVCache.zip
-	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
+	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	clang -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 

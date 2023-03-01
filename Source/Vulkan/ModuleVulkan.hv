@@ -485,16 +485,16 @@ ModuleVulkan := class extend ModuleInterface
 						str := StrCopy(strm.GetString().Str())
 
 						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
-						start := TokenSymbol(StringSpan("{}"),1)
+						start := new TokenSymbol(StringSpan("{}"),1) //TODO memory leak
 						start.Down = token
 						tt := token
 						while tt != null
 						{
-							tt.Up = start&
+							tt.Up = start
 							tt = tt.Right
 						}
 
-						SyntaxCompress(start&,LexHVFileRoot)
+						SyntaxCompress(start,LexHVFileRoot)
 
 						asFunc := TryParseFunction(start.Down.Down.Right.Right)->{BoxFuncTemplate^}
 						assert(asFunc != null)
@@ -689,6 +689,30 @@ ModuleVulkan := class extend ModuleInterface
 		}
 
 		return null
+	}
+	GetType := virtual !(StringSpan name) -> Type^ 
+	{ 
+		cnstName := GetConstString(name.GetString().Str())
+		st := cnstName.NonNullStr()
+
+		if name == "VulkanFunctionsClass"
+		{
+			tp := GetVulkanClass()
+			assert(tp is ConstType)
+			return tp->{ConstType^}.Value
+		}
+		inUnit := Units.TryFind(st)
+		if inUnit != null
+		{
+			if inUnit^ is ConstType
+				return inUnit^->{ConstType^}.Value 
+		}
+		tp := GetModuleType(st)
+		if tp != null
+		{
+			return tp
+		}
+		return null 
 	}
 }
 

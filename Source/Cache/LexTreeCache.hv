@@ -40,6 +40,13 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 		strm.Read(x&,4)
 	}
 
+	tokenCompressed := false
+	if x == 2
+	{
+		tokenCompressed = true
+		strm.Read(x&,4)
+	}
+
 	resToken := Token^
 
 	stSize := s32
@@ -119,6 +126,11 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 			assert(false)
 			
 	}
+
+	if tokenCompressed
+	{
+		TokensParsed.Insert(resToken)
+	}
 	subs := s32
 	strm.Read(subs&,4)
 
@@ -156,6 +168,13 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 		strm.Write(c&,4)
 		strm.Write(itToken.Line.Line&,4)
 	}
+
+	if TokensParsed.Contain(itToken)
+	{
+		x = 2
+		strm.Write(x&,4)
+	}
+
 	subs := s32
 	itr := itToken.Down
 	while itr != null

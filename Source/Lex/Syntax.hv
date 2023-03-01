@@ -151,6 +151,10 @@ SyntaxCompress := !(Token^ begin, PriorityBagOld^ bag) -> bool
 {
 	if begin == null return true
 
+	if TokensParsed.Contain(begin)
+		return true
+	TokensParsed.Insert(begin)
+
 	metChange := bool
 	GotWork := true
 

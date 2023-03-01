@@ -142,6 +142,7 @@ BoxFile := class extend BoxUnit
 				{
 					CheckAppendHolder(iter)
 				}else{
+					printf("some error %s\n",iter.GetValue())
 					iter.Print(0)
 					iter.EmitError("Unknown object")
 				}

@@ -63,6 +63,20 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 			assert(false)
 		}
 	}
+
+	for sp : CodeSpaces
+	{
+		for module : sp.Modules
+		{
+			tp := module.GetType(name)
+			if tp != null
+			{
+				tp2 := GetConstType(tp)
+				TypesDatabase[name] = tp2
+				return tp2
+			}
+		}
+	}
 	return null
 }
 

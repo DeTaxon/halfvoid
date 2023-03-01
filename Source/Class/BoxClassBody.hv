@@ -286,16 +286,16 @@ BoxClassBody := class extend BoxClassPoison
 							}else {
 								// typ2 := ParseType(itm.Down.Right)
 								// if typ2 == null
-								// 	itm.EmitError("Unknow object")
+								// 	itm.EmitError("Unknown object")
 								exeObj := TryGetExeCall(itm)
 								if exeObj == null
-									itm.EmitError("Unknow object")	
+									itm.EmitError("Unknown object")	
 								if exeObj is in BoxExeConstObj and isVirtual
 								{
 									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
 									PreVTableVars[name] = newVal
 								}else{
-									itm.EmitError("Unknow object")
+									itm.EmitError("Unknown object")
 								}
 							}
 						}
