@@ -3,12 +3,14 @@ GUsingCacheFile := bool
 
 CFile := CacheFile^
 RegsCache := CacheStringModule^
+LexFileCache := CacheFileModule^
 
 OpenCacheFile := !(char^ fileName) -> void
 {
 	GUsingCacheFile = true
 	CFile = new CacheFile(fileName)
 	RegsCache = CFile.GetStringModule("RegExp")
+	LexFileCache = CFile.GetFileModule("LexFiles")
 }
 
 
@@ -17,7 +19,7 @@ TryGetCacheOfFile := !(vRepoFile^ fl) -> Blob^
 	if not GUsingCacheFile
 		return null
 
-	return CFile.TryGetCacheValue(fl)
+	return LexFileCache.TryGetCacheValue(fl)
 }
 
 

@@ -7,14 +7,14 @@ SerializeTokens := !(vRepoFile^ fil,Token^ tkn) -> void
 	if tkn == null
 	{
 		data := new BlobOnVector(0)
-		CFile.WriteCacheOfFile(fil,data)
+		LexFileCache.WriteCacheOfFile(fil,data)
 	}else{
 		echo := TEchoStream
 		SerializeTokenInner(echo&,tkn,streamedLine)
 
 		data := new BlobOnVector(echo.Size())
 		echo.Read(data.GetPointer()->{char^},data.Size())
-		CFile.WriteCacheOfFile(fil,data)
+		LexFileCache.WriteCacheOfFile(fil,data)
 	}
 
 }
