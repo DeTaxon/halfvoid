@@ -6,28 +6,67 @@ CacheFile := class extend TGCObject
 	{
 		zipFile = new ZipRWFile(fName)
 
-		blobCacheMeta := zipFile.TryGetFile("BlobCache.txt")
-		if blobCacheMeta != null
-		{
-			mp := blobCacheMeta.GetMap()
-
-			spn := StringSpan(mp.Get()->{char^},mp.Size())
-
-			spn.DivideStr("\n", x ==> {
-				while true
-				{
-					val := x
-					yield void
-					CacheBlobList.Emplace()
-					newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
-					newEntry.key = val.GetString()
-					newEntry.fileName = x.GetString()
-					yield void
-				}
-			})
-		}
 	}
 
+
+	Flush := !() -> void
+	{
+		for it : stringModules
+		{
+			it->{CacheStringModule^}.Flush()
+		}
+		zipFile.Flush()
+	}
+	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
+	{
+		inRep := zipFile.TryGetFile(fl.GetPath())
+		if inRep == null
+			return null
+		fileTime := fl.GetModificationTime()
+		cacheTime := inRep.GetModificationTime()
+
+		if (fileTime - cacheTime)->{s64} > 0 //TODO fileTime > cacheTime does not work
+		{
+			return null
+		}else{
+			mp := inRep.GetMap()
+			resBlob := new BlobOnVector(mp.Size())
+			if mp.Size() != 0
+				memcpy(resBlob.GetPointer(),mp.Get(),mp.Size())
+			return resBlob
+		}
+	}
+	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
+	{
+		itPath := fl.GetPath()
+		zipFile.WriteFile(itPath,data)
+	}
+
+	stringModules := AVLMap.{String^,void^} //TODO way to make weak references
+	GetStringModule := !(StringView name) -> CacheStringModule^
+	{
+		stName := name.GetString()
+		
+		if stringModules.Contain(stName)
+			return stringModules[stName]->{CacheStringModule^}
+
+		result = new CacheStringModule(stName,this&)
+		stringModules[stName] = result
+	}
+}
+
+CacheStringModule := class extend TGCObject
+{
+	base := CacheFile^
+	moduleName := String^
+
+	this := !(String^ nm, CacheFile^ bs) -> void
+	{
+		base = bs
+		moduleName = nm
+
+		LoadMeta()
+	}
 	CacheChangedBlobData := bool
 	CacheBlobList  := List.{BlobCacheData} //TODO Optimize
 	CacheBlobByString := !(StringView value, !()&->Blob^  cb) -> Blob^
@@ -38,7 +77,7 @@ CacheFile := class extend TGCObject
 			{
 				if not it.loaded
 				{
-					fileInZip := zipFile.TryGetFile(it.fileName)
+					fileInZip := base.zipFile.TryGetFile(it.fileName)
 					assert( fileInZip != null)
 					if fileInZip != null
 					{
@@ -91,7 +130,29 @@ CacheFile := class extend TGCObject
 	
 		return newBlob
 	}
+	LoadMeta := !() -> void
+	{
+		blobCacheMeta := base.zipFile.TryGetFile("BlobCache.txt")
+		if blobCacheMeta != null
+		{
+			mp := blobCacheMeta.GetMap()
 
+			spn := StringSpan(mp.Get()->{char^},mp.Size())
+
+			spn.DivideStr("\n", x ==> {
+				while true
+				{
+					val := x
+					yield void
+					CacheBlobList.Emplace()
+					newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
+					newEntry.key = val.GetString()
+					newEntry.fileName = x.GetString()
+					yield void
+				}
+			})
+		}
+	}
 	Flush := !() -> void
 	{
 		if CacheChangedBlobData
@@ -103,7 +164,7 @@ CacheFile := class extend TGCObject
 			{
 				if it.changed
 				{
-					zipFile.WriteFile(it.fileName,it.value)
+					base.zipFile.WriteFile(it.fileName,it.value)
 				}
 				MetaCache << it.key << "\n" << it.fileName << "\n"
 			}
@@ -111,34 +172,9 @@ CacheFile := class extend TGCObject
 			tempBlob := new BlobOnVector(MetaCache.Size())
 			MetaCache.Read(tempBlob.GetPointer(),tempBlob.Size())
 			
-			zipFile.WriteFile("BlobCache.txt",tempBlob)
+			base.zipFile.WriteFile("BlobCache.txt",tempBlob)
 		}
 	}
-	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
-	{
-		inRep := zipFile.TryGetFile(fl.GetPath())
-		if inRep == null
-			return null
-		fileTime := fl.GetModificationTime()
-		cacheTime := inRep.GetModificationTime()
-
-		if (fileTime - cacheTime)->{s64} > 0 //TODO fileTime > cacheTime does not work
-		{
-			return null
-		}else{
-			mp := inRep.GetMap()
-			resBlob := new BlobOnVector(mp.Size())
-			if mp.Size() != 0
-				memcpy(resBlob.GetPointer(),mp.Get(),mp.Size())
-			return resBlob
-		}
-	}
-	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
-	{
-		itPath := fl.GetPath()
-		zipFile.WriteFile(itPath,data)
-	}
-
 }
 
 BlobCacheData := class

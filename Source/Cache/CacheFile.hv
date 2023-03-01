@@ -1,13 +1,14 @@
 
 GUsingCacheFile := bool
-GCacheFile := ZipRWFile^
+
 CFile := CacheFile^
+RegsCache := CacheStringModule^
 
 OpenCacheFile := !(char^ fileName) -> void
 {
 	GUsingCacheFile = true
 	CFile = new CacheFile(fileName)
-	GCacheFile = CFile.zipFile
+	RegsCache = CFile.GetStringModule("RegExp")
 }
 
 
@@ -15,22 +16,8 @@ TryGetCacheOfFile := !(vRepoFile^ fl) -> Blob^
 {
 	if not GUsingCacheFile
 		return null
-	inRep := GCacheFile.TryGetFile(fl.GetPath())
-	if inRep == null
-		return null
-	fileTime := fl.GetModificationTime()
-	cacheTime := inRep.GetModificationTime()
 
-	if (fileTime - cacheTime)->{s64} > 0 //TODO fileTime > cacheTime does not work
-	{
-		return null
-	}else{
-		mp := inRep.GetMap()
-		resBlob := new BlobOnVector(mp.Size())
-		if mp.Size() != 0
-			memcpy(resBlob.GetPointer(),mp.Get(),mp.Size())
-		return resBlob
-	}
+	return CFile.TryGetCacheValue(fl)
 }
 
 
@@ -42,7 +29,7 @@ CacheBlobByStringReg := !(StringView value, !()&-> BoxRawData^ cb) -> BoxRawData
 
 	cb2 := cb
 	resBlob := BoxRawData^
-	blb := CFile.CacheBlobByString(value,() ==> {
+	blb := RegsCache.CacheBlobByString(value,() ==> {
 		resBlob = cb2()
 		bl := new BlobOnVector(resBlob.ValueSize)
 		memcpy(bl.GetPointer(),resBlob.Value,bl.Size())
@@ -63,8 +50,6 @@ FinilizeCache := !() -> void
 	if not GUsingCacheFile
 		return void
 	
-	CFile.Flush()
-
 	for it : CodeSpaces
 	{
 		for fl : it.Files
@@ -75,7 +60,7 @@ FinilizeCache := !() -> void
 			}
 		}
 	}
-	GCacheFile.Flush()
+	CFile.Flush()
 }
 
 
