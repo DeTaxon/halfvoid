@@ -52,17 +52,6 @@ AppendClass BoxFuncBody
 				return GetExchange2(c1,it.GetVarType(),false)
 			})
 		}
-		// if containGC
-		// {
-		// 	InternalsHatch.Await()
-
-		// 	objs5 := CheckExeDownList
-		// 	objs5.Push(CapturedVarsTuple.CreateCall())
-		// 	cnsts := List.{BoxExeConstObj^}
-		// 	cleanFunc := GCleanGCClass.GetFunc(objs5,cnsts)
-		// 	assert(cleanFunc != null)
-		// 	CapturedVarsCleanup = cleanFunc.CreateCall(objs5)
-		// }
 	}
 	CreateGetCaptureCall := !() -> void
 	{

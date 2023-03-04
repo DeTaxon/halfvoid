@@ -60,8 +60,8 @@ JsonNode := class
 
 	"[]" := !(StringView^ walkPath) -> JsonNode^
 	{
-		itms := List.{StringSpan}
-		walkPath.DivideStr(" ",x ==> { itms.Push(x)}) //TODO memory 
+		itms := HybridQueue.{StringSpan,20}
+		walkPath.DivideStr(" ",x ==> { itms.Push(x)}) 
 		iter  := this&
 		for it : itms
 		{

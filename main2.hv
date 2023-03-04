@@ -1,29 +1,7 @@
-//TODO
-// after new stable version, in winapi.clib make it back to WriteLine
 
 main := !(char^[] args) -> int
 {
-	cb := () ==>
-	{
-		return new Blob
-	}
-	cb()
 	return 0
-	a := "abc"reg
-	b := "abd"reg
-
-	fl := new ZipRWFile(StringSpan("zip.zip"))
-
-	if args.Size() == 2
-	{
-		TestData := Vector.{u8}(5)
-		memcpy(TestData.GetPointer(),"world",5)
-		fl.WriteFileOld(StringSpan("Regexp/test2.txt"),TestData&)
-	}else{
-		TestData := Vector.{u8}(5)
-		memcpy(TestData.GetPointer(),"hello",5)
-		fl.WriteFileOld(StringSpan("Regexp/test.txt"),TestData&)
-	}
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
 	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
@@ -42,6 +20,38 @@ main := !(char^[] args) -> int
 //if file already exists
 //throw exceptions when file cannot be created, no space on disk, incorrect file format
 
+//TypeInfo := type_trait 
+//{
+//	TypeSize(),
+//	"<=>",
+//	delete
+//}
+//
+//List := class .{generic TypeInfo T} extend T[]
+//{
+//	node := class
+//	{
+//		next := node^
+//		prev := node^
+//		data := T
+//	}
+//
+//	createNode := !() -> node^
+//	{
+//		//return malloc(node->TypeSize + T.TypeSize)
+//		return new node 
+//	}
+//
+//	"for" := generator () -> T
+//	{
+//		itr := start
+//		while itr != null
+//		{
+//			yield itr.data
+//			itr = itr.next
+//		}
+//	}
+//}
 
 //#Module
 //{
