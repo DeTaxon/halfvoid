@@ -324,8 +324,29 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,bool expectExac) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
-	defer priorityes.Destroy()
 
+	CalculatePriorities(x,Objs,consts,priorityes)
+
+	if priorityes.Size() == 0
+		return null
+
+	bestI := 0
+	for i : x.Size()
+	{
+		if priorityes[i] < priorityes[bestI]
+			bestI = i
+	}
+	if expectExac
+	{
+		if priorityes[bestI] != 0
+			return null
+	}
+	if priorityes[bestI] == CmpNoExchange
+		return null
+	return x[bestI]
+}
+CalculatePriorities := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,HybridQueue.{int,13} priorityes) -> void
+{
 	for h : x
 	{
 		if h is in BoxFunc
@@ -359,23 +380,6 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 			assert(false)
 		}
 	}
-	if priorityes.Size() == 0
-		return null
-
-	bestI := 0
-	for i : x.Size()
-	{
-		if priorityes[i] < priorityes[bestI]
-			bestI = i
-	}
-	if expectExac
-	{
-		if priorityes[bestI] != 0
-			return null
-	}
-	if priorityes[bestI] == CmpNoExchange
-		return null
-	return x[bestI]
 }
 
 CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxExeObj^
@@ -403,6 +407,10 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 
 	if callItem == null
 		return null
+	return makeFuncCall(callItem,Objs,consts)
+}
+makeFuncCall := !(BoxUnit^ callItem, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+{
 	if callItem is ConstVar
 	{
 		cn := callItem->{ConstVar^}
@@ -419,6 +427,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 	{
 		return callItem->{BoxFunc^}.CreateCall(Objs)
 	}
+	return null
 }
 
 oneGonnaOnly := task_local bool

@@ -44,9 +44,11 @@ Token := class
 			if it is ConstVar
 			{
 				cv := it->{ConstVar^}
-				if cv is BoxExeInt
+				if cv.Value is BoxExeInt
 				{
 					ln << "var " << cv.Name << " = " << cv.Value->{BoxExeInt^}.Value<< "\n"
+				}else if cv.Value is BoxExeString {
+					ln << "var " << cv.Name << " = <" << cv.Value->{BoxExeString^}.val << ">\n"
 				}else{
 					ln << "var " << cv.Name << " = unknown\n"
 				}

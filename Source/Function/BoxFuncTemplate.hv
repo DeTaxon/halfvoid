@@ -19,6 +19,8 @@ BoxFuncTemplate := class extend BoxUnit
 	{
 		fTyp := ToFuncType(objs,consts)
 
+		assert(fTyp != null)
+
 		pri := CheckPriority(fTyp,objs,consts)
 
 		if pri == CmpNoExchange

@@ -11,7 +11,9 @@ CreateBuiltinsBool := !() -> void
 	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
 	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
 	bSpace.Functions[StringSpan(". not")].Push(new BuiltInBoolNot() )
+	bSpace.Functions[StringSpan("<=>")].Push(new BuildInSpaceShipBool() )
 }
+
 BuiltInBoolNot := class extend BoxFuncCommon
 {
 	this := !() -> void
@@ -33,5 +35,33 @@ BuiltInBoolNot := class extend BoxFuncCommon
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
+	}
+}
+BuildInSpaceShipBool := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		tp := GTypeBool
+		SetType(GetFuncType(![tp,tp],GTypeInt))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		tp := this.GetType()->{TypeFunc^}.Params[0].ItType
+		lst[0].PrintPre(f)
+		lst[1].PrintPre(f)
+
+		f^ << "%Xr" << resId << " = xor i1 " 
+		lst[0].PrintUse(f)
+		f^ << " , "
+		lst[1].PrintUse(f)
+		f^ << "\n"
+
+
+		f^ << "%Possible" << resId << " = select i1 "
+		lst[1].PrintUse(f)
+		f^ << " , i32 1, i32 -1\n"
+
+		f^ << "%T" << resId << " = select i1 %Xr" << resId << " , i32 0, i32 %Possible" << resId << "\n"
+
 	}
 }

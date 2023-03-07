@@ -43,7 +43,13 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 	if oper in ![">",">=","<","<=","==","!="]
 	{
-		return innertTryGetCompareOverSpaceship(oper,tmpList,itm)?
+		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)
+		//if res == null
+		//{
+		//	itm.EmitError("Operator not found\n")
+		//}
+		if res != null
+			return res
 	}
 
 	res1 := innerTryGetInfixCall(oper,tmpList,itm)
@@ -51,41 +57,120 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		return res1
 
 	return innerTryGetOperMeta(itm)?
-	
-
 }
 
 innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^
 {
-	mdlCall := innerTryGetInfixCall(StringSpan("<=>"),lst,debugItem)
-	if mdlCall != null
-	{
-		objs7 := CheckExeDownList
-		objs7.Push(mdlCall)
+	return TryComputeOperators(oper,lst)?
+	spc := StringSpan("<=>")
 
-		zero := GetExeInt(0)->{BoxExeObj^}
-		if mdlCall.GetType() != GTypeInt
+	operList := HybridQueue.{StringSpan,2}
+	operList.Push(oper)
+	operList.Push(spc)
+
+	usingSpaceship := false
+	resCall := BoxUnit^
+
+
+
+	GetItemGlobal2(operList&,(funcList,names) ==> bool {
+		priorityes := HybridQueue.{int,13}
+		consts := List.{BoxExeConstObj^}
+
+		CalculatePriorities(funcList,lst,consts,priorityes)
+
+		bestMain := BoxUnit^
+		mainP := CmpNoExchange
+		bestMaybe := BoxUnit^
+		maybeP := mainP
+
+		if priorityes.Size() != 0
 		{
-			zero = GetExchange(zero,mdlCall.GetType())
+			for pri,i : priorityes
+			{
+				if pri == CmpNoExchange
+					continue
+				if names[i] == "<=>"
+				{
+					if pri < maybeP
+					{
+						maybeP = pri
+						bestMaybe = funcList[i]
+					}
+				}else{
+					if pri < mainP
+					{
+						mainP = pri
+						bestMain = funcList[i]
+					}
+				}
+			}
+			if mainP != CmpNoExchange and mainP <= maybeP
+			{
+				resCall = bestMain
+				return true
+			}
+			if maybeP != CmpNoExchange
+			{
+				usingSpaceship = true
+				resCall = bestMaybe
+				return true
+			}
 		}
-		if zero == null
-			return null
-		objs7.Push(zero)
-		switch oper
+		return false
+	})
+
+	if resCall != null
+	{
+		cnsts := List.{BoxExeConstObj^}
+		result = makeFuncCall(resCall,lst,cnsts) 
+		if usingSpaceship
 		{
-			case ">"
-				return innerTryGetInfixCall(StringSpan(">"),objs7,debugItem)
-			case ">="
-				return innerTryGetInfixCall(StringSpan(">="),objs7,debugItem)
-			case "<"
-				return innerTryGetInfixCall(StringSpan("<"),objs7,debugItem)
-			case "<="
-				return innerTryGetInfixCall(StringSpan("<="),objs7,debugItem)
-			case "=="
-				return innerTryGetInfixCall(StringSpan("=="),objs7,debugItem)
-			case "!="
-				return innerTryGetInfixCall(StringSpan("!="),objs7,debugItem)
+			result = spaceshipConvert(oper,result,debugItem)
 		}
+		return void
+	}
+	oneList := CheckExeDownList
+	noConsts := List.{BoxExeConstObj^}
+	oneList.Push(lst[1])
+	result = innerTryGetMethodCall(spc,lst[0],oneList,noConsts)
+	if result != null
+	{
+		result = spaceshipConvert(oper,result,debugItem)
+		return void
+	}
+	return innerTryGetMethodCall(oper,lst[0],oneList,noConsts)?
+}
+
+spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> BoxExeObj^
+{
+	result = oldCall
+
+	objs7 := CheckExeDownList
+	objs7.Push(result)
+
+	zero := GetExeInt(0)->{BoxExeObj^}
+	if result.GetType() != GTypeInt
+	{
+		zero = GetExchange(zero,result.GetType())
+	}
+	if zero == null //TODO emit error?
+		return null
+	objs7.Push(zero)
+	switch oper
+	{
+		case ">"
+			return innertTryGetCompareOverSpaceship(StringSpan(">"),objs7,debugItem)
+		case ">="
+			return innertTryGetCompareOverSpaceship(StringSpan(">="),objs7,debugItem)
+		case "<"
+			return innertTryGetCompareOverSpaceship(StringSpan("<"),objs7,debugItem)
+		case "<="
+			return innertTryGetCompareOverSpaceship(StringSpan("<="),objs7,debugItem)
+		case "=="
+			return innertTryGetCompareOverSpaceship(StringSpan("=="),objs7,debugItem)
+		case "!="
+			return innertTryGetCompareOverSpaceship(StringSpan("!="),objs7,debugItem)
 	}
 }
 
@@ -137,7 +222,7 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 			resFunc = GetBestFunc(fncs,lst2,cnsts,false)
 		})
 		if resFunc == null
-			errToken.EmitError("can not get function")
+			return null
 		if resFunc is in BoxFunc
 		{
 			return resFunc->{BoxFunc^}.CreateCall(lst2)
