@@ -1,8 +1,11 @@
 
 main := !(char^[] args) -> int
 {
-	x := max(1.0,2.0)
-	printf("hm %f %f\n",max(1.0,2.0),min(1.0,2.0))
+	x := u64
+	y := u64
+
+	y = 1
+	printf("test %p\n", testCmp(x,y))
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }

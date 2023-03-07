@@ -233,6 +233,47 @@ BuiltInIntSuffixF := class extend BoxFuncCommon
 		return GetExchange(objs[0],GTypeFloat)
 	}
 }
+
+BuiltinSpaceShipUnsigned := class extend BoxFuncCommon
+{
+	isSigned := bool
+	this := !(Type^ tp,bool inIsSigned) -> void
+	{
+		isSigned = inIsSigned
+		SetType(GetFuncType(![tp,tp],GTypeInt))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		tp := this.GetType()->{TypeFunc^}.Params[0].ItType
+		lst[0].PrintPre(f)
+		lst[1].PrintPre(f)
+
+		f^ << "%EqCheck" << resId << " = icmp eq "
+		tp.PrintType(f)
+		lst[0].PrintUse(f)
+		f^ << " , "
+		lst[1].PrintUse(f)
+		f^ << "\n"
+
+		f^ << "%BiggerCheck" << resId << " = icmp "
+		if isSigned
+		{
+			f^ << "sgt "
+		}else{
+			f^ << "ugt "
+		}
+		tp.PrintType(f)
+		lst[0].PrintUse(f)
+		f^ << " , "
+		lst[1].PrintUse(f)
+		f^ << "\n"
+
+		f^ << "%Possible" << resId << " = select i1 %BiggerCheck" << resId << " , i32 1, i32 -1\n"
+		f^ << "%T" << resId << " = select i1 %EqCheck" << resId << " , i32 0, i32 %Possible" << resId << "\n"
+
+	}
+}
+
 CreateBuiltinsInt := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
@@ -275,12 +316,7 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan(". -")].Push(new BuiltInIntMinus(unarMinusType,"sub","0") )
 
-		if isSigned
-		{
-			bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
-		}else{
-			bSpace.Functions[StringSpan("<=>")].Push(new BuiltInIntBase(strt,"sub") ) //TODO case for unsigned int
-		}
+		bSpace.Functions[StringSpan("<=>")].Push(new BuiltinSpaceShipUnsigned(x,isSigned))
 
 		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
 
