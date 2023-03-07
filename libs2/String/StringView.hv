@@ -78,3 +78,13 @@ StringView := class extend TGCObject
 		return -1
 	return 1
 }
+"<=>" := !(char^ a, char^ b) -> int
+{
+	if a->{void^} == null and b->{void^} == null
+		return 0
+	if a->{void^} == null
+		return -1
+	if b->{void^} == null
+		return 1
+	return strcmp(a,b)
+}

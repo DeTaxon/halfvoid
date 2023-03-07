@@ -1,0 +1,413 @@
+TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
+{
+	if itm == null return null
+	if itm.Down == null return null
+	if itm.Down.Right == null return null
+	if itm.Down.Right.Right == null return null
+
+	if itm.Down.Right.GetValue() == "not" and itm.Down.Right.Right.GetValue() == "in"
+	{
+		lst3 := CheckExeDownList
+		lst3.Push(TryGetExeCall(itm.Down))
+		lst3.Push(TryGetExeCall(itm.Down.Right.Right.Right))
+
+		res := innerTryGetInfixCall(StringSpan("in"),lst3,itm)
+		if res == null
+			return null
+
+		lst4 := CheckExeDownList
+		lst4.Push(res)
+		cnsts := List.{BoxExeConstObj^}
+		return CreateFuncCall(StringSpan(". not"),lst4,cnsts)
+	}
+
+	if itm.Down.Right.Right.Right != null return null
+
+	if not HVOperators.Contain(itm.Down.Right.GetValue())
+		return null
+	if itm.Down.Right.GetValue() == "->" return null
+
+	tmpList := CheckExeDownList
+
+	oper := itm.Down.Right.GetValue()
+
+	if oper == "or" or oper == "and"
+	{
+		return TryGetAndOrCall(itm)
+	}
+
+
+	tmpList.Push(TryGetExeCall(itm.Down))
+	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
+
+
+	if oper in ![">",">=","<","<=","==","!="]
+	{
+		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)
+		//if res == null
+		//{
+		//	itm.EmitError("Operator not found\n")
+		//}
+		if res != null
+			return res
+	}
+
+	res1 := innerTryGetInfixCall(oper,tmpList,itm)
+	if res1 != null
+		return res1
+
+	return innerTryGetOperMeta(itm)?
+}
+
+innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^
+{
+	return TryComputeOperators(oper,lst)?
+	spc := StringSpan("<=>")
+
+	operList := HybridQueue.{StringSpan,2}
+	operList.Push(oper)
+	operList.Push(spc)
+
+	usingSpaceship := false
+	resCall := BoxUnit^
+	resCallPriority := int
+
+	bestMain := BoxUnit^
+	mainP := CmpNoExchange
+	bestMaybe := BoxUnit^
+	maybeP := mainP
+
+	GetItemGlobal2(operList&,(funcList,names) ==> bool {
+		priorityes := HybridQueue.{int,13}
+		consts := List.{BoxExeConstObj^}
+
+		CalculatePriorities(funcList,lst,consts,priorityes)
+
+
+		found := false
+
+		if priorityes.Size() != 0
+		{
+			for pri,i : priorityes
+			{
+				if pri == CmpNoExchange
+					continue
+				if names[i] == "<=>"
+				{
+					if pri < maybeP
+					{
+						maybeP = pri
+						bestMaybe = funcList[i]
+						found = true
+					}
+				}else{
+					if pri < mainP
+					{
+						mainP = pri
+						bestMain = funcList[i]
+						found = true
+					}
+				}
+			}
+			return found
+		}
+		return false
+	})
+
+	vrObj := lst[0]
+	space := FieldSpace^
+
+	if lst[0] is FieldSpaceHolder
+	{
+		hldr := lst[0]->{FieldSpaceHolder^}
+		vrObj = hldr.GetObject()
+		space = hldr.GetFieldSpace()
+	}
+
+
+	clsType := vrObj.GetType()
+
+	if clsType is in TypePoint
+	{
+		clsType = clsType.Base
+	}
+
+	hmm := CmpNoExchange
+
+	if clsType is TypeClass
+	{
+		cls := clsType->{TypeClass^}.ToClass //todo GetClass
+		callItem := BoxUnit^
+		funcs := HybridQueue.{BoxUnit^,10}
+		funcNames := HybridQueue.{StringSpan,20}
+		if space != null
+		{
+			cls.GetMethodsInFields(oper,space, x ==> {
+				for it : x
+				{
+					funcs.Push(it)
+					funcNames.Push(oper)
+				}
+			})
+			cls.GetMethodsInFields(spc,space, x ==> {
+				for it : x
+				{
+					funcs.Push(it)
+					funcNames.Push(spc)
+				}
+			})
+		}else{
+			cls.GetMethods(oper, x ==> {
+				for it : x
+				{
+					funcs.Push(it)
+					funcNames.Push(oper)
+				}
+			})
+			cls.GetMethods(spc,x ==> {
+				for it : x
+				{
+					funcs.Push(it)
+					funcNames.Push(spc)
+				}
+			})
+		}
+		if funcs.Size() != 0
+		{
+			priorityes := HybridQueue.{int,13}
+			consts := List.{BoxExeConstObj^}
+
+			CalculatePriorities(funcs,lst,consts,priorityes)
+			for pri,i : priorityes
+			{
+				if pri == CmpNoExchange
+					continue
+				if funcNames[i] == "<=>"
+				{
+					if pri < maybeP
+					{
+						//maybeP = pri
+						//bestMaybe = funcs[i]
+						hmm = min(hmm,pri)
+					}
+				}else{
+					if pri < mainP
+					{
+						//mainP = pri
+						//bestMain = funcs[i]
+						hmm = min(hmm,pri)
+					}
+				}
+			}
+		}
+		lst[0] = vrObj
+	}
+
+
+	if mainP != CmpNoExchange and mainP <= maybeP
+	{
+		resCall = bestMain
+		resCallPriority = mainP
+	}else if maybeP != CmpNoExchange
+	{
+		usingSpaceship = true
+		resCall = bestMaybe
+		resCallPriority = maybeP
+	}
+
+	if resCall != null and hmm != CmpNoExchange
+	{
+		printf("WTF %s %s\n",lst[0].GetType().GetBADStr(),lst[1].GetType().GetBADStr())
+	}
+
+	if resCall != null
+	{
+		cnsts := List.{BoxExeConstObj^}
+		result = makeFuncCall(resCall,lst,cnsts) 
+		if usingSpaceship
+		{
+			result = spaceshipConvert(oper,result,debugItem)
+		}
+		return void
+	}
+	oneList := CheckExeDownList
+	noConsts := List.{BoxExeConstObj^}
+	oneList.Push(lst[1])
+	result = innerTryGetMethodCall(spc,lst[0],oneList,noConsts)
+	if result != null
+	{
+		result = spaceshipConvert(oper,result,debugItem)
+		return void
+	}
+	return innerTryGetMethodCall(oper,lst[0],oneList,noConsts)?
+}
+
+spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> BoxExeObj^
+{
+	result = oldCall
+
+	objs7 := CheckExeDownList
+	objs7.Push(result)
+
+	zero := GetExeInt(0)->{BoxExeObj^}
+	if result.GetType() != GTypeInt
+	{
+		zero = GetExchange(zero,result.GetType())
+	}
+	if zero == null //TODO emit error?
+		return null
+	objs7.Push(zero)
+	switch oper
+	{
+		case ">"
+			return innertTryGetCompareOverSpaceship(StringSpan(">"),objs7,debugItem)
+		case ">="
+			return innertTryGetCompareOverSpaceship(StringSpan(">="),objs7,debugItem)
+		case "<"
+			return innertTryGetCompareOverSpaceship(StringSpan("<"),objs7,debugItem)
+		case "<="
+			return innertTryGetCompareOverSpaceship(StringSpan("<="),objs7,debugItem)
+		case "=="
+			return innertTryGetCompareOverSpaceship(StringSpan("=="),objs7,debugItem)
+		case "!="
+			return innertTryGetCompareOverSpaceship(StringSpan("!="),objs7,debugItem)
+	}
+}
+
+innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) -> BoxExeObj^
+{
+	if lst[0] == null or lst[1] == null
+	{
+		return null
+	}
+	assert(lst.Size() == 2)
+
+	tmpList := CheckExeDownList
+	if oper == "in"
+	{
+		tmpList.Push(lst[1])
+		tmpList.Push(lst[0])
+	}else{
+		tmpList.Push(lst[0])
+		tmpList.Push(lst[1])
+	}
+
+	if tmpList[0] is FieldSpaceHolder
+	{
+		holder := tmpList[0]->{FieldSpaceHolder^}
+
+		lst2 := CheckExeDownList
+		for it,i : tmpList
+		{
+			if i == 0
+			{
+				lst2.Push(holder.GetObject())
+			}else{
+				lst2.Push(it)
+			}
+		}
+		
+		holderType := holder.GetObject().GetType()
+		cls := BoxClass^
+		if holderType is TypeClass
+		{
+			cls = holderType->{TypeClass^}.ToClass
+		}else{
+			assert(holderType is in TypePoint and holderType.Base is TypeClass)
+			cls = holderType.Base->{TypeClass^}.ToClass
+		}
+		resFunc := BoxUnit^
+		cls.GetMethodsInFields(oper,holder.GetFieldSpace(),(fncs) ==> {
+			cnsts := List.{BoxExeConstObj^}
+			resFunc = GetBestFunc(fncs,lst2,cnsts,false)
+		})
+		if resFunc == null
+			return null
+		if resFunc is in BoxFunc
+		{
+			return resFunc->{BoxFunc^}.CreateCall(lst2)
+		}else{
+			errToken.EmitError("Unknown function recived, software error")
+		}
+		assert(false)
+	}
+
+	if tmpList[0].GetType() is in TypeClass
+	{
+		cnsts := List.{BoxExeConstObj^}
+		objs8 := CheckExeDownList
+		objs8.Push(tmpList[1])
+		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
+	}
+	return TryComputeOperators(oper,tmpList)?
+
+	consts := List.{BoxExeConstObj^}
+	return CreateFuncCall(oper,tmpList,consts)?
+
+
+	return null
+}
+
+TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
+{
+	if oper in !["==","!="]
+	{
+		if objs.Size() != 2
+			return null
+
+		c1 := objs[0]
+		c2 := objs[1]
+
+		if c1 == c2
+		{
+			if oper == "=="
+				return GBoolTrue
+			return GBoolFalse
+		}
+		if c1 == GObjNone or c2 == GObjNone
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+
+		if not objs[^].IsConst
+			return null
+
+
+		if c1 is BoxExeString and c2 is BoxExeString
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+
+		if c1 is BoxExeInt and c2 is BoxExeInt
+		{
+			if oper == "=="
+				return GBoolFalse
+			return GBoolTrue
+		}
+
+	}
+	if oper == "<=>"
+	{
+		if objs.Size() != 2
+			return null
+
+		c1 := objs[0]
+		c2 := objs[1]
+
+		if c1 == c2
+		{
+			return GetExeInt(0)
+		}
+		if c1.GetType() == c2.GetType()
+		{
+			if c1 is BoxExeString and c2 is BoxExeString
+			{
+				return GetExeInt(c1->{BoxExeString^}.val <=> c2->{BoxExeString^}.val)
+			}
+		}
+	}
+}
