@@ -33,4 +33,12 @@ CacheFileModule := class extend TGCObject
 		itPath := StringConcat(moduleName,"/",fl.GetPath())
 		base.zipFile.WriteFile(itPath,data)
 	}
+	GetCacheValue := !(vRepoFile^ fl, !()&->Blob^ cb) -> Blob^
+	{
+		inDB := TryGetCacheValue(fl)
+		if inDB != null
+			return inDB
+		result = cb()
+		WriteCacheOfFile(fl,result)
+	}
 }

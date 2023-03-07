@@ -257,6 +257,8 @@ main := !(char^[] args) -> int
 }
 PrintDeclares := !(Stream^ f) -> void
 {
+	PrintBuildInMinMax(f)
+
 	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
 	f^ << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
@@ -265,8 +267,6 @@ PrintDeclares := !(Stream^ f) -> void
 	f^ << "declare void @longjmp(i8* %abc,i32 %ty) #3\n"
 	f^ << "declare i8* @llvm.eh.sjlj.lsda() #0\n"
 	f^ << "declare void @llvm.debugtrap() #0\n"
-	f^ << "declare i32 @llvm.smin.i32(i32 %a, i32 %b) #0\n"
-	f^ << "declare i32 @llvm.smax.i32(i32 %a, i32 %b) #0\n"
 	f^ << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
 	f^ << "declare i8* @llvm.stacksave() #1\n"
 	f^ << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"

@@ -6,7 +6,7 @@ TILambda := class extend TGCObject
 	}
 
 	getCaptureVar := virtual !() -> void^ { return null }
-	getYieldState := virtual !() -> ref int {  } //TODO assert
+	getYieldState := virtual !() -> ref int { assert(false) }
 	getYieldVars := virtual !() -> void^ { return null }
 	getGCVars := virtual !() -> void^ { return null }
 }
@@ -125,22 +125,6 @@ internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVars
 
 internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple^ CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuple^,YieldVars}
 {
-	if CaptureVars == null
-	{
-		c := CaptureTuple
-
-		i := 0
-		for it : c->AllFields
-		{
-			i += 1
-		}
-		if i != 0
-		{
-			printf("AHA %i\n",i)
-		}
-		assert( i == 0)
-	}
-
 	result.callFunc = fnc
 	result.capPtr = CaptureVars
 }

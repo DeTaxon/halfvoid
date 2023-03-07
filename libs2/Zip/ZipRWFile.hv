@@ -34,13 +34,6 @@ ZipRWFile := class extend TGCObject
 		}
 		return null
 	}
-	WriteFileOld := !(StringView fileName, u8[] data) -> void //TODO remove it
-	{
-		newBlob := new BlobOnVector(data.Size())
-		if data.Size() != 0
-			memcpy(newBlob.GetPointer(),data.GetPointer(),data.Size())
-		this.WriteFile(fileName,newBlob)
-	}
 	WriteFile := !(StringView fileName, Blob^ data) -> void //TODO folder support
 	{
 		fileData.DeleteIf(x => x.fileName == fileName)
@@ -71,6 +64,7 @@ ZipRWFile := class extend TGCObject
 			tpl.0 = it.offsetToFileHeader
 			tpl.1 = it.offsetToFileHeader + it.dataSize + it.fileName.Size() + zipFileHeader->TypeSize
 			BusyPages.SortedPush(tpl)
+			endOfMainData = max(endOfMainData->{int},tpl.1->{int}) //TODO u64 comparetion is not working
 		}
 		freePages := List.{Tuple.{u64,u64}}
 
@@ -256,7 +250,7 @@ ZipRWFile := class extend TGCObject
 				newEn.fhSize = zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
 				dataStart := ptTH->{u8^}[newEn.fhSize]&
 				newEn.offsetToData = dataStart&->{u64^}^ - ptrToFl&->{u64^}^
-				newEn.offsetToFileHeader = ptTH&->{u64^}^ - ptrToFl&->{u64^}^
+				newEn.offsetToFileHeader = cdTable.offsetToFileHeader
 				newEn.dataSize = cdTable.compressedSize
 				newEn.timeModified = loadTime(ptTH.lastModifTime,ptTH.lastModifDate)
 			}else{

@@ -1,19 +1,42 @@
 
 
-BuiltInMinInt := class extend BoxFuncCommon
+BuiltInMinMaxInt := class extend BoxFuncCommon
 {
-	this := !() -> void
+	isSign := bool
+	isMin := bool
+	this := !(Type^ tp,bool isSigned,bool inIsMin) -> void
 	{
-		SetType(GetFuncType(![GTypeInt,GTypeInt],GTypeInt))
+		isSign = isSigned
+		isMin = inIsMin
+		SetType(GetFuncType(![tp,tp],tp))
 	}
 	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
+		tp := GetType()->{TypeFunc^}.ResultType
 		lst[0].PrintPre(f)
 		lst[1].PrintPre(f)
+
+		sign := "u"
+		if isSign 
+			sign = "s"
 		
-		f^ << "%T" << resId << " = call i32 @llvm.smin.i32(i32 "
+		f^ << "%T" << resId << " = call "
+		tp.PrintType(f)
+		f^ << " @llvm."<< sign
+		if isMin{
+			f^ << "min."
+		}else{
+			f^ << "max."
+		}
+		tp.PrintType(f)
+		f^ << "( "
+
+		tp.PrintType(f)
+		f^ << " "
 		lst[0].PrintUse(f)
-		f^ << ",i32 "
+		f^ << ","
+		tp.PrintType(f)
+		f^ << " "
 		lst[1].PrintUse(f)
 		f^ << ")"
 		if DebugMode
@@ -28,44 +51,101 @@ BuiltInMinInt := class extend BoxFuncCommon
 
 		int1 := objs[0]->{BoxExeInt^}.Value
 		int2 := objs[1]->{BoxExeInt^}.Value
-		return GetExeInt(min(int1,int2))
+		if isMin
+		{
+			return GetExeInt(min(int1,int2))
+		}else{
+			return GetExeInt(max(int1,int2))
+		}
 	}
 }
-BuiltInMaxInt := class extend BoxFuncCommon
+
+BuiltInMinMaxFloat := class extend BoxFuncCommon
 {
-	this := !() -> void
+	isMin := bool
+	this := !(Type^ tp,bool inIsMin) -> void
 	{
-		SetType(GetFuncType(![GTypeInt,GTypeInt],GTypeInt))
+		isMin = inIsMin
+		SetType(GetFuncType(![tp,tp],tp))
 	}
 	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
 	{
+		tp := GetType()->{TypeFunc^}.ResultType
 		lst[0].PrintPre(f)
 		lst[1].PrintPre(f)
 		
-		f^ << "%T" << resId << " = call i32 @llvm.smax.i32(i32 "
+		f^ << "%T" << resId << " = call "
+		tp.PrintType(f)
+		f^ << " @llvm."
+		if isMin{
+			f^ << "minnum."
+		}else{
+			f^ << "maxnum."
+		}
+		if tp == GTypeFloat
+		{
+			f^ << "f32"
+		}else{
+			assert(tp == GTypeDouble)
+			f^ << "f64"
+		}
+		f^ << "( "
+
+		tp.PrintType(f)
+		f^ << " "
 		lst[0].PrintUse(f)
-		f^ << ",i32 "
+		f^ << ","
+		tp.PrintType(f)
+		f^ << " "
 		lst[1].PrintUse(f)
 		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	IsExecutable := virtual true
-	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
-	{
-		assert(objs[0] is BoxExeInt)
-		assert(objs[1] is BoxExeInt)
+	//IsExecutable := virtual true
+	//Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//{
+	//	assert(objs[0] is BoxExeInt)
+	//	assert(objs[1] is BoxExeInt)
 
-		int1 := objs[0]->{BoxExeInt^}.Value
-		int2 := objs[1]->{BoxExeInt^}.Value
-		return GetExeInt(max(int1,int2))
-	}
+	//	int1 := objs[0]->{BoxExeInt^}.Value
+	//	int2 := objs[1]->{BoxExeInt^}.Value
+	//	if isMin
+	//	{
+	//		return GetExeInt(min(int1,int2))
+	//	}else{
+	//		return GetExeInt(max(int1,int2))
+	//	}
+	//}
 }
 
 CreateBuiltInMinMax := !() -> void
 {
-	bSpace := CodeSpaces[0]& //TODO maybe move to -1 when it is fully here, and not partly in Min.hv
-	bSpace.Functions[StringSpan("min")].Push(new BuiltInMinInt())
-	bSpace.Functions[StringSpan("max")].Push(new BuiltInMaxInt())
+	bSpace := CodeSpaces[0]& //TODO maybe move to -1 when it is fully here, and not partialy in Min.hv
+
+	ForEachIntType( (x,s) ==> {
+		bSpace.Functions[StringSpan("max")].Push(new BuiltInMinMaxInt(x,s,false))
+		bSpace.Functions[StringSpan("min")].Push(new BuiltInMinMaxInt(x,s,true))
+	})
+	ForEachFloatType (x ==> {
+		bSpace.Functions[StringSpan("max")].Push(new BuiltInMinMaxFloat(x,false))
+		bSpace.Functions[StringSpan("min")].Push(new BuiltInMinMaxFloat(x,true))
+	})
+}
+
+PrintBuildInMinMax := !(Stream^ f) -> void
+{
+	for it : !["i8","i16","i32","i64"]
+	{
+		f^ << "declare " << it << "  @llvm.smin."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"
+		f^ << "declare " << it << "  @llvm.smax."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"
+		f^ << "declare " << it << "  @llvm.umin."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"
+		f^ << "declare " << it << "  @llvm.umax."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"
+	}
+
+	f^ << "declare float     @llvm.minnum.f32(float %Val0, float %Val1)"
+	f^ << "declare double    @llvm.minnum.f64(double %Val0, double %Val1)"
+	f^ << "declare float     @llvm.maxnum.f32(float  %Val0, float  %Val1)"
+	f^ << "declare double    @llvm.maxnum.f64(double %Val0, double %Val1)"
 }
