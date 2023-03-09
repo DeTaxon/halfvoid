@@ -10,14 +10,15 @@ vRepoObject := class extend TGCObject
 
 	GetPath := !() -> String^
 	{
-		
-		itms := List.{vRepoObject^}
+		itms := HybridStack.{vRepoObject^,16}
 		iterUp := this&
 		while iterUp != null
 		{
 			itms.PushFront(iterUp)
 			iterUp = iterUp.upFolder
 		}
+		if itms.Size() > 1
+			itms.Pop()
 		
 		strB := TEchoStream
 		for it,i : itms

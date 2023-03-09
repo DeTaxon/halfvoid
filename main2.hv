@@ -1,11 +1,8 @@
 
 main := !(char^[] args) -> int
 {
-	x := u64
-	y := u64
-
-	y = 1
-	printf("test %p\n", x > y)
+	tst := FSGetFile("Source/main.hv")
+	printf("test %s\n",tst.GetPath().Str())
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
