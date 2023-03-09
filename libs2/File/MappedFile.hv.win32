@@ -61,7 +61,7 @@ MappedFile := class extend TGCObject
 		
 		pA := PAGE_READONLY
 		if flg != FILE_READ pA = PAGE_READWRITE
-		mapId = CreateFileMappingW(hndl,null,pA,fileSize&->{u32^}[1],fileSize&->{u32^}[0],null) //TODO other endians?
+		mapId = CreateFileMappingW(hndl,null,pA,fileSize&->{u32^}[1],fileSize&->{u32^}[0],null)
 		if mapId&->{u64^}^ == not_b 0U
 		{
 			CloseHandle(hndl)

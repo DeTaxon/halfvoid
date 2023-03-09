@@ -186,7 +186,7 @@ vRepo := class extend TGCObject
 		stObj := fileName.GetString()
 		tmpVar := StringSpan(stObj.Str())
 
-		itms := List.{StringSpan}
+		itms := HybridQueue.{StringSpan,20}
 		tmpVar.DivideStr("/",x ==> { itms.Push(x) })
 		iterFolder := rrF
 

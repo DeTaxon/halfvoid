@@ -20,8 +20,6 @@ FixedSizeRing := class .{@T} extend TGCObject
 		result = fixedArray[myIndex]
 		if T->IsGCPointer
 			fixedArray[myIndex] = null
-		if T->TypeGroup == "Point" //TODO and IsGCPtr
-			fiexdArray[myIndex] = null
 	}
 	Size := !() -> int
 	{

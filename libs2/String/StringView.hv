@@ -36,7 +36,7 @@ StringView := class extend TGCObject
 			mySize := Size()
 			otherSize := toCmp.Size()
 			if mySize < otherSize
-				return -1 //TODO, other values?
+				return -1
 			newSpan := StringSpan(NonNullStr()[mySize - otherSize]&,otherSize)
 			return newSpan <=> toCmp
 		}
