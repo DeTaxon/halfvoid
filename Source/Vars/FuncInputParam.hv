@@ -80,7 +80,7 @@ FuncInputParam := class extend ParamFunc
 		}
 		if SelfSet == null
 		{
-			printf("Software error for type %s %s\n",varMiddleType.GetBADStr(),CurrentFunc.Name)
+			printf("Software error for type %s %s\n",varMiddleType.GetBADStr().Str(),CurrentFunc.Name)
 		}
 		assert(SelfSet != null)
 

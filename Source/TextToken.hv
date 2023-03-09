@@ -39,7 +39,7 @@ Token := class
 			if it is TypeVar
 			{
 				cv := it->{TypeVar^}
-				ln << "var " << cv.Name << " = " << cv.Value.GetBADStr() << "\n"
+				ln << "var " << cv.Name << " = " << cv.Value.GetBADStr().Str() << "\n"
 			}else
 			if it is ConstVar
 			{

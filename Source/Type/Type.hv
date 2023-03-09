@@ -65,15 +65,13 @@ Type := class
 		GRefTypes[this&] = nRef
 		return nRef
 	}
-	GetBADStr := !() -> char^
+	GetBADStr := !() -> String^
 	{
 		ec := TEchoStream
 		PrintDebugName(ec&)
 		//ec << ","
 		//PrintType(ec&)
-		st := ec.GetString()
-		st.IncRef() //TODO memory leak
-		return st.Str()
+		return ec.GetString()
 	}
 	IsMetaReady := virtual !() -> bool
 	{

@@ -98,10 +98,10 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl := TEchoStream
 						tmpl << "Could not exchange type from "
 						//downs[i].GetType().PrintDebugName(tmpl&)
-						tmpl << downs[i].GetType().GetBADStr()
+						tmpl << downs[i].GetType().GetBADStr().Str()
 						tmpl << " to "
 						//par.ItType.PrintDebugName(tmpl&)
-						tmpl << par.ItType.GetBADStr()
+						tmpl << par.ItType.GetBADStr().Str()
 						tmpl << "\n"
 						tmpl << "Expect ref " << (par.IsRef ?: "yes" : "no") << "\n"
 						c := tmpl.GetString()

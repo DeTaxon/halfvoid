@@ -104,7 +104,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		{
 			obj.Down.EmitError("Object for TypeBase must have a type")
 		}
-		return GetExeString(GetConstString(typ.GetBADStr()))
+		return GetExeString(GetConstString(typ.GetBADStr().Str()))
 	}
 	if right.Value == "TypeId"
 	{
