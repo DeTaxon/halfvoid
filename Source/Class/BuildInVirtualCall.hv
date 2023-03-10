@@ -1,0 +1,107 @@
+BuildInVirtualCall := class extend BoxFuncCommon
+{
+	funcIndex := int
+	wrappedFunc := BoxFunc^
+	this := !(BoxFunc^ inWFunc,int inFuncIndex) -> void
+	{
+		NormalizeType(inWFunc.GetType().GetPoint())
+		wrappedFunc = inWFunc
+		funcIndex = inFuncIndex
+		SetType(inWFunc.GetType()->{TypeFunc^})
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+
+		funcType := wrappedFunc.GetType() ->{TypeFunc^}
+		normFuncTypePtr := NormalizeType(funcType.GetPoint())
+
+		thisIndex := 0
+		if funcType.ResultType.IsComplexReturn() and not funcType.ResultRef
+			thisIndex = 1
+
+		thisItem := lst[thisIndex]
+		wrappedThis := virtualNoPreCallWrapper(thisItem)
+
+		clsType := thisItem.GetType()
+
+		if not (clsType is TypeClass)
+		{
+			for it : lst
+			{
+				printf("wut %s %p\n",it.GetType().GetBADStr().Str(),lst.Size())
+			}
+		}
+		assert(clsType is TypeClass)
+		vTableType := clsType->{TypeClass^}.ToClass->{BoxClassBody^}.VTableType.ItType
+
+		newList := ExeDownList
+		newList.Push(lst[^])
+		newList[thisIndex] = wrappedThis&
+
+		thisItem.PrintPointPre(f)
+
+		f^ << "%VTableIndex" << resId << " = getelementptr "
+		clsType.PrintType(f)
+		f^ << " , "
+		clsType.PrintType(f)
+		f^ << "* "
+		thisItem.PrintPointUse(f)
+		f^ << " , i32 0, i32 0\n"
+
+		f^ << "%VTable" << resId << " = load "
+		vTableType.PrintType(f)
+		f^ << "* , "
+		vTableType.PrintType(f)
+		f^ << "** %VTableIndex" << resId << "\n"
+
+		f^ << "%FuncIndex" << resId << " = getelementptr "
+		vTableType.PrintType(f)
+		f^ << " , "
+		vTableType.PrintType(f)
+		f^ << "* %VTable" << resId <<  ", i32 0, i32 " << funcIndex << "\n"
+
+		f^ << "%FuncPtr" << resId << " = load "
+		normFuncTypePtr.PrintType(f)
+		f^ << " , "
+		normFuncTypePtr.PrintType(f)
+		f^ << "* %FuncIndex" << resId << "\n"
+
+		fncObj := virtualGetPointer(normFuncTypePtr,resId)
+
+		PrintFuncCallCommon(f,fncObj&,resId,newList)
+	}
+}
+
+virtualGetPointer := class extend BoxExeObj
+{
+	varIndex := int
+	this := !(Type^ tp,int inIndex) -> void
+	{
+		ObjType = tp
+		varIndex = inIndex
+	}
+	PrintPre := virtual !(Stream^ f) -> void
+	{
+	}
+	PrintUse := virtual !(Stream^ f) -> void
+	{
+		f^ << "%FuncPtr" << varIndex
+	}
+}
+virtualNoPreCallWrapper := class extend BoxExeObj
+{
+	wrapped := BoxExeObj^
+	this := !(BoxExeObj^ toWrap) -> void
+	{
+		wrapped = toWrap
+		ObjType = toWrap.GetType()
+	}
+	PrintPointPre := virtual !(Stream^ f) -> void
+	{
+	}
+	PrintPointUse := virtual !(Stream^ f) -> void
+	{
+		wrapped.PrintPointUse(f)
+	}
+
+}

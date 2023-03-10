@@ -1,4 +1,8 @@
 
+//TODO MUST BE RESOLVED AS FAST AS POSSIBLE
+//TaskCheckMutex does not work
+
+
 main := !(char^[] args) -> int
 {
 	tst := FSGetFile("Source/main.hv")

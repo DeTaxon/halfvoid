@@ -186,7 +186,7 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 
 	for itm,i : lst
 	{
-		if itType.Params.Size() > i and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
+		if i < itType.Params.Size() and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
 		{
 			itm.PrintPointPre(f)
 		}else{

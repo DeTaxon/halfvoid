@@ -18,6 +18,9 @@ undefine Stati
 ifeq ($(callgrind),yes)
 	cg := valgrind --tool=callgrind
 endif
+ifeq ($(helgrind),yes)
+	hg := valgrind --tool=helgrind --log-file=grind.txt
+endif
 
 ifeq ($(tm),yes)
 	TimeF := $(TimeFlags)
@@ -52,7 +55,7 @@ halfvoid:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 libs2/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
