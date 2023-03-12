@@ -157,3 +157,8 @@ GetSteadyTime := !() -> double
 {
 	return GetTickCount64()*0.001
 }
+
+localtime_r := !(u64^ c_time,void^ tm) -> void
+{
+	_localtime64_s(tm,c_time)
+}

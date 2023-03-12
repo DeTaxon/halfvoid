@@ -101,6 +101,8 @@
 		"GetTempPathW" : "int,int,u16^",
 		"GetTempFileNameW" : "int,u16^,u16^,int,u16^",
 
-		"GetSystemInfo" : "void,void^"
+		"GetSystemInfo" : "void,void^",
+
+		"_localtime64_s" : "void^,void^,u64^"
 	}
 }

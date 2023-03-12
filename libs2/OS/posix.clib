@@ -76,6 +76,9 @@
 		"nanosleep" : "int,void^,void^",
 		"clock_gettime" : "void,u64,void^",
 
+		"localtime_r" : "void^,u64^,void^",
+
+
 		"eventfd" : "int,u64,int",
 		"inotify_init" : "int",
 		"inotify_add_watch" : "int,int,char^,int",
