@@ -121,10 +121,11 @@ fsIsExist := !(char^ nm) -> bool
 }
 fsGetModificationTime := !(char^ nm) -> u64
 {
-	st1 := char[144]
-	if stat(nm,st1[0]&) != 0
+	st := uv_stat_t
+	statRes := uvStat("Source/main.hv",st)
+	if statRes != 0
 		return 0
-	return st1[88]&->{u64^}^
+	return st.st_mtim.tv_sec
 }
 osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
 {

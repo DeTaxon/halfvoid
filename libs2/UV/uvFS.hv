@@ -1,5 +1,15 @@
 uvStat := !(char^ filePath,uv_stat_t statResult) -> int
 {
-	createUVLoop()
-	return uv_fs_stat(uvLoopGlobal.GetPointer(),statResult&,filePath,null)
+	loadUVLibrary()
+
+	hm := char[1024]
+	result = uv_fs_stat(null,hm[0]&,filePath,null)
+	
+	if result == 0
+	{
+		st := uv_fs_get_ptr(hm[0]&)->{uv_stat_t^}
+		statResult = st^
+	}
+	uv_fs_req_cleanup(hm[0]&)
+	return void
 }

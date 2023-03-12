@@ -60,4 +60,4 @@ cycle:
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid
+.PHONY:  cycle ver3_2 test halfvoid win.exe

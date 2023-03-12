@@ -5,12 +5,11 @@
 
 main := !(char^[] args) -> int
 {
-	st := uv_stat_t	
+	st := uv_stat_t
 	statRes := uvStat("Source/main.hv",st)
 	printf("hm %i %li\n",statRes,st.st_mtim.tv_sec)
 	printf("test %li\n",fsGetModificationTime("Source/main.hv"))
 
-	uvLoopGlobal=null
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }

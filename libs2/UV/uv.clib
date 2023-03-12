@@ -12,6 +12,8 @@
 		"uv_run" : "int,void^,int",
 
 		"uv_fs_stat" : "int,void^,void^,char^,void^",
+		"uv_fs_get_ptr" : "void^,void^",
+		"uv_fs_req_cleanup" : "void,void^",
 
 		"uv_close" : "void,void^,void^",
 
