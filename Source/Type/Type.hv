@@ -456,6 +456,16 @@ CreateStandardTypes := !() -> void
 
 	DefsTable[23] = new TypeDef("vec3f",GTypeVec3f)
 	DefsTable[24] = new TypeDef("vec2f",GTypeVec2f)
+
+	if targetLinux
+	{
+		DefsTable[25] = new TypeDef("c_long",TypeTable[7]) //s64
+	}else if targetWindows
+	{
+		DefsTable[25] = new TypeDef("c_long",TypeTable[6]) //s32
+	}else {
+		assert(false)
+	}
 }
 
 

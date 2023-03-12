@@ -77,6 +77,10 @@ MappedFile := class extend TGCObject
 		return point
 	}
 
+	ResizeFile := !(s64 newSize) -> void
+	{
+		assert(false) //TODO implement it
+	}
 	Size := !() -> int
 	{
 		return fileSize

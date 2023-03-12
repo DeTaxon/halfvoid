@@ -6,11 +6,14 @@
 	],
 	"funcs" : {
 		"uv_default_loop" : "void^",
+		"uv_loop_init" : "int,void^",
 		"uv_loop_close" : "int,void^",
-		"uv_run" : "int,void^,int",
 		"uv_loop_size" : "u64",
+		"uv_run" : "int,void^,int",
 
-		"uv_close" : "void,void^,void^"
+		"uv_fs_stat" : "int,void^,void^,char^,void^",
+
+		"uv_close" : "void,void^,void^",
 
 		"uv_async_init" : "int,void^,void^,void^",
 		"uv_async_send" : "int,void^",

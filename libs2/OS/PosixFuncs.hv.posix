@@ -22,18 +22,6 @@ S_IFDIR := 16384
 S_IFREG := 32768
 S_IFLINK := 40960
 
-tm := class
-{
-	tm_sec := int
-	tm_min := int
-	tm_hour := int
-	tm_mday:= int
-	tm_mon := int
-	tm_year := int
-	tm_wday := int
-	tm_yday := int
-	tm_isdst := int
-}
 
 osIsFolder := !(char^ nm) -> bool
 {

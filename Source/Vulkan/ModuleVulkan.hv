@@ -479,7 +479,7 @@ ModuleVulkan := class extend ModuleInterface
 					newStruct.enterScope(() ==> {
 						strm := TEchoStream
 						strm << "\"this\" := !() -> void { \n"
-						strm << "this.sType = " << intVal << "\n"
+						strm << "sType = " << intVal << "\n"
 						strm << "}\n"
 
 						str := StrCopy(strm.GetString().Str())

@@ -1,0 +1,5 @@
+uvStat := !(char^ filePath,uv_stat_t statResult) -> int
+{
+	createUVLoop()
+	return uv_fs_stat(uvLoopGlobal.GetPointer(),statResult&,filePath,null)
+}

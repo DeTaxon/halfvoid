@@ -5,8 +5,12 @@
 
 main := !(char^[] args) -> int
 {
-	tst := FSGetFile("Source/main.hv")
-	printf("test %s\n",tst.GetPath().Str())
+	st := uv_stat_t	
+	statRes := uvStat("Source/main.hv",st)
+	printf("hm %i %li\n",statRes,st.st_mtim.tv_sec)
+	printf("test %li\n",fsGetModificationTime("Source/main.hv"))
+
+	uvLoopGlobal=null
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }

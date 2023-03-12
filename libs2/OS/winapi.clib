@@ -24,6 +24,7 @@
 		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
 		"WriteFile" : "int,void^,void^,u32,u32^,void^",
 		"ReadFile" : "int,void^,void^,u32,u32^,void^",
+		"GetFileTime" : "int,void^,void^,void^,void^",
 		"CloseHandle" : "void,void^",
 
 		"DeleteFileW" : "int,u16^",

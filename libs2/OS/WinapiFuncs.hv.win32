@@ -115,6 +115,17 @@ osFileId := !(char^ itStr) -> u64
 	result = result shl 32
 	result += flInf.nFileIndexLow
 }
+fsIsExist := !(char^ nm) -> bool
+{
+	return osFileId(nm) != 0
+}
+fsGetModificationTime := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return 0
+	return st1[88]&->{u64^}^
+}
 osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
 {
 	ech := TEchoStream //TODO optimize
