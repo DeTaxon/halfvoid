@@ -156,10 +156,10 @@ VulkanGLFWInstance := class extend VulkanInstance
 	{
 		resCall^ = true
 
-		Funcs.vkResetFences(LogicalDevice,1,vkFence&)
-		resAq := Funcs.vkAcquireNextImageKHR(LogicalDevice,itSwapchain,not_b 0U,null,vkFence,imageIndex)
+		Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
+		resAq := Funcs.vkAcquireNextImageKHR(LogicalDevice,itSwapchain,not_b 0U,null,itGlobFence,imageIndex)
 	
-		Funcs.vkWaitForFences(LogicalDevice,1,vkFence&,1,10000000)
+		Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,1,10000000)
 		if resAq ==  VK_ERROR_OUT_OF_DATE_KHR or resAq == VK_SUBOPTIMAL_KHR
 		{
 			resCall^ = false

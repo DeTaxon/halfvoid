@@ -1,7 +1,7 @@
 NuklearVulkanContext := class //extend TGCObject
 {
 	itContext := void^
-	vInstance := VulkanGLFWInstance^
+	vInstance := VulkanDefaultInstance^
 
 	atlasData := nk_font_atlas 
 	atlasTexture := TVkTexture^
@@ -33,7 +33,7 @@ NuklearVulkanContext := class //extend TGCObject
 		nk_clear(itContext)
 	}
 
-	Init := !(VulkanGLFWInstance^ vi) -> void
+	Init := !(VulkanDefaultInstance^ vi) -> void
 	{
 		vInstance = vi
 		Nuklear_init() //TODO once
@@ -160,7 +160,7 @@ NuklearVulkanContext := class //extend TGCObject
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
 		
-		vSetTexture(nuklearDescp,atlasTexture,gSamplerNearest)
+		vSetTexture(nuklearDescp,atlasTexture,vInstance.SamplerNearest)
 	}
 
 	Draw := !(VkCommandBuffer cmdB,int w, int h) -> void

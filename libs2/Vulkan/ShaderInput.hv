@@ -67,7 +67,7 @@ TShaderInput := class
 		ppC.setLayoutCount = sets.Size()
 		ppC.pSetLayouts&->{void^^}^ = layouts&->{void^}
 	
-		itInstance.Funcs.vkCreatePipelineLayout(vkLogCard,ppC&,null,itLayout&)
+		itInstance.Funcs.vkCreatePipelineLayout(itInstance.LogicalDevice,ppC&,null,itLayout&)
 	}
 	CreateDescriptorPool := !(int setIndex,int poolSize) -> TDescriptorPool^
 	{
@@ -88,8 +88,8 @@ TShaderInput := class
 	}
 	CreateShader := !(Blob^ vertBlob, Blob^ fragBlob) -> vShader^
 	{
-		vrtObj := LoadShaderModule3(vertBlob)
-		fragObj := LoadShaderModule3(fragBlob)
+		vrtObj := LoadShaderModule3(itInstance,vertBlob)
+		fragObj := LoadShaderModule3(itInstance,fragBlob)
 
 		vert := vrtObj.Get()
 		frag := fragObj.Get()
@@ -256,20 +256,13 @@ TShaderInput := class
 		//  VK_NULL_HANDLE, VkPipeline                                     basePipelineHandle
 
 		result = new vShader
-		itInstance.Funcs.vkCreateGraphicsPipelines(vkLogCard,null,1,gpC&,null,result.itPipe&)
+		itInstance.Funcs.vkCreateGraphicsPipelines(itInstance.LogicalDevice,null,1,gpC&,null,result.itPipe&)
 	}
 }
-LoadShaderModule2 := !(vRepoFile^ fil) -> vShaderModule^
-{
-	filMap := fil.GetMap()
-
-	result = new vShaderModule
-	result.LoadShaderModule(filMap.Get(),filMap.Size())
-}
-LoadShaderModule3 := !(Blob^ fil) -> vShaderModule^
+LoadShaderModule3 := !(VulkanInstance^ inst,Blob^ fil) -> vShaderModule^
 {
 	result = new vShaderModule
-	result.LoadShaderModule(fil.GetPointer(),fil.Size())
+	result.LoadShaderModule(inst,fil.GetPointer(),fil.Size())
 }
 
 TShaderSet := class extend TGCObject
@@ -309,7 +302,7 @@ TUniformSet := class extend TShaderSet
 		setDesc.bindingCount = 1
 		setDesc.pBindings&->{void^^}^ = oneDesc&->{void^}
 	
-		inst.Funcs.vkCreateDescriptorSetLayout(vkLogCard,setDesc&,null,itSet&)
+		inst.Funcs.vkCreateDescriptorSetLayout(inst.LogicalDevice,setDesc&,null,itSet&)
 	}
 	GetPoolType := virtual !() -> int
 	{
@@ -341,7 +334,7 @@ TImageSet := class extend TShaderSet
 		set2Desc.bindingCount = imgCount
 		set2Desc.pBindings&->{void^^}^ = twoDesc[0]&->{void^}
 	
-		inst.Funcs.vkCreateDescriptorSetLayout(vkLogCard,set2Desc&,null,itSet&)
+		inst.Funcs.vkCreateDescriptorSetLayout(inst.LogicalDevice,set2Desc&,null,itSet&)
 	}
 	GetPoolType := virtual !() -> int
 	{
@@ -392,7 +385,7 @@ TDescriptorPool := class extend TGCObject
 		descPoolC.poolSizeCount = 1
 		descPoolC.pPoolSizes&->{void^^}^ = test[0]&->{void^}//descPoolSize
 	
-		baseLayout.itInstance.Funcs.vkCreateDescriptorPool(vkLogCard,descPoolC&,null,vPool&)
+		baseLayout.itInstance.Funcs.vkCreateDescriptorPool(baseLayout.itInstance.LogicalDevice,descPoolC&,null,vPool&)
 	}
 	CreateDescriptor := !() -> VkDescriptorSet
 	{
@@ -403,7 +396,7 @@ TDescriptorPool := class extend TGCObject
 		allDesc.pSetLayouts&->{void^^}^ = lay&
 
 		preRes := void^
-		baseLayout.itInstance.Funcs.vkAllocateDescriptorSets(vkLogCard,allDesc&,preRes&)
+		baseLayout.itInstance.Funcs.vkAllocateDescriptorSets(baseLayout.itInstance.LogicalDevice,allDesc&,preRes&)
 		return preRes
 	}
 	//TODO need Destroy

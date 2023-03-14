@@ -115,12 +115,12 @@ vShaderModule := class extend TGCObject
 {
 	itModule := VkShaderModule
 
-	LoadShaderModule := !(void^ modPoint,int modSize) -> void
+	LoadShaderModule := !(VulkanInstance^ inst,void^ modPoint,int modSize) -> void
 	{
 		vSC := VkShaderModuleCreateInfo()
 		vSC.codeSize = modSize
 		vSC.pCode&->{void^^}^ = modPoint
-		vk.Funcs.vkCreateShaderModule(vkLogCard,vSC&,null,itModule&) //TODO remove vk.Funcs
+		inst.Funcs.vkCreateShaderModule(inst.LogicalDevice,vSC&,null,itModule&) //TODO remove vk.Funcs
 	}
 	Get := !() -> VkShaderModule
 	{
@@ -155,7 +155,6 @@ vShader := class
 	}
 	LoadShader := !(vShaderModule^ vertModule,vShaderModule^ fragModule,vShaderVertexOptions^ opts) -> void
 	{
-
 		vert := vertModule.Get()
 		frag := fragModule.Get()
 
@@ -316,7 +315,7 @@ vShader := class
 		//  nullptr,        const VkPipelineDynamicStateCreateInfo        *pDynamicState
 		//  0,              uint32_t                                       subpass
 		//  VK_NULL_HANDLE, VkPipeline                                     basePipelineHandle
-		vkCreateGraphicsPipelines(vkLogCard,null,1,gpC&,null,itPipe&)
+		Funcs.vkCreateGraphicsPipelines(LogicalDevice,null,1,gpC&,null,itPipe&)
 	}
 	LoadShaderLight := !(vShaderModule^ vertModule,vShaderModule^ fragModule) -> void
 	{
@@ -446,6 +445,6 @@ vShader := class
 		//  nullptr,        const VkPipelineDynamicStateCreateInfo        *pDynamicState
 		//  0,              uint32_t                                       subpass
 		//  VK_NULL_HANDLE, VkPipeline                                     basePipelineHandle
-		vkCreateGraphicsPipelines(vkLogCard,null,1,gpC&,null,itPipe&)
+		Funcs.vkCreateGraphicsPipelines(LogicalDevice,null,1,gpC&,null,itPipe&)
 	}
 }

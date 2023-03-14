@@ -1,0 +1,119 @@
+SimpleWindow := class extend VulkanDefaultInstance
+{
+
+	itWin := GLFWWindow^
+	nuklearContext := NuklearGoAroundContext^
+
+	mainRenderPass := TRenderPass^
+
+	this := !() -> void
+	{
+		itWin = new GLFWWindow
+		itWin.Init(500,500,"Test")
+		Init()
+
+		vk = this& //TODO
+		vk.initCreateStageMemory()
+
+		nuklearContext = new NuklearGoAroundContext
+		nuklearContext.Init(this&)
+
+		CreateSurface(itWin.windowHandle)
+
+		mainRenderPass = nuklearContext.CreateRenderPass(SwapImageFormat)
+		gRenderPassLight = mainRenderPass.Get()
+
+		CreateSwapchain(500,500)
+
+		nuklearContext.CreateShader(mainRenderPass)
+
+	}
+
+	Run := !() -> void
+	{
+		step1Cmd := TVkCommandBuffer(this&,itDrawCommandPool)
+
+		while not itWin.ShouldClose()
+		{
+			surfaceIndex := u32
+			drawRes := true
+			@work DrawGetImage(surfaceIndex&,drawRes&)
+
+			step1Cmd.Reset()
+			step1Cmd.Start()
+			
+
+			StartTextDraw(step1Cmd.Get(),GetSurfaceFramebuffer(surfaceIndex))
+
+			nuklearContext.InputCheck(itWin)
+			nuklearContext.MakeDraw()
+			nuklearContext.RenderStep()
+			nuklearContext.Clear()
+
+			nuklearContext.Draw(step1Cmd.Get(),500,500)
+
+			StopTextDraw(step1Cmd.Get())
+
+			step1Cmd.Stop()
+
+			Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
+			step1Cmd.Submit(DrawQueue,itGlobFence)
+
+			DrawPresentImage(surfaceIndex)
+
+			hm := u64 //TODO
+			hm = not_b hm
+			@work Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,hm)
+
+			itWin.PollEvents()
+			itWin.SwapBuffers()
+		}
+	}
+
+	StartTextDraw := !(VkCommandBuffer cmd,VkFramebuffer frm ) -> void
+	{
+		imgBarCPre := VkImageMemoryBarrier[2]
+	
+		beginInfo := VkRenderPassBeginInfo()
+	
+		clrValues := float[13]
+	
+		clrValues[0] = 0.0
+		clrValues[1] = 0.5
+		clrValues[2] = 1.0
+		clrValues[4] = 1.0f
+		clrValues[5] = 0.0f
+		clrValues[6] = 0.0f
+		clrValues[7] = 1.0f
+	
+		clrValues[8] = 0.0f
+		clrValues[9] = 1.0f
+		clrValues[10] = 0.0f
+		clrValues[11] = 0.0f
+	
+		beginInfo.renderPass = mainRenderPass.Get()
+		beginInfo.framebuffer = frm
+		beginInfo.renderArea.extent.width = vk.GetSurfaceWidth() //surfAb.currentExtent.width
+		beginInfo.renderArea.extent.height = vk.GetSurfaceHeight() //surfAb.currentExtent.height
+		beginInfo.clearValueCount = 1
+		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
+		
+		Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE) //TODO remove vk.Funcs
+	}
+	StopTextDraw := !(VkCommandBuffer cmd) -> bool
+	{
+		Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
+	}
+
+	DrawCode := virtual !(void^ nk) -> void
+	{
+	}
+}
+
+NuklearGoAroundContext := class extend NuklearVulkanContext
+{
+	DrawCode := virtual !(void^ nk) -> void
+	{
+		vInstance->{SimpleWindow^}.DrawCode(nk)
+	}
+}
