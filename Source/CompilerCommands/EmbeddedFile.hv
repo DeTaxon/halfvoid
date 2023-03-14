@@ -45,29 +45,22 @@ blobDatas := List.{BoxRawData^}
 
 BoxRawData := class extend BoxExeObj
 {
-	Value := u8^
-	ValueSize := int
-
+	ItBlob := Blob^
 	ItId := int
 
-	this := !(u8^ data, int siz) -> void
+	this := !(Blob^ setBlob) -> void
 	{
 		ItId = GetNewId()
 
-		Value = data
-		ValueSize = siz
+		ItBlob = setBlob
 
 		ObjType = GTypeVoidP
-
-		ValueSize = siz
-		if siz != 0
-		{
-			Value = malloc(siz)->{u8^}
-			memcpy(Value,data,siz)
-		}
 	}
 	PrintGlobal := virtual !(Stream^ f) -> void
 	{
+		ValueSize := ItBlob.Size()
+		Value := ItBlob.GetPointer()->{u8^}
+
 		f^ << "@File" << ItId << " = global [" << ValueSize << " x i8] ["
 		for i : ValueSize
 		{
@@ -82,12 +75,13 @@ BoxRawData := class extend BoxExeObj
 	}
 	PrintUse := virtual !(Stream^ f) -> void
 	{
+		ValueSize := ItBlob.Size()
 		f^ << "getelementptr inbounds ([" << ValueSize << " x i8] , [ " << ValueSize << " x i8]* @File" << ItId <<" , i32 0, i32 0)"
 	}
 
 	GetSize := !() -> int
 	{
-		return ValueSize
+		return ItBlob.Size()
 	}
 
 }
@@ -103,7 +97,10 @@ EmbFile := class
 		itFile = inFile
 
 		fileMap = inFile.GetMap()
-		data = new BoxRawData(fileMap.Get(),inFile.Size())
+		fileBlob := new BlobOnVector(fileMap.Size())
+		if fileMap.Size() != 0
+			memcpy(fileBlob.GetPointer(),fileMap.Get(),fileMap.Size())
+		data = new BoxRawData(fileBlob)
 	}
 	GetSize := !() -> int 
 	{

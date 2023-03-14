@@ -24,27 +24,22 @@ TryGetCacheOfFile := !(vRepoFile^ fl) -> Blob^
 
 
 
-CacheBlobByStringReg := !(StringView value, !()&-> BoxRawData^ cb) -> BoxRawData^
+blobsCache := AVLMap.{Blob^,BoxRawData^}
+CacheBlobByStringReg := !(StringView value, !()&-> Blob^ cb) -> BoxRawData^
 {
 	if not GUsingCacheFile
-		return cb()
+	{
+		blb := cb()
+		return new BoxRawData(blb)
+	}
 
-	cb2 := cb
-	resBlob := BoxRawData^
-	blb := RegsCache.CacheBlobByString(value,() ==> {
-		resBlob = cb2()
-		bl := new BlobOnVector(resBlob.ValueSize)
-		memcpy(bl.GetPointer(),resBlob.Value,bl.Size())
-		return bl->{Blob^}
-	})
-	
-	if resBlob != null
-		return resBlob
-	
-	why := malloc(blb.Size())
-	memcpy(why,blb.GetPointer(),blb.Size())
-	resBlob = new BoxRawData(why->{u8^},blb.Size())
-	return resBlob
+	blb := RegsCache.CacheBlobByString(value,cb)
+
+	if blobsCache.Contain(blb)
+		return blobsCache[blb]
+
+	result = new BoxRawData(blb)
+	blobsCache[blb] = result
 
 }
 FinilizeCache := !() -> void
