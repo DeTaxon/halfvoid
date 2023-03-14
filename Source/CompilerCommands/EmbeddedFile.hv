@@ -99,17 +99,13 @@ BoxRawData := class extend BoxExeObj
 EmbFile := class
 {
 	itFile := vRepoFile^
-	fileMap := FileView^
 	data := BoxRawData^
 
 	this := !(vRepoFile^ inFile) -> void
 	{
 		itFile = inFile
 
-		fileMap = inFile.GetMap()
-		fileBlob := new BlobOnVector(fileMap.Size())
-		if fileMap.Size() != 0
-			memcpy(fileBlob.GetPointer(),fileMap.Get(),fileMap.Size())
+		fileBlob := inFile.GetBlob()
 		data = new BoxRawData(fileBlob)
 	}
 	GetSize := !() -> int 

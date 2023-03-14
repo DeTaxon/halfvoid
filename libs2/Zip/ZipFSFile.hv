@@ -21,6 +21,14 @@ vRepoFile := class extend vRepoObject
 
 		return new ZipFSFileView(this&)
 	}
+	GetBlob := virtual !() -> Blob^
+	{
+		fileMap := GetMap()
+		fileBlob := new BlobOnVector(fileMap.Size())
+		if fileMap.Size() != 0
+			memcpy(fileBlob.GetPointer(),fileMap.Get(),fileMap.Size())
+		return fileBlob
+	}
 	GetModificationTime := !() -> u64
 	{
 		assert(ptrToZip == null)
