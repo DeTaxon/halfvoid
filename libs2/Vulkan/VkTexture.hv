@@ -103,7 +103,7 @@ TVkTexture := class
 			imgFile.StoreToMemory("RGB",ptrToSet)
 		}
 		itInstance.itStageMemory.Unmap()
-		vStageCpyToImage(itImg,itW,itH) //TODO
+		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
 
 	}
 	Destroy := virtual !() -> void //TODO double delete

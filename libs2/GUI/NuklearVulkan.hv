@@ -58,7 +58,7 @@ NuklearVulkanContext := class //extend TGCObject
 
 		tempMem := vInstance.itStageMemory
 		tempMem.TransferData(TArraySpan.{u8}(imgABC->{u8^},ax*ay*4))
-		vStageCpyToImage(atlasTexture.itImg,ax,ay) //TODO refactor
+		vStageCpyToImage(vInstance,atlasTexture.itImg,ax,ay) //TODO refactor
 
 		nk_font_atlas_end(atlasData&,atlasTexture,null)
 
@@ -160,14 +160,14 @@ NuklearVulkanContext := class //extend TGCObject
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
 		
-		vSetTexture(nuklearDescp,atlasTexture,vInstance.SamplerNearest)
+		vSetTexture(vInstance,nuklearDescp,atlasTexture,vInstance.SamplerNearest)
 	}
 
 	Draw := !(VkCommandBuffer cmdB,int w, int h) -> void
 	{
 		offsets := VkDeviceSize
 
-		textShader.ApplyShaderToQueue(cmdB)
+		textShader.ApplyShaderToQueue(vInstance,cmdB,w->{float},h->{float})
 
 		scales := float[2]
 		scales[0] = 1.0 / w

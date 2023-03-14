@@ -133,25 +133,25 @@ vShader := class
 	itPipe := VkPipeline
 	this := !() -> void {}
 
-	ApplyShaderToQueue := !(VkCommandBuffer itBuf) -> void
+	ApplyShaderToQueue := !(VulkanInstance^ inst,VkCommandBuffer itBuf,float surfWidth, float surfHeight) -> void
 	{
 		vp := VkViewport 
 		vp.x = 0.0f
 		vp.y = 0.0f
-		vp.width = vk.GetSurfaceWidth()->{float}
-		vp.height = vk.GetSurfaceHeight()->{float}
+		vp.width = surfWidth
+		vp.height = surfHeight
 		vp.minDepth = 0.0f
 		vp.maxDepth = 1.0f
 
 		sc := VkRect2D
 		sc.offset.x = 0
 		sc.offset.y = 0
-		sc.extent.width = vk.GetSurfaceWidth()
-		sc.extent.height = vk.GetSurfaceHeight()
+		sc.extent.width = surfWidth
+		sc.extent.height = surfHeight
 
-		vk.Funcs.vkCmdBindPipeline(itBuf,VK_PIPELINE_BIND_POINT_GRAPHICS,itPipe)
-		vk.Funcs.vkCmdSetViewport(itBuf,0,1,vp&)
-		vk.Funcs.vkCmdSetScissor(itBuf,0,1,sc&)
+		inst.Funcs.vkCmdBindPipeline(itBuf,VK_PIPELINE_BIND_POINT_GRAPHICS,itPipe)
+		inst.Funcs.vkCmdSetViewport(itBuf,0,1,vp&)
+		inst.Funcs.vkCmdSetScissor(itBuf,0,1,sc&)
 	}
 	LoadShader := !(vShaderModule^ vertModule,vShaderModule^ fragModule,vShaderVertexOptions^ opts) -> void
 	{

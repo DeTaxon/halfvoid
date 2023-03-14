@@ -12,8 +12,7 @@ SimpleWindow := class extend VulkanDefaultInstance
 		itWin.Init(500,500,"Test")
 		Init()
 
-		vk = this& //TODO
-		vk.initCreateStageMemory()
+		initCreateStageMemory()
 
 		nuklearContext = new NuklearGoAroundContext
 		nuklearContext.Init(this&)
@@ -93,8 +92,8 @@ SimpleWindow := class extend VulkanDefaultInstance
 	
 		beginInfo.renderPass = mainRenderPass.Get()
 		beginInfo.framebuffer = frm
-		beginInfo.renderArea.extent.width = vk.GetSurfaceWidth() //surfAb.currentExtent.width
-		beginInfo.renderArea.extent.height = vk.GetSurfaceHeight() //surfAb.currentExtent.height
+		beginInfo.renderArea.extent.width = GetSurfaceWidth() //surfAb.currentExtent.width
+		beginInfo.renderArea.extent.height = GetSurfaceHeight() //surfAb.currentExtent.height
 		beginInfo.clearValueCount = 1
 		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
 		

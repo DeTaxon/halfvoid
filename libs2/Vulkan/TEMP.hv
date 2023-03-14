@@ -1,7 +1,7 @@
 
-vStageCpyToImage := !(VkImage tCpy,int w, int h) -> void
+vStageCpyToImage := !(VulkanInstance^ inst,VkImage tCpy,int w, int h) -> void
 {
-	vk.PushTransferQueueAndWait(cmd ==> {
+	inst.PushTransferQueueAndWait(cmd ==> {
 		stg1 := VkImageMemoryBarrier()
 
 		stg1.srcAccessMask = 0
@@ -17,7 +17,7 @@ vStageCpyToImage := !(VkImage tCpy,int w, int h) -> void
 		stg1.subresourceRange.layerCount = 1
 
 
-		vk.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+		inst.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 			VK_PIPELINE_STAGE_TRANSFER_BIT,0,0,null,0,null,1,stg1&)
 
 		cpyCmd := VkBufferImageCopy
@@ -27,7 +27,7 @@ vStageCpyToImage := !(VkImage tCpy,int w, int h) -> void
 		cpyCmd.imageExtent.height = h
 		cpyCmd.imageExtent.depth = 1
 
-		vk.Funcs.vkCmdCopyBufferToImage(cmd.Get(),vk.itStageMemory.GetBufferPointer()^,tCpy,VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,1,cpyCmd&)
+		inst.Funcs.vkCmdCopyBufferToImage(cmd.Get(),inst.itStageMemory.GetBufferPointer()^,tCpy,VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,1,cpyCmd&)
 
 		stg2 := VkImageMemoryBarrier()
 		stg2.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT
@@ -42,10 +42,10 @@ vStageCpyToImage := !(VkImage tCpy,int w, int h) -> void
 		stg2.subresourceRange.levelCount = 1
 		stg2.subresourceRange.layerCount = 1
 
-		vk.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TRANSFER_BIT,VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,0,0,null,0,null,1,stg2&)
+		inst.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TRANSFER_BIT,VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,0,0,null,0,null,1,stg2&)
 	})
 }
-vSetTexture := !(VkDescriptorSet toSet,TVkTexture^ donor,VkSampler smSampler) -> void
+vSetTexture := !(VulkanInstance^ inst,VkDescriptorSet toSet,TVkTexture^ donor,VkSampler smSampler) -> void
 {
 	imgI := VkDescriptorImageInfo
 	imgI.sampler = smSampler
@@ -58,5 +58,5 @@ vSetTexture := !(VkDescriptorSet toSet,TVkTexture^ donor,VkSampler smSampler) ->
 	wrT.pImageInfo&->{void^^}^ = imgI&
 	wrT.dstSet = toSet
 
-	vk.Funcs.vkUpdateDescriptorSets(vk.LogicalDevice,1,wrT&,0,null)
+	inst.Funcs.vkUpdateDescriptorSets(inst.LogicalDevice,1,wrT&,0,null)
 }
