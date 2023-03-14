@@ -4,7 +4,26 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 
 	CheckFuncCallBrackets(itm.Down.Right,dwns)
 
-	assert(dwns.Size() != 0 and dwns.Size() mod 2 == 0) //TODO emit error
+	badInputs := false
+	if dwns.Size() == 0 or dwns.Size() mod 2 != 0
+		badInputs = true
+	if not badInputs
+	{
+		for it,i : dwns
+		{
+			if i mod 2 == 0
+			{
+				if it is not BoxExeString
+					badInputs = true
+			}else{
+				if it is not BoxExeInt
+					badInputs = true
+			}
+		}
+	}
+
+	if badInputs
+		itm.EmitError("Incorrect use of #Regexp command")
 
 	echo := TEchoStream
 
@@ -22,7 +41,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 	regBlob := CacheBlobByStringReg(resSt, x ==> {
 		lx := LexBuilder
 
-		names := HybridQueue.{String^,20} //TODO it can be removed, needed for memeory readons
+		names := HybridQueue.{String^,20} //needed so String values could be kept
 		
 		for i : (dwns.Size() div 2)
 		{
@@ -52,7 +71,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 
 	objs := CheckExeDownList
 	objs.Push(regBlob)
-	objs.Push(GetExeInt(0)) //TODO do i need it?
+	objs.Push(GetExeInt(0))
 	cnsts := List.{BoxExeConstObj^}
 	res := CreateFuncCall(StringSpan("internalRegexpRetrive"),objs,cnsts)
 	assert(res != null)

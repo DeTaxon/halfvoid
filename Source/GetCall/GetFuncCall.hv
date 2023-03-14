@@ -189,16 +189,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 					extraObjs[0] = vr
 
-					if callItem is in BoxFuncTemplate //TODO: i nedd some function for callItem to Use transformation
-					{
-						return callItem->{BoxFuncTemplate^}.CreateFuncCall(extraObjs,consts)
-					} else if callItem is in BoxFunc
-					{
-						return callItem->{BoxFunc^}.CreateCall(extraObjs)
-					}else{
-						assert(false)
-					}
-
+					return makeFuncCall(callItem,extraObjs,consts)
 				}
 			}
 

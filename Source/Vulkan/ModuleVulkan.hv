@@ -485,7 +485,7 @@ ModuleVulkan := class extend ModuleInterface
 						str := StrCopy(strm.GetString().Str())
 
 						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
-						start := new TokenSymbol(StringSpan("{}"),1) //TODO memory leak
+						start := new TokenSymbol(StringSpan("{}"),1)
 						start.Down = token
 						tt := token
 						while tt != null
