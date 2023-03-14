@@ -1,0 +1,41 @@
+AppendClass VulkanInstance
+{
+	CreateMesh := !(u8[] vertData, u8[] indexData,VKType indType) -> TVkMesh^
+	{
+		result = new TVkMesh
+		result.itInstance = this&
+		result.Create(vertData,indexData,indType)
+	}
+}
+
+TVkMesh := class
+{
+	itInstance := VulkanInstance^
+
+	vertexMemory := TVkMemBuffer^
+	indexMemory := TVkMemBuffer^
+	indType := VKType
+	
+	Create := !(u8[] vertData, u8[] indexData,VKType inIndType) -> void
+	{
+		vertexMemory = itInstance.CreateMemBufferObject(vertData.Size(),VK_BUFFER_USAGE_VERTEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+		indexMemory = itInstance.CreateMemBufferObject(indexData.Size(),VK_BUFFER_USAGE_INDEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+		indType = inIndType
+
+		TransferData(vertData,indexData)
+	}
+
+	TransferData := !(u8[] vertData, u8[] indexData) -> void
+	{
+		vertexMemory.TransferData(vertData)
+		indexMemory.TransferData(indexData)
+	}
+	Bind := !(VkCommandBuffer cmdB) -> void
+	{
+		offsets := VkDeviceSize
+
+		itInstance.Funcs.vkCmdBindVertexBuffers(cmdB,0,1,vertexMemory.GetBufferPointer(),offsets&)
+		itInstance.Funcs.vkCmdBindIndexBuffer(cmdB,indexMemory.GetBufferPointer()^,0,indType.GetBaseIndexType())
+	}
+
+}

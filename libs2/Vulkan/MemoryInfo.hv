@@ -1,0 +1,8 @@
+VulkanMemoryInfo := class
+{
+	index := int
+	flags := int
+	heapSize := u64
+
+	IsHostVisible := !() -> bool { return (flags and_b VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0}
+}

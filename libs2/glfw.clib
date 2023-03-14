@@ -58,6 +58,10 @@
 		"glfwSetWindowSizeCallback" : "void,void^,void^",
 		"glfwSetWindowTitle" : "void,void^,char^",
 
+		"glfwSetWindowUserPointer" : "void,void^,void^",
+		"glfwGetWindowUserPointer" : "void^,void^",
+
+
 		"glfwGetMouseButton" : "int,void^,int",
 		"glfwGetCursorPos" : "void,void^,double^,double^"
 	}

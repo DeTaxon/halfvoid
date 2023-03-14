@@ -69,7 +69,17 @@ FuncLocalParam := class extend ParamFunc
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
-		assert(not populated)
+		//assert(not populated)
+
+		if populated
+		{
+			if this& is FuncLocalParam
+			{
+				return new BoxFuncCall(this&)
+			}else{
+				assert(false)
+			}
+		}
 
 		res := new ParamLoadObj(this&)
 		CreatedVarCalls.Push(res)
