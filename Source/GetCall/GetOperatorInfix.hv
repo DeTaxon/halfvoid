@@ -154,8 +154,9 @@ spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> B
 	{
 		zero = GetExchange(zero,result.GetType())
 	}
-	if zero == null //TODO emit error?
-		return null
+	if zero == null
+		debugItem.EmitError("could not compare objects, found spaceship operator, but it does not return int type")
+
 	objs7.Push(zero)
 	switch oper
 	{

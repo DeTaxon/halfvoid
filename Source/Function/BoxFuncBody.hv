@@ -176,7 +176,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			{
 				name = InputVarNames[i]
 			}else{
-				if i == 0 and ParentScope? is in BoxClass //TODO Check for static somehow
+				if i == 0 and Attrs.IsMethod
 				{
 					name = StringSpan("this")
 				}else{
