@@ -2,7 +2,7 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 {
 	cmd := itm.Down->{TokenIndent^}.Value
 
-	if cmd == "#File"
+	if cmd == "#File" or cmd == "#FileLocal"
 	{
 		return TryEmbedFile(itm)
 	}

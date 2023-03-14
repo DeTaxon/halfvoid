@@ -9,10 +9,20 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	{
 		itm.EmitError("usage #File(name)")
 	}
+
+	isLocal := itm.Down->{TokenIndent^}.Value == "#FileLocal"
 	 
 	fileName := skb.Down->{TokenString^}.Value
 
-	itFile := FSGetFile(fileName) //todo exceptions?
+	
+	itFile := vRepoFile^
+
+	if isLocal
+	{
+		itFile = itm.Line.File.file.GetFile(fileName)
+	}else{
+		itFile = FSGetFile(fileName) //todo exceptions?
+	}
 
 	if itFile == null
 		itm.EmitError("File not found")
