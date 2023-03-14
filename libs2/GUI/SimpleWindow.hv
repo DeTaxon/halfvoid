@@ -20,9 +20,8 @@ SimpleWindow := class extend VulkanDefaultInstance
 		CreateSurface(itWin.windowHandle)
 
 		mainRenderPass = nuklearContext.CreateRenderPass(SwapImageFormat)
-		gRenderPassLight = mainRenderPass.Get()
 
-		CreateSwapchain(500,500)
+		CreateSwapchain(mainRenderPass,500,500)
 
 		nuklearContext.CreateShader(mainRenderPass)
 

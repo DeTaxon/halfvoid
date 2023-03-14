@@ -78,7 +78,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 		SwapImageColorSpace = formts[1].colorSpace
 		SwapImageMode = reqMod
 	}
-	CreateSwapchain := !(int inW,int inH) -> void
+	CreateSwapchain := !(TRenderPass^ renPass,int inW,int inH) -> void
 	{
 		oldSwapchain := itSwapchain
 
@@ -138,7 +138,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 			Funcs.vkCreateImageView(LogicalDevice,imgViewC&,null,surfaceImageViews^[i]&)
 	
 			fbC := VkFramebufferCreateInfo()
-			fbC.renderPass = gRenderPassLight //TODO!! unconst
+			fbC.renderPass = renPass.Get()
 			fbC.attachmentCount = 1
 			fbC.pAttachments&->{void^^}^ = surfaceImageViews^[i]&
 			fbC.width = inW
