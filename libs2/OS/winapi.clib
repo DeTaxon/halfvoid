@@ -84,6 +84,7 @@
 		"WakeAllConditionVariable" : "void,void^",
 
 		"CreateThread" : "void^,void^,size_t,void^,void^,u32,void^",
+		"GetCurrentThreadId" : "int",
 		"WaitForSingleObject" : "void,void^,u32",
 
 		"ConvertThreadToFiber" : "void^,void^",

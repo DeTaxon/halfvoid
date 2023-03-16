@@ -11,7 +11,7 @@ VulkanInstance := class extend TGCObject
 
 	Init := !() -> void
 	{
-		vkLib := GetLibrary("libvulkan.so")
+		vkLib := GetLibrary(!["libvulkan.so","vulkan-1.dll"])
 
 		assert(vkLib != null) //TODO emit error
 

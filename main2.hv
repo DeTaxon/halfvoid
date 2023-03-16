@@ -1,7 +1,8 @@
 
-//TODO MUST BE RESOLVED AS FAST AS POSSIBLE
-//TaskCheckMutex does not work
-
+//TODO i need some way to profile fibers usage and way to find abandoned hatches
+//TODO @once does not work with function input variables
+//TODO todo in libs2/Random.hv is important
+//TODO arr := !["","1"] ; arr[0] returns null
 
 main := !(char^[] args) -> int
 {

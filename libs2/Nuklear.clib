@@ -2,7 +2,8 @@
 	"link" : "dynamic",
 	"initname" : "Nuklear_init",
 	"libs" : [
-		"Nuklear.so"
+		"Nuklear.so",
+		"Nuklear.dll"
 	],
 	"structs" : {
 		"nk_color" : {
@@ -40,6 +41,9 @@
 		"NK_WINDOW_BACKGROUND" : "256",
 		"NK_WINDOW_SCALE_LEFT" : "512",
 		"NK_WINDOW_NO_INPUT" : "1024",
+
+		"NK_DYNAMI" : "0",
+		"NK_STATIC" : "1",
 
 		"NK_FONT_ATLAS_ALPHA8" : "0",
 		"NK_FONT_ATLAS_RGBA32" : "1",
@@ -88,7 +92,10 @@
 
 		"nk_label" : "void,void^,char^,int",
 
+		"nk_button_text" : "bool,void^,char^,int",
 		"nk_button_label" : "bool,void^,char^",
+		"nk_button_label_styled" : "bool,void^,void^,char^",
+		"nk_button_color" : "bool,void^,nk_color",
 
 		"nk_layout_row_static" : "void,void^,float,int,int",
 		"nk_layout_row_dynamic" : "void,void^,float,int",
@@ -102,6 +109,23 @@
 		"nk_font_atlas_add_default" : "void^,void^,float,void^",
 
 		"nk_style_load_all_cursors" : "void,void^,void^",
-		"nk_style_set_font" : "void,void^,void^"
+		"nk_style_set_font" : "void,void^,void^",
+
+		"nk_layout_row_template_begin" : "void,void^,float",
+		"nk_layout_row_template_push_dynamic" : "void,void^",
+		"nk_layout_row_template_push_variable" : "void,void^,float",
+		"nk_layout_row_template_push_static" : "void,void^,float",
+		"nk_layout_row_template_end" : "void,void^",
+
+		"nk_style_show_cursor" : "void,void^",
+		"nk_style_hide_cursor" : "void,void^",
+
+		"nk_layout_space_begin" : "void,void^,int,float,int",
+		"nk_layout_space_push" : "void,void^,nk_rect",
+		"nk_layout_space_end" : "void,void^",
+
+		"nke_style_button_size" : "int",
+		"nke_style_button_copy_from_context" : "void,void^,void^",
+		"nke_style_button_set_color" : "void,void^,int,nk_color"
 	}
 }

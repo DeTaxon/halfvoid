@@ -7,6 +7,9 @@ AppendClass Task
 	}
 	CreateStack := !() -> void
 	{
+		if fiberHandler != null
+			return void
+			
 		fiberHandler = CreateFiber(4*1024*1024,ucontextStartTask,null)
 		itTaskWorker = CurrentThread
 

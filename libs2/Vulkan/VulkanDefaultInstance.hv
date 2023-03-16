@@ -1,5 +1,12 @@
 VulkanDefaultInstance := class extend VulkanGLFWInstance
 {
+
+	preferSimpleGPU := bool
+	PreferSimpleGPU := !() -> void
+	{
+		preferSimpleGPU = true
+	}
+
 	Init := !() -> void
 	{
 		super()
@@ -25,6 +32,8 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		addLayer("VK_LAYER_LUNARG_standard_validation")
 		addLayer("VK_LAYER_KHRONOS_validation")
 		addLayer("VK_LAYER_LUNARG_vktrace")
+		//addLayer("VK_LAYER_AMD_switchable_graphics")
+
 	}
 	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void
 	{
@@ -73,22 +82,43 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 	}
 	DeviceSelectStep := virtual !(VkPhysicalDevice[] deviceList) -> int
 	{
+		preferedCards := int[3]
+		preferedCards[^] = -1
+
+		if deviceList.Size() == 0
+		{
+			printf("No videocards\n")
+		}
+
 		for it,i : deviceList
 		{
 			printf("device id %i\n",i)
 
 			devProp := VkPhysicalDeviceProperties
 			Funcs.vkGetPhysicalDeviceProperties(it,devProp&)
-				
-			printf("-name %s\n",devProp.deviceName&)
-			printf("-type %i\n",devProp.deviceType)
+			
+			if devProp.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU and preferedCards[0] == -1
+			{
+				preferedCards[0] = i
+			}
+			if devProp.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU  and preferedCards[1] == -1
+			{
+				preferedCards[1] = i
+			}
+			if devProp.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU  and preferedCards[2] == -1
+			{
+				preferedCards[2] = i
+			}
+
+			//printf("-name %s\n",devProp.deviceName&)
+			//printf("-type %i\n",devProp.deviceType)
 
 			propsCount := u32
 			Funcs.vkGetPhysicalDeviceQueueFamilyProperties(it,propsCount&,null)
 			prps := Vector.{VkQueueFamilyProperties}(propsCount)
 			Funcs.vkGetPhysicalDeviceQueueFamilyProperties(it,propsCount&,prps.GetPointer())
 
-			for it,j : prps
+			if false for it,j : prps
 			{
 				printf("-quque family %i\n",j)
 				printf("-- queueCount %i\n",it.queueCount)
@@ -105,7 +135,14 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 				printf(" }\n")
 			}
 		}
-		return 2
+		if preferSimpleGPU and preferedCards[1] != -1
+			return preferedCards[1]
+		for it : preferedCards
+		{
+			if it != -1
+				return it
+		}
+		return 0
 	}
 	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
 	{ 

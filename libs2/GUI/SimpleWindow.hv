@@ -6,10 +6,13 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 	mainRenderPass := TRenderPass^
 
-	this := !() -> void
+	this := !(int w, int h,char^ title) -> void
 	{
+
+		PreferSimpleGPU()
+		
 		itWin = new GLFWWindow
-		itWin.Init(500,500,"Test")
+		itWin.Init(w,h,title)
 		Init()
 
 		initCreateStageMemory()
@@ -21,12 +24,16 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 		mainRenderPass = nuklearContext.CreateRenderPass(SwapImageFormat)
 
-		CreateSwapchain(mainRenderPass,500,500)
+		CreateSwapchain(mainRenderPass,w,h)
 
 		nuklearContext.CreateShader(mainRenderPass)
 
+		InitWindow(nuklearContext)
+
+		waitEndFence
 	}
 
+	waitEndFence := VkFence
 	Run := !() -> void
 	{
 		step1Cmd := TVkCommandBuffer(this&,itDrawCommandPool)
@@ -35,12 +42,11 @@ SimpleWindow := class extend VulkanDefaultInstance
 		{
 			surfaceIndex := u32
 			drawRes := true
-			@work DrawGetImage(surfaceIndex&,drawRes&)
+			DrawGetImage(surfaceIndex&,drawRes&)
 
 			step1Cmd.Reset()
 			step1Cmd.Start()
 			
-
 			StartTextDraw(step1Cmd.Get(),GetSurfaceFramebuffer(surfaceIndex))
 
 			nuklearContext.InputCheck(itWin)
@@ -48,20 +54,19 @@ SimpleWindow := class extend VulkanDefaultInstance
 			nuklearContext.RenderStep()
 			nuklearContext.Clear()
 
-			nuklearContext.Draw(step1Cmd.Get(),500,500)
+			nuklearContext.Draw(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
 
 			StopTextDraw(step1Cmd.Get())
 
 			step1Cmd.Stop()
 
-			Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
-			step1Cmd.Submit(DrawQueue,itGlobFence)
+			step1Cmd.Submit(DrawQueue,null)
 
 			DrawPresentImage(surfaceIndex)
 
-			hm := u64 //TODO
-			hm = not_b hm
-			@work Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,hm)
+			//hm := u64 //TODO
+			//hm = not_b hm
+			//Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,hm)
 
 			itWin.PollEvents()
 			itWin.SwapBuffers()
@@ -103,7 +108,10 @@ SimpleWindow := class extend VulkanDefaultInstance
 		Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
 	}
 
-	DrawCode := virtual !(void^ nk) -> void
+	InitWindow := virtual !(void^ nk) -> void
+	{
+	}
+	DrawCode := virtual !(void^ nk,int w, int h) -> void
 	{
 	}
 }
@@ -112,6 +120,7 @@ NuklearGoAroundContext := class extend NuklearVulkanContext
 {
 	DrawCode := virtual !(void^ nk) -> void
 	{
-		vInstance->{SimpleWindow^}.DrawCode(nk)
+		wn := vInstance->{SimpleWindow^}
+		wn.DrawCode(nk,wn.GetSurfaceWidth(),wn.GetSurfaceHeight())
 	}
 }

@@ -35,10 +35,12 @@ VulkanGLFWInstance := class extend VulkanInstance
 		formts := Vector.{VkSurfaceFormatKHR}(formsCount)
 		Funcs.vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice,itSurface,formsCount&,formts.GetPointer())
 
-		printf("formats\n")
-		for it : formts
-		{
-			printf("-format %i\n",it&->{int^}^)
+		if false{
+			printf("formats\n")
+			for it : formts
+			{
+				printf("-format %i\n",it&->{int^}^)
+			}
 		}
 
 		presMods := u32
@@ -46,27 +48,30 @@ VulkanGLFWInstance := class extend VulkanInstance
 		pMods := Vector.{VkPresentModeKHR}(presMods)
 		Funcs.vkGetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice,itSurface,presMods&,pMods.GetPointer())
 
-		printf("supported mods\n")
-
-		for it : pMods
+		if false
 		{
-			switch it
+			printf("supported mods\n")
+
+			for it : pMods
 			{
-				case VK_PRESENT_MODE_IMMEDIATE_KHR
-					printf("- IMMEDIATE\n")
-				case VK_PRESENT_MODE_MAILBOX_KHR
-					printf("- MAILBOX\n")
-				case VK_PRESENT_MODE_FIFO_KHR
-					printf("- FIFO\n")
-				case VK_PRESENT_MODE_FIFO_RELAXED_KHR
-					printf("- FIFO_RELAXED\n")
-				case void
-					printf("- unknown %i\n",it)
+				switch it
+				{
+					case VK_PRESENT_MODE_IMMEDIATE_KHR
+						printf("- IMMEDIATE\n")
+					case VK_PRESENT_MODE_MAILBOX_KHR
+						printf("- MAILBOX\n")
+					case VK_PRESENT_MODE_FIFO_KHR
+						printf("- FIFO\n")
+					case VK_PRESENT_MODE_FIFO_RELAXED_KHR
+						printf("- FIFO_RELAXED\n")
+					case void
+						printf("- unknown %i\n",it)
+				}
 			}
 		}
 		reqMod := pMods[0]
 		reqMod = VK_PRESENT_MODE_FIFO_KHR
-		reqMod = VK_PRESENT_MODE_IMMEDIATE_KHR
+		//reqMod = VK_PRESENT_MODE_IMMEDIATE_KHR
 		//for gUserModes //TODO
 		//{
 		//	if it in pMods

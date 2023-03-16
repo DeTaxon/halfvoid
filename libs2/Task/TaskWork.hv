@@ -15,6 +15,7 @@ TaskWorkersToDo := List.{Task^}
 
 	TaskCheckMutex.Unlock()
 	result = lmbd()
+	printf("WHHWHY %i %p\n",GetCurrentThreadId(),CurrentTask)
 	TaskCheckMutex.Lock()
 
 	myTask->{Task^}.resume()
@@ -52,6 +53,7 @@ ExpectWorkers := !(int x) -> void
 	for i : diff
 	{
 		newWorker := new TaskWorkerCreated()
+		
 		newWorker.CreateThread()
 		TaskAdditionalWorkers.Push(newWorker)
 	}

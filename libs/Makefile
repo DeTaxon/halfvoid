@@ -11,6 +11,9 @@ NuklearGLFW.so : NuklearGLFW.c
 Nuklear.so : Nuklear.c
 	clang $(flags) $^ -lm -shared -o $@
 
+Nuklear.dll : Nuklear.c
+	clang $(flags) --target=x86_64-w64-mingw32-gnu $^ -lm -shared -o $@
+
 download:
 	mkdir stb
 	(cd stb; git clone https://github.com/nothings/stb)

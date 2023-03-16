@@ -36,6 +36,7 @@ NuklearVulkanContext := class //extend TGCObject
 	Init := !(VulkanDefaultInstance^ vi) -> void
 	{
 		vInstance = vi
+
 		Nuklear_init() //TODO once
 
 		itContext = calloc(nk_context_size(),1)
@@ -52,6 +53,7 @@ NuklearVulkanContext := class //extend TGCObject
 		//fnt := nk_font_atlas_add_from_memory(atls_data,ttfMap.Get(),ttfMap.Size(),24,null)
 
 		imgABC := nk_font_atlas_bake(atlasData&,ax&,ay&,NK_FONT_ATLAS_RGBA32)
+
 
 		atlasTexture = vInstance.CreateTexture()
 		atlasTexture.CreateObject(ax,ay)
@@ -106,14 +108,14 @@ NuklearVulkanContext := class //extend TGCObject
 
 		nk_buffer_init_default(cmds[0]&)
 
-		vRealVertBuf := Vector.{u8}(16*1024)
-		vRealIndBuf := Vector.{u8}(16*1024)
+		vRealVertBuf := Vector.{u8}(16*16*1024)
+		vRealIndBuf := Vector.{u8}(8*16*1024)
 
-		nk_buffer_init_fixed(vBuf[0]&,vRealVertBuf.GetPointer(),16*1024) //TODO cleanup
-		nk_buffer_init_fixed(iBuf[0]&,vRealIndBuf.GetPointer(),2048)
+		nk_buffer_init_fixed(vBuf[0]&,vRealVertBuf.GetPointer(),16*16*1024) //TODO cleanup
+		nk_buffer_init_fixed(iBuf[0]&,vRealIndBuf.GetPointer(),8*16*1024)
 		res := nk_convert(itContext,cmds[0]&,vBuf[0]&,iBuf[0]&,cfg&)
 
-		assert(res == 0)
+		assert(res == 0) //TODO dynamic way of getting
 
 		textList.Destroy()
 		cmd := nk__draw_begin(itContext,cmds[0]&)->{nk_draw_command^}

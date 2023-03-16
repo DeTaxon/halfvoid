@@ -37,7 +37,6 @@ nk_font_atlas := class
 	font_num := int
 
 }
-
 nk_draw_vertex_layout_element := class
 {
 	attribute := int
