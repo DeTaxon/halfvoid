@@ -47,6 +47,14 @@ main := !(char^[] args) -> int
 	osHVFile := ".hv.posix"
 	osCLIBFile := ".clib.posix"
 
+	if #OS() == "Windows"
+	{
+		targetLinux = false
+		targetWindows = true
+		osHVFile = ".hv.win32"
+		osCLIBFile = ".clib.win32"
+	}
+
 	i := 1
 	while i < args.Size()
 	{
