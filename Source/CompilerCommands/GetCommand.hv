@@ -10,5 +10,13 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return CommandGetRegexp(itm)	
 	}
+	if cmd == "#OS"
+	{
+		if targetLinux
+			return GetExeString(StringSpan("Linux"))
+		if targetWindows
+			return GetExeString(StringSpan("Windows"))
+		assert(false)
+	}
 	itm.EmitError("Command not found")	
 }
