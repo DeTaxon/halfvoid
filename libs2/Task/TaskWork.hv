@@ -15,7 +15,6 @@ TaskWorkersToDo := List.{Task^}
 
 	TaskCheckMutex.Unlock()
 	result = lmbd()
-	printf("WHHWHY %i %p\n",GetCurrentThreadId(),CurrentTask)
 	TaskCheckMutex.Lock()
 
 	myTask->{Task^}.resume()

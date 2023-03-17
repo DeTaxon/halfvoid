@@ -35,7 +35,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 		formts := Vector.{VkSurfaceFormatKHR}(formsCount)
 		Funcs.vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice,itSurface,formsCount&,formts.GetPointer())
 
-		if false{
+		if false {
 			printf("formats\n")
 			for it : formts
 			{
@@ -78,9 +78,25 @@ VulkanGLFWInstance := class extend VulkanInstance
 		//		reqMod = it
 		//}
 
+		preferedFormatIndex := 0
+
+		for it,i : formts
+		{
+			if it&->{int^}^ == VK_FORMAT_R8G8B8A8_UNORM
+			{
+				preferedFormatIndex = i
+				break
+			}
+			if it&->{int^}^ == VK_FORMAT_B8G8R8A8_UNORM
+			{
+				preferedFormatIndex = i
+				break
+			}
+		}
+
 		//TODO: format priority
-		SwapImageFormat = formts[1].format
-		SwapImageColorSpace = formts[1].colorSpace
+		SwapImageFormat = formts[preferedFormatIndex].format
+		SwapImageColorSpace = formts[preferedFormatIndex].colorSpace
 		SwapImageMode = reqMod
 	}
 	CreateSwapchain := !(TRenderPass^ renPass,int inW,int inH) -> void

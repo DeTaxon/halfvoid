@@ -184,6 +184,17 @@ GetLibrary := !(char^[] lbs) -> Library^
 {
 	for i : lbs.Size()
 	{
+		spn := StringSpan(lbs[i])
+		if #OS() == "Windows"
+		{
+			if spn.End == ".so"
+				continue
+		}
+		if #OS() == "Linux"
+		{
+			if spn.End == ".dll"
+				continue
+		}
 		lb := gLibDB.GetLib(lbs[i])
 		if lb != null
 			return lb

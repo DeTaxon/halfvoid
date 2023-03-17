@@ -233,7 +233,8 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 			{
 				tp := dwn.GetType()
 				tp.PrintType(f)
-				f^ << "* byval("
+				f^ << "* "
+				f^ << "byval("
 				tp.PrintType(f)
 				f^ << ") "
 				dwn.PrintPointUse(f)

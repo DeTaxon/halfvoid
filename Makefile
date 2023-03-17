@@ -56,11 +56,14 @@ halfvoid:
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -win32 -g -C0 libs2/ -C1 Source/ -o out.ll
-	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid
+	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid -g -C0 libs2/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
+cycle.exe:
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid_win.exe -win32 -g -C0 libs2/ -C1 Source/ -o out.exe.ll
+	clang -gdwarf-4 -static out.exe.ll -o halfvoid_win.exe
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe

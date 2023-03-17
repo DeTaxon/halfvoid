@@ -30,19 +30,44 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 		InitWindow(nuklearContext)
 
-		waitEndFence
 	}
 
-	waitEndFence := VkFence
+	fpsLimited := bool
+	fpsPeriod := float
+	SetFPSLimit := !(int fpsCount) -> void
+	{
+		assert(fpsCount >= 0)
+		if fpsCount == 0
+		{
+			fpsLimited = false
+		}else{
+			fpsLimited = true
+			fpsPeriod = 1 / fpsCount
+		}
+	}
+
 	Run := !() -> void
 	{
 		step1Cmd := TVkCommandBuffer(this&,itDrawCommandPool)
+
+		lastTime := GetSteadyTime() - 1 //sec
 
 		while not itWin.ShouldClose()
 		{
 			surfaceIndex := u32
 			drawRes := true
 			DrawGetImage(surfaceIndex&,drawRes&)
+
+			if fpsLimited
+			{
+				itTime := GetSteadyTime()
+				diffTime := itTime - lastTime
+				if diffTime < fpsPeriod
+				{
+					TSleep(fpsPeriod - diffTime)
+				}
+				lastTime = GetSteadyTime()
+			}
 
 			step1Cmd.Reset()
 			step1Cmd.Start()

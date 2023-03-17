@@ -181,7 +181,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 GetLVarName := !(int x) -> StringSpan
 {
 	buff := char[100]
-	sprintf(buff[0]&,"%Var%i",x)
+	sprintf(buff[0]&,"%%Var%i",x)
 	result = GetConstString(buff[0]&)
 }
 

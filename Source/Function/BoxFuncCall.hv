@@ -317,6 +317,61 @@ BoxFuncCall := class extend BoxExeObj
 				asPtr.downs.Push(newDown[^])
 			}
 		}
+		if targetWindows
+		{
+			leftVars := 4
+			needRework := false
+			k := 0
+			types4 := Type^[100]
+			isRefs4 := bool[100]
+
+			newDown := ExeDownList
+			preRes := ExeDownList
+
+			for it,i : fType.Params
+			{
+				if it.IsRef
+				{
+					types4[k] = it.ItType
+					isRefs4[k] = true
+					newDown.Push(downs[i])
+					k += 1
+					leftVars -= 1
+				}else if it.ItType is TypeClass and leftVars > 0 and it.ItType.GetSize() <= 8
+				{
+					needRework = true
+
+					dObj := BoxExeObj^
+					dObj = new UnrefFuncCall(downs[i])
+					dObj = GetExchange2(dObj,GTypeU64.GetPoint(),false)
+					assert(dObj != null)
+					dObj = new PtrToRef(dObj)
+
+					types4[k] = GTypeU64
+					newDown.Push(dObj)
+					k += 1
+					leftVars -= 1
+
+				}else{
+					types4[k] = it.ItType
+					newDown.Push(downs[i])
+					k += 1
+					leftVars -= 1
+				}
+			}
+			if needRework //and this& is BoxFuncPointerCall
+			{
+				assert(this& is BoxFuncPointerCall)
+
+				asPtr := this&->{BoxFuncPointerCall^}
+
+				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
+				asPtr.ItPtrFunc = GetExchange2(asPtr.ItPtrFunc,newFunc.GetPoint(),false)
+				asPtr.PreCalls.Push(preRes[^])
+				asPtr.downs.Destroy()
+				asPtr.downs.Push(newDown[^])
+			}
+		}
 
 		if ResultVar != null and fType.ResultType is TypeClass
 		{

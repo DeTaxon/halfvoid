@@ -6,10 +6,6 @@
 
 main := !(char^[] args) -> int
 {
-	if #OS() == "Windows"
-	{
-		x = 15
-	}
 	printf("test %s\n",#OS())
 	return 0
 

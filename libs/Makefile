@@ -12,7 +12,7 @@ Nuklear.so : Nuklear.c
 	clang $(flags) $^ -lm -shared -o $@
 
 Nuklear.dll : Nuklear.c
-	clang $(flags) --target=x86_64-w64-mingw32-gnu $^ -lm -shared -o $@
+	clang $(flags) -static $^ -lm -shared -o $@
 
 download:
 	mkdir stb
