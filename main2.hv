@@ -8,13 +8,17 @@
 
 main := !(char^[] args) -> int
 {
-	fl := FSGetFile("glfw3.dll")
-	lb := GetLibrary(fl)
-	fnc := lb.Get("glfwInit")->{!()^->void}
-	fncWin := lb.Get("glfwCreateWindow")->{!(int,int,char^,void^,void^)^->void^}
-	printf("hey %p %p\n",lb,fnc)
-	fnc()
-	fncWin(500,500,"LOL",null,null)
+	libGlfwInit()
+
+	glfwInit()
+	win := glfwCreateWindow(500,500,"HI",null,null)
+	//fl := FSGetFile("glfw3.dll")
+	//lb := GetLibrary(fl)
+	//fnc := lb.Get("glfwInit")->{!()^->void}
+	//fncWin := lb.Get("glfwCreateWindow")->{!(int,int,char^,void^,void^)^->void^}
+	//printf("hey %p %p\n",lb,fnc)
+	//fnc()
+	//fncWin(500,500,"LOL",null,null)
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
