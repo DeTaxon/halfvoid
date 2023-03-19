@@ -34,7 +34,7 @@ vRepoFile := class extend vRepoObject
 		assert(ptrToZip == null)
 		return fsGetModificationTime(GetPath().Str())
 	}
-	IsVirtual := !() -> bool 
+	IsVirtual := virtual !() -> bool 
 	{
 		return ptrToZip != null
 	}

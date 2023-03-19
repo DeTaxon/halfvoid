@@ -4,13 +4,11 @@ Library := class
 	hndl := void^
 	itFileName := char^
 	loadedObjs := AVLMap.{String^,void^}
-	//if $win32
-	//	win32DllData := win32DllLoadData^
 
 	this := !() -> void
 	{
 	}
-	Get := !(StringView name) -> void^
+	Get := virtual !(StringView name) -> void^
 	{
 		nm := name.GetString()
 
@@ -202,36 +200,33 @@ GetLibrary := !(char^[] lbs) -> Library^
 	return null
 }
 
+GetLibrary := !(vRepoFile^ fl) -> Library^
+{
+	//assert(fl.IsVirtual)
+
+	if #OS() == "Windows"
+	{
+		pt := fl.GetMap()
+
+		resLoad := win32LoadLibrary(pt.Get(),pt.Size())
+		
+		res := new LibraryWackyLoad
+		res.win32DllData = resLoad
+
+		return res
+
+
+		//nameCpy := StrCopy(name)
+		//inMap2 := ref loadedLibs[nameCpy]
+		//inMap2.hndl = hndl
+		////inMap2.itFileName = StrCopy(tmpName)
+		//inMap2.win32DllData = resLoad
+		//return inMap2&
+	}
+}
+
 //Library := class 
 //{
-//	hndl := LibDBObject^
-//	this := !(args...) -> void
-//	{
-//		Open(args...)
-//	}
-//	skipLib := !(char^ name) -> bool
-//	{
-//		strEnd := StringEnd(name)
-//		if $posix and strEnd == ".dll" return true
-//		if $win32 and strEnd != ".dll" return true
-//		return false
-//	}
-//	Open := !(char^ name,args...) -> void
-//	{
-//		hndl = null
-//		if not skipLib(name)
-//		{
-//			try //TODO make it pretty
-//			{
-//				hndl = LibDB.GetLib(name)
-//			}catch(IException^ e)
-//			{
-//			}
-//		}
-//		if hndl == null
-//			Open(args...)
-//	}
-//	Open := !() -> void {}
 //
 //	Open := !(char^ name) -> void
 //	{

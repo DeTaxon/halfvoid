@@ -22,7 +22,9 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 			r.EmitError("Can not cast to unknown type")
 		lObj := TryGetExeCall(obj.Down)
 		if lObj == null
-			r.EmitError("Unknown object to case")
+		{
+			r.EmitError("Unknown object to cast")
+		}
 		return GetExchange2(lObj,toType,false)
 
 	}

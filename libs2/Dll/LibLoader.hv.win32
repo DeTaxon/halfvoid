@@ -1,3 +1,24 @@
+LibraryWackyLoad := class extend Library
+{
+	win32DllData := win32DllLoadData^
+	Get := virtual !(StringView name) -> void^
+	{
+		nm := name.GetString()
+
+		inMap := loadedObjs.TryFind(nm)
+		if inMap != null
+			return inMap^
+
+		 inExport := win32DllData.exportFunctions.TryFind(nm.Str())
+		 if inExport != null
+		 {
+		 	loadedObjs[nm] = inExport^
+		 	return inExport^
+		 }
+
+	}
+}
+
 
 OpenLib := !(char^ libName) -> void^
 {

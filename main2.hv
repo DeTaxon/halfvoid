@@ -4,9 +4,17 @@
 //TODO todo in libs2/Random.hv is important
 //TODO arr := !["","1"] ; arr[0] returns null
 
+//TODO bug res := ptr1->{size_t} - ptr2->{size_t} fails as unary minus takes priority
+
 main := !(char^[] args) -> int
 {
-	printf("test %s\n",#OS())
+	fl := FSGetFile("glfw3.dll")
+	lb := GetLibrary(fl)
+	fnc := lb.Get("glfwInit")->{!()^->void}
+	fncWin := lb.Get("glfwCreateWindow")->{!(int,int,char^,void^,void^)^->void^}
+	printf("hey %p %p\n",lb,fnc)
+	fnc()
+	fncWin(500,500,"LOL",null,null)
 	return 0
 
 	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }

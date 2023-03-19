@@ -39,6 +39,9 @@ win.exe:
 	$(gdb_tui) ./halfvoid -win32 -g -C0 libs2 main2.hv -o out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe
 
+win2.exe:
+	$(gdb_tui) ./halfvoid_win.exe -win32 -g -C0 libs2 main2.hv -o out.ll
+	clang -g out.ll -o win.exe
 Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m $(wildcard *.pr)
 Objs/hres.zip: $(wildcard ./hres/*)
@@ -66,4 +69,4 @@ cycle.exe:
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe

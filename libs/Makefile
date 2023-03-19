@@ -12,7 +12,7 @@ Nuklear.so : Nuklear.c
 	clang $(flags) $^ -lm -shared -o $@
 
 Nuklear.dll : Nuklear.c
-	clang $(flags) -static $^ -lm -shared -o $@
+	clang -m64 -fno-exceptions -fno-rtti -fno-strict-aliasing -O2 -static $^ -lm -shared -o $@
 
 download:
 	mkdir stb

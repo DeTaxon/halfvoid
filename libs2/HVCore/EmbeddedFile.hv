@@ -10,6 +10,10 @@ vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already mad
 	{
 		return new ZipFSFileViewRaw(itData->{u8^},fileSize)
 	}
+	IsVirtual := virtual !() -> bool 
+	{
+		return true
+	}
 }
 
 

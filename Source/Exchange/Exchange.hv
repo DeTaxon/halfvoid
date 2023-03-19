@@ -65,9 +65,43 @@ GetExchange2 := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 		return new PtrExchange(obj,expType)
 	}
 
+	if inType is in TypePoint and expType == GTypeSizeT
+	{
+		return new PtrToSizeT(obj)
+	}
+
 	return null
 }
 
+PtrToSizeT := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = GTypeSizeT
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(Stream^ f) -> void //todo remove copy of code, at UnrefObj.hv
+	{
+		Down.PrintPre(f)
+
+		f^ << "%TUnref" << resId << " = ptrtoint "
+		Down.GetType().PrintType(f)
+		f^ << " "
+		Down.PrintUse(f)
+		f^ << " to i64" //TODO arch
+		if DebugMode
+			f^ << ", !dgb !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintUse := virtual !(Stream^ f) -> void
+	{
+		f^ << "%TUnref" << resId
+	}
+}
 PtrToRef := class extend BoxExeObj
 {
 	resId := int

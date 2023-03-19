@@ -213,59 +213,59 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 		}
 	}
 
-	//if newMem != nt_part.OptionalHeader.ImageBase
-	//{
-	//	memDiff := size_t
-	//	memLess := false
-	//	if newMem > nt_part.OptionalHeader.ImageBase
-	//	{
-	//		memDiff = newMem->{size_t} - nt_part.OptionalHeader.ImageBase
-	//	}else{
-	//		memDiff = nt_part.OptionalHeader.ImageBase - newMem->{size_t}
-	//		memLess = true
-	//	}
+	if newMem != nt_part.OptionalHeader.ImageBase
+	{
+		memDiff := size_t
+		memLess := false
+		if newMem > nt_part.OptionalHeader.ImageBase
+		{
+			memDiff = newMem->{size_t} - nt_part.OptionalHeader.ImageBase->{size_t}
+		}else{
+			memDiff = nt_part.OptionalHeader.ImageBase->{size_t} - (newMem->{size_t})
+			memLess = true
+		}
 
-	//	baseReloc := ref nt_part.OptionalHeader.DataDirectory[5]
-	//	reloc := (newMem + baseReloc.VirtualAddress)->{image_base_relocation^}
+		baseReloc := ref nt_part.OptionalHeader.DataDirectory[5]
+		reloc := (newMem->{u8^}[baseReloc.VirtualAddress]&)->{image_base_relocation^}
 
-	//	while reloc.VirtualAddress != 0
-	//	{
-	//		dest := newMem + reloc.VirtualAddress
-	//		relInfo := (reloc + 1)->{u16^}
-	//		
-	//		nextReloc := (reloc->{void^} + reloc.SizeOfBlock)->{image_base_relocation^}
-	//		while true
-	//		{
-	//			if relInfo >= nextReloc
-	//				break
-	//			relType := relInfo^ >> 12
-	//			relOffset := relInfo^ and_b 0xFFF
+		while reloc.VirtualAddress != 0
+		{
+			dest := newMem->{u8^}[reloc.VirtualAddress]&
+			relInfo := (reloc[1]&)->{u16^}
+			
+			nextReloc := (reloc->{u8^}[reloc.SizeOfBlock]&)->{image_base_relocation^}
+			while true
+			{
+				if relInfo >= nextReloc
+					break
+				relType := relInfo^ shr 12
+				relOffset := relInfo^ and_b 0xFFF
 
-	//			switch relType
-	//			{
-	//				case 3
-	//					pathAddr32 := dest + relOffset
-	//					if memLess
-	//					{
-	//						pathAddr32->{u32^}^ -= memDiff
-	//					}else{
-	//						pathAddr32->{u32^}^ += memDiff
-	//					}
-	//				case 10
-	//					pathAddr64 := dest + relOffset
-	//					if memLess
-	//					{
-	//						pathAddr64->{u64^}^ -= memDiff
-	//					}else{
-	//						pathAddr64->{u64^}^ += memDiff
-	//					}
-	//			}
+				switch relType
+				{
+					case 3
+						pathAddr32 := dest[relOffset]&
+						if memLess
+						{
+							pathAddr32->{u32^}^ -= memDiff
+						}else{
+							pathAddr32->{u32^}^ += memDiff
+						}
+					case 10
+						pathAddr64 := dest[relOffset]&
+						if memLess
+						{
+							pathAddr64->{u64^}^ -= memDiff
+						}else{
+							pathAddr64->{u64^}^ += memDiff
+						}
+				}
 
-	//			relInfo = relInfo + 1	
-	//		}
-	//		reloc = nextReloc
-	//	}
-	//}
+				relInfo = relInfo[1]&
+			}
+			reloc = nextReloc
+		}
+	}
 
 	imprtDir := ref nt_part.OptionalHeader.DataDirectory[1]
 	dirS := newMem[imprtDir.VirtualAddress]&->{image_import_descriptor^}
@@ -275,8 +275,7 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 	{
 		nowD := ref dirS[i]
 		if nowD.Name == 0 break
-		printf("hm %s\n",newMem[nowD.Name]&)
-		//itLib := Library((newMem + nowD.Name)->{char^}) //TODO: ref count
+		itLib := GetLibrary((newMem->{u8^}[nowD.Name]&)->{char^}) //TODO: ref count
 		fT2 := newMem[nowD.FirstThunk]&->{void^^}
 		fThunk := fT2
 		
@@ -292,8 +291,7 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 				assert(false)
 			}else{
 				mm := newMem[fThunk->{u64^}^]&->{image_import_by_name^}
-				printf("hey %s\n",mm.Name[0]&)
-				//fT2^ = itLib.Get(mm.Name[0]&)
+				fT2^ = itLib.Get(mm.Name[0]&)
 			}
 			fThunk = fThunk[1]&
 			fT2 = fT2[1]&
@@ -302,71 +300,71 @@ win32LoadLibrary := !(void^ memPtr,size_t memSize) -> win32DllLoadData^
 		i += 1
 	}
 
-	//for i : nt_part.FileHeader.NumberOfSections
-	//{
-	//	section := ref sections[i]
-	//	dest := void^()
+	for i : nt_part.FileHeader.NumberOfSections
+	{
+		section := ref sections[i]
+		dest := void^
 
-	//	setFlag := 1
-	//	isRead := ((section.Characteristics and_b IMAGE_SCN_MEM_READ) != 0)
-	//	isWrite := ((section.Characteristics and_b IMAGE_SCN_MEM_WRITE) != 0)
-	//	isExecute := ((section.Characteristics and_b IMAGE_SCN_MEM_EXECUTE) != 0)
-	//	
-	//	if isRead and not isWrite setFlag = PAGE_READONLY
-	//	if isRead and isWrite setFlag = PAGE_READWRITE
-	//	if not isRead and isWrite setFlag = PAGE_WRITECOPY
-	//	
-	//	if isExecute setFlag = setFlag << 4 
-	//	setFlag = PAGE_EXECUTE_READWRITE //TODO: get shared pages chracteristics
+		setFlag := 1
+		isRead := ((section.Characteristics and_b IMAGE_SCN_MEM_READ) != 0)
+		isWrite := ((section.Characteristics and_b IMAGE_SCN_MEM_WRITE) != 0)
+		isExecute := ((section.Characteristics and_b IMAGE_SCN_MEM_EXECUTE) != 0)
+		
+		if isRead and not isWrite setFlag = PAGE_READONLY
+		if isRead and isWrite setFlag = PAGE_READWRITE
+		if not isRead and isWrite setFlag = PAGE_WRITECOPY
+		
+		if isExecute setFlag = setFlag shl 4 
+		setFlag = PAGE_EXECUTE_READWRITE //TODO: get shared pages chracteristics
 
-	//	oldPg := u32
-	//	if sections[i].SizeOfRawData == 0
-	//	{
-	//		sSize := 0
-	//		getSectionSize(i,sSize&)
+		oldPg := u32
+		if sections[i].SizeOfRawData == 0
+		{
+			sSize := 0
+			getSectionSize(i,sSize&)
 
-	//		if sSize != 0
-	//		{
-	//			VirtualProtect(newMem + section.VirtualAddress,sSize,setFlag,oldPg&)
-	//		}
-	//	}else{
-	//		resV := VirtualProtect(newMem + section.VirtualAddress, section.SizeOfRawData,setFlag,oldPg&)
-	//	}
-	//}
+			if sSize != 0
+			{
+				VirtualProtect(newMem->{u8^}[section.VirtualAddress]&,sSize,setFlag,oldPg&)
+			}
+		}else{
+			resV := VirtualProtect(newMem->{u8^}[section.VirtualAddress]&, section.SizeOfRawData,setFlag,oldPg&)
+		}
+	}
 
-	//tlsDir := ref nt_part.OptionalHeader.DataDirectory[9]
-	//if tlsDir.VirtualAddress != 0
-	//{
-	//	cdb := (newMem + tlsDir.VirtualAddress)->{image_tls_directory64^}
-	//	callbV := cdb.AddressOfCallBacks&->{void^^}^
-	//	callb := callbV->{!(void^,int,void^)^^->void}
-	//	while callb^ != null
-	//	{
-	//		callb^(newMem,1,null)
-	//		callb = callb + 1
-	//	}
-	//	//assert(false)
-	//}
+	tlsDir := ref nt_part.OptionalHeader.DataDirectory[9]
+	if tlsDir.VirtualAddress != 0
+	{
+		cdb := (newMem->{u8^}[tlsDir.VirtualAddress]&)->{image_tls_directory64^}
+		callbV := cdb.AddressOfCallBacks&->{void^^}^
+		callb := callbV->{!(void^,int,void^)^^->void}
+		while callb^ != null
+		{
+			callb^(newMem,1,null)
+			callb = callb[1]&
+		}
+		//assert(false)
+	}
 
-	//if nt_part.OptionalHeader.AddressOfEntryPoint != 0
-	//{
-	//	entry := (newMem + nt_part.OptionalHeader.AddressOfEntryPoint)->{!(void^,u32,void^)^->void}
-	//	//entry(newMem,1,null)
-	//	//entry(newMem,2,null)
-	//}
+	if nt_part.OptionalHeader.AddressOfEntryPoint != 0
+	{
+		entry := (newMem->{u8^}[nt_part.OptionalHeader.AddressOfEntryPoint]&)->{!(void^,u32,void^)^->void}
+		//entry(newMem,1,null)
+		//entry(newMem,2,null)
+	}
 
-	//exprtDir := ref nt_part.OptionalHeader.DataDirectory[0]
-	//exS := (newMem + exprtDir.VirtualAddress)->{image_export_descriptor^}
+	exprtDir := ref nt_part.OptionalHeader.DataDirectory[0]
+	exS := (newMem->{u8^}[exprtDir.VirtualAddress]&)->{image_export_descriptor^}
 
-	//resDat := new win32DllLoadData
+	resDat := new win32DllLoadData
 
-	//for j : exS.NumberOfNames
-	//{
-	//	nameRef := (newMem + exS.AddressOfNames + j*4)->{u32^}
-	//	itName := newMem + nameRef^
-	//	funcRef := (newMem + exS.AddressOfFunctions + j*4)->{u32^}
-	//	itFunc := (newMem + funcRef^)->{!()^->void}
-	//	resDat.exportFunctions[itName->{char^}] = itFunc
-	//}
-	//return resDat
+	for j : exS.NumberOfNames
+	{
+		nameRef := (newMem->{u8^}[exS.AddressOfNames + j*4]&)->{u32^}
+		itName := newMem->{u8^}[nameRef^]&
+		funcRef := (newMem ->{u8^}[exS.AddressOfFunctions + j*4]&)->{u32^}
+		itFunc := (newMem->{u8^}[funcRef^]&)->{!()^->void}
+		resDat.exportFunctions[itName->{char^}] = itFunc
+	}
+	return resDat
 }
