@@ -92,7 +92,6 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 
 		for it,i : deviceList
 		{
-			printf("device id %i\n",i)
 
 			devProp := VkPhysicalDeviceProperties
 			Funcs.vkGetPhysicalDeviceProperties(it,devProp&)

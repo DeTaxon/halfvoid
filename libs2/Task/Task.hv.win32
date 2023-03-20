@@ -27,7 +27,6 @@ AppendClass Task
 
 	switchToTask := !() -> void
 	{
-		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
 		SwitchToFiber(fiberHandler)
 	}

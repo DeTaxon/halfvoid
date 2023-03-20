@@ -65,19 +65,27 @@ GLFWWindow := class
 	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
 	{
 	}
+	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
+	{
+	}
 
 	M1Pressed := bool
 	M2Pressed := bool
-	MousePressed := !(int button, int action, int mods) -> void
+	MousePressedInner := !(int button, int action, int mods) -> void
 	{
+		buttonNum := 0;
 		switch button
 		{
 			case GLFW_MOUSE_BUTTON_LEFT
 				M1Pressed = action == GLFW_PRESS
 			case GLFW_MOUSE_BUTTON_RIGHT
 				M2Pressed = action == GLFW_PRESS
+				buttonNum = 1
 			case GLFW_MOUSE_BUTTON_MIDDLE
+				buttonNum = 2
 		}
+
+		MousePressed(buttonNum,action == GLFW_PRESS,mods)
 	}
 
 	SwapBuffers := !() -> void
@@ -135,7 +143,7 @@ glfwMouseMove := !(void^ w, double itX, double itY) -> void
 }
 glfwMousePressed := !(void^ w,int button, int action, int mods) -> void
 {
-	glfwGetWindowUserPointer(w)->{GLFWWindow^}.MousePressed(button,action,mods)
+	glfwGetWindowUserPointer(w)->{GLFWWindow^}.MousePressedInner(button,action,mods)
 }
 
 glfwCharPress := !(void^ wi, int charCode) -> void

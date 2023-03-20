@@ -27,8 +27,8 @@ VulkanGLFWInstance := class extend VulkanInstance
 		surfAb := VkSurfaceCapabilitiesKHR
 		Funcs.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice,itSurface,surfAb&)
 
-		printf("surface settings\n")
-		printf("img count min = %i , max = %i\n",surfAb.minImageCount,surfAb.maxImageCount)
+		//printf("surface settings\n")
+		//printf("img count min = %i , max = %i\n",surfAb.minImageCount,surfAb.maxImageCount)
 
 		formsCount := u32
 		Funcs.vkGetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice,itSurface,formsCount&,null)

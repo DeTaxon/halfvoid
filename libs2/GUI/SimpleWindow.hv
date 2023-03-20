@@ -1,17 +1,20 @@
 SimpleWindow := class extend VulkanDefaultInstance
 {
 
-	itWin := GLFWWindow^
+	itWin := GLFWGoAround^
 	nuklearContext := NuklearGoAroundContext^
 
 	mainRenderPass := TRenderPass^
+	drawLayout := TShaderInput^
+	drawShader := vShader^
 
 	this := !(int w, int h,char^ title) -> void
 	{
 
 		PreferSimpleGPU()
 		
-		itWin = new GLFWWindow
+		itWin = new GLFWGoAround
+		itWin.backContext = this&
 		itWin.Init(w,h,title)
 		Init()
 
@@ -30,7 +33,28 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 		InitWindow(nuklearContext)
 
+		drawLayout = mainRenderPass.CreateLayout(![
+			VKType(VType_Float,2),
+			VKType(VType_Float,2),
+			VKType(VType_UInt8,4)
+		],![
+			new TImageSet(1)
+		],![
+			new TVertexPushConstant(4*4)
+		],
+		1
+		)
+		drawShader = drawLayout.CreateShader(#File("TextVert2Compiled.vert"),#File("TextFrag2Compiled.frag"))
+
+
+		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
+		nuklearDescp = nuklearPool.CreateDescriptor()
+		vSetTexture(this&,nuklearDescp,nuklearContext.atlasTexture,SamplerNearest)
 	}
+
+
+	nuklearPool := TDescriptorPool^ 
+	nuklearDescp := VkDescriptorSet
 
 	fpsLimited := bool
 	fpsPeriod := float
@@ -58,36 +82,52 @@ SimpleWindow := class extend VulkanDefaultInstance
 			drawRes := true
 			DrawGetImage(surfaceIndex&,drawRes&)
 
-			if fpsLimited
+			if drawRes
 			{
-				itTime := GetSteadyTime()
-				diffTime := itTime - lastTime
-				if diffTime < fpsPeriod
+
+				if fpsLimited
 				{
-					TSleep(fpsPeriod - diffTime)
+					itTime := GetSteadyTime()
+					diffTime := itTime - lastTime
+					if diffTime < fpsPeriod
+					{
+						TSleep(fpsPeriod - diffTime)
+					}
+					lastTime = GetSteadyTime()
 				}
-				lastTime = GetSteadyTime()
+
+				step1Cmd.Reset()
+				step1Cmd.Start()
+				
+				StartTextDraw(step1Cmd.Get(),GetSurfaceFramebuffer(surfaceIndex))
+
+				nuklearContext.InputCheck(itWin)
+				nuklearContext.MakeDraw()
+				nuklearContext.RenderStep()
+				nuklearContext.Clear()
+
+				nuklearContext.Draw(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
+
+				w := GetSurfaceWidth()
+				h := GetSurfaceHeight()
+				
+				drawShader.ApplyShaderToQueue(this&,step1Cmd.Get(),w->{float},h->{float})
+				sts := VkDescriptorSet[1]
+				sts[0] = nuklearDescp
+				Funcs.vkCmdBindDescriptorSets(step1Cmd.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
+				DrawVulkan(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
+
+				StopTextDraw(step1Cmd.Get())
+
+				step1Cmd.Stop()
+
+				step1Cmd.Submit(DrawQueue,null)
+
+				DrawPresentImage(surfaceIndex)
+				
+			}else{
+				CreateSwapchain(mainRenderPass,itWin.Width,itWin.Height)
 			}
-
-			step1Cmd.Reset()
-			step1Cmd.Start()
-			
-			StartTextDraw(step1Cmd.Get(),GetSurfaceFramebuffer(surfaceIndex))
-
-			nuklearContext.InputCheck(itWin)
-			nuklearContext.MakeDraw()
-			nuklearContext.RenderStep()
-			nuklearContext.Clear()
-
-			nuklearContext.Draw(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
-
-			StopTextDraw(step1Cmd.Get())
-
-			step1Cmd.Stop()
-
-			step1Cmd.Submit(DrawQueue,null)
-
-			DrawPresentImage(surfaceIndex)
 
 			//hm := u64 //TODO
 			//hm = not_b hm
@@ -139,6 +179,21 @@ SimpleWindow := class extend VulkanDefaultInstance
 	DrawCode := virtual !(void^ nk,int w, int h) -> void
 	{
 	}
+	DrawVulkan := virtual !(VkCommandBuffer cmd,int w, int h) -> void
+	{
+
+	}	
+	
+	MouseMoved := virtual !(double x, double y) -> void
+	{
+	}
+
+	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
+	{
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
+	{
+	}
 }
 
 NuklearGoAroundContext := class extend NuklearVulkanContext
@@ -147,5 +202,24 @@ NuklearGoAroundContext := class extend NuklearVulkanContext
 	{
 		wn := vInstance->{SimpleWindow^}
 		wn.DrawCode(nk,wn.GetSurfaceWidth(),wn.GetSurfaceHeight())
+	}
+}
+
+GLFWGoAround := class extend GLFWWindow
+{
+	backContext := SimpleWindow^
+
+	MouseMoved := virtual !(double x, double y) -> void
+	{
+		backContext.MouseMoved(x,y)
+	}
+
+	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
+	{
+		backContext.KeyChanged(key,scancode,pressed)
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
+	{
+		backContext.MousePressed(buttonNum,pressed,mods)
 	}
 }

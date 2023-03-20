@@ -35,6 +35,13 @@ AppendClass Task
 		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
 			swapcontext(uContext[0]&,CurrentTask.uContext[0]&)
 	}
+	switchToTask := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+			llvmLongJump(this.longJumpBuf[0]&)
+	}
 	OSDestroy := !() -> void
 	{
 		if stackPtr != null

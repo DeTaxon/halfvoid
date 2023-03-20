@@ -25,13 +25,6 @@ Task := class extend TGCObject
 		CurrentThread.ThreadMainTask.switchToTask()
 	}
 
-	switchToTask := !() -> void
-	{
-		oldTask := CurrentTask->{void^}
-		CurrentTask = this&
-		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
-			llvmLongJump(this.longJumpBuf[0]&)
-	}
 
 	resume := !() -> void
 	{

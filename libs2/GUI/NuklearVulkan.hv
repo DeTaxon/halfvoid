@@ -185,13 +185,8 @@ NuklearVulkanContext := class //extend TGCObject
 		index_offset := 0
 		for it : textList
 		{
-			//TODO use max min
-			nX := it.1
-			if nX < 0 
-				nX = 0
-			nY := it.2
-			if nY < 0 
-				nY = 0
+			nX := max(it.1,0)
+			nY := max(it.2,0)
 
 			nW := it.3
 			if nW + nX >= w
