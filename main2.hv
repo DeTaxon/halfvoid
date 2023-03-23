@@ -6,28 +6,18 @@
 
 //TODO bug res := ptr1->{size_t} - ptr2->{size_t} fails as unary minus takes priority
 
+
+Tst := class
+{
+	Why := !(bool tst = false) -> Tuple.{int}
+	{
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	libGlfwInit()
-
-	glfwInit()
-	win := glfwCreateWindow(500,500,"HI",null,null)
-	//fl := FSGetFile("glfw3.dll")
-	//lb := GetLibrary(fl)
-	//fnc := lb.Get("glfwInit")->{!()^->void}
-	//fncWin := lb.Get("glfwCreateWindow")->{!(int,int,char^,void^,void^)^->void^}
-	//printf("hey %p %p\n",lb,fnc)
-	//fnc()
-	//fncWin(500,500,"LOL",null,null)
-	return 0
-
-	//itFile >> XMLDecoder >> FillView(x ==> { x.PrintTree() }
-	//TFlow(itFile,ImageDecoder,ImageToBuffer,BufferCoppy(ResultBuffer))
-	//itFile >> ImageDecoder >> ImageToBuffer >> BufferCopy(ResultBuffer)
-
-	//flw := TFlow(InfStream.{int}(),Uniq,File("w"))
-	//flw.Push(13)
-
+	c := Tst
+	c.Why()
 	return 0
 }
 

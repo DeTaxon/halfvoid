@@ -55,6 +55,8 @@ BoxFuncCall := class extend BoxExeObj
 			}
 		}
 
+		diffCount := itType.Params.Size() - fType.Params.Size()
+
 		downs.Push(objs[^])
 		resId = GetNewId()
 
@@ -63,7 +65,7 @@ BoxFuncCall := class extend BoxExeObj
 			if i >= downs.Size()
 			{
 				assert(fnc != null)
-				defToken := fnc.GetDefaultToken(i)
+				defToken := fnc.GetDefaultToken(i - diffCount)
 				assert(defToken != null)
 
 				if defToken.GetValue() == "static"

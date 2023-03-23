@@ -1,7 +1,6 @@
-SimpleWindow := class extend VulkanDefaultInstance
+SimpleWindow := class extend GLFWWindow
 {
-
-	itWin := GLFWGoAround^
+	vInstance := VulkanDefaultInstance^
 	nuklearContext := NuklearGoAroundContext^
 
 	mainRenderPass := TRenderPass^
@@ -11,23 +10,23 @@ SimpleWindow := class extend VulkanDefaultInstance
 	this := !(int w, int h,char^ title) -> void
 	{
 
-		PreferSimpleGPU()
+		vInstance = new VulkanDefaultInstance
+		vInstance.PreferSimpleGPU()
 		
-		itWin = new GLFWGoAround
-		itWin.backContext = this&
-		itWin.Init(w,h,title)
-		Init()
+		Init(w,h,title)
+		vInstance.Init()
 
-		initCreateStageMemory()
+		vInstance.initCreateStageMemory()
 
 		nuklearContext = new NuklearGoAroundContext
-		nuklearContext.Init(this&)
+		nuklearContext.wn = this&
+		nuklearContext.Init(vInstance)
 
-		CreateSurface(itWin.windowHandle)
+		vInstance.CreateSurface(windowHandle)
 
-		mainRenderPass = nuklearContext.CreateRenderPass(SwapImageFormat)
+		mainRenderPass = nuklearContext.CreateRenderPass(vInstance.SwapImageFormat)
 
-		CreateSwapchain(mainRenderPass,w,h)
+		vInstance.CreateSwapchain(mainRenderPass,w,h)
 
 		nuklearContext.CreateShader(mainRenderPass)
 
@@ -49,7 +48,7 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
-		vSetTexture(this&,nuklearDescp,nuklearContext.atlasTexture,SamplerNearest)
+		vSetTexture(vInstance,nuklearDescp,nuklearContext.atlasTexture,vInstance.SamplerNearest)
 	}
 
 
@@ -72,15 +71,15 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 	Run := !() -> void
 	{
-		step1Cmd := TVkCommandBuffer(this&,itDrawCommandPool)
+		step1Cmd := TVkCommandBuffer(vInstance,vInstance.itDrawCommandPool)
 
 		lastTime := GetSteadyTime() - 1 //sec
 
-		while not itWin.ShouldClose()
+		while not ShouldClose()
 		{
 			surfaceIndex := u32
 			drawRes := true
-			DrawGetImage(surfaceIndex&,drawRes&)
+			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
 			if drawRes
 			{
@@ -99,42 +98,37 @@ SimpleWindow := class extend VulkanDefaultInstance
 				step1Cmd.Reset()
 				step1Cmd.Start()
 				
-				StartTextDraw(step1Cmd.Get(),GetSurfaceFramebuffer(surfaceIndex))
+				StartTextDraw(step1Cmd.Get(),vInstance.GetSurfaceFramebuffer(surfaceIndex))
 
-				nuklearContext.InputCheck(itWin)
 				nuklearContext.MakeDraw()
-				nuklearContext.RenderStep()
-				nuklearContext.Clear()
 
-				nuklearContext.Draw(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
+				w := vInstance.GetSurfaceWidth()
+				h := vInstance.GetSurfaceHeight()
 
-				w := GetSurfaceWidth()
-				h := GetSurfaceHeight()
-				
-				drawShader.ApplyShaderToQueue(this&,step1Cmd.Get(),w->{float},h->{float})
+				drawShader.ApplyShaderToQueue(vInstance,step1Cmd.Get(),w->{float},h->{float})
 				sts := VkDescriptorSet[1]
 				sts[0] = nuklearDescp
-				Funcs.vkCmdBindDescriptorSets(step1Cmd.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
-				DrawVulkan(step1Cmd.Get(),GetSurfaceWidth(),GetSurfaceHeight())
+				vInstance.Funcs.vkCmdBindDescriptorSets(step1Cmd.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
+				DrawVulkan(step1Cmd.Get(),w,h)
 
 				StopTextDraw(step1Cmd.Get())
 
 				step1Cmd.Stop()
 
-				step1Cmd.Submit(DrawQueue,null)
+				step1Cmd.Submit(vInstance.DrawQueue,null)
 
-				DrawPresentImage(surfaceIndex)
+				vInstance.DrawPresentImage(surfaceIndex)
 				
 			}else{
-				CreateSwapchain(mainRenderPass,itWin.Width,itWin.Height)
+				vInstance.CreateSwapchain(mainRenderPass,Width,Height)
 			}
 
 			//hm := u64 //TODO
 			//hm = not_b hm
 			//Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,hm)
 
-			itWin.PollEvents()
-			itWin.SwapBuffers()
+			PollEvents()
+			SwapBuffers()
 		}
 	}
 
@@ -161,16 +155,16 @@ SimpleWindow := class extend VulkanDefaultInstance
 	
 		beginInfo.renderPass = mainRenderPass.Get()
 		beginInfo.framebuffer = frm
-		beginInfo.renderArea.extent.width = GetSurfaceWidth() //surfAb.currentExtent.width
-		beginInfo.renderArea.extent.height = GetSurfaceHeight() //surfAb.currentExtent.height
+		beginInfo.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+		beginInfo.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
 		beginInfo.clearValueCount = 1
 		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
 		
-		Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE) //TODO remove vk.Funcs
+		vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE) //TODO remove vk.Funcs
 	}
 	StopTextDraw := !(VkCommandBuffer cmd) -> bool
 	{
-		Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
+		vInstance.Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
 	}
 
 	InitWindow := virtual !(void^ nk) -> void
@@ -198,28 +192,9 @@ SimpleWindow := class extend VulkanDefaultInstance
 
 NuklearGoAroundContext := class extend NuklearVulkanContext
 {
+	wn := SimpleWindow^
 	DrawCode := virtual !(void^ nk) -> void
 	{
-		wn := vInstance->{SimpleWindow^}
-		wn.DrawCode(nk,wn.GetSurfaceWidth(),wn.GetSurfaceHeight())
-	}
-}
-
-GLFWGoAround := class extend GLFWWindow
-{
-	backContext := SimpleWindow^
-
-	MouseMoved := virtual !(double x, double y) -> void
-	{
-		backContext.MouseMoved(x,y)
-	}
-
-	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
-	{
-		backContext.KeyChanged(key,scancode,pressed)
-	}
-	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
-	{
-		backContext.MousePressed(buttonNum,pressed,mods)
+		wn.DrawCode(nk,wn.vInstance.GetSurfaceWidth(),wn.vInstance.GetSurfaceHeight())
 	}
 }

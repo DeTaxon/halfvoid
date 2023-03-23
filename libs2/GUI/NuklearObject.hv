@@ -1,0 +1,216 @@
+NuklearObject := class
+{
+	vInstance := VulkanInstance^
+	textList := List.{Tuple.{int,int}}
+	renderMesh := TVkMesh^
+	drawLayout := TShaderInput^
+	
+	CreateWindow := !(VulkanInstance^ inInst,void^ nk, int w, int h) -> void
+	{
+		vInstance = inInst
+		rect := nk_rect
+		rect.x = 0
+		rect.y = 0
+		rect.w = w
+		rect.h = h
+
+		ExpectedW = w
+		ExpectedH = h
+
+		nk_style_hide_cursor(nk)
+		if nk_begin(nk,"MainWindow",rect,32) != 0
+		{
+		}
+		nk_end(nk)
+		RenderStep(vInstance,nk,false)
+		nk_clear(nk)
+	}
+	Create := !(VulkanInstance^ inInst, void^ nk,void^ style,char^ text) -> void
+	{
+		vInstance = inInst
+		rect := nk_rect//(10,10,100,100)
+		rect.x = 0
+		rect.y = 0
+		rect.w = 100000
+		rect.h = 100000
+
+
+		rect2 := nk_rect
+		rect2.x = 500
+		rect2.y = 500
+		rect2.w = 30
+		rect2.h = 30
+
+		ExpectedW = 30
+		ExpectedH = 30
+
+		nk_style_hide_cursor(nk)
+		if nk_begin(nk,"MainWindow",rect,32) != 0
+		{
+			nk_layout_space_begin(nk,NK_STATIC,rect2.w,100)
+			nk_layout_space_push(nk,rect2)
+			nk_button_label_styled(nk,style,text)
+			nk_layout_space_end(nk)
+		}
+		nk_end(nk)
+		RenderStep(vInstance,nk,true)
+		nk_clear(nk)
+	}
+	RenderStep := !(VulkanInstance^ vInstance,void^ itContext,bool ignoreWindow) -> void
+	{
+		layT := nk_draw_vertex_layout_element[4]
+		layT[0].attribute = NK_VERTEX_POSITION
+		layT[0].format = NK_FORMAT_FLOAT
+		layT[0].offset = 0
+		layT[1].attribute = NK_VERTEX_TEXCOORD
+		layT[1].format = NK_FORMAT_FLOAT
+		layT[1].offset = 4*2
+		layT[2].attribute = NK_VERTEX_COLOR
+		layT[2].format = NK_FORMAT_R8G8B8A8
+		layT[2].offset = 4*4
+		layT[3].attribute = NK_VERTEX_ATTRIBUTE_COUNT
+		layT[3].format = NK_FORMAT_COUNT
+		layT[3].offset = 0
+
+		cfg := nk_convert_config
+		cfg.vertex_size = 4*4 + 4
+		cfg.vertex_layout = layT[0]&
+		cfg.vertex_alignment = 4
+		cfg.circle_segment_count = 22
+		cfg.curve_segment_count = 22
+		cfg.arc_segment_count = 22
+		cfg.global_alpha = 1.0f
+		cfg.shape_AA = 1
+		cfg.line_AA = 1
+
+		vBuf := u8[1024]
+		iBuf := u8[1024]
+		cmds := u8[1024]
+
+		nk_buffer_init_default(cmds[0]&)
+
+		vRealVertBuf := Vector.{u8}(16*16*1024)
+		vRealIndBuf := Vector.{u8}(8*16*1024)
+
+		nk_buffer_init_fixed(vBuf[0]&,vRealVertBuf.GetPointer(),16*16*1024) //TODO cleanup
+		nk_buffer_init_fixed(iBuf[0]&,vRealIndBuf.GetPointer(),8*16*1024)
+		res := nk_convert(itContext,cmds[0]&,vBuf[0]&,iBuf[0]&,cfg&)
+
+		assert(res == 0) //TODO dynamic way of getting
+
+		tempList :=  List.{Tuple.{int}}
+
+		cmd := nk__draw_begin(itContext,cmds[0]&)->{nk_draw_command^}
+		while cmd != null
+		{
+			tempList.Emplace(cmd.elem_count)
+			cmd = nk__draw_next(cmd,cmds[0]&,itContext)->{nk_draw_command^}
+		}
+
+		if renderMesh == null
+		{
+			renderMesh = vInstance.CreateMesh(vRealVertBuf&,vRealIndBuf&,VKType(VType_UInt16,1))
+		}else{
+			assert(false)
+		}
+
+		indOffset := 0
+		for it,cc : tempList
+		{
+			isOutOfWindow := false
+			for i : (it.0 div 3)
+			{
+				for j : 3
+				{
+					ind := vRealIndBuf.GetPointer()->{u16^}[indOffset + i*3 + j]
+					pos := vRealVertBuf.GetPointer()->{u8^}[cfg.vertex_size * ind]&->{float^}
+					itX := pos[0]
+					itY := pos[1]
+
+					if (itX not in 100..10000) or (itY not in 100..10000)
+					{
+						isOutOfWindow = true
+					}
+				}
+			}
+
+			if not isOutOfWindow or not ignoreWindow
+			{
+				textList.Emplace(indOffset,it.0)
+			}
+
+			indOffset += it.0
+		}
+
+
+
+
+		nk_buffer_free(vBuf[0]&)
+		nk_buffer_free(iBuf[0]&)
+		nk_buffer_free(cmds[0]&)
+
+		maxX := 0.0
+		maxY := 0.0
+		minX := 10000000000.0 //TODO unconst
+		minY := 10000000000.0
+
+		for it,i : textList
+		{
+			for i : (it.1 div 3)
+			{
+				for j : 3
+				{
+					ind := vRealIndBuf.GetPointer()->{u16^}[it.0 + i*3 + j]
+					pos := vRealVertBuf.GetPointer()->{u8^}[cfg.vertex_size * ind]&->{float^}
+					itX := pos[0]
+					itY := pos[1]
+					
+					maxX = max(maxX,itX)
+					minX = min(minX,itX)
+					maxY = max(maxY,itY)
+					minY = min(minY,itY)
+				}
+			}
+		}
+
+
+		CenterX = (maxX + minX)*0.5
+		CenterY = (maxY + minY)*0.5
+
+		ResultW = maxX - minX
+		ResultH = maxY - minY
+	}
+
+	CenterX := float
+	CenterY := float
+
+	ResultW := float
+	ResultH := float
+	ExpectedW := float
+	ExpectedH := float
+	PushDraw := !(VkCommandBuffer cmdB,int w,int h,float offsetX, float offsetY) -> void
+	{
+		offsetX -= CenterX - ExpectedW*0.5
+		offsetY -= CenterY - ExpectedH*0.5
+		renderMesh.Bind(cmdB)
+
+		for it,i : textList
+		{
+			scales := float[4]
+			scales[0] = 1.0 / w
+			scales[1] = 1.0 / h
+			scales[2] = offsetX
+			scales[3] = offsetY
+			vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
+
+			sc := VkRect2D
+			sc.offset.x = 0
+			sc.offset.y = 0
+			sc.extent.width = w
+			sc.extent.height = h
+
+			vInstance.Funcs.vkCmdSetScissor(cmdB,0,1,sc&)
+			vInstance.Funcs.vkCmdDrawIndexed(cmdB,it.1,1,it.0,0,0)
+		}
+	}
+}
