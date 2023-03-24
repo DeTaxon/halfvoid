@@ -5,6 +5,27 @@ NuklearObject := class
 	renderMesh := TVkMesh^
 	drawLayout := TShaderInput^
 	
+	Create := !(VulkanInstance^ inInst, void^ nk,int w, int h,!()&-> void cb) -> void
+	{
+		vInstance = inInst
+		rect := nk_rect//(10,10,100,100)
+		rect.x = 0
+		rect.y = 0
+		rect.w = 100000
+		rect.h = 100000
+
+		ExpectedW = w
+		ExpectedH = h
+
+		nk_style_hide_cursor(nk)
+		if nk_begin(nk,"MainWindow",rect,32) != 0
+		{
+			cb()
+		}
+		nk_end(nk)
+		RenderStep(vInstance,nk,true)
+		nk_clear(nk)
+	}
 	CreateWindow := !(VulkanInstance^ inInst,void^ nk, int w, int h) -> void
 	{
 		vInstance = inInst
