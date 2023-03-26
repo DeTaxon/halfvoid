@@ -1,0 +1,128 @@
+
+LayoutHorizontal := class extend LayoutBase
+{
+	this := !(GUIObject^[] objs) -> void
+	{
+		super(objs)
+	}
+	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
+	{
+		fullSizeCount = 0
+		foundStaticW = false
+		foundStaticH = false
+		staticW = 0
+		staticH = 0
+
+		foundFullSizeW = false
+		foundFullSizeH = false
+
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+			{
+				itL := it.0.GetLayout()
+				switch itL.1
+				{	
+					case 0
+						foundFullSizeH = true
+						fullSizeCount += 1
+					case 1
+						staticH = max(staticH,itL.0.x)
+						foundStaticH = true
+					case 2 //dynamic ??
+				}
+				continue
+			}
+
+			itL := it.0.GetLayout()
+			switch itL.1
+			{
+				case 0 //fullSuze
+					foundFullSizeW = true
+				case 1 //static
+					staticW = staticW + itL.0.x
+					foundStaticW = true
+				case 2 //dynamic
+			}
+			switch itL.2
+			{
+				case 0 //fullSuze
+					foundFullSizeH = true
+					fullSizeCount += 1
+				case 1 //static
+					staticH = max(staticH,itL.0.y)
+					foundStaticH = true
+				case 2 //dynamic
+			}
+		}
+
+		if foundStaticW { result.0.x = staticW }
+		if foundStaticH { result.0.y = staticH }
+
+		if foundStaticW { result.1 = 1
+		}else { result.1 = 0}
+
+		if foundStaticW { result.2 = 1
+		}else {result.2 = 0}
+	}
+
+	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	{
+		maxHeight := setSize.y
+		if foundStaticH
+		{
+			maxHeight = staticH
+		}
+
+		pOffset := float
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+			{
+				itL := it.0.GetLayout()
+				switch itL.1
+				{
+					case 0
+						pOffset += (setSize.x - staticW) / fullSizeCount
+					case 1
+						pOffset += itL.0.x
+				}
+				continue
+			}
+			itL := it.0.GetLayout()
+			newSize := vec2f
+			switch itL.1
+			{
+				case 0
+					assert(false)
+				case 1
+					switch itL.2
+					{
+						case 1
+							newSize.y = itL.0.y
+						case 0
+							newSize.y = maxHeight
+					}
+					newSize.x = itL.0.x
+					it.0.SetLayout(ctx,newSize)
+					it.1.y = 0
+					it.1.x = pOffset
+					it.2 = newSize
+				case 2
+					assert(false)
+			}
+			pOffset += newSize.y
+		}
+	}
+	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+				continue
+
+			newOffset := offset + it.1
+			it.0.PushDraw(cmdB,w,h,offset + it.1)
+		}
+	}
+}
