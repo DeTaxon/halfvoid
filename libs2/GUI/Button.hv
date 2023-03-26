@@ -1,0 +1,44 @@
+Button := class extend GUIObject
+{
+	thisLabel := String^
+	pressCallback := !()&-> void
+	this := !(float x, float y,StringView setLabel) -> void
+	{
+		SetSize("static",x,"static",y)
+		thisLabel = setLabel.GetString()
+	}
+	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	{
+		super(ctx,setSize)
+		cX := setSize.x
+		cY := setSize.y
+		Create(ctx.vInstance,ctx.itContext, setSize.x,setSize.y, () ==> {
+			rect2 := nk_rect
+			rect2.x = 200
+			rect2.y = 200
+			rect2.w = cX
+			rect2.h = cY
+
+			nk := ctx.itContext
+
+			//unknownPlace := malloc(nke_style_button_size())
+			//defer free(unknownPlace)
+
+			//nke_style_button_copy_from_context(nk,unknownPlace)
+			
+			nk_layout_space_begin(nk,NK_STATIC,rect2.w,100)
+			nk_layout_space_push(nk,rect2)
+			//nk_button_label_styled(nk,unknownPlace,thisLabel.Str())
+			nk_button_label(nk,thisLabel.Str())
+			nk_layout_space_end(nk)
+		})
+	}
+	SetPressCallback := !(!()&->void cb) -> void
+	{
+		pressCallback = cb.Capture()
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+		pressCallback?()
+	}
+}

@@ -209,10 +209,10 @@ NuklearObject := class
 	ResultH := float
 	ExpectedW := float
 	ExpectedH := float
-	PushDraw := !(VkCommandBuffer cmdB,int w,int h,float offsetX, float offsetY) -> void
+	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void
 	{
-		offsetX -= CenterX - ExpectedW*0.5
-		offsetY -= CenterY - ExpectedH*0.5
+		offset.x -= CenterX - ExpectedW*0.5
+		offset.y -= CenterY - ExpectedH*0.5
 		renderMesh.Bind(cmdB)
 
 		for it,i : textList
@@ -220,8 +220,8 @@ NuklearObject := class
 			scales := float[4]
 			scales[0] = 1.0 / w
 			scales[1] = 1.0 / h
-			scales[2] = offsetX
-			scales[3] = offsetY
+			scales[2] = offset.x
+			scales[3] = offset.y
 			vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
 
 			sc := VkRect2D

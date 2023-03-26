@@ -3,6 +3,7 @@
 //TODO @once does not work with function input variables
 //TODO todo in libs2/Random.hv is important
 //TODO arr := !["","1"] ; arr[0] returns null
+//TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 //TODO bug res := ptr1->{size_t} - ptr2->{size_t} fails as unary minus takes priority
 

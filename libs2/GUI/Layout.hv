@@ -1,0 +1,188 @@
+//layout
+//0 - fullsize
+//1 - static, pixels
+//2 - dynamic, procent
+
+
+GUIObject := class extend NuklearObject
+{
+
+	thisLayout := Tuple.{int,int}
+	thisLayoutSize := vec2f
+	drawSize := vec2f
+	SetSize := !(char^ wl, float w, char^ hl, float h) -> void
+	{
+		switch wl
+		{
+			case "static" thisLayout.0 = 1
+			case "dynamic" thisLayout.0 = 2
+			case void thisLayout.0 = 0
+		}
+		switch hl
+		{
+			case "static" thisLayout.1 = 1
+			case "dynamic" thisLayout.1 = 2
+			case void thisLayout.1 = 0
+		}
+
+		thisLayoutSize = vec2f(w,h)
+		if w == 0.0
+			thisLayout.0 = 0
+		if h == 0.0
+			thisLayout.1 = 0
+	}
+
+	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
+	{
+		return !{thisLayoutSize,thisLayout.0,thisLayout.1}
+	}
+	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	{
+		drawSize = setSize
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+	}
+}
+
+LayoutSpacer := class extend GUIObject
+{
+	this := !(char^ layoutType, float layoutSize) -> void
+	{
+		SetSize(layoutType,layoutSize,layoutType,layoutSize)
+	}
+}
+
+LayoutVertical := class extend GUIObject
+{
+	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
+	staticW := float
+	staticH := float
+	fullSizeCount := int
+
+	this := !(GUIObject^[] objs) -> void
+	{
+		for it : objs
+		{
+			objects.Emplace(it,vec2f(0,0),vec2f(0,0),false)
+		}
+	}
+	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
+	{
+		fullSizeCount = 0
+		foundStaticW := false
+		foundStaticH := false
+		staticW = 0
+		staticH = 0
+
+		foundFullSizeW := false
+		foundFullSizeH := false
+
+		for it : objects
+		{
+			//if it.0 is LayoutSpacer
+			//{
+			//	itL := it.0.GetLayout()
+			//	switch itL.0.1
+			//	{	
+			//		case 0
+			//			foundFullSizeW = true
+			//			fullSizeCount += 1
+			//		case 1
+			//			staticW = max(staticW,itL.0.x)
+			//			foundStaticW = true
+			//		case 2 //dynamic ??
+			//	}
+			//	continue
+			//}
+
+			itL := it.0.GetLayout()
+			switch itL.1
+			{
+				case 0 //fullSuze
+					foundFullSizeW = true
+				case 1 //static
+					staticW = max(staticW,itL.0.x)
+					foundStaticW = true
+				case 2 //dynamic
+			}
+			switch itL.2
+			{
+				case 0 //fullSuze
+					foundFullSizeH = true
+					fullSizeCount += 1
+				case 1 //static
+					staticH += itL.0.y
+					foundStaticH = true
+				case 2 //dynamic
+			}
+		}
+
+		if foundStaticW { result.0.x = staticW }
+		if foundStaticH { result.0.y = staticH }
+
+		if foundFullSizeW { result.1 = 0
+		}else if foundStaticW { result.1 = 1
+		}else{ result.1 = 0 }
+
+		if foundFullSizeH { result.2 = 0
+		}else if foundStaticH {result.2 = 1
+		}else{ result.2 = 0 }
+	}
+
+	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	{
+		yOffset := float
+		for it : objects
+		{
+			itL := it.0.GetLayout()
+			newSize := vec2f
+			switch itL.2
+			{
+				case 0
+					assert(false)
+				case 1
+					switch itL.1
+					{
+						case 1
+							newSize.x = itL.0.x
+						case 0
+							newSize.x = setSize.x
+					}
+					newSize.y = itL.0.y
+					it.0.SetLayout(ctx,newSize)
+					it.1.y = yOffset
+					it.1.x = 0
+					it.2 = newSize
+				case 2
+					assert(false)
+			}
+			yOffset += newSize.y
+		}
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if (it.1.y > offset.y) or  (it.1.y + it.2.y < offset.y)
+				continue
+			
+			if (it.1.x > offset.x) or (it.1.x + it.2.x < offset.x)
+				continue
+
+			it.0.MousePressed(buttonNum,pressed,offset - it.1)
+			return void
+		}
+	}
+	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+				continue
+
+			newOffset := offset + it.1
+			it.0.PushDraw(cmdB,w,h,offset + it.1)
+		}
+	}
+}
