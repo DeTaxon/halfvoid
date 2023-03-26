@@ -53,12 +53,17 @@ LayoutSpacer := class extend GUIObject
 	}
 }
 
-LayoutVertical := class extend GUIObject
+LayoutBase := class extend GUIObject
 {
 	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
 	staticW := float
 	staticH := float
+	foundStaticW := bool 
+	foundStaticH := bool 
 	fullSizeCount := int
+
+	foundFullSizeW := bool 
+	foundFullSizeH := bool 
 
 	this := !(GUIObject^[] objs) -> void
 	{
@@ -70,13 +75,13 @@ LayoutVertical := class extend GUIObject
 	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
 	{
 		fullSizeCount = 0
-		foundStaticW := false
-		foundStaticH := false
+		foundStaticW = false
+		foundStaticH = false
 		staticW = 0
 		staticH = 0
 
-		foundFullSizeW := false
-		foundFullSizeH := false
+		foundFullSizeW = false
+		foundFullSizeH = false
 
 		for it : objects
 		{
@@ -132,6 +137,17 @@ LayoutVertical := class extend GUIObject
 
 	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
 	{
+		maxWidth := setSize.x
+		if not foundFullSizeW
+		{
+			if foundStaticW
+			{
+				maxWidth = staticW
+			}else{
+				assert(false)
+			}
+		}
+
 		yOffset := float
 		for it : objects
 		{
@@ -147,7 +163,7 @@ LayoutVertical := class extend GUIObject
 						case 1
 							newSize.x = itL.0.x
 						case 0
-							newSize.x = setSize.x
+							newSize.x = maxWidth
 					}
 					newSize.y = itL.0.y
 					it.0.SetLayout(ctx,newSize)
@@ -185,4 +201,16 @@ LayoutVertical := class extend GUIObject
 			it.0.PushDraw(cmdB,w,h,offset + it.1)
 		}
 	}
+}
+
+LayoutVertical := class extend LayoutBase
+{
+	this := !(GUIObject^[] objs) -> void
+	{
+		super(objs)
+	}
+}
+LayoutHorizontal := class extend LayoutBase
+{
+	
 }
