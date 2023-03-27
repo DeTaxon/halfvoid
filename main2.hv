@@ -21,11 +21,15 @@ TestFunc := !(en hmm) -> void
 	//	case "all"
 	//	case "dynamic"
 	//	case "static"
+	//		printf("IT WORKS\n")
 	//}
 }
 main := !(char^[] args) -> int
 {
-	TestFunc("static")
+	c := en
+	c = "static"
+	c == c
+	TestFunc(c)
 	return 0
 }
 

@@ -113,7 +113,6 @@ BoxSwitch := class extend BoxExeObj
 
 			if checkRes == null
 			{
-				printf("TEST %i\n",objs[1] is FieldSpaceHolder)
 				currentCase.EmitError("Can not compare case object with switch statement")
 			}
 
