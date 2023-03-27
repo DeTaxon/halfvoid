@@ -27,7 +27,7 @@ LayoutHorizontal := class extend LayoutBase
 						foundFullSizeH = true
 						fullSizeCount += 1
 					case 1
-						staticH = max(staticH,itL.0.x)
+						staticW += itL.0.x
 						foundStaticH = true
 					case 2 //dynamic ??
 				}

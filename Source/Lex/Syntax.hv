@@ -120,6 +120,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"~d",RuleCallFunction) return true
 				case "#ClassBlock"
 					if RuleUse(begin,"~d",RuleClass) return true
+					if RuleUse(begin,"~d",RuleEnum) return true
 				case "#CallDecoratorCall"
 					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
 							return true
@@ -229,6 +230,19 @@ RuleDecoratorCall := !(void^ itr) -> int
 	return 0
 }
 
+RuleEnum := !(void^ itr) -> int
+{
+
+	It := itr->{Token^}
+
+	if It.GetValue() != "enum"  return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" return 0
+	return 2
+}
 RuleClass := !(void^ itr) -> int
 {
 

@@ -27,7 +27,7 @@ LayoutVertical := class extend LayoutBase
 						foundFullSizeW = true
 						fullSizeCount += 1
 					case 1
-						staticW = max(staticW,itL.0.x)
+						staticH += itL.0.x
 						foundStaticW = true
 					case 2 //dynamic ??
 				}
@@ -72,13 +72,23 @@ LayoutVertical := class extend LayoutBase
 		if foundStaticW
 		{
 			maxWidth = staticW
-		}else{
-			assert(false)
 		}
 
-		yOffset := float
+		pOffset := float
 		for it : objects
 		{
+			if it.0 is LayoutSpacer
+			{
+				itL := it.0.GetLayout()
+				switch itL.1
+				{
+					case 0
+						pOffset += (setSize.x - staticW) / fullSizeCount
+					case 1
+						pOffset += itL.0.x
+				}
+				continue
+			}
 			itL := it.0.GetLayout()
 			newSize := vec2f
 			switch itL.2
@@ -95,13 +105,13 @@ LayoutVertical := class extend LayoutBase
 					}
 					newSize.y = itL.0.y
 					it.0.SetLayout(ctx,newSize)
-					it.1.y = yOffset
+					it.1.y = pOffset
 					it.1.x = 0
 					it.2 = newSize
 				case 2
 					assert(false)
 			}
-			yOffset += newSize.y
+			pOffset += newSize.y
 		}
 	}
 	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void

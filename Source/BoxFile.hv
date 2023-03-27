@@ -99,7 +99,7 @@ BoxFile := class extend BoxUnit
 
 		while iter != null
 		{
-			vr := TryParseVarInFile(iter)	
+			vr := TryParseVarInFile(iter)
 
 			if vr == null
 			{
@@ -186,6 +186,7 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 		return TryParseTypedefTemplate(obj)
 	}
 
+
 	name := StringSpan
 	isSuffix := bool
 	if iter is TokenIndent
@@ -201,13 +202,20 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 
 	if varToken == null
 		return null
+
+	if varToken.Down?.GetValue() == "enum"
+	{
+		en := TryParseEnum(varToken)
+		assert(en != null)
+		return new TypeVar(name,en.ItType)
+	}
 	
-	if varToken?.GetValue() == "thread_local"
+	if varToken.GetValue() == "thread_local"
 	{
 		return null
 	}
 	
-	if varToken?.GetValue() == "task_local"
+	if varToken.GetValue() == "task_local"
 	{
 		return new TaskLocalVarDelayed(name,varToken.Right)
 	}
@@ -237,6 +245,7 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 		cls3.SetName(name)
 		return new TemplateTypeVar(name,cls3)
 	}
+
 
 	return null
 }

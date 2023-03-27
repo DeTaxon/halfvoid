@@ -7,18 +7,25 @@
 
 //TODO bug res := ptr1->{size_t} - ptr2->{size_t} fails as unary minus takes priority
 
-
-Tst := class
+en := enum
 {
-	Why := !(bool tst = false) -> Tuple.{int}
-	{
-	}
+	"all",
+	"dynamic",
+	"static",
 }
-
+TestFunc := !(en hmm) -> void
+{
+	printf("lol %i\n",hmm)
+	//switch hmm
+	//{
+	//	case "all"
+	//	case "dynamic"
+	//	case "static"
+	//}
+}
 main := !(char^[] args) -> int
 {
-	c := Tst
-	c.Why()
+	TestFunc("static")
 	return 0
 }
 

@@ -1,0 +1,76 @@
+TryParseEnum := !(Token^ tkn) -> BoxEnum^
+{
+	if tkn == null or tkn.Down == null or tkn.Down.GetValue() != "enum"
+		return null
+	
+	resEnum := new BoxEnum()
+
+	iter := tkn.Down.Right.Down
+
+	while iter != null
+	{
+		if iter.GetValue() != ","
+		{
+			if iter is TokenString
+			{
+				resEnum.Values.Emplace(GetExeString(iter->{TokenString^}.Value),null->{BoxEnumValue^})
+			}else{
+				iter.EmitError("Unknown use of enum")
+			}
+		}
+		iter = iter.Right
+	}
+	return resEnum
+}
+
+BoxEnum := class extend BoxUnit
+{
+	ItType := TypeEnum^
+	Values := HybridQueue.{Tuple.{BoxExeString^,BoxEnumValue^},10}
+
+	this := !() -> void
+	{
+		ItType = new TypeEnum()
+		ItType.ToEnum = this&
+	}
+
+	GetEnum := !(StringSpan val) -> BoxExeObj^
+	{
+		for it,i : Values
+		{
+			if it.0.val == val
+			{
+				if it.1 == null
+					it.1 = new BoxEnumValue(ItType,i)
+				return it.1
+			}
+		}
+		return null
+	}
+}
+
+TypeEnum := class extend TypeStandard
+{
+	ToEnum := BoxEnum^
+	this := !() -> void
+	{
+		super("i32","Enum","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",4,4)
+	}
+}
+BoxEnumValue := class extend BoxExeObj
+{
+	ItValue := int
+	this := !(TypeEnum^ itType, int itValue) -> void
+	{
+		ObjType = itType
+		ItValue = itValue
+	}
+	PrintUse := virtual !(Stream^ f) -> void
+	{
+		f^ << ItValue
+	}
+	PrintConst := virtual !(Stream^ f) -> void
+	{
+		f^ << ItValue
+	}
+}

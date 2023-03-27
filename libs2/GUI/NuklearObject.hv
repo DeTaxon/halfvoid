@@ -132,7 +132,7 @@ NuklearObject := class
 		{
 			renderMesh = vInstance.CreateMesh(vRealVertBuf&,vRealIndBuf&,VKType(VType_UInt16,1))
 		}else{
-			assert(false)
+			renderMesh.TransferData(vRealVertBuf&,vRealIndBuf&)
 		}
 
 		indOffset := 0

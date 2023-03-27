@@ -1,0 +1,18 @@
+
+ExchangeEnum := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not TypeEnum
+			return CmpNoExchange
+		if obj is not BoxExeString
+			return CmpNoExchange
+		if newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.val) == null
+			return CmpNoExchange
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		return newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.val)
+	}
+}
