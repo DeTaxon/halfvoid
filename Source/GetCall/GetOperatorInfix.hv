@@ -61,23 +61,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 				//??
 			}
 		}
-		if oper == "=="
-		{
-			if tmpList[1] is BoxExeString
-			{
-				asStr := tmpList[1]->{BoxExeString^}
-				enValue := enm.GetEnum(asStr.val)
-				if enValue == null
-					itm.EmitError("Enum does not contain this value")
-				tmpList[1] = enValue
-				return enm.GetCmpFunc().CreateCall(tmpList)
-			}else if tmpList[1].GetType() == tmpList[0].GetType()
-			{
-				return enm.GetCmpFunc().CreateCall(tmpList)
-			}else{
-				//??
-			}
-		}
 	}
 
 	if oper in ![">",">=","<","<=","==","!="]
@@ -109,6 +92,28 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 
 	usingSpaceship := false
 	resCall := BoxUnit^
+
+	if lst[0]?.GetType() is TypeEnum
+	{
+		enm := lst[0].GetType()->{TypeEnum^}.ToEnum
+		if oper == "=="
+		{
+			if lst[1] is BoxExeString
+			{
+				asStr := lst[1]->{BoxExeString^}
+				enValue := enm.GetEnum(asStr.val)
+				if enValue == null
+					debugItem.EmitError("Enum does not contain this value")
+				lst[1] = enValue
+				return enm.GetCmpFunc().CreateCall(lst)
+			}else if lst[1].GetType() == lst[0].GetType()
+			{
+				return enm.GetCmpFunc().CreateCall(lst)
+			}else{
+				//??
+			}
+		}
+	}
 
 
 

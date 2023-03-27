@@ -16,20 +16,24 @@ en := enum
 TestFunc := !(en hmm) -> void
 {
 	printf("lol %i\n",hmm)
-	//switch hmm
-	//{
-	//	case "all"
-	//	case "dynamic"
-	//	case "static"
-	//		printf("IT WORKS\n")
-	//}
+	switch hmm
+	{
+		case "all"
+			printf("IT WORKS all\n")
+		case "dynamic"
+			printf("IT WORKS dynamic\n")
+		case "static"
+			printf("IT WORKS static\n")
+	}
 }
 main := !(char^[] args) -> int
 {
 	c := en
 	c = "static"
-	c == c
 	TestFunc(c)
+	TestFunc("dynamic")
+	TestFunc("all")
+	TestFunc("dynamic")
 	return 0
 }
 
