@@ -1,7 +1,5 @@
 
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
-//TODO @once does not work with function input variables
-//TODO todo in libs2/Random.hv is important
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 main := !(char^[] args) -> int
@@ -49,6 +47,14 @@ main := !(char^[] args) -> int
 //	}
 //}
 
+//TODO todo in libs2/Random.hv is important
+//i want a way to call function at the start of the program if function that uses it is called
+//GetRandom  := !() -> int
+//{
+//	#ModuleInit(initRandom())
+//	....
+//}
+
 //#Module
 //{
 //	xml := XMLFile(#File("vk.xml"))
@@ -60,6 +66,8 @@ main := !(char^[] args) -> int
 //	}
 //}
 
+
+//inline road failed, local variables need to be rewoked
 //inline road
 //static variables stays in one function
 //input variadic variables C //do i need it?
