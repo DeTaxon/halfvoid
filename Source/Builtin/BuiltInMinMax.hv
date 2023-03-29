@@ -144,8 +144,8 @@ PrintBuildInMinMax := !(Stream^ f) -> void
 		f^ << "declare " << it << "  @llvm.umax."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"
 	}
 
-	f^ << "declare float     @llvm.minnum.f32(float %Val0, float %Val1)"
-	f^ << "declare double    @llvm.minnum.f64(double %Val0, double %Val1)"
-	f^ << "declare float     @llvm.maxnum.f32(float  %Val0, float  %Val1)"
-	f^ << "declare double    @llvm.maxnum.f64(double %Val0, double %Val1)"
+	f^ << "declare float     @llvm.minnum.f32(float %Val0, float %Val1)\n"
+	f^ << "declare double    @llvm.minnum.f64(double %Val0, double %Val1)\n"
+	f^ << "declare float     @llvm.maxnum.f32(float  %Val0, float  %Val1)\n"
+	f^ << "declare double    @llvm.maxnum.f64(double %Val0, double %Val1)\n"
 }
