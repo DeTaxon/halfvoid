@@ -539,6 +539,8 @@ RuleMinus := !(void^ itr) -> int
 		if It.Left.GetValue() == "()" return 0
 		if It.Left is TokenSuffix return 0 
 		if It.Left.IsData return 0
+		if It.Left.GetValue() == "{}" and It.Left.Left?.GetValue() == "->"
+			return 0
 	}
 
 	It = It.Right
