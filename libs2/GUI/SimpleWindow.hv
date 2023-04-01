@@ -34,8 +34,6 @@ SimpleWindow := class extend GLFWWindow
 
 		vInstance.CreateSwapchain(mainRenderPass,w,h)
 
-		nuklearContext.CreateShader(mainRenderPass)
-
 		drawLayout = mainRenderPass.CreateLayout(![
 			VKType(VType_Float,2),
 			VKType(VType_Float,2),
@@ -47,7 +45,7 @@ SimpleWindow := class extend GLFWWindow
 		],
 		1
 		)
-		drawShader = drawLayout.CreateShader(#File("TextVert2Compiled.vert"),#File("TextFrag2Compiled.frag"))
+		drawShader = drawLayout.CreateShader(#FileLocal("TextVertCompiled.vert"),#FileLocal("TextFragCompiled.frag"))
 
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
@@ -127,6 +125,8 @@ SimpleWindow := class extend GLFWWindow
 						backgroundWindow.CreateWindow(vInstance,nuklearContext.itContext,1000,1000)
 						backgroundWindow.drawLayout = this.drawLayout
 					}
+					oldW = w
+					oldH = h
 				}
 				backgroundWindow.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
 				mainGUIObject.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))

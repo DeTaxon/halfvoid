@@ -63,29 +63,6 @@ NuklearVulkanContext := class //extend TGCObject
 	drawLayout := TShaderInput^
 	textShader := vShader^ 
 	
-	nuklearPool := TDescriptorPool^ 
-	nuklearDescp := VkDescriptorSet
-	CreateShader := !(TRenderPass^ pass) -> void
-	{
-		drawLayout = pass.CreateLayout(![
-			VKType(VType_Float,2),
-			VKType(VType_Float,2),
-			VKType(VType_UInt8,4)
-		],![
-			new TImageSet(1)
-		],![
-			new TVertexPushConstant(2*4)
-		],
-		1
-		)
-
-		textShader = drawLayout.CreateShader(#FileLocal("TextVertCompiled.vert"),#FileLocal("TextFragCompiled.frag"))
-
-		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
-		nuklearDescp = nuklearPool.CreateDescriptor()
-		
-		vSetTexture(vInstance,nuklearDescp,atlasTexture,vInstance.SamplerNearest)
-	}
 
 	Draw := !(VkCommandBuffer cmdB,int w, int h) -> void
 	{

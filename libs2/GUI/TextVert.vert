@@ -9,10 +9,12 @@ layout(location = 1) out vec4 o_color;
 
 layout(push_constant) uniform PushConsts{
 	vec2 screenResolution;
+	vec2 objectOffset;
 }consts;
 
 void main() {
-	gl_Position = vec4(i_Position,0.0f,1.0f)*vec4(consts.screenResolution,0.0,1.0);
+	vec4 itPosition = vec4(i_Position + consts.objectOffset,0.0f,1.0f);
+	gl_Position = itPosition*vec4(consts.screenResolution,0.0,1.0);
 	gl_Position -= vec4(0.5,0.5,0.0,0.0);
 	gl_Position *= vec4(2.0,2.0,1.0,1.0);
 	//gl_Position.y = -gl_Position.y;
