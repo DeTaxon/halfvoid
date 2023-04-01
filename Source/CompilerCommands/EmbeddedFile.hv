@@ -41,7 +41,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	objs.Push(emb.data)
 	objs.Push(GetExeInt(emb.GetSize()))
 	objs.Push(GBoolFalse)
-	objs.Push(GetExeString(fileName))
+	objs.Push(GetExeString(itFile.GetName()^[0..0]))
 
 	cnsts := List.{BoxExeConstObj^}
 

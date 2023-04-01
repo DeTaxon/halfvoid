@@ -44,3 +44,8 @@ extern void nke_style_button_set_color(struct nk_style_button* btn_style,int set
 		btn_style->active = nk_style_item_color(set_color);
 	}
 }
+
+extern struct nk_user_font* nke_font_get_handle(struct nk_font* fnt)
+{
+	return &(fnt->handle);
+}

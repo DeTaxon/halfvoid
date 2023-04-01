@@ -7,6 +7,12 @@ SimpleWindow := class extend GLFWWindow
 	drawLayout := TShaderInput^
 	drawShader := vShader^
 
+	mainGUIObject := GUIObject^
+	oldW := int
+	oldH := int
+
+	backgroundWindow := NuklearObject
+
 	this := !(int w, int h,char^ title) -> void
 	{
 
@@ -30,8 +36,6 @@ SimpleWindow := class extend GLFWWindow
 
 		nuklearContext.CreateShader(mainRenderPass)
 
-		InitWindow(nuklearContext)
-
 		drawLayout = mainRenderPass.CreateLayout(![
 			VKType(VType_Float,2),
 			VKType(VType_Float,2),
@@ -45,10 +49,13 @@ SimpleWindow := class extend GLFWWindow
 		)
 		drawShader = drawLayout.CreateShader(#File("TextVert2Compiled.vert"),#File("TextFrag2Compiled.frag"))
 
-
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
 		vSetTexture(vInstance,nuklearDescp,nuklearContext.atlasTexture,vInstance.SamplerNearest)
+
+		mainGUIObject = InitWindow()
+
+
 	}
 
 
@@ -94,21 +101,35 @@ SimpleWindow := class extend GLFWWindow
 					}
 					lastTime = GetSteadyTime()
 				}
+				w := vInstance.GetSurfaceWidth()
+				h := vInstance.GetSurfaceHeight()
 
 				step1Cmd.Reset()
 				step1Cmd.Start()
 				
 				StartTextDraw(step1Cmd.Get(),vInstance.GetSurfaceFramebuffer(surfaceIndex))
 
-				nuklearContext.MakeDraw()
+				//nuklearContext.MakeDraw()
 
-				w := vInstance.GetSurfaceWidth()
-				h := vInstance.GetSurfaceHeight()
 
 				drawShader.ApplyShaderToQueue(vInstance,step1Cmd.Get(),w->{float},h->{float})
 				sts := VkDescriptorSet[1]
 				sts[0] = nuklearDescp
 				vInstance.Funcs.vkCmdBindDescriptorSets(step1Cmd.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
+
+				if mainGUIObject != null
+				{
+					if oldW != w or oldH != h
+					{
+						mainGUIObject.GetLayout()
+						mainGUIObject.SetLayout(nuklearContext,vec2f(w,h))
+
+						backgroundWindow.CreateWindow(vInstance,nuklearContext.itContext,1000,1000)
+						backgroundWindow.drawLayout = this.drawLayout
+					}
+				}
+				backgroundWindow.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
+				mainGUIObject.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
 				DrawVulkan(step1Cmd.Get(),w,h)
 
 				StopTextDraw(step1Cmd.Get())
@@ -167,7 +188,7 @@ SimpleWindow := class extend GLFWWindow
 		vInstance.Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
 	}
 
-	InitWindow := virtual !(void^ nk) -> void
+	InitWindow := virtual !() -> GUIObject^
 	{
 	}
 	DrawCode := virtual !(void^ nk,int w, int h) -> void
@@ -187,6 +208,7 @@ SimpleWindow := class extend GLFWWindow
 	}
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
+		mainGUIObject?.MousePressed(buttonNum,pressed,vec2f(MouseX,MouseY))
 	}
 }
 

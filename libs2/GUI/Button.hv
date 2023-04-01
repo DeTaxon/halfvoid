@@ -1,11 +1,16 @@
-Button := class extend GUIObject
+NkButton := class extend GUIObject
 {
 	thisLabel := String^
 	pressCallback := !()&-> void
-	this := !(float x, float y,StringView setLabel) -> void
+
+	buttonStyle := void^
+	nuklearContext := NuklearVulkanContext^
+
+	this := !(NuklearVulkanContext^ nkCtx,float x, float y,StringView setLabel) -> void
 	{
 		SetSize("static",x,"static",y)
 		thisLabel = setLabel.GetString()
+		nuklearContext = nkCtx
 	}
 	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
 	{
@@ -28,10 +33,38 @@ Button := class extend GUIObject
 			
 			nk_layout_space_begin(nk,NK_STATIC,rect2.w,100)
 			nk_layout_space_push(nk,rect2)
-			//nk_button_label_styled(nk,unknownPlace,thisLabel.Str())
-			nk_button_label(nk,thisLabel.Str())
+			if buttonStyle != null
+			{
+				nk_button_label_styled(nk,buttonStyle,thisLabel.Str())
+			}else{
+				nk_button_label(nk,thisLabel.Str())
+			}
 			nk_layout_space_end(nk)
 		})
+	}
+	SetColor := !(ButtonColorLayer layer, int r, int g, int b, int alpha = 255) -> void
+	{
+		if buttonStyle == null
+		{
+			buttonStyle = malloc(nke_style_button_size())
+			nke_style_button_copy_from_context(nuklearContext.itContext,buttonStyle)
+		}
+
+		itColor := nk_color
+		itColor.r = r
+		itColor.g = g
+		itColor.b = b
+		itColor.a = alpha
+
+		switch layer
+		{
+			case "normal"
+				nke_style_button_set_color(buttonStyle,0,itColor)
+			case "hover"
+				nke_style_button_set_color(buttonStyle,1,itColor)
+			case "pressed"
+				nke_style_button_set_color(buttonStyle,2,itColor)
+		}
 	}
 	SetPressCallback := !(!()&->void cb) -> void
 	{
@@ -41,4 +74,11 @@ Button := class extend GUIObject
 	{
 		pressCallback?()
 	}
+}
+
+ButtonColorLayer := enum
+{
+	"normal",
+	"hover",
+	"pressed"
 }

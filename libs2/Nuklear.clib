@@ -126,6 +126,8 @@
 
 		"nke_style_button_size" : "int",
 		"nke_style_button_copy_from_context" : "void,void^,void^",
-		"nke_style_button_set_color" : "void,void^,int,nk_color"
+		"nke_style_button_set_color" : "void,void^,int,nk_color",
+
+		"nke_font_get_handle" : "void^,void^"
 	}
 }

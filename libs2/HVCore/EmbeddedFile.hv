@@ -1,10 +1,11 @@
 vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already made object
 {
 	itData := void^
-	this := !(void^ inData, int inpSize) -> void
+	this := !(void^ inData, int inpSize,char^ itName) -> void
 	{
 		itData = inData
 		fileSize = inpSize
+		objName = new String(itName)
 	}
 	GetMap := virtual !() -> FileView^
 	{
@@ -17,9 +18,9 @@ vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already mad
 }
 
 
-internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ filePath) -> vEmbeddedFile^
+internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ fileName) -> vEmbeddedFile^
 {
 	//TODO use filePath
 	//todo compressed version
-	return new vEmbeddedFile(data,fileSize)
+	return new vEmbeddedFile(data,fileSize,fileName)
 }

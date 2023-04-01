@@ -49,7 +49,7 @@ NuklearVulkanContext := class //extend TGCObject
 
 		nk_font_atlas_end(atlasData&,atlasTexture,null)
 
-		nk_init_default(itContext,fnt2->{void^^}[1]&)
+		nk_init_default(itContext,nke_font_get_handle(fnt2))
 
 		nk_style_load_all_cursors(itContext,atlasData.cursors[0]&)
 	}

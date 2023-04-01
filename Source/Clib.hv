@@ -258,6 +258,30 @@ CLib := class extend ModuleInterface
 				dt << "}\n"
 			}
 		}
+		if targetLinux
+		{
+			dllFile := vRepoFile^
+			for it : dlls
+			{
+				if it.End != ".so"
+					continue
+				
+				try
+				{
+					dllFile = libFile.GetFile(it)
+					if dllFile != null //TODO exception or "return null" , i need to make up my mind
+						break
+				}catch(e)
+				{
+				}
+			}
+			if dllFile != null
+			{
+				dt << "if lib == null \n{\n"
+				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
+				dt << "}\n"
+			}
+		}
 		for it, ind : itFuncs
 		{
 			if ind == initFuncName

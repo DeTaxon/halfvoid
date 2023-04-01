@@ -23,7 +23,6 @@ TaskWorker := class extend TGCObject
 	CreateThread := !() -> void
 	{
 		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a wait for passing variable as weak pointer
-			printf("hoh %p\n",CurrentTask)
 			CurrentThread = wk->{TaskWorker^}
 			CurrentThread.ThreadMainTask = CurrentTask
 			CurrentTask.OSFirstInit()

@@ -214,14 +214,10 @@ GetLibrary := !(vRepoFile^ fl) -> Library^
 		res.win32DllData = resLoad
 
 		return res
-
-
-		//nameCpy := StrCopy(name)
-		//inMap2 := ref loadedLibs[nameCpy]
-		//inMap2.hndl = hndl
-		////inMap2.itFileName = StrCopy(tmpName)
-		//inMap2.win32DllData = resLoad
-		//return inMap2&
+	}
+	if #OS() == "Linux"
+	{
+		return loadDllFromEmbeddedFile(fl)	
 	}
 }
 

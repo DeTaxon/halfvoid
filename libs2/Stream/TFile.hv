@@ -27,4 +27,8 @@ TFile := class extend Stream
 		fclose(handle)
 		handle = null
 	}
+	Destroy := virtual !() -> void
+	{	
+		Close()
+	}
 }
