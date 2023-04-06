@@ -49,3 +49,8 @@ extern struct nk_user_font* nke_font_get_handle(struct nk_font* fnt)
 {
 	return &(fnt->handle);
 }
+
+extern nk_size nke_buffer_get_allocated(struct nk_buffer* buf)
+{
+	return buf->allocated;
+}

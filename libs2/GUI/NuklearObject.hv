@@ -128,11 +128,17 @@ NuklearObject := class
 			cmd = nk__draw_next(cmd,cmds[0]&,itContext)->{nk_draw_command^}
 		}
 
+		vertSize := nke_buffer_get_allocated(vBuf[0]&)
+		indSize := nke_buffer_get_allocated(iBuf[0]&)
+
+		vert2 := TArraySpan.{u8}(vRealVertBuf.GetPointer(),vertSize)
+		ind2 := TArraySpan.{u8}(vRealIndBuf.GetPointer(),indSize)
+
 		if renderMesh == null
 		{
-			renderMesh = vInstance.CreateMesh(vRealVertBuf&,vRealIndBuf&,VKType(VType_UInt16,1))
+			renderMesh = vInstance.CreateMesh(vert2&,ind2&,VKType(VType_UInt16,1))
 		}else{
-			renderMesh.TransferData(vRealVertBuf&,vRealIndBuf&)
+			renderMesh.TransferData(vert2&,ind2&)
 		}
 
 		indOffset := 0
@@ -217,6 +223,9 @@ NuklearObject := class
 
 		for it,i : textList
 		{
+			if it.1 == 0 
+				continue
+
 			scales := float[4]
 			scales[0] = 1.0 / w
 			scales[1] = 1.0 / h
@@ -224,13 +233,6 @@ NuklearObject := class
 			scales[3] = offset.y
 			vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
 
-			sc := VkRect2D
-			sc.offset.x = 0
-			sc.offset.y = 0
-			sc.extent.width = w
-			sc.extent.height = h
-
-			vInstance.Funcs.vkCmdSetScissor(cmdB,0,1,sc&)
 			vInstance.Funcs.vkCmdDrawIndexed(cmdB,it.1,1,it.0,0,0)
 		}
 	}

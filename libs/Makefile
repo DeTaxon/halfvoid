@@ -18,3 +18,4 @@ download:
 	mkdir stb
 	(cd stb; git clone https://github.com/nothings/stb)
 	git clone https://github.com/Immediate-Mode-UI/Nuklear
+	git clone https://github.com/wolfpld/tracy

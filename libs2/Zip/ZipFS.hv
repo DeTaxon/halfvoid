@@ -177,7 +177,7 @@ vRepo := class extend TGCObject
 	GetFile := !(StringView fileName,vRepoFolder^ rrF) -> vRepoFile^
 	{
 		obj := getObject(fileName,rrF)
-		if obj is vRepoFile
+		if obj? is vRepoFile
 			return obj->{vRepoFile^}
 		throw new Exception("File not found")
 	}

@@ -17,7 +17,7 @@ SimpleWindow := class extend GLFWWindow
 	{
 
 		vInstance = new VulkanDefaultInstance
-		vInstance.PreferSimpleGPU()
+		vInstance.PreferIntegratedGPU()
 		
 		Init(w,h,title)
 		vInstance.Init()
@@ -80,8 +80,12 @@ SimpleWindow := class extend GLFWWindow
 
 		lastTime := GetSteadyTime() - 1 //sec
 
+		//___tracy_emit_frame_mark("MainLoop")
+
 		while not ShouldClose()
 		{
+			___tracy_emit_frame_mark_start("MainLoop")
+			defer ___tracy_emit_frame_mark_end("MainLoop")
 			surfaceIndex := u32
 			drawRes := true
 			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
@@ -109,6 +113,12 @@ SimpleWindow := class extend GLFWWindow
 
 				//nuklearContext.MakeDraw()
 
+				sc := VkRect2D
+				sc.offset.x = 0
+				sc.offset.y = 0
+				sc.extent.width = w
+				sc.extent.height = h
+				vInstance.Funcs.vkCmdSetScissor(step1Cmd.Get(),0,1,sc&)
 
 				drawShader.ApplyShaderToQueue(vInstance,step1Cmd.Get(),w->{float},h->{float})
 				sts := VkDescriptorSet[1]

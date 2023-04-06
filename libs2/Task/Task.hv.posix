@@ -37,10 +37,17 @@ AppendClass Task
 	}
 	switchToTask := !() -> void
 	{
+		//thisTask := char[256]
+		//sprintf(thisTask[0]&,"Task %p\n",this&)
+
+		//___tracy_fiber_enter?(thisTask[0]&)
+
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
 		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
 			llvmLongJump(this.longJumpBuf[0]&)
+
+		//___tracy_fiber_leave?()
 	}
 	OSDestroy := !() -> void
 	{
