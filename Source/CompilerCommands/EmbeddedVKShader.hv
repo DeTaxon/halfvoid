@@ -1,0 +1,54 @@
+TryEmbeddVKShader := !(Token^ itm) -> BoxExeObj^
+{
+	if itm.Down.Right == null or itm.Down.Right.GetValue() != "()"
+	{
+		itm.EmitError("usage #EmbVKShader(name)")
+	}
+	skb := itm.Down.Right
+	if skb.Down == null or not (skb.Down is TokenString)
+	{
+		itm.EmitError("usage #EmbVKShader(name)")
+	}
+
+	isLocal := itm.Down->{TokenIndent^}.Value == "#EmbVKShader"
+	fileName := skb.Down->{TokenString^}.Value
+
+	
+	itFile := vRepoFile^
+
+	if isLocal
+	{
+		itFile = itm.Line.File.file.GetFile(fileName)
+	}else{
+		itFile = FSGetFile(fileName) //todo exceptions?
+	}
+
+	if itFile == null
+		itm.EmitError("File not found")
+	
+	
+
+	emb := BoxRawData^
+	if not embeddedShaders.Contain(itFile)
+	{
+		blb := CompileVulkanShader(itFile)
+		if blb == null
+			itm.EmitError("Could not compile shader")
+		emb = new BoxRawData(blb)
+		embeddedShaders[itFile] = emb
+	}else{
+		emb = embeddedShaders[itFile]
+	}
+
+	objs := CheckExeDownList
+	objs.Push(emb)
+	objs.Push(GetExeInt(emb.ItBlob.Size()))
+	objs.Push(GBoolFalse)
+	objs.Push(GetExeString(itFile.GetName()^[0..0]))
+
+	cnsts := List.{BoxExeConstObj^}
+	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs,cnsts)
+}
+
+embeddedShaders := AVLMap.{vRepoFile^,BoxRawData^}
+

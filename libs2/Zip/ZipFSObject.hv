@@ -6,7 +6,7 @@ vRepoObject := class extend TGCObject
 
 	GetName := !() -> String^ { return objName }
 	
-	//GetUpFolder := !() -> vRepoFolder^ { return upFolder }
+	GetUpFolder := !() -> vRepoFolder^ { return upFolder }
 
 	GetPath := !() -> String^
 	{

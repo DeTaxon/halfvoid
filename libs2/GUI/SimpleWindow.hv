@@ -45,7 +45,7 @@ SimpleWindow := class extend GLFWWindow
 		],
 		1
 		)
-		drawShader = drawLayout.CreateShader(#FileLocal("TextVertCompiled.vert"),#FileLocal("TextFragCompiled.frag"))
+		drawShader = drawLayout.CreateShader(#EmbVKShader("TextVert.vert"),#EmbVKShader("TextFrag.frag"))
 
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()

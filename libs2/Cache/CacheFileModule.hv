@@ -39,6 +39,8 @@ CacheFileModule := class extend TGCObject
 		if inDB != null
 			return inDB
 		result = cb()
+		if result == null
+			return null
 		WriteCacheOfFile(fl,result)
 	}
 }

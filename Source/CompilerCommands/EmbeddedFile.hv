@@ -124,6 +124,10 @@ PrintEmbeddedFiles := !(Stream^ f) -> void
 	{
 		it.PrintGlobal(f)
 	}
+	for it : embeddedShaders
+	{
+		it.PrintGlobal(f)
+	}
 	for it : blobDatas
 	{
 		it.PrintGlobal(f)

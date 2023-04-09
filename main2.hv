@@ -1,6 +1,27 @@
 
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
+//TODO make FS aware of CacheFile
+
+
+//TestClass := class
+//{
+//	x := int
+//	"for" := #generator !() -> void
+//	{
+//		for i : 2..7
+//		{
+//			printf("called %i\n",x)
+//			yield i
+//		}
+//	}
+//}
+//SaveStack := #defer !() -> void
+//{
+//	stackSize := UnitStack.Size()
+//	defer {
+//	}
+//}
 
 main := !(char^[] args) -> int
 {
