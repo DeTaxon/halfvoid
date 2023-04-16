@@ -70,6 +70,11 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	TaskMainTaskWorker = CurrentThread
 	CurrentTask.OSFirstInit()
 
+	if #Tracy()
+	{
+		tracy_init()
+	}
+
 	TSpawnTask(() ==> {	
 		spn := TArraySpan.{char^}//(argv,argc)
 		spn.pointer = argv
@@ -78,6 +83,12 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	})
 
 	EnterTaskThreadCycle(true)
+
+	if #Tracy()
+	{
+		___tracy_emit_memory_free_callstack = null
+	}
+
 	TaskContextDestructor()
 	TaskMainTaskWorker = null
 	

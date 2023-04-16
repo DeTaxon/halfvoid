@@ -1,8 +1,14 @@
 internalHVNew := !() .{@T} -> T^
 {
+	objSize := max(T->TypeSize,1)
 	result&->{void^^}^ = calloc(1,max(T->TypeSize,1) ) //way to bypass DecRef
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
+
+	//if #Tracy()
+	//{
+	//	___tracy_emit_memory_alloc_callstack?(result,objSize,999,0)
+	//}
 }
 internalHVNewConstructed := !(@T^ obj, args...) -> T^
 {
@@ -12,5 +18,9 @@ internalHVNewConstructed := !(@T^ obj, args...) -> T^
 
 internalHVDelete := !(@T^ x) -> void
 {
+	//if #Tracy()
+	//{	
+	//	___tracy_emit_memory_free_callstack?(x,9999,0)
+	//}
 	free(x)
 }

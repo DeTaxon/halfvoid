@@ -81,12 +81,31 @@ TVkTexture := class
 			i *= 2
 		return i
 	}
+	CreateTexture := !(int w, int h, u8[] data) -> void
+	{	
+
+		useAlpha := true
+		//if not vkRGB8Support //TODO add info to instance?
+			useAlpha = true
+
+		memTyp := CreateObject(w,h,(x,y) ==> {
+			x.format = VK_FORMAT_R8G8B8_UNORM
+			if useAlpha x.format = VK_FORMAT_R8G8B8A8_UNORM
+		})
+
+		ptrToSet := itInstance.itStageMemory.Map()->{u8^}
+
+		memcpy(ptrToSet,data.GetPointer(),data.Size())
+
+		itInstance.itStageMemory.Unmap()
+		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
+	}
 	CreateTexture := !(vRepoFile^ itFile) -> void
 	{	
 		imgFile := TImageFile(itFile)
 
 		useAlpha := imgFile.haveAlpha
-		if not vkRGB8Support
+		//if not vkRGB8Support //TODO add info to instance?
 			useAlpha = true
 
 		memTyp := CreateObject(imgFile.itWidth,imgFile.itHeight,(x,y) ==> {
@@ -104,7 +123,6 @@ TVkTexture := class
 		}
 		itInstance.itStageMemory.Unmap()
 		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
-
 	}
 	Destroy := virtual !() -> void //TODO double delete
 	{

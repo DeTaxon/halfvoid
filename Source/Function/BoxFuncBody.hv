@@ -137,6 +137,8 @@ BoxFuncBody := class extend BoxFuncCommon
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
+		//TracyZone("Parsing function")
+
 		oldVarsCount := GCVarsInUse
 		GCVarsInUse = 0
 

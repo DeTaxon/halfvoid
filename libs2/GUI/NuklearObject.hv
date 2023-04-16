@@ -217,6 +217,7 @@ NuklearObject := class
 	ExpectedH := float
 	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void
 	{
+
 		offset.x -= CenterX - ExpectedW*0.5
 		offset.y -= CenterY - ExpectedH*0.5
 		renderMesh.Bind(cmdB)
@@ -232,7 +233,6 @@ NuklearObject := class
 			scales[2] = offset.x
 			scales[3] = offset.y
 			vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
-
 			vInstance.Funcs.vkCmdDrawIndexed(cmdB,it.1,1,it.0,0,0)
 		}
 	}

@@ -22,5 +22,11 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			return GetExeString(StringSpan("Windows"))
 		assert(false)
 	}
+	if cmd == "#Tracy"
+	{
+		if UseTracy
+			return GBoolTrue
+		return GBoolFalse
+	}
 	itm.EmitError("Command not found")	
 }

@@ -5,6 +5,9 @@ CLANG := /usr/lib/llvm13/bin/clang
 c_lib.so: uring.cpp stb/main.cpp Nuklear.o
 	clang -gdwarf-4 $(flags) -shared -lm -luring  $^ -o $@
 
+stb_truetype.so : stb/truetype.cpp
+	clang -gdwarf-4 $(flags) -shared -lm  $^ -o $@
+
 NuklearGLFW.so : NuklearGLFW.c
 	clang $(flags) -shared -lm -lglfw $^ -o $@
 

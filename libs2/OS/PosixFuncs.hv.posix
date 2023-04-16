@@ -79,6 +79,12 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 	}
 
 }
+
+fsGetAbsolutePath := !(char^ ptr) -> String^
+{
+	
+}
+
 GetRealTimeU64Seconds := !() -> u64
 {
 	times := u64[2]

@@ -23,6 +23,11 @@ AppendClass Task
 		uContext[32]&->{u64^}^ = stackSize
 		makecontext(uContext[0]&,ucontextStartTask,0)
 		itTaskWorker = CurrentThread
+	
+		//if #Tracy()
+		//{
+		//	___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
+		//}
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
@@ -37,22 +42,24 @@ AppendClass Task
 	}
 	switchToTask := !() -> void
 	{
-		//thisTask := char[256]
-		//sprintf(thisTask[0]&,"Task %p\n",this&)
-
-		//___tracy_fiber_enter?(thisTask[0]&)
+		//if #Tracy()
+		//{
+		//	___tracy_fiber_enter(taskNames[taskId].0[0]&)
+		//}
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
 		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
 			llvmLongJump(this.longJumpBuf[0]&)
-
-		//___tracy_fiber_leave?()
 	}
 	OSDestroy := !() -> void
 	{
 		if stackPtr != null
 		{
+			//if #Tracy()
+			//{	
+			//	___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
+			//}
 			free(stackPtr)
 			stackPtr = null
 		}

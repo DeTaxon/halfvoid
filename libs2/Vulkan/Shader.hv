@@ -447,4 +447,8 @@ vShader := class
 		//  VK_NULL_HANDLE, VkPipeline                                     basePipelineHandle
 		Funcs.vkCreateGraphicsPipelines(LogicalDevice,null,1,gpC&,null,itPipe&)
 	}
+	Get := !() -> void^
+	{
+		return itPipe
+	}
 }

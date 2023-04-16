@@ -62,7 +62,7 @@ ZipFSFileViewZipDeflate := class extend FileView
 	{
 		if pointer != null
 		{
-			delete pointer
+			free(pointer)
 			pointer = null
 		}
 	}

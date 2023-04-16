@@ -10,7 +10,7 @@ TryEmbeddVKShader := !(Token^ itm) -> BoxExeObj^
 		itm.EmitError("usage #EmbVKShader(name)")
 	}
 
-	isLocal := itm.Down->{TokenIndent^}.Value == "#EmbVKShader"
+	isLocal := itm.Down->{TokenIndent^}.Value == "#EmbVKShaderLocal"
 	fileName := skb.Down->{TokenString^}.Value
 
 	

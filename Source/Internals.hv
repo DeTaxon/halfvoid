@@ -95,6 +95,8 @@ intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
 
 InitInternals := !() -> void
 {
+	TracyZone("Internal functions")
+
 	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
 	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
 	TemplateInternalNewOne = intGetTemplate("internalHVNew")

@@ -29,9 +29,12 @@ targetWindows := false
 
 DisableScary := false
 
+UseTracy := false
+
 OutputFile := char^
 main := !(char^[] args) -> int
 {
+	TracyZone("MainFunc")
 
 	for i : 9973
 	{
@@ -63,6 +66,8 @@ main := !(char^[] args) -> int
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i]) //TODO args check
+			case "-tracy"
+				UseTracy = true
 			case "-scary"
 				DisableScary = true
 			case "-linux"

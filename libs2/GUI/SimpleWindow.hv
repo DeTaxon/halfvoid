@@ -11,11 +11,13 @@ SimpleWindow := class extend GLFWWindow
 	oldW := int
 	oldH := int
 
-	backgroundWindow := NuklearObject
+
+	ClearColor := vec4f
 
 	this := !(int w, int h,char^ title) -> void
 	{
-
+		ClearColor = vec4f(1.0,0.5,1.0,1.0)
+		
 		vInstance = new VulkanDefaultInstance
 		vInstance.PreferIntegratedGPU()
 		
@@ -45,7 +47,7 @@ SimpleWindow := class extend GLFWWindow
 		],
 		1
 		)
-		drawShader = drawLayout.CreateShader(#EmbVKShader("TextVert.vert"),#EmbVKShader("TextFrag.frag"))
+		drawShader = drawLayout.CreateShader(#EmbVKShaderLocal("TextVert.vert"),#EmbVKShaderLocal("TextFrag.frag"))
 
 		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
 		nuklearDescp = nuklearPool.CreateDescriptor()
@@ -76,7 +78,7 @@ SimpleWindow := class extend GLFWWindow
 
 	Run := !() -> void
 	{
-		step1Cmd := TVkCommandBuffer(vInstance,vInstance.itDrawCommandPool)
+		step1Cmd := TVkCommandBuffer(vInstance,vInstance.itDrawCmdPool2)
 
 		lastTime := GetSteadyTime() - 1 //sec
 
@@ -84,8 +86,8 @@ SimpleWindow := class extend GLFWWindow
 
 		while not ShouldClose()
 		{
-			___tracy_emit_frame_mark_start("MainLoop")
-			defer ___tracy_emit_frame_mark_end("MainLoop")
+			//___tracy_emit_frame_mark_start("MainLoop")
+			//defer ___tracy_emit_frame_mark_end("MainLoop")
 			surfaceIndex := u32
 			drawRes := true
 			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
@@ -107,7 +109,7 @@ SimpleWindow := class extend GLFWWindow
 				h := vInstance.GetSurfaceHeight()
 
 				step1Cmd.Reset()
-				step1Cmd.Start()
+				step1Cmd.Start(null,0)
 				
 				StartTextDraw(step1Cmd.Get(),vInstance.GetSurfaceFramebuffer(surfaceIndex))
 
@@ -131,14 +133,10 @@ SimpleWindow := class extend GLFWWindow
 					{
 						mainGUIObject.GetLayout()
 						mainGUIObject.SetLayout(nuklearContext,vec2f(w,h))
-
-						backgroundWindow.CreateWindow(vInstance,nuklearContext.itContext,1000,1000)
-						backgroundWindow.drawLayout = this.drawLayout
 					}
 					oldW = w
 					oldH = h
 				}
-				backgroundWindow.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
 				mainGUIObject.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
 				DrawVulkan(step1Cmd.Get(),w,h)
 
@@ -171,10 +169,10 @@ SimpleWindow := class extend GLFWWindow
 	
 		clrValues := float[13]
 	
-		clrValues[0] = 0.0
-		clrValues[1] = 0.5
-		clrValues[2] = 1.0
-		clrValues[4] = 1.0f
+		clrValues[0] = ClearColor.x
+		clrValues[1] = ClearColor.y
+		clrValues[2] = ClearColor.z
+		clrValues[4] = ClearColor.w
 		clrValues[5] = 0.0f
 		clrValues[6] = 0.0f
 		clrValues[7] = 1.0f
