@@ -11,8 +11,19 @@ SimpleWindow := class extend GLFWWindow
 	oldW := int
 	oldH := int
 
-
 	ClearColor := vec4f
+
+	FontAtlases := List.{FontAtlas^}
+	CreateFont := !(vRepoFile^ fil, float height) -> Font^
+	{
+		testAtlas := new FontAtlas(vInstance,fil,height,1)
+		FontAtlases.Push(testAtlas)
+		result = testAtlas.fonts[0]
+		testAtlas.atlasDescriptor = nuklearPool.CreateDescriptor()
+		vSetTexture(vInstance,testAtlas.atlasDescriptor,testAtlas.atlasTexture,vInstance.SamplerNearest)
+	}
+
+	vkOverlay := VkOverlayContext
 
 	this := !(int w, int h,char^ title) -> void
 	{
@@ -55,9 +66,12 @@ SimpleWindow := class extend GLFWWindow
 
 		mainGUIObject = InitWindow()
 
-
+		vkOverlay.inst = vInstance
+		vkOverlay.w = w
+		vkOverlay.h = h
+		vkOverlay.textDrawLayout = drawLayout
+		vkOverlay.textDrawShader = drawShader
 	}
-
 
 	nuklearPool := TDescriptorPool^ 
 	nuklearDescp := VkDescriptorSet
@@ -131,13 +145,13 @@ SimpleWindow := class extend GLFWWindow
 				{
 					if oldW != w or oldH != h
 					{
-						mainGUIObject.GetLayout()
-						mainGUIObject.SetLayout(nuklearContext,vec2f(w,h))
+						mainGUIObject.GetLayout(vkOverlay&)
+						mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
 					}
 					oldW = w
 					oldH = h
 				}
-				mainGUIObject.PushDraw(step1Cmd.Get(),w,h,vec2f(0,0))
+				mainGUIObject.PushDraw(vkOverlay&,step1Cmd.Get(),vec2f(0,0))
 				DrawVulkan(step1Cmd.Get(),w,h)
 
 				StopTextDraw(step1Cmd.Get())

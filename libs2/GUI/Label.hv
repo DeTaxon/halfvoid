@@ -3,11 +3,14 @@ TextLabel := class extend TGCObject
 	itText := String^
 	itFont := Font^
 	itMesh := TVkMesh^
+	textSize := vec2f
+	needChange := bool
 
 	this := !(Font^ fnt, StringView data) -> void
 	{
 		itFont = fnt
 		itText = data.GetString()
+		needChange = true
 	}
 	CreateMesh := !(VulkanInstance^ inst) -> void
 	{
@@ -23,13 +26,11 @@ TextLabel := class extend TGCObject
 		ptr := msh.GetPointer()->{meshData^}
 		ind := mshIndex.GetPointer()->{int^}
 
-		
-
 		for i : itText.Size()
 		{
 			test := stbtt_aligned_quad
 
-			stbtt_GetPackedQuad(itFont.packedChars.GetPointer(),512,512,itText.Str()[i],xPos&,yPos&,test&,0)
+			stbtt_GetPackedQuad(itFont.packedChars.GetPointer(),512,512,itText.Str()[i],xPos&,yPos&,test&,1)
 
 			for it,j : ![!{false,false},!{true,false},!{false,true},!{true,true}]
 			{
@@ -50,20 +51,37 @@ TextLabel := class extend TGCObject
 			ind[i*6 + 5] = i*4 + 3
 		}
 		itMesh = inst.CreateMesh(msh&,mshIndex&,VKType(VType_UInt32,1))
+		textSize = vec2f(xPos,yPos)
 	}
-	Draw := !(SweeperNuklear^ base,VkCommandBuffer cmdB ,TShaderInput^ drawLayout,int w, int h,vec2f offset) -> void
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{
-		
-		//sts := VkDescriptorSet[1]
-		//sts[0] = descriptor
-		//base.vInstance.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
+		if needChange
+		{
+			CreateMesh(ctx.inst)
+			needChange = false
+		}
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+		if needChange
+		{
+			CreateMesh(ctx.inst)
+			needChange = false
+		}
+
+		ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,ctx.w,ctx.h)
+
+		sts := VkDescriptorSet[1]
+		sts[0] = itFont.baseAtlas.atlasDescriptor
+		ctx.inst.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,ctx.textDrawLayout.Get(),0,1,sts[0]&,0,null)
+
 		itMesh.Bind(cmdB)
 		scales := float[4]
-		scales[0] = 1.0 / w
-		scales[1] = 1.0 / h
+		scales[0] = 1.0 / ctx.w
+		scales[1] = 1.0 / ctx.h
 		scales[2] = offset.x
 		scales[3] = offset.y
-		base.vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
-		base.vInstance.Funcs.vkCmdDrawIndexed(cmdB,itText.Size()*6,1,0,0,0)
+		ctx.inst.Funcs.vkCmdPushConstants(cmdB,ctx.textDrawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
+		ctx.inst.Funcs.vkCmdDrawIndexed(cmdB,itText.Size()*6,1,0,0,0)
 	}
 }

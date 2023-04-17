@@ -5,7 +5,7 @@ LayoutHorizontal := class extend LayoutBase
 	{
 		super(objs)
 	}
-	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{
 		fullSizeCount = 0
 		foundStaticW = false
@@ -20,7 +20,7 @@ LayoutHorizontal := class extend LayoutBase
 		{
 			if it.0 is LayoutSpacer
 			{
-				itL := it.0.GetLayout()
+				itL := it.0.GetLayout(ctx)
 				switch itL.1
 				{	
 					case 0
@@ -34,7 +34,7 @@ LayoutHorizontal := class extend LayoutBase
 				continue
 			}
 
-			itL := it.0.GetLayout()
+			itL := it.0.GetLayout(ctx)
 			switch itL.1
 			{
 				case 0 //fullSuze
@@ -66,7 +66,7 @@ LayoutHorizontal := class extend LayoutBase
 		}else {result.2 = 0}
 	}
 
-	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
 	{
 		maxHeight := setSize.y
 		if foundStaticH
@@ -79,7 +79,7 @@ LayoutHorizontal := class extend LayoutBase
 		{
 			if it.0 is LayoutSpacer
 			{
-				itL := it.0.GetLayout()
+				itL := it.0.GetLayout(ctx)
 				switch itL.1
 				{
 					case 0
@@ -89,7 +89,7 @@ LayoutHorizontal := class extend LayoutBase
 				}
 				continue
 			}
-			itL := it.0.GetLayout()
+			itL := it.0.GetLayout(ctx)
 			newSize := vec2f
 			switch itL.1
 			{
@@ -114,7 +114,7 @@ LayoutHorizontal := class extend LayoutBase
 			pOffset += newSize.y
 		}
 	}
-	PushDraw := virtual !(VkCommandBuffer cmdB,int w,int h,vec2f offset) -> void
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
 		for it : objects
 		{
@@ -122,7 +122,7 @@ LayoutHorizontal := class extend LayoutBase
 				continue
 
 			newOffset := offset + it.1
-			it.0.PushDraw(cmdB,w,h,offset + it.1)
+			it.0.PushDraw(ctx,cmdB,offset + it.1)
 		}
 	}
 }

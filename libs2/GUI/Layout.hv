@@ -4,7 +4,7 @@
 //2 - dynamic, procent
 
 
-GUIObject := class extend NuklearObject
+GUIObject := class extend TGCObject
 {
 
 	thisLayout := Tuple.{int,int}
@@ -32,15 +32,18 @@ GUIObject := class extend NuklearObject
 			thisLayout.1 = 0
 	}
 
-	GetLayout := virtual !() -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{
 		return !{thisLayoutSize,thisLayout.0,thisLayout.1}
 	}
-	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
 	{
 		drawSize = setSize
 	}
 	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
 	}
 }

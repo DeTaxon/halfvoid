@@ -1,70 +1,24 @@
 NkButton := class extend GUIObject
 {
-	thisLabel := String^
 	pressCallback := !()&-> void
 
-	buttonStyle := void^
-	nuklearContext := NuklearVulkanContext^
+	itText := TextLabel
+	textOffset := vec2f
 
-	this := !(NuklearVulkanContext^ nkCtx,float x, float y,StringView setLabel) -> void
+	this := !(SimpleWindow^ nkCtx,float x, float y,StringView setLabel,Font^ setFont) -> void
 	{
 		SetSize("static",x,"static",y)
-		thisLabel = setLabel.GetString()
-		nuklearContext = nkCtx
+
+		assert(setFont != null)
+		itText."this"(setFont,setLabel)
 	}
-	SetLayout := virtual !(NuklearVulkanContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
 	{
 		super(ctx,setSize)
-		cX := setSize.x
-		cY := setSize.y
-		Create(ctx.vInstance,ctx.itContext, setSize.x,setSize.y, () ==> {
-			rect2 := nk_rect
-			rect2.x = 200
-			rect2.y = 200
-			rect2.w = cX
-			rect2.h = cY
-
-			nk := ctx.itContext
-
-			//unknownPlace := malloc(nke_style_button_size())
-			//defer free(unknownPlace)
-
-			//nke_style_button_copy_from_context(nk,unknownPlace)
-			
-			nk_layout_space_begin(nk,NK_STATIC,rect2.w,100)
-			nk_layout_space_push(nk,rect2)
-			if buttonStyle != null
-			{
-				nk_button_label_styled(nk,buttonStyle,thisLabel.Str())
-			}else{
-				nk_button_label(nk,thisLabel.Str())
-			}
-			nk_layout_space_end(nk)
-		})
 	}
 	SetColor := !(ButtonColorLayer layer, int r, int g, int b, int alpha = 255) -> void
 	{
-		if buttonStyle == null
-		{
-			buttonStyle = malloc(nke_style_button_size())
-			nke_style_button_copy_from_context(nuklearContext.itContext,buttonStyle)
-		}
-
-		itColor := nk_color
-		itColor.r = r
-		itColor.g = g
-		itColor.b = b
-		itColor.a = alpha
-
-		switch layer
-		{
-			case "normal"
-				nke_style_button_set_color(buttonStyle,0,itColor)
-			case "hover"
-				nke_style_button_set_color(buttonStyle,1,itColor)
-			case "pressed"
-				nke_style_button_set_color(buttonStyle,2,itColor)
-		}
+		//TODO
 	}
 	SetPressCallback := !(!()&->void cb) -> void
 	{
@@ -73,6 +27,21 @@ NkButton := class extend GUIObject
 	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
 	{
 		pressCallback?()
+	}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	{
+		result = super(ctx)
+		itText.GetLayout(ctx)
+	}
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	{
+		super(ctx,setSize)
+		textOffset.x = (setSize.x - itText.textSize.x)*0.5
+		textOffset.y = (setSize.y + itText.itFont.height)*0.5
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+		itText.PushDraw(ctx,cmdB,offset + textOffset)
 	}
 }
 
