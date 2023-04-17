@@ -1,29 +1,21 @@
 SimpleWindow := class extend GLFWWindow
 {
 	vInstance := VulkanDefaultInstance^
-	nuklearContext := NuklearGoAroundContext^
 
 	mainRenderPass := TRenderPass^
-	drawLayout := TShaderInput^
-	drawShader := vShader^
 
 	mainGUIObject := GUIObject^
 	oldW := int
 	oldH := int
 
 	ClearColor := vec4f
+	vkOverlay := VkOverlayContext
 
-	FontAtlases := List.{FontAtlas^}
 	CreateFont := !(vRepoFile^ fil, float height) -> Font^
 	{
-		testAtlas := new FontAtlas(vInstance,fil,height,1)
-		FontAtlases.Push(testAtlas)
-		result = testAtlas.fonts[0]
-		testAtlas.atlasDescriptor = nuklearPool.CreateDescriptor()
-		vSetTexture(vInstance,testAtlas.atlasDescriptor,testAtlas.atlasTexture,vInstance.SamplerNearest)
+		return vkOverlay.CreateFont(fil,height)
 	}
 
-	vkOverlay := VkOverlayContext
 
 	this := !(int w, int h,char^ title) -> void
 	{
@@ -37,44 +29,19 @@ SimpleWindow := class extend GLFWWindow
 
 		vInstance.initCreateStageMemory()
 
-		nuklearContext = new NuklearGoAroundContext
-		nuklearContext.wn = this&
-		nuklearContext.Init(vInstance)
-
 		vInstance.CreateSurface(windowHandle)
 
-		mainRenderPass = nuklearContext.CreateRenderPass(vInstance.SwapImageFormat)
+		mainRenderPass = vkOverlay.CreateRenderPass(vInstance,vInstance.SwapImageFormat)
 
 		vInstance.CreateSwapchain(mainRenderPass,w,h)
 
-		drawLayout = mainRenderPass.CreateLayout(![
-			VKType(VType_Float,2),
-			VKType(VType_Float,2),
-			VKType(VType_UInt8,4)
-		],![
-			new TImageSet(1)
-		],![
-			new TVertexPushConstant(4*4)
-		],
-		1
-		)
-		drawShader = drawLayout.CreateShader(#EmbVKShaderLocal("TextVert.vert"),#EmbVKShaderLocal("TextFrag.frag"))
-
-		nuklearPool = drawLayout.CreateDescriptorPool(0,100) //TODO unconst
-		nuklearDescp = nuklearPool.CreateDescriptor()
-		vSetTexture(vInstance,nuklearDescp,nuklearContext.atlasTexture,vInstance.SamplerNearest)
+		vkOverlay.Init(mainRenderPass)
 
 		mainGUIObject = InitWindow()
 
-		vkOverlay.inst = vInstance
 		vkOverlay.w = w
 		vkOverlay.h = h
-		vkOverlay.textDrawLayout = drawLayout
-		vkOverlay.textDrawShader = drawShader
 	}
-
-	nuklearPool := TDescriptorPool^ 
-	nuklearDescp := VkDescriptorSet
 
 	fpsLimited := bool
 	fpsPeriod := float
@@ -126,20 +93,6 @@ SimpleWindow := class extend GLFWWindow
 				step1Cmd.Start(null,0)
 				
 				StartTextDraw(step1Cmd.Get(),vInstance.GetSurfaceFramebuffer(surfaceIndex))
-
-				//nuklearContext.MakeDraw()
-
-				sc := VkRect2D
-				sc.offset.x = 0
-				sc.offset.y = 0
-				sc.extent.width = w
-				sc.extent.height = h
-				vInstance.Funcs.vkCmdSetScissor(step1Cmd.Get(),0,1,sc&)
-
-				drawShader.ApplyShaderToQueue(vInstance,step1Cmd.Get(),w->{float},h->{float})
-				sts := VkDescriptorSet[1]
-				sts[0] = nuklearDescp
-				vInstance.Funcs.vkCmdBindDescriptorSets(step1Cmd.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
 
 				if mainGUIObject != null
 				{
@@ -231,14 +184,5 @@ SimpleWindow := class extend GLFWWindow
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
 		mainGUIObject?.MousePressed(buttonNum,pressed,vec2f(MouseX,MouseY))
-	}
-}
-
-NuklearGoAroundContext := class extend NuklearVulkanContext
-{
-	wn := SimpleWindow^
-	DrawCode := virtual !(void^ nk) -> void
-	{
-		wn.DrawCode(nk,wn.vInstance.GetSurfaceWidth(),wn.vInstance.GetSurfaceHeight())
 	}
 }
