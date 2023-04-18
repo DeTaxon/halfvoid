@@ -24,9 +24,21 @@
 //	}
 //}
 
+
+
 main := !(char^[] args) -> int
 {
+	for it : #MarkedFunctions("CallAtStart")
+	{
+		it()
+	}
+	#MarkFunction("CallAtStart",StartFunctionTest)
 	return 0
+}
+
+StartFunctionTest := !() -> void
+{
+	printf("it works\n")	
 }
 
 //Zip file

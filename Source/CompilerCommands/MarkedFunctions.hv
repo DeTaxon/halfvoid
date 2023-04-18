@@ -1,0 +1,83 @@
+TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
+{
+	cmd := itm.Down->{TokenIndent^}.Value
+
+	if cmd == "#MarkedFunctions"
+	{
+		markName  := itm.Down.Right.Down
+
+		if markName == null or markName is not TokenString
+			itm.EmitError("Unknown input variable")
+
+		return markedObjects[markName->{TokenString^}.Value]&
+	}
+	if cmd == "#MarkFunction"
+	{
+		markName  := itm.Down.Right.Down
+
+		if markName == null or markName is not TokenString 
+			or markName.Right.GetValue() != "," or markName.Right.Right == null
+			or markName.Right.Right is not TokenIndent
+			itm.EmitError("Unknown input variable")
+
+		fncName := markName.Right.Right->{TokenIndent^}.Value
+		fnc := TryGetExeCall(markName.Right.Right)
+
+		callItem := BoxUnit^
+		GetItemGlobal(fncName, x ==> {
+			for it : x
+			{
+				if it is in BoxFunc
+				{
+					callItem = it
+					return true
+				}
+				if it is in BoxFuncTemplate
+				{
+					callItem = it
+					return true
+				}
+			}
+			return false
+		})
+
+		if callItem == null
+			itm.EmitError("Function not found")
+
+		mark := ref markedObjects[markName->{TokenString^}.Value]
+		mark.AddFunc(fnc)
+
+		return GBoolTrue
+		
+	}
+}
+
+
+markedObjects := AVLMap.{StringSpan,MarkedFunctions}
+
+MarkedFunctions := class extend BoxMetaGrowingObject
+{
+	functions := List.{BoxExeObj^}
+	listeners := List.{!(int)&->void}
+
+	IsMetaIteratable := virtual !() -> bool { return true }
+	MetaIteretableSize := virtual !() -> int { return functions.Size() }
+
+	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return functions[ind] }
+
+	RegisterUser := virtual !(!(int)&->void cb) -> void
+	{
+		listeners.Push(cb.Capture())
+	}
+	AddFunc := !(BoxExeObj^ obj) -> void
+	{
+		for it : functions
+		{
+			printf("wut %p %p\n",it,obj)
+			if it == obj
+				return void
+		}
+		functions.Push(obj)
+		listeners[^](functions.Size() - 1)
+	}
+}

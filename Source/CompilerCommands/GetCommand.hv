@@ -22,6 +22,10 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			return GetExeString(StringSpan("Windows"))
 		assert(false)
 	}
+	if cmd == "#MarkedFunctions" or cmd == "#MarkFunction"
+	{
+		return TryGetMarkedFunctions(itm)
+	}
 	if cmd == "#Tracy"
 	{
 		if UseTracy
