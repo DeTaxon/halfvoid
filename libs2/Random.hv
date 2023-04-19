@@ -1,18 +1,13 @@
 
-initedRandom := bool
 initRandom := !() -> void
 {
-	if initedRandom
-		return void
-	initedRandom = true
 	x := time(null)
 	srand(x&->{int^}^)
 }
 
 RandInt := !(Range rRange) -> int
 {
-	//TODO if function is used, call initRandom at start
-	initRandom()
+	#MarkFunction("CallAtStart",initRandom)
 
 	res := rand()
 
