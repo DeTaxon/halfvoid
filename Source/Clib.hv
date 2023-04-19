@@ -28,6 +28,7 @@ CLib := class extend ModuleInterface
 	linkType := StringSpan
 
 	initFunc := BoxFuncBodyStr^
+	addedToStartInitFunc := bool
 
 	this := !(vRepoFile^ fil) -> void
 	{
@@ -100,9 +101,11 @@ CLib := class extend ModuleInterface
 
 		if name == initFuncName
 		{
-			assert(initFunc == null)
-			initFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
-			itFuncs[name] = initFunc
+			if initFunc == null
+			{
+				initFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
+				itFuncs[name] = initFunc
+			}
 			return initFunc
 		}
 
@@ -223,6 +226,14 @@ CLib := class extend ModuleInterface
 		{
 			glVar := CreateGlobalVar(name,fType.GetPoint(),false)
 			itFuncs[name] = glVar
+
+			if not addedToStartInitFunc
+			{
+				iFunc := GetItem(initFuncName)
+				assert(iFunc is in BoxFunc)
+				MarkedAddCallAtStart(iFunc->{BoxFunc^})
+				addedToStartInitFunc = true
+			}
 			return glVar
 		}
 
@@ -245,6 +256,8 @@ CLib := class extend ModuleInterface
 			dt << "\"" << dlls[i] << "\""
 		}
 		dt << "])\n"
+
+		//dt << "printf(\"called " << initFuncName << "\n\")\n"
 
 		if targetWindows
 		{

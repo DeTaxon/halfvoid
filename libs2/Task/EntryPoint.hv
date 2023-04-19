@@ -70,9 +70,9 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	TaskMainTaskWorker = CurrentThread
 	CurrentTask.OSFirstInit()
 
-	if #Tracy()
+	for it : #MarkedFunctions("CallAtStart")
 	{
-		tracy_init()
+		it()
 	}
 
 	TSpawnTask(() ==> {	

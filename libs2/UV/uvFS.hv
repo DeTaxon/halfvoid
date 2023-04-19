@@ -1,7 +1,5 @@
 uvStat := !(char^ filePath,uv_stat_t statResult) -> int
 {
-	loadUVLibrary()
-
 	hm := char[1024]
 	result = uv_fs_stat(null,hm[0]&,filePath,null)
 	
@@ -15,8 +13,6 @@ uvStat := !(char^ filePath,uv_stat_t statResult) -> int
 }
 uvRealpath := !(char^ filePath) -> String^
 {
-	loadUVLibrary()
-
 	hm := char[1024]
 	intRes := uv_fs_realpath(null,hm[0]&,filePath,null)
 	if intRes == 0

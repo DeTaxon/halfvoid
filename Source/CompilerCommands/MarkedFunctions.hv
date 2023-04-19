@@ -52,6 +52,12 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 	}
 }
 
+MarkedAddCallAtStart := !(BoxFunc^ fnc) -> void
+{
+	mark := ref markedObjects[StringSpan("CallAtStart")]
+	mark.AddFunc(fnc)
+}
+
 
 markedObjects := AVLMap.{StringSpan,MarkedFunctions}
 
@@ -73,7 +79,6 @@ MarkedFunctions := class extend BoxMetaGrowingObject
 	{
 		for it : functions
 		{
-			printf("wut %p %p\n",it,obj)
 			if it == obj
 				return void
 		}

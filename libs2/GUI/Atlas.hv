@@ -8,8 +8,6 @@ FontAtlas := class extend TGCObject
 
 	this := !(VulkanInstance^ inst,vRepoFile^ fil, float fontSize, int oversampling) -> void
 	{
-		@once stb_truetype_init()
-
 		atlasTest := Vector.{u8}(512*512)
 		
 		stbtt_PackBegin(packContext&,atlasTest.GetPointer(),512,512,512,1,null) //TODO unconst

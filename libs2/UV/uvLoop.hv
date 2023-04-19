@@ -13,15 +13,6 @@ UVLoop := class extend TGCObject
 	}
 }
 
-uvLibraryLoaded := bool
-loadUVLibrary := !() -> void
-{
-	if uvLibraryLoaded
-		return void
-	uvLibraryLoaded = true
-	libUVInit()
-}
-
 uvLoopGlobal := UVLoop^
 createUVLoop := !() -> void
 {

@@ -28,18 +28,10 @@
 
 main := !(char^[] args) -> int
 {
-	for it : #MarkedFunctions("CallAtStart")
-	{
-		it()
-	}
-	#MarkFunction("CallAtStart",StartFunctionTest)
+	printf("hm %p\n",uv_fs_realpath)
 	return 0
 }
 
-StartFunctionTest := !() -> void
-{
-	printf("it works\n")	
-}
 
 //Zip file
 //crc32

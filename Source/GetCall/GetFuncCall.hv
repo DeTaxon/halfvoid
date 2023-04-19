@@ -244,6 +244,12 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null
 	{
+		if dwnItem is in BoxFunc
+		{
+			fnc := dwnItem->{BoxFunc^}
+			if fnc.GetType()->{TypeFunc^}.Params.Size() == 0 and Objs.Size() == 0
+				return fnc.CreateCall(Objs)
+		}
 		return innerTryGetPtrCall(dwnItem,Objs)?
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}

@@ -22,8 +22,6 @@ NuklearVulkanContext := class //extend TGCObject
 	{
 		vInstance = vi
 
-		Nuklear_init() //TODO once
-
 		itContext = calloc(nk_context_size(),1)
 
 		ax := 0
