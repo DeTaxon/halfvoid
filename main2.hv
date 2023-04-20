@@ -25,10 +25,18 @@
 //}
 
 
+obj2 := class extend TGCObject
+{
+}
+
+testFunc := !(TGCObject^[@S] hm) -> void
+{
+}
 
 main := !(char^[] args) -> int
 {
-	printf("hm %p\n",uv_fs_realpath)
+	c := new obj2
+	testFunc(![c,c])
 	return 0
 }
 
