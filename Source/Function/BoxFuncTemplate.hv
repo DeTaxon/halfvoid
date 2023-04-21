@@ -11,6 +11,7 @@ BoxFuncTemplate := class extend BoxUnit
 	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
 	{
 		fTyp := ToFuncType(objs,consts)
+
 		if fTyp == null
 			return CmpNoExchange
 		return CheckPriority(fTyp,objs,consts)

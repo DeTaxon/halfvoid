@@ -29,7 +29,6 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	CheckFuncCallBrackets(brc,Objs)
 
 	consts := List.{BoxExeConstObj^}
-	defer consts.Destroy()
 	if constsToken != null
 	{
 		SyntaxCompress(constsToken,LexHVInputVars)

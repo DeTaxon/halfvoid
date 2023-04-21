@@ -18,3 +18,35 @@ ExchangeArrayToPtr := class extend ExchangeUnit
 		return new ArrToPtr(obj,expType)
 	}
 }
+
+ExchangeArrayHolderToArray := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if not obj is BoxArrayHolder
+			return CmpNoExchange
+		if not expectResultRef
+			return CmpNoExchange
+		if to is not TypeArr
+			return CmpNoExchange
+
+		holder := obj->{BoxArrayHolder^}
+		typ := to->{TypeArr^}
+
+		if holder.GetArraySize() != typ.len
+			return CmpNoExchange
+
+		resExchange := 0
+
+		for it : holder.vals
+		{
+			resExchange = max(resExchange,TypePriorCmp(it,typ.Base,false))
+		}
+
+		return resExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return obj->{BoxArrayHolder^}.createUse(expType.Base)
+	}
+}

@@ -39,20 +39,6 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 	res := new BoxArrayHolder(allType,allConsts,itm)
 	res.vals.Push(objs[^])
 	return res
-	//if objs.Size() == 0
-	//{
-	//	return new BoxArrayHolder()
-	//}
-
-	//if allConsts
-	//{
-	//	arrType := allType.GetArray(objs.Size())
-	//	glbVar := CreateGlobalVar(StringSpan("anon"),arrType,false)
-	//	cnst := new BoxArrayConst(arrType)
-	//	cnst.dwns.Push(objs[^]->{BoxExeConstObj^})
-	//	glbVar.MemValue = cnst
-	//	return glbVar.Value.CreateCall()
-	//}
 
 	cnsts := List.{BoxExeConstObj^}
 	cnsts.Push(GetConstType(allType.GetArray(objs.Size())))

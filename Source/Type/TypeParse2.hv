@@ -1,5 +1,9 @@
 CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 {
+	return CheckTemplateType(null,tp,tk,resCnsts)
+}
+CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+{
 	if tk is TokenTemplateType
 	{
 		if tp == null
@@ -293,9 +297,25 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 			constVal = GetExeInt(asArr.len)
 		}
 
-		dTyp := CheckTemplateType(baseType,tk.Down,resCnsts) //TODO: unnull
+		dTyp := CheckTemplateType(baseType,tk.Down,resCnsts)
 		if dTyp == null
+		{
+			dwnType := ParseType(tk.Down)
+			if dwnType != null
+			{
+				if obj? is BoxArrayHolder
+				{
+					for it : obj->{BoxArrayHolder^}.vals
+					{
+						if not CanExchange(it,dwnType)
+							return null
+					}
+					return dwnType.GetArray(constVal->{BoxExeInt^}.Value)
+				}
+			}
 			return null
+		}
+
 
 		if tk.Down.Right.Down.Right != null
 			return null

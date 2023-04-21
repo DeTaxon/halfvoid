@@ -21,6 +21,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 	{
 		assert(false)
 	}
+
 	if obj is BoxArrayHolder 
 	{
 		arr := obj->{BoxArrayHolder^}

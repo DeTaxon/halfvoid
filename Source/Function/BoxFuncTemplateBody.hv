@@ -113,7 +113,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		fInTypes := Type^[100]
 		isRefs := bool[100]
 
-		datas := HybridQueue.{Tuple.{Type^,bool},10}
+		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
 
 		addObjType := (int i) ==> {
@@ -124,12 +124,12 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				if ar.GetArraySize() == 0
 				{
 					assert(hData.Types[i].ItType != null)
-					datas.Emplace(hData.Types[i].ItType,hData.Types[i].IsRef)
+					datas.Emplace(objs[i],hData.Types[i].ItType,hData.Types[i].IsRef)
 				}else{
-					datas.Emplace(ar.GetArrayType(),true)
+					datas.Emplace(objs[i],ar.GetArrayType(),true)
 				}//TODO better exchange
 			}else{
-				datas.Emplace(objs[i].GetType(),objs[i].IsMem())
+				datas.Emplace(objs[i],objs[i].GetType(),objs[i].IsMem())
 			}
 		}
 
@@ -146,7 +146,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				{
 					addObjType(i)
 				}else{
-					datas.Emplace(hData.Types[i].ItType,hData.Types[i].IsRef)
+					datas.Emplace(null->{BoxExeObj^},hData.Types[i].ItType,hData.Types[i].IsRef)
 				}
 			}
 		}
@@ -160,11 +160,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		headerCheckHatch.Await()
 
-		datas := HybridQueue.{Tuple.{Type^,bool},10}
+		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
 		for i : tp.Params.Size()
 		{
-			datas.Emplace(tp.Params[i].ItType,tp.Params[i].IsRef)
+			datas.Emplace(null->{BoxExeObj^},tp.Params[i].ItType,tp.Params[i].IsRef)
 		}
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		checkTypes(datas,consts,resConsts)
@@ -190,7 +190,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{Type^,bool},10} objs, List.{BoxExeConstObj^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, List.{BoxExeConstObj^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
 	{
 		//TODO , multi round check
 
@@ -212,7 +212,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if i >= hData.Types.Size()
 			{
 				assert(hData.IsVariadic)
-				fTyps[i] = objs[i].0
+				fTyps[i] = objs[i].1
 			}else{
 				iRef[i] = hData.Types[i].IsRef
 				if hData.Types[i].ItType != null
@@ -220,7 +220,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 					fTyps[i] = hData.Types[i].ItType
 				}else if hData.Types[i].ItToken != null
 				{
-					fTyps[i] = checkType(objs[i].0,hData.Types[i].ItToken,resCnsts)
+					fTyps[i] = checkType(objs[i].0,objs[i].1,hData.Types[i].ItToken,resCnsts)
 				}
 			}
 		}
@@ -241,14 +241,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			rTokenTree = rTokenTree.Right
 		}
 
-		resTypeT = checkType(null,rTokenTree,resCnsts)
+		resTypeT = checkType(null,null,rTokenTree,resCnsts)
 		if resTypeT == null and rTokenTree != null
 			rTokenTree.EmitError("Can not get result value")
 		return GetFuncType(objs.Size(),fTyps[0]&,iRef[0]&,resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}
-	checkType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+	checkType := !(BoxExeObj^ obj,Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 	{
-		return CheckTemplateType(tp,tk,resCnsts)
+		return CheckTemplateType(obj,tp,tk,resCnsts)
 	}
 
 	IsOneFunc := virtual !() -> bool

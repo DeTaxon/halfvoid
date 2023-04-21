@@ -24,6 +24,7 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangePointerClassToBase)
 	ExchangeList.Push(new ExchangeRefClassToBase)
 	ExchangeList.Push(new ExchangeArrayToPtr)
+	ExchangeList.Push(new ExchangeArrayHolderToArray)
 	ExchangeList.Push(new ExchangePointsToVoidP)
 	ExchangeList.Push(new ExchangePointsToPointClass)
 	ExchangeList.Push(new ExchangeNullToPtr)

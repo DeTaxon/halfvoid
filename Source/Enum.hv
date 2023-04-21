@@ -51,14 +51,14 @@ BoxEnum := class extend BoxUnit
 	GetSetFunc := !() -> BoxFunc^
 	{
 		if storeFunc == null
-			storeFunc = new BuiltInPrimeStore(GetFuncType(![ItType->{Type^},ItType],![true,false],GTypeVoid)) //TODO remove ->{Type^}
+			storeFunc = new BuiltInPrimeStore(GetFuncType(![ItType,ItType],![true,false],GTypeVoid))
 		return storeFunc
 	}
 	cmpFunc := BoxFunc^
 	GetCmpFunc := !() -> BoxFunc^
 	{
 		if cmpFunc == null
-			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType->{Type^},ItType],GTypeBool),"icmp eq") //TODO remove ->{Type^}
+			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType,ItType],GTypeBool),"icmp eq")
 		return cmpFunc
 	}
 }
