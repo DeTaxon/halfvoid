@@ -5,6 +5,8 @@ NkButton := class extend GUIObject
 	itText := TextLabel
 	textOffset := vec2f
 
+	itMesh := TVkMesh^
+
 	this := !(SimpleWindow^ nkCtx,float x, float y,StringView setLabel,Font^ setFont) -> void
 	{
 		SetSize("static",x,"static",y)
@@ -37,10 +39,51 @@ NkButton := class extend GUIObject
 	{
 		super(ctx,setSize)
 		textOffset.x = (setSize.x - itText.textSize.x)*0.5
-		textOffset.y = (setSize.y + itText.itFont.height)*0.5
+		textOffset.y = (setSize.y + itText.itFont.height*0.5)*0.5
+
+		if itMesh == null
+		{
+			Vertices := Vector.{u8}(GUIVertex->TypeSize*4)
+			Indexes := Vector.{u8}(u16->TypeSize*6)
+
+			vPtr := Vertices.GetPointer()->{GUIVertex^}
+
+			for it,i : ![!{0,0},!{1,0},!{0,1},!{1,1}]
+			{
+				vPtr[i].pos[0] = it.0*setSize.x
+				vPtr[i].pos[1] = it.1*setSize.y
+				vPtr[i].uv[0] = 0
+				vPtr[i].uv[1] = 0
+				vPtr[i].color[0] = 255*it.0 
+				vPtr[i].color[1] = 255*it.1
+				vPtr[i].color[2] = 0 
+				vPtr[i].color[3] = 255
+			}
+			iPtr := Indexes.GetPointer()->{u16^}
+			iPtr[0] = 0
+			iPtr[1] = 1
+			iPtr[2] = 2
+			iPtr[3] = 1
+			iPtr[4] = 3
+			iPtr[5] = 2
+
+			itMesh = ctx.inst.CreateMesh(Vertices&,Indexes&,VKType(VType_UInt16,1))
+		}
 	}
 	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
+		if itMesh != null
+		{
+			ctx.figureDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,ctx.w,ctx.h)
+			itMesh.Bind(cmdB)
+			scales := float[4]
+			scales[0] = 1.0 / ctx.w
+			scales[1] = 1.0 / ctx.h
+			scales[2] = offset.x
+			scales[3] = offset.y
+			ctx.inst.Funcs.vkCmdPushConstants(cmdB,ctx.figureDrawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
+			ctx.inst.Funcs.vkCmdDrawIndexed(cmdB,6,1,0,0,0)
+		}
 		itText.PushDraw(ctx,cmdB,offset + textOffset)
 	}
 }

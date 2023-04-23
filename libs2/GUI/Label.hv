@@ -20,10 +20,10 @@ TextLabel := class extend TGCObject
 		xPos := float
 		yPos := float
 
-		msh := Vector.{u8}(meshData->TypeSize*itText.Size()*4)
+		msh := Vector.{u8}(GUIVertex->TypeSize*itText.Size()*4)
 		mshIndex := Vector.{u8}(itText.Size()*4*6)
 
-		ptr := msh.GetPointer()->{meshData^}
+		ptr := msh.GetPointer()->{GUIVertex^}
 		ind := mshIndex.GetPointer()->{int^}
 
 		for i : itText.Size()
