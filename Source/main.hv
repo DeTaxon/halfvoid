@@ -274,6 +274,10 @@ PrintDeclares := !(Stream^ f) -> void
 
 	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+	f^ << "declare float     @llvm.cos.f32(float  %Val)\n"
+	f^ << "declare float     @llvm.sin.f32(float  %Val)\n"
+	f^ << "declare double    @llvm.cos.f64(double %Val)\n"
+	f^ << "declare double    @llvm.sin.f64(double %Val)\n"
 	f^ << "declare i32 @llvm.eh.sjlj.setjmp(i8* %abc) #1\n"
 	f^ << "declare void @llvm.eh.sjlj.longjmp(i8* %abc) #3\n"
 	f^ << "declare i32 @setjmp(i8* %abc) #1\n"

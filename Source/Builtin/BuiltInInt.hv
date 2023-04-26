@@ -388,6 +388,9 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"fcmp ueq") )
 		bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"fcmp une") )
+
+		bSpace.Functions[StringSpan("cos")].Push(new BuiltInFloatCosSin(unarMinusType,"cos"))
+		bSpace.Functions[StringSpan("sin")].Push(new BuiltInFloatCosSin(unarMinusType,"sin"))
 	})
 }
 BuiltInFloatSpaceship := class extend BoxFuncCommon
@@ -420,6 +423,40 @@ BuiltInFloatSpaceship := class extend BoxFuncCommon
 		f^ << "%TIsNegInt" << resId << " = select i1 %TIsNeg" << resId << ", i32 -1, i32 1\n"
 
 		f^ << "%T" << resId << " = and i32 %TIsNegInt" << resId << ", %TIsValInt" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInFloatCosSin := class extend BoxFuncCommon
+{
+	fncName := char^
+	this := !(TypeFunc^ iType,char^ fName) -> void
+	{
+		SetType(iType)
+		fncName = fName
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = call "
+		tp.PrintType(f)
+		f^ << " @llvm." << fncName << "." 
+		if tp == GTypeFloat
+		{
+			f^ << "f32"
+		}else{
+			assert(tp == GTypeDouble)
+			f^ << "f64"
+		}
+		f^ << "("
+		tp.PrintType(f)
+		f^ << " "
+		lst[0].PrintUse(f)
+		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"

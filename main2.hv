@@ -24,21 +24,17 @@
 //	}
 //}
 
-
-obj2 := class extend TGCObject
-{
-}
-
-testFunc := !(TGCObject^[@S] hm) -> void
-{
-}
-
 main := !(char^[] args) -> int
 {
-	c := new obj2
-	testFunc(![c,c])
+	x := cos(90deg ->{float})
 	return 0
 }
+
+//#Test
+//{
+// statis_assert(#IsConst(cos(90deg) ))
+//}
+//
 
 
 //Zip file
