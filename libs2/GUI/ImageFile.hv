@@ -1,22 +1,3 @@
-
-webpGetFeatures := !(void^,u64,void^,int)^ -> int
-webpGetDataRGB := !(void^,u64,void^,u64,int)^ -> void^
-webpGetDataRGBA := !(void^,u64,void^,u64,int)^ -> void^
-
-InitWebP := !() -> bool
-{
-	if webpGetFeatures != null
-		return true
-	//itLib := GetLibrary("libwebp.so","libwebp.so.6","libwebp-7.dll")
-	itLib := GetLibrary("libwebp.so")
-	
-	webpGetFeatures&->{void^^}^ = itLib.Get("WebPGetFeaturesInternal")
-	webpGetDataRGB&->{void^^}^ = itLib.Get("WebPDecodeRGBInto")
-	webpGetDataRGBA&->{void^^}^ = itLib.Get("WebPDecodeRGBAInto")
-	
-	return true
-}
-
 TImageFile := class extend TGCObject
 {
 	itFile := vRepoFile^
@@ -32,13 +13,11 @@ TImageFile := class extend TGCObject
 		//TODO check image type
 		itFile = setFile
 
-		InitWebP()
-
 		mp := itFile.GetMap()
 
 		webpInf := int[10] // width,height,has_alpha, has_animation,type, 5 x for feature
 
-		webpGetFeatures(mp.Get()->{void^},mp.Size()->{u64},webpInf[0]&->{void^},0x0208)
+		WebPGetFeaturesInternal(mp.Get()->{void^},mp.Size()->{u64},webpInf[0]&->{void^},0x0208)
 		
 		itWidth = webpInf[0]
 		itHeight = webpInf[1]
@@ -56,9 +35,9 @@ TImageFile := class extend TGCObject
 			switch layoutType
 			{
 				case "RGB"
-					webpGetDataRGB(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*3,itWidth*3)
+					WebPDecodeRGBInto(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*3,itWidth*3)
 				case "RGBA"
-					webpGetDataRGBA(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*4,itWidth*4)
+					WebPDecodeRGBAInto(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*4,itWidth*4)
 			}
 		}
 	}
