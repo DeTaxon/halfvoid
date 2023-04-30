@@ -34,6 +34,12 @@ GlobalVar := class extend BoxUnit
 		AwaitType()
 		return Value is ThreadLocalVarFunc
 	}
+	GetOutputName := !() -> String^
+	{
+		buf := char[255]
+		sprintf(buf[0]&,"V%i",Value.varId)
+		return new String(buf[0]&)
+	}
 }
 
 GlobalVars := List.{GlobalVar^}

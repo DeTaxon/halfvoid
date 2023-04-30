@@ -39,6 +39,9 @@ MainTarget: test
 test:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -g -C0 libs2 main2.hv -o out.ll -cache /tmp/TestCache.zip
 	clang -g out.ll -o test
+jit:
+	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 libs2 main2.hv -cache /tmp/TestCache.zip
+
 win.exe:
 	$(gdb_tui) ./halfvoid -win32 -g -C0 libs2 main2.hv -o out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe

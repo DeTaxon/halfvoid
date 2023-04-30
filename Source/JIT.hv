@@ -1,0 +1,135 @@
+
+RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
+{
+	try{
+		//llvmLib := Library("libLLVM-*.so","libLLVM.dll","LLVM-C.dll")
+		llvmLib := GetLibrary("libLLVM-15.0.7.so")
+		llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
+		llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}
+		llvmIRInContext := llvmLib.Get("LLVMParseIRInContext")->{!(void^,void^,void^^,char^^)^->int}
+		llvmGetNamedFunction := llvmLib.Get("LLVMGetNamedFunction")->{!(void^,char^)^-> void^}
+	
+		LLVMVerifyModule := llvmLib.Get("LLVMVerifyModule")->{!(void^,int,char^^)^-> void}
+		LLVMLinkInMCJIT := llvmLib.Get("LLVMLinkInMCJIT")->{!()^->void}
+		//LLVMInitializeNativeTarget := llvmLib.Get("LLVMInitializeNativeTarget")->{!()^->void}
+		LLVMCreateExecutionEngineForModule := llvmLib.Get("LLVMCreateExecutionEngineForModule")->{!(void^^,void^,char^^)^->int}
+		LLVMCreateJITCompilerForModule := llvmLib.Get("LLVMCreateJITCompilerForModule")->{!(void^^,void^,char^^)^->int}
+		LLVMCreateMCJITCompilerForModule := llvmLib.Get("LLVMCreateMCJITCompilerForModule")->{!(void^^,void^,void^,u64,char^^)^->int}
+		LLVMCreateGenericValueOfInt := llvmLib.Get("LLVMCreateGenericValueOfInt")->{!(void^,s64,int)^->void^}
+		LLVMInt32Type := llvmLib.Get("LLVMInt32Type")->{!()^->void^}
+		LLVMRunFunction := llvmLib.Get("LLVMRunFunction")->{!(void^,void^,int,void^)^->void}
+		LLVMGetFunctionAddress := llvmLib.Get("LLVMGetFunctionAddress")->{!(void^,void^)^->void^}
+		LLVMGetGlobalValueAddress := llvmLib.Get("LLVMGetGlobalValueAddress")->{!(void^,void^)^->void^}
+		LLVMCreateGenericValueOfPointer := llvmLib.Get("LLVMCreateGenericValueOfPointer")->{!(void^)^->void^}
+
+		LLVM_NATIVE_TARGETINFO := llvmLib.Get("LLVMInitializeX86TargetInfo")->{!()^->void}
+		LLVM_NATIVE_TARGET := llvmLib.Get("LLVMInitializeX86Target")->{!()^->void}
+		LLVM_NATIVE_TARGETMC := llvmLib.Get("LLVMInitializeX86TargetMC")->{!()^->void}
+		LLVMInitializeX86AsmPrinter := llvmLib.Get("LLVMInitializeX86AsmPrinter")->{!()^->void}
+
+		LLVMPrintModuleToFile := llvmLib.Get("LLVMPrintModuleToFile")->{!(void^,char^,void^)^->void}
+
+		ctx := llvmCreateContext()
+		lines := f.GetString()
+		buf := llvmMemBuf(lines.Str(),lines.Size(),"FileData",0)
+
+			//tF := TFile("dump.ll","w")
+			//tF << lines
+			//tF.Close()
+
+		msg := char^
+		module := void^
+		res := llvmIRInContext(ctx,buf,module&,msg&)
+		if msg != null and msg != "" and DebugMode
+		{
+			printf("error %s\n",msg)
+			//tF := TFile("dump.ll","w")
+			//tF.Write(lines,fil.Size())
+			//tF.Close()
+			return void
+		}
+		//mainFunc := intGetFunc("main")
+		assert(mainFunc != null and mainFunc is BoxFuncBody)
+		fName := mainFunc->{BoxFuncBody^}.OutputName.GetString()
+		//mainFunc2 := llvmGetNamedFunction(module,fName.Str())
+
+
+		LLVMVerifyModule(module,0,msg&)
+		if msg != null and msg != ""
+		{
+			printf("error %s\n",msg)
+
+		//	tF := TFile("dump.ll","w")
+		//	tF.Write(lines,fil.Size())
+		//	tF.Close()
+			return void
+		}
+
+
+		LLVMLinkInMCJIT()
+		//LLVMInitializeNativeTarget()
+		LLVM_NATIVE_TARGETINFO()
+		LLVM_NATIVE_TARGET()
+		LLVM_NATIVE_TARGETMC()
+		LLVMInitializeX86AsmPrinter()
+
+		//LLVMCreateMCJITCompilerForModule := llvmLib.Get("LLVMCreateMCJITCompilerForModule")->{!(void^^,void^,void^,u64,char^^)^->int}
+		eng := void^
+		res = LLVMCreateMCJITCompilerForModule(eng&,module,null,0,msg&)
+		if msg != null and msg != ""
+			printf("error %s\n",msg)
+
+		for sp : CodeSpaces
+		{
+			for cModule : sp.Modules
+			{
+				if cModule is not CLib
+					continue
+				clib := cModule->{CLib^}
+
+				if clib.itFuncs.Size() == 0
+					continue
+
+				libNamesStr := HybridQueue.{String^,10}
+				libNames := HybridQueue.{char^,10}
+
+				for dll : clib.dlls
+				{
+					newName := dll.GetString()
+					libNamesStr.Push(newName)
+					libNames.Push(newName.Str())
+				}
+				lib := GetLibrary(libNames&)
+
+				assert(lib != null)
+
+				for fnc,funcName : clib.itFuncs
+				{
+					if funcName == clib.initFuncName
+						continue
+					libObject := lib.Get(funcName)
+					
+					if libObject == null
+						continue
+					assert(fnc is GlobalVar)
+					itName := fnc->{GlobalVar^}.GetOutputName()
+					ptrToVar := LLVMGetGlobalValueAddress(eng,itName.Str())->{void^^}
+					assert(ptrToVar != null)
+					ptrToVar^ = libObject
+				}
+			}
+		}
+
+		//test := LLVMGetGlobalValueAddress(eng,"V659")->{void^^}
+		//test^ = printf
+
+		fPoint := LLVMGetFunctionAddress(eng,fName.Str())->{!(void^)^->int}
+		fPoint(null)
+
+	}catch(e)
+	{
+		printf("error %s\n","hmm")
+	}
+	return void
+}
+

@@ -31,6 +31,8 @@ DisableScary := false
 
 UseTracy := false
 
+JITMode := bool
+
 OutputFile := char^
 main := !(char^[] args) -> int
 {
@@ -63,6 +65,8 @@ main := !(char^[] args) -> int
 	{
 		switch args[i]
 		{
+			case "-jit"
+				JITMode = true
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i]) //TODO args check
@@ -170,8 +174,14 @@ main := !(char^[] args) -> int
 	RecheckAppends()
 	GParsedAllFiles.Emit()
 
-	mainFunc := intGetFunc("internalHVEntryPoint")
+
+	mainFuncName := "internalHVEntryPoint"
+	if JITMode
+		mainFuncName = "main"
+
+	mainFunc := intGetFunc(mainFuncName)
 	assert(mainFunc != null)
+	assert(mainFunc is BoxFuncBody)
 	mainFunc.ParseBody()
 	mainFunc.WaitReadyState()
 	mainFunc.ForceOutputName(StringSpan("main"))
@@ -208,8 +218,26 @@ main := !(char^[] args) -> int
 
 	printf("good to go\n")
 
-	outFile := new TFile(OutputFile,"wb")
+	if JITMode
+	{
+		byteCode := new TEchoStream
+		WriteCodeToStream(byteCode)
+		RunJITMode(byteCode,mainFunc->{BoxFuncBody^})
+	}else{
+		outFile := new TFile(OutputFile,"wb")
 
+		WriteCodeToStream(outFile)
+		printf("done\n")
+		outFile.Close()
+	}
+
+	FinilizeCache()
+
+	return 0
+}
+
+WriteCodeToStream := !(Stream^ outFile) -> void
+{
 	PrintDeclares(outFile)
 	if DebugMode
 		PrintDebugMeta(outFile)
@@ -256,18 +284,8 @@ main := !(char^[] args) -> int
 		GDebugTypePrintMeta[0].PrintMeta(outFile)
 		GDebugTypePrintMeta.Pop()
 	}
-	printf("done\n")
-	outFile.Close()
-
-	FinilizeCache()
-
-	// for i : 9973
-	// {
-	// 	printf("%i ",funcTypes[i].Size())
-	// }
-	// printf("\n")
-	return 0
 }
+
 PrintDeclares := !(Stream^ f) -> void
 {
 	PrintBuildInMinMax(f)
