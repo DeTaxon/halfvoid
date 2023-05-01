@@ -1,0 +1,23 @@
+
+ObjectDB := class .{@T,@ElCount} 
+{
+	elements := HybridQueue.{void^,10}
+	currentMap := T^
+	mapAllocated := int
+
+	CreateItem := !() -> T^
+	{
+		if currentMap == null or mapAllocated == ElCount
+		{
+			if currentMap != null
+				elements.Push(currentMap)
+			currentMap = malloc(ElCount*T->TypeSize)->{T^}
+			mapAllocated = 0
+		}
+
+		result = currentMap[mapAllocated]&
+		ZeroMem(result^)
+
+		mapAllocated += 1
+	}
+}

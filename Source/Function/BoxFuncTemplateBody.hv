@@ -173,6 +173,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		names := HybridQueue.{StringSpan,10}
 		names.Push(hData.Types[^].Name)
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
+
 		newFunc.VariadicName = hData.VariadicName
 		newFunc.SetPrintName(Name)
 		newFunc.DefaultValues[ind] = hData.DefaultValues[^ind]
