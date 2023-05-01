@@ -13,13 +13,12 @@ UVLoop := class extend TGCObject
 	}
 }
 
-uvLoopGlobal := UVLoop^
-createUVLoop := !() -> void
-{
-	if uvLoopGlobal != null
-		return void
-
-	loadUVLibrary()
-	//uvLoopGlobal = malloc(UVLoop->TypeSize + uv_loop_size())->{UVLoop^}
-	//uv_loop_init(uvLoopGlobal.GetPointer())
-}
+//createUVLoop := !() -> void
+//{
+//	if uvLoopGlobal != null
+//		return void
+//
+//	uvLoopGlobal := static UVLoop^
+//	//uvLoopGlobal = malloc(UVLoop->TypeSize + uv_loop_size())->{UVLoop^}
+//	//uv_loop_init(uvLoopGlobal.GetPointer())
+//}

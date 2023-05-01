@@ -108,6 +108,8 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 					if funcName == clib.initFuncName
 						continue
 					libObject := lib.Get(funcName)
+
+					printf("JIT searching %s\n",funcName)
 					
 					if libObject == null
 						continue
