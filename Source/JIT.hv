@@ -1,6 +1,9 @@
 
 RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 {
+	
+	//mainFunc.Execute()
+
 	try{
 		//llvmLib := Library("libLLVM-*.so","libLLVM.dll","LLVM-C.dll")
 		llvmLib := GetLibrary("libLLVM-15.0.7.so")

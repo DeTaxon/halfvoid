@@ -24,19 +24,9 @@
 //	}
 //}
 
-alreadyhave := !() -> void
-{
-	c := static int
-	c += 1
-	printf("hm %i\n",c)
-}
-
 main := !(char^[] args) -> int
 {
 	printf("HI\n")
-	alreadyhave()
-	alreadyhave()
-	alreadyhave()
 	return 0
 }
 

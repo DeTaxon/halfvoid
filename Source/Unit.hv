@@ -47,6 +47,13 @@ BoxUnit := class
 	}
 
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
+
+	IsExecutable := virtual false
+	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	{
+		assert(false)
+	}
+
 }
 
 IsGCPtr := !(Type^ tp) -> bool
