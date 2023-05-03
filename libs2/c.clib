@@ -42,6 +42,7 @@
 		"getenv" : "char^,char^",
 		"setenv" : "int,char^,char^,int",
 
+		"puts" : "int,char^",
 		"printf" : "int,char^,...",
 		"sprintf" : "int,char^,char^,...",
 		"snprintf" : "int,char^,int,char^,...",

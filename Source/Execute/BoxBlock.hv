@@ -1,0 +1,8 @@
+AppendClass BoxBlock
+{
+	IsExecutable := virtual true
+	Execute := virtual !(ExecutionContext^ ctx,BoxExeObj^[] args) -> BoxExeObj^
+	{
+		exeLines[^].Execute(ctx,args)	
+	}
+}

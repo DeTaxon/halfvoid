@@ -2,6 +2,16 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 {
 	cmd := itm.Down->{TokenIndent^}.Value
 
+	for CmpFnc : #MarkedFunctions("CompilerCommand")
+	{
+		return CmpFnc(cmd,itm)?
+	}
+
+	if cmd == "#Run"
+	{
+		return RunCommand(cmd,itm)
+	}
+
 	if cmd == "#File" or cmd == "#FileLocal"
 	{
 		return TryEmbedFile(itm)

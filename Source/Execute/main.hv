@@ -1,0 +1,27 @@
+
+RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
+{
+	if name != "#Run"
+		return null
+
+
+	assert(itm.Down.Right.Down.GetValue() == "{}")
+
+	noNames := HybridQueue.{StringSpan,10}
+	attrs := FuncAttributes
+	fnc := new BoxFuncBody(GetFuncType(GTypeVoid),attrs, noNames,itm.Down.Right.Down)
+	fnc.ParseBody()
+	fnc.WaitReadyState()
+
+	ctx := ExecutionContext
+	fnc.Execute(ctx&, ![])
+	
+	return GObjNone
+}
+
+ExeucteFunction := !(BoxFuncBody^ fnc) -> void
+{
+	fnc.Execute()
+}
+
+

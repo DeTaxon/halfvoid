@@ -38,7 +38,7 @@ main := !(char^[] args) -> int
 {
 	TracyZone("MainFunc")
 
-	for i : 9973
+	for i : 9973 //TODO remove this
 	{
 		ZeroMem(funcTypes[i])
 	}

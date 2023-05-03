@@ -48,7 +48,6 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		mark.AddFunc(fnc)
 
 		return GBoolTrue
-		
 	}
 }
 

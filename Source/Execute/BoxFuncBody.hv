@@ -1,0 +1,8 @@
+AppendClass BoxFuncBody
+{
+	IsExecutable := virtual true
+	Execute := virtual !(ExecutionContext^ ctx,BoxExeObj^[] args) -> BoxExeObj^
+	{
+		body.Execute(ctx,![])
+	}
+}

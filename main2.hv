@@ -24,9 +24,31 @@
 //	}
 //}
 
+
+TestClass := class
+{
+	x := int
+	test := !() -> void
+	{
+		lmbd1 :=  () ==> void {
+			lmbd2 := () ==> void {
+				x = 100
+			}
+			lmbd2()
+		}
+		lmbd1()
+		printf("test %i\n",x)
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	printf("HI\n")
+	#Run({
+		//printf("test\n")
+		puts("Oh hello there")
+	})
+	c := TestClass
+	c.test()
 	return 0
 }
 

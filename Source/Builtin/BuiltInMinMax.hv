@@ -43,7 +43,6 @@ BuiltInMinMaxInt := class extend BoxFuncCommon
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	IsExecutable := virtual true
 	IsConstexpr := virtual true
 	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
