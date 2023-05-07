@@ -116,6 +116,31 @@ BuiltInMemsetInlineInt := class extend BoxFuncCommon
 		f^ << ")\n"
 	}
 }
+BuiltInGSWrite := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeU64],GTypeVoid))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[0].PrintPre(f)
+  		f^ << "call void @llvm.x86.wrgsbase.64(i64 "
+		lst[0].PrintUse(f)
+		f^ << ") \n"
+	}
+}
+BuiltInGSRead := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(GTypeU64))
+	}
+	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	{
+  		f^ << "%T" << resId << " =  call i64 @llvm.x86.rdgsbase.64() \n"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {
@@ -124,6 +149,9 @@ CreateBuildInTools := !() -> void
 	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
 	bSpace.Functions[StringSpan("MemBarrier")].Push(new BuiltInMemBarrier() )
 	bSpace.Functions[StringSpan("llvmMemsetInlineInt")].Push(new BuiltInMemsetInlineInt() )
+
+	bSpace.Functions[StringSpan("llvmGSWrite")].Push(new BuiltInGSWrite() )
+	bSpace.Functions[StringSpan("llvmGSRead") ].Push(new BuiltInGSRead()  )
 
 	builtInSetJump = new BuiltInSetJump() 
 	bSpace.Functions[StringSpan("llvmSetJump")].Push(builtInSetJump)

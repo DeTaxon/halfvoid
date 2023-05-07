@@ -13,15 +13,12 @@ RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
 	fnc.ParseBody()
 	fnc.WaitReadyState()
 
-	ctx := ExecutionContext
-	fnc.Execute(ctx&, ![])
-	
-	return GObjNone
-}
+	strm := TEchoStream
 
-ExeucteFunction := !(BoxFuncBody^ fnc) -> void
-{
-	fnc.Execute()
+	//fnc.PrintCode(strm)
+
+
+	return GObjNone
 }
 
 

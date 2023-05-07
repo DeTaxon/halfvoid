@@ -326,6 +326,9 @@ PrintDeclares := !(Stream^ f) -> void
 
 	f^ << "declare void @llvm.memset.p0i8.i64(i8* %dest, i8 %val,i64 %len, i1 %isvolatile)\n"
 	f^ << "declare void @llvm.memset.inline.p0.p0i8.i32(i8* %ptr,i8 %val,i32 %len,i1 %isVolatile) #3\n"
+
+	f^ << "declare void @llvm.x86.wrgsbase.64(i64)\n"
+	f^ << "declare i64 @llvm.x86.rdgsbase.64()\n"
 	
 }
 

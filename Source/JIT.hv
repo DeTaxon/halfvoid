@@ -7,34 +7,15 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 	try{
 		//llvmLib := Library("libLLVM-*.so","libLLVM.dll","LLVM-C.dll")
 		llvmLib := GetLibrary("libLLVM-15.0.7.so")
-		llvmMemBuf := llvmLib.Get("LLVMCreateMemoryBufferWithMemoryRange")->{!(void^,size_t,char^,int)^->void^}
-		llvmCreateContext := llvmLib.Get("LLVMContextCreate")->{!()^->void^}
-		llvmIRInContext := llvmLib.Get("LLVMParseIRInContext")->{!(void^,void^,void^^,char^^)^->int}
-		llvmGetNamedFunction := llvmLib.Get("LLVMGetNamedFunction")->{!(void^,char^)^-> void^}
-	
-		LLVMVerifyModule := llvmLib.Get("LLVMVerifyModule")->{!(void^,int,char^^)^-> void}
-		LLVMLinkInMCJIT := llvmLib.Get("LLVMLinkInMCJIT")->{!()^->void}
-		//LLVMInitializeNativeTarget := llvmLib.Get("LLVMInitializeNativeTarget")->{!()^->void}
-		LLVMCreateExecutionEngineForModule := llvmLib.Get("LLVMCreateExecutionEngineForModule")->{!(void^^,void^,char^^)^->int}
-		LLVMCreateJITCompilerForModule := llvmLib.Get("LLVMCreateJITCompilerForModule")->{!(void^^,void^,char^^)^->int}
-		LLVMCreateMCJITCompilerForModule := llvmLib.Get("LLVMCreateMCJITCompilerForModule")->{!(void^^,void^,void^,u64,char^^)^->int}
-		LLVMCreateGenericValueOfInt := llvmLib.Get("LLVMCreateGenericValueOfInt")->{!(void^,s64,int)^->void^}
-		LLVMInt32Type := llvmLib.Get("LLVMInt32Type")->{!()^->void^}
-		LLVMRunFunction := llvmLib.Get("LLVMRunFunction")->{!(void^,void^,int,void^)^->void}
-		LLVMGetFunctionAddress := llvmLib.Get("LLVMGetFunctionAddress")->{!(void^,void^)^->void^}
-		LLVMGetGlobalValueAddress := llvmLib.Get("LLVMGetGlobalValueAddress")->{!(void^,void^)^->void^}
-		LLVMCreateGenericValueOfPointer := llvmLib.Get("LLVMCreateGenericValueOfPointer")->{!(void^)^->void^}
 
-		LLVM_NATIVE_TARGETINFO := llvmLib.Get("LLVMInitializeX86TargetInfo")->{!()^->void}
-		LLVM_NATIVE_TARGET := llvmLib.Get("LLVMInitializeX86Target")->{!()^->void}
-		LLVM_NATIVE_TARGETMC := llvmLib.Get("LLVMInitializeX86TargetMC")->{!()^->void}
-		LLVMInitializeX86AsmPrinter := llvmLib.Get("LLVMInitializeX86AsmPrinter")->{!()^->void}
+		LLVM_NATIVE_TARGETINFO := LLVMInitializeX86TargetInfo
+		LLVM_NATIVE_TARGET := LLVMInitializeX86Target
+		LLVM_NATIVE_TARGETMC := LLVMInitializeX86TargetMC
+		LLVMInitializeX86AsmPrinter := LLVMInitializeX86AsmPrinter
 
-		LLVMPrintModuleToFile := llvmLib.Get("LLVMPrintModuleToFile")->{!(void^,char^,void^)^->void}
-
-		ctx := llvmCreateContext()
+		ctx := LLVMContextCreate()
 		lines := f.GetString()
-		buf := llvmMemBuf(lines.Str(),lines.Size(),"FileData",0)
+		buf := LLVMCreateMemoryBufferWithMemoryRange(lines.Str(),lines.Size(),"FileData",0)
 
 			//tF := TFile("dump.ll","w")
 			//tF << lines
@@ -42,7 +23,7 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 
 		msg := char^
 		module := void^
-		res := llvmIRInContext(ctx,buf,module&,msg&)
+		res := LLVMParseIRInContext(ctx,buf,module&,msg&)
 		if msg != null and msg != "" and DebugMode
 		{
 			printf("error %s\n",msg)
@@ -54,7 +35,6 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 		//mainFunc := intGetFunc("main")
 		assert(mainFunc != null and mainFunc is BoxFuncBody)
 		fName := mainFunc->{BoxFuncBody^}.OutputName.GetString()
-		//mainFunc2 := llvmGetNamedFunction(module,fName.Str())
 
 
 		LLVMVerifyModule(module,0,msg&)

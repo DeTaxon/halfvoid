@@ -1,0 +1,26 @@
+{
+	"initname" : "libGlfwInit",
+	"libs" : [
+		"libLLVM-15.0.7.so",
+	],
+	"funcs" : {
+		"LLVMCreateMemoryBufferWithMemoryRange" : "void^,void^,size_t,char^,int",
+		"LLVMContextCreate" : "void^",
+		"LLVMParseIRInContext" : "int,void^,void^,void^^,char^^",
+		"LLVMVerifyModule" : "void,void^,int,char^^",
+		"LLVMLinkInMCJIT" : "void",
+		"LLVMCreateExecutionEngineForModule" : "int,void^^,void^,char^^",
+		"LLVMCreateJITCompilerForModule" : "int,void^^,void^,char^^",
+		"LLVMCreateMCJITCompilerForModule" : "int,void^^,void^,void^,u64,char^^",
+		"LLVMCreateGenericValueOfInt" : "void^,void^,s64,int",
+		"LLVMInt32Type" : "void^",
+		"LLVMGetFunctionAddress" : "void^,void^,void^",
+		"LLVMGetGlobalValueAddress" : "void^,void^,void^",
+		"LLVMCreateGenericValueOfPointer" : "void^,void^",
+
+		"LLVMInitializeX86TargetInfo" : "void",
+		"LLVMInitializeX86Target" : "void",
+		"LLVMInitializeX86TargetMC" : "void",
+		"LLVMInitializeX86AsmPrinter" : "void"
+	}
+}
