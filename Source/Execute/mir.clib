@@ -1,0 +1,12 @@
+
+{
+	"initname" : "libmir_init",
+	"consts" : {
+	}.
+	"libs" : [
+		"libmir.so"
+	],
+	"funcs" : {
+		"_MIR_init" : "void^"
+	}
+}

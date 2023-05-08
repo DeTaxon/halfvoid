@@ -1,8 +1,0 @@
-AppendClass BoxExeLineSimple
-{
-	IsExecutable := virtual true
-	Execute := virtual !(ExecutionContext^ ctx,BoxExeObj^[] args) -> BoxExeObj^
-	{
-		Down.Execute(ctx,args)
-	}
-}

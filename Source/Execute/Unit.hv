@@ -1,8 +1,0 @@
-AppendClass BoxUnit
-{
-	IsExecutable := virtual false
-	Execute := virtual !(ExecutionContext^ ctx,BoxExeObj^[] args) -> BoxExeObj^
-	{
-		assert(false)	
-	}
-}

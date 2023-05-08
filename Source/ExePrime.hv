@@ -145,12 +145,16 @@ BoxExeString := class extend BoxExeConstObj
 	}
 	PrintUse := virtual !(Stream^ f) -> void
 	{
-		stSize := val.Size() + 1
-		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+		PrintConst(f)
 	}
 	PrintConst := virtual !(Stream^ f) -> void
 	{
 		stSize := val.Size() + 1
-		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+		if JITMode
+		{
+			f^ << "inttoptr (i64 " << val.ptr->{size_t} << " to i8*)" //TODO arch
+		}else{
+			f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
+		}
 	}
 }

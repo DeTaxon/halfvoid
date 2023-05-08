@@ -45,8 +45,7 @@ TestClass := class
 main := !(char^[] args) -> int
 {
 	#Run({
-		//printf("test\n")
-		puts("Oh hello there")
+		printf("Oh hello there\n")
 	})
 	c := TestClass
 	c.test()

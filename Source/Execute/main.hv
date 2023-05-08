@@ -4,21 +4,125 @@ RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
 	if name != "#Run"
 		return null
 
-
 	assert(itm.Down.Right.Down.GetValue() == "{}")
 
 	noNames := HybridQueue.{StringSpan,10}
 	attrs := FuncAttributes
 	fnc := new BoxFuncBody(GetFuncType(GTypeVoid),attrs, noNames,itm.Down.Right.Down)
-	fnc.ParseBody()
-	fnc.WaitReadyState()
 
-	strm := TEchoStream
+	oldMode := JITMode
+	defer JITMode = oldMode
+	JITMode = true
 
-	//fnc.PrintCode(strm)
+	//oldDeb := DebugMode
+	//defer DebugMode = oldDeb
+	//DebugMode = false
 
+	for spc : CodeSpaces
+	{
+		for modl : spc.Modules
+		{
+			if modl is not CLib
+				continue
+			if modl->{CLib^}.initFuncName != "standartcinit"
+				continue
+			JITContext.uncheckedFunctions.PushFront(modl.GetItem(StringSpan("printf"))->{BoxFunc^})
+		}
+	}
+
+	JITContext.uncheckedFunctions.PushFront(fnc)
+
+	while JITContext.uncheckedFunctions.Size() != 0
+	{
+		checkFunc := JITContext.uncheckedFunctions.Pop()
+
+		if checkFunc is in BoxFuncBody
+		{
+			bodyFnc := checkFunc->{BoxFuncBody^}
+			bodyFnc.ParseBody()
+			bodyFnc.WaitReadyState()
+
+			bodyFnc.PrintCode(JITContext.currentFunctionStream&)
+
+		}else if checkFunc is in BoxFuncDeclare {
+			declareFunc := checkFunc->{BoxFuncDeclare^}
+
+			assert(declareFunc.itName == "printf")
+			declareFunc.JITFuntionPointer = printf
+
+			// for spc : CodeSpaces
+			// {
+			// 	for mod : spc.Modules
+			// 	{ 
+			// 		moduleFnc := mod.GetItem(declareFunc.itName)
+			// 		if moduleFnc != null
+			// 		{
+			// 			lib := GetLibrary()
+			// 		}
+			// 	}
+			// }
+		}else {
+			assert(false)
+		}
+	}
+
+	PrintDebugMeta(JITContext.currentFunctionStream&)
+	fnc.GetType().PrintMeta(JITContext.currentFunctionStream&)
+
+	for spc : CodeSpaces
+	{
+		for fil : spc.Files
+		{
+			fil.PrintCode(JITContext.currentFunctionStream&)
+		}
+	}
+	
+	lines := JITContext.currentFunctionStream.GetString()
+	//printf("%s\n",lines.Str())
+
+	ctx := LLVMContextCreate()
+	buf := LLVMCreateMemoryBufferWithMemoryRange(lines.Str(),lines.Size(),"FileData",0)
+	msg := char^
+	module := void^
+	res := LLVMParseIRInContext(ctx,buf,module&,msg&)
+	if msg != null and msg != "" and DebugMode
+	{
+		printf("error %s\n",msg)
+		return GObjNone
+	}
+	//mainFunc := intGetFunc("main")
+
+	LLVMVerifyModule(module,0,msg&)
+	if msg != null and msg != ""
+	{
+		printf("error %s\n",msg)
+		return GObjNone
+	}
+		InitJit()
+	eng := void^
+	res = LLVMCreateMCJITCompilerForModule(eng&,module,null,0,msg&)
+	if msg != null and msg != ""
+		printf("error %s\n",msg)
+	fPoint := LLVMGetFunctionAddress(eng,fnc.OutputName.NonNullStr())->{!()^->int}
+	fPoint()
 
 	return GObjNone
 }
 
+AppendClass BoxFuncBody
+{
+	JITFuntionPointer := void^
+}
+AppendClass BoxFuncDeclare
+{
+	JITFuntionPointer := void^
+}
 
+JITContext_type := class
+{
+	uncheckedFunctions := HybridStack.{BoxFunc^,20}
+	nonLinkedFunctions := HybridStack.{BoxFuncBody^,20}
+	processedFunctions := AVLSet.{void^}
+	currentFunctionStream := TEchoStream
+}
+JITContext := JITContext_type

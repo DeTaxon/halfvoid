@@ -190,6 +190,23 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 	}
 	fncObj.PrintPre(f)
 
+	if JITMode
+	{
+		if fncObj is in BoxFuncDeclare
+		{
+			declr := fncObj->{BoxFuncDeclare^}
+			fpType := declr.GetType()
+			f^ << "%JITPointer" << resId << "  = inttoptr i64 " << declr.JITFuntionPointer&->{size_t} << " to "
+			fpType.GetPoint().GetPoint().PrintType(f)
+			f^ << "\n"
+			f^ << "%JITFunc" << resId << " = load "
+			fpType.PrintType(f)
+			f^ << "* , "
+			fpType.PrintType(f)
+			f^ << "** %JITPointer" << resId << "\n" 
+		}
+	}
+
 	if itType.ResultType != GTypeVoid
 	{
 		f^ << "%T" << resId << " = "
@@ -204,7 +221,13 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 		if itType.ResultRef
 			f^ << "*"
 	}
-	fncObj.PrintUse(f)
+
+	if JITMode and (fncObj is in BoxFuncDeclare) 
+	{
+		f^ << "%JITFunc" << resId
+	}else{
+		fncObj.PrintUse(f)
+	}
 
 	f^ << "("
 	

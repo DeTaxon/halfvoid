@@ -1,17 +1,29 @@
 
+InitJit := !() -> void
+{
+	inited := static bool
+	if inited
+		return void
+	inited = true
+	
+	LLVM_NATIVE_TARGETINFO := LLVMInitializeX86TargetInfo
+	LLVM_NATIVE_TARGET := LLVMInitializeX86Target
+	LLVM_NATIVE_TARGETMC := LLVMInitializeX86TargetMC
+	LLVMInitializeX86AsmPrinter := LLVMInitializeX86AsmPrinter
+
+	LLVMLinkInMCJIT()
+	//LLVMInitializeNativeTarget()
+	LLVM_NATIVE_TARGETINFO()
+	LLVM_NATIVE_TARGET()
+	LLVM_NATIVE_TARGETMC()
+	LLVMInitializeX86AsmPrinter()
+}
+
 RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 {
-	
-	//mainFunc.Execute()
 
 	try{
-		//llvmLib := Library("libLLVM-*.so","libLLVM.dll","LLVM-C.dll")
-		llvmLib := GetLibrary("libLLVM-15.0.7.so")
-
-		LLVM_NATIVE_TARGETINFO := LLVMInitializeX86TargetInfo
-		LLVM_NATIVE_TARGET := LLVMInitializeX86Target
-		LLVM_NATIVE_TARGETMC := LLVMInitializeX86TargetMC
-		LLVMInitializeX86AsmPrinter := LLVMInitializeX86AsmPrinter
+		InitJit()
 
 		ctx := LLVMContextCreate()
 		lines := f.GetString()
@@ -27,9 +39,6 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 		if msg != null and msg != "" and DebugMode
 		{
 			printf("error %s\n",msg)
-			//tF := TFile("dump.ll","w")
-			//tF.Write(lines,fil.Size())
-			//tF.Close()
 			return void
 		}
 		//mainFunc := intGetFunc("main")
@@ -41,22 +50,11 @@ RunJITMode := !(TEchoStream^ f,BoxFuncBody^ mainFunc) -> void
 		if msg != null and msg != ""
 		{
 			printf("error %s\n",msg)
-
-		//	tF := TFile("dump.ll","w")
-		//	tF.Write(lines,fil.Size())
-		//	tF.Close()
 			return void
 		}
 
 
-		LLVMLinkInMCJIT()
-		//LLVMInitializeNativeTarget()
-		LLVM_NATIVE_TARGETINFO()
-		LLVM_NATIVE_TARGET()
-		LLVM_NATIVE_TARGETMC()
-		LLVMInitializeX86AsmPrinter()
 
-		//LLVMCreateMCJITCompilerForModule := llvmLib.Get("LLVMCreateMCJITCompilerForModule")->{!(void^^,void^,void^,u64,char^^)^->int}
 		eng := void^
 		res = LLVMCreateMCJITCompilerForModule(eng&,module,null,0,msg&)
 		if msg != null and msg != ""
