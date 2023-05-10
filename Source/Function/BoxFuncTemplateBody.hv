@@ -115,6 +115,15 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
+		for it,i  : objs
+		{
+			if it? is BoxArrayHolder and i < hData.Types.Size() and it->{BoxArrayHolder^}.GetArraySize() == 0
+			{
+				if hData.Types[i].ItType == null
+					return null
+			}
+		}
+
 
 		addObjType := (int i) ==> {
 			if objs[i] is BoxArrayHolder

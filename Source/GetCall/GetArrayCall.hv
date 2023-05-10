@@ -132,7 +132,7 @@ BoxArrayHolder := class extend BoxExeObj
 		return createUse(defaultType)
 	}
 	createUse := !(Type^ bs) -> BoxExeObj^
-	{
+	{	
 		if vals.Size() == 0
 			return null
 		if isAllConsts and bs == defaultType

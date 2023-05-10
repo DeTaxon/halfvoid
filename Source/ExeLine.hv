@@ -566,6 +566,8 @@ ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 	array := ar->{BoxArrayHolder^}
 	if IsViewType(toType)
 		return true
+	if array.GetArraySize() == 0
+		return false
 	if array.GetArrayType() == toType
 		return true
 	return false
