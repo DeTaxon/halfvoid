@@ -56,11 +56,16 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			}
 		}
 		if a == 2{
-			if tok[0] == '#'
+			if IsKeyword(tok)
 			{
-				ns = new TokenIndent(tok)
+				ns = new TokenSymbol(tok,a)
 			}else{
-				ns = new TokenTemplateType(tok)
+				if tok[0] == '#'
+				{
+					ns = new TokenIndent(tok)
+				}else{
+					ns = new TokenTemplateType(tok)
+				}
 			}
 		}
 		if a == 3 {
@@ -375,6 +380,8 @@ IsKeyword := !(@TT W) -> bool
 		case "ref" return true
 		case "inline" return true
 		case "enum" return true
+		case "#Reserve" return true
+		case "#Copy" return true
 	}
 
 	return false

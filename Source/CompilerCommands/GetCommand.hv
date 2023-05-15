@@ -1,5 +1,7 @@
 TryGetCommand := !(Token^ itm) -> BoxExeObj^ 
 {
+	if itm == null or itm.Down == null
+		return null
 	cmd := itm.Down->{TokenIndent^}.Value
 
 	for CmpFnc : #MarkedFunctions("CompilerCommand")

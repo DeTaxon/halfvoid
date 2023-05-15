@@ -269,7 +269,8 @@ RuleClass := !(void^ itr) -> int
 		size += 2
 	}
 
-	if It.GetValue() == "extend"
+
+	while It.GetValue() in !["extend","#Reserve"]
 	{
 		It = It.Right
 		if It == null return 0

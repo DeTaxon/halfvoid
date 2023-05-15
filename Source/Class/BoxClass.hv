@@ -1,3 +1,10 @@
+InheritanceType := enum
+{
+	"extend",
+	"reserve",
+	"copy"
+}
+
 
 BoxClass := class extend BoxUnit
 {

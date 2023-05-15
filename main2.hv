@@ -23,17 +23,28 @@
 //	}
 //}
 
-TestFunc := !(int^ val) -> void
+ExpectClass := class
+{
+	SomeFunc := virtual !() -> void
+	{
+		printf("no\n")
+	}
+}
+
+SomeInterface := class 
+	#Reserve ExpectClass
 {
 }
-TestFunc := !(int[] val) -> void
+
+ImplInterface := class 
+	extend SomeInterface
 {
-	printf("lol\n")
 }
 
 main := !(char^[] args) -> int
 {
-	TestFunc(![])
+	test := ImplInterface
+	test.SomeFunc()
 	return 0
 }
 
