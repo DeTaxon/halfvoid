@@ -12,6 +12,7 @@ BoxClass := class extend BoxUnit
 	ItType := Type^
 	IsPacked := bool
 	Parents := HybridQueue.{BoxClass^,1}
+	Reserved := HybridQueue.{BoxClass^,1}
 	ItName := StringSpan
 
 	Fields := List.{FieldParam^}

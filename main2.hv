@@ -25,6 +25,7 @@
 
 ExpectClass := class
 {
+	x := int
 	SomeFunc := virtual !() -> void
 	{
 		printf("no\n")
@@ -37,13 +38,14 @@ SomeInterface := class
 }
 
 ImplInterface := class 
-	extend SomeInterface
+	extend SomeInterface,ExpectClass
 {
 }
 
 main := !(char^[] args) -> int
 {
 	test := ImplInterface
+	//test := SomeInterface
 	test.SomeFunc()
 	return 0
 }

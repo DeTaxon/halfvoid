@@ -13,7 +13,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	bodyToken := Token^
 	
 	IsPacked := bool
-	ItParents := HybridQueue.{Token^,2}
+	ItParents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 
 	ItConstsTokens := List.{Token^}
 
@@ -21,7 +21,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 
 	ParentScope := BoxUnit^
 
-	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy, Token^ cnsts) -> void
+	this := !(bool isPacked,HybridQueue.{Tuple.{Token^,InheritanceType},2} parents,Token^ bdy, Token^ cnsts) -> void
 	{
 		bodyToken = bdy
 		constantsToken = cnsts

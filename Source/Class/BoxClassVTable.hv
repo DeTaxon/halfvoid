@@ -99,11 +99,7 @@ AppendClass BoxClass
 					VTable.Push(vFunc)
 				}
 
-				//cnsts := List.{BoxExeConstObj^}
-				//cnsts.Push(GetExeInt(ind))
-				//vFunc := TemplateInternalVirtualCall.CreateFunc(fnc.GetType()->{TypeFunc^},cnsts)
 				vFunc := new BuildInVirtualCall(fnc,ind)
-				//cnsts.Destroy()
 				vFunc.SetName(fncName)
 				DefaultSpace.VirtualCleanMethods[fncName].Push(fnc)
 				DefaultSpace.VirtualMethods[fncName].Push(vFunc)

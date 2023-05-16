@@ -7,7 +7,7 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 		return null
 	
 
-	parents := HybridQueue.{Token^,2}
+	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 	constValue := Token^
 
 	isPacked := bool
@@ -22,16 +22,24 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 		iter = constValue.Right
 	}
 
-	if iter.GetValue() == "extend"
+	while iter.GetValue() in !["extend","#Reserve"]
 	{
 		iter = iter.Right
-		parents.Push(iter)
+
+		inh := InheritanceType
+		switch iter.Left.GetValue()
+		{
+			case "extend" inh = "extend"
+			case "#Reserve" inh = "reserve"
+		}
+
+		parents.Emplace(iter,inh)
 		iter = iter.Right
 
 		while iter.GetValue() == ","
 		{
 			iter = iter.Right
-			parents.Push(iter)
+			parents.Emplace(iter,inh)
 			iter = iter.Right
 		}
 		assert(iter.GetValue() == "{}")
@@ -50,7 +58,7 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 BoxClassBody := class extend BoxClassPoison
 {
 	Body := Token^
-	ParentTokens := HybridQueue.{Token^,5}
+	ParentTokens := HybridQueue.{Tuple.{Token^,InheritanceType},5}
 
 	VParentState := THatch
 	VTableState := THatch
@@ -83,7 +91,7 @@ BoxClassBody := class extend BoxClassPoison
 	ParentScope := BoxUnit^
 	GetParentScope := virtual !() -> BoxUnit^ { return ParentScope }
 
-	this := !(bool isPacked,HybridQueue.{Token^,2} parents,Token^ bdy) -> void
+	this := !(bool isPacked,HybridQueue.{Tuple.{Token^,InheritanceType},2} parents,Token^ bdy) -> void
 	{
 		ItName = "anon" //todo
 		ItId = GetNewId()
@@ -132,16 +140,29 @@ BoxClassBody := class extend BoxClassPoison
 
 		ScopePutConstants()
 
+		memParents := HybridQueue.{BoxClass^,10}
+
 		for i : ParentTokens.Size()
 		{
-			inhType := CheckTemplateType(null,ParentTokens[i],NamedConstants)
+			inhType := CheckTemplateType(null,ParentTokens[i].0,NamedConstants)
 			if inhType == null
-				ParentTokens[i].EmitError("can not inherit unknown class")
+				ParentTokens[i].0.EmitError("can not inherit unknown class")
 			if not (inhType is TypeClass)
-				ParentTokens[i].EmitError("parent type must be class")
+				ParentTokens[i].0.EmitError("parent type must be class")
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.ToClass.StartParseBody()
-			Parents.Push(asClsParent.ToClass)
+
+			switch ParentTokens[i].1
+			{
+				case "extend"
+					memParents.Push(asClsParent.ToClass)
+					Parents.Push(asClsParent.ToClass)
+				case "reserve"
+					memParents.Push(asClsParent.ToClass)
+					Reserved.Push(asClsParent.ToClass)
+				case "copy"
+					assert(false)
+			}
 		}
 		PrimeParentStep()
 		VParentState.Emit()
@@ -156,16 +177,14 @@ BoxClassBody := class extend BoxClassPoison
 			checkClassBody(it,funcs)
 		}
 		
-		if Parents.Size() != 0
+		if memParents.Size() != 0
 		{
-			Parents[0].AwaitVTableStep()
-			for it,i : Parents[0].VTable
+			memParents[0].AwaitVTableStep()
+			for it,i : memParents[0].VTable
 			{
 				VTable.Push(it)
 			}
 		}
-
-
 
 		populatePoisons(Parents[^])
 

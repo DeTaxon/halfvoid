@@ -55,10 +55,13 @@ BoxClassTuple := class extend BoxClassPoison
 			}
 		}
 
+		memParents := HybridQueue.{BoxClass^,1}
+
 		if needGC
 		{
 			InternalsGC.Await()
 			Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
+			memParents.Push(GCTypeImplement->{TypeClass^}.ToClass)
 		}
 		
 
