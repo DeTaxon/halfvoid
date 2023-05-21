@@ -34,7 +34,7 @@ ZipRWFile := class extend TGCObject
 		}
 		return null
 	}
-	WriteFile := !(StringView fileName, Blob^ data) -> void //TODO folder support
+	WriteFile := !(StringView fileName, Blob^ data,bool useCompression = false) -> void //TODO folder support
 	{
 		fileData.DeleteIf(x => x.fileName == fileName)
 
@@ -43,6 +43,7 @@ ZipRWFile := class extend TGCObject
 		newEntry.fileName = fileName.GetString()
 		newEntry.fileData = data
 		newEntry.timeModified = time(null) //GetRealTimeU64Seconds()
+		newEntry.compress = useCompression
 	}
 	Flush := !() -> void
 	{
@@ -82,12 +83,53 @@ ZipRWFile := class extend TGCObject
 					freePages.Push(maybeFree)
 			}
 		}
+		for it : fileUnsavedData
+		{
+			if it.compress and it.fileData.Size() > 128 //todo do something to magic number?
+			{
+				newBlob := new BlobOnVector(it.fileData.Size())
+
+				writeStream := z_stream
+				writeStream.next_in = it.fileData.GetPointer()
+				writeStream.avail_in = it.fileData.Size()
+
+				writeStream.next_out = newBlob.GetPointer()
+				writeStream.avail_out = newBlob.Size()
+
+				it.comprType = 0
+				
+				initRes := deflateInit2(writeStream&,-1,8,-15,9,0)
+				if  initRes == 0
+				{
+					defer deflateEnd(writeStream&)
+
+					wrTest := deflate(writeStream&,4)
+					if wrTest == 1
+					{
+						secondBlob := new BlobOnVector(writeStream.total_out) //TODO no copy
+						memcpy(secondBlob.GetPointer(),newBlob.GetPointer(),writeStream.total_out)
+						it.fileDataToWrite = secondBlob
+						it.comprType = 8
+					}else{
+						it.fileDataToWrite = it.fileData
+					}
+				}else{
+					assert(false)
+					it.fileDataToWrite = it.fileData
+				}
+
+			}else{
+				it.fileDataToWrite = it.fileData
+			}
+		}
 
 		for it : fileUnsavedData
 		{
+			blobToWrite := it.fileDataToWrite
+
 			reqSize := zipFileHeader->TypeSize 
 			reqSize += it.fileName.Size() 
-			reqSize += it.fileData.Size()
+			reqSize += blobToWrite.Size()
 
 			foundPos := false
 			for page : freePages
@@ -115,7 +157,9 @@ ZipRWFile := class extend TGCObject
 			newField.offsetToData = it.assignedRange.0 + it.fileName.Size() + zipFileHeader->TypeSize
 			newField.fileName = it.fileName
 			newField.dataSize = it.fileData.Size()
+			newField.compressedSize = blobToWrite.Size()
 			newField.timeModified = it.timeModified
+			newField.compressionMethod = it.comprType
 		}
 
 		//TODO check if file exists
@@ -151,10 +195,11 @@ ZipRWFile := class extend TGCObject
 			ZeroMem(fileHeader^)
 	
 			fileHeader.signature = 0x04034b50
-			fileHeader.compressedSize = it.fileData.Size()
+			fileHeader.compressedSize = it.fileDataToWrite.Size()
 			fileHeader.realSize = it.fileData.Size()
 			fileHeader.fileNameLen = it.fileName.Size()
 			fileHeader.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
+			fileHeader.compressionMethod = it.comprType
 
 			fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
 			
@@ -162,9 +207,9 @@ ZipRWFile := class extend TGCObject
 
 			fileWritePtr = fileWritePtr[it.fileName.Size()]&
 
-			if it.fileData.Size() != 0
+			if it.fileDataToWrite.Size() != 0
 			{
-				memcpy(fileWritePtr,it.fileData.GetPointer(),it.fileData.Size())
+				memcpy(fileWritePtr,it.fileDataToWrite.GetPointer(),it.fileDataToWrite.Size())
 			}
 
 			it.fileData = null
@@ -186,10 +231,11 @@ ZipRWFile := class extend TGCObject
 			cdEntry.signature = 0x02014b50
 			cdEntry.madeWithVersion = 20
 			cdEntry.versionNeedToExtract = 20
-			cdEntry.compressedSize = it.dataSize
+			cdEntry.compressedSize = it.compressedSize
 			cdEntry.realSize = it.dataSize
 			cdEntry.fileNameLen = it.fileName.Size()
 			cdEntry.offsetToFileHeader = it.offsetToFileHeader
+			cdEntry.compressionMethod = it.compressionMethod
 
 			cdEntry.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
 
@@ -251,7 +297,8 @@ ZipRWFile := class extend TGCObject
 				dataStart := ptTH->{u8^}[newEn.fhSize]&
 				newEn.offsetToData = dataStart&->{u64^}^ - ptrToFl&->{u64^}^
 				newEn.offsetToFileHeader = cdTable.offsetToFileHeader
-				newEn.dataSize = cdTable.compressedSize
+				newEn.dataSize = cdTable.realSize
+				newEn.compressedSize = cdTable.compressedSize
 				newEn.timeModified = loadTime(ptTH.lastModifTime,ptTH.lastModifDate)
 			}else{
 				newEn.offsetToData = 0
@@ -305,8 +352,6 @@ vZipEntry2 := class
 	fullName := StringSpan
 	comprType := int
 	timeModified := u64
-	//subFolders := List.{vZipEntry^}
-	//compressedPointer := void^
 
 	"this" := !() -> void {}
 
@@ -357,8 +402,11 @@ zipRWUnsavedData := class
 {
 	fileName := String^
 	fileData := Blob^
+	fileDataToWrite := Blob^
 	timeModified := u64
 	assignedRange := Tuple.{u64,u64}
+	compress := bool
+	comprType := int
 
 	this := !() -> void {}
 	"=" := default
@@ -367,11 +415,13 @@ zipIntEntry := class
 {
 	offsetToData := u64
 	dataSize := u64
+	compressedSize := u64
 	offsetToFileHeader := u64
 	fhSize := int
 	offsetToCDEntry := u64
 	cdEntrySize := int
 	fileName := String^
+	compressionMethod := int
 	
 	timeModified := u64
 	
