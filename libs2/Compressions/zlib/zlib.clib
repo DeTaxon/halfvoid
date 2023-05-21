@@ -1,0 +1,11 @@
+{
+	"initname" : "libZlibInit",
+	"libs" : [
+		"libz.so"
+	],
+	"funcs" : {
+		"deflateInit2_" : "int,void^,int,int,int,int,int,char^,int",
+		"deflate" : "int,void^,int",
+		"deflateEnd" : "int,void^"
+	}
+}

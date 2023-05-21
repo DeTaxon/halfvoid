@@ -1,0 +1,11 @@
+ClassBuildContext := class extend TGCObject
+{
+	MemParents := HybridQueue.{BoxClass^,5}
+	FieldsParents := HybridQueue.{BoxClass^,5}
+	ReservedParents := HybridQueue.{BoxClass^,5}
+
+	All := HybridQueue.{Tuple.{BoxClass^,InheritanceType},5}
+
+	FillReserve := HybridQueue.{BoxClass^,5}
+	UnfilledReserve := HybridQueue.{BoxClass^,5}
+}
