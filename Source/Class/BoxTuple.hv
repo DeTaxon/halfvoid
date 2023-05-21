@@ -55,18 +55,20 @@ BoxClassTuple := class extend BoxClassPoison
 			}
 		}
 
-		memParents := HybridQueue.{BoxClass^,1}
 
 		if needGC
 		{
 			InternalsGC.Await()
 			Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
-			memParents.Push(GCTypeImplement->{TypeClass^}.ToClass)
 		}
 		
 
 		SubWork(() ==> {
 			InternalsHatch.Await()
+
+			buildCtx := ClassBuildContext
+			buildCtx.MemParents.Push(Parents[^])
+
 			cnsts := List.{BoxExeConstObj^}
 			setFunc := GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
@@ -108,10 +110,10 @@ BoxClassTuple := class extend BoxClassPoison
 
 			PrimeParentStep()
 
-			PrepareVTable()
-			CreateVTable()
+			PrepareVTable(buildCtx)
+			CreateVTable(buildCtx)
 
-			InheritStep()
+			InheritStep(buildCtx)
 
 			mthHatch.Emit()
 		})

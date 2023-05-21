@@ -140,7 +140,7 @@ BoxClassBody := class extend BoxClassPoison
 
 		ScopePutConstants()
 
-		memParents := HybridQueue.{BoxClass^,10}
+		buildCtx := ClassBuildContext
 
 		for i : ParentTokens.Size()
 		{
@@ -151,19 +151,71 @@ BoxClassBody := class extend BoxClassPoison
 				ParentTokens[i].0.EmitError("parent type must be class")
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.ToClass.StartParseBody()
+			asClsParent.ToClass.AwaitParentStep()
 
-			switch ParentTokens[i].1
+			buildCtx.All.Emplace(asClsParent.ToClass,ParentTokens[i].1)
+		}
+		
+		for it : buildCtx.All
+		{
+			if it.1 == "reserve"
+				continue
+
+			for ress : it.0.Reserved
 			{
-				case "extend"
-					memParents.Push(asClsParent.ToClass)
-					Parents.Push(asClsParent.ToClass)
-				case "reserve"
-					memParents.Push(asClsParent.ToClass)
-					Reserved.Push(asClsParent.ToClass)
-				case "copy"
-					assert(false)
+				buildCtx.ReservedParents.Push(ress)
 			}
 		}
+		for it : buildCtx.All
+		{
+			itReserved := false
+			for inReserv : buildCtx.ReservedParents
+			{
+				if inReserv == it.0
+					itReserved = true
+			}
+			if itReserved
+			{
+				buildCtx.FillReserve.Push(it.0)
+			}else{
+				buildCtx.MemParents.Push(it.0)
+				if not (it.1 == "reserve")
+					buildCtx.FieldsParents.Push(it.0)
+			}
+		}
+
+		for it : buildCtx.MemParents
+		{
+			Parents.Push(it)
+		}
+
+		for it : buildCtx.All
+		{
+			if not (it.1 == "reserve")
+				continue
+			buildCtx.ReservedParents.Push(it.0)
+		}
+
+		for it : buildCtx.ReservedParents
+		{
+			isMissed := true
+			for fld : buildCtx.FillReserve
+			{
+				if fld == it
+					isMissed = false
+			}
+			if isMissed
+			{
+				buildCtx.UnfilledReserve.Push(it)
+			}
+		}
+		Reserved.Push(buildCtx.UnfilledReserve[^])
+
+		for it : buildCtx.FillReserve
+		{
+			ApplyedReserve.Push(it)	
+		}
+
 		PrimeParentStep()
 		VParentState.Emit()
 
@@ -177,10 +229,10 @@ BoxClassBody := class extend BoxClassPoison
 			checkClassBody(it,funcs)
 		}
 		
-		if memParents.Size() != 0
+		if buildCtx.MemParents.Size() != 0
 		{
-			memParents[0].AwaitVTableStep()
-			for it,i : memParents[0].VTable
+			buildCtx.MemParents[0].AwaitVTableStep()
+			for it,i : buildCtx.MemParents[0].VTable
 			{
 				VTable.Push(it)
 			}
@@ -188,11 +240,14 @@ BoxClassBody := class extend BoxClassPoison
 
 		populatePoisons(Parents[^])
 
-		PrepareVTable()
-		CreateVTable()
+		PrepareVTable(buildCtx)
+		CreateVTable(buildCtx)
+
+		emitTest := static AVLSet.{void^}
+
 		VTableState.Emit()
 
-		InheritStep()
+		InheritStep(buildCtx)
 		FieldsState.Emit()
 
 	}

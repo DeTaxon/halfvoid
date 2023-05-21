@@ -433,6 +433,8 @@ ModuleVulkan := class extend ModuleInterface
 			newStruct.ItType = new TypeClass(newStruct)
 			Typedefs[StrCopy(name)] = newStruct.ItType
 
+			buildCtx := ClassBuildContext
+
 			sTypVal := char^
 
 			for mems : inMap^.Childs
@@ -465,7 +467,7 @@ ModuleVulkan := class extend ModuleInterface
 					}
 				}
 			}
-			newStruct.InheritStep()
+			newStruct.InheritStep(buildCtx)
 
 			if sTypVal != null
 			{

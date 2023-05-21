@@ -96,7 +96,7 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 	if lst[0]?.GetType() is TypeEnum
 	{
 		enm := lst[0].GetType()->{TypeEnum^}.ToEnum
-		if oper == "=="
+		if oper == "==" or oper == "!="
 		{
 			if lst[1] is BoxExeString
 			{
@@ -105,7 +105,15 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 				if enValue == null
 					debugItem.EmitError("Enum does not contain this value")
 				lst[1] = enValue
-				return enm.GetCmpFunc().CreateCall(lst)
+				res := enm.GetCmpFunc().CreateCall(lst)
+				if oper == "!="
+				{
+					lst2 := CheckExeDownList
+					lst2.Push(res)
+					res = innertTryGetCompareOverSpaceship(StringSpan(". not"),lst2,debugItem)
+					assert(res != null)
+				}
+				return res
 			}else if lst[1].GetType() == lst[0].GetType()
 			{
 				return enm.GetCmpFunc().CreateCall(lst)

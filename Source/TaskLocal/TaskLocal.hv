@@ -111,11 +111,13 @@ BoxClassTupleDelayed := class extend BoxClass
 	}
 	InitTuple := !(List.{Type^} types) -> void
 	{
+		buildCtx := ClassBuildContext
+
 		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 		}
-		InheritStep()
+		InheritStep(buildCtx)
 		fieldsHatch.Emit()
 	}
 	AwaitTypeState := virtual !() -> void

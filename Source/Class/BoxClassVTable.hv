@@ -24,8 +24,12 @@ AppendClass BoxClass
 		dat.vals.Push(GetExeInt(VTableId))
 		Parents[^].GetVTableIds(dat)
 	}
-	PrepareVTable := !() -> void
+	PrepareVTable := !(ClassBuildContext buildCtx) -> void
 	{
+		if ItName == "ImplInterface"
+		{
+			printf("hey %i\n",VTable.Size())
+		}
 
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
@@ -73,6 +77,7 @@ AppendClass BoxClass
 			}
 		}
 
+
 		for fncList,fncName : PreVTableFuncs
 		{
 			for fnc : fncList
@@ -107,7 +112,7 @@ AppendClass BoxClass
 			}
 		}
 	}
-	CreateVTable := !() -> void
+	CreateVTable := !(ClassBuildContext buildCtx) -> void
 	{
 		if VTable.Size() == 0
 			return void

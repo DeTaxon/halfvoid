@@ -3,7 +3,7 @@ AppendClass BoxClass
 
 	fieldsOffset := int
 
-	InheritStep := !() -> void
+	InheritStep := !(ClassBuildContext ctx) -> void
 	{
 		assert(FieldsPath.Size() == 0)
 

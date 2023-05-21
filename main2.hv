@@ -23,30 +23,32 @@
 //	}
 //}
 
-ExpectClass := class
-{
-	x := int
-	SomeFunc := virtual !() -> void
-	{
-		printf("no\n")
-	}
-}
-
-SomeInterface := class 
-	#Reserve ExpectClass
-{
-}
-
-ImplInterface := class 
-	extend SomeInterface,ExpectClass
-{
-}
+//ExpectClass := class
+//{
+//	x := int //TODO reserve it
+//	SomeFunc := virtual !() -> void
+//	{
+//		printf("no\n")
+//	}
+//}
+//
+//SomeInterface := class 
+//	#Reserve ExpectClass
+//{
+//	//TODO reserve does not reserve fields
+//}
+//
+//ImplInterface := class 
+//	extend SomeInterface,ExpectClass
+//{
+//	//TODO must be a version of a copy
+//}
 
 main := !(char^[] args) -> int
 {
-	test := ImplInterface
+	//test := ImplInterface
 	//test := SomeInterface
-	test.SomeFunc()
+	//test.SomeFunc()
 	return 0
 }
 
