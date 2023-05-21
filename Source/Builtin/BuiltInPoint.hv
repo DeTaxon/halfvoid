@@ -11,8 +11,11 @@ CreateBuiltinsPoint := !() -> void
 
 	x := GTypeVoidP
 	cmpType := GetFuncType(![x,x],GTypeBool)
-	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
-	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+
+	GPointCmpVoidFuncEQ = new BuiltInIntBase(cmpType,"icmp eq") 
+	GPointCmpVoidFuncNE = new BuiltInIntBase(cmpType,"icmp ne") 
+	bSpace.Functions[StringSpan("==")].Push(GPointCmpVoidFuncEQ)
+	bSpace.Functions[StringSpan("!=")].Push(GPointCmpVoidFuncNE)
 
 
 	bSpace.Functions[StringSpan("<=>")].Push(new BuiltInPointSpaceship() )
@@ -67,6 +70,8 @@ PointStoreTemplate := class extend BoxFuncTemplate
 	}
 }
 GPointStoreTemplate := PointStoreTemplate^
+GPointCmpVoidFuncEQ := BoxFunc^
+GPointCmpVoidFuncNE := BoxFunc^
 
 PointArrayGetTemplate := class extend BoxFuncTemplate
 {

@@ -2,7 +2,6 @@
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
-//TODO String^ == null fails, it tries to transform null to String
 
 //TestClass := class
 //{
@@ -23,6 +22,16 @@
 //	}
 //}
 
+main := !(char^[] args) -> int
+{
+	//test := ImplInterface
+	//test := SomeInterface
+	//test.SomeFunc()
+	return 0
+}
+
+
+//Reserve inheritance failed, it's overcomplicated
 //ExpectClass := class
 //{
 //	x := int //TODO reserve it
@@ -43,14 +52,6 @@
 //{
 //	//TODO must be a version of a copy
 //}
-
-main := !(char^[] args) -> int
-{
-	//test := ImplInterface
-	//test := SomeInterface
-	//test.SomeFunc()
-	return 0
-}
 
 //#Test
 //{

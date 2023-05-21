@@ -93,6 +93,17 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 	usingSpaceship := false
 	resCall := BoxUnit^
 
+	if (oper == "==" or oper == "!=") and (lst[0] is BoxExeNull or lst[1] is BoxExeNull)
+		and lst[0].GetType() is in TypePoint and lst[1].GetType() is in TypePoint
+	{
+		if oper == "=="
+		{
+			return GPointCmpVoidFuncEQ.CreateCall(lst)
+		}else{
+			return GPointCmpVoidFuncNE.CreateCall(lst)
+		}
+	}
+
 	if lst[0]?.GetType() is TypeEnum
 	{
 		enm := lst[0].GetType()->{TypeEnum^}.ToEnum
