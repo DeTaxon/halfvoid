@@ -19,10 +19,12 @@ BoxFuncBodyStr := class extend BoxFuncBody
 	ParseString := !(StringSpan strData) -> void
 	{
 		fl := GetAnyFile()
+
 		tkns := GetObjectsFromMemory(fl,strData.NonNullStr(),strData.Size())
 
 		bdy = new TokenSymbol(StringSpan("{}"),1)
-		bdy.Line = funcLine?.ItToken.Line
+		bdy.Line = new FileLine(fl)
+		bdy.Line.Line = 0
 		bdy.Down = tkns
 
 		itr := tkns

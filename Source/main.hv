@@ -260,6 +260,7 @@ WriteCodeToStream := !(Stream^ outFile) -> void
 			fil.PrintCode(outFile)
 		}
 	}
+	DummyFile.PrintCode(outFile)
 
 	for st : GlobalStrings
 	{

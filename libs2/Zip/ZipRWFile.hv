@@ -87,37 +87,15 @@ ZipRWFile := class extend TGCObject
 		{
 			if it.compress and it.fileData.Size() > 128 //todo do something to magic number?
 			{
-				newBlob := new BlobOnVector(it.fileData.Size())
+				newBlob := CompressBlobDeflate(it.fileData)
 
-				writeStream := z_stream
-				writeStream.next_in = it.fileData.GetPointer()
-				writeStream.avail_in = it.fileData.Size()
-
-				writeStream.next_out = newBlob.GetPointer()
-				writeStream.avail_out = newBlob.Size()
-
-				it.comprType = 0
-				
-				initRes := deflateInit2(writeStream&,-1,8,-15,9,0)
-				if  initRes == 0
+				if newBlob != null
 				{
-					defer deflateEnd(writeStream&)
-
-					wrTest := deflate(writeStream&,4)
-					if wrTest == 1
-					{
-						secondBlob := new BlobOnVector(writeStream.total_out) //TODO no copy
-						memcpy(secondBlob.GetPointer(),newBlob.GetPointer(),writeStream.total_out)
-						it.fileDataToWrite = secondBlob
-						it.comprType = 8
-					}else{
-						it.fileDataToWrite = it.fileData
-					}
+					it.fileDataToWrite = newBlob
+					it.comprType = 8
 				}else{
-					assert(false)
 					it.fileDataToWrite = it.fileData
 				}
-
 			}else{
 				it.fileDataToWrite = it.fileData
 			}

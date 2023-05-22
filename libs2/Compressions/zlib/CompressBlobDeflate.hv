@@ -1,0 +1,29 @@
+CompressBlobDeflate := !(Blob^ blb) -> Blob^
+{
+	if blb == null or blb.Size() == 0
+		return null
+	
+	newBlob := new BlobOnVector(blb.Size())
+
+	writeStream := z_stream
+	writeStream.next_in = blb.GetPointer()
+	writeStream.avail_in = blb.Size()
+
+	writeStream.next_out = newBlob.GetPointer()
+	writeStream.avail_out = newBlob.Size()
+	
+	initRes := deflateInit2(writeStream&,-1,8,-15,9,0)
+
+	if initRes != 0
+		return null
+	defer deflateEnd(writeStream&)
+
+	wrTest := deflate(writeStream&,4)
+	if wrTest != 1
+		return null
+
+	secondBlob := new BlobOnVector(writeStream.total_out) //TODO no copy
+	memcpy(secondBlob.GetPointer(),newBlob.GetPointer(),writeStream.total_out)
+
+	return secondBlob
+}

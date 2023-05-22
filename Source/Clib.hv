@@ -325,14 +325,28 @@ CLib := class extend ModuleInterface
 	}
 }
 
-GetAnyFile := !() -> BoxFile^
+
+BoxFileDummy := class extend BoxFile
 {
-	for spc : CodeSpaces
+	PrintCode := virtual !(Stream^ f) -> void
 	{
-		for fil : spc.Files
+		if DebugMode //later
 		{
-			return fil
+			f^ << "!" << fileId  << " = !DIFile(filename: \"" 
+			f^ << "DummyFile" << "\", directory: \""
+			f^ <<  "/" <<"\")\n"
 		}
 	}
-	assert(false)
+}
+
+DummyFile := BoxFile^
+GetAnyFile := !() -> BoxFile^
+{
+	if DummyFile != null
+		return DummyFile
+
+	res := new BoxFileDummy
+	res.fileName = StringSpan("DummyFile")
+	DummyFile = res
+	return res
 }
