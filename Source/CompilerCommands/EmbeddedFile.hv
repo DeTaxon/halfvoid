@@ -2,17 +2,29 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 {
 	if itm.Down.Right == null or itm.Down.Right.GetValue() != "()"
 	{
-		itm.EmitError("usage #File(name)")
+		itm.EmitError("usage #File(name[,compress])")
 	}
 	skb := itm.Down.Right
 	if skb.Down == null or not (skb.Down is TokenString)
 	{
-		itm.EmitError("usage #File(name)")
+		itm.EmitError("usage #File(name[,compress])")
 	}
 
 	isLocal := itm.Down->{TokenIndent^}.Value == "#FileLocal"
 	 
 	fileName := skb.Down->{TokenString^}.Value
+
+	compressFile := false
+
+	if skb.Down.Right?.GetValue() == "," and skb.Down.Right.Right? is TokenBool
+	{
+		ind := skb.Down.Right.Right->{TokenBool^}
+
+		if ind.Value == "true"
+		{
+			compressFile = true
+		}
+	}
 
 	
 	itFile := vRepoFile^
@@ -26,12 +38,11 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 
 	if itFile == null
 		itm.EmitError("File not found")
-	
 
 	emb := EmbFile^
 	if not embeddedFiles.Contain(itFile)
 	{
-		emb = new EmbFile(itFile)
+		emb = new EmbFile(itFile,compressFile)
 		embeddedFiles[itFile] = emb
 	}else{
 		emb = embeddedFiles[itFile]
@@ -39,8 +50,9 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 
 	objs := CheckExeDownList
 	objs.Push(emb.data)
-	objs.Push(GetExeInt(emb.GetSize()))
-	objs.Push(GBoolFalse)
+	objs.Push(GetExeInt(emb.fileSize))
+	objs.Push(GetExeInt(emb.compressedSize))
+	objs.Push(emb.isCompressed ?: GBoolTrue : GBoolFalse)
 	objs.Push(GetExeString(itFile.GetName()^[0..0]))
 
 	cnsts := List.{BoxExeConstObj^}
@@ -99,13 +111,30 @@ BoxRawData := class extend BoxExeObj
 EmbFile := class
 {
 	itFile := vRepoFile^
+	isCompressed := bool
+	fileSize := int
+	compressedSize := int
 	data := BoxRawData^
 
-	this := !(vRepoFile^ inFile) -> void
+	this := !(vRepoFile^ inFile, bool compressFile) -> void
 	{
 		itFile = inFile
 
 		fileBlob := inFile.GetBlob()
+
+		fileSize = fileBlob.Size()
+		compressedSize = fileBlob.Size()
+
+		if compressFile
+		{
+			newBlob := CompressBlobDeflate(fileBlob)
+			if newBlob != null
+			{
+				isCompressed = true
+				fileBlob = newBlob
+				compressedSize = fileBlob.Size()
+			}
+		}
 		data = new BoxRawData(fileBlob)
 	}
 	GetSize := !() -> int 

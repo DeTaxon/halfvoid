@@ -1,14 +1,27 @@
 vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already made object
 {
 	itData := void^
-	this := !(void^ inData, int inpSize,char^ itName) -> void
+	compressedSize := int
+	isCompressed := bool
+	uncompressedBlob := Blob^
+	this := !(void^ inData, int inpSize,int compSize,bool isComp,char^ itName) -> void
 	{
 		itData = inData
 		fileSize = inpSize
 		objName = new String(itName)
+
+		isCompressed = isComp
+		compressedSize = compSize
 	}
 	GetMap := virtual !() -> FileView^
 	{
+		if isCompressed
+		{
+			uncompressedBlob = new BlobOnVector(fileSize)
+			printf("hm %i %i\n",compressedSize,fileSize)
+			CrappyDeflateInflate(itData,compressedSize,uncompressedBlob.GetPointer(),fileSize)
+			return new ZipFSFileViewRaw(uncompressedBlob.GetPointer()->{u8^},fileSize)
+		}
 		return new ZipFSFileViewRaw(itData->{u8^},fileSize)
 	}
 	IsVirtual := virtual !() -> bool 
@@ -18,9 +31,15 @@ vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already mad
 }
 
 
+internalGetEmbeddedFile := !(void^ data, int fileSize,int compressedSize,bool isCompressed, char^ fileName) -> vEmbeddedFile^
+{
+	//TODO use filePath
+	//todo compressed version
+	return new vEmbeddedFile(data,fileSize,compressedSize,isCompressed,fileName)
+}
 internalGetEmbeddedFile := !(void^ data, int fileSize,bool isCompressed, char^ fileName) -> vEmbeddedFile^
 {
 	//TODO use filePath
 	//todo compressed version
-	return new vEmbeddedFile(data,fileSize,fileName)
+	return new vEmbeddedFile(data,fileSize,fileSize,false,fileName)
 }

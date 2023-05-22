@@ -3,6 +3,7 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 //TODO Cache file gets recompiled because Clib files attaches to them
+//TODO Array of Vtable classes fails
 
 //TestClass := class
 //{
@@ -25,13 +26,11 @@
 
 main := !(char^[] args) -> int
 {
-	tstZip := ZipRWFile("test.zip")
-
-	fl := FSGetFile("main2.hv")
-	flBlob := fl.GetBlob()
-
-	tstZip.WriteFile("Test1.txt",flBlob,true)
-	tstZip.WriteFile("Test2.txt",flBlob,false)
+	fl := #File("main2.hv",true)
+	//fl := #File("main2.hv")
+	tst := fl.GetBlob()
+	spn := StringSpan(tst.GetPointer()->{char^},tst.Size())
+	printf("hey %s\n",spn)
 	//test := ImplInterface
 	//test := SomeInterface
 	//test.SomeFunc()

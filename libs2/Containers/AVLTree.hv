@@ -50,6 +50,8 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		}
 		iter.data = dat
 		
+		//this&->{AVLTree.{void^}^}.AVLRepair(iter->{CommonTreeNode.{void^}^}) //not worth it, 
+		//TODO make a good way to unite functions
 		AVLRepair(iter)
 
 		toRet^ = iter
