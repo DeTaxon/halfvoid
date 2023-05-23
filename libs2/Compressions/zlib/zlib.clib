@@ -1,7 +1,9 @@
 {
 	"initname" : "libZlibInit",
 	"libs" : [
-		"libz.so"
+		"libz.so",
+		"libz.so.1",
+		"zlib1.dll"
 	],
 	"funcs" : {
 		"deflateInit2_" : "int,void^,int,int,int,int,int,char^,int",

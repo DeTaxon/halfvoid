@@ -2,8 +2,6 @@
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
-//TODO Cache file gets recompiled because Clib files attaches to them
-//TODO Array of Vtable classes fails
 
 //TestClass := class
 //{
@@ -24,16 +22,10 @@
 //	}
 //}
 
+tst := Vector.{int}[10]
 main := !(char^[] args) -> int
 {
-	fl := #File("main2.hv",true)
-	//fl := #File("main2.hv")
-	tst := fl.GetBlob()
-	spn := StringSpan(tst.GetPointer()->{char^},tst.Size())
-	printf("hey %s\n",spn)
-	//test := ImplInterface
-	//test := SomeInterface
-	//test.SomeFunc()
+	printf("test %p\n",tst[0]->VTable)
 	return 0
 }
 

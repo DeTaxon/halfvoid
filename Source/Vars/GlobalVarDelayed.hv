@@ -56,6 +56,14 @@ GlobalVarDelayed := class extend GlobalVar
 			{
 				MemValue = createConstType(tp)
 			}
+			if tp is TypeArr
+			{
+				iter := tp
+				while iter is TypeArr
+					iter = iter.Base
+				if iter is TypeClass
+					MemValue = createConstType(tp)
+			}
 		}
 
 		if tp != null

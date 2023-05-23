@@ -6,6 +6,9 @@ internalHVGetTaskLocalTuple := !() -> void^
 {
 	return CurrentTask.taskLocalData&
 }
+internalHVSetTaskLocalTuple := !(void^ tsLocal) -> void
+{
+}
 
 TaskCheckMutex := Mutex^
 TaskWaitTasksConVar := ConVar^
