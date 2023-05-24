@@ -58,6 +58,12 @@
 		"glfwSetWindowSizeCallback" : "void,void^,void^",
 		"glfwSetWindowTitle" : "void,void^,char^",
 
+		"glfwGetPrimaryMonitor" : "void^",
+		"glfwGetVideoMode" : "void^,void^",
+		"glfwSetWindowMonitor" : "void,void^,void^,int,int,int,int,int",
+		"glfwGetWindowFrameSize" : "void,void^,int^,int^,int^,int^",
+		"glfwGetWindowPos" : "void,void^,int^,int^",
+
 		"glfwSetWindowUserPointer" : "void,void^,void^",
 		"glfwGetWindowUserPointer" : "void^,void^",
 

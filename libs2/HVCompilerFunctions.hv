@@ -12,6 +12,16 @@ internalHVInitClass := !(@T x)  -> void
 			{
 				internalHVInitClass(fld)
 			}
+			if fld->TypeGroup == "Array" 
+			{
+				//if fld->TypeBase->TypeGroup == "Class"
+				//{
+				//	for i : fld->ArraySize
+				//	{
+				//		internalHVInitClass(fld[i])
+				//	}
+				//}
+			}
 		}
 		if T >= TGCIObject
 		{

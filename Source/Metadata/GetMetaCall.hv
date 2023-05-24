@@ -37,15 +37,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 
 	if right.Value == "TypeGroup"
 	{
-		typ := ParseType(obj.Down)
-		if typ == null
-		{
-			dwnObj := TryGetExeCall(obj.Down)
-			if dwnObj != null
-				typ = dwnObj.GetType()
-			if typ == null
-				obj.Down.EmitError("Object for TypeGroup must have a type")
-		}
+		typ := getMetaDownType(obj.Down)
 		if typ is TypeClass
 			return GetExeString(StringSpan("Class"))
 		if typ is TypeStandard
@@ -143,6 +135,15 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	if right.Value == "AllFields"
 	{
 		return TryGetMetaFields(obj)
+	}
+	if right.Value == "ArraySize"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+			return null
+		if typ is not TypeArr
+			return null
+		return GetExeInt(typ->{TypeArr^}.len)
 	}
 	if right.Value == "VTable"
 	{

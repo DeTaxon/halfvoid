@@ -22,10 +22,16 @@
 //	}
 //}
 
-tst := Vector.{int}[10]
+hmm := class
+{
+	tst := TGCObject[10]
+}
 main := !(char^[] args) -> int
 {
-	printf("test %p\n",tst[0]->VTable)
+	printf("start\n")
+	c := hmm
+	ZeroMem(c)
+	printf("test %p\n",c.tst[0]->VTable)
 	return 0
 }
 

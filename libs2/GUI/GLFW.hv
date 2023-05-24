@@ -100,6 +100,34 @@ GLFWWindow := class
 	{
 		return glfwWindowShouldClose(windowHandle)
 	}
+
+	IsFullscreened := bool
+	WindowedWidth := int
+	WindowedHeight := int
+	WindowedX := int
+	WindowedY := int
+
+	SetWindowed := !() -> void
+	{
+		monitor := glfwGetPrimaryMonitor()
+		mode := glfwGetVideoMode(monitor)->{GLFWvidmode^}
+
+		glfwSetWindowMonitor(windowHandle,null,WindowedX,WindowedY,WindowedWidth,WindowedHeight,mode.refreshRate)
+		IsFullscreened = false
+	}
+	SetFullscreen := !() -> void
+	{
+		monitor := glfwGetPrimaryMonitor()
+		mode := glfwGetVideoMode(monitor)->{GLFWvidmode^}
+
+		WindowedWidth = Width
+		WindowedHeight = Height
+
+		glfwGetWindowPos(windowHandle,WindowedX&,WindowedY&)
+
+		glfwSetWindowMonitor(windowHandle,monitor,0,0,mode.width,mode.height,mode.refreshRate)
+		IsFullscreened = true
+	}
 }
 
 
@@ -148,4 +176,14 @@ glfwMousePressed := !(void^ w,int button, int action, int mods) -> void
 glfwCharPress := !(void^ wi, int charCode) -> void
 {
 	//printf("test %i\n",charCode)
+}
+
+GLFWvidmode := class
+{
+    width := int
+    height := int
+    redBits := int
+    greenBits := int
+    blueBits := int
+    refreshRate := int
 }
