@@ -12,7 +12,6 @@ internalHVSetTaskLocalTuple := !(void^ tsLocal) -> void
 
 TaskCheckMutex := Mutex^
 TaskWaitTasksConVar := ConVar^
-TaskSleepConVar := ConVar^
 
 TaskPausedWorkers := int
 TaskQuitProgram := bool

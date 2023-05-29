@@ -45,9 +45,10 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			}
 			if TaskLoopWorkCounter != 0
 			{
-				TaskCheckMutex.Unlock()
-				TaskCodePollWork(waitTime)
-				TaskCheckMutex.Lock()
+				TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
+				//TaskCheckMutex.Unlock()
+				//TaskCodePollWork(waitTime)
+				//TaskCheckMutex.Lock()
 			}
 			someoneOnLoop = false
 		}else{

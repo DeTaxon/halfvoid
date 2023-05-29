@@ -18,7 +18,6 @@ vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already mad
 		if isCompressed
 		{
 			uncompressedBlob = new BlobOnVector(fileSize)
-			printf("hm %i %i\n",compressedSize,fileSize)
 			CrappyDeflateInflate(itData,compressedSize,uncompressedBlob.GetPointer(),fileSize)
 			return new ZipFSFileViewRaw(uncompressedBlob.GetPointer()->{u8^},fileSize)
 		}

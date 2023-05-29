@@ -34,7 +34,6 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		addLayer("VK_LAYER_KHRONOS_validation")
 		addLayer("VK_LAYER_LUNARG_vktrace")
 		//addLayer("VK_LAYER_AMD_switchable_graphics")
-
 	}
 	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void
 	{
@@ -68,7 +67,8 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		appInfo.applicationVersion = 1
 		appInfo.pEngineName = "SimpleWrapper"
 		appInfo.engineVersion = 1
-		appInfo.apiVersion = 4194325//(1 << 22) + (0 << 11) + 21
+		//appInfo.apiVersion = 4194325//(1 << 22) + (0 << 11) + 0
+		appInfo.apiVersion = 4200448//(1 << 22) + (3 << 11) + 0
 	}
 	DebugStep := virtual !() -> void
 	{
@@ -147,6 +147,15 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
 	{ 
 		expectDeviceExtensions.Push("VK_KHR_swapchain") //TODO check for swapchains
+
+
+		if true and false 
+		{
+			for it : deviceExtensions
+			{
+				printf("hm %s\n",it.extensionName[0]&)
+			}
+		}
 
 		//halfFloatExt := "VK_KHR_16bit_storage" //TODO maybe add it
 		//if devSupports.Contain(halfFloatExt)

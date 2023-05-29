@@ -99,7 +99,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 		SwapImageColorSpace = formts[preferedFormatIndex].colorSpace
 		SwapImageMode = reqMod
 	}
-	CreateSwapchain := !(TRenderPass^ renPass,int inW,int inH) -> void
+	CreateSwapchain := !(TRenderPass^ renPass,int inW,int inH) -> bool
 	{
 		oldSwapchain := itSwapchain
 
@@ -122,9 +122,12 @@ VulkanGLFWInstance := class extend VulkanInstance
 		crtSwap.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR
 		crtSwap.presentMode = SwapImageMode
 		crtSwap.clipped = 0
-		crtSwap.oldSwapchain = null
+		crtSwap.oldSwapchain = oldSwapchain
 		
-		Funcs.vkCreateSwapchainKHR(LogicalDevice,crtSwap&,null,itSwapchain&)
+		res := Funcs.vkCreateSwapchainKHR(LogicalDevice,crtSwap&,null,itSwapchain&)
+
+		if res != 0
+			return false
 	
 		if oldSwapchain != null
 		{
@@ -168,6 +171,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 	
 			Funcs.vkCreateFramebuffer(LogicalDevice,fbC&,null,surfaceFramebuffers^[i]&)
 		}
+		return true
 	}
 	GetSurfaceFramebuffer := !(u32 indx) -> VkFramebuffer
 	{

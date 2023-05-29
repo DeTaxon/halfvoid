@@ -1,24 +1,24 @@
 
 TaskOSInit := !() -> void
 {
-	TaskMainEvent = new Event()
+	//TaskMainEvent = new Event()
 
-	TaskPollSize = 1
-	TaskPollList[0] = TaskMainEvent.Get()
-	TaskPollFunctions[0] = TaskMainEventCB
+	//TaskPollSize = 1
+	//TaskPollList[0] = TaskMainEvent.Get()
+	//TaskPollFunctions[0] = TaskMainEventCB
 }
 TaskOSDestroy := !() -> void
 {
-	TaskMainEvent = null
+	//TaskMainEvent = null
 }
 
 
-TaskMainEvent := Event^
-TaskMainEventCB := !() -> void
-{
-	
-}
-
-TaskPollSize := int
-TaskPollFunctions := void^[32]
-TaskPollList := void^[32]
+//TaskMainEvent := Event^
+//TaskMainEventCB := !() -> void
+//{
+//	
+//}
+//
+//TaskPollSize := int
+//TaskPollFunctions := void^[32]
+//TaskPollList := void^[32]
