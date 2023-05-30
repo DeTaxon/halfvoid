@@ -5,7 +5,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 
 	surfaceImages := Vector.{VkImage}^
 	surfaceImageViews := Vector.{VkImageView}^
-	surfaceFramebuffers := Vector.{VkFramebuffer}^
+	surfaceFramebuffer := VkFramebuffer
 
 	SwapImageFormat := int
 	SwapImageColorSpace := int
@@ -123,7 +123,8 @@ VulkanGLFWInstance := class extend VulkanInstance
 		crtSwap.presentMode = SwapImageMode
 		crtSwap.clipped = 0
 		crtSwap.oldSwapchain = oldSwapchain
-		
+	
+		//TODO fails as it have weird xml
 		res := Funcs.vkCreateSwapchainKHR(LogicalDevice,crtSwap&,null,itSwapchain&)
 
 		if res != 0
@@ -140,7 +141,6 @@ VulkanGLFWInstance := class extend VulkanInstance
 		Funcs.vkGetSwapchainImagesKHR(LogicalDevice,itSwapchain,imgCount&,surfaceImages.GetPointer())
 	
 		surfaceImageViews = new Vector.{VkImageView}(surfaceImages.Size())
-		surfaceFramebuffers = new Vector.{VkFramebuffer}(surfaceImages.Size())
 
 		for it,i : surfaceImages^
 		{
@@ -160,22 +160,34 @@ VulkanGLFWInstance := class extend VulkanInstance
 			imgViewC.subresourceRange.layerCount = 1
 	
 			Funcs.vkCreateImageView(LogicalDevice,imgViewC&,null,surfaceImageViews^[i]&)
-	
-			fbC := VkFramebufferCreateInfo()
-			fbC.renderPass = renPass.Get()
-			fbC.attachmentCount = 1
-			fbC.pAttachments&->{void^^}^ = surfaceImageViews^[i]&
-			fbC.width = inW
-			fbC.height = inH
-			fbC.layers = 1
-	
-			Funcs.vkCreateFramebuffer(LogicalDevice,fbC&,null,surfaceFramebuffers^[i]&)
 		}
+
+		fbAtt := VkFramebufferAttachmentImageInfo()
+		fbAtt.width = inW
+		fbAtt.height = inH
+		fbAtt.layerCount = 1
+		fbAtt.viewFormatCount = 1
+		fbAtt.pViewFormats = SwapImageFormat&
+		fbAtt.usage = 0x00000010
+
+		fbAttCr := VkFramebufferAttachmentsCreateInfo
+		fbAttCr.sType = 1000108001//TODO VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENTS_CREATE_INFO
+		fbAttCr.attachmentImageInfoCount = 1
+		fbAttCr.pAttachmentImageInfos = fbAtt&
+	
+		fbC := VkFramebufferCreateInfo()
+		fbC.pNext = fbAttCr&
+		fbC.renderPass = renPass.Get()
+		fbC.flags = 1 //VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT //TODO
+		fbC.attachmentCount = 1
+		fbC.pAttachments&->{void^^}^ = null
+		fbC.width = inW
+		fbC.height = inH
+		fbC.layers = 1
+	
+		Funcs.vkCreateFramebuffer(LogicalDevice,fbC&,null,surfaceFramebuffer&)
+
 		return true
-	}
-	GetSurfaceFramebuffer := !(u32 indx) -> VkFramebuffer
-	{
-		return surfaceFramebuffers[indx]
 	}
 	DrawGetImage := !(u32^ imageIndex,bool^ resCall) -> bool
 	{

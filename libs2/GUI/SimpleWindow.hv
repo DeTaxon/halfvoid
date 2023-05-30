@@ -92,7 +92,7 @@ SimpleWindow := class extend GLFWWindow
 				step1Cmd.Reset()
 				step1Cmd.Start(null,0)
 				
-				StartTextDraw(step1Cmd.Get(),vInstance.GetSurfaceFramebuffer(surfaceIndex))
+				StartTextDraw(step1Cmd.Get(),surfaceIndex)
 
 				if mainGUIObject != null
 				{
@@ -128,7 +128,7 @@ SimpleWindow := class extend GLFWWindow
 		}
 	}
 
-	StartTextDraw := !(VkCommandBuffer cmd,VkFramebuffer frm ) -> void
+	StartTextDraw := !(VkCommandBuffer cmd,int imgNumber) -> void
 	{
 		imgBarCPre := VkImageMemoryBarrier[2]
 	
@@ -150,12 +150,17 @@ SimpleWindow := class extend GLFWWindow
 		clrValues[11] = 0.0f
 	
 		beginInfo.renderPass = mainRenderPass.Get()
-		beginInfo.framebuffer = frm
+		beginInfo.framebuffer = vInstance.surfaceFramebuffer
 		beginInfo.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
 		beginInfo.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
 		beginInfo.clearValueCount = 1
 		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
 		
+		renderPassAttms := VkRenderPassAttachmentBeginInfo()
+		renderPassAttms.attachmentCount = 1
+		renderPassAttms.pAttachments = vInstance.surfaceImageViews[imgNumber]&
+		beginInfo.pNext = renderPassAttms&
+
 		vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE) //TODO remove vk.Funcs
 	}
 	StopTextDraw := !(VkCommandBuffer cmd) -> bool

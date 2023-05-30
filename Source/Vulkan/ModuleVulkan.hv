@@ -48,6 +48,8 @@ ModuleVulkan := class extend ModuleInterface
 				asNode := it.second->{TreeNode^}
 				switch asNode.NodeName
 				{
+				case "feature"
+					CheckFeatures(asNode)
 				case "extensions"
 					CheckExtensions(asNode)
 				}
@@ -74,6 +76,47 @@ ModuleVulkan := class extend ModuleInterface
 	}
 
 	
+	CheckFeatures := !(TreeNode^ nd) -> void
+	{
+		for sN : nd.Childs
+		{
+			if not sN.first continue
+
+			asNeed := sN.second->{TreeNode^}
+
+			for sub : asNeed.Childs
+			{
+				asN2 := sub.second->{TreeNode^}
+				switch asN2.NodeName
+				{
+					case "enum"
+						itName := asN2.Attrs.TryFind("name")
+						if itName != null
+						{
+							itDir := asN2.Attrs.TryFind("dir")
+							if itDir != null assert(itDir^ == "-")
+							itOffst := asN2.Attrs.TryFind("offset")
+							if itOffst != null
+							{
+								offst := ToInt(itOffst^)
+								offst += 1000000000
+
+								extnum := ToInt(asN2.Attrs["extnumber"])
+								extnum -= 1
+								extnum *= 1000
+
+								offst += extnum
+
+								if itDir != null offst = -offst
+								ItInts[itName^] = offst
+							}else{
+							}
+						}
+					case void
+				}
+			}
+		}
+	}
 	CheckExtensions := !(TreeNode^ nd) -> void
 	{
 		for sN : nd.Childs
@@ -111,6 +154,7 @@ ModuleVulkan := class extend ModuleInterface
 									offst := ToInt(itOffst^)
 									offst += extNumber
 									offst += 1000000000
+
 									if itDir != null offst = -offst
 									ItInts[itName^] = offst
 								}else{
@@ -218,8 +262,10 @@ ModuleVulkan := class extend ModuleInterface
 									retType = GTypeVoid.GetPoint()
 								case "typedef VkBool32 (VKAPI_PTR *"
 									retType = Typedefs["VkBool32"]
+								case "typedef PFN_vkVoidFunction (VKAPI_PTR *"
+									retType = GTypeVoidP
 								case void
-									printf("VKMODULE: cant read type %s\n",itRet)
+									printf("VKMODULE: cant read type <%s>\n",itRet)
 									return void
 							}
 						}
@@ -443,6 +489,12 @@ ModuleVulkan := class extend ModuleInterface
 					asN := mems.second->{TreeNode^}
 					if asN.NodeName == "member"
 					{
+						if asN.Attrs.Contain("api")
+						{
+							if asN.Attrs["api"] != "vulkan"
+								continue
+						}
+						
 						memType := TryCheckType(asN)
 						if memType == null {
 							printf("VKMODULE: in struct %s need check %s\n",name,asN.GetValueString("name"))

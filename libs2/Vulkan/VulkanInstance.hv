@@ -108,6 +108,10 @@ VulkanInstance := class extend TGCObject
 		logDevice.ppEnabledExtensionNames = usingPhysExts.GetPointer()->{char^}
 		logDevice.pEnabledFeatures = zeroFeature&
 
+		imagelessFrame := VkPhysicalDeviceImagelessFramebufferFeatures()
+		imagelessFrame.imagelessFramebuffer = 1
+		logDevice.pNext = imagelessFrame&
+
 		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
 
 		Funcs.vkGetDeviceQueue(LogicalDevice,0,0,DrawQueue&)
