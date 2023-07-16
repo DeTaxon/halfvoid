@@ -37,17 +37,17 @@ endif
 MainTarget: test
 
 test:
-	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -g -C0 libs2 main2.hv -o out.ll -cache /tmp/TestCache.zip
+	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -g -C0 StandardHVLibrary main2.hv -o out.ll -cache /tmp/TestCache.zip
 	clang -g out.ll -mfsgsbase -o test
 jit:
-	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 libs2 main2.hv -cache /tmp/TestCache.zip
+	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
 win.exe:
-	$(gdb_tui) ./halfvoid -win32 -g -C0 libs2 main2.hv -o out.ll
+	$(gdb_tui) ./halfvoid -win32 -g -C0 StandardHVLibrary main2.hv -o out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe
 
 win2.exe:
-	$(gdb_tui) ./halfvoid_win.exe -win32 -g -C0 libs2 main2.hv -o out.ll
+	$(gdb_tui) ./halfvoid_win.exe -win32 -g -C0 StandardHVLibrary main2.hv -o out.ll
 	clang -g out.ll -o win.exe
 Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
 	mkdir -p TempDir;zip -u Objs/CompilerData.zip Mach.m $(wildcard *.pr)
@@ -62,16 +62,16 @@ SizeCheck:
 	nm --print-size --size-sort --radix=d ./halfvoid  | less
 
 halfvoid:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 libs2/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -win32 -g -C0 libs2/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -g -C0 libs2/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid_win.exe -win32 -g -C0 libs2/ -C1 Source/ -o out.exe.ll
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid_win.exe -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
 	clang -gdwarf-4 -static out.exe.ll -o halfvoid_win.exe
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
