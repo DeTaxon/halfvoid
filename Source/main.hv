@@ -38,10 +38,6 @@ main := !(char^[] args) -> int
 {
 	TracyZone("MainFunc")
 
-	for i : 9973 //TODO remove this
-	{
-		ZeroMem(funcTypes[i])
-	}
 	CodeSpaces.IncRef()
 
 	files := new List.{char^}

@@ -26,12 +26,15 @@ hmm := class
 {
 	tst := TGCObject[10]
 }
+
+cc2 := List.{TGCObject^}[100]
 main := !(char^[] args) -> int
 {
-	printf("start\n")
-	c := hmm
-	ZeroMem(c)
-	printf("test %p\n",c.tst[0]->VTable)
+	printf("test %p\n",cc2[0]->VTable)
+	//printf("start\n")
+	//c := hmm
+	//ZeroMem(c)
+	//printf("test %p\n",c.tst[0]->VTable)
 	return 0
 }
 

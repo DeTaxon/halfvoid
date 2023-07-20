@@ -126,10 +126,22 @@ GlobalVarDelayed := class extend GlobalVar
 	createConstTypeClass2 := !(ClassConstValue^ dwn,BoxClass^ cls) -> void
 	{
 		for it : cls.Parents
-		createConstTypeClass2(dwn,it)
+			createConstTypeClass2(dwn,it)
+	
+		isThisGCClass := false
+		if cls.ItType == GCType
+		{
+			isThisGCClass = true
+		}
 
 		for it,i : cls.Fields
 		{
+			if isThisGCClass and i == 0
+			{
+				assert(it.Value == GTypeInt)
+				dwn.Value.Push(GetExeInt(1))
+				continue
+			}
 			if it.Value is TypeClass or (it.Value is TypeArr and it.Value.Base is TypeClass)
 			{
 				dwn.Value.Push(createConstType(it.Value))
