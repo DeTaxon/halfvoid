@@ -228,7 +228,7 @@ LexBuilder := class extend TGCObject
 	}
 	GenerateMachine := !() -> WordDetermMachine^
 	{
-		if Nfas.Size() == 0 return void //TODO: assert? or throw
+		if Nfas.Size() == 0 return null
 		if Nfas.Size() == 1
 		{
 			//Nfas[0].PrintIt()

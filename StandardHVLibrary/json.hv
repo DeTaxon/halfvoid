@@ -55,8 +55,6 @@ JsonNode := class
 	IsArray := !() -> bool { return itType == jsonTypeArray}
 
 	GetStr := !() -> StringSpan { result = itValue }
-	GetInt := !() -> int { if itType != jsonTypeField throw new Exception("Node is not field") return ToInt(itValue.StrTmp())} //TODO: span to int
-	GetFloat := !() -> float { if itType != jsonTypeField throw new Exception("Node is not field") return ToFloat(itValue)}
 
 	"[]" := !(StringView^ walkPath) -> JsonNode^
 	{
@@ -76,7 +74,7 @@ JsonNode := class
 				}
 			}
 			if not found 
-				throw new Exception("Path not found")
+				return null
 		}
 		return iter
 	}
@@ -107,7 +105,7 @@ Json := class extend JsonNode
 {
 	tokens := List.{Tuple.{int,StringSpan}}
 
-	ParseString := !(char^ fileData,int size) -> void
+	ParseString := !(char^ fileData,int size) -> bool
 	{
 		jMachine := #Regexp(
 			"\"((\\\\ [^]) | [^\"\\\\])*\"",1,
@@ -125,26 +123,33 @@ Json := class extend JsonNode
 			tokens.Emplace(c,tok)
 		})
 		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != "{"
-			throw new Exception("Incorrect json")
+			return false
 		tokens.Pop()
-		checkRecord(this&)
+		if not checkRecord(this&)
+			return false
 		itType = jsonTypeRecord
+
+		return true
 	}
 
 		
-	checkRecord := !(JsonNode^ toCheck) -> void
+	checkRecord := !(JsonNode^ toCheck) -> bool
 	{
 		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "}")
 		{
 			if tokens[0].0 == 4 and tokens[0].1 == ","
 				tokens.Pop()
-			toCheck.itSub.Push(checkNode())
+			nd := checkNode()
+			if nd == null
+				return false
+			toCheck.itSub.Push(nd)
 		}
 		if tokens.Size() == 0
-			throw new Exception("Incorrect")
+			return false
 		tokens.Pop()
+		return true
 	}
-	checkArray := !(JsonNode^ toCheck) -> void
+	checkArray := !(JsonNode^ toCheck) -> bool
 	{
 		while tokens.Size() != 0 and not (tokens[0].0 == 4 and tokens[0].1 == "]")
 		{
@@ -154,24 +159,25 @@ Json := class extend JsonNode
 			toCheck.itSub.Push(newNode)
 		}
 		if tokens.Size() == 0
-			throw new Exception("Incorrect")
+			return false
 		tokens.Pop()
+		return true
 	}
 	checkNode := !() -> JsonNode^
 	{
 		thisNode := new JsonNode
 
 		if tokens.Size() == 0 or tokens[0].0 != 1
-			throw new Exception("Incorrect")
+			return null
 		thisNode.itKey = tokens[0].1[1..-1]
 		thisNode.haveName = true
 		tokens.Pop()
 
 		if tokens.Size() == 0 or tokens[0].0 != 4 or tokens[0].1 != ":" 
-			throw new Exception("Incorrect")
+			return null
 		tokens.Pop()
 		if tokens.Size() == 0
-			throw new Exception("Incorrect")
+			return null
 		return checkNode2(thisNode)
 	}
 	checkNode2 := !(JsonNode^ thisNode) -> JsonNode^
@@ -196,11 +202,13 @@ Json := class extend JsonNode
 			case "["
 				thisNode.itType = jsonTypeArray
 				tokens.Pop()
-				checkArray(thisNode)
+				if not checkArray(thisNode)
+					return null
 			case "{"
 				thisNode.itType = jsonTypeRecord
 				tokens.Pop()
-				checkRecord(thisNode)
+				if not checkRecord(thisNode)
+					return null
 			}
 		}
 		return thisNode

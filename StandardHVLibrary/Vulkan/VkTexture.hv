@@ -60,7 +60,8 @@ TVkTexture := class
 		itInstance.Funcs.vkCreateImage(itInstance.LogicalDevice,newImg&,null,itImg&)
 
 		if itImg == null
-			throw new Exception("Could not create texture")
+			return 0 //TODO moving away from exceptions
+			//throw new Exception("Could not create texture")
 
 		itInstance.Funcs.vkGetImageMemoryRequirements(itInstance.LogicalDevice,itImg,memInfp&)
 

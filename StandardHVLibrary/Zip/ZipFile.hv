@@ -70,6 +70,10 @@ ZipFile := class extend TGCObject
 	{
 		itr := zipRoot&
 		StringSpan(fileNameI).DivideStr("\\/",x ==> {
+
+			if itr == null
+				return void
+
 			for subs : itr.subFolders
 			{
 				if subs.objName == x
@@ -78,7 +82,7 @@ ZipFile := class extend TGCObject
 					return void
 				}
 			}
-			throw new Exception("File not found")
+			itr = null
 		})
 
 		return itr
