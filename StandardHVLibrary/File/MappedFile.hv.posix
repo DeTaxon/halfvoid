@@ -24,11 +24,11 @@ MappedFile := class extend TGCObject
 		point = null
 		Open(fileName,flg,itSize)
 	}
-	Open := !(char^ fileName) -> void
+	Open := !(char^ fileName) -> bool
 	{
-		Open(fileName,FILE_READ,0)
+		return Open(fileName,FILE_READ,0)
 	}
-	Open := !(char^ fileName,int flg, u64 itSize) -> void
+	Open := !(char^ fileName,int flg, u64 itSize) -> bool
 	{
 		posFlg := O_RDONLY
 		if flg != FILE_READ
@@ -38,9 +38,7 @@ MappedFile := class extend TGCObject
 
 		fileId = open(fileName,posFlg,511)
 		if fileId == -1
-		{
-			throw new Exception("can not open file")
-		}
+			return false
 	
 		fileSize = osFileSize(fileName)
 	
@@ -51,7 +49,7 @@ MappedFile := class extend TGCObject
 		if itSize != 0 and fileSize != itSize
 		{
 			if ftruncate(fileId,itSize) == -1
-				throw new Exception("can not resize file")
+				return false
 			fileSize = itSize
 		}
 		fileFlag = mmFlgs
@@ -60,15 +58,17 @@ MappedFile := class extend TGCObject
 		if mmRes&->{u64^}^ + 1 == 0
 		{
 			close(fileId)
-			throw new Exception("can not map file")
+			return false
 		}
 		point = mmRes->{u8^}
+
+		return true
 	}
-	ResizeFile := !(u64 newSize) -> void //TODO error check
+	ResizeFile := !(u64 newSize) -> bool
 	{
 		oldSize := fileSize
 		if ftruncate(fileId,newSize)  == -1
-			throw new Exception("can not resize file")
+			return false
 		fileSize = newSize
 
 		if newSize > oldSize
@@ -79,10 +79,11 @@ MappedFile := class extend TGCObject
 			if mmRes&->{u64^}^ + 1 == 0
 			{
 				close(fileId)
-				throw new Exception("can not map file")
+				return false
 			}
 			point = mmRes->{u8^}
 		}
+		return true
 	}
 	Get := !() -> u8^
 	{

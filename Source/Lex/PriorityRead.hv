@@ -64,7 +64,7 @@ PriorityBagOld := class
 
 				uPos := -2
 
-				ln.DivideStr(reg->{Regexp^},word ==> void { //TODO allow use reg without ^
+				ln.DivideStr(reg,word ==> void {
 					rawWord := word[1..-1]
 					
 					wordContainUniq := false

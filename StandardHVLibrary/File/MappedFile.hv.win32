@@ -26,11 +26,11 @@ MappedFile := class extend TGCObject
 		point = null
 		Open(fileName,flg,itSize)
 	}
-	Open := !(char^ fileName) -> void
+	Open := !(char^ fileName) -> bool
 	{
-		Open(fileName,FILE_READ,0)
+		return Open(fileName,FILE_READ,0)
 	}
-	Open := !(char^ fileName,int flg, u64 itSize) -> void
+	Open := !(char^ fileName,int flg, u64 itSize) -> bool
 	{
 		opTyp := GENERIC_READ
 		fFlg := OPEN_EXISTING
@@ -54,7 +54,7 @@ MappedFile := class extend TGCObject
 		hndl = CreateFileW(asW.GetPointer(),opTyp,fS,null,fFlg,FILE_ATTRIBUTE_NORMAL,null)
 		if hndl&->{u64^}^ == not_b 0U
 		{
-			throw new Exception("can not open file")
+			return false
 		}
 	
 		fileSize = itSize
@@ -65,11 +65,13 @@ MappedFile := class extend TGCObject
 		if mapId&->{u64^}^ == not_b 0U
 		{
 			CloseHandle(hndl)
-			throw new Exception("can not map file")
+			return false
 		}
 		accTyp := FILE_MAP_READ
 		if flg != FILE_READ accTyp = FILE_MAP_ALL_ACCESS
 		point = MapViewOfFile(mapId,accTyp,0,0,fileSize)->{u8^}
+
+		return true
 	}
 
 	Get := !() -> u8^
