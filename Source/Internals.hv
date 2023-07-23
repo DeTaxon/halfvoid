@@ -31,14 +31,6 @@ GCLambda := BoxClassTemplate^
 GCStackType := BoxClassTemplate^
 GCDeferLambda := BoxClassTemplate^
 
-ExceptionIException := Type^
-ExceptionEnterFunc := BoxFunc^
-ExceptionLeaveFunc := BoxFunc^
-ExceptionEnterTryCatch := BoxFunc^
-ExceptionLeaveTryCatch := BoxFunc^
-ExceptionThrowException := BoxFunc^
-ExceptionGetException := BoxFunc^
-
 ArrayViewTemplate := BoxClassTemplate^
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
 
@@ -130,14 +122,6 @@ InitInternals := !() -> void
 
 	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
 	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
-
-	ExceptionIException = intGetClass("IException").ItType
-	ExceptionEnterFunc = intGetFunc("internalEnterGCFunction")
-	ExceptionLeaveFunc = intGetFunc("internalLeaveGCFunction")
-	ExceptionEnterTryCatch = intGetFunc("internalEnterTryCatch")
-	ExceptionLeaveTryCatch = intGetFunc("internalLeaveTryCatch")
-	ExceptionThrowException = intGetFunc("internalThrowException")
-	ExceptionGetException = intGetFunc("internalGetException")
 
 	ArrayViewTemplate = intGetClassTemplate("TArrayView")
 	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")

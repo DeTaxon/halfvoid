@@ -270,14 +270,9 @@ CLib := class extend ModuleInterface
 				if it.End != ".dll"
 					continue
 				
-				try
-				{
-					dllFile = libFile.GetFile(it)
-					if dllFile != null //TODO exception or "return null" , i need to make up my mind
-						break
-				}catch(e)
-				{
-				}
+				dllFile = libFile.GetFile(it)
+				if dllFile != null
+					break
 			}
 			if dllFile != null
 			{
@@ -294,14 +289,9 @@ CLib := class extend ModuleInterface
 				if it.End != ".so"
 					continue
 				
-				try
-				{
-					dllFile = libFile.GetFile(it)
-					if dllFile != null //TODO exception or "return null" , i need to make up my mind
-						break
-				}catch(e)
-				{
-				}
+				dllFile = libFile.GetFile(it)
+				if dllFile != null
+					break
 			}
 			if dllFile != null
 			{

@@ -184,7 +184,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetLambdaCall(itm)?
 	return TryGetContinueBreak(itm)?
 	return TryGetDecoratorCall(itm)?
-	return TryGetTryCatch(itm)?
+	//return TryGetTryCatch(itm)?
 	return TryGetArrayCall(itm)?
 	return TryGetTrinary(itm)?
 	return TryGetSuffixCall(itm)?
