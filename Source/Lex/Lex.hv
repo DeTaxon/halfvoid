@@ -334,54 +334,59 @@ PopOutNode := !(Token^ what) -> void
 	what.Right = null
 }
 
-IsKeyword := !(@TT W) -> bool
+gKeywords := ![
+	"mod",
+	"return",
+	"for",
+	"if",
+	"else",
+	"while",
+	"do",
+	"delete",
+	"switch",
+	"case",
+	"class",
+	"extern",
+	"extend",
+	"at",
+	"defer",
+	"type",
+	"virtual",
+	"new",
+	"delete",
+	"thread_local",
+	"task_local",
+	"keep_name",
+	"packed_class",
+	"self_return",
+	"try",
+	"catch",
+	"throw",
+	"on_exception",
+	"yield",
+	"AppendClass",
+	"default",
+	"weak",
+	"poison",
+	"defer_tail",
+	"static",
+	"field",
+	"none",
+	"shr",
+	"shl",
+	"ref",
+	"inline",
+	"enum",
+	"#Reserve",
+	"#Copy"
+]
+
+IsKeyword := !(StringSpan W) -> bool
 {
-	switch W
+	for it : gKeywords
 	{
-		case "mod" return true
-		case "return" return true
-		case "for" return true
-		case "if" return true
-		case "else" return true
-		case "while" return true
-		case "do" return true
-		case "delete" return true
-		case "switch" return true
-		case "case" return true
-		case "class" return true
-		case "extern" return true
-		case "extend" return true
-		case "at" return true
-		case "defer" return true
-		case "type" return true
-		case "virtual" return true
-		case "new" return true
-		case "delete" return true
-		case "thread_local" return true
-		case "task_local" return true
-		case "keep_name" return true
-		case "packed_class" return true
-		case "self_return" return true
-		case "try" return true
-		case "catch" return true
-		case "throw" return true
-		case "on_exception" return true
-		case "yield" return true
-		case "AppendClass" return true
-		case "default" return true
-		case "weak" return true
-		case "poison" return true
-		case "defer_tail" return true
-		case "static" return true
-		case "field" return true
-		case "none" return true
-		case "shr" return true
-		case "shl" return true
-		case "ref" return true
-		case "inline" return true
-		case "enum" return true
-		case "#Reserve" return true
-		case "#Copy" return true
+		if W == it
+			return true
 	}
 
 	return false
