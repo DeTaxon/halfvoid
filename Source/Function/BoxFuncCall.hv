@@ -112,7 +112,8 @@ BoxFuncCall := class extend BoxExeObj
 						{
 							CurrentLine.ItToken.EmitError(c.Str())
 						}else{
-							throw new Exception(c.Str())
+							printf("%s",c.Str())
+							exit(-1)
 						}
 					}
 					if newObj.GetType() == par.ItType
@@ -157,7 +158,7 @@ BoxFuncCall := class extend BoxExeObj
 							CurrentLine.ItToken.EmitError("Passed class to c-variadic function, transfer function not found\n")
 						}else{
 							printf("Passed class to c-variadic function, transfer function not found\n")
-							throw new Exception("")
+							exit(-1)
 						}
 					}
 				}

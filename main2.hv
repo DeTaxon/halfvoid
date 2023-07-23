@@ -30,6 +30,7 @@ hmm := class
 cc2 := List.{TGCObject^}[100]
 main := !(char^[] args) -> int
 {
+	ccc 
 	printf("test %p\n",cc2[0]->VTable)
 	//printf("start\n")
 	//c := hmm

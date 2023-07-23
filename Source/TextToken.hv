@@ -59,7 +59,8 @@ Token := class
 				ln << "local var " << nv.Name << " as unknown type\n" 
 			}
 		}
-		throw new Exception(ln.GetString()) //todo memory
+		printf("%s",ln.GetString().Str())
+		exit(-1)
 	}
 }
 
