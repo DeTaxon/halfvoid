@@ -28,7 +28,6 @@ FuncInlineWrapper := class extend BoxExeObj
 		oldReturns := CurrentReturns
 		CurrentReturns = thisReturns&
 
-
 		vSize := fnc.InputVarNames.Size()
 		fTyp := fnc.GetType()->{TypeFunc^}
 
@@ -36,7 +35,7 @@ FuncInlineWrapper := class extend BoxExeObj
 		thisReturns.ResultRef = fTyp.ResultRef
 		thisReturns.ResultType = fTyp.ResultType
 
-		if not thisReturns.IsAutoResult
+		if not thisReturns.IsAutoResult and thisReturns.ResultType != GTypeVoid
 		{
 			rFnc := new FuncLocalParam(thisReturns.ResultType)
 			thisReturns.ResultVar = new MemVar(StringSpan("result"),rFnc)
@@ -100,10 +99,10 @@ FuncInlineWrapper := class extend BoxExeObj
 		{
 			resultCall = thisReturns.ResultVar.Value.CreateCall()
 		}else{
-			assert(false)
+			//assert(false)
 		}
 
-		if thisReturns.IsAutoResult
+		if thisReturns.IsAutoResult and ObjType != GTypeVoid
 		{
 			thisReturns.CheckReturnStep(fnc.ObjType->{TypeFunc^}) //TODO?
 
@@ -143,7 +142,7 @@ FuncInlineWrapper := class extend BoxExeObj
 	}
 	PrintPointUse := virtual !(Stream^ f) -> void
 	{
-		resultCall.PrintPointUse(f)
+		resultCall?.PrintPointUse(f)
 	}
 	PrintUse := virtual !(Stream^ f) -> void
 	{
@@ -161,6 +160,7 @@ FuncInlineWrapper := class extend BoxExeObj
 		//{
 		//	it.PrintDebugMeta(f)
 		//}
+
 		body.PrintDebugMeta(f)
 
 		GDebugFileId = oldId

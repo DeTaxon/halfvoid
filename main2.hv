@@ -15,27 +15,17 @@
 //		}
 //	}
 //}
-//SaveStack := #defer !() -> void
-//{
-//	stackSize := UnitStack.Size()
-//	defer {
-//	}
-//}
 
-hmm := class
+fnc2 := inline !() -> void
 {
-	tst := TGCObject[10]
+	printf("hello\n")
 }
 
-cc2 := List.{TGCObject^}[100]
 main := !(char^[] args) -> int
 {
-	ccc 
-	printf("test %p\n",cc2[0]->VTable)
-	//printf("start\n")
-	//c := hmm
-	//ZeroMem(c)
-	//printf("test %p\n",c.tst[0]->VTable)
+	fnc2()
+	fnc2()
+	fnc2()
 	return 0
 }
 
