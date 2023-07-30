@@ -75,7 +75,6 @@ BoxBlock := class extend BoxExeObj
 		GCInUseBefore = GCVarsInUse
 		defer GCVarsInUse = GCInUseBefore
 
-
 		iter := Token^
 		if down != null
 			iter = down.Down
@@ -95,27 +94,6 @@ BoxBlock := class extend BoxExeObj
 				iter = iter.Right
 				continue
 			}
-			// if iter.Down?.GetValue() == "while"
-			// {
-			// 	whileObj := TryParseWhile(iter)
-			// 	if whileObj != null
-			// 	{
-			// 		exeLines.Push(whileObj)
-			// 		iter = iter.Right
-			// 		continue
-			// 	}
-			// }
-			// if iter.Down?.GetValue() == "for"
-			// {
-			// 	forObj := GetForCycle(iter)
-			// 	assert(forObj != null)
-			// 	if forObj != null
-			// 	{
-			// 		exeLines.Push(forObj)
-			// 		iter = iter.Right
-			// 		continue
-			// 	}
-			// }
 
 			vr := TryParseVar(iter)
 
@@ -166,7 +144,7 @@ BoxBlock := class extend BoxExeObj
 		if exeLines.Size() == 0
 			return void
 
-		oldVal := GDebugScopeId
+				oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 

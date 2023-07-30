@@ -9,6 +9,15 @@ BoxReturn := class extend BoxExeObj
 		ObjType = GTypeVoid
 		ResultCall = rc
 
+		for it : UnitStack
+		{
+			if it is FuncInlineWrapper
+			{
+				//TODO GC vars in inline functions
+				return void
+			}
+		}
+
 		if GCVarsInUse != 0
 		{
 			objs := CheckExeDownList

@@ -16,17 +16,20 @@
 //	}
 //}
 
-fnc2 := inline !() -> int
+fnc2 := inline !(int x,List.{int} c) -> int
 {
-	printf("hello\n")
+	c.Push(100)
+	printf("hello %p %i\n",c&,c.Size())
 
-	return 12
+	return x + 12
 }
 
 main := !(char^[] args) -> int
 {
-	ccc := fnc2()
-	printf("world %i %i\n",ccc,fnc2())
+	lst := List.{int}
+	ccc := fnc2(15,lst)
+	printf("world %i\n",ccc)
+	printf("hey %p %i\n",lst&,lst.Size())
 	return 0
 }
 
