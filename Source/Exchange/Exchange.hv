@@ -335,6 +335,10 @@ FloatToIntExchange := class extend BoxExeObj
 	{
 		f^ << "%T" << resId
 	}
+	PrintDebugMeta := virtual !(Stream^ f) -> void
+	{
+		Down.PrintDebugMeta(f)
+	}
 }
 IntToFloatExchange := class extend BoxExeObj
 {
@@ -429,6 +433,10 @@ IntExchange := class extend BoxExeObj
 	PrintUse := virtual !(Stream^ f) -> void
 	{
 		f^ << "%T" << resId
+	}
+	PrintDebugMeta := virtual !(Stream^ f) -> void
+	{
+		Down.PrintDebugMeta(f)
 	}
 }
 

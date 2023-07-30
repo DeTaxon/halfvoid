@@ -14,7 +14,6 @@ BoxFuncCall := class extend BoxExeObj
 	ResultVar := ParamFunc^
 	ExtraWork := List.{BoxExeObj^}
 
-
 	this := !(BoxFunc^ fnc) -> void
 	{
 		callObj = fnc
@@ -439,6 +438,11 @@ BoxFuncCall := class extend BoxExeObj
 		}else{
 			PrintFuncResult(f)
 		}
+	}
+	PrintDebugMeta := virtual !(Stream^ f) -> void
+	{
+		downs[^].PrintDebugMeta(f)
+		ExtraWork[^].PrintDebugMeta(f)
 	}
 }
 BoxFuncComplexCall := class extend BoxFuncCall

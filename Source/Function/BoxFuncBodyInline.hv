@@ -156,10 +156,6 @@ FuncInlineWrapper := class extend BoxExeObj
 		{
 			GDebugFileId = bodyToken.Line.File.fileId
 		}
-		//for it : vars
-		//{
-		//	it.PrintDebugMeta(f)
-		//}
 
 		body.PrintDebugMeta(f)
 

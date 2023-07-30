@@ -16,16 +16,17 @@
 //	}
 //}
 
-fnc2 := inline !() -> void
+fnc2 := inline !() -> int
 {
 	printf("hello\n")
+
+	return 12
 }
 
 main := !(char^[] args) -> int
 {
-	fnc2()
-	fnc2()
-	fnc2()
+	ccc := fnc2()
+	printf("world %i %i\n",ccc,fnc2())
 	return 0
 }
 
