@@ -28,10 +28,34 @@ Stream := class extend TGCObject
 	}
 	"<<" := !(int value) -> ref Stream
 	{
-		intVal := char[64]
-		len := sprintf(intVal[0]&,"%i",value)
-		Write(intVal[0]&,len)
-		return this
+		if value == 0
+		{
+			Write("0",1)
+			return this
+		}else if value == (-2147483647) - 1 {
+			Write("-2147483648",11)
+		}else{
+			intVal := char[32]
+			isNegative := value < 0
+			if isNegative
+				value = -value
+			i := 30
+			while value != 0
+			{
+				remd := value mod 10
+				value = value div 10
+				intVal[i] = '0' + remd
+				i -= 1
+			}
+			if isNegative
+			{
+				intVal[i] = '-'
+				i -= 1
+			}
+
+			Write(intVal[i + 1]&,30 - i)
+			return this
+		}
 	}
 	"<<" := !(s64 value) -> ref Stream
 	{
