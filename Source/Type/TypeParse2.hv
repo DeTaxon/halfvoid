@@ -4,6 +4,27 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 }
 CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 {
+	if tk is TokenIndent
+	{	
+		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
+		if dwnTp == null
+		{
+			name := tk->{TokenIndent^}.Value
+			if resCnsts.Contain(name)
+			{
+				itm2 := resCnsts[name]
+				if itm2 is ConstType
+				{
+					dwnTp = itm2->{ConstType^}.Value
+				}
+			}
+		}
+		if dwnTp == null
+			return null
+		if tp != null and tp != dwnTp
+			return null
+		return dwnTp
+	}
 	if tk is TokenTemplateType
 	{
 		if tp == null
@@ -329,27 +350,6 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 			return dTyp.GetArray(num)
 		}
 		return null
-	}
-	if tk is TokenIndent
-	{	
-		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
-		if dwnTp == null
-		{
-			name := tk->{TokenIndent^}.Value
-			if resCnsts.Contain(name)
-			{
-				itm2 := resCnsts[name]
-				if itm2 is ConstType
-				{
-					dwnTp = itm2->{ConstType^}.Value
-				}
-			}
-		}
-		if dwnTp == null
-			return null
-		if tp != null and tp != dwnTp
-			return null
-		return dwnTp
 	}
 	if tk.Down?.Right?.GetValue() == "^"
 	{

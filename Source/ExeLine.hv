@@ -466,15 +466,29 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	consts := List.{BoxExeConstObj^}
 	consts.Push(GetConstType(toType))
 
-	callItem := BoxUnit^
-	GetItemGlobalFunc(StringSpan("->{}"), x ==>{
-		callItem = GetBestFunc(x,Objs,consts,true)
-		if callItem == null
-			return false
-		return true
-	})
+	found := false
+	for spc : CodeSpaces
+	{
+		if GetBestFunc(spc.ExchangeTableTemplates,Objs,consts,true) != null
+		{
+			found = true
+			break
+		}
+		if GetBestFunc(spc.ExchangeTableFuncs,Objs,consts,true) != null
+		{
+			found = true
+			break
+		}
+	}
+
+	//GetItemGlobalFunc(StringSpan("->{}"), x ==>{
+	//	callItem = GetBestFunc(x,Objs,consts,true)
+	//	if callItem == null
+	//		return false
+	//	return true
+	//})
 	oneGonnaOnly = false
-	return callItem != null
+	return found
 }
 
 CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
