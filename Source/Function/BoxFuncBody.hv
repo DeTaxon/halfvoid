@@ -115,7 +115,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if CurrentCodeSpace != null
 		{
-			CurrentCodeSpace.Functions[Name].Push(this&)
+			CurrentCodeSpace.AddFunction(Name,this&)
 		}
 	}
 	SetPrintName := virtual !(StringSpan nm) -> void

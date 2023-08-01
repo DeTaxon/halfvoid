@@ -52,7 +52,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		Name = name
 		if CurrentCodeSpace != null
 		{
-			CurrentCodeSpace.Templates[Name].Push(this&)
+			CurrentCodeSpace.AddTemplate(Name,this&)
 		}
 	}
 	ParseHeader := virtual !() -> void

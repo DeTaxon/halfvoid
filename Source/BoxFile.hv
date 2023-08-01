@@ -6,7 +6,23 @@ BoxCodeSpace := class
 	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
 	Globals := AVLMap.{StringSpan,List.{BoxUnit^}}
 
+	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
+	ExchangeTableTemplate := HybridQueue.{BoxUnit^,10}
+
 	Modules := List.{ModuleInterface^}
+
+	AddTemplate := !(StringSpan name, BoxFuncTemplate^ newTempl) -> void
+	{
+		Templates[name].Push(newTempl)
+		if name == "->{}"
+			ExchangeTableTemplate.Push(newTempl)
+	}
+	AddFunction := !(StringSpan name, BoxFunc^ newFnc) -> void
+	{
+		Functions[name].Push(newFnc)
+		if name == "->{}"
+			ExchangeTableFuncs.Push(newFnc)
+	}
 }
 
 

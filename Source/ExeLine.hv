@@ -432,27 +432,39 @@ makeFuncCall := !(BoxUnit^ callItem, CheckExeDownList Objs,List.{BoxExeConstObj^
 }
 
 oneGonnaOnly := task_local bool
-IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
+//IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
+//{
+//	if oneGonnaOnly
+//		return false
+//	oneGonnaOnly = true
+//
+//	callItem := BoxUnit^
+//	GetItemGlobal(name, x ==>{
+//		callItem = GetBestFunc(x,Objs,consts,true)
+//		if callItem == null
+//			return false
+//		return true
+//	})
+//	oneGonnaOnly = false
+//	return callItem != null
+//}
+
+isGonnaWorkCache := AVLMap.{Type^,AVLMap.{Type^,bool}}[2]
+
+IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 {
 	if oneGonnaOnly
 		return false
 	oneGonnaOnly = true
 
-	callItem := BoxUnit^
-	GetItemGlobal(name, x ==>{
-		callItem = GetBestFunc(x,Objs,consts,true)
-		if callItem == null
-			return false
-		return true
-	})
-	oneGonnaOnly = false
-	return callItem != null
-}
-IsGonnaWorkExchange := !(CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
-{
-	if oneGonnaOnly
-		return false
-	oneGonnaOnly = true
+	objType := obj.GetType()
+	isMem := obj.IsMem() ?: 1 : 0;
+
+	Objs := CheckExeDownList
+	Objs.Push(obj)
+
+	consts := List.{BoxExeConstObj^}
+	consts.Push(GetConstType(toType))
 
 	callItem := BoxUnit^
 	GetItemGlobalFunc(StringSpan("->{}"), x ==>{
@@ -540,12 +552,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 			{
 				thisCase = 0
 			}else{
-				objs12 := CheckExeDownList
-				objs12.Push(objs[i])
-				cnsts12 := List.{BoxExeConstObj^}
-				cnsts12.Push(GetConstType(toType))
 				
-				excCheck := IsGonnaWorkExchange(objs12,cnsts12)
+				excCheck := IsGonnaWorkExchange(objs[i],toType)
 				if excCheck
 				{
 					thisCase = 1000
