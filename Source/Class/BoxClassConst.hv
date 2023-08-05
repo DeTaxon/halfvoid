@@ -3,8 +3,10 @@ ClassConstValue := class extend BoxExeConstObj
 	ItType := Type^
 	Value := List.{BoxExeConstObj^}
 
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "{"
 		for it,i : Value
 		{
@@ -14,9 +16,9 @@ ClassConstValue := class extend BoxExeConstObj
 			assert(typ != null)
 			typ2 := NormalizeType(typ)
 
-			typ2.PrintType(f)
+			typ2.PrintType(ctx)
 			f^ << " "
-			it.PrintConst(f)
+			it.PrintConst(ctx)
 		}
 		f^ << "}"
 	}
@@ -30,9 +32,10 @@ ClassArray := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		typ2 := NormalizeType(ObjType.Base)
+		f := ctx.writeStream
 
 		f^ << "["
 		for it,i : Value
@@ -40,9 +43,9 @@ ClassArray := class extend BoxExeConstObj
 			if i > 0
 				f^ << ","
 
-			typ2.PrintType(f)
+			typ2.PrintType(ctx)
 			f^ << " "
-			it.PrintConst(f)
+			it.PrintConst(ctx)
 		}
 		f^ << "]"
 	}
@@ -56,9 +59,9 @@ ConstFuncPtr := class extend BoxExeConstObj
 		ObjType = fnc.GetType().GetPoint()
 		Func = fnc
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Func.PrintName(f)
+		Func.PrintName(ctx)
 	}
 }
 
@@ -71,9 +74,9 @@ ClassVTablePtrConst := class extend BoxExeConstObj
 		itClass = cls
 		ObjType = cls.VTableType.ItType.GetPoint()
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		itClass.VTableValue.Value.PrintResultObj(f,0,0)
+		itClass.VTableValue.Value.PrintResultObj(ctx,0,0)
 	}
 }
 
@@ -83,8 +86,8 @@ ZeroClassConst := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "zeroinitializer"
+		ctx.writeStream^ << "zeroinitializer"
 	}
 }

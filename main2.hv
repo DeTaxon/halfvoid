@@ -16,20 +16,15 @@
 //	}
 //}
 
-fnc2 := inline !(int x,List.{int} c) -> int
-{
-	c.Push(100)
-	printf("hello %p %i\n",c&,c.Size())
-
-	return x + 12
-}
-
 main := !(char^[] args) -> int
 {
-	lst := List.{int}
-	ccc := fnc2(15,lst)
-	printf("world %i\n",ccc)
-	printf("hey %p %i\n",lst&,lst.Size())
+	tstMem := PageMemory
+	tstMem.Create(4096,"rwe")
+
+	ptr := tstMem.GetPointer()
+
+	bt := ptr->{u8^}
+
 	return 0
 }
 

@@ -275,25 +275,26 @@ MemVar := class extend NamedVar
 	{
 		return Value.GetType()->{TypeFunc^}.ResultType
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(Value != null)
-		Value.PrintCode(f)
-		pDebugCode(f)
-		doInits(f)
+		Value.PrintCode(ctx)
+		pDebugCode(ctx)
+		doInits(ctx)
 	}
 	NotifyCaptureUse := virtual !() -> void
 	{
 		assert(Value != null)
 		Value.NotifyCaptureUse()
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		//Value.PrintDebugMeta(f)
-		pDebugMeta(f)
+		pDebugMeta(ctx)
 	}
-	pDebugCode := !(Stream^ f) -> void
+	pDebugCode := !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		if not (Value.IsDebuggable())
 			return void
 		if debugGetValue == null
@@ -302,9 +303,9 @@ MemVar := class extend NamedVar
 		if Value.IsValue()
 		{
 			// not suppose to happen
-			debugGetValue.PrintPre(f)
+			debugGetValue.PrintPre(ctx)
 		}else{
-			debugGetValue.PrintPointPre(f)
+			debugGetValue.PrintPointPre(ctx)
 		}
 		
 		tp := Value.GetVarType()
@@ -319,7 +320,7 @@ MemVar := class extend NamedVar
 		f^ << "(metadata "
 		inType := tp
 		inType = NormalizeType(inType)
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		if not Value.IsValue()
 			f^ << "*"
 		// if Value.IsRef()
@@ -327,21 +328,23 @@ MemVar := class extend NamedVar
 		f^ << " " 
 		if Value.IsValue()
 		{
-			debugGetValue.PrintUse(f)
+			debugGetValue.PrintUse(ctx)
 		}else{
-			debugGetValue.PrintPointUse(f)
+			debugGetValue.PrintPointUse(ctx)
 		}
 		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 	}
-	doInits := !(Stream^ f) -> void
+	doInits := !(LLVMWriteContext^ ctx) -> void
 	{
-		Inits[^].PrintDefaultUse(f)
+		Inits[^].PrintDefaultUse(ctx)
 	}
-	pDebugMeta := !(Stream^ f) -> void
+	pDebugMeta := !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		if not DebugMode
 			return void
-		Inits[^].PrintDebugMeta(f)
+		Inits[^].PrintDebugMeta(ctx)
 
 		if Value is in FuncLocalParam or Value is in FuncInputParam
 		{
@@ -372,7 +375,7 @@ MemVarRef := class extend MemVar
 		debId = GetNewId()
 	}
 
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 }
@@ -383,14 +386,14 @@ MemVarBorrowed := class extend MemVar
 	{
 		this."MemVar.this"(vName,clFunc)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		pDebugCode(f)
-		doInits(f)
+		pDebugCode(ctx)
+		doInits(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		pDebugMeta(f)
+		pDebugMeta(ctx)
 	}
 }
 MemVarBorrowedRef := class extend MemVarBorrowed
@@ -415,14 +418,14 @@ FuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(MemObj != null)
-		MemObj.PrintCode(f)
+		MemObj.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		MemObj.PrintDebugMeta(f)
+		MemObj.PrintDebugMeta(ctx)
 	}
 
 	Work := virtual !() -> void
@@ -446,14 +449,14 @@ TemplateFuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(MemObj != null)
-		MemObj.PrintCode(f)
+		MemObj.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		MemObj.PrintDebugMeta(f)
+		MemObj.PrintDebugMeta(ctx)
 	}
 
 	Work := virtual !() -> void

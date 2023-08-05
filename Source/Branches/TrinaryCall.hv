@@ -78,40 +78,42 @@ TrinaryOper := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		tp := onTrue.GetType()
 
-		ifStatement.PrintPre(f)
-		PrintBranch(f,ifStatement,trueLabel,falseLabel)
+		ifStatement.PrintPre(ctx)
+		PrintBranch(ctx,ifStatement,trueLabel,falseLabel)
 
-		trueLabel.PrintCode(f)
-		onTrue.PrintPre(f)
-		trueExitLabel.PrintCode(f)
-		endLabel.PrintGo(f)
+		trueLabel.PrintCode(ctx)
+		onTrue.PrintPre(ctx)
+		trueExitLabel.PrintCode(ctx)
+		endLabel.PrintGo(ctx)
 
-		falseLabel.PrintCode(f)
-		onFalse.PrintPre(f)
-		falseExitLabel.PrintCode(f)
-		endLabel.PrintGo(f)
+		falseLabel.PrintCode(ctx)
+		onFalse.PrintPre(ctx)
+		falseExitLabel.PrintCode(ctx)
+		endLabel.PrintGo(ctx)
 
-		endLabel.PrintLabelCreate(f)
+		endLabel.PrintLabelCreate(ctx)
 
 		f^ << "%T" << ItId << " = phi "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 
 		f^ << " ["
-		onTrue.PrintUse(f)
+		onTrue.PrintUse(ctx)
 		f^ << ","
-		trueExitLabel.PrintLabel(f)
+		trueExitLabel.PrintLabel(ctx)
 		f^ << "]"
 
 		f^ << ","
 
 		f^ << " ["
-		onFalse.PrintUse(f)
+		onFalse.PrintUse(ctx)
 		f^ << ","
-		falseExitLabel.PrintLabel(f)
+		falseExitLabel.PrintLabel(ctx)
 		f^ << "]"
 
 		if DebugMode
@@ -119,9 +121,9 @@ TrinaryOper := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << ItId
+		ctx.writeStream^ << "%T" << ItId
 	}
 }
 TrinaryOperMem := class extend BoxExeObj
@@ -157,41 +159,43 @@ TrinaryOperMem := class extend BoxExeObj
 	{
 		return true
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		tp := onTrue.GetType()
 
-		ifStatement.PrintPre(f)
-		PrintBranch(f,ifStatement,trueLabel,falseLabel)
+		ifStatement.PrintPre(ctx)
+		PrintBranch(ctx,ifStatement,trueLabel,falseLabel)
 
-		trueLabel.PrintCode(f)
-		onTrue.PrintPointPre(f)
-		trueExitLabel.PrintCode(f)
-		endLabel.PrintGo(f)
+		trueLabel.PrintCode(ctx)
+		onTrue.PrintPointPre(ctx)
+		trueExitLabel.PrintCode(ctx)
+		endLabel.PrintGo(ctx)
 
-		falseLabel.PrintCode(f)
-		onFalse.PrintPointPre(f)
-		falseExitLabel.PrintCode(f)
-		endLabel.PrintGo(f)
+		falseLabel.PrintCode(ctx)
+		onFalse.PrintPointPre(ctx)
+		falseExitLabel.PrintCode(ctx)
+		endLabel.PrintGo(ctx)
 
-		endLabel.PrintLabelCreate(f)
+		endLabel.PrintLabelCreate(ctx)
 
 		f^ << "%T" << ItId << " = phi "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << "*"
 
 		f^ << " ["
-		onTrue.PrintPointUse(f)
+		onTrue.PrintPointUse(ctx)
 		f^ << ","
-		trueExitLabel.PrintLabel(f)
+		trueExitLabel.PrintLabel(ctx)
 		f^ << "]"
 
 		f^ << ","
 
 		f^ << " ["
-		onFalse.PrintPointUse(f)
+		onFalse.PrintPointUse(ctx)
 		f^ << ","
-		falseExitLabel.PrintLabel(f)
+		falseExitLabel.PrintLabel(ctx)
 		f^ << "]"
 
 		if DebugMode
@@ -199,17 +203,17 @@ TrinaryOperMem := class extend BoxExeObj
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << ItId
+		ctx.writeStream^ << "%T" << ItId
 	}
 
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintUnrefObj(f,ItId,this&)
+		PrintUnrefObj(ctx,ItId,this&)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%TUnref" << ItId
+		ctx.writeStream^ << "%TUnref" << ItId
 	}
 }

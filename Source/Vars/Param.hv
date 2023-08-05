@@ -18,11 +18,11 @@ ParamFunc := class extend BoxFuncCommon
 	{
 		return false
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 
 	}
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 
 	}
@@ -39,16 +39,17 @@ ParamFunc := class extend BoxFuncCommon
 		assert(false)
 	}
 
-	PrintMakeZero := !(Stream^ f) -> void
+	PrintMakeZero := !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		pType := GetType()->{TypeFunc^}.ResultType
 
 		if IsInt(pType) or pType == GTypeBool
 		{
 			f^ << "store "
-			pType.PrintType(f)
+			pType.PrintType(ctx)
 			f^ << " 0, "
-			pType.PrintType(f)
+			pType.PrintType(ctx)
 			f^ << "* " << irName
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
@@ -57,7 +58,7 @@ ParamFunc := class extend BoxFuncCommon
 		{
 			miniId := GetNewId()
 			f^ << "%Void" << miniId << " = bitcast "
-			pType.PrintType(f)
+			pType.PrintType(ctx)
 			f^ << "* " << irName << " to i8*"
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId

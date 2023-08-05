@@ -1,7 +1,7 @@
 ModuleInterface := class
 {
 	Work := virtual !() -> void {}
-	PrintCode := virtual !(Stream^ f) -> void {}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void {}
 	GetType := virtual !(StringSpan name) -> Type^ { return null }
 	GetItem := virtual !(StringSpan name) -> BoxUnit^ { return null}
 	CreateInitPart := virtual !() -> void {}
@@ -79,13 +79,13 @@ CLib := class extend ModuleInterface
 			linkType = StringSpan("dynamic")
 	
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		for it : itFuncs
 		{
 			if it is in BoxFuncDeclare
 			{
-				it->{BoxFuncDeclare^}.PrintCode(f)
+				it->{BoxFuncDeclare^}.PrintCode(ctx)
 			}
 		}
 	}
@@ -318,10 +318,11 @@ CLib := class extend ModuleInterface
 
 BoxFileDummy := class extend BoxFile
 {
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if DebugMode //later
 		{
+			f := ctx.writeStream
 			f^ << "!" << fileId  << " = !DIFile(filename: \"" 
 			f^ << "DummyFile" << "\", directory: \""
 			f^ <<  "/" <<"\")\n"

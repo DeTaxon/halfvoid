@@ -297,17 +297,18 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		readyState.Await()
 	}
-	PrintName := virtual !(Stream^ f) -> void
+	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "@" << OutputName
+		ctx.writeStream^ << "@" << OutputName
 		if OutputName.Size() == 0
 			printf("bad\n")
 	}
 	
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if body == null
 			return void
+		f := ctx.writeStream
 
 		GDebugFuncId = 0
 		CurrentFunc = this&
@@ -322,9 +323,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		GDebugScopeId = GDebugFuncId
 
 		f^ << "define "
-		PrintResultType(f)
+		PrintResultType(ctx)
 		f^ << " @" << OutputName << "("
-		PrintInputTypes(f)
+		PrintInputTypes(ctx)
 		f^ << ")"
 		if DebugMode
 			f^ << " !dbg !" << GDebugFuncId
@@ -332,32 +333,32 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "{\n"
 
 
-		CapturedVarsTuple?.PrintAlloc(f)
+		CapturedVarsTuple?.PrintAlloc(ctx)
 		for it : regularVars
-			it.PrintAlloc(f)
-		ResultVar?.Value.PrintAlloc(f)
-		ResultVar?.PrintCode(f)
+			it.PrintAlloc(ctx)
+		ResultVar?.Value.PrintAlloc(ctx)
+		ResultVar?.PrintCode(ctx)
 
-		PrintStackData(f)
+		PrintStackData(ctx)
 
 
-		PrintYieldCreateVar(f)
-		PrintYieldCodeParamsGC(f)
+		PrintYieldCreateVar(ctx)
+		PrintYieldCodeParamsGC(ctx)
 
-		PrintYieldCodeGo(f)
+		PrintYieldCodeGo(ctx)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
-		gcArrayPtr?.PrintCode(f)
-		Params[^].PrintCode(f)
+		gcArrayPtr?.PrintCode(ctx)
+		Params[^].PrintCode(ctx)
 
-		gcSetPtr?.PrintDefaultUse(f)
+		gcSetPtr?.PrintDefaultUse(ctx)
 		
-		body.PrintCode(f)
+		body.PrintCode(ctx)
 
-		YieldPrintFinilize(f)
+		YieldPrintFinilize(ctx)
 
-		ExitLabel.PrintCode(f)
+		ExitLabel.PrintCode(ctx)
 
 		//CapturedVarsCleanup?.PrintDefaultUse(f)
 
@@ -375,11 +376,11 @@ BoxFuncBody := class extend BoxFuncCommon
 				tmpList := CheckExeDownList
 				cl := BoxFuncCall(ResultVar.Value,tmpList)
 
-				cl.PrintPre(f)
+				cl.PrintPre(ctx)
 				f^ << "ret "
-				cl.GetType().PrintType(f)
+				cl.GetType().PrintType(ctx)
 				f^ << " "
-				cl.PrintUse(f)
+				cl.PrintUse(ctx)
 				if DebugMode
 					f^ << " , !dbg !" << GDebugLineCallId
 				f^ <<"\n"
@@ -397,16 +398,16 @@ BoxFuncBody := class extend BoxFuncCommon
 				GDebugFileId = bdy.Line.File.fileId
 			}
 
-			funcLine.PrintDebugMeta(f)
-			body.PrintDebugMeta(f)
-			Params[^].PrintDebugMeta(f)
-			ResultVar?.PrintDebugMeta(f)
+			funcLine.PrintDebugMeta(ctx)
+			body.PrintDebugMeta(ctx)
+			Params[^].PrintDebugMeta(ctx)
+			ResultVar?.PrintDebugMeta(ctx)
 
 			f^ << "!" << GDebugFuncId << " = distinct !DISubprogram(name:\""
-			PrintName(f)
+			PrintName(ctx)
 			f^ << "\","
 			f^ << "linkageName:\""
-			PrintName(f)
+			PrintName(ctx)
 			f^ << "\","
 			f^ << "scope: !" << GDebugFileId << " , file: !" << GDebugFileId
 			f^ << ",type: !" << GetType().MetaId
@@ -422,7 +423,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			//	f << ", templateParams:!"<<tmplId
 			f^ << ")\n"
 
-			//inlineFunctions[^].PrintDebugMeta(f)
+			//inlineFunctions[^].PrintDebugMeta(ctx)
 
 			GDebugFileId = oldFileId
 		}

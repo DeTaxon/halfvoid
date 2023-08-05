@@ -34,9 +34,9 @@ MetaFieldsHolder := class extend BoxMetaObj
 		ObjType = GTypeVoid
 	}
 
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		objRes.PrintCode(f)
+		objRes.PrintCode(ctx)
 	}
 
 	IsMetaIteratable := virtual !() -> bool 

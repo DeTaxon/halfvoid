@@ -23,17 +23,17 @@ FuncInputParam := class extend ParamFunc
 	{
 		return isRef
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 		if GetType()->{TypeFunc^}.ResultType != GTypeVoid
 		{
-			f^ <<  irName
+			ctx.writeStream^ <<  irName
 		}
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	NotifyMemUse := virtual !() -> void
@@ -90,7 +90,7 @@ FuncInputParam := class extend ParamFunc
 
 		CurrentFunc = oldFnc
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 	IsValue := virtual !() -> bool
@@ -124,9 +124,9 @@ FuncInputParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ <<  irName
+		ctx.writeStream^ <<  irName
 	}
 }
 
@@ -151,27 +151,22 @@ ParamLoadObj := class extend BoxExeObj
 
 	NotifyCaptureUse := virtual !() -> void { VarPtr.NotifyCaptureUse() }
 
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		CallObj.PrintPre(f)
+		CallObj.PrintPre(ctx)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		CallObj.PrintUse(f)
+		CallObj.PrintUse(ctx)
 	}
 
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		if CallObj == null
-		{
-			printf("hm %p\n",this&)
-			assert(false)
-		}
-		CallObj.PrintPointPre(f)
+		CallObj.PrintPointPre(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		CallObj.PrintPointUse(f)
+		CallObj.PrintPointUse(ctx)
 	}
 }
 
@@ -197,10 +192,10 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		return true
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		LocalParamBackup.PrintCode(f)
-		SelfSet.PrintDefaultUse(f)
+		LocalParamBackup.PrintCode(ctx)
+		SelfSet.PrintDefaultUse(ctx)
 	}
 	IsValue := virtual !() -> bool
 	{
@@ -224,8 +219,8 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		return LocalParamBackup.IsDebuggable()
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		LocalParamBackup.PrintDebugLine(f)
+		LocalParamBackup.PrintDebugLine(ctx)
 	}
 }

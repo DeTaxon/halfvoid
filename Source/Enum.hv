@@ -79,12 +79,12 @@ BoxEnumValue := class extend BoxExeObj
 		ObjType = itType
 		ItValue = itValue
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << ItValue
+		ctx.writeStream^ << ItValue
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << ItValue
+		ctx.writeStream^ << ItValue
 	}
 }

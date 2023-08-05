@@ -33,34 +33,34 @@ PackedExeObj := class extend BoxExeObj
 	{
 		return mainCall.IsMem()
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if IsMem()
 		{
-			PrintPointPre(f)
+			PrintPointPre(ctx)
 		}else{
-			PrintPre(f)
+			PrintPre(ctx)
 		}
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		preCalls[^].PrintDefaultUse(f)
-		mainCall.PrintPointPre(f)
-		postCalls[^].PrintDefaultUse(f)
+		preCalls[^].PrintDefaultUse(ctx)
+		mainCall.PrintPointPre(ctx)
+		postCalls[^].PrintDefaultUse(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		mainCall.PrintPointUse(f)
+		mainCall.PrintPointUse(ctx)
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		preCalls[^].PrintDefaultUse(f)
-		mainCall.PrintPre(f)
-		postCalls[^].PrintDefaultUse(f)
+		preCalls[^].PrintDefaultUse(ctx)
+		mainCall.PrintPre(ctx)
+		postCalls[^].PrintDefaultUse(ctx)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		mainCall.PrintUse(f)
+		mainCall.PrintUse(ctx)
 	}
 
 }

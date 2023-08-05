@@ -7,16 +7,18 @@ BoxFuncDeclare := class extend BoxFuncCommon
 		itName = fName
 	}
 
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "declare "
-		PrintResultType(f)
+		PrintResultType(ctx)
 		f^ << " @" << itName << "("
-		PrintInputTypes(f)
+		PrintInputTypes(ctx)
 		f^ << ")\n"
 	}
-	PrintName := virtual !(Stream^ f) -> void
+	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "@" << itName
+		ctx.writeStream^ << "@" << itName
 	}
 }

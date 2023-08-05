@@ -135,30 +135,32 @@ BoxBlock := class extend BoxExeObj
 			UnitStack.Pop()
 		}
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintCode(f)
+		PrintCode(ctx)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if exeLines.Size() == 0
 			return void
 
-				oldVal := GDebugScopeId
+		oldVal := GDebugScopeId
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 
-		simpleVars[^].PrintCode(f)
-		gcVars[^].PrintCode(f)
+		simpleVars[^].PrintCode(ctx)
+		gcVars[^].PrintCode(ctx)
 
-		exeLines[^].PrintCode(f)
+		exeLines[^].PrintCode(ctx)
 
-		quitLabel?.PrintCode(f)
+		quitLabel?.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if exeLines.Size() == 0
 			return void
+
+		f := ctx.writeStream
 		f^ << "!" << MetaId << " = !DILexicalBlock(scope: !" 
 		f^ << GDebugScopeId << ", file: !" << GDebugFileId
 		if ItLine != null
@@ -171,9 +173,9 @@ BoxBlock := class extend BoxExeObj
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 		
-		simpleVars[^].PrintDebugMeta(f)
-		gcVars[^].PrintDebugMeta(f)
-		exeLines[^].PrintDebugMeta(f)
+		simpleVars[^].PrintDebugMeta(ctx)
+		gcVars[^].PrintDebugMeta(ctx)
+		exeLines[^].PrintDebugMeta(ctx)
 	}
 	GetQuitLabel := !() -> BoxLabel^
 	{

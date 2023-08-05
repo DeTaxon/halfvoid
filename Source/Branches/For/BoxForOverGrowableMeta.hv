@@ -113,11 +113,11 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 
 	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
 	{
-		PrintCode(f)
+		PrintCode(ctx)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		dwnObjs[^].MetaObj.PrintDefaultUse(f)
+		dwnObjs[^].MetaObj.PrintDefaultUse(ctx)
 
 		for i : blocks.Size()
 		{
@@ -125,17 +125,17 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 			{
 				for it : middleVars[i]
 				{
-					it.PrintCode(f)
+					it.PrintCode(ctx)
 				}
 			}
 
-			blocks[i].PrintCode(f)
+			blocks[i].PrintCode(ctx)
 		}
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		middleVars[^][^].PrintDebugMeta(f)
-		dwnObjs[^].MetaObj.PrintDebugMeta(f)
-		blocks[^].PrintDebugMeta(f)
+		middleVars[^][^].PrintDebugMeta(ctx)
+		dwnObjs[^].MetaObj.PrintDebugMeta(ctx)
+		blocks[^].PrintDebugMeta(ctx)
 	}
 }

@@ -103,8 +103,10 @@ TryGetObj := class extend BoxExeObj
 		JumpFrame.PopulateCalls()
 	}
 
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "%Frm" << ItId << " = alloca [5 x i8*]\n" //todo! create local var void^[5], and maybe use BuiltinSetJump
 
   		f^ << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
@@ -118,29 +120,28 @@ TryGetObj := class extend BoxExeObj
 		
 		f^ << "%B" << ItId << "= icmp eq i32 %T" << ItId << " , 0\n"
 		f^ << "br i1 %B" << ItId << ", label "
-		StartLabel.PrintLabel(f)
+		StartLabel.PrintLabel(ctx)
 		f^ << " , label "
-		ExceptionLabel.PrintLabel(f)
+		ExceptionLabel.PrintLabel(ctx)
 		f^ << "\n"
 
-		StartLabel.PrintCode(f)
+		StartLabel.PrintCode(ctx)
 
-		EnterCall.PrintDefaultUse(f)
-		DownBlock.PrintCode(f)
-		LeaveCall.PrintDefaultUse(f)
-		ExitLabel.PrintGo(f)
+		EnterCall.PrintDefaultUse(ctx)
+		DownBlock.PrintCode(ctx)
+		LeaveCall.PrintDefaultUse(ctx)
+		ExitLabel.PrintGo(ctx)
 
-		ExceptionLabel.PrintCode(f)
-		ExcpVarCall?.PrintCode(f)
-		ExceptionBlock.PrintCode(f)
-		//ExitLabel.PrintGo(f)
+		ExceptionLabel.PrintCode(ctx)
+		ExcpVarCall?.PrintCode(ctx)
+		ExceptionBlock.PrintCode(ctx)
 
-		ExitLabel.PrintCode(f)
+		ExitLabel.PrintCode(ctx)
 	}
 
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		DownBlock.PrintDebugMeta(f)
-		ExceptionBlock.PrintDebugMeta(f)
+		DownBlock.PrintDebugMeta(ctx)
+		ExceptionBlock.PrintDebugMeta(ctx)
 	}
 }

@@ -96,31 +96,33 @@ BoxIfTrueOnly := class extend BoxExeObj
 		if TrueEndLabel == null
 			TrueEndLabel = new BoxLabel()
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
 		GDebugLineCallId = IfLine.MetaId
 
-		Val.PrintPre(f)
+		f := ctx.writeStream
+
+		Val.PrintPre(ctx)
 
 		f^ << "br i1 "
-		Val.PrintUse(f)
+		Val.PrintUse(ctx)
 		f^ << ", label "
-		TrueWorked.PrintLabel(f)
+		TrueWorked.PrintLabel(ctx)
 		f^ << ", label "
-		TrueEndLabel.PrintLabel(f)
+		TrueEndLabel.PrintLabel(ctx)
 		f^ << "\n"
 
-		TrueWorked.PrintCode(f)
+		TrueWorked.PrintCode(ctx)
 
-		OnTrue.PrintCode(f)
-		TrueEndLabel.PrintCode(f)
+		OnTrue.PrintCode(ctx)
+		TrueEndLabel.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		IfLine.PrintDebugMeta(f)
-		OnTrue?.PrintDebugMeta(f)
+		IfLine.PrintDebugMeta(ctx)
+		OnTrue?.PrintDebugMeta(ctx)
 	}
 }
 BoxIfFull := class extend BoxExeObj
@@ -150,36 +152,38 @@ BoxIfFull := class extend BoxExeObj
 		if FalsePath == null
 			FalsePath = new BoxLabel()
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
 		GDebugLineCallId = IfLine.MetaId
 
-		Val.PrintPre(f)
+		f := ctx.writeStream
+
+		Val.PrintPre(ctx)
 
 		f^ << "br i1 "
-		Val.PrintUse(f)
+		Val.PrintUse(ctx)
 		f^ << ", label "
-		TruePath.PrintLabel(f)
+		TruePath.PrintLabel(ctx)
 		f^ << ", label "
-		FalsePath.PrintLabel(f)
+		FalsePath.PrintLabel(ctx)
 		f^ << "\n"
 
-		TruePath.PrintCode(f)
-		OnTrue.PrintCode(f)
-		EndPath.PrintGo(f)
+		TruePath.PrintCode(ctx)
+		OnTrue.PrintCode(ctx)
+		EndPath.PrintGo(ctx)
 
-		FalsePath.PrintCode(f)
-		OnFalse.PrintCode(f)
-		EndPath.PrintGo(f)
+		FalsePath.PrintCode(ctx)
+		OnFalse.PrintCode(ctx)
+		EndPath.PrintGo(ctx)
 		
-		EndPath.PrintCode(f)
+		EndPath.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		IfLine.PrintDebugMeta(f)
-		OnTrue.PrintDebugMeta(f)
-		OnFalse.PrintDebugMeta(f)
+		IfLine.PrintDebugMeta(ctx)
+		OnTrue.PrintDebugMeta(ctx)
+		OnFalse.PrintDebugMeta(ctx)
 	}
 }

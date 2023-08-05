@@ -300,29 +300,31 @@ FieldPath := class extend BoxFuncCommon
 	{
 		return true
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
-		f^ << "%T" << resId 
+		ctx.writeStream^ << "%T" << resId 
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		tp := lst[0].GetType()
+
 		assert(tp is TypeClass)
 		cls := tp->{TypeClass^}.ToClass
-		lst[0].PrintPointPre(f)
+		lst[0].PrintPointPre(ctx)
 		f^ << "%T" << resId << " = getelementptr "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << ","
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << "* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << " , i32 0, i32 " << GetIndex(cls)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId

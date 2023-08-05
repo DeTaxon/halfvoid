@@ -38,30 +38,31 @@ FuncLocalParam := class extend ParamFunc
 		this&->{FuncLocalParamCaptured^}.DoCapture()
 		assert(this& is FuncLocalParamCaptured)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintMakeZero(f)
-		Inits[^].PrintDefaultUse(f)
+		PrintMakeZero(ctx)
+		Inits[^].PrintDefaultUse(ctx)
 	}
 
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		pType := GetType()->{TypeFunc^}.ResultType
+		f := ctx.writeStream
 
 		f^ << irName << " = alloca "
-		pType.PrintType(f)
+		pType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
-		f^ << irName 
+		ctx.writeStream^ << irName 
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -98,9 +99,9 @@ FuncLocalParam := class extend ParamFunc
 	{
 		return true
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << irName
+		ctx.writeStream^ << irName
 	}
 	
 }
@@ -129,9 +130,9 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		RezeroCall = callFunc.CreateCall(objs)
 
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		RezeroCall?.PrintDefaultUse(f)
+		RezeroCall?.PrintDefaultUse(ctx)
 	}
 
 	GetTupleVar := virtual !() -> BoxExeObj^
@@ -172,7 +173,7 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 		return true
 	}
 
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 }

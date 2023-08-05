@@ -17,14 +17,14 @@ SwitchCase := class
 		nopeLabel = new BoxLabel()
 	}
 
-	PrintIt := !(Stream^ f , BoxLabel^ qLabel) -> void
+	PrintIt := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
 	{
-		cmpCheck.PrintPre(f)
-		PrintBranch(f,cmpCheck,useNode,nopeLabel)
-		useNode.PrintCode(f)
-		caseBody?.PrintCode(f)
-		qLabel.PrintGo(f)
-		nopeLabel.PrintCode(f)
+		cmpCheck.PrintPre(ctx)
+		PrintBranch(ctx,cmpCheck,useNode,nopeLabel)
+		useNode.PrintCode(ctx)
+		caseBody?.PrintCode(ctx)
+		qLabel.PrintGo(ctx)
+		nopeLabel.PrintCode(ctx)
 	}
 }
 BoxSwitch := class extend BoxExeObj
@@ -145,26 +145,26 @@ BoxSwitch := class extend BoxExeObj
 			checkCase()
 		}
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintCode(f)
+		PrintCode(ctx)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		mainVar.PrintCode(f)
+		mainVar.PrintCode(ctx)
 
 		for it : caseNodes
 		{
-			it.PrintIt(f,quitNode)
+			it.PrintIt(ctx,quitNode)
 		}
-		deafultNode?.PrintCode(f)
-		quitNode.PrintCode(f)
+		deafultNode?.PrintCode(ctx)
+		quitNode.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		for it : caseNodes
-			it.caseBody?.PrintDebugMeta(f)
-		deafultNode?.PrintDebugMeta(f)
+			it.caseBody?.PrintDebugMeta(ctx)
+		deafultNode?.PrintDebugMeta(ctx)
 	}
 
 }

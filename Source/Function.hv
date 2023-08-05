@@ -121,25 +121,27 @@ BoxLabel := class
 		id = labelIdIterator
 		labelIdIterator += 1
 	}
-	PrintLabel := virtual !(Stream^ f) -> void
+	PrintLabel := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%L" << id
+		ctx.writeStream^ << "%L" << id
 	}
-	PrintGo := virtual !(Stream^ f) -> void
+	PrintGo := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "br label %L" << id
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintGo(f)
-		PrintLabelCreate(f)
+		PrintGo(ctx)
+		PrintLabelCreate(ctx)
 	}
-	PrintLabelCreate := virtual !(Stream^ f) -> void
+	PrintLabelCreate := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "L" << id << ":\n"
+		ctx.writeStream^ << "L" << id << ":\n"
 	}
 }
 

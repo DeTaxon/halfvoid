@@ -20,17 +20,18 @@ BuiltInBoolNot := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeBool],GTypeBool))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPre(f)
+		lst[0].PrintPre(ctx)
 		
+		f := ctx.writeStream
 		tFunc := GetType()->{TypeFunc^}
 		tp := tFunc.Params[0].ItType
 
 		f^ << "%T" << resId << " = xor " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ", 1"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -44,21 +45,22 @@ BuildInSpaceShipBool := class extend BoxFuncCommon
 		tp := GTypeBool
 		SetType(GetFuncType(![tp,tp],GTypeInt))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		tp := this.GetType()->{TypeFunc^}.Params[0].ItType
-		lst[0].PrintPre(f)
-		lst[1].PrintPre(f)
+		lst[0].PrintPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		f^ << "%Xr" << resId << " = xor i1 " 
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " , "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << "\n"
 
 
 		f^ << "%Possible" << resId << " = select i1 "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << " , i32 1, i32 -1\n"
 
 		f^ << "%T" << resId << " = select i1 %Xr" << resId << " , i32 0, i32 %Possible" << resId << "\n"

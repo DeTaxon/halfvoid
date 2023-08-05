@@ -32,11 +32,11 @@ BoxReturn := class extend BoxExeObj
 			cleanupCall = GFuncGCSetNullArray.CreateCall(objs)
 		}
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ResultCall?.PrintDefaultUse(f)
-		cleanupCall?.PrintDefaultUse(f)
-		EndLabel.PrintGo(f)
+		ResultCall?.PrintDefaultUse(ctx)
+		cleanupCall?.PrintDefaultUse(ctx)
+		EndLabel.PrintGo(ctx)
 	}
 }
 
@@ -59,12 +59,12 @@ BoxYield := class extend BoxReturn
 		toThis = new BoxLabel()
 	}
 
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ResultCall?.PrintDefaultUse(f)
-		callSet.PrintDefaultUse(f)
-		EndLabel.PrintGo(f)
-		toThis.PrintCode(f)
+		ResultCall?.PrintDefaultUse(ctx)
+		callSet.PrintDefaultUse(ctx)
+		EndLabel.PrintGo(ctx)
+		toThis.PrintCode(ctx)
 	}
 	GetLabel := virtual !() -> BoxLabel^
 	{
@@ -173,8 +173,8 @@ ReturnHalfState := class extend BoxExeObj
 		return callObj.GetType()
 	}
 
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		returnObj.PrintDefaultUse(f)
+		returnObj.PrintDefaultUse(ctx)
 	}
 }

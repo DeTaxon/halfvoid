@@ -116,17 +116,18 @@ BuiltInVecElementRef := class extend BoxFuncCommon
 		SetType(tp)
 		vecInd = ind
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		typ := lst[0].GetType()
-		lst[0].PrintPointPre(f)
+		lst[0].PrintPointPre(ctx)
 
 		f^ << "%T" << resId << " = getelementptr "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " , "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << "* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << " , i32 0, i32 " << vecInd
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -146,17 +147,19 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 			vecSize = vs
 		}
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		typ := lst[0].GetType()
-		lst[0].PrintPre(f)
+
+		lst[0].PrintPre(ctx)
 
 		f^ << "%T" << resId << " = shufflevector "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " , "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " zeroinitializer ," 
 		f^ << "<" << vecSize << " x i32 > <"
 		for i : vecSize
@@ -218,18 +221,20 @@ BuiltInVecScalarMult := class extend BoxFuncCommon
 	{
 		SetType(tp)
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		typ := lst[0].GetType()
 		siz := GetVecXTypeSize(typ)
-		lst[^].PrintPre(f)
+
+		lst[^].PrintPre(ctx)
 
 		f^ << "%Temp" << resId << " = fmul "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " , "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << "\n"
 		f^ << "%T" << resId << " = call fast float @llvm.vector.reduce.fadd.f32.v" 
 		f^ << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << resId << ")"
@@ -247,27 +252,29 @@ BuiltInVecOperOnFloat := class extend BoxFuncCommon
 		llvmOper = itOper
 		SetType(tp)
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		typ := lst[0].GetType()
+
 		typBase := lst[1].GetType()
 		siz := GetVecXTypeSize(typ)
-		lst[^].PrintPre(f)
+		lst[^].PrintPre(ctx)
 
 		f^ << "%TempT" << resId << " =  insertelement "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " undef, "
-		typBase.PrintType(f)
+		typBase.PrintType(ctx)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << " , i32 0"
 		f^ << "\n"
 
 		f^ << "%Temp" << resId << " = shufflevector "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " %TempT" << resId
 		f^ << ", "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " undef , <" << siz << " x i32> <"
 		for i : siz
 		{
@@ -278,9 +285,9 @@ BuiltInVecOperOnFloat := class extend BoxFuncCommon
 		f^ << ">\n"
 
 		f^ << "%T" << resId << " = " << llvmOper << " "
-		typ.PrintType(f)
+		typ.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " , " << "%Temp" << resId
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId

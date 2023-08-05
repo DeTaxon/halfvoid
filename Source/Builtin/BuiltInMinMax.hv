@@ -10,34 +10,35 @@ BuiltInMinMaxInt := class extend BoxFuncCommon
 		isMin = inIsMin
 		SetType(GetFuncType(![tp,tp],tp))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		tp := GetType()->{TypeFunc^}.ResultType
-		lst[0].PrintPre(f)
-		lst[1].PrintPre(f)
+		lst[0].PrintPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		sign := "u"
 		if isSign 
 			sign = "s"
 		
 		f^ << "%T" << resId << " = call "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " @llvm."<< sign
 		if isMin{
 			f^ << "min."
 		}else{
 			f^ << "max."
 		}
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << "( "
 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ","
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -68,14 +69,15 @@ BuiltInMinMaxFloat := class extend BoxFuncCommon
 		isMin = inIsMin
 		SetType(GetFuncType(![tp,tp],tp))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		tp := GetType()->{TypeFunc^}.ResultType
-		lst[0].PrintPre(f)
-		lst[1].PrintPre(f)
+		lst[0].PrintPre(ctx)
+		lst[1].PrintPre(ctx)
 		
 		f^ << "%T" << resId << " = call "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " @llvm."
 		if isMin{
 			f^ << "minnum."
@@ -91,13 +93,13 @@ BuiltInMinMaxFloat := class extend BoxFuncCommon
 		}
 		f^ << "( "
 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ","
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -134,8 +136,10 @@ CreateBuiltInMinMax := !() -> void
 	})
 }
 
-PrintBuildInMinMax := !(Stream^ f) -> void
+PrintBuildInMinMax := !(LLVMWriteContext^ ctx) -> void
 {
+	f := ctx.writeStream
+
 	for it : !["i8","i16","i32","i64"]
 	{
 		f^ << "declare " << it << "  @llvm.smin."<<it<<"("<<it<<" %a,"<<it<<"  %b) #0\n"

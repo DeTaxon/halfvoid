@@ -27,16 +27,18 @@ BuiltInPointSpaceship := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeS64)) //TODO arch 
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
 
 		f^ << "%TA" << resId << " = ptrtoint i8* "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " to i64\n"
 
 		f^ << "%TB" << resId << " = ptrtoint i8* "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << " to i64\n"
 
 		f^ << "%T" << resId << " = sub i64 %TA" << resId << " , %TB" << resId
@@ -109,9 +111,11 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
 		
 		tFunc := GetType()->{TypeFunc^}
 		tp := tFunc.Params[0].ItType
@@ -124,15 +128,15 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 		}
 
 		f^ << "%T" << resId << " = getelementptr " 
-		bs.PrintType(f)
+		bs.PrintType(ctx)
 		f^ << " , "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << " ,  "
-		lst[1].GetType().PrintType(f)
+		lst[1].GetType().PrintType(ctx)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"

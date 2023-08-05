@@ -1,0 +1,4 @@
+LLVMWriteContext := class
+{
+	writeStream := Stream^
+}

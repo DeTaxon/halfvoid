@@ -78,8 +78,9 @@ BoxRawData := class extend BoxExeObj
 
 		ObjType = GTypeVoidP
 	}
-	PrintGlobal := virtual !(Stream^ f) -> void
+	PrintGlobal := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		ValueSize := ItBlob.Size()
 		Value := ItBlob.GetPointer()->{u8^}
 
@@ -92,13 +93,13 @@ BoxRawData := class extend BoxExeObj
 		}
 		f^ << "]\n"
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ValueSize := ItBlob.Size()
-		f^ << "getelementptr inbounds ([" << ValueSize << " x i8] , [ " << ValueSize << " x i8]* @File" << ItId <<" , i32 0, i32 0)"
+		ctx.writeStream^ << "getelementptr inbounds ([" << ValueSize << " x i8] , [ " << ValueSize << " x i8]* @File" << ItId <<" , i32 0, i32 0)"
 	}
 
 	GetSize := !() -> int
@@ -141,24 +142,24 @@ EmbFile := class
 	{
 		return data.GetSize()
 	}
-	PrintGlobal := !(Stream^ f) -> void
+	PrintGlobal := !(LLVMWriteContext^ ctx) -> void
 	{
-		data.PrintGlobal(f)
+		data.PrintGlobal(ctx)
 	}
 }
 
-PrintEmbeddedFiles := !(Stream^ f) -> void
+PrintEmbeddedFiles := !(LLVMWriteContext^ ctx) -> void
 {
 	for it : embeddedFiles
 	{
-		it.PrintGlobal(f)
+		it.PrintGlobal(ctx)
 	}
 	for it : embeddedShaders
 	{
-		it.PrintGlobal(f)
+		it.PrintGlobal(ctx)
 	}
 	for it : blobDatas
 	{
-		it.PrintGlobal(f)
+		it.PrintGlobal(ctx)
 	}
 }

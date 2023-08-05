@@ -38,11 +38,13 @@ BoxClass := class extend BoxUnit
 		ItName = name
 	}
 
-	printFieldsPath := !(Stream^ f, bool^ needComma) -> void
+	printFieldsPath := !(LLVMWriteContext^ ctx, bool^ needComma) -> void
 	{
+		f := ctx.writeStream
+
 		for it : Parents
 		{
-			it.printFieldsPath(f,needComma)
+			it.printFieldsPath(ctx,needComma)
 		}
 		for it : FieldsPath
 		{
@@ -51,16 +53,18 @@ BoxClass := class extend BoxUnit
 			needComma^ = true
 			typ := it.Field.Value
 			typ = NormalizeType(typ)
-			typ.PrintType(f)
+			typ.PrintType(ctx)
 		}
 	}
 
 	StartParseBody := virtual !() -> void {} 
 	AwaitParentStep := virtual !() -> void {}
 	AwaitVTableStep := virtual !() -> void {}
-	PrintAsType := virtual !(Stream^ f) -> void
+	PrintAsType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintVTable(f)
+		f := ctx.writeStream
+
+		PrintVTable(ctx)
 
 		needComma := false
 		f^ << "%Class" << ItId << " = type "
@@ -73,10 +77,10 @@ BoxClass := class extend BoxUnit
 		}else{
 			if VTable.Size() != 0
 			{
-				VTableType.ItType.GetPoint().PrintType(f)
+				VTableType.ItType.GetPoint().PrintType(ctx)
 				needComma = true
 			}
-			printFieldsPath(f,needComma&)
+			printFieldsPath(ctx,needComma&)
 		}
 		f^ << "}"
 		if IsPacked
@@ -86,7 +90,6 @@ BoxClass := class extend BoxUnit
 		if DebugMode
 		{
 			fieldMetas := List.{int}
-			defer fieldMetas.Destroy()
 
 			for i : FieldsPath.Size()
 			{
@@ -305,12 +308,13 @@ TypeClass := class extend Type
 		ItHash = typeHashIterator
 		typeHashIterator += 1
 	}
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%Class" << MetaId
+		ctx.writeStream^ << "%Class" << MetaId
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		f^ << ToClass.ItName
 		if ToClass.Constants?.Constants.Size() != 0
 		{
@@ -321,7 +325,7 @@ TypeClass := class extend Type
 					f^ << ","
 				if it is ConstType
 				{
-					it->{ConstType^}.Value.PrintDebugName(f)
+					it->{ConstType^}.Value.PrintDebugName(ctx)
 				}
 			}
 			f^ << "}"

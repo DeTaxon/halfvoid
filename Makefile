@@ -16,7 +16,7 @@ endif
 undefine Stati
 
 ifeq ($(callgrind),yes)
-	cg := valgrind --tool=callgrind
+	cg := valgrind --tool=callgrind --dump-instr=yes
 endif
 ifeq ($(helgrind),yes)
 	hg := valgrind --tool=helgrind --log-file=grind.txt

@@ -13,20 +13,20 @@ FuncLocalVoidParam := class extend ParamFunc
 	NotifyCaptureUse := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 
-	PrintAlloc := virtual !(Stream^ f) -> void
+	PrintAlloc := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -41,7 +41,7 @@ FuncLocalVoidParam := class extend ParamFunc
 	{
 		return false
 	}
-	PrintDebugLine := virtual !(Stream^ f) -> void
+	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 	

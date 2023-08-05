@@ -161,7 +161,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
-		defer resConsts.Destroy()
 		return checkTypes(datas,consts,resConsts)
 	}
 	
@@ -207,13 +206,16 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		fTyps := Type^[100]
 		iRef := bool[100]
 
-		for i : consts.Size()
-		{
-			if Constants[i].Value? != consts[i]
-				return null
-			outConst := CheckTemplateConst(consts[i],Constants[i].ItToken,resCnsts)
+		if consts.Size() != Constants.Size()
+			return null
 
-			if Constants[i].Value? != outConst?
+		for myConst : Constants , inConst : consts
+		{
+			if myConst.Value? != inConst
+				return null
+			outConst := CheckTemplateConst(inConst,myConst.ItToken,resCnsts)
+
+			if myConst.Value? != outConst?
 				return null
 		}
 

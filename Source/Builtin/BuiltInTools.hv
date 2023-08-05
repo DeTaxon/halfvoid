@@ -6,7 +6,7 @@ BuiltInAssert := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeBool],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 		if not DebugMode
 			return void
@@ -14,16 +14,18 @@ BuiltInAssert := class extend BoxFuncCommon
 		trueLabel = new BoxLabel()
 		falseLabel = new BoxLabel()
 
-		lst[0].PrintPre(f)
+		lst[0].PrintPre(ctx)
 		
-		PrintBranch(f,lst[0],trueLabel,falseLabel)
+		PrintBranch(ctx,lst[0],trueLabel,falseLabel)
 		
-		falseLabel.PrintCode(f)
+		f := ctx.writeStream
+
+		falseLabel.PrintCode(ctx)
 		f^ << "call void @llvm.debugtrap()"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
-		trueLabel.PrintCode(f)
+		trueLabel.PrintCode(ctx)
 	}
 }
 
@@ -35,29 +37,30 @@ BuiltInSetJump := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP.GetArray(5)],GTypeInt))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
 		ItId := GetNewId()
 
-		lst[0].PrintPointPre(f)
+		lst[0].PrintPointPre(ctx)
 
   		f^ << "%Frame" << ItId << "  = call i8* @llvm.frameaddress.p0i8(i32 0)\n"
 
 		f^ << "%FrameStore" << ItId << " = getelementptr [5 x i8*], [5 x i8*]* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << ", i64 0, i64 0\n"
 
 		f^ << "store i8* %Frame" << ItId << ", i8** %FrameStore" << ItId << ", align 16\n"
   		f^ << "%Stack" << ItId << " = call i8* @llvm.stacksave()\n"
 
 		f^ << "%StackStore" << ItId << " = getelementptr [5 x i8*], [5 x i8*]* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << ", i64 0, i64 2\n"
 
   		f^ << "store i8* %Stack" << ItId << ", i8** %StackStore"<< ItId <<", align 16\n"
 
 		f^ << "%E" << ItId << " = bitcast [5 x i8*]* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << " to i8*\n"
 
   		f^ << "%T" << resId << " = call i32 @llvm.eh.sjlj.setjmp(i8* %E" << ItId <<")\n"
@@ -72,12 +75,14 @@ BuiltInLongJump := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeVoidP],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
 		
 		f^ << "call void @llvm.eh.sjlj.longjmp(i8* "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -90,9 +95,9 @@ BuiltInMemBarrier := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(0,null,null,GTypeVoid,false,false))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		f^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
+		ctx.writeStream^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
 	}
 }
 BuiltInMemsetInlineInt := class extend BoxFuncCommon
@@ -101,18 +106,20 @@ BuiltInMemsetInlineInt := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(4,![GTypeVoidP,GTypeU8,GTypeInt,GTypeBool],null,GTypeVoid,false,false))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
 		f^ << "call void @llvm.memset.inline.p0.p0i8.i32("
 		f^ << "i8* "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ", i8 "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << ", i32 "
-		lst[2].PrintUse(f)
+		lst[2].PrintUse(ctx)
 		f^ << ",i1 "
-		lst[3].PrintUse(f)
+		lst[3].PrintUse(ctx)
 		f^ << ")\n"
 	}
 }
@@ -122,11 +129,13 @@ BuiltInGSWrite := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeU64],GTypeVoid))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPre(ctx)
   		f^ << "call void @llvm.x86.wrgsbase.64(i64 "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ") \n"
 	}
 }
@@ -136,9 +145,9 @@ BuiltInGSRead := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(GTypeU64))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-  		f^ << "%T" << resId << " =  call i64 @llvm.x86.rdgsbase.64() \n"
+  		ctx.writeStream^ << "%T" << resId << " =  call i64 @llvm.x86.rdgsbase.64() \n"
 	}
 }
 

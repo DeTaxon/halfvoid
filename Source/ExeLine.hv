@@ -90,7 +90,7 @@ BoxExeLineSimple := class extend BoxUnit
 		ItToken = itm
 		Down = newObj
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
@@ -98,24 +98,24 @@ BoxExeLineSimple := class extend BoxUnit
 		
 		if Down is in BoxExeObj
 		{
-			Down->{BoxExeObj^}.PrintDefaultUse(f)
+			Down->{BoxExeObj^}.PrintDefaultUse(ctx)
 		}else{
-			Down.PrintCode(f)
+			Down.PrintCode(ctx)
 		}
 		el := eLabel()
 		if el != null
-			el.PrintCode(f)
+			el.PrintCode(ctx)
 	}
 	eLabel := virtual !() -> BoxLabel^
 	{
 		return null
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(ItToken != null)
 		assert(ItToken.Line != null)
-		Down?.PrintDebugMeta(f)
-		f^ << "!" << MetaId << " = !DILocation(line:" << ItToken.Line.Line << ",column:1, scope:!" << GDebugScopeId << ")\n"
+		Down?.PrintDebugMeta(ctx)
+		ctx.writeStream^ << "!" << MetaId << " = !DILocation(line:" << ItToken.Line.Line << ",column:1, scope:!" << GDebugScopeId << ")\n"
 	}
 }
 
@@ -134,25 +134,25 @@ BoxExeObj := class extend BoxUnit
 	{
 		return false
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if IsMem()
 		{
-			PrintPointPre(f)
+			PrintPointPre(ctx)
 		}else{
-			PrintPre(f)
+			PrintPre(ctx)
 		}
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 
@@ -161,7 +161,7 @@ BoxExeObj := class extend BoxUnit
 BoxExeConstObj := class extend BoxExeObj
 {
 	IsConst := virtual true
-	PrintConst := virtual !(Stream^ f) -> void {}
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void {}
 }
 
 TryGetExeCall := !(Token^ itm) -> BoxExeObj^
@@ -456,9 +456,12 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	if oneGonnaOnly
 		return false
 	oneGonnaOnly = true
+	defer oneGonnaOnly = false
 
 	objType := obj.GetType()
 	isMem := obj.IsMem() ?: 1 : 0;
+
+	return isGonnaWorkCache[isMem][objType]?[toType]?
 
 	Objs := CheckExeDownList
 	Objs.Push(obj)
@@ -481,13 +484,20 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 		}
 	}
 
+	if isGonnaWorkCache[isMem][objType]?[toType]? != found
+	{
+		printf("why\n")
+	}
+	isGonnaWorkCache[isMem][objType][toType] = found
+
+
 	//GetItemGlobalFunc(StringSpan("->{}"), x ==>{
 	//	callItem = GetBestFunc(x,Objs,consts,true)
 	//	if callItem == null
 	//		return false
 	//	return true
 	//})
-	oneGonnaOnly = false
+	//oneGonnaOnly = false
 	return found
 }
 

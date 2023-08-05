@@ -326,24 +326,24 @@ ConstructorCallWrapper := class extend BoxExeObj
 		return true
 	}
 
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		itCall.PrintDefaultUse(f)
-		varCall.PrintPointPre(f)
-		ExtraWork[^].PrintDefaultUse(f)
+		itCall.PrintDefaultUse(ctx)
+		varCall.PrintPointPre(ctx)
+		ExtraWork[^].PrintDefaultUse(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		varCall.PrintPointUse(f)
+		varCall.PrintPointUse(ctx)
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(not (ObjType is in TypeClass))
-		PrintUnrefObj(f,extraId,this&)
+		PrintUnrefObj(ctx,extraId,this&)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(not (ObjType is in TypeClass))
-		f^ << "%TUnref" << extraId
+		ctx.writeStream^ << "%TUnref" << extraId
 	}
 }

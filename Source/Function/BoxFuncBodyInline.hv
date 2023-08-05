@@ -125,33 +125,33 @@ FuncInlineWrapper := class extend BoxExeObj
 	{
 		return thisReturns.ResultRef
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		for it : vars
 		{
-			it.PrintCode(f)
+			it.PrintCode(ctx)
 		}
-		body.PrintCode(f)
-		resultCall?.PrintPointPre(f)
+		body.PrintCode(ctx)
+		resultCall?.PrintPointPre(ctx)
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		for it : vars
 		{
-			it.PrintCode(f)
+			it.PrintCode(ctx)
 		}
-		body.PrintCode(f)
-		resultCall?.PrintPre(f)
+		body.PrintCode(ctx)
+		resultCall?.PrintPre(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		resultCall?.PrintPointUse(f)
+		resultCall?.PrintPointUse(ctx)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		resultCall.PrintUse(f)
+		resultCall.PrintUse(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 
 		oldId := GDebugFileId
@@ -160,7 +160,7 @@ FuncInlineWrapper := class extend BoxExeObj
 			GDebugFileId = bodyToken.Line.File.fileId
 		}
 
-		body.PrintDebugMeta(f)
+		body.PrintDebugMeta(ctx)
 
 		GDebugFileId = oldId
 	}

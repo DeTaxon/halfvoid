@@ -46,13 +46,13 @@ UnrefFuncCall := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintPointPre(f)
+		Down.PrintPointPre(ctx)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintPointUse(f)
+		Down.PrintPointUse(ctx)
 	}
 }
 PtrToRefFuncCall := class extend BoxExeObj
@@ -69,37 +69,37 @@ PtrToRefFuncCall := class extend BoxExeObj
 	{
 		return true
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintPre(f)
+		Down.PrintPre(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintUnrefObj(f,resId,this&)
+		PrintUnrefObj(ctx,resId,this&)
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%TUnref" << resId
+		ctx.writeStream^ << "%TUnref" << resId
 	}
 }
 
 
-PrintUnrefObj := !(Stream^ f,int id,BoxExeObj^ obj) -> void
+PrintUnrefObj := !(LLVMWriteContext^ ctx,int id,BoxExeObj^ obj) -> void
 {
-
+	f := ctx.writeStream
 	rType := NormalizeType(obj.GetType())
 
-	obj.PrintPointPre(f)
+	obj.PrintPointPre(ctx)
 	f^ << "%TUnref" << id << " = load "
-	rType.PrintType(f)
+	rType.PrintType(ctx)
 	f^ << ","
-	rType.PrintType(f)
+	rType.PrintType(ctx)
 	f^ << "* "
-	obj.PrintPointUse(f)
+	obj.PrintPointUse(ctx)
 	if DebugMode
 		f^ << ", !dgb !" << GDebugLineCallId
 	f^ << "\n"

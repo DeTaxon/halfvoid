@@ -48,8 +48,9 @@ BoxExeBool := class extend BoxExeConstObj
 		val = nVal
 		ObjType = GTypeBool
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		if val 
 		{
 			f^ << "1"
@@ -58,8 +59,9 @@ BoxExeBool := class extend BoxExeConstObj
 		}
 	}
 
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		if val
 		{
 			f^ << "1"
@@ -76,13 +78,13 @@ BoxExeInt := class extend BoxExeConstObj
 		Value = nVal
 		ObjType = GTypeInt
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << Value
+		ctx.writeStream^ << Value
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << Value
+		ctx.writeStream^ << Value
 		//ObjType.PrintType(f)
 		//f^ << " " << Value
 	}
@@ -95,9 +97,9 @@ BoxExeDouble := class extend BoxExeConstObj
 		val = v
 		ObjType = GTypeDouble
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << val
+		ctx.writeStream^ << val
 	}
 }
 
@@ -112,8 +114,9 @@ BoxExeString := class extend BoxExeConstObj
 		val = dat
 		ObjType = GTypeChar.GetPoint()
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		f^ << "@Str" << strId << " = constant [" << val.Size() +  1 << " x i8] c\""
 		k := 0
 		SomeBuf := char[2]
@@ -143,13 +146,15 @@ BoxExeString := class extend BoxExeConstObj
 		}
 		f^ << "\\00\"\n"
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintConst(f)
+		PrintConst(ctx)
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		stSize := val.Size() + 1
+
 		if JITMode
 		{
 			f^ << "inttoptr (i64 " << val.ptr->{size_t} << " to i8*)" //TODO arch

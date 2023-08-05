@@ -46,14 +46,14 @@ Type := class
 	{
 		return false
 	}
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		//assert(false)
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(false)
 	}
@@ -68,7 +68,11 @@ Type := class
 	GetBADStr := !() -> String^
 	{
 		ec := TEchoStream
-		PrintDebugName(ec&)
+		ctx := LLVMWriteContext
+		ctx.writeStream = ec&
+		defer ctx.writeStream = null
+
+		PrintDebugName(ctx&)
 		//ec << ","
 		//PrintType(ec&)
 		return ec.GetString()
@@ -140,18 +144,18 @@ TypeStandard := class extend Type
 	{
 		return ItSize
 	}
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << IRName
+		ctx.writeStream^ << IRName
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << ItGoodName
+		ctx.writeStream^ << ItGoodName
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		assert(DebugMode)
-		f^ << "!" << MetaId << " = " << MetaInfo << "\n"
+		ctx.writeStream^ << "!" << MetaId << " = " << MetaInfo << "\n"
 	}
 }
 
@@ -192,24 +196,26 @@ TypeArr := class extend Type
 	{
 		return true
 	}
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "["
 		f^ << len
 		f^ << " x "
-		Base.PrintType(f)
+		Base.PrintType(ctx)
 		f^ << "]"
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Base.PrintDebugName(f)
-		f^ << "[" << len << "]"
+		Base.PrintDebugName(ctx)
+		ctx.writeStream^ << "[" << len << "]"
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		nId := GetNewId()
-		f^ << "!" << nId << " = !DISubrange(count: " << len << ")\n"
-		f^ << "!" << MetaId << " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" << Base.MetaId << ", size: " << GetSize()*8 << ", elements: !{!" << nId << "}" << ")\n"
+		ctx.writeStream^ << "!" << nId << " = !DISubrange(count: " << len << ")\n"
+		ctx.writeStream^ << "!" << MetaId << " = !DICompositeType(tag:DW_TAG_array_type, baseType: !" << Base.MetaId << ", size: " << GetSize()*8 << ", elements: !{!" << nId << "}" << ")\n"
 	}
 	NotifyUse := virtual !() -> void
 	{
@@ -242,19 +248,19 @@ TypePoint := class extend Type
 	{
 		return GArchBitSize div 8
 	}
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Base.PrintType(f)
-		f^ << "*"
+		Base.PrintType(ctx)
+		ctx.writeStream^ << "*"
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Base.PrintDebugName(f)
-		f^ << "^"
+		Base.PrintDebugName(ctx)
+		ctx.writeStream^ << "^"
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
+		ctx.writeStream^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
 	}
 	NotifyUse := virtual !() -> void
 	{
@@ -263,9 +269,9 @@ TypePoint := class extend Type
 }
 TypeVoidPoint := class extend TypePoint
 {
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "i8*"
+		ctx.writeStream^ << "i8*"
 	}
 }
 
@@ -281,9 +287,9 @@ TypeDebugRef := class extend Type //FO
 			GDebugTypePrintMeta.Push(this&)
 		}
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "!" << MetaId << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << Base.MetaId <<", size: "<< GArchBitSize << ")\n"
+		ctx.writeStream^ << "!" << MetaId << " = !DIDerivedType(tag: DW_TAG_reference_type, baseType: !" << Base.MetaId <<", size: "<< GArchBitSize << ")\n"
 	}
 }
 
@@ -469,8 +475,8 @@ CreateStandardTypes := !() -> void
 }
 
 
-PrintTypeNormalized := !(Stream^ f, Type^ tp) -> void
+PrintTypeNormalized := !(LLVMWriteContext^ ctx, Type^ tp) -> void
 {
 	tp = NormalizeType(tp)
-	tp.PrintType(f)
+	tp.PrintType(ctx)
 }

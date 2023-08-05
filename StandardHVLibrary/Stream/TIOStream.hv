@@ -26,6 +26,11 @@ Stream := class extend TGCObject
 		Write(strData.GetString().Str(),strData.Size())
 		return this
 	}
+	"<<" := !(StringSpan strData) -> ref Stream
+	{
+		Write(strData.NonNullStr(),strData.Size())
+		return this
+	}
 	"<<" := !(int value) -> ref Stream
 	{
 		if value == 0

@@ -58,53 +58,53 @@ BoxFor := class extend BoxExeObj
 
 	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
 	{
-		PrintCode(f)
+		PrintCode(ctx)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		oldLineCall := GDebugLineCallId
 		GDebugLineCallId = HeadLine.MetaId
+		defer GDebugLineCallId = oldLineCall
 
-		values[^].InitStep.PrintCode(f)
-		CheckStep.PrintCode(f)
+		values[^].InitStep.PrintCode(ctx)
+		CheckStep.PrintCode(ctx)
 
 		for it : values
 		{
 			if it.HaveValue != null
 			{
-				it.HaveValue.PrintPre(f)
-				PrintBranch(f,it.HaveValue,it.NextCheck,EndLabel&)
-				it.NextCheck.PrintCode(f)
+				it.HaveValue.PrintPre(ctx)
+				PrintBranch(ctx,it.HaveValue,it.NextCheck,EndLabel&)
+				it.NextCheck.PrintCode(ctx)
 			}
 
-			//it.GetCall.PrintDefaultUse(f)
-			it.ValueVar.PrintCode(f)
+			//it.GetCall.PrintDefaultUse(ctx)
+			it.ValueVar.PrintCode(ctx)
 
 			if it.IsFinished != null
 			{
-				it.IsFinished.PrintPre(f)
-				PrintBranch(f,it.IsFinished,EndLabel&,it.NextCheck)
-				it.NextCheck.PrintCode(f)
+				it.IsFinished.PrintPre(ctx)
+				PrintBranch(ctx,it.IsFinished,EndLabel&,it.NextCheck)
+				it.NextCheck.PrintCode(ctx)
 			}
 		}
 
-		body.PrintCode(f)
+		body.PrintCode(ctx)
 
 		for it : values
 		{
-			it.IncFunc?.PrintDefaultUse(f)
+			it.IncFunc?.PrintDefaultUse(ctx)
 		}
 
-		CreatedIndexAdd?.PrintDefaultUse(f)
+		CreatedIndexAdd?.PrintDefaultUse(ctx)
 
-		CheckStep.PrintGo(f)
-		EndLabel.PrintCode(f)
+		CheckStep.PrintGo(ctx)
+		EndLabel.PrintCode(ctx)
 
-		GDebugLineCallId = oldLineCall
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		HeadLine?.PrintDebugMeta(f)
-		body.PrintDebugMeta(f)
+		HeadLine?.PrintDebugMeta(ctx)
+		body.PrintDebugMeta(ctx)
 	}
 }

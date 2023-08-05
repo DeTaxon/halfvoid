@@ -104,22 +104,23 @@ PtrToSizeT := class extend BoxExeObj
 		ObjType = GTypeSizeT
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void //todo remove copy of code, at UnrefObj.hv
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
 	{
-		Down.PrintPre(f)
+		f := ctx.writeStream
+		Down.PrintPre(ctx)
 
 		f^ << "%TUnref" << resId << " = ptrtoint "
-		Down.GetType().PrintType(f)
+		Down.GetType().PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to i64" //TODO arch
 		if DebugMode
 			f^ << ", !dgb !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%TUnref" << resId
+		ctx.writeStream^ << "%TUnref" << resId
 	}
 }
 PtrToRef := class extend BoxExeObj
@@ -133,44 +134,47 @@ PtrToRef := class extend BoxExeObj
 		ObjType = obj.GetType().Base
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		inType := Down.GetType()
-		Down.PrintPre(f)
+		Down.PrintPre(ctx)
 		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		f^ << "*"
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
-	PrintPre := virtual !(Stream^ f) -> void //todo remove copy of code, at UnrefObj.hv
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
 	{
+		f := ctx.writeStream
 		rType := ObjType
 
-		PrintPointPre(f)
+		PrintPointPre(ctx)
 		f^ << "%TUnref" << resId << " = load "
-		rType.PrintType(f)
+		rType.PrintType(ctx)
 		f^ << ","
-		rType.PrintType(f)
+		rType.PrintType(ctx)
 		f^ << "* "
-		PrintPointUse(f)
+		PrintPointUse(ctx)
 		if DebugMode
 			f^ << ", !dgb !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%TUnref" << resId
+		ctx.writeStream^ << "%TUnref" << resId
 	}
 }
 RefExchange := class extend BoxExeObj
@@ -184,25 +188,26 @@ RefExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPointPre(f)
+
+		Down.PrintPointPre(ctx)
 		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << "* "
-		Down.PrintPointUse(f)
+		Down.PrintPointUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		f^ << "*"
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
-
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
 PtrRefExchange := class extend PtrExchange
@@ -214,25 +219,27 @@ PtrRefExchange := class extend PtrExchange
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPointPre(f)
+
+		Down.PrintPointPre(ctx)
 		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << "* "
-		Down.PrintPointUse(f)
+		Down.PrintPointUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		f^ << "*"
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
 ArrToPtr := class extend BoxExeObj
@@ -246,25 +253,27 @@ ArrToPtr := class extend BoxExeObj
 		ObjType = obj.GetType().Base.GetPoint()
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPointPre(f)
+
+		Down.PrintPointPre(ctx)
 		f^ << "%T" << resId << " = getelementptr "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " , "
-		inType.GetPoint().PrintType(f)
+		inType.GetPoint().PrintType(ctx)
 		f^ << " "
-		Down.PrintPointUse(f)
+		Down.PrintPointUse(ctx)
 		f^ << " , i32 0, i32 0"
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
 PtrExchange := class extend BoxExeObj
@@ -278,24 +287,26 @@ PtrExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPre(f)
+
+		Down.PrintPre(ctx)
 		f^ << "%T" << resId << " = bitcast "
-		PrintTypeNormalized(f,inType)
+		PrintTypeNormalized(ctx,inType)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
 FloatToIntExchange := class extend BoxExeObj
@@ -309,10 +320,12 @@ FloatToIntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPre(f)
+
+		Down.PrintPre(ctx)
 		f^ << "%T" << resId << " = "
 		if IsUInt(ObjType)
 		{
@@ -321,23 +334,23 @@ FloatToIntExchange := class extend BoxExeObj
 			f^ << "fptosi"
 		}
 		f^ << " "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintDebugMeta(f)
+		Down.PrintDebugMeta(ctx)
 	}
 }
 IntToFloatExchange := class extend BoxExeObj
@@ -351,10 +364,12 @@ IntToFloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPre(f)
+
+		Down.PrintPre(ctx)
 		f^ << "%T" << resId << " = "
 		if IsUInt(inType)
 		{
@@ -363,19 +378,19 @@ IntToFloatExchange := class extend BoxExeObj
 			f^ << "sitofp"
 		}
 		f^ << " "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
 IntExchange := class extend BoxExeObj
@@ -389,17 +404,19 @@ IntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPre(f)
+
+		Down.PrintPre(ctx)
 
 		if inType.GetSize() == ObjType.GetSize()
 		{
 			f^ << "%T" << resId << " = add "
-			inType.PrintType(f)
+			inType.PrintType(ctx)
 			f^ << " "
-			Down.PrintUse(f)
+			Down.PrintUse(ctx)
 			f^ << " , 0 "
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
@@ -420,23 +437,23 @@ IntExchange := class extend BoxExeObj
 			}
 		}
 		f^ << " "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		Down.PrintDebugMeta(f)
+		Down.PrintDebugMeta(ctx)
 	}
 }
 
@@ -451,10 +468,12 @@ FloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		inType := Down.GetType()
-		Down.PrintPre(f)
+
+		Down.PrintPre(ctx)
 		f^ << "%T" << resId << " = "
 		if inType.GetSize() > ObjType.GetSize()
 		{
@@ -463,18 +482,18 @@ FloatExchange := class extend BoxExeObj
 			f^ << "fpext"
 		}
 		f^ << " "
-		inType.PrintType(f)
+		inType.PrintType(ctx)
 		f^ << " "
-		Down.PrintUse(f)
+		Down.PrintUse(ctx)
 		f^ << " to "
-		ObjType.PrintType(f)
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }

@@ -32,6 +32,10 @@ RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
 
 	JITContext.uncheckedFunctions.PushFront(fnc)
 
+	writeContext := LLVMWriteContext
+	writeContext.writeStream = JITContext.currentFunctionStream&
+	defer writeContext.writeStream = null
+
 	while JITContext.uncheckedFunctions.Size() != 0
 	{
 		checkFunc := JITContext.uncheckedFunctions.Pop()
@@ -42,7 +46,7 @@ RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
 			bodyFnc.ParseBody()
 			bodyFnc.WaitReadyState()
 
-			bodyFnc.PrintCode(JITContext.currentFunctionStream&)
+			bodyFnc.PrintCode(writeContext&)
 
 		}else if checkFunc is in BoxFuncDeclare {
 			declareFunc := checkFunc->{BoxFuncDeclare^}
@@ -66,14 +70,14 @@ RunCommand := !(StringView name, Token^ itm) -> BoxExeObj^
 		}
 	}
 
-	PrintDebugMeta(JITContext.currentFunctionStream&)
-	fnc.GetType().PrintMeta(JITContext.currentFunctionStream&)
+	PrintDebugMeta(writeContext&)
+	fnc.GetType().PrintMeta(writeContext&)
 
 	for spc : CodeSpaces
 	{
 		for fil : spc.Files
 		{
-			fil.PrintCode(JITContext.currentFunctionStream&)
+			fil.PrintCode(writeContext&)
 		}
 	}
 	

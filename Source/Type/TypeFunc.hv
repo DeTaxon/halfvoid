@@ -27,11 +27,12 @@ TypeFunc := class extend Type
 			GDebugTypePrintMeta.Push(this&)
 		}
 	}
-	PrintMeta := virtual !(Stream^ f) -> void
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		
 		if ResultType == null
 			return void
+		f := ctx.writeStream
+
 		for par : Params
 		{
 			if par.ItType == null return void
@@ -60,9 +61,11 @@ TypeFunc := class extend Type
 		f^ << "})\n"
 	}
 
-	PrintType := virtual !(Stream^ f) -> void
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ResultType.PrintType(f)
+		f := ctx.writeStream
+
+		ResultType.PrintType(ctx)
 		if ResultRef
 			f^ << "*"
 
@@ -76,7 +79,7 @@ TypeFunc := class extend Type
 				f^ << ","
 			needComma = true
 
-			par.ItType.PrintType(f)
+			par.ItType.PrintType(ctx)
 			if par.IsRef or par.ItType is in TypeClass
 				f^ << "*"
 		}
@@ -90,8 +93,10 @@ TypeFunc := class extend Type
 
 		f^ << ")"
 	}
-	PrintDebugName := virtual !(Stream^ f) -> void
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "{!("
 		for it, i : Params
 		{
@@ -99,12 +104,12 @@ TypeFunc := class extend Type
 				f^ << ","
 			if it.IsRef
 				f^ << "ref "
-			it.ItType.PrintDebugName(f)
+			it.ItType.PrintDebugName(ctx)
 		}
 		f^ << ")->"
 		if ResultRef
 			f^ << "ref "
-		ResultType.PrintDebugName(f)
+		ResultType.PrintDebugName(ctx)
 		f^ << "}"
 	}
 }

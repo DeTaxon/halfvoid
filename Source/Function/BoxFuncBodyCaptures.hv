@@ -98,13 +98,13 @@ AppendClass BoxFuncBody
 		inChain = true
 	}
 
-	PrintStackData := virtual !(Stream^ f) -> void
+	PrintStackData := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		CapturedVarsTuple?.PrintCode(f)
-		PrintYieldCodeParams(f)
-		PrintCaptureUsage(f,true)
+		CapturedVarsTuple?.PrintCode(ctx)
+		PrintYieldCodeParams(ctx)
+		PrintCaptureUsage(ctx,true)
 	}
-	PrintCaptureUsage := !(Stream^ f,bool isFirstCall) -> void
+	PrintCaptureUsage := !(LLVMWriteContext^ ctx,bool isFirstCall) -> void
 	{
 		if ParentFunc == null
 			return void
@@ -117,25 +117,25 @@ AppendClass BoxFuncBody
 		//if not isFirstCall
 		//	return void
 
+		f := ctx.writeStream
+
 		assert(ParentFunc.CapturedVarsTuple.GetVarType() is TypeClass)
 
-		getThisCapture.PrintPre(f)
+		getThisCapture.PrintPre(ctx)
 		subType := getThisCapture.GetType()
-		ParentFunc.CapturedVarsTuple.PrintResultObj(f,0,0)
+		ParentFunc.CapturedVarsTuple.PrintResultObj(ctx,0,0)
 		f^ << " = bitcast "
-		subType.PrintType(f)
+		subType.PrintType(ctx)
 		f^ << " "
-		getThisCapture.PrintUse(f)
+		getThisCapture.PrintUse(ctx)
 		f^ << " to "
-		ParentFunc.CapturedVarsTuple.GetVarType().PrintType(f)
+		ParentFunc.CapturedVarsTuple.GetVarType().PrintType(ctx)
 		f^ << "*"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ <<"\n"
 		
-
-
-		ParentFunc?.PrintCaptureUsage(f,false)
+		ParentFunc?.PrintCaptureUsage(ctx,false)
 	}
 	EnterScope := !(!()&->void cb) -> void
 	{

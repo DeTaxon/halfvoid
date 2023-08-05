@@ -58,17 +58,19 @@ BoxArrayConst := class extend BoxExeConstObj
 	{
 		ObjType = tp
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		elType := dwns[0].GetType()
+		f := ctx.writeStream
+
 		f^ << "["
 		for it,i : dwns
 		{
 			if i != 0
 				f^ << ","
-			elType.PrintType(f)
+			elType.PrintType(ctx)
 			f^ << " "
-			it.PrintConst(f)
+			it.PrintConst(ctx)
 		}
 		f^ << "]"
 	}

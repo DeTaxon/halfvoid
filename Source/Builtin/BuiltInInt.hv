@@ -6,19 +6,21 @@ BuiltInIntBase := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[^].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
 		
 		tFunc := GetType()->{TypeFunc^}
 		tp := tFunc.Params[0].ItType
 
 		f^ << "%T" << resId << " = " << llvm << " " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ","
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -33,38 +35,40 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPointPre(f)
-		lst[1].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPointPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%Temp" << resId << " = load "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << ","
-		tp.GetPoint().PrintType(f)
+		tp.GetPoint().PrintType(ctx)
 		f^ << " "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 		f^ << "%T" << resId << " = " << llvm << " " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " %Temp" << resId
 		f^ << ","
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 		f^ << "store "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " %T" << resId << ","
-		tp.GetPoint().PrintType(f)
+		tp.GetPoint().PrintType(ctx)
 		f^ << " "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -78,21 +82,23 @@ BuiltInInterlockOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPointPre(f)
-		lst[1].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPointPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%T" << resId << " = atomicrmw " << llvm << " " 
-		tp.GetPoint().PrintType(f)
+		tp.GetPoint().PrintType(ctx)
 		f^ << " "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		f^ << " , "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << " acquire"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
@@ -112,24 +118,26 @@ BuiltInIntDecInc := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPointPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPointPre(ctx)
 
 		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%T" << resId << " = load "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << ","
-		tp.GetPoint().PrintType(f)
+		tp.GetPoint().PrintType(ctx)
 		f^ << " "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
 		f^ << "%Temp" << resId << " = " << llvm << " " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " %T" << resId
 		f^ << ", 1"
 		if DebugMode
@@ -137,11 +145,11 @@ BuiltInIntDecInc := class extend BoxFuncCommon
 		f^ << "\n"
 
 		f^ << "store "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " %Temp" << resId << ","
-		tp.GetPoint().PrintType(f)
+		tp.GetPoint().PrintType(ctx)
 		f^ << " "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -157,16 +165,18 @@ BuiltInIntMinus := class extend BoxFuncCommon
 		llvm = lvm
 		cnstVal = cv
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPre(ctx)
 
 		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%T" << resId << " = "<< llvm <<" " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " " << cnstVal << ", "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -178,22 +188,24 @@ BuiltInPrimeStore := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPointPre(f)
-		lst[1].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPointPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		bs := GetType()
 		tp := bs->{TypeFunc^}.Params[0].ItType
 
 		f^ << "store "
-		PrintTypeNormalized(f,tp)
+		PrintTypeNormalized(ctx,tp)
 		f^ << " "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << ","
-		PrintTypeNormalized(f,tp)
+		PrintTypeNormalized(ctx,tp)
 		f^ << "* "
-		lst[0].PrintPointUse(f)
+		lst[0].PrintPointUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
@@ -207,7 +219,7 @@ BuiltInIntSuffixU := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeInt],GTypeU64))
 	}
-	//PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	//PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	//{
 	//}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -223,7 +235,7 @@ BuiltInIntSuffixF := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeDouble],GTypeFloat))
 	}
-	//PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	//PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	//{
 	//}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
@@ -242,17 +254,19 @@ BuiltinSpaceShipUnsigned := class extend BoxFuncCommon
 		isSigned = inIsSigned
 		SetType(GetFuncType(![tp,tp],GTypeInt))
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
+		f := ctx.writeStream
+
 		tp := this.GetType()->{TypeFunc^}.Params[0].ItType
-		lst[0].PrintPre(f)
-		lst[1].PrintPre(f)
+		lst[0].PrintPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		f^ << "%EqCheck" << resId << " = icmp eq "
-		tp.PrintType(f)
-		lst[0].PrintUse(f)
+		tp.PrintType(ctx)
+		lst[0].PrintUse(ctx)
 		f^ << " , "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << "\n"
 
 		f^ << "%BiggerCheck" << resId << " = icmp "
@@ -262,10 +276,10 @@ BuiltinSpaceShipUnsigned := class extend BoxFuncCommon
 		}else{
 			f^ << "ugt "
 		}
-		tp.PrintType(f)
-		lst[0].PrintUse(f)
+		tp.PrintType(ctx)
+		lst[0].PrintUse(ctx)
 		f^ << " , "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		f^ << "\n"
 
 		f^ << "%Possible" << resId << " = select i1 %BiggerCheck" << resId << " , i32 1, i32 -1\n"
@@ -399,27 +413,29 @@ BuiltInFloatSpaceship := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPre(f)
-		lst[1].PrintPre(f)
+		f := ctx.writeStream
+
+		lst[0].PrintPre(ctx)
+		lst[1].PrintPre(ctx)
 
 		tpFunc := GetType()->{TypeFunc^}
 		tp := tpFunc.Params[0].ItType
 
 		f^ << "%TDiff" << resId << " = fsub " 
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " " 
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ <<  ", "
-		lst[1].PrintUse(f)
+		lst[1].PrintUse(ctx)
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 
-		f^ << "%TIsVal" << resId << " = fcmp une " tp.PrintType(f) f^ << "%TDiff" << resId << " , 0.0\n"
+		f^ << "%TIsVal" << resId << " = fcmp une " tp.PrintType(ctx) f^ << "%TDiff" << resId << " , 0.0\n"
 		f^ << "%TIsValInt" << resId << " = sext i1 %TIsVal" << resId << " to i32\n"
-		f^ << "%TIsNeg" << resId << " = fcmp ult " tp.PrintType(f) f^ << "%TDiff" << resId << " , 0.0\n"
+		f^ << "%TIsNeg" << resId << " = fcmp ult " tp.PrintType(ctx) f^ << "%TDiff" << resId << " , 0.0\n"
 		f^ << "%TIsNegInt" << resId << " = select i1 %TIsNeg" << resId << ", i32 -1, i32 1\n"
 
 		f^ << "%T" << resId << " = and i32 %TIsNegInt" << resId << ", %TIsValInt" << resId
@@ -436,14 +452,15 @@ BuiltInFloatCosSin := class extend BoxFuncCommon
 		SetType(iType)
 		fncName = fName
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		lst[0].PrintPre(f)
+		f := ctx.writeStream
+		lst[0].PrintPre(ctx)
 
 		tp := GetType()->{TypeFunc^}.ResultType
 
 		f^ << "%T" << resId << " = call "
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " @llvm." << fncName << "." 
 		if tp == GTypeFloat
 		{
@@ -453,9 +470,9 @@ BuiltInFloatCosSin := class extend BoxFuncCommon
 			f^ << "f64"
 		}
 		f^ << "("
-		tp.PrintType(f)
+		tp.PrintType(ctx)
 		f^ << " "
-		lst[0].PrintUse(f)
+		lst[0].PrintUse(ctx)
 		f^ << ")"
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId

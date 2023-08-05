@@ -40,35 +40,37 @@ BoxWhile := class extend BoxExeObj
 		CycleCheck."this"()
 		WhileLine = new BoxExeLineSimple(whileToken,val)
 	}
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintCode(f)
+		PrintCode(ctx)
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		oldLine := GDebugLineCallId
 		defer GDebugLineCallId = oldLine
 		GDebugLineCallId = WhileLine.MetaId
 
-		CycleCheck.PrintCode(f)
+		f := ctx.writeStream
 
-		Val.PrintPre(f)
+		CycleCheck.PrintCode(ctx)
+
+		Val.PrintPre(ctx)
 		f^ << "br i1 "
-		Val.PrintUse(f)
+		Val.PrintUse(ctx)
 		f^ << ", label "
-		CycleStart.PrintLabel(f)
+		CycleStart.PrintLabel(ctx)
 		f^ << ", label "
-		CycleEnd.PrintLabel(f)
+		CycleEnd.PrintLabel(ctx)
 		f^ << "\n"
 
-		CycleStart.PrintCode(f)
-		Body.PrintCode(f)
-		CycleCheck.PrintGo(f)
-		CycleEnd.PrintCode(f)
+		CycleStart.PrintCode(ctx)
+		Body.PrintCode(ctx)
+		CycleCheck.PrintGo(ctx)
+		CycleEnd.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		WhileLine.PrintDebugMeta(f)
-		Body.PrintDebugMeta(f)
+		WhileLine.PrintDebugMeta(ctx)
+		Body.PrintDebugMeta(ctx)
 	}
 }

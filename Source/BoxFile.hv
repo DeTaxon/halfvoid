@@ -170,10 +170,11 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if DebugMode //later
 		{
+			f := ctx.writeStream
 			pth := file.GetPath()
 			if fsIsExist(pth.Str()) //TODO to something better
 			{

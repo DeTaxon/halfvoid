@@ -38,21 +38,23 @@ BoxFunc := class extend BoxExeConstObj
 	WaitReadyState := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 	GetExitLabel := virtual !() -> BoxLabel^
 	{
 		assert(false)
 	}
-	PrintResultType := virtual !(Stream^ f) -> void
+	PrintResultType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		fTyp := GetType()->{TypeFunc^}
+
 		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
-			GTypeVoid.PrintType(f)
+			GTypeVoid.PrintType(ctx)
 		}else{
-			fTyp.ResultType.PrintType(f)
+			fTyp.ResultType.PrintType(ctx)
 			if fTyp.ResultRef
 				f^ << "*"
 		}
@@ -63,18 +65,19 @@ BoxFunc := class extend BoxExeConstObj
 	ParseBodyForced := virtual !() -> void
 	{
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintName(f)
+		PrintName(ctx)
 	}
-	PrintInputTypes := virtual !(Stream^ f) -> void
+	PrintInputTypes := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
 		fTyp := GetType()->{TypeFunc^}
 		needComma := false
 
 		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
 		{
-			fTyp.ResultType.PrintType(f)
+			fTyp.ResultType.PrintType(ctx)
 			f^ << "* %result" 
 			needComma = true
 		}
@@ -88,7 +91,7 @@ BoxFunc := class extend BoxExeConstObj
 			inType := par.ItType
 			if not par.IsRef
 				inType = NormalizeType(inType)
-			inType.PrintType(f)
+			inType.PrintType(ctx)
 			if par.IsRef
 				f^ << "*"
 			f^ << " %par" << i
@@ -100,14 +103,14 @@ BoxFunc := class extend BoxExeConstObj
 			f^ << "..."
 		}
 	}
-	PrintName := virtual !(Stream^ f) -> void
+	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -143,29 +146,30 @@ BoxFunc := class extend BoxExeConstObj
 
 BoxFuncCommon := class extend BoxFunc
 {
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 		fTyp := GetType()->{TypeFunc^}
 		if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
 		{
-			f^ << "%T" << resId
+			ctx.writeStream^ << "%T" << resId
 		}
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
-		PrintFuncCallCommon(f,this&,resId,lst)
+		PrintFuncCallCommon(ctx,this&,resId,lst)
 	}
 }
 
-PrintFuncCallResultCommon := !(Stream^ f,TypeFunc^ fTyp,int resId) -> void
+PrintFuncCallResultCommon := !(LLVMWriteContext^ ctx,TypeFunc^ fTyp,int resId) -> void
 {
 	if not (fTyp.ResultType == GTypeVoid and not fTyp.ResultRef)
 	{
-		f^ << "%T" << resId
+		ctx.writeStream^ << "%T" << resId
 	}
 }
-PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
+PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDownList lst) -> void
 {
+	f := ctx.writeStream
 	itType := TypeFunc^
 	if fncObj is in BoxFunc
 	{
@@ -183,12 +187,12 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 	{
 		if i < itType.Params.Size() and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
 		{
-			itm.PrintPointPre(f)
+			itm.PrintPointPre(ctx)
 		}else{
-			itm.PrintPre(f)
+			itm.PrintPre(ctx)
 		}
 	}
-	fncObj.PrintPre(f)
+	fncObj.PrintPre(ctx)
 
 	if JITMode
 	{
@@ -197,12 +201,12 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 			declr := fncObj->{BoxFuncDeclare^}
 			fpType := declr.GetType()
 			f^ << "%JITPointer" << resId << "  = inttoptr i64 " << declr.JITFuntionPointer&->{size_t} << " to "
-			fpType.GetPoint().GetPoint().PrintType(f)
+			fpType.GetPoint().GetPoint().PrintType(ctx)
 			f^ << "\n"
 			f^ << "%JITFunc" << resId << " = load "
-			fpType.PrintType(f)
+			fpType.PrintType(ctx)
 			f^ << "* , "
-			fpType.PrintType(f)
+			fpType.PrintType(ctx)
 			f^ << "** %JITPointer" << resId << "\n" 
 		}
 	}
@@ -215,9 +219,9 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 	f^ << "call "
 	if itType.IsVargs
 	{
-		itType.PrintType(f)
+		itType.PrintType(ctx)
 	}else{
-		itType.ResultType.PrintType(f)
+		itType.ResultType.PrintType(ctx)
 		if itType.ResultRef
 			f^ << "*"
 	}
@@ -226,7 +230,7 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 	{
 		f^ << "%JITFunc" << resId
 	}else{
-		fncObj.PrintUse(f)
+		fncObj.PrintUse(ctx)
 	}
 
 	f^ << "("
@@ -243,25 +247,25 @@ PrintFuncCallCommon := !(Stream^ f,BoxExeObj^ fncObj,int resId,ExeDownList lst) 
 		{
 			inType := dwn.GetType()
 			inType = NormalizeType(inType)
-			inType.PrintType(f)
+			inType.PrintType(ctx)
 			f^ << "* "
-			dwn.PrintPointUse(f)
+			dwn.PrintPointUse(ctx)
 		}else{'
 			if i < itType.Params.Size() and itType.Params[i].ItType is in TypeClass
 			{
 				tp := dwn.GetType()
-				tp.PrintType(f)
+				tp.PrintType(ctx)
 				f^ << "* "
 				f^ << "byval("
-				tp.PrintType(f)
+				tp.PrintType(ctx)
 				f^ << ") "
-				dwn.PrintPointUse(f)
+				dwn.PrintPointUse(ctx)
 			}else{
 				inType := dwn.GetType()
 				inType = NormalizeType(inType)
-				inType.PrintType(f)
+				inType.PrintType(ctx)
 				f^ << " "
-				dwn.PrintUse(f)
+				dwn.PrintUse(ctx)
 			}
 		}
 	}

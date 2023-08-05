@@ -11,9 +11,9 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 		objRes = new FuncResultParam(itm)
 	}
 
-	PrintDefaultUse := virtual !(Stream^ f) -> void
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		objRes.PrintCode(f)
+		objRes.PrintCode(ctx)
 	}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
@@ -60,12 +60,12 @@ VarIntObj := class extend BoxExeObj
 			minSize += Value.ItAlign - unalign
 		return minSize
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << getVal()
+		ctx.writeStream^ << getVal()
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		f^ << getVal()
+		ctx.writeStream^ << getVal()
 	}
 }

@@ -395,54 +395,54 @@ BoxFuncCall := class extend BoxExeObj
 		return callObj.IsMem()
 	}
 
-	PassedFuncCall := !(Stream^ f, int passedId)  -> void
+	PassedFuncCall := !(LLVMWriteContext^ ctx, int passedId)  -> void
 	{
-		callObj.PrintFuncCall(f,passedId,0,downs)
+		callObj.PrintFuncCall(ctx,passedId,0,downs)
 	}
-	PassedFuncResult := !(Stream^ f, int passedId)  -> void
+	PassedFuncResult := !(LLVMWriteContext^ ctx, int passedId)  -> void
 	{
-		callObj.PrintResultObj(f,passedId,-1)
+		callObj.PrintResultObj(ctx,passedId,-1)
 	}
 
-	PrintFuncUse := virtual !(Stream^ f) -> void
+	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		callObj.PrintFuncCall(f,resId,0,downs)
-		ExtraWork[^].PrintDefaultUse(f)
+		callObj.PrintFuncCall(ctx,resId,0,downs)
+		ExtraWork[^].PrintDefaultUse(ctx)
 	}
-	PrintFuncResult := virtual !(Stream^ f) -> void
+	PrintFuncResult := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		callObj.PrintResultObj(f,resId,-1)
+		callObj.PrintResultObj(ctx,resId,-1)
 	}
-	PrintPointPre := virtual !(Stream^ f) -> void
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintFuncUse(f)
+		PrintFuncUse(ctx)
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintFuncResult(f)
+		PrintFuncResult(ctx)
 	}
-	PrintPre := virtual !(Stream^ f) -> void
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if IsMem()
 		{
-			PrintUnrefObj(f,resId,this&)
+			PrintUnrefObj(ctx,resId,this&)
 		}else{
-			PrintFuncUse(f)
+			PrintFuncUse(ctx)
 		}
 	}
-	PrintUse := virtual !(Stream^ f) -> void
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if IsMem()
 		{
-			f^ << "%TUnref" << resId
+			ctx.writeStream^ << "%TUnref" << resId
 		}else{
-			PrintFuncResult(f)
+			PrintFuncResult(ctx)
 		}
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		downs[^].PrintDebugMeta(f)
-		ExtraWork[^].PrintDebugMeta(f)
+		downs[^].PrintDebugMeta(ctx)
+		ExtraWork[^].PrintDebugMeta(ctx)
 	}
 }
 BoxFuncComplexCall := class extend BoxFuncCall
@@ -451,9 +451,9 @@ BoxFuncComplexCall := class extend BoxFuncCall
 	{
 		return true
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		downs[0].PrintPointUse(f)
+		downs[0].PrintPointUse(ctx)
 	}
 }
 BoxFuncPointerCall := class extend BoxFuncCall
@@ -470,14 +470,14 @@ BoxFuncPointerCall := class extend BoxFuncCall
 		ft := ItPtrFunc.GetType().Base->{TypeFunc^}
 		return ft.ResultType
 	}
-	PrintFuncUse := virtual !(Stream^ f) -> void
+	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PreCalls[^].PrintDefaultUse(f)
-		PrintFuncCallCommon(f,ItPtrFunc,resId,downs)
+		PreCalls[^].PrintDefaultUse(ctx)
+		PrintFuncCallCommon(ctx,ItPtrFunc,resId,downs)
 	}
-	PrintFuncResult := virtual !(Stream^ f) -> void
+	PrintFuncResult := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		PrintFuncCallResultCommon(f,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
+		PrintFuncCallResultCommon(ctx,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
 	}
 	NotifyMemUse := virtual !() -> void
 	{
@@ -493,8 +493,8 @@ BoxFuncPointerComplexCall := class extend BoxFuncPointerCall
 	{
 		return true
 	}
-	PrintPointUse := virtual !(Stream^ f) -> void
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		downs[0].PrintPointUse(f)
+		downs[0].PrintPointUse(ctx)
 	}
 }

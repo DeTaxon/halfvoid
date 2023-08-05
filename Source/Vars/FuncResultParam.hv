@@ -17,20 +17,20 @@ FuncResultParam := class extend ParamFunc
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		exeObj.PrintDefaultUse(f)
+		exeObj.PrintDefaultUse(ctx)
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 		if exeObj.IsMem()
 		{
-			exeObj.PrintPointUse(f)
+			exeObj.PrintPointUse(ctx)
 		}else{
-			exeObj.PrintUse(f)
+			exeObj.PrintUse(ctx)
 		}
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -137,20 +137,20 @@ FuncResultParam2 := class extend FuncResultParam
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		exeObj.PrintDefaultUse(f)
+		exeObj.PrintDefaultUse(ctx)
 	}
-	PrintResultObj := virtual !(Stream^ f, int resId, int debId) -> void
+	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 		if exeObj.IsMem()
 		{
-			exeObj.PrintPointUse(f)
+			exeObj.PrintPointUse(ctx)
 		}else{
-			exeObj.PrintUse(f)
+			exeObj.PrintUse(ctx)
 		}
 	}
-	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
 
@@ -177,9 +177,9 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		setVar.PrintDefaultUse(f)
+		setVar.PrintDefaultUse(ctx)
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
@@ -195,9 +195,9 @@ FuncResultParam2OnMemRef := class extend FuncResultParam2
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		setVar.PrintDefaultUse(f)
+		setVar.PrintDefaultUse(ctx)
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{

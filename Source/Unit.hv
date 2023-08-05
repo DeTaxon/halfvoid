@@ -3,13 +3,13 @@ BoxUnit := class
 	Work := virtual !() -> void
 	{
 	}
-	PrintCode := virtual !(Stream^ f) -> void
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 	NotifyMemUse := virtual !() -> void
 	{
 	}
-	PrintDebugMeta := virtual !(Stream^ f) -> void
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 

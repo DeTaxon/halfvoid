@@ -216,13 +216,17 @@ main := !(char^[] args) -> int
 
 	if JITMode
 	{
-		byteCode := new TEchoStream
-		WriteCodeToStream(byteCode)
-		RunJITMode(byteCode,mainFunc->{BoxFuncBody^})
+		assert(false)
+		//byteCode := new TEchoStream
+		//WriteCodeToStream(byteCode)
+		//RunJITMode(byteCode,mainFunc->{BoxFuncBody^})
 	}else{
 		outFile := new TFile(OutputFile,"wb")
 
-		WriteCodeToStream(outFile)
+		ctx := LLVMWriteContext
+		ctx.writeStream = outFile
+
+		WriteCodeToStream(ctx&)
 		printf("done\n")
 		outFile.Close()
 	}
@@ -232,60 +236,61 @@ main := !(char^[] args) -> int
 	return 0
 }
 
-WriteCodeToStream := !(Stream^ outFile) -> void
+WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 {
-	PrintDeclares(outFile)
+	PrintDeclares(ctx)
 	if DebugMode
-		PrintDebugMeta(outFile)
+		PrintDebugMeta(ctx)
 
-	AllClasses[^].PrintAsType(outFile)
+	AllClasses[^].PrintAsType(ctx)
 	for spc : CodeSpaces
 	{
 		for fil : spc.Files
 		{
 			GDebugFileId = fil.fileId
-			fil.AllClasses[^].PrintAsType(outFile)
+			fil.AllClasses[^].PrintAsType(ctx)
 		}
 	}
-	GlobalVars[^].PrintCode(outFile)
+	GlobalVars[^].PrintCode(ctx)
 	for spc : CodeSpaces
 	{
-		spc.Globals[^][^].PrintCode(outFile)
+		spc.Globals[^][^].PrintCode(ctx)
 		for fil : spc.Files
 		{
-			fil.PrintCode(outFile)
+			fil.PrintCode(ctx)
 		}
 	}
-	DummyFile.PrintCode(outFile)
+	DummyFile.PrintCode(ctx)
 
 	for st : GlobalStrings
 	{
-		st.PrintCode(outFile)
+		st.PrintCode(ctx)
 	}
-	PrintEmbeddedFiles(outFile)
+	PrintEmbeddedFiles(ctx)
 	for spc : CodeSpaces
 	{
 		for lb : spc.Modules
 		{	
-			lb.PrintCode(outFile)
+			lb.PrintCode(ctx)
 		}
 		for fil : spc.Files
 		{
 			GDebugFileId = fil.fileId
 		}
 	}
-	AllFunctions[^].PrintCode(outFile)
+	AllFunctions[^].PrintCode(ctx)
 
 	while GDebugTypePrintMeta.Size() != 0
 	{
-		GDebugTypePrintMeta[0].PrintMeta(outFile)
+		GDebugTypePrintMeta[0].PrintMeta(ctx)
 		GDebugTypePrintMeta.Pop()
 	}
 }
 
-PrintDeclares := !(Stream^ f) -> void
+PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 {
-	PrintBuildInMinMax(f)
+	PrintBuildInMinMax(ctx)
+	f := ctx.writeStream
 
 	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
@@ -330,8 +335,10 @@ PrintDeclares := !(Stream^ f) -> void
 }
 
 cuId := int
-PrintDebugMeta := !(Stream^ fil) -> void
+PrintDebugMeta := !(LLVMWriteContext^ ctx) -> void
 {
+	fil := ctx.writeStream
+
 	globVar := GetNewId()
 
 	fileId := 0

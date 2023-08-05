@@ -13,11 +13,11 @@ AppendClass BoxClass
 	VTableId := int
 	VTableCheckTypeArray := GlobalVar^
 
-	PrintVTable := virtual !(Stream^ f) -> void
+	PrintVTable := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if VTable.Size() == 0
 			return void
-		VTableValue.PrintCode(f)
+		VTableValue.PrintCode(ctx)
 	}
 	GetVTableIds := !(BoxArrayHolder dat) -> void
 	{
@@ -163,8 +163,8 @@ VTableEntry := class
 {
 	Name := StringSpan
 
-	PrintType := virtual !(Stream^ f) -> void { GetType().PrintType(f) }
-	PrintConst := virtual !(Stream^ f) -> void {}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void { GetType().PrintType(ctx) }
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void {}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {return false}
 	GetType := virtual !() -> Type^ { return null }
 	GetConst := virtual !() -> BoxExeConstObj^ { return null }
@@ -178,12 +178,14 @@ CheckInfoConst := class extend BoxExeConstObj
 		ItGlobVar = gv
 		ObjType = GTypeVoidP
 	}
-	PrintConst := virtual !(Stream^ f) -> void
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		f := ctx.writeStream
+
 		f^ << "bitcast ("
-		ItGlobVar.Value.pType.PrintType(f)
+		ItGlobVar.Value.pType.PrintType(ctx)
 		f^ << "* "
-		ItGlobVar.Value.PrintResultObj(f,0,0)
+		ItGlobVar.Value.PrintResultObj(ctx,0,0)
 		f^ << " to i8*)"
 	}
 }
@@ -196,8 +198,8 @@ VTableVar := class extend VTableEntry
 		Name = nm
 		ItConst = cnst
 	}
-	PrintType := virtual !(Stream^ f) -> void { ItConst.GetType().PrintType(f) }
-	PrintConst := virtual !(Stream^ f) -> void { ItConst.PrintUse(f)}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void { ItConst.GetType().PrintType(ctx) }
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void { ItConst.PrintUse(ctx)}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool {
 		if not (cmp is VTableVar)
 			return false
@@ -224,18 +226,18 @@ VTableFunc := class extend VTableEntry
 	{
 		return Value.GetType().GetPoint()
 	}
-	PrintType := virtual !(Stream^ f) -> void 
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void 
 	{
-		Value.GetType().PrintType(f)
-		f^ << "*"
+		Value.GetType().PrintType(ctx)
+		ctx.writeStream^ << "*"
 	}
 	GetConst := virtual !() -> BoxExeConstObj^
 	{
 		return new ConstFuncPtr(Value)
 	}
-	PrintConst := virtual !(Stream^ f) -> void 
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void 
 	{
-		Value.PrintName(f)
+		Value.PrintName(ctx)
 	}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool 
 	{
@@ -274,7 +276,7 @@ VTableFunc := class extend VTableEntry
 //		ItClass = cls
 //		Index = funcIndex
 //	}
-//	PrintFuncCall := virtual !(Stream^ f,int resId,int debId,ExeDownList lst) -> void
+//	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 //	{
 //		fType := ObjType->{TypeFunc^}
 //
