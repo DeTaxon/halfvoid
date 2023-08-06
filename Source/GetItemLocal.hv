@@ -2,7 +2,6 @@
 GetItemLocal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 {
 	lst := HybridQueue.{BoxUnit^,10}
-	defer lst.Destroy()
 
 	for it : UnitStack
 	{

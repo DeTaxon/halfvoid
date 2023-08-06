@@ -784,7 +784,6 @@ BoxClassVulkan := class extend BoxClass
 		finishHatch.Await()
 
 		objs := HybridQueue.{BoxUnit^,10}
-		defer objs.Destroy()
 		populateMethods(name,StringSpan(""),objs)
 
 		if objs.Size() != 0

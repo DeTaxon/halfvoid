@@ -70,7 +70,6 @@ PriorityBagOld := class
 					wordContainUniq := false
 
 					rl := HybridQueue.{StringSpan,30}
-					defer rl.Destroy()
 
 					rawWord.DivideStr(" ",x ==> { rl.Push(x) })
 

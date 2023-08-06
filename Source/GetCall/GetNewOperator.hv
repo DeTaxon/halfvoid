@@ -9,7 +9,6 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		if tp == null
 			itm.EmitError("Unknown type")
 		cnsts := List.{BoxExeConstObj^}
-		defer cnsts.Destroy()
 		cnsts.Push(GetConstType(tp))
 		objs := CheckExeDownList
 		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)

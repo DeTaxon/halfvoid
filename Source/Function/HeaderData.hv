@@ -53,7 +53,6 @@ FunctionHeaderInfo := class
 		SyntaxCompress(brackets,LexHVInputVars)
 
 		bag := HybridQueue.{Token^,10}
-		defer bag.Destroy()
 
 		iter := brackets.Down
 

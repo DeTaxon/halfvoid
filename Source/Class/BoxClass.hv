@@ -246,7 +246,6 @@ BoxClass := class extend BoxUnit
 		assert(fieldName.Size() != 0)
 
 		objs := HybridQueue.{BoxUnit^,10}
-		defer objs.Destroy()
 		populateMethods(name,fieldName,objs)
 
 		if objs.Size() != 0

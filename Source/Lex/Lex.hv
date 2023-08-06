@@ -225,7 +225,6 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 UniteSkobs := !(Token^ Tree) -> Token^
 {
 	Bag := List.{Token^}
-	defer Bag.Destroy()
 
 	iter := Tree
 	

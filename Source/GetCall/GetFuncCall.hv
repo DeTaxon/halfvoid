@@ -25,7 +25,6 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 
 	Objs := CheckExeDownList
-	defer Objs.Destroy()
 	CheckFuncCallBrackets(brc,Objs)
 
 	consts := List.{BoxExeConstObj^}
