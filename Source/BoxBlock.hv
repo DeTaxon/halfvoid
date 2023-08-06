@@ -120,7 +120,6 @@ BoxBlock := class extend BoxExeObj
 			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
 			{
 				dat := CheckExeDownList
-				defer dat.Destroy() //todo remove
 				cl := it.CreateCall()
 				dat.Push(cl)
 				cl2 := GFuncGCSetNull.CreateCall(dat)
