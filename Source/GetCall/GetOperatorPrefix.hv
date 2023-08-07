@@ -34,19 +34,21 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 	}
 	if itm.Down.GetValue() == "defer"
 	{
-		lmbdPre := CreateHeadlessLambda(itm.Down.Right)->{BoxLambdaHolder^}
-		assert(lmbdPre is BoxLambdaHolder)
-		//assert(lmbdPre.IsOneFunc())
-		lmbd := lmbdPre.CreateOneFuncLambda()
-		assert(lmbdPre.cleanType != null)
+		deferedCall := TryGetExeCall(itm.Down.Right)
+		return new BoxDefer(deferedCall)
 
-		assert(lmbdPre.cleanType is in TypeClass)
-		
-		arr := List.{BoxExeConstObj^}
-		arr.Push(GetConstType(lmbdPre.cleanType))
-		newType := GCDeferLambda.GetClass(arr).ItType
-		arr.Destroy()
-		return innerTrySetType(lmbd,newType)
+		//lmbdPre := CreateHeadlessLambda(itm.Down.Right)->{BoxLambdaHolder^}
+		//assert(lmbdPre is BoxLambdaHolder)
+		////assert(lmbdPre.IsOneFunc())
+		//lmbd := lmbdPre.CreateOneFuncLambda()
+		//assert(lmbdPre.cleanType != null)
+
+		//assert(lmbdPre.cleanType is in TypeClass)
+		//
+		//arr := List.{BoxExeConstObj^}
+		//arr.Push(GetConstType(lmbdPre.cleanType))
+		//newType := GCDeferLambda.GetClass(arr).ItType
+		//return innerTrySetType(lmbd,newType)
 	}
 
 	if itm.Down is TokenSymbol

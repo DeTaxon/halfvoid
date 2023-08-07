@@ -113,7 +113,7 @@ FuncAttributes := class
 }
 
 labelIdIterator := 1
-BoxLabel := class
+BoxLabel := class extend BoxExeObj
 {
 	id := int
 	this := !() -> void

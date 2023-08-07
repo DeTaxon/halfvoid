@@ -18,12 +18,24 @@
 
 main := !(char^[] args) -> int
 {
-	tstMem := PageMemory
-	tstMem.Create(4096,"rwe")
+	printf("a\n")
+	defer printf("d\n")
+	defer printf("c\n")
+	printf("b\n")
 
-	ptr := tstMem.GetPointer()
+	for i : 5
+	{
+		defer printf("break defer\n")
+		break
+	}
 
-	bt := ptr->{u8^}
+
+	//tstMem := PageMemory
+	//tstMem.Create(4096,"rwe")
+
+	//ptr := tstMem.GetPointer()
+
+	//bt := ptr->{u8^}
 
 	return 0
 }

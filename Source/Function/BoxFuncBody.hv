@@ -310,6 +310,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 		f := ctx.writeStream
 
+		ctx.funcCallCounter = 1
+
 		GDebugFuncId = 0
 		CurrentFunc = this&
 

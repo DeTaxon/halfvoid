@@ -1,4 +1,15 @@
 LLVMWriteContext := class
 {
 	writeStream := Stream^
+
+	funcCallCounter := int
+	deferObjects := HybridStack.{BoxExeObj^,20}
+
+
+	GetNewId := !() -> int
+	{
+		funcCallCounter += 1
+		return funcCallCounter
+	}
+
 }

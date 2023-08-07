@@ -33,6 +33,12 @@ BoxContinue := class extend BoxExeObj
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		exitCall?.PrintDefaultUse(ctx)
+		for it : ctx.deferObjects
+		{
+			if it == goLabel
+				break
+			it.PrintDefer(ctx)
+		}
 		goLabel.PrintGo(ctx)
 	}
 }
@@ -59,6 +65,12 @@ BoxBreak := class extend BoxExeObj
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		exitCall?.PrintDefaultUse(ctx)
+		for it : ctx.deferObjects
+		{
+			if it == goLabel
+				break
+			it.PrintDefer(ctx)
+		}
 		goLabel.PrintGo(ctx)
 	}
 }

@@ -61,7 +61,6 @@ PtrToRefFuncCall := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = Down.GetType().Base
 	}
@@ -71,6 +70,7 @@ PtrToRefFuncCall := class extend BoxExeObj
 	}
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		Down.PrintPre(ctx)
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
@@ -79,6 +79,7 @@ PtrToRefFuncCall := class extend BoxExeObj
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.funcCallCounter + 1
 		PrintUnrefObj(ctx,resId,this&)
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void

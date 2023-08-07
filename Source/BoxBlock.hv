@@ -147,10 +147,21 @@ BoxBlock := class extend BoxExeObj
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 
+		deferObjsAtStart := ctx.deferObjects.Size()
+
+		if quitLabel != null
+			ctx.deferObjects.PushFront(quitLabel)
+
 		simpleVars[^].PrintCode(ctx)
 		gcVars[^].PrintCode(ctx)
 
 		exeLines[^].PrintCode(ctx)
+
+		while deferObjsAtStart  !=  ctx.deferObjects.Size()
+		{
+			dObj := ctx.deferObjects.Pop()
+			dObj.PrintDefer(ctx)
+		}
 
 		quitLabel?.PrintCode(ctx)
 	}

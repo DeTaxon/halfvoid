@@ -129,13 +129,13 @@ PtrToRef := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = obj.GetType().Base
 	}
 	IsMem := virtual !() -> bool { return true }
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 
 		inType := Down.GetType()
@@ -158,6 +158,7 @@ PtrToRef := class extend BoxExeObj
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		rType := ObjType
 
@@ -183,13 +184,13 @@ RefExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -214,13 +215,13 @@ PtrRefExchange := class extend PtrExchange
 {
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -248,13 +249,13 @@ ArrToPtr := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = obj.GetType().Base.GetPoint()
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -282,13 +283,13 @@ PtrExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -315,13 +316,13 @@ FloatToIntExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -359,13 +360,13 @@ IntToFloatExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -399,13 +400,13 @@ IntExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 
@@ -463,13 +464,13 @@ FloatExchange := class extend BoxExeObj
 	Down := BoxExeObj^
 	this := !(BoxExeObj^ obj, Type^ toType) -> void
 	{
-		resId = GetNewId()
 		Down = obj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		f := ctx.writeStream
 		inType := Down.GetType()
 

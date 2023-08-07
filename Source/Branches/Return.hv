@@ -36,6 +36,12 @@ BoxReturn := class extend BoxExeObj
 	{
 		ResultCall?.PrintDefaultUse(ctx)
 		cleanupCall?.PrintDefaultUse(ctx)
+
+		//TODO inline functions?
+		for it : ctx.deferObjects
+		{
+			it.PrintDefer(ctx)
+		}
 		EndLabel.PrintGo(ctx)
 	}
 }

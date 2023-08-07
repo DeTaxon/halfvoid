@@ -44,7 +44,6 @@ BoxAndOr := class extend BoxExeObj
 		RightCall = cl2
 
 		ObjType = GTypeBool
-		resId = GetNewId()
 
 		TruePath = new BoxLabel()
 		FalsePath = new BoxLabel()
@@ -97,6 +96,7 @@ BoxAnd := class extend BoxAndOr
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		PrintStep1(ctx)
 		PrintBranch(ctx,LeftCall,NextPath,FalsePath)
 		PrintStep3(ctx)
@@ -112,6 +112,7 @@ BoxOr := class extend BoxAndOr
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		PrintStep1(ctx)
 		PrintBranch(ctx,LeftCall,TruePath,NextPath)
 		PrintStep3(ctx)

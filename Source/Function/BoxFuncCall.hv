@@ -57,7 +57,6 @@ BoxFuncCall := class extend BoxExeObj
 		diffCount := itType.Params.Size() - fType.Params.Size()
 
 		downs.Push(objs[^])
-		resId = GetNewId()
 
 		for par,i : itType.Params
 		{
@@ -415,6 +414,7 @@ BoxFuncCall := class extend BoxExeObj
 	}
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		resId = ctx.GetNewId()
 		PrintFuncUse(ctx)
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
@@ -425,8 +425,10 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		if IsMem()
 		{
+			resId = ctx.funcCallCounter + 1 //TODO do something with unref
 			PrintUnrefObj(ctx,resId,this&)
 		}else{
+			resId = ctx.GetNewId()
 			PrintFuncUse(ctx)
 		}
 	}

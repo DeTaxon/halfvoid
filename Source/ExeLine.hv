@@ -74,6 +74,7 @@ BoxExeLine := class extend BoxExeLineSimple
 			return GetDownObject(itm,depth+1)
 		})
 	}
+
 }
 BoxExeLineSimple := class extend BoxUnit
 {
@@ -153,6 +154,11 @@ BoxExeObj := class extend BoxUnit
 	{
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+
+	IsDefered := virtual !() -> bool { return false }
+	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
 
