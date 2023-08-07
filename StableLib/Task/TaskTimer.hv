@@ -1,0 +1,17 @@
+
+TaskTimersMutex := Mutex^
+TaskTimersArray := List.{Tuple.{double,Task^}}
+
+TSleep := !(double val) -> void
+{
+	endTime := GetSteadyTime() + val
+	TaskCheckMutex.Lock()
+	TaskLoopWorkCounter += 1
+
+	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+
+	if someoneOnLoop
+		TaskWaitTasksConVar.Notify()
+	CurrentThread.ThreadMainTask.switchToTask()
+	TaskCheckMutex.Unlock()
+}

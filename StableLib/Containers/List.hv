@@ -1,0 +1,249 @@
+ListNode := class .{@T}
+{
+	data := T
+	next := ListNode.{T}^
+	prev := ListNode.{T}^
+}
+
+List := class.{@T} extend TArrayView.{T}
+{
+	start := ListNode.{T}^
+	end := ListNode.{T}^
+
+	itSize := int
+
+
+	Push := !(T itm) -> void
+	{
+		newNode := createBackNode()
+		newNode.data = itm
+	}
+
+	Emplace := !(args...) -> void
+	{
+		newNode := createBackNode()
+		newNode.data .this(args...)
+	}
+	PushUniq := !(T itm) -> void
+	{
+		if this[^] == itm
+			return void
+		Push(itm)
+	}
+	createBackNode := !() -> ListNode.{T}^
+	{
+		newNode := createNode()
+		if itSize == 0
+		{
+			start = newNode
+			end = newNode
+		}else{
+			end.next = newNode
+			newNode.prev = end
+			end = newNode
+		}
+		itSize += 1
+		return newNode
+	}
+	PushFront := !(T itm) -> void
+	{
+		newNode := createFrontNode()
+		newNode.data = itm
+	}
+	EmplaceFront := !(args...) -> void
+	{
+		newNode := createFrontNode()
+		newNode.data.this(args...)
+	}
+
+	createFrontNode := !() -> ListNode.{T}^
+	{
+		newNode := createNode()
+		if itSize == 0
+		{
+			start = newNode
+			end = newNode
+		}else{
+			start.prev = newNode
+			newNode.next = start
+			start = newNode
+		}
+		itSize += 1
+		return newNode
+	}
+	Pop := !() -> T
+	{
+		assert(itSize >= 1)
+		result = start.data
+		containerCleanObject(start.data&)
+		if itSize == 1
+		{
+			destroyNode(start)
+			start = null
+			end = null
+		}else{
+			nd := start
+			start = start.next
+			destroyNode(nd)
+		}
+		itSize -= 1
+	}
+
+	"[]" := virtual !(int ind) -> ref T
+	{
+		if ind < 0
+			return this[itSize + ind]
+		assert(ind >= 0 and ind < itSize)
+
+		itr := start
+		for i : ind
+		{
+			itr = itr.next
+		}
+		return itr.data
+	}
+
+	ToVector := virtual !() -> Vector.{T}^
+	{
+		nowSize := Size()
+		result = new Vector.{T}(nowSize)
+		for it,i : this
+		{
+			result^[i] = it
+		}
+	}
+	"in" := !(T itm) -> bool
+	{
+		if this[^] == itm
+			return true
+		return false
+	}
+	FindIndex := !(T itm) -> int
+	{
+		for it,ind : this
+		{
+			if it == itm
+				return ind
+		}
+		return -1
+	}
+
+	Size := virtual !() -> int { return itSize }
+	Destroy := virtual !() -> void
+	{
+		itr := start
+		while itr != null
+		{
+			nd := itr
+			itr = itr.next
+			destroyNode(nd)
+		}
+		start = null
+		end = null
+		itSize = 0
+	}
+	SortedPush := !(T itm) -> void
+	{
+		if Size() == 0
+		{
+			Push(itm)
+			return void
+		}
+		itr := start
+		while itr != null
+		{
+			if itr.data > itm
+				break
+			itr = itr.next
+		}
+		if itr == null
+		{
+			Push(itm)
+			return void
+		}
+		newNode := createNode()
+		newNode.data = itm
+		if itr == start
+		{
+			newNode.next = start
+			start.prev = newNode
+			start = newNode
+		}else{
+			newNode.prev = itr.prev
+			newNode.next = itr
+			itr.prev.next = newNode
+			itr.prev = newNode
+		}
+	}
+	DeleteIf := !( !(T&)&->bool cb) -> void
+	{
+		itr := start
+		while itr != null
+		{
+			if cb(itr.data)
+			{
+				if itSize == 1
+				{
+					destroyNode(start)
+					start = null
+					end = null
+					itr = null
+				}else if itr == start
+				{
+					start = itr.next
+					start.prev = null
+					destroyNode(itr)
+					itr = start
+				}else if itr == end
+				{
+					end = itr.prev
+					end.next = null
+					destroyNode(itr)
+					itr = null
+				}else{
+					itNode := itr
+					itr = itNode.next
+					itNode.prev.next = itNode.next
+					itNode.next.prev = itNode.prev
+				}
+				itSize -= 1
+			}else{
+				itr = itr.next
+			}
+		}
+	}
+	destroyNode := !(ListNode.{T}^ nd) -> void
+	{
+		if T->IsGCPointer
+		{
+			nd.data = null
+		}
+		delete nd
+	}
+	createNode := !() -> ListNode.{T}^
+	{
+		return new ListNode.{T}
+	}
+	"for" := !() -> TListIterator.{T}
+	{
+		result.iter = start
+	}
+}
+
+
+TListIterator := class .{@T}
+{
+	iter := ListNode.{T}^
+	HaveValue := !() -> bool
+	{
+		result = iter != null
+	}
+	"()" := !() -> ref T
+	{
+		return iter.data
+	}
+	Inc := !() -> void
+	{
+		iter = iter.next
+	}
+}

@@ -1,0 +1,46 @@
+
+
+CompileVulkanShader := !(vRepoFile^ fl) -> Blob^
+{
+	moduleType := char^	
+	if fl.GetName().End == ".vert"
+	{
+		moduleType = "vert"
+	}else if fl.GetName().End == ".frag"
+	{
+		moduleType = "frag"
+	}else{
+		return null
+	}
+	baseFolder := fl.GetUpFolder()
+
+	flCache := ref fsCompilerCache[baseFolder]
+	if flCache.0 == null
+	{
+		flCache.0 = new CacheFile(CreateString(baseFolder.GetPath(), "/CompiledShaders.zip"))
+		flCache.1 = flCache.0.GetFileModule("Shaders")
+	}
+	result = flCache.1.GetCacheValue(fl,() ==> Blob^ {
+		ec := TEchoStream //TODO non linux version, and use Processes + Pipes
+		ec << "glslangValidator -S " << moduleType << " -e main --target-env vulkan1.0 " //TODO i have some trouble selecting version, besides vulkan1.0
+		ec << fl.GetPath()
+		ec << " -o /tmp/MechaCacheFile"
+		st := ec.GetString()
+		res := system(st.Str())
+		if res != 0
+		{
+			return null
+		}
+		chc := MappedFile("/tmp/MechaCacheFile")
+		result = new BlobOnVector(chc.Size())
+		if chc.Size() != 0
+		{
+			memcpy(result.GetPointer(),chc.Get(),chc.Size())
+		}
+	})
+	flCache.0.Flush()
+}
+
+
+fsCompilerCache := AVLMap.{vRepoFolder^,Tuple.{CacheFile^,CacheFileModule^}}
+

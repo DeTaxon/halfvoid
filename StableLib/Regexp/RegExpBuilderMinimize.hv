@@ -1,0 +1,106 @@
+MinimizeMachine := !(DetMachine input) -> DetMachine
+{
+	
+	EndStates := new List.{int}
+	for input.IsEndNode 
+		EndStates.PushUniq(it)
+	
+	NodeSets := Vector.{int}(input.IsEndNode.Size())
+	for it,i : input.IsEndNode
+		NodeSets[i] = EndStates.FindIndex(it)
+
+	setCheck := 0
+	setSize := EndStates.Size()
+	foundMin := false
+	while setCheck < setSize
+	{
+		for j : input.NodeId.Size()
+		{
+			gotSets := new List.{int}
+			for i : input.IsEndNode.Size()
+			{
+				if setCheck == NodeSets[i]
+				{
+					if input.Table[i][j] != -1
+						gotSets.PushUniq(NodeSets[input.Table[i][j]])
+					else gotSets.PushUniq(-1) 
+				}
+			}
+			if gotSets.Size() >= 2
+			{	
+				for i : input.IsEndNode.Size()
+				{
+					if setCheck == NodeSets[i]
+					{
+						goTo := input.Table[i][j]
+						inSet := 0 
+						if goTo != -1
+						{
+							inSet = gotSets.FindIndex(NodeSets[goTo])
+						}else{
+							inSet = gotSets.FindIndex(-1)
+						}
+						if inSet != 0
+						{
+							NodeSets[i] = setSize + inSet - 1
+						}
+					}
+				}
+				setSize += gotSets.Size() - 1
+				foundMin = true
+			}
+		}
+		setCheck++
+		if setCheck == setSize and foundMin
+		{
+			foundMin = false
+			setCheck = 0
+		}
+	}
+
+	result.Table = new Vector.{int[]}(setSize)
+	for it :  result.Table
+	{
+		it = new Vector.{int}(input.NodeId.Size())
+		for itm : it itm = -1
+	}
+	result.NodeId = new Vector.{int}(input.NodeId.Size())
+	for a : result.NodeId, b : input.NodeId 
+		a = b
+	result.IsEndNode = new Vector.{int}(setSize)
+	transformer := new Vector.{int}(NodeSets.Size())
+	
+	{
+		someIter := 0
+		usedSets := new List.{int}
+		itNode := new List.{int}
+		for it,i : NodeSets
+		{
+			if it in usedSets^
+			{
+				ps := usedSets.FindIndex(it)
+				transformer^[i] = itNode^[ps]
+			}else{
+				transformer^[i] = someIter
+				usedSets.PushUniq(it)
+				itNode.Push(someIter)
+				someIter++
+			}
+		}
+	}
+
+	for i : NodeSets.Size()
+	{
+		fromNew := transformer^[i]
+		result.IsEndNode[fromNew] = input.IsEndNode[i]
+		for j : input.NodeId.Size()
+		{
+			toOld := input.Table[i][j]
+			if toOld != -1
+			{
+				toNew := transformer^[toOld]
+				result.Table[fromNew][j] = toNew
+			}
+		}
+	}
+}

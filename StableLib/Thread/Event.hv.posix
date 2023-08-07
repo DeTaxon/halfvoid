@@ -1,0 +1,32 @@
+Event := class extend TGCObject
+{
+    evId := int
+    this := !() -> void
+    {
+        evId = eventfd(0,0)
+    }
+    Get := !() -> int
+    {
+        return evId
+    }
+
+    Emit := !() -> void
+    {
+        someVal := 1U
+        write(evId,someVal&,8)
+    }
+    Wait := !() -> void
+    {
+        someVal := u64
+        read(evId,someVal&,8)
+    }
+    Reset := !() -> void
+    {
+        assert(false)
+    }
+
+    Destroy := virtual !() -> void
+    {
+        close(evId)
+    }
+}

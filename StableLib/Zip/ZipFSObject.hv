@@ -1,0 +1,34 @@
+
+vRepoObject := class extend TGCObject
+{
+	objName := String^
+	upFolder := vRepoFolder^
+
+	GetName := !() -> String^ { return objName }
+	
+	GetUpFolder := !() -> vRepoFolder^ { return upFolder }
+
+	GetPath := !() -> String^
+	{
+		itms := HybridStack.{vRepoObject^,16}
+		iterUp := this&
+		while iterUp != null
+		{
+			itms.PushFront(iterUp)
+			iterUp = iterUp.upFolder
+		}
+		if itms.Size() > 1
+			itms.Pop()
+		
+		strB := TEchoStream
+		for it,i : itms
+		{
+			strB << it.objName
+			if i != itms.Size() - 1
+			{
+				strB << "/"
+			}
+		}
+		return strB.GetString()
+	}
+}

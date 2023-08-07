@@ -1,0 +1,181 @@
+VulkanInstance := class extend TGCObject
+{
+	Instance := void^
+	Funcs := VulkanFunctionsClass^
+
+	PhysicalDevice := VkPhysicalDevice
+	LogicalDevice := VkDevice
+
+	DrawQueue := VkQueue
+	TransferQueue := VkQueue
+
+	Init := !() -> void
+	{
+		vkLib := GetLibrary(!["libvulkan.so","vulkan-1.dll"])
+
+		assert(vkLib != null) //TODO emit error
+
+		vkGetInstanceProcAddr := vkLib.Get("vkGetInstanceProcAddr")->{PFN_vkGetInstanceProcAddr}
+		vkEnumerateInstanceExtensionProperties := vkGetInstanceProcAddr(null,"vkEnumerateInstanceExtensionProperties")->{PFN_vkEnumerateInstanceExtensionProperties}
+		vkEnumerateInstanceLayerProperties := vkGetInstanceProcAddr(null,"vkEnumerateInstanceLayerProperties")->{PFN_vkEnumerateInstanceLayerProperties}
+		vkCreateInstance := vkGetInstanceProcAddr(null,"vkCreateInstance")->{PFN_vkCreateInstance}
+
+		Funcs = new VulkanFunctionsClass
+
+		count := u32
+
+		vkEnumerateInstanceLayerProperties(count&,null)
+		lays := Vector.{VkLayerProperties}(count->{int})
+		vkEnumerateInstanceLayerProperties(count&,lays.GetPointer())
+
+		vkEnumerateInstanceExtensionProperties(null,count&,null)
+		exts := Vector.{VkExtensionProperties}(count->{int})
+		vkEnumerateInstanceExtensionProperties(null,count&,exts.GetPointer())
+
+		usingLayers := List.{char^}
+		usingExtensions := List.{char^}
+
+		LayerStep(lays&,usingLayers) //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LayerStep
+		ExtensionStep(exts&,usingExtensions) //<<<<<<<<<<<<<<<<<<<<<< ExtensionStep
+
+		appInfo := VkApplicationInfo()
+
+		AppInfoStep(appInfo)
+
+		instCr := VkInstanceCreateInfo()
+		instCr.pApplicationInfo = appInfo&
+
+		setLayers := usingLayers.ToVector()
+		setExtensions := usingExtensions.ToVector()
+
+		instCr.enabledLayerCount = setLayers.Size()
+		instCr.ppEnabledLayerNames = setLayers.GetPointer()
+		instCr.enabledExtensionCount = setExtensions.Size()
+		instCr.ppEnabledExtensionNames = setExtensions.GetPointer()
+		createRes := vkCreateInstance(instCr&,null,Instance&) //<<<<<<<<<<<<<<<<<<<<<<<<<<< CreateInstance
+
+		for fnc , fncName : Funcs->AllFields
+		{
+			fnc&->{void^^}^ = vkGetInstanceProcAddr(Instance,fncName)
+			//printf("GetInstClass %p %s\n",fnc,fncName)
+		}
+
+		DebugStep() //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<DebugStep
+
+		devCount := u32
+		Funcs.vkEnumeratePhysicalDevices(Instance,devCount&,null)
+		devs := Vector.{VkPhysicalDevice}(devCount)
+		Funcs.vkEnumeratePhysicalDevices(Instance,devCount&,devs.GetPointer())
+		
+		numDevice := DeviceSelectStep(devs&) //TODO check if bad  //<<<<<<<<<<<<<<<<<<<<<<<<< DeviceSelectStep
+		
+		PhysicalDevice = devs[numDevice]
+
+		devExts := Vector.{VkExtensionProperties}
+		devSupports := AVLSet.{char^}
+
+		devExtsCount := u32
+		Funcs.vkEnumerateDeviceExtensionProperties(PhysicalDevice,null,devExtsCount&,null)
+		if devExtsCount != 0
+		{
+			devExts.Resize(devExtsCount)
+			Funcs.vkEnumerateDeviceExtensionProperties(PhysicalDevice,null,devExtsCount&,devExts.GetPointer())
+		}
+
+
+		physExts := List.{char^}
+
+		DeviceExtensionStep(devExts&,physExts)
+
+		usingPhysExts := physExts.ToVector()
+
+		queueCreateInf := VkDeviceQueueCreateInfo()
+		queueCreateInf.queueFamilyIndex = 0 //TODO what is that?
+		zeroPrior := float
+		zeroPrior = 0.0
+		queueCreateInf.queueCount = 1 //TODO what is that?
+		queueCreateInf.pQueuePriorities = zeroPrior&
+		
+		zeroFeature := VkPhysicalDeviceFeatures //TODO what is that?
+
+		logDevice := VkDeviceCreateInfo()
+
+		logDevice.queueCreateInfoCount = 1
+		logDevice.pQueueCreateInfos = queueCreateInf&
+		logDevice.enabledLayerCount = 0 // usingLayers.Size() //TODO
+		logDevice.ppEnabledLayerNames = null //usingLayers.Get() //TODO
+		logDevice.enabledExtensionCount = usingPhysExts.Size()
+		logDevice.ppEnabledExtensionNames = usingPhysExts.GetPointer()->{char^}
+		logDevice.pEnabledFeatures = zeroFeature&
+
+		imagelessFrame := VkPhysicalDeviceImagelessFramebufferFeatures()
+		imagelessFrame.imagelessFramebuffer = 1
+		logDevice.pNext = imagelessFrame&
+
+		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
+
+		Funcs.vkGetDeviceQueue(LogicalDevice,0,0,DrawQueue&)
+		TransferQueue = DrawQueue
+
+		CheckMemory()
+
+		initCmdBuffer()
+	}
+	
+	itStageMemory := TVkMemBuffer^
+	initCreateStageMemory := !() -> void
+	{
+    		stSize := 0x4c4c00
+		itStageMemory = CreateTransferMemBuffer(stSize)
+	}
+
+	DeviceMemory := List.{VulkanMemoryInfo^}
+	HostMemory := List.{VulkanMemoryInfo^}
+	BestTransferMemory := VulkanMemoryInfo^ 
+	CheckMemory := !() -> void
+	{
+		
+		memReq := VkPhysicalDeviceMemoryProperties
+		Funcs.vkGetPhysicalDeviceMemoryProperties(PhysicalDevice,memReq&)
+
+		for heapI : memReq.memoryHeapCount&->{int^}^
+		{
+			for i : memReq.memoryTypeCount&->{int^}^
+			{
+				if memReq.memoryTypes[i].heapIndex != heapI
+					continue
+
+				memBits := memReq.memoryTypes[i]&->{int^}^
+
+				newMemInfo := new VulkanMemoryInfo
+
+				newMemInfo.index = i
+				newMemInfo.flags = memBits
+				newMemInfo.heapSize = memReq.memoryHeaps[heapI].size
+
+				if (memBits and_b VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) != 0
+				{
+					DeviceMemory.Push(newMemInfo)
+				}else{
+					if BestTransferMemory == null 
+						or BestTransferMemory.heapSize < newMemInfo.heapSize
+					{
+						BestTransferMemory = newMemInfo
+					}
+					HostMemory.Push(newMemInfo)
+				}
+			}
+		}
+	}
+
+	LayerStep := virtual !(VkLayerProperties[] supportedLayers, List.{char^} usingLayers) -> void { assert(false) }
+	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void { assert(false) }
+	AppInfoStep := virtual !(VkApplicationInfo appInfo) -> void { assert(false) }
+	DebugStep := virtual !() -> void { assert(false) }
+	DeviceSelectStep := virtual !(VkPhysicalDevice[] deviceList) -> int { assert(false) }
+	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void { assert(false) }
+}
+
+
+
+

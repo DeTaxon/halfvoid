@@ -1,0 +1,73 @@
+HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
+{
+	StaticSize := int
+	FullSize := int
+	StaticArray := T[HSize]
+	ListArray := List.{T}
+
+	"[]" := virtual !(int i) -> ref T
+	{
+		if i >= HSize
+		{
+			return ListArray[i - HSize]
+		}
+		return StaticArray[i]
+	}
+	Size := virtual !() -> int
+	{
+		return FullSize
+	}
+
+	Push := !(T itm) -> void
+	{
+		if StaticSize < HSize
+		{
+			ZeroMem(StaticArray[StaticSize])
+			StaticArray[StaticSize] = itm
+			StaticSize += 1
+		}else{
+			ListArray.Push(itm)
+		}
+		FullSize += 1
+	}
+	Emplace := !(args...) -> void
+	{
+		if StaticSize < HSize
+		{
+			ZeroMem(StaticArray[StaticSize])
+			StaticArray[StaticSize].this(args...)
+			StaticSize += 1
+		}else{
+			ListArray.Emplace(args...)
+		}
+		FullSize += 1
+	}
+	Destroy := virtual !() -> void
+	{
+		if T->IsGCPointer
+		{
+			for i : StaticSize
+				StaticArray[i] = null
+		}
+		StaticSize = 0
+		FullSize = 0
+		ListArray.Destroy()
+	}
+	//"for" := !() -> !()&->ref T
+	//{
+	//	lmbd := () ==> ref T{
+	//		for iVal : StaticSize
+	//		{
+	//			yield StaticArray[iVal]
+	//		}
+	//		if ListArray.Size() != 0
+	//		{
+	//			for it : ListArray
+	//			{
+	//				yield it
+	//			}
+	//		}
+	//	}
+	//	return lmbd.Capture()
+	//}
+}

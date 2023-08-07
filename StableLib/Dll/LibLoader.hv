@@ -1,0 +1,220 @@
+
+Library := class
+{
+	hndl := void^
+	itFileName := char^
+	loadedObjs := AVLMap.{String^,void^}
+
+	this := !() -> void
+	{
+	}
+	Get := virtual !(StringView name) -> void^
+	{
+		nm := name.GetString()
+
+		inMap := loadedObjs.TryFind(nm)
+		if inMap != null
+			return inMap^
+		// if $win32 if win32DllData != null
+		// {
+		// 	inExport := win32DllData.exportFunctions.TryFind(name)
+		// 	if inExport != null
+		// 	{
+		// 		loadedFuncs[StrCopy(name)] = inExport^
+		// 		return inExport^
+		// 	}
+		// }
+
+		newFunc := LoadFuncLib(hndl,name.GetString().Str())
+		loadedObjs[nm] = newFunc
+		
+		return newFunc
+	}
+}
+
+LibDatabaseType := class
+{
+	loadedLibs := AVLMap.{String^,Library^}
+	
+	//Destroy := !() -> void
+	//{
+	//	for loadedLibs
+	//	{
+	//		CloseLib(it.hndl)
+	//		if it.itFileName != null
+	//			TFSDelete(it.itFileName)
+	//	}
+	//	itMemPool.Destroy()
+	//}
+	GetLib := !(StringView name) -> Library^
+	{
+		nrm := name.GetString()
+		inMap := loadedLibs.TryFind(nrm)
+		if inMap != null
+			return inMap^
+
+		hndl := void^
+
+		// if '*' in name
+		// {
+		// 	if $posix
+		// 	{
+		// 		libName := name
+		// 		card := Wildcard(name)
+		// 		LibLoaderCheckFolders()
+		// 		for libFolder : _loadLibDirs
+		// 		{
+		// 			pt := Path(libFolder)
+		// 			for lib : pt
+		// 			{
+		// 				if lib.Name() in card
+		// 				{
+		// 					hndl = OpenLib(lib.Get())
+		// 					if hndl != null
+		// 					{
+		// 						libName = StrCopy(lib.Name().Get())
+		// 						break
+		// 					}
+		// 				}
+		// 			}
+		// 			if hndl != null
+		// 				break
+		// 		}
+		// 		if hndl != null
+		// 		{
+		// 			inMap2 := ref loadedLibs[libName]
+		// 			inMap2.hndl = hndl
+		// 			return inMap2&
+		// 		}
+		// 	}
+		// }else{
+			hndl = OpenLib(nrm.Str())
+
+			
+			if hndl == null
+			{
+				nameBuff := char[1024] //TODO better string support?
+				sprintf(nameBuff,"./%s",nrm.Str())
+				//if exTest.IsExist()
+				//{
+					hndl = OpenLib(nameBuff)
+				//}
+			}
+
+			if hndl != null
+			{
+
+				newObj := new Library
+				newObj.hndl = hndl
+				loadedLibs[nrm] = newObj
+				
+				return newObj
+			}
+			return null
+		//}
+
+		// if intrRepoBrowser != null
+		// {
+		// 	inFS := intrRepoBrowser.GetFile(name)
+		// 	if inFS != null
+		// 	{
+		// 		if inFS.IsVirtual()
+		// 		{
+		// 			if $win32
+		// 			{
+
+		// 				pt := inFS.Map()
+		// 				defer inFS.Unmap()
+
+		// 				resLoad := win32LoadLibrary(pt,inFS.Size())
+
+		// 				nameCpy := StrCopy(name)
+		// 				inMap2 := ref loadedLibs[nameCpy]
+		// 				inMap2.hndl = hndl
+		// 				//inMap2.itFileName = StrCopy(tmpName)
+		// 				inMap2.win32DllData = resLoad
+		// 				return inMap2&
+		// 			}
+		// 			if $posix
+		// 			{
+		// 				pt := inFS.Map()
+		// 				defer inFS.Unmap()
+
+		// 				rf := RawFile()
+		// 				newName := rf.OpenTemp(name,true)
+		// 				rf.Write(pt,inFS.Size())
+		// 				rf.Close()
+
+		// 				hndl = OpenLib(newName)
+		// 				inMap4 := ref loadedLibs[StrCopy(name)]
+		// 				inMap4.hndl = hndl
+		// 				return inMap4&
+		// 			}
+		// 		}else{
+		// 			toLoad := inFS.GetPath()
+		// 			toLoad2 := Path(toLoad)
+		// 			toLoad = toLoad2.FullPath().Get()
+
+		// 			hndl = OpenLib(toLoad)
+
+
+		// 			if hndl == null
+		// 				return null
+		// 			inMap3 := ref loadedLibs[StrCopy(name)]
+		// 			inMap3.hndl = hndl
+		// 			return inMap3&
+		// 		}
+		// 	}
+		// }
+		return null
+	}
+}
+gLibDB := LibDatabaseType
+
+GetLibrary := !(StringView libName) -> Library^
+{
+	return gLibDB.GetLib(libName)
+}
+
+GetLibrary := !(char^[] lbs) -> Library^
+{
+	for i : lbs.Size()
+	{
+		spn := StringSpan(lbs[i])
+		if #OS() == "Windows"
+		{
+			if spn.End == ".so"
+				continue
+		}
+		if #OS() == "Linux"
+		{
+			if spn.End == ".dll"
+				continue
+		}
+		lb := gLibDB.GetLib(lbs[i])
+		if lb != null
+			return lb
+	}
+	return null
+}
+
+GetLibrary := !(vRepoFile^ fl) -> Library^
+{
+	//assert(fl.IsVirtual)
+
+	if #OS() == "Windows"
+	{
+		pt := fl.GetMap()
+
+		resLoad := win32LoadLibrary(pt.Get(),pt.Size())
+		
+		res := new LibraryWackyLoad
+		res.win32DllData = resLoad
+
+		return res
+	}
+	if #OS() == "Linux"
+	{
+		return loadDllFromEmbeddedFile(fl)	
+	}
+}

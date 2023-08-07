@@ -1,0 +1,64 @@
+
+VkOverlayContext := class
+{
+	inst := VulkanDefaultInstance^
+	w := float
+	h := float
+
+	textDrawLayout := TShaderInput^
+	textDrawShader := vShader^
+
+	figureDrawLayout := TShaderInput^
+	figureDrawShader := vShader^
+
+	atlasPool := TDescriptorPool^
+
+	FontAtlases := List.{FontAtlas^}
+	CreateFont := !(vRepoFile^ fil, float height) -> Font^
+	{
+		testAtlas := new FontAtlas(inst,fil,height,1)
+		FontAtlases.Push(testAtlas)
+		result = testAtlas.fonts[0]
+		testAtlas.atlasDescriptor = atlasPool.CreateDescriptor()
+		vSetTexture(inst,testAtlas.atlasDescriptor,testAtlas.atlasTexture,inst.SamplerNearest)
+	}
+
+	CreateRenderPass := !(VulkanInstance^ vInst, int imageFormat) -> TRenderPass^
+	{
+		inst = vInst
+		return inst.CreateRenderPass(![
+			TRenderPassFrame(imageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+		],false)
+	}
+	Init := !(TRenderPass^ rPass) -> void
+	{
+		drawLayout := rPass.CreateLayout(![
+			VKType(VType_Float,2),
+			VKType(VType_Float,2),
+			VKType(VType_UInt8,4)
+		],![
+			new TImageSet(1)
+		],![
+			new TVertexPushConstant(4*4)
+		],
+		1
+		)
+		drawShader := drawLayout.CreateShader(#EmbVKShaderLocal("TextVert.vert"),#EmbVKShaderLocal("TextFrag.frag"))
+
+		figureDrawLayout = rPass.CreateLayout(![
+			VKType(VType_Float,2),
+			VKType(VType_Float,2),
+			VKType(VType_UInt8,4)
+		],![],![
+			new TVertexPushConstant(4*4)
+		],
+		1
+		)
+		figureDrawShader = drawLayout.CreateShader(#EmbVKShaderLocal("FigureDraw.vert"),#EmbVKShaderLocal("FigureDraw.frag"))
+
+		textDrawLayout = drawLayout
+		textDrawShader = drawShader
+
+		atlasPool = textDrawLayout.CreateDescriptorPool(0,10)
+	}
+}

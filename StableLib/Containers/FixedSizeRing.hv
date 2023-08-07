@@ -1,0 +1,38 @@
+FixedSizeRing := class .{@T} extend TGCObject
+{
+	fixedArray := T[128]
+	itSize := int
+	startIndex := u32
+	endIndex := u32
+
+	Push := !(T x) -> void
+	{
+		myIndex := InterlockAdd(startIndex,1) and_b 0x7F
+		lastSize := InterlockAdd(itSize,1)
+		assert(lastSize < 128)
+		fixedArray[myIndex] = x
+	}
+	Pop := !() -> T
+	{
+		myIndex := InterlockAdd(endIndex,1) and_b 0x7F
+		lastSize := InterlockSub(itSize,1)
+		assert(lastSize > 0)
+		result = fixedArray[myIndex]
+		if T->IsGCPointer
+			fixedArray[myIndex] = null
+	}
+	Size := !() -> int
+	{
+		return itSize
+	}
+	Destroy := virtual !() -> void
+	{
+		if T->TypeGroup == "Point"
+		{
+			while Size() != 0
+			{
+				Pop()
+			}
+		}
+	}
+}

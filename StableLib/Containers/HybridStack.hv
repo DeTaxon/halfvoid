@@ -1,0 +1,83 @@
+HybridStack := class .{@T,@HSize} extend TArrayView.{T}
+{
+	StaticSize := int
+	StaticArray := T[HSize]
+	ListArray := List.{T}
+
+	"[]" := virtual !(int i) -> ref T
+	{
+		if i < ListArray.Size()
+		{
+			return ListArray[i]
+		}
+		return StaticArray[HSize - StaticSize + (i - ListArray.Size())]
+	}
+	Size := virtual !() -> int
+	{
+		return StaticSize + ListArray.Size()
+	}
+
+	Pop := !() -> T
+	{
+		if ListArray.Size() != 0
+		{
+			return ListArray.Pop()
+		}else {
+			result = StaticArray[HSize - StaticSize]
+			if T->IsGCPointer
+			{
+				StaticArray[HSize - StaticSize] = null
+			}
+			StaticSize -= 1
+		}
+	}
+
+	PushFront := !(T itm) -> void
+	{
+		if StaticSize < HSize
+		{
+			StaticArray[HSize - StaticSize - 1] = itm
+			StaticSize += 1
+		}else{
+			ListArray.PushFront(itm)
+		}
+	}
+	EmplaceFront := !(args...) -> void
+	{
+		if StaticSize < HSize
+		{
+			ZeroMem(StaticArray[StaticSize])
+			StaticArray[HSize - StaticSize - 1].this(args...)
+			StaticSize += 1
+		}else{
+			ListArray.EmplaceFront(args...)
+		}
+	}
+	Destroy := virtual !() -> void
+	{
+		if T->IsGCPointer
+		{
+			for i : StaticSize
+				StaticArray[i] = null
+		}
+		StaticSize = 0
+		ListArray.Destroy()
+	}
+	"for" := !() -> !()&->ref T
+	{
+		lmbd := () ==> ref T{
+			if ListArray.Size() != 0
+			{
+				for it : ListArray
+				{
+					yield it
+				}
+			}
+			for i : StaticSize
+			{
+				yield StaticArray[HSize - StaticSize + i]
+			}
+		}
+		return lmbd.Capture()
+	}
+}

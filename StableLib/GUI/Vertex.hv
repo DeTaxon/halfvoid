@@ -1,0 +1,7 @@
+
+GUIVertex := class
+{
+	pos := float[2]
+	uv := float[2]
+	color := u8[4]
+}

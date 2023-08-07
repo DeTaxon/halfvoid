@@ -1,0 +1,115 @@
+NuklearVulkanContext := class //extend TGCObject
+{
+	itContext := void^
+	vInstance := VulkanDefaultInstance^
+
+	atlasData := nk_font_atlas 
+	atlasTexture := TVkTexture^
+
+	textList := List.{Tuple.{int,float,float,float,float}}
+	renderMesh := TVkMesh^
+
+
+	MakeDraw := !() -> void
+	{
+		DrawCode(itContext)
+	}
+	DrawCode := virtual !(void^ nk) -> void
+	{
+	}
+
+	Init := !(VulkanDefaultInstance^ vi) -> void
+	{
+		vInstance = vi
+
+		itContext = calloc(nk_context_size(),1)
+
+		ax := 0
+		ay := 0
+		nk_font_atlas_init_default(atlasData&)
+		nk_font_atlas_begin(atlasData&)
+
+		fnt2 := nk_font_atlas_add_default(atlasData&,24,null)
+
+		//ttf := FSGetFile("./Pacifico.ttf")
+		//ttfMap := ttf.GetMap()
+		//fnt := nk_font_atlas_add_from_memory(atls_data,ttfMap.Get(),ttfMap.Size(),24,null)
+
+		imgABC := nk_font_atlas_bake(atlasData&,ax&,ay&,NK_FONT_ATLAS_RGBA32)
+
+
+		atlasTexture = vInstance.CreateTexture()
+		atlasTexture.CreateObject(ax,ay)
+
+		tempMem := vInstance.itStageMemory
+		tempMem.TransferData(TArraySpan.{u8}(imgABC->{u8^},ax*ay*4))
+		vStageCpyToImage(vInstance,atlasTexture.itImg,ax,ay) //TODO refactor
+
+		nk_font_atlas_end(atlasData&,atlasTexture,null)
+
+		nk_init_default(itContext,nke_font_get_handle(fnt2))
+
+		nk_style_load_all_cursors(itContext,atlasData.cursors[0]&)
+	}
+	CreateRenderPass := !(int imageFormat) -> TRenderPass^
+	{
+		return vInstance.CreateRenderPass(![
+			TRenderPassFrame(imageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+		],false)
+	}
+
+	drawLayout := TShaderInput^
+	textShader := vShader^ 
+	
+
+	Draw := !(VkCommandBuffer cmdB,int w, int h) -> void
+	{
+		offsets := VkDeviceSize
+
+		textShader.ApplyShaderToQueue(vInstance,cmdB,w->{float},h->{float})
+
+		scales := float[2]
+		scales[0] = 1.0 / w
+		scales[1] = 1.0 / h
+		vInstance.Funcs.vkCmdPushConstants(cmdB,drawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*2,scales&)
+
+		sts := VkDescriptorSet[1]
+		sts[0] = nuklearDescp
+		vInstance.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,drawLayout.Get(),0,1,sts[0]&,0,null)
+
+		renderMesh.Bind(cmdB)
+
+		index_offset := 0
+		for it : textList
+		{
+			nX := max(it.1,0)
+			nY := max(it.2,0)
+
+			nW := it.3
+			if nW + nX >= w
+				nW = w - nX
+
+			if nW <= 0
+				continue
+			nH := it.4
+			if nH + nY >= h
+				nH = h - nY
+			if nH <= 0
+				continue
+
+			sc := VkRect2D
+			sc.offset.x = nX
+			sc.offset.y = nY
+			sc.extent.width = nW
+			sc.extent.height = nH
+
+			vInstance.Funcs.vkCmdSetScissor(cmdB,0,1,sc&)
+			vInstance.Funcs.vkCmdDrawIndexed(cmdB,it.0,1,index_offset,0,0)
+			index_offset += it.0
+		}
+	}
+	
+	Destroy := virtual !() -> void
+	{
+	}
+}

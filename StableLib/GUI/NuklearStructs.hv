@@ -1,0 +1,72 @@
+nk_image := class
+{
+	handle := void^
+	w := u16
+	h := u16
+	region := u16[4]
+}
+nk_cursor := class
+{
+	img := nk_image
+	size := nk_vec2
+	offset := nk_vec2
+}
+nk_allocator := class
+{
+	userdata := void^
+	alloc := void^
+	free := void^
+}
+nk_font_atlas := class
+{
+	pixel := void^
+	tex_width := int
+	tex_height := int
+
+	permament := nk_allocator
+	temporary := nk_allocator
+
+	custom := nk_recti
+	cursors := nk_cursor[7] // NK_CURSOR_COUNT
+
+	glyph_count := int
+	glyphs := void^
+	default_font := void^
+	fonts := void^
+	config := void^
+	font_num := int
+
+}
+nk_draw_vertex_layout_element := class
+{
+	attribute := int
+	format := int
+	offset := size_t
+}
+nk_draw_null_texture := class 
+{
+	texture := void^ /* texture handle to a texture with a white pixel */
+	uvX := float /* coordinates to a white pixel in the texture  */
+	uvY := float /* coordinates to a white pixel in the texture  */
+}
+
+nk_draw_command := class
+{
+	elem_count := int
+	clip_rect := nk_rect
+	texture := void^
+}
+
+nk_convert_config := class
+{
+	global_alpha := float /* global alpha value */
+	line_AA := int /* line anti-aliasing flag can be turned off if you are tight on memory */
+	shape_AA := int /* shape anti-aliasing flag can be turned off if you are tight on memory */
+	circle_segment_count := u32 /* number of segments used for circles: default to 22 */
+	arc_segment_count := u32 /* number of segments used for arcs: default to 22 */
+	curve_segment_count := u32 /* number of segments used for curves: default to 22 */
+	nullValue := nk_draw_null_texture /* handle to texture with a white pixel for shape drawing */
+	vertex_layout := nk_draw_vertex_layout_element^  /* describes the vertex output format and packing */
+	vertex_size := size_t /* sizeof one vertex for vertex packing */
+	vertex_alignment := size_t /* vertex alignment: Can be obtained by NK_ALIGNOF */
+}

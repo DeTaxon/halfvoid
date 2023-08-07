@@ -1,0 +1,41 @@
+
+
+tracyZoneData := class
+{
+	Name := char^
+	Function := char^
+	File := char^
+	Line := u32
+	Color := u32
+}
+
+tracyZoneDestructor := class extend TGCObject
+{
+	dat := tracyZoneData
+	ctx := u64
+	enabled := bool
+	Destroy := virtual !() -> void
+	{
+		if #Tracy()
+		{
+			if enabled
+			{
+				___tracy_emit_zone_end(ctx)
+			}
+		}
+	}
+}
+
+
+TracyZone := !(char^ zoneName) -> tracyZoneDestructor
+{
+	if #Tracy()
+	{
+		result.dat.Name = zoneName
+		result.dat.Function = "None"
+		result.dat.File = "main.hv"
+		result.ctx = ___tracy_emit_zone_begin_callstack(result.dat&,999,1)
+		result.enabled = true
+		//result.ctx = ___tracy_emit_zone_begin(result.dat&,1)
+	}
+}

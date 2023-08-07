@@ -1,0 +1,21 @@
+
+CurrentTask := thread_local Task^
+CurrentThread := thread_local TaskWorker^
+
+internalHVGetTaskLocalTuple := !() -> void^
+{
+	return CurrentTask.taskLocalData&
+}
+internalHVSetTaskLocalTuple := !(void^ tsLocal) -> void
+{
+}
+
+TaskCheckMutex := Mutex^
+TaskWaitTasksConVar := ConVar^
+
+TaskPausedWorkers := int
+TaskQuitProgram := bool
+TaskMainTaskWorker := TaskWorker^
+TaskAdditionalWorkers := List.{TaskWorker^}
+
+TaskPauseList := AVLMap.{double,Task^}

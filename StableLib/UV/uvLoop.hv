@@ -1,0 +1,24 @@
+
+
+UVLoop := class extend TGCObject
+{
+	loopData := u8[0]
+	Destroy := virtual !() -> void
+	{
+		uv_loop_close(loopData[0]&)
+	}
+	GetPointer := !() -> u8^
+	{
+		return loopData[0]&
+	}
+}
+
+//createUVLoop := !() -> void
+//{
+//	if uvLoopGlobal != null
+//		return void
+//
+//	uvLoopGlobal := static UVLoop^
+//	//uvLoopGlobal = malloc(UVLoop->TypeSize + uv_loop_size())->{UVLoop^}
+//	//uv_loop_init(uvLoopGlobal.GetPointer())
+//}

@@ -1,0 +1,99 @@
+internalHVEntryPoint := !(int argc,char^^ argv) -> int
+{
+	//All function expects to CurrentTask be initialized, this is not working for first function
+	//so first function MUST initialize CurrentTask
+	internalInitThread()
+
+	result = internalHVEntryPoint2(argc,argv)
+
+	internalGlobalsDestroy()
+
+	CurrentThread.ThreadMainTask = null
+	CurrentThread = null
+	internalThreadDestructor()
+}
+
+internalInitThread := !() -> void
+{
+	voidVal := calloc(1,Task->TypeSize)
+	internalHVInitClass(voidVal->{Task^}^)
+	CurrentTask = voidVal->{Task^}
+	CurrentTask.DecRef()
+}
+
+internalGlobalsDestroy := !() -> void
+{
+	for it,ind : $GlobalVariables
+	{
+		if it->Type >= TGCIObject
+		{
+			it.Destroy()
+		}
+		if it->TypeGroup == "Array"
+		{
+			if it->TypeBase->IsGCPointer
+			{
+				for c : it
+					c = null
+			}
+		}
+	}
+}
+internalThreadDestructor := !() -> void
+{
+	CurrentTask = null
+}
+
+
+TSpawnTask := !(!()&-> void cb) -> void
+{
+	startTask := new Task(cb.Capture())
+
+	CurrentThread.AllTasks.Insert(startTask)
+	CurrentThread.CreateTasks.Push(startTask)
+	startTask = null
+}
+
+
+ucontextStartTask := !() -> void
+{
+	CurrentTask.startTaskThread()
+}
+
+internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
+{
+	InitTaskContext()
+	//TaskUVInit()
+
+	CurrentThread = new TaskWorker()
+	CurrentThread.ThreadMainTask = CurrentTask
+	TaskMainTaskWorker = CurrentThread
+	CurrentTask.OSFirstInit()
+
+	for it : #MarkedFunctions("CallAtStart")
+	{
+		it()
+	}
+
+	TSpawnTask(() ==> {	
+		spn := TArraySpan.{char^}//(argv,argc)
+		spn.pointer = argv
+		spn.itSize = argc
+		main(spn&)
+	})
+
+	EnterTaskThreadCycle(true)
+
+	if #Tracy()
+	{
+		___tracy_emit_memory_free_callstack = null
+	}
+
+	TaskContextDestructor()
+	TaskMainTaskWorker = null
+	
+	//ur_exit(gTaskIORing)
+	//ur_destroy(gTaskIORing)
+}
+
+

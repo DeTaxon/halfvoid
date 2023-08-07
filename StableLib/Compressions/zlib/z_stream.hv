@@ -1,0 +1,21 @@
+z_stream := class
+{
+	next_in := void^
+	avail_in := u32
+	total_in := c_long
+
+	next_out := void^
+	avail_out := u32
+	total_out := c_long
+
+	msg := char^
+	state := void^
+
+	zalloc := void^
+	zfree := void^
+	opaque := void^
+
+	data_type := s32
+	adler := c_long
+	reserved := c_long
+}

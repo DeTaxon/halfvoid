@@ -1,0 +1,37 @@
+AppendClass Task
+{
+	fiberHandler := void^
+	OSFirstInit := !() -> void
+	{
+		fiberHandler = ConvertThreadToFiber(null)
+	}
+	CreateStack := !() -> void
+	{
+		if fiberHandler != null
+			return void
+			
+		fiberHandler = CreateFiber(4*1024*1024,ucontextStartTask,null)
+		itTaskWorker = CurrentThread
+
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		SwitchToFiber(fiberHandler)
+	}
+	firstStartOS := !() -> void
+	{
+		oldTask := CurrentTask->{void^}
+		CurrentTask = CurrentThread.ThreadMainTask
+		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+			SwitchToFiber(CurrentTask.fiberHandler)
+	}
+
+	switchToTask := !() -> void
+	{
+		CurrentTask = this&
+		SwitchToFiber(fiberHandler)
+	}
+
+	OSDestroy := !() -> void
+	{
+	}
+}

@@ -1,0 +1,43 @@
+
+// gTaskIORing := void^
+// gTaskRingWorkCount := int
+
+TaskDoUring := !( !(void^)&->void cb) -> void
+{
+	// gTaskRingWorkCount += 1
+
+	// sqe := ur_get_sqe(gTaskIORing)
+	// cb(sqe)
+	// ur_sqe_set_data(sqe,CurrentTask)
+	// ur_submit(gTaskIORing)
+	
+	// CurrentThread.ThreadMainTask.switchToTask()
+	
+	// gTaskRingWorkCount -= 1
+}
+
+// Sleep := !(double val) -> void
+// {
+// 	endTime := GetSteadyTime() + val
+// 	while TaskPauseList.Contain(endTime)
+// 		endTime += 0.0001f
+// 	TaskPauseList[endTime] = CurrentTask
+// 	TaskPollWorkInProgress += 1
+// 	CurrentThread.ThreadMainTask.switchToTask()
+// 	TaskPollWorkInProgress -= 1
+// }
+
+	//example
+	//timeout := u64[2]
+	//timeout[0] = 1 //1 sec
+	//timeout[1] = 1
+
+	//tst := URing()
+
+	//sqe := tst.GetSQE()
+	//sqe.opcode = 11 //TIMEOUT
+	//sqe.addr&->{void^^}^ = timeout[0]&
+	//sqe.len = 1
+	//sqe.off = 1
+	//tst.Submit()
+	//tst.WaitOne()

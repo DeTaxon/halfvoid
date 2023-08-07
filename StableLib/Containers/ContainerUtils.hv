@@ -1,0 +1,12 @@
+containerCleanObject := !(@T^ x) -> void
+{
+	if T->IsGCClass
+	{
+		x.Destroy()
+		internalGCClearClass(x^)
+	}
+	if T->IsGCPointer
+	{
+		x^ = null
+	}
+}

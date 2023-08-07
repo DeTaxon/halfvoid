@@ -62,7 +62,7 @@ SizeCheck:
 	nm --print-size --size-sort --radix=d ./halfvoid  | less
 
 halfvoid:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 StandardHVLibrary/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 StableLib/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.ll

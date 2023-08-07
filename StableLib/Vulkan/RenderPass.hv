@@ -1,0 +1,107 @@
+AppendClass VulkanInstance
+{
+	CreateRenderPass := !(TRenderPassFrame[] lst, bool useDepth) -> TRenderPass^
+	{
+		result = new TRenderPass
+		result.itInstance = this&
+		result.CreatePass(this&,lst,useDepth)
+	}
+}
+
+TRenderPass := class extend TGCObject
+{
+	itInstance := VulkanInstance^
+	itPass := VkRenderPass
+	Get := !() -> VkRenderPass { return itPass }
+	CreatePass := !(VulkanInstance^ inst,TRenderPassFrame[] lst, bool useDepth) -> void
+	{
+		assert(lst.Size() <= 10)
+		attmDesc := VkAttachmentDescription[11]
+
+		for i : lst.Size()
+		{
+			attmDesc[i].format = lst[i].typeFormat
+			attmDesc[i].samples = VK_SAMPLE_COUNT_1_BIT
+			attmDesc[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+			attmDesc[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE
+			attmDesc[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE
+			attmDesc[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
+			attmDesc[i].initialLayout = lst[i].beginLayout
+			attmDesc[i].finalLayout  = lst[i].endLayout
+		}
+		attmRef := VkAttachmentReference[10]
+
+		for i : lst.Size()
+		{
+			attmRef[i].attachment = i
+			attmRef[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		}
+
+		attmRef2 := VkAttachmentReference
+
+		if useDepth
+		{
+			ls := lst.Size()
+			attmRef2.attachment = ls
+			attmRef2.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+
+			attmDesc[ls].format = VK_FORMAT_D16_UNORM
+			attmDesc[ls].samples = VK_SAMPLE_COUNT_1_BIT
+			attmDesc[ls].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+			attmDesc[ls].storeOp = VK_ATTACHMENT_STORE_OP_STORE
+			attmDesc[ls].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE
+			attmDesc[ls].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE
+			attmDesc[ls].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+			attmDesc[ls].finalLayout  = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+		}
+
+		subpass := VkSubpassDescription
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS
+		subpass.inputAttachmentCount = 0
+		subpass.pInputAttachments = null
+		subpass.colorAttachmentCount = lst.Size()
+		subpass.pColorAttachments&->{void^^}^ = attmRef[0]&
+		subpass.pResolveAttachments = null
+		subpass.preserveAttachmentCount = 0
+		subpass.pPreserveAttachments = null
+
+		rpC := VkRenderPassCreateInfo()
+		rpC.attachmentCount = lst.Size()
+		rpC.pAttachments&->{void^^}^ = attmDesc[0]&
+		rpC.subpassCount = 1
+		rpC.pSubpasses&->{void^^}^ = subpass&
+		rpC.dependencyCount = 0
+		rpC.pDependencies = null
+
+		if useDepth
+		{
+			subpass.pDepthStencilAttachment&->{void^^}^ = attmRef2&
+			rpC.attachmentCount += 1
+		}
+
+		inst.Funcs.vkCreateRenderPass(inst.LogicalDevice,rpC&,null,itPass&)
+	}
+	CreateLayout := !(VKType[] vInput,TShaderSet^[] sets, TPushConstant^[] cnsts, int resImgCount) -> TShaderInput^
+	{
+		result = new TShaderInput
+		result.itInstance = itInstance
+		result.itPass = this&
+		result.CreateInput(vInput,sets,cnsts,resImgCount)
+	}
+}
+
+TRenderPassFrame := class 
+{
+	typeFormat := u64
+	beginLayout := u64
+	endLayout := u64
+
+	this := !(u64 tp, u64 beg, u64 end) -> void
+	{
+		typeFormat = tp
+		beginLayout = beg
+		endLayout = end
+	}
+
+	"=" := default
+}

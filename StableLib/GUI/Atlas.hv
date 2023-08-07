@@ -1,0 +1,61 @@
+FontAtlas := class extend TGCObject
+{
+	packContext := stbtt_pack_context
+	atlasTexture := TVkTexture^
+	fonts := HybridQueue.{Font^,4}
+
+	atlasDescriptor := VkDescriptorSet
+
+	this := !(VulkanInstance^ inst,vRepoFile^ fil, float fontSize, int oversampling) -> void
+	{
+		atlasTest := Vector.{u8}(512*512)
+		
+		stbtt_PackBegin(packContext&,atlasTest.GetPointer(),512,512,512,1,null) //TODO unconst
+		stbtt_PackSetOversampling(packContext&,oversampling,oversampling)
+
+		thisFont := new Font(this&,256,fontSize)
+		fontData := fil.GetMap()
+		fonts.Push(thisFont)
+		stbtt_PackFontRange(packContext&,fontData.Get(),0,fontSize,0,256,thisFont.packedChars.GetPointer()) //TODO check result,
+
+		stbtt_PackEnd(packContext&)
+
+		atlTexture := inst.CreateTexture()
+		newTexture := Vector.{u8}(512*512*4)
+
+		ff := atlasTest.GetPointer()
+		tt := newTexture.GetPointer()
+		for i : 512
+		{
+			for j : 512
+			{
+				tt[(i + j*512)*4 + 0] = 255 
+				tt[(i + j*512)*4 + 1] = 255 
+				tt[(i + j*512)*4 + 2] = 255 
+				tt[(i + j*512)*4 + 3] = ff[i + j*512]
+			}
+		}
+		atlasTexture = inst.CreateTexture()
+		atlasTexture.CreateTexture(512,512,newTexture&) //TODO use VK_FORMAT_R8
+	}
+	Destroy := virtual !() -> void
+	{
+		for it : fonts
+		{
+			it.packedChars.Destroy()
+		}
+	}
+}
+Font := class
+{
+	baseAtlas := FontAtlas^
+	packedChars := Vector.{stbtt_packedchar}
+	height := float
+
+	this := !(FontAtlas^ base,int cSize,float h) -> void
+	{
+		baseAtlas = base
+		packedChars.Resize(cSize)
+		height = h
+	}
+}

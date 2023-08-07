@@ -1,0 +1,94 @@
+//layout
+//0 - fullsize
+//1 - static, pixels
+//2 - dynamic, procent
+
+
+GUIObject := class extend TGCObject
+{
+
+	thisLayout := Tuple.{int,int}
+	thisLayoutSize := vec2f
+	drawSize := vec2f
+	SetSize := !(char^ wl, float w, char^ hl, float h) -> void
+	{
+		switch wl
+		{
+			case "static" thisLayout.0 = 1
+			case "dynamic" thisLayout.0 = 2
+			case void thisLayout.0 = 0
+		}
+		switch hl
+		{
+			case "static" thisLayout.1 = 1
+			case "dynamic" thisLayout.1 = 2
+			case void thisLayout.1 = 0
+		}
+
+		thisLayoutSize = vec2f(w,h)
+		if w == 0.0
+			thisLayout.0 = 0
+		if h == 0.0
+			thisLayout.1 = 0
+	}
+
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	{
+		return !{thisLayoutSize,thisLayout.0,thisLayout.1}
+	}
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	{
+		drawSize = setSize
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+	}
+}
+
+LayoutSpacer := class extend GUIObject
+{
+	this := !(char^ layoutType, float layoutSize) -> void
+	{
+		SetSize(layoutType,layoutSize,layoutType,layoutSize)
+	}
+}
+
+LayoutBase := class extend GUIObject
+{
+	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
+	staticW := float
+	staticH := float
+	foundStaticW := bool 
+	foundStaticH := bool 
+	fullSizeCount := int
+
+	foundFullSizeW := bool 
+	foundFullSizeH := bool 
+
+	this := !(GUIObject^[] objs) -> void
+	{
+		for it : objs
+		{
+			objects.Emplace(it,vec2f(0,0),vec2f(0,0),false)
+		}
+	}
+
+	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if (it.1.y > offset.y) or  (it.1.y + it.2.y < offset.y)
+				continue
+			
+			if (it.1.x > offset.x) or (it.1.x + it.2.x < offset.x)
+				continue
+
+			it.0.MousePressed(buttonNum,pressed,offset - it.1)
+			return void
+		}
+	}
+}
+

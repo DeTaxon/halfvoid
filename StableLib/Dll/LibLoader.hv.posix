@@ -1,0 +1,84 @@
+//
+//LibLoaderFolders := List.{char^}
+//
+//_loadLibDirs := List.{char^}
+//
+//_loadedLibLoaderCheckFolders := false
+//LibLoaderCheckFolders := !() -> void
+//{
+//	if _loadedLibLoaderCheckFolders
+//		return void
+//	_loadedLibLoaderCheckFolders = true
+//
+//	for it : !["/lib","/usr/lib"]
+//	{
+//		if Path(it).IsExist()
+//			_loadLibDirs.Push(StrCopy(it))
+//	}
+//
+//	pToConf := Path("/etc/ld.so.conf.d")
+//
+//	if not pToConf.IsExist()
+//		return void
+//	for confs : Wildcard("/etc/ld.so.conf.d/*.conf")
+//	{
+//		try
+//		{
+//			file := MappedFile(confs.Get())
+//			spn := StringSpan(file.Get(),file.Size())
+//			lines := spn.DivideStr("\n")
+//			for it : lines
+//			{
+//				if it.Size() == 0 or it[0] == '#'
+//					continue
+//				pathTest := Path(it)
+//				if pathTest.IsExist()
+//				{
+//					_loadLibDirs.Push(it.Str())
+//				}
+//			}
+//		}catch(IException^ e)
+//		{
+//		}
+//	}
+//}
+
+//TODO delete folder on quit
+//todo search tmpfs on system
+
+tempDirName := String^
+createDllTempDir := !() -> void
+{
+	buff := char[1024]
+	strcpy(buff[0]&,"/dev/shm/hvso.XXXXXX")
+	mkdtemp(buff[0]&)
+	tempDirName = new String(buff[0]&)
+}
+
+loadDllFromEmbeddedFile := !(vRepoFile^ fl) -> Library^
+{
+	@once createDllTempDir()
+
+	fileName := CreateString(tempDirName,"/",fl.GetName())
+	
+	someFile := new TFile(fileName.Str(),"wb")
+
+	mp := fl.GetMap()
+	someFile.Write(mp.Get(),mp.Size())
+
+	someFile = null
+	
+	result = new Library
+	result.hndl = OpenLib(fileName.Str())
+}
+
+OpenLib := !(char^ libName) -> void^
+{
+	return dlopen(libName,2)
+}
+LoadFuncLib := !(void^ hndl, char^ objName) -> void^
+{
+	return dlsym(hndl,objName)
+}
+
+

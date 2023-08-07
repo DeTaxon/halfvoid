@@ -1,0 +1,172 @@
+
+
+
+vZipEntry := class
+{
+	ptrToObj := ZipFile^
+	offset := int
+	realSize := u32
+	zipSize := u32
+	objName := StringSpan
+	fullName := StringSpan
+	comprType := int
+	subFolders := List.{vZipEntry^}
+	//compressedPointer := void^
+
+	"this" := !() -> void {}
+
+	Size := !() -> size_t
+	{
+		return realSize
+	}
+	Name := !() -> StringSpan
+	{
+		return objName
+	}
+	Path := !() -> StringSpan
+	{
+		return fullName
+	}
+
+	GetMap := !() -> FileView^
+	{
+		if comprType == 8
+		{
+			compressedPointer := malloc(realSize)
+			resPtr := ptrToObj.asMapped.point[offset]&
+
+			CrappyDeflateInflate(resPtr,zipSize,compressedPointer->{u8^},realSize)
+			return new ZipFSFileViewZipDeflate(this&,compressedPointer->{u8^},realSize)
+		}
+
+		assert(comprType == 0)
+
+		resPtr := ptrToObj.asMapped.point[offset]&
+		return new ZipFSFileViewZipStore(this&,resPtr,realSize)
+	}
+
+	Print := !(int de) -> void
+	{
+		for i : de printf("-")
+
+		printf("%s %i %i %i\n",objName.GetString().Str(),realSize,zipSize,comprType)
+		subFolders[^].Print(de+1)
+	}
+}
+ZipFile := class extend TGCObject
+{
+	examined := bool
+	asMapped := MappedFile
+	fileName := String^
+
+	zipRoot := vZipEntry
+
+	this := !() -> void
+	{
+		zipRoot.objName = StringSpan("/")
+		zipRoot.ptrToObj = this&
+	}
+	GetFile := !(char^ fileNameI) -> vZipEntry^
+	{
+		itr := zipRoot&
+		StringSpan(fileNameI).DivideStr("\\/",x ==> {
+
+			if itr == null
+				return void
+
+			for subs : itr.subFolders
+			{
+				if subs.objName == x
+				{
+					itr = subs
+					return void
+				}
+			}
+			itr = null
+		})
+
+		return itr
+	}
+		
+
+	AnalizeFile := !(StringView fileToLoad) -> bool
+	{
+		fileName = fileToLoad.GetString()
+
+		asMapped.Open(fileName.Str())
+		ptrToFl := asMapped.point
+		eod := ptrToFl[asMapped.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
+
+		if eod.signature != 0x06054b50
+		{
+			return false
+		}
+
+		tableCount := eod.numberOfCentralDirectoryHere
+		cdTable := ptrToFl[eod.offsetToStartOfCD]&->{zipCentralDirectory^}
+	
+
+		for i : tableCount
+		{	
+			ptrToStr := cdTable[1]&->{char^}
+			newStr := StringSpan(ptrToStr,cdTable.fileNameLen)
+
+			if newStr[-1..0] == "/"
+			{
+				cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
+				+ cdTable.fileNameLen 
+				+ cdTable.extraFieldsLen
+				+ cdTable.commentLen
+				]&->{zipCentralDirectory^}
+				continue
+			}
+
+			fldrs := List.{StringSpan}
+			newStr.DivideStr("/", x ==> { fldrs.Push(x)})
+			itmIter := zipRoot&
+
+			for itm,j : fldrs
+			{	
+				found := false
+				for it : itmIter.subFolders
+				{
+					if itm == it.objName
+					{
+						itmIter = it
+						found = true
+						break
+					}
+				}
+				if not found 
+				{
+					itmIter.subFolders.Push(new vZipEntry)
+					nI := itmIter.subFolders[-1]
+					nI.ptrToObj = this&
+					nI.objName = itm
+					nI.fullName = newStr
+
+					if  j == fldrs.Size() - 1
+					{
+						nI.realSize = cdTable.realSize
+						nI.zipSize = cdTable.compressedSize
+						nI.comprType = cdTable.compressionMethod
+
+						ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
+
+						nI.offset = cdTable.offsetToFileHeader + zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
+					}else{
+						itmIter = nI
+					}
+				}
+			}
+
+			cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
+			+ cdTable.fileNameLen 
+			+ cdTable.extraFieldsLen
+			+ cdTable.commentLen
+			]&->{zipCentralDirectory^}
+		}
+		return true
+	}
+
+}

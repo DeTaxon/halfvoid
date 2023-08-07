@@ -1,0 +1,115 @@
+
+O_RDONLY := 0
+O_WRONLY := 1
+O_RDWR := 2
+
+O_APPEND := 1024
+O_CREAT := 64
+O_EXCL := 128
+O_TRUNC := 512
+O_TMPFILE := 4259840
+
+PROT_READ := 1
+PROT_WRITE := 2
+PROT_EXEC := 4
+PROT_NONE := 0
+
+MAP_SHARED := 1
+MAP_PRIVATE := 2
+MAP_ANON := 32
+MAP_POPULATE := 32768
+
+S_IFDIR := 16384
+S_IFREG := 32768
+S_IFLINK := 40960
+
+
+osIsFolder := !(char^ nm) -> bool
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return false
+	itflg := st1[24]&->{s32^}^
+	if (itflg and_b S_IFDIR) == S_IFDIR
+		return true
+	return false
+}
+
+fsIsExist := !(char^ nm) -> bool
+{
+	return osFileId(nm) != 0
+}
+
+fsGetModificationTime := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return 0
+	return st1[88]&->{u64^}^
+}
+osFileSize := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return 0
+	return st1[48]&->{u64^}^
+}
+osFileId := !(char^ nm) -> u64
+{
+	st1 := char[144]
+	if stat(nm,st1[0]&) != 0
+		return 0
+	return st1[8]&->{u64^}^
+}
+osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
+{
+
+	dirFd := opendir(nm)
+	if dirFd == null
+		return void
+	
+	defer closedir(dirFd)
+
+	while true
+	{
+		nowEntry := readdir(dirFd)
+		if nowEntry == null
+			return void
+		view := StringSpan(nowEntry->{char^}[19]&)
+		cb(view)
+	}
+
+}
+
+fsGetAbsolutePath := !(char^ ptr) -> String^
+{
+	
+}
+
+GetRealTimeU64Seconds := !() -> u64
+{
+	times := u64[2]
+	clock_gettime(0,times[0]&)
+	return times[0]
+}
+GetSteadyTime := !() -> double
+{
+	times := u64[2]
+	clock_gettime(1,times[0]&)
+	resTime := times[0]->{double}
+	return resTime + times[1]*0.001*0.001*0.001
+}
+
+POLLIN := 1
+POLLINI := 2
+POLLOUT := 4
+POPLLERR := 8
+
+pollfd := class 
+{
+	fd := int
+	events := u16
+	revents := u16
+
+	"=" := default
+}

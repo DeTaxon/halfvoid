@@ -1,0 +1,93 @@
+Vector := class .{@T} extend TArrayView.{T}
+{
+	pointer := T^
+	itSize := int
+
+	this := !(int count) -> void
+	{
+		Resize(count)
+	}
+	"[]" := virtual !(int i) -> ref T
+	{
+		return pointer[i]
+	}
+	Size := virtual !() -> int
+	{
+		return itSize
+	}
+	Resize := !(int count) -> void
+	{
+		if count == itSize
+			return void
+
+		newPointer := calloc(count,T->TypeSize)->{T^}
+
+
+		if T->TypeGroup == "Class"
+		{
+			for i : count
+			{
+				internalHVInitClass(newPointer[i])
+			}
+		}
+
+		//for i : min(itSize,count) //TODO
+		//{
+		//	newPointer[i] = pointer[i]
+		//}
+
+		pointer = newPointer
+		itSize = count
+
+	}
+
+
+	GetPointer := virtual !() -> T^
+	{
+		return pointer
+	}
+
+	Destroy := virtual !() -> void
+	{
+		if pointer != null
+		{
+			if T->IsGCPointer
+			{
+				for i : itSize
+				{
+					pointer[i] = null
+				}
+			}
+			free(pointer)
+			pointer = null
+		}
+		itSize = 0
+	}
+
+	"for" := !() -> HVFixedArrayIterator.{T}
+	{
+		result.pointer = GetPointer()
+		result.size = Size()
+	}
+}
+
+HVFixedArrayIterator := class .{@T}
+{
+	pointer := T^
+	size := int
+	ind := int
+	"()" := !() -> ref T
+	{
+		result = pointer[ind]&
+		ind += 1
+	}
+	HaveValue := !() -> bool
+	{
+		result = ind < size
+	}
+}
+
+"->{}" := !(TVector.{@T} ve) .{T^} -> T^
+{
+	return ve.Get()
+}

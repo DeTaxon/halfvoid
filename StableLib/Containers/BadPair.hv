@@ -1,0 +1,10 @@
+BadPair := class .{@A,@B}
+{
+	first := A
+	second := B
+
+	"<" := !(BadPair.{A,B} itR) -> bool {	return first < itR.first }
+	"<=>" := !(BadPair.{A,B} itR) -> int {	return first <=> itR.first }
+	"=" := !(BadPair.{A,B} itR) -> void {	first = itR.first	}
+	"==" := !(BadPair.{A,B} itR) -> bool {	return first == itR.first }
+}

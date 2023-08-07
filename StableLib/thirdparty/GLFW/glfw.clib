@@ -1,0 +1,74 @@
+{
+	"initname" : "libGlfwInit",
+	"consts" :{
+		"GLFW_KEY_0" : 48,
+		"GLFW_KEY_9" : 57, 
+		"GLFW_KEY_A" : 65,
+		"GLFW_KEY_Z" : 90 
+		"GLFW_KEY_LEFT_BRACKET" :    91,
+		"GLFW_KEY_BACKSLASH" :    92,
+		"GLFW_KEY_RIGHT_BRACKET" :    93,
+		"GLFW_KEY_GRAVE_ACCENT" :    96,
+		"GLFW_KEY_SPACE" :    32,
+		"GLFW_KEY_APOSTROPHE" :    39,
+		"GLFW_KEY_COMMA" :    44,
+		"GLFW_KEY_MINUS" :    45,
+		"GLFW_KEY_PERIOD" :    46,
+		"GLFW_KEY_SLASH" :    47,
+		"GLFW_KEY_SEMICOLON" :    59,
+		"GLFW_KEY_EQUAL" :    61,
+		"GLFW_KEY_ESCAPE" :    256,
+		"GLFW_FALSE"    :	0,
+		"GLFW_RELEASE"  :	0,
+		"GLFW_PRESS"    :	1,
+		"GLFW_REPEAT"   :	2,
+		"GLFW_NO_API" : 0,
+		"GLFW_CLIENT_API" : 0x22001,
+		"GLFW_CURSOR" : 0x33001,
+		"GLFW_CURSOR_NORMAL" : 0x34001,
+		"GLFW_CURSOR_HIDDEN" : 0x34002,
+		"GLFW_CURSOR_DISABLED" : 0x34003,
+
+		"GLFW_MOUSE_BUTTON_LEFT" : 0,
+		"GLFW_MOUSE_BUTTON_RIGHT" : 1,
+		"GLFW_MOUSE_BUTTON_MIDDLE" : 2
+	},
+	"libs" : [
+		"libglfw.so.3",
+		"glfw3.dll"
+	],
+	"funcs" : {
+		"glfwInit" : "int",
+		"glfwTerminate" : "void",
+		"glfwSetErrorCallback" : "void,void^",
+		"glfwSetKeyCallback" : "void,void^,void^",
+		"glfwSetCharCallback" : "void,void^,void^",
+		"glfwCreateWindow" : "void^,int,int,char^,void^,void^",
+		"glfwWindowHint" : "void^,int,int",
+		"glfwDestroyWindow" : "void,void^",
+		"glfwGetTime" : "double",
+		"glfwMakeContextCurrent" : "void,void^",
+		"glfwWindowShouldClose" : "bool,void^",
+		"glfwPollEvents" : "void",
+		"glfwCreateWindowSurface" : "int,void^,void^,void^,void^",
+		"glfwSwapBuffers" : "void,void^",
+		"glfwSetCursorPosCallback" : "void,void^,void^",
+		"glfwSetMouseButtonCallback" : "void,void^,void^",
+		"glfwSetInputMode" : "void,void^,int,int",
+		"glfwSetWindowSizeCallback" : "void,void^,void^",
+		"glfwSetWindowTitle" : "void,void^,char^",
+
+		"glfwGetPrimaryMonitor" : "void^",
+		"glfwGetVideoMode" : "void^,void^",
+		"glfwSetWindowMonitor" : "void,void^,void^,int,int,int,int,int",
+		"glfwGetWindowFrameSize" : "void,void^,int^,int^,int^,int^",
+		"glfwGetWindowPos" : "void,void^,int^,int^",
+
+		"glfwSetWindowUserPointer" : "void,void^,void^",
+		"glfwGetWindowUserPointer" : "void^,void^",
+
+
+		"glfwGetMouseButton" : "int,void^,int",
+		"glfwGetCursorPos" : "void,void^,double^,double^"
+	}
+}

@@ -1,0 +1,149 @@
+AppendClass VulkanInstance
+{
+	PushTransferQueueAndWait := !( !(TVkCommandBuffer^)&->void cb) -> void
+	{
+		assert(TransferQueue == DrawQueue)
+		tmpCmd := TVkCommandBuffer(this&,itDrawCmdPool2)
+		tmpCmd.Reset()
+		tmpCmd.Start()
+		cb(tmpCmd&)
+		tmpCmd.Stop()
+		
+		Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
+		tmpCmd.Submit(TransferQueue,itGlobFence)
+
+		Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,not_b 0U)
+	}
+	PushDrawQueueAndWait := !( !(TVkCommandBuffer^)&->void cb) -> void
+	{
+		assert(TransferQueue == DrawQueue)
+		tmpCmd := TVkCommandBuffer(this&,itDrawCmdPool2)
+		tmpCmd.Reset()
+		tmpCmd.Start()
+		cb(tmpCmd&)
+		tmpCmd.Stop()
+		Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
+		tmpCmd.Submit(TransferQueue,itGlobFence)
+
+		Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,not_b 0U)
+	}
+
+	itGlobFence := VkFence //TODO i need more then one in future
+	itDrawCmdPool2 := TVkCommandBufferPool^
+	initCmdBuffer := !() -> void
+	{
+		assert(TransferQueue == DrawQueue)
+
+		itDrawCmdPool2 = CreateCmdPool()
+		
+		crtFence := VkFenceCreateInfo()
+		Funcs.vkCreateFence(LogicalDevice,crtFence&,null,itGlobFence&)
+	}
+
+	CreateCmdPool := !() -> TVkCommandBufferPool^
+	{
+		result = new TVkCommandBufferPool
+		result.itInstance = this&
+
+		cmdPoolC := VkCommandPoolCreateInfo()
+		cmdPoolC.queueFamilyIndex = 0 //TODO unconst
+		cmdPoolC.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+		Funcs.vkCreateCommandPool(LogicalDevice,cmdPoolC&,null,result.itCmdPool&)
+		Funcs.vkResetCommandPool(LogicalDevice,result.itCmdPool,VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT)
+	}
+}
+
+TVkCommandBufferPool := class extend TGCObject
+{
+	itInstance := VulkanInstance^
+	itCmdPool := VkCommandPool
+
+	CreateSecondaryCmdBuffer := !() -> TVkCommandBuffer^
+	{
+		result = new TVkCommandBuffer
+		result.itCmdPool2 = this&
+
+		cmdBufC := VkCommandBufferAllocateInfo()
+
+		cmdBufC.commandPool = itCmdPool
+		cmdBufC.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY
+		cmdBufC.commandBufferCount = 1
+		
+		itInstance.Funcs.vkAllocateCommandBuffers(itInstance.LogicalDevice,cmdBufC&,result.itCmdBuf&)
+	}
+}
+
+TVkCommandBuffer := class extend TGCObject
+{
+	itCmdBuf := VkCommandBuffer
+	itCmdPool2 := TVkCommandBufferPool^
+
+	this := !(VulkanInstance^ inst,TVkCommandBufferPool^ cmdPool) -> void
+	{
+		itCmdPool2 = cmdPool
+
+		cmdBufC := VkCommandBufferAllocateInfo()
+
+		cmdBufC.commandPool = cmdPool.itCmdPool
+		cmdBufC.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY 
+		cmdBufC.commandBufferCount = 1
+		
+		inst.Funcs.vkAllocateCommandBuffers(inst.LogicalDevice,cmdBufC&,itCmdBuf&)
+	}
+
+	Reset := !() -> void
+	{
+		itCmdPool2.itInstance.Funcs.vkResetCommandBuffer(itCmdBuf,VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT)
+	}
+
+	Get := !() -> VkCommandBuffer
+	{
+		return itCmdBuf
+	}
+	Start := !() -> void
+	{
+		biC := VkCommandBufferBeginInfo()
+		biC.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+
+		itCmdPool2.itInstance.Funcs.vkBeginCommandBuffer(itCmdBuf,biC&)
+	}
+	Start := !(TRenderPass^ rnd, int subpass = 0) -> void
+	{
+		biC := VkCommandBufferBeginInfo()
+		biC.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT or_b VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT
+
+		inhr := VkCommandBufferInheritanceInfo()
+		if rnd != null
+		{
+			inhr.renderPass = rnd.Get()
+			inhr.subpass = subpass
+
+			biC.pInheritanceInfo&->{void^^}^ = inhr&
+		}
+
+		itCmdPool2.itInstance.Funcs.vkBeginCommandBuffer(itCmdBuf,biC&)
+	}
+	Stop := !() -> void
+	{
+		itCmdPool2.itInstance.Funcs.vkEndCommandBuffer(itCmdBuf)
+	}
+	Submit := !(VkQueue qs,VkFence fns) -> void
+	{
+		waitMsk := VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+		submInf := VkSubmitInfo()
+		submInf.waitSemaphoreCount = 0
+		submInf.pWaitSemaphores = null
+		submInf.pWaitDstStageMask&->{void^^}^ = waitMsk&->{void^}
+		submInf.commandBufferCount = 1
+  		submInf.pCommandBuffers = itCmdBuf&
+  		submInf.signalSemaphoreCount = 0
+  		submInf.pSignalSemaphores = null
+
+		itCmdPool2.itInstance.Funcs.vkQueueSubmit(qs, 1, submInf&, fns) 
+	}
+	Destroy := virtual !() -> void
+	{
+		inst := itCmdPool2.itInstance
+		inst.Funcs.vkFreeCommandBuffers(inst.LogicalDevice,itCmdPool2.itCmdPool,1,itCmdBuf&)
+	}
+}

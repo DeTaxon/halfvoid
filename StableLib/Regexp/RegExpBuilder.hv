@@ -1,0 +1,395 @@
+// //TODO memory leak
+
+
+
+LexTreeNode := class
+{
+	Left := LexTreeNode^
+	Right := LexTreeNode^
+	Up := LexTreeNode^
+	Down := LexTreeNode^
+	nodeType := int
+	nodeValue := int
+	nodeIdStart := int
+	nodeIdEnd := int
+	this := !(int typ) -> void
+	{
+		nodeType = typ
+	}
+	this := !(int typ,int cal) -> void
+	{
+		nodeType = typ
+		nodeValue = cal
+	}
+	Print := !(int s) -> void
+	{	
+		for s printf("->")
+		printf("Node %c %c\n",nodeType,nodeValue)
+		if Down != null Down.Print(s+1)
+		if Right != null Right.Print(s)
+	}
+}
+
+CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
+{
+	gotSome := false
+	itr := nowNode
+	while itr != null{
+		c := itr
+		siz := 0
+		failed := false
+		for i : rule.Size()
+		{
+			if c == null return gotSome
+			switch rule[i] //BUG: can not return/continue/break from switch
+			{
+				case '3'
+					if c.nodeType in "2RSPMQBOA" {
+						siz += 1
+					}else failed = true
+				case '4'
+					if c.nodeType in "2RSPMQBOA^"
+					{
+						while c.Right.nodeType in "2RSPMQBOA^"
+						{
+							c = c.Right
+							if c == null return gotSome
+							siz += 1
+						}
+						siz += 1
+					}else failed = true
+				case void
+					if c.nodeType == rule[i]
+					{
+						siz += 1
+					}else failed = true
+			}
+			if failed break
+			c = c.Right
+		}
+
+		if not failed 
+		{
+			newNd := new LexTreeNode(res)
+			ri := itr
+			for siz - 1
+			{
+				ri = ri.Right
+			}
+			newNd.Down = itr
+			newNd.Up = itr.Up
+			if newNd.Up?.Down == itr
+				newNd.Up.Down = newNd
+			newNd.Left = itr.Left
+			newNd.Left?.Right = newNd
+			newNd.Right = ri.Right
+			newNd.Right?.Left = newNd
+			itr.Left = null
+			ri.Right = null
+			while itr != null
+			{
+				itr.Up = newNd
+				itr = itr.Right
+			}
+			gotSome = true
+		}
+		else
+		{
+			itr = itr.Right
+		}
+	}
+	return gotSome	
+}
+
+LexBuilder := class extend TGCObject
+{
+	Nfas := List.{NonDetMachine^}
+	CharGroups := int[256]
+	ApplyReg := !(char^ regEx) -> void
+	{
+		ApplyReg(regEx,1)
+	}
+	ApplyReg := !(char^ regEx, int val) -> void
+	{
+
+		Words := new LexTreeNode(0)
+		iter := Words
+
+		i := 0
+		while regEx[i] != 0
+		{
+			switch regEx[i] // BUG: can not use switch(regEx[i])
+			{
+				case in "+-*[]()|?^"
+					iter.Right = new LexTreeNode(regEx[i],' ')
+					iter.Right.Left = iter
+					iter = iter.Right
+				case '\\'
+					switch regEx[i+1]
+					{
+					case 'n'
+						iter.Right = new LexTreeNode('2',10)
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					case 't'
+						iter.Right = new LexTreeNode('2',9)
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					case void
+						iter.Right = new LexTreeNode('2',regEx[i+1])
+						iter.Right.Left = iter
+						iter = iter.Right
+						i += 1
+					}
+				case ' '
+					//empty
+				case void 
+					iter.Right = new LexTreeNode('2',regEx[i])
+					iter.Right.Left = iter
+					iter = iter.Right
+
+			}
+			i += 1
+		}
+
+		optIter := Words.Right
+
+		while optIter != null
+		{
+			if optIter.nodeType == '2'
+			{
+				valStart := optIter.nodeValue
+				valEnd := int
+				if optIter.Right?.nodeType == '-' and optIter.Right.Right?.nodeType == '2'
+				{
+					valEnd = optIter.Right.Right.nodeValue
+					optIter = optIter.Right.Right.Right
+				}else{
+					valEnd = valStart
+					optIter = optIter.Right
+				}
+				i := valStart
+				while i <= valEnd
+				{
+					CharGroups[i] += 1
+					i += 1
+				}
+				while i < 256
+				{
+					CharGroups[i] += 2
+					i += 1
+				}
+			}else{
+				optIter = optIter.Right
+			}
+		}
+
+		while true
+		{
+			if CheckRule(!['3','-','3'],'R',Words.Right) continue
+			if CheckRule(!['[','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['[','^','4',']'],'S',Words.Right)  continue 
+			if CheckRule(!['3','+'],'P',Words.Right)  continue 
+			if CheckRule(!['3','*'],'M',Words.Right)  continue 
+			if CheckRule(!['3','?'],'Q',Words.Right)  continue 
+			if CheckRule(!['3','3'],'A',Words.Right)  continue 
+			if CheckRule(!['3','|','3'],'O',Words.Right)  continue 
+			if CheckRule(!['(','3',')'],'B',Words.Right)  continue 
+			break
+		}
+
+		// Nfas.EmplaceFront()
+		nowNodes := List.{NonDetNodeLine}
+		itrId := 1
+		mstart := int
+		mend := int
+		BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
+		AddNodeLine(nowNodes,0,mstart,-1)
+		newMachine := new NonDetMachine
+		newMachine.Lines = nowNodes.ToVector()
+		newMachine.EndNodeData = ![!{mend,val}].ToVector()
+		
+		Nfas.Push(newMachine)
+
+		destrNodes(Words)
+		
+	}
+	destrNodes := !(LexTreeNode^ nd) -> void
+	{
+		if nd == null
+			return void
+		if nd.Down != null
+			destrNodes(nd.Down)
+		if nd.Right != null
+			destrNodes(nd.Right)
+		delete nd
+	}
+	GenerateMachine := !() -> WordDetermMachine^
+	{
+		if Nfas.Size() == 0 return null
+		if Nfas.Size() == 1
+		{
+			//Nfas[0].PrintIt()
+			newMach := DeterminateMachine(Nfas[0])
+			// printf("------------determ-------\n")
+			//newMach.PrintIt()
+			MinMach := MinimizeMachine(newMach)
+			// printf("-------------minim--------\n")
+			//MinMach.PrintIt()
+			//printf("-------------word--------\n")
+			return MakeWordDetermMachine(MinMach)
+		}else
+		{
+			//PushTempMemPool()
+			newLines := List.{NonDetNodeLine}
+			newEnds := List.{Tuple.{int,int}}
+			multiNode := NonDetMachine
+			nowOffset := 0
+
+			for itM : Nfas
+			{
+				maxNodes := 0
+				for lin : itM.Lines
+				{
+					newLines.EmplaceFront()
+					newLines[0].from = lin.from
+					if lin.from != 0 newLines[0].from += nowOffset
+					newLines[0].to = lin.to
+					if lin.to != 0 newLines[0].to += nowOffset
+					newLines[0].symbl = lin.symbl
+
+					if maxNodes < lin.from maxNodes = lin.from
+					if maxNodes < lin.to maxNodes = lin.to
+					//maxNodes = max(maxNodes,lin.from)
+					//maxNodes = max(maxNodes,lin.to)
+				}
+				for ends : itM.EndNodeData
+				{
+					newEnds.PushFront(!{ends.0 + nowOffset,ends.1})
+				}
+				nowOffset += maxNodes + 1
+			}
+			multiNode.Lines = newLines.ToVector()
+			multiNode.EndNodeData = newEnds.ToVector()
+			newMach := DeterminateMachine(multiNode)
+			MinMach := MinimizeMachine(newMach)
+			//PopTempMemPool()
+			return MakeWordDetermMachine(MinMach)
+		}
+		return void
+	}
+}
+
+AddNodeLine := !(List.{NonDetNodeLine} lines,int frm,int toNode, int val) -> void
+{
+	lines.EmplaceFront()
+	lines[0].from = frm
+	lines[0].to = toNode
+	lines[0].symbl = val
+}
+
+BuildPartOfNode := !(List.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ itStart, int^ itEnd) -> bool 
+{
+	switch nd.nodeType
+	{
+		case 'R' { return false }
+		case 'O'{
+			reses := int[4]
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
+			BuildPartOfNode(lines,nd.Down.Right.Right,itr,reses[2]&,reses[3]&)
+			itStart^ = itr^++
+			itEnd^ = itr^++
+
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,itStart^,reses[2],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
+			AddNodeLine(lines,reses[3],itEnd^,-1)
+
+			return true
+		}
+		case 'Q'{
+			reses := int[2]
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
+			AddNodeLine(lines,itStart^,itEnd^,-1)
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
+			return true
+		}
+		case 'M'{
+			reses := int[2]
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			BuildPartOfNode(lines,nd.Down,itr,reses[0]&,reses[1]&)
+			AddNodeLine(lines,itStart^,itEnd^,-1)
+			AddNodeLine(lines,reses[1],reses[0],-1)
+			AddNodeLine(lines,itStart^,reses[0],-1)
+			AddNodeLine(lines,reses[1],itEnd^,-1)
+			return true
+		}
+		case 'P'{
+			BuildPartOfNode(lines,nd.Down,itr,itStart,itEnd)
+
+			AddNodeLine(lines,itEnd^,itStart^,-1)
+			return true
+		}
+		case 'A'{
+			someLine := int[2]
+			BuildPartOfNode(lines,nd.Down,itr,itStart,someLine[0]&)
+			BuildPartOfNode(lines,nd.Down.Right,itr,someLine[1]&,itEnd)
+
+			AddNodeLine(lines,someLine[0],someLine[1],-1)
+			return true
+		}
+		case '2'{
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			AddNodeLine(lines,itStart^,itEnd^,nd.nodeValue)
+			return true
+		}
+		case 'B'{
+			return BuildPartOfNode(lines,nd.Down.Right,itr,itStart,itEnd)
+		}
+		case 'S'
+		{
+			itStart^ = itr^++
+			itEnd^ = itr^++
+			nowSet := Bitset.{32}()
+			reverseIt := false
+			
+			iterat := nd.Down
+
+			while iterat != null
+			{
+				switch iterat.nodeType
+				{
+					case '2'{
+						nowSet << iterat.nodeValue
+					}
+					case '^'{
+						reverseIt = true
+					}
+					case 'R'{
+						itmStart := iterat.Down.nodeValue
+						itmEnd := iterat.Down.Right.Right.nodeValue
+						nowSet << itmStart..itmEnd
+					}
+				}
+				iterat = iterat.Right
+			}
+			if reverseIt nowSet.Inverse()
+
+			for it : nowSet
+			{
+				AddNodeLine(lines,itStart^,itEnd^,it)
+			}
+			return true
+		}
+	}
+	return true	
+}
+

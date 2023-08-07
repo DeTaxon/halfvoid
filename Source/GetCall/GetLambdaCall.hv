@@ -34,7 +34,6 @@ TryGetLambdaCall := !(Token^ itm) -> BoxExeObj^
 		bodyToken = iter
 	}
 
-
 	res := new BoxLambdaHolder(itm.Down,bodyToken,typeToken,captureToken)
 
 	//if res.IsOneFunc()

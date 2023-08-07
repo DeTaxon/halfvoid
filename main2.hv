@@ -16,18 +16,33 @@
 //	}
 //}
 
+TestDestroyClass := class extend TGCObject
+{
+	val := int
+	Destroy := virtual !() -> void
+	{
+		printf("YES %i\n",val)
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	printf("a\n")
-	defer printf("d\n")
-	defer printf("c\n")
-	printf("b\n")
+	c1 := TestDestroyClass
+	c2 := TestDestroyClass
 
-	for i : 5
-	{
-		defer printf("break defer\n")
-		break
-	}
+	c1.val = 1
+	c2.val = 2
+	return 0
+	//printf("a\n")
+	//defer printf("d\n")
+	//defer printf("c\n")
+	//printf("b\n")
+
+	//for i : 5
+	//{
+	//	defer printf("break defer\n")
+	//	break
+	//}
 
 
 	//tstMem := PageMemory

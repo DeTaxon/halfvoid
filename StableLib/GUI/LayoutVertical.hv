@@ -1,0 +1,128 @@
+
+LayoutVertical := class extend LayoutBase
+{
+	this := !(GUIObject^[] objs) -> void
+	{
+		super(objs)
+	}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	{
+		fullSizeCount = 0
+		foundStaticW = false
+		foundStaticH = false
+		staticW = 0
+		staticH = 0
+
+		foundFullSizeW = false
+		foundFullSizeH = false
+
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+			{
+				itL := it.0.GetLayout(ctx)
+				switch itL.1
+				{	
+					case 0
+						foundFullSizeW = true
+						fullSizeCount += 1
+					case 1
+						staticH += itL.0.x
+						foundStaticW = true
+					case 2 //dynamic ??
+				}
+				continue
+			}
+
+			itL := it.0.GetLayout(ctx)
+			switch itL.1
+			{
+				case 0 //fullSuze
+					foundFullSizeW = true
+				case 1 //static
+					staticW = max(staticW,itL.0.x)
+					foundStaticW = true
+				case 2 //dynamic
+			}
+			switch itL.2
+			{
+				case 0 //fullSuze
+					foundFullSizeH = true
+					fullSizeCount += 1
+				case 1 //static
+					staticH += itL.0.y
+					foundStaticH = true
+				case 2 //dynamic
+			}
+		}
+
+		if foundStaticW { result.0.x = staticW }
+		if foundStaticH { result.0.y = staticH }
+
+		if foundStaticW { result.1 = 1
+		}else { result.1 = 0}
+
+		if foundStaticW { result.2 = 1
+		}else {result.2 = 0}
+	}
+
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	{
+		maxWidth := setSize.x
+		if foundStaticW
+		{
+			maxWidth = staticW
+		}
+
+		pOffset := float
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+			{
+				itL := it.0.GetLayout(ctx)
+				switch itL.1
+				{
+					case 0
+						pOffset += (setSize.x - staticW) / fullSizeCount
+					case 1
+						pOffset += itL.0.x
+				}
+				continue
+			}
+			itL := it.0.GetLayout(ctx)
+			newSize := vec2f
+			switch itL.2
+			{
+				case 0
+					assert(false)
+				case 1
+					switch itL.1
+					{
+						case 1
+							newSize.x = itL.0.x
+						case 0
+							newSize.x = maxWidth
+					}
+					newSize.y = itL.0.y
+					it.0.SetLayout(ctx,newSize)
+					it.1.y = pOffset
+					it.1.x = 0
+					it.2 = newSize
+				case 2
+					assert(false)
+			}
+			pOffset += newSize.y
+		}
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+				continue
+
+			newOffset := offset + it.1
+			it.0.PushDraw(ctx,cmdB,offset + it.1)
+		}
+	}
+}

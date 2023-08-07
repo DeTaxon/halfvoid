@@ -1,0 +1,191 @@
+buttons := bool[256]
+
+GLFWWindow := class 
+{
+	windowHandle := void^
+
+	LastTimeResized := double
+
+	Width := int //TODO decline setter?
+	Height := int
+
+	MouseX := int
+	MouseY := int
+
+	Init := !(int x, int y,char^ title) -> void
+	{
+		@once {
+			glfwInit()
+		}
+
+		Width = x
+		Height = y
+
+		glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API)
+		windowHandle = glfwCreateWindow(x,y,title,null,null)
+
+		glfwSetKeyCallback(windowHandle,glfwKeyPressRes)
+		glfwSetWindowSizeCallback(windowHandle,glfwWinResized)
+
+		glfwSetCursorPosCallback(windowHandle,glfwMouseMove)
+		glfwSetMouseButtonCallback(windowHandle,glfwMousePressed)
+
+		glfwSetCharCallback(windowHandle,glfwCharPress)
+
+		glfwSetWindowUserPointer(windowHandle,this&)
+
+		LastTimeResized = GetSteadyTime()
+	}
+
+	SetInputMode := !(char^ newMode) -> void
+	{
+		modeVal := int
+		switch newMode
+		{
+			case "DISABLED"
+				modeVal = GLFW_CURSOR_DISABLED
+			case "HIDDEN"
+				modeVal = GLFW_CURSOR_HIDDEN
+			case "NORMAL"
+				modeVal = GLFW_CURSOR_NORMAL
+		}
+		glfwSetInputMode(windowHandle,GLFW_CURSOR,modeVal)
+	}
+	
+	mouseMovedInner := !(double x, double y) -> void
+	{
+		MouseX = x
+		MouseY = y
+
+		MouseMoved(x,y)
+	}
+	MouseMoved := virtual !(double x, double y) -> void
+	{
+	}
+
+	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
+	{
+	}
+	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
+	{
+	}
+
+	M1Pressed := bool
+	M2Pressed := bool
+	MousePressedInner := !(int button, int action, int mods) -> void
+	{
+		buttonNum := 0;
+		switch button
+		{
+			case GLFW_MOUSE_BUTTON_LEFT
+				M1Pressed = action == GLFW_PRESS
+			case GLFW_MOUSE_BUTTON_RIGHT
+				M2Pressed = action == GLFW_PRESS
+				buttonNum = 1
+			case GLFW_MOUSE_BUTTON_MIDDLE
+				buttonNum = 2
+		}
+
+		MousePressed(buttonNum,action == GLFW_PRESS,mods)
+	}
+
+	SwapBuffers := !() -> void
+	{
+		glfwSwapBuffers(windowHandle)
+	}
+	PollEvents := !() -> void
+	{
+		//Only one can call, it is static
+		glfwPollEvents()
+	}
+	ShouldClose := !() -> bool
+	{
+		return glfwWindowShouldClose(windowHandle)
+	}
+
+	IsFullscreened := bool
+	WindowedWidth := int
+	WindowedHeight := int
+	WindowedX := int
+	WindowedY := int
+
+	SetWindowed := !() -> void
+	{
+		monitor := glfwGetPrimaryMonitor()
+		mode := glfwGetVideoMode(monitor)->{GLFWvidmode^}
+
+		glfwSetWindowMonitor(windowHandle,null,WindowedX,WindowedY,WindowedWidth,WindowedHeight,mode.refreshRate)
+		IsFullscreened = false
+	}
+	SetFullscreen := !() -> void
+	{
+		monitor := glfwGetPrimaryMonitor()
+		mode := glfwGetVideoMode(monitor)->{GLFWvidmode^}
+
+		WindowedWidth = Width
+		WindowedHeight = Height
+
+		glfwGetWindowPos(windowHandle,WindowedX&,WindowedY&)
+
+		glfwSetWindowMonitor(windowHandle,monitor,0,0,mode.width,mode.height,mode.refreshRate)
+		IsFullscreened = true
+	}
+}
+
+
+glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
+{
+	asCh := 0
+
+	//printf("heh %i\n",key)
+	switch(key)
+	{
+		case in GLFW_KEY_0..GLFW_KEY_9
+			asCh = '0' + key - GLFW_KEY_0
+		case in GLFW_KEY_A..GLFW_KEY_Z
+			asCh = 'a' + key - GLFW_KEY_A
+		case GLFW_KEY_ESCAPE
+			asCh = 'Q'
+		case 340
+			asCh = 'S'
+		case 32
+			asCh = ' '
+		//case 290
+	}
+	if asCh != 0 and (action == GLFW_PRESS or action == GLFW_RELEASE)
+	{
+		buttons[asCh] = action == GLFW_PRESS
+	}
+
+	glfwGetWindowUserPointer(wn)->{GLFWWindow^}.KeyChanged(key,scancode,action == GLFW_PRESS)
+}
+glfwWinResized := !(void^ window, int newW, int newH) -> void
+{
+	w := glfwGetWindowUserPointer(window)->{GLFWWindow^}
+	w.Width = newW
+	w.Height = newH
+	w.LastTimeResized = GetSteadyTime()
+}
+glfwMouseMove := !(void^ w, double itX, double itY) -> void
+{
+	glfwGetWindowUserPointer(w)->{GLFWWindow^}.mouseMovedInner(itX,itY)
+}
+glfwMousePressed := !(void^ w,int button, int action, int mods) -> void
+{
+	glfwGetWindowUserPointer(w)->{GLFWWindow^}.MousePressedInner(button,action,mods)
+}
+
+glfwCharPress := !(void^ wi, int charCode) -> void
+{
+	//printf("test %i\n",charCode)
+}
+
+GLFWvidmode := class
+{
+    width := int
+    height := int
+    redBits := int
+    greenBits := int
+    blueBits := int
+    refreshRate := int
+}

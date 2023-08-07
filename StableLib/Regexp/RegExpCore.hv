@@ -1,0 +1,278 @@
+Regexp := class extend TGCObject
+{
+	RegExpReadText := virtual !(StringView text, !(StringSpan,int)&->void toEmit) -> void
+	{
+		assert(false)
+	}
+}
+
+RegexpAsBlob := class extend Regexp
+{
+	blobData := u8[0]
+	this := !() -> void
+	{
+		blobData = inBlob
+	}
+	IsPrintable := !(char itm) -> bool
+	{
+		if itm in 'a'..'z'
+			return true
+		if itm in 'A'..'Z'
+			return true
+		if itm in '0'..'9'
+			return true
+		return false
+	}
+	PrintIt := !() -> void
+	{
+		statesCount := blobData[0]&->{int^}[0]
+		linesSize := blobData[0]&->{int^}[1]
+		charToGo := blobData[4*2]&->{u8^}
+		isEndNode := blobData[4*2 + 256]&->{int^}
+		tableData := blobData[4*2 + 256 + 4*statesCount]&->{int^}
+
+		printf("           ")
+		for statesCount printf("%4i ",it)
+		printf("\n")
+		printf("lines %3i  ",linesSize)
+		for statesCount printf("%4i ",isEndNode[it])
+		printf("\n")
+		chStart := 0
+		chEnd := 0
+		while chStart < 256
+		{
+			while charToGo[chEnd] == charToGo[chStart] {
+				chEnd++
+				if chEnd == 256 break
+			}
+			newEnd := chEnd - 1
+			if chStart == newEnd
+			{
+				if IsPrintable(chStart) printf("     %c     ",chStart) else printf("   0x%02X    ",chStart)
+			}else{
+				if IsPrintable(chStart) printf("   %c",chStart) else printf("0x%02X",chStart)
+				printf("..")
+				if IsPrintable(newEnd) printf("%c   ",newEnd) else printf("0X%02X",newEnd)
+				printf(" ")
+			}
+
+			nodLine := charToGo[chStart]->{int}
+
+			for j : statesCount
+			{
+				printf("%4i ",tableData[j*linesSize + nodLine])
+			}
+			printf("\n")
+
+			chStart = chEnd
+
+		}
+	}
+	RegExpReadText := virtual !(StringView text, !(StringSpan,int)&->void toEmit) -> void
+	{
+		statesCount := blobData[0]&->{int^}[0]
+		linesSize := blobData[0]&->{int^}[1]
+		charToGo := blobData[4*2]&->{u8^}
+		isEndNode := blobData[4*2 + 256]&->{int^}
+		tableData := blobData[4*2 + 256 + 4*statesCount]&->{int^}
+		
+		data := text.NonNullStr()
+		siz := text.Size()
+
+		i := 0
+		while i < siz
+		{
+			nowState := 0
+			nowPos := 0
+			nowSize := 0
+			lastGoodTerm := -1
+			lastGoodSize := 0
+
+			while nowPos != -1
+			{
+				if nowSize + i - 1 >= siz break
+
+				if isEndNode[nowPos] != -1
+				{
+					lastGoodTerm = isEndNode[nowPos]
+					lastGoodSize = nowSize
+				}
+
+				nowChar := data[i + nowSize]
+				if nowChar >= 128 //TODO add support in compiler
+					nowChar = 'a'
+
+				inTable := charToGo[nowChar]
+				nowPos = tableData[nowPos*linesSize + inTable]
+				nowSize++
+			}
+			if lastGoodTerm != -1
+			{
+				toEmit(StringSpan(data[i]&,lastGoodSize),lastGoodTerm)
+				i += lastGoodSize
+			}else{
+				i++
+			}
+		}
+	}
+}
+
+WordDetermMachine := class extend Regexp
+{
+	Table := int[][]
+	IsEndNode := int[]
+	CharToGo := u8[256]
+
+	ComputeBlobSize := !() -> int{
+		return 256 + 4 + 4 + Table.Size()*(Table[0].Size() + 1)*4
+	}
+ 	SerializeToMap := !(u8^ data) -> void{
+ 		asInt := data->{int^}
+ 		asInt[0] = Table.Size()
+ 		asInt[1] = Table[0].Size()
+ 		itr := data[8]&
+ 		memcpy(itr,CharToGo[0]&,256)
+ 		itr = itr[256]&
+ 		lineSize := IsEndNode.Size()*4
+ 		memcpy(itr,IsEndNode.GetPointer(),lineSize)
+ 		itr = itr[lineSize]&
+ 		lineSize = Table[0].Size()*4
+
+ 		for state : Table
+ 		{
+ 			memcpy(itr,state.GetPointer(),lineSize)
+ 			itr = itr[lineSize]&
+ 		}
+ 	}
+ 	LoadFromMap := !(u8^ data, int size) -> void
+ 	{
+ 		asInt := data->{int^}
+ 		states := asInt[0]
+ 		lines := asInt[1]
+ 		itr := data[8]&
+      	
+ 		memcpy(CharToGo[0]&,itr,256)
+ 		itr = itr[256]&
+
+ 		lineSize := states*4
+ 		IsEndNode = new Vector.{int}(states)
+ 		memcpy(IsEndNode.GetPointer(),itr,lineSize)
+ 		itr = itr[lineSize]&
+ 		lineSize = lines*4
+
+ 		Table = new Vector.{int[]}(states)
+ 		for tb : Table
+ 		{
+ 			tb = new Vector.{int}(lines)
+ 			memcpy(tb.GetPointer(),itr,lineSize)
+ 			itr = itr[lineSize]&
+ 		}
+
+ 	}
+	//"=" := default
+	IsPrintable := !(char itm) -> bool
+	{
+		if itm in 'a'..'z'
+			return true
+		if itm in 'A'..'Z'
+			return true
+		if itm in '0'..'9'
+			return true
+		return false
+	}
+	PrintIt := !() -> void
+	{
+		printf("           ")
+		for IsEndNode.Size() printf("%4i ",it)
+		printf("\n")
+		printf("lines %3i  ",Table[0].Size())
+		for IsEndNode printf("%4i ",it)
+		printf("\n")
+		chStart := 0
+		chEnd := 0
+		while chStart < 256
+		{
+			while CharToGo[chEnd] == CharToGo[chStart] {
+				chEnd++
+				if chEnd == 256 break
+			}
+			newEnd := chEnd - 1
+			if chStart == newEnd
+			{
+				if IsPrintable(chStart) printf("     %c     ",chStart) else printf("   0x%02X    ",chStart)
+			}else{
+				if IsPrintable(chStart) printf("   %c",chStart) else printf("0x%02X",chStart)
+				printf("..")
+				if IsPrintable(newEnd) printf("%c   ",newEnd) else printf("0X%02X",newEnd)
+				printf(" ")
+			}
+
+			nodLine := CharToGo[chStart]->{int}
+
+			for j : IsEndNode.Size()
+			{
+				printf("%4i ",Table[j][nodLine])
+			}
+			printf("\n")
+
+			chStart = chEnd
+
+		}
+	}
+// 	IsMatch := !(char^ toTst) -> bool
+// 	{
+// 		toRet := false
+// 		stSize := strlen(toTst)
+// 		RegExpReadText(this&,toTst,stSize,(a,b,c) ==> {
+// 			if b == 0 and c == stSize
+// 				toRet = true
+// 		})
+// 		return toRet
+// 	}
+// 	"in" := !(char^ toTst) -> bool
+// 	{
+// 		return IsMatch(toTst)
+// 	}
+// }
+
+	RegExpReadText := virtual !(StringView text, !(StringSpan,int)&->void toEmit) -> void
+	{
+		data := text.NonNullStr()
+		siz := text.Size()
+		i := 0
+		while i < siz
+		{
+			nowState := 0
+			nowPos := 0
+			nowSize := 0
+			lastGoodTerm := -1
+			lastGoodSize := 0
+
+			while nowPos != -1
+			{
+				if nowSize + i - 1 >= siz break
+
+				if IsEndNode[nowPos] != -1
+				{
+					lastGoodTerm = IsEndNode[nowPos]
+					lastGoodSize = nowSize
+				}
+
+				nowChar := data[i + nowSize]
+				if nowChar >= 128 //TODO add support in compiler
+					nowChar = 'a'
+
+				inTable := CharToGo[nowChar]
+				nowPos = Table[nowPos][inTable]
+				nowSize++
+			}
+			if lastGoodTerm != -1
+			{
+				toEmit(StringSpan(data[i]&,lastGoodSize),lastGoodTerm) //,i,lastGoodSize)
+				i += lastGoodSize
+			}else{
+				i++
+			}
+		}
+	}
+}

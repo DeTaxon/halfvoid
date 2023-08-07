@@ -1,0 +1,28 @@
+_threadProxyFunc := !(void^ x) -> void
+{
+	internalInitThread()
+	_threadProxyFuncInner(x)
+	internalThreadDestructor()
+}
+_threadProxyFuncInner := !(void^ x) -> void
+{
+	asThread := x->{Thread^}
+	asThread.Call()
+}
+
+Thread := class extend TGCObject
+{
+	lmb := !()&->void
+	this := !(!()&->void lambd) ->	void
+	{
+		lmb = lambd.Capture()
+		threadStart()
+	}
+	Call := !() -> void
+	{
+		lmb()
+	}
+	//Join := !() -> void {}
+}
+
+

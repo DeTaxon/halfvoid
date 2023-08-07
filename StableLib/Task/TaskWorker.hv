@@ -1,0 +1,77 @@
+TaskWorker := class extend TGCObject
+{
+	AllTasks := AVLSet.{Task^}
+	CreateTasks := List.{Task^}
+	PendingTasks := FixedSizeRing.{Task^}
+	DeleteTasks := List.{Task^}
+
+	ThreadMainTask := Task^
+
+	itThread := Thread^
+
+	this := !() -> void
+	{
+		internalHVInitClass(AllTasks)
+	}
+
+	Destroy := virtual !() -> void
+	{
+		AllTasks.Destroy()
+		itThread?.Join()
+		ThreadMainTask = null
+	}
+	CreateThread := !() -> void
+	{
+		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a wait for passing variable as weak pointer
+			CurrentThread = wk->{TaskWorker^}
+			CurrentThread.ThreadMainTask = CurrentTask
+			CurrentTask.OSFirstInit()
+			EnterTaskThreadCycle(false)
+			CurrentThread.ThreadMainTask = null
+			CurrentThread = null
+		})
+	}
+	PopReadyTask := !() -> Task^
+	{
+		if PendingTasks.Size() != 0
+		{
+			return PendingTasks.Pop()
+		}
+
+		if CreateTasks.Size() != 0
+		{
+			hm := CreateTasks.Pop()
+			hm.CreateStack()
+			return hm
+		}
+		return ReciveWorkTask()
+	}
+	ReciveWorkTask := virtual !() -> Task^
+	{
+		return null
+	}
+	WaitForTasks := !() -> void
+	{
+		itWaitMutex.Lock()
+		itWaitConVar.Wait(itWaitMutex)
+		itWaitMutex.Unlock()
+	}
+	switchToMain := !() -> void
+	{
+		ThreadMainTask.switchToTask()
+	}
+}
+TaskWorkerCreated := class extend TaskWorker
+{
+	ReciveWorkTask := virtual !() -> Task^
+	{
+		if TaskWorkersToDo.Size() != 0
+		{
+			hm := TaskWorkersToDo.Pop()
+			hm.CreateStack()
+			//AllTasks.Insert(hm)
+			return hm
+		}
+		return null
+	}
+}

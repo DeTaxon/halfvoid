@@ -1,0 +1,12 @@
+AppendClass Thread
+{
+	itData := u64
+	threadStart := !() -> void
+	{
+		pthread_create(itData&,null,_threadProxyFunc,this&->{void^})
+	}
+	Join := !() -> void
+	{
+		pthread_join(itData,null)
+	}
+}

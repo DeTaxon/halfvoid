@@ -1,0 +1,119 @@
+TEchoStream := class extend Stream
+{
+	ptr := char^
+	inPtrSize := int
+	redData := int
+	pages := List.{char^}
+
+	this := !() -> void {
+	}
+	Read := virtual !(void^ data, s64 size) -> s64
+	{
+		if pages.Size() != 0
+		{
+			pageLeft := (4096 - redData)->{s64}
+
+			nxt := pages[0]
+			toRead := min(pageLeft,size)
+			memcpy(data,nxt[redData]&,toRead)
+			redData += toRead
+			if redData == 4096
+			{
+				free(nxt)
+				pages.Pop()
+				redData = 0
+			}
+			if toRead < size
+			{
+				return toRead + Read(data->{u8^}[toRead]&,size - toRead)
+			}
+		}else{
+			if inPtrSize == 0
+				return 0
+			toRead := min(size->{int},inPtrSize)
+			memcpy(data,ptr[redData]&,toRead)
+			redData += toRead
+			if redData == inPtrSize
+			{
+				redData = 0
+				inPtrSize = 0
+				free(ptr)
+				ptr = null
+			}
+			return toRead
+		}
+	}
+	Write := virtual !(void^ adding, s64 sLen) -> s64
+	{
+		if sLen == 0 return 0
+		
+		BufSize := 4096
+		if ptr == null ptr = malloc(BufSize)->{char^}
+		if sLen + inPtrSize > BufSize
+		{
+			moved := 0
+			diff := sLen + inPtrSize - BufSize
+			memcpy(ptr[inPtrSize]&,adding,sLen - diff)
+			moved += sLen - diff
+			
+			pages.Push(ptr)
+			while sLen - moved > BufSize {
+				preSet := malloc(BufSize)->{char^}
+				memcpy(preSet[0]&,adding->{char^}[moved]&,BufSize)
+				pages.Push(preSet)
+				moved += BufSize
+			}
+			ptr = malloc(BufSize)->{char^}
+			memcpy(ptr[0]&,adding->{char^}[moved]&,sLen - moved)
+			inPtrSize = sLen - moved
+
+		}else{
+			memcpy(ptr[inPtrSize]&,adding,sLen)
+			inPtrSize += sLen
+		}
+		return sLen
+	}
+	Size := !() -> size_t
+	{
+		BufSize := 4096
+		return pages.Size()*BufSize + inPtrSize
+	}
+	GetString := !()  -> String^ 
+	{
+		if inPtrSize == 0{
+			return new String("")
+		}
+		BufSize := 4096
+		indItr := pages.Size()*BufSize
+		outSize := indItr + inPtrSize
+
+		res := malloc(outSize + 1)->{char^}
+		res[outSize] = 0
+		memcpy(res[indItr]&,ptr,inPtrSize)
+		//indItr -= BufSize
+		indItr = 0
+
+		for pages
+		{
+			memcpy(res[indItr]&,it,BufSize)
+			indItr += BufSize
+		}
+		result = new String(res,outSize)
+	}
+	Destroy := virtual !() -> void
+	{
+		if pages.Size() != 0
+		{
+			for it : pages
+				free(it)
+			pages.Destroy()
+		}
+		if ptr != null
+		{
+			free(ptr)
+			ptr = null
+		}
+		inPtrSize = 0
+		redData = 0
+	}
+}

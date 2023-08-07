@@ -1,0 +1,13 @@
+
+"for" := !(@ArrType[@Size] arr) -> HVFixedArrayIterator.{ArrType}
+{
+	result.pointer = arr[0]&
+	result.size = Size
+}
+
+//TODO: need a concept to check if operator "=" exists for ArrType, otherwise error message is cryptic
+"=" := !(@ArrType[@Size]& arrSet,ArrType[Size] arrGet) -> void
+{
+	for i : Size
+		arrSet[i] = arrGet[i]
+}

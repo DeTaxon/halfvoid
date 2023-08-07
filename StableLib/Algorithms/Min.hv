@@ -1,0 +1,6 @@
+min := !(@T x, T y) -> T
+{
+    if x < y
+        return x
+    return y
+}

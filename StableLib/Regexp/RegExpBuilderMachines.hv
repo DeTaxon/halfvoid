@@ -1,0 +1,73 @@
+NonDetNodeLine := class
+{
+	from := int
+	to := int
+	symbl := int
+	this := !(int fr, int tt , int s) -> void
+	{
+		from = fr
+		to = tt
+		symbl = s
+	}
+	this := !() -> void
+	{
+	}
+	"=" := !(NonDetNodeLine newVal) -> void
+	{
+		from = newVal.from
+		to = newVal.to
+		symbl = newVal.symbl
+	}
+}
+NonDetMachine := class extend TGCObject
+{
+	Lines := Vector.{NonDetNodeLine}^
+	EndNodeData := Tuple.{int,int}[] // nodeId,resultId
+	this := !() -> void
+	{
+		EndNodeData = null
+		Lines = null
+	}
+	"=" := !(NonDetMachine wut) -> void {}
+	PrintIt := !() -> void
+	{
+		printf("---------------\n")
+		for it : Lines
+			printf("line %6i %6i %6i\n",it.from,it.to,it.symbl)
+		for it : EndNodeData
+			printf("EndNode %6i %6i\n",it.0,it.1)
+		printf("---------------\n")
+	}
+}
+
+DetMachine := class extend TGCObject
+{
+	Table := int[][]
+	NodeId := int[]
+	IsEndNode := int[]
+	this := !() -> void
+	{
+		table = null
+		NodeId = null
+		IsEndNode = null
+	}
+	"=" := !(DetMachine wut) -> void {}
+	PrintIt := !() -> void
+	{
+		printf("     ")
+		for IsEndNode.Size() printf("%4i ",it)
+		printf("\n")
+		printf("     ")
+		for IsEndNode printf("%4i ",it)
+		printf("\n")
+		for i : NodeId.Size()
+		{
+			printf("%4i ",NodeId[i])
+			for j : IsEndNode.Size()
+			{	
+				printf("%4i ",Table[j][i])
+			}
+			printf("\n")
+		}
+	}
+}

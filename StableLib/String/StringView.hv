@@ -1,0 +1,94 @@
+StringView := class extend TGCObject
+{
+	Size := virtual !() -> int {}
+	GetString := virtual !() -> String^ {}
+	DivideStr := !(char^ to,!(StringSpan)&->void cb) -> void
+	{
+		i := 0
+		j := 0
+		ptr := NonNullStr()
+		itSize := Size()
+		while j < itSize
+		{
+			if ptr[j] in to
+			{
+				if j != i {
+					newSpan := StringSpan(ptr[i]&,j - i)
+					cb(newSpan)
+				}
+				i = j+1
+				j += 1
+			} else
+			{
+				j += 1
+			}
+		}
+		if j - i != 0
+		{
+			newSpan := StringSpan(ptr[i]&,j - i)
+			cb(newSpan)
+		}
+	}
+	End := fake
+	{
+		"<=>" := !(StringView toCmp) -> int
+		{
+			mySize := Size()
+			otherSize := toCmp.Size()
+			if mySize < otherSize
+				return -1
+			newSpan := StringSpan(NonNullStr()[mySize - otherSize]&,otherSize)
+			return newSpan <=> toCmp
+		}
+		"<=>" := !(char^ toCmp) -> int
+		{
+			return this.End <=> StringSpan(toCmp)
+		}
+	}
+	"[]" := virtual !(Range x) -> StringSpan
+	{
+		assert(false)
+	}
+	"in" := !(int x) -> bool
+	{
+		ptr := NonNullStr()
+		for i : Size()
+		{
+			if ptr[i] == x
+				return true
+		}
+		return false
+	}
+	NonNullStr := virtual !() -> char^ { assert(false) }
+}
+"<=>" := !(StringView^ a,char^ b) -> int
+{
+	vw := StringSpan(b)
+	return a <=> vw&
+}
+"<=>" := !(StringView a, StringView b) -> int
+{
+	aSize := a.Size()
+	bSize := b.Size()
+	minSize := min(aSize,bSize)
+	cmpRes := strncmp(a.NonNullStr(),b.NonNullStr(),minSize)
+
+	if cmpRes != 0
+		return cmpRes
+		
+	if aSize == bSize
+		return 0
+	if minSize == a.Size()
+		return -1
+	return 1
+}
+"<=>" := !(char^ a, char^ b) -> int
+{
+	if a->{void^} == null and b->{void^} == null
+		return 0
+	if a->{void^} == null
+		return -1
+	if b->{void^} == null
+		return 1
+	return strcmp(a,b)
+}
