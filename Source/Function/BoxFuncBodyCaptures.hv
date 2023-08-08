@@ -1,7 +1,5 @@
 AppendClass BoxFuncBody
 {
-	CaptureUsed := bool
-
 	ParentFunc := BoxFuncBody^
 	ThisCaptureTupleType := Type^
 	CaptureGetCall := BoxExeObj^
@@ -12,7 +10,7 @@ AppendClass BoxFuncBody
 	//CapturedVarsCleanup := BoxExeObj^
 	CapturedManualy := AVLMap.{StringSpan,MemVar^}
 
-	CapturedBySomeVars := AVLMap.{StringSpan,Tuple.{NamedVar^,MemVar^,BoxExeObj^}} //By ref,value
+	CapturedVars2 := List.{MemVar^}
 
 	FunctionResultVars := List.{FuncResultParam2^}
 
@@ -86,17 +84,6 @@ AppendClass BoxFuncBody
 	}
 
 	getCaptureInLeafs := BoxExeObj^
-	inChain := bool
-	NotifyChainCapture := !() -> void
-	{
-		assert(Attrs.IsLambda)
-
-		if inChain
-			return void
-
-		Params[0].Value.NotifyCaptureUse()
-		inChain = true
-	}
 
 	PrintStackData := virtual !(LLVMWriteContext^ ctx) -> void
 	{

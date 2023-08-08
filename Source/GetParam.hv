@@ -61,29 +61,21 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					mv2 := mv->{MemVar^}
 					if metFuncs.Size() != 0
 					{
-						if metFuncs.Size() >= 2
-						{
-							for it,i : metFuncs
-							{
-								if i != 0
-									it.NotifyChainCapture()
-							}
-						}
-						metFuncs[^].CaptureUsed = true
+						printf("paramName %s\n",mv.Name)
+						itm.EmitError("Can not use this capture")
 
-						varType := mv2.Value.GetVarType()
+						//varType := mv2.Value.GetVarType()
 
-						if IsGCType(varType) or IsGCPtr(varType)
-						{
-							assert(lastLambdaHolder != null)
-							mv2.Value.NotifyMemUse()
-							getVar := CallFromSomeVar(mv2)
-							resVar := lastLambdaHolder.CaptureObject(asItm.Value,new UnrefFuncCall(getVar),true,asItm)
-							return CallFromSomeVar(resVar)
-						}else {
-							mv2.NotifyCaptureUse()
-						}
-
+						//if IsGCType(varType) or IsGCPtr(varType)
+						//{
+						//	assert(lastLambdaHolder != null)
+						//	mv2.Value.NotifyMemUse()
+						//	getVar := CallFromSomeVar(mv2)
+						//	resVar := lastLambdaHolder.CaptureObject(asItm.Value,new UnrefFuncCall(getVar),true,asItm)
+						//	return CallFromSomeVar(resVar)
+						//}else {
+						//	mv2.NotifyCaptureUse()
+						//}
 					}
 					return CallFromSomeVar(mv2)
 				}else if par is MacroVar {
@@ -126,10 +118,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 			metFuncs.Push(fnc)
 
-			if fnc.CapturedBySomeVars.Contain(asItm.Value)
-			{
-				return CallFromSomeVar(fnc.CapturedBySomeVars[asItm.Value].1)
-			}
 			if fnc.CapturedManualy.Contain(asItm.Value)
 			{
 				return CallFromSomeVar(fnc.CapturedManualy[asItm.Value])

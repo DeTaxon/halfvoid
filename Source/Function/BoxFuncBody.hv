@@ -150,6 +150,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		CurrentReturns.IsAutoResult = Attrs.IsAutoResult
 		CurrentReturns.ExitLabel = GetExitLabel()
 
+
 		if not Attrs.IsAutoResult
 		{
 			fTy := this.GetType()->{TypeFunc^}
@@ -206,6 +207,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		
 		CurrentScope = this&
 
+		for it : CapturedVars2
+		{
+			UnitStack.PushFront(it)
+		}
+
 		for par : Params
 		{
 			UnitStack.PushFront(par)
@@ -249,16 +255,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		YieldWork()
 		WorkBodyCaptures()
-
-		if Attrs.IsLambda
-		{
-			newTplType := ParentFunc.GetCaptureTuple().ItType
-			if CaptureUsed
-			{
-				ThisCaptureTupleType = newTplType
-				CreateGetCaptureCall()
-			}
-		}
 
 		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
 		ResultVar?.Value.PopulateCalls()

@@ -91,7 +91,10 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		newFunc := cb() //Vars captured
 
-		capturedVars := List.{Tuple.{StringSpan,BoxExeObj^,bool}}
+		resObj := new LambdaObject
+		capturedVars := ref resObj.capturedVars
+
+		vars := ref newFunc.CapturedVars2
 
 		if captureTokens != null
 		{
@@ -104,6 +107,7 @@ BoxLambdaHolder := class extend BoxExeObj
 				{
 					capName := StringSpan
 					capCall := BoxExeObj^
+					macroRes := MacroParam^
 					isRef := false
 
 					if iterC is TokenIndent
@@ -113,6 +117,8 @@ BoxLambdaHolder := class extend BoxExeObj
 						capCall = TryCheckGetParam(iterC)
 						if capCall == null
 							iterC.EmitError("Could not get captured value") //todo better error
+						macroRes = new MacroParam(capCall.GetType(),true)
+						vars.Push(new MemVar(capName,macroRes))
 					}else if iterC.Down?.Right?.GetValue() == "&" and iterC.Down is TokenIndent
 					{
 						capName = iterC.Down->{TokenIndent^}.Value
@@ -122,6 +128,8 @@ BoxLambdaHolder := class extend BoxExeObj
 							iterC.EmitError("Could not get captured value") //todo better error
 						isRef = true
 						capCall = new UnrefFuncCall(capCall)
+						macroRes = new MacroParam(capCall.GetType(),true)
+						vars.Push(new MemVarRef(capName,macroRes))
 					}else if iterC.Down?.Right?.GetValue() == "=" and iterC.Down is TokenIndent
 					{
 						capName = iterC.Down->{TokenIndent^}.Value
@@ -129,22 +137,16 @@ BoxLambdaHolder := class extend BoxExeObj
 						if capCall == null
 							iterC.EmitError("Can not get result of right of operator =")
 					}
-					capturedVars.Emplace(capName,capCall,isRef)
+					capturedVars.Emplace(capName,capCall,macroRes,isRef)
 				}
 				iterC = iterC.Right
 			}
 		}
 
-		resObj := new LambdaObject
 		resObj.baseFunc = CurrentFunc
 		resObj.lambdaFunc = newFunc
 
 		emptyConsts := List.{BoxExeConstObj^}
-
-		for it : capturedVars
-		{
-			resObj.CaptureObject(it.0,it.1,it.2,captureTokens)
-		}
 	
 		UnitStack.PushFront(resObj)
 		newFunc.ParseBodyForced()
@@ -155,29 +157,55 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		getTupleVar := BoxExeObj^
 
-		tplType := CurrentFunc.GetCaptureTuple().ItType
-
-		if newFunc.CaptureUsed
+	
+		tplTypes := List.{Type^}	
+		for it : capturedVars
 		{
-			getTupleMacro := new MacroParam(tplType.GetPoint(),false)
-			CurrentFunc.CapturedVarsGets.Push(getTupleMacro)
-			getTupleVar = getTupleMacro.CreateCall()
-		}else{
-			mptyTuple := List.{Type^}
-			tplType = GetTuple(mptyTuple).ItType
+			tplTypes.Push(it.1.GetType())
+		}
 
-			getTupleVar = GetExchange(GObjNull,tplType.GetPoint())
+		tplTuple := GetTuple(tplTypes)
+		tplType := tplTuple.ItType
+
+		for it,i : capturedVars
+		{
+			if it.3
+			{
+			}else{
+				mc := it.2
+				mc.PopulateCalls2(() ==> {
+					asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+
+					objs3 := CheckExeDownList
+					objs3.Push(asRawPar.CreateCall())
+					cnsts := List.{BoxExeConstObj^}
+					cnsts.Push(GetConstType(tplType))
+					lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
+					assert(lGCall != null)
+
+					getPtr := lGCall.CreateCall(objs3)
+					assert(getPtr != null)
+
+					objs3.Destroy()
+
+					pth := tplTuple.GetFieldByIndexTuple(i)
+					objs3.Push(getPtr)
+					r6 := pth.CreateCall(objs3)
+					assert(r6 != null)
+					asRawPar.PopulateCalls()
+					return r6
+				})
+			}
 		}
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
-		objs.Push(getTupleVar)
 
 		lst := List.{BoxExeConstObj^}
 		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
+		lst.Push(GetConstType(tplType))
 		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
-		lst.Destroy()
 
 		step1 := createLambdaFunc.CreateCall(objs)
 		step2 := new UnrefFuncCall(step1)
@@ -188,14 +216,44 @@ BoxLambdaHolder := class extend BoxExeObj
 		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
 		InternalsHatch.Await()
 		lambdaType := GCLambda.GetClass(cnsts).ItType
-		cnsts.Destroy()
 
-		assert(step1 is in BoxFuncCall)
-		st := step1->{BoxFuncCall^}
-		for it, i : newFunc.CapturedBySomeVars
+		if capturedVars.Size() != 0
 		{
-			st.ExtraWork.Push(it.2)
+			objs3 := CheckExeDownList
+			objs3.Push(new ObjResultHolder(step2))
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetConstType(tplType))
+			getCaptureListFunc := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
+			cnsts.Destroy()
+			getCaptureList := getCaptureListFunc.CreateCall(objs3)
+			getCap := new ObjResultHolder(getCaptureList)
+
+			resObj.postCalls.Push(getCaptureList)
+
+			for it,i : capturedVars
+			{
+				pth := tplTuple.GetFieldByIndexTuple(i)
+				objs1 := CheckExeDownList
+				objs1.Push(getCap)
+				element := pth.CreateCall(objs1)
+				assert(element != null)
+				objs2 := CheckExeDownList
+				objs2.Push(element)
+				objs2.Push(it.1)
+				resCall := CreateFuncCall(StringSpan("="),objs2)
+				assert(resCall != null)
+
+				resObj.postCalls.Push(resCall)
+			}
 		}
+
+
+		//assert(step1 is in BoxFuncCall)
+		//st := step1->{BoxFuncCall^}
+		//for it, i : newFunc.CapturedBySomeVars
+		//{
+		//	st.ExtraWork.Push(it.2)
+		//}
 
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
 
@@ -218,45 +276,46 @@ LambdaObject := class extend PackedExeObj
 {
 	baseFunc := BoxFuncBody^
 	lambdaFunc := BoxFuncBody^
+	capturedVars := List.{Tuple.{StringSpan,BoxExeObj^,MacroParam^,bool}}
 
-	CaptureObject := !(StringSpan name,BoxExeObj^ obj,bool isRef,Token^ errorToken) -> MemVar^
-	{
-		emptyConsts := List.{BoxExeConstObj^}
+	//CaptureObject := !(StringSpan name,BoxExeObj^ obj,bool isRef,Token^ errorToken) -> MemVar^
+	//{
+	//	emptyConsts := List.{BoxExeConstObj^}
 
-		locVar := FuncLocalParam^
-		baseFunc.EnterScope(() ==> {
-			locVar = new FuncLocalParam(obj.GetType())
-			CurrentFunc.regularVars.Push(locVar)
-			locVar.NotifyCaptureUse()
-		})
+	//	locVar := FuncLocalParam^
+	//	baseFunc.EnterScope(() ==> {
+	//		locVar = new FuncLocalParam(obj.GetType())
+	//		CurrentFunc.regularVars.Push(locVar)
+	//		locVar.NotifyCaptureUse()
+	//	})
 
-		objs9 := CheckExeDownList
-		objs9.Push(locVar.CreateCall())
-		objs9.Push(obj)
+	//	objs9 := CheckExeDownList
+	//	objs9.Push(locVar.CreateCall())
+	//	objs9.Push(obj)
 
-		itSet := BoxExeObj^
-		
-		if obj.GetType() is in TypePoint
-		{
-			itSet = GPointStoreTemplate.GetFunc(objs9,emptyConsts).CreateCall(objs9) 
-		}else{
-			itSet = CreateFuncCall(StringSpan("="),objs9,emptyConsts)
-			if itSet == null
-				errorToken.EmitError("Could not get operator = for capture variable")
-		}
-		objs9.Destroy()
-		preCalls.Push(itSet)
+	//	itSet := BoxExeObj^
+	//	
+	//	if obj.GetType() is in TypePoint
+	//	{
+	//		itSet = GPointStoreTemplate.GetFunc(objs9,emptyConsts).CreateCall(objs9) 
+	//	}else{
+	//		itSet = CreateFuncCall(StringSpan("="),objs9,emptyConsts)
+	//		if itSet == null
+	//			errorToken.EmitError("Could not get operator = for capture variable")
+	//	}
+	//	objs9.Destroy()
+	//	preCalls.Push(itSet)
 
 
-		itMemVar := MemVar^
-		if isRef
-		{
-			itMemVar = new MemVarRef(name,locVar)
-		}else{
-			itMemVar = new MemVar(name,locVar)
-		}
-		lambdaFunc.CapturedManualy[name] = itMemVar
-		lambdaFunc.CaptureUsed = true
-		return itMemVar
-	}
+	//	itMemVar := MemVar^
+	//	if isRef
+	//	{
+	//		itMemVar = new MemVarRef(name,locVar)
+	//	}else{
+	//		itMemVar = new MemVar(name,locVar)
+	//	}
+	//	lambdaFunc.CapturedManualy[name] = itMemVar
+	//	lambdaFunc.CaptureUsed = true
+	//	return itMemVar
+	//}
 }
