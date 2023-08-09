@@ -27,12 +27,15 @@ TestDestroyClass := class extend TGCObject
 
 main := !(char^[] args) -> int
 {
-	c := 15
+	c := 16
+	d := 20
 
-	lmbd := () ==> [c] {
-		printf("hello world %i\n",c)
+	lmbd := () ==> [d&,c] {
+		printf("hello world %i %i\n",c,d)
+		d += 100
 	}
 	lmbd()
+	printf("new d %i\n",d)
 
 	//printf("a\n")
 	//defer printf("d\n")

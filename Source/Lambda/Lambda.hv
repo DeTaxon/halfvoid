@@ -129,7 +129,7 @@ BoxLambdaHolder := class extend BoxExeObj
 						isRef = true
 						capCall = new UnrefFuncCall(capCall)
 						macroRes = new MacroParam(capCall.GetType(),true)
-						vars.Push(new MemVarRef(capName,macroRes))
+						vars.Push(new MemVarBorrowedRef(capName,macroRes))
 					}else if iterC.Down?.Right?.GetValue() == "=" and iterC.Down is TokenIndent
 					{
 						capName = iterC.Down->{TokenIndent^}.Value
@@ -169,9 +169,9 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		for it,i : capturedVars
 		{
-			if it.3
-			{
-			}else{
+			//if it.3
+			//{
+			//}else{
 				mc := it.2
 				mc.PopulateCalls2(() ==> {
 					asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
@@ -195,7 +195,7 @@ BoxLambdaHolder := class extend BoxExeObj
 					asRawPar.PopulateCalls()
 					return r6
 				})
-			}
+			//}
 		}
 
 		objs := CheckExeDownList
