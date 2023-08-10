@@ -207,11 +207,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		
 		CurrentScope = this&
 
-		for it : CapturedVars2
-		{
-			UnitStack.PushFront(it)
-		}
-
 		for par : Params
 		{
 			UnitStack.PushFront(par)

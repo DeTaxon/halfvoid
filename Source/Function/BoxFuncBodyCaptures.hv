@@ -10,7 +10,7 @@ AppendClass BoxFuncBody
 	//CapturedVarsCleanup := BoxExeObj^
 	CapturedManualy := AVLMap.{StringSpan,MemVar^}
 
-	CapturedVars2 := List.{MemVar^}
+	CapturedVars2 := List.{LocalVar^}
 
 	FunctionResultVars := List.{FuncResultParam2^}
 

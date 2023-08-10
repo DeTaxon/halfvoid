@@ -40,6 +40,14 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		if par is LambdaObject
 		{
 			lastLambdaHolder = par->{LambdaObject^}
+
+			capVars := ref lastLambdaHolder.lambdaFunc.CapturedVars2
+
+			for it : capVars
+			{
+				if it.itName == asItm.Value
+					return it.GetCall()
+			}
 		}
 		if par is ConstVar
 		{

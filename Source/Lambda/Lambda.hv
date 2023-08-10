@@ -92,7 +92,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		newFunc := cb() //Vars captured
 
 		resObj := new LambdaObject
-		capturedVars := ref resObj.capturedVars
+		capturedVars := List.{Tuple.{LocalVar^,BoxExeObj^}}
 
 		vars := ref newFunc.CapturedVars2
 
@@ -107,7 +107,7 @@ BoxLambdaHolder := class extend BoxExeObj
 				{
 					capName := StringSpan
 					capCall := BoxExeObj^
-					macroRes := MacroParam^
+					locVar := LocalVar^
 					isRef := false
 
 					if iterC is TokenIndent
@@ -117,8 +117,9 @@ BoxLambdaHolder := class extend BoxExeObj
 						capCall = TryCheckGetParam(iterC)
 						if capCall == null
 							iterC.EmitError("Could not get captured value") //todo better error
-						macroRes = new MacroParam(capCall.GetType(),true)
-						vars.Push(new MemVar(capName,macroRes))
+
+						locVar = new LocalVar(capName,capCall.GetType(),true,false)
+						vars.Push(locVar)
 					}else if iterC.Down?.Right?.GetValue() == "&" and iterC.Down is TokenIndent
 					{
 						capName = iterC.Down->{TokenIndent^}.Value
@@ -127,17 +128,19 @@ BoxLambdaHolder := class extend BoxExeObj
 						if capCall == null
 							iterC.EmitError("Could not get captured value") //todo better error
 						isRef = true
+						locVar = new LocalVar(capName,capCall.GetType(),true,true)
 						capCall = new UnrefFuncCall(capCall)
-						macroRes = new MacroParam(capCall.GetType(),true)
-						vars.Push(new MemVarBorrowedRef(capName,macroRes))
+						vars.Push(locVar)
 					}else if iterC.Down?.Right?.GetValue() == "=" and iterC.Down is TokenIndent
 					{
 						capName = iterC.Down->{TokenIndent^}.Value
 						capCall = TryGetExeCall(iterC.Down.Right.Right)
 						if capCall == null
 							iterC.EmitError("Can not get result of right of operator =")
+						locVar = new LocalVar(capName,capCall.GetType(),true,false)
+						vars.Push(locVar)
 					}
-					capturedVars.Emplace(capName,capCall,macroRes,isRef)
+					capturedVars.Emplace(locVar,capCall)
 				}
 				iterC = iterC.Right
 			}
@@ -150,7 +153,6 @@ BoxLambdaHolder := class extend BoxExeObj
 	
 		UnitStack.PushFront(resObj)
 		newFunc.ParseBodyForced()
-
 		
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := fncFnc.CreateCall()
@@ -169,33 +171,27 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		for it,i : capturedVars
 		{
-			//if it.3
-			//{
-			//}else{
-				mc := it.2
-				mc.PopulateCalls2(() ==> {
-					asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+			asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
 
-					objs3 := CheckExeDownList
-					objs3.Push(asRawPar.CreateCall())
-					cnsts := List.{BoxExeConstObj^}
-					cnsts.Push(GetConstType(tplType))
-					lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
-					assert(lGCall != null)
+			objs3 := CheckExeDownList
+			objs3.Push(asRawPar.CreateCall())
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetConstType(tplType))
+			lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
+			assert(lGCall != null)
 
-					getPtr := lGCall.CreateCall(objs3)
-					assert(getPtr != null)
+			getPtr := lGCall.CreateCall(objs3)
+			assert(getPtr != null)
 
-					objs3.Destroy()
+			objs3.Destroy()
 
-					pth := tplTuple.GetFieldByIndexTuple(i)
-					objs3.Push(getPtr)
-					r6 := pth.CreateCall(objs3)
-					assert(r6 != null)
-					asRawPar.PopulateCalls()
-					return r6
-				})
-			//}
+			pth := tplTuple.GetFieldByIndexTuple(i)
+			objs3.Push(getPtr)
+			r6 := pth.CreateCall(objs3)
+			assert(r6 != null)
+			asRawPar.PopulateCalls()
+
+			it.0.SetCall(r6)
 		}
 
 		objs := CheckExeDownList
@@ -248,13 +244,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		}
 
 
-		//assert(step1 is in BoxFuncCall)
-		//st := step1->{BoxFuncCall^}
-		//for it, i : newFunc.CapturedBySomeVars
-		//{
-		//	st.ExtraWork.Push(it.2)
-		//}
-
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
 
 		while UnitStack.Size() > stackSize
@@ -276,7 +265,6 @@ LambdaObject := class extend PackedExeObj
 {
 	baseFunc := BoxFuncBody^
 	lambdaFunc := BoxFuncBody^
-	capturedVars := List.{Tuple.{StringSpan,BoxExeObj^,MacroParam^,bool}}
 
 	//CaptureObject := !(StringSpan name,BoxExeObj^ obj,bool isRef,Token^ errorToken) -> MemVar^
 	//{

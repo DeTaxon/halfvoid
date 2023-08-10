@@ -1,0 +1,63 @@
+LocalVar := class
+{
+	itName := StringSpan
+	isMemory := bool
+	isReference := bool
+
+	this := !(StringSpan inName,Type^ varType,bool isMem,bool isRef) -> void
+	{
+		itName = inName
+
+		isMemory = isMem
+		isReference = isRef
+
+		proxy.ObjType = varType
+		proxy.baseVar = this&
+	}
+
+
+	GetCall := !() -> BoxExeObj^
+	{
+		return proxy&
+	}
+
+	SetCall := !(BoxExeObj^ toCall) -> void
+	{
+		if isReference
+		{
+			proxy.Down = new PtrToRef(toCall)
+		}else{
+			proxy.Down = toCall
+		}
+	}
+
+	proxy := LocalVarProxy
+}
+
+
+LocalVarProxy := class extend BoxExeObj
+{
+	baseVar := LocalVar^
+	Down := BoxExeObj^
+
+	IsMem := virtual !() -> bool
+	{
+		return baseVar.isMemory
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointPre(ctx)
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointUse(ctx)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintUse(ctx)
+	}
+}
