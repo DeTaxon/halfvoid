@@ -33,15 +33,19 @@ main := !(char^[] args) -> int
 
 	lmbd := () ==> [d&,c] {
 		printf("hello world %i %i\n",c,d)
+		printf("hello world %i %i\n",c,d)
 		d += 100
 		subLambda := () ==> [c,d&] {
-			//printf("test %i %i %i\n",c,d,e)
-			printf("test %i %i\n",c,d)
+			yield void
+			printf("test %i %i %i\n",c,d,e)
+			e = 999
+			yield void
 		}
+		subLambda()
 		subLambda()
 	}
 	lmbd()
-	printf("new d %i\n",d)
+	printf("new d %i %i\n",d,e)
 
 	//printf("a\n")
 	//defer printf("d\n")

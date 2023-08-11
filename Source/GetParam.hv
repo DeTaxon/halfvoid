@@ -69,21 +69,26 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					mv2 := mv->{MemVar^}
 					if metFuncs.Size() != 0
 					{
-						printf("paramName %s\n",mv.Name)
-						itm.EmitError("Can not use this capture")
 
-						//varType := mv2.Value.GetVarType()
+						metLambdas := HybridStack.{LambdaObject^,16}
 
-						//if IsGCType(varType) or IsGCPtr(varType)
-						//{
-						//	assert(lastLambdaHolder != null)
-						//	mv2.Value.NotifyMemUse()
-						//	getVar := CallFromSomeVar(mv2)
-						//	resVar := lastLambdaHolder.CaptureObject(asItm.Value,new UnrefFuncCall(getVar),true,asItm)
-						//	return CallFromSomeVar(resVar)
-						//}else {
-						//	mv2.NotifyCaptureUse()
-						//}
+						for it : UnitStack
+						{
+							if it == par
+								break
+							if it is LambdaObject
+								metLambdas.PushFront(it->{LambdaObject^})
+						}
+
+						capCall := CallFromSomeVar(mv2)
+
+						while metLambdas.Size() != 0
+						{
+							lambd := metLambdas.Pop()
+							locVar := lambd.CaptureObject(asItm.Value,capCall,true)
+							capCall = locVar.GetCall()
+						}
+						return capCall
 					}
 					return CallFromSomeVar(mv2)
 				}else if par is MacroVar {

@@ -92,7 +92,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		newFunc := cb() //Vars captured
 
 		resObj := new LambdaObject
-		capturedVars := List.{Tuple.{LocalVar^,BoxExeObj^}}
+		capturedVars := ref resObj.capturedVars
 
 		vars := ref newFunc.CapturedVars2
 
@@ -265,45 +265,16 @@ LambdaObject := class extend PackedExeObj
 {
 	baseFunc := BoxFuncBody^
 	lambdaFunc := BoxFuncBody^
+	capturedVars := List.{Tuple.{LocalVar^,BoxExeObj^}}
 
-	//CaptureObject := !(StringSpan name,BoxExeObj^ obj,bool isRef,Token^ errorToken) -> MemVar^
-	//{
-	//	emptyConsts := List.{BoxExeConstObj^}
+	CaptureObject := !(StringSpan name, BoxExeObj^ capCall,bool isRef) -> LocalVar^
+	{
+		setType := capCall.GetType()
 
-	//	locVar := FuncLocalParam^
-	//	baseFunc.EnterScope(() ==> {
-	//		locVar = new FuncLocalParam(obj.GetType())
-	//		CurrentFunc.regularVars.Push(locVar)
-	//		locVar.NotifyCaptureUse()
-	//	})
+		if isRef 
+			capCall = new UnrefFuncCall(capCall)
 
-	//	objs9 := CheckExeDownList
-	//	objs9.Push(locVar.CreateCall())
-	//	objs9.Push(obj)
-
-	//	itSet := BoxExeObj^
-	//	
-	//	if obj.GetType() is in TypePoint
-	//	{
-	//		itSet = GPointStoreTemplate.GetFunc(objs9,emptyConsts).CreateCall(objs9) 
-	//	}else{
-	//		itSet = CreateFuncCall(StringSpan("="),objs9,emptyConsts)
-	//		if itSet == null
-	//			errorToken.EmitError("Could not get operator = for capture variable")
-	//	}
-	//	objs9.Destroy()
-	//	preCalls.Push(itSet)
-
-
-	//	itMemVar := MemVar^
-	//	if isRef
-	//	{
-	//		itMemVar = new MemVarRef(name,locVar)
-	//	}else{
-	//		itMemVar = new MemVar(name,locVar)
-	//	}
-	//	lambdaFunc.CapturedManualy[name] = itMemVar
-	//	lambdaFunc.CaptureUsed = true
-	//	return itMemVar
-	//}
+		result = new LocalVar(name,setType,true,isRef)
+		capturedVars.Emplace(result,capCall)
+	}
 }
