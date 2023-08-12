@@ -69,7 +69,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					mv2 := mv->{MemVar^}
 					if metFuncs.Size() != 0
 					{
-
 						metLambdas := HybridStack.{LambdaObject^,16}
 
 						for it : UnitStack

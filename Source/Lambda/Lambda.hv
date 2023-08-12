@@ -166,7 +166,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			tplTypes.Push(it.1.GetType())
 		}
 
-		tplTuple := GetTuple(tplTypes)
+		tplTuple := GetTuple(tplTypes,true)
 		tplType := tplTuple.ItType
 
 		for it,i : capturedVars
@@ -176,11 +176,12 @@ BoxLambdaHolder := class extend BoxExeObj
 			objs3 := CheckExeDownList
 			objs3.Push(asRawPar.CreateCall())
 			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetConstType(tplType))
 			lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
 			assert(lGCall != null)
 
+
 			getPtr := lGCall.CreateCall(objs3)
+			getPtr = GetExchange2(getPtr,tplType.GetPoint(),false) 
 			assert(getPtr != null)
 
 			objs3.Destroy()
@@ -198,8 +199,8 @@ BoxLambdaHolder := class extend BoxExeObj
 		objs.Push(fncPtr)
 
 		lst := List.{BoxExeConstObj^}
-		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
 		lst.Push(GetConstType(tplType))
+		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
 		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 
@@ -218,10 +219,10 @@ BoxLambdaHolder := class extend BoxExeObj
 			objs3 := CheckExeDownList
 			objs3.Push(new ObjResultHolder(step2))
 			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetConstType(tplType))
 			getCaptureListFunc := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
 			cnsts.Destroy()
 			getCaptureList := getCaptureListFunc.CreateCall(objs3)
+			getCaptureList = GetExchange2(getCaptureList,tplType.GetPoint(),false)
 			getCap := new ObjResultHolder(getCaptureList)
 
 			resObj.postCalls.Push(getCaptureList)
@@ -271,8 +272,11 @@ LambdaObject := class extend PackedExeObj
 	{
 		setType := capCall.GetType()
 
-		if isRef 
+		if isRef
+		{
+			capCall.NotifyMemUse()
 			capCall = new UnrefFuncCall(capCall)
+		}
 
 		result = new LocalVar(name,setType,true,isRef)
 		capturedVars.Emplace(result,capCall)

@@ -9,7 +9,7 @@ Type := class
 	ItHash := int
 	arrays := AVLMap.{int,Type^}
 
-	GetType := virtual !() -> string
+	GetType := virtual !() -> char^
 	{
 		return ""
 	}

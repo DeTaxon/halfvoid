@@ -25,8 +25,26 @@ TestDestroyClass := class extend TGCObject
 	}
 }
 
+clss2 := class extend TGCObject
+{
+	val := int
+
+	Test := !(void^ hm) -> void
+	{
+		ll := () ==> {
+			//val = new TGCObject
+			val = 100
+			hm = hm
+		}
+		ll()
+	}
+}
+
 main := !(char^[] args) -> int
 {
+	h := clss2
+	h.Test(null)
+
 	c := 16
 	d := 20
 	e := 100

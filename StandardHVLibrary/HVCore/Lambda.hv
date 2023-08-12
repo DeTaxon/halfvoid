@@ -81,9 +81,9 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 {
 	return lmb.callFunc(lmb&,args...)
 }
-internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
+internalHVLambdaGetCaptures := !(void^ lmbd)-> void^
 {
-	result = lmbd->{TILambda^}.getCaptureVar()->{T^}
+	result = lmbd->{TILambda^}.getCaptureVar()
 }
 internalHVLambdaGetYieldState := !(void^ lmbd) -> ref int
 {

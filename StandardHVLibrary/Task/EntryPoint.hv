@@ -1,16 +1,16 @@
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	////All function expects to CurrentTask be initialized, this is not working for first function
-	////so first function MUST initialize CurrentTask
-	//internalInitThread()
+	//All function expects to CurrentTask be initialized, this is not working for first function
+	//so first function MUST initialize CurrentTask
+	internalInitThread()
 
 	result = internalHVEntryPoint2(argc,argv)
 
-	//internalGlobalsDestroy()
+	internalGlobalsDestroy()
 
-	//CurrentThread.ThreadMainTask = null
-	//CurrentThread = null
-	//internalThreadDestructor()
+	CurrentThread.ThreadMainTask = null
+	CurrentThread = null
+	internalThreadDestructor()
 }
 
 internalInitThread := !() -> void
@@ -62,38 +62,38 @@ ucontextStartTask := !() -> void
 
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
-	//InitTaskContext()
-	////TaskUVInit()
+	InitTaskContext()
+	//TaskUVInit()
 
-	//CurrentThread = new TaskWorker()
-	//CurrentThread.ThreadMainTask = CurrentTask
-	//TaskMainTaskWorker = CurrentThread
-	//CurrentTask.OSFirstInit()
+	CurrentThread = new TaskWorker()
+	CurrentThread.ThreadMainTask = CurrentTask
+	TaskMainTaskWorker = CurrentThread
+	CurrentTask.OSFirstInit()
 
-	//for it : #MarkedFunctions("CallAtStart")
-	//{
-	//	it()
-	//}
+	for it : #MarkedFunctions("CallAtStart")
+	{
+		it()
+	}
 
-	//TSpawnTask(() ==> [argv,argc] {	
+	TSpawnTask(() ==> [argv,argc] {	
 		spn := TArraySpan.{char^}//(argv,argc)
 		spn.pointer = argv
 		spn.itSize = argc
 		main(spn&)
-	//})
+	})
 
-	//EnterTaskThreadCycle(true)
+	EnterTaskThreadCycle(true)
 
-	//if #Tracy()
-	//{
-	//	___tracy_emit_memory_free_callstack = null
-	//}
+	if #Tracy()
+	{
+		___tracy_emit_memory_free_callstack = null
+	}
 
-	//TaskContextDestructor()
-	//TaskMainTaskWorker = null
-	//
-	////ur_exit(gTaskIORing)
-	////ur_destroy(gTaskIORing)
+	TaskContextDestructor()
+	TaskMainTaskWorker = null
+	
+	//ur_exit(gTaskIORing)
+	//ur_destroy(gTaskIORing)
 }
 
 
