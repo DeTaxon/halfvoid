@@ -76,7 +76,7 @@ BoxFile := class extend BoxUnit
 				break
 		}
 		assert(foundSpace)
-		
+
 		defer loaded.Emit()
 
 		tokens := Token^

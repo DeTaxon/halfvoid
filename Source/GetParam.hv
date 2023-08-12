@@ -81,10 +81,15 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 						capCall := CallFromSomeVar(mv2)
 
+						isRef := true
+
+						if IsGCPtr(capCall.GetType())
+							isRef = false
+
 						while metLambdas.Size() != 0
 						{
 							lambd := metLambdas.Pop()
-							locVar := lambd.CaptureObject(asItm.Value,capCall,true)
+							locVar := lambd.CaptureObject(asItm.Value,capCall,isRef)
 							capCall = locVar.GetCall()
 						}
 						return capCall

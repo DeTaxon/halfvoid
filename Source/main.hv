@@ -152,9 +152,8 @@ main := !(char^[] args) -> int
 
 	for fil : CodeFiles
 	{
-		fil2 := fil
-		TSpawnTask(() ==> {
-			fil2.Parse()
+		TSpawnTask(() ==> [fil] {
+			fil.Parse()
 		})
 	}
 

@@ -74,7 +74,7 @@ PriorityBagOld := class
 					rawWord.DivideStr(" ",x ==> { rl.Push(x) })
 
 					lAddRule := !(MiniMachineNodeOld^,int)&-> void
-					addRule := (MiniMachineNodeOld^ machIter , int i) ==>
+					addRule := (MiniMachineNodeOld^ machIter , int i) ==> [lAddRule&]
 					{
 						stW := GetConstStringSpan(rl[i])
 						switch stW
