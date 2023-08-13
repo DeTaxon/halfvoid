@@ -132,12 +132,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}
 			if exeObj is ConstructorCallWrapper
 			{
-				objAsCnstr := exeObj->{ConstructorCallWrapper^}
-				vr3 := new MemVarBorrowed(name,objAsCnstr.itVar)
-				vr3.Inits.Push(objAsCnstr.itCall)
-				vr3.Inits.Push(objAsCnstr.ExtraWork[^])
-
-				return vr3
+				ObjAsCnstr := exeObj->{ConstructorCallWrapper^}
+				return new AliasVar(name,ObjAsCnstr.itVar)
 			}
 
 			if exeObj is BoxLambdaHolder

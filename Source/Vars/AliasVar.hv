@@ -1,0 +1,15 @@
+AliasVar := class extend BoxUnit
+{
+	itName := StringSpan
+	itValue := BoxUnit^
+
+	this := !(StringSpan setName, BoxUnit^ setValue) -> void
+	{
+		itName = setName
+		itValue = setValue
+	}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		itValue.PrintCode(ctx)
+	}
+}

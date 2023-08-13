@@ -38,19 +38,28 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	cnstrCall := ParseType(itm.Down)
 	if cnstrCall != null
 	{
-		c := CreateVar(cnstrCall,false)
-		cCall := c.CreateCall()
+		locVar := new LocalVar(StringSpan("anon"),cnstrCall,true,false)
+
+		cCall := locVar.CreateVarCall()
 
 		constrObj := innerTryGetMethodCall(StringSpan("this"),cCall,Objs,consts)
 		if constrObj != null
-			return new ConstructorCallWrapper(c,constrObj)
+		{
+			locVar.extraWork.Push(constrObj)
+			CurrentFunc.LocalVars.Push(locVar)
+			return new ConstructorCallWrapper(locVar,cCall)
+		}
 
 		objs22 := CheckExeDownList
 		objs22.Push(cCall)
 		objs22.Push(Objs[^])
 		check2 := CreateFuncCall(StringSpan(". this"),objs22)
 		if check2 != null
-			return new ConstructorCallWrapper(c,check2)
+		{
+			locVar.extraWork.Push(check2)
+			CurrentFunc.LocalVars.Push(locVar)
+			return new ConstructorCallWrapper(locVar,cCall)
+		}
 		itm.EmitError("Constructor not found")
 	}
 	
@@ -302,23 +311,13 @@ innerTryGetSkobCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs,List.{BoxExeC
 
 ConstructorCallWrapper := class extend BoxExeObj
 {
-	itVar := ParamFunc^
-	itCall := BoxExeObj^
-	varCall := BoxExeObj^
-	ExtraWork := List.{BoxExeObj^}
-	extraId := int
-	this := !(ParamFunc^ vr, BoxExeObj^ bj) -> void
+	itVar := LocalVar^
+	cCall := BoxExeObj^
+	this := !(LocalVar^ vr, BoxExeObj^ bj) -> void
 	{
-		extraId = GetNewId()
+		cCall = bj
+		ObjType = vr.GetType()
 		itVar = vr
-		itCall = bj
-		varCall = vr.CreateCall()
-		ObjType = vr.GetVarType()
-
-		if ObjType is TypeClass
-		{
-			ModifyStackAllocatedVar(vr,ExtraWork)
-		}
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -327,22 +326,20 @@ ConstructorCallWrapper := class extend BoxExeObj
 
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		itCall.PrintDefaultUse(ctx)
-		varCall.PrintPointPre(ctx)
-		ExtraWork[^].PrintDefaultUse(ctx)
+		itVar.PrintCode(ctx)
+		cCall.PrintPointPre(ctx)
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		varCall.PrintPointUse(ctx)
+		cCall.PrintPointUse(ctx)
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		assert(not (ObjType is in TypeClass))
-		PrintUnrefObj(ctx,extraId,this&)
+		itVar.PrintCode(ctx)
+		cCall.PrintPre(ctx)
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		assert(not (ObjType is in TypeClass))
-		ctx.writeStream^ << "%TUnref" << extraId
+		cCall.PrintUse(ctx)
 	}
 }
