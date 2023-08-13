@@ -13,3 +13,21 @@ AliasVar := class extend BoxUnit
 		itValue.PrintCode(ctx)
 	}
 }
+
+AliasVarOhNo := class extend BoxUnit
+{
+	itName := StringSpan
+	itValue := BoxExeObj^
+	itVar := LocalVar^
+
+	this := !(StringSpan setName, BoxExeObj^ setValue,LocalVar^ setVar) -> void
+	{
+		itName = setName
+		itValue = setValue
+		itVar = setVar
+	}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		itValue.PrintDefaultUse(ctx)
+	}
+}

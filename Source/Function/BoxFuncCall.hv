@@ -11,7 +11,7 @@ BoxFuncCall := class extend BoxExeObj
 	downs := ExeDownList
 	resId := int
 
-	ResultVar := ParamFunc^
+	ResultVar := LocalVar^
 	ExtraWork := List.{BoxExeObj^}
 
 	this := !(BoxFunc^ fnc) -> void
@@ -41,8 +41,9 @@ BoxFuncCall := class extend BoxExeObj
 
 		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 		{
-			ResultVar = CreateVar(fType.ResultType,false)
-			downs.Push(ResultVar.CreateCall())
+			ResultVar = new LocalVar(StringSpan("anon"),fType.ResultType,true,false)
+			CurrentFunc.LocalVars.Push(ResultVar)
+			downs.Push(ResultVar.CreateVarCall())
 
 			if this& is BoxFuncCall
 			{
@@ -373,11 +374,6 @@ BoxFuncCall := class extend BoxExeObj
 				asPtr.downs.Push(newDown[^])
 			}
 		}
-
-		if ResultVar != null and fType.ResultType is TypeClass
-		{
-			ModifyStackAllocatedVar(ResultVar,ExtraWork)
-		}
 	}
 	NotifyMemUse := virtual !() -> void
 	{
@@ -405,6 +401,7 @@ BoxFuncCall := class extend BoxExeObj
 
 	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ResultVar?.PrintCode(ctx)
 		callObj.PrintFuncCall(ctx,resId,0,downs)
 		ExtraWork[^].PrintDefaultUse(ctx)
 	}

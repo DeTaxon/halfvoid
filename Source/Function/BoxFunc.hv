@@ -250,7 +250,7 @@ PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDo
 			inType.PrintType(ctx)
 			f^ << "* "
 			dwn.PrintPointUse(ctx)
-		}else{'
+		}else{
 			if i < itType.Params.Size() and itType.Params[i].ItType is in TypeClass
 			{
 				tp := dwn.GetType()

@@ -65,6 +65,14 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				return av.itValue->{LocalVar^}.CreateVarCall()
 			}
 		}
+		if par is AliasVarOhNo
+		{
+			av := par->{AliasVarOhNo^}
+			if av.itName == asItm.Value
+			{
+				return av.itVar.CreateVarCall()
+			}
+		}
 		if par is LocalVar
 		{
 			lv := par->{LocalVar^}
