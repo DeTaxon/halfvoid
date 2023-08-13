@@ -16,10 +16,25 @@
 //	}
 //}
 
+BadClass := class extend TGCObject
+{
+	SomePrint := virtual !() -> void
+	{
+		printf("some print\n")
+	}
+	Destroy := virtual !() -> void
+	{
+		printf("called destroy\n")
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	x := int
-	printf("test %i\n",x)
+	{
+		x := BadClass
+		x.SomePrint()
+		defer printf("defer\n")
+	}
 
 	return 0
 }

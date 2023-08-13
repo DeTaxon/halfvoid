@@ -11,7 +11,27 @@ AppendClass BoxFuncBody
 			access := new FuncLocalVarAccess(i,tp)
 			it.SetCall(access)
 
-			it.createVar.Push(new FuncLocalVarCleanup(access))
+			createCall := new FuncLocalVarCleanup(access)
+			it.createVar.Push(createCall)
+
+			if tp is TypeClass
+			{
+				objs := CheckExeDownList
+				objs.Push(access)
+				cnsts := List.{BoxExeConstObj^}
+				fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
+
+				assert(fnc != null)
+
+				it.createVar.Push(fnc.CreateCall(objs))
+
+				if IsGCClass(tp)
+				{
+					noObjs := CheckExeDownList
+					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
+					createCall.deferCall = new BoxDefer(destrCall)
+				}
+			}
 		}
 	}
 	PrintLocalVars := !(LLVMWriteContext^ ctx) -> void
@@ -31,6 +51,8 @@ AppendClass BoxFuncBody
 FuncLocalVarCleanup := class extend BoxExeObj
 {
 	getVal := BoxExeObj^
+	deferCall := BoxExeObj^
+
 	baseType := Type^
 	this := !(BoxExeObj^ gV) -> void
 	{
@@ -48,6 +70,9 @@ FuncLocalVarCleanup := class extend BoxExeObj
 		if DebugMode
 			f^ << ", !dbg !" << GDebugLineCallId
 		f^ << "\n"
+
+		if deferCall != null
+			ctx.deferObjects.PushFront(deferCall)
 	}
 }
 
@@ -55,10 +80,11 @@ FuncLocalVarAccess := class extend BoxExeObj
 {
 	varIndex := int
 	unrefInd := int
+
 	this := !(int ind, Type^ varType) -> void
 	{
 		ObjType = varType
-		varIndex = 0
+		varIndex = ind
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
