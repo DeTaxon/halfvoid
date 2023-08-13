@@ -1,0 +1,20 @@
+
+BoxDefer := class extend BoxExeObj
+{
+	onDefer := BoxExeObj^
+	this := !(BoxExeObj^ dObj) -> void
+	{
+		onDefer = dObj
+		ObjType = GTypeVoid
+	}
+	IsDefered := virtual !() -> bool { return true }
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.deferObjects.PushFront(this&)
+	}
+	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		onDefer.PrintDefaultUse(ctx)
+	}
+}
+

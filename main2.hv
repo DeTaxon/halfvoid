@@ -18,6 +18,10 @@
 
 BadClass := class extend TGCObject
 {
+	this := !(int x) -> void
+	{
+		printf("called constructor %i\n",x)
+	}
 	SomePrint := virtual !() -> void
 	{
 		printf("some print\n")
@@ -31,8 +35,10 @@ BadClass := class extend TGCObject
 main := !(char^[] args) -> int
 {
 	{
-		x := BadClass
+		x := BadClass(88)
 		x.SomePrint()
+		y := ref x
+		y.SomePrint()
 		defer printf("defer\n")
 	}
 

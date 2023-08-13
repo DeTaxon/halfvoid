@@ -4,7 +4,8 @@ LocalVar := class extend BoxUnit
 	isMemory := bool
 	isReference := bool
 
-	createVar := HybridQueue.{BoxExeObj^,4}
+	createVar := HybridQueue.{BoxExeObj^,2}
+	extraWork := HybridQueue.{BoxExeObj^,4}
 
 	this := !(StringSpan inName,Type^ varType,bool isMem,bool isRef) -> void
 	{
@@ -15,27 +16,41 @@ LocalVar := class extend BoxUnit
 
 		proxy.ObjType = varType
 		proxy.baseVar = this&
+
+		if isRef
+			proxy.ObjType = varType.GetPoint()
 	}
 
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		createVar[^].PrintDefaultUse(ctx)
+		extraWork[^].PrintDefaultUse(ctx)
 	}
 
 
-	GetCall := !() -> BoxExeObj^
+	GetBaseType := virtual !() -> Type^
 	{
-		return proxy&
+		return proxy.ObjType
+	}
+	GetType := virtual !() -> Type^
+	{
+		if isReference
+			return proxy.ObjType.Base
+		return proxy.ObjType
+	}
+	CreateVarCall := !() -> BoxExeObj^
+	{
+		if isReference
+		{
+			return new PtrToRef(proxy&)
+		}else{
+			return proxy&
+		}
 	}
 
 	SetCall := !(BoxExeObj^ toCall) -> void
 	{
-		if isReference
-		{
-			proxy.Down = new PtrToRef(toCall)
-		}else{
-			proxy.Down = toCall
-		}
+		proxy.Down = toCall
 	}
 
 	proxy := LocalVarProxy
@@ -46,6 +61,7 @@ LocalVarProxy := class extend BoxExeObj
 {
 	baseVar := LocalVar^
 	Down := BoxExeObj^
+	BaseDown := BoxExeObj^
 
 	IsMem := virtual !() -> bool
 	{

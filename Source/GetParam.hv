@@ -46,7 +46,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			for it : capVars
 			{
 				if it.itName == asItm.Value
-					return it.GetCall()
+					return it.CreateVarCall()
 			}
 		}
 		if par is ConstVar
@@ -61,7 +61,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			lv := par->{LocalVar^}
 
 			if lv.itName == asItm.Value
-				return lv.GetCall()
+				return lv.CreateVarCall()
 		}
 		if par is in NamedVar
 		{
@@ -97,7 +97,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 						{
 							lambd := metLambdas.Pop()
 							locVar := lambd.CaptureObject(asItm.Value,capCall,isRef)
-							capCall = locVar.GetCall()
+							capCall = locVar.CreateVarCall()
 						}
 						return capCall
 					}
