@@ -1,0 +1,84 @@
+AppendClass BoxFuncBody
+{
+	LocalVars := List.{LocalVar^}
+
+	LocalVariablesStep := !() -> void
+	{
+		for it, i : LocalVars
+		{
+			tp := it.GetCall().GetType()
+
+			access := new FuncLocalVarAccess(i,tp)
+			it.SetCall(access)
+
+			it.createVar.Push(new FuncLocalVarCleanup(access))
+		}
+	}
+	PrintLocalVars := !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+
+		for it,i : LocalVars
+		{
+			tp := it.GetCall().GetType()
+			f^ << "%Var" << i << " = alloca "
+			tp.PrintType(ctx)
+			f^ << "\n"
+		}
+	}
+}
+
+FuncLocalVarCleanup := class extend BoxExeObj
+{
+	getVal := BoxExeObj^
+	baseType := Type^
+	this := !(BoxExeObj^ gV) -> void
+	{
+		baseType = gV.GetType()
+		getVal = GetExchange2(new UnrefFuncCall(gV),GTypeVoidP,false)
+	}
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+		getVal.PrintPre(ctx)
+
+		f^ << "call  void @llvm.memset.inline.p0.p0i8.i32(i8* "
+		getVal.PrintUse(ctx)
+		f^ << ", i8 0, i32 " << baseType.GetSize() << ",i1 false)"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+
+FuncLocalVarAccess := class extend BoxExeObj
+{
+	varIndex := int
+	unrefInd := int
+	this := !(int ind, Type^ varType) -> void
+	{
+		ObjType = varType
+		varIndex = 0
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%Var" <<varIndex
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		unrefInd = ctx.GetNewId()
+		f := ctx.writeStream
+
+		f^ << "%TUnref" << unrefInd << " = load "
+		ObjType.PrintType(ctx)
+		f^ << " , "
+		ObjType.PrintType(ctx)
+		f^ << "* "
+		PrintPointUse(ctx)
+		f^ << "\n"
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%TUnref" << unrefInd
+	}
+}

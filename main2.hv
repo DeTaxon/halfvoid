@@ -16,73 +16,10 @@
 //	}
 //}
 
-TestDestroyClass := class extend TGCObject
-{
-	val := int
-	Destroy := virtual !() -> void
-	{
-		printf("YES %i\n",val)
-	}
-}
-
-clss2 := class extend TGCObject
-{
-	val := int
-
-	Test := !(void^ hm) -> void
-	{
-		ll := () ==> {
-			//val = new TGCObject
-			val = 100
-			hm = hm
-		}
-		ll()
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	h := clss2
-	h.Test(null)
-
-	c := 16
-	d := 20
-	e := 100
-
-	lmbd := () ==> [d&,c] {
-		printf("hello world %i %i\n",c,d)
-		printf("hello world %i %i\n",c,d)
-		d += 100
-		subLambda := () ==> [c,d&] {
-			yield void
-			printf("test %i %i %i\n",c,d,e)
-			e = 999
-			yield void
-		}
-		subLambda()
-		subLambda()
-	}
-	lmbd()
-	printf("new d %i %i\n",d,e)
-
-	//printf("a\n")
-	//defer printf("d\n")
-	//defer printf("c\n")
-	//printf("b\n")
-
-	//for i : 5
-	//{
-	//	defer printf("break defer\n")
-	//	break
-	//}
-
-
-	//tstMem := PageMemory
-	//tstMem.Create(4096,"rwe")
-
-	//ptr := tstMem.GetPointer()
-
-	//bt := ptr->{u8^}
+	x := int
+	printf("test %i\n",x)
 
 	return 0
 }

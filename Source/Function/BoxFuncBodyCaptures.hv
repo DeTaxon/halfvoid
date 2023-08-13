@@ -7,7 +7,6 @@ AppendClass BoxFuncBody
 	CapturedVars := List.{ParamFunc^}
 	CapturedVarsTuple := ParamFunc^
 	CapturedVarsGets := List.{MacroParam^}
-	//CapturedVarsCleanup := BoxExeObj^
 	CapturedManualy := AVLMap.{StringSpan,MemVar^}
 
 	CapturedVars2 := List.{LocalVar^}

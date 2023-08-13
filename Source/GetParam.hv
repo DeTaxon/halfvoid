@@ -56,6 +56,13 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			if cv.Name == asItm.Value
 				return cv.Value
 		}
+		if par is LocalVar
+		{
+			lv := par->{LocalVar^}
+
+			if lv.itName == asItm.Value
+				return lv.GetCall()
+		}
 		if par is in NamedVar
 		{
 			mv := par->{NamedVar^}

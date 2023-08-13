@@ -21,7 +21,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		isSuffix = true
 	}
 
-	varToken := iter.Right.Right
+		varToken := iter.Right.Right
 
 	if varToken == null
 		return null
@@ -109,10 +109,18 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			return new MemVar(name,resVoid)
 		}else{
 			assert(CurrentScope is in BoxFunc) 
-			vr := CreateVar(varType,false)
-			resVar := new MemVarBorrowed(name,vr)
-			ModifyStackAllocatedVar(vr,resVar.Inits)
-			return resVar
+			
+			if varType == GTypeInt
+			{
+				newVar := new LocalVar(name,varType,true,false)
+				CurrentFunc.LocalVars.Push(newVar)
+				return newVar
+			}else{
+				vr := CreateVar(varType,false)
+				resVar := new MemVarBorrowed(name,vr)
+				ModifyStackAllocatedVar(vr,resVar.Inits)
+				return resVar
+			}
 		}
 	}
 	

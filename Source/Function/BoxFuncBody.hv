@@ -192,14 +192,6 @@ BoxFuncBody := class extend BoxFuncCommon
 			CreateResultVar()
 			returnHolder.ResultVar = ResultVar 
 		}
-		//if Attrs.IsMethod
-		//{
-		//	classUnroll.MethodObj = Params[0].Value
-		//	classUnroll.BaseClass = ObjType->{TypeFunc^}.Params[0].ItType->{TypeClass^}.ToClass
-		//	assert(classUnroll.BaseClass is in BoxClass)
-		//	UnitStack.PushFront(classUnroll&)
-		//}
-
 
 		UnitStack.PushFront(ConstVars[^])
 
@@ -219,6 +211,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		returnHolder.ReturnBlock = body
 		body."this"(bdy)
 		body.Work()
+
+		LocalVariablesStep()
 
 		if Attrs.IsAutoResult
 		{
@@ -344,6 +338,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		gcArrayPtr?.PrintCode(ctx)
 		Params[^].PrintCode(ctx)
+
+		PrintLocalVars(ctx)
 
 		gcSetPtr?.PrintDefaultUse(ctx)
 		

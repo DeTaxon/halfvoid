@@ -1,8 +1,10 @@
-LocalVar := class
+LocalVar := class extend BoxUnit
 {
 	itName := StringSpan
 	isMemory := bool
 	isReference := bool
+
+	createVar := HybridQueue.{BoxExeObj^,4}
 
 	this := !(StringSpan inName,Type^ varType,bool isMem,bool isRef) -> void
 	{
@@ -13,6 +15,11 @@ LocalVar := class
 
 		proxy.ObjType = varType
 		proxy.baseVar = this&
+	}
+
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		createVar[^].PrintDefaultUse(ctx)
 	}
 
 
