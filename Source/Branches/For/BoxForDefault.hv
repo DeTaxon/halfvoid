@@ -78,8 +78,8 @@ BoxFor := class extend BoxExeObj
 				it.NextCheck.PrintCode(ctx)
 			}
 
-			//it.GetCall.PrintDefaultUse(ctx)
 			it.ValueVar.PrintCode(ctx)
+			it.CallGetValue.PrintDefaultUse(ctx)
 
 			if it.IsFinished != null
 			{

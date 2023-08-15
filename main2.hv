@@ -34,13 +34,22 @@ BadClass := class extend TGCObject
 
 main := !(char^[] args) -> int
 {
+	for it : ![1,5,8]
 	{
-		x := BadClass(88)
-		x.SomePrint()
-		y := ref x
-		y.SomePrint()
-		defer printf("defer\n")
+		printf("test %i\n",it)
 	}
+	for it : 5
+	{
+		printf("test2 %i\n",it)
+	}
+
+	//{
+	//	x := BadClass(88)
+	//	x.SomePrint()
+	//	y := ref x
+	//	y.SomePrint()
+	//	defer printf("defer\n")
+	//}
 
 	return 0
 }

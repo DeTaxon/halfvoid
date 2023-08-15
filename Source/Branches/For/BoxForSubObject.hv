@@ -5,7 +5,7 @@ ForSubObjects := class
 	DownToken := Token^
 
 	DownResult := BoxExeObj^
-	ValueVar := MemVar^
+	ValueVar := LocalVar^
 	IndVar := NamedVar^
 	GetCall := BoxExeObj^
 	IsFinished := BoxExeObj^
@@ -13,6 +13,8 @@ ForSubObjects := class
 	InitStep := ParamFunc^
 	NextCheck := BoxLabel^
 	IncFunc := BoxExeObj^
+
+	CallGetValue := BoxExeObj^
 
 	MetaObj := BoxMetaObj^
 	IsMeta := bool
@@ -130,9 +132,24 @@ ForSubObjects := class
 		HaveValue = haveValue
 		InitStep = dwnVar
 
-		valueVarParam := new FuncResultParam2(iCall)
-		CurrentFunc.FunctionResultVars.Push(valueVarParam)
-		ValueVar = new MemVar(StringSpan(ValueName),valueVarParam)
+		ValueVar = new LocalVar(ValueName,iCall.GetType(),true,iCall.IsMem())
+		CurrentFunc.LocalVars.Push(ValueVar)
+
+		objs8 := CheckExeDownList
+		if iCall.IsMem()
+		{
+			objs8.Push(ValueVar.proxy&)
+			objs8.Push(new UnrefFuncCall(iCall))
+		}else{
+			objs8.Push(ValueVar.proxy&)
+			objs8.Push(iCall)
+		}
+		CallGetValue = CreateFuncCall(StringSpan("="),objs8)
+		assert(CallGetValue != null)
+
+		//valueVarParam := new FuncResultParam2(iCall)
+		//CurrentFunc.FunctionResultVars.Push(valueVarParam)
+		//ValueVar = new MemVar(StringSpan(ValueName),valueVarParam)
 	}
 
 	"=" := default

@@ -44,8 +44,7 @@ FuncResultParam := class extend ParamFunc
 }
 FuncResultParam2 := class extend FuncResultParam
 {
-	fallbackVar := ParamFunc^
-	setVar := BoxExeObj^
+	fallbackVar := LocalVar^
 
 	this := !(Type^ tp,bool isRef2) -> void
 	{
@@ -88,13 +87,11 @@ FuncResultParam2 := class extend FuncResultParam
 		if refPath
 			varType = varType.GetPoint()
 
-		oldF := CurrentFunc
-		CurrentFunc = parentFunc
-		fallbackVar = parentFunc.body.CreateVar(varType,false)
-		CurrentFunc = oldF
+		fallbackVar = new LocalVar(StringSpan("anon"),varType,true,refPath)
+		parentFunc.LocalVars.Push(fallbackVar)
 
 		dwns := CheckExeDownList
-		dwns.Push(fallbackVar.CreateCall())
+		dwns.Push(fallbackVar.proxy&)
 
 		if refPath
 		{
@@ -103,21 +100,13 @@ FuncResultParam2 := class extend FuncResultParam
 			dwns.Push(exeObj)
 		}
 
-		setVar = CreateFuncCall(StringSpan("="),dwns)
+		setVar := CreateFuncCall(StringSpan("="),dwns)
 		assert(setVar != null)
+		fallbackVar.extraWork.Push(setVar)
 
-		mpty := CheckExeDownList
-		if refPath
+		for it : CreatedVarCalls
 		{
-			for it : CreatedVarCalls
-			{
-				it.CallObj = new PtrToRefFuncCall(fallbackVar.CreateCall(mpty))
-			}
-		}else{
-			for it : CreatedVarCalls
-			{
-				it.CallObj = fallbackVar.CreateCall(mpty)
-			}
+			it.CallObj = fallbackVar.CreateVarCall()
 		}
 		CreatedVarCalls.Destroy()
 
@@ -131,7 +120,6 @@ FuncResultParam2 := class extend FuncResultParam
 	NotifyCaptureUse := virtual !() -> void
 	{
 		makeBackupVar()
-		fallbackVar.NotifyCaptureUse()
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -179,12 +167,12 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		setVar.PrintDefaultUse(ctx)
+		fallbackVar.PrintCode(ctx)
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(CreatedVarCalls.Size() == 0)
-		return fallbackVar.CreateCall(objs)
+		return fallbackVar.CreateVarCall()
 	}
 	PopulateCalls := virtual !() -> void
 	{
@@ -197,12 +185,12 @@ FuncResultParam2OnMemRef := class extend FuncResultParam2
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		setVar.PrintDefaultUse(ctx)
+		fallbackVar.PrintCode(ctx)
 	}
 	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
 	{
 		assert(CreatedVarCalls.Size() == 0)
-		return new PtrToRefFuncCall(fallbackVar.CreateCall(objs))
+		return fallbackVar.CreateVarCall()
 	}
 	PopulateCalls := virtual !() -> void
 	{
