@@ -6,7 +6,7 @@ ForSubObjects := class
 
 	DownResult := BoxExeObj^
 	ValueVar := LocalVar^
-	IndVar := NamedVar^
+	IndVar := LocalVar^
 	GetCall := BoxExeObj^
 	IsFinished := BoxExeObj^
 	HaveValue := BoxExeObj^
@@ -96,7 +96,6 @@ ForSubObjects := class
 		
 		fncOperType := objCall->{BoxFunc^}.GetType()->{TypeFunc^}
 
-		indVar := ParamFunc^
 		if fncOperType.Params.Size() >= 3
 			DownToken.EmitError("iteretable operator have too many inputs")
 		if fncOperType.Params.Size() == 2
@@ -105,27 +104,20 @@ ForSubObjects := class
 				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
 			if not (fncOperType.Params[1].ItType is in TypePoint)
 				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
-			indVar = CreateVar(fncOperType.Params[1].ItType,false)
+
+			IndVar = new LocalVar(IndexName,fncOperType.Params[1].ItType.Base,true,true)
+			CurrentFunc.LocalVars.Push(IndVar)
 		}
 
 		objs2 := CheckExeDownList
 		objs2.Push(mainCall)
-		if indVar != null
-			objs2.Push(indVar.CreateCall())
+		if IndVar != null
+			objs2.Push(IndVar.proxy&)
 
 		iCall := objCall->{BoxFunc^}.CreateCall(objs2)
 
 		if iCall == null
 			DownToken.EmitError("iteratable object is not callable, no () function")
-
-
-		if indVar != null and IndexName.Size() != 0
-		{
-			IndVar = new MacroVar(IndexName,() ==>  [indVar] {
-				getVar := indVar.CreateCall()
-				return new PtrToRefFuncCall(getVar)->{BoxExeObj^}
-			})
-		}
 
 		GetCall = iCall
 		IsFinished = iFins
@@ -146,10 +138,6 @@ ForSubObjects := class
 		}
 		CallGetValue = CreateFuncCall(StringSpan("="),objs8)
 		assert(CallGetValue != null)
-
-		//valueVarParam := new FuncResultParam2(iCall)
-		//CurrentFunc.FunctionResultVars.Push(valueVarParam)
-		//ValueVar = new MemVar(StringSpan(ValueName),valueVarParam)
 	}
 
 	"=" := default

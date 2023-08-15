@@ -34,13 +34,22 @@ BadClass := class extend TGCObject
 
 main := !(char^[] args) -> int
 {
-	for it : ![1,5,8]
+	for it,i : ![1,5,8]
 	{
-		printf("test %i\n",it)
+		printf("test %i %i\n",it,i)
 	}
 	for it : 5
 	{
 		printf("test2 %i\n",it)
+	}
+
+	tst := AVLMap.{int,int}
+	tst[2] = 5
+	tst[8] = 15
+
+	for it,ind : tst
+	{
+		printf("hey %i %i\n",it,ind)
 	}
 
 	//{
