@@ -159,11 +159,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 			metFuncs.Push(fnc)
 
-			if fnc.CapturedManualy.Contain(asItm.Value)
-			{
-				return CallFromSomeVar(fnc.CapturedManualy[asItm.Value])
-			}
-
 			if fnc.VariadicName == asItm.Value
 			{
 				return new MetaVargsParam(fnc)

@@ -14,7 +14,6 @@ TryGetContinueBreak := !(Token^ itm) -> BoxExeObj^
 BoxContinue := class extend BoxExeObj
 {
 	goLabel := BoxLabel^
-	exitCall := BoxExeObj^
 	this := !(Token^ itm) -> void
 	{
 		for it : UnitStack
@@ -23,7 +22,6 @@ BoxContinue := class extend BoxExeObj
 			{
 				block := it->{BoxBlock^}
 				goLabel = block.GetQuitLabel()
-				exitCall = block.CreateGCClear()
 				break
 			}
 		}
@@ -32,7 +30,6 @@ BoxContinue := class extend BoxExeObj
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		exitCall?.PrintDefaultUse(ctx)
 		for it : ctx.deferObjects
 		{
 			if it == goLabel
@@ -46,7 +43,6 @@ BoxContinue := class extend BoxExeObj
 BoxBreak := class extend BoxExeObj
 {
 	goLabel := BoxLabel^
-	exitCall := BoxExeObj^
 	this := !(Token^ itm) -> void
 	{
 		for it : UnitStack
@@ -55,7 +51,6 @@ BoxBreak := class extend BoxExeObj
 			{
 				block := it->{BoxBlock^}
 				goLabel = block.GetQuitLabel()
-				exitCall = block.CreateGCClear()
 				break
 			}
 		}
@@ -64,7 +59,6 @@ BoxBreak := class extend BoxExeObj
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		exitCall?.PrintDefaultUse(ctx)
 		for it : ctx.deferObjects
 		{
 			if it == goLabel

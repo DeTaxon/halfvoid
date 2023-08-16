@@ -4,9 +4,6 @@ BoxBlock := class extend BoxExeObj
 	GCInUseBefore := int
 	ItLine := FileLine^
 	exeLines := List.{BoxUnit^} //todo : to hybrid
-	
-	simpleVars := List.{BoxFunc^}
-	gcVars := List.{BoxFunc^}
 
 	returnLabel := BoxLabel^
 	quitLabel := BoxLabel^
@@ -16,32 +13,6 @@ BoxBlock := class extend BoxExeObj
 	lambdaWay := !()&->BoxUnit^
 
 	ParentFunc := BoxFuncBody^
-
-	CreateVar := !(Type^ varType, bool isRef) -> ParamFunc^
-	{
-		assert(isRef == false)
-		assert(ParentFunc != null)
-
-		if IsGCPtr(varType)
-		{
-			gcIndex := GCVarsInUse
-			GCVarsInUse += 1
-
-			assert(CurrentFunc is in BoxFuncBody)
-			ParentFunc.NotifyGCUsed()
-
-			newVar := new FuncGCLocalParam(varType,gcIndex)
-			gcVars.PushFront(newVar)
-			ParentFunc.gcVars.Push(newVar)
-			return newVar
-		}
-
-		newVar2 := new FuncLocalParam(varType)
-		simpleVars.PushFront(newVar2)
-		ParentFunc.regularVars.Push(newVar2)
-
-		return newVar2
-	}
 
 	this := !(Token^ bdy) -> void
 	{
@@ -114,21 +85,6 @@ BoxBlock := class extend BoxExeObj
 			iter = iter.Right
 		}
 
-		for it : gcVars
-		{
-			tp := it.GetType()->{TypeFunc^}.ResultType
-			if tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
-			{
-				dat := CheckExeDownList
-				cl := it.CreateCall()
-				dat.Push(cl)
-				cl2 := GFuncGCSetNull.CreateCall(dat)
-
-				pad := new BoxExeLineSimple(infoToken,cl2)
-				exeLines.Push(pad)
-			}
-		}
-
 		while UnitStack.Size() > stackAtStart
 		{
 			UnitStack.Pop()
@@ -151,9 +107,6 @@ BoxBlock := class extend BoxExeObj
 
 		if quitLabel != null
 			ctx.deferObjects.PushFront(quitLabel)
-
-		simpleVars[^].PrintCode(ctx)
-		gcVars[^].PrintCode(ctx)
 
 		exeLines[^].PrintCode(ctx)
 
@@ -183,8 +136,6 @@ BoxBlock := class extend BoxExeObj
 		GDebugScopeId = MetaId
 		defer GDebugScopeId = oldVal
 		
-		simpleVars[^].PrintDebugMeta(ctx)
-		gcVars[^].PrintDebugMeta(ctx)
 		exeLines[^].PrintDebugMeta(ctx)
 	}
 	GetQuitLabel := !() -> BoxLabel^
@@ -192,19 +143,6 @@ BoxBlock := class extend BoxExeObj
 		if quitLabel == null
 			quitLabel = new BoxLabel()
 		return quitLabel
-	}
-	CreateGCClear := !() -> BoxExeObj^
-	{
-		if GCVarsInUse == GCInUseBefore
-			return null
-
-		assert(CurrentFunc.gcArrayPtr != null)
-
-		objs := CheckExeDownList
-		objs.Push(GetExchange2(CurrentFunc.gcArrayPtr.CreateCall(),GCType.GetPoint().GetPoint(),false))
-		objs.Push(GetExeInt(GCInUseBefore))
-		objs.Push(GetExeInt(GCVarsInUse - 1))
-		return GFuncGCSetNullArray.CreateCall(objs)
 	}
 }
 
@@ -230,18 +168,4 @@ BoxBlockBreak := class extend BoxBlock
 	{
 		this."BoxBlock.this"(tokenLine,l)
 	}
-}
-
-CreateVar := !(Type^ typ, bool isRef) -> ParamFunc^
-{
-	assert(isRef == false)
-
-	for it : UnitStack
-	{
-		if it is in BoxBlock
-		{
-			return it->{BoxBlock^}.CreateVar(typ,isRef)
-		}
-	}
-	assert(false)
 }

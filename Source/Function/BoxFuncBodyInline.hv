@@ -40,7 +40,6 @@ FuncInlineWrapper := class extend BoxExeObj
 		{
 			rFnc := new FuncLocalParam(thisReturns.ResultType)
 			thisReturns.ResultVar = new MemVar(StringSpan("result"),rFnc)
-			CurrentFunc.regularVars.Push(rFnc)
 			UnitStack.PushFront(thisReturns.ResultVar)
 		}
 
@@ -111,7 +110,6 @@ FuncInlineWrapper := class extend BoxExeObj
 
 			rFnc := new FuncLocalParam(thisReturns.ResultType)
 			thisReturns.ResultVar = new MemVar(StringSpan("result"),rFnc)
-			CurrentFunc.regularVars.Push(rFnc)
 			UnitStack.PushFront(thisReturns.ResultVar)
 
 			thisReturns.ResolveReturnVars()

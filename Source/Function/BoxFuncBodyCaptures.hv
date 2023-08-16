@@ -4,11 +4,6 @@ AppendClass BoxFuncBody
 	ThisCaptureTupleType := Type^
 	CaptureGetCall := BoxExeObj^
 
-	CapturedVars := List.{ParamFunc^}
-	CapturedVarsTuple := ParamFunc^
-	CapturedVarsGets := List.{MacroParam^}
-	CapturedManualy := AVLMap.{StringSpan,MemVar^}
-
 	CapturedVars2 := List.{LocalVar^}
 
 	FunctionResultVars := List.{FuncResultParam2^}
@@ -19,109 +14,13 @@ AppendClass BoxFuncBody
 		{
 			it.PopulateCalls()
 		}
-
-		if CapturedVars.Size() == 0 //TODO case for non captured lambdas
-			return void
-		
-		containGC := false
-		for it : CapturedVars
-		{
-			typ := it.GetVarType()
-			if IsGCPtr(typ)
-			{
-				containGC = true
-				break
-			}
-		}
-
-		if CapturedVarsTuple == null
-		{
-			tplClass := GetCaptureTuple()
-			CapturedVarsTuple = new FuncLocalParam(tplClass.ItType)
-		}
-
-		for it, i : CapturedVarsGets
-		{
-			it.PopulateCalls2(() ==>
-			{
-				getVar := CapturedVarsTuple.CreateCall()
-				c1 := new UnrefFuncCall(getVar)
-				return GetExchange2(c1,it.GetVarType(),false)
-			})
-		}
-	}
-	CreateGetCaptureCall := !() -> void
-	{
-		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
-
-		CaptureGetCall = innerGetCaptureCall(asRawPar)
-		getCaptureInLeafs = innerGetCaptureCall(Params[0].Value)
-		asRawPar.PopulateCalls()
-	}
-
-	innerGetCaptureCall := !(ParamFunc^ val) -> BoxExeObj^
-	{
-		objs3 := CheckExeDownList
-		objs3.Push(val.CreateCall())
-		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(ThisCaptureTupleType))
-		lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
-		assert(lGCall != null)
-		cnsts.Destroy()
-		
-		return lGCall.CreateCall(objs3)
-	}
-
-	GetCaptureTuple := !() -> BoxClass^
-	{
-		tps := List.{Type^}
-		tps.Push(CapturedVars[^].GetType()->{TypeFunc^}.ResultType)
-		tplClass := GetTuple(tps,true)
-		tps.Destroy()
-		
-		return tplClass
 	}
 
 	getCaptureInLeafs := BoxExeObj^
 
 	PrintStackData := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		CapturedVarsTuple?.PrintCode(ctx)
 		PrintYieldCodeParams(ctx)
-		PrintCaptureUsage(ctx,true)
-	}
-	PrintCaptureUsage := !(LLVMWriteContext^ ctx,bool isFirstCall) -> void
-	{
-		if ParentFunc == null
-			return void
-		
-		getThisCapture := CaptureGetCall
-		if not isFirstCall
-			getThisCapture = getCaptureInLeafs
-		if getThisCapture == null
-			return void //todo, too lazy way to check if lambda captured some variables
-		//if not isFirstCall
-		//	return void
-
-		f := ctx.writeStream
-
-		assert(ParentFunc.CapturedVarsTuple.GetVarType() is TypeClass)
-
-		getThisCapture.PrintPre(ctx)
-		subType := getThisCapture.GetType()
-		ParentFunc.CapturedVarsTuple.PrintResultObj(ctx,0,0)
-		f^ << " = bitcast "
-		subType.PrintType(ctx)
-		f^ << " "
-		getThisCapture.PrintUse(ctx)
-		f^ << " to "
-		ParentFunc.CapturedVarsTuple.GetVarType().PrintType(ctx)
-		f^ << "*"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ <<"\n"
-		
-		ParentFunc?.PrintCaptureUsage(ctx,false)
 	}
 	EnterScope := !(!()&->void cb) -> void
 	{

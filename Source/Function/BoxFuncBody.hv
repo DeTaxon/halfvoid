@@ -231,36 +231,11 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 
 
-		if Yields.Size() != 0
-		{
-			for it : regularVars
-				it.NotifyCaptureUse()
-
-			for it : FunctionResultVars
-				it.NotifyCaptureUse()
-		}
-
-		WorkBodyGC()
-
 		YieldWork()
 		WorkBodyCaptures()
 
 		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
 		ResultVar?.Value.PopulateCalls()
-		//gcArrayPtr?.PopulateCalls()
-		gcVars[^].PopulateCalls()
-		CapturedVarsTuple?.PopulateCalls()
-
-		gcArrayPtr?.PopulateCalls2(() ==> {
-			assert(gcArrayVar != null)
-			step1 := gcArrayVar.CreateCall()
-			step2 := new UnrefFuncCall(step1)
-			step3 := GetExchange2(step2, GTypeVoidP.GetPoint(),false)
-			assert(step3 != null)
-			return step3
-		})
-		regularVars[^].PopulateCalls()
-
 		
 		while UnitStack.Size() > stackSize
 		{
@@ -309,6 +284,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		defer GDebugScopeId = oldScope
 		GDebugScopeId = GDebugFuncId
 
+		ctx.deferObjects.Destroy()
+
 		f^ << "define "
 		PrintResultType(ctx)
 		f^ << " @" << OutputName << "("
@@ -320,36 +297,26 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "{\n"
 
 
-		CapturedVarsTuple?.PrintAlloc(ctx)
-		for it : regularVars
-			it.PrintAlloc(ctx)
+		PrintLocalVars(ctx)
 		ResultVar?.Value.PrintAlloc(ctx)
 		ResultVar?.PrintCode(ctx)
 
 		PrintStackData(ctx)
 
-
-		PrintYieldCreateVar(ctx)
 		PrintYieldCodeParamsGC(ctx)
 
 		PrintYieldCodeGo(ctx)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
 
-		gcArrayPtr?.PrintCode(ctx)
 		Params[^].PrintCode(ctx)
 
-		PrintLocalVars(ctx)
-
-		gcSetPtr?.PrintDefaultUse(ctx)
 		
 		body.PrintCode(ctx)
 
 		YieldPrintFinilize(ctx)
 
 		ExitLabel.PrintCode(ctx)
-
-		//CapturedVarsCleanup?.PrintDefaultUse(f)
 
 		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
 

@@ -2,7 +2,6 @@ BoxReturn := class extend BoxExeObj
 {
 	EndLabel := BoxLabel^
 	ResultCall := BoxExeObj^
-	cleanupCall := BoxExeObj^
 	this := !(BoxLabel^ l,BoxExeObj^ rc) -> void
 	{
 		EndLabel = l
@@ -17,25 +16,10 @@ BoxReturn := class extend BoxExeObj
 				return void
 			}
 		}
-
-		if GCVarsInUse != 0
-		{
-			objs := CheckExeDownList
-			gcPtr := CurrentFunc->{BoxFuncBody^}.gcArrayPtr
-			assert(gcPtr != null)
-			getGCPtr := gcPtr.CreateCall(objs)
-
-			objs.Push(GetExchange2(getGCPtr,GCType.GetPoint().GetPoint(),false))
-			objs.Push(GetExeInt(0))
-			objs.Push(GetExeInt(GCVarsInUse - 1))
-
-			cleanupCall = GFuncGCSetNullArray.CreateCall(objs)
-		}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ResultCall?.PrintDefaultUse(ctx)
-		cleanupCall?.PrintDefaultUse(ctx)
 
 		//TODO inline functions?
 		for it : ctx.deferObjects

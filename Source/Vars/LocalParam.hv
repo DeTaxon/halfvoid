@@ -32,12 +32,6 @@ FuncLocalParam := class extend ParamFunc
 		return true
 	}
 
-	NotifyCaptureUse := virtual !() -> void
-	{
-		this&->SetType(FuncLocalParamCaptured)
-		this&->{FuncLocalParamCaptured^}.DoCapture()
-		assert(this& is FuncLocalParamCaptured)
-	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		PrintMakeZero(ctx)
@@ -114,21 +108,6 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 
 	NotifyCaptureUse := virtual !() -> void
 	{
-	}
-	DoCapture := !() -> void
-	{
-		assert(parentFunc != null)
-		CapturedIndex = parentFunc.CapturedVars.Size()
-		parentFunc.CapturedVars.Push(this&)
-
-		objs := CheckExeDownList
-		objs.Push(this.CreateCall())
-		cnsts := List.{BoxExeConstObj^}
-
-		callFunc := GZeroMemTemplate.GetFunc(objs,cnsts)
-		assert(callFunc != null)
-		RezeroCall = callFunc.CreateCall(objs)
-
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{

@@ -2,7 +2,7 @@ FuncInputParam := class extend ParamFunc
 {
 	CapturedIndex := int
 	CreatedVarCalls := List.{ParamLoadObj^}
-	LocalParamBackup := FuncLocalParam^
+	LocalVarBackup := LocalVar^
 	SelfSet := BoxExeObj^
 
 	SelfAsBlank := ParamFunc^
@@ -25,6 +25,7 @@ FuncInputParam := class extend ParamFunc
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		LocalVarBackup?.PrintCode(ctx)
 	}
 	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
@@ -42,12 +43,6 @@ FuncInputParam := class extend ParamFunc
 			return void
 		CreateMemUse()
 	}
-	NotifyCaptureUse := virtual !() -> void
-	{
-		CreateMemUse()
-		LocalParamBackup.NotifyCaptureUse()
-		this&->SetType(FuncInputParamCaptured)
-	}
 	CreateMemUse := virtual !() -> void
 	{
 		if SelfAsBlank != null
@@ -59,36 +54,31 @@ FuncInputParam := class extend ParamFunc
 
 		SelfAsBlank = new FuncInputParam(GetVarType(),isRef,irName)
 
-		oldFnc := CurrentFunc
-		CurrentFunc = parentFunc
-		LocalParamBackup = new FuncLocalParam(varMiddleType)
+		LocalVarBackup = new LocalVar(StringSpan(""),GetVarType(),true,isRef)
+		parentFunc.LocalVars.Push(LocalVarBackup)
 
 		objs := CheckExeDownList
-		objs.Push(LocalParamBackup.CreateCall())
+		objs.Push(LocalVarBackup.proxy&)
 		if isRef
 		{
 			objs.Push(new UnrefFuncCall(new BoxFuncCall(SelfAsBlank)))
 		}else{
 			objs.Push(new BoxFuncCall(SelfAsBlank))
 		}
-		if varMiddleType is in TypePoint
-		{
-			cnsts := List.{BoxExeConstObj^}
-			SelfSet = GPointStoreTemplate.GetFunc(objs,cnsts).CreateCall(objs)
-		}else{
+		//if varMiddleType is in TypePoint
+		//{
+		//	cnsts := List.{BoxExeConstObj^}
+		//	SelfSet = GPointStoreTemplate.GetFunc(objs,cnsts).CreateCall(objs)
+		//}else{
 			SelfSet = CreateFuncCall(StringSpan("="),objs)
-		}
+		//}
 		if SelfSet == null
 		{
 			printf("Software error for type %s %s\n",varMiddleType.GetBADStr().Str(),CurrentFunc.Name)
 		}
 		assert(SelfSet != null)
 
-		parentFunc.regularVars.Push(LocalParamBackup)
-
 		this&->SetType(FuncInputParamInMem)
-
-		CurrentFunc = oldFnc
 	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -194,7 +184,7 @@ FuncInputParamInMem := class extend FuncInputParam
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		LocalParamBackup.PrintCode(ctx)
+		LocalVarBackup.PrintCode(ctx)
 		SelfSet.PrintDefaultUse(ctx)
 	}
 	IsValue := virtual !() -> bool
@@ -207,20 +197,14 @@ FuncInputParamInMem := class extend FuncInputParam
 	{
 		for it : CreatedVarCalls
 		{
-			if isRef
-			{
-				it.CallObj = new PtrToRefFuncCall(LocalParamBackup.CreateCall())
-			}else{
-				it.CallObj = LocalParamBackup.CreateCall()
-			}
+			it.CallObj = LocalVarBackup.CreateVarCall()
 		}
 	}
 	IsDebuggable := virtual !() -> bool
 	{
-		return LocalParamBackup.IsDebuggable()
+		return false
 	}
 	PrintDebugLine := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		LocalParamBackup.PrintDebugLine(ctx)
 	}
 }
