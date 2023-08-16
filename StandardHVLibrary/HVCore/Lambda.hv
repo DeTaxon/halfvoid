@@ -27,12 +27,12 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 {
 	capturedVars := CaptureTuple
 	yieldState := int
-	lambdaVars := YieldTuple
+	yieldVars := YieldTuple
 
 	IsFinished := virtual !() -> bool { return yieldState < 0 }
 	getCaptureVar := virtual !() -> void^ {  result = capturedVars& }
 	getYieldState := virtual !() -> ref int { return yieldState }
-	getYieldVars := virtual !() -> void^ { return lambdaVars& }
+	getYieldVars := virtual !() -> void^ { return yieldVars& }
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^
 	{
@@ -53,7 +53,7 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 			}
 		}
 
-		for setField : newLambda.lambdaVars->AllFields , getField : this.lambdaVars->AllFields
+		for setField : newLambda.yieldVars->AllFields , getField : this.yieldVars->AllFields
 		{
 			if getField->TypeGroup == "Class"
 			{
@@ -73,7 +73,7 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 	Destroy := virtual !() -> void
 	{
 		internalGCClearClass(capturedVars)
-		internalGCClearClass(lambdaVars)
+		internalGCClearClass(yieldVars)
 	}
 }
 

@@ -5,91 +5,92 @@ AppendClass BoxFuncBody
 	LocalVariablesStep := !() -> void
 	{
 		if IsGenerator()
+			return void
+		for it, i : LocalVars
 		{
-			tpl := GetYieldTuple()
-			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetConstType(tpl.ItType))
+			tp := it.GetBaseType()
 
-			asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
-			for it, i : LocalVars
+			access := new FuncLocalVarAccess(i,tp)
+			it.SetCall(access)
+
+			createCall := new FuncLocalVarCleanup(access)
+			it.createVar.Push(createCall)
+
+			if tp is TypeClass
 			{
-				tp := it.GetBaseType()
-				pth := tpl.GetFieldByIndex(i)
+				objs := CheckExeDownList
+				objs.Push(access)
+				cnsts := List.{BoxExeConstObj^}
+				fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
 
-				Objs2 := CheckExeDownList
-				Objs2.Push(asRawPar.CreateCall())
-				getYieldFnc := TemplateInternalGetYieldVars.GetFunc(Objs2,cnsts) //TODO simplify all of this
-				getYield := getYieldFnc.CreateCall(Objs2)
+				assert(fnc != null)
 
-				objs3 := CheckExeDownList
-				objs3.Push(getYield)
-				access := pth.CreateCall(objs3)
+				it.createVar.Push(fnc.CreateCall(objs))
 
-				it.SetCall(access)
-
-				createCall := new FuncLocalVarCleanup(access)
-				it.createVar.Push(createCall)
-
-				if tp is TypeClass
+				if IsGCClass(tp)
 				{
-					objs := CheckExeDownList
-					objs.Push(access)
-					cnsts := List.{BoxExeConstObj^}
-					fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
-
-					assert(fnc != null)
-
-					it.createVar.Push(fnc.CreateCall(objs))
-
-					if IsGCClass(tp)
-					{
-						InternalsHatch.Await()
-						noObjs := CheckExeDownList
-						destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-						createCall.deferCall = new BoxDefer(destrCall)
-					}
+					InternalsHatch.Await()
+					noObjs := CheckExeDownList
+					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
+					createCall.deferCall = new BoxDefer(destrCall)
 				}
 			}
-			asRawPar.PopulateCalls()
-		}else{
-			for it, i : LocalVars
+			if IsGCPtr(tp)
 			{
-				tp := it.GetBaseType()
+				objs := CheckExeDownList
+				objs.Push(access)
+				destrCall := GFuncGCSetNull.CreateCall(objs)
+				createCall.deferCall = new BoxDefer(destrCall)
+			}
+		}
+	}
+	LocalVariablesForYield := !(BoxClass^ lambdaClass) -> void
+	{
+		tpl := GetYieldTuple()
+		cnsts := List.{BoxExeConstObj^}
+		cnsts.Push(GetConstType(tpl.ItType))
 
-				access := new FuncLocalVarAccess(i,tp)
-				it.SetCall(access)
+		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+		for it, i : LocalVars
+		{
+			tp := it.GetBaseType()
+			pth := tpl.GetFieldByIndex(i)
 
-				createCall := new FuncLocalVarCleanup(access)
-				it.createVar.Push(createCall)
+			Objs2 := CheckExeDownList
+			Objs2.Push(asRawPar.CreateCall())
+			getYieldFnc := TemplateInternalGetYieldVars.GetFunc(Objs2,cnsts) //TODO simplify all of this
+			getYield := getYieldFnc.CreateCall(Objs2)
 
-				if tp is TypeClass
+			objs3 := CheckExeDownList
+			objs3.Push(getYield)
+			access := pth.CreateCall(objs3)
+
+			it.SetCall(access)
+
+			createCall := new FuncLocalVarCleanup(access)
+			it.createVar.Push(createCall)
+
+			if tp is TypeClass
+			{
+				objs := CheckExeDownList
+				objs.Push(access)
+				cnsts := List.{BoxExeConstObj^}
+				fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
+
+				assert(fnc != null)
+
+				it.createVar.Push(fnc.CreateCall(objs))
+
+				if IsGCClass(tp)
 				{
-					objs := CheckExeDownList
-					objs.Push(access)
-					cnsts := List.{BoxExeConstObj^}
-					fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
-
-					assert(fnc != null)
-
-					it.createVar.Push(fnc.CreateCall(objs))
-
-					if IsGCClass(tp)
-					{
-						InternalsHatch.Await()
-						noObjs := CheckExeDownList
-						destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-						createCall.deferCall = new BoxDefer(destrCall)
-					}
-				}
-				if IsGCPtr(tp)
-				{
-					objs := CheckExeDownList
-					objs.Push(access)
-					destrCall := GFuncGCSetNull.CreateCall(objs)
+					InternalsHatch.Await()
+					noObjs := CheckExeDownList
+					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
 					createCall.deferCall = new BoxDefer(destrCall)
 				}
 			}
 		}
+		asRawPar.PopulateCalls()
 	}
 	PrintLocalVars := !(LLVMWriteContext^ ctx) -> void
 	{

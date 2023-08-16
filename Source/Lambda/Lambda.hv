@@ -244,6 +244,13 @@ BoxLambdaHolder := class extend BoxExeObj
 			}
 		}
 
+		if newFunc.IsGenerator()
+		{
+			crtLambdaType := step1.GetType()
+			assert(crtLambdaType != null and crtLambdaType is TypeClass)
+
+			newFunc.LocalVariablesForYield(crtLambdaType->{TypeClass^}.ToClass)
+		}
 
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
 
