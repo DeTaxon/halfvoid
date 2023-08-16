@@ -69,16 +69,14 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		{
 			av := par->{AliasVarOhNo^}
 			if av.itName == asItm.Value
-			{
-				return av.itVar.CreateVarCall()
-			}
+				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is LocalVar
 		{
 			lv := par->{LocalVar^}
 
 			if lv.itName == asItm.Value
-				return lv.CreateVarCall()
+				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is in NamedVar
 		{
@@ -91,34 +89,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				}else if par is in MemVar
 				{
 					mv2 := mv->{MemVar^}
-					if metFuncs.Size() != 0
-					{
-						metLambdas := HybridStack.{LambdaObject^,16}
-
-						for it : UnitStack
-						{
-							if it == par
-								break
-							if it is LambdaObject
-								metLambdas.PushFront(it->{LambdaObject^})
-						}
-
-						capCall := CallFromSomeVar(mv2)
-
-						isRef := true
-
-						if IsGCPtr(capCall.GetType())
-							isRef = false
-
-						while metLambdas.Size() != 0
-						{
-							lambd := metLambdas.Pop()
-							locVar := lambd.CaptureObject(asItm.Value,capCall,isRef)
-							capCall = locVar.CreateVarCall()
-						}
-						return capCall
-					}
-					return CallFromSomeVar(mv2)
+					return GetParamCaptureVar(CallFromSomeVar(mv2),asItm.Value,par,metFuncs)
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
@@ -267,4 +238,34 @@ CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
 	}
 	assert(false)
 	return null
+}
+GetParamCaptureVar := !(BoxExeObj^ preRes,StringSpan varName,BoxUnit^ par,HybridQueue.{BoxFuncBody^,4} fncs) -> BoxExeObj^
+{
+	if fncs.Size() == 0
+		return preRes
+
+	metLambdas := HybridStack.{LambdaObject^,16} //todo input metLambdas not funcs
+
+	for it : UnitStack
+	{
+		if it == par
+			break
+		if it is LambdaObject
+			metLambdas.PushFront(it->{LambdaObject^})
+	}
+
+	capCall := preRes
+
+	isRef := true
+
+	if IsGCPtr(capCall.GetType())
+		isRef = false
+
+	while metLambdas.Size() != 0
+	{
+		lambd := metLambdas.Pop()
+		locVar := lambd.CaptureObject(varName,capCall,isRef)
+		capCall = locVar.CreateVarCall()
+	}
+	return capCall
 }

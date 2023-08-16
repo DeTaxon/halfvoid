@@ -194,12 +194,13 @@ BoxLambdaHolder := class extend BoxExeObj
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
 		assert(lambdaCapturePath != null)
 
+		printf("hey %i\n",capturedVars.Size())
+
 		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
 		for it,i : capturedVars
 		{
 			objs3 := CheckExeDownList
 			objs3.Push(GetExchange2(asRawPar.CreateCall(),cleanType.GetPoint(),false))
-			cnsts := List.{BoxExeConstObj^}
 			getCaps := lambdaCapturePath.CreateCall(objs3)
 			assert(getCaps != null)
 
@@ -283,5 +284,6 @@ LambdaObject := class extend PackedExeObj
 
 		result = new LocalVar(name,setType,true,isRef)
 		capturedVars.Emplace(result,capCall)
+		lambdaFunc.CapturedVars2.Push(result)
 	}
 }
