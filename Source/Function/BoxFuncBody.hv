@@ -212,7 +212,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		body."this"(bdy)
 		body.Work()
 
-		LocalVariablesStep()
 
 		if Attrs.IsAutoResult
 		{
@@ -232,6 +231,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 
 		YieldWork()
+		LocalVariablesStep()
 		WorkBodyCaptures()
 
 		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!

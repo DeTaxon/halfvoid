@@ -49,9 +49,7 @@ AppendClass BoxFuncBody
 		{
 			tps.Push(it.GetBaseType())
 		}
-		tpl := GetTuple(tps,true)
-		tps.Destroy()
-		return tpl
+		return GetTuple(tps,true)
 	}
 	YieldWork := !() -> void
 	{
@@ -104,7 +102,7 @@ AppendClass BoxFuncBody
 	{
 		if YieldStateInt == null
 			return void
-		assert(YieldFinilize != null)
-		YieldFinilize.PrintDefaultUse(ctx)
+		//assert(YieldFinilize != null)
+		//YieldFinilize.PrintDefaultUse(ctx)
 	}
 }

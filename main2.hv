@@ -16,25 +16,53 @@
 //	}
 //}
 
-BadClass := class extend TGCObject
-{
-	this := !(int x) -> void
-	{
-		printf("called constructor %i\n",x)
-	}
-	SomePrint := virtual !() -> void
-	{
-		printf("some print\n")
-	}
-	Destroy := virtual !() -> void
-	{
-		printf("called destroy\n")
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	printf("hello\n")
+	hm := () ==> {
+		x := 0
+		while true
+		{
+			printf("around the world %i\n",x)
+			x += 1
+			yield void
+			printf("da world %i\n",x)
+			x += 1
+			yield void
+			printf("around ze world %i\n",x)
+			x += 1
+			yield void
+			printf("around my world %i\n",x)
+			x += 1
+			yield void
+		}
+	}
+	hm2 := () ==> {
+		x := 0
+		while true
+		{
+			printf("around the world %i\n",x)
+			x += 1
+			yield void
+			printf("da world %i\n",x)
+			x += 1
+			yield void
+			printf("around ze world %i\n",x)
+			x += 1
+			yield void
+			printf("around my world %i\n",x)
+			x += 1
+			yield void
+		}
+	}
+
+	hm()
+	hm2()
+	hm()
+	hm2()
+	hm()
+	hm2()
+	hm()
+	hm2()
 	return 0
 }
 
