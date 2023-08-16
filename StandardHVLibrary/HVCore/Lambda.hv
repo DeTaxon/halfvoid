@@ -5,7 +5,6 @@ TILambda := class extend TGCObject
 		return false
 	}
 
-	getCaptureVar := virtual !() -> void^ { return null }
 	getYieldState := virtual !() -> ref int { assert(false) }
 	getGCVars := virtual !() -> void^ { return null }
 }
@@ -29,7 +28,6 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 	yieldVars := YieldTuple
 
 	IsFinished := virtual !() -> bool { return yieldState < 0 }
-	getCaptureVar := virtual !() -> void^ {  result = capturedVars& }
 	getYieldState := virtual !() -> ref int { return yieldState }
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^
@@ -78,10 +76,6 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {
 	return lmb.callFunc(lmb&,args...)
-}
-internalHVLambdaGetCaptures := !(void^ lmbd)-> void^
-{
-	result = lmbd->{TILambda^}.getCaptureVar()
 }
 internalHVLambdaGetYieldState := !(void^ lmbd) -> ref int
 {

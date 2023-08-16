@@ -169,31 +169,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		tplTuple := GetTuple(tplTypes,true)
 		tplType := tplTuple.ItType
 
-		for it,i : capturedVars
-		{
-			asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
-
-			objs3 := CheckExeDownList
-			objs3.Push(asRawPar.CreateCall())
-			cnsts := List.{BoxExeConstObj^}
-			lGCall := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
-			assert(lGCall != null)
-
-
-			getPtr := lGCall.CreateCall(objs3)
-			getPtr = GetExchange2(getPtr,tplType.GetPoint(),false) 
-			assert(getPtr != null)
-
-			objs3.Destroy()
-
-			pth := tplTuple.GetFieldByIndexTuple(i)
-			objs3.Push(getPtr)
-			r6 := pth.CreateCall(objs3)
-			assert(r6 != null)
-			asRawPar.PopulateCalls()
-
-			it.0.SetCall(r6)
-		}
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
@@ -209,20 +184,43 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		cleanType = step1.GetType()
 
+		assert(cleanType is TypeClass)
+
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
 		InternalsHatch.Await()
 		lambdaType := GCLambda.GetClass(cnsts).ItType
 
+		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
+		assert(lambdaCapturePath != null)
+
+		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+		for it,i : capturedVars
+		{
+			objs3 := CheckExeDownList
+			objs3.Push(GetExchange2(asRawPar.CreateCall(),cleanType.GetPoint(),false))
+			cnsts := List.{BoxExeConstObj^}
+			getCaps := lambdaCapturePath.CreateCall(objs3)
+			assert(getCaps != null)
+
+			objs3.Destroy()
+
+			pth := tplTuple.GetFieldByIndexTuple(i)
+			objs3.Push(getCaps)
+			r6 := pth.CreateCall(objs3)
+			assert(r6 != null)
+
+			it.0.SetCall(r6)
+		}
+		asRawPar.PopulateCalls()
+
 		if capturedVars.Size() != 0
 		{
 			objs3 := CheckExeDownList
 			objs3.Push(new ObjResultHolder(step2))
-			cnsts := List.{BoxExeConstObj^}
-			getCaptureListFunc := TemplateInternalGetCaptures.GetFunc(objs3,cnsts)
-			cnsts.Destroy()
-			getCaptureList := getCaptureListFunc.CreateCall(objs3)
-			getCaptureList = GetExchange2(getCaptureList,tplType.GetPoint(),false)
+
+			getCaptureList := lambdaCapturePath.CreateCall(objs3)
+			assert(getCaptureList != null)
 			getCap := new ObjResultHolder(getCaptureList)
 
 			resObj.postCalls.Push(getCaptureList)
@@ -246,10 +244,8 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if newFunc.IsGenerator()
 		{
-			crtLambdaType := step1.GetType()
-			assert(crtLambdaType != null and crtLambdaType is TypeClass)
 
-			newFunc.LocalVariablesForYield(crtLambdaType->{TypeClass^}.ToClass)
+			newFunc.LocalVariablesForYield(cleanType->{TypeClass^}.ToClass)
 		}
 
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())

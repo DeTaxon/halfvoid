@@ -18,51 +18,32 @@
 
 main := !(char^[] args) -> int
 {
-	hm := () ==> {
+	y := 200
+	hm := () ==> [y&] {
 		x := 0
 		while true
 		{
-			printf("around the world %i\n",x)
+			printf("around the world %i %i\n",x,y)
 			x += 1
 			yield void
-			printf("da world %i\n",x)
+			printf("da world %i %i\n",x,y)
 			x += 1
 			yield void
-			printf("around ze world %i\n",x)
+			printf("around ze world %i %i\n",x,y)
 			x += 1
 			yield void
-			printf("around my world %i\n",x)
+			printf("around my world %i %i\n",x,y)
 			x += 1
 			yield void
 		}
 	}
-	hm2 := () ==> {
-		x := 0
-		while true
-		{
-			printf("around the world %i\n",x)
-			x += 1
-			yield void
-			printf("da world %i\n",x)
-			x += 1
-			yield void
-			printf("around ze world %i\n",x)
-			x += 1
-			yield void
-			printf("around my world %i\n",x)
-			x += 1
-			yield void
-		}
-	}
-
 	hm()
-	hm2()
+	y = 10
 	hm()
-	hm2()
+	y = 2020
 	hm()
-	hm2()
+	y = -20
 	hm()
-	hm2()
 	return 0
 }
 
