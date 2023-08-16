@@ -46,6 +46,10 @@ AppendClass BoxFuncBody
 	}
 	LocalVariablesForYield := !(BoxClass^ lambdaClass) -> void
 	{
+		yieldVars := lambdaClass.GetField(StringSpan("yieldVars"))
+
+		assert(yieldVars != null)
+
 		tpl := GetYieldTuple()
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(tpl.ItType))
@@ -56,13 +60,16 @@ AppendClass BoxFuncBody
 			tp := it.GetBaseType()
 			pth := tpl.GetFieldByIndex(i)
 
+
+			asCls := GetExchange2(asRawPar.CreateCall(),lambdaClass.ItType.GetPoint(),false)
+
 			Objs2 := CheckExeDownList
-			Objs2.Push(asRawPar.CreateCall())
-			getYieldFnc := TemplateInternalGetYieldVars.GetFunc(Objs2,cnsts) //TODO simplify all of this
-			getYield := getYieldFnc.CreateCall(Objs2)
+			Objs2.Push(asCls)
+			yieldPtr := yieldVars.CreateCall(Objs2)
+			assert(yieldPtr != null)
 
 			objs3 := CheckExeDownList
-			objs3.Push(getYield)
+			objs3.Push(yieldPtr)
 			access := pth.CreateCall(objs3)
 
 			it.SetCall(access)
