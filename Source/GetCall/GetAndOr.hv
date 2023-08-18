@@ -2,24 +2,25 @@ TryGetAndOrCall := !(Token^ itm) -> BoxExeObj^
 {
 	oper := itm.Down.Right.GetValue()
 
-	qc := QCatch^
-	stackSize := UnitStack.Size()
+	qc := DeferBlock^
 
+	stackSize := UnitStack.Size()
+	
 	if oper == "or"
 	{
-		qc = new QCatch
+		qc = new DeferBlock()
 		UnitStack.PushFront(qc)
 	}
 	cl1 := TryGetExeCall(itm.Down)
 	if cl1 == null
 		return null
 
-	while stackSize < UnitStack.Size()
-		UnitStack.Pop()
 
 	cl2 := TryGetExeCall(itm.Down.Right.Right)
 	if cl2 == null
 		return null
+	while stackSize < UnitStack.Size()
+		UnitStack.Pop()
 
 	if oper == "or"
 		return new BoxOr(cl1,cl2,qc)
@@ -38,6 +39,8 @@ BoxAndOr := class extend BoxExeObj
 	FalsePath := BoxLabel^
 	EndLabel := BoxLabel^
 
+	defBlockRight := DeferBlock
+
 	CommonInit := !(BoxExeObj^ cl1,BoxExeObj^ cl2) -> void
 	{
 		LeftCall = cl1
@@ -50,6 +53,8 @@ BoxAndOr := class extend BoxExeObj
 		if NextPath == null
 			NextPath = new BoxLabel()
 		EndLabel = new BoxLabel()
+
+		defBlockRight."this"()
 	}
 
 	IsMem := virtual !() -> bool { return false }
@@ -61,14 +66,15 @@ BoxAndOr := class extend BoxExeObj
 	PrintStep1 := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		LeftCall.PrintPre(ctx)
-
 	}
 	PrintStep3 := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
 
 		NextPath.PrintLabelCreate(ctx)
+		defBlockRight.StartBlock(ctx)
 		RightCall.PrintPre(ctx)
+		defBlockRight.EndBlock(ctx)
 
 		PrintBranch(ctx,RightCall,TruePath,FalsePath)
 
@@ -104,20 +110,60 @@ BoxAnd := class extend BoxAndOr
 }
 BoxOr := class extend BoxAndOr
 {
-	this := !(BoxExeObj^ cl1,BoxExeObj^ cl2,QCatch^ qc) -> void
+	defBlock := DeferBlock^
+	this := !(BoxExeObj^ cl1,BoxExeObj^ cl2,DeferBlock^ bd) -> void
 	{
-		if qc != null
-			NextPath = qc.ItLabel
+		if bd != null
+			NextPath = bd.GetQLabel()
+		defBlock = bd
 		CommonInit(cl1,cl2)
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		resId = ctx.GetNewId()
+		
+		defBlock.StartBlock(ctx)
 		PrintStep1(ctx)
+		defBlock.EndBlock(ctx)
+
 		PrintBranch(ctx,LeftCall,TruePath,NextPath)
 		PrintStep3(ctx)
 	}
 }
+
+DeferBlock := class extend BoxUnit
+{
+	EndLabel := BoxLabel
+	DefStackSize := int
+
+	this := !() -> void
+	{
+		EndLabel."this"()
+	}
+
+	StartBlock := !(LLVMWriteContext^ ctx) -> int
+	{
+		DefStackSize = ctx.deferObjects.Size()
+	}
+	EndBlock := !(LLVMWriteContext^ ctx) -> void
+	{
+		while DefStackSize < ctx.deferObjects.Size()
+		{
+			ob := ctx.deferObjects.Pop()
+			ob.PrintDefer(ctx)
+		}
+	}
+
+	PrintGo := !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+
+	GetQLabel := virtual !() -> BoxLabel^
+	{
+		return EndLabel&
+	}
+}
+
 PrintBranch := !(LLVMWriteContext^ ctx, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
 {
 	f := ctx.writeStream

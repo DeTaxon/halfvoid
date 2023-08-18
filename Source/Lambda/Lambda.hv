@@ -172,7 +172,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
-
+	
 		lst := List.{BoxExeConstObj^}
 		lst.Push(GetConstType(tplType))
 		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
@@ -193,8 +193,6 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
 		assert(lambdaCapturePath != null)
-
-		printf("hey %i\n",capturedVars.Size())
 
 		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
 		for it,i : capturedVars

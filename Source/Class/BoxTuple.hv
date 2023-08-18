@@ -11,7 +11,7 @@ GetTuple := !(List.{Type^} types, bool simpleTuple) -> BoxClass^
 GetTuple := !(List.{Type^} types, bool simpleTuple,bool isVTable) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
 {
 	typesArr := Type^[200] //todo  to Array
-	typesArr[i] = types[^i]
+	typesArr[i] = types[^i].GetPoint()
 	hck := GetFuncType(types.Size(),typesArr[0]&,null,GTypeVoid,false,false)
 	if tplDatabase.Contain(hck)
 		return tplDatabase[hck]

@@ -2,7 +2,9 @@ BoxQuestionPointer := class extend BoxExeObj
 {
 	itDown := BoxExeObj^
 	quitLabel := BoxLabel^
+	defBlock := DeferBlock^
 	continueLabel := BoxLabel^
+
 	this := !(BoxExeObj^ newDown) -> void
 	{
 		itDown = newDown
@@ -11,9 +13,16 @@ BoxQuestionPointer := class extend BoxExeObj
 		continueLabel = new BoxLabel()
 		for it : UnitStack
 		{
-			quitLabel = it.GetQLabel()
-			if quitLabel != null
-				break
+			if it is DeferBlock
+			{
+				defBlock = it->{DeferBlock^}
+				quitLabel = defBlock.GetQLabel()
+			}else{
+				quitLabel = it.GetQLabel()
+				if quitLabel != null
+					break
+			}
+
 		}
 
 	}

@@ -165,10 +165,6 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 
 	for fnc : itList^
 	{
-		if fnc == null
-		{
-			printf("hm %i %i\n",hsh,hsh mod 9973)
-		}
 		if count != fnc.Params.Size()
 			continue
 		if fnc.IsVargs != isVargs

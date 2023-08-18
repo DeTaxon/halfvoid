@@ -18,35 +18,11 @@
 
 main := !(char^[] args) -> int
 {
-	BABA := 200.0
-	printf("hm %p\n",BABA&)
-	hm := () ==> {
-		x := 0
-		printf("hm %p\n",BABA&)
-		printf("hm %p\n",BABA&)
-		while true
+	osReadFolder(".",x ==> {
+		if x == "." or x == ".."
 		{
-			printf("around the world %i %f\n",x,BABA)
-			x += 1
-			yield void
-			printf("da world %i %f\n",x,BABA)
-			x += 1
-			yield void
-			printf("around ze world %i %f\n",x,BABA)
-			x += 1
-			yield void
-			printf("around my world %i %f\n",x,BABA)
-			x += 1
-			yield void
 		}
-	}
-	hm()
-	BABA = 10
-	hm()
-	BABA = 2020
-	hm()
-	BABA = -20
-	hm()
+	})
 	return 0
 }
 
