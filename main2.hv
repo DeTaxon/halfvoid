@@ -15,14 +15,23 @@
 //		}
 //	}
 //}
+cls := class
+{
+	someVar := int
+
+	Get := !() -> StringSpan
+	{
+		return StringSpan("hi")
+	}
+}
 
 main := !(char^[] args) -> int
 {
-	osReadFolder(".",x ==> {
-		if x == "." or x == ".."
-		{
-		}
-	})
+	c := cls^
+
+	if c?.Get() == "a"
+	{
+	}
 	return 0
 }
 

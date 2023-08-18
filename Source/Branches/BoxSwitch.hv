@@ -10,16 +10,23 @@ SwitchCase := class
 	caseBody := BoxBlock^
 	useNode := BoxLabel^
 	nopeLabel := BoxLabel^
+	
+	defBlock := DeferBlock
 
 	this := !() -> void
 	{
 		useNode = new BoxLabel()
 		nopeLabel = new BoxLabel()
+
+		defBlock."this"()
 	}
 
 	PrintIt := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
 	{
+		defBlock.StartBlock(ctx)
 		cmpCheck.PrintPre(ctx)
+		defBlock.EndBlock(ctx)
+
 		PrintBranch(ctx,cmpCheck,useNode,nopeLabel)
 		useNode.PrintCode(ctx)
 		caseBody?.PrintCode(ctx)

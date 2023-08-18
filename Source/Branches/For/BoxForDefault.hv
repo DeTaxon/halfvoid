@@ -91,6 +91,7 @@ BoxFor := class extend BoxExeObj
 			}
 
 			it.ValueVar.PrintCode(ctx)
+			it.IndVar?.PrintCode(ctx)
 			it.CallGetValue.PrintDefaultUse(ctx)
 
 			if it.IsFinished != null

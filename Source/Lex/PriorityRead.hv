@@ -50,7 +50,9 @@ PriorityBagOld := class
 
 		reg := "r?\"((\\\\ [^]) | [^\"\\\\])*\""reg
 
-		fileSpan.DivideStr("\n",ln ==> {
+		cls := this&
+
+		fileSpan.DivideStr("\n",ln ==> [cls] {
 			if ln.Size() == 0
 				return void
 			if ln[0] == '#'
@@ -64,7 +66,7 @@ PriorityBagOld := class
 
 				uPos := -2
 
-				ln.DivideStr(reg,word ==> void {
+				ln.DivideStr(reg,word ==> [cls] {
 					rawWord := word[1..-1]
 					
 					wordContainUniq := false
@@ -74,7 +76,7 @@ PriorityBagOld := class
 					rawWord.DivideStr(" ",x ==> { rl.Push(x) })
 
 					lAddRule := !(MiniMachineNodeOld^,int)&-> void
-					addRule := (MiniMachineNodeOld^ machIter , int i) ==> [lAddRule&]
+					addRule := (MiniMachineNodeOld^ machIter , int i) ==> [lAddRule&,cls]
 					{
 						stW := GetConstStringSpan(rl[i])
 						switch stW
@@ -95,7 +97,7 @@ PriorityBagOld := class
 
 								wordContainUniq = true
 								uns.Insert(stW)
-								Opers.Insert(stW)
+								cls.Opers.Insert(stW)
 						}
 						next := ref machIter.WhatNext[stW]
 						if next == null
