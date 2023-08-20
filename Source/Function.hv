@@ -147,3 +147,14 @@ BoxLabel := class extend BoxExeObj
 
 
 
+BoxLabel2 := class extend BoxLabel
+{
+	this := !() -> void
+	{
+	}
+	CreateId := !(LLVMWriteContext^ ctx) -> void
+	{
+		id = ctx.GetNewId()
+		id = GetNewId()
+	}
+}

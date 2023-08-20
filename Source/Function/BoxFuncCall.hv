@@ -471,6 +471,7 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	}
 	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ResultVar?.PrintCode(ctx)
 		PreCalls[^].PrintDefaultUse(ctx)
 		PrintFuncCallCommon(ctx,ItPtrFunc,resId,downs)
 	}

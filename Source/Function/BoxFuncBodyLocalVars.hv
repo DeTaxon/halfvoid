@@ -1,6 +1,7 @@
 AppendClass BoxFuncBody
 {
 	LocalVars := List.{LocalVar^}
+	LocalVarsDeferChecks := List.{LocalVar^}
 
 	LocalVariablesStep := !() -> void
 	{
@@ -29,18 +30,38 @@ AppendClass BoxFuncBody
 
 				if IsGCClass(tp)
 				{
+					defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
+					defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
+					defGuard.SetCall(new FuncLocalVarAccess(LocalVarsDeferChecks.Size() + 1000,GTypeBool)) //TODO unconst
+
+					LocalVarsDeferChecks.Push(defGuard)
+					
+					objsI := CheckExeDownList
+					objsI.Push(defGuard.CreateVarCall())
+					objsI.Push(GBoolTrue)
+					setTrue := CreateFuncCall(StringSpan("="),objsI)
+
+					it.createVar.Push(setTrue)
+
 					InternalsHatch.Await()
 					noObjs := CheckExeDownList
 					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-					createCall.deferCall = new BoxDefer(destrCall)
+					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall)
 				}
+
 			}
 			if IsGCPtr(tp)
 			{
+				defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
+				defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
+				defGuard.SetCall(new FuncLocalVarAccess(LocalVarsDeferChecks.Size() + 1000,GTypeBool)) //TODO unconst
+
+				LocalVarsDeferChecks.Push(defGuard)
+
 				objs := CheckExeDownList
 				objs.Push(access)
 				destrCall := GFuncGCSetNull.CreateCall(objs)
-				createCall.deferCall = new BoxDefer(destrCall)
+				createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall)
 			}
 		}
 	}
@@ -110,6 +131,14 @@ AppendClass BoxFuncBody
 			tp.PrintType(ctx)
 			f^ << "\n"
 		}
+		for it,i : LocalVarsDeferChecks
+		{
+			tp := it.GetBaseType()
+			f^ << "%Var" << (i + 1000) << " = alloca "
+			tp.PrintType(ctx)
+			f^ << "\n"
+			it.PrintCode(ctx)
+		}
 	}
 }
 
@@ -172,5 +201,39 @@ FuncLocalVarAccess := class extend BoxExeObj
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.writeStream^ << "%TUnref" << unrefInd
+	}
+}
+FuncLocalCallIfTrue := class extend BoxExeObj
+{
+	GetVar := BoxExeObj^
+	DownCall := BoxExeObj^
+	TrueBranch := BoxLabel2
+	FalseBranch := BoxLabel2
+	storeFalse := BoxExeObj^
+
+	this := !(BoxExeObj^ varPtr,BoxExeObj^ dwn) -> void
+	{
+		GetVar = varPtr
+		DownCall = dwn
+		TrueBranch."this"()
+		FalseBranch."this"()
+
+		objs := CheckExeDownList
+		objs.Push(varPtr)
+		objs.Push(GBoolFalse)
+		storeFalse = CreateFuncCall(StringSpan("="),objs)
+	}
+	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		TrueBranch.CreateId(ctx)
+		FalseBranch.CreateId(ctx)
+
+		GetVar.PrintPre(ctx)
+		PrintBranch(ctx,GetVar,TrueBranch&,FalseBranch&)
+		TrueBranch.PrintLabelCreate(ctx)
+		DownCall.PrintDefaultUse(ctx)
+		storeFalse.PrintDefaultUse(ctx)
+		FalseBranch.PrintGo(ctx)
+		FalseBranch.PrintLabelCreate(ctx)
 	}
 }
