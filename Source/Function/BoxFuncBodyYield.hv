@@ -55,6 +55,14 @@ AppendClass BoxFuncBody
 	{
 		if Yields.Size() == 0
 			return void
+		
+		objs := CheckExeDownList
+		cnsts := List.{BoxExeConstObj^}
+
+		objs.Push(YieldStateInt.CreateCall())
+		objs.Push(GetExeInt(-1))
+		YieldFinilize = CreateFuncCall(StringSpan("="),objs,cnsts)
+
 	}
 	PrintYieldCodeParams := !(LLVMWriteContext^ ctx) -> void
 	{
@@ -102,7 +110,7 @@ AppendClass BoxFuncBody
 	{
 		if YieldStateInt == null
 			return void
-		//assert(YieldFinilize != null)
-		//YieldFinilize.PrintDefaultUse(ctx)
+		assert(YieldFinilize != null)
+		YieldFinilize.PrintDefaultUse(ctx)
 	}
 }

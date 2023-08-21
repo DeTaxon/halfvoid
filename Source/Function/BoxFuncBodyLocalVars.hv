@@ -81,7 +81,6 @@ AppendClass BoxFuncBody
 			tp := it.GetBaseType()
 			pth := tpl.GetFieldByIndex(i)
 
-
 			asCls := GetExchange2(asRawPar.CreateCall(),lambdaClass.ItType.GetPoint(),false)
 
 			Objs2 := CheckExeDownList

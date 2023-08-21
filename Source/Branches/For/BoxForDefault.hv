@@ -78,7 +78,7 @@ BoxFor := class extend BoxExeObj
 		defer GDebugLineCallId = oldLineCall
 
 		CreatedIndex?.PrintCode(ctx)
-		values[^].InitStep.PrintCode(ctx)
+		values[^].InitStep.PrintDefaultUse(ctx)
 		CheckStep.PrintCode(ctx)
 
 		for it : values
