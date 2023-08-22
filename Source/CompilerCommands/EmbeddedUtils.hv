@@ -1,0 +1,69 @@
+
+EmbedInfo := class
+{
+	embedData := Blob^
+	rawData := BoxRawData^
+
+	compressionType := char^
+	fileSize := s64
+	compressedSize := s64
+	fileName := StringSpan
+}
+
+EmbeddedObjects := AVLMap.{StringSpan,AVLMap.{void^,EmbedInfo}}
+
+CreateEmbeddedObj := !(StringSpan cmp,void^ key,StringSpan setFileName,char^ compType, !()&->Blob^ cb) -> BoxExeObj^
+{
+	cType := compType
+	module := ref EmbeddedObjects[cmp]
+
+	blobExist := module.Contain(key)
+	embInfo := ref module[key]
+	if not blobExist
+	{
+		embInfo.embedData = cb()
+
+		embInfo.fileSize = embInfo.embedData.Size()
+		embInfo.fileName = setFileName
+
+		switch compType
+		{
+			case "None"
+			case "Deflate"
+				{
+					if embInfo.embedData.Size() <= 1
+					{
+						cType = "None"
+					}else{
+						embInfo.embedData = CompressBlobDeflate(embInfo.embedData)
+					}
+				}
+			case void
+				return null
+		}
+
+		embInfo.compressionType = cType
+		embInfo.compressedSize = embInfo.embedData.Size()
+		embInfo.rawData = new BoxRawData(embInfo.embedData)
+	}
+
+	objs := CheckExeDownList
+	objs.Push(embInfo.rawData)
+	objs.Push(GetExeInt(embInfo.fileSize))
+	objs.Push(GetExeInt(embInfo.compressedSize))
+	objs.Push(embInfo.compressionType == "Deflate" ?: GBoolTrue : GBoolFalse)
+	objs.Push(GetExeString(embInfo.fileName))
+
+	cnsts := List.{BoxExeConstObj^}
+	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs,cnsts)
+}
+
+PrintEmbeddedFiles := !(LLVMWriteContext^ ctx) -> void
+{
+	for it : blobDatas
+	{
+		it.PrintGlobal(ctx)
+	}
+	EmbeddedObjects[^][^].rawData.PrintGlobal(ctx)
+}
+

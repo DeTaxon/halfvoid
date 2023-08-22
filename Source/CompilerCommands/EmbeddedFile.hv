@@ -15,7 +15,6 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	fileName := skb.Down->{TokenString^}.Value
 
 	compressFile := false
-
 	if skb.Down.Right?.GetValue() == "," and skb.Down.Right.Right? is TokenBool
 	{
 		ind := skb.Down.Right.Right->{TokenBool^}
@@ -39,30 +38,13 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	if itFile == null
 		itm.EmitError("File not found")
 
-	emb := EmbFile^
-	if not embeddedFiles.Contain(itFile)
-	{
-		emb = new EmbFile(itFile,compressFile)
-		embeddedFiles[itFile] = emb
-	}else{
-		emb = embeddedFiles[itFile]
-	}
-
-	objs := CheckExeDownList
-	objs.Push(emb.data)
-	objs.Push(GetExeInt(emb.fileSize))
-	objs.Push(GetExeInt(emb.compressedSize))
-	objs.Push(emb.isCompressed ?: GBoolTrue : GBoolFalse)
-	objs.Push(GetExeString(itFile.GetName()^[0..0]))
-
-	cnsts := List.{BoxExeConstObj^}
-
-	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs,cnsts)
+	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),itFile,itFile.GetName()^[0..0]
+	, compressFile ?: "Deflate" : "None"
+	,() ==> Blob^ {
+		return itFile.GetBlob()
+	})
 }
 
-
-
-embeddedFiles := AVLMap.{vRepoFile^,EmbFile^}
 blobDatas := List.{BoxRawData^}
 
 BoxRawData := class extend BoxExeObj
@@ -106,7 +88,6 @@ BoxRawData := class extend BoxExeObj
 	{
 		return ItBlob.Size()
 	}
-
 }
 
 EmbFile := class
@@ -148,18 +129,3 @@ EmbFile := class
 	}
 }
 
-PrintEmbeddedFiles := !(LLVMWriteContext^ ctx) -> void
-{
-	for it : embeddedFiles
-	{
-		it.PrintGlobal(ctx)
-	}
-	for it : embeddedShaders
-	{
-		it.PrintGlobal(ctx)
-	}
-	for it : blobDatas
-	{
-		it.PrintGlobal(ctx)
-	}
-}
