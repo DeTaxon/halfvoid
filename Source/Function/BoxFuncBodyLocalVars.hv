@@ -17,6 +17,11 @@ AppendClass BoxFuncBody
 			createCall := new FuncLocalVarCleanup(access)
 			it.createVar.Push(createCall)
 
+			if it.itName.Size() >= 1 and it.itName[0] != '.'
+			{
+				it.createVar.Push(new FuncLocalDebugInfoValue(it.CreateVarCall(),it))
+			}
+
 			if tp is TypeClass
 			{
 				objs := CheckExeDownList
@@ -234,5 +239,53 @@ FuncLocalCallIfTrue := class extend BoxExeObj
 		storeFalse.PrintDefaultUse(ctx)
 		FalseBranch.PrintGo(ctx)
 		FalseBranch.PrintLabelCreate(ctx)
+	}
+}
+FuncLocalDebugInfoValue := class extend BoxExeObj
+{
+	getVar := BoxExeObj^
+	baseVar := LocalVar^
+	debId := int
+	this := !(BoxExeObj^ varPtr,LocalVar^ lVar) -> void
+	{
+		getVar = varPtr
+		baseVar = lVar
+		debId = GetNewId()
+	}
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if not DebugMode
+			return void
+		if baseVar.isReference
+			return void
+
+		getVar.PrintPointPre(ctx)
+
+		f := ctx.writeStream
+
+		f^ << "call void @llvm.dbg.declare(metadata "
+		inType := baseVar.GetType()
+		inType = NormalizeType(inType)
+		inType.PrintType(ctx)
+		f^ << "* " 
+		getVar.PrintPointUse(ctx)
+		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+
+		ctx.funcDebugMetas.Push(this&)
+	}
+	PrintDebugPostFuncMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+
+		pType := baseVar.GetType()
+		f^ << "!" << debId << " = !DILocalVariable(name: \"" << baseVar.itName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
+		f^ << ", line: " << 0 << ", type:!"
+		if baseVar.isReference
+		{
+			f^ <<pType.MakeDebugRef().MetaId
+		}else{
+			f^ <<pType.MetaId
+		}
+		f^ << ")\n"
 	}
 }

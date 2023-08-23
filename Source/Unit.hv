@@ -46,6 +46,8 @@ BoxUnit := class
 	{
 	}
 
+	PrintDebugPostFuncMeta := virtual !(LLVMWriteContext^ ctx) -> void {}
+
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
 
 	IsExecutable := virtual false

@@ -378,6 +378,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 			//inlineFunctions[^].PrintDebugMeta(ctx)
 
+			ctx.funcDebugMetas[^].PrintDebugPostFuncMeta(ctx)
+			ctx.funcDebugMetas.Destroy()
+
 			GDebugFileId = oldFileId
 		}
 	}

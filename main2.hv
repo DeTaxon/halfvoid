@@ -16,24 +16,13 @@
 //	}
 //}
 
-Test := !(int[] hm) -> void
-{
-	for it : hm
-		printf("wow %i\n",it)
-}
-Test2 := !(int x) -> void
-{
-	x = 16
-}
-
 main := !(char^[] args) -> int
 {
-	Test2(100)
-	c := HybridQueue.{int,20}
-	c.Push(13)
-	c.Push(7)
-	c.Push(-3)
-	Test(c)
+	x := 13
+	y := 200
+	c := "hi"
+	d := ref x
+	assert(false)
 	return 0
 }
 

@@ -5,6 +5,8 @@ LLVMWriteContext := class
 	funcCallCounter := int
 	deferObjects := HybridStack.{BoxExeObj^,20}
 
+	funcDebugMetas := List.{BoxExeObj^}
+
 
 	GetNewId := !() -> int
 	{
