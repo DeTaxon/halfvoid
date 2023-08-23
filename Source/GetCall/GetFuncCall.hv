@@ -205,7 +205,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				fnc := ob->{BoxFuncBody^}
 				if fnc.Attrs.IsMethod
 				{
-					baseType := fnc.Params[0].GetVarType()
+					baseType := fnc.Params[0].GetType()
 					assert(baseType is TypeClass)
 					cls := baseType->{TypeClass^}.ToClass
 

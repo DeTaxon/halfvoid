@@ -61,7 +61,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			av := par->{AliasVar^}
 			if av.itName == asItm.Value
 			{
-				assert(av.itValue is LocalVar)
+				assert(av.itValue is in LocalVar)
 				return av.itValue->{LocalVar^}.CreateVarCall()
 			}
 		}
@@ -71,7 +71,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			if av.itName == asItm.Value
 				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
-		if par is LocalVar
+		if par is in LocalVar
 		{
 			lv := par->{LocalVar^}
 
@@ -137,7 +137,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
-				clsType := fnc.Params[0].GetVarType()
+				clsType := fnc.Params[0].GetType()
 				assert(clsType is TypeClass)
 				cls := clsType->{TypeClass^}.ToClass
 

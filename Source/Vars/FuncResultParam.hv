@@ -7,11 +7,15 @@ FuncResultParam := class extend ParamFunc
 		assert(CurrentFunc != null)
 		parentFunc = CurrentFunc
 		SetType(GetFuncType(0,null,null,tp,isRef2,false))
+
 	}
 	this := !(BoxExeObj^ obj) -> void
 	{
 		exeObj = obj
 		this."FuncResultParam.this"(obj.GetType(),obj.IsMem())
+
+		if obj.IsMem()
+			obj.NotifyMemUse()
 	}
 	IsMem := virtual !() -> bool
 	{

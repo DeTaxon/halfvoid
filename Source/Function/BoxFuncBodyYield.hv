@@ -6,7 +6,9 @@ AppendClass BoxFuncBody
 	//YieldTupleVar := ParamFunc^
 	YieldFinilize := BoxExeObj^
     
-	Params := HybridQueue.{MemVar^,8}
+	Params := HybridQueue.{FuncInputVar^,8}
+	ParamsLocalVars := HybridQueue.{LocalVar^,8}
+
 	ResultVar := MemVar^
 
 	PutYieldState := !(BoxYield^ yld) -> int
@@ -21,6 +23,32 @@ AppendClass BoxFuncBody
 	IsGenerator := !() -> bool
 	{
 		return Yields.Size() != 0
+	}
+
+	CreateInputParams := !() -> void
+	{
+		for it, i : Params
+		{
+			getVar := new GetFuncInputVar(i,it.GetBaseType())
+
+			if it.NeedMemUse
+			{
+				locVar := new LocalVar(it.itName,it.GetBaseType(),true,it.isReference)
+				this.LocalVars.Push(locVar)
+
+				objs := CheckExeDownList
+				objs.Push(locVar.proxy&)
+				objs.Push(getVar)
+				setVar := CreateFuncCall(StringSpan("="),objs)
+				assert(setVar != null)
+				it.createVar.Push(setVar)
+				it.SetCall(locVar.proxy&)
+
+				ParamsLocalVars.Push(locVar)
+			}else{
+				it.SetCall(getVar)
+			}
+		}
 	}
 	GetYieldStateParam := !() -> ParamFunc^
 	{

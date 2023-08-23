@@ -10,15 +10,15 @@ MetaVargsParam := class extend BoxMetaObj
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { return fromFunc.Params.Size() - fromFunc.NamedParametersCount}
 
-	GetMetaIterValueParam := virtual !(int ind) -> ParamFunc^ 
+	GetMetaIterValueVar := virtual !(int ind) -> LocalVar^ 
 	{ 
 		itInd := ind + fromFunc.NamedParametersCount
-		return fromFunc.Params[itInd].Value
+		return fromFunc.Params[itInd]
 	}
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
 	{ 
 		itInd := ind + fromFunc.NamedParametersCount
-		return fromFunc.Params[itInd].Value.CreateCall()
+		return fromFunc.Params[itInd].CreateVarCall()
 	}
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
 }

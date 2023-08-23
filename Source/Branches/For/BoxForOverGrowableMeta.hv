@@ -67,14 +67,22 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 
 		for j : dwnObjs.Size()
 		{
-			mtVar := dwnObjs[j].MetaObj.GetMetaIterValueParam(i)
-			if mtVar != null
+			locVar := dwnObjs[j].MetaObj.GetMetaIterValueVar(i)
+
+			if locVar != null
 			{
-				newVar := new MemVarBorrowed(dwnObjs[j].ValueName,mtVar)
-				middleVars[i].Push(newVar)
-				UnitStack.PushFront(newVar)
+				alVar := new AliasVar(dwnObjs[j].ValueName,locVar)
+				UnitStack.PushFront(alVar)
 			}else{
-				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+				mtVar := dwnObjs[j].MetaObj.GetMetaIterValueParam(i)
+				if mtVar != null
+				{
+					newVar := new MemVarBorrowed(dwnObjs[j].ValueName,mtVar)
+					middleVars[i].Push(newVar)
+					UnitStack.PushFront(newVar)
+				}else{
+					tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
+				}
 			}
 
 			if dwnObjs[j].IndexName.Size() != 0

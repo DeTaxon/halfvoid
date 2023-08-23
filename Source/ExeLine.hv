@@ -268,7 +268,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 						if i < funcObj.NamedParametersCount
 							continue
 
-						tmpVar := new MemVar(funcObj.VariadicName,funcObj.Params[i].Value)
+						tmpVar := new AliasVar(funcObj.VariadicName,funcObj.Params[i])
 						UnitStack.PushFront(tmpVar)
 
 						obj := TryGetExeCall(itr.Down)

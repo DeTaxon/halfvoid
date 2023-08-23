@@ -63,6 +63,10 @@ LocalVarProxy := class extend BoxExeObj
 	Down := BoxExeObj^
 	BaseDown := BoxExeObj^
 
+	NotifyMemUse := virtual !() -> void
+	{
+		baseVar.NotifyMemUse()
+	}
 	IsMem := virtual !() -> bool
 	{
 		return baseVar.isMemory

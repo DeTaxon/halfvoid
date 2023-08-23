@@ -183,9 +183,8 @@ BoxFuncBody := class extend BoxFuncCommon
 					name = GetParSpan(i)
 				}
 			}
-			parObj := new FuncInputParam(par.ItType,par.IsRef,GetParSpan(i))
-			vr := new MemVar(name,parObj)
-			Params.Push(vr)
+			newVar := new FuncInputVar(name,par.ItType,true,par.IsRef)
+			Params.Push(newVar)
 		}
 		if not Attrs.IsAutoResult
 		{
@@ -231,10 +230,10 @@ BoxFuncBody := class extend BoxFuncCommon
 
 
 		YieldWork()
+		CreateInputParams()
 		LocalVariablesStep()
 		WorkBodyCaptures()
-
-		Params[^].Value.PopulateCalls() //must be before regualrVars.Populate()!!!
+		
 		ResultVar?.Value.PopulateCalls()
 		
 		while UnitStack.Size() > stackSize
@@ -260,8 +259,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.writeStream^ << "@" << OutputName
-		if OutputName.Size() == 0
-			printf("bad\n")
+		assert(OutputName.Size() != 0)
 	}
 	
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
@@ -300,6 +298,8 @@ BoxFuncBody := class extend BoxFuncCommon
 		PrintLocalVars(ctx)
 		ResultVar?.Value.PrintAlloc(ctx)
 		ResultVar?.PrintCode(ctx)
+		ParamsLocalVars[^].PrintCode(ctx)
+		Params[^].PrintCode(ctx)
 
 		PrintStackData(ctx)
 
@@ -308,9 +308,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		PrintYieldCodeGo(ctx)
 
 		rTyp := GetType()->{TypeFunc^}.ResultType
-
-		Params[^].PrintCode(ctx)
-
 		
 		body.PrintCode(ctx)
 
