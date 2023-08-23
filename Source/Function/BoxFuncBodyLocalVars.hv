@@ -19,7 +19,7 @@ AppendClass BoxFuncBody
 
 			if it.itName.Size() >= 1 and it.itName[0] != '.'
 			{
-				it.createVar.Push(new FuncLocalDebugInfoValue(it.CreateVarCall(),it))
+				it.createVar.Push(new FuncLocalDebugInfoDeclare(it.proxy&,it))
 			}
 
 			if tp is TypeClass
@@ -241,7 +241,7 @@ FuncLocalCallIfTrue := class extend BoxExeObj
 		FalseBranch.PrintLabelCreate(ctx)
 	}
 }
-FuncLocalDebugInfoValue := class extend BoxExeObj
+FuncLocalDebugInfoDeclare := class extend BoxExeObj
 {
 	getVar := BoxExeObj^
 	baseVar := LocalVar^
@@ -251,12 +251,13 @@ FuncLocalDebugInfoValue := class extend BoxExeObj
 		getVar = varPtr
 		baseVar = lVar
 		debId = GetNewId()
+
+		if baseVar.isReference
+			baseVar.GetType().MakeDebugRef()
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if not DebugMode
-			return void
-		if baseVar.isReference
 			return void
 
 		getVar.PrintPointPre(ctx)
@@ -267,8 +268,61 @@ FuncLocalDebugInfoValue := class extend BoxExeObj
 		inType := baseVar.GetType()
 		inType = NormalizeType(inType)
 		inType.PrintType(ctx)
+		if baseVar.isReference
+			f^ << "*"
 		f^ << "* " 
 		getVar.PrintPointUse(ctx)
+		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
+
+		ctx.funcDebugMetas.Push(this&)
+	}
+	PrintDebugPostFuncMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+
+		pType := baseVar.GetType()
+		f^ << "!" << debId << " = !DILocalVariable(name: \"" << baseVar.itName << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId
+		f^ << ", line: " << 0 << ", type:!"
+		if baseVar.isReference
+		{
+			f^ <<pType.MakeDebugRef().MetaId
+		}else{
+			f^ <<pType.MetaId
+		}
+		f^ << ")\n"
+	}
+}
+FuncLocalDebugInfoValue := class extend BoxExeObj
+{
+	getVar := BoxExeObj^
+	baseVar := LocalVar^
+	debId := int
+	this := !(BoxExeObj^ varPtr,LocalVar^ lVar) -> void
+	{
+		getVar = varPtr
+		baseVar = lVar
+		debId = GetNewId()
+
+		if baseVar.isReference
+			baseVar.GetType().MakeDebugRef()
+	}
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if not DebugMode
+			return void
+
+		getVar.PrintPre(ctx)
+
+		f := ctx.writeStream
+
+		f^ << "call void @llvm.dbg.value(metadata "
+		inType := baseVar.GetType()
+		inType = NormalizeType(inType)
+		inType.PrintType(ctx)
+		if baseVar.isReference
+			f^ << "*"
+		f^ << " " 
+		getVar.PrintUse(ctx)
 		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 
 		ctx.funcDebugMetas.Push(this&)

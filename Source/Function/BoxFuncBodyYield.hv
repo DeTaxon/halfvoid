@@ -46,6 +46,7 @@ AppendClass BoxFuncBody
 
 				ParamsLocalVars.Push(locVar)
 			}else{
+				it.createVar.Push(new FuncLocalDebugInfoValue(it.proxy&,it))
 				it.SetCall(getVar)
 			}
 		}
