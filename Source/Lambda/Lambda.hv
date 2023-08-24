@@ -194,11 +194,11 @@ BoxLambdaHolder := class extend BoxExeObj
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
 		assert(lambdaCapturePath != null)
 
-		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+		lambFuncThis := newFunc.Params[0]
 		for it,i : capturedVars
 		{
 			objs3 := CheckExeDownList
-			objs3.Push(GetExchange2(asRawPar.CreateCall(),cleanType.GetPoint(),false))
+			objs3.Push(GetExchange2(lambFuncThis.CreateVarCall(),cleanType.GetPoint(),false))
 			getCaps := lambdaCapturePath.CreateCall(objs3)
 			assert(getCaps != null)
 
@@ -211,7 +211,6 @@ BoxLambdaHolder := class extend BoxExeObj
 
 			it.0.SetCall(r6)
 		}
-		asRawPar.PopulateCalls()
 
 		if capturedVars.Size() != 0
 		{
