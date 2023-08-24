@@ -1,0 +1,39 @@
+FuncInputVar := class extend LocalVar
+{
+	NeedMemUse  := bool
+
+	NotifyMemUse := virtual !() -> void
+	{
+		NeedMemUse = true
+	}
+	this := !(StringSpan inName,Type^ varType,bool isMem,bool isRef) -> void
+	{
+		super(inName,varType,isMem,isRef)
+	}
+}
+
+GetFuncInputVar := class extend BoxExeObj
+{
+	varIndex := int
+	this := !(int ind,Type^ objType) -> void
+	{
+		ObjType = objType
+		varIndex = ind
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		assert(false)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%par" << varIndex
+	}
+
+}
