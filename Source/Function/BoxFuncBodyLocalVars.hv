@@ -80,13 +80,13 @@ AppendClass BoxFuncBody
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(tpl.ItType))
 
-		asRawPar := new FuncInputParam(GTypeVoidP,false,StringSpan("%par0")) //TODO: way too bad
+		locVarThis := Params[0]
 		for it, i : LocalVars
 		{
 			tp := it.GetBaseType()
 			pth := tpl.GetFieldByIndex(i)
 
-			asCls := GetExchange2(asRawPar.CreateCall(),lambdaClass.ItType.GetPoint(),false)
+			asCls := GetExchange2(locVarThis.CreateVarCall(),lambdaClass.ItType.GetPoint(),false)
 
 			Objs2 := CheckExeDownList
 			Objs2.Push(asCls)
@@ -122,7 +122,6 @@ AppendClass BoxFuncBody
 				}
 			}
 		}
-		asRawPar.PopulateCalls()
 	}
 	PrintLocalVars := !(LLVMWriteContext^ ctx) -> void
 	{
