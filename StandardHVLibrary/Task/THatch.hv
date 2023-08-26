@@ -59,7 +59,7 @@ THatch := class
 		//pt.Pause(next_wakeup&)
 		pt.next_point = next_wakeup
 		next_wakeup = pt&
-		pt.itTask = CurrentTask
+		pt.itTask = TSGetCurrentTask()
 		TaskCheckMutex.Lock()
 		CurrentThread.switchToMain()
 		TaskCheckMutex.Unlock()

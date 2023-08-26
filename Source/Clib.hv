@@ -262,44 +262,45 @@ CLib := class extend ModuleInterface
 
 		//dt << "printf(\"called " << initFuncName << "\n\")\n"
 
-		if targetWindows
-		{
-			dllFile := vRepoFile^
-			for it : dlls
-			{
-				if it.End != ".dll"
-					continue
-				
-				dllFile = libFile.GetFile(it)
-				if dllFile != null
-					break
-			}
-			if dllFile != null
-			{
-				dt << "if lib == null \n{\n"
-				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
-				dt << "}\n"
-			}
-		}
-		if targetLinux
-		{
-			dllFile := vRepoFile^
-			for it : dlls
-			{
-				if it.End != ".so"
-					continue
-				
-				dllFile = libFile.GetFile(it)
-				if dllFile != null
-					break
-			}
-			if dllFile != null
-			{
-				dt << "if lib == null \n{\n"
-				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
-				dt << "}\n"
-			}
-		}
+		//TODO not ready
+		//if targetWindows
+		//{
+		//	dllFile := vRepoFile^
+		//	for it : dlls
+		//	{
+		//		if it.End != ".dll"
+		//			continue
+		//		
+		//		dllFile = libFile.GetFile(it)
+		//		if dllFile != null
+		//			break
+		//	}
+		//	if dllFile != null
+		//	{
+		//		dt << "if lib == null \n{\n"
+		//		dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
+		//		dt << "}\n"
+		//	}
+		//}
+		//if targetLinux
+		//{
+		//	dllFile := vRepoFile^
+		//	for it : dlls
+		//	{
+		//		if it.End != ".so"
+		//			continue
+		//		
+		//		dllFile = libFile.GetFile(it)
+		//		if dllFile != null
+		//			break
+		//	}
+		//	if dllFile != null
+		//	{
+		//		dt << "if lib == null \n{\n"
+		//		dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\",true))\n"
+		//		dt << "}\n"
+		//	}
+		//}
 		for it, ind : itFuncs
 		{
 			if ind == initFuncName

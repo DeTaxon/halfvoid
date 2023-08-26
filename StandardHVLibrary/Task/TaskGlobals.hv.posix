@@ -1,0 +1,11 @@
+
+hideCurrentTask := thread_local Task^
+TSGetCurrentTask := !() -> Task^
+{
+	return hideCurrentTask
+}
+TSSetCurrentTask := !(Task^ tks) -> void
+{
+	hideCurrentTask = tks
+}
+

@@ -7,10 +7,10 @@ TaskWorkersToDo := List.{Task^}
 
 	ExpectWorkers(1)
 
-	TaskWorkersToDo.Push(CurrentTask)
+	TaskWorkersToDo.Push(TSGetCurrentTask())
 	TaskWaitTasksConVar.NotifyAll()
 
-	myTask := CurrentTask->{void^}
+	myTask := TSGetCurrentTask()
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()
