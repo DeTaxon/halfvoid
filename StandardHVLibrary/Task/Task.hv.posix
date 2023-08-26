@@ -29,16 +29,16 @@ AppendClass Task
 		//	___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
 		//}
 
-		oldTask := TSGetCurrentTask()
-		TSSetCurrentTask(this&)
-		swapcontext(oldTask.uContext[0]&,uContext[0]&)
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
+		swapcontext(oldTask->{Task^}.uContext[0]&,uContext[0]&)
 	}
 	firstStartOS := !() -> void
 	{
-		oldTask := TSGetCurrentTask()
-		TSSetCurrentTask(CurrentThread.ThreadMainTask)
+		oldTask := CurrentTask->{void^}
+		CurrentTask = CurrentThread.ThreadMainTask
 		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
-			swapcontext(uContext[0]&,CurrentThread.ThreadMainTask.uContext[0]&)
+			swapcontext(uContext[0]&,CurrentTask.uContext[0]&)
 	}
 	switchToTask := !() -> void
 	{
@@ -47,8 +47,8 @@ AppendClass Task
 		//	___tracy_fiber_enter(taskNames[taskId].0[0]&)
 		//}
 
-		oldTask := TSGetCurrentTask()->{void^}
-		TSSetCurrentTask(this&)
+		oldTask := CurrentTask->{void^}
+		CurrentTask = this&
 		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
 			llvmLongJump(this.longJumpBuf[0]&)
 	}

@@ -24,8 +24,8 @@ TaskWorker := class extend TGCObject
 	{
 		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a wait for passing variable as weak pointer
 			CurrentThread = wk->{TaskWorker^}
-			CurrentThread.ThreadMainTask = TSGetCurrentTask()
-			TSGetCurrentTask().OSFirstInit()
+			CurrentThread.ThreadMainTask = CurrentTask
+			CurrentTask.OSFirstInit()
 			EnterTaskThreadCycle(false)
 			CurrentThread.ThreadMainTask = null
 			CurrentThread = null

@@ -24,13 +24,12 @@ Test := !(int II, float UU) -> void
 	d := ref x
 	II = 140
 	x + x
-	//assert(false)
+	assert(false)
 	x + x
 }
 main := !(char^[] args) -> int
 {
 	Test(999,3.13)
-	printf("hello\n")
 	return 0
 }
 

@@ -17,8 +17,8 @@ internalInitThread := !() -> void
 {
 	voidVal := calloc(1,Task->TypeSize)
 	internalHVInitClass(voidVal->{Task^}^)
-	TSSetCurrentTask(voidVal->{Task^})
-	voidVal->{Task^}.DecRef()
+	CurrentTask = voidVal->{Task^}
+	CurrentTask.DecRef()
 }
 
 internalGlobalsDestroy := !() -> void
@@ -41,7 +41,7 @@ internalGlobalsDestroy := !() -> void
 }
 internalThreadDestructor := !() -> void
 {
-	TSSetCurrentTask(null)
+	CurrentTask = null
 }
 
 
@@ -57,7 +57,7 @@ TSpawnTask := !(!()&-> void cb) -> void
 
 ucontextStartTask := !() -> void
 {
-	TSGetCurrentTask().startTaskThread()
+	CurrentTask.startTaskThread()
 }
 
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
@@ -66,9 +66,9 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	//TaskUVInit()
 
 	CurrentThread = new TaskWorker()
-	CurrentThread.ThreadMainTask = TSGetCurrentTask()
+	CurrentThread.ThreadMainTask = CurrentTask
 	TaskMainTaskWorker = CurrentThread
-	TSGetCurrentTask().OSFirstInit()
+	CurrentTask.OSFirstInit()
 
 	for it : #MarkedFunctions("CallAtStart")
 	{
