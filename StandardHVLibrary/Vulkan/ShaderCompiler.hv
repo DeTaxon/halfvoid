@@ -2,6 +2,9 @@
 
 CompileVulkanShader := !(vRepoFile^ fl) -> Blob^
 {
+	cmlr := ShaderCompiler
+	return cmlr.Compile(fl)
+
 	moduleType := char^	
 	if fl.GetName().End == ".vert"
 	{
@@ -43,4 +46,33 @@ CompileVulkanShader := !(vRepoFile^ fl) -> Blob^
 
 
 fsCompilerCache := AVLMap.{vRepoFolder^,Tuple.{CacheFile^,CacheFileModule^}}
+
+
+ShaderCompiler := class
+{
+	Compile := !(vRepoFile^ fl) -> Blob^
+	{
+		blb := fl.GetBlob()
+		flName := fl.GetName().GetString()
+
+		opts := shaderc_compile_options_initialize()
+
+		shaderc_compile_options_set_target_env(opts,shaderc_target_env_vulkan,shaderc_env_version_vulkan_1_0)
+
+		target := shaderc_vertex_shader
+		if flName.End == ".frag"
+			target = shaderc_fragment_shader
+
+		cmplr := shaderc_compiler_initialize()
+		res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",opts)
+		resInt := shaderc_result_get_compilation_status(res)
+		txt := shaderc_result_get_error_message(res)
+		printf("res %i <%s>\n",resInt,txt)
+
+		resSize := shaderc_result_get_length(res)
+		resBlob := new BlobOnVector(resSize)
+		memcpy(resBlob.GetPointer(),shaderc_result_get_bytes(res),resSize)
+		return resBlob
+	}
+}
 
