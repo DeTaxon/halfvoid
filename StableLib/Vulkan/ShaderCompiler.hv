@@ -1,46 +1,54 @@
 
 
-CompileVulkanShader := !(vRepoFile^ fl) -> Blob^
+ShaderCompiler := class extend TGCObject
 {
-	moduleType := char^	
-	if fl.GetName().End == ".vert"
-	{
-		moduleType = "vert"
-	}else if fl.GetName().End == ".frag"
-	{
-		moduleType = "frag"
-	}else{
-		return null
-	}
-	baseFolder := fl.GetUpFolder()
+	cacheFile := CacheFile^
+	cacheFileModule := CacheFileModule^
 
-	flCache := ref fsCompilerCache[baseFolder]
-	if flCache.0 == null
+	options := void^
+
+	this := !() -> void
 	{
-		flCache.0 = new CacheFile(CreateString(baseFolder.GetPath(), "/CompiledShaders.zip"))
-		flCache.1 = flCache.0.GetFileModule("Shaders")
+		options = shaderc_compile_options_initialize()
+		assert(options != null)
+		shaderc_compile_options_set_target_env(options,shaderc_target_env_vulkan,shaderc_env_version_vulkan_1_0)
 	}
-	result = flCache.1.GetCacheValue(fl,() ==> Blob^ {
-		ec := TEchoStream //TODO non linux version, and use Processes + Pipes
-		ec << "glslangValidator -S " << moduleType << " -e main --target-env vulkan1.0 " //TODO i have some trouble selecting version, besides vulkan1.0
-		ec << fl.GetPath()
-		ec << " -o /tmp/MechaCacheFile"
-		st := ec.GetString()
-		res := system(st.Str())
-		if res != 0
+
+	SetCacheFile := !(CacheFile^ setCF) -> void
+	{
+		assert(cacheFile == null)
+
+		cacheFile = setCF
+		cacheFileModule = setCF.GetFileModule("Shaders") //TODO unconst
+	}
+	Compile := !(vRepoFile^ fl) -> Blob^
+	{
+		lmbdCreate := () ==> Blob^
 		{
-			return null
+			blb := fl.GetBlob()
+			flName := fl.GetName().GetString()
+
+			target := shaderc_vertex_shader
+			if flName.End == ".frag"
+				target = shaderc_fragment_shader
+
+			cmplr := shaderc_compiler_initialize()
+			res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",options)
+			resInt := shaderc_result_get_compilation_status(res)
+			txt := shaderc_result_get_error_message(res)
+
+			resSize := shaderc_result_get_length(res)
+			resBlob := new BlobOnVector(resSize)
+			memcpy(resBlob.GetPointer(),shaderc_result_get_bytes(res),resSize)
+			return resBlob
 		}
-		chc := MappedFile("/tmp/MechaCacheFile")
-		result = new BlobOnVector(chc.Size())
-		if chc.Size() != 0
+		if cacheFileModule != null
 		{
-			memcpy(result.GetPointer(),chc.Get(),chc.Size())
+			result = cacheFileModule.GetCacheValue(fl,lmbdCreate)
+			cacheFile.Flush()
+		}else{
+			return lmbdCreate()
 		}
-	})
-	flCache.0.Flush()
+	}
 }
-
-
-fsCompilerCache := AVLMap.{vRepoFolder^,Tuple.{CacheFile^,CacheFileModule^}}
 

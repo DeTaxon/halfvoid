@@ -63,21 +63,23 @@ HybridStack := class .{@T,@HSize} extend TArrayView.{T}
 		StaticSize = 0
 		ListArray.Destroy()
 	}
-	"for" := !() -> !()&->ref T
-	{
-		lmbd := () ==> ref T{
-			if ListArray.Size() != 0
-			{
-				for it : ListArray
-				{
-					yield it
-				}
-			}
-			for i : StaticSize
-			{
-				yield StaticArray[HSize - StaticSize + i]
-			}
-		}
-		return lmbd.Capture()
-	}
+
+	//TODO uncomment
+	//"for" := !() -> !()&->ref T
+	//{
+	//	lmbd := () ==> [this&] ref T{
+	//		if cls.ListArray.Size() != 0
+	//		{
+	//			for it : cls.ListArray
+	//			{
+	//				yield it
+	//			}
+	//		}
+	//		for i : StaticSize
+	//		{
+	//			yield cls.StaticArray[HSize - StaticSize + i]
+	//		}
+	//	}
+	//	return lmbd.Capture()
+	//}
 }

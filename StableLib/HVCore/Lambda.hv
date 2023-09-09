@@ -5,9 +5,7 @@ TILambda := class extend TGCObject
 		return false
 	}
 
-	getCaptureVar := virtual !() -> void^ { return null }
 	getYieldState := virtual !() -> ref int { assert(false) }
-	getYieldVars := virtual !() -> void^ { return null }
 	getGCVars := virtual !() -> void^ { return null }
 }
 
@@ -23,40 +21,21 @@ TLambda := class .{@FuncPtr} extend TILambda
 		return null
 	}
 }
-TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
+TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPtr}
 {
-	capPtr := CapTypePtr
+	capturedVars := CaptureTuple
 	yieldState := int
-	lambdaVars := YieldTuple
+	yieldVars := YieldTuple
 
 	IsFinished := virtual !() -> bool { return yieldState < 0 }
-	getCaptureVar := virtual !() -> void^ {  result = capPtr }
 	getYieldState := virtual !() -> ref int { return yieldState }
-	getYieldVars := virtual !() -> void^ { return lambdaVars& }
 
 	Capture := virtual !() -> TLambda.{FuncPtr}^
 	{
-		newLambda := new TLambdaImpCaptured.{FuncPtr,CapTypePtr,YieldTuple}
+		newLambda := new TLambdaImp.{FuncPtr,CaptureTuple,YieldTuple}
 		newLambda.callFunc = callFunc
 
-		if capPtr == null
-		{
-			i := 0
-			for it : newLambda.thisCapturedVars->AllFields
-			{
-				i += 1
-			}
-			if i != 0
-			{
-				printf("wow %s\n",CapTypePtr->TypeName)
-				for it : newLambda.thisCapturedVars->AllFields
-				{
-					printf("hah %s\n",it->TypeName)
-				}
-				assert(capPtr != null)
-			}
-		}
-		for setField : newLambda.thisCapturedVars->AllFields , getField : this.capPtr^->AllFields
+		for setField : newLambda.capturedVars->AllFields , getField : this.capturedVars->AllFields
 		{
 			if getField->TypeGroup == "Class"
 			{
@@ -70,7 +49,7 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 			}
 		}
 
-		for setField : newLambda.lambdaVars->AllFields , getField : this.lambdaVars->AllFields
+		for setField : newLambda.yieldVars->AllFields , getField : this.yieldVars->AllFields
 		{
 			if getField->TypeGroup == "Class"
 			{
@@ -84,23 +63,13 @@ TLambdaImp := class .{@FuncPtr,@CapTypePtr,@YieldTuple} extend TLambda.{FuncPtr}
 				}
 			}
 		}
-		newLambda.capPtr = newLambda.thisCapturedVars&
 
 		return newLambda
 	}
 	Destroy := virtual !() -> void
 	{
-		internalGCClearClass(lambdaVars)
-	}
-}
-TLambdaImpCaptured := class .{@FuncPtr,@CapType^,@YieldTuple} extend TLambdaImp.{FuncPtr,CapType^,YieldTuple}
-{
-	thisCapturedVars := CapType
-	getCaptureVar := virtual !() -> void^ {  result = thisCapturedVars& }
-	Destroy := virtual !() -> void
-	{
-		internalGCClearClass(thisCapturedVars)
-		internalGCClearClass(lambdaVars)
+		internalGCClearClass(capturedVars)
+		internalGCClearClass(yieldVars)
 	}
 }
 
@@ -108,23 +77,12 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 {
 	return lmb.callFunc(lmb&,args...)
 }
-internalHVLambdaGetCaptures := !(void^ lmbd) .{@T} -> T^
-{
-	result = lmbd->{TILambda^}.getCaptureVar()->{T^}
-}
 internalHVLambdaGetYieldState := !(void^ lmbd) -> ref int
 {
 	return lmbd->{TILambda^}.getYieldState()
 }
 
-internalHVLambdaGetYieldTuple := !(void^ lmbd) .{@LambdaVarsTuple} -> LambdaVarsTuple^
-{
-	return lmbd->{TILambda^}.getYieldVars()->{LambdaVarsTuple^}
-}
-
-
-internalHVCreateLambda := !(@FuncPtr fnc,@CaptureTuple^ CaptureVars).{@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuple^,YieldVars}
+internalHVCreateLambda := !(@FuncPtr fnc).{@CaptureTuple,@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuple,YieldVars}
 {
 	result.callFunc = fnc
-	result.capPtr = CaptureVars
 }
