@@ -15,21 +15,10 @@
 //		}
 //	}
 //}
-
-Test := !(int II, float UU) -> void
-{
-	x := 13
-	y := 200
-	c := "hi"
-	d := ref x
-	II = 140
-	x + x
-	assert(false)
-	x + x
-}
 main := !(char^[] args) -> int
 {
-	Test(999,3.13)
+	printf("hello worlds\n")
+	x := 2 + 3
 	return 0
 }
 

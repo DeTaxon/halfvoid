@@ -36,10 +36,18 @@ TryEmbeddVKShader := !(Token^ itm) -> BoxExeObj^
 	if itFile == null
 		itm.EmitError("File not found")
 	
+	if shaderCompiler == null
+	{
+		shaderCompiler = new ShaderCompiler()
+		if CFile != null
+			shaderCompiler.SetCacheFile(CFile)
+	}
 	
 	return CreateEmbeddedObj(StringSpan("EmbVKShader"),itFile,StringSpan("test")
 	, compressFile ?: "Deflate" : "None"
 	,() ==> Blob^ {
-		return CompileVulkanShader(itFile)
+		return shaderCompiler.Compile(itFile)
 	})
 }
+
+shaderCompiler := ShaderCompiler^
