@@ -259,7 +259,7 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 			fil.PrintCode(ctx)
 		}
 	}
-	DummyFile.PrintCode(ctx)
+	DummyFile?.PrintCode(ctx)
 
 	for st : GlobalStrings
 	{
