@@ -15,10 +15,20 @@
 //		}
 //	}
 //}
+
+VClass := class
+{
+	Test := virtual !() -> void
+	{
+		printf("hi\n")
+	}
+}
 main := !(char^[] args) -> int
 {
-	printf("hello worlds\n")
-	x := 2 + 3
+	//printf("hello worlds\n")
+	x := VClass^
+	y := 2 + 2
+	x.Test()
 	return 0
 }
 

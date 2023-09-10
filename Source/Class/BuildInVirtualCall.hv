@@ -25,13 +25,6 @@ BuildInVirtualCall := class extend BoxFuncCommon
 
 		clsType := thisItem.GetType()
 
-		if not (clsType is TypeClass)
-		{
-			for it : lst
-			{
-				printf("wut %s %p\n",it.GetType().GetBADStr().Str(),lst.Size())
-			}
-		}
 		assert(clsType is TypeClass)
 		vTableType := clsType->{TypeClass^}.ToClass->{BoxClassBody^}.VTableType.ItType
 
@@ -47,25 +40,37 @@ BuildInVirtualCall := class extend BoxFuncCommon
 		clsType.PrintType(ctx)
 		f^ << "* "
 		thisItem.PrintPointUse(ctx)
-		f^ << " , i32 0, i32 0\n"
+		f^ << " , i32 0, i32 0"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
 
 		f^ << "%VTable" << resId << " = load "
 		vTableType.PrintType(ctx)
 		f^ << "* , "
 		vTableType.PrintType(ctx)
-		f^ << "** %VTableIndex" << resId << "\n"
+		f^ << "** %VTableIndex" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
 
 		f^ << "%FuncIndex" << resId << " = getelementptr "
 		vTableType.PrintType(ctx)
 		f^ << " , "
 		vTableType.PrintType(ctx)
-		f^ << "* %VTable" << resId <<  ", i32 0, i32 " << funcIndex << "\n"
+		f^ << "* %VTable" << resId <<  ", i32 0, i32 " << funcIndex
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
 
 		f^ << "%FuncPtr" << resId << " = load "
 		normFuncTypePtr.PrintType(ctx)
 		f^ << " , "
 		normFuncTypePtr.PrintType(ctx)
-		f^ << "* %FuncIndex" << resId << "\n"
+		f^ << "* %FuncIndex" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
 
 		fncObj := virtualGetPointer(normFuncTypePtr,resId)
 
