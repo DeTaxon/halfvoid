@@ -114,7 +114,7 @@ TypeFunc := class extend Type
 	}
 }
 
-funcTypes := List.{TypeFunc^}[9973]
+funcTypes := HybridQueue.{TypeFunc^,10}[9973]^
 
 
 GetFuncType := !(Type^ res) -> TypeFunc^
@@ -161,7 +161,7 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 	// 	}
 	// }
 
-	itList := funcTypes[hsh mod 9973]&
+	itList := funcTypes^[hsh mod 9973]&
 
 	for fnc : itList^
 	{

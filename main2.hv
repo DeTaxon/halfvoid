@@ -22,13 +22,14 @@ VClass := class
 	{
 		printf("hi\n")
 	}
+	Test2 := virtual false
 }
 main := !(char^[] args) -> int
 {
 	//printf("hello worlds\n")
 	x := VClass^
 	y := 2 + 2
-	x.Test()
+	x.Test2
 	return 0
 }
 

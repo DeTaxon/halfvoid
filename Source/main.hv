@@ -36,6 +36,12 @@ JITMode := bool
 OutputFile := char^
 main := !(char^[] args) -> int
 {
+	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
+	for i : 9973
+	{
+		internalHVInitClass(funcTypes^[i])
+	}
+
 	TracyZone("MainFunc")
 
 	CodeSpaces.IncRef()
