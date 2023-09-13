@@ -59,3 +59,85 @@ Font := class
 		height = h
 	}
 }
+
+ImageAtlas := class extend TGCObject
+{
+	atlasTexture := TVkTexture^
+	atlasW := int
+	atlasH := int
+
+	rectangles := Vector.{stbrp_rect}
+	usedCount := int
+
+	imageData := u8^
+
+	images := List.{Tuple.{u8^,int,int}}
+
+	this := !(int width, int height, int maxImages = 64) -> void
+	{
+		atlasW = width
+		atlasH = height
+
+
+		rectangles.Resize(maxImages)
+	}
+
+	AddImage := !(vRepoFile^ someFile) -> int
+	{
+		imgFile := TImageFile(someFile)
+
+		newId := usedCount
+		rectangles[usedCount].w = imgFile.itWidth
+		rectangles[usedCount].h = imgFile.itHeight
+		usedCount += 1
+
+		nodes := Vector.{stbrp_node}
+		nodes.Resize(128)
+
+		ctx := new stbrp_context
+		defer delete ctx
+
+		stbrp_init_target(ctx,atlasW,atlasH,nodes.GetPointer(),nodes.Size())
+		stbrp_pack_rects(ctx,rectangles.GetPointer(),rectangles.Size())
+
+		rct := ref rectangles[newId]
+		assert(rct.was_packed != 0)
+
+		newImage := malloc(imgFile.itWidth*imgFile.itHeight*4)->{u8^}
+		imgFile.StoreToMemory("RGBA",newImage)
+
+		images.Emplace(newImage,imgFile.itWidth,imgFile.itHeight)
+	}
+
+	Finish := !(VulkanInstance^ inst) -> void
+	{
+		imageData = malloc(atlasW*atlasH*4)->{u8^}
+		defer free(imageData)
+
+		for it,i : images
+		{
+			for j : it.2
+			{
+				rct := ref rectangles[i]
+				memcpy(imageData[(rct.x + rct.y*atlasW)*4 + j*atlasW*4]&,it.0[j*it.1*4]&,it.1*4)
+			}
+		}
+
+		atlasTexture = inst.CreateTexture()
+		atlasTexture.CreateTexture(atlasW,atlasH,TArraySpan.{u8}(imageData,atlasW*atlasH*4))
+	}
+
+
+	Destroy := virtual !() -> void
+	{
+		if imageData != null
+		{
+			free(imageData)
+			imageData = null
+		}
+	}
+
+	
+}
+
+

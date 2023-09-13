@@ -1,3 +1,32 @@
+stbrp_rect := class
+{
+	id := s32
+	w := s32
+	h := s32
+	x := s32
+	y := s32
+	was_packed := s32
+}
+
+stbrp_node := class
+{
+	x := s32
+	y := s32
+	next := stbrp_node^
+}
+
+stbrp_context := class
+{
+	width := s32
+	height := s32
+	align := s32
+	init_mode := s32
+	num_nodes := s32
+	active_head := stbrp_node^
+	free_head := stbrp_node^
+	extra := stbrp_node[2]
+}
+
 
 stbtt_pack_context := class
 {

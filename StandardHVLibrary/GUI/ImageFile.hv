@@ -24,7 +24,7 @@ TImageFile := class extend TGCObject
 		haveAlpha = webpInf[2] != 0
 		haveAnimation = webpInf[3] != 0
 	}
-	StoreToMemory := !(char^ layoutType, void^ ptrToSet) -> void //TODO 
+	StoreToMemory := !(char^ layoutType, void^ ptrToSet, int bufferSize = 0, int strideSize = 0) -> void //TODO 
 	{
 		mp := itFile.GetMap()
 
@@ -35,9 +35,11 @@ TImageFile := class extend TGCObject
 			switch layoutType
 			{
 				case "RGB"
-					WebPDecodeRGBInto(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*3,itWidth*3)
+					WebPDecodeRGBInto(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*3,strideSize != 0 ?: strideSize : itWidth*3)
 				case "RGBA"
-					WebPDecodeRGBAInto(mp.Get(),mp.Size(),ptrToSet,itWidth*itHeight*4,itWidth*4)
+					WebPDecodeRGBAInto(mp.Get(),mp.Size(),ptrToSet
+						,bufferSize != 0 ?: bufferSize :itWidth*itHeight*4
+						,strideSize != 0 ?: strideSize : itWidth*4)
 			}
 		}
 	}

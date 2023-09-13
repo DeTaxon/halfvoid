@@ -131,7 +131,7 @@ main := !(char^[] args) -> int
 	
 	HVOperators.Insert(PriorityData.Opers[^])
 	
-	mac := #File("Mach.m")
+	mac := #File("Mach.m",true)
 	macMap := mac.GetMap()
 	LoadLexMachine(macMap.Get(),mac.Size()) 
 
