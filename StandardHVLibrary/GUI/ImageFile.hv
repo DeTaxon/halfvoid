@@ -43,6 +43,14 @@ TImageFile := class extend TGCObject
 			}
 		}
 	}
+
+	CreateImage := !(char^ lay) -> Image^
+	{
+		assert(lay == "RGBA")
+		result = new Image()
+		result.CreateBlank(itWidth,itHeight)
+		StoreToMemory(lay,result.GetPointer())
+	}
 }
 		// end := StringEnd(itFile.objName)
 

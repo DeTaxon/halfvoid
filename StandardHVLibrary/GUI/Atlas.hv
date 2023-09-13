@@ -71,7 +71,7 @@ ImageAtlas := class extend TGCObject
 
 	imageData := u8^
 
-	images := List.{Tuple.{u8^,int,int}}
+	images := List.{Image^}
 
 	this := !(int width, int height, int maxImages = 64) -> void
 	{
@@ -103,10 +103,28 @@ ImageAtlas := class extend TGCObject
 		rct := ref rectangles[newId]
 		assert(rct.was_packed != 0)
 
-		newImage := malloc(imgFile.itWidth*imgFile.itHeight*4)->{u8^}
-		imgFile.StoreToMemory("RGBA",newImage)
+		images.Push(imgFile.CreateImage("RGBA"))
+	}
+	AddImage := !(Image^ someImage) -> int
+	{
+		newId := usedCount
+		rectangles[usedCount].w = someImage.Width
+		rectangles[usedCount].h = someImage.Height
+		usedCount += 1
 
-		images.Emplace(newImage,imgFile.itWidth,imgFile.itHeight)
+		nodes := Vector.{stbrp_node}
+		nodes.Resize(128)
+
+		ctx := new stbrp_context
+		defer delete ctx
+
+		stbrp_init_target(ctx,atlasW,atlasH,nodes.GetPointer(),nodes.Size())
+		stbrp_pack_rects(ctx,rectangles.GetPointer(),rectangles.Size())
+
+		rct := ref rectangles[newId]
+		assert(rct.was_packed != 0)
+
+		images.Push(someImage)
 	}
 
 	Finish := !(VulkanInstance^ inst) -> void
@@ -116,10 +134,10 @@ ImageAtlas := class extend TGCObject
 
 		for it,i : images
 		{
-			for j : it.2
+			for j : it.Height
 			{
 				rct := ref rectangles[i]
-				memcpy(imageData[(rct.x + rct.y*atlasW)*4 + j*atlasW*4]&,it.0[j*it.1*4]&,it.1*4)
+				memcpy(imageData[(rct.x + rct.y*atlasW)*4 + j*atlasW*4]&,it.GetPointer()->{u8^}[j*it.Width*4]&,it.Width*4)
 			}
 		}
 
