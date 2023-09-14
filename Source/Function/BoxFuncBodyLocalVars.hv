@@ -63,6 +63,13 @@ AppendClass BoxFuncBody
 
 				LocalVarsDeferChecks.Push(defGuard)
 
+				objsI := CheckExeDownList
+				objsI.Push(defGuard.CreateVarCall())
+				objsI.Push(GBoolTrue)
+				setTrue := CreateFuncCall(StringSpan("="),objsI)
+
+				it.createVar.Push(setTrue)
+
 				objs := CheckExeDownList
 				objs.Push(access)
 				destrCall := GFuncGCSetNull.CreateCall(objs)

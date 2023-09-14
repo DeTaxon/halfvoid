@@ -23,13 +23,29 @@ VClass := class
 		printf("hi\n")
 	}
 	Test2 := virtual false
+
+	"for" := !() -> !()&->int
+	{
+		lmb := () ==> int
+		{
+			for i : 5
+			{
+				yield i
+			}
+		}
+		result = lmb.Capture()
+		printf("hm %i\n",result.RefValue)
+	}
 }
 main := !(char^[] args) -> int
 {
-	//printf("hello worlds\n")
-	x := VClass^
-	y := 2 + 2
-	x.Test2
+	//tst := VClass
+	//for i : tst
+	//{
+	//	printf("hey %i\n",i)
+	//}
+
+	c := new TGCObject
 	return 0
 }
 
