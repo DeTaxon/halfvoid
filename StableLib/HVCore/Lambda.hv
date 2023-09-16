@@ -63,7 +63,6 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPt
 				}
 			}
 		}
-
 		return newLambda
 	}
 	Destroy := virtual !() -> void
