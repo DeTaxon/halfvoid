@@ -150,7 +150,6 @@ BoxArrayHolder := class extend BoxExeObj
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(bs.GetArray(vals.Size())))
 		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
-		cnsts.Destroy()
 
 		if resCall == null
 			debugToken.EmitError("could not create array, function ![] not found")

@@ -94,7 +94,7 @@ ExchangeArrayHolderToArrayView := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
 	{
-		if not obj is BoxArrayHolder
+		if obj is not BoxArrayHolder
 			return CmpNoExchange
 		if to is not TypeArrayView
 			return CmpNoExchange
@@ -112,7 +112,16 @@ ExchangeArrayHolderToArrayView := class extend ExchangeUnit
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
-		return obj->{BoxArrayHolder^}.createUse(expType.Base)
+		arrBox := obj->{BoxArrayHolder^}
+		if arrBox.GetArraySize() == 0
+		{
+			objs := CheckExeDownList
+			cnsts := List.{BoxExeConstObj^}
+			cnsts.Push(GetConstType(expType.Base))
+			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
+			return resFunc.CreateCall()
+		}
+		return arrBox.createUse(expType.Base)
 	}
 }
 ExchangeNullptrToArrayView := class extend ExchangeUnit
