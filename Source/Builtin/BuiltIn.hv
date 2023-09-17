@@ -8,4 +8,5 @@ CreateBuiltins := !() -> void
 	CreateBuildInTools()
 	CreateBuiltInVec()
 	CreateBuiltInVoid()
+	CreateBuiltinsArrayViews()
 }

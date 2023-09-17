@@ -2,33 +2,78 @@
 CreateBuiltinsArrayViews := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
+
+	bSpace.Templates[StringSpan("==")].Push(new BuiltInArrayViewCmpVoidP(true))
+	bSpace.Templates[StringSpan("!=")].Push(new BuiltInArrayViewCmpVoidP(false))
 }
 
 BuiltInArrayViewCmpVoidP := class extend BoxFuncTemplate
 {
+	m_isEq := bool
+	this := !(bool isEq) -> void
+	{
+		m_isEq = isEq
+	}
 	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 2
 			return null
-		a := objs[0].GetType()
-		if a is in TypePoint or a is TypeArr
+
+		if objs[0].GetType() is not TypeArrayView and objs[1].GetType() is not TypeArrayView
+			return null
+
+
+		for it : objs
 		{
-			a2 := a.Base.GetPoint()
-			if a is in TypePoint and a.Base is TypeClass
-			{
-				if a.Base->{TypeClass^}.ToClass.IsViewType()
-				{
-					return null
-				}
-			}
-			return GetFuncType(2,![a2,GTypeInt],null,a.Base,true,false)
+			if objs[0].GetType() != GTypeVoidP and objs[0].GetType() is not TypeArrayView
+				return null
 		}
-		return null
+		return GetFuncType(2,![objs[0].GetType(),objs[1].GetType()],null,GTypeBool,false,false)
+
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
-		return new BuiltInPointGetItem(tp)
+		return new BuiltInArrayViewCmp(tp,m_isEq)
 	}
 }
 
+BuiltInArrayViewCmp := class extend BoxFuncCommon
+{
+	m_isEq := bool
+	this := !(TypeFunc^ iType, bool isEq) -> void
+	{
+		SetType(iType)
+		m_isEq = isEq
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
+
+		f^ << "%TLeft" << resId << " = bitcast "
+		lst[0].GetType().PrintType(ctx)
+		f^ << " "
+		lst[0].PrintUse(ctx)
+		f^ << " to i8*\n"
+
+		f^ << "%TRight" << resId << " = bitcast "
+		lst[1].GetType().PrintType(ctx)
+		f^ << " "
+		lst[1].PrintUse(ctx)
+		f^ << " to i8*\n"
+	
+		f^ << "%T" << resId << " = "
+		if m_isEq
+		{
+			f^ << "icmp eq"
+		}else{
+			f^ << "icmp ne"
+		}
+		f^ << " i8* %TLeft" << resId << " , %TRight" << resId
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 

@@ -44,6 +44,7 @@ main := !(char^[] args) -> int
 	//{
 	//	printf("hey %i\n",i)
 	//}
+	printf("ham %i\n",args != null)
 	printf("hm %i\n",args.Size())
 	printf("hmmm %s\n",args[^])
 
