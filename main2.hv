@@ -19,20 +19,16 @@
 
 main := !(char^[] args) -> int
 {
-	m := FSGetFile("Mach.m")
-	bl := m.GetBlob()
+	vc := new Vector.{int}
+	tst := int[]
+	tst = vc
 
-	rg := WordDetermMachine
-	rg.LoadFromMap(bl.GetPointer(),bl.Size())
-
-	fl := FSGetFile("main2.hv")
-
-	fB := fl.GetBlob()
-
-	printf("after %p %i\n",rg.IsEndNode,rg.IsEndNode&->{Vector.{int}^^}^.RefValue)
-	//rg.RegExpReadText(StringSpan(fB.GetPointer()->{char^},fB.Size()), (xx,cc) ==> {
-	//	printf("hm\n")
-	//})
+	printf("before %i\n",tst.RefValue)
+	{
+		c := tst
+		printf("at work %i\n",tst.RefValue)
+	}
+	printf("after %i\n",tst.RefValue)
 	return 0
 }
 
