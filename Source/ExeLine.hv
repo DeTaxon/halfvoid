@@ -582,7 +582,6 @@ CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> 
 			{
 				thisCase = 0
 			}else{
-				
 				excCheck := IsGonnaWorkExchange(objs[i],toType)
 				if excCheck
 				{

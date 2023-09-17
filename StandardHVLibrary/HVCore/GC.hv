@@ -33,7 +33,6 @@ TGCIObject := class
 TGCObject := class extend TGCIObject
 {
 }
-
 "=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
 {
 	itm2?.IncRef()

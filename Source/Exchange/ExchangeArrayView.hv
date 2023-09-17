@@ -1,5 +1,34 @@
 
-ExchangeArrayViewClassToArrayView := class extend ExchangeUnit
+ExchangeArrayViewToGC := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if obj.GetType() is not TypeArrayView
+			return CmpNoExchange
+	
+		if to is in TypePoint
+		{
+			if to.Base != GCType
+				return CmpNoExchange
+		}else
+		{
+			return CmpNoExchange
+		}
+		if expectResultRef and not obj.IsMem()
+			return CmpNoExchange
+
+		return 1000
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		if expectResultRef and obj.IsMem()
+		{
+			return new RefExchange(obj,expType)
+		}
+		return new PtrExchange(obj,expType)
+	}
+}
+ExchangeArrayViewClassPtrToArrayView := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
 	{
@@ -22,6 +51,78 @@ ExchangeArrayViewClassToArrayView := class extend ExchangeUnit
 				return CmpNoExchange
 		}
 
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new PtrExchange(obj,expType)
+	}
+}
+ExchangeArrayViewClassToArrayView := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if to is not TypeArrayView
+			return CmpNoExchange
+
+		bsType := obj.GetType()
+		
+		if bsType is not TypeClass
+			return CmpNoExchange
+
+		if not obj.IsMem()
+			return CmpNoExchange
+
+		toView := to->{TypeArrayView^}
+
+		if bsType != toView.viewClassType
+		{
+			fRes := TypeFight(bsType,toView.viewClassType)
+			if fRes != toView.viewClassType
+				return CmpNoExchange
+		}
+
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new PtrExchange(new UnrefFuncCall(obj),expType)
+	}
+}
+ExchangeArrayHolderToArrayView := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if not obj is BoxArrayHolder
+			return CmpNoExchange
+		if to is not TypeArrayView
+			return CmpNoExchange
+
+		holder := obj->{BoxArrayHolder^}
+		typ := to->{TypeArrayView^}
+
+		resExchange := 0
+
+		for it : holder.vals
+		{
+			resExchange = max(resExchange,TypePriorCmp(it,typ.Base,false))
+		}
+		return resExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return obj->{BoxArrayHolder^}.createUse(expType.Base)
+	}
+}
+ExchangeNullptrToArrayView := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if to is not TypeArrayView
+			return CmpNoExchange
+		if obj != GObjNull
+			return CmpNoExchange
 		return 0
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^

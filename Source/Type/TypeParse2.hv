@@ -296,6 +296,10 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 			{
 				dwnType = tp.Base
 			}
+			if tp? is TypeArrayView
+			{
+				dwnType = tp.Base
+			}
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null

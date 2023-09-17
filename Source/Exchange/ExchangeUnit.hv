@@ -31,6 +31,10 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeNullToPtr)
 	ExchangeList.Push(new ExchangeLambdaFromHolder)
 	ExchangeList.Push(new ExchangeEnum)
+	ExchangeList.Push(new ExchangeArrayViewClassPtrToArrayView)
 	ExchangeList.Push(new ExchangeArrayViewClassToArrayView)
+	ExchangeList.Push(new ExchangeArrayHolderToArrayView)
+	ExchangeList.Push(new ExchangeNullptrToArrayView)
+	ExchangeList.Push(new ExchangeArrayViewToGC)
 }
 

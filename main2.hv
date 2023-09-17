@@ -16,39 +16,23 @@
 //	}
 //}
 
-VClass := class
-{
-	Test := virtual !() -> void
-	{
-		printf("hi\n")
-	}
-	Test2 := virtual false
 
-	"for" := !() -> !()&->int
-	{
-		lmb := () ==> int
-		{
-			for i : 5
-			{
-				yield i
-			}
-		}
-		result = lmb.Capture()
-		printf("hm %i\n",result.RefValue)
-	}
-}
 main := !(char^[] args) -> int
 {
-	//tst := VClass
-	//for i : tst
-	//{
-	//	printf("hey %i\n",i)
-	//}
-	printf("ham %i\n",args != null)
-	printf("hm %i\n",args.Size())
-	printf("hmmm %s\n",args[^])
+	m := FSGetFile("Mach.m")
+	bl := m.GetBlob()
 
-	c := new TGCObject
+	rg := WordDetermMachine
+	rg.LoadFromMap(bl.GetPointer(),bl.Size())
+
+	fl := FSGetFile("main2.hv")
+
+	fB := fl.GetBlob()
+
+	printf("after %p %i\n",rg.IsEndNode,rg.IsEndNode&->{Vector.{int}^^}^.RefValue)
+	//rg.RegExpReadText(StringSpan(fB.GetPointer()->{char^},fB.Size()), (xx,cc) ==> {
+	//	printf("hm\n")
+	//})
 	return 0
 }
 

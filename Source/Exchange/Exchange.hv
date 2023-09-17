@@ -22,33 +22,33 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 		assert(false)
 	}
 
-	if obj is BoxArrayHolder 
-	{
-		arr := obj->{BoxArrayHolder^}
+	//if obj is BoxArrayHolder 
+	//{
+	//	arr := obj->{BoxArrayHolder^}
 
-		if IsViewType(expType)
-		{
-			bsExp := GetViewBaseType(expType)
+	//	if expType is TypeArrayView
+	//	{
+	//		bsExp := expType.Base
 
-			for it,i : arr.vals
-			{
-				if it.GetType() != bsExp
-				{
-					exc := GetExchange(it,bsExp)
-					if exc != null
-					{
-						delete exc
-					}else{
-						return null
-					}
-				}
-			}
-			return arr.CreateViewArray(expType)
-		}
+	//		for it,i : arr.vals
+	//		{
+	//			if it.GetType() != bsExp
+	//			{
+	//				exc := GetExchange(it,bsExp)
+	//				if exc != null
+	//				{
+	//					delete exc
+	//				}else{
+	//					return null
+	//				}
+	//			}
+	//		}
+	//		return arr.CreateViewArray(expType)
+	//	}
 
-		if arr.GetArraySize() != 0 and arr.GetArrayType() == expType
-			return arr.CreateDefaultUse()
-	}
+	//	if arr.GetArraySize() != 0 and arr.GetArrayType() == expType
+	//		return arr.CreateDefaultUse()
+	//}
 
 	objs := CheckExeDownList
 	objs.Push(obj)

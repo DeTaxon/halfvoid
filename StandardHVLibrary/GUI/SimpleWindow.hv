@@ -158,7 +158,7 @@ SimpleWindow := class extend GLFWWindow
 		
 		renderPassAttms := VkRenderPassAttachmentBeginInfo()
 		renderPassAttms.attachmentCount = 1
-		renderPassAttms.pAttachments = vInstance.surfaceImageViews[imgNumber]&
+		renderPassAttms.pAttachments = vInstance.surfaceImageViews^[imgNumber]&
 		beginInfo.pNext = renderPassAttms&
 
 		vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE)
