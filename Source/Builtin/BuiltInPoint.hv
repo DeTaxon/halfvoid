@@ -60,7 +60,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 		if not objs[0].IsMem()
 			return null
 		a := objs[0].GetType()
-		if a is in TypePoint
+		if a is in TypePoint or a is TypeArrayView
 		{
 			return GetFuncType(2,![a,a],![true,false],GTypeVoid,false,false)
 		}

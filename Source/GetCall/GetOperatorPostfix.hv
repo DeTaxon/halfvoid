@@ -64,6 +64,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		}
 		if dObj == null
 			return null
+		if dObj.GetType() is TypeArrayView
+			dObj = new PtrExchange(dObj,dObj.GetType()->{TypeArrayView^}.viewClassType.GetPoint())
 		Objs.Push(dObj)
 		SyntaxCompress(itm.Down.Right,PriorityData)
 		CheckFuncCallBrackets(itm.Down.Right,Objs)

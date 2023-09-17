@@ -50,6 +50,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GetExeString(StringSpan("Array"))
 		if typ is in TypeEnum
 			return GetExeString(StringSpan("Enum"))
+		if typ is TypeArrayView
+			return GetExeString(StringSpan("ArrayView"))
 		assert(false)
 		return null
 	}

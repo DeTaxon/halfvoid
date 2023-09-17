@@ -299,14 +299,8 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null
-			tpys := List.{BoxExeConstObj^}
-			tpys.Push(GetConstType(dTyp2))
-			assert(ArrayViewTemplate != null)
-			rClass := ArrayViewTemplate.GetClass(tpys)
-			assert(rClass != null)
-			tpys.Destroy()
+			return dTyp2.GetArrayView()
 
-			return rClass.ItType.GetPoint()
 		}
 
 		baseType := Type^

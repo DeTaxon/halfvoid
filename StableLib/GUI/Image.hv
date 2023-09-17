@@ -1,0 +1,40 @@
+Image := class extend TGCObject
+{
+	Data := u8^
+	Width := int
+	Height := int
+
+	this := !() -> void
+	{
+	}
+
+	CreateBlank := !(int w, int h) -> void
+	{
+		Data = malloc(w*h*4)->{u8^} //TODO layouts RGBA RGB RG R R8 R16 RGB_half_float idk
+		Width = w
+		Height = h
+	}
+	GetPointer := !() -> u8^
+	{
+		return Data
+	}
+	ForEachPixelU8 := !(!(int,int,u8^)&->void cb) -> void
+	{
+		for i : Height
+		{
+			for j : Width
+			{
+				cb(j,i,Data[j + i*Width]&)
+			}
+		}
+	}
+
+	Destroy := virtual !() -> void
+	{
+		if Data != null
+		{
+			free(Data)
+			Data = null
+		}
+	}
+}

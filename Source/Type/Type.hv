@@ -6,6 +6,7 @@ Type := class
 	MetaId := int
 	Base := Type^
 	AsPoint := Type^
+	AsArrayView := Type^
 	ItHash := int
 	arrays := AVLMap.{int,Type^}
 
@@ -18,6 +19,23 @@ Type := class
 		if AsPoint == null
 			AsPoint = new TypePoint(this&)
 		return AsPoint
+	}
+	GetArrayView := virtual !() -> Type^
+	{
+		if AsArrayView == null
+		{
+			res := new TypeArrayView(this&)
+
+			tpys := List.{BoxExeConstObj^}
+			tpys.Push(GetConstType(this&)) //TODO maybe use temp obj on stack
+			assert(ArrayViewTemplate != null)
+			rClass := ArrayViewTemplate.GetClass(tpys)
+			assert(rClass != null)
+			res.viewClassType = rClass.ItType->{TypeClass^}
+
+			AsArrayView = res
+		}
+		return AsArrayView
 	}
 	GetArray := virtual !(int len) -> Type^
 	{
@@ -272,6 +290,51 @@ TypeVoidPoint := class extend TypePoint
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.writeStream^ << "i8*"
+	}
+}
+TypeArrayView := class extend Type
+{
+	viewClassType := TypeClass^
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+		ItHash = typeHashIterator
+		typeHashIterator += 1
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "ArrayView"
+	}
+	GetAlign := virtual !() -> int
+	{
+		return GArchBitSize div 8
+	}
+	GetSize := virtual !() -> int
+	{
+		return GArchBitSize div 8
+	}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		viewClassType.PrintType(ctx)
+		ctx.writeStream^ << "*"
+	}
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Base.PrintDebugName(ctx)
+		ctx.writeStream^ << "[]"
+	}
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "!" << MetaId << " = !DIDerivedType(tag:DW_TAG_pointer_type, baseType: !" << Base.MetaId << " ,size: " << GArchBitSize << ", align: " << GArchBitSize << ")\n"
+	}
+	NotifyUse := virtual !() -> void
+	{
+		Base.NotifyUse()
 	}
 }
 

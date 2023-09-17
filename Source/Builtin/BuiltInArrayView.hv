@@ -1,0 +1,34 @@
+
+CreateBuiltinsArrayViews := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+}
+
+BuiltInArrayViewCmpVoidP := class extend BoxFuncTemplate
+{
+	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		a := objs[0].GetType()
+		if a is in TypePoint or a is TypeArr
+		{
+			a2 := a.Base.GetPoint()
+			if a is in TypePoint and a.Base is TypeClass
+			{
+				if a.Base->{TypeClass^}.ToClass.IsViewType()
+				{
+					return null
+				}
+			}
+			return GetFuncType(2,![a2,GTypeInt],null,a.Base,true,false)
+		}
+		return null
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return new BuiltInPointGetItem(tp)
+	}
+}
+
+
