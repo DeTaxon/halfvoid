@@ -178,8 +178,6 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 		strm.Write(itToken.Line.Line&,4)
 		
 		size := itToken.Line.Attributes.Size() ->{int}
-		if size != 0
-			printf("wut %i\n",size)
 		strm.Write(size&,4)
 		if size != 0
 		{
