@@ -42,7 +42,7 @@ BoxYield := class extend BoxReturn
 		yVar := CurrentFunc.GetYieldStateParam()
 
 		objs := CheckExeDownList
-		objs.Push(yVar.CreateCall())
+		objs.Push(yVar.CreateVarCall())
 		objs.Push(GetExeInt(yieldVal))
 
 		callSet = CreateFuncCall(StringSpan("="),objs)

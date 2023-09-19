@@ -2,7 +2,7 @@ AppendClass BoxFuncBody
 {
 	Yields := List.{BoxYield^}
 	YieldStart := BoxLabel^
-	YieldStateInt := ParamFunc^
+	YieldStateInt := LocalVar^
 	//YieldTupleVar := ParamFunc^
 	YieldFinilize := BoxExeObj^
     
@@ -51,17 +51,12 @@ AppendClass BoxFuncBody
 			}
 		}
 	}
-	GetYieldStateParam := !() -> ParamFunc^
+	GetYieldStateParam := !() -> LocalVar^
 	{
 		if YieldStateInt == null
 		{
 			assert(CurrentFunc == this&)
-
-			Objs := CheckExeDownList
-			Objs.Push(Params[0].CreateVarCall())
-
-			yGet := TemplateInternalGetYieldState.CreateCall(Objs)
-			YieldStateInt = new FuncResultParam(yGet)
+			YieldStateInt = new LocalVar(StringSpan(".anon"),GTypeInt,true,false)
 		}
 		return YieldStateInt
 	}
@@ -86,7 +81,7 @@ AppendClass BoxFuncBody
 		objs := CheckExeDownList
 		cnsts := List.{BoxExeConstObj^}
 
-		objs.Push(YieldStateInt.CreateCall())
+		objs.Push(YieldStateInt.CreateVarCall())
 		objs.Push(GetExeInt(-1))
 		YieldFinilize = CreateFuncCall(StringSpan("="),objs,cnsts)
 
@@ -110,7 +105,7 @@ AppendClass BoxFuncBody
 			return void
 		f := ctx.writeStream
 
-		cl := BoxFuncCall(YieldStateInt) //todo??
+		cl := YieldStateInt.CreateVarCall() //todo??
 		cl.PrintPre(ctx)
 
 		f^ << "switch i32 "

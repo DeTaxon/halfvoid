@@ -242,8 +242,15 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if newFunc.IsGenerator()
 		{
-
 			newFunc.LocalVariablesForYield(cleanType->{TypeClass^}.ToClass)
+
+			yieldStatePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("yieldState"))
+			assert(yieldStatePath != null)
+
+			objs3 := CheckExeDownList
+			objs3.Push(GetExchange2(lambFuncThis.CreateVarCall(),cleanType.GetPoint(),false))
+			getState := yieldStatePath.CreateCall(objs3)
+			newFunc.YieldStateInt.SetCall(getState)
 		}
 
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
