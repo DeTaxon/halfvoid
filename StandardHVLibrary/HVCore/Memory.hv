@@ -16,7 +16,7 @@ internalHVNewConstructed := !(@T^ obj, args...) -> T^
 	result.this(args...)
 }
 
-internalHVDelete := !(@T^ x) -> void
+internalHVDelete := !(void^ x) -> void
 {
 	//if #Tracy()
 	//{	

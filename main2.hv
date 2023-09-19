@@ -17,6 +17,15 @@
 //}
 
 
+TestClass := class extend TGCObject
+{
+	subObj := int[]
+	Destroy := virtual !() -> void
+	{
+		printf("huh\n")
+	}
+}
+
 main := !(char^[] args) -> int
 {
 	vc := new Vector.{int}
@@ -25,8 +34,11 @@ main := !(char^[] args) -> int
 
 	printf("before %i\n",tst.RefValue)
 	{
-		c := tst
-		printf("at work %i\n",tst.RefValue)
+		//c := tst
+		//printf("at work %i\n",tst.RefValue)
+		d := TestClass
+		d.subObj = tst
+		printf("at work %i %i\n",tst.RefValue, d.subObj->IsGCPointer)
 	}
 	printf("after %i\n",tst.RefValue)
 	return 0

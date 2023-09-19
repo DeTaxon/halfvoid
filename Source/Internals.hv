@@ -2,7 +2,7 @@ TemplateInternalInitClass := BoxFuncTemplate^
 //TemplateInternalVirtualCall := BoxFuncTemplate^
 TemplateInternalNewOne := BoxFuncTemplate^
 TemplateInternalNewOneConstructed := BoxFuncTemplate^
-TemplateInternalDelete := BoxFuncTemplate^
+FunctionInternalDelete := BoxFunc^
 
 TemplateInternalCreateLambda := BoxFuncTemplate^
 TemplateInternalLambdaCall := BoxFuncTemplate^
@@ -91,7 +91,7 @@ InitInternals := !() -> void
 	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
 	TemplateInternalNewOne = intGetTemplate("internalHVNew")
 	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
-	TemplateInternalDelete = intGetTemplate("internalHVDelete")
+	FunctionInternalDelete = intGetFunc("internalHVDelete")
 
 	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
 	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")

@@ -54,7 +54,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		objs := CheckExeDownList
 		objs.Push(dwn)
 		cnsts := List.{BoxExeConstObj^}
-		fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
-		return fnc.CreateCall(objs)
+		//fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
+		return FunctionInternalDelete.CreateCall(objs)
 	}
 }

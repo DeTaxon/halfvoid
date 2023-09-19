@@ -300,6 +300,8 @@ CLib := class extend ModuleInterface
 				dt << "}\n"
 			}
 		}
+		dt << "if lib == null\n"
+		dt << "		return void\n"
 		for it, ind : itFuncs
 		{
 			if ind == initFuncName

@@ -57,12 +57,3 @@ BoxUnit := class
 	}
 
 }
-
-IsGCPtr := !(Type^ tp) -> bool
-{
-	return tp is in TypePoint and TypeFight(tp.Base,GCType) == GCType
-}
-IsGCType := !(Type^ tp) -> bool
-{
-	return tp is in TypeClass and TypeFight(tp,GCType) == GCType
-}

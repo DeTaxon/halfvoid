@@ -1,5 +1,7 @@
 IsGCPtr := !(Type^ typ) -> bool
 {
+	if typ is TypeArrayView
+		return true
 	if typ is in TypePoint and typ.IsComplexReturn()
 		return true
 	return false
@@ -9,4 +11,9 @@ IsGCClass := !(Type^ typ) -> bool
 	if typ is in TypeClass and TypeFight(typ,GCType) == GCType
 		return true
 	return false
+}
+
+IsGCType := !(Type^ tp) -> bool
+{
+	return tp is in TypeClass and TypeFight(tp,GCType) == GCType
 }

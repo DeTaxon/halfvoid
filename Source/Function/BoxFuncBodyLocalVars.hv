@@ -51,7 +51,8 @@ AppendClass BoxFuncBody
 					InternalsHatch.Await()
 					noObjs := CheckExeDownList
 					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall)
+					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
+					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,destrCall2)
 				}
 
 			}
@@ -73,7 +74,7 @@ AppendClass BoxFuncBody
 				objs := CheckExeDownList
 				objs.Push(access)
 				destrCall := GFuncGCSetNull.CreateCall(objs)
-				createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall)
+				createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,null)
 			}
 		}
 	}
@@ -217,14 +218,16 @@ FuncLocalCallIfTrue := class extend BoxExeObj
 {
 	GetVar := BoxExeObj^
 	DownCall := BoxExeObj^
+	DownCall2 := BoxExeObj^
 	TrueBranch := BoxLabel2
 	FalseBranch := BoxLabel2
 	storeFalse := BoxExeObj^
 
-	this := !(BoxExeObj^ varPtr,BoxExeObj^ dwn) -> void
+	this := !(BoxExeObj^ varPtr,BoxExeObj^ dwn,BoxExeObj^ dwn2) -> void
 	{
 		GetVar = varPtr
 		DownCall = dwn
+		DownCall2 = dwn2
 		TrueBranch."this"()
 		FalseBranch."this"()
 
@@ -242,6 +245,7 @@ FuncLocalCallIfTrue := class extend BoxExeObj
 		PrintBranch(ctx,GetVar,TrueBranch&,FalseBranch&)
 		TrueBranch.PrintLabelCreate(ctx)
 		DownCall.PrintDefaultUse(ctx)
+		DownCall2?.PrintDefaultUse(ctx)
 		storeFalse.PrintDefaultUse(ctx)
 		FalseBranch.PrintGo(ctx)
 		FalseBranch.PrintLabelCreate(ctx)
