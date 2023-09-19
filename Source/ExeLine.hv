@@ -465,7 +465,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	defer oneGonnaOnly = false
 
 	objType := obj.GetType()
-	isMem := obj.IsMem() ?: 1 : 0;
+	isMem := obj.IsMem() ?: 1 : 0
 
 	return isGonnaWorkCache[isMem][objType]?[toType]?
 

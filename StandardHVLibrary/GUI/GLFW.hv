@@ -74,7 +74,7 @@ GLFWWindow := class
 	M2Pressed := bool
 	MousePressedInner := !(int button, int action, int mods) -> void
 	{
-		buttonNum := 0;
+		buttonNum := 0
 		switch button
 		{
 			case GLFW_MOUSE_BUTTON_LEFT

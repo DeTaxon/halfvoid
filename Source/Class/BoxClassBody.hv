@@ -334,6 +334,8 @@ BoxClassBody := class extend BoxClassPoison
 							tmpl.SetName(name)
 							DefaultSpace.MethodTemplates[name].Push(tmpl)
 						}
+						if itm.Line.Attributes.Size() != 0
+							printf("hmmm %s\n",itm.Line.Attributes.GetString().Str())
 					}else
 					{
 						if itm.Down?.GetValue() == "fake"

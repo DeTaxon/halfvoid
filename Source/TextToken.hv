@@ -111,6 +111,7 @@ FileLine := class
 {
 	File := BoxFile^
 	Line := int
+	Attributes := StringSpan
 
 	this := !(BoxFile^ fil) -> void
 	{

@@ -212,10 +212,9 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			//new line
 			itLine = null
 		}
-		//if a == 21 {
-		//	//todo: replace
-		//	// attrs
-		//}
+		if a == 21 {
+			itLine.Attributes = tok[1..0]
+		}
 		prevId = a
 	})
 	UniteSkobs(treeStart)

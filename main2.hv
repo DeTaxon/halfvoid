@@ -17,30 +17,25 @@
 //}
 
 
-TestClass := class extend TGCObject
+TestClass := class .{@T}
 {
-	subObj := int[]
-	Destroy := virtual !() -> void
+	Test := virtual !() -> void ; TemplateResist
 	{
-		printf("huh\n")
+		val := static 4
+		printf("huh %p\n",val&)
 	}
 }
 
 main := !(char^[] args) -> int
 {
-	vc := new Vector.{int}
-	tst := int[]
-	tst = vc
-
-	printf("before %i\n",tst.RefValue)
-	{
-		//c := tst
-		//printf("at work %i\n",tst.RefValue)
-		d := TestClass
-		d.subObj = tst
-		printf("at work %i %i\n",tst.RefValue, d.subObj->IsGCPointer)
-	}
-	printf("after %i\n",tst.RefValue)
+	a := TestClass.{int}
+	b := TestClass.{float}
+	c := TestClass.{double}
+	d := TestClass.{void^}
+	a.Test()
+	b.Test()
+	c.Test()
+	d.Test()
 	return 0
 }
 

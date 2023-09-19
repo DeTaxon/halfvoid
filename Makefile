@@ -59,7 +59,7 @@ $(CurrentLex): LexBuilder/main.hv $(wildcard *.pr)
 Mach.m: $(CurrentLex)
 	$(CurrentLex)
 SizeCheck:
-	nm --print-size --size-sort --radix=d ./halfvoid  | less
+	nm --print-size --size-sort --radix=d --reverse-sort ./halfvoid  | less
 
 halfvoid:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 StableLib/ -C1 Source/ -o out.ll
