@@ -1,89 +1,123 @@
-TryParseFunction := !(Token^ obj) -> BoxUnit^
+PFunctionParser := class
 {
+	found := bool
+	isTemplate := bool
 	Attr := FuncAttributes
-
-	if obj == null or obj.Down == null return null
-
-	iter := obj.Down
-
 	decorators := HybridQueue.{TokenTemplateType^,10}
-	
-	while iter is TokenTemplateType
-	{
-		decorators.Push(iter->{TokenTemplateType^})
-
-		iter = iter.Right
-		if iter == null return null
-	}
-
-	if iter == null
-		return null
-
-	if iter.GetValue() == "inline"
-	{
-		iter = iter.Right
-		Attr.IsInline = true
-		assert(iter != null)
-	}
-
-	if iter.GetValue() != "!"
-		return null
-	
-	iter = iter.Right
-	if iter == null return null
-
-	if iter.GetValue() != "()"
-		return null
-
-	brackets := iter
-
-	isTemplate := ContainTemplateObj(brackets)
-
-	iter = iter.Right
-	if iter == null return null
-
+	brackets := Token^
 	constToken := Token^
-
-	if iter.GetValue() == "."
-	{
-		iter = iter.Right
-		if iter.GetValue() != "{}"
-			return null
-		constToken = iter
-		iter = iter.Right
-	}
-
 	resultToken := Token^
+	bodyToken := Token^
 
-	if iter.GetValue() == "->" 
+	this := !(Token^ obj) -> void
 	{
-		iter = iter.Right
-		if iter == null return null
 
-		resultToken = iter
+		if obj == null or obj.Down == null 
+			return void
 
-		if iter.GetValue() == "ref"
+		iter := obj.Down
+
+		
+		while iter is TokenTemplateType
 		{
+			decorators.Push(iter->{TokenTemplateType^})
+
 			iter = iter.Right
-			if iter == null return null
+			if iter == null 
+				return void
 		}
 
+		if iter == null
+			return void
+
+		if iter.GetValue() == "inline"
+		{
+			iter = iter.Right
+			Attr.IsInline = true
+			assert(iter != null)
+		}
+
+		if iter.GetValue() != "!"
+			return void
+		
 		iter = iter.Right
-		if iter == null return null
+		if iter == null 
+			return void
+
+		if iter.GetValue() != "()"
+			return void
+
+		brackets = iter
+
+		isTemplate = ContainTemplateObj(brackets)
+
+		iter = iter.Right
+		if iter == null 
+			return void
+
+		if iter.GetValue() == "."
+		{
+			iter = iter.Right
+			if iter.GetValue() != "{}"
+				return void
+			constToken = iter
+			iter = iter.Right
+		}
+
+
+		if iter.GetValue() == "->" 
+		{
+			iter = iter.Right
+			if iter == null 
+				return void
+
+			resultToken = iter
+
+			if iter.GetValue() == "ref"
+			{
+				iter = iter.Right
+				if iter == null 
+					return void
+			}
+
+			iter = iter.Right
+			if iter == null 
+				return void
+		}
+
+
+		if iter.GetValue() != "{}" 
+			return void
+
+		bodyToken = iter
+
+		found = true
+		return void
+
 	}
-
-
-	if iter.GetValue() != "{}" return null
-
-	asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,iter)->{BoxFuncTemplate^}
-
-	for it : decorators
+	IsFound := !() -> bool
 	{
-		asTempl = new BoxFuncTemplateDecorator(asTempl,it)
+		return found
 	}
+	CreateObject := !() -> BoxUnit^
+	{
+		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken)->{BoxFuncTemplate^}
 
-	return asTempl
+		for it : decorators
+		{
+			asTempl = new BoxFuncTemplateDecorator(asTempl,it)
+		}
 
+		return asTempl
+	}
+}
+
+TryParseFunction := !(Token^ obj) -> BoxUnit^
+{
+	c := PFunctionParser(obj)
+	if not c.IsFound()
+		return null
+	return c.CreateObject()
 }
 
 ContainTemplateObj := !(Token^ itm) -> bool
