@@ -299,8 +299,40 @@ BoxClassBody := class extend BoxClassPoison
 						}
 					}
 
-					asFunc = TryParseFunction(itm)
-					if asFunc != null
+					fncParser := PFunctionParser(itm)
+					fncUsed := false
+
+					if fncParser.IsFound()
+					{
+						if itm.Line?.Attributes.Size() != 0 and not isPoison and TemplateParent != null
+						{
+							
+							prepData := ref TemplateParent->{BoxClassTemplateBody^}.ResistFunctions[itm.Line][name]
+
+							printf("Hey %p\n",prepData)
+
+							if prepData == null
+							{
+								asFunc = fncParser.CreateObject()
+								if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+								{
+									asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+								}
+
+								assert(asFunc != null and asFunc is in BoxFuncBody)
+								prepData = asFunc
+							}else{
+								asFunc = new ResistFunc(prepData->{BoxFunc^},ItType)
+							}
+
+						}else{
+							asFunc = fncParser.CreateObject()
+						}
+					}
+
+					if fncUsed
+					{
+					}else if asFunc != null
 					{
 						if isPoison
 						{
@@ -334,8 +366,6 @@ BoxClassBody := class extend BoxClassPoison
 							tmpl.SetName(name)
 							DefaultSpace.MethodTemplates[name].Push(tmpl)
 						}
-						if itm.Line.Attributes.Size() != 0
-							printf("hmmm %s\n",itm.Line.Attributes.GetString().Str())
 					}else
 					{
 						if itm.Down?.GetValue() == "fake"

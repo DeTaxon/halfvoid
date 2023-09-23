@@ -19,7 +19,7 @@
 
 TestClass := class .{@T}
 {
-	Test := virtual !() -> void ; TemplateResist
+	Test := !() -> void ; TemplateResist
 	{
 		val := static 4
 		printf("huh %p\n",val&)

@@ -21,6 +21,8 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 
 	ParentScope := BoxUnit^
 
+	ResistFunctions := AVLMap.{FileLine^,AVLMap.{StringSpan,BoxUnit^}}
+
 	this := !(bool isPacked,HybridQueue.{Tuple.{Token^,InheritanceType},2} parents,Token^ bdy, Token^ cnsts) -> void
 	{
 		bodyToken = bdy
@@ -30,7 +32,6 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 
 		if cnsts != null
 			SyntaxCompress(cnsts,LexHVInputVars)
-
 
 		iter := cnsts.Down
 		while iter != null

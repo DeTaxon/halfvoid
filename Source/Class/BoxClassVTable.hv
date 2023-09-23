@@ -26,11 +26,6 @@ AppendClass BoxClass
 	}
 	PrepareVTable := !(ClassBuildContext buildCtx) -> void
 	{
-		if ItName == "ImplInterface"
-		{
-			printf("hey %i\n",VTable.Size())
-		}
-
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
 			TableIdIter += 1
