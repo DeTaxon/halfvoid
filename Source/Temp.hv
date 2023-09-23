@@ -34,3 +34,26 @@ StrCopy := !(char^ a) -> char^
 
 	return Pre
 }
+
+SubStrContain := !(StringView whr, char^ subStr) -> bool
+{
+	sbSize := strlen(subStr)
+	if sbSize > whr.Size()
+		return false
+
+	trgt := whr.NonNullStr()
+	sb := subStr
+
+	i := 0
+	leftSize := whr.Size() - sbSize
+
+	while leftSize >= 0
+	{
+		if strncmp(trgt[i]&,sb,sbSize) == 0
+			return true
+		i += 1
+		leftSize -= 1
+	}
+
+	return false
+}

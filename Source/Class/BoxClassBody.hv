@@ -304,12 +304,10 @@ BoxClassBody := class extend BoxClassPoison
 
 					if fncParser.IsFound()
 					{
-						if itm.Line?.Attributes.Size() != 0 and not isPoison and TemplateParent != null
+						if itm.Line?.Attributes.Size() != 0 and SubStrContain(itm.Line.Attributes,"TemplateResist")  and not isPoison and TemplateParent != null
 						{
 							
 							prepData := ref TemplateParent->{BoxClassTemplateBody^}.ResistFunctions[itm.Line][name]
-
-							printf("Hey %p\n",prepData)
 
 							if prepData == null
 							{
@@ -322,7 +320,13 @@ BoxClassBody := class extend BoxClassPoison
 								assert(asFunc != null and asFunc is in BoxFuncBody)
 								prepData = asFunc
 							}else{
-								asFunc = new ResistFunc(prepData->{BoxFunc^},ItType)
+								probFunc := fncParser.CreateObject()
+								defer delete probFunc
+
+								assert(probFunc != null and probFunc is BoxFuncTemplateBody)
+								asTmplt := probFunc->{BoxFuncTemplateBody^}
+								assert(asTmplt.IsOneFunc())
+								asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
 							}
 
 						}else{

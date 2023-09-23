@@ -3,29 +3,27 @@ ResistFunc := class extend BoxFunc
 	base := BoxFunc^
 	resId := int
 
-	this := !(BoxFunc^ baseFunc,Type^ clsType) -> void
+	this := !(BoxFunc^ baseFunc,Type^ fncType) -> void
 	{
 		base = baseFunc
-		tp := baseFunc.GetType()
-		assert(tp != null and tp is TypeFunc)
-		tp = FuncTypeSetParam(tp->{TypeFunc^},0,clsType,true)
-		SetType(tp->{TypeFunc^})
+		SetType(fncType->{TypeFunc^})
 	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		resId = ctx.GetNewId()
-
-		ctx.writeStream^ << "%T" << resId << "  = bitcast "
+		ctx.writeStream^ << " bitcast ("
 		base.GetType().PrintType(ctx)
 		ctx.writeStream^ << "* "
 		base.PrintUse(ctx)
 		ctx.writeStream^ << " to "
 		GetType().PrintType(ctx)
-		ctx.writeStream^ << "*\n"
+		ctx.writeStream^ << "*)"
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ctx.writeStream^ << "%T" << resId
+		PrintName(ctx)
 	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
