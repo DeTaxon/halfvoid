@@ -77,66 +77,6 @@ GetPointerHash13n8 := !(void^ val) -> int
 	return res mod 13
 }
 
-internalLockMiniMutex := AtomicMutex
-internalLockMutex := Mutex^[13] 
-internalLockUsing := AVLMap.{void^,Tuple.{ConVar^,int,int}}[13]
-
-TLock := !(void^ k,int count = 1) -> void
-{
-	itHash := GetPointerHash13n8(k)
-
-	if internalLockMutex[itHash] == null
-	{
-		internalLockMiniMutex.Lock()
-		if internalLockMutex[itHash] == null
-			internalLockMutex[itHash] = new Mutex()
-		internalLockMiniMutex.Unlock()
-	}
-
-	internalLockMutex[itHash].Lock()
-	defer internalLockMutex[itHash].Unlock()
-	
-
-	if internalLockUsing[itHash].Contain(k)
-	{
-		itEnt := internalLockUsing[itHash][k]&
-		itEnt.1 += 1
-		while itEnt.2 == 0
-			itEnt.0.Wait(internalLockMutex[itHash])
-		itEnt.2 -= 1
-	}else{
-		newEnt := internalLockUsing[itHash][k]&
-		newEnt.0 = TLockPool.GetConVar()
-		newEnt.1 = 1
-		newEnt.2 = count - 1
-	}
-}
-TUnlock := !(void^ k) -> void
-{
-	itHash := GetPointerHash13n8(k)
-
-	internalLockMutex[itHash].Lock()
-	defer internalLockMutex[itHash].Unlock()
-	
-	itEnt := internalLockUsing[itHash][k]&
-	itEnt.1 -= 1
-	if itEnt.1 == 0
-	{
-		TLockPool.Release(itEnt.0)
-		itEnt = null //TODO weak pointers
-		internalLockUsing[itHash].Remove(k)
-	}else{
-		itEnt.2 += 1
-		itEnt.0.Notify()
-	}
-}
-
-// TGuard := !(void^ k = #uniq) -> void {
-// 	TLock(k)
-// } defer_tail (void^ k) {
-// 	TUnlock(k)
-// }
-
 internalBarMiniMutex := AtomicMutex
 internalBarMutex := Mutex^
 internalBarUsing := AVLMap.{void^,Tuple.{ConVar^,int}}
