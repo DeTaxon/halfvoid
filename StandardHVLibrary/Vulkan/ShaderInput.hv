@@ -235,16 +235,16 @@ TShaderInput := class
 		dsC.front.depthFailOp = VK_STENCIL_OP_KEEP
 		dsC.front.writeMask = 0
 
-		rndrFormats := u64[10]
+		rndrFormats := u32[10]
 		for it,i : itPass.itFrames
 			rndrFormats[i] = it.typeFormat
 		rndr := VkPipelineRenderingCreateInfo()
 		rndr.colorAttachmentCount = itPass.itFrames.Size()
 		rndr.pColorAttachmentFormats&->{void^^}^ = rndrFormats[0]&
-		//rndr.depthAttachmentFormat = VK_FORMAT_D16_UNORM
-		rndr.depthAttachmentFormat = VK_FORMAT_UNDEFINED //TODO
+		rndr.depthAttachmentFormat = VK_FORMAT_UNDEFINED
+		if itPass.itUseDepth
+			rndr.depthAttachmentFormat = VK_FORMAT_D16_UNORM //TODO unconst
 		rndr.stencilAttachmentFormat = VK_FORMAT_UNDEFINED //VK_FORMAT_D32_SFLOAT_S8_UINT
-		
 
 		gpC := VkGraphicsPipelineCreateInfo()
 		gpC.stageCount = 2

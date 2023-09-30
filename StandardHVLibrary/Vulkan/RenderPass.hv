@@ -13,6 +13,7 @@ TRenderPass := class extend TGCObject
 	itInstance := VulkanInstance^
 	itPass := VkRenderPass
 	itFrames := TRenderPassFrame[]
+	itUseDepth := bool
 
 	Get := !() -> VkRenderPass { return itPass }
 	CreatePass := !(VulkanInstance^ inst,TRenderPassFrame[] lst, bool useDepth) -> void
@@ -21,6 +22,7 @@ TRenderPass := class extend TGCObject
 		attmDesc := VkAttachmentDescription[11]
 
 		itFrames = lst.ToVector()
+		itUseDepth = useDepth
 
 		for i : lst.Size()
 		{
