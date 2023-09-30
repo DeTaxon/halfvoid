@@ -445,7 +445,22 @@ ModuleVulkan := class extend ModuleInterface
 						{
 							fNd := nd.Childs[3].second->{TreeNode^}
 
-							if fSt == "const " and tSt == "* "{
+							tS := StringSpan(tSt)
+
+							if tS.Size() == 0
+								return null
+							if tS[0] != '*'
+								return null
+
+							for i : tS.Size()
+							{
+								if i == 0
+									continue
+								if tS[i] != ' '
+									return null
+							}
+
+							if fSt == "const "{
 								itTypeName := GetModuleType(nd.GetValueString("type"))
 								if itTypeName == null return null
 								return itTypeName.GetPoint()

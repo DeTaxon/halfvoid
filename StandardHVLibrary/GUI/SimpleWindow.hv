@@ -91,6 +91,15 @@ SimpleWindow := class extend GLFWWindow
 
 				step1Cmd.Reset()
 				step1Cmd.Start(null,0)
+
+				bar1 := VkImageMemoryBarrier()
+				bar1.image = vInstance.surfaceImages^[surfaceIndex]
+				bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
+				bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+				bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
+				bar1.subresourceRange.levelCount = 1
+				bar1.subresourceRange.layerCount = 1
+				vInstance.Funcs.vkCmdPipelineBarrier(step1Cmd.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 				
 				StartTextDraw(step1Cmd.Get(),surfaceIndex)
 
@@ -108,6 +117,10 @@ SimpleWindow := class extend GLFWWindow
 				DrawVulkan(step1Cmd.Get(),w,h)
 
 				StopTextDraw(step1Cmd.Get())
+			
+				bar1.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+				bar1.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+				vInstance.Funcs.vkCmdPipelineBarrier(step1Cmd.Get(),VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,0,0,null,0,null,1,bar1&)
 
 				step1Cmd.Stop()
 
@@ -130,42 +143,82 @@ SimpleWindow := class extend GLFWWindow
 
 	StartTextDraw := !(VkCommandBuffer cmd,int imgNumber) -> void
 	{
-		imgBarCPre := VkImageMemoryBarrier[2]
+		//imgBarCPre := VkImageMemoryBarrier[2]
 	
-		beginInfo := VkRenderPassBeginInfo()
+		//beginInfo := VkRenderPassBeginInfo()
 	
-		clrValues := float[13]
+		//clrValues := float[13]
+	
+		//clrValues[0] = ClearColor.x
+		//clrValues[1] = ClearColor.y
+		//clrValues[2] = ClearColor.z
+		//clrValues[4] = ClearColor.w
+		//clrValues[5] = 0.0f
+		//clrValues[6] = 0.0f
+		//clrValues[7] = 1.0f
+	
+		//clrValues[8] = 0.0f
+		//clrValues[9] = 1.0f
+		//clrValues[10] = 0.0f
+		//clrValues[11] = 0.0f
+	
+		//beginInfo.renderPass = mainRenderPass.Get()
+		//beginInfo.framebuffer = vInstance.surfaceFramebuffer
+		//beginInfo.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+		//beginInfo.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
+		//beginInfo.clearValueCount = 1
+		//beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
+		//
+		//renderPassAttms := VkRenderPassAttachmentBeginInfo()
+		//renderPassAttms.attachmentCount = 1
+		//renderPassAttms.pAttachments = vInstance.surfaceImageViews^[imgNumber]&
+		//beginInfo.pNext = renderPassAttms&
+
+		//vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE)
+
+		//dpth := VkRenderingAttachmentInfo()
+		//dpth.imageView = vInstance.surfaceImageViews^[imgNumber]
+		//dpth.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		//dpth.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+		//dpth.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE
+		//dpth.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+
+		clrAtt := VkRenderingAttachmentInfo[10]
+
+		clrValues := float[4]
 	
 		clrValues[0] = ClearColor.x
 		clrValues[1] = ClearColor.y
 		clrValues[2] = ClearColor.z
 		clrValues[4] = ClearColor.w
-		clrValues[5] = 0.0f
-		clrValues[6] = 0.0f
-		clrValues[7] = 1.0f
-	
-		clrValues[8] = 0.0f
-		clrValues[9] = 1.0f
-		clrValues[10] = 0.0f
-		clrValues[11] = 0.0f
-	
-		beginInfo.renderPass = mainRenderPass.Get()
-		beginInfo.framebuffer = vInstance.surfaceFramebuffer
-		beginInfo.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
-		beginInfo.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
-		beginInfo.clearValueCount = 1
-		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
-		
-		renderPassAttms := VkRenderPassAttachmentBeginInfo()
-		renderPassAttms.attachmentCount = 1
-		renderPassAttms.pAttachments = vInstance.surfaceImageViews^[imgNumber]&
-		beginInfo.pNext = renderPassAttms&
 
-		vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE)
+		for it,i : mainRenderPass.itFrames
+		{
+			atm := ref clrAtt[i]
+			atm."this"()
+			atm.imageView = vInstance.surfaceImageViews^[imgNumber]
+			atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+			atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+			atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+			atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+			memcpy(atm.clearValue&,clrValues[0]&,4*4)
+		}
+
+		rndr := VkRenderingInfo()
+		rndr.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+		rndr.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
+		rndr.layerCount = 1
+		rndr.colorAttachmentCount = 1
+		rndr.pColorAttachments&->{void^^}^ = clrAtt[0]&
+		//rndr.pDepthAttachment = dpth&
+		//rndr.pStencilAttachment = null
+
+		vInstance.Funcs.vkCmdBeginRendering(cmd,rndr&)
 	}
 	StopTextDraw := !(VkCommandBuffer cmd) -> bool
 	{
-		vInstance.Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
+		vInstance.Funcs.vkCmdEndRendering(cmd)
+		//vInstance.Funcs.vkCmdEndRenderPass(cmd)
 	}
 
 	InitWindow := virtual !() -> GUIObject^

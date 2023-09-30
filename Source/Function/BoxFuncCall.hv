@@ -19,8 +19,8 @@ BoxFuncCall := class extend BoxExeObj
 		callObj = fnc
 		assert(callObj != null)
 
-		if callObj is BoxFuncBody
-			callObj->{BoxFuncBody^}.ParseBody()
+		if callObj is in BoxFunc
+			callObj->{BoxFunc^}.ParseBody()
 
 		empty := CheckExeDownList
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,empty)
@@ -30,8 +30,8 @@ BoxFuncCall := class extend BoxExeObj
 		callObj = fnc
 		assert(callObj != null)
 
-		if callObj is BoxFuncBody
-			callObj->{BoxFuncBody^}.ParseBody()
+		if callObj is in BoxFunc
+			callObj->{BoxFunc^}.ParseBody()
 
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs)
 	}

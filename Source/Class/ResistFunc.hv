@@ -29,4 +29,8 @@ ResistFunc := class extend BoxFunc
 	{
 		PrintFuncCallCommon(ctx,this&,resId,lst)
 	}
+	ParseBody := virtual !() -> void
+	{
+		base.ParseBody()
+	}
 }

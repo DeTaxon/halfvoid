@@ -311,23 +311,29 @@ BoxClassBody := class extend BoxClassPoison
 
 							if prepData == null
 							{
-								asFunc = fncParser.CreateObject()
-								if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+								//TLock(TemplateParent)
+								//defer TUnlock(TemplateParent)
+								if prepData == null
 								{
-									asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+									asFunc = fncParser.CreateObject()
+									if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+									{
+										asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+									}
+
+									assert(asFunc != null and asFunc is in BoxFuncBody)
+									prepData = asFunc
+									asFunc->{BoxFuncBody^}.SetName(name)
 								}
-
-								assert(asFunc != null and asFunc is in BoxFuncBody)
-								prepData = asFunc
-							}else{
-								probFunc := fncParser.CreateObject()
-								defer delete probFunc
-
-								assert(probFunc != null and probFunc is BoxFuncTemplateBody)
-								asTmplt := probFunc->{BoxFuncTemplateBody^}
-								assert(asTmplt.IsOneFunc())
-								asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
 							}
+
+							probFunc := fncParser.CreateObject()
+							defer delete probFunc
+
+							assert(probFunc != null and probFunc is BoxFuncTemplateBody)
+							asTmplt := probFunc->{BoxFuncTemplateBody^}
+							assert(asTmplt.IsOneFunc())
+							asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
 
 						}else{
 							asFunc = fncParser.CreateObject()
