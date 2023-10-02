@@ -59,16 +59,16 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 //	return x^[i]
 //}
 
-"[]" := !(TArrayView.{@T}^ x,int i) -> ref T
-{
-	assert(x != null)
-	return x^[i]
-}
-"[]" := !(Vector.{@T}^ x,int i) -> ref T
-{
-	assert(x != null)
-	return x^[i]
-}
+//"[]" := !(TArrayView.{@T}^ x,int i) -> ref T
+//{
+//	assert(x != null)
+//	return x^[i]
+//}
+//"[]" := !(Vector.{@T}^ x,int i) -> ref T
+//{
+//	assert(x != null)
+//	return x^[i]
+//}
 
 "![]" := !(args...) .{@ResType} -> ResType
 {

@@ -13,6 +13,9 @@ VkOverlayContext := class
 
 	atlasPool := TDescriptorPool^
 
+	CmdGeneration := s64
+	DataGeneration := s64
+
 	FontAtlases := List.{FontAtlas^}
 	CreateFont := !(vRepoFile^ fil, float height) -> Font^
 	{

@@ -1,0 +1,79 @@
+
+lockData := class
+{
+	inited := bool
+	leftSize := int
+	lockUsers := int
+	inUse := int
+	pausedTask := lockDataLink^
+}
+lockDataLink := class
+{
+	data := Task^
+	next := lockDataLink^
+}
+
+lockObjects := AVLMap.{void^,lockData}
+
+TLock := !(void^ k,int count = 1) -> void
+{
+	TaskCheckMutex.Lock()
+	defer TaskCheckMutex.Unlock()
+
+	thisLock := ref lockObjects[k]
+
+	if not thisLock.inited
+	{
+		thisLock.inited = true
+		thisLock.leftSize = count
+	}
+	thisLock.lockUsers += 1
+
+	while thisLock.leftSize == 0
+	{
+		thisNode := lockDataLink
+		thisNode.data = CurrentTask
+		thisNode.next = thisLock.pausedTask
+		thisLock.pausedTask = thisNode&
+		CurrentThread.switchToMain()
+	}
+
+	thisLock.inUse += 1
+	thisLock.leftSize -= 1
+
+	if thisLock.inUse != 1
+	{
+		printf("huh %i %i %i\n",thisLock.inUse , thisLock.leftSize,thisLock.lockUsers)
+	}
+}
+TUnlock := !(void^ k) -> void
+{
+	TaskCheckMutex.Lock()
+	defer TaskCheckMutex.Unlock()
+	
+	thisLock := ref lockObjects[k]
+
+	assert(thisLock.inited)
+
+	thisLock.leftSize += 1
+	thisLock.lockUsers -= 1
+	thisLock.inUse -= 1
+
+	if thisLock.lockUsers == 0
+	{
+		lockObjects.Remove(k)
+	}else{
+		if thisLock.pausedTask != null
+		{
+			thisLock.pausedTask.data.resume()
+			TaskWaitTasksConVar.NotifyAll()
+			thisLock.pausedTask = thisLock.pausedTask.next
+		}
+	}
+}
+
+// TGuard := !(void^ k = #uniq) -> void {
+// 	TLock(k)
+// } defer_tail (void^ k) {
+// 	TUnlock(k)
+// }

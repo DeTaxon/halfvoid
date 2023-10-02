@@ -58,11 +58,11 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine^
 		it = new Vector.{int}(newSize)
 		for frm,j : totalItems
 		{
-			it^[j] = input.Table[i][frm]
+			it[j] = input.Table[i][frm]
 		}
 		if containFake
 		{
-			it^[totalItems.Size()] = -1
+			it[totalItems.Size()] = -1
 		}
 	}
 	result.IsEndNode = new Vector.{int}(input.IsEndNode.Size())

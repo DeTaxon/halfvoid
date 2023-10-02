@@ -30,9 +30,9 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 			}
 		}
 		//Add build option
-		addLayer("VK_LAYER_LUNARG_standard_validation")
-		addLayer("VK_LAYER_KHRONOS_validation")
-		addLayer("VK_LAYER_LUNARG_vktrace")
+		//addLayer("VK_LAYER_LUNARG_standard_validation")
+		//addLayer("VK_LAYER_KHRONOS_validation")
+		//addLayer("VK_LAYER_LUNARG_vktrace")
 		//addLayer("VK_LAYER_AMD_switchable_graphics")
 	}
 	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void
@@ -68,7 +68,8 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		appInfo.pEngineName = "SimpleWrapper"
 		appInfo.engineVersion = 1
 		//appInfo.apiVersion = 4194325//(1 << 22) + (0 << 11) + 0
-		appInfo.apiVersion = 4200448//(1 << 22) + (3 << 11) + 0
+		//appInfo.apiVersion = 4200448//(1 << 22) + (3 << 11) + 0
+		appInfo.apiVersion = 4206592//(1 << 22) + (3 << 12) + 0
 	}
 	DebugStep := virtual !() -> void
 	{
@@ -89,6 +90,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		if deviceList.Size() == 0
 		{
 			printf("No videocards\n")
+			//TODO error
 		}
 
 		for it,i : deviceList
@@ -149,14 +151,14 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		expectDeviceExtensions.Push("VK_KHR_swapchain") //TODO check for swapchains
 		expectDeviceExtensions.Push("VK_KHR_imageless_framebuffer")
 		expectDeviceExtensions.Push("VK_KHR_image_format_list")
+		expectDeviceExtensions.Push("VK_KHR_dynamic_rendering")
+		expectDeviceExtensions.Push("VK_KHR_depth_stencil_resolve")
+		expectDeviceExtensions.Push("VK_KHR_create_renderpass2")
 
 
-		if true and false 
+		for it : deviceExtensions
 		{
-			for it : deviceExtensions
-			{
-				printf("hm %s\n",it.extensionName[0]&)
-			}
+			//printf("hm %s\n",it.extensionName[0]&)
 		}
 
 

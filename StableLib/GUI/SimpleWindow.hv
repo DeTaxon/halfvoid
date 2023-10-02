@@ -16,7 +16,6 @@ SimpleWindow := class extend GLFWWindow
 		return vkOverlay.CreateFont(fil,height)
 	}
 
-
 	this := !(int w, int h,char^ title) -> void
 	{
 		ClearColor = vec4f(1.0,0.5,1.0,1.0)
@@ -57,115 +56,139 @@ SimpleWindow := class extend GLFWWindow
 		}
 	}
 
+	imgCommands := AVLMap.{u32,SimpleWindowImageInfo}
+	
 	Run := !() -> void
 	{
-		step1Cmd := TVkCommandBuffer(vInstance,vInstance.itDrawCmdPool2)
-
 		lastTime := GetSteadyTime() - 1 //sec
-
-		//___tracy_emit_frame_mark("MainLoop")
 
 		while not ShouldClose()
 		{
-			//___tracy_emit_frame_mark_start("MainLoop")
-			//defer ___tracy_emit_frame_mark_end("MainLoop")
 			surfaceIndex := u32
 			drawRes := true
 			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
-			if drawRes
+			if not drawRes
 			{
-
-				if fpsLimited
-				{
-					itTime := GetSteadyTime()
-					diffTime := itTime - lastTime
-					if diffTime < fpsPeriod
-					{
-						TSleep(fpsPeriod - diffTime)
-					}
-					lastTime = GetSteadyTime()
-				}
-				w := vInstance.GetSurfaceWidth()
-				h := vInstance.GetSurfaceHeight()
-
-				step1Cmd.Reset()
-				step1Cmd.Start(null,0)
-				
-				StartTextDraw(step1Cmd.Get(),surfaceIndex)
-
-				if mainGUIObject != null
-				{
-					if oldW != w or oldH != h
-					{
-						mainGUIObject.GetLayout(vkOverlay&)
-						mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
-					}
-					oldW = w
-					oldH = h
-				}
-				mainGUIObject.PushDraw(vkOverlay&,step1Cmd.Get(),vec2f(0,0))
-				DrawVulkan(step1Cmd.Get(),w,h)
-
-				StopTextDraw(step1Cmd.Get())
-
-				step1Cmd.Stop()
-
-				step1Cmd.Submit(vInstance.DrawQueue,null)
-
-				vInstance.DrawPresentImage(surfaceIndex)
-				
-			}else{
 				vInstance.CreateSwapchain(mainRenderPass,Width,Height)
+				continue
 			}
 
-			//hm := u64 //TODO
-			//hm = not_b hm
-			//Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,hm)
 
-			PollEvents()
+			if fpsLimited
+			{
+				itTime := GetSteadyTime()
+				diffTime := itTime - lastTime
+				if diffTime < fpsPeriod
+				{
+					TSleep(fpsPeriod - diffTime)
+				}
+				lastTime = GetSteadyTime()
+			}
+
+			cmdBuf := ref imgCommands[surfaceIndex]
+
+			if not cmdBuf.inited
+			{
+				cmdBuf.cmdData."this"(vInstance,vInstance.itDrawCmdPool2)
+			}
+
+			w := vInstance.GetSurfaceWidth()
+			h := vInstance.GetSurfaceHeight()
+
+			if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration) or (cmdBuf.dataGen != vkOverlay.DataGeneration)
+			{
+				cmdBuf.dataGen = vkOverlay.DataGeneration
+				if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration)
+				{
+					cmdBuf.cmdGen = vkOverlay.CmdGeneration
+
+					cmdBuf.cmdData.Reset()
+					cmdBuf.cmdData.Start()
+
+					bar1 := VkImageMemoryBarrier()
+					bar1.image = vInstance.surfaceImages^[surfaceIndex]
+					bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
+					bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+					bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
+					bar1.subresourceRange.levelCount = 1
+					bar1.subresourceRange.layerCount = 1
+					vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
+					
+					StartTextDraw(cmdBuf.cmdData.Get(),surfaceIndex)
+
+					if mainGUIObject != null
+					{
+						if oldW != w or oldH != h
+						{
+							mainGUIObject.GetLayout(vkOverlay&)
+							mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
+						}
+						oldW = w
+						oldH = h
+					}
+					mainGUIObject.PushDraw(vkOverlay&,cmdBuf.cmdData.Get(),vec2f(0,0))
+					DrawVulkan(cmdBuf.cmdData.Get(),w,h)
+
+					StopTextDraw(cmdBuf.cmdData.Get())
+					
+					bar1.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+					bar1.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+					vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,0,0,null,0,null,1,bar1&)
+
+					cmdBuf.cmdData.Stop()
+				}
+
+				cmdBuf.cmdData.Submit(vInstance.DrawQueue,null)
+
+				vInstance.DrawPresentImage(surfaceIndex)
+			}else{
+				vInstance.DrawPresentImage(surfaceIndex)
+			}
+
+			cmdBuf.inited = true
+				
 			SwapBuffers()
+			PollEvents()
 		}
 	}
 
 	StartTextDraw := !(VkCommandBuffer cmd,int imgNumber) -> void
 	{
-		imgBarCPre := VkImageMemoryBarrier[2]
-	
-		beginInfo := VkRenderPassBeginInfo()
-	
-		clrValues := float[13]
+		clrAtt := VkRenderingAttachmentInfo[10]
+
+		clrValues := float[4]
 	
 		clrValues[0] = ClearColor.x
 		clrValues[1] = ClearColor.y
 		clrValues[2] = ClearColor.z
 		clrValues[4] = ClearColor.w
-		clrValues[5] = 0.0f
-		clrValues[6] = 0.0f
-		clrValues[7] = 1.0f
-	
-		clrValues[8] = 0.0f
-		clrValues[9] = 1.0f
-		clrValues[10] = 0.0f
-		clrValues[11] = 0.0f
-	
-		beginInfo.renderPass = mainRenderPass.Get()
-		beginInfo.framebuffer = vInstance.surfaceFramebuffer
-		beginInfo.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
-		beginInfo.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
-		beginInfo.clearValueCount = 1
-		beginInfo.pClearValues&->{void^^}^ = clrValues[0]&->{void^}
-		
-		renderPassAttms := VkRenderPassAttachmentBeginInfo()
-		renderPassAttms.attachmentCount = 1
-		renderPassAttms.pAttachments = vInstance.surfaceImageViews[imgNumber]&
-		beginInfo.pNext = renderPassAttms&
 
-		vInstance.Funcs.vkCmdBeginRenderPass(cmd,beginInfo&,VK_SUBPASS_CONTENTS_INLINE)
+		for it,i : mainRenderPass.itFrames
+		{
+			atm := ref clrAtt[i]
+			atm."this"()
+			atm.imageView = vInstance.surfaceImageViews^[imgNumber]
+			atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+			atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+			atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+			atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+			memcpy(atm.clearValue&,clrValues[0]&,4*4)
+		}
+
+		rndr := VkRenderingInfo()
+		rndr.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+		rndr.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
+		rndr.layerCount = 1
+		rndr.colorAttachmentCount = 1
+		rndr.pColorAttachments&->{void^^}^ = clrAtt[0]&
+
+		vInstance.Funcs.vkCmdBeginRendering(cmd,rndr&)
 	}
 	StopTextDraw := !(VkCommandBuffer cmd) -> bool
 	{
-		vInstance.Funcs.vkCmdEndRenderPass(cmd) //TODO remove vk.Funcs
+		vInstance.Funcs.vkCmdEndRendering(cmd)
+		//vInstance.Funcs.vkCmdEndRenderPass(cmd)
 	}
 
 	InitWindow := virtual !() -> GUIObject^
@@ -188,6 +211,20 @@ SimpleWindow := class extend GLFWWindow
 	}
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
-		mainGUIObject?.MousePressed(buttonNum,pressed,vec2f(MouseX,MouseY))
+		mainGUIObject?.MousePressed(vkOverlay&,buttonNum,pressed,vec2f(MouseX,MouseY))
 	}
+	RedrawWindow := !() -> void
+	{
+		vkOverlay.DataGeneration += 1
+	}
+}
+
+SimpleWindowImageInfo := class
+{
+	inited := bool
+
+	cmdGen := s64
+	cmdData := TVkCommandBuffer
+
+	dataGen := s64
 }

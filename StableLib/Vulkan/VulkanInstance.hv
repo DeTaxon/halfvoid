@@ -96,7 +96,7 @@ VulkanInstance := class extend TGCObject
 		queueCreateInf.queueCount = 1 //TODO what is that?
 		queueCreateInf.pQueuePriorities = zeroPrior&
 		
-		zeroFeature := VkPhysicalDeviceFeatures //TODO what is that?
+		zeroFeature := VkPhysicalDeviceFeatures
 
 		logDevice := VkDeviceCreateInfo()
 
@@ -111,6 +111,10 @@ VulkanInstance := class extend TGCObject
 		imagelessFrame := VkPhysicalDeviceImagelessFramebufferFeatures()
 		imagelessFrame.imagelessFramebuffer = 1
 		logDevice.pNext = imagelessFrame&
+
+		dynamicRender := VkPhysicalDeviceDynamicRenderingFeatures()
+		dynamicRender.dynamicRendering = VK_TRUE
+		imagelessFrame.pNext = dynamicRender&
 
 		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
 

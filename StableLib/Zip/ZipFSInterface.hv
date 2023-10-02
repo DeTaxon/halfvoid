@@ -18,6 +18,9 @@ createFSObject := !() -> void
 	{
 		TLock(gRepoObject&)
 		defer TUnlock(gRepoObject&)
+
+		if gRepoObject != null
+			return void
 		gRepoObject = new vRepo
 		gRepoObject.Init(".")
 	}

@@ -296,7 +296,6 @@ vShader := class
 		dsC.front.depthFailOp = VK_STENCIL_OP_KEEP
 		dsC.front.writeMask = 0
 
-
 		gpC := VkGraphicsPipelineCreateInfo()
 		gpC.stageCount = 2
 		gpC.pStages&->{void^^}^ = sStg[0]&
