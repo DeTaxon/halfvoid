@@ -30,9 +30,9 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 			}
 		}
 		//Add build option
-		addLayer("VK_LAYER_LUNARG_standard_validation")
-		addLayer("VK_LAYER_KHRONOS_validation")
-		addLayer("VK_LAYER_LUNARG_vktrace")
+		//addLayer("VK_LAYER_LUNARG_standard_validation")
+		//addLayer("VK_LAYER_KHRONOS_validation")
+		//addLayer("VK_LAYER_LUNARG_vktrace")
 		//addLayer("VK_LAYER_AMD_switchable_graphics")
 	}
 	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void

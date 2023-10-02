@@ -27,9 +27,10 @@ NkButton := class extend GUIObject
 	{
 		pressCallback = cb.Capture()
 	}
-	MousePressed := virtual !(int buttonNum, bool pressed,vec2f offset) -> void
+	MousePressed := virtual !(VkOverlayContext^ ctx,int buttonNum, bool pressed,vec2f offset) -> void
 	{
-		pressCallback?()
+		if pressed
+			pressCallback?()
 	}
 	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{

@@ -9,6 +9,13 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 		return CmpFnc(cmd,itm)?
 	}
 
+	if cmd == "#DebugMode"
+	{
+		if DebugMode
+			return GBoolTrue
+		return GBoolFalse
+	}
+
 	if cmd == "#Run"
 	{
 		return RunCommand(cmd,itm)

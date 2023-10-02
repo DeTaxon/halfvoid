@@ -21,21 +21,22 @@ globObj := int
 
 main := !(char^[] args) -> int
 {
-	ExpectWorkers(16)
-	for i : 16
-	{
-		SpawnWork(() ==>{
-			for i : 1000000
-			{
-				TLock(globObj&)
-				globObj += 1
-				TUnlock(globObj&)
-			}
-		})
-	}
+	//ExpectWorkers(16)
+	//for i : 16
+	//{
+	//	SpawnWork(() ==>{
+	//		for i : 1000000
+	//		{
+	//			TLock(globObj&)
+	//			globObj += 1
+	//			TUnlock(globObj&)
+	//		}
+	//	})
+	//}
+	printf("hello %i\n",#DebugMode())
 
-	TSleep(2)
-	printf("hey %i\n",globObj)
+	//TSleep(2)
+	//printf("hey %i\n",globObj)
 	
 	return 0
 }
