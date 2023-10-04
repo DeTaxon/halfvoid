@@ -1,7 +1,8 @@
 {
 	"initname" : "shadercInit",
 	"libs" : [
-		"libshaderc_shared.so"
+		"libshaderc_shared.so",
+		"libshaderc_shared.dll"
 	],
 	"consts" : {
 		"shaderc_vertex_shader" : 0,
