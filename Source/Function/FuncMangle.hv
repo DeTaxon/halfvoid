@@ -25,7 +25,18 @@ GetFuncMangle := !(StringSpan name) -> StringSpan
 		}
 	}else{
 		FuncNameIter += 1
-		sprintf(buff[0]&,"anon_func_%i", FuncNameIter)
+
+		switch name
+		{
+			case "[]"
+				sprintf(buff[0]&,"operator_square_brackets_%i", FuncNameIter)
+			case "!="
+				sprintf(buff[0]&,"operator_not_equal_%i", FuncNameIter)
+			case "=="
+				sprintf(buff[0]&,"operator_equal_%i", FuncNameIter)
+			case void
+				sprintf(buff[0]&,"anon_func_%i", FuncNameIter)
+		}
 
 		spn := GetConstString(buff[0]&)
 		FuncNameDatabase.Insert(spn)

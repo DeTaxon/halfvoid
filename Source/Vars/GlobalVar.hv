@@ -89,6 +89,10 @@ GlobalVarFunc := class extend ParamFunc
 		f^ << "\n"
 
 	}
+	PrintOutputName := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "@V" << varId 
+	}
 	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
 	{
 		ctx.writeStream^ << "@V" << varId 

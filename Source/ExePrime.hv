@@ -117,7 +117,7 @@ BoxExeString := class extend BoxExeConstObj
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		f^ << "@Str" << strId << " = constant [" << val.Size() +  1 << " x i8] c\""
+		f^ << "@Str" << strId << " = private constant [" << val.Size() +  1 << " x i8] c\""
 		k := 0
 		SomeBuf := char[2]
 		SomeBuf[1] = 0

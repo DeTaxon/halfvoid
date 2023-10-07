@@ -29,12 +29,6 @@ internalGetVTableVariable := !(@T2 obj) .{@FieldNumber} -> void //result replace
 	return obj->VTable.FieldNumber
 }
 
-
-internalCheckIsSameType := !(@T^ obj) .{@Cls} -> bool
-{
-	return obj->VTable == Cls->VTable
-}
-
 internalCheckIsInSameType := !(@T^ obj) .{@Cls} -> bool
 {
 	itId := Cls->TypeId

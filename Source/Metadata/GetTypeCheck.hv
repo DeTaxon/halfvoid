@@ -37,7 +37,17 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 	{
 		fnc = TemplateInternalIsInSameType.GetFunc(objs3,cnsts)
 	}else{
-		fnc = TemplateInternalIsSameType.GetFunc(objs3,cnsts)
+		//fnc = TemplateInternalIsSameType.GetFunc(objs3,cnsts)
+		rCall := BoxExeObj^
+		rCall = new IsSameTypeChecker(checkObj,expType->{TypeClass^})
+		if makeNegative
+		{
+			objs8 := CheckExeDownList
+			objs8.Push(rCall)
+			cnsts := List.{BoxExeConstObj^}
+			rCall = CreateFuncCall(StringSpan(". not"),objs8,cnsts)
+		}
+		return rCall
 	}
 	assert(fnc != null)
 
@@ -51,6 +61,74 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 	}
 	return resCall
 }
+
+
+IsSameTypeChecker := class extend BoxExeObj
+{
+	DownObj := BoxExeObj^
+	TargetType := TypeClass^
+	resId := int
+	this := !(BoxExeObj^ dwnObj, TypeClass^ expType) -> void
+	{
+		ObjType = GTypeBool
+		DownObj = dwnObj
+
+		if DownObj.GetType() is TypeClass
+		{
+			DownObj = new UnrefFuncCall(DownObj)
+		}
+		TargetType = expType
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+
+		vType := DownObj.GetType().Base->{TypeClass^}.ToClass
+		vTableType := vType.VTableType
+
+		DownObj.PrintPre(ctx)
+		resId = ctx.GetNewId()
+
+		f^ << "%TPtr" << resId << " = getelementptr "
+		DownObj.GetType().Base.PrintType(ctx)
+		f^ << " , "
+		DownObj.GetType().PrintType(ctx)
+		f^ << " "
+		DownObj.PrintUse(ctx)
+		f^ <<", i32 0, i32 0\n"
+		f^ << "%TVTable" << resId << " = load "
+		vTableType.ItType.PrintType(ctx)
+		f^ << "* , "
+		vTableType.ItType.PrintType(ctx)
+		f^ << "** %TPtr" << resId
+
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "%TPre" << resId << " = bitcast "
+		vTableType.ItType.PrintType(ctx)
+		f^ << "* %TVTable" << resId << " to "
+		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
+		f^ << "*"
+		f^ << "\n"
+
+		f^ << "%T" << resId << " = icmp eq "
+		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
+		f^ << "* %TPre" << resId << " , "
+		TargetType.ToClass.VTableValue.Value.PrintOutputName(ctx)
+		f^ << "\n"
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%T" << resId
+	}
+}
+
 
 IsVirtualClass := !(Type^ tp) -> bool
 {
