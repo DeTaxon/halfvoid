@@ -58,6 +58,7 @@ BoxBlock := class extend BoxExeObj
 		}
 		while iter != null
 		{
+			NeedGuardLocalVar = false
 			if iter.GetValue() == "{}"
 			{
 				subBlock := new BoxBlock(iter)

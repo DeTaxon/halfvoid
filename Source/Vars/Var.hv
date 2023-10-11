@@ -110,7 +110,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		}else{
 			assert(CurrentScope is in BoxFunc) 
 			newVar := new LocalVar(name,varType,true,false)
-			CurrentFunc.LocalVars.Push(newVar)
+			CurrentFunc.AddLocalVar(newVar)
 			return newVar
 		}
 	}
@@ -182,7 +182,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 					if setCall == null
 						return null
 					locVar.extraWork.Push(setCall)
-					CurrentFunc.LocalVars.Push(locVar)
+					CurrentFunc.AddLocalVar(locVar)
 					return locVar
 				}
 			}else{

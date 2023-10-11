@@ -42,7 +42,7 @@ BoxFor := class extend BoxExeObj
 				if CreatedIndex == null
 				{
 					CreatedIndex = new LocalVar(StringSpan("anon"),GTypeInt,true,false)
-					CurrentFunc.LocalVars.Push(CreatedIndex)
+					CurrentFunc.AddLocalVar(CreatedIndex)
 
 					objs0 := CheckExeDownList
 					objs0.Push(CreatedIndex.CreateVarCall())

@@ -13,6 +13,7 @@ TokensParsed := AVLSet.{Token^}
 
 TryCatchUsed := bool
 
+NeedGuardLocalVar := task_local bool
 
 DebugMode := bool
 ErrorState := bool

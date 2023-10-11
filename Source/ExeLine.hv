@@ -36,6 +36,9 @@ BoxExeLine := class extend BoxExeLineSimple
 
 		CheckMacroStep(itm)
 
+		if MacroCycleMacro.Size() != 0
+			NeedGuardLocalVar = true
+
 		Down = GetDownObject(itm,0)
 
 		CurrentLine = oldLine

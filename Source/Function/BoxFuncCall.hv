@@ -42,7 +42,7 @@ BoxFuncCall := class extend BoxExeObj
 		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 		{
 			ResultVar = new LocalVar(StringSpan("anon"),fType.ResultType,true,false)
-			CurrentFunc.LocalVars.Push(ResultVar)
+			CurrentFunc.AddLocalVar(ResultVar)
 			downs.Push(ResultVar.CreateVarCall())
 
 			if this& is BoxFuncCall

@@ -113,7 +113,7 @@ ForSubObjects := class
 				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
 
 			IndVar = new LocalVar(IndexName,fncOperType.Params[1].ItType.Base,true,true)
-			CurrentFunc.LocalVars.Push(IndVar)
+			CurrentFunc.AddLocalVar(IndVar)
 		}
 
 		objs2 := CheckExeDownList
@@ -131,7 +131,7 @@ ForSubObjects := class
 		HaveValue = haveValue
 
 		ValueVar = new LocalVar(ValueName,iCall.GetType(),true,iCall.IsMem())
-		CurrentFunc.LocalVars.Push(ValueVar)
+		CurrentFunc.AddLocalVar(ValueVar)
 
 		objs8 := CheckExeDownList
 		if iCall.IsMem()

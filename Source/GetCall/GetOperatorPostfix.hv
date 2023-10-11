@@ -40,6 +40,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			{
 				cl2 = new BoxQuestionPointer(cl2)
 			}
+			NeedGuardLocalVar = true
 			return cl2
 		}
 
@@ -50,7 +51,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		{
 			itm.Down.Right.EmitError("Left of ? operator must be pointer")
 		}
-
+		NeedGuardLocalVar = true
 		return new BoxQuestionPointer(cl)
 	}
 	if oper == "[]"

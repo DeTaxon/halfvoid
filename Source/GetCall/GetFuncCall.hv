@@ -46,7 +46,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		if constrObj != null
 		{
 			locVar.extraWork.Push(constrObj)
-			CurrentFunc.LocalVars.Push(locVar)
+			CurrentFunc.AddLocalVar(locVar)
 			return new ConstructorCallWrapper(locVar,cCall)
 		}
 
@@ -57,7 +57,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		if check2 != null
 		{
 			locVar.extraWork.Push(check2)
-			CurrentFunc.LocalVars.Push(locVar)
+			CurrentFunc.AddLocalVar(locVar)
 			return new ConstructorCallWrapper(locVar,cCall)
 		}
 		itm.EmitError("Constructor not found")

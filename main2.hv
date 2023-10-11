@@ -16,28 +16,39 @@
 //	}
 //}
 
+SubOperator := !(@T a, T b) -> T
+{
+	return a - b
+}
 
-globObj := int
+
+TemplateTest := class .{@T}
+{
+	x := T
+	y := T
+
+	#Virtualize("ContainerSub","SubOperator",T,T)
+
+	TestFunc := virtual !() -> void ; TemplateResist
+	{
+		TmpVar := static 15
+		printf("HEY %p\n",TmpVar&)
+		x = ContainerSub(x,y)
+	}
+}
 
 main := !(char^[] args) -> int
 {
-	//ExpectWorkers(16)
-	//for i : 16
-	//{
-	//	SpawnWork(() ==>{
-	//		for i : 1000000
-	//		{
-	//			TLock(globObj&)
-	//			globObj += 1
-	//			TUnlock(globObj&)
-	//		}
-	//	})
-	//}
-	printf("hello %i\n",#DebugMode())
+	a := TemplateTest.{int}
+	a.x = 100
+	a.y = 12
+	b := TemplateTest.{float}
+	b.x = 100
+	b.y = 12
 
-	//TSleep(2)
-	//printf("hey %i\n",globObj)
-	
+	a.TestFunc()
+	b.TestFunc()
+	printf("result %i %f\n",a.x, b.x)
 	return 0
 }
 

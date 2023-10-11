@@ -259,6 +259,43 @@ BoxClassBody := class extend BoxClassPoison
 
 		while iter != null
 		{
+			//if iter.Down? is TokenIndent and iter.Down->{TokenIndent^}.Value == "#Virtualize"
+			//{
+			//	dwns := CheckExeDownList
+
+			//	itr2 := iter.Down.Right.Down
+
+			//	virtualName := itr2->{TokenString^}.Value
+
+			//	itr2 = itr2.Right.Right
+
+			//	funcName := itr2->{TokenString^}.Value
+
+			//	itr2 = itr2.Right
+
+			//	while itr2 != null
+			//	{
+			//		if itr2.GetValue() == ","
+			//		{
+			//			itr2 = itr2.Right
+			//			continue
+			//		}
+			//		tp := ParseType(itr2)
+
+			//		assert(tp != null) //TODO emit error
+
+			//		dwns.Push(new BlankObjectExe(tp,false)) //TODO also refs, clean memory
+
+			//		itr2 = itr2.Right
+			//	}
+
+			//	vrFunc := CreateFuncCall(funcName,dwns)
+			//	printf("test %s %s %p\n",virtualName,funcName,vrFunc)
+
+			//	iter = iter.Right
+			//	continue
+			//}
+
 			if iter.Down?.Right?.GetValue() == ":="
 			{
 				assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
