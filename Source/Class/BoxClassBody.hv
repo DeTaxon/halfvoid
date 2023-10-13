@@ -6,7 +6,6 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 	if  itm.Down.GetValue() != "class" and itm.Down.GetValue() != "packed_class"
 		return null
 	
-
 	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 	constValue := Token^
 
@@ -370,6 +369,7 @@ BoxClassBody := class extend BoxClassPoison
 							assert(probFunc != null and probFunc is BoxFuncTemplateBody)
 							asTmplt := probFunc->{BoxFuncTemplateBody^}
 							assert(asTmplt.IsOneFunc())
+							asTmplt.IsOneFunc() // DO NOT DELETE, IsOneFunc contain headerParse.Await() thats needed , TODO make it better
 							asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
 
 						}else{
