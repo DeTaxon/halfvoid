@@ -57,48 +57,57 @@ SimpleWindow := class extend GLFWWindow
 	}
 
 	imgCommands := AVLMap.{u32,SimpleWindowImageInfo}
+	imgGeneration := int
+	cmdGeneration := int
 	
 	Run := !() -> void
 	{
+		imgGeneration = vkOverlay.DataGeneration - 1
+		cmdGeneration = vkOverlay.CmdGeneration - 1
+
 		lastTime := GetSteadyTime() - 1 //sec
 
 		while not ShouldClose()
 		{
-			surfaceIndex := u32
-			drawRes := true
-			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
-
-			if not drawRes
+			if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration)
 			{
-				vInstance.CreateSwapchain(mainRenderPass,Width,Height)
-				continue
-			}
+				imgGeneration = vkOverlay.DataGeneration
+				cmdGeneration = vkOverlay.CmdGeneration
 
+				surfaceIndex := u32
+				drawRes := true
+				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
-			if fpsLimited
-			{
-				itTime := GetSteadyTime()
-				diffTime := itTime - lastTime
-				if diffTime < fpsPeriod
+				if not drawRes
 				{
-					TSleep(fpsPeriod - diffTime)
+					vInstance.CreateSwapchain(mainRenderPass,Width,Height)
+					vkOverlay.DataGeneration += 1
+					vkOverlay.CmdGeneration += 1
+					continue
 				}
-				lastTime = GetSteadyTime()
-			}
 
-			cmdBuf := ref imgCommands[surfaceIndex]
 
-			if not cmdBuf.inited
-			{
-				cmdBuf.cmdData."this"(vInstance,vInstance.itDrawCmdPool2)
-			}
+				if fpsLimited
+				{
+					itTime := GetSteadyTime()
+					diffTime := itTime - lastTime
+					if diffTime < fpsPeriod
+					{
+						TSleep(fpsPeriod - diffTime)
+					}
+					lastTime = GetSteadyTime()
+				}
 
-			w := vInstance.GetSurfaceWidth()
-			h := vInstance.GetSurfaceHeight()
+				cmdBuf := ref imgCommands[surfaceIndex]
 
-			if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration) or (cmdBuf.dataGen != vkOverlay.DataGeneration)
-			{
-				cmdBuf.dataGen = vkOverlay.DataGeneration
+				if not cmdBuf.inited
+				{
+					cmdBuf.cmdData."this"(vInstance,vInstance.itDrawCmdPool2)
+				}
+
+				w := vInstance.GetSurfaceWidth()
+				h := vInstance.GetSurfaceHeight()
+
 				if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration)
 				{
 					cmdBuf.cmdGen = vkOverlay.CmdGeneration
@@ -142,11 +151,11 @@ SimpleWindow := class extend GLFWWindow
 				cmdBuf.cmdData.Submit(vInstance.DrawQueue,null)
 
 				vInstance.DrawPresentImage(surfaceIndex)
+				cmdBuf.inited = true
 			}else{
-				vInstance.DrawPresentImage(surfaceIndex)
+				TSleep(0.1)
 			}
 
-			cmdBuf.inited = true
 				
 			SwapBuffers()
 			PollEvents()
@@ -225,6 +234,4 @@ SimpleWindowImageInfo := class
 
 	cmdGen := s64
 	cmdData := TVkCommandBuffer
-
-	dataGen := s64
 }
