@@ -113,7 +113,7 @@ List := class.{@T} extend TArrayView.{T}
 	{
 		lft^ = right^
 	}
-	ToVector := virtual !() -> Vector.{T}^ ; TemplateResist
+	ToVector := virtual !() -> Vector.{T}^
 	{
 		//nowSize := Size()
 		//result = new Vector.{T}(nowSize)
