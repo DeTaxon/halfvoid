@@ -90,7 +90,7 @@ List := class.{@T} extend TArrayView.{T}
 		itSize -= 1
 	}
 
-	"[]" := virtual !(int ind) -> ref T
+	"[]" := virtual !(int ind) -> ref T ; TemplateResist
 	{
 		if ind < 0
 			return this[itSize + ind]
@@ -104,13 +104,26 @@ List := class.{@T} extend TArrayView.{T}
 		return itr.data
 	}
 
-	ToVector := virtual !() -> Vector.{T}^
+
+	createVector := virtual !(Vector.{T}^^ res,int nowSize) -> void
 	{
-		nowSize := Size()
-		result = new Vector.{T}(nowSize)
+		res^ = new Vector.{T}(nowSize)
+	}
+	setFunc := virtual !(T^ lft,T^ right) -> void
+	{
+		lft^ = right^
+	}
+	ToVector := virtual !() -> Vector.{T}^ ; TemplateResist
+	{
+		//nowSize := Size()
+		//result = new Vector.{T}(nowSize)
+		createVector(result&,Size())
+		ptrRes := result.GetPointer()
+		
 		for it,i : this
 		{
-			result^[i] = it
+			//result^[i] = it
+			setFunc(ptrRes[i]&,it&)
 		}
 	}
 	"in" := !(T itm) -> bool

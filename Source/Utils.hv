@@ -1,21 +1,23 @@
 
+ConstStringsSpans := AVLMap.{StringSpan,StringSpan}
 ConstStrings := AVLMap.{char^,StringSpan}
 
 GetConstStringSpan := !(StringSpan val) -> ref StringSpan
 {
-	return GetConstString(val.GetString().Str())
+	return ConstStringsSpans[val]?
+
+	stCpy := malloc(val.Size() + 1)->{char^}
+	if val.Size() != 0
+		memcpy(stCpy,val.NonNullStr(),val.Size())
+	stCpy[val.Size()] = 0
+	spn := StringSpan(stCpy->{char^},val.Size()) 
+	res := ref ConstStringsSpans[spn]
+	res = spn
+	return res
 }
 GetConstString := !(char^ val) -> ref StringSpan
 {
-	if ConstStrings.Contain(val)
-		return ConstStrings[val]
-	stSize := strlen(val)
-	v2 := malloc(stSize + 1)->{char^}
-	memcpy(v2,val,stSize)
-	v2[stSize] = 0
-	spn := StringSpan(v2,stSize)
-	ConstStrings[v2] = spn
-	return ConstStrings[val]
+	return GetConstStringSpan(StringSpan(val))
 }
 
 
