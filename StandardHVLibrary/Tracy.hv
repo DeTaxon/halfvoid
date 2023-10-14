@@ -17,14 +17,14 @@ tracyZoneDestructor := class extend TGCObject
 	enabled := bool
 	Destroy := virtual !() -> void
 	{
-		if #Tracy()
-		{
-			if enabled
-			{
-				___tracy_emit_zone_end(ctx)
-			}
-			enabled = false
-		}
+		//if #Tracy()
+		//{
+		//	if enabled
+		//	{
+		//		___tracy_emit_zone_end(ctx)
+		//	}
+		//	enabled = false
+		//}
 	}
 }
 

@@ -19,7 +19,7 @@ internalHVNewConstructed := !(@T^ obj, args...) -> T^
 internalHVDelete := !(void^ x) -> void
 {
 	if #Tracy() and GlobalTracyInUse
-	{	
+	{
 		___tracy_emit_memory_free_callstack?(x,62,0)
 	}
 	free(x)
