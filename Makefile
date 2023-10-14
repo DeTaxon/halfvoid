@@ -15,6 +15,10 @@ ifeq ($(nostatic),yes)
 endif
 undefine Stati
 
+ifeq ($(massif),yes)
+	mass_if := valgrind --tool=massif
+endif
+
 ifeq ($(callgrind),yes)
 	cg := valgrind --tool=callgrind --dump-instr=yes
 endif
@@ -68,17 +72,17 @@ halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -win32 -g -C0 StableLib/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui)  $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -mfsgsbase $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
-	clang -gdwarf-4 -femulated-tls -static out.exe.ll -o halfvoid.exe
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe $(trc) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
+	clang++ -gdwarf-4 -femulated-tls -static out.exe.ll -g -o halfvoid.exe
 cycle_release.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
-	clang -O2 -femulated-tls -static out.exe.ll -o halfvoid.exe
+	clang++ -O2 -femulated-tls -static out.exe.ll -o halfvoid.exe
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 

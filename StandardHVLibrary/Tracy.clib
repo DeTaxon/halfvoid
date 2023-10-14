@@ -3,7 +3,8 @@
 	"link" : "dynamic",
 	"initname" : "tracy_init",
 	"libs" : [
-		"libTracyClient.so"
+		"libTracyClient.so",
+		"libTracyClient.dll"
 	],
 	"structs" : {
 		"___tracy_source_location_data" : {

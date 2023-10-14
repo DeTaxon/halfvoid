@@ -63,7 +63,6 @@ ucontextStartTask := !() -> void
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	InitTaskContext()
-	//TaskUVInit()
 
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask
@@ -74,6 +73,12 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	{
 		it()
 	}
+	
+	if #Tracy()
+	{
+		GlobalTracyInUse = true
+	}
+
 
 	TSpawnTask(() ==> [argv,argc] {	
 		spn := TArraySpan.{char^}//(argv,argc)
@@ -86,7 +91,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 
 	if #Tracy()
 	{
-		___tracy_emit_memory_free_callstack = null
+		GlobalTracyInUse = false
 	}
 
 	TaskContextDestructor()

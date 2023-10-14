@@ -62,6 +62,8 @@ SimpleWindow := class extend GLFWWindow
 	
 	Run := !() -> void
 	{
+		TracyZone("Window main loop")
+
 		imgGeneration = vkOverlay.DataGeneration - 1
 		cmdGeneration = vkOverlay.CmdGeneration - 1
 
@@ -152,13 +154,12 @@ SimpleWindow := class extend GLFWWindow
 
 				vInstance.DrawPresentImage(surfaceIndex)
 				cmdBuf.inited = true
-			}else{
-				TSleep(0.1)
-			}
 
-				
-			SwapBuffers()
-			PollEvents()
+				SwapBuffers()
+				PollEvents()
+			}else{
+				glfwWaitEventsTimeout(0.1)
+			}	
 		}
 	}
 
