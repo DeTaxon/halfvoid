@@ -367,6 +367,8 @@ CalculatePriorities := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.
 			tmpl := h->{BoxFuncTemplate^}
 			cmpRes := tmpl.GetPriority(Objs,consts)
 			priorityes.Push(cmpRes)
+		}else if h is in GlobalVar2 {
+			priorityes.Push(CmpNoExchange) //todo?
 		}else if h is in GlobalVar {
 			priorityes.Push(CmpNoExchange) //todo?
 		}else if h is in ConstType {

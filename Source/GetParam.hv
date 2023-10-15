@@ -93,6 +93,10 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
+				}else if par is GlobalNameAlias2 {
+					al := par->{GlobalNameAlias2^}
+					al.Value.NotifyUseAndWait()
+					return al.Value.proxy&
 				}else if par is GlobalNameAlias {
 					al := par->{GlobalNameAlias^}
 					al.Value.AwaitType()

@@ -11,7 +11,7 @@ AppendClass BoxClass
 	VTableField := FieldPath^
 
 	VTableId := int
-	VTableCheckTypeArray := GlobalVar^
+	VTableCheckTypeArray := GlobalVar2^
 
 	PrintVTable := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -36,7 +36,7 @@ AppendClass BoxClass
 			arrHolder.vals.Push(GetExeInt(0))
 
 			newVar := CreateGlobalVar(StringSpan("$anon"),arrHolder.GetArrayType(),false)
-			newVar.MemValue = arrHolder.GetAsConst()
+			newVar.value = arrHolder.GetAsConst()
 			VTableCheckTypeArray = newVar
 
 			tiName := StringSpan("@TypeInfo")
@@ -166,8 +166,8 @@ VTableEntry := class
 
 CheckInfoConst := class extend BoxExeConstObj
 {
-	ItGlobVar := GlobalVar^
-	this := !(GlobalVar^ gv) -> void
+	ItGlobVar := GlobalVar2^
+	this := !(GlobalVar2^ gv) -> void
 	{
 		ItGlobVar = gv
 		ObjType = GTypeVoidP
@@ -177,9 +177,9 @@ CheckInfoConst := class extend BoxExeConstObj
 		f := ctx.writeStream
 
 		f^ << "bitcast ("
-		ItGlobVar.Value.pType.PrintType(ctx)
+		ItGlobVar.proxy.ObjType.PrintType(ctx)
 		f^ << "* "
-		ItGlobVar.Value.PrintResultObj(ctx,0,0)
+		ItGlobVar.PrintOutputName(ctx)
 		f^ << " to i8*)"
 	}
 }

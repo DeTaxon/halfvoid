@@ -121,7 +121,6 @@ BoxFile := class extend BoxUnit
 			{
 				if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
 				{
-					//vr = new GlobalVarDelayed(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
 					vr = new GlobalVar2(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
 					GlobalVars2.Push(vr->{GlobalVar2^})
 				}

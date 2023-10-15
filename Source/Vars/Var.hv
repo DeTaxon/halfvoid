@@ -37,10 +37,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		sprintf(buf[0]&,"hidden%i",GetNewId())
 		newName := GetConstString(buf[0]&)
 
-		vrTable := new GlobalVarDelayed(newName,varToken.Right)
+		vrTable := new GlobalVar2(newName,varToken.Right)
+		GlobalVars2.Push(vrTable)
 		CodeSpaces[-1].Globals[newName].Push(vrTable) //todo Optimize, codespace can have spetial place for unque names
 
-		res := new GlobalNameAlias
+		res := new GlobalNameAlias2 //TODO memory leak
 		res.Name = name
 		res.Value = vrTable
 		return res
@@ -240,6 +241,10 @@ NamedVar := class extend BoxUnit
 GlobalNameAlias := class extend NamedVar
 {
 	Value := GlobalVar^
+}
+GlobalNameAlias2 := class extend NamedVar
+{
+	Value := GlobalVar2^
 }
 MemVar := class extend NamedVar
 {

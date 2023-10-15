@@ -82,7 +82,7 @@ BoxArrayHolder := class extend BoxExeObj
 	vals := CheckExeDownList
 	defaultType := Type^
 	isAllConsts := bool
-	globalVar := GlobalVar^
+	globalVar := GlobalVar2^
 	debugToken := Token^
 
 	this := !(Type^ elType,bool isC,Token^ debToken) -> void
@@ -142,9 +142,9 @@ BoxArrayHolder := class extend BoxExeObj
 			if globalVar == null
 			{
 				globalVar = CreateGlobalVar(StringSpan("anon"),bs.GetArray(vals.Size()),false)
-				globalVar.MemValue = GetAsConst()
+				globalVar.value = GetAsConst()
 			}
-			return globalVar.Value.CreateCall()
+			return globalVar.proxy&
 		}
 
 		cnsts := List.{BoxExeConstObj^}

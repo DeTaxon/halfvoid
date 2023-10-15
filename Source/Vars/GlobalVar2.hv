@@ -22,6 +22,21 @@ GlobalVar2 := class extend BoxUnit
 		downToken = checkToken
 		proxy.baseVar = this&
 	}
+	this := !(StringSpan varName,Type^ tp,bool itl) -> void
+	{
+		itName = varName
+		proxy.baseVar = this&
+		isThreadLocal = itl
+
+		proxy.Down = new GetGlobalVar2(this&,tp)
+		proxy.ObjType = tp
+
+		parsed = true
+		startedParse = true
+
+		varId = GetNewId()
+		parseHatch.Emit()
+	}
 
 	NotifyUseAndWait := !() -> void
 	{
@@ -193,6 +208,10 @@ GlobalVar2 := class extend BoxUnit
 		}
 		f^ << "\n"
 
+	}
+	PrintOutputName := !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "@V" << varId
 	}
 
 }

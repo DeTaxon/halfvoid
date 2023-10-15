@@ -71,7 +71,7 @@ BoxFuncCall := class extend BoxExeObj
 				{
 					assert(par.IsRef)
 					glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
-					varCall := glVar.Value.CreateCall()
+					varCall := glVar.proxy&
 					downs.Push(varCall)
 					defToken = defToken.Right
 				}else{
