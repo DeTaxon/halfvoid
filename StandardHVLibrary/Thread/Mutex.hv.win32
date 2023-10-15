@@ -1,9 +1,8 @@
 
 
-
 Mutex := class
 {
-	itBuffer := char[1024]
+	itBuffer := char[40]
 	"this" := !() -> void
 	{
 		InitializeCriticalSectionAndSpinCount(this&,0x400)
@@ -24,7 +23,7 @@ Mutex := class
 
 ConVar := class
 {
-	itBuffer := char[1024]
+	itBuffer := char[8]
 	"this" := !() -> void
 	{
 		InitializeConditionVariable(this&)

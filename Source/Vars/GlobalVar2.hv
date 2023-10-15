@@ -192,6 +192,9 @@ GlobalVar2 := class extend BoxUnit
 		if not parsed
 			return void
 
+		if proxy.Down is not GetGlobalVar2
+			return void
+
 		f := ctx.writeStream
 
 		f^ << "@V" << varId << " = "

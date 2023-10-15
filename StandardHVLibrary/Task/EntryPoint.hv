@@ -1,5 +1,7 @@
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
+	TLSMutex."this"() //TODO only if TLS used
+
 	//All function expects to CurrentTask be initialized, this is not working for first function
 	//so first function MUST initialize CurrentTask
 	internalInitThread()
@@ -64,10 +66,12 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	InitTaskContext()
 
+
 	CurrentThread = new TaskWorker()
 	CurrentThread.ThreadMainTask = CurrentTask
 	TaskMainTaskWorker = CurrentThread
 	CurrentTask.OSFirstInit()
+
 
 	for it : #MarkedFunctions("CallAtStart")
 	{
