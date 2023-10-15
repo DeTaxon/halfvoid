@@ -121,7 +121,9 @@ BoxFile := class extend BoxUnit
 			{
 				if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
 				{
-					vr = new GlobalVarDelayed(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+					//vr = new GlobalVarDelayed(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+					vr = new GlobalVar2(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+					GlobalVars2.Push(vr->{GlobalVar2^})
 				}
 			}
 
@@ -136,6 +138,10 @@ BoxFile := class extend BoxUnit
 						//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
 						TypesDatabase[vr->{TemplateTypeVar^}.Name] = vr
 					}
+				}else if vr is in GlobalVar2
+				{
+					glb := vr->{GlobalVar2^}
+					CurrentCodeSpace.Globals[glb.itName].Push(vr)
 				}else if vr is in GlobalVar
 				{
 					glb := vr->{GlobalVar^}

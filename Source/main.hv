@@ -14,6 +14,8 @@ loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void
 	res^ = new PriorityBagOld(fileMap.Get(),fileMap.Size())
 }
 
+GlobalVars2 := List.{GlobalVar2^}
+
 GArchBitSize := 64
 
 GDebugTypePrintMeta := List.{Type^}
@@ -26,6 +28,8 @@ AllFunctions := List.{BoxFunc^}
 
 targetLinux := false
 targetWindows := false
+
+EmulateTLS := false
 
 DisableScary := false
 
@@ -44,7 +48,7 @@ main := !(char^[] args) -> int
 		internalHVInitClass(funcTypes^[i])
 	}
 
-	TracyZoneS("MainFunc")
+	TracyZone("MainFunc")
 
 	CodeSpaces.IncRef()
 
@@ -78,6 +82,8 @@ main := !(char^[] args) -> int
 				UseTracy = true
 			case "-scary"
 				DisableScary = true
+			case "-emulate-tls"
+				EmulateTLS = true
 			case "-linux"
 				targetLinux = true
 				targetWindows = false
@@ -258,7 +264,9 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 			fil.AllClasses[^].PrintAsType(ctx)
 		}
 	}
+
 	GlobalVars[^].PrintCode(ctx)
+	GlobalVars2[^].PrintCodeVar(ctx)
 	for spc : CodeSpaces
 	{
 		spc.Globals[^][^].PrintCode(ctx)

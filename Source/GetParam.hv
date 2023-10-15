@@ -167,6 +167,13 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = gVar.Value
 				return true
 			}
+			if it is in GlobalVar2
+			{
+				gVar := it->{GlobalVar2^}
+				gVar.NotifyUseAndWait()
+				callItem = gVar
+				return true
+			}
 			if it is TaskLocalVar or it is TaskLocalVarDelayed
 			{
 				callItem = it
@@ -196,6 +203,10 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	})
 	if callItem != null
 	{
+		if callItem is in GlobalVar2
+		{
+			return callItem->{GlobalVar2^}.proxy&
+		}
 		if callItem is TaskLocalVar
 		{
 			return callItem->{TaskLocalVar^}.CreateCall()

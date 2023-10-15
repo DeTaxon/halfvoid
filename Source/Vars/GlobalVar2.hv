@@ -1,0 +1,272 @@
+GlobalVar2 := class extend BoxUnit
+{
+	itName := StringSpan
+	
+	parsed := bool
+	startedParse := bool
+	isThreadLocal := bool
+
+	value := BoxExeConstObj^
+
+	downToken := Token^
+
+	parseHatch := THatch
+
+	proxy := GlobalVarProxy
+
+	varId := int
+
+	this := !(StringSpan varName,Token^ checkToken) -> void
+	{
+		itName = varName
+		downToken = checkToken
+		proxy.baseVar = this&
+	}
+
+	NotifyUseAndWait := !() -> void
+	{
+		if startedParse
+		{
+			parseHatch.Await()
+			return void
+		}
+		startedParse = true //TODO thread unsafe
+		cls := this&
+		TSpawnTask(() ==> [cls] {
+			cls.Parse()
+		})
+		parseHatch.Await()
+	}
+
+	Parse := !() -> void
+	{
+		GParsedAllFiles.Await()
+
+		varId = GetNewId()
+
+		if downToken.GetValue() == "thread_local"
+		{
+			downToken = downToken.Right
+			isThreadLocal = true
+		}
+
+		typeToken := downToken
+		
+		tp := ParseType(typeToken)
+
+		if tp == null
+		{
+			value = TryGetExeCall(typeToken)->{BoxExeConstObj^}
+			if value? is BoxArrayHolder
+			{
+				ah := value->{BoxArrayHolder^}
+				if ah.GetArraySize() == 0
+					typeToken.EmitError("Can not use empty array as global variable")
+				if not ah.IsConst()
+					typeToken.EmitError("Array must be made of constants")
+				tp = ah.GetArrayType()
+				value = ah.GetAsConst()
+			}else{
+				if not (value is in BoxExeConstObj)
+					typeToken.EmitError("Global variable value must be a constant")
+			}
+			assert(tp != GTypeVoid)
+			if value != null
+				tp = value.GetType()
+		}else{
+			if tp is TypeClass
+			{
+				value = createConstType(tp)
+			}
+			if tp is TypeArr
+			{
+				iter := tp
+				while iter is TypeArr
+					iter = iter.Base
+				if iter is TypeClass
+					value = createConstType(tp)
+			}
+		}
+
+		if tp != null
+		{
+			if tp == GTypeVoid
+				downToken.EmitError("Software error\n")
+			tp.NotifyUse()
+			proxy.Down = new GetGlobalVar2(this&,tp)
+			proxy.ObjType = tp
+		}else{
+			downToken.EmitError("Can not get type of global variable")
+		}
+		parsed = true
+		parseHatch.Emit()
+	
+	}
+	createConstType := !(Type^ tp) -> BoxExeConstObj^
+	{
+		if tp is in TypeClass
+			return createConstTypeClass(tp)
+		if tp is TypeArr
+			return createConstTypeArray(tp)
+		return null
+	}
+	createConstTypeArray := !(Type^ tp) -> BoxExeConstObj^
+	{
+		ta := tp->{TypeArr^}
+		assert(ta.len != 0)
+
+		oneObj := createConstType(ta.Base)
+		
+		res := new ClassArray(ta)
+		for i : ta.len
+		{
+			res.Value.Push(oneObj)
+		}
+		return res
+	}
+	createConstTypeClass := !(Type^ tp) -> BoxExeConstObj^
+	{
+		dwn := new ClassConstValue
+
+		cls := tp->{TypeClass^}.ToClass
+		cls.AwaitTypeState()
+
+		if cls is in BoxClassBody
+		{
+			bd := cls->{BoxClassBody^}
+			if bd.VTableField != null
+			{
+				dwn.Value.Push(new ClassVTablePtrConst(bd))
+			}
+		}
+		createConstTypeClass2(dwn,cls)
+
+		dwn.ItType = cls.ItType
+		dwn.ObjType = cls.ItType
+		return dwn
+	}
+	createConstTypeClass2 := !(ClassConstValue^ dwn,BoxClass^ cls) -> void
+	{
+		for it : cls.Parents
+			createConstTypeClass2(dwn,it)
+	
+		isThisGCClass := false
+		if cls.ItType == GCType
+		{
+			isThisGCClass = true
+		}
+
+		for it,i : cls.Fields
+		{
+			if isThisGCClass and i == 0
+			{
+				assert(it.Value == GTypeInt)
+				dwn.Value.Push(GetExeInt(1))
+				continue
+			}
+			if it.Value is TypeClass or (it.Value is TypeArr and it.Value.Base is TypeClass)
+			{
+				dwn.Value.Push(createConstType(it.Value))
+			}else{
+				dwn.Value.Push(new ZeroClassConst(it.Value))
+			}
+		}
+	}
+	PrintCodeVar := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if not parsed
+			return void
+
+		f := ctx.writeStream
+
+		f^ << "@V" << varId << " = "
+		if isThreadLocal
+			f^ << " thread_local"
+		f^ << " global "
+		proxy.GetType().PrintType(ctx)
+		if value != null
+		{
+			f^ << " "
+			value.PrintConst(ctx)
+		}else{
+			f^ << " zeroinitializer"
+		}
+		f^ << "\n"
+
+	}
+
+}
+
+GlobalVarProxy := class extend BoxExeObj
+{
+	baseVar := GlobalVar2^
+	Down := BoxExeObj^
+
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointPre(ctx)
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointUse(ctx)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintUse(ctx)
+	}
+}
+GetGlobalVar2 := class extend BoxExeObj
+{
+	baseVar := GlobalVar2^
+	unrefId := int //TODO remove somehow?
+	
+	this := !(GlobalVar2^ glbObj,Type^ tp) -> void
+	{
+		baseVar = glbObj
+		ObjType = tp
+	}
+
+	NotifyMemUse := virtual !() -> void
+	{
+	}
+	IsMem := virtual !() -> bool
+	{
+		return true
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "@V" << baseVar.varId
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		unrefId = ctx.GetNewId()
+		f := ctx.writeStream
+		rType := NormalizeType(GetType())
+
+		PrintPointPre(ctx)
+		f^ << "%TUnref" << unrefId << " = load "
+		rType.PrintType(ctx)
+		f^ << ","
+		rType.PrintType(ctx)
+		f^ << "* "
+		PrintPointUse(ctx)
+		if DebugMode
+			f^ << ", !dgb !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%TUnref" << unrefId
+	}
+}
