@@ -73,6 +73,11 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	{
 		it()
 	}
+
+	for it : #MarkedFunctions("ThreadBegin")
+	{
+		it()
+	}
 	
 	if #Tracy()
 	{
@@ -88,6 +93,11 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	})
 
 	EnterTaskThreadCycle(true)
+
+	for it : #MarkedFunctions("ThreadEnd")
+	{
+		it()
+	}
 
 	if #Tracy()
 	{

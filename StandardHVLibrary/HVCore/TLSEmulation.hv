@@ -1,0 +1,17 @@
+
+//
+//TLSCreateStruct := !() -> void
+//{
+//}
+//TLSDeleteStruct := !() -> void
+//{
+//}
+//
+//TLSMutex := Mutex
+//TLSData := AVLMap.{u64,void^}
+//
+//GetTLSVar := !().{@T} -> T^
+//{
+//	#MarkFunction("ThreadBegin",TLSCreateStruct)
+//	#MarkFunction("ThreadEnd",TLSDeleteStruct)
+//}

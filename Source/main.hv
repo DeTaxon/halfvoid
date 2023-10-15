@@ -14,8 +14,6 @@ loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void
 	res^ = new PriorityBagOld(fileMap.Get(),fileMap.Size())
 }
 
-GlobalVars2 := List.{GlobalVar2^}
-
 GArchBitSize := 64
 
 GDebugTypePrintMeta := List.{Type^}
@@ -213,17 +211,7 @@ main := !(char^[] args) -> int
 			libs.CreateInitPart()
 	}
 
-	while GClassesInProgress.Size() != 0
-	{
-		GClassesInProgress[0].AwaitReadyState()
-		GClassesInProgress.Pop()
-	}
-
-	while GFuncsInProgress.Size() != 0
-	{
-		GFuncsInProgress[0].WaitReadyState()
-		GFuncsInProgress.Pop()
-	}
+	WaitForParsingObjects()
 
 	printf("good to go\n")
 
@@ -247,6 +235,21 @@ main := !(char^[] args) -> int
 	FinilizeCache()
 
 	return 0
+}
+
+WaitForParsingObjects := !() -> void
+{
+	while GClassesInProgress.Size() != 0
+	{
+		GClassesInProgress[0].AwaitReadyState()
+		GClassesInProgress.Pop()
+	}
+
+	while GFuncsInProgress.Size() != 0
+	{
+		GFuncsInProgress[0].WaitReadyState()
+		GFuncsInProgress.Pop()
+	}
 }
 
 WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void

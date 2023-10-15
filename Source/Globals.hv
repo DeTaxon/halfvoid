@@ -27,6 +27,8 @@ GDebugFuncId := task_local int
 GDebugScopeId := task_local int
 GDebugLineCallId := task_local int
 
+GlobalVars2 := List.{GlobalVar2^}
+
 SubWork := !(!()&->void x) -> void
 {
 	subLambda := x.Capture()

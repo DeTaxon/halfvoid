@@ -20,7 +20,17 @@ Thread := class extend TGCObject
 	}
 	Call := !() -> void
 	{
+		for it : #MarkedFunctions("ThreadBegin")
+		{
+			it()
+		}
+
 		lmb()
+
+		for it : #MarkedFunctions("ThreadEnd")
+		{
+			it()
+		}
 	}
 	//Join := !() -> void {}
 }
