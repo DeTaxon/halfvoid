@@ -158,7 +158,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
 				return GObjNone
-			fncCall := cls.VTableValue.Value.CreateCall()
+			fncCall := cls.VTableValue.proxy&
 			return new UnrefFuncCall(fncCall)
 		}
 		dObj := TryGetExeCall(obj.Down)

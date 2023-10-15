@@ -120,7 +120,7 @@ IsSameTypeChecker := class extend BoxExeObj
 		f^ << "%T" << resId << " = icmp eq "
 		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
 		f^ << "* %TPre" << resId << " , "
-		TargetType.ToClass.VTableValue.Value.PrintOutputName(ctx)
+		TargetType.ToClass.VTableValue.PrintOutputName(ctx)
 		f^ << "\n"
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void

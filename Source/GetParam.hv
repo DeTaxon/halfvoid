@@ -97,10 +97,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					al := par->{GlobalNameAlias2^}
 					al.Value.NotifyUseAndWait()
 					return al.Value.proxy&
-				}else if par is GlobalNameAlias {
-					al := par->{GlobalNameAlias^}
-					al.Value.AwaitType()
-					return al.Value.Value.CreateCall()
 				}else{
 					assert(false)
 				}
@@ -164,13 +160,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	GetItemGlobal(asItm.Value, x ==> {
 		for it : x
 		{
-			if it is in GlobalVar
-			{
-				gVar := it->{GlobalVar^}
-				gVar.AwaitType()
-				callItem = gVar.Value
-				return true
-			}
 			if it is in GlobalVar2
 			{
 				gVar := it->{GlobalVar2^}

@@ -76,7 +76,7 @@ ClassVTablePtrConst := class extend BoxExeConstObj
 	}
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		itClass.VTableValue.Value.PrintResultObj(ctx,0,0)
+		itClass.VTableValue.PrintOutputName(ctx)
 	}
 }
 

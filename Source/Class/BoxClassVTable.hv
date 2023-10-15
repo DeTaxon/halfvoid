@@ -7,7 +7,7 @@ AppendClass BoxClass
 
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
-	VTableValue := GlobalVar^
+	VTableValue := GlobalVar2^
 	VTableField := FieldPath^
 
 	VTableId := int
@@ -17,7 +17,7 @@ AppendClass BoxClass
 	{
 		if VTable.Size() == 0
 			return void
-		VTableValue.PrintCode(ctx)
+		VTableValue.PrintCodeVar(ctx)
 	}
 	GetVTableIds := !(BoxArrayHolder dat) -> void
 	{
@@ -119,7 +119,7 @@ AppendClass BoxClass
 		}
 		VTableType = GetTuple(tps,true,true)
 		VTableType.StartParseBody()
-		VTableValue = new GlobalVar(StringSpan(""),VTableType.ItType)
+		VTableValue = new GlobalVar2(StringSpan(""),VTableType.ItType,false)
 		
 		cnst := new ClassConstValue
 		cnst.ItType = VTableType.ItType
@@ -128,7 +128,7 @@ AppendClass BoxClass
 		{
 			cnst.Value.Push(it.GetConst())
 		}
-		VTableValue.MemValue = cnst
+		VTableValue.value = cnst
 		VTableField = new FieldPathAbs(ItType,VTableType.ItType.GetPoint())
 	}
 

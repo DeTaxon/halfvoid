@@ -237,11 +237,6 @@ NamedVar := class extend BoxUnit
 {
 	Name := StringSpan
 }
-
-GlobalNameAlias := class extend NamedVar
-{
-	Value := GlobalVar^
-}
 GlobalNameAlias2 := class extend NamedVar
 {
 	Value := GlobalVar2^

@@ -289,3 +289,11 @@ GetGlobalVar2 := class extend BoxExeObj
 		ctx.writeStream^ << "%TUnref" << unrefId
 	}
 }
+CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar2^
+{
+	mName := GetFuncMangle(name)
+	newVar := new GlobalVar2(mName,tp,isThreadLocal)
+	GlobalVars2.Push(newVar)
+	return newVar
+}
+

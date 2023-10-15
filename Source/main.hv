@@ -265,7 +265,6 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 		}
 	}
 
-	GlobalVars[^].PrintCode(ctx)
 	GlobalVars2[^].PrintCodeVar(ctx)
 	for spc : CodeSpaces
 	{

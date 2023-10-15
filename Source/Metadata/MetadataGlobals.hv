@@ -19,7 +19,7 @@ GlobalVarsIterator := class extend BoxMetaObj
 {
 	IsMetaIteratable := virtual !() -> bool { return true }
 
-	globs := List.{Tuple.{StringSpan,ParamFunc^}}
+	globs := List.{Tuple.{StringSpan,BoxExeObj^}}
 	metaInited := bool
 	MetaInit := !() -> void
 	{
@@ -34,12 +34,12 @@ GlobalVarsIterator := class extend BoxMetaObj
 			{
 				for glb : glbBlock
 				{
-					if glb is in GlobalVar
+					if glb is in GlobalVar2
 					{
-						asGlb := glb->{GlobalVar^}
-						if not asGlb.IsThreadLocal()
+						asGlb := glb->{GlobalVar2^}
+						if not asGlb.isThreadLocal and asGlb.parsed
 						{
-							globs.Emplace(glbName,asGlb.Value)
+							globs.Emplace(glbName,asGlb.proxy&)
 						}
 					}
 				}
@@ -53,8 +53,8 @@ GlobalVarsIterator := class extend BoxMetaObj
 		return globs.Size()
 	}
 
-	GetMetaIterValueParam := virtual !(int ind) -> ParamFunc^ { return globs[ind].1 } // called this first, if == null next is GetMetaIterValue
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return null }
+	GetMetaIterValueParam := virtual !(int ind) -> ParamFunc^ { return null } // called this first, if == null next is GetMetaIterValue
+	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return globs[ind].1 }
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return GetExeString(GetConstString(globs[ind].0)) }
 }
