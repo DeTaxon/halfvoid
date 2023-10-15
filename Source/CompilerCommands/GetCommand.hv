@@ -45,6 +45,10 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryGetMarkedFunctions(itm)
 	}
+	if cmd == "#TLSSize"
+	{
+		return GetExeInt(TLSSize)
+	}
 	if cmd == "#Tracy"
 	{
 		if UseTracy

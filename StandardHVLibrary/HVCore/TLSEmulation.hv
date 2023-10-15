@@ -1,17 +1,35 @@
 
-//
-//TLSCreateStruct := !() -> void
+
+//internalTLSCreateStruct := !() -> void
 //{
+//	newStruct := calloc(#TLSSize(),1)
+//	TLSMutex.Lock()
+//	TLSData[osGetThreadId()] = newStruct
+//	TLSMutex.Unlock()
 //}
-//TLSDeleteStruct := !() -> void
+//internalTLSDeleteStruct := !() -> void
 //{
+//	TLSMutex.Lock()
+//	id := osGetThreadId()
+//	strc := TLSData[id]
+//	TLSData.Remove(id)
+//	TLSMutex.Unlock()
+//	free(strc)
 //}
-//
-//TLSMutex := Mutex
-//TLSData := AVLMap.{u64,void^}
-//
-//GetTLSVar := !().{@T} -> T^
-//{
-//	#MarkFunction("ThreadBegin",TLSCreateStruct)
-//	#MarkFunction("ThreadEnd",TLSDeleteStruct)
-//}
+
+TLSMutex := Mutex
+TLSData := AVLMap.{u64,void^}
+
+internalGetTLSVar := !() -> void^
+{
+	//#MarkFunction("ThreadBegin",internalTLSCreateStruct)
+	//#MarkFunction("ThreadEnd",internalTLSDeleteStruct)
+
+	TLSMutex.Lock()
+	res := ref TLSData[osGetThreadId()]
+	if res == null
+		res = calloc(#TLSSize(),1)
+	TLSMutex.Unlock()
+
+	result = res
+}

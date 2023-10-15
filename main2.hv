@@ -16,39 +16,9 @@
 //	}
 //}
 
-SubOperator := !(@T a, T b) -> T
-{
-	return a - b
-}
-
-
-TemplateTest := class .{@T}
-{
-	x := T
-	y := T
-
-	#Virtualize("ContainerSub","SubOperator",T,T)
-
-	TestFunc := virtual !() -> void ; TemplateResist
-	{
-		TmpVar := static 15
-		printf("HEY %p\n",TmpVar&)
-		x = ContainerSub(x,y)
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	a := TemplateTest.{int}
-	a.x = 100
-	a.y = 12
-	b := TemplateTest.{float}
-	b.x = 100
-	b.y = 12
-
-	a.TestFunc()
-	b.TestFunc()
-	printf("result %i %f\n",a.x, b.x)
+	printf("Hello world %p\n",CurrentTask)
 	return 0
 }
 

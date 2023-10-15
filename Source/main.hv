@@ -27,8 +27,6 @@ AllFunctions := List.{BoxFunc^}
 targetLinux := false
 targetWindows := false
 
-EmulateTLS := false
-
 DisableScary := false
 
 UseTracy := false
@@ -210,6 +208,10 @@ main := !(char^[] args) -> int
 		for libs : it.Modules
 			libs.CreateInitPart()
 	}
+
+	WaitForParsingObjects()
+
+	TLSStep()
 
 	WaitForParsingObjects()
 

@@ -15,7 +15,8 @@
 		"syscall" : "s64,s64,...",
 
 		"pthread_create" : "int,u64^,void^,void^,void^",
-		"pthread_join" : "int,u64,void^^"
+		"pthread_join" : "int,u64,void^^",
+		"pthread_self" : "u64",
 		
 		"pthread_mutex_init" : "void,void^,void^",
 		"pthread_mutex_lock" : "void,void^",

@@ -113,3 +113,9 @@ pollfd := class
 
 	"=" := default
 }
+
+
+osGetThreadId := !() -> u64
+{
+	return pthread_self()
+}

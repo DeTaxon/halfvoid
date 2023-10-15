@@ -1,0 +1,44 @@
+
+
+EmulateTLS := false
+TLSSize := int
+TLSType := Type^
+
+TLSStep := !() -> void
+{
+	if not EmulateTLS
+		return void
+
+	tlsTypes := List.{Type^}
+	tlsVars := List.{GlobalVar2^}
+	
+	for it :  GlobalVars2
+	{
+		if not it.isThreadLocal
+			continue
+		if not it.parsed
+			continue
+		tlsTypes.Push(it.proxy.GetType())
+		tlsVars.Push(it)
+	}
+	if tlsVars.Size() == 0
+		return void
+
+	tlsTuple := GetTuple(tlsTypes)
+
+	TLSSize = tlsTuple.ItType.GetSize()
+
+	mpty := CheckExeDownList
+	getPtr := CreateFuncCall(StringSpan("internalGetTLSVar"),mpty)
+	varGet := GetExchange2(getPtr,tlsTuple.ItType.GetPoint(),false)
+
+	for it,i : tlsVars
+	{
+		vrs := CheckExeDownList
+		vrs.Push(varGet)
+		gtVar := tlsTuple.GetFieldByIndexTuple(i)
+		varRef := gtVar.CreateCall(vrs)
+		assert(varRef != null)
+		it.proxy.Down = varRef //TODO memleak
+	}
+}
