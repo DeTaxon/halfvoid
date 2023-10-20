@@ -69,6 +69,9 @@ GLFWWindow := class
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
 	}
+	WindowResized := virtual !(int width, int height) -> void
+	{
+	}
 
 	M1Pressed := bool
 	M2Pressed := bool
@@ -165,6 +168,7 @@ glfwWinResized := !(void^ window, int newW, int newH) -> void
 	w.Width = newW
 	w.Height = newH
 	w.LastTimeResized = GetSteadyTime()
+	w.WindowResized(newW,newH)
 }
 glfwMouseMove := !(void^ w, double itX, double itY) -> void
 {

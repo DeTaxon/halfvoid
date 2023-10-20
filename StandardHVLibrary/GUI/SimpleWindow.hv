@@ -138,6 +138,8 @@ SimpleWindow := class extend GLFWWindow
 						oldW = w
 						oldH = h
 					}
+					vkOverlay.w = w
+					vkOverlay.h = h
 					mainGUIObject.PushDraw(vkOverlay&,cmdBuf.cmdData.Get(),vec2f(0,0))
 					DrawVulkan(cmdBuf.cmdData.Get(),w,h)
 
@@ -199,6 +201,10 @@ SimpleWindow := class extend GLFWWindow
 	{
 		vInstance.Funcs.vkCmdEndRendering(cmd)
 		//vInstance.Funcs.vkCmdEndRenderPass(cmd)
+	}
+	WindowResized := virtual !(int width, int height) -> void
+	{
+		imgGeneration -= 1
 	}
 
 	InitWindow := virtual !() -> GUIObject^
