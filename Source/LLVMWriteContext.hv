@@ -7,11 +7,69 @@ LLVMWriteContext := class
 
 	funcDebugMetas := List.{BoxExeObj^}
 
+	currentFunction := BoxFuncBody^
 
+	exitNodes := ContextExitNode
+
+
+	Clear := !() -> void
+	{
+		exitNodes.subNodes.Destroy()
+	}
 	GetNewId := !() -> int
 	{
 		funcCallCounter += 1
 		return funcCallCounter
 	}
+	
+	PrintExitPaths := !() -> void
+	{
+		exitNodes.PrintExits(this&)
+	}
+}
 
+ContextExitNode := class extend TGCObject
+{
+	subNodes := AVLMap.{BoxExeObj^,ContextExitNode}
+	exitLabel := BoxLabel^
+
+	GetLabel := !() -> BoxLabel^
+	{
+		if exitLabel == null
+			exitLabel = new BoxLabel()
+		return exitLabel
+	}
+
+	PrintExits := !(LLVMWriteContext^ ctx) -> void
+	{
+		switch subNodes.Size()
+		{
+			case 1
+				for it,ind : subNodes
+				{
+					it.PrintExits(ctx)
+					ind.PrintDefer(ctx)
+				}
+				if exitLabel != null
+				{
+					exitLabel.PrintGo(ctx)
+					exitLabel.PrintCode(ctx)
+				}
+			case 0
+				//meh
+				if exitLabel != null
+					exitLabel.PrintCode(ctx)
+			case void
+				{
+					lbl := GetLabel()
+					for it,ind : subNodes
+					{
+						it.PrintExits(ctx)
+						ind.PrintDefer(ctx)
+						lbl.PrintGo(ctx)
+					}
+					lbl.PrintCode(ctx)
+				}
+		}
+	}
 }

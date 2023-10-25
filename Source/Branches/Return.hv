@@ -22,11 +22,25 @@ BoxReturn := class extend BoxExeObj
 		ResultCall?.PrintDefaultUse(ctx)
 
 		//TODO inline functions?
-		for it : ctx.deferObjects
+
+		//for it : ctx.deferObjects
+		//{
+		//	it.PrintDefer(ctx)
+		//}
+		//EndLabel.PrintGo(ctx)
+
+		if ctx.deferObjects.Size() == 0
 		{
-			it.PrintDefer(ctx)
+			EndLabel.PrintGo(ctx)
+		}else{
+			iter := ctx.exitNodes&
+			for i : ctx.deferObjects.Size()
+			{
+				it := ctx.deferObjects[ctx.deferObjects.Size() - i - 1]
+				iter = iter.subNodes[it]&
+			}
+			iter.GetLabel().PrintGo(ctx)
 		}
-		EndLabel.PrintGo(ctx)
 	}
 }
 

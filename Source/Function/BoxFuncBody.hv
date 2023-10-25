@@ -269,6 +269,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		f := ctx.writeStream
 
 		ctx.funcCallCounter = 1
+		ctx.currentFunction = this&
 
 		GDebugFuncId = 0
 		CurrentFunc = this&
@@ -283,6 +284,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		GDebugScopeId = GDebugFuncId
 
 		ctx.deferObjects.Destroy()
+		ctx.Clear()
 
 		f^ << "define "
 		PrintResultType(ctx)
@@ -312,6 +314,10 @@ BoxFuncBody := class extend BoxFuncCommon
 		body.PrintCode(ctx)
 
 		YieldPrintFinilize(ctx)
+
+		ExitLabel.PrintGo(ctx)
+
+		ctx.PrintExitPaths()
 
 		ExitLabel.PrintCode(ctx)
 

@@ -18,8 +18,9 @@
 
 main := !(char^[] args) -> int
 {
-	printf("Hello world %p\n",CurrentTask)
-	return 0
+	c := int
+	TLock(c&)
+	TUnlock(c&)
 }
 
 
