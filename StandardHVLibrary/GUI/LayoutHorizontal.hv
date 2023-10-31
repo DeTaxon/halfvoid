@@ -28,7 +28,7 @@ LayoutHorizontal := class extend LayoutBase
 						fullSizeCount += 1
 					case 1
 						staticW += itL.0.x
-						foundStaticH = true
+						//foundStaticH = true
 					case 2 //dynamic ??
 				}
 				continue
@@ -62,7 +62,7 @@ LayoutHorizontal := class extend LayoutBase
 		if foundStaticW { result.1 = 1
 		}else { result.1 = 0}
 
-		if foundStaticW { result.2 = 1
+		if foundStaticH { result.2 = 1
 		}else {result.2 = 0}
 	}
 
@@ -91,10 +91,11 @@ LayoutHorizontal := class extend LayoutBase
 			}
 			itL := it.0.GetLayout(ctx)
 			newSize := vec2f
+			//printf("wut %i\n",itL.1)
 			switch itL.1
 			{
 				case 0
-					assert(false)
+					it.0.SetLayout(ctx,setSize)
 				case 1
 					switch itL.2
 					{
@@ -105,6 +106,7 @@ LayoutHorizontal := class extend LayoutBase
 					}
 					newSize.x = itL.0.x
 					it.0.SetLayout(ctx,newSize)
+					//printf("hey %f %f %f %f %i\n",newSize.x,newSize.y,setSize.x,setSize.y,itL.2)
 					it.1.y = 0
 					it.1.x = pOffset
 					it.2 = newSize

@@ -28,7 +28,7 @@ LayoutVertical := class extend LayoutBase
 						fullSizeCount += 1
 					case 1
 						staticH += itL.0.x
-						foundStaticW = true
+						//foundStaticW = true
 					case 2 //dynamic ??
 				}
 				continue
@@ -62,8 +62,10 @@ LayoutVertical := class extend LayoutBase
 		if foundStaticW { result.1 = 1
 		}else { result.1 = 0}
 
-		if foundStaticW { result.2 = 1
+		if foundStaticH { result.2 = 1
 		}else {result.2 = 0}
+		
+		printf("hey %f %f %i %i\n",result.0.x,result.0.y,result.1,result.2)
 	}
 
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
@@ -94,7 +96,7 @@ LayoutVertical := class extend LayoutBase
 			switch itL.2
 			{
 				case 0
-					assert(false)
+					it.0.SetLayout(ctx,setSize)
 				case 1
 					switch itL.1
 					{

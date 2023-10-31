@@ -10,7 +10,13 @@ NkButton := class extend GUIObject
 
 	this := !(SimpleWindow^ nkCtx,float x, float y,StringView setLabel,Font^ setFont) -> void
 	{
-		SetSize("static",x,"static",y)
+		typeX := "static"
+		if x == 0
+			typeX = "fullsize"
+		typeY := "static"
+		if y == 0
+			typeY = "fullsize"
+		SetSize(typeX,x,typeY,y)
 
 		assert(setFont != null)
 		itText."this"(setFont,setLabel)
