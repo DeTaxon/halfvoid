@@ -232,6 +232,7 @@ SimpleWindow := class extend GLFWWindow
 	RedrawWindow := !() -> void
 	{
 		vkOverlay.DataGeneration += 1
+		vkOverlay.CmdGeneration += 1
 	}
 }
 

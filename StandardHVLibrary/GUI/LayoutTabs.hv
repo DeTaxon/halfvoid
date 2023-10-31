@@ -2,10 +2,19 @@
 
 LayoutTabs := class extend LayoutBase
 {
+	currentIndex := int
 	this := !(GUIObject^[] objs) -> void
 	{
 		super(objs)
 	}
+
+	NextTab := !() -> void
+	{
+		if objects.Size() == 0
+			return void
+		currentIndex = (currentIndex + 1) mod objects.Size()
+	}
+	
 	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{
 		foundStaticW = false
@@ -68,10 +77,22 @@ LayoutTabs := class extend LayoutBase
 	}
 	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
-		for it : objects
+		for it,i : objects
 		{
+			if i != currentIndex
+				continue
 			it.0.PushDraw(ctx,cmdB,offset + it.1)
 			break
+		}
+	}
+	MousePressed := virtual !(VkOverlayContext^ ctx,int buttonNum, bool pressed,vec2f offset) -> void
+	{
+		for it,i : objects
+		{
+			if i != currentIndex
+				continue
+			it.0.MousePressed(ctx,buttonNum,pressed,offset - it.1)
+			return void
 		}
 	}
 }
