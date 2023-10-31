@@ -1,11 +1,23 @@
-
-
-LayoutTabs := class extend LayoutBase
+AppendClass VkOverlayContext
 {
+	CreateLayoutTabs := !(GUIObject^[] objs) -> LayoutTabs^
+	{
+		result = new LayoutTabs(objs)
+		result.baseContext = this&
+	}
+}
+
+LayoutTabs := class extend GUIObject//LayoutBase
+{
+	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
+	baseContext := VkOverlayContext^
 	currentIndex := int
 	this := !(GUIObject^[] objs) -> void
 	{
-		super(objs)
+		for it : objs
+		{
+			objects.Emplace(it,vec2f(0,0),vec2f(0,0),false)
+		}
 	}
 
 	NextTab := !() -> void
@@ -13,17 +25,20 @@ LayoutTabs := class extend LayoutBase
 		if objects.Size() == 0
 			return void
 		currentIndex = (currentIndex + 1) mod objects.Size()
+
+		baseContext.DataGeneration += 1
+		baseContext.CmdGeneration += 1
 	}
 	
 	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
 	{
-		foundStaticW = false
-		foundStaticH = false
-		staticW = 0
-		staticH = 0
+		foundStaticW := false
+		foundStaticH := false
+		staticW := 0
+		staticH := 0
 
-		foundFullSizeW = false
-		foundFullSizeH = false
+		foundFullSizeW := false
+		foundFullSizeH := false
 
 		for it : objects
 		{
