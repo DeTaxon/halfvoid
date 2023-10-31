@@ -1,0 +1,77 @@
+
+
+LayoutTabs := class extend LayoutBase
+{
+	this := !(GUIObject^[] objs) -> void
+	{
+		super(objs)
+	}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	{
+		foundStaticW = false
+		foundStaticH = false
+		staticW = 0
+		staticH = 0
+
+		foundFullSizeW = false
+		foundFullSizeH = false
+
+		for it : objects
+		{
+			itL := it.0.GetLayout(ctx)
+			switch itL.1
+			{
+				case 0 //fullSuze
+					foundFullSizeW = true
+				case 1 //static
+					staticW = max(staticW,itL.0.x)
+					foundStaticW = true
+				case 2 //dynamic
+			}
+			switch itL.2
+			{
+				case 0 //fullSuze
+					foundFullSizeH = true
+				case 1 //static
+					staticH = max(staticH,itL.0.y)
+					foundStaticH = true
+				case 2 //dynamic
+			}
+		}
+
+		if foundStaticW { result.0.x = staticW }
+		if foundStaticH { result.0.y = staticH }
+
+		if foundStaticW { result.1 = 1
+		}else { result.1 = 0}
+
+		if foundStaticH { result.2 = 1
+		}else {result.2 = 0}
+	}
+
+	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	{
+		for it : objects
+		{
+			newSize := setSize
+			itL := it.0.GetLayout(ctx)
+			if itL.1 == 1
+			{
+				newSize.x = itL.0.x
+			}
+			if itL.2 == 1
+			{
+				newSize.y = itL.0.y
+			}
+			it.0.SetLayout(ctx,newSize)
+		}
+	}
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+		for it : objects
+		{
+			it.0.PushDraw(ctx,cmdB,offset + it.1)
+			break
+		}
+	}
+}

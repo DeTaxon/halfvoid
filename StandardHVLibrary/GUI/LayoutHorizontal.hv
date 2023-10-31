@@ -39,6 +39,7 @@ LayoutHorizontal := class extend LayoutBase
 			{
 				case 0 //fullSuze
 					foundFullSizeW = true
+					fullSizeCount += 1
 				case 1 //static
 					staticW = staticW + itL.0.x
 					foundStaticW = true
@@ -48,7 +49,6 @@ LayoutHorizontal := class extend LayoutBase
 			{
 				case 0 //fullSuze
 					foundFullSizeH = true
-					fullSizeCount += 1
 				case 1 //static
 					staticH = max(staticH,itL.0.y)
 					foundStaticH = true
@@ -91,11 +91,14 @@ LayoutHorizontal := class extend LayoutBase
 			}
 			itL := it.0.GetLayout(ctx)
 			newSize := vec2f
-			//printf("wut %i\n",itL.1)
 			switch itL.1
 			{
 				case 0
-					it.0.SetLayout(ctx,setSize)
+					newSize = setSize
+					newSize.x = (setSize.x - staticW) / fullSizeCount
+					it.0.SetLayout(ctx,newSize)
+					it.1.y = 0
+					it.1.x = pOffset
 				case 1
 					switch itL.2
 					{
@@ -106,14 +109,13 @@ LayoutHorizontal := class extend LayoutBase
 					}
 					newSize.x = itL.0.x
 					it.0.SetLayout(ctx,newSize)
-					//printf("hey %f %f %f %f %i\n",newSize.x,newSize.y,setSize.x,setSize.y,itL.2)
 					it.1.y = 0
 					it.1.x = pOffset
 					it.2 = newSize
 				case 2
 					assert(false)
 			}
-			pOffset += newSize.y
+			pOffset += newSize.x
 		}
 	}
 	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
