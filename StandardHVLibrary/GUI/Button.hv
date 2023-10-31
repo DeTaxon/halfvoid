@@ -38,7 +38,7 @@ NkButton := class extend GUIObject
 		if pressed
 			pressCallback?()
 	}
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{
 		result = super(ctx)
 		itText.GetLayout(ctx)

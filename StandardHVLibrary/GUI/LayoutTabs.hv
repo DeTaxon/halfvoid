@@ -30,7 +30,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		baseContext.CmdGeneration += 1
 	}
 	
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{
 		foundStaticW := false
 		foundStaticH := false
@@ -63,14 +63,14 @@ LayoutTabs := class extend GUIObject//LayoutBase
 			}
 		}
 
-		if foundStaticW { result.0.x = staticW }
-		if foundStaticH { result.0.y = staticH }
+		if foundStaticW { result.Sizes.x = staticW }
+		if foundStaticH { result.Sizes.y = staticH }
 
-		if foundStaticW { result.1 = 1
-		}else { result.1 = 0}
+		if foundStaticW { result.LayoutTypeW = 1
+		}else { result.LayoutTypeW = 0}
 
-		if foundStaticH { result.2 = 1
-		}else {result.2 = 0}
+		if foundStaticH { result.LayoutTypeH = 1
+		}else {result.LayoutTypeH = 0}
 	}
 
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
@@ -79,13 +79,13 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		{
 			newSize := setSize
 			itL := it.0.GetLayout(ctx)
-			if itL.1 == 1
+			if itL.LayoutTypeW == 1
 			{
-				newSize.x = itL.0.x
+				newSize.x = itL.Sizes.x
 			}
-			if itL.2 == 1
+			if itL.LayoutTypeH == 1
 			{
-				newSize.y = itL.0.y
+				newSize.y = itL.Sizes.y
 			}
 			it.0.SetLayout(ctx,newSize)
 		}

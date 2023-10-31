@@ -5,7 +5,7 @@ LayoutHorizontal := class extend LayoutBase
 	{
 		super(objs)
 	}
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{
 		fullSizeCount = 0
 		foundStaticW = false
@@ -35,35 +35,35 @@ LayoutHorizontal := class extend LayoutBase
 			}
 
 			itL := it.0.GetLayout(ctx)
-			switch itL.1
+			switch itL.LayoutTypeW
 			{
 				case 0 //fullSuze
 					foundFullSizeW = true
 					fullSizeCount += 1
 				case 1 //static
-					staticW = staticW + itL.0.x
+					staticW = staticW + itL.Sizes.x
 					foundStaticW = true
 				case 2 //dynamic
 			}
-			switch itL.2
+			switch itL.LayoutTypeH
 			{
 				case 0 //fullSuze
 					foundFullSizeH = true
 				case 1 //static
-					staticH = max(staticH,itL.0.y)
+					staticH = max(staticH,itL.Sizes.y)
 					foundStaticH = true
 				case 2 //dynamic
 			}
 		}
 
-		if foundStaticW { result.0.x = staticW }
-		if foundStaticH { result.0.y = staticH }
+		if foundStaticW { result.Sizes.x = staticW }
+		if foundStaticH { result.Sizes.y = staticH }
 
-		if foundStaticW { result.1 = 1
-		}else { result.1 = 0}
+		if foundStaticW { result.LayoutTypeW = 1
+		}else { result.LayoutTypeW = 0}
 
-		if foundStaticH { result.2 = 1
-		}else {result.2 = 0}
+		if foundStaticH { result.LayoutTypeH = 1
+		}else {result.LayoutTypeH = 0}
 	}
 
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
@@ -80,18 +80,18 @@ LayoutHorizontal := class extend LayoutBase
 			if it.0 is LayoutSpacer
 			{
 				itL := it.0.GetLayout(ctx)
-				switch itL.1
+				switch itL.LayoutTypeW
 				{
 					case 0
 						pOffset += (setSize.x - staticW) / fullSizeCount
 					case 1
-						pOffset += itL.0.x
+						pOffset += itL.Sizes.x
 				}
 				continue
 			}
 			itL := it.0.GetLayout(ctx)
 			newSize := vec2f
-			switch itL.1
+			switch itL.LayoutTypeW
 			{
 				case 0
 					newSize = setSize
@@ -100,14 +100,14 @@ LayoutHorizontal := class extend LayoutBase
 					it.1.y = 0
 					it.1.x = pOffset
 				case 1
-					switch itL.2
+					switch itL.LayoutTypeH
 					{
 						case 1
-							newSize.y = itL.0.y
+							newSize.y = itL.Sizes.y
 						case 0
 							newSize.y = maxHeight
 					}
-					newSize.x = itL.0.x
+					newSize.x = itL.Sizes.x
 					it.0.SetLayout(ctx,newSize)
 					it.1.y = 0
 					it.1.x = pOffset
