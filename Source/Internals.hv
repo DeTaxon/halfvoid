@@ -17,7 +17,6 @@ TemplateInternalIsInSameType := BoxFuncTemplate^
 GInternalSetType := BoxFuncTemplate^
 
 GFuncGCSetNull := BoxFunc^
-GFuncGCSetNullArray := BoxFunc^
 
 GCType := Type^
 
@@ -102,7 +101,6 @@ InitInternals := !() -> void
 	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
 
 	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
-	GFuncGCSetNullArray = intGetFunc("internalHVGCSetNullArray")
 
 	GInternalSetType = intGetTemplate("internalHVSetType")
 
