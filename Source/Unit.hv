@@ -23,7 +23,7 @@ BoxUnit := class
 
 		while iter != null
 		{
-			if iter is BoxFile
+			if iter is in BoxFile
 				return iter->{BoxFile^}
 			iter = iter.GetParentScope()
 		}

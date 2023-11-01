@@ -1,0 +1,25 @@
+class
+{
+	RefValue := int
+	
+	IncRef := !() -> void { RefValue += 1 }
+	DecRef := !() -> void {
+		RefValue -= 1
+		if RefValue == 0
+		{
+			Destroy()
+			postDestroy()
+			SelfDelete()
+		}
+	}
+	Destroy := virtual !() -> void {}
+	SelfDelete := virtual !() -> void
+	{
+		delete this&
+	}
+	
+	postDestroy := poison virtual !() -> void
+	{
+		internalGCClearClass(this)
+	}
+}

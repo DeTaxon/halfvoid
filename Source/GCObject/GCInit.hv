@@ -1,3 +1,27 @@
+
+
 GCObjectInit := !() -> void
 {
+	classBody := #FileLocal("GCClass.hv.builtin").GetBlob()
+
+	df := GetAnyFile()
+
+	objs := GetObjectsFromMemory(df,classBody.GetPointer(),classBody.Size())
+
+	tknData := new TokenData
+	tknData.Down = objs
+	objs.Up = tknData
+	objs.Right.Up = tknData
+	objs = tknData
+	CurrentFile = df
+	CurrentScope = df
+	classObj := TryParseClass(objs)->{BoxClassBody^}
+
+	vr :=  new TypeVar(StringSpan("TestTest"),classObj.ItType)
+	TypesDatabase[vr->{TypeVar^}.Name] = vr
+
+	AllClasses.Push(classObj)
+
+	//bSpace := CodeSpaces[-1]&
+	//bSpace.Functions[StringSpan("TestTest")].Push(new  )
 }

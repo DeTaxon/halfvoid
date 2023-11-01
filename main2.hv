@@ -20,11 +20,11 @@
 
 main := !(char^[] args) -> int
 {
-	tst := CreateStackTrace()
-	//tst.PrintTrace()
-	tst.ForEachCall((x,y,z) ==> {
-		printf("test %s %s %i\n",x,y,z)
-	})
+	//tst := CreateStackTrace()
+	////tst.PrintTrace()
+	//tst.ForEachCall((x,y,z) ==> {
+	//	printf("test %s %s %i\n",x,y,z)
+	//})
 }
 
 
