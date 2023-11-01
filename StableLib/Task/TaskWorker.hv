@@ -40,6 +40,40 @@ TaskWorker := class extend TGCObject
 
 		if CreateTasks.Size() != 0
 		{
+			//maxSize := static 0
+			//if true //CreateTasks.Size() > maxSize
+			//{
+			//	maxSize = CreateTasks.Size()
+			//	//printf("hey %i\n",maxSize)
+
+			//	maxIndex := 0
+			//	maxVal := 0
+			//	nextTask := CreateTasks[0]
+			//	for it,i : CreateTasks
+			//	{
+			//		counter := 0
+			//		itr := it.finishedWork.next_wakeup
+			//		while itr != null
+			//		{
+			//			counter += 1
+			//			itr = itr.next_point
+			//		}
+			//		if counter > maxVal
+			//		{
+			//			maxVal = counter
+			//			maxIndex = i
+			//			nextTask = it
+			//		}
+			//		//printf("why %i\n",counter)
+			//	}
+			//	if maxIndex != 0
+			//	{
+			//		//printf("needed task at %i %i\n",maxIndex,maxVal)
+			//		CreateTasks.DeleteIf(x ==> { return x == nextTask })
+			//		nextTask.CreateStack()
+			//		return nextTask
+			//	}
+			//}
 			hm := CreateTasks.Pop()
 			hm.CreateStack()
 			return hm

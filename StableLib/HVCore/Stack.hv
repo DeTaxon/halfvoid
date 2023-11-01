@@ -12,17 +12,7 @@ internalHVStackAllocatedGC := class .{@T} extend T
 	}
 }
 
-internalHVGCSetNull := !(TGCIObject^ & itm1) -> void
+internalHVGCSetNull := !(TGCObject^ & itm1) -> void
 {
-	itm1 = null->{TGCIObject^}
-}
-
-internalHVGCSetNullArray := !(TGCIObject^^ arrs, int start, int end) -> void
-{
-	i := end
-	while i >= start
-	{
-		arrs[i] = null
-		i -= 1
-	}
+	itm1 = null->{TGCObject^}
 }

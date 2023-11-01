@@ -1,4 +1,12 @@
-NkButton := class extend GUIObject
+AppendClass VkOverlayContext
+{
+	CreateButton := !(float x, float y,StringView setLabel,Font^ setFont) -> HvButton^
+	{
+		return new HvButton(x,y,setLabel,setFont)
+	}
+}
+
+HvButton := class extend GUIObject
 {
 	pressCallback := !()&-> void
 
@@ -8,9 +16,15 @@ NkButton := class extend GUIObject
 	itMesh := TVkMesh^
 	meshVerCount := int
 
-	this := !(SimpleWindow^ nkCtx,float x, float y,StringView setLabel,Font^ setFont) -> void
+	this := !(float x, float y,StringView setLabel,Font^ setFont) -> void
 	{
-		SetSize("static",x,"static",y)
+		typeX := "static"
+		if x == 0
+			typeX = "fullsize"
+		typeY := "static"
+		if y == 0
+			typeY = "fullsize"
+		SetSize(typeX,x,typeY,y)
 
 		assert(setFont != null)
 		itText."this"(setFont,setLabel)
@@ -32,7 +46,7 @@ NkButton := class extend GUIObject
 		if pressed
 			pressCallback?()
 	}
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{
 		result = super(ctx)
 		itText.GetLayout(ctx)

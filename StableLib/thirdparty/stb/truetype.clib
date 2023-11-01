@@ -3,7 +3,8 @@
 	"link" : "dynamic",
 	"initname" : "stb_truetype_init",
 	"libs" : [
-		"stb_truetype.so"
+		"stb_truetype.so",
+		"stb_truetype.dll"
 	],
 	"funcs" : {
 

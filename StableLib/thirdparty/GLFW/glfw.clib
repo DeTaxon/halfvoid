@@ -49,7 +49,11 @@
 		"glfwGetTime" : "double",
 		"glfwMakeContextCurrent" : "void,void^",
 		"glfwWindowShouldClose" : "bool,void^",
+
 		"glfwPollEvents" : "void",
+		"glfwWaitEvents" : "void",
+		"glfwWaitEventsTimeout" : "void,double",
+
 		"glfwCreateWindowSurface" : "int,void^,void^,void^,void^",
 		"glfwSwapBuffers" : "void,void^",
 		"glfwSetCursorPosCallback" : "void,void^,void^",

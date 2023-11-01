@@ -1,0 +1,11 @@
+
+{
+	"initname" : "libGLIBCInit",
+	"libs" : [
+		"libc.so",
+	],
+	"funcs" : {
+		"backtrace" : "int,void^^,int".
+		"backtrace_symbols" : "char^^,void^,int"
+	}
+}

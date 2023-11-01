@@ -23,13 +23,21 @@ CommonTree := class .{@DATA}
 	{
 		res^ = new CommonTreeNode.{DATA}
 	}
+	cmpObjects := virtual !(DATA^ left, DATA^ right) -> int
+	{
+		return left^ <=> right^
+	}
 	
-	FindNode := !(DATA dat) -> CommonTreeNode.{DATA}^
+	FindNode := virtual !(DATA dat) -> CommonTreeNode.{DATA}^
+	{
+		return FindNodeInner(dat&)
+	}
+	FindNodeInner := virtual !(DATA^ dat) -> CommonTreeNode.{DATA}^ ; TemplateResist
 	{
 		itr := Start
 		while itr != null
 		{
-			stRes := itr.data <=> dat
+			stRes := cmpObjects(itr.data&,dat)
 			if stRes == 0 return itr
 			if stRes < 0 	itr = itr.Right
 			else 		itr = itr.Left

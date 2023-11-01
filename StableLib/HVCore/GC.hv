@@ -1,39 +1,39 @@
 
-//Yes, it is not an interface but started as one
-//It made it that way so IncRef and DecRef would not be  virtual functions for extra 2% perfomance
-TGCIObject := class
-{
-	//IncRef := virtual !() -> void { }
-	//DecRef := virtual !() -> void { }
-	//Destroy := virtual !() -> void {}
-	RefValue := int
-
-	IncRef := !() -> void { RefValue += 1 }
-	DecRef := !() -> void {
-		RefValue -= 1
-		if RefValue == 0
-		{
-			Destroy()
-			postDestroy()
-			SelfDelete()
-		}
-	}
-	Destroy := virtual !() -> void {}
-	SelfDelete := virtual !() -> void
-	{
-		delete this&
-	}
-
-	postDestroy := poison virtual !() -> void
-	{
-		internalGCClearClass(this)
-	}
-}
-
-TGCObject := class extend TGCIObject
-{
-}
-"=" := !(TGCIObject^& itm1, TGCIObject^ itm2) -> void
+////Yes, it is not an interface but started as one
+////It made it that way so IncRef and DecRef would not be  virtual functions for extra 2% perfomance
+//TGCIObject := class
+//{
+//	//IncRef := virtual !() -> void { }
+//	//DecRef := virtual !() -> void { }
+//	//Destroy := virtual !() -> void {}
+//	RefValue := int
+//
+//	IncRef := !() -> void { RefValue += 1 }
+//	DecRef := !() -> void {
+//		RefValue -= 1
+//		if RefValue == 0
+//		{
+//			Destroy()
+//			postDestroy()
+//			SelfDelete()
+//		}
+//	}
+//	Destroy := virtual !() -> void {}
+//	SelfDelete := virtual !() -> void
+//	{
+//		delete this&
+//	}
+//
+//	postDestroy := poison virtual !() -> void
+//	{
+//		internalGCClearClass(this)
+//	}
+//}
+//
+//TGCObject := class extend TGCIObject
+//{
+//}
+"=" := !(TGCObject^& itm1, TGCObject^ itm2) -> void
 {
 	itm2?.IncRef()
 	if itm1 != null
@@ -47,7 +47,7 @@ internalGCClearClass := !(@T itm) -> void
 {
 	for it,ind : itm->AllFields
 	{
-		if it->Type >= TGCIObject
+		if it->Type >= TGCObject
 		{
 			it.Destroy()
 		}

@@ -4,37 +4,44 @@
 //2 - dynamic, procent
 
 
+GUILayoutInfo := class
+{
+	Sizes := vec2f
+	LayoutTypeW := int
+	LayoutTypeH := int
+
+	"=" := default
+}
+
 GUIObject := class extend TGCObject
 {
-
-	thisLayout := Tuple.{int,int}
-	thisLayoutSize := vec2f
+	thisLayout := GUILayoutInfo
 	drawSize := vec2f
 	SetSize := !(char^ wl, float w, char^ hl, float h) -> void
 	{
 		switch wl
 		{
-			case "static" thisLayout.0 = 1
-			case "dynamic" thisLayout.0 = 2
-			case void thisLayout.0 = 0
+			case "static" thisLayout.LayoutTypeW = 1
+			case "dynamic" thisLayout.LayoutTypeW = 2
+			case void thisLayout.LayoutTypeH = 0
 		}
 		switch hl
 		{
-			case "static" thisLayout.1 = 1
-			case "dynamic" thisLayout.1 = 2
-			case void thisLayout.1 = 0
+			case "static" thisLayout.LayoutTypeH = 1
+			case "dynamic" thisLayout.LayoutTypeH = 2
+			case void thisLayout.LayoutTypeH = 0
 		}
 
-		thisLayoutSize = vec2f(w,h)
+		thisLayout.Sizes = vec2f(w,h)
 		if w == 0.0
-			thisLayout.0 = 0
+			thisLayout.LayoutTypeW = 0
 		if h == 0.0
-			thisLayout.1 = 0
+			thisLayout.LayoutTypeH = 0
 	}
 
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{
-		return !{thisLayoutSize,thisLayout.0,thisLayout.1}
+		result = thisLayout
 	}
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
 	{

@@ -1,0 +1,10 @@
+
+{
+	"initname" : "libGLIBCInit",
+	"libs" : [
+		"libunwind.so",
+	],
+	"funcs" : {
+		"unw_backtrace" : "int,void^^,int".
+	}
+}

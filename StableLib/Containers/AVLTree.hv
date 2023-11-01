@@ -7,10 +7,6 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		CreatedNodes = null
 	}
 
-	cmpObjects := virtual !(DATA^ left, DATA^ right) -> int
-	{
-		return left^ <=> right^
-	}
 	setOperator := virtual !(DATA^ left, DATA^ right) -> void
 	{
 		left^ = right^
