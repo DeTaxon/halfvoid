@@ -16,11 +16,15 @@
 //	}
 //}
 
+
+
 main := !(char^[] args) -> int
 {
-	c := int
-	TLock(c&)
-	TUnlock(c&)
+	tst := CreateStackTrace()
+	//tst.PrintTrace()
+	tst.ForEachCall((x,y,z) ==> {
+		printf("test %s %s %i\n",x,y,z)
+	})
 }
 
 

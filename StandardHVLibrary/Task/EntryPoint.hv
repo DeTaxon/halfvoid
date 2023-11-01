@@ -1,5 +1,9 @@
+
+HvArg0 := char^ //TODO move it away
+
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
+	HvArg0 = argv[0]
 	TLSMutex."this"() //TODO only if TLS used
 
 	//All function expects to CurrentTask be initialized, this is not working for first function
@@ -47,13 +51,14 @@ internalThreadDestructor := !() -> void
 }
 
 
-TSpawnTask := !(!()&-> void cb) -> void
+TSpawnTask := !(!()&-> void cb) -> Task^
 {
 	startTask := new Task(cb.Capture())
 
 	CurrentThread.AllTasks.Insert(startTask)
 	CurrentThread.CreateTasks.Push(startTask)
-	startTask = null
+	
+	return startTask
 }
 
 
@@ -61,6 +66,7 @@ ucontextStartTask := !() -> void
 {
 	CurrentTask.startTaskThread()
 }
+
 
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {

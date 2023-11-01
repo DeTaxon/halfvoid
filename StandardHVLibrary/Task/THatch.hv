@@ -51,15 +51,44 @@ THatch := class
 		}
 		TaskWaitTasksConVar.NotifyAll()
 	}
+	GetWaitingCount := !() -> int
+	{
+		counter := 0
+		itr := next_wakeup
+		while itr != null
+		{
+			counter += 1
+			itr = itr.next_point
+		}
+		return counter
+	}
 	Await := !() -> void
 	{
 		if flag
 			return void
+
 		pt := TITaskPausePoint
 		//pt.Pause(next_wakeup&)
 		pt.next_point = next_wakeup
 		next_wakeup = pt&
 		pt.itTask = CurrentTask
+
+		//if counter >= 3
+		//{
+		//	TestFile^ << "NEW_CALL\n"
+		//	TestFile^ << "Calls " << counter << "\n"
+		//	stk := CreateStackTrace(1)
+		//	stk.ForEachCall((x,y,z) ==> {
+		//		if x == null or y == null
+		//			return void
+		//		TestFile^ << "STACK_LINE\n"
+		//		TestFile^ << "File " << x << "\n"
+		//		TestFile^ << "Function " << y << "\n"
+		//		TestFile^ << "Line " << z << "\n"
+		//	})
+		//}
+
+
 		TaskCheckMutex.Lock()
 		CurrentThread.switchToMain()
 		TaskCheckMutex.Unlock()

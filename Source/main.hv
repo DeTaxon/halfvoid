@@ -33,9 +33,11 @@ UseTracy := false
 
 JITMode := bool
 
+TestFile := TFile^
 OutputFile := char^
 main := !(char^[] args) -> int
 {
+	TestFile = new TFile("TestFile.txt","wb")
 	lb := GetLibrary("libTracy.dll")
 	
 	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}

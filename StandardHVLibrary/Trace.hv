@@ -1,0 +1,30 @@
+
+back_callback := !(void^ data, void^ pc, char^ fileName, int lineNo,char^ function) -> int
+{
+	printf("pc <%p> file <%s> line <%i> function <%s>\n",pc,fileName,lineNo,function)
+}
+
+back_callback2 := !(void^ data, void^ pc, char^ fileName, int lineNo,char^ function) -> int
+{
+	data->{!(char^,char^,int)&->void}(fileName,function,lineNo)
+}
+
+HvStackTrace := class
+{
+	state := void^
+
+	PrintTrace := !() -> void
+	{
+		backtrace_full(state,0,back_callback,null,null)
+	}
+	ForEachCall := !(!(char^,char^,int)&-> void clb) -> void
+	{
+		backtrace_full(state,0,back_callback2,null,clb)
+	}
+}
+
+CreateStackTrace := !(int ignoreCalls = 0) -> HvStackTrace^
+{
+	result = new HvStackTrace
+	result.state = backtrace_create_state(HvArg0,1 + ignoreCalls,null,null)
+}

@@ -45,13 +45,14 @@ internalThreadDestructor := !() -> void
 }
 
 
-TSpawnTask := !(!()&-> void cb) -> void
+TSpawnTask := !(!()&-> void cb) -> Task^
 {
 	startTask := new Task(cb.Capture())
 
 	CurrentThread.AllTasks.Insert(startTask)
 	CurrentThread.CreateTasks.Push(startTask)
-	startTask = null
+
+	return startTask
 }
 
 
