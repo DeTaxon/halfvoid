@@ -29,6 +29,15 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		baseContext.DataGeneration += 1
 		baseContext.CmdGeneration += 1
 	}
+	SetTab := !(int index) -> void
+	{
+		if objects.Size() == 0
+			return void
+		currentIndex = (indexndex + 1) mod objects.Size()
+
+		baseContext.DataGeneration += 1
+		baseContext.CmdGeneration += 1
+	}
 	
 	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
 	{

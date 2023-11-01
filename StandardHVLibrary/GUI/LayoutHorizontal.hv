@@ -99,6 +99,7 @@ LayoutHorizontal := class extend LayoutBase
 					it.0.SetLayout(ctx,newSize)
 					it.1.y = 0
 					it.1.x = pOffset
+					it.2 = newSize
 				case 1
 					switch itL.LayoutTypeH
 					{

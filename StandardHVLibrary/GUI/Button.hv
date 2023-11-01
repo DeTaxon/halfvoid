@@ -1,4 +1,12 @@
-NkButton := class extend GUIObject
+AppendClass VkOverlayContext
+{
+	CreateButton := !(float x, float y,StringView setLabel,Font^ setFont) -> HvButton^
+	{
+		return new HvButton(x,y,setLabel,setFont)
+	}
+}
+
+HvButton := class extend GUIObject
 {
 	pressCallback := !()&-> void
 
@@ -8,7 +16,7 @@ NkButton := class extend GUIObject
 	itMesh := TVkMesh^
 	meshVerCount := int
 
-	this := !(SimpleWindow^ nkCtx,float x, float y,StringView setLabel,Font^ setFont) -> void
+	this := !(float x, float y,StringView setLabel,Font^ setFont) -> void
 	{
 		typeX := "static"
 		if x == 0

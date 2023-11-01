@@ -94,7 +94,12 @@ LayoutVertical := class extend LayoutBase
 			switch itL.LayoutTypeH
 			{
 				case 0
-					it.0.SetLayout(ctx,setSize)
+					newSize = setSize
+					newSize.y = (setSize.y - staticH) / fullSizeCount
+					it.0.SetLayout(ctx,newSize)
+					it.1.x = 0
+					it.1.y = pOffset
+					it.2 = newSize
 				case 1
 					switch itL.LayoutTypeW
 					{
