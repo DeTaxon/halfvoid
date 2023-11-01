@@ -104,8 +104,8 @@ InitInternals := !() -> void
 
 	GInternalSetType = intGetTemplate("internalHVSetType")
 
-	cName := TokenIndent(StringSpan("TGCIObject"))
-	GCType = ParseType(cName&)
+	cName := TokenIndent(StringSpan("TGCObject"))
+	//GCType = ParseType(cName&)
 
 	GCILambda = intGetClass("TILambda")
 	GCLambda = intGetClassTemplate("TLambda")

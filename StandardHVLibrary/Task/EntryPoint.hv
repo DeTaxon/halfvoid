@@ -31,7 +31,7 @@ internalGlobalsDestroy := !() -> void
 {
 	for it,ind : $GlobalVariables
 	{
-		if it->Type >= TGCIObject
+		if it->Type >= TGCObject
 		{
 			it.Destroy()
 		}

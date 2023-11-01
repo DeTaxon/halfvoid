@@ -17,10 +17,12 @@ GCObjectInit := !() -> void
 	CurrentScope = df
 	classObj := TryParseClass(objs)->{BoxClassBody^}
 
-	vr :=  new TypeVar(StringSpan("TestTest"),classObj.ItType)
+	vr :=  new TypeVar(StringSpan("TGCObject"),classObj.ItType)
 	TypesDatabase[vr->{TypeVar^}.Name] = vr
 
 	AllClasses.Push(classObj)
+
+	GCType = classObj.ItType
 
 	//bSpace := CodeSpaces[-1]&
 	//bSpace.Functions[StringSpan("TestTest")].Push(new  )
