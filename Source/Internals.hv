@@ -23,7 +23,6 @@ GCType := Type^
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
 
-GCStackType := BoxClassTemplate^
 GCDeferLambda := BoxClassTemplate^
 
 ArrayViewTemplate := BoxClassTemplate^
@@ -109,8 +108,6 @@ InitInternals := !() -> void
 
 	GCILambda = intGetClass("TILambda")
 	GCLambda = intGetClassTemplate("TLambda")
-
-	GCStackType = intGetClassTemplate("internalHVStackAllocatedGC")
 	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
 
 	ArrayViewTemplate = intGetClassTemplate("TArrayView")

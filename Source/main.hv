@@ -153,6 +153,8 @@ main := !(char^[] args) -> int
 	PreInitTaskLocal()
 	cuId = GetNewId()
 
+	GCObjectInit()
+
 	for spc : CodeSpaces
 	{
 		spc.Modules[^].Work()
@@ -172,7 +174,6 @@ main := !(char^[] args) -> int
 		fil.loaded.Await()
 	}
 
-	GCObjectInit()
 
 	InitInternals()
 	SubWork(() ==> {InitInternalsGC() })
