@@ -177,7 +177,6 @@ main := !(char^[] args) -> int
 
 
 	InitInternals()
-	SubWork(() ==> {InitInternalsGC() })
 	InitTaskLocal()
 	InitLambda()
 	RecheckAppends()

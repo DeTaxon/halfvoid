@@ -58,8 +58,8 @@ BoxClassTuple := class extend BoxClassPoison
 
 		if needGC
 		{
-			InternalsGC.Await()
-			Parents.Push(GCTypeImplement->{TypeClass^}.ToClass)
+			assert(GCType != null)
+			Parents.Push(GCType->{TypeClass^}.ToClass)
 		}
 		
 

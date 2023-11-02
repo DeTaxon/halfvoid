@@ -9,7 +9,6 @@ TryGetTryCatch := !(Token^ itm) -> BoxExeObj^
 		if dwnCall == null
 			itm.EmitError("Error compiling exception to be thrown")
 
-		InternalsHatch.Await()
 		inClass := dwnCall.GetType()
 		if inClass is in TypePoint
 			inClass = inClass.Base
@@ -51,8 +50,6 @@ TryGetObj := class extend BoxExeObj
 	this := !(Token^ itm) -> void
 	{
 		TryCatchUsed = true
-
-		InternalsHatch.Await()
 
 		ItId = GetNewId()
 
