@@ -371,7 +371,6 @@ TypePointComplex := class extend TypePoint
 	}
 	IsComplexReturn := virtual !() -> bool
 	{
-		InternalsHatch.Await()
 		isGC := TypeFight(Base,GCType) == GCType
 		return isGC
 	}

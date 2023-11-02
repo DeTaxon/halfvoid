@@ -82,7 +82,7 @@ BoxClassTuple := class extend BoxClassPoison
 			for it,i : Fields
 			{
 				t := it.Value
-				typs[i + 1]	= t
+				typs[i + 1] = t
 				if t is in TypeClass or t is in TypeArr
 					isRef[i + 1] = true
 			}
