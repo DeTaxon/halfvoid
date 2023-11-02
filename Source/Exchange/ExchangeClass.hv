@@ -71,7 +71,7 @@ ExchangeRefClassToArrayView := class extend ExchangeUnit
 			return CmpNoExchange
 
 
-		InternalsHatch.Await()
+		assert(ArrayViewTemplate != null)
 		toCls := newType.Base->{TypeClass^}.ToClass
 		if not (toCls.TemplateParent == ArrayViewTemplate)
 			return CmpNoExchange

@@ -266,7 +266,7 @@ BoxClass := class extend BoxUnit
 	IsViewType := !() -> bool
 	{
 		AwaitTypeState()
-		InternalsHatch.Await()
+		assert(ArrayViewTemplate != null)
 		if TemplateParent == ArrayViewTemplate
 			return true
 
