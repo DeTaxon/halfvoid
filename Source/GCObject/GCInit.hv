@@ -1,29 +1,54 @@
 
+GCType := Type^
+GFuncGCSetNull := BoxFunc^
 
 GCObjectInit := !() -> void
 {
-	classBody := #FileLocal("GCClass.hv.builtin").GetBlob()
-
 	df := GetAnyFile()
-
-	objs := GetObjectsFromMemory(df,classBody.GetPointer(),classBody.Size())
-
-	tknData := new TokenData
-	tknData.Down = objs
-	objs.Up = tknData
-	objs.Right.Up = tknData
-	objs = tknData
 	CurrentFile = df
 	CurrentScope = df
-	classObj := TryParseClass(objs)->{BoxClassBody^}
 
-	vr :=  new TypeVar(StringSpan("TGCObject"),classObj.ItType)
-	TypesDatabase[vr->{TypeVar^}.Name] = vr
+	{
+		classBody := #FileLocal("GCClass.hv.builtin").GetBlob()
 
-	AllClasses.Push(classObj)
+		objs := GetObjectsFromMemory(df,classBody.GetPointer(),classBody.Size())
 
-	GCType = classObj.ItType
+		tknData := new TokenData
+		tknData.Down = objs
+		objs.Up = tknData
+		objs.Right.Up = tknData
+		objs = tknData
+		classObj := TryParseClass(objs)->{BoxClassBody^}
 
-	//bSpace := CodeSpaces[-1]&
-	//bSpace.Functions[StringSpan("TestTest")].Push(new  )
+		vr :=  new TypeVar(StringSpan("TGCObject"),classObj.ItType)
+		TypesDatabase[vr->{TypeVar^}.Name] = vr
+
+		AllClasses.Push(classObj)
+
+		GCType = classObj.ItType
+	}
+
+	//--------------------------------------
+
+	{
+		fncSpn := StringSpan("!(TGCObject^& arg0)->void { arg0 = null->{TGCObject^}}")
+		objs := GetObjectsFromMemory(df,fncSpn.NonNullStr(),fncSpn.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+
+		itr := objs
+		while itr != null
+		{
+			itr.Up = tknData
+			itr = itr.Right
+		}
+		objs = tknData
+
+		stFuncTemplate := TryParseFunction(objs)
+		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
+		GFuncGCSetNull = stFuncTemplate->{BoxFuncTemplateBody^}.GetOneFunc()
+		GFuncGCSetNull->{BoxFuncBody^}.SetName(StringSpan("$anon"))
+	}
 }
+

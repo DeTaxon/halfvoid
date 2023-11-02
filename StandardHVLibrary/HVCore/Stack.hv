@@ -1,16 +1,4 @@
-internalHVDeferLambda := class .{@T} extend internalHVStackAllocatedGC.{T}
-{
-	Destroy := virtual !() -> void {
-		this()
-	}
-}
 
-internalHVStackAllocatedGC := class .{@T} extend T
-{
-	SelfDelete := virtual !() -> void
-	{
-	}
-}
 
 internalHVGCSetNull := !(TGCObject^ & itm1) -> void
 {

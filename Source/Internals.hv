@@ -16,14 +16,8 @@ TemplateInternalIsInSameType := BoxFuncTemplate^
 
 GInternalSetType := BoxFuncTemplate^
 
-GFuncGCSetNull := BoxFunc^
-
-GCType := Type^
-
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
-
-GCDeferLambda := BoxClassTemplate^
 
 ArrayViewTemplate := BoxClassTemplate^
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
@@ -99,16 +93,10 @@ InitInternals := !() -> void
 
 	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
 
-	GFuncGCSetNull = intGetFunc("internalHVGCSetNull")
-
 	GInternalSetType = intGetTemplate("internalHVSetType")
-
-	cName := TokenIndent(StringSpan("TGCObject"))
-	//GCType = ParseType(cName&)
 
 	GCILambda = intGetClass("TILambda")
 	GCLambda = intGetClassTemplate("TLambda")
-	GCDeferLambda = intGetClassTemplate("internalHVDeferLambda")
 
 	ArrayViewTemplate = intGetClassTemplate("TArrayView")
 	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")

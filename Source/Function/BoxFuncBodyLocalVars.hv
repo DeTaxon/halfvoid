@@ -52,7 +52,6 @@ AppendClass BoxFuncBody
 
 						it.createVar.Push(setTrue)
 
-						InternalsHatch.Await()
 						noObjs := CheckExeDownList
 						destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
 						destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
