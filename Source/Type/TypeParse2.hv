@@ -269,8 +269,6 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 	{
 		if tk.Down.Right.Down == null
 		{
-			InternalsHatch.Await()
-
 			dwnType := Type^
 			if tp? is in TypeClass or (tp? is in TypePoint and tp?.Base is in TypeClass)
 			{

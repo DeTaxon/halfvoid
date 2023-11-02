@@ -175,7 +175,7 @@ IsViewType := !(Type^ tp) -> bool
 		return false
 	cls := tp.Base->{TypeClass^}.ToClass
 
-	InternalsHatch.Await()
+	assert(ArrayViewTemplate != null)
 	if cls.TemplateParent != ArrayViewTemplate
 		return false
 	return true
@@ -189,7 +189,7 @@ GetViewBaseType := !(Type^ tp) -> Type^
 		return null
 	cls := tp.Base->{TypeClass^}.ToClass
 
-	InternalsHatch.Await()
+	assert(ArrayViewTemplate != null)
 	if cls.TemplateParent != ArrayViewTemplate
 		return null
 	return cls.Constants?.Constants[0]->{ConstType^}.Value

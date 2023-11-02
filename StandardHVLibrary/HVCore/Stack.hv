@@ -1,6 +1,0 @@
-
-
-internalHVGCSetNull := !(TGCObject^ & itm1) -> void
-{
-	itm1 = null->{TGCObject^}
-}

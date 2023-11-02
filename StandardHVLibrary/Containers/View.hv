@@ -1,34 +1,34 @@
-TArrayView := class .{@T} extend TGCObject
-{
-	Size := virtual !() -> int {}
-	"[]" := virtual !(int i) -> ref T { assert(false) }
-	"for" := !() -> ViewIterator.{T}
-	{
-		result.ViewPtr = this&
-	}
-	GetPointer := virtual !() -> T^ { return null }
-	Clear := virtual !() -> void
-	{
-		Destroy()
-	}
-}
-
-ViewIterator := class.{@T} extend TGCObject
-{
-	ViewPtr := T[]
-	indx := int
-
-	HaveValue := !() -> bool
-	{
-		return indx < ViewPtr.Size()
-	}
-	"()" := !() -> ref T
-	{
-		i := indx
-		indx += 1
-		return ViewPtr[i]
-	}
-}
+//TArrayView := class .{@T} extend TGCObject
+//{
+//	Size := virtual !() -> int {}
+//	"[]" := virtual !(int i) -> ref T { assert(false) }
+//	"for" := !() -> ViewIterator.{T}
+//	{
+//		result.ViewPtr = this&
+//	}
+//	GetPointer := virtual !() -> T^ { return null }
+//	Clear := virtual !() -> void
+//	{
+//		Destroy()
+//	}
+//}
+//
+//ViewIterator := class.{@T} extend TGCObject
+//{
+//	ViewPtr := T[]
+//	indx := int
+//
+//	HaveValue := !() -> bool
+//	{
+//		return indx < ViewPtr.Size()
+//	}
+//	"()" := !() -> ref T
+//	{
+//		i := indx
+//		indx += 1
+//		return ViewPtr[i]
+//	}
+//}
 
 TArraySpan := class .{@T} extend TArrayView.{T}
 {

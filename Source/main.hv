@@ -154,6 +154,7 @@ main := !(char^[] args) -> int
 	cuId = GetNewId()
 
 	GCObjectInit()
+	ArrayViewInit()
 
 	for spc : CodeSpaces
 	{
@@ -272,6 +273,9 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 			fil.AllClasses[^].PrintAsType(ctx)
 		}
 	}
+
+	GDebugFileId = DummyFile.fileId
+	DummyFile.AllClasses[^].PrintAsType(ctx)
 
 	GlobalVars2[^].PrintCodeVar(ctx)
 	for spc : CodeSpaces

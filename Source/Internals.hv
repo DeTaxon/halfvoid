@@ -19,7 +19,6 @@ GInternalSetType := BoxFuncTemplate^
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
 
-ArrayViewTemplate := BoxClassTemplate^
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
 
 GDefautlSetTemplate := BoxFuncTemplate^
@@ -98,7 +97,6 @@ InitInternals := !() -> void
 	GCILambda = intGetClass("TILambda")
 	GCLambda = intGetClassTemplate("TLambda")
 
-	ArrayViewTemplate = intGetClassTemplate("TArrayView")
 	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")

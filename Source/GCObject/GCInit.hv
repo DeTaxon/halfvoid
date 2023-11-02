@@ -23,8 +23,6 @@ GCObjectInit := !() -> void
 		vr :=  new TypeVar(StringSpan("TGCObject"),classObj.ItType)
 		TypesDatabase[vr->{TypeVar^}.Name] = vr
 
-		AllClasses.Push(classObj)
-
 		GCType = classObj.ItType
 	}
 
