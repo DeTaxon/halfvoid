@@ -27,6 +27,8 @@ main := !(char^[] args) -> int
 	//})
 	tst := !{23,8}
 	printf("hey %i %i\n",tst.0,tst.1)
+	tst."this"(3,15)
+	printf("hey %i %i\n",tst.0,tst.1)
 }
 
 

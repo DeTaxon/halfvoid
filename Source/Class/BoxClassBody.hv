@@ -421,7 +421,8 @@ BoxClassBody := class extend BoxClassPoison
 						}else{
 							if itm.GetValue() == "default"
 							{
-								InternalsHatch.Await()
+								assert(GDefautlSetTemplate != null)
+								assert(GDefautlCompareTemplate != null)
 
 								setFunc := BoxFunc^
 								cnsts := List.{BoxExeConstObj^}

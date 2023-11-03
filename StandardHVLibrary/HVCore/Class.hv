@@ -1,3 +1,6 @@
+
+
+//TODO remove after updating stable exe
 internalClassDefaultSet := !(@T a, T b) -> void
 {
 	for x : a->AllFields, y : b->AllFields
@@ -5,6 +8,7 @@ internalClassDefaultSet := !(@T a, T b) -> void
 		x = y
 	}
 }
+//TODO remove after updating stable exe
 internalClassDefaultCompare := !(@T a, T b) -> int
 {
 	for x : a->AllFields, y : b->AllFields
@@ -16,6 +20,7 @@ internalClassDefaultCompare := !(@T a, T b) -> int
 	return 0
 }
 
+//TODO remove after updating stable exe
 internalTupleConstructor := !(@Tpl this,args...) -> void
 {
 	for it,i : args

@@ -1,6 +1,12 @@
 
 TemplateInternalCreateTuple := BoxFuncTemplate^
 
+GDefautlSetTemplate := BoxFuncTemplate^
+GDefautlCompareTemplate := BoxFuncTemplate^
+
+TemplateInternalTupleConstructor := BoxFuncTemplate^
+
+
 TupleInitBuiltin := !() -> void
 {
 	df := GetAnyFile()
@@ -29,5 +35,75 @@ TupleInitBuiltin := !() -> void
 		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
 		TemplateInternalCreateTuple = stFuncTemplate->{BoxFuncTemplateBody^}
 		TemplateInternalCreateTuple->{BoxFuncTemplateBody^}.SetName(StringSpan("$anon"))
+	}
+
+	{
+		fl := #FileLocal("TupleSetTemplate.hv.builtin")
+		flBlob := fl.GetBlob()
+		flBlob.IncRef() //TODO mem?
+		fncSpn := StringSpan(flBlob.GetPointer()->{char^},flBlob.Size())
+		objs := GetObjectsFromMemory(df,fncSpn.NonNullStr(),fncSpn.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+
+		itr := objs
+		while itr != null
+		{
+			itr.Up = tknData
+			itr = itr.Right
+		}
+		objs = tknData
+
+		stFuncTemplate := TryParseFunction(objs)
+		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
+		GDefautlSetTemplate = stFuncTemplate->{BoxFuncTemplateBody^}
+		GDefautlSetTemplate->{BoxFuncTemplateBody^}.SetName(StringSpan("$anon"))
+	}
+	{
+		fl := #FileLocal("TupleCompareTemplate.hv.builtin")
+		flBlob := fl.GetBlob()
+		flBlob.IncRef() //TODO mem?
+		fncSpn := StringSpan(flBlob.GetPointer()->{char^},flBlob.Size())
+		objs := GetObjectsFromMemory(df,fncSpn.NonNullStr(),fncSpn.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+
+		itr := objs
+		while itr != null
+		{
+			itr.Up = tknData
+			itr = itr.Right
+		}
+		objs = tknData
+
+		stFuncTemplate := TryParseFunction(objs)
+		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
+		GDefautlCompareTemplate = stFuncTemplate->{BoxFuncTemplateBody^}
+		GDefautlCompareTemplate->{BoxFuncTemplateBody^}.SetName(StringSpan("$anon"))
+	}
+	{
+		fl := #FileLocal("TupleConstructorTemplate.hv.builtin")
+		flBlob := fl.GetBlob()
+		flBlob.IncRef() //TODO mem?
+		fncSpn := StringSpan(flBlob.GetPointer()->{char^},flBlob.Size())
+		objs := GetObjectsFromMemory(df,fncSpn.NonNullStr(),fncSpn.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+
+		itr := objs
+		while itr != null
+		{
+			itr.Up = tknData
+			itr = itr.Right
+		}
+		objs = tknData
+
+		stFuncTemplate := TryParseFunction(objs)
+		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
+		TemplateInternalTupleConstructor = stFuncTemplate->{BoxFuncTemplateBody^}
+		TemplateInternalTupleConstructor->{BoxFuncTemplateBody^}.SetName(StringSpan("$anon"))
 	}
 }

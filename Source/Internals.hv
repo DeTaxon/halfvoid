@@ -7,8 +7,6 @@ FunctionInternalDelete := BoxFunc^
 TemplateInternalCreateLambda := BoxFuncTemplate^
 TemplateInternalLambdaCall := BoxFuncTemplate^
 
-TemplateInternalTupleConstructor := BoxFuncTemplate^
-
 TemplateInternalGetVTableVariable := BoxFuncTemplate^
 
 TemplateInternalIsInSameType := BoxFuncTemplate^
@@ -19,10 +17,6 @@ GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
 
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
-
-GDefautlSetTemplate := BoxFuncTemplate^
-GDefautlCompareTemplate := BoxFuncTemplate^
-
 GZeroMemTemplate := BoxFuncTemplate^
 
 GVectorConstructor1 := BoxFuncTemplate^
@@ -84,7 +78,7 @@ InitInternals := !() -> void
 	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
 	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
 
-	TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
+	//TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
 
 	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
 
@@ -99,8 +93,8 @@ InitInternals := !() -> void
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
 
-	GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
-	GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
+	//GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
+	//GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
 
 	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
 	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")

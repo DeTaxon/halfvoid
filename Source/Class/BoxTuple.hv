@@ -64,7 +64,10 @@ BoxClassTuple := class extend BoxClassPoison
 		
 
 		SubWork(() ==> {
-			InternalsHatch.Await()
+			//InternalsHatch.Await()
+			assert(GDefautlSetTemplate != null)
+			assert(TemplateInternalTupleConstructor != null)
+			assert(GDefautlCompareTemplate != null)
 
 			buildCtx := ClassBuildContext
 			buildCtx.MemParents.Push(Parents[^])
