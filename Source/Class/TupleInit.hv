@@ -1,0 +1,33 @@
+
+TemplateInternalCreateTuple := BoxFuncTemplate^
+
+TupleInitBuiltin := !() -> void
+{
+	df := GetAnyFile()
+	CurrentFile = df
+	CurrentScope = df
+
+	{
+		fl := #FileLocal("TupleCreate.hv.builtin")
+		flBlob := fl.GetBlob()
+		flBlob.IncRef() //TODO mem?
+		fncSpn := StringSpan(flBlob.GetPointer()->{char^},flBlob.Size())
+		objs := GetObjectsFromMemory(df,fncSpn.NonNullStr(),fncSpn.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+
+		itr := objs
+		while itr != null
+		{
+			itr.Up = tknData
+			itr = itr.Right
+		}
+		objs = tknData
+
+		stFuncTemplate := TryParseFunction(objs)
+		assert(stFuncTemplate != null and stFuncTemplate is in BoxFuncTemplateBody)
+		TemplateInternalCreateTuple = stFuncTemplate->{BoxFuncTemplateBody^}
+		TemplateInternalCreateTuple->{BoxFuncTemplateBody^}.SetName(StringSpan("$anon"))
+	}
+}

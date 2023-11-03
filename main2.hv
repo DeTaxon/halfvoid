@@ -25,6 +25,8 @@ main := !(char^[] args) -> int
 	//tst.ForEachCall((x,y,z) ==> {
 	//	printf("test %s %s %i\n",x,y,z)
 	//})
+	tst := !{23,8}
+	printf("hey %i %i\n",tst.0,tst.1)
 }
 
 

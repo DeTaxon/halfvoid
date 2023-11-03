@@ -1,0 +1,7 @@
+!(args...) . {@ResType} -> ResType
+{
+	for it,i : args
+	{
+		result.i = it
+	}
+}

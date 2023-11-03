@@ -44,6 +44,7 @@ ZeroMem := !(@T& x) -> void
 		internalHVInitClass(x)
 }
 
+//TODO remove after updating stable executable
 internalHVCreateTuple := !(args...) . {@ResType} -> ResType
 {
 	for it,i : args

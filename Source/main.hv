@@ -153,6 +153,7 @@ main := !(char^[] args) -> int
 	PreInitTaskLocal()
 	cuId = GetNewId()
 
+	TupleInitBuiltin()
 	GCObjectInit()
 	ArrayViewInit()
 
