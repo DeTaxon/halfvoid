@@ -20,17 +20,12 @@
 
 main := !(char^[] args) -> int
 {
-	//tst := CreateStackTrace()
-	////tst.PrintTrace()
-	//tst.ForEachCall((x,y,z) ==> {
-	//	printf("test %s %s %i\n",x,y,z)
-	//})
-	tst := !{23,8}
-	printf("hey %i %i\n",tst.0,tst.1)
-	tst."this"(3,15)
-	printf("hey %i %i\n",tst.0,tst.1)
+	itms := HybridQueue.{StringSpan,2}
+	itms.Push(StringSpan("why"))
+	itms.Push(StringSpan("not"))
+	itms[0]
+	itms[0]
 }
-
 
 //Reserve inheritance failed, it's overcomplicated
 //ExpectClass := class

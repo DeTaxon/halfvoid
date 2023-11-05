@@ -8,26 +8,20 @@ BoxReturn := class extend BoxExeObj
 		ObjType = GTypeVoid
 		ResultCall = rc
 
-		for it : UnitStack
-		{
-			if it is FuncInlineWrapper
-			{
-				//TODO GC vars in inline functions
-				return void
-			}
-		}
+		//for it : UnitStack
+		//{
+		//	if it is FuncInlineWrapper
+		//	{
+		//		//TODO GC vars in inline functions
+		//		return void
+		//	}
+		//}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ResultCall?.PrintDefaultUse(ctx)
 
 		//TODO inline functions?
-
-		//for it : ctx.deferObjects
-		//{
-		//	it.PrintDefer(ctx)
-		//}
-		//EndLabel.PrintGo(ctx)
 
 		if ctx.deferObjects.Size() == 0
 		{
@@ -117,12 +111,12 @@ ReturnHalfState := class extend BoxExeObj
 							errorToken.EmitError("result type does not compare with function result")
 						}
 					}else{
-						newObj := GetExchange(callObj,CurrentFunc.ResultVar.GetVarType())
+						newObj := GetExchange(callObj,CurrentFunc.ResultVar.GetType())
 						if newObj == null
 						{
 							if callObj is BoxExeNull
 							{
-								newObj = GetExchange2(callObj,CurrentFunc.ResultVar.GetVarType(),false)
+								newObj = GetExchange2(callObj,CurrentFunc.ResultVar.GetType(),false)
 							}else{
 								errorToken.EmitError("can not convert type to function result")
 							}
@@ -142,7 +136,7 @@ ReturnHalfState := class extend BoxExeObj
 				}
 
 				objs := CheckExeDownList
-				objs.Push(CurrentReturns.ResultVar.Value.CreateCall())
+				objs.Push(CurrentReturns.ResultVar.CreateVarCall())
 				objs.Push(callObj2)
 
 				if rRef

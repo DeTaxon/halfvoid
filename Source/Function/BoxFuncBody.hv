@@ -234,8 +234,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		LocalVariablesStep()
 		WorkBodyCaptures()
 		
-		ResultVar?.Value.PopulateCalls()
-		
 		while UnitStack.Size() > stackSize
 		{
 			UnitStack.Pop()
@@ -298,7 +296,6 @@ BoxFuncBody := class extend BoxFuncCommon
 
 
 		PrintLocalVars(ctx)
-		ResultVar?.Value.PrintAlloc(ctx)
 		ResultVar?.PrintCode(ctx)
 		ParamsLocalVars[^].PrintCode(ctx)
 		Params[^].PrintCode(ctx)
@@ -333,7 +330,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			if ResultVar != null
 			{
 				tmpList := CheckExeDownList
-				cl := BoxFuncCall(ResultVar.Value,tmpList)
+				cl := ResultVar.proxy&
 
 				cl.PrintPre(ctx)
 				f^ << "ret "
@@ -390,15 +387,15 @@ BoxFuncBody := class extend BoxFuncCommon
 			GDebugFileId = oldFileId
 		}
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
-	{
-		if Attrs.IsInline
-		{
-			return new FuncInlineWrapper(this&,objs)
-		}else{
-			return super(objs)
-		}
-	}
+	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//{
+	//	if Attrs.IsInline
+	//	{
+	//		return new FuncInlineWrapper(this&,objs)
+	//	}else{
+	//		return super(objs)
+	//	}
+	//}
 }
 
 GetParSpan := !(int i) -> StringSpan

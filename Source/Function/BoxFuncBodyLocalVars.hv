@@ -180,6 +180,14 @@ AppendClass BoxFuncBody
 			f^ << "\n"
 			it.PrintCode(ctx)
 		}
+
+		if printResultVar
+		{
+			tp := ResultVar.GetBaseType()
+			f^ << "%Var" << 99999 << " = alloca "
+			tp.PrintType(ctx)
+			f^ << "\n"
+		}
 	}
 }
 

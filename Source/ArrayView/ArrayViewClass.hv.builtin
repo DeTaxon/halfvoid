@@ -1,0 +1,14 @@
+class .{@T} extend TGCObject
+{
+	Size := virtual !() -> int {}
+	"[]" := virtual !(int i) -> ref T { assert(false) }
+	"for" := !() -> ViewIterator.{T}
+	{
+		result.ViewPtr = this&
+	}
+	GetPointer := virtual !() -> T^ { return null }
+	Clear := virtual !() -> void
+	{
+		Destroy()
+	}
+}

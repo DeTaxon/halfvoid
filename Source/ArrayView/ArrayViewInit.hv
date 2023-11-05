@@ -1,0 +1,48 @@
+
+ArrayViewTemplate := BoxClassTemplate^
+
+ArrayViewInit := !() -> void
+{
+	df := GetAnyFile()
+	CurrentFile = df
+	CurrentScope = df
+
+	{
+		classBody := #FileLocal("ArrayViewClass.hv.builtin").GetBlob()
+
+		objs := GetObjectsFromMemory(df,classBody.GetPointer(),classBody.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+		objs.Up = tknData
+		objs.Right.Up = tknData
+		objs = tknData
+		classObj := TryParseClass(objs)->{BoxClassTemplateBody^}
+		assert(classObj != null and classObj is in BoxClassTemplateBody)
+
+		name := StringSpan("TArrayView")
+		vr := new TemplateTypeVar(name,classObj)
+		classObj.SetName(name)
+		TypesDatabase[vr.Name] = vr
+
+		ArrayViewTemplate = classObj
+	}
+	{
+		classBody := #FileLocal("ArrayViewIterator.hv.builtin").GetBlob()
+
+		objs := GetObjectsFromMemory(df,classBody.GetPointer(),classBody.Size())
+
+		tknData := new TokenData
+		tknData.Down = objs
+		objs.Up = tknData
+		objs.Right.Up = tknData
+		objs = tknData
+		classObj := TryParseClass(objs)->{BoxClassTemplateBody^}
+		assert(classObj != null and classObj is in BoxClassTemplateBody)
+
+		name := StringSpan("ViewIterator")
+		vr := new TemplateTypeVar(name,classObj)
+		classObj.SetName(name)
+		TypesDatabase[vr.Name] = vr
+	}
+}

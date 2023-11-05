@@ -333,7 +333,7 @@ MemVar := class extend NamedVar
 			return void
 		Inits[^].PrintDebugMeta(ctx)
 
-		if Value is in FuncLocalParam or Value is in FuncInputParam
+		if Value is in FuncLocalParam
 		{
 			pType := Value.GetType()->{TypeFunc^}.ResultType
 			f^ << "!" << debId << " = !DILocalVariable(name: \"" << Name << "\" , scope:!" << GDebugScopeId << " , file:!" << GDebugFileId

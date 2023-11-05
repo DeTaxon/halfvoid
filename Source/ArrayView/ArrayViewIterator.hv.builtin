@@ -1,0 +1,17 @@
+
+class.{@T} extend TGCObject
+{
+	ViewPtr := T[]
+	indx := int
+
+	HaveValue := !() -> bool
+	{
+		return indx < ViewPtr.Size()
+	}
+	"()" := !() -> ref T
+	{
+		i := indx
+		indx += 1
+		return ViewPtr[i]
+	}
+}

@@ -35,5 +35,47 @@ GetFuncInputVar := class extend BoxExeObj
 	{
 		ctx.writeStream^ << "%par" << varIndex
 	}
-
+}
+GetFuncResultVar := class extend BoxExeObj
+{
+	this := !(Type^ objType) -> void
+	{
+		ObjType = objType
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		assert(false)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%result"
+	}
+}
+GetLocalVarVoid := class extend BoxExeObj
+{
+	this := !() -> void
+	{
+		ObjType = GTypeVoid
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		assert(false)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
 }

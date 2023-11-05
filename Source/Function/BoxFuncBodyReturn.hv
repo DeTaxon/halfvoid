@@ -1,7 +1,9 @@
 AppendClass BoxFuncBody
 {
 	returnHolder := ReturnsHolder
-	inlineFunctions := List.{FuncInlineWrapper^}
+	//inlineFunctions := List.{FuncInlineWrapper^}
+
+	printResultVar := bool //TODO way too weird
 
 	CheckReturnStep := !() -> void
 	{
@@ -26,21 +28,28 @@ AppendClass BoxFuncBody
 			resSpn := StringSpan("result")
 			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
 			{
-				rv := new FuncInputParam(tp.ResultType,true,StringSpan("%result"))
-				ResultVar = new MemVar(resSpn,rv)
+				getRes := new GetFuncResultVar(tp.ResultType.GetPoint())
+				ResultVar = new LocalVar(resSpn,tp.ResultType,true,true)
+				ResultVar.SetCall(getRes)
 			}else{
 				rFuncType := tp.ResultType
 				if tp.ResultRef
 					rFuncType = rFuncType.GetPoint()
-				rFnc := new FuncLocalParam(rFuncType)
-				//regularVars.Push(rFnc)
-				ResultVar = new MemVar(resSpn,rFnc)
+
+				ResultVar = new LocalVar(resSpn,rFuncType,true,false)
+				access := new FuncLocalVarAccess(99999,rFuncType) //TODO better result name
+				ResultVar.SetCall(access)
+
+				createCall := new FuncLocalVarCleanup(access)
+				ResultVar.createVar.Push(createCall)
+
+				printResultVar = true
 			}
 		}else
 		{
 			resSpn := StringSpan("result")
-			resVoid := new FuncLocalVoidParam()
-			ResultVar = new MemVar(resSpn,resVoid)
+			ResultVar = new FuncInputVar(resSpn,GTypeVoid,true,false)
+			ResultVar.SetCall(new GetLocalVarVoid()) //TODO i could unit all of the new GetLocalVarVoid()
 		}
 	}
 }
@@ -49,7 +58,7 @@ ReturnsHolder := class extend BoxUnit
 	IsAutoResult := bool
 	ResultRef := bool
 	ResultType := Type^
-	ResultVar := MemVar^
+	ResultVar := LocalVar^
 	Returns := HybridQueue.{ReturnHalfState^,4}
 
 	ReturnBlock := BoxBlock^

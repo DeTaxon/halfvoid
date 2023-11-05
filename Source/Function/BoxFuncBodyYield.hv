@@ -9,7 +9,7 @@ AppendClass BoxFuncBody
 	Params := HybridQueue.{FuncInputVar^,8}
 	ParamsLocalVars := HybridQueue.{LocalVar^,8}
 
-	ResultVar := MemVar^
+	ResultVar := LocalVar^
 
 	PutYieldState := !(BoxYield^ yld) -> int
 	{
