@@ -1,6 +1,7 @@
 AppendClass Task
 {
 	fiberHandler := void^
+	thisTaskStackSize := size_t
 	OSFirstInit := !() -> void
 	{
 		fiberHandler = ConvertThreadToFiber(null)
@@ -9,14 +10,26 @@ AppendClass Task
 	{
 		if fiberHandler != null
 			return void
-			
-		fiberHandler = CreateFiber(4*1024*1024,ucontextStartTask,null)
+		
+		taskSize := 4*1024*1024
+		thisTaskStackSize = taskSize
+		fiberHandler = CreateFiber(taskSize,ucontextStartTask,null)
 		itTaskWorker = CurrentThread
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
 		SwitchToFiber(fiberHandler)
 	}
+	GetStackUsage := !() -> TaskStackUsageInfo
+	{
+		if stackPtr == null or thisTaskStackSize == 0
+			return void
+		anyVar := void^
+		//c := anyVar&->{size_t} - stackPtr->{size_t}
+		//result.UsedSize = thisTaskStackSize - c
+		//result.TotalSize = thisTaskStackSize
+	}
+
 	firstStartOS := !() -> void
 	{
 		oldTask := CurrentTask->{void^}

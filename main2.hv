@@ -20,11 +20,18 @@
 
 main := !(char^[] args) -> int
 {
-	itms := HybridQueue.{StringSpan,2}
-	itms.Push(StringSpan("why"))
-	itms.Push(StringSpan("not"))
-	itms[0]
-	itms[0]
+	IterFunc(64)
+}
+
+IterFunc := !(int depths) -> void
+{
+	if(depths < 0)
+		return void
+	c := int[1024]
+
+	memUsage := CurrentTask.GetStackUsage()
+	printf("test %li %li %li %f %f\n",memUsage.TotalSize,memUsage.Used(),memUsage.Free(),memUsage.ProcUsage()*100.0,memUsage.ProcFree()*100.0)
+	IterFunc(depths - 1)
 }
 
 //Reserve inheritance failed, it's overcomplicated

@@ -79,4 +79,31 @@ Task := class extend TGCObject
 	}
 }
 
+TaskStackUsageInfo := class
+{
+	TotalSize := size_t
+	UsedSize := size_t
+
+	Used := !() -> size_t
+	{
+		return UsedSize
+	}
+	Free := !() -> size_t
+	{
+		return TotalSize - UsedSize
+	}
+	ProcUsage := !() -> double
+	{
+		if TotalSize == 0
+			return 0.0
+		return this.Used()->{double} / TotalSize->{double}
+	}
+	ProcFree := !() -> double
+	{
+		if TotalSize == 0
+			return 0.0
+		return this.Free()->{double} / TotalSize->{double}
+	}
+}
+
 
