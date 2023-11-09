@@ -93,7 +93,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			}
 		}
 	}
-	ToFuncType := virtual !(CheckExeDownList objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		headerCheckHatch.Await()
 

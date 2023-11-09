@@ -22,7 +22,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 1 or consts.Size() != 1
 			return null
@@ -177,7 +177,7 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 
 BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 {
-	ToFuncType := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() > 5 or objs.Size() < 2
 			return null
