@@ -310,5 +310,5 @@ NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 		bls[k] = inp.Params[i].IsRef
 		k += 1
 	}
-	return GetFuncType(k,typs[0]&,bls[0]&,GTypeVoid,false,inp.IsVargs)
+	return GetFuncType(k,TArraySpan.{Type^}(typs[0]&,k),TArraySpan.{bool}(bls[0]&,k),GTypeVoid,false,inp.IsVargs)
 }

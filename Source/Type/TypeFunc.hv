@@ -224,7 +224,8 @@ FuncTypeSetResult := !(TypeFunc^ oldType,Type^ newResult,bool isRefResult) -> Ty
 		Typs[i] = oldType.Params[i].ItType
 		isRef[i] = oldType.Params[i].IsRef
 	}
-	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,newResult,isRefResult,oldType.IsVargs)
+	k := oldType.Params.Size()
+	return GetFuncType(k,TArraySpan.{Type^}(Typs[0]&,k),TArraySpan.{bool}(isRef[0]&,k),newResult,isRefResult,oldType.IsVargs)
 }
 FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefParam) -> TypeFunc^
 {
@@ -238,7 +239,8 @@ FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefP
 	}
 	Typs[index] = newParamType
 	isRef[index] = isRefParam
-	return GetFuncType(oldType.Params.Size(),Typs[0]&,isRef[0]&,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+	k := oldType.Params.Size()
+	return GetFuncType(k,TArraySpan.{Type^}(Typs[0]&,k),TArraySpan.{bool}(isRef[0]&,k),oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
 }
 FuncTypePopFront := !(TypeFunc^ oldType) -> TypeFunc^
 {
@@ -257,5 +259,6 @@ FuncTypePopFront := !(TypeFunc^ oldType) -> TypeFunc^
 		Typs[i] = oldType.Params[i].ItType
 		isRef[i] = oldType.Params[i].IsRef
 	}
-	return GetFuncType(oldType.Params.Size() - 1,Typs[0]&,isRef[0]&,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+	k := oldType.Params.Size() - 1
+	return GetFuncType(k,TArraySpan.{Type^}(Typs[0]&,k),TArraySpan.{bool}(isRef[0]&,k),oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
 }
