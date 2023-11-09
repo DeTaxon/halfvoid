@@ -8,7 +8,7 @@ BoxFuncTemplate := class extend BoxUnit
 
 	GetDefaultValuesCount := virtual !() -> int { return 0 }
 
-	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> int
 	{
 		fTyp := ToFuncType(objs,consts)
 
@@ -65,7 +65,7 @@ BoxFuncTemplate := class extend BoxUnit
 
 		return GetFuncType(objs.Size(),tps[0]&, refs[0]&,GTypeVoid,false,false)
 	}
-	CheckPriority := virtual !(TypeFunc^ tp,CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
 	{
 		return CmpFuncPriority(tp,objs,GetDefaultValuesCount())
 	}

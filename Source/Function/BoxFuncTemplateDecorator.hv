@@ -11,7 +11,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 		decoratorToken = tkn
 		baseScope = CurrentScope
 	}
-	GetPriority := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> int
+	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> int
 	{
 		return baseTemplate.GetPriority(objs,consts)
 	}
