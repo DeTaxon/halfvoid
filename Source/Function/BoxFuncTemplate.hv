@@ -16,7 +16,7 @@ BoxFuncTemplate := class extend BoxUnit
 			return CmpNoExchange
 		return CheckPriority(fTyp,objs,consts)
 	}
-	GetFunc := virtual !(CheckExeDownList objs, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	GetFunc := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		fTyp := ToFuncType(objs,consts)
 
@@ -32,7 +32,7 @@ BoxFuncTemplate := class extend BoxUnit
 		return GetFuncByType(fTyp,consts)
 	}
 
-	GetFuncByType := virtual !(TypeFunc^ fTyp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	GetFuncByType := virtual !(TypeFunc^ fTyp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		if AllFuncs.Contain(fTyp)
 		{
@@ -43,7 +43,11 @@ BoxFuncTemplate := class extend BoxUnit
 			}
 		}
 
-		newFunc := CreateFunc(fTyp,consts)
+		//newFunc := CreateFunc(fTyp,consts) TODO make line below back to consts
+		tmpList := List.{BoxExeConstObj^}
+		tmpList.Push(consts[^])
+		newFunc := CreateFunc(fTyp,tmpList)
+
 		AllFuncs[fTyp].Push(newFunc)
 
 		cns := FuncConstants[newFunc]&
