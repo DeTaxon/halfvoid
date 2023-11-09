@@ -119,15 +119,11 @@ funcTypes := HybridQueue.{TypeFunc^,10}[9973]^
 
 GetFuncType := !(Type^ res) -> TypeFunc^
 {
-	return GetFuncType(0,null,null,res,false,false)
+	return GetFuncType(0,TArraySpan.{Type^}(null,0),TArraySpan.{bool}(null,0),res,false,false)
 }
 GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
 {
 	return GetFuncType(S,TArraySpan.{Type^}(args[0]&,S),null,res,false,false)
-}
-GetFuncType := !(Type^[@S] args,bool[@S2] isRefs,Type^ res) -> TypeFunc^
-{
-	return GetFuncType(S,TArraySpan.{Type^}(args[0]&,S),TArraySpan.{bool}(isRefs[0]&,S2),res,false,false)
 }
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
@@ -137,11 +133,24 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 	refsView := refsSpan&->{bool[]}
 	if refs == null
 		refsView = null
-	//assert(false)
-	return GetFuncType(count,argsSpan,refsView,res,resRef,isVargs)
+	return GetFuncType(argsSpan,refsView,res,resRef,isVargs)
 }
-GetFuncType := !(int count,Type^[] args,bool[] refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
+GetFuncType := !(int count,Type^[] args,bool[] refs, Type^ res = GTypeVoid,bool resRef = false,bool isVargs = false) -> TypeFunc^
 {
+	return GetFuncType(args,refs,res,resRef,isVargs)
+}
+
+GetFuncType := !(	
+			Type^[] args = null,
+			bool[] refs = null, 
+			Type^ res = GTypeVoid,
+			bool resRef = false,
+			bool isVargs = false
+			) -> TypeFunc^
+{
+	count := 0
+	if args != null
+		count = args.Size()
 	hsh := u32
 
 	for i : count
