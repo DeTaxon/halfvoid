@@ -119,11 +119,11 @@ funcTypes := HybridQueue.{TypeFunc^,10}[9973]^
 
 GetFuncType := !(Type^ res) -> TypeFunc^
 {
-	return GetFuncType(0,TArraySpan.{Type^}(null,0),TArraySpan.{bool}(null,0),res,false,false)
+	return GetFuncType(null,null,res)
 }
-GetFuncType := !(Type^[@S] args,Type^ res) -> TypeFunc^
+GetFuncType := !(Type^[] args,Type^ res) -> TypeFunc^
 {
-	return GetFuncType(S,TArraySpan.{Type^}(args[0]&,S),null,res,false,false)
+	return GetFuncType(args,null,res)
 }
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
@@ -135,6 +135,7 @@ GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool is
 		refsView = null
 	return GetFuncType(argsSpan,refsView,res,resRef,isVargs)
 }
+
 GetFuncType := !(int count,Type^[] args,bool[] refs, Type^ res = GTypeVoid,bool resRef = false,bool isVargs = false) -> TypeFunc^
 {
 	return GetFuncType(args,refs,res,resRef,isVargs)
