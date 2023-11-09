@@ -354,9 +354,9 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 		return null
 	return x[bestI]
 }
-CalculatePriorities := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,HybridQueue.{int,13} priorityes) -> void
+CalculatePriorities := !(BoxUnit^[] candidateObjects,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,HybridQueue.{int,13} priorityes) -> void
 {
-	for h : x
+	for h : candidateObjects
 	{
 		if h is in BoxFunc
 		{
@@ -441,25 +441,9 @@ makeFuncCall := !(BoxUnit^ callItem, CheckExeDownList Objs,List.{BoxExeConstObj^
 }
 
 oneGonnaOnly := task_local bool
-//IsGonnaWorkCreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> bool
-//{
-//	if oneGonnaOnly
-//		return false
-//	oneGonnaOnly = true
-//
-//	callItem := BoxUnit^
-//	GetItemGlobal(name, x ==>{
-//		callItem = GetBestFunc(x,Objs,consts,true)
-//		if callItem == null
-//			return false
-//		return true
-//	})
-//	oneGonnaOnly = false
-//	return callItem != null
-//}
-
 isGonnaWorkCache := AVLMap.{Type^,AVLMap.{Type^,bool}}[2]
 
+//TODO i don't like it
 IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 {
 	if oneGonnaOnly
@@ -493,20 +477,11 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 		}
 	}
 
-	if isGonnaWorkCache[isMem][objType]?[toType]? != found
-	{
-		printf("why\n")
-	}
+	//if isGonnaWorkCache[isMem][objType]?[toType]? != found
+	//{
+	//	printf("why\n")
+	//}
 	isGonnaWorkCache[isMem][objType][toType] = found
-
-
-	//GetItemGlobalFunc(StringSpan("->{}"), x ==>{
-	//	callItem = GetBestFunc(x,Objs,consts,true)
-	//	if callItem == null
-	//		return false
-	//	return true
-	//})
-	//oneGonnaOnly = false
 	return found
 }
 
@@ -542,7 +517,7 @@ CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExe
 
 CmpNoExchange := 999000
 
-CmpFuncPriority := !(TypeFunc^ fncType, CheckExeDownList objs ,int defaults) -> int
+CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
 {
 	worstCase := 0
 

@@ -176,13 +176,11 @@ main := !(char^[] args) -> int
 		fil.loaded.Await()
 	}
 
-
 	InitInternals()
 	InitTaskLocal()
 	InitLambda()
 	RecheckAppends()
 	GParsedAllFiles.Emit()
-
 
 	mainFuncName := "internalHVEntryPoint"
 	if JITMode

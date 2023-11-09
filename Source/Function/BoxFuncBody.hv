@@ -97,8 +97,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		cls := this&
 		GFuncsInProgress.Push(this&)
 
-		memUsage := CurrentTask.GetStackUsage()
-		//printf("hey %li %f\n",memUsage.Free(),memUsage.ProcFree())
 		TSpawnTask(() ==> [cls] {
 			cls.ParseBodyForced()
 		})

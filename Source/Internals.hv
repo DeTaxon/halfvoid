@@ -93,9 +93,6 @@ InitInternals := !() -> void
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
 
-	//GDefautlSetTemplate = intGetTemplate("internalClassDefaultSet")
-	//GDefautlCompareTemplate = intGetTemplate("internalClassDefaultCompare")
-
 	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
 	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
 	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
