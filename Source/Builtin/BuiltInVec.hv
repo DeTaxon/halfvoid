@@ -69,7 +69,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 
 		return GetFuncType(1,![a],![true],GTypeFloat,true,false)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		str := consts[0]->{BoxExeString^}.val
 		vecInd := 0
@@ -200,7 +200,7 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 		
 		return GetFuncType(objs.Size(),typs[0]&,isRefs[0]&,GTypeVoid,false,false)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		InternalsHatch.Await()
 		if tp.Params.Size() == 5

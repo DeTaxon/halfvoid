@@ -31,7 +31,7 @@ BuiltInArrayViewCmpVoidP := class extend BoxFuncTemplate
 		return GetFuncType(2,![objs[0].GetType(),objs[1].GetType()],null,GTypeBool,false,false)
 
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		return new BuiltInArrayViewCmp(tp,m_isEq)
 	}

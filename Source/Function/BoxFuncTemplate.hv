@@ -43,10 +43,7 @@ BoxFuncTemplate := class extend BoxUnit
 			}
 		}
 
-		//newFunc := CreateFunc(fTyp,consts) TODO make line below back to consts
-		tmpList := List.{BoxExeConstObj^}
-		tmpList.Push(consts[^])
-		newFunc := CreateFunc(fTyp,tmpList)
+		newFunc := CreateFunc(fTyp,consts)
 
 		AllFuncs[fTyp].Push(newFunc)
 
@@ -73,7 +70,7 @@ BoxFuncTemplate := class extend BoxUnit
 	{
 		return CmpFuncPriority(tp,objs,GetDefaultValuesCount())
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, List.{BoxExeConstObj^} consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		assert(false)
 		return null
