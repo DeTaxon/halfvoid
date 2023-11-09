@@ -172,6 +172,6 @@ FunctionHeaderInfo := class
 		if resType == null
 			resType = GTypeVoid
 
-		return GetFuncType(Types.Size(),fTyp[0]&,isRef[0]&,ResultType.ItType,ResultType.IsRef,IsVargs)
+		return GetFuncType(Types.Size(),TArraySpan.{Type^}(fTyp[0]&,Types.Size()),TArraySpan.{bool}(isRef[0]&,Types.Size()),ResultType.ItType,ResultType.IsRef,IsVargs)
 	}
 }
