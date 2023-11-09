@@ -51,7 +51,7 @@ BoxFuncTemplate := class extend BoxUnit
 
 		return newFunc
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
 	{
 		tps := Type^[100] //TODO unconsts?
 		refs := bool[100]

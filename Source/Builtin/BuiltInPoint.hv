@@ -53,7 +53,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
 	{
 		if objs.Size() != 2
 			return null
@@ -80,7 +80,7 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs, List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
 	{
 		if objs.Size() != 2
 			return null

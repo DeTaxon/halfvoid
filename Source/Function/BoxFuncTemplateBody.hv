@@ -93,7 +93,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			}
 		}
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs,List.{BoxExeConstObj^} consts) -> TypeFunc^
+	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
 	{
 		headerCheckHatch.Await()
 
@@ -199,7 +199,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, List.{BoxExeConstObj^} consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
 	{
 		//TODO , multi round check
 
