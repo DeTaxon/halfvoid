@@ -6,17 +6,9 @@ AppendClass BoxFuncBody
 
 	CapturedVars2 := List.{LocalVar^}
 
-	FunctionResultVars := List.{FuncResultParam2^}
-
 	WorkBodyCaptures := !() -> void
 	{
-		for it : FunctionResultVars
-		{
-			it.PopulateCalls()
-		}
 	}
-
-	getCaptureInLeafs := BoxExeObj^
 
 	PrintStackData := virtual !(LLVMWriteContext^ ctx) -> void
 	{

@@ -54,17 +54,20 @@ BoxFuncTemplate := class extend BoxUnit
 	}
 	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
 	{
-		tps := Type^[100] //TODO unconsts?
-		refs := bool[100]
+		tps := HybridQueue.{Type^,12}
+		refs := HybridQueue.{bool,12}
 
 		for ob,i : objs
 		{
-			tps[i] = ob.GetType()
+			tps.Push(ob.GetType())
+			isRef := false
 			if IsComplexType(tps[i])
-				refs[i] = true
+				isRef = true
+			refs.Push(isRef)
+
 		}
 
-		return GetFuncType(objs.Size(),tps[0]&, refs[0]&,GTypeVoid,false,false)
+		return GetFuncType(tps, refs,GTypeVoid,false,false)
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
 	{
