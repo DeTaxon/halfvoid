@@ -265,7 +265,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	assert(false)
 }
 
-innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
+innerTryGetPtrCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs) -> BoxExeObj^
 {
 	dType := dwnItem.GetType()
 	if dType is in TypePoint and dType.Base is TypeFunc
@@ -278,7 +278,7 @@ innerTryGetPtrCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs) -> BoxExeObj^
 	}
 	return null
 }
-innerTryGetSkobCall := !(BoxExeObj^ dwnItem, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+innerTryGetSkobCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	dType := dwnItem.GetType()
 	cls := BoxClass^

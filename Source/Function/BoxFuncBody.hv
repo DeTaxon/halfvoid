@@ -388,15 +388,6 @@ BoxFuncBody := class extend BoxFuncCommon
 			GDebugFileId = oldFileId
 		}
 	}
-	//CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
-	//{
-	//	if Attrs.IsInline
-	//	{
-	//		return new FuncInlineWrapper(this&,objs)
-	//	}else{
-	//		return super(objs)
-	//	}
-	//}
 }
 
 GetParSpan := !(int i) -> StringSpan
