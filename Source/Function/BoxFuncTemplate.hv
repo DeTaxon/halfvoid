@@ -88,7 +88,7 @@ BoxFuncTemplate := class extend BoxUnit
 	SetName := virtual !(StringSpan name) -> void
 	{
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 	{
 		fnc := GetFunc(objs,consts)
 		return fnc.CreateCall(objs)
