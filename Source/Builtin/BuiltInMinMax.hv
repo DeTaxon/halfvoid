@@ -106,7 +106,7 @@ BuiltInMinMaxFloat := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 	//IsExecutable := virtual true
-	//Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	//Execute := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	//{
 	//	assert(objs[0] is BoxExeInt)
 	//	assert(objs[1] is BoxExeInt)

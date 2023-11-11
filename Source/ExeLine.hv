@@ -330,7 +330,7 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 	return GetBestFunc(x,Objs,consts,false)
 }
 
-GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,bool expectExac) -> BoxUnit^
+GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
 
@@ -354,7 +354,7 @@ GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeC
 		return null
 	return x[bestI]
 }
-CalculatePriorities := !(BoxUnit^[] candidateObjects,CheckExeDownList Objs,List.{BoxExeConstObj^} consts,HybridQueue.{int,13} priorityes) -> void
+CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,HybridQueue.{int,13} priorityes) -> void
 {
 	for h : candidateObjects
 	{
