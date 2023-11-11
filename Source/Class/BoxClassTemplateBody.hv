@@ -1,6 +1,6 @@
 BoxClassTemplate := class extend BoxUnit
 {
-	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
 	{
 		assert(false)
 	}
@@ -51,7 +51,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	}
 
 	classes := AVLMap.{int,List.{Tuple.{ConstantHolder^,BoxClass^}}}
-	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
 	{
 		hsh := 0
 		

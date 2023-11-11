@@ -1,14 +1,14 @@
 
 tplDatabase := AVLMap.{Type^,BoxClassTuple^}
-GetTuple := !(List.{Type^} types) -> BoxClass^
+GetTuple := !(Type^[] types) -> BoxClass^
 {
 	return GetTuple(types,false,false)
 }
-GetTuple := !(List.{Type^} types, bool simpleTuple) -> BoxClass^
+GetTuple := !(Type^[] types, bool simpleTuple) -> BoxClass^
 {
 	return GetTuple(types,simpleTuple,false)
 }
-GetTuple := !(List.{Type^} types, bool simpleTuple,bool isVTable) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
+GetTuple := !(Type^[] types, bool simpleTuple,bool isVTable) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
 {
 	typesArr := Type^[200] //todo  to Array
 	typesArr[i] = types[^i].GetPoint()
@@ -30,7 +30,7 @@ GetTuple := !(List.{Type^} types, bool simpleTuple,bool isVTable) -> BoxClass^ /
 BoxClassTuple := class extend BoxClassPoison
 {
 	mthHatch := THatch
-	this := !(List.{Type^} types,bool simpleTuple) -> void
+	this := !(Type^[] types,bool simpleTuple) -> void
 	{
 		ItName = "Tuple"
 		ItId = GetNewId()
@@ -151,7 +151,7 @@ BoxClassTuple := class extend BoxClassPoison
 
 BoxClassTupleTemplate := class extend BoxClassTemplate
 {
-	GetClass := virtual !(List.{BoxExeConstObj^} inpts) -> BoxClass^
+	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
 	{
 		lst := List.{Type^}
 
