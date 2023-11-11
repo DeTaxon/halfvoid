@@ -13,7 +13,7 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 		}
 		return StaticArray[i]
 	}
-	Size := virtual !() -> int
+	Size := virtual !() -> int ; TemplateResist
 	{
 		return FullSize
 	}
