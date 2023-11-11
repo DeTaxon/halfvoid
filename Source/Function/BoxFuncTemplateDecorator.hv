@@ -15,7 +15,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		return baseTemplate.GetPriority(objs,consts)
 	}
-	GetFunc := virtual !(CheckExeDownList objs, BoxExeConstObj^[] consts) -> BoxFunc^
+	GetFunc := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		return baseTemplate.GetFunc(objs,consts)
 	}

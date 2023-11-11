@@ -391,7 +391,7 @@ CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs) -> BoxExeObj^
 	cnsts := List.{BoxExeConstObj^}
 	return CreateFuncCall(name,Objs,cnsts)
 }
-CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	callItem := BoxUnit^
 
@@ -414,7 +414,7 @@ CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,List.{BoxExeConstObj^} co
 		return null
 	return makeFuncCall(callItem,Objs,consts)
 }
-makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	if callItem is ConstVar
 	{
@@ -480,7 +480,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	return found
 }
 
-CreateFuncCallOperator := !(StringSpan name, CheckExeDownList Objs, List.{BoxExeConstObj^} consts) -> BoxExeObj^
+CreateFuncCallOperator := !(StringSpan name, BoxExeObj^[] Objs, BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
 	{

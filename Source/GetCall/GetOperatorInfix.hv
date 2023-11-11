@@ -238,7 +238,7 @@ spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> B
 	}
 }
 
-innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) -> BoxExeObj^
+innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> BoxExeObj^
 {
 	if lst[0] == null or lst[1] == null
 	{
@@ -312,7 +312,7 @@ innerTryGetInfixCall := !(StringSpan oper,CheckExeDownList lst,Token^ errToken) 
 	return null
 }
 
-TryComputeOperators := !(StringSpan oper, CheckExeDownList  objs) -> BoxExeObj^
+TryComputeOperators := !(StringSpan oper, BoxExeObj^[]  objs) -> BoxExeObj^
 {
 	if oper in !["==","!="]
 	{
