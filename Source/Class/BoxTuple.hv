@@ -1,14 +1,6 @@
 
 tplDatabase := AVLMap.{Type^,BoxClassTuple^}
-GetTuple := !(Type^[] types) -> BoxClass^
-{
-	return GetTuple(types,false,false)
-}
-GetTuple := !(Type^[] types, bool simpleTuple) -> BoxClass^
-{
-	return GetTuple(types,simpleTuple,false)
-}
-GetTuple := !(Type^[] types, bool simpleTuple,bool isVTable) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
+GetTuple := !(Type^[] types, bool simpleTuple = false,bool isVTable = false) -> BoxClass^ //TODO remove isVTable to class, maybe just make CreateTuple instead of GetTuple
 {
 	typesArr := Type^[200] //todo  to Array
 	typesArr[i] = types[^i].GetPoint()
