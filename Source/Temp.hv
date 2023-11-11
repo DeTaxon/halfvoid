@@ -9,12 +9,6 @@
 	return false
 }
 
-StrSize := !(char^ a) -> int
-{
-	Si := 0
-	while a[Si] != 0 Si += 1
-	return Si
-}
 ToInt := !(char^ inp) -> int
 {
 	return strtol(inp,null,0)
@@ -27,7 +21,7 @@ ToFloat := !(char^ inp) -> float
 
 StrCopy := !(char^ a) -> char^
 {
-	Si := StrSize(a)
+	Si := strlen(a)
 	Pre := malloc(Si+1)->{char^}
 	memcpy(Pre->{void^},a,Si)
 	Pre[Si] = 0
