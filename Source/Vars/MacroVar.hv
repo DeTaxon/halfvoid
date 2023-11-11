@@ -47,7 +47,7 @@ MacroParam := class extend ParamFunc
 	}
 	NotifyCaptureUse := virtual !() -> void {}
 
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
 

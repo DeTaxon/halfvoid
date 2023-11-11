@@ -29,8 +29,8 @@ FuncGCLocalParam := class extend ParamFunc
 		parentFunc.gcArrayPtr.NotifyCaptureUse()
 	}
 
-	populated := bool
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	populated := bool //TODO REMOVE
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 0)
 		assert(not populated)

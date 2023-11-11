@@ -120,7 +120,7 @@ BoxFunc := class extend BoxExeConstObj
 		empty := CheckExeDownList
 		return CreateCall(empty)
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		if this.IsConstexpr
 		{

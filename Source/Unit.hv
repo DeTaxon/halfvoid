@@ -51,7 +51,7 @@ BoxUnit := class
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
 
 	IsExecutable := virtual false
-	Execute := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	Execute := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(false)
 	}

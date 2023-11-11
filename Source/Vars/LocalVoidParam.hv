@@ -29,7 +29,7 @@ FuncLocalVoidParam := class extend ParamFunc
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		return GObjVoid
 	}

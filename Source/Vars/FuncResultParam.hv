@@ -41,7 +41,7 @@ FuncResultParam := class extend ParamFunc
 	PopulateCalls := virtual !() -> void
 	{
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		return new BoxFuncCall(this&,objs)
 	}
@@ -146,9 +146,9 @@ FuncResultParam2 := class extend FuncResultParam
 	{
 	}
 
-	populated := bool
+	populated := bool //TODO REMOVE
 	CreatedVarCalls := List.{ParamLoadObj^}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(not populated)
 		res := new ParamLoadObj(this&)
@@ -173,7 +173,7 @@ FuncResultParam2OnMem := class extend FuncResultParam2
 	{
 		fallbackVar.PrintCode(ctx)
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(CreatedVarCalls.Size() == 0)
 		return fallbackVar.CreateVarCall()
@@ -191,7 +191,7 @@ FuncResultParam2OnMemRef := class extend FuncResultParam2
 	{
 		fallbackVar.PrintCode(ctx)
 	}
-	CreateCall := virtual !(CheckExeDownList objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(CreatedVarCalls.Size() == 0)
 		return fallbackVar.CreateVarCall()
