@@ -325,12 +325,7 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 }
 
 
-GetBestFunc := !(HybridQueue.{BoxUnit^,10} x,CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxUnit^
-{
-	return GetBestFunc(x,Objs,consts,false)
-}
-
-GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac) -> BoxUnit^
+GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac = false) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
 
@@ -391,12 +386,12 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 	}
 }
 
-CreateFuncCall := !(StringSpan name, CheckExeDownList Objs) -> BoxExeObj^
+CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs) -> BoxExeObj^
 {
 	cnsts := List.{BoxExeConstObj^}
 	return CreateFuncCall(name,Objs,cnsts)
 }
-CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	callItem := BoxUnit^
 
@@ -419,7 +414,7 @@ CreateFuncCall := !(StringSpan name, CheckExeDownList Objs,List.{BoxExeConstObj^
 		return null
 	return makeFuncCall(callItem,Objs,consts)
 }
-makeFuncCall := !(BoxUnit^ callItem, CheckExeDownList Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
+makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,List.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	if callItem is ConstVar
 	{
