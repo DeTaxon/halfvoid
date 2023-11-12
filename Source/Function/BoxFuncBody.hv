@@ -136,6 +136,14 @@ BoxFuncBody := class extend BoxFuncCommon
 	WorkBody := virtual !() -> void
 	{
 		//TracyZone("Parsing function")
+		GParsedAllFiles.Await()
+
+		if ParentScope? is in BoxClass
+		{
+			ParentScope->{BoxClass^}.AwaitTypeState()
+			ParentScope->{BoxClass^}.AwaitReadyState()
+			ParentScope->{BoxClass^}.AwaitParentStep()
+		}
 
 		oldVarsCount := GCVarsInUse
 		GCVarsInUse = 0

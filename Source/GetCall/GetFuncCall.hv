@@ -245,6 +245,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 		resFunc := BoxExeObj^
 		resFunc = CreateFuncCall(asInd.Value,Objs,consts)
+
 		if resFunc != null
 			return resFunc
 	}

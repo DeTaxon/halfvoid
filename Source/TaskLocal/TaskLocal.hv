@@ -8,6 +8,7 @@ TaskLocalVar := class extend NamedVar
 		itType = tp
 		itIndex = TaskLocalTypes.Size()
 		TaskLocalTypes.Push(tp)
+		assert(tp != null)
 	}
 	CreateCall := virtual !() -> BoxExeObj^
 	{
@@ -36,8 +37,10 @@ TaskLocalVarDelayed := class extend NamedVar
 		TaskLocalDelayedVars.Push(this&)
 
 		SubWork(() ==> {
+			GParsedAllFiles.Await()
 			itType = ParseType(itToken)
 			itIndex = TaskLocalTypes.Size()
+			assert(itType != null)
 			TaskLocalTypes.Push(itType)
 			itHatch.Emit()
 		})
@@ -88,6 +91,7 @@ InitTaskLocal := !() -> void
 {
 
 	SubWork(() ==> {
+		GParsedAllFiles.Await()
 		for it : TaskLocalDelayedVars
 		{
 			it.itHatch.Await()

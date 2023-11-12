@@ -65,7 +65,6 @@ AppendClass BoxClass
 		}
 		fieldCBCaptured := !(BoxClass^,int)&->void
 
-
 		for fil,i : Fields
 		{
 			fil.Value.NotifyUse()
