@@ -234,54 +234,38 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 		}else{
 			if itr.Down?.Right?.GetValue() == "..."
 			{
-				vg := VarGroup^
-
 				funcObj := BoxFuncBody^
 				for it : UnitStack
 				{
-					if it is VarGroup
-					{
-						vg = it->{VarGroup^}
-						//TODO check names
-						break
-					}
 					if it is BoxFuncBody
 					{
 						funcObj = it->{BoxFuncBody^}
 						break
 					}
 				}
-				if vg != null
+				assert(funcObj != null)
+				if funcObj == null
+					itm.EmitError("software error, compiler is broken")
+				
+				assert(funcObj.VariadicName.Size() != 0)
+
+				stackSize := UnitStack.Size()
+
+				for i : funcObj.Params.Size()
 				{
-					for it : vg.Vars
-					{
-						Objs.Push(it.CreateCall())
-					}
-				}else{
-					assert(funcObj != null)
-					if funcObj == null
-						itm.EmitError("software error, compiler is broken")
+					if i < funcObj.NamedParametersCount
+						continue
+
+					tmpVar := new AliasVar(funcObj.VariadicName,funcObj.Params[i])
+					UnitStack.PushFront(tmpVar)
+
+					obj := TryGetExeCall(itr.Down)
+					assert(obj != null)
+					Objs.Push(obj)
+
+					while UnitStack.Size() > stackSize
+						UnitStack.Pop()
 					
-					assert(funcObj.VariadicName.Size() != 0)
-
-					stackSize := UnitStack.Size()
-
-					for i : funcObj.Params.Size()
-					{
-						if i < funcObj.NamedParametersCount
-							continue
-
-						tmpVar := new AliasVar(funcObj.VariadicName,funcObj.Params[i])
-						UnitStack.PushFront(tmpVar)
-
-						obj := TryGetExeCall(itr.Down)
-						assert(obj != null)
-						Objs.Push(obj)
-
-						while UnitStack.Size() > stackSize
-							UnitStack.Pop()
-						
-					}
 				}
 			}else{
 				obj := TryGetExeCall(itr)

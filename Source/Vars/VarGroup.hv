@@ -1,6 +1,0 @@
-
-VarGroup := class extend BoxUnit
-{
-	Name := StringSpan
-	Vars := HybridQueue.{ParamFunc^,5}
-}
