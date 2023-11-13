@@ -33,19 +33,9 @@ UseTracy := false
 
 JITMode := bool
 
-//TestFile := TFile^
-
 OutputFile := char^
 main := !(char^[] args) -> int
 {
-	//lb := GetLibrary("libTracy.dll")
-	//TestFile = new TFile("Stacks.txt","wb")
-	//TestFile^ << "{\n"
-	//TestFile^ << "	\"calls\" : [\n"
-	//defer TestFile^ << "}\n"
-	//defer TestFile^ << "	]\n"
-	//defer TestFile^ << "	{}\n"
-	
 	
 	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
 	for i : 9973
@@ -175,14 +165,7 @@ main := !(char^[] args) -> int
 
 	for fil : CodeFiles
 	{
-		TSpawnTask(() ==> [fil] {
-			fil.Parse()
-		})
-	}
-
-	for fil : CodeFiles
-	{
-		fil.loaded.Await()
+		fil.Parse()
 	}
 
 	InitInternals()
