@@ -131,8 +131,8 @@ NuklearObject := class
 		vertSize := nke_buffer_get_allocated(vBuf[0]&)
 		indSize := nke_buffer_get_allocated(iBuf[0]&)
 
-		vert2 := TArraySpan.{u8}(vRealVertBuf.GetPointer(),vertSize)
-		ind2 := TArraySpan.{u8}(vRealIndBuf.GetPointer(),indSize)
+		vert2 := ArraySpan.{u8}(vRealVertBuf.GetPointer(),vertSize)
+		ind2 := ArraySpan.{u8}(vRealIndBuf.GetPointer(),indSize)
 
 		if renderMesh == null
 		{

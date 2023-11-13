@@ -30,7 +30,7 @@
 //	}
 //}
 
-TArraySpan := class .{@T} extend TArrayView.{T}
+ArraySpan := class .{@T} extend TArrayView.{T}
 {
 	pointer := T^
 	itSize := int
@@ -78,12 +78,12 @@ TArraySpan := class .{@T} extend TArrayView.{T}
 	}
 }
 
-internalCreateEmptyArray := !() .{@Typ} -> TArraySpan.{Typ}
+internalCreateEmptyArray := !() .{@Typ} -> ArraySpan.{Typ}
 {
 	result.itSize = 0
 }
 
-"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> TArraySpan.{Typ}
+"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> ArraySpan.{Typ}
 {
 	result.pointer = itArr[0]&
 	result.itSize = Size

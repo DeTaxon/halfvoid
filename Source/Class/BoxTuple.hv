@@ -5,7 +5,7 @@ GetTuple := !(Type^[] types, bool simpleTuple = false,bool isVTable = false) -> 
 {
 	typesArr := Type^[200] //todo  to Array
 	typesArr[i] = types[^i].GetPoint()
-	hck := GetFuncType(types.Size(),TArraySpan.{Type^}(typesArr[0]&,types.Size()),null,GTypeVoid,false,false)
+	hck := GetFuncType(types.Size(),ArraySpan.{Type^}(typesArr[0]&,types.Size()),null,GTypeVoid,false,false)
 	if tplDatabase.Contain(hck)
 		return tplDatabase[hck]
 	newClass := new BoxClassTuple(types,simpleTuple)
@@ -83,7 +83,7 @@ BoxClassTuple := class extend BoxClassPoison
 					isRef[i + 1] = true
 			}
 			ll := Fields.Size() + 1
-			fType := GetFuncType(ll,TArraySpan.{Type^}(typs[0]&,ll),TArraySpan.{bool}(isRef[0]&,ll),GTypeVoid,false,false)
+			fType := GetFuncType(ll,ArraySpan.{Type^}(typs[0]&,ll),ArraySpan.{bool}(isRef[0]&,ll),GTypeVoid,false,false)
 			cnstrFunc := TemplateInternalTupleConstructor.CreateFunc(fType,cnsts)
 			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
 

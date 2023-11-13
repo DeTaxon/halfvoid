@@ -142,7 +142,7 @@ ImageAtlas := class extend TGCObject
 		}
 
 		atlasTexture = inst.CreateTexture()
-		atlasTexture.CreateTexture(atlasW,atlasH,TArraySpan.{u8}(imageData,atlasW*atlasH*4))
+		atlasTexture.CreateTexture(atlasW,atlasH,ArraySpan.{u8}(imageData,atlasW*atlasH*4))
 	}
 
 

@@ -42,7 +42,7 @@ NuklearVulkanContext := class //extend TGCObject
 		atlasTexture.CreateObject(ax,ay)
 
 		tempMem := vInstance.itStageMemory
-		tempMem.TransferData(TArraySpan.{u8}(imgABC->{u8^},ax*ay*4))
+		tempMem.TransferData(ArraySpan.{u8}(imgABC->{u8^},ax*ay*4))
 		vStageCpyToImage(vInstance,atlasTexture.itImg,ax,ay) //TODO refactor
 
 		nk_font_atlas_end(atlasData&,atlasTexture,null)

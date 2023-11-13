@@ -217,7 +217,7 @@ CLib := class extend ModuleInterface
 			}
 			c += 1
 		})
-		fType := GetFuncType(c-1, TArraySpan.{Type^}(typs[1]&,c-1),TArraySpan.{bool}(isRefs[0]&,c-1),typs[0],false,isVarg)
+		fType := GetFuncType(c-1, ArraySpan.{Type^}(typs[1]&,c-1),ArraySpan.{bool}(isRefs[0]&,c-1),typs[0],false,isVarg)
 
 		if fType == null
 		{

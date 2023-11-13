@@ -96,7 +96,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 
 
 	TSpawnTask(() ==> [argv,argc] {	
-		spn := TArraySpan.{char^}//(argv,argc)
+		spn := ArraySpan.{char^}//(argv,argc)
 		spn.pointer = argv
 		spn.itSize = argc
 		main(spn&)
