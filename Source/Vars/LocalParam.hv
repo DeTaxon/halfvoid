@@ -139,10 +139,8 @@ FuncLocalParamCaptured := class extend FuncLocalParam
 			}
 			assert(cls != null)
 			fld := cls.GetFieldByIndex(CapturedIndex)
-			objs := CheckExeDownList
-			objs.Push(getCall)
 			assert(fld != null)
-			it.CallObj = new BoxFuncCall(fld,objs)
+			it.CallObj = new BoxFuncCall(fld,![getCall])
 			objs.Destroy()
 		}
 	}
