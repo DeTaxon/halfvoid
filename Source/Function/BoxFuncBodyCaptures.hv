@@ -1,24 +1,9 @@
 AppendClass BoxFuncBody
 {
-	ParentFunc := BoxFuncBody^
-	ThisCaptureTupleType := Type^
-	CaptureGetCall := BoxExeObj^
-
 	CapturedVars2 := List.{LocalVar^}
-
-	WorkBodyCaptures := !() -> void
-	{
-	}
 
 	PrintStackData := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		PrintYieldCodeParams(ctx)
-	}
-	EnterScope := !(!()&->void cb) -> void
-	{
-		oldFunc := CurrentFunc
-		CurrentFunc = this&
-		cb()
-		CurrentFunc = oldFunc
 	}
 }

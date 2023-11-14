@@ -149,7 +149,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		GCVarsInUse = 0
 
 		oldFunc := CurrentFunc //todo defer  PushStack(CurrentFunc,this&)
-		ParentFunc = oldFunc
 		FuncStack.PushFront(this&)
 		CurrentFunc = this&
 
@@ -241,7 +240,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		YieldWork()
 		CreateInputParams()
 		LocalVariablesStep()
-		WorkBodyCaptures()
 		
 		while UnitStack.Size() > stackSize
 		{
