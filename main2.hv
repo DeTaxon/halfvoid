@@ -3,35 +3,9 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-//TestClass := class
-//{
-//	x := int
-//	"for" := #generator !() -> void
-//	{
-//		for i : 2..7
-//		{
-//			printf("called %i\n",x)
-//			yield i
-//		}
-//	}
-//}
-
-
-
 main := !(char^[] args) -> int
 {
-	IterFunc(64)
-}
-
-IterFunc := !(int depths) -> void
-{
-	if(depths < 0)
-		return void
-	c := int[1024]
-
-	memUsage := CurrentTask.GetStackUsage()
-	printf("test %li %li %li %f %f\n",memUsage.TotalSize,memUsage.Used(),memUsage.Free(),memUsage.ProcUsage()*100.0,memUsage.ProcFree()*100.0)
-	IterFunc(depths - 1)
+	printf("hello world!\n")
 }
 
 //Reserve inheritance failed, it's overcomplicated

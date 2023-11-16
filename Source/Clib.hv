@@ -277,7 +277,7 @@ CLib := class extend ModuleInterface
 			if dllFile != null
 			{
 				dt << "if lib == null \n{\n"
-				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
+				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\",true))\n"
 				dt << "}\n"
 			}
 		}
@@ -296,7 +296,7 @@ CLib := class extend ModuleInterface
 			if dllFile != null
 			{
 				dt << "if lib == null \n{\n"
-				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\"))\n"
+				dt << "lib = GetLibrary(#File(\"" << dllFile.GetPath() << "\",true))\n"
 				dt << "}\n"
 			}
 		}
