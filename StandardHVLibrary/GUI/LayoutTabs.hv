@@ -33,7 +33,9 @@ LayoutTabs := class extend GUIObject//LayoutBase
 	{
 		if objects.Size() == 0
 			return void
-		currentIndex = (indexndex + 1) mod objects.Size()
+		if index >= objects.Size() or index < 0
+			return void
+		currentIndex = index
 
 		baseContext.DataGeneration += 1
 		baseContext.CmdGeneration += 1
