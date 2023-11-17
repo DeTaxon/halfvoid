@@ -70,20 +70,6 @@ StringSpan := class extend StringView
 	"!=" := !(char^ st) -> bool { return this <=> st != 0 }
 	"==" := !(StringSpan st) -> bool { return this <=> st == 0 }
 	"!=" := !(StringSpan st) -> bool { return this <=> st != 0 }
-	// "<<" := !(StringSpan toGet) -> ref StringSpan
-	// {
-	// 	minVal := itSize
-	// 	if toGet.itSize < minVal minVal = toGet.itSize
-	// 	memcpy(ptr,toGet.ptr,minVal)
-	// 	return this
-	// }
-	// StrTmp := !()  -> char^ {
-	// 	return @temp Str()
-	// }
-	// "->{}" := !() .{char^}-> char^
-	// {
-	// 	return @temp Str()
-	// }
 	DivideStr := !(Regexp rg,!(StringSpan)&->void cb) -> void
 	{
 		rg.RegExpReadText(this,(word,c) ==> {

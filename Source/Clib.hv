@@ -118,8 +118,12 @@ CLib := class extend ModuleInterface
 
 		if itPreConsts.Contain(name)
 		{
-			val := strtol(itPreConsts[name].GetString().Str(),null,0)
-			itConsts[name] = GetExeInt(val) //TODO add float support
+			if '.' in itPreConsts[name]
+			{
+				itConsts[name] = new BoxExeDouble(itPreConsts[name].ToFloat())
+			}else{
+				itConsts[name] = GetExeInt(itPreConsts[name].ToInt())
+			}
 			return itConsts[name]
 		}
 
