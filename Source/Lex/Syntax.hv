@@ -240,8 +240,19 @@ RuleEnum := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() != "{}" return 0
-	return 2
+	if It.GetValue() == "extend"
+	{
+		It = It.Right
+		if It == null return 0
+		It = It.Right
+		if It == null return 0
+
+		if It.GetValue() != "{}"  return 0
+		return 4
+	}else{
+		if It.GetValue() != "{}" return 0
+		return 2
+	}
 }
 RuleClass := !(void^ itr) -> int
 {

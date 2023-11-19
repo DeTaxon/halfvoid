@@ -3,39 +3,96 @@ TryParseEnum := !(Token^ tkn) -> BoxEnum^
 	if tkn == null or tkn.Down == null or tkn.Down.GetValue() != "enum"
 		return null
 	
-	resEnum := new BoxEnum()
+	resEnum := new BoxEnum(tkn.Down)
 
-	iter := tkn.Down.Right.Down
-
-	while iter != null
-	{
-		if iter.GetValue() != ","
-		{
-			if iter is TokenString
-			{
-				resEnum.Values.Emplace(GetExeString(iter->{TokenString^}.Value),null->{BoxEnumValue^})
-			}else{
-				iter.EmitError("Unknown use of enum")
-			}
-		}
-		iter = iter.Right
-	}
 	return resEnum
 }
 
 BoxEnum := class extend BoxUnit
 {
 	ItType := TypeEnum^
+	ReadyState := THatch
 	Values := HybridQueue.{Tuple.{BoxExeString^,BoxEnumValue^},10}
+	EnumToken := Token^
 
-	this := !() -> void
+	this := !(Token^ datToken) -> void
 	{
 		ItType = new TypeEnum()
 		ItType.ToEnum = this&
+		EnumToken = datToken
+	}
+
+	GetType := !() -> void
+	{
+		AwaitReadyState()
+		return itType
+	}
+
+	AwaitReadyState := !() -> void
+	{
+		ParseBody()
+		ReadyState.Await()
+	}
+
+	startedParse := bool
+	ParseBody := !() -> void
+	{
+		if startedParse
+			return void
+		startedParse = true
+
+		SubWork(() ==>{
+			iter := EnumToken.Right
+
+			baseType := GTypeInt->{TypeStandard^}
+
+			if iter.GetValue() == "extend"
+			{
+				iter = iter.Right
+
+				exType := ParseType(iter)
+
+				if exType == null
+					iter.EmitError("unknown extended type")
+
+				if IsInt(exType)
+				{
+					baseType = exType->{TypeStandard^}
+				}else{
+					iter.EmitError("unknown extended type")
+				}
+				
+
+				iter = iter.Right.Down
+			}else{
+				iter = iter.Down
+			}
+
+			while iter != null
+			{
+				if iter.GetValue() != ","
+				{
+					if iter is TokenString
+					{
+						Values.Emplace(GetExeString(iter->{TokenString^}.Value),null->{BoxEnumValue^})
+					}else{
+						iter.EmitError("Unknown use of enum")
+					}
+				}
+				iter = iter.Right
+			}
+			ItType.IRName = baseType.IRName
+			ItType.MetaInfo = baseType.MetaInfo
+			ItType.ItSize  = baseType.ItSize
+			ItType.ItAlign = baseType.ItAlign
+
+			ReadyState.Emit()
+		})
 	}
 
 	GetEnum := !(StringSpan val) -> BoxExeObj^
 	{
+		AwaitReadyState()
 		for it,i : Values
 		{
 			if it.0.val == val
@@ -50,6 +107,7 @@ BoxEnum := class extend BoxUnit
 	storeFunc := BoxFunc^
 	GetSetFunc := !() -> BoxFunc^
 	{
+		AwaitReadyState()
 		if storeFunc == null
 			storeFunc = new BuiltInPrimeStore(GetFuncType(![ItType,ItType],![true,false],GTypeVoid))
 		return storeFunc
@@ -57,6 +115,7 @@ BoxEnum := class extend BoxUnit
 	cmpFunc := BoxFunc^
 	GetCmpFunc := !() -> BoxFunc^
 	{
+		AwaitReadyState()
 		if cmpFunc == null
 			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType,ItType],GTypeBool),"icmp eq")
 		return cmpFunc
@@ -68,7 +127,17 @@ TypeEnum := class extend TypeStandard
 	ToEnum := BoxEnum^
 	this := !() -> void
 	{
-		super("i32","Enum","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",4,4)
+		super("i32","Enum","!DIBasicType(name: \"enum\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
+	}
+	GetAlign := virtual !() -> int
+	{
+		ToEnum.AwaitReadyState()
+		return super()
+	}
+	GetSize := virtual !() -> int
+	{
+		ToEnum.AwaitReadyState()
+		return super()
 	}
 }
 BoxEnumValue := class extend BoxExeObj

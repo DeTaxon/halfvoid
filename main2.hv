@@ -3,9 +3,19 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
+Enum1 := enum extend u8
+{
+	"a",
+	"b",
+	"c"
+}
+
 main := !(char^[] args) -> int
 {
-	printf("hello world!\n")
+	c := Enum1
+	c = "c"
+	printf("hm %i %i\n",c,c->TypeSize)
+	//printf("hello world!\n")
 }
 
 //Reserve inheritance failed, it's overcomplicated
