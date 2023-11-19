@@ -10,10 +10,17 @@ Enum1 := enum extend u8
 	"c"
 }
 
+Enum2 := enum extend Enum1
+{
+	"e",
+	"f",
+	"g"
+}
+
 main := !(char^[] args) -> int
 {
-	c := Enum1
-	c = "c"
+	c := Enum2
+	c = "f"
 	printf("hm %i %i\n",c,c->TypeSize)
 	//printf("hello world!\n")
 }

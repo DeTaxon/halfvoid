@@ -14,6 +14,7 @@ BoxEnum := class extend BoxUnit
 	ReadyState := THatch
 	Values := HybridQueue.{Tuple.{BoxExeString^,BoxEnumValue^},10}
 	EnumToken := Token^
+	Parent := BoxEnum^
 
 	this := !(Token^ datToken) -> void
 	{
@@ -58,6 +59,17 @@ BoxEnum := class extend BoxUnit
 				if IsInt(exType)
 				{
 					baseType = exType->{TypeStandard^}
+				}else if exType is TypeEnum{
+					asEnum := exType->{TypeEnum^}.ToEnum
+
+					asEnum.AwaitReadyState()
+					baseType = asEnum.ItType
+
+					for it : asEnum.Values
+					{
+						Values.Emplace(it.0,it.1)
+					}
+					Parent = asEnum
 				}else{
 					iter.EmitError("unknown extended type")
 				}
