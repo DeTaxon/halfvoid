@@ -10,6 +10,7 @@ BoxFuncCall := class extend BoxExeObj
 	callObj := BoxFunc^
 	downs := ExeDownList
 	resId := int
+	unrefResId := int
 
 	ResultVar := LocalVar^
 	ExtraWork := List.{BoxExeObj^}
@@ -422,8 +423,8 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		if IsMem()
 		{
-			resId = ctx.funcCallCounter + 1 //TODO do something with unref
-			PrintUnrefObj(ctx,resId,this&)
+			unrefResId = ctx.GetNewId()
+			PrintUnrefObj(ctx,unrefResId,this&)
 		}else{
 			resId = ctx.GetNewId()
 			PrintFuncUse(ctx)
@@ -433,7 +434,7 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		if IsMem()
 		{
-			ctx.writeStream^ << "%TUnref" << resId
+			ctx.writeStream^ << "%TUnref" << unrefResId
 		}else{
 			PrintFuncResult(ctx)
 		}
