@@ -7,21 +7,10 @@ BoxReturn := class extend BoxExeObj
 		EndLabel = l
 		ObjType = GTypeVoid
 		ResultCall = rc
-
-		//for it : UnitStack
-		//{
-		//	if it is FuncInlineWrapper
-		//	{
-		//		//TODO GC vars in inline functions
-		//		return void
-		//	}
-		//}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ResultCall?.PrintDefaultUse(ctx)
-
-		//TODO inline functions?
 
 		if ctx.deferObjects.Size() == 0
 		{
@@ -87,7 +76,7 @@ ReturnHalfState := class extend BoxExeObj
 	{
 		if callObj != null
 		{
-			if callObj.GetType() != GTypeVoid //TODO Auto return type
+			if callObj.GetType() != GTypeVoid
 			{
 				rRef := CurrentReturns.ResultRef
 

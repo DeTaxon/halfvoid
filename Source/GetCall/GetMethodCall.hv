@@ -101,7 +101,7 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, BoxExeObj^[] sObjs,Box
 	if clsType is  TypeArrayView
 	{
 		clsType = clsType->{TypeArrayView^}.viewClassType
-		Objs[0] = new PtrExchange(vrObj,clsType.GetPoint()) //TODO mem use?
+		Objs[0] = new PtrExchange(vrObj,clsType.GetPoint())
 	}
 
 	if clsType is in TypePoint
