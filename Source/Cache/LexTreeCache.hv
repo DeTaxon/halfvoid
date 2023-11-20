@@ -87,11 +87,10 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 			}else{
 				resToken = new TokenBool(false)
 			}
-		case 107
-			strm.Read(stSize&,4)
-			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
-			resToken = new TokenWayControl(spn)
+		case 301
+			resToken = new TokenBreak()
+		case 302
+			resToken = new TokenContinue()
 		case 108
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
@@ -238,14 +237,14 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 			x = 0
 		}
 		strm.Write(x&,4)
-	}else if itToken is TokenWayControl
+	}else if itToken is TokenBreak
 	{
-		decor := itToken->{TokenWayControl^}
-		x = 107
+		x = 301
 		strm.Write(x&,4)
-		x = decor.Value.Size()
+	}else if itToken is TokenContinue
+	{
+		x = 302
 		strm.Write(x&,4)
-		strm^ << decor.Value
 	}else if itToken is TokenSuffix
 	{
 		decor := itToken->{TokenSuffix^}

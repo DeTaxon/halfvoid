@@ -171,23 +171,40 @@ TokenBool := class extend Token
 		Right?.Print(x)
 	}
 }
-TokenWayControl := class extend Token
+TokenBreak := class extend Token
 {
-	Value := StringSpan
 	IsBlock := virtual true
 
-	this := !(StringSpan val) -> void
+	this := !() -> void
 	{
-		Value = val
 	}
 	GetValue := virtual !() -> StringSpan
 	{
-		return Value
+		return StringSpan("break")
 	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("symbol %s\n",Value)
+		printf("symbol break\n")
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+}
+TokenContinue := class extend Token
+{
+	IsBlock := virtual true
+
+	this := !() -> void
+	{
+	}
+	GetValue := virtual !() -> StringSpan
+	{
+		return StringSpan("continue")
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("symbol continue\n")
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
