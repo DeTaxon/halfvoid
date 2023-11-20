@@ -13,7 +13,7 @@ AppendClass BoxFuncBody
 		{
 			tp := it.GetBaseType()
 
-			access := new FuncLocalVarAccess(i,tp)
+			access := new FuncLocalVarAccess(it,tp)
 			it.SetCall(access)
 
 			createCall := new FuncLocalVarCleanup(access)
@@ -41,7 +41,7 @@ AppendClass BoxFuncBody
 					{
 						defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
 						defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
-						defGuard.SetCall(new FuncLocalVarAccess(LocalVarsDeferChecks.Size() + 1000,GTypeBool)) //TODO unconst
+						defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
 
 						LocalVarsDeferChecks.Push(defGuard)
 						
@@ -72,7 +72,7 @@ AppendClass BoxFuncBody
 				{
 					defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
 					defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
-					defGuard.SetCall(new FuncLocalVarAccess(LocalVarsDeferChecks.Size() + 1000,GTypeBool)) //TODO unconst
+					defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
 
 					LocalVarsDeferChecks.Push(defGuard)
 
@@ -165,17 +165,17 @@ AppendClass BoxFuncBody
 	{
 		f := ctx.writeStream
 
-		for it,i : LocalVars
+		for it : LocalVars
 		{
 			tp := it.GetBaseType()
-			f^ << "%Var" << i << " = alloca "
+			f^ << "%Var" << ctx.GetLocalVarId(it) << " = alloca "
 			tp.PrintType(ctx)
 			f^ << "\n"
 		}
-		for it,i : LocalVarsDeferChecks
+		for it : LocalVarsDeferChecks
 		{
 			tp := it.GetBaseType()
-			f^ << "%Var" << (i + 1000) << " = alloca "
+			f^ << "%Var" << ctx.GetLocalVarId(it) << " = alloca "
 			tp.PrintType(ctx)
 			f^ << "\n"
 			it.PrintCode(ctx)
@@ -184,7 +184,7 @@ AppendClass BoxFuncBody
 		if printResultVar
 		{
 			tp := ResultVar.GetBaseType()
-			f^ << "%Var" << 99999 << " = alloca "
+			f^ << "%Var" << ctx.GetLocalVarId(ResultVar) << " = alloca "
 			tp.PrintType(ctx)
 			f^ << "\n"
 		}
@@ -221,18 +221,18 @@ FuncLocalVarCleanup := class extend BoxExeObj
 
 FuncLocalVarAccess := class extend BoxExeObj
 {
-	varIndex := int
+	baseVar := LocalVar^
 	unrefInd := int
 
-	this := !(int ind, Type^ varType) -> void
+	this := !(LocalVar^ vr, Type^ varType) -> void
 	{
 		ObjType = varType
-		varIndex = ind
+		baseVar = vr
 	}
 	IsMem := virtual !() -> bool { return true }
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ctx.writeStream^ << "%Var" <<varIndex
+		ctx.writeStream^ << "%Var" << ctx.GetLocalVarId(baseVar)
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{

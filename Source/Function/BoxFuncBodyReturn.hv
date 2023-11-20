@@ -37,7 +37,7 @@ AppendClass BoxFuncBody
 					rFuncType = rFuncType.GetPoint()
 
 				ResultVar = new LocalVar(resSpn,rFuncType,true,false)
-				access := new FuncLocalVarAccess(99999,rFuncType) //TODO better result name
+				access := new FuncLocalVarAccess(ResultVar,rFuncType)
 				ResultVar.SetCall(access)
 
 				createCall := new FuncLocalVarCleanup(access)

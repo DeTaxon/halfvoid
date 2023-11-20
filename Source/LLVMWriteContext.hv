@@ -11,10 +11,20 @@ LLVMWriteContext := class
 
 	exitNodes := ContextExitNode
 
+	LocalVarIds := AVLMap.{void^,int}
+
+	GetLocalVarId := !(void^ obj) -> int
+	{
+		if LocalVarIds.Contain(obj)
+			return LocalVarIds[obj]
+		result = LocalVarIds.Size()
+		LocalVarIds[obj] = result
+	}
 
 	Clear := !() -> void
 	{
 		exitNodes.subNodes.Destroy()
+		LocalVarIds.Destroy()
 	}
 	GetNewId := !() -> int
 	{
