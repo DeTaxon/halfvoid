@@ -101,21 +101,4 @@ GetItemGlobal2 := !(StringSpan[] names, !(HybridQueue.{BoxUnit^,10}, StringSpan[
 				return void
 		}
 	}
-
-	//TODO module support?
-	//for spc : CodeSpaces.Reverse
-	//{
-	//	lst.Destroy()
-	//	for cl : spc.Modules
-	//	{
-	//		fnc := cl.GetItem(name)
-	//		if fnc != null
-	//			lst.Push(fnc)
-	//	}
-	//	if lst.Size() != 0
-	//	{
-	//		if cb(lst)
-	//			return void
-	//	}
-	//}
 }

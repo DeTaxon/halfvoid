@@ -171,7 +171,15 @@ CLib := class extend ModuleInterface
 			}
 			ind.Value = ind.Value[0..(-ptrs)]
 			tp := ParseType(ind&)
-			assert(tp != null) //TODO emit error
+
+			if tp == null
+			{
+				iNeedFString := TEchoStream
+				iNeedFString << "vulkan module: could not load type " << name
+				dat := TokenData
+				dat.EmitError(iNeedFString.GetString().Str())
+			}
+
 			for j : ptrs
 				tp = tp.GetPoint()
 			newStruct.Fields.Push(new FieldParam(itm.Key(),tp))
