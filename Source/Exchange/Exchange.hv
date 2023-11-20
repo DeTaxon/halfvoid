@@ -113,7 +113,7 @@ PtrToSizeT := class extend BoxExeObj
 		Down.GetType().PrintType(ctx)
 		f^ << " "
 		Down.PrintUse(ctx)
-		f^ << " to i64" //TODO arch
+		f^ << " to " << GArchLLVMTypeSizeT
 		if DebugMode
 			f^ << ", !dgb !" << GDebugLineCallId
 		f^ << "\n"

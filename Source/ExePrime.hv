@@ -157,7 +157,7 @@ BoxExeString := class extend BoxExeConstObj
 
 		if JITMode
 		{
-			f^ << "inttoptr (i64 " << val.ptr->{size_t} << " to i8*)" //TODO arch
+			f^ << "inttoptr (" << GArchLLVMTypeSizeT <<" " << val.ptr->{size_t} << " to i8*)"
 		}else{
 			f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 		}

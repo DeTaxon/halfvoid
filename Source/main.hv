@@ -15,6 +15,7 @@ loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void
 }
 
 GArchBitSize := 64
+GArchLLVMTypeSizeT := "i64"
 
 GDebugTypePrintMeta := List.{Type^}
 
