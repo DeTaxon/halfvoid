@@ -121,12 +121,9 @@ FileLine := class
 
 TokenNull := class extend Token
 {
-	Value := StringSpan
-
 	IsData := virtual true
-	this := !(StringSpan val) -> void
+	this := !() -> void
 	{
-		Value = val
 	}
 	GetValue := virtual !() -> StringSpan
 	{
@@ -154,24 +151,22 @@ TokenNone := class extend Token
 
 TokenBool := class extend Token
 {
-	Value := StringSpan
-	Parsed := bool
+	boolValue := bool
 
 	IsData := virtual true
 
-	this := !(StringSpan val,bool val2) -> void
+	this := !(bool val2) -> void
 	{
-		Value = val
-		Parsed = val2
+		boolValue = val2
 	}
 	GetValue := virtual !() -> StringSpan
 	{
-		return Value
+		return StringSpan(boolValue ?: "true" : "false")
 	}
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("bool %i\n",Parsed)
+		printf("bool %i\n",boolValue)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}

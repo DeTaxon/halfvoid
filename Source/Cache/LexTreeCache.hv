@@ -83,9 +83,9 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 			strm.Read(stSize&,4)
 			if stSize == 1
 			{
-				resToken = new TokenBool(StringSpan("true"),true)
+				resToken = new TokenBool(true)
 			}else{
-				resToken = new TokenBool(StringSpan("false"),false)
+				resToken = new TokenBool(false)
 			}
 		case 107
 			strm.Read(stSize&,4)
@@ -231,7 +231,7 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 	{
 		x = 106
 		strm.Write(x&,4)
-		if itToken->{TokenBool^}.Parsed
+		if itToken->{TokenBool^}.boolValue
 		{
 			x = 1
 		}else{

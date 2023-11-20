@@ -19,7 +19,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	{
 		ind := skb.Down.Right.Right->{TokenBool^}
 
-		if ind.Value == "true"
+		if ind.boolValue
 		{
 			compressFile = true
 		}

@@ -30,11 +30,11 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			switch tok
 			{
 				case "null"
-					ns = new TokenNull(tok)
+					ns = new TokenNull()
 				case "true"
-					ns = new TokenBool(tok,true)
+					ns = new TokenBool(true)
 				case "false"
-					ns = new TokenBool(tok,false)
+					ns = new TokenBool(false)
 				case "continue"
 					ns = new TokenWayControl(tok)
 				case "break"
