@@ -68,9 +68,14 @@ GetLocalVarVoid := class extend BoxExeObj
 	{
 		return false
 	}
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		assert(false)
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{

@@ -12,7 +12,11 @@ BoxFuncBodyStr := class extend BoxFuncBody
 		if DebugMode
 		{
 			funcLine = new BoxExeLine()
-			funcLine.ItToken = GFuncGCSetNull->{BoxFuncBody^}.funcLine.ItToken //TODO better debug data
+			newToken := new TokenData
+			newToken.Line = new FileLine
+			newToken.Line.File = GetAnyFile()
+			newToken.Line.Line = 1
+			funcLine.ItToken = newToken
 		}
 	}
 

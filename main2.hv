@@ -3,26 +3,49 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-Enum1 := enum extend u8
-{
-	"a",
-	"b",
-	"c"
-}
 
-Enum2 := enum extend Enum1
+cc := class
 {
-	"e",
-	"f",
-	"g"
+	a := float
+	b := float
+	c := int
+	d := int
+	"=" := default
+}
+CreateCC := !() -> cc
+{
+	result.a = 0.5
+	result.b = 4.7
+	result.c = 13
+	result.d = 99
+
+	printf("CreateC\n")
+}
+main2 := !() -> void
+{
+	j := @once2 CreateCC()
+
+	@once2 {
+		printf("hi hi\n")
+	}
+
+	printf("hey %f %f %i %i\n",j.a,j.b,j.c,j.d)
+	//printf("hello world!\n")
+}
+"@once2 call" := !(!()&->@T cb, bool called = static false,T ResObjHAHA = static) -> T
+{
+	if called
+		return ResObjHAHA
+	//TODO add mutex
+	ResObjHAHA = cb()
+	called = true
+	return ResObjHAHA
 }
 
 main := !(char^[] args) -> int
 {
-	c := Enum2
-	c = "f"
-	printf("hm %i %i\n",c,c->TypeSize)
-	//printf("hello world!\n")
+	main2()
+	main2()
 }
 
 //Reserve inheritance failed, it's overcomplicated

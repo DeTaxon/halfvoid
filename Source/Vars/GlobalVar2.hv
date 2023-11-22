@@ -248,7 +248,6 @@ GlobalVarProxy := class extend BoxExeObj
 GetGlobalVar2 := class extend BoxExeObj
 {
 	baseVar := GlobalVar2^
-	unrefId := int //TODO remove somehow?
 	
 	this := !(GlobalVar2^ glbObj,Type^ tp) -> void
 	{
@@ -272,7 +271,7 @@ GetGlobalVar2 := class extend BoxExeObj
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		unrefId = ctx.GetNewId()
+		unrefId := ctx.CreateUnrefId(this&)
 		f := ctx.writeStream
 		rType := NormalizeType(GetType())
 
@@ -289,7 +288,7 @@ GetGlobalVar2 := class extend BoxExeObj
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ctx.writeStream^ << "%TUnref" << unrefId
+		ctx.writeStream^ << "%TUnref" << ctx.GetUnrefId(this&)
 	}
 }
 CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar2^

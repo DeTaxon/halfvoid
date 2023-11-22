@@ -12,6 +12,7 @@ LLVMWriteContext := class
 	exitNodes := ContextExitNode
 
 	LocalVarIds := AVLMap.{void^,int}
+	UnrefIds := AVLMap.{void^,int}
 
 	GetLocalVarId := !(void^ obj) -> int
 	{
@@ -20,11 +21,23 @@ LLVMWriteContext := class
 		result = LocalVarIds.Size()
 		LocalVarIds[obj] = result
 	}
+	GetUnrefId := !(void^ obj) -> int
+	{
+		if UnrefIds.Contain(obj)
+			return UnrefIds[obj]
+		return CreateUnrefId(obj)
+	}
+	CreateUnrefId := !(void^ obj) -> int
+	{
+		result = this.GetNewId()
+		UnrefIds[obj] = result
+	}
 
 	Clear := !() -> void
 	{
 		exitNodes.subNodes.Destroy()
 		LocalVarIds.Destroy()
+		UnrefIds.Destroy()
 	}
 	GetNewId := !() -> int
 	{

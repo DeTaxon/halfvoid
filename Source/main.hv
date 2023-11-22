@@ -17,6 +17,8 @@ loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void
 GArchBitSize := 64
 GArchLLVMTypeSizeT := "i64"
 
+GVoidObj := BoxExeObj^
+
 GDebugTypePrintMeta := List.{Type^}
 
 GFuncsInProgress := List.{BoxFunc^}
@@ -147,6 +149,7 @@ main := !(char^[] args) -> int
 	GObjNone = new BoxExeNone()
 	GObjNull = new BoxExeNull()
 	GObjVoid = new BoxExeVoid()
+	GVoidObj = new GetLocalVarVoid()
 	CreateBuiltins()
 	ExchangeInit()
 	TupleInit()

@@ -359,6 +359,9 @@ FuncLocalDebugInfoValue := class extend BoxExeObj
 		if not DebugMode
 			return void
 
+		if baseVar.GetType() == GTypeVoid
+			return void
+
 		getVar.PrintPre(ctx)
 
 		f := ctx.writeStream

@@ -262,6 +262,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		return CheckTemplateType(obj,tp,tk,resCnsts)
 	}
+	AwaitHeaderParse := !() -> void
+	{
+		headerCheckHatch.Await()
+	}
 
 	IsOneFunc := virtual !() -> bool
 	{

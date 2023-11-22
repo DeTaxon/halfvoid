@@ -84,6 +84,9 @@ BoxFunc := class extend BoxExeConstObj
 
 		for par,i : fTyp.Params
 		{
+			if par.ItType == GTypeVoid
+				continue
+
 			if needComma
 				f^ << ","
 			needComma = true
@@ -239,6 +242,9 @@ PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDo
 
 	for dwn,i : lst
 	{
+		if dwn.GetType() == GTypeVoid
+			continue
+
 		if needComma
 			f^ << ","
 		needComma = true

@@ -49,7 +49,7 @@ AppendClass BoxFuncBody
 		{
 			resSpn := StringSpan("result")
 			ResultVar = new FuncInputVar(resSpn,GTypeVoid,true,false)
-			ResultVar.SetCall(new GetLocalVarVoid()) //TODO i could unit all of the new GetLocalVarVoid()
+			ResultVar.SetCall(GObjVoid)
 		}
 	}
 }
