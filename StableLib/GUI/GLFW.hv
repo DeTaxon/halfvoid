@@ -133,6 +133,10 @@ GLFWWindow := class
 		glfwSetWindowMonitor(windowHandle,monitor,0,0,mode.width,mode.height,mode.refreshRate)
 		IsFullscreened = true
 	}
+	SetWindowSize := !(int w, int h) -> void
+	{
+		glfwSetWindowSize(windowHandle,w,h)
+	}
 }
 
 

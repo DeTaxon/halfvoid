@@ -62,7 +62,7 @@ SimpleWindow := class extend GLFWWindow
 	
 	Run := !() -> void
 	{
-		TracyZone("Window main loop")
+		//TracyZone("Window main loop")
 
 		imgGeneration = vkOverlay.DataGeneration - 1
 		cmdGeneration = vkOverlay.CmdGeneration - 1
@@ -130,11 +130,9 @@ SimpleWindow := class extend GLFWWindow
 
 					if mainGUIObject != null
 					{
-						if oldW != w or oldH != h
-						{
-							mainGUIObject.GetLayout(vkOverlay&)
-							mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
-						}
+						mainGUIObject.GetLayout(vkOverlay&)
+						mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
+
 						oldW = w
 						oldH = h
 					}

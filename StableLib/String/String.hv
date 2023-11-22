@@ -58,28 +58,6 @@ String := class extend StringView
 	}
 	Size := !() -> int { return itSize }
 	NonNullStr := virtual !() -> char^ { return charPtr }
-
-
-	ToFloat := !() -> float
-	{
-		s := Size()
-
-		assert(s < 63) //TODO implementation for more then 64 numbers?
-		buf := u8[64]
-		memcpy(buf[0]&,NonNullStr(),s)
-		buf[s] = 0
-		return strtod(buf[0]&,null)
-	}
-	ToInt := !() -> int
-	{
-		s := Size()
-
-		assert(s < 63) //TODO implementation for more then 64 numbers?
-		buf := u8[64]
-		memcpy(buf[0]&,NonNullStr(),s)
-		buf[s] = 0
-		return strtol(buf[0]&,null,0)
-	}
 }
 
 //"->{}" := !(TString^ st) .{char^} -> char^

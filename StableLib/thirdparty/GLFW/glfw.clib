@@ -68,6 +68,8 @@
 		"glfwGetWindowFrameSize" : "void,void^,int^,int^,int^,int^",
 		"glfwGetWindowPos" : "void,void^,int^,int^",
 
+		"glfwSetWindowSize" : "void,void^,int,int",
+
 		"glfwSetWindowUserPointer" : "void,void^,void^",
 		"glfwGetWindowUserPointer" : "void^,void^",
 
