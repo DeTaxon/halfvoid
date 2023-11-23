@@ -1,0 +1,6 @@
+
+
+CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
+{
+	fnc := funcToRun.CreateMCFunction()
+}

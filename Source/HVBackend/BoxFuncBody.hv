@@ -1,0 +1,8 @@
+AppendClass BoxFuncBody
+{
+	CreateMCFunction := virtual !() -> MCFunction^
+	{
+		result = new MCFunction
+		result.BaseFunction = this&
+	}
+}

@@ -1,0 +1,35 @@
+//MC = Machine Code
+
+MCObject := class
+{
+	IsConstant := virtual false
+	Value := u64
+}
+MCConstDouble := class
+{
+
+}
+
+MCLabel := class
+{
+	CodePosition := s32 // i just need class to exist
+}
+
+MCFunction := class //extend TGCObject
+{
+	BaseFunction := BoxFuncBody^
+
+	Objects := MCObject[]
+	Labels := MCLabel[]
+	Lines := MCLine[]
+}
+
+MCLine := class
+{
+	opcode := MCBaseOpcodes
+	var1 := u16
+	var2 := u16
+	var3 := u16
+	var4 := u16
+	var5 := u16
+}

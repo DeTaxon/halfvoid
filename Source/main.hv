@@ -36,6 +36,9 @@ UseTracy := false
 
 JITMode := bool
 
+RunMode := bool
+RunModeFuncName := char^
+
 OutputFile := char^
 main := !(char^[] args) -> int
 {
@@ -76,6 +79,10 @@ main := !(char^[] args) -> int
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i]) //TODO args check
+			case "-run"
+				i += 1
+				RunModeFuncName = args[i]
+				RunMode = true
 			case "-tracy"
 				UseTracy = true
 			case "-scary"
@@ -214,6 +221,20 @@ main := !(char^[] args) -> int
 	WaitForParsingObjects()
 
 	printf("good to go\n")
+
+	if RunMode
+	{
+		toRun := intGetFunc(RunModeFuncName)
+		if toRun == null
+		{
+			printf("RunMode function not found\n")
+			return -1
+		}
+		toRun.ParseBody()
+		toRun.WaitReadyState()
+		CompileAndRunCode(toRun->{BoxFuncBody^})
+		return 0
+	}
 
 	if JITMode
 	{
