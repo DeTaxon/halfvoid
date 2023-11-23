@@ -1,0 +1,28 @@
+
+
+CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
+{
+	builderBase := MCBuildContext
+	builderBase.Init()
+
+	funcToRun.CreateMCFunction(builderBase&)
+	fnc := builderBase.CreateMCFunction()
+
+	fnc.Print()
+
+	builder_x64 := MCBuildContext_x86_64 
+
+	builder_x64.Compile(fnc)
+
+	bigMem := PageMemory
+	bigMem.Create(8*1024*1024,"rwe")
+	
+	stream := ref builder_x64.ResultData
+
+	stream.Read(bigMem.GetPointer(),bigMem.Size())
+
+	ptr := bigMem.GetPointer()->{!()^->int}
+	ptr()
+
+	exit(0)
+}

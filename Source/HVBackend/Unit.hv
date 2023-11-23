@@ -1,0 +1,12 @@
+AppendClass BoxUnit
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		assert(false)
+	}
+}
+
+WriteMCResult := class
+{
+	CreatedId := int
+}

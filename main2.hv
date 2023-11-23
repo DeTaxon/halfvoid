@@ -5,6 +5,7 @@
 
 
 
+
 main := !(char^[] args) -> int
 {
 }

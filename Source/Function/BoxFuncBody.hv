@@ -119,6 +119,10 @@ BoxFuncBody := class extend BoxFuncCommon
 			CurrentCodeSpace.AddFunction(Name,this&)
 		}
 	}
+	GetName := virtual !() -> StringSpan
+	{
+		return Name
+	}
 	SetPrintName := virtual !(StringSpan nm) -> void
 	{
 		Name = nm

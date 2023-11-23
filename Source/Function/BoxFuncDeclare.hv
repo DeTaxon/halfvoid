@@ -21,4 +21,8 @@ BoxFuncDeclare := class extend BoxFuncCommon
 	{
 		ctx.writeStream^ << "@" << itName
 	}
+	GetName := virtual !() -> StringSpan
+	{
+		return itName
+	}
 }

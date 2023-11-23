@@ -4,10 +4,41 @@ MCObject := class
 {
 	IsConstant := virtual false
 	Value := u64
+
+	"=" := !(MCObject setValue) -> void
+	{
+		this->VTable = setValue->VTable
+		Value = setValue.Value
+	}
+	PrintObject := virtual !() -> void { printf("unknown object") }
 }
-MCConstDouble := class
+
+
+MCConstVoid := class extend MCObject
+{
+	IsConstant := virtual true
+	
+	PrintObject := virtual !() -> void { printf("void object") }
+}
+MCConstDouble := class extend MCObject
 {
 
+}
+MCConstFunction := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref BoxFunc^ { return Value&->{BoxFunc^^}^}
+
+	PrintObject := virtual !() -> void { printf("Function %s",GetValue().GetName()) }
+}
+MCConstString :=  class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref String^ { return Value&->{String^^}^}
+
+	PrintObject := virtual !() -> void { printf("String %s",GetValue().Str()) }
 }
 
 MCLabel := class
@@ -22,6 +53,17 @@ MCFunction := class //extend TGCObject
 	Objects := MCObject[]
 	Labels := MCLabel[]
 	Lines := MCLine[]
+
+	Print := !() -> void
+	{
+		printf("-------- Objects\n")
+		for it,i : Objects
+		{
+			printf("%4i: ",i)
+			it.PrintObject()
+			printf("\n")
+		}
+	}
 }
 
 MCLine := class
@@ -32,4 +74,16 @@ MCLine := class
 	var3 := u16
 	var4 := u16
 	var5 := u16
+
+	"=" := default
+
+	this := !(MCBaseOpcodes code,u16 v1 = 0, u16 v2 = 0, u16 v3 = 0, u16 v4 = 0, u16 v5 = 0) -> void
+	{
+		opcode = code
+		var1 = v1
+		var2 = v2
+		var3 = v3
+		var4 = v4
+		var5 = v5
+	}
 }

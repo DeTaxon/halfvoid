@@ -1,0 +1,22 @@
+AppendClass BoxFuncCall
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		fncId := ctx.AddFuncConst(callObj)
+
+		thisIndexes := HybridQueue.{int,16}
+
+		for it : downs
+		{
+			subObj := it.WriteMC(ctx)
+			thisIndexes.Push(subObj.CreatedId)
+		}
+
+		ctx.lines.Push(MCLine("call_start",fncId))
+		for it : thisIndexes
+		{
+			ctx.lines.Push(MCLine("load_var",it))
+		}
+		ctx.lines.Push(MCLine("call_end"))
+	}
+}

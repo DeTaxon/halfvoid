@@ -28,6 +28,10 @@ BoxFunc := class extend BoxExeConstObj
 	WorkBody := virtual !() -> void
 	{
 	}
+	GetName := virtual !() -> StringSpan
+	{
+		return StringSpan("")
+	}
 	SetName := virtual !(StringSpan nm) -> void
 	{
 	}

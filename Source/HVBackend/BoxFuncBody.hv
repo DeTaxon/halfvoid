@@ -1,8 +1,7 @@
 AppendClass BoxFuncBody
 {
-	CreateMCFunction := virtual !() -> MCFunction^
+	CreateMCFunction := virtual !(MCBuildContext^ ctx) -> void
 	{
-		result = new MCFunction
-		result.BaseFunction = this&
+		body.WriteMC(ctx)
 	}
 }

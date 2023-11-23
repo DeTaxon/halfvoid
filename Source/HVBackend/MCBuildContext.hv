@@ -1,0 +1,42 @@
+MCBuildContext := class extend TGCObject
+{
+	codes := List.{MCLine}
+	objects := List.{MCObject}
+	lines := List.{MCLine}
+
+	Init := !() -> void
+	{
+		newObj := MCConstVoid
+		objects.Push(newObj)
+	}
+
+	AddFuncConst := !(BoxFunc^ obj) -> int
+	{
+		for it, i : objects 
+		{
+			if it& is not MCConstFunction
+				continue
+			asFunc := it&->{MCConstFunction^}
+			if obj == asFunc.GetValue()
+				return i
+		}
+
+		setVal := MCConstFunction
+		setVal.GetValue() = obj
+		result = objects.Size()
+		objects.Push(setVal)
+	}
+	AddString := !(String^ value) -> int
+	{
+		setVal := MCConstString
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
+	CreateMCFunction := !() -> MCFunction^
+	{
+		result = new MCFunction
+
+		result.Objects = objects.ToVector()
+	}
+}

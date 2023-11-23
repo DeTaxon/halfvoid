@@ -1,0 +1,10 @@
+AppendClass BoxBlock
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		for it : exeLines
+		{
+			it.WriteMC(ctx)
+		}
+	}
+}
