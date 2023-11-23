@@ -1,3 +1,18 @@
 
 
+MCBuildContext_x86_64 := class
+{
+	ResultData := TEchoStream
+
+	Compile := !(MCFunction^ fnc) -> void
+	{
+
+		ResultData << "\x55" // push $rbp
+		ResultData << "\x48\x89\xF8" // mov $rdi,$rax
+
+		ResultData << "\x5D" // pop $rbp
+		ResultData << "\xC3" // ret
+	}
+}
+
 
