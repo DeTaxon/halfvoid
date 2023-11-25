@@ -2,6 +2,10 @@ AppendClass BoxFuncBody
 {
 	CreateMCFunction := virtual !(MCBuildContext^ ctx) -> void
 	{
+		for it,i : LocalVars
+		{
+			ctx.AddLocalVar(it)
+		}
 		body.WriteMC(ctx)
 	}
 }

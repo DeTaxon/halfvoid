@@ -1,7 +1,16 @@
 
-MCInterpFuncFrame := class
+MCInterpFuncFrame := class extend TGCObject
 {
 	func := MCFunction^
+
+	localVarBlob := Blob^
+	localVarTable := AVLMap.{int,void^}
+
+	GetObjectPtr := !(int index) -> void^
+	{
+		return localVarTable[index]?
+		assert(false)
+	}
 
 	GetStringPtr := !(u16 index) -> char^
 	{
@@ -12,6 +21,28 @@ MCInterpFuncFrame := class
 			return obj&->{MCConstString^}.GetValue()
 		}else{
 			assert(false)
+		}
+	}
+	GetInt := !(u16 index) -> int
+	{
+		obj := ref func.Objects[index]
+
+		if obj& is MCConstInteger
+		{
+			return obj&->{MCConstInteger^}.GetValue()
+		}else{
+			assert(false)
+		}
+	}
+	GetS64 := !(u16 index) -> s64
+	{
+		obj := ref func.Objects[index]
+
+		if obj& is MCConstS64
+		{
+			return obj&->{MCConstS64^}.GetValue()
+		}else{
+			return GetObjectPtr(index)->{s64^}^
 		}
 	}
 	GetDouble := !(u16 index) -> double
@@ -49,6 +80,14 @@ MCInterpFuncFrame := class
 				values[i]&->{double^}^ = GetDouble(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_double
+			}else if itType == GTypeInt{
+				values[i]&->{int^}^ = GetInt(it)
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_sint32
+			}else if itType == GTypeS64{
+				values[i]&->{s64^}^ = GetS64(it)
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_sint64
 			}else{
 				assert(false)
 			}

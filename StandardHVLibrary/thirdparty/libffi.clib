@@ -10,6 +10,8 @@
 		"ffi_call" : "void,void^,void^,void^,void^^",
 
 		"ffi_type_pointer" : "void",
+		"ffi_type_sint32" : "void",
+		"ffi_type_sint64" : "void",
 		"ffi_type_double" : "void"
 	}
 }

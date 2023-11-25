@@ -137,7 +137,7 @@ BoxFuncCall := class extend BoxExeObj
 				if i < fType.Params.Size()
 					continue
 				tp := downs[i].GetType()
-				if IsInt(tp)
+				if IsInt(tp) and not (tp == GTypeU64 or GTypeS64 == tp)
 				{
 					if IsUInt(tp)
 					{

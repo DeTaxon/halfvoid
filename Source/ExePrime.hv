@@ -70,6 +70,7 @@ BoxExeBool := class extend BoxExeConstObj
 		}
 	}
 }
+
 BoxExeInt := class extend BoxExeConstObj
 {
 	Value := int
@@ -85,8 +86,23 @@ BoxExeInt := class extend BoxExeConstObj
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.writeStream^ << Value
-		//ObjType.PrintType(f)
-		//f^ << " " << Value
+	}
+}
+BoxExeS64 := class extend BoxExeConstObj
+{
+	Value := s64
+	this := !(s64 nVal) -> void
+	{
+		Value = nVal
+		ObjType = GTypeS64
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << Value
+	}
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << Value
 	}
 }
 BoxExeDouble := class extend BoxExeConstObj

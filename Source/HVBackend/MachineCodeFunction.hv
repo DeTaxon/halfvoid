@@ -15,12 +15,35 @@ MCObject := class
 }
 
 
+MCVariable := class extend MCObject
+{
+
+	PrintObject := virtual !() -> void { printf("Variable with type %s", GetType().GetBADStr().Str()) }
+	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
+	GetType := virtual !() -> Type^ { return GetValueType()}
+}
 MCConstVoid := class extend MCObject
 {
 	IsConstant := virtual true
 	
 	PrintObject := virtual !() -> void { printf("void object") }
 	GetType := virtual !() -> Type^ { return GTypeVoid}
+}
+MCConstInteger := class extend MCObject
+{
+
+	GetValue := !() -> ref int { return Value&->{int^}^}
+
+	PrintObject := virtual !() -> void { printf("Integer %i",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeInt }
+}
+MCConstS64 := class extend MCObject
+{
+
+	GetValue := !() -> ref s64 { return Value&->{s64^}^}
+
+	PrintObject := virtual !() -> void { printf("Integer %li",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeS64 }
 }
 MCConstDouble := class extend MCObject
 {

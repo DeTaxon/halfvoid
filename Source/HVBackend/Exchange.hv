@@ -1,0 +1,9 @@
+AppendClass IntExchange
+{
+	
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		printf("why %s %s\n",Down.GetType().GetBADStr().Str(),ObjType.GetBADStr().Str()) //TODO
+		assert(false)
+	}
+}

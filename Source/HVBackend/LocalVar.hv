@@ -1,0 +1,25 @@
+
+AppendClass LocalVar
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODO uncomment
+		//createVar[^].PrintDefaultUse(ctx)
+		//extraWork[^].PrintDefaultUse(ctx)
+	}
+}
+
+AppendClass FuncLocalVarAccess
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.GetLocalVar(baseVar)
+	}
+}
+AppendClass LocalVarProxy
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = Down.WriteMC(ctx)
+	}
+}

@@ -9,4 +9,6 @@ AppendClass BoxUnit
 WriteMCResult := class
 {
 	CreatedId := int
+
+	"=" := default
 }

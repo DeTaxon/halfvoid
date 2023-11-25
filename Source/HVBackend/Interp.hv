@@ -7,6 +7,16 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
 
+	thisFrame.localVarBlob = new BlobOnVector(512) //TODO calculate stack size
+	for it,i : interpFunc.Objects
+	{
+		if it& is MCVariable
+		{
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer() //TODO hm
+		}
+	}
+	memset(thisFrame.localVarBlob.GetPointer(),0,512) //TODO remove
+
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{

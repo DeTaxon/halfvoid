@@ -7,6 +7,20 @@ AppendClass BoxExeString
 	}
 }
 
+AppendClass BoxExeInt
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddInteger(Value)
+	}
+}
+AppendClass BoxExeS64
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddS64(Value)
+	}
+}
 AppendClass BoxExeDouble
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult

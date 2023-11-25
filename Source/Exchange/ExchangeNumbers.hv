@@ -22,6 +22,10 @@ ExchangeInts := class extend ExchangeUnit
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
+		if obj is BoxExeInt and newType == GTypeS64
+		{
+			return new BoxExeS64(obj->{BoxExeInt^}.Value)
+		}
 		return new IntExchange(obj,newType)
 	}
 }

@@ -4,10 +4,26 @@ MCBuildContext := class extend TGCObject
 	objects := List.{MCObject}
 	lines := List.{MCLine}
 
+	VarsToObject := AVLMap.{LocalVar^,int}
+
 	Init := !() -> void
 	{
 		newObj := MCConstVoid
 		objects.Push(newObj)
+	}
+
+	AddLocalVar := !(LocalVar^ vr) -> int
+	{
+		result = objects.Size()
+		VarsToObject[vr] = result
+		setVal := MCVariable
+		setVal.GetValueType() = vr.GetBaseType()
+		objects.Push(setVal)
+	}
+	GetLocalVar := !(LocalVar^ vr) -> int
+	{
+		assert(VarsToObject.Contain(vr))
+		return VarsToObject[vr]
 	}
 
 	AddFuncConst := !(BoxFunc^ obj) -> int
@@ -29,6 +45,20 @@ MCBuildContext := class extend TGCObject
 	AddString := !(String^ value) -> int
 	{
 		setVal := MCConstString
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
+	AddInteger := !(int value) -> int
+	{
+		setVal := MCConstInteger
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
+	AddS64 := !(s64 value) -> int
+	{
+		setVal := MCConstS64
 		setVal.GetValue() = value
 		result = objects.Size()
 		objects.Push(setVal)

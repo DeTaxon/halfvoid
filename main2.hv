@@ -21,7 +21,8 @@ main := !(char^[] args) -> int
 
 CalculatePi := !() -> void
 {
-	printf("oh yes %f %s\n",3.14,"YES")
+	i := s64
+	printf("oh yes %i\n",i)
 }
 
 //Reserve inheritance failed, it's overcomplicated
