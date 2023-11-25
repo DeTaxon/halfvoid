@@ -33,6 +33,13 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddDouble := !(double value) -> int
+	{
+		setVal := MCConstDouble
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
 	CreateMCFunction := !() -> MCFunction^
 	{
 		result = new MCFunction

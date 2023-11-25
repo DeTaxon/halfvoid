@@ -6,3 +6,11 @@ AppendClass BoxExeString
 		result.CreatedId = ctx.AddString(val.GetString())	
 	}
 }
+
+AppendClass BoxExeDouble
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddDouble(val)
+	}
+}

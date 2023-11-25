@@ -25,6 +25,10 @@ MCConstVoid := class extend MCObject
 MCConstDouble := class extend MCObject
 {
 
+	GetValue := !() -> ref double { return Value&->{double^}^}
+
+	PrintObject := virtual !() -> void { printf("Double %f",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeDouble }
 }
 MCConstFunction := class extend MCObject
 {

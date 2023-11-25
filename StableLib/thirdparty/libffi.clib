@@ -9,6 +9,7 @@
 
 		"ffi_call" : "void,void^,void^,void^,void^^",
 
-		"ffi_type_pointer" : "void"
+		"ffi_type_pointer" : "void",
+		"ffi_type_double" : "void"
 	}
 }

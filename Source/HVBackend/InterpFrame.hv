@@ -14,6 +14,17 @@ MCInterpFuncFrame := class
 			assert(false)
 		}
 	}
+	GetDouble := !(u16 index) -> double
+	{
+		obj := ref func.Objects[index]
+
+		if obj& is MCConstDouble
+		{
+			return obj&->{MCConstDouble^}.GetValue()
+		}else{
+			assert(false)
+		}
+	}
 
 	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,int[] indexes,int resultIndex) -> void
 	{
@@ -34,6 +45,10 @@ MCInterpFuncFrame := class
 				values[i] = GetStringPtr(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_pointer
+			}else if itType == GTypeDouble{
+				values[i]&->{double^}^ = GetDouble(it)
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_double
 			}else{
 				assert(false)
 			}
