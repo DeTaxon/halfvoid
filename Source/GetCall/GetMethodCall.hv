@@ -39,6 +39,11 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		CheckFuncCallConsts(constsToken,consts)
 	}
 
+	if vr.GetType() is in TypeEnum
+	{
+		return GetEnumMethodCall(itm,vr,Objs,consts)?
+	}
+
 	gotName := false
 	methodName := StringSpan
 
@@ -75,6 +80,8 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	{
 		return innerTryGetPtrCall(ptrCall,Objs)?
 	}
+
+	
 
 	itm.EmitError("Method not found")
 	assert(false)

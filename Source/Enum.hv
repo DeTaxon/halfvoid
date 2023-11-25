@@ -16,6 +16,8 @@ BoxEnum := class extend BoxUnit
 	EnumToken := Token^
 	Parent := BoxEnum^
 
+	CStrTable := GlobalVar2^
+
 	this := !(Token^ datToken) -> void
 	{
 		ItType = new TypeEnum()
@@ -93,6 +95,7 @@ BoxEnum := class extend BoxUnit
 				}
 				iter = iter.Right
 			}
+			ItType.Base = baseType
 			ItType.IRName = baseType.IRName
 			ItType.MetaInfo = baseType.MetaInfo
 			ItType.ItSize  = baseType.ItSize
@@ -152,6 +155,7 @@ TypeEnum := class extend TypeStandard
 		return super()
 	}
 }
+
 BoxEnumValue := class extend BoxExeObj
 {
 	ItValue := int
@@ -168,4 +172,43 @@ BoxEnumValue := class extend BoxExeObj
 	{
 		ctx.writeStream^ << ItValue
 	}
+}
+
+GetEnumMethodCall := !(Token^ itm,BoxExeObj^ vr,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+{
+	if itm.Down.Right.Right is not TokenIndent
+		return null
+
+	itName := itm.Down.Right.Right->{TokenIndent^}.Value
+	if itName == "ToCStr"
+	{
+		return CreateFuncCall(StringSpan("internalEnumToCString"),![vr])
+	}
+}
+
+enumGetCStrTable := !(Type^ enumType) -> BoxExeObj^
+{
+	if enumType is not in TypeEnum
+		return null
+	tp := enumType->{TypeEnum^}.ToEnum
+
+	tp.AwaitReadyState()
+
+	if tp.CStrTable == null
+	{
+		valCount := tp.Values.Size()
+		globType := GTypeChar.GetPoint().GetArray(tp.Values.Size() + 1)
+		tp.CStrTable = CreateGlobalVar(StringSpan("."),globType,false)
+
+		setArr := new ClassArray(globType)
+		for it : tp.Values
+		{
+			setArr.Value.Push(it.0)
+		}
+		setArr.Value.Push(GObjNull)
+
+		tp.CStrTable.value = setArr 
+	}
+
+	return tp.CStrTable.proxy&
 }

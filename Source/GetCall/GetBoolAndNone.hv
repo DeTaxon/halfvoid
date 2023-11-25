@@ -31,6 +31,11 @@ BoxExeNull := class extend BoxExeConstObj
 	{
 		ctx.writeStream^ << "null"
 	}
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+		f^ << "zeroinitializer"
+	}
 }
 BoxExeVoid := class extend BoxExeConstObj
 {

@@ -199,6 +199,18 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		return setCall
 	}
 
+	if right.Value == "EnumToCStr"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+			return null
+		if typ is not in TypeEnum
+		{
+			obj.EmitError("Object is not enumeration")
+		}
+		return enumGetCStrTable(typ)
+	}
+
 	right.EmitError("Unknown metafield")
 	
 	assert(false)

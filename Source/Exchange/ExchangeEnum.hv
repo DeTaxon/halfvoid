@@ -1,5 +1,5 @@
 
-ExchangeEnum := class extend ExchangeUnit
+ExchangeEnumFromConstString := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
 	{
@@ -14,5 +14,43 @@ ExchangeEnum := class extend ExchangeUnit
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
 		return newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.val)
+	}
+}
+ExchangeEnumToInt := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if not IsInt(newType)
+			return CmpNoExchange
+		if obj.GetType() is not TypeEnum
+			return CmpNoExchange
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new EnumToIntExchange(obj)
+	}
+}
+
+EnumToIntExchange := class extend BoxExeObj
+{
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ setObj) -> void
+	{
+		Down = setObj
+		ObjType = setObj.GetType()->{TypeEnum^}.Base
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintUse(ctx)
+	}
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintDebugMeta(ctx)
 	}
 }
