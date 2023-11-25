@@ -16,7 +16,7 @@ AppendClass BoxFuncBody
 			access := new FuncLocalVarAccess(it,tp)
 			it.SetCall(access)
 
-			createCall := new FuncLocalVarCleanup(access)
+			createCall := new FuncLocalVarCleanup(access,it)
 			it.createVar.Push(createCall)
 
 			if it.itName.Size() >= 1 and it.itName[0] != '.'
@@ -195,10 +195,16 @@ FuncLocalVarCleanup := class extend BoxExeObj
 {
 	getVal := BoxExeObj^
 	deferCall := BoxExeObj^
+	baseVar := LocalVar^
 
 	baseType := Type^
 	this := !(BoxExeObj^ gV) -> void
 	{
+		this."this"(gV,null)
+	}
+	this := !(BoxExeObj^ gV,LocalVar^ vr) -> void
+	{
+		baseVar = vr
 		baseType = gV.GetType()
 		getVal = GetExchange2(new UnrefFuncCall(gV),GTypeVoidP,false)
 	}

@@ -2,10 +2,15 @@
 MCBaseOpcodes := enum extend u16
 {
 	"label",
-	"goto",
-	"goto_if_op",
+	"jmp", // label
+	"jmp_if_bool", // label var_bool
+	"jmp_if_op", // label operator var1 var2
 
+	"clean", // op1
 	"mov",
+	"cast", // op1 op2 // change type (int to float),(int to s64) ...
+
+	"cmp", // operator var1 var2
 
 	"add",
 	"sub",
@@ -13,7 +18,7 @@ MCBaseOpcodes := enum extend u16
 	"div",
 	"mod",
 
-	"call_start",
+	"call_start", // function opResult calling_convection
 	"load_var",
 	"call_end",
 }

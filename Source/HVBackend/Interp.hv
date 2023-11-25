@@ -15,7 +15,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer() //TODO hm
 		}
 	}
-	memset(thisFrame.localVarBlob.GetPointer(),0,512) //TODO remove
 
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
@@ -51,6 +50,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 				}
 			}
 
+		}else if opPtr[cs].opcode == "clean"{
+			obj := interpFunc.Objects[opPtr[cs].var1]
+			clnVar := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			assert(clnVar != null)
+
+			memset(clnVar,0,obj.GetType().GetSize())
+			cs += 1
 		}else{
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
 			cs += 1

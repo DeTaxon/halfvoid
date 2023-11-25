@@ -3,12 +3,29 @@ AppendClass LocalVar
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		printf("hm %i %i\n",createVar.Size(), createVar[0] is FuncLocalVarCleanup)
+		printf("hm %i %i\n",createVar.Size(), createVar[1] is FuncLocalDebugInfoDeclare)
+		createVar[^].WriteMC(ctx)
 		//TODO uncomment
 		//createVar[^].PrintDefaultUse(ctx)
 		//extraWork[^].PrintDefaultUse(ctx)
 	}
 }
 
+AppendClass FuncLocalVarCleanup
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		if baseVar != null
+		{
+			ctx.lines.Push(MCLine("clean",ctx.GetLocalVar(baseVar)))
+		}else{
+			assert(false) //TODO vars in generators
+			//res := getVal.WriteMC(ctx)
+			//ctx.lines.Push(MCLine("clean",res.CreatedId))
+		}
+	}
+}
 AppendClass FuncLocalVarAccess
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
@@ -21,5 +38,11 @@ AppendClass LocalVarProxy
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		result = Down.WriteMC(ctx)
+	}
+}
+AppendClass FuncLocalDebugInfoDeclare
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
 	}
 }
