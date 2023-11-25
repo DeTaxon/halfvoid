@@ -38,5 +38,6 @@ MCBuildContext := class extend TGCObject
 		result = new MCFunction
 
 		result.Objects = objects.ToVector()
+		result.Lines = lines.ToVector()
 	}
 }

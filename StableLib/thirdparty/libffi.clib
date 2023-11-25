@@ -1,0 +1,14 @@
+{
+	"initname" : "libFFIInit",
+	"libs" : [
+		"libffi.so"
+	],
+	"funcs" : {
+		"ffi_prep_cif" : "int,void^,int,int,void^,void^^",
+		"ffi_prep_cif_var" : "int,void^,int,int,int,void^,void^^",
+
+		"ffi_call" : "void,void^,void^,void^,void^^",
+
+		"ffi_type_pointer" : "void"
+	}
+}

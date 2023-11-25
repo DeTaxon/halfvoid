@@ -38,7 +38,7 @@ MCConstString :=  class extend MCObject
 
 	GetValue := !() -> ref String^ { return Value&->{String^^}^}
 
-	PrintObject := virtual !() -> void { printf("String %s",GetValue().Str()) }
+	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().Str()) }
 }
 
 MCLabel := class
@@ -59,9 +59,14 @@ MCFunction := class //extend TGCObject
 		printf("-------- Objects\n")
 		for it,i : Objects
 		{
-			printf("%4i: ",i)
+			printf("%10i: ",i)
 			it.PrintObject()
 			printf("\n")
+		}
+		printf("-------- Assembly\n")
+		for it, i : Lines
+		{
+			printf("%16s: %6i %6i %6i %6i %6i\n",it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)
 		}
 	}
 }

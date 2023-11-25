@@ -10,19 +10,22 @@ CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
 
 	fnc.Print()
 
-	builder_x64 := MCBuildContext_x86_64 
+	iCntx := MCInterpContext
+	MCInterpFunction(iCntx&,fnc)
 
-	builder_x64.Compile(fnc)
+	//builder_x64 := MCBuildContext_x86_64 
 
-	bigMem := PageMemory
-	bigMem.Create(8*1024*1024,"rwe")
-	
-	stream := ref builder_x64.ResultData
+	//builder_x64.Compile(fnc)
 
-	stream.Read(bigMem.GetPointer(),bigMem.Size())
+	//bigMem := PageMemory
+	//bigMem.Create(8*1024*1024,"rwe")
+	//
+	//stream := ref builder_x64.ResultData
 
-	ptr := bigMem.GetPointer()->{!()^->int}
-	ptr()
+	//stream.Read(bigMem.GetPointer(),bigMem.Size())
+
+	//ptr := bigMem.GetPointer()->{!()^->int}
+	//ptr()
 
 	exit(0)
 }

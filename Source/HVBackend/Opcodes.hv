@@ -7,16 +7,11 @@ MCBaseOpcodes := enum extend u16
 
 	"mov",
 
-	"iadd",
-	"isub",
-	"imul",
-	"idiv",
-	"imod",
-
-	"fadd",
-	"fsub",
-	"fmul",
-	"fdiv",
+	"add",
+	"sub",
+	"mul",
+	"div",
+	"mod",
 
 	"call_start",
 	"load_var",

@@ -22,6 +22,8 @@ main := !(char^[] args) -> int
 CalculatePi := !() -> void
 {
 	puts("3.14")
+	puts("15")
+	puts("96")
 }
 
 //Reserve inheritance failed, it's overcomplicated

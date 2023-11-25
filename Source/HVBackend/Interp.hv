@@ -1,0 +1,95 @@
+MCInterpContext := class
+{
+	
+}
+MCInterpFuncFrame := class
+{
+	func := MCFunction^
+
+	GetStringPtr := !(u16 index) -> char^
+	{
+		obj := ref func.Objects[index]
+
+		if obj& is MCConstString
+		{
+			return obj&->{MCConstString^}.GetValue()
+		}else{
+			assert(false)
+		}
+	}
+
+}
+
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
+{
+	cs := 0
+	thisFrame := MCInterpFuncFrame
+	thisFrame.func = interpFunc
+
+	opPtr := interpFunc.Lines.GetPointer()
+	assert(opPtr != null)
+
+	opsCount := interpFunc.Lines.Size()
+	while cs < opsCount
+	{
+		if opPtr[cs].opcode == "call_start"
+		{
+			fncObj := ref interpFunc.Objects[opPtr[cs].var1]
+			cs += 1
+
+			indxs := HybridQueue.{int,8}
+			while opPtr[cs].opcode != "call_end"
+			{
+				if opPtr[cs].opcode == "load_var"
+				{
+					indxs.Push(opPtr[cs].var1)
+				}else{
+					assert(false)
+				}
+				cs += 1
+			}
+			cs += 1
+
+			if fncObj& is MCConstFunction
+			{
+				fncHV := fncObj&->{MCConstFunction^}.GetValue()
+
+				if fncHV is BoxFuncDeclare
+				{
+					fncType := fncHV.GetType()->{TypeFunc^}
+
+					varsCount := fncType.Params.Size()
+					assert(varsCount <= 40) //TODO Unconst
+
+					values := void^[40]
+					valuesPtr := void^[40]
+					valuesTypes := void^[40]
+
+					resultType := ffi_type_pointer->{void^}
+
+					for it, i : fncType.Params
+					{
+						if it.ItType == GTypeChar.GetPoint()
+						{
+							values[i] = thisFrame.GetStringPtr(indxs[i])
+							valuesPtr[i] = values[i]&
+							valuesTypes[i] = ffi_type_pointer
+						}else{
+							assert(false)
+						}
+					}
+					someCif := u8[256] //TODO get type size 
+					ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
+					resValue := void^
+					ffi_call(someCif[0]&,puts,resValue&,valuesPtr[0]&)
+				}else{
+					assert(false)
+				}
+			}
+
+		}else{
+			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
+			cs += 1
+		}
+	}
+}
