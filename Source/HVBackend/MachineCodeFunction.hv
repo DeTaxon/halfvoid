@@ -11,6 +11,7 @@ MCObject := class
 		Value = setValue.Value
 	}
 	PrintObject := virtual !() -> void { printf("unknown object") }
+	GetType := virtual !() -> Type^ { return GTypeVoid}
 }
 
 
@@ -19,6 +20,7 @@ MCConstVoid := class extend MCObject
 	IsConstant := virtual true
 	
 	PrintObject := virtual !() -> void { printf("void object") }
+	GetType := virtual !() -> Type^ { return GTypeVoid}
 }
 MCConstDouble := class extend MCObject
 {
@@ -39,6 +41,7 @@ MCConstString :=  class extend MCObject
 	GetValue := !() -> ref String^ { return Value&->{String^^}^}
 
 	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().Str()) }
+	GetType := virtual !() -> Type^ { return GTypeChar.GetPoint() }
 }
 
 MCLabel := class

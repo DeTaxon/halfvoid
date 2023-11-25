@@ -1,0 +1,52 @@
+
+MCInterpFuncFrame := class
+{
+	func := MCFunction^
+
+	GetStringPtr := !(u16 index) -> char^
+	{
+		obj := ref func.Objects[index]
+
+		if obj& is MCConstString
+		{
+			return obj&->{MCConstString^}.GetValue()
+		}else{
+			assert(false)
+		}
+	}
+
+	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,int[] indexes,int resultIndex) -> void
+	{
+		varsCount := fType.Params.Size()
+		assert(varsCount <= 40) //TODO Unconst
+
+		values := void^[40]
+		valuesPtr := void^[40]
+		valuesTypes := void^[40]
+
+		resultType := ffi_type_pointer->{void^}
+
+		for it,i : indexes
+		{
+			itType := func.Objects[it]&.GetType()
+			if itType == GTypeChar.GetPoint()
+			{
+				values[i] = GetStringPtr(it)
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_pointer
+			}else{
+				assert(false)
+			}
+		}
+		someCif := u8[256] //TODO get type size
+
+		if fType.IsVargs
+		{
+			ffi_prep_cif_var(someCif[0]&,2, varsCount,indexes.Size(),resultType,valuesTypes[0]&)
+		}else{
+			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
+		}
+		resValue := void^
+		ffi_call(someCif[0]&,fPointer,resValue&,valuesPtr[0]&)
+	}
+}

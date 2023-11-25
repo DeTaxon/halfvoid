@@ -1,0 +1,26 @@
+
+MCInterpContext := class
+{
+
+	declarePtrs := AVLMap.{void^,void^}
+
+	DeclareToPtr := !(BoxFuncDeclare^ dclr) -> void^
+	{
+		return declarePtrs[dclr]?
+
+		fName := dclr.GetName()
+
+		switch(fName) //TODO load them from libraries
+		{
+		case "puts"
+			result = puts
+		case "printf"
+			result = printf
+		case void
+			assert(false)
+		}
+
+		declarePtrs[dclr] = result
+	}
+}
+
