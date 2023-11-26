@@ -19,6 +19,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
+		thisLine := ref opPtr[cs]
 		if opPtr[cs].opcode == "call_start"
 		{
 			fncObj := ref interpFunc.Objects[opPtr[cs].var1]
@@ -46,7 +47,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 					fncType := fncHV.GetType()->{TypeFunc^}
 					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),indxs,0)
 				}else{
-					assert(false)
+					//fncHV.WriteFuncCallMC(iCntx,indxs)
 				}
 			}
 
@@ -56,6 +57,48 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			assert(clnVar != null)
 
 			memset(clnVar,0,obj.GetType().GetSize())
+			cs += 1
+		}else if thisLine.opcode == "add" {
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			if IsInt(objTyp)
+			{
+				bigInt := s64
+				switch objTyp.GetSize()
+				{
+					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ + ptr2->{s8^}^
+					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ + ptr2->{s16^}^
+					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ + ptr2->{s32^}^
+					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ + ptr2->{s64^}^
+				}
+			}else{
+				assert(false)
+			}
+			cs += 1
+		}else if thisLine.opcode == "sub" {
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			if IsInt(objTyp)
+			{
+				bigInt := s64
+				switch objTyp.GetSize()
+				{
+					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ - (ptr2->{s8^}^)
+					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ - (ptr2->{s16^}^)
+					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ - (ptr2->{s32^}^)
+					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ - (ptr2->{s64^}^)
+				}
+			}else{
+				assert(false)
+			}
 			cs += 1
 		}else{
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)

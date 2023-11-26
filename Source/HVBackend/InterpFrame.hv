@@ -9,6 +9,12 @@ MCInterpFuncFrame := class extend TGCObject
 	GetObjectPtr := !(int index) -> void^
 	{
 		return localVarTable[index]?
+
+		obj := ref func.Objects[index]
+		if obj&.IsConstant
+		{
+			return obj.Value&
+		}
 		assert(false)
 	}
 

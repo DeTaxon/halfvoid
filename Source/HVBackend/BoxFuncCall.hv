@@ -2,21 +2,35 @@ AppendClass BoxFuncCall
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		fncId := ctx.AddFuncConst(callObj)
-
-		thisIndexes := HybridQueue.{int,16}
-
-		for it : downs
+		if callObj.IsMCInlined
 		{
-			subObj := it.WriteMC(ctx)
-			thisIndexes.Push(subObj.CreatedId)
-		}
+			callObj.WriteFuncCallMC(ctx,downs)
+		}else{
+			fncId := ctx.AddFuncConst(callObj)
 
-		ctx.lines.Push(MCLine("call_start",fncId))
-		for it : thisIndexes
-		{
-			ctx.lines.Push(MCLine("load_var",it))
+			thisIndexes := HybridQueue.{int,16}
+
+			for it : downs
+			{
+				subObj := it.WriteMC(ctx)
+				thisIndexes.Push(subObj.CreatedId)
+			}
+
+			ctx.lines.Push(MCLine("call_start",fncId))
+			for it : thisIndexes
+			{
+				ctx.lines.Push(MCLine("load_var",it))
+			}
+			ctx.lines.Push(MCLine("call_end"))
 		}
-		ctx.lines.Push(MCLine("call_end"))
+	}
+}
+
+AppendClass BoxFunc
+{
+	IsMCInlined := virtual false
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		assert(false)
 	}
 }

@@ -22,6 +22,8 @@ main := !(char^[] args) -> int
 CalculatePi := !() -> void
 {
 	i := s64
+	i += 15
+	i -= 5
 	printf("oh yes %i\n",i)
 }
 

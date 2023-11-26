@@ -3,8 +3,6 @@ AppendClass LocalVar
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		printf("hm %i %i\n",createVar.Size(), createVar[0] is FuncLocalVarCleanup)
-		printf("hm %i %i\n",createVar.Size(), createVar[1] is FuncLocalDebugInfoDeclare)
 		createVar[^].WriteMC(ctx)
 		//TODO uncomment
 		//createVar[^].PrintDefaultUse(ctx)

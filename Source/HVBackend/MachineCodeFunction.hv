@@ -32,6 +32,7 @@ MCConstVoid := class extend MCObject
 MCConstInteger := class extend MCObject
 {
 
+	IsConstant := virtual true
 	GetValue := !() -> ref int { return Value&->{int^}^}
 
 	PrintObject := virtual !() -> void { printf("Integer %i",GetValue()) }
@@ -40,6 +41,7 @@ MCConstInteger := class extend MCObject
 MCConstS64 := class extend MCObject
 {
 
+	IsConstant := virtual true
 	GetValue := !() -> ref s64 { return Value&->{s64^}^}
 
 	PrintObject := virtual !() -> void { printf("Integer %li",GetValue()) }
