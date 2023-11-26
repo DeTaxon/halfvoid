@@ -24,8 +24,7 @@ CalculatePi := !() -> void
 	values := malloc(512)->{int^}
 	values[0] = 13
 	values[1] = 105
-	printf("test %i %p\n",values[0],values[0]&)
-	printf("test %i %p\n",values[1],values[1]&)
+	printf("test %li\n",values[1] mod values[0])
 	//i := 10
 	//while i != 0
 	//{

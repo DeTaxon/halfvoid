@@ -26,7 +26,7 @@ AppendClass BuiltInIntBase
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
 
-		resInd := ctx.CreateVar(GTypeBool)
+		resInd := ctx.CreateVar(GetType()->{TypeFunc^}.ResultType)
 		result.CreatedId = resInd
 
 		switch llvm
@@ -35,6 +35,12 @@ AppendClass BuiltInIntBase
 			ctx.lines.Push(MCLine("cmp",resInd,"==",var1.CreatedId,var2.CreatedId))
 		case "icmp ne"
 			ctx.lines.Push(MCLine("cmp",resInd,"!=",var1.CreatedId,var2.CreatedId))
+		case "mul"
+			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "sdiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "srem"
+			HVB_ins_mod(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case void
 			assert(false) //TODO float, other cmp
 		}

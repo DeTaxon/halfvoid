@@ -30,3 +30,16 @@ HVB_ins_get_pointer := !(MCBuildContext^ ctx,s32 resultId, s32 objectId) -> void
 {
 	ctx.lines.Push(MCLine("get_pointer",resultId,objectId))
 }
+
+HVB_ins_mul := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("mul",resId,opr1,opr2))
+}
+HVB_ins_div := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("div",resId,opr1,opr2))
+}
+HVB_ins_mod := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("mod",resId,opr1,opr2))
+}
