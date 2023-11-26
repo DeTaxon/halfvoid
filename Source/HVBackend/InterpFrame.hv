@@ -8,12 +8,25 @@ MCInterpFuncFrame := class extend TGCObject
 
 	GetObjectPtr := !(int index) -> void^
 	{
+		obj := ref func.Objects[index]
+		if obj& is MCReference
+		{
+			return localVarTable[index]->{void^^}^
+		}
 		return localVarTable[index]?
 
-		obj := ref func.Objects[index]
 		if obj&.IsConstant
 		{
 			return obj.Value&
+		}
+		assert(false)
+	}
+	GetReferencePtr := !(int index) -> void^
+	{
+		obj := ref func.Objects[index]
+		if obj& is MCReference
+		{
+			return localVarTable[index]
 		}
 		assert(false)
 	}
@@ -37,7 +50,7 @@ MCInterpFuncFrame := class extend TGCObject
 		{
 			return obj&->{MCConstInteger^}.GetValue()
 		}else{
-			assert(false)
+			return GetObjectPtr(index)->{int^}^
 		}
 	}
 	GetS64 := !(u16 index) -> s64
@@ -59,7 +72,7 @@ MCInterpFuncFrame := class extend TGCObject
 		{
 			return obj&->{MCConstDouble^}.GetValue()
 		}else{
-			assert(false)
+			return GetObjectPtr(index)->{double^}^
 		}
 	}
 

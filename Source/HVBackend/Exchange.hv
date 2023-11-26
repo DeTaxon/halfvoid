@@ -33,6 +33,9 @@ AppendClass PtrExchange
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		assert(false)
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result = dwn
 	}
 }

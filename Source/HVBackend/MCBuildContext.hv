@@ -39,6 +39,13 @@ MCBuildContext := class extend TGCObject
 		assert(VarsToObject.Contain(vr))
 		return VarsToObject[vr]
 	}
+	CreateReference := !(Type^ varType) -> int
+	{
+		result = objects.Size()
+		setVal := MCReference
+		setVal.GetValueType() = varType
+		objects.Push(setVal)
+	}
 
 	AddFuncConst := !(BoxFunc^ obj) -> int
 	{

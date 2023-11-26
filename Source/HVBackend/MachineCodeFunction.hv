@@ -22,6 +22,12 @@ MCVariable := class extend MCObject
 	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
 	GetType := virtual !() -> Type^ { return GetValueType()}
 }
+MCReference := class extend MCObject
+{
+	PrintObject := virtual !() -> void { printf("Variable reference with type %s", GetType().GetBADStr().Str()) }
+	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
+	GetType := virtual !() -> Type^ { return GetValueType()}
+}
 MCConstVoid := class extend MCObject
 {
 	IsConstant := virtual true

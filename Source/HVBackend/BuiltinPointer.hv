@@ -1,0 +1,13 @@
+AppendClass BuiltInPointGetItem
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
+
+		newRef := ctx.CreateReference(GetType()->{TypeFunc^}.ResultType)
+		HVB_ins_load_element(ctx,newRef,var1.CreatedId,var2.CreatedId)
+		result.CreatedId = newRef
+	}
+}

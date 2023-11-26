@@ -21,14 +21,17 @@ main := !(char^[] args) -> int
 
 CalculatePi := !() -> void
 {
-	mem := malloc(512)
-	i := s64
-	i += 13
-	while i != 0
-	{
-		printf("oh yes %i %p\n",i,mem)
-		i -= 1
-	}
+	values := malloc(512)->{int^}
+	values[0] = 13
+	values[1] = 105
+	printf("test %i %p\n",values[0],values[0]&)
+	printf("test %i %p\n",values[1],values[1]&)
+	//i := 10
+	//while i != 0
+	//{
+	//	printf("oh yes %i %p\n",i,values[0])
+	//	i -= 1
+	//}
 }
 
 //Reserve inheritance failed, it's overcomplicated

@@ -16,6 +16,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]& //TODO hm
 			offset += 16
 		}
+		if it& is MCReference
+		{
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]& //TODO hm
+			offset += 16
+		}
 	}
 	
 	labelsPos := Tuple.{u16,int}[]
@@ -172,6 +177,39 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			typeSize := interpFunc.Objects[thisLine.var1].GetType().GetSize()
 			memcpy(v1,v2,typeSize)
+			//TODO float to int , and back
+			//signed types sign extension
+			cs += 1
+		}else if thisLine.opcode == "load_element" {
+			varType := interpFunc.Objects[thisLine.var2].GetType()
+			indType := interpFunc.Objects[thisLine.var3].GetType()
+
+			assert(indType == GTypeInt)
+
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			v3 := thisFrame.GetObjectPtr(thisLine.var3)
+
+			if varType is in TypePoint
+			{
+				objSet := ref interpFunc.Objects[thisLine.var1]
+				assert(objSet& is MCReference)
+				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+				setPtr->{void^^}^ = v2->{u8^}[v3->{int^}^ * indType.GetSize()]&
+			}else{
+				assert(false)
+			}
+
+			cs += 1
+		}else if thisLine.opcode == "get_pointer" {
+			res := thisFrame.GetObjectPtr(thisLine.var1)
+
+			obj := ref interpFunc.Objects[thisLine.var2]
+			if obj& is MCReference
+			{
+				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]->{void^^}^
+			}else{ //TODO check for MCVariable
+				assert(false)
+			}
 			cs += 1
 		}else{
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)

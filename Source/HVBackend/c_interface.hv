@@ -21,3 +21,12 @@ HVB_ins_cast := !(MCBuildContext^ ctx, s32 resultId, s32 source) -> void
 {
 	ctx.lines.Push(MCLine("cast",resultId,source))
 }
+
+HVB_ins_load_element := !(MCBuildContext^ ctx,s32 resultId, s32 objectId, s32 objectIndex) -> void
+{
+	ctx.lines.Push(MCLine("load_element",resultId,objectId,objectIndex))
+}
+HVB_ins_get_pointer := !(MCBuildContext^ ctx,s32 resultId, s32 objectId) -> void
+{
+	ctx.lines.Push(MCLine("get_pointer",resultId,objectId))
+}

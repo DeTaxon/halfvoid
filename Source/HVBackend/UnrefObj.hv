@@ -1,0 +1,10 @@
+AppendClass UnrefFuncCall
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		dwnObj := Down.WriteMC(ctx)
+		newVar := ctx.CreateVar(GetType())
+		HVB_ins_get_pointer(ctx,newVar,dwnObj.CreatedId)
+		result.CreatedId = newVar
+	}
+}

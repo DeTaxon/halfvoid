@@ -12,6 +12,9 @@ MCBaseOpcodes := enum extend u16
 
 	"cmp", // operator var1 var2
 
+	"load_element",
+	"get_pointer",
+
 	"add",
 	"sub",
 	"mul",
