@@ -16,7 +16,16 @@ AppendClass BoxFuncCall
 				thisIndexes.Push(subObj.CreatedId)
 			}
 
-			ctx.lines.Push(MCLine("call_start",fncId))
+			fType := callObj.GetType()->{TypeFunc^}
+
+			resultId := 0
+			if fType.ResultType != GTypeVoid //TODO ref
+			{
+				resultId = ctx.CreateVar(fType.ResultType)
+			}
+			result.CreatedId = resultId
+
+			ctx.lines.Push(MCLine("call_start",resultId,fncId))
 			for it : thisIndexes
 			{
 				ctx.lines.Push(MCLine("load_var",it))

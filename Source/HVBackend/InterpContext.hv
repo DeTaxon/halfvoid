@@ -16,6 +16,10 @@ MCInterpContext := class
 			result = puts
 		case "printf"
 			result = printf
+		case "malloc"
+			result = malloc
+		case "free"
+			result = free
 		case void
 			assert(false)
 		}

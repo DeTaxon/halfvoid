@@ -1,9 +1,38 @@
 AppendClass IntExchange
 {
-	
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		printf("why %s %s\n",Down.GetType().GetBADStr().Str(),ObjType.GetBADStr().Str()) //TODO
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result = dwn
+	}
+}
+AppendClass FloatExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		assert(false)
+	}
+}
+AppendClass FloatToIntExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		assert(false)
+	}
+}
+AppendClass IntToFloatExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		assert(false)
+	}
+}
+AppendClass PtrExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
 		assert(false)
 	}
 }

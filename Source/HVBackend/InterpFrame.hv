@@ -63,7 +63,7 @@ MCInterpFuncFrame := class extend TGCObject
 		}
 	}
 
-	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,int[] indexes,int resultIndex) -> void
+	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,int[] indexes,int resultIndex) -> void
 	{
 		varsCount := fType.Params.Size()
 		assert(varsCount <= 40) //TODO Unconst
@@ -82,6 +82,11 @@ MCInterpFuncFrame := class extend TGCObject
 				values[i] = GetStringPtr(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_pointer
+			}else if itType is in  TypePoint
+			{
+				values[i] = GetObjectPtr(it)->{void^^}^
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_pointer
 			}else if itType == GTypeDouble{
 				values[i]&->{double^}^ = GetDouble(it)
 				valuesPtr[i] = values[i]&
@@ -95,6 +100,7 @@ MCInterpFuncFrame := class extend TGCObject
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_sint64
 			}else{
+				printf("unknown type %s\n",itType.GetBADStr().Str())
 				assert(false)
 			}
 		}
@@ -106,7 +112,6 @@ MCInterpFuncFrame := class extend TGCObject
 		}else{
 			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
 		}
-		resValue := void^
-		ffi_call(someCif[0]&,fPointer,resValue&,valuesPtr[0]&)
+		ffi_call(someCif[0]&,fPointer,resultValue,valuesPtr[0]&)
 	}
 }

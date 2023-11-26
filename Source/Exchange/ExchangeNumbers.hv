@@ -12,12 +12,15 @@ ExchangeInts := class extend ExchangeUnit
 
 		if not IsInt(f1)
 			return CmpNoExchange
+		extra := 0
+		if IsUInt(f1) != IsUInt(newType)
+			extra = 1
 
 		if f1.GetSize() > newType.GetSize()
 		{
-			return 1995 + (100 - newType.GetSize())
+			return 1900 + (32 - newType.GetSize()) + extra
 		}
-		return 995 + (100 - newType.GetSize())
+		return 900 + (32 - newType.GetSize()) + extra
 
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^

@@ -40,3 +40,13 @@ AppendClass BuiltInIntBase
 		}
 	}
 }
+AppendClass BuiltInPrimeStore
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
+		HVB_ins_move(ctx,var1.CreatedId,var2.CreatedId)
+	}
+}

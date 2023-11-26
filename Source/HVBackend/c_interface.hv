@@ -12,3 +12,12 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 {
 	ctx.lines.Push(MCLine("jmp",labelId))
 }
+
+HVB_ins_move := !(MCBuildContext^ ctx, s32 resultId, s32 source) -> void
+{
+	ctx.lines.Push(MCLine("mov",resultId,source))
+}
+HVB_ins_cast := !(MCBuildContext^ ctx, s32 resultId, s32 source) -> void
+{
+	ctx.lines.Push(MCLine("cast",resultId,source))
+}

@@ -21,12 +21,12 @@ main := !(char^[] args) -> int
 
 CalculatePi := !() -> void
 {
+	mem := malloc(512)
 	i := s64
 	i += 13
-	j := s64
-	while i != j
+	while i != 0
 	{
-		printf("oh yes %i\n",i)
+		printf("oh yes %i %p\n",i,mem)
 		i -= 1
 	}
 }
