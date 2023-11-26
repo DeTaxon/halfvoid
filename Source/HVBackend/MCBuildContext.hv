@@ -72,6 +72,14 @@ MCBuildContext := class extend TGCObject
 	}
 	AddInteger := !(int value) -> int
 	{
+		for it,i : objects
+		{
+			if it& is MCConstInteger
+			{
+				if it&->{MCConstInteger^}.GetValue() == value
+					return i
+			}
+		}
 		setVal := MCConstInteger
 		setVal.GetValue() = value
 		result = objects.Size()

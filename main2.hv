@@ -20,7 +20,7 @@ main := !(char^[] args) -> int
 CalculatePi := !() -> void
 {
 	//nums := 1000000
-	nums := 100
+	nums := 1000
 	bigNums := nums*3
 	values := malloc(bigNums*4 + 1000)->{int^}
 

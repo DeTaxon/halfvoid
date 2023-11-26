@@ -8,7 +8,7 @@ CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
 	funcToRun.CreateMCFunction(builderBase&)
 	fnc := builderBase.CreateMCFunction()
 
-	fnc.Print()
+	//fnc.Print()
 
 	iCntx := MCInterpContext
 	MCInterpFunction(iCntx&,fnc)

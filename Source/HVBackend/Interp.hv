@@ -7,19 +7,51 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
 
-	thisFrame.localVarBlob = new BlobOnVector(4096) //TODO calculate stack size
+	useStackSize := 0
+	for it,i : interpFunc.Objects
+	{
+		typ := Type^
+		if it& is MCVariable
+			typ = it&->{MCVariable^}.GetType()
+		if it& is MCReference
+			typ = GTypeVoidP
+		if typ != null
+		{
+			al := typ.GetAlign()
+			if al != 0
+			{
+				useStackSize = ((useStackSize + al - 1) div al) * al
+			}
+			useStackSize += typ.GetSize()
+		}
+	}
+	useStackSize = (useStackSize + 15) and_b 0xFFFFF0
+	thisFrame.localVarBlob = new BlobOnVector(useStackSize)
 	offset := int
 	for it,i : interpFunc.Objects
 	{
+		typ := Type^
 		if it& is MCVariable
-		{
-			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]& //TODO hm
-			offset += 16
-		}
+			typ = it&->{MCVariable^}.GetType()
 		if it& is MCReference
+			typ = GTypeVoidP
+		if typ != null
 		{
-			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]& //TODO hm
-			offset += 16
+			al := typ.GetAlign()
+			if al != 0
+			{
+				offset = ((offset + al - 1) div al) * al
+			}
+			if it& is MCVariable
+			{
+				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
+			}
+			if it& is MCReference
+			{
+				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
+			}
+
+			offset += typ.GetSize()
 		}
 	}
 	
