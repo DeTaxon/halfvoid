@@ -7,7 +7,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
 
-	thisFrame.localVarBlob = new BlobOnVector(512) //TODO calculate stack size
+	thisFrame.localVarBlob = new BlobOnVector(4096) //TODO calculate stack size
 	offset := int
 	for it,i : interpFunc.Objects
 	{
@@ -214,6 +214,12 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 				{
 					case "==" resBool^ = (spc == 0)
 					case "!=" resBool^ = (spc != 0)
+					case "<=" resBool^ = (spc <= 0)
+					case "<" resBool^ = (spc < 0)
+					case ">=" resBool^ = (spc >= 0)
+					case ">" resBool^ = (spc > 0)
+					case void
+						assert(false)
 				}
 			}
 			cs += 1
@@ -252,12 +258,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			v3 := thisFrame.GetObjectPtr(thisLine.var3)
 
+
 			if varType is in TypePoint
 			{
 				objSet := ref interpFunc.Objects[thisLine.var1]
 				assert(objSet& is MCReference)
 				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-				setPtr->{void^^}^ = v2->{u8^}[v3->{int^}^ * indType.GetSize()]&
+				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * indType.GetSize()]&
 			}else{
 				assert(false)
 			}
@@ -270,7 +277,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			if obj& is MCReference
 			{
 				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]->{void^^}^
-			}else{ //TODO check for MCVariable
+			}else if obj& is MCVariable{
+				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]
+			}else{
 				assert(false)
 			}
 			cs += 1

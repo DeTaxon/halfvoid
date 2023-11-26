@@ -35,6 +35,18 @@ AppendClass BuiltInIntBase
 			ctx.lines.Push(MCLine("cmp",resInd,"==",var1.CreatedId,var2.CreatedId))
 		case "icmp ne"
 			ctx.lines.Push(MCLine("cmp",resInd,"!=",var1.CreatedId,var2.CreatedId))
+		case "icmp slt"
+			ctx.lines.Push(MCLine("cmp",resInd,"<",var1.CreatedId,var2.CreatedId))
+		case "icmp sle"
+			ctx.lines.Push(MCLine("cmp",resInd,"<=",var1.CreatedId,var2.CreatedId))
+		case "icmp sge"
+			ctx.lines.Push(MCLine("cmp",resInd,">=",var1.CreatedId,var2.CreatedId))
+		case "icmp sgt"
+			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+		case "add"
+			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "sub"
+			HVB_ins_sub(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "mul"
 			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "sdiv"

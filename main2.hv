@@ -14,23 +14,49 @@ En := enum
 
 main := !(char^[] args) -> int
 {
-	h := En
-	h = "Des"
-	printf("test %s\n",h.ToCStr())
+	CalculatePi()
 }
 
 CalculatePi := !() -> void
 {
-	values := malloc(512)->{int^}
-	values[0] = 13
-	values[1] = 105
-	printf("test %li\n",values[1] mod values[0])
-	//i := 10
-	//while i != 0
-	//{
-	//	printf("oh yes %i %p\n",i,values[0])
-	//	i -= 1
-	//}
+	//nums := 1000000
+	nums := 100
+	bigNums := nums*3
+	values := malloc(bigNums*4 + 1000)->{int^}
+
+	i := 0
+	while i < bigNums
+	{
+		values[i] = 2
+		i += 1
+	}
+	i = 0
+	while i < nums
+	{
+		j := 0
+		while j < bigNums
+		{
+			values[j] *= 10
+			j += 1
+		}
+		j = bigNums - 1
+		while j >= 1
+		{
+			thisMul := j
+			thisDiv := 2*j + 1
+
+			carry := (values[j] div thisDiv)*thisMul
+			modul := values[j] mod thisDiv
+			values[j] = modul
+			j -= 1
+			values[j] += carry
+		}
+		num := values[0] div 10
+		values[0] = values[0] mod 10
+		printf("%i",num)
+		i += 1
+	}
+	printf("\n")
 }
 
 //Reserve inheritance failed, it's overcomplicated
