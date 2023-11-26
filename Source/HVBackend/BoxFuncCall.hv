@@ -4,7 +4,7 @@ AppendClass BoxFuncCall
 	{
 		if callObj.IsMCInlined
 		{
-			callObj.WriteFuncCallMC(ctx,downs)
+			result = callObj.WriteFuncCallMC(ctx,downs)
 		}else{
 			fncId := ctx.AddFuncConst(callObj)
 

@@ -8,12 +8,38 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 	assert(opPtr != null)
 
 	thisFrame.localVarBlob = new BlobOnVector(512) //TODO calculate stack size
+	offset := int
 	for it,i : interpFunc.Objects
 	{
 		if it& is MCVariable
 		{
-			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer() //TODO hm
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]& //TODO hm
+			offset += 8
 		}
+	}
+
+
+	
+	labelsPos := Tuple.{u16,int}[]
+	
+	{
+		labelsList := List.{Tuple.{u16,int}}
+		for it,i : interpFunc.Lines
+		{
+			if it.opcode == "label"
+			{
+				labelsList.Emplace(it.var1,i)
+			}
+		}
+		labelsPos = labelsList.ToVector()
+	}
+	getLabel := (u16 val) ==> [labelsPos&]{
+		for it : labelsPos
+		{
+			if it.0 == val
+				return it.1
+		}
+		assert(false)
 	}
 
 	opsCount := interpFunc.Lines.Size()
@@ -100,6 +126,41 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 				assert(false)
 			}
 			cs += 1
+		}else if thisLine.opcode == "cmp" {
+			objTyp := interpFunc.Objects[thisLine.var3].GetType()
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
+			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
+
+			if IsInt(objTyp)
+			{
+				spc := s64
+				switch objTyp.GetSize()
+				{
+					case 1 spc = ptr1->{s8^}^ - (ptr2->{s8^}^)
+					case 2 spc = ptr1->{s16^}^ - (ptr2->{s16^}^)
+					case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
+					case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
+				}
+				switch thisLine.V2Cond()
+				{
+					case "==" resBool^ = (spc == 0)
+					case "!=" resBool^ = (spc != 0)
+				}
+			}
+			cs += 1
+		}else if thisLine.opcode == "label" {
+			cs += 1
+		}else if thisLine.opcode == "jmp" {
+			cs = getLabel(thisLine.var1)
+		}else if thisLine.opcode == "jmp_if_bool" {
+			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{bool^}
+			if boolVar^
+			{
+				cs = getLabel(thisLine.var1)
+			}else{
+				cs += 1
+			}
 		}else{
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
 			cs += 1

@@ -22,9 +22,13 @@ main := !(char^[] args) -> int
 CalculatePi := !() -> void
 {
 	i := s64
-	i += 15
-	i -= 5
-	printf("oh yes %i\n",i)
+	i += 13
+	j := s64
+	while i != j
+	{
+		printf("oh yes %i\n",i)
+		i -= 1
+	}
 }
 
 //Reserve inheritance failed, it's overcomplicated

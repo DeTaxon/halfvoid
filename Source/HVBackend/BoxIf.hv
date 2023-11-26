@@ -1,0 +1,40 @@
+
+
+AppendClass BoxIfTrueOnly
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		truePath := ctx.CreateLabel()
+		falsePath := ctx.CreateLabel()
+
+		cmpTest := Val.WriteMC(ctx)
+
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
+
+		ctx.lines.Push(MCLine("label",truePath))
+		OnTrue.WriteMC(ctx)
+		ctx.lines.Push(MCLine("label",falsePath))
+	}
+}
+AppendClass BoxIfFull
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		truePath := ctx.CreateLabel()
+		falsePath := ctx.CreateLabel()
+		endPath := ctx.CreateLabel()
+
+		cmpTest := Val.WriteMC(ctx)
+
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
+
+		ctx.lines.Push(MCLine("label",truePath))
+		OnTrue.WriteMC(ctx)
+		ctx.lines.Push(MCLine("jmp",endPath))
+		ctx.lines.Push(MCLine("label",falsePath))
+		OnFalse.WriteMC(ctx)
+		ctx.lines.Push(MCLine("label",endPath))
+	}
+}

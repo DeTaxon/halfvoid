@@ -1,0 +1,21 @@
+
+AppendClass BoxWhile
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		startLabel := ctx.CreateLabel()
+		bodyLabel := ctx.CreateLabel()
+		endLabel := ctx.CreateLabel()
+
+		HVB_ins_label(ctx,startLabel)
+		cmpRes := Val.WriteMC(ctx)
+		HVB_ins_jump_if_bool(ctx,bodyLabel,cmpRes.CreatedId)
+		HVB_ins_jump(ctx,endLabel)
+		HVB_ins_label(ctx,bodyLabel)
+
+		Body.WriteMC(ctx)
+
+		HVB_ins_jump(ctx,startLabel)
+		HVB_ins_label(ctx,endLabel)
+	}
+}

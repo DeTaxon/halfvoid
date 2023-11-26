@@ -12,6 +12,20 @@ MCBuildContext := class extend TGCObject
 		objects.Push(newObj)
 	}
 
+	CreateLabel := !() -> int
+	{
+		result = objects.Size()
+		setVal := MCLabel
+		objects.Push(setVal)
+	}
+
+	CreateVar := !(Type^ varType) -> int
+	{
+		result = objects.Size()
+		setVal := MCVariable
+		setVal.GetValueType() = varType
+		objects.Push(setVal)
+	}
 	AddLocalVar := !(LocalVar^ vr) -> int
 	{
 		result = objects.Size()

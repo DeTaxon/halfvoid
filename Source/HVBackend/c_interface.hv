@@ -1,0 +1,14 @@
+
+
+HVB_ins_label := !(MCBuildContext^ ctx,s32 labelId) -> void
+{
+	ctx.lines.Push(MCLine("label",labelId))
+}
+HVB_ins_jump_if_bool := !(MCBuildContext^ ctx,s32 labelId, s32 cmpTest) -> void
+{
+	ctx.lines.Push(MCLine("jmp_if_bool",labelId,cmpTest))
+}
+HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
+{
+	ctx.lines.Push(MCLine("jmp",labelId))
+}
