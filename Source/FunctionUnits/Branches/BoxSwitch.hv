@@ -6,6 +6,7 @@ TryParseSwitch := !(Token^ itm) -> BoxExeObj^
 
 SwitchCase := class
 {
+	baseObj := BoxExeObj^
 	cmpCheck := BoxExeObj^
 	caseBody := BoxBlock^
 	useNode := BoxLabel^
@@ -28,6 +29,10 @@ SwitchCase := class
 		defBlock.EndBlock(ctx)
 
 		PrintBranch(ctx,cmpCheck,useNode,nopeLabel)
+		PrintItBase(ctx,qLabel)
+	}
+	PrintItBase := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
+	{
 		useNode.PrintCode(ctx)
 		caseBody?.PrintCode(ctx)
 		qLabel.PrintGo(ctx)
@@ -42,7 +47,9 @@ BoxSwitch := class extend BoxExeObj
 	quitNode := BoxLabel^
 
 	caseNodes := List.{SwitchCase^}
-	deafultNode := BoxBlock^
+
+	defaultLabel := BoxLabel^
+	defaultNode := BoxBlock^
 
 	this := !(Token^ itm) -> void
 	{
@@ -69,6 +76,7 @@ BoxSwitch := class extend BoxExeObj
 		currentCase := Token^
 		startNode := Token^
 		startNodeCount := int
+		allConsts := true
 
 		checkCase := () ==> {
 			if currentCase == null
@@ -88,7 +96,7 @@ BoxSwitch := class extend BoxExeObj
 			if currentCase.Down.Right is TokenIndent and currentCase.Down.Right->{TokenIndent^}.Value == "void"
 			{
 				//todo if too much default cases
-				deafultNode = thisCaseBlock
+				defaultNode = thisCaseBlock
 				return void
 			}
 			checkRes := BoxExeObj^
@@ -99,11 +107,23 @@ BoxSwitch := class extend BoxExeObj
 			{
 				caseVal = caseVal.Right
 				caseCheckFuncName = StringSpan("in")
+				allConsts = false //TODO cases where "in ![1,2,3]" ,  " in 6..10 "
 			}
 
 			caseCheck := TryGetExeCall(caseVal)
 			if caseCheck == null
 				currentCase.EmitError("Could not get case object")
+			if caseCheck is BoxExeString and mainCall.GetType() is TypeEnum
+			{
+				asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
+				if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.val,null)
+				{
+					caseVal.EmitError("Enumeration does not contain this value")
+				}
+			}else {
+				allConsts = false
+			}
+			baseObj := caseCheck
 			
 			objs := CheckExeDownList
 			objs.Push(mainVar.CreateCall())
@@ -126,6 +146,7 @@ BoxSwitch := class extend BoxExeObj
 			newNode := new SwitchCase()
 			newNode.caseBody = thisCaseBlock
 			newNode.cmpCheck = checkRes
+			newNode.baseObj = baseObj
 
 			caseNodes.Push(newNode)
 
@@ -151,6 +172,16 @@ BoxSwitch := class extend BoxExeObj
 		{
 			checkCase()
 		}
+		if allConsts
+		{
+			if mainCall.GetType() is TypeEnum
+			{
+				defaultLabel = new BoxLabel()
+				this&->SetType(BoxSwitchOnEnum)
+			}else{
+				assert(false)
+			}
+		}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -164,14 +195,63 @@ BoxSwitch := class extend BoxExeObj
 		{
 			it.PrintIt(ctx,quitNode)
 		}
-		deafultNode?.PrintCode(ctx)
-		quitNode.PrintCode(ctx)
+		defaultNode?.PrintCode(ctx)
+		quitNode?.PrintCode(ctx)
 	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		for it : caseNodes
 			it.caseBody?.PrintDebugMeta(ctx)
-		deafultNode?.PrintDebugMeta(ctx)
+		defaultNode?.PrintDebugMeta(ctx)
 	}
 
+}
+BoxSwitchOnEnum := class extend BoxSwitch
+{
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		en := mainCall.GetType()->{TypeEnum^}.ToEnum
+		bsTyp := Type^
+		bsTyp = mainCall.GetType().Base
+		f := ctx.writeStream
+
+		mainCall.PrintPre(ctx)
+
+		f^ << "switch "
+		bsTyp.PrintType(ctx)
+		f^ << " "
+		mainCall.PrintUse(ctx)
+		f^ << " , label "
+		if defaultNode != null
+		{
+			defaultLabel.PrintLabel(ctx)
+		}else{
+			quitNode.PrintLabel(ctx)
+		}
+		f^ << " [ "
+		for it : this.caseNodes
+		{
+			indX := int
+			en.GetEnumIndex(it.baseObj->{BoxExeString^}.val,indX&)
+			bsTyp.PrintType(ctx)
+			f^ << " " << indX
+			f^ << ", label "
+			it.useNode.PrintLabel(ctx)
+			f^ << "\n"
+		}
+		f^ << "]\n"
+		for it : this.caseNodes
+		{
+			it.PrintItBase(ctx,quitNode)
+			quitNode.PrintGo(ctx)
+		}
+		if defaultNode != null
+		{
+			defaultLabel.PrintLabelCreate(ctx)
+			defaultNode.PrintCode(ctx)
+			quitNode.PrintGo(ctx)
+		}
+
+		quitNode?.PrintCode(ctx)
+	}
 }

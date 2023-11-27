@@ -14,7 +14,17 @@ En := enum
 
 main := !(char^[] args) -> int
 {
-	CalculatePi()
+	c := En
+	c = "Tros"
+
+	switch c
+	{
+	case "Des"
+		printf("test\n")
+	case void
+		printf("default\n")
+	}
+	//CalculatePi()
 }
 
 CalculatePi := !() -> void

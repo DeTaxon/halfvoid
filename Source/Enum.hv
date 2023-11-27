@@ -105,6 +105,20 @@ BoxEnum := class extend BoxUnit
 		})
 	}
 
+	GetEnumIndex := !(StringSpan val,int^ res) -> bool
+	{
+		AwaitReadyState()
+		for it,i : Values
+		{
+			if it.0.val == val
+			{
+				if res != null
+					res^ = i
+				return true
+			}
+		}
+		return false
+	}
 	GetEnum := !(StringSpan val) -> BoxExeObj^
 	{
 		AwaitReadyState()
