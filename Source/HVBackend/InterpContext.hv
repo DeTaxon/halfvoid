@@ -2,29 +2,53 @@
 MCInterpContext := class
 {
 
+	loadedDlls := AVLMap.{CLib^,Library^}
 	declarePtrs := AVLMap.{void^,void^}
 
 	DeclareToPtr := !(BoxFuncDeclare^ dclr) -> void^
 	{
 		return declarePtrs[dclr]?
 
-		fName := dclr.GetName()
-
-		switch(fName) //TODO load them from libraries
+		for space : CodeSpaces
 		{
-		case "puts"
-			result = puts
-		case "printf"
-			result = printf
-		case "malloc"
-			result = malloc
-		case "free"
-			result = free
-		case void
-			assert(false)
-		}
+			for module : space.Modules
+			{
+				if module is not CLib
+					continue
 
-		declarePtrs[dclr] = result
+				cLib := module->{CLib^}
+				if not cLib.IsMyFunc(dclr)
+					continue
+
+				if not loadedDlls.Contain(cLib)
+				{
+					useLib := Library^
+					for it : cLib.dlls
+					{
+						useLib = GetLibrary(it)
+						if useLib != null
+							break
+					}
+					if useLib == null
+					{
+						printf("could not load library for function %s\n",dclr.GetName())
+						exit(0)
+					}
+					loadedDlls[cLib] = useLib
+				}
+				fnc := loadedDlls[cLib].Get(dclr.GetName())
+				if fnc == null
+				{
+					printf("could not load function %s\n",dclr.GetName())
+					exit(0)
+				}
+				declarePtrs[dclr] = fnc
+				return fnc
+			}
+		}
+		assert(false)
+		printf("could not load function declare, HOW?\n")
+		exit(0)
 	}
 }
 

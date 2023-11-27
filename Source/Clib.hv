@@ -36,6 +36,16 @@ CLib := class extend ModuleInterface
 		fileMap = fil.GetMap()
 		libFile = fil
 	}
+
+	IsMyFunc := !(BoxFunc^ fnc) -> bool
+	{
+		for it : itFuncs
+		{
+			if it == fnc
+				return true
+		}
+		return false
+	}
 	Work := virtual !() -> void
 	{
 		textMap = StringSpan(fileMap.Get(),libFile.Size())
