@@ -176,6 +176,13 @@ TypeStandard := class extend Type
 		ctx.writeStream^ << "!" << MetaId << " = " << MetaInfo << "\n"
 	}
 }
+TypeInteger := class extend TypeStandard
+{
+	this := !(char^ Name,char^ goodName,char^ mName,  int siz, int Aln) -> void
+	{
+		super(Name,goodName,mName,siz,Aln)
+	}
+}
 
 TypeArr := class extend Type
 {
@@ -426,10 +433,7 @@ IsUInt := !(Type^ obj) -> bool
 }
 IsInt := !(Type^ obj) -> bool
 {
-	for i : 8
-		if TypeTable[i] == obj
-			return true
-	return false
+	return obj is TypeInteger
 }
 IsFloat := !(Type^ obj) -> bool
 {
@@ -441,16 +445,16 @@ IsFloat := !(Type^ obj) -> bool
 CreateStandardTypes := !() -> void
 {	
 	//u
-	TypeTable[0] = new TypeStandard("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)
-	TypeTable[1] = new TypeStandard("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)
-	TypeTable[2] = new TypeStandard("i32","u32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)
-	TypeTable[3] = new TypeStandard("i64","u64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
+	TypeTable[0] = new TypeInteger("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)
+	TypeTable[1] = new TypeInteger("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)
+	TypeTable[2] = new TypeInteger("i32","u32","!DIBasicType(name: \"uint\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)
+	TypeTable[3] = new TypeInteger("i64","u64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 
 	//s
-	TypeTable[4] = new TypeStandard("i8","s8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
-	TypeTable[5] = new TypeStandard("i16","s16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)
-	TypeTable[6] = new TypeStandard("i32","s32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
-	TypeTable[7] = new TypeStandard("i64","s64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
+	TypeTable[4] = new TypeInteger("i8","s8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
+	TypeTable[5] = new TypeInteger("i16","s16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)
+	TypeTable[6] = new TypeInteger("i32","s32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
+	TypeTable[7] = new TypeInteger("i64","s64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
 
 	TypeTable[8] = new TypeStandard("i1","bool","!DIBasicType(name: \"boolean\", size: 8, align: 1,encoding: DW_ATE_boolean)",1,1)
 

@@ -42,6 +42,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GetExeString(StringSpan("Class"))
 		if typ is TypeStandard
 			return GetExeString(StringSpan("Prime"))
+		if typ is TypeInteger
+			return GetExeString(StringSpan("Prime"))
 		if typ is in TypePoint
 			return GetExeString(StringSpan("Pointer"))
 		if typ is in TypeFunc
