@@ -36,12 +36,12 @@ BoxFile := class extend BoxUnit
 
 	loaded := THatch
 
-	objects := List.{BoxUnit^}
-
 	AllClasses := List.{BoxClass^}
 
 	fileTokens := Token^
 	tokensChanged := bool
+
+	ParsedTokens := AVLSet.{Token^}
 
 	this := !(vRepoFile^ inFile) -> void
 	{
@@ -55,10 +55,145 @@ BoxFile := class extend BoxUnit
 		result = fileName
 	}
 
-	Parse := !() -> void
+	LoadFiles := !() -> void
 	{
-		fileName = GetConstString(file.GetName().Str())
+		tokens := Token^
 
+		blb := TryGetCacheOfFile(file)
+		if blb != null
+		{
+			if blb.Size() == 0
+				return void
+			s := StreamReadBlob(blb.GetPointer(),blb.Size())
+			fileTokens = LoadCachedTokens(s&,this&)
+		}
+		if fileTokens == null
+		{
+			tokens = GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
+
+			if tokens == null
+				return void
+
+			tokensChanged = true
+
+			fileTokens = new Token
+
+			fileTokens.Down = tokens
+			itr := tokens
+			while itr != null
+			{
+				itr.Up = fileTokens
+				itr = itr.Right
+			}
+
+			SyntaxCompress(fileTokens,LexHVFileRoot)
+		}
+	}
+	ParseClasses := !() -> void
+	{
+		if fileTokens == null
+			return void
+
+		LoadSpace()
+
+		iter := fileTokens.Down
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{}else{
+				iter = iter.Right
+				continue
+			}
+			stVal := iter.Down.Right
+
+
+			cls := TryParseClass(stVal.Right)
+
+			if cls == null
+			{
+				iter = iter.Right
+				continue
+			}
+			
+
+			name := StringSpan
+			if stVal.Left is TokenString
+			{
+				name = stVal.Left->{TokenString^}.Value
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value
+			}else{
+				assert(false)
+			}
+
+			if cls is in BoxClass
+			{
+				cls2 := cls->{BoxClass^}
+				cls2.SetName(name)
+				clsVar := new TypeVar(name,cls2.ItType)
+				TypesDatabase[name] = clsVar
+			} else if cls is in BoxClassTemplate
+			{
+				cls3 := cls->{BoxClassTemplate^}
+				cls3.SetName(name)
+				templateVar := new TemplateTypeVar(name,cls3)
+				TypesDatabase[name] = templateVar
+			}else{
+				assert(false)
+			}
+
+			ParsedTokens.Insert(iter)
+
+			iter = iter.Right
+		}
+	}
+	ParseAppendClasses := !() -> void
+	{
+		if fileTokens == null
+			return void
+
+		LoadSpace()
+		iter := fileTokens.Down
+		while iter != null
+		{
+			if iter.Down?.GetValue() == "AppendClass"
+			{} else{
+				iter = iter.Right
+				continue
+			}
+			CheckAppendHolder(iter)
+			ParsedTokens.Insert(iter)
+			iter = iter.Right
+		}
+	}
+	ParseTypedefs := !() -> void
+	{
+		if fileTokens == null
+			return void
+
+		LoadSpace()
+		iter := fileTokens.Down
+		while iter != null
+		{
+			if iter.Down?.Right?.Right?.GetValue() == "type"
+			{
+				res := TryParseTypedefTemplate(iter)
+
+				if res != null
+				{
+					assert(res is TypedefTemplateVar)
+					asTemplate := res->{TypedefTemplateVar^}
+					TypesDatabase[asTemplate.Name] = asTemplate
+					ParsedTokens.Insert(iter)
+				}
+			}
+			iter = iter.Right
+		}
+	}
+
+	LoadSpace := !() -> void
+	{
 		CurrentFile = this&
 		foundSpace := false
 		for spc : CodeSpaces
@@ -77,38 +212,17 @@ BoxFile := class extend BoxUnit
 		}
 		assert(foundSpace)
 
+	}
+	Parse := !() -> void
+	{
+		fileName = GetConstString(file.GetName().Str())
+
+		LoadSpace()
+
 		defer loaded.Emit()
 
-		tokens := Token^
-
-		blb := TryGetCacheOfFile(file)
-		if blb != null
-		{
-			if blb.Size() == 0
-				return void
-			s := StreamReadBlob(blb.GetPointer(),blb.Size())
-			fileTokens = LoadCachedTokens(s&,this&)
-		}
 		if fileTokens == null
-		{
-			tokens = GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
-
-			if tokens == null
-				return void
-			tokensChanged = true
-
-			fileTokens = new Token
-
-			fileTokens.Down = tokens
-			itr := tokens
-			while itr != null
-			{
-				itr.Up = fileTokens
-				itr = itr.Right
-			}
-
-			SyntaxCompress(fileTokens,LexHVFileRoot)
-		}
+			return void
 
 		CurrentScope = this&
 		iter := fileTokens.Down
@@ -116,6 +230,12 @@ BoxFile := class extend BoxUnit
 		while iter != null
 		{
 			vr := TryParseVarInFile(iter)
+
+			if ParsedTokens.Contain(iter)
+			{
+				iter = iter.Right
+				continue
+			}
 
 			if vr == null
 			{
@@ -151,20 +271,14 @@ BoxFile := class extend BoxUnit
 				}else {
 				}
 
-				objects.Push(vr)
 				vr.Work()
 			}else{
-				if iter.Down?.GetValue() == "AppendClass"
+				cmdRes := TryGetCommand(iter)
+				if cmdRes == null
 				{
-					CheckAppendHolder(iter)
-				}else{
-					cmdRes := TryGetCommand(iter)
-					if cmdRes == null
-					{
-						printf("some error %s\n",iter.GetValue())
-						iter.Print(0)
-						iter.EmitError("Unknown object")
-					}
+					printf("some error %s\n",iter.GetValue())
+					iter.Print(0)
+					iter.EmitError("Unknown object")
 				}
 			}
 			iter = iter.Right
@@ -203,12 +317,6 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 		return null
 	if iter.Right?.GetValue() != ":="
 		return null
-
-	if iter.Right?.Right.GetValue() == "type"
-	{
-		return TryParseTypedefTemplate(obj)
-	}
-
 
 	name := StringSpan
 	isSuffix := bool
@@ -252,21 +360,6 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 			return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
 		}
 		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
-	}
-
-	cls := TryParseClass(varToken)
-	if cls != null
-	{
-		if cls is in BoxClass
-		{
-			cls2 := cls->{BoxClass^}
-			cls2.SetName(name)
-			return new TypeVar(name,cls2.ItType)
-		}
-		assert( cls is in BoxClassTemplate)
-		cls3 := cls->{BoxClassTemplate^}
-		cls3.SetName(name)
-		return new TemplateTypeVar(name,cls3)
 	}
 
 

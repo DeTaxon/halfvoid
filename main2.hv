@@ -3,28 +3,10 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-En := enum
-{
-	"Uno",
-	"Des",
-	"Tros"
-}
-
-
 
 main := !(char^[] args) -> int
 {
-	c := En
-	c = "Tros"
-
-	switch c
-	{
-	case "Des"
-		printf("test\n")
-	case void
-		printf("default\n")
-	}
-	//CalculatePi()
+	CalculatePi()
 }
 
 CalculatePi := !() -> void

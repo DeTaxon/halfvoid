@@ -167,6 +167,11 @@ main := !(char^[] args) -> int
 	GCObjectInit()
 	ArrayViewInit()
 
+	CodeFiles[^].LoadFiles()
+	CodeFiles[^].ParseClasses()
+	CodeFiles[^].ParseTypedefs()
+	CodeFiles[^].ParseAppendClasses()
+
 	for spc : CodeSpaces
 	{
 		spc.Modules[^].Work()
