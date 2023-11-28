@@ -165,10 +165,12 @@ main := !(char^[] args) -> int
 
 	TupleInitBuiltin()
 	GCObjectInit()
-	ArrayViewInit()
 
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseClasses()
+
+	ArrayViewInit()
+
 	CodeFiles[^].ParseTypedefs()
 	CodeFiles[^].ParseAppendClasses()
 

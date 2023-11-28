@@ -1,4 +1,4 @@
-AllAppends := List.{Token^}
+AllAppends := List.{Token^} //TODO rethink this object
 
 RecheckAppends := !() -> void
 {
