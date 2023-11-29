@@ -173,6 +173,7 @@ main := !(char^[] args) -> int
 
 	CodeFiles[^].ParseTypedefs()
 	CodeFiles[^].ParseAppendClasses()
+	CodeFiles[^].ParseFunctions()
 
 	for spc : CodeSpaces
 	{

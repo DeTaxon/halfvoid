@@ -191,6 +191,60 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
+	ParseFunctions := !() -> void
+	{
+		if fileTokens == null
+			return void
+
+		LoadSpace()
+		iter := fileTokens.Down
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{}else{
+				iter = iter.Right
+				continue
+			}
+			stVal := iter.Down.Right
+
+			if stVal.Right == null
+			{
+				iter = iter.Right
+				continue
+			}
+
+			c := PFunctionParser(stVal.Right)
+			if not c.IsFound()
+			{
+				iter = iter.Right
+				continue
+			}
+
+			isSuffix := false
+			name := StringSpan
+			if stVal.Left is TokenString
+			{
+				name = stVal.Left->{TokenString^}.Value
+				isSuffix = true
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value
+			}else{
+				assert(false)
+			}
+
+			fnc := c.CreateObject()
+			assert(fnc != null)
+			assert(fnc is in BoxFuncTemplate)
+			res := new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
+
+			ParsedTokens.Insert(iter)
+			res.MemObj.SetName(res.Name)
+			CurrentCodeSpace.AddTemplate(res.Name,fnc->{BoxFuncTemplate^})
+
+			iter = iter.Right
+		}
+	}
 
 	LoadSpace := !() -> void
 	{
@@ -229,13 +283,14 @@ BoxFile := class extend BoxUnit
 
 		while iter != null
 		{
-			vr := TryParseVarInFile(iter)
-
 			if ParsedTokens.Contain(iter)
 			{
 				iter = iter.Right
 				continue
 			}
+
+			vr := TryParseVarInFile(iter)
+
 
 			if vr == null
 			{
@@ -350,18 +405,6 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 	{
 		return new TaskLocalVarDelayed(name,varToken.Right)
 	}
-	
-	fnc := TryParseFunction(varToken)
-
-	if fnc != null
-	{
-		if fnc is in BoxFuncTemplate
-		{
-			return new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
-		}
-		return new FuncVar(name,isSuffix,fnc->{BoxFunc^})
-	}
-
 
 	return null
 }

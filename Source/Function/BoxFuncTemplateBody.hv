@@ -16,6 +16,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	Constants := List.{FuncTemplateConstant}
 
+	sState := StackState
+
 	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2,Token^ constToken, Token^ resToken,Token^ bodyIn) -> void
 	{
 		assert(brackets2 == null)//not implemented
@@ -28,15 +30,12 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if resTyp == null
 			Attrs.IsAutoResult = true
 
-		ths := this&
-		SubWork(() ==> [ths] {
-			ths.ParseHeader()
-			ths.headerCheckHatch.Emit()
-		})
+		sState.Save()
 		ParentScope = CurrentScope
 	}
 	GetDefaultValuesCount := virtual !() -> int 
 	{
+		StartParseHeader()
 		return hData.DefaultValues.Size() 
 	}
 
@@ -47,16 +46,31 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		return ParentScope
 	}
 
+	startedParse := bool
+	StartParseHeader := !() -> void
+	{
+		if startedParse
+		{
+			headerCheckHatch.Await()
+		}else{
+			startedParse = true
+			TSpawnTask(() ==> {
+				ParseHeader()
+				headerCheckHatch.Emit()
+			})
+			headerCheckHatch.Await()
+		}
+		
+	}
+
 	SetName := virtual !(StringSpan name) -> void
 	{
 		Name = name
-		if CurrentCodeSpace != null
-		{
-			CurrentCodeSpace.AddTemplate(Name,this&)
-		}
 	}
 	ParseHeader := virtual !() -> void
 	{
+		sState.Load()
+
 		if Attrs.IsAutoResult
 			hData.IsAutoResult = true
 		
@@ -95,7 +109,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
 	{
-		headerCheckHatch.Await()
+		StartParseHeader()
 
 		minArgs := hData.Types.Size()
 		maxArgs := hData.Types.Size()
@@ -166,7 +180,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
-		headerCheckHatch.Await()
+		StartParseHeader()
 
 		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
@@ -269,7 +283,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	IsOneFunc := virtual !() -> bool
 	{
-		headerCheckHatch.Await()
+		StartParseHeader()
 
 		if not hData.IsOneFunc()
 			return false
@@ -279,7 +293,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	GetOneFunc := virtual !() -> BoxFunc^
 	{
-		headerCheckHatch.Await()
+		StartParseHeader()
 			
 		resFuncTyp := hData.CreateFuncType()
 		cnsts := List.{BoxExeConstObj^}
