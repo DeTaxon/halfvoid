@@ -54,11 +54,31 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			headerCheckHatch.Await()
 		}else{
 			startedParse = true
-			TSpawnTask(() ==> {
+
+			forwardCall := false
+
+			stk := CurrentTask.GetStackUsage()
+			if stk.Free() > 1000000 and not DisableScary
+			{
+				forwardCall = true
+			}
+			
+			if forwardCall
+			{
+				oldStack := StackState
+				oldStack.Save()
+				defer oldStack.Load()
+
 				ParseHeader()
 				headerCheckHatch.Emit()
-			})
-			headerCheckHatch.Await()
+			}else{
+				TSpawnTask(() ==> {
+					ParseHeader()
+					headerCheckHatch.Emit()
+				})
+				headerCheckHatch.Await()
+			}
+
 		}
 		
 	}

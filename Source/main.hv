@@ -85,7 +85,7 @@ main := !(char^[] args) -> int
 				RunMode = true
 			case "-tracy"
 				UseTracy = true
-			case "-scary"
+			case "-no-scary"
 				DisableScary = true
 			case "-emulate-tls"
 				EmulateTLS = true

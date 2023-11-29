@@ -26,6 +26,10 @@ ifeq ($(helgrind),yes)
 	hg := valgrind --tool=helgrind --log-file=grind.txt
 endif
 
+ifeq ($(scary),yes)
+	NoScary := -no-scary
+endif
+
 ifeq ($(tm),yes)
 	TimeF := $(TimeFlags)
 endif
@@ -74,7 +78,7 @@ halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0 StableLib/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(NoScary)  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
 	clang -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
