@@ -374,14 +374,12 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 		return null
 
 	name := StringSpan
-	isSuffix := bool
 	if iter is TokenIndent
 	{
 		name = iter->{TokenIndent^}.Value
 	}else if iter is TokenString
 	{
 		name = iter->{TokenString^}.Value
-		isSuffix = true
 	}
 
 	varToken := iter.Right.Right
