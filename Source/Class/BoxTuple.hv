@@ -58,15 +58,15 @@ BoxClassTuple := class extend BoxClassPoison
 
 		SubWork(() ==> {
 			//InternalsHatch.Await()
-			assert(GDefautlSetTemplate != null)
+			assert(GDefaultSetTemplate != null)
 			assert(TemplateInternalTupleConstructor != null)
-			assert(GDefautlCompareTemplate != null)
+			assert(GDefaultCompareTemplate != null)
 
 			buildCtx := ClassBuildContext
 			buildCtx.MemParents.Push(Parents[^])
 
 			cnsts := List.{BoxExeConstObj^}
-			setFunc := GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
 
 			typs := Type^[100]
@@ -88,7 +88,7 @@ BoxClassTuple := class extend BoxClassPoison
 			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
 
 			
-			cmpFunc := GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+			cmpFunc := GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
 
 			ScopePutConstants()

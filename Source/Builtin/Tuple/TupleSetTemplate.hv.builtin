@@ -1,7 +1,0 @@
-!(@T a, T b) -> void
-{
-	for x : a->AllFields, y : b->AllFields
-	{
-		x = y
-	}
-}

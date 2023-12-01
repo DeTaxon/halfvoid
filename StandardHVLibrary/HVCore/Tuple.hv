@@ -1,0 +1,32 @@
+
+internalTuple_Compare := !(@T a, T b) -> int
+{
+	for x : a->AllFields, y : b->AllFields
+	{
+		result = x <=> y
+		if result != 0
+			return void
+	}
+	return 0
+}
+internalTuple_Constructor := !(@Tpl this,args...) -> void
+{
+	for it,i : args
+	{
+		this.i = it
+	}
+}
+internalTuple_Create :=  !(args...) . {@ResType} -> ResType
+{
+	for it,i : args
+	{
+		result.i = it
+	}
+}
+internalTuple_Set := !(@T a, T b) -> void
+{
+	for x : a->AllFields, y : b->AllFields
+	{
+		x = y
+	}
+}

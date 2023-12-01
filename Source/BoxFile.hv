@@ -249,6 +249,7 @@ BoxFile := class extend BoxUnit
 	LoadSpace := !() -> void
 	{
 		CurrentFile = this&
+		CurrentScope = this&
 		foundSpace := false
 		for spc : CodeSpaces
 		{

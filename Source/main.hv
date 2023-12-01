@@ -163,8 +163,6 @@ main := !(char^[] args) -> int
 	PreInitTaskLocal()
 	cuId = GetNewId()
 
-	TupleInitBuiltin()
-
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseClasses()
 
@@ -175,6 +173,7 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseFunctions()
 
 	GCObjectInit()
+	TupleInitBuiltin()
 
 	for spc : CodeSpaces
 	{

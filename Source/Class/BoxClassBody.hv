@@ -384,17 +384,17 @@ BoxClassBody := class extend BoxClassPoison
 						}else{
 							if itm.GetValue() == "default"
 							{
-								assert(GDefautlSetTemplate != null)
-								assert(GDefautlCompareTemplate != null)
+								assert(GDefaultSetTemplate != null)
+								assert(GDefaultCompareTemplate != null)
 
 								setFunc := BoxFunc^
 								cnsts := List.{BoxExeConstObj^}
 								switch name
 								{
 									case "="
-										setFunc = GDefautlSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+										setFunc = GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
 									case "<=>"
-										setFunc = GDefautlCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+										setFunc = GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
 									case void
 										itm.EmitError("unknown default operator")
 								}

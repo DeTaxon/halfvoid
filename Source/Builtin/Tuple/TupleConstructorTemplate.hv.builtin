@@ -1,7 +1,0 @@
-!(@Tpl this,args...) -> void
-{
-	for it,i : args
-	{
-		this.i = it
-	}
-}
