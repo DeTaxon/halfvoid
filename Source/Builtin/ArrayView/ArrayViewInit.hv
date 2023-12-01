@@ -3,12 +3,5 @@ ArrayViewTemplate := BoxClassTemplate^
 
 ArrayViewInit := !() -> void
 {
-	//TODO asserts to error messages
-	assert(TypesDatabase.Contain(StringSpan("TArrayView")))
-
-	val := TypesDatabase[StringSpan("TArrayView")]
-	assert(val != null)
-	assert(val is TemplateTypeVar)
-
-	ArrayViewTemplate = val->{TemplateTypeVar^}.Value
+	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
 }

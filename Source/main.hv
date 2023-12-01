@@ -164,7 +164,6 @@ main := !(char^[] args) -> int
 	cuId = GetNewId()
 
 	TupleInitBuiltin()
-	GCObjectInit()
 
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseClasses()
@@ -174,6 +173,8 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseTypedefs()
 	CodeFiles[^].ParseAppendClasses()
 	CodeFiles[^].ParseFunctions()
+
+	GCObjectInit()
 
 	for spc : CodeSpaces
 	{
