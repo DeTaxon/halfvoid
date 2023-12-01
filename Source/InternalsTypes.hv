@@ -1,0 +1,49 @@
+
+ArrayViewTemplate := BoxClassTemplate^
+GCType := Type^
+
+InitInternalsTypes := !() -> void
+{
+	GCType = intGetClass2("TGCObject").ItType
+	assert(GCType != null)
+
+	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
+}
+
+intGetClass := !(char^ name) -> BoxClass^
+{
+	res := GetTypeByName(StringSpan(name))
+	assert(res != null)
+	assert(res is in TypeClass)
+	return res->{TypeClass^}.ToClass
+}
+intGetClass2 := !(char^ name) -> BoxClass^
+{
+	if not TypesDatabase.Contain(StringSpan(name))
+		return null
+
+	val := TypesDatabase[StringSpan(name)]
+	if val == null and val is not TypeVar
+		return null
+
+	return val->{TypeVar^}.Value->{TypeClass^}.ToClass
+}
+
+intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
+{
+	res := GetTypeObjByName(StringSpan(name))
+	assert(res != null)
+	assert(res is in TemplateTypeVar)
+	return res->{TemplateTypeVar^}.Value
+}
+intGetClassTemplate2 := !(char^ name) -> BoxClassTemplate^
+{
+	if not TypesDatabase.Contain(StringSpan(name))
+		return null
+
+	val := TypesDatabase[StringSpan(name)]
+	if val == null and val is not TemplateTypeVar
+		return null
+
+	return val->{TemplateTypeVar^}.Value
+}

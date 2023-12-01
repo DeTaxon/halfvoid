@@ -1,13 +1,8 @@
 
-GCType := Type^
 GFuncGCSetNull := BoxFunc^
 
 GCObjectInit := !() -> void
 {
-	//TODO assert to errors
-
-	GCType = intGetClass2("TGCObject").ItType
-	assert(GCType != null)
 	GFuncGCSetNull = intGetFunc("internalGC_SetNull")
 	assert(GFuncGCSetNull != null)
 

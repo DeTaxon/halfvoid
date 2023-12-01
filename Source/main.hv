@@ -165,15 +165,13 @@ main := !(char^[] args) -> int
 
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseClasses()
-
-	ArrayViewInit()
-
 	CodeFiles[^].ParseTypedefs()
 	CodeFiles[^].ParseAppendClasses()
 	CodeFiles[^].ParseFunctions()
 
-	GCObjectInit()
+	InitInternalsTypes()
 	TupleInitBuiltin()
+	GCObjectInit()
 
 	for spc : CodeSpaces
 	{

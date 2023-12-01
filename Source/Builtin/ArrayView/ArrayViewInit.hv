@@ -1,7 +1,0 @@
-
-ArrayViewTemplate := BoxClassTemplate^
-
-ArrayViewInit := !() -> void
-{
-	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
-}
