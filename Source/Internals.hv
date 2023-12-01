@@ -13,9 +13,6 @@ TemplateInternalIsInSameType := BoxFuncTemplate^
 
 GInternalSetType := BoxFuncTemplate^
 
-GCILambda := BoxClass^
-GCLambda := BoxClassTemplate^
-
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
 GZeroMemTemplate := BoxFuncTemplate^
 
@@ -24,7 +21,60 @@ GVectorConstructor2 := BoxFuncTemplate^
 GVectorConstructor3 := BoxFuncTemplate^
 GVectorConstructor4 := BoxFuncTemplate^
 
+GFuncGCSetNull := BoxFunc^
+
+TemplateInternalCreateTuple := BoxFuncTemplate^
+GDefaultSetTemplate := BoxFuncTemplate^
+GDefaultCompareTemplate := BoxFuncTemplate^
+TemplateInternalTupleConstructor := BoxFuncTemplate^
+
 InternalsHatch := THatch
+
+InitInternals := !() -> void
+{
+	GetAnyFile() //TODO move to somewhere
+	//TracyZone("Internal functions")
+
+	GFuncGCSetNull = intGetFunc("internalGC_SetNull")
+	assert(GFuncGCSetNull != null)
+
+	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
+	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
+	TemplateInternalNewOne = intGetTemplate("internalHVNew")
+	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
+	FunctionInternalDelete = intGetFunc("internalHVDelete")
+
+	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
+	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
+
+	//TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
+
+	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
+
+	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
+
+	GInternalSetType = intGetTemplate("internalHVSetType")
+
+	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
+
+	GZeroMemTemplate = intGetTemplate("ZeroMem")
+
+	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
+	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
+	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
+	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
+
+	TemplateInternalCreateTuple = intGetTemplate("internalTuple_Create")
+	assert(TemplateInternalCreateTuple != null)
+	GDefaultSetTemplate = intGetTemplate("internalTuple_Set")
+	assert(GDefaultSetTemplate != null)
+	GDefaultCompareTemplate = intGetTemplate("internalTuple_Compare")
+	assert(GDefaultCompareTemplate != null)
+	TemplateInternalTupleConstructor = intGetTemplate("internalTuple_Constructor")
+	assert(TemplateInternalTupleConstructor != null)
+
+	InternalsHatch.Emit()
+}
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
@@ -49,39 +99,3 @@ intGetFunc := !(char^ name) -> BoxFunc^
 	return res.GetOneFunc()
 }
 
-InitInternals := !() -> void
-{
-	GetAnyFile() //TODO move to somewhere
-	//TracyZone("Internal functions")
-
-	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
-	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
-	TemplateInternalNewOne = intGetTemplate("internalHVNew")
-	TemplateInternalNewOneConstructed = intGetTemplate("internalHVNewConstructed")
-	FunctionInternalDelete = intGetFunc("internalHVDelete")
-
-	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
-	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
-
-	//TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
-
-	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
-
-	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
-
-	GInternalSetType = intGetTemplate("internalHVSetType")
-
-	GCILambda = intGetClass("TILambda")
-	GCLambda = intGetClassTemplate("TLambda")
-
-	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
-
-	GZeroMemTemplate = intGetTemplate("ZeroMem")
-
-	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
-	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
-	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
-	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
-
-	InternalsHatch.Emit()
-}

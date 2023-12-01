@@ -2,12 +2,18 @@
 ArrayViewTemplate := BoxClassTemplate^
 GCType := Type^
 
+GCILambda := BoxClass^
+GCLambda := BoxClassTemplate^
+
 InitInternalsTypes := !() -> void
 {
 	GCType = intGetClass2("TGCObject").ItType
 	assert(GCType != null)
 
 	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
+
+	GCILambda = intGetClass2("TILambda")
+	GCLambda = intGetClassTemplate2("TLambda")
 }
 
 intGetClass := !(char^ name) -> BoxClass^

@@ -170,8 +170,6 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseFunctions()
 
 	InitInternalsTypes()
-	TupleInitBuiltin()
-	GCObjectInit()
 
 	for spc : CodeSpaces
 	{
