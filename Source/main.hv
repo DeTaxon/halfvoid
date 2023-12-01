@@ -39,10 +39,13 @@ JITMode := bool
 RunMode := bool
 RunModeFuncName := char^
 
+//TestFile := TFile^
+
 OutputFile := char^
 main := !(char^[] args) -> int
 {
-	
+	//TestFile = new TFile("tst.txt","w")
+
 	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
 	for i : 9973
 	{
@@ -170,6 +173,7 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseFunctions()
 
 	InitInternalsTypes()
+	InitInternals()
 
 	for spc : CodeSpaces
 	{
@@ -183,7 +187,6 @@ main := !(char^[] args) -> int
 		fil.Parse()
 	}
 
-	InitInternals()
 	InitTaskLocal()
 	InitLambda()
 	RecheckAppends()

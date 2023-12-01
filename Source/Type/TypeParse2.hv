@@ -151,7 +151,6 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 		{
 			args := List.{BoxExeConstObj^}
 			args.Push(GetConstType(fType.GetPoint()))
-			InternalsHatch.Await()
 			rl := GCLambda.GetClass(args)
 			assert(rl != null)
 			args.Destroy()

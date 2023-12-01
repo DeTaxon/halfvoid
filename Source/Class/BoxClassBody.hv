@@ -332,6 +332,7 @@ BoxClassBody := class extend BoxClassPoison
 							assert(probFunc != null and probFunc is BoxFuncTemplateBody)
 							asTmplt := probFunc->{BoxFuncTemplateBody^}
 							assert(asTmplt.IsOneFunc())
+							asTmplt.IsOneFunc()
 							asTmplt.AwaitHeaderParse()
 							asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
 

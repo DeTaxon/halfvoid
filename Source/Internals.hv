@@ -28,8 +28,6 @@ GDefaultSetTemplate := BoxFuncTemplate^
 GDefaultCompareTemplate := BoxFuncTemplate^
 TemplateInternalTupleConstructor := BoxFuncTemplate^
 
-InternalsHatch := THatch
-
 InitInternals := !() -> void
 {
 	GetAnyFile() //TODO move to somewhere
@@ -37,6 +35,15 @@ InitInternals := !() -> void
 
 	GFuncGCSetNull = intGetFunc("internalGC_SetNull")
 	assert(GFuncGCSetNull != null)
+
+	TemplateInternalCreateTuple = intGetTemplate("internalTuple_Create")
+	assert(TemplateInternalCreateTuple != null)
+	GDefaultSetTemplate = intGetTemplate("internalTuple_Set")
+	assert(GDefaultSetTemplate != null)
+	GDefaultCompareTemplate = intGetTemplate("internalTuple_Compare")
+	assert(GDefaultCompareTemplate != null)
+	TemplateInternalTupleConstructor = intGetTemplate("internalTuple_Constructor")
+	assert(TemplateInternalTupleConstructor != null)
 
 	TemplateInternalInitClass = intGetTemplate("internalHVInitClass")
 	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
@@ -64,16 +71,6 @@ InitInternals := !() -> void
 	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
 	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
 
-	TemplateInternalCreateTuple = intGetTemplate("internalTuple_Create")
-	assert(TemplateInternalCreateTuple != null)
-	GDefaultSetTemplate = intGetTemplate("internalTuple_Set")
-	assert(GDefaultSetTemplate != null)
-	GDefaultCompareTemplate = intGetTemplate("internalTuple_Compare")
-	assert(GDefaultCompareTemplate != null)
-	TemplateInternalTupleConstructor = intGetTemplate("internalTuple_Constructor")
-	assert(TemplateInternalTupleConstructor != null)
-
-	InternalsHatch.Emit()
 }
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
@@ -95,6 +92,7 @@ intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 intGetFunc := !(char^ name) -> BoxFunc^
 {
 	res := intGetTemplate(name)
+	res.IsOneFunc()
 	assert(res.IsOneFunc())
 	return res.GetOneFunc()
 }

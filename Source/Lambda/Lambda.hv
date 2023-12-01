@@ -188,7 +188,6 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
-		InternalsHatch.Await()
 		lambdaType := GCLambda.GetClass(cnsts).ItType
 
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))

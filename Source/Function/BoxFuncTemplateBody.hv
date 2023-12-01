@@ -298,6 +298,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	AwaitHeaderParse := !() -> void
 	{
+		StartParseHeader()
 		headerCheckHatch.Await()
 	}
 

@@ -202,7 +202,7 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
-		InternalsHatch.Await()
+		assert(GVectorConstructor4 != null)
 		if tp.Params.Size() == 5
 			return GVectorConstructor4.CreateFunc(tp,consts)
 		if tp.Params.Size() == 4
