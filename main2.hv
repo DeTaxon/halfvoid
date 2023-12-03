@@ -30,6 +30,8 @@ CheckSwitch := !(TGCObject^ k) -> void
 		printf("it is B1\n")
 	case ClassB2
 		printf("it is B2\n")
+	case in TGCObject
+		printf("some kind of TGCObject\n")
 	case void
 		printf("idk type\n")
 	}

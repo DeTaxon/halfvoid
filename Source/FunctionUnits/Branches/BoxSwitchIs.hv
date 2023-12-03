@@ -22,7 +22,15 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	{
 		if iter.Down == null or iter.Down.GetValue() != "case"
 			iter.EmitError("Unknown object")
-		caseType := ParseType(iter.Down.Right)
+
+		isIn := false
+		typeToCheck := iter.Down.Right
+		if typeToCheck.GetValue() == "in"
+		{
+			isIn = true
+			typeToCheck = typeToCheck.Right
+		}
+		caseType := ParseType(typeToCheck)
 
 		if caseType == null
 			iter.Down.Right.EmitError("Unknown type")
@@ -33,7 +41,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
 				iter.Down.Right.EmitError("Type does not have virtual table")
-			tpCheck = CreateTypeIsCheck(mainVar.CreateCall(),caseType,false,false)
+			tpCheck = CreateTypeIsCheck(mainVar.CreateCall(),caseType,isIn,false)
 
 			assert(tpCheck != null)
 		}
