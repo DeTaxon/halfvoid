@@ -642,9 +642,17 @@ RuleSwitch := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
+	size := 3
+	if It.GetValue() == "is"
+	{
+		size += 1
+		It = It.Right
+		if It == null return 0
+	}
+
 	if It.GetValue() != "{}" return 0
 
-	return 3
+	return size
 }
 
 RuleCase := !(void^ itr) -> int

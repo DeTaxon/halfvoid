@@ -282,8 +282,9 @@ UNext := !(Token^ where,Token^ nObj, int count) -> Token^
 	UNext(where,nObj,Last)
 	return nObj
 }
-UNext := !(Token^ where,Token^ nObj, Token^ Last) -> void
+UNext := !(Token^ where,Token^ nObj, Token^ Last) -> Token^
 {
+	result = nObj
 	End := Last.Right
 
 	if End != null {

@@ -1,0 +1,68 @@
+ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
+{
+	mainCall := TryGetExeCall(itm.Down.Right)
+
+	if mainCall == null
+		itm.Down.Right.EmitError("Unknown object to switch on")
+
+	mainVar := new FuncResultParam(mainCall)
+
+	skb := itm.Down.Right.Right.Right
+
+	assert(skb.GetValue() == "{}")
+
+	SyntaxCompress(skb,PriorityData)
+
+	cases := HybridQueue.{SwitchCase^,13}
+
+	iter := skb.Down
+	prevNode := Token^
+	while iter != null
+	{
+		if iter.Down == null or iter.Down.GetValue() != "case"
+			iter.EmitError("Unknown object")
+		caseType := ParseType(iter.Down.Right)
+
+		if caseType == null
+			iter.Down.Right.EmitError("Unknown type")
+
+		assert(caseType is in TypeClass)
+
+		if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
+			iter.Down.Right.EmitError("Type does not have virtual table")
+
+		caseIter := iter
+		iter = iter.Right
+		startIter := iter
+		endIter := Token^
+		while iter != null
+		{
+			if iter.Down?.GetValue() == "case"
+				break
+			endIter = iter
+			iter = iter.Right
+		}
+
+		tpCheck := CreateTypeIsCheck(mainVar.CreateCall(),caseType,false,false)
+		assert(tpCheck != null)
+
+		bdyIter := startIter
+		if startIter != endIter or startIter.GetValue() != "{}"
+		{
+			bdyIter = UNext(startIter,new TokenSymbol(StringSpan("{}"),1) ,endIter)
+		}
+
+		newCase := new SwitchCase()
+
+		newCase.cmpCheck = tpCheck
+		newCase.caseBody = new BoxBlock(bdyIter)
+		cases.Push(newCase)
+
+	}
+	baseSwitch := new BoxSwitch
+	baseSwitch.quitNode = new BoxLabel()
+	baseSwitch.mainCall = mainCall
+	baseSwitch.mainVar = mainVar
+	baseSwitch.caseNodes.Push(cases[^])
+	return baseSwitch
+}

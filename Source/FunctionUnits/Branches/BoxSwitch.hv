@@ -1,8 +1,11 @@
 TryParseSwitch := !(Token^ itm) -> BoxExeObj^
 {
+	if itm.Down.Right?.Right?.GetValue() == "is"
+	{
+		return ParseBoxSwitchIs(itm)
+	}
 	return new BoxSwitch(itm)
 }
-
 
 SwitchCase := class
 {
@@ -78,6 +81,8 @@ BoxSwitch := class extend BoxExeObj
 		startNodeCount := int
 		allConsts := true
 
+		quitNode = new BoxLabel()
+
 		checkCase := () ==> {
 			if currentCase == null
 				return void
@@ -150,7 +155,6 @@ BoxSwitch := class extend BoxExeObj
 
 			caseNodes.Push(newNode)
 
-			quitNode = new BoxLabel()
 		}
 
 		while itr != null

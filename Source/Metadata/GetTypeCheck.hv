@@ -28,40 +28,23 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 	if not IsVirtualClass(checkObj.GetType().Base)
 		obj.Down.EmitError("Object on left of is must have type of a pointer to virtual class")
 
-	objs3 := CheckExeDownList
-	objs3.Push(checkObj)
-	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(GetConstType(expType))
-	fnc := BoxFunc^ 
-	if makeInCheck
-	{
-		fnc = TemplateInternalIsInSameType.GetFunc(objs3,cnsts)
-	}else{
-		//fnc = TemplateInternalIsSameType.GetFunc(objs3,cnsts)
-		rCall := BoxExeObj^
-		rCall = new IsSameTypeChecker(checkObj,expType->{TypeClass^})
-		if makeNegative
-		{
-			objs8 := CheckExeDownList
-			objs8.Push(rCall)
-			cnsts := List.{BoxExeConstObj^}
-			rCall = CreateFuncCall(StringSpan(". not"),objs8,cnsts)
-		}
-		return rCall
-	}
-	assert(fnc != null)
-
-	resCall :=  fnc.CreateCall(objs3)
-	if makeNegative
-	{
-		objs8 := CheckExeDownList
-		objs8.Push(resCall)
-		cnsts := List.{BoxExeConstObj^}
-		resCall = CreateFuncCall(StringSpan(". not"),objs8,cnsts)
-	}
-	return resCall
+	return CreateTypeIsCheck(checkObj,expType,makeInCheck,makeNegative)
 }
 
+CreateTypeIsCheck := !(BoxExeObj^ checkObj, Type^ expType,bool isIn, bool makeNegative) -> BoxExeObj^
+{
+	rCall := BoxExeObj^
+	if isIn
+	{
+		fnc := TemplateInternalIsInSameType.GetFunc(![checkObj],![GetConstType(expType)])
+		rCall = fnc.CreateCall(![checkObj])
+	}else{
+		rCall = new IsSameTypeChecker(checkObj,expType->{TypeClass^})
+	}
+	if makeNegative
+		rCall = CreateFuncCall(StringSpan(". not"),![rCall],![])
+	return rCall
+}
 
 IsSameTypeChecker := class extend BoxExeObj
 {

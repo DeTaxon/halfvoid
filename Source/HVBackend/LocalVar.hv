@@ -5,9 +5,6 @@ AppendClass LocalVar
 	{
 		createVar[^].WriteMC(ctx)
 		extraWork[^].WriteMC(ctx)
-		//TODO uncomment
-		//createVar[^].PrintDefaultUse(ctx)
-		//extraWork[^].PrintDefaultUse(ctx)
 	}
 }
 
