@@ -105,21 +105,6 @@ BuiltInMinMaxFloat := class extend BoxFuncCommon
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
-	//IsExecutable := virtual true
-	//Execute := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
-	//{
-	//	assert(objs[0] is BoxExeInt)
-	//	assert(objs[1] is BoxExeInt)
-
-	//	int1 := objs[0]->{BoxExeInt^}.Value
-	//	int2 := objs[1]->{BoxExeInt^}.Value
-	//	if isMin
-	//	{
-	//		return GetExeInt(min(int1,int2))
-	//	}else{
-	//		return GetExeInt(max(int1,int2))
-	//	}
-	//}
 }
 
 CreateBuiltInMinMax := !() -> void

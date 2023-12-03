@@ -3,25 +3,37 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-ClassA := class extend TGCObject
+//ClassA := class extend TGCObject
+//{
+//}
+//
+//ClassB1 := class extend ClassA
+//{
+//}
+//
+//ClassB2 := class extend ClassA
+//{
+//}
+//
+//ClassC1 := class extend ClassB1
+//{
+//}
+
+EmptyClass := class
 {
 }
 
-ClassB1 := class extend ClassA
+NotEmpty := class extend EmptyClass
 {
+	c := EmptyClass
+	x := float
 }
 
-ClassB2 := class extend ClassA
-{
-}
-
-ClassC1 := class extend ClassB1
-{
-}
 
 main := !(char^[] args) -> int
 {
-	k := new ClassB1
+	printf("wut %i %i\n", EmptyClass->TypeSize,NotEmpty->TypeSize)
+	//k := new ClassB1
 
 	//switch type k
 	//{

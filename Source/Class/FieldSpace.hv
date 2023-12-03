@@ -1,7 +1,7 @@
 FieldSpace := class
 {
 	itClass := BoxClass^
-	baseSpace := FieldSpace^ //TODO multiple FieldBases as for multiple inheritance
+	baseSpace := FieldSpace^
 
 	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
 	VirtualMethods := AVLMap.{StringSpan,List.{BoxFunc^}}

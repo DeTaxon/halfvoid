@@ -189,7 +189,6 @@ main := !(char^[] args) -> int
 
 	InitTaskLocal()
 	InitLambda()
-	RecheckAppends()
 	GParsedAllFiles.Emit()
 
 	mainFuncName := "internalHVEntryPoint"
