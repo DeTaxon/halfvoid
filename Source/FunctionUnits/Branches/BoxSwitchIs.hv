@@ -14,6 +14,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	SyntaxCompress(skb,PriorityData)
 
 	cases := HybridQueue.{SwitchCase^,13}
+	defaultNode := BoxBlock^
 
 	iter := skb.Down
 	prevNode := Token^
@@ -26,10 +27,16 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		if caseType == null
 			iter.Down.Right.EmitError("Unknown type")
 
-		assert(caseType is in TypeClass)
 
-		if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
-			iter.Down.Right.EmitError("Type does not have virtual table")
+		tpCheck := BoxExeObj^
+		if caseType != GTypeVoid
+		{
+			if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
+				iter.Down.Right.EmitError("Type does not have virtual table")
+			tpCheck = CreateTypeIsCheck(mainVar.CreateCall(),caseType,false,false)
+
+			assert(tpCheck != null)
+		}
 
 		caseIter := iter
 		iter = iter.Right
@@ -43,8 +50,6 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			iter = iter.Right
 		}
 
-		tpCheck := CreateTypeIsCheck(mainVar.CreateCall(),caseType,false,false)
-		assert(tpCheck != null)
 
 		bdyIter := startIter
 		if startIter != endIter or startIter.GetValue() != "{}"
@@ -52,11 +57,16 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			bdyIter = UNext(startIter,new TokenSymbol(StringSpan("{}"),1) ,endIter)
 		}
 
-		newCase := new SwitchCase()
+		if caseType != GTypeVoid
+		{
+			newCase := new SwitchCase()
 
-		newCase.cmpCheck = tpCheck
-		newCase.caseBody = new BoxBlock(bdyIter)
-		cases.Push(newCase)
+			newCase.cmpCheck = tpCheck
+			newCase.caseBody = new BoxBlock(bdyIter)
+			cases.Push(newCase)
+		}else{
+			defaultNode = new BoxBlock(bdyIter)
+		}
 
 	}
 	baseSwitch := new BoxSwitch
@@ -64,5 +74,8 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	baseSwitch.mainCall = mainCall
 	baseSwitch.mainVar = mainVar
 	baseSwitch.caseNodes.Push(cases[^])
+	baseSwitch.defaultNode = defaultNode
+	if defaultNode != null
+		baseSwitch.defaultLabel = new BoxLabel()
 	return baseSwitch
 }
