@@ -99,3 +99,22 @@ IsGCType := !(Type^ tp) -> bool
 {
 	return tp is in TypeClass and TypeFight(tp,GCType) == GCType
 }
+
+
+
+stackHolder := class extend TGCObject
+{
+	stackAtStart := int
+	Destroy := virtual !() -> void
+	{
+		while UnitStack.Size() > stackAtStart
+		{
+			UnitStack.Pop()
+		}
+	}
+}
+
+StackCheckpoint := !() -> stackHolder
+{
+	result.stackAtStart = UnitStack.Size()
+}

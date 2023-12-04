@@ -16,6 +16,11 @@ ClassB1 := class extend ClassA
 
 ClassB2 := class extend ClassA
 {
+	this := !() -> void
+	{
+		coolVar = 100
+	}
+	coolVar := double
 }
 
 ClassC1 := class extend ClassB1
@@ -29,18 +34,20 @@ CheckSwitch := !(TGCObject^ k) -> void
 	case ClassB1
 		printf("it is B1\n")
 	case ClassB2
-		printf("it is B2\n")
+		printf("it is B2 %f\n",k.coolVar)
+		k = null
 	case in TGCObject
 		printf("some kind of TGCObject\n")
 	case void
 		printf("idk type\n")
 	}
+	printf("after %p\n",k)
 }
 
 main := !(char^[] args) -> int
 {
 	CheckSwitch(new ClassB1)
-	CheckSwitch(new ClassB2)
+	CheckSwitch(new ClassB2())
 	CheckSwitch(new TGCObject)
 
 	//CalculatePi()

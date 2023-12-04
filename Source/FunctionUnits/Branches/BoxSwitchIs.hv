@@ -7,6 +7,16 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 
 	mainVar := new FuncResultParam(mainCall)
 
+	canSwapNames := false
+	swapName := StringSpan
+
+	if mainCall is LocalVarProxy and itm.Down.Right is TokenIndent
+	{
+		assert(mainCall.GetType() is in TypePoint)
+		canSwapNames = true
+		swapName = itm.Down.Right->{TokenIndent^}.Value
+	}
+
 	skb := itm.Down.Right.Right.Right
 
 	assert(skb.GetValue() == "{}")
@@ -69,8 +79,26 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			newCase := new SwitchCase()
 
+			StackCheckpoint()
+
+			newVar := LocalVar^
+			if canSwapNames
+			{
+				newVar = new LocalVar(swapName,caseType.GetPoint(),true,true)
+				exchange := GetExchange2(new UnrefFuncCall(mainCall),caseType.GetPoint().GetPoint(),false)
+				assert(exchange != null)
+				setCall := CreateFuncCall(StringSpan("="),![newVar.proxy&,exchange])
+				assert(setCall != null)
+				newVar.extraWork.Push(setCall)
+				CurrentFunc.LocalVars.Push(newVar)
+
+				UnitStack.PushFront(newVar)
+			}
+
 			newCase.cmpCheck = tpCheck
 			newCase.caseBody = new BoxBlock(bdyIter)
+			if newVar != null
+				newCase.caseBody.exeLines.PushFront(newVar)
 			cases.Push(newCase)
 		}else{
 			defaultNode = new BoxBlock(bdyIter)
