@@ -41,6 +41,7 @@ UnrefFuncCall := class extend BoxExeObj
 	{
 		Down = obj
 		ObjType = Down.GetType().GetPoint()
+		obj.NotifyMemUse()
 	}
 	IsMem := virtual !() -> bool
 	{

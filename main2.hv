@@ -27,7 +27,7 @@ ClassC1 := class extend ClassB1
 {
 }
 
-CheckSwitch := !(TGCObject^ k) -> void
+CheckSwitch := !(TGCObject k) -> void
 {
 	switch k is
 	{
@@ -35,13 +35,11 @@ CheckSwitch := !(TGCObject^ k) -> void
 		printf("it is B1\n")
 	case ClassB2
 		printf("it is B2 %f\n",k.coolVar)
-		k = null
 	case in TGCObject
 		printf("some kind of TGCObject\n")
 	case void
 		printf("idk type\n")
 	}
-	printf("after %p\n",k)
 }
 
 main := !(char^[] args) -> int

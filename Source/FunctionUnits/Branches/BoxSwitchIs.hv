@@ -5,17 +5,55 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	if mainCall == null
 		itm.Down.Right.EmitError("Unknown object to switch on")
 
-	mainVar := new FuncResultParam(mainCall)
-
 	canSwapNames := false
 	swapName := StringSpan
+	isMem := mainCall.IsMem()
 
-	if mainCall is LocalVarProxy and itm.Down.Right is TokenIndent
+	if itm.Down.Right is TokenIndent
 	{
-		assert(mainCall.GetType() is in TypePoint)
-		canSwapNames = true
+		assert(mainCall.GetType() is in TypePoint or mainCall.GetType() is in TypeClass)
 		swapName = itm.Down.Right->{TokenIndent^}.Value
+
+		for it : UnitStack
+		{
+			if it is in LocalVar
+			{
+				if it->{LocalVar^}.itName == swapName
+				{
+					canSwapNames = true
+					break
+				}
+			}
+		}
 	}
+
+	callType := mainCall.GetType()
+	mainVar := LocalVar^
+
+	if callType is in TypeClass
+	{
+		assert(mainCall.IsMem())
+		mainCall = new UnrefFuncCall(mainCall)
+		callType = mainCall.GetType()
+	}
+	if callType is in TypePoint
+	{
+		if mainCall.IsMem()
+		{
+			mainVar = new LocalVar(StringSpan(""),mainCall.GetType(),true,true)
+			setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,new UnrefFuncCall(mainCall)])
+			mainVar.extraWork.Push(setVar)
+		}else{
+			mainVar = new LocalVar(StringSpan(""),mainCall.GetType(),true,false)
+			setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,mainCall])
+			mainVar.extraWork.Push(setVar)
+		}
+	}else{
+		itm.EmitError("Bad type to switch on")
+		return null
+	}
+	assert(mainVar != null)
+	CurrentFunc.LocalVars.Push(mainVar)
 
 	skb := itm.Down.Right.Right.Right
 
@@ -51,7 +89,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
 				iter.Down.Right.EmitError("Type does not have virtual table")
-			tpCheck = CreateTypeIsCheck(mainVar.CreateCall(),caseType,isIn,false)
+			tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
 
 			assert(tpCheck != null)
 		}
@@ -85,7 +123,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			if canSwapNames
 			{
 				newVar = new LocalVar(swapName,caseType.GetPoint(),true,true)
-				exchange := GetExchange2(new UnrefFuncCall(mainCall),caseType.GetPoint().GetPoint(),false)
+				exchange := GetExchange2(new UnrefFuncCall(mainVar.CreateVarCall()),caseType.GetPoint().GetPoint(),false)
 				assert(exchange != null)
 				setCall := CreateFuncCall(StringSpan("="),![newVar.proxy&,exchange])
 				assert(setCall != null)
@@ -105,7 +143,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		}
 
 	}
-	baseSwitch := new BoxSwitch
+	baseSwitch := new BoxSwitchIs
 	baseSwitch.quitNode = new BoxLabel()
 	baseSwitch.mainCall = mainCall
 	baseSwitch.mainVar = mainVar
@@ -114,4 +152,88 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	if defaultNode != null
 		baseSwitch.defaultLabel = new BoxLabel()
 	return baseSwitch
+}
+BoxSwitchIs := class extend BoxExeObj
+{
+	mainCall := BoxExeObj^
+	mainVar := LocalVar^
+
+	quitNode := BoxLabel^
+
+	caseNodes := List.{SwitchCase^}
+
+	defaultLabel := BoxLabel^
+	defaultNode := BoxBlock^
+
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		PrintCode(ctx)
+	}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		mainVar.PrintCode(ctx)
+
+		for it : caseNodes
+		{
+			it.PrintIt(ctx,quitNode)
+		}
+		defaultNode?.PrintCode(ctx)
+		quitNode?.PrintCode(ctx)
+	}
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		for it : caseNodes
+			it.caseBody?.PrintDebugMeta(ctx)
+		defaultNode?.PrintDebugMeta(ctx)
+	}
+
+}
+BoxSwitchOnEnum := class extend BoxSwitch
+{
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		en := mainCall.GetType()->{TypeEnum^}.ToEnum
+		bsTyp := Type^
+		bsTyp = mainCall.GetType().Base
+		f := ctx.writeStream
+
+		mainCall.PrintPre(ctx)
+
+		f^ << "switch "
+		bsTyp.PrintType(ctx)
+		f^ << " "
+		mainCall.PrintUse(ctx)
+		f^ << " , label "
+		if defaultNode != null
+		{
+			defaultLabel.PrintLabel(ctx)
+		}else{
+			quitNode.PrintLabel(ctx)
+		}
+		f^ << " [ "
+		for it : this.caseNodes
+		{
+			indX := int
+			en.GetEnumIndex(it.baseObj->{BoxExeString^}.val,indX&)
+			bsTyp.PrintType(ctx)
+			f^ << " " << indX
+			f^ << ", label "
+			it.useNode.PrintLabel(ctx)
+			f^ << "\n"
+		}
+		f^ << "]\n"
+		for it : this.caseNodes
+		{
+			it.PrintItBase(ctx,quitNode)
+			quitNode.PrintGo(ctx)
+		}
+		if defaultNode != null
+		{
+			defaultLabel.PrintLabelCreate(ctx)
+			defaultNode.PrintCode(ctx)
+			quitNode.PrintGo(ctx)
+		}
+
+		quitNode?.PrintCode(ctx)
+	}
 }
