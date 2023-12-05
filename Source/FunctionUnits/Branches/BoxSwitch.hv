@@ -18,8 +18,19 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 
 	if mainCall == null
 		itr.EmitError("could not get switch satatement")
+
+	toSetVar := mainCall
+	if mainCall.IsMem()
+		toSetVar = new UnrefFuncCall(mainCall)
 	
-	mainVar := new FuncResultParam(mainCall)
+	mainVar := new LocalVar(StringSpan(""),mainCall.GetType(),true,mainCall.IsMem())
+	setCall := CreateFuncCall(StringSpan("="),![mainVar.proxy&,toSetVar])
+	
+	if setCall == null
+		obj.EmitError("Unknown error,  switch base does not have operator =")
+
+	mainVar.extraWork.Push(setCall)
+	CurrentFunc.LocalVars.Push(mainVar)
 
 	itr = itr.Right
 
@@ -85,7 +96,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		baseObj := caseCheck
 		
 		objs := CheckExeDownList
-		objs.Push(mainVar.CreateCall())
+		objs.Push(mainVar.CreateVarCall() )
 		objs.Push(caseCheck)
 		checkRes := BoxExeObj^
 		if caseCheckFuncName == "=="
@@ -184,7 +195,7 @@ SwitchCase := class
 BoxSwitch := class extend BoxExeObj
 {
 	mainCall := BoxExeObj^
-	mainVar := FuncResultParam^
+	mainVar := LocalVar^
 
 	quitNode := BoxLabel^
 
@@ -193,7 +204,7 @@ BoxSwitch := class extend BoxExeObj
 	defaultLabel := BoxLabel^
 	defaultNode := BoxBlock^
 
-	this := !(BoxExeObj^ mCall, FuncResultParam^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
+	this := !(BoxExeObj^ mCall, LocalVar^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
 	{
 		ObjType = GTypeVoid
 		quitNode = new BoxLabel()
