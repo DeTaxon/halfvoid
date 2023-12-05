@@ -3,52 +3,9 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-ClassA := class extend TGCObject
-{
-	wtf := virtual !() -> void
-	{
-	}
-}
-
-ClassB1 := class extend ClassA
-{
-}
-
-ClassB2 := class extend ClassA
-{
-	this := !() -> void
-	{
-		coolVar = 100
-	}
-	coolVar := double
-}
-
-ClassC1 := class extend ClassB1
-{
-}
-
-CheckSwitch := !(TGCObject k) -> void
-{
-	switch k is
-	{
-	case ClassB1
-		printf("it is B1\n")
-	case ClassB2
-		printf("it is B2 %f\n",k.coolVar)
-	case in TGCObject
-		printf("some kind of TGCObject\n")
-	case void
-		printf("idk type\n")
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	CheckSwitch(new ClassB1)
-	CheckSwitch(new ClassB2())
-	CheckSwitch(new TGCObject)
-
-	//CalculatePi()
+	CalculatePi()
 }
 
 CalculatePi := !() -> void
@@ -92,7 +49,6 @@ CalculatePi := !() -> void
 	}
 	printf("\n")
 }
-
 //Reserve inheritance failed, it's overcomplicated
 //ExpectClass := class
 //{

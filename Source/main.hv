@@ -179,7 +179,7 @@ main := !(char^[] args) -> int
 	{
 		spc.Modules[^].Work()
 
-		GDebugFileId = spc.Files[^].fileId //todo, remove it, is is for debug id
+		//GDebugFileId = spc.Files[^].fileId //todo, remove it, is is for debug id
 	}
 
 	for fil : CodeFiles

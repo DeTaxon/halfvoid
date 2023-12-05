@@ -4,7 +4,146 @@ TryParseSwitch := !(Token^ itm) -> BoxExeObj^
 	{
 		return ParseBoxSwitchIs(itm)
 	}
-	return new BoxSwitch(itm)
+
+	return TryParseRegularSwitch(itm)
+}
+
+TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
+{
+	itr := obj.Down
+
+	itr = itr.Right
+
+	mainCall := TryGetExeCall(itr)
+
+	if mainCall == null
+		itr.EmitError("could not get switch satatement")
+	
+	mainVar := new FuncResultParam(mainCall)
+
+	itr = itr.Right
+
+	assert(itr.GetValue() == "{}")
+
+	SyntaxCompress(itr,PriorityData)
+	itr = itr.Down
+	
+	currentCase := Token^
+	startNode := Token^
+	startNodeCount := int
+	allConsts := true
+
+	defaultNode := BoxBlock^
+
+	cases := HybridQueue.{SwitchCase^,13}
+
+	checkCase := () ==> {
+		if currentCase == null
+			return void
+
+		thisCaseBlock := BoxBlock^
+
+		if startNode != null
+		{
+			if startNodeCount != 1 or startNode.GetValue() != "{}"
+			{
+				startNode = UNext(startNode,new TokenSymbol(StringSpan("{}"),1) ,startNodeCount)
+			}
+			thisCaseBlock = new BoxBlock(startNode)
+		}
+		
+		if currentCase.Down.Right is TokenIndent and currentCase.Down.Right->{TokenIndent^}.Value == "void"
+		{
+			//todo if too much default cases
+			defaultNode = thisCaseBlock
+			return void
+		}
+		checkRes := BoxExeObj^
+
+		caseVal := currentCase.Down.Right
+		caseCheckFuncName := StringSpan("==")
+		if caseVal.GetValue() == "in"
+		{
+			caseVal = caseVal.Right
+			caseCheckFuncName = StringSpan("in")
+			allConsts = false //TODO cases where "in ![1,2,3]" ,  " in 6..10 "
+		}
+
+		caseCheck := TryGetExeCall(caseVal)
+		if caseCheck == null
+			currentCase.EmitError("Could not get case object")
+		if caseCheck is BoxExeString and mainCall.GetType() is TypeEnum
+		{
+			asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
+			if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.val,null)
+			{
+				caseVal.EmitError("Enumeration does not contain this value")
+			}
+		}else {
+			allConsts = false
+		}
+		baseObj := caseCheck
+		
+		objs := CheckExeDownList
+		objs.Push(mainVar.CreateCall())
+		objs.Push(caseCheck)
+		checkRes := BoxExeObj^
+		if caseCheckFuncName == "=="
+		{
+			checkRes = innertTryGetCompareOverSpaceship(caseCheckFuncName,objs,caseVal)
+		}
+		if checkRes == null
+		{
+			checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
+		}
+
+		if checkRes == null
+		{
+			currentCase.EmitError("Can not compare case object with switch statement")
+		}
+
+		newNode := new SwitchCase()
+		newNode.caseBody = thisCaseBlock
+		newNode.cmpCheck = checkRes
+		newNode.baseObj = baseObj
+
+		cases.Push(newNode)
+
+	}
+
+	while itr != null
+	{
+		if itr.Down?.GetValue() == "case"
+		{
+			checkCase()
+			currentCase = itr
+			startNode = null
+			startNodeCount = 0
+		}else{
+			if startNode == null
+				startNode = itr
+			startNodeCount += 1
+		}
+		itr = itr.Right
+	}
+	if currentCase != null
+	{
+		checkCase()
+	}
+
+	resSwitch := new BoxSwitch(mainCall,mainVar,cases,defaultNode)
+
+	if allConsts
+	{
+		if mainCall.GetType() is TypeEnum
+		{
+			resSwitch.defaultLabel = new BoxLabel()
+			resSwitch->SetType(BoxSwitchOnEnum)
+		}else{
+			assert(false)
+		}
+	}
+	return resSwitch
 }
 
 SwitchCase := class
@@ -54,138 +193,25 @@ BoxSwitch := class extend BoxExeObj
 	defaultLabel := BoxLabel^
 	defaultNode := BoxBlock^
 
-	this := !(Token^ itm) -> void
+	this := !(BoxExeObj^ mCall, FuncResultParam^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
 	{
 		ObjType = GTypeVoid
-		itr := itm.Down
-		assert(itr.GetValue() == "switch")
-
-		itr = itr.Right
-
-		mainCall = TryGetExeCall(itr)
-
-		if mainCall == null
-			itr.EmitError("could not get switch satatement") //todo
-		
-		mainVar = new FuncResultParam(mainCall)
-
-		itr = itr.Right
-
-		assert(itr.GetValue() == "{}")
-
-		SyntaxCompress(itr,PriorityData)
-		itr = itr.Down
-		
-		currentCase := Token^
-		startNode := Token^
-		startNodeCount := int
-		allConsts := true
-
 		quitNode = new BoxLabel()
 
-		checkCase := () ==> {
-			if currentCase == null
-				return void
+		mainCall = mCall
+		mainVar = mVar
+		defaultNode = defNode
+		caseNodes.Push(cases[^])
+	}
+	this := !(BoxExeObj^ mCall, FuncResultParam^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
+	{
+		ObjType = GTypeVoid
+		quitNode = new BoxLabel()
 
-			thisCaseBlock := BoxBlock^
-
-			if startNode != null
-			{
-				if startNodeCount != 1 or startNode.GetValue() != "{}"
-				{
-					startNode = UNext(startNode,new TokenSymbol(StringSpan("{}"),1) ,startNodeCount)
-				}
-				thisCaseBlock = new BoxBlock(startNode)
-			}
-			
-			if currentCase.Down.Right is TokenIndent and currentCase.Down.Right->{TokenIndent^}.Value == "void"
-			{
-				//todo if too much default cases
-				defaultNode = thisCaseBlock
-				return void
-			}
-			checkRes := BoxExeObj^
-
-			caseVal := currentCase.Down.Right
-			caseCheckFuncName := StringSpan("==")
-			if caseVal.GetValue() == "in"
-			{
-				caseVal = caseVal.Right
-				caseCheckFuncName = StringSpan("in")
-				allConsts = false //TODO cases where "in ![1,2,3]" ,  " in 6..10 "
-			}
-
-			caseCheck := TryGetExeCall(caseVal)
-			if caseCheck == null
-				currentCase.EmitError("Could not get case object")
-			if caseCheck is BoxExeString and mainCall.GetType() is TypeEnum
-			{
-				asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
-				if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.val,null)
-				{
-					caseVal.EmitError("Enumeration does not contain this value")
-				}
-			}else {
-				allConsts = false
-			}
-			baseObj := caseCheck
-			
-			objs := CheckExeDownList
-			objs.Push(mainVar.CreateCall())
-			objs.Push(caseCheck)
-			checkRes := BoxExeObj^
-			if caseCheckFuncName == "=="
-			{
-				checkRes = innertTryGetCompareOverSpaceship(caseCheckFuncName,objs,caseVal)
-			}
-			if checkRes == null
-			{
-				checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
-			}
-
-			if checkRes == null
-			{
-				currentCase.EmitError("Can not compare case object with switch statement")
-			}
-
-			newNode := new SwitchCase()
-			newNode.caseBody = thisCaseBlock
-			newNode.cmpCheck = checkRes
-			newNode.baseObj = baseObj
-
-			caseNodes.Push(newNode)
-
-		}
-
-		while itr != null
-		{
-			if itr.Down?.GetValue() == "case"
-			{
-				checkCase()
-				currentCase = itr
-				startNode = null
-				startNodeCount = 0
-			}else{
-				if startNode == null
-					startNode = itr
-				startNodeCount += 1
-			}
-			itr = itr.Right
-		}
-		if currentCase != null
-		{
-			checkCase()
-		}
-		if allConsts
-		{
-			if mainCall.GetType() is TypeEnum
-			{
-				defaultLabel = new BoxLabel()
-				this&->SetType(BoxSwitchOnEnum)
-			}else{
-				assert(false)
-			}
-		}
+		mainCall = mCall
+		mainVar = mVar
+		defaultNode = defNode
+		caseNodes.Push(cases[^])
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
