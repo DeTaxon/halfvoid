@@ -66,7 +66,7 @@ AppendClass BoxFuncBody
 				}
 
 			}
-			if IsGCPtr(tp)
+			if IsGCPtr(tp) and not it.isReference
 			{
 				if LocalVarsToDeferGuard.Contain(it)
 				{
