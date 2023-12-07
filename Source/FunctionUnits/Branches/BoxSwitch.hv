@@ -214,16 +214,6 @@ BoxSwitch := class extend BoxExeObj
 		defaultNode = defNode
 		caseNodes.Push(cases[^])
 	}
-	this := !(BoxExeObj^ mCall, FuncResultParam^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
-	{
-		ObjType = GTypeVoid
-		quitNode = new BoxLabel()
-
-		mainCall = mCall
-		mainVar = mVar
-		defaultNode = defNode
-		caseNodes.Push(cases[^])
-	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		PrintCode(ctx)

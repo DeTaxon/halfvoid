@@ -287,12 +287,6 @@ BoxClass := class extend BoxUnit
 		itDynamicSize = new VarIntObj(this&)
 		return itDynamicSize
 	}
-	//GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
-	//{
-	//	AwaitTypeState()
-	//	return new MetaFieldsHolder(itm,this&)
-	//}
-
 }
 
 TypeClass := class extend Type
