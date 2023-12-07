@@ -1,14 +1,22 @@
 GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 {
-	callObj := BoxExeObj^
-	objRes := ParamFunc^
+	objRes := LocalVar^
 	itClass := BoxClass^
 
 	this := !(BoxExeObj^ itm,BoxClass^ bs) -> void
 	{
 		itClass = bs
-		callObj = itm
-		objRes = new FuncResultParam(itm)
+
+		valueType := itm.GetType()
+		assert(valueType is in TypeClass)
+
+		objRes = new LocalVar(StringSpan(""),valueType,true,true)
+
+		setCall := CreateFuncCall(StringSpan("="),![objRes.proxy&,new UnrefFuncCall(itm)])
+		assert(setCall != null)
+		objRes.extraWork.Push(setCall)
+		assert(CurrentFunc != null)
+		CurrentFunc.LocalVars.Push(objRes)
 	}
 
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
@@ -34,7 +42,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 		itClass.AwaitTypeState()
 		indCall := itClass.GetFieldByIndex(ind)
 		itms := CheckExeDownList
-		itms.Push(objRes.CreateCall())
+		itms.Push(objRes.CreateVarCall())
 		return indCall.CreateCall(itms)
 	}
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
