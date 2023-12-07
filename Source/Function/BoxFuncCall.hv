@@ -230,7 +230,6 @@ BoxFuncCall := class extend BoxExeObj
 							leftFloats -= floats
 							leftInts -= floats
 
-							newCall := new FuncResultParam(new UnrefFuncCall(downs[i]))
 							newLocalVar := new LocalVar(StringSpan(""),downs[i].GetType(),true,true)
 
 							setCall := CreateFuncCall(StringSpan("="),![newLocalVar.proxy&,new UnrefFuncCall(downs[i])])
@@ -275,7 +274,7 @@ BoxFuncCall := class extend BoxExeObj
 								{
 									if oo >= 8
 									{
-										gt := newCall.CreateCall()
+										gt := newLocalVar.proxy&->{BoxExeObj^}
 										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
@@ -287,7 +286,7 @@ BoxFuncCall := class extend BoxExeObj
 										oo -= 8
 										fInd += 8
 									}else if oo >= 4 {
-										gt := newCall.CreateCall()
+										gt := newLocalVar.proxy&->{BoxExeObj^}
 										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
@@ -305,8 +304,6 @@ BoxFuncCall := class extend BoxExeObj
 							}else{
 								assert(false)
 							}
-
-							newCall.PopulateCalls()
 							
 						}else{
 							types4[k] = it.ItType
