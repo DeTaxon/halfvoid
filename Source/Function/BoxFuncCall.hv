@@ -190,6 +190,7 @@ BoxFuncCall := class extend BoxExeObj
 			isRefs4 := bool[100]
 
 			newDown := ExeDownList
+			preVars := List.{LocalVar^}
 			preRes := ExeDownList
 
 			for it,i : fType.Params
@@ -230,7 +231,15 @@ BoxFuncCall := class extend BoxExeObj
 							leftInts -= floats
 
 							newCall := new FuncResultParam(new UnrefFuncCall(downs[i]))
-							preRes.Push(newCall)
+							newLocalVar := new LocalVar(StringSpan(""),downs[i].GetType(),true,true)
+
+							setCall := CreateFuncCall(StringSpan("="),![newLocalVar.proxy&,new UnrefFuncCall(downs[i])])
+							assert(setCall != null)
+							newLocalVar.extraWork.Push(setCall)
+							assert(CurrentFunc != null)
+							CurrentFunc.LocalVars.Push(newLocalVar)
+
+							preVars.Push(newLocalVar)
 
 							if floats != 0 and ints == 0
 							{
@@ -238,7 +247,7 @@ BoxFuncCall := class extend BoxExeObj
 								fInd := 0
 								while oo >= 2
 								{
-									gt := newCall.CreateCall()
+									gt := newLocalVar.proxy&->{BoxExeObj^}
 									gt = GetExchange2(gt,GTypeVec2f.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd))
 									newDown.Push(gt)
@@ -249,7 +258,7 @@ BoxFuncCall := class extend BoxExeObj
 								}
 								if oo != 0
 								{
-									gt := newCall.CreateCall()
+									gt := newLocalVar.proxy&->{BoxExeObj^}
 									gt = GetExchange2(gt,GTypeFloat.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd*2))
 									newDown.Push(gt)
@@ -321,6 +330,7 @@ BoxFuncCall := class extend BoxExeObj
 				newFunc := GetFuncType(k,types4[0]&,isRefs4[0]&,fType.ResultType,fType.ResultRef,fType.IsVargs)
 				asPtr.ItPtrFunc = GetExchange2(asPtr.ItPtrFunc,newFunc.GetPoint(),false)
 				asPtr.PreCalls.Push(preRes[^])
+				asPtr.PreVars.Push(preVars[^])
 				asPtr.downs.Destroy()
 				asPtr.downs.Push(newDown[^])
 			}
@@ -463,6 +473,7 @@ BoxFuncComplexCall := class extend BoxFuncCall
 }
 BoxFuncPointerCall := class extend BoxFuncCall
 {
+	PreVars := List.{LocalVar^}
 	PreCalls := List.{BoxExeObj^}
 	ItPtrFunc := BoxExeObj^
 	this := !(BoxExeObj^ ptrVal,BoxExeObj^[] objs) -> void
@@ -478,6 +489,7 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ResultVar?.PrintCode(ctx)
+		PreVars[^].PrintCode(ctx)
 		PreCalls[^].PrintDefaultUse(ctx)
 		PrintFuncCallCommon(ctx,ItPtrFunc,resId,downs)
 	}
