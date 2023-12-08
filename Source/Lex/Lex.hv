@@ -114,8 +114,8 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				}	
 			}
 			DaBuff[j] = 0
-			val := GetConstString(DaBuff)
-			ns = new TokenString(val)
+			//val := GetConstString(DaBuff)
+			ns = new TokenString(new String(DaBuff[0]&))
 		}
 		if a == 4 {
 			newVal := int

@@ -281,9 +281,9 @@ TokenTemplateType := class extend TokenIndent
 
 TokenString := class extend Token
 {
-	Value := StringSpan
+	Value := String^
 	IsData := virtual true
-	this := !(StringSpan val) -> void
+	this := !(String^ val) -> void
 	{
 		Value = val
 	}

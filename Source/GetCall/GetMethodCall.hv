@@ -54,7 +54,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	}else if itm.Down.Right.Right is TokenString
 	{
 		gotName = true
-		methodName = itm.Down.Right.Right->{TokenString^}.Value
+		methodName = StringSpan(itm.Down.Right.Right->{TokenString^}.Value.Str())
 	}
 
 	if gotName

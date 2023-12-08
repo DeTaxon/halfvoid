@@ -266,7 +266,7 @@ BoxClassBody := class extend BoxClassPoison
 				{
 					name = iter.Down->{TokenIndent^}.Value
 				}else{
-					name = iter.Down->{TokenString^}.Value
+					name = StringSpan(iter.Down->{TokenString^}.Value.Str())
 				}
 
 				itm := iter.Down.Right.Right
@@ -444,7 +444,15 @@ BoxClassBody := class extend BoxClassPoison
 		{
 			if itr.Down == null or itr.Down.Right == null or itr.Down.Right.GetValue() != ":="
 				itr.EmitError("Fake field can only contain functions")
-			name := itr.Down->{TokenIndent^}.Value //todo , str type
+			name := StringSpan
+
+			if itr.Down is TokenString
+			{
+				name = StringSpan(itr.Down->{TokenString^}.Value.Str())
+			}else{
+				assert(itr.Down is TokenIndent)
+				name = itr.Down->{TokenIndent^}.Value
+			}
 
 			asFunc := TryParseFunction(itr.Down.Right.Right)
 			if asFunc != null

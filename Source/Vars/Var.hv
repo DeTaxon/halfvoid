@@ -17,11 +17,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		name = iter->{TokenIndent^}.Value
 	}else if iter is TokenString
 	{
-		name = iter->{TokenString^}.Value
+		name = StringSpan(iter->{TokenString^}.Value.Str())
 		isSuffix = true
 	}
 
-		varToken := iter.Right.Right
+	varToken := iter.Right.Right
 
 	if varToken == null
 		return null

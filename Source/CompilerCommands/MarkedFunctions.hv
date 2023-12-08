@@ -9,7 +9,7 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		if markName == null or markName is not TokenString
 			itm.EmitError("Unknown input variable")
 
-		return markedObjects[markName->{TokenString^}.Value]&
+		return markedObjects[StringSpan(markName->{TokenString^}.Value.Str())]&
 	}
 	if cmd == "#MarkFunction"
 	{
@@ -44,7 +44,7 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		if callItem == null
 			itm.EmitError("Function not found")
 
-		mark := ref markedObjects[markName->{TokenString^}.Value]
+		mark := ref markedObjects[StringSpan(markName->{TokenString^}.Value.Str())]
 		mark.AddFunc(fnc)
 
 		return GBoolTrue

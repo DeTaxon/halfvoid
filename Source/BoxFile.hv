@@ -119,7 +119,7 @@ BoxFile := class extend BoxUnit
 			name := StringSpan
 			if stVal.Left is TokenString
 			{
-				name = stVal.Left->{TokenString^}.Value
+				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
 			}else if stVal.Left is TokenIndent
 			{
 				name = stVal.Left->{TokenIndent^}.Value
@@ -238,7 +238,7 @@ BoxFile := class extend BoxUnit
 			name := StringSpan
 			if stVal.Left is TokenString
 			{
-				name = stVal.Left->{TokenString^}.Value
+				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
 				isSuffix = true
 			}else if stVal.Left is TokenIndent
 			{
@@ -394,7 +394,7 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 		name = iter->{TokenIndent^}.Value
 	}else if iter is TokenString
 	{
-		name = iter->{TokenString^}.Value
+		name = StringSpan(iter->{TokenString^}.Value.Str())
 	}
 
 	varToken := iter.Right.Right
