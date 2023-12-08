@@ -222,7 +222,7 @@ BoxSwitchOnEnum := class extend BoxSwitch
 		for it : this.caseNodes
 		{
 			indX := int
-			en.GetEnumIndex(StringSpan(it.baseObj->{BoxExeString^}.Value.Str()),indX&)
+			en.GetEnumIndex(it.baseObj->{BoxExeString^}.Value,indX&)
 			bsTyp.PrintType(ctx)
 			f^ << " " << indX
 			f^ << ", label "

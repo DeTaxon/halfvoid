@@ -105,12 +105,12 @@ BoxEnum := class extend BoxUnit
 		})
 	}
 
-	GetEnumIndex := !(StringSpan val,int^ res) -> bool
+	GetEnumIndex := !(String^ val,int^ res) -> bool
 	{
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if StringSpan(it.0.Value.Str()) == val
+			if it.0.Value == val
 			{
 				if res != null
 					res^ = i
@@ -119,12 +119,12 @@ BoxEnum := class extend BoxUnit
 		}
 		return false
 	}
-	GetEnum := !(StringSpan val) -> BoxExeObj^
+	GetEnum := !(String^ val) -> BoxExeObj^
 	{
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if StringSpan(it.0.Value.Str()) == val
+			if it.0.Value == val
 			{
 				if it.1 == null
 					it.1 = new BoxEnumValue(ItType,i)

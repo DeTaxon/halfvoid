@@ -7,13 +7,13 @@ ExchangeEnumFromConstString := class extend ExchangeUnit
 			return CmpNoExchange
 		if obj is not BoxExeString
 			return CmpNoExchange
-		if newType->{TypeEnum^}.ToEnum.GetEnum(StringSpan(obj->{BoxExeString^}.Value.Str())) == null
+		if newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.Value) == null
 			return CmpNoExchange
 		return 0
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
-		return newType->{TypeEnum^}.ToEnum.GetEnum(StringSpan(obj->{BoxExeString^}.Value.Str()))
+		return newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.Value)
 	}
 }
 ExchangeEnumToInt := class extend ExchangeUnit
