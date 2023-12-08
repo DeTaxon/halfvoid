@@ -19,7 +19,7 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 		regBlobSize := int
 
 
-		stName := downVal->{BoxExeString^}.val.GetString()
+		stName := downVal->{BoxExeString^}.Value
 
 		if not RegexpBlobs.Contain(stName)
 		{

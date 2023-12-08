@@ -48,7 +48,7 @@ Token := class
 				{
 					ln << "var " << cv.Name << " = " << cv.Value->{BoxExeInt^}.Value<< "\n"
 				}else if cv.Value is BoxExeString {
-					ln << "var " << cv.Name << " = <" << cv.Value->{BoxExeString^}.val << ">\n"
+					ln << "var " << cv.Name << " = <" << cv.Value->{BoxExeString^}.Value << ">\n"
 				}else{
 					ln << "var " << cv.Name << " = unknown\n"
 				}

@@ -49,7 +49,7 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 			if tmpList[1] is BoxExeString
 			{
 				asStr := tmpList[1]->{BoxExeString^}
-				enValue := enm.GetEnum(asStr.val)
+				enValue := enm.GetEnum(StringSpan(asStr.Value.Str()))
 				if enValue == null
 					itm.EmitError("Enum does not contain this value")
 				tmpList[1] = enValue
@@ -112,7 +112,7 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 			if lst[1] is BoxExeString
 			{
 				asStr := lst[1]->{BoxExeString^}
-				enValue := enm.GetEnum(asStr.val)
+				enValue := enm.GetEnum(StringSpan(asStr.Value.Str()))
 				if enValue == null
 					debugItem.EmitError("Enum does not contain this value")
 				lst[1] = enValue
@@ -370,7 +370,7 @@ TryComputeOperators := !(StringSpan oper, BoxExeObj^[]  objs) -> BoxExeObj^
 		{
 			if c1 is BoxExeString and c2 is BoxExeString
 			{
-				return GetExeInt(c1->{BoxExeString^}.val <=> c2->{BoxExeString^}.val)
+				return GetExeInt(c1->{BoxExeString^}.Value <=> c2->{BoxExeString^}.Value)
 			}
 		}
 	}

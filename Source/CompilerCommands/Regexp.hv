@@ -34,7 +34,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 		assert(v1 is BoxExeString)
 		assert(v2 is BoxExeInt)
 
-		echo <<  v1->{BoxExeString^}.val << v2->{BoxExeInt^}.Value
+		echo <<  v1->{BoxExeString^}.Value << v2->{BoxExeInt^}.Value
 	}
 	resSt := echo.GetString()
 
@@ -45,7 +45,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 		
 		for i : (dwns.Size() div 2)
 		{
-			v1 := dwns[2*i]->{BoxExeString^}.val.GetString()
+			v1 := dwns[2*i]->{BoxExeString^}.Value
 			v2 := dwns[2*i + 1]->{BoxExeInt^}.Value
 
 			names.Push(v1)

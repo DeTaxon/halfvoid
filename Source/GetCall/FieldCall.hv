@@ -70,7 +70,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 		lastObj := CheckExeDownList
 		lastObj.Push(val)
 		lastConsts := List.{BoxExeConstObj^}
-		lastConsts.Push(GetExeString(GetConstString(name)))
+		lastConsts.Push(GetExeString(name.GetString()))
 		lastRes := CreateFuncCall(StringSpan("."),lastObj,lastConsts)
 		lastConsts.Destroy()
 		if lastRes != null

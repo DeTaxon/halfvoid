@@ -7,6 +7,10 @@ main := !(char^[] args) -> int
 {
 	CalculatePi()
 }
+RunTest := !() -> void
+{
+	printf("hello world!\n")
+}
 
 CalculatePi := !() -> void
 {

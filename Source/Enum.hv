@@ -88,7 +88,7 @@ BoxEnum := class extend BoxUnit
 				{
 					if iter is TokenString
 					{
-						Values.Emplace(GetExeString(iter->{TokenString^}.Value),null->{BoxEnumValue^})
+						Values.Emplace(GetExeString(iter->{TokenString^}.Value.GetString()),null->{BoxEnumValue^})
 					}else{
 						iter.EmitError("Unknown use of enum")
 					}
@@ -110,7 +110,7 @@ BoxEnum := class extend BoxUnit
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if it.0.val == val
+			if StringSpan(it.0.Value.Str()) == val
 			{
 				if res != null
 					res^ = i
@@ -124,7 +124,7 @@ BoxEnum := class extend BoxUnit
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if it.0.val == val
+			if StringSpan(it.0.Value.Str()) == val
 			{
 				if it.1 == null
 					it.1 = new BoxEnumValue(ItType,i)

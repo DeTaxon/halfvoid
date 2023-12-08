@@ -3,7 +3,7 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 	if itm is TokenString
 	{
 		tkn := itm->{TokenString^}
-		return GetExeString(tkn.Value)
+		return GetExeString(tkn.Value.GetString())
 	}
 	if itm is TokenInt
 	{
@@ -26,14 +26,16 @@ GetExeInt := !(int val) -> BoxExeInt^
 	return newObj
 }
 
-GlobalStrings := AVLMap.{StringSpan,BoxExeString^}
+GlobalStrings := AVLMap.{String^,BoxExeString^}
 strIdIterator := 1
-GetExeString := !(StringSpan str) -> BoxExeString^
+GetExeString := !(StringView^ str) -> BoxExeString^
 {
-	if GlobalStrings.Contain(str)
-		return GlobalStrings[str]
-	newVal := new BoxExeString(str)
-	GlobalStrings[str] = newVal
+	str2 := str.GetString()
+
+	if GlobalStrings.Contain(str2)
+		return GlobalStrings[str2]
+	newVal := new BoxExeString(str2)
+	GlobalStrings[str2] = newVal
 	return newVal
 }
 
@@ -122,35 +124,35 @@ BoxExeDouble := class extend BoxExeConstObj
 BoxExeString := class extend BoxExeConstObj
 {
 	strId := int
-	val := StringSpan
-	this := !(StringSpan dat) -> void
+	Value := String^
+	this := !(String^ dat) -> void
 	{
 		strId = strIdIterator
 		strIdIterator += 1
-		val = dat
+		Value = dat
 		ObjType = GTypeChar.GetPoint()
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		f^ << "@Str" << strId << " = private constant [" << val.Size() +  1 << " x i8] c\""
+		f^ << "@Str" << strId << " = private constant [" << Value.Size() +  1 << " x i8] c\""
 		k := 0
 		SomeBuf := char[2]
 		SomeBuf[1] = 0
-		while val[k] != 0
+		while k != Value.Size()
 		{
-			SomeBuf[0] = val[k]
-			if val[k] == "\n"[0]
+			SomeBuf[0] = Value^[k]
+			if Value^[k] == "\n"[0]
 			{
 				f^ << "\\0A"
 			}else
 			{
-				if val[k] == "\""[0]
+				if Value^[k] == "\""[0]
 				{
 					f^ << "\\22"
 				}else
 				{
-					if val[k] == "\\"[0]
+					if Value^[k] == "\\"[0]
 					{
 						f^ << "\\5C"
 					}else{
@@ -169,11 +171,11 @@ BoxExeString := class extend BoxExeConstObj
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		stSize := val.Size() + 1
+		stSize := Value.Size() + 1
 
 		if JITMode
 		{
-			f^ << "inttoptr (" << GArchLLVMTypeSizeT <<" " << val.ptr->{size_t} << " to i8*)"
+			f^ << "inttoptr (" << GArchLLVMTypeSizeT <<" " << Value.Size()->{size_t} << " to i8*)"
 		}else{
 			f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 		}

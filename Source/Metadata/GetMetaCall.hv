@@ -39,21 +39,21 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		typ := getMetaDownType(obj.Down)
 		if typ is TypeClass
-			return GetExeString(StringSpan("Class"))
+			return GetExeString(StringSpan("Class").GetString())
 		if typ is TypeStandard
-			return GetExeString(StringSpan("Prime"))
+			return GetExeString(StringSpan("Prime").GetString())
 		if typ is TypeInteger
-			return GetExeString(StringSpan("Prime"))
+			return GetExeString(StringSpan("Prime").GetString())
 		if typ is in TypePoint
-			return GetExeString(StringSpan("Pointer"))
+			return GetExeString(StringSpan("Pointer").GetString())
 		if typ is in TypeFunc
-			return GetExeString(StringSpan("Function"))
+			return GetExeString(StringSpan("Function").GetString())
 		if typ is in TypeArr
-			return GetExeString(StringSpan("Array"))
+			return GetExeString(StringSpan("Array").GetString())
 		if typ is in TypeEnum
-			return GetExeString(StringSpan("Enum"))
+			return GetExeString(StringSpan("Enum").GetString())
 		if typ is TypeArrayView
-			return GetExeString(StringSpan("ArrayView"))
+			return GetExeString(StringSpan("ArrayView").GetString())
 		assert(false)
 		return null
 	}
@@ -104,7 +104,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		{
 			obj.Down.EmitError("Object for TypeBase must have a type")
 		}
-		return GetExeString(GetConstString(typ.GetBADStr().Str()))
+		return GetExeString(typ.GetBADStr())
 	}
 	if right.Value == "TypeId"
 	{

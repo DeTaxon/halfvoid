@@ -36,9 +36,9 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	if cmd == "#OS"
 	{
 		if targetLinux
-			return GetExeString(StringSpan("Linux"))
+			return GetExeString(StringSpan("Linux").GetString())
 		if targetWindows
-			return GetExeString(StringSpan("Windows"))
+			return GetExeString(StringSpan("Windows").GetString())
 		assert(false)
 	}
 	if cmd == "#MarkedFunctions" or cmd == "#MarkFunction"

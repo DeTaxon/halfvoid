@@ -86,7 +86,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		if caseCheck is BoxExeString and mainCall.GetType() is TypeEnum
 		{
 			asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
-			if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.val,null)
+			if not asEn.GetEnumIndex(StringSpan(caseCheck->{BoxExeString^}.Value.Str()),null)
 			{
 				caseVal.EmitError("Enumeration does not contain this value")
 			}

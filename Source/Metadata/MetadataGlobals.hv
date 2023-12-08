@@ -56,5 +56,5 @@ GlobalVarsIterator := class extend BoxMetaObj
 	GetMetaIterValueParam := virtual !(int ind) -> ParamFunc^ { return null } // called this first, if == null next is GetMetaIterValue
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return globs[ind].1 }
 
-	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return GetExeString(GetConstString(globs[ind].0)) }
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return GetExeString(globs[ind].0.GetString()) }
 }

@@ -52,7 +52,7 @@ CreateEmbeddedObj := !(StringSpan cmp,void^ key,StringSpan setFileName,char^ com
 	objs.Push(GetExeInt(embInfo.fileSize))
 	objs.Push(GetExeInt(embInfo.compressedSize))
 	objs.Push(embInfo.compressionType == "Deflate" ?: GBoolTrue : GBoolFalse)
-	objs.Push(GetExeString(embInfo.fileName))
+	objs.Push(GetExeString(embInfo.fileName.GetString()))
 
 	cnsts := List.{BoxExeConstObj^}
 	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs,cnsts)

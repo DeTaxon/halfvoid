@@ -48,7 +48,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
 	{
 		itClass.AwaitTypeState()
-		return GetExeString(GetConstString(itClass.GetFieldByIndex(ind).Field.Name))
+		return GetExeString(itClass.GetFieldByIndex(ind).Field.Name.GetString())
 	}
 }
 

@@ -35,7 +35,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 		strVal := consts[0]->{BoxExeString^}
 		if not (strVal is BoxExeString)
 			return null
-		switch strVal.val
+		switch strVal.Value^
 		{
 			case "x"
 			case "y"
@@ -46,22 +46,22 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				if vecSize < 4
 					return null
 			case void
-				if strVal.val.Size() > 4
+				if strVal.Value.Size() > 4
 					return null
-				if strVal.val.Size() <= 0
+				if strVal.Value.Size() <= 0
 					return null
 				
-				for i : strVal.val.Size()
+				for i : strVal.Value.Size()
 				{
-					if not (strVal.val[i] in "xyzw0")
+					if not (strVal.Value^[i] in "xyzw0")
 						return null
 				}
 				resType := Type^
-				if a == GTypeQuantf and strVal.val.Size() == 4
+				if a == GTypeQuantf and strVal.Value.Size() == 4
 				{
 					resType = GTypeQuantf
 				}else{
-					resType = GetVecTypeX(strVal.val.Size())
+					resType = GetVecTypeX(strVal.Value.Size())
 				}
 
 				return GetFuncType(1,![a],![true],resType,false,false)
@@ -71,7 +71,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
-		str := consts[0]->{BoxExeString^}.val
+		str := StringSpan(consts[0]->{BoxExeString^}.Value.Str())
 		vecInd := 0
 		simpleGet := true
 		switch str
