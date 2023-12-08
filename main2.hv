@@ -5,8 +5,11 @@
 
 main := !(char^[] args) -> int
 {
-	CalculatePi()
+	c := Str
+	c->AsString = new String("hoh")
+	printf("test %s\n",c->AsString.Str())
 }
+
 RunTest := !() -> void
 {
 	printf("hello world!\n")

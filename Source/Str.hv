@@ -1,0 +1,24 @@
+
+GTypeStringP := Type^
+GTypeStr := Type^
+
+CreateStrType := !() -> void
+{
+	GTypeStrBase := intGetClass2("String")
+	assert(GTypeStrBase != null)
+	GTypeStringP = GTypeStrBase.ItType.GetPoint()
+
+	GTypeStr = new TypeStr(GTypeStrBase.ItType)
+	TypesDatabase[StringSpan("Str")] = GetConstType(GTypeStr)
+}
+
+TypeStr := class extend TypePoint
+{
+	this := !(Type^ tp) -> void
+	{
+		super(tp)
+	}
+}
+
+
+

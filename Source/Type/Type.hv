@@ -539,6 +539,8 @@ CreateStandardTypes := !() -> void
 	}else {
 		assert(false)
 	}
+
+	//DefsTable[26] reserved by Str
 }
 
 

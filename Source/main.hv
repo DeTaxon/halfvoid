@@ -172,6 +172,7 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseAppendClasses()
 	CodeFiles[^].ParseFunctions()
 
+	CreateStrType()
 	InitInternalsTypes()
 	InitInternals()
 

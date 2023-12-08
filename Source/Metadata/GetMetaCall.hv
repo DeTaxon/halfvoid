@@ -212,7 +212,25 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		}
 		return enumGetCStrTable(typ)
 	}
+	if right.Value == "AsString"
+	{
+		dwnRes := TryGetExeCall(obj.Down)
+		if dwnRes == null //TODO error
+			return null
+		if dwnRes.GetType() is not TypeStr //TODO error
+			return null
 
+		if dwnRes.IsMem()
+		{
+			unrf := new UnrefFuncCall(dwnRes)
+			exc := new PtrExchange(unrf,GTypeStringP.GetPoint())
+			return new PtrToRef(exc)
+		}else{
+			return new PtrExchange(dwnRes,GTypeStringP)
+		}
+	}
+
+	printf("hm %s\n",right.Value)
 	right.EmitError("Unknown metafield")
 	
 	assert(false)
