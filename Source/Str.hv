@@ -12,11 +12,22 @@ CreateStrType := !() -> void
 	TypesDatabase[StringSpan("Str")] = GetConstType(GTypeStr)
 }
 
-TypeStr := class extend TypePoint
+TypeStr := class extend TypePointLike
 {
-	this := !(Type^ tp) -> void
+	this := !(Type^ nBase) -> void
 	{
-		super(tp)
+		Base = nBase
+		ItHash = typeHashIterator
+		typeHashIterator += 1
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return true
 	}
 }
 

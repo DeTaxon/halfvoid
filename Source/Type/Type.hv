@@ -248,23 +248,8 @@ TypeArr := class extend Type
 	}
 }
 
-TypePoint := class extend Type
+TypePointLike := class extend Type
 {
-	this := !(Type^ nBase) -> void
-	{
-		Base = nBase
-		ItHash = typeHashIterator
-		typeHashIterator += 1
-		if DebugMode
-		{
-			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
-		}
-	}
-	GetType := virtual !() -> string
-	{
-		return "point"
-	}
 	GetAlign := virtual !() -> int
 	{
 		return GArchBitSize div 8
@@ -290,6 +275,24 @@ TypePoint := class extend Type
 	NotifyUse := virtual !() -> void
 	{
 		Base.NotifyUse()
+	}
+}
+TypePoint := class extend TypePointLike
+{
+	this := !(Type^ nBase) -> void
+	{
+		Base = nBase
+		ItHash = typeHashIterator
+		typeHashIterator += 1
+		if DebugMode
+		{
+			MetaId = GetNewId()
+			GDebugTypePrintMeta.Push(this&)
+		}
+	}
+	GetType := virtual !() -> string
+	{
+		return "point"
 	}
 }
 TypeVoidPoint := class extend TypePoint

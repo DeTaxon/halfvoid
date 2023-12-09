@@ -5,9 +5,17 @@
 
 main := !(char^[] args) -> int
 {
-	c := Str
-	c->AsString = new String("hoh")
-	printf("test %s\n",c->AsString.Str())
+	//c := Str
+	//c = "hoh"
+	StringSpan("hoh").GetString()
+}
+"=" := !(Str& left, StringView right) -> void
+{
+	left->AsString = right.GetString()
+}
+"->{}" := !(Str& obj) .{TGCObject^} -> ref TGCObject^
+{
+	return obj->AsString&->{TGCObject^^}^
 }
 
 RunTest := !() -> void

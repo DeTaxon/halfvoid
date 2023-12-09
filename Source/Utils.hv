@@ -84,6 +84,8 @@ IsGCPtr := !(Type^ typ) -> bool
 {
 	if typ is TypeArrayView
 		return true
+	if typ is TypeStr
+		return true
 	if typ is in TypePoint and typ.IsComplexReturn()
 		return true
 	return false

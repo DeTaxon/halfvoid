@@ -12,7 +12,10 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 
 		objRes = new LocalVar(StringSpan(""),valueType,true,true)
 
-		setCall := CreateFuncCall(StringSpan("="),![objRes.proxy&,new UnrefFuncCall(itm)])
+		objs := ![objRes.proxy&,new UnrefFuncCall(itm)]
+
+		setFunc := GPointStoreTemplate.GetFunc(objs,![])
+		setCall := setFunc.CreateCall(objs)
 		assert(setCall != null)
 		objRes.extraWork.Push(setCall)
 		assert(CurrentFunc != null)
