@@ -230,14 +230,7 @@ BoxFuncCall := class extend BoxExeObj
 							leftFloats -= floats
 							leftInts -= floats
 
-							newLocalVar := new LocalVar(StringSpan(""),downs[i].GetType(),true,true)
-
-							setCall := CreateFuncCall(StringSpan("="),![newLocalVar.proxy&,new UnrefFuncCall(downs[i])])
-							assert(setCall != null)
-							newLocalVar.extraWork.Push(setCall)
-							assert(CurrentFunc != null)
-							CurrentFunc.LocalVars.Push(newLocalVar)
-
+							newLocalVar := ToLocalVar(,downs[i])
 							preVars.Push(newLocalVar)
 
 							if floats != 0 and ints == 0

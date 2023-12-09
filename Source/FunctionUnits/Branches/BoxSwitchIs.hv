@@ -38,22 +38,11 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	}
 	if callType is in TypePoint
 	{
-		if mainCall.IsMem()
-		{
-			mainVar = new LocalVar(StringSpan(""),mainCall.GetType(),true,true)
-			setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,new UnrefFuncCall(mainCall)])
-			mainVar.extraWork.Push(setVar)
-		}else{
-			mainVar = new LocalVar(StringSpan(""),mainCall.GetType(),true,false)
-			setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,mainCall])
-			mainVar.extraWork.Push(setVar)
-		}
+		mainVar = ToLocalVar(mainCall)
 	}else{
 		itm.EmitError("Bad type to switch on")
 		return null
 	}
-	assert(mainVar != null)
-	CurrentFunc.LocalVars.Push(mainVar)
 
 	skb := itm.Down.Right.Right.Right
 
@@ -122,13 +111,9 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			newVar := LocalVar^
 			if canSwapNames
 			{
-				newVar = new LocalVar(swapName,caseType.GetPoint(),true,true)
 				exchange := GetExchange2(new UnrefFuncCall(mainVar.CreateVarCall()),caseType.GetPoint().GetPoint(),false)
-				assert(exchange != null)
-				setCall := CreateFuncCall(StringSpan("="),![newVar.proxy&,exchange])
-				assert(setCall != null)
-				newVar.extraWork.Push(setCall)
-				CurrentFunc.LocalVars.Push(newVar)
+				baseCall := new PtrToRef(exchange)
+				newVar = ToLocalVar(baseCall,swapName)
 
 				UnitStack.PushFront(newVar)
 			}

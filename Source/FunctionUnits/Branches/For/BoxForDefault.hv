@@ -29,16 +29,6 @@ BoxFor := class extend BoxExeObj
 		{
 			if it.IndexName.Size() != 0 and it.IndVar == null
 			{
-				//if CreatedIndex == null
-				//{
-				//	CreatedIndex = CreateVar(GTypeInt,false)
-				//	objs0 := CheckExeDownList
-				//	objs0.Push(CreatedIndex.CreateCall())
-				//	CreatedIndexAdd = CreateFuncCall(StringSpan("++"),objs0)
-				//	assert(CreatedIndexAdd != null)
-				//	CreatedIndexVar = new MemVarBorrowed(it.IndexName,CreatedIndex)
-				//}
-				//it.IndVar = CreatedIndexVar
 				if CreatedIndex == null
 				{
 					CreatedIndex = new LocalVar(StringSpan("anon"),GTypeInt,true,false)
