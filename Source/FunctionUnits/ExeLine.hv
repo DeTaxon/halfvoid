@@ -222,7 +222,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 }
 
 
-CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
+CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,BoxExeObj^} namedInputs) -> void
 {
 	SyntaxCompress(itm,PriorityData)
 	itr := itm.Down
@@ -268,13 +268,24 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs) -> void
 					
 				}
 			}else{
-				obj := TryGetExeCall(itr)
-				if obj == null
+				if itr.Down?.Right?.GetValue() == "="
 				{
-					itr.Print(0)
-					itr.EmitError("Could not compile line")
+					if itr.Down is not TokenIndent
+						itr.EmitError("Left of operator = must be a name")
+					name := itr.Down->{TokenIndent^}.Value
+					obj := TryGetExeCall(itr.Down.Right.Right)
+					if obj == null
+						itr.Down.Right.Right.EmitError("Could not parse")
+					namedInputs[name] = obj
+				}else{
+					obj := TryGetExeCall(itr)
+					if obj == null
+					{
+						itr.Print(0)
+						itr.EmitError("Could not compile line")
+					}
+					Objs.Push(obj)
 				}
-				Objs.Push(obj)
 			}
 		}
 		itr = itr.Right

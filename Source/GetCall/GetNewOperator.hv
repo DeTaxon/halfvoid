@@ -18,7 +18,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.Right.Right?.GetValue() == "()"
 		{
 			objs.Push(resCall)
-			CheckFuncCallBrackets(itm.Down.Right.Right,objs)
+			namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use varaible
+			CheckFuncCallBrackets(itm.Down.Right.Right,objs,namedInputs)
 
 			if tp is TypeClass
 			{

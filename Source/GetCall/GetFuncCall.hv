@@ -25,7 +25,8 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 
 	Objs := CheckExeDownList
-	CheckFuncCallBrackets(brc,Objs)
+	namedInputs := AVLMap.{StringSpan,BoxExeObj^}
+	CheckFuncCallBrackets(brc,Objs,namedInputs)
 
 	consts := List.{BoxExeConstObj^}
 	if constsToken != null

@@ -31,7 +31,8 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	if vr == null return null
 
 	Objs := CheckExeDownList
-	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs)
+	namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use variable
+	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs,namedInputs)
 
 	if constsToken != null
 	{
