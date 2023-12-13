@@ -1,4 +1,0 @@
-ExecutionContext := class
-{
-	mir_context := void^
-}

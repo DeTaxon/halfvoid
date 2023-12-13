@@ -3,37 +3,26 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-ClassB := class extend TGCObject
+
+ManyVars := !(int x, int y = 30, double z = 0.5) -> void
 {
-	x := int
+	printf("wow %i %i %f\n",x,y,z)
 }
 
 main := !(char^[] args) -> int
 {
-	c := new ClassB
-	c.x = 500
-	g := c->{TGCObject^}
-	switch g is
-	{
-	case ClassB
-		printf("yes %i\n",g.x)
-		g = null
-	case void
-		printf("none\n")
-	}
-	printf("HAH %p\n",g)
-	//c := Str
-	//c = "hoh"
-	//StringSpan("hoh").GetString()
+	ManyVars(13)
+	ManyVars(13,7)
+	ManyVars(13,z = 30)
 }
-"=" := !(Str& left, StringView right) -> void
-{
-	left->AsString = right.GetString()
-}
-"->{}" := !(Str& obj) .{TGCObject^} -> ref TGCObject^
-{
-	return obj->AsString&->{TGCObject^^}^
-}
+//"=" := !(Str& left, StringView right) -> void
+//{
+//	left->AsString = right.GetString()
+//}
+//"->{}" := !(Str& obj) .{TGCObject^} -> ref TGCObject^
+//{
+//	return obj->AsString&->{TGCObject^^}^
+//}
 
 RunTest := !() -> void
 {

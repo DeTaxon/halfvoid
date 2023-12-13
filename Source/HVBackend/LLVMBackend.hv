@@ -1,0 +1,10 @@
+
+LLVMPrintTextModule := !(HVModule module, TIOStream result) -> void
+{
+	StringValues := AVLMap.{String^,int} 
+	UsedClasses := AVLSet.{BoxClass^}
+
+	for func : module.Functions
+	{
+	}
+}

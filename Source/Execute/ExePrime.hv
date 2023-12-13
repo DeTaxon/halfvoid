@@ -1,8 +1,0 @@
-AppendClass BoxExeString
-{
-	IsExecutable := virtual true
-	Execute := virtual !(ExecutionContext^ ctx,BoxExeObj^[] args) -> BoxExeObj^
-	{
-		return this&
-	}
-}

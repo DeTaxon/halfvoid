@@ -16,11 +16,6 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 		return GBoolFalse
 	}
 
-	if cmd == "#Run"
-	{
-		return RunCommand(cmd,itm)
-	}
-
 	if cmd == "#File" or cmd == "#FileLocal"
 	{
 		return TryEmbedFile(itm)
