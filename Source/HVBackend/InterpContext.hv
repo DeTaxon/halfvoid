@@ -1,9 +1,21 @@
 
 MCInterpContext := class
 {
+	funcs := AVLMap.{BoxFuncBody^,MCFunction^} 
 
 	loadedDlls := AVLMap.{CLib^,Library^}
 	declarePtrs := AVLMap.{void^,void^}
+
+	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
+	{
+		return funcs[itm]?
+
+		buildCtx := MCBuildContext
+		itm.CreateMCFunction(buildCtx&)
+		result = buildCtx.CreateMCFunction()
+
+		funcs[itm] = result
+	}
 
 	DeclareToPtr := !(BoxFuncDeclare^ dclr) -> void^
 	{

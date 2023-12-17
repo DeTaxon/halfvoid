@@ -9,11 +9,47 @@ ManyVars := !(int x, int y = 30, double z = 0.5) -> void
 	printf("wow %i %i %f\n",x,y,z)
 }
 
+ClsInput := class
+{
+	Objects := int[]
+	ExtraData := double
+}
+
+TestClsInput := !(ClsInput inputs) -> void
+{
+	for it : inputs.Objects
+	{
+		printf("test %i\n",it)
+	}
+}
+"->{}" := !(int[] vals) -> TestClsInput
+{
+	result.Objects = vals
+}
+
+//#RegisterCommand("Regexp2",
+//	!(char^[] args) -> Blob^
+//	{
+//		mch := Machine
+//		for it : args
+//		{
+//			mch.AddLine(it,0)
+//		}
+//		return mch.GenerateMachine().ToBlob()
+//	},
+//	!(Blob^ arg) -> Regexp
+//	{
+//		
+//	},
+//	Cachable=true
+//)
+
 main := !(char^[] args) -> int
 {
-	ManyVars(13)
-	ManyVars(13,7)
-	ManyVars(13,z = 30)
+	//TestClsInput(![2,53,10])
+	//ManyVars(13)
+	//ManyVars(13,7)
+	//ManyVars(13,z = 30)
 }
 //"=" := !(Str& left, StringView right) -> void
 //{
