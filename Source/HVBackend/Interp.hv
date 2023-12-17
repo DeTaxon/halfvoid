@@ -1,5 +1,6 @@
-MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
+	//interpFunc.Print()
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -35,6 +36,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 			typ = it&->{MCVariable^}.GetType()
 		if it& is MCReference
 			typ = GTypeVoidP
+		if i == 1 and callerFrame != null
+		{
+			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
+			continue
+		}
 		if typ != null
 		{
 			al := typ.GetAlign()
@@ -85,7 +91,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 		{
 		case "call_start"
 			fncObj := ref interpFunc.Objects[opPtr[cs].var2]
+			returnIndexCall := opPtr[cs].var1
 			cs += 1
+
 
 			indxs := HybridQueue.{int,8}
 			while opPtr[cs].opcode != "call_end"
@@ -110,6 +118,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc) -> void
 				{
 					fncType := fncHV.GetType()->{TypeFunc^}
 					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,indxs,0)
+				}else if fncHV is in BoxFuncBody{
+					fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
+					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 				}else{
 					//fncHV.WriteFuncCallMC(iCntx,indxs)
 				}

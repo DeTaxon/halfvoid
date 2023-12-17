@@ -2,6 +2,13 @@ AppendClass BoxFuncBody
 {
 	CreateMCFunction := virtual !(MCBuildContext^ ctx) -> void
 	{
+		resType := GetType()->{TypeFunc^}.ResultType
+		if resType != GTypeVoid
+		{
+			assert(ResultVar != null)
+			varId := ctx.AddLocalVar(ResultVar)
+			assert(varId == 1)
+		}
 		for it,i : LocalVars
 		{
 			ctx.AddLocalVar(it)

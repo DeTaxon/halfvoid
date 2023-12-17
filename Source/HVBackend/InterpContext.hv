@@ -10,7 +10,11 @@ MCInterpContext := class
 	{
 		return funcs[itm]?
 
+		itm.ParseBody()
+		itm.WaitReadyState()
+
 		buildCtx := MCBuildContext
+		buildCtx.Init()
 		itm.CreateMCFunction(buildCtx&)
 		result = buildCtx.CreateMCFunction()
 
