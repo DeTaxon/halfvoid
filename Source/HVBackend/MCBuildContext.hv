@@ -6,6 +6,9 @@ MCBuildContext := class extend TGCObject
 
 	VarsToObject := AVLMap.{LocalVar^,int}
 
+	InputsIndxStart := int
+	InputsIndxCount := int
+
 	Init := !() -> void
 	{
 		newObj := MCConstVoid
@@ -105,5 +108,7 @@ MCBuildContext := class extend TGCObject
 
 		result.Objects = objects.ToVector()
 		result.Lines = lines.ToVector()
+		result.InputsIndxStart = this.InputsIndxStart
+		result.InputsIndxCount = this.InputsIndxCount
 	}
 }

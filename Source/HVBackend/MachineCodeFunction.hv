@@ -87,6 +87,9 @@ MCFunction := class //extend TGCObject
 {
 	BaseFunction := BoxFuncBody^
 
+	InputsIndxStart := int
+	InputsIndxCount := int
+
 	Objects := MCObject[]
 	Labels := MCLabel[]
 	Lines := MCLine[]

@@ -1,6 +1,6 @@
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
-	//interpFunc.Print()
+	interpFunc.Print()
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -29,6 +29,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	useStackSize = (useStackSize + 15) and_b 0xFFFFF0
 	thisFrame.localVarBlob = new BlobOnVector(useStackSize)
 	offset := int
+	inpPos := 0
 	for it,i : interpFunc.Objects
 	{
 		typ := Type^
@@ -39,6 +40,12 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		if i == 1 and callerFrame != null
 		{
 			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
+			continue
+		}
+		if callerIndx != null and i in Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size())
+		{
+			thisFrame.localVarTable[i] = callerFrame.localVarTable[callerIndx[inpPos]]
+			inpPos += 1
 			continue
 		}
 		if typ != null

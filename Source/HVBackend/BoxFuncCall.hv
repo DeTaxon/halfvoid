@@ -13,7 +13,10 @@ AppendClass BoxFuncCall
 			for it : downs
 			{
 				subObj := it.WriteMC(ctx)
-				thisIndexes.Push(subObj.CreatedId)
+
+				varId := ctx.CreateVar(it.GetType())
+				HVB_ins_move(ctx,varId,subObj.CreatedId)
+				thisIndexes.Push(varId)
 			}
 
 			fType := callObj.GetType()->{TypeFunc^}

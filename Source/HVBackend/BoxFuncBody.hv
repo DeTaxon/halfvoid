@@ -8,6 +8,14 @@ AppendClass BoxFuncBody
 			assert(ResultVar != null)
 			varId := ctx.AddLocalVar(ResultVar)
 			assert(varId == 1)
+			ctx.InputsIndxStart = 1
+		}else{
+			ctx.InputsIndxStart = 0
+		}
+		ctx.InputsIndxCount = Params.Size()
+		for it,i : Params
+		{
+			ctx.AddLocalVar(it)
 		}
 		for it,i : LocalVars
 		{

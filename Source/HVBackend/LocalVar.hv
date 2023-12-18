@@ -29,6 +29,13 @@ AppendClass FuncLocalVarAccess
 		result.CreatedId = ctx.GetLocalVar(baseVar)
 	}
 }
+AppendClass GetFuncInputVar
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.GetLocalVar(baseVar)
+	}
+}
 AppendClass LocalVarProxy
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult

@@ -62,12 +62,12 @@ main := !(char^[] args) -> int
 RunTest := !() -> void
 {
 	c := int
-	c = RunTest2()
+	c = RunTest2(10,109)
 	printf("hello world %i!\n",c)
 }
-RunTest2 := !() -> int
+RunTest2 := !(int x, int y) -> int
 {
-	result = 47
+	result = x + y
 	printf("sub wunk\n")
 }
 

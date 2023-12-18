@@ -6,6 +6,7 @@ MCInterpFuncFrame := class extend TGCObject
 	localVarBlob := Blob^
 	localVarTable := AVLMap.{int,void^}
 
+
 	GetObjectPtr := !(int index) -> void^
 	{
 		obj := ref func.Objects[index]
@@ -15,6 +16,10 @@ MCInterpFuncFrame := class extend TGCObject
 		}
 		return localVarTable[index]?
 
+		if obj& is MCConstString
+		{
+			return obj&->{MCConstString^}.GetValue().charPtr&
+		}
 		if obj&.IsConstant
 		{
 			return obj.Value&
@@ -38,6 +43,9 @@ MCInterpFuncFrame := class extend TGCObject
 		if obj& is MCConstString
 		{
 			return obj&->{MCConstString^}.GetValue()
+		}else if obj& is MCVariable
+		{
+			return localVarTable[index]->{char^^}^
 		}else{
 			assert(false)
 		}

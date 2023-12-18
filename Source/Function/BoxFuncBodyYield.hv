@@ -29,7 +29,7 @@ AppendClass BoxFuncBody
 	{
 		for it, i : Params
 		{
-			getVar := new GetFuncInputVar(i,it.GetBaseType())
+			getVar := new GetFuncInputVar(it,i,it.GetBaseType())
 
 			if it.NeedMemUse
 			{
