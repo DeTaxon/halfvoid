@@ -6,6 +6,9 @@ AppendClass BoxFuncCall
 		{
 			result = callObj.WriteFuncCallMC(ctx,downs)
 		}else{
+			if callObj is in BoxFuncBody //TODO remove
+				return void
+
 			fncId := ctx.AddFuncConst(callObj)
 
 			thisIndexes := HybridQueue.{int,16}

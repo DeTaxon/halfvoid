@@ -1,4 +1,8 @@
 
+HVB_ins_const_int32 := !(MCBuildContext^ ctx, s32 value) -> int
+{
+	return ctx.AddInteger(value)
+}
 
 HVB_ins_label := !(MCBuildContext^ ctx,s32 labelId) -> void
 {

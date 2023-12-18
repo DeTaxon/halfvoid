@@ -1,0 +1,20 @@
+AppendClass FieldPath
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx)
+
+		tf := GetType()->{TypeFunc^}
+		classObj := tf.Params[0].ItType->{TypeClass^}.ToClass
+		resType := tf.ResultType
+
+		classObj.AwaitReadyState()
+
+		resId := ctx.CreateReference(resType)
+		intId := HVB_ins_const_int32(ctx,GetIndex(classObj))
+		HVB_ins_load_element(ctx,resId,var1.CreatedId,intId)
+
+		result.CreatedId = resId
+	}
+}

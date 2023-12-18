@@ -316,6 +316,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(objSet& is MCReference)
 				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
 				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * indType.GetSize()]&
+			}else if varType is in TypeClass{
+				asClass := varType->{TypeClass^}.ToClass
+				fld := asClass.GetFieldByIndex(v3->{int^}^)
+
+				objSet := ref interpFunc.Objects[thisLine.var1]
+				assert(objSet& is MCReference)
+				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+				setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
 			}else{
 				assert(false)
 			}
