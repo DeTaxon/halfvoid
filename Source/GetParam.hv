@@ -141,17 +141,24 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				assert(clsType is TypeClass)
 				cls := clsType->{TypeClass^}.ToClass
 
-				fld := cls.GetField(asItm.Value) //todo: could use field call ifrom here
-
+				fld := cls.GetField(asItm.Value)
 				if fld != null
 				{
 					tkn1 := TokenIndent(StringSpan("this"))
-					parGetCall := TryCheckGetParam(tkn1&) //todo, i can get from Params
+					parGetCall := TryCheckGetParam(tkn1&)
 					assert(parGetCall != null)
 
-					itms := CheckExeDownList
-					itms.Push(parGetCall)
-					return fld.CreateCall(itms)
+					return fld.CreateCall(![parGetCall])
+				}
+
+				mt := cls.GetFieldInVTable(asItm.Value)
+				if mt != null
+				{
+					tkn1 := TokenIndent(StringSpan("this"))
+					parGetCall := TryCheckGetParam(tkn1&)
+					assert(parGetCall != null)
+
+					return mt.CreateCall(![parGetCall])
 				}
 			}
 		}

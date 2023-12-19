@@ -184,10 +184,6 @@ AppendClass BoxClass
 		}
 		return null
 	}
-	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
-	{
-		return null
-	}
 	GetFieldByIndex := virtual !(int val) -> FieldPath^
 	{
 		AwaitTypeState()

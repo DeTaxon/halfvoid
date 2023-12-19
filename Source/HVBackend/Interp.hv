@@ -329,6 +329,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 
 			cs += 1
+		case "set_reference"
+			v1 := thisFrame.GetReferencePtr(thisLine.var1)
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			v1->{void^^}^ = v2
+			cs += 1
 		case "get_pointer"
 			res := thisFrame.GetObjectPtr(thisLine.var1)
 

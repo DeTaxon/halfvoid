@@ -14,6 +14,7 @@ MCBaseOpcodes := enum extend u16
 
 	"load_element",
 	"load_field",
+	"set_reference",
 	"get_pointer",
 
 	"add",

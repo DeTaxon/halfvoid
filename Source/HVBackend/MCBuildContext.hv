@@ -33,9 +33,16 @@ MCBuildContext := class extend TGCObject
 	{
 		result = objects.Size()
 		VarsToObject[vr] = result
-		setVal := MCVariable
-		setVal.GetValueType() = vr.GetBaseType()
-		objects.Push(setVal)
+		if vr.isReference
+		{
+			setVal := MCReference
+			setVal.GetValueType() = vr.GetBaseType()
+			objects.Push(setVal)
+		}else{
+			setVal := MCVariable
+			setVal.GetValueType() = vr.GetBaseType()
+			objects.Push(setVal)
+		}
 	}
 	GetLocalVar := !(LocalVar^ vr) -> int
 	{

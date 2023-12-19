@@ -6,23 +6,30 @@ AppendClass BoxFuncCall
 		{
 			result = callObj.WriteFuncCallMC(ctx,downs)
 		}else{
-			if callObj is in BoxFuncBody //TODO remove
-				return void
-
 			fncId := ctx.AddFuncConst(callObj)
 
 			thisIndexes := HybridQueue.{int,16}
 
-			for it : downs
+			fType := callObj.GetType()->{TypeFunc^}
+
+			for it,i : downs
 			{
 				subObj := it.WriteMC(ctx)
 
-				varId := ctx.CreateVar(it.GetType())
-				HVB_ins_move(ctx,varId,subObj.CreatedId)
-				thisIndexes.Push(varId)
+				isRef := false
+				if i < fType.Params.Size()
+					isRef = fType.Params[i].IsRef
+				if isRef
+				{
+					varId := ctx.CreateReference(it.GetType())
+					HVB_ins_set_reference(ctx,varId,subObj.CreatedId)
+					thisIndexes.Push(varId)
+				}else{
+					varId := ctx.CreateVar(it.GetType())
+					HVB_ins_move(ctx,varId,subObj.CreatedId)
+					thisIndexes.Push(varId)
+				}
 			}
-
-			fType := callObj.GetType()->{TypeFunc^}
 
 			resultId := 0
 			if fType.ResultType != GTypeVoid //TODO ref

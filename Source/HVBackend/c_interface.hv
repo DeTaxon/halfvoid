@@ -30,6 +30,10 @@ HVB_ins_load_element := !(MCBuildContext^ ctx,s32 resultId, s32 objectId, s32 ob
 {
 	ctx.lines.Push(MCLine("load_element",resultId,objectId,objectIndex))
 }
+HVB_ins_set_reference := !(MCBuildContext^ ctx,s32 resultId, s32 objectId) -> void
+{
+	ctx.lines.Push(MCLine("set_reference",resultId,objectId))
+}
 HVB_ins_get_pointer := !(MCBuildContext^ ctx,s32 resultId, s32 objectId) -> void
 {
 	ctx.lines.Push(MCLine("get_pointer",resultId,objectId))
