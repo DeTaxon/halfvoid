@@ -63,22 +63,22 @@ TestClsInput := !(ClsInput inputs) -> void
 //	Cachable=true
 //)
 
-C1 := class extend TGCObject
+Tomato := class extend TGCObject
 {
-	TestVar := virtual poison #Iter()
+	TestVar := virtual poison #ThisClass()->TypeName
 	Hey := !() -> void
 	{
-		printf("test %i\n",TestVar)
+		printf("test %s\n",TestVar)
 	}
 }
-C2 := class extend C1
+PotatoClass := class extend Tomato
 {
 }
 
 main := !(char^[] args) -> int
 {
-	r1 := C1
-	r2 := C2
+	r1 := Tomato
+	r2 := PotatoClass
 
 	r1.Hey()
 	r2.Hey()

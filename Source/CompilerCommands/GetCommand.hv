@@ -50,11 +50,18 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			return GBoolTrue
 		return GBoolFalse
 	}
-	if cmd == "#Iter"
+	if cmd == "#ThisClass"
 	{
-		itr2 := static 0
-		itr2 += 1
-		return GetExeInt(itr2)
+		itrScope := CurrentScope
+		while itrScope != null
+		{
+			if itrScope is in BoxClass
+				break
+			itrScope = itrScope.GetParentScope()
+		}
+		if itrScope == null
+			itm.EmitError("Command is not in class")
+		return GetConstType(itrScope->{BoxClass^}.ItType)
 	}
 	itm.EmitError("Command not found")	
 }
