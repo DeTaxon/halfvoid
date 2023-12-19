@@ -412,6 +412,10 @@ BoxClassBody := class extend BoxClassPoison
 								{
 									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
 									PreVTableVars[name] = newVal
+									if isPoison
+									{
+										PoisonFields[name] = !{itm,true}
+									}
 								}else{
 									itm.EmitError("Unknown object")
 								}

@@ -65,7 +65,7 @@ TestClsInput := !(ClsInput inputs) -> void
 
 C1 := class extend TGCObject
 {
-	TestVar := virtual 15
+	TestVar := virtual poison #Iter()
 	Hey := !() -> void
 	{
 		printf("test %i\n",TestVar)
@@ -73,7 +73,6 @@ C1 := class extend TGCObject
 }
 C2 := class extend C1
 {
-	TestVar := virtual 16
 }
 
 main := !(char^[] args) -> int

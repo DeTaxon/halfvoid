@@ -50,5 +50,11 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			return GBoolTrue
 		return GBoolFalse
 	}
+	if cmd == "#Iter"
+	{
+		itr2 := static 0
+		itr2 += 1
+		return GetExeInt(itr2)
+	}
 	itm.EmitError("Command not found")	
 }
