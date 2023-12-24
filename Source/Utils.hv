@@ -139,7 +139,7 @@ ToLocalVar := !(BoxExeObj^ itm,StringSpan varName) -> LocalVar^
 		assert(setCall != null)
 		objRes.extraWork.Push(setCall)
 		assert(CurrentFunc != null)
-		CurrentFunc.LocalVars.Push(objRes)
+		CurrentFunc.AddLocalVar(objRes)
 
 		return objRes
 	}else{
@@ -147,6 +147,7 @@ ToLocalVar := !(BoxExeObj^ itm,StringSpan varName) -> LocalVar^
 		setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,itm])
 		assert(setVar != null)
 		mainVar.extraWork.Push(setVar)
+		CurrentFunc.AddLocalVar(mainVar)
 		return mainVar
 	}
 }

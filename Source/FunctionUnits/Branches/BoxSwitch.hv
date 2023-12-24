@@ -30,7 +30,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		obj.EmitError("Unknown error,  switch base does not have operator =")
 
 	mainVar.extraWork.Push(setCall)
-	CurrentFunc.LocalVars.Push(mainVar)
+	CurrentFunc.AddLocalVar(mainVar)
 
 	itr = itr.Right
 

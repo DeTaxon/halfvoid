@@ -9,95 +9,18 @@ AppendClass BoxFuncBody
 	{
 		if IsGenerator()
 			return void
+
+		defer finishedLocalVarInit = true
+
 		for it, i : LocalVars
 		{
-			tp := it.GetBaseType()
-
-			access := new FuncLocalVarAccess(it,tp)
-			it.SetCall(access)
-
-			createCall := new FuncLocalVarCleanup(access,it)
-			it.createVar.Push(createCall)
-
-			if it.itName.Size() >= 1 and it.itName[0] != '.'
-			{
-				it.createVar.Push(new FuncLocalDebugInfoDeclare(it.proxy&,it))
-			}
-
-			if tp is TypeClass
-			{
-				objs := CheckExeDownList
-				objs.Push(access)
-				cnsts := List.{BoxExeConstObj^}
-				fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
-
-				assert(fnc != null)
-
-				it.createVar.Push(fnc.CreateCall(objs))
-
-				if IsGCClass(tp)
-				{
-					if LocalVarsToDeferGuard.Contain(it)
-					{
-						defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
-						defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
-						defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
-
-						LocalVarsDeferChecks.Push(defGuard)
-						
-						objsI := CheckExeDownList
-						objsI.Push(defGuard.CreateVarCall())
-						objsI.Push(GBoolTrue)
-						setTrue := CreateFuncCall(StringSpan("="),objsI)
-
-						it.createVar.Push(setTrue)
-
-						noObjs := CheckExeDownList
-						destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-						destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
-						createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,destrCall2)
-					}else{
-
-						noObjs := CheckExeDownList
-						destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
-						destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
-						createCall.deferCall = new BoxDeferSize2(destrCall,destrCall2)
-					}
-				}
-
-			}
-			if IsGCPtr(tp) and not it.isReference
-			{
-				if LocalVarsToDeferGuard.Contain(it)
-				{
-					defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
-					defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
-					defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
-
-					LocalVarsDeferChecks.Push(defGuard)
-
-					objsI := CheckExeDownList
-					objsI.Push(defGuard.CreateVarCall())
-					objsI.Push(GBoolTrue)
-					setTrue := CreateFuncCall(StringSpan("="),objsI)
-
-					it.createVar.Push(setTrue)
-
-					objs := CheckExeDownList
-					objs.Push(access)
-					destrCall := GFuncGCSetNull.CreateCall(objs)
-					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,null)
-				}else{
-					objs := CheckExeDownList
-					objs.Push(access)
-					destrCall := GFuncGCSetNull.CreateCall(objs)
-					createCall.deferCall = new BoxDefer(destrCall)
-				}
-			}
+			InitLocalVar(it)
 		}
 	}
 	LocalVariablesForYield := !(BoxClass^ lambdaClass) -> void
 	{
+		defer finishedLocalVarInit = true
+
 		yieldVars := lambdaClass.GetField(StringSpan("yieldVars"))
 
 		assert(yieldVars != null)
@@ -148,6 +71,95 @@ AppendClass BoxFuncBody
 			}
 		}
 	}
+	InitLocalVar := !(LocalVar^ it) -> void
+	{
+		tp := it.GetBaseType()
+
+		access := new FuncLocalVarAccess(it,tp)
+		it.SetCall(access)
+
+		createCall := new FuncLocalVarCleanup(access,it)
+		it.createVar.Push(createCall)
+
+		if it.itName.Size() >= 1 and it.itName[0] != '.'
+		{
+			it.createVar.Push(new FuncLocalDebugInfoDeclare(it.proxy&,it))
+		}
+
+		if tp is TypeClass
+		{
+			objs := CheckExeDownList
+			objs.Push(access)
+			cnsts := List.{BoxExeConstObj^}
+			fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
+
+			assert(fnc != null)
+
+			it.createVar.Push(fnc.CreateCall(objs))
+
+			if IsGCClass(tp)
+			{
+				if LocalVarsToDeferGuard.Contain(it)
+				{
+					defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
+					defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
+					defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
+
+					LocalVarsDeferChecks.Push(defGuard)
+					
+					objsI := CheckExeDownList
+					objsI.Push(defGuard.CreateVarCall())
+					objsI.Push(GBoolTrue)
+					setTrue := CreateFuncCall(StringSpan("="),objsI)
+
+					it.createVar.Push(setTrue)
+
+					noObjs := CheckExeDownList
+					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
+					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
+					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,destrCall2)
+				}else{
+
+					noObjs := CheckExeDownList
+					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
+					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
+					createCall.deferCall = new BoxDeferSize2(destrCall,destrCall2)
+				}
+			}
+
+		}
+		if IsGCPtr(tp) and not it.isReference
+		{
+			if LocalVarsToDeferGuard.Contain(it)
+			{
+				defGuard := new LocalVar(StringSpan(".anon"),GTypeBool,true,false)
+				defGuard.createVar.Push(new FuncLocalVarCleanup(defGuard.CreateVarCall()))
+				defGuard.SetCall(new FuncLocalVarAccess(defGuard,GTypeBool))
+
+				LocalVarsDeferChecks.Push(defGuard)
+
+				objsI := CheckExeDownList
+				objsI.Push(defGuard.CreateVarCall())
+				objsI.Push(GBoolTrue)
+				setTrue := CreateFuncCall(StringSpan("="),objsI)
+
+				it.createVar.Push(setTrue)
+
+				objs := CheckExeDownList
+				objs.Push(access)
+				destrCall := GFuncGCSetNull.CreateCall(objs)
+				createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,null)
+			}else{
+				objs := CheckExeDownList
+				objs.Push(access)
+				destrCall := GFuncGCSetNull.CreateCall(objs)
+				createCall.deferCall = new BoxDefer(destrCall)
+			}
+		}
+	}
+
+	finishedLocalVarInit := bool
+
 	AddLocalVar := !(LocalVar^ lVar) -> void
 	{
 		LocalVars.Push(lVar)
@@ -158,6 +170,11 @@ AppendClass BoxFuncBody
 			{
 				LocalVarsToDeferGuard.Insert(lVar)
 			}
+		}
+		if finishedLocalVarInit
+		{
+			InitLocalVar(lVar)
+			assert(not IsGenerator())
 		}
 
 	}

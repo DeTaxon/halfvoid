@@ -43,10 +43,13 @@ VKGrowableClass := class extend BoxClass
 		for it : FieldsPath
 		{
 			if it.Field.Name == val
+			{
 				return it
+			}
 		}
 
 		newFieldType := GetNewFieldType(val)
+
 
 		if newFieldType == null
 			return null

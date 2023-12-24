@@ -6,7 +6,7 @@ BoxForOverMeta := class extend BoxExeObj
 
 	metaCount := int
 
-	middleVars := AVLMap.{int,List.{NamedVar^}}
+	middleVars := AVLMap.{int,List.{LocalVar^}}
 
 	itBody := Token^
 
@@ -42,15 +42,7 @@ BoxForOverMeta := class extend BoxExeObj
 				alVar := new AliasVar(dwnObjs[j].ValueName,locVar)
 				UnitStack.PushFront(alVar)
 			}else{
-				mtVar := dwnObjs[j].MetaObj.GetMetaIterValueParam(i)
-				if mtVar != null
-				{
-					newVar := new MemVarBorrowed(dwnObjs[j].ValueName,mtVar)
-					middleVars[i].Push(newVar)
-					UnitStack.PushFront(newVar)
-				}else{
-					tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
-				}
+				tryAddVar(dwnObjs[j].MetaObj.GetMetaIterValue(i),i,dwnObjs[j].ValueName)
 			}
 
 			if dwnObjs[j].IndexName.Size() != 0
@@ -75,9 +67,8 @@ BoxForOverMeta := class extend BoxExeObj
 			UnitStack.PushFront(new ConstVar(itName,toAdd->{BoxExeConstObj^}))
 			return void
 		}
-		
-		fr := new FuncResultParam(toAdd)
-		newVar := new MemVar(itName,fr)
+	
+		newVar := ToLocalVar(toAdd,itName)
 		middleVars[num].Push(newVar)
 		UnitStack.PushFront(newVar)
 	}

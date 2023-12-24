@@ -3,7 +3,6 @@ BoxMetaObj := class extend BoxExeObj
 	IsMetaIteratable := virtual !() -> bool { return false }
 	MetaIteretableSize := virtual !() -> int { return 0}
 
-	GetMetaIterValueParam := virtual !(int ind) -> ParamFunc^ { return null } // called this first, if == null next is GetMetaIterValue
 	GetMetaIterValueVar := virtual !(int ind) -> LocalVar^  { return null }
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return null }
 
