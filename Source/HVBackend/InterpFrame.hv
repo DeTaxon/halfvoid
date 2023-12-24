@@ -12,6 +12,8 @@ MCInterpFuncFrame := class extend TGCObject
 		obj := ref func.Objects[index]
 		if obj& is MCReference
 		{
+			assert(localVarTable.Contain(index))
+			assert(localVarTable[index] != null)
 			return localVarTable[index]->{void^^}^
 		}
 		return localVarTable[index]?

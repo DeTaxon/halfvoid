@@ -37,12 +37,12 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			typ = it&->{MCVariable^}.GetType()
 		if it& is MCReference
 			typ = GTypeVoidP
-		if i == 1 and callerFrame != null
+		if i == 1 and callerFrame != null and returnIndex != 0
 		{
 			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
 			continue
 		}
-		if callerIndx != null and i in Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size())
+		if callerIndx != null and i in Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size() - 1)
 		{
 			thisFrame.localVarTable[i] = callerFrame.localVarTable[callerIndx[inpPos]]
 			inpPos += 1
@@ -93,6 +93,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
+		printf("line %i\n",cs)
 		thisLine := ref opPtr[cs]
 		switch opPtr[cs].opcode
 		{
@@ -332,6 +333,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "set_reference"
 			v1 := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			printf("refPtr %p %p\n",v1,v2)
 			v1->{void^^}^ = v2
 			cs += 1
 		case "get_pointer"

@@ -1,0 +1,16 @@
+AppendClass MemVar
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		Value.WriteMC(ctx)
+		Inits[^].WriteMC(ctx)
+	}
+}
+
+AppendClass FuncResultParam
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		exeObj.WriteMC(ctx)
+	}
+}

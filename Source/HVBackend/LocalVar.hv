@@ -14,7 +14,8 @@ AppendClass FuncLocalVarCleanup
 	{
 		if baseVar != null
 		{
-			ctx.lines.Push(MCLine("clean",ctx.GetLocalVar(baseVar)))
+			if not baseVar.isReference //TODO think about references
+				ctx.lines.Push(MCLine("clean",ctx.GetLocalVar(baseVar)))
 		}else{
 			assert(false) //TODO vars in generators
 			//res := getVal.WriteMC(ctx)

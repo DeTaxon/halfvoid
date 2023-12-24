@@ -1,0 +1,27 @@
+AppendClass BoxForOverGrowableMeta
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		dwnObjs[^].MetaObj.WriteMC(ctx)
+
+		for i : blocks.Size()
+		{
+			if middleVars.Contain(i)
+			{
+				for it : middleVars[i]
+				{
+					it.WriteMC(ctx)
+				}
+			}
+
+			blocks[i].WriteMC(ctx)
+		}
+	}
+}
+AppendClass GrowableClassMetaFields
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		objRes.WriteMC(ctx)
+	}
+}

@@ -1,0 +1,10 @@
+AppendClass PtrToRef
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		resCall := Down.WriteMC(ctx)
+		newRef := ctx.CreateReference(GetType())
+		HVB_ins_set_reference(ctx,newRef,resCall.CreatedId)
+		result.CreatedId = newRef
+	}
+}

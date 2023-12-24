@@ -36,11 +36,11 @@ MCBuildContext := class extend TGCObject
 		if vr.isReference
 		{
 			setVal := MCReference
-			setVal.GetValueType() = vr.GetBaseType()
+			setVal.GetValueType() = vr.GetType()
 			objects.Push(setVal)
 		}else{
 			setVal := MCVariable
-			setVal.GetValueType() = vr.GetBaseType()
+			setVal.GetValueType() = vr.GetType()
 			objects.Push(setVal)
 		}
 	}

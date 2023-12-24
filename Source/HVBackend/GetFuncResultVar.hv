@@ -1,0 +1,7 @@
+AppendClass GetFuncResultVar
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.GetLocalVar(base)
+	}
+}
