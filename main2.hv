@@ -4,6 +4,24 @@
 //TODO make FS aware of CacheFile
 
 
+main := !(char^[] args) -> int
+{
+	//TestClsInput(![2,53,10])
+	//ManyVars(13)
+	//ManyVars(13,7)
+	//ManyVars(13,z = 30)
+
+	tbl := HVTable2.{int,int}
+	tbl.Add(1,2)
+	tbl.Add(2,3)
+	tbl.Add(4,5)
+
+	tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
+	tbl.key.Get(1, (x) ==> { printf("hm just %i\n",x) })
+	tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
+	tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
+}
+
 RunClass := class
 {
 	x := int
@@ -11,15 +29,12 @@ RunClass := class
 }
 RunTest := !() -> void
 {
-	c := RunClass
-	c.y = 147
-
-	//c2 := RunTest2(10,109)
-	printf("hello world %i!\n",c.y)
+	c := RunTest2(10,109).y
+	printf("hello world %i!\n",c)
 }
-RunTest2 := !(int x, int y) -> int
+RunTest2 := !(int x, int y) -> RunClass
 {
-	result = x + y
+	result.y = x + y
 	printf("sub wunk\n")
 }
 
@@ -62,32 +77,6 @@ TestClsInput := !(ClsInput inputs) -> void
 //	},
 //	Cachable=true
 //)
-
-Tomato := class extend TGCObject
-{
-	TestVar := virtual poison #ThisClass()->TypeName
-	Hey := !() -> void
-	{
-		printf("test %s\n",TestVar)
-	}
-}
-PotatoClass := class extend Tomato
-{
-}
-
-main := !(char^[] args) -> int
-{
-	r1 := Tomato
-	r2 := PotatoClass
-
-	r1.Hey()
-	r2.Hey()
-
-	//TestClsInput(![2,53,10])
-	//ManyVars(13)
-	//ManyVars(13,7)
-	//ManyVars(13,z = 30)
-}
 //"=" := !(Str& left, StringView right) -> void
 //{
 //	left->AsString = right.GetString()

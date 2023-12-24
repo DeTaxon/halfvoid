@@ -164,7 +164,7 @@ ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> vo
 		{
 			if blCount[i] != 0
 			{
-				ZeroMem(toSet.extraNodes[i]) //TODO array of VTable types does not work
+				ZeroMem(toSet.extraNodes[i])
 				toSet.extraNodes[i].Resize(blCount[i])
 				//toSet.extraNodes[i] = new Tuple.{u16,u16}[blCount[i]]
 			}

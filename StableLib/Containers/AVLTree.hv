@@ -15,7 +15,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 	{
 		return FindOrCreateInner(dat&,toRet)
 	}
-	FindOrCreateInner := virtual !(DATA^ dat,CommonTreeNode.{DATA}^^ toRet) -> bool ; TemplateResist //bool isCreated 
+	FindOrCreateInner := virtual !(DATA^ dat,CommonTreeNode.{DATA}^^ toRet) -> bool ; Template Resist //bool isCreated 
 	{
 		if Start == null 
 		{
