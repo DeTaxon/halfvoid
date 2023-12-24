@@ -40,9 +40,11 @@ GetFuncInputVar := class extend BoxExeObj
 }
 GetFuncResultVar := class extend BoxExeObj
 {
-	this := !(Type^ objType) -> void
+	base := LocalVar^
+	this := !(LocalVar^ baseVar,Type^ objType) -> void
 	{
 		ObjType = objType
+		base = baseVar
 	}
 	IsMem := virtual !() -> bool
 	{

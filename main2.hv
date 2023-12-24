@@ -11,15 +11,15 @@ main := !(char^[] args) -> int
 	//ManyVars(13,7)
 	//ManyVars(13,z = 30)
 
-	tbl := HVTable2.{int,int}
-	tbl.Add(1,2)
-	tbl.Add(2,3)
-	tbl.Add(4,5)
+	//tbl := HVTable2.{int,int}
+	//tbl.Add(1,2)
+	//tbl.Add(2,3)
+	//tbl.Add(4,5)
 
-	tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
-	tbl.key.Get(1, (x) ==> { printf("hm just %i\n",x) })
-	tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
-	tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
+	//tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
+	//tbl.key.Get(1, (x) ==> { printf("hm just %i\n",x) })
+	//tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
+	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
 RunClass := class

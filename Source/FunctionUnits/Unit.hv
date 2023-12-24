@@ -1,5 +1,7 @@
 BoxUnit := class
 {
+	UnitName := virtual poison #ThisClass()->TypeName
+
 	Work := virtual !() -> void
 	{
 	}

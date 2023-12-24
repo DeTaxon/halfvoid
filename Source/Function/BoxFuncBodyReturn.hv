@@ -28,8 +28,8 @@ AppendClass BoxFuncBody
 			resSpn := StringSpan("result")
 			if tp.ResultType.IsComplexReturn() and not tp.ResultRef
 			{
-				getRes := new GetFuncResultVar(tp.ResultType.GetPoint())
 				ResultVar = new LocalVar(resSpn,tp.ResultType,true,true)
+				getRes := new GetFuncResultVar(ResultVar,tp.ResultType.GetPoint())
 				ResultVar.SetCall(getRes)
 			}else{
 				rFuncType := tp.ResultType

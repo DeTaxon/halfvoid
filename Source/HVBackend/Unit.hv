@@ -2,6 +2,7 @@ AppendClass BoxUnit
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		printf("WriteMC not implemented on %s\n",UnitName)
 		assert(false)
 	}
 }
