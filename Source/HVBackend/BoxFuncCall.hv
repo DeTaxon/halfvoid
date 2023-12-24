@@ -35,11 +35,13 @@ AppendClass BoxFuncCall
 				ctx.AddLocalVar(ResultVar)
 			}
 
+			returnByInput := false
 			resultId := 0
 			if fType.ResultType != GTypeVoid //TODO ref
 			{
 				if fType.ResultType.IsComplexReturn()
 				{
+					returnByInput = true
 					assert(ResultVar != null)
 					resultId = ctx.CreateReference(fType.ResultType)
 					HVB_ins_set_reference(ctx,resultId,ctx.GetLocalVar(ResultVar))
@@ -50,8 +52,10 @@ AppendClass BoxFuncCall
 			result.CreatedId = resultId
 
 			ctx.lines.Push(MCLine("call_start",resultId,fncId))
-			for it : thisIndexes
+			for it, i  : thisIndexes
 			{
+				if i == 0 and returnByInput
+					continue
 				ctx.lines.Push(MCLine("load_var",it))
 			}
 			ctx.lines.Push(MCLine("call_end"))
