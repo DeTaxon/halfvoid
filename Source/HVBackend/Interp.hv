@@ -1,9 +1,12 @@
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
-	interpFunc.Print()
+	//interpFunc.Print()
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
+
+	if interpFunc.Lines.Size() == 0
+		return void
 
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
@@ -93,7 +96,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
-		printf("line %i\n",cs)
+		//printf("line %i\n",cs)
 		thisLine := ref opPtr[cs]
 		switch opPtr[cs].opcode
 		{
@@ -333,7 +336,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "set_reference"
 			v1 := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			printf("refPtr %p %p\n",v1,v2)
 			v1->{void^^}^ = v2
 			cs += 1
 		case "get_pointer"

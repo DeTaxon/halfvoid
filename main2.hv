@@ -31,11 +31,12 @@ RunTest := !() -> void
 {
 	d := RunClass
 	RunTest2(d)
-	//printf("test %i\n",d.x)
+	printf("test %i %i\n",d.x,d.y)
 }
 RunTest2 := !(RunClass d) -> void
 {
-	//d.x = 200
+	d.x = 200
+	d.y = 99
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

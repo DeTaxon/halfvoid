@@ -21,8 +21,8 @@ AppendClass BoxFuncCall
 					isRef = fType.Params[i].IsRef
 				if isRef
 				{
-					varId := ctx.CreateReference(it.GetType())
-					HVB_ins_set_reference(ctx,varId,subObj.CreatedId)
+					varId := ctx.CreateVar(it.GetType().GetPoint())
+					HVB_ins_get_pointer(ctx,varId,subObj.CreatedId)
 					thisIndexes.Push(varId)
 				}else{
 					varId := ctx.CreateVar(it.GetType())

@@ -14,7 +14,7 @@ AppendClass FuncLocalVarCleanup
 	{
 		if baseVar != null
 		{
-			if not baseVar.isReference //TODO think about references
+			if not baseVar.isReference
 				ctx.lines.Push(MCLine("clean",ctx.GetLocalVar(baseVar)))
 		}else{
 			assert(false) //TODO vars in generators
@@ -27,7 +27,17 @@ AppendClass FuncLocalVarAccess
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		result.CreatedId = ctx.GetLocalVar(baseVar)
+		if baseVar.isReference
+		{
+			//varId := ctx.GetLocalVar(baseVar)
+			//newId := ctx.CreateReference(baseVar.GetType())
+			//zero := HVB_ins_const_int32(ctx,0)
+			//HVB_ins_load_element(ctx,newId,varId,zero)
+			//result.CreatedId = newId
+			result.CreatedId = ctx.GetLocalVar(baseVar)
+		}else{
+			result.CreatedId = ctx.GetLocalVar(baseVar)
+		}
 	}
 }
 AppendClass GetFuncInputVar
