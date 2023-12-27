@@ -31,6 +31,8 @@ MCBuildContext := class extend TGCObject
 	}
 	AddLocalVar := !(LocalVar^ vr) -> int
 	{
+		return VarsToObject[vr]?
+
 		result = objects.Size()
 		VarsToObject[vr] = result
 		if vr.isReference

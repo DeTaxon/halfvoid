@@ -22,6 +22,6 @@ AppendClass GrowableClassMetaFields
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		//objRes.WriteMC(ctx)
+		objRes.WriteMC(ctx)
 	}
 }

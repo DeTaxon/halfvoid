@@ -39,3 +39,21 @@ AppendClass PtrExchange
 		result.CreatedId = newVar
 	}
 }
+AppendClass RefExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		dwnRes := Down.WriteMC(ctx)
+
+		baseVar := ctx.CreateVar(Down.GetType().GetPoint())
+		resVar := ctx.CreateVar(ObjType.GetPoint())
+		resRef := ctx.CreateReference(ObjType)
+
+		zero := ctx.AddInteger(0)
+		HVB_ins_get_pointer(ctx,baseVar,dwnRes.CreatedId)
+		HVB_ins_move(ctx,resVar,baseVar)
+		HVB_ins_load_element(ctx,resRef,resVar,zero)
+
+		result.CreatedId = resRef
+	}
+}

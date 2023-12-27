@@ -26,17 +26,29 @@ RunClass := class
 {
 	x := int
 	y := int
+
+	wrtFunc := !() -> void
+	{
+		printf("nope\n")
+	}
+}
+RunClass2 := class extend RunClass
+{
+	wrtFunc := !() -> void
+	{
+		printf("yiep\n")
+	}
 }
 RunTest := !() -> void
 {
-	d := RunClass
+	d := RunClass2
+	d.x = 100
 	RunTest2(d)
-	printf("test %i %i\n",d.x,d.y)
 }
 RunTest2 := !(RunClass d) -> void
 {
-	d.x = 200
-	d.y = 99
+	d.wrtFunc()
+	printf("test %i\n",d.x)
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void
@@ -217,39 +229,6 @@ CalculatePi := !() -> void
 //}
 
 
-//inline road failed, local variables need to be rewoked
-//inline road
-//static variables stays in one function
-//input variadic variables C //do i need it?
-//deducting type by returns
-//captured values, and defer does not work
-//debug data for functions in different files
-SomeClass44 := class
-{
-	xx := int
-	testCall := inline !(int cmplxName,args...) .{@HH} -> int
-	{
-		printf("hello world %i %i %i\n",cmplxName,args...)
-		cmplxName = 1313
-		printf("hello world %i %i %i\n",cmplxName,args...)
-		printf("wut %i %i %i\n",HH,xx,test2())
-		return 47
-	}
-	test2 := !() -> int
-	{
-		return 1734 + xx
-	}
-	someBug := !(int j = 13) -> void
-	{
-	}
-}
-
-inlineBugs := !() -> void
-{
-	x := 74
-	c := y.testCall(x,15,-100).{477}
-	printf("after %i %i\n",x,c)
-}
 
 //TODO
 //decorator function

@@ -21,6 +21,16 @@ AppendClass BoxFuncBody
 		{
 			ctx.AddLocalVar(it)
 		}
+
+		ResultVar?.WriteMC(ctx)
+		Params[^].WriteMC(ctx)
 		body.WriteMC(ctx)
+	}
+}
+
+AppendClass FuncLocalDebugInfoValue
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> void
+	{
 	}
 }

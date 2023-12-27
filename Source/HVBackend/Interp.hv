@@ -1,6 +1,6 @@
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
-	//interpFunc.Print()
+	interpFunc.Print()
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -96,7 +96,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
-		//printf("line %i\n",cs)
+		printf("line %i\n",cs)
 		thisLine := ref opPtr[cs]
 		switch opPtr[cs].opcode
 		{

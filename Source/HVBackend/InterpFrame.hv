@@ -118,6 +118,10 @@ MCInterpFuncFrame := class extend TGCObject
 				values[i]&->{int^}^ = GetInt(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_sint32
+			}else if itType == GTypeU64{
+				values[i]&->{s64^}^ = GetS64(it)
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_uint64
 			}else if itType == GTypeS64{
 				values[i]&->{s64^}^ = GetS64(it)
 				valuesPtr[i] = values[i]&
