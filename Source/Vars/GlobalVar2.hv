@@ -38,6 +38,11 @@ GlobalVar2 := class extend BoxUnit
 		parseHatch.Emit()
 	}
 
+	GetType := !() -> Type^
+	{
+		return proxy.GetType()
+	}
+
 	NotifyUseAndWait := !() -> void
 	{
 		if startedParse

@@ -20,6 +20,12 @@ main := !(char^[] args) -> int
 	//tbl.key.Get(1, (x) ==> { printf("hm just %i\n",x) })
 	//tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
 	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
+	//
+	c := RunClass2
+	for it,i : c->AllFields
+	{
+		printf("hello\n")
+	}
 }
 
 RunClass := class
@@ -27,23 +33,24 @@ RunClass := class
 	x := int
 	y := int
 
-	wrtFunc := !() -> void
+	wrtFunc := virtual !() -> void
 	{
 		printf("nope\n")
 	}
 }
 RunClass2 := class extend RunClass
 {
-	wrtFunc := !() -> void
+	wrtFunc := virtual !() -> void
 	{
 		printf("yiep\n")
 	}
 }
 RunTest := !() -> void
 {
-	d := RunClass2
-	d.x = 100
-	RunTest2(d)
+	d := RunClass
+	d.wrtFunc()
+	//d.x = 100
+	//RunTest2(d)
 }
 RunTest2 := !(RunClass d) -> void
 {

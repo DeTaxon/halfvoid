@@ -1,0 +1,12 @@
+AppendClass GlobalVar2
+{
+
+}
+
+AppendClass GlobalVarProxy
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.GetGlobalVar(baseVar)
+	}
+}

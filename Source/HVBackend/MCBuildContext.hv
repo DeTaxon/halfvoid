@@ -5,6 +5,7 @@ MCBuildContext := class extend TGCObject
 	lines := List.{MCLine}
 
 	VarsToObject := AVLMap.{LocalVar^,int}
+	GlobalVars := AVLMap.{GlobalVar2^,int}
 
 	InputsIndxStart := int
 	InputsIndxCount := int
@@ -29,22 +30,25 @@ MCBuildContext := class extend TGCObject
 		setVal.GetValueType() = varType
 		objects.Push(setVal)
 	}
+	GetGlobalVar := virtual !(GlobalVar2^ vr) -> int
+	{
+		return GlobalVars[vr]?
+
+		result = objects.Size()
+		GlobalVars[vr] = result
+		setVal := MCGlobalVariable
+		setVal.GetValueObject() = vr
+		objects.Push(setVal)
+	}
 	AddLocalVar := !(LocalVar^ vr) -> int
 	{
 		return VarsToObject[vr]?
 
 		result = objects.Size()
 		VarsToObject[vr] = result
-		if vr.isReference
-		{
-			setVal := MCVariable
-			setVal.GetValueType() = vr.GetBaseType()
-			objects.Push(setVal)
-		}else{
-			setVal := MCVariable
-			setVal.GetValueType() = vr.GetType()
-			objects.Push(setVal)
-		}
+		setVal := MCVariable
+		setVal.GetValueType() = vr.GetBaseType()
+		objects.Push(setVal)
 	}
 	GetLocalVar := !(LocalVar^ vr) -> int
 	{

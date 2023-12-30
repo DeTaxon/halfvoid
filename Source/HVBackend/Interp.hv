@@ -125,15 +125,20 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				fncHV := fncObj&->{MCConstFunction^}.GetValue()
 
-				if fncHV is BoxFuncDeclare
+				if fncHV is in BuildInVirtualCall
 				{
+					v1 := thisFrame.GetObjectPtr(indxs[0])
+					globVar := iCntx.GetGlobalVarFromMem(v1->{void^^}^)
+					cls := iCntx.GetClassFromVTable(globVar) 
+					printf("hey %p %s\n",cls,fncObj.GetType().GetBADStr().Str())
+				}else if fncHV is BoxFuncDeclare {
 					fncType := fncHV.GetType()->{TypeFunc^}
 					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,indxs,0)
 				}else if fncHV is in BoxFuncBody{
 					fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
 					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 				}else{
-					//fncHV.WriteFuncCallMC(iCntx,indxs)
+					assert(false)
 				}
 			}
 
@@ -322,7 +327,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * indType.GetSize()]&
 			}else if varType is in TypeClass{
 				asClass := varType->{TypeClass^}.ToClass
-				fld := asClass.GetFieldByIndex(v3->{int^}^)
+				fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
 
 				objSet := ref interpFunc.Objects[thisLine.var1]
 				assert(objSet& is MCReference)
@@ -347,6 +352,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]->{void^^}^
 			}else if obj& is MCVariable{
 				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]
+			}else if obj& is MCGlobalVariable {
+				res->{void^^}^ = iCntx.GetGlobalVarMem(obj&->{MCGlobalVariable^}.GetValueObject())
 			}else{
 				assert(false)
 			}

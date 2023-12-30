@@ -17,10 +17,15 @@ MCObject := class
 
 MCVariable := class extend MCObject
 {
-
 	PrintObject := virtual !() -> void { printf("Variable with type %s", GetType().GetBADStr().Str()) }
 	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
 	GetType := virtual !() -> Type^ { return GetValueType()}
+}
+MCGlobalVariable := class extend MCObject
+{
+	PrintObject := virtual !() -> void { printf("Global variable with type %s", GetType().GetBADStr().Str()) }
+	GetValueObject := !() -> ref GlobalVar2^ { return Value&->{GlobalVar2^^}^ }
+	GetType := virtual !() -> Type^ { return GetValueObject().GetType() }
 }
 MCReference := class extend MCObject
 {

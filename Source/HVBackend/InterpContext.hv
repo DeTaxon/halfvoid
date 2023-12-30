@@ -6,6 +6,34 @@ MCInterpContext := class
 	loadedDlls := AVLMap.{CLib^,Library^}
 	declarePtrs := AVLMap.{void^,void^}
 
+	globalVariables := AVLMap.{GlobalVar2^,void^}
+	vtableToClass := AVLMap.{void^,BoxClass^}
+
+	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
+	{
+		return globalVariables[vr]?
+
+		varSize := vr.GetType().GetSize()
+		result = calloc(varSize,1)
+		globalVariables[vr] = result
+	}
+	GetGlobalVarFromMem := !(void^ val) -> GlobalVar2^
+	{
+		for it, ind : globalVariables
+		{
+			if it == val
+				return ind
+		}
+		return null
+	}
+	GetClassFromVTable := !(GlobalVar2^ vr) -> BoxClass^
+	{
+		if vr == null
+			return null
+		return vtableToClass[vr]?
+		return null
+	}
+
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{
 		return funcs[itm]?

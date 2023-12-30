@@ -39,17 +39,17 @@ AppendClass BoxClass
 			newVar.value = arrHolder.GetAsConst()
 			VTableCheckTypeArray = newVar
 
-			tiName := StringSpan("@TypeInfo")
+			itName := StringSpan("@TypeInfo")
 
 			assert(newVar != null)
 
 			newConst := new CheckInfoConst(newVar)
-			newVirtualVar := new VTableVar(tiName,newConst)
+			newVirtualVar := new VTableVar(itName,newConst)
 			if VTable.Size() == 0
 			{
 				VTable.Push(newVirtualVar)
 			}else{
-				assert(VTable[0] is VTableVar and VTable[0].Name == tiName)
+				assert(VTable[0] is VTableVar and VTable[0].Name == itName)
 				VTable[0] = newVirtualVar
 			}
 		}

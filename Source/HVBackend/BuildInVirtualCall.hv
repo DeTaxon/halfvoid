@@ -1,0 +1,7 @@
+AppendClass BuildInVirtualCall
+{
+	//IsMCInlined := virtual true
+	//WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	//{
+	//}
+}

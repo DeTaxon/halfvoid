@@ -199,6 +199,31 @@ AppendClass BoxClass
 			return Parents[0].GetFieldByIndex(val)
 		return FieldsPath[val - offsetCount]
 	}
+	GetFieldByIndexRaw := virtual !(int val) -> FieldPath^
+	{
+		AwaitTypeState()
+
+		if VTableField != null
+		{
+			if val == 0
+			{
+				return VTableField
+			}else{
+				val -= 1
+			}
+		}
+
+		assert(Parents.Size() <= 1)
+
+		totalCount := GetFieldsCount()
+		offsetCount := totalCount - Fields.Size()
+
+		if val < 0 or val >= totalCount
+			return null
+		if val < offsetCount
+			return Parents[0].GetFieldByIndex(val)
+		return FieldsPath[val - offsetCount]
+	}
 	GetFieldByIndexTuple := virtual !(int val) -> FieldPath^
 	{
 		AwaitTypeState()
