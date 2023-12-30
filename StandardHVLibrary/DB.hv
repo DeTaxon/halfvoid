@@ -1,0 +1,41 @@
+
+
+HVTable2 := class .{@Left,@Right}
+{
+	frwd := AVLMap.{Left,List.{Right}}
+	bckwrd := AVLMap.{Left,List.{Right}}
+
+	Add := !(Left lft, Right rght) -> void
+	{
+		frwd[lft].PushUniq(rght)
+		bckwrd[rght].PushUniq(lft)
+	}
+	key := fake
+	{
+		Get := !(Left inp, !(Right&)&->void cb) -> void
+		{
+			if not frwd.Contain(inp)
+				return void
+			line := ref this.frwd[inp]
+			for it : line
+			{
+				cb(it)
+			}
+		}
+	}
+	value := fake
+	{
+		Get := !(Right inp, !(Left&)&->void cb) -> void
+		{
+			if not bckwrd.Contain(inp)
+				return void
+			line := ref this.bckwrd[inp]
+			for it : line
+			{
+				cb(it)
+			}
+		}
+
+	}
+}
+

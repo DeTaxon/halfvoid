@@ -1,4 +1,3 @@
-
 ObjectDB := class .{@T,@ElCount} 
 {
 	elements := HybridQueue.{void^,10}
