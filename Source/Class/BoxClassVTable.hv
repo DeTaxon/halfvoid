@@ -120,6 +120,8 @@ AppendClass BoxClass
 		VTableType = GetTuple(tps,true,true)
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar2(StringSpan(""),VTableType.ItType,false)
+
+		VirtualTables.Add(this&,VTableValue)
 		
 		cnst := new ClassConstValue
 		cnst.ItType = VTableType.ItType

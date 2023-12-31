@@ -42,10 +42,10 @@ RunClass2 := class extend RunClass
 }
 RunTest := !() -> void
 {
-	d := RunClass
-	d.wrtFunc()
+	d := RunClass2
+	//d.wrtFunc()
 	//d.x = 100
-	//RunTest2(d)
+	RunTest2(d)
 }
 RunTest2 := !(RunClass d) -> void
 {

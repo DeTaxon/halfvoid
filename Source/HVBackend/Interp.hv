@@ -1,6 +1,6 @@
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
-	interpFunc.Print()
+	//interpFunc.Print()
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -96,7 +96,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
-		printf("line %i\n",cs)
+		//printf("line %i\n",cs)
 		thisLine := ref opPtr[cs]
 		switch opPtr[cs].opcode
 		{
@@ -128,9 +128,17 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				if fncHV is in BuildInVirtualCall
 				{
 					v1 := thisFrame.GetObjectPtr(indxs[0])
-					globVar := iCntx.GetGlobalVarFromMem(v1->{void^^}^)
-					cls := iCntx.GetClassFromVTable(globVar) 
-					printf("hey %p %s\n",cls,fncObj.GetType().GetBADStr().Str())
+					vTable := v1->{void^^^}^^
+					globVar := iCntx.GetGlobalVarFromMem(vTable)
+					assert(globVar != null)
+					cls := globVar.GetType()->{TypeClass^}.ToClass
+					memOffset := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex).MemOffset
+
+					memObj := vTable->{u8^}[memOffset]&->{void^^}^
+					fncAsMC := iCntx.GetMCFunc(memObj->{BoxFuncBody^})
+					assert(memObj->{BoxFuncBody^} is in BoxFuncBody)
+					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
+
 				}else if fncHV is BoxFuncDeclare {
 					fncType := fncHV.GetType()->{TypeFunc^}
 					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,indxs,0)

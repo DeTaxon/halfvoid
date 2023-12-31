@@ -29,6 +29,8 @@ GDebugLineCallId := task_local int
 
 GlobalVars2 := List.{GlobalVar2^}
 
+VirtualTables := HVTable2.{BoxClass^,GlobalVar2^}
+
 SubWork := !(!()&->void x) -> void
 {
 	subLambda := x.Capture()
