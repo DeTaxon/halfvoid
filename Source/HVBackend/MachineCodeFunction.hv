@@ -111,7 +111,7 @@ MCFunction := class //extend TGCObject
 		printf("-------- Assembly\n")
 		for it, i : Lines
 		{
-			printf("%16s: %6i %6i %6i %6i %6i\n",it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)
+			printf("%7i %16s: %6i %6i %6i %6i %6i\n",i,it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)
 		}
 	}
 }

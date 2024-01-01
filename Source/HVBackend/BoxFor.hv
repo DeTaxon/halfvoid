@@ -1,0 +1,45 @@
+AppendClass BoxFor
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		CreatedIndex?.WriteMC(ctx)
+		values[^].InitStep.WriteMC(ctx)
+		CheckStep.WriteMC(ctx)
+
+		for it : values
+		{
+			if it.HaveValue != null
+			{
+				res := it.HaveValue.WriteMC(ctx)
+				HVB_ins_jump_if_bool(ctx,ctx.GetLabel(it.NextCheck),res.CreatedId)
+				HVB_ins_jump(ctx,ctx.GetLabel(EndLabel&))
+				it.NextCheck.WriteMC(ctx)
+			}
+
+			it.ValueVar.WriteMC(ctx)
+			it.IndVar?.WriteMC(ctx)
+			it.CallGetValue.WriteMC(ctx)
+
+			if it.IsFinished != null
+			{
+				res := it.IsFinished.WriteMC(ctx)
+				HVB_ins_jump_if_bool(ctx,ctx.GetLabel(EndLabel&),res.CreatedId)
+				HVB_ins_jump(ctx,ctx.GetLabel(it.NextCheck))
+				it.NextCheck.WriteMC(ctx)
+			}
+		}
+
+		body.WriteMC(ctx)
+
+		for it : values
+		{
+			it.IncFunc?.WriteMC(ctx)
+		}
+
+		CreatedIndexInc?.WriteMC(ctx)
+
+		CheckStep.WriteGoMC(ctx)
+
+		EndLabel.WriteMC(ctx)
+	}
+}

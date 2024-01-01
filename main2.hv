@@ -17,40 +17,18 @@ main := !(char^[] args) -> int
 	tbl.Add(4,5)
 
 	//tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
-	tbl.key.Get(1, (x) ==> { printf("hm just %i\n",x) })
+	tbl.Key.Get(1, (x) ==> { printf("hm just %i\n",x) })
 	//tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
-	tbl.value.Get(2 , (x) ==> { printf("back %i\n",x)})
+	tbl.Value.Get(2 , (x) ==> { printf("back %i\n",x)})
 	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
-RunClass := class
-{
-	x := int
-	y := int
-
-	wrtFunc := virtual !() -> void
-	{
-		printf("nope\n")
-	}
-}
-RunClass2 := class extend RunClass
-{
-	wrtFunc := virtual !() -> void
-	{
-		printf("yiep\n")
-	}
-}
 RunTest := !() -> void
 {
-	d := RunClass2
-	//d.wrtFunc()
-	//d.x = 100
-	RunTest2(d)
-}
-RunTest2 := !(RunClass d) -> void
-{
-	d.wrtFunc()
-	printf("test %i\n",d.x)
+	for i  : 5
+	{
+		printf("hi %i\n",i)
+	}
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

@@ -22,9 +22,9 @@ AppendClass Task
 	}
 	GetStackUsage := !() -> TaskStackUsageInfo
 	{
-		if stackPtr == null or thisTaskStackSize == 0
-			return void
-		anyVar := void^
+		//if stackPtr == null or thisTaskStackSize == 0
+		//	return void
+		//anyVar := void^
 		//c := anyVar&->{size_t} - stackPtr->{size_t}
 		//result.UsedSize = thisTaskStackSize - c
 		//result.TotalSize = thisTaskStackSize

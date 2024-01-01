@@ -1,6 +1,7 @@
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
 	//interpFunc.Print()
+	//exit(0)
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -89,6 +90,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		{
 			if it.0 == val
 				return it.1
+		}
+		printf("lost label %i\n",val)
+		for it : labelsPos
+		{
+			printf("labels %i %i\n",it.0,it.1)
 		}
 		assert(false)
 	}

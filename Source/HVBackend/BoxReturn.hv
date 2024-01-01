@@ -1,0 +1,22 @@
+AppendClass BoxReturn
+{
+	
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ResultCall?.WriteMC(ctx)
+
+		//TODO finish
+		//if ctx.deferObjects.Size() == 0
+		//{
+		//	EndLabel.PrintGo(ctx)
+		//}else{
+		//	iter := ctx.exitNodes&
+		//	for i : ctx.deferObjects.Size()
+		//	{
+		//		it := ctx.deferObjects[ctx.deferObjects.Size() - i - 1]
+		//		iter = iter.subNodes[it]&
+		//	}
+		//	iter.GetLabel().PrintGo(ctx)
+		//}
+	}
+}

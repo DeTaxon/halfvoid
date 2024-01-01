@@ -10,6 +10,8 @@ MCBuildContext := class extend TGCObject
 	InputsIndxStart := int
 	InputsIndxCount := int
 
+	labels := AVLMap.{BoxLabel^,int}
+
 	Init := !() -> void
 	{
 		newObj := MCConstVoid
@@ -21,6 +23,15 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		setVal := MCLabel
 		objects.Push(setVal)
+	}
+	GetLabel := !(BoxLabel^ lbl) -> int
+	{
+		return labels[lbl]?
+
+		result = objects.Size()
+		setVal := MCLabel
+		objects.Push(setVal)
+		labels[lbl] = result
 	}
 
 	CreateVar := !(Type^ varType) -> int

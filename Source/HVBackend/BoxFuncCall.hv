@@ -33,6 +33,7 @@ AppendClass BoxFuncCall
 			if ResultVar != null
 			{
 				ctx.AddLocalVar(ResultVar)
+				ResultVar.WriteMC(ctx)
 			}
 
 			returnByInput := false
