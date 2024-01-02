@@ -26,6 +26,7 @@ MCInterpFuncFrame := class extend TGCObject
 		{
 			return obj.Value&
 		}
+		
 		assert(false)
 	}
 	GetReferencePtr := !(int index) -> void^

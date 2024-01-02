@@ -33,7 +33,7 @@ MCInterpContext := class
 			{
 				val := ref classVar.VTable[i]
 
-				pth := classVar.GetFieldByIndexRaw(i)
+				pth := vTable.GetFieldByIndexRaw(i)
 				memPtr := result->{u8^}[pth.MemOffset]&
 
 				if val is VTableFunc

@@ -25,12 +25,24 @@ main := !(char^[] args) -> int
 
 RunTest := !() -> void
 {
-	c := 3..10
+	//c := 3..10
 
-	for i  : c
+	j := List.{int}
+	j.Push(13)
+	j.Push(7)
+	j.Push(100)
+
+	for it : j
 	{
-		printf("hi %i\n",i)
+		printf("pls %i\n",it)
 	}
+
+	//for i  : c
+	//{
+	//	defer printf("post\n")
+	//	printf("hi %i\n",i)
+	//	break
+	//}
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

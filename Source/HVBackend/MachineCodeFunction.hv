@@ -83,6 +83,16 @@ MCConstString :=  class extend MCObject
 	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().Str()) }
 	GetType := virtual !() -> Type^ { return GTypeChar.GetPoint() }
 }
+MCConstPointer := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref void^ { return Value&->{void^^}^}
+
+	PrintObject := virtual !() -> void { printf("Pointer \"%p\"",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeVoidP }
+	
+}
 
 MCLabel := class extend MCObject
 {

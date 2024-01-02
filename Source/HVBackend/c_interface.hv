@@ -17,6 +17,24 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 	ctx.lines.Push(MCLine("jmp",labelId))
 }
 
+HVB_ins_cmp := !(MCBuildContext^ ctx , s32 res , s32 obj1, char^ cmpOper, s32 obj2) -> bool
+{
+	cond := MCJumpIfConditions //TODO string to enum convertion
+	switch cmpOper
+	{
+	case "<" cond = "<"
+	case "<=" cond = "<="
+	case ">" cond = ">"
+	case ">=" cond = ">="
+	case "==" cond = "=="
+	case "!=" cond = "!="
+	case void 
+		return false
+	}
+	ctx.lines.Push(MCLine("cmp", res,cond,obj1,obj2))
+	return true
+}
+
 HVB_ins_move := !(MCBuildContext^ ctx, s32 resultId, s32 source) -> void
 {
 	ctx.lines.Push(MCLine("mov",resultId,source))

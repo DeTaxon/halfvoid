@@ -20,6 +20,8 @@ AppendClass FuncLocalVarCleanup
 			res := getVal.WriteMC(ctx)
 			ctx.lines.Push(MCLine("clean",res.CreatedId))
 		}
+		if deferCall != null
+			ctx.DeferObjects.PushFront(deferCall)
 	}
 }
 AppendClass FuncLocalVarAccess

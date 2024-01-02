@@ -4,5 +4,8 @@ AppendClass BoxExeLineSimple
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		Down.WriteMC(ctx)
+		el := eLabel()
+		if el != null
+			el.WriteMC(ctx)
 	}
 }

@@ -1,10 +1,12 @@
 AppendClass BoxLabel
 {
-	
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		lblId := ctx.GetLabel(this&)
 		HVB_ins_label(ctx,lblId)
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
 	}
 	WriteGoMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{

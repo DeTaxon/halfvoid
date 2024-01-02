@@ -2,9 +2,21 @@ AppendClass BoxBlock
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		deferObjsAtStart := ctx.DeferObjects.Size()
+
+		if quitLabel != null
+			ctx.DeferObjects.PushFront(quitLabel)
+
 		for it : exeLines
 		{
 			it.WriteMC(ctx)
 		}
+
+		while deferObjsAtStart  !=  ctx.DeferObjects.Size()
+		{
+			dObj := ctx.DeferObjects.Pop()
+			dObj.WriteDeferMC(ctx)
+		}
+		quitLabel?.WriteMC(ctx)
 	}
 }

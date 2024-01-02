@@ -7,6 +7,9 @@ MCBuildContext := class extend TGCObject
 	VarsToObject := AVLMap.{LocalVar^,int}
 	GlobalVars := AVLMap.{GlobalVar2^,int}
 
+	exitNodes := ContextExitNode
+	DeferObjects := HybridStack.{BoxExeObj^,20}
+
 	InputsIndxStart := int
 	InputsIndxCount := int
 
@@ -112,6 +115,21 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddPointer := !(void^ value) -> int
+	{
+		for it,i : objects
+		{
+			if it& is MCConstPointer
+			{
+				if it&->{MCConstPointer^}.GetValue() == value
+					return i
+			}
+		}
+		setVal := MCConstPointer
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
 	AddS64 := !(s64 value) -> int
 	{
 		setVal := MCConstS64
@@ -134,5 +152,45 @@ MCBuildContext := class extend TGCObject
 		result.Lines = lines.ToVector()
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
+	}
+	WriteExitPathsMC := !() -> void
+	{
+		exitNodes.WriteExitsMC(this&)
+	}
+}
+
+AppendClass ContextExitNode
+{
+	WriteExitsMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		switch subNodes.Size()
+		{
+			case 1
+				for it,ind : subNodes
+				{
+					it.WriteExitsMC(ctx)
+					ind.WriteDeferMC(ctx)
+				}
+				if exitLabel != null
+				{
+					exitLabel.WriteGoMC(ctx)
+					exitLabel.WriteMC(ctx)
+				}
+			case 0
+				//meh
+				if exitLabel != null
+					exitLabel.WriteMC(ctx)
+			case void
+				{
+					lbl := GetLabel()
+					for it,ind : subNodes
+					{
+						it.WriteExitsMC(ctx)
+						ind.WriteDeferMC(ctx)
+						lbl.WriteGoMC(ctx)
+					}
+					lbl.WriteMC(ctx)
+				}
+		}
 	}
 }

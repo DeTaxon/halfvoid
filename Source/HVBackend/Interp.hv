@@ -42,6 +42,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			typ = it&->{MCVariable^}.GetType()
 		if it& is MCReference
 			typ = GTypeVoidP
+
 		if i == 1 and callerFrame != null and returnIndex != 0
 		{
 			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
@@ -153,6 +154,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
 					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 				}else{
+					printf("failed to call, unknown class %s\n",fncHV.UnitName)
 					assert(false)
 				}
 			}
@@ -174,6 +176,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			if IsInt(objTyp)
 			{
 				bigInt := s64
+
 				switch objTyp.GetSize()
 				{
 					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ + ptr2->{s8^}^
@@ -275,16 +278,26 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp)
+			if IsInt(objTyp) or objTyp is in TypePoint
 			{
 				spc := s64
-				switch objTyp.GetSize()
+
+				if IsInt(objTyp)
 				{
-					case 1 spc = ptr1->{s8^}^ - (ptr2->{s8^}^)
-					case 2 spc = ptr1->{s16^}^ - (ptr2->{s16^}^)
-					case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
-					case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
+					switch objTyp.GetSize()
+					{
+						case 1 spc = ptr1->{s8^}^ - (ptr2->{s8^}^)
+						case 2 spc = ptr1->{s16^}^ - (ptr2->{s16^}^)
+						case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
+						case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
+					}
+				}else if objTyp is in TypePoint
+				{
+					spc = ptr1->{size_t^^}^ <=> ptr2->{size_t^^}^
+				}else{
+					assert(false)
 				}
+
 				switch thisLine.V2Cond()
 				{
 					case "==" resBool^ = (spc == 0)
@@ -296,6 +309,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case void
 						assert(false)
 				}
+			}else{
+				assert(false)
 			}
 			cs += 1
 		case "label"
