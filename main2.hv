@@ -32,7 +32,15 @@ RunTest := !() -> void
 	j.Push(7)
 	j.Push(100)
 
-	for it : j
+	printf("pls %i\n",j.start.data)
+	printf("pls %i\n",j.start.next.data)
+	printf("pls %i\n",j.start.next.next.data)
+
+	printf("pls %i\n",j[0])
+	printf("pls %i\n",j[1])
+	printf("pls %i\n",j[2])
+
+	for it,i : j
 	{
 		printf("pls %i\n",it)
 	}

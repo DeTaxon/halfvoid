@@ -1,0 +1,25 @@
+AppendClass BuiltInMinMaxInt
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		newLabel := ctx.CreateLabel()
+
+		v1 := indexes[0].WriteMC(ctx).CreatedId
+		v2 := indexes[1].WriteMC(ctx).CreatedId
+		resVar := ctx.CreateVar(indexes[0].GetType())
+
+		resCmp := ctx.CreateVar(GTypeBool)
+
+		if isMin
+		{
+			HVB_ins_cmp(ctx,resCmp,v1,"<",v2)
+		}else{
+			HVB_ins_cmp(ctx,resCmp,v1,">",v2)
+		}
+		HVB_ins_move(ctx,resVar,v1)
+		HVB_ins_jump_if_bool(ctx,newLabel,resCmp)
+		HVB_ins_move(ctx,resVar,v2)
+		HVB_ins_label(ctx,newLabel)
+	}
+}

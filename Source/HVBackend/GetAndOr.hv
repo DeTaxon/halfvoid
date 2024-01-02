@@ -1,0 +1,22 @@
+AppendClass BoxAnd
+{	
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		continueLabel := ctx.CreateLabel()
+		endLabel := ctx.CreateLabel()
+		resValue := ctx.CreateVar(GTypeBool)
+
+		res1 := LeftCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res1)
+
+		HVB_ins_jump_if_bool(ctx,continueLabel,res1)
+		HVB_ins_jump(ctx,endLabel)
+
+		HVB_ins_label(ctx, continueLabel)
+		res2 := RightCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res2)
+		HVB_ins_jump(ctx,endLabel)
+
+		HVB_ins_label(ctx,endLabel)
+	}
+}

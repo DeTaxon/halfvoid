@@ -11,8 +11,6 @@ List := class.{@T} extend TArrayView.{T}
 	start := ListNode.{T}^
 	end := ListNode.{T}^
 
-
-
 	Push := !(T itm) -> void
 	{
 		newNode := createBackNode()

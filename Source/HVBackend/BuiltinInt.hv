@@ -58,6 +58,27 @@ AppendClass BuiltInIntBase
 		}
 	}
 }
+AppendClass BuiltInIntDecInc
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		obj := indexes[0].WriteMC(ctx).CreatedId
+		one := HVB_ins_const_int32(ctx,1)
+
+		switch llvm
+		{
+		case "add"
+			HVB_ins_add(ctx,obj,obj,one)
+		case "sub"
+			HVB_ins_sub(ctx,obj,obj,one)
+		case void
+			assert(false)
+
+		}
+	}
+}
+
 AppendClass BuiltInPrimeStore
 {
 	IsMCInlined := virtual true

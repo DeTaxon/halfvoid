@@ -1,0 +1,7 @@
+AppendClass VarIntObj
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = HVB_ins_const_int32(ctx,getVal())
+	}
+}

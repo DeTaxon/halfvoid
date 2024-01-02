@@ -1,0 +1,7 @@
+AppendClass BoxExeNull
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddPointer(null)	
+	}
+}

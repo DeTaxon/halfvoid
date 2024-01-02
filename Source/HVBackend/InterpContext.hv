@@ -58,6 +58,8 @@ MCInterpContext := class
 	{
 		return funcs[itm]?
 
+		assert(itm is in BoxFuncBody)
+
 		itm.ParseBody()
 		itm.WaitReadyState()
 

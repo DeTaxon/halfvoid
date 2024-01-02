@@ -1,0 +1,13 @@
+AppendClass BoxQuestionPointer
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = itDown.WriteMC(ctx)
+
+		nullObj := ctx.AddPointer(null)
+
+		cmpRes := ctx.CreateVar(GTypeBool)
+		HVB_ins_cmp(ctx,cmpRes,result.CreatedId, "==" , nullObj)
+		HVB_ins_jump_if_bool(ctx,ctx.GetLabel(quitLabel),cmpRes)
+	}
+}

@@ -1,0 +1,23 @@
+AppendClass BoxDefer
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ctx.DeferObjects.PushFront(this&)
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		onDefer.WriteMC(ctx)
+	}
+}
+AppendClass BoxDeferSize2
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ctx.DeferObjects.PushFront(this&)
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		onDefer1.WriteMC(ctx)
+		onDefer2.WriteMC(ctx)
+	}
+}

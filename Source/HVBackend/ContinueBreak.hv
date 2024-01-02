@@ -1,0 +1,26 @@
+AppendClass BoxContinue
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		for it : ctx.DeferObjects
+		{
+			if it == goLabel
+				break
+			it.WriteDeferMC(ctx)
+		}
+		goLabel.WriteGoMC(ctx)
+	}
+}
+AppendClass BoxBreak
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		for it : ctx.DeferObjects
+		{
+			if it == goLabel
+				break
+			it.WriteDeferMC(ctx)
+		}
+		goLabel.WriteGoMC(ctx)
+	}
+}

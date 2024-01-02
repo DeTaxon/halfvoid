@@ -32,7 +32,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	}
 	useStackSize = (useStackSize + 15) and_b 0xFFFFF0
 	thisFrame.localVarBlob = new BlobOnVector(useStackSize)
-	memset(thisFrame.localVarBlob.GetPointer(),0,useStackSize)
 	offset := int
 	inpPos := 0
 	for it,i : interpFunc.Objects
@@ -142,9 +141,18 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					cls := globVar.GetType()->{TypeClass^}.ToClass
 					memOffset := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex).MemOffset
 
-					memObj := vTable->{u8^}[memOffset]&->{void^^}^
+					memObj := vTable->{u8^}[memOffset]&->{BoxUnit^^}^
+
+					if memObj is ResistFunc
+					{
+						memObj = memObj->{ResistFunc^}.base
+					}
+
 					fncAsMC := iCntx.GetMCFunc(memObj->{BoxFuncBody^})
+
+
 					assert(memObj->{BoxFuncBody^} is in BoxFuncBody)
+
 					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 
 				}else if fncHV is BoxFuncDeclare {
