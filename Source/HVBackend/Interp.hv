@@ -32,6 +32,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	}
 	useStackSize = (useStackSize + 15) and_b 0xFFFFF0
 	thisFrame.localVarBlob = new BlobOnVector(useStackSize)
+	memset(thisFrame.localVarBlob.GetPointer(),0,useStackSize)
 	offset := int
 	inpPos := 0
 	for it,i : interpFunc.Objects

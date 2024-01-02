@@ -38,6 +38,7 @@ Range := class
 	{
 		result = x >= start and x <= end
 	}
+	"=" := default
 }
 ".." := !(int s, int e) -> Range
 {

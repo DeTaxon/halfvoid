@@ -25,7 +25,9 @@ main := !(char^[] args) -> int
 
 RunTest := !() -> void
 {
-	for i  : 5
+	c := 3..10
+
+	for i  : c
 	{
 		printf("hi %i\n",i)
 	}

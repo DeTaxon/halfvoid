@@ -12,13 +12,22 @@ AppendClass BoxFuncCall
 
 			fType := callObj.GetType()->{TypeFunc^}
 
+			extraOffset := 0
+			if fType.ResultType.IsComplexReturn()
+				extraOffset += 1
+
 			for it,i : downs
 			{
+
 				subObj := it.WriteMC(ctx)
 
+				if i < extraOffset
+					continue
+				fInd := i - extraOffset
+
 				isRef := false
-				if i < fType.Params.Size()
-					isRef = fType.Params[i].IsRef
+				if fInd < fType.Params.Size()
+					isRef = fType.Params[fInd].IsRef
 				if isRef
 				{
 					varId := ctx.CreateVar(it.GetType().GetPoint())
@@ -44,8 +53,8 @@ AppendClass BoxFuncCall
 				{
 					returnByInput = true
 					assert(ResultVar != null)
-					resultId = ctx.CreateReference(fType.ResultType)
-					HVB_ins_set_reference(ctx,resultId,ctx.GetLocalVar(ResultVar))
+					resultId = ctx.CreateVar(fType.ResultType.GetPoint())
+					HVB_ins_get_pointer(ctx,resultId,ctx.GetLocalVar(ResultVar))
 				}else{
 					resultId = ctx.CreateVar(fType.ResultType)
 				}
@@ -55,8 +64,6 @@ AppendClass BoxFuncCall
 			ctx.lines.Push(MCLine("call_start",resultId,fncId))
 			for it, i  : thisIndexes
 			{
-				if i == 0 and returnByInput
-					continue
 				ctx.lines.Push(MCLine("load_var",it))
 			}
 			ctx.lines.Push(MCLine("call_end"))
