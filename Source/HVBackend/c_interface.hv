@@ -57,6 +57,10 @@ HVB_ins_get_pointer := !(MCBuildContext^ ctx,s32 resultId, s32 objectId) -> void
 	ctx.lines.Push(MCLine("get_pointer",resultId,objectId))
 }
 
+HVB_ins_not := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("not",resId,opr1))
+}
 HVB_ins_add := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("add",resId,opr1,opr2))

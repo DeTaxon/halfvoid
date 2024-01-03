@@ -17,3 +17,10 @@ AppendClass AliasVarOhNo
 		result = itValue.WriteMC(ctx)
 	}
 }
+AppendClass AliasVar
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = itValue.WriteMC(ctx)
+	}
+}

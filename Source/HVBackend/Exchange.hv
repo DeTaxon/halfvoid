@@ -5,7 +5,7 @@ AppendClass IntExchange
 		newVar := ctx.CreateVar(ObjType)
 		dwn := Down.WriteMC(ctx)
 		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
-		result = dwn
+		result.CreatedId = newVar
 	}
 }
 AppendClass FloatExchange
@@ -55,5 +55,15 @@ AppendClass RefExchange
 		HVB_ins_load_element(ctx,resRef,resVar,zero)
 
 		result.CreatedId = resRef
+	}
+}
+AppendClass ArrToPtr
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		newVar := ctx.CreateVar(ObjType)
+		dwnRes := Down.WriteMC(ctx).CreatedId
+		HVB_ins_get_pointer(ctx,newVar,dwnRes)
+		result.CreatedId = newVar
 	}
 }

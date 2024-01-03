@@ -115,6 +115,21 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddBool := !(bool value) -> int
+	{
+		for it,i : objects
+		{
+			if it& is MCConstBool
+			{
+				if it&->{MCConstBool^}.GetValue() == value
+					return i
+			}
+		}
+		setVal := MCConstBool
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
 	AddPointer := !(void^ value) -> int
 	{
 		for it,i : objects

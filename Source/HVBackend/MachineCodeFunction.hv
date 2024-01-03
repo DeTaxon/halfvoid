@@ -49,6 +49,15 @@ MCConstInteger := class extend MCObject
 	PrintObject := virtual !() -> void { printf("Integer %i",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeInt }
 }
+MCConstBool := class extend MCObject
+{
+
+	IsConstant := virtual true
+	GetValue := !() -> ref bool { return Value&->{bool^}^}
+
+	PrintObject := virtual !() -> void { printf("Bool %i",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeBool }
+}
 MCConstS64 := class extend MCObject
 {
 

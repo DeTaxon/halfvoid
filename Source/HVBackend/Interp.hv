@@ -93,10 +93,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				return it.1
 		}
 		printf("lost label %i\n",val)
-		for it : labelsPos
-		{
-			printf("labels %i %i\n",it.0,it.1)
-		}
+		interpFunc.Print()
+		//for it : labelsPos
+		//{
+		//	printf("labels %i %i\n",it.0,it.1)
+		//}
 		assert(false)
 	}
 
@@ -173,6 +174,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			assert(clnVar != null)
 
 			memset(clnVar,0,obj.GetType().GetSize())
+			cs += 1
+		case "not"
+			objTyp := interpFunc.Objects[thisLine.var1].GetType()
+
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+
+			if objTyp == GTypeBool
+			{
+				ptr1->{bool^}^ = ptr2->{u8^}^ == 0
+			}else{
+				assert(false)
+			}
 			cs += 1
 		case "add"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
@@ -342,9 +356,28 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "cast"
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			typeSize := interpFunc.Objects[thisLine.var1].GetType().GetSize()
-			memset(v1,0,typeSize)
-			memcpy(v1,v2,typeSize)
+			objType := interpFunc.Objects[thisLine.var1].GetType()
+			typeSize := objType.GetSize()
+
+			if IsInt(objType)
+			{
+				oldType := interpFunc.Objects[thisLine.var2].GetType()
+				if typeSize > oldType.GetSize() and not IsUInt(objType)
+				{
+					memset(v1,0,typeSize)
+					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
+				}else{
+					memset(v1,0,typeSize)
+					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
+				}
+			}else if objType is in TypePoint or objType is in TypeArrayView
+			{
+				//memset(v1,0,typeSize)
+				memcpy(v1,v2,typeSize)
+			}else{
+				printf("can not cast type %s\n",objType.GetBADStr().Str())
+				assert(false)
+			}
 			//TODO float to int , and back
 			//signed types sign extension
 			cs += 1
@@ -393,6 +426,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]
 			}else if obj& is MCGlobalVariable {
 				res->{void^^}^ = iCntx.GetGlobalVarMem(obj&->{MCGlobalVariable^}.GetValueObject())
+			}else if obj& is MCConstInteger{
+				res->{void^^}^ = obj&->{MCConstInteger^}.GetValue()&
 			}else{
 				assert(false)
 			}

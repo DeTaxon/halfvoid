@@ -17,6 +17,11 @@ MCBaseOpcodes := enum extend u16
 	"set_reference",
 	"get_pointer",
 
+	"and",
+	"or",
+	"xor",
+	"not",
+
 	"add",
 	"sub",
 	"mul",

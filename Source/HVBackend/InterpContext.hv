@@ -42,6 +42,31 @@ MCInterpContext := class
 					memPtr->{void^^}^ = asFnc.Value
 				}
 			}
+		}else if vr.value != null
+		{
+			WriteGlobToMem(vr.value,result)
+			
+		}
+	}
+	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void
+	{
+		tp := obj.GetType()
+
+		if obj is BoxArrayConst
+		{
+			arr := obj->{BoxArrayConst^}
+			elemSize := tp.Base.GetSize()
+
+			for it,i : arr.dwns
+			{
+				WriteGlobToMem(it,mem->{u8^}[i*elemSize]&)
+			}
+
+		}else if obj is BoxExeInt{
+			mem->{s32^}^ = obj->{BoxExeInt^}.Value
+		}else{
+			printf("Unknown const %s\n",obj.UnitName)
+			assert(false)
 		}
 	}
 	GetGlobalVarFromMem := !(void^ val) -> GlobalVar2^

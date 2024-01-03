@@ -4,26 +4,26 @@ AppendClass BoxIfTrueOnly
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		truePath := ctx.CreateLabel()
-		falsePath := ctx.CreateLabel()
+		truePath := ctx.GetLabel(TrueWorked)
+		falsePath := ctx.GetLabel(TrueEndLabel)
 
 		cmpTest := Val.WriteMC(ctx)
 
 		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
 		ctx.lines.Push(MCLine("jmp",falsePath))
 
-		ctx.lines.Push(MCLine("label",truePath))
+		HVB_ins_label(ctx,truePath)
 		OnTrue.WriteMC(ctx)
-		ctx.lines.Push(MCLine("label",falsePath))
+		HVB_ins_label(ctx,falsePath)
 	}
 }
 AppendClass BoxIfFull
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		truePath := ctx.CreateLabel()
-		falsePath := ctx.CreateLabel()
-		endPath := ctx.CreateLabel()
+		truePath := ctx.GetLabel(TruePath&)
+		falsePath := ctx.GetLabel(FalsePath)
+		endPath := ctx.GetLabel(EndPath&)
 
 		cmpTest := Val.WriteMC(ctx)
 

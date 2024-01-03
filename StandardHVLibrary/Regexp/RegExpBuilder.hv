@@ -76,6 +76,7 @@ CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
 			{
 				ri = ri.Right
 			}
+
 			newNd.Down = itr
 			newNd.Up = itr.Up
 			if newNd.Up?.Down == itr

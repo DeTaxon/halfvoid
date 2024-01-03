@@ -26,23 +26,15 @@ main := !(char^[] args) -> int
 	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
+Rm := class
+{
+	next := Rm^
+}
+
 RunTest := !() -> void
 {
-	for i : 2..15
-	{
-		switch i
-		{
-			case 10
-				printf("it's ten %i %i\n",i, i in 1..10)
-			case in 1..10
-				printf("it's start %i %i\n",i, i in 1..10)
-			case void
-				printf("else %i %i\n",i, i in 1..10)
-
-		}
-	}
-	//test := LexBuilder
-	//test.ApplyReg("[0-9]+",1)
+	test := LexBuilder
+	test.ApplyReg("[0-9]+",1)
 	//mac := test.GenerateMachine()
 }
 
