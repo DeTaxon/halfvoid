@@ -326,8 +326,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "jmp"
 			cs = getLabel(thisLine.var1)
 		case "jmp_if_bool"
-			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{bool^}
-			if boolVar^
+			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{u8^}
+			if boolVar^ != 0
 			{
 				cs = getLabel(thisLine.var1)
 			}else{
@@ -343,6 +343,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			typeSize := interpFunc.Objects[thisLine.var1].GetType().GetSize()
+			memset(v1,0,typeSize)
 			memcpy(v1,v2,typeSize)
 			//TODO float to int , and back
 			//signed types sign extension

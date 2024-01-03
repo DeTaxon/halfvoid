@@ -127,6 +127,9 @@ MCInterpFuncFrame := class extend TGCObject
 				values[i]&->{s64^}^ = GetS64(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_sint64
+			}else if itType == GTypeBool{
+				valuesPtr[i] = GetObjectPtr(it)
+				valuesTypes[i] = ffi_type_sint8
 			}else{
 				printf("unknown type %s\n",itType.GetBADStr().Str())
 				assert(false)

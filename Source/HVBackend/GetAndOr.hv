@@ -6,6 +6,8 @@ AppendClass BoxAnd
 		endLabel := ctx.CreateLabel()
 		resValue := ctx.CreateVar(GTypeBool)
 
+		result.CreatedId = resValue
+
 		res1 := LeftCall.WriteMC(ctx).CreatedId
 		HVB_ins_move(ctx,resValue,res1)
 
@@ -18,5 +20,22 @@ AppendClass BoxAnd
 		HVB_ins_jump(ctx,endLabel)
 
 		HVB_ins_label(ctx,endLabel)
+	}
+}
+
+AppendClass DeferBlock
+{
+
+	StartBlockMC := !(MCBuildContext^ ctx) -> int
+	{
+		DefStackSize = ctx.DeferObjects.Size()
+	}
+	EndBlockMC := !(MCBuildContext^ ctx) -> void
+	{
+		while DefStackSize < ctx.DeferObjects.Size()
+		{
+			ob := ctx.DeferObjects.Pop()
+			ob.WriteDeferMC(ctx)
+		}
 	}
 }

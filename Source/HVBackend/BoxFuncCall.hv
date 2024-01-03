@@ -46,15 +46,18 @@ AppendClass BoxFuncCall
 			}
 
 			returnByInput := false
+			setResultId := 0
 			resultId := 0
+
 			if fType.ResultType != GTypeVoid //TODO ref
 			{
 				if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 				{
 					returnByInput = true
 					assert(ResultVar != null)
-					resultId = ctx.CreateVar(fType.ResultType.GetPoint())
-					HVB_ins_get_pointer(ctx,resultId,ctx.GetLocalVar(ResultVar))
+					setResultId = ctx.CreateVar(fType.ResultType.GetPoint())
+					HVB_ins_get_pointer(ctx,setResultId,ctx.GetLocalVar(ResultVar))
+					resultId = ctx.GetLocalVar(ResultVar)
 				}else{
 					if fType.ResultRef
 					{
@@ -62,10 +65,11 @@ AppendClass BoxFuncCall
 					}else{
 						resultId = ctx.CreateVar(fType.ResultType)
 					}
+					setResultId = resultId
 				}
 			}
 
-			ctx.lines.Push(MCLine("call_start",resultId,fncId))
+			ctx.lines.Push(MCLine("call_start",setResultId,fncId))
 			for it, i  : thisIndexes
 			{
 				ctx.lines.Push(MCLine("load_var",it))

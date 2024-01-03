@@ -1,0 +1,35 @@
+AppendClass BoxSwitch
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		mainVar.WriteMC(ctx)
+
+		for it : caseNodes
+		{
+			it.WriteItMC(ctx,quitNode)
+		}
+		defaultNode?.WriteMC(ctx)
+		quitNode?.WriteMC(ctx)
+	}
+}
+
+AppendClass SwitchCase
+{
+	WriteItMC := virtual !(MCBuildContext^ ctx,BoxLabel^ qLabel) -> WriteMCResult
+	{
+		defBlock.StartBlockMC(ctx)
+		cmpRes := cmpCheck.WriteMC(ctx).CreatedId
+		defBlock.EndBlockMC(ctx)
+		
+		HVB_ins_jump_if_bool(ctx,ctx.GetLabel(useNode),cmpRes)
+		HVB_ins_jump(ctx,ctx.GetLabel(nopeLabel))
+		WriteItBaseMC(ctx,qLabel)
+	}
+	WriteItBaseMC := virtual !(MCBuildContext^ ctx,BoxLabel^ qLabel) -> WriteMCResult
+	{
+		HVB_ins_label(ctx,ctx.GetLabel(useNode))
+		caseBody?.WriteMC(ctx)
+		HVB_ins_jump(ctx,ctx.GetLabel(qLabel))
+		HVB_ins_label(ctx,ctx.GetLabel(nopeLabel))
+	}
+}

@@ -6,6 +6,9 @@
 
 main := !(char^[] args) -> int
 {
+	RunTest()
+	return 0
+
 	//TestClsInput(![2,53,10])
 	//ManyVars(13)
 	//ManyVars(13,7)
@@ -25,32 +28,22 @@ main := !(char^[] args) -> int
 
 RunTest := !() -> void
 {
-	//c := 3..10
-
-	j := List.{int}
-	j.Push(13)
-	j.Push(7)
-	j.Push(100)
-
-	printf("pls %i\n",j.start.data)
-	printf("pls %i\n",j.start.next.data)
-	printf("pls %i\n",j.start.next.next.data)
-
-	printf("pls %i\n",j[0])
-	printf("pls %i\n",j[1])
-	printf("pls %i\n",j[2])
-
-	for it,i : j
+	for i : 2..15
 	{
-		printf("pls %i\n",it)
-	}
+		switch i
+		{
+			case 10
+				printf("it's ten %i %i\n",i, i in 1..10)
+			case in 1..10
+				printf("it's start %i %i\n",i, i in 1..10)
+			case void
+				printf("else %i %i\n",i, i in 1..10)
 
-	//for i  : c
-	//{
-	//	defer printf("post\n")
-	//	printf("hi %i\n",i)
-	//	break
-	//}
+		}
+	}
+	//test := LexBuilder
+	//test.ApplyReg("[0-9]+",1)
+	//mac := test.GenerateMachine()
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void
