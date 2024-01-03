@@ -1,4 +1,0 @@
-deflateInit2 := !(void^ strm, int level, int method, int windowBits, int memLevel, int strategy) ->  int
-{
-	return deflateInit2_(strm,level,method,windowBits,memLevel,strategy,"1.2.13",z_stream->TypeSize)
-}

@@ -72,10 +72,10 @@ SizeCheck:
 	nm --print-size --size-sort --radix=d --reverse-sort ./halfvoid  | less
 
 halfvoid:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0 StableLib/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0 StableLib/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
 	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(NoScary)  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip

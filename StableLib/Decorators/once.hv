@@ -1,8 +1,0 @@
-"@once call" := !(!()&->@T cb, bool called = static false) -> T
-{
-	if called
-		return void
-	//TODO add mutex
-	cb()
-	called = true
-}

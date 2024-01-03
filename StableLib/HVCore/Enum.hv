@@ -1,4 +1,0 @@
-internalEnumToCString := !(@T en) -> char^
-{
-	result = T->EnumToCStr[en->{int}]
-}
