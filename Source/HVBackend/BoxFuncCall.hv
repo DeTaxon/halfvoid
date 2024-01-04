@@ -13,7 +13,7 @@ AppendClass BoxFuncCall
 			fType := callObj.GetType()->{TypeFunc^}
 
 			extraOffset := 0
-			if fType.ResultType.IsComplexReturn()
+			if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 				extraOffset += 1
 
 			for it,i : downs

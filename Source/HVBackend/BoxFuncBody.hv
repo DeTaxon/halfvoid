@@ -21,6 +21,10 @@ AppendClass BoxFuncBody
 		{
 			ctx.AddLocalVar(it)
 		}
+		for it,i : LocalVarsDeferChecks
+		{
+			ctx.AddLocalVar(it)
+		}
 
 		ResultVar?.WriteMC(ctx)
 		Params[^].WriteMC(ctx)
@@ -34,7 +38,34 @@ AppendClass BoxFuncBody
 
 AppendClass FuncLocalDebugInfoValue
 {
-	WriteMC := virtual !(MCBuildContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+	}
+}
+AppendClass FuncLocalCallIfTrue
+{
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//trueLabel := ctx.GetLabel(TrueBranch&) 
+		//falseLabel := ctx.GetLabel(FalseBranch&)
+	
+		assert(ctx.objects->VTable != null)
+
+		trueLabel := ctx.CreateLabel() 
+		falseLabel := ctx.CreateLabel()
+
+		varVal := GetVar.WriteMC(ctx).CreatedId
+
+		HVB_ins_jump_if_bool(ctx,trueLabel,varVal)
+		HVB_ins_jump(ctx,falseLabel)
+
+		HVB_ins_label(ctx,trueLabel)
+
+		DownCall.WriteMC(ctx)
+		DownCall2?.WriteMC(ctx)
+		storeFalse.WriteMC(ctx)
+		HVB_ins_jump(ctx,falseLabel)
+
+		HVB_ins_label(ctx,falseLabel)
 	}
 }

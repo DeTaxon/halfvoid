@@ -1,6 +1,8 @@
 
 MCBaseOpcodes := enum extend u16
 {
+	"noop",
+
 	"label",
 	"jmp", // label
 	"jmp_if_bool", // label var_bool

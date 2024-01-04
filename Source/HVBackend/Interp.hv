@@ -93,7 +93,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				return it.1
 		}
 		printf("lost label %i\n",val)
-		interpFunc.Print()
+		//interpFunc.Print()
 		//for it : labelsPos
 		//{
 		//	printf("labels %i %i\n",it.0,it.1)
@@ -108,6 +108,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		thisLine := ref opPtr[cs]
 		switch opPtr[cs].opcode
 		{
+		case "noop"
+			cs += 1
 		case "call_start"
 			fncObj := ref interpFunc.Objects[opPtr[cs].var2]
 			returnIndexCall := opPtr[cs].var1

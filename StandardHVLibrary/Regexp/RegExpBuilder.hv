@@ -112,7 +112,6 @@ LexBuilder := class extend TGCObject
 	}
 	ApplyReg := !(char^ regEx, int val) -> void
 	{
-
 		Words := new LexTreeNode(0)
 		iter := Words
 
@@ -207,6 +206,7 @@ LexBuilder := class extend TGCObject
 		mstart := int
 		mend := int
 		BuildPartOfNode(nowNodes,Words.Right,itrId&,mstart&,mend&)
+
 		AddNodeLine(nowNodes,0,mstart,-1)
 		newMachine := new NonDetMachine
 		newMachine.Lines = nowNodes.ToVector()

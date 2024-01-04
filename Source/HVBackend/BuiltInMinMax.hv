@@ -21,5 +21,7 @@ AppendClass BuiltInMinMaxInt
 		HVB_ins_jump_if_bool(ctx,newLabel,resCmp)
 		HVB_ins_move(ctx,resVar,v2)
 		HVB_ins_label(ctx,newLabel)
+
+		result.CreatedId = resVar
 	}
 }

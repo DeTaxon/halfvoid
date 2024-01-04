@@ -78,6 +78,22 @@ AppendClass BuiltInIntDecInc
 		}
 	}
 }
+AppendClass BuiltInIntMinus
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		resType := ObjType->{TypeFunc^}.ResultType
+
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+
+		res := ctx.CreateVar(resType)
+		HVB_ins_clean(ctx,res)
+		HVB_ins_sub(ctx,res,res,dwn)
+
+		result.CreatedId = res
+	}
+}
 
 AppendClass BuiltInPrimeStore
 {

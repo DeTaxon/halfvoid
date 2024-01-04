@@ -12,6 +12,7 @@ internalHVNew := !() .{@T} -> T^
 }
 internalHVNewConstructed := !(@T^ obj, args...) -> T^
 {
+	//printf("internal func\n")
 	result = obj
 	result.this(args...)
 }

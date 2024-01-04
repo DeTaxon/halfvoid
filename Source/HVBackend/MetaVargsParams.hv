@@ -1,0 +1,6 @@
+AppendClass MetaVargsParam
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+	}
+}

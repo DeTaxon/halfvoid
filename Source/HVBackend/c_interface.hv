@@ -1,7 +1,16 @@
 
+HVB_ins_noop := !(MCBuildContext^ ctx) -> void
+{
+	ctx.lines.Push(MCLine("noop"))
+}
+
 HVB_ins_const_int32 := !(MCBuildContext^ ctx, s32 value) -> int
 {
 	return ctx.AddInteger(value)
+}
+HVB_ins_clean := !(MCBuildContext^ ctx, s32 value) -> void
+{
+	ctx.lines.Push(MCLine("clean",value))
 }
 
 HVB_ins_label := !(MCBuildContext^ ctx,s32 labelId) -> void

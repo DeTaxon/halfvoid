@@ -3,6 +3,8 @@ typeHashIterator := 1
 
 Type := class 
 {
+	UnitName := virtual poison #ThisClass()->TypeName
+
 	MetaId := int
 	Base := Type^
 	AsPoint := Type^
@@ -48,11 +50,13 @@ Type := class
 
 	GetAlign := virtual !() -> int
 	{
+		printf("Get align not implemented for %s\n",this.UnitName)
 		assert(false)
 		return 0
 	}
 	GetSize := virtual !() -> int
 	{
+		printf("Get size not implemented for %s\n",this.UnitName)
 		assert(false)
 		return 0
 	}
