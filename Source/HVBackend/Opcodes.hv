@@ -24,6 +24,10 @@ MCBaseOpcodes := enum extend u16
 	"xor",
 	"not",
 
+	"shl",
+	"sshr",
+	"ushr",
+
 	"add",
 	"sub",
 	"mul",

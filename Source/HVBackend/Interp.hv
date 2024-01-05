@@ -185,6 +185,53 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			memset(clnVar,0,obj.GetType().GetSize())
 			cs += 1
+		case "and"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ and_b ptr2->{s8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ and_b ptr2->{s16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ and_b ptr2->{s32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ and_b ptr2->{s64^}^
+			}
+			cs += 1
+		case "or"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ or_b ptr2->{s8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ or_b ptr2->{s16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ or_b ptr2->{s32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ or_b ptr2->{s64^}^
+			}
+
+			cs += 1
+		case "shl"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ shl ptr2->{s8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ shl ptr2->{s16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ shl ptr2->{s32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ shl ptr2->{s64^}^
+			}
+
+			cs += 1
 		case "not"
 			objTyp := interpFunc.Objects[thisLine.var1].GetType()
 
@@ -406,7 +453,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				objSet := ref interpFunc.Objects[thisLine.var1]
 				assert(objSet& is MCReference)
 				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * indType.GetSize()]&
+				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
 			}else if varType is in TypeClass{
 				asClass := varType->{TypeClass^}.ToClass
 				fld := asClass.GetFieldByIndexRaw(v3->{int^}^)

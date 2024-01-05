@@ -38,6 +38,10 @@ RunTest := !() -> void
 	test := LexBuilder
 	test.ApplyReg("[0-9]+",1)
 	mac := test.GenerateMachine()
+
+	mac.RegExpReadText(StringSpan("absc 234 asfa;sdkj 9871234 lkaj35r;"),(x,y) ==> {
+		printf("test %s\n",x.GetString().Str())
+	})
 	
 }
 

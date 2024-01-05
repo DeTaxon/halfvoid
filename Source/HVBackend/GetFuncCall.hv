@@ -1,0 +1,8 @@
+AppendClass ConstructorCallWrapper
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		itVar.WriteMC(ctx)
+		result = cCall.WriteMC(ctx)
+	}
+}

@@ -33,7 +33,7 @@ NonDetMachine := class extend TGCObject
 	{
 		printf("---------------\n")
 		for it : Lines
-			printf("line %6i %6i %6i\n",it.from,it.to,it.symbl)
+			printf("line    %6i %6i %6i\n",it.from,it.to,it.symbl)
 		for it : EndNodeData
 			printf("EndNode %6i %6i\n",it.0,it.1)
 		printf("---------------\n")
