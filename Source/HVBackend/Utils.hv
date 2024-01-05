@@ -1,0 +1,11 @@
+
+AppendClass PackedExeObj
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		preCalls[^].WriteMC(ctx)
+		result = mainCall.WriteMC(ctx)
+		postCalls[^].WriteMC(ctx)
+	}
+}
+

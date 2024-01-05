@@ -26,41 +26,19 @@ main := !(char^[] args) -> int
 	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
-Rm := class
-{
-	next := Rm^
-}
-
-SimpleClass := class extend TGCObject
-{
-	this := !(int x) -> void
-	{
-		printf("hop %p %i\n",this&,x)
-	}
-}
 
 RunTest := !() -> void
 {
-	d := ![1,2]//.ToVector()
-	//printf("tast %p\n",d&)
-	//j := new Vector.{Tuple.{int,int}}(1)
-	//j^[i] = d[^i]
-	j := d.ToVector()
-	//c := new SimpleClass(13)
-	//printf("c %p\n",c)
-	//new Vector.{int}(15)
-	//c := List.{int}
-
+	
 	//c.Push(13)
 	//c.Push(7)
 
 	//d := c.ToVector()
 
-	//test := LexBuilder
-	//test.ApplyReg("[0-9]+",1)
-	//mac := test.GenerateMachine()
+	test := LexBuilder
+	test.ApplyReg("[0-9]+",1)
+	mac := test.GenerateMachine()
 	
-	printf("is it free\n")
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

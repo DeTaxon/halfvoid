@@ -9,6 +9,8 @@ MCInterpContext := class
 	globalVariables := AVLMap.{GlobalVar2^,void^}
 
 	//VTableFunctions := HVTable2.{BuildInVirtualFunctionCall^,void^}
+	
+	functionPointers := HVTable2.{MCFunction^,void^}
 
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
@@ -77,6 +79,23 @@ MCInterpContext := class
 				return ind
 		}
 		return null
+	}
+
+	GetFunctionPointer := !(MCFunction^ fnc) -> void^
+	{
+		funcPointer := void^
+		functionPointers.Key.Get(fnc, (x) ==> { funcPointer = x})
+		if funcPointer != null
+			return funcPointer
+
+		funcPointer = malloc(16) //TODO replace with closures
+
+		functionPointers.Add(fnc,funcPointer)
+		return funcPointer
+	}
+	GetFuncByPointer := !(void^ ptr) -> MCFunction^
+	{
+		functionPointers.Value.Get(ptr,(x) ==> { result = x })	
 	}
 
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^

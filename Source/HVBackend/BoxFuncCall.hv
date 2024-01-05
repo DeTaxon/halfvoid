@@ -2,15 +2,17 @@ AppendClass BoxFuncCall
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		if callObj.IsMCInlined
+		if callObj?.IsMCInlined
 		{
 			result = callObj.WriteFuncCallMC(ctx,downs)
 		}else{
-			fncId := ctx.AddFuncConst(callObj)
+			WritePreCallMC(ctx)
+
+			fncId := GetFuncIdMC(ctx)
 
 			thisIndexes := HybridQueue.{int,16}
 
-			fType := callObj.GetType()->{TypeFunc^}
+			fType := GetFuncTypeMC()->{TypeFunc^}
 
 			extraOffset := 0
 			if fType.ResultType.IsComplexReturn() and not fType.ResultRef
@@ -86,6 +88,40 @@ AppendClass BoxFuncCall
 				result.CreatedId = resultId
 			}
 		}
+	}
+
+	WritePreCallMC := virtual !(MCBuildContext^ ctx) -> void
+	{
+
+	}
+	GetFuncIdMC := virtual !(MCBuildContext^ ctx) -> int
+	{
+		return ctx.AddFuncConst(callObj)
+	}
+	GetFuncTypeMC := virtual !() -> TypeFunc^
+	{
+		return callObj.GetType()->{TypeFunc^}
+	}
+}
+AppendClass BoxFuncPointerCall
+{
+	//WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	//{
+	//	assert(false)
+	//}
+	WritePreCallMC := virtual !(MCBuildContext^ ctx) -> void
+	{
+		PreVars[^].WriteMC(ctx)
+		PreCalls[^].WriteMC(ctx)
+	}
+	GetFuncIdMC := virtual !(MCBuildContext^ ctx) -> int
+	{
+		return ItPtrFunc.WriteMC(ctx).CreatedId
+	}
+	GetFuncTypeMC := virtual !() -> TypeFunc^
+	{
+		result = ItPtrFunc.GetType().Base->{TypeFunc^}
+		assert(result is TypeFunc)
 	}
 }
 

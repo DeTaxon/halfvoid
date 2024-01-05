@@ -168,6 +168,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					printf("failed to call, unknown class %s\n",fncHV.UnitName)
 					assert(false)
 				}
+			} else if  fncObj& is MCVariable or fncObj& is MCReference{
+				functionPointer := thisFrame.GetObjectPtr(thisLine.var2)->{void^^}^
+				assert(functionPointer != null) //TODO emit error
+				fncVal := iCntx.GetFuncByPointer(functionPointer)
+				assert(fncVal != null)
+				MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
+			}else{
+				assert(false)
 			}
 
 		case "clean"
@@ -430,6 +438,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				res->{void^^}^ = iCntx.GetGlobalVarMem(obj&->{MCGlobalVariable^}.GetValueObject())
 			}else if obj& is MCConstInteger{
 				res->{void^^}^ = obj&->{MCConstInteger^}.GetValue()&
+			}else if obj& is MCConstFunction{
+				frFunc := obj&->{MCConstFunction^}.GetValue()
+				assert(frFunc is BoxFuncBody) //TODO to error?
+				mcFunc := iCntx.GetMCFunc(frFunc->{BoxFuncBody^})
+				assert(mcFunc != null)
+				mcFuncPtr := iCntx.GetFunctionPointer(mcFunc)
+				res->{void^^}^ = mcFuncPtr
 			}else{
 				assert(false)
 			}
