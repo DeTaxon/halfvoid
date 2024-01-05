@@ -61,6 +61,7 @@
 		"glfwSetInputMode" : "void,void^,int,int",
 		"glfwSetWindowSizeCallback" : "void,void^,void^",
 		"glfwSetWindowTitle" : "void,void^,char^",
+		"glfwSetWindowRefreshCallback" : "void,void^,void^",
 
 		"glfwGetPrimaryMonitor" : "void^",
 		"glfwGetVideoMode" : "void^,void^",

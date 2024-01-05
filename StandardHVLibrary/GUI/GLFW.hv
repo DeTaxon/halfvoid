@@ -31,6 +31,7 @@ GLFWWindow := class
 		glfwSetMouseButtonCallback(windowHandle,glfwMousePressed)
 
 		glfwSetCharCallback(windowHandle,glfwCharPress)
+		glfwSetWindowRefreshCallback(windowHandle,glfwRefreshCB)
 
 		glfwSetWindowUserPointer(windowHandle,this&)
 
@@ -71,6 +72,11 @@ GLFWWindow := class
 	}
 	WindowResized := virtual !(int width, int height) -> void
 	{
+	}
+
+	WindowRepair := virtual !() -> void
+	{
+
 	}
 
 	M1Pressed := bool
@@ -186,6 +192,10 @@ glfwMousePressed := !(void^ w,int button, int action, int mods) -> void
 glfwCharPress := !(void^ wi, int charCode) -> void
 {
 	//printf("test %i\n",charCode)
+}
+glfwRefreshCB := !(void^ w) -> void
+{
+	glfwGetWindowUserPointer(w)->{GLFWWindow^}.WindowRepair()
 }
 
 GLFWvidmode := class

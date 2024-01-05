@@ -227,6 +227,10 @@ SimpleWindow := class extend GLFWWindow
 	{
 		mainGUIObject?.MousePressed(vkOverlay&,buttonNum,pressed,vec2f(MouseX,MouseY))
 	}
+	WindowRepair := virtual !() -> void
+	{
+		RedrawWindow()
+	}
 	RedrawWindow := !() -> void
 	{
 		vkOverlay.DataGeneration += 1
