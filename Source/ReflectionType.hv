@@ -1,0 +1,78 @@
+
+ReflectionTypesIndexes := HVTable2.{Type^,int}
+ReflectionTypesIter := 1
+
+GTypeType := Type^
+
+ReflectionTypeInit := !() -> void
+{
+	GTypeType = new TypeReflectionType()
+
+	thisSpace := ref CodeSpaces[-1]
+
+	cmpType := GetFuncType(![GTypeType,GTypeType],![false,false],GTypeBool)
+	storeType := GetFuncType(![GTypeType,GTypeType],![true,false],GTypeVoid)
+
+	assert(GTypeBool != null)
+
+	thisSpace.Types[StringSpan("Type"  )] = new TypeVar(StringSpan("Type"),GTypeType)
+	thisSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
+	thisSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+	thisSpace.Functions[StringSpan("=" )].Push(new BuiltInPrimeStore(storeType) )
+}
+
+GetReflectionTypeIndex := !(Type^ tp) -> int
+{
+	recived := false
+	res := int
+	ReflectionTypesIndexes.Key.Get(tp, x ==> {
+		recived = true
+		res = x
+	})
+	if recived
+		return res
+	res = ReflectionTypesIter++
+	ReflectionTypesIndexes.Add(tp,res)
+	return res
+}
+
+
+TypeReflectionType := class extend TypeStandard
+{
+	this := !() -> void
+	{
+		super("i32","Enum","!DIBasicType(name: \"enum\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
+	}
+}
+ExchangeTypeTypeFromType := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType != GTypeType
+			return CmpNoExchange
+		if obj is not ConstType
+			return CmpNoExchange
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new BoxTypeValue(GetReflectionTypeIndex(obj->{ConstType^}.Value))
+	}
+}
+BoxTypeValue := class extend BoxExeConstObj
+{
+	Value := int
+	this := !(int setValue) -> void
+	{
+		ObjType = GTypeType
+		Value = setValue
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << Value
+	}
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << Value
+	}
+}

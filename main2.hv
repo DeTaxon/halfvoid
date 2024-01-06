@@ -16,11 +16,18 @@
 //		ctx.AddField(fieldName,int)
 //	}
 //)
+TestCall := !(Type x) -> int
+{
+	printf("hm %i %i\n",x == int, x == float)
+}
 
 main := !(char^[] args) -> int
 {
-	piValue := CalculatePiString()
-	printf("%s\n",piValue)
+	TestCall(int)
+	TestCall(float)
+	return 0
+	//piValue := CalculatePiString()
+	//printf("%s\n",piValue)
 	return 0
 	//RunTest()
 	//return 0
