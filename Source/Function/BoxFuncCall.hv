@@ -272,7 +272,7 @@ BoxFuncCall := class extend BoxExeObj
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
 										gt = GetExchange2(gt,GTypeU64.GetPoint(),false)
-										gt = new PtrToRefFuncCall(gt)
+										gt = new PtrToRef(gt)
 										newDown.Push(gt)
 										types4[k] = GTypeU64
 										k += 1
@@ -284,7 +284,7 @@ BoxFuncCall := class extend BoxExeObj
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
 										gt = GetExchange2(gt,GTypeInt.GetPoint(),false)
-										gt = new PtrToRefFuncCall(gt)
+										gt = new PtrToRef(gt)
 										newDown.Push(gt)
 										types4[k] = GTypeInt
 										k += 1

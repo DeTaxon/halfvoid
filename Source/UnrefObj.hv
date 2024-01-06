@@ -31,7 +31,7 @@ TryGetPtrObj := !(Token^ itm) -> BoxExeObj^
 		itm.EmitError("can not dereference object")
 
 	if dwn.GetType() is in TypePoint
-		return new PtrToRefFuncCall(dwn)
+		return new PtrToRef(dwn)
 }
 
 UnrefFuncCall := class extend BoxExeObj
@@ -56,39 +56,6 @@ UnrefFuncCall := class extend BoxExeObj
 		Down.PrintPointUse(ctx)
 	}
 }
-PtrToRefFuncCall := class extend BoxExeObj
-{
-	resId := int
-	Down := BoxExeObj^
-	this := !(BoxExeObj^ obj) -> void
-	{
-		Down = obj
-		ObjType = Down.GetType().Base
-	}
-	IsMem := virtual !() -> bool
-	{
-		return true
-	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		resId = ctx.GetNewId()
-		Down.PrintPre(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintUse(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		resId = ctx.funcCallCounter + 1
-		PrintUnrefObj(ctx,resId,this&)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%TUnref" << resId
-	}
-}
-
 
 PrintUnrefObj := !(LLVMWriteContext^ ctx,int id,BoxExeObj^ obj) -> void
 {

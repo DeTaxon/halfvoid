@@ -4,44 +4,61 @@
 //TODO make FS aware of CacheFile
 
 
+
+#CreateClass(
+	Name = "TestClass",
+	Init = !(ctx)
+	{
+		ctx.AddField("x",int)
+	}
+	GetFieldFailedCB = !(ctx,fieldName)
+	{
+		ctx.AddField(fieldName,int)
+	}
+)
+
 main := !(char^[] args) -> int
 {
-	RunTest()
+	piValue := CalculatePiString()
+	printf("%s\n",piValue)
 	return 0
+	//RunTest()
+	//return 0
 
-	//TestClsInput(![2,53,10])
-	//ManyVars(13)
-	//ManyVars(13,7)
-	//ManyVars(13,z = 30)
+	////TestClsInput(![2,53,10])
+	////ManyVars(13)
+	////ManyVars(13,7)
+	////ManyVars(13,z = 30)
 
-	tbl := HVTable2.{int,int}
-	tbl.Add(1,2)
-	tbl.Add(2,3)
-	tbl.Add(4,5)
+	//tbl := HVTable2.{int,int}
+	//tbl.Add(1,2)
+	//tbl.Add(2,3)
+	//tbl.Add(4,5)
 
-	//tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
-	tbl.Key.Get(1, (x) ==> { printf("hm just %i\n",x) })
-	//tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
-	tbl.Value.Get(2 , (x) ==> { printf("back %i\n",x)})
-	//tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
+	////tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
+	//tbl.Key.Get(1, (x) ==> { printf("hm just %i\n",x) })
+	////tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
+	//tbl.Value.Get(2 , (x) ==> { printf("back %i\n",x)})
+	////tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
 
 RunTest := !() -> void
 {
+	CalculatePiString()
 	
 	//c.Push(13)
 	//c.Push(7)
 
 	//d := c.ToVector()
 
-	test := LexBuilder
-	test.ApplyReg("[0-9]+",1)
-	mac := test.GenerateMachine()
+	//test := LexBuilder
+	//test.ApplyReg("[0-9]+",1)
+	//mac := test.GenerateMachine()
 
-	mac.RegExpReadText(StringSpan("absc 234 asfa;sdkj 9871234 lkaj35r;"),(x,y) ==> {
-		printf("test %s\n",x.GetString().Str())
-	})
+	//mac.RegExpReadText(StringSpan("absc 234 asfa;sdkj 9871234 lkaj35r;"),(x,y) ==> {
+	//	printf("test %s\n",x.GetString().Str())
+	//})
 	
 }
 
@@ -93,6 +110,64 @@ TestClsInput := !(ClsInput inputs) -> void
 //	return obj->AsString&->{TGCObject^^}^
 //}
 
+CalculatePiString := !() -> u8^
+{
+	nums := 12000
+	bigNums := nums*3
+	values := malloc(bigNums*4)->{int^}
+
+	result = calloc(nums + 1,1)->{u8^}
+
+	i := 0
+	while i < bigNums
+	{
+		values[i] = 2
+		i += 1
+	}
+	i = 0
+	while i < nums
+	{
+		j := 0
+		while j < bigNums
+		{
+			values[j] *= 10
+			j += 1
+		}
+		j = bigNums - 1
+		while j >= 1
+		{
+			thisMul := j
+			thisDiv := 2*j + 1
+
+			carry := (values[j] div thisDiv)*thisMul
+			modul := values[j] mod thisDiv
+			values[j] = modul
+			j -= 1
+			values[j] += carry
+		}
+		num := values[0] div 10
+		values[0] = values[0] mod 10
+
+		c := 0
+		while num != 0
+		{
+			result[i + c] += num
+			if result[i + c] >= 10
+			{
+				result[i + c] = result[i + c] mod 10
+				num = 1
+			}else{
+				num = 0
+			}
+			c -= 1
+		}
+		i += 1
+	}
+	for i : nums
+	{
+		result[i] += '0'
+	}
+}
 CalculatePi := !() -> void
 {
 	nums := 1000

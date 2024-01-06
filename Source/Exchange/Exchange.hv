@@ -166,16 +166,7 @@ PtrToRef := class extend BoxExeObj
 		f := ctx.writeStream
 		rType := ObjType
 
-		PrintPointPre(ctx)
-		f^ << "%TUnref" << resId << " = load "
-		rType.PrintType(ctx)
-		f^ << ","
-		rType.PrintType(ctx)
-		f^ << "* "
-		PrintPointUse(ctx)
-		if DebugMode
-			f^ << ", !dgb !" << GDebugLineCallId
-		f^ << "\n"
+		PrintUnrefObj(ctx,resId + 1,this&)
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{

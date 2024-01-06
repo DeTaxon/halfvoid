@@ -13,7 +13,7 @@ TryGetMetaFields := !(Token^ itm) -> BoxExeObj^
 	if dwnType is in TypePoint and dwnType.Base is in TypeClass
 	{
 		cls = dwnType.Base->{TypeClass^}.ToClass
-		dwn = new PtrToRefFuncCall(dwn)
+		dwn = new PtrToRef(dwn)
 	}
 	if cls == null
 		itm.EmitError("Object does not have fields")

@@ -8,16 +8,3 @@ AppendClass UnrefFuncCall
 		result.CreatedId = newVar
 	}
 }
-AppendClass PtrToRefFuncCall
-{
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		zero := HVB_ins_const_int32(ctx,0)
-		newRef := ctx.CreateReference(ObjType)
-		
-		dwn := Down.WriteMC(ctx)
-		HVB_ins_load_element(ctx,newRef,dwn.CreatedId,zero)
-
-		result.CreatedId = newRef
-	}
-}

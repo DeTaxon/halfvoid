@@ -35,7 +35,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			{
 				cl2 = new UnrefFuncCall(cl2)
 				cl2 = new BoxQuestionPointer(cl2)
-				cl2 = new PtrToRefFuncCall(cl2)
+				cl2 = new PtrToRef(cl2)
 			}
 			if cl2.GetType() is in TypePoint
 			{
