@@ -5,17 +5,17 @@
 
 
 
-#CreateClass(
-	Name = "TestClass",
-	Init = !(ctx)
-	{
-		ctx.AddField("x",int)
-	}
-	GetFieldFailedCB = !(ctx,fieldName)
-	{
-		ctx.AddField(fieldName,int)
-	}
-)
+//#CreateClass(
+//	Name = "TestClass",
+//	Init = !(ctx)
+//	{
+//		ctx.AddField("x",int)
+//	}
+//	GetFieldFailedCB = !(ctx,fieldName)
+//	{
+//		ctx.AddField(fieldName,int)
+//	}
+//)
 
 main := !(char^[] args) -> int
 {

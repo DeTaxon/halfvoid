@@ -9,6 +9,8 @@ BoxCodeSpace := class
 	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
 	ExchangeTableTemplates := HybridQueue.{BoxUnit^,10}
 
+	Types := AVLMap.{StringSpan,BoxUnit^}
+
 	Modules := List.{ModuleInterface^}
 
 	AddTemplate := !(StringSpan name, BoxFuncTemplate^ newTempl) -> void
@@ -132,13 +134,13 @@ BoxFile := class extend BoxUnit
 				cls2 := cls->{BoxClass^}
 				cls2.SetName(name)
 				clsVar := new TypeVar(name,cls2.ItType)
-				TypesDatabase[name] = clsVar
+				CurrentCodeSpace.Types[name] = clsVar
 			} else if cls is in BoxClassTemplate
 			{
 				cls3 := cls->{BoxClassTemplate^}
 				cls3.SetName(name)
 				templateVar := new TemplateTypeVar(name,cls3)
-				TypesDatabase[name] = templateVar
+				CurrentCodeSpace.Types[name] = templateVar
 			}else{
 				assert(false)
 			}
@@ -198,7 +200,7 @@ BoxFile := class extend BoxUnit
 				{
 					assert(res is TypedefTemplateVar)
 					asTemplate := res->{TypedefTemplateVar^}
-					TypesDatabase[asTemplate.Name] = asTemplate
+					CurrentCodeSpace.Types[asTemplate.Name] = asTemplate
 					ParsedTokens.Insert(iter)
 				}
 			}
@@ -322,10 +324,10 @@ BoxFile := class extend BoxUnit
 				{
 					if vr is TypeVar
 					{
-						TypesDatabase[vr->{TypeVar^}.Name] = vr
+						CurrentCodeSpace.Types[vr->{TypeVar^}.Name] = vr
 					}else{
 						//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
-						TypesDatabase[vr->{TemplateTypeVar^}.Name] = vr
+						CurrentCodeSpace.Types[vr->{TemplateTypeVar^}.Name] = vr
 					}
 				}else if vr is in GlobalVar2
 				{
@@ -333,7 +335,7 @@ BoxFile := class extend BoxUnit
 					CurrentCodeSpace.Globals[glb.itName].Push(vr)
 				}else if vr is in TypedefTemplateVar
 				{
-					TypesDatabase[vr->{TypedefTemplateVar^}.Name] = vr
+					CurrentCodeSpace.Types[vr->{TypedefTemplateVar^}.Name] = vr
 				}else if vr is in NamedVar
 				{
 					v := vr->{NamedVar^}

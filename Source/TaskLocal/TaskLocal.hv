@@ -84,7 +84,7 @@ PreInitTaskLocal := !() -> void
 	bSpace := CodeSpaces[-1]&
 
 	varName := StringSpan("internalHVTaskLocalTuple")
-	TypesDatabase[varName] = new TypeVar(varName,tupleVarType.ItType) //todo make it pretty
+	CodeSpaces[-1].Types[varName] = new TypeVar(varName,tupleVarType.ItType) //todo make it pretty
 }
 
 InitTaskLocal := !() -> void

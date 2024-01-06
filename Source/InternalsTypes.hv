@@ -25,14 +25,17 @@ intGetClass := !(char^ name) -> BoxClass^
 }
 intGetClass2 := !(char^ name) -> BoxClass^
 {
-	if not TypesDatabase.Contain(StringSpan(name))
-		return null
+	for spc : CodeSpaces.Reverse
+	{
+		if not spc.Types.Contain(StringSpan(name))
+			continue
+		val := spc.Types[StringSpan(name)]
+		if val == null and val is not TypeVar
+			return null
 
-	val := TypesDatabase[StringSpan(name)]
-	if val == null and val is not TypeVar
-		return null
-
-	return val->{TypeVar^}.Value->{TypeClass^}.ToClass
+		return val->{TypeVar^}.Value->{TypeClass^}.ToClass
+	}
+	return null
 }
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
@@ -44,12 +47,15 @@ intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
 }
 intGetClassTemplate2 := !(char^ name) -> BoxClassTemplate^
 {
-	if not TypesDatabase.Contain(StringSpan(name))
-		return null
+	for spc : CodeSpaces.Reverse
+	{
+		if not spc.Types.Contain(StringSpan(name))
+			continue
+		val := spc.Types[StringSpan(name)]
+		if val == null and val is not TemplateTypeVar
+			return null
 
-	val := TypesDatabase[StringSpan(name)]
-	if val == null and val is not TemplateTypeVar
-		return null
-
-	return val->{TemplateTypeVar^}.Value
+		return val->{TemplateTypeVar^}.Value
+	}
+	return null
 }
