@@ -5,6 +5,9 @@ GCType := Type^
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
 
+GBlobClass := BoxClass^
+GBlobType := Type^
+
 InitInternalsTypes := !() -> void
 {
 	GCType = intGetClass2("TGCObject").ItType
@@ -14,6 +17,10 @@ InitInternalsTypes := !() -> void
 
 	GCILambda = intGetClass2("TILambda")
 	GCLambda = intGetClassTemplate2("TLambda")
+
+	GBlobClass = intGetClass2("Blob")
+	assert(GBlobClass != null)
+	GBlobType = GBlobClass.ItType
 }
 
 intGetClass := !(char^ name) -> BoxClass^

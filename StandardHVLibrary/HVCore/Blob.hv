@@ -1,0 +1,10 @@
+internalHVDecompressBlob := !(Blob^ inpBlob, void^^  blobPointer, size_t^ blobSize) -> void
+{
+	blobPointer^ = inpBlob.GetPointer()
+	blobSize^ = inpBlob.Size()
+}
+
+internalHVCreateBlobOnSpan := !(void^ ptr, s64 siz) -> BlobSpan
+{
+	result.this(ptr,siz)
+}

@@ -63,5 +63,7 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			itm.EmitError("Command is not in class")
 		return GetConstType(itrScope->{BoxClass^}.ItType)
 	}
+
+	return TryAddCallCommand(itm)?
 	itm.EmitError("Command not found")	
 }

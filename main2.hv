@@ -16,18 +16,41 @@
 //		ctx.AddField(fieldName,int)
 //	}
 //)
-TestCall := !(Type x) -> int
-{
-	printf("hm %i %i\n",x == int, x == float)
-}
+//#CreateClass(
+//	Name = "TestClass",
+//	Init = !(ctx)
+//	{
+//		ctx.AddField("x",int)
+//	}
+//	GetFieldFailedCB = !(ctx,fieldName)
+//	{
+//		ctx.AddField(fieldName,int)
+//	}
+//)
+
+#CreateCallCommand(
+	Name = "ComputePi",
+	Call = !() -> Blob^
+	{
+		piStr := CalculatePiString()
+		piSize := strlen(piStr)
+
+		result = new BlobOnVector(piSize)
+		memcpy(result.GetPointer(),piStr,piSize)
+		free(piStr)
+	}
+	ExchangeOut = !(Blob^ blb) -> char^
+	{
+		return blb.GetPointer()
+	}
+)
 
 main := !(char^[] args) -> int
 {
-	TestCall(int)
-	TestCall(float)
-	return 0
 	//piValue := CalculatePiString()
 	//printf("%s\n",piValue)
+	c := #ComputePi()
+	printf("hob %s\n",c)
 	return 0
 	//RunTest()
 	//return 0
@@ -52,7 +75,7 @@ main := !(char^[] args) -> int
 
 RunTest := !() -> void
 {
-	CalculatePiString()
+	//CalculatePiString()
 	
 	//c.Push(13)
 	//c.Push(7)
@@ -119,7 +142,7 @@ TestClsInput := !(ClsInput inputs) -> void
 
 CalculatePiString := !() -> u8^
 {
-	nums := 12000
+	nums := 1000
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}
 

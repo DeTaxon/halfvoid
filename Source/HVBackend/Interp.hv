@@ -1,3 +1,27 @@
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
+{
+	thisFrame := MCInterpFuncFrame
+	
+	retIndex := 0
+	if resultPtr != null
+	{
+		retIndex = 1
+		thisFrame.localVarTable[1] = resultPtr
+	}
+	inptsIndexes := HybridQueue.{int,10}
+	inptsExtraStep := HybridQueue.{void^,10}
+	if inputs != null
+	{
+		for it,i : inputs
+		{
+			c := i + 5
+			inptsIndexes.Push(c)
+			thisFrame.localVarTable[c] = it
+		}
+	}
+	MCInterpFunction(iCntx,interpFunc,thisFrame&,inptsIndexes,retIndex)
+}
+
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
 {
 	//interpFunc.Print()

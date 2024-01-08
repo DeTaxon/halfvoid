@@ -1,0 +1,162 @@
+
+TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
+{
+	cmd := itm.Down->{TokenIndent^}.Value
+
+	if cmd == "#CreateCallCommand"
+	{
+		posArgs := List.{Token^}
+		namedArgs := AVLMap.{StringSpan,Token^}
+
+		if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
+			itm.EmitError("Could not parse inputs")
+		if not namedArgs.Contain(StringSpan("Name"))
+			itm.EmitError("Command must have a Name")
+
+		cmdName := namedArgs[StringSpan("Name")]
+		if cmdName is not TokenString
+			itm.EmitError("Command name must be a string")
+
+		echo := TEchoStream
+		echo << "#" << cmdName->{TokenString^}.Value.Str()
+		spn := GetConstString(echo.GetString().Str())
+
+		userCmd := ref UserCommands[spn]
+
+		if not namedArgs.Contain(StringSpan("Call"))
+			itm.EmitError("Command must have a Call function")
+
+		c := PFunctionParser(namedArgs[StringSpan("Call")])
+		if not c.IsFound()
+		{
+			itm.EmitError("Call object is not a function")
+		}
+		fncTmplt := c.CreateObject()
+		assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
+		assert(fncTmplt->{BoxFuncTemplate^}.IsOneFunc()) //TODO error check
+		fnc := fncTmplt->{BoxFuncTemplate^}.GetOneFunc()
+		userCmd.CallFunction = fnc->{BoxFuncBody^}
+
+		fncResult := fnc.GetType()->{TypeFunc^}.ResultType
+
+		if fncResult == GTypeVoid {}
+		else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() {}
+		else {
+			itm.EmitError("Call function uses function with non cmopatable type, compatable types [void,Blob^]")
+		}
+
+		if namedArgs.Contain(StringSpan("ExchangeOut"))
+		{
+			c2 := PFunctionParser(namedArgs[StringSpan("ExchangeOut")])
+			if not c2.IsFound()
+			{
+				itm.EmitError("ExchangeOut object is not a function")
+			}
+			fncTmplt := c2.CreateObject()
+			assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
+			assert(fncTmplt->{BoxFuncTemplate^}.IsOneFunc()) //TODO error check
+			fnc := fncTmplt->{BoxFuncTemplate^}.GetOneFunc()
+
+			userCmd.ExchangeOut = fnc->{BoxFuncBody^}
+			
+		}
+
+		return GObjNone
+	}
+	if UserCommands.Contain(cmd)
+	{
+		userCmd := ref UserCommands[cmd]
+
+		resultBlob := void^
+		extraStep := resultBlob&
+		interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
+		MCInterpFunction(GInterpCntx&,interpFnc,null,extraStep&)
+
+		fncResult := userCmd.CallFunction.GetType()->{TypeFunc^}.ResultType
+
+		if fncResult == GTypeVoid {
+
+		}else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() 
+		{
+
+			decBlob := intGetFunc("internalHVDecompressBlob")
+			assert(decBlob != null)
+			ptrVal := void^
+			extraStep := ptrVal&
+			blobSize := size_t
+			extraStep2 := blobSize&
+			arrr := void^[3]
+			arrr[0] = resultBlob&
+			arrr[1] = extraStep&
+			arrr[2] = extraStep2&
+			mcFunc := GInterpCntx.GetMCFunc(decBlob->{BoxFuncBody^})
+			MCInterpFunction(GInterpCntx&,mcFunc,arrr,null)
+
+			newBlob := new BlobOnVector(blobSize)
+			if blobSize != 0
+			{
+				memcpy(newBlob.GetPointer(),ptrVal,blobSize)
+			}
+
+			dltOld := GInterpCntx.GetMCFunc(GFuncGCSetNull->{BoxFuncBody^})
+			arr2 := void^[1]
+			arr2[0] = resultBlob&
+			extraStep = resultBlob&
+			MCInterpFunction(GInterpCntx&,dltOld,arr2,null)
+
+			res := new BoxRawData(newBlob)
+			blobDatas.Push(res)
+
+			ptrToBlob := CreateFuncCall(StringSpan("internalHVCreateBlobOnSpan"),![res->{BoxExeObj^},GetExeInt(blobSize)]) //TODO GetExeInt for s64
+			assert(ptrToBlob != null)
+			blobRefToPtr := new UnrefFuncCall(ptrToBlob)
+			blbRes := new PtrExchange(blobRefToPtr,GBlobType.GetPoint())
+
+			if userCmd.ExchangeOut != null
+			{
+				return userCmd.ExchangeOut.CreateCall(![blbRes])
+			}
+
+			return blbRes
+		}
+		
+		return GObjNone
+	}
+	return null
+}
+
+
+ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{StringSpan,Token^} res) -> bool
+{
+	SyntaxCompress(itm,LexHVFileRoot)
+	itr := itm.Down
+	while itr != null
+	{
+		if itr.GetValue() == ","
+		{
+			itr = itr.Right
+			continue
+		}
+
+		if itr.Down?.Right?.GetValue() == "="
+		{
+			if itr.Down is not TokenIndent
+				return false
+			key := itr.Down->{TokenIndent^}.Value
+			res[key] = itr.Down.Right.Right
+		}else{
+			posArgs.Push(itr)
+		}
+			
+		itr = itr.Right
+	}
+	return true
+}
+
+UserCommands := AVLMap.{StringSpan,UserCommandObj}
+
+UserCommandObj := class
+{
+	CallFunction := BoxFuncBody^
+	ExchangeOut := BoxFuncBody^
+}

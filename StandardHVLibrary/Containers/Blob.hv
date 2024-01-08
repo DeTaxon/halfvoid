@@ -25,3 +25,15 @@ BlobOnVector := class extend Blob
 		itSize = 0
 	}
 }
+BlobSpan := class extend Blob
+{
+	itData := void^
+	itSize := s64
+	this := !(void^ iPtr, s64 siz) -> void
+	{
+		itData = iPtr
+		itSize = siz
+	}
+	GetPointer := virtual !() -> u8^ { return itData->{u8^} }
+	Size := virtual !() -> s64 { return itSize }
+}

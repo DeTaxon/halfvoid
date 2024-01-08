@@ -267,8 +267,11 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		if OutputName.Size() == 0
+		{
+			OutputName = GetFuncMangle(StringSpan("Anon"))
+		}
 		ctx.writeStream^ << "@" << OutputName
-		assert(OutputName.Size() != 0)
 	}
 	
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
@@ -297,7 +300,9 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		f^ << "define "
 		PrintResultType(ctx)
-		f^ << " @" << OutputName << "("
+		f^ << " "
+		PrintName(ctx)
+		f^ << "("
 		PrintInputTypes(ctx)
 		f^ << ")"
 		if DebugMode

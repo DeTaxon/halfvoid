@@ -39,6 +39,8 @@ JITMode := bool
 RunMode := bool
 RunModeFuncName := char^
 
+GInterpCntx := MCInterpContext
+
 //TestFile := TFile^
 
 OutputFile := char^
