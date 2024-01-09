@@ -32,12 +32,7 @@
 	Name = "ComputePi",
 	Call = !() -> Blob^
 	{
-		piStr := CalculatePiString()
-		piSize := strlen(piStr)
-
-		result = new BlobOnVector(piSize)
-		memcpy(result.GetPointer(),piStr,piSize)
-		free(piStr)
+		result = CalculatePiBlob()
 	}
 	ExchangeOut = !(Blob^ blb) -> char^
 	{
@@ -47,10 +42,20 @@
 
 main := !(char^[] args) -> int
 {
+	//_mkdir("😊")
+	
+	tst := CacheFile("Test.zip")
+	fls := tst.GetFileModule("Bad")
+	fls.GetCacheValue(FSGetFile("grind.txt"),() ==> Blob^ {
+		printf("doung calculus\n")
+		result = new BlobOnVector(200)
+	})
+	return 0
 	//piValue := CalculatePiString()
 	//printf("%s\n",piValue)
-	c := #ComputePi()
-	printf("hob %s\n",c)
+	//c := #ComputePi()
+	//printf("hob %s\n",c)
+	//#Run(CalculatePiString())
 	return 0
 	//RunTest()
 	//return 0
@@ -115,38 +120,16 @@ TestClsInput := !(ClsInput inputs) -> void
 	result.Objects = vals
 }
 
-//#RegisterCommand("Regexp2",
-//	!(char^[] args) -> Blob^
-//	{
-//		mch := Machine
-//		for it : args
-//		{
-//			mch.AddLine(it,0)
-//		}
-//		return mch.GenerateMachine().ToBlob()
-//	},
-//	!(Blob^ arg) -> Regexp
-//	{
-//		
-//	},
-//	Cachable=true
-//)
-//"=" := !(Str& left, StringView right) -> void
-//{
-//	left->AsString = right.GetString()
-//}
-//"->{}" := !(Str& obj) .{TGCObject^} -> ref TGCObject^
-//{
-//	return obj->AsString&->{TGCObject^^}^
-//}
-
-CalculatePiString := !() -> u8^
+CalculatePiBlob := !() -> Blob^
 {
-	nums := 1000
+	nums := 12000
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}
 
-	result = calloc(nums + 1,1)->{u8^}
+	result = new BlobOnVector(nums + 1)
+	resultPtr := result.GetPointer()->{u8^}
+	memset(resultPtr,0,result.Size())
+	//resultPtr[nums] = 0
 
 	i := 0
 	while i < bigNums
@@ -181,10 +164,10 @@ CalculatePiString := !() -> u8^
 		c := 0
 		while num != 0
 		{
-			result[i + c] += num
-			if result[i + c] >= 10
+			resultPtr[i + c] += num
+			if resultPtr[i + c] >= 10
 			{
-				result[i + c] = result[i + c] mod 10
+				resultPtr[i + c] = resultPtr[i + c] mod 10
 				num = 1
 			}else{
 				num = 0
@@ -195,49 +178,8 @@ CalculatePiString := !() -> u8^
 	}
 	for i : nums
 	{
-		result[i] += '0'
+		resultPtr[i] += '0'
 	}
-}
-CalculatePi := !() -> void
-{
-	nums := 1000
-	//nums = 1000000
-	bigNums := nums*3
-	values := malloc(bigNums*4)->{int^}
-
-	i := 0
-	while i < bigNums
-	{
-		values[i] = 2
-		i += 1
-	}
-	i = 0
-	while i < nums
-	{
-		j := 0
-		while j < bigNums
-		{
-			values[j] *= 10
-			j += 1
-		}
-		j = bigNums - 1
-		while j >= 1
-		{
-			thisMul := j
-			thisDiv := 2*j + 1
-
-			carry := (values[j] div thisDiv)*thisMul
-			modul := values[j] mod thisDiv
-			values[j] = modul
-			j -= 1
-			values[j] += carry
-		}
-		num := values[0] div 10
-		values[0] = values[0] mod 10
-		printf("%i",num)
-		i += 1
-	}
-	printf("\n")
 }
 //Reserve inheritance failed, it's overcomplicated
 //ExpectClass := class

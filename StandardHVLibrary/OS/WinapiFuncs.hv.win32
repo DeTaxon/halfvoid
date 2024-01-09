@@ -120,13 +120,27 @@ fsIsExist := !(char^ nm) -> bool
 	return osFileId(nm) != 0
 }
 fsGetModificationTime := !(char^ nm) -> u64
-{
-	st := uv_stat_t
-	statRes := uvStat("Source/main.hv",st)
-	if statRes != 0
-		return 0
-	return st.st_mtim.tv_sec
+{	
+	itAsW := Utf8ToUtf16(nm)
+	st := _stat64_winapi
+	statRes := _wstat64(itAsW.GetPointer(),st&)
+	return st.st_mtime
 }
+_stat64_winapi := class
+{
+    st_dev := s32
+    st_ino := s16
+    st_mode := u16
+    st_nlink := s16
+    st_uid := s16
+    st_gid := s16
+    st_rdev := s32
+    st_size := s64
+    st_atime := u64
+    st_mtime := u64
+    st_ctime := u64
+}
+
 osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
 {
 	ech := TEchoStream //TODO optimize

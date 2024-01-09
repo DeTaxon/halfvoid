@@ -5,6 +5,14 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
 	HvArg0 = argv[0]
 	TLSMutex."this"() //TODO only if TLS used
+	
+	if #OS() == "Windows"
+	{	
+		SetConsoleOutputCP(CP_UTF8)
+		SetConsoleCP(CP_UTF8)
+		res := setlocale(0,".utf-8")
+		//printf("hoy %s\n",res)
+	}
 
 	//All function expects to CurrentTask be initialized, this is not working for first function
 	//so first function MUST initialize CurrentTask

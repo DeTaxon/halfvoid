@@ -104,6 +104,10 @@
 
 		"GetSystemInfo" : "void,void^",
 
-		"_localtime64_s" : "void^,void^,u64^"
+		"_localtime64_s" : "void^,void^,u64^",
+		
+		"_mkdir" : "int,char^",
+		"_wstat64" : "int,void^,void^",
+		"setlocale" : "char^,int,char^"
 	}
 }
