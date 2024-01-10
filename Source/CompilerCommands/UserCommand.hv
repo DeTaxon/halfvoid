@@ -61,16 +61,56 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			
 		}
 
+		if namedArgs.Contain(StringSpan("CacheOn")) and CFile != null
+		{
+			userCmd.UseCache = true
+			userCmd.CachedValues = CFile.GetStringModule("EmbedPi")
+		}
+
+
 		return GObjNone
 	}
 	if UserCommands.Contain(cmd)
 	{
 		userCmd := ref UserCommands[cmd]
 
+		objVals := CheckExeDownList
+		namedObjs := AVLMap.{StringSpan,BoxExeObj^}
+		CheckFuncCallBrackets(itm.Down.Right,objVals,namedObjs)
+
+		cmpRes := CmpFuncPriority(userCmd.CallFunction.GetType()->{TypeFunc^},objVals,userCmd.CallFunction.GetDefaultValuesCount())
+
+		if cmpRes != 0
+		{
+			itm.EmitError("Input variables must be same type, no exchange for now ")
+		}
+
+		for it : objVals 
+		{
+			if not it.IsConst
+			{
+				itm.EmitError("All inputs must be consts")
+			}
+		}
+
+		valBoxes := List.{s64}
+		inptPointers := List.{void^}
+		for it : objVals
+		{
+			switch it is
+			{
+			case BoxExeInt
+				valBoxes.Push(it.Value)
+				inptPointers.Push(valBoxes[-1]&)
+			case void
+				assert(false)
+			}
+		}
+
 		resultBlob := void^
 		extraStep := resultBlob&
 		interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
-		MCInterpFunction(GInterpCntx&,interpFnc,null,extraStep&)
+		MCInterpFunction(GInterpCntx&,interpFnc,inptPointers,extraStep&)
 
 		fncResult := userCmd.CallFunction.GetType()->{TypeFunc^}.ResultType
 
@@ -159,4 +199,7 @@ UserCommandObj := class
 {
 	CallFunction := BoxFuncBody^
 	ExchangeOut := BoxFuncBody^
+
+	UseCache := bool
+	CachedValues := CacheStringModule^
 }

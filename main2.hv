@@ -30,9 +30,10 @@
 
 #CreateCallCommand(
 	Name = "ComputePi",
-	Call = !() -> Blob^
+	CacheOn = "Inputs",
+	Call = !(int x) -> Blob^
 	{
-		result = CalculatePiBlob()
+		result = CalculatePiBlob(x)
 	}
 	ExchangeOut = !(Blob^ blb) -> char^
 	{
@@ -42,19 +43,10 @@
 
 main := !(char^[] args) -> int
 {
-	//_mkdir("😊")
-	
-	tst := CacheFile("Test.zip")
-	fls := tst.GetFileModule("Bad")
-	fls.GetCacheValue(FSGetFile("grind.txt"),() ==> Blob^ {
-		printf("doung calculus\n")
-		result = new BlobOnVector(200)
-	})
-	return 0
-	//piValue := CalculatePiString()
-	//printf("%s\n",piValue)
-	//c := #ComputePi()
-	//printf("hob %s\n",c)
+	//piValue := CalculatePiBlob(12000)
+	//printf("%s\n",piValue.GetPointer())
+	c := #ComputePi(1200)
+	printf("hob %s\n",c)
 	//#Run(CalculatePiString())
 	return 0
 	//RunTest()
@@ -120,9 +112,8 @@ TestClsInput := !(ClsInput inputs) -> void
 	result.Objects = vals
 }
 
-CalculatePiBlob := !() -> Blob^
+CalculatePiBlob := !(int nums) -> Blob^
 {
-	nums := 12000
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}
 
