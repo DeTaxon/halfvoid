@@ -1,7 +1,8 @@
 {
 	"initname" : "libFFIInit",
 	"libs" : [
-		"libffi.so"
+		"libffi.so",
+		"libffi-8.dll"
 	],
 	"funcs" : {
 		"ffi_prep_cif" : "int,void^,int,int,void^,void^^",

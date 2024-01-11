@@ -107,57 +107,89 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			}
 		}
 
-		resultBlob := void^
-		extraStep := resultBlob&
-		interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
-		MCInterpFunction(GInterpCntx&,interpFnc,inptPointers,extraStep&)
+		
 
 		fncResult := userCmd.CallFunction.GetType()->{TypeFunc^}.ResultType
 
-		if fncResult == GTypeVoid {
-
-		}else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() 
+		callObj := () ==> Blob^
 		{
+			resultBlob := void^
+			extraStep := resultBlob&
+			interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
+			MCInterpFunction(GInterpCntx&,interpFnc,inptPointers,extraStep&)
 
-			decBlob := intGetFunc("internalHVDecompressBlob")
-			assert(decBlob != null)
-			ptrVal := void^
-			extraStep := ptrVal&
-			blobSize := size_t
-			extraStep2 := blobSize&
-			arrr := void^[3]
-			arrr[0] = resultBlob&
-			arrr[1] = extraStep&
-			arrr[2] = extraStep2&
-			mcFunc := GInterpCntx.GetMCFunc(decBlob->{BoxFuncBody^})
-			MCInterpFunction(GInterpCntx&,mcFunc,arrr,null)
-
-			newBlob := new BlobOnVector(blobSize)
-			if blobSize != 0
+			if fncResult == GTypeVoid {
+				return new BlobSpan
+			}else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() 
 			{
-				memcpy(newBlob.GetPointer(),ptrVal,blobSize)
+				decBlob := intGetFunc("internalHVDecompressBlob")
+				assert(decBlob != null)
+				ptrVal := void^
+				extraStep := ptrVal&
+				blobSize := size_t
+				extraStep2 := blobSize&
+				arrr := void^[3]
+				arrr[0] = resultBlob&
+				arrr[1] = extraStep&
+				arrr[2] = extraStep2&
+				mcFunc := GInterpCntx.GetMCFunc(decBlob->{BoxFuncBody^})
+				MCInterpFunction(GInterpCntx&,mcFunc,arrr,null)
+
+				newBlob := new BlobOnVector(blobSize)
+				if blobSize != 0
+				{
+					memcpy(newBlob.GetPointer(),ptrVal,blobSize)
+				}
+
+				dltOld := GInterpCntx.GetMCFunc(GFuncGCSetNull->{BoxFuncBody^})
+				arr2 := void^[1]
+				arr2[0] = resultBlob&
+				extraStep = resultBlob&
+				MCInterpFunction(GInterpCntx&,dltOld,arr2,null)
+
+
+				return newBlob
+			}
+		}
+		resBlb := Blob^
+
+		if userCmd.UseCache
+		{
+			CacheString := TEchoStream
+
+			for it : objVals
+			{
+				switch it is
+				{
+				case BoxExeInt
+					CacheString << it.Value
+				case void
+					assert(false)
+				}
+				CacheString << "_~&a№_"
 			}
 
-			dltOld := GInterpCntx.GetMCFunc(GFuncGCSetNull->{BoxFuncBody^})
-			arr2 := void^[1]
-			arr2[0] = resultBlob&
-			extraStep = resultBlob&
-			MCInterpFunction(GInterpCntx&,dltOld,arr2,null)
+			resBlb = userCmd.CachedValues.CacheBlobByString(CacheString.GetString(),callObj)
+		}else{
+			resBlb = callObj()
+		}
 
-			res := new BoxRawData(newBlob)
-			blobDatas.Push(res)
+		if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint()
+		{
+				res := new BoxRawData(resBlb)
+				blobSize := resBlb.Size()
+				blobDatas.Push(res)
 
-			ptrToBlob := CreateFuncCall(StringSpan("internalHVCreateBlobOnSpan"),![res->{BoxExeObj^},GetExeInt(blobSize)]) //TODO GetExeInt for s64
-			assert(ptrToBlob != null)
-			blobRefToPtr := new UnrefFuncCall(ptrToBlob)
-			blbRes := new PtrExchange(blobRefToPtr,GBlobType.GetPoint())
+				ptrToBlob := CreateFuncCall(StringSpan("internalHVCreateBlobOnSpan"),![res->{BoxExeObj^},GetExeInt(blobSize)]) //TODO GetExeInt for s64
+				assert(ptrToBlob != null)
+				blobRefToPtr := new UnrefFuncCall(ptrToBlob)
+				blbRes := new PtrExchange(blobRefToPtr,GBlobType.GetPoint())
 
-			if userCmd.ExchangeOut != null
-			{
-				return userCmd.ExchangeOut.CreateCall(![blbRes])
-			}
-
-			return blbRes
+				if userCmd.ExchangeOut != null
+				{
+					return userCmd.ExchangeOut.CreateCall(![blbRes])
+				}
+				return res
 		}
 		
 		return GObjNone
