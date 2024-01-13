@@ -11,6 +11,8 @@ MCInterpContext := class
 	//VTableFunctions := HVTable2.{BuildInVirtualFunctionCall^,void^}
 	
 	functionPointers := HVTable2.{MCFunction^,void^}
+	
+	vtableFunctions := AVLSet.{void^}
 
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
@@ -28,6 +30,14 @@ MCInterpContext := class
 
 		if classVar != null
 		{
+			if classVar.ItName == "BlobOnVector"
+			{
+				free(result)
+				result = BlobOnVector->VTable
+				globalVariables[vr] = result
+				return void
+			}
+
 			vTable := classVar.VTableType
 			fldsCount := vTable.GetFieldsCount()
 
@@ -42,12 +52,12 @@ MCInterpContext := class
 				{
 					asFnc := val->{VTableFunc^}
 					memPtr->{void^^}^ = asFnc.Value
+					vtableFunctions.Insert(asFnc.Value)
 				}
 			}
 		}else if vr.value != null
 		{
 			WriteGlobToMem(vr.value,result)
-			
 		}
 	}
 	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void

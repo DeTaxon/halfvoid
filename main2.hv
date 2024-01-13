@@ -41,11 +41,25 @@
 	}
 )
 
+#CreateCallCommand(
+	Name = "Test",
+	Call = !() -> Blob^
+	{
+		result = new BlobOnVector(13)
+		for i : 12
+		{
+			result.GetPointer()[i] = i + 'a'
+		}
+		result.GetPointer()[12] = 0
+	}
+)
+
 main := !(char^[] args) -> int
 {
 	//piValue := CalculatePiBlob(12000)
 	//printf("%s\n",piValue.GetPointer())
-	c := #ComputePi(1200)
+	//c := #ComputePi(120)
+	c := #Test()
 	printf("hob %s\n",c)
 	//#Run(CalculatePiString())
 	return 0
@@ -72,6 +86,7 @@ main := !(char^[] args) -> int
 
 RunTest := !() -> void
 {
+	printf("test\n")
 	//CalculatePiString()
 	
 	//c.Push(13)

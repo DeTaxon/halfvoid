@@ -166,21 +166,30 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					globVar := iCntx.GetGlobalVarFromMem(vTable)
 					assert(globVar != null)
 					cls := globVar.GetType()->{TypeClass^}.ToClass
-					memOffset := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex).MemOffset
+					memField := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex)
+					memOffset := memField.MemOffset
 
 					memObj := vTable->{u8^}[memOffset]&->{BoxUnit^^}^
-
-					if memObj is ResistFunc
+					
+					if iCntx.vtableFunctions.Contain(memObj)
 					{
-						memObj = memObj->{ResistFunc^}.base
+
+						if memObj is ResistFunc
+						{
+							memObj = memObj->{ResistFunc^}.base
+						}
+
+						fncAsMC := iCntx.GetMCFunc(memObj->{BoxFuncBody^})
+						assert(fncAsMC != null)
+
+
+						assert(memObj->{BoxFuncBody^} is in BoxFuncBody)
+
+						MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
+					}else{
+						fncType := memField.GetType()->{TypeFunc^}.ResultType.Base
+						thisFrame.CallFuncPtr(fncType->{TypeFunc^},memObj,resultPtr,indxs,0)
 					}
-
-					fncAsMC := iCntx.GetMCFunc(memObj->{BoxFuncBody^})
-
-
-					assert(memObj->{BoxFuncBody^} is in BoxFuncBody)
-
-					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 
 				}else if fncHV is BoxFuncDeclare {
 					fncType := fncHV.GetType()->{TypeFunc^}
