@@ -10,6 +10,7 @@ MCBuildContext := class extend TGCObject
 	exitNodes := ContextExitNode
 	DeferObjects := HybridStack.{BoxExeObj^,20}
 
+	ResultIndex := int
 	InputsIndxStart := int
 	InputsIndxCount := int
 
@@ -165,6 +166,7 @@ MCBuildContext := class extend TGCObject
 
 		result.Objects = objects.ToVector()
 		result.Lines = lines.ToVector()
+		result.ResultIndex = this.ResultIndex
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
 	}

@@ -59,8 +59,8 @@ main := !(char^[] args) -> int
 	//piValue := CalculatePiBlob(12000)
 	//printf("%s\n",piValue.GetPointer())
 	//c := #ComputePi(120)
-	c := #Test()
-	printf("hob %s\n",c)
+	//c := #Test()
+	//printf("hob %s\n",c)
 	//#Run(CalculatePiString())
 	return 0
 	//RunTest()
@@ -83,25 +83,19 @@ main := !(char^[] args) -> int
 	////tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
+VarTest := class 
+{
+	Test := virtual !(int x) -> int
+	{
+		printf("hello %i\n",x)
+		result = 100
+	}
+}
 
 RunTest := !() -> void
 {
-	printf("test\n")
-	//CalculatePiString()
-	
-	//c.Push(13)
-	//c.Push(7)
-
-	//d := c.ToVector()
-
-	//test := LexBuilder
-	//test.ApplyReg("[0-9]+",1)
-	//mac := test.GenerateMachine()
-
-	//mac.RegExpReadText(StringSpan("absc 234 asfa;sdkj 9871234 lkaj35r;"),(x,y) ==> {
-	//	printf("test %s\n",x.GetString().Str())
-	//})
-	
+	c := VarTest
+	printf("h %i\n",c.Test(7))
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

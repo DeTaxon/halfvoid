@@ -8,6 +8,7 @@ AppendClass BoxFuncBody
 			assert(ResultVar != null)
 			varId := ctx.AddLocalVar(ResultVar)
 			assert(varId == 1)
+			ctx.ResultIndex = 1
 			ctx.InputsIndxStart = 2
 		}else{
 			ctx.InputsIndxStart = 1

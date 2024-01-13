@@ -30,13 +30,13 @@ MCInterpContext := class
 
 		if classVar != null
 		{
-			if classVar.ItName == "BlobOnVector"
-			{
-				free(result)
-				result = BlobOnVector->VTable
-				globalVariables[vr] = result
-				return void
-			}
+			//if classVar.ItName == "BlobOnVector"
+			//{
+			//	free(result)
+			//	result = BlobOnVector->VTable
+			//	globalVariables[vr] = result
+			//	return void
+			//}
 
 			vTable := classVar.VTableType
 			fldsCount := vTable.GetFieldsCount()
@@ -51,8 +51,17 @@ MCInterpContext := class
 				if val is VTableFunc
 				{
 					asFnc := val->{VTableFunc^}
-					memPtr->{void^^}^ = asFnc.Value
-					vtableFunctions.Insert(asFnc.Value)
+					fnc := asFnc.Value->{BoxFuncBody^}
+					if fnc is ResistFunc
+					{
+						fnc = fnc->{ResistFunc^}.base->{BoxFuncBody^}
+					}
+					assert(fnc is in BoxFuncBody)
+					mc := GetMCFunc(fnc)
+					memPtr->{void^^}^ = GetFunctionPointer(mc)
+
+					//memPtr->{void^^}^ = asFnc.Value
+					//vtableFunctions.Insert(asFnc.Value)
 				}
 			}
 		}else if vr.value != null
@@ -98,14 +107,73 @@ MCInterpContext := class
 		if funcPointer != null
 			return funcPointer
 
-		funcPointer = malloc(16) //TODO replace with closures
+		newClosure := new HV_closure_func_data
 
+		closure := ffi_closure_alloc(128,newClosure.func_pointer&) //TODO unconst
+		PopulateCIF(fnc,newClosure.ffi_cif[0]&)
+
+		res := ffi_prep_closure_loc(closure,newClosure.ffi_cif[0]&,HV_closure_func,newClosure,newClosure.func_pointer)
+
+		newClosure.interpCntx = this&
+		newClosure.interpFunc = fnc
+
+		funcPointer = newClosure.func_pointer
 		functionPointers.Add(fnc,funcPointer)
 		return funcPointer
 	}
+
+	PopulateCIF := !(MCFunction^ fnc, void^ resCIF) -> void
+	{
+		resultType := void^
+		if fnc.ResultIndex != 0
+		{
+			resultType = ThisToCif(fnc.Objects[fnc.ResultIndex].GetType())
+		}else{
+			resultType = ffi_type_void
+		}
+
+		types := void^[120]
+		typesSize := 0
+		for i : fnc.InputsIndxCount
+		{
+			j := i + fnc.InputsIndxStart
+			types[typesSize] = ThisToCif(fnc.Objects[j].GetType())
+			typesSize += 1
+		}
+		ffi_prep_cif(resCIF,2, typesSize,resultType,types[0]&)
+		
+	}
+	ThisToCif := !(Type^ itType) -> void^
+	{
+		if itType == GTypeChar.GetPoint()
+		{
+			return ffi_type_pointer
+		}else if itType is in  TypePoint
+		{
+			return ffi_type_pointer
+		}else if itType == GTypeDouble{
+			return ffi_type_double
+		}else if itType == GTypeInt{
+			return ffi_type_sint32
+		}else if itType == GTypeU64{
+			return ffi_type_uint64
+		}else if itType == GTypeS64{
+			return ffi_type_sint64
+		}else if itType == GTypeBool{
+			return ffi_type_sint8
+		}else if itType == GTypeU8{
+			return ffi_type_uint8
+		}else{
+			printf("unknown type %s\n",itType.GetBADStr().Str())
+			assert(false)
+		}
+	}
+
 	GetFuncByPointer := !(void^ ptr) -> MCFunction^
 	{
-		functionPointers.Value.Get(ptr,(x) ==> { result = x })	
+		res := MCFunction^
+		functionPointers.Value.Get(ptr,(x) ==> { res = x })
+		return res
 	}
 
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
@@ -172,3 +240,23 @@ MCInterpContext := class
 	}
 }
 
+HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data) -> void
+{
+	mc := data.interpFunc
+	hv := mc.BaseFunction
+
+	thisArgs := HybridQueue.{void^,120}
+	for i : data.interpFunc.InputsIndxCount
+	{
+		thisArgs.Push(args[i])
+	}
+	MCInterpFunction(GInterpCntx&,data.interpFunc,thisArgs,ret)
+}
+
+HV_closure_func_data := class
+{
+	func_pointer := void^
+	ffi_cif := u8[128]
+	interpCntx := MCInterpContext^
+	interpFunc := MCFunction^
+}

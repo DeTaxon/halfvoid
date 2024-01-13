@@ -111,6 +111,7 @@ MCFunction := class //extend TGCObject
 {
 	BaseFunction := BoxFuncBody^
 
+	ResultIndex := int
 	InputsIndxStart := int
 	InputsIndxCount := int
 

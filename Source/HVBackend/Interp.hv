@@ -171,7 +171,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 					memObj := vTable->{u8^}[memOffset]&->{BoxUnit^^}^
 					
-					if iCntx.vtableFunctions.Contain(memObj)
+					if iCntx.vtableFunctions.Contain(memObj) and false
 					{
 
 						if memObj is ResistFunc

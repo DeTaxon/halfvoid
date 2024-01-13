@@ -8,8 +8,12 @@
 		"ffi_prep_cif" : "int,void^,int,int,void^,void^^",
 		"ffi_prep_cif_var" : "int,void^,int,int,int,void^,void^^",
 
+		"ffi_closure_alloc" : "void^,size_t,void^",
+		"ffi_prep_closure_loc" : "int,void^,void^,void^,void^,void^",
+
 		"ffi_call" : "void,void^,void^,void^,void^^",
 
+		"ffi_type_void" : "void",
 		"ffi_type_pointer" : "void",
 		"ffi_type_sint8" : "void",
 		"ffi_type_uint8" : "void",
