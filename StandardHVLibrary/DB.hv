@@ -22,6 +22,14 @@ HVTable2 := class .{@Left,@Right}
 				cb(it)
 			}
 		}
+		ContainSome := !(Left obj) -> bool
+		{
+			return frwd.Contain(obj)
+		}
+		GetOne := !(Left obj) -> ref Right
+		{
+			return frwd[obj]
+		}
 	}
 	Value := fake
 	{
@@ -34,6 +42,14 @@ HVTable2 := class .{@Left,@Right}
 			{
 				cb(it)
 			}
+		}
+		ContainSome := !(Right obj) -> bool
+		{
+			return bckwrd.Contain(obj)
+		}
+		GetOne := !(Right obj) -> ref Left
+		{
+			return bckwrd[obj][0]
 		}
 
 	}

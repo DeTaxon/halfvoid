@@ -116,7 +116,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			resultBlob := void^
 			extraStep := resultBlob&
 			interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
-			MCInterpFunction(GInterpCntx&,interpFnc,inptPointers,extraStep&)
+			MCInterpFunction2(GInterpCntx&,interpFnc,inptPointers,extraStep&)
 
 			if fncResult == GTypeVoid {
 				return new BlobSpan

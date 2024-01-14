@@ -14,18 +14,32 @@ AppendClass BoxFuncCall
 
 			fType := GetFuncTypeMC()->{TypeFunc^}
 
-			extraOffset := 0
-			if fType.ResultType.IsComplexReturn() and not fType.ResultRef
-				extraOffset += 1
+			isComplex := fType.ResultType.IsComplexReturn() and not fType.ResultRef
 
-			for it,i : downs
+			if ResultVar != null
 			{
+				ctx.AddLocalVar(ResultVar)
+				ResultVar.WriteMC(ctx)
+			}
 
+			for it,indx : downs
+			{
 				subObj := it.WriteMC(ctx)
+				fInd := indx
 
-				if i < extraOffset
-					continue
-				fInd := i - extraOffset
+				if isComplex
+				{
+					if fInd == 0
+					{
+						varId := ctx.GetLocalVar(ResultVar)
+						varId2 := ctx.CreateVar(it.GetType().GetPoint())
+						HVB_ins_get_pointer(ctx,varId2,varId)
+						thisIndexes.Push(varId2)
+						continue
+					}else{
+						fInd -= 1
+					}
+				}
 
 				isRef := false
 				if fInd < fType.Params.Size()
@@ -41,13 +55,8 @@ AppendClass BoxFuncCall
 					thisIndexes.Push(varId)
 				}
 			}
-			if ResultVar != null
-			{
-				ctx.AddLocalVar(ResultVar)
-				ResultVar.WriteMC(ctx)
-			}
 
-			returnByInput := false
+			//returnByInput := false
 			setResultId := 0
 			resultId := 0
 
@@ -55,10 +64,6 @@ AppendClass BoxFuncCall
 			{
 				if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 				{
-					returnByInput = true
-					assert(ResultVar != null)
-					setResultId = ctx.CreateVar(fType.ResultType.GetPoint())
-					HVB_ins_get_pointer(ctx,setResultId,ctx.GetLocalVar(ResultVar))
 					resultId = ctx.GetLocalVar(ResultVar)
 				}else{
 					if fType.ResultRef

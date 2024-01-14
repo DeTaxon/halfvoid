@@ -58,7 +58,7 @@ main := !(char^[] args) -> int
 {
 	//piValue := CalculatePiBlob(12000)
 	//printf("%s\n",piValue.GetPointer())
-	//c := #ComputePi(120)
+	//c := #ComputePi(12000)
 	//c := #Test()
 	//printf("hob %s\n",c)
 	//#Run(CalculatePiString())
@@ -83,19 +83,32 @@ main := !(char^[] args) -> int
 	////tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
+
+Baad := class
+{
+	x := double
+	y := double
+	z := int[128]
+}
 VarTest := class 
 {
-	Test := virtual !(int x) -> int
+	//Test := virtual !() -> Baad
+	//{
+	//	result.x = 100.0
+	//	result.y = 200.0
+	//}
+	Good := virtual !() -> void
 	{
-		printf("hello %i\n",x)
-		result = 100
+		printf("good %p\n",this&)
 	}
 }
 
 RunTest := !() -> void
 {
 	c := VarTest
-	printf("h %i\n",c.Test(7))
+	c.Good()
+	//r := c.Test()
+	//printf("hm %p %f %f\n",r&,r.x,r.y)
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

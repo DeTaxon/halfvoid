@@ -1,3 +1,28 @@
+
+MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
+{
+	fType := interpFunc.BaseFunction.GetType()->{TypeFunc^}
+
+	isComplex := fType.ResultType.IsComplexReturn() and not fType.ResultRef
+
+	if isComplex and resultPtr != null
+	{
+		vars2 := HybridQueue.{void^,120}
+		vars2.Push(resultPtr)
+		if inputs != null
+		{
+			for it : inputs
+			{
+				vars2.Push(it)
+			}
+		}
+		MCInterpFunction(iCntx,interpFunc,vars2,null)
+	}else{
+		MCInterpFunction(iCntx,interpFunc,inputs,resultPtr)
+	}
+
+}
+
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
 {
 	thisFrame := MCInterpFuncFrame
@@ -26,6 +51,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 {
 	//interpFunc.Print()
 	//exit(0)
+	//
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
@@ -161,7 +187,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 				if fncHV is in BuildInVirtualCall
 				{
-					v1 := thisFrame.GetObjectPtr(indxs[0])
+					vTableIndx := 0
+					fType := fncHV->{BuildInVirtualCall^}.wrappedFunc.GetType()->{TypeFunc^}
+
+					if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+						vTableIndx = 1
+			
+					v1 := thisFrame.GetObjectPtr(indxs[vTableIndx])
 					vTable := v1->{void^^^}^^
 					globVar := iCntx.GetGlobalVarFromMem(vTable)
 					assert(globVar != null)
@@ -171,19 +203,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 					memObj := vTable->{u8^}[memOffset]&->{BoxUnit^^}^
 					
-					if iCntx.vtableFunctions.Contain(memObj) and false
+					if iCntx.vtableFunctions.Value.ContainSome(memObj)
 					{
+						mx := iCntx.vtableFunctions.Value.GetOne(memObj)
 
-						if memObj is ResistFunc
-						{
-							memObj = memObj->{ResistFunc^}.base
-						}
+						assert(mx is in BoxFuncBody)
 
-						fncAsMC := iCntx.GetMCFunc(memObj->{BoxFuncBody^})
+						fncAsMC := iCntx.GetMCFunc(mx)
 						assert(fncAsMC != null)
-
-
-						assert(memObj->{BoxFuncBody^} is in BoxFuncBody)
 
 						MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 					}else{

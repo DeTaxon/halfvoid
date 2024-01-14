@@ -12,7 +12,7 @@ MCInterpContext := class
 	
 	functionPointers := HVTable2.{MCFunction^,void^}
 	
-	vtableFunctions := AVLSet.{void^}
+	vtableFunctions := HVTable2.{BoxFuncBody^,void^}
 
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
@@ -58,10 +58,11 @@ MCInterpContext := class
 					}
 					assert(fnc is in BoxFuncBody)
 					mc := GetMCFunc(fnc)
-					memPtr->{void^^}^ = GetFunctionPointer(mc)
+					fncPointer := GetFunctionPointer(mc)
+					memPtr->{void^^}^ = fncPointer
 
 					//memPtr->{void^^}^ = asFnc.Value
-					//vtableFunctions.Insert(asFnc.Value)
+					vtableFunctions.Add(asFnc.Value->{BoxFuncBody^},fncPointer)
 				}
 			}
 		}else if vr.value != null
@@ -131,9 +132,12 @@ MCInterpContext := class
 		}else{
 			resultType = ffi_type_void
 		}
+		hv := fnc.BaseFunction
+		fType := hv.GetType()->{TypeFunc^}
 
 		types := void^[120]
 		typesSize := 0
+
 		for i : fnc.InputsIndxCount
 		{
 			j := i + fnc.InputsIndxStart
@@ -189,6 +193,7 @@ MCInterpContext := class
 		buildCtx.Init()
 		itm.CreateMCFunction(buildCtx&)
 		result = buildCtx.CreateMCFunction()
+		result.BaseFunction = itm
 
 		funcs[itm] = result
 	}
@@ -244,11 +249,16 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 {
 	mc := data.interpFunc
 	hv := mc.BaseFunction
+	fType := hv.GetType()->{TypeFunc^}
 
+
+	c := args[0]
+	d := c&
 	thisArgs := HybridQueue.{void^,120}
 	for i : data.interpFunc.InputsIndxCount
 	{
-		thisArgs.Push(args[i])
+		//thisArgs.Push(args[i])
+		thisArgs.Push(d&)
 	}
 	MCInterpFunction(GInterpCntx&,data.interpFunc,thisArgs,ret)
 }

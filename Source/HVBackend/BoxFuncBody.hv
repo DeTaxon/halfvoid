@@ -2,14 +2,24 @@ AppendClass BoxFuncBody
 {
 	CreateMCFunction := virtual !(MCBuildContext^ ctx) -> void
 	{
-		resType := GetType()->{TypeFunc^}.ResultType
+		fType := GetType()->{TypeFunc^}
+		resType := fType.ResultType
+		ctx.InputsIndxCount = Params.Size()
 		if resType != GTypeVoid
 		{
-			assert(ResultVar != null)
-			varId := ctx.AddLocalVar(ResultVar)
-			assert(varId == 1)
-			ctx.ResultIndex = 1
-			ctx.InputsIndxStart = 2
+			if resType.IsComplexReturn() and not fType.ResultRef
+			{
+				ctx.InputsIndxStart = 1
+				ctx.InputsIndxCount += 1
+				varId := ctx.AddLocalVar(ResultVar)
+				assert(varId == 1)
+			}else{
+				assert(ResultVar != null)
+				varId := ctx.AddLocalVar(ResultVar)
+				assert(varId == 1)
+				ctx.ResultIndex = varId
+				ctx.InputsIndxStart = 2
+			}
 		}else{
 			ctx.InputsIndxStart = 1
 		}
