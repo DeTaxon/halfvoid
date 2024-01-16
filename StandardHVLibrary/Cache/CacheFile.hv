@@ -33,5 +33,10 @@ CacheFile := class extend TGCObject
 		result = new CacheStringModule(stName,this&)
 		stringModules[stName] = result
 	}
+
+	GetModule := !(StringView name) -> CacheModule^
+	{
+		return new CacheModule(name,this&)
+	}
 }
 

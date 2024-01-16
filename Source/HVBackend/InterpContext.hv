@@ -37,6 +37,13 @@ MCInterpContext := class
 			//	globalVariables[vr] = result
 			//	return void
 			//}
+			//if classVar.ItName == "vRepoFile"
+			//{
+			//	free(result)
+			//	result = vRepoFile->VTable
+			//	globalVariables[vr] = result
+			//	return void
+			//}
 
 			vTable := classVar.VTableType
 			fldsCount := vTable.GetFieldsCount()
@@ -251,14 +258,13 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 	hv := mc.BaseFunction
 	fType := hv.GetType()->{TypeFunc^}
 
-
-	c := args[0]
-	d := c&
+	step2 := void^[120]
 	thisArgs := HybridQueue.{void^,120}
 	for i : data.interpFunc.InputsIndxCount
 	{
-		//thisArgs.Push(args[i])
-		thisArgs.Push(d&)
+		step2[i] = args[i]
+		//thisArgs.Push(step2[i]&)
+		thisArgs.Push(args[i])
 	}
 	MCInterpFunction(GInterpCntx&,data.interpFunc,thisArgs,ret)
 }

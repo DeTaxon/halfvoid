@@ -3,8 +3,6 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
-
-
 //#CreateClass(
 //	Name = "TestClass",
 //	Init = !(ctx)
@@ -27,60 +25,23 @@
 //		ctx.AddField(fieldName,int)
 //	}
 //)
-
-#CreateCallCommand(
-	Name = "ComputePi",
-	CacheOn = "Inputs",
-	Call = !(int x) -> Blob^
-	{
-		result = CalculatePiBlob(x)
-	}
-	ExchangeOut = !(Blob^ blb) -> char^
-	{
-		return blb.GetPointer()
-	}
-)
-
+//
 #CreateCallCommand(
 	Name = "Test",
-	Call = !() -> Blob^
+	Call = !(vRepoFile^ fil) -> Blob^
 	{
-		result = new BlobOnVector(13)
-		for i : 12
-		{
-			result.GetPointer()[i] = i + 'a'
-		}
-		result.GetPointer()[12] = 0
+		return fil.GetBlob()
+	}
+	Exchange = !(Blob^ bl) -> char^
+	{
+		return bl.GetPointer()
 	}
 )
 
 main := !(char^[] args) -> int
 {
-	//piValue := CalculatePiBlob(12000)
-	//printf("%s\n",piValue.GetPointer())
-	//c := #ComputePi(12000)
-	//c := #Test()
-	//printf("hob %s\n",c)
-	//#Run(CalculatePiString())
+	RunTest()
 	return 0
-	//RunTest()
-	//return 0
-
-	////TestClsInput(![2,53,10])
-	////ManyVars(13)
-	////ManyVars(13,7)
-	////ManyVars(13,z = 30)
-
-	//tbl := HVTable2.{int,int}
-	//tbl.Add(1,2)
-	//tbl.Add(2,3)
-	//tbl.Add(4,5)
-
-	////tbl.key.GetRecur(1, (x) ==> { printf("hm %i\n",x) })
-	//tbl.Key.Get(1, (x) ==> { printf("hm just %i\n",x) })
-	////tbl.key.GetRecur(5, (x) ==> { printf("hm %i\n",x) })
-	//tbl.Value.Get(2 , (x) ==> { printf("back %i\n",x)})
-	////tbl.value.GetRecur(3, (x) ==> { printf("back %i\n",x) })
 }
 
 
@@ -94,21 +55,23 @@ VarTest := class
 {
 	//Test := virtual !() -> Baad
 	//{
+	//	printf("hoy\n")
 	//	result.x = 100.0
 	//	result.y = 200.0
 	//}
-	Good := virtual !() -> void
+	Good := virtual !(int x) -> void^
 	{
-		printf("good %p\n",this&)
+		printf("good %p %i\n",this&,x)
 	}
 }
 
 RunTest := !() -> void
 {
-	c := VarTest
-	c.Good()
-	//r := c.Test()
-	//printf("hm %p %f %f\n",r&,r.x,r.y)
+	spn := StringSpan("Many hands make light work.Hey")
+	bs := Base64Encode(spn.NonNullStr(),spn.Size())
+	printf("test %s\n",bs.Str())
+	bck := Base64Decode(bs)
+	printf("back <%s>\n",StringSpan(bck.GetPointer(),bck.Size()).GetString().Str())
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

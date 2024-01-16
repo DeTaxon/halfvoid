@@ -351,7 +351,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 		nxtType := Type^
 		if tp != null
 		{
-			if not (tp is in TypePoint)
+			if tp is not in TypePoint
 				return null
 			nxtType = tp.Base
 		}

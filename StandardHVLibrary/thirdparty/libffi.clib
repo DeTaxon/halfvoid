@@ -1,6 +1,7 @@
 {
 	"initname" : "libFFIInit",
 	"libs" : [
+		"libffid.so",
 		"libffi.so",
 		"libffi-8.dll"
 	],

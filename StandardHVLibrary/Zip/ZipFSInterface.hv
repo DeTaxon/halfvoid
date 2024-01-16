@@ -11,6 +11,11 @@ FSGetFile := !(StringView inp) -> vRepoFile^
 	createFSObject()
 	return gRepoObject.GetFile(inp)
 }
+FSGetFile := !(vRepoFolder^ fldr,StringView inp) -> vRepoFile^
+{
+	createFSObject()
+	return gRepoObject.GetFile(inp,fldr)
+}
 
 createFSObject := !() -> void
 {

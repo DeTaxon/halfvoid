@@ -37,3 +37,8 @@ BlobSpan := class extend Blob
 	GetPointer := virtual !() -> u8^ { return itData->{u8^} }
 	Size := virtual !() -> s64 { return itSize }
 }
+
+MakeBlob := !(s64 siz) -> Blob^
+{
+	return new BlobOnVector(siz)
+}

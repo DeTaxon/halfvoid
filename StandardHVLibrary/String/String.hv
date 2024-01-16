@@ -24,6 +24,11 @@ String := class extend StringView
 		memcpy(charPtr,inp,itSize)
 		charPtr[itSize] = 0
 	}
+	this := !(int size) -> void
+	{
+		itSize = size
+		charPtr = calloc(itSize + 1,1)->{char^}
+	}
 	Destroy := virtual !() -> void
 	{
 		if charPtr == null
@@ -40,8 +45,10 @@ String := class extend StringView
 	}
 	"[]" := virtual !(Range ind) -> StringSpan
 	{
-		result.ptr = charPtr
-		result.itSize = itSize
+		res := StringSpan
+		res.ptr = charPtr
+		res.itSize = itSize
+		return res[ind]
 	}
 	Str := virtual !() -> char^
 	{

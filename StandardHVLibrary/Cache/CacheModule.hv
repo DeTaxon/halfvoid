@@ -1,0 +1,32 @@
+CacheModule := class
+{
+	base := CacheFile^
+	moduleName := String^
+
+	this := !(StringView nm, CacheFile^ bs) -> void
+	{
+		base = bs
+		moduleName = nm.GetString()
+
+		LoadMeta()
+	}
+	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
+	{
+	}
+	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
+	{
+		itPath := StringConcat(moduleName,"/",fl.GetPath())
+		base.zipFile.WriteFile(itPath,data)
+	}
+	GetCachedValue := !(StringView stv, vRepoFile^[] files, !()&->Blob^ cb) -> Blob^
+	{
+		inDB := TryGetCacheValue(stv,files)
+		if inDB != null
+			return inDB
+		result = cb()
+		if result == null
+			return null
+		WriteCacheOfFile(fl,result)
+	}
+
+}

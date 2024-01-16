@@ -89,6 +89,7 @@ MCInterpFuncFrame := class extend TGCObject
 
 	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,int[] indexes,int resultIndex) -> void
 	{
+		fType = NormalizeFuncType(fType)
 		varsCount := fType.Params.Size()
 		assert(varsCount <= 40) //TODO Unconst
 

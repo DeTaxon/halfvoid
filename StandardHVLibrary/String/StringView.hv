@@ -29,6 +29,22 @@ StringView := class extend TGCObject
 			cb(newSpan)
 		}
 	}
+	Start := fake
+	{
+		"<=>" := !(StringView toCmp) -> int
+		{
+			mySize := Size()
+			otherSize := toCmp.Size()
+			if mySize < otherSize
+				return -1
+			newSpan := StringSpan(NonNullStr(),otherSize)
+			return newSpan <=> toCmp
+		}
+		"<=>" := !(char^ toCmp) -> int
+		{
+			return this.End <=> StringSpan(toCmp)
+		}
+	}
 	End := fake
 	{
 		"<=>" := !(StringView toCmp) -> int

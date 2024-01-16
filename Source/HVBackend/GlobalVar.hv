@@ -1,5 +1,9 @@
 AppendClass GlobalVar2
 {
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = proxy.WriteMC(ctx)
+	}
 
 }
 
@@ -22,5 +26,12 @@ AppendClass AliasVar
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		result = itValue.WriteMC(ctx)
+	}
+}
+AppendClass GlobalNameAlias2
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = Value.WriteMC(ctx)
 	}
 }

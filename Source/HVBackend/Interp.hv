@@ -34,7 +34,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inp
 		thisFrame.localVarTable[1] = resultPtr
 	}
 	inptsIndexes := HybridQueue.{int,10}
-	inptsExtraStep := HybridQueue.{void^,10}
 	if inputs != null
 	{
 		for it,i : inputs
@@ -92,7 +91,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		if it& is MCReference
 			typ = GTypeVoidP
 
-		if i == 1 and callerFrame != null and returnIndex != 0
+		if i != 0 and i == interpFunc.ResultIndex and callerFrame != null and returnIndex != 0
 		{
 			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
 			continue
@@ -195,9 +194,12 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			
 					v1 := thisFrame.GetObjectPtr(indxs[vTableIndx])
 					vTable := v1->{void^^^}^^
-					globVar := iCntx.GetGlobalVarFromMem(vTable)
-					assert(globVar != null)
-					cls := globVar.GetType()->{TypeClass^}.ToClass
+
+					vTblCls := fncHV->{BuildInVirtualCall^}.wrappedFunc->{BoxFuncBody^}.Params[0].GetType()->{TypeClass^}
+					cls := vTblCls.ToClass.VTableType
+					//globVar := iCntx.GetGlobalVarFromMem(vTable)
+					//assert(globVar != null)
+					//cls := globVar.GetType()->{TypeClass^}.ToClass
 					memField := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex)
 					memOffset := memField.MemOffset
 
@@ -273,6 +275,38 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ or_b ptr2->{s16^}^
 				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ or_b ptr2->{s32^}^
 				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ or_b ptr2->{s64^}^
+			}
+
+			cs += 1
+		case "sshr"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ shr ptr2->{s8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ shr ptr2->{s16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ shr ptr2->{s32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ shr ptr2->{s64^}^
+			}
+
+			cs += 1
+		case "ushr"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{u8^}^ shr ptr2->{u8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{u16^}^ shr ptr2->{u16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{u32^}^ shr ptr2->{u32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{u64^}^ shr ptr2->{u64^}^
 			}
 
 			cs += 1

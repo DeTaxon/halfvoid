@@ -8,6 +8,8 @@ GCLambda := BoxClassTemplate^
 GBlobClass := BoxClass^
 GBlobType := Type^
 
+GRepoFileType := Type^
+
 InitInternalsTypes := !() -> void
 {
 	GCType = intGetClass2("TGCObject").ItType
@@ -21,6 +23,8 @@ InitInternalsTypes := !() -> void
 	GBlobClass = intGetClass2("Blob")
 	assert(GBlobClass != null)
 	GBlobType = GBlobClass.ItType
+
+	GRepoFileType = intGetClass2("vRepoFile").ItType
 }
 
 intGetClass := !(char^ name) -> BoxClass^

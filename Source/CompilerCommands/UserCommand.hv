@@ -78,30 +78,54 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		namedObjs := AVLMap.{StringSpan,BoxExeObj^}
 		CheckFuncCallBrackets(itm.Down.Right,objVals,namedObjs)
 
-		cmpRes := CmpFuncPriority(userCmd.CallFunction.GetType()->{TypeFunc^},objVals,userCmd.CallFunction.GetDefaultValuesCount())
+		fType := userCmd.CallFunction.GetType()->{TypeFunc^}
 
-		if cmpRes != 0
-		{
-			itm.EmitError("Input variables must be same type, no exchange for now ")
-		}
-
-		for it : objVals 
+		for it,i : objVals 
 		{
 			if not it.IsConst
 			{
 				itm.EmitError("All inputs must be consts")
 			}
+			if it.GetType() == fType.Params[i].ItType
+			{
+				//fine, nothing to do
+			} else if it is BoxExeString and fType.Params[i].ItType == GRepoFileType.GetPoint()
+			{
+			}else{
+				itm.EmitError("Input variables must be same type, no exchange for now ")
+			}
 		}
+
+		usedFiles := List.{vRepoFile^}
 
 		valBoxes := List.{s64}
 		inptPointers := List.{void^}
-		for it : objVals
+		for it,i : objVals
 		{
 			switch it is
 			{
 			case BoxExeInt
 				valBoxes.Push(it.Value)
 				inptPointers.Push(valBoxes[-1]&)
+			case BoxExeString
+				if fType.Params[i].ItType == GRepoFileType.GetPoint()
+				{
+					fil :=  vRepoFile^
+					if it.Value.Start == "local:/"
+					{
+						fldr := itm.Line.File.file.GetUpFolder()
+						fil = FSGetFile(fldr,it.Value^[7..0])
+					}else{
+						fil = FSGetFile(it.Value)
+					}
+					if fil == null
+						itm.EmitError("File not found")
+					valBoxes.Push(fil->{size_t})
+					inptPointers.Push(valBoxes[-1]&)
+					usedFiles.Push(fil)
+				}else{
+					assert(false)
+				}
 			case void
 				assert(false)
 			}

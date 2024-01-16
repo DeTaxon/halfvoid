@@ -1,0 +1,93 @@
+
+Base64Encode := !(void^ data, int dataSize) -> String^
+{
+	groups := (dataSize + 2) div 3
+
+	result = new String(groups*4)
+	ptr := result.NonNullStr()->{u8^}
+	
+	for i : groups
+	{
+		value := 0
+		for j : 3
+		{
+			nj := 2 - j
+			indx := i*3 + nj
+			if indx < dataSize
+				value&->{u8^}[j] = data->{u8^}[indx]
+		}
+
+		for j : 4
+		{
+			curVal :=  value and_b 0x3F
+			value = value shr 6
+			ptr[i*4 + (3 - j)] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[curVal]
+		}
+	}
+	
+	nonAlignData := dataSize mod 3
+	if nonAlignData != 0
+	{
+		for i : (3 - nonAlignData)
+		{
+			ptr[groups*4 - i - 1] = '='
+		}
+	}
+}
+Base64Decode := !(StringView^ inpt) -> Blob^
+{
+	ptr := inpt.NonNullStr()->{u8^}
+	dataSize := inpt.Size()
+
+	if dataSize mod 4 != 0
+		return null
+
+	if dataSize == 0
+		return MakeBlob(dataSize)
+	
+	resultSize := (dataSize div 4)*3
+	if ptr[dataSize - 1] == '='
+		resultSize -= 1
+	if ptr[dataSize - 2] == '='
+		resultSize -= 1
+
+	result = MakeBlob(resultSize)
+
+	resPtr := result.GetPointer()->{u8^}
+
+	table := u8[256]
+
+	table[^] = 255
+	for i,j : 'A' .. 'Z'
+		table[i] = j
+	for i,j : 'a' .. 'z'
+		table[i] = j + 26
+	for i,j : '0' .. '9'
+		table[i] = j + 52
+	table['+'] = 62
+	table['/'] = 63
+	table['='] = 0
+
+	groups := dataSize div 4
+	for i : groups
+	{
+		value := 0
+		for j : 4
+		{
+			c := table[ptr[i*4 + j]]
+			if c == 255
+				return null
+			value = (value shl 6) + c
+		}
+		for j : 3
+		{
+			nj := 2 - j
+			indx := i*3 + nj
+			if indx < resultSize
+				resPtr[indx] = value&->{u8^}[j]
+		}
+	}
+}
+
+
+
