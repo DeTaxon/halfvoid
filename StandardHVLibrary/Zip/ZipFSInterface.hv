@@ -11,7 +11,7 @@ FSGetFile := !(StringView inp) -> File^
 	createFSObject()
 	return gRepoObject.GetFile(inp)
 }
-FSGetFile := !(vRepoFolder^ fldr,StringView inp) -> File^
+FSGetFile := !(Folder^ fldr,StringView inp) -> File^
 {
 	createFSObject()
 	return gRepoObject.GetFile(inp,fldr)

@@ -1,7 +1,7 @@
 
 vRepo := class extend TGCObject
 {
-	rootFolder := vRepoFolder^
+	rootFolder := Folder^
 	ignZip := AVLSet.{u64}
 	preferVirtual := bool
 
@@ -9,7 +9,7 @@ vRepo := class extend TGCObject
 
 	Init := !(StringView pathName)-> void
 	{
-		rootFolder = new vRepoFolder
+		rootFolder = new Folder
 		rootFolder.objName = pathName.GetString()
 	}
 
@@ -35,10 +35,10 @@ vRepo := class extend TGCObject
 		if fil == null
 			return void
 
-		rep := fil->{vRepoFolder^}
+		rep := fil->{Folder^}
 		innerReadFolder(rep,recur,callb)
 	}
-	innerReadFolder := !(vRepoFolder^ rep,bool recur,!(File^)& -> void callb) -> void
+	innerReadFolder := !(Folder^ rep,bool recur,!(File^)& -> void callb) -> void
 	{
 		ExamineFolder(rep)
 
@@ -56,7 +56,7 @@ vRepo := class extend TGCObject
 	{
 		return GetFile(fileName,rootFolder)
 	}
-	ExamineFolder := !(vRepoFolder^ iterFolder) -> void
+	ExamineFolder := !(Folder^ iterFolder) -> void
 	{
 		assert(iterFolder != null)
 		if iterFolder.examined
@@ -79,7 +79,7 @@ vRepo := class extend TGCObject
 
 				if osIsFolder(absPath.Str())
 				{
-					newObj := new vRepoFolder
+					newObj := new Folder
 					newObj.objName = strName
 					newObj.upFolder = iterFolder
 					iterFolder.subFolders[strName] = newObj
@@ -115,7 +115,7 @@ vRepo := class extend TGCObject
 			tt.AnalizeFile(absPath.Str())
 			zipFolders.Insert(tt)			
 
-			rpFld := vRepoFolder^
+			rpFld := Folder^
 
 			if iterFolder.subFolders.Contain(z)
 			{
@@ -123,7 +123,7 @@ vRepo := class extend TGCObject
 			}
 			if rpFld == null
 			{
-				rpFld = new vRepoFolder
+				rpFld = new Folder
 				rpFld.objName = z
 				rpFld.upFolder = iterFolder
 				rpFld.virtualFolder = true
@@ -157,7 +157,7 @@ vRepo := class extend TGCObject
 
 				if subItm.realSize == 0
 				{
-					rpFld := new vRepoFolder
+					rpFld := new Folder
 					rpFld.objName = subItemName
 					rpFld.virtualFolder = true
 					iterFolder.subFolders[subItemName] = rpFld 
@@ -174,14 +174,14 @@ vRepo := class extend TGCObject
 		}
 	}
 
-	GetFile := !(StringView fileName,vRepoFolder^ rrF) -> File^
+	GetFile := !(StringView fileName,Folder^ rrF) -> File^
 	{
 		obj := getObject(fileName,rrF)
 		if obj? is File
 			return obj->{File^}
 		return null
 	}
-	getObject := !(StringView fileName,vRepoFolder^ rrF) -> vRepoObject^
+	getObject := !(StringView fileName,Folder^ rrF) -> vRepoObject^
 	{
 		stObj := fileName.GetString()
 		tmpVar := StringSpan(stObj.Str())

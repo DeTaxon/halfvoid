@@ -1,10 +1,10 @@
-vRepoFolder := class extend vRepoObject
+Folder := class extend vRepoObject
 {
 	examined := bool
 	virtualFolder := bool
 	subZipFolders := List.{vZipEntry^}
 
-	subFolders := AVLMap.{String^,vRepoFolder^}
+	subFolders := AVLMap.{String^,Folder^}
 
 	subFiles := AVLMap.{String^,File^}
 	subVirtualFiles := AVLMap.{String^,File^}

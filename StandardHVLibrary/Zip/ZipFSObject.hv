@@ -2,11 +2,11 @@
 vRepoObject := class extend TGCObject
 {
 	objName := String^
-	upFolder := vRepoFolder^
+	upFolder := Folder^
 
 	GetName := !() -> String^ { return objName }
 	
-	GetUpFolder := !() -> vRepoFolder^ { return upFolder }
+	GetUpFolder := !() -> Folder^ { return upFolder }
 
 	GetPath := !() -> String^
 	{
