@@ -21,7 +21,7 @@ ShaderCompiler := class extend TGCObject
 		cacheFile = setCF
 		cacheFileModule = setCF.GetFileModule("Shaders") //TODO unconst
 	}
-	Compile := !(vRepoFile^ fl) -> Blob^
+	Compile := !(File^ fl) -> Blob^
 	{
 		lmbdCreate := () ==> Blob^
 		{

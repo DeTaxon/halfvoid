@@ -198,7 +198,7 @@ GetLibrary := !(char^[] lbs) -> Library^
 	return null
 }
 
-GetLibrary := !(vRepoFile^ fl) -> Library^
+GetLibrary := !(File^ fl) -> Library^
 {
 	//assert(fl.IsVirtual)
 

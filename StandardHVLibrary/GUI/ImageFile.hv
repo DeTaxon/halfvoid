@@ -1,6 +1,6 @@
 TImageFile := class extend TGCObject
 {
-	itFile := vRepoFile^
+	itFile := File^
 
 	haveAnimation := bool //TODO getters
 	haveAlpha := bool
@@ -8,7 +8,7 @@ TImageFile := class extend TGCObject
 	itWidth := int
 	itHeight := int
 
-	this := !(vRepoFile^ setFile) -> void
+	this := !(File^ setFile) -> void
 	{
 		//TODO check image type
 		itFile = setFile

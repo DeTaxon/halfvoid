@@ -28,8 +28,14 @@
 //
 #CreateCallCommand(
 	Name = "Test",
-	Call = !(vRepoFile^ fil) -> Blob^
+	CacheOn = "Inputs"
+	Call = !(File^ fil) -> Blob^
 	{
+		i := 10000000
+		while i > 0
+		{
+			i -= 1
+		}
 		return fil.GetBlob()
 	}
 	Exchange = !(Blob^ bl) -> char^
@@ -44,34 +50,10 @@ main := !(char^[] args) -> int
 	return 0
 }
 
-
-Baad := class
-{
-	x := double
-	y := double
-	z := int[128]
-}
-VarTest := class 
-{
-	//Test := virtual !() -> Baad
-	//{
-	//	printf("hoy\n")
-	//	result.x = 100.0
-	//	result.y = 200.0
-	//}
-	Good := virtual !(int x) -> void^
-	{
-		printf("good %p %i\n",this&,x)
-	}
-}
-
 RunTest := !() -> void
 {
-	spn := StringSpan("Many hands make light work.Hey")
-	bs := Base64Encode(spn.NonNullStr(),spn.Size())
-	printf("test %s\n",bs.Str())
-	bck := Base64Decode(bs)
-	printf("back <%s>\n",StringSpan(bck.GetPointer(),bck.Size()).GetString().Str())
+	c := #Test("main2.hv")
+	printf("Test %s\n",c)
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

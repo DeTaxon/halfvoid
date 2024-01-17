@@ -10,7 +10,7 @@ ModuleInterface := class
 CLib := class extend ModuleInterface
 {
 	textMap := StringSpan
-	libFile := vRepoFile^
+	libFile := File^
 	fileMap := FileView^
 	js := Json^
 
@@ -30,7 +30,7 @@ CLib := class extend ModuleInterface
 	initFunc := BoxFuncBodyStr^
 	addedToStartInitFunc := bool
 
-	this := !(vRepoFile^ fil) -> void
+	this := !(File^ fil) -> void
 	{
 		linkType = StringSpan("dynamic")
 		fileMap = fil.GetMap()
@@ -286,7 +286,7 @@ CLib := class extend ModuleInterface
 
 		if targetWindows
 		{
-			dllFile := vRepoFile^
+			dllFile := File^
 			for it : dlls
 			{
 				if it.End != ".dll"
@@ -305,7 +305,7 @@ CLib := class extend ModuleInterface
 		}
 		if targetLinux
 		{
-			dllFile := vRepoFile^
+			dllFile := File^
 			for it : dlls
 			{
 				if it.End != ".so"

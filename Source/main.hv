@@ -6,7 +6,7 @@ PriorityData := PriorityBagOld^
 LexHVFileRoot := PriorityBagOld^
 LexHVInputVars := PriorityBagOld^
 
-loadLex2 := !(vRepoFile^ pri,PriorityBagOld^^ res) -> void 
+loadLex2 := !(File^ pri,PriorityBagOld^^ res) -> void 
 {
 	fileMap := pri.GetMap()
 	fileMap.IncRef() //TODO unref

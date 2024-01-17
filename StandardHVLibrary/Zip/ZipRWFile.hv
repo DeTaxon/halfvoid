@@ -362,6 +362,12 @@ vZipEntry2 := class
 
 		return new ZipFSFileViewZipStore(null,ptrToObj,realSize) //TODO make it non null
 	}
+	GetBlob := !() -> Blob^
+	{
+		mp := GetMap()
+		result = MakeBlob(mp.Size())
+		memcpy(result.GetPointer(),mp.Get(),mp.Size())
+	}
 
 	GetModificationTime := !() -> u64
 	{

@@ -74,7 +74,7 @@ TShaderInput := class
 		return new TDescriptorPool(this&,setIndex,poolSize)
 	}
 
-	CreateShader := !(vRepoFile^ vertBlob, vRepoFile^ fragBlob) -> vShader^
+	CreateShader := !(File^ vertBlob, File^ fragBlob) -> vShader^
 	{
 		mp1 := vertBlob.GetMap()
 		b1 := new BlobOnVector(mp1.Size())

@@ -14,7 +14,7 @@ OpenCacheFile := !(char^ fileName) -> void
 }
 
 
-TryGetCacheOfFile := !(vRepoFile^ fl) -> Blob^
+TryGetCacheOfFile := !(File^ fl) -> Blob^
 {
 	if not GUsingCacheFile
 		return null

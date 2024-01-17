@@ -101,7 +101,7 @@ TVkTexture := class
 		itInstance.itStageMemory.Unmap()
 		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
 	}
-	CreateTexture := !(vRepoFile^ itFile) -> void
+	CreateTexture := !(File^ itFile) -> void
 	{	
 		imgFile := TImageFile(itFile)
 

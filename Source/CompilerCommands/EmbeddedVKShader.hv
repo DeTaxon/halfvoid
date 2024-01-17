@@ -24,7 +24,7 @@ TryEmbeddVKShader := !(Token^ itm) -> BoxExeObj^
 		}
 	}
 	
-	itFile := vRepoFile^
+	itFile := File^
 
 	if isLocal
 	{

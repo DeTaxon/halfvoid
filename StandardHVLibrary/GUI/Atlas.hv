@@ -6,7 +6,7 @@ FontAtlas := class extend TGCObject
 
 	atlasDescriptor := VkDescriptorSet
 
-	this := !(VulkanInstance^ inst,vRepoFile^ fil, float fontSize, int oversampling) -> void
+	this := !(VulkanInstance^ inst,File^ fil, float fontSize, int oversampling) -> void
 	{
 		atlasTest := Vector.{u8}(512*512)
 		
@@ -82,7 +82,7 @@ ImageAtlas := class extend TGCObject
 		rectangles.Resize(maxImages)
 	}
 
-	AddImage := !(vRepoFile^ someFile) -> int
+	AddImage := !(File^ someFile) -> int
 	{
 		imgFile := TImageFile(someFile)
 

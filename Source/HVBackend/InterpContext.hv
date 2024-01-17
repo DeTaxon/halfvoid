@@ -37,10 +37,10 @@ MCInterpContext := class
 			//	globalVariables[vr] = result
 			//	return void
 			//}
-			//if classVar.ItName == "vRepoFile"
+			//if classVar.ItName == "File"
 			//{
 			//	free(result)
-			//	result = vRepoFile->VTable
+			//	result = File->VTable
 			//	globalVariables[vr] = result
 			//	return void
 			//}

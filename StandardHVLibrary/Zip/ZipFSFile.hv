@@ -1,4 +1,4 @@
-vRepoFile := class extend vRepoObject
+File := class extend vRepoObject
 {
 	ptrToRepo := vRepo^
 	ptrToZip := vZipEntry^
@@ -8,7 +8,7 @@ vRepoFile := class extend vRepoObject
 	{
 		ptrToProxy = null
 	}
-	GetFile := !(StringView fileName) -> vRepoFile^
+	GetFile := !(StringView fileName) -> File^
 	{
 		return ptrToRepo.GetFile(fileName,upFolder)
 	}
@@ -24,7 +24,7 @@ vRepoFile := class extend vRepoObject
 	GetBlob := virtual !() -> Blob^
 	{
 		fileMap := GetMap()
-		fileBlob := new BlobOnVector(fileMap.Size())
+		fileBlob := MakeBlob(fileMap.Size())
 		if fileMap.Size() != 0
 			memcpy(fileBlob.GetPointer(),fileMap.Get(),fileMap.Size())
 		return fileBlob

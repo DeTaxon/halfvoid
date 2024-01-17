@@ -31,7 +31,7 @@ BoxCodeSpace := class
 BoxFile := class extend BoxUnit
 {
 	fileId := int
-	file := vRepoFile^
+	file := File^
 	fileMap := FileView^
 	fileSize := int
 	fileName := StringSpan
@@ -45,7 +45,7 @@ BoxFile := class extend BoxUnit
 
 	ParsedTokens := AVLSet.{Token^}
 
-	this := !(vRepoFile^ inFile) -> void
+	this := !(File^ inFile) -> void
 	{
 		fileId = GetNewId()
 		file = inFile

@@ -26,7 +26,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	}
 
 	
-	itFile := vRepoFile^
+	itFile := File^
 
 	if isLocal
 	{
@@ -92,13 +92,13 @@ BoxRawData := class extend BoxExeObj
 
 EmbFile := class
 {
-	itFile := vRepoFile^
+	itFile := File^
 	isCompressed := bool
 	fileSize := int
 	compressedSize := int
 	data := BoxRawData^
 
-	this := !(vRepoFile^ inFile, bool compressFile) -> void
+	this := !(File^ inFile, bool compressFile) -> void
 	{
 		itFile = inFile
 

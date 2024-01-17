@@ -1,4 +1,4 @@
-vEmbeddedFile := class extend vRepoFile //TODO, extend IFile, not an already made object
+vEmbeddedFile := class extend File //TODO, extend IFile, not an already made object
 {
 	itData := void^
 	compressedSize := int

@@ -1,6 +1,6 @@
 
 
-SerializeTokens := !(vRepoFile^ fil,Token^ tkn) -> void
+SerializeTokens := !(File^ fil,Token^ tkn) -> void
 {
 	streamedLine := FileLine^
 

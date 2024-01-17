@@ -6,8 +6,8 @@ vRepoFolder := class extend vRepoObject
 
 	subFolders := AVLMap.{String^,vRepoFolder^}
 
-	subFiles := AVLMap.{String^,vRepoFile^}
-	subVirtualFiles := AVLMap.{String^,vRepoFile^}
+	subFiles := AVLMap.{String^,File^}
+	subVirtualFiles := AVLMap.{String^,File^}
 
 	IsVirtual := !() -> bool { return virtualFolder }
 }

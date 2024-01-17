@@ -3,6 +3,8 @@ CacheModule := class
 	base := CacheFile^
 	moduleName := String^
 
+	cacheChangedBlobData := bool
+	cacheBlobList  := List.{BlobCacheData} //TODO Optimize
 	this := !(StringView nm, CacheFile^ bs) -> void
 	{
 		base = bs
@@ -10,15 +12,112 @@ CacheModule := class
 
 		LoadMeta()
 	}
-	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
+	TryGetCacheValue := !(StringView st, File^[] fl) -> Blob^
 	{
+		base64Key := Base64Encode(st.NonNullStr(),st.Size())
+
+		for it : cacheBlobList
+		{
+			if it.key == base64Key
+			{
+				if not it.loaded
+				{
+					if it.filesCache^ != getFilesCache(fl)^
+						return null
+					fil := base.zipFile.TryGetFile(it.fileName)
+					if fil == null
+						return null
+					it.value = fil.GetBlob()
+					it.loaded = true
+				}
+				return it.value
+			}
+		}
+		return null
 	}
-	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
+	WriteCacheOfFile := !(StringView st, File^[] files,Blob^ data) -> void
 	{
-		itPath := StringConcat(moduleName,"/",fl.GetPath())
+		base64Key := Base64Encode(st.NonNullStr(),st.Size())
+
+		for it : cacheBlobList
+		{
+			if it.key == base64Key
+			{
+				it.filesCache = getFilesCache(files)
+				base.zipFile.WriteFile(it.fileName,data)
+				return void
+			}
+		}
+		cacheBlobList.Emplace()
+		newEntry := ref cacheBlobList[-1]
+		itPath := StringConcat(moduleName,"/","hi")
+		newEntry.key = base64Key
+		newEntry.fileName = itPath
+		newEntry.filesCache = getFilesCache(files)
+
 		base.zipFile.WriteFile(itPath,data)
 	}
-	GetCachedValue := !(StringView stv, vRepoFile^[] files, !()&->Blob^ cb) -> Blob^
+	getFilesCache := !(File^[] fl) -> String^
+	{
+		if fl == null or fl.Size() == 0
+			return new String("empty")
+		echo := TEchoStream()
+		for it : fl
+		{
+			diff := it.GetModificationTime()
+			echo << diff
+		}
+		return echo.GetString()
+	}
+	LoadMeta := !() -> void
+	{
+		blobCacheMeta := base.zipFile.TryGetFile(StringConcat(moduleName,"/BlobCache.txt"))
+		if blobCacheMeta != null
+		{
+			mp := blobCacheMeta.GetMap()
+
+			spn := StringSpan(mp.Get()->{char^},mp.Size())
+
+			spn.DivideStr("\n", x ==> {
+				while true
+				{
+					val := x
+					yield void
+					filesData := x
+					yield void
+					cacheBlobList.Emplace()
+					newEntry := ref cacheBlobList[-1]
+					newEntry.key = val.GetString()
+					newEntry.fileName = x.GetString()
+					newEntry.filesCache = filesData.GetString()
+					yield void
+				}
+			})
+		}
+	}
+	Flush := !() -> void
+	{
+		if cacheChangedBlobData
+		{
+			assert(cacheBlobList.Size() != 0)
+
+			MetaCache := TEchoStream
+			for it : cacheBlobList
+			{
+				if it.changed
+				{
+					base.zipFile.WriteFile(StringConcat(moduleName,"/",it.fileName),it.value)
+				}
+				MetaCache << it.key << "\n" << it.filesCache << "\n" << it.fileName << "\n"
+			}
+
+			tempBlob := new BlobOnVector(MetaCache.Size())
+			MetaCache.Read(tempBlob.GetPointer(),tempBlob.Size())
+			
+			base.zipFile.WriteFile(StringConcat(moduleName,"/BlobCache.txt"),tempBlob)
+		}
+	}
+	GetCachedValue := !(StringView stv, File^[] files, !()&->Blob^ cb) -> Blob^
 	{
 		inDB := TryGetCacheValue(stv,files)
 		if inDB != null
@@ -26,7 +125,9 @@ CacheModule := class
 		result = cb()
 		if result == null
 			return null
-		WriteCacheOfFile(fl,result)
+		cacheChangedBlobData = true
+		WriteCacheOfFile(stv,files,result)
+		Flush()
 	}
 
 }

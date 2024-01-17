@@ -55,7 +55,7 @@ createDllTempDir := !() -> void
 	tempDirName = new String(buff[0]&)
 }
 
-loadDllFromEmbeddedFile := !(vRepoFile^ fl) -> Library^
+loadDllFromEmbeddedFile := !(File^ fl) -> Library^
 {
 	@once createDllTempDir()
 

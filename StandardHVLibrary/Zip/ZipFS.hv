@@ -29,7 +29,7 @@ vRepo := class extend TGCObject
 		zipFolders.Insert(itObj)
 		rootFolder.subZipFolders.Push(itObj.zipRoot&)
 	}
-	ReadFolder := !(StringView p,bool recur,!(vRepoFile^)& -> void callb) -> void
+	ReadFolder := !(StringView p,bool recur,!(File^)& -> void callb) -> void
 	{
 		fil := getObject(p,rootFolder)
 		if fil == null
@@ -38,7 +38,7 @@ vRepo := class extend TGCObject
 		rep := fil->{vRepoFolder^}
 		innerReadFolder(rep,recur,callb)
 	}
-	innerReadFolder := !(vRepoFolder^ rep,bool recur,!(vRepoFile^)& -> void callb) -> void
+	innerReadFolder := !(vRepoFolder^ rep,bool recur,!(File^)& -> void callb) -> void
 	{
 		ExamineFolder(rep)
 
@@ -52,7 +52,7 @@ vRepo := class extend TGCObject
 			}
 		}
 	}
-	GetFile := !(StringView fileName)-> vRepoFile^
+	GetFile := !(StringView fileName)-> File^
 	{
 		return GetFile(fileName,rootFolder)
 	}
@@ -95,7 +95,7 @@ vRepo := class extend TGCObject
 					{
 						zips.Push(strName)
 					}else{
-						newObj2 := new vRepoFile
+						newObj2 := new File
 						newObj2.upFolder = iterFolder
 						newObj2.objName = strName
 						newObj2.ptrToRepo = this&
@@ -163,7 +163,7 @@ vRepo := class extend TGCObject
 					iterFolder.subFolders[subItemName] = rpFld 
 					rpFld.subZipFolders.Push(subItm)
 				}else{
-					newObj := new vRepoFile 
+					newObj := new File 
 					newObj.upFolder = iterFolder
 					newObj.objName = subItemName
 					newObj.ptrToRepo = this&
@@ -174,11 +174,11 @@ vRepo := class extend TGCObject
 		}
 	}
 
-	GetFile := !(StringView fileName,vRepoFolder^ rrF) -> vRepoFile^
+	GetFile := !(StringView fileName,vRepoFolder^ rrF) -> File^
 	{
 		obj := getObject(fileName,rrF)
-		if obj? is vRepoFile
-			return obj->{vRepoFile^}
+		if obj? is File
+			return obj->{File^}
 		return null
 	}
 	getObject := !(StringView fileName,vRepoFolder^ rrF) -> vRepoObject^

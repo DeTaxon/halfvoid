@@ -9,7 +9,7 @@ CacheFileModule := class extend TGCObject
 		base = bs
 		moduleName = nm
 	}
-	TryGetCacheValue := !(vRepoFile^ fl) -> Blob^
+	TryGetCacheValue := !(File^ fl) -> Blob^
 	{
 		inRep := base.zipFile.TryGetFile(StringConcat(moduleName,"/",fl.GetPath()))
 		if inRep == null
@@ -28,12 +28,12 @@ CacheFileModule := class extend TGCObject
 			return resBlob
 		}
 	}
-	WriteCacheOfFile := !(vRepoFile^ fl,Blob^ data) -> void
+	WriteCacheOfFile := !(File^ fl,Blob^ data) -> void
 	{
 		itPath := StringConcat(moduleName,"/",fl.GetPath())
 		base.zipFile.WriteFile(itPath,data)
 	}
-	GetCacheValue := !(vRepoFile^ fl, !()&->Blob^ cb) -> Blob^
+	GetCacheValue := !(File^ fl, !()&->Blob^ cb) -> Blob^
 	{
 		inDB := TryGetCacheValue(fl)
 		if inDB != null

@@ -7,9 +7,9 @@ FileView := class extend TGCObject
 
 ZipFSFileView := class extend FileView
 {
-	baseFile := vRepoFile^
+	baseFile := File^
 	itMap := MappedFile^
-	this := !(vRepoFile^ bFile) -> void
+	this := !(File^ bFile) -> void
 	{
 		baseFile = bFile
 		pth := bFile.GetPath()

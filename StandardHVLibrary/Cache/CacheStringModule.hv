@@ -24,9 +24,7 @@ CacheStringModule := class extend TGCObject
 					assert( fileInZip != null)
 					if fileInZip != null
 					{
-						mp := fileInZip.GetMap()
-						newBlob := new BlobOnVector(mp.Size()->{s64})
-						memcpy(newBlob.GetPointer(),mp.Get(),mp.Size())
+						newBlob := fileInZip.GetBlob()
 						it.loaded = true
 						it.value = newBlob
 						return newBlob
@@ -124,6 +122,7 @@ BlobCacheData := class
 {
 	key := String^
 	fileName := String^
+	filesCache := String^
 	value := Blob^
 	changed := bool
 	loaded := bool

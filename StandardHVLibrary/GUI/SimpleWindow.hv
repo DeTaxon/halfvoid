@@ -11,7 +11,7 @@ SimpleWindow := class extend GLFWWindow
 	ClearColor := vec4f
 	vkOverlay := VkOverlayContext
 
-	CreateFont := !(vRepoFile^ fil, float height) -> Font^
+	CreateFont := !(File^ fil, float height) -> Font^
 	{
 		return vkOverlay.CreateFont(fil,height)
 	}

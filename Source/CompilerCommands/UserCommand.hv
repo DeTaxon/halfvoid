@@ -64,7 +64,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		if namedArgs.Contain(StringSpan("CacheOn")) and CFile != null
 		{
 			userCmd.UseCache = true
-			userCmd.CachedValues = CFile.GetStringModule("EmbedPi")
+			userCmd.CachedValues = CFile.GetModule("EmbedPi")
 		}
 
 
@@ -96,7 +96,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			}
 		}
 
-		usedFiles := List.{vRepoFile^}
+		usedFiles := List.{File^}
 
 		valBoxes := List.{s64}
 		inptPointers := List.{void^}
@@ -110,7 +110,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			case BoxExeString
 				if fType.Params[i].ItType == GRepoFileType.GetPoint()
 				{
-					fil :=  vRepoFile^
+					fil :=  File^
 					if it.Value.Start == "local:/"
 					{
 						fldr := itm.Line.File.file.GetUpFolder()
@@ -187,13 +187,15 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				{
 				case BoxExeInt
 					CacheString << it.Value
+				case BoxExeString
+					CacheString << it.Value
 				case void
 					assert(false)
 				}
 				CacheString << "_~&a№_"
 			}
 
-			resBlb = userCmd.CachedValues.CacheBlobByString(CacheString.GetString(),callObj)
+			resBlb = userCmd.CachedValues.GetCachedValue(CacheString.GetString(),usedFiles,callObj)
 		}else{
 			resBlb = callObj()
 		}
@@ -257,5 +259,5 @@ UserCommandObj := class
 	ExchangeOut := BoxFuncBody^
 
 	UseCache := bool
-	CachedValues := CacheStringModule^
+	CachedValues := CacheModule^
 }
