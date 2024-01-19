@@ -1,5 +1,7 @@
 internalHVDecompressBlob := !(Blob^ inpBlob, void^^  blobPointer, size_t^ blobSize) -> void
 {
+	if inpBlob == null
+		return void
 	blobPointer^ = inpBlob.GetPointer()
 	blobSize^ = inpBlob.Size()
 }

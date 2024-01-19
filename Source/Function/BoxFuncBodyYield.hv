@@ -1,5 +1,5 @@
 AppendClass BoxFuncBody
-{
+{LocalVar
 	Yields := List.{BoxYield^}
 	YieldStart := BoxLabel^
 	YieldStateInt := LocalVar^
@@ -41,7 +41,7 @@ AppendClass BoxFuncBody
 				objs.Push(getVar)
 				setVar := CreateFuncCall(StringSpan("="),objs)
 				assert(setVar != null)
-				it.createVar.Push(setVar)
+				it.extraWork.Push(setVar)
 				it.SetCall(locVar.proxy&)
 
 				ParamsLocalVars.Push(locVar)

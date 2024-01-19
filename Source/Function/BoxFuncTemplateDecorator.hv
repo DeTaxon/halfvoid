@@ -63,8 +63,6 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 		assert(fCall.callObj is in BoxFuncBody)
 
 		newFnc := fCall.callObj->{BoxFuncBody^}
-		printf("hey %p\n",baseScope)
-		printf("hey %p\n",baseScope? is in BoxClass,newFnc)
 		newFnc.ParentScope = baseScope
 
 		return resCall

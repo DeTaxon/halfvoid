@@ -98,15 +98,15 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		usedFiles := List.{File^}
 
-		valBoxes := List.{s64}
+		valBoxes := s64[120]
 		inptPointers := List.{void^}
 		for it,i : objVals
 		{
 			switch it is
 			{
 			case BoxExeInt
-				valBoxes.Push(it.Value)
-				inptPointers.Push(valBoxes[-1]&)
+				valBoxes[i] = it.Value
+				inptPointers.Push(valBoxes[i]&)
 			case BoxExeString
 				if fType.Params[i].ItType == GRepoFileType.GetPoint()
 				{
@@ -120,8 +120,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 					}
 					if fil == null
 						itm.EmitError("File not found")
-					valBoxes.Push(fil->{size_t})
-					inptPointers.Push(valBoxes[-1]&)
+					valBoxes[i] = fil->{size_t}
+					inptPointers.Push(valBoxes[i]&)
 					usedFiles.Push(fil)
 				}else{
 					assert(false)
@@ -130,8 +130,6 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				assert(false)
 			}
 		}
-
-		
 
 		fncResult := userCmd.CallFunction.GetType()->{TypeFunc^}.ResultType
 
@@ -197,6 +195,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 			resBlb = userCmd.CachedValues.GetCachedValue(CacheString.GetString(),usedFiles,callObj)
 		}else{
+
 			resBlb = callObj()
 		}
 

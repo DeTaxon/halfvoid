@@ -24,19 +24,14 @@ AppendClass BoxFuncBody
 			ctx.InputsIndxStart = 1
 		}
 		ctx.InputsIndxCount = Params.Size()
-		for it,i : Params
-		{
-			ctx.AddLocalVar(it)
-		}
-		for it,i : LocalVars
-		{
-			ctx.AddLocalVar(it)
-		}
-		for it,i : LocalVarsDeferChecks
-		{
-			ctx.AddLocalVar(it)
-		}
 
+
+		ctx.AddLocalVar(Params[^])
+		ctx.AddLocalVar(ParamsLocalVars[^])
+		ctx.AddLocalVar(LocalVars[^])
+		ctx.AddLocalVar(LocalVarsDeferChecks[^])
+
+		ParamsLocalVars[^].WriteMC(ctx)
 		ResultVar?.WriteMC(ctx)
 		Params[^].WriteMC(ctx)
 		body.WriteMC(ctx)
