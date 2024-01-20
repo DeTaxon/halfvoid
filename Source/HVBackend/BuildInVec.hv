@@ -1,0 +1,14 @@
+AppendClass BuiltInVecElementRef
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		resTyp := GetType()->{TypeFunc^}.ResultType
+
+		obj := indexes[0].WriteMC(ctx)
+		newRef := ctx.CreateReference(resTyp)
+		valId := HVB_ins_const_int32(ctx,vecInd)
+		HVB_ins_load_element(ctx,newRef,obj.CreatedId,valId)
+		result.CreatedId = newRef
+	}
+}

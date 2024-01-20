@@ -34,7 +34,7 @@ AppendClass BoxFuncBody
 		ParamsLocalVars[^].WriteMC(ctx)
 		ResultVar?.WriteMC(ctx)
 		Params[^].WriteMC(ctx)
-		body.WriteMC(ctx)
+		body?.WriteMC(ctx)
 
 		ExitLabel.WriteGoMC(ctx)
 		ctx.WriteExitPathsMC()

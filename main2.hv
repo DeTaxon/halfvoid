@@ -18,20 +18,19 @@
 )
 
 main := !(char^[] args) -> int
-{
-	x := 199
-	callObj := () ==> {
-		printf("hey %i\n",x)
-	}
-	callObj()
+{	
 	return 0
 }
 
 RunTest := !() -> void
 {
-	x := double
-	x = 10
-	printf("ha %f\n",x)
+	glfwInit()
+	win := glfwCreateWindow(640, 480, "My Title", null, null)
+	while not glfwWindowShouldClose(win)
+	{
+        glfwPollEvents()
+	}
+
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

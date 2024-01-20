@@ -76,6 +76,29 @@ MCInterpContext := class
 		{
 			WriteGlobToMem(vr.value,result)
 		}
+
+		for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
+		{
+			for module : space.Modules
+			{
+				if module is not CLib
+					continue
+
+				cLib := module->{CLib^}
+
+				for it, ind : cLib.itFuncs
+				{
+					if it == vr
+					{
+						lib := GetClibDll(cLib,ind)
+						fncPtr := lib.Get(ind)
+						result->{void^^}^ = fncPtr
+					}
+				}
+			}
+		}
+
+
 	}
 	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void
 	{
@@ -159,8 +182,9 @@ MCInterpContext := class
 		if itType == GTypeChar.GetPoint()
 		{
 			return ffi_type_pointer
-		}else if itType is in  TypePoint
-		{
+		}else if itType is in  TypePoint{
+			return ffi_type_pointer
+		}else if itType is in  TypeArrayView{
 			return ffi_type_pointer
 		}else if itType == GTypeDouble{
 			return ffi_type_double
@@ -205,7 +229,26 @@ MCInterpContext := class
 		funcs[itm] = result
 	}
 
-	DeclareToPtr := !(BoxFuncDeclare^ dclr) -> void^
+	GetClibDll := !(CLib^ cLib, StringSpan funcName) -> Library^
+	{
+		return loadedDlls[cLib]?
+
+		useLib := Library^
+		for it : cLib.dlls
+		{
+			useLib = GetLibrary(it)
+			if useLib != null
+				break
+		}
+		if useLib == null
+		{
+			printf("could not load library for function %s\n",funcName.GetString().Str())
+			exit(0)
+		}
+		loadedDlls[cLib] = useLib
+		return  useLib
+	}
+ 	DeclareToPtr := !(BoxFuncDeclare^ dclr) -> void^
 	{
 		return declarePtrs[dclr]?
 
@@ -219,24 +262,9 @@ MCInterpContext := class
 				cLib := module->{CLib^}
 				if not cLib.IsMyFunc(dclr)
 					continue
+				useLib := GetClibDll(cLib,dclr.GetName())
 
-				if not loadedDlls.Contain(cLib)
-				{
-					useLib := Library^
-					for it : cLib.dlls
-					{
-						useLib = GetLibrary(it)
-						if useLib != null
-							break
-					}
-					if useLib == null
-					{
-						printf("could not load library for function %s\n",dclr.GetName())
-						exit(0)
-					}
-					loadedDlls[cLib] = useLib
-				}
-				fnc := loadedDlls[cLib].Get(dclr.GetName())
+				fnc := useLib.Get(dclr.GetName())
 				if fnc == null
 				{
 					printf("could not load function %s\n",dclr.GetName())

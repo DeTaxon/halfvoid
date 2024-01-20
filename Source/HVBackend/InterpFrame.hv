@@ -2,6 +2,7 @@
 MCInterpFuncFrame := class extend TGCObject
 {
 	func := MCFunction^
+	iCntx := MCInterpContext^
 
 	localVarBlob := Blob^
 	localVarTable := AVLMap.{int,void^}
@@ -25,6 +26,13 @@ MCInterpFuncFrame := class extend TGCObject
 		if obj&.IsConstant
 		{
 			return obj.Value&
+		}
+		if obj& is MCGlobalVariable
+		{
+			glbVar := obj&->{MCGlobalVariable^}.GetValueObject()
+			memObj := iCntx.GetGlobalVarMem(glbVar)
+			assert(memObj != null)
+			return memObj
 		}
 		
 		assert(false)
@@ -108,6 +116,11 @@ MCInterpFuncFrame := class extend TGCObject
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_pointer
 			}else if itType is in  TypePoint
+			{
+				values[i] = GetObjectPtr(it)->{void^^}^
+				valuesPtr[i] = values[i]&
+				valuesTypes[i] = ffi_type_pointer
+			}else if itType is in  TypeArrayView
 			{
 				values[i] = GetObjectPtr(it)->{void^^}^
 				valuesPtr[i] = values[i]&

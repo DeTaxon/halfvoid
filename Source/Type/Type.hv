@@ -448,6 +448,16 @@ IsFloat := !(Type^ obj) -> bool
 	if obj == GTypeDouble return true
 	return false
 }
+IsVecType := !(Type^ tp) -> bool
+{
+	if tp == GTypeVec4f
+		return true
+	if tp == GTypeVec3f
+		return true
+	if tp == GTypeVec2f
+		return true
+	return false
+}
 
 CreateStandardTypes := !() -> void
 {	
@@ -546,6 +556,9 @@ CreateStandardTypes := !() -> void
 	}else {
 		assert(false)
 	}
+	GTypeVec2f.Base = GTypeFloat
+	GTypeVec3f.Base = GTypeFloat
+	GTypeVec4f.Base = GTypeFloat
 
 	//DefsTable[26] reserved by Str
 }

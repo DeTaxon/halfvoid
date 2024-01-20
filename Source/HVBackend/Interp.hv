@@ -54,6 +54,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.func = interpFunc
+	thisFrame.iCntx = iCntx
 
 	if interpFunc.Lines.Size() == 0
 		return void
@@ -237,7 +238,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				fncVal := iCntx.GetFuncByPointer(functionPointer)
 				assert(fncVal != null)
 				MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
+			} else if fncObj& is MCGlobalVariable
+			{
+				glbVar := fncObj&->{MCGlobalVariable^}.GetValueObject()
+				memObj := iCntx.GetGlobalVarMem(glbVar)
+				assert(memObj != null)
+				thisFrame.CallFuncPtr(glbVar.GetType().Base->{TypeFunc^},memObj->{void^^}^,resultPtr,indxs,0)
 			}else{
+				fncObj.PrintObject()
 				assert(false)
 			}
 
@@ -349,14 +357,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			if IsInt(objTyp)
 			{
-				bigInt := s64
-
 				switch objTyp.GetSize()
 				{
 					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ + ptr2->{s8^}^
 					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ + ptr2->{s16^}^
 					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ + ptr2->{s32^}^
 					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ + ptr2->{s64^}^
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = ptr1->{float^}^ + ptr2->{float^}^
+					case 8 ptrRes->{double^}^ = ptr1->{double^}^ + ptr2->{double^}^
 				}
 			}else{
 				assert(false)
@@ -371,13 +384,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			if IsInt(objTyp)
 			{
-				bigInt := s64
 				switch objTyp.GetSize()
 				{
 					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ - (ptr2->{s8^}^)
 					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ - (ptr2->{s16^}^)
 					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ - (ptr2->{s32^}^)
 					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ - (ptr2->{s64^}^)
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = ptr1->{float^}^ - (ptr2->{float^}^)
+					case 8 ptrRes->{double^}^ = ptr1->{double^}^ - (ptr2->{double^}^)
 				}
 			}else{
 				assert(false)
@@ -392,13 +411,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			if IsInt(objTyp)
 			{
-				bigInt := s64
 				switch objTyp.GetSize()
 				{
 					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ * (ptr2->{s8^}^)
 					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ * (ptr2->{s16^}^)
 					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ * (ptr2->{s32^}^)
 					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ * (ptr2->{s64^}^)
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = ptr1->{float^}^ * ptr2->{float^}^
+					case 8 ptrRes->{double^}^ = ptr1->{double^}^ * ptr2->{double^}^
 				}
 			}else{
 				assert(false)
@@ -413,13 +438,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			if IsInt(objTyp)
 			{
-				bigInt := s64
 				switch objTyp.GetSize()
 				{
 					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ div (ptr2->{s8^}^)
 					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ div (ptr2->{s16^}^)
 					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ div (ptr2->{s32^}^)
 					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ div (ptr2->{s64^}^)
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = ptr1->{float^}^ / ptr2->{float^}^
+					case 8 ptrRes->{double^}^ = ptr1->{double^}^ / ptr2->{double^}^
 				}
 			}else{
 				assert(false)
@@ -544,7 +575,21 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				case void
 					assert(false)
 				}
-			}else
+			}else if IsFloat(toType) and IsFloat(fromType)
+			{
+				bigFloat := double
+				switch fromType.GetSize()
+				{
+					case 4 bigFloat = v2->{float^}^
+					case 8 bigFloat = v2->{double^}^
+				}
+				switch toType.GetSize()
+				{
+					case 4 v1->{float^}^ = bigFloat
+					case 8 v1->{double^}^ = bigFloat
+				}
+
+			} else
 			{
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
 				assert(false)
@@ -576,7 +621,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(objSet& is MCReference)
 				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
 				setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
+			}else if IsVecType(varType) {
+				assert(varType.Base != null)
+				elementSize := varType.Base.GetSize()
+				elementNum := v3->{s32^}^
+				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+				setPtr->{u8^^}^ = v2->{u8^}[elementSize*elementNum]&
 			}else{
+				printf("No load_element for %s\n",varType.GetBADStr().Str())
 				assert(false)
 			}
 

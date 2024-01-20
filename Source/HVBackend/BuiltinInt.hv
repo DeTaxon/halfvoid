@@ -53,11 +53,19 @@ AppendClass BuiltInIntBase
 			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
 		case "add"
 			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fadd"
+			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "sub"
+			HVB_ins_sub(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fsub"
 			HVB_ins_sub(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "mul"
 			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fmul"
+			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "sdiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fdiv"
 			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "and"
 			HVB_ins_and(ctx,resInd,var1.CreatedId,var2.CreatedId)
