@@ -8,10 +8,6 @@
 	CacheOn = "Inputs"
 	Call = !(File^ fil) -> Blob^
 	{
-		for i : 5000000
-		{
-
-		}
 		ret :=  fil.GetBlob()
 		return ret
 	}
@@ -23,14 +19,19 @@
 
 main := !(char^[] args) -> int
 {
-	RunTest()
+	x := 199
+	callObj := () ==> {
+		printf("hey %i\n",x)
+	}
+	callObj()
 	return 0
 }
 
 RunTest := !() -> void
 {
-	c := #Test("main2.hv")
-	printf("Test %s\n",c)
+	x := double
+	x = 10
+	printf("ha %f\n",x)
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

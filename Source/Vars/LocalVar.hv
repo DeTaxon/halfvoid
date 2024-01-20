@@ -1,4 +1,4 @@
-LocalVar := class extend BoxUnit
+LocalVar := class extend BoxExeObj
 {
 	itName := StringSpan
 	isMemory := bool
@@ -19,12 +19,17 @@ LocalVar := class extend BoxUnit
 
 		if isRef
 			proxy.ObjType = varType.GetPoint()
+		ObjType = proxy.ObjType
 	}
 
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		createVar[^].PrintDefaultUse(ctx)
 		extraWork[^].PrintDefaultUse(ctx)
+	}
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		PrintCode(ctx)
 	}
 
 

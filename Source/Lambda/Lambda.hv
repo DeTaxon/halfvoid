@@ -213,26 +213,21 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if capturedVars.Size() != 0
 		{
-			objs3 := CheckExeDownList
-			objs3.Push(new ObjResultHolder(step2))
+			assert(step1 is in BoxFuncCall)
+			lambVar := step1->{BoxFuncCall^}.ResultVar
+			assert(lambVar != null)
 
-			getCaptureList := lambdaCapturePath.CreateCall(objs3)
+			getCaptureList := lambdaCapturePath.CreateCall(![lambVar.CreateVarCall()])
 			assert(getCaptureList != null)
-			getCap := new ObjResultHolder(getCaptureList)
-
-			resObj.postCalls.Push(getCaptureList)
+			getCapVar := ToLocalVar(getCaptureList)
+			resObj.postCalls.Push(getCapVar)
 
 			for it,i : capturedVars
 			{
 				pth := tplTuple.GetFieldByIndexTuple(i)
-				objs1 := CheckExeDownList
-				objs1.Push(getCap)
-				element := pth.CreateCall(objs1)
+				element := pth.CreateCall(![getCapVar.CreateVarCall()])
 				assert(element != null)
-				objs2 := CheckExeDownList
-				objs2.Push(element)
-				objs2.Push(it.1)
-				resCall := CreateFuncCall(StringSpan("="),objs2)
+				resCall := CreateFuncCall(StringSpan("="),![element,it.1])
 				assert(resCall != null)
 
 				resObj.postCalls.Push(resCall)

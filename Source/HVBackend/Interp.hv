@@ -508,13 +508,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "cast"
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			objType := interpFunc.Objects[thisLine.var1].GetType()
-			typeSize := objType.GetSize()
+			toType := interpFunc.Objects[thisLine.var1].GetType()
+			fromType := interpFunc.Objects[thisLine.var2].GetType()
+			typeSize := toType.GetSize()
 
-			if IsInt(objType)
+			if IsInt(toType) and IsInt(fromType)
 			{
 				oldType := interpFunc.Objects[thisLine.var2].GetType()
-				if typeSize > oldType.GetSize() and not IsUInt(objType)
+				if typeSize > oldType.GetSize() and not IsUInt(toType)
 				{
 					memset(v1,0,typeSize)
 					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
@@ -522,12 +523,30 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					memset(v1,0,typeSize)
 					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
 				}
-			}else if objType is in TypePoint or objType is in TypeArrayView
+			}else if toType is in TypePoint or toType is in TypeArrayView
 			{
 				//memset(v1,0,typeSize)
 				memcpy(v1,v2,typeSize)
-			}else{
-				printf("can not cast type %s\n",objType.GetBADStr().Str())
+			}else if IsFloat(toType) and IsInt(fromType)
+			{
+				val := s64
+				memcpy(val&,v2,fromType.GetSize())
+				if not IsUInt(fromType)
+				{
+					shift := (8 - fromType.GetSize()) * 8
+					val = val shl shift
+					val = val shr shift
+				}
+				switch toType
+				{
+				case GTypeFloat v1->{float^}^ = val
+				case GTypeDouble v1->{double^}^ = val
+				case void
+					assert(false)
+				}
+			}else
+			{
+				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
 				assert(false)
 			}
 			//TODO float to int , and back
