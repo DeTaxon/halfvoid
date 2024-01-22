@@ -19,3 +19,11 @@ AppendClass BoxReturn
 		}
 	}
 }
+
+AppendClass ReturnHalfState
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		returnObj.WriteMC(ctx)
+	}
+}

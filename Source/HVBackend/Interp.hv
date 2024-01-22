@@ -197,7 +197,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					v1 := thisFrame.GetObjectPtr(indxs[vTableIndx])
 					vTable := v1->{void^^^}^^
 
-					vTblCls := fncHV->{BuildInVirtualCall^}.wrappedFunc->{BoxFuncBody^}.Params[0].GetType()->{TypeClass^}
+					virtualFunc := fncHV->{BuildInVirtualCall^}.wrappedFunc
+
+					if virtualFunc is ResistFunc
+					{
+						virtualFunc = virtualFunc->{ResistFunc^}.base
+					}
+
+					vTblCls := virtualFunc->{BoxFuncBody^}.Params[0].GetType()->{TypeClass^}
 					cls := vTblCls.ToClass.VTableType
 					//globVar := iCntx.GetGlobalVarFromMem(vTable)
 					//assert(globVar != null)
@@ -210,6 +217,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					if iCntx.vtableFunctions.Value.ContainSome(memObj)
 					{
 						mx := iCntx.vtableFunctions.Value.GetOne(memObj)
+
+						if mx is ResistFunc
+						{
+							mx = mx->{ResistFunc^}.base->{BoxFuncBody^}
+						}
 
 						assert(mx is in BoxFuncBody)
 
@@ -226,8 +238,37 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					fncType := fncHV.GetType()->{TypeFunc^}
 					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,indxs,0)
 				}else if fncHV is in BoxFuncBody{
-					fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
-					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
+					bdy := fncHV->{BoxFuncBody^}
+					fncPtr := void^
+
+					//TODO unify
+					if bdy.Name == "TLock"
+					{
+						fncPtr = TLock
+					}
+					if bdy.Name == "TUnlock"
+					{
+						fncPtr = TUnlock
+					}
+					if bdy.Name == "TUnlock"
+					{
+						fncPtr = TUnlock
+					}
+					if bdy.Name == "FSGetFile"
+					{
+						fncPtr = FSGetFile
+					}
+					if bdy.Name == "TSleep"
+					{
+						fncPtr = TSleep
+					}
+					if fncPtr != null
+					{
+						thisFrame.CallFuncPtr(bdy.GetType()->{TypeFunc^},fncPtr,resultPtr,indxs,0)
+					}else{
+						fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
+						MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
+					}
 				}else{
 					printf("failed to call, unknown class %s\n",fncHV.UnitName)
 					assert(false)
@@ -236,8 +277,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				functionPointer := thisFrame.GetObjectPtr(thisLine.var2)->{void^^}^
 				assert(functionPointer != null) //TODO emit error
 				fncVal := iCntx.GetFuncByPointer(functionPointer)
-				assert(fncVal != null)
-				MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
+				if fncVal != null
+				{
+					MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
+				}else{
+					fType := fncObj.GetType().Base->{TypeFunc^}
+					thisFrame.CallFuncPtr(fType,functionPointer,resultPtr,indxs,0)
+				}
 			} else if fncObj& is MCGlobalVariable
 			{
 				glbVar := fncObj&->{MCGlobalVariable^}.GetValueObject()
@@ -483,7 +529,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp) or objTyp is in TypePoint
+			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp)
 			{
 				spc := s64
 
@@ -499,6 +545,18 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}else if objTyp is in TypePoint
 				{
 					spc = ptr1->{size_t^^}^ <=> ptr2->{size_t^^}^
+				}else if IsFloat(objTyp)
+				{
+					spcFloat := 0.0
+					switch objTyp.GetSize()
+					{
+						case 4 spcFloat = ptr1->{float^}^ - (ptr2->{float^}^)
+						case 8 spcFloat = ptr1->{double^}^ - (ptr2->{double^}^)
+					}
+					if spcFloat > 0
+						spc = 1
+					if spcFloat < 0
+						spc = -1
 				}else{
 					assert(false)
 				}
@@ -587,6 +645,21 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				{
 					case 4 v1->{float^}^ = bigFloat
 					case 8 v1->{double^}^ = bigFloat
+				}
+			}else if IsInt(toType) and IsFloat(fromType)
+			{
+				bigFloat := double
+				switch fromType.GetSize()
+				{
+					case 4 bigFloat = v2->{float^}^
+					case 8 bigFloat = v2->{double^}^
+				}
+				switch toType.GetSize()
+				{
+					case 1 v1->{s8^}^ = bigFloat
+					case 2 v1->{s16^}^ = bigFloat
+					case 4 v1->{s32^}^ = bigFloat
+					case 8 v1->{s64^}^ = bigFloat
 				}
 
 			} else

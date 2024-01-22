@@ -1,0 +1,24 @@
+AppendClass IsSameTypeChecker
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		res := ctx.CreateVar(GTypeBool)
+		result.CreatedId = res
+
+		dwn := DownObj.WriteMC(ctx)
+
+		cpy := ctx.CreateVar(GTypeVoidP.GetPoint())
+
+		zero := ctx.AddInteger(0)
+
+		HVB_ins_cast(ctx,cpy,dwn.CreatedId)
+		tablRef := ctx.CreateReference(GTypeVoidP)
+		HVB_ins_load_element(ctx,tablRef,dwn.CreatedId,zero)
+
+		vr := ctx.GetGlobalVar(TargetType.ToClass.VTableValue)
+		vrPointer := ctx.CreateVar(GTypeVoidP)
+		HVB_ins_get_pointer(ctx,vrPointer,vr)
+		HVB_ins_cmp(ctx,res,tablRef,"==",vrPointer)
+
+	}
+}

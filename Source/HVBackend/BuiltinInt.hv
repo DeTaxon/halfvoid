@@ -7,10 +7,16 @@ AppendClass BuiltInIntEqAndOper
 		var2 := indexes[1].WriteMC(ctx)
 		switch llvm
 		{
+		case "fadd"
+			ctx.lines.Push(MCLine("add",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case "add"
 			ctx.lines.Push(MCLine("add",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "fsub"
+			ctx.lines.Push(MCLine("sub",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case "sub"
 			ctx.lines.Push(MCLine("sub",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "fmul"
+			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case "mul"
 			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case void
@@ -51,6 +57,16 @@ AppendClass BuiltInIntBase
 			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
 		case "icmp sgt"
 			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+
+		case "fcmp ueq"
+			ctx.lines.Push(MCLine("cmp",resInd,"==",var1.CreatedId,var2.CreatedId))
+		case "fcmp une"
+			ctx.lines.Push(MCLine("cmp",resInd,"!=",var1.CreatedId,var2.CreatedId))
+		case "fcmp ugt"
+			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+		case "fcmp ult"
+			ctx.lines.Push(MCLine("cmp",resInd,"<",var1.CreatedId,var2.CreatedId))
+
 		case "add"
 			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "fadd"

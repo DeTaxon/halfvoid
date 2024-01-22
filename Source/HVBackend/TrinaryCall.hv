@@ -1,0 +1,72 @@
+AppendClass TrinaryOper
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		resVar := ctx.CreateVar(ObjType)
+
+		truePath := ctx.GetLabel(trueLabel)
+		trueExitPath := ctx.GetLabel(trueExitLabel)
+		falsePath := ctx.GetLabel(falseLabel)
+		falseExitPath := ctx.GetLabel(falseExitLabel)
+		endPath := ctx.GetLabel(endLabel)
+
+		cmpTest := ifStatement.WriteMC(ctx)
+
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
+
+		HVB_ins_label(ctx,truePath)
+		tRes := onTrue.WriteMC(ctx)
+		HVB_ins_move(ctx,resVar,tRes.CreatedId)
+		HVB_ins_label(ctx,trueExitPath)
+		HVB_ins_jump(ctx,endPath)
+
+		HVB_ins_label(ctx,falsePath)
+		fRes := onFalse.WriteMC(ctx)
+		HVB_ins_move(ctx,resVar,fRes.CreatedId)
+		HVB_ins_label(ctx,falseExitPath)
+		HVB_ins_jump(ctx,endPath)
+
+		HVB_ins_label(ctx,endPath)
+
+		result.CreatedId = resVar
+	}
+}
+AppendClass TrinaryOperMem
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		resVar := ctx.CreateReference(ObjType)
+		resVarPointer := ctx.CreateVar(ObjType.GetPoint())
+
+		truePath := ctx.GetLabel(trueLabel)
+		trueExitPath := ctx.GetLabel(trueExitLabel)
+		falsePath := ctx.GetLabel(falseLabel)
+		falseExitPath := ctx.GetLabel(falseExitLabel)
+		endPath := ctx.GetLabel(endLabel)
+
+		cmpTest := ifStatement.WriteMC(ctx)
+
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
+
+		HVB_ins_label(ctx,truePath)
+		tRes := onTrue.WriteMC(ctx)
+		HVB_ins_get_pointer(ctx,resVarPointer,tRes.CreatedId)
+		HVB_ins_label(ctx,trueExitPath)
+		HVB_ins_jump(ctx,endPath)
+
+		HVB_ins_label(ctx,falsePath)
+		fRes := onFalse.WriteMC(ctx)
+		HVB_ins_get_pointer(ctx,resVarPointer,fRes.CreatedId)
+		HVB_ins_label(ctx,falseExitPath)
+		HVB_ins_jump(ctx,endPath)
+
+		HVB_ins_label(ctx,endPath)
+
+		zero := HVB_ins_const_int32(ctx,0)
+		HVB_ins_load_element(ctx,resVar,resVarPointer,zero)
+
+		result.CreatedId = resVar
+	}
+}

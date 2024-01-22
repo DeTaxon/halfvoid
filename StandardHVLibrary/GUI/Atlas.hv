@@ -14,9 +14,9 @@ FontAtlas := class extend TGCObject
 		stbtt_PackSetOversampling(packContext&,oversampling,oversampling)
 
 		thisFont := new Font(this&,256,fontSize)
-		fontData := fil.GetMap()
+		fontData := fil.GetBlob()
 		fonts.Push(thisFont)
-		stbtt_PackFontRange(packContext&,fontData.Get(),0,fontSize,0,256,thisFont.packedChars.GetPointer()) //TODO check result,
+		stbtt_PackFontRange(packContext&,fontData.GetPointer(),0,fontSize,0,256,thisFont.packedChars.GetPointer()) //TODO check result,
 
 		stbtt_PackEnd(packContext&)
 

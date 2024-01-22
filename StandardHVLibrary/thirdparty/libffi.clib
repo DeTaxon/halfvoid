@@ -23,5 +23,6 @@
 		"ffi_type_sint64" : "void",
 		"ffi_type_uint64" : "void",
 		"ffi_type_double" : "void"
+		"ffi_type_float" : "void"
 	}
 }

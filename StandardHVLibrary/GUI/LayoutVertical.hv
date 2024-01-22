@@ -41,6 +41,7 @@ LayoutVertical := class extend LayoutBase
 					foundFullSizeW = true
 				case 1 //static
 					staticW = max(staticW,itL.Sizes.x)
+
 					foundStaticW = true
 				case 2 //dynamic
 			}

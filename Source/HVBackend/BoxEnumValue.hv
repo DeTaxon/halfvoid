@@ -1,0 +1,7 @@
+AppendClass BoxEnumValue
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddInteger(ItValue)
+	}
+}

@@ -318,7 +318,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			
 		resFuncTyp := hData.CreateFuncType()
 		cnsts := List.{BoxExeConstObj^}
-		return CreateFunc(resFuncTyp,cnsts)
+		return GetFuncByType(resFuncTyp,cnsts)
 	}
 
 }

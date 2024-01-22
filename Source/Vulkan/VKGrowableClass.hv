@@ -53,6 +53,9 @@ VKGrowableClass := class extend BoxClass
 
 		if newFieldType == null
 			return null
+		//printf("wut %s\n",val.GetString().Str())
+
+		//return AddExtraField(val,newFieldType)
 
 		newField := new FieldParam(val,newFieldType)
 		Fields.Push(newField)
@@ -73,6 +76,8 @@ VKGrowableClass := class extend BoxClass
 		}
 
 		ItSize += newFieldType.GetSize() //todo variable size object?
+		RecalculateSize()
+		//printf("hm %i\n",ItSize)
 
 		for it : fieldIterators
 		{

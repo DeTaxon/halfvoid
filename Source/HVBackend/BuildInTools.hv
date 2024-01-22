@@ -1,0 +1,11 @@
+AppendClass BuiltInMemsetInlineInt
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		//TODO memleak
+		cl := CreateFuncCall(StringSpan("memset"),![indexes[0],indexes[1],indexes[2]])
+		assert(cl != null)
+		return cl.WriteMC(ctx)
+	}
+}

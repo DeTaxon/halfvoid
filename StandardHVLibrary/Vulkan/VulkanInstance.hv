@@ -57,7 +57,7 @@ VulkanInstance := class extend TGCObject
 		for fnc , fncName : Funcs->AllFields
 		{
 			fnc&->{void^^}^ = vkGetInstanceProcAddr(Instance,fncName)
-			//printf("GetInstClass %p %s\n",fnc,fncName)
+			//printf("GetInstClass %p %s %p\n",fnc,fncName, fnc&->{u64^}^ - this.Funcs->{u64^}^)
 		}
 
 		DebugStep() //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<DebugStep

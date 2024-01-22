@@ -1,0 +1,8 @@
+AppendClass BoxRawData
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODO insert data about global object in Objects
+		result.CreatedId = ctx.AddPointer(ItBlob.GetPointer())
+	}
+}
