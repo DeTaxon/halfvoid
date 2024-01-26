@@ -79,6 +79,8 @@ AppendClass BuiltInIntBase
 			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "fmul"
 			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "udiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "sdiv"
 			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "fdiv"
@@ -148,5 +150,56 @@ AppendClass BuiltInPrimeStore
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
 		HVB_ins_move(ctx,var1.CreatedId,var2.CreatedId)
+	}
+}
+AppendClass BuiltinSpaceShipUnsigned
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		res := ctx.CreateVar(GTypeInt)
+		cmpVal := ctx.CreateVar(GTypeBool)
+
+		v1 := indexes[0].WriteMC(ctx).CreatedId
+		v2 := indexes[1].WriteMC(ctx).CreatedId
+
+		zero := ctx.AddInteger(0)
+		one := ctx.AddInteger(1)
+		notOne := ctx.AddInteger(-1)
+
+		endLabel := ctx.CreateLabel()
+
+		HVB_ins_cmp(ctx,cmpVal,v1,"==",v2)
+		HVB_ins_move(ctx,res,zero)
+		HVB_ins_jump_if_bool(ctx,endLabel,cmpVal)
+
+		HVB_ins_cmp(ctx,cmpVal,v1,">",v2)
+		HVB_ins_move(ctx,res,one)
+		HVB_ins_jump_if_bool(ctx,endLabel,cmpVal)
+
+		HVB_ins_move(ctx,res,notOne)
+
+		HVB_ins_label(ctx,endLabel)
+		result.CreatedId = res
+	}
+}
+AppendClass BuiltInFloatCosSin
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		resType := ObjType->{TypeFunc^}.ResultType
+
+		resVar := ctx.CreateVar(resType)
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+
+		if fncName == "cos"
+		{
+			HVB_ins_cos(ctx,resVar,dwn)
+		}else{
+			HVB_ins_sin(ctx,resVar,dwn)
+		}
+
+		result.CreatedId = resVar
 	}
 }

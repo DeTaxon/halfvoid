@@ -186,6 +186,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				fncHV := fncObj&->{MCConstFunction^}.GetValue()
 
+				if fncHV is ResistFunc
+				{
+					fncHV = fncHV->{ResistFunc^}.base
+				}
+
 				if fncHV is in BuildInVirtualCall
 				{
 					vTableIndx := 0
@@ -213,6 +218,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					memOffset := memField.MemOffset
 
 					memObj := vTable->{u8^}[memOffset]&->{BoxUnit^^}^
+
+					fPtr := iCntx.GetFuncByPointer(memObj)
 					
 					if iCntx.vtableFunctions.Value.ContainSome(memObj)
 					{
@@ -289,7 +296,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				glbVar := fncObj&->{MCGlobalVariable^}.GetValueObject()
 				memObj := iCntx.GetGlobalVarMem(glbVar)
 				assert(memObj != null)
-				thisFrame.CallFuncPtr(glbVar.GetType().Base->{TypeFunc^},memObj->{void^^}^,resultPtr,indxs,0)
+				fncVal := iCntx.GetFuncByPointer(memObj->{void^^}^)
+				if fncVal != null
+				{
+					MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
+				}else{
+					thisFrame.CallFuncPtr(glbVar.GetType().Base->{TypeFunc^},memObj->{void^^}^,resultPtr,indxs,0)
+				}
+
 			}else{
 				fncObj.PrintObject()
 				assert(false)
@@ -417,7 +431,15 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case 4 ptrRes->{float^}^ = ptr1->{float^}^ + ptr2->{float^}^
 					case 8 ptrRes->{double^}^ = ptr1->{double^}^ + ptr2->{double^}^
 				}
+			}else if IsVecType(objTyp){
+				switch objTyp
+				{
+					case GTypeVec2f ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ + ptr2->{vec2f^}^
+					case GTypeVec3f ptrRes->{vec3f^}^ = ptr1->{vec3f^}^ + ptr2->{vec3f^}^
+					case GTypeVec4f ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ + ptr2->{vec4f^}^
+				}
 			}else{
+				printf("some add %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
 			cs += 1
@@ -484,12 +506,23 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			if IsInt(objTyp)
 			{
-				switch objTyp.GetSize()
+				if IsUInt(objTyp)
 				{
-					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ div (ptr2->{s8^}^)
-					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ div (ptr2->{s16^}^)
-					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ div (ptr2->{s32^}^)
-					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ div (ptr2->{s64^}^)
+					switch objTyp.GetSize()
+					{
+						case 1 ptrRes->{u8^}^ = ptr1->{u8^}^ div (ptr2->{u8^}^)
+						case 2 ptrRes->{u16^}^ = ptr1->{u16^}^ div (ptr2->{u16^}^)
+						case 4 ptrRes->{u32^}^ = ptr1->{u32^}^ div (ptr2->{u32^}^)
+						case 8 ptrRes->{u64^}^ = ptr1->{u64^}^ div (ptr2->{u64^}^)
+					}
+				}else{
+					switch objTyp.GetSize()
+					{
+						case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ div (ptr2->{s8^}^)
+						case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ div (ptr2->{s16^}^)
+						case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ div (ptr2->{s32^}^)
+						case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ div (ptr2->{s64^}^)
+					}
 				}
 			}else if IsFloat(objTyp)
 			{
@@ -529,7 +562,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp)
+			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is in TypeArrayView
 			{
 				spc := s64
 
@@ -542,7 +575,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 						case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
 						case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
 					}
-				}else if objTyp is in TypePoint
+				}else if objTyp is in TypePoint or objTyp is in TypeArrayView
 				{
 					spc = ptr1->{size_t^^}^ <=> ptr2->{size_t^^}^
 				}else if IsFloat(objTyp)
@@ -731,6 +764,40 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(mcFunc != null)
 				mcFuncPtr := iCntx.GetFunctionPointer(mcFunc)
 				res->{void^^}^ = mcFuncPtr
+			}else{
+				assert(false)
+			}
+			cs += 1
+		case "cos"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+
+			if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = cos(ptr1->{float^}^)
+					case 8 ptrRes->{double^}^ = cos(ptr1->{double^}^)
+				}
+			}else{
+				assert(false)
+			}
+			cs += 1
+		case "sin"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+
+			if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = sin(ptr1->{float^}^)
+					case 8 ptrRes->{double^}^ = sin(ptr1->{double^}^)
+				}
 			}else{
 				assert(false)
 			}

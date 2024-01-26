@@ -90,6 +90,8 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
+	if vr == null
+		return null
 
 	vrObj := vr
 	space := FieldSpace^

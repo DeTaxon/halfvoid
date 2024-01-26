@@ -330,7 +330,7 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 		//thisArgs.Push(step2[i]&)
 		thisArgs.Push(args[i])
 	}
-	MCInterpFunction(GInterpCntx&,data.interpFunc,thisArgs,ret)
+	MCInterpFunction(data.interpCntx,data.interpFunc,thisArgs,ret)
 }
 
 HV_closure_func_data := class

@@ -217,6 +217,8 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 		return unrefCall
 	return TryGetPtrObj(itm)?
 
+	return TryGetQuickParam(itm)?
+
 	return null
 
 }
@@ -278,13 +280,20 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 						itr.Down.Right.Right.EmitError("Could not parse")
 					namedInputs[name] = obj
 				}else{
-					obj := TryGetExeCall(itr)
-					if obj == null
+					qLambda := TryGetQuickLambda(itr)
+					if qLambda != null
 					{
-						itr.Print(0)
-						itr.EmitError("Could not compile line")
+						Objs.Push(qLambda)
+					}else{
+
+						obj := TryGetExeCall(itr)
+						if obj == null
+						{
+							itr.Print(0)
+							itr.EmitError("Could not compile line")
+						}
+						Objs.Push(obj)
 					}
-					Objs.Push(obj)
 				}
 			}
 		}
@@ -530,6 +539,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
 	yep := false
 	for i : count
 	{
+		if objs[i] == null
+			return CmpNoExchange
 		toIsMem := fncType.Params[i].IsRef
 		if toIsMem
 			objs[i].NotifyMemUse()

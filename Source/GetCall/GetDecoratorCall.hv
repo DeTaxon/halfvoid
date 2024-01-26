@@ -8,6 +8,28 @@ TryGetDecoratorCall := !(Token^ itm) -> BoxExeObj^
 	    return null
 	
 	dn := itm.Down->{TokenTemplateType^}.Value
+
+	{
+		numCheck := dn[1..0]
+		if numCheck.Size() != 0
+		{
+			isNum := true
+			for i : numCheck.Size()
+			{
+				if numCheck[i] in '0'..'9'
+				{
+
+				}else{
+					isNum = false
+					break
+				}
+			}
+			if isNum
+			{
+				return null
+			}
+		}
+	}
 	
 	k := 0
 	buff := char[256]

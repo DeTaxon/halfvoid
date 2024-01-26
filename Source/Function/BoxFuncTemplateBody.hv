@@ -159,8 +159,12 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 
 
+		failed := false
 		addObjType := (int i) ==> {
-			if objs[i] is BoxArrayHolder
+			if objs[i] == null
+			{
+				failed = true
+			} else if objs[i] is BoxArrayHolder
 			{
 				ar := objs[i]->{BoxArrayHolder^}
 
@@ -193,6 +197,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				}
 			}
 		}
+		if failed
+			return null
 
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		return checkTypes(datas,consts,resConsts)

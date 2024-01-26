@@ -19,6 +19,17 @@
 
 main := !(char^[] args) -> int
 {	
+	c := List.{int}
+	c.Push(13)
+	c.Push(5)
+	c.Push(47)
+	c.Push(0)
+
+	c.DeleteIf(@1 > 20)
+	for it : c
+	{
+		printf("hey %i\n",it)
+	}
 	return 0
 }
 

@@ -1,0 +1,58 @@
+TryGetQuickLambda := !(Token^ itr) -> BoxExeObj^
+{
+	if not CheckForQLambda(itr)
+		return null
+	return CreateHeadlessLambda(itr)
+}
+
+
+CheckForQLambda := !(Token^ checkObj) -> bool
+{
+	if checkObj is TokenTemplateType
+	{
+		val := checkObj->{TokenTemplateType^}.Value
+		if val.Size() <= 1
+			return false
+		if val[0] != '@'
+			return false
+		for i : val.Size()
+		{
+			if i == 0
+				continue
+			it := val[i]
+			if it in '0'..'9'
+				continue
+			return false
+		}
+		return true
+	}
+	itr := checkObj.Down
+	while itr != null
+	{
+		if CheckForQLambda(itr)
+			return true
+		itr = itr.Right
+	}
+
+	return false
+}
+
+TryGetQuickParam := !(Token^ itm) -> BoxExeObj^
+{
+	if itm is not TokenTemplateType
+		return null
+	val := itm->{TokenTemplateType^}.Value[1..0]
+	if not val.IsInt()
+		return null
+	num := StrToInt(val)
+
+	if num < 0
+		return null
+
+	if CurrentFunc == null
+		return null
+	if num >= CurrentFunc.Params.Size()
+		return null
+
+	return CurrentFunc.Params[num].CreateVarCall()
+}

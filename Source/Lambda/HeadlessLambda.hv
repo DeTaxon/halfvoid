@@ -2,6 +2,15 @@ CreateHeadlessLambda := !(Token^ itm) -> BoxExeObj^
 {
     emptyBrackets := new TokenData
     emptyBrackets2 := new TokenSymbol(StringSpan("()"),1)
+
+	args := new TokenIndent(StringSpan("args"))
+	argsDots := new TokenIndent(StringSpan("..."))
+	args.Right = argsDots
+	args.Up = emptyBrackets2
+	argsDots.Up = emptyBrackets2
+
+	emptyBrackets2.Down = args
+
     setCmd := new TokenSymbol(StringSpan("=>"),1)
     tknData := new TokenData
 

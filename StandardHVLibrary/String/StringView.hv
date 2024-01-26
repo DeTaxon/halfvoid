@@ -75,6 +75,29 @@ StringView := class extend TGCObject
 		}
 		return false
 	}
+
+	IsInt := !() -> bool
+	{
+		siz := Size()
+		if siz == 0
+			return false
+		ptr := NonNullStr()
+		i := 0
+		if ptr[i] == '-'
+		{
+			if i <= 1
+				return false
+			i += 1
+		}
+		while i < siz
+		{
+			if ptr[i] not in '0'..'9'
+				return false
+			i += 1
+		}
+		return true
+	}
+
 	NonNullStr := virtual !() -> char^ { assert(false) }
 }
 "<=>" := !(StringView^ a,char^ b) -> int
