@@ -2,7 +2,7 @@ TryGetQuickLambda := !(Token^ itr) -> BoxExeObj^
 {
 	if not CheckForQLambda(itr)
 		return null
-	return CreateHeadlessLambda(itr)
+	return CreateHeadlessLambda(itr,true)
 }
 
 

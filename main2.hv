@@ -3,6 +3,30 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 //TODO make FS aware of CacheFile
 
+
+
+#Module(
+	Body = {
+		parsed := bool
+	},
+	Init = !() -> void
+	{
+
+	}
+	GetItem = !(StringView str) -> BoxUnit^
+	{
+		
+	},
+	#CreateClass(
+		Name = "Test",
+		GetFieldFailed := !(StringView name) -> void^
+		{
+			return HV_Type(int)
+		}
+
+	)
+
+)
 #CreateCallCommand(
 	Name = "Test",
 	CacheOn = "Inputs"
@@ -17,19 +41,33 @@
 	}
 )
 
-main := !(char^[] args) -> int
-{	
-	c := List.{int}
-	c.Push(13)
-	c.Push(5)
-	c.Push(47)
-	c.Push(0)
-
-	c.DeleteIf(@1 > 20)
-	for it : c
-	{
-		printf("hey %i\n",it)
+D2 := !() -> void
+{
+	@once {
+		printf("hey\n")
 	}
+	@once {
+		printf("hoy %i\n", @once 2 + 2)
+	}
+}
+
+main := !(char^[] args) -> int
+{
+	D2()
+	D2()
+
+	tst := List.{int}
+	tst.Push(20[^])
+
+	tst.DeleteIf(@1 mod 5 == 0)
+
+	printf("hh %i\n",tst[^])
+	//hm := FSGetFolder(StringSpan("Test.zip"))
+	//zip2 := hm.ptrToZipEntry.ptrToObj
+
+	//printf("yay %p %p\n",hm,zip2)
+	//zip2.WriteFile(StringSpan("Test"),MakeBlob(256),false)
+	//zip2.Flush()
 	return 0
 }
 

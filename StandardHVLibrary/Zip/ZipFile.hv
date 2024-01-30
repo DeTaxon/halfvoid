@@ -5,12 +5,16 @@ vZipEntry := class
 {
 	ptrToObj := ZipFile^
 	offset := int
+	offsetToFileHeader := int
 	realSize := u32
 	zipSize := u32
-	objName := StringSpan
-	fullName := StringSpan
+	objName := String^
+	fullName := String^
 	comprType := int
+	timeModified := u64
 	subFolders := List.{vZipEntry^}
+
+	IsFolder := bool
 	//compressedPointer := void^
 
 	"this" := !() -> void {}
@@ -61,9 +65,11 @@ ZipFile := class extend TGCObject
 
 	zipRoot := vZipEntry
 
+	fileUnsavedData := List.{zipRWUnsavedData}
+
 	this := !() -> void
 	{
-		zipRoot.objName = StringSpan("/")
+		zipRoot.objName = new String("/")
 		zipRoot.ptrToObj = this&
 	}
 	GetFile := !(char^ fileNameI) -> vZipEntry^
@@ -93,7 +99,7 @@ ZipFile := class extend TGCObject
 	{
 		fileName = fileToLoad.GetString()
 
-		asMapped.Open(fileName.Str())
+		asMapped.Open(fileName.Str(),FILE_READ + FILE_WRITE,0)
 		ptrToFl := asMapped.point
 		eod := ptrToFl[asMapped.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
@@ -142,19 +148,22 @@ ZipFile := class extend TGCObject
 					itmIter.subFolders.Push(new vZipEntry)
 					nI := itmIter.subFolders[-1]
 					nI.ptrToObj = this&
-					nI.objName = itm
-					nI.fullName = newStr
+					nI.objName = itm.GetString()
+					nI.fullName = newStr.GetString()
+					nI.offsetToFileHeader = cdTable.offsetToFileHeader
 
 					if  j == fldrs.Size() - 1
 					{
 						nI.realSize = cdTable.realSize
 						nI.zipSize = cdTable.compressedSize
 						nI.comprType = cdTable.compressionMethod
+						nI.timeModified = loadTime(cdTable.lastModifTime,cdTable.lastModifDate)
 
 						ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
 
 						nI.offset = cdTable.offsetToFileHeader + zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
 					}else{
+						nI.IsFolder = true
 						itmIter = nI
 					}
 				}
@@ -167,6 +176,301 @@ ZipFile := class extend TGCObject
 			]&->{zipCentralDirectory^}
 		}
 		return true
+	}
+	getEntry := !(StringSpan newStr,bool createPath) -> vZipEntry^
+	{
+		fldrs := List.{StringSpan}
+		newStr.DivideStr("/", x ==> { fldrs.Push(x)})
+		itmIter := zipRoot&
+
+		for itm,j : fldrs
+		{	
+			found := false
+			for it : itmIter.subFolders
+			{
+				if itm == it.objName
+				{
+					itmIter = it
+					found = true
+					break
+				}
+			}
+			if not found 
+			{
+				if not createPath
+					return null
+
+				itmIter.subFolders.Push(new vZipEntry)
+				nI := itmIter.subFolders[-1]
+				nI.ptrToObj = this&
+				nI.objName = itm.GetString()
+				nI.fullName = newStr.GetString()
+
+				if  j == fldrs.Size() - 1
+				{
+					return itmIter
+				}else{
+					nI.IsFolder = true
+					itmIter = nI
+				}
+			}
+		}
+		return itmIter
+	}
+	WriteFile := !(StringView fileName, Blob^ data,bool useCompression = false) -> void //TODO folder support
+	{
+		//fileData.DeleteIf(x => x.fileName == fileName)
+		entry := getEntry(fileName,true)
+
+		fileUnsavedData.Emplace()
+		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
+		newEntry.fileName = fileName.GetString()
+		newEntry.fileData = data
+		newEntry.timeModified = time(null) //GetRealTimeU64Seconds()
+		newEntry.compress = useCompression
+	}
+	Flush := !() -> void
+	{
+		if fileUnsavedData.Size() == 0
+			return void
+
+		endOfMainData := u64
+
+		fileData := List.{vZipEntry^}
+		fileData.Push(zipRoot&)
+		ii := 0
+		while ii < fileData.Size()
+		{
+			thisData := ref fileData[ii]
+			for it : thisData.subFolders
+			{
+				fileData.Push(it)
+			}
+			ii += 1
+		}
+		fileData.DeleteIf(x => x.IsFolder)
+		fileData.DeleteIf(x => x.fullName == null)
+		
+		for it : fileData
+		{
+			itEnd := it.offset + it.zipSize
+			endOfMainData = max(endOfMainData,itEnd)
+		}
+
+		BusyPages := List.{Tuple.{u64,u64}} //TODO optimize to RangeSetClass
+		for it : fileData
+		{
+			tpl := Tuple.{u64,u64}
+			tpl.0 = it.offsetToFileHeader
+			tpl.1 = it.offsetToFileHeader + it.zipSize + it.fullName.Size() + zipFileHeader->TypeSize
+			BusyPages.SortedPush(tpl)
+			endOfMainData = max(endOfMainData->{int},tpl.1->{int}) //TODO u64 comparetion is not working
+		}
+		freePages := List.{Tuple.{u64,u64}}
+
+		if BusyPages.Size() != 0 and BusyPages[0].0 != 0
+		{
+			freePages.Emplace(0,BusyPages[0].0)
+		}
+
+		if BusyPages.Size() >= 2
+		{
+			for i : (BusyPages.Size() - 1)
+			{
+				maybeFree := !{BusyPages[i].1,BusyPages[i+1].0}
+				if maybeFree.0 != maybeFree.1
+					freePages.Push(maybeFree)
+			}
+		}
+		for it : fileUnsavedData
+		{
+			if it.compress and it.fileData.Size() > 128 //todo do something to magic number?
+			{
+				newBlob := CompressBlobDeflate(it.fileData)
+
+				if newBlob != null
+				{
+					it.fileDataToWrite = newBlob
+					it.comprType = 8
+				}else{
+					it.fileDataToWrite = it.fileData
+				}
+			}else{
+				it.fileDataToWrite = it.fileData
+			}
+		}
+
+		for it : fileUnsavedData
+		{
+			blobToWrite := it.fileDataToWrite
+
+			reqSize := zipFileHeader->TypeSize 
+			reqSize += it.fileName.Size() 
+			reqSize += blobToWrite.Size()
+
+			foundPos := false
+			for page : freePages
+			{
+				if page.1 - page.0 >= reqSize
+				{
+					foundPos = true
+					it.assignedRange = page
+					page.0 += reqSize
+					break
+				}
+			}
+
+			if not foundPos
+			{
+				it.assignedRange.0 = endOfMainData
+				it.assignedRange.1 = endOfMainData + reqSize
+				endOfMainData += reqSize
+			}
+
+			newField := new vZipEntry
+			fileData.Push(newField)
+
+			newField.offsetToFileHeader = it.assignedRange.0
+			newField.offset = it.assignedRange.0 + it.fileName.Size() + zipFileHeader->TypeSize
+			newField.fullName = it.fileName.GetString()
+			newField.realSize = it.fileData.Size()
+			newField.zipSize = blobToWrite.Size()
+			newField.timeModified = it.timeModified
+			newField.comprType = it.comprType
+		}
+
+		//TODO check if file exists
+		
+		newSize := endOfMainData
+
+		for it : fileData
+		{
+			newSize += zipCentralDirectory->TypeSize
+			newSize += it.fullName.Size()
+			//comments,extra fields
+		}
+
+		newSize += zipEndOfDirectory->TypeSize
+
+		if false //not fileExists
+		{
+			fileMap = new MappedFile(fileZipName.Str(),FILE_READ + FILE_WRITE,newSize)
+		}else{
+			if newSize != asMapped.Size()
+			{
+				asMapped.ResizeFile(newSize)
+			}
+		}
+		
+		ptr := asMapped.Get()->{u8^}
+
+		for it : fileUnsavedData
+		{
+			fileWritePtr := ptr[it.assignedRange.0]&
+
+			fileHeader := fileWritePtr->{zipFileHeader^}
+			ZeroMem(fileHeader^)
+	
+			fileHeader.signature = 0x04034b50
+			fileHeader.compressedSize = it.fileDataToWrite.Size()
+			fileHeader.realSize = it.fileData.Size()
+			fileHeader.fileNameLen = it.fileName.Size()
+			fileHeader.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
+			fileHeader.compressionMethod = it.comprType
+
+			fileWritePtr = fileWritePtr[zipFileHeader->TypeSize]&
+			
+			memcpy(fileWritePtr,it.fileName.NonNullStr(),it.fileName.Size())
+
+			fileWritePtr = fileWritePtr[it.fileName.Size()]&
+
+			if it.fileDataToWrite.Size() != 0
+			{
+				memcpy(fileWritePtr,it.fileDataToWrite.GetPointer(),it.fileDataToWrite.Size())
+			}
+
+			it.fileData = null
+		}
+
+		fileUnsavedData.Destroy()
+
+
+		ptr = ptr[endOfMainData]&
+
+		cdSize := 0
+
+		offsetToCD := endOfMainData
+
+		for it : fileData
+		{
+			cdEntry := ptr->{zipCentralDirectory^}
+			ZeroMem(cdEntry^)
+			cdEntry.signature = 0x02014b50
+			cdEntry.madeWithVersion = 20
+			cdEntry.versionNeedToExtract = 20
+			cdEntry.compressedSize = it.zipSize
+			cdEntry.realSize = it.realSize
+			cdEntry.fileNameLen = it.fullName.Size()
+			cdEntry.offsetToFileHeader = it.offsetToFileHeader
+			cdEntry.compressionMethod = it.comprType
+
+			cdEntry.lastModifTime&->{u32^}^ = decomposeTime(it.timeModified)
+
+			ptr = ptr[zipCentralDirectory->TypeSize]&
+
+			memcpy(ptr,it.fullName.Str(),it.fullName.Size())
+
+			ptr = ptr[it.fullName.Size()]&
+
+			newSize += it.fullName.Size()
+			//comments,extra fields
+
+			cdSize += zipCentralDirectory->TypeSize + it.fullName.Size()
+		}
+		end := ptr->{zipEndOfDirectory^}
+		ZeroMem(end^)
+		end.signature = 0x06054b50
+		end.diskNumber = 0
+		end.centrDirStartDisk = 0
+		end.numberOfCentralDirectoryHere = fileData.Size()
+		end.totalNumberOfCentralDirectory = fileData.Size()
+		end.sizeOfCentralDirectoryBytes = cdSize
+		end.offsetToStartOfCD = offsetToCD
+		
+	}
+	decomposeTime := !(u64 seconds) -> u32
+	{
+		buf := char[1024]
+		res := buf[0]&->{tm^}
+		localtime_r(seconds&,res)
+
+		res.tm_year -= 80
+
+		mSeconds := (res.tm_sec div 2) + 32 * res.tm_min + 2048*res.tm_hour
+		mDay := res.tm_mday + 32*(res.tm_mon + 1) + 512*res.tm_year
+		return mDay*65536 + mSeconds
+	}
+	loadTime := !(u32 seconds, u32 day) -> u64
+	{
+		buf := char[1024]
+		res := buf[0]&->{tm^}
+
+		res.tm_sec = (seconds and_b 31) * 2
+		res.tm_min = (seconds div 32) and_b 63
+		res.tm_hour = seconds div 2048
+
+		res.tm_mday = day and_b 31
+		res.tm_mon = (day div 32) and_b 15
+		res.tm_mon -= 1
+		res.tm_year = day div 512
+		res.tm_year += 80
+
+		return mktime(res)
+	}
+
+	Destroy := virtual !() -> void
+	{
+		Flush()
 	}
 
 }

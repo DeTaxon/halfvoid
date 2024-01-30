@@ -1,4 +1,4 @@
-CreateHeadlessLambda := !(Token^ itm) -> BoxExeObj^
+CreateHeadlessLambda := !(Token^ itm, bool manyVars = false) -> BoxExeObj^
 {
     emptyBrackets := new TokenData
     emptyBrackets2 := new TokenSymbol(StringSpan("()"),1)
@@ -9,7 +9,8 @@ CreateHeadlessLambda := !(Token^ itm) -> BoxExeObj^
 	args.Up = emptyBrackets2
 	argsDots.Up = emptyBrackets2
 
-	emptyBrackets2.Down = args
+	if manyVars
+		emptyBrackets2.Down = args
 
     setCmd := new TokenSymbol(StringSpan("=>"),1)
     tknData := new TokenData

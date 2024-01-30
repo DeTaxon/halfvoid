@@ -4,6 +4,16 @@ FSReadFolder := !(StringSpan p,bool recur,!(File^)& -> void callb) -> void
 	createFSObject()
 	gRepoObject.ReadFolder(p,recur,callb)
 }
+FSGetFolder := !(StringSpan p) -> Folder^
+{
+	createFSObject()
+	res := gRepoObject.getObject(p,gRepoObject.rootFolder)
+	if res == null
+		return null
+	if res is Folder
+		return res->{Folder^}
+	return null
+}
 
 gRepoObject := vRepo^
 FSGetFile := !(StringView inp) -> File^

@@ -1,13 +1,14 @@
 Folder := class extend vRepoObject
 {
-	examined := bool
-	virtualFolder := bool
-	subZipFolders := List.{vZipEntry^}
+	//examined := bool
+	//virtualFolder := bool
+	//ptrToZipEntry := vZipEntry^
+	//subZipFolders := List.{vZipEntry^}
 
-	subFolders := AVLMap.{String^,Folder^}
+	//subFolders := AVLMap.{String^,Folder^}
 
-	subFiles := AVLMap.{String^,File^}
-	subVirtualFiles := AVLMap.{String^,File^}
+	//subFiles := AVLMap.{String^,File^}
+	//subVirtualFiles := AVLMap.{String^,File^}
 
-	IsVirtual := !() -> bool { return virtualFolder }
+	//IsVirtual := !() -> bool { return virtualFolder }
 }

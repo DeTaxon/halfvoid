@@ -83,6 +83,11 @@ StringSpan := class extend StringView
 	result.ptr = obj
 	result.itSize = strlen(obj)
 }
+"->{}" := !(StringView obj) .{StringSpan} -> StringSpan
+{
+	result.ptr = obj.NonNullStr()
+	result.itSize = obj.Size()
+}
 "in" := !(char^ k,char c) -> bool
 {
 	if k == null

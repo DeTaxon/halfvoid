@@ -1,7 +1,7 @@
 File := class extend vRepoObject
 {
 	ptrToRepo := vRepo^
-	ptrToZip := vZipEntry^
+	//ptrToZip := vZipEntry^
 	fileSize := u64
 
 	this := !() -> void
@@ -10,14 +10,14 @@ File := class extend vRepoObject
 	}
 	GetFile := !(StringView fileName) -> File^
 	{
-		return ptrToRepo.GetFile(fileName,upFolder)
+		return ptrToRepo.GetFile(fileName,GetParentFolder())
 	}
 	GetMap := virtual !() -> FileView^
 	{
-		if ptrToZip != null
-		{
-			return ptrToZip.GetMap()
-		}
+		//if ptrToZip != null
+		//{
+		//	return ptrToZip.GetMap()
+		//}
 
 		return new ZipFSFileView(this&)
 	}
@@ -31,12 +31,30 @@ File := class extend vRepoObject
 	}
 	GetModificationTime := !() -> u64
 	{
-		assert(ptrToZip == null)
 		return fsGetModificationTime(GetPath().Str())
 	}
+	GetParentFolder := !() -> Folder^
+	{
+		lastSlash := 0
+		ptr := absPath.Str()
+		for i : absPath.Size()
+		{
+			if ptr[i] == '/'
+			{
+				lastSlash = i
+			}
+		}
+		if lastSlash == 0
+			return null
+
+		result = new Folder
+		result.absPath = absPath^[0..lastSlash].GetString()
+		result.objName = result.absPath //TODO norman obj Name
+	}
+
 	IsVirtual := virtual !() -> bool 
 	{
-		return ptrToZip != null
+		return false
 	}
 	Size := !() -> size_t
 	{

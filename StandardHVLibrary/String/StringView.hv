@@ -131,3 +131,8 @@ StringView := class extend TGCObject
 		return 1
 	return strcmp(a,b)
 }
+
+"->{}" := !(char^ value) .{StringView} -> StringSpan
+{
+	return StringSpan(value)
+}

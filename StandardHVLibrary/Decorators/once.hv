@@ -3,6 +3,6 @@
 	if called
 		return void
 	//TODO add mutex
-	cb()
+	result = cb()
 	called = true
 }
