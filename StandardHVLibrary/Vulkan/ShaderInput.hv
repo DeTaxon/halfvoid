@@ -283,13 +283,13 @@ TShaderInput := class
 		sStg := VkPipelineShaderStageCreateInfo[3]
 		sStg[^].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 
-		sStg[0].stage = 1 shl 7//VK_SHADER_STAGE_MESH_BIT_EXT //TODO
+		sStg[0].stage = VK_SHADER_STAGE_MESH_BIT_EXT
 		sStg[0].module = mesh
 		sStg[0].pName&->{void^^}^ = "main"
 		sStg[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT
 		sStg[1].module = frag
 		sStg[1].pName&->{void^^}^ = "main"
-		sStg[2].stage = 1 shl 6 //VK_SHADER_STAGE_TASK_BIT_EXT //TODO
+		sStg[2].stage = VK_SHADER_STAGE_TASK_BIT_EXT
 		sStg[2].module = task
 		sStg[2].pName&->{void^^}^ = "main"
 

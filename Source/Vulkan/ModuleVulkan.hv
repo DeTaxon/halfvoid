@@ -146,10 +146,6 @@ ModuleVulkan := class extend ModuleInterface
 							itName := asN2.Attrs.TryFind("name")
 							if itName != null
 							{
-							if itName^ == "VK_SHADER_STAGE_MESH_BIT_EXT"
-							{
-								printf("YES YES\n")
-							}
 								itDir := asN2.Attrs.TryFind("dir")
 								if itDir != null assert(itDir^ == "-")
 								itOffst := asN2.Attrs.TryFind("offset")
