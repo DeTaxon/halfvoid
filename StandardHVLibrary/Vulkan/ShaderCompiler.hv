@@ -11,7 +11,9 @@ ShaderCompiler := class extend TGCObject
 	{
 		options = shaderc_compile_options_initialize()
 		assert(options != null)
-		shaderc_compile_options_set_target_env(options,shaderc_target_env_vulkan,shaderc_env_version_vulkan_1_0)
+		//shaderc_compile_options_set_target_env(options,shaderc_target_env_vulkan,shaderc_env_version_vulkan_1_0)
+		shaderc_compile_options_set_target_env(options,shaderc_target_env_vulkan,shaderc_env_version_vulkan_1_3)
+		shaderc_compile_options_set_target_spirv(options,shaderc_spirv_version_1_6)
 	}
 
 	SetCacheFile := !(CacheFile^ setCF) -> void
@@ -31,6 +33,10 @@ ShaderCompiler := class extend TGCObject
 			target := shaderc_vertex_shader
 			if flName.End == ".frag"
 				target = shaderc_fragment_shader
+			if flName.End == ".task"
+				target = shaderc_task_shader
+			if flName.End == ".mesh"
+				target = shaderc_mesh_shader
 
 			cmplr := shaderc_compiler_initialize()
 			res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",options)

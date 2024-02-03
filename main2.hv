@@ -5,28 +5,28 @@
 
 
 
-#Module(
-	Body = {
-		parsed := bool
-	},
-	Init = !() -> void
-	{
-
-	}
-	GetItem = !(StringView str) -> BoxUnit^
-	{
-		
-	},
-	#CreateClass(
-		Name = "Test",
-		GetFieldFailed := !(StringView name) -> void^
-		{
-			return HV_Type(int)
-		}
-
-	)
-
-)
+//#Module(
+//	Body = {
+//		parsed := bool
+//	},
+//	Init = !() -> void
+//	{
+//
+//	}
+//	GetItem = !(StringView str) -> BoxUnit^
+//	{
+//		
+//	},
+//	#CreateClass(
+//		Name = "Test",
+//		GetFieldFailed := !(StringView name) -> Type
+//		{
+//			fncType := HV_GetFuncType()
+//			return HV_Type(int)
+//		}
+//
+//	)
+//)
 #CreateCallCommand(
 	Name = "Test",
 	CacheOn = "Inputs"
@@ -41,27 +41,9 @@
 	}
 )
 
-D2 := !() -> void
-{
-	@once {
-		printf("hey\n")
-	}
-	@once {
-		printf("hoy %i\n", @once 2 + 2)
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	D2()
-	D2()
-
-	tst := List.{int}
-	tst.Push(20[^])
-
-	tst.DeleteIf(@1 mod 5 == 0)
-
-	printf("hh %i\n",tst[^])
+	printf("hey %i %i\n",VK_SHADER_STAGE_MESH_BIT_EXT, 1 shl 7)
 	//hm := FSGetFolder(StringSpan("Test.zip"))
 	//zip2 := hm.ptrToZipEntry.ptrToObj
 

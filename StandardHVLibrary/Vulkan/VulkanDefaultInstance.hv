@@ -1,6 +1,6 @@
 VulkanDefaultInstance := class extend VulkanGLFWInstance
 {
-
+	
 	preferIntegratedGPU := bool
 	PreferIntegratedGPU := !() -> void
 	{
@@ -30,10 +30,10 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 			}
 		}
 		//Add build option
-		//addLayer("VK_LAYER_LUNARG_standard_validation")
-		//addLayer("VK_LAYER_KHRONOS_validation")
-		//addLayer("VK_LAYER_LUNARG_vktrace")
-		//addLayer("VK_LAYER_AMD_switchable_graphics")
+		addLayer("VK_LAYER_LUNARG_standard_validation")
+		addLayer("VK_LAYER_KHRONOS_validation")
+		addLayer("VK_LAYER_LUNARG_vktrace")
+		addLayer("VK_LAYER_AMD_switchable_graphics")
 	}
 	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void
 	{
@@ -137,6 +137,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 				printf(" }\n")
 			}
 		}
+
 		if preferIntegratedGPU and preferedCards[1] != -1
 			return preferedCards[1]
 		for it : preferedCards

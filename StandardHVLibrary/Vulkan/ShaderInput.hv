@@ -270,6 +270,167 @@ TShaderInput := class
 		result = new vShader
 		itInstance.Funcs.vkCreateGraphicsPipelines(itInstance.LogicalDevice,null,1,gpC&,null,result.itPipe&)
 	}
+	CreateMeshShader := !(Blob^ taskBlob,Blob^ meshBlob, Blob^ fragBlob) -> vShader^
+	{
+		taskObj := LoadShaderModule3(itInstance,taskBlob)
+		meshObj := LoadShaderModule3(itInstance,meshBlob)
+		fragObj := LoadShaderModule3(itInstance,fragBlob)
+
+		task := taskObj.Get()
+		mesh := meshObj.Get()
+		frag := fragObj.Get()
+
+		sStg := VkPipelineShaderStageCreateInfo[3]
+		sStg[^].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+
+		sStg[0].stage = 1 shl 7//VK_SHADER_STAGE_MESH_BIT_EXT //TODO
+		sStg[0].module = mesh
+		sStg[0].pName&->{void^^}^ = "main"
+		sStg[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT
+		sStg[1].module = frag
+		sStg[1].pName&->{void^^}^ = "main"
+		sStg[2].stage = 1 shl 6 //VK_SHADER_STAGE_TASK_BIT_EXT //TODO
+		sStg[2].module = task
+		sStg[2].pName&->{void^^}^ = "main"
+
+
+		paC1 := VkPipelineInputAssemblyStateCreateInfo()
+		paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+
+		stts := VkDynamicState[2]
+		stts[0] = VK_DYNAMIC_STATE_VIEWPORT
+		stts[1] = VK_DYNAMIC_STATE_SCISSOR
+
+		dins := VkPipelineDynamicStateCreateInfo()
+		dins.dynamicStateCount = 2
+		dins.pDynamicStates = stts[0]&
+
+		pVSC := VkPipelineViewportStateCreateInfo()
+		pVSC.viewportCount = 1
+		pVSC.pViewports = null
+		pVSC.scissorCount = 1
+		pVSC.pScissors = null
+
+		rasterC := VkPipelineRasterizationStateCreateInfo()
+		rasterC.polygonMode = VK_POLYGON_MODE_FILL
+		rasterC.cullMode = VK_CULL_MODE_BACK_BIT
+		rasterC.cullMode = VK_CULL_MODE_NONE
+		rasterC.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE
+		rasterC.lineWidth = 1.0f
+		//  VK_FALSE, VkBool32   depthClampEnable
+		//  VK_FALSE, VkBool32   rasterizerDiscardEnable
+		//  VK_FALSE, VkBool32   depthBiasEnable
+		//  0.0f,     float      depthBiasConstantFactor
+		//  0.0f,     float      depthBiasClamp
+		//  0.0f,     float      depthBiasSlopeFactor
+
+		sampleC := VkPipelineMultisampleStateCreateInfo()
+		sampleC.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
+		sampleC.minSampleShading = 1.0f
+		//  VK_FALSE,   VkBool32              sampleShadingEnable
+		//  nullptr,    const VkSampleMask   *pSampleMask
+		//  VK_FALSE,   VkBool32              alphaToCoverageEnable
+		//  VK_FALSE    VkBool32              alphaToOneEnable
+
+		assert(resultImageCount <= 4)
+
+		blndPre := VkPipelineColorBlendAttachmentState[4]
+
+		for i : resultImageCount
+		{
+			blndPre[i].blendEnable = VK_TRUE //TODO PERFOMANCE
+			blndPre[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA
+			blndPre[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA
+			blndPre[i].colorBlendOp = VK_BLEND_OP_ADD
+			blndPre[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE
+			blndPre[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO
+			blndPre[i].alphaBlendOp = VK_BLEND_OP_ADD
+			blndPre[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT or_b VK_COLOR_COMPONENT_G_BIT or_b VK_COLOR_COMPONENT_B_BIT or_b VK_COLOR_COMPONENT_A_BIT
+
+	
+			//TODO this code runs faster, but sometime i need alpha blending
+			//blndPre[i].srcColorBlendFactor = VK_BLEND_FACTOR_ONE
+			//blndPre[i].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO
+			//blndPre[i].colorBlendOp = VK_BLEND_OP_ADD
+			//blndPre[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE
+			//blndPre[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO
+			//blndPre[i].alphaBlendOp = VK_BLEND_OP_ADD
+			//blndPre[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT or_b VK_COLOR_COMPONENT_G_BIT or_b VK_COLOR_COMPONENT_B_BIT or_b VK_COLOR_COMPONENT_A_BIT
+		}
+
+
+		blndC := VkPipelineColorBlendStateCreateInfo()
+		blndC.logicOp = VK_LOGIC_OP_COPY
+		blndC.attachmentCount = resultImageCount
+		blndC.pAttachments&->{void^^}^ = blndPre[0]&
+		//  VK_FALSE,                     VkBool32   logicOpEnable
+		//  { 0.0f, 0.0f, 0.0f, 0.0f }    float      blendConstants[4]
+
+		pLC := VkPipelineLayoutCreateInfo()
+		//  0,        VkPipelineLayoutCreateFlags    flags
+		//  0,        uint32_t                       setLayoutCount
+		//  nullptr,  const VkDescriptorSetLayout   *pSetLayouts
+		//  0,        uint32_t                       pushConstantRangeCount
+		//  nullptr   const VkPushConstantRange     *pPushConstantRanges
+
+		dsC := VkPipelineDepthStencilStateCreateInfo()
+		dsC.depthTestEnable = VK_TRUE
+		dsC.depthWriteEnable = VK_TRUE
+		dsC.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL
+		dsC.depthBoundsTestEnable = VK_FALSE
+		dsC.minDepthBounds = 0.0f
+		dsC.maxDepthBounds = 0.0f
+		dsC.stencilTestEnable = VK_FALSE
+		dsC.back.failOp = VK_STENCIL_OP_KEEP
+		dsC.back.passOp = VK_STENCIL_OP_KEEP
+		dsC.back.compareOp = VK_COMPARE_OP_ALWAYS
+		dsC.back.compareMask = 0
+		dsC.back.reference = 0
+		dsC.back.depthFailOp = VK_STENCIL_OP_KEEP
+		dsC.back.writeMask = 0
+		dsC.front.failOp = VK_STENCIL_OP_KEEP
+		dsC.front.passOp = VK_STENCIL_OP_KEEP
+		dsC.front.compareOp = VK_COMPARE_OP_ALWAYS
+		dsC.front.compareMask = 0
+		dsC.front.reference = 0
+		dsC.front.depthFailOp = VK_STENCIL_OP_KEEP
+		dsC.front.writeMask = 0
+
+		rndrFormats := u32[10]
+		for it,i : itPass.itFrames
+			rndrFormats[i] = it.typeFormat
+		rndr := VkPipelineRenderingCreateInfo()
+		rndr.colorAttachmentCount = itPass.itFrames.Size()
+		rndr.pColorAttachmentFormats&->{void^^}^ = rndrFormats[0]&
+		rndr.depthAttachmentFormat = VK_FORMAT_UNDEFINED
+		if itPass.itUseDepth
+			rndr.depthAttachmentFormat = VK_FORMAT_D16_UNORM //TODO unconst
+		rndr.stencilAttachmentFormat = VK_FORMAT_UNDEFINED //VK_FORMAT_D32_SFLOAT_S8_UINT
+
+		gpC := VkGraphicsPipelineCreateInfo()
+		gpC.stageCount = 2
+		gpC.pStages&->{void^^}^ = sStg[0]&
+		gpC.pVertexInputState&->{void^^}^ = null
+		gpC.pInputAssemblyState&->{void^^}^ = paC1&
+		gpC.pViewportState&->{void^^}^ = pVSC&
+		gpC.pRasterizationState&->{void^^}^ = rasterC&
+		gpC.pMultisampleState&->{void^^}^ = sampleC&
+		gpC.pColorBlendState&->{void^^}^ = blndC&
+		gpC.layout = this.Get()
+		//gpC.renderPass = itPass.Get()
+		gpC.basePipelineIndex = -1
+		gpC.pDepthStencilState&->{void^^}^ = dsC&
+		gpC.pDynamicState&->{void^^}^ = dins&
+		//  nullptr,        const VkPipelineTessellationStateCreateInfo   *pTessellationState
+		//  nullptr,        const VkPipelineDynamicStateCreateInfo        *pDynamicState
+		//  0,              uint32_t                                       subpass
+		//  VK_NULL_HANDLE, VkPipeline                                     basePipelineHandle
+
+		gpC.pNext = rndr&
+
+		result = new vShader
+		itInstance.Funcs.vkCreateGraphicsPipelines(itInstance.LogicalDevice,null,1,gpC&,null,result.itPipe&)
+	}
 }
 LoadShaderModule3 := !(VulkanInstance^ inst,Blob^ fil) -> vShaderModule^
 {
@@ -297,8 +458,14 @@ TShaderSet := class extend TGCObject
 }
 TUniformSet := class extend TShaderSet
 {
+	setStage := int
 	this := !() -> void
 	{
+		setStage = VK_SHADER_STAGE_VERTEX_BIT
+	}
+	this := !(int stg) -> void
+	{
+		setStage = stg
 	}
 
 	Create := virtual !(VulkanInstance^ inst) -> void
@@ -307,7 +474,7 @@ TUniformSet := class extend TShaderSet
 		oneDesc.binding = 0
 		oneDesc.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
 		oneDesc.descriptorCount = 1
-		oneDesc.stageFlags = VK_SHADER_STAGE_VERTEX_BIT
+		oneDesc.stageFlags = setStage
 		oneDesc.pImmutableSamplers = null
 	
 		setDesc := VkDescriptorSetLayoutCreateInfo()
@@ -368,6 +535,15 @@ TVertexPushConstant := class extend TPushConstant
 	this := !(int itSize) -> void
 	{
 		cnst.stageFlags = VK_SHADER_STAGE_VERTEX_BIT
+		cnst.offset = 0
+		cnst.size = itSize
+	}
+}
+TMeshPushConstant := class extend TPushConstant
+{
+	this := !(int itSize) -> void
+	{
+		cnst.stageFlags = 1 shl 7 //VK_SHADER_STAGE_MESH_BIT_EXT //TODO
 		cnst.offset = 0
 		cnst.size = itSize
 	}

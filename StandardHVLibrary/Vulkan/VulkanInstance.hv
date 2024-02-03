@@ -116,6 +116,17 @@ VulkanInstance := class extend TGCObject
 		dynamicRender.dynamicRendering = VK_TRUE
 		imagelessFrame.pNext = dynamicRender&
 
+		meshFeature := VkPhysicalDeviceMeshShaderFeaturesEXT()
+		meshFeature.meshShader = 1
+		meshFeature.taskShader = 1
+		if useMeshShader
+			dynamicRender.pNext = meshFeature&
+
+		maintn4 := VkPhysicalDeviceMaintenance4Features()
+		maintn4.maintenance4 = 1
+		meshFeature.pNext = maintn4&
+
+
 		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
 
 		Funcs.vkGetDeviceQueue(LogicalDevice,0,0,DrawQueue&)
@@ -170,6 +181,12 @@ VulkanInstance := class extend TGCObject
 				}
 			}
 		}
+	}
+
+	useMeshShader := bool
+	UseMeshShader := !() -> void
+	{
+		useMeshShader = true
 	}
 
 	LayerStep := virtual !(VkLayerProperties[] supportedLayers, List.{char^} usingLayers) -> void { assert(false) }
