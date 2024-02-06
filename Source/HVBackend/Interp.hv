@@ -768,6 +768,60 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 			cs += 1
+		case "max"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			if IsInt(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 1 ptrRes->{s8^}^ = max(ptr1->{s8^}^,ptr2->{s8^}^)
+					case 2 ptrRes->{s16^}^ =max(ptr1->{s16^}^ ,ptr2->{s16^}^)
+					case 4 ptrRes->{s32^}^ =max(ptr1->{s32^}^ ,ptr2->{s32^}^)
+					case 8 ptrRes->{s64^}^ =max(ptr1->{s64^}^ ,ptr2->{s64^}^)
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^  = max(ptr1->{float^}^  ,ptr2->{float^}^)
+					case 8 ptrRes->{double^}^ = max(ptr1->{double^}^ ,ptr2->{double^}^)
+				}
+			}else{
+				assert(false)
+			}
+			cs += 1
+		case "min"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			if IsInt(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 1 ptrRes->{s8^}^ = min(ptr1->{s8^}^,ptr2->{s8^}^)
+					case 2 ptrRes->{s16^}^ =min(ptr1->{s16^}^ ,ptr2->{s16^}^)
+					case 4 ptrRes->{s32^}^ =min(ptr1->{s32^}^ ,ptr2->{s32^}^)
+					case 8 ptrRes->{s64^}^ =min(ptr1->{s64^}^ ,ptr2->{s64^}^)
+				}
+			}else if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^  = min(ptr1->{float^}^  ,ptr2->{float^}^)
+					case 8 ptrRes->{double^}^ = min(ptr1->{double^}^ ,ptr2->{double^}^)
+				}
+			}else{
+				assert(false)
+			}
+			cs += 1
 		case "cos"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 

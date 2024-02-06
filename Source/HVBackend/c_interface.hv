@@ -110,6 +110,14 @@ HVB_ins_mod := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("mod",resId,opr1,opr2))
 }
+HVB_ins_max := !(MCBuildContext^ ctx, s32 resId, s32 opr1,s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("max",resId,opr1,opr2))
+}
+HVB_ins_min := !(MCBuildContext^ ctx, s32 resId, s32 opr1,s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("min",resId,opr1,opr2))
+}
 HVB_ins_cos := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 {
 	ctx.lines.Push(MCLine("cos",resId,opr1))

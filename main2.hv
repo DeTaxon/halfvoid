@@ -43,7 +43,6 @@
 
 main := !(char^[] args) -> int
 {
-	printf("hey %i %i\n",VK_SHADER_STAGE_MESH_BIT_EXT, 1 shl 7)
 	//hm := FSGetFolder(StringSpan("Test.zip"))
 	//zip2 := hm.ptrToZipEntry.ptrToObj
 
@@ -62,14 +61,18 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 
 RunTest := !() -> void
 {
-	glfwInit()
-	win := glfwCreateWindow(640, 480, "My Title", null, null)
-	printf("test %p\n",mouseMove)
-	glfwSetCursorPosCallback(win,mouseMove)
-	while not glfwWindowShouldClose(win)
-	{
-        glfwPollEvents()
-	}
+	a := 1
+	b := 2
+	printf("max %i\n",max(a,b))
+	printf("min %i\n",min(a,b))
+	//glfwInit()
+	//win := glfwCreateWindow(640, 480, "My Title", null, null)
+	//printf("test %p\n",mouseMove)
+	//glfwSetCursorPosCallback(win,mouseMove)
+	//while not glfwWindowShouldClose(win)
+	//{
+    //    glfwPollEvents()
+	//}
 }
 
 ManyVars := !(int x, int y = 30, double z = 0.5) -> void

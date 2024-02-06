@@ -4,3 +4,8 @@ max := !(@T x, T y) -> T
         return x
     return y
 }
+
+clamp := !(@T minVal, @T value, @T maxVal) -> T
+{
+	return min(max(minVal,value),maxVal)
+}

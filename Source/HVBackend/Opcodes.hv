@@ -38,6 +38,9 @@ MCBaseOpcodes := enum extend u16
 	"load_var",
 	"call_end",
 
+	"max",
+	"min",
+
 	"cos",
 	"sin"
 }
