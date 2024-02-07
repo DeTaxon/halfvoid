@@ -42,7 +42,9 @@ MCBaseOpcodes := enum extend u16
 	"min",
 
 	"cos",
-	"sin"
+	"sin",
+
+	"memset"
 }
 
 MCJumpIfConditions := enum extend u16

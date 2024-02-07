@@ -12,14 +12,13 @@ AppendClass FuncLocalVarCleanup
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		if baseVar != null
-		{
-			if not baseVar.isReference
-				ctx.lines.Push(MCLine("clean",ctx.GetLocalVar(baseVar)))
-		}else{
-			res := getVal.WriteMC(ctx)
-			ctx.lines.Push(MCLine("clean",res.CreatedId))
-		}
+		obj := getVal.WriteMC(ctx).CreatedId
+		zero := HVB_ins_const_int32(ctx,0)
+		typeSize := HVB_ins_const_int32(ctx,baseType.GetSize())
+
+		HVB_ins_memset(ctx,obj,zero,typeSize)
+
+
 		if deferCall != null
 			ctx.DeferObjects.PushFront(deferCall)
 	}

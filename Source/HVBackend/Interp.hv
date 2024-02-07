@@ -269,6 +269,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					{
 						fncPtr = TSleep
 					}
+					if fncPtr == null
+						fncPtr = CheckFuncExchange(bdy.Name)
 					if fncPtr != null
 					{
 						thisFrame.CallFuncPtr(bdy.GetType()->{TypeFunc^},fncPtr,resultPtr,indxs,0)
@@ -854,6 +856,20 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}
 			}else{
 				assert(false)
+			}
+			cs += 1
+		case "memset"
+			sizeType := interpFunc.Objects[thisLine.var3].GetType()
+
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr3 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			assert(sizeType == GTypeInt)
+			switch sizeType.GetSize()
+			{
+				case 4 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{int^}^)
+				case 8 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{u64^}^)
 			}
 			cs += 1
 		case void

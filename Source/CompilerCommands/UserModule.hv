@@ -1,0 +1,60 @@
+TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
+{
+	cmd := itm.Down->{TokenIndent^}.Value
+	if cmd != "#Module"
+		return null
+
+	posArgs := List.{Token^}
+	namedArgs := AVLMap.{StringSpan,Token^}
+
+	if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
+		itm.EmitError("Could not parse inputs")
+
+	newModule := new UserModule
+
+	bdy := new TokenSymbol(StringSpan("{}"),0)
+	bdy.Down = itm.Down.Right.Down
+	bdy.Down?.Up = bdy
+
+	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
+	par1 := new TokenIndent(StringSpan("internalHVModuleBase"))
+	c := InheritanceType
+	c = "extend"
+	parents.Emplace(par1,c)
+
+	resultClass := new BoxClassBody(false,parents,bdy)
+
+	newModule.bodyClass = resultClass
+
+	UserModules.Push(newModule)
+	return GObjNone
+}
+
+GetItemUser := !(StringView name) -> BoxExeObj^
+{
+	for it : UserModules
+	{
+		if it.impClass == null
+		{
+			it.bodyClass.AwaitReadyState()
+			it.bodyClass.AwaitTypeState()
+			resType := GetConstType(it.bodyClass.ItType)
+			tmpl := intGetTemplate("internalHVCreateBase")
+			assert(tmpl != null)
+			fnc := tmpl.GetFunc(![],![resType])
+			assert(fnc != null)
+			
+			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
+			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
+		}
+		return it.impClass?.GetItem(name)?->{BoxExeObj^}
+	}
+}
+
+UserModules := List.{UserModule^}
+
+UserModule := class
+{
+	bodyClass := BoxClassBody^
+	impClass := internalHVModuleBase^
+}

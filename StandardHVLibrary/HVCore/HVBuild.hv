@@ -1,0 +1,1 @@
+HV_Create_int32 := !(int value) -> void^ {}

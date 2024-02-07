@@ -1,0 +1,11 @@
+internalHVModuleBase := class
+{
+	GetItem := virtual !(StringView name) -> void^
+	{
+	}
+}
+
+internalHVCreateBase := !() .{@T} -> T^
+{
+	result = new T
+}

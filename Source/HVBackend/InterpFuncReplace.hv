@@ -1,0 +1,11 @@
+CheckFuncExchange := !(StringView name) -> void^
+{
+	if name == "HV_Create_int32"
+		return hvr_Create_int32
+
+}
+
+hvr_Create_int32 := !(int value) -> void^
+{
+	return GetExeInt(value)
+}

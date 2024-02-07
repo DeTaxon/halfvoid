@@ -27,6 +27,19 @@
 //
 //	)
 //)
+
+#Module(
+	x := int
+
+	GetItem := virtual !(StringView name) -> void^
+	{
+		if name == "GL_POINT_BIT"
+		{
+			return HV_Create_int32(109)
+		}
+		printf("hello %s\n",name.GetString().Str())
+	}
+)
 #CreateCallCommand(
 	Name = "Test",
 	CacheOn = "Inputs"
@@ -43,6 +56,7 @@
 
 main := !(char^[] args) -> int
 {
+	printf("WIN %i\n",GL_POINT_BIT)
 	//hm := FSGetFolder(StringSpan("Test.zip"))
 	//zip2 := hm.ptrToZipEntry.ptrToObj
 

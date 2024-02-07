@@ -126,3 +126,8 @@ HVB_ins_sin := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 {
 	ctx.lines.Push(MCLine("sin",resId,opr1))
 }
+
+HVB_ins_memset := !(MCBuildContext^ ctx, s32 opr1, s32 opr2 , s32 opr3) -> void
+{
+	ctx.lines.Push(MCLine("memset",opr1,opr2,opr3))
+}
