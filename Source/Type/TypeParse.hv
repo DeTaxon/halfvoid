@@ -52,33 +52,33 @@ ParseType := !(Token^ obj) -> Type^
 
 TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^
 {
-		for it : UnitStack
+	for it : UnitStack
+	{
+		if it is TypeVar
 		{
-			if it is TypeVar
+			tv := it->{TypeVar^}
+			if tv.Name == name
+				return it
+		}
+		if it is ConstVar
+		{
+			tv := it->{ConstVar^}
+			if tv.Name == name
+				return it
+		}
+	}
+	for spc : CodeSpaces
+	{
+		if spc.Globals.Contain(name)
+		{
+			for glb : spc.Globals[name]
 			{
-				tv := it->{TypeVar^}
-				if tv.Name == name
-					return it
-			}
-			if it is ConstVar
-			{
-				tv := it->{ConstVar^}
-				if tv.Name == name
-					return it
+				return glb
 			}
 		}
-		for spc : CodeSpaces
+		for lb : spc.Modules
 		{
-			if spc.Globals.Contain(name)
-			{
-				for glb : spc.Globals[name]
-				{
-					return glb
-				}
-			}
-			for lb : spc.Modules
-			{
-				return lb.GetItem(name)?
-			}
+			return lb.GetItem(name)?
 		}
+	}
 }

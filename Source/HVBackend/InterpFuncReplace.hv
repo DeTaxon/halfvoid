@@ -2,10 +2,41 @@ CheckFuncExchange := !(StringView name) -> void^
 {
 	if name == "HV_Create_int32"
 		return hvr_Create_int32
+	if name == "HV_CreateClass"
+		return hvr_CreateClass
 
 }
 
 hvr_Create_int32 := !(int value) -> void^
 {
 	return GetExeInt(value)
+}
+
+hvr_CreateClass := !() -> void^
+{
+	newClassBase := new HVClassImpl
+	newClass := new hvr_Class
+
+	newClassBase.baseClass = newClass
+	return newClassBase
+}
+
+hvr_Class := class extend BoxClass
+{
+
+}
+
+HVClassImpl := class extend HV_Class
+{
+	baseClass := hvr_Class^
+
+	AddCallback_GetFieldFailed := virtual !(StringView name) -> void^ 
+	{
+
+	}
+	GetType := virtual !() -> void^ 
+	{
+		return GetConstType(GTypeInt)
+		return GetConstType(baseClass.ItType)
+	}
 }

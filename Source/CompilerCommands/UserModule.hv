@@ -44,6 +44,7 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 			fnc := tmpl.GetFunc(![],![resType])
 			assert(fnc != null)
 			
+
 			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
 		}

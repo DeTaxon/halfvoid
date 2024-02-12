@@ -87,7 +87,7 @@ HVFixedArrayIterator := class .{@T}
 	}
 }
 
-"->{}" := !(TVector.{@T} ve) .{T^} -> T^
+"->{}" := !(Vector.{@T} ve) .{T^} -> T^
 {
 	return ve.Get()
 }
