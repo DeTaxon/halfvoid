@@ -41,28 +41,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
-	if tmpList[0]?.GetType() is TypeEnum
-	{
-		enm := tmpList[0].GetType()->{TypeEnum^}.ToEnum
-		if oper == "="
-		{
-			if tmpList[1] is BoxExeString
-			{
-				asStr := tmpList[1]->{BoxExeString^}
-				enValue := enm.GetEnum(asStr.Value)
-				if enValue == null
-					itm.EmitError("Enum does not contain this value")
-				tmpList[1] = enValue
-				return enm.GetSetFunc().CreateCall(tmpList)
-			}else if tmpList[1].GetType() == tmpList[0].GetType()
-			{
-				return enm.GetSetFunc().CreateCall(tmpList)
-			}else{
-				//??
-			}
-		}
-	}
-
 	if oper in ![">",">=","<","<=","==","!="]
 	{
 		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)

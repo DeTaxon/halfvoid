@@ -20,6 +20,8 @@ ExchangeEnumToInt := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
 	{
+		if expectResultRef
+			return CmpNoExchange
 		if not IsInt(newType)
 			return CmpNoExchange
 		if obj.GetType() is not TypeEnum

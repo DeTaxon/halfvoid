@@ -9,4 +9,5 @@ CreateBuiltins := !() -> void
 	CreateBuiltInVec()
 	CreateBuiltInVoid()
 	CreateBuiltinsArrayViews()
+	CreateBuildInEnum()
 }

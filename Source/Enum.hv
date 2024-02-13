@@ -133,14 +133,6 @@ BoxEnum := class extend BoxUnit
 		}
 		return null
 	}
-	storeFunc := BoxFunc^
-	GetSetFunc := !() -> BoxFunc^
-	{
-		AwaitReadyState()
-		if storeFunc == null
-			storeFunc = new BuiltInPrimeStore(GetFuncType(![ItType,ItType],![true,false],GTypeVoid))
-		return storeFunc
-	}
 	cmpFunc := BoxFunc^
 	GetCmpFunc := !() -> BoxFunc^
 	{
@@ -225,4 +217,45 @@ enumGetCStrTable := !(Type^ enumType) -> BoxExeObj^
 	}
 
 	return tp.CStrTable.proxy&
+}
+
+EnumBuildInStoreTemplate := class extend BoxFuncTemplate 
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		a := objs[0].GetType()
+		b := objs[1].GetType()
+
+		if a is not TypeEnum
+			return null
+
+		if b is TypeEnum
+		{
+			if a != b
+				return null
+		}else if b == GTypeChar.GetPoint()
+		{
+			if not objs[1].IsConst
+				return null
+
+		}else{
+			return null
+		}
+		
+		return GetFuncType(![a,a],![true,false],GTypeVoid)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	{
+		return new BuiltInPrimeStore(tp)
+	}
+}
+CreateBuildInEnum := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+	bSpace.Templates[StringSpan("=")].Push(new EnumBuildInStoreTemplate())
 }

@@ -284,6 +284,25 @@ BoxFile := class extend BoxUnit
 		assert(foundSpace)
 
 	}
+
+	AddWork := !() -> void
+	{
+		fileName = GetConstString(file.GetName().Str())
+		if fileTokens == null
+			return void
+
+		//iter := fileTokens.Down
+		//while iter != null
+		//{
+		//	if ParsedTokens.Contain(iter)
+		//	{
+		//		iter = iter.Right
+		//		continue
+		//	}
+		//	iter = iter.Right
+		//}
+		
+	}
 	Parse := !() -> void
 	{
 		fileName = GetConstString(file.GetName().Str())
@@ -422,4 +441,81 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 	}
 
 	return null
+}
+
+CWorkBaseFile := class extend CWorkUnit
+{
+	itFile := BoxFile^
+	itToken := Token^
+	itState := CWorkState
+	itError := String^
+
+	this := !(BoxFile^ inpFile, Token^ inpToken) -> void
+	{
+		itFile = inpFile
+		itToken = inpToken
+		itState = "Created"
+	}
+	GetErrorMessage := virtual !() -> String^
+	{
+		return itError
+	}
+	
+	DoWork := virtual !() -> CWorkState 
+	{
+		if itState == "Complete" or itState == "Failed"
+			return itState
+
+		itFile.LoadSpace()
+
+		vr := TryParseVarInFile(itFile)
+
+		if vr == null
+		{
+			if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
+			{
+				vr = new GlobalVar2(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+				GlobalVars2.Push(vr->{GlobalVar2^})
+			}
+		}
+
+		if vr != null
+		{
+			if vr is TypeVar or vr is TemplateTypeVar
+			{
+				if vr is TypeVar
+				{
+					CurrentCodeSpace.Types[vr->{TypeVar^}.Name] = vr
+				}else{
+					//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
+					CurrentCodeSpace.Types[vr->{TemplateTypeVar^}.Name] = vr
+				}
+			}else if vr is in GlobalVar2
+			{
+				glb := vr->{GlobalVar2^}
+				CurrentCodeSpace.Globals[glb.itName].Push(vr)
+			}else if vr is in TypedefTemplateVar
+			{
+				CurrentCodeSpace.Types[vr->{TypedefTemplateVar^}.Name] = vr
+			}else if vr is in NamedVar
+			{
+				v := vr->{NamedVar^}
+				CurrentCodeSpace.Globals[v.Name].Push(vr)
+			}else {
+			}
+
+			vr.Work()
+		}else{
+			cmdRes := TryGetCommand(iter)
+			if cmdRes == null
+			{
+				itError = itToken.MakeError()
+				return "Failed"
+			}
+		}
+
+	}
+	IsDone := virtual !() -> bool {
+		return false
+	}
 }

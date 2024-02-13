@@ -1,0 +1,62 @@
+
+
+CompilerWork := class
+{
+	works := List.{CWorkUnit^}
+
+	Add := !(CWorkUnit^ unit) -> void
+	{
+		works.Push(unit)
+	}
+	WorkCount := !() -> int
+	{
+		return works.Size()
+	}
+
+	DoWork := !() -> int
+	{
+		while works.Size() != 0
+		{
+			completeCount := 0
+			progressCount := 0
+			failsCount := 0
+
+			for i : works.Size()
+			{
+				itm := works.Pop()
+				res := CWorkState
+				res = itm.DoWork()
+				switch res
+				{
+					case "Complete"
+						completeCount += 1
+					case "MadeProgress"
+						progressCount += 1
+						works.Push(itm)
+					case "Failed"
+						works.Push(itm)
+						failsCount += 1
+				}
+			}
+			if completeCount == 0 and progressCount == 0 and failsCount != 0
+				break
+		}
+		return works.Size()
+	}
+	
+}
+
+CWorkUnit := class extend TGCObject
+{
+	DoWork := virtual !() -> CWorkState {}
+	IsDone := virtual !() -> bool {}
+	GetErrorMessage := virtual !() -> String^ {}
+}
+
+CWorkState := enum
+{
+	"Created",
+	"Complete",
+	"MadeProgress",
+	"Failed"
+}

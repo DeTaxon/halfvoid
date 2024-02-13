@@ -17,54 +17,61 @@
 	}
 )
 
-#Module(
-	x := int
+//#Module(
+//	x := int
+//
+//	loaded := bool
+//	LoadXML := !() -> void
+//	{
+//		if loaded
+//			return void
+//	}
+//
+//	funcClass := HV_Class^
+//	funcClassType := void^
+//	FuncClass := !() -> void^
+//	{
+//		return funcClassType?
+//
+//		funcClass = HV_CreateClass()
+//
+//		//printf("class create %p\n",funcClass)
+//
+//		funcClassType = funcClass.GetType()
+//		printf("heh %p\n",funcClassType)
+//		return funcClassType
+//	}
+//
+//	GetItem := virtual !(StringView name) -> void^
+//	{
+//		if name == "GL_POINT_BIT"
+//		{
+//			return HV_Create_int32(109)
+//		}
+//		if name == "glFuncsClass"
+//		{
+//			return FuncClass()
+//		}
+//		LoadXML()
+//	}
+//)
+//
+EnumTest := enum
+{
+	"Ok",
+	"NotOk"
+}
 
-	loaded := bool
-	LoadXML := !() -> void
-	{
-		if loaded
-			return void
-	}
-
-	funcClass := HV_Class^
-	funcClassType := void^
-	FuncClass := !() -> void^
-	{
-		return funcClassType?
-
-		funcClass = HV_CreateClass()
-
-		//printf("class create %p\n",funcClass)
-
-		funcClassType = funcClass.GetType()
-		printf("heh %p\n",funcClassType)
-		return funcClassType
-	}
-
-	GetItem := virtual !(StringView name) -> void^
-	{
-		if name == "GL_POINT_BIT"
-		{
-			return HV_Create_int32(109)
-		}
-		if name == "glFuncsClass"
-		{
-			return FuncClass()
-		}
-		LoadXML()
-	}
-)
+Func := !() -> EnumTest
+{
+	return "Ok"
+}
 
 main := !(char^[] args) -> int
 {
-	//hm := FSGetFolder(StringSpan("Test.zip"))
-	//zip2 := hm.ptrToZipEntry.ptrToObj
-
-	//printf("yay %p %p\n",hm,zip2)
-	//zip2.WriteFile(StringSpan("Test"),MakeBlob(256),false)
-	//zip2.Flush()
-	RunTest()
+	c := Func()
+	printf("hey %i\n",c)
+	//RunTest()
 	return 0
 }
 

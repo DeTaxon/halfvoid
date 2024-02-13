@@ -41,6 +41,7 @@ RunModeFuncName := char^
 
 GInterpCntx := MCInterpContext
 
+WorkBag := CompilerWork 
 //TestFile := TFile^
 
 OutputFile := char^
@@ -190,6 +191,7 @@ main := !(char^[] args) -> int
 	{
 		fil.Parse()
 	}
+	//WorkBag.DoWork()
 
 	InitTaskLocal()
 	InitLambda()
