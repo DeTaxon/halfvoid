@@ -149,6 +149,11 @@ BoxFunc := class extend BoxExeConstObj
 	}
 	
 	IsConstexpr := virtual false
+
+	IsComplete := virtual !() -> bool
+	{
+		return true
+	}
 }
 
 BoxFuncCommon := class extend BoxFunc

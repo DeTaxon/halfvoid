@@ -291,16 +291,17 @@ BoxFile := class extend BoxUnit
 		if fileTokens == null
 			return void
 
-		//iter := fileTokens.Down
-		//while iter != null
-		//{
-		//	if ParsedTokens.Contain(iter)
-		//	{
-		//		iter = iter.Right
-		//		continue
-		//	}
-		//	iter = iter.Right
-		//}
+		iter := fileTokens.Down
+		while iter != null
+		{
+			if ParsedTokens.Contain(iter)
+			{
+				iter = iter.Right
+				continue
+			}
+			WorkBag.AddWork(new CWorkBaseFile(this&,iter))
+			iter = iter.Right
+		}
 		
 	}
 	Parse := !() -> void
@@ -311,69 +312,6 @@ BoxFile := class extend BoxUnit
 
 		defer loaded.Emit()
 
-		if fileTokens == null
-			return void
-
-		CurrentScope = this&
-		iter := fileTokens.Down
-
-		while iter != null
-		{
-			if ParsedTokens.Contain(iter)
-			{
-				iter = iter.Right
-				continue
-			}
-
-			vr := TryParseVarInFile(iter)
-
-
-			if vr == null
-			{
-				if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
-				{
-					vr = new GlobalVar2(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
-					GlobalVars2.Push(vr->{GlobalVar2^})
-				}
-			}
-
-			if vr != null
-			{
-				if vr is TypeVar or vr is TemplateTypeVar
-				{
-					if vr is TypeVar
-					{
-						CurrentCodeSpace.Types[vr->{TypeVar^}.Name] = vr
-					}else{
-						//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
-						CurrentCodeSpace.Types[vr->{TemplateTypeVar^}.Name] = vr
-					}
-				}else if vr is in GlobalVar2
-				{
-					glb := vr->{GlobalVar2^}
-					CurrentCodeSpace.Globals[glb.itName].Push(vr)
-				}else if vr is in TypedefTemplateVar
-				{
-					CurrentCodeSpace.Types[vr->{TypedefTemplateVar^}.Name] = vr
-				}else if vr is in NamedVar
-				{
-					v := vr->{NamedVar^}
-					CurrentCodeSpace.Globals[v.Name].Push(vr)
-				}else {
-				}
-
-				vr.Work()
-			}else{
-				cmdRes := TryGetCommand(iter)
-				if cmdRes == null
-				{
-					printf("some error %s\n",iter.GetValue())
-					iter.Print(0)
-					iter.EmitError("Unknown object")
-				}
-			}
-			iter = iter.Right
-		}
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -467,14 +405,15 @@ CWorkBaseFile := class extend CWorkUnit
 			return itState
 
 		itFile.LoadSpace()
+		CurrentScope = itFile
 
-		vr := TryParseVarInFile(itFile)
+		vr := TryParseVarInFile(itToken)
 
 		if vr == null
 		{
-			if iter.Down?.Right?.GetValue() == ":=" and iter.Down is TokenIndent
+			if itToken.Down?.Right?.GetValue() == ":=" and itToken.Down is TokenIndent
 			{
-				vr = new GlobalVar2(iter.Down->{TokenIndent^}.Value,iter.Down.Right.Right)
+				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itToken.Down.Right.Right)
 				GlobalVars2.Push(vr->{GlobalVar2^})
 			}
 		}
@@ -506,10 +445,10 @@ CWorkBaseFile := class extend CWorkUnit
 
 			vr.Work()
 		}else{
-			cmdRes := TryGetCommand(iter)
+			cmdRes := TryGetCommand(itToken)
 			if cmdRes == null
 			{
-				itError = itToken.MakeError()
+				itError = itToken.MakeError("Unknown object")
 				return "Failed"
 			}
 		}

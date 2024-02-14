@@ -95,7 +95,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 		StartedParse = true
 		cls := this&
-		GFuncsInProgress.Push(this&)
+		//GFuncsInProgress.Push(this&)
+		createCWork()
 
 		TSpawnTask(() ==> [cls] {
 			cls.ParseBodyForced()
@@ -107,7 +108,8 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 		StartedParseForced = true
 
-		GFuncsInProgress.Push(this&)
+		//GFuncsInProgress.Push(this&)
+		createCWork()
 		this.WorkBody()
 	}
 	SetName := virtual !(StringSpan nm) -> void
@@ -133,6 +135,13 @@ BoxFuncBody := class extend BoxFuncCommon
 	GetExitLabel := virtual !() -> BoxLabel^
 	{
 		return ExitLabel
+	}
+
+
+	createCWork := !() -> void
+	{
+		funcComp := new CWorkFuncCompile(this&)
+		WorkBag.AddWork(funcComp)
 	}
 
 	body := BoxBlock^
@@ -273,6 +282,10 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		ctx.writeStream^ << "@" << OutputName
 	}
+	IsComplete := virtual !() -> bool
+	{
+		return readyState.Emited()
+	}
 	
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -410,4 +423,28 @@ GetParSpan := !(int i) -> StringSpan
 	buff := char[100]
 	sprintf(buff[0]&,"%%par%i",i)
 	result = GetConstString(buff[0]&)
+}
+
+CWorkFuncCompile := class extend CWorkUnit
+{
+	itFunc := BoxFuncBody^
+
+	this := !(BoxFuncBody^ b) -> void
+	{
+		itFunc = b
+	}
+
+	DoWork := virtual !() -> CWorkState 
+	{
+		if IsDone()
+			return "Complete"
+		return "Failed"
+	}
+	IsDone := virtual !() -> bool 
+	{
+		return itFunc.IsComplete()
+	}
+	GetErrorMessage := virtual !() -> String^ 
+	{	
+	}
 }

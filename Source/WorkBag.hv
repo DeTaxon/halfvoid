@@ -4,7 +4,7 @@ CompilerWork := class
 {
 	works := List.{CWorkUnit^}
 
-	Add := !(CWorkUnit^ unit) -> void
+	AddWork := !(CWorkUnit^ unit) -> void
 	{
 		works.Push(unit)
 	}

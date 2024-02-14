@@ -99,21 +99,26 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		}
 	}
 
-
-	varType := ParseType(varToken)
-
-	if varType != null
+	
+	makeLocalVar := (Type^ newType) ==> BoxUnit^
 	{
-		if varType == GTypeVoid
+		if newType == GTypeVoid
 		{
 			resVoid := new FuncLocalVoidParam()
 			return new MemVar(name,resVoid)
 		}else{
 			assert(CurrentScope is in BoxFunc) 
-			newVar := new LocalVar(name,varType,true,false)
+			newVar := new LocalVar(name,newType,true,false)
 			CurrentFunc.AddLocalVar(newVar)
 			return newVar
 		}
+	}
+
+	varType := ParseType(varToken)
+
+	if varType != null
+	{
+		return makeLocalVar(varType)
 	}
 	
 	refVar := bool
@@ -125,6 +130,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	exeObj := TryGetExeCall(varToken)
 	if exeObj != null
 	{
+		//if exeObj is ConstType
+		//{
+		//	return makeLocalVar(exeObj->{ConstType^}.Value)
+		//}
 		if CurrentScope is in BoxFunc
 		{
 			if exeObj is BoxArrayHolder

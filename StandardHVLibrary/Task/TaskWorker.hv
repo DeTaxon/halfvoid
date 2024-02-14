@@ -2,7 +2,8 @@ TaskWorker := class extend TGCObject
 {
 	AllTasks := AVLSet.{Task^}
 	CreateTasks := List.{Task^}
-	PendingTasks := FixedSizeRing.{Task^}
+	PendingTasks := List.{Task^}
+	PendingLastTasks := List.{Task^}
 	DeleteTasks := List.{Task^}
 
 	ThreadMainTask := Task^
@@ -78,7 +79,13 @@ TaskWorker := class extend TGCObject
 			hm.CreateStack()
 			return hm
 		}
-		return ReciveWorkTask()
+		return ReciveWorkTask()?
+
+		if PendingLastTasks.Size() != 0
+		{
+			return PendingLastTasks.Pop()
+		}
+		return null
 	}
 	ReciveWorkTask := virtual !() -> Task^
 	{

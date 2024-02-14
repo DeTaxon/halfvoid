@@ -34,6 +34,8 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 {
 	for it : UserModules
 	{
+		if not it.ExpectFunctionsComplete()
+			continue
 		if it.impClass == null
 		{
 			it.bodyClass.AwaitReadyState()
@@ -58,4 +60,43 @@ UserModule := class
 {
 	bodyClass := BoxClassBody^
 	impClass := internalHVModuleBase^
+
+	isCompiled := bool
+	compileWork := CWorkUserModuleCompilation^
+
+	ExpectFunctionsComplete := !() -> bool
+	{
+		if isCompiled
+			return true
+
+		if compileWork == null
+		{
+			newWork := new CWorkUserModuleCompilation
+			WorkBag.AddWork(newWork)
+			compileWork = newWork
+		}
+		if compileWork.IsDone()
+		{
+			isCompiled = true
+			compileWork = null
+			return true
+		}
+		return false
+	}
+}
+
+CWorkUserModuleCompilation := class extend CWorkUnit
+{
+	DoWork := virtual !() -> CWorkState 
+	{
+		return "Complete"
+	}
+	IsDone := virtual !() -> bool 
+	{
+		return false
+	}
+	GetErrorMessage := virtual !() -> String^ 
+	{
+		return null
+	}
 }

@@ -17,70 +17,59 @@
 	}
 )
 
-//#Module(
-//	x := int
-//
-//	loaded := bool
-//	LoadXML := !() -> void
-//	{
-//		if loaded
-//			return void
-//	}
-//
-//	funcClass := HV_Class^
-//	funcClassType := void^
-//	FuncClass := !() -> void^
-//	{
-//		return funcClassType?
-//
-//		funcClass = HV_CreateClass()
-//
-//		//printf("class create %p\n",funcClass)
-//
-//		funcClassType = funcClass.GetType()
-//		printf("heh %p\n",funcClassType)
-//		return funcClassType
-//	}
-//
-//	GetItem := virtual !(StringView name) -> void^
-//	{
-//		if name == "GL_POINT_BIT"
-//		{
-//			return HV_Create_int32(109)
-//		}
-//		if name == "glFuncsClass"
-//		{
-//			return FuncClass()
-//		}
-//		LoadXML()
-//	}
-//)
-//
-EnumTest := enum
-{
-	"Ok",
-	"NotOk"
-}
+#Module(
+	x := int
 
-Func := !() -> EnumTest
-{
-	return "Ok"
-}
+	loaded := bool
+	LoadXML := !() -> void
+	{
+		if loaded
+			return void
+	}
+
+	funcClass := HV_Class^
+	funcClassType := void^
+	FuncClass := !() -> void^
+	{
+		return funcClassType?
+
+		funcClass = HV_CreateClass()
+
+		//printf("class create %p\n",funcClass)
+
+		funcClassType = funcClass.GetType()
+		printf("heh %p\n",funcClassType)
+		return funcClassType
+	}
+
+	GetItem := virtual !(StringView name) -> void^
+	{
+		if name == "GL_POINT_BIT"
+		{
+			return HV_Create_int32(109)
+		}
+		if name == "glFuncsClass"
+		{
+			return FuncClass()
+		}
+		LoadXML()
+	}
+)
 
 main := !(char^[] args) -> int
 {
-	c := Func()
-	printf("hey %i\n",c)
 	//RunTest()
 	return 0
 }
-
 
 
 mouseMove := !(void^ w, double itX, double itY) -> void
 {
 	printf("hey %p %f %f\n",w,itX,itY)
 }
+
+
+
 
 RunTest := !() -> void
 {
@@ -96,28 +85,6 @@ RunTest := !() -> void
 	//}
 }
 
-ManyVars := !(int x, int y = 30, double z = 0.5) -> void
-{
-	printf("wow %i %i %f\n",x,y,z)
-}
-
-ClsInput := class
-{
-	Objects := int[]
-	ExtraData := double
-}
-
-TestClsInput := !(ClsInput inputs) -> void
-{
-	for it : inputs.Objects
-	{
-		printf("test %i\n",it)
-	}
-}
-"->{}" := !(int[] vals) -> TestClsInput
-{
-	result.Objects = vals
-}
 
 CalculatePiBlob := !(int nums) -> Blob^
 {
@@ -179,33 +146,6 @@ CalculatePiBlob := !(int nums) -> Blob^
 		resultPtr[i] += '0'
 	}
 }
-//Reserve inheritance failed, it's overcomplicated
-//ExpectClass := class
-//{
-//	x := int //TODO reserve it
-//	SomeFunc := virtual !() -> void
-//	{
-//		printf("no\n")
-//	}
-//}
-//
-//SomeInterface := class 
-//	#Reserve ExpectClass
-//{
-//	//TODO reserve does not reserve fields
-//}
-//
-//ImplInterface := class 
-//	extend SomeInterface,ExpectClass
-//{
-//	//TODO must be a version of a copy
-//}
-
-//#Test
-//{
-// statis_assert(#IsConst(cos(90deg) ))
-//}
-//
 
 
 //Zip file
@@ -215,38 +155,6 @@ CalculatePiBlob := !(int nums) -> Blob^
 //if file already exists
 //throw exceptions when file cannot be created, no space on disk, incorrect file format
 
-//TypeInfo := type_trait 
-//{
-//	TypeSize(),
-//	"<=>",
-//	delete
-//}
-//
-//List := class .{generic TypeInfo T} extend T[]
-//{
-//	node := class
-//	{
-//		next := node^
-//		prev := node^
-//		data := T
-//	}
-//
-//	createNode := !() -> node^
-//	{
-//		//return malloc(node->TypeSize + T.TypeSize)
-//		return new node 
-//	}
-//
-//	"for" := generator () -> T
-//	{
-//		itr := start
-//		while itr != null
-//		{
-//			yield itr.data
-//			itr = itr.next
-//		}
-//	}
-//}
 
 //TODO todo in libs2/Random.hv is important
 //i want a way to call function at the start of the program if function that uses it is called
@@ -255,18 +163,6 @@ CalculatePiBlob := !(int nums) -> Blob^
 //	#ModuleInit(initRandom())
 //	....
 //}
-
-//#Module
-//{
-//	xml := XMLFile(#File("vk.xml"))
-//	cls := #CreateClass("VKFuncs")
-//
-//	#Callback(cls,"FieldMissed") (name)
-//	{
-//		
-//	}
-//}
-
 
 
 //TODO
@@ -282,45 +178,3 @@ CalculatePiBlob := !(int nums) -> Blob^
 //interpreter support File,XML
 //Class can be created by script
 //Module Vulkan uses Normal Class and usese new API
-
-
-DllTest := !() -> void
-{
-	tst := FSGetFile("libwebp-7.dll")
-	mp := tst.GetMap()
-
-	win32LoadLibrary(mp.Get(),tst.Size())
-}
-
-RegExpTest := !() -> void
-{
-	itBuilder := LexBuilder
-
-	itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",1)
-	itBuilder.ApplyReg("[0-9]+(.[0-9]+)?",2)
-	itBuilder.ApplyReg("0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2)
-	itBuilder.ApplyReg(" true | false | null",3)
-	itBuilder.ApplyReg("\\{ | \\} | \\, | \\: | \\[ | \\]",4)
-	itBuilder.ApplyReg("\\  | \\t | \\n",5)
-
-	res := itBuilder.GenerateMachine()
-
-	// res.PrintIt()
-
-	tst := FSGetFile("test.json")
-	mp := tst.GetMap()
-
-	res.RegExpReadText(mp.Get(),mp.Size(), (st,a) ==> {
-		if a != 5
-		{
-			printf("hm <%s>\n",st.GetString().Str())
-		}
-	})
-}
-
-//AClass := class
-//{
-//	ggg := virtual int TODO Creates bug
-//	g3 := int
-//}
-

@@ -81,4 +81,5 @@ TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^
 			return lb.GetItem(name)?
 		}
 	}
+	return GetItemUser(name)?
 }

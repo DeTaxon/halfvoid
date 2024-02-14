@@ -15,3 +15,11 @@ TSleep := !(double val) -> void
 	CurrentThread.ThreadMainTask.switchToTask()
 	TaskCheckMutex.Unlock()
 }
+
+TaskYield := !() -> void
+{
+	TaskCheckMutex.Lock()
+	CurrentThread.PendingLastTasks.Push(CurrentTask)
+	CurrentThread.ThreadMainTask.switchToTask()
+	TaskCheckMutex.Unlock()
+}

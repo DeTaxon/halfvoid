@@ -21,7 +21,7 @@ GVoidObj := BoxExeObj^
 
 GDebugTypePrintMeta := List.{Type^}
 
-GFuncsInProgress := List.{BoxFunc^}
+//GFuncsInProgress := List.{BoxFunc^}
 GClassesInProgress := List.{BoxClass^}
 
 AllClasses := List.{BoxClass^}
@@ -187,11 +187,9 @@ main := !(char^[] args) -> int
 		//GDebugFileId = spc.Files[^].fileId //todo, remove it, is is for debug id
 	}
 
-	for fil : CodeFiles
-	{
-		fil.Parse()
-	}
-	//WorkBag.DoWork()
+	CodeFiles[^].Parse()
+	CodeFiles[^].AddWork()
+	WorkBag.DoWork()
 
 	InitTaskLocal()
 	InitLambda()
@@ -208,17 +206,7 @@ main := !(char^[] args) -> int
 	mainFunc.WaitReadyState()
 	mainFunc.ForceOutputName(StringSpan("main"))
 
-	while GClassesInProgress.Size() != 0
-	{
-		GClassesInProgress[0].AwaitReadyState()
-		GClassesInProgress.Pop()
-	}
-
-	while GFuncsInProgress.Size() != 0
-	{
-		GFuncsInProgress[0].WaitReadyState()
-		GFuncsInProgress.Pop()
-	}
+	WaitForParsingObjects()
 
 	for it : CodeSpaces
 	{
@@ -226,11 +214,13 @@ main := !(char^[] args) -> int
 			libs.CreateInitPart()
 	}
 
+
 	WaitForParsingObjects()
 
 	TLSStep()
 
 	WaitForParsingObjects()
+
 
 	printf("good to go\n")
 
@@ -278,10 +268,11 @@ WaitForParsingObjects := !() -> void
 		GClassesInProgress.Pop()
 	}
 
-	while GFuncsInProgress.Size() != 0
+	TaskYield()
+	while WorkBag.WorkCount() != 0
 	{
-		GFuncsInProgress[0].WaitReadyState()
-		GFuncsInProgress.Pop()
+		WorkBag.DoWork()
+		TaskYield()
 	}
 }
 
