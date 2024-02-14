@@ -72,11 +72,15 @@ UserModule := class
 		if compileWork == null
 		{
 			newWork := new CWorkUserModuleCompilation
+			bodyClass.GetMethods(StringSpan("GetItem"),x ==> {
+				newWork.AddUnit(x[^])
+			})
 			WorkBag.AddWork(newWork)
 			compileWork = newWork
 		}
 		if compileWork.IsDone()
 		{
+			printf("YEEEEES\n")
 			isCompiled = true
 			compileWork = null
 			return true
@@ -87,13 +91,45 @@ UserModule := class
 
 CWorkUserModuleCompilation := class extend CWorkUnit
 {
+	waitFunctions := List.{BoxFuncBody^}
+
+	this := !(BoxUnit^ startFunction) -> void
+	{
+		AddUnit(startFunction)
+	}
+	AddUnit := !(BoxUnit^ newUnit) -> void
+	{
+		if newUnit is in BoxFuncBody
+		{
+			waitFunctions.Push(newUnit->{BoxFuncBody^})
+		}else if newUnit is BuildInVirtualCall{
+			vCall := newUnit->{BuildInVirtualCall^}
+			AddUnit(vCall.wrappedFunc)
+		}else{
+			printf("unknown object to wait in user module %s\n",newUnit.UnitName)
+			assert(false)
+		}
+	}
 	DoWork := virtual !() -> CWorkState 
 	{
-		return "Complete"
+		if IsDone()
+			return "Complete"
+
+		while true
+		{
+			if waitFunctions.Size() == 0
+				return "Complete"
+			frnt := waitFunctions[0]
+			if frnt.IsComplete()
+				waitFunctions.Pop()
+		}
+
+
+		return "Failed"
 	}
 	IsDone := virtual !() -> bool 
 	{
-		return false
+		return waitFunctions.Size() == 0
 	}
 	GetErrorMessage := virtual !() -> String^ 
 	{

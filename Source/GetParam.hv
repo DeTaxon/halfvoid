@@ -10,6 +10,8 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	if res == null
 	{
+		return null 
+		//TODO
 		asItm := itm->{TokenIndent^}
 
 		c := TEchoStream

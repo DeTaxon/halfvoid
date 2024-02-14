@@ -21,7 +21,7 @@ hvr_CreateClass := !() -> void^
 	return newClassBase
 }
 
-hvr_Class := class extend BoxClass
+hvr_Class := class extend BoxClassPoison
 {
 
 }

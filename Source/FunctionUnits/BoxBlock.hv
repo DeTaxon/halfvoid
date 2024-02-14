@@ -67,19 +67,28 @@ BoxBlock := class extend BoxExeObj
 				continue
 			}
 
-			vr := TryParseVar(iter)
-
-			if vr != null
+			pad := new BoxExeLine()
+			while true
 			{
-				pad := new BoxExeLineSimple(iter,vr)
+				vr := TryParseVar(iter)
 
-				exeLines.Push(pad)
-				UnitStack.PushFront(vr)
-			}else{
-				pad := TryGetUnitCall(iter)
-				//pad := new BoxExeLine()
-				//pad.DoLine(iter)
-				exeLines.Push(pad)
+				if vr != null
+				{
+					pad2 := new BoxExeLineSimple(iter,vr)
+
+					exeLines.Push(pad2)
+					UnitStack.PushFront(vr)
+
+					delete pad
+					break
+				}
+				if pad.DoLine(iter,false)
+				{
+					exeLines.Push(pad)
+					break
+				}
+					
+				TaskYield()
 			}
 			
 		

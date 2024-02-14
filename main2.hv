@@ -58,7 +58,7 @@
 
 main := !(char^[] args) -> int
 {
-	//RunTest()
+	RunTest()
 	return 0
 }
 
@@ -73,7 +73,8 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 
 RunTest := !() -> void
 {
-	c := glFuncsClass 
+	c := glFuncsClass
+	//c.x = 12
 	//glfwInit()
 	//win := glfwCreateWindow(640, 480, "My Title", null, null)
 	//glfwSetCursorPosCallback(win,mouseMove)

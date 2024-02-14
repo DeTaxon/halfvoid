@@ -23,7 +23,7 @@ BoxExeLine := class extend BoxExeLineSimple
 		return exitLabel
 	}
 
-	DoLine := !(Token^ itm) -> void
+	DoLine := !(Token^ itm, bool emitError = true) -> bool
 	{
 		stackAtStart := UnitStack.Size()
 		UnitStack.PushFront(this&)
@@ -46,11 +46,16 @@ BoxExeLine := class extend BoxExeLineSimple
 			UnitStack.Pop()
 
 		if Down != null
-			return void
+			return true
 
-		ItToken.Print(0)
-		itm.EmitError("Unknown error")
-		assert(false)
+		if emitError
+		{
+			ItToken.Print(0)
+			itm.EmitError("Unknown error")
+			assert(false)
+		}else{
+			return false
+		}
 	}
 	GetDownObject := !(Token^ itm,int depth) -> BoxUnit^
 	{

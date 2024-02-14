@@ -269,9 +269,27 @@ WaitForParsingObjects := !() -> void
 	}
 
 	TaskYield()
-	while WorkBag.WorkCount() != 0
+
+	prevCount := WorkBag.WorkCount()
+	used := 0
+	maxUses := 50
+	while true
 	{
 		WorkBag.DoWork()
+		if WorkBag.WorkCount() == 0
+			break
+		nowCount := WorkBag.WorkCount()
+
+		if nowCount != prevCount
+		{
+			used = 0
+			prevCount = nowCount
+		}else{
+			used += 1
+			if used >= maxUses
+				break
+		}
+
 		TaskYield()
 	}
 }
