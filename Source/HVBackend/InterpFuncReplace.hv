@@ -109,7 +109,6 @@ HVClassImpl := class extend HV_Class
 	{
 		baseClass.newFieldCB = null
 		baseClass.newFieldCB = cb?.Capture()
-		//baseClass.newFieldCB.callFunc = cb.callFunc //TODO Capture fails on interpreter
 	}
 	GetType := virtual !() -> void^ 
 	{

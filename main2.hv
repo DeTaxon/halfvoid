@@ -73,8 +73,6 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 }
 
 
-
-
 RunTest := !() -> void
 {
 	c := glFuncsClass
