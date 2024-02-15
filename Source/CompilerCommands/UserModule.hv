@@ -80,7 +80,6 @@ UserModule := class
 		}
 		if compileWork.IsDone()
 		{
-			printf("YEEEEES\n")
 			isCompiled = true
 			compileWork = null
 			return true
@@ -101,7 +100,9 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 	{
 		if newUnit is in BoxFuncBody
 		{
-			waitFunctions.Push(newUnit->{BoxFuncBody^})
+			bFunc := newUnit->{BoxFuncBody^}
+			if not bFunc.IsComplete()
+				waitFunctions.Push(bFunc)
 		}else if newUnit is BuildInVirtualCall{
 			vCall := newUnit->{BuildInVirtualCall^}
 			AddUnit(vCall.wrappedFunc)
@@ -121,7 +122,19 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 				return "Complete"
 			frnt := waitFunctions[0]
 			if frnt.IsComplete()
+			{
 				waitFunctions.Pop()
+
+				mc := GInterpCntx.GetMCFunc(frnt)
+
+				for it : mc.Objects
+				{
+					if it& is MCConstFunction
+					{
+						AddUnit(it&->{MCConstFunction^}.GetValue())
+					}
+				}
+			}
 		}
 
 

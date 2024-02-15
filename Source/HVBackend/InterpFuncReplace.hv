@@ -4,6 +4,8 @@ CheckFuncExchange := !(StringView name) -> void^
 		return hvr_Create_int32
 	if name == "HV_CreateClass"
 		return hvr_CreateClass
+	if name == "HV_GetType"
+		return hvr_GetType
 
 }
 
@@ -11,11 +13,22 @@ hvr_Create_int32 := !(int value) -> void^
 {
 	return GetExeInt(value)
 }
+hvr_GetType := !(StringView typeName) -> void^
+{
+	spn := typeName.AsStringSpan()
+	indnt := TokenIndent(spn)
+	asType := ParseType(indnt&)
+	if asType == null
+		return null
+	return GetConstType(asType)
+}
 
 hvr_CreateClass := !() -> void^
 {
 	newClassBase := new HVClassImpl
-	newClass := new hvr_Class
+	newClass := new hvr_Class()
+
+	AllClasses.Push(newClass)
 
 	newClassBase.baseClass = newClass
 	return newClassBase
@@ -23,6 +36,68 @@ hvr_CreateClass := !() -> void^
 
 hvr_Class := class extend BoxClassPoison
 {
+	newFieldCB := !(StringView)&->void^
+
+	this := !() -> void
+	{
+		ItName = "ModuleClass" //todo
+		ItId = GetNewId()
+		ItType = new TypeClass(this&)
+
+		ItAlign = 1 //TODO pointer size
+		ItSize = 0
+	}
+	GetNewFieldType := virtual !(StringSpan val) -> Type^
+	{
+		printf("hello %s!!!!\n",val.GetString().Str())
+		if newFieldCB != null
+			return newFieldCB?(val)?->{ConstType^}.Value
+		return GTypeInt
+	}
+	GetField := virtual !(StringSpan val) -> FieldPath^
+	{
+		for it : FieldsPath
+		{
+			if it.Field.Name == val
+			{
+				return it
+			}
+		}
+
+		newFieldType := GetNewFieldType(val)
+
+		if newFieldType == null
+			return null
+
+		newField := new FieldParam(val,newFieldType)
+		Fields.Push(newField)
+
+		fPath := new FieldPath(ItType,newField.Value)
+		fPath.Field = newField
+		fPath.Index = FieldsPath.Size()
+
+		FieldsPath.Push(fPath)
+
+		fieldAlign := newFieldType.GetAlign()
+		ItAlign = max(ItAlign,fieldAlign)
+
+		unalign := ItSize mod fieldAlign
+		if unalign != 0
+		{
+			ItSize += fieldAlign - unalign
+		}
+
+		ItSize += newFieldType.GetSize() //todo variable size object?
+		RecalculateSize()
+		//printf("hm %i\n",ItSize)
+
+		for it : fieldIterators
+		{
+			it.ItemCreated(FieldsPath.Size() - 1)
+		}
+
+		return fPath 
+	}
 
 }
 
@@ -30,13 +105,14 @@ HVClassImpl := class extend HV_Class
 {
 	baseClass := hvr_Class^
 
-	AddCallback_GetFieldFailed := virtual !(StringView name) -> void^ 
+	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void
 	{
-
+		baseClass.newFieldCB = null
+		baseClass.newFieldCB = cb?.Capture()
+		//baseClass.newFieldCB.callFunc = cb.callFunc //TODO Capture fails on interpreter
 	}
 	GetType := virtual !() -> void^ 
 	{
-		return GetConstType(GTypeInt)
 		return GetConstType(baseClass.ItType)
 	}
 }

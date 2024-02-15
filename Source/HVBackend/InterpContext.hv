@@ -324,11 +324,13 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 
 	step2 := void^[120]
 	thisArgs := HybridQueue.{void^,120}
+	//printf("closure %i\n",data.interpFunc.InputsIndxCount)
 	for i : data.interpFunc.InputsIndxCount
 	{
 		step2[i] = args[i]
 		//thisArgs.Push(step2[i]&)
 		thisArgs.Push(args[i])
+		//printf("clsr %p\n",args[i])
 	}
 	MCInterpFunction(data.interpCntx,data.interpFunc,thisArgs,ret)
 }

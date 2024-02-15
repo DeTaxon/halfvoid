@@ -99,6 +99,11 @@ StringView := class extend TGCObject
 	}
 
 	NonNullStr := virtual !() -> char^ { assert(false) }
+
+	AsStringSpan := !() -> StringSpan
+	{
+		result."this"(NonNullStr(),Size())
+	}
 }
 "<=>" := !(StringView^ a,char^ b) -> int
 {

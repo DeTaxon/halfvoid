@@ -39,6 +39,10 @@
 
 		funcClassType = funcClass.GetType()
 		printf("heh %p\n",funcClassType)
+		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
+			printf("hah %s\n",x.GetString().Str())
+			return HV_GetType(StringSpan("float"))
+		})
 		return funcClassType
 	}
 
@@ -74,7 +78,9 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 RunTest := !() -> void
 {
 	c := glFuncsClass
-	//c.x = 12
+	printf("hey %i\n",c->TypeSize)
+	c.x = 12.5
+	printf("hey %f %i\n",c.x,c->TypeSize)
 	//glfwInit()
 	//win := glfwCreateWindow(640, 480, "My Title", null, null)
 	//glfwSetCursorPosCallback(win,mouseMove)

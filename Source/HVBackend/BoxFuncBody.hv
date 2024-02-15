@@ -23,7 +23,6 @@ AppendClass BoxFuncBody
 		}else{
 			ctx.InputsIndxStart = 1
 		}
-		ctx.InputsIndxCount = Params.Size()
 
 
 		ctx.AddLocalVar(Params[^])

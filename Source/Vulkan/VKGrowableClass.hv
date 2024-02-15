@@ -50,7 +50,6 @@ VKGrowableClass := class extend BoxClass
 
 		newFieldType := GetNewFieldType(val)
 
-
 		if newFieldType == null
 			return null
 		//printf("wut %s\n",val.GetString().Str())

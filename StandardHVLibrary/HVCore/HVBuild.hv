@@ -1,1 +1,10 @@
 HV_Create_int32 := !(int value) -> void^ {}
+
+HV_GetType := !(StringView typeName) -> void^ {}
+
+HV_CreateClass := !() -> HV_Class^ {}
+HV_Class := class
+{
+	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
+	GetType := virtual !() -> void^ {}
+}

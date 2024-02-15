@@ -10,10 +10,3 @@ internalHVCreateBase := !() .{@T} -> T^
 	result = new T
 }
 
-
-HV_CreateClass := !() -> HV_Class^ {}
-HV_Class := class
-{
-	AddCallback_GetFieldFailed := virtual !(StringView name) -> void^ {}
-	GetType := virtual !() -> void^ {}
-}
