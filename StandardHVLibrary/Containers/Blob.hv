@@ -2,6 +2,11 @@ Blob := class extend TGCObject
 {
 	GetPointer := virtual !() -> u8^ { assert(false)}
 	Size := virtual !() -> s64 { assert(false) }
+
+	AsStringSpan := !() -> StringSpan
+	{
+		return StringSpan(GetPointer()->{char^},Size())
+	}
 }
 
 BlobOnVector := class extend Blob

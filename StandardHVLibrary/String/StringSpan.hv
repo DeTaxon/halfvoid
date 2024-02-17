@@ -26,7 +26,15 @@ StringSpan := class extend StringView
 	}
 	Size := virtual !() -> int { return itSize }
 	GetString := virtual !() -> String^ { return new String(ptr,itSize) }
-	"[]" := !(int ind) -> ref char { return ptr[ind] }
+	"[]" := !(int ind) -> ref char {
+		if ind > 0
+		{
+			assert(ind < Size())
+		}
+		if ind < 0
+			return this[Size() + ind]
+		return ptr[ind] 
+	}
 	"[]" := virtual !(Range ran) -> StringSpan
 	{
 		toGet := StringSpan(ptr,itSize,ran)

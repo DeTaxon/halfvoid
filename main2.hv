@@ -18,7 +18,9 @@
 )
 
 #Module(
-	x := int
+
+	xmlBlob := Blob^
+	glXML := TreeNode^
 
 	loaded := bool
 	LoadXML := !() -> void
@@ -36,11 +38,9 @@
 		funcClass = HV_CreateClass()
 
 		//printf("class create %p\n",funcClass)
-
+		//
 		funcClassType = funcClass.GetType()
-		printf("heh %p\n",funcClassType)
 		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
-			printf("hah %s\n",x.GetString().Str())
 			return HV_GetType(StringSpan("float"))
 		})
 		return funcClassType
@@ -62,7 +62,13 @@
 
 main := !(char^[] args) -> int
 {
-	RunTest()
+	glFile := FSGetFile("./gl.xml")
+	xmlBlob := glFile.GetBlob()
+
+	glXML := ParseXML2(xmlBlob.AsStringSpan())
+
+	glXML.Print()
+	//RunTest()
 	return 0
 }
 

@@ -138,7 +138,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			
 			k := 0
 		
-			while tok[k] in '0'..'9'
+			while k < tok.Size() and tok[k] in '0'..'9'
 			{
 				Value *= 10
 				Value += tok[k] - '0'
@@ -159,16 +159,16 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				k += 1 
 			}
 			k += 1 //.
-			while tok[k] in '0'..'9'
+			while k < tok.Size() and tok[k] in '0'..'9'
 			{
 				Value += (tok[k] - '0')*Quant
 				k += 1
 				Quant *= 0.1
 			}
-			if tok[k] == 'e' 
-			{
-				//todo: not now
-			}
+			//if tok[k] == 'e' 
+			//{
+			//	//todo: not now
+			//}
 			ns = new TokenDouble(tok,Value)
 		}
 		if a == 7 {

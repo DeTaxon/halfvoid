@@ -44,11 +44,11 @@ CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
 			switch rule[i] //BUG: can not return/continue/break from switch
 			{
 				case '3'
-					if c.nodeType in "2RSPMQBOA" {
+					if c.nodeType in "2RSPMQBOAE" {
 						siz += 1
 					}else failed = true
 				case '4'
-					if c.nodeType in "2RSPMQBOA^"
+					if c.nodeType in "2RSPMQBOAE^"
 					{
 						while c.Right.nodeType in "2RSPMQBOA^"
 						{
@@ -188,6 +188,9 @@ LexBuilder := class extend TGCObject
 
 		while true
 		{
+			if CheckRule(!['(','^','3','3','3',')'],'E',Words.Right)  continue 
+			if CheckRule(!['(','^','3','3',')'],'E',Words.Right)  continue 
+			if CheckRule(!['(','^','3',')'],'E',Words.Right)  continue 
 			if CheckRule(!['3','-','3'],'R',Words.Right) continue
 			if CheckRule(!['[','4',']'],'S',Words.Right)  continue 
 			if CheckRule(!['[','^','4',']'],'S',Words.Right)  continue 
@@ -350,6 +353,36 @@ BuildPartOfNode := !(List.{NonDetNodeLine} lines,LexTreeNode^ nd,int^ itr,int^ i
 			itStart^ = itr^++
 			itEnd^ = itr^++
 			AddNodeLine(lines,itStart^,itEnd^,nd.nodeValue)
+			return true
+		}
+		case 'E' {
+			itStart^ = itr^++
+			itEnd^ = itr^++
+
+			itInd := itStart^
+
+			dwnNode := nd.Down.Right.Right
+
+			while dwnNode.Right != null
+			{
+				prevNode := itInd
+				itInd = itr^++
+				for it : 256
+				{
+					if it == dwnNode.nodeValue
+					{
+						AddNodeLine(lines,prevNode,itInd,it)
+					}else{
+						AddNodeLine(lines,prevNode,itStart^,it)
+					}
+				}
+				dwnNode = dwnNode.Right
+			}
+
+			AddNodeLine(lines,itInd,itEnd^,-1)
+			
+			//BuildPartOfNode(lines,nd.Down.Right,itr,itStart,itEnd)
+
 			return true
 		}
 		case 'B'{
