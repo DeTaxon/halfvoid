@@ -97,6 +97,17 @@ StringView := class extend TGCObject
 		}
 		return true
 	}
+	ToInt := !() -> int
+	{
+		s := Size()
+		if s > 63 or s == 0
+			return 0
+
+		buffer := char[64]
+		memcpy(buffer[0]&,NonNullStr(),s)
+		buffer[s] = 0
+		return strtol(buffer[0]&,null,0)
+	}
 
 	NonNullStr := virtual !() -> char^ { assert(false) }
 

@@ -20,9 +20,9 @@ GArchLLVMTypeSizeT := "i64"
 GVoidObj := BoxExeObj^
 
 GDebugTypePrintMeta := List.{Type^}
-
+	
 //GFuncsInProgress := List.{BoxFunc^}
-GClassesInProgress := List.{BoxClass^}
+//GClassesInProgress := List.{BoxClass^}
 
 AllClasses := List.{BoxClass^}
 AllFunctions := List.{BoxFunc^}
@@ -199,14 +199,16 @@ main := !(char^[] args) -> int
 	if JITMode
 		mainFuncName = "main"
 
+	WaitForParsingObjects()
 	mainFunc := intGetFunc(mainFuncName)
 	assert(mainFunc != null)
 	assert(mainFunc is BoxFuncBody)
 	mainFunc.ParseBody()
-	mainFunc.WaitReadyState()
-	mainFunc.ForceOutputName(StringSpan("main"))
+	//mainFunc.WaitReadyState()
 
 	WaitForParsingObjects()
+
+	mainFunc.ForceOutputName(StringSpan("main"))
 
 	for it : CodeSpaces
 	{
@@ -267,11 +269,18 @@ main := !(char^[] args) -> int
 
 WaitForParsingObjects := !() -> void
 {
-	while GClassesInProgress.Size() != 0
-	{
-		GClassesInProgress[0].AwaitReadyState()
-		GClassesInProgress.Pop()
-	}
+	//while GClassesInProgress.Size() != 0
+	//{
+	//	//cls := GClassesInProgress[0]
+	//	//if cls is in BoxClassBody
+	//	//{
+	//	//	printf("hey %s\n",cls.ItName)
+	//	//}else{
+	//	//	printf("not class %s\n",cls.UnitName )
+	//	//}
+	//	GClassesInProgress[0].AwaitReadyState()
+	//	GClassesInProgress.Pop()
+	//}
 
 	TaskYield()
 

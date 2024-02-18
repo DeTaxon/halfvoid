@@ -23,6 +23,7 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	parents.Emplace(par1,c)
 
 	resultClass := new BoxClassBody(false,parents,bdy)
+	resultClass.ItName = StringSpan("ModuleName")
 
 	newModule.bodyClass = resultClass
 
@@ -46,7 +47,6 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 			fnc := tmpl.GetFunc(![],![resType])
 			assert(fnc != null)
 			
-
 			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
 		}
@@ -71,10 +71,12 @@ UserModule := class
 
 		if compileWork == null
 		{
+
+			bodyClass.StartParseBody()
+
 			newWork := new CWorkUserModuleCompilation
-			bodyClass.GetMethods(StringSpan("GetItem"),x ==> {
-				newWork.AddUnit(x[^])
-			})
+			newWork.waitModuleClass = bodyClass
+			newWork.AddClass(bodyClass)
 			WorkBag.AddWork(newWork)
 			compileWork = newWork
 		}
@@ -91,10 +93,19 @@ UserModule := class
 CWorkUserModuleCompilation := class extend CWorkUnit
 {
 	waitFunctions := List.{BoxFuncBody^}
+	waitClasses := List.{BoxClass^}
+	waitModuleClass := BoxClass^
 
 	this := !(BoxUnit^ startFunction) -> void
 	{
 		AddUnit(startFunction)
+	}
+	AddClass := !(BoxClass^ cls) -> void
+	{
+		if cls.IsComplete()
+			return void
+		waitClasses.Push(cls)
+
 	}
 	AddUnit := !(BoxUnit^ newUnit) -> void
 	{
@@ -118,20 +129,42 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 
 		while true
 		{
-			if waitFunctions.Size() == 0
+			if waitFunctions.Size() == 0 and waitClasses.Size() == 0
 				return "Complete"
-			frnt := waitFunctions[0]
-			if frnt.IsComplete()
+
+
+			if waitModuleClass?.IsComplete()
 			{
-				waitFunctions.Pop()
+				waitModuleClass.GetMethods(StringSpan("GetItem"),x ==> {
+					AddUnit(x[^])
+				})
+				waitModuleClass = null
+			}
 
-				mc := GInterpCntx.GetMCFunc(frnt)
-
-				for it : mc.Objects
+			if waitClasses.Size() != 0
+			{
+				frnt := waitClasses[0]
+				if frnt.IsComplete()
 				{
-					if it& is MCConstFunction
+					waitClasses.Pop()
+				}
+			}
+
+			if waitFunctions.Size() != 0
+			{
+				frnt := waitFunctions[0]
+				if frnt.IsComplete()
+				{
+					waitFunctions.Pop()
+
+					mc := GInterpCntx.GetMCFunc(frnt)
+
+					for it : mc.Objects
 					{
-						AddUnit(it&->{MCConstFunction^}.GetValue())
+						if it& is MCConstFunction
+						{
+							AddUnit(it&->{MCConstFunction^}.GetValue())
+						}
 					}
 				}
 			}
@@ -142,6 +175,8 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 	}
 	IsDone := virtual !() -> bool 
 	{
+		if waitClasses.Size() != 0
+			return false
 		return waitFunctions.Size() == 0
 	}
 	GetErrorMessage := virtual !() -> String^ 

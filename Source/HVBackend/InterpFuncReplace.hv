@@ -49,7 +49,6 @@ hvr_Class := class extend BoxClassPoison
 	}
 	GetNewFieldType := virtual !(StringSpan val) -> Type^
 	{
-		printf("hello %s!!!!\n",val.GetString().Str())
 		if newFieldCB != null
 			return newFieldCB?(val)?->{ConstType^}.Value
 		return GTypeInt

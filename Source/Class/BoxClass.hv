@@ -130,6 +130,10 @@ BoxClass := class extend BoxUnit
 	{
 		
 	}
+	IsComplete := virtual !() -> bool
+	{
+		return true
+	}
 	FieldsCount := !() -> int
 	{
 		sum := Fields.Size()

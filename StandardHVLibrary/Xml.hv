@@ -1,0 +1,185 @@
+XML := class extend TGCObject
+{
+	RootNode := XMLNode^
+
+	Parse := virtual !(StringView xmlText) -> void
+	{
+		rebB := LexBuilder
+		rebB.ApplyReg("<[^!][^>]*>",1)
+		rebB.ApplyReg("<!\\-\\- ( ^ \\- \\- > )",2)
+		regM := rebB.GenerateMachine()
+
+		RootNode = new XMLNode
+		
+		NodeStory := HybridStack.{XMLNode^,16}
+		CurrentNode := RootNode
+
+		firstRun := true
+		prevNode := xmlText.NonNullStr()
+		
+		regM.RegExpReadText(xmlText,(nodeSpn,val) ==> {
+
+
+			nodePtr := nodeSpn.NonNullStr()[-1]&
+			diffOffset := nodePtr->{size_t} - prevNode->{size_t} + 1
+
+			if firstRun
+			{
+				prevNode = nodeSpn.NonNullStr()[nodeSpn.Size()]&
+				firstRun = false
+			}else{
+				if diffOffset != 0
+				{
+					needAdd := false
+					for i : diffOffset
+					{
+						if prevNode[i] not in " 	\n"
+						{
+							needAdd = true
+							break
+						}
+					}
+					if needAdd
+					{
+						setSpan := StringSpan(prevNode,diffOffset)
+						CurrentNode.Values.Emplace(setSpan)
+					}
+				}
+				prevNode = nodeSpn.NonNullStr()[nodeSpn.Size()]&
+			}
+
+			if val == 2
+			{
+				return void
+			}
+			if nodeSpn[1] == '!' // comment
+			{
+			}else if nodeSpn[1] == '?'
+			{
+				//something important but i dont need it
+			}else if nodeSpn[1] == '/' //</node>
+			{
+				if NodeStory.Size() != 0 //TODO it's a error
+					CurrentNode = NodeStory.Pop()
+			}else //<node/> + <node>
+			{
+				newNode := new XMLNode
+
+				i := 1
+				while i < nodeSpn.Size() and nodeSpn[i] not in  " 	\n/>"
+					i += 1
+
+				newNode.NodeName = nodeSpn[1 .. (i - 1)]
+				nextSpn := nodeSpn[(i+1)..0]
+
+				attrReg := #Regexp("'[^']*'",1,"\"[^\"]*\"",1, "[a-zA-Z0-9]+",2,"=",3)
+				attrReg.RegExpReadText(nextSpn, (attrVal,attrInd) ==> {
+					attrName := attrVal
+					yield void
+					yield void
+					attrValue := attrVal
+
+					newNode.Attrs[attrName] = attrValue[1..-1]
+				})
+
+				CurrentNode.Values.Emplace(newNode)
+
+				if nodeSpn[-2] != '/'
+				{
+					NodeStory.PushFront(CurrentNode)
+					CurrentNode = newNode
+				}
+			}
+		})
+
+	}
+
+	Destroy := virtual !() -> void
+	{
+
+	}
+	Print := !() -> void
+	{
+		RootNode.Print(0)
+	}
+}
+
+XMLParseState := class
+{
+	CurrentNode := XMLNode^
+
+	this := !(XMLNode^ curNode) -> void
+	{
+
+	}
+}
+XMLNode := class
+{
+	NodeName := StringSpan
+	Attrs := AVLMap.{StringSpan,StringSpan}
+	Values := HybridQueue.{XMLNodeValue,12}
+	//
+	Print := !(int ind) -> void
+	{
+		for i : ind
+			printf("	")
+		printf("<%s>\n",NodeName)
+
+		for it : Values
+		{
+			if it.IsString
+			{
+				for i : (ind + 1)
+					printf("	")
+				printf("%s\n",it.ValueSpan)
+			}else{
+				it.ValueNode.Print(ind+1)
+			}
+		}
+	}
+	GetNode := !(StringView path) -> XMLNode^
+	{
+		resNode := this& 
+		path.DivideStr("/",x ==> {
+			if resNode == null
+				return void
+			for it : resNode.Values
+			{
+				if it.IsString
+					continue
+				if it.ValueNode.NodeName == x
+				{
+					resNode = it.ValueNode
+					return void
+				}
+			}
+			resNode = null
+		})
+		return resNode
+	}
+}
+
+XMLNodeValue := class
+{
+	IsString := bool
+	ValueSpan := StringSpan
+	ValueNode := XMLNode^
+
+	"=" := default
+
+	this := !(StringSpan spn) -> void
+	{
+		IsString = true
+		ValueSpan = spn
+	}
+	this := !(XMLNode^ newNode) -> void
+	{
+		ValueNode = newNode
+	}
+}
+
+ParseXML2 := !(StringView xmlText) -> XML^
+{
+	result = new XML
+	result.Parse(xmlText)
+}

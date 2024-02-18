@@ -116,12 +116,18 @@ BoxClassBody := class extend BoxClassPoison
 			return void
 		startedParse = true
 
-		GClassesInProgress.Push(this&)
+		//GClassesInProgress.Push(this&)
+		AddClassWork()
+
 		cls := this&
 		TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
 			CurrentFile = cls.classFile
 			cls.ParseBody()	
 		})
+	}
+	AddClassWork := !() -> void
+	{
+		WorkBag.AddWork(new CWorkClassCompile(this&))
 	}
 	AwaitTypeState := virtual !() -> void
 	{
@@ -241,8 +247,6 @@ BoxClassBody := class extend BoxClassPoison
 
 		PrepareVTable(buildCtx)
 		CreateVTable(buildCtx)
-
-		emitTest := static AVLSet.{void^}
 
 		VTableState.Emit()
 
@@ -487,4 +491,33 @@ BoxClassBody := class extend BoxClassPoison
 	}
 	AwaitParentStep := virtual !() -> void { StartParseBody() VParentState.Await() }
 	AwaitVTableStep := virtual !() -> void { StartParseBody() VTableState.Await() }
+
+	IsComplete := virtual !() -> bool
+	{
+		return FieldsState.Emited()
+	}
+}
+
+CWorkClassCompile := class extend CWorkUnit
+{
+	itClass := BoxClassBody^
+
+	this := !(BoxClassBody^ b) -> void
+	{
+		itClass = b
+	}
+
+	DoWork := virtual !() -> CWorkState 
+	{
+		if IsDone()
+			return "Complete"
+		return "Failed"
+	}
+	IsDone := virtual !() -> bool 
+	{
+		return itClass.IsComplete()
+	}
+	GetErrorMessage := virtual !() -> String^ 
+	{	
+	}
 }

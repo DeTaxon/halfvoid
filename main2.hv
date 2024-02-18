@@ -20,13 +20,62 @@
 #Module(
 
 	xmlBlob := Blob^
-	glXML := TreeNode^
+	glXML := XML^
 
-	loaded := bool
-	LoadXML := !() -> void
+	glCommands := AVLMap.{StringSpan,XMLNode^}
+	glValues := AVLMap.{StringSpan,int}
+
+	parsedXml := bool
+	ParseXml := !() -> void
 	{
-		if loaded
+		if parsedXml
 			return void
+		parsedXml = true
+
+		glFile := FSGetFile("./gl.xml")
+		xmlBlob := glFile.GetBlob()
+
+		glXML = ParseXML2(xmlBlob.AsStringSpan())
+
+		for baseNode : glXML.RootNode.Values[0].ValueNode.Values
+		{
+			if baseNode.IsString
+			{
+				continue
+			}
+
+			switch baseNode.ValueNode.NodeName
+			{
+			case "commands"
+				for command : baseNode.ValueNode.Values
+				{
+					if command.IsString
+						continue
+
+					commandName := command.ValueNode.GetNode("proto/name")
+
+					if commandName != null
+					{
+						glCommands[commandName.Values[0].ValueSpan] = commandName
+					}
+					
+				}
+			case "enums"
+				for it : baseNode.ValueNode.Values
+				{
+					if it.IsString
+						continue
+					val := it.ValueNode
+
+					if val.Attrs.Contain(StringSpan("value")) and val.Attrs.Contain(StringSpan("name"))
+					{
+						glValues[val.Attrs[StringSpan("name")]] = val.Attrs[StringSpan("value")].ToInt()
+					}
+
+				}
+			}
+		}
+
 	}
 
 	funcClass := HV_Class^
@@ -37,8 +86,8 @@
 
 		funcClass = HV_CreateClass()
 
-		//printf("class create %p\n",funcClass)
-		//
+		ParseXml()
+
 		funcClassType = funcClass.GetType()
 		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
 			return HV_GetType(StringSpan("float"))
@@ -48,26 +97,22 @@
 
 	GetItem := virtual !(StringView name) -> void^
 	{
-		if name == "GL_POINT_BIT"
+		if name.Start == StringSpan("GL_")
 		{
-			return HV_Create_int32(109)
+			ParseXml()
+			if glValues.Contain(name)
+				return HV_Create_int32(glValues[name])
 		}
 		if name == "glFuncsClass"
 		{
 			return FuncClass()
 		}
-		LoadXML()
 	}
 )
 
 main := !(char^[] args) -> int
 {
-	glFile := FSGetFile("./gl.xml")
-	xmlBlob := glFile.GetBlob()
-
-	glXML := ParseXML2(xmlBlob.AsStringSpan())
-
-	glXML.Print()
+	//glXML.Print()
 	//RunTest()
 	return 0
 }
@@ -81,6 +126,10 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 
 RunTest := !() -> void
 {
+	printf("gl %p\n",GL_COLOR)
+
+	return void
+
 	c := glFuncsClass
 	printf("hey %i\n",c->TypeSize)
 	c.x = 12.5
