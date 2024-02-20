@@ -109,7 +109,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		StartedParseForced = true
 
 		//GFuncsInProgress.Push(this&)
-		createCWork()
 		this.WorkBody()
 	}
 	SetName := virtual !(StringSpan nm) -> void
@@ -138,16 +137,18 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 
 
-	createCWork := !() -> void
+	createCWork := !() -> CWorkFuncCompile^
 	{
 		funcComp := new CWorkFuncCompile(this&)
 		WorkBag.AddWork(funcComp)
+		return funcComp
 	}
 
 	body := BoxBlock^
 	readyState := THatch
 	WorkBody := virtual !() -> void
 	{
+		CurrentFuncWork = createCWork()
 		//TracyZone("Parsing function")
 		GParsedAllFiles.Await()
 

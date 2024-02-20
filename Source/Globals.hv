@@ -7,6 +7,8 @@ CurrentLine := task_local BoxExeLine^
 CurrentReturns := task_local ReturnsHolder^
 FuncStack := task_local List.{BoxFuncBody^}
 
+CurrntFuncWork := task_local CWorkFuncCompile^
+
 HVOperators := AVLSet.{StringSpan}
 
 TokensParsed := AVLSet.{Token^}

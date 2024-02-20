@@ -6,6 +6,8 @@ CheckFuncExchange := !(StringView name) -> void^
 		return hvr_CreateClass
 	if name == "HV_GetType"
 		return hvr_GetType
+	if name == "HV_GetFuncType"
+		return hvr_GetFuncType
 
 }
 
@@ -21,6 +23,12 @@ hvr_GetType := !(StringView typeName) -> void^
 	if asType == null
 		return null
 	return GetConstType(asType)
+}
+hvr_GetFuncType := !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) ->void^ 
+{
+	typesThis := HybridQueue.{Type^,16}
+	typesThis.Push(types[^]->{Type^})
+	return GetFuncType(typesThis,isReference,resultType->{Type^},resultReference,isVariadicArguments)
 }
 
 hvr_CreateClass := !() -> void^

@@ -1,6 +1,7 @@
 HV_Create_int32 := !(int value) -> void^ {}
 
 HV_GetType := !(StringView typeName) -> void^ {}
+HV_GetFuncType := !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) {}
 
 HV_CreateClass := !() -> HV_Class^ {}
 HV_Class := class

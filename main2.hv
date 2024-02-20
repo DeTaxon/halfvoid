@@ -56,7 +56,7 @@
 
 					if commandName != null
 					{
-						glCommands[commandName.Values[0].ValueSpan] = commandName
+						glCommands[commandName.Values[0].ValueSpan] = commandName[2..0]
 					}
 					
 				}
@@ -76,6 +76,61 @@
 			}
 		}
 
+	}
+	GetCommandType := !(StringView str) -> void^
+	{
+		spn := str.AsStringSpan()
+		if not glCommands.Contain(spn)
+			return null
+
+		cmd := glCommands[spn]
+		types := HybridQueue.{void^,16}
+
+		for pars : cmd.ValueNode.Value 
+		{
+			if pars.IsString or pars.ValueNode.NodeName != "param"
+				continue
+
+			parType := GetParamType(pars.ValueNode)
+			if parType == null
+				return null
+			types.Push(parType)
+		}
+	}
+	GetParamType := !(XMLNode^ node) -> void^
+	{
+		nodeOpts := char[256]
+		sSize := 0
+
+		for it : node.Values
+		{
+			nodeOpts[sSize] = it.IsString ?: '0' : '1'
+			sSize += 1
+		}
+
+		nodeType := StringSpan(nodeOpts,sSize)
+
+		switch nodeType
+		{
+		case "11"
+			pType := node.GetNode("ptype")
+			if pType != null
+			{
+				return GetStringType(node.ValueSpan)
+			}
+		case void
+			printf("opengl cant get param %s\n",nodeType)
+		}
+		
+	}
+	GetStringType := !(StringSpan typeName) -> void^
+	{
+		switch typeName
+		{
+			case void
+				printf("opengl unknown type %s\n",typeName)
+				return null
+		}
 	}
 
 	funcClass := HV_Class^
@@ -128,12 +183,18 @@ RunTest := !() -> void
 {
 	printf("gl %p\n",GL_COLOR)
 
+	gl := glFuncsClass
+
+	for it,ind : gl->AllFields
+	{
+		printf("field %s %p %p\n",ind,gl&,it&)
+	}
+
+	gl.BindTexture(GL_TEXTURE_2D,0)
+
+
 	return void
 
-	c := glFuncsClass
-	printf("hey %i\n",c->TypeSize)
-	c.x = 12.5
-	printf("hey %f %i\n",c.x,c->TypeSize)
 	//glfwInit()
 	//win := glfwCreateWindow(640, 480, "My Title", null, null)
 	//glfwSetCursorPosCallback(win,mouseMove)
