@@ -10,15 +10,20 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 	if res == null
 	{
-		return null 
-		//TODO
-		asItm := itm->{TokenIndent^}
+		if CurrentFuncWork != null
+		{
+			asItm := itm->{TokenIndent^}
 
-		c := TEchoStream
-		c << "Could not get param " << asItm.Value
-		c2 := c.GetString()
-		c2.IncRef()
-		itm.EmitError(c2.Str()) //todo better explanation
+			c := TEchoStream
+			c << "Could not get param " << asItm.Value
+			c2 := c.GetString()
+			c2.IncRef()
+			errCode := itm.MakeError(c2.Str()) //todo better explanation
+
+			CurrentFuncWork.itError = errCode
+		}
+
+		return null
 	}
 	return res
 }

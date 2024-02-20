@@ -429,6 +429,7 @@ GetParSpan := !(int i) -> StringSpan
 CWorkFuncCompile := class extend CWorkUnit
 {
 	itFunc := BoxFuncBody^
+	itError := String^
 
 	this := !(BoxFuncBody^ b) -> void
 	{
@@ -447,5 +448,6 @@ CWorkFuncCompile := class extend CWorkUnit
 	}
 	GetErrorMessage := virtual !() -> String^ 
 	{	
+		return itError
 	}
 }

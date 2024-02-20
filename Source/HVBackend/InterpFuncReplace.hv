@@ -6,6 +6,8 @@ CheckFuncExchange := !(StringView name) -> void^
 		return hvr_CreateClass
 	if name == "HV_GetType"
 		return hvr_GetType
+	if name == "HV_GetTypePointer"
+		return hvr_GetTypePointer
 	if name == "HV_GetFuncType"
 		return hvr_GetFuncType
 
@@ -24,11 +26,18 @@ hvr_GetType := !(StringView typeName) -> void^
 		return null
 	return GetConstType(asType)
 }
+hvr_GetTypePointer := !(void^ baseType) -> void^ 
+{
+	typ := baseType->{ConstType^}.Value
+	return GetConstType(typ.GetPoint())
+}
 hvr_GetFuncType := !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) ->void^ 
 {
 	typesThis := HybridQueue.{Type^,16}
-	typesThis.Push(types[^]->{Type^})
-	return GetFuncType(typesThis,isReference,resultType->{Type^},resultReference,isVariadicArguments)
+	typesThis.Push(types[^]->{ConstType^}.Value)
+	rType := resultType->{ConstType^}.Value
+	fType := GetFuncType(typesThis,isReference,rType,resultReference,isVariadicArguments)
+	return GetConstType(fType)
 }
 
 hvr_CreateClass := !() -> void^
@@ -59,7 +68,7 @@ hvr_Class := class extend BoxClassPoison
 	{
 		if newFieldCB != null
 			return newFieldCB?(val)?->{ConstType^}.Value
-		return GTypeInt
+		return null
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
 	{

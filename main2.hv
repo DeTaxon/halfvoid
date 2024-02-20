@@ -56,7 +56,7 @@
 
 					if commandName != null
 					{
-						glCommands[commandName.Values[0].ValueSpan] = commandName[2..0]
+						glCommands[commandName.Values[0].ValueSpan[2..0]] = command.ValueNode
 					}
 					
 				}
@@ -86,7 +86,7 @@
 		cmd := glCommands[spn]
 		types := HybridQueue.{void^,16}
 
-		for pars : cmd.ValueNode.Value 
+		for pars : cmd.Values 
 		{
 			if pars.IsString or pars.ValueNode.NodeName != "param"
 				continue
@@ -96,6 +96,8 @@
 				return null
 			types.Push(parType)
 		}
+		fType := HV_GetFuncType(types,null,HV_GetType("void"),false,false)
+		return HV_GetTypePointer(fType)
 	}
 	GetParamType := !(XMLNode^ node) -> void^
 	{
@@ -113,11 +115,11 @@
 		switch nodeType
 		{
 		case "11"
-			pType := node.GetNode("ptype")
-			if pType != null
-			{
-				return GetStringType(node.ValueSpan)
-			}
+		 	pType := node.GetNode("ptype")
+		 	if pType != null
+		 	{
+		 		return GetStringType(pType.Values[0].ValueSpan)
+		 	}
 		case void
 			printf("opengl cant get param %s\n",nodeType)
 		}
@@ -127,6 +129,10 @@
 	{
 		switch typeName
 		{
+			case "GLenum"
+				return HV_GetType("u32")
+			case "GLuint"
+				return HV_GetType("s32")
 			case void
 				printf("opengl unknown type %s\n",typeName)
 				return null
@@ -145,7 +151,11 @@
 
 		funcClassType = funcClass.GetType()
 		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
-			return HV_GetType(StringSpan("float"))
+			if glCommands.Contain(x.AsStringSpan())
+			{
+				return GetCommandType(x)
+			}
+			return null
 		})
 		return funcClassType
 	}
@@ -181,29 +191,19 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 
 RunTest := !() -> void
 {
-	printf("gl %p\n",GL_COLOR)
-
 	gl := glFuncsClass
 
-	for it,ind : gl->AllFields
+	//gl.BindTexture(0,0)
+
+	glfwInit()
+	win := glfwCreateWindow(640, 480, "My Title", null, null)
+	glfwSetCursorPosCallback(win,mouseMove)
+	while not glfwWindowShouldClose(win)
 	{
-		printf("field %s %p %p\n",ind,gl&,it&)
+		
+		
+        glfwPollEvents()
 	}
-
-	gl.BindTexture(GL_TEXTURE_2D,0)
-
-
-	return void
-
-	//glfwInit()
-	//win := glfwCreateWindow(640, 480, "My Title", null, null)
-	//glfwSetCursorPosCallback(win,mouseMove)
-	//while not glfwWindowShouldClose(win)
-	//{
-	//	
-	//	
-    //    glfwPollEvents()
-	//}
 }
 
 

@@ -225,7 +225,16 @@ main := !(char^[] args) -> int
 
 	if WorkBag.WorkCount() != 0
 	{
-		printf("failed to do some work\n")
+		printf("failed to do some work %i\n",WorkBag.works.Size())
+
+		for it : WorkBag.works
+		{
+			er := it.GetErrorMessage()
+			if er != null
+			{
+				puts(er.Str())
+			}
+		}
 		exit(0)
 	}
 
