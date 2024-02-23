@@ -193,11 +193,22 @@ RunTest := !() -> void
 {
 	gl := glFuncsClass
 
-	//gl.BindTexture(0,0)
-
 	glfwInit()
+
+	lib := GetLibrary("libGL.so")
+	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
+
 	win := glfwCreateWindow(640, 480, "My Title", null, null)
 	glfwSetCursorPosCallback(win,mouseMove)
+
+	nameBuffer := char[128]
+	for it,ind : gl->AllFields
+	{
+		sprintf(nameBuffer[0]&,"gl%s",ind)
+		it = glGetProcAddress(nameBuffer[0]&)
+		printf("proc %s %p\n",ind,it)
+	}
+
 	while not glfwWindowShouldClose(win)
 	{
 		

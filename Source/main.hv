@@ -223,20 +223,8 @@ main := !(char^[] args) -> int
 
 	WaitForParsingObjects()
 
-	if WorkBag.WorkCount() != 0
-	{
-		printf("failed to do some work %i\n",WorkBag.works.Size())
-
-		for it : WorkBag.works
-		{
-			er := it.GetErrorMessage()
-			if er != null
-			{
-				puts(er.Str())
-			}
-		}
+	if WorkBagPrintErrors()
 		exit(0)
-	}
 
 	printf("good to go\n")
 
@@ -249,7 +237,10 @@ main := !(char^[] args) -> int
 			return -1
 		}
 		toRun.ParseBody()
-		toRun.WaitReadyState()
+		//toRun.WaitReadyState()
+		WaitForParsingObjects()
+		if WorkBagPrintErrors()
+			exit(0)
 		CompileAndRunCode(toRun->{BoxFuncBody^})
 		return 0
 	}
@@ -276,6 +267,30 @@ main := !(char^[] args) -> int
 	return 0
 }
 
+
+WorkBagPrintErrors := !() -> bool
+{
+	if WorkBag.WorkCount() == 0
+		return false
+
+	printf("failed to do some work %i\n",WorkBag.works.Size())
+
+	for it : WorkBag.works
+	{
+		er := it.GetErrorMessage()
+		if er != null
+		{
+			puts(er.Str())
+		} else if it is CWorkClassCompile
+		{
+			printf("could not compile class %s\n",it->{CWorkClassCompile^}.itClass.ItName)
+		}else if it is CWorkFuncCompile
+		{
+			printf("could not compile function %s\n",it->{CWorkFuncCompile^}.itFunc.Name)
+		}
+	}
+	return true
+}
 WaitForParsingObjects := !() -> void
 {
 	//while GClassesInProgress.Size() != 0
