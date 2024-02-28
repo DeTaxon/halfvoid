@@ -349,6 +349,22 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 
 			cs += 1
+		case "xor"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			switch objTyp.GetSize()
+			{
+				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ xor_b ptr2->{s8^}^
+				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ xor_b ptr2->{s16^}^
+				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ xor_b ptr2->{s32^}^
+				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ xor_b ptr2->{s64^}^
+			}
+
+			cs += 1
 		case "sshr"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -468,7 +484,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case 4 ptrRes->{float^}^ = ptr1->{float^}^ - (ptr2->{float^}^)
 					case 8 ptrRes->{double^}^ = ptr1->{double^}^ - (ptr2->{double^}^)
 				}
+			}else if objTyp == GTypeVec2f {
+				ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ - (ptr2->{vec2f^}^)
 			}else{
+				printf("failed to sub, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
 			cs += 1
@@ -564,11 +583,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is in TypeArrayView
+			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is in TypeArrayView or objTyp is TypeEnum
 			{
 				spc := s64
 
-				if IsInt(objTyp)
+				if IsInt(objTyp) or objTyp is TypeEnum
 				{
 					switch objTyp.GetSize()
 					{
@@ -608,6 +627,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 						assert(false)
 				}
 			}else{
+				printf("failed to cmp, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
 			cs += 1

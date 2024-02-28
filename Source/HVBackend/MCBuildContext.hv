@@ -153,6 +153,18 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddInteger := !(s64 value, Type^ intType) -> int
+	{
+		switch intType.GetSize()
+		{
+			case 4
+				return AddInteger(value)
+			case 8
+				return AddS64(value)
+			case void
+				assert(false)
+		}
+	}
 	AddDouble := !(double value) -> int
 	{
 		setVal := MCConstDouble

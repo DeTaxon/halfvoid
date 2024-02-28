@@ -135,8 +135,30 @@ AppendClass BuiltInIntMinus
 		dwn := indexes[0].WriteMC(ctx).CreatedId
 
 		res := ctx.CreateVar(resType)
-		HVB_ins_clean(ctx,res)
-		HVB_ins_sub(ctx,res,res,dwn)
+		constId := int
+
+		switch cnstVal
+		{
+		case "0"
+			constId = ctx.CreateVar(resType)
+			HVB_ins_clean(ctx,constId)
+		case "-1"
+			constId = ctx.AddInteger(-1,resType)
+		case void
+			assert(false)
+		}
+
+		switch llvm
+		{
+		case "fsub"
+			HVB_ins_sub(ctx,res,constId,dwn)
+		case "sub"
+			HVB_ins_sub(ctx,res,constId,dwn)
+		case "xor"
+			HVB_ins_xor(ctx,res,constId,dwn)
+		case void
+			assert(false)
+		}
 
 		result.CreatedId = res
 	}

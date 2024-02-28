@@ -3,6 +3,25 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 
+
+
+main := !(char^[] args) -> int
+{
+	//glXML.Print()
+	RunTest()
+	return 0
+}
+
+RunTest := !() -> void
+{
+	for i : 100
+	{
+		c := 360deg->{float} * i*0.01->{float}
+		printf("hey %f %f %f\n",c,cos(c),sin(c))
+	}
+	printf("ha %f %f\n",cos(0),sin(0))
+}
+
 #CreateCallCommand(
 	Name = "Test",
 	CacheOn = "Inputs"
@@ -16,7 +35,6 @@
 		return bl.GetPointer()
 	}
 )
-
 #Module(
 
 	xmlBlob := Blob^
@@ -131,8 +149,12 @@
 		{
 			case "GLenum"
 				return HV_GetType("u32")
+			case "GLbitfield"
+				return HV_GetType("s32")
 			case "GLuint"
 				return HV_GetType("s32")
+			case "GLfloat"
+				return HV_GetType("float")
 			case void
 				printf("opengl unknown type %s\n",typeName)
 				return null
@@ -175,45 +197,48 @@
 	}
 )
 
-main := !(char^[] args) -> int
-{
-	//glXML.Print()
-	//RunTest()
-	return 0
-}
-
-
 mouseMove := !(void^ w, double itX, double itY) -> void
 {
-	printf("hey %p %f %f\n",w,itX,itY)
+	//printf("hey %p %f %f\n",w,itX,itY)
 }
 
 
-RunTest := !() -> void
+RunTest2 := !() -> void
 {
 	gl := glFuncsClass
 
 	glfwInit()
 
-	lib := GetLibrary("libGL.so")
-	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
-
 	win := glfwCreateWindow(640, 480, "My Title", null, null)
 	glfwSetCursorPosCallback(win,mouseMove)
+	glfwMakeContextCurrent(win)
+
+	lib := GetLibrary("libGL.so")
+	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
 
 	nameBuffer := char[128]
 	for it,ind : gl->AllFields
 	{
 		sprintf(nameBuffer[0]&,"gl%s",ind)
-		it = glGetProcAddress(nameBuffer[0]&)
-		printf("proc %s %p\n",ind,it)
+		it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+		//printf("proc %s %p\n",ind,it)
 	}
+
+	gl.ClearColor(1.0,0.5,0.0,0.0)
 
 	while not glfwWindowShouldClose(win)
 	{
-		
-		
+		gl.Clear(GL_COLOR_BUFFER_BIT)
+		gl.Begin(GL_TRIANGLES)
+		gl.Color3f(1.0,0.0,0.0)
+		gl.Vertex3f(-1.0,-1.0,0.0)
+		gl.Color3f(0.0,1.0,0.0)
+		gl.Vertex3f(1.0,-1.0,0.0)
+		gl.Color3f(0.0,0.0,1.0)
+		gl.Vertex3f(0.0,1.0,0.0)
+		gl.End()
         glfwPollEvents()
+		glfwSwapBuffers(win)
 	}
 }
 

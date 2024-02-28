@@ -150,6 +150,29 @@ BuiltInGSRead := class extend BoxFuncCommon
   		ctx.writeStream^ << "%T" << resId << " =  call i64 @llvm.x86.rdgsbase.64() \n"
 	}
 }
+BuiltInDegreeSuffix := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ iType) -> void
+	{
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+
+		lst[0].PrintPre(ctx)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = fmul " 
+		tp.PrintType(ctx)
+		f^ << " " << "0.017453292519943295" << ", "
+		lst[0].PrintUse(ctx)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {

@@ -74,6 +74,10 @@ HVB_ins_or := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("or",resId,opr1,opr2))
 }
+HVB_ins_xor := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("xor",resId,opr1,opr2))
+}
 HVB_ins_sshr := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("sshr",resId,opr1,opr2))

@@ -390,7 +390,7 @@ CreateBuiltinsInt := !() -> void
 
 		if x == GTypeDouble
 		{
-			bSpace.Functions[StringSpan("suffix deg")].Push(new BuiltInIntMinus(unarMinusType,"fmul","0.017453292519943295") )
+			bSpace.Functions[StringSpan("suffix deg")].Push(new BuiltInDegreeSuffix(unarMinusType) )
 		}
 
 		bSpace.Functions[StringSpan("<=>")].Push(new BuiltInFloatSpaceship(strtToInt) )

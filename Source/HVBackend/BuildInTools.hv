@@ -9,3 +9,20 @@ AppendClass BuiltInMemsetInlineInt
 		return cl.WriteMC(ctx)
 	}
 }
+AppendClass BuiltInDegreeSuffix
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		resType := ObjType->{TypeFunc^}.ResultType
+
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+
+		mulVar := ctx.AddDouble(0.017453292519943295)
+
+		res := ctx.CreateVar(resType)
+		HVB_ins_mul(ctx,res,mulVar,dwn)
+
+		result.CreatedId = res
+	}
+}
