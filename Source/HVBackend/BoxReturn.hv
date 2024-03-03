@@ -27,3 +27,13 @@ AppendClass ReturnHalfState
 		returnObj.WriteMC(ctx)
 	}
 }
+AppendClass BoxYield
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ResultCall?.WriteMC(ctx)
+		callSet.WriteMC(ctx)
+		EndLabel.WriteGoMC(ctx)
+		toThis.WriteMC(ctx)
+	}
+}

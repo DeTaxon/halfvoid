@@ -12,14 +12,27 @@ main := !(char^[] args) -> int
 	return 0
 }
 
+Nope := !() -> bool
+{
+	printf("test\n")
+}
+
 RunTest := !() -> void
 {
-	for i : 100
-	{
-		c := 360deg->{float} * i*0.01->{float}
-		printf("hey %f %f %f\n",c,cos(c),sin(c))
+
+	lmbd := () ==> int {
+		diffs := ![-1,0,1]
+		printf("pre step\n")
+		for dX : 4
+		{
+			printf("step %i\n",dX)
+			yield 1
+		}
 	}
-	printf("ha %f %f\n",cos(0),sin(0))
+	printf("create %p\n",lmbd)
+	lmbd()
+	lmbd()
+	lmbd()
 }
 
 #CreateCallCommand(

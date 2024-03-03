@@ -26,6 +26,13 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 	ctx.lines.Push(MCLine("jmp",labelId))
 }
 
+HVB_ins_cmp_new := !(MCBuildContext^ ctx , s32 obj1, char^ cmpOper, s32 obj2) -> int
+{
+	cmpRes := ctx.CreateVar(GTypeBool) 
+	HVB_ins_cmp(ctx,cmpRes,obj1,cmpOper,obj2)
+	return cmpRes
+}
+
 HVB_ins_cmp := !(MCBuildContext^ ctx , s32 res , s32 obj1, char^ cmpOper, s32 obj2) -> bool
 {
 	cond := MCJumpIfConditions //TODO string to enum convertion

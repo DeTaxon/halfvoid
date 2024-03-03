@@ -119,7 +119,6 @@ AppendClass BoxFuncBody
 					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
 					createCall.deferCall = new FuncLocalCallIfTrue(defGuard.CreateVarCall(),destrCall,destrCall2)
 				}else{
-
 					noObjs := CheckExeDownList
 					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
 					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)

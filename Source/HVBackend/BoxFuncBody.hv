@@ -24,15 +24,32 @@ AppendClass BoxFuncBody
 			ctx.InputsIndxStart = 1
 		}
 
-
 		ctx.AddLocalVar(Params[^])
 		ctx.AddLocalVar(ParamsLocalVars[^])
-		ctx.AddLocalVar(LocalVars[^])
-		ctx.AddLocalVar(LocalVarsDeferChecks[^])
 
+		if YieldStateInt != null
+		{
+			yieldState := YieldStateInt.CreateVarCall().WriteMC(ctx).CreatedId
+
+			for it,i : Yields
+			{
+				constVal := ctx.AddInteger(i + 1)
+				goLabel := ctx.GetLabel(it.GetLabel())
+
+				cmpRes := HVB_ins_cmp_new(ctx,yieldState,"==",constVal)
+				HVB_ins_jump_if_bool(ctx,goLabel,cmpRes)
+			}
+		}else{
+			ctx.AddLocalVar(LocalVars[^])
+			ctx.AddLocalVar(LocalVarsDeferChecks[^])
+
+		}
+
+		LocalVarsDeferChecks[^].WriteMC(ctx)
 		ParamsLocalVars[^].WriteMC(ctx)
 		ResultVar?.WriteMC(ctx)
 		Params[^].WriteMC(ctx)
+
 		body?.WriteMC(ctx)
 
 		ExitLabel.WriteGoMC(ctx)

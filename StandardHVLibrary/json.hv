@@ -126,7 +126,9 @@ Json := class extend JsonNode
 			return false
 		tokens.Pop()
 		if not checkRecord(this&)
+		{
 			return false
+		}
 		itType = jsonTypeRecord
 
 		return true
@@ -141,11 +143,15 @@ Json := class extend JsonNode
 				tokens.Pop()
 			nd := checkNode()
 			if nd == null
+			{
 				return false
+			}
 			toCheck.itSub.Push(nd)
 		}
 		if tokens.Size() == 0
+		{
 			return false
+			}
 		tokens.Pop()
 		return true
 	}

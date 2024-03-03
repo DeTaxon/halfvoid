@@ -20,6 +20,10 @@ TryGetAndOrCall := !(Token^ itm) -> BoxExeObj^
 	if cl1 == GBoolTrue and oper == "or"
 		return cl1
 
+	oldNeed := NeedGuardLocalVar
+	NeedGuardLocalVar = true
+	defer NeedGuardLocalVar = oldNeed
+
 	cl2 := TryGetExeCall(itm.Down.Right.Right)
 	if cl2 == null
 		return null

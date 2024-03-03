@@ -31,7 +31,7 @@ AppendClass BoxFuncCall
 				{
 					if fInd == 0
 					{
-						varId := ctx.GetLocalVar(ResultVar)
+						varId := ResultVar.CreateVarCall().WriteMC(ctx).CreatedId //ctx.GetLocalVar(ResultVar)
 						varId2 := ctx.CreateVar(it.GetType().GetPoint())
 						HVB_ins_get_pointer(ctx,varId2,varId)
 						thisIndexes.Push(varId2)
@@ -64,7 +64,7 @@ AppendClass BoxFuncCall
 			{
 				if fType.ResultType.IsComplexReturn() and not fType.ResultRef
 				{
-					resultId = ctx.GetLocalVar(ResultVar)
+					resultId = ResultVar.CreateVarCall().WriteMC(ctx).CreatedId
 				}else{
 					if fType.ResultRef
 					{
