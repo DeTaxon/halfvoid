@@ -19,20 +19,8 @@ Nope := !() -> bool
 
 RunTest := !() -> void
 {
-
-	lmbd := () ==> int {
-		diffs := ![-1,0,1]
-		printf("pre step\n")
-		for dX : 4
-		{
-			printf("step %i\n",dX)
-			yield 1
-		}
-	}
-	printf("create %p\n",lmbd)
-	lmbd()
-	lmbd()
-	lmbd()
+	c := sqrt(0.5)
+	printf("hm %f\n",c)
 }
 
 #CreateCallCommand(

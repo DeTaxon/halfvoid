@@ -44,6 +44,7 @@ HVB_ins_cmp := !(MCBuildContext^ ctx , s32 res , s32 obj1, char^ cmpOper, s32 ob
 	case ">=" cond = ">="
 	case "==" cond = "=="
 	case "!=" cond = "!="
+	case "<=>" cond = "<=>"
 	case void 
 		return false
 	}
@@ -129,6 +130,10 @@ HVB_ins_min := !(MCBuildContext^ ctx, s32 resId, s32 opr1,s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("min",resId,opr1,opr2))
 }
+HVB_ins_sqrt := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("sqrt",resId,opr1))
+}
 HVB_ins_cos := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 {
 	ctx.lines.Push(MCLine("cos",resId,opr1))
@@ -136,6 +141,31 @@ HVB_ins_cos := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 HVB_ins_sin := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 {
 	ctx.lines.Push(MCLine("sin",resId,opr1))
+}
+
+HVB_ins_vec_build := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2, s32 opr3, s32 opr4) -> void
+{
+	ctx.lines.Push(MCLine("vec_build",resId,opr1,opr2,opr3,opr4))
+}
+HVB_ins_vec_scalar_mul := !(MCBuildContext^ ctx, s32 resId, s32 opr1, s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("vec_scalar_mul",resId,opr1,opr2))
+}
+HVB_ins_vec_shuffle_begin := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("vec_shuffle_begin",resId,opr1))
+}
+HVB_ins_vec_shuffle_index := !(MCBuildContext^ ctx, s32 posVal) -> void
+{
+	ctx.lines.Push(MCLine("vec_shuffle_index",posVal))
+}
+HVB_ins_vec_shuffle_zero := !(MCBuildContext^ ctx) -> void
+{
+	ctx.lines.Push(MCLine("vec_shuffle_zero"))
+}
+HVB_ins_vec_shuffle_end := !(MCBuildContext^ ctx) -> void
+{
+	ctx.lines.Push(MCLine("vec_shuffle_end"))
 }
 
 HVB_ins_memset := !(MCBuildContext^ ctx, s32 opr1, s32 opr2 , s32 opr3) -> void

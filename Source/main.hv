@@ -394,6 +394,8 @@ PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 
 	f^ << "declare float     @llvm.pow.f32(float  %Val, float %Power)\n"
 	f^ << "declare double    @llvm.pow.f64(double %Val, double %Power)\n"
+	f^ << "declare float     @llvm.sqrt.f32(float %Val)\n"
+	f^ << "declare double    @llvm.sqrt.f64(double %Val)\n"
 	f^ << "declare float     @llvm.cos.f32(float  %Val)\n"
 	f^ << "declare float     @llvm.sin.f32(float  %Val)\n"
 	f^ << "declare double    @llvm.cos.f64(double %Val)\n"

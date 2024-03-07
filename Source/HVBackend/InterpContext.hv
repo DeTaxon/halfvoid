@@ -295,6 +295,9 @@ MCInterpContext := class
 	{
 		return declarePtrs[dclr]?
 
+		if dclr.GetName() == "tanf" //TODO remove
+			return hvr_tanf
+
 		for space : CodeSpaces
 		{
 			for module : space.Modules
@@ -310,15 +313,14 @@ MCInterpContext := class
 				fnc := useLib.Get(dclr.GetName())
 				if fnc == null
 				{
-					printf("could not load function %s\n",dclr.GetName())
-					exit(0)
+					continue
 				}
 				declarePtrs[dclr] = fnc
 				return fnc
 			}
 		}
 		assert(false)
-		printf("could not load function declare, HOW?\n")
+		printf("could not load function declare\n")
 		exit(0)
 	}
 }
@@ -340,6 +342,11 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 		//printf("clsr %p\n",args[i])
 	}
 	MCInterpFunction(data.interpCntx,data.interpFunc,thisArgs,ret)
+}
+
+hvr_tanf := !(float inp) -> float
+{
+	return tanf(inp)
 }
 
 HV_closure_func_data := class

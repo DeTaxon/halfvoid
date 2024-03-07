@@ -21,9 +21,9 @@
 	preR.z = a.x*b.y - a.y*b.x
 	return preR
 }
-Length := !(vec4f this) -> float { return sqrtf(this<+>this) }
-Length := !(vec3f this) -> float { return sqrtf(this<+>this) }
-Length := !(vec2f this) -> float { return sqrtf(this<+>this) }
+Length := !(vec4f this) -> float { return sqrt(this<+>this) }
+Length := !(vec3f this) -> float { return sqrt(this<+>this) }
+Length := !(vec2f this) -> float { return sqrt(this<+>this) }
 
 LengthSq := !(vec4f this) -> float { return this<+>this }
 LengthSq := !(vec3f this) -> float { return this<+>this }
@@ -34,7 +34,7 @@ Normal := !(vec4f this) -> vec4f
 	siz := this <+> this
 	if siz < 0.000001f
 		return this
-	siz = 1/sqrtf(siz)
+	siz = 1/sqrt(siz)
 	preRet := this
 	preRet.x *= siz
 	preRet.y *= siz
@@ -46,27 +46,27 @@ Distance := !(vec3f a, vec3f b) -> float
 {
 	c1 := a - b
 	c2 := c1 <+> c1
-	return sqrtf(c2)
+	return sqrt(c2)
 }
 Distance := !(vec4f a, vec4f b) -> float
 {
 	c1 := a - b
 	c2 := c1 <+> c1
-	return sqrtf(c2)
+	return sqrt(c2)
 }
 
 quantfAt := !(float x, float y, float z, float de) -> quantf
 {
 	halfAn := de * 0.5f
-	size := sqrtf(x*x + y*y + z*z)
+	size := sqrt(x*x + y*y + z*z)
 	size = 1.0f / size
-	sinA := sinf(halfAn)
+	sinA := sin(halfAn)
 	size *= sinA
 
 	return quantf(	x*size,
 			y*size,
 			z*size,
-			cosf(halfAn))
+			cos(halfAn))
 }
 
 centf := class
@@ -156,3 +156,13 @@ centf := class
 "suffix x" := !(double value) -> vec3f { return vec3f(value,0,0) }
 "suffix y" := !(double value) -> vec3f { return vec3f(0,value,0) }
 "suffix z" := !(double value) -> vec3f { return vec3f(0,0,value) }
+
+
+tan := !(float x) -> float
+{
+	return sin(x) / cos(x)
+}
+tan := !(double x) -> double
+{
+	return sin(x) / cos(x)
+}

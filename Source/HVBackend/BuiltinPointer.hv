@@ -11,3 +11,18 @@ AppendClass BuiltInPointGetItem
 		result.CreatedId = newRef
 	}
 }
+AppendClass BuiltInPointSpaceship
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		res := ctx.CreateVar(GTypeInt);
+
+		var1 := indexes[0].WriteMC(ctx).CreatedId
+		var2 := indexes[1].WriteMC(ctx).CreatedId
+
+		HVB_ins_cmp(ctx,res,var1,"<=>",var2)
+
+		result.CreatedId = res
+	}
+}

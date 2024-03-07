@@ -142,6 +142,9 @@ AppendClass BuiltInIntMinus
 		case "0"
 			constId = ctx.CreateVar(resType)
 			HVB_ins_clean(ctx,constId)
+		case "0.0"
+			constId = ctx.CreateVar(resType)
+			HVB_ins_clean(ctx,constId)
 		case "-1"
 			constId = ctx.AddInteger(-1,resType)
 		case void
@@ -224,4 +227,20 @@ AppendClass BuiltInFloatCosSin
 
 		result.CreatedId = resVar
 	}
+}
+AppendClass BuiltInFloatSqrt
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		resType := ObjType->{TypeFunc^}.ResultType
+
+		resVar := ctx.CreateVar(resType)
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+
+		HVB_ins_sqrt(ctx,resVar,dwn)
+
+		result.CreatedId = resVar
+	}
+
 }

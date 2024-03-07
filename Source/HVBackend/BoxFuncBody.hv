@@ -52,6 +52,11 @@ AppendClass BoxFuncBody
 
 		body?.WriteMC(ctx)
 
+		if YieldStateInt != null
+		{
+			YieldFinilize.WriteMC(ctx)
+		}
+
 		ExitLabel.WriteGoMC(ctx)
 		ctx.WriteExitPathsMC()
 		ExitLabel.WriteMC(ctx)

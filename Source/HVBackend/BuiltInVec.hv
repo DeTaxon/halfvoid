@@ -1,0 +1,71 @@
+
+AppendClass BuiltInVecOperOnFloat
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		typ := indexes[0].GetType()
+		vecVal := indexes[0].WriteMC(ctx).CreatedId
+		fltVal := indexes[1].WriteMC(ctx).CreatedId
+		
+		siz := GetVecXTypeSize(typ)
+
+		newVec := ctx.CreateVar(typ)
+
+		HVB_ins_vec_build(ctx,newVec,fltVal,fltVal,fltVal,fltVal)
+
+		switch llvmOper
+		{
+		case "fadd"
+			HVB_ins_add(ctx,newVec,vecVal,newVec)
+		case "fsub"
+			HVB_ins_sub(ctx,newVec,vecVal,newVec)
+		case "fmul"
+			HVB_ins_mul(ctx,newVec,vecVal,newVec)
+		case "fdiv"
+			HVB_ins_div(ctx,newVec,vecVal,newVec)
+		}
+
+		result.CreatedId = newVec
+	}
+}
+AppendClass BuiltInVecScalarMult
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		val1 := indexes[0].WriteMC(ctx).CreatedId
+		val2 := indexes[1].WriteMC(ctx).CreatedId
+
+		newVar := ctx.CreateVar(GTypeFloat) //TODO maybe for double
+
+		HVB_ins_vec_scalar_mul(ctx,newVar,val1,val2)
+
+		result.CreatedId = newVar
+	}
+}
+AppendClass BuiltInVecShuffle
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] lst) -> WriteMCResult
+	{
+		typ := lst[0].GetType()
+		inpObj := lst[0].WriteMC(ctx).CreatedId
+		vecSize := GetVecXTypeSize(typ)
+
+		newVar := ctx.CreateVar(typ)
+
+		HVB_ins_vec_shuffle_begin(ctx,newVar,inpObj)
+		for it : indexes
+		{
+			if it >= vecSize
+			{
+				HVB_ins_vec_shuffle_zero(ctx)
+			}else{
+				HVB_ins_vec_shuffle_index(ctx,ctx.AddInteger(it))
+			}
+		}
+		HVB_ins_vec_shuffle_end(ctx)
+		result.CreatedId = newVar
+	}
+}

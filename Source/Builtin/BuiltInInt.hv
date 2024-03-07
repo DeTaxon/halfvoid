@@ -405,6 +405,8 @@ CreateBuiltinsInt := !() -> void
 
 		bSpace.Functions[StringSpan("cos")].Push(new BuiltInFloatCosSin(unarMinusType,"cos"))
 		bSpace.Functions[StringSpan("sin")].Push(new BuiltInFloatCosSin(unarMinusType,"sin"))
+
+		bSpace.Functions[StringSpan("sqrt")].Push(new BuiltInFloatSqrt(unarMinusType))
 	})
 }
 BuiltInFloatSpaceship := class extend BoxFuncCommon
@@ -462,6 +464,39 @@ BuiltInFloatCosSin := class extend BoxFuncCommon
 		f^ << "%T" << resId << " = call "
 		tp.PrintType(ctx)
 		f^ << " @llvm." << fncName << "." 
+		if tp == GTypeFloat
+		{
+			f^ << "f32"
+		}else{
+			assert(tp == GTypeDouble)
+			f^ << "f64"
+		}
+		f^ << "("
+		tp.PrintType(ctx)
+		f^ << " "
+		lst[0].PrintUse(ctx)
+		f^ << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInFloatSqrt := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ iType) -> void
+	{
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+		lst[0].PrintPre(ctx)
+
+		tp := GetType()->{TypeFunc^}.ResultType
+
+		f^ << "%T" << resId << " = call "
+		tp.PrintType(ctx)
+		f^ << " @llvm.sqrt." 
 		if tp == GTypeFloat
 		{
 			f^ << "f32"

@@ -558,6 +558,7 @@ CreateStandardTypes := !() -> void
 	}else {
 		assert(false)
 	}
+	GTypeQuantf.Base = GTypeFloat
 	GTypeVec2f.Base = GTypeFloat
 	GTypeVec3f.Base = GTypeFloat
 	GTypeVec4f.Base = GTypeFloat

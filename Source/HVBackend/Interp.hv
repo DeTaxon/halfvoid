@@ -269,6 +269,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					{
 						fncPtr = TSleep
 					}
+					if bdy.Name == "TSpawnTask"
+					{
+						fncPtr = TSpawnTask
+					}
 					if fncPtr == null
 						fncPtr = CheckFuncExchange(bdy.Name)
 					if fncPtr != null
@@ -486,9 +490,15 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}
 			}else if objTyp == GTypeVec2f {
 				ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ - (ptr2->{vec2f^}^)
+			}else if objTyp == GTypeVec3f {
+				ptrRes->{vec3f^}^ = ptr1->{vec3f^}^ - (ptr2->{vec3f^}^)
+			}else if objTyp == GTypeVec4f {
+				ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ - (ptr2->{vec4f^}^)
 			}else{
+				//interpFunc.Print()
+				//printf("line %i\n",cs)
 				printf("failed to sub, unknown type %s\n",objTyp.GetBADStr().Str())
-				assert(false)
+				exit(0)
 			}
 			cs += 1
 		case "mul"
@@ -514,7 +524,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case 4 ptrRes->{float^}^ = ptr1->{float^}^ * ptr2->{float^}^
 					case 8 ptrRes->{double^}^ = ptr1->{double^}^ * ptr2->{double^}^
 				}
+			}else if objTyp == GTypeQuantf {
+				ptrRes->{quantf^}^ = ptr1->{quantf^}^ * (ptr2->{quantf^}^)
 			}else{
+				printf("failed to mul, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
 			cs += 1
@@ -552,6 +565,12 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case 4 ptrRes->{float^}^ = ptr1->{float^}^ / ptr2->{float^}^
 					case 8 ptrRes->{double^}^ = ptr1->{double^}^ / ptr2->{double^}^
 				}
+			}else if objTyp == GTypeVec4f {
+				ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+				ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+				ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+				for i : 4
+					ptrRes->{float^}[i] = ptr1->{float^}[i] / ptr2->{float^}[i]
 			}else{
 				assert(false)
 			}
@@ -623,6 +642,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case "<" resBool^ = (spc < 0)
 					case ">=" resBool^ = (spc >= 0)
 					case ">" resBool^ = (spc > 0)
+					case "<=>" resBool->{int^}^ = spc
 					case void
 						assert(false)
 				}
@@ -749,7 +769,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(objSet& is MCReference)
 				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
 				setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
-			}else if IsVecType(varType) {
+			}else if IsVecType(varType) or varType == GTypeQuantf {
 				assert(varType.Base != null)
 				elementSize := varType.Base.GetSize()
 				elementNum := v3->{s32^}^
@@ -844,6 +864,24 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 			cs += 1
+		case "sqrt"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+
+			if IsFloat(objTyp)
+			{
+				switch objTyp.GetSize()
+				{
+					case 4 ptrRes->{float^}^ = sqrtf(ptr1->{float^}^)
+					case 8 ptrRes->{double^}^ = sqrtf(ptr1->{double^}^) //TODO switch to base sqrt
+				}
+			}else{
+				assert(false)
+			}
+			cs += 1
+			
 		case "cos"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -878,6 +916,79 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 			cs += 1
+		case "vec_build"
+			objTyp := interpFunc.Objects[thisLine.var1].GetType()
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+
+			if objTyp == GTypeVec2f
+			{
+				ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+				ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+				
+				ptrRes->{float^}[0] = ptr1->{float^}^
+				ptrRes->{float^}[1] = ptr2->{float^}^
+
+			}else if objTyp == GTypeVec4f {
+				ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+				ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+				ptr3 := thisFrame.GetObjectPtr(opPtr[cs].var4)
+				ptr4 := thisFrame.GetObjectPtr(opPtr[cs].var5)
+				
+				ptrRes->{float^}[0] = ptr1->{float^}^
+				ptrRes->{float^}[1] = ptr2->{float^}^
+				ptrRes->{float^}[2] = ptr3->{float^}^
+				ptrRes->{float^}[3] = ptr4->{float^}^
+			}else{
+				printf("unknown vector build on %s\n",objTyp.GetBADStr().Str())
+				exit(0)
+			}
+
+			cs += 1
+		case "vec_scalar_mul"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
+
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+
+			if objTyp == GTypeVec3f {
+				ptrRes->{float^}^ = ptr1->{vec3f^}^ <+> ptr2->{vec3f^}^
+			}else if objTyp == GTypeVec4f {
+				ptrRes->{float^}^ = ptr1->{vec4f^}^ <+> ptr2->{vec4f^}^
+			}else if objTyp == GTypeQuantf {
+				ptrRes->{float^}^ = ptr1->{quantf^}^ <+> ptr2->{quantf^}^
+			}else{
+				printf("unknown vec_scalar_mul on %s\n",objTyp.GetBADStr().Str())
+				exit(0)
+			}
+			cs += 1
+		case "vec_shuffle_begin"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+			vecDest := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			vecSource := thisFrame.GetObjectPtr(opPtr[cs].var2)
+
+			//TODO non float base, maybe double
+
+			cs += 1
+
+			ind := 0
+
+			while opPtr[cs].opcode != "vec_shuffle_end"
+			{
+				if opPtr[cs].opcode == "vec_shuffle_zero"
+				{
+					vecDest->{float^}[ind] = 0.0
+				}else{
+					thisInd := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+					vecDest->{float^}[ind] = vecSource->{float^}[thisInd]
+				}
+				ind += 1
+				cs += 1
+			}
+
+			cs += 1
+			
+			
 		case "memset"
 			sizeType := interpFunc.Objects[thisLine.var3].GetType()
 
