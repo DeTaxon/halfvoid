@@ -3,6 +3,13 @@ TaskWorkersToDo := List.{Task^}
 
 "@work call" := !(!()&->@T lmbd ) -> T
 {
+	taskWorkCallBegin()
+	result = lmbd()
+	taskWorkCallEnd()
+}
+
+taskWorkCallBegin := !() -> void
+{
 	TaskCheckMutex.Lock() //TODO optimize
 
 	ExpectWorkers(1)
@@ -12,10 +19,13 @@ TaskWorkersToDo := List.{Task^}
 
 	myTask := CurrentTask->{void^}
 	CurrentThread.switchToMain()
-
 	TaskCheckMutex.Unlock()
-	result = lmbd()
+
+}
+taskWorkCallEnd := !() -> void
+{
 	TaskCheckMutex.Lock()
+	myTask := CurrentTask->{void^}
 
 	myTask->{Task^}.resume()
 	TaskWaitTasksConVar.NotifyAll()

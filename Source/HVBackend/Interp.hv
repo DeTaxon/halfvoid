@@ -273,6 +273,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					{
 						fncPtr = TSpawnTask
 					}
+					if bdy.Name == "taskWorkCallBegin"
+					{
+						fncPtr = taskWorkCallBegin
+					}
+					if bdy.Name == "taskWorkCallEnd"
+					{
+						fncPtr = taskWorkCallEnd
+					}
 					if fncPtr == null
 						fncPtr = CheckFuncExchange(bdy.Name)
 					if fncPtr != null
@@ -526,6 +534,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}
 			}else if objTyp == GTypeQuantf {
 				ptrRes->{quantf^}^ = ptr1->{quantf^}^ * (ptr2->{quantf^}^)
+			}else if objTyp == GTypeVec4f {
+				ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ * (ptr2->{vec4f^}^)
 			}else{
 				printf("failed to mul, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
@@ -955,6 +965,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				ptrRes->{float^}^ = ptr1->{vec3f^}^ <+> ptr2->{vec3f^}^
 			}else if objTyp == GTypeVec4f {
 				ptrRes->{float^}^ = ptr1->{vec4f^}^ <+> ptr2->{vec4f^}^
+			}else if objTyp == GTypeVec2f {
+				ptrRes->{float^}^ = ptr1->{vec2f^}^ <+> ptr2->{vec2f^}^
 			}else if objTyp == GTypeQuantf {
 				ptrRes->{float^}^ = ptr1->{quantf^}^ <+> ptr2->{quantf^}^
 			}else{
