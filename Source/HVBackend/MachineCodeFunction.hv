@@ -120,6 +120,10 @@ MCFunction := class //extend TGCObject
 	Labels := MCLabel[]
 	Lines := MCLine[]
 
+	//optimization info
+	StackFrameSize := int
+	StackOffsets := int[]
+
 	Print := !() -> void
 	{
 		printf("-------- Objects\n")
@@ -134,6 +138,58 @@ MCFunction := class //extend TGCObject
 		{
 			printf("%7i %16s: %6i %6i %6i %6i %6i\n",i,it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)
 		}
+	}
+
+	ComputeStackFrame := !() -> void
+	{
+		useStackSize := 0
+		for it,i : Objects
+		{
+			typ := Type^
+			if it& is MCVariable
+				typ = it&->{MCVariable^}.GetType()
+			if it& is MCReference
+				typ = GTypeVoidP
+			if typ != null
+			{
+				al := typ.GetAlign()
+				if al != 0
+				{
+					useStackSize = ((useStackSize + al - 1) div al) * al
+				}
+				useStackSize += typ.GetSize()
+			}
+		}
+		useStackSize = (useStackSize + 15) and_b 0xFFFFF0
+		StackFrameSize = useStackSize
+
+		objOffsets := List.{int}
+		offset := int
+		inpPos := 0
+		for it,i : Objects
+		{
+			typ := Type^
+			if it& is MCVariable
+				typ = it&->{MCVariable^}.GetType()
+			if it& is MCReference
+				typ = GTypeVoidP
+
+			if typ != null
+			{
+				al := typ.GetAlign()
+				if al != 0
+				{
+					offset = ((offset + al - 1) div al) * al
+				}
+
+				objOffsets.Push(offset)
+
+				offset += typ.GetSize()
+			}else{
+				objOffsets.Push(0)
+			}
+		}
+		StackOffsets = objOffsets.ToVector()
 	}
 }
 

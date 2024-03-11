@@ -62,29 +62,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
 
-	useStackSize := 0
-	for it,i : interpFunc.Objects
-	{
-		typ := Type^
-		if it& is MCVariable
-			typ = it&->{MCVariable^}.GetType()
-		if it& is MCReference
-			typ = GTypeVoidP
-		if typ != null
-		{
-			al := typ.GetAlign()
-			if al != 0
-			{
-				useStackSize = ((useStackSize + al - 1) div al) * al
-			}
-			useStackSize += typ.GetSize()
-		}
-	}
-	useStackSize = (useStackSize + 15) and_b 0xFFFFF0
+	useStackSize := interpFunc.StackFrameSize
 	thisFrame.localVarBlob = MakeBlob(useStackSize)
 	//memset(thisFrame.localVarBlob.GetPointer(),0,useStackSize)
-	offset := int
-	inpPos := 0
+	//
 	for it,i : interpFunc.Objects
 	{
 		typ := Type^
@@ -93,24 +74,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		if it& is MCReference
 			typ = GTypeVoidP
 
-		if i != 0 and i == interpFunc.ResultIndex and callerFrame != null and returnIndex != 0
-		{
-			thisFrame.localVarTable[i] = callerFrame.localVarTable[returnIndex]
-			continue
-		}
-		if callerIndx != null and i in Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size() - 1)
-		{
-			thisFrame.localVarTable[i] = callerFrame.localVarTable[callerIndx[inpPos]]
-			inpPos += 1
-			continue
-		}
 		if typ != null
 		{
-			al := typ.GetAlign()
-			if al != 0
-			{
-				offset = ((offset + al - 1) div al) * al
-			}
+			offset := interpFunc.StackOffsets[i]
 			if it& is MCVariable
 			{
 				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
@@ -119,8 +85,18 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
 			}
-
-			offset += typ.GetSize()
+		}
+	}
+	if callerFrame != null and returnIndex != 0
+	{
+		thisFrame.localVarTable[interpFunc.ResultIndex] = callerFrame.localVarTable[returnIndex]
+	}
+	if callerIndx != null
+	{
+		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size() - 1)
+		for it,i : rng
+		{
+			thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
 		}
 	}
 	

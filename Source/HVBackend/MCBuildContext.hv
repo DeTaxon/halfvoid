@@ -181,6 +181,8 @@ MCBuildContext := class extend TGCObject
 		result.ResultIndex = this.ResultIndex
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
+
+		result.ComputeStackFrame()
 	}
 	WriteExitPathsMC := !() -> void
 	{
