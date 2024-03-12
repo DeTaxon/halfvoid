@@ -106,34 +106,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
 		}
 	}
-	
-	labelsPos := Tuple.{u16,int}[]
-	
-	{
-		labelsList := List.{Tuple.{u16,int}}
-		for it,i : interpFunc.Lines
-		{
-			if it.opcode == "label"
-			{
-				labelsList.Emplace(it.var1,i)
-			}
-		}
-		labelsPos = labelsList.ToVector()
-	}
-	getLabel := (u16 val) ==> [labelsPos&]{
-		for it : labelsPos
-		{
-			if it.0 == val
-				return it.1
-		}
-		printf("lost label %i\n",val)
-		//interpFunc.Print()
-		//for it : labelsPos
-		//{
-		//	printf("labels %i %i\n",it.0,it.1)
-		//}
-		assert(false)
-	}
+
+	labelsPtr := interpFunc.StackOffsets.GetPointer()
 
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
@@ -647,12 +621,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "label"
 			cs += 1
 		case "jmp"
-			cs = getLabel(thisLine.var1)
+			//cs = getLabel(thisLine.var1)
+			cs = labelsPtr[thisLine.var1]
 		case "jmp_if_bool"
 			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{u8^}
 			if boolVar^ != 0
 			{
-				cs = getLabel(thisLine.var1)
+				//cs = getLabel(thisLine.var1)
+				cs = labelsPtr[thisLine.var1]
 			}else{
 				cs += 1
 			}

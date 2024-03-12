@@ -123,7 +123,7 @@ MCFunction := class //extend TGCObject
 
 	//optimization info
 	StackFrameSize := int
-	StackOffsets := int[]
+	StackOffsets := int[] // Also contains lable positions
 
 	Print := !() -> void
 	{
@@ -192,6 +192,18 @@ MCFunction := class //extend TGCObject
 		}
 		StackFrameSize = (offset + 15) and_b 0xFFFFF0
 		StackOffsets = objOffsets.ToVector()
+
+		if Objects.Size() != 0
+		{
+			for it,i : Lines
+			{
+				if it.opcode == "label"
+				{
+					StackOffsets[it.var1] = i
+				}
+			}
+		}
+
 	}
 }
 
