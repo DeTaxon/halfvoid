@@ -25,7 +25,18 @@ MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] in
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
 {
+	if interpFunc.Lines.Size() == 0
+		return void
+
+	objCount := 0
+	if inputs != null
+	{
+		objCount = 5 + inputs.Size()
+	}
+
 	thisFrame := MCInterpFuncFrame
+	thisFrame.CreateFrame(iCntx,interpFunc,objCount)
+
 	
 	retIndex := 0
 	if resultPtr != null
@@ -50,14 +61,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 {
 	//interpFunc.Print()
 	//exit(0)
-	//
-	cs := 0
-	thisFrame := MCInterpFuncFrame
-	thisFrame.func = interpFunc
-	thisFrame.iCntx = iCntx
 
 	if interpFunc.Lines.Size() == 0
 		return void
+
+	cs := 0
+	thisFrame := MCInterpFuncFrame
+	thisFrame.CreateFrame(iCntx,interpFunc)
+
 
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
@@ -65,27 +76,23 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	useStackSize := interpFunc.StackFrameSize
 	thisFrame.localVarBlob = MakeBlob(useStackSize)
 	//memset(thisFrame.localVarBlob.GetPointer(),0,useStackSize)
-	//
+	
 	for it,i : interpFunc.Objects
 	{
-		typ := Type^
+		offset := interpFunc.StackOffsets[i]
 		if it& is MCVariable
-			typ = it&->{MCVariable^}.GetType()
-		if it& is MCReference
-			typ = GTypeVoidP
-
-		if typ != null
 		{
-			offset := interpFunc.StackOffsets[i]
-			if it& is MCVariable
-			{
-				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
-			}
-			if it& is MCReference
-			{
-				thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
-			}
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
 		}
+		if it& is MCReference
+		{
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
+		}
+		//if it.IsConstant
+		//{
+		//	thisFrame.localVarTable[i] = it.Value&
+		//}
+		
 	}
 	if callerFrame != null and returnIndex != 0
 	{

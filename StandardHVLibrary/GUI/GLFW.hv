@@ -165,6 +165,7 @@ glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 			asCh = ' '
 		//case 290
 	}
+
 	if asCh != 0 and (action == GLFW_PRESS or action == GLFW_RELEASE)
 	{
 		buttons[asCh] = action == GLFW_PRESS

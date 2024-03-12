@@ -106,6 +106,7 @@ MCConstPointer := class extend MCObject
 
 MCLabel := class extend MCObject
 {
+	PrintObject := virtual !() -> void { printf("Label") }
 }
 
 MCFunction := class //extend TGCObject
@@ -142,30 +143,30 @@ MCFunction := class //extend TGCObject
 
 	ComputeStackFrame := !() -> void
 	{
-		useStackSize := 0
-		for it,i : Objects
-		{
-			typ := Type^
-			if it& is MCVariable
-				typ = it&->{MCVariable^}.GetType()
-			if it& is MCReference
-				typ = GTypeVoidP
-			if typ != null
-			{
-				al := typ.GetAlign()
-				if al != 0
-				{
-					useStackSize = ((useStackSize + al - 1) div al) * al
-				}
-				useStackSize += typ.GetSize()
-			}
-		}
-		useStackSize = (useStackSize + 15) and_b 0xFFFFF0
-		StackFrameSize = useStackSize
+		StackFrameSize = 0
+		//useStackSize := 0
+		//for it,i : Objects
+		//{
+		//	typ := Type^
+		//	if it& is MCVariable
+		//		typ = it&->{MCVariable^}.GetType()
+		//	if it& is MCReference
+		//		typ = GTypeVoidP
+		//	if typ != null
+		//	{
+		//		al := typ.GetAlign()
+		//		if al != 0
+		//		{
+		//			useStackSize = ((useStackSize + al - 1) div al) * al
+		//		}
+		//		useStackSize += typ.GetSize()
+		//	}
+		//}
+		//useStackSize = (useStackSize + 15) and_b 0xFFFFF0
+		//StackFrameSize = useStackSize
 
 		objOffsets := List.{int}
 		offset := int
-		inpPos := 0
 		for it,i : Objects
 		{
 			typ := Type^
@@ -189,6 +190,7 @@ MCFunction := class //extend TGCObject
 				objOffsets.Push(0)
 			}
 		}
+		StackFrameSize = (offset + 15) and_b 0xFFFFF0
 		StackOffsets = objOffsets.ToVector()
 	}
 }

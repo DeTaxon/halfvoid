@@ -19,8 +19,8 @@ Nope := !() -> bool
 
 RunTest := !() -> void
 {
-	c := sqrt(0.5)
-	printf("hm %f\n",c)
+	//c := sqrt(0.5)
+	//printf("hm %f\n",c)
 }
 
 #CreateCallCommand(
