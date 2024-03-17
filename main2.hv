@@ -113,8 +113,8 @@ RunTest := !() -> void
 				return null
 			types.Push(parType)
 		}
-		fType := HV_GetFuncType(types,null,HV.GetType("void"),false,false)
-		return HV_GetTypePointer(fType)
+		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
+		return HV.GetTypePointer(fType)
 	}
 	GetParamType := !(XMLNode^ node) -> void^
 	{
@@ -166,7 +166,7 @@ RunTest := !() -> void
 	{
 		return funcClassType?
 
-		funcClass = HV_CreateClass()
+		funcClass = HV.CreateClass()
 
 		ParseXml()
 
@@ -187,7 +187,7 @@ RunTest := !() -> void
 		{
 			ParseXml()
 			if glValues.Contain(name)
-				return HV_Create_int32(glValues[name])
+				return HV.Create_int32(glValues[name])
 		}
 		if name == "glFuncsClass"
 		{

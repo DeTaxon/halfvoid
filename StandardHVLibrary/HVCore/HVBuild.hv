@@ -1,21 +1,19 @@
-HV_Create_int32 := !(int value) -> void^ {}
 
-//HV_GetType := !(StringView typeName) -> void^ {}
-HV_GetTypePointer := !(void^ baseType) -> void^ {}
-HV_GetFuncType := !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ {}
-
-HV_CreateClass := !() -> HV_Class^ {}
-HV_Class := class
-{
-	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
-	GetType := virtual !() -> void^ {}
-}
 
 HV := HV_Context^
 HV_Context := class
 {
-	GetType := virtual !(StringView typeName) -> void^ 
-	{
-		
-	}
+	GetType := virtual !(StringView typeName) -> void^ {}
+	GetTypePointer := virtual !(void^ baseType) -> void^ {}
+	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ {}\
+
+	CreateClass := virtual !() -> HV_Class^ {}
+
+	Create_int32 := virtual !(int value) -> void^ {}
+}
+
+HV_Class := class
+{
+	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
+	GetType := virtual !() -> void^ {}
 }

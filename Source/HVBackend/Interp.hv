@@ -244,8 +244,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					{
 						fncPtr = taskWorkCallEnd
 					}
-					if fncPtr == null
-						fncPtr = CheckFuncExchange(bdy.Name)
 					if fncPtr != null
 					{
 						thisFrame.CallFuncPtr(bdy.GetType()->{TypeFunc^},fncPtr,resultPtr,indxs,0)
