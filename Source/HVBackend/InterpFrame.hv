@@ -4,12 +4,38 @@ MCInterpFuncFrame := class extend TGCObject
 	func := MCFunction^
 	iCntx := MCInterpContext^
 
-	localVarBlob := Blob^
+	localVarBlob := u8^
 	//localVarTable := AVLMap.{int,void^}
 	localVarTable := void^^
 	//localVarTableHolder := Vector.{void^}
 
 	objs := MCObject^
+
+	StackPointer := u8^
+	StackAllocated := int
+
+
+	CreateStack := !() -> void
+	{
+		StackPointer = malloc(8*1024*1024)->{u8^} //TODO unconst
+	}
+	DestroyStack := !() -> void
+	{
+		free(StackPointer)
+		
+	}
+	InheritStack := !(MCInterpFuncFrame^ inherStack) -> void
+	{
+		StackPointer = inherStack.StackPointer
+		StackAllocated = inherStack.StackAllocated
+	}
+
+	AllocateOnStack := !(int allocSize) -> void^
+	{
+		allocSize = (allocSize + 15) and_b 0xFFFFF0
+		result = StackPointer[StackAllocated]&
+		StackAllocated += allocSize
+	}
 
 	CreateFrame := !(MCInterpContext^ setContext,MCFunction^ setFunction,int atLeastLocalVarCount = 0) -> void
 	{
@@ -23,17 +49,18 @@ MCInterpFuncFrame := class extend TGCObject
 		if setFunction.Objects.Size() != 0
 		{
 			allocCount := max(setFunction.Objects.Size(),atLeastLocalVarCount)
-			localVarTable = calloc(allocCount,size_t->TypeSize)->{void^^}
+			//localVarTable = calloc(allocCount,size_t->TypeSize)->{void^^}
+			localVarTable = AllocateOnStack(allocCount*size_t->TypeSize)->{void^^}
 		}
 
 		objs = func.Objects.GetPointer()
 	}
-	Destroy := virtual !() -> void
-	{
-		if localVarTable != null
-			free(localVarTable)
-		localVarTable = null
-	}
+	//Destroy := virtual !() -> void
+	//{
+	//	if localVarTable != null
+	//		free(localVarTable)
+	//	localVarTable = null
+	//}
 
 	GetObjectPtr := !(int index) -> void^
 	{

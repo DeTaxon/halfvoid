@@ -17,6 +17,13 @@ MCInterpContext := class
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
 	{
+
+		if vr.itName == "HV"
+		{
+			InitRunContext()
+			return HV&
+		}
+
 		return globalVariables[vr]?
 
 		vr.NotifyUseAndWait()

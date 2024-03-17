@@ -8,7 +8,6 @@
 main := !(char^[] args) -> int
 {
 	//glXML.Print()
-	RunTest()
 	return 0
 }
 
@@ -19,8 +18,7 @@ Nope := !() -> bool
 
 RunTest := !() -> void
 {
-	//c := sqrt(0.5)
-	//printf("hm %f\n",c)
+	RunTest2()
 }
 
 #CreateCallCommand(
@@ -115,7 +113,7 @@ RunTest := !() -> void
 				return null
 			types.Push(parType)
 		}
-		fType := HV_GetFuncType(types,null,HV_GetType("void"),false,false)
+		fType := HV_GetFuncType(types,null,HV.GetType("void"),false,false)
 		return HV_GetTypePointer(fType)
 	}
 	GetParamType := !(XMLNode^ node) -> void^
@@ -149,13 +147,13 @@ RunTest := !() -> void
 		switch typeName
 		{
 			case "GLenum"
-				return HV_GetType("u32")
+				return HV.GetType("u32")
 			case "GLbitfield"
-				return HV_GetType("s32")
+				return HV.GetType("s32")
 			case "GLuint"
-				return HV_GetType("s32")
+				return HV.GetType("s32")
 			case "GLfloat"
-				return HV_GetType("float")
+				return HV.GetType("float")
 			case void
 				printf("opengl unknown type %s\n",typeName)
 				return null
@@ -214,8 +212,14 @@ RunTest2 := !() -> void
 	glfwSetCursorPosCallback(win,mouseMove)
 	glfwMakeContextCurrent(win)
 
-	lib := GetLibrary("libGL.so")
+	lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
 	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
+
+	if glGetProcAddress == null
+	{
+		glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
+	}
+
 
 	nameBuffer := char[128]
 	for it,ind : gl->AllFields

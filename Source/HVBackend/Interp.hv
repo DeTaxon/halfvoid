@@ -35,7 +35,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inp
 	}
 
 	thisFrame := MCInterpFuncFrame
+	thisFrame.CreateStack()
 	thisFrame.CreateFrame(iCntx,interpFunc,objCount)
+
+	defer thisFrame.DestroyStack()
 
 	
 	retIndex := 0
@@ -57,7 +60,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inp
 	MCInterpFunction(iCntx,interpFunc,thisFrame&,inptsIndexes,retIndex)
 }
 
-MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame = null, int[] callerIndx = null,int returnIndex = 0) -> void
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, int[] callerIndx = null,int returnIndex = 0) -> void
 {
 	//interpFunc.Print()
 	//exit(0)
@@ -65,8 +68,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	if interpFunc.Lines.Size() == 0
 		return void
 
+	assert(callerFrame != null)
+
 	cs := 0
 	thisFrame := MCInterpFuncFrame
+	thisFrame.InheritStack(callerFrame)
 	thisFrame.CreateFrame(iCntx,interpFunc)
 
 
@@ -74,7 +80,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	assert(opPtr != null)
 
 	useStackSize := interpFunc.StackFrameSize
-	thisFrame.localVarBlob = MakeBlob(useStackSize)
+	thisFrame.localVarBlob = thisFrame.AllocateOnStack(useStackSize)->{u8^}
 	//memset(thisFrame.localVarBlob.GetPointer(),0,useStackSize)
 	
 	for it,i : interpFunc.Objects
@@ -82,11 +88,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		offset := interpFunc.StackOffsets[i]
 		if it& is MCVariable
 		{
-			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob[offset]&
 		}
 		if it& is MCReference
 		{
-			thisFrame.localVarTable[i] = thisFrame.localVarBlob.GetPointer()->{u8^}[offset]&
+			thisFrame.localVarTable[i] = thisFrame.localVarBlob[offset]&
 		}
 		//if it.IsConstant
 		//{

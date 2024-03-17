@@ -1,0 +1,18 @@
+InitRunContext := !() -> void
+{
+	initedRun := static false
+	HV = new HVContextImplementation
+}
+
+HVContextImplementation := class extend HV_Context
+{
+	GetType := virtual !(StringView typeName) -> void^ 
+	{
+		spn := typeName.AsStringSpan()
+		indnt := TokenIndent(spn)
+		asType := ParseType(indnt&)
+		if asType == null
+			return null
+		return GetConstType(asType)
+	}
+}

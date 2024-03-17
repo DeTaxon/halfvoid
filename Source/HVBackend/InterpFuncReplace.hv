@@ -4,8 +4,6 @@ CheckFuncExchange := !(StringView name) -> void^
 		return hvr_Create_int32
 	if name == "HV_CreateClass"
 		return hvr_CreateClass
-	if name == "HV_GetType"
-		return hvr_GetType
 	if name == "HV_GetTypePointer"
 		return hvr_GetTypePointer
 	if name == "HV_GetFuncType"
@@ -16,15 +14,6 @@ CheckFuncExchange := !(StringView name) -> void^
 hvr_Create_int32 := !(int value) -> void^
 {
 	return GetExeInt(value)
-}
-hvr_GetType := !(StringView typeName) -> void^
-{
-	spn := typeName.AsStringSpan()
-	indnt := TokenIndent(spn)
-	asType := ParseType(indnt&)
-	if asType == null
-		return null
-	return GetConstType(asType)
 }
 hvr_GetTypePointer := !(void^ baseType) -> void^ 
 {
