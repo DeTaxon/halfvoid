@@ -386,6 +386,10 @@ ModuleVulkan := class extend ModuleInterface
 							return null
 						}
 					case "param"
+						if asN.Attrs.Contain("api") and asN.Attrs["api"] != "vulkan"
+						{
+							continue
+						}
 						resPar := CheckCommandParam(it.second->{TreeNode^})
 						if resPar == null {
 							printf("VKMODULE: can not create func pointer %s ... param %i\n",name,ind + 1)

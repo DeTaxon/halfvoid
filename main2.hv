@@ -8,6 +8,7 @@
 main := !(char^[] args) -> int
 {
 	//glXML.Print()
+	RunTest2()
 	return 0
 }
 
