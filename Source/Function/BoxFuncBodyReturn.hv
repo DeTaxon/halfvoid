@@ -4,6 +4,7 @@ AppendClass BoxFuncBody
 	//inlineFunctions := List.{FuncInlineWrapper^}
 
 	printResultVar := bool //TODO way too weird
+	createVoidResultVar := bool
 
 	CheckReturnStep := !() -> void
 	{

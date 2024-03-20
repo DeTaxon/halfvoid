@@ -46,6 +46,10 @@ BoxExeVoid := class extend BoxExeConstObj
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "null"
+	}
 }
 GObjNone := BoxExeNone^
 GObjNull := BoxExeNull^

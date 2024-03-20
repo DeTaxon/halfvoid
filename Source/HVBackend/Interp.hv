@@ -236,13 +236,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					{
 						fncPtr = TSpawnTask
 					}
-					if bdy.Name == "taskWorkCallBegin"
+					if bdy.Name == "internalWorkCall"
 					{
-						fncPtr = taskWorkCallBegin
-					}
-					if bdy.Name == "taskWorkCallEnd"
-					{
-						fncPtr = taskWorkCallEnd
+						fncPtr = internalWorkCall
 					}
 					if fncPtr != null
 					{

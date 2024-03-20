@@ -5,3 +5,10 @@ AppendClass BoxExeNull
 		result.CreatedId = ctx.AddPointer(null)	
 	}
 }
+AppendClass BoxExeVoid
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.CreateVar(GTypeVoid)
+	}
+}

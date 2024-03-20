@@ -263,6 +263,11 @@ MCInterpContext := class
 
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{
+
+		somePointer := static 0 //TODO maybe not global
+		TLock(somePointer&)
+		defer TUnlock(somePointer&)
+
 		return funcs[itm]?
 
 		assert(itm is in BoxFuncBody)

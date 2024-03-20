@@ -8,18 +8,21 @@
 main := !(char^[] args) -> int
 {
 	//glXML.Print()
-	RunTest2()
+	Nope()
 	return 0
 }
 
-Nope := !() -> bool
+Nope := !() -> void
 {
-	printf("test\n")
+	c := result&
+
+	g := @work 2+2
+	@work printf("test %p\n",g)
 }
 
 RunTest := !() -> void
 {
-	RunTest2()
+	Nope()
 }
 
 #CreateCallCommand(

@@ -3,12 +3,15 @@ TaskWorkersToDo := List.{Task^}
 
 "@work call" := !(!()&->@T lmbd ) -> T
 {
-	taskWorkCallBegin()
-	result = lmbd()
-	taskWorkCallEnd()
+	//taskWorkCallBegin()
+	//result = lmbd()
+	//taskWorkCallEnd()
+	internalWorkCall(() ==> [cl = result&] {
+		cl^ = lmbd()
+	})
 }
 
-taskWorkCallBegin := !() -> void
+internalWorkCall := !(!()&->void lmbd) -> void
 {
 	TaskCheckMutex.Lock() //TODO optimize
 
@@ -21,9 +24,8 @@ taskWorkCallBegin := !() -> void
 	CurrentThread.switchToMain()
 	TaskCheckMutex.Unlock()
 
-}
-taskWorkCallEnd := !() -> void
-{
+	lmbd()
+	
 	TaskCheckMutex.Lock()
 	myTask := CurrentTask->{void^}
 
@@ -33,6 +35,14 @@ taskWorkCallEnd := !() -> void
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()
+}
+
+taskWorkCallBegin := !() -> void
+{
+
+}
+taskWorkCallEnd := !() -> void
+{
 }
 
 SpawnWork := !(!()&->void lmbd) -> Task^
