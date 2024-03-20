@@ -263,7 +263,6 @@ MCInterpContext := class
 
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{
-
 		somePointer := static 0 //TODO maybe not global
 		TLock(somePointer&)
 		defer TUnlock(somePointer&)
@@ -279,6 +278,8 @@ MCInterpContext := class
 		buildCtx.Init()
 		itm.CreateMCFunction(buildCtx&)
 		result = buildCtx.CreateMCFunction()
+
+		result = InterpPassPrepare(result)
 		result.BaseFunction = itm
 
 		funcs[itm] = result

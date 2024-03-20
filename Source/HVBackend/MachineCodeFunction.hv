@@ -4,6 +4,7 @@ MCObject := class
 {
 	IsConstant := virtual false
 	Value := u64
+	Value2 := u64
 
 	"=" := !(MCObject setValue) -> void
 	{
@@ -101,7 +102,17 @@ MCConstPointer := class extend MCObject
 
 	PrintObject := virtual !() -> void { printf("Pointer \"%p\"",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeVoidP }
-	
+}
+MCConstPointerTyped := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref void^ { return Value&->{void^^}^}
+
+	PrintObject := virtual !() -> void { printf("Pointer \"%p\"",GetValue()) }
+	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
+
+	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
 }
 
 MCLabel := class extend MCObject

@@ -211,47 +211,16 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					bdy := fncHV->{BoxFuncBody^}
 					fncPtr := void^
 
-					//TODO unify
-					if bdy.Name == "TLock"
-					{
-						fncPtr = TLock
-					}
-					if bdy.Name == "TUnlock"
-					{
-						fncPtr = TUnlock
-					}
-					if bdy.Name == "TUnlock"
-					{
-						fncPtr = TUnlock
-					}
-					if bdy.Name == "FSGetFile"
-					{
-						fncPtr = FSGetFile
-					}
-					if bdy.Name == "TSleep"
-					{
-						fncPtr = TSleep
-					}
-					if bdy.Name == "TSpawnTask"
-					{
-						fncPtr = TSpawnTask
-					}
-					if bdy.Name == "internalWorkCall"
-					{
-						fncPtr = internalWorkCall
-					}
-					if fncPtr != null
-					{
-						thisFrame.CallFuncPtr(bdy.GetType()->{TypeFunc^},fncPtr,resultPtr,indxs,0)
-					}else{
-						fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
-						MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
-					}
+					fncAsMC := iCntx.GetMCFunc(fncHV->{BoxFuncBody^})
+					MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 				}else{
 					printf("failed to call, unknown class %s\n",fncHV.UnitName)
 					assert(false)
 				}
-			} else if  fncObj& is MCVariable or fncObj& is MCReference{
+			} else if fncObj& is MCConstPointerTyped {
+				fType := fncObj.GetType().Base->{TypeFunc^}
+				thisFrame.CallFuncPtr(fType,fncObj&->{MCConstPointer^}.GetValue(),resultPtr,indxs,0)
+			} else if fncObj& is MCVariable or fncObj& is MCReference{
 				functionPointer := thisFrame.GetObjectPtr(thisLine.var2)->{void^^}^
 				assert(functionPointer != null) //TODO emit error
 				fncVal := iCntx.GetFuncByPointer(functionPointer)

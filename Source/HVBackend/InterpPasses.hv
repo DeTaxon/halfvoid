@@ -1,0 +1,64 @@
+
+InterpPassPrepare := !(MCFunction^ optFunction) -> MCFunction^
+{
+	result = optFunction
+	
+	result = InterpPassReplaceCoreFunction(result)
+}
+
+InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
+{
+
+	for it : optFunction.Objects
+	{
+		if it& is MCConstFunction
+		{
+			constFunc := it&->{MCConstFunction^}.GetValue()
+
+			if constFunc is BoxFuncBody
+			{
+				bdy := constFunc->{BoxFuncBody^}
+
+				fncPtr := void^
+
+				if bdy.Name == "TSpawnTask"
+				{
+					fncPtr = TSpawnTask
+				}
+				if bdy.Name == "TLock"
+				{
+					fncPtr = TLock
+				}
+				if bdy.Name == "TUnlock"
+				{
+					fncPtr = TUnlock
+				}
+				if bdy.Name == "TUnlock"
+				{
+					fncPtr = TUnlock
+				}
+				if bdy.Name == "FSGetFile"
+				{
+					fncPtr = FSGetFile
+				}
+				if bdy.Name == "TSleep"
+				{
+					fncPtr = TSleep
+				}
+				if bdy.Name == "internalWorkCall"
+				{
+					fncPtr = internalWorkCall
+				}
+
+				if fncPtr != null
+				{
+					it&->SetType(MCConstPointerTyped)
+					it&->{MCConstPointerTyped^}.GetValue() = fncPtr
+					it&->{MCConstPointerTyped^}.SetType(bdy.GetType().GetPoint())
+				}
+	
+			}
+		}
+	}
+	return optFunction
+}
