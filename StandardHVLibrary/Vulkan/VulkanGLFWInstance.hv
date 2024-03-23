@@ -109,12 +109,14 @@ VulkanGLFWInstance := class extend VulkanInstance
 		surfaceInfo := VkSurfaceCapabilitiesKHR
 		Funcs.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice,itSurface,surfaceInfo&)
 
-		setW := clamp(surfaceInfo.minImageExtent.width,inW->{u32},surfaceInfo.minImageExtent.width)
-		setH := clamp(surfaceInfo.minImageExtent.height,inH->{u32},surfaceInfo.minImageExtent.height)
+		setW := clamp(surfaceInfo.minImageExtent.width,inW->{u32},surfaceInfo.maxImageExtent.width)
+		setH := clamp(surfaceInfo.minImageExtent.height,inH->{u32},surfaceInfo.maxImageExtent.height)
+
+		createImgsCount := max(3,surfaceInfo.minImageCount)
 	
 		crtSwap := VkSwapchainCreateInfoKHR()
 		crtSwap.surface = itSurface
-		crtSwap.minImageCount = 3
+		crtSwap.minImageCount = createImgsCount
 		crtSwap.imageFormat = SwapImageFormat
 		crtSwap.imageColorSpace = SwapImageColorSpace
 		crtSwap.imageExtent.width = setW

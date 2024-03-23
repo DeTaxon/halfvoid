@@ -11,6 +11,8 @@ SimpleWindow := class extend GLFWWindow
 	ClearColor := vec4f
 	vkOverlay := VkOverlayContext
 
+	outdatedWindowSize := bool
+
 	CreateFont := !(File^ fil, float height) -> Font^
 	{
 		return vkOverlay.CreateFont(fil,height)
@@ -80,8 +82,9 @@ SimpleWindow := class extend GLFWWindow
 				drawRes := true
 				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
-				if not drawRes
+				if not drawRes or outdatedWindowSize
 				{
+					outdatedWindowSize = false
 					vInstance.CreateSwapchain(mainRenderPass,Width,Height)
 					vkOverlay.DataGeneration += 1
 					vkOverlay.CmdGeneration += 1
@@ -203,6 +206,7 @@ SimpleWindow := class extend GLFWWindow
 	WindowResized := virtual !(int width, int height) -> void
 	{
 		imgGeneration -= 1
+		outdatedWindowSize = true
 	}
 
 	InitWindow := virtual !() -> GUIObject^

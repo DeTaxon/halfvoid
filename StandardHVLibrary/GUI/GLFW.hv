@@ -142,6 +142,9 @@ GLFWWindow := class
 	SetWindowSize := !(int w, int h) -> void
 	{
 		glfwSetWindowSize(windowHandle,w,h)
+		Width = w
+		Height = h
+		WindowResized(w,h)
 	}
 }
 
