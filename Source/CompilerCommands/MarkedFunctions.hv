@@ -21,7 +21,7 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 			itm.EmitError("Unknown input variable")
 
 		fncName := markName.Right.Right->{TokenIndent^}.Value
-		fnc := TryGetExeCall(markName.Right.Right)
+		//fnc := TryGetExeCall(markName.Right.Right)
 
 		callItem := BoxUnit^
 		GetItemGlobal(fncName, x ==> {

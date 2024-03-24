@@ -16,6 +16,7 @@ FSGetFolder := !(StringSpan p) -> Folder^
 }
 
 gRepoObject := vRepo^
+#MarkFunction("JITPass",FSGetFile)
 FSGetFile := !(StringView inp) -> File^
 {
 	createFSObject()

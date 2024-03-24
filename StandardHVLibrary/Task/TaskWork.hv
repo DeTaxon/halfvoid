@@ -11,6 +11,8 @@ TaskWorkersToDo := List.{Task^}
 	})
 }
 
+
+#MarkFunction("JITPass",internalWorkCall)
 internalWorkCall := !(!()&->void lmbd) -> void
 {
 	TaskCheckMutex.Lock() //TODO optimize

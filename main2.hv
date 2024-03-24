@@ -4,10 +4,10 @@
 
 
 
-#MarkFunction("TEST",TestRun)
-TestRun := !() -> void
+//#MarkFunction("TEST",TestRun)
+TestRun := !(!()&->void cb) -> void
 {
-	printf("TES\n")
+	cb()
 }
 
 main := !(char^[] args) -> int
@@ -28,7 +28,9 @@ Nope := !() -> void
 
 RunTest := !() -> void
 {
-	TSleep(1)
+	TestRun(() ==> {
+		printf("yep\n")
+	})
 }
 
 #CreateCallCommand(

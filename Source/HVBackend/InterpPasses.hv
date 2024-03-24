@@ -29,35 +29,6 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 					}
 				}
 
-				if bdy.Name == "TSpawnTask"
-				{
-					fncPtr = TSpawnTask
-				}
-				if bdy.Name == "TLock"
-				{
-					fncPtr = TLock
-				}
-				if bdy.Name == "TUnlock"
-				{
-					fncPtr = TUnlock
-				}
-				if bdy.Name == "TUnlock"
-				{
-					fncPtr = TUnlock
-				}
-				if bdy.Name == "FSGetFile"
-				{
-					fncPtr = FSGetFile
-				}
-				//if bdy.Name == "TSleep"
-				//{
-				//	fncPtr = TSleep
-				//}
-				if bdy.Name == "internalWorkCall"
-				{
-					fncPtr = internalWorkCall
-				}
-
 				if fncPtr != null
 				{
 					it&->SetType(MCConstPointerTyped)

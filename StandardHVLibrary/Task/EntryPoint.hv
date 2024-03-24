@@ -59,6 +59,7 @@ internalThreadDestructor := !() -> void
 }
 
 
+#MarkFunction("JITPass",TSpawnTask)
 TSpawnTask := !(!()&-> void cb) -> Task^
 {
 	startTask := new Task(cb.Capture())
