@@ -132,7 +132,6 @@ VulkanGLFWInstance := class extend VulkanInstance
 		crtSwap.clipped = 0
 		crtSwap.oldSwapchain = oldSwapchain
 	
-		//TODO fails as it have weird xml
 		res := Funcs.vkCreateSwapchainKHR(LogicalDevice,crtSwap&,null,itSwapchain&)
 
 		if res != 0
@@ -149,6 +148,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 		Funcs.vkGetSwapchainImagesKHR(LogicalDevice,itSwapchain,imgCount&,surfaceImages.GetPointer())
 	
 		surfaceImageViews = new Vector.{VkImageView}(surfaceImages.Size())
+
 
 		for it,i : surfaceImages^
 		{

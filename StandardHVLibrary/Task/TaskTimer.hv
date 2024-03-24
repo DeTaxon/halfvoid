@@ -2,6 +2,8 @@
 TaskTimersMutex := Mutex^
 TaskTimersArray := List.{Tuple.{double,Task^}}
 
+
+#MarkFunction("JITPass",TSleep)
 TSleep := !(double val) -> void
 {
 	endTime := GetSteadyTime() + val

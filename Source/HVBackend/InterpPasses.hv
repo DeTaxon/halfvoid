@@ -21,6 +21,14 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 
 				fncPtr := void^
 
+				//for it, ind : #MarkedFunctions("JITPass")
+				//{
+				//	if bdy.Name == ind
+				//	{
+				//		//fncPtr = it
+				//	}
+				//}
+
 				if bdy.Name == "TSpawnTask"
 				{
 					fncPtr = TSpawnTask

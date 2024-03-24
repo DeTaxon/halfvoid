@@ -22,7 +22,7 @@ Nope := !() -> void
 
 RunTest := !() -> void
 {
-	Nope()
+	TSleep(1)
 }
 
 #CreateCallCommand(

@@ -70,6 +70,14 @@ MarkedFunctions := class extend BoxMetaGrowingObject
 
 	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return functions[ind] }
 
+	//GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ {
+	//	fnc := functions[ind]
+	//	printf("gug %s\n",fnc.UnitName)
+	//	if fnc is BoxFuncBody
+	//		return GetExeString(fnc->{BoxFuncBody^}.Name.GetString()) 
+	//	return null
+	//}
+
 	RegisterUser := virtual !(!(int)&->void cb) -> void
 	{
 		listeners.Push(cb.Capture())
