@@ -4,11 +4,17 @@
 
 
 
+#MarkFunction("TEST",TestRun)
+TestRun := !() -> void
+{
+	printf("TES\n")
+}
 
 main := !(char^[] args) -> int
 {
 	//glXML.Print()
-	Nope()
+	//Nope()
+	RunTest()
 	return 0
 }
 

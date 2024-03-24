@@ -20,6 +20,14 @@ GetItemLocal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> vo
 				lst.Push(cn)
 			}
 		}
+		if it is AliasVar
+		{
+			cn := it->{AliasVar^}
+			if cn.itName == name
+			{
+				lst.Push(cn)
+			}
+		}
 	}
 	if lst.Size() != 0
 	{

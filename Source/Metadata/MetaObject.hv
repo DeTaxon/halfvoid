@@ -4,7 +4,7 @@ BoxMetaObj := class extend BoxExeObj
 	MetaIteretableSize := virtual !() -> int { return 0}
 
 	GetMetaIterValueVar := virtual !(int ind) -> LocalVar^  { return null }
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return null }
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return null }
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
 }

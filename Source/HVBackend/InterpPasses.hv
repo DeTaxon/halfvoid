@@ -21,13 +21,13 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 
 				fncPtr := void^
 
-				//for it, ind : #MarkedFunctions("JITPass")
-				//{
-				//	if bdy.Name == ind
-				//	{
-				//		//fncPtr = it
-				//	}
-				//}
+				for it, ind : #MarkedFunctions("JITPass")
+				{
+					if bdy.Name == ind
+					{
+						fncPtr = it
+					}
+				}
 
 				if bdy.Name == "TSpawnTask"
 				{
@@ -49,10 +49,10 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 				{
 					fncPtr = FSGetFile
 				}
-				if bdy.Name == "TSleep"
-				{
-					fncPtr = TSleep
-				}
+				//if bdy.Name == "TSleep"
+				//{
+				//	fncPtr = TSleep
+				//}
 				if bdy.Name == "internalWorkCall"
 				{
 					fncPtr = internalWorkCall

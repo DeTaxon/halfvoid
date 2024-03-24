@@ -95,7 +95,7 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 			nowStack.Load()
 		}
 	}
-	tryAddVar := !(BoxExeObj^ toAdd,int num,StringSpan itName) -> void {
+	tryAddVar := !(BoxUnit^ toAdd,int num,StringSpan itName) -> void {
 		if toAdd == null
 			return void
 		
@@ -104,10 +104,23 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 			UnitStack.PushFront(new ConstVar(itName,toAdd->{BoxExeConstObj^}))
 			return void
 		}
-		
-		newVar := ToLocalVar(toAdd,itName)
-		middleVars[num].Push(newVar)
-		UnitStack.PushFront(newVar)
+
+		if toAdd is in BoxExeObj
+		{
+			newVar := ToLocalVar(toAdd->{BoxExeObj^},itName)
+			middleVars[num].Push(newVar)
+			UnitStack.PushFront(newVar)
+		} else if toAdd is in BoxFunc {
+			fnc := toAdd->{BoxFunc^}
+			fncAlias := new AliasVar(itName,toAdd) //TODO memory leak
+			UnitStack.PushFront(fncAlias)
+		} else if toAdd is in BoxFuncTemplate {
+			fnc := toAdd->{BoxFuncTemplate^}
+			fncAlias := new AliasVar(itName,toAdd) //TODO memory leak
+			UnitStack.PushFront(fncAlias)
+		}else{
+			assert(false)
+		}
 	}
 
 	PrintDefaultUse := virtual !(TIOStrean^ f) -> void

@@ -42,8 +42,27 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	metFuncs := HybridQueue.{BoxFuncBody^,4}
 	lastLambdaHolder := LambdaObject^
 
-	for par : UnitStack
+	for parObject : UnitStack
 	{
+		par := parObject
+		if par is AliasVar and par->{AliasVar^}.itName == asItm.Value
+		{
+			par2 := par->{AliasVar^}.itValue
+			if par2 is in BoxFuncTemplate
+			{
+				tmpl := par2->{BoxFuncTemplate^}
+				if tmpl.IsOneFunc()
+				{
+					par2 = tmpl.GetOneFunc()
+				}
+			}
+			if par2 is in BoxFunc
+			{
+				c := new FuncPointerParam(par2->{BoxFunc^})
+				return c.CreateCall()
+			}
+		}
+
 		if par is LambdaObject
 		{
 			lastLambdaHolder = par->{LambdaObject^}
@@ -63,6 +82,12 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			if cv.Name == asItm.Value
 				return cv.Value
 		}
+		if par is AliasVarOhNo
+		{
+			av := par->{AliasVarOhNo^}
+			if av.itName == asItm.Value
+				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
+		}
 		if par is AliasVar
 		{
 			av := par->{AliasVar^}
@@ -71,12 +96,6 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				assert(av.itValue is in LocalVar)
 				return av.itValue->{LocalVar^}.CreateVarCall()
 			}
-		}
-		if par is AliasVarOhNo
-		{
-			av := par->{AliasVarOhNo^}
-			if av.itName == asItm.Value
-				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is in LocalVar
 		{

@@ -31,7 +31,7 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 		infoUser(ind) //TODO can be null
 	}
 
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
 	{
 		itClass.AwaitTypeState()
 		indCall := itClass.GetFieldByIndex(ind)

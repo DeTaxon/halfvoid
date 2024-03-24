@@ -45,7 +45,7 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 			itm.EmitError("Function not found")
 
 		mark := ref markedObjects[StringSpan(markName->{TokenString^}.Value.Str())]
-		mark.AddFunc(fnc)
+		mark.AddFunc(callItem)
 
 		return GBoolTrue
 	}
@@ -62,27 +62,28 @@ markedObjects := AVLMap.{StringSpan,MarkedFunctions}
 
 MarkedFunctions := class extend BoxMetaGrowingObject
 {
-	functions := List.{BoxExeObj^}
+	functions := List.{BoxUnit^}
 	listeners := List.{!(int)&->void}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { return functions.Size() }
 
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return functions[ind] }
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return functions[ind] }
 
-	//GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ {
-	//	fnc := functions[ind]
-	//	printf("gug %s\n",fnc.UnitName)
-	//	if fnc is BoxFuncBody
-	//		return GetExeString(fnc->{BoxFuncBody^}.Name.GetString()) 
-	//	return null
-	//}
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ {
+		fnc := functions[ind]
+		if fnc is BoxFuncBody
+			return GetExeString(fnc->{BoxFuncBody^}.Name.GetString()) //TODO remake string usage 
+		if fnc is BoxFuncTemplateBody
+			return GetExeString(fnc->{BoxFuncTemplateBody^}.Name.GetString()) //TODO remake string usage
+		return null
+	}
 
 	RegisterUser := virtual !(!(int)&->void cb) -> void
 	{
 		listeners.Push(cb.Capture())
 	}
-	AddFunc := !(BoxExeObj^ obj) -> void
+	AddFunc := !(BoxUnit^ obj) -> void
 	{
 		for it : functions
 		{
@@ -92,4 +93,5 @@ MarkedFunctions := class extend BoxMetaGrowingObject
 		functions.Push(obj)
 		listeners[^](functions.Size() - 1)
 	}
+
 }

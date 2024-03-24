@@ -1,0 +1,6 @@
+AppendClass MarkedFunctions
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+	}
+}

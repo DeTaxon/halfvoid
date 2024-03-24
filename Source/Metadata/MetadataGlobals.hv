@@ -53,7 +53,7 @@ GlobalVarsIterator := class extend BoxMetaObj
 		return globs.Size()
 	}
 
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ { return globs[ind].1 }
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return globs[ind].1 }
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return GetExeString(globs[ind].0.GetString()) }
 }

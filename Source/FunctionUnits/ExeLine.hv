@@ -360,8 +360,13 @@ GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool ex
 }
 CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,HybridQueue.{int,13} priorityes) -> void
 {
-	for h : candidateObjects
+	for checkObj : candidateObjects
 	{
+		h := checkObj
+		if h is AliasVar
+		{
+			h = h->{AliasVar^}.itValue
+		}
 		if h is in BoxFunc
 		{
 			fnc := h->{BoxFunc^}
@@ -432,6 +437,11 @@ makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts)
 		{
 			callItem = cn.Value->{BoxFuncTemplateConst^}.Value
 		}
+	}
+	if callItem is AliasVar
+	{
+		av := callItem->{AliasVar^}
+		callItem = av.itValue
 	}
 	if callItem is in BoxFuncTemplate
 	{

@@ -15,7 +15,7 @@ MetaVargsParam := class extend BoxMetaObj
 		itInd := ind + fromFunc.NamedParametersCount
 		return fromFunc.Params[itInd]
 	}
-	GetMetaIterValue := virtual !(int ind) -> BoxExeObj^ 
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
 	{ 
 		itInd := ind + fromFunc.NamedParametersCount
 		return fromFunc.Params[itInd].CreateVarCall()
