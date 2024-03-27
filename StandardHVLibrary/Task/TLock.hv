@@ -47,6 +47,7 @@ TLock := !(void^ k,int count = 1) -> void
 		printf("huh %i %i %i\n",thisLock.inUse , thisLock.leftSize,thisLock.lockUsers)
 	}
 }
+
 #MarkFunction("JITPass",TUnlock)
 TUnlock := !(void^ k) -> void
 {

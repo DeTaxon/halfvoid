@@ -15,18 +15,18 @@ TArrayView := class .{@T} extend TGCObject
 
 ViewIterator := class.{@T} extend TGCObject
 {
-	ViewPtr := T[]
+	ViewPtr := void^
 	indx := int
 
 	HaveValue := !() -> bool
 	{
-		return indx < ViewPtr.Size()
+		return indx < ViewPtr->{TArrayView.{T}^}.Size()
 	}
 	"()" := !() -> ref T
 	{
 		i := indx
 		indx += 1
-		return ViewPtr[i]
+		return ViewPtr->{TArrayView.{T}^}^[i]
 	}
 }
 
