@@ -4,8 +4,50 @@ InterpPassPrepare := !(MCFunction^ optFunction) -> MCFunction^
 	result = optFunction
 	
 	result = InterpPassReplaceCoreFunction(result)
+	result = InterpPassPrecomputeLoadElement(result)
 }
 
+
+InterpPassPrecomputeLoadElement := !(MCFunction^ optFunction) -> MCFunction^
+{
+	for it : optFunction.Lines
+	{
+		if it.opcode != "load_element"
+			continue
+
+		varType := optFunction.Objects[it.var2].GetType()
+
+		if optFunction.Objects[it.var3]& is not MCConstInteger
+			continue
+
+		objSet := ref optFunction.Objects[it.var1]
+		assert(objSet& is MCReference)
+		if objSet& is not MCReference
+			continue
+		
+		indVal := optFunction.Objects[it.var3]&->{MCConstInteger^}.GetValue()
+
+		if varType is in TypeClass
+		{
+			asClass := varType->{TypeClass^}.ToClass
+			fld := asClass.GetFieldByIndexRaw(indVal)
+			it.ConstValue = fld.MemOffset
+			it.opcode = "load_element_opt_class_const"
+		}else if IsVecType(varType) or varType == GTypeQuantf {
+			if optFunction.Objects[it.var3]& is MCConstInteger
+			{
+				assert(varType.Base != null)
+				elementSize := varType.Base.GetSize()
+				elementNum := optFunction.Objects[it.var3]&->{MCConstInteger^}.GetValue()
+				it.ConstValue = elementSize*elementNum
+				it.opcode = "load_element_opt_class_const"
+
+			}
+		}
+	
+	}
+	return optFunction
+}
 InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 {
 

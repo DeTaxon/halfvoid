@@ -719,6 +719,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 
 			cs += 1
+		case "load_element_opt_class_const"
+			setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			setPtr->{u8^^}^ = v2->{u8^}[thisLine.ConstValue]&
+			cs += 1
 		case "set_reference"
 			v1 := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)

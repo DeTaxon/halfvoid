@@ -227,6 +227,8 @@ MCLine := class
 	var4 := u16
 	var5 := u16
 
+	ConstValue := s32
+
 	"=" := default
 
 	this := !(MCBaseOpcodes code,u16 v1 = 0, u16 v2 = 0, u16 v3 = 0, u16 v4 = 0, u16 v5 = 0) -> void

@@ -52,7 +52,10 @@ MCBaseOpcodes := enum extend u16
 	"vec_shuffle_zero",
 	"vec_shuffle_end",
 
-	"memset"
+	"memset",
+
+	//Optimizations
+	"load_element_opt_class_const"
 }
 
 MCJumpIfConditions := enum extend u16
