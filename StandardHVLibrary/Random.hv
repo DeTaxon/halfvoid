@@ -5,6 +5,8 @@ initRandom := !() -> void
 	srand(x&->{int^}^)
 }
 
+
+#MarkFunction("JITPass",RandInt)
 RandInt := !(Range rRange) -> int
 {
 	#MarkFunction("CallAtStart",initRandom)

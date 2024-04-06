@@ -1,0 +1,217 @@
+GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
+{
+	res := new BoxAssemblerInline
+
+	itr := itm.Down.Right.Down
+
+	buf := char[256]
+
+	while itr != null
+	{
+		if itr.GetValue() == ":"
+			break
+
+		if itr is not TokenString
+			return null //TODO error
+
+		st := itr->{TokenString^}.Value
+
+		i := 0
+		c := 0
+		while i < st.Size()
+		{
+			switch st^[i]
+			{
+			case '%'
+				i += 1
+				switch st^[i]
+				{
+					case '%'
+						buf[c] = '%'
+						c += 1
+					case in '0'..'9'
+						buf[c] = '$'
+						c += 1
+						buf[c] = st^[i]
+						c += 1
+					case void
+						buf[c] = st^[i]
+						c += 1
+				}
+			case '$'
+				buf[c] = st^[i]
+				c += 1
+				buf[c] = st^[i]
+				c += 1
+			case void
+				buf[c] = st^[i]
+				c += 1
+			}
+			i += 1
+		}
+		res.AsmLines.Push(new String(buf[0]&,c))
+
+
+		itr = itr.Right
+	}
+
+	if itr != null and itr.GetValue() == ":"
+	{
+		itr = itr.Right
+
+		if itr.GetValue() != ":"
+		{
+			assert(itr.Down is TokenString)
+
+			res.ClobData.Push(itr.Down->{TokenString^}.Value)
+			res.ResObj = TryGetExeCall(itr.Down.Right.Down)
+
+			itr = itr.Right
+		}
+	}
+
+	if itr != null and itr.GetValue() == ":"
+	{
+		itr = itr.Right
+		while itr != null
+		{
+			if itr.GetValue() == ":"
+				break
+			if itr.GetValue() == ","
+				itr = itr.Right
+			if itr == null
+				break
+
+			assert(itr.Down is TokenString)
+
+			res.ClobData.Push(itr.Down->{TokenString^}.Value)
+			newInp := TryGetExeCall(itr.Down.Right.Down)
+			if newInp == null
+				return null
+			res.CallObj.Push(newInp)
+
+			itr = itr.Right	
+		}
+	}
+	if itr != null and itr.GetValue() == ":"
+	{
+		itr = itr.Right
+		while itr != null
+		{
+			if itr.GetValue() == ":"
+				break
+			if itr.GetValue() == ","
+				itr = itr.Right
+			if itr == null
+				break
+
+			assert(itr is TokenString)
+
+			strValue := itr->{TokenString^}.Value
+
+			if strValue.Size() > 0 and strValue^[0] == '%'
+			{
+				st := TEchoStream
+				st << "~{"
+				st << strValue^[1..0]
+				st << "}"
+				res.ClobData.Push(st.GetString())
+			}
+			itr = itr.Right
+		}
+	}
+
+
+	return res
+}
+
+BoxAssemblerInline := class extend BoxExeObj
+{
+
+	AsmLines := List.{String^}
+
+	ResObj := BoxExeObj^
+	CallObj := List.{BoxExeObj^}
+
+	ClobData := List.{String^}
+	
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+
+		ResObj?.PrintPointPre(ctx)
+		CallObj[^].PrintPre(ctx)
+		
+		f := ctx.writeStream
+
+		resType := GTypeVoid
+		resId := ctx.GetNewId()
+
+		if ResObj != null
+		{
+			resType = ResObj.GetType()
+			f^ << "%T" << resId << " = "
+		}
+
+		f^ << "call "
+		resType.PrintType(ctx)
+		f^ << " asm sideeffect\""
+
+		for it,i : AsmLines
+		{
+			if i != 0
+				f^ << ";"
+			f^ << it
+		}
+
+		f^ << "\" , \""
+
+
+		writeDot := false
+
+		for it,i :  ClobData
+		{
+			if writeDot
+			{
+				f^ << ","
+			}else{
+				writeDot = true
+			}
+			f^ << it^
+		}
+		for it : !["~{dirflag}","~{fpsr}","~{flags}"]
+		{
+
+			if writeDot
+			{
+				f^ << ","
+			}else{
+				writeDot = true
+			}
+			f^ << it
+		}
+		f^ << "\""
+		f^ << "("
+
+		for it,i : CallObj
+		{
+			if i != 0
+				f^ << ","
+			it.GetType().PrintType(ctx)
+			f^ << " "
+			it.PrintUse(ctx)
+		}
+		f^ << ")"
+		f^ << "\n"
+		if ResObj != null
+		{
+			f^ << "store "
+			resType.PrintType(ctx)
+			f^ << " %T" << resId << " , "
+			resType.PrintType(ctx)
+			f^ << "* "
+			ResObj.PrintPointUse(ctx)
+			f^ << "\n"
+		}
+  		//%7 = call ptr asm sideeffect "movq $1,%rax;movq %rax,$0;", "=r,r,~{rax},~{dirflag},~{fpsr},~{flags}"(ptr %6) #5, !srcloc !5
+	}
+}

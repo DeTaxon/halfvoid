@@ -43,6 +43,8 @@ ShaderCompiler := class extend TGCObject
 			resInt := shaderc_result_get_compilation_status(res)
 			txt := shaderc_result_get_error_message(res)
 
+			printf("error %s\n",txt) //TODO
+
 			resSize := shaderc_result_get_length(res)
 			resBlob := new BlobOnVector(resSize)
 			memcpy(resBlob.GetPointer(),shaderc_result_get_bytes(res),resSize)

@@ -22,6 +22,10 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryGetCommand(itm)
 	}
+	if itm.Down is TokenIndent and itm.Down->{TokenIndent^}.Value == "asm"
+	{
+		return GetAssemblerInline(itm)
+	}
 
 
 	Objs := CheckExeDownList

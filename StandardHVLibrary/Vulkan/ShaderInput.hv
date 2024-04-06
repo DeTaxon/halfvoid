@@ -488,6 +488,38 @@ TUniformSet := class extend TShaderSet
 		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
 	}
 }
+TUniformStorage := class extend TShaderSet
+{
+	setStage := int
+	this := !() -> void
+	{
+		setStage = VK_SHADER_STAGE_VERTEX_BIT
+	}
+	this := !(int stg) -> void
+	{
+		setStage = stg
+	}
+
+	Create := virtual !(VulkanInstance^ inst) -> void
+	{
+		oneDesc := VkDescriptorSetLayoutBinding
+		oneDesc.binding = 0
+		oneDesc.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+		oneDesc.descriptorCount = 1
+		oneDesc.stageFlags = setStage
+		oneDesc.pImmutableSamplers = null
+	
+		setDesc := VkDescriptorSetLayoutCreateInfo()
+		setDesc.bindingCount = 1
+		setDesc.pBindings&->{void^^}^ = oneDesc&->{void^}
+	
+		inst.Funcs.vkCreateDescriptorSetLayout(inst.LogicalDevice,setDesc&,null,itSet&)
+	}
+	GetPoolType := virtual !() -> int
+	{
+		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+	}
+}
 TImageSet := class extend TShaderSet
 {
 	imgCount := int
@@ -543,7 +575,7 @@ TMeshPushConstant := class extend TPushConstant
 {
 	this := !(int itSize) -> void
 	{
-		cnst.stageFlags = 1 shl 7 //VK_SHADER_STAGE_MESH_BIT_EXT //TODO
+		cnst.stageFlags = VK_SHADER_STAGE_MESH_BIT_EXT //TODO
 		cnst.offset = 0
 		cnst.size = itSize
 	}

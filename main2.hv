@@ -2,19 +2,19 @@
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
-
-
-//#MarkFunction("TEST",TestRun)
-TestRun := !(!()&->void cb) -> void
-{
-	cb()
-}
-
 main := !(char^[] args) -> int
 {
-	//glXML.Print()
-	//Nope()
-	RunTest()
+	x := 15
+	y := int
+	asm(
+		"movl %1,%%eax"
+		"addl $150,%%eax"
+		"movl %%eax,%0"
+		: "=r" (y)
+		: "r" (x)
+		: "%eax"
+	)
+	printf("wut %i %i\n",x,y)
 	return 0
 }
 
@@ -28,9 +28,7 @@ Nope := !() -> void
 
 RunTest := !() -> void
 {
-	TestRun(() ==> {
-		printf("yep\n")
-	})
+	RunTest2()
 }
 
 #CreateCallCommand(

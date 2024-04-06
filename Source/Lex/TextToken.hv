@@ -299,7 +299,7 @@ TokenString := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("string <%s>\n",Value)
+		printf("string <%s>\n",Value.Str())
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
