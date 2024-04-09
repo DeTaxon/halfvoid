@@ -5,6 +5,8 @@ AppendClass Task
 	stackPtr := void^
 	thisTaskStackSize := size_t
 
+	fiberContext := fiber_context_x64
+
 	OSFirstInit := !() -> void
 	{
 		
@@ -15,26 +17,34 @@ AppendClass Task
 		if stackPtr != null
 			return void
 
-		getcontext(uContext[0]&)
-		stackSize := 4*1024*1024
-		thisTaskStackSize = stackSize
-		stackPtr = malloc(stackSize) //TODO set stack size
-		//stackPtr = mmap(null,stackSize,PROT_READ + PROT_WRITE,MAP_ANON + MAP_PRIVATE,-1,null)
-		uContext[24]&->{u64^}^ = 0
-		uContext[8]&->{void^^}^ = null
-		uContext[16]&->{void^^}^ = stackPtr
-		uContext[32]&->{u64^}^ = stackSize
-		makecontext(uContext[0]&,ucontextStartTask,0)
 		itTaskWorker = CurrentThread
-	
-		//if #Tracy()
-		//{
-		//	___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
-		//}
+		stackSize := 8*1024*1024
+		stackPtr = malloc(stackSize) //TODO set stack size
+		thisTaskStackSize = stackSize
+		get_context_x64(fiberContext&)
+		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
-		oldTask := CurrentTask->{void^}
-		CurrentTask = this&
-		swapcontext(oldTask->{Task^}.uContext[0]&,uContext[0]&)
+
+		//getcontext(uContext[0]&)
+		//stackSize := 4*1024*1024
+		//thisTaskStackSize = stackSize
+		//stackPtr = malloc(stackSize) //TODO set stack size
+		////stackPtr = mmap(null,stackSize,PROT_READ + PROT_WRITE,MAP_ANON + MAP_PRIVATE,-1,null)
+		//uContext[24]&->{u64^}^ = 0
+		//uContext[8]&->{void^^}^ = null
+		//uContext[16]&->{void^^}^ = stackPtr
+		//uContext[32]&->{u64^}^ = stackSize
+		//makecontext(uContext[0]&,ucontextStartTask,0)
+		//itTaskWorker = CurrentThread
+	
+		////if #Tracy()
+		////{
+		////	___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
+		////}
+
+		//oldTask := CurrentTask->{void^}
+		//CurrentTask = this&
+		//swapcontext(oldTask->{Task^}.uContext[0]&,uContext[0]&)
 	}
 	GetStackUsage := !() -> TaskStackUsageInfo
 	{
@@ -47,10 +57,10 @@ AppendClass Task
 	}
 	firstStartOS := !() -> void
 	{
-		oldTask := CurrentTask->{void^}
-		CurrentTask = CurrentThread.ThreadMainTask
-		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
-			swapcontext(uContext[0]&,CurrentTask.uContext[0]&)
+		//oldTask := CurrentTask->{void^}
+		//CurrentTask = CurrentThread.ThreadMainTask
+		//if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+		//	swapcontext(uContext[0]&,CurrentTask.uContext[0]&)
 	}
 	switchToTask := !() -> void
 	{
@@ -61,8 +71,9 @@ AppendClass Task
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
-		if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
-			llvmLongJump(this.longJumpBuf[0]&)
+		//if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
+		//	llvmLongJump(this.longJumpBuf[0]&)
+		swap_context_x64(oldTask->{Task^}.fiberContext&,this.fiberContext&)
 	}
 	OSDestroy := !() -> void
 	{

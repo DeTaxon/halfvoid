@@ -1,20 +1,30 @@
 
+
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
+
+baseContext := fiber_context_x64
+newContext := fiber_context_x64
+
+
+TestFunc := !() -> void
+{
+	c := char[1024]
+	printf("Test\n")
+	swap_context_x64(newContext&,baseContext&)
+}
 main := !(char^[] args) -> int
 {
-	x := 15
-	y := int
-	asm(
-		"movl %1,%%eax"
-		"addl $150,%%eax"
-		"movl %%eax,%0"
-		: "=r" (y)
-		: "r" (x)
-		: "%eax"
-	)
-	printf("wut %i %i\n",x,y)
+	stck := MakeBlob(4*1024*1024)
+
+	get_context_x64(newContext&)
+	make_context_x64(newContext&,TestFunc,stck.GetPointer(),stck.Size())
+
+	//printf("Thread 1\n")
+	swap_context_x64(baseContext&,newContext&)
+
+	printf("Back 1\n")
 	return 0
 }
 

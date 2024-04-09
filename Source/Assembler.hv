@@ -34,6 +34,15 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 						c += 1
 						buf[c] = st^[i]
 						c += 1
+					case '='
+						buf[c] = '$'
+						buf[c+1] = '{'
+						buf[c+2] = ':'
+						buf[c+3] = 'u'
+						buf[c+4] = 'i'
+						buf[c+5] = 'd'
+						buf[c+6] = '}'
+						c += 7
 					case void
 						buf[c] = st^[i]
 						c += 1

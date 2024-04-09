@@ -1,0 +1,124 @@
+
+fiber_context_x64 := class
+{
+	rip := void^
+	rsp := void^
+	rbx := void^
+	rbp := void^
+	r12 := void^
+	r13 := void^
+	r14 := void^
+	r15 := void^
+
+	//xmm6 := vec4f
+	//xmm7 := vec4f
+	//xmm8 := vec4f
+	//xmm9 := vec4f
+	//xmm10 := vec4f
+	//xmm11 := vec4f
+	//xmm12 := vec4f
+	//xmm13 := vec4f
+	//xmm14 := vec4f
+	//xmm15 := vec4f
+
+	"=" := default
+}
+
+get_context_x64 := !(fiber_context_x64^ ctx) -> void
+{
+	asm(
+		"movq %0, %%rdi;"
+		"call get_context_step%=;"
+		"jmp get_context_end%=;"
+		"get_context_step%=:"
+
+		"movq (%%rsp),%%r8"
+		"movq %%r8,8*0(%%rdi)"
+		"leaq 8(%%rsp),%%r8"
+		"movq %%r8,8*1(%%rdi)"
+
+		"movq %%rbx,8*2(%%rdi)"
+		"movq %%rbp,8*3(%%rdi)"
+		"movq %%r12,8*4(%%rdi)"
+		"movq %%r13,8*5(%%rdi)"
+		"movq %%r14,8*6(%%rdi)"
+		"movq %%r15,8*7(%%rdi)"
+
+		"movq %%r15,8*7(%%rdi)"
+
+		"xorl %%eax, %%eax"
+		"ret;"
+		"get_context_end%=:"
+		:
+		: "r"(ctx)
+		: "%rdi"
+	)
+}
+set_context_x64 := !(fiber_context_x64^ ctx) -> void
+{
+	asm(
+		"movq 8*0(%%rdi),%%r8"
+		"movq 8*1(%%rdi),%%rsp"
+
+		"movq 8*2(%%rdi),%%rbx"
+		"movq 8*3(%%rdi),%%rbp"
+		"movq 8*4(%%rdi),%%r12"
+		"movq 8*5(%%rdi),%%r13"
+		"movq 8*6(%%rdi),%%r14"
+		"movq 8*7(%%rdi),%%r15"
+
+		"pushq %%r8"
+		"xorl %%eax, %%eax"
+		"ret;"
+		:
+		: "r"(ctx)
+		: "%rdi","%r8"
+	)
+}
+swap_context_x64 := !(fiber_context_x64^ thisContext,fiber_context_x64^ newContext) -> void
+{
+	asm(
+		"movq %0, %%rdi;"
+		"movq %1, %%rsi;"
+		"call swap_context_step%=;"
+		"jmp swap_context_end%=;"
+		"swap_context_step%=:"
+
+		"movq (%%rsp),%%r8"
+		"movq %%r8,8*0(%%rdi)"
+		"leaq 8(%%rsp),%%r8"
+		"movq %%r8,8*1(%%rdi)"
+
+		"movq %%rbx,8*2(%%rdi)"
+		"movq %%rbp,8*3(%%rdi)"
+		"movq %%r12,8*4(%%rdi)"
+		"movq %%r13,8*5(%%rdi)"
+		"movq %%r14,8*6(%%rdi)"
+		"movq %%r15,8*7(%%rdi)"
+
+
+		"movq 8*0(%%rsi),%%r8"
+		"movq 8*1(%%rsi),%%rsp"
+
+		"movq 8*2(%%rsi),%%rbx"
+		"movq 8*3(%%rsi),%%rbp"
+		"movq 8*4(%%rsi),%%r12"
+		"movq 8*5(%%rsi),%%r13"
+		"movq 8*6(%%rsi),%%r14"
+		"movq 8*7(%%rsi),%%r15"
+
+		"pushq %%r8"
+		"xorl %%eax, %%eax"
+		"ret;"
+		"swap_context_end%=:"
+		:
+		: "r"(thisContext) , "r"(newContext)
+		: "%rdi","%r8", "%rsi"
+	)
+}
+
+make_context_x64 := !(fiber_context_x64^ ctx,void^ fncPointer, void^ newStack, int stackSize) -> void
+{
+	ctx.rip = fncPointer
+	ctx.rsp = newStack->{u8^}[stackSize - 128 - 8]& //128 - red zone
+}
