@@ -82,7 +82,10 @@
 
 		"eventfd" : "int,u64,int",
 		"inotify_init" : "int",
+		"inotify_init1" : "int,int",
 		"inotify_add_watch" : "int,int,char^,int",
+
+		"ioctl" : "int,int,int,...",
 
 		"poll" : "int,void^,int,int",
 

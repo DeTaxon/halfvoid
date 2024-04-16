@@ -4,41 +4,57 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 
-baseContext := fiber_context_x64
-newContext := fiber_context_x64
-
-
-TestFunc := !() -> void
-{
-	c := char[1024]
-	printf("Test\n")
-	swap_context_x64(newContext&,baseContext&)
-}
 main := !(char^[] args) -> int
 {
-	stck := MakeBlob(4*1024*1024)
 
-	get_context_x64(newContext&)
-	make_context_x64(newContext&,TestFunc,stck.GetPointer(),stck.Size())
+	MonitorFolder(".",false,(fsObj) ==> {
+		if fsObj is not File
+			return void
+		f := fsObj->{File^}
+		printf("called <%s>\n",f.GetPath().Str())
+	})
 
-	//printf("Thread 1\n")
-	swap_context_x64(baseContext&,newContext&)
-
-	printf("Back 1\n")
+	while(true)
+	{
+		printf("step\n")
+		TSleep(1)
+	}
 	return 0
 }
 
-Nope := !() -> void
-{
-	c := result&
-
-	g := @work 2+2
-	@work printf("test %p\n",g)
-}
 
 RunTest := !() -> void
 {
-	RunTest2()
+	printf("test\n")
+}
+
+RangesExperiment := !() -> void
+{
+
+	Pripeline(
+		GetFile("main2.hv").GetStream()
+		DataStreamTo.{u32}
+		Map(@1 * 15)
+		Map(@1.ToString())
+		ToTextStream
+		TCPConnect("127.0.0.1:1234")
+	).Run()
+
+	
+	x := ![1,6,8,2,5,8]
+
+	x.sorted()
+		.top(1)
+		.map(@1.ToString())
+		.reduce(" ")
+		.write(stdout)
+	f := FSGetFile("main2.hv")
+
+	f.GetStream().Iter().Map(Base64Decode).Split("\n").Window(2):q.Map(Base64Encode).Write()
+
+	x.Iter().Sort().Map(@1.ToString()).Reduce(",").Write(stdout)
+
+	Stream(x) >> f.GetSream()
 }
 
 #CreateCallCommand(

@@ -1,0 +1,96 @@
+
+
+IN_CLOSE := 24
+IN_OPEN := 32
+IN_MODIFY := 2
+
+
+wd_struct := class
+{
+	wd := s32
+	mask := u32
+	cookie := u32
+
+	len := u32
+	name := char[1]
+}
+
+//TODO
+//Make File^ , not String^
+//Check for repeats
+//Poll in io_uring
+FIONREAD := 21531
+inotify_wrapper_fd := class
+{
+	fd := int
+
+	fileNodes := AVLMap.{int,inotify_wrapper_node}
+
+	Init := !() -> void
+	{
+		//fd = inotify_init1(2048) // IN_NONBLOCK
+	}
+
+	MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
+	{
+		@once {
+			OSDoInThread(() ==> {
+				this.fd = inotify_init1(2048)
+			})
+			OSAddStreamReader(fd,(blb,isLast) ==> [this&]{
+				ptr := blb.GetPointer()->{wd_struct^}
+				fileName := StringSpan(ptr.name[0]&,ptr.len)
+
+				for it : fileNodes
+				{
+
+					sBuf := TEchoStream
+					sBuf << it.objectName << "/" << fileName
+
+					fullPath := sBuf.GetString()
+
+					newFile := new File()
+					newFile.absPath = fullPath
+					newFile.objName = fileName.GetString()
+
+					it.monitorWorker.CreateTask(() ==> [newFile,cc = it.callback]{
+						cc(newFile)
+					})
+				}
+			})
+		}
+
+
+		TLock(this&)
+		defer TUnlock(this&)
+
+		wd := inotify_add_watch(fdTest,folderPath.GetString().Str(),IN_MODIFY)
+		printf("tst %i\n",wd)
+		newNode := ref fileNodes[wd]
+		newNode.objectName = folderPath.GetString()
+		newNode.monitorWorker = CurrentThread
+		newNode.callback = cb.Capture()
+	}
+}
+inotify_wrapper_node := class
+{
+	objectName := String^
+	monitorWorker := TaskWorker^
+	callback := !(FSObject^)&-> void
+}
+
+iw_fd := inotify_wrapper_fd
+//TODO add destroy
+initMonitorFolder := !() -> void
+{
+	iw_fd.Init()
+}
+
+
+MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
+{
+	#MarkFunction("CallAtStart",initMonitorFolder)
+
+	return iw_fd.MonitorFolder(folderPath,recursive,cb)
+}
+

@@ -1,4 +1,6 @@
 
+
+FSObject := type vRepoObject
 vRepoObject := class extend TGCObject
 {
 	objName := String^

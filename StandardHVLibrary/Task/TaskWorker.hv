@@ -23,7 +23,7 @@ TaskWorker := class extend TGCObject
 	}
 	CreateThread := !() -> void
 	{
-		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a wait for passing variable as weak pointer
+		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a way for passing variable as weak pointer
 			CurrentThread = wk->{TaskWorker^}
 			CurrentThread.ThreadMainTask = CurrentTask
 			CurrentTask.OSFirstInit()
@@ -31,6 +31,15 @@ TaskWorker := class extend TGCObject
 			CurrentThread.ThreadMainTask = null
 			CurrentThread = null
 		})
+	}
+	CreateTask := !(!()&-> void cb) -> Task^
+	{
+		startTask := new Task(cb.Capture())
+
+		AllTasks.Insert(startTask)
+		CreateTasks.Push(startTask)
+		
+		return startTask
 	}
 	PopReadyTask := !() -> Task^
 	{

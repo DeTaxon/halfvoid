@@ -6,7 +6,6 @@ File := class extend vRepoObject
 
 	this := !() -> void
 	{
-		ptrToProxy = null
 	}
 	GetFile := !(StringView fileName) -> File^
 	{
