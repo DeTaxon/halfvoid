@@ -7,14 +7,14 @@
 main := !(char^[] args) -> int
 {
 
-	//TSpawnTask(() ==> {
+	TSpawnTask(() ==> {
 		AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
 			if fsObj is not File
 				return void
 			f := fsObj->{File^}
 			printf("called <%s>\n",f.GetPath().Str())
 		})
-	//})
+	})
 
 	while(true)
 	{

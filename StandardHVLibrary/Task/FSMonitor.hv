@@ -16,9 +16,7 @@ wd_struct := class
 }
 
 //TODO
-//Make File^ , not String^
 //Check for repeats
-//Poll in io_uring
 FIONREAD := 21531
 inotify_wrapper_fd := class
 {
@@ -28,15 +26,13 @@ inotify_wrapper_fd := class
 
 	Init := !() -> void
 	{
-		//fd = inotify_init1(2048) // IN_NONBLOCK
 	}
 
 	MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
 	{
 		@once {
-			//OSLoop.DoInThread(() ==> {
-			//})
 			this.fd = inotify_init1(2048)
+
 			TSpawnTask(() ==> [this&]{
 				OSAsyncReadNonStop(fd,(blb) ==> [this&]{
 					ptr := blb.GetPointer()->{wd_struct^}
@@ -54,33 +50,51 @@ inotify_wrapper_fd := class
 						newFile.absPath = fullPath
 						newFile.objName = fileName.GetString()
 
-						it.monitorWorker.CreateTask(() ==> [newFile,cc = it.callback]{
-							cc(newFile)
-						})
+						if it.isPaused
+						{
+							it.monitorTask.resume()
+							it.isPaused = false
+							it.changedObject = newFile
+						}
 					}
-
 				})
 			})
 		}
 
 
 		TLock(this&)
-		defer TUnlock(this&)
 
 		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),IN_MODIFY)
-		printf("tst %i\n",wd)
+
 		newNode := ref fileNodes[wd]
 		newNode.objectName = folderPath.GetString()
-		newNode.monitorWorker = CurrentThread
-		newNode.callback = cb.Capture()
+		newNode.monitorTask = CurrentTask
 
+		TUnlock(this&)
+
+		thrd := CurrentThread
+		//TODO Cancalable
+		while true
+		{
+			TaskCheckMutex.Lock()
+			newNode.isPaused = true
+			thrd.switchToMain()
+			TaskCheckMutex.Unlock()
+
+			if newNode.changedObject != null
+			{
+				cb(newNode.changedObject)
+				newNode.changedObject = null
+			}
+		}
 	}
 }
 inotify_wrapper_node := class
 {
 	objectName := String^
-	monitorWorker := TaskWorker^
-	callback := !(FSObject^)&-> void
+	monitorTask := Task^
+	changedObject := FSObject^
+	isPaused := bool
 }
 
 iw_fd := inotify_wrapper_fd

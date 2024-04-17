@@ -31,10 +31,13 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			someoneOnLoop = true
 
 			nowTime := GetSteadyTime()
-	
-			while TaskTimersArray.Size() != 0 and TaskTimersArray[0].0 <= nowTime
+
+
+			someResumed := false
+			while TaskTimersArray.Size() != 0 and (TaskTimersArray[0].0 - nowTime <= 0.001) //1 ms accuracy
 			{
 				TaskTimersArray[0].1.resume()
+				someResumed = true
 				TaskTimersArray.Pop()
 				TaskLoopWorkCounter -= 1
 			}
@@ -43,7 +46,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			{
 				waitTime = TaskTimersArray[0].0 - nowTime
 			}
-			if TaskLoopWorkCounter != 0
+			if TaskLoopWorkCounter != 0 and not someResumed
 			{
 				//TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
 				TaskCodePollWork(waitTime)

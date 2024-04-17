@@ -51,10 +51,10 @@ OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
 
 	while true
 	{
-		//TaskCheckMutex.Lock()
+		TaskCheckMutex.Lock()
 		newWork.isPaused = true
 		thrd.switchToMain()
-		//TaskCheckMutex.Unlock()
+		TaskCheckMutex.Unlock()
 		//TODO cancel
 		
 		count := int
@@ -76,6 +76,10 @@ TaskCodePollWork := !(double waitTime) -> void
 	poll(TaskPollList[0]&,TaskPollSize,(waitTime*1000)->{int})
 	TaskCheckMutex.Lock()
 
+	if TaskPollList[0].revents != 0
+	{
+		TaskMainEvent.Wait()
+	}
 
 	for i : TaskPollSize
 	{
