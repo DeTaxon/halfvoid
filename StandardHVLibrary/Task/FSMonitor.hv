@@ -34,29 +34,32 @@ inotify_wrapper_fd := class
 	MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
 	{
 		@once {
-			OSLoop.DoInThread(() ==> {
-				this.fd = inotify_init1(2048)
-			})
-			OSLoop.AddStreamReader(fd,(blb,isLast) ==> [this&]{
-				ptr := blb.GetPointer()->{wd_struct^}
-				fileName := StringSpan(ptr.name[0]&,ptr.len)
+			//OSLoop.DoInThread(() ==> {
+			//})
+			this.fd = inotify_init1(2048)
+			TSpawnTask(() ==> [this&]{
+				OSAsyncReadNonStop(fd,(blb) ==> [this&]{
+					ptr := blb.GetPointer()->{wd_struct^}
+					fileName := StringSpan(ptr.name[0]&,ptr.len)
 
-				for it : fileNodes
-				{
+					for it : fileNodes
+					{
 
-					sBuf := TEchoStream
-					sBuf << it.objectName << "/" << fileName
+						sBuf := TEchoStream
+						sBuf << it.objectName << "/" << fileName
 
-					fullPath := sBuf.GetString()
+						fullPath := sBuf.GetString()
 
-					newFile := new File()
-					newFile.absPath = fullPath
-					newFile.objName = fileName.GetString()
+						newFile := new File()
+						newFile.absPath = fullPath
+						newFile.objName = fileName.GetString()
 
-					it.monitorWorker.CreateTask(() ==> [newFile,cc = it.callback]{
-						cc(newFile)
-					})
-				}
+						it.monitorWorker.CreateTask(() ==> [newFile,cc = it.callback]{
+							cc(newFile)
+						})
+					}
+
+				})
 			})
 		}
 
@@ -64,12 +67,13 @@ inotify_wrapper_fd := class
 		TLock(this&)
 		defer TUnlock(this&)
 
-		wd := inotify_add_watch(fdTest,folderPath.GetString().Str(),IN_MODIFY)
+		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),IN_MODIFY)
 		printf("tst %i\n",wd)
 		newNode := ref fileNodes[wd]
 		newNode.objectName = folderPath.GetString()
 		newNode.monitorWorker = CurrentThread
 		newNode.callback = cb.Capture()
+
 	}
 }
 inotify_wrapper_node := class
@@ -87,7 +91,7 @@ initMonitorFolder := !() -> void
 }
 
 
-MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
+AsyncMonitorFolderNonStop := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
 {
 	#MarkFunction("CallAtStart",initMonitorFolder)
 

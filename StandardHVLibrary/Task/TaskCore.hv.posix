@@ -1,4 +1,90 @@
+
+TaskOSInit := !() -> void
+{
+	TaskMainEvent = new Event()
+
+	TaskPollSize = 1
+	TaskPollList[0].fd = TaskMainEvent.Get()
+	TaskPollList[0].events = POLLIN
+	//TaskPollFunctions[0] = TaskMainEventCB
+}
+TaskOSDestroy := !() -> void
+{
+	TaskMainEvent = null
+}
+
+TaskMainEvent := Event^
+//TaskMainEventCB := !() -> void
+//{
+//	
+//}
+
+TaskPollSize := int
+TaskPollWorks := osReadWork^[32]
+TaskPollList := pollfd[32]
+
+osReadWork := class
+{
+	workTask := Task^
+	isPaused := bool
+}
+
+//TODO  make cancalable
+OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
+{
+	thrd := CurrentThread
+	
+	newWork := osReadWork
+	newWork.workTask = CurrentTask
+
+	TaskCheckMutex.Lock()
+	TaskLoopWorkCounter += 1
+	itId := TaskPollSize
+	TaskPollSize += 1
+	TaskPollWorks[itId] = newWork&
+
+	TaskPollList[itId].fd = fd
+	TaskPollList[itId].events = POLLIN
+
+	TaskMainEvent.Emit()
+	TaskCheckMutex.Unlock()
+
+	while true
+	{
+		//TaskCheckMutex.Lock()
+		newWork.isPaused = true
+		thrd.switchToMain()
+		//TaskCheckMutex.Unlock()
+		//TODO cancel
+		
+		count := int
+		ioctl(fd,FIONREAD,count&)
+
+		buf := MakeBlob(count)
+		read(fd,buf.GetPointer(),count) //TODO somehow same thread?
+		cb(buf)
+	}
+}
+
 TaskCodePollWork := !(double waitTime) -> void
 {
+	for i : TaskPollSize
+	{
+		TaskPollList[i].revents = 0
+	}
+	TaskCheckMutex.Unlock()
 	poll(TaskPollList[0]&,TaskPollSize,(waitTime*1000)->{int})
+	TaskCheckMutex.Lock()
+
+
+	for i : TaskPollSize
+	{
+		if TaskPollWorks[i] == null
+			continue
+		if TaskPollList[i].revents != 0 and TaskPollWorks[i].isPaused
+		{
+			TaskPollWorks[i].workTask.resume()
+			TaskPollWorks[i].isPaused = false
+		}
+	}
 }
