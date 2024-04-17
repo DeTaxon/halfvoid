@@ -1,102 +1,144 @@
 
 
-osWorker := Thread^
-osWorkerEvent := Event
-osWorkerMutex := Mutex
+OSLoopType := class
+{
+	osWorker := Thread^
+	osWorkerEvent := Event
+	osWorkerMutex := Mutex
+
+	externalWork := HybridQueue.{osExternalWork^,20}
+
+	Init := !() -> void
+	{
+		osWorkerEvent."this"()
+		osWorkerMutex."this"()
+
+		osWorker = new Thread(() ==> {
+
+			polls := pollfd[32]
+
+			pollsCount := 1
+			polls[0].fd = osWorkerEvent.evId
+			polls[0].events = POLLIN
+
+			movedWork := externalWork->Type
+
+			while true
+			{
+
+				osWorkerMutex.Lock()
+				if boolAddFD
+				{
+					polls[1].fd = fdTest
+					polls[1].events = POLLIN
+					pollsCount = 2
+					boolAddFD = false
+				}
+				if externalWork.Size() != 0
+				{
+					for it : externalWork
+					{
+						movedWork.Push(it)
+					}
+					externalWork.Destroy()
+				}
+				osWorkerMutex.Unlock()
+
+				if movedWork.Size() != 0
+				{
+					for it : movedWork
+					{
+						cb := it.workCallback
+						cb() //TODO cant use it.workCallback()
+						it.waitIsFinished = true
+						it.waitConVar.Notify()
+					}
+					movedWork.Destroy()
+				}
+
+				for i : pollsCount
+				{
+					if polls[i].revents != 0
+					{
+						switch i
+						{
+							case 0
+								osWorkerEvent.Wait()
+							case 1
+								count := int
+								ioctl(fdTest,FIONREAD,count&)
+
+								buf := MakeBlob(count)
+								read(fdTest,buf.GetPointer(),count)
+								cbTest(buf,false)
+						}
+					}
+					polls[i].revents = 0
+				}
+
+				poll(polls[0]&,pollsCount,1000)
+			}
+		})
+	}
+
+	DoInThread := !(!()&->void cb) -> void
+	{
+		#MarkFunction("CallAtStart",OSWorkerStart)
+
+		thisWork := osExternalWork
+		thisWork."this"()
+	
+		osWorkerMutex.Lock()
+
+		externalWork.Push(thisWork&)
+		thisWork.workCallback = cb
+
+		osWorkerEvent.Emit()
+		while not thisWork.waitIsFinished
+		{
+			thisWork.waitConVar.Wait(osWorkerMutex&)
+		}
+		osWorkerMutex.Unlock()
+	}
+
+	AddStreamReader := !(int fd,!(Blob^,bool)&->void cb) -> void
+	{
+		#MarkFunction("CallAtStart",OSWorkerStart)
+	
+		cbTest = cb.Capture()
+		fdTest = fd
+	
+		osWorkerMutex.Lock()
+		osWorkerEvent.Emit()
+		boolAddFD = true
+		osWorkerMutex.Unlock()
+	}
+
+}
+
+osExternalWork := class
+{
+	waitIsFinished := bool
+	waitConVar := ConVar
+	workCallback := !()&->void
+
+	this := !() -> void
+	{
+		waitConVar."this"()
+	}
+}
+
+OSLoop := OSLoopType
+
 OSWorkerStart := !() -> void
 {
-	osWorkerEvent."this"()
-	osWorkerMutex."this"()
-
-	finishConVar."this"()
-
-	osWorker = new Thread(() ==> {
-
-		polls := pollfd[32]
-
-		pollsCount := 1
-		polls[0].fd = osWorkerEvent.evId
-		polls[0].events = POLLIN
-
-		while true
-		{
-
-			osWorkerMutex.Lock()
-			if boolAddFD
-			{
-				polls[1].fd = fdTest
-				polls[1].events = POLLIN
-				pollsCount = 2
-				boolAddFD = false
-			}
-			if finishSome
-			{
-				doInThread()
-				finishConVar.Notify()
-				finishSome = false
-			}
-			osWorkerMutex.Unlock()
-
-			for i : pollsCount
-			{
-				if polls[i].revents != 0
-				{
-					switch i
-					{
-						case 0
-							osWorkerEvent.Wait()
-						case 1
-							count := int
-							ioctl(fdTest,FIONREAD,count&)
-
-							buf := MakeBlob(count)
-							read(fdTest,buf.GetPointer(),count)
-							cbTest(buf,false)
-					}
-				}
-				polls[i].revents = 0
-			}
-
-			poll(polls[0]&,pollsCount,1000)
-		}
-	})
+	OSLoop.Init()
 }
+
 cbTest := !(Blob^,bool)&-> void
 fdTest := int
-doInThread := !()&->void
-
-finishSome := bool
-finishConVar := ConVar 
-
-OSDoInThread := !(!()&->void cb) -> void
-{
-	#MarkFunction("CallAtStart",OSWorkerStart)
-
-	osWorkerMutex.Lock()
-	doInThread = cb
-	osWorkerEvent.Emit()
-	finishSome = true
-	while finishSome
-	{
-		finishConVar.Wait(osWorkerMutex&)
-	}
-	osWorkerMutex.Unlock()
-}
 
 boolAddFD := bool
-
-OSAddStreamReader := !(int fd,!(Blob^,bool)&->void cb) -> void
-{
-	#MarkFunction("CallAtStart",OSWorkerStart)
-
-	cbTest = cb.Capture()
-	fdTest = fd//inotify_init1(2048) // IN_NONBLOCK
-
-	osWorkerMutex.Lock()
-	osWorkerEvent.Emit()
-	boolAddFD = true
-	osWorkerMutex.Unlock()
-}
 
 //TODO add destroy
 OSWorkerEnd := !() -> void

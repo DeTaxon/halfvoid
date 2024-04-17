@@ -34,10 +34,10 @@ inotify_wrapper_fd := class
 	MonitorFolder := !(StringView folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
 	{
 		@once {
-			OSDoInThread(() ==> {
+			OSLoop.DoInThread(() ==> {
 				this.fd = inotify_init1(2048)
 			})
-			OSAddStreamReader(fd,(blb,isLast) ==> [this&]{
+			OSLoop.AddStreamReader(fd,(blb,isLast) ==> [this&]{
 				ptr := blb.GetPointer()->{wd_struct^}
 				fileName := StringSpan(ptr.name[0]&,ptr.len)
 
