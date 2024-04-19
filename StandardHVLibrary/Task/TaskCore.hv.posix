@@ -30,7 +30,7 @@ osReadWork := class
 }
 
 //TODO  make cancalable
-OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
+OSAsyncReadNonStop := !(void^ fd,!(Blob^)&->void cb) -> void
 {
 	thrd := CurrentThread
 	

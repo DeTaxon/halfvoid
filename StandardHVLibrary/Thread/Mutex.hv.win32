@@ -35,7 +35,8 @@ ConVar := class
 	}
 	WaitFor := !(Mutex^ mtx,double waitTime) ->void
 	{
-		SleepConditionVariableCS(this&,mtx,(waitTime*1000)->{int})
+		waitTimeInt := (waitTime*1000)->{int}
+		SleepConditionVariableCS(this&,mtx,waitTimeInt)
 	}
 	Notify := !() -> void
 	{

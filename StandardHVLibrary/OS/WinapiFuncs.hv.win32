@@ -65,6 +65,13 @@ BY_HANDLE_FILE_INFORMATION := class
 	nFileIndexHigh := u32
 	nFileIndexLow := u32
 }
+FILE_NOTIFY_INFORMATION := class
+{
+	NextEntryOffset := s32
+	Action := s32
+	FileNameLength := s32
+	FileName := u16[1]
+}
 
 Utf8ToUtf16 := !(char^ itStr) -> Vector.{u16}
 {
@@ -79,6 +86,15 @@ Utf16ToUtf8 := !(u16^ itStr) -> String^
 	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,null->{char^},0,null,null)
 	assert(resSize < 1024)
 	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,-1,buffer[0]&,resSize,null,null)
+	buffer[resSize] = 0
+	return new String(buffer[0]&)
+}
+Utf16ToUtf8 := !(u16^ itStr,int len) -> String^
+{
+	buffer := char[1024] //TODO unconst?
+	resSize := WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,len,null->{char^},0,null,null)
+	assert(resSize < 1024)
+	WideCharToMultiByte(CP_UTF8,WC_COMPOSITECHECK,itStr,len,buffer[0]&,resSize,null,null)
 	buffer[resSize] = 0
 	return new String(buffer[0]&)
 }

@@ -50,6 +50,9 @@ test:
 test.exe:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid.exe -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -o out.ll
 	clang -g out.ll -mfsgsbase -o test.exe
+test2.exe:
+	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -cache /tmp/TestCache.zip -o /tmp/out.ll
+	clang --target=x86_64-w64-mingw32-gnu -g /tmp/out.ll -mfsgsbase -o test.exe -lws2_32
 jit:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run:

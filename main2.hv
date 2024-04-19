@@ -6,21 +6,42 @@
 
 main := !(char^[] args) -> int
 {
+	thisFolder := CreateFileA(".",
+		FILE_LIST_DIRECTORY,
+		FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,
+		null,
+		OPEN_EXISTING,
+		FILE_FLAG_BACKUP_SEMANTICS,
+		null)
 
-	TSpawnTask(() ==> {
-		AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
-			if fsObj is not File
-				return void
-			f := fsObj->{File^}
-			printf("called <%s>\n",f.GetPath().Str())
-		})
-	})
+	resultData := char[1024]
+	resBytes := int
 
-	while(true)
+	nt := resultData[0]&->{FILE_NOTIFY_INFORMATION^}
+
+	while true
 	{
-		printf("step\n")
-		TSleep(1)
+		ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,null,null)
+
+		nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
+		printf("hey %s\n",nm.Str())
 	}
+
+
+	//TSpawnTask(() ==> {
+	//	AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
+	//		if fsObj is not File
+	//			return void
+	//		f := fsObj->{File^}
+	//		printf("called <%s>\n",f.GetPath().Str())
+	//	})
+	//})
+
+	//while(true)
+	//{
+	//	printf("step\n")
+	//	TSleep(1)
+	//}
 	return 0
 }
 

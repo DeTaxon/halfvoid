@@ -13,14 +13,19 @@
 		"FILE_SHARE_WRITE" : 2,
 		"FILE_SHARE_DELETE" : 4,
 
+		"FILE_LIST_DIRECTORY" : 1,
+
 		"CREATE_ALWAYS" : 2,
 		"CREATE_NEW" : 1,
 		"OPEN_ALWAYS" : 4,
 		"OPEN_EXISTING" : 3,
-		"TRUNCATE_EXISTING" : 5
+		"TRUNCATE_EXISTING" : 5,
+
+		"FILE_NOTIFY_CHANGE_LAST_WRITE" : 16
 	},
 	"funcs" : {
 		
+		"CreateFileA" : "void^,char^,int,int,void^,int,int,void^",
 		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",
 		"WriteFile" : "int,void^,void^,u32,u32^,void^",
 		"ReadFile" : "int,void^,void^,u32,u32^,void^",
@@ -96,6 +101,8 @@
 		"SetEvent" : "int,void^",
 		"ResetEvent" : "int,void^",
 		"WaitForMultipleObjects" : "int,u32,void^,int,u32",
+
+		"WSAPoll" : "int,void^,int,int",
 
 		"GetOverlappedResult" : "int,void^,void^,int^,int",
 
