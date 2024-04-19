@@ -91,6 +91,7 @@
 		"CreateThread" : "void^,void^,size_t,void^,void^,u32,void^",
 		"GetCurrentThreadId" : "int",
 		"WaitForSingleObject" : "void,void^,u32",
+		"WaitForMultipleObjects" : "int,u32,void^,int,u32",
 
 		"ConvertThreadToFiber" : "void^,void^",
 		"SwitchToFiber" : "void,void^",
@@ -100,7 +101,6 @@
 		"CreateEventA" : "void^,void^,int,int,char^",
 		"SetEvent" : "int,void^",
 		"ResetEvent" : "int,void^",
-		"WaitForMultipleObjects" : "int,u32,void^,int,u32",
 
 		"WSAPoll" : "int,void^,int,int",
 

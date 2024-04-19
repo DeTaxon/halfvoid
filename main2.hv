@@ -6,26 +6,35 @@
 
 main := !(char^[] args) -> int
 {
-	thisFolder := CreateFileA(".",
-		FILE_LIST_DIRECTORY,
-		FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,
-		null,
-		OPEN_EXISTING,
-		FILE_FLAG_BACKUP_SEMANTICS,
-		null)
+	TSpawnTask(() ==> {
+		thisFolder := CreateFileA(".",
+			FILE_LIST_DIRECTORY,
+			FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,
+			null,
+			OPEN_EXISTING,
+			FILE_FLAG_BACKUP_SEMANTICS or_b FILE_FLAG_OVERLAPPED,
+			null)
 
-	resultData := char[1024]
-	resBytes := int
+		evnt := new Event()
 
-	nt := resultData[0]&->{FILE_NOTIFY_INFORMATION^}
+		resultData := char[1024]
+		resBytes := int
 
-	while true
-	{
-		ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,null,null)
+		nt := resultData[0]&->{FILE_NOTIFY_INFORMATION^}
 
-		nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
-		printf("hey %s\n",nm.Str())
-	}
+		lap := OVERLAPPED
+		lap.hEvent = evnt.Get()
+
+	
+		ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
+		AsyncWaitEventNonStop(evnt.Get(),() ==> 
+		{
+			ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
+
+			nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
+			printf("hey %s\n",nm.Str())
+		})
+	})
 
 
 	//TSpawnTask(() ==> {
@@ -37,11 +46,11 @@ main := !(char^[] args) -> int
 	//	})
 	//})
 
-	//while(true)
-	//{
-	//	printf("step\n")
-	//	TSleep(1)
-	//}
+	while(true)
+	{
+		printf("step\n")
+		TSleep(1)
+	}
 	return 0
 }
 

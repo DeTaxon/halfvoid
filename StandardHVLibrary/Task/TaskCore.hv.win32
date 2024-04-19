@@ -4,8 +4,7 @@ TaskOSInit := !() -> void
 	TaskMainEvent = new Event()
 
 	TaskPollSize = 1
-	TaskPollList[0].fd = TaskMainEvent.Get()
-	TaskPollList[0].events = POLLIN
+	TaskPollList[0] = TaskMainEvent.Get()
 }
 TaskOSDestroy := !() -> void
 {
@@ -37,9 +36,10 @@ osReadWork := class
 
 TaskPollSize := int
 TaskPollWorks := osReadWork^[32]
-TaskPollList := pollfd[32]
+//TaskPollList := pollfd[32]
+TaskPollList := void^[32]
 
-OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
+AsyncWaitEventNonStop := !(void^ fd,!()&->void cb) -> void
 {
 	thrd := CurrentThread
 	
@@ -52,8 +52,7 @@ OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
 	TaskPollSize += 1
 	TaskPollWorks[itId] = newWork&
 
-	TaskPollList[itId].fd = fd
-	TaskPollList[itId].events = POLLIN
+	TaskPollList[itId] = fd
 
 	TaskMainEvent.Emit()
 	TaskCheckMutex.Unlock()
@@ -65,36 +64,22 @@ OSAsyncReadNonStop := !(int fd,!(Blob^)&->void cb) -> void
 		thrd.switchToMain()
 		TaskCheckMutex.Unlock()
 		//TODO cancel
-		
-		count := int
-		ioctl(fd,FIONREAD,count&)
-
-		buf := MakeBlob(count)
-		read(fd,buf.GetPointer(),count) //TODO somehow same thread?
-		cb(buf)
+	
+		cb()
 	}
 }
 
 TaskCodePollWork := !(double waitTime) -> void
 {
-	
-	for i : TaskPollSize
-	{
-		TaskPollList[i].revents = 0
-	}
 
 	TaskCheckMutex.Unlock()
-	WSAPoll(TaskPollList[0]&,TaskPollSize,(waitTime*1000)->{int})
+	waitResult := WaitForMultipleObjects(TaskPollSize,TaskPollList[0]&,0,(waitTime*1000)->{int})
+	//WSAPoll(TaskPollList[0]&,TaskPollSize,(waitTime*1000)->{int})
 	TaskCheckMutex.Lock()
 
-	for i : TaskPollSize
+	if waitResult < TaskPollSize and TaskPollWorks[waitResult] != null
 	{
-		if TaskPollWorks[i] == null
-			continue
-		if TaskPollList[i].revents != 0 and TaskPollWorks[i].isPaused
-		{
-			TaskPollWorks[i].workTask.resume()
-			TaskPollWorks[i].isPaused = false
-		}
+		TaskPollWorks[waitResult].workTask.resume()
+		TaskPollWorks[waitResult].isPaused = false
 	}
 }

@@ -72,6 +72,13 @@ FILE_NOTIFY_INFORMATION := class
 	FileNameLength := s32
 	FileName := u16[1]
 }
+OVERLAPPED := class
+{
+	Internal := void^
+	InternalHigh := void^
+	Pointer := void^
+	hEvent := void^
+}
 
 Utf8ToUtf16 := !(char^ itStr) -> Vector.{u16}
 {
