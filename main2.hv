@@ -6,45 +6,15 @@
 
 main := !(char^[] args) -> int
 {
+
 	TSpawnTask(() ==> {
-		thisFolder := CreateFileA(".",
-			FILE_LIST_DIRECTORY,
-			FILE_SHARE_READ or_b FILE_SHARE_WRITE or_b FILE_SHARE_DELETE,
-			null,
-			OPEN_EXISTING,
-			FILE_FLAG_BACKUP_SEMANTICS or_b FILE_FLAG_OVERLAPPED,
-			null)
-
-		evnt := new Event()
-
-		resultData := char[1024]
-		resBytes := int
-
-		nt := resultData[0]&->{FILE_NOTIFY_INFORMATION^}
-
-		lap := OVERLAPPED
-		lap.hEvent = evnt.Get()
-
-	
-		ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
-		AsyncWaitEventNonStop(evnt.Get(),() ==> 
-		{
-			ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,1,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
-
-			nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
-			printf("hey %s\n",nm.Str())
+		AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
+			if fsObj is not File
+				return void
+			f := fsObj->{File^}
+			printf("called <%s>\n",f.GetPath().Str())
 		})
 	})
-
-
-	//TSpawnTask(() ==> {
-	//	AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
-	//		if fsObj is not File
-	//			return void
-	//		f := fsObj->{File^}
-	//		printf("called <%s>\n",f.GetPath().Str())
-	//	})
-	//})
 
 	while(true)
 	{
