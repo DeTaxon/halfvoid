@@ -680,8 +680,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
 				assert(false)
 			}
-			//TODO float to int , and back
-			//signed types sign extension
 			cs += 1
 		case "load_element"
 			varType := interpFunc.Objects[thisLine.var2].GetType()
