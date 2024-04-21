@@ -110,6 +110,11 @@ ModuleVulkan := class extend ModuleInterface
 								if itDir != null offst = -offst
 								ItInts[itName^] = offst
 							}else{
+								bitPos := asN2.Attrs.TryFind("bitpos")
+								if bitPos != null
+								{
+									ItInts[itName^] = 1 shl ToInt(bitPos^)
+								}
 							}
 						}
 					case void

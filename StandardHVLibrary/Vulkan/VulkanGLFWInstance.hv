@@ -178,15 +178,14 @@ VulkanGLFWInstance := class extend VulkanInstance
 		fbAtt.pViewFormats = SwapImageFormat&
 		fbAtt.usage = 0x00000010
 
-		fbAttCr := VkFramebufferAttachmentsCreateInfo
-		fbAttCr.sType = 1000108001//TODO VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENTS_CREATE_INFO
+		fbAttCr := VkFramebufferAttachmentsCreateInfo()
 		fbAttCr.attachmentImageInfoCount = 1
 		fbAttCr.pAttachmentImageInfos = fbAtt&
 	
 		fbC := VkFramebufferCreateInfo()
 		fbC.pNext = fbAttCr&
 		fbC.renderPass = renPass.Get()
-		fbC.flags = 1 //VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT //TODO
+		fbC.flags = VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT
 		fbC.attachmentCount = 1
 		fbC.pAttachments&->{void^^}^ = null
 		fbC.width = inW
