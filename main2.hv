@@ -3,24 +3,122 @@
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
+"=" := !(Str& st1, Str st2) -> void
+{
+	st1->AsString = st2->AsString
+}
+"=" := !(Str& st1, char^ chData) -> void
+{
+	st1->AsString = new String(chData)
+}
+"->{}" := !(Str st) .{char^} -> char^
+{
+	if st->AsString == null
+		return ""
+	return st->AsString.Str()
+}
+
+
+
+toStringToCBuffer := !(s64 bigIntValue, char^ buffer, int^ iter) -> void
+{
+	
+	if bigIntValue == 0
+	{
+		buffer[iter^] = '0'
+		iter^ += 1
+		return void
+	}
+
+	i2 := iter^ + 18 + 3
+	c := 0
+
+	isNegative := bigIntValue < 0
+	if isNegative
+	{
+		bigIntValue = -bigIntValue
+		buffer[iter^] = '-'
+		iter^ += 1
+	}
+
+	while bigIntValue != 0
+	{
+		modVal := bigIntValue mod 10
+		buffer[i2] = '0' + modVal
+		i2 -= 1
+		c += 1
+		bigIntValue = bigIntValue div 10
+	}
+	for i : c
+	{
+		buffer[iter^] = buffer[i + i2 + 1]
+		iter^ += 1
+	}
+	
+}
+ToString := !(s64 bigIntValue) -> Str
+{
+	smallBuffer := char[64]
+	iter := 0
+	toStringToCBuffer(bigIntValue,smallBuffer,iter&)
+	result->AsString = new String(smallBuffer,iter)
+}
+ToString := !(double this) -> Str
+{
+	//TODO very big floats
+	smallBuffer := char[128]
+	
+	iter := 0
+	if this < 0
+	{
+		smallBuffer[iter] = '-'
+		iter += 1
+		this = -this
+	}
+
+	this *= 10000000 //10^7
+
+	above1 := this->{s64}
+
+
+	if above1 == 0
+	{
+		smallBuffer[iter] = '0'
+		smallBuffer[iter + 1] = '.'
+		smallBuffer[iter + 2] = '0'
+		iter += 3
+	}else{
+		toStringToCBuffer(above1,smallBuffer,iter&)
+		for i : 7
+		{
+			smallBuffer[iter - i] = smallBuffer[iter - i - 1]
+		}
+		smallBuffer[iter-7] = '.'
+
+		for i : 6
+		{
+			if smallBuffer[iter - 1] == '0'
+			{
+				iter -= 1
+			}else{
+				break
+			}
+		}
+		if smallBuffer[iter - 1] == '.'
+		{
+			smallBuffer[iter] = '0'
+			iter += 1
+		}
+	}
+
+	result->AsString = new String(smallBuffer,iter)
+}
 
 main := !(char^[] args) -> int
 {
-
-	TSpawnTask(() ==> {
-		AsyncMonitorFolderNonStop(".",false,(fsObj) ==> {
-			if fsObj is not File
-				return void
-			f := fsObj->{File^}
-			printf("called <%s>\n",f.GetPath().Str())
-		})
-	})
-
-	while(true)
-	{
-		printf("step\n")
-		TSleep(1)
-	}
+	flt := -47.15
+	printf("hey %s\n",flt.ToString())
+	//tst = flt.ToString()
 	return 0
 }
 

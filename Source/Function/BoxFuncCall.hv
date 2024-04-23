@@ -149,7 +149,7 @@ BoxFuncCall := class extend BoxExeObj
 				}else if tp == GTypeFloat
 				{
 					downs[i] = GetExchange(downs[i],GTypeDouble)
-				}else if tp is in TypeClass
+				}else if tp is in TypeClass or tp is TypeStr
 				{
 					stTyp := GTypeChar.GetPoint()
 					while downs[i] != null and downs[i].GetType() != stTyp

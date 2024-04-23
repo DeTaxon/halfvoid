@@ -10,6 +10,8 @@ CreateStrType := !() -> void
 
 	GTypeStr = new TypeStr(GTypeStrBase.ItType)
 	CodeSpaces[-1].Types[StringSpan("Str")] = GetConstType(GTypeStr)
+
+	ExchangeList.Push(new ExchangeStrToStringPointerClass)
 }
 
 TypeStr := class extend TypePointLike
@@ -31,5 +33,28 @@ TypeStr := class extend TypePointLike
 	}
 }
 
+ExchangeStrToStringPointerClass := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		frm := obj.GetType()
+		if frm is TypeStr and newType is in TypePoint
+		{
+			if frm.Base is TypeClass and newType.Base is TypeClass
+			{
+				fgh := TypeFight(frm.Base,newType.Base)
+				if fgh == newType.Base
+					return 1000
+			}
+		}
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		if obj.IsMem()
+			return new PtrRefExchange(obj,expType)
+		return new PtrExchange(obj,expType)
+	}
+}
 
 

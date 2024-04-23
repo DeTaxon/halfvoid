@@ -9,15 +9,6 @@
 	return false
 }
 
-ToInt := !(char^ inp) -> int
-{
-	return strtol(inp,null,0)
-}
-
-ToFloat := !(char^ inp) -> float
-{
-	return strtod(inp,null)
-}
 
 StrCopy := !(char^ a) -> char^
 {

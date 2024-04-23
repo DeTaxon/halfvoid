@@ -39,6 +39,12 @@ AppendClass BoxFuncBody
 				objs := CheckExeDownList
 				objs.Push(locVar.proxy&)
 				objs.Push(getVar)
+
+				if it.GetBaseType() == GTypeStr
+				{
+					objs[0] = new PtrRefExchange(objs[0],GCType.GetPoint())
+					objs[1] = new PtrExchange(objs[1],GCType.GetPoint())
+				}
 				setVar := CreateFuncCall(StringSpan("="),objs)
 				assert(setVar != null)
 				it.extraWork.Push(setVar)
