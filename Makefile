@@ -72,10 +72,12 @@ Objs/CompilerData.zip: Mach.m $(wildcard *.pr)
 Objs/hres.zip: $(wildcard ./hres/*)
 	zip -ur Objs/hres.zip hres
 
-$(CurrentLex): LexBuilder/main.hv $(wildcard *.pr)
+$(CurrentLex):
 	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "Source/" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
-Mach.m: $(CurrentLex)
-	$(CurrentLex)
+Mach.m: LexBuilder/main.hv $(wildcard *.pr)
+	./halfvoid -C0 StandardHVLibrary Source/Lex/PriorityRead.hv Source/Lex/Lex.hv Source/Utils.hv LexBuilder/main.hv -g -o /tmp/lex.ll
+	clang /tmp/lex.ll -g -lm -lpthread -o lex
+	./lex
 SizeCheck:
 	nm --print-size --size-sort --radix=d --reverse-sort ./halfvoid  | less
 
@@ -100,4 +102,4 @@ cycle_release.exe:
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m

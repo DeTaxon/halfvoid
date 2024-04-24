@@ -19,7 +19,10 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	{
 		cmpExe = GetExchange(cmpExe,GTypeBool)
 		if cmpExe == null
+		{
+			itm.Print(0)
 			itm.EmitError("If statement is not boolean")
+		}
 	}
 
 

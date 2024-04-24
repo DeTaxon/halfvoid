@@ -1,5 +1,5 @@
 
-main := !(int argc, char^^ argv) -> int
+main := !(char^[] args) -> int
 {
 
 	//itM := MappedFile^
@@ -7,37 +7,41 @@ main := !(int argc, char^^ argv) -> int
 	//defer itM.Close()
 	//pr := new PriorityBagOld(itM.point,itM.Size())
 
-	itBuilder := LexBuilder()
+	itBuilder := LexBuilder
 
 	itBuilder.ApplyReg("$?[a-zA-Z_][a-zA-Z0-9_]*",1)
 	itBuilder.ApplyReg("(@ | #)[a-zA-Z0-9_]*",2)
 	itBuilder.ApplyReg("\"((\\\\ [^]) | [^\"\\\\])*\"",3)
 	itBuilder.ApplyReg("'( (\\\\ [^]) | [^ '\\\\])  '",4)
+	//itBuilder.ApplyReg("[0-9]+(_[0-9]+)*",5)
 	itBuilder.ApplyReg("[0-9]+",5)
 	itBuilder.ApplyReg("[0-9]+.[0-9]+",6)
 	itBuilder.ApplyReg("0x[0-9a-fA-F]+",7)
 
 
+	tmpArr := new AVLSet.{StringSpan}
+	allOpers := new AVLSet.{char^}
 
-	tmpArr := new AVLSet.{char^}
-	allOpers := new AVLSet.{char^} ; $temp
+	
+	FSReadFolder(StringSpan("."),false, (x) ==> [tmpArr]{
+		if x.GetName().End == ".pr"
+		{
+			blb := x.GetBlob()
+			blb.IncRef()
+			pr := new PriorityBagOld(blb.GetPointer(),blb.Size())
+			tmpArr.Insert(StringSpan(pr.Opers[^]))
+		}
+	})
+	printf(" wut %i\n",tmpArr.Size())
 
-	for prFile : Wildcard("*.pr")
-	{
-		mp := MappedFile^
-		mp = new MappedFile(prFile.Get())
-		pr := new PriorityBagOld(mp.point,mp.Size())
-		tmpArr.Insert(pr.Opers[^])
-		//pr.AddExtre(tmpArr^)
-	}
-	tmpArr.Insert(":=")
-	tmpArr.Insert("=>")
-	tmpArr.Insert("-->")
-	tmpArr.Insert("extern")
-	tmpArr.Insert("at")
-	tmpArr.Insert("defer")
-	tmpArr.Insert("type")
-	tmpArr.Insert("virtual")
+	tmpArr.Insert(StringSpan(":="))
+	tmpArr.Insert(StringSpan("=>"))
+	tmpArr.Insert(StringSpan("-->"))
+	tmpArr.Insert(StringSpan("extern"))
+	tmpArr.Insert(StringSpan("at"))
+	tmpArr.Insert(StringSpan("defer"))
+	tmpArr.Insert(StringSpan("type"))
+	tmpArr.Insert(StringSpan("virtual"))
 	//tmpArr.Insert(pr.Opers[^])
 	//pr.AddExtra(tmpArr^)
 	LexKeyWords := ![":=","=>","==>","...",":",".",",","?","!",".","|"]
@@ -49,14 +53,17 @@ main := !(int argc, char^^ argv) -> int
 		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak","poison","defer_tail"
 		,"static","field"]
 
-	tmpArr.Insert(LexKeyWords[^])
-	tmpArr.Insert(AllKeyWords[^])
+	tmpArr.Insert(StringSpan(LexKeyWords[^]))
+	//tmpArr.Insert(AllKeyWords[^])
 
 	for it,i : tmpArr^ {
 		buff2 := char[64]
 		k := 0
-		for c : it
+
+		for j : it.Size()
 		{
+			c := it[j]
+
 			if c in "-+?[]^*|()"
 			{
 				buff2[k] = '\\'
@@ -70,7 +77,6 @@ main := !(int argc, char^^ argv) -> int
 		buff2[k] = 0
 		itBuilder.ApplyReg(buff2[0]&,50 + i)
 	}
-	printf("itms %i\n",tmpArr.Size())
 
 	//itBuilder.ApplyReg("\\( | \\) | \\{ | \\. | \\} | \\[ | \\]",8)
 	//itBuilder.ApplyReg("\\? | \\, | \\! | \\| | \\.",8)
@@ -88,11 +94,11 @@ main := !(int argc, char^^ argv) -> int
 
 	res := itBuilder.GenerateMachine()
 
-	mSize := res.ComputeFileSize()
-	outData := new u8[mSize]
+	mSize := res.ComputeBlobSize()
+	outData := malloc(mSize)->{u8^}
 	res.SerializeToMap(outData)
 	outFile := TFile("Mach.m","wb")
-	outFile.Write(outData->{void^},outData->len)
+	outFile.Write(outData->{void^},mSize)
 	outFile.Close()
 
 	return 0

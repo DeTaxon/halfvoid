@@ -116,7 +116,7 @@ ToString := !(double this) -> Str
 
 main := !(char^[] args) -> int
 {
-	flt := -47.15
+	flt := 0.015
 	printf("hey %s\n",flt.ToString())
 	//tst = flt.ToString()
 	return 0

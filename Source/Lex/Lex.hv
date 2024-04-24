@@ -46,12 +46,12 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 					{
 						ns = new TokenSymbol(tok,a)
 					}else{
-					      if prevId == 3 or prevId == 5 or prevId ==  6
-					      {
-							ns = new TokenSuffix(tok)
-					      }else{
-					    		ns = new TokenIndent(tok)
-					      }
+					    if prevId == 3 or prevId == 5 or prevId ==  6
+					    {
+						  	ns = new TokenSuffix(tok)
+					    }else{
+					      	ns = new TokenIndent(tok)
+					    }
 					}
 			}
 		}
@@ -138,10 +138,13 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			
 			k := 0
 		
-			while k < tok.Size() and tok[k] in '0'..'9'
+			while k < tok.Size() and (tok[k] in '0'..'9' or tok[k]  == '_')
 			{
-				Value *= 10
-				Value += tok[k] - '0'
+				if tok[k] != '_'
+				{
+					Value *= 10
+					Value += tok[k] - '0'
+				}
 				k += 1
 			}
 			ns = new TokenInt(tok,Value)
