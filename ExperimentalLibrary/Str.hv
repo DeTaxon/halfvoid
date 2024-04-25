@@ -1,0 +1,129 @@
+
+"=" := !(Str& st1, Str st2) -> void
+{
+	st1->AsString = st2->AsString
+}
+"=" := !(Str& st1, char^ chData) -> void
+{
+	st1->AsString = new String(chData)
+}
+"->{}" := !(Str st) .{char^} -> char^
+{
+	if st->AsString == null
+		return ""
+	return st->AsString.Str()
+}
+
+toStringToCBuffer := !(s64 bigIntValue, char^ buffer, int^ iter) -> void
+{
+	
+	if bigIntValue == 0
+	{
+		buffer[iter^] = '0'
+		iter^ += 1
+		return void
+	}
+
+	i2 := iter^ + 18 + 3 //18 - max digits for  s64, +3 to be sure
+	c := 0
+
+	isNegative := bigIntValue < 0
+	if isNegative
+	{
+		bigIntValue = -bigIntValue
+		buffer[iter^] = '-'
+		iter^ += 1
+	}
+
+	while bigIntValue != 0
+	{
+		modVal := bigIntValue mod 10
+		buffer[i2] = '0' + modVal
+		i2 -= 1
+		c += 1
+		bigIntValue = bigIntValue div 10
+	}
+	for i : c
+	{
+		buffer[iter^] = buffer[i + i2 + 1]
+		iter^ += 1
+	}
+	
+}
+ToString := !(s64 bigIntValue) -> Str
+{
+	smallBuffer := char[64]
+	iter := 0
+	toStringToCBuffer(bigIntValue,smallBuffer,iter&)
+	result->AsString = new String(smallBuffer,iter)
+}
+ToString := !(double this) -> Str
+{
+	//TODO very big floats
+	smallBuffer := char[128]
+	
+	iter := 0
+	if this < 0
+	{
+		smallBuffer[iter] = '-'
+		iter += 1
+		this = -this
+	}
+
+	if this->{s64} == 0
+	{
+		smallBuffer[iter] = '0'
+		iter += 1
+	}
+
+	this *= 10_000_000 //10^7
+
+	above1 := this->{s64}
+
+
+	if above1 == 0
+	{
+		smallBuffer[iter + 1] = '.'
+		smallBuffer[iter + 2] = '0'
+		iter += 3
+	}else{
+		iterAtStart := iter
+		toStringToCBuffer(above1,smallBuffer,iter&)
+		digitsCount := iter - iterAtStart
+
+		shiftSize := min(digitsCount,7)
+
+		extraShift := max(7 - digitsCount,0)
+
+
+		for i : shiftSize
+		{
+			smallBuffer[iter - i + extraShift] = smallBuffer[iter - i - 1]
+		}
+		iter += extraShift
+
+		for i : extraShift
+		{
+			smallBuffer[iter-shiftSize - extraShift + i + 1] = '0'
+		}
+
+		smallBuffer[iter-shiftSize - extraShift] = '.'
+
+		for i : 6
+		{
+			if smallBuffer[iter - 1] == '0'
+			{
+				iter -= 1
+			}else{
+				break
+			}
+		}
+		if smallBuffer[iter - 1] == '.'
+		{
+			smallBuffer[iter] = '0'
+			iter += 1
+		}
+	}
+
+	result->AsString = new String(smallBuffer,iter)
+}
