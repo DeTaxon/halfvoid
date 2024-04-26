@@ -20,7 +20,7 @@ AppendClass BuiltInIntEqAndOper
 		case "mul"
 			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case void
-			assert(false) //TODO float
+			assert(false)
 		}
 	}
 }
@@ -104,7 +104,7 @@ AppendClass BuiltInIntBase
 		case "urem"
 			HVB_ins_mod(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case void
-			assert(false) //TODO float, other cmp
+			assert(false)
 		}
 	}
 }

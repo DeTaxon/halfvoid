@@ -8,7 +8,7 @@
 
 main := !(char^[] args) -> int
 {
-	flt := -0.01
+	flt := 0.0451
 	printf("hey %s\n",flt.ToString())
 	//tst = flt.ToString()
 	return 0
