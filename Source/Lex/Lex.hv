@@ -253,8 +253,10 @@ UniteSkobs := !(Token^ Tree) -> Token^
 				return iter
 			}
 
-			NewObj := new TokenSymbol(StringSpan(itPair),0)
+			NewObj := new TokenSkobSymbol(StringSpan(itPair),0)
 			NewObj.Line = Old.Line
+			NewObj.EndLine = iter.Line
+			
 			UNext(Old,NewObj,iter)
 
 			TIter := NewObj.Down

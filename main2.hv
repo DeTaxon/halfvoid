@@ -4,23 +4,16 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 
-
-
-
-
 main := !(char^[] args) -> int
 {
-	c := "Hello World!"
-	crc := Crc32()
-	crc.Feed(c,strlen(c))
-	printf("crc %X\n",crc.Get())
+
+
 	return 0
 }
 
 
 SubFunction := !() -> void
 {
-
 	printf("called function\n")	
 }
 
@@ -29,213 +22,213 @@ RunTest := !() -> void
 	while true
 	{
 		SubFunction()
-		TSleep(1)
+		TSleep(3)
 	}
 }
 
-RangesExperiment := !() -> void
-{
-
-	Pripeline(
-		GetFile("main2.hv").GetStream()
-		DataStreamTo.{u32}
-		Map(@1 * 15)
-		Map(@1.ToString())
-		ToTextStream
-		TCPConnect("127.0.0.1:1234")
-	).Run()
-
-	
-	x := ![1,6,8,2,5,8]
-
-	x.sorted()
-		.top(1)
-		.map(@1.ToString())
-		.reduce(" ")
-		.write(stdout)
-	f := FSGetFile("main2.hv")
-
-	f.GetStream().Iter().Map(Base64Decode).Split("\n").Window(2):q.Map(Base64Encode).Write()
-
-	x.Iter().Sort().Map(@1.ToString()).Reduce(",").Write(stdout)
-
-	Stream(x) >> f.GetSream()
-}
-
-#CreateCallCommand(
-	Name = "Test",
-	CacheOn = "Inputs"
-	Call = !(File^ fil) -> Blob^
-	{
-		ret :=  fil.GetBlob()
-		return ret
-	}
-	Exchange = !(Blob^ bl) -> char^
-	{
-		return bl.GetPointer()
-	}
-)
-#Module(
-
-	xmlBlob := Blob^
-	glXML := XML^
-
-	glCommands := AVLMap.{StringSpan,XMLNode^}
-	glValues := AVLMap.{StringSpan,int}
-
-	parsedXml := bool
-	ParseXml := !() -> void
-	{
-		if parsedXml
-			return void
-		parsedXml = true
-
-		glFile := FSGetFile("./gl.xml")
-		xmlBlob := glFile.GetBlob()
-
-		glXML = ParseXML2(xmlBlob.AsStringSpan())
-
-		for baseNode : glXML.RootNode.Values[0].ValueNode.Values
-		{
-			if baseNode.IsString
-			{
-				continue
-			}
-
-			switch baseNode.ValueNode.NodeName
-			{
-			case "commands"
-				for command : baseNode.ValueNode.Values
-				{
-					if command.IsString
-						continue
-
-					commandName := command.ValueNode.GetNode("proto/name")
-
-					if commandName != null
-					{
-						glCommands[commandName.Values[0].ValueSpan[2..0]] = command.ValueNode
-					}
-					
-				}
-			case "enums"
-				for it : baseNode.ValueNode.Values
-				{
-					if it.IsString
-						continue
-					val := it.ValueNode
-
-					if val.Attrs.Contain(StringSpan("value")) and val.Attrs.Contain(StringSpan("name"))
-					{
-						glValues[val.Attrs[StringSpan("name")]] = val.Attrs[StringSpan("value")].ToInt()
-					}
-
-				}
-			}
-		}
-
-	}
-	GetCommandType := !(StringView str) -> void^
-	{
-		spn := str.AsStringSpan()
-		if not glCommands.Contain(spn)
-			return null
-
-		cmd := glCommands[spn]
-		types := HybridQueue.{void^,16}
-
-		for pars : cmd.Values 
-		{
-			if pars.IsString or pars.ValueNode.NodeName != "param"
-				continue
-
-			parType := GetParamType(pars.ValueNode)
-			if parType == null
-				return null
-			types.Push(parType)
-		}
-		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
-		return HV.GetTypePointer(fType)
-	}
-	GetParamType := !(XMLNode^ node) -> void^
-	{
-		nodeOpts := char[256]
-		sSize := 0
-
-		for it : node.Values
-		{
-			nodeOpts[sSize] = it.IsString ?: '0' : '1'
-			sSize += 1
-		}
-
-		nodeType := StringSpan(nodeOpts,sSize)
-
-		switch nodeType
-		{
-		case "11"
-		 	pType := node.GetNode("ptype")
-		 	if pType != null
-		 	{
-		 		return GetStringType(pType.Values[0].ValueSpan)
-		 	}
-		case void
-			printf("opengl cant get param %s\n",nodeType)
-		}
-		
-	}
-	GetStringType := !(StringSpan typeName) -> void^
-	{
-		switch typeName
-		{
-			case "GLenum"
-				return HV.GetType("u32")
-			case "GLbitfield"
-				return HV.GetType("s32")
-			case "GLuint"
-				return HV.GetType("s32")
-			case "GLfloat"
-				return HV.GetType("float")
-			case void
-				printf("opengl unknown type %s\n",typeName)
-				return null
-		}
-	}
-
-	funcClass := HV_Class^
-	funcClassType := void^
-	FuncClass := !() -> void^
-	{
-		return funcClassType?
-
-		funcClass = HV.CreateClass()
-
-		ParseXml()
-
-		funcClassType = funcClass.GetType()
-		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
-			if glCommands.Contain(x.AsStringSpan())
-			{
-				return GetCommandType(x)
-			}
-			return null
-		})
-		return funcClassType
-	}
-
-	GetItem := virtual !(StringView name) -> void^
-	{
-		if name.Start == StringSpan("GL_")
-		{
-			ParseXml()
-			if glValues.Contain(name)
-				return HV.Create_int32(glValues[name])
-		}
-		if name == "glFuncsClass"
-		{
-			return FuncClass()
-		}
-	}
-)
+//RangesExperiment := !() -> void
+//{
+//
+//	Pripeline(
+//		GetFile("main2.hv").GetStream()
+//		DataStreamTo.{u32}
+//		Map(@1 * 15)
+//		Map(@1.ToString())
+//		ToTextStream
+//		TCPConnect("127.0.0.1:1234")
+//	).Run()
+//
+//	
+//	x := ![1,6,8,2,5,8]
+//
+//	x.sorted()
+//		.top(1)
+//		.map(@1.ToString())
+//		.reduce(" ")
+//		.write(stdout)
+//	f := FSGetFile("main2.hv")
+//
+//	f.GetStream().Iter().Map(Base64Decode).Split("\n").Window(2):q.Map(Base64Encode).Write()
+//
+//	x.Iter().Sort().Map(@1.ToString()).Reduce(",").Write(stdout)
+//
+//	Stream(x) >> f.GetSream()
+//}
+//
+//#CreateCallCommand(
+//	Name = "Test",
+//	CacheOn = "Inputs"
+//	Call = !(File^ fil) -> Blob^
+//	{
+//		ret :=  fil.GetBlob()
+//		return ret
+//	}
+//	Exchange = !(Blob^ bl) -> char^
+//	{
+//		return bl.GetPointer()
+//	}
+//)
+//#Module(
+//
+//	xmlBlob := Blob^
+//	glXML := XML^
+//
+//	glCommands := AVLMap.{StringSpan,XMLNode^}
+//	glValues := AVLMap.{StringSpan,int}
+//
+//	parsedXml := bool
+//	ParseXml := !() -> void
+//	{
+//		if parsedXml
+//			return void
+//		parsedXml = true
+//
+//		glFile := FSGetFile("./gl.xml")
+//		xmlBlob := glFile.GetBlob()
+//
+//		glXML = ParseXML2(xmlBlob.AsStringSpan())
+//
+//		for baseNode : glXML.RootNode.Values[0].ValueNode.Values
+//		{
+//			if baseNode.IsString
+//			{
+//				continue
+//			}
+//
+//			switch baseNode.ValueNode.NodeName
+//			{
+//			case "commands"
+//				for command : baseNode.ValueNode.Values
+//				{
+//					if command.IsString
+//						continue
+//
+//					commandName := command.ValueNode.GetNode("proto/name")
+//
+//					if commandName != null
+//					{
+//						glCommands[commandName.Values[0].ValueSpan[2..0]] = command.ValueNode
+//					}
+//					
+//				}
+//			case "enums"
+//				for it : baseNode.ValueNode.Values
+//				{
+//					if it.IsString
+//						continue
+//					val := it.ValueNode
+//
+//					if val.Attrs.Contain(StringSpan("value")) and val.Attrs.Contain(StringSpan("name"))
+//					{
+//						glValues[val.Attrs[StringSpan("name")]] = val.Attrs[StringSpan("value")].ToInt()
+//					}
+//
+//				}
+//			}
+//		}
+//
+//	}
+//	GetCommandType := !(StringView str) -> void^
+//	{
+//		spn := str.AsStringSpan()
+//		if not glCommands.Contain(spn)
+//			return null
+//
+//		cmd := glCommands[spn]
+//		types := HybridQueue.{void^,16}
+//
+//		for pars : cmd.Values 
+//		{
+//			if pars.IsString or pars.ValueNode.NodeName != "param"
+//				continue
+//
+//			parType := GetParamType(pars.ValueNode)
+//			if parType == null
+//				return null
+//			types.Push(parType)
+//		}
+//		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
+//		return HV.GetTypePointer(fType)
+//	}
+//	GetParamType := !(XMLNode^ node) -> void^
+//	{
+//		nodeOpts := char[256]
+//		sSize := 0
+//
+//		for it : node.Values
+//		{
+//			nodeOpts[sSize] = it.IsString ?: '0' : '1'
+//			sSize += 1
+//		}
+//
+//		nodeType := StringSpan(nodeOpts,sSize)
+//
+//		switch nodeType
+//		{
+//		case "11"
+//		 	pType := node.GetNode("ptype")
+//		 	if pType != null
+//		 	{
+//		 		return GetStringType(pType.Values[0].ValueSpan)
+//		 	}
+//		case void
+//			printf("opengl cant get param %s\n",nodeType)
+//		}
+//		
+//	}
+//	GetStringType := !(StringSpan typeName) -> void^
+//	{
+//		switch typeName
+//		{
+//			case "GLenum"
+//				return HV.GetType("u32")
+//			case "GLbitfield"
+//				return HV.GetType("s32")
+//			case "GLuint"
+//				return HV.GetType("s32")
+//			case "GLfloat"
+//				return HV.GetType("float")
+//			case void
+//				printf("opengl unknown type %s\n",typeName)
+//				return null
+//		}
+//	}
+//
+//	funcClass := HV_Class^
+//	funcClassType := void^
+//	FuncClass := !() -> void^
+//	{
+//		return funcClassType?
+//
+//		funcClass = HV.CreateClass()
+//
+//		ParseXml()
+//
+//		funcClassType = funcClass.GetType()
+//		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
+//			if glCommands.Contain(x.AsStringSpan())
+//			{
+//				return GetCommandType(x)
+//			}
+//			return null
+//		})
+//		return funcClassType
+//	}
+//
+//	GetItem := virtual !(StringView name) -> void^
+//	{
+//		if name.Start == StringSpan("GL_")
+//		{
+//			ParseXml()
+//			if glValues.Contain(name)
+//				return HV.Create_int32(glValues[name])
+//		}
+//		if name == "glFuncsClass"
+//		{
+//			return FuncClass()
+//		}
+//	}
+//)
 
 mouseMove := !(void^ w, double itX, double itY) -> void
 {
@@ -243,112 +236,112 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 }
 
 
-RunTest2 := !() -> void
-{
-	gl := glFuncsClass
+//RunTest2 := !() -> void
+//{
+//	gl := glFuncsClass
+//
+//	glfwInit()
+//
+//	win := glfwCreateWindow(640, 480, "My Title", null, null)
+//	glfwSetCursorPosCallback(win,mouseMove)
+//	glfwMakeContextCurrent(win)
+//
+//	lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
+//	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
+//
+//	if glGetProcAddress == null
+//	{
+//		glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
+//	}
+//
+//
+//	nameBuffer := char[128]
+//	for it,ind : gl->AllFields
+//	{
+//		sprintf(nameBuffer[0]&,"gl%s",ind)
+//		it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+//		//printf("proc %s %p\n",ind,it)
+//	}
+//
+//	gl.ClearColor(1.0,0.5,0.0,0.0)
+//
+//	while not glfwWindowShouldClose(win)
+//	{
+//		gl.Clear(GL_COLOR_BUFFER_BIT)
+//		gl.Begin(GL_TRIANGLES)
+//		gl.Color3f(1.0,0.0,0.0)
+//		gl.Vertex3f(-1.0,-1.0,0.0)
+//		gl.Color3f(0.0,1.0,0.0)
+//		gl.Vertex3f(1.0,-1.0,0.0)
+//		gl.Color3f(0.0,0.0,1.0)
+//		gl.Vertex3f(0.0,1.0,0.0)
+//		gl.End()
+//        glfwPollEvents()
+//		glfwSwapBuffers(win)
+//	}
+//}
 
-	glfwInit()
 
-	win := glfwCreateWindow(640, 480, "My Title", null, null)
-	glfwSetCursorPosCallback(win,mouseMove)
-	glfwMakeContextCurrent(win)
-
-	lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
-	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
-
-	if glGetProcAddress == null
-	{
-		glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
-	}
-
-
-	nameBuffer := char[128]
-	for it,ind : gl->AllFields
-	{
-		sprintf(nameBuffer[0]&,"gl%s",ind)
-		it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
-		//printf("proc %s %p\n",ind,it)
-	}
-
-	gl.ClearColor(1.0,0.5,0.0,0.0)
-
-	while not glfwWindowShouldClose(win)
-	{
-		gl.Clear(GL_COLOR_BUFFER_BIT)
-		gl.Begin(GL_TRIANGLES)
-		gl.Color3f(1.0,0.0,0.0)
-		gl.Vertex3f(-1.0,-1.0,0.0)
-		gl.Color3f(0.0,1.0,0.0)
-		gl.Vertex3f(1.0,-1.0,0.0)
-		gl.Color3f(0.0,0.0,1.0)
-		gl.Vertex3f(0.0,1.0,0.0)
-		gl.End()
-        glfwPollEvents()
-		glfwSwapBuffers(win)
-	}
-}
-
-
-CalculatePiBlob := !(int nums) -> Blob^
-{
-	bigNums := nums*3
-	values := malloc(bigNums*4)->{int^}
-
-	result = new BlobOnVector(nums + 1)
-	resultPtr := result.GetPointer()->{u8^}
-	memset(resultPtr,0,result.Size())
-	//resultPtr[nums] = 0
-
-	i := 0
-	while i < bigNums
-	{
-		values[i] = 2
-		i += 1
-	}
-	i = 0
-	while i < nums
-	{
-		j := 0
-		while j < bigNums
-		{
-			values[j] *= 10
-			j += 1
-		}
-		j = bigNums - 1
-		while j >= 1
-		{
-			thisMul := j
-			thisDiv := 2*j + 1
-
-			carry := (values[j] div thisDiv)*thisMul
-			modul := values[j] mod thisDiv
-			values[j] = modul
-			j -= 1
-			values[j] += carry
-		}
-		num := values[0] div 10
-		values[0] = values[0] mod 10
-
-		c := 0
-		while num != 0
-		{
-			resultPtr[i + c] += num
-			if resultPtr[i + c] >= 10
-			{
-				resultPtr[i + c] = resultPtr[i + c] mod 10
-				num = 1
-			}else{
-				num = 0
-			}
-			c -= 1
-		}
-		i += 1
-	}
-	for i : nums
-	{
-		resultPtr[i] += '0'
-	}
-}
+//CalculatePiBlob := !(int nums) -> Blob^
+//{
+//	bigNums := nums*3
+//	values := malloc(bigNums*4)->{int^}
+//
+//	result = new BlobOnVector(nums + 1)
+//	resultPtr := result.GetPointer()->{u8^}
+//	memset(resultPtr,0,result.Size())
+//	//resultPtr[nums] = 0
+//
+//	i := 0
+//	while i < bigNums
+//	{
+//		values[i] = 2
+//		i += 1
+//	}
+//	i = 0
+//	while i < nums
+//	{
+//		j := 0
+//		while j < bigNums
+//		{
+//			values[j] *= 10
+//			j += 1
+//		}
+//		j = bigNums - 1
+//		while j >= 1
+//		{
+//			thisMul := j
+//			thisDiv := 2*j + 1
+//
+//			carry := (values[j] div thisDiv)*thisMul
+//			modul := values[j] mod thisDiv
+//			values[j] = modul
+//			j -= 1
+//			values[j] += carry
+//		}
+//		num := values[0] div 10
+//		values[0] = values[0] mod 10
+//
+//		c := 0
+//		while num != 0
+//		{
+//			resultPtr[i + c] += num
+//			if resultPtr[i + c] >= 10
+//			{
+//				resultPtr[i + c] = resultPtr[i + c] mod 10
+//				num = 1
+//			}else{
+//				num = 0
+//			}
+//			c -= 1
+//		}
+//		i += 1
+//	}
+//	for i : nums
+//	{
+//		resultPtr[i] += '0'
+//	}
+//}
 
 
 //Zip file

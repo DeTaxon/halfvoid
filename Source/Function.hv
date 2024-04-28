@@ -4,6 +4,7 @@ PFunctionParser := class
 	isTemplate := bool
 	Attr := FuncAttributes
 	decorators := HybridQueue.{TokenTemplateType^,10}
+	baseToken := Token^
 	brackets := Token^
 	constToken := Token^
 	resultToken := Token^
@@ -14,6 +15,8 @@ PFunctionParser := class
 
 		if obj == null or obj.Down == null 
 			return void
+
+		baseToken = obj
 
 		iter := obj.Down
 
@@ -101,7 +104,49 @@ PFunctionParser := class
 	}
 	ComputeHash := !(Blob^ fileData) -> u32
 	{
-		
+		if fileData.Size() == 0
+			return 0
+		if baseToken.Line == null or bodyToken == null
+			return 0
+		if bodyToken is not TokenSkobSymbol
+			return 0
+		asSkob := bodyToken->{TokenSkobSymbol^}
+
+		if asSkob.EndLine == null
+			return 0
+
+		startLine := baseToken.Line.Line
+		endLine := asSkob.EndLine.Line
+
+		arr := fileData.GetPointer()
+		startLineIndex := 0
+		i := 0
+		curLine := 1
+		blbSize := fileData.Size()
+		while i < blbSize and curLine != startLine
+		{
+			if arr[i] == '\n'
+				curLine += 1
+			i += 1
+		}
+		startLineIndex = i
+		while i < blbSize and curLine != endLine
+		{
+			if arr[i] == '\n'
+				curLine += 1
+			i += 1
+		}
+		while i < blbSize and arr[i] != '\n'
+		{
+			i += 1
+		}
+		if i < blbSize
+			i += 1
+		funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
+
+		crc := Crc32()
+		crc.Feed(funcCode.NonNullStr(),funcCode.Size())
+		return crc.Get()
 	}
 	CreateObject := !() -> BoxUnit^
 	{

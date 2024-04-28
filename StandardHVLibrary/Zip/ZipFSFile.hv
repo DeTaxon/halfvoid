@@ -61,11 +61,10 @@ File := class extend vRepoObject
 	}
 	Size := !() -> size_t
 	{
-		// if ptrToZip != null
-		// {
-		// 	return ptrToZip.Size()
-		// }
-		// return fileSize
+		if this& is File
+		{
+			return osFileSize(GetPath().Str())
+		}
 		return fileSize
 	}
 	IsValid := !() -> bool

@@ -60,13 +60,15 @@ BoxFile := class extend BoxUnit
 
 	LoadFiles := !() -> void
 	{
-		fileTokens = this.LoadFile(file)
+		fileTokens = this.LoadFile(file,fileData,false)
 	}
-	LoadFile := !(File^ newFile) -> Token^
+	LoadFile := !(File^ newFile,Blob^ fileValue, bool forceLoad) -> Token^
 	{
 		resultTokens := Token^
 
-		blb := TryGetCacheOfFile(newFile)
+		blb := Blob^
+		if not forceLoad
+			blb = TryGetCacheOfFile(newFile)
 		if blb != null
 		{
 			if blb.Size() == 0
@@ -76,7 +78,7 @@ BoxFile := class extend BoxUnit
 		}
 		if resultTokens == null
 		{
-			tokens := GetObjectsFromMemory(this&,fileData.GetPointer()->{char^},fileSize)
+			tokens := GetObjectsFromMemory(this&,fileValue.GetPointer()->{char^},fileValue.Size())
 
 			if tokens == null
 				return void
@@ -354,20 +356,17 @@ BoxFile := class extend BoxUnit
 	}
 	ReloadFile := !(File^ newFile) -> void
 	{
-		toks := LoadFile(newFile)
+		thisData := newFile.GetBlob()
+		toks := LoadFile(newFile,thisData,true)
 		
 		fncs := ParseFunctions(toks)
 
-		thisData := newFile.GetBlob()
-
-		for fnc : fncs
+		for iter : fncs
 		{
 			stVal := iter.Down.Right
 
 			c := PFunctionParser(stVal.Right)
 			crc := c.ComputeHash(thisData)
-			printf("crc %i\n",crc)
-			
 		}
 		
 	}

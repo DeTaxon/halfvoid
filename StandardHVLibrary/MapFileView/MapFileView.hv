@@ -16,7 +16,7 @@ ZipFSFileView := class extend FileView
 		itMap = new MappedFile(pth.Str())
 	}
 	Get := virtual !() -> u8^ {return itMap.Get()}
-	Size := virtual !() -> u64 { return baseFile.fileSize }
+	Size := virtual !() -> u64 { return baseFile.Size() }
 }
 
 ZipFSFileViewRaw := class extend FileView

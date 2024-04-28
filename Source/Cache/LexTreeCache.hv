@@ -102,6 +102,17 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 			spn = GetConstStringSpan(StringSpan(buf,stSize))
 			strm.Read(stSize&,4)
 			resToken = new TokenSymbol(spn,stSize)
+		case 115
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			strm.Read(stSize&,4)
+			c := int
+			strm.Read(x&,4)
+			preRes := new TokenSkobSymbol(spn,stSize)
+			preRes.EndLine = new FileLine(setFile)
+			preRes.EndLine.Line = c
+			resToken = preRes 
 		case 110
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
@@ -253,6 +264,18 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 		x = decor.Value.Size()
 		strm.Write(x&,4)
 		strm^ << decor.Value
+	}else if itToken is TokenSkobSymbol
+	{
+		decor := itToken->{TokenSkobSymbol^}
+		x = 115
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm^ << decor.Value
+		x = itToken.TokenId
+		strm.Write(x&,4)
+		x = decor.EndLine.Line
+		strm.Write(x&,4)
 	}else if itToken is TokenSymbol
 	{
 		decor := itToken->{TokenSymbol^}
@@ -310,6 +333,8 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 		assert(false)
 	}
 	strm.Write(subs&,4)
+
+	//Latest id is 115
 
 	itr = itToken.Down
 	while itr != null

@@ -255,6 +255,16 @@ TokenSymbol := class extend Token
 		Right?.Print(x)
 	}
 }
+TokenSkobSymbol := class extend TokenSymbol
+{
+	EndLine := FileLine^
+
+	this := !(StringSpan val, int tId) -> void
+	{
+		Value = val
+		TokenId = tId
+	}
+}
 TokenIndent := class extend Token
 {
 	Value := StringSpan
