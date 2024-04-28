@@ -99,6 +99,10 @@ PFunctionParser := class
 	{
 		return found
 	}
+	ComputeHash := !(Blob^ fileData) -> u32
+	{
+		
+	}
 	CreateObject := !() -> BoxUnit^
 	{
 		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken)->{BoxFuncTemplate^}

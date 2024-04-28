@@ -34,7 +34,7 @@ inotify_wrapper_fd := class
 			this.fd = inotify_init1(2048)
 
 			TSpawnTask(() ==> [this&]{
-				OSAsyncReadNonStop(fd,(blb) ==> [this&]{
+				OSAsyncReadNonStop(this.fd,(blb) ==> [this&]{
 					ptr := blb.GetPointer()->{wd_struct^}
 					fileName := StringSpan(ptr.name[0]&,ptr.len)
 

@@ -1,0 +1,62 @@
+// Big thank you for algorithm
+// https://gist.github.com/timepp/1f678e200d9e0f2a043a9ec6b3690635
+
+Crc32 := class
+{
+	value := u32
+	//table := u32[256] //TODO table to global variable as static element?
+
+	this := !() -> void
+	{
+		value = -1
+
+		//poly := 0xEDB88320
+		//for i : 256
+		//{
+		//	c := i->{u32}
+		//	for j : 8
+		//	{
+		//		if (c and_b 1) != 0
+		//		{
+		//			c = poly xor_b (c shr 1)
+		//		}else{
+		//			c = c shr 1
+		//		}
+		//	}
+		//	table[i] = c
+		//}
+	}
+
+	Feed := !(void^ ptr, int len) -> void
+	{
+		arr := ptr->{u8^}
+		c := value->{u32}
+		for i : len
+		{
+			ch := arr[i]
+			for j : 8
+			{
+				b := (ch xor_b c) and_b 1
+				c = c shr 1
+				if b != 0
+					c = c xor_b 0xEDB88320
+				ch = ch shr 1
+			}
+		}
+		value = c
+	}
+	//Feed := !(void^ ptr, int len) -> void
+	//{
+	//	arr := ptr->{u8^}
+	//	c := value
+	//	for i : len
+	//	{
+	//		c = table[(c xor_b arr[i]) and_b 0xFF] xor_b (c shr 8)
+	//	}
+	//	value = c
+	//}
+	Get := !() -> u32
+	{
+		return value xor_b -1
+	}
+}

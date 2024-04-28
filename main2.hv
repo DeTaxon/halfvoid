@@ -6,18 +6,31 @@
 
 
 
+
+
 main := !(char^[] args) -> int
 {
-	flt := 0.0451
-	printf("hey %s\n",flt.ToString())
-	//tst = flt.ToString()
+	c := "Hello World!"
+	crc := Crc32()
+	crc.Feed(c,strlen(c))
+	printf("crc %X\n",crc.Get())
 	return 0
 }
 
 
+SubFunction := !() -> void
+{
+
+	printf("called function\n")	
+}
+
 RunTest := !() -> void
 {
-	printf("test\n")
+	while true
+	{
+		SubFunction()
+		TSleep(1)
+	}
 }
 
 RangesExperiment := !() -> void

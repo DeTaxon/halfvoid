@@ -41,8 +41,10 @@ RunModeFuncName := char^
 
 GInterpCntx := MCInterpContext
 
-WorkBag := CompilerWork 
-//TestFile := TFile^
+WorkBag := CompilerWork
+
+NonStopBuild := false
+
 
 OutputFile := char^
 main := !(char^[] args) -> int
@@ -91,6 +93,8 @@ main := !(char^[] args) -> int
 				RunMode = true
 			case "-tracy"
 				UseTracy = true
+			case "-nonstop"
+				NonStopBuild = true
 			case "-no-scary"
 				DisableScary = true
 			case "-emulate-tls"
@@ -241,6 +245,40 @@ main := !(char^[] args) -> int
 		WaitForParsingObjects()
 		if WorkBagPrintErrors()
 			exit(0)
+
+		
+		if #OS() == "Linux"
+		{
+			TSpawnTask(() ==> {
+				AsyncMonitorFolderNonStop(".",true,(changedFile) ==> {
+					asFile := changedFile->{File^}
+
+					flId := asFile.GetId()
+
+
+					foundFile := BoxFile^
+					for spc : CodeSpaces
+					{
+						for thisFile : spc.Files
+						{
+							fId := thisFile.file.GetId()
+							if fId == flId
+							{
+								foundFile = thisFile
+								break
+							}
+						}
+						if foundFile != null
+							break
+					}
+					if foundFile != null
+					{
+						foundFile.ReloadFile(asFile)
+					}
+				})
+			})
+		}
+
 		CompileAndRunCode(toRun->{BoxFuncBody^})
 		return 0
 	}
@@ -293,19 +331,6 @@ WorkBagPrintErrors := !() -> bool
 }
 WaitForParsingObjects := !() -> void
 {
-	//while GClassesInProgress.Size() != 0
-	//{
-	//	//cls := GClassesInProgress[0]
-	//	//if cls is in BoxClassBody
-	//	//{
-	//	//	printf("hey %s\n",cls.ItName)
-	//	//}else{
-	//	//	printf("not class %s\n",cls.UnitName )
-	//	//}
-	//	GClassesInProgress[0].AwaitReadyState()
-	//	GClassesInProgress.Pop()
-	//}
-
 	TaskYield()
 
 	prevCount := WorkBag.WorkCount()

@@ -55,6 +55,10 @@ File := class extend vRepoObject
 	{
 		return false
 	}
+	GetId := !() -> u64
+	{	
+		return osFileId(GetPath().Str())
+	}
 	Size := !() -> size_t
 	{
 		// if ptrToZip != null

@@ -60,6 +60,8 @@ run:
 run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
+run_nonstop:
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 win.exe:
 	$(gdb_tui) ./halfvoid -win32 -g -C0 StandardHVLibrary main2.hv -o out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe

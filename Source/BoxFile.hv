@@ -32,13 +32,14 @@ BoxFile := class extend BoxUnit
 {
 	fileId := int
 	file := File^
-	fileMap := FileView^
+	fileData := Blob^
 	fileSize := int
 	fileName := StringSpan
 
 	loaded := THatch
 
 	AllClasses := List.{BoxClass^}
+	Functions := List.{BoxFuncTemplate^}
 
 	fileTokens := Token^
 	tokensChanged := bool
@@ -49,7 +50,7 @@ BoxFile := class extend BoxUnit
 	{
 		fileId = GetNewId()
 		file = inFile
-		fileMap = file.GetMap()
+		fileData = file.GetBlob()
 		fileSize = file.Size()
 	}
 	GetName := !() -> StringSpan
@@ -59,37 +60,42 @@ BoxFile := class extend BoxUnit
 
 	LoadFiles := !() -> void
 	{
-		tokens := Token^
+		fileTokens = this.LoadFile(file)
+	}
+	LoadFile := !(File^ newFile) -> Token^
+	{
+		resultTokens := Token^
 
-		blb := TryGetCacheOfFile(file)
+		blb := TryGetCacheOfFile(newFile)
 		if blb != null
 		{
 			if blb.Size() == 0
 				return void
 			s := StreamReadBlob(blb.GetPointer(),blb.Size())
-			fileTokens = LoadCachedTokens(s&,this&)
+			resultTokens = LoadCachedTokens(s&,this&)
 		}
-		if fileTokens == null
+		if resultTokens == null
 		{
-			tokens = GetObjectsFromMemory(this&,fileMap.Get()->{char^},fileSize)
+			tokens := GetObjectsFromMemory(this&,fileData.GetPointer()->{char^},fileSize)
 
 			if tokens == null
 				return void
 
 			tokensChanged = true
 
-			fileTokens = new Token
+			resultTokens = new Token
 
-			fileTokens.Down = tokens
+			resultTokens.Down = tokens
 			itr := tokens
 			while itr != null
 			{
-				itr.Up = fileTokens
+				itr.Up = resultTokens
 				itr = itr.Right
 			}
 
-			SyntaxCompress(fileTokens,LexHVFileRoot)
+			SyntaxCompress(resultTokens,LexHVFileRoot)
 		}
+		return resultTokens
 	}
 	ParseClasses := !() -> void
 	{
@@ -209,32 +215,13 @@ BoxFile := class extend BoxUnit
 	}
 	ParseFunctions := !() -> void
 	{
-		if fileTokens == null
-			return void
+		res := ParseFunctions(fileTokens)
 
-		LoadSpace()
-		iter := fileTokens.Down
-		while iter != null
+		for iter : res
 		{
-			if iter.Down?.Right?.GetValue() == ":="
-			{}else{
-				iter = iter.Right
-				continue
-			}
 			stVal := iter.Down.Right
 
-			if stVal.Right == null
-			{
-				iter = iter.Right
-				continue
-			}
-
 			c := PFunctionParser(stVal.Right)
-			if not c.IsFound()
-			{
-				iter = iter.Right
-				continue
-			}
 
 			isSuffix := false
 			name := StringSpan
@@ -257,6 +244,37 @@ BoxFile := class extend BoxUnit
 			ParsedTokens.Insert(iter)
 			res.MemObj.SetName(res.Name)
 			CurrentCodeSpace.AddTemplate(res.Name,fnc->{BoxFuncTemplate^})
+		}
+	}
+	ParseFunctions := !(Token^ checkTokens) ->	HybridQueue.{Token^,20}
+	{
+		if checkTokens == null
+			return void
+
+		LoadSpace()
+		iter := checkTokens.Down
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{}else{
+				iter = iter.Right
+				continue
+			}
+			stVal := iter.Down.Right
+
+			if stVal.Right == null
+			{
+				iter = iter.Right
+				continue
+			}
+
+			c := PFunctionParser(stVal.Right)
+			if not c.IsFound()
+			{
+				iter = iter.Right
+				continue
+			}
+			result.Push(iter)
 
 			iter = iter.Right
 		}
@@ -333,6 +351,25 @@ BoxFile := class extend BoxUnit
 				f^ <<  "/" <<"\")\n"
 			}
 		}
+	}
+	ReloadFile := !(File^ newFile) -> void
+	{
+		toks := LoadFile(newFile)
+		
+		fncs := ParseFunctions(toks)
+
+		thisData := newFile.GetBlob()
+
+		for fnc : fncs
+		{
+			stVal := iter.Down.Right
+
+			c := PFunctionParser(stVal.Right)
+			crc := c.ComputeHash(thisData)
+			printf("crc %i\n",crc)
+			
+		}
+		
 	}
 }
 TryParseVarInFile := !(Token^ obj) -> BoxUnit^
