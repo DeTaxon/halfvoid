@@ -90,28 +90,28 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 	//{
 	//	return Contain(val)
 	//}
-	//Values := fake
-	//{
-	//	"in" := !(VALUE val) -> bool
-	//	{
-	//		if this[^] == val
-	//			return true
-	//		return false
-	//	}
-	//	Clone := !() .{} -> VALUE[] 
-	//	{
-	//		res := new VALUE[itSize]
-	//		for frm : this, to : res
-	//		{
-	//			to = frm
-	//		}
-	//		return res
-	//	}
-	//	Get := !() -> VALUE[]
-	//	{
-	//		return @temp Clone()
-	//	}
-	//}
+	Values := fake
+	{
+		"in" := !(VALUE val) -> bool
+		{
+			if this[^] == val
+				return true
+			return false
+		}
+		//Clone := !() .{} -> VALUE[] 
+		//{
+		//	res := new VALUE[itSize]
+		//	for frm : this, to : res
+		//	{
+		//		to = frm
+		//	}
+		//	return res
+		//}
+		//Get := !() -> VALUE[]
+		//{
+		//	return @temp Clone()
+		//}
+	}
 	"for" := !() -> MapCommonIterator.{KEY,VALUE}
 	{
 		result.itr = itTree.Start

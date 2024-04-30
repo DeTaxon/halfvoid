@@ -241,11 +241,15 @@ BoxFile := class extend BoxUnit
 			fnc := c.CreateObject()
 			assert(fnc != null)
 			assert(fnc is in BoxFuncTemplate)
+			if fnc is in BoxFuncTemplateBody
+				fnc->{BoxFuncTemplateBody^}.hash = c.ComputeHash(fileData)
 			res := new TemplateFuncVar(name,isSuffix,fnc->{BoxFuncTemplate^})
 
 			ParsedTokens.Insert(iter)
 			res.MemObj.SetName(res.Name)
 			CurrentCodeSpace.AddTemplate(res.Name,fnc->{BoxFuncTemplate^})
+
+			Functions.Push(fnc->{BoxFuncTemplate^})
 		}
 	}
 	ParseFunctions := !(Token^ checkTokens) ->	HybridQueue.{Token^,20}
@@ -354,12 +358,15 @@ BoxFile := class extend BoxUnit
 			}
 		}
 	}
-	ReloadFile := !(File^ newFile) -> void
+	ReloadFile := !(HotloadContext^ ctx,File^ newFile) -> void
 	{
 		thisData := newFile.GetBlob()
 		toks := LoadFile(newFile,thisData,true)
 		
 		fncs := ParseFunctions(toks)
+
+		newHashs := AVLMap.{Token^,u32}
+		newFuncNames := List.{Tuple.{String^,Token^}}
 
 		for iter : fncs
 		{
@@ -367,6 +374,45 @@ BoxFile := class extend BoxUnit
 
 			c := PFunctionParser(stVal.Right)
 			crc := c.ComputeHash(thisData)
+			newHashs[iter] = crc
+
+			name := String^
+			if stVal.Left is TokenString
+			{
+				name = stVal.Left->{TokenString^}.Value
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value.GetString()
+			}else{
+				assert(false)
+			}
+
+			newFuncNames.Emplace(name,iter)
+		}
+
+		for c : Functions
+		{
+			if c is not in BoxFuncTemplateBody
+				continue
+			thisFunc := c->{BoxFuncTemplateBody^}
+			if thisFunc.hash in newHashs.Values
+				continue
+			
+			foundFunc := Token^
+			for it : newFuncNames
+			{
+				if it.0^ != thisFunc.Name
+					continue
+				foundFunc = it.1
+				break
+			}
+
+			if foundFunc != null
+			{
+				//TODO check header types
+				d := PFunctionParser(foundFunc.Down.Right.Right)
+				thisFunc.ReloadFunctions(ctx,d)
+			}
 		}
 		
 	}

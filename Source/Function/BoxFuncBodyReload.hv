@@ -1,0 +1,47 @@
+AppendClass BoxFuncBody
+{
+	ClearFunction := !() -> void
+	{
+		StartedParse = false
+		StartedParseForced = false
+
+		//ResultTypeHatch.Reset()
+		readyState.Reset()
+		headerHatch.Reset()
+
+		//ExitLabel = null
+
+		Yields.Destroy()
+		YieldStart = null
+		YieldStateInt = null
+		YieldFinilize = null
+
+		Params.Destroy()
+		ParamsLocalVars.Destroy()
+
+		ResultVar = null
+
+		returnHolder.Reset()
+		printResultVar = false
+
+		LocalVars.Destroy()
+		LocalVarsDeferChecks.Destroy()
+		LocalVarsToDeferGuard.Destroy()
+
+		body = null
+		readyState.Reset()
+	}
+
+	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser headerData) -> void
+	{
+		ClearFunction()
+
+		inps1 = headerData.brackets
+		resTyp = headerData.resultToken
+		bdy = headerData.bodyToken
+
+		ParseBody()
+
+		ctx.ChangedFunctions.Push(this&)
+	}
+}

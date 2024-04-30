@@ -12,6 +12,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	Name := StringSpan
 
+	hash := u32
+
 	hData := FunctionHeaderInfo
 
 	Constants := List.{FuncTemplateConstant}
@@ -32,6 +34,26 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		sState.Save()
 		ParentScope = CurrentScope
+	}
+
+	ReloadFunctions := !(HotloadContext^ ctx,PFunctionParser headerData) -> void
+	{
+		Attrs = headerData.Attr
+		inps1 = headerData.brackets
+		resTyp = headerData.resultToken
+		cns = headerData.constToken
+		bdy = headerData.bodyToken
+
+		if resTyp == null
+			Attrs.IsAutoResult = true
+
+		for it : AllFuncs[^]
+		{
+			if it is not in BoxFuncBody
+				continue
+
+			it->{BoxFuncBody^}.ReloadFunction(ctx,headerData)
+		}
 	}
 	GetDefaultValuesCount := virtual !() -> int 
 	{

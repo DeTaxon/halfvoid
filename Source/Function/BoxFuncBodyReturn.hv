@@ -100,4 +100,11 @@ ReturnsHolder := class extend BoxUnit
 	{
 		Returns[^].ResolveStep()
 	}
+	Reset := !() -> void
+	{
+		ResultType = null
+		ResultVar = null
+		ExitLabel = null
+		Returns.Destroy()
+	}
 }

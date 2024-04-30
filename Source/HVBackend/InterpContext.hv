@@ -284,6 +284,18 @@ MCInterpContext := class
 		funcs[itm] = result
 	}
 
+	ReloadFunctions := !(HotloadContext^ ctx) -> void
+	{
+		for newFunc : ctx.ChangedFunctions
+		{
+			if funcs.Contain(newFunc)
+			{
+				ctx.OutdatedFunctions.Push(funcs[newFunc])
+				funcs.Remove(newFunc)
+			}
+		}
+	}
+
 	GetClibDll := !(CLib^ cLib, StringSpan funcName) -> Library^
 	{
 		return loadedDlls[cLib]?

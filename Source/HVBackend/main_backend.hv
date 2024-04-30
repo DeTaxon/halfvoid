@@ -2,9 +2,8 @@
 
 CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
 {
-	iCntx := MCInterpContext
-	fnc := iCntx.GetMCFunc(funcToRun)
-	MCInterpFunction(iCntx&,fnc)
+	fnc := GInterpCntx.GetMCFunc(funcToRun)
+	MCInterpFunction(GInterpCntx&,fnc)
 
 	//builder_x64 := MCBuildContext_x86_64 
 

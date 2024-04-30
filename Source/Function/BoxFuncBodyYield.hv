@@ -1,5 +1,5 @@
 AppendClass BoxFuncBody
-{LocalVar
+{
 	Yields := List.{BoxYield^}
 	YieldStart := BoxLabel^
 	YieldStateInt := LocalVar^

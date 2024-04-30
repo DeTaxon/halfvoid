@@ -250,6 +250,9 @@ main := !(char^[] args) -> int
 		if #OS() == "Linux"
 		{
 			TSpawnTask(() ==> {
+
+				hotload := HotloadContext
+
 				AsyncMonitorFolderNonStop(".",true,(changedFile) ==> {
 					asFile := changedFile->{File^}
 
@@ -273,8 +276,16 @@ main := !(char^[] args) -> int
 					}
 					if foundFile != null
 					{
-						foundFile.ReloadFile(asFile)
+						foundFile.ReloadFile(hotload&,asFile)
 					}
+
+					WaitForParsingObjects()
+					if WorkBagPrintErrors()
+						exit(0)
+
+					GInterpCntx.ReloadFunctions(hotload&)
+
+					hotload.Reset()
 				})
 			})
 		}

@@ -6,15 +6,17 @@
 
 main := !(char^[] args) -> int
 {
-
-
 	return 0
 }
 
+Sub2 := !(int x, int y) -> int
+{
+	return x + y
+}
 
 SubFunction := !() -> void
 {
-	printf("called function\n")	
+	printf("calle function %i %i!\n",Sub2(2,3),Sub2(3,4))
 }
 
 RunTest := !() -> void
@@ -22,7 +24,7 @@ RunTest := !() -> void
 	while true
 	{
 		SubFunction()
-		TSleep(3)
+		TSleep(1)
 	}
 }
 

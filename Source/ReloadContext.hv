@@ -1,0 +1,11 @@
+HotloadContext := class
+{
+	ChangedFunctions := List.{BoxFuncBody^}
+
+	OutdatedFunctions := List.{MCFunction^}
+
+	Reset := !() -> void
+	{
+		ChangedFunctions.Destroy()
+	}
+}

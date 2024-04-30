@@ -66,6 +66,10 @@ THatch := class
 		}
 		return counter
 	}
+	Reset := !() -> void
+	{
+		flag = false
+	}
 	//meh := int
 	Await := !() -> void
 	{
