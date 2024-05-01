@@ -9,6 +9,11 @@ main := !(char^[] args) -> int
 	return 0
 }
 
+
+//Sub3 := !(int x, int y) -> void
+//{
+//	return x * y
+//}
 Sub2 := !(int x, int y) -> int
 {
 	return x + y

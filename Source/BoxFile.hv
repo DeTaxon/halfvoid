@@ -358,64 +358,6 @@ BoxFile := class extend BoxUnit
 			}
 		}
 	}
-	ReloadFile := !(HotloadContext^ ctx,File^ newFile) -> void
-	{
-		thisData := newFile.GetBlob()
-		toks := LoadFile(newFile,thisData,true)
-		
-		fncs := ParseFunctions(toks)
-
-		newHashs := AVLMap.{Token^,u32}
-		newFuncNames := List.{Tuple.{String^,Token^}}
-
-		for iter : fncs
-		{
-			stVal := iter.Down.Right
-
-			c := PFunctionParser(stVal.Right)
-			crc := c.ComputeHash(thisData)
-			newHashs[iter] = crc
-
-			name := String^
-			if stVal.Left is TokenString
-			{
-				name = stVal.Left->{TokenString^}.Value
-			}else if stVal.Left is TokenIndent
-			{
-				name = stVal.Left->{TokenIndent^}.Value.GetString()
-			}else{
-				assert(false)
-			}
-
-			newFuncNames.Emplace(name,iter)
-		}
-
-		for c : Functions
-		{
-			if c is not in BoxFuncTemplateBody
-				continue
-			thisFunc := c->{BoxFuncTemplateBody^}
-			if thisFunc.hash in newHashs.Values
-				continue
-			
-			foundFunc := Token^
-			for it : newFuncNames
-			{
-				if it.0^ != thisFunc.Name
-					continue
-				foundFunc = it.1
-				break
-			}
-
-			if foundFunc != null
-			{
-				//TODO check header types
-				d := PFunctionParser(foundFunc.Down.Right.Right)
-				thisFunc.ReloadFunctions(ctx,d)
-			}
-		}
-		
-	}
 }
 TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 {
