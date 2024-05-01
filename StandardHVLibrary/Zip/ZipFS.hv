@@ -7,7 +7,7 @@ vRepo := class extend TGCObject
 	{
 	}
 
-	ReadFolder := !(StringView p,bool recur,!(File^)& -> void callb) -> void
+	ReadFolder := !(StringView p,bool recur,!(FSObject^)& -> void callb) -> void
 	{
 		
 		repoObj := this&
@@ -24,6 +24,10 @@ vRepo := class extend TGCObject
 				{
 					ReadFolder(absPath,recur,callb)
 				}
+				fold := new Folder
+				fold.absPath = absPath
+				fold.objName = x.GetString()
+				callb(fold)
 			}else{
 				diffSize := absPath.Size() - p.Size()
 				fil := new File

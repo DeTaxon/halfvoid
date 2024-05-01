@@ -87,9 +87,15 @@ BoxBlock := class extend BoxExeObj
 					exeLines.Push(pad)
 					break
 				}
+
+
+				if CurrentFuncWork.isCanceled
+					break
 					
 				TaskYield()
 			}
+			if CurrentFuncWork.isCanceled
+				break
 			
 		
 			iter = iter.Right

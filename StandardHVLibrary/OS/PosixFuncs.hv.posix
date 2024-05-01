@@ -61,6 +61,7 @@ osFileId := !(char^ nm) -> u64
 		return 0
 	return st1[8]&->{u64^}^
 }
+
 osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 {
 

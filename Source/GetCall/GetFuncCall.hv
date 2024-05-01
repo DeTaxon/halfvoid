@@ -30,7 +30,8 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 	Objs := CheckExeDownList
 	namedInputs := AVLMap.{StringSpan,BoxExeObj^}
-	CheckFuncCallBrackets(brc,Objs,namedInputs)
+	if not CheckFuncCallBrackets(brc,Objs,namedInputs)
+		return null
 
 	consts := List.{BoxExeConstObj^}
 	if constsToken != null
@@ -267,9 +268,8 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
 
-	itm.Print(0)
-	itm.EmitError("Can not parse function call")
-	assert(false)
+	CurrentFuncWork.itError = itm.MakeError("Can not parse function call")
+	return null
 }
 
 innerTryGetPtrCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs) -> BoxExeObj^

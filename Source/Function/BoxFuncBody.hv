@@ -233,6 +233,9 @@ BoxFuncBody := class extend BoxFuncCommon
 		body."this"(bdy)
 		body.Work()
 
+		if CurrentFuncWork.isCanceled
+			return void
+
 
 		if Attrs.IsAutoResult
 		{
@@ -430,6 +433,7 @@ CWorkFuncCompile := class extend CWorkUnit
 {
 	itFunc := BoxFuncBody^
 	itError := String^
+	isCanceled := bool
 
 	this := !(BoxFuncBody^ b) -> void
 	{
@@ -449,5 +453,9 @@ CWorkFuncCompile := class extend CWorkUnit
 	GetErrorMessage := virtual !() -> String^ 
 	{	
 		return itError
+	}
+	Cancel := virtual !() -> void
+	{
+		isCanceled = true
 	}
 }

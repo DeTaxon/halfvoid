@@ -229,7 +229,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 }
 
 
-CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,BoxExeObj^} namedInputs) -> void
+CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,BoxExeObj^} namedInputs) -> bool
 {
 	SyntaxCompress(itm,PriorityData)
 	itr := itm.Down
@@ -294,8 +294,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 						obj := TryGetExeCall(itr)
 						if obj == null
 						{
-							itr.Print(0)
-							itr.EmitError("Could not compile line")
+							return false
 						}
 						Objs.Push(obj)
 					}
@@ -304,6 +303,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 		}
 		itr = itr.Right
 	}
+	return true
 }
 CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 {

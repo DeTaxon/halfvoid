@@ -76,7 +76,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		objVals := CheckExeDownList
 		namedObjs := AVLMap.{StringSpan,BoxExeObj^}
-		CheckFuncCallBrackets(itm.Down.Right,objVals,namedObjs)
+		if not CheckFuncCallBrackets(itm.Down.Right,objVals,namedObjs)
+			return null
 
 		fType := userCmd.CallFunction.GetType()->{TypeFunc^}
 

@@ -1,5 +1,5 @@
 
-FSReadFolder := !(StringSpan p,bool recur,!(File^)& -> void callb) -> void
+FSReadFolder := !(StringView p,bool recur,!(FSObject^)& -> void callb) -> void
 {
 	createFSObject()
 	gRepoObject.ReadFolder(p,recur,callb)

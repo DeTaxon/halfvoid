@@ -13,6 +13,11 @@ CompilerWork := class
 		return works.Size()
 	}
 
+	CancelAll := !() -> void
+	{
+		works[^].Cancel()
+	}
+
 	DoWork := !() -> int
 	{
 		while works.Size() != 0
@@ -51,6 +56,7 @@ CWorkUnit := class extend TGCObject
 	DoWork := virtual !() -> CWorkState {}
 	IsDone := virtual !() -> bool {}
 	GetErrorMessage := virtual !() -> String^ {}
+	Cancel := virtual !() -> void {}
 }
 
 CWorkState := enum

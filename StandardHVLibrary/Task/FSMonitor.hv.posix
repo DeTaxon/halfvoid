@@ -15,6 +15,7 @@ wd_struct := class
 	name := char[1]
 }
 
+
 //TODO
 //Check for repeats
 FIONREAD := 21531
@@ -35,40 +36,51 @@ inotify_wrapper_fd := class
 
 			TSpawnTask(() ==> [this&]{
 				OSAsyncReadNonStop(this.fd,(blb) ==> [this&]{
+
 					ptr := blb.GetPointer()->{wd_struct^}
 					fileName := StringSpan(ptr.name[0]&,ptr.len)
 
-					for it : fileNodes
+					node := ref fileNodes[ptr.wd]
+					sBuf := TEchoStream
+					sBuf << node.objectName << "/" << fileName
+
+					fullPath := sBuf.GetString()
+
+					newFile := new File()
+					newFile.absPath = fullPath
+					newFile.objName = fileName.GetString()
+
+					if node.nodeWork.isPaused
 					{
-
-						sBuf := TEchoStream
-						sBuf << it.objectName << "/" << fileName
-
-						fullPath := sBuf.GetString()
-
-						newFile := new File()
-						newFile.absPath = fullPath
-						newFile.objName = fileName.GetString()
-
-						if it.isPaused
-						{
-							it.monitorTask.resume()
-							it.isPaused = false
-							it.changedObject = newFile
-						}
+						node.nodeWork.monitorTask.resume()
+						node.nodeWork.isPaused = false
+						node.nodeWork.changedObject = newFile
 					}
 				})
 			})
 		}
 
 
+		thisWork := NodeWork
+		thisWork.monitorTask = CurrentTask
 		TLock(this&)
 
 		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),IN_MODIFY)
-
 		newNode := ref fileNodes[wd]
 		newNode.objectName = folderPath.GetString()
-		newNode.monitorTask = CurrentTask
+		newNode.nodeWork = thisWork&
+
+		if recursive
+		{
+			FSReadFolder(folderPath,true, (x) ==> {
+				if x is not in Folder
+					return void
+				wd := inotify_add_watch(this.fd,x.GetPath().Str(),IN_MODIFY)
+				newNode := ref fileNodes[wd]
+				newNode.objectName = x.GetPath()
+				newNode.nodeWork = thisWork&
+			})
+		}
 
 		TUnlock(this&)
 
@@ -77,14 +89,14 @@ inotify_wrapper_fd := class
 		while true
 		{
 			TaskCheckMutex.Lock()
-			newNode.isPaused = true
+			thisWork.isPaused = true
 			thrd.switchToMain()
 			TaskCheckMutex.Unlock()
 
-			if newNode.changedObject != null
+			if thisWork.changedObject != null
 			{
-				cb(newNode.changedObject)
-				newNode.changedObject = null
+				cb(thisWork.changedObject)
+				thisWork.changedObject = null
 			}
 		}
 	}
@@ -92,8 +104,13 @@ inotify_wrapper_fd := class
 inotify_wrapper_node := class
 {
 	objectName := String^
+	nodeWork := NodeWork^
+}
+
+NodeWork := class
+{
 	monitorTask := Task^
-	changedObject := FSObject^
+	changedObject := FSObject^ //TODO multiple objects
 	isPaused := bool
 }
 

@@ -36,7 +36,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		ParentScope = CurrentScope
 	}
 
-	ReloadFunctions := !(HotloadContext^ ctx,PFunctionParser headerData) -> void
+	ReloadFunctions := !(HotloadContext^ ctx,PFunctionParser headerData,Blob^ fileData) -> void
 	{
 		Attrs = headerData.Attr
 		inps1 = headerData.brackets
@@ -46,6 +46,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if resTyp == null
 			Attrs.IsAutoResult = true
+
+		hash = headerData.ComputeHash(fileData)
 
 		for it : AllFuncs[^]
 		{

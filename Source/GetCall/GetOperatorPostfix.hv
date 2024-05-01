@@ -18,7 +18,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			objs := CheckExeDownList
 			objs.Push(cl)
 			namedInputs := AVLMap.{StringSpan,BoxExeObj^}
-			CheckFuncCallBrackets(dwn.Down.Right,objs,namedInputs)
+			if not CheckFuncCallBrackets(dwn.Down.Right,objs,namedInputs)
+				return null
 
 			cnsts := List.{BoxExeConstObj^}
 
@@ -71,7 +72,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		Objs.Push(dObj)
 		SyntaxCompress(itm.Down.Right,PriorityData)
 		namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use varaible
-		CheckFuncCallBrackets(itm.Down.Right,Objs,namedInputs)
+		if not CheckFuncCallBrackets(itm.Down.Right,Objs,namedInputs)
+			return null
 
 		cnsts := List.{BoxExeConstObj^}
 		return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)

@@ -32,6 +32,8 @@ AppendClass BoxFile
 			newFuncNames.Emplace(name,iter)
 		}
 
+		foundFunctions := AVLSet.{Token^}
+
 		for c : Functions
 		{
 			if c is not in BoxFuncTemplateBody
@@ -53,8 +55,18 @@ AppendClass BoxFile
 			{
 				//TODO check header types
 				d := PFunctionParser(foundFunc.Down.Right.Right)
-				thisFunc.ReloadFunctions(ctx,d)
+				thisFunc.ReloadFunctions(ctx,d,thisData)
+				foundFunctions.Insert(foundFunc)
 			}
+		}
+		for it : newFuncNames
+		{
+			if foundFunctions.Contain(it.1)
+				continue
+
+			d := PFunctionParser(it.1.Down.Right.Right)
+
+			CreateFunc(GetConstStringSpan(it.0.AsStringSpan()),false,d&,null)
 		}
 		
 	}

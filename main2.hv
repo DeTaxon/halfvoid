@@ -6,14 +6,19 @@
 
 main := !(char^[] args) -> int
 {
+
+	AsyncMonitorFolderNonStop(StringSpan("."), true , x ==> {
+		printf("changed %s\n",x.GetPath().Str())
+	})
+
 	return 0
 }
 
 
-//Sub3 := !(int x, int y) -> void
-//{
-//	return x * y
-//}
+Sub3 := !(int x, int y) -> int
+{
+	return x * y
+}
 Sub2 := !(int x, int y) -> int
 {
 	return x + y
@@ -21,7 +26,7 @@ Sub2 := !(int x, int y) -> int
 
 SubFunction := !() -> void
 {
-	printf("calle function %i %i!\n",Sub2(2,3),Sub2(3,4))
+	printf("calle function %i %i!\n",Sub2(2,3),Sub3(1,3))
 }
 
 RunTest := !() -> void

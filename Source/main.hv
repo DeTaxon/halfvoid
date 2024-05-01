@@ -118,7 +118,11 @@ main := !(char^[] args) -> int
 				if StringSpan(args[i][0..2]) == "-C"
 				{
 					num := StrToInt(args[i][2..0])
-					FSReadFolder(StringSpan(args[i+1]),true,zFil ==> {
+					FSReadFolder(StringSpan(args[i+1]),true,zObj ==> {
+						if zObj is not in File
+							return void
+
+						zFil := zObj->{File^}
 						zFil.IncRef()//TODO memory
 						nm := zFil.GetName()
 						if nm.End == ".hv" or nm.End == osHVFile
@@ -253,7 +257,7 @@ main := !(char^[] args) -> int
 
 				hotload := HotloadContext
 
-				AsyncMonitorFolderNonStop(".",true,(changedFile) ==> {
+				AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> {
 					asFile := changedFile->{File^}
 
 					flId := asFile.GetId()
@@ -281,7 +285,10 @@ main := !(char^[] args) -> int
 
 					WaitForParsingObjects()
 					if WorkBagPrintErrors()
-						exit(0)
+					{
+						WorkBag.CancelAll()
+						return void
+					}
 
 					GInterpCntx.ReloadFunctions(hotload&)
 
