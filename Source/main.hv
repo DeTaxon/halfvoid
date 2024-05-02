@@ -20,9 +20,6 @@ GArchLLVMTypeSizeT := "i64"
 GVoidObj := BoxExeObj^
 
 GDebugTypePrintMeta := List.{Type^}
-	
-//GFuncsInProgress := List.{BoxFunc^}
-//GClassesInProgress := List.{BoxClass^}
 
 AllClasses := List.{BoxClass^}
 AllFunctions := List.{BoxFunc^}
@@ -49,7 +46,6 @@ NonStopBuild := false
 OutputFile := char^
 main := !(char^[] args) -> int
 {
-	//TestFile = new TFile("tst.txt","w")
 
 	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
 	for i : 9973
@@ -283,9 +279,18 @@ main := !(char^[] args) -> int
 						foundFile.ReloadFile(hotload&,asFile)
 					}
 
+					hotload.FailedToCompile[^].Recompile()
+					hotload.FailedToCompile.Destroy()
+
 					WaitForParsingObjects()
 					if WorkBagPrintErrors()
 					{
+						for it : WorkBag.works
+						{
+							if it is not CWorkFuncCompile
+								continue
+							hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
+						}
 						WorkBag.CancelAll()
 						return void
 					}

@@ -39,8 +39,6 @@ AppendClass BoxFile
 			if c is not in BoxFuncTemplateBody
 				continue
 			thisFunc := c->{BoxFuncTemplateBody^}
-			if thisFunc.hash in newHashs.Values
-				continue
 			
 			foundFunc := Token^
 			for it : newFuncNames
@@ -53,10 +51,19 @@ AppendClass BoxFile
 
 			if foundFunc != null
 			{
+				foundFunctions.Insert(foundFunc)
+			}
+
+			if thisFunc.hash in newHashs.Values
+				continue
+
+			if foundFunc != null
+			{
 				//TODO check header types
 				d := PFunctionParser(foundFunc.Down.Right.Right)
 				thisFunc.ReloadFunctions(ctx,d,thisData)
-				foundFunctions.Insert(foundFunc)
+			} else {
+				DeleteFunction(thisFunc)
 			}
 		}
 		for it : newFuncNames
@@ -65,9 +72,13 @@ AppendClass BoxFile
 				continue
 
 			d := PFunctionParser(it.1.Down.Right.Right)
-
 			CreateFunc(GetConstStringSpan(it.0.AsStringSpan()),false,d&,null)
 		}
 		
+	}
+	DeleteFunction := !(BoxFuncTemplate^ delFunc) -> void
+	{
+		Functions.DeleteIf(@1 == delFunc)
+		CodeSpaces[^].Templates[^].DeleteIf(@1 == delFunc) //TODO optimize
 	}
 }

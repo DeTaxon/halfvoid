@@ -44,4 +44,9 @@ AppendClass BoxFuncBody
 
 		ctx.ChangedFunctions.Push(this&)
 	}
+	Recompile := !() -> void
+	{
+		ClearFunction()
+		ParseBody()
+	}
 }

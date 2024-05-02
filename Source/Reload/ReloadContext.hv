@@ -2,6 +2,8 @@ HotloadContext := class
 {
 	ChangedFunctions := List.{BoxFuncBody^}
 
+	FailedToCompile := List.{BoxFuncBody^}
+
 	OutdatedFunctions := List.{MCFunction^}
 
 	Reset := !() -> void

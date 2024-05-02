@@ -3,7 +3,7 @@ BoxCodeSpace := class
 	Files := List.{BoxFile^}
 
 	Templates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
-	Functions := AVLMap.{StringSpan,List.{BoxFunc^}}
+	Functions := AVLMap.{StringSpan,List.{BoxFunc^}} //only for builtin functions
 	Globals := AVLMap.{StringSpan,List.{BoxUnit^}}
 
 	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}

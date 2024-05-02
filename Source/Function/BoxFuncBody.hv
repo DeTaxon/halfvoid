@@ -114,11 +114,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	SetName := virtual !(StringSpan nm) -> void
 	{
 		Name = nm
-
-		if CurrentCodeSpace != null
-		{
-			CurrentCodeSpace.AddFunction(Name,this&)
-		}
 	}
 	GetName := virtual !() -> StringSpan
 	{
