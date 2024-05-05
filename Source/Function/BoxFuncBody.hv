@@ -17,6 +17,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	Constants := List.{BoxUnit^}
 	ConstVars := List.{BoxUnit^}
 
+	hash := u32
 	NamedParametersCount := int
 	VariadicName := StringSpan
 

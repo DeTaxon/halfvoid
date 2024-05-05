@@ -11,6 +11,7 @@ MCInterpContext := class
 	//VTableFunctions := HVTable2.{BuildInVirtualFunctionCall^,void^}
 	
 	functionPointers := HVTable2.{MCFunction^,void^}
+	closureData := HVTable2.{void^,HV_closure_func_data^}
 	
 	vtableFunctions := HVTable2.{BoxFuncBody^,void^}
 
@@ -194,7 +195,23 @@ MCInterpContext := class
 
 		funcPointer = newClosure.func_pointer
 		functionPointers.Add(fnc,funcPointer)
+		closureData.Add(funcPointer,newClosure)
 		return funcPointer
+	}
+
+	UpdateFunctionPointer := !(BoxFuncBody^ changedFunc) -> void
+	{
+		if not vtableFunctions.Key.ContainSome(changedFunc)
+			return void
+		fncPointer := vtableFunctions.Key.GetOne(changedFunc)
+
+		functionPointers.Value.RemoveAll(fncPointer)
+		iFunc := GetMCFunc(changedFunc)
+		functionPointers.Add(iFunc,fncPointer)
+
+		closure := closureData.Key.GetOne(fncPointer)
+		assert(closure != null)
+		closure.interpFunc = iFunc
 	}
 
 	PopulateCIF := !(MCFunction^ fnc, void^ resCIF,void^^ types) -> void
@@ -293,6 +310,11 @@ MCInterpContext := class
 				ctx.OutdatedFunctions.Push(funcs[newFunc])
 				funcs.Remove(newFunc)
 			}
+		}
+
+		for virtFunc : ctx.ChangedVirtualFunctions
+		{
+			UpdateFunctionPointer(virtFunc)
 		}
 	}
 

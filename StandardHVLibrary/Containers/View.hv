@@ -11,6 +11,16 @@ TArrayView := class .{@T} extend TGCObject
 	{
 		Destroy()
 	}
+
+	ContainIf := virtual !(!(T)&->bool cb) -> bool
+	{
+		for it : this
+		{
+			if cb(it)
+				return true
+		}
+		return false
+	}
 }
 
 ViewIterator := class.{@T} extend TGCObject

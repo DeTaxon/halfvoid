@@ -1,56 +1,139 @@
 
-TryParseClass := !(Token^ itm) -> BoxUnit^
+
+PClassParser := class
 {
-	if itm == null or itm.Down == null
-		return null
-	if  itm.Down.GetValue() != "class" and itm.Down.GetValue() != "packed_class"
-		return null
-	
-	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
-	constValue := Token^
+	isFound := bool
+	classToken := Token^
 
 	isPacked := bool
-	if itm.Down.GetValue() == "packed_class"
-		isPacked = true
+	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
+	bodyToken := Token^
+	constValue := Token^
 
-	iter := itm.Down.Right
-
-	if iter.GetValue() == "."
+	this := !(Token^ itm) -> void
 	{
-		constValue = iter.Right
-		iter = constValue.Right
-	}
+		classToken = itm
 
-	while iter.GetValue() in !["extend","#Reserve"]
-	{
-		iter = iter.Right
+		if itm == null or itm.Down == null
+			return void
+		itm = itm.Down
 
-		inh := InheritanceType
-		switch iter.Left.GetValue()
+		if  itm.GetValue() != "class" and itm.GetValue() != "packed_class"
+			return void
+		
+
+		if itm.GetValue() == "packed_class"
+			isPacked = true
+
+		iter := itm.Right
+
+		if iter.GetValue() == "."
 		{
-			case "extend" inh = "extend"
-			case "#Reserve" inh = "reserve"
+			constValue = iter.Right
+			iter = constValue.Right
 		}
 
-		parents.Emplace(iter,inh)
-		iter = iter.Right
-
-		while iter.GetValue() == ","
+		while iter.GetValue() in !["extend","#Reserve"]
 		{
 			iter = iter.Right
+
+			inh := InheritanceType
+			switch iter.Left.GetValue()
+			{
+				case "extend" inh = "extend"
+				case "#Reserve" inh = "reserve"
+			}
+
 			parents.Emplace(iter,inh)
 			iter = iter.Right
+
+			while iter.GetValue() == ","
+			{
+				iter = iter.Right
+				parents.Emplace(iter,inh)
+				iter = iter.Right
+			}
+			assert(iter.GetValue() == "{}")
 		}
-		assert(iter.GetValue() == "{}")
+		bodyToken = iter
+
+		if bodyToken == null
+			return void
+		isFound = true
 	}
-	bdy := iter
 
-	if bdy == null
+
+	IsFound := !() -> bool
+	{
+		return isFound
+	}
+	IsTemplate := !() -> bool
+	{
+		return constValue != null
+	}
+
+	CreateObject := !() -> BoxUnit^
+	{
+		if not IsFound()
+			return null
+		if constValue != null
+			return new BoxClassTemplateBody(isPacked,parents,bodyToken,constValue)
+		return new BoxClassBody(isPacked,parents,bodyToken)
+	}
+	ComputeHash := !(Blob^ fileData) -> u32
+	{
+		if fileData.Size() == 0
+			return 0
+		if classToken.Line == null or bodyToken == null
+			return 0
+		if bodyToken is not TokenSkobSymbol
+			return 0
+		asSkob := bodyToken->{TokenSkobSymbol^}
+
+		if asSkob.EndLine == null
+			return 0
+
+		startLine := classToken.Line.Line
+		endLine := asSkob.EndLine.Line
+
+		arr := fileData.GetPointer()
+		startLineIndex := 0
+		i := 0
+		curLine := 1
+		blbSize := fileData.Size()
+		while i < blbSize and curLine != startLine
+		{
+			if arr[i] == '\n'
+				curLine += 1
+			i += 1
+		}
+		startLineIndex = i
+		while i < blbSize and curLine != endLine
+		{
+			if arr[i] == '\n'
+				curLine += 1
+			i += 1
+		}
+		while i < blbSize and arr[i] != '\n'
+		{
+			i += 1
+		}
+		if i < blbSize
+			i += 1
+		funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
+
+		crc := Crc32()
+		crc.Feed(funcCode.NonNullStr(),funcCode.Size())
+		return crc.Get()
+	}
+}
+
+TryParseClass := !(Token^ itm) -> BoxUnit^
+{
+	c := PClassParser(itm)
+	if not c.IsFound()
 		return null
-
-	if constValue != null
-		return new BoxClassTemplateBody(isPacked,parents,bdy,constValue)
-	return new BoxClassBody(isPacked,parents,bdy)
+	return c.CreateObject()
 }
 
 
@@ -65,6 +148,8 @@ BoxClassBody := class extend BoxClassPoison
 
 	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
+
+	hash := u32
 
 	ComputeConsts := !() -> void
 	{
@@ -103,7 +188,6 @@ BoxClassBody := class extend BoxClassPoison
 
 		IsPacked = isPacked
 		Body = bdy
-		itFile.AllClasses.Push(this&)
 
 		classFile = CurrentFile
 	}
@@ -367,6 +451,12 @@ BoxClassBody := class extend BoxClassPoison
 							f := asFunc->{BoxFunc^}
 							f.SetName(name)
 							f.Work()
+
+							if f is in BoxFuncBody and ParentScope is BoxFile
+							{
+								f2 := f->{BoxFuncBody^}
+								f2.hash = fncParser.ComputeHash(ParentScope->{BoxFile^}.fileData)
+							}
 
 							if isVirtual
 							{

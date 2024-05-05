@@ -1,6 +1,7 @@
 HotloadContext := class
 {
 	ChangedFunctions := List.{BoxFuncBody^}
+	ChangedVirtualFunctions := List.{BoxFuncBody^}
 
 	FailedToCompile := List.{BoxFuncBody^}
 
@@ -9,5 +10,6 @@ HotloadContext := class
 	Reset := !() -> void
 	{
 		ChangedFunctions.Destroy()
+		ChangedVirtualFunctions.Destroy()
 	}
 }

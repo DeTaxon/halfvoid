@@ -20,6 +20,16 @@ PFunctionParser := class
 
 		iter := obj.Down
 
+		//while true
+		//{
+		//	switch iter.GetValue()
+		//	{
+		//		case "virtual"
+		//			iter = iter.Right
+		//		case void
+		//			break
+		//	}
+		//}
 		
 		while iter is TokenTemplateType
 		{

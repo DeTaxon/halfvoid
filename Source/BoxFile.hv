@@ -38,7 +38,8 @@ BoxFile := class extend BoxUnit
 
 	loaded := THatch
 
-	AllClasses := List.{BoxClass^}
+	FileClasses := List.{BoxClassBody^}
+	FileClassTemplates := List.{BoxClassTemplateBody^}
 	Functions := List.{BoxFuncTemplate^}
 
 	fileTokens := Token^
@@ -101,31 +102,11 @@ BoxFile := class extend BoxUnit
 	}
 	ParseClasses := !() -> void
 	{
-		if fileTokens == null
-			return void
+		classes := ParseClasses(fileTokens)
 
-		LoadSpace()
-
-		iter := fileTokens.Down
-		while iter != null
+		for iter : classes
 		{
-			if iter.Down?.Right?.GetValue() == ":="
-			{}else{
-				iter = iter.Right
-				continue
-			}
 			stVal := iter.Down.Right
-
-
-			cls := TryParseClass(stVal.Right)
-
-			if cls == null
-			{
-				iter = iter.Right
-				continue
-			}
-			
-
 			name := StringSpan
 			if stVal.Left is TokenString
 			{
@@ -137,23 +118,57 @@ BoxFile := class extend BoxUnit
 				assert(false)
 			}
 
-			if cls is in BoxClass
+			d := PClassParser(stVal.Right)
+			assert(d.IsFound())
+			cls := d.CreateObject()
+
+			if cls is in BoxClassBody
 			{
-				cls2 := cls->{BoxClass^}
+				cls2 := cls->{BoxClassBody^}
 				cls2.SetName(name)
 				clsVar := new TypeVar(name,cls2.ItType)
 				CurrentCodeSpace.Types[name] = clsVar
-			} else if cls is in BoxClassTemplate
+				FileClasses.Push(cls2)
+				cls2.hash = d.ComputeHash(fileData)
+			} else if cls is in BoxClassTemplateBody
 			{
-				cls3 := cls->{BoxClassTemplate^}
+				cls3 := cls->{BoxClassTemplateBody^}
 				cls3.SetName(name)
 				templateVar := new TemplateTypeVar(name,cls3)
 				CurrentCodeSpace.Types[name] = templateVar
+				FileClassTemplates.Push(cls3)
 			}else{
 				assert(false)
 			}
 
 			ParsedTokens.Insert(iter)
+		}
+	}
+	ParseClasses := !(Token^ tokens) -> HybridQueue.{Token^,20}
+	{
+		if tokens == null
+			return void
+		LoadSpace()
+
+		iter := tokens.Down
+		while iter != null
+		{
+			if iter.Down?.Right?.GetValue() == ":="
+			{}else{
+				iter = iter.Right
+				continue
+			}
+			stVal := iter.Down.Right
+
+			p := PClassParser(stVal.Right)
+
+			if not p.IsFound()
+			{
+				iter = iter.Right
+				continue
+			}
+			
+			result.Push(iter)
 
 			iter = iter.Right
 		}

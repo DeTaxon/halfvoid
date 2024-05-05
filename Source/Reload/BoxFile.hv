@@ -4,6 +4,64 @@ AppendClass BoxFile
 	{
 		thisData := newFile.GetBlob()
 		toks := LoadFile(newFile,thisData,true)
+
+		ReloadFunctions(ctx,newFile,thisData,toks)
+		ReloadClasses(ctx,newFile,thisData,toks)
+	}
+
+	ReloadClasses := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData, Token^ toks) -> void
+	{
+		classes := ParseClasses(toks)
+
+		newHashs := AVLMap.{Token^,u32}
+		classNames := List.{Tuple.{String^,Token^}}
+
+		for iter : classes
+		{
+			stVal := iter.Down.Right
+
+			name := String^
+			if stVal.Left is TokenString
+			{
+				name = stVal.Left->{TokenString^}.Value
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value.GetString()
+			}else{
+				assert(false)
+			}
+			c := PClassParser(stVal.Right)
+
+			newHashs[iter] = c.ComputeHash(thisData)
+			classNames.Push(!{name,iter})
+		}
+
+		notFoundClass := List.{BoxClassBody^}
+		for cls : FileClasses
+		{
+			if cls.hash in newHashs.Values
+				continue
+
+			foundClass := Token^
+			className := String^
+
+			for it : classNames
+			{
+				if it.0^ != cls.ItName
+					continue
+				foundClass = it.1
+				className = it.0
+			}
+			if foundClass != null
+			{
+				cls.ReloadClass(ctx,foundClass.Down.Right.Right,thisData)
+				cls.hash = PClassParser(foundClass.Down.Right.Right).ComputeHash(thisData)
+			}
+		}
+	}
+
+	ReloadFunctions := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData, Token^ toks) -> void
+	{
 		
 		fncs := ParseFunctions(toks)
 

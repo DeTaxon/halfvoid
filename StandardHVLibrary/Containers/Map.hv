@@ -98,6 +98,20 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
 				return true
 			return false
 		}
+		DeleteIf := !(VALUE val) -> int
+		{
+			deleteKeys := List.{KEY}
+
+			for it,ind : this
+			{
+				if it == val
+					deleteKeys.Push(ind)
+			}
+			for it : deleteKeys
+			{
+				this.Remove(it)
+			}
+		}
 		//Clone := !() .{} -> VALUE[] 
 		//{
 		//	res := new VALUE[itSize]

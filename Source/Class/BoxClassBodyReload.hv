@@ -1,0 +1,99 @@
+AppendClass BoxClassBody
+{
+	ReloadClass := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData) -> void
+	{
+		p := PClassParser(tokens)
+
+		fncs := List.{BoxFuncBody^}
+
+		for it : DefaultSpace.Methods[^]
+		{
+			if it is not in BoxFuncBody
+				continue
+			fnc := it->{BoxFuncBody^}
+			fncs.Push(fnc)
+		}
+		for it : PreVTableFuncs[^]
+		{
+			if it is not in BoxFuncBody
+				continue
+			fnc := it->{BoxFuncBody^}
+			fncs.Push(fnc)
+		}
+
+		newFuncs := List.{Tuple.{Token^,String^,u32}}
+
+		SyntaxCompress(p.bodyToken,LexHVFileRoot)
+		iter := p.bodyToken.Down
+		while iter != null
+		{
+			if iter.Down == null or iter.Down.Right == null or iter.Down.Right.GetValue() != ":="
+			{
+				iter = iter.Right
+				continue
+			}
+
+			stVal := iter.Down.Right
+			itm := stVal.Right
+
+			if itm.GetValue() == "virtual"
+				itm = itm.Right
+
+			c := PFunctionParser(itm)
+
+			if not c.IsFound()
+			{
+				iter = iter.Right
+				continue
+			}
+			name := String^
+			if stVal.Left is TokenString
+			{
+				name = stVal.Left->{TokenString^}.Value
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value.GetString()
+			}else{
+				assert(false)
+			}
+			newFuncs.Push(!{iter,name,c.ComputeHash(fileData)})
+
+			iter = iter.Right
+		}
+
+		for it : newFuncs
+		{
+			foundFunc := BoxFuncBody^
+			for fnc : fncs
+			{
+				if fnc.Name == it.1^
+				{
+					foundFunc = fnc
+					break
+				}
+			}
+			if foundFunc == null
+				break
+			if foundFunc.hash == it.2
+			{
+
+			}else{
+				itm := it.0.Down.Right.Right
+				if itm.GetValue() == "virtual"
+					itm = itm.Right
+				p := PFunctionParser(itm)
+				foundFunc.ReloadFunction(ctx,p)
+				foundFunc.hash = p.ComputeHash(fileData)
+
+				for it : PreVTableFuncs[^]
+				{
+				}
+
+				if PreVTableFuncs[^].ContainIf(@1 == foundFunc)
+				{
+					ctx.ChangedVirtualFunctions.Push(foundFunc)
+				}
+			}
+		}
+	}
+}

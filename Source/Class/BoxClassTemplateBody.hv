@@ -20,6 +20,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	ItName := StringSpan
 
 	ParentScope := BoxUnit^
+	ItFile := BoxFile^
 
 	ResistFunctions := AVLMap.{FileLine^,AVLMap.{StringSpan,BoxUnit^}}
 
@@ -29,6 +30,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		constantsToken = cnsts
 		IsPacked = isPacked
 		ItParents.Push(parents[^])
+		ItFile = CurrentFile
 
 		if cnsts != null
 			SyntaxCompress(cnsts,LexHVInputVars)
@@ -96,6 +98,9 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		newClass.ComputeConsts()
 		newClass.TemplateParent = this&
 		newClass.IsPacked = IsPacked
+
+		ItFile?.FileClasses.Push(newClass)
+
 		return newClass
 	}
 }

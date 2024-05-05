@@ -392,12 +392,12 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 		for fil : spc.Files
 		{
 			GDebugFileId = fil.fileId
-			fil.AllClasses[^].PrintAsType(ctx)
+			fil.FileClasses[^].PrintAsType(ctx)
 		}
 	}
 
 	GDebugFileId = DummyFile.fileId
-	DummyFile.AllClasses[^].PrintAsType(ctx)
+	DummyFile.FileClasses[^].PrintAsType(ctx)
 
 	GlobalVars2[^].PrintCodeVar(ctx)
 	for spc : CodeSpaces

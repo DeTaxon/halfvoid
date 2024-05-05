@@ -12,6 +12,32 @@ HVTable2 := class .{@Left,@Right}
 	}
 	Key := fake
 	{
+		RemoveAll := !(Left key) -> void
+		{
+			if not frwd.Contain(key)
+				return void
+
+			objToDel := List.{Right}
+
+			for it : frwd
+			{
+				objToDel.Push(it[^])
+			}
+			frwd.Remove(key)
+
+			afterCleanup := List.{Right}
+
+			for it,ind : bckwrd
+			{
+				it.DeleteIf(@1 == key)
+				if it.Size() == 0
+					afterCleanup.Push(ind)
+			}
+			for it : afterCleanup
+			{
+				bckwrd.Remove(it)
+			}
+		}
 		Get := !(Left inp, !(Right&)&->void cb) -> void
 		{
 			if not frwd.Contain(inp)
@@ -28,11 +54,41 @@ HVTable2 := class .{@Left,@Right}
 		}
 		GetOne := !(Left obj) -> ref Right
 		{
-			return frwd[obj]
+			if not frwd.Contain(obj)
+			{
+				return void
+			}
+			return frwd[obj][0]
 		}
 	}
 	Value := fake
 	{
+		RemoveAll := !(Right key) -> void
+		{
+			if not bckwrd.Contain(key)
+				return void
+
+			objToDel := List.{Left}
+
+			for it : bckwrd
+			{
+				objToDel.Push(it[^])
+			}
+			bckwrd.Remove(key)
+
+			afterCleanup := List.{Left}
+
+			for it,ind : frwd
+			{
+				it.DeleteIf(@1 == key)
+				if it.Size() == 0
+					afterCleanup.Push(ind)
+			}
+			for it : afterCleanup
+			{
+				bckwrd.Remove(it)
+			}
+		}
 		Get := !(Right inp, !(Left&)&->void cb) -> void
 		{
 			if not bckwrd.Contain(inp)
