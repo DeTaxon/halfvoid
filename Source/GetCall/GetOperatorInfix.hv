@@ -41,6 +41,9 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
+	if tmpList[0] == null or tmpList[1] == null
+		return null
+
 	if oper in ![">",">=","<","<=","==","!="]
 	{
 		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)
