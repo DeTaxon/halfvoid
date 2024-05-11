@@ -37,7 +37,7 @@ LayoutHorizontal := class extend LayoutBase
 			itL := it.0.GetLayout(ctx)
 			switch itL.LayoutTypeW
 			{
-				case 0 //fullSuze
+				case 0 //fullSize
 					foundFullSizeW = true
 					fullSizeCount += 1
 				case 1 //static
@@ -47,7 +47,7 @@ LayoutHorizontal := class extend LayoutBase
 			}
 			switch itL.LayoutTypeH
 			{
-				case 0 //fullSuze
+				case 0 //fullSize
 					foundFullSizeH = true
 				case 1 //static
 					staticH = max(staticH,itL.Sizes.y)

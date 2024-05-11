@@ -4,10 +4,15 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 
+TestFunc := !(vec4f x) -> void
+{
+	printf("one %f",x.x)
+}
+
 main := !(char^[] args) -> int
 {
-	if a == 5
-		return 6
+	c := vec4f(1.0,0.5,0.0,0.99)
+	TestFunc(c)
 	return 0
 }
 

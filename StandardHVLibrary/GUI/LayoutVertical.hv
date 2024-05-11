@@ -37,7 +37,7 @@ LayoutVertical := class extend LayoutBase
 			itL := it.0.GetLayout(ctx)
 			switch itL.LayoutTypeW
 			{
-				case 0 //fullSuze
+				case 0 //fullSize
 					foundFullSizeW = true
 				case 1 //static
 					staticW = max(staticW,itL.Sizes.x)
@@ -47,7 +47,7 @@ LayoutVertical := class extend LayoutBase
 			}
 			switch itL.LayoutTypeH
 			{
-				case 0 //fullSuze
+				case 0 //fullSize
 					foundFullSizeH = true
 					fullSizeCount += 1
 				case 1 //static
@@ -65,6 +65,8 @@ LayoutVertical := class extend LayoutBase
 
 		if foundStaticH { result.LayoutTypeH = 1
 		}else {result.LayoutTypeH = 0}
+ 
+		result.LayoutTypeW = 0
 	}
 
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void

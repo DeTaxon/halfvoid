@@ -144,6 +144,8 @@ MCInterpContext := class
 
 		}else if obj is BoxExeInt{
 			mem->{s32^}^ = obj->{BoxExeInt^}.Value
+		}else if obj is BoxExeDouble{
+			mem->{double^}^ = obj->{BoxExeDouble^}.val
 		}else if obj is BoxExeString
 		{
 			mem->{char^^}^ = obj->{BoxExeString^}.Value.Str()

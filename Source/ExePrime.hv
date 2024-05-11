@@ -119,6 +119,10 @@ BoxExeDouble := class extend BoxExeConstObj
 	{
 		ctx.writeStream^ << val
 	}
+	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << val
+	}
 }
 
 BoxExeString := class extend BoxExeConstObj

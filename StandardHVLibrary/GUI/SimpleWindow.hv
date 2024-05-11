@@ -1,4 +1,4 @@
-SimpleWindow := class extend GLFWWindow
+Window := class extend GLFWWindow
 {
 	vInstance := VulkanDefaultInstance^
 
@@ -162,6 +162,7 @@ SimpleWindow := class extend GLFWWindow
 				PollEvents()
 			}else{
 				glfwWaitEventsTimeout(0.1)
+				TSleep(0.001) //TODO @work glfwWaitEventsTimeout(0.1) for some reason VERY slow
 			}	
 		}
 	}
@@ -211,6 +212,7 @@ SimpleWindow := class extend GLFWWindow
 
 	InitWindow := virtual !() -> GUIObject^
 	{
+		return new LayoutVertical(![])
 	}
 	DrawCode := virtual !(void^ nk,int w, int h) -> void
 	{
