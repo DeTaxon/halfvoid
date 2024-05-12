@@ -82,9 +82,14 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 
 }
 
-fsGetAbsolutePath := !(char^ ptr) -> String^
+fsGetAbsolutePath := !(StringView ptr) -> String^
 {
-	
+	bsName := ptr.GetString()
+	resPath := realpath(bsName.Str(),null)
+	if resPath == null
+		return null
+	defer free(resPath)
+	result = new String(resPath)
 }
 
 GetRealTimeU64Seconds := !() -> u64

@@ -10,6 +10,9 @@ GUILayoutInfo := class
 	LayoutTypeW := int
 	LayoutTypeH := int
 
+	CanFullSizeW := bool
+	CanFullSizeH := bool
+
 	"=" := default
 }
 

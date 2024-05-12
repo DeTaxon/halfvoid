@@ -95,8 +95,11 @@ MappedFile := class extend TGCObject
 	{
 		if hndl == null
 			return void
-		hndl = null
+		
 		UnmapViewOfFile(mapId)
+		CloseHandle(mapId)
 		CloseHandle(hndl)
+
+		hndl = null
 	}
 }

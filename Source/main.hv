@@ -258,6 +258,8 @@ main := !(char^[] args) -> int
 
 					flId := asFile.GetId()
 
+					printf("WUT %s\n",asFile.GetPath().GetString().Str())
+
 
 					foundFile := BoxFile^
 					for spc : CodeSpaces

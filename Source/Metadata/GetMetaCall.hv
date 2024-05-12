@@ -44,6 +44,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GetExeString(StringSpan("Prime").GetString())
 		if typ is TypeInteger
 			return GetExeString(StringSpan("Prime").GetString())
+		if typ is TypeVector
+			return GetExeString(StringSpan("Prime").GetString())
 		if typ is in TypePoint
 			return GetExeString(StringSpan("Pointer").GetString())
 		if typ is in TypePoint

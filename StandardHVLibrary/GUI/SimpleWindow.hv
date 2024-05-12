@@ -80,7 +80,7 @@ Window := class extend GLFWWindow
 
 				surfaceIndex := u32
 				drawRes := true
-				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+				@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
 				if not drawRes or outdatedWindowSize
 				{
@@ -161,8 +161,7 @@ Window := class extend GLFWWindow
 				SwapBuffers()
 				PollEvents()
 			}else{
-				glfwWaitEventsTimeout(0.1)
-				TSleep(0.001) //TODO @work glfwWaitEventsTimeout(0.1) for some reason VERY slow
+				@work glfwWaitEventsTimeout(0.1)
 			}	
 		}
 	}

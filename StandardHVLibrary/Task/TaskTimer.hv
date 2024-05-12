@@ -18,6 +18,7 @@ TSleep := !(double val) -> void
 	TaskCheckMutex.Unlock()
 }
 
+#MarkFunction("JITPass",TaskYield)
 TaskYield := !() -> void
 {
 	TaskCheckMutex.Lock()

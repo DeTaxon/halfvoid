@@ -6,7 +6,7 @@
 
 TestFunc := !(vec4f x) -> void
 {
-	printf("one %f",x.x)
+	printf("one %f\n",x.x)
 }
 
 main := !(char^[] args) -> int

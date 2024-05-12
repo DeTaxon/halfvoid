@@ -24,7 +24,7 @@ LayoutHorizontal := class extend LayoutBase
 				switch itL.1
 				{	
 					case 0
-						foundFullSizeH = true
+						foundFullSizeW = true
 						fullSizeCount += 1
 					case 1
 						staticW += itL.0.x
@@ -64,12 +64,15 @@ LayoutHorizontal := class extend LayoutBase
 
 		if foundStaticH { result.LayoutTypeH = 1
 		}else {result.LayoutTypeH = 0}
+
+		result.CanFullSizeW = foundFullSizeW
+		result.CanFullSizeH = foundFullSizeH
 	}
 
 	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
 	{
 		maxHeight := setSize.y
-		if foundStaticH
+		if foundStaticH and not foundFullSizeH
 		{
 			maxHeight = staticH
 		}

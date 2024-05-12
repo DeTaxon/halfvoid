@@ -33,7 +33,7 @@ internalWorkCall := !(!()&->void lmbd) -> void
 
 	myTask->{Task^}.resume()
 	TaskWaitTasksConVar.NotifyAll()
-	//TaskMainEvent.Emit()
+	TaskMainEvent.Emit()
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()

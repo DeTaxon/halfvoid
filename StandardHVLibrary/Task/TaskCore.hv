@@ -17,6 +17,13 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
+		if TaskLoopWorkCounter != 0 and not someoneOnLoop
+		{
+			someoneOnLoop = true
+			TaskCodePollWork(0.0)
+			someoneOnLoop = false
+		}
+
 
 		doTask := ct.PopReadyTask()
 

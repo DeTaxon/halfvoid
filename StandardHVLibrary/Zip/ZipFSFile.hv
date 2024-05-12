@@ -22,10 +22,14 @@ File := class extend vRepoObject
 	}
 	GetBlob := virtual !() -> Blob^
 	{
-		fileMap := GetMap()
-		fileBlob := MakeBlob(fileMap.Size())
-		if fileMap.Size() != 0
-			memcpy(fileBlob.GetPointer(),fileMap.Get(),fileMap.Size())
+		fileBlob := MakeBlob(this.Size())
+		if fileBlob.Size() != 0
+		{
+			tst := this.GetPath()
+			desc := fopen(tst.Str(),"rb")
+			defer fclose(desc)
+			fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)
+		}
 		return fileBlob
 	}
 	GetModificationTime := !() -> u64
