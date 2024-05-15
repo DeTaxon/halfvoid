@@ -27,36 +27,60 @@ Crc32 := class
 		//}
 	}
 
-	Feed := !(void^ ptr, int len) -> void
-	{
-		arr := ptr->{u8^}
-		c := value->{u32}
-		for i : len
-		{
-			ch := arr[i]
-			for j : 8
-			{
-				b := (ch xor_b c) and_b 1
-				c = c shr 1
-				if b != 0
-					c = c xor_b 0xEDB88320
-				ch = ch shr 1
-			}
-		}
-		value = c
-	}
 	//Feed := !(void^ ptr, int len) -> void
 	//{
 	//	arr := ptr->{u8^}
-	//	c := value
+	//	c := value->{u32}
 	//	for i : len
 	//	{
-	//		c = table[(c xor_b arr[i]) and_b 0xFF] xor_b (c shr 8)
+	//		ch := arr[i]
+	//		for j : 8
+	//		{
+	//			b := (ch xor_b c) and_b 1
+	//			c = c shr 1
+	//			if b != 0
+	//				c = c xor_b 0xEDB88320
+	//			ch = ch shr 1
+	//		}
 	//	}
 	//	value = c
 	//}
+	Feed := !(void^ ptr, int len) -> void
+	{
+		#MarkFunction("CallAtStart",ComputeCrc32Table)
+
+		arr := ptr->{u8^}
+		c := value
+		for i : len
+		{
+			c = Crc32Table[(c xor_b arr[i]) and_b 0xFF] xor_b (c shr 8)
+		}
+		value = c
+	}
 	Get := !() -> u32
 	{
 		return value xor_b -1
 	}
 }
+
+Crc32Table := u32[256]
+ComputeCrc32Table := !() -> void
+{
+	poly := 0xEDB88320
+	for i : 256
+	{
+		c := i->{u32}
+		for j : 8
+		{
+			if (c and_b 1) != 0
+			{
+				c = poly xor_b (c shr 1)
+			}else{
+				c = c shr 1
+			}
+		}
+		Crc32Table[i] = c
+	}
+}
+
+

@@ -247,7 +247,7 @@ main := !(char^[] args) -> int
 			exit(0)
 
 		
-		if #OS() == "Linux"
+		if true
 		{
 			TSpawnTask(() ==> {
 
