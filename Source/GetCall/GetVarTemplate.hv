@@ -1,0 +1,45 @@
+
+TryGetVarTemplateUse := !(Token^ obj) -> BoxExeObj^
+{
+	if obj == null
+		return null
+
+	if obj.Down == null
+		return null
+	if obj.Down.Right == null
+		return null
+	if obj.Down.Right.GetValue() != "."
+		return null
+	if obj.Down.Right.Right == null
+		return null
+	if obj.Down.Right.Right.GetValue() != "{}"
+		return null
+
+	iter := obj.Down.Right
+
+	dwn := TryGetExeCall(obj.Down)
+	if dwn == null or dwn is not GlobalVarTemplate
+		return null
+
+	consts := List.{BoxExeConstObj^}
+	itr := iter.Right.Down
+	while itr != null
+	{
+		if itr.GetValue() != ","
+		{
+			newItem := TryGetExeCall(itr)
+			if newItem is not in BoxExeConstObj
+				return null
+			consts.Push(newItem->{BoxExeConstObj^})
+		}
+		itr = itr.Right
+	}
+
+	gvr := dwn->{GlobalVarTemplate^}
+
+	itVar := gvr.GetGlobalVar(consts)
+	if itVar == null
+		return null
+
+	return itVar.proxy&
+}

@@ -1,0 +1,66 @@
+
+GlobalVarTemplate := class extend BoxExeObj
+{
+	constTree := Token^
+	typeTree := Token^
+
+	VarName := StringSpan
+
+	VarNames := List.{StringSpan}
+
+	vars := List.{Tuple.{BoxExeConstObj^[],GlobalVar2^}}
+
+	this := !(StringSpan name,Token^ inTypeTree,Token^ constToken) -> void
+	{
+		typeTree = inTypeTree
+		constTree = constToken
+		VarName = name
+	}
+	GetGlobalVar := !(BoxExeConstObj^[] consts) -> GlobalVar2^
+	{
+		for it : vars
+		{
+			if IsEqConstants(consts,it.0)
+				return it.1
+		}
+
+		typ := GetVarType(consts)
+		if typ == null
+			return null
+		
+		globVar := CreateGlobalVar(VarName,typ,false)
+
+		vars.Emplace(consts.ToVector(),globVar)
+
+		return globVar
+	}
+	GetVarType := !(BoxExeConstObj^[] consts) -> Type^
+	{
+		resConsts := AVLMap.{StringSpan,BoxUnit^}
+
+		cycleLimit := 0
+
+		while cycleLimit < 1
+		{
+			cycleLimit += 1
+
+			itr := constTree.Down
+			i := 0
+			while itr != null
+			{
+				if itr.GetValue() != ","
+				{
+					assert(itr is TokenTemplateType)
+					CheckTemplateConst(consts[i],itr,resConsts)
+					i += 1
+				}
+				itr = itr.Right
+			}
+
+			typ := CheckTemplateType(null,typeTree,resConsts)
+			if typ != null
+				return typ
+		}
+		return null
+	}
+}
