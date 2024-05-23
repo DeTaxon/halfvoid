@@ -24,8 +24,8 @@ LayoutHorizontal := class extend LayoutBase
 				switch itL.1
 				{	
 					case 0
-						foundFullSizeW = true
-						fullSizeCount += 1
+				  		foundFullSizeW = true
+				  		fullSizeCount += 1
 					case 1
 						staticW += itL.0.x
 						//foundStaticH = true

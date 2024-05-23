@@ -424,6 +424,13 @@ RuleParam := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
+	if It.GetValue() == "@" and It.Right?.GetValue() == "{}"
+	{	
+		size += 2
+		It = It.Right.Right
+		if It == null return 0
+	}
+
 	if It.GetValue() == "default"
 	{
 		return size + 2

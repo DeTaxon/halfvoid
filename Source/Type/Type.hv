@@ -191,9 +191,9 @@ TypeVector := class extend TypeStandard
 {
 	base := Type^
 	vecElementCount := int
-	this := !(char^ Name,char^ goodName,Type^ bType, int count) -> void
+	this := !(char^ Name,char^ goodName,Type^ bType, int count,int sAlign) -> void
 	{
-		super(Name,goodName,"",bType.GetSize()*count,16)
+		super(Name,goodName,"",bType.GetSize()*count,sAlign)
 		vecElementCount = count
 		base = bType
 	}
@@ -504,11 +504,11 @@ CreateStandardTypes := !() -> void
 
 	TypeTable[15] = new TypeStandard("%OpaqType","opaque","!DIBasicType(name: \"opaque\", size: 8, align: 8,encoding: DW_ATE_unsigned)",0,0)
 
-	TypeTable[17] = new TypeVector("%Vec4f","vec4f",TypeTable[9],4)
-	TypeTable[18] = new TypeVector("%Vec4f","quantf",TypeTable[9],4)
+	TypeTable[17] = new TypeVector("%Vec4f","vec4f",TypeTable[9],4,16)
+	TypeTable[18] = new TypeVector("%Vec4f","quantf",TypeTable[9],4,16)
 
-	TypeTable[19] = new TypeVector("%Vec3f","vec3f",TypeTable[9],3)
-	TypeTable[20] = new TypeVector("%Vec2f","vec2f",TypeTable[9],2)
+	TypeTable[19] = new TypeVector("%Vec3f","vec3f",TypeTable[9],3,16)
+	TypeTable[20] = new TypeVector("%Vec2f","vec2f",TypeTable[9],2,8)
 
 	TypeTable[21] = new TypeStandard("i16","half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
 

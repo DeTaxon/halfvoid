@@ -185,6 +185,7 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 
 	return TryGetMacroCall(itm)? //MUST BE FIRST
 	
+	return TryGetVarTemplateUse(itm)?
 	return TryGetBranchCall(itm)?
 	return TryGetNewDeleteOperator(itm)?
 	return TryGetBoolOrNone(itm)?

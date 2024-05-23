@@ -64,7 +64,12 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				{
 					ns = new TokenIndent(tok)
 				}else{
-					ns = new TokenTemplateType(tok)
+					if tok.Size() == 1
+					{
+						ns = new TokenSymbol(tok,a)
+					}else{
+						ns = new TokenTemplateType(tok)
+					}
 				}
 			}
 		}

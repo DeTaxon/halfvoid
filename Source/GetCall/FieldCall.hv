@@ -6,6 +6,7 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 	if itm.Down.Right.Right == null return null
 	if itm.Down.Right.Right.Right != null return null
 	if itm.Down.Right.GetValue() != "." return null
+	//if itm.Down.Right.Right.GetValue() == "{}" return null
 
 	val := TryGetExeCall(itm.Down)
 	if val == null

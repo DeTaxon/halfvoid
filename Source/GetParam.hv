@@ -224,6 +224,11 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				callItem = it
 				return true
 			}
+			if it is GlobalVarTemplate
+			{
+				callItem = it
+				return true
+			}
 		}
 		return false
 	})
@@ -248,6 +253,10 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		if callItem is in BoxExeConstObj
 		{
 			return callItem->{BoxExeConstObj^}
+		}
+		if callItem is GlobalVarTemplate
+		{
+			return callItem->{BoxExeObj^}
 		}
 	}
 

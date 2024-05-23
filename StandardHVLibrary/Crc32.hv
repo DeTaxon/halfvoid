@@ -4,27 +4,10 @@
 Crc32 := class
 {
 	value := u32
-	//table := u32[256] //TODO table to global variable as static element?
 
 	this := !() -> void
 	{
 		value = -1
-
-		//poly := 0xEDB88320
-		//for i : 256
-		//{
-		//	c := i->{u32}
-		//	for j : 8
-		//	{
-		//		if (c and_b 1) != 0
-		//		{
-		//			c = poly xor_b (c shr 1)
-		//		}else{
-		//			c = c shr 1
-		//		}
-		//	}
-		//	table[i] = c
-		//}
 	}
 
 	//Feed := !(void^ ptr, int len) -> void
@@ -82,5 +65,4 @@ ComputeCrc32Table := !() -> void
 		Crc32Table[i] = c
 	}
 }
-
 

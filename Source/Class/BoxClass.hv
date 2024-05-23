@@ -334,7 +334,9 @@ TypeClass := class extend Type
 		minSize := ToClass.ItSize
 		unalign := minSize mod ToClass.ItAlign
 		if unalign != 0
+		{
 			minSize += ToClass.ItAlign - unalign
+		}
 		return minSize
 	}
 	GetAlign := virtual !() -> int

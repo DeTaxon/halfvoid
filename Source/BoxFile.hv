@@ -451,6 +451,15 @@ CWorkBaseFile := class extend CWorkUnit
 		itFile.LoadSpace()
 		CurrentScope = itFile
 
+		if itToken.Down.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
+		{
+			//TODO must be token, not str
+			name := itToken.Down->{TokenIndent^}.Value
+			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right)
+			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
+			return "Complete"
+		}
+
 		vr := TryParseVarInFile(itToken)
 
 		if vr == null

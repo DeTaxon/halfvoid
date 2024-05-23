@@ -3,16 +3,20 @@
 //TODO i need some way to profile fiber usage and way to find abandoned hatches
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
+//Ha := type.{@T} T[3]
+Sqr := @{@T} T[3]
+//#OnInit {
+//	this[^i] = i*i
+//}
 
-TestFunc := !(vec4f x) -> void
-{
-	printf("one %f\n",x.x)
-}
 
 main := !(char^[] args) -> int
 {
-	c := vec4f(1.0,0.5,0.0,0.99)
-	TestFunc(c)
+	printf("ha %p\n",Sqr.{int}[0]&)
+	printf("ha %p\n",Sqr.{float}[0]&)
+	printf("ha %p\n",Sqr.{int}[0]&)
+	printf("ha %p %p\n",Sqr.{s64}[0]&,Sqr.{s64}[1]&)
+	printf("ha %p %p\n",Sqr.{s16}[0]&,Sqr.{s16}[1]&)
 	return 0
 }
 

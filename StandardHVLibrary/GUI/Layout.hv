@@ -69,6 +69,7 @@ LayoutSpacer := class extend GUIObject
 LayoutBase := class extend GUIObject
 {
 	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
+
 	staticW := float
 	staticH := float
 	foundStaticW := bool 
