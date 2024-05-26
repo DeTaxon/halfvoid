@@ -10,11 +10,12 @@ GlobalVarTemplate := class extend BoxExeObj
 
 	vars := List.{Tuple.{BoxExeConstObj^[],GlobalVar2^}}
 
-	this := !(StringSpan name,Token^ inTypeTree,Token^ constToken) -> void
+	this := !(StringSpan name,Token^ inTypeTree,Token^ constToken,Token^ base) -> void
 	{
 		typeTree = inTypeTree
 		constTree = constToken
 		VarName = name
+
 	}
 	GetGlobalVar := !(BoxExeConstObj^[] consts) -> GlobalVar2^
 	{

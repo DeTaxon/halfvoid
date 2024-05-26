@@ -451,7 +451,7 @@ CWorkBaseFile := class extend CWorkUnit
 		itFile.LoadSpace()
 		CurrentScope = itFile
 
-		if itToken.Down.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
+		if itToken.Down?.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
 		{
 			//TODO must be token, not str
 			name := itToken.Down->{TokenIndent^}.Value

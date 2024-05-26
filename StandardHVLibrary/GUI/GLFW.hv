@@ -67,6 +67,9 @@ GLFWWindow := class
 	KeyChanged := virtual !(int key, int scancode, bool pressed) -> void
 	{
 	}
+	KeyChangedChar := virtual !(int key, bool pressed) -> void
+	{
+	}
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
 	}
@@ -169,12 +172,15 @@ glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 		//case 290
 	}
 
+
+	base := glfwGetWindowUserPointer(wn)->{GLFWWindow^}
 	if asCh != 0 and (action == GLFW_PRESS or action == GLFW_RELEASE)
 	{
 		buttons[asCh] = action == GLFW_PRESS
+		base.KeyChangedChar(asCh,action == GLFW_PRESS)
 	}
 
-	glfwGetWindowUserPointer(wn)->{GLFWWindow^}.KeyChanged(key,scancode,action == GLFW_PRESS)
+	base.KeyChanged(key,scancode,action == GLFW_PRESS)
 }
 glfwWinResized := !(void^ window, int newW, int newH) -> void
 {

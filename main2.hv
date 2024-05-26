@@ -5,9 +5,9 @@
 
 //Ha := type.{@T} T[3]
 Sqr := @{@T} T[3]
-//#OnInit {
-//	this[^i] = i*i
-//}
+#OnInit {
+	this[^i] = i*i
+}
 
 
 main := !(char^[] args) -> int
