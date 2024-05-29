@@ -221,12 +221,7 @@ PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDo
 			f^ << "*"
 	}
 
-	if JITMode and (fncObj is in BoxFuncDeclare) 
-	{
-		f^ << "%JITFunc" << resId
-	}else{
-		fncObj.PrintUse(ctx)
-	}
+	fncObj.PrintUse(ctx)
 
 	f^ << "("
 	

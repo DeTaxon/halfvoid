@@ -120,7 +120,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	{
 		//printf("line %i\n",cs)
 		thisLine := ref opPtr[cs]
-		switch opPtr[cs].opcode
+		switch thisLine.opcode
 		{
 		case "noop"
 			cs += 1
@@ -250,8 +250,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 
 		case "clean"
-			obj := interpFunc.Objects[opPtr[cs].var1]
-			clnVar := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			obj := interpFunc.Objects[thisLine.var1]
+			clnVar := thisFrame.GetObjectPtr(thisLine.var1)
 			assert(clnVar != null)
 
 			memset(clnVar,0,obj.GetType().GetSize())
@@ -259,9 +259,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "and"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -274,9 +274,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "or"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -290,9 +290,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "xor"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -306,9 +306,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "sshr"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -322,9 +322,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "ushr"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -338,9 +338,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "shl"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch objTyp.GetSize()
 			{
@@ -354,8 +354,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "not"
 			objTyp := interpFunc.Objects[thisLine.var1].GetType()
 
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var2)
 
 			if objTyp == GTypeBool
 			{
@@ -367,9 +367,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "add"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
@@ -402,9 +402,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "sub"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
@@ -438,9 +438,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "mul"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
@@ -470,9 +470,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "div"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
@@ -514,9 +514,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "mod"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
-			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
@@ -534,8 +534,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			cs += 1
 		case "cmp"
 			objTyp := interpFunc.Objects[thisLine.var3].GetType()
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var3)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var4)
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var3)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
 			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is in TypeArrayView or objTyp is TypeEnum

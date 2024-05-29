@@ -179,7 +179,7 @@ HvButton := class extend GUIObject
 		{
 			ctx.figureDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,ctx.w,ctx.h)
 			itMesh.Bind(cmdB)
-			scales := float[4]
+			scales := float[8]
 			scales[0] = 1.0 / ctx.w
 			scales[1] = 1.0 / ctx.h
 			scales[2] = offset.x

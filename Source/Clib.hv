@@ -85,9 +85,6 @@ CLib := class extend ModuleInterface
 					
 			}
 		}
-		if JITMode
-			linkType = StringSpan("dynamic")
-	
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{

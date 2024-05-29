@@ -31,8 +31,6 @@ DisableScary := false
 
 UseTracy := false
 
-JITMode := bool
-
 RunMode := bool
 RunModeFuncName := char^
 
@@ -78,8 +76,6 @@ main := !(char^[] args) -> int
 	{
 		switch args[i]
 		{
-			case "-jit"
-				JITMode = true
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i]) //TODO args check
@@ -200,8 +196,6 @@ main := !(char^[] args) -> int
 	GParsedAllFiles.Emit()
 
 	mainFuncName := "internalHVEntryPoint"
-	if JITMode
-		mainFuncName = "main"
 
 	WaitForParsingObjects()
 	mainFunc := intGetFunc(mainFuncName)
@@ -258,9 +252,6 @@ main := !(char^[] args) -> int
 
 					flId := asFile.GetId()
 
-					printf("WUT %s\n",asFile.GetPath().GetString().Str())
-
-
 					foundFile := BoxFile^
 					for spc : CodeSpaces
 					{
@@ -308,22 +299,14 @@ main := !(char^[] args) -> int
 		return 0
 	}
 
-	if JITMode
-	{
-		assert(false)
-		//byteCode := new TEchoStream
-		//WriteCodeToStream(byteCode)
-		//RunJITMode(byteCode,mainFunc->{BoxFuncBody^})
-	}else{
-		outFile := new TFile(OutputFile,"wb")
+	outFile := new TFile(OutputFile,"wb")
 
-		ctx := LLVMWriteContext
-		ctx.writeStream = outFile
+	ctx := LLVMWriteContext
+	ctx.writeStream = outFile
 
-		WriteCodeToStream(ctx&)
-		printf("done\n")
-		outFile.Close()
-	}
+	WriteCodeToStream(ctx&)
+	printf("done\n")
+	outFile.Close()
 
 	FinilizeCache()
 

@@ -455,7 +455,7 @@ CWorkBaseFile := class extend CWorkUnit
 		{
 			//TODO must be token, not str
 			name := itToken.Down->{TokenIndent^}.Value
-			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right)
+			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
 			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
 			return "Complete"
 		}
