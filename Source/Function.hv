@@ -195,11 +195,14 @@ ContainTemplateObj := !(Token^ itm) -> bool
 FuncAttributes := class
 {
 	IsMethod := bool
-	IsVirtual := bool
 	IsStatic := bool
 	IsLambda := bool
 	IsAutoResult := bool
 	IsInline := bool
+
+	//not for functions
+	IsVirtual := bool
+	IsPoison := bool
 		
 	"=" := default
 }

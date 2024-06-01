@@ -1,30 +1,38 @@
 AppendClass BoxClassBody
 {
-	//TODO work with append
+	//TODO new function, virtual? poison?
+	//TODO fake fields
+	//TODO deletion on function
 	//TODO fields
 	//TODO somehow templates
 	//TODO template virtual methods
+	//TODO change in attributes, virtual <-> regular, how do i do poison?
 	
 	ReloadClass := !(HotloadContext^ ctx) -> void
 	{
-		classFuncs := List.{Tuple.{Token^,String^,u32,Type^}}
+		classFuncs := List.{Tuple.{Token^,String^,u32,Type^,FuncAttributes,Token^}}
 		checkReloadBody(ctx,Body,ctx.GetFileData(ClassFile),classFuncs)
 		for it : Appends
 		{
-			//TODO good fileData, from it.0 file
 			checkReloadBody(ctx,it.1,ctx.GetFileData(it.0),classFuncs)
 		}
 
 		fncs := List.{BoxFuncBody^}
 
-		for it : DefaultSpace.Methods[^]
+		oldScope := CurrentScope
+		defer CurrentScope = oldScope
+		CurrentScope = this&
+
+		checkSpace := DefaultSpace&
+
+		for it : checkSpace.Methods[^]
 		{
 			if it is not in BoxFuncBody
 				continue
 			fnc := it->{BoxFuncBody^}
 			fncs.Push(fnc)
 		}
-		for it : PreVTableFuncs[^]
+		for it : PreVTableFuncs[^] //TODO?
 		{
 			if it is not in BoxFuncBody
 				continue
@@ -56,7 +64,25 @@ AppendClass BoxClassBody
 			//TODO deleted functions somehow
 			if foundFunc == null
 			{
-				//TODO new function
+				if it.4.IsVirtual
+				{
+					//TODO new virtual function?
+				}else{
+					f := PFunctionParser(it.5)
+					assert(f.IsFound())
+					newFunc := f.CreateObject()
+
+					spn := GetConstString(it.1.Str())
+
+					if newFunc is in BoxFuncTemplate
+					{
+						checkSpace.MethodTemplates[spn].Push(newFunc->{BoxFuncTemplate^})
+					}else{
+						assert(newFunc is in BoxFunc)
+						checkSpace.Methods[spn].Push(newFunc->{BoxFunc^})
+					}
+
+				}
 			}else{
 				if foundFunc.hash == it.2
 				{
@@ -79,7 +105,7 @@ AppendClass BoxClassBody
 
 	}
 
-	checkReloadBody := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData,List.{Tuple.{Token^,String^,u32,Type^}} classFuncs) -> void
+	checkReloadBody := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData,List.{Tuple.{Token^,String^,u32,Type^,FuncAttributes,Token^}} classFuncs) -> void
 	{
 		SyntaxCompress(tokens,LexHVFileRoot)
 		iter := tokens.Down
@@ -94,13 +120,12 @@ AppendClass BoxClassBody
 			stVal := iter.Down.Right
 			itm := stVal.Right
 
-			isVirtual := false
-			isPoison := false
+			attrs := FuncAttributes
 
 			while itm.GetValue() in !["virtual","poison"]
 			{
-				isVirtual = isVirtual or itm.GetValue() == "virtual"
-				isPoison = isPoison or itm.GetValue() == "poison"
+				attrs.IsVirtual = attrs.IsVirtual or itm.GetValue() == "virtual"
+				attrs.IsPoison = attrs.IsPoison or itm.GetValue() == "poison"
 				itm = itm.Right
 			}
 
@@ -119,7 +144,7 @@ AppendClass BoxClassBody
 
 			if c.IsFound()
 			{
-				classFuncs.Push(!{iter,name,c.ComputeHash(fileData),c.TryCreateFuncType(ItType)})
+				classFuncs.Push(!{iter,name,c.ComputeHash(fileData),c.TryCreateFuncType(ItType),attrs,itm})
 			}
 			iter = iter.Right
 		}

@@ -18,6 +18,10 @@ main := !(char^[] args) -> int
 
 TestClass1 := class
 {
+	//NewFunc := !() -> void
+	//{
+	//	printf("new func\n")
+	//}
 	SubFunction := virtual !() -> void
 	{
 		printf("Hey\n")
