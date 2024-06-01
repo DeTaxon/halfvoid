@@ -102,6 +102,56 @@ IsGCType := !(Type^ tp) -> bool
 	return tp is in TypeClass and TypeFight(tp,GCType) == GCType
 }
 
+ComputeBracketsHash := !(Blob^ fileData,Token^ startLine, Token^ brackets) -> u32
+{
+	if startLine == null
+		startLine = brackets
+
+	if fileData.Size() == 0
+		return 0
+	if brackets == null
+		return 0
+	if brackets is not TokenSkobSymbol
+		return 0
+	asSkob := brackets->{TokenSkobSymbol^}
+
+	if asSkob.EndLine == null or startLine.Line == null
+		return 0
+
+	startLine := startLine.Line.Line
+	endLine := asSkob.EndLine.Line
+
+	arr := fileData.GetPointer()
+	startLineIndex := 0
+	i := 0
+	curLine := 1
+	blbSize := fileData.Size()
+	while i < blbSize and curLine != startLine
+	{
+		if arr[i] == '\n'
+			curLine += 1
+		i += 1
+	}
+	startLineIndex = i
+	while i < blbSize and curLine != endLine
+	{
+		if arr[i] == '\n'
+			curLine += 1
+		i += 1
+	}
+	while i < blbSize and arr[i] != '\n'
+	{
+		i += 1
+	}
+	if i < blbSize
+		i += 1
+	funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
+
+	crc := Crc32()
+	crc.Feed(funcCode.NonNullStr(),funcCode.Size())
+	return crc.Get()
+}
+
 
 
 stackHolder := class extend TGCObject

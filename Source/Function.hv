@@ -19,17 +19,6 @@ PFunctionParser := class
 		baseToken = obj
 
 		iter := obj.Down
-
-		//while true
-		//{
-		//	switch iter.GetValue()
-		//	{
-		//		case "virtual"
-		//			iter = iter.Right
-		//		case void
-		//			break
-		//	}
-		//}
 		
 		while iter is TokenTemplateType
 		{
@@ -168,6 +157,16 @@ PFunctionParser := class
 		}
 
 		return asTempl
+	}
+	TryCreateFuncType := !(Type^ classInMethod) -> Type^
+	{
+		c := FunctionHeaderInfo
+		if classInMethod != null
+		{
+			c.Types.Emplace(StringSpan(),classInMethod,true,null->{Token^})
+		}
+		c.ParseHeader(brackets,resultToken)
+		return c.TryCreateFuncType()
 	}
 }
 

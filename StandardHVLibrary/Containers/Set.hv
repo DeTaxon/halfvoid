@@ -85,10 +85,10 @@ ContainerCommonSet := class .{@TreeType,@DATA} extend TGCObject
 		}
 	}
 	Size := !() -> int { return itSize }
-	//"in" := !(DATA val) -> bool
-	//{
-	//	return Contain(val)
-	//}
+	"in" := !(DATA val) -> bool
+	{
+		return Contain(val)
+	}
 
 	ToVector := !() -> Vector.{DATA}^
 	{

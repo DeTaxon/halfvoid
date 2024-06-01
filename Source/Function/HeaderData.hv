@@ -157,6 +157,17 @@ FunctionHeaderInfo := class
 			return false
 		return true
 	}
+	TryCreateFuncType := !() -> TypeFunc^
+	{
+		for it : Types
+		{
+			if it.ItType == null
+				return null
+		}
+		if ResultType.ItType == null
+			return null
+		return CreateFuncType()
+	}
 	CreateFuncType := !() -> TypeFunc^
 	{
 		assert(IsOneFunc())

@@ -12,14 +12,17 @@ Sqr := @{@T} T[3]
 
 main := !(char^[] args) -> int
 {
-	printf("ha %p\n",Sqr.{int}[0]&)
-	printf("ha %p\n",Sqr.{float}[0]&)
-	printf("ha %p\n",Sqr.{int}[0]&)
-	printf("ha %p %p\n",Sqr.{s64}[0]&,Sqr.{s64}[1]&)
-	printf("ha %p %p\n",Sqr.{s16}[0]&,Sqr.{s16}[1]&)
 	return 0
 }
 
+
+AppendClass TestClass1
+{
+	SubFunction2 := virtual !() -> void
+	{
+		printf("Hoy\n")
+	}
+}
 
 TestClass1 := class
 {
@@ -39,6 +42,7 @@ RunTest := !() -> void
 	while true
 	{
 		tst.SubFunction()
+		tst.SubFunction2()
 		TSleep(1)
 	}
 }

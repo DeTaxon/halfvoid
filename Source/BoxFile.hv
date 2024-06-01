@@ -175,11 +175,31 @@ BoxFile := class extend BoxUnit
 	}
 	ParseAppendClasses := !() -> void
 	{
-		if fileTokens == null
+		lst := ParseAppend(fileTokens)
+
+		for iter : lst
+		{
+			name := iter.Down.Right->{TokenIndent^}.Value
+
+			cls := intGetClass2(name.GetString().Str())
+
+			if cls == null
+			{
+				iter.EmitError("class not found")
+			}else{
+				assert(cls is in BoxClassBody)
+				cls->{BoxClassBody^}.Appends.Emplace(this&,iter.Down.Right.Right,0)
+				ParsedTokens.Insert(iter)
+			}
+		}
+	}
+	ParseAppend := !(Token^ toks) -> List.{Token^}
+	{
+		if toks == null
 			return void
 
 		LoadSpace()
-		iter := fileTokens.Down
+		iter := toks.Down
 		while iter != null
 		{
 			if iter.Down?.GetValue() == "AppendClass"
@@ -191,18 +211,7 @@ BoxFile := class extend BoxUnit
 			{
 				iter.EmitError("i dont know how you got there")
 			}
-			name := iter.Down.Right->{TokenIndent^}.Value
-
-			cls := intGetClass2(name.GetString().Str())
-
-			if cls == null
-			{
-				iter.EmitError("class not found")
-			}else{
-				assert(cls is in BoxClassBody)
-				cls->{BoxClassBody^}.Appends.Push(iter.Down.Right.Right)
-				ParsedTokens.Insert(iter)
-			}
+			result.Push(iter)
 			iter = iter.Right
 		}
 	}

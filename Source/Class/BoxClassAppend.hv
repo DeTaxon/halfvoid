@@ -1,4 +1,4 @@
 AppendClass BoxClassBody
 {
-	Appends := List.{Token^}
+	Appends := List.{Tuple.{BoxFile^,Token^,u32}}
 }

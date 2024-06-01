@@ -6,10 +6,50 @@ AppendClass BoxFile
 		toks := LoadFile(newFile,thisData,true)
 
 		ReloadFunctions(ctx,newFile,thisData,toks)
-		ReloadClasses(ctx,newFile,thisData,toks)
+
+		
+		changedClasses := AVLSet.{BoxClassBody^}
+
+		ReloadAppends(ctx,newFile,thisData,toks,changedClasses)
+		ReloadClasses(ctx,newFile,thisData,toks,changedClasses)
+
+		for it : changedClasses
+		{
+			it.ReloadClass(ctx,thisData)
+		}
+	}
+	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
+	{
+		cleanedClasses := AVLSet.{void^}
+
+		lst := ParseAppend(toks)
+
+		for iter : lst
+		{
+			name := iter.Down.Right->{TokenIndent^}.Value
+
+			cls := intGetClass2(name.GetString().Str())
+
+			if cls == null
+			{
+				iter.EmitError("class not found")
+			}else{
+				assert(cls is in BoxClassBody)
+				cls2 := cls->{BoxClassBody^}
+				if cls2 not in cleanedClasses
+				{
+					cls2.Appends.DeleteIf(@1.0 == this&)
+					cleanedClasses.Insert(cls2)
+				}
+				appendBody := iter.Down.Right.Right
+				cls2->{BoxClassBody^}.Appends.Emplace(this&,appendBody,ComputeBracketsHash(thisData,null,appendBody))
+				ParsedTokens.Insert(iter)
+				changedClasses.Insert(cls2)
+			}
+		}
 	}
 
-	ReloadClasses := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData, Token^ toks) -> void
+	ReloadClasses := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData, Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{
 		classes := ParseClasses(toks)
 
@@ -54,8 +94,12 @@ AppendClass BoxFile
 			}
 			if foundClass != null
 			{
-				cls.ReloadClass(ctx,foundClass.Down.Right.Right,thisData)
-				cls.hash = PClassParser(foundClass.Down.Right.Right).ComputeHash(thisData)
+				//cls.ReloadClass(ctx,foundClass.Down.Right.Right,thisData)
+				//TODO inheritance
+				p := PClassParser(foundClass.Down.Right.Right)
+				changedClasses.Insert(cls)
+				cls.Body = p.bodyToken
+				cls.hash = p.ComputeHash(thisData)
 			}
 		}
 	}

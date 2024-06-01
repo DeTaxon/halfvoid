@@ -1,8 +1,19 @@
 AppendClass BoxClassBody
 {
-	ReloadClass := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData) -> void
+	//TODO work with append
+	//TODO fields
+	//TODO somehow templates
+	//TODO template virtual methods
+	
+	ReloadClass := !(HotloadContext^ ctx,Blob^ fileData) -> void
 	{
-		p := PClassParser(tokens)
+		classFuncs := List.{Tuple.{Token^,String^,u32,Type^}}
+		checkReloadBody(ctx,Body,fileData,classFuncs)
+		for it : Appends
+		{
+			//TODO good fileData, from it.0 file
+			checkReloadBody(ctx,it.1,fileData,classFuncs)
+		}
 
 		fncs := List.{BoxFuncBody^}
 
@@ -20,11 +31,58 @@ AppendClass BoxClassBody
 			fnc := it->{BoxFuncBody^}
 			fncs.Push(fnc)
 		}
+		for it : classFuncs
+		{
+			foundFunc := BoxFuncBody^
+			for fnc : fncs
+			{
+				if fnc.Name == it.1^
+				{
+					if it.3 == null
+					{
+						//WHAT?
+						foundFunc = fnc
+						break
+					}else{
+						if it.3 == fnc.GetType()
+						{
+							foundFunc = fnc
+							break
+						}
+					}
+				}
+			}
 
-		newFuncs := List.{Tuple.{Token^,String^,u32}}
+			//TODO deleted functions somehow
+			if foundFunc == null
+			{
+				//TODO new function
+			}else{
+				if foundFunc.hash == it.2
+				{
+					//nothing changed to function :)
+				}else{
+					itm := it.0.Down.Right.Right
+					while itm.GetValue() in  !["virtual","poison"]
+						itm = itm.Right
+					p := PFunctionParser(itm)
+					foundFunc.ReloadFunction(ctx,p)
+					foundFunc.hash = p.ComputeHash(fileData)
 
-		SyntaxCompress(p.bodyToken,LexHVFileRoot)
-		iter := p.bodyToken.Down
+					if PreVTableFuncs[^].ContainIf(@1 == foundFunc)
+					{
+						ctx.ChangedVirtualFunctions.Push(foundFunc)
+					}
+				}
+			}
+		}
+
+	}
+
+	checkReloadBody := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData,List.{Tuple.{Token^,String^,u32,Type^}} classFuncs) -> void
+	{
+		SyntaxCompress(tokens,LexHVFileRoot)
+		iter := tokens.Down
 		while iter != null
 		{
 			if iter.Down == null or iter.Down.Right == null or iter.Down.Right.GetValue() != ":="
@@ -36,16 +94,16 @@ AppendClass BoxClassBody
 			stVal := iter.Down.Right
 			itm := stVal.Right
 
-			if itm.GetValue() == "virtual"
-				itm = itm.Right
+			isVirtual := false
+			isPoison := false
 
-			c := PFunctionParser(itm)
-
-			if not c.IsFound()
+			while itm.GetValue() in !["virtual","poison"]
 			{
-				iter = iter.Right
-				continue
+				isVirtual = isVirtual or itm.GetValue() == "virtual"
+				isPoison = isPoison or itm.GetValue() == "poison"
+				itm = itm.Right
 			}
+
 			name := String^
 			if stVal.Left is TokenString
 			{
@@ -56,44 +114,15 @@ AppendClass BoxClassBody
 			}else{
 				assert(false)
 			}
-			newFuncs.Push(!{iter,name,c.ComputeHash(fileData)})
 
+			c := PFunctionParser(itm)
+
+			if c.IsFound()
+			{
+				classFuncs.Push(!{iter,name,c.ComputeHash(fileData),c.TryCreateFuncType(ItType)})
+			}
 			iter = iter.Right
 		}
 
-		for it : newFuncs
-		{
-			foundFunc := BoxFuncBody^
-			for fnc : fncs
-			{
-				if fnc.Name == it.1^
-				{
-					foundFunc = fnc
-					break
-				}
-			}
-			if foundFunc == null
-				break
-			if foundFunc.hash == it.2
-			{
-
-			}else{
-				itm := it.0.Down.Right.Right
-				if itm.GetValue() == "virtual"
-					itm = itm.Right
-				p := PFunctionParser(itm)
-				foundFunc.ReloadFunction(ctx,p)
-				foundFunc.hash = p.ComputeHash(fileData)
-
-				for it : PreVTableFuncs[^]
-				{
-				}
-
-				if PreVTableFuncs[^].ContainIf(@1 == foundFunc)
-				{
-					ctx.ChangedVirtualFunctions.Push(foundFunc)
-				}
-			}
-		}
 	}
 }

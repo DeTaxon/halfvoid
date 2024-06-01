@@ -96,7 +96,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 		StartedParse = true
 		cls := this&
-		//GFuncsInProgress.Push(this&)
+
 		createCWork()
 
 		TSpawnTask(() ==> [cls] {
@@ -109,7 +109,6 @@ BoxFuncBody := class extend BoxFuncCommon
 			return void
 		StartedParseForced = true
 
-		//GFuncsInProgress.Push(this&)
 		this.WorkBody()
 	}
 	SetName := virtual !(StringSpan nm) -> void

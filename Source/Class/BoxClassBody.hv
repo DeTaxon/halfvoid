@@ -315,7 +315,7 @@ BoxClassBody := class extend BoxClassPoison
 		checkClassBody(Body,funcs)
 		for it : Appends
 		{
-			checkClassBody(it,funcs)
+			checkClassBody(it.1,funcs)
 		}
 		
 		if buildCtx.MemParents.Size() != 0
