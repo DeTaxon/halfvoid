@@ -7,9 +7,22 @@ HotloadContext := class
 
 	OutdatedFunctions := List.{MCFunction^}
 
+	fileDatas := AVLMap.{BoxFile^,Blob^}
+
 	Reset := !() -> void
 	{
 		ChangedFunctions.Destroy()
 		ChangedVirtualFunctions.Destroy()
+
+		fileDatas[^].IncRef() //TODO intetional memleak
+		fileDatas.Destroy()
+	}
+	
+	GetFileData := !(BoxFile^ fil) -> Blob^
+	{
+		return fileDatas[fil]?
+
+		result = fil.file.GetBlob()
+		fileDatas[fil] = result
 	}
 }

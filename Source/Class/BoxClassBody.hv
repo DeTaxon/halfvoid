@@ -140,6 +140,7 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 BoxClassBody := class extend BoxClassPoison
 {
 	Body := Token^
+	ClassFile := BoxFile^
 	ParentTokens := HybridQueue.{Tuple.{Token^,InheritanceType},5}
 
 	VParentState := THatch

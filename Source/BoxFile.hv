@@ -129,6 +129,7 @@ BoxFile := class extend BoxUnit
 				clsVar := new TypeVar(name,cls2.ItType)
 				CurrentCodeSpace.Types[name] = clsVar
 				FileClasses.Push(cls2)
+				cls2.ClassFile = this&
 				cls2.hash = d.ComputeHash(fileData)
 			} else if cls is in BoxClassTemplateBody
 			{

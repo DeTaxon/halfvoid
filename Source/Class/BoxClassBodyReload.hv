@@ -5,14 +5,14 @@ AppendClass BoxClassBody
 	//TODO somehow templates
 	//TODO template virtual methods
 	
-	ReloadClass := !(HotloadContext^ ctx,Blob^ fileData) -> void
+	ReloadClass := !(HotloadContext^ ctx) -> void
 	{
 		classFuncs := List.{Tuple.{Token^,String^,u32,Type^}}
-		checkReloadBody(ctx,Body,fileData,classFuncs)
+		checkReloadBody(ctx,Body,ctx.GetFileData(ClassFile),classFuncs)
 		for it : Appends
 		{
 			//TODO good fileData, from it.0 file
-			checkReloadBody(ctx,it.1,fileData,classFuncs)
+			checkReloadBody(ctx,it.1,ctx.GetFileData(it.0),classFuncs)
 		}
 
 		fncs := List.{BoxFuncBody^}
@@ -67,7 +67,7 @@ AppendClass BoxClassBody
 						itm = itm.Right
 					p := PFunctionParser(itm)
 					foundFunc.ReloadFunction(ctx,p)
-					foundFunc.hash = p.ComputeHash(fileData)
+					foundFunc.hash = it.2
 
 					if PreVTableFuncs[^].ContainIf(@1 == foundFunc)
 					{

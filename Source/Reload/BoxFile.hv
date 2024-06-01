@@ -15,7 +15,7 @@ AppendClass BoxFile
 
 		for it : changedClasses
 		{
-			it.ReloadClass(ctx,thisData)
+			it.ReloadClass(ctx)
 		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void

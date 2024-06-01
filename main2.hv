@@ -16,14 +16,6 @@ main := !(char^[] args) -> int
 }
 
 
-AppendClass TestClass1
-{
-	SubFunction2 := virtual !() -> void
-	{
-		printf("Hoy\n")
-	}
-}
-
 TestClass1 := class
 {
 	SubFunction := virtual !() -> void
