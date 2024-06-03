@@ -261,7 +261,9 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		if dwnItem is in BoxFunc
 		{
 			fnc := dwnItem->{BoxFunc^}
-			if fnc.GetType()->{TypeFunc^}.Params.Size() == 0 and Objs.Size() == 0
+			fncVarsCount := fnc.GetType()->{TypeFunc^}.Params.Size()
+			minReqCount := fncVarsCount - fnc.GetDefaultValuesCount()
+			if minReqCount == 0 and Objs.Size() == 0 //TODO non zero options
 				return fnc.CreateCall(Objs)
 		}
 		return innerTryGetPtrCall(dwnItem,Objs)?

@@ -44,14 +44,19 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		if callItem == null
 			itm.EmitError("Function not found")
 
-		mark := ref markedObjects[StringSpan(markName->{TokenString^}.Value.Str())]
-		mark.AddFunc(callItem)
+		MarkFunction(StringSpan(markName->{TokenString^}.Value.Str()),callItem->{BoxFunc^})
 
 		return GBoolTrue
 	}
 }
 
-MarkedAddCallAtStart := !(BoxFunc^ fnc) -> void
+MarkFunction := !(StringSpan name,BoxFunc^ callItem) -> void
+{
+	mark := ref markedObjects[GetConstString(name)]
+	mark.AddFunc(callItem)
+}
+
+MarkAddCallAtStart := !(BoxFunc^ fnc) -> void
 {
 	mark := ref markedObjects[StringSpan("CallAtStart")]
 	mark.AddFunc(fnc)

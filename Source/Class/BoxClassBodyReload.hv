@@ -2,11 +2,12 @@ AppendClass BoxClassBody
 {
 	//TODO new function, virtual? poison?
 	//TODO fake fields
-	//TODO deletion on function
+	//TODO deletion of function
 	//TODO fields
 	//TODO somehow templates
 	//TODO template virtual methods
 	//TODO change in attributes, virtual <-> regular, how do i do poison?
+	//TODO it all works in inheritance, fields, virtual , poison
 	
 	ReloadClass := !(HotloadContext^ ctx) -> void
 	{

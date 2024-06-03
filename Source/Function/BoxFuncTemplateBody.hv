@@ -251,15 +251,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.DefaultValues[ind] = hData.DefaultValues[^ind]
 		newFunc.ParentScope = ParentScope
 
-		for it,ind : resConsts
-		{
-			if it is ConstType
-			{
-				newFunc.ConstVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
-			}else{
-				newFunc.ConstVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
-			}
-		}
+		ConstMapToList(resConsts,newFunc.ConstVars)
 
 		return newFunc
 	}

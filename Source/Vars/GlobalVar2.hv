@@ -10,6 +10,12 @@ GlobalVar2 := class extend BoxUnit
 
 	downToken := Token^
 
+
+	ConstVars := List.{BoxUnit^}
+	BodyToken := Token^
+	BodyTokenChecked := bool
+	InitFunction := BoxFuncBody^
+
 	parseHatch := THatch
 
 	proxy := GlobalVarProxy
@@ -58,6 +64,44 @@ GlobalVar2 := class extend BoxUnit
 		parseHatch.Await()
 	}
 
+	BodyInit := !() -> void
+	{
+		if BodyTokenChecked
+			return void
+		BodyTokenChecked = true
+
+		if BodyToken == null
+			return void
+		SyntaxCompress(BodyToken,LexHVFileRoot)
+		iter := BodyToken.Down
+		while iter != null
+		{
+			if iter.Down? is TokenIndent and iter.Down->{TokenIndent^}.Value[0] == '#'
+				and iter.Down.Right?.GetValue() == "{}"
+			{
+				fncName := iter.Down->{TokenIndent^}.Value
+				bdy := iter.Down.Right
+
+				switch fncName
+				{
+				case "#OnInit"
+					names := HybridQueue.{StringSpan,10}
+					names.Push(StringSpan("this"))
+					attrs := FuncAttributes
+
+					fncType := GetFuncType(![this.proxy.GetType()],![true],GTypeVoid)
+					//fncType := GetFuncType(GTypeVoid)
+					newFunc := new BoxFuncBody(fncType,attrs,names,bdy)
+					newFunc.ConstVars.Push(this.ConstVars[^])
+					newFunc.DefaultValues2[0] = this.proxy&
+					InitFunction = newFunc
+					MarkAddCallAtStart(newFunc)
+				}
+			}
+			iter = iter.Right
+		}
+	}
+
 	Parse := !() -> void
 	{
 		GParsedAllFiles.Await()
@@ -69,6 +113,7 @@ GlobalVar2 := class extend BoxUnit
 			downToken = downToken.Right
 			isThreadLocal = true
 		}
+
 
 		typeToken := downToken
 		
@@ -115,9 +160,16 @@ GlobalVar2 := class extend BoxUnit
 			tp.NotifyUse()
 			proxy.Down = new GetGlobalVar2(this&,tp)
 			proxy.ObjType = tp
+
+
+			if BodyToken != null
+			{
+				BodyInit()
+			}
 		}else{
 			downToken.EmitError("Can not get type of global variable")
 		}
+
 		parsed = true
 		parseHatch.Emit()
 	

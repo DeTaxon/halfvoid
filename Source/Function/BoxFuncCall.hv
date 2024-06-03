@@ -65,6 +65,14 @@ BoxFuncCall := class extend BoxExeObj
 			if i >= downs.Size()
 			{
 				assert(fnc != null)
+
+				defVal := fnc.GetDefaultValue(i - diffCount)
+				if defVal != null
+				{
+					downs.Push(defVal)
+					continue
+				}
+
 				defToken := fnc.GetDefaultToken(i - diffCount)
 				assert(defToken != null)
 

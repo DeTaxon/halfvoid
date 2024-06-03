@@ -20,6 +20,10 @@ BoxFunc := class extend BoxExeConstObj
 	{
 		return 0
 	}
+	GetDefaultValue := virtual !(int i) -> BoxExeObj^
+	{
+		return null
+	}
 	GetDefaultToken := virtual !(int i) -> Token^
 	{
 		return null

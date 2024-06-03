@@ -10,7 +10,11 @@ HV_Context := class
 	CreateClass := virtual !() -> HV_Class^ {}
 
 	Create_int32 := virtual !(int value) -> void^ {}
+
+	CacheIt := virtual !() -> void {}
 }
+
+HV_Context_Empty := HV_Context
 
 HV_Class := class
 {

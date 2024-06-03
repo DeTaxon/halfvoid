@@ -3,6 +3,7 @@ GlobalVarTemplate := class extend BoxExeObj
 {
 	constTree := Token^
 	typeTree := Token^
+	BodyToken := Token^
 
 	VarName := StringSpan
 
@@ -16,6 +17,15 @@ GlobalVarTemplate := class extend BoxExeObj
 		constTree = constToken
 		VarName = name
 
+		iter := base
+		while iter != null
+		{
+			if iter.GetValue() == "{}" and iter.Right == null
+			{
+				BodyToken = iter
+			}
+			iter = iter.Right
+		}
 	}
 	GetGlobalVar := !(BoxExeConstObj^[] consts) -> GlobalVar2^
 	{
@@ -25,19 +35,25 @@ GlobalVarTemplate := class extend BoxExeObj
 				return it.1
 		}
 
-		typ := GetVarType(consts)
+		resConsts := AVLMap.{StringSpan,BoxUnit^}
+
+		typ := GetVarType(consts,resConsts)
 		if typ == null
 			return null
 		
 		globVar := CreateGlobalVar(VarName,typ,false)
 
+		ConstMapToList(resConsts,globVar.ConstVars)
+
+		globVar.BodyToken = BodyToken
+		globVar.BodyInit()
+
 		vars.Emplace(consts.ToVector(),globVar)
 
 		return globVar
 	}
-	GetVarType := !(BoxExeConstObj^[] consts) -> Type^
+	GetVarType := !(BoxExeConstObj^[] consts,AVLMap.{StringSpan,BoxUnit^} resConsts) -> Type^
 	{
-		resConsts := AVLMap.{StringSpan,BoxUnit^}
 
 		cycleLimit := 0
 

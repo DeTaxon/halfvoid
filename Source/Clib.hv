@@ -253,7 +253,7 @@ CLib := class extend ModuleInterface
 			{
 				iFunc := GetItem(initFuncName)
 				assert(iFunc is in BoxFunc)
-				MarkedAddCallAtStart(iFunc->{BoxFunc^})
+				MarkAddCallAtStart(iFunc->{BoxFunc^})
 				addedToStartInitFunc = true
 			}
 			return glVar

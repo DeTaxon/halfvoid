@@ -62,7 +62,12 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 			}else{
 				if tok[0] == '#'
 				{
-					ns = new TokenIndent(tok)
+					if tok.Size() == 1
+					{
+						ns = new TokenSymbol(tok,a)
+					}else{
+						ns = new TokenIndent(tok)
+					}
 				}else{
 					if tok.Size() == 1
 					{

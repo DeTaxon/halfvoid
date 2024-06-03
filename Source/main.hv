@@ -29,6 +29,8 @@ targetWindows := false
 
 DisableScary := false
 
+GVInitInterpreterd := false
+
 UseTracy := false
 
 RunMode := bool

@@ -140,6 +140,7 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 					if RuleUse(begin,"switch()",RuleSwitch) 
 							return true
 					if RuleUse(begin,"case()",RuleCase) return true
+					if RuleUse(begin,"#func()",RuleRunFunc) return true
 			}
 		}
 	}
@@ -468,19 +469,16 @@ RuleParam := !(void^ itr) -> int
 
 	if It != null
 	{
+		if It.GetValue() == "at" return size + 2 + 2
+
 		subIt := It
-		if subIt is TokenIndent and subIt->{TokenIndent^}.Value == "#OnInit"
+		if subIt?.GetValue() == "#"
+			and subIt.Right?.GetValue() == "{}"
 		{
-			subIt = subIt.Right
-			if subIt?.GetValue() == "{}"
-			{
-				subIt = subIt.Right
-				size += 2
-			}
+			size += 2
 		}
 		return size + 2
 	}
-	if It.GetValue() != "at" return size + 2
 
 	It = It.Right
 	if It == null return 0
@@ -676,6 +674,20 @@ RuleSwitch := !(void^ itr) -> int
 	return size
 }
 
+RuleRunFunc := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+
+	if It == null return 0
+	if It is not TokenIndent return 0
+	if It->{TokenIndent^}.Value[0] != '#' return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() == "{}" return 2
+	return 0
+}
 RuleCase := !(void^ itr) -> int
 {
 	It := itr->{Token^}

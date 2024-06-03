@@ -22,6 +22,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	VariadicName := StringSpan
 
 	DefaultValues := AVLMap.{int,Token^}
+	DefaultValues2 := AVLMap.{int,BoxExeObj^}
 
 	ExitLabel := BoxLabel^
 
@@ -38,7 +39,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	GetDefaultValuesCount := virtual !() -> int
 	{
-		return DefaultValues.Size()
+		return max(DefaultValues.Size(),DefaultValues2.Size())
+	}
+
+	GetDefaultValue := virtual !(int i) -> BoxExeObj^
+	{
+		if not DefaultValues2.Contain(i)
+			return null
+		return DefaultValues2[i]
 	}
 	GetDefaultToken := virtual !(int i) -> Token^
 	{
