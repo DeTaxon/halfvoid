@@ -128,6 +128,16 @@ MCInterpContext := class
 
 
 	}
+	LoadGlobFromMem := !(void^ mem, BoxExeConstObj^ obj) -> void
+	{
+		if obj is BoxExeInt
+		{
+			printf("wha %p\n",mem)
+			obj->{BoxExeInt^}.Value = mem->{int^}^
+		}else{
+			assert(false)
+		}
+	}
 	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void
 	{
 		tp := obj.GetType()

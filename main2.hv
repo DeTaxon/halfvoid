@@ -7,7 +7,7 @@
 Sqr := int #{
 	#OnInit
 	{
-		printf("called init\n")
+		printf("called init %p\n",this&)
 		this = RandInt(0..200)
 	}
 }

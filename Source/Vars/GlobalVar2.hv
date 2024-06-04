@@ -85,6 +85,8 @@ GlobalVar2 := class extend BoxUnit
 				switch fncName
 				{
 				case "#OnInit"
+
+					//TODO Add CWork
 					names := HybridQueue.{StringSpan,10}
 					names.Push(StringSpan("this"))
 					attrs := FuncAttributes
@@ -95,7 +97,25 @@ GlobalVar2 := class extend BoxUnit
 					newFunc.ConstVars.Push(this.ConstVars[^])
 					newFunc.DefaultValues2[0] = this.proxy&
 					InitFunction = newFunc
-					MarkAddCallAtStart(newFunc)
+
+					if GVInitInterpreted
+					{
+						fncMC := GInterpCntx.GetMCFunc(newFunc)
+						thisVarPtr := GInterpCntx.GetGlobalVarMem(this&)
+						MCInterpFunction2(GInterpCntx&,fncMC,![thisVarPtr&],null)
+
+						if value == null
+						{
+							value = createConstType(proxy.ObjType)
+						}
+						assert(value != null)
+						printf("here\n")
+
+						GInterpCntx.LoadGlobFromMem(thisVarPtr,value)
+
+					}else{
+						MarkAddCallAtStart(newFunc)
+					}
 				}
 			}
 			iter = iter.Right
@@ -162,16 +182,17 @@ GlobalVar2 := class extend BoxUnit
 			proxy.ObjType = tp
 
 
-			if BodyToken != null
-			{
-				BodyInit()
-			}
 		}else{
 			downToken.EmitError("Can not get type of global variable")
 		}
 
 		parsed = true
 		parseHatch.Emit()
+
+		if BodyToken != null and tp != null //LOL, #OnInit is not part of initialization
+		{
+			BodyInit()
+		}
 	
 	}
 	createConstType := !(Type^ tp) -> BoxExeConstObj^
@@ -180,6 +201,8 @@ GlobalVar2 := class extend BoxUnit
 			return createConstTypeClass(tp)
 		if tp is TypeArr
 			return createConstTypeArray(tp)
+		if IsInt(tp) and tp.GetSize() == 4
+			return new BoxExeInt(0)
 		return null
 	}
 	createConstTypeArray := !(Type^ tp) -> BoxExeConstObj^

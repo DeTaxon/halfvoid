@@ -45,7 +45,7 @@ endif
 MainTarget: test
 
 test:
-	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o out.ll --vk vk.xml -cache /tmp/TestCache.zip
+	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(NoScary) -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o out.ll --vk vk.xml -cache /tmp/TestCache.zip
 	clang -g out.ll -mfsgsbase -lm -o test
 test.exe:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid.exe -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -o out.ll

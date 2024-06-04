@@ -29,7 +29,7 @@ targetWindows := false
 
 DisableScary := false
 
-GVInitInterpreterd := false
+GVInitInterpreted := true
 
 UseTracy := false
 
@@ -91,6 +91,7 @@ main := !(char^[] args) -> int
 				NonStopBuild = true
 			case "-no-scary"
 				DisableScary = true
+				GVInitInterpreted = false
 			case "-emulate-tls"
 				EmulateTLS = true
 			case "-linux"
