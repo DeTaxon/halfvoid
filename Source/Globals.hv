@@ -59,6 +59,7 @@ StackState := class
 	itFunc := BoxFuncBody^
 	itLine := BoxExeLine^
 	itReturns := ReturnsHolder^
+	itFuncWork := CWorkFuncCompile^
 
 	gcVarsInUse := int
 
@@ -73,6 +74,7 @@ StackState := class
 		itFunc = CurrentFunc
 		itLine = CurrentLine
 		itReturns = CurrentReturns
+		itFuncWork = CurrentFuncWork
 
 		gcVarsInUse = GCVarsInUse
 
@@ -89,6 +91,7 @@ StackState := class
 		CurrentFunc = itFunc
 		CurrentLine = itLine
 		CurrentReturns = itReturns
+		CurrentFuncWork = itFuncWork
 
 		GCVarsInUse = gcVarsInUse
 

@@ -4,18 +4,18 @@
 //TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
 
 //Ha := type.{@T} T[3]
-Sqr := @{@T,@Val} T[3] #{
+Sqr := int #{
 	#OnInit
 	{
-		printf("called init %i\n",Val)
-		this[^i] = i*i
+		printf("called init\n")
+		this = RandInt(0..200)
 	}
 }
 
 
 main := !(char^[] args) -> int
 {
-	printf("Test %i\n",Sqr.{int,15}[2])
+	printf("Test %i\n",Sqr)
 	return 0
 }
 

@@ -495,6 +495,16 @@ CWorkBaseFile := class extend CWorkUnit
 			}else if vr is in GlobalVar2
 			{
 				glb := vr->{GlobalVar2^}
+
+				itr2 := itToken.Down
+				while itr2 != null
+				{
+					if itr2.Right == null and itr2.GetValue() == "{}"
+					{
+						glb.BodyToken = itr2
+					}
+					itr2 = itr2.Right
+				}
 				CurrentCodeSpace.Globals[glb.itName].Push(vr)
 			}else if vr is in TypedefTemplateVar
 			{
