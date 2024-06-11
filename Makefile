@@ -26,6 +26,10 @@ ifeq ($(helgrind),yes)
 	hg := valgrind --tool=helgrind --log-file=grind.txt
 endif
 
+ifeq ($(UseCache),yes)
+	CacheFlags := -cache /tmp/HVCache.zip
+endif
+
 ifeq ($(scary),yes)
 	NoScary := -no-scary
 endif
@@ -61,9 +65,9 @@ run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
 run_nonstop:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv main3.hv -cache /tmp/TestCache.zip
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run_nonstop.exe:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv main3.hv
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv
 win.exe:
 	$(gdb_tui) ./halfvoid -win32 -g -C0 StandardHVLibrary main2.hv -o out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g out.ll -o win.exe
@@ -92,16 +96,16 @@ halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(NoScary)  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid  $(NoScary)  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) -cache /tmp/HVCache.zip
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -mfsgsbase -O2 -s $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -emulate-tls $(trc) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
 	clang++ -gdwarf-4 -static out.exe.ll -g -o halfvoid.exe
 cycle_release.exe:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ $(CacheFlags)
 	clang++ -O2 -femulated-tls -static out.exe.ll -o halfvoid.exe
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 

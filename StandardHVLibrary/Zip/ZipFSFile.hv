@@ -23,9 +23,9 @@ File := class extend vRepoObject
 	GetBlob := virtual !() -> Blob^
 	{
 		fileBlob := MakeBlob(this.Size())
+		tst := this.GetPath()
 		if fileBlob.Size() != 0
 		{
-			tst := this.GetPath()
 			desc := fopen(tst.Str(),"rb")
 			defer fclose(desc)
 			fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)

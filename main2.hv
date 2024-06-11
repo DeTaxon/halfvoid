@@ -1,22 +1,8 @@
 
 
-//TODO i need some way to profile fiber usage and way to find abandoned hatches
-//TODO capturing vec2f crash program, maybe value are not aligned to 16 byte
-
-//Ha := type.{@T} T[3]
-Sqr := int #{
-	#OnInit
-	{
-		printf("called init %p\n",this&)
-		this = RandInt(0..200)
-	}
-}
-
 
 main := !(char^[] args) -> int
 {
-	printf("Test %i\n",Sqr)
-	return 0
 }
 
 
@@ -372,26 +358,11 @@ mouseMove := !(void^ w, double itX, double itY) -> void
 //if file already exists
 //throw exceptions when file cannot be created, no space on disk, incorrect file format
 
-
-//TODO todo in libs2/Random.hv is important
-//i want a way to call function at the start of the program if function that uses it is called
-//GetRandom  := !() -> int
-//{
-//	#ModuleInit(initRandom())
-//	....
-//}
-
-
 //TODO
-//decorator function
 //@cache function, @once function/call
 //decorator func pass constants?
 //default initializer for growing class, and const value as global const
 //field becomes static if it is not inside class
 //zero size class optimizations
 //x := field 10  non types not working
-//class->AllFields to work with new Fields
-//Allow code to be interpreted
-//interpreter support File,XML
-//Class can be created by script
 //Module Vulkan uses Normal Class and usese new API

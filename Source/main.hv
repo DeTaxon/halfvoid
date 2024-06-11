@@ -9,7 +9,7 @@ LexHVInputVars := PriorityBagOld^
 loadLex2 := !(File^ pri,PriorityBagOld^^ res) -> void 
 {
 	fileMap := pri.GetMap()
-	fileMap.IncRef() //TODO unref
+	fileMap.IncRef()
 	pri.IncRef()
 	res^ = new PriorityBagOld(fileMap.Get(),fileMap.Size())
 }

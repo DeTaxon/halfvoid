@@ -92,7 +92,6 @@ intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 intGetFunc := !(char^ name) -> BoxFunc^
 {
 	res := intGetTemplate(name)
-	res.IsOneFunc()
 	assert(res.IsOneFunc())
 	return res.GetOneFunc()
 }

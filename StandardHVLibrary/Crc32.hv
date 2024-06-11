@@ -34,9 +34,11 @@ Crc32 := class
 
 		arr := ptr->{u8^}
 		c := value
-		for i : len
+		i := 0
+		while i != len
 		{
 			c = Crc32Table[(c xor_b arr[i]) and_b 0xFF] xor_b (c shr 8)
+			i += 1
 		}
 		value = c
 	}
@@ -66,3 +68,38 @@ ComputeCrc32Table := !() -> void
 	}
 }
 
+Crc32c := class
+{
+	value := u32
+
+	this := !() -> void
+	{
+		value = -1
+	}
+	Feed := !(void^ ptr, int len) -> void
+	{
+		if len == 0
+			return void
+		//TODO assert x64
+		i := 0
+		c := value
+		while i != len
+		{
+			pt := ptr->{u8^}[i]&
+			asm(
+				"movl %2,%%eax"
+				"crc32b %1,%%eax"
+				"movl %%eax,%0"
+				: "=r"(c)
+				: "r"(pt^), "r"(c)
+				: "%eax"
+			)
+			i += 1
+		}
+		this.value = c
+	}
+	Get := !() -> u32
+	{
+		return value xor_b -1
+	}
+}

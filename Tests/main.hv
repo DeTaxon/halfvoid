@@ -1,0 +1,10 @@
+
+
+main := !(char^[] args) -> void
+{
+	for it : #Marked("Test")
+	{
+		it()
+		//TODO exceptions?
+	}
+}

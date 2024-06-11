@@ -1,8 +1,0 @@
-
-AppendClass TestClass1
-{
-	SubFunction2 := virtual !() -> void
-	{
-		printf("Hoy\n")
-	}
-}

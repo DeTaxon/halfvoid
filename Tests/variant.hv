@@ -1,0 +1,70 @@
+
+Optional := class .{@T}
+{
+	value := T
+	isSet := bool
+	
+	IsSet := !() -> bool { return isSet }
+	Get := !() -> ref T { return value }
+	GetOr := !(T onBad) -> { return isSet ?: value : onBad }
+}
+
+Variant := class .{@VTypes...}
+{
+	selectedIndex := int
+	baseValues := Tuple.{VTypes...}
+
+	"=" := !(@T newValue) -> void
+	{
+		selectedIndex = VTypes.FindIndex(T)
+	} #{
+		#CheckInput := !(args) -> bool
+		{
+			for it : VTypes
+			{
+				if #Compiles(args[0]->{VTypes})
+					return true
+			}
+			return false
+		}
+	}
+
+} #{
+	SwitchIs_Check := !().{@ExpectedType}
+	{
+		indx := VTypes.FindIndex(ExpectedType)
+		if not indx.IsSet()
+			return none
+
+		return #CreateSwitchIsCase(
+			@1.selectedIndex == indx + i,
+			return @1.baseValues[indx]
+		)
+		
+	}
+}
+
+#MarkFunction("Test",VariantTest)
+VariantTest := !() -> bool
+{
+	test := Variant.{int,float,Str}
+
+	switch RandInt(1..3)
+	{
+		case 1 test = 15
+		case 2 test = 14.3
+		case 3 test = "Hello"
+	}
+
+	switch test is
+	{
+	case int
+		printf("test is int   %i\n",test)
+	case float
+		printf("test is float %f\n",test)
+	case Str
+		printf("test is Str   %s\n",test)
+	}
+	return 0
+}
+
