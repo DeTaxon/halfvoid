@@ -55,6 +55,11 @@ MarkFunction := !(StringSpan name,BoxFunc^ callItem) -> void
 	mark := ref markedObjects[GetConstString(name)]
 	mark.AddFunc(callItem)
 }
+MarkObject := !(StringView name,BoxUnit^ callItem) -> void
+{
+	mark := ref markedObjects[GetConstString(name.AsStringSpan())]
+	mark.AddFunc(callItem)
+}
 
 MarkAddCallAtStart := !(BoxFunc^ fnc) -> void
 {

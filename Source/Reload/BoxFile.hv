@@ -181,6 +181,6 @@ AppendClass BoxFile
 	DeleteFunction := !(BoxFuncTemplate^ delFunc) -> void
 	{
 		Functions.DeleteIf(@1 == delFunc)
-		CodeSpaces[^].Templates[^].DeleteIf(@1 == delFunc) //TODO optimize
+		CodeSpaces[^].Templates[^].DeleteIf(@1 == delFunc)
 	}
 }

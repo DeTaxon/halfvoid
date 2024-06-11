@@ -1,0 +1,36 @@
+
+
+CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc) -> void
+{
+	iter := fnc.RunToken
+	SyntaxCompress(iter,LexHVFileRoot)
+
+	iter = iter.Down
+
+	while iter != null
+	{
+		if iter.Down? is TokenIndent
+		{
+			name := iter.Down->{TokenIndent^}.Value
+			switch name
+			{
+			case "#Mark"
+				if iter.Down.Right?.GetValue() == "()"
+				{
+					skb := iter.Down.Right
+					SyntaxCompress(skb,LexHVFileRoot)
+					if skb.Down?.Right == null and skb.Down is TokenString
+					{
+						markValue := skb.Down->{TokenString^}.Value
+						MarkObject(markValue,fnc)
+					}else{
+						//TODO emit error
+					}
+				}else{
+					//TODO emit error
+				}
+			}
+		}
+		iter = iter.Right
+	}
+}

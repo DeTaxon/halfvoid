@@ -1,5 +1,11 @@
 
 
+TestFunc := !() -> void #{
+	#Mark("CallAtStart")
+}{
+	printf("Hey hey\n")	
+}
+
 
 main := !(char^[] args) -> int
 {
@@ -15,21 +21,6 @@ TestClass1 := class
 	SubFunction := virtual !() -> void
 	{
 		printf("Hey\n")
-	}
-}
-TestClass2 := !() -> void
-{
-
-}
-
-RunTest := !() -> void
-{
-	tst := TestClass1
-	while true
-	{
-		tst.SubFunction()
-		tst.SubFunction2()
-		TSleep(1)
 	}
 }
 

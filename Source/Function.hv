@@ -9,6 +9,7 @@ PFunctionParser := class
 	constToken := Token^
 	resultToken := Token^
 	bodyToken := Token^
+	runToken := Token^
 
 	this := !(Token^ obj) -> void
 	{
@@ -87,11 +88,25 @@ PFunctionParser := class
 				return void
 		}
 
+		if iter.GetValue() == "#"
+		{
+			runToken  = iter.Right
+			iter = iter.Right.Right
+		}
 
-		if iter.GetValue() != "{}" 
+
+		if iter.GetValue() != "{}"
 			return void
 
 		bodyToken = iter
+
+		iter = iter.Right
+
+		if iter?.GetValue() == "#"
+		{
+			runToken  = iter.Right
+			iter = iter.Right.Right
+		}
 
 		found = true
 		return void
@@ -149,7 +164,12 @@ PFunctionParser := class
 	}
 	CreateObject := !() -> BoxUnit^
 	{
-		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken)->{BoxFuncTemplate^}
+		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken,runToken)->{BoxFuncTemplate^}
+
+		if runToken != null
+		{
+			CheckTemplateBodyCommands(asTempl->{BoxFuncTemplateBody^})
+		}
 
 		for it : decorators
 		{

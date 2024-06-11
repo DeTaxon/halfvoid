@@ -6,6 +6,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	inps1 := Token^
 	resTyp := Token^
 	bdy := Token^
+	RunToken := Token^
 	cns := Token^
 
 	headerCheckHatch := THatch
@@ -20,7 +21,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	sState := StackState
 
-	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2,Token^ constToken, Token^ resToken,Token^ bodyIn) -> void
+	this := !(FuncAttributes atrs,Token^ brackets1,Token^ brackets2,Token^ constToken, Token^ resToken,Token^ bodyIn, Token^ runToken) -> void
 	{
 		assert(brackets2 == null)//not implemented
 		Attrs = atrs
@@ -28,6 +29,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resTyp = resToken
 		cns = constToken
 		bdy = bodyIn
+		RunToken = runToken
 
 		if resTyp == null
 			Attrs.IsAutoResult = true

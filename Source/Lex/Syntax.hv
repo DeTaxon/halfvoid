@@ -379,10 +379,39 @@ RuleFunctionBody := !(void^ itr) -> int
 		size += 2
 	}
 
-	if It.GetValue() == "{}" return size + 1
+	if It.GetValue() == "#"
+	{
+		It = It.Right
+
+		if It == null return 0
+
+		if It.GetValue() != "{}" return 0
+		It = It.Right
+
+		if It == null return 0
+
+		size += 2
+	}
+
 	if It.GetValue() == "declare" return size + 1
 
-	return 0
+	if It.GetValue() != "{}" return 0
+
+	if It.GetValue() == "#"
+	{
+		It = It.Right
+
+		if It == null return 0
+
+		if It.GetValue() != "{}" return 0
+		It = It.Right
+
+		if It == null return 0
+
+		size += 2
+	}
+
+	return size + 1
 
 }
 RuleParam := !(void^ itr) -> int
