@@ -5,47 +5,35 @@ Optional := class .{@T}
 	isSet := bool
 	
 	IsSet := !() -> bool { return isSet }
-	Get := !() -> ref T { return value }
+	"?" := !() -> ref T { return isSet ?: value : null }
 	GetOr := !(T onBad) -> { return isSet ?: value : onBad }
 }
 
-Variant := class .{@VTypes...}
+Variant := class .{@TypeList...}
 {
 	selectedIndex := int
-	baseValues := Tuple.{VTypes...}
+	baseValues := Tuple.{TypeList...}
 
-	"=" := !(@T newValue) -> void
+	"=" := !(@T newValue) .{ TypeIndex = TypeList.IndexOf(T)? } -> void
 	{
-		selectedIndex = VTypes.FindIndex(T)
-	} #{
-		#CheckInput := !(args) -> bool
-		{
-			for it : VTypes
-			{
-				if #Compiles(args[0]->{VTypes})
-					return true
-			}
-			return false
-		}
+		selectedIndex = TypeIndex
+		baseValue.TypeIndex = newValue
 	}
 
-} #{
-	SwitchIs_Check := !().{@ExpectedType}
+	"is" := !().{@ExpectedType, TypeIndex = TypeList.IndexOf(ExpectedType)? } -> bool
 	{
-		indx := VTypes.FindIndex(ExpectedType)
-		if not indx.IsSet()
-			return none
-
-		return #CreateSwitchIsCase(
-			@1.selectedIndex == indx + i,
-			return @1.baseValues[indx]
-		)
-		
+		return selectedIndex == TypeIndex
+	}
+	"->{}?" :=  !().{@ExpectedType,TypeIndex = TypeList.IndexOf(ExpectedType)? } -> ref ExpectedType
+	{
+		if selectedIndex != TypeIndex
+			return null
+		return baseValues.TypeIndex
 	}
 }
 
-#MarkFunction("Test",VariantTest)
 VariantTest := !() -> bool
+	#Mark("Test")
 {
 	test := Variant.{int,float,Str}
 
@@ -56,6 +44,11 @@ VariantTest := !() -> bool
 		case 3 test = "Hello"
 	}
 
+	if test is int
+	{
+		test += 15
+	}
+
 	switch test is
 	{
 	case int
@@ -64,6 +57,12 @@ VariantTest := !() -> bool
 		printf("test is float %f\n",test)
 	case Str
 		printf("test is Str   %s\n",test)
+	}
+
+	if test is int
+	{
+		test->Clean = 3.4
+		assert(test is float)
 	}
 	return 0
 }

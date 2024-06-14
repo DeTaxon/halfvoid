@@ -9,7 +9,9 @@ PFunctionParser := class
 	constToken := Token^
 	resultToken := Token^
 	bodyToken := Token^
+
 	runToken := Token^
+	compilerCommands := List.{Token^}
 
 	this := !(Token^ obj) -> void
 	{
@@ -88,14 +90,22 @@ PFunctionParser := class
 				return void
 		}
 
-		if iter.GetValue() == "#"
+		while iter is TokenData
+			and iter?.Down? is TokenIndent 
+			and iter.Down->{TokenIndent^}.Value[0] == '#'
+		{
+			compilerCommands.Push(iter)
+			iter = iter.Right
+		}
+
+		if iter?.GetValue() == "#"
 		{
 			runToken  = iter.Right
 			iter = iter.Right.Right
 		}
 
 
-		if iter.GetValue() != "{}"
+		if iter == null or iter.GetValue() != "{}"
 			return void
 
 		bodyToken = iter
@@ -166,9 +176,9 @@ PFunctionParser := class
 	{
 		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken,runToken)->{BoxFuncTemplate^}
 
-		if runToken != null
+		if runToken != null or compilerCommands.Size() != 0
 		{
-			CheckTemplateBodyCommands(asTempl->{BoxFuncTemplateBody^})
+			CheckTemplateBodyCommands(asTempl->{BoxFuncTemplateBody^},compilerCommands)
 		}
 
 		for it : decorators

@@ -1,36 +1,49 @@
 
 
-CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc) -> void
+CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> void
 {
-	iter := fnc.RunToken
-	SyntaxCompress(iter,LexHVFileRoot)
-
-	iter = iter.Down
-
-	while iter != null
+	if cmd.Down? is TokenIndent
 	{
-		if iter.Down? is TokenIndent
+		name := cmd.Down->{TokenIndent^}.Value
+		switch name
 		{
-			name := iter.Down->{TokenIndent^}.Value
-			switch name
+		case "#Mark"
+			if cmd.Down.Right?.GetValue() == "()"
 			{
-			case "#Mark"
-				if iter.Down.Right?.GetValue() == "()"
+				skb := cmd.Down.Right
+				SyntaxCompress(skb,LexHVFileRoot)
+				if skb.Down?.Right == null and skb.Down is TokenString
 				{
-					skb := iter.Down.Right
-					SyntaxCompress(skb,LexHVFileRoot)
-					if skb.Down?.Right == null and skb.Down is TokenString
-					{
-						markValue := skb.Down->{TokenString^}.Value
-						MarkObject(markValue,fnc)
-					}else{
-						//TODO emit error
-					}
+					markValue := skb.Down->{TokenString^}.Value
+					MarkObject(markValue,fnc)
 				}else{
 					//TODO emit error
 				}
+			}else{
+				//TODO emit error
 			}
 		}
-		iter = iter.Right
+	}
+	
+}
+CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc,Token^[] cmds) -> void
+{
+	if cmds != null
+	{
+		CheckTemplateBodyCommandsSingle(fnc,cmds[^])
+	}
+
+	if fnc.RunToken != null
+	{
+		iter := fnc.RunToken
+		SyntaxCompress(iter,LexHVFileRoot)
+
+		iter = iter.Down
+
+		while iter != null
+		{
+			CheckTemplateBodyCommandsSingle(fnc,iter)
+			iter = iter.Right
+		}
 	}
 }
