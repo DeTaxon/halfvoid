@@ -44,10 +44,10 @@ You can find these usefull:
 Class implementation could be separated between multiple files.
 
 <h4>File embedding</h4>
-With this you can make a file as part of .exe file. By the moment i write this, C++ does not support this. And the way C++ plans it, files will not be compressed.
+With this you can make a file as part of .exe file. Nothing new for popular compilers. Also i provide some middle step before embedding. It could be simple as special compression algorithm. I made it so i could compile vulkan api shaders before embedding them.
 
 <h4>Reflection</h4>
-It is not fully implemented and i have no idea what "fully implemented" is. Right now you can iterate over all field of class and compare types. Just enough for easy reference counting.
+It is not fully implemented and i have no idea what "fully implemented" is. Right now you can iterate over all field of class and compare types. Just enough for simple reference counting.
 
 <h4>Vulkan api support</h4>
 For easier work, compiler provides unique class. All of the fields are function pointers to Vulkan API commands. But fields are created on demand. Unused functions don't exist in the .exe file. 
