@@ -1,14 +1,4 @@
 
-Optional := class .{@T}
-{
-	value := T
-	isSet := bool
-	
-	IsSet := !() -> bool { return isSet }
-	"?" := !() -> ref T { return isSet ?: value : null }
-	GetOr := !(T onBad) -> { return isSet ?: value : onBad }
-}
-
 Variant := class .{@TypeList...}
 {
 	selectedIndex := int

@@ -375,7 +375,7 @@ BoxFile := class extend BoxUnit
 			pth := file.GetPath()
 			if fsIsExist(pth.Str()) //TODO to something better
 			{
-				pth2 := uvRealpath(pth.Str())
+				pth2 := fsGetAbsolutePath(pth)
 				if pth2->{void^} == null
 					pth2 = pth
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 

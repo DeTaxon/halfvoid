@@ -1,0 +1,19 @@
+
+Optional := class .{@T}
+{
+	value := T
+	isSet := bool
+	
+	IsSet := !() -> bool { return isSet }
+	"?" := !() -> ref T {
+		if isSet
+			return value
+		return void
+	}
+	GetOr := !(T onBad) -> T { return isSet ?: value : onBad }
+	"=" := !(T newValue) -> void {
+		value = newValue
+		isSet = true
+	}
+}
+

@@ -47,7 +47,35 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		}
 
 		cl := TryGetExeCall(itm.Down)
-		assert(cl != null)
+
+		if cl == null
+			return null
+
+		clType := cl.GetType()
+		//TODO variable, if test? { test now is T vriable, not a wrapper of T
+
+		if clType is in TypeClass
+		{
+			Objs := CheckExeDownList
+			Objs.Push(cl)
+			consts := List.{BoxExeConstObj^}
+			cl2 := CreateFuncCallOperator(StringSpan("?"),Objs,consts)
+			if cl2 != null
+			{
+				if cl2.IsMem()
+				{
+					cl2 = new UnrefFuncCall(cl2)
+					cl2 = new BoxQuestionPointer(cl2)
+					cl2 = new PtrToRef(cl2)
+				}
+				if cl2.GetType() is in TypePoint
+				{
+					cl2 = new BoxQuestionPointer(cl2)
+				}
+				NeedGuardLocalVar = true
+				return cl2
+			}
+		}
 
 		if not (cl.GetType() is in TypePoint)
 		{

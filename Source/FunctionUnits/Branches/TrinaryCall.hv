@@ -153,6 +153,9 @@ TrinaryOperMem := class extend BoxExeObj
 
 		ItId = GetNewId()
 
+		onTrue.NotifyMemUse()
+		onFalse.NotifyMemUse()
+
 		ObjType = onTrue.GetType()
 	}
 	IsMem := virtual !() -> bool
