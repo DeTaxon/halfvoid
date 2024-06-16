@@ -1,8 +1,8 @@
 <h2>Introduction</h2>
 
-My own programming language. You can think of it as C++ clone.
+My own programming language. You can think of it as a C++ clone.
 
-Compiler is at early stage, and not user freandly.
+Compiler is at early stage, and not user friendly.
 It only have features that i use.
 
 Here is a simple program for demonstration.
