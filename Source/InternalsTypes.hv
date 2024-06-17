@@ -1,9 +1,11 @@
 
 ArrayViewTemplate := BoxClassTemplate^
+OptionalTemplate := BoxClassTemplate^
 GCType := Type^
 
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
+
 
 GBlobClass := BoxClass^
 GBlobType := Type^
@@ -16,6 +18,7 @@ InitInternalsTypes := !() -> void
 	assert(GCType != null)
 
 	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
+	OptionalTemplate = intGetClassTemplate2("Optional")
 
 	GCILambda = intGetClass2("TILambda")
 	GCLambda = intGetClassTemplate2("TLambda")

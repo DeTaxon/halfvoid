@@ -164,6 +164,13 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 		return fType
 
 	}
+	if tk.Down?.Right?.GetValue() == "?"
+	{
+		resType := CheckTemplateType(obj,null,tk.Down,resCnsts) //TODO non null value so it could work in template
+		if resType == null
+			return null
+		return OptionalTemplate.GetClass(![GetConstType(resType)]).ItType
+	}
 	if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
 	{
 		//lType := checkType(null,tk.Down,resCnsts) //TODO: do something with null, so i could use @Tepl.{@arg}

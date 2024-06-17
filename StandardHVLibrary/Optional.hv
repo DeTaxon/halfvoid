@@ -4,7 +4,9 @@ Optional := class .{@T}
 	value := T
 	isSet := bool
 	
-	IsSet := !() -> bool { return isSet }
+	IsSet := !() -> bool {
+		return isSet
+	}
 	"?" := !() -> ref T {
 		if isSet
 			return value
