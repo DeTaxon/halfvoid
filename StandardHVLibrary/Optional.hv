@@ -4,10 +4,14 @@ Optional := class .{@T}
 	value := T
 	isSet := bool
 	
-	IsSet := !() -> bool {
+	IsSet := !() -> bool 
+		#AddAutoCast(@1.value)
+	{
 		return isSet
 	}
-	"?" := !() -> ref T {
+	"?" := !() -> ref T
+		#AddAutoCast(@1.value)
+	{
 		if isSet
 			return value
 		return void

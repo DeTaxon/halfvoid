@@ -22,9 +22,11 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 		{
 			itm.Print(0)
 			itm.EmitError("If statement is not boolean")
+			return null
 		}
 	}
 
+	AutoCastCheckIfState(cmpExe)
 
 	tryToken := MakeItBlock(itm.Down.Right.Right)
 	flsToken := Token^

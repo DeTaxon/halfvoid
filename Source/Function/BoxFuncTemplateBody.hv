@@ -18,6 +18,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	hData := FunctionHeaderInfo
 
 	Constants := List.{FuncTemplateConstant}
+	Properties := AVLMap.{StringSpan,Token^}
 
 	sState := StackState
 
@@ -254,6 +255,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.ParentScope = ParentScope
 
 		ConstMapToList(resConsts,newFunc.ConstVars)
+
+		CheckPropertieAutoCast(this&,newFunc)
 
 		return newFunc
 	}

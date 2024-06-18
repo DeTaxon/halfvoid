@@ -4,11 +4,16 @@ main := !(char^[] args) -> int
 	val := int?
 
 	//val = 5
-	val? += 100
+	//val? += 100
+
+	if val.IsSet()
+	{
+
+	}
 
 
-	printf("hey %i\n",val.IsSet())
-	printf("val %i\n",val.GetOr(15))
+	//printf("hey %i\n",val.IsSet())
+	//printf("val %i\n",val.GetOr(15))
 }
 RunTest := !() -> void
 {

@@ -22,6 +22,8 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 			}else{
 				//TODO emit error
 			}
+		case "#AddAutoCast"
+			fnc.Properties[GetConstString("#AddAutoCast")] = cmd
 		}
 	}
 	

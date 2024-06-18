@@ -1,0 +1,17 @@
+AutoCastCheckIfState := !(BoxExeObj^ ifCheck) -> void
+{
+	if ifCheck is not BoxFuncCall
+		return void
+	asFunc := ifCheck->{BoxFuncCall^}.callObj->{BoxFuncBody^}
+	if asFunc is not in BoxFuncBody
+		return void
+
+	autoCastStr := GetConstString("#AddAutoCast")
+	if not asFunc.Properties.Contain(autoCastStr)
+		return void
+
+	ptr := asFunc.Properties[autoCastStr]
+	if ptr is not AutoCastPropertie
+		return void
+	
+}

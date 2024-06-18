@@ -1,0 +1,14 @@
+CheckPropertieAutoCast := !(BoxFuncTemplateBody^ tmplt, BoxFuncBody^ fnc) -> void
+{
+	spn := GetConstString("#AddAutoCast")
+	if not tmplt.Properties.Contain(spn)
+		return void
+
+		
+	fnc.Properties[spn] = new AutoCastPropertie
+}
+
+AutoCastPropertie := class extend FunctionPropertie
+{
+	ExchangeFunction := BoxFunc^
+}
