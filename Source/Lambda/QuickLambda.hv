@@ -49,6 +49,13 @@ TryGetQuickParam := !(Token^ itm) -> BoxExeObj^
 	if num < 0
 		return null
 
+	//TODO instead ask function for start of non hidden input variables
+	if CurrentFunc.Attrs.IsLambda or CurrentFunc.Attrs.IsMethod
+	{
+	}else{
+		num -= 1
+	}
+
 	if CurrentFunc == null
 		return null
 	if num >= CurrentFunc.Params.Size()

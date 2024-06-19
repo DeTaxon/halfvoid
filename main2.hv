@@ -1,4 +1,13 @@
 
+
+TempFunc := !(!(int)^->int cb) -> void
+{
+	for i : 4..10
+	{
+		printf("hey %i\n",cb(i))
+	}
+}
+
 main := !(char^[] args) -> int
 {
 	val := int?
@@ -10,6 +19,8 @@ main := !(char^[] args) -> int
 	{
 
 	}
+
+	TempFunc(@1 * 2)
 
 
 	//printf("hey %i\n",val.IsSet())

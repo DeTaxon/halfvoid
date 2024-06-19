@@ -18,3 +18,28 @@ ExchangeLambdaFromHolder := class extend ExchangeUnit
 		return hldr.CreateLambda(expType)
 	}
 }
+ExchangeLambdaFromHolderToFunctionPointer := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ toType,bool expectResultRef) -> int
+	{
+		if not (obj is BoxLambdaHolder)
+			return CmpNoExchange
+
+		hldr := obj->{BoxLambdaHolder^}
+
+		if toType is not in TypePoint
+			return CmpNoExchange
+		if toType.Base is not in  TypeFunc
+			return CmpNoExchange
+		//TODO add variable check
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		hldr := obj->{BoxLambdaHolder^}
+		res := hldr.CreateFunction(expType)
+		if res == null
+			return null
+		return new FuncPointerParam(res).CreateCall()
+	}
+}

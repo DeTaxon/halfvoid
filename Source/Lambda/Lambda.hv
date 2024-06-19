@@ -60,6 +60,17 @@ BoxLambdaHolder := class extend BoxExeObj
 			return this.tmpl.GetOneFunc()->{BoxFuncBody^}
 		})
 	}
+	CreateFunction := virtual !(Type^ toType) -> BoxFunc^
+	{
+		if toType is not in TypePoint
+			return null
+		if toType.Base is not in TypeFunc
+			return null
+		//TODO, temporary fix , that probably gonna be forever
+		tmpl.Attrs.IsLambda = false
+		cnsts := List.{BoxExeConstObj^}
+		return tmpl.CreateFunc(toType.Base->{TypeFunc^},cnsts)
+	}
 	CreateLambda := virtual !(Type^ toType) -> BoxExeObj^
 	{
 		if not (toType is in TypePoint)
