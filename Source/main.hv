@@ -313,6 +313,7 @@ main := !(char^[] args) -> int
 
 	FinilizeCache()
 
+	//exit(0)
 	return 0
 }
 

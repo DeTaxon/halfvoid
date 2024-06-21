@@ -99,7 +99,6 @@ ReturnsHolder := class extend BoxUnit
 			retRef := true
 			if returnNonMem
 				retRef = false
-			retRef = false
 			result = FuncTypeSetResult(fncType,resType,retRef)
 		}
 		ResultType = resType

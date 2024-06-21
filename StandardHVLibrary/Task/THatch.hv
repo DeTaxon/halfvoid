@@ -48,6 +48,8 @@ THatch := class
 	}
 	EmitInner := !() -> void
 	{
+		if flag
+			return void
 		flag = true
 		itr := next_wakeup
 		while itr != null
@@ -80,6 +82,8 @@ THatch := class
 			return void
 		//meh += 1
 
+		TaskCheckMutex.Lock()
+
 		pt := TITaskPausePoint
 		//pt.Pause(next_wakeup&)
 		pt.next_point = next_wakeup
@@ -109,7 +113,6 @@ THatch := class
 		//	TestFile^ << "	},\n"
 		//}
 
-		TaskCheckMutex.Lock()
 		CurrentThread.switchToMain()
 		TaskCheckMutex.Unlock()
 

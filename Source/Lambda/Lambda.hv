@@ -93,6 +93,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		fTyp := cnstTyp.Base->{TypeFunc^}
 		return createLambd(() ==> {
 			cnsts := List.{BoxExeConstObj^}
+			tmpl.Attrs.IsAutoResult = false
 			return tmpl.CreateFunc(fTyp,cnsts)->{BoxFuncBody^}
 		})
 	}
