@@ -153,6 +153,12 @@ ReturnHalfState := class extend BoxExeObj
 	{
 		return returnObj
 	}
+	IsReturnMem := !() -> bool
+	{
+		if callObj == null
+			return false
+		return callObj.IsMem()
+	}
 	GetSetType := !() -> Type^
 	{
 		if callObj == null

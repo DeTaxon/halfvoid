@@ -4,8 +4,21 @@ CheckPropertieAutoCast := !(BoxFuncTemplateBody^ tmplt, BoxFuncBody^ fnc) -> voi
 	if not tmplt.Properties.Contain(spn)
 		return void
 
-		
-	fnc.Properties[spn] = new AutoCastPropertie
+	tkn := tmplt.Properties[spn].Down.Right
+	SyntaxCompress(tkn,LexHVFileRoot)
+
+
+	fType := fnc.GetType()->{TypeFunc^}
+	assert(fType is TypeFunc)
+	varType := fType.Params[0].ItType
+	ql := TryGetQuickLambda(tkn.Down)->{BoxLambdaHolder^}
+
+	castFuncType := GetFuncType(1,![varType],![true],GTypeVoid)
+	castFunc := ql.CreateFunction(castFuncType.GetPoint())
+
+	newCast := new AutoCastPropertie
+	newCast.ExchangeFunction = castFunc
+	fnc.Properties[spn] = newCast 
 }
 
 AutoCastPropertie := class extend FunctionPropertie

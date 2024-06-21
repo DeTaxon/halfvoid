@@ -1,30 +1,24 @@
 
-
-TempFunc := !(!(int)^->int cb) -> void
-{
-	for i : 4..10
-	{
-		printf("hey %i\n",cb(i))
-	}
-}
-
 main := !(char^[] args) -> int
 {
 	val := int?
 
-	//val = 5
+	val = 0
 	//val? += 100
+	//
+	printf("a %p\n",val&)
 
 	if val.IsSet()
 	{
+		printf("b %p\n",val&)
+		val += 999
+	}else{
 
 	}
 
-	TempFunc(@1 * 2)
 
-
-	//printf("hey %i\n",val.IsSet())
-	//printf("val %i\n",val.GetOr(15))
+	printf("hey %i\n",val.IsSet())
+	printf("val %i\n",val.GetOr(15))
 }
 RunTest := !() -> void
 {

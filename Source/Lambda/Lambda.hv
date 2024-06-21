@@ -68,6 +68,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			return null
 		//TODO, temporary fix , that probably gonna be forever
 		tmpl.Attrs.IsLambda = false
+		tmpl.Attrs.IsAutoResult = true
 		cnsts := List.{BoxExeConstObj^}
 		return tmpl.CreateFunc(toType.Base->{TypeFunc^},cnsts)
 	}

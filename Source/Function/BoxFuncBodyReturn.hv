@@ -68,9 +68,13 @@ ReturnsHolder := class extend BoxUnit
 	CheckReturnStep := !(TypeFunc^ fncType) -> TypeFunc^
 	{
 		resType := GTypeNone
+		returnNonMem := false
 
 		for it : Returns
 		{
+			if not it.IsReturnMem()
+				returnNonMem = true
+
 			st := it.GetSetType()
 
 			if resType == GTypeNone
@@ -92,7 +96,10 @@ ReturnsHolder := class extend BoxUnit
 		result = fncType
 		if resType != GTypeNone
 		{
-			result = FuncTypeSetResult(fncType,resType,false)
+			retRef := true
+			if returnNonMem
+				retRef = false
+			result = FuncTypeSetResult(fncType,resType,retRef)
 		}
 		ResultType = resType
 	}
