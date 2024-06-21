@@ -21,5 +21,9 @@ Optional := class .{@T}
 		value = newValue
 		isSet = true
 	}
+	Reset := !() -> void
+	{
+		isSet = false
+	}
 }
 
