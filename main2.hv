@@ -9,12 +9,8 @@ main := !(char^[] args) -> int
 	for it : vals
 	{
 		if not it.IsSet()
-		{
-			//it += 999
-		}else{
-			it += 999
-		}
-		printf("hey %i %i\n",it.IsSet(),it.GetOr(0))
+			continue
+		printf("hey %i\n",it)
 	}
 }
 RunTest := !() -> void

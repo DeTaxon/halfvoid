@@ -1,0 +1,22 @@
+BoxIfIsTerminating := !(BoxUnit^ baseObj) -> bool
+{
+	if baseObj is not BoxBlock
+		return false
+	blck := baseObj->{BoxBlock^}
+
+	if blck.exeLines.Size() != 1
+		return false
+	
+	
+	thisLine := blck.exeLines[0]
+	if thisLine is not BoxExeLine
+		return false
+
+	exeObj := thisLine->{BoxExeLine^}.Down
+
+	if exeObj is BoxContinue or exeObj is BoxBreak
+		return true
+	
+	return false
+
+}

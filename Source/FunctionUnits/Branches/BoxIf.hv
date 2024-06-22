@@ -62,7 +62,9 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 		UnitStack.PushFront(onTrueVars[^])
 		tru = new BoxBlock(tryToken)
 		tru.Work()
+
 	}
+
 
 	if flsToken != null
 	{
@@ -76,6 +78,16 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	{
 		retOnlyTrue := new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru,qc)
 		retOnlyTrue.PreTrue.Push(onTrueVars[^])
+
+		if onFalseVars.Size() != 0
+		{
+			if BoxIfIsTerminating(tru)
+			{
+				retOnlyTrue.PostIf.Push(onFalseVars[^])
+				CurrentLine.addPostStack.PushFront(onFalseVars[^])
+			}
+		}
+
 		return retOnlyTrue
 	}
 	retIfFull := new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
@@ -102,6 +114,7 @@ BoxIfTrueOnly := class extend BoxExeObj
 	OnTrue := BoxBlock^
 	TrueWorked := BoxLabel^
 	TrueEndLabel := BoxLabel^
+	PostIf := List.{BoxExeObj^}
 	IfLine := BoxExeLineSimple^
 
 	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue, QCatch^ qc) -> void
@@ -142,6 +155,7 @@ BoxIfTrueOnly := class extend BoxExeObj
 		PreTrue[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
 		OnTrue.PrintCode(ctx)
 		TrueEndLabel.PrintCode(ctx)
+		PostIf[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
 	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
