@@ -1,12 +1,27 @@
 AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
 {
+	
 	if ifCheck is not BoxFuncCall
 		return void
 	fncCall := ifCheck->{BoxFuncCall^}
-	asFunc := fncCall.callObj->{BoxFuncBody^}
-	if asFunc is not in BoxFuncBody
+
+	sendToTrue := true
+
+	baseFunc := fncCall.callObj
+	if baseFunc is BuiltInBoolNot
+	{
+		sendToTrue = false
+		fncCall = fncCall.downs[0]->{BoxFuncCall^}
+		if fncCall is not BoxFuncCall
+			return void
+		baseFunc = fncCall->{BoxFuncCall^}.callObj
+	}
+
+
+	if baseFunc is not in BoxFuncBody
 		return void
 
+	asFunc := baseFunc->{BoxFuncBody^}
 	
 	autoCastStr := GetConstString("#AddAutoCast")
 	if not asFunc.Properties.Contain(autoCastStr)
@@ -34,5 +49,11 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 
 	newVar := ToLocalVar(changedCall,locVar.itName)
 	newVar.AutoCastedFrom = locVar
-	onTrueVars.Push(newVar)
+
+	if sendToTrue
+	{
+		onTrueVars.Push(newVar)
+	}else{
+		onFalseVars.Push(newVar)
+	}
 }

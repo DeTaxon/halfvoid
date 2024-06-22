@@ -8,9 +8,11 @@ main := !(char^[] args) -> int
 
 	for it : vals
 	{
-		if it.IsSet()
+		if not it.IsSet()
 		{
-			it += 100
+			//it += 999
+		}else{
+			it += 999
 		}
 		printf("hey %i %i\n",it.IsSet(),it.GetOr(0))
 	}

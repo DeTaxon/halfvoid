@@ -31,8 +31,6 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 
 	AutoCastCheckIfState(cmpExe,onTrueVars,onFalseVars)
 
-	UnitStack.PushFront(onTrueVars[^])
-
 	tryToken := MakeItBlock(itm.Down.Right.Right)
 	flsToken := Token^
 	
@@ -58,11 +56,18 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	tru := BoxBlock^
 	fls := BoxBlock^
 
-	tru = new BoxBlock(tryToken)
-	tru.Work()
+	if true
+	{
+		StackCheckpoint()
+		UnitStack.PushFront(onTrueVars[^])
+		tru = new BoxBlock(tryToken)
+		tru.Work()
+	}
 
 	if flsToken != null
 	{
+		StackCheckpoint()
+		UnitStack.PushFront(onFalseVars[^])
 		fls = new BoxBlock(flsToken)
 		fls.Work()
 	}
@@ -75,6 +80,7 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	}
 	retIfFull := new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
 	retIfFull.PreTrue.Push(onTrueVars[^])
+	retIfFull.PreFalse.Push(onFalseVars[^])
 	return retIfFull 
 }
 
@@ -148,6 +154,7 @@ BoxIfFull := class extend BoxExeObj
 	Val := BoxExeObj^
 	PreTrue := List.{BoxExeObj^}
 	OnTrue := BoxBlock^
+	PreFalse := List.{BoxExeObj^}
 	OnFalse := BoxBlock^
 	TruePath := BoxLabel
 	FalsePath := BoxLabel^
@@ -195,6 +202,7 @@ BoxIfFull := class extend BoxExeObj
 		EndPath.PrintGo(ctx)
 
 		FalsePath.PrintCode(ctx)
+		PreFalse[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
 		OnFalse.PrintCode(ctx)
 		EndPath.PrintGo(ctx)
 		
