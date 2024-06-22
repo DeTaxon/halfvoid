@@ -1,4 +1,4 @@
-AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars) -> void
+AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
 {
 	if ifCheck is not BoxFuncCall
 		return void
@@ -20,6 +20,9 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars) -> vo
 	assert(fncCall.downs.Size() != 0) //TODO
 
 	firstObject := fncCall.downs[0]
+
+	if firstObject is PtrToRef
+		firstObject = firstObject->{PtrToRef^}.Down
 
 	if firstObject is not LocalVarProxy
 		return void

@@ -27,8 +27,9 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	}
 
 	onTrueVars := List.{BoxExeObj^}
+	onFalseVars := List.{BoxExeObj^}
 
-	AutoCastCheckIfState(cmpExe,onTrueVars)
+	AutoCastCheckIfState(cmpExe,onTrueVars,onFalseVars)
 
 	UnitStack.PushFront(onTrueVars[^])
 
