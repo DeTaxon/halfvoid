@@ -1,6 +1,7 @@
 BoxExeLine := class extend BoxExeLineSimple
 {
 	exitLabel := BoxLabel^
+	addPostStack := List.{BoxUnit^}
 
 	this := !() -> void
 	{
@@ -44,6 +45,12 @@ BoxExeLine := class extend BoxExeLineSimple
 		CurrentLine = oldLine
 		while stackAtStart < UnitStack.Size()
 			UnitStack.Pop()
+
+		while addPostStack.Size() != 0
+		{
+			someObj := addPostStack.Pop()
+			UnitStack.PushFront(someObj)
+		}
 
 		if Down != null
 			return true

@@ -21,7 +21,8 @@ TryRemoveAutoCast := !(BoxExeObj^ vr,BoxExeObj^[] objs, !(BoxExeObj^,BoxExeObj^[
 	res := cb(tempVar,newObjs)
 	if res != null
 	{
-		UnitStack.PushFront(castedVars[^])	
+		UnitStack.PushFront(castedVars[^])
+		CurrentLine.addPostStack.Push(castedVars[^])
 	}
 	return res
 }
@@ -43,6 +44,6 @@ tryUncastVar := !(BoxExeObj^& obj, HybridQueue.{LocalVar^,20} castedVars) -> boo
 		return false
 
 	obj = locVar.AutoCastedFrom.CreateVarCall()
-	castedVars.Push(locVar)
+	castedVars.Push(locVar.AutoCastedFrom)
 	return true
 }

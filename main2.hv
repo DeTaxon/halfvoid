@@ -1,25 +1,33 @@
 
+SubTest := class
+{
+	x := int
+
+	"=" := default
+	this := !() -> void {}
+	this := !(int y) -> void { x = y}
+}
+
 main := !(char^[] args) -> int
 {
-	val := int?
+	val := SubTest?
 
-	val = 0
+	val = SubTest()
 	//val? += 100
 	//
 	printf("a %p\n",val&)
 
 	if val.IsSet()
 	{
-		printf("b %p\n",val&)
 		val.Reset()
-		val += 999
+		val.x += 999
 	}else{
 
 	}
 
 
 	printf("hey %i\n",val.IsSet())
-	printf("val %i\n",val.GetOr(15))
+	printf("val %i\n",val.GetOr(SubTest(15)).x)
 }
 RunTest := !() -> void
 {
