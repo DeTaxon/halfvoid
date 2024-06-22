@@ -6,6 +6,8 @@ main := !(char^[] args) -> int
 	vals[2] = 15
 	vals[7] = 7
 
+	c := int^
+
 	for it : vals
 	{
 		if not it.IsSet()

@@ -12,9 +12,14 @@ BoxIfIsTerminating := !(BoxUnit^ baseObj) -> bool
 	if thisLine is not BoxExeLine
 		return false
 
+	if thisLine->{BoxExeLine^}.HaveQuestionCheckEscape
+		return false
+
 	exeObj := thisLine->{BoxExeLine^}.Down
 
 	if exeObj is BoxContinue or exeObj is BoxBreak
+		return true
+	if exeObj is BoxReturn
 		return true
 	
 	return false

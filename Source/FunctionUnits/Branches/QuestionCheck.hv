@@ -9,6 +9,8 @@ BoxQuestionPointer := class extend BoxExeObj
 	{
 		itDown = newDown
 		ObjType = newDown.GetType()
+
+		CurrentLine?.HaveQuestionCheckEscape = true
 		
 		continueLabel = new BoxLabel()
 		for it : UnitStack

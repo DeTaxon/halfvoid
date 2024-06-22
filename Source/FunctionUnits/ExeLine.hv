@@ -96,6 +96,7 @@ BoxExeLineSimple := class extend BoxUnit
 	MetaId := int
 	ItToken := Token^
 	Down := BoxUnit^
+	HaveQuestionCheckEscape := bool
 
 	MacroCycleMacro := List.{Tuple.{Token^,StringSpan,StringSpan}}
 
