@@ -7,6 +7,10 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 
 	"[]" := virtual !(int i) -> ref T
 	{
+		if i < 0
+		{
+			return this[Size() + i]
+		}
 		if i >= HSize
 		{
 			return ListArray[i - HSize]

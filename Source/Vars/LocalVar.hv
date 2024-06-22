@@ -4,6 +4,8 @@ LocalVar := class extend BoxExeObj
 	isMemory := bool
 	isReference := bool
 
+	AutoCastedFrom := LocalVar^
+
 	createVar := HybridQueue.{BoxExeObj^,2}
 	extraWork := HybridQueue.{BoxExeObj^,4}
 

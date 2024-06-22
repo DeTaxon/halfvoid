@@ -426,7 +426,11 @@ CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts)
 	}
 
 	if callItem == null
-		return null
+	{
+		return TryRemoveAutoCast(null,Objs, (newVr,newObjs) ==> {
+			return CreateFuncCall(name,newObjs,consts)
+		})
+	}
 	return makeFuncCall(callItem,Objs,consts)
 }
 makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^

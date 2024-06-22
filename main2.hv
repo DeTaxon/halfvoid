@@ -11,6 +11,7 @@ main := !(char^[] args) -> int
 	if val.IsSet()
 	{
 		printf("b %p\n",val&)
+		val.Reset()
 		val += 999
 	}else{
 

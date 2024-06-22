@@ -29,5 +29,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars) -> vo
 	fncExchange := ptr->{AutoCastPropertie^}.ExchangeFunction
 	changedCall := fncExchange.CreateCall(![varCall])
 
-	onTrueVars.Push(ToLocalVar(changedCall,locVar.itName))
+	newVar := ToLocalVar(changedCall,locVar.itName)
+	newVar.AutoCastedFrom = locVar
+	onTrueVars.Push(newVar)
 }

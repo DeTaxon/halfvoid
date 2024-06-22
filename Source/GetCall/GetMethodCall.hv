@@ -145,7 +145,12 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, BoxExeObj^[] sObjs,Box
 			}
 			assert(false)
 		}
-		return null
+		return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
+			return innerTryGetMethodCall(name,newVr,newObjs,consts)
+		})
 	}
+	return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
+		return innerTryGetMethodCall(name,newVr,newObjs,consts)
+	})
 }
 

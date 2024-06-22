@@ -1,0 +1,48 @@
+
+TryRemoveAutoCast := !(BoxExeObj^ vr,BoxExeObj^[] objs, !(BoxExeObj^,BoxExeObj^[])&->BoxExeObj^ cb) -> BoxExeObj^
+{
+	castedVars := HybridQueue.{LocalVar^,20}
+
+	tempVar := vr
+	metAutoCastReset := tryUncastVar(tempVar,castedVars)
+
+	newObjs := CheckExeDownList
+
+	for it : objs
+	{
+		newObjs.Push(it)
+
+		foundCast := tryUncastVar(newObjs[-1],castedVars)
+		if foundCast
+			metAutoCastReset = true
+	}
+	if not metAutoCastReset
+		return null
+	res := cb(tempVar,newObjs)
+	if res != null
+	{
+		UnitStack.PushFront(castedVars[^])	
+	}
+	return res
+}
+tryUncastVar := !(BoxExeObj^& obj, HybridQueue.{LocalVar^,20} castedVars) -> bool
+{
+	cl := obj
+
+	if cl == null
+		return false
+
+	if cl is PtrToRef
+		cl = cl->{PtrToRef^}.Down
+
+	if cl is not LocalVarProxy
+		return false
+	locVar := cl->{LocalVarProxy^}.baseVar
+
+	if locVar.AutoCastedFrom == null
+		return false
+
+	obj = locVar.AutoCastedFrom.CreateVarCall()
+	castedVars.Push(locVar)
+	return true
+}
