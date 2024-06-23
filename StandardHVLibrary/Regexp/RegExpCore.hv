@@ -240,6 +240,7 @@ WordDetermMachine := class extend Regexp
 		data := text.NonNullStr()
 		siz := text.Size()
 		i := 0
+
 		while i < siz
 		{
 			nowState := 0
@@ -250,13 +251,14 @@ WordDetermMachine := class extend Regexp
 
 			while nowPos != -1
 			{
-				if nowSize + i - 1 >= siz break
-
 				if IsEndNode[nowPos] != -1
 				{
 					lastGoodTerm = IsEndNode[nowPos]
 					lastGoodSize = nowSize
 				}
+
+				if nowSize + i >= siz
+					break
 
 				nowChar := data[i + nowSize]
 				if nowChar >= 128 //TODO add support in compiler

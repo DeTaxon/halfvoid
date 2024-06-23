@@ -53,6 +53,7 @@ BoxFile := class extend BoxUnit
 		file = inFile
 		fileData = file.GetBlob()
 		fileSize = file.Size()
+		fileName = GetConstString(file.GetName().AsStringSpan())
 	}
 	GetName := !() -> StringSpan
 	{

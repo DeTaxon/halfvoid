@@ -26,9 +26,11 @@ File := class extend vRepoObject
 		tst := this.GetPath()
 		if fileBlob.Size() != 0
 		{
-			desc := fopen(tst.Str(),"rb")
-			defer fclose(desc)
-			fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)
+			mp := MappedFile(tst.Str())
+			memcpy(fileBlob.GetPointer(),mp.Get(),fileBlob.Size())
+			//desc := fopen(tst.Str(),"rb")
+			//defer fclose(desc)
+			//fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)
 		}
 		return fileBlob
 	}
