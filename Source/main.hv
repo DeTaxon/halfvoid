@@ -28,6 +28,7 @@ targetLinux := false
 targetWindows := false
 
 DisableScary := false
+UseExtra := false
 
 GVInitInterpreted := true
 
@@ -81,6 +82,8 @@ main := !(char^[] args) -> int
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i]) //TODO args check
+			case "-extra"
+				UseExtra = true
 			case "-run"
 				i += 1
 				RunModeFuncName = args[i]

@@ -1,19 +1,32 @@
 
+SubTest := class extend TGCObject
+{
+	c := int
+
+	this := !() -> void
+	{
+		c = 100
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	vals := int?[10]
+	vals := TGCObject^
 
-	vals[2] = 15
-	vals[7] = 7
+	vals = new SubTest()
 
-	c := int^
+	if vals is not SubTest
+		return 0
 
-	for it : vals
-	{
-		if not it.IsSet()
-			continue
-		printf("hey %i\n",it)
-	}
+	printf("yep %i\n",vals.c)
+
+	j := SubTest^
+	//j = new TGCObject
+	
+	vals = new TGCObject
+
+	//printf("yep %i\n",vals.c)
+
 }
 RunTest := !() -> void
 {

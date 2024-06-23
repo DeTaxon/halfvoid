@@ -1,21 +1,28 @@
 AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
 {
+	if ifCheck is BoxFuncCall and ifCheck->{BoxFuncCall^}.callObj is BuiltInBoolNot
+	{
+		return AutoCastCheckIfState(ifCheck->{BoxFuncCall^}.downs[0],onFalseVars,onTrueVars)
+	}
+
+	if ifCheck is IsSameTypeChecker and UseExtra
+	{
+		check := ifCheck->{IsSameTypeChecker^}
+		if check.DownObj is LocalVarProxy
+		{
+			oldVar := check.DownObj->{LocalVarProxy^}.baseVar
+			newVar := ToLocalVar(new PtrExchange(check.DownObj,check.TargetType.GetPoint()),oldVar.itName)
+			newVar.AutoCastedFrom = oldVar
+			onTrueVars.Push(newVar)
+			return void
+		}
+	}
 	
 	if ifCheck is not BoxFuncCall
 		return void
 	fncCall := ifCheck->{BoxFuncCall^}
 
-	sendToTrue := true
-
 	baseFunc := fncCall.callObj
-	if baseFunc is BuiltInBoolNot
-	{
-		sendToTrue = false
-		fncCall = fncCall.downs[0]->{BoxFuncCall^}
-		if fncCall is not BoxFuncCall
-			return void
-		baseFunc = fncCall->{BoxFuncCall^}.callObj
-	}
 
 
 	if baseFunc is not in BoxFuncBody
@@ -50,10 +57,5 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 	newVar := ToLocalVar(changedCall,locVar.itName)
 	newVar.AutoCastedFrom = locVar
 
-	if sendToTrue
-	{
-		onTrueVars.Push(newVar)
-	}else{
-		onFalseVars.Push(newVar)
-	}
+	onTrueVars.Push(newVar)
 }

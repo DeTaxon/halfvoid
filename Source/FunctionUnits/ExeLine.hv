@@ -672,7 +672,23 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 				}
 			}
 		}
+	}
 
+	if a is TypeArrayView or b is TypeArrayView
+	{
+		if a is not TypeArrayView
+			return TypeFight(b,a)
+		assert(a is TypeArrayView)
+
+		if b is not TypeArrayView and b is in TypePoint
+		{
+			clsType := a->{TypeArrayView^}.viewClassType.GetPoint()
+			clsRes := TypeFight(clsType,b)
+			if clsRes == clsType
+			{
+				return a
+			}
+		}
 	}
 	return null
 }

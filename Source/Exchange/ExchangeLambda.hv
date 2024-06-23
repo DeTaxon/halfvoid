@@ -10,6 +10,7 @@ ExchangeLambdaFromHolder := class extend ExchangeUnit
 
 		if hldr.CanBeThisType(to)
 			return 0
+		printf("yep\n")
 		return CmpNoExchange
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^

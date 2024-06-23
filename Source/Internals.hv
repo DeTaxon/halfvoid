@@ -21,6 +21,8 @@ GVectorConstructor2 := BoxFuncTemplate^
 GVectorConstructor3 := BoxFuncTemplate^
 GVectorConstructor4 := BoxFuncTemplate^
 
+
+GOperatorSetGC := BoxFuncTemplate^
 GFuncGCSetNull := BoxFunc^
 
 TemplateInternalCreateTuple := BoxFuncTemplate^
@@ -33,6 +35,7 @@ InitInternals := !() -> void
 	GetAnyFile() //TODO move to somewhere
 	//TracyZone("Internal functions")
 
+	GOperatorSetGC = intGetTemplate("internalGCSetVal")
 	GFuncGCSetNull = intGetFunc("internalGC_SetNull")
 	assert(GFuncGCSetNull != null)
 

@@ -38,6 +38,16 @@ TGCObject := class
 	itm1&->{void^^}^ = itm2->{void^}
 }
 
+internalGCSetVal := !(@T^& itm1,T^ itm2) -> void
+{
+	itm2?.IncRef()
+	if itm1 != null
+	{
+		itm1.DecRef()
+	}
+	itm1&->{void^^}^ = itm2->{void^}
+}
+
 internalGCClearClass := !(@T itm) -> void
 {
 	for it,ind : itm->AllFields

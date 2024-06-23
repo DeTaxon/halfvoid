@@ -110,7 +110,7 @@ BoxFuncCall := class extend BoxExeObj
 					exchangeLimit -= 1
 					if newObj == null or exchangeLimit <= 0
 					{
-						printf("wha %s\n",fType.GetBADStr().Str())
+						//printf("wha %s\n",fType.GetBADStr().Str())
 						tmpl := TEchoStream
 						tmpl << "Could not exchange type from "
 						//downs[i].GetType().PrintDebugName(tmpl&)

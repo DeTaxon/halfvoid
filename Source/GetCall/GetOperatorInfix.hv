@@ -38,6 +38,7 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 
 
+
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
@@ -53,6 +54,35 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		//}
 		if res != null
 			return res
+	}
+
+	if oper == "=" and IsGCPtr(tmpList[0].GetType()) and IsGCPtr(tmpList[1].GetType()) and tmpList[0].IsMem()
+	{
+		t1 := tmpList[0].GetType()
+		t2 := tmpList[1].GetType()
+		fightResult := TypeFight(t1,t2)
+
+		fncType := GetFuncType(2,![GCType.GetPoint(),GCType.GetPoint()],![true,false],GTypeVoid)
+		pri := GOperatorSetGC.GetPriority(tmpList,![])
+		if fightResult == t1
+			//and pri != CmpNoExchange
+		{	
+			//setFunc := GOperatorSetGC.GetFunc(tmpList,![])
+			setFunc := GOperatorSetGC.GetFuncByType(fncType,![])
+			return setFunc.CreateCall(tmpList)
+		}else{
+			//printf("wut ~~ %s ~~ %s ~~ %i\n",t1.GetBADStr().Str(),t2.GetBADStr().Str(),pri)
+			return TryRemoveAutoCast(null,tmpList,(newVr,newObjs) ==> {
+				tt1 := newObjs[0].GetType()
+				tt2 := newObjs[1].GetType()
+				fightResult := TypeFight(tt1,tt2)
+				if fightResult == tt1
+				{
+					return GOperatorSetGC.GetFuncByType(fncType,![]).CreateCall(newObjs)
+				}
+				return null->{BoxExeObj^}
+			})
+		}
 	}
 
 	res1 := innerTryGetInfixCall(oper,tmpList,itm)
