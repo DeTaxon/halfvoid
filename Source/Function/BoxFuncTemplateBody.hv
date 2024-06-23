@@ -253,6 +253,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.SetPrintName(Name)
 		newFunc.DefaultValues[ind] = hData.DefaultValues[^ind]
 		newFunc.ParentScope = ParentScope
+		newFunc.TemplateParent = this&
 
 		ConstMapToList(resConsts,newFunc.ConstVars)
 

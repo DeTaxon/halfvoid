@@ -1,11 +1,14 @@
 AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
 {
+	if not UseExtra
+		return void
+
 	if ifCheck is BoxFuncCall and ifCheck->{BoxFuncCall^}.callObj is BuiltInBoolNot
 	{
 		return AutoCastCheckIfState(ifCheck->{BoxFuncCall^}.downs[0],onFalseVars,onTrueVars)
 	}
 
-	if ifCheck is IsSameTypeChecker and UseExtra
+	if ifCheck is IsSameTypeChecker
 	{
 		check := ifCheck->{IsSameTypeChecker^}
 		if check.DownObj is LocalVarProxy
@@ -29,6 +32,38 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 		return void
 
 	asFunc := baseFunc->{BoxFuncBody^}
+
+	if asFunc.TemplateParent == TemplateInternalIsInSameType
+	{
+		//TODO delete this after release
+
+		oldCall := fncCall.downs[0]
+		if oldCall is PtrToRef
+			oldCall = oldCall->{PtrToRef^}.Down
+		if oldCall is LocalVarProxy
+		{
+			oldVar := oldCall->{LocalVarProxy^}.baseVar
+			
+			resType := Type^
+			for it : asFunc.ConstVars
+			{
+				if it is not TypeVar
+					continue
+				tv := it->{TypeVar^}
+				if tv.Name == "Cls"
+				{
+					resType = tv.Value
+				}
+			}
+			if resType != null
+			{
+				newVar := ToLocalVar(new PtrExchange(fncCall.downs[0],resType.GetPoint()),oldVar.itName)
+				newVar.AutoCastedFrom = oldVar
+				onTrueVars.Push(newVar)
+				return void
+			}
+		}
+	}
 	
 	autoCastStr := GetConstString("#AddAutoCast")
 	if not asFunc.Properties.Contain(autoCastStr)

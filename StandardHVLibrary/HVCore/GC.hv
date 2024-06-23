@@ -28,6 +28,8 @@ TGCObject := class
 	}
 }
 
+
+//TODO delete after new stable library
 "=" := !(TGCObject^& itm1, TGCObject^ itm2) -> void
 {
 	itm2?.IncRef()

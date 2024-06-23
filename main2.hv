@@ -15,7 +15,7 @@ main := !(char^[] args) -> int
 
 	vals = new SubTest()
 
-	if vals is not SubTest
+	if vals is not in SubTest
 		return 0
 
 	printf("yep %i\n",vals.c)
