@@ -9,28 +9,32 @@ SubTest := class extend TGCObject
 	}
 }
 
-main := !(char^[] args) -> int
+tst1 := !() -> void
 {
 	vals := TGCObject^
 
 	vals = new SubTest()
 
 	if vals is not in SubTest
-		return 0
-
+		return void
+	//printf("wot\n")
 	printf("yep %i\n",vals.c)
 
-	j := SubTest^
-	//j = new TGCObject
-	
+	////j = new TGCObject
+	//
 	vals = new TGCObject
 
-	//printf("yep %i\n",vals.c)
+	printf("yep %i\n",vals.c)
+}
 
+main := !(char^[] args) -> int
+{
+	tst1()
 }
 RunTest := !() -> void
 {
-	RunOpenGLTest()
+	//RunOpenGLTest()
+	tst1()
 }
 
 

@@ -83,6 +83,15 @@ MCInterpContext := class
 				pth := vTable.GetFieldByIndexRaw(i)
 				memPtr := result->{u8^}[pth.MemOffset]&
 
+				if i == 0 and val is VTableVar //TODO less hardcoded
+				{
+					itVal := val->{VTableVar^}.ItConst
+					baseVal := itVal->{CheckInfoConst^}.ItGlobVar.value
+					newArr := malloc(baseVal.GetType().GetSize()) //TODO mem leak
+					WriteGlobToMem(baseVal,newArr)
+					memPtr->{void^^}^ = newArr
+				}
+
 				if val is VTableFunc
 				{
 					asFnc := val->{VTableFunc^}

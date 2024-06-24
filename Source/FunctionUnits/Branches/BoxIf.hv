@@ -152,10 +152,10 @@ BoxIfTrueOnly := class extend BoxExeObj
 
 		TrueWorked.PrintCode(ctx)
 
-		PreTrue[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
+		PreTrue[^].PrintDefaultUse(ctx)
 		OnTrue.PrintCode(ctx)
 		TrueEndLabel.PrintCode(ctx)
-		PostIf[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
+		PostIf[^].PrintDefaultUse(ctx)
 	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -211,12 +211,12 @@ BoxIfFull := class extend BoxExeObj
 		f^ << "\n"
 
 		TruePath.PrintCode(ctx)
-		PreTrue[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
+		PreTrue[^].PrintDefaultUse(ctx)
 		OnTrue.PrintCode(ctx)
 		EndPath.PrintGo(ctx)
 
 		FalsePath.PrintCode(ctx)
-		PreFalse[^].PrintDefaultUse(ctx) //TODO copy to interpreter side
+		PreFalse[^].PrintDefaultUse(ctx)
 		OnFalse.PrintCode(ctx)
 		EndPath.PrintGo(ctx)
 		

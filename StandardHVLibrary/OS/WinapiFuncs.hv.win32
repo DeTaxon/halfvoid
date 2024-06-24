@@ -189,6 +189,19 @@ osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
 			return void
 	}
 }
+fsGetAbsolutePath := !(StringView ptr) -> String^
+{
+	bsName := ptr.GetString()
+	strU16 := Utf8ToUtf16(bsName.Str())
+
+	buf := u16[512]
+
+	resSize := GetFullPathNameW(strU16.GetPointer(),512,buf[0]&,null)
+	if resSize == 0
+		return null
+	resStr := Utf16ToUtf8(buf[0]&,resSize)
+	return resStr
+}
 
 GetSteadyTime := !() -> double
 {

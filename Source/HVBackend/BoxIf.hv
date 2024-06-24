@@ -13,8 +13,10 @@ AppendClass BoxIfTrueOnly
 		ctx.lines.Push(MCLine("jmp",falsePath))
 
 		HVB_ins_label(ctx,truePath)
+		PreTrue[^].WriteMC(ctx)
 		OnTrue.WriteMC(ctx)
 		HVB_ins_label(ctx,falsePath)
+		PostIf[^].WriteMC(ctx)
 	}
 }
 AppendClass BoxIfFull
@@ -31,9 +33,11 @@ AppendClass BoxIfFull
 		ctx.lines.Push(MCLine("jmp",falsePath))
 
 		ctx.lines.Push(MCLine("label",truePath))
+		PreTrue[^].WriteMC(ctx)
 		OnTrue.WriteMC(ctx)
 		ctx.lines.Push(MCLine("jmp",endPath))
 		ctx.lines.Push(MCLine("label",falsePath))
+		PreFalse[^].WriteMC(ctx)
 		OnFalse.WriteMC(ctx)
 		ctx.lines.Push(MCLine("label",endPath))
 	}
