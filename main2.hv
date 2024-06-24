@@ -1,40 +1,9 @@
-
-SubTest := class extend TGCObject
-{
-	c := int
-
-	this := !() -> void
-	{
-		c = 100
-	}
-}
-
-tst1 := !() -> void
-{
-	vals := TGCObject^
-
-	vals = new SubTest()
-
-	if vals is not in SubTest
-		return void
-	//printf("wot\n")
-	printf("yep %i\n",vals.c)
-
-	////j = new TGCObject
-	//
-	vals = new TGCObject
-
-	printf("yep %i\n",vals.c)
-}
-
 main := !(char^[] args) -> int
 {
-	tst1()
 }
 RunTest := !() -> void
 {
-	//RunOpenGLTest()
-	tst1()
+	RunOpenGLTest()
 }
 
 
@@ -92,218 +61,218 @@ TestClass1 := class
 //		return bl.GetPointer()
 //	}
 //)
-//#Module(
-//
-//	xmlBlob := Blob^
-//	glXML := XML^
-//
-//	glCommands := AVLMap.{StringSpan,XMLNode^}
-//	glValues := AVLMap.{StringSpan,int}
-//
-//	parsedXml := bool
-//	ParseXml := !() -> void
-//	{
-//		if parsedXml
-//			return void
-//		parsedXml = true
-//
-//		glFile := FSGetFile("./gl.xml")
-//		xmlBlob := glFile.GetBlob()
-//
-//		glXML = ParseXML2(xmlBlob.AsStringSpan())
-//
-//		for baseNode : glXML.RootNode.Values[0].ValueNode.Values
-//		{
-//			if baseNode.IsString
-//			{
-//				continue
-//			}
-//
-//			switch baseNode.ValueNode.NodeName
-//			{
-//			case "commands"
-//				for command : baseNode.ValueNode.Values
-//				{
-//					if command.IsString
-//						continue
-//
-//					commandName := command.ValueNode.GetNode("proto/name")
-//
-//					if commandName != null
-//					{
-//						glCommands[commandName.Values[0].ValueSpan[2..0]] = command.ValueNode
-//					}
-//					
-//				}
-//			case "enums"
-//				for it : baseNode.ValueNode.Values
-//				{
-//					if it.IsString
-//						continue
-//					val := it.ValueNode
-//
-//					if val.Attrs.Contain(StringSpan("value")) and val.Attrs.Contain(StringSpan("name"))
-//					{
-//						glValues[val.Attrs[StringSpan("name")]] = val.Attrs[StringSpan("value")].ToInt()
-//					}
-//
-//				}
-//			}
-//		}
-//
-//	}
-//	GetCommandType := !(StringView str) -> void^
-//	{
-//		spn := str.AsStringSpan()
-//		if not glCommands.Contain(spn)
-//			return null
-//
-//		cmd := glCommands[spn]
-//		types := HybridQueue.{void^,16}
-//
-//		for pars : cmd.Values 
-//		{
-//			if pars.IsString or pars.ValueNode.NodeName != "param"
-//				continue
-//
-//			parType := GetParamType(pars.ValueNode)
-//			if parType == null
-//				return null
-//			types.Push(parType)
-//		}
-//		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
-//		return HV.GetTypePointer(fType)
-//	}
-//	GetParamType := !(XMLNode^ node) -> void^
-//	{
-//		nodeOpts := char[256]
-//		sSize := 0
-//
-//		for it : node.Values
-//		{
-//			nodeOpts[sSize] = it.IsString ?: '0' : '1'
-//			sSize += 1
-//		}
-//
-//		nodeType := StringSpan(nodeOpts,sSize)
-//
-//		switch nodeType
-//		{
-//		case "11"
-//		 	pType := node.GetNode("ptype")
-//		 	if pType != null
-//		 	{
-//		 		return GetStringType(pType.Values[0].ValueSpan)
-//		 	}
-//		case void
-//			printf("opengl cant get param %s\n",nodeType)
-//		}
-//		
-//	}
-//	GetStringType := !(StringSpan typeName) -> void^
-//	{
-//		switch typeName
-//		{
-//			case "GLenum"
-//				return HV.GetType("u32")
-//			case "GLbitfield"
-//				return HV.GetType("s32")
-//			case "GLuint"
-//				return HV.GetType("s32")
-//			case "GLfloat"
-//				return HV.GetType("float")
-//			case void
-//				printf("opengl unknown type %s\n",typeName)
-//				return null
-//		}
-//	}
-//
-//	funcClass := HV_Class^
-//	funcClassType := void^
-//	FuncClass := !() -> void^
-//	{
-//		return funcClassType?
-//
-//		funcClass = HV.CreateClass()
-//
-//		ParseXml()
-//
-//		funcClassType = funcClass.GetType()
-//		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
-//			if glCommands.Contain(x.AsStringSpan())
-//			{
-//				return GetCommandType(x)
-//			}
-//			return null
-//		})
-//		return funcClassType
-//	}
-//
-//	GetItem := virtual !(StringView name) -> void^
-//	{
-//		if name.Start == StringSpan("GL_")
-//		{
-//			ParseXml()
-//			if glValues.Contain(name)
-//				return HV.Create_int32(glValues[name])
-//		}
-//		if name == "glFuncsClass"
-//		{
-//			return FuncClass()
-//		}
-//	}
-//)
-//
-//mouseMove := !(void^ w, double itX, double itY) -> void
-//{
-//	//printf("hey %p %f %f\n",w,itX,itY)
-//}
-//
-//
-//RunOpenGLTest := !() -> void
-//{
-//	gl := glFuncsClass
-//
-//	glfwInit()
-//
-//	win := glfwCreateWindow(640, 480, "My Title", null, null)
-//	glfwSetCursorPosCallback(win,mouseMove)
-//	glfwMakeContextCurrent(win)
-//
-//	lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
-//	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
-//
-//	if glGetProcAddress == null
-//	{
-//		glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
-//	}
-//
-//
-//	nameBuffer := char[128]
-//	for it,ind : gl->AllFields
-//	{
-//		sprintf(nameBuffer[0]&,"gl%s",ind)
-//		it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
-//		//printf("proc %s %p\n",ind,it)
-//	}
-//
-//	gl.ClearColor(1.0,0.5,0.0,0.0)
-//
-//	while not glfwWindowShouldClose(win)
-//	{
-//		gl.Clear(GL_COLOR_BUFFER_BIT)
-//		gl.Begin(GL_TRIANGLES)
-//		gl.Color3f(1.0,0.0,0.0)
-//		gl.Vertex3f(-1.0,-1.0,0.0)
-//		gl.Color3f(0.0,1.0,0.0)
-//		gl.Vertex3f(1.0,-1.0,0.0)
-//		gl.Color3f(0.0,0.0,1.0)
-//		gl.Vertex3f(0.0,1.0,0.0)
-//		gl.End()
-//        glfwPollEvents()
-//		glfwSwapBuffers(win)
-//	}
-//}
+#Module(
+
+	xmlBlob := Blob^
+	glXML := XML^
+
+	glCommands := AVLMap.{StringSpan,XMLNode^}
+	glValues := AVLMap.{StringSpan,int}
+
+	parsedXml := bool
+	ParseXml := !() -> void
+	{
+		if parsedXml
+			return void
+		parsedXml = true
+
+		glFile := FSGetFile("./gl.xml")
+		xmlBlob := glFile.GetBlob()
+
+		glXML = ParseXML2(xmlBlob.AsStringSpan())
+
+		for baseNode : glXML.RootNode.Values[0].ValueNode.Values
+		{
+			if baseNode.IsString
+			{
+				continue
+			}
+
+			switch baseNode.ValueNode.NodeName
+			{
+			case "commands"
+				for command : baseNode.ValueNode.Values
+				{
+					if command.IsString
+						continue
+
+					commandName := command.ValueNode.GetNode("proto/name")
+
+					if commandName != null
+					{
+						glCommands[commandName.Values[0].ValueSpan[2..0]] = command.ValueNode
+					}
+					
+				}
+			case "enums"
+				for it : baseNode.ValueNode.Values
+				{
+					if it.IsString
+						continue
+					val := it.ValueNode
+
+					if val.Attrs.Contain(StringSpan("value")) and val.Attrs.Contain(StringSpan("name"))
+					{
+						glValues[val.Attrs[StringSpan("name")]] = val.Attrs[StringSpan("value")].ToInt()
+					}
+
+				}
+			}
+		}
+
+	}
+	GetCommandType := !(StringView str) -> void^
+	{
+		spn := str.AsStringSpan()
+		if not glCommands.Contain(spn)
+			return null
+
+		cmd := glCommands[spn]
+		types := HybridQueue.{void^,16}
+
+		for pars : cmd.Values 
+		{
+			if pars.IsString or pars.ValueNode.NodeName != "param"
+				continue
+
+			parType := GetParamType(pars.ValueNode)
+			if parType == null
+				return null
+			types.Push(parType)
+		}
+		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
+		return HV.GetTypePointer(fType)
+	}
+	GetParamType := !(XMLNode^ node) -> void^
+	{
+		nodeOpts := char[256]
+		sSize := 0
+
+		for it : node.Values
+		{
+			nodeOpts[sSize] = it.IsString ?: '0' : '1'
+			sSize += 1
+		}
+
+		nodeType := StringSpan(nodeOpts,sSize)
+
+		switch nodeType
+		{
+		case "11"
+		 	pType := node.GetNode("ptype")
+		 	if pType != null
+		 	{
+		 		return GetStringType(pType.Values[0].ValueSpan)
+		 	}
+		case void
+			printf("opengl cant get param %s\n",nodeType)
+		}
+		
+	}
+	GetStringType := !(StringSpan typeName) -> void^
+	{
+		switch typeName
+		{
+			case "GLenum"
+				return HV.GetType("u32")
+			case "GLbitfield"
+				return HV.GetType("s32")
+			case "GLuint"
+				return HV.GetType("s32")
+			case "GLfloat"
+				return HV.GetType("float")
+			case void
+				printf("opengl unknown type %s\n",typeName)
+				return null
+		}
+	}
+
+	funcClass := HV_Class^
+	funcClassType := void^
+	FuncClass := !() -> void^
+	{
+		return funcClassType?
+
+		funcClass = HV.CreateClass()
+
+		ParseXml()
+
+		funcClassType = funcClass.GetType()
+		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
+			if glCommands.Contain(x.AsStringSpan())
+			{
+				return GetCommandType(x)
+			}
+			return null
+		})
+		return funcClassType
+	}
+
+	GetItem := virtual !(StringView name) -> void^
+	{
+		if name.Start == StringSpan("GL_")
+		{
+			ParseXml()
+			if glValues.Contain(name)
+				return HV.Create_int32(glValues[name])
+		}
+		if name == "glFuncsClass"
+		{
+			return FuncClass()
+		}
+	}
+)
+
+mouseMove := !(void^ w, double itX, double itY) -> void
+{
+	//printf("hey %p %f %f\n",w,itX,itY)
+}
+
+
+RunOpenGLTest := !() -> void
+{
+	gl := glFuncsClass
+
+	glfwInit()
+
+	win := glfwCreateWindow(640, 480, "My Title", null, null)
+	glfwSetCursorPosCallback(win,mouseMove)
+	glfwMakeContextCurrent(win)
+
+	lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
+	glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
+
+	if glGetProcAddress == null
+	{
+		glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
+	}
+
+
+	nameBuffer := char[128]
+	for it,ind : gl->AllFields
+	{
+		sprintf(nameBuffer[0]&,"gl%s",ind)
+		it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+		//printf("proc %s %p\n",ind,it)
+	}
+
+	gl.ClearColor(1.0,0.5,0.0,0.0)
+
+	while not glfwWindowShouldClose(win)
+	{
+		gl.Clear(GL_COLOR_BUFFER_BIT)
+		gl.Begin(GL_TRIANGLES)
+		gl.Color3f(1.0,0.0,0.0)
+		gl.Vertex3f(-1.0,-1.0,0.0)
+		gl.Color3f(0.0,1.0,0.0)
+		gl.Vertex3f(1.0,-1.0,0.0)
+		gl.Color3f(0.0,0.0,1.0)
+		gl.Vertex3f(0.0,1.0,0.0)
+		gl.End()
+        glfwPollEvents()
+		glfwSwapBuffers(win)
+	}
+}
 
 
 //CalculatePiBlob := !(int nums) -> Blob^

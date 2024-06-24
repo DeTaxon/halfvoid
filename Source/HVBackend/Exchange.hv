@@ -94,3 +94,13 @@ AppendClass ArrToPtr
 		result.CreatedId = newVar
 	}
 }
+AppendClass PtrToSizeT
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_move(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
+	}
+}

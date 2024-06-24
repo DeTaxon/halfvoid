@@ -93,6 +93,8 @@ AppendClass BuiltInIntBase
 			HVB_ins_and(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "or"
 			HVB_ins_or(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "xor"
+			HVB_ins_xor(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "shl"
 			HVB_ins_shl(ctx,resInd,var1.CreatedId,var2.CreatedId)
 		case "ashr"
