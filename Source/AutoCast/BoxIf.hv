@@ -1,26 +1,42 @@
-AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
+AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars, bool inSwitchIs = false) -> void
 {
-	if not UseExtra
+	if not UseExtra and not inSwitchIs
 		return void
-
-	if ifCheck is BoxFuncCall and ifCheck->{BoxFuncCall^}.callObj is BuiltInBoolNot
-	{
-		return AutoCastCheckIfState(ifCheck->{BoxFuncCall^}.downs[0],onFalseVars,onTrueVars)
-	}
 
 	if ifCheck is IsSameTypeChecker
 	{
-		check := ifCheck->{IsSameTypeChecker^}
-		if check.DownObj is LocalVarProxy
+		objIsRef := false
+		checkObj := ifCheck->{IsSameTypeChecker^}
+
+		checkObj2 := ifCheck->{IsSameTypeChecker^}.DownObj
+		if checkObj2 is PtrToRef
 		{
-			oldVar := check.DownObj->{LocalVarProxy^}.baseVar
-			newVar := ToLocalVar(new PtrExchange(check.DownObj,check.TargetType.GetPoint()),oldVar.itName)
+			checkObj2 = checkObj2->{PtrToRef^}.Down
+			objIsRef = true
+		}
+		if checkObj2 is LocalVarProxy
+		{
+			oldVar := checkObj2->{LocalVarProxy^}.baseVar
+			resObj := BoxExeObj^
+			resObj = new PtrExchange(checkObj->{IsSameTypeChecker^}.DownObj,checkObj->{IsSameTypeChecker^}.TargetType.GetPoint())
+			if objIsRef
+			{
+				resObj = new PtrToRef(resObj)
+			}
+			newVar := ToLocalVar(resObj,oldVar.itName)
 			newVar.AutoCastedFrom = oldVar
 			onTrueVars.Push(newVar)
 			return void
 		}
 	}
+	if not UseExtra
+		return void
 	
+	if ifCheck is BoxFuncCall and ifCheck->{BoxFuncCall^}.callObj is BuiltInBoolNot
+	{
+		return AutoCastCheckIfState(ifCheck->{BoxFuncCall^}.downs[0],onFalseVars,onTrueVars)
+	}
+
 	if ifCheck is not BoxFuncCall
 		return void
 	fncCall := ifCheck->{BoxFuncCall^}

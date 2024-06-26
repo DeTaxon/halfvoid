@@ -6,7 +6,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		itm.Down.Right.EmitError("Unknown object to switch on")
 
 	canSwapNames := false
-	swapName := StringSpan
+	swapName := StringSpan("$anon")
 	isMem := mainCall.IsMem()
 
 	if itm.Down.Right is TokenIndent
@@ -38,7 +38,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	}
 	if callType is in TypePoint
 	{
-		mainVar = ToLocalVar(mainCall)
+		mainVar = ToLocalVar(mainCall,swapName)
 	}else{
 		itm.EmitError("Bad type to switch on")
 		return null
@@ -76,9 +76,17 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		tpCheck := BoxExeObj^
 		if caseType != GTypeVoid
 		{
-			if not IsVirtualClass(caseType) //calls casrType.AwaitVTableStep
-				iter.Down.Right.EmitError("Type does not have virtual table")
-			tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
+			if IsVirtualClass(caseType)
+			{
+				tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
+			}else {
+				tpCheck = innerTryGetMethodCall(StringSpan("is"),mainVar.CreateVarCall(),![],![GetConstType(caseType)])
+
+				if tpCheck == null
+				{
+					iter.Down.Right.EmitError("Could not compare type")
+				}
+			}
 
 			assert(tpCheck != null)
 		}
@@ -108,14 +116,31 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 
 			StackCheckpoint()
 
-			newVar := LocalVar^
-			if canSwapNames
-			{
-				exchange := GetExchange2(new UnrefFuncCall(mainVar.CreateVarCall()),caseType.GetPoint().GetPoint(),false)
-				baseCall := new PtrToRef(exchange)
-				newVar = ToLocalVar(baseCall,swapName)
+			newVar := BoxExeObj^
+			if canSwapNames //and tpCheck is IsSameTypeChecker
+			{	
+				onTrue := List.{BoxExeObj^}
+				onFalse := List.{BoxExeObj^}
+				AutoCastCheckIfState(tpCheck,onTrue,onFalse,true)
+				assert(onTrue.Size() < 2)
 
-				UnitStack.PushFront(newVar)
+				if onTrue.Size() == 1
+				{
+					newVar = onTrue[0]
+					UnitStack.PushFront(newVar)
+				} else
+				{
+					//printf("nope %s %p\n",tpCheck.UnitName,tpCheck)
+					//if tpCheck is IsSameTypeChecker
+					//{
+					//	exchange := GetExchange2(new UnrefFuncCall(mainVar.CreateVarCall()),caseType.GetPoint().GetPoint(),false)
+					//	baseCall := new PtrToRef(exchange)
+					//	newVar = ToLocalVar(baseCall,swapName)
+
+					//	UnitStack.PushFront(newVar)
+
+					//}
+				}
 			}
 
 			newCase.cmpCheck = tpCheck
