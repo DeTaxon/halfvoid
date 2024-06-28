@@ -1,8 +1,21 @@
 
 
+templatePrefixElement := class
+{
+	Tok := Token^
+	Value := BoxExeObj^
+
+	this := !(Token^ arg1, BoxExeObj^ arg2) -> void
+	{
+		Tok = arg1
+		Value = arg2
+	}
+	"=" := default
+}
+
 TemplatePrefix := class
 {
-	Constants := List.{Tuple.{Token^,BoxExeObj^} }
+	Constants := List.{templatePrefixElement}
 	ConstantsMinSize := int
 
 	CheckToken := !(Token^ cns) -> void
@@ -15,7 +28,6 @@ TemplatePrefix := class
 			{
 				rc := AVLMap.{StringSpan,BoxUnit^}
 				cItm := CheckTemplateConst(null,iter,rc)
-				rc.Destroy()
 				Constants.Emplace(iter,cItm)
 				ConstantsMinSize += 1
 			}
@@ -28,8 +40,7 @@ TemplatePrefix := class
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		for it : Constants
 		{
-			outConst := CheckTemplateConst(null,it.0,resConsts)
-			if outConst == null
+			if it.Value == null
 				return false
 		}
 		return true
@@ -49,13 +60,13 @@ TemplatePrefix := class
 		
 		for myConst : Constants , inConst : consts
 		{
-			if myConst.1? != inConst
+			if myConst.Value? != inConst
 				return false
-			outConst := CheckTemplateConst(inConst,myConst.0,resCnsts)
+			outConst := CheckTemplateConst(inConst,myConst.Tok,resCnsts)
 			if outConst == null
 				return false
 
-			if myConst.1? != outConst?
+			if myConst.Value? != outConst?
 				return false
 		}
 		return true
