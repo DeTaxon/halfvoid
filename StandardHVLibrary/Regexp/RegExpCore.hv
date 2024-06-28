@@ -219,6 +219,17 @@ WordDetermMachine := class extend Regexp
 
 		}
 	}
+	CreateBlobRegexp := !() -> Blob^
+	{
+		machSize := ComputeBlobSize()
+		//blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
+		blobSize := null->{RegexpAsBlob^}.blobData[machSize]&->{size_t} //TODO more normal size computation?
+		newBlob := MakeBlob(blobSize)
+		ZeroMem(newBlob.GetPointer()->{RegexpAsBlob^}^)
+		SerializeToMap(newBlob.GetPointer()->{RegexpAsBlob^}.blobData[0]&)
+
+		return newBlob
+	}
 // 	IsMatch := !(char^ toTst) -> bool
 // 	{
 // 		toRet := false

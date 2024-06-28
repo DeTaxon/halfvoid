@@ -14,9 +14,9 @@ Variant := class .{@Types...}
 
 main := !(char^[] args) -> int
 {
-	c := Variant.{double,int}
-	c.values.0 = 3.14
-	c.values.1 = 999
+	//c := Variant.{double,int}
+	//c.values.0 = 3.14
+	//c.values.1 = 999
 
 	//switch c is
 	//{

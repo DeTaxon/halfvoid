@@ -56,12 +56,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 		}
 		machine :=  lx.GenerateMachine()
 
-		blobSize := RegexpAsBlob->TypeSize + machine.ComputeBlobSize()
-		newBlob := new BlobOnVector(blobSize)
-		ZeroMem(newBlob.GetPointer()->{RegexpAsBlob^}^)
-		machine.SerializeToMap(newBlob.GetPointer()->{RegexpAsBlob^}.blobData[0]&)
-
-		return newBlob
+		return machine.CreateBlobRegexp()
 	})
 
 	if not RegexpBlobs.Contain(resSt)
