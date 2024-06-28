@@ -17,7 +17,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	hData := FunctionHeaderInfo
 
-	Constants := List.{FuncTemplateConstant}
+	TempPrefix := TemplatePrefix
 	Properties := AVLMap.{StringSpan,Token^}
 
 	sState := StackState
@@ -139,19 +139,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if cns != null
 		{
-			SyntaxCompress(cns,LexHVInputVars)
-			iter := cns.Down
-			while iter != null
-			{
-				if iter.GetValue() != ","
-				{
-					rc := AVLMap.{StringSpan,BoxUnit^}
-					cItm := CheckTemplateConst(null,iter,rc)
-					rc.Destroy()
-					Constants.Emplace(iter,cItm)
-				}
-				iter = iter.Right
-			}
+			TempPrefix.CheckToken(cns)
 		}
 	}
 	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
@@ -168,7 +156,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		
 		if objs.Size() < minArgs or objs.Size() > maxArgs
 			return null
-		if consts.Size() != Constants.Size()
+		if not TempPrefix.CheckByCount(consts.Size())
 			return null
 
 		fInTypes := Type^[100]
@@ -268,18 +256,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		fTyps := Type^[100]
 		iRef := bool[100]
 
-		if consts.Size() != Constants.Size()
+		if not TempPrefix.CheckConsts(consts,resCnsts)
 			return null
-
-		for myConst : Constants , inConst : consts
-		{
-			if myConst.Value? != inConst
-				return null
-			outConst := CheckTemplateConst(inConst,myConst.ItToken,resCnsts)
-
-			if myConst.Value? != outConst?
-				return null
-		}
 
 		for i : objs.Size()
 		{
@@ -336,7 +314,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		if not hData.IsOneFunc()
 			return false
-		if Constants[^].Value == null
+		if not TempPrefix.IsOneOption()
 			return false
 		return true
 	}

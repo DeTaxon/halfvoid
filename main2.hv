@@ -3,9 +3,10 @@ Variant := class .{@VarTypes...}
 	//selected := int
 	values := Tuple.{VarTypes...}
 
-	"is" := !() .{@T} -> bool
-		#AddAutoCast(@1.value)
+	"is" := !() .{@T, @Index = int} -> bool
+		#AddAutoCast(@1.values.0)
 	{
+		c := Index
 		return true
 	}
 }
@@ -14,18 +15,18 @@ Variant := class .{@VarTypes...}
 
 main := !(char^[] args) -> int
 {
-	c := Variant.{int,int}
-	c.values.0 = 3.14
-	c.values.1 = 999
+	c := Variant.{int,double}
+	c.values.0 = 999
+	c.values.1 = 3.14
 
-	//switch c is
-	//{
-	//case float
-	//	printf("test %f\n",c)
-	//case int
-	//	printf("test %i\n",c)
-	//}
-	//
+	switch c is
+	{
+	case float
+		printf("test %f\n",c)
+	case int
+		printf("test %i\n",c)
+	}
+	
 	printf("hey %i %i\n",c.values.0,c.values.1)
 }
 RunTest := !() -> void

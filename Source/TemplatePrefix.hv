@@ -1,0 +1,63 @@
+
+
+TemplatePrefix := class
+{
+	Constants := List.{Tuple.{Token^,BoxExeObj^} }
+	ConstantsMinSize := int
+
+	CheckToken := !(Token^ cns) -> void
+	{
+		SyntaxCompress(cns,LexHVInputVars)
+		iter := cns.Down
+		while iter != null
+		{
+			if iter.GetValue() != ","
+			{
+				rc := AVLMap.{StringSpan,BoxUnit^}
+				cItm := CheckTemplateConst(null,iter,rc)
+				rc.Destroy()
+				Constants.Emplace(iter,cItm)
+				ConstantsMinSize += 1
+			}
+			iter = iter.Right
+		}
+	}
+
+	IsOneOption := !() -> bool
+	{
+		resConsts := AVLMap.{StringSpan,BoxUnit^}
+		for it : Constants
+		{
+			outConst := CheckTemplateConst(null,it.0,resConsts)
+			if outConst == null
+				return false
+		}
+		return true
+	}
+	CheckByCount := !(int count) -> bool
+	{
+		if count < ConstantsMinSize
+			return false
+		if count > Constants.Size()
+			return false
+		return true
+	}
+	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> bool
+	{
+		if not CheckByCount(consts.Size())
+			return false
+		
+		for myConst : Constants , inConst : consts
+		{
+			if myConst.1? != inConst
+				return false
+			outConst := CheckTemplateConst(inConst,myConst.0,resCnsts)
+			if outConst == null
+				return false
+
+			if myConst.1? != outConst?
+				return false
+		}
+		return true
+	}
+}
