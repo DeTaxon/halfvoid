@@ -7,6 +7,8 @@ Variant := class .{@VarTypes...}
 		#AddAutoCast(@1.values.0)
 	{
 		c := Index
+		c = 190
+		printf("HA %i\n",c)
 		return true
 	}
 }

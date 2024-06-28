@@ -4,6 +4,7 @@ templatePrefixElement := class
 {
 	Tok := Token^
 	Value := BoxExeObj^
+	DefaultToken := Token^
 
 	this := !(Token^ arg1, BoxExeObj^ arg2) -> void
 	{
@@ -24,14 +25,31 @@ TemplatePrefix := class
 		iter := cns.Down
 		while iter != null
 		{
-			if iter.GetValue() != ","
+			if iter.GetValue() == ","
 			{
-				rc := AVLMap.{StringSpan,BoxUnit^}
-				cItm := CheckTemplateConst(null,iter,rc)
-				Constants.Emplace(iter,cItm)
-				ConstantsMinSize += 1
+				iter = iter.Right
+				continue
 			}
+
+			rc := AVLMap.{StringSpan,BoxUnit^}
+			cItm := CheckTemplateConst(null,iter,rc)
+			Constants.Emplace(iter,cItm)
+
 			iter = iter.Right
+
+			if iter?.GetValue() == "="
+			{
+				iter = iter.Right
+				if iter == null
+				{
+					//TODO emit error, incorrect
+					return void
+				}
+				Constants[Constants.Size()-1].DefaultToken = iter
+				iter = iter.Right
+			}else{
+				ConstantsMinSize = Constants.Size() - 1
+			}
 		}
 	}
 
@@ -58,8 +76,12 @@ TemplatePrefix := class
 		if not CheckByCount(consts.Size())
 			return false
 		
-		for myConst : Constants , inConst : consts
+		//for myConst : Constants , inConst : consts
+		for i : min(Constants.Size(),consts.Size())
 		{
+			myConst := ref Constants[i]
+			inConst := consts[i]
+
 			if myConst.Value? != inConst
 				return false
 			outConst := CheckTemplateConst(inConst,myConst.Tok,resCnsts)
@@ -68,6 +90,21 @@ TemplatePrefix := class
 
 			if myConst.Value? != outConst?
 				return false
+		}
+		if consts.Size() < Constants.Size()
+		{
+			for i : (consts.Size()..(Constants.Size() - 1))
+			{
+				resObj := CheckTemplateConst(null,Constants[i].DefaultToken,resCnsts)
+				if resObj == null
+				{
+					return false
+				}else{
+					res2 := CheckTemplateConst(resObj,Constants[i].Tok,resCnsts)
+					if res2 == null
+						return false
+				}
+			}
 		}
 		return true
 	}
