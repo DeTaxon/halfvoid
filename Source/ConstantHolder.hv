@@ -33,6 +33,27 @@ TemplateCheckConstants := !(BoxExeConstObj^[] cnsts, List.{Token^} cnstsTokens, 
 	if cnsts.Size() != cnstsTokens.Size()
 		return false
 
+	if cnstsTokens.Size() == 2
+		and cnstsTokens[0] is TokenTemplateType
+		and cnstsTokens[1].GetValue() == "..."
+	{
+		varName := cnstsTokens[0]->{TokenTemplateType^}.Value[1..0] //TODO empty variadic?
+		//TODO this case just for one {@Types...}, maybe add for @{@T,@Types...}
+
+		typs := List.{Type^}
+		for c2 : cnsts
+		{
+			if c2 is not ConstType
+			{
+				return false
+			}
+			typs.Push(c2->{ConstType^}.Value)
+		}
+		newVar := new TypeVariadicVar(varName,typs)
+		namedConsts[varName] = newVar
+		return true //TODO maybe for {@T,@Types...,@C} , extra variables after variadic
+	}
+
 	for cnst, i : cnsts, token : cnstsTokens
 	{
 		res := CheckTemplateConst(cnst,token,namedConsts)

@@ -104,6 +104,12 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			if lv.itName == asItm.Value
 				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
+		if par is TypeVariadicVar
+		{
+			lv := par->{TypeVariadicVar^}
+			if lv.Name == asItm.Value
+				return lv
+		}
 		if par is in NamedVar
 		{
 			mv := par->{NamedVar^}

@@ -159,6 +159,8 @@ BoxClassBody := class extend BoxClassPoison
 			if it is ConstType
 			{
 				NamedConstantsVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
+			}else if it is TypeVariadicVar {
+				NamedConstantsVars.Push(it)
 			}else{
 				assert(it is in BoxExeConstObj)
 				NamedConstantsVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))

@@ -1,7 +1,7 @@
-Variant := class .{@Types...}
+Variant := class .{@VarTypes...}
 {
 	//selected := int
-	values := Tuple.{Types...}
+	values := Tuple.{VarTypes...}
 
 	"is" := !() .{@T} -> bool
 		#AddAutoCast(@1.value)
@@ -14,9 +14,9 @@ Variant := class .{@Types...}
 
 main := !(char^[] args) -> int
 {
-	//c := Variant.{double,int}
-	//c.values.0 = 3.14
-	//c.values.1 = 999
+	c := Variant.{int,int}
+	c.values.0 = 3.14
+	c.values.1 = 999
 
 	//switch c is
 	//{
@@ -25,6 +25,8 @@ main := !(char^[] args) -> int
 	//case int
 	//	printf("test %i\n",c)
 	//}
+	//
+	printf("hey %i %i\n",c.values.0,c.values.1)
 }
 RunTest := !() -> void
 {

@@ -230,6 +230,18 @@ TemplateTypeVar := class extend BoxUnit
 		Value = val
 	}
 }
+TypeVariadicVar := class extend BoxExeConstObj
+{
+	Name := StringSpan
+	Values := Type^[]
+
+	this := !(StringSpan name, Type^[] vals) -> void
+	{
+		Name = name
+		Values = vals.ToVector()
+		ObjType := GTypeNone
+	}
+}
 
 ConstVar := class extend BoxUnit
 {

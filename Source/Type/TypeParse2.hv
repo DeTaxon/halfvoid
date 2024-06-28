@@ -5,7 +5,7 @@ CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts
 CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 {
 	if tk is TokenIndent
-	{	
+	{
 		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
 		if dwnTp == null
 		{
@@ -239,8 +239,27 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 
 		while itr != null
 		{
-			if itr.GetValue() != ","
+			if itr.GetValue() == ","
 			{
+				itr = itr.Right
+				continue
+			}
+
+			if itr.Right?.GetValue() == "..."
+			{
+				vt := innerTryGetParam(itr)
+
+				if vt == null or vt is not TypeVariadicVar
+					return null
+
+				vt2 := vt->{TypeVariadicVar^}
+
+				for it : vt2.Values
+				{
+					cnsts.Push(GetConstType(it))
+				}
+				itr = itr.Right.Right
+			}else{
 				itConst := BoxExeConstObj^
 				if cls != null
 				{
@@ -254,9 +273,10 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 					return null
 				}
 				cnsts.Push(resCnst)
+				i += 1
+				itr = itr.Right
 			}
 			i += 1
-			itr = itr.Right
 		}
 		if tmpl != null
 		{
@@ -447,4 +467,11 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 	}
 	//assert(false)
 	return null
+}
+CheckTemplateTypeList := !(BoxExeObj^ obj, Type^[] tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+{
+	if tp.Size() == 0
+		return null
+	
+	return CheckTemplateType(obj,tp[0],tk,resCnsts)
 }
