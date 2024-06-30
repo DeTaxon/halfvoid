@@ -1,15 +1,17 @@
 Variant := class .{@VarTypes...}
 {
-	//selected := int
+	selected := int
 	values := Tuple.{VarTypes...}
 
-	"is" := !() .{@T, @Index = int} -> bool
+	Set := !(@T newObj) .{@Index = VarTypes.IndexOf(T)} -> void
+	{
+		selected = Index
+		values.Index = newObj
+	}
+	"is" := !() .{@T, @Index = VarTypes.IndexOf(T)} -> bool
 		#AddAutoCast(@1.values.0)
 	{
-		c := Index
-		c = 190
-		printf("HA %i\n",c)
-		return true
+		return selected == Index
 	}
 }
 
@@ -18,15 +20,13 @@ Variant := class .{@VarTypes...}
 main := !(char^[] args) -> int
 {
 	c := Variant.{int,double}
-	c.values.0 = 999
-	c.values.1 = 3.14
-
+	c.Set(3)
 	switch c is
 	{
-	case float
-		printf("test %f\n",c)
+	case double
+		printf("double %f\n",c)
 	case int
-		printf("test %i\n",c)
+		printf("int %i\n",c)
 	}
 	
 	printf("hey %i %i\n",c.values.0,c.values.1)

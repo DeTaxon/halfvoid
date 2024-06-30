@@ -402,6 +402,13 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 			assert(resCnsts[name] is in BoxExeConstObj)
 			return resCnsts[name]->{BoxExeConstObj^}
 		}
+		for it : UnitStack
+		{
+			if it is TypeVariadicVar and it->{TypeVariadicVar^}.Name == name
+			{
+				return it->{TypeVariadicVar^} //TODO if cnsts != null compare it
+			}
+		}	
 		//glb := TypeGetGlobalByIndent(name)
 		//if glb == null
 		//	glb = GetTypeObjByName(name)
@@ -464,6 +471,31 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		}
 		return val
 	
+	}
+	if itm.Down? is TokenIndent //TODO not start with indent?
+		and itm.Down.Right?.GetValue() == "."
+		and itm.Down.Right.Right? is TokenIndent
+		and itm.Down.Right.Right.Right?.GetValue() == "()"
+	{
+		SyntaxCompress(itm.Down.Right.Right.Right,LexHVInputVars)
+		methodName := itm.Down.Right.Right->{TokenIndent^}.Value
+		switch methodName
+		{
+		case "IndexOf"
+			dwnConst := CheckTemplateConst(null,itm.Down,resCnsts)
+			if dwnConst == null or dwnConst is not TypeVariadicVar
+				return null
+			checkType := CheckTemplateType(null,null,itm.Down.Right.Right.Right.Down,resCnsts)
+			if checkType == null
+				return null
+			for it,i : dwnConst->{TypeVariadicVar^}.Values
+			{
+				if it == checkType
+					return GetExeInt(i)
+			}
+			return null
+
+		}
 	}
 	//assert(false)
 	return null

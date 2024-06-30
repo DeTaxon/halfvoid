@@ -253,6 +253,14 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		//TODO , multi round check
 
+		//TODO completly replace stack, not add
+
+		StackCheckpoint()
+
+		if ParentScope is in BoxClassBody
+			ParentScope->{BoxClassBody^}.PutItConstants()
+
+
 		fTyps := Type^[100]
 		iRef := bool[100]
 
