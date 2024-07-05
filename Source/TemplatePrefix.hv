@@ -71,12 +71,24 @@ TemplatePrefix := class
 			return false
 		return true
 	}
-	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> bool
+	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts,BoxExeObj^[] objs = null,Type^[] objsTypes,Token^[] typeTokens = null) -> bool
 	{
 		if not CheckByCount(consts.Size())
 			return false
 		
-		//for myConst : Constants , inConst : consts
+		if objs != null and typeTokens != null and objsTypes != null
+		{
+			for i : min(objs.Size(),typeTokens.Size())
+			{
+				obj := objs[i]
+				objType := objsTypes[i]
+				tok := typeTokens[i]
+				if objType == null or tok == null
+					continue
+				CheckTemplateType(obj,objType,tok,resCnsts)
+			}
+		}
+		
 		for i : min(Constants.Size(),consts.Size())
 		{
 			myConst := ref Constants[i]
@@ -107,5 +119,15 @@ TemplatePrefix := class
 			}
 		}
 		return true
+	}
+	PopulateVars := !(AVLMap.{StringSpan,BoxUnit^} namedCnsts,List.{BoxUnit^} resList) -> void
+	{
+		for it,ind : namedCnsts
+		{
+			if it is TypeVariadicVar
+			{
+				resList.Push(it)
+			}
+		}
 	}
 }

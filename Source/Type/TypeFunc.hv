@@ -270,5 +270,10 @@ FuncTypePopFront := !(TypeFunc^ oldType) -> TypeFunc^
 		isRef[i] = oldType.Params[i].IsRef
 	}
 	k := oldType.Params.Size() - 1
+	for i : k
+	{
+		if Typs[i] == null
+			return null
+	}
 	return GetFuncType(k,ArraySpan.{Type^}(Typs[0]&,k),ArraySpan.{bool}(isRef[0]&,k),oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
 }

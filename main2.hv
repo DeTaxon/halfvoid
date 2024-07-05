@@ -3,7 +3,7 @@ Variant := class .{@VarTypes...}
 	selected := int
 	values := Tuple.{VarTypes...}
 
-	Set := !(@T newObj) .{@Index = VarTypes.IndexOf(T)} -> void
+	SetVariant := !(@T newObj) .{@Index = VarTypes.IndexOf(T)} -> void
 	{
 		selected = Index
 		values.Index = newObj
@@ -20,7 +20,7 @@ Variant := class .{@VarTypes...}
 main := !(char^[] args) -> int
 {
 	c := Variant.{int,double}
-	c.Set(3)
+	c.SetVariant(3)
 	switch c is
 	{
 	case double

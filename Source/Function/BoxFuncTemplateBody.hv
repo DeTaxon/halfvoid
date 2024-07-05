@@ -223,6 +223,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		StartParseHeader()
 
+
+		StackCheckpoint()
+		ScopePutConstants()
+
 		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
 		for i : tp.Params.Size()
@@ -231,6 +235,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 		resConsts := AVLMap.{StringSpan,BoxUnit^}
 		checkTypes(datas,consts,resConsts)
+
+		if Name == "SetVariant"
+		{
+			checkTypes(datas,consts,resConsts)
+		}
 
 
 		names := HybridQueue.{StringSpan,10}
@@ -243,7 +252,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.ParentScope = ParentScope
 		newFunc.TemplateParent = this&
 
-		ConstMapToList(resConsts,newFunc.ConstVars)
+		TempPrefix.PopulateVars(resConsts,newFunc.ConstVars)
+		ConstMapToList(resConsts,newFunc.ConstVars) //TODO for stupid reasons it's doubled
 
 		CheckPropertieAutoCast(this&,newFunc)
 
@@ -255,16 +265,20 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		//TODO completly replace stack, not add
 
+
 		StackCheckpoint()
-
-		if ParentScope is in BoxClassBody
-			ParentScope->{BoxClassBody^}.PutItConstants()
-
+		ScopePutConstants()
 
 		fTyps := Type^[100]
 		iRef := bool[100]
 
-		if not TempPrefix.CheckConsts(consts,resCnsts)
+		inObjs := HybridQueue.{BoxExeObj^,20}
+		inObjs.Push(objs[^].0)
+		inObjsTypes := HybridQueue.{Type^,20}
+		inObjsTypes.Push(objs[^].1)
+		inTokens := HybridQueue.{Token^,20}
+		inTokens.Push(hData.Types[^].ItToken)
+		if not TempPrefix.CheckConsts(consts,resCnsts,inObjs,inObjsTypes,inTokens)
 			return null
 
 		for i : objs.Size()
@@ -334,5 +348,4 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		cnsts := List.{BoxExeConstObj^}
 		return GetFuncByType(resFuncTyp,cnsts)
 	}
-
 }

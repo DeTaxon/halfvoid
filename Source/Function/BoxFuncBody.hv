@@ -297,6 +297,13 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		return readyState.Emited()
 	}
+	PutItConstants := virtual !() -> void
+	{
+		for it : ConstVars
+		{
+			UnitStack.PushFront(it)
+		}
+	}
 	
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{

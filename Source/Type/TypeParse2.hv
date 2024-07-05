@@ -80,6 +80,8 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 				lCls := tp.Base->{TypeClass^}.ToClass
 				clsFnc := lCls.Constants.Constants[0]->{ConstType^}.Value.Base->{TypeFunc^}
 				baseFuncType = FuncTypePopFront(clsFnc)
+				if baseFuncType == null
+					return null
 			}
 
 		}
