@@ -25,7 +25,7 @@ BuiltInPointSpaceship := class extend BoxFuncCommon
 {
 	this := !() -> void
 	{
-		SetType(GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeS64)) //TODO arch 
+		SetType(GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeInt))
 	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
@@ -35,16 +35,22 @@ BuiltInPointSpaceship := class extend BoxFuncCommon
 
 		f^ << "%TA" << resId << " = ptrtoint i8* "
 		lst[0].PrintUse(ctx)
-		f^ << " to i64\n"
+		f^ << " to i64\n" //TODO Arch
 
 		f^ << "%TB" << resId << " = ptrtoint i8* "
 		lst[1].PrintUse(ctx)
 		f^ << " to i64\n"
 
-		f^ << "%T" << resId << " = sub i64 %TA" << resId << " , %TB" << resId
+		f^ << "%TIsEq" << resId << " = icmp eq i64 %TA" << resId << ", %TB" << resId << "\n"
+		f^ << "%TIsBg" << resId << " = icmp ugt i64 %TA" << resId << ", %TB" << resId << "\n"
+		f^ << "%TBgN" << resId << " = select i1 %TIsBg" << resId << " , i32 1, i32 -1\n"
+
+
+		f^ << "%T" << resId << " = select i1 %TIsEq" << resId << " , i32 0 , i32 %TBgN" << resId
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
+		//note: output MUST be s32
 	}
 }
 

@@ -18,6 +18,40 @@ LLVMWriteContext := class
 	{
 		if LocalVarIds.Contain(obj)
 			return LocalVarIds[obj]
+		for it,ind : LocalVarIds
+		{
+			if ind == obj
+			{
+				printf("failed %i %p\n",LocalVarIds.Contain(obj),obj)
+				start := void^
+				start = null
+				for it2,ind2 : LocalVarIds
+				{
+					printf("state %p %i\n",ind2,start >= ind2)
+					start = ind2
+				}
+				iter := LocalVarIds.itTree.Start
+				while iter != null
+				{
+					c := obj <=> iter.data.0
+					printf("step %p %i\n",iter.data.0,c)
+					if c == 0
+					{
+						printf("found it %p\n",iter.data.0)
+						break
+					}
+					if c > 0
+					{
+						iter = iter.Right
+					}else{
+						iter = iter.Left
+					}
+				}
+				LocalVarIds.Contain(obj)
+				
+				assert(false)
+			}
+		}
 		result = LocalVarIds.Size()
 		LocalVarIds[obj] = result
 	}

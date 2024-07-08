@@ -18,26 +18,13 @@ CommonTree := class .{@DATA}
 {
 	Start := CommonTreeNode.{DATA}^
 	CreatedNodes := CommonTreeNode.{DATA}^
-
-	allocateNode := virtual !(CommonTreeNode.{DATA}^^ res) -> void
-	{
-		res^ = new CommonTreeNode.{DATA}
-	}
-	cmpObjects := virtual !(DATA^ left, DATA^ right) -> int
-	{
-		return left^ <=> right^
-	}
 	
 	FindNode := virtual !(DATA dat) -> CommonTreeNode.{DATA}^
-	{
-		return FindNodeInner(dat&)
-	}
-	FindNodeInner := virtual !(DATA^ dat) -> CommonTreeNode.{DATA}^ ; TemplateResist
 	{
 		itr := Start
 		while itr != null
 		{
-			stRes := cmpObjects(itr.data&,dat)
+			stRes := itr.data <=> dat
 			if stRes == 0 return itr
 			if stRes < 0 	itr = itr.Right
 			else 		itr = itr.Left
@@ -56,7 +43,7 @@ CommonTree := class .{@DATA}
 		}
 		return itr
 	}
-	createNode := virtual !() -> CommonTreeNode.{DATA}^ ; TemplateResist
+	createNode := virtual !() -> CommonTreeNode.{DATA}^
 	{
 		newNode := CommonTreeNode.{DATA}^
 		if CreatedNodes != null
@@ -65,8 +52,7 @@ CommonTree := class .{@DATA}
 			CreatedNodes = CreatedNodes.Right
 			//ZeroMem(newNode)
 		}else{
-			//newNode = new CommonTreeNode.{DATA}
-			allocateNode(newNode&)
+			newNode = new CommonTreeNode.{DATA}
 		}
 		return newNode
 	}

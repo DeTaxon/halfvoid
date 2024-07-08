@@ -7,21 +7,13 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		CreatedNodes = null
 	}
 
-	setOperator := virtual !(DATA^ left, DATA^ right) -> void
-	{
-		left^ = right^
-	}
 	FindOrCreate := !(DATA dat,CommonTreeNode.{DATA}^^ toRet) -> bool //bool isCreated
-	{
-		return FindOrCreateInner(dat&,toRet)
-	}
-	FindOrCreateInner := virtual !(DATA^ dat,CommonTreeNode.{DATA}^^ toRet) -> bool ; Template Resist //bool isCreated 
 	{
 		if Start == null 
 		{
 			Start = this.createNode()
 			toRet^ = Start
-			setOperator(Start.data&,dat)
+			Start.data = dat
 			//Start.data = dat
 			return true
 		}
@@ -30,8 +22,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		
 		while iter != null
 		{
-			//cmpRes := iter.data <=> dat
-			cmpRes := cmpObjects(iter.data&,dat)
+			cmpRes := iter.data <=> dat
 			if cmpRes == 0{
 				break
 			}else{
@@ -49,8 +40,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			return false
 		}
 		
-		//cmpRes2 := prev.data <=> dat
-		cmpRes2 := cmpObjects(prev.data&,dat)
+		cmpRes2 := prev.data <=> dat
 		if cmpRes2 < 0{
 			prev.Right = this.createNode()
 			prev.Right.Up = prev
@@ -60,7 +50,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			prev.Left.Up = prev
 			iter = prev.Left
 		}
-		setOperator(iter.data&,dat)
+		iter.data = dat
 		//iter.data = dat
 		
 		//this&->{AVLTree.{void^}^}.AVLRepair(iter->{CommonTreeNode.{void^}^}) //not worth it, 
@@ -70,7 +60,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		toRet^ = iter
 		return true
 	}
-	AVLRepair := !(CommonTreeNode.{DATA}^ toRep) -> void ; TemplateResist
+	AVLRepair := !(CommonTreeNode.{DATA}^ toRep) -> void
 	{
 		if toRep == null return void
 

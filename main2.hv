@@ -19,17 +19,21 @@ Variant := class .{@VarTypes...}
 
 main := !(char^[] args) -> int
 {
-	c := Variant.{int,double}
-	c.SetVariant(3)
-	switch c is
-	{
-	case double
-		printf("double %f\n",c)
-	case int
-		printf("int %i\n",c)
-	}
-	
-	printf("hey %i %i\n",c.values.0,c.values.1)
+	c := void^
+	r := void^
+	d := c& <=> r&
+	printf("Wha %i\n",d)
+	//c := Variant.{int,double}
+	//c.SetVariant(3)
+	//switch c is
+	//{
+	//case double
+	//	printf("double %f\n",c)
+	//case int
+	//	printf("int %i\n",c)
+	//}
+	//
+	//printf("hey %i %i\n",c.values.0,c.values.1)
 }
 RunTest := !() -> void
 {

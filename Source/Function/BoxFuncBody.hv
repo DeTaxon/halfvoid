@@ -341,7 +341,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		f^ << "\n"
 		f^ << "{\n"
 
-
 		PrintLocalVars(ctx)
 		ResultVar?.PrintCode(ctx)
 		ParamsLocalVars[^].PrintCode(ctx)
