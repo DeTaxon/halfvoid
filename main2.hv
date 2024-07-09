@@ -16,12 +16,18 @@ Variant := class .{@VarTypes...}
 }
 
 
+SubFunc := !() -> AVLMap.{Str,int}
+{
+	result["abc"] = 15
+}
 
 main := !(char^[] args) -> int
 {
-	c := Str
-	c = "BlaBla"
-	printf("hello %s\n",c)
+	c := SubFunc()
+	for it,ind : c
+	{
+		printf("hey %i %s\n",it,ind)
+	}
 	//c := Variant.{int,double}
 	//c.SetVariant(3)
 	//switch c is

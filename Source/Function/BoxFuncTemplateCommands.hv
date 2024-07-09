@@ -35,6 +35,33 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 			}else{
 				assert(false) //TODO error
 			}
+		case "#FilterBeConst"
+			if cmd.Down?.Right?.GetValue() == "()"
+			{
+				skb := cmd.Down.Right
+				SyntaxCompress(skb,LexHVFileRoot)
+				intValue := TryGetExeCall(skb.Down)
+				if intValue? is BoxExeInt
+				{
+					constCheck := true
+					if skb.Down?.Right?.Right != null
+					{
+						constVal := TryGetExeCall(skb.Down.Right.Right)
+						if constVal? is BoxExeBool
+						{
+							constCheck = constVal == GBoolTrue
+						}
+					}
+					newPropertie := new FilterBeConstPropertie
+					newPropertie.InputIndex = intValue->{BoxExeInt^}.Value - 1
+					newPropertie.ExpectBeConst = constCheck
+
+					fnc.TemplateProperties[StringSpan("#FilterBeConst")].Push(newPropertie)
+				}
+			}else{
+				assert(false) //TODO error
+			}
+			
 		}
 	}
 	
@@ -59,4 +86,9 @@ CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc,Token^[] cmds) -> void
 			iter = iter.Right
 		}
 	}
+}
+FilterBeConstPropertie := class extend FunctionPropertie
+{
+	InputIndex := int
+	ExpectBeConst := bool
 }

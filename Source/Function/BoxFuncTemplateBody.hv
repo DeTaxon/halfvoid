@@ -19,6 +19,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	TempPrefix := TemplatePrefix
 	Properties := AVLMap.{StringSpan,Token^}
+	TemplateProperties := AVLMap.{StringSpan,List.{FunctionPropertie^}}
 	BlockedExchange := AVLSet.{int}
 
 	sState := StackState
@@ -353,6 +354,20 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
 	{
+		if TemplateProperties.Contain(StringSpan("#FilterBeConst"))
+		{
+			for it : TemplateProperties[StringSpan("#FilterBeConst")]
+			{
+				prop := it->{FilterBeConstPropertie^}
+				if prop.InputIndex < objs.Size()
+				{
+					if prop.ExpectBeConst != objs[prop.InputIndex].IsConst
+					{
+						return CmpNoExchange
+					}
+				}
+			}
+		}
 		return CmpFuncPriority(tp,objs,GetDefaultValuesCount(),BlockedExchange)
 	}
 }

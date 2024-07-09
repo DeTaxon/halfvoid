@@ -21,3 +21,10 @@ HV_Class := class
 	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
 	GetType := virtual !() -> void^ {}
 }
+
+HV_Object := class
+{
+	IsConst := virtual false
+	//TODO
+	//GetType
+}

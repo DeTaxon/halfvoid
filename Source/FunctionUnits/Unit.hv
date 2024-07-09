@@ -1,4 +1,4 @@
-BoxUnit := class
+BoxUnit := class extend HV_Object
 {
 	UnitName := virtual poison #ThisClass()->TypeName
 
@@ -14,9 +14,6 @@ BoxUnit := class
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 	}
-
-	IsConst := virtual false
-
 
 
 	GetFileScope := virtual !() -> BoxFile^

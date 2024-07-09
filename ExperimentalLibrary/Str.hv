@@ -16,9 +16,15 @@
 }
 
 "->{}" := !(char^ chData, StringOnCStr tempObj = static ) .{Str} -> Str
+	#FilterBeConst(1)
 {
 	tempObj.this(chData)
 	result->AsString =  tempObj&
+}
+"->{}" := !(char^ chData) .{Str} -> Str
+	#FilterBeConst(1,false)
+{
+	result->AsString =  new String(chData)
 }
 
 StringOnCStr := class extend String
