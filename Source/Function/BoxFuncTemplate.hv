@@ -71,7 +71,7 @@ BoxFuncTemplate := class extend BoxUnit
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
 	{
-		return CmpFuncPriority(tp,objs,GetDefaultValuesCount())
+		return CmpFuncPriorityAllExchange(tp,objs,GetDefaultValuesCount())
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{

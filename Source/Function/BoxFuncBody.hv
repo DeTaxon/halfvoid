@@ -29,6 +29,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	InputVarNames := List.{StringSpan}
 
 	Properties := AVLMap.{StringSpan,FunctionPropertie^}
+	BlockedExchange := AVLSet.{int}
 
 	classUnroll := ClassUnroll
 
@@ -39,7 +40,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		return ParentScope
 	}
-
 
 	GetDefaultValuesCount := virtual !() -> int
 	{

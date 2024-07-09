@@ -19,6 +19,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	TempPrefix := TemplatePrefix
 	Properties := AVLMap.{StringSpan,Token^}
+	BlockedExchange := AVLSet.{int}
 
 	sState := StackState
 
@@ -257,6 +258,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		CheckPropertieAutoCast(this&,newFunc)
 
+		newFunc.BlockedExchange.Insert(this.BlockedExchange[^])
+
 		return newFunc
 	}
 	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
@@ -347,5 +350,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resFuncTyp := hData.CreateFuncType()
 		cnsts := List.{BoxExeConstObj^}
 		return GetFuncByType(resFuncTyp,cnsts)
+	}
+	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
+	{
+		return CmpFuncPriority(tp,objs,GetDefaultValuesCount(),BlockedExchange)
 	}
 }

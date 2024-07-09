@@ -1,17 +1,44 @@
 
 "=" := !(Str& st1, Str st2) -> void
+	#ExpectExactType(1)
 {
-	st1->AsString = st2->AsString
+	st1->AsString = st2->AsString.GetString()
 }
-"=" := !(Str& st1, char^ chData) -> void
-{
-	st1->AsString = new String(chData)
-}
+//"=" := !(Str& st1, char^ chData) -> void
+//{
+//	st1->AsString = new String(chData)
+//}
 "->{}" := !(Str st) .{char^} -> char^
 {
 	if st->AsString == null
 		return ""
 	return st->AsString.Str()
+}
+
+"->{}" := !(char^ chData) .{Str} -> StringOnCStr
+{
+	result.this(chData)
+}
+"->{}" := !(StringOnCStr chData) .{Str} -> Str
+{
+	result->AsString = chData&
+}
+
+StringOnCStr := class extend String
+{
+	this := !(char^ ptr) -> void
+	{
+		charPtr = ptr
+		itSize = strlen(ptr)
+	}
+	GetString := virtual !() -> String^
+	{
+		return new String(charPtr,itSize)
+	}
+	Destroy := virtual !() -> void
+	{
+		
+	}
 }
 
 toStringToCBuffer := !(s64 bigIntValue, char^ buffer, int^ iter) -> void

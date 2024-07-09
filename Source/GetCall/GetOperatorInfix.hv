@@ -314,6 +314,7 @@ innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> B
 		objs8.Push(tmpList[1])
 		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
 	}
+
 	return TryComputeOperators(oper,tmpList)?
 
 	consts := List.{BoxExeConstObj^}

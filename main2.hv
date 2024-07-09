@@ -19,10 +19,9 @@ Variant := class .{@VarTypes...}
 
 main := !(char^[] args) -> int
 {
-	c := void^
-	r := void^
-	d := c& <=> r&
-	printf("Wha %i\n",d)
+	c := Str
+	c = "BlaBla"
+	printf("hello %s\n",c)
 	//c := Variant.{int,double}
 	//c.SetVariant(3)
 	//switch c is

@@ -379,7 +379,13 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 		if h is in BoxFunc
 		{
 			fnc := h->{BoxFunc^}
-			cmpRes := CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount())
+			cmpRes := 0
+			if fnc is in BoxFuncBody
+			{
+				cmpRes = CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount(),fnc->{BoxFuncBody^}.BlockedExchange)
+			}else{
+				cmpRes = CmpFuncPriorityAllExchange(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount())
+			}
 			priorityes.Push(cmpRes)
 		}else if h is in BoxFuncTemplate{
 			tmpl := h->{BoxFuncTemplate^}
@@ -544,7 +550,12 @@ CreateFuncCallOperator := !(StringSpan name, BoxExeObj^[] Objs, BoxExeConstObj^[
 
 CmpNoExchange := 999000
 
-CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
+CmpFuncPriorityAllExchange := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
+{
+	blockedExchange := AVLSet.{int}
+	return CmpFuncPriority(fncType,objs,defaults,blockedExchange)
+}
+CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.{int} blockedExchange) -> int
 {
 	worstCase := 0
 
@@ -575,6 +586,11 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
 		frmType := objs[i].GetType()
 		frmIsMem := objs[i].IsMem()
 		toType := fncType.Params[i].ItType
+
+		if frmType != toType and blockedExchange.Contain(i)
+		{
+			return CmpNoExchange
+		}
 
 		thisCase := TypePriorCmp(objs[i],toType,toIsMem)
 

@@ -24,6 +24,17 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 			}
 		case "#AddAutoCast"
 			fnc.Properties[GetConstString("#AddAutoCast")] = cmd
+		case "#ExpectExactType"
+			if cmd.Down?.Right?.GetValue() == "()"
+			{
+				intValue := TryGetExeCall(cmd.Down.Right.Down)
+				if intValue? is BoxExeInt
+				{
+					fnc.BlockedExchange.Insert(intValue->{BoxExeInt^}.Value - 1) //-1 - input counts from 1, but i need from zero
+				}
+			}else{
+				assert(false) //TODO error
+			}
 		}
 	}
 	
