@@ -109,7 +109,6 @@ GlobalVar2 := class extend BoxUnit
 							value = createConstType(proxy.ObjType)
 						}
 						assert(value != null)
-						printf("here\n")
 
 						GInterpCntx.LoadGlobFromMem(thisVarPtr,value)
 
@@ -194,6 +193,24 @@ GlobalVar2 := class extend BoxUnit
 			BodyInit()
 		}
 	
+	}
+	CheckValue := !() -> void
+	{
+		if value != null
+			return void
+		tp := proxy.ObjType
+		if tp is TypeClass
+		{
+			value = createConstType(tp)
+		}
+		if tp is TypeArr
+		{
+			iter := tp
+			while iter is TypeArr
+				iter = iter.Base
+			if iter is TypeClass
+				value = createConstType(tp)
+		}
 	}
 	createConstType := !(Type^ tp) -> BoxExeConstObj^
 	{
@@ -375,6 +392,7 @@ CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar
 {
 	mName := GetFuncMangle(name)
 	newVar := new GlobalVar2(mName,tp,isThreadLocal)
+	newVar.CheckValue()
 	GlobalVars2.Push(newVar)
 	return newVar
 }
