@@ -8,6 +8,10 @@ HVB_ins_const_int32 := !(MCBuildContext^ ctx, s32 value) -> int
 {
 	return ctx.AddInteger(value)
 }
+HVB_ins_const_str := !(MCBuildContext^ ctx, char^ value) -> int
+{
+	return ctx.AddString(new String(value))
+}
 HVB_ins_clean := !(MCBuildContext^ ctx, s32 value) -> void
 {
 	ctx.lines.Push(MCLine("clean",value))
@@ -172,3 +176,16 @@ HVB_ins_memset := !(MCBuildContext^ ctx, s32 opr1, s32 opr2 , s32 opr3) -> void
 {
 	ctx.lines.Push(MCLine("memset",opr1,opr2,opr3))
 }
+
+
+HVB_ins_debug_set_file := !(MCBuildContext^ ctx, char^ fileName) -> void
+{
+	strVal := HVB_ins_const_str(ctx,fileName)
+	ctx.lines.Push(MCLine("debug_set_file",strVal))
+}
+HVB_ins_debug_set_line := !(MCBuildContext^ ctx, int lineNumber) -> void
+{
+	intVal := HVB_ins_const_int32(ctx,lineNumber)
+	ctx.lines.Push(MCLine("debug_set_line",intVal))
+}
+

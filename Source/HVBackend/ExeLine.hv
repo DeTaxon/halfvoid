@@ -3,6 +3,7 @@ AppendClass BoxExeLineSimple
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		HVB_ins_debug_set_line(ctx,ItToken?.Line?.Line)
 		Down.WriteMC(ctx)
 		el := eLabel()
 		if el != null

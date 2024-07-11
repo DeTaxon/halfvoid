@@ -50,6 +50,13 @@ AppendClass BoxFuncBody
 		ResultVar?.WriteMC(ctx)
 		Params[^].WriteMC(ctx)
 
+		fileObj := GetFileScope()
+		if fileObj != null
+		{
+			HVB_ins_debug_set_file(ctx,fileObj.fileName.GetString().Str())
+			HVB_ins_debug_set_line(ctx,bdy?.Line?.Line)
+		}
+
 		body?.WriteMC(ctx)
 
 		if YieldStateInt != null
@@ -73,9 +80,6 @@ AppendClass FuncLocalCallIfTrue
 {
 	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		//trueLabel := ctx.GetLabel(TrueBranch&) 
-		//falseLabel := ctx.GetLabel(FalseBranch&)
-	
 		assert(ctx.objects->VTable != null)
 
 		trueLabel := ctx.CreateLabel() 

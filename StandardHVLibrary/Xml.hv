@@ -19,7 +19,6 @@ XML := class extend TGCObject
 		
 		regM.RegExpReadText(xmlText,(nodeSpn,val) ==> {
 
-
 			nodePtr := nodeSpn.NonNullStr()[-1]&
 			diffOffset := nodePtr->{size_t} - prevNode->{size_t} + 1
 

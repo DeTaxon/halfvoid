@@ -74,7 +74,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	thisFrame := MCInterpFuncFrame
 	thisFrame.InheritStack(callerFrame)
 	thisFrame.CreateFrame(iCntx,interpFunc)
-
+	thisFrame.ParentFrame = callerFrame
 
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
@@ -945,6 +945,15 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				case 4 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{int^}^)
 				case 8 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{u64^}^)
 			}
+			cs += 1
+
+		case "debug_set_file"
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			thisFrame.DebugFileName = ptr1->{char^^}^
+			cs += 1
+		case "debug_set_line"
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			thisFrame.DebugFileLine = ptr1->{int^}^
 			cs += 1
 		case void
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)

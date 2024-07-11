@@ -379,6 +379,7 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 		PrintDebugMeta(ctx)
 
 	AllClasses[^].PrintAsType(ctx)
+	UserModules[^].bodyClass?.PrintAsType(ctx)
 	for spc : CodeSpaces
 	{
 		for fil : spc.Files

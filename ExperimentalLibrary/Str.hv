@@ -9,6 +9,7 @@
 //	st1->AsString = new String(chData)
 //}
 "->{}" := !(Str st) .{char^} -> char^
+	#ExpectExactType(1)
 {
 	if st->AsString == null
 		return ""

@@ -14,6 +14,11 @@ MCInterpFuncFrame := class extend TGCObject
 	StackPointer := u8^
 	StackAllocated := int
 
+	DebugFileName := char^
+	DebugFileLine := int
+
+	ParentFrame := MCInterpFuncFrame^
+
 
 	CreateStack := !() -> void
 	{
