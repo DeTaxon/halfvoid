@@ -446,6 +446,7 @@ CWorkFuncCompile := class extend CWorkUnit
 {
 	itFunc := BoxFuncBody^
 	itError := String^
+	itLine := int
 	isCanceled := bool
 
 	this := !(BoxFuncBody^ b) -> void

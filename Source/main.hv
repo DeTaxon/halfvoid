@@ -328,6 +328,8 @@ WorkBagPrintErrors := !() -> bool
 
 	printf("failed to do some work %i\n",WorkBag.works.Size())
 
+
+
 	for it : WorkBag.works
 	{
 		er := it.GetErrorMessage()
@@ -339,7 +341,8 @@ WorkBagPrintErrors := !() -> bool
 			printf("could not compile class %s\n",it->{CWorkClassCompile^}.itClass.ItName)
 		}else if it is CWorkFuncCompile
 		{
-			printf("could not compile function %s\n",it->{CWorkFuncCompile^}.itFunc.Name)
+			cWork := it->{CWorkFuncCompile^}
+			printf("could not compile function %s %s:%i\n",cWork.itFunc.Name,cWork.itFunc.GetFileScope().fileName,cWork.itLine)
 		}
 	}
 	return true

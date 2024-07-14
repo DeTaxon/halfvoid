@@ -67,6 +67,8 @@ BoxBlock := class extend BoxExeObj
 				continue
 			}
 
+			CurrentFuncWork?.itLine = iter.Line?.Line
+
 			pad := new BoxExeLine()
 			while true
 			{

@@ -1,7 +1,7 @@
 
 VkOverlayContext := class
 {
-	inst := VulkanDefaultInstance^
+	inst := VulkanInstance^
 	w := float
 	h := float
 

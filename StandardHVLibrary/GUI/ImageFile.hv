@@ -1,4 +1,4 @@
-TImageFile := class extend TGCObject
+ImageFile := class extend TGCObject
 {
 	itFile := File^
 
