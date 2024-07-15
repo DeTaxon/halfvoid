@@ -8,8 +8,3 @@ ToFloat := !(char^ inp) -> float
 {
 	return strtod(inp,null)
 }
-
-ToString := !(float this) -> char^
-{
-	//return ""
-}

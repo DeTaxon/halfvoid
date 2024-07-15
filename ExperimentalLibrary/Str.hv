@@ -81,11 +81,18 @@ toStringToCBuffer := !(s64 bigIntValue, char^ buffer, int^ iter) -> void
 	}
 	
 }
-ToString := !(s64 bigIntValue) -> Str
+ToString := !(s64 this) -> Str
 {
 	smallBuffer := char[64]
 	iter := 0
-	toStringToCBuffer(bigIntValue,smallBuffer,iter&)
+	toStringToCBuffer(this,smallBuffer,iter&)
+	result->AsString = new String(smallBuffer,iter)
+}
+ToString := !(s32 this) -> Str
+{
+	smallBuffer := char[64]
+	iter := 0
+	toStringToCBuffer(this,smallBuffer,iter&)
 	result->AsString = new String(smallBuffer,iter)
 }
 ToString := !(double this) -> Str

@@ -23,7 +23,7 @@ SubFunc := !() -> AVLMap.{Str,int}
 
 main := !(char^[] args) -> int
 {
-	RunOpenGLTest()
+	//RunOpenGLTest()
 	//c := Variant.{int,double}
 	//c.SetVariant(3)
 	//switch c is

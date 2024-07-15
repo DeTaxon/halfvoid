@@ -1,0 +1,57 @@
+RawFileStream := class extend Stream
+{
+	FileFd := int
+
+	this := !(Str fileName, char^ options) -> void
+	{
+		Open(fileName,options)
+	}
+
+	Open := !(Str fileName, char^ options) -> bool
+	{
+		posFlg := O_RDONLY
+
+
+		while options^ != 0
+		{
+			switch options^
+			{
+				case 'r'
+					posFlg = posFlg or_b O_RDONLY
+				case 'w'
+					posFlg = O_RDWR
+				case 'c'
+					posFlg = posFlg or_b O_CREAT
+			}
+			options = options[1]&
+		}
+		FileFd = open(fileName,posFlg,493) //TODO base of 4?
+
+		if FileFd == -1
+			return false
+		return true
+	}
+	Read := virtual !(void^ data, s64 size) -> s64
+	{
+		if FileFd == -1
+			return -1
+		return read(FileFd,data,size)
+	}
+	Write := virtual !(void^ data, s64 size) -> s64
+	{
+		if FileFd == -1
+			return -1
+		return write(FileFd,data,size)
+	}
+	Close := virtual !() -> void
+	{
+		if FileFd == -1
+			return void
+		close(FileFd)
+		FileFd = -1
+	}
+	Destroy := virtual !() -> void
+	{
+		Close()
+	}
+}

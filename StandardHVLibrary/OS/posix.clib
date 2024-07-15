@@ -37,9 +37,10 @@
 		"sem_post" : "int,void^",
 		"sem_destroy" : "int,void^",
 
-		"open"  : "int,char^,int,int",
+		"open"  : "int,char^,int,...",
 		"read"  : "s64,int,void^,u32",
 		"write" : "s64,int,void^,u32",
+		"fsync" : "void,int",
 		"close" : "void,int",
 
 		"lseek" : "s64,int,s64,int",
