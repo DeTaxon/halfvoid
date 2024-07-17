@@ -1,0 +1,32 @@
+
+{
+	"link" : "dynamic",
+	"initname" : "initncurses",
+	"libs" : [
+		"libncursesw.so.6.5"
+	],
+	"funcs" : {
+
+		"initscr" : "void^",
+		"nonl" : "void",
+		"raw" : "void",
+		"cbreak" : "void",
+		"echo" : "void",
+		"noecho" : "void",
+		"startcolor" : "void",
+
+		"refresh" : "void",
+		"wrefresh" : "void,void^",
+
+		"newwin" : "void^,int,int,int,int",
+		"box" : "void,void^,int,int",
+
+		"wgetch" : "int,void^",
+
+		"mvaddstr" : "void,int,int,char^",
+		"mvprintw" : "void,int,int,char^,...",
+
+		"delwin" : "void,void^",
+		"endwin" : "void"
+	}
+}

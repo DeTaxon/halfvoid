@@ -5,6 +5,9 @@
 		"libc.so.6"
 	],
 	"consts" : {
+		"TIOCGWINSZ" : 21523,
+		"SIGWINCH" : 28,
+
 		"SEEK_SET" : 0,
 		"SEEK_CUR" : 1,
 		"SEEK_END" : 2,
@@ -79,6 +82,8 @@
 		"clock_gettime" : "void,u64,void^",
 
 		"localtime_r" : "void^,u64^,void^",
+
+		"signal" : "void,int,void^",
 
 
 		"eventfd" : "int,u64,int",

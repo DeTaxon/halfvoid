@@ -1,0 +1,23 @@
+AppendClass GUIObject
+{
+	DrawCli := virtual !(DrawCliContext^ ctx) -> void
+	{
+
+	}
+}
+
+AppendClass LayoutBase
+{
+	DrawCli := virtual !(DrawCliContext^ ctx) -> void
+	{
+		for it : objects
+		{
+			it.0.DrawCli(ctx)
+		}
+	}
+}
+
+DrawCliContext := class
+{
+
+}

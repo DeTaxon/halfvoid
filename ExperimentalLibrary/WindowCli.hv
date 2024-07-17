@@ -1,0 +1,44 @@
+WindowCli := class extend TGCObject
+{
+	cliWindow := void^
+	mainGUIObject := GUIObject^
+
+	ctx := DrawCliContext
+
+	InitWindow := virtual !() -> GUIObject^
+	{
+		return new LayoutVertical(![])
+	}
+	Run := !() -> void
+	{
+		cliWindow = initscr()
+		raw()
+		noecho()
+		nonl()
+
+		box(cliWindow,0,0)
+
+		mainGUIObject = InitWindow()
+
+		
+		while true
+		{
+			draw()
+
+			c := @work wgetch(cliWindow) //TODO more normal way to wait
+
+			if c == 27 //ESC
+				break
+		}
+		endwin()
+	}
+	draw := !() -> void
+	{
+		mainGUIObject.DrawCli(ctx&)
+		refresh()
+	}
+	Refresh := !() -> void
+	{
+		draw()
+	}
+}
