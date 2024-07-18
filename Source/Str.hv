@@ -57,4 +57,3 @@ ExchangeStrToStringPointerClass := class extend ExchangeUnit
 	}
 }
 
-

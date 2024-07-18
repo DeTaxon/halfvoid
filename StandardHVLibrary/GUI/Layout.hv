@@ -42,11 +42,11 @@ GUIObject := class extend TGCObject
 			thisLayout.LayoutTypeH = 0
 	}
 
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
 	{
 		result = thisLayout
 	}
-	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(LayoutContext^ ctx,vec2f setSize) -> void
 	{
 		drawSize = setSize
 	}
@@ -101,5 +101,11 @@ LayoutBase := class extend GUIObject
 			return void
 		}
 	}
+}
+
+LayoutContext := class
+{
+	w := float
+	h := float
 }
 

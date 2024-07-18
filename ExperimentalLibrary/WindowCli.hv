@@ -1,9 +1,9 @@
 WindowCli := class extend TGCObject
 {
-	cliWindow := void^
 	mainGUIObject := GUIObject^
 
 	ctx := DrawCliContext
+	layoutContext := LayoutContext
 
 	InitWindow := virtual !() -> GUIObject^
 	{
@@ -11,21 +11,24 @@ WindowCli := class extend TGCObject
 	}
 	Run := !() -> void
 	{
-		cliWindow = initscr()
+		ctx.Window = initscr()
 		raw()
 		noecho()
 		nonl()
 
-		box(cliWindow,0,0)
-
 		mainGUIObject = InitWindow()
+		
+		layoutContext.w = getmaxx(ctx.Window)
+		layoutContext.h = getmaxy(ctx.Window)
 
+		mainGUIObject.GetLayout(layoutContext&)
+		mainGUIObject.SetLayout(layoutContext&,vec2f(layoutContext.w,layoutContext.h))
 		
 		while true
 		{
 			draw()
 
-			c := @work wgetch(cliWindow) //TODO more normal way to wait
+			c := @work wgetch(ctx.Window) //TODO more normal way to wait
 
 			if c == 27 //ESC
 				break
@@ -34,11 +37,17 @@ WindowCli := class extend TGCObject
 	}
 	draw := !() -> void
 	{
-		mainGUIObject.DrawCli(ctx&)
+		mainGUIObject.DrawCli(ctx&,vec2i(0,0))
 		refresh()
 	}
 	Refresh := !() -> void
 	{
 		draw()
 	}
+}
+DrawCliContext := class
+{
+	TerminalSize := vec2i
+	Window := void^
+
 }

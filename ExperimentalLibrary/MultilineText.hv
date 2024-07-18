@@ -3,7 +3,7 @@ MultilineText := class extend GUIObject
 	lines := Str[]
 	this := !() -> void
 	{
-		SetSize("static",100,"static",100)
+		SetSize("",1,"",1)
 	}
 	this := !(Str[] newLines) -> void
 	{
@@ -14,15 +14,41 @@ MultilineText := class extend GUIObject
 	{
 		lines = newLines
 	}
-	Refresh := !() -> void
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
 	{
-		
-	}
-	DrawCli := virtual !(DrawCliContext^ ctx) -> void
-	{
-		for it,i : lines
+		textWidth := drawSize.x->{int}
+		maxLines := drawSize.y->{int} - 1 //TODO why -1
+
+		if textWidth <=	0
+			return void
+
+
+		//totalLines := 0
+		//for it : lines.Reverse
+		//{
+		//	lineCount := CalculateStringLines(it,textWidth)
+		//	totalLines += lineCount
+
+		//	if totalLines > maxLines
+		//		break
+		//}
+
+		iter := maxLines
+		for it : lines.Reverse
 		{
-			mvaddstr(i+1,1,it)
+			cnt := CalculateStringLines(it,textWidth)
+			iter -= cnt
+
+			if iter < 0
+				return void
+
+			mvaddstr(offset.y + iter,offset.x,it)
 		}
 	}
+}
+
+//TODO UTF8 aware + \n aware
+CalculateStringLines := !(Str value, int textWidth) -> int
+{
+	return (value->AsString.Size() + textWidth - 1) div textWidth //TODO without ->AsString
 }

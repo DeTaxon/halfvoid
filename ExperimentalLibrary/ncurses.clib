@@ -19,6 +19,8 @@
 		"wrefresh" : "void,void^",
 
 		"newwin" : "void^,int,int,int,int",
+		"getmaxx" : "int,void^",
+		"getmaxy" : "int,void^",
 		"box" : "void,void^,int,int",
 
 		"wgetch" : "int,void^",

@@ -1,6 +1,6 @@
 AppendClass GUIObject
 {
-	DrawCli := virtual !(DrawCliContext^ ctx) -> void
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
 	{
 
 	}
@@ -8,16 +8,12 @@ AppendClass GUIObject
 
 AppendClass LayoutBase
 {
-	DrawCli := virtual !(DrawCliContext^ ctx) -> void
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
 	{
 		for it : objects
 		{
-			it.0.DrawCli(ctx)
+			it.0.DrawCli(ctx,offset)
 		}
 	}
 }
 
-DrawCliContext := class
-{
-
-}

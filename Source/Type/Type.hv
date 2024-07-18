@@ -473,11 +473,7 @@ IsFloat := !(Type^ obj) -> bool
 }
 IsVecType := !(Type^ tp) -> bool
 {
-	if tp == GTypeVec4f
-		return true
-	if tp == GTypeVec3f
-		return true
-	if tp == GTypeVec2f
+	if tp is TypeVector
 		return true
 	return false
 }
@@ -513,6 +509,13 @@ CreateStandardTypes := !() -> void
 	TypeTable[21] = new TypeStandard("i16","half","!DIBasicType(name: \"half\", size: 16, align: 16,encoding: DW_ATE_float)",2,2)
 
 	TypeTable[22] = new TypeStandard("void","void","!DIBasicType(name: \"void\", size: 32, align: 32,encoding: DW_ATE_signed)",0,0)
+
+	TypeTable[23] = new TypeVector("<4 x i32>","vec4i",TypeTable[6],4,16)
+	TypeTable[24] = new TypeVector("<3 x i32>","vec3i",TypeTable[6],3,16)
+	TypeTable[25] = new TypeVector("<2 x i32>","vec2i",TypeTable[6],2,8)
+
+	for it : ![23,24,25]
+		TypeTable[it].Base = TypeTable[6]
 
 	GTypeNone = TypeTable[22]
 	GTypeBool =   TypeTable[8]
@@ -580,6 +583,11 @@ CreateStandardTypes := !() -> void
 	}else {
 		assert(false)
 	}
+
+	DefsTable[26] = new TypeDef("vec4i",TypeTable[23])
+	DefsTable[27] = new TypeDef("vec3i",TypeTable[24])
+	DefsTable[28] = new TypeDef("vec2i",TypeTable[25])
+
 	GTypeQuantf.Base = GTypeFloat
 	GTypeVec2f.Base = GTypeFloat
 	GTypeVec3f.Base = GTypeFloat

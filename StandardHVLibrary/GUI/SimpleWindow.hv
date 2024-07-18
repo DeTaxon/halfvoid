@@ -10,6 +10,7 @@ Window := class extend GLFWWindow
 
 	ClearColor := vec4f
 	vkOverlay := VkOverlayContext
+	layoutContet := LayoutContext
 
 	outdatedWindowSize := bool
 
@@ -133,8 +134,8 @@ Window := class extend GLFWWindow
 
 					if mainGUIObject != null
 					{
-						mainGUIObject.GetLayout(vkOverlay&)
-						mainGUIObject.SetLayout(vkOverlay&,vec2f(w,h))
+						mainGUIObject.GetLayout(layoutContext&)
+						mainGUIObject.SetLayout(layoutContext&,vec2f(w,h))
 
 						oldW = w
 						oldH = h

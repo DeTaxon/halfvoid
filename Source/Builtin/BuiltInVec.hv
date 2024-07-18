@@ -1,19 +1,29 @@
 GetVecXTypeSize := !(Type^ itY) -> int
 {
-	if itY == GTypeVec4f return 4
-	if itY == GTypeVec3f return 3
-	if itY == GTypeVec2f return 2
-	if itY == GTypeQuantf return 4
-	return 0
+	if itY is not TypeVector
+		return 0
+	return itY->{TypeVector^}.vecElementCount
 }
 
-GetVecTypeX := !(int Siz) -> Type^
+GetVecTypeX := !(Type^ base, int Siz) -> Type^
 {
-	switch Siz
+	if base == GTypeFloat
 	{
-		case 4 return GTypeVec4f
-		case 3 return GTypeVec3f
-		case 2 return GTypeVec2f
+		switch Siz
+		{
+			case 4 return GTypeVec4f
+			case 3 return GTypeVec3f
+			case 2 return GTypeVec2f
+		}
+	}
+	if base == GTypeInt
+	{
+		switch Siz
+		{
+			case 4 return TypeTable[23]
+			case 3 return TypeTable[24]
+			case 2 return TypeTable[25]
+		}
 	}
 }
 
@@ -61,13 +71,13 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				{
 					resType = GTypeQuantf
 				}else{
-					resType = GetVecTypeX(strVal.Value.Size())
+					resType = GetVecTypeX(a.Base,strVal.Value.Size())
 				}
 
 				return GetFuncType(1,![a],![true],resType,false,false)
 		}
 
-		return GetFuncType(1,![a],![true],GTypeFloat,true,false)
+		return GetFuncType(1,![a],![true],a.Base,true,false)
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
@@ -324,6 +334,30 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions[StringSpan("-")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fsub") )
 		bSpace.Functions[StringSpan("*")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fmul") )
 		bSpace.Functions[StringSpan("/")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fdiv") )
+	}
+	for xIndex : ![23,24,25]
+	{
+		x := TypeTable[xIndex]
+		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		baseRefed := GetFuncType(![x,x],![true,false],x)
+		baseAdd := GetFuncType(![x,x],![false,false],x)
+		operOnInt := GetFuncType(![x,GTypeInt],![false,false],x)
+
+		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(baseAdd,"add") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(baseAdd,"sub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(baseAdd,"mul") )
+
+		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
+		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
+		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+		bSpace.Functions[StringSpan("/=")].Push(new BuiltInIntEqAndOper(baseRefed,"div") )
+
+		bSpace.Functions[StringSpan("+")].Push(new BuiltInVecOperOnFloat(operOnInt,"add") )
+		bSpace.Functions[StringSpan("-")].Push(new BuiltInVecOperOnFloat(operOnInt,"sub") )
+		bSpace.Functions[StringSpan("*")].Push(new BuiltInVecOperOnFloat(operOnInt,"mul") )
+		bSpace.Functions[StringSpan("/")].Push(new BuiltInVecOperOnFloat(operOnInt,"div") )
 	}
 
 	bSpace.Templates[StringSpan(".")].Push(new BuiltInGetVecTemplate())

@@ -1,25 +1,29 @@
-FixedSizeRing := class .{@T} extend TGCObject
+FixedSizeRing := class .{@T,@ArraySize} extend TArrayView.{T}
 {
-	fixedArray := T[128]
+	fixedArray := T[ArraySize]
 	itSize := int
 	startIndex := u32
 	endIndex := u32
 
-	Push := !(T x) -> void
+	PushOverwrite := !(T x) -> void
 	{
-		myIndex := InterlockAdd(startIndex,1) and_b 0x7F
+		myIndex := InterlockAdd(startIndex,1) mod ArraySize
 		lastSize := InterlockAdd(itSize,1)
-		assert(lastSize < 128)
 		fixedArray[myIndex] = x
 	}
 	Pop := !() -> T
 	{
-		myIndex := InterlockAdd(endIndex,1) and_b 0x7F
+		myIndex := InterlockAdd(endIndex,1) mod ArraySize
 		lastSize := InterlockSub(itSize,1)
 		assert(lastSize > 0)
 		result = fixedArray[myIndex]
 		if T->IsGCPointer
 			fixedArray[myIndex] = null
+	}
+	"[]" := virtual !(int index) -> ref T
+	{
+		myIndex := (index + startIndex) mod ArraySize
+		return fixedArray[myIndex]
 	}
 	Size := !() -> int
 	{

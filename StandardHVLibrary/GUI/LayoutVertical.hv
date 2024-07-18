@@ -5,7 +5,7 @@ LayoutVertical := class extend LayoutBase
 	{
 		super(objs)
 	}
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
 	{
 		fullSizeCount = 0
 		foundStaticW = false
@@ -70,7 +70,7 @@ LayoutVertical := class extend LayoutBase
 		result.CanFullSizeH = foundFullSizeH
 	}
 
-	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(LayoutContext^ ctx,vec2f setSize) -> void
 	{
 		maxWidth := setSize.x
 		if foundStaticW and not foundFullSizeW

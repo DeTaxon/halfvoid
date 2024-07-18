@@ -21,6 +21,13 @@ TArrayView := class .{@T} extend TGCObject
 		}
 		return false
 	}
+	Reverse := fake
+	{
+		"for" := !() -> ViewIteratorReverse.{T}
+		{
+			result.ViewPtr = this&
+		}
+	}
 }
 
 ViewIterator := class.{@T} extend TGCObject
@@ -37,6 +44,25 @@ ViewIterator := class.{@T} extend TGCObject
 		i := indx
 		indx += 1
 		return ViewPtr->{TArrayView.{T}^}^[i]
+	}
+}
+ViewIteratorReverse := class.{@T} extend TGCObject
+{
+	ViewPtr := void^
+	indx := int
+	reversedIndex := int
+
+	HaveValue := !() -> bool
+	{
+		return indx < ViewPtr->{TArrayView.{T}^}.Size()
+	}
+	"()" := !(int^& resIndex) -> ref T
+	{
+		objSize := ViewPtr->{TArrayView.{T}^}.Size()
+		reversedIndex = objSize - (indx + 1)
+		resIndex = reversedIndex&
+		indx += 1
+		return ViewPtr->{TArrayView.{T}^}^[reversedIndex]
 	}
 }
 
