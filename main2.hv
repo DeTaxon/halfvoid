@@ -36,30 +36,7 @@ TestWin := class extend WindowCli
 main := !(char^[] args) -> int
 {
 	test := new TestWin
-	
-	quiting := false
-	tmpTask := TSpawnTask(() ==> {
-
-		fil := fopen("gl.xml","r")
-		//defer close(fil)
-
-		buffer := char[1024]
-		
-		while not quiting
-		{
-			ln := fgets(buffer,1024,fil)
-			if ln == null
-				break
-			test.TestLines.Push(ln)
-			test.Refresh()
-		}
-
-	})
-
 	test.Run()
-	quiting = true
-
-	tmpTask.finishedWork.Await()
 }
 RunTest := !() -> void
 {

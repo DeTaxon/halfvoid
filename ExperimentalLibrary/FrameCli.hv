@@ -1,0 +1,22 @@
+FrameCli := class extend GUIObject
+{
+	subObject := GUIObject^
+	this := !(GUIObject^ obj) -> void
+	{
+		subObject = obj
+	}
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
+	{
+		//TODO if static layout
+		result = subObject.GetLayout(ctx)
+	}
+	SetLayout := virtual !(LayoutContext^ ctx,vec2f setSize) -> void
+	{
+		subObject.SetLayout(ctx,setSize - vec2f(1.0,1.0))
+	}
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
+	{
+		subObject.DrawCli(ctx,offset + vec2i(1,1))
+		box(ctx.Window,0,0)
+	}
+}
