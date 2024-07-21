@@ -2,6 +2,8 @@
 VkOverlayContext := class
 {
 	inst := VulkanInstance^
+	w := float
+	h := float
 
 	textDrawLayout := TShaderInput^
 	textDrawShader := vShader^

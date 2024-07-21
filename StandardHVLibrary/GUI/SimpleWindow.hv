@@ -10,7 +10,7 @@ Window := class extend GLFWWindow
 
 	ClearColor := vec4f
 	vkOverlay := VkOverlayContext
-	layoutContet := LayoutContext
+	layoutContext := LayoutContext
 
 	outdatedWindowSize := bool
 

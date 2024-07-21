@@ -1,0 +1,84 @@
+
+CliWin := class extend WindowCli
+{
+	ErrorList := List.{Str}
+
+	InitWindow := virtual !() -> GUIObject^
+	{
+		return new FrameCli(
+			new LayoutHorizontal(![
+				new MultilineText(ErrorList)
+			])
+		)
+	}
+}
+EnterCliMode := !() -> void
+{
+	win := new CliWin
+
+		
+	TSpawnTask(() ==> {
+
+		hotload := HotloadContext
+
+		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> [win&] {
+			asFile := changedFile->{File^}
+
+
+			flId := asFile.GetId()
+
+
+			foundFile := BoxFile^
+			for spc : CodeSpaces
+			{
+				for thisFile : spc.Files
+				{
+					fId := thisFile.file.GetId()
+					if fId == flId
+					{
+						foundFile = thisFile
+						break
+					}
+				}
+				if foundFile != null
+					break
+			}
+			if foundFile == null
+				return void
+
+			foundFile.ReloadFile(hotload&,asFile)
+
+			hotload.FailedToCompile[^].Recompile()
+			hotload.FailedToCompile.Destroy()
+
+			WaitForParsingObjects()
+
+			win.ErrorList.Push(StrConcat("Error size ",WorkBag.works.Size()))
+			if WorkBag.works.Size() != 0
+			{
+				for it : WorkBag.works
+				{
+					msg := WorkToError(it)
+					if msg->AsString == null
+						continue
+					win.ErrorList.Push(msg)
+				}
+				for it : WorkBag.works
+				{
+					if it is not CWorkFuncCompile
+						continue
+					hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
+				}
+				WorkBag.CancelAll()
+			}else{
+				GInterpCntx.ReloadFunctions(hotload&)
+				hotload.Reset()
+			}
+			win.Refresh()
+
+		})
+	})
+
+	win.Run()
+
+}

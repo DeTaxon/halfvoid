@@ -230,6 +230,12 @@ main := !(char^[] args) -> int
 	if WorkBagPrintErrors()
 		exit(0)
 
+	if NonStopBuild
+	{
+		EnterCliMode()
+		exit(0)
+	}
+
 	printf("good to go\n")
 
 	if RunMode
@@ -246,60 +252,6 @@ main := !(char^[] args) -> int
 		if WorkBagPrintErrors()
 			exit(0)
 
-		
-		if true
-		{
-			TSpawnTask(() ==> {
-
-				hotload := HotloadContext
-
-				AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> {
-					asFile := changedFile->{File^}
-
-					flId := asFile.GetId()
-
-					foundFile := BoxFile^
-					for spc : CodeSpaces
-					{
-						for thisFile : spc.Files
-						{
-							fId := thisFile.file.GetId()
-							if fId == flId
-							{
-								foundFile = thisFile
-								break
-							}
-						}
-						if foundFile != null
-							break
-					}
-					if foundFile != null
-					{
-						foundFile.ReloadFile(hotload&,asFile)
-					}
-
-					hotload.FailedToCompile[^].Recompile()
-					hotload.FailedToCompile.Destroy()
-
-					WaitForParsingObjects()
-					if WorkBagPrintErrors()
-					{
-						for it : WorkBag.works
-						{
-							if it is not CWorkFuncCompile
-								continue
-							hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
-						}
-						WorkBag.CancelAll()
-						return void
-					}
-
-					GInterpCntx.ReloadFunctions(hotload&)
-
-					hotload.Reset()
-				})
-			})
-		}
 
 		CompileAndRunCode(toRun->{BoxFuncBody^})
 		return 0
@@ -347,6 +299,24 @@ WorkBagPrintErrors := !() -> bool
 	}
 	return true
 }
+
+WorkToError := !(CWorkUnit^ itWork) -> Str
+{
+	st := TEchoStream
+	switch itWork is
+	{
+	case CWorkClassCompile
+		st << "could not compile class " << itWork.itClass.ItName
+		return st.GetString().Str()
+	case CWorkFuncCompile
+		st << "could not compile function " << itWork.itFunc.Name.GetString().Str() << " "<< itWork.itFunc.GetFileScope().fileName.GetString().Str() << ":" << itWork.itLine
+		return st.GetString().Str()
+	case void
+		return itWork.GetErrorMessage().Str()
+	}
+}
+
+
 WaitForParsingObjects := !() -> void
 {
 	TaskYield()

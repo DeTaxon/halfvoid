@@ -94,3 +94,13 @@ StringConcat := !(args...) -> String^
 	}
 	return echo.GetString()
 }
+StrConcat := !(args...) -> Str
+{
+	echo := TEchoStream
+
+	for it : args
+	{
+		echo << it
+	}
+	result->AsString = echo.GetString()
+}

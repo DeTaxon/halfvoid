@@ -37,6 +37,7 @@ WindowCli := class extend TGCObject
 	}
 	draw := !() -> void
 	{
+		wclear(ctx.Window)
 		mainGUIObject.DrawCli(ctx&,vec2i(0,0))
 		refresh()
 	}

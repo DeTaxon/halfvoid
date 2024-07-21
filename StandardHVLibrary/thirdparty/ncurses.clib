@@ -17,6 +17,7 @@
 
 		"refresh" : "void",
 		"wrefresh" : "void,void^",
+		"wclear" : "void,void^",
 
 		"newwin" : "void^,int,int,int,int",
 		"getmaxx" : "int,void^",
