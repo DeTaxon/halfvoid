@@ -26,8 +26,7 @@ BoxUnit := class extend HV_Object
 				return iter->{BoxFile^}
 			iter = iter.GetParentScope()
 		}
-		assert(false)
-		return null
+		return GetAnyFile()
 	}
 
 	GetParentScope := virtual !() -> BoxUnit^

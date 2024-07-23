@@ -2,15 +2,45 @@
 CliWin := class extend WindowCli
 {
 	ErrorList := List.{Str}
+	LogList := List.{Str}
+
+	tabs := LayoutTabs^
 
 	InitWindow := virtual !() -> GUIObject^
 	{
-		return new FrameCli(
+		tabs = new  LayoutTabs(![
 			new LayoutHorizontal(![
 				new MultilineText(ErrorList)
-			])
-		)
+			]),
+			new LayoutHorizontal(![
+				new MultilineText(LogList)
+			]),
+		])
+	
+		return new FrameCli(tabs)
 	}
+	KeyPressed := virtual !(int keyChar) -> void
+	{
+		switch keyChar
+		{
+		case '\t'
+			tabs.NextTab()
+			Refresh()
+		case 'r'
+			StartInterpreter()
+		}
+	}
+}
+
+StartInterpreter := !() -> void
+{
+	TSpawnTask(() ==> {
+		toRun := intGetFunc(RunModeFuncName)
+		toRun.ParseBody()
+		WaitForParsingObjects()
+
+		CompileAndRunCode(toRun->{BoxFuncBody^})
+	})
 }
 EnterCliMode := !() -> void
 {

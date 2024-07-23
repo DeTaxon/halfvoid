@@ -279,11 +279,7 @@ MCInterpContext := class
 			return ffi_type_sint8
 		}else if itType == GTypeU8{
 			return ffi_type_uint8
-		}else if itType == GTypeVec2f{
-			return ffi_type_pointer
-		}else if itType == GTypeVec3f{
-			return ffi_type_pointer
-		}else if itType == GTypeVec4f{
+		}else if itType is TypeVector {
 			return ffi_type_pointer
 		}else{
 			printf("unknown type %s\n",itType.GetBADStr().Str())

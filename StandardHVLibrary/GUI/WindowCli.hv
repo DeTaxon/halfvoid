@@ -32,6 +32,7 @@ WindowCli := class extend TGCObject
 
 			if c == 27 //ESC
 				break
+			KeyPressed(c)
 		}
 		endwin()
 	}
@@ -44,6 +45,9 @@ WindowCli := class extend TGCObject
 	Refresh := !() -> void
 	{
 		draw()
+	}
+	KeyPressed := virtual !(int keyChar) -> void
+	{
 	}
 }
 DrawCliContext := class

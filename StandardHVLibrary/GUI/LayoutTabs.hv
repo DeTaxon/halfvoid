@@ -10,7 +10,7 @@ AppendClass VkOverlayContext
 LayoutTabs := class extend GUIObject//LayoutBase
 {
 	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
-	baseContext := VkOverlayContext^
+	//baseContext := VkOverlayContext^
 	currentIndex := int
 	this := !(GUIObject^[] objs) -> void
 	{
@@ -26,8 +26,8 @@ LayoutTabs := class extend GUIObject//LayoutBase
 			return void
 		currentIndex = (currentIndex + 1) mod objects.Size()
 
-		baseContext.DataGeneration += 1
-		baseContext.CmdGeneration += 1
+		//baseContext.DataGeneration += 1
+		//baseContext.CmdGeneration += 1
 	}
 	SetTab := !(int index) -> void
 	{
@@ -37,11 +37,11 @@ LayoutTabs := class extend GUIObject//LayoutBase
 			return void
 		currentIndex = index
 
-		baseContext.DataGeneration += 1
-		baseContext.CmdGeneration += 1
+		//baseContext.DataGeneration += 1
+		//baseContext.CmdGeneration += 1
 	}
 	
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> GUILayoutInfo
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
 	{
 		foundStaticW := false
 		foundStaticH := false
@@ -84,7 +84,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		}else {result.LayoutTypeH = 0}
 	}
 
-	SetLayout := virtual !(VkOverlayContext^ ctx,vec2f setSize) -> void
+	SetLayout := virtual !(LayoutContext^ ctx,vec2f setSize) -> void
 	{
 		for it : objects
 		{
@@ -101,13 +101,23 @@ LayoutTabs := class extend GUIObject//LayoutBase
 			it.0.SetLayout(ctx,newSize)
 		}
 	}
-	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	//PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	//{
+	//	for it,i : objects
+	//	{
+	//		if i != currentIndex
+	//			continue
+	//		it.0.PushDraw(ctx,cmdB,offset + it.1) //TODO why do i have +it.1
+	//		break
+	//	}
+	//}
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
 	{
 		for it,i : objects
 		{
 			if i != currentIndex
 				continue
-			it.0.PushDraw(ctx,cmdB,offset + it.1)
+			it.0.DrawCli(ctx,offset)
 			break
 		}
 	}

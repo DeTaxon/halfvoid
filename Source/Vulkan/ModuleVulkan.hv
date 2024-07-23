@@ -549,6 +549,7 @@ ModuleVulkan := class extend ModuleInterface
 				}
 			}
 			newStruct.InheritStep(buildCtx)
+			newStruct.ParentScope = GetAnyFile()
 
 			if sTypVal != null
 			{
@@ -801,8 +802,9 @@ ModuleVulkan := class extend ModuleInterface
 
 BoxClassVulkan := class extend BoxClass
 {
-
 	finishHatch := THatch
+	ParentScope := BoxUnit^
+	GetParentScope := virtual !() -> BoxUnit^ { return ParentScope }
 
 	FinilizeCreation := !() -> void
 	{
