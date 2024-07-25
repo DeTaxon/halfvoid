@@ -60,23 +60,46 @@ va_list := class
 	point2 := void^
 }
 
+printf_hv_printStr := !(char^ str, int prev, int i) -> void
+{
+	if prev > i
+		return void
+	Console.Write(str[prev]&,i - prev + 1)
+	
+}
 printf_hv := !(char^ str, ... ) -> void
 {
 	va := va_list
 	va_start(va&)
 
-	intVal := double
-	
-	Console^ << "HOHO\n" << str
+	prev := 0
+	i := 0
 
-
-	while true
+	while str[i] != 0
 	{
-		intVal = va_arg(va&).{double}
-		Console^ << intVal << "\n"
-		if intVal == 0.0
-			break
+		if str[i] == '%'
+		{
+			printf_hv_printStr(str,prev, i - 1)
+			i += 1
+			switch str[i]
+			{
+			case 'i'
+				i += 1
+				prev = i
+				Console^ << va_arg(va&).{int}
+			case 'f'
+				i += 1
+				prev = i
+				Console^ << va_arg(va&).{double}
+			case void
+				i += 1 //hmmm....
+			}
+
+		}else{
+			i += 1
+		}
 	}
+	printf_hv_printStr(str,prev,i - 1)
 
 	va_end(va&)
 }
@@ -88,7 +111,7 @@ main := !(char^[] args) -> int
 
 	Console = new TextStream(outStream)
 	
-	printf_hv("Yep %i\n",15.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,0.0)
+	printf_hv("Yep %f\n",15.0)
 	
 	Console.Destroy()
 }
