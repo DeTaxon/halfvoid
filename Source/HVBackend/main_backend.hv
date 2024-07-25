@@ -18,6 +18,4 @@ CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
 
 	//ptr := bigMem.GetPointer()->{!()^->int}
 	//ptr()
-
-	exit(0)
 }

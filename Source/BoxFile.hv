@@ -121,30 +121,36 @@ BoxFile := class extend BoxUnit
 
 			d := PClassParser(stVal.Right)
 			assert(d.IsFound())
-			cls := d.CreateObject()
 
-			if cls is in BoxClassBody
-			{
-				cls2 := cls->{BoxClassBody^}
-				cls2.SetName(name)
-				clsVar := new TypeVar(name,cls2.ItType)
-				CurrentCodeSpace.Types[name] = clsVar
-				FileClasses.Push(cls2)
-				cls2.ClassFile = this&
-				cls2.hash = d.ComputeHash(fileData)
-			} else if cls is in BoxClassTemplateBody
-			{
-				cls3 := cls->{BoxClassTemplateBody^}
-				cls3.SetName(name)
-				templateVar := new TemplateTypeVar(name,cls3)
-				CurrentCodeSpace.Types[name] = templateVar
-				FileClassTemplates.Push(cls3)
-			}else{
-				assert(false)
-			}
+			AddClass(name,d&)
 
 			ParsedTokens.Insert(iter)
 		}
+	}
+	AddClass := !(StringSpan name, PClassParser^ d) -> void
+	{
+		cls := d.CreateObject()
+
+		if cls is in BoxClassBody
+		{
+			cls2 := cls->{BoxClassBody^}
+			cls2.SetName(name)
+			clsVar := new TypeVar(name,cls2.ItType)
+			CurrentCodeSpace.Types[name] = clsVar
+			FileClasses.Push(cls2)
+			cls2.ClassFile = this&
+			cls2.hash = d.ComputeHash(fileData)
+		} else if cls is in BoxClassTemplateBody
+		{
+			cls3 := cls->{BoxClassTemplateBody^}
+			cls3.SetName(name)
+			templateVar := new TemplateTypeVar(name,cls3)
+			CurrentCodeSpace.Types[name] = templateVar
+			FileClassTemplates.Push(cls3)
+		}else{
+			assert(false)
+		}
+		
 	}
 	ParseClasses := !(Token^ tokens) -> HybridQueue.{Token^,20}
 	{

@@ -72,8 +72,13 @@ FunctionHeaderInfo := class
 		checkBag := () ==> {
 			if bag.Size() == 1
 			{
-				assert(bag[0] is TokenIndent)
-				Types.Emplace(bag[0]->{TokenIndent^}.Value,null->{Type^},false,null->{Token^})
+				if bag[0].GetValue() == "..."
+				{
+					IsVargs = true
+				}else{
+					assert(bag[0] is TokenIndent)
+					Types.Emplace(bag[0]->{TokenIndent^}.Value,null->{Type^},false,null->{Token^})
+				}
 			}else if bag.Size() >= 2 {
 				if bag[1].GetValue() == "..."
 				{

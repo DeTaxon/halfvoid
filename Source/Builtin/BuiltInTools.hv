@@ -173,6 +173,84 @@ BuiltInDegreeSuffix := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 }
+BuiltInLLVMProxy := class extend BoxFuncCommon
+{
+	funcName := char^
+	this := !(char^ fName, TypeFunc^ iType) -> void
+	{
+		funcName = fName
+		SetType(iType)
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+
+		lst[^].PrintPre(ctx)
+
+		f^ << "call void " << funcName << "("
+		for it,i : lst
+		{
+			if i != 0
+				f^ << ","
+			it.GetType().PrintType(ctx)
+			f^ << " "
+			it.PrintUse(ctx)
+		}
+		f^ << ")"
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ <<"\n"
+	}
+}
+BuiltInVaArgTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
+	{
+		if objs.Size() != 1 or consts.Size() != 1
+			return null
+
+		if objs[0].GetType() is not in TypePoint
+			return null
+
+		if consts[0] is not ConstType
+			return null
+
+
+		return GetFuncType(![GTypeVoidP],consts[0]->{ConstType^}.Value)
+		
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	{
+		return new BuiltInVaArg(tp,consts[0]->{ConstType^}.Value)
+	}
+}
+BuiltInVaArg := class extend BoxFuncCommon
+{
+	TargetType := Type^
+	this := !(TypeFunc^ iType,Type^ newType) -> void
+	{
+		SetType(iType)
+		TargetType = newType
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+
+		lst[0].PrintPre(ctx)
+
+		f^ << "%T" << resId << " = va_arg ptr "
+		lst[0].PrintUse(ctx)
+		f^ << " , "
+		TargetType.PrintType(ctx)
+
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ <<"\n"
+	}
+}
 
 CreateBuildInTools := !() -> void
 {
@@ -187,4 +265,9 @@ CreateBuildInTools := !() -> void
 
 	builtInSetJump = new BuiltInSetJump() 
 	bSpace.Functions[StringSpan("llvmSetJump")].Push(builtInSetJump)
+
+	bSpace.Functions[StringSpan("va_start")].Push(new BuiltInLLVMProxy("@llvm.va_start",GetFuncType(![GTypeVoidP],GTypeVoid)))
+	bSpace.Functions[StringSpan("va_end")].Push(new BuiltInLLVMProxy("@llvm.va_end",GetFuncType(![GTypeVoidP],GTypeVoid)))
+	bSpace.Functions[StringSpan("va_copy")].Push(new BuiltInLLVMProxy("@llvm.va_copy",GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeVoid)))
+	bSpace.Templates[StringSpan("va_arg")].Push(new BuiltInVaArgTemplate)
 }

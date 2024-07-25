@@ -562,8 +562,8 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.
 	assert(fncType != null)
 	assert(fncType is TypeFunc)
 
-	minArgs :=fncType.Params.Size()
-	maxArgs :=fncType.Params.Size()
+	minArgs := fncType.Params.Size()
+	maxArgs := fncType.Params.Size()
 
 	minArgs -= defaults
 

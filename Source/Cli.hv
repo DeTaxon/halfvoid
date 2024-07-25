@@ -83,6 +83,8 @@ EnterCliMode := !() -> void
 
 			WaitForParsingObjects()
 
+			//win.ErrorList.Clear()
+
 			win.ErrorList.Push(StrConcat("Error size ",WorkBag.works.Size()))
 			if WorkBag.works.Size() != 0
 			{

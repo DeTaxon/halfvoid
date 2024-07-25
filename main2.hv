@@ -1,46 +1,100 @@
-Variant := class .{@VarTypes...}
-{
-	selected := int
-	values := Tuple.{VarTypes...}
 
-	SetVariant := !(@T newObj) .{@Index = VarTypes.IndexOf(T)} -> void
+
+
+TextStream := class extend Stream
+{
+	BaseStream := Stream^
+	EchoStream := TEchoStream
+
+	this := !(Stream^ base) -> void
 	{
-		selected = Index
-		values.Index = newObj
+		BaseStream = base
 	}
-	"is" := !() .{@T, @Index = VarTypes.IndexOf(T)} -> bool
-		#AddAutoCast(@1.values.0)
+
+	Read := virtual !(void^ data, s64 size) -> s64
 	{
-		return selected == Index
+		return BaseStream.Read(data,size)
+	}
+	Write := virtual !(void^ adding, s64 sLen) -> s64
+	{
+		needFlush := false
+
+		st := adding->{char^}
+		i := s64
+		while i < sLen
+		{
+			if st[i] == '\n'
+			{
+				needFlush = true
+				break
+			}
+			i += 1
+		}
+		EchoStream.Write(adding,sLen)
+		if needFlush
+			Flush()
+	}
+	Flush := !() -> void
+	{
+		st := EchoStream.GetString() //TODO optimizable
+		if st.Size() != 0
+		{
+			BaseStream.Write(st.Str(),st.Size())
+		}
+		EchoStream.Destroy()
+	}
+	Destroy := virtual !() -> void
+	{
+		Flush()
 	}
 }
 
 
-SubFunc := !() -> AVLMap.{Str,int}
+Console := Stream^
+
+va_list := class
 {
-	result["abc"] = 15
+	offset := int
+	idk := int
+	point1 := void^
+	point2 := void^
 }
 
-TestWin := class extend WindowCli
+printf_hv := !(char^ str, ... ) -> void
 {
-	TestLines := List.{Str}
-	InitWindow := virtual !() -> GUIObject^
+	va := va_list
+	va_start(va&)
+
+	intVal := double
+	
+	Console^ << "HOHO\n" << str
+
+
+	while true
 	{
-		return new FrameCli(
-			new LayoutHorizontal(![
-				new MultilineText(TestLines)
-			])
-		)
+		intVal = va_arg(va&).{double}
+		Console^ << intVal << "\n"
+		if intVal == 0.0
+			break
 	}
+
+	va_end(va&)
 }
+
 main := !(char^[] args) -> int
 {
-	test := new TestWin
-	test.Run()
+	outStream := new RawFileStream
+	outStream.FileFd = 2
+
+	Console = new TextStream(outStream)
+	
+	printf_hv("Yep %i\n",15.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,0.0)
+	
+	Console.Destroy()
 }
 RunTest := !() -> void
 {
-	RunOpenGLTest()
+	//RunOpenGLTest()
 }
 
 //RangesExperiment := !() -> void

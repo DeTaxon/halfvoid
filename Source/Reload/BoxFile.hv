@@ -76,7 +76,8 @@ AppendClass BoxFile
 			classNames.Push(!{name,iter})
 		}
 
-		notFoundClass := List.{BoxClassBody^}
+		newClasses := List.{Token^}
+
 		for cls : FileClasses
 		{
 			if cls.hash in newHashs.Values
@@ -100,8 +101,26 @@ AppendClass BoxFile
 				changedClasses.Insert(cls)
 				cls.Body = p.bodyToken
 				cls.hash = p.ComputeHash(thisData)
+			}else{
+				newClasses.Push(foundClass)
 			}
 		}
+
+		for it : newClasses
+		{
+			name := StringSpan
+
+			if it.Down is TokenIndent
+			{
+				name = it.Down->{TokenIndent^}.Value
+			}else{
+				name = GetConstString(it.Down->{TokenString^}.Value.Str())
+			}
+			d := PClassParser(it.Down.Right.Right)
+			AddClass(name,d&)
+		}
+
+		//TODO removed classes
 	}
 
 	ReloadFunctions := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData, Token^ toks) -> void
