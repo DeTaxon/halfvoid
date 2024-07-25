@@ -483,7 +483,14 @@ CWorkBaseFile := class extend CWorkUnit
 		{
 			if itToken.Down?.Right?.GetValue() == ":=" and itToken.Down is TokenIndent
 			{
-				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itToken.Down.Right.Right)
+				isRef := false
+				itr2 := itToken.Down.Right.Right
+				if itr2.GetValue() == "ref"
+				{
+					itr2 = itr2.Right
+					isRef = true
+				}
+				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itr2,isRef)
 				GlobalVars2.Push(vr->{GlobalVar2^})
 			}
 		}

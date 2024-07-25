@@ -5,6 +5,7 @@ GlobalVar2 := class extend BoxUnit
 	parsed := bool
 	startedParse := bool
 	isThreadLocal := bool
+	isReference := bool
 
 	value := BoxExeConstObj^
 
@@ -22,11 +23,12 @@ GlobalVar2 := class extend BoxUnit
 
 	varId := int
 
-	this := !(StringSpan varName,Token^ checkToken) -> void
+	this := !(StringSpan varName,Token^ checkToken,bool isRef) -> void
 	{
 		itName = varName
 		downToken = checkToken
 		proxy.baseVar = this&
+		isReference = isRef
 	}
 	this := !(StringSpan varName,Type^ tp,bool itl) -> void
 	{
@@ -138,6 +140,11 @@ GlobalVar2 := class extend BoxUnit
 		
 		tp := ParseType(typeToken)
 
+		if tp != null and isReference
+		{
+			tp = tp.GetPoint()
+		}
+
 		if tp == null
 		{
 			value = TryGetExeCall(typeToken)->{BoxExeConstObj^}
@@ -211,6 +218,12 @@ GlobalVar2 := class extend BoxUnit
 			if iter is TypeClass
 				value = createConstType(tp)
 		}
+	}
+	CreateCall := !() -> BoxExeObj^
+	{
+		if isReference
+			return new PtrToRef(proxy&)
+		return proxy&
 	}
 	createConstType := !(Type^ tp) -> BoxExeConstObj^
 	{

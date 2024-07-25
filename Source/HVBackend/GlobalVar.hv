@@ -4,7 +4,6 @@ AppendClass GlobalVar2
 	{
 		result = proxy.WriteMC(ctx)
 	}
-
 }
 
 AppendClass GlobalVarProxy

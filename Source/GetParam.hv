@@ -242,7 +242,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	{
 		if callItem is in GlobalVar2
 		{
-			return callItem->{GlobalVar2^}.proxy&
+			return callItem->{GlobalVar2^}.CreateCall()
 		}
 		if callItem is TaskLocalVar
 		{

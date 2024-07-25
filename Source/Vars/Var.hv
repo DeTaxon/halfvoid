@@ -37,7 +37,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		sprintf(buf[0]&,"hidden%i",GetNewId())
 		newName := GetConstString(buf[0]&)
 
-		vrTable := new GlobalVar2(newName,varToken.Right)
+		vrTable := new GlobalVar2(newName,varToken.Right,false)
 		GlobalVars2.Push(vrTable)
 		CodeSpaces[-1].Globals[newName].Push(vrTable) //todo Optimize, codespace can have spetial place for unque names
 

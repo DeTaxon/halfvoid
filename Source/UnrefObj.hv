@@ -13,6 +13,9 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 	dwn.NotifyMemUse()
 	if not dwn.IsMem()
 		itm.EmitError("can not get pointer to object, it is not on the memory")
+	
+	if dwn is PtrToRef
+		return dwn->{PtrToRef^}.Down
 
 	return new UnrefFuncCall(dwn)
 }

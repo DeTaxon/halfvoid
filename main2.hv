@@ -104,16 +104,23 @@ printf_hv := !(char^ str, ... ) -> void
 	va_end(va&)
 }
 
+
+VarRef := ref int
+BaseInt := int
+
 main := !(char^[] args) -> int
 {
-	outStream := new RawFileStream
-	outStream.FileFd = 2
+	VarRef& = BaseInt&
+	BaseInt = 120
+	printf("test %i\n",VarRef)
+	//outStream := new RawFileStream
+	//outStream.FileFd = 2
 
-	Console = new TextStream(outStream)
-	
-	printf_hv("Yep %f\n",15.0)
-	
-	Console.Destroy()
+	//Console = new TextStream(outStream)
+	//
+	//printf_hv("Yep %f\n",15.0)
+	//
+	//Console.Destroy()
 }
 RunTest := !() -> void
 {
