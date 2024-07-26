@@ -1,0 +1,48 @@
+
+TextStream := class extend Stream
+{
+	BaseStream := Stream^
+	EchoStream := TEchoStream
+
+	this := !(Stream^ base) -> void
+	{
+		BaseStream = base
+	}
+
+	Read := virtual !(void^ data, s64 size) -> s64
+	{
+		return BaseStream.Read(data,size)
+	}
+	Write := virtual !(void^ adding, s64 sLen) -> s64
+	{
+		needFlush := false
+
+		st := adding->{char^}
+		i := s64
+		while i < sLen
+		{
+			if st[i] == '\n'
+			{
+				needFlush = true
+				break
+			}
+			i += 1
+		}
+		EchoStream.Write(adding,sLen)
+		if needFlush
+			Flush()
+	}
+	Flush := !() -> void
+	{
+		st := EchoStream.GetString() //TODO optimizable
+		if st.Size() != 0
+		{
+			BaseStream.Write(st.Str(),st.Size())
+		}
+		EchoStream.Destroy()
+	}
+	Destroy := virtual !() -> void
+	{
+		Flush()
+	}
+}

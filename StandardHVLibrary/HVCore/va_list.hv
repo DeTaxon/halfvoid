@@ -1,0 +1,8 @@
+
+va_list := class
+{
+	offset := int
+	idk := int
+	point1 := void^
+	point2 := void^
+}
