@@ -50,7 +50,7 @@ TextStream := class extend Stream
 }
 
 
-Console := Stream^
+Console := ref Stream
 
 va_list := class
 {
@@ -65,7 +65,6 @@ printf_hv_printStr := !(char^ str, int prev, int i) -> void
 	if prev > i
 		return void
 	Console.Write(str[prev]&,i - prev + 1)
-	
 }
 printf_hv := !(char^ str, ... ) -> void
 {
@@ -75,6 +74,8 @@ printf_hv := !(char^ str, ... ) -> void
 	prev := 0
 	i := 0
 
+	buf := char[64]
+
 	while str[i] != 0
 	{
 		if str[i] == '%'
@@ -83,14 +84,52 @@ printf_hv := !(char^ str, ... ) -> void
 			i += 1
 			switch str[i]
 			{
+			case 'p'
+				i += 1
+				prev = i
+
+				baseVal := va_arg(va&).{u64}
+				if baseVal == 0
+				{
+					Console << "(nil)"
+				}else{
+					buf[0] = '0'
+					buf[1] = 'x'
+					for j : 16 //TODO Arch
+					{
+						reverse := (16 - j - 1)*4
+						thisVal := baseVal shr reverse
+						thisVal = thisVal and_b 0xF
+						buf[j+2] = "0123456789abcdef"[thisVal]
+					}
+					offset := 0
+					for j : 16
+					{
+						if buf[j+2] != '0'
+							break
+						offset += 1
+					}
+					if offset != 0
+					{
+						for j : 16
+						{
+							buf[j+2] = buf[j+2+offset]
+						}
+					}
+					Console.Write(buf[0]&,18 - offset)
+				}
+			case 's'
+				i += 1
+				prev = i
+				Console << va_arg(va&).{char^}
 			case 'i'
 				i += 1
 				prev = i
-				Console^ << va_arg(va&).{int}
+				Console << va_arg(va&).{s64}
 			case 'f'
 				i += 1
 				prev = i
-				Console^ << va_arg(va&).{double}
+				Console << va_arg(va&).{double}
 			case void
 				i += 1 //hmmm....
 			}
@@ -105,22 +144,9 @@ printf_hv := !(char^ str, ... ) -> void
 }
 
 
-VarRef := ref int
-BaseInt := int
-
 main := !(char^[] args) -> int
 {
-	VarRef& = BaseInt&
-	BaseInt = 120
-	printf("test %i\n",VarRef)
-	//outStream := new RawFileStream
-	//outStream.FileFd = 2
-
-	//Console = new TextStream(outStream)
-	//
-	//printf_hv("Yep %f\n",15.0)
-	//
-	//Console.Destroy()
+	printf("Yep %i %p %s\n",15,outStream,"Hello")
 }
 RunTest := !() -> void
 {
