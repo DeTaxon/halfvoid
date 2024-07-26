@@ -3,6 +3,7 @@ CliWin := class extend WindowCli
 {
 	ErrorList := List.{Str}
 	LogList := List.{Str}
+	ConsoleList := List.{Str}
 
 	tabs := LayoutTabs^
 
@@ -14,6 +15,9 @@ CliWin := class extend WindowCli
 			]),
 			new LayoutHorizontal(![
 				new MultilineText(LogList)
+			]),
+			new LayoutHorizontal(![
+				new MultilineText(ConsoleList)
 			]),
 		])
 	
@@ -42,11 +46,40 @@ StartInterpreter := !() -> void
 		CompileAndRunCode(toRun->{BoxFuncBody^})
 	})
 }
+
+StreamOnLambda := class extend Stream
+{
+	readLambda := !(void^,s64)&->void
+	writeLambda := !(void^,s64)&->void
+	this := !(!(void^,s64)&-> void rl, !(void^,s64)&->void wl) -> void
+	{
+		readLambda = rl
+		writeLambda = wl
+	}
+	Read := virtual !(void^ data, s64 sLen) -> void
+	{
+		readLambda?(data,sLen)
+	}
+	Write := virtual !(void^ data, s64 sLen) -> void
+	{
+		writeLambda?(data,sLen)
+	}
+}
+
+
 EnterCliMode := !() -> void
 {
 	win := new CliWin
 
-		
+	//TODO allow interpreter to work with variadics
+	Console& = new StreamOnLambda(null,(data,sLen) ==> [win&]{
+		st := Str
+		st->AsString = new String(data->{char^},sLen->{int})
+		win.ConsoleList.Push(st)
+		win.Refresh()
+	})
+	Console& = new TextStream(Console&)
+
 	TSpawnTask(() ==> {
 
 		hotload := HotloadContext

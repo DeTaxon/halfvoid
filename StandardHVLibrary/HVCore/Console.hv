@@ -5,8 +5,7 @@ Console := ref Stream
 ConsoleInit := !() -> void
 	#Mark("CallAtStart")
 {
-	rawStream := new RawFileStream
-	rawStream.FileFd = 1
+	rawStream := new RawFileStreamBorrow(1)
 
 	Console& = new TextStream(rawStream)
 }

@@ -57,11 +57,25 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 		{
 			constFunc := it&->{MCConstFunction^}.GetValue()
 
+			fncPtr := void^
+			fncType := Type^
+
+			if constFunc is BoxFuncDeclare
+			{
+				nm := constFunc->{BoxFuncDeclare^}
+
+				if nm.itName == "printf"
+				{
+					fncPtr = printf_hv
+				}
+
+				if fncPtr != null
+					fncType = nm.GetType().GetPoint()
+			}
+
 			if constFunc is BoxFuncBody
 			{
 				bdy := constFunc->{BoxFuncBody^}
-
-				fncPtr := void^
 
 				for it, ind : #MarkedFunctions("JITPass")
 				{
@@ -70,14 +84,14 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 						fncPtr = it
 					}
 				}
-
 				if fncPtr != null
-				{
-					it&->SetType(MCConstPointerTyped)
-					it&->{MCConstPointerTyped^}.GetValue() = fncPtr
-					it&->{MCConstPointerTyped^}.SetType(bdy.GetType().GetPoint())
-				}
-	
+					fncType = bdy.GetType().GetPoint()
+			}
+			if fncPtr != null
+			{
+				it&->SetType(MCConstPointerTyped)
+				it&->{MCConstPointerTyped^}.GetValue() = fncPtr
+				it&->{MCConstPointerTyped^}.SetType(fncType)
 			}
 		}
 	}
