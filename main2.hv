@@ -5,7 +5,18 @@ main := !(char^[] args) -> int
 }
 RunTest := !() -> void
 {
+	ManyArgs(null,1,5,10)
 	//RunOpenGLTest()
+}
+ManyArgs := !(char^ base,...) -> void
+{
+	va := va_list
+	va_start(va&)
+	for i : 3
+	{
+		printf("hey %i\n",va_arg(va&).{s64})
+	}
+	va_end(va&)
 }
 
 //RangesExperiment := !() -> void

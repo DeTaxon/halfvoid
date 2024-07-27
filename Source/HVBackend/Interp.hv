@@ -106,7 +106,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	}
 	if callerIndx != null
 	{
-		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + callerIndx.Size() - 1)
+		assert(callerIndx.Size() >= interpFunc.InputsIndxCount)
+		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + interpFunc.InputsIndxCount - 1)
 		for it,i : rng
 		{
 			thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
@@ -944,6 +945,28 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				case 4 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{int^}^)
 				case 8 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{u64^}^)
+			}
+			cs += 1
+		case "va_start"
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1->{int^^}^^ = 0
+			cs += 1
+		case "va_end"
+			cs += 1
+		case "va_arg"
+			indxPtr := thisFrame.GetObjectPtr(opPtr[cs].var2)->{int^^}^
+			indx := indxPtr^
+			indxPtr^ += 1
+			indx += interpFunc.InputsIndxCount
+			if callerIndx != null and callerIndx.Size() > indx
+			{
+				resultPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
+				argPtr := callerFrame.GetObjectPtr(callerIndx[indx])
+
+				memcpy(resultPtr,argPtr,interpFunc.Objects[thisLine.var1].GetType().GetSize())
+				
+			}else{
+				assert(false)
 			}
 			cs += 1
 

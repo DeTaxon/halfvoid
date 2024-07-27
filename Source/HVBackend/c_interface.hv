@@ -189,3 +189,15 @@ HVB_ins_debug_set_line := !(MCBuildContext^ ctx, int lineNumber) -> void
 	ctx.lines.Push(MCLine("debug_set_line",intVal))
 }
 
+HVB_ins_va_start := !(MCBuildContext^ ctx, s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("va_start",opr1))
+}
+HVB_ins_va_end := !(MCBuildContext^ ctx, s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("va_end",opr1))
+}
+HVB_ins_va_arg := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("va_arg",opr1,opr2))
+}

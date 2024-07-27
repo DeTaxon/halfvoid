@@ -26,3 +26,32 @@ AppendClass BuiltInDegreeSuffix
 		result.CreatedId = res
 	}
 }
+
+AppendClass BuiltInLLVMProxy
+{
+
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+		switch funcName
+		{
+		case "@llvm.va_start"
+			HVB_ins_va_start(ctx,dwn)
+		case "@llvm.va_end"
+			HVB_ins_va_end(ctx,dwn)
+		}
+	}
+}
+AppendClass BuiltInVaArg
+{
+
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+		newVar := ctx.CreateVar(TargetType)
+		HVB_ins_va_arg(ctx,newVar,dwn)
+		result.CreatedId = newVar
+	}
+}
