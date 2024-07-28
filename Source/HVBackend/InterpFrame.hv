@@ -4,6 +4,8 @@ MCInterpFuncFrame := class extend TGCObject
 	func := MCFunction^
 	iCntx := MCInterpContext^
 
+	callerIndx := int[] 
+
 	localVarBlob := u8^
 	//localVarTable := AVLMap.{int,void^}
 	localVarTable := void^^

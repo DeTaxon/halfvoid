@@ -71,14 +71,23 @@ EnterCliMode := !() -> void
 {
 	win := new CliWin
 
-	//TODO allow interpreter to work with variadics
-	Console& = new StreamOnLambda(null,(data,sLen) ==> [win&]{
-		st := Str
-		st->AsString = new String(data->{char^},sLen->{int})
-		win.ConsoleList.Push(st)
-		win.Refresh()
-	})
-	Console& = new TextStream(Console&)
+	conVar := intGetGlobalVar("Console")
+	if conVar != null
+	{
+		conVar.NotifyUseAndWait()
+		globVar := GInterpCntx.GetGlobalVarMem(conVar)
+
+		newStream := Stream^
+		newStream = new StreamOnLambda(null,(data,sLen) ==> [win&]{
+			st := Str
+			st->AsString = new String(data->{char^},sLen->{int})
+			win.ConsoleList.Push(st)
+			win.Refresh()
+		})
+		newStream = new TextStream(newStream)
+
+		globVar->{Stream^^}^ = newStream
+	}
 
 	TSpawnTask(() ==> {
 

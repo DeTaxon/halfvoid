@@ -74,6 +74,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	thisFrame := MCInterpFuncFrame
 	thisFrame.InheritStack(callerFrame)
 	thisFrame.CreateFrame(iCntx,interpFunc)
+	thisFrame.callerIndx = callerIndx
 	thisFrame.ParentFrame = callerFrame
 
 	opPtr := interpFunc.Lines.GetPointer()
@@ -106,8 +107,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	}
 	if callerIndx != null
 	{
-		assert(callerIndx.Size() >= interpFunc.InputsIndxCount)
-		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + interpFunc.InputsIndxCount - 1)
+		argCount := min(callerIndx.Size(),interpFunc.InputsIndxCount)
+		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + argCount - 1)
 		for it,i : rng
 		{
 			thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
@@ -949,19 +950,26 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			cs += 1
 		case "va_start"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1->{int^^}^^ = 0
+			ptr1->{s64^^}^[0] = 0
+			ptr1->{void^^^}^[1] = thisFrame&
+			ptr1->{void^^^}^[2] = interpFunc
 			cs += 1
 		case "va_end"
 			cs += 1
 		case "va_arg"
-			indxPtr := thisFrame.GetObjectPtr(opPtr[cs].var2)->{int^^}^
+			
+			indxPtr := thisFrame.GetObjectPtr(opPtr[cs].var2)->{s64^^}^
+			
+			argFrame := indxPtr->{void^^}[1]->{MCInterpFuncFrame^}
+			argFunc := indxPtr->{void^^}[2]->{MCFunction^}
+
 			indx := indxPtr^
 			indxPtr^ += 1
-			indx += interpFunc.InputsIndxCount
-			if callerIndx != null and callerIndx.Size() > indx
+			indx += argFunc.InputsIndxCount
+			if argFrame.callerIndx != null and argFrame.callerIndx.Size() > indx
 			{
 				resultPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
-				argPtr := callerFrame.GetObjectPtr(callerIndx[indx])
+				argPtr := argFrame.ParentFrame.GetObjectPtr(argFrame.callerIndx[indx])
 
 				memcpy(resultPtr,argPtr,interpFunc.Objects[thisLine.var1].GetType().GetSize())
 				

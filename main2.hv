@@ -1,11 +1,12 @@
 
 main := !(char^[] args) -> int
 {
-	printf("Yep %i %p %s\n",15,null,"Hello")
+	printf_hv("Yep %i %p %s\n",15,null,"Hello")
 }
 RunTest := !() -> void
 {
-	ManyArgs(null,1,5,10)
+	//Console << "Test 1"
+	//ManyArgs(null,1,5,10)
 	//RunOpenGLTest()
 }
 ManyArgs := !(char^ base,...) -> void

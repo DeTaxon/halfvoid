@@ -98,4 +98,19 @@ intGetFunc := !(char^ name) -> BoxFunc^
 	assert(res.IsOneFunc())
 	return res.GetOneFunc()
 }
+intGetGlobalVar := !(char^ name) -> GlobalVar2^
+{
+	res := GlobalVar2^
+	GetItemGlobal(StringSpan(name),x ==> {
+		for itm : x
+		{
+			if itm is in GlobalVar2
+			{
+				res = itm->{GlobalVar2^}
+				return true
+			}
+		}
+	})
+	return res
+}
 
