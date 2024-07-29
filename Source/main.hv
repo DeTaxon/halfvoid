@@ -47,6 +47,7 @@ NonStopBuild := false
 OutputFile := char^
 main := !(char^[] args) -> int
 {
+	HotloadStream& = new VoidStream
 
 	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
 	for i : 9973

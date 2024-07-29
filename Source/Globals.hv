@@ -7,6 +7,8 @@ CurrentLine := task_local BoxExeLine^
 CurrentReturns := task_local ReturnsHolder^
 FuncStack := task_local List.{BoxFuncBody^}
 
+HotloadStream := ref Stream
+
 CurrentFuncWork := task_local CWorkFuncCompile^
 
 HVOperators := AVLSet.{StringSpan}

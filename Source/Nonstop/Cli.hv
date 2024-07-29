@@ -2,7 +2,7 @@
 CliWin := class extend WindowCli
 {
 	ErrorList := List.{Str}
-	LogList := List.{Str}
+	HotloadList := List.{Str}
 	ConsoleList := List.{Str}
 
 	tabs := LayoutTabs^
@@ -14,7 +14,7 @@ CliWin := class extend WindowCli
 				new MultilineText(ErrorList)
 			]),
 			new LayoutHorizontal(![
-				new MultilineText(LogList)
+				new MultilineText(HotloadList)
 			]),
 			new LayoutHorizontal(![
 				new MultilineText(ConsoleList)
@@ -88,6 +88,14 @@ EnterCliMode := !() -> void
 
 		globVar->{Stream^^}^ = newStream
 	}
+
+	HotloadStream& = new StreamOnLambda(null,(data,sLen) ==> [win&]{
+		st := Str
+		st->AsString = new String(data->{char^},sLen->{int})
+		win.HotloadList.Push(st)
+		win.Refresh()
+	})
+	HotloadStream& = new TextStream(HotloadStream&)
 
 	TSpawnTask(() ==> {
 

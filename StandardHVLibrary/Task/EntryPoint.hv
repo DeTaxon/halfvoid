@@ -83,10 +83,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	CurrentTask.OSFirstInit()
 
 
-	for it : #MarkedFunctions("CallAtStart")
-	{
-		it()
-	}
+	CallStartFunctions()
 
 	for it : #MarkedFunctions("ThreadBegin")
 	{

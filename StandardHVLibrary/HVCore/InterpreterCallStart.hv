@@ -1,0 +1,7 @@
+CallStartFunctions := !() -> void
+{
+	for it : #MarkedFunctions("CallAtStart")
+	{
+		it()
+	}
+}

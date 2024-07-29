@@ -2,20 +2,15 @@
 
 CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
 {
+	@once {
+		startFunc := intGetFunc("CallStartFunctions")
+		CompileAndRunCodeInner(startFunc->{BoxFuncBody^})
+	}
+	CompileAndRunCodeInner(funcToRun)
+}
+
+CompileAndRunCodeInner := !(BoxFuncBody^ funcToRun) -> void
+{
 	fnc := GInterpCntx.GetMCFunc(funcToRun)
 	MCInterpFunction(GInterpCntx&,fnc)
-
-	//builder_x64 := MCBuildContext_x86_64 
-
-	//builder_x64.Compile(fnc)
-
-	//bigMem := PageMemory
-	//bigMem.Create(8*1024*1024,"rwe")
-	//
-	//stream := ref builder_x64.ResultData
-
-	//stream.Read(bigMem.GetPointer(),bigMem.Size())
-
-	//ptr := bigMem.GetPointer()->{!()^->int}
-	//ptr()
 }

@@ -2,6 +2,9 @@ AppendClass BoxFuncBody
 {
 	CreateMCFunction := virtual !(MCBuildContext^ ctx) -> void
 	{
+		ParseBody()
+		WaitReadyState()
+
 		fType := GetType()->{TypeFunc^}
 		resType := fType.ResultType
 		ctx.InputsIndxCount = Params.Size()

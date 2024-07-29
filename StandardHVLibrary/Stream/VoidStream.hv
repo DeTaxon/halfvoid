@@ -1,0 +1,5 @@
+
+VoidStream := class extend Stream
+{
+
+}

@@ -1,7 +1,7 @@
 
 main := !(char^[] args) -> int
 {
-	printf_hv("Yep %i %p %s\n",15,null,"Hello")
+	printf("Yep %i %p %s\n",15,null,"Hello")
 }
 RunTest := !() -> void
 {
