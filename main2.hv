@@ -1,7 +1,21 @@
 
+C := class extend TGCObject
+{
+	TestFunc := virtual !() -> void
+	{
+		printf("yep\n")
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	printf("Yep %i %p %s\n",15,null,"Hello")
+	r := TGCObject^
+	r = new C
+
+	if r is in C
+	{
+		r.TestFunc()
+	}
 }
 RunTest := !() -> void
 {

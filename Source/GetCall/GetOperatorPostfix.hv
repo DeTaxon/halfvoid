@@ -36,7 +36,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			{
 				cl2 = new UnrefFuncCall(cl2)
 				cl2 = new BoxQuestionPointer(cl2)
-				cl2 = new PtrToRef(cl2)
+				cl2 = new PtrToRefAuto(cl2)
 			}
 			if cl2.GetType() is in TypePoint
 			{
@@ -66,7 +66,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 				{
 					cl2 = new UnrefFuncCall(cl2)
 					cl2 = new BoxQuestionPointer(cl2)
-					cl2 = new PtrToRef(cl2)
+					cl2 = new PtrToRefAuto(cl2)
 				}
 				if cl2.GetType() is in TypePoint
 				{
@@ -98,7 +98,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		if dObj.GetType() == null
 			return null
 		if dObj.GetType() is TypeArrayView
-			dObj = new PtrToRef(new PtrExchange(dObj,dObj.GetType()->{TypeArrayView^}.viewClassType.GetPoint()))
+			dObj = new PtrToRefAuto(new PtrExchange(dObj,dObj.GetType()->{TypeArrayView^}.viewClassType.GetPoint()))
 		Objs.Push(dObj)
 		SyntaxCompress(itm.Down.Right,PriorityData)
 		namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use varaible

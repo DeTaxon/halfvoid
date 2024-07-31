@@ -145,6 +145,13 @@ PtrToRef := class extend BoxExeObj
 		ctx.writeStream^ << "%TUnref" << resId
 	}
 }
+PtrToRefAuto := class extend PtrToRef
+{
+	this := !(BoxExeObj^ obj) -> void
+	{
+		super(obj)
+	}
+}
 RefExchange := class extend BoxExeObj
 {
 	resId := int

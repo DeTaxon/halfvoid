@@ -35,6 +35,7 @@ internalGetVTableVariable := !(@T2 obj) .{@FieldNumber} -> void //result replace
 }
 
 internalCheckIsInSameType := !(@T^ obj) .{@Cls} -> bool
+	#AddAutoCast(@1->{Cls^})
 {
 	return internalCheckIsInSameType(obj->VTable.0->{int^},Cls->TypeId)
 }

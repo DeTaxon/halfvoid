@@ -27,7 +27,8 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 	setCall := CreateFuncCall(StringSpan("="),![mainVar.proxy&,toSetVar])
 	
 	if setCall == null
-		obj.EmitError("Unknown error,  switch base does not have operator =")
+		return null
+	
 
 	mainVar.extraWork.Push(setCall)
 	CurrentFunc.AddLocalVar(mainVar)

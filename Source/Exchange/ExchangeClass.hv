@@ -22,7 +22,7 @@ ExchangePointerClassToBase := class extend ExchangeUnit
 
 		if inType.Base == expType
 		{
-			return new PtrToRef(obj)
+			return new PtrToRefAuto(obj)
 		}
 		if TypeFight(inType.Base,expType) == expType
 		{

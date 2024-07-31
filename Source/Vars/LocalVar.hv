@@ -49,7 +49,7 @@ LocalVar := class extend BoxExeObj
 	{
 		if isReference
 		{
-			return new PtrToRef(proxy&)
+			return new PtrToRefAuto(proxy&)
 		}else{
 			return proxy&
 		}

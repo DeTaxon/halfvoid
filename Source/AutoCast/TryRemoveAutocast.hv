@@ -33,7 +33,7 @@ tryUncastVar := !(BoxExeObj^& obj, HybridQueue.{LocalVar^,20} castedVars) -> boo
 	if cl == null
 		return false
 
-	if cl is PtrToRef
+	if cl is PtrToRefAuto
 		cl = cl->{PtrToRef^}.Down
 
 	if cl is not LocalVarProxy

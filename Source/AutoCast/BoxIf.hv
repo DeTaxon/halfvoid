@@ -9,7 +9,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 		checkObj := ifCheck->{IsSameTypeChecker^}
 
 		checkObj2 := ifCheck->{IsSameTypeChecker^}.DownObj
-		if checkObj2 is PtrToRef
+		if checkObj2 is PtrToRefAuto
 		{
 			checkObj2 = checkObj2->{PtrToRef^}.Down
 			objIsRef = true
@@ -21,7 +21,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 			resObj = new PtrExchange(checkObj->{IsSameTypeChecker^}.DownObj,checkObj->{IsSameTypeChecker^}.TargetType.GetPoint())
 			if objIsRef
 			{
-				resObj = new PtrToRef(resObj)
+				resObj = new PtrToRefAuto(resObj)
 			}
 			newVar := ToLocalVar(resObj,oldVar.itName)
 			newVar.AutoCastedFrom = oldVar
@@ -54,7 +54,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 		//TODO delete this after release
 
 		oldCall := fncCall.downs[0]
-		if oldCall is PtrToRef
+		if oldCall is PtrToRefAuto
 			oldCall = oldCall->{PtrToRef^}.Down
 		if oldCall is LocalVarProxy
 		{
@@ -94,7 +94,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 
 	firstObject := fncCall.downs[0]
 
-	if firstObject is PtrToRef
+	if firstObject is PtrToRefAuto
 		firstObject = firstObject->{PtrToRef^}.Down
 
 	if firstObject is not LocalVarProxy

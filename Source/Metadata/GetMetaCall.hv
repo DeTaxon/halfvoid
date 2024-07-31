@@ -25,7 +25,12 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 		{
 			r.EmitError("Unknown object to cast")
 		}
-		return GetExchange2(lObj,toType,false)
+		res := GetExchange2(lObj,toType,false)
+		if res != null
+			return res
+		return TryRemoveAutoCast(null,![lObj], (newVr,newObjs) ==> {
+			return GetExchange2(newObjs[0],toType,false)
+		})
 
 	}
 	return null

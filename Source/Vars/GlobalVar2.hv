@@ -171,7 +171,7 @@ GlobalVar2 := class extend BoxUnit
 			}
 			if tp is TypeArr
 			{
-				iter := tp
+				iter := tp->{Type^}
 				while iter is TypeArr
 					iter = iter.Base
 				if iter is TypeClass
@@ -212,7 +212,7 @@ GlobalVar2 := class extend BoxUnit
 		}
 		if tp is TypeArr
 		{
-			iter := tp
+			iter := tp->{Type^}
 			while iter is TypeArr
 				iter = iter.Base
 			if iter is TypeClass
@@ -222,7 +222,7 @@ GlobalVar2 := class extend BoxUnit
 	CreateCall := !() -> BoxExeObj^
 	{
 		if isReference
-			return new PtrToRef(proxy&)
+			return new PtrToRefAuto(proxy&)
 		return proxy&
 	}
 	createConstType := !(Type^ tp) -> BoxExeConstObj^

@@ -279,11 +279,11 @@ CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
 {
 	if vr is MemVarBorrowedRef
 	{
-		return new PtrToRef(vr->{MemVar^}.Value.CreateCall())
+		return new PtrToRefAuto(vr->{MemVar^}.Value.CreateCall())
 	}
 	if vr is MemVarRef
 	{
-		return new PtrToRef(vr->{MemVar^}.Value.CreateCall())
+		return new PtrToRefAuto(vr->{MemVar^}.Value.CreateCall())
 	}
 	if vr is in MemVar
 	{
