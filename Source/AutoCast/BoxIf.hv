@@ -89,7 +89,6 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 	if ptr is not AutoCastPropertie
 		return void
 
-	assert(asFunc.Attrs.IsMethod) //TODO
 	assert(fncCall.downs.Size() != 0) //TODO
 
 	firstObject := fncCall.downs[0]

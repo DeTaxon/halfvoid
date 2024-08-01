@@ -32,6 +32,7 @@ ExchangeArrayViewClassPtrToArrayView := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
 	{
+
 		if to is not TypeArrayView
 			return CmpNoExchange
 

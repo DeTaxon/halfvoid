@@ -23,7 +23,7 @@ ExchangeArrayHolderToArray := class extend ExchangeUnit
 {
 	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
 	{
-		if not obj is BoxArrayHolder
+		if obj is not BoxArrayHolder
 			return CmpNoExchange
 		if not expectResultRef
 			return CmpNoExchange

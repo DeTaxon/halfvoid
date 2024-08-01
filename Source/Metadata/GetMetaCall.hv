@@ -24,6 +24,7 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 		if lObj == null
 		{
 			r.EmitError("Unknown object to cast")
+			return null
 		}
 		res := GetExchange2(lObj,toType,false)
 		if res != null
