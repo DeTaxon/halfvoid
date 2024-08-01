@@ -9,6 +9,18 @@ BuildInVirtualCall := class extend BoxFuncCommon
 		funcIndex = inFuncIndex
 		SetType(inWFunc.GetType()->{TypeFunc^})
 	}
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
+	{
+		if wrappedFunc is in BoxFuncBody
+		{
+			fnc := wrappedFunc->{BoxFuncBody^}
+			assert(fnc.ParentScope is in BoxClass)
+			baseClass := fnc.ParentScope->{BoxClass^}
+			fam := baseClass.GetFamily()
+			fam.NotifyVirtualFuncUsage(fnc.Name)
+		}
+		return super(objs)
+	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 		f := ctx.writeStream

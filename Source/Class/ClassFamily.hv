@@ -1,0 +1,22 @@
+ClassFamily := class
+{
+	Classes := AVLSet.{BoxClass^}
+
+
+	UsedVirtualFunctions := AVLSet.{Str}
+	NotifyVirtualFuncUsage := !(Str funcName) -> void
+	{
+		UsedVirtualFunctions.Insert(funcName)
+
+		spn := funcName->AsString.AsStringSpan()
+		for cls : Classes
+		{
+			if not cls.PreVTableFuncs.Contain(spn)
+				continue
+			for fnc : cls.PreVTableFuncs[spn]
+			{
+				fnc.ParseBody()
+			}
+		}
+	}
+}

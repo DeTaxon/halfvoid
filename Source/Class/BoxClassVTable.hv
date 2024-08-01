@@ -103,7 +103,7 @@ AppendClass BoxClass
 				vFunc.SetName(fncName)
 				DefaultSpace.VirtualCleanMethods[fncName].Push(fnc)
 				DefaultSpace.VirtualMethods[fncName].Push(vFunc)
-				fnc.ParseBody()
+				//fnc.ParseBody()
 			}
 		}
 	}
@@ -233,7 +233,8 @@ VTableFunc := class extend VTableEntry
 	}
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void 
 	{
-		Value.PrintName(ctx)
+		obj := ConstFuncPtr(Value)
+		obj.PrintConst(ctx)
 	}
 	IsEq := virtual !(VTableEntry^ cmp) -> bool 
 	{

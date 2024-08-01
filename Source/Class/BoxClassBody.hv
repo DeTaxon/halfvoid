@@ -337,9 +337,26 @@ BoxClassBody := class extend BoxClassPoison
 
 		VTableState.Emit()
 
+		CheckVTableFuncUsage()
+
 		InheritStep(buildCtx)
 		FieldsState.Emit()
 
+	}
+
+	CheckVTableFuncUsage := !() -> void
+	{
+		fam := GetFamily()
+
+		for usedFunc : fam.UsedVirtualFunctions
+		{
+			spn := usedFunc->AsString.AsStringSpan()
+
+			if PreVTableFuncs.Contain(spn)
+			{
+				PreVTableFuncs[spn][^].ParseBody()
+			}
+		}
 	}
 
 	checkClassBody := !(Token^ bodyVal,@TT funcs) -> void
@@ -414,6 +431,7 @@ BoxClassBody := class extend BoxClassPoison
 									assert(asFunc != null and asFunc is in BoxFuncBody)
 									prepData = asFunc
 									asFunc->{BoxFuncBody^}.SetName(name)
+									asFunc->{BoxFuncBody^}.ParseBody()
 								}
 							}
 

@@ -29,6 +29,25 @@ BoxClass := class extend BoxUnit
 	PrimeParents := HybridQueue.{Tuple.{BoxClass^,BoxClass^,int},1}
 
 	TemplateParent := BoxClassTemplate^
+	Family := ClassFamily^
+
+	GetFamily := !() -> ClassFamily^
+	{
+		if Family != null
+			return Family
+
+		AwaitVTableStep()
+		if Parents.Size() != 0
+		{
+			Family = Parents[0].GetFamily()
+			Family.Classes.Insert(this&)
+			return Family 
+		}
+		
+		Family = new ClassFamily
+		Family.Classes.Insert(this&)
+		return Family
+	}
 
 	CreateCommon := !() -> void
 	{

@@ -27,6 +27,11 @@
 {
 	result->AsString =  new String(chData)
 }
+"->{}" := !(StringSpan chData) .{Str} -> Str
+	#FilterBeConst(1,false)
+{
+	result->AsString = chData.GetString()
+}
 
 StringOnCStr := class extend String
 {
