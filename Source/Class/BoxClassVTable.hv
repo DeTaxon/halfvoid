@@ -103,7 +103,10 @@ AppendClass BoxClass
 				vFunc.SetName(fncName)
 				DefaultSpace.VirtualCleanMethods[fncName].Push(fnc)
 				DefaultSpace.VirtualMethods[fncName].Push(vFunc)
-				//fnc.ParseBody()
+				if DisableScary
+				{
+					fnc.ParseBody()
+				}
 			}
 		}
 	}
