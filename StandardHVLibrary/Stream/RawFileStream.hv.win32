@@ -1,0 +1,81 @@
+
+RawFileStream := class extend Stream
+{
+	FileFd := void^
+
+	this := !(Str fileName, char^ options) -> void
+	{
+		Open(fileName,options)
+	}
+
+	Open := !(Str fileName, char^ options) -> bool
+	{
+		posFlg := 0
+		createFlg := 0
+
+
+		while options^ != 0
+		{
+			switch options^
+			{
+				case 'r'
+					posFlg = posFlg or_b GENERIC_READ
+				case 'w'
+					posFlg = posFlg or_b GENERIC_WRITE
+				case 'c'
+					createFlg = CREATE_NEW
+			}
+			options = options[1]&
+		}
+		if posFlg == 0
+			posFlg = GENERIC_READ
+		if createFlg == 0
+			createFlg = OPEN_EXISTING
+		nameU16 = Utf8ToUtf16(fileName)
+		FileFd = CreateFileW(nameU16.GetPointer(),posFlg,FILE_SHARE_READ,null,createFlg,FILE_ATTRIBUTE_NORMAL.null)
+
+		if FileFd == (-1)->{size_t}->{void^}
+			return false
+		return true
+	}
+	Read := virtual !(void^ data, s64 size) -> s64
+	{
+		if FileFd == null
+			return -1
+		redBytes := u32
+		if ReadFile(FileFd,data,size,redBytes&,null) == 0
+			return -1
+		return redBytes
+	}
+	Write := virtual !(void^ data, s64 size) -> s64
+	{
+		if FileFd == null
+			return -1
+		
+		written := u32
+		if WriteFile(FileFd,data,size,written&,null) == 0
+			return -1
+		return written
+	}
+	Close := virtual !() -> void
+	{
+		if FileFd == null
+			return void
+		CloseHandle(FileFd)
+		FileFd = null
+	}
+	Destroy := virtual !() -> void
+	{
+		Close()
+	}
+}
+RawFileStreamBorrow := class extend RawFileStream
+{
+	this := !(void^ fd) -> void
+	{
+		FileFd = fd
+	}
+	Destroy := virtual !() -> void
+	{
+	}
+}

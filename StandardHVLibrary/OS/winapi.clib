@@ -21,9 +21,13 @@
 		"OPEN_EXISTING" : 3,
 		"TRUNCATE_EXISTING" : 5,
 
+		"FILE_ATTRIBUTE_NORMAL" : 128,
+
 		"FILE_NOTIFY_CHANGE_LAST_WRITE" : 16
 	},
 	"funcs" : {
+
+		"GetStdHandle" : "void^,s32",
 		
 		"CreateFileA" : "void^,char^,int,int,void^,int,int,void^",
 		"CreateFileW" : "void^,u16^,int,int,void^,int,int,void^",

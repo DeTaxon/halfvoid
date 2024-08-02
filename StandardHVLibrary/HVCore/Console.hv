@@ -5,7 +5,16 @@ Console := ref Stream
 ConsoleInit := !() -> void
 	#Mark("CallAtStart")
 {
-	rawStream := new RawFileStreamBorrow(1)
+	rawStream := Stream^
+	if #OS() == "Linux"
+	{
+		rawStream = new RawFileStreamBorrow(1)
+	}
+	if #OS() == "Windows"
+	{
+		outHandle := GetStdHandle(-11)
+		rawStream = new RawFileStreamBorrow(outHandle)
+	}
 
 	Console& = new TextStream(rawStream)
 }

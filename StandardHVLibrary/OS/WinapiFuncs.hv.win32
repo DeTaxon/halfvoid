@@ -80,12 +80,20 @@ OVERLAPPED := class
 	hEvent := void^
 }
 
+Utf8ToUtf16 := !(Str itStr) -> Vector.{u16}
+{
+	Ut8ToUtf16_inner(itStr->AsString.Str(),result)
+}
 Utf8ToUtf16 := !(char^ itStr) -> Vector.{u16}
 {
+	Ut8ToUtf16_inner(itStr->AsString.Str(),result)
+}
+Utf8ToUtf16_inner := !(char^ itStr,Vector.{u16} res) -> void
+{
 	retSize := MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,null,0)
-	result.Resize(retSize + 1)
-	MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,result.GetPointer(),retSize)
-	result[retSize] = 0
+	res.Resize(retSize + 1)
+	MultiByteToWideChar(CP_UTF8,MB_PRECOMPOSED,itStr,-1,res.GetPointer(),retSize)
+	res[retSize] = 0
 }
 Utf16ToUtf8 := !(u16^ itStr) -> String^
 {
