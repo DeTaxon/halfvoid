@@ -186,6 +186,7 @@ List := class.{@T} extend TArrayView.{T}
 			itr.prev.next = newNode
 			itr.prev = newNode
 		}
+		itSize += 1
 	}
 	DeleteIf := !( !(T&)&->bool cb) -> void
 	{

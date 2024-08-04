@@ -33,14 +33,29 @@ inotify_wrapper_fd := class
 	{
 		@once {
 			this.fd = inotify_init1(2048)
+			
+			monitorThread := static Thread^
 
-			TSpawnTask(() ==> [this&]{
-				OSAsyncReadNonStop(this.fd,(blb) ==> [this&]{
+			monitorThread = new Thread(() ==> {
+				pollList := pollfd
+				pollList.fd = iw_fd.fd
+				pollList.events = POLLIN
 
-					ptr := blb.GetPointer()->{wd_struct^}
-					fileName := StringSpan(ptr.name[0]&,ptr.len)
+				buf := char[4096]
 
-					node := ref fileNodes[ptr.wd]
+				while true //TODO gracefull quit
+				{
+					pollList.revents = 0
+					poll(pollList&,1,1000)
+					if (pollList.revents and_b POLLIN) == 0
+						continue
+
+					redBytes := read(pollList.fd,buf[0]&,4096)
+
+					ptr := buf[0]&->{wd_struct^}
+					fileName := StringSpan(ptr.name[0]&)
+
+					node := ref iw_fd.fileNodes[ptr.wd]
 					sBuf := TEchoStream
 					sBuf << node.objectName << "/" << fileName
 
@@ -50,14 +65,41 @@ inotify_wrapper_fd := class
 					newFile.absPath = fullPath
 					newFile.objName = fileName.GetString()
 
+					TaskCheckMutex.Lock()
 					if node.nodeWork.isPaused
 					{
 						node.nodeWork.monitorTask.resume()
 						node.nodeWork.isPaused = false
-						node.nodeWork.changedObject = newFile
 					}
-				})
+					node.nodeWork.changedObjects.Push(newFile)
+					TaskCheckMutex.Unlock()
+				}
 			})
+
+			//TSpawnTask(() ==> [this&]{
+			//	OSAsyncReadNonStop(this.fd,(blb) ==> [this&]{
+
+			//		ptr := blb.GetPointer()->{wd_struct^}
+			//		fileName := StringSpan(ptr.name[0]&,ptr.len)
+
+			//		node := ref fileNodes[ptr.wd]
+			//		sBuf := TEchoStream
+			//		sBuf << node.objectName << "/" << fileName
+
+			//		fullPath := sBuf.GetString()
+
+			//		newFile := new File()
+			//		newFile.absPath = fullPath
+			//		newFile.objName = fileName.GetString()
+
+			//		if node.nodeWork.isPaused
+			//		{
+			//			node.nodeWork.monitorTask.resume()
+			//			node.nodeWork.isPaused = false
+			//			node.nodeWork.changedObject = newFile
+			//		}
+			//	})
+			//})
 		}
 
 
@@ -95,10 +137,11 @@ inotify_wrapper_fd := class
 			thrd.switchToMain()
 			TaskCheckMutex.Unlock()
 
-			if thisWork.changedObject != null
+			//TODO also move content to temporary object
+			if thisWork.changedObjects.Size() != 0
 			{
-				cb(thisWork.changedObject)
-				thisWork.changedObject = null
+				cb(thisWork.changedObjects[^])
+				thisWork.changedObjects.Destroy()
 			}
 		}
 	}
@@ -112,7 +155,7 @@ inotify_wrapper_node := class
 NodeWork := class
 {
 	monitorTask := Task^
-	changedObject := FSObject^ //TODO multiple objects
+	changedObjects := List.{FSObject^}
 	isPaused := bool
 }
 

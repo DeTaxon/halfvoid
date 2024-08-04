@@ -48,7 +48,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 				TaskTimersArray.Pop()
 				TaskLoopWorkCounter -= 1
 			}
-			waitTime := 1->{double}
+			waitTime := 1
 			if TaskTimersArray.Size() != 0
 			{
 				waitTime = TaskTimersArray[0].0 - nowTime

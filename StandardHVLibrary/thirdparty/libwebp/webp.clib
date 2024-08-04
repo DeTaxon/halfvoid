@@ -3,7 +3,8 @@
 	"initname" : "webp_init",
 	"libs" : [
 		"libwebp.so",
-		"libwebp.dll"
+		"libwebp.dll",
+		"libwebp-7.dll"
 	],
 	"funcs" : {
 		"WebPGetFeaturesInternal" : "int,void^,u64,void^,int",

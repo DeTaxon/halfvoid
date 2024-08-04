@@ -464,6 +464,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				ptrRes->{quantf^}^ = ptr1->{quantf^}^ * (ptr2->{quantf^}^)
 			}else if objTyp == GTypeVec4f {
 				ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ * (ptr2->{vec4f^}^)
+			}else if objTyp == GTypeVec2f {
+				ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ * (ptr2->{vec2f^}^)
 			}else{
 				printf("failed to mul, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)

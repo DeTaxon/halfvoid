@@ -64,7 +64,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		if namedArgs.Contain(StringSpan("CacheOn")) and CFile != null
 		{
 			userCmd.UseCache = true
-			userCmd.CachedValues = CFile.GetModule("EmbedPi")
+			userCmd.CachedValues = CFile.GetModule("EmbedPi") //TODO get name from module
 		}
 
 

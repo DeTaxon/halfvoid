@@ -36,7 +36,7 @@ TaskWorker := class extend TGCObject
 	{
 		startTask := new Task(cb.Capture())
 
-		TaskCheckMutex.Unlock()
+		TaskCheckMutex.Lock()
 		
 		AllTasks.Insert(startTask)
 		CreateTasks.Push(startTask)

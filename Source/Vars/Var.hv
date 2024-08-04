@@ -161,7 +161,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			{
 				fc := exeObj->{BoxFuncCall^}
 				if fc.ResultVar != null
-					return new AliasVarOhNo(name,exeObj,fc.ResultVar)
+				{
+					fc.ResultVar.itName = name
+					return new AliasVarOhNo(name,exeObj,fc.ResultVar) //TODO maybe i can just return fc.ResultVar
+				}
 				
 			}
 			if refVar and not exeObj.IsMem()

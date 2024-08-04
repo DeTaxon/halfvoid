@@ -69,6 +69,8 @@ StreamOnLambda := class extend Stream
 
 EnterCliMode := !() -> void
 {
+	ExpectWorkers(16)
+
 	win := new CliWin
 
 	conVar := intGetGlobalVar("Console")
@@ -104,7 +106,6 @@ EnterCliMode := !() -> void
 		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> [win&] {
 			asFile := changedFile->{File^}
 
-
 			flId := asFile.GetId()
 
 
@@ -124,7 +125,11 @@ EnterCliMode := !() -> void
 					break
 			}
 			if foundFile == null
+			{
+				HotloadStream << "Changed file " << changedFile.GetName() << " not found in list\n"
 				return void
+			}
+			HotloadStream << "Changed file " << changedFile.GetName() <<" , reloading content\n"
 
 			foundFile.ReloadFile(hotload&,asFile)
 

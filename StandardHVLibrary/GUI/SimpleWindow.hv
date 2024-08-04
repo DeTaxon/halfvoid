@@ -162,7 +162,7 @@ Window := class extend GLFWWindow
 				SwapBuffers()
 				PollEvents()
 			}else{
-				@work glfwWaitEventsTimeout(0.1)
+				@work glfwWaitEventsTimeout(0.01)
 			}	
 		}
 	}
