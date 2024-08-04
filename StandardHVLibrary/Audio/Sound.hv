@@ -1,0 +1,20 @@
+Sound := class extend TGCObject
+{
+	format := int
+	data := void^
+	size := u64
+	freq := u64
+
+	buf := u32
+	this := !(File^ fil) -> void
+	{
+		//buf = alutCreateBufferFromFile(fil.GetName().Str())
+		alutLoadWAVFile(fil.GetPath().Str(), format&, data&, size&, freq&,null)
+		alGenBuffers(1,buf&)
+		alBufferData(buf,format,data,size,freq)
+	}
+	Destroy := virtual !() -> void
+	{
+		
+	}
+}

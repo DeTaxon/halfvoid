@@ -1,0 +1,81 @@
+SoundEngine := class extend TGCObject
+{
+	quit := bool
+	pollTask := Task^
+
+	device := void^
+	context := void^
+
+
+	freeSources := List.{int}
+	busySources := List.{SoundPlayProgress^}
+
+	this := !() -> void
+	{
+		device = alcOpenDevice(null)
+		context = alcCreateContext(device,null)
+		alcMakeContextCurrent(context)
+
+		@once {
+			w := 0
+			alutInit(w&,null)
+		}
+	}
+	CreateSound := !(File^ fil) -> Sound^
+	{
+		return new Sound(fil)	
+	}
+
+	PlaySound := !(Sound^ snd) -> SoundPlayProgress^
+	{
+		source := getSource()
+		alSourcei(source,AL_BUFFER,snd.buf)
+		alSourcei(source,AL_LOOPING,0)
+		alSourcePlay(source)
+		
+		result = new SoundPlayProgress
+		result.SourceId = source
+		result.PlaySound = snd
+	}
+	PlaySoundLooped := !(Sound^ snd) -> SoundPlayProgress^
+	{
+		source := getSource()
+		alSourcei(source,AL_BUFFER,snd.buf)
+		alSourcei(source,AL_LOOPING,1)
+		alSourcePlay(source)
+		
+		result = new SoundPlayProgress
+		result.SourceId = source
+		result.PlaySound = snd
+	}
+	getSource := !() -> int
+	{
+		if freeSources.Size() == 0
+		{
+			source := u32
+			alGenSources(1,source&)
+			freeSources.Push(source)
+		}
+		return freeSources.Pop()
+	}
+
+	CreateTask := !() -> void
+	{
+		if pollTask != null
+			return void
+		quit = false
+
+		pollTask = TSpawnTask(() ==> {
+			while not quit
+			{
+				TSleep(0.1) //TODO somehow async
+			}
+		})
+	}
+
+	Stop := !() -> void
+	{
+		quit = true
+		pollTask?.AwaitCompletion()
+	}
+}

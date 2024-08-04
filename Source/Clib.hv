@@ -112,7 +112,7 @@ CLib := class extend ModuleInterface
 		{
 			if initFunc == null
 			{
-				initFunc = new BoxFuncBodyStr(GetFuncType(GTypeVoid))
+				initFunc = new BoxFuncBodyStr(name,GetFuncType(GTypeVoid))
 				itFuncs[name] = initFunc
 			}
 			return initFunc
@@ -267,6 +267,8 @@ CLib := class extend ModuleInterface
 	CreateInitPart := virtual !() -> void
 	{
 		if initFunc == null
+			return void
+		if initFunc.IsComplete()
 			return void
 
 		dt := TEchoStream

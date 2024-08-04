@@ -1,0 +1,25 @@
+SoundPlayProgress := class extend TGCObject
+{
+	SourceId := int
+	PlaySound := Sound^
+	PlayState := THatch
+
+	AwaitCompletion := !() -> void
+	{
+		PlayState.Await()
+	}
+	IsFinished := !() -> bool
+	{
+		state := int
+		alGetSourcei(SourceId,AL_SOURCE_STATE,state&)
+		return state != AL_PLAYING 
+	}
+	GetProgress := !() -> float
+	{
+		alGetSourcef(SourceId,AL_SEC_OFFSET,result&)
+	}
+	Cancel := !() -> void
+	{
+
+	}
+}

@@ -77,6 +77,10 @@ Task := class extend TGCObject
 			}
 		}
 	}
+	AwaitCompletion := !() -> void
+	{
+		finishedWork.Await()
+	}
 }
 
 TaskStackUsageInfo := class

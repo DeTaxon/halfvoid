@@ -230,6 +230,11 @@ main := !(char^[] args) -> int
 
 	if WorkBagPrintErrors()
 		exit(0)
+	for it : CodeSpaces
+	{
+		for libs : it.Modules
+			libs.CreateInitPart()
+	}
 
 	if NonStopBuild
 	{

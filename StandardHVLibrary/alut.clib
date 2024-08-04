@@ -1,0 +1,17 @@
+
+{
+	"link" : "dynamic",
+	"initname" : "alut_init",
+	"libs" : [
+		"libalut.so"
+	],
+	"funcs" : {
+		"alutInit" : "int,int^,char^^",
+		"alutCreateBufferFromFile" : "u32,char^",
+		"alutCreateBufferHelloWorld" : "u32",
+		"alutLoadWAVFile" : "void,char^,int^,void^^,u64^,u64^,int^",
+
+		"alutGetError" : "int",
+		"alutGetErrorString" : "char^,int"
+	}
+}

@@ -1,0 +1,46 @@
+{
+	"link" : "dynamic",
+	"initname" : "openal_init",
+	"libs" : [
+		"libopenal.so",
+		"libopenal-1.dll",
+		"soft_oal.dll"
+	],
+	"consts" : {
+		"AL_LOOPING" : "0x1007",
+		"AL_BUFFER" : "0x1009",
+		"AL_FORMAT_MONO16" : "0x1101",
+
+		"AL_LOOPING" : "0x1007",
+
+		"AL_SOURCE_STATE" : "0x1010",
+
+		"AL_INITIAL" : "0x1011"
+		"AL_PLAYING" : "0x1012"
+		"AL_PAUSED" : "0x1013"
+		"AL_STOPPED" : "0x1014"
+		
+		"AL_SEC_OFFSET" : "0x1024"
+		"AL_SAMPLE_OFFSET" : "0x1025"
+		"AL_BYTE_OFFSET" : "0x1026"
+	}
+	"funcs" : {
+		
+		"alcOpenDevice" : "void^,char^",
+		"alcCreateContext" : "void^,void^,...",
+		"alcMakeContextCurrent" : "void,void^",
+		"alGenBuffers" : "void,int,u32^",
+		"alBufferData" : "void,u32,int,void^,int,int",
+
+		"alGenSources" : "void,int,u32^",
+
+		"alSourcei" : "void,u32,int,int",
+		"alSourcef" : "void,u32,int,float",
+		"alGetSourcei" : "void,u32,int,int^"
+		"alGetSourcef" : "void,u32,int,float^"
+
+		"alSourcePlay" : "void,u32"
+		"alSourceRewind" : "void,u32"
+		"alSourceStop" : "void,u32"
+	}
+}

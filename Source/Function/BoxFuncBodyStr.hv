@@ -1,9 +1,9 @@
 BoxFuncBodyStr := class extend BoxFuncBody
 {
-	this := !(TypeFunc^ fncType) -> void
+	funcIsComplete := bool
+	this := !(StringSpan setName,TypeFunc^ fncType) -> void
 	{
-
-		Name = "anon"
+		Name = setName
 		SetType(fncType)
 		readyState.Emit()
 		ResultTypeHatch.Emit()
@@ -38,6 +38,8 @@ BoxFuncBodyStr := class extend BoxFuncBody
 			itr = itr.Right
 		}
 		ParseBodyForced()
+		funcIsComplete = true
 	}
 	ParseBody := virtual !() -> void {}
+	IsComplete := virtual !() -> bool { return funcIsComplete }
 }
