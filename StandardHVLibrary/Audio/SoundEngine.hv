@@ -15,11 +15,6 @@ SoundEngine := class extend TGCObject
 		device = alcOpenDevice(null)
 		context = alcCreateContext(device,null)
 		alcMakeContextCurrent(context)
-
-		@once {
-			w := 0
-			alutInit(w&,null)
-		}
 	}
 	CreateSound := !(File^ fil) -> Sound^
 	{

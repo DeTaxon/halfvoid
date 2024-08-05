@@ -94,8 +94,6 @@ BoxFuncCall := class extend BoxExeObj
 						defToken.EmitError("Could not execute default token, called function is incorrect")
 					downs.Push(newCall)
 				}
-				
-				continue
 			}
 
 			newObj := downs[i]

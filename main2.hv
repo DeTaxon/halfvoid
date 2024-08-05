@@ -8,7 +8,7 @@ main := !(char^[] args) -> int
 	snd := eng.CreateSound(FSGetFile("Toasty.wav"))
 	prog := eng.PlaySound(snd)
 
-	TSleep(3.0)
+	TSleep(2.0)
 	
 	eng.Stop()
 }

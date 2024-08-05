@@ -1,20 +1,93 @@
 Sound := class extend TGCObject
 {
+	data := Blob^
 	format := int
-	data := void^
-	size := u64
 	freq := u64
 
 	buf := u32
 	this := !(File^ fil) -> void
 	{
-		//buf = alutCreateBufferFromFile(fil.GetName().Str())
-		alutLoadWAVFile(fil.GetPath().Str(), format&, data&, size&, freq&,null)
+		mp := fil.GetMap()
+		ptr := mp.Get()->{u8^}
+		siz := mp.Size()
+
+		isStereo := false
+		bitsPerSample := int
+
+		i := 12
+		while i < siz
+		{
+			base := ptr[i]&->{WAVE_File_Header^}
+			spn := StringSpan(base.ckId&->{char^},4)
+			switch spn
+			{
+				case "fmt "
+					fileInfo := ptr[i]&->{WAVE_fmt_chunk^}
+					freq = fileInfo.nSamplesPerSec
+					assert(fileInfo.nChannels <= 2) //TODO somehow 5.1 channels?
+					isStereo = fileInfo.nChannels == 2
+					bitsPerSample = fileInfo.wBitsPerSample
+				case "data"
+					data = MakeBlob(base.ckSize)
+					memcpy(data.GetPointer(),ptr[i + 8]&,data.Size())
+					
+			}
+			asHeader := ptr[i]&->{WAVE_fmt_chunk^}
+
+			//TODO LIST chunk
+
+			i += asHeader.ckSize + 8
+		}
+		if isStereo{
+			if bitsPerSample == 16
+			{
+				format = AL_FORMAT_STEREO16
+			}else{
+				format = AL_FORMAT_STEREO8
+				assert(bitsPerSample == 8)
+			}
+		}else{
+			if bitsPerSample == 16
+			{
+				format = AL_FORMAT_MONO16
+			}else{
+				format = AL_FORMAT_MONO8
+				assert(bitsPerSample == 8)
+			}
+		}
+
 		alGenBuffers(1,buf&)
-		alBufferData(buf,format,data,size,freq)
+		alBufferData(buf,format,data.GetPointer(),data.Size(),freq)
 	}
 	Destroy := virtual !() -> void
 	{
 		
 	}
 }
+
+WAVE_File_Header := class
+{
+	ckId := s32
+	ckSize := s32
+	dataId := s32
+}
+WAVE_fmt_chunk := class
+{
+	ckId := s32
+	ckSize := s32
+	wFormatTag := s16
+	nChannels := s16
+	nSamplesPerSec := s32
+	nAvgBytesPerSec := s32
+	nBlockAlign := s16
+	wBitsPerSample := s16
+	cbSize := s16
+	wValidBitsPerSample := s32
+	dwChannelMask := s32
+	SubFormat := u8[16]
+}
+
+WAVE_FORMAT_PCM := 0x0001
+WAVE_FORMAT_IEEE_FLOAT := 0x0003
+WAVE_FORMAT_ALAW := 0x0007
+WAVE_FORMAT_EXTENSIBLE := 0xFFFE
