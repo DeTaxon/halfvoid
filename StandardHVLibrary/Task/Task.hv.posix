@@ -64,10 +64,10 @@ AppendClass Task
 	}
 	switchToTask := !() -> void
 	{
-		if #Tracy() and GlobalTracyInUse
-		{
-			___tracy_fiber_enter(taskNames[taskId].0[0]&)
-		}
+		//if #Tracy() and GlobalTracyInUse
+		//{
+		//	___tracy_fiber_enter(taskNames[taskId].0[0]&)
+		//}
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&

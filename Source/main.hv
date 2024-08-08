@@ -32,7 +32,6 @@ UseExtra := false
 
 GVInitInterpreted := true
 
-UseTracy := false
 
 RunMode := bool
 RunModeFuncName := char^
@@ -75,6 +74,9 @@ main := !(char^[] args) -> int
 		osCLIBFile = ".clib.win32"
 	}
 
+
+	AddCompilerVars := List.{Str}
+
 	i := 1
 	while i < args.Size()
 	{
@@ -89,8 +91,9 @@ main := !(char^[] args) -> int
 				i += 1
 				RunModeFuncName = args[i]
 				RunMode = true
-			case "-tracy"
-				UseTracy = true
+			case "-var"
+				i += 1
+				AddCompilerVars.Push(args[i])
 			case "-nonstop"
 				NonStopBuild = true
 			case "-no-scary"
@@ -175,6 +178,11 @@ main := !(char^[] args) -> int
 	TupleInit()
 	PreInitTaskLocal()
 	cuId = GetNewId()
+
+	for compilerVar : AddCompilerVars
+	{
+		CompilerVars[compilerVar] = GBoolTrue
+	}
 
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseClasses()

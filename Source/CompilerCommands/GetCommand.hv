@@ -44,12 +44,8 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return GetExeInt(TLSSize)
 	}
-	if cmd == "#Tracy"
-	{
-		if UseTracy
-			return GBoolTrue
-		return GBoolFalse
-	}
+	if cmd == "#Var"
+		return GetCompilerCommand(itm) 
 	if cmd == "#ThisClass"
 	{
 		itrScope := CurrentScope

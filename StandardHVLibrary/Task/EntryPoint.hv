@@ -90,10 +90,10 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 		it()
 	}
 	
-	if #Tracy()
-	{
-		GlobalTracyInUse = true
-	}
+	//if #Tracy()
+	//{
+	//	GlobalTracyInUse = true
+	//}
 
 
 	TSpawnTask(() ==> [argv,argc] {	
@@ -110,10 +110,10 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 		it()
 	}
 
-	if #Tracy()
-	{
-		GlobalTracyInUse = false
-	}
+	//if #Tracy()
+	//{
+	//	GlobalTracyInUse = false
+	//}
 
 	TaskContextDestructor()
 	TaskMainTaskWorker = null

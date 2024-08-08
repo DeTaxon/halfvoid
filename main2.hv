@@ -1,9 +1,7 @@
 
 main := !(char^[] args) -> int
 {
-	c := Str
-	c = "15"
-	printf("test %i\n",c.Size())
+	printf("test %i\n",#Var("Tracy"))
 }
 RunTest := !() -> void
 {

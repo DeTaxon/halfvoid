@@ -17,27 +17,27 @@ Task := class extend TGCObject
 	{
 		taskLambda = cb
 
-		if #Tracy()
-		{
+		//if #Tracy()
+		//{
 
-			if taskNamesFree != 0
-			{
-				taskNamesFree -= 1
-				for it, ind : taskNames
-				{
-					if it.1
-						continue
-					taskId = ind
-					break
-				}
-			}else{
-				taskIdIterator += 1
-				taskId = taskIdIterator
-			}
-			taskData := ref taskNames[taskId]
-			sprintf(taskNames[taskId].0[0]&,"Task%i\n",taskId)
-			taskData.1 = true
-		}
+		//	if taskNamesFree != 0
+		//	{
+		//		taskNamesFree -= 1
+		//		for it, ind : taskNames
+		//		{
+		//			if it.1
+		//				continue
+		//			taskId = ind
+		//			break
+		//		}
+		//	}else{
+		//		taskIdIterator += 1
+		//		taskId = taskIdIterator
+		//	}
+		//	taskData := ref taskNames[taskId]
+		//	sprintf(taskNames[taskId].0[0]&,"Task%i\n",taskId)
+		//	taskData.1 = true
+		//}
 	}
 	startTaskThread := !() -> void
 	{
@@ -60,11 +60,11 @@ Task := class extend TGCObject
 
 	Destroy := virtual !() -> void
 	{
-		if #Tracy()
-		{
-			taskNamesFree += 1
-			taskNames[taskId].1 = false
-		}
+		//if #Tracy()
+		//{
+		//	taskNamesFree += 1
+		//	taskNames[taskId].1 = false
+		//}
 
 		OSDestroy()
 		taskLambda = null
