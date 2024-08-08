@@ -230,14 +230,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if dwnRes.GetType() is not TypeStr //TODO error
 			return null
 
-		if dwnRes.IsMem()
-		{
-			unrf := new UnrefFuncCall(dwnRes)
-			exc := new PtrExchange(unrf,GTypeStringP.GetPoint())
-			return new PtrToRef(exc)
-		}else{
-			return new PtrExchange(dwnRes,GTypeStringP)
-		}
+		return strAsString(dwnRes)
 	}
 
 	printf("hm %s\n",right.Value)
@@ -245,6 +238,17 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	
 	assert(false)
 	return null
+}
+strAsString := !(BoxExeObj^ obj) -> BoxExeObj^
+{
+	if obj.IsMem()
+	{
+		unrf := new UnrefFuncCall(obj)
+		exc := new PtrExchange(unrf,GTypeStringP.GetPoint())
+		return new PtrToRef(exc)
+	}else{
+		return new PtrExchange(obj,GTypeStringP)
+	}
 }
 
 getMetaDownType := !(Token^ obj) -> Type^

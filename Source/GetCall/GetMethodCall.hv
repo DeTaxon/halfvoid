@@ -82,6 +82,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(ptrCall,Objs)?
 	}
 
+
 	
 
 	itm.EmitError("Method not found")
@@ -148,6 +149,12 @@ innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, BoxExeObj^[] sObjs,Box
 		return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
 			return innerTryGetMethodCall(name,newVr,newObjs,consts)
 		})
+	}
+
+	if vr?.GetType() == GTypeStr
+	{
+		asSt := strAsString(vr)
+		return innerTryGetMethodCall(name,asSt,sObjs,consts)
 	}
 	return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
 		return innerTryGetMethodCall(name,newVr,newObjs,consts)

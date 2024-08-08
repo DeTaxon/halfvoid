@@ -20,6 +20,18 @@ SoundEngine := class extend TGCObject
 	{
 		return new Sound(fil)	
 	}
+	ReserveSources := !(int exp) -> void
+	{
+		diff := exp - freeSources.Size()
+		if exp <= 0
+			return void
+		for i : diff
+		{
+			source := u32
+			alGenSources(1,source&)
+			freeSources.Push(source)
+		}
+	}
 
 	PlaySound := !(Sound^ snd) -> SoundPlayProgress^
 	{
@@ -31,6 +43,8 @@ SoundEngine := class extend TGCObject
 		result = new SoundPlayProgress
 		result.SourceId = source
 		result.PlaySound = snd
+
+		busySources.Push(result)
 	}
 	PlaySoundLooped := !(Sound^ snd) -> SoundPlayProgress^
 	{
@@ -42,6 +56,8 @@ SoundEngine := class extend TGCObject
 		result = new SoundPlayProgress
 		result.SourceId = source
 		result.PlaySound = snd
+
+		busySources.Push(result)
 	}
 	getSource := !() -> int
 	{
@@ -60,9 +76,26 @@ SoundEngine := class extend TGCObject
 			return void
 		quit = false
 
-		pollTask = TSpawnTask(() ==> {
-			while not quit
+		pollTask = TSpawnTask(() ==> [q = quit&]{
+			while not q^
 			{
+				metFinished := false
+
+				@work {
+					for it : busySources
+					{
+						if it.IsFinished()
+						{
+							metFinished = true
+							freeSources.Push(it.SourceId)
+							it.PlayState.Emit()
+						}
+					}
+				}
+				if metFinished
+				{
+					busySources.DeleteIf(x => x.PlayState.Emited())
+				}
 				TSleep(0.1) //TODO somehow async
 			}
 		})

@@ -1,16 +1,9 @@
 
 main := !(char^[] args) -> int
 {
-	
-	eng := new SoundEngine()
-	eng.CreateTask()
-
-	snd := eng.CreateSound(FSGetFile("Toasty.wav"))
-	prog := eng.PlaySound(snd)
-
-	TSleep(2.0)
-	
-	eng.Stop()
+	c := Str
+	c = "15"
+	printf("test %i\n",c.Size())
 }
 RunTest := !() -> void
 {

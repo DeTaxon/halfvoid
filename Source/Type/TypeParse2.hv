@@ -394,6 +394,8 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 }
 CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxUnit^} resCnsts) -> BoxExeConstObj^
 {
+	if itm == null
+		return null
 
 	if itm is TokenIndent
 	{

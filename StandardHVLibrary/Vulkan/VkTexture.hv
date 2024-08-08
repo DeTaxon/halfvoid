@@ -103,7 +103,7 @@ TVkTexture := class
 	}
 	CreateTexture := !(File^ itFile) -> void
 	{	
-		imgFile := TImageFile(itFile)
+		imgFile := ImageFile(itFile)
 
 		useAlpha := imgFile.haveAlpha
 		//if not vkRGB8Support //TODO add info to instance?

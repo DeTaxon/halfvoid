@@ -12,7 +12,7 @@ SoundPlayProgress := class extend TGCObject
 	{
 		state := int
 		alGetSourcei(SourceId,AL_SOURCE_STATE,state&)
-		return state != AL_PLAYING 
+		return state == AL_STOPPED
 	}
 	GetProgress := !() -> float
 	{

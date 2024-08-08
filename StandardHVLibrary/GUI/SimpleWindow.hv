@@ -74,14 +74,15 @@ Window := class extend GLFWWindow
 
 		while not ShouldClose()
 		{
-			if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration)
+			if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration) or true
 			{
 				imgGeneration = vkOverlay.DataGeneration
 				cmdGeneration = vkOverlay.CmdGeneration
 
 				surfaceIndex := u32
 				drawRes := true
-				@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+				//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
 				if not drawRes or outdatedWindowSize
 				{
@@ -114,7 +115,7 @@ Window := class extend GLFWWindow
 				w := vInstance.GetSurfaceWidth()
 				h := vInstance.GetSurfaceHeight()
 
-				if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration)
+				if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration) or true
 				{
 					cmdBuf.cmdGen = vkOverlay.CmdGeneration
 
@@ -159,8 +160,10 @@ Window := class extend GLFWWindow
 				vInstance.DrawPresentImage(surfaceIndex)
 				cmdBuf.inited = true
 
-				SwapBuffers()
+
+				//SwapBuffers()
 				PollEvents()
+				TaskYield()
 			}else{
 				@work glfwWaitEventsTimeout(0.01)
 			}	
