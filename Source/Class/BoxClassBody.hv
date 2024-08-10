@@ -182,7 +182,7 @@ BoxClassBody := class extend BoxClassPoison
 
 	this := !(bool isPacked,HybridQueue.{Tuple.{Token^,InheritanceType},2} parents,Token^ bdy) -> void
 	{
-		ItName = "anon" //todo
+		Name = "anon" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 		
@@ -203,11 +203,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		if startedParse
 		{
-			ComputeDesire(parseTask?.Desired,CurrentTask.Desired)
-			if ItName in !["TLambda","BoxEnum"]
-			{
-				parseTask?.Desired += 10
-			}
+			//ComputeDesire(parseTask?.Desired,CurrentTask.Desired)
 			return void
 		}
 		startedParse = true
@@ -220,11 +216,7 @@ BoxClassBody := class extend BoxClassPoison
 			CurrentFile = cls.classFile
 			cls.ParseBody()	
 		})
-		ComputeDesire(parseTask.Desired,CurrentTask.Desired)
-			if ItName in !["TLambda","BoxEnum"]
-			{
-				parseTask?.Desired += 10
-			}
+		//ComputeDesire(parseTask.Desired,CurrentTask.Desired)
 	}
 	AddClassWork := !() -> void
 	{

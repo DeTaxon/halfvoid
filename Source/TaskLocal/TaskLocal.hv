@@ -109,7 +109,7 @@ BoxClassTupleDelayed := class extend BoxClass
 	fieldsHatch := THatch
 	this := !() -> void
 	{
-		ItName = "anon" //todo
+		Name = "anon" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 	}

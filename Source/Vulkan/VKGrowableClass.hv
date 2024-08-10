@@ -20,7 +20,7 @@ VKGrowableClass := class extend BoxClass
 	{
 		itModule = bs
 
-		ItName = "VulkanFunctionsClass" //todo
+		Name = "VulkanFunctionsClass" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&) //TODO remove duplicate from BoxClassBody,BoxTuple
 

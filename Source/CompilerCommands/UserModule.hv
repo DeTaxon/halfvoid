@@ -23,7 +23,7 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	parents.Emplace(par1,c)
 
 	resultClass := new BoxClassBody(false,parents,bdy)
-	resultClass.ItName = StringSpan("ModuleName")
+	resultClass.Name = StringSpan("ModuleName")
 
 	newModule.bodyClass = resultClass
 

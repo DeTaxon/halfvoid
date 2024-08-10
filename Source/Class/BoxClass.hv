@@ -15,7 +15,7 @@ BoxClass := class extend BoxUnit
 	Reserved := HybridQueue.{BoxClass^,1}
 	ApplyedReserve := HybridQueue.{BoxClass^,1}
 
-	ItName := StringSpan
+	Name := StringSpan
 
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
@@ -54,7 +54,7 @@ BoxClass := class extend BoxUnit
 	}
 	SetName := !(StringSpan name) -> void
 	{
-		ItName = name
+		Name = name
 	}
 
 	printFieldsPath := !(LLVMWriteContext^ ctx, bool^ needComma) -> void
@@ -133,9 +133,9 @@ BoxClass := class extend BoxUnit
 
 			f^ << "!" << ItId
 			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
-			f^ << ItName
+			f^ << Name
 			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: "<< ItSize*8 <<", flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""
-			f^ << ItName
+			f^ << Name
 			f^ << "\")\n"
 		}
 	}
@@ -218,7 +218,7 @@ BoxClass := class extend BoxUnit
 			
 			clsName := name[0..indx]
 			funcName := name[(indx+1)..0]
-			if clsName == ItName
+			if clsName == Name
 			{
 				if itSpace.Methods.Contain(funcName)
 				{
@@ -331,7 +331,7 @@ TypeClass := class extend Type
 	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		f^ << ToClass.ItName
+		f^ << ToClass.Name
 		if ToClass.Constants?.Constants.Size() != 0
 		{
 			f^ << "{"

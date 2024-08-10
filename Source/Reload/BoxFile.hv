@@ -88,7 +88,7 @@ AppendClass BoxFile
 
 			for it : classNames
 			{
-				if it.0^ != cls.ItName
+				if it.0^ != cls.Name
 					continue
 				foundClass = it.1
 				className = it.0

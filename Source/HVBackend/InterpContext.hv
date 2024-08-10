@@ -37,35 +37,35 @@ MCInterpContext := class
 
 		if classVar != null
 		{
-			if classVar.ItName == "BlobOnVector"
+			if classVar.Name == "BlobOnVector"
 			{
 				free(result)
 				result = BlobOnVector->VTable
 				globalVariables[vr] = result
 				return void
 			}
-			if classVar.ItName == "File"
+			if classVar.Name == "File"
 			{
 				free(result)
 				result = File->VTable
 				globalVariables[vr] = result
 				return void
 			}
-			if classVar.ItName == "StringSpan"
+			if classVar.Name == "StringSpan"
 			{
 				free(result)
 				result = StringSpan->VTable
 				globalVariables[vr] = result
 				return void
 			}
-			if classVar.ItName == "String"
+			if classVar.Name == "String"
 			{
 				free(result)
 				result = String->VTable
 				globalVariables[vr] = result
 				return void
 			}
-			//if classVar.ItName == "XML"
+			//if classVar.Name == "XML"
 			//{
 			//	free(result)
 			//	result = XML->VTable

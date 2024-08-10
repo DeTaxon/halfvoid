@@ -25,7 +25,7 @@ BoxClassTuple := class extend BoxClassPoison
 	mthHatch := THatch
 	this := !(Type^[] types,bool simpleTuple) -> void
 	{
-		ItName = "Tuple"
+		Name = "Tuple"
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 

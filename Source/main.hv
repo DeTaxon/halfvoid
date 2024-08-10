@@ -313,7 +313,7 @@ WorkBagPrintErrors := !() -> bool
 			puts(er.Str())
 		} else if it is CWorkClassCompile
 		{
-			printf("could not compile class %s\n",it->{CWorkClassCompile^}.itClass.ItName)
+			printf("could not compile class %s\n",it->{CWorkClassCompile^}.itClass.Name)
 		}else if it is CWorkFuncCompile
 		{
 			cWork := it->{CWorkFuncCompile^}
@@ -329,7 +329,7 @@ WorkToError := !(CWorkUnit^ itWork) -> Str
 	switch itWork is
 	{
 	case CWorkClassCompile
-		st << "could not compile class " << itWork.itClass.ItName
+		st << "could not compile class " << itWork.itClass.Name
 		return st.GetString().Str()
 	case CWorkFuncCompile
 		st << "could not compile function " << itWork.itFunc.Name.GetString().Str() << " "<< itWork.itFunc.GetFileScope().fileName.GetString().Str() << ":" << itWork.itLine

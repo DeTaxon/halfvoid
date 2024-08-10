@@ -160,7 +160,7 @@ CLib := class extend ModuleInterface
 		nd := itPreStructs[name]
 
 		newStruct := new BoxClassVulkan
-		newStruct.ItName = StringSpan(name)
+		newStruct.Name = StringSpan(name)
 		newStruct.ItId = GetNewId()
 		newStruct.ItType = new TypeClass(newStruct)
 
