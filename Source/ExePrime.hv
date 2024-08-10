@@ -44,16 +44,16 @@ GBoolTrue := BoxExeBool^
 GBoolFalse := BoxExeBool^
 BoxExeBool := class extend BoxExeConstObj
 {
-	val := bool
+	Value := bool
 	this := !(bool nVal) -> void
 	{
-		val = nVal
+		Value = nVal
 		ObjType = GTypeBool
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		if val 
+		if Value 
 		{
 			f^ << "1"
 		}else{
@@ -64,7 +64,7 @@ BoxExeBool := class extend BoxExeConstObj
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		f := ctx.writeStream
-		if val
+		if Value
 		{
 			f^ << "1"
 		}else{
@@ -72,7 +72,7 @@ BoxExeBool := class extend BoxExeConstObj
 		}
 	}
 	PrintDebug := virtual !(Stream ctx) -> void {
-		if val
+		if Value
 		{
 			ctx << "true"
 		}else{
@@ -124,22 +124,22 @@ BoxExeS64 := class extend BoxExeConstObj
 }
 BoxExeDouble := class extend BoxExeConstObj
 {
-	val := double
+	Value := double
 	this := !(double v) -> void
 	{
-		val = v
+		Value = v
 		ObjType = GTypeDouble
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ctx.writeStream^ << val
+		ctx.writeStream^ << Value
 	}
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		ctx.writeStream^ << val
+		ctx.writeStream^ << Value
 	}
 	PrintDebug := virtual !(Stream ctx) -> {
-		ctx << val
+		ctx << Value
 	}
 }
 

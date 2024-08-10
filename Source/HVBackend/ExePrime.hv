@@ -25,13 +25,13 @@ AppendClass BoxExeDouble
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		result.CreatedId = ctx.AddDouble(val)
+		result.CreatedId = ctx.AddDouble(Value)
 	}
 }
 AppendClass BoxExeBool
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		result.CreatedId = ctx.AddBool(val)
+		result.CreatedId = ctx.AddBool(Value)
 	}
 }
