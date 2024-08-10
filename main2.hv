@@ -1,7 +1,9 @@
 
 main := !(char^[] args) -> int
 {
-	printf("test %i\n",#Var("Tracy"))
+	c := Str
+	c = "abc"
+	printf("wut %i %i\n",c[0] == '0',c[0] == 'a')
 }
 RunTest := !() -> void
 {

@@ -212,13 +212,6 @@ main := !(char^[] args) -> int
 	InitLambda()
 	GParsedAllFiles.Emit()
 
-
-	{
-		intGetClass("WriteMCResult")?.StartParseBody()
-		intGetClass("TGCObject")?.StartParseBody()
-		WaitForParsingObjects()
-	}
-
 	mainFuncName := "internalHVEntryPoint"
 
 	WaitForParsingObjects()
