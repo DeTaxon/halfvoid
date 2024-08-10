@@ -24,7 +24,6 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			someoneOnLoop = false
 		}
 
-
 		doTask := ct.PopReadyTask()
 
 		if doTask != null

@@ -18,7 +18,7 @@ AppendClass Task
 			return void
 
 		itTaskWorker = CurrentThread
-		stackSize := 8*1024*1024
+		stackSize := 2*1024*1024 //TODO var
 		stackPtr = malloc(stackSize) //TODO set stack size
 		thisTaskStackSize = stackSize
 		get_context_x64(fiberContext&)
@@ -37,10 +37,10 @@ AppendClass Task
 		//makecontext(uContext[0]&,ucontextStartTask,0)
 		//itTaskWorker = CurrentThread
 	
-		////if #Tracy()
-		////{
-		////	___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
-		////}
+		if #Var("Tracy")
+		{
+			___tracy_emit_memory_alloc_callstack?(stackPtr,stackSize,999,0)
+		}
 
 		//oldTask := CurrentTask->{void^}
 		//CurrentTask = this&
@@ -64,10 +64,10 @@ AppendClass Task
 	}
 	switchToTask := !() -> void
 	{
-		//if #Tracy() and GlobalTracyInUse
-		//{
-		//	___tracy_fiber_enter(taskNames[taskId].0[0]&)
-		//}
+		if #Var("Tracy") and GlobalTracyInUse
+		{
+			___tracy_fiber_enter(taskNames[taskId].0[0]&)
+		}
 
 		oldTask := CurrentTask->{void^}
 		CurrentTask = this&
@@ -79,10 +79,10 @@ AppendClass Task
 	{
 		if stackPtr != null
 		{
-			//if #Tracy()
-			//{	
-			//	___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
-			//}
+			if #Var("Tracy")
+			{	
+				___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
+			}
 
 			free(stackPtr)
 			//munmap(stackPtr,thisTaskStackSize)

@@ -71,6 +71,15 @@ BoxExeBool := class extend BoxExeConstObj
 			f^ << "0"
 		}
 	}
+	PrintDebug := virtual !(Stream ctx) -> void {
+		if val
+		{
+			ctx << "true"
+		}else{
+			ctx << "false"
+		}
+		
+	}
 }
 
 BoxExeInt := class extend BoxExeConstObj
@@ -89,6 +98,9 @@ BoxExeInt := class extend BoxExeConstObj
 	{
 		ctx.writeStream^ << Value
 	}
+	PrintDebug := virtual !(Stream ctx) -> void {
+		ctx << Value
+	}
 }
 BoxExeS64 := class extend BoxExeConstObj
 {
@@ -106,6 +118,9 @@ BoxExeS64 := class extend BoxExeConstObj
 	{
 		ctx.writeStream^ << Value
 	}
+	PrintDebug := virtual !(Stream ctx) -> {
+		ctx << Value
+	}
 }
 BoxExeDouble := class extend BoxExeConstObj
 {
@@ -122,6 +137,9 @@ BoxExeDouble := class extend BoxExeConstObj
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.writeStream^ << val
+	}
+	PrintDebug := virtual !(Stream ctx) -> {
+		ctx << val
 	}
 }
 
@@ -179,4 +197,8 @@ BoxExeString := class extend BoxExeConstObj
 
 		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 	}
+	PrintDebug := virtual !(Stream ctx) -> void {
+		ctx << Value^
+	}
+
 }

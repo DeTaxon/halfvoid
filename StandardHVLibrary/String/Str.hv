@@ -4,6 +4,11 @@
 {
 	st1->AsString = st2->AsString
 }
+"=" := !(Str& st1, String^ st2) -> void
+	#ExpectExactType(1)
+{
+	st1->AsString = st2.GetString()
+}
 //"=" := !(Str& st1, char^ chData) -> void
 //{
 //	st1->AsString = new String(chData)

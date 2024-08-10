@@ -6,7 +6,7 @@ CompilerWork := class
 
 	AddWork := !(CWorkUnit^ unit) -> void
 	{
-		works.Push(unit)
+		works.PushFront(unit)
 	}
 	WorkCount := !() -> int
 	{
@@ -57,6 +57,7 @@ CWorkUnit := class extend TGCObject
 	IsDone := virtual !() -> bool {}
 	GetErrorMessage := virtual !() -> String^ {}
 	Cancel := virtual !() -> void {}
+	GetWorkTask := virtual !() -> Task^ {}
 }
 
 CWorkState := enum

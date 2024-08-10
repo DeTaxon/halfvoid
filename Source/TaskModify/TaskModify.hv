@@ -1,0 +1,61 @@
+AppendClass Task
+{
+	Desired := int
+}
+
+
+THatchTask := class
+{
+	
+}
+
+ComputeDesire := !(int& setDesire,int& parentDesire) -> void
+{
+	//setDesire = max(setDesire,parentDesire + 5)
+	//setDesire += 1
+}
+
+
+AddCustomTaskPoll := !() -> void
+{
+	CurrentThread.SetCustomTaskPoll((TaskWorker^ self) ==> {
+	
+
+		if self.PendingTasks.Size() != 0
+		{
+			return self.PendingTasks.Pop()
+		}
+		return null
+
+		taskTable := AVLMap.{Task^,int}
+
+		for it,ind : WorkBag.works
+		{
+			itTask := it.GetWorkTask()
+			if itTask != null
+				taskTable[itTask] = ind
+		}
+
+		mostDesired := 20000000
+		mostDesiredTask := null->{Task^}
+		for it,i : self.CreateTasks
+		{
+			if taskTable.Contain(it)
+				continue
+			pri := taskTable[it]
+			if mostDesired > pri
+			{
+				mostDesired = pri
+				mostDesiredTask = it
+			}
+		}
+		if mostDesiredTask != null
+		{
+			self.CreateTasks.DeleteIf(x => x == mostDesiredTask)
+			mostDesiredTask.CreateStack()
+			return mostDesiredTask
+		}
+	})
+}
+
+

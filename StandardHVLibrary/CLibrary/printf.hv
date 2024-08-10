@@ -1,9 +1,12 @@
 
-printf_hv_printStr := !(Stream outStream,char^ str, int prev, int i) -> void
+str_printf := !(char^ str, ... ) -> Str
 {
-	if prev > i
-		return void
-	outStream.Write(str[prev]&,i - prev + 1)
+	va := va_list
+	va_start(va&)
+	echo := TEchoStream
+	vprintf_hv_stream(echo,str,va&)
+	va_end(va&)
+	result->AsString = echo.GetString()
 }
 printf_hv := !(char^ str, ... ) -> void
 {
@@ -15,6 +18,12 @@ printf_hv := !(char^ str, ... ) -> void
 vprintf_hv := !(char^ str, va_list^ va ) -> void
 {
 	vprintf_hv_stream(Console,str,va)
+}
+printf_hv_printStr := !(Stream outStream,char^ str, int prev, int i) -> void
+{
+	if prev > i
+		return void
+	outStream.Write(str[prev]&,i - prev + 1)
 }
 vprintf_hv_stream := !(Stream outStream, char^ str, va_list^ va ) -> void
 {

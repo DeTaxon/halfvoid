@@ -147,6 +147,8 @@ BoxClassBody := class extend BoxClassPoison
 	VTableState := THatch
 	FieldsState := THatch
 
+	parseTask := Task^
+
 	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
 
@@ -200,17 +202,29 @@ BoxClassBody := class extend BoxClassPoison
 	StartParseBody := virtual !() -> void
 	{
 		if startedParse
+		{
+			ComputeDesire(parseTask?.Desired,CurrentTask.Desired)
+			if ItName in !["TLambda","BoxEnum"]
+			{
+				parseTask?.Desired += 10
+			}
 			return void
+		}
 		startedParse = true
 
 		//GClassesInProgress.Push(this&)
 		AddClassWork()
 
 		cls := this&
-		TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
+		parseTask = TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
 			CurrentFile = cls.classFile
 			cls.ParseBody()	
 		})
+		ComputeDesire(parseTask.Desired,CurrentTask.Desired)
+			if ItName in !["TLambda","BoxEnum"]
+			{
+				parseTask?.Desired += 10
+			}
 	}
 	AddClassWork := !() -> void
 	{
@@ -219,16 +233,45 @@ BoxClassBody := class extend BoxClassPoison
 	AwaitTypeState := virtual !() -> void
 	{
 		StartParseBody()
-		FieldsState.Await()
+
+		if #Var("Tracy") and not FieldsState.Emited()
+		{
+			if #Var("Tracy") TracyPrintf("Task paused on class %p %s",this&,GetGoodName())
+			FieldsState.Await()
+			if #Var("Tracy") TracyPrintf("Task Resumed from class %p %s",this&,GetGoodName())
+		}else{
+			FieldsState.Await()
+		}
 	}
 	AwaitReadyState := virtual !() -> void
 	{
 		StartParseBody()
 		AwaitTypeState()
 	}
+	GetGoodName := !() -> Str
+	{
+		echo := TEchoStream
+		
+		echo << ItName
+		if Constants?.Constants.Size() != 0
+		{
+			echo << ".{"
+			for it,i : Constants.Constants
+			{
+				if it is not in BoxExeConstObj
+				if i != 0
+					echo << ","
+				it->{BoxExeConstObj^}.PrintDebug(echo)
+			}
+			echo << "}"
+		}
+		result->AsString = echo.GetString()
+	}
 	ParseBody := virtual !() -> void
 	{
 		GParsedAllFiles.Await()
+
+		if #Var("Tracy") TracyPrintf("Started class parse %p %s",this&,GetGoodName())
 
 		ScopePutConstants()
 
@@ -340,6 +383,8 @@ BoxClassBody := class extend BoxClassPoison
 		CheckVTableFuncUsage()
 
 		InheritStep(buildCtx)
+
+		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
 		FieldsState.Emit()
 
 	}
@@ -630,5 +675,10 @@ CWorkClassCompile := class extend CWorkUnit
 	}
 	GetErrorMessage := virtual !() -> String^ 
 	{	
+	}
+	
+	GetWorkTask := virtual !() -> Task^ 
+	{
+		return itClass.parseTask
 	}
 }

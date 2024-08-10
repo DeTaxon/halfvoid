@@ -11,7 +11,7 @@ AppendClass Task
 		if fiberHandler != null
 			return void
 		
-		taskSize := 4*1024*1024
+		taskSize := 2*1024*1024 //TODO var
 		thisTaskStackSize = taskSize
 		fiberHandler = CreateFiber(taskSize,ucontextStartTask,null)
 		itTaskWorker = CurrentThread

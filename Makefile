@@ -39,7 +39,7 @@ ifeq ($(tm),yes)
 endif
 
 ifeq ($(tracy),yes)
-	trc := -tracy
+	trc := -var Tracy
 endif
 
 ifeq ($(tui),yes)

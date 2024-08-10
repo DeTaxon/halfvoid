@@ -1,8 +1,6 @@
 
 BoxFuncBody := class extend BoxFuncCommon
 {
-	headerHatch := THatch
-
 	Attrs := FuncAttributes
 
 	Name := StringSpan
@@ -105,15 +103,19 @@ BoxFuncBody := class extend BoxFuncCommon
 	ParseBody := virtual !() -> void
 	{
 		if StartedParse
+		{
+			ComputeDesire(parseTask?.Desired,CurrentTask.Desired)
 			return void
+		}
 		StartedParse = true
 		cls := this&
 
 		createCWork()
 
-		TSpawnTask(() ==> [cls] {
+		parseTask = TSpawnTask(() ==> [cls] {
 			cls.ParseBodyForced()
 		})
+		ComputeDesire(parseTask.Desired,CurrentTask.Desired)
 	}
 	ParseBodyForced := virtual !() -> void
 	{
@@ -122,6 +124,31 @@ BoxFuncBody := class extend BoxFuncCommon
 		StartedParseForced = true
 
 		this.WorkBody()
+	}
+	GetGoodName := virtual !() -> Str
+	{
+		echo := TEchoStream
+
+		if ParentScope? is in BoxClassBody
+		{
+			echo << ParentScope->{BoxClassBody^}.GetGoodName()
+			echo << "::"
+		}
+
+		echo << Name
+		if Constants.Size() != 0
+		{
+			echo << ".{"
+			for it,i : Constants
+			{
+				if it is not in BoxExeConstObj
+				if i != 0
+					echo << ","
+				it->{BoxExeConstObj^}.PrintDebug(echo)
+			}
+			echo << "}"
+		}
+		result->AsString = echo.GetString()
 	}
 	SetName := virtual !(StringSpan nm) -> void
 	{
@@ -153,8 +180,11 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	body := BoxBlock^
 	readyState := THatch
+	parseTask := Task^
 	WorkBody := virtual !() -> void
 	{
+
+		if #Var("Tracy") TracyPrintf("Started function %p %s",this&,GetGoodName())
 		CurrentFuncWork = createCWork()
 		//TracyZone("Parsing function")
 		GParsedAllFiles.Await()
@@ -279,11 +309,21 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		assert(GetType() != null and GetType()->{TypeFunc^}.ResultType != null)
 		NormalizeType(GetType().GetPoint())
+
+		if #Var("Tracy") TracyPrintf("Function %p %s parse ended",this&,GetGoodName())
 		readyState.Emit()
+		parseTask = null
 	}
 	WaitReadyState := virtual !() -> void
 	{
-		readyState.Await()
+		if #Var("Tracy") and not readyState.Emited()
+		{
+			if #Var("Tracy") TracyPrintf("Task paused on function %p %s",this&,GetGoodName())
+			readyState.Await()
+			if #Var("Tracy") TracyPrintf("Task Resumed from function %p %s",this&,GetGoodName())
+		}else{
+			readyState.Await()
+		}
 	}
 	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -471,5 +511,9 @@ CWorkFuncCompile := class extend CWorkUnit
 	Cancel := virtual !() -> void
 	{
 		isCanceled = true
+	}
+	GetWorkTask := virtual !() -> Task^ 
+	{
+		return itFunc.parseTask
 	}
 }

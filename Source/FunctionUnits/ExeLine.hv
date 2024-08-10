@@ -184,6 +184,7 @@ BoxExeConstObj := class extend BoxExeObj
 {
 	IsConst := virtual true
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void {}
+	PrintDebug := virtual !(Stream ctx) -> void {}
 }
 
 TryGetExeCall := !(Token^ itm) -> BoxExeObj^

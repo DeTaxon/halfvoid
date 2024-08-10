@@ -1,4 +1,4 @@
-taskIdIterator := int
+taskIdIterator := 1
 taskNames := AVLMap.{int,Tuple.{char[20],bool}}
 taskNamesFree := 0
 
@@ -16,36 +16,44 @@ Task := class extend TGCObject
 	this := !(!()& -> void cb) -> void
 	{
 		taskLambda = cb
-
-		//if #Tracy()
-		//{
-
-		//	if taskNamesFree != 0
-		//	{
-		//		taskNamesFree -= 1
-		//		for it, ind : taskNames
-		//		{
-		//			if it.1
-		//				continue
-		//			taskId = ind
-		//			break
-		//		}
-		//	}else{
-		//		taskIdIterator += 1
-		//		taskId = taskIdIterator
-		//	}
-		//	taskData := ref taskNames[taskId]
-		//	sprintf(taskNames[taskId].0[0]&,"Task%i\n",taskId)
-		//	taskData.1 = true
-		//}
 	}
 	startTaskThread := !() -> void
 	{
+		if #Var("Tracy")
+		{
+
+			if taskNamesFree != 0
+			{
+				taskNamesFree -= 1
+				for it, ind : taskNames
+				{
+					if it.1
+						continue
+					taskId = ind
+					break
+				}
+			}else{
+				taskIdIterator += 1
+				taskId = taskIdIterator
+			}
+			taskData := ref taskNames[taskId]
+			sprintf(taskNames[taskId].0[0]&,"Task%i\n",taskId)
+			taskData.1 = true
+		}
 		TaskCheckMutex.Unlock()
 		firstStartOS()
 		assert(taskLambda != null)
 		taskLambda()
 		TaskCheckMutex.Lock()
+		if #Var("Tracy")
+		{
+			if taskId != 0
+			{
+				taskNamesFree += 1
+				taskNames[taskId].1 = false
+				taskId = 0
+			}
+		}
 		CurrentThread.DeleteTasks.Push(this&)
 		finishedWork.EmitInner()
 		taskLambda = null
@@ -60,11 +68,6 @@ Task := class extend TGCObject
 
 	Destroy := virtual !() -> void
 	{
-		//if #Tracy()
-		//{
-		//	taskNamesFree += 1
-		//	taskNames[taskId].1 = false
-		//}
 
 		OSDestroy()
 		taskLambda = null

@@ -22,6 +22,9 @@
 		"___tracy_emit_zone_begin_callstack" : "u64,void^,int,int",
 		"___tracy_emit_zone_end" : "void,u64",
 
+		"___tracy_emit_message" : "void,char^,int,int",
+		"___tracy_emit_messageC" : "void,char^,int,int,int",
+
 		"___tracy_emit_frame_mark" : "void,char^",
 		"___tracy_emit_frame_mark_start" : "void,char^",
 		"___tracy_emit_frame_mark_end" : "void,char^",

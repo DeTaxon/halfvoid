@@ -7,7 +7,6 @@ AppendClass BoxFuncBody
 
 		//ResultTypeHatch.Reset()
 		readyState.Reset()
-		headerHatch.Reset()
 
 		//ExitLabel = null
 

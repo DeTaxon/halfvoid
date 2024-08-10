@@ -94,6 +94,10 @@ ConstType := class extend BoxExeConstObj
 		ObjType = GTypeVoid
 		Value = tp
 	}
+	PrintDebug := virtual !(Stream ctx) -> void
+	{
+		ctx << Value?.GetBADStr()
+	}
 }
 
 

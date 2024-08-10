@@ -8,6 +8,8 @@ TaskWorker := class extend TGCObject
 
 	ThreadMainTask := Task^
 
+	CustomTaskPoll := !(TaskWorker^)&->Task^
+
 	itThread := Thread^
 
 	this := !() -> void
@@ -39,15 +41,27 @@ TaskWorker := class extend TGCObject
 		TaskCheckMutex.Lock()
 		
 		AllTasks.Insert(startTask)
-		CreateTasks.Push(startTask)
+		CreateTasks.PushFront(startTask)
 
 		TaskWaitTasksConVar.NotifyAll()
 		TaskCheckMutex.Unlock()
 		
 		return startTask
 	}
+	SetCustomTaskPoll := !(!(TaskWorker^)&->Task^ cb) -> void
+	{
+		CustomTaskPoll = cb.Capture()
+	}
 	PopReadyTask := !() -> Task^
 	{
+
+		if CustomTaskPoll != null
+		{
+			c:= CustomTaskPoll(this&)
+			if c != null
+				return c
+		}
+
 		if PendingTasks.Size() != 0
 		{
 			return PendingTasks.Pop()
