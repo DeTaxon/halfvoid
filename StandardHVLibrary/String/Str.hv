@@ -33,9 +33,13 @@
 	result->AsString =  new String(chData)
 }
 "->{}" := !(StringSpan chData) .{Str} -> Str
-	#FilterBeConst(1,false)
 {
 	result->AsString = chData.GetString()
+}
+
+"->{}" := !(String^ chData) .{Str} -> Str
+{
+	result->AsString = chData
 }
 
 StringOnCStr := class extend String

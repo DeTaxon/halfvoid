@@ -383,10 +383,11 @@ BoxFile := class extend BoxUnit
 			if fsIsExist(pth.Str()) //TODO to something better
 			{
 				pth2 := fsGetAbsolutePath(pth)
-				if pth2->{void^} == null
+				if not pth2.IsSet()
 					pth2 = pth
+				p := pth2.GetOr("")
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
-				f^ << pth2.Str() << "\", directory: \""
+				f^ << p.Str() << "\", directory: \""
 				f^ <<  "/" <<"\")\n"
 			}else{
 				f^ << "!" << fileId  << " = !DIFile(filename: \"" 

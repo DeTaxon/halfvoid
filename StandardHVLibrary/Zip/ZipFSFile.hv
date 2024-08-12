@@ -7,7 +7,7 @@ File := class extend vRepoObject
 	this := !() -> void
 	{
 	}
-	GetFile := !(StringView fileName) -> File^
+	GetFile := !(Str fileName) -> File^
 	{
 		return ptrToRepo.GetFile(fileName,GetParentFolder())
 	}
@@ -20,14 +20,20 @@ File := class extend vRepoObject
 
 		return new ZipFSFileView(this&)
 	}
+	GetStream := virtual !() -> Stream^
+	{
+		return new RawFileStream(this.GetPath(),"rw")
+	}
 	GetBlob := virtual !() -> Blob^
 	{
 		fileBlob := MakeBlob(this.Size())
 		tst := this.GetPath()
 		if fileBlob.Size() != 0
 		{
-			mp := MappedFile(tst.Str())
-			memcpy(fileBlob.GetPointer(),mp.Get(),fileBlob.Size())
+			st := GetStream()
+			st.Read(fileBlob.GetPointer(),fileBlob.Size())
+			//mp := MappedFile(tst.Str())
+			//memcpy(fileBlob.GetPointer(),mp.Get(),fileBlob.Size())
 			//desc := fopen(tst.Str(),"rb")
 			//defer fclose(desc)
 			//fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)
@@ -53,7 +59,7 @@ File := class extend vRepoObject
 			return null
 
 		result = new Folder
-		result.absPath = absPath^[0..lastSlash].GetString()
+		result.absPath->AsString = absPath[0..lastSlash].GetString()
 		result.objName = result.absPath //TODO norman obj Name
 	}
 

@@ -8,7 +8,7 @@ vEmbeddedFile := class extend File //TODO, extend IFile, not an already made obj
 	{
 		itData = inData
 		fileSize = inpSize
-		objName = new String(itName)
+		objName ->AsString = new String(itName)
 
 		isCompressed = isComp
 		compressedSize = compSize

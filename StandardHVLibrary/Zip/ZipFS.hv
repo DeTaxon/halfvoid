@@ -7,11 +7,10 @@ vRepo := class extend TGCObject
 	{
 	}
 
-	ReadFolder := !(StringView p,bool recur,!(FSObject^)& -> void callb) -> void
+	ReadFolder := !(Str p,bool recur,!(FSObject^)& -> void callb) -> void
 	{
-		
 		repoObj := this&
-		osReadFolder(p.GetString().Str(),x ==> {
+		osReadFolder(p.Str(),x ==> {
 
 			if x == "." or x == ".."
 				return void
@@ -25,33 +24,33 @@ vRepo := class extend TGCObject
 					ReadFolder(absPath,recur,callb)
 				}
 				fold := new Folder
-				fold.absPath = absPath
-				fold.objName = x.GetString()
+				fold.absPath->AsString = absPath
+				fold.objName->AsString = x.GetString()
 				callb(fold)
 			}else{
 				diffSize := absPath.Size() - p.Size()
 				fil := new File
 				fil.ptrToRepo = repoObj
 				fil.fileSize = osFileSize(absPath.Str())
-				fil.absPath = absPath
-				fil.objName = x.GetString()
+				fil.absPath->AsString = absPath
+				fil.objName->AsString = x.GetString()
 
 				callb(fil)
 			}
 		})
 	}
-	GetFile := !(StringView fileName)-> File^
+	GetFile := !(Str fileName)-> File^
 	{
 		return GetFile(fileName,null)
 	}
-	GetFile := !(StringView fileName,Folder^ rrF) -> File^
+	GetFile := !(Str fileName,Folder^ rrF) -> File^
 	{
-		st := String^
+		st := Str
 		if rrF == null
 		{
-			st = fileName.GetString()
+			st = fileName
 		}else{
-			st = CreateString(rrF.GetPath(),"/",fileName)
+			st->AsString = CreateString(rrF.GetPath(),"/",fileName)
 		}
 
 		if not fsIsExist(st.Str())

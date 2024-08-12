@@ -62,7 +62,7 @@ osFileId := !(char^ nm) -> u64
 	return st1[8]&->{u64^}^
 }
 
-osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
+osReadFolder := !(char^ nm, !(Str)& -> void cb) -> void
 {
 
 	dirFd := opendir(nm)
@@ -76,18 +76,19 @@ osReadFolder := !(char^ nm, !(StringView)& -> void cb) -> void
 		nowEntry := readdir(dirFd)
 		if nowEntry == null
 			return void
-		view := StringSpan(nowEntry->{char^}[19]&)
-		cb(view)
+		v := Str
+		v->AsString = new String(nowEntry->{char^}[19]&)
+		cb(v)
 	}
 
 }
 
-fsGetAbsolutePath := !(StringView ptr) -> String^
+fsGetAbsolutePath := !(Str ptr) -> Str?
 {
 	bsName := ptr.GetString()
 	resPath := realpath(bsName.Str(),null)
 	if resPath == null
-		return null
+		return void
 	defer free(resPath)
 	result = new String(resPath)
 }

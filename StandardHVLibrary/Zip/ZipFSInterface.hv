@@ -1,10 +1,10 @@
 
-FSReadFolder := !(StringView p,bool recur,!(FSObject^)& -> void callb) -> void
+FSReadFolder := !(Str p,bool recur,!(FSObject^)& -> void callb) -> void
 {
 	createFSObject()
 	gRepoObject.ReadFolder(p,recur,callb)
 }
-FSGetFolder := !(StringSpan p) -> Folder^
+FSGetFolder := !(Str p) -> Folder^
 {
 	createFSObject()
 	res := gRepoObject.getObject(p,gRepoObject.rootFolder)
@@ -17,12 +17,12 @@ FSGetFolder := !(StringSpan p) -> Folder^
 
 gRepoObject := vRepo^
 #MarkFunction("JITPass",FSGetFile)
-FSGetFile := !(StringView inp) -> File^
+FSGetFile := !(Str inp) -> File^
 {
 	createFSObject()
 	return gRepoObject.GetFile(inp)
 }
-FSGetFile2 := !(Folder^ fldr,StringView inp) -> File^
+FSGetFile2 := !(Folder^ fldr,Str inp) -> File^
 {
 	createFSObject()
 	return gRepoObject.GetFile(inp,fldr)

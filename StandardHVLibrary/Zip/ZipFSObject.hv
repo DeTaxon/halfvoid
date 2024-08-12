@@ -3,15 +3,15 @@
 FSObject := type vRepoObject
 vRepoObject := class extend TGCObject
 {
-	objName := String^
-	absPath := String^
+	objName := Str
+	absPath := Str
 	upFolder := Folder^
 
 	GetName := !() -> String^ { return objName }
 	
 	GetUpFolder := !() -> Folder^ { return upFolder }
 
-	GetPath := !() -> String^
+	GetPath := !() -> Str
 	{
 		return absPath
 		//itms := HybridStack.{vRepoObject^,16}
