@@ -14,7 +14,7 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 				SyntaxCompress(skb,LexHVFileRoot)
 				if skb.Down?.Right == null and skb.Down is TokenString
 				{
-					markValue := skb.Down->{TokenString^}.Value
+					markValue := skb.Down->{TokenString^}.Value->AsString
 					MarkObject(markValue,fnc)
 				}else{
 					//TODO emit error

@@ -26,14 +26,11 @@ TryEmbeddVKShader := !(Token^ itm) -> BoxExeObj^
 	
 	itFile := File^
 
-	fileNameStr := Str
-	fileNameStr->AsString = fileName
-
 	if isLocal
 	{
-		itFile = itm.Line.File.file.GetFile(fileNameStr)
+		itFile = itm.Line.File.file.GetFile(fileName)
 	}else{
-		itFile = FSGetFile(fileNameStr) //todo exceptions?
+		itFile = FSGetFile(fileName) //todo exceptions?
 	}
 
 	if itFile == null

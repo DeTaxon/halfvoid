@@ -133,7 +133,7 @@ AppendClass BoxClassBody
 			name := String^
 			if stVal.Left is TokenString
 			{
-				name = stVal.Left->{TokenString^}.Value
+				name = stVal.Left->{TokenString^}.Value->AsString
 			}else if stVal.Left is TokenIndent
 			{
 				name = stVal.Left->{TokenIndent^}.Value.GetString()

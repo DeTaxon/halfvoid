@@ -3,9 +3,7 @@ GetCompilerCommand := !(Token^ itm) -> BoxExeObj^
 	if itm.Down?.Right?.Down? is TokenString
 	{
 		vName := itm.Down.Right.Down->{TokenString^}.Value
-		st := Str
-		st->AsString = vName
-		return CompilerVars[st]?
+		return CompilerVars[vName]?
 		return GBoolFalse
 	}
 }

@@ -20,11 +20,11 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 		c := 0
 		while i < st.Size()
 		{
-			switch st^[i]
+			switch st[i]
 			{
 			case '%'
 				i += 1
-				switch st^[i]
+				switch st[i]
 				{
 					case '%'
 						buf[c] = '%'
@@ -32,7 +32,7 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 					case in '0'..'9'
 						buf[c] = '$'
 						c += 1
-						buf[c] = st^[i]
+						buf[c] = st[i]
 						c += 1
 					case '='
 						buf[c] = '$'
@@ -44,16 +44,16 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 						buf[c+6] = '}'
 						c += 7
 					case void
-						buf[c] = st^[i]
+						buf[c] = st[i]
 						c += 1
 				}
 			case '$'
-				buf[c] = st^[i]
+				buf[c] = st[i]
 				c += 1
-				buf[c] = st^[i]
+				buf[c] = st[i]
 				c += 1
 			case void
-				buf[c] = st^[i]
+				buf[c] = st[i]
 				c += 1
 			}
 			i += 1
@@ -118,11 +118,11 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 
 			strValue := itr->{TokenString^}.Value
 
-			if strValue.Size() > 0 and strValue^[0] == '%'
+			if strValue.Size() > 0 and strValue[0] == '%'
 			{
 				st := TEchoStream
 				st << "~{"
-				st << strValue^[1..0]
+				st << strValue[1..0]
 				st << "}"
 				res.ClobData.Push(st.GetString())
 			}
