@@ -24,16 +24,16 @@ vRepo := class extend TGCObject
 					ReadFolder(absPath,recur,callb)
 				}
 				fold := new Folder
-				fold.absPath->AsString = absPath
-				fold.objName->AsString = x.GetString()
+				fold.absPath = absPath
+				fold.objName = x
 				callb(fold)
 			}else{
 				diffSize := absPath.Size() - p.Size()
 				fil := new File
 				fil.ptrToRepo = repoObj
 				fil.fileSize = osFileSize(absPath.Str())
-				fil.absPath->AsString = absPath
-				fil.objName->AsString = x.GetString()
+				fil.absPath = absPath
+				fil.objName = x
 
 				callb(fil)
 			}
@@ -50,7 +50,7 @@ vRepo := class extend TGCObject
 		{
 			st = fileName
 		}else{
-			st->AsString = CreateString(rrF.GetPath(),"/",fileName)
+			st = CreateString(rrF.GetPath(),"/",fileName)
 		}
 
 		if not fsIsExist(st.Str())

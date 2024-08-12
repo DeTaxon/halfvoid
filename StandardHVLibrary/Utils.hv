@@ -1,7 +1,7 @@
-CreateString := !(args...) -> String^
+CreateString := !(args...) -> Str
 {
 	echo := TEchoStream
 	for arg : args
 		echo << arg
-	return echo.GetString()
+	result->AsString = echo.GetString()
 }
