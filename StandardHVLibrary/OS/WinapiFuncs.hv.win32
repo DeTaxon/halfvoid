@@ -172,7 +172,7 @@ _stat64_winapi := class
     st_ctime := u64
 }
 
-osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
+osReadFolder := !(char^ inName, !(Str)& -> void cb) -> void
 {
 	ech := TEchoStream //TODO optimize
 	ech << inName
@@ -191,24 +191,22 @@ osReadFolder := !(char^ inName, !(StringView)& -> void cb) -> void
 		nm := Utf16ToUtf8(nowEntry.cFileName[0]&)
 		if nm.Str() != "." and nm.Str() != ".."
 		{
-			cb(nm.Str())
+			cb(nm)
 		}
 		if not FindNextFileW(hndl,nowEntry&)
 			return void
 	}
 }
-fsGetAbsolutePath := !(StringView ptr) -> String^
+fsGetAbsolutePath := !(Str ptr) -> Str?
 {
-	bsName := ptr.GetString()
-	strU16 := Utf8ToUtf16(bsName.Str())
+	strU16 := Utf8ToUtf16(ptr.Str())
 
 	buf := u16[512]
 
 	resSize := GetFullPathNameW(strU16.GetPointer(),512,buf[0]&,null)
 	if resSize == 0
-		return null
-	resStr := Utf16ToUtf8(buf[0]&,resSize)
-	return resStr
+		return void
+	result = Utf16ToUtf8(buf[0]&,resSize)
 }
 
 GetSteadyTime := !() -> double

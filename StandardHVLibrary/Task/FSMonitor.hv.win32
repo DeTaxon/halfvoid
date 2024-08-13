@@ -27,23 +27,23 @@ AsyncMonitorFolderNonStop := !(StringView folderPath,bool recursive,!(FSObject^)
 
 	recVal := recursive ?: 1 : 0
 	
-	ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,recVal,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
-	AsyncWaitEventNonStop(evnt.Get(),() ==> 
-	{
-		ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,recVal,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
+	//ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,recVal,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
+	//AsyncWaitEventNonStop(evnt.Get(),() ==> 
+	//{
+	//	ReadDirectoryChangesW(thisFolder,resultData[0]&,1024,recVal,FILE_NOTIFY_CHANGE_LAST_WRITE,resBytes&,lap&,null)
 
-		nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
+	//	nm := Utf16ToUtf8(nt.FileName[0]&,nt.FileNameLength)
 
-		sBuf := TEchoStream
-		sBuf << folderPath << "/" << nm^
+	//	sBuf := TEchoStream
+	//	sBuf << folderPath << "/" << nm^
 
-		fullPath := sBuf.GetString()
+	//	fullPath := sBuf.GetString()
 
-		newFile := new File()
-		newFile.absPath = fullPath
-		newFile.objName = nm
+	//	newFile := new File()
+	//	newFile.absPath = fullPath
+	//	newFile.objName = nm
 
-		cb(newFile)
-	})
+	//	cb(newFile)
+	//})
 }
 

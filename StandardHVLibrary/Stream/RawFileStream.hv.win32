@@ -31,11 +31,11 @@ RawFileStream := class extend Stream
 			posFlg = GENERIC_READ
 		if createFlg == 0
 			createFlg = OPEN_EXISTING
-		nameU16 = Utf8ToUtf16(fileName)
-		FileFd = CreateFileW(nameU16.GetPointer(),posFlg,FILE_SHARE_READ,null,createFlg,FILE_ATTRIBUTE_NORMAL.null)
+		nameU16 := Utf8ToUtf16(fileName->AsString)
+		FileFd = CreateFileW(nameU16.GetPointer(),posFlg,FILE_SHARE_READ,null,createFlg,FILE_ATTRIBUTE_NORMAL,null)
 
-		if FileFd == (-1)->{size_t}->{void^}
-			return false
+		//if FileFd == (-1)->{size_t}->{void^} TODO error check
+		//	return false
 		return true
 	}
 	Read := virtual !(void^ data, s64 size) -> s64
