@@ -24,7 +24,7 @@ CacheModule := class
 				{
 					if it.filesCache^ != getFilesCache(fl)^
 						return null
-					fil := base.zipFile.TryGetFile(it.fileName)
+					fil := base.zipFile.GetFile(it.fileName)
 					if fil == null
 						return null
 					it.value = fil.GetBlob()
@@ -71,7 +71,7 @@ CacheModule := class
 	}
 	LoadMeta := !() -> void
 	{
-		blobCacheMeta := base.zipFile.TryGetFile(StringConcat(moduleName,"/BlobCache.txt"))
+		blobCacheMeta := base.zipFile.GetFile(StrConcat(moduleName,"/BlobCache.txt"))
 		if blobCacheMeta != null
 		{
 			mp := blobCacheMeta.GetMap()

@@ -382,19 +382,6 @@ vZipEntry2 := class
 		subFolders[^].Print(de+1)
 	}
 }
-zipRWUnsavedData := class
-{
-	fileName := String^
-	fileData := Blob^
-	fileDataToWrite := Blob^
-	timeModified := u64
-	assignedRange := Tuple.{u64,u64}
-	compress := bool
-	comprType := int
-
-	this := !() -> void {}
-	"=" := default
-}
 zipIntEntry := class
 {
 	offsetToData := u64

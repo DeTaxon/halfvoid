@@ -1,63 +1,33 @@
 
 MappedFile := class extend TGCObject
 {
-	fileId := u64
-	fileSize  := u64
-	mapId := u64
+	fileStream := RawFileStream
 	point := u8^
+	fileSize := u64
 	fileFlag := int
-	this := !(char^ fileName) -> void
+	this := !(Str fileName,char^ flags) -> void
 	{
-		fileId = 0
-		point = null
-		Open(fileName,FILE_READ,0)
+		Open(fileName,flags)
 	}
-	this := !(char^ fileName,int flg) -> void
+	Open := !(Str fileName,char^ flags) -> bool
 	{
-		fileId = 0
-		point = null
-		Open(fileName,flg,0)
-	}
-	this := !(char^ fileName,int flg, u64 itSize) -> void
-	{
-		fileId = 0
-		point = null
-		Open(fileName,flg,itSize)
-	}
-	Open := !(char^ fileName) -> bool
-	{
-		return Open(fileName,FILE_READ,0)
-	}
-	Open := !(char^ fileName,int flg, u64 itSize) -> bool
-	{
-		posFlg := O_RDONLY
-		if flg != FILE_READ
-			posFlg = O_RDWR
-		if flg == FILE_CREATE
-			posFlg = posFlg or_b O_CREAT
-
-		fileId = open(fileName,posFlg,511)
-		if fileId == -1
+		if not fileStream.Open(fileName,flags)
 			return false
-	
 		fileSize = osFileSize(fileName)
 	
 		mmFlgs := PROT_READ
-		if flg != FILE_READ
-			mmFlgs = mmFlgs or_b PROT_WRITE
-
-		if itSize != 0 and fileSize != itSize
-		{
-			if ftruncate(fileId,itSize) == -1
-				return false
-			fileSize = itSize
-		}
+		if 'w' in flags
+			mmFlgs = PROT_READ or_b PROT_WRITE
 		fileFlag = mmFlgs
-		mmRes := mmap(null,fileSize,mmFlgs,MAP_SHARED,fileId,null)
+
+		if fileSize == 0
+			return true
+
+		mmRes := mmap(null,fileSize,mmFlgs,MAP_SHARED,fileStream.FileFd,null)
 		//if mmRes&->{u64^}^ == not_b 0U //TODO
 		if mmRes&->{u64^}^ + 1 == 0
 		{
-			close(fileId)
+			fileStream.Close()
 			return false
 		}
 		point = mmRes->{u8^}
@@ -66,19 +36,21 @@ MappedFile := class extend TGCObject
 	}
 	ResizeFile := !(u64 newSize) -> bool
 	{
+		if newSize == fileSize
+			return true
 		oldSize := fileSize
-		if ftruncate(fileId,newSize)  == -1
+		if ftruncate(fileStream.FileFd,newSize) == -1
 			return false
 		fileSize = newSize
 
 		if newSize > oldSize
 		{
 			munmap(point,oldSize)
-			mmRes := mmap(null,newSize,fileFlag,MAP_SHARED,fileId,null)
+			mmRes := mmap(null,newSize,fileFlag,MAP_SHARED,fileStream.FileFd,null)
 			//if mmRes&->{u64^}^ == not_b 0U //TODO
 			if mmRes&->{u64^}^ + 1 == 0
 			{
-				close(fileId)
+				fileStream.Close()
 				return false
 			}
 			point = mmRes->{u8^}
@@ -104,7 +76,7 @@ MappedFile := class extend TGCObject
 			return void
 		
 		munmap(point,fileSize)
-		close(fileId)
+		fileStream.Close()
 		point = null
 		
 	}

@@ -20,7 +20,7 @@ CacheStringModule := class extend TGCObject
 			{
 				if not it.loaded
 				{
-					fileInZip := base.zipFile.TryGetFile(StringConcat(moduleName,"/",it.fileName))
+					fileInZip := base.zipFile.GetFile(StrConcat(moduleName,"/",it.fileName))
 					assert( fileInZip != null)
 					if fileInZip != null
 					{
@@ -73,7 +73,7 @@ CacheStringModule := class extend TGCObject
 	}
 	LoadMeta := !() -> void
 	{
-		blobCacheMeta := base.zipFile.TryGetFile(StringConcat(moduleName,"/BlobCache.txt"))
+		blobCacheMeta := base.zipFile.GetFile(StrConcat(moduleName,"/BlobCache.txt"))
 		if blobCacheMeta != null
 		{
 			mp := blobCacheMeta.GetMap()

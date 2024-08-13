@@ -1,6 +1,16 @@
 
 main := !(char^[] args) -> int
 {
+	c := new CacheFile("tst.zip")
+	c.IncRef()
+
+	tst := c.GetStringModule("Test")
+
+	tst.CacheBlobByString("Test",() ==> {
+		printf("making blob\n")
+		return MakeBlob(15)
+	})
+	c.Flush()
 }
 RunTest := !() -> void
 {

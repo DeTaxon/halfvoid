@@ -11,7 +11,7 @@ CacheFileModule := class extend TGCObject
 	}
 	TryGetCacheValue := !(File^ fl) -> Blob^
 	{
-		inRep := base.zipFile.TryGetFile(StringConcat(moduleName,"/",fl.GetPath()))
+		inRep := base.zipFile.GetFile(StrConcat(moduleName,"/",fl.GetPath()))
 		if inRep == null
 			return null
 		fileTime := fl.GetModificationTime()

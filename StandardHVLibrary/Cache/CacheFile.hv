@@ -1,11 +1,11 @@
 CacheFile := class extend TGCObject
 {
-	zipFile := ZipRWFile^
+	zipFile := ZipFile^
 
-	this := !(StringView fName) -> void
+	this := !(Str fName) -> void
 	{
-		zipFile = new ZipRWFile(fName)
-
+		zipFile = new ZipFile()
+		zipFile.AnalizeFile(fName)
 	}
 
 	Flush := !() -> void
@@ -22,21 +22,23 @@ CacheFile := class extend TGCObject
 		return new CacheFileModule(name.GetString(),this&)
 	}
 
-	stringModules := AVLMap.{String^,void^} //TODO way to make weak references
-	GetStringModule := !(StringView name) -> CacheStringModule^
+	stringModules := AVLMap.{Str,void^} //TODO way to make weak references
+	GetStringModule := !(Str name) -> CacheStringModule^
 	{
-		stName := name.GetString()
-		
-		if stringModules.Contain(stName)
-			return stringModules[stName]->{CacheStringModule^}
+		if stringModules.Contain(name)
+			return stringModules[name]->{CacheStringModule^}
 
-		result = new CacheStringModule(stName,this&)
-		stringModules[stName] = result
+		result = new CacheStringModule(name,this&)
+		stringModules[name] = result
 	}
 
 	GetModule := !(StringView name) -> CacheModule^
 	{
 		return new CacheModule(name,this&)
+	}
+	Destroy := virtual !() -> void
+	{
+		Flush()
 	}
 }
 

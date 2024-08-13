@@ -48,6 +48,16 @@ vZipEntry := class
 		resPtr := ptrToObj.asMapped.point[offset]&
 		return new ZipFSFileViewZipStore(this&,resPtr,realSize)
 	}
+	GetBlob := !() -> Blob^
+	{
+		result = MakeBlob(Size())
+
+		if result.Size() != 0
+		{
+			mp := GetMap()
+			memcpy(result.GetPointer(),mp.Get(),result.Size())
+		}
+	}
 
 	Print := !(int de) -> void
 	{
@@ -61,11 +71,10 @@ ZipFile := class extend TGCObject
 {
 	examined := bool
 	asMapped := MappedFile
-	fileName := String^
-
+	fileName := Str
 	zipRoot := vZipEntry
 
-	fileUnsavedData := List.{zipRWUnsavedData}
+	fileUnsavedData := List.{zipUnsavedData}
 
 	this := !() -> void
 	{
@@ -95,12 +104,15 @@ ZipFile := class extend TGCObject
 	}
 		
 
-	AnalizeFile := !(StringView fileToLoad) -> bool
+	AnalizeFile := !(Str fileToLoad) -> bool
 	{
-		fileName = fileToLoad.GetString()
+		fileName = fileToLoad
+		asMapped.Open(fileName,"rwc")
 
-		asMapped.Open(fileName.Str(),FILE_READ + FILE_WRITE,0)
-		ptrToFl := asMapped.point
+		if asMapped.Size() == 0
+			return true
+
+		ptrToFl := asMapped.Get()
 		eod := ptrToFl[asMapped.Size() - zipEndOfDirectory->TypeSize]&->{zipEndOfDirectory^}
 
 		if eod.signature != 0x06054b50
@@ -224,6 +236,7 @@ ZipFile := class extend TGCObject
 
 		fileUnsavedData.Emplace()
 		newEntry := ref fileUnsavedData[fileUnsavedData.Size() - 1]
+		newEntry.fileEntry = entry
 		newEntry.fileName = fileName.GetString()
 		newEntry.fileData = data
 		newEntry.timeModified = time(null) //GetRealTimeU64Seconds()
@@ -327,8 +340,7 @@ ZipFile := class extend TGCObject
 				endOfMainData += reqSize
 			}
 
-			newField := new vZipEntry
-			fileData.Push(newField)
+			newField := it.fileEntry
 
 			newField.offsetToFileHeader = it.assignedRange.0
 			newField.offset = it.assignedRange.0 + it.fileName.Size() + zipFileHeader->TypeSize
@@ -473,4 +485,18 @@ ZipFile := class extend TGCObject
 		Flush()
 	}
 
+}
+zipUnsavedData := class
+{
+	fileEntry := vZipEntry^
+	fileName := String^
+	fileData := Blob^
+	fileDataToWrite := Blob^
+	timeModified := u64
+	assignedRange := Tuple.{u64,u64}
+	compress := bool
+	comprType := int
+
+	this := !() -> void {}
+	"=" := default
 }
