@@ -1,74 +1,36 @@
 
 MappedFile := class extend TGCObject
 {
-	hndl := void^
+	hndl := RawFileStream
 	fileSize  := u64
-	mapId := void^
 	point := u8^
-	this := !(char^ fileName) -> void
+	shareFlag := int
+	mapId := void^
+	this := !(Str fileName,char^ flg) -> void
 	{
-		hndl = null
 		point = null
-		Open(fileName,FILE_READ,0)
+		Open(fileName,flg)
 	}
-	this := !(char^ fileName,int flg) -> void
+	Open := !(Str fileName,char^ flg) -> bool
 	{
-		hndl = null
-		point = null
-		if flg == FILE_CREATE
-			Open(fileName,FILE_WRITE,0)
-		else
-			Open(fileName,flg,0)
-	}
-	this := !(char^ fileName,int flg, u64 itSize) -> void
-	{
-		hndl = null
-		point = null
-		Open(fileName,flg,itSize)
-	}
-	Open := !(char^ fileName) -> bool
-	{
-		return Open(fileName,FILE_READ,0)
-	}
-	Open := !(char^ fileName,int flg, u64 itSize) -> bool
-	{
-		opTyp := GENERIC_READ
-		fFlg := OPEN_EXISTING
-		fS := FILE_SHARE_READ
+		shareFlag = PAGE_READONLY
 
-		if itSize == 0
-		{
-			itSize = osFileSize(fileName)
-		}
+		if 'w' in flg
+			shareFlag  = PAGE_READWRITE
 
-		if flg != FILE_READ
-		{
-			fS = fS or_b FILE_SHARE_WRITE
-			opTyp = opTyp or_b GENERIC_WRITE
-		}
-		if flg == FILE_CREATE
-		{
-			fFlg = CREATE_NEW
-		}
-		asW := Utf8ToUtf16(fileName)
-		hndl = CreateFileW(asW.GetPointer(),opTyp,fS,null,fFlg,FILE_ATTRIBUTE_NORMAL,null)
-		if hndl&->{u64^}^ == not_b 0U
-		{
+		if not hndl.Open(fileName,flg)
 			return false
-		}
-	
-		fileSize = itSize
+
+		fileSize = osFileSize(fileName)
 		
-		pA := PAGE_READONLY
-		if flg != FILE_READ pA = PAGE_READWRITE
-		mapId = CreateFileMappingW(hndl,null,pA,fileSize&->{u32^}[1],fileSize&->{u32^}[0],null)
+		mapId = CreateFileMappingW(hndl.FileFd,null,shareFlag,fileSize&->{u32^}[1],fileSize&->{u32^}[0],null)
 		if mapId&->{u64^}^ == not_b 0U
 		{
-			CloseHandle(hndl)
+			hndl.Close()
 			return false
 		}
 		accTyp := FILE_MAP_READ
-		if flg != FILE_READ accTyp = FILE_MAP_ALL_ACCESS
+		if shareFlag == PAGE_READWRITE accTyp = FILE_MAP_ALL_ACCESS
 		point = MapViewOfFile(mapId,accTyp,0,0,fileSize)->{u8^}
 
 		return true
@@ -93,13 +55,11 @@ MappedFile := class extend TGCObject
 	}
 	Close := !() -> void
 	{
-		if hndl == null
-			return void
-		
-		UnmapViewOfFile(mapId)
-		CloseHandle(mapId)
-		CloseHandle(hndl)
-
-		hndl = null
+		if point != null
+		{
+			UnmapViewOfFile(mapId)
+			CloseHandle(mapId)
+			point = null
+		}
 	}
 }
