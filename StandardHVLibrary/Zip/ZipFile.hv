@@ -144,48 +144,16 @@ ZipFile := class extend TGCObject
 				continue
 			}
 
-			fldrs := List.{StringSpan}
-			newStr.DivideStr("/", x ==> { fldrs.Push(x)})
-			itmIter := zipRoot&
+			ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
 
-			for itm,j : fldrs
-			{	
-				found := false
-				for it : itmIter.subFolders
-				{
-					if itm == it.objName
-					{
-						itmIter = it
-						found = true
-						break
-					}
-				}
-				if not found 
-				{
-					itmIter.subFolders.Push(new vZipEntry)
-					nI := itmIter.subFolders[-1]
-					nI.IsExist = true
-					nI.ptrToObj = this&
-					nI.objName = itm.GetString()
-					nI.fullName = newStr.GetString()
-					nI.offsetToFileHeader = cdTable.offsetToFileHeader
-
-					if  j == fldrs.Size() - 1
-					{
-						nI.realSize = cdTable.realSize
-						nI.zipSize = cdTable.compressedSize
-						nI.comprType = cdTable.compressionMethod
-						nI.timeModified = loadTime(cdTable.lastModifTime,cdTable.lastModifDate)
-
-						ptTH := ptrToFl[cdTable.offsetToFileHeader]&->{zipFileHeader^}
-
-						nI.offset = cdTable.offsetToFileHeader + zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
-					}else{
-						nI.IsFolder = true
-						itmIter = nI
-					}
-				}
-			}
+			newEntry := getEntry(newStr,true)
+			newEntry.IsExist = true
+			newEntry.offsetToFileHeader = cdTable.offsetToFileHeader
+			newEntry.realSize = cdTable.realSize
+			newEntry.zipSize = cdTable.compressedSize
+			newEntry.comprType = cdTable.compressionMethod
+			newEntry.timeModified = loadTime(cdTable.lastModifTime,cdTable.lastModifDate)
+			newEntry.offset = cdTable.offsetToFileHeader + zipFileHeader->TypeSize + ptTH.fileNameLen + ptTH.extraFieldsLen
 
 			cdTable = cdTable->{u8^}[zipCentralDirectory->TypeSize 
 			+ cdTable.fileNameLen 
