@@ -1,28 +1,40 @@
 CacheModule := class
 {
 	base := CacheFile^
-	moduleName := String^
+	moduleName := Str
 
 	cacheChangedBlobData := bool
 	cacheBlobList  := List.{BlobCacheData} //TODO Optimize
-	this := !(StringView nm, CacheFile^ bs) -> void
+	this := !(Str nm, CacheFile^ bs) -> void
 	{
 		base = bs
-		moduleName = nm.GetString()
+		moduleName = nm
 
 		LoadMeta()
 	}
-	TryGetCacheValue := !(StringView st, File^[] fl) -> Blob^
-	{
-		base64Key := Base64Encode(st.NonNullStr(),st.Size())
 
+	getCacheKey := !(Str st, File^[] files) -> Str
+	{
+		allKey := TEchoStream
+
+		allKey << st
+		for it : files
+		{
+			allKey << it.GetPath()
+		}
+		resKey := allKey.GetString()
+		result->AsString = Base64Encode(resKey.Str(),resKey.Size())
+	}
+	TryGetCacheValue := !(Str st, File^[] files) -> Blob^
+	{
+		base64Key := getCacheKey(st,files)
 		for it : cacheBlobList
 		{
 			if it.key == base64Key
 			{
 				if not it.loaded
 				{
-					if it.filesCache^ != getFilesCache(fl)^
+					if it.filesCache != getFilesCache(files)
 						return null
 					fil := base.zipFile.GetFile(it.fileName)
 					if fil == null
@@ -35,9 +47,9 @@ CacheModule := class
 		}
 		return null
 	}
-	WriteCacheOfFile := !(StringView st, File^[] files,Blob^ data) -> void
+	WriteCacheOfFile := !(Str st, File^[] files,Blob^ data) -> void
 	{
-		base64Key := Base64Encode(st.NonNullStr(),st.Size())
+		base64Key := getCacheKey(st,files)
 
 		for it : cacheBlobList
 		{
@@ -50,24 +62,25 @@ CacheModule := class
 		}
 		cacheBlobList.Emplace()
 		newEntry := ref cacheBlobList[-1]
-		itPath := StringConcat(moduleName,"/","hi")
+		itPath := StrConcat(moduleName,"/","hi")
 		newEntry.key = base64Key
 		newEntry.fileName = itPath
 		newEntry.filesCache = getFilesCache(files)
 
 		base.zipFile.WriteFile(itPath,data)
 	}
-	getFilesCache := !(File^[] fl) -> String^
+	getFilesCache := !(File^[] fl) -> Str
 	{
 		if fl == null or fl.Size() == 0
 			return new String("empty")
-		echo := TEchoStream()
+
+		maxTime := 0
 		for it : fl
 		{
-			diff := it.GetModificationTime()
-			echo << diff
+			maxTime = max(maxTime,it.GetModificationTime())
 		}
-		return echo.GetString()
+
+		return StrConcat(maxTime)
 	}
 	LoadMeta := !() -> void
 	{
@@ -87,9 +100,9 @@ CacheModule := class
 					yield void
 					cacheBlobList.Emplace()
 					newEntry := ref cacheBlobList[-1]
-					newEntry.key = val.GetString()
-					newEntry.fileName = x.GetString()
-					newEntry.filesCache = filesData.GetString()
+					newEntry.key->AsString = val.GetString()
+					newEntry.fileName->AsString = x.GetString()
+					newEntry.filesCache->AsString = filesData.GetString()
 					yield void
 				}
 			})
@@ -117,7 +130,7 @@ CacheModule := class
 			base.zipFile.WriteFile(StringConcat(moduleName,"/BlobCache.txt"),tempBlob)
 		}
 	}
-	GetCachedValue := !(StringView stv, File^[] files, !()&->Blob^ cb) -> Blob^
+	GetCachedValue := !(Str stv, File^[] files, !()&->Blob^ cb) -> Blob^
 	{
 		inDB := TryGetCacheValue(stv,files)
 		if inDB != null

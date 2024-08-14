@@ -12,7 +12,7 @@ CacheStringModule := class extend TGCObject
 	}
 	CacheChangedBlobData := bool
 	CacheBlobList  := List.{BlobCacheData} //TODO Optimize
-	CacheBlobByString := !(StringView value, !()&->Blob^  cb) -> Blob^
+	CacheBlobByString := !(Str value, !()&->Blob^  cb) -> Blob^
 	{
 		for it : CacheBlobList
 		{
@@ -62,9 +62,9 @@ CacheStringModule := class extend TGCObject
 	
 		CacheBlobList.Emplace()
 		newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
-		newEntry.key = value.GetString()
+		newEntry.key = value
 	
-		newEntry.fileName = new String(buf[0]&)
+		newEntry.fileName->AsString = new String(buf[0]&)
 		newEntry.value = newBlob
 		newEntry.changed = true
 		newEntry.loaded = true
@@ -87,8 +87,8 @@ CacheStringModule := class extend TGCObject
 					yield void
 					CacheBlobList.Emplace()
 					newEntry := ref CacheBlobList[CacheBlobList.Size() - 1]
-					newEntry.key = val.GetString()
-					newEntry.fileName = x.GetString()
+					newEntry.key->AsString = val.GetString()
+					newEntry.fileName->AsString = x.GetString()
 					yield void
 				}
 			})
@@ -120,9 +120,9 @@ CacheStringModule := class extend TGCObject
 
 BlobCacheData := class
 {
-	key := String^
-	fileName := String^
-	filesCache := String^
+	key := Str
+	fileName := Str
+	filesCache := Str
 	value := Blob^
 	changed := bool
 	loaded := bool

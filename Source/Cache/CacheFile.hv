@@ -33,7 +33,7 @@ CacheBlobByStringReg := !(StringView value, !()&-> Blob^ cb) -> BoxRawData^
 		return new BoxRawData(blb)
 	}
 
-	blb := RegsCache.CacheBlobByString(value,cb)
+	blb := RegsCache.CacheBlobByString(value.GetString(),cb)
 
 	if blobsCache.Contain(blb)
 		return blobsCache[blb]

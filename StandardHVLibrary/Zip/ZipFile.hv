@@ -163,10 +163,10 @@ ZipFile := class extend TGCObject
 		}
 		return true
 	}
-	getEntry := !(StringSpan newStr,bool createPath) -> vZipEntry^
+	getEntry := !(Str newStr,bool createPath) -> vZipEntry^
 	{
 		fldrs := List.{StringSpan}
-		newStr.DivideStr("/", x ==> { fldrs.Push(x)})
+		newStr.AsStringSpan().DivideStr("/", x ==> { fldrs.Push(x)})
 		itmIter := zipRoot&
 
 		for itm,j : fldrs
@@ -203,7 +203,7 @@ ZipFile := class extend TGCObject
 		}
 		return itmIter
 	}
-	WriteFile := !(StringView fileName, Blob^ data,bool useCompression = false) -> void //TODO folder support
+	WriteFile := !(Str fileName, Blob^ data,bool useCompression = false) -> void //TODO folder support
 	{
 		//fileData.DeleteIf(x => x.fileName == fileName)
 		entry := getEntry(fileName,true)
