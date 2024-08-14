@@ -25,7 +25,6 @@ RawFileStream := class extend Stream
 			options = options[1]&
 		}
 		FileFd = open(fileName.Str(),posFlg,493) //TODO base of 4?
-		printf("hey %i %s %i\n",FileFd, fileName,posFlg)
 
 		if FileFd == -1
 			return false

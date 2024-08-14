@@ -15,6 +15,7 @@ vZipEntry := class
 	subFolders := List.{vZipEntry^}
 
 	IsFolder := bool
+	IsExist := bool
 	//compressedPointer := void^
 
 	"this" := !() -> void {}
@@ -58,12 +59,16 @@ vZipEntry := class
 			memcpy(result.GetPointer(),mp.Get(),result.Size())
 		}
 	}
+	GetModificationTime := !() -> u64
+	{
+		return timeModified
+	}
 
 	Print := !(int de) -> void
 	{
 		for i : de printf("-")
 
-		printf("%s %i %i %i\n",objName.GetString().Str(),realSize,zipSize,comprType)
+		printf("%s %i %i %i %p\n",objName.GetString().Str(),realSize,zipSize,comprType,this&)
 		subFolders[^].Print(de+1)
 	}
 }
@@ -81,10 +86,10 @@ ZipFile := class extend TGCObject
 		zipRoot.objName = new String("/")
 		zipRoot.ptrToObj = this&
 	}
-	GetFile := !(char^ fileNameI) -> vZipEntry^
+	GetFile := !(Str fileNameI) -> vZipEntry^
 	{
 		itr := zipRoot&
-		StringSpan(fileNameI).DivideStr("\\/",x ==> {
+		fileNameI->AsString.AsStringSpan().DivideStr("\\/",x ==> {
 
 			if itr == null
 				return void
@@ -159,6 +164,7 @@ ZipFile := class extend TGCObject
 				{
 					itmIter.subFolders.Push(new vZipEntry)
 					nI := itmIter.subFolders[-1]
+					nI.IsExist = true
 					nI.ptrToObj = this&
 					nI.objName = itm.GetString()
 					nI.fullName = newStr.GetString()
@@ -220,7 +226,7 @@ ZipFile := class extend TGCObject
 
 				if  j == fldrs.Size() - 1
 				{
-					return itmIter
+					return nI
 				}else{
 					nI.IsFolder = true
 					itmIter = nI
@@ -273,6 +279,8 @@ ZipFile := class extend TGCObject
 		BusyPages := List.{Tuple.{u64,u64}} //TODO optimize to RangeSetClass
 		for it : fileData
 		{
+			if not it.IsExist
+				continue
 			tpl := Tuple.{u64,u64}
 			tpl.0 = it.offsetToFileHeader
 			tpl.1 = it.offsetToFileHeader + it.zipSize + it.fullName.Size() + zipFileHeader->TypeSize
@@ -364,14 +372,9 @@ ZipFile := class extend TGCObject
 
 		newSize += zipEndOfDirectory->TypeSize
 
-		if false //not fileExists
+		if newSize != asMapped.Size()
 		{
-			fileMap = new MappedFile(fileZipName.Str(),FILE_READ + FILE_WRITE,newSize)
-		}else{
-			if newSize != asMapped.Size()
-			{
-				asMapped.ResizeFile(newSize)
-			}
+			asMapped.ResizeFile(newSize)
 		}
 		
 		ptr := asMapped.Get()->{u8^}
@@ -412,6 +415,7 @@ ZipFile := class extend TGCObject
 		cdSize := 0
 
 		offsetToCD := endOfMainData
+
 
 		for it : fileData
 		{

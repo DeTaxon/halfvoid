@@ -10,6 +10,10 @@ main := !(char^[] args) -> int
 		printf("making blob\n")
 		return MakeBlob(15)
 	})
+	tst.CacheBlobByString("Test2",() ==> {
+		printf("making blob2\n")
+		return MakeBlob(15)
+	})
 	c.Flush()
 }
 RunTest := !() -> void

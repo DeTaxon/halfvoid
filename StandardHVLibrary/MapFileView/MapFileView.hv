@@ -13,7 +13,7 @@ ZipFSFileView := class extend FileView
 	{
 		baseFile = bFile
 		pth := bFile.GetPath()
-		itMap = new MappedFile(pth.Str())
+		itMap = new MappedFile(pth,"rw")
 	}
 	Get := virtual !() -> u8^ {return itMap.Get()}
 	Size := virtual !() -> u64 { return baseFile.Size() }

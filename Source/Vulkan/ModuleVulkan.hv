@@ -13,7 +13,7 @@ ModuleVulkan := class extend ModuleInterface
 
 	this := !(char^ xmlName) -> void
 	{
-		xmlFile := MappedFile(xmlName)
+		xmlFile := MappedFile(xmlName,"rw")
 		xmlTree = ParseXML(xmlFile.point)
 	}
 	GetType2 := !(char^ nm) -> Type^
