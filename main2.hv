@@ -4,16 +4,14 @@ main := !(char^[] args) -> int
 	c := new CacheFile("tst.zip")
 	c.IncRef()
 
-	tst := c.GetStringModule("Test")
+	tst := c.GetModule("Test")
 
-	tst.CacheBlobByString("Test",() ==> {
-		printf("making blob\n")
-		return MakeBlob(15)
+	tst.GetCachedValue("File35",![FSGetFile("tst2")], () ==> {
+		c := MakeBlob(15)
+		printf("makeing blob\n")
+		return c
 	})
-	tst.CacheBlobByString("Test2",() ==> {
-		printf("making blob2\n")
-		return MakeBlob(15)
-	})
+
 	c.Flush()
 }
 RunTest := !() -> void

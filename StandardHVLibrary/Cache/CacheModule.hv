@@ -60,9 +60,17 @@ CacheModule := class
 				return void
 			}
 		}
+
+		fileSetName := new String(base64Key.Str(),base64Key.Size())
+		for i : fileSetName.Size()
+		{
+			if fileSetName.charPtr[i] == '='
+				fileSetName.charPtr[i] = '0'
+
+		}
 		cacheBlobList.Emplace()
 		newEntry := ref cacheBlobList[-1]
-		itPath := StrConcat(moduleName,"/","hi")
+		itPath := StrConcat(moduleName,"/",fileSetName)
 		newEntry.key = base64Key
 		newEntry.fileName = itPath
 		newEntry.filesCache = getFilesCache(files)
@@ -124,7 +132,7 @@ CacheModule := class
 				MetaCache << it.key << "\n" << it.filesCache << "\n" << it.fileName << "\n"
 			}
 
-			tempBlob := new BlobOnVector(MetaCache.Size())
+			tempBlob := MakeBlob(MetaCache.Size())
 			MetaCache.Read(tempBlob.GetPointer(),tempBlob.Size())
 			
 			base.zipFile.WriteFile(StringConcat(moduleName,"/BlobCache.txt"),tempBlob)
