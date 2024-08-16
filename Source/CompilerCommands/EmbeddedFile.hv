@@ -38,7 +38,9 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	if itFile == null
 		itm.EmitError("File not found")
 
-	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),itFile,itFile.GetName()^[0..0]
+	constStr := GetConstString(itFile.GetPath().Str())
+
+	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),constStr.NonNullStr(),itFile.GetName()^[0..0]
 	, compressFile ?: "Deflate" : "None"
 	,() ==> Blob^ {
 		return itFile.GetBlob()
