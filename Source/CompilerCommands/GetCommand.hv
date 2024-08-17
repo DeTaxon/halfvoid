@@ -20,10 +20,6 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryEmbedFile(itm)
 	}
-	if cmd == "#EmbVKShader" or cmd == "#EmbVKShaderLocal"
-	{
-		return TryEmbeddVKShader(itm)
-	}
 	if cmd == "#Regexp"
 	{
 		return CommandGetRegexp(itm)	
