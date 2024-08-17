@@ -11,6 +11,11 @@ BuildInVirtualCall := class extend BoxFuncCommon
 	}
 	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
+		TryForceVirtualUse()
+		return super(objs)
+	}
+	TryForceVirtualUse := !() -> void
+	{
 		if wrappedFunc is in BoxFuncBody
 		{
 			fnc := wrappedFunc->{BoxFuncBody^}
@@ -19,7 +24,6 @@ BuildInVirtualCall := class extend BoxFuncCommon
 			fam := baseClass.GetFamily()
 			fam.NotifyVirtualFuncUsage(fnc.Name)
 		}
-		return super(objs)
 	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{

@@ -1,0 +1,32 @@
+TryForceVirtualFunctions := !(Token^ itm) -> BoxExeObj^
+{
+	if itm?.Down?.Right?.Down? is TokenString {}
+	else{
+		//TODO emit error
+		return null
+	}
+
+	clsName := itm.Down.Right.Down->{TokenString^}.Value
+
+	cls := intGetClass(clsName)
+
+	if cls == null
+		return null
+
+	if cls is BoxClassBody
+	{
+		clsBody := cls->{BoxClassBody^}
+
+		cls.StartParseBody()
+		cls.AwaitReadyState()
+
+		for it : clsBody.DefaultSpace.VirtualMethods[^]
+		{
+			if it is BuildInVirtualCall
+				it->{BuildInVirtualCall^}.TryForceVirtualUse()
+		}
+		
+	}
+
+	return GObjNone
+}

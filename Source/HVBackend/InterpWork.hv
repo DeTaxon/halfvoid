@@ -1,0 +1,35 @@
+
+InterpWork := class extend CWorkUnit
+{
+	isDone := bool
+	errMessage := Str
+	interpTask := Task^
+
+	this := !(Task^ setTask) -> void
+	{
+		interpTask = setTask
+	}
+	DoWork := virtual !() -> CWorkState
+	{
+		if IsDone()
+			return "Complete"
+		return "Created"
+	}
+	IsDone := virtual !() -> bool
+	{
+		return isDone
+	}
+	GetErrorMessage := virtual !() -> String^
+	{
+		return errMessage->AsString
+	}
+	SetErrorMessage := virtual !(Str newMessage) -> void
+	{
+		errMessage = newMessage
+	}
+	Cancel := virtual !() -> void {}
+	GetWorkTask := virtual !() -> Task^
+	{
+		return interpTask
+	}
+}

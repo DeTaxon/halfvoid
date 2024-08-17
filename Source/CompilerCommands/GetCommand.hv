@@ -40,6 +40,10 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 	{
 		return TryGetMarkedFunctions(itm)
 	}
+	if cmd == "#ForceVirtualFunctions"
+	{
+		return TryForceVirtualFunctions(itm)
+	}
 	if cmd == "#TLSSize"
 	{
 		return GetExeInt(TLSSize)

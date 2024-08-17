@@ -33,7 +33,8 @@ InitInternalsTypes := !() -> void
 intGetClass := !(char^ name) -> BoxClass^
 {
 	res := GetTypeByName(StringSpan(name))
-	assert(res != null)
+	if res == null
+		return null
 	assert(res is in TypeClass)
 	return res->{TypeClass^}.ToClass
 }
