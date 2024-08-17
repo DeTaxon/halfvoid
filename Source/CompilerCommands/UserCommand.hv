@@ -139,7 +139,14 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			resultBlob := void^
 			extraStep := resultBlob&
 			interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
-			MCInterpFunction2(GInterpCntx&,interpFnc,inptPointers,extraStep&)
+			interpResult := MCInterpFunction2Resulted(GInterpCntx&,interpFnc,inptPointers,extraStep&)
+
+			resMessage := interpResult.GetErrorMessage()
+			if resMessage != null
+			{
+				CurrentFuncWork.SetErrorMessage(resMessage)
+				return null
+			}
 
 			if fncResult == GTypeVoid {
 				return new BlobSpan
@@ -180,6 +187,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 			resBlb = callObj()
 		}
+		if CurrentFuncWork.isFailed
+			return null
 
 		if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint()
 		{

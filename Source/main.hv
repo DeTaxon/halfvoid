@@ -154,6 +154,7 @@ main := !(char^[] args) -> int
 		i += 1
 	}
 
+	#ForceVirtualFunctions("vRepoObject")
 	#ForceVirtualFunctions("File")
 	#ForceVirtualFunctions("HV_Context")
 

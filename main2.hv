@@ -14,11 +14,13 @@ RunTest := !() -> void
 		checkFile.GetPath() //TODO WHY DO I NEED TO CALL THIS, OTHERWISE IT CRASHES
 
 		shaderCompiler := new ShaderCompiler()
-		result = shaderCompiler.Compile(checkFile)
-		if result == null
+		compileResult := shaderCompiler.Compile(checkFile)
+		if compileResult.ErrorMessage->AsString != null
 		{
-			HV.EmitError("oh no")
-			printf("failed\n")
+			HV.EmitError(compileResult.ErrorMessage)
+			return void
+		}else{
+			return compileResult.ResultShader
 		}
 	}
 )

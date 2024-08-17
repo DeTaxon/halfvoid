@@ -488,6 +488,7 @@ CWorkFuncCompile := class extend CWorkUnit
 	itError := String^
 	itLine := int
 	isCanceled := bool
+	isFailed := bool
 
 	this := !(BoxFuncBody^ b) -> void
 	{
@@ -496,6 +497,8 @@ CWorkFuncCompile := class extend CWorkUnit
 
 	DoWork := virtual !() -> CWorkState 
 	{
+		if isFailed
+			return "Failed"
 		if IsDone()
 			return "Complete"
 		return "Failed"
@@ -507,6 +510,11 @@ CWorkFuncCompile := class extend CWorkUnit
 	GetErrorMessage := virtual !() -> String^ 
 	{	
 		return itError
+	}
+	SetErrorMessage := virtual !(Str setError) -> String^ 
+	{	
+		itError = setError->AsString
+		isFailed = true
 	}
 	Cancel := virtual !() -> void
 	{

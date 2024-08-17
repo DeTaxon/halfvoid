@@ -12,11 +12,24 @@ CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
 CompileAndRunCodeInner := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
 	result = new InterpWork(CurrentTask)
+	oldWork := CurrentWork
 	CurrentWork = result
 
 	fnc := GInterpCntx.GetMCFunc(funcToRun)
 	MCInterpFunction(GInterpCntx&,fnc)
 
 	CurrentWork->{InterpWork^}.isDone = true
-	CurrentWork = null
+	CurrentWork = oldWork
+}
+
+MCInterpFunction2Resulted := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> InterpWork^
+{
+	result = new InterpWork(CurrentTask)
+	oldWork := CurrentWork
+	CurrentWork = result
+
+	MCInterpFunction2(iCntx,interpFunc,inputs,resultPtr)
+
+	CurrentWork->{InterpWork^}.isDone = true
+	CurrentWork = oldWork
 }

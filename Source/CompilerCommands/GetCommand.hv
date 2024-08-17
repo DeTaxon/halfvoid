@@ -66,5 +66,11 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 
 	return TryAddCallCommand(itm)?
 	return TryAddCreateModule(itm)?
-	itm.EmitError("Command not found")	
+
+	if not CurrentFuncWork.isFailed
+	{
+		itm.EmitError("Command not found")
+	}else{
+		return null
+	}
 }

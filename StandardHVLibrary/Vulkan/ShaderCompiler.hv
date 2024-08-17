@@ -1,5 +1,12 @@
 
 
+
+ShaderCompiler_CompileResult := class
+{
+	ResultShader := Blob^
+	ErrorMessage := Str
+}
+
 ShaderCompiler := class extend TGCObject
 {
 	cacheFile := CacheFile^
@@ -23,44 +30,34 @@ ShaderCompiler := class extend TGCObject
 		cacheFile = setCF
 		cacheFileModule = setCF.GetFileModule("Shaders") //TODO unconst
 	}
-	Compile := !(File^ fl) -> Blob^
+	Compile := !(File^ fl) -> ShaderCompiler_CompileResult
 	{
-		lmbdCreate := () ==> Blob^
+		blb := fl.GetBlob()
+		flName := fl.GetName().GetString()
+
+		target := shaderc_vertex_shader
+		if flName.End == ".frag"
+			target = shaderc_fragment_shader
+		if flName.End == ".task"
+			target = shaderc_task_shader
+		if flName.End == ".mesh"
+			target = shaderc_mesh_shader
+
+		cmplr := shaderc_compiler_initialize()
+		res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",options)
+		resInt := shaderc_result_get_compilation_status(res)
+		txt := shaderc_result_get_error_message(res)
+
+		if txt != null and StringSpan(txt) != ""
 		{
-			blb := fl.GetBlob()
-			flName := fl.GetName().GetString()
-
-			target := shaderc_vertex_shader
-			if flName.End == ".frag"
-				target = shaderc_fragment_shader
-			if flName.End == ".task"
-				target = shaderc_task_shader
-			if flName.End == ".mesh"
-				target = shaderc_mesh_shader
-
-			cmplr := shaderc_compiler_initialize()
-			res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",options)
-			resInt := shaderc_result_get_compilation_status(res)
-			txt := shaderc_result_get_error_message(res)
-
-			if txt != null and StringSpan(txt) != ""
-			{
-				printf("error %s\n",txt)
-				return null
-			}
-
-			resSize := shaderc_result_get_length(res)
-			resBlob := new BlobOnVector(resSize)
-			memcpy(resBlob.GetPointer(),shaderc_result_get_bytes(res),resSize)
-			return resBlob
+			result.ErrorMessage->AsString = new String(txt)
+			return void
 		}
-		if cacheFileModule != null
-		{
-			result = cacheFileModule.GetCacheValue(fl,lmbdCreate)
-			cacheFile.Flush()
-		}else{
-			return lmbdCreate()
-		}
+
+		resSize := shaderc_result_get_length(res)
+		resBlob := new BlobOnVector(resSize)
+		memcpy(resBlob.GetPointer(),shaderc_result_get_bytes(res),resSize)
+		result.ResultShader = resBlob
 	}
 }
 
