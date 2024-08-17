@@ -64,7 +64,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		if namedArgs.Contain(StringSpan("CacheOn")) and CFile != null
 		{
 			userCmd.UseCache = true
-			userCmd.CachedValues = CFile.GetModule("EmbedPi") //TODO get name from module
+			userCmd.CachedValues = CFile.GetModule(cmdName->{TokenString^}.Value)
 		}
 
 
@@ -145,32 +145,11 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				return new BlobSpan
 			}else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() 
 			{
-				decBlob := intGetFunc("internalHVDecompressBlob")
-				assert(decBlob != null)
-				ptrVal := void^
-				extraStep := ptrVal&
-				blobSize := size_t
-				extraStep2 := blobSize&
-				arrr := void^[3]
-				arrr[0] = resultBlob&
-				arrr[1] = extraStep&
-				arrr[2] = extraStep2&
-				mcFunc := GInterpCntx.GetMCFunc(decBlob->{BoxFuncBody^})
-				MCInterpFunction(GInterpCntx&,mcFunc,arrr,null)
-
-				newBlob := new BlobOnVector(blobSize)
-				if blobSize != 0
-				{
-					memcpy(newBlob.GetPointer(),ptrVal,blobSize)
-				}
-
-				dltOld := GInterpCntx.GetMCFunc(GFuncGCSetNull->{BoxFuncBody^})
-				arr2 := void^[1]
-				arr2[0] = resultBlob&
-				extraStep = resultBlob&
-				MCInterpFunction(GInterpCntx&,dltOld,arr2,null)
-
-
+				if resultBlob == null
+					return null
+				blb := resultBlob->{Blob^}
+				newBlob := MakeBlob(blb.Size())
+				memcpy(newBlob.GetPointer(),blb.GetPointer(),blb.Size())
 				return newBlob
 			}
 		}
@@ -179,6 +158,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		if userCmd.UseCache
 		{
 			CacheString := TEchoStream
+
+			CacheString << cmd 
 
 			for it : objVals
 			{
@@ -202,6 +183,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint()
 		{
+			if resBlb == null
+			{
+				return GetExchange(GObjNull,GBlobType.GetPoint())
+			}else{
 				res := new BoxRawData(resBlb)
 				blobSize := resBlb.Size()
 				blobDatas.Push(res)
@@ -215,7 +200,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				{
 					return userCmd.ExchangeOut.CreateCall(![blbRes])
 				}
-				return res
+				return blbRes
+			}
 		}
 		
 		return GObjNone

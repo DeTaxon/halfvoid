@@ -12,6 +12,8 @@ HV_Context := class
 	Create_int32 := virtual !(int value) -> void^ {}
 
 	CacheIt := virtual !() -> void {}
+
+	EmitError := virtual !(Str ErrorMessage) -> void {}
 }
 
 HV_Context_Empty := HV_Context

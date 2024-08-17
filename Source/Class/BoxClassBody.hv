@@ -244,7 +244,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		echo := TEchoStream
 		
-		echo << ItName
+		echo << Name
 		if Constants?.Constants.Size() != 0
 		{
 			echo << ".{"

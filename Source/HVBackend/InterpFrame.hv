@@ -172,7 +172,7 @@ MCInterpFuncFrame := class extend TGCObject
 		for it,i : indexes
 		{
 			itType := func.Objects[it]&.GetType()
-			if itType == GTypeChar.GetPoint()
+			if itType == GTypeChar.GetPoint() or itType == GTypeStr
 			{
 				values[i] = GetStringPtr(it)
 				valuesPtr[i] = values[i]&

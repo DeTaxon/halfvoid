@@ -51,6 +51,13 @@ MCInterpContext := class
 				globalVariables[vr] = result
 				return void
 			}
+			if classVar.Name == "vRepoObject"
+			{
+				free(result)
+				result = vRepoObject->VTable
+				globalVariables[vr] = result
+				return void
+			}
 			if classVar.Name == "StringSpan"
 			{
 				free(result)

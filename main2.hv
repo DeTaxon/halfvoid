@@ -1,22 +1,30 @@
 
 main := !(char^[] args) -> int
 {
-	c := new CacheFile("tst.zip")
-	c.IncRef()
-
-	tst := c.GetModule("Test")
-
-	tst.GetCachedValue("File35",![FSGetFile("tst2")], () ==> {
-		c := MakeBlob(15)
-		printf("makeing blob\n")
-		return c
-	})
-
-	c.Flush()
+	c := #EmbedVulkanShader("main2.hv")
 }
 RunTest := !() -> void
 {
 }
+
+#CreateCallCommand(
+	Name = "EmbedVulkanShader",
+	CacheOn = true,
+	Call = !(File^ checkFile) -> Blob^
+	{
+		checkFile.GetPath() //TODO WHY DO I NEED TO CALL THIS, OTHERWISE IT CRASHES
+
+		shaderCompiler := new ShaderCompiler()
+		result = shaderCompiler.Compile(checkFile)
+		if result == null
+		{
+			HV.EmitError("oh no")
+			printf("failed\n")
+		}
+	}
+)
+
+
 
 //RangesExperiment := !() -> void
 //{

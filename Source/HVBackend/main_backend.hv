@@ -1,16 +1,22 @@
 
 
-CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> void
+CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
 	@once {
 		startFunc := intGetFunc("CallStartFunctions")
 		CompileAndRunCodeInner(startFunc->{BoxFuncBody^})
 	}
-	CompileAndRunCodeInner(funcToRun)
+	return CompileAndRunCodeInner(funcToRun)
 }
 
-CompileAndRunCodeInner := !(BoxFuncBody^ funcToRun) -> void
+CompileAndRunCodeInner := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
+	result = new InterpWork(CurrentTask)
+	CurrentWork = result
+
 	fnc := GInterpCntx.GetMCFunc(funcToRun)
 	MCInterpFunction(GInterpCntx&,fnc)
+
+	CurrentWork->{InterpWork^}.isDone = true
+	CurrentWork = null
 }

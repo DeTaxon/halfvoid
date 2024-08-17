@@ -219,8 +219,7 @@ main := !(char^[] args) -> int
 	assert(mainFunc != null)
 	assert(mainFunc is BoxFuncBody)
 	mainFunc.ParseBody()
-	//mainFunc.WaitReadyState()
-
+	
 	WaitForParsingObjects()
 
 	mainFunc.ForceOutputName(StringSpan("main"))

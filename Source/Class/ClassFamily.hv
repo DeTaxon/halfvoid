@@ -2,7 +2,7 @@ ClassFamily := class
 {
 	Classes := AVLSet.{BoxClass^}
 
-
+	ForceVirtualFunctionUse := bool
 	UsedVirtualFunctions := AVLSet.{Str}
 	NotifyVirtualFuncUsage := !(Str funcName) -> void
 	{

@@ -5,7 +5,7 @@ hvr_Class := class extend BoxClassPoison
 
 	this := !() -> void
 	{
-		ItName = "ModuleClass" //todo
+		Name = "ModuleClass" //todo
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 

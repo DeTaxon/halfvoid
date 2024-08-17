@@ -9,6 +9,7 @@ FuncStack := task_local List.{BoxFuncBody^}
 
 HotloadStream := ref Stream
 
+CurrentWork := task_local CWorkUnit^
 CurrentFuncWork := task_local CWorkFuncCompile^
 
 HVOperators := AVLSet.{StringSpan}

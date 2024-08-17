@@ -45,4 +45,12 @@ HVContextImplementation := class extend HV_Context
 	{
 		return GetExeInt(value)
 	}
+
+	EmitError := virtual !(Str errorMessage) -> void
+	{
+		if CurrentWork == null
+			return void
+		CurrentWork.SetErrorMessage(errorMessage)
+	}
+
 }

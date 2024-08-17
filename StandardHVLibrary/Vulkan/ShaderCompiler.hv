@@ -46,6 +46,7 @@ ShaderCompiler := class extend TGCObject
 			if txt != null and StringSpan(txt) != ""
 			{
 				printf("error %s\n",txt)
+				return null
 			}
 
 			resSize := shaderc_result_get_length(res)

@@ -56,6 +56,7 @@ CWorkUnit := class extend TGCObject
 	DoWork := virtual !() -> CWorkState {}
 	IsDone := virtual !() -> bool {}
 	GetErrorMessage := virtual !() -> String^ {}
+	SetErrorMessage := virtual !(Str newMessage) -> void {}
 	Cancel := virtual !() -> void {}
 	GetWorkTask := virtual !() -> Task^ {}
 }
