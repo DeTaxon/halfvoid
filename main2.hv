@@ -6,24 +6,6 @@ main := !(char^[] args) -> int
 RunTest := !() -> void
 {
 }
-#CreateCallCommand(
-	Name = "EmbedVulkanShader",
-	CacheOn = true,
-	Call = !(File^ checkFile) -> Blob^
-	{
-		checkFile.GetPath() //TODO WHY DO I NEED TO CALL THIS, OTHERWISE IT CRASHES
-
-		shaderCompiler := new ShaderCompiler()
-		compileResult := shaderCompiler.Compile(checkFile)
-		if compileResult.ErrorMessage->AsString != null
-		{
-			HV.EmitError(compileResult.ErrorMessage)
-			return void
-		}else{
-			return compileResult.ResultShader
-		}
-	}
-)
 
 
 

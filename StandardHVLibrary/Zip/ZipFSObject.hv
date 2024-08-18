@@ -9,7 +9,34 @@ vRepoObject := class extend TGCObject
 
 	GetName := !() -> String^ { return objName }
 	
-	GetUpFolder := !() -> Folder^ { return upFolder }
+	GetUpFolder := !() -> Folder^
+	{
+		//TODO this needs upgrade
+		if upFolder == null and absPath->AsString != null
+		{
+			if absPath->AsString.End != "/"
+			{
+				ptr := absPath.Str()
+				siz := absPath.Size()
+				i := siz - 1
+				while i >= 0
+				{
+					if ptr[i] == '/'
+						break
+					i -= 1
+				}
+				if i < 2
+					return null
+				spn := absPath[0..i]
+
+				res := new Folder
+				res.absPath->AsString = spn.GetString()
+				return res
+
+			}
+		}
+		return upFolder 
+	}
 
 	GetPath := !() -> Str
 	{

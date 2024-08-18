@@ -112,10 +112,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				if fType.Params[i].ItType == GRepoFileType.GetPoint()
 				{
 					fil :=  File^
-					if it.Value.Start == "local:/"
+					if it.Value.Start == "local:"
 					{
 						fldr := itm.Line.File.file.GetUpFolder()
-						fil = FSGetFile2(fldr,it.Value^[7..0])
+						fil = FSGetFile2(fldr,it.Value^[6..0])
 					}else{
 						fil = FSGetFile(it.Value)
 					}
