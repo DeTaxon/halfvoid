@@ -150,6 +150,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		return TryGetMetaFields(obj)
 	}
+	if right.Value == "LocalFields"
+	{
+		return TryGetMetaFields(obj,true)
+	}
 	if right.Value == "ArraySize"
 	{
 		typ := getMetaDownType(obj.Down)

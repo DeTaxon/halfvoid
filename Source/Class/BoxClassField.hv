@@ -241,6 +241,10 @@ AppendClass BoxClass
 		fieldIterators.Push(newIterator)
 		return newIterator
 	}
+	GetFieldsIteratorLocal := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
+	{
+		return new GrowableClassMetaFieldsLocal(itm,this&)
+	}
 
 	dependentsOnGrow := List.{!(BoxClass^,int)&->void}
 	AddDependsOnGrow := !(!(BoxClass^,int)&-> void cb) -> void

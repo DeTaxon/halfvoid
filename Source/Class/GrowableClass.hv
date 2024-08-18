@@ -71,3 +71,50 @@ VarIntObj := class extend BoxExeObj
 		ctx.writeStream^ << getVal()
 	}
 }
+GrowableClassMetaFieldsLocal := class extend  BoxMetaGrowingObject
+{
+	objRes := LocalVar^
+	itClass := BoxClass^
+
+	this := !(BoxExeObj^ itm,BoxClass^ bs) -> void
+	{
+		itClass = bs
+
+		valueType := itm.GetType()
+		assert(valueType is in TypeClass)
+
+		objRes = ToLocalVar(itm)
+	}
+
+	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		objRes.PrintCode(ctx)
+	}
+
+	IsMetaIteratable := virtual !() -> bool { return true }
+	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.Fields.Size() }
+
+	infoUser := !(int)&->void
+	RegisterUser := virtual !(!(int)&->void cb) -> void //TODO toobad, not designed for that use
+	{
+		infoUser = cb
+	}
+	ItemCreated := !(int ind) -> void
+	{
+		infoUser(ind) //TODO can be null
+	}
+
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
+	{
+		itClass.AwaitTypeState()
+		indCall := itClass.GetFieldByIndexTuple(ind)
+		itms := CheckExeDownList
+		itms.Push(objRes.CreateVarCall())
+		return indCall.CreateCall(itms)
+	}
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
+	{
+		itClass.AwaitTypeState()
+		return GetExeString(itClass.GetFieldByIndexTuple(ind).Field.Name.GetString())
+	}
+}

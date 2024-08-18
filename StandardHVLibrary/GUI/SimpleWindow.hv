@@ -157,7 +157,7 @@ Window := class extend GLFWWindow
 
 				cmdBuf.cmdData.Submit(vInstance.DrawQueue,null)
 
-				vInstance.DrawPresentImage(surfaceIndex)
+				@work vInstance.DrawPresentImage(surfaceIndex)
 				cmdBuf.inited = true
 
 

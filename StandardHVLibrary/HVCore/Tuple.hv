@@ -1,7 +1,7 @@
 
 internalTuple_Compare := !(@T a, T b) -> int
 {
-	for x : a->AllFields, y : b->AllFields
+	for x : a->LocalFields, y : b->LocalFields
 	{
 		result = x <=> y
 		if result != 0

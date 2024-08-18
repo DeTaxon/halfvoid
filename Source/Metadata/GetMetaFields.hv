@@ -1,4 +1,4 @@
-TryGetMetaFields := !(Token^ itm) -> BoxExeObj^
+TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 {
 	dwn := TryGetExeCall(itm.Down)
 
@@ -18,5 +18,7 @@ TryGetMetaFields := !(Token^ itm) -> BoxExeObj^
 	if cls == null
 		itm.EmitError("Object does not have fields")
 
+	if isLocal
+		return cls.GetFieldsIteratorLocal(dwn)
 	return cls.GetFieldsIterator(dwn)
 }
