@@ -60,12 +60,12 @@ Token := class
 			}
 		}
 		result->AsString = ln.GetString()
-	}
-	EmitError := !(char^ info) -> void
-	{
-		errMsg := MakeError(info)
-		printf("%s",errMsg)
-		exit(-1)
+
+		if CurrentWork == null or DisableScary
+		{
+			printf("Could not wistand error\n%s\n",result)
+			exit(-1)
+		}
 	}
 }
 

@@ -213,14 +213,16 @@ BoxClassBody := class extend BoxClassPoison
 
 		cls := this&
 		parseTask = TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
+			CurrentWork = AddClassWork()
 			CurrentFile = cls.classFile
 			cls.ParseBody()	
 		})
 		//ComputeDesire(parseTask.Desired,CurrentTask.Desired)
 	}
-	AddClassWork := !() -> void
+	AddClassWork := !() -> CWorkUnit^
 	{
-		WorkBag.AddWork(new CWorkClassCompile(this&))
+		result = new CWorkClassCompile(this&)
+		WorkBag.AddWork(result)
 	}
 	AwaitTypeState := virtual !() -> void
 	{

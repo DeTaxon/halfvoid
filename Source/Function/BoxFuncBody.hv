@@ -186,6 +186,7 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		if #Var("Tracy") TracyPrintf("Started function %p %s",this&,GetGoodName())
 		CurrentFuncWork = createCWork()
+		CurrentWork = CurrentFuncWork
 		//TracyZone("Parsing function")
 		GParsedAllFiles.Await()
 
@@ -511,7 +512,7 @@ CWorkFuncCompile := class extend CWorkUnit
 	{	
 		return itError
 	}
-	SetErrorMessage := virtual !(Str setError) -> String^ 
+	SetErrorMessage := virtual !(Str setError) -> void 
 	{	
 		itError = setError->AsString
 		isFailed = true

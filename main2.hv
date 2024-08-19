@@ -5,7 +5,7 @@ main := !(char^[] args) -> int
 	d := Tuple.{double,int}
 
 	c.0 = 1.4
-	d.0 = 1.3
+	d.6 = 1.3
 
 	printf("test %i %i\n",c > d, c.0 > d.0)
 }

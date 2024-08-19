@@ -242,7 +242,7 @@ main := !(char^[] args) -> int
 	WaitForParsingObjects()
 
 	if WorkBagPrintErrors()
-		exit(0)
+		exit(-1)
 	for it : CodeSpaces
 	{
 		for libs : it.Modules
