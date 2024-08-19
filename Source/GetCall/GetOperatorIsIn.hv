@@ -12,7 +12,10 @@ TryGetIsInCall := !(Token^ itm) -> BoxExeObj^
 
 	typ2 := ParseType(obj2)
 	if typ2 == null
-		obj2.EmitError("Unknown type")
+	{
+		CurrentWork?.SetErrorMessage(obj2.MakeError("Unknown type"))
+		return null
+	}
 	
 	typ1 := ParseType(obj1)
 

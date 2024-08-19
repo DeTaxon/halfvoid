@@ -15,10 +15,16 @@ BoxForOverGrowableMeta := class extend BoxExeObj
 	{
 		ObjType = GTypeVoid
 		if not dwns[^].IsMeta
-			bdy.EmitError("All of iteratables must be metadata")
+		{
+			CurrentWork?.SetErrorMessage(bdy.MakeError("All of iteratables must be metadata"))
+			return void
+		}
 		k := dwns[0].MetaObj.MetaIteretableSize() //TODO check all dwns
 		if k != dwns[^].MetaObj.MetaIteretableSize()
-			bdy.EmitError("All of iteretables must be same size")
+		{
+			CurrentWork?.SetErrorMessage(bdy.MakeError("All of iteretables must be same size"))
+			return void
+		}
 
 		dwnObjs.Push(dwns[^])
 	

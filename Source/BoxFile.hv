@@ -193,7 +193,8 @@ BoxFile := class extend BoxUnit
 
 			if cls == null
 			{
-				iter.EmitError("class not found")
+				CurrentWork?.SetErrorMessage(iter.MakeError("class not found"))
+				return void
 			}else{
 				assert(cls is in BoxClassBody)
 				cls->{BoxClassBody^}.Appends.Emplace(this&,iter.Down.Right.Right,0)
@@ -217,7 +218,8 @@ BoxFile := class extend BoxUnit
 			}
 			if iter.Down.Right is not TokenIndent
 			{
-				iter.EmitError("i dont know how you got there")
+				CurrentWork?.SetErrorMessage(iter.MakeError("i dont know how you got there"))
+				return void
 			}
 			result.Push(iter)
 			iter = iter.Right
@@ -448,7 +450,7 @@ CWorkBaseFile := class extend CWorkUnit
 	itFile := BoxFile^
 	itToken := Token^
 	itState := CWorkState
-	itError := String^
+	itError := Str
 
 	this := !(BoxFile^ inpFile, Token^ inpToken) -> void
 	{
@@ -458,7 +460,7 @@ CWorkBaseFile := class extend CWorkUnit
 	}
 	GetErrorMessage := virtual !() -> String^
 	{
-		return itError
+		return itError->AsString
 	}
 	
 	DoWork := virtual !() -> CWorkState 

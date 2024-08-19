@@ -7,7 +7,10 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		markName  := itm.Down.Right.Down
 
 		if markName == null or markName is not TokenString
-			itm.EmitError("Unknown input variable")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Unknown input variable"))
+			return null
+		}
 
 		return markedObjects[StringSpan(markName->{TokenString^}.Value.Str())]&
 	}
@@ -18,7 +21,10 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		if markName == null or markName is not TokenString 
 			or markName.Right.GetValue() != "," or markName.Right.Right == null
 			or markName.Right.Right is not TokenIndent
-			itm.EmitError("Unknown input variable")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Unknown input variable"))
+			return null
+		}
 
 		fncName := markName.Right.Right->{TokenIndent^}.Value
 		//fnc := TryGetExeCall(markName.Right.Right)
@@ -42,7 +48,10 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		})
 
 		if callItem == null
-			itm.EmitError("Function not found")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Function not found"))
+			return null
+		}
 
 		MarkFunction(StringSpan(markName->{TokenString^}.Value.Str()),callItem->{BoxFunc^})
 

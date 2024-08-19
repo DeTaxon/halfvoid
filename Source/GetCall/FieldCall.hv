@@ -10,10 +10,12 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 
 	val := TryGetExeCall(itm.Down)
 	if val == null
-		itm.Down.EmitError("Could not get left of . object")
+	{
+		CurrentWork?.SetErrorMessage(itm.Down.MakeError("Could not get left of . object"))
+		return null
+	}
 	return innerTryGetFieldCall(val,itm.Down.Right.Right)?
 
-	itm.EmitError("Field not found")
 	return null
 }
 
@@ -105,7 +107,10 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			
 			fld := cls.GetFieldByIndexTuple(fieldInd)
 			if fld == null
-				rObj.EmitError("field does not exist") //todo: better error
+			{
+				CurrentWork?.SetErrorMessage(rObj.MakeError("field does not exist")) //todo: better error
+				return null
+			}
 
 			itms := CheckExeDownList
 			itms.Push(val)

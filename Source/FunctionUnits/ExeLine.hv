@@ -57,9 +57,8 @@ BoxExeLine := class extend BoxExeLineSimple
 
 		if emitError
 		{
-			ItToken.Print(0)
-			itm.EmitError("Unknown error")
-			assert(false)
+			CurrentWork?.SetErrorMessage(itm.MakeError("Unknown error"))
+			return false
 		}else{
 			return false
 		}
@@ -184,7 +183,7 @@ BoxExeConstObj := class extend BoxExeObj
 {
 	IsConst := virtual true
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void {}
-	PrintDebug := virtual !(Stream ctx) -> void {}
+	PrintDebug := virtual !(Stream ctx) -> {}
 }
 
 TryGetExeCall := !(Token^ itm) -> BoxExeObj^
@@ -262,7 +261,10 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 				}
 				assert(funcObj != null)
 				if funcObj == null
-					itm.EmitError("software error, compiler is broken")
+				{
+					CurrentWork?.SetErrorMessage(itm.MakeError("software error, compiler is broken"))
+					return false //TODO exception
+				}
 				
 				assert(funcObj.VariadicName.Size() != 0)
 
@@ -288,11 +290,17 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 				if itr.Down?.Right?.GetValue() == "="
 				{
 					if itr.Down is not TokenIndent
-						itr.EmitError("Left of operator = must be a name")
+					{
+						CurrentWork?.SetErrorMessage(itr.MakeError("Left of operator = must be a name"))
+						return false //TODO Exception
+					}
 					name := itr.Down->{TokenIndent^}.Value
 					obj := TryGetExeCall(itr.Down.Right.Right)
 					if obj == null
-						itr.Down.Right.Right.EmitError("Could not parse")
+					{
+						CurrentWork?.SetErrorMessage(itr.Down.Right.Right.MakeError("Could not parse"))
+						return false //TODO exception
+					}
 					namedInputs[name] = obj
 				}else{
 					qLambda := TryGetQuickLambda(itr)
@@ -335,7 +343,8 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 					assert(cns is in BoxExeConstObj)
 					consts.Push(cns->{BoxExeConstObj^})
 				}else{
-					iter.EmitError("could not get constant value")
+					CurrentWork?.SetErrorMessage(iter.MakeError("could not get constant value"))
+					return void //TODO make exception
 				}
 			}
 		}

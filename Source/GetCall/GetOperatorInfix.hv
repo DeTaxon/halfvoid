@@ -48,10 +48,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	if oper in ![">",">=","<","<=","==","!="]
 	{
 		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)
-		//if res == null
-		//{
-		//	itm.EmitError("Operator not found\n")
-		//}
 		if res != null
 			return res
 	}
@@ -125,7 +121,10 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 				asStr := lst[1]->{BoxExeString^}
 				enValue := enm.GetEnum(asStr.Value)
 				if enValue == null
-					debugItem.EmitError("Enum does not contain this value")
+				{
+					CurrentWork?.SetErrorMessage(debugItem.MakeError("Enum does not contain this value"))
+					return null
+				}
 				lst[1] = enValue
 				res := enm.GetCmpFunc().CreateCall(lst)
 				if oper == "!="
@@ -229,7 +228,10 @@ spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> B
 		zero = GetExchange(zero,result.GetType())
 	}
 	if zero == null
-		debugItem.EmitError("could not compare objects, found spaceship operator, but it does not return int type")
+	{
+		CurrentWork?.SetErrorMessage(debugItem.MakeError("could not compare objects, found spaceship operator, but it does not return int type"))
+		return null
+	}
 
 	objs7.Push(zero)
 	switch oper
@@ -302,7 +304,8 @@ innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> B
 		{
 			return resFunc->{BoxFunc^}.CreateCall(lst2)
 		}else{
-			errToken.EmitError("Unknown function recived, software error")
+			CurrentWork?.SetErrorMessage(errToken.MakeError("Unknown function recived, software error"))
+			return null
 		}
 		assert(false)
 	}

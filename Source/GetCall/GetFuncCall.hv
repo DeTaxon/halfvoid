@@ -66,7 +66,8 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			CurrentFunc.AddLocalVar(locVar)
 			return new ConstructorCallWrapper(locVar,cCall)
 		}
-		itm.EmitError("Constructor not found")
+		CurrentWork?.SetErrorMessage(itm.MakeError("Constructor not found"))
+		return null
 	}
 	
 	if itm.Down is TokenIndent
@@ -77,10 +78,16 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		{
 			itClass := CurrentFunc.GetBaseClass()
 			if itClass == null
-				itm.EmitError("super must be called in method")
+			{
+				CurrentWork?.SetErrorMessage(itm.MakeError("super must be called in method"))
+				return null
+			}
 
 			if itClass.Parents.Size() == 0
-				itm.EmitError("Class does not have parents")
+			{
+				CurrentWork?.SetErrorMessage(itm.MakeError("Class does not have parents"))
+				return null
+			}
 
 			thisIndex := TokenIndent
 			thisIndex.Value = StringSpan("this")
@@ -145,7 +152,10 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			itSpace = itSpace.baseSpace
 
 			if itSpace == null
-				itm.EmitError("super function can not be called")
+			{
+				CurrentWork?.SetErrorMessage(itm.MakeError("super function can not be called"))
+				return null
+			}
 
 			fncs := HybridQueue.{BoxUnit^,10}		
 			while true
@@ -171,7 +181,10 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 					return resFunc->{BoxFunc^}.CreateCall(newObjs)
 
 				if itSpace.baseSpace == null
-					itm.EmitError("super function not found")
+				{
+					CurrentWork?.SetErrorMessage(itm.MakeError("super function not found"))
+					return null
+				}
 				itSpace = itSpace.baseSpace
 			}
 
@@ -270,7 +283,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
 	}
 
-	CurrentFuncWork.itError = itm.MakeError("Can not parse function call")
+	CurrentFuncWork.SetErrorMessage(itm.MakeError("Can not parse function call"))
 	return null
 }
 

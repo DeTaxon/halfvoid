@@ -86,7 +86,10 @@ ReturnHalfState := class extend BoxExeObj
 				if rRef
 				{
 					if not callObj.IsMem()
-						errorToken.EmitError("Can not return reference, object does not sits in memory")
+					{
+						CurrentWork?.SetErrorMessage(errorToken.MakeError("Can not return reference, object does not sits in memory"))
+						return void
+					}
 				}
 
 				if resType != funcType
@@ -97,7 +100,8 @@ ReturnHalfState := class extend BoxExeObj
 						{
 							callObj2 = GetExchange(new UnrefFuncCall(callObj),funcType.GetPoint())
 						}else{
-							errorToken.EmitError("result type does not compare with function result")
+							CurrentWork?.SetErrorMessage(errorToken.MakeError("result type does not compare with function result"))
+							return void
 						}
 					}else{
 						newObj := GetExchange(callObj,CurrentFunc.ResultVar.GetType())
@@ -107,7 +111,8 @@ ReturnHalfState := class extend BoxExeObj
 							{
 								newObj = GetExchange2(callObj,CurrentFunc.ResultVar.GetType(),false)
 							}else{
-								errorToken.EmitError("can not convert type to function result")
+								CurrentWork?.SetErrorMessage(errorToken.MakeError("can not convert type to function result"))
+								return void
 							}
 						}
 						callObj = newObj
@@ -137,7 +142,10 @@ ReturnHalfState := class extend BoxExeObj
 				}else{
 					callObj = innerTryGetInfixCall(StringSpan("="),objs,errorToken)
 					if callObj == null
-						errorToken.EmitError("Can not return value, no \"=\" operator")
+					{
+						CurrentWork?.SetErrorMessage(errorToken.MakeError("Can not return value, no \"=\" operator"))
+						return void
+					}
 				}
 			}
 		}

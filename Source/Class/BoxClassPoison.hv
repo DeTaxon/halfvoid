@@ -43,9 +43,15 @@ BoxClassPoison := class extend BoxClass
 				continue
 			exeObj := TryGetExeCall(it.0)
 			if exeObj == null
-				it.0.EmitError("Can not set poison variable, could not compute")
+			{
+				CurrentWork?.SetErrorMessage(it.0.MakeError("Can not set poison variable, could not compute"))
+				return void
+			}
 			if exeObj is not in BoxExeConstObj
-				it.0.EmitError("Poison value must compute to constant")
+			{
+				CurrentWork?.SetErrorMessage(it.0.MakeError("Poison value must compute to constant"))
+				return void
+			}
 			newVal := new VTableVar(ind,exeObj->{BoxExeConstObj^})
 			PreVTableVars[ind] = newVal
 		}

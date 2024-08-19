@@ -90,7 +90,10 @@ ReturnsHolder := class extend BoxUnit
 			}
 
 			if resType == null
-				it.errorToken.EmitError("can not create type that satisfy all return objects")
+			{
+				CurrentWork?.SetErrorMessage(it.errorToken.MakeError("can not create type that satisfy all return objects"))
+				return null
+			}
 		}
 	
 		result = fncType

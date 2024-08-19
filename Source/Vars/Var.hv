@@ -28,7 +28,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	
 	if varToken?.GetValue() == "thread_local" or varToken?.GetValue() == "task_local"
 	{
-		varToken.EmitError("task/thread local must be at the root of file")
+		CurrentWork?.SetErrorMessage(varToken.MakeError("task/thread local must be at the root of file"))
+		return null
 	}
 
 	if varToken?.GetValue() == "static"
@@ -56,7 +57,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			fnc := CurrentScope->{BoxFuncBody^}
 
 			if not fnc.Attrs.IsMethod
-				varToken.EmitError("Function must be a method")
+			{
+				CurrentWork?.SetErrorMessage(varToken.MakeError("Function must be a method"))
+				return null
+			}
 			
 			cls := BoxClass^
 
@@ -92,10 +96,12 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				})
 				return mv
 			}else{
-				varToken.EmitError("Compiler error, could not get class")
+				CurrentWork?.SetErrorMessage(varToken.MakeError("Compiler error, could not get class"))
+				return null
 			}
 		}else{
-			varToken.EmitError("Field variable must be inside method")
+			CurrentWork?.SetErrorMessage(varToken.MakeError("Field variable must be inside method"))
+			return null
 		}
 	}
 
@@ -150,7 +156,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			{
 				hldr := exeObj->{BoxLambdaHolder^}
 				if not hldr.IsOneFunc()
-					varToken.EmitError("lambda function can not be template for variable") //todo better explanation
+				{
+					CurrentWork?.SetErrorMessage(varToken.MakeError("lambda function can not be template for variable")) //todo better explanation
+					return null
+				}
 				exeObj = hldr.CreateOneFuncLambda()
 			}
 
@@ -169,7 +178,8 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}
 			if refVar and not exeObj.IsMem()
 			{
-				varToken.EmitError("can not make reference")
+				CurrentWork?.SetErrorMessage(varToken.MakeError("can not make reference"))
+				return null
 			}
 
 			if vr == null

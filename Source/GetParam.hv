@@ -20,7 +20,7 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 			c2.IncRef()
 			errCode := itm.MakeError(c2.Str()) //todo better explanation
 
-			CurrentFuncWork.itError = errCode
+			CurrentFuncWork.SetErrorMessage(errCode)
 		}
 
 		return null

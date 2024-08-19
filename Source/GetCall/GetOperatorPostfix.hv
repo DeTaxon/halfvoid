@@ -29,7 +29,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 				cl2 = CreateFuncCallOperator(StringSpan("[]"),objs,cnsts)
 				if cl2 == null
 				{
-					dwn.EmitError("Could not create function call []? or []\n")
+					CurrentWork?.SetErrorMessage(dwn.MakeError("Could not create function call []? or []\n"))
+					return null
 				}
 			}
 			if cl2.IsMem()
@@ -79,7 +80,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 
 		if not (cl.GetType() is in TypePoint)
 		{
-			itm.Down.Right.EmitError("Left of ? operator must be pointer")
+			CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("Left of ? operator must be pointer"))
+			return null
 		}
 		NeedGuardLocalVar = true
 		return new BoxQuestionPointer(cl)

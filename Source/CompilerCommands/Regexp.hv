@@ -25,7 +25,10 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 	}
 
 	if badInputs
-		itm.EmitError("Incorrect use of #Regexp command")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("Incorrect use of #Regexp command"))
+		return null
+	}
 
 	echo := TEchoStream
 

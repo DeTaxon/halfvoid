@@ -9,10 +9,16 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 	dwn := TryGetExeCall(itm.Down)
 
 	if dwn == null
-		itm.EmitError("can not get pointer to error object")
+	{
+		CurrentFuncWork?.SetErrorMessage(itm.MakeError("can not get pointer to error object"))
+		return null
+	}
 	dwn.NotifyMemUse()
 	if not dwn.IsMem()
-		itm.EmitError("can not get pointer to object, it is not on the memory")
+	{
+		CurrentFuncWork?.SetErrorMessage(itm.MakeError("can not get pointer to object, it is not on the memory"))
+		return null
+	}
 	
 	if dwn is in PtrToRef
 		return dwn->{PtrToRef^}.Down
@@ -31,7 +37,10 @@ TryGetPtrObj := !(Token^ itm) -> BoxExeObj^
 
 	assert(dwn != null)
 	if dwn == null
-		itm.EmitError("can not dereference object")
+	{
+		CurrentFuncWork?.SetErrorMessage(itm.MakeError("can not dereference object"))
+		return null
+	}
 
 	if dwn.GetType() is in TypePoint
 		return new PtrToRef(dwn)

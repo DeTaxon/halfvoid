@@ -273,9 +273,15 @@ BoxClassBody := class extend BoxClassPoison
 		{
 			inhType := CheckTemplateType(null,ParentTokens[i].0,NamedConstants)
 			if inhType == null
-				ParentTokens[i].0.EmitError("can not inherit unknown class")
+			{
+				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("can not inherit unknown class"))
+				return void
+			}
 			if not (inhType is TypeClass)
-				ParentTokens[i].0.EmitError("parent type must be class")
+			{
+				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("parent type must be class"))
+				return void
+			}
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.ToClass.StartParseBody()
 			asClsParent.ToClass.AwaitParentStep()
@@ -524,7 +530,10 @@ BoxClassBody := class extend BoxClassPoison
 							}
 						}else {
 							if isPoison
-								itm.EmitError("poison function can not be template")
+							{
+								CurrentWork?.SetErrorMessage(itm.MakeError("poison function can not be template"))
+								return void
+							}
 							tmpl := asFunc->{BoxFuncTemplate^}
 							tmpl.SetName(name)
 							DefaultSpace.MethodTemplates[name].Push(tmpl)
@@ -549,17 +558,18 @@ BoxClassBody := class extend BoxClassPoison
 									case "<=>"
 										setFunc = GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
 									case void
-										itm.EmitError("unknown default operator")
+										CurrentWork?.SetErrorMessage(itm.MakeError("unknown default operator"))
+										return void
 								}
 								assert(setFunc != null)
 								DefaultSpace.Methods[name].Push(setFunc)
 							}else {
-								// typ2 := ParseType(itm.Down.Right)
-								// if typ2 == null
-								// 	itm.EmitError("Unknown object")
 								exeObj := TryGetExeCall(itm)
 								if exeObj == null
-									itm.EmitError("Unknown object")	
+								{
+									CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
+									return void
+								}
 								if exeObj is in BoxExeConstObj and isVirtual
 								{
 									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
@@ -569,7 +579,8 @@ BoxClassBody := class extend BoxClassPoison
 										PoisonFields[name] = !{itm,true}
 									}
 								}else{
-									itm.EmitError("Unknown object")
+									CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
+									return void
 								}
 							}
 						}
@@ -583,7 +594,10 @@ BoxClassBody := class extend BoxClassPoison
 	CheckFakeFields := !(Token^ itm) -> void
 	{
 		if not (itm.Down is TokenIndent)
-			itm.EmitError("fake field must be named by simple word")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("fake field must be named by simple word"))
+			return void
+		}
 
 		fieldName := itm.Down->{TokenIndent^}.Value
 		
@@ -599,7 +613,10 @@ BoxClassBody := class extend BoxClassPoison
 		while itr != null
 		{
 			if itr.Down == null or itr.Down.Right == null or itr.Down.Right.GetValue() != ":="
-				itr.EmitError("Fake field can only contain functions")
+			{
+				CurrentWork?.SetErrorMessage(itr.MakeError("Fake field can only contain functions"))
+				return void
+			}
 			name := StringSpan
 
 			if itr.Down is TokenString

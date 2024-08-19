@@ -26,7 +26,10 @@ BoxContinue := class extend BoxExeObj
 			}
 		}
 		if goLabel == null
-			itm.EmitError("continue operator used without cycle")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("continue operator used without cycle"))
+			return void
+		}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -55,7 +58,10 @@ BoxBreak := class extend BoxExeObj
 			}
 		}
 		if goLabel == null
-			itm.EmitError("break operator used without cycle")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("break operator used without cycle"))
+			return void
+		}
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{

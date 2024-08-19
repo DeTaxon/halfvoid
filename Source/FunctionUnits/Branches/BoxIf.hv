@@ -13,15 +13,17 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 		UnitStack.Pop()
 
 	if cmpExe == null
-		itm.EmitError("Could not get if statement")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("Could not get if statement"))
+		return null
+	}
 
 	if cmpExe.GetType() != GTypeBool
 	{
 		cmpExe = GetExchange(cmpExe,GTypeBool)
 		if cmpExe == null
 		{
-			itm.Print(0)
-			itm.EmitError("If statement is not boolean")
+			CurrentWork?.SetErrorMessage(itm.MakeError("If statement is not boolean"))
 			return null
 		}
 	}

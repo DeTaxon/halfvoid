@@ -184,7 +184,8 @@ CLib := class extend ModuleInterface
 				iNeedFString := TEchoStream
 				iNeedFString << "vulkan module: could not load type " << name
 				dat := TokenData
-				dat.EmitError(iNeedFString.GetString().Str())
+				CurrentWork?.SetErrorMessage(dat.MakeError(iNeedFString.GetString().Str()))
+				return null
 			}
 
 			for j : ptrs

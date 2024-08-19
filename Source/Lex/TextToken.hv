@@ -23,7 +23,7 @@ Token := class
 		//assert(false)
 	}
 
-	MakeError := !(char^ info) -> String^
+	MakeError := !(char^ info) -> Str
 	{
 		ln := TEchoStream
 
@@ -59,12 +59,12 @@ Token := class
 				ln << "local var " << nv.Name << " as unknown type\n" 
 			}
 		}
-		return ln.GetString()
+		result->AsString = ln.GetString()
 	}
 	EmitError := !(char^ info) -> void
 	{
 		errMsg := MakeError(info)
-		printf("%s",errMsg.Str())
+		printf("%s",errMsg)
 		exit(-1)
 	}
 }

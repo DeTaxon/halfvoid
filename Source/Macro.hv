@@ -58,57 +58,16 @@ CheckMacroStep := !(Token^ itm) -> void
 		if indToken != null
 		{
 			if not (indToken is TokenIndent)
-				itm.EmitError("Unknown cycle index object")
+			{
+				CurrentFuncWork.SetErrorMessage(itm.MakeError("Unknown cycle index object"))
+				return void
+			}
 			indName = indToken->{TokenIndent^}.Value
 		}
 		//CurrentLine.MacroCycleMacro.Emplace(itm,GetCycleVarName(),indName)
 		CurrentLine.MacroCycleMacro.Emplace(itm,StringSpan("it"),indName)
 	}
 }
-
-// CheckForCycleMacro := !(Token^ itm) -> void
-// {
-// 	if itm.Down?.GetValue() == "if"
-// 	{
-// 		innerCheckForCycleMacro(itm.Down.Right)
-// 	}else if itm.Down?.GetValue() == "while"
-// 	{
-// 		innerCheckForCycleMacro(itm.Down.Right)
-// 	}else{
-// 		innerCheckForCycleMacro(itm)
-// 	}
-// }
-
-// innerCheckForCycleMacro := !(Token^ itm) -> void
-// {
-// 	if itm == null
-// 		return void
-
-// 	if itm.GetValue() == "{}"
-// 		return void
-
-// 	iter := itm.Down
-
-// 	while iter != null
-// 	{
-// 		innerCheckForCycleMacro(iter)
-// 		iter = iter.Right
-// 	}
-	
-// 	if itm.Down?.Right?.GetValue() == "[]" and itm.Down.Right.Down?.GetValue() == "^"
-// 	{
-// 		indToken := itm.Down.Right.Down.Right
-// 		indName := StringSpan
-// 		if indToken != null
-// 		{
-// 			if not (indToken is TokenIndent)
-// 				itm.EmitError("Unknown cycle index object")
-// 			indName = indToken->{TokenIndent^}.Value
-// 		}
-// 		MacroCycleRemade.Emplace(itm,GetCycleVarName(),indName)
-// 	}
-// 	return void
-// }
 
 TryGetMacroCall := !(Token^ itm) -> BoxExeObj^
 {

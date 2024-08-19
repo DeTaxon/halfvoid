@@ -19,14 +19,23 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 
 	expType := ParseType(iter)
 	if expType == null
-		iter.EmitError("Can not get type")
+	{
+		CurrentWork?.SetErrorMessage(iter.MakeError("Can not get type"))
+		return null
+	}
 	if not IsVirtualClass(expType)
-		iter.EmitError("Type on right of is must be a virtual class")
+	{
+		CurrentWork?.SetErrorMessage(iter.MakeError("Type on right of is must be a virtual class"))
+		return null
+	}
 	checkObj := TryGetExeCall(obj.Down)
 	if checkObj == null
 		return null
 	if not IsVirtualClass(checkObj.GetType().Base)
-		obj.Down.EmitError("Object on left of is must have type of a pointer to virtual class")
+	{
+		CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object on left of is must have type of a pointer to virtual class"))
+		return null
+	}
 
 	return CreateTypeIsCheck(checkObj,expType,makeInCheck,makeNegative)
 }

@@ -2,12 +2,14 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 {
 	if itm.Down.Right == null or itm.Down.Right.GetValue() != "()"
 	{
-		itm.EmitError("usage #File(name[,compress])")
+		CurrentWork?.SetErrorMessage(itm.MakeError("usage #File(name[,compress])"))
+		return null
 	}
 	skb := itm.Down.Right
 	if skb.Down == null or not (skb.Down is TokenString)
 	{
-		itm.EmitError("usage #File(name[,compress])")
+		CurrentWork?.SetErrorMessage(itm.MakeError("usage #File(name[,compress])"))
+		return null
 	}
 
 	isLocal := itm.Down->{TokenIndent^}.Value == "#FileLocal"
@@ -36,7 +38,10 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	}
 
 	if itFile == null
-		itm.EmitError("File not found")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("File not found"))
+		return null
+	}
 
 	constStr := GetConstString(itFile.GetPath().Str())
 

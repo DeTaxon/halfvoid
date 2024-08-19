@@ -55,7 +55,10 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 	objs.Push(downVal)
 	resFunc := CreateFuncCall(st,objs)
 	if resFunc == null
-		itm.EmitError("suffix call not found")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("suffix call not found"))
+		return null
+	}
 	return resFunc
 }
 

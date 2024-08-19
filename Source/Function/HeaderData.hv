@@ -83,7 +83,10 @@ FunctionHeaderInfo := class
 				if bag[1].GetValue() == "..."
 				{
 					if not (bag[0] is TokenIndent)
-						bag[0].EmitError("Left of ... must be a name for variable")
+					{
+						CurrentWork?.SetErrorMessage(bag[0].MakeError("Left of ... must be a name for variable"))
+						return void
+					}
 					IsVariadic = true
 					VariadicName = bag[0]->{TokenIndent^}.Value
 				}else{
@@ -98,7 +101,10 @@ FunctionHeaderInfo := class
 						}
 					}
 					if not (indItm is TokenIndent)
-						indItm.EmitError("Incorrect name for input variable")
+					{
+						CurrentWork?.SetErrorMessage(indItm.MakeError("Incorrect name for input variable"))
+						return void
+					}
 					typ := ParseType(bag[0])
 					name := indItm->{TokenIndent^}.Value
 					if typ != null and IsComplexType(typ)
@@ -116,7 +122,10 @@ FunctionHeaderInfo := class
 						if c > 0
 						{
 							if c == bag.Size() - 1
-								bag[c].EmitError("Bad function header")
+							{
+								CurrentWork?.SetErrorMessage(bag[c].MakeError("Bad function header"))
+								return void
+							}
 							if bag[c+1].GetValue() == "static"
 							{
 								isRef = true

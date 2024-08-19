@@ -19,11 +19,14 @@ TryGetMetaCall := !(Token^ obj) -> BoxExeObj^
 		SyntaxCompress(r,PriorityData)
 		toType := ParseType(r.Down)
 		if toType == null
-			r.EmitError("Can not cast to unknown type")
+		{
+			CurrentWork?.SetErrorMessage(r.MakeError("Can not cast to unknown type"))
+			return null
+		}
 		lObj := TryGetExeCall(obj.Down)
 		if lObj == null
 		{
-			r.EmitError("Unknown object to cast")
+			CurrentWork?.SetErrorMessage(r.MakeError("Unknown object to cast"))
 			return null
 		}
 		res := GetExchange2(lObj,toType,false)
@@ -72,7 +75,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := getMetaDownType(obj.Down)
 		if typ == null
 		{
-			obj.Down.EmitError("Object for IsGCClass must have a type")
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsGCClass must have a type"))
+			return null
 		}
 		if IsGCType(typ)
 			return GBoolTrue
@@ -83,7 +87,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := getMetaDownType(obj.Down)
 		if typ == null
 		{
-			obj.Down.EmitError("Object for IsGCPointer must have a type")
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsGCPointer must have a type"))
+			return null
 		}
 		if IsGCPtr(typ)
 			return GBoolTrue
@@ -93,7 +98,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		dwnObj := TryGetExeCall(obj.Down)
 		if dwnObj == null
-			obj.EmitError("Can not get type")
+		{
+			CurrentWork?.SetErrorMessage(obj.MakeError("Can not get type"))
+			return null
+		}
 		return GetConstType(dwnObj.GetType())
 	}
 	if right.Value == "TypeBase"
@@ -101,10 +109,14 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := getMetaDownType(obj.Down)
 		if typ == null
 		{
-			obj.Down.EmitError("Object for TypeBase must have a type")
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for TypeBase must have a type"))
+			return null
 		}
 		if typ.Base == null
-			obj.Down.EmitError("Object for TypeBase does not have base class")
+		{
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for TypeBase does not have base class"))
+			return null
+		}
 		return GetConstType(typ.Base)
 	}
 	if right.Value == "TypeName"
@@ -112,7 +124,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := getMetaDownType(obj.Down)
 		if typ == null
 		{
-			obj.Down.EmitError("Object for TypeBase must have a type")
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for TypeBase must have a type"))
+			return null
 		}
 		return GetExeString(typ.GetBADStr())
 	}
@@ -120,7 +133,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		itType8 := ParseType(obj.Down)
 		if itType8 == null
-			obj.EmitError("Can not get type")
+		{
+			CurrentWork?.SetErrorMessage(obj.MakeError("Can not get type"))
+			return null
+		}
 		if itType8 is TypeClass
 		{
 			cls := itType8->{TypeClass^}.ToClass
@@ -143,7 +159,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			}
 			return GetExeInt(itType.GetSize())
 		}else{
-			obj.EmitError("Can not get TypeSize, it is not a type")
+			CurrentWork?.SetErrorMessage(obj.MakeError("Can not get TypeSize, it is not a type"))
+			return null
 		}
 	}
 	if right.Value == "AllFields"
@@ -169,7 +186,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if typ != null
 		{
 			if not (typ is TypeClass)
-				obj.Down.EmitError("Item is not a class")
+			{
+				CurrentWork?.SetErrorMessage(obj.Down.MakeError("Item is not a class"))
+				return null
+			}
 			cls := typ->{TypeClass^}.ToClass
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
@@ -199,10 +219,12 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 					return GObjNone
 				}
 			}else{
-				obj.EmitError("Left of ->VTable is not a class")
+				CurrentWork?.SetErrorMessage(obj.MakeError("Left of ->VTable is not a class"))
+				return null
 			}
 		}
-		obj.Down.EmitError("Compiler error. How did you get there?")
+		CurrentWork?.SetErrorMessage(obj.Down.MakeError("Compiler error. How did you get there?"))
+		return null
 	}
 
 	if right.Value == "SetType"
@@ -211,7 +233,10 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := ParseType(obj.Down.Right.Right.Right.Down)
 		setCall := innerTrySetType(dwnRes,typ)
 		if setCall == null
-			obj.EmitError("Can not set type")
+		{
+			CurrentWork?.SetErrorMessage(obj.MakeError("Can not set type"))
+			return null
+		}
 		return setCall
 	}
 
@@ -222,7 +247,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return null
 		if typ is not in TypeEnum
 		{
-			obj.EmitError("Object is not enumeration")
+			CurrentWork?.SetErrorMessage(obj.MakeError("Object is not enumeration"))
+			return null
 		}
 		return enumGetCStrTable(typ)
 	}
@@ -237,10 +263,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		return strAsString(dwnRes)
 	}
 
-	printf("hm %s\n",right.Value)
-	right.EmitError("Unknown metafield")
-	
-	assert(false)
+	CurrentWork?.SetErrorMessage(right.MakeError("Unknown metafield"))
 	return null
 }
 strAsString := !(BoxExeObj^ obj) -> BoxExeObj^

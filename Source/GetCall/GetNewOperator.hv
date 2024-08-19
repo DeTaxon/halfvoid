@@ -7,7 +7,10 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 	{
 		tp := ParseType(itm.Down.Right)
 		if tp == null
-			itm.EmitError("Unknown type")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Unknown type"))
+			return null
+		}
 		cnsts := List.{BoxExeConstObj^}
 		cnsts.Push(GetConstType(tp))
 		objs := CheckExeDownList
@@ -31,7 +34,10 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 					callFunc = GetBestFunc(x,objs,zeroConsts)
 				})
 				if callFunc == null
-					itm.EmitError("Constructor not found")
+				{
+					CurrentWork?.SetErrorMessage(itm.MakeError("Constructor not found"))
+					return null
+				}
 				assert(callFunc is in BoxFunc)
 
 				fType := callFunc->{BoxFunc^}.GetType()->{TypeFunc^}

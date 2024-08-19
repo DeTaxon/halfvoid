@@ -17,7 +17,10 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 	mainCall := TryGetExeCall(itr)
 
 	if mainCall == null
-		itr.EmitError("could not get switch satatement")
+	{
+		CurrentWork?.SetErrorMessage(itr.MakeError("could not get switch satatement"))
+		return void
+	}
 
 	toSetVar := mainCall
 	if mainCall.IsMem()
@@ -83,13 +86,17 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 
 		caseCheck := TryGetExeCall(caseVal)
 		if caseCheck == null
-			currentCase.EmitError("Could not get case object")
+		{
+			CurrentWork?.SetErrorMessage(currentCase.MakeError("Could not get case object"))
+			return void
+		}
 		if caseCheck is BoxExeString and mainCall.GetType() is TypeEnum
 		{
 			asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
 			if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.Value,null)
 			{
-				caseVal.EmitError("Enumeration does not contain this value")
+				CurrentWork?.SetErrorMessage(caseVal.MakeError("Enumeration does not contain this value"))
+				return void
 			}
 		}else {
 			allConsts = false
@@ -111,7 +118,8 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 
 		if checkRes == null
 		{
-			currentCase.EmitError("Can not compare case object with switch statement")
+			CurrentWork?.SetErrorMessage(currentCase.MakeError("Can not compare case object with switch statement"))
+			return void
 		}
 
 		newNode := new SwitchCase()

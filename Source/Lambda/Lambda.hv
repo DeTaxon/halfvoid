@@ -29,7 +29,10 @@ BoxLambdaHolder := class extend BoxExeObj
 			bPtr = brackets.Down
 		}else{
 			if not (brackets is TokenIndent)
-				brackets.EmitError("Unknown input object for lambda") //todo better error
+			{
+				CurrentWork?.SetErrorMessage(brackets.MakeError("Unknown input object for lambda")) //todo better error
+				return void //TODO propogate error to BoxBlock
+			}
 			
 			bPtr = new TokenSymbol(StringSpan("()"),1)
 			bPtr.Down = new TokenIndent(brackets->{TokenIndent^}.Value)
@@ -129,7 +132,10 @@ BoxLambdaHolder := class extend BoxExeObj
 
 						capCall = TryCheckGetParam(iterC)
 						if capCall == null
-							iterC.EmitError("Could not get captured value") //todo better error
+						{
+							CurrentWork?.SetErrorMessage(iterC.MakeError("Could not get captured value")) //todo better error
+							return null
+						}
 
 						locVar = new LocalVar(capName,capCall.GetType(),true,false)
 						vars.Push(locVar)
@@ -139,7 +145,10 @@ BoxLambdaHolder := class extend BoxExeObj
 
 						capCall = TryCheckGetParam(iterC.Down)
 						if capCall == null
-							iterC.EmitError("Could not get captured value") //todo better error
+						{
+							CurrentWork?.SetErrorMessage(iterC.MakeError("Could not get captured value")) //todo better error
+							return null
+						}
 						isRef = true
 						locVar = new LocalVar(capName,capCall.GetType(),true,true)
 						capCall = new UnrefFuncCall(capCall)
@@ -149,7 +158,11 @@ BoxLambdaHolder := class extend BoxExeObj
 						capName = iterC.Down->{TokenIndent^}.Value
 						capCall = TryGetExeCall(iterC.Down.Right.Right)
 						if capCall == null
-							iterC.EmitError("Can not get result of right of operator =")
+						{
+							CurrentWork?.SetErrorMessage(iterC.MakeError("Can not get result of right of operator ="))
+							return null
+						}
+
 						locVar = new LocalVar(capName,capCall.GetType(),true,false)
 						vars.Push(locVar)
 					}

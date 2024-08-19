@@ -7,10 +7,16 @@ TryParseWhile := !(Token^ itm) -> BoxExeObj^
 		cmpExe := TryGetExeCall(itm.Down.Right)
 
 		if cmpExe == null
-			itm.Down.Right.EmitError("Could not parse while statement")
+		{
+			CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("Could not parse while statement"))
+			return null
+		}
 
 		if cmpExe.GetType() != GTypeBool
-			itm.EmitError("While statement is not boolean type")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("While statement is not boolean type"))
+			return null
+		}
 
 		token := MakeItBlock(itm.Down.Right.Right)
 		body := new BoxBlockContinue(token)

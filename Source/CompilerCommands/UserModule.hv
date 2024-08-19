@@ -8,7 +8,10 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	namedArgs := AVLMap.{StringSpan,Token^}
 
 	if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
-		itm.EmitError("Could not parse inputs")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("Could not parse inputs"))
+		return null
+	}
 
 	newModule := new UserModule
 

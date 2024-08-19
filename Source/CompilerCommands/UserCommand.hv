@@ -9,13 +9,22 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		namedArgs := AVLMap.{StringSpan,Token^}
 
 		if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
-			itm.EmitError("Could not parse inputs")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Could not parse inputs"))
+			return null
+		}
 		if not namedArgs.Contain(StringSpan("Name"))
-			itm.EmitError("Command must have a Name")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Command must have a Name"))
+			return null
+		}
 
 		cmdName := namedArgs[StringSpan("Name")]
 		if cmdName is not TokenString
-			itm.EmitError("Command name must be a string")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Command name must be a string"))
+			return null
+		}
 
 		echo := TEchoStream
 		echo << "#" << cmdName->{TokenString^}.Value.Str()
@@ -24,12 +33,16 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		userCmd := ref UserCommands[spn]
 
 		if not namedArgs.Contain(StringSpan("Call"))
-			itm.EmitError("Command must have a Call function")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Command must have a Call function"))
+			return null
+		}
 
 		c := PFunctionParser(namedArgs[StringSpan("Call")])
 		if not c.IsFound()
 		{
-			itm.EmitError("Call object is not a function")
+			CurrentWork?.SetErrorMessage(itm.MakeError("Call object is not a function"))
+			return null
 		}
 		fncTmplt := c.CreateObject()
 		assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
@@ -42,7 +55,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		if fncResult == GTypeVoid {}
 		else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() {}
 		else {
-			itm.EmitError("Call function uses function with non cmopatable type, compatable types [void,Blob^]")
+			CurrentWork?.SetErrorMessage(itm.MakeError("Call function uses function with non cmopatable type, compatable types [void,Blob^]"))
+			return null
 		}
 
 		if namedArgs.Contain(StringSpan("ExchangeOut"))
@@ -50,7 +64,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			c2 := PFunctionParser(namedArgs[StringSpan("ExchangeOut")])
 			if not c2.IsFound()
 			{
-				itm.EmitError("ExchangeOut object is not a function")
+				CurrentWork?.SetErrorMessage(itm.MakeError("ExchangeOut object is not a function"))
+				return null
 			}
 			fncTmplt := c2.CreateObject()
 			assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
@@ -85,7 +100,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		{
 			if not it.IsConst
 			{
-				itm.EmitError("All inputs must be consts")
+				CurrentWork?.SetErrorMessage(itm.MakeError("All inputs must be consts"))
+				return null
 			}
 			if it.GetType() == fType.Params[i].ItType
 			{
@@ -93,7 +109,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			} else if it is BoxExeString and fType.Params[i].ItType == GRepoFileType.GetPoint()
 			{
 			}else{
-				itm.EmitError("Input variables must be same type, no exchange for now ")
+				CurrentWork?.SetErrorMessage(itm.MakeError("Input variables must be same type, no exchange for now "))
+				return null
 			}
 		}
 
@@ -120,7 +137,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 						fil = FSGetFile(it.Value)
 					}
 					if fil == null
-						itm.EmitError("File not found")
+					{
+						CurrentWork?.SetErrorMessage(itm.MakeError("File not found"))
+						return null
+					}
 					valBoxes[i] = fil->{size_t}
 					inptPointers.Push(valBoxes[i]&)
 					usedFiles.Push(fil)

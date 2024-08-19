@@ -55,7 +55,10 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 		consts2.Destroy()
 
 		if resCall == null
-			decoratorToken.EmitError("Could not create decorator") //TODO emit at caller
+		{
+			CurrentWork?.SetErrorMessage(decoratorToken.MakeError("Could not create decorator")) //TODO emit at caller
+			return null
+		}
 
 		assert(resCall is BoxFuncCall)
 

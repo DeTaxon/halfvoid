@@ -19,7 +19,10 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		}else{
 			dwnRes := TryGetExeCall(itm.Down.Right)
 			if dwnRes == null
-				itm.Down.Right.EmitError("could not get result to return")
+			{
+				CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("could not get result to return"))
+				return null
+			}
 			preRes = new ReturnHalfState(itm.Down.Right,dwnRes,isYield)
 		}
 

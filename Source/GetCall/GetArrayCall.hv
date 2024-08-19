@@ -20,7 +20,10 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 		{
 			o := TryGetExeCall(itr)
 			if o == null
-				itr.EmitError("could not get array element\n")
+			{
+				CurrentWork?.SetErrorMessage(itr.MakeError("could not get array element\n"))
+				return null
+			}
 			if not (o is in BoxExeConstObj)
 				allConsts = false
 			if allType == null
@@ -29,7 +32,10 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 			}else{
 				allType = TypeFight(allType,o.GetType())
 				if allType == null
-					itr.EmitError("all elements of array must be same type\n")
+				{
+					CurrentWork?.SetErrorMessage(itr.MakeError("all elements of array must be same type\n"))
+					return null
+				}
 			}
 			objs.Push(o)
 		}
@@ -46,7 +52,10 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 	cnsts.Destroy()
 
 	if resCall == null
-		itm.EmitError("could not create array, function ![] not found")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("could not create array, function ![] not found"))
+		return null
+	}
 	return resCall
 }
 
@@ -152,7 +161,10 @@ BoxArrayHolder := class extend BoxExeObj
 		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
 
 		if resCall == null
-			debugToken.EmitError("could not create array, function ![] not found")
+		{
+			CurrentWork?.SetErrorMessage(debugToken.MakeError("could not create array, function ![] not found"))
+			return null
+		}
 		return resCall
 	}
 	GetAsConst := virtual !() -> BoxArrayConst^

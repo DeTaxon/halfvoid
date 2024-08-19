@@ -40,14 +40,18 @@ ForSubObjects := class
 		}
 
 		if getForCall == null
-			DownToken.EmitError("Object does not have operator for")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("Object does not have operator for"))
+			return void
+		}
 
 		dwnVar := LocalVar^
 		if getForCall is in  BoxFuncCall and getForCall->{BoxFuncCall^}.ResultVar != null
 		{
 			dwnVar = getForCall->{BoxFuncCall^}.ResultVar
 		}else{
-			DownToken.EmitError("For class, meh, software error")
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("For class, meh, software error"))
+			return void
 		}
 
 		InitStep = getForCall
@@ -65,9 +69,15 @@ ForSubObjects := class
 		}
 
 		if checkFunc == null
-			DownToken.EmitError("iteratable object does not contain IsFinished or HaveValue")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("iteratable object does not contain IsFinished or HaveValue"))
+			return void
+		}
 		if checkFunc.GetType() != GTypeBool
-			DownToken.EmitError("IsFinished or HaveValue return non boolean type")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("IsFinished or HaveValue return non boolean type"))
+			return void
+		}
 		
 		IncFunc = innerTryGetMethodCall(StringSpan("Inc"),dwnVar.CreateVarCall(),objs,cnsts)
 		
@@ -85,7 +95,10 @@ ForSubObjects := class
 		}
 		
 		if cls == null
-			DownToken.EmitError("unknown iteretable result")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("unknown iteretable result"))
+			return void
+		}
 		
 		objCall := BoxUnit^
 		cls.GetMethods(StringSpan("()"),x ==> {
@@ -96,21 +109,36 @@ ForSubObjects := class
 		})
 
 		if objCall == null
-			DownToken.EmitError("iteratable object must have exacly one operator ()")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("iteratable object must have exacly one operator ()"))
+			return void
+		}
 		
 		if not (objCall is in BoxFunc)
-			DownToken.EmitError("operator () is not a function")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("operator () is not a function"))
+			return void
+		}
 		
 		fncOperType := objCall->{BoxFunc^}.GetType()->{TypeFunc^}
 
 		if fncOperType.Params.Size() >= 3
-			DownToken.EmitError("iteretable operator have too many inputs")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("iteretable operator have too many inputs"))
+			return void
+		}
 		if fncOperType.Params.Size() == 2
 		{
 			if not fncOperType.Params[1].IsRef
-				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
+			{
+				CurrentWork?.SetErrorMessage(DownToken.MakeError("iterateble operator () , input must be reference to a pointer"))
+				return void
+			}
 			if not (fncOperType.Params[1].ItType is in TypePoint)
-				DownToken.EmitError("iterateble operator () , input must be reference to a pointer")
+			{
+				CurrentWork?.SetErrorMessage(DownToken.MakeError("iterateble operator () , input must be reference to a pointer"))
+				return void
+			}
 
 			IndVar = new LocalVar(IndexName,fncOperType.Params[1].ItType.Base,true,true)
 			CurrentFunc.AddLocalVar(IndVar)
@@ -124,7 +152,10 @@ ForSubObjects := class
 		iCall := objCall->{BoxFunc^}.CreateCall(objs2)
 
 		if iCall == null
-			DownToken.EmitError("iteratable object is not callable, no () function")
+		{
+			CurrentWork?.SetErrorMessage(DownToken.MakeError("iteratable object is not callable, no () function"))
+			return void
+		}
 
 		GetCall = iCall
 		IsFinished = iFins

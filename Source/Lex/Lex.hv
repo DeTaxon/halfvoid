@@ -260,7 +260,7 @@ UniteSkobs := !(Token^ Tree) -> Token^
 			Old := Bag.Pop()
 			if tokId - Old.TokenId != 3
 			{
-				Old.EmitError("incorrect pair for bracket") //todo Better error
+				CurrentWork?.SetErrorMessage(Old.MakeError("incorrect pair for bracket")) //todo Better error
 				return iter
 			}
 
@@ -287,7 +287,8 @@ UniteSkobs := !(Token^ Tree) -> Token^
 	}
 	for Bag
 	{
-		it.EmitError("pair for bracket not found") //todo Better error
+		CurrentWork?.SetErrorMessage(it.MakeError("pair for bracket not found")) //todo Better error
+		return null
 	}
 	return null
 }

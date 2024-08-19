@@ -32,7 +32,8 @@ AppendClass BoxFile
 
 			if cls == null
 			{
-				iter.EmitError("class not found")
+				CurrentWork?.SetErrorMessage(iter.MakeError("class not found"))
+				return void
 			}else{
 				assert(cls is in BoxClassBody)
 				cls2 := cls->{BoxClassBody^}

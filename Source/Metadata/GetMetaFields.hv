@@ -16,7 +16,10 @@ TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 		dwn = new PtrToRef(dwn)
 	}
 	if cls == null
-		itm.EmitError("Object does not have fields")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("Object does not have fields"))
+		return null
+	}
 
 	if isLocal
 		return cls.GetFieldsIteratorLocal(dwn)

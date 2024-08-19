@@ -45,6 +45,8 @@ BoxEnum := class extend BoxUnit
 		startedParse = true
 
 		SubWork(() ==>{
+
+			//TODO set CurrentWork
 			iter := EnumToken.Right
 
 			baseType := GTypeInt->{TypeStandard^}
@@ -56,7 +58,10 @@ BoxEnum := class extend BoxUnit
 				exType := ParseType(iter)
 
 				if exType == null
-					iter.EmitError("unknown extended type")
+				{
+					CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
+					return void
+				}
 
 				if IsInt(exType)
 				{
@@ -73,7 +78,8 @@ BoxEnum := class extend BoxUnit
 					}
 					Parent = asEnum
 				}else{
-					iter.EmitError("unknown extended type")
+					CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
+					return void
 				}
 				
 
@@ -90,7 +96,8 @@ BoxEnum := class extend BoxUnit
 					{
 						Values.Emplace(GetExeString(iter->{TokenString^}.Value.GetString()),null->{BoxEnumValue^})
 					}else{
-						iter.EmitError("Unknown use of enum")
+						CurrentWork?.SetErrorMessage(iter.MakeError("Unknown use of enum"))
+						return void
 					}
 				}
 				iter = iter.Right

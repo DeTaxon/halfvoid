@@ -91,7 +91,9 @@ BoxFuncCall := class extend BoxExeObj
 				}else{
 					newCall := TryGetExeCall(defToken)
 					if newCall == null
-						defToken.EmitError("Could not execute default token, called function is incorrect")
+					{
+						CurrentWork?.SetErrorMessage(defToken.MakeError("Could not execute default token, called function is incorrect"))
+					}
 					downs.Push(newCall)
 				}
 			}
@@ -122,10 +124,9 @@ BoxFuncCall := class extend BoxExeObj
 						c.IncRef() //TODO memory leak
 						if CurrentLine?.ItToken != null
 						{
-							CurrentLine.ItToken.EmitError(c.Str())
+							CurrentWork?.SetErrorMessage(CurrentLine.ItToken.MakeError(c.Str()))
 						}else{
-							printf("%s",c.Str())
-							exit(-1)
+							CurrentWork?.SetErrorMessage(c.Str())
 						}
 					}
 					if newObj.GetType() == par.ItType
@@ -167,10 +168,10 @@ BoxFuncCall := class extend BoxExeObj
 
 						if CurrentLine?.ItToken != null
 						{
-							CurrentLine.ItToken.EmitError("Passed class to c-variadic function, transfer function not found\n")
+							CurrentWork?.SetErrorMessage(CurrentLine.ItToken.MakeError("Passed class to c-variadic function, transfer function not found\n"))
+							//TODO exception
 						}else{
-							printf("Passed class to c-variadic function, transfer function not found\n")
-							exit(-1)
+							CurrentWork?.SetErrorMessage("Passed class to c-variadic function, transfer function not found\n")
 						}
 					}
 				}

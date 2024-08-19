@@ -23,7 +23,10 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
 			forElement := ForSubObjects
 
 			if not (iter is TokenIndent)
-				iter.EmitError("not a name for cycle element variable") //todo better error explanation
+			{
+				CurrentWork?.SetErrorMessage(iter.MakeError("not a name for cycle element variable")) //todo better error explanation
+				return null
+			}
 			
 			name := iter->{TokenIndent^}.Value
 			index := StringSpan("")
@@ -35,7 +38,10 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
 				iter = iter.Right
 
 				if not (iter is TokenIndent)
-					iter.EmitError("not a name for cycle index variable") //todo better error explanation
+				{
+					CurrentWork?.SetErrorMessage(iter.MakeError("not a name for cycle index variable")) //todo better error explanation
+					return null
+				}
 				
 				index = iter->{TokenIndent^}.Value
 
@@ -86,7 +92,10 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 			dwnRes := TryGetExeCall(it.DownToken)
 
 			if dwnRes == null
-				it.DownToken.EmitError("Could not get result for cycle over obj")
+			{
+				CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Could not get result for cycle over obj"))
+				return null
+			}
 
 			if dwnRes is BoxArrayHolder
 				dwnRes = dwnRes->{BoxArrayHolder^}.CreateDefaultUse()
@@ -96,7 +105,10 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
 
 				if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
-					it.DownToken.EmitError("Meta object is not iteratable")
+				{
+					CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Meta object is not iteratable"))
+					return null
+				}
 
 				it.IsMeta = true
 				it.MetaObj = dwnRes->{BoxMetaObj^}

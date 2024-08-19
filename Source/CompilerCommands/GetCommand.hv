@@ -56,7 +56,10 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			itrScope = itrScope.GetParentScope()
 		}
 		if itrScope == null
-			itm.EmitError("Command is not in class")
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("Command is not in class"))
+			return null
+		}
 		return GetConstType(itrScope->{BoxClass^}.ItType)
 	}
 
@@ -65,7 +68,8 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 
 	if not CurrentFuncWork.isFailed
 	{
-		itm.EmitError("Command not found")
+		CurrentWork?.SetErrorMessage(itm.MakeError("Command not found"))
+		return null
 	}else{
 		return null
 	}

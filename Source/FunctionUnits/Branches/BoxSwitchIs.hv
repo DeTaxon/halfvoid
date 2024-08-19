@@ -3,7 +3,10 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	mainCall := TryGetExeCall(itm.Down.Right)
 
 	if mainCall == null
-		itm.Down.Right.EmitError("Unknown object to switch on")
+	{
+		CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("Unknown object to switch on"))
+		return null
+	}
 
 	canSwapNames := false
 	swapName := StringSpan("$anon")
@@ -40,7 +43,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	{
 		mainVar = ToLocalVar(mainCall,swapName)
 	}else{
-		itm.EmitError("Bad type to switch on")
+		CurrentWork?.SetErrorMessage(itm.MakeError("Bad type to switch on"))
 		return null
 	}
 
@@ -58,7 +61,10 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	while iter != null
 	{
 		if iter.Down == null or iter.Down.GetValue() != "case"
-			iter.EmitError("Unknown object")
+		{
+			CurrentWork?.SetErrorMessage(iter.MakeError("Unknown object"))
+			return null
+		}
 
 		isIn := false
 		typeToCheck := iter.Down.Right
@@ -70,7 +76,10 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		caseType := ParseType(typeToCheck)
 
 		if caseType == null
-			iter.Down.Right.EmitError("Unknown type")
+		{
+			CurrentWork?.SetErrorMessage(iter.Down.Right.MakeError("Unknown type"))
+			return null
+		}
 
 
 		tpCheck := BoxExeObj^
@@ -84,7 +93,8 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 
 				if tpCheck == null
 				{
-					iter.Down.Right.EmitError("Could not compare type")
+					CurrentWork?.SetErrorMessage(iter.Down.Right.MakeError("Could not compare type"))
+					return null
 				}
 			}
 

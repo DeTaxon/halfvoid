@@ -152,14 +152,23 @@ GlobalVar2 := class extend BoxUnit
 			{
 				ah := value->{BoxArrayHolder^}
 				if ah.GetArraySize() == 0
-					typeToken.EmitError("Can not use empty array as global variable")
+				{
+					CurrentWork?.SetErrorMessage(typeToken.MakeError("Can not use empty array as global variable"))
+					return void
+				}
 				if not ah.IsConst()
-					typeToken.EmitError("Array must be made of constants")
+				{
+					CurrentWork?.SetErrorMessage(typeToken.MakeError("Array must be made of constants"))
+					return void
+				}
 				tp = ah.GetArrayType()
 				value = ah.GetAsConst()
 			}else{
 				if not (value is in BoxExeConstObj)
-					typeToken.EmitError("Global variable value must be a constant")
+				{
+					CurrentWork?.SetErrorMessage(typeToken.MakeError("Global variable value must be a constant"))
+					return void
+				}
 			}
 			assert(tp != GTypeVoid)
 			if value != null
@@ -182,14 +191,18 @@ GlobalVar2 := class extend BoxUnit
 		if tp != null
 		{
 			if tp == GTypeVoid
-				downToken.EmitError("Software error\n")
+			{
+				CurrentWork?.SetErrorMessage(downToken.MakeError("Software error\n"))
+				return void
+			}
 			tp.NotifyUse()
 			proxy.Down = new GetGlobalVar2(this&,tp)
 			proxy.ObjType = tp
 
 
 		}else{
-			downToken.EmitError("Can not get type of global variable")
+			CurrentWork?.SetErrorMessage(downToken.MakeError("Can not get type of global variable"))
+			return void
 		}
 
 		parsed = true

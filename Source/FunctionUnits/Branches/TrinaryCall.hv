@@ -12,7 +12,10 @@ TryGetTrinary := !(Token^ itm) -> BoxExeObj^
 	if ifRes == null
 		return null
 	if ifRes.GetType() != GTypeBool
-		itr.EmitError("Check statement of ?: must be bool")
+	{
+		CurrentWork?.SetErrorMessage(itr.MakeError("Check statement of ?: must be bool"))
+		return null
+	}
 	
 	itr = itr.Right.Right
 
@@ -28,7 +31,10 @@ TryGetTrinary := !(Token^ itm) -> BoxExeObj^
 	
 	resTyp := TypeFight(onTrue.GetType(),onFalse.GetType())
 	if resTyp == null
-		itm.EmitError("Can not get type that sattisfy both of results of ?:")
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("Can not get type that sattisfy both of results of ?:"))
+		return null
+	}
 	
 	if resTyp != onTrue.GetType()
 		onTrue = GetExchange(onTrue,resTyp)
