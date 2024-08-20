@@ -115,10 +115,12 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 		if newUnit is in BoxFuncBody
 		{
 			bFunc := newUnit->{BoxFuncBody^}
+			bFunc.ParseBody()
 			if not bFunc.IsComplete()
 				waitFunctions.Push(bFunc)
 		}else if newUnit is BuildInVirtualCall{
 			vCall := newUnit->{BuildInVirtualCall^}
+			vCall.TryForceVirtualUse()
 			AddUnit(vCall.wrappedFunc)
 		}else{
 			printf("unknown object to wait in user module %s\n",newUnit.UnitName)
@@ -128,59 +130,50 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 	DoWork := virtual !() -> CWorkState 
 	{
 		if IsDone()
-			return "Complete"
-
-		while true
 		{
-			if waitFunctions.Size() == 0 and waitClasses.Size() == 0
-				return "Complete"
+			return "Complete"
+		}
 
+		if waitModuleClass?.IsComplete()
+		{
+			waitModuleClass.GetMethods(StringSpan("GetItem"),x ==> {
+				AddUnit(x[^])
+			})
+			waitModuleClass = null
+		}
 
-			if waitModuleClass?.IsComplete()
+		if waitClasses.Size() != 0
+		{
+			frnt := waitClasses[0]
+			if frnt.IsComplete()
 			{
-				waitModuleClass.GetMethods(StringSpan("GetItem"),x ==> {
-					AddUnit(x[^])
-				})
-				waitModuleClass = null
+				waitClasses.Pop()
 			}
+		}
 
-			if waitClasses.Size() != 0
+		while waitFunctions.Size() != 0 and waitFunctions[0].IsComplete()
+		{
+			frnt := waitFunctions[0]
+			waitFunctions.Pop()
+
+			mc := GInterpCntx.GetMCFunc(frnt)
+
+			for it : mc.Objects
 			{
-				frnt := waitClasses[0]
-				if frnt.IsComplete()
+				if it& is MCConstFunction
 				{
-					waitClasses.Pop()
-				}
-			}
-
-			if waitFunctions.Size() != 0
-			{
-				frnt := waitFunctions[0]
-				if frnt.IsComplete()
-				{
-					waitFunctions.Pop()
-
-					mc := GInterpCntx.GetMCFunc(frnt)
-
-					for it : mc.Objects
-					{
-						if it& is MCConstFunction
-						{
-							AddUnit(it&->{MCConstFunction^}.GetValue())
-						}
-					}
+					AddUnit(it&->{MCConstFunction^}.GetValue())
 				}
 			}
 		}
 
-
+		if IsDone()
+			return "Complete"
 		return "Failed"
 	}
 	IsDone := virtual !() -> bool 
 	{
-		if waitClasses.Size() != 0
-			return false
-		return waitFunctions.Size() == 0
+		return waitClasses.Size() == 0 and waitFunctions.Size() == 0
 	}
 	GetErrorMessage := virtual !() -> String^ 
 	{

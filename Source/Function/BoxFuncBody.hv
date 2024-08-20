@@ -183,7 +183,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	parseTask := Task^
 	WorkBody := virtual !() -> void
 	{
-
 		if #Var("Tracy") TracyPrintf("Started function %p %s",this&,GetGoodName())
 		CurrentFuncWork = createCWork()
 		CurrentWork = CurrentFuncWork

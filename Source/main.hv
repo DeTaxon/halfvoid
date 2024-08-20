@@ -157,6 +157,12 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("vRepoObject")
 	#ForceVirtualFunctions("File")
 	#ForceVirtualFunctions("HV_Context")
+	#ForceVirtualFunctions("HV_Class")
+	#ForceVirtualFunctions("internalHVModuleBase")
+	#ForceVirtualFunctions("BlobOnVector")
+	#ForceVirtualFunctions("StringSpan")
+	#ForceVirtualFunctions("String")
+	//#ForceVirtualFunctions("XML")
 
 	GetFuncMangle(StringSpan("main"))
 
@@ -228,11 +234,11 @@ main := !(char^[] args) -> int
 
 	mainFunc.ForceOutputName(StringSpan("main"))
 
-	for it : CodeSpaces
-	{
-		for libs : it.Modules
-			libs.CreateInitPart()
-	}
+	//for it : CodeSpaces
+	//{
+	//	for libs : it.Modules
+	//		libs.CreateInitPart()
+	//}
 
 
 	WaitForParsingObjects()
@@ -248,6 +254,10 @@ main := !(char^[] args) -> int
 		for libs : it.Modules
 			libs.CreateInitPart()
 	}
+	WaitForParsingObjects()
+
+	if WorkBagPrintErrors()
+		exit(-1)
 
 	if NonStopBuild
 	{
@@ -298,8 +308,6 @@ WorkBagPrintErrors := !() -> bool
 		return false
 
 	printf("failed to do some work %i\n",WorkBag.works.Size())
-
-
 
 	for it : WorkBag.works
 	{
