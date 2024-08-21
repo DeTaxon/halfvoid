@@ -156,15 +156,15 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 			frnt := waitFunctions[0]
 			waitFunctions.Pop()
 
-			mc := GInterpCntx.GetMCFunc(frnt)
+			//mc := GInterpCntx.GetMCFunc(frnt)
 
-			for it : mc.Objects
-			{
-				if it& is MCConstFunction
-				{
-					AddUnit(it&->{MCConstFunction^}.GetValue())
-				}
-			}
+			//for it : mc.Objects
+			//{
+			//	if it& is MCConstFunction
+			//	{
+			//		AddUnit(it&->{MCConstFunction^}.GetValue())
+			//	}
+			//}
 		}
 
 		if IsDone()

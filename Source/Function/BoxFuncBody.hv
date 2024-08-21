@@ -516,6 +516,11 @@ CWorkFuncCompile := class extend CWorkUnit
 		itError = setError->AsString
 		isFailed = true
 	}
+	ClearError := virtual !() -> void
+	{
+		itError = null
+		isFailed = false
+	}
 	Cancel := virtual !() -> void
 	{
 		isCanceled = true

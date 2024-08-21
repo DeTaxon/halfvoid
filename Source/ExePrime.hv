@@ -118,7 +118,7 @@ BoxExeS64 := class extend BoxExeConstObj
 	{
 		ctx.writeStream^ << Value
 	}
-	PrintDebug := virtual !(Stream ctx) -> {
+	PrintDebug := virtual !(Stream ctx) -> void {
 		ctx << Value
 	}
 }

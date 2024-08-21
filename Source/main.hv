@@ -162,7 +162,7 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("BlobOnVector")
 	#ForceVirtualFunctions("StringSpan")
 	#ForceVirtualFunctions("String")
-	//#ForceVirtualFunctions("XML")
+	#ForceVirtualFunctions("XML")
 
 	GetFuncMangle(StringSpan("main"))
 
