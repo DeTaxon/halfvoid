@@ -1,11 +1,24 @@
 
+TestClass := class extend TGCObject
+{
+	x := int
+	this := !() -> void
+	{
+		x = RandInt(1..100)
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	RunOpenGLTest()
+	c := TGCObject^
+	c = new TestClass()
+
+	if c is not in TestClass
+		return 0
+	printf("c %i\n",c.x)
 }
 RunTest := !() -> void
 {
-	RunOpenGLTest()
 }
 
 #Module(

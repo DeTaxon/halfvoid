@@ -21,7 +21,7 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 			resObj = new PtrExchange(checkObj->{IsSameTypeChecker^}.DownObj,checkObj->{IsSameTypeChecker^}.TargetType.GetPoint())
 			if objIsRef
 			{
-				resObj = new PtrToRefAuto(resObj)
+				resObj = new PtrToRef(resObj)
 			}
 			newVar := ToLocalVar(resObj,oldVar.itName)
 			newVar.AutoCastedFrom = oldVar

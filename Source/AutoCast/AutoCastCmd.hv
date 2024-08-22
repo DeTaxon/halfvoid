@@ -16,6 +16,8 @@ CheckPropertieAutoCast := !(BoxFuncTemplateBody^ tmplt, BoxFuncBody^ fnc) -> voi
 	castFuncType := GetFuncType(1,![varType],![true],GTypeVoid)
 	castFunc := ql.CreateFunction(castFuncType.GetPoint())
 
+	castFunc->{BoxFuncBody^}.ParentScope = fnc
+
 	newCast := new AutoCastPropertie
 	newCast.ExchangeFunction = castFunc
 	fnc.Properties[spn] = newCast 
