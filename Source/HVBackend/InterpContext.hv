@@ -267,7 +267,7 @@ MCInterpContext := class
 	}
 	ThisToCif := !(Type^ itType) -> void^
 	{
-		if itType == GTypeChar.GetPoint()
+		if itType == GTypeChar.GetPoint() or itType == GTypeStr
 		{
 			return ffi_type_pointer
 		}else if itType is in  TypePoint{

@@ -53,7 +53,9 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
 		}
-		return it.impClass?.GetItem(name)?->{BoxExeObj^}
+		st := Str
+		st-> AsString = name.GetString()
+		return it.impClass?.GetItem(st)?->{BoxExeObj^}
 	}
 }
 

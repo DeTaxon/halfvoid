@@ -1,6 +1,6 @@
 internalHVModuleBase := class
 {
-	GetItem := virtual !(StringView name) -> void^
+	GetItem := virtual !(Str name) -> void^
 	{
 	}
 }

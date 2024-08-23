@@ -1,33 +1,28 @@
 
-TestClass := class extend TGCObject
-{
-	x := int
-	this := !() -> void
-	{
-		x = RandInt(1..100)
-	}
-}
+
 
 main := !(char^[] args) -> int
 {
-	c := TGCObject^
-	c = new TestClass()
-
-	if c is not in TestClass
-		return 0
-	printf("c %i\n",c.x)
+	RunOpenGLTest()
 }
 RunTest := !() -> void
 {
 }
 
 #Module(
+	GetItem := virtual !(Str st) -> void^
+	{
+		
+	}
+)
+
+#Module(
 
 	xmlBlob := Blob^
 	glXML := XML^
 
-	glCommands := AVLMap.{StringSpan,XMLNode^}
-	glValues := AVLMap.{StringSpan,int}
+	glCommands := AVLMap.{Str,XMLNode^}
+	glValues := AVLMap.{Str,int}
 
 	parsedXml := bool
 	ParseXml := !() -> void
@@ -168,9 +163,9 @@ RunTest := !() -> void
 		return funcClassType
 	}
 
-	GetItem := virtual !(StringView name) -> void^
+	GetItem := virtual !(Str name) -> void^
 	{
-		if name.Start == StringSpan("GL_")
+		if name.Start == "GL_"
 		{
 			ParseXml()
 			if glValues.Contain(name)

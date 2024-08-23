@@ -21,6 +21,10 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 
 innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 {
+	if val?.GetType() == GTypeStr
+	{
+		val = strAsString(val)
+	}
 	if rObj is TokenIndent
 	{
 		name := rObj->{TokenIndent^}.Value
