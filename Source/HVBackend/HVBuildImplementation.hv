@@ -38,6 +38,10 @@ HVContextImplementation := class extend HV_Context
 		newClassBase.baseClass = newClass
 		return newClassBase
 	}
+	CreateFunction := virtual !(Str funcText) -> HV_FunctionTemplate^
+	{
+		
+	}
 
 
 
@@ -51,4 +55,8 @@ HVContextImplementation := class extend HV_Context
 		CurrentWork?.SetErrorMessage(errorMessage)
 	}
 
+}
+HV_FunctionTemplateImp := class extend HV_FunctionTemplate
+{
+	GetFunction := virtual !() -> HV_Function^ {}
 }

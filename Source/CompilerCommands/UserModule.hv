@@ -55,7 +55,10 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 		}
 		st := Str
 		st-> AsString = name.GetString()
-		return it.impClass?.GetItem(st)?->{BoxExeObj^}
+		res := BoxExeObj^
+		res = it.impClass?.GetItem(st)?->{BoxExeObj^}
+		if res? is in BoxExeObj
+			return res
 	}
 }
 

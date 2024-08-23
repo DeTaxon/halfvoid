@@ -3,7 +3,7 @@
 
 main := !(char^[] args) -> int
 {
-	RunOpenGLTest()
+	TestHello()
 }
 RunTest := !() -> void
 {
@@ -12,7 +12,14 @@ RunTest := !() -> void
 #Module(
 	GetItem := virtual !(Str st) -> void^
 	{
-		
+		if st == "TestHello"
+		{
+			return @once HV.CreateFunction("
+				!() -> void{
+					printf(\"Hi, maybe\")
+				}
+			")
+		}
 	}
 )
 

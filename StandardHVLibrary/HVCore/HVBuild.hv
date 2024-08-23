@@ -5,13 +5,12 @@ HV_Context := class
 {
 	GetType := virtual !(StringView typeName) -> void^ {}
 	GetTypePointer := virtual !(void^ baseType) -> void^ {}
-	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ {}\
+	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
 
 	Create_int32 := virtual !(int value) -> void^ {}
-
-	CacheIt := virtual !() -> void {}
+	CreateFunction := virtual !(Str funcText) -> HV_FunctionTemplate^ {}
 
 	EmitError := virtual !(Str ErrorMessage) -> void {}
 }
@@ -29,4 +28,13 @@ HV_Object := class
 	IsConst := virtual false
 	//TODO
 	//GetType
+}
+
+HV_FunctionTemplate := class
+{
+	GetFunction := virtual !() -> HV_Function^ {}
+}
+HV_Function := class
+{
+
 }
