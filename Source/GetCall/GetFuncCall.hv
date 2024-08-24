@@ -271,6 +271,12 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	dwnItem := TryGetExeCall(itm.Down)
 	if dwnItem != null
 	{
+		if dwnItem is in BoxFuncTemplate
+		{
+			tmpl := dwnItem->{BoxFuncTemplate^}
+			if tmpl.IsOneFunc()
+				dwnItem = tmpl.GetOneFunc()
+		}
 		if dwnItem is in BoxFunc
 		{
 			fnc := dwnItem->{BoxFunc^}

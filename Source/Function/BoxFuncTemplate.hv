@@ -1,5 +1,5 @@
 
-BoxFuncTemplate := class extend BoxUnit
+BoxFuncTemplate := class extend BoxExeConstObj
 {
 	AllFuncs := AVLMap.{Type^,List.{BoxFunc^}}
 	FuncConstants := AVLMap.{BoxFunc^,List.{BoxExeConstObj^}}

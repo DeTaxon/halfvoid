@@ -39,5 +39,8 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeNullptrToArrayView)
 	ExchangeList.Push(new ExchangeArrayViewToGC)
 	ExchangeList.Push(new ExchangeTypeTypeFromType)
+
+	ExchangeList.Push(new BoxFuncTemplateToBoxFunc)
+	ExchangeList.Push(new BoxFuncToPointer)
 }
 

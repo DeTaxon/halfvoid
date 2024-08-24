@@ -1,0 +1,68 @@
+
+
+BoxFuncTemplateToBoxFunc := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not in TypePoint //TODO void^ or exact TypePointer
+			return CmpNoExchange
+
+		if obj is not in BoxFuncTemplate
+			return CmpNoExchange
+		tmpl := obj->{BoxFuncTemplate^}
+		if not tmpl.IsOneFunc()
+			return CmpNoExchange
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		res := obj->{BoxFuncTemplate^}.GetOneFunc()
+		assert(res != null)
+		return res
+	}
+
+}
+BoxFuncToPointer := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not in TypePoint //TODO void^ or exact TypePointer
+			return CmpNoExchange
+
+		if obj is FuncPointerParam
+			return CmpNoExchange
+		if obj is not in BoxFunc
+			return CmpNoExchange
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new FuncToPointerObj(obj->{BoxFunc^})
+	}
+}
+
+FuncToPointerObj := class extend BoxExeObj
+{
+	func := BoxFunc^
+
+	this := !(BoxFunc^ f) -> void
+	{
+		f.ParseBody()
+		func = f
+		ObjType = f.GetType().GetPoint()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return false
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		func.PrintName(ctx)
+	}
+	
+}

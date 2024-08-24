@@ -3,7 +3,9 @@
 
 main := !(char^[] args) -> int
 {
-	TestHello()
+	c := void^
+	c = RunTest
+	//TestHello()
 }
 RunTest := !() -> void
 {

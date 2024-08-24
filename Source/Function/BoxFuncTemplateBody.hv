@@ -33,6 +33,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		cns = constToken
 		bdy = bodyIn
 		RunToken = runToken
+		ObjType = GTypeNone
 
 		if resTyp == null
 			Attrs.IsAutoResult = true
