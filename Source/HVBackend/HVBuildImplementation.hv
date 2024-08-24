@@ -20,6 +20,13 @@ HVContextImplementation := class extend HV_Context
 		typ := baseType->{ConstType^}.Value
 		return GetConstType(typ.GetPoint())
 	}
+	GetTypeBase := virtual !(void^ baseType) -> void^
+	{
+		typ := baseType->{ConstType^}.Value
+		if typ.Base == null
+			return null
+		return GetConstType(typ.Base)
+	}
 	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ 
 	{
 		typesThis := HybridQueue.{Type^,16}

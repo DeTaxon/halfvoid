@@ -4,6 +4,7 @@
 main := !(char^[] args) -> int
 {
 	c := TestClass
+	c.x = 404
 	c.TestFunc()
 }
 RunTest := !() -> void
@@ -16,9 +17,10 @@ RunTest := !() -> void
 		if st == "TestClass"
 		{
 			cls := @once HV.CreateClass()
+			cls.AddField("x",HV.GetType("int"))
 			cls.AddMethodStr("TestFunc","
 				!() -> void{
-					printf(\"Hi, maybe\\n\")
+					printf(\"Hi, maybe %i\\n\",x)
 				}
 			")
 			return cls.GetType()

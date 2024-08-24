@@ -69,6 +69,14 @@ HVClassImpl := class extend HV_Class
 {
 	baseClass := hvr_Class^
 
+	AddField := virtual !(Str fieldName,void^ fieldType) -> void
+	{
+		if fieldType == null
+			return void
+		obj := fieldType->{ConstType^}
+		spn := GetConstString(fieldName.AsStringSpan())
+		baseClass.AddExtraField(spn,obj.Value)
+	}
 	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void
 	{
 		baseClass.newFieldCB = null

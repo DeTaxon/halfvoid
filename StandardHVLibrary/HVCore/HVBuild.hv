@@ -5,6 +5,7 @@ HV_Context := class
 {
 	GetType := virtual !(StringView typeName) -> void^ {}
 	GetTypePointer := virtual !(void^ baseType) -> void^ {}
+	GetTypeBase := virtual !(void^ baseType) -> void^ {} // pointer of type to it's type
 	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
@@ -19,6 +20,7 @@ HV_Context_Empty := HV_Context
 
 HV_Class := class
 {
+	AddField := virtual !(Str fieldName,void^ fieldType) -> void {}
 	AddMethod := virtual !(Str funcName,void^ fncObj) -> void {}
 	AddMethodStr := virtual !(Str funcName,Str fncText) -> void {}
 	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
