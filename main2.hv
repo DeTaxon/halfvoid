@@ -88,14 +88,14 @@ RunTest := !() -> void
 		}
 
 	}
-	GetCommandType := !(StringView str) -> void^
+	GetCommandType := !(StringView str) -> HV_Object^
 	{
 		spn := str.AsStringSpan()
 		if not glCommands.Contain(spn)
 			return null
 
 		cmd := glCommands[spn]
-		types := HybridQueue.{void^,16}
+		types := HybridQueue.{HV_Object^,16}
 
 		for pars : cmd.Values 
 		{
@@ -110,7 +110,7 @@ RunTest := !() -> void
 		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
 		return HV.GetTypePointer(fType)
 	}
-	GetParamType := !(XMLNode^ node) -> void^
+	GetParamType := !(XMLNode^ node) -> HV_Object^
 	{
 		nodeOpts := char[256]
 		sSize := 0
@@ -136,7 +136,7 @@ RunTest := !() -> void
 		}
 		
 	}
-	GetStringType := !(StringSpan typeName) -> void^
+	GetStringType := !(StringSpan typeName) -> HV_Object^
 	{
 		switch typeName
 		{
@@ -155,8 +155,8 @@ RunTest := !() -> void
 	}
 
 	funcClass := HV_Class^
-	funcClassType := void^
-	FuncClass := !() -> void^
+	funcClassType := HV_Object^
+	FuncClass := !() -> HV_Object^
 	{
 		return funcClassType?
 
@@ -175,7 +175,7 @@ RunTest := !() -> void
 		return funcClassType
 	}
 
-	GetItem := virtual !(Str name) -> void^
+	GetItem := virtual !(Str name) -> HV_Object^
 	{
 		if name.Start == "GL_"
 		{

@@ -6,7 +6,7 @@ InitRunContext := !() -> void
 
 HVContextImplementation := class extend HV_Context
 {
-	GetType := virtual !(StringView typeName) -> void^ 
+	GetType := virtual !(StringView typeName) -> HV_Object^ 
 	{
 		spn := typeName.AsStringSpan()
 		indnt := TokenIndent(spn)
@@ -15,19 +15,19 @@ HVContextImplementation := class extend HV_Context
 			return null
 		return GetConstType(asType)
 	}
-	GetTypePointer := virtual !(void^ baseType) -> void^ 
+	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
 		typ := baseType->{ConstType^}.Value
 		return GetConstType(typ.GetPoint())
 	}
-	GetTypeBase := virtual !(void^ baseType) -> void^
+	GetTypeBase := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
 		typ := baseType->{ConstType^}.Value
 		if typ.Base == null
 			return null
 		return GetConstType(typ.Base)
 	}
-	GetFuncType := virtual !(void^[] types,bool[] isReference, void^ resultType,bool resultReference,bool isVariadicArguments) -> void^ 
+	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ 
 	{
 		typesThis := HybridQueue.{Type^,16}
 		typesThis.Push(types[^]->{ConstType^}.Value)
@@ -45,12 +45,12 @@ HVContextImplementation := class extend HV_Context
 		newClassBase.baseClass = newClass
 		return newClassBase
 	}
-	CreateFunction := virtual !(Str funcText) -> void^
+	CreateFunction := virtual !(Str funcText) -> HV_Object^
 	{
 		return StrToFunctionTemplate(funcText)
 	}
 
-	Create_int32 := virtual !(int value) -> void^ 
+	Create_int32 := virtual !(int value) -> HV_Object^
 	{
 		return GetExeInt(value)
 	}

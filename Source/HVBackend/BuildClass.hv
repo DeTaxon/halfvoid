@@ -69,7 +69,7 @@ HVClassImpl := class extend HV_Class
 {
 	baseClass := hvr_Class^
 
-	AddField := virtual !(Str fieldName,void^ fieldType) -> void
+	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void
 	{
 		if fieldType == null
 			return void
@@ -82,11 +82,11 @@ HVClassImpl := class extend HV_Class
 		baseClass.newFieldCB = null
 		baseClass.newFieldCB = cb?.Capture()
 	}
-	GetType := virtual !() -> void^ 
+	GetType := virtual !() -> HV_Object^ 
 	{
 		return GetConstType(baseClass.ItType)
 	}
-	AddMethod := virtual !(Str funcName,void^ fncObj) -> void
+	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void
 	{
 		if fncObj == null
 			return void
