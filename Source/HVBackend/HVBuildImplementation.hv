@@ -38,9 +38,26 @@ HVContextImplementation := class extend HV_Context
 		newClassBase.baseClass = newClass
 		return newClassBase
 	}
-	CreateFunction := virtual !(Str funcText) -> HV_FunctionTemplate^
+	CreateFunction := virtual !(Str funcText) -> void^
 	{
-		
+		tokens := GetObjectsFromMemory(GetAnyFile(),funcText.Str(),funcText.Size())
+
+		resultTokens := new Token
+
+		resultTokens.Down = tokens
+		itr := tokens
+		while itr != null
+		{
+			itr.Up = resultTokens
+			itr = itr.Right
+		}
+
+		SyntaxCompress(resultTokens,LexHVFileRoot)
+		c := PFunctionParser(resultTokens.Down)
+		if not c.IsFound()
+			return null
+
+		return c.CreateObject()
 	}
 
 

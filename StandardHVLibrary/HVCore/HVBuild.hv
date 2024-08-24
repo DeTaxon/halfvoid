@@ -10,7 +10,7 @@ HV_Context := class
 	CreateClass := virtual !() -> HV_Class^ {}
 
 	Create_int32 := virtual !(int value) -> void^ {}
-	CreateFunction := virtual !(Str funcText) -> HV_FunctionTemplate^ {}
+	CreateFunction := virtual !(Str funcText) -> void^ {}
 
 	EmitError := virtual !(Str ErrorMessage) -> void {}
 }

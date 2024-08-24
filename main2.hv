@@ -3,9 +3,7 @@
 
 main := !(char^[] args) -> int
 {
-	c := void^
-	c = RunTest
-	//TestHello()
+	TestHello()
 }
 RunTest := !() -> void
 {
@@ -18,7 +16,7 @@ RunTest := !() -> void
 		{
 			return @once HV.CreateFunction("
 				!() -> void{
-					printf(\"Hi, maybe\")
+					printf(\"Hi, maybe\\n\")
 				}
 			")
 		}
