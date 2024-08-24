@@ -78,4 +78,15 @@ HVClassImpl := class extend HV_Class
 	{
 		return GetConstType(baseClass.ItType)
 	}
+	AddMethod := virtual !(Str funcName,void^ fncObj) -> void
+	{
+		if fncObj == null
+			return void
+		if fncObj->{BoxUnit^} is not in BoxFuncTemplate
+			return void
+		spn := GetConstString(funcName.AsStringSpan())
+		tmpl := fncObj->{BoxFuncTemplateBody^} //TODO, check if body
+		tmpl.ParentScope = baseClass
+		baseClass.DefaultSpace.MethodTemplates[spn].Push(fncObj->{BoxFuncTemplate^})
+	}
 }

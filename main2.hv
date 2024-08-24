@@ -3,7 +3,8 @@
 
 main := !(char^[] args) -> int
 {
-	TestHello()
+	c := TestClass
+	c.TestFunc()
 }
 RunTest := !() -> void
 {
@@ -12,13 +13,16 @@ RunTest := !() -> void
 #Module(
 	GetItem := virtual !(Str st) -> void^
 	{
-		if st == "TestHello"
+		if st == "TestClass"
 		{
-			return @once HV.CreateFunction("
-				!() -> void{
+			cls := @once HV.CreateClass()
+			fnc := @once HV.CreateFunction("
+				!(@T& this) -> void{
 					printf(\"Hi, maybe\\n\")
 				}
 			")
+			cls.AddMethod("TestFunc",fnc)
+			return cls.GetType()
 		}
 	}
 )
