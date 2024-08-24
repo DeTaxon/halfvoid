@@ -16,12 +16,11 @@ RunTest := !() -> void
 		if st == "TestClass"
 		{
 			cls := @once HV.CreateClass()
-			fnc := @once HV.CreateFunction("
-				!(@T& this) -> void{
+			cls.AddMethodStr("TestFunc","
+				!() -> void{
 					printf(\"Hi, maybe\\n\")
 				}
 			")
-			cls.AddMethod("TestFunc",fnc)
 			return cls.GetType()
 		}
 	}

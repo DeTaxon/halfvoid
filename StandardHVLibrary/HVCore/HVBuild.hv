@@ -20,6 +20,7 @@ HV_Context_Empty := HV_Context
 HV_Class := class
 {
 	AddMethod := virtual !(Str funcName,void^ fncObj) -> void {}
+	AddMethodStr := virtual !(Str funcName,Str fncText) -> void {}
 	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
 	GetType := virtual !() -> void^ {}
 }

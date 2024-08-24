@@ -89,4 +89,16 @@ HVClassImpl := class extend HV_Class
 		tmpl.ParentScope = baseClass
 		baseClass.DefaultSpace.MethodTemplates[spn].Push(fncObj->{BoxFuncTemplate^})
 	}
+	AddMethodStr := virtual !(Str funcName,Str fncText) -> void
+	{
+		oldScope := CurrentScope
+		defer CurrentScope = oldScope
+		CurrentScope = baseClass
+
+		fnc := StrToFunctionTemplate(fncText)
+		if fnc == null
+			return void
+		spn := GetConstString(funcName.AsStringSpan())
+		baseClass.DefaultSpace.MethodTemplates[spn].Push(fnc)
+	}
 }

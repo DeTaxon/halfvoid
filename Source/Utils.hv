@@ -215,3 +215,26 @@ ConstMapToList := !(AVLMap.{StringSpan,BoxUnit^} cMap, List.{BoxUnit^} cList) ->
 		}
 	}
 }
+
+
+StrToFunctionTemplate := !(Str funcText) -> BoxFuncTemplate^
+{
+	tokens := GetObjectsFromMemory(GetAnyFile(),funcText.Str(),funcText.Size())
+
+	resultTokens := new Token
+
+	resultTokens.Down = tokens
+	itr := tokens
+	while itr != null
+	{
+		itr.Up = resultTokens
+		itr = itr.Right
+	}
+
+	SyntaxCompress(resultTokens,LexHVFileRoot)
+	c := PFunctionParser(resultTokens.Down)
+	if not c.IsFound()
+		return null
+
+	return c.CreateObject()->{BoxFuncTemplate^}
+}
