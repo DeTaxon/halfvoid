@@ -6,6 +6,7 @@ main := !(char^[] args) -> int
 	c := TestClass
 	c.x = 404
 	c.TestFunc()
+	RunOpenGLTest()
 }
 RunTest := !() -> void
 {

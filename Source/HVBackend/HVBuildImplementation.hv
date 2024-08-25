@@ -37,13 +37,12 @@ HVContextImplementation := class extend HV_Context
 	}
 	CreateClass := virtual !() -> HV_Class^ 
 	{
-		newClassBase := new HVClassImpl
 		newClass := new hvr_Class()
 
 		AllClasses.Push(newClass)
 
-		newClassBase.baseClass = newClass
-		return newClassBase
+		newClass.hvClass.baseClass =  newClass
+		return newClass.hvClass&
 	}
 	CreateFunction := virtual !(Str funcText) -> HV_Object^
 	{

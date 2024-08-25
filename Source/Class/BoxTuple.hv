@@ -29,6 +29,8 @@ BoxClassTuple := class extend BoxClassPoison
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
+		hvClass.baseClass = this&
+
 		needGC := false
 
 		for it,i : types //todo remove i

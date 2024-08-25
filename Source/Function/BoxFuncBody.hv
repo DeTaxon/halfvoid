@@ -79,7 +79,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			funcLine.ItToken = bdy
 			assert(funcLine.ItToken.Line != null)
 		}
-		ExitLabel = new BoxLabel() 
+		ExitLabel = new BoxLabel()
 	}
 	GetBaseClass := !() -> BoxClass^
 	{

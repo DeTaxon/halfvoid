@@ -67,7 +67,7 @@ hvr_Class := class extend BoxClassPoison
 
 HVClassImpl := class extend HV_Class
 {
-	baseClass := hvr_Class^
+	baseClass := BoxClass^
 
 	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void
 	{
@@ -79,8 +79,11 @@ HVClassImpl := class extend HV_Class
 	}
 	AddCallback_GetFieldFailed := virtual !(!(StringView)&->HV_Object^ cb ) -> void
 	{
-		baseClass.newFieldCB = null
-		baseClass.newFieldCB = cb?.Capture()
+		if baseClass is not hvr_Class
+			return void
+		cls := baseClass->{hvr_Class^}
+		cls.newFieldCB = null
+		cls.newFieldCB = cb?.Capture()
 	}
 	GetType := virtual !() -> HV_Object^ 
 	{
