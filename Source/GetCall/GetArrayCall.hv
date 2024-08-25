@@ -47,7 +47,7 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 	return res
 
 	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(GetConstType(allType.GetArray(objs.Size())))
+	cnsts.Push(allType.GetArray(objs.Size()))
 	resCall := CreateFuncCall(StringSpan("![]"),objs,cnsts)
 	cnsts.Destroy()
 
@@ -127,7 +127,7 @@ BoxArrayHolder := class extend BoxExeObj
 		{
 			objs := CheckExeDownList
 			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(GetConstType(bs))
+			cnsts.Push(bs)
 			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
 			cnsts.Destroy()
 			return resFunc.CreateCall()
@@ -157,7 +157,7 @@ BoxArrayHolder := class extend BoxExeObj
 		}
 
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(bs.GetArray(vals.Size())))
+		cnsts.Push(bs.GetArray(vals.Size()))
 		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
 
 		if resCall == null

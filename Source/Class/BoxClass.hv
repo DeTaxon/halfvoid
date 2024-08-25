@@ -339,9 +339,9 @@ TypeClass := class extend Type
 			{
 				if i != 0
 					f^ << ","
-				if it is ConstType
+				if it is in Type
 				{
-					it->{ConstType^}.Value.PrintDebugName(ctx)
+					it->{Type^}.PrintDebugName(ctx)
 				}
 			}
 			f^ << "}"

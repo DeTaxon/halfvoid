@@ -43,11 +43,11 @@ TemplateCheckConstants := !(BoxExeConstObj^[] cnsts, List.{Token^} cnstsTokens, 
 		typs := List.{Type^}
 		for c2 : cnsts
 		{
-			if c2 is not ConstType
+			if c2 is not in Type
 			{
 				return false
 			}
-			typs.Push(c2->{ConstType^}.Value)
+			typs.Push(c2->{Type^})
 		}
 		newVar := new TypeVariadicVar(varName,typs)
 		namedConsts[varName] = newVar
@@ -74,32 +74,6 @@ TemplateCheckConstants := !(BoxExeConstObj^[] cnsts, List.{Token^} cnstsTokens, 
 	//}
 	return true
 }
-
-
-typeConsts := AVLMap.{Type^,ConstType^}
-GetConstType := !(Type^ tp) -> BoxExeConstObj^
-{
-	if typeConsts.Contain(tp)
-		return typeConsts[tp]
-	newCmp := new ConstType(tp)
-	typeConsts[tp] = newCmp
-	return newCmp
-}
-
-ConstType := class extend BoxExeConstObj
-{
-	Value := Type^
-	this := !(Type^ tp) -> void
-	{
-		ObjType = GTypeVoid
-		Value = tp
-	}
-	PrintDebug := virtual !(Stream ctx) -> void
-	{
-		ctx << Value?.GetBADStr()
-	}
-}
-
 
 typeTemplateConsts := AVLMap.{BoxClassTemplate^,ConstTemplateType^}
 GetConstTemplateType := !(BoxClassTemplate^ tp) -> BoxExeConstObj^

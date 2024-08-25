@@ -14,8 +14,8 @@ TypeObjToType := !(BoxUnit^ res) -> Type^
 		return null
 	if res is TypeVar
 		return res->{TypeVar^}.Value
-	if res is ConstType
-		return res->{ConstType^}.Value
+	if res is in Type
+		return res->{Type^}
 	return null
 }
 
@@ -35,8 +35,8 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 			if tv.Name == name
 			{
 				vl := tv.Value
-				if vl is ConstType
-					return vl->{ConstType^}
+				if vl is in Type
+					return vl->{Type^}
 			}
 		}
 	}
@@ -48,7 +48,7 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 		if sp.Types.Contain(name)
 		{
 			itm := sp.Types[name]
-			if itm is ConstType
+			if itm is in Type
 			{
 				return itm
 			}else if itm is TypeVar
@@ -72,9 +72,8 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 			tp := module.GetType(name)
 			if tp != null
 			{
-				tp2 := GetConstType(tp)
-				sp.Types[name] = tp2
-				return tp2
+				sp.Types[name] = tp
+				return tp
 			}
 		}
 	}
@@ -87,7 +86,7 @@ TypeDatabaseInitDefaults := !() -> void
 	{
 		if defs == null
 			break
-		CodeSpaces[-1].Types[defs.ItName] = GetConstType(defs.ItType)
+		CodeSpaces[-1].Types[defs.ItName] = defs.ItType
 	}
 }
 

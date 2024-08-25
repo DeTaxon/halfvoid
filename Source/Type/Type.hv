@@ -1,9 +1,9 @@
 
 typeHashIterator := 1
 
-Type := class 
+Type := class extend BoxExeConstObj
 {
-	UnitName := virtual poison #ThisClass()->TypeName
+	//UnitName := virtual poison #ThisClass()->TypeName
 
 	MetaId := int
 	Base := Type^
@@ -12,9 +12,9 @@ Type := class
 	ItHash := int
 	arrays := AVLMap.{int,Type^}
 
-	GetType := virtual !() -> char^
+	GetType := virtual !() -> Type^
 	{
-		return ""
+		return GTypeNone
 	}
 	GetPoint := virtual !() -> Type^
 	{
@@ -29,7 +29,7 @@ Type := class
 			res := new TypeArrayView(this&)
 
 			tpys := List.{BoxExeConstObj^}
-			tpys.Push(GetConstType(this&)) //TODO maybe use temp obj on stack
+			tpys.Push(this&) //TODO maybe use temp obj on stack
 			assert(ArrayViewTemplate != null)
 			rClass := ArrayViewTemplate.GetClass(tpys)
 			assert(rClass != null)
@@ -106,6 +106,10 @@ Type := class
 	NotifyUse := virtual !() -> void
 	{
 	}
+	PrintDebug := virtual !(Stream ctx) -> void
+	{
+		ctx << GetBADStr()
+	}
 }
 
 TypeDef := class
@@ -148,10 +152,6 @@ TypeStandard := class extend Type
 			MetaId = GetNewId()
 			GDebugTypePrintMeta.Push(this&)
 		}
-	}
-	GetType := virtual !() -> string
-	{
-		return "standart"
 	}
 	GetName := virtual !() -> string
 	{
@@ -226,10 +226,6 @@ TypeArr := class extend Type
 			MetaId = GetNewId()
 			GDebugTypePrintMeta.Push(this&)
 		}
-	}
-	GetType := virtual !() -> string
-	{
-		return "array"
 	}
 	GetAlign := virtual !() -> int
 	{
@@ -341,10 +337,6 @@ TypeArrayView := class extend Type
 			MetaId = GetNewId()
 			GDebugTypePrintMeta.Push(this&)
 		}
-	}
-	GetType := virtual !() -> string
-	{
-		return "ArrayView"
 	}
 	GetAlign := virtual !() -> int
 	{

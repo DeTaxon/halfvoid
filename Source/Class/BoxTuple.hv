@@ -150,9 +150,9 @@ BoxClassTupleTemplate := class extend BoxClassTemplate
 
 		for it : inpts
 		{
-			if it is ConstType
+			if it is in Type
 			{
-				lst.Push(it->{ConstType^}.Value)
+				lst.Push(it->{Type^})
 			}else{
 				return null
 			}

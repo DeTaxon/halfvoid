@@ -60,7 +60,7 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(itm.MakeError("Command is not in class"))
 			return null
 		}
-		return GetConstType(itrScope->{BoxClass^}.ItType)
+		return itrScope->{BoxClass^}.ItType
 	}
 
 	return TryAddCallCommand(itm)?

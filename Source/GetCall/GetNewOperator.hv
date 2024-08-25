@@ -12,7 +12,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 			return null
 		}
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(tp))
+		cnsts.Push(tp)
 		objs := CheckExeDownList
 		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
 		assert(fnc != null)

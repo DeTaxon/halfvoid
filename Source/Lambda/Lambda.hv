@@ -86,10 +86,10 @@ BoxLambdaHolder := class extend BoxExeObj
 		if cls.Constants == null or cls.Constants.Constants.Size() != 1
 			return null
 		cnst1 := cls.Constants.Constants[0]
-		if not (cnst1 is ConstType)
+		if cnst1 is not in Type
 			return null
-		cnstTyp := cnst1->{ConstType^}.Value
-		if not (cnstTyp is in TypePoint)
+		cnstTyp := cnst1->{Type^}
+		if cnstTyp is not in TypePoint
 			return null
 		if not (cnstTyp.Base is in TypeFunc)
 			return null
@@ -200,8 +200,8 @@ BoxLambdaHolder := class extend BoxExeObj
 		objs.Push(fncPtr)
 	
 		lst := List.{BoxExeConstObj^}
-		lst.Push(GetConstType(tplType))
-		lst.Push(GetConstType(newFunc.GetYieldTuple().ItType))
+		lst.Push(tplType)
+		lst.Push(newFunc.GetYieldTuple().ItType)
 		
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
 
@@ -213,7 +213,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		assert(cleanType is TypeClass)
 
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(newFunc.GetType().GetPoint()))
+		cnsts.Push(newFunc.GetType().GetPoint())
 		lambdaType := GCLambda.GetClass(cnsts).ItType
 
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))

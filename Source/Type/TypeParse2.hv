@@ -13,9 +13,9 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 			if resCnsts.Contain(name)
 			{
 				itm2 := resCnsts[name]
-				if itm2 is ConstType
+				if itm2 is in Type
 				{
-					dwnTp = itm2->{ConstType^}.Value
+					dwnTp = itm2->{Type^}
 				}
 			}
 		}
@@ -33,16 +33,16 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 
 		if resCnsts.Contain(nm)
 		{
-			if resCnsts[nm] is ConstType
+			if resCnsts[nm] is in Type
 			{
-				vr := resCnsts[nm]->{ConstType^}
-				if vr.Value != tp
+				vr := resCnsts[nm]->{Type^}
+				if vr != tp
 				{
 					return null
 				}
 			}
 		}else{
-			resCnsts[nm] = GetConstType(tp)
+			resCnsts[nm] = tp
 		}
 		return tp
 	}
@@ -78,7 +78,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 				and tp.Base->{TypeClass^}.ToClass.TemplateParent == GCLambda
 			{
 				lCls := tp.Base->{TypeClass^}.ToClass
-				clsFnc := lCls.Constants.Constants[0]->{ConstType^}.Value.Base->{TypeFunc^}
+				clsFnc := lCls.Constants.Constants[0]->{Type^}.Base->{TypeFunc^}
 				baseFuncType = FuncTypePopFront(clsFnc)
 				if baseFuncType == null
 					return null
@@ -152,7 +152,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 		if isLambda
 		{
 			args := List.{BoxExeConstObj^}
-			args.Push(GetConstType(fType.GetPoint()))
+			args.Push(fType.GetPoint())
 			rl := GCLambda.GetClass(args)
 			assert(rl != null)
 			args.Destroy()
@@ -171,7 +171,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 		resType := CheckTemplateType(obj,null,tk.Down,resCnsts) //TODO non null value so it could work in template
 		if resType == null
 			return null
-		return OptionalTemplate.GetClass(![GetConstType(resType)]).ItType
+		return OptionalTemplate.GetClass(![resType]).ItType
 	}
 	if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
 	{
@@ -258,7 +258,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 
 				for it : vt2.Values
 				{
-					cnsts.Push(GetConstType(it))
+					cnsts.Push(it)
 				}
 				itr = itr.Right.Right
 			}else{
@@ -316,7 +316,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 					assert(clItr.Parents.Size() != 0)
 					clItr = clItr.Parents[0] //todo Multi inherence support
 				}
-				dwnType = clItr.Constants?.Constants[0]->{ConstType^}.Value
+				dwnType = clItr.Constants?.Constants[0]->{Type^}
 			}
 			if tp? is TypeArr
 			{
@@ -421,14 +421,14 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 			glb = TypeGetGlobalByIndent(name)
 		if glb != null
 		{
-			if glb is ConstVar
+			if glb is in ConstVar
 				return glb->{ConstVar^}.Value
 			if glb is TypeVar
-				return GetConstType(glb->{TypeVar^}.Value)
+				return glb->{TypeVar^}.Value
 			if glb is in TemplateTypeVar
 				return GetConstTemplateType(glb->{TemplateTypeVar^}.Value)
-			if glb is ConstType
-				return glb->{BoxExeConstObj^}
+			if glb is in Type
+				return glb->{Type^}
 			CurrentWork?.SetErrorMessage(itm.MakeError("software error, Globals variables must use consts"))
 			return null
 		}
@@ -439,14 +439,14 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxU
 		return GetExeInt(val)
 	}
 
-	if cnst == null or cnst is ConstType
+	if cnst == null or cnst is in Type
 	{
 		inType := Type^
 		if cnst != null
-			inType = cnst->{ConstType^}.Value
+			inType = cnst->{Type^}
 		resTp := CheckTemplateType(inType,itm,resCnsts)
 		if resTp != null
-			return GetConstType(resTp)
+			return resTp
 	}
 
 	if itm is TokenTemplateType

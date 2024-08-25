@@ -8,7 +8,7 @@ LambdaClassTemplate := class extend BoxClassTemplateBody
 		{
 			assert(inpts.Size() == 1)
 			fncPtr := inpts[0]
-			typ := inpts[0]->{ConstType^}.Value
+			typ := inpts[0]->{Type^}
 			assert(typ is in TypePoint and typ.Base is TypeFunc)
 
 			fType := typ.Base->{TypeFunc^}

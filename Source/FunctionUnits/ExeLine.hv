@@ -335,7 +335,7 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 			tp := ParseType(iter)
 			if tp != null
 			{
-				consts.Push(GetConstType(tp))
+				consts.Push(tp)
 			}else{
 				cns := TryGetExeCall(iter)
 				if cns != null
@@ -403,7 +403,7 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 			priorityes.Push(cmpRes)
 		}else if h is in GlobalVar2 {
 			priorityes.Push(CmpNoExchange) //todo?
-		}else if h is in ConstType {
+		}else if h is in Type {
 			priorityes.Push(CmpNoExchange) //todo?
 		}else if h is in TypeVar {
 			priorityes.Push(CmpNoExchange) //todo?
@@ -503,7 +503,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	Objs.Push(obj)
 
 	consts := List.{BoxExeConstObj^}
-	consts.Push(GetConstType(toType))
+	consts.Push(toType)
 
 	found := false
 	for spc : CodeSpaces

@@ -12,7 +12,7 @@ IsEqConstants := !(BoxExeConstObj^[] a, BoxExeConstObj^[] b) -> bool
 
 cmpConst := !(BoxExeConstObj^ a, BoxExeConstObj^ b) -> bool
 {
-	if a is ConstType and b is ConstType
+	if a is in Type and b is in Type
 	{
 		return a == b
 	}

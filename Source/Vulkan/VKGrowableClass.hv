@@ -8,7 +8,7 @@ AppendClass ModuleVulkan
 			vulkanClass = new VKGrowableClass(this&)
 			AllClasses.Push(vulkanClass)
 		}
-		return GetConstType(vulkanClass.ItType)
+		return vulkanClass.ItType
 	}
 }
 

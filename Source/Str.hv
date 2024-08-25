@@ -9,7 +9,7 @@ CreateStrType := !() -> void
 	GTypeStringP = GTypeStrBase.ItType.GetPoint()
 
 	GTypeStr = new TypeStr(GTypeStrBase.ItType)
-	CodeSpaces[-1].Types[StringSpan("Str")] = GetConstType(GTypeStr)
+	CodeSpaces[-1].Types[StringSpan("Str")] = GTypeStr
 
 	ExchangeList.Push(new ExchangeStrToStringPointerClass)
 }

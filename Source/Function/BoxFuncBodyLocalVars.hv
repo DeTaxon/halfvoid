@@ -27,7 +27,7 @@ AppendClass BoxFuncBody
 
 		tpl := GetYieldTuple()
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(GetConstType(tpl.ItType))
+		cnsts.Push(tpl.ItType)
 
 		locVarThis := Params[0]
 		for it, i : LocalVars

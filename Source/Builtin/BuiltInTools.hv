@@ -215,16 +215,16 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 		if objs[0].GetType() is not in TypePoint
 			return null
 
-		if consts[0] is not ConstType
+		if consts[0] is not in Type
 			return null
 
 
-		return GetFuncType(![GTypeVoidP],consts[0]->{ConstType^}.Value)
+		return GetFuncType(![GTypeVoidP],consts[0]->{Type^})
 		
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
-		return new BuiltInVaArg(tp,consts[0]->{ConstType^}.Value)
+		return new BuiltInVaArg(tp,consts[0]->{Type^})
 	}
 }
 BuiltInVaArg := class extend BoxFuncCommon

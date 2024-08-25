@@ -144,14 +144,14 @@ CLib := class extend ModuleInterface
 	{ 
 		if itStructs.Contain(name)
 		{
-			assert(itStructs[name] is ConstType)
-			return itStructs[name]->{ConstType^}.Value
+			assert(itStructs[name] is in Type)
+			return itStructs[name]->{Type^}
 		}
 		if itPreStructs.Contain(name)
 		{
 			tp := innerMakeType(name)
-			assert(tp is ConstType)
-			return tp->{ConstType^}.Value
+			assert(tp is in Type)
+			return tp->{Type^}
 		}
 		return null 
 	}
@@ -197,7 +197,7 @@ CLib := class extend ModuleInterface
 		AllClasses.Push(newStruct)
 		newStruct.FinilizeCreation()
 
-		res := GetConstType(newStruct.ItType)
+		res := newStruct.ItType
 		itStructs[name] = res
 		return res
 	}

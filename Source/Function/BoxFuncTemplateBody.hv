@@ -190,11 +190,13 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				{
 					assert(hData.Types[i].ItType != null)
 					datas.Emplace(objs[i],hData.Types[i].ItType,hData.Types[i].IsRef)
+					assert(hData.Types[i].ItType? is in Type)
 				}else{
 					datas.Emplace(objs[i],ar.GetArrayType(),true)
 				}//TODO better exchange
 			}else{
 				datas.Emplace(objs[i],objs[i].GetType(),objs[i].IsMem())
+				assert(objs[i].GetType() is in Type)
 			}
 		}
 
@@ -212,6 +214,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 					addObjType(i)
 				}else{
 					datas.Emplace(null->{BoxExeObj^},hData.Types[i].ItType,hData.Types[i].IsRef)
+					assert(hData.Types[i].ItType? is in Type)
 				}
 			}
 		}

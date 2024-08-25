@@ -23,7 +23,7 @@ HV_Class := class
 	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void {}
 	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void {}
 	AddMethodStr := virtual !(Str funcName,Str fncText) -> void {}
-	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void{}
+	AddCallback_GetFieldFailed := virtual !(!(StringView)&->HV_Object^ cb ) -> void{}
 	GetType := virtual !() -> HV_Object^ {}
 }
 

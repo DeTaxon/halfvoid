@@ -45,7 +45,7 @@ CreateTypeIsCheck := !(BoxExeObj^ checkObj, Type^ expType,bool isIn, bool makeNe
 	rCall := BoxExeObj^
 	if isIn
 	{
-		fnc := TemplateInternalIsInSameType.GetFunc(![checkObj],![GetConstType(expType)])
+		fnc := TemplateInternalIsInSameType.GetFunc(![checkObj],![expType])
 		rCall = fnc.CreateCall(![checkObj])
 	}else{
 		rCall = new IsSameTypeChecker(checkObj,expType->{TypeClass^})

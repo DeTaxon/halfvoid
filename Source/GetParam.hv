@@ -268,7 +268,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 	asType := ParseType(itm)
 	if asType != null
-		return GetConstType(asType)
+		return asType
 
 	return GetItemUser(asItm.Value)? 
 

@@ -50,13 +50,13 @@ ExchangeTypeTypeFromType := class extend ExchangeUnit
 	{
 		if newType != GTypeType
 			return CmpNoExchange
-		if obj is not ConstType
+		if obj is not Type
 			return CmpNoExchange
 		return 0
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
-		return new BoxTypeValue(GetReflectionTypeIndex(obj->{ConstType^}.Value))
+		return new BoxTypeValue(GetReflectionTypeIndex(obj->{Type^}))
 	}
 }
 BoxTypeValue := class extend BoxExeConstObj

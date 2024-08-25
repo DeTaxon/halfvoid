@@ -769,7 +769,7 @@ ModuleVulkan := class extend ModuleInterface
 		tp := GetModuleType(st)
 		if tp != null
 		{
-			return GetConstType(tp)
+			return tp
 		}
 
 		return null
@@ -782,14 +782,14 @@ ModuleVulkan := class extend ModuleInterface
 		if name == "VulkanFunctionsClass"
 		{
 			tp := GetVulkanClass()
-			assert(tp is ConstType)
-			return tp->{ConstType^}.Value
+			assert(tp is in Type)
+			return tp->{Type^}
 		}
 		inUnit := Units.TryFind(st)
 		if inUnit != null
 		{
-			if inUnit^ is ConstType
-				return inUnit^->{ConstType^}.Value 
+			if inUnit^ is in Type
+				return inUnit^->{Type^}
 		}
 		tp := GetModuleType(st)
 		if tp != null

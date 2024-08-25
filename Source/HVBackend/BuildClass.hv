@@ -1,7 +1,7 @@
 
 hvr_Class := class extend BoxClassPoison
 {
-	newFieldCB := !(StringView)&->void^
+	newFieldCB := !(StringView)&->HV_Object^
 
 	this := !() -> void
 	{
@@ -15,7 +15,7 @@ hvr_Class := class extend BoxClassPoison
 	GetNewFieldType := virtual !(StringSpan val) -> Type^
 	{
 		if newFieldCB != null
-			return newFieldCB?(val)?->{ConstType^}.Value
+			return newFieldCB?(val)?->{Type^}
 		return null
 	}
 	GetField := virtual !(StringSpan val) -> FieldPath^
@@ -73,18 +73,18 @@ HVClassImpl := class extend HV_Class
 	{
 		if fieldType == null
 			return void
-		obj := fieldType->{ConstType^}
+		obj := fieldType->{Type^}
 		spn := GetConstString(fieldName.AsStringSpan())
-		baseClass.AddExtraField(spn,obj.Value)
+		baseClass.AddExtraField(spn,obj)
 	}
-	AddCallback_GetFieldFailed := virtual !(!(StringView)&->void^ cb ) -> void
+	AddCallback_GetFieldFailed := virtual !(!(StringView)&->HV_Object^ cb ) -> void
 	{
 		baseClass.newFieldCB = null
 		baseClass.newFieldCB = cb?.Capture()
 	}
 	GetType := virtual !() -> HV_Object^ 
 	{
-		return GetConstType(baseClass.ItType)
+		return baseClass.ItType
 	}
 	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void
 	{

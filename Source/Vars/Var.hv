@@ -136,9 +136,9 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 	exeObj := TryGetExeCall(varToken)
 	if exeObj != null
 	{
-		if exeObj is ConstType
+		if exeObj is in Type
 		{
-			return makeLocalVar(exeObj->{ConstType^}.Value)
+			return makeLocalVar(exeObj->{Type^})
 		}
 		if CurrentScope is in BoxFunc
 		{

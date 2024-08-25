@@ -44,7 +44,7 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 		{
 			it.bodyClass.AwaitReadyState()
 			it.bodyClass.AwaitTypeState()
-			resType := GetConstType(it.bodyClass.ItType)
+			resType := it.bodyClass.ItType
 			tmpl := intGetTemplate("internalHVCreateBase")
 			assert(tmpl != null)
 			fnc := tmpl.GetFunc(![],![resType])

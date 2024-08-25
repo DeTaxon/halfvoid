@@ -49,7 +49,7 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		//assert(lmbdPre.cleanType is in TypeClass)
 		//
 		//arr := List.{BoxExeConstObj^}
-		//arr.Push(GetConstType(lmbdPre.cleanType))
+		//arr.Push(lmbdPre.cleanType)
 		//newType := GCDeferLambda.GetClass(arr).ItType
 		//return innerTrySetType(lmbd,newType)
 	}

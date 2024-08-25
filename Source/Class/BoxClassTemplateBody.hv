@@ -59,9 +59,9 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		
 		for it : inpts
 		{
-			if it is ConstType
+			if it is in Type
 			{
-				hsh += it->{ConstType^}.Value.ItHash
+				hsh += it->{Type^}.ItHash
 			}
 		}
 

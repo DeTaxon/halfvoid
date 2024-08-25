@@ -13,27 +13,27 @@ HVContextImplementation := class extend HV_Context
 		asType := ParseType(indnt&)
 		if asType == null
 			return null
-		return GetConstType(asType)
+		return asType
 	}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
-		typ := baseType->{ConstType^}.Value
-		return GetConstType(typ.GetPoint())
+		typ := baseType->{Type^}
+		return typ.GetPoint()
 	}
 	GetTypeBase := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
-		typ := baseType->{ConstType^}.Value
+		typ := baseType->{Type^}
 		if typ.Base == null
 			return null
-		return GetConstType(typ.Base)
+		return typ.Base
 	}
 	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ 
 	{
 		typesThis := HybridQueue.{Type^,16}
-		typesThis.Push(types[^]->{ConstType^}.Value)
-		rType := resultType->{ConstType^}.Value
+		typesThis.Push(types[^]->{Type^})
+		rType := resultType->{Type^}
 		fType := GetFuncType(typesThis,isReference,rType,resultReference,isVariadicArguments)
-		return GetConstType(fType)
+		return fType
 	}
 	CreateClass := virtual !() -> HV_Class^ 
 	{

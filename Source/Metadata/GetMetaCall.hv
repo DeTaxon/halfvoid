@@ -102,7 +102,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(obj.MakeError("Can not get type"))
 			return null
 		}
-		return GetConstType(dwnObj.GetType())
+		return dwnObj.GetType()
 	}
 	if right.Value == "TypeBase"
 	{
@@ -117,7 +117,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for TypeBase does not have base class"))
 			return null
 		}
-		return GetConstType(typ.Base)
+		return typ.Base
 	}
 	if right.Value == "TypeName"
 	{
@@ -287,9 +287,9 @@ getMetaDownType := !(Token^ obj) -> Type^
 	dwnObj := TryGetExeCall(obj)
 	if dwnObj != null
 	{
-		if dwnObj is ConstType
+		if dwnObj is in Type
 		{
-			return dwnObj->{ConstType^}.Value
+			return dwnObj->{Type^}
 		}
 		return dwnObj.GetType()
 	}
@@ -311,9 +311,9 @@ innerTryGetOperMeta := !(Token^ itm) -> BoxExeObj^
 		if tp1 == null
 		{
 			obj1 := TryGetExeCall(itm.Down)
-			if obj1? is ConstType
+			if obj1? is in Type
 			{
-				tp1 = obj1->{ConstType^}.Value
+				tp1 = obj1->{Type^}
 			}else{
 				return null
 			}
@@ -321,9 +321,9 @@ innerTryGetOperMeta := !(Token^ itm) -> BoxExeObj^
 		if tp2 == null
 		{
 			obj2 := TryGetExeCall(itm.Down)
-			if obj2? is ConstType
+			if obj2? is in Type
 			{
-				tp2 = obj2->{ConstType^}.Value
+				tp2 = obj2->{Type^}
 			}else{
 				return null
 			}
@@ -352,7 +352,7 @@ innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
 		itObj = new UnrefFuncCall(itObj)
 
 	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(GetConstType(toType))
+	cnsts.Push(toType)
 	objs := CheckExeDownList
 	objs.Push(itObj)
 	fnc := GInternalSetType.GetFunc(objs,cnsts)

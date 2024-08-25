@@ -207,9 +207,9 @@ ConstMapToList := !(AVLMap.{StringSpan,BoxUnit^} cMap, List.{BoxUnit^} cList) ->
 {
 	for it,ind : cMap
 	{
-		if it is ConstType
+		if it is in Type
 		{
-			cList.Push(new TypeVar(ind,it->{ConstType^}.Value))
+			cList.Push(new TypeVar(ind,it->{Type^}))
 		}else{
 			cList.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
 		}

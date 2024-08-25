@@ -158,9 +158,9 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		for it,ind : NamedConstants
 		{
-			if it is ConstType
+			if it is in Type
 			{
-				NamedConstantsVars.Push(new TypeVar(ind,it->{ConstType^}.Value))
+				NamedConstantsVars.Push(new TypeVar(ind,it->{Type^}))
 			}else if it is TypeVariadicVar {
 				NamedConstantsVars.Push(it)
 			}else{
