@@ -96,4 +96,10 @@ BoxFuncTemplate := class extend BoxExeConstObj
 		fnc := GetFunc(objs,consts)
 		return fnc.CreateCall(objs)
 	}
+	GetHeaderHash := virtual !() -> u32
+	{
+	}
+	GetFullHash := virtual !() -> u32
+	{
+	}
 }

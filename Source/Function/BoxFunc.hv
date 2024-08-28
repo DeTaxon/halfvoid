@@ -158,6 +158,15 @@ BoxFunc := class extend BoxExeConstObj
 	{
 		return true
 	}
+
+	GetHeaderHash := virtual !() -> u32
+	{
+		return 0
+	}
+	GetFullHash := virtual !() -> u32
+	{
+		return 0
+	}
 }
 
 BoxFuncCommon := class extend BoxFunc

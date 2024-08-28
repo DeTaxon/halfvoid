@@ -1,154 +1,49 @@
 AppendClass BoxClassBody
 {
-	//TODO new function, virtual? poison?
-	//TODO fake fields
-	//TODO deletion of function
-	//TODO fields
-	//TODO somehow templates
-	//TODO template virtual methods
-	//TODO change in attributes, virtual <-> regular, how do i do poison?
-	//TODO it all works in inheritance, fields, virtual , poison
 	
 	ReloadClass := !(HotloadContext^ ctx) -> void
 	{
-		classFuncs := List.{Tuple.{Token^,String^,u32,Type^,FuncAttributes,Token^}}
-		checkReloadBody(ctx,Body,ctx.GetFileData(ClassFile),classFuncs)
-		for it : Appends
+		className := GetGoodName()
+
+		HotloadStream << "Started reload of class " << className << "\n"
+
+		oldData := new ClassReloadOldData
+		oldData.ctx = ctx
+
+		for it, ind : DefaultSpace.MethodTemplates
 		{
-			checkReloadBody(ctx,it.1,ctx.GetFileData(it.0),classFuncs)
+			setLine := ref oldData.OldFuncTemplates[ind]
+			setLine.Push(it[^])
+		}
+		for it, ind : DefaultSpace.Methods
+		{
+			setLine := ref oldData.OldFuncs[ind]
+			setLine.Push(it[^])
 		}
 
-		fncs := List.{BoxFuncBody^}
+		DefaultSpace.MethodTemplates.Destroy()
 
-		oldScope := CurrentScope
-		defer CurrentScope = oldScope
-		CurrentScope = this&
+		WorkBody(oldData)
 
-		checkSpace := DefaultSpace&
+		HotloadStream << "Reload result: Recovered  Function templates = " << oldData.RecoveredFuncTemplates.Size()
+			<< " , Functions = " << oldData.RecoveredFuncs.Size()
+			<< "\n"
 
-		for it : checkSpace.Methods[^]
-		{
-			if it is not in BoxFuncBody
-				continue
-			fnc := it->{BoxFuncBody^}
-			fncs.Push(fnc)
-		}
-		for it : PreVTableFuncs[^] //TODO?
-		{
-			if it is not in BoxFuncBody
-				continue
-			fnc := it->{BoxFuncBody^}
-			fncs.Push(fnc)
-		}
-		for it : classFuncs
-		{
-			foundFunc := BoxFuncBody^
-			for fnc : fncs
-			{
-				if fnc.Name == it.1^
-				{
-					if it.3 == null
-					{
-						//WHAT?
-						foundFunc = fnc
-						break
-					}else{
-						if it.3 == fnc.GetType()
-						{
-							foundFunc = fnc
-							break
-						}
-					}
-				}
-			}
+		HotloadStream << "End of reload of class " << className << "\n"
 
-			//TODO deleted functions somehow
-			if foundFunc == null
-			{
-				if it.4.IsVirtual
-				{
-					//TODO new virtual function?
-				}else{
-					f := PFunctionParser(it.5)
-					assert(f.IsFound())
-					newFunc := f.CreateObject()
-
-					spn := GetConstString(it.1.Str())
-
-					if newFunc is in BoxFuncTemplate
-					{
-						checkSpace.MethodTemplates[spn].Push(newFunc->{BoxFuncTemplate^})
-					}else{
-						assert(newFunc is in BoxFunc)
-						checkSpace.Methods[spn].Push(newFunc->{BoxFunc^})
-					}
-
-				}
-			}else{
-				if foundFunc.hash == it.2
-				{
-					//nothing changed to function :)
-				}else{
-					itm := it.0.Down.Right.Right
-					while itm.GetValue() in  !["virtual","poison"]
-						itm = itm.Right
-					p := PFunctionParser(itm)
-					foundFunc.ReloadFunction(ctx,p)
-					foundFunc.hash = it.2
-
-					if PreVTableFuncs[^].ContainIf(@1 == foundFunc)
-					{
-						ctx.ChangedVirtualFunctions.Push(foundFunc)
-					}
-				}
-			}
-		}
-
+		oldData = null
 	}
+}
 
-	checkReloadBody := !(HotloadContext^ ctx,Token^ tokens,Blob^ fileData,List.{Tuple.{Token^,String^,u32,Type^,FuncAttributes,Token^}} classFuncs) -> void
-	{
-		SyntaxCompress(tokens,LexHVFileRoot)
-		iter := tokens.Down
-		while iter != null
-		{
-			if iter.Down == null or iter.Down.Right == null or iter.Down.Right.GetValue() != ":="
-			{
-				iter = iter.Right
-				continue
-			}
 
-			stVal := iter.Down.Right
-			itm := stVal.Right
+ClassReloadOldData := class extend TGCObject
+{
+	ctx := HotloadContext^
 
-			attrs := FuncAttributes
+	OldFuncs := AVLMap.{Str,List.{BoxFunc^}}
+	RecoveredFuncs := List.{BoxFunc^}
 
-			while itm.GetValue() in !["virtual","poison"]
-			{
-				attrs.IsVirtual = attrs.IsVirtual or itm.GetValue() == "virtual"
-				attrs.IsPoison = attrs.IsPoison or itm.GetValue() == "poison"
-				itm = itm.Right
-			}
+	OldFuncTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
+	RecoveredFuncTemplates := List.{BoxFuncTemplate^}
 
-			name := String^
-			if stVal.Left is TokenString
-			{
-				name = stVal.Left->{TokenString^}.Value->AsString
-			}else if stVal.Left is TokenIndent
-			{
-				name = stVal.Left->{TokenIndent^}.Value.GetString()
-			}else{
-				assert(false)
-			}
-
-			c := PFunctionParser(itm)
-
-			if c.IsFound()
-			{
-				classFuncs.Push(!{iter,name,c.ComputeHash(fileData),c.TryCreateFuncType(ItType),attrs,itm})
-			}
-			iter = iter.Right
-		}
-
-	}
 }

@@ -217,7 +217,7 @@ BoxClassBody := class extend BoxClassPoison
 		parseTask = TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
 			CurrentWork = AddClassWork()
 			CurrentFile = cls.classFile
-			cls.ParseBody()	
+			cls.WorkBody(null)
 		})
 		//ComputeDesire(parseTask.Desired,CurrentTask.Desired)
 	}
@@ -263,7 +263,7 @@ BoxClassBody := class extend BoxClassPoison
 		}
 		result->AsString = echo.GetString()
 	}
-	ParseBody := virtual !() -> void
+	WorkBody := virtual !(ClassReloadOldData^ oldData) -> void
 	{
 		GParsedAllFiles.Await()
 
@@ -360,10 +360,10 @@ BoxClassBody := class extend BoxClassPoison
 
 		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
 
-		checkClassBody(Body,funcs)
+		checkClassBody(Body,oldData,funcs)
 		for it : Appends
 		{
-			checkClassBody(it.1,funcs)
+			checkClassBody(it.1,oldData,funcs)
 		}
 		
 		if buildCtx.MemParents.Size() != 0
@@ -406,7 +406,7 @@ BoxClassBody := class extend BoxClassPoison
 		}
 	}
 
-	checkClassBody := !(Token^ bodyVal,@TT funcs) -> void
+	checkClassBody := !(Token^ bodyVal,ClassReloadOldData^ oldData,@TT funcs) -> void
 	{
 		SyntaxCompress(bodyVal,LexHVFileRoot)
 		iter := bodyVal.Down
@@ -458,42 +458,86 @@ BoxClassBody := class extend BoxClassPoison
 
 					if fncParser.IsFound()
 					{
-						if itm.Line?.Attributes.Size() != 0 and SubStrContain(itm.Line.Attributes,"TemplateResist")  and not isPoison and TemplateParent != null
+						if oldData != null
 						{
-							
-							prepData := ref TemplateParent->{BoxClassTemplateBody^}.ResistFunctions[itm.Line][name]
-
-							if prepData == null
+							fncHash := fncParser.ComputeHeaderHash(bodyVal.Line.File.fileData)
+							thisFullHash := u32
+							for it : oldData.OldFuncTemplates[name]?
 							{
-								//TLock(TemplateParent)
-								//defer TUnlock(TemplateParent)
-								if prepData == null
+								if it.GetHeaderHash() == fncHash
 								{
-									asFunc = fncParser.CreateObject()
-									if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
-									{
-										asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
-									}
+									asFunc = it
+									thisFullHash = it.GetFullHash()
+									oldData.RecoveredFuncTemplates.Push(it)
+									break
+								}
+							}
+							for it : oldData.OldFuncs[name]?
+							{
+								if it.GetHeaderHash() == fncHash
+								{
+									asFunc = it
+									thisFullHash = it.GetFullHash()
+									oldData.RecoveredFuncs.Push(it)
+									break
+								}
+							}
+							if asFunc != null
+							{
+								fncHash2 := fncParser.ComputeHash(bodyVal.Line.File.fileData)
 
-									assert(asFunc != null and asFunc is in BoxFuncBody)
-									prepData = asFunc
-									asFunc->{BoxFuncBody^}.SetName(name)
-									asFunc->{BoxFuncBody^}.ParseBody()
+								if fncHash2 != thisFullHash
+								{
+									HotloadStream << "Function in class changed body\n"
+									if asFunc is in BoxFuncBody
+									{
+										asFunc->{BoxFuncBody^}.ReloadFunction(oldData.ctx,fncParser)
+									}else if asFunc is in BoxFuncTemplateBody {
+										asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser,bodyVal.Line.File.fileData)
+									}
 								}
 							}
 
-							probFunc := fncParser.CreateObject()
-							defer delete probFunc
+						}
+						if asFunc == null
+						{
+							if itm.Line?.Attributes.Size() != 0 and SubStrContain(itm.Line.Attributes,"TemplateResist")  and not isPoison and TemplateParent != null
+							{
+								
+								prepData := ref TemplateParent->{BoxClassTemplateBody^}.ResistFunctions[itm.Line][name]
 
-							assert(probFunc != null and probFunc is BoxFuncTemplateBody)
-							asTmplt := probFunc->{BoxFuncTemplateBody^}
-							assert(asTmplt.IsOneFunc())
-							asTmplt.IsOneFunc()
-							asTmplt.AwaitHeaderParse()
-							asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
+								if prepData == null
+								{
+									//TLock(TemplateParent)
+									//defer TUnlock(TemplateParent)
+									if prepData == null
+									{
+										asFunc = fncParser.CreateObject()
+										if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+										{
+											asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+										}
 
-						}else{
-							asFunc = fncParser.CreateObject()
+										assert(asFunc != null and asFunc is in BoxFuncBody)
+										prepData = asFunc
+										asFunc->{BoxFuncBody^}.SetName(name)
+										asFunc->{BoxFuncBody^}.ParseBody()
+									}
+								}
+
+								probFunc := fncParser.CreateObject()
+								defer delete probFunc
+
+								assert(probFunc != null and probFunc is BoxFuncTemplateBody)
+								asTmplt := probFunc->{BoxFuncTemplateBody^}
+								assert(asTmplt.IsOneFunc())
+								asTmplt.IsOneFunc()
+								asTmplt.AwaitHeaderParse()
+								asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
+
+							}else{
+								asFunc = fncParser.CreateObject()
+							}
 						}
 					}
 
@@ -509,6 +553,7 @@ BoxClassBody := class extend BoxClassPoison
 						}
 						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
 						{
+							//TODO maybe i only need templates
 							asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
 						}
 						if asFunc is in BoxFunc
@@ -524,6 +569,7 @@ BoxClassBody := class extend BoxClassPoison
 							{
 								f2 := f->{BoxFuncBody^}
 								f2.hash = fncParser.ComputeHash(ParentScope->{BoxFile^}.fileData)
+								f2.headerHash = fncParser.ComputeHeaderHash(ParentScope->{BoxFile^}.fileData)
 							}
 
 							if isVirtual

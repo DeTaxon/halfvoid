@@ -1,12 +1,17 @@
 
+TestClass := class
+{
+	Test := !() -> void
+	{
+		printf("hello\n")
+	}
+}
 
 
 main := !(char^[] args) -> int
 {
 	c := TestClass
-	c.x = 404
-	c.TestFunc()
-	RunOpenGLTest()
+	c.Test()
 }
 RunTest := !() -> void
 {

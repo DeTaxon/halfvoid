@@ -3,10 +3,10 @@ AppendClass BoxFile
 	ReloadFile := !(HotloadContext^ ctx,File^ newFile) -> void
 	{
 		thisData := newFile.GetBlob()
+		fileData = thisData
 		toks := LoadFile(newFile,thisData,true)
 
 		ReloadFunctions(ctx,newFile,thisData,toks)
-
 		
 		changedClasses := AVLSet.{BoxClassBody^}
 

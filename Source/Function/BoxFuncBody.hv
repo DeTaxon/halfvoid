@@ -15,7 +15,9 @@ BoxFuncBody := class extend BoxFuncCommon
 	Constants := List.{BoxUnit^}
 	ConstVars := List.{BoxUnit^}
 
+	headerHash := u32
 	hash := u32
+
 	NamedParametersCount := int
 	VariadicName := StringSpan
 
@@ -472,6 +474,14 @@ BoxFuncBody := class extend BoxFuncCommon
 
 			GDebugFileId = oldFileId
 		}
+	}
+	GetHeaderHash := virtual !() -> u32
+	{
+		return headerHash
+	}
+	GetFullHash := virtual !() -> u32
+	{
+		return hash
 	}
 }
 

@@ -13,6 +13,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	Name := StringSpan
 
+	headerHash := u32
 	hash := u32
 
 	hData := FunctionHeaderInfo
@@ -53,6 +54,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if resTyp == null
 			Attrs.IsAutoResult = true
 
+		headerHash = headerData.ComputeHeaderHash(fileData)
 		hash = headerData.ComputeHash(fileData)
 
 		for it : AllFuncs[^]
@@ -258,6 +260,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.ParentScope = ParentScope
 		newFunc.TemplateParent = this&
 
+		newFunc.headerHash = this.headerHash
+		newFunc.hash = this.hash
+
 		TempPrefix.PopulateVars(resConsts,newFunc.ConstVars)
 		ConstMapToList(resConsts,newFunc.ConstVars) //TODO for stupid reasons it's doubled
 
@@ -376,5 +381,13 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			}
 		}
 		return CmpFuncPriority(tp,objs,GetDefaultValuesCount(),BlockedExchange)
+	}
+	GetHeaderHash := virtual !() -> u32
+	{
+		return headerHash
+	}
+	GetFullHash := virtual !() -> u32
+	{
+		return hash
 	}
 }

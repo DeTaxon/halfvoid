@@ -281,7 +281,10 @@ BoxFile := class extend BoxUnit
 		assert(fnc != null)
 		assert(fnc is in BoxFuncTemplate)
 		if fnc is in BoxFuncTemplateBody
+		{
+			fnc->{BoxFuncTemplateBody^}.headerHash = newFunc.ComputeHeaderHash(fileData)
 			fnc->{BoxFuncTemplateBody^}.hash = newFunc.ComputeHash(fileData)
+		}
 		res := new TemplateFuncVar(newName,isSuffix,fnc->{BoxFuncTemplate^})
 
 		ParsedTokens.Insert(iter?)

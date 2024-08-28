@@ -126,6 +126,27 @@ PFunctionParser := class
 	{
 		return found
 	}
+	ComputeHeaderHash := !(Blob^ fileData) -> u32
+	{
+		if fileData.Size() == 0
+			return 0
+		if baseToken.Line == null or bodyToken == null
+			return 0
+		if bodyToken is not TokenSkobSymbol
+			return 0
+		asSkob := bodyToken->{TokenSkobSymbol^}
+
+		if asSkob.EndLine == null
+			return 0
+
+		startLine := brackets.Line.Line
+		endLine := brackets.Line.Line
+
+		if resultToken != null
+			endLine = resultToken.Line.Line
+
+		return computeHashOnLines(fileData,startLine,endLine)
+	}
 	ComputeHash := !(Blob^ fileData) -> u32
 	{
 		if fileData.Size() == 0
@@ -142,6 +163,10 @@ PFunctionParser := class
 		startLine := baseToken.Line.Line
 		endLine := asSkob.EndLine.Line
 
+		return computeHashOnLines(fileData,startLine,endLine)
+	}
+	computeHashOnLines := !(Blob^ fileData, int startLine, int endLine) -> u32
+	{
 		arr := fileData.GetPointer()
 		startLineIndex := 0
 		i := 0
