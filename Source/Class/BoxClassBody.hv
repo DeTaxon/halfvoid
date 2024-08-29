@@ -384,7 +384,7 @@ BoxClassBody := class extend BoxClassPoison
 
 		CheckVTableFuncUsage()
 
-		InheritStep(buildCtx)
+		InheritStep(buildCtx,oldData)
 
 		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
 		FieldsState.Emit()
@@ -429,7 +429,21 @@ BoxClassBody := class extend BoxClassPoison
 				asType := ParseType(itm)
 				if asType != null
 				{
-					newField := new FieldParam(name,asType)
+					newField := FieldParam^
+					if oldData != null
+					{
+						for it : oldData.OldFields
+						{
+							if it.Name == name and it.Value == asType
+							{
+								newField = it
+								oldData.RecoveredFields.Push(it)
+								break
+							}
+						}
+					}
+					if newField == null
+						newField = new FieldParam(name,asType)
 					Fields.Push(newField)
 				}else
 				{

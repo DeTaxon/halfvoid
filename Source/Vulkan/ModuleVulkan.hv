@@ -548,7 +548,7 @@ ModuleVulkan := class extend ModuleInterface
 					}
 				}
 			}
-			newStruct.InheritStep(buildCtx)
+			newStruct.InheritStep(buildCtx,null)
 			newStruct.ParentScope = GetAnyFile()
 
 			if sTypVal != null

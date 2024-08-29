@@ -112,7 +112,7 @@ BoxClassTuple := class extend BoxClassPoison
 			PrepareVTable(buildCtx)
 			CreateVTable(buildCtx)
 
-			InheritStep(buildCtx)
+			InheritStep(buildCtx,null)
 
 			mthHatch.Emit()
 		})

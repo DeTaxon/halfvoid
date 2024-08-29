@@ -21,17 +21,33 @@ AppendClass BoxClassBody
 			setLine.Push(it[^])
 		}
 
+		oldData.OldFields.Push(Fields[^])
+		oldData.OldFieldPaths.Push(FieldsPath[^])
+
 		DefaultSpace.MethodTemplates.Destroy()
+
+		Fields.Destroy()
+		FieldsPath.Destroy()
+
+		oldMemStruct := GetMemStructureHash()
 
 		WorkBody(oldData)
 
+		curMemStructure := GetMemStructureHash()
+
 		HotloadStream << "Reload result: Recovered  Function templates = " << oldData.RecoveredFuncTemplates.Size()
-			<< " , Functions = " << oldData.RecoveredFuncs.Size()
+			<< " , Functions = " << oldData.RecoveredFuncs.Size() << "/" << oldData.OldFuncs.Size()
+			<< " , Fields = " << oldData.RecoveredFields.Size() << "/" << oldData.OldFields.Size()
 			<< "\n"
 
 		HotloadStream << "End of reload of class " << className << "\n"
 
 		oldData = null
+	}
+
+	GetMemStructureHash := !() -> u32
+	{
+		return 0
 	}
 }
 
@@ -45,5 +61,9 @@ ClassReloadOldData := class extend TGCObject
 
 	OldFuncTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
 	RecoveredFuncTemplates := List.{BoxFuncTemplate^}
+
+	OldFields := List.{FieldParam^}
+	OldFieldPaths := List.{FieldPath^}
+	RecoveredFields := List.{FieldParam^}
 
 }

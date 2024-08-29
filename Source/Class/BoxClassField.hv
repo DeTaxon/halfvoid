@@ -3,7 +3,7 @@ AppendClass BoxClass
 
 	fieldsOffset := int
 
-	InheritStep := !(ClassBuildContext ctx) -> void
+	InheritStep := !(ClassBuildContext ctx,ClassReloadOldData^ oldData) -> void
 	{
 		assert(FieldsPath.Size() == 0)
 
@@ -69,7 +69,22 @@ AppendClass BoxClass
 		{
 			fil.Value.NotifyUse()
 
-			fPath := new FieldPath(ItType,fil.Value)
+			fPath := FieldPath^
+
+			if oldData != null
+			{
+				for it : oldData.OldFieldPaths
+				{
+					if it.Field == fil
+					{
+						fPath = it
+						break
+					}
+				}
+			}
+
+			if fPath == null
+				fPath = new FieldPath(ItType,fil.Value)
 			fPath.Field = fil
 			fPath.Index = i
 

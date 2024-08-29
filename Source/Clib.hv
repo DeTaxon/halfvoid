@@ -193,7 +193,7 @@ CLib := class extend ModuleInterface
 			newStruct.Fields.Push(new FieldParam(itm.Key(),tp))
 		}
 		buildCtx := ClassBuildContext
-		newStruct.InheritStep(buildCtx)
+		newStruct.InheritStep(buildCtx,null)
 		AllClasses.Push(newStruct)
 		newStruct.FinilizeCreation()
 

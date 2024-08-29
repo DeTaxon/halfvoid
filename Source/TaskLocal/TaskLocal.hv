@@ -121,7 +121,7 @@ BoxClassTupleDelayed := class extend BoxClass
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 		}
-		InheritStep(buildCtx)
+		InheritStep(buildCtx,null)
 		fieldsHatch.Emit()
 	}
 	AwaitTypeState := virtual !() -> void

@@ -1,10 +1,15 @@
 
 TestClass := class
 {
+	x := int
+	y := int
+	z := int
 	Test := !() -> void
 	{
-		printf("hello\n")
+		printf("hell %i\n",this->TypeSize)
 	}
+
+
 }
 
 
