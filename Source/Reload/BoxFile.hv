@@ -183,7 +183,7 @@ AppendClass BoxFile
 			{
 				//TODO check header types
 				d := PFunctionParser(foundFunc.Down.Right.Right)
-				thisFunc.ReloadFunctions(ctx,d,thisData)
+				thisFunc.ReloadFunctions(ctx,d&,thisData)
 			} else {
 				DeleteFunction(thisFunc)
 			}

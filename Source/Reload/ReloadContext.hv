@@ -3,6 +3,8 @@ HotloadContext := class
 	ChangedFunctions := List.{BoxFuncBody^}
 	ChangedVirtualFunctions := List.{BoxFuncBody^}
 
+	ReloadFunctions := List.{BoxFuncBody^}
+
 	FailedToCompile := List.{BoxFuncBody^}
 
 	OutdatedFunctions := List.{MCFunction^}

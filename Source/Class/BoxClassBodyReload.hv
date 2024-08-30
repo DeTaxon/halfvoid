@@ -21,6 +21,11 @@ AppendClass BoxClassBody
 			setLine.Push(it[^])
 		}
 
+		oldSize := ItType.GetSize()
+
+		PrimeParents.Destroy()
+		Parents.Destroy()
+
 		oldData.OldFields.Push(Fields[^])
 		oldData.OldFieldPaths.Push(FieldsPath[^])
 
@@ -32,6 +37,23 @@ AppendClass BoxClassBody
 		oldMemStruct := GetMemStructureHash()
 
 		WorkBody(oldData)
+
+		newSize := ItType.GetSize()
+
+		if newSize != oldSize
+		{
+			HotloadStream << "Class " << className << " changed size from " << oldSize << " to " << newSize << "\n"
+			
+
+			cnt := DB_TypeSizeUsage.bckwrd.Contain(this&) ?: "true" : "false"
+
+			DB_TypeSizeUsage.Value.Get(this&,x ==> {
+				if x is in BoxFuncBody
+				{
+					ctx.ReloadFunctions.Push(x->{BoxFuncBody^})
+				}
+			})
+		}
 
 		curMemStructure := GetMemStructureHash()
 

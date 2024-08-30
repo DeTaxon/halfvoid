@@ -29,17 +29,21 @@ AppendClass BoxFuncBody
 
 		body = null
 		readyState.Reset()
+
+		DB_TypeSizeUsage.Key.RemoveAll(this&)
 	}
 
-	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser headerData) -> void
+	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser^ headerData) -> void
 	{
 		preParsed := StartedParse or StartedParseForced
 		ClearFunction()
 
-		inps1 = headerData.brackets
-		resTyp = headerData.resultToken
-		bdy = headerData.bodyToken
-
+		if headerData != null
+		{
+			inps1 = headerData.brackets
+			resTyp = headerData.resultToken
+			bdy = headerData.bodyToken
+		}
 		if preParsed
 		{
 			ParseBody()

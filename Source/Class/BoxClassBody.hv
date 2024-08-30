@@ -505,9 +505,9 @@ BoxClassBody := class extend BoxClassPoison
 									HotloadStream << "Function in class changed body\n"
 									if asFunc is in BoxFuncBody
 									{
-										asFunc->{BoxFuncBody^}.ReloadFunction(oldData.ctx,fncParser)
+										asFunc->{BoxFuncBody^}.ReloadFunction(oldData.ctx,fncParser&)
 									}else if asFunc is in BoxFuncTemplateBody {
-										asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser,bodyVal.Line.File.fileData)
+										asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser&,bodyVal.Line.File.fileData)
 									}
 								}
 							}

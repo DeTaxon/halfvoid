@@ -11,10 +11,10 @@ CliWin := class extend WindowCli
 	{
 		tabs = new  LayoutTabs(![
 			new LayoutHorizontal(![
-				new MultilineText(ErrorList)
+				new MultilineText(HotloadList)
 			]),
 			new LayoutHorizontal(![
-				new MultilineText(HotloadList)
+				new MultilineText(ErrorList)
 			]),
 			new LayoutHorizontal(![
 				new MultilineText(ConsoleList)
@@ -132,6 +132,12 @@ EnterCliMode := !() -> void
 			HotloadStream << "Changed file " << changedFile.GetName() <<" , reloading content\n"
 
 			foundFile.ReloadFile(hotload&,asFile)
+
+			while hotload.ReloadFunctions.Size() != 0
+			{
+				newFunc := hotload.ReloadFunctions.Pop()
+				newFunc.ReloadFunction(hotload&,null)
+			}
 
 			hotload.FailedToCompile[^].Recompile()
 			hotload.FailedToCompile.Destroy()
