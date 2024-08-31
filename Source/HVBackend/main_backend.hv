@@ -1,15 +1,13 @@
 
 
-CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
+CompileAndRunInit := !() -> void
 {
 	@once {
 		startFunc := intGetFunc("CallStartFunctions")
-		CompileAndRunCodeInner(startFunc->{BoxFuncBody^})
+		CompileAndRunCode(startFunc->{BoxFuncBody^})
 	}
-	return CompileAndRunCodeInner(funcToRun)
 }
-
-CompileAndRunCodeInner := !(BoxFuncBody^ funcToRun) -> InterpWork^
+CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
 	result = new InterpWork(CurrentTask)
 	oldWork := CurrentWork

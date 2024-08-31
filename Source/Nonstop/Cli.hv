@@ -73,6 +73,8 @@ EnterCliMode := !() -> void
 
 	win := new CliWin
 
+	CompileAndRunInit()
+
 	conVar := intGetGlobalVar("Console")
 	if conVar != null
 	{

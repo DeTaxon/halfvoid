@@ -66,11 +66,13 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 
 				if nm.itName == "printf"
 				{
-					fncPtr = printf_hv
+					pv := @once intGetFunc("printf_hv")
+					if pv != null
+					{
+						it&->{MCConstFunction^}.GetValue() = pv
+					}
 				}
 
-				if fncPtr != null
-					fncType = nm.GetType().GetPoint()
 			}
 
 			if constFunc is BoxFuncBody
