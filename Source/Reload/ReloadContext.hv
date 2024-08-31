@@ -4,6 +4,7 @@ HotloadContext := class
 	ChangedVirtualFunctions := List.{BoxFuncBody^}
 
 	ReloadFunctions := List.{BoxFuncBody^}
+	ReloadClasses := List.{BoxClassBody^}
 
 	FailedToCompile := List.{BoxFuncBody^}
 

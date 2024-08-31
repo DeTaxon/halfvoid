@@ -133,10 +133,16 @@ EnterCliMode := !() -> void
 
 			foundFile.ReloadFile(hotload&,asFile)
 
-			while hotload.ReloadFunctions.Size() != 0
+			while hotload.ReloadFunctions.Size() != 0 and hotload.ReloadClasses.Size() != 0
 			{
-				newFunc := hotload.ReloadFunctions.Pop()
-				newFunc.ReloadFunction(hotload&,null)
+				if hotload.ReloadFunctions.Size() != 0
+				{
+					newFunc := hotload.ReloadFunctions.Pop()
+					newFunc.ReloadFunction(hotload&,null)
+				}else{
+					newClass := hotload.ReloadClasses.Pop()
+					newClass.ReloadClass(hotload&)
+				}
 			}
 
 			hotload.FailedToCompile[^].Recompile()

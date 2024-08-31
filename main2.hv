@@ -5,6 +5,8 @@ TestClass := class
 	y := int
 	z := int
 
+	j := float
+
 	Test := !() -> void
 	{
 		printf("hell %i\n",this->TypeSize)
@@ -12,10 +14,21 @@ TestClass := class
 
 }
 
+TestClass2 := class extend TestClass
+{
+
+	w := float
+	
+	Test := !() -> void
+	{
+		printf("hell %i\n",this->TypeSize)
+	}
+}
+
 
 main := !(char^[] args) -> int
 {
-	c := TestClass
+	c := TestClass2
 	c.Test()
 }
 RunTest := !() -> void

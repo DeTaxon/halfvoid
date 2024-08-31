@@ -31,6 +31,8 @@ AppendClass BoxFuncBody
 		readyState.Reset()
 
 		DB_TypeSizeUsage.Key.RemoveAll(this&)
+		DB_FieldUsage.Key.RemoveAll(this&)
+		DB_LocalVarUsage.Key.RemoveAll(this&)
 	}
 
 	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser^ headerData) -> void

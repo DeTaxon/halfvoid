@@ -46,6 +46,9 @@ BoxFuncCall := class extend BoxExeObj
 			CurrentFunc.AddLocalVar(ResultVar)
 			downs.Push(ResultVar.CreateVarCall())
 
+			if RunMode and fType.ResultType is in TypeClass
+				DB_LocalVarUsage.Add(CurrentFunc,fType.ResultType->{TypeClass^}.ToClass)
+
 			if this& is BoxFuncCall
 			{
 				this&->SetType(BoxFuncComplexCall)

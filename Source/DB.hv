@@ -1,5 +1,9 @@
 
 
- DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
- DB_ClassFieldUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_ClassExtends := HVTable2.{BoxClass^,BoxClass^} //Left extend right
+
+DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_ClassFieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 

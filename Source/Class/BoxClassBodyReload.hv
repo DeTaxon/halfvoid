@@ -7,6 +7,7 @@ AppendClass BoxClassBody
 
 		HotloadStream << "Started reload of class " << className << "\n"
 
+
 		oldData := new ClassReloadOldData
 		oldData.ctx = ctx
 
@@ -22,6 +23,7 @@ AppendClass BoxClassBody
 		}
 
 		oldSize := ItType.GetSize()
+		oldHash := GetMemStructureHash()
 
 		PrimeParents.Destroy()
 		Parents.Destroy()
@@ -34,11 +36,10 @@ AppendClass BoxClassBody
 		Fields.Destroy()
 		FieldsPath.Destroy()
 
-		oldMemStruct := GetMemStructureHash()
-
 		WorkBody(oldData)
 
 		newSize := ItType.GetSize()
+		newHash := GetMemStructureHash()
 
 		if newSize != oldSize
 		{
@@ -50,12 +51,34 @@ AppendClass BoxClassBody
 			DB_TypeSizeUsage.Value.Get(this&,x ==> {
 				if x is in BoxFuncBody
 				{
-					ctx.ReloadFunctions.Push(x->{BoxFuncBody^})
+					ctx.ReloadFunctions.PushUniq(x->{BoxFuncBody^})
+				}
+			})
+			DB_LocalVarUsage.Value.Get(this&,x ==> {
+				if x is in BoxFuncBody
+				{
+					ctx.ReloadFunctions.PushUniq(x->{BoxFuncBody^})
 				}
 			})
 		}
 
-		curMemStructure := GetMemStructureHash()
+		if oldHash != newHash
+		{
+			DB_LocalVarUsage.Value.Get(this&,x ==> {
+				if x is in BoxFuncBody
+					ctx.ReloadFunctions.PushUniq(x->{BoxFuncBody^})
+			})
+			DB_FieldUsage.Value.Get(this&,x ==> {
+				if x is in BoxFuncBody
+					ctx.ReloadFunctions.PushUniq(x->{BoxFuncBody^})
+			})
+
+			DB_ClassExtends.Value.Get(this&, x ==> {
+				if x is in BoxClassBody
+					ctx.ReloadClasses.PushUniq(x->{BoxClassBody^})
+			})
+			DB_ClassExtends.Value.RemoveAll(this&)
+		}
 
 		HotloadStream << "Reload result: Recovered  Function templates = " << oldData.RecoveredFuncTemplates.Size()
 			<< " , Functions = " << oldData.RecoveredFuncs.Size() << "/" << oldData.OldFuncs.Size()
@@ -69,7 +92,18 @@ AppendClass BoxClassBody
 
 	GetMemStructureHash := !() -> u32
 	{
-		return 0
+		hs := Crc32
+		for it : Parents
+		{
+			th := it.ItType.ItHash
+			hs.Feed(th&,4)
+		}
+		for it : Fields
+		{
+			th := it.Value.ItHash
+			hs.Feed(th&,4)
+		}
+		return hs.Get()
 	}
 }
 

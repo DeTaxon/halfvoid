@@ -116,9 +116,10 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				return null
 			}
 
-			itms := CheckExeDownList
-			itms.Push(val)
-			return fld.CreateCall(itms)
+			if RunMode
+				DB_FieldUsage.Add(CurrentFunc?,cls)
+
+			return fld.CreateCall(![val])
 		}
 	}
 

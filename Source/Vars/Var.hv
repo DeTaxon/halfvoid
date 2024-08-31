@@ -113,6 +113,9 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			resVoid := new FuncLocalVoidParam()
 			return new MemVar(name,resVoid)
 		}else{
+
+			if RunMode and newType is in TypeClass
+				DB_LocalVarUsage.Add(CurrentFunc?,newType->{TypeClass^}.ToClass)
 			assert(CurrentScope is in BoxFunc) 
 			newVar := new LocalVar(name,newType,true,false)
 			CurrentFunc.AddLocalVar(newVar)
