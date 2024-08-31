@@ -6,6 +6,7 @@ TestClass := class
 	z := int
 
 	j := float
+	k := int
 
 	Test := !() -> void
 	{

@@ -135,7 +135,7 @@ EnterCliMode := !() -> void
 
 			foundFile.ReloadFile(hotload&,asFile)
 
-			while hotload.ReloadFunctions.Size() != 0 and hotload.ReloadClasses.Size() != 0
+			while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
 			{
 				if hotload.ReloadFunctions.Size() != 0
 				{

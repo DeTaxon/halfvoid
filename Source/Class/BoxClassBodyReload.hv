@@ -64,6 +64,7 @@ AppendClass BoxClassBody
 
 		if oldHash != newHash
 		{
+			HotloadStream << "Class " << className << " changed structure\n"
 			DB_LocalVarUsage.Value.Get(this&,x ==> {
 				if x is in BoxFuncBody
 					ctx.ReloadFunctions.PushUniq(x->{BoxFuncBody^})
@@ -74,8 +75,12 @@ AppendClass BoxClassBody
 			})
 
 			DB_ClassExtends.Value.Get(this&, x ==> {
+				HotloadStream << "Reloading class \n"
 				if x is in BoxClassBody
+				{
+				HotloadStream << "huh \n"
 					ctx.ReloadClasses.PushUniq(x->{BoxClassBody^})
+				}
 			})
 			DB_ClassExtends.Value.RemoveAll(this&)
 		}

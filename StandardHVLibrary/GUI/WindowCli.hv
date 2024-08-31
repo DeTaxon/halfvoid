@@ -30,7 +30,7 @@ WindowCli := class extend TGCObject
 
 			c := @work wgetch(ctx.Window) //TODO more normal way to wait
 
-			if c == 27 //ESC
+			if c == 'q'
 				break
 			KeyPressed(c)
 		}

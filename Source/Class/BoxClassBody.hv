@@ -324,8 +324,6 @@ BoxClassBody := class extend BoxClassPoison
 		for it : buildCtx.MemParents
 		{
 			Parents.Push(it)
-			if RunMode
-				DB_ClassExtends.Add(this&,it)
 		}
 
 		for it : buildCtx.All
