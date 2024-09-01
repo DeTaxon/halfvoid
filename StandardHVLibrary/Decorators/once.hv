@@ -1,8 +1,9 @@
-"@once call" := !(!()&->@T cb, bool called = static false) -> T
+"@once call" := !(!()&->@T cb, bool called = static false, T oldResult = static) -> T
 {
 	if called
-		return void
+		return oldResult
 	//TODO add mutex
 	result = cb()
+	oldResult = result
 	called = true
 }

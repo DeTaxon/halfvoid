@@ -27,10 +27,26 @@ TestClass2 := class extend TestClass
 }
 
 
+cc := int
+Test3 := !() -> void^
+{
+	return cc&
+}
+
+Test4 := !() -> void
+{
+	j := @once Test3()
+	printf("hey %p\n",j)
+}
+
 main := !(char^[] args) -> int
 {
-	c := TestClass2
-	c.Test()
+	for i : 10
+	{
+		Test4()
+	}
+	//c := TestClass2
+	//c.Test()
 }
 RunTest := !() -> void
 {
