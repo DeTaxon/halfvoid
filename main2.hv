@@ -22,7 +22,7 @@ TestClass2 := class extend TestClass
 	
 	Test := !() -> void
 	{
-		printf("hell %i\n",this->TypeSize)
+		printf("hello %i\n",this->TypeSize)
 	}
 }
 

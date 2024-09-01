@@ -137,13 +137,13 @@ EnterCliMode := !() -> void
 
 			while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
 			{
-				if hotload.ReloadFunctions.Size() != 0
+				if hotload.ReloadClasses.Size() != 0
 				{
-					newFunc := hotload.ReloadFunctions.Pop()
-					newFunc.ReloadFunction(hotload&,null)
-				}else{
 					newClass := hotload.ReloadClasses.Pop()
 					newClass.ReloadClass(hotload&)
+				}else{
+					newFunc := hotload.ReloadFunctions.Pop()
+					newFunc.ReloadFunction(hotload&,null)
 				}
 			}
 
