@@ -72,13 +72,13 @@ MCInterpContext := class
 				globalVariables[vr] = result
 				return void
 			}
-			//if classVar.Name == "XML"
-			//{
-			//	free(result)
-			//	result = XML->VTable
-			//	globalVariables[vr] = result
-			//	return void
-			//}
+			if classVar.Name == "XML"
+			{
+				free(result)
+				result = XML->VTable
+				globalVariables[vr] = result
+				return void
+			}
 
 			vTable := classVar.VTableType
 			fldsCount := vTable.GetFieldsCount()

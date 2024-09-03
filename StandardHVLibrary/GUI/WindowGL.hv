@@ -1,0 +1,49 @@
+AppendClass Window
+{
+	InitGL := !() -> void
+	{
+		Init(vkOverlay.w,vkOverlay.h,windowTitle.Str(),false)
+		mainGUIObject = InitWindow()
+	}
+	RunGL := !() -> void
+	{
+		InitGL()
+		glfwMakeContextCurrent(windowHandle)
+
+		gl := glFuncsClass
+
+		lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
+		glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
+
+		if glGetProcAddress == null
+		{
+			glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
+		}
+
+		nameBuffer := char[128]
+		for it,ind : gl->AllFields
+		{
+			sprintf(nameBuffer[0]&,"gl%s",ind)
+			it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+			//printf("proc %s %p\n",ind,it)
+		}
+
+		gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)
+		
+		while not ShouldClose()
+		{
+			gl.Clear(GL_COLOR_BUFFER_BIT)
+			gl.Begin(GL_TRIANGLES)
+			gl.Color3f(1.0,0.0,0.0)
+			gl.Vertex3f(-1.0,-1.0,0.0)
+			gl.Color3f(0.0,1.0,0.0)
+			gl.Vertex3f(1.0,-1.0,0.0)
+			gl.Color3f(0.0,0.0,1.0)
+			gl.Vertex3f(0.0,1.0,0.0)
+			gl.End()
+			PollEvents()
+			SwapBuffers()
+			TaskYield()
+		}
+	}
+}

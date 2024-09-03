@@ -12,16 +12,18 @@ GLFWWindow := class
 	MouseX := int
 	MouseY := int
 
-	Init := !(int x, int y,char^ title) -> void
+	Init := !(int x, int y,char^ title, bool noApi) -> void
 	{
 		@once {
+			glfwSetErrorCallback(glfwErrorCB)
 			glfwInit()
 		}
 
 		Width = x
 		Height = y
 
-		glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API)
+		if noApi
+			glfwWindowHint(GLFW_CLIENT_API,GLFW_NO_API)
 		windowHandle = glfwCreateWindow(x,y,title,null,null)
 
 		glfwSetKeyCallback(windowHandle,glfwKeyPressRes)
@@ -32,6 +34,7 @@ GLFWWindow := class
 
 		glfwSetCharCallback(windowHandle,glfwCharPress)
 		glfwSetWindowRefreshCallback(windowHandle,glfwRefreshCB)
+
 
 		glfwSetWindowUserPointer(windowHandle,this&)
 
@@ -149,6 +152,7 @@ GLFWWindow := class
 		Height = h
 		WindowResized(w,h)
 	}
+
 }
 
 
@@ -216,4 +220,9 @@ GLFWvidmode := class
     greenBits := int
     blueBits := int
     refreshRate := int
+}
+
+glfwErrorCB := !( int cd, char^ text) -> void
+{
+	printf("GLFW error %i: %s\n",cd,text)
 }
