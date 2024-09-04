@@ -1,20 +1,19 @@
 
 HashMap := class .{@TKey,@TValue}
 {
-	bucket := ListNode.{Tuple.{TKey,TValue}}^[8192]
+	bucket := ListNode.{Tuple.{TKey,TValue}}^[4000]
 	ItSize := int
 
 	thisBucket := !(TKey key) -> ref ListNode.{Tuple.{TKey,TValue}}^
 	{
 		hsh := Hash(key)
-		hsh = 0
-		return bucket[hsh mod 8192]
+		return bucket[hsh mod 4000]
 	}
 	Contain := !(TKey key) -> bool
 	{
 		bk := ref thisBucket(key)
 
-		iter := bk.next
+		iter := bk
 		while iter != null
 		{
 			if iter.data.0 == key
@@ -83,7 +82,7 @@ HashMap := class .{@TKey,@TValue}
 	{
 		cb := (TKey^& key) ==> ref TValue 
 		{
-			for it : 8192
+			for it : 4000
 			{
 				iter := bucket[it]
 

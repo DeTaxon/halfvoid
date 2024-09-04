@@ -179,3 +179,19 @@ ToString := !(double this) -> Str
 
 	result->AsString = new String(smallBuffer,iter)
 }
+"<=>" := !(Str a, Str b) -> int
+{
+	aSize := a.itSize
+	bSize := b.itSize
+	minSize := min(aSize,bSize)
+	cmpRes := strncmp(a.charPtr,b.charPtr,minSize)
+
+	if cmpRes != 0
+		return cmpRes
+		
+	if aSize == bSize
+		return 0
+	if minSize == aSize
+		return -1
+	return 1
+}
