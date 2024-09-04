@@ -22,7 +22,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	ParentScope := BoxUnit^
 	ItFile := BoxFile^
 
-	ResistFunctions := AVLMap.{FileLine^,AVLMap.{StringSpan,BoxUnit^}}
+	ResistFunctions := AVLMap.{Token^,BoxUnit^}
 
 	this := !(bool isPacked,HybridQueue.{Tuple.{Token^,InheritanceType},2} parents,Token^ bdy, Token^ cnsts) -> void
 	{

@@ -1,6 +1,7 @@
 BuildInVirtualCall := class extend BoxFuncCommon
 {
 	funcIndex := int
+	notedUse := bool
 	wrappedFunc := BoxFunc^
 	this := !(BoxFunc^ inWFunc,int inFuncIndex) -> void
 	{
@@ -16,8 +17,12 @@ BuildInVirtualCall := class extend BoxFuncCommon
 	}
 	TryForceVirtualUse := !() -> void
 	{
+		if notedUse
+			return void
 		if wrappedFunc is in BoxFuncBody
 		{
+			notedUse = true
+
 			fnc := wrappedFunc->{BoxFuncBody^}
 			assert(fnc.ParentScope is in BoxClass)
 			baseClass := fnc.ParentScope->{BoxClass^}

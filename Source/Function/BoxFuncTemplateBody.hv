@@ -19,8 +19,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	hData := FunctionHeaderInfo
 
 	TempPrefix := TemplatePrefix
-	Properties := AVLMap.{StringSpan,Token^}
-	TemplateProperties := AVLMap.{StringSpan,List.{FunctionPropertie^}}
+	Properties := AVLMap.{Str,Token^}
+	TemplateProperties := AVLMap.{Str,List.{FunctionPropertie^}}
 	BlockedExchange := AVLSet.{int}
 
 	sState := StackState
@@ -369,9 +369,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
 	{
-		if TemplateProperties.Contain(StringSpan("#FilterBeConst"))
+		if TemplateProperties.Contain("#FilterBeConst")
 		{
-			for it : TemplateProperties[StringSpan("#FilterBeConst")]
+			for it : TemplateProperties["#FilterBeConst"]
 			{
 				prop := it->{FilterBeConstPropertie^}
 				if prop.InputIndex < objs.Size()

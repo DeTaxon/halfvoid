@@ -9,7 +9,7 @@ BoxCodeSpace := class
 	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
 	ExchangeTableTemplates := HybridQueue.{BoxUnit^,10}
 
-	Types := AVLMap.{StringSpan,BoxUnit^}
+	Types := AVLMap.{Str,BoxUnit^}
 
 	Modules := List.{ModuleInterface^}
 

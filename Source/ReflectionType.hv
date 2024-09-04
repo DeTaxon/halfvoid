@@ -15,7 +15,7 @@ ReflectionTypeInit := !() -> void
 
 	assert(GTypeBool != null)
 
-	thisSpace.Types[StringSpan("Type"  )] = new TypeVar(StringSpan("Type"),GTypeType)
+	thisSpace.Types["Type"] = new TypeVar(StringSpan("Type"),GTypeType)
 	thisSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
 	thisSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
 	thisSpace.Functions[StringSpan("=" )].Push(new BuiltInPrimeStore(storeType) )

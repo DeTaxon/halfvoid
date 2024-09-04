@@ -1,55 +1,151 @@
 
-TestClass := class
-{
-	x := int
-	y := int
-	z := int
-
-	j := float
-	k := int
-
-	Test := !() -> void
-	{
-		printf("hell %i\n",this->TypeSize)
-	}
-
-}
-
-TestClass2 := class extend TestClass
-{
-
-	w := float
-	
-	Test := !() -> void
-	{
-		printf("hello %i\n",this->TypeSize)
-	}
-}
-
-
-cc := int
-Test3 := !() -> void^
-{
-	return cc&
-}
-
-Test4 := !() -> void
-{
-	j := @once Test3()
-	printf("hey %p\n",j)
-}
 
 main := !(char^[] args) -> int
 {
-	for i : 10
-	{
-		Test4()
+	mp := HashMap.{Str,int}
+
+	check := () ==> {
+		for it,ind : mp
+		{
+			printf("key %s value %i\n",ind,it)
+		}
 	}
-	//c := TestClass2
-	//c.Test()
+
+	mp["Hello"] = 3
+	mp["World"] = 5
+	mp["Test"] = 1
+	
+	check()
+	mp["World"] = 100
+
+	check()
+
+	mp.Remove("Hello")
+
+	check()
 }
 RunTest := !() -> void
 {
+}
+
+
+HashMap := class .{@TKey,@TValue}
+{
+	bucket := ListNode.{Tuple.{TKey,TValue}}^[8192]
+	ItSize := int
+
+	thisBucket := !(TKey key) -> ref ListNode.{Tuple.{TKey,TValue}}^
+	{
+		hsh := Hash(key)
+		hsh = 0
+		return bucket[hsh mod 8192]
+	}
+	Contain := !(TKey key) -> bool
+	{
+		bk := ref thisBucket(key)
+
+		iter := bk.next
+		while iter != null
+		{
+			if iter.data.0 == key
+				return true
+			iter = iter.next
+		}
+		return false
+	}
+	Size := !() -> int
+	{
+		return ItSize
+	}
+
+	"[]" := !(TKey key) -> ref TValue
+	{
+		bk := ref thisBucket(key)
+
+		iter := bk
+
+		while iter != null and iter.data.0 != key
+			iter = iter.next
+
+		if iter != null
+			return iter.data.1
+
+		iter = new ListNode.{Tuple.{TKey,TValue}}
+		iter.data.0 = key
+
+		if bk == null {
+			bk = iter
+		}else{
+			iter.next = bk
+			bk.prev = iter
+			bk = iter
+		}
+
+		ItSize += 1
+		return iter.data.1
+	}
+	Remove := !(TKey key) -> void
+	{
+		bk := ref thisBucket(key)
+		
+		iter := bk
+
+		while iter != null and iter.data.0 != key
+			iter = iter.next
+
+		if iter == null
+			return void
+
+		if iter == bk
+		{
+			bk = iter.next
+			bk?.prev = null
+		}else{
+			iter.prev.next = iter.next
+			iter.next?.prev = iter.prev
+		}
+
+		
+		ItSize -= 1
+		delete iter
+	}
+	"for" := !() -> !(TKey^&)&->ref TValue
+	{
+		cb := (TKey^& key) ==> ref TValue 
+		{
+			for it : 8192
+			{
+				iter := bucket[it]
+
+				while iter != null
+				{
+					key = iter.data.0&
+					yield iter.data.1
+
+					iter = iter.next
+				}
+			}
+		}
+		return cb.Capture()
+	}
+}
+
+
+Hash := !(Str stringValue) -> int
+{
+	if stringValue->AsString == null
+		return 0
+	value := 1
+
+	c := stringValue.charPtr
+	i := 0
+
+	while c[i] != 0
+	{
+		value = (value shl 3) + (value xor_b c[i]) + (value shr 16)
+		i += 1
+	}
+	return value
 }
 
 #Module(

@@ -137,7 +137,7 @@ main := !(char^[] args) -> int
 						}else if nm.End == ".clib" or nm.End == osCLIBFile
 						{
 							spc := CodeSpaces[num]&
-							spc.Modules.Push(new CLib(zFil))
+							spc.Modules.Push(new CLib(zFil,spc))
 						}
 					})
 					i += 1
@@ -293,6 +293,7 @@ main := !(char^[] args) -> int
 
 	WriteCodeToStream(ctx&)
 	printf("done\n")
+
 	outFile.Close()
 
 	FinilizeCache()

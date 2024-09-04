@@ -17,11 +17,9 @@ CLib := class extend ModuleInterface
 
 	itFuncs := AVLMap.{StringSpan,BoxUnit^}
 	itConsts := AVLMap.{StringSpan,BoxUnit^}
-	itStructs := AVLMap.{StringSpan,BoxUnit^}
 
 	itPreFuncs := AVLMap.{StringSpan,StringSpan}
 	itPreConsts := AVLMap.{StringSpan,StringSpan}
-	itPreStructs := AVLMap.{StringSpan,JsonNode^}
 
 	dlls := List.{StringSpan}
 	initFuncName := StringSpan
@@ -30,11 +28,14 @@ CLib := class extend ModuleInterface
 	initFunc := BoxFuncBodyStr^
 	addedToStartInitFunc := bool
 
-	this := !(File^ fil) -> void
+	ParentScope := BoxCodeSpace^ 
+
+	this := !(File^ fil,BoxCodeSpace^ scope) -> void
 	{
 		linkType = StringSpan("dynamic")
 		fileMap = fil.GetMap()
 		libFile = fil
+		ParentScope = scope
 	}
 
 	IsMyFunc := !(BoxFunc^ fnc) -> bool
@@ -80,7 +81,8 @@ CLib := class extend ModuleInterface
 				case "structs"
 					for lbs : nd^
 					{
-						itPreStructs[lbs.Key()] = lbs
+						newType := innerMakeType2(lbs.Key(),lbs)
+						ParentScope.Types[lbs.Key()] = newType
 					}
 					
 			}
@@ -105,9 +107,6 @@ CLib := class extend ModuleInterface
 		if itConsts.Contain(name)
 			return itConsts[name]
 		
-		if itStructs.Contain(name)
-			return itStructs[name]
-
 		if name == initFuncName
 		{
 			if initFunc == null
@@ -134,28 +133,55 @@ CLib := class extend ModuleInterface
 			return itConsts[name]
 		}
 
-		if itPreStructs.Contain(name)
-		{
-			return innerMakeType(name)
-		}
 		return null
 	}
 	GetType := virtual !(StringSpan name) -> Type^ 
 	{ 
-		if itStructs.Contain(name)
-		{
-			assert(itStructs[name] is in Type)
-			return itStructs[name]->{Type^}
-		}
-		if itPreStructs.Contain(name)
-		{
-			tp := innerMakeType(name)
-			assert(tp is in Type)
-			return tp->{Type^}
-		}
 		return null 
 	}
-	innerMakeType := !(StringSpan name) -> BoxUnit^
+	innerMakeType2 := !(StringSpan name,JsonNode^ nd) -> BoxUnit^
+	{
+		newStruct := new BoxClassVulkan
+		newStruct.Name = StringSpan(name)
+		newStruct.ItId = GetNewId()
+		newStruct.ItType = new TypeClass(newStruct)
+
+		for itm : nd^
+		{
+			ind := TokenIndent(itm.Value())
+			ptrs := 0
+			i := ind.Value.Size() - 1
+			while i >= 0
+			{
+				if ind.Value[i] != '^'
+					break
+				ptrs += 1
+				i -= 1
+			}
+			ind.Value = ind.Value[0..(-ptrs)]
+			tp := ParseType(ind&)
+
+			if tp == null
+			{
+				iNeedFString := TEchoStream
+				iNeedFString << "clib module: could not load type " << name
+				dat := TokenData
+				CurrentWork?.SetErrorMessage(dat.MakeError(iNeedFString.GetString().Str()))
+				return null
+			}
+
+			for j : ptrs
+				tp = tp.GetPoint()
+			newStruct.Fields.Push(new FieldParam(itm.Key(),tp))
+		}
+		buildCtx := ClassBuildContext
+		newStruct.InheritStep(buildCtx,null)
+		AllClasses.Push(newStruct)
+		newStruct.FinilizeCreation()
+
+		return newStruct.ItType
+	}
+	innerMakeType := !(StringSpan name) -> BoxUnit^ //TODO delete
 	{
 		nd := itPreStructs[name]
 

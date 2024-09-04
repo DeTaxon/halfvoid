@@ -61,6 +61,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		return true
 	}
 	AVLRepair := !(CommonTreeNode.{DATA}^ toRep) -> void
+		#TemplateResist()
 	{
 		if toRep == null return void
 

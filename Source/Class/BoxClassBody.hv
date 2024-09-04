@@ -515,42 +515,42 @@ BoxClassBody := class extend BoxClassPoison
 						}
 						if asFunc == null
 						{
-							if itm.Line?.Attributes.Size() != 0 and SubStrContain(itm.Line.Attributes,"TemplateResist")  and not isPoison and TemplateParent != null
+							if not isPoison and TemplateParent? is in BoxClassTemplateBody
 							{
-								
-								prepData := ref TemplateParent->{BoxClassTemplateBody^}.ResistFunctions[itm.Line][name]
-
-								if prepData == null
+								pr := TemplateParent->{BoxClassTemplateBody^}
+								if pr.ResistFunctions.Contain(fncParser.bodyToken)
 								{
-									//TLock(TemplateParent)
-									//defer TUnlock(TemplateParent)
-									if prepData == null
-									{
-										asFunc = fncParser.CreateObject()
-										if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
-										{
-											asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
-										}
+									readyFunc := pr.ResistFunctions[fncParser.bodyToken]->{BoxFuncBody^}
+									probData := fncParser.CreateObject()->{BoxFuncTemplateBody^}
+									probData.IsOneFunc()
+									probData.AwaitHeaderParse()
 
-										assert(asFunc != null and asFunc is in BoxFuncBody)
-										prepData = asFunc
-										asFunc->{BoxFuncBody^}.SetName(name)
-										asFunc->{BoxFuncBody^}.ParseBody()
-									}
+									asFunc = new ResistFunc(readyFunc,probData.hData.CreateFuncType())
+
+									delete probData
 								}
+							}
 
-								probFunc := fncParser.CreateObject()
-								defer delete probFunc
-
-								assert(probFunc != null and probFunc is BoxFuncTemplateBody)
-								asTmplt := probFunc->{BoxFuncTemplateBody^}
-								assert(asTmplt.IsOneFunc())
-								asTmplt.IsOneFunc()
-								asTmplt.AwaitHeaderParse()
-								asFunc = new ResistFunc(prepData->{BoxFunc^},asTmplt.hData.CreateFuncType())
-
-							}else{
+							if asFunc == null
+							{
 								asFunc = fncParser.CreateObject()
+
+								assert(asFunc is in BoxFuncTemplateBody)
+
+								tmpl := asFunc->{BoxFuncTemplateBody^}
+
+								if tmpl.Properties.Contain("#TemplateResist") and TemplateParent? is in BoxClassTemplateBody
+								{
+									tmpl := TemplateParent->{BoxClassTemplateBody^}
+
+									asTmplt := asFunc->{BoxFuncTemplateBody^}
+									assert(asTmplt.IsOneFunc())
+									asTmplt.IsOneFunc()
+									asTmplt.AwaitHeaderParse()
+									newFunc := asTmplt.GetOneFunc()
+
+									tmpl.ResistFunctions[fncParser.bodyToken] = newFunc
+								}
 							}
 						}
 					}

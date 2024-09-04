@@ -42,9 +42,9 @@ intGetClass2 := !(char^ name) -> BoxClass^
 {
 	for spc : CodeSpaces.Reverse
 	{
-		if not spc.Types.Contain(StringSpan(name))
+		if not spc.Types.Contain(name)
 			continue
-		val := spc.Types[StringSpan(name)]
+		val := spc.Types[name]
 		if val == null and val is not TypeVar
 			return null
 
@@ -55,7 +55,7 @@ intGetClass2 := !(char^ name) -> BoxClass^
 
 intGetClassTemplate := !(char^ name) -> BoxClassTemplate^
 {
-	res := GetTypeObjByName(StringSpan(name))
+	res := GetTypeObjByName(name)
 	assert(res != null)
 	assert(res is in TemplateTypeVar)
 	return res->{TemplateTypeVar^}.Value
@@ -64,9 +64,9 @@ intGetClassTemplate2 := !(char^ name) -> BoxClassTemplate^
 {
 	for spc : CodeSpaces.Reverse
 	{
-		if not spc.Types.Contain(StringSpan(name))
+		if not spc.Types.Contain(name)
 			continue
-		val := spc.Types[StringSpan(name)]
+		val := spc.Types[name]
 		if val == null and val is not TemplateTypeVar
 			return null
 

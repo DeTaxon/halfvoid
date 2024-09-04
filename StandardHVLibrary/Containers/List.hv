@@ -29,7 +29,8 @@ List := class.{@T} extend TArrayView.{T}
 		Push(itm)
 	}
 
-	createBackNode := virtual !() -> ListNode.{T}^ ; TemplateResist
+	createBackNode := virtual !() -> ListNode.{T}^
+		#TemplateResist()
 	{
 		newNode := createNode()
 		if itSize == 0
@@ -55,7 +56,8 @@ List := class.{@T} extend TArrayView.{T}
 		newNode.data.this(args...)
 	}
 
-	createFrontNode := virtual !() -> ListNode.{T}^ ; TemplateResist
+	createFrontNode := virtual !() -> ListNode.{T}^
+		#TemplateResist()
 	{
 		newNode := createNode()
 		if itSize == 0
@@ -88,7 +90,8 @@ List := class.{@T} extend TArrayView.{T}
 		itSize -= 1
 	}
 
-	"[]" := virtual !(int ind) -> ref T ; TemplateResist
+	"[]" := virtual !(int ind) -> ref T
+		#TemplateResist()
 	{
 		if ind < 0
 			return this[itSize + ind]
@@ -140,7 +143,7 @@ List := class.{@T} extend TArrayView.{T}
 		return -1
 	}
 
-	Size := virtual !() -> int { return itSize } ; TemplateResist
+	Size := virtual !() -> int #TemplateResist() { return itSize }
 	Destroy := virtual !() -> void
 	{
 		itr := start
