@@ -1,0 +1,18 @@
+
+
+Hash := !(Str stringValue) -> int
+{
+	if stringValue->AsString == null
+		return 0
+	value := 1
+
+	c := stringValue.charPtr
+	i := 0
+
+	while c[i] != 0
+	{
+		value = (value shl 3) + (value xor_b c[i]) + (value shr 16)
+		i += 1
+	}
+	return value
+}
