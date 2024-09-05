@@ -226,7 +226,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if failed
 			return null
 
-		resConsts := AVLMap.{StringSpan,BoxUnit^}
+		resConsts := AVLMap.{Str,BoxUnit^}
 		return checkTypes(datas,consts,resConsts)
 	}
 	
@@ -244,7 +244,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		{
 			datas.Emplace(null->{BoxExeObj^},tp.Params[i].ItType,tp.Params[i].IsRef)
 		}
-		resConsts := AVLMap.{StringSpan,BoxUnit^}
+		resConsts := AVLMap.{Str,BoxUnit^}
 		checkTypes(datas,consts,resConsts)
 
 		if Name == "SetVariant"
@@ -275,7 +275,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, BoxExeConstObj^[] consts, AVLMap.{Str,BoxUnit^} resCnsts) -> TypeFunc^
 	{
 		//TODO , multi round check
 
@@ -339,7 +339,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		}
 		return GetFuncType(objs.Size(),ArraySpan.{Type^}(fTyps[0]&,objs.Size()),ArraySpan.{bool}(iRef[0]&,objs.Size()),resTypeT,hData.ResultType.IsRef,hData.IsVargs)
 	}
-	checkType := !(BoxExeObj^ obj,Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+	checkType := !(BoxExeObj^ obj,Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^} resCnsts) -> Type^
 	{
 		return CheckTemplateType(obj,tp,tk,resCnsts)
 	}

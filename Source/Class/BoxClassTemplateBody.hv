@@ -83,7 +83,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	}
 	CreateClass := virtual !(ConstantHolder^ inConsts,BoxExeConstObj^[] inpts) -> BoxClass^
 	{
-		namedConstants := AVLMap.{StringSpan,BoxUnit^}
+		namedConstants := AVLMap.{Str,BoxUnit^}
 		TemplateCheckConstants(inpts,ItConstsTokens,namedConstants)
 
 		oldScope := CurrentScope

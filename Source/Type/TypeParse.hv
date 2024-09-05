@@ -1,4 +1,4 @@
-GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Type^
+GetTypeFromIndent := !(Token^ obj,AVLMap.{Str,BoxUnit^}^ resCnsts) -> Type^
 {
 	assert(obj is TokenIndent)
 
@@ -45,7 +45,7 @@ ParseType := !(Token^ obj) -> Type^
 	if obj == null
 		return null
 
-	someMap := AVLMap.{StringSpan,BoxUnit^}
+	someMap := AVLMap.{Str,BoxUnit^}
 	return CheckTemplateType(null,obj,someMap)
 }
 

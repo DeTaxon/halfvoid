@@ -31,7 +31,7 @@ TemplatePrefix := class
 				continue
 			}
 
-			rc := AVLMap.{StringSpan,BoxUnit^}
+			rc := AVLMap.{Str,BoxUnit^}
 			cItm := CheckTemplateConst(null,iter,rc)
 			Constants.Emplace(iter,cItm)
 
@@ -71,7 +71,7 @@ TemplatePrefix := class
 			return false
 		return true
 	}
-	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{StringSpan,BoxUnit^} resCnsts,BoxExeObj^[] objs = null,Type^[] objsTypes,Token^[] typeTokens = null) -> bool
+	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{Str,BoxUnit^} resCnsts,BoxExeObj^[] objs = null,Type^[] objsTypes,Token^[] typeTokens = null) -> bool
 	{
 		if not CheckByCount(consts.Size())
 			return false
@@ -120,7 +120,7 @@ TemplatePrefix := class
 		}
 		return true
 	}
-	PopulateVars := !(AVLMap.{StringSpan,BoxUnit^} namedCnsts,List.{BoxUnit^} resList) -> void
+	PopulateVars := !(AVLMap.{Str,BoxUnit^} namedCnsts,List.{BoxUnit^} resList) -> void
 	{
 		for it,ind : namedCnsts
 		{

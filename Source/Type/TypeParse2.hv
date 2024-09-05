@@ -1,8 +1,8 @@
-CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+CheckTemplateType := !(Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^} resCnsts) -> Type^
 {
 	return CheckTemplateType(null,tp,tk,resCnsts)
 }
-CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^} resCnsts) -> Type^
 {
 	if tk is TokenIndent
 	{
@@ -392,7 +392,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{StringSpan,Bo
 	//assert(false)
 	return null
 }
-CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{StringSpan,BoxUnit^} resCnsts) -> BoxExeConstObj^
+CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{Str,BoxUnit^} resCnsts) -> BoxExeConstObj^
 {
 	if itm == null
 		return null

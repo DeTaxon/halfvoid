@@ -54,7 +54,7 @@ TypedefTemplateConst := class extend BoxExeConstObj
 			return ParseType(TypeToken)
 		}
 
-		resCnsts := AVLMap.{StringSpan,BoxUnit^}
+		resCnsts := AVLMap.{Str,BoxUnit^}
 		for i : cnsts.Size()
 		{
 			CheckTemplateConst(cnsts[i],ItConsts[i],resCnsts)

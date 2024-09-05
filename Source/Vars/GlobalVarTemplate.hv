@@ -35,7 +35,7 @@ GlobalVarTemplate := class extend BoxExeObj
 				return it.1
 		}
 
-		resConsts := AVLMap.{StringSpan,BoxUnit^}
+		resConsts := AVLMap.{Str,BoxUnit^}
 
 		typ := GetVarType(consts,resConsts)
 		if typ == null
@@ -52,7 +52,7 @@ GlobalVarTemplate := class extend BoxExeObj
 
 		return globVar
 	}
-	GetVarType := !(BoxExeConstObj^[] consts,AVLMap.{StringSpan,BoxUnit^} resConsts) -> Type^
+	GetVarType := !(BoxExeConstObj^[] consts,AVLMap.{Str,BoxUnit^} resConsts) -> Type^
 	{
 
 		cycleLimit := 0

@@ -203,15 +203,15 @@ ToLocalVar := !(BoxExeObj^ itm,StringSpan varName) -> LocalVar^
 }
 
 
-ConstMapToList := !(AVLMap.{StringSpan,BoxUnit^} cMap, List.{BoxUnit^} cList) -> void
+ConstMapToList := !(AVLMap.{Str,BoxUnit^} cMap, List.{BoxUnit^} cList) -> void
 {
 	for it,ind : cMap
 	{
 		if it is in Type
 		{
-			cList.Push(new TypeVar(ind,it->{Type^}))
+			cList.Push(new TypeVar(GetConstString(ind.AsStringSpan()),it->{Type^}))
 		}else{
-			cList.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
+			cList.Push(new ConstVar(GetConstString(ind.AsStringSpan()),it->{BoxExeConstObj^}))
 		}
 	}
 }

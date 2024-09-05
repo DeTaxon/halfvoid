@@ -1,16 +1,7 @@
 
-ExtraMain := !(StringSpan hey) -> Str
-{
-	return hey
-}
-
 main := !(char^[] args) -> int
 {
-	d := StringSpan("test")
-
-	mp := AVLMap.{Str,int}
-
-	mp[d] = 40
+	RunOpenGLTest()
 }
 RunTest := !() -> void
 {

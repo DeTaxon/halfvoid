@@ -28,7 +28,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		echo := TEchoStream
 		echo << "#" << cmdName->{TokenString^}.Value.Str()
-		spn := GetConstString(echo.GetString().Str())
+		spn := echo.GetString()
 
 		userCmd := ref UserCommands[spn]
 
@@ -85,9 +85,9 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		return GObjNone
 	}
-	if UserCommands.Contain(cmd.AsStringSpan())
+	if UserCommands.Contain(cmd)
 	{
-		userCmd := ref UserCommands[cmd.AsStringSpan()]
+		userCmd := ref UserCommands[cmd]
 
 		objVals := CheckExeDownList
 		namedObjs := AVLMap.{StringSpan,BoxExeObj^}
@@ -266,7 +266,7 @@ ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{StringSpan,Token^} 
 	return true
 }
 
-UserCommands := AVLMap.{StringSpan,UserCommandObj}
+UserCommands := AVLMap.{Str,UserCommandObj}
 
 UserCommandObj := class
 {

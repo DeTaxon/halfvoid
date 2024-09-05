@@ -149,7 +149,7 @@ BoxClassBody := class extend BoxClassPoison
 
 	parseTask := Task^
 
-	NamedConstants := AVLMap.{StringSpan,BoxUnit^}
+	NamedConstants := AVLMap.{Str,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
 
 	hash := u32
@@ -160,12 +160,12 @@ BoxClassBody := class extend BoxClassPoison
 		{
 			if it is in Type
 			{
-				NamedConstantsVars.Push(new TypeVar(ind,it->{Type^}))
+				NamedConstantsVars.Push(new TypeVar(ind.AsStringSpan(),it->{Type^}))
 			}else if it is TypeVariadicVar {
 				NamedConstantsVars.Push(it)
 			}else{
 				assert(it is in BoxExeConstObj)
-				NamedConstantsVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
+				NamedConstantsVars.Push(new ConstVar(ind.AsStringSpan(),it->{BoxExeConstObj^}))
 			}
 		}
 	}
