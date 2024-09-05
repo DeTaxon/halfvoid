@@ -2,8 +2,8 @@ ModuleInterface := class
 {
 	Work := virtual !() -> void {}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void {}
-	GetType := virtual !(StringSpan name) -> Type^ { return null }
-	GetItem := virtual !(StringSpan name) -> BoxUnit^ { return null}
+	GetType := virtual !(Str name) -> Type^ { return null }
+	GetItem := virtual !(Str name) -> BoxUnit^ { return null}
 	CreateInitPart := virtual !() -> void {}
 }
 
@@ -15,11 +15,11 @@ CLib := class extend ModuleInterface
 	js := Json^
 
 
-	itFuncs := AVLMap.{StringSpan,BoxUnit^}
-	itConsts := AVLMap.{StringSpan,BoxUnit^}
+	itFuncs := AVLMap.{Str,BoxUnit^}
+	itConsts := AVLMap.{Str,BoxUnit^}
 
-	itPreFuncs := AVLMap.{StringSpan,StringSpan}
-	itPreConsts := AVLMap.{StringSpan,StringSpan}
+	itPreFuncs := AVLMap.{Str,StringSpan}
+	itPreConsts := AVLMap.{Str,StringSpan}
 
 	dlls := List.{StringSpan}
 	initFuncName := StringSpan
@@ -99,7 +99,7 @@ CLib := class extend ModuleInterface
 		}
 	}
 	
-	GetItem := virtual !(StringSpan name) -> BoxUnit^
+	GetItem := virtual !(Str name) -> BoxUnit^
 	{
 		if itFuncs.Contain(name)
 			return itFuncs[name]
@@ -111,7 +111,7 @@ CLib := class extend ModuleInterface
 		{
 			if initFunc == null
 			{
-				initFunc = new BoxFuncBodyStr(name,GetFuncType(GTypeVoid))
+				initFunc = new BoxFuncBodyStr(GetConstString(name.AsStringSpan()),GetFuncType(GTypeVoid))
 				itFuncs[name] = initFunc
 			}
 			return initFunc
@@ -135,14 +135,14 @@ CLib := class extend ModuleInterface
 
 		return null
 	}
-	GetType := virtual !(StringSpan name) -> Type^ 
+	GetType := virtual !(Str name) -> Type^ 
 	{ 
 		return null 
 	}
-	innerMakeType2 := !(StringSpan name,JsonNode^ nd) -> BoxUnit^
+	innerMakeType2 := !(Str name,JsonNode^ nd) -> BoxUnit^
 	{
 		newStruct := new BoxClassVulkan
-		newStruct.Name = StringSpan(name)
+		newStruct.Name = GetConstString(name.AsStringSpan())
 		newStruct.ItId = GetNewId()
 		newStruct.ItType = new TypeClass(newStruct)
 
@@ -227,7 +227,7 @@ CLib := class extend ModuleInterface
 		itStructs[name] = res
 		return res
 	}
-	innerGetFunc := !(StringSpan name) -> BoxUnit^
+	innerGetFunc := !(Str name) -> BoxUnit^
 	{
 		bdy := itPreFuncs[name]
 
@@ -273,7 +273,7 @@ CLib := class extend ModuleInterface
 
 		if linkType == "dynamic"
 		{
-			glVar := CreateGlobalVar(name,fType.GetPoint(),false)
+			glVar := CreateGlobalVar(GetConstString(name.AsStringSpan()),fType.GetPoint(),false)
 			itFuncs[name] = glVar
 
 			if not addedToStartInitFunc
@@ -286,7 +286,7 @@ CLib := class extend ModuleInterface
 			return glVar
 		}
 
-		func := new BoxFuncDeclare(fType,name)
+		func := new BoxFuncDeclare(fType,GetConstString(name.AsStringSpan()))
 		itFuncs[name] = func
 		return func
 	}

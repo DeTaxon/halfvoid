@@ -40,7 +40,7 @@ GetItemGlobal := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> v
 	}
 }
 
-GetItemGlobalFunc := !(StringSpan name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+GetItemGlobalFunc := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 {
 	lst := HybridQueue.{BoxUnit^,10}
 	for spc : CodeSpaces.Reverse

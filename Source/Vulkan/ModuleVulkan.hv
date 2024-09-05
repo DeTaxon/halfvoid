@@ -2,14 +2,14 @@ ModuleVulkan := class extend ModuleInterface
 {
 	xmlTree := TreeNode^
 
-	Enums := AVLMap.{char^,Tuple.{int,char^}}
-	Typedefs := AVLMap.{char^,Type^}
-	ItInts := AVLMap.{char^,int}
+	Enums := AVLMap.{Str,Tuple.{int,char^}}
+	Typedefs := AVLMap.{Str,Type^}
+	ItInts := AVLMap.{Str,int}
 
-	Units := AVLMap.{char^,BoxUnit^}
+	Units := AVLMap.{Str,BoxUnit^}
 
-	Commands := AVLMap.{char^,TreeNode^}
-	Structs := AVLMap.{char^,TreeNode^}
+	Commands := AVLMap.{Str,TreeNode^}
+	Structs := AVLMap.{Str,TreeNode^}
 
 	this := !(char^ xmlName) -> void
 	{
@@ -351,7 +351,7 @@ ModuleVulkan := class extend ModuleInterface
 		}		
 	}
 
-	GetModuleType := !(char^ name) -> Type^
+	GetModuleType := !(Str name) -> Type^
 	{
 		inDefs := Typedefs.TryFind(name)
 		if inDefs != null return inDefs^
@@ -506,7 +506,7 @@ ModuleVulkan := class extend ModuleInterface
 			newStruct.Name = StringSpan(name)
 			newStruct.ItId = GetNewId()
 			newStruct.ItType = new TypeClass(newStruct)
-			Typedefs[StrCopy(name)] = newStruct.ItType
+			Typedefs[name] = newStruct.ItType
 
 			buildCtx := ClassBuildContext
 
@@ -725,7 +725,7 @@ ModuleVulkan := class extend ModuleInterface
 		return null
 	}
 
-	GetFromInts := !(char^ name,int^ res) -> bool
+	GetFromInts := !(Str name,int^ res) -> bool
 	{
 		inInts := ItInts.TryFind(name)
 		if inInts == null {
@@ -745,12 +745,9 @@ ModuleVulkan := class extend ModuleInterface
 	
 
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void {}
-	GetItem := virtual !(StringSpan name) -> BoxUnit^ 
+	GetItem := virtual !(Str name) -> BoxUnit^ 
 	{
-		cnstName := GetConstString(name.GetString().Str())
-		st := cnstName.NonNullStr()
-
-		inUnit := Units.TryFind(st)
+		inUnit := Units.TryFind(name)
 		if inUnit != null
 			return inUnit^
 
@@ -760,13 +757,13 @@ ModuleVulkan := class extend ModuleInterface
 		}
 
 		intRes := int
-		if GetFromInts(st,intRes&)
+		if GetFromInts(name,intRes&)
 		{
 			return GetExeInt(intRes)
 		}
 
 
-		tp := GetModuleType(st)
+		tp := GetModuleType(name)
 		if tp != null
 		{
 			return tp
@@ -774,24 +771,21 @@ ModuleVulkan := class extend ModuleInterface
 
 		return null
 	}
-	GetType := virtual !(StringSpan name) -> Type^ 
+	GetType := virtual !(Str name) -> Type^ 
 	{ 
-		cnstName := GetConstString(name.GetString().Str())
-		st := cnstName.NonNullStr()
-
 		if name == "VulkanFunctionsClass"
 		{
 			tp := GetVulkanClass()
 			assert(tp is in Type)
 			return tp->{Type^}
 		}
-		inUnit := Units.TryFind(st)
+		inUnit := Units.TryFind(name)
 		if inUnit != null
 		{
 			if inUnit^ is in Type
 				return inUnit^->{Type^}
 		}
-		tp := GetModuleType(st)
+		tp := GetModuleType(name)
 		if tp != null
 		{
 			return tp

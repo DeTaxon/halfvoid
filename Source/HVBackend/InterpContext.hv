@@ -134,8 +134,8 @@ MCInterpContext := class
 				{
 					if it == vr
 					{
-						lib := GetClibDll(cLib,ind)
-						fncPtr := lib.Get(ind)
+						lib := GetClibDll(cLib,ind.AsStringSpan())
+						fncPtr := lib.Get(ind.AsStringSpan())
 						result->{void^^}^ = fncPtr
 					}
 				}
