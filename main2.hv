@@ -1,28 +1,16 @@
 
+ExtraMain := !(StringSpan hey) -> Str
+{
+	return hey
+}
 
 main := !(char^[] args) -> int
 {
-	mp := HashMap.{Str,int}
+	d := StringSpan("test")
 
-	check := () ==> {
-		for it,ind : mp
-		{
-			printf("key %s value %i\n",ind,it)
-		}
-	}
+	mp := AVLMap.{Str,int}
 
-	mp["Hello"] = 3
-	mp["World"] = 5
-	mp["Test"] = 1
-	
-	check()
-	mp["World"] = 100
-
-	check()
-
-	mp.Remove("Hello")
-
-	check()
+	mp[d] = 40
 }
 RunTest := !() -> void
 {

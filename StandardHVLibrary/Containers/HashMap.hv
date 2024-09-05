@@ -1,13 +1,13 @@
 
 HashMap := class .{@TKey,@TValue}
 {
-	bucket := ListNode.{Tuple.{TKey,TValue}}^[4000]
+	bucket := ListNode.{Tuple.{TKey,TValue}}^[8192]
 	ItSize := int
 
 	thisBucket := !(TKey key) -> ref ListNode.{Tuple.{TKey,TValue}}^
 	{
-		hsh := Hash(key)
-		return bucket[hsh mod 4000]
+		hsh := Hash(key)->{u32}
+		return bucket[hsh mod 8192]
 	}
 	Contain := !(TKey key) -> bool
 	{
@@ -82,7 +82,7 @@ HashMap := class .{@TKey,@TValue}
 	{
 		cb := (TKey^& key) ==> ref TValue 
 		{
-			for it : 4000
+			for it : 8192
 			{
 				iter := bucket[it]
 

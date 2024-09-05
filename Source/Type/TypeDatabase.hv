@@ -19,7 +19,7 @@ TypeObjToType := !(BoxUnit^ res) -> Type^
 	return null
 }
 
-GetTypeObjByName := !(StringSpan name) -> BoxUnit^
+GetTypeObjByName := !(Str name) -> BoxUnit^
 {
 	for it : UnitStack
 	{
@@ -69,7 +69,7 @@ GetTypeObjByName := !(StringSpan name) -> BoxUnit^
 		}
 		for module : sp.Modules
 		{
-			tp := module.GetType(name)
+			tp := module.GetType(name.AsStringSpan())
 			if tp != null
 			{
 				sp.Types[name] = tp

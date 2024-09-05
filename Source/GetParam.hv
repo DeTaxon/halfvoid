@@ -86,7 +86,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		{
 			av := par->{AliasVarOhNo^}
 			if av.itName == asItm.Value
-				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
+				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value.AsStringSpan(),par,metFuncs)
 		}
 		if par is AliasVar
 		{

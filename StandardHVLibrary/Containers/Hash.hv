@@ -11,7 +11,7 @@ Hash := !(Str stringValue) -> int
 
 	while c[i] != 0
 	{
-		value = (value shl 3) + (value xor_b c[i]) + (value shr 16)
+		value = (value shl 3) + c[i] + (value shr 16)
 		i += 1
 	}
 	return value

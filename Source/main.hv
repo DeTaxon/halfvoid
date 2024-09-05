@@ -298,6 +298,27 @@ main := !(char^[] args) -> int
 
 	FinilizeCache()
 
+	//for spc : CodeSpaces
+	//{
+	//	sizeCheck := AVLMap.{int,int}
+	//	for it : spc.Types.bucket
+	//	{
+	//		iter := it
+	//		i := 0
+	//		while iter != null
+	//		{
+	//			i += 1
+	//			iter = iter.next
+	//		}
+	//		sizeCheck[i] += 1
+	//	}
+	//	printf("map test\n")
+	//	for it,ind : sizeCheck
+	//	{
+	//		printf("Depth %i Count %i\n",ind,it)
+	//	}
+	//}
+
 	exit(0)
 	return 0
 }

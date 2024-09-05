@@ -85,7 +85,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		return GObjNone
 	}
-	if UserCommands.Contain(cmd)
+	if UserCommands.Contain(cmd.AsStringSpan())
 	{
 		userCmd := ref UserCommands[cmd]
 

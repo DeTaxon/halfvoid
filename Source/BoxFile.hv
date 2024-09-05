@@ -9,7 +9,7 @@ BoxCodeSpace := class
 	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
 	ExchangeTableTemplates := HybridQueue.{BoxUnit^,10}
 
-	Types := AVLMap.{Str,BoxUnit^}
+	Types := HashMap.{Str,BoxUnit^}
 
 	Modules := List.{ModuleInterface^}
 
@@ -477,7 +477,7 @@ CWorkBaseFile := class extend CWorkUnit
 		if itToken.Down?.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
 		{
 			//TODO must be token, not str
-			name := itToken.Down->{TokenIndent^}.Value
+			name := itToken.Down->{TokenIndent^}.Value.AsStringSpan()
 			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
 			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
 			return "Complete"

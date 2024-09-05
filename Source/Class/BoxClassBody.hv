@@ -663,7 +663,7 @@ BoxClassBody := class extend BoxClassPoison
 			return void
 		}
 
-		fieldName := itm.Down->{TokenIndent^}.Value
+		fieldName := itm.Down->{TokenIndent^}.Value.AsStringSpan()
 		
 		skob := itm.Down.Right.Right.Down.Right
 		SyntaxCompress(skob,LexHVFileRoot)
