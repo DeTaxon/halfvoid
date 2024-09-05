@@ -301,7 +301,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{StringSpan,
 						CurrentWork?.SetErrorMessage(itr.Down.Right.Right.MakeError("Could not parse"))
 						return false //TODO exception
 					}
-					namedInputs[name] = obj
+					namedInputs[name.AsStringSpan()] = obj
 				}else{
 					qLambda := TryGetQuickLambda(itr)
 					if qLambda != null

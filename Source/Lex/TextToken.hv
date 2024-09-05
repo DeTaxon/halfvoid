@@ -267,10 +267,10 @@ TokenSkobSymbol := class extend TokenSymbol
 }
 TokenIndent := class extend Token
 {
-	Value := StringSpan
+	Value := Str
 	
 	IsData := virtual true
-	this := !(StringSpan val) -> void
+	this := !(Str val) -> void
 	{
 		Value = val
 	}
@@ -288,7 +288,7 @@ TokenIndent := class extend Token
 }
 TokenTemplateType := class extend TokenIndent
 {
-	this := !(StringSpan val) -> void
+	this := !(Str val) -> void
 	{
 		Value = val
 	}

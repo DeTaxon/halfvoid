@@ -102,7 +102,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			lv := par->{LocalVar^}
 
 			if lv.itName == asItm.Value
-				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value,par,metFuncs)
+				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value.AsStringSpan(),par,metFuncs)
 		}
 		if par is TypeVariadicVar
 		{
@@ -121,7 +121,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				}else if par is in MemVar
 				{
 					mv2 := mv->{MemVar^}
-					return GetParamCaptureVar(CallFromSomeVar(mv2),asItm.Value,par,metFuncs)
+					return GetParamCaptureVar(CallFromSomeVar(mv2),asItm.Value.AsStringSpan(),par,metFuncs)
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
@@ -141,7 +141,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			cls := unroll.BaseClass
 			obj := unroll.MethodObj
 
-			fld := cls.GetField(asItm.Value)
+			fld := cls.GetField(asItm.Value.AsStringSpan())
 
 			if metFuncs.Size() != 0
 			{
@@ -173,7 +173,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				assert(clsType is TypeClass)
 				cls := clsType->{TypeClass^}.ToClass
 
-				fld := cls.GetField(asItm.Value)
+				fld := cls.GetField(asItm.Value.AsStringSpan())
 				if fld != null
 				{
 					tkn1 := TokenIndent(StringSpan("this"))
@@ -183,7 +183,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					return fld.CreateCall(![parGetCall])
 				}
 
-				mt := cls.GetFieldInVTable(asItm.Value)
+				mt := cls.GetFieldInVTable(asItm.Value.AsStringSpan())
 				if mt != null
 				{
 					tkn1 := TokenIndent(StringSpan("this"))
@@ -196,7 +196,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		}
 	}
 	callItem := BoxUnit^
-	GetItemGlobal(asItm.Value, x ==> {
+	GetItemGlobal(asItm.Value.AsStringSpan(), x ==> {
 		for it : x
 		{
 			if it is in GlobalVar2
@@ -270,7 +270,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	if asType != null
 		return asType
 
-	return GetItemUser(asItm.Value)? 
+	return GetItemUser(asItm.Value.AsStringSpan())? 
 
 	return null
 }

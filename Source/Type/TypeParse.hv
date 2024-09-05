@@ -3,7 +3,7 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{StringSpan,BoxUnit^}^ resCnsts) -> Typ
 	assert(obj is TokenIndent)
 
 	asIndent := obj->{TokenIndent^}
-	name := asIndent.Value
+	name := asIndent.Value.AsStringSpan()
 
 	if resCnsts?.Contain(name)
 	{

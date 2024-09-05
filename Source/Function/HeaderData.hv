@@ -77,7 +77,7 @@ FunctionHeaderInfo := class
 					IsVargs = true
 				}else{
 					assert(bag[0] is TokenIndent)
-					Types.Emplace(bag[0]->{TokenIndent^}.Value,null->{Type^},false,null->{Token^})
+					Types.Emplace(bag[0]->{TokenIndent^}.Value.AsStringSpan(),null->{Type^},false,null->{Token^})
 				}
 			}else if bag.Size() >= 2 {
 				if bag[1].GetValue() == "..."
@@ -106,7 +106,7 @@ FunctionHeaderInfo := class
 						return void
 					}
 					typ := ParseType(bag[0])
-					name := indItm->{TokenIndent^}.Value
+					name := indItm->{TokenIndent^}.Value.AsStringSpan()
 					if typ != null and IsComplexType(typ)
 						isRef = true
 					

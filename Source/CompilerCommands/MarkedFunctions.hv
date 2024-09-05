@@ -30,7 +30,7 @@ TryGetMarkedFunctions := !(Token^ itm) -> BoxExeObj^
 		//fnc := TryGetExeCall(markName.Right.Right)
 
 		callItem := BoxUnit^
-		GetItemGlobal(fncName, x ==> {
+		GetItemGlobal(fncName.AsStringSpan(), x ==> {
 			for it : x
 			{
 				if it is in BoxFunc

@@ -496,7 +496,7 @@ CWorkBaseFile := class extend CWorkUnit
 					itr2 = itr2.Right
 					isRef = true
 				}
-				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itr2,isRef)
+				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value.AsStringSpan(),itr2,isRef)
 				GlobalVars2.Push(vr->{GlobalVar2^})
 			}
 		}

@@ -115,7 +115,7 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 		case 110
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn = StringSpan(buf,stSize)
 			resToken = new TokenIndent(spn)
 		case 111
 			strm.Read(stSize&,4)

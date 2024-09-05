@@ -204,7 +204,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				extraObjs.Push(Objs[^])
 
 				callItem := BoxUnit^
-				cls.GetMethods(asInd.Value,fncs ==> {
+				cls.GetMethods(asInd.Value.AsStringSpan(),fncs ==> {
 					callItem = GetBestFunc(fncs,extraObjs,consts,false)
 				})
 				if callItem != null
@@ -236,7 +236,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 					extraObjs.Push(Objs[^])
 
 					callItem := BoxUnit^
-					cls.GetMethods(asInd.Value,fncs ==> {
+					cls.GetMethods(asInd.Value.AsStringSpan(),fncs ==> {
 						callItem = GetBestFunc(fncs,extraObjs,consts,false)
 					})
 					if callItem != null
@@ -263,7 +263,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		}
 
 		resFunc := BoxExeObj^
-		resFunc = CreateFuncCall(asInd.Value,Objs,consts)
+		resFunc = CreateFuncCall(asInd.Value.AsStringSpan(),Objs,consts)
 
 		if resFunc != null
 			return resFunc

@@ -72,7 +72,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		objs2.Push(vr)
 		objs2.Push(Objs[^])
 
-		newFnc := CreateFuncCall(nm.Value,objs2,consts)
+		newFnc := CreateFuncCall(nm.Value.AsStringSpan(),objs2,consts)
 		return newFnc?
 	}
 	
