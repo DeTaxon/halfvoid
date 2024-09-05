@@ -317,23 +317,23 @@ CreateBuiltInVec:= !() -> void
 		baseAdd := GetFuncType(![x,x],![false,false],x)
 		operOnFloat := GetFuncType(![x,baseOfVec],![false,false],x)
 
-		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))
 
-		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(baseAdd,"fadd") )
-		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(baseAdd,"fsub") )
-		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(baseAdd,"fmul") )
+		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"fadd") )
+		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"fsub") )
+		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"fmul") )
 
-		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
-		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
-		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"fmul") )
-		bSpace.Functions[StringSpan("/=")].Push(new BuiltInIntEqAndOper(baseRefed,"fdiv") )
+		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
+		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
+		bSpace.Functions["*="].Push(new BuiltInIntEqAndOper(baseRefed,"fmul") )
+		bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"fdiv") )
 
-		bSpace.Functions[StringSpan("<+>")].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
+		bSpace.Functions["<+>"].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
 
-		bSpace.Functions[StringSpan("+")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fadd") )
-		bSpace.Functions[StringSpan("-")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fsub") )
-		bSpace.Functions[StringSpan("*")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fmul") )
-		bSpace.Functions[StringSpan("/")].Push(new BuiltInVecOperOnFloat(operOnFloat,"fdiv") )
+		bSpace.Functions["+"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fadd") )
+		bSpace.Functions["-"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fsub") )
+		bSpace.Functions["*"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fmul") )
+		bSpace.Functions["/"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fdiv") )
 	}
 	for xIndex : ![23,24,25]
 	{
@@ -343,24 +343,24 @@ CreateBuiltInVec:= !() -> void
 		baseAdd := GetFuncType(![x,x],![false,false],x)
 		operOnInt := GetFuncType(![x,GTypeInt],![false,false],x)
 
-		bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType))
+		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))
 
-		bSpace.Functions[StringSpan("+")].Push(new BuiltInIntBase(baseAdd,"add") )
-		bSpace.Functions[StringSpan("-")].Push(new BuiltInIntBase(baseAdd,"sub") )
-		bSpace.Functions[StringSpan("*")].Push(new BuiltInIntBase(baseAdd,"mul") )
+		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
+		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
+		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"mul") )
 
-		bSpace.Functions[StringSpan("+=")].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
-		bSpace.Functions[StringSpan("-=")].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
-		bSpace.Functions[StringSpan("*=")].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
-		bSpace.Functions[StringSpan("/=")].Push(new BuiltInIntEqAndOper(baseRefed,"div") )
+		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
+		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
+		bSpace.Functions["*="].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+		bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"div") )
 
-		bSpace.Functions[StringSpan("+")].Push(new BuiltInVecOperOnFloat(operOnInt,"add") )
-		bSpace.Functions[StringSpan("-")].Push(new BuiltInVecOperOnFloat(operOnInt,"sub") )
-		bSpace.Functions[StringSpan("*")].Push(new BuiltInVecOperOnFloat(operOnInt,"mul") )
-		bSpace.Functions[StringSpan("/")].Push(new BuiltInVecOperOnFloat(operOnInt,"div") )
+		bSpace.Functions["+"].Push(new BuiltInVecOperOnFloat(operOnInt,"add") )
+		bSpace.Functions["-"].Push(new BuiltInVecOperOnFloat(operOnInt,"sub") )
+		bSpace.Functions["*"].Push(new BuiltInVecOperOnFloat(operOnInt,"mul") )
+		bSpace.Functions["/"].Push(new BuiltInVecOperOnFloat(operOnInt,"div") )
 	}
 
-	bSpace.Templates[StringSpan(".")].Push(new BuiltInGetVecTemplate())
+	bSpace.Templates["."].Push(new BuiltInGetVecTemplate())
 
-	bSpace.Templates[StringSpan(". this")].Push(new BuiltInVecConstrTemplate)
+	bSpace.Templates[". this"].Push(new BuiltInVecConstrTemplate)
 }

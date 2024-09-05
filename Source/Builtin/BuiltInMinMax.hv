@@ -112,12 +112,12 @@ CreateBuiltInMinMax := !() -> void
 	bSpace := CodeSpaces[0]& //TODO maybe move to -1 when it is fully here, and not partialy in Min.hv
 
 	ForEachIntType( (x,s) ==> {
-		bSpace.Functions[StringSpan("max")].Push(new BuiltInMinMaxInt(x,s,false))
-		bSpace.Functions[StringSpan("min")].Push(new BuiltInMinMaxInt(x,s,true))
+		bSpace.Functions["max"].Push(new BuiltInMinMaxInt(x,s,false))
+		bSpace.Functions["min"].Push(new BuiltInMinMaxInt(x,s,true))
 	})
 	ForEachFloatType (x ==> {
-		bSpace.Functions[StringSpan("max")].Push(new BuiltInMinMaxFloat(x,false))
-		bSpace.Functions[StringSpan("min")].Push(new BuiltInMinMaxFloat(x,true))
+		bSpace.Functions["max"].Push(new BuiltInMinMaxFloat(x,false))
+		bSpace.Functions["min"].Push(new BuiltInMinMaxFloat(x,true))
 	})
 }
 

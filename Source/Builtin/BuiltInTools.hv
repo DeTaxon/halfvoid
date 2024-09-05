@@ -255,19 +255,19 @@ BuiltInVaArg := class extend BoxFuncCommon
 CreateBuildInTools := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
-	bSpace.Functions[StringSpan("assert")].Push(new BuiltInAssert() )
-	bSpace.Functions[StringSpan("llvmLongJump")].Push(new BuiltInLongJump() )
-	bSpace.Functions[StringSpan("MemBarrier")].Push(new BuiltInMemBarrier() )
-	bSpace.Functions[StringSpan("llvmMemsetInlineInt")].Push(new BuiltInMemsetInlineInt() )
+	bSpace.Functions["assert"].Push(new BuiltInAssert() )
+	bSpace.Functions["llvmLongJump"].Push(new BuiltInLongJump() )
+	bSpace.Functions["MemBarrier"].Push(new BuiltInMemBarrier() )
+	bSpace.Functions["llvmMemsetInlineInt"].Push(new BuiltInMemsetInlineInt() )
 
-	bSpace.Functions[StringSpan("llvmGSWrite")].Push(new BuiltInGSWrite() )
-	bSpace.Functions[StringSpan("llvmGSRead") ].Push(new BuiltInGSRead()  )
+	bSpace.Functions["llvmGSWrite"].Push(new BuiltInGSWrite() )
+	bSpace.Functions["llvmGSRead" ].Push(new BuiltInGSRead()  )
 
 	builtInSetJump = new BuiltInSetJump() 
-	bSpace.Functions[StringSpan("llvmSetJump")].Push(builtInSetJump)
+	bSpace.Functions["llvmSetJump"].Push(builtInSetJump)
 
-	bSpace.Functions[StringSpan("va_start")].Push(new BuiltInLLVMProxy("@llvm.va_start",GetFuncType(![GTypeVoidP],GTypeVoid)))
-	bSpace.Functions[StringSpan("va_end")].Push(new BuiltInLLVMProxy("@llvm.va_end",GetFuncType(![GTypeVoidP],GTypeVoid)))
-	bSpace.Functions[StringSpan("va_copy")].Push(new BuiltInLLVMProxy("@llvm.va_copy",GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeVoid)))
-	bSpace.Templates[StringSpan("va_arg")].Push(new BuiltInVaArgTemplate)
+	bSpace.Functions["va_start"].Push(new BuiltInLLVMProxy("@llvm.va_start",GetFuncType(![GTypeVoidP],GTypeVoid)))
+	bSpace.Functions["va_end"].Push(new BuiltInLLVMProxy("@llvm.va_end",GetFuncType(![GTypeVoidP],GTypeVoid)))
+	bSpace.Functions["va_copy"].Push(new BuiltInLLVMProxy("@llvm.va_copy",GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeVoid)))
+	bSpace.Templates["va_arg"].Push(new BuiltInVaArgTemplate)
 }

@@ -2,8 +2,8 @@ BoxCodeSpace := class
 {
 	Files := List.{BoxFile^}
 
-	Templates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
-	Functions := AVLMap.{StringSpan,List.{BoxFunc^}} //only for builtin functions
+	Templates := AVLMap.{Str,List.{BoxFuncTemplate^}}
+	Functions := AVLMap.{Str,List.{BoxFunc^}} //only for builtin functions
 	Globals := AVLMap.{Str,List.{BoxUnit^}}
 
 	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
@@ -13,13 +13,13 @@ BoxCodeSpace := class
 
 	Modules := List.{ModuleInterface^}
 
-	AddTemplate := !(StringSpan name, BoxFuncTemplate^ newTempl) -> void
+	AddTemplate := !(Str name, BoxFuncTemplate^ newTempl) -> void
 	{
 		Templates[name].Push(newTempl)
 		if name == "->{}"
 			ExchangeTableTemplates.Push(newTempl)
 	}
-	AddFunction := !(StringSpan name, BoxFunc^ newFnc) -> void
+	AddFunction := !(Str name, BoxFunc^ newFnc) -> void
 	{
 		Functions[name].Push(newFnc)
 		if name == "->{}"

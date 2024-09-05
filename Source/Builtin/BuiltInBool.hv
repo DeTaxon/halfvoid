@@ -7,11 +7,11 @@ CreateBuiltinsBool := !() -> void
 	storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 	cmpType := GetFuncType(![x,x],GTypeBool)
 
-	bSpace.Functions[StringSpan("=")].Push(new BuiltInPrimeStore(storeType) )
-	bSpace.Functions[StringSpan("==")].Push(new BuiltInIntBase(cmpType,"icmp eq") )
-	bSpace.Functions[StringSpan("!=")].Push(new BuiltInIntBase(cmpType,"icmp ne") )
-	bSpace.Functions[StringSpan(". not")].Push(new BuiltInBoolNot() )
-	bSpace.Functions[StringSpan("<=>")].Push(new BuildInSpaceShipBool() )
+	bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType) )
+	bSpace.Functions["=="].Push(new BuiltInIntBase(cmpType,"icmp eq") )
+	bSpace.Functions["!="].Push(new BuiltInIntBase(cmpType,"icmp ne") )
+	bSpace.Functions[". not"].Push(new BuiltInBoolNot() )
+	bSpace.Functions["<=>"].Push(new BuildInSpaceShipBool() )
 }
 
 BuiltInBoolNot := class extend BoxFuncCommon

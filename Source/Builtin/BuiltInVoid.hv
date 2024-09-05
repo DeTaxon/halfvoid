@@ -15,5 +15,5 @@ CreateBuiltInVoid := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
 
-	bSpace.Functions[StringSpan("=")].Push(new BuiltInVoidStore())
+	bSpace.Functions["="].Push(new BuiltInVoidStore())
 }
