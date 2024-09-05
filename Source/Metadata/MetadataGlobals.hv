@@ -19,7 +19,7 @@ GlobalVarsIterator := class extend BoxMetaObj
 {
 	IsMetaIteratable := virtual !() -> bool { return true }
 
-	globs := List.{Tuple.{StringSpan,BoxExeObj^}}
+	globs := List.{Tuple.{StringSpan,BoxExeObj^}} //TODO Str
 	metaInited := bool
 	MetaInit := !() -> void
 	{
@@ -39,7 +39,7 @@ GlobalVarsIterator := class extend BoxMetaObj
 						asGlb := glb->{GlobalVar2^}
 						if not asGlb.isThreadLocal and asGlb.parsed
 						{
-							globs.Emplace(glbName,asGlb.proxy&)
+							globs.Emplace(glbName.AsStringSpan(),asGlb.proxy&)
 						}
 					}
 				}
