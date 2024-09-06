@@ -2,8 +2,8 @@ TableIdIter := int
 
 AppendClass BoxClass
 {
-	PreVTableVars := AVLMap.{StringSpan,VTableEntry^}
-	PreVTableFuncs := AVLMap.{StringSpan,List.{BoxFunc^}}
+	PreVTableVars := AVLMap.{Str,VTableEntry^}
+	PreVTableFuncs := AVLMap.{Str,List.{BoxFunc^}}
 
 	VTable := List.{VTableEntry^}
 	VTableType := BoxClass^
@@ -160,7 +160,7 @@ AppendClass BoxClass
 
 VTableEntry := class
 {
-	Name := StringSpan
+	Name := Str
 
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void { GetType().PrintType(ctx) }
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void {}
@@ -192,7 +192,7 @@ CheckInfoConst := class extend BoxExeConstObj
 VTableVar := class extend VTableEntry
 {
 	ItConst := BoxExeConstObj^
-	this := !(StringSpan nm, BoxExeConstObj^ cnst) -> void
+	this := !(Str nm, BoxExeConstObj^ cnst) -> void
 	{
 		Name = nm
 		ItConst = cnst
@@ -216,7 +216,7 @@ VTableFunc := class extend VTableEntry
 {
 	Value := BoxFunc^
 
-	this := !(StringSpan nm, BoxFunc^ fn) -> void
+	this := !(Str nm, BoxFunc^ fn) -> void
 	{
 		Name = nm
 		Value = fn

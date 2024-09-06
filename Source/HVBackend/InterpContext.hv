@@ -18,7 +18,7 @@ MCInterpContext := class
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
 	{
-		if vr.itName == "HV"
+		if vr.ItName == "HV"
 		{
 			InitRunContext()
 			return HV&

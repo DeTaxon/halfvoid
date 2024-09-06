@@ -32,15 +32,15 @@ BoxFunc := class extend BoxExeConstObj
 	WorkBody := virtual !() -> void
 	{
 	}
-	GetName := virtual !() -> StringSpan
+	GetName := virtual !() -> Str
 	{
-		return StringSpan("")
+		return ""
 	}
-	SetName := virtual !(StringSpan nm) -> void
+	SetName := virtual !(Str nm) -> void
 	{
 	}
-	ForceOutputName := virtual !(StringSpan nm) -> void {}
-	SetPrintName := virtual !(StringSpan nm) -> void
+	ForceOutputName := virtual !(Str nm) -> void {}
+	SetPrintName := virtual !(Str nm) -> void
 	{
 	}
 	WaitReadyState := virtual !() -> void

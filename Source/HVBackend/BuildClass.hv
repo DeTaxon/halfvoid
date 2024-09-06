@@ -1,7 +1,7 @@
 
 hvr_Class := class extend BoxClassPoison
 {
-	newFieldCB := !(StringView)&->HV_Object^
+	newFieldCB := !(Str)&->HV_Object^
 
 	this := !() -> void
 	{
@@ -12,13 +12,13 @@ hvr_Class := class extend BoxClassPoison
 		ItAlign = 1 //TODO pointer size
 		ItSize = 0
 	}
-	GetNewFieldType := virtual !(StringSpan val) -> Type^
+	GetNewFieldType := virtual !(Str val) -> Type^
 	{
 		if newFieldCB != null
 			return newFieldCB?(val)?->{Type^}
 		return null
 	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
+	GetField := virtual !(Str val) -> FieldPath^
 	{
 		for it : FieldsPath
 		{
@@ -74,10 +74,9 @@ HVClassImpl := class extend HV_Class
 		if fieldType == null
 			return void
 		obj := fieldType->{Type^}
-		spn := GetConstString(fieldName.AsStringSpan())
-		baseClass.AddExtraField(spn,obj)
+		baseClass.AddExtraField(fieldName,obj)
 	}
-	AddCallback_GetFieldFailed := virtual !(!(StringView)&->HV_Object^ cb ) -> void
+	AddCallback_GetFieldFailed := virtual !(!(Str)&->HV_Object^ cb ) -> void
 	{
 		if baseClass is not hvr_Class
 			return void
@@ -95,10 +94,9 @@ HVClassImpl := class extend HV_Class
 			return void
 		if fncObj->{BoxUnit^} is not in BoxFuncTemplate
 			return void
-		spn := GetConstString(funcName.AsStringSpan())
 		tmpl := fncObj->{BoxFuncTemplateBody^} //TODO, check if body
 		tmpl.ParentScope = baseClass
-		baseClass.DefaultSpace.MethodTemplates[spn].Push(fncObj->{BoxFuncTemplate^})
+		baseClass.DefaultSpace.MethodTemplates[funcName].Push(fncObj->{BoxFuncTemplate^})
 	}
 	AddMethodStr := virtual !(Str funcName,Str fncText) -> void
 	{
@@ -109,7 +107,6 @@ HVClassImpl := class extend HV_Class
 		fnc := StrToFunctionTemplate(fncText)
 		if fnc == null
 			return void
-		spn := GetConstString(funcName.AsStringSpan())
-		baseClass.DefaultSpace.MethodTemplates[spn].Push(fnc)
+		baseClass.DefaultSpace.MethodTemplates[funcName].Push(fnc)
 	}
 }

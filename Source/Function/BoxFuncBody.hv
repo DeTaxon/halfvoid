@@ -3,8 +3,8 @@ BoxFuncBody := class extend BoxFuncCommon
 {
 	Attrs := FuncAttributes
 
-	Name := StringSpan
-	OutputName := StringSpan
+	Name := Str
+	OutputName := Str
 
 	inps1 := Token^
 	resTyp := Token^
@@ -152,19 +152,19 @@ BoxFuncBody := class extend BoxFuncCommon
 		}
 		result->AsString = echo.GetString()
 	}
-	SetName := virtual !(StringSpan nm) -> void
+	SetName := virtual !(Str nm) -> void
 	{
 		Name = nm
 	}
-	GetName := virtual !() -> StringSpan
+	GetName := virtual !() -> Str
 	{
 		return Name
 	}
-	SetPrintName := virtual !(StringSpan nm) -> void
+	SetPrintName := virtual !(Str nm) -> void
 	{
 		Name = nm
 	}
-	ForceOutputName := virtual !(StringSpan nm) -> void {
+	ForceOutputName := virtual !(Str nm) -> void {
 		OutputName = nm
 	}
 	GetExitLabel := virtual !() -> BoxLabel^

@@ -1,8 +1,8 @@
 
-FuncNameDatabase := AVLSet.{StringSpan}
+FuncNameDatabase := AVLSet.{Str}
 FuncNameIter := int
 
-GetFuncMangle := !(StringSpan name) -> StringSpan
+GetFuncMangle := !(Str name) -> Str
 {
 	buff := char[1024] //todo unconst
 
@@ -16,9 +16,9 @@ GetFuncMangle := !(StringSpan name) -> StringSpan
 			memcpy(buff[0]&,name.NonNullStr(),name.Size())
 			sprintf(buff[name.Size()]&,"_%i",itId)
 			
-			spn := GetConstString(buff[0]&)
+			spn := new String(buff[0]&)
 			FuncNameDatabase.Insert(spn)
-			result = spn
+			result->AsString = spn
 		}else{
 			FuncNameDatabase.Insert(name)
 			result = name
@@ -38,17 +38,18 @@ GetFuncMangle := !(StringSpan name) -> StringSpan
 				sprintf(buff[0]&,"anon_func_%i", FuncNameIter)
 		}
 
-		spn := GetConstString(buff[0]&)
+		spn := new String(buff[0]&)
 		FuncNameDatabase.Insert(spn)
-		result = spn
+		result->AsString = spn
 	}
 }
 
-isRegularName := !(StringSpan name) -> bool
+isRegularName := !(Str name) -> bool
 {
+	cStr := name.Str()
 	for i : name.Size()
 	{
-		switch name[i]
+		switch cStr[i]
 		{
 			case in 'a'..'z'
 			case in 'A'..'Z'

@@ -1,6 +1,6 @@
 GlobalVar2 := class extend BoxUnit
 {
-	itName := StringSpan
+	ItName := Str
 	
 	parsed := bool
 	startedParse := bool
@@ -23,16 +23,16 @@ GlobalVar2 := class extend BoxUnit
 
 	varId := int
 
-	this := !(StringSpan varName,Token^ checkToken,bool isRef) -> void
+	this := !(Str varName,Token^ checkToken,bool isRef) -> void
 	{
-		itName = varName
+		ItName = varName
 		downToken = checkToken
 		proxy.baseVar = this&
 		isReference = isRef
 	}
-	this := !(StringSpan varName,Type^ tp,bool itl) -> void
+	this := !(Str varName,Type^ tp,bool itl) -> void
 	{
-		itName = varName
+		ItName = varName
 		proxy.baseVar = this&
 		isThreadLocal = itl
 
@@ -417,7 +417,7 @@ GetGlobalVar2 := class extend BoxExeObj
 CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar2^
 {
 	mName := GetFuncMangle(name)
-	newVar := new GlobalVar2(mName,tp,isThreadLocal)
+	newVar := new GlobalVar2(GetConstString(mName.AsStringSpan()),tp,isThreadLocal)
 	newVar.CheckValue()
 	GlobalVars2.Push(newVar)
 	return newVar

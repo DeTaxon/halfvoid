@@ -34,7 +34,7 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	return GObjNone
 }
 
-GetItemUser := !(StringView name) -> BoxExeObj^
+GetItemUser := !(Str name) -> BoxExeObj^
 {
 	for it : UserModules
 	{
@@ -54,10 +54,8 @@ GetItemUser := !(StringView name) -> BoxExeObj^
 			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
 		}
-		st := Str
-		st-> AsString = name.GetString()
 		res := BoxExeObj^
-		res = it.impClass?.GetItem(st)?->{BoxExeObj^}
+		res = it.impClass?.GetItem(name)?->{BoxExeObj^}
 		if res? is in BoxExeObj
 			return res
 	}

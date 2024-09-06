@@ -6,10 +6,9 @@ InitRunContext := !() -> void
 
 HVContextImplementation := class extend HV_Context
 {
-	GetType := virtual !(StringView typeName) -> HV_Object^ 
+	GetType := virtual !(Str typeName) -> HV_Object^ 
 	{
-		spn := typeName.AsStringSpan()
-		indnt := TokenIndent(spn)
+		indnt := TokenIndent(typeName)
 		asType := ParseType(indnt&)
 		if asType == null
 			return null

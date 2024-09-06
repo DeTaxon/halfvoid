@@ -162,16 +162,16 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			{
 				itSpace.itClass.AwaitTypeState()
 
-				if itSpace.Methods.Contain(CurrentFunc.Name)
+				if itSpace.Methods.Contain(CurrentFunc.Name.AsStringSpan())
 				{
-					for it : itSpace.Methods[CurrentFunc.Name]
+					for it : itSpace.Methods[CurrentFunc.Name.AsStringSpan()]
 					{
 						fncs.Push(it)
 					}
 				}
-				if itSpace.VirtualCleanMethods.Contain(CurrentFunc.Name)
+				if itSpace.VirtualCleanMethods.Contain(CurrentFunc.Name.AsStringSpan())
 				{
-					for it : itSpace.VirtualCleanMethods[CurrentFunc.Name]
+					for it : itSpace.VirtualCleanMethods[CurrentFunc.Name.AsStringSpan()]
 					{
 						fncs.Push(it)
 					}

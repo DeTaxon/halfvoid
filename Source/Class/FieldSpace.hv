@@ -3,12 +3,12 @@ FieldSpace := class
 	itClass := BoxClass^
 	baseSpace := FieldSpace^
 
-	Methods := AVLMap.{StringSpan,List.{BoxFunc^}}
-	VirtualMethods := AVLMap.{StringSpan,List.{BoxFunc^}}
-	VirtualCleanMethods := AVLMap.{StringSpan,List.{BoxFunc^}} // skips virtual table
-	MethodTemplates := AVLMap.{StringSpan,List.{BoxFuncTemplate^}}
+	Methods := AVLMap.{Str,List.{BoxFunc^}}
+	VirtualMethods := AVLMap.{Str,List.{BoxFunc^}}
+	VirtualCleanMethods := AVLMap.{Str,List.{BoxFunc^}} // skips virtual table
+	MethodTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
 
-	GetMethods := !(StringSpan name, HybridQueue.{BoxUnit^,10} objs) -> void
+	GetMethods := !(Str name, HybridQueue.{BoxUnit^,10} objs) -> void
 	{
 		if Methods.Contain(name)
 		{

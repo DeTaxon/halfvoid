@@ -232,7 +232,7 @@ main := !(char^[] args) -> int
 	
 	WaitForParsingObjects()
 
-	mainFunc.ForceOutputName(StringSpan("main"))
+	mainFunc.ForceOutputName("main")
 
 	//for it : CodeSpaces
 	//{

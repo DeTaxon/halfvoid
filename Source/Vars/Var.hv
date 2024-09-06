@@ -226,10 +226,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 TypeVar := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 	Value := Type^
 
-	this := !(StringSpan name, Type^ val) -> void
+	this := !(Str name, Type^ val) -> void
 	{
 		Name = name
 		Value = val
@@ -261,10 +261,10 @@ TypeVariadicVar := class extend BoxExeConstObj
 
 ConstVar := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 	Value := BoxExeConstObj^
 
-	this := !(StringSpan vName, BoxExeConstObj^ clFunc) -> void
+	this := !(Str vName, BoxExeConstObj^ clFunc) -> void
 	{
 		Name = vName
 		Value = clFunc

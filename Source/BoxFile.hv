@@ -525,7 +525,7 @@ CWorkBaseFile := class extend CWorkUnit
 					}
 					itr2 = itr2.Right
 				}
-				CurrentCodeSpace.Globals[glb.itName].Push(vr)
+				CurrentCodeSpace.Globals[glb.ItName].Push(vr)
 			}else if vr is in TypedefTemplateVar
 			{
 				CurrentCodeSpace.Types[vr->{TypedefTemplateVar^}.Name] = vr

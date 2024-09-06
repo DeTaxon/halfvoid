@@ -133,7 +133,7 @@ AppendClass BoxClass
 		return sum
 	}
 
-	AddExtraField := !(StringSpan newName, Type^ newFieldType) -> FieldPath^
+	AddExtraField := !(Str newName, Type^ newFieldType) -> FieldPath^
 	{
 		//TODO check for existing name
 
@@ -189,7 +189,7 @@ AppendClass BoxClass
 			fldClass.AddDependsOnGrow(fieldCB.Capture())
 		}
 	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
+	GetField := virtual !(Str val) -> FieldPath^
 	{
 		AwaitTypeState()
 
@@ -321,9 +321,9 @@ AppendClass BoxClass
 }
 FieldParam := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 	Value := Type^
-	this := !(StringSpan name, Type^ val) -> void
+	this := !(Str name, Type^ val) -> void
 	{
 		Name = name
 		Value = val

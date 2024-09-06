@@ -141,7 +141,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			cls := unroll.BaseClass
 			obj := unroll.MethodObj
 
-			fld := cls.GetField(asItm.Value.AsStringSpan())
+			fld := cls.GetField(asItm.Value)
 
 			if metFuncs.Size() != 0
 			{
@@ -270,7 +270,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	if asType != null
 		return asType
 
-	return GetItemUser(asItm.Value.AsStringSpan())? 
+	return GetItemUser(asItm.Value)? 
 
 	return null
 }
