@@ -2,7 +2,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 {
 	dwns := CheckExeDownList
 
-	namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use varaible
+	namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use varaible
 	if not CheckFuncCallBrackets(itm.Down.Right,dwns,namedInputs)
 		return null
 

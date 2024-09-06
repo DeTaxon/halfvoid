@@ -5,7 +5,7 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 		return null
 
 	posArgs := List.{Token^}
-	namedArgs := AVLMap.{StringSpan,Token^}
+	namedArgs := AVLMap.{Str,Token^}
 
 	if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
 	{
@@ -20,13 +20,13 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	bdy.Down?.Up = bdy
 
 	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
-	par1 := new TokenIndent(StringSpan("internalHVModuleBase"))
+	par1 := new TokenIndent("internalHVModuleBase")
 	c := InheritanceType
 	c = "extend"
 	parents.Emplace(par1,c)
 
 	resultClass := new BoxClassBody(false,parents,bdy)
-	resultClass.Name = StringSpan("ModuleName")
+	resultClass.Name = "ModuleName"
 
 	newModule.bodyClass = resultClass
 

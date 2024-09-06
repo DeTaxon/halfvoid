@@ -160,12 +160,12 @@ BoxClassBody := class extend BoxClassPoison
 		{
 			if it is in Type
 			{
-				NamedConstantsVars.Push(new TypeVar(ind.AsStringSpan(),it->{Type^}))
+				NamedConstantsVars.Push(new TypeVar(ind,it->{Type^}))
 			}else if it is TypeVariadicVar {
 				NamedConstantsVars.Push(it)
 			}else{
 				assert(it is in BoxExeConstObj)
-				NamedConstantsVars.Push(new ConstVar(ind.AsStringSpan(),it->{BoxExeConstObj^}))
+				NamedConstantsVars.Push(new ConstVar(ind,it->{BoxExeConstObj^}))
 			}
 		}
 	}
@@ -397,11 +397,9 @@ BoxClassBody := class extend BoxClassPoison
 
 		for usedFunc : fam.UsedVirtualFunctions
 		{
-			spn := usedFunc->AsString.AsStringSpan()
-
-			if PreVTableFuncs.Contain(spn)
+			if PreVTableFuncs.Contain(usedFunc)
 			{
-				PreVTableFuncs[spn][^].ParseBody()
+				PreVTableFuncs[usedFunc][^].ParseBody()
 			}
 		}
 	}
@@ -663,7 +661,7 @@ BoxClassBody := class extend BoxClassPoison
 			return void
 		}
 
-		fieldName := itm.Down->{TokenIndent^}.Value.AsStringSpan()
+		fieldName := itm.Down->{TokenIndent^}.Value
 		
 		skob := itm.Down.Right.Right.Down.Right
 		SyntaxCompress(skob,LexHVFileRoot)

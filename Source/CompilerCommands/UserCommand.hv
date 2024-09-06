@@ -6,7 +6,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 	if cmd == "#CreateCallCommand"
 	{
 		posArgs := List.{Token^}
-		namedArgs := AVLMap.{StringSpan,Token^}
+		namedArgs := AVLMap.{Str,Token^}
 
 		if not ParseCmdInputs(itm.Down.Right,posArgs,namedArgs)
 		{
@@ -90,7 +90,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		userCmd := ref UserCommands[cmd]
 
 		objVals := CheckExeDownList
-		namedObjs := AVLMap.{StringSpan,BoxExeObj^}
+		namedObjs := AVLMap.{Str,BoxExeObj^}
 		if not CheckFuncCallBrackets(itm.Down.Right,objVals,namedObjs)
 			return null
 
@@ -239,7 +239,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 }
 
 
-ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{StringSpan,Token^} res) -> bool
+ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{Str,Token^} res) -> bool
 {
 	SyntaxCompress(itm,LexHVFileRoot)
 	itr := itm.Down
@@ -255,7 +255,7 @@ ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{StringSpan,Token^} 
 		{
 			if itr.Down is not TokenIndent
 				return false
-			key := itr.Down->{TokenIndent^}.Value.AsStringSpan()
+			key := itr.Down->{TokenIndent^}.Value
 			res[key] = itr.Down.Right.Right
 		}else{
 			posArgs.Push(itr)

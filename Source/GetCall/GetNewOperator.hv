@@ -21,7 +21,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.Right.Right?.GetValue() == "()"
 		{
 			objs.Push(resCall)
-			namedInputs := AVLMap.{StringSpan,BoxExeObj^} //TODO use varaible
+			namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use varaible
 			if not CheckFuncCallBrackets(itm.Down.Right.Right,objs,namedInputs)
 				return null
 
