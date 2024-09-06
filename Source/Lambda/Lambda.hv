@@ -296,7 +296,7 @@ LambdaObject := class extend PackedExeObj
 	lambdaFunc := BoxFuncBody^
 	capturedVars := List.{Tuple.{LocalVar^,BoxExeObj^}}
 
-	CaptureObject := !(StringSpan name, BoxExeObj^ capCall,bool isRef) -> LocalVar^
+	CaptureObject := !(Str name, BoxExeObj^ capCall,bool isRef) -> LocalVar^
 	{
 		setType := capCall.GetType()
 

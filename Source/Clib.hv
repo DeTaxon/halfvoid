@@ -111,7 +111,7 @@ CLib := class extend ModuleInterface
 		{
 			if initFunc == null
 			{
-				initFunc = new BoxFuncBodyStr(GetConstString(name.AsStringSpan()),GetFuncType(GTypeVoid))
+				initFunc = new BoxFuncBodyStr(name,GetFuncType(GTypeVoid))
 				itFuncs[name] = initFunc
 			}
 			return initFunc
@@ -142,7 +142,7 @@ CLib := class extend ModuleInterface
 	innerMakeType2 := !(Str name,JsonNode^ nd) -> BoxUnit^
 	{
 		newStruct := new BoxClassVulkan
-		newStruct.Name = GetConstString(name.AsStringSpan())
+		newStruct.Name = name
 		newStruct.ItId = GetNewId()
 		newStruct.ItType = new TypeClass(newStruct)
 
@@ -273,7 +273,7 @@ CLib := class extend ModuleInterface
 
 		if linkType == "dynamic"
 		{
-			glVar := CreateGlobalVar(GetConstString(name.AsStringSpan()),fType.GetPoint(),false)
+			glVar := CreateGlobalVar(name,fType.GetPoint(),false)
 			itFuncs[name] = glVar
 
 			if not addedToStartInitFunc
@@ -286,7 +286,7 @@ CLib := class extend ModuleInterface
 			return glVar
 		}
 
-		func := new BoxFuncDeclare(fType,GetConstString(name.AsStringSpan()))
+		func := new BoxFuncDeclare(fType,name)
 		itFuncs[name] = func
 		return func
 	}

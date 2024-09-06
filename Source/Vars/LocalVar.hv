@@ -1,6 +1,6 @@
 LocalVar := class extend BoxExeObj
 {
-	itName := StringSpan
+	itName := Str
 	isMemory := bool
 	isReference := bool
 
@@ -9,7 +9,7 @@ LocalVar := class extend BoxExeObj
 	createVar := HybridQueue.{BoxExeObj^,2}
 	extraWork := HybridQueue.{BoxExeObj^,4}
 
-	this := !(StringSpan inName,Type^ varType,bool isMem,bool isRef) -> void
+	this := !(Str inName,Type^ varType,bool isMem,bool isRef) -> void
 	{
 		itName = inName
 

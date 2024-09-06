@@ -175,7 +175,7 @@ ToLocalVar := !(BoxExeObj^ itm) -> LocalVar^
 {
 	return ToLocalVar(itm,StringSpan(""))
 }
-ToLocalVar := !(BoxExeObj^ itm,StringSpan varName) -> LocalVar^
+ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 {
 	valueType := itm.GetType()
 	if itm.IsMem()

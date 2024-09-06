@@ -137,7 +137,7 @@ AppendClass BoxClass
 		VTableField = new FieldPathAbs(ItType,VTableType.ItType.GetPoint())
 	}
 
-	GetFieldInVTable := virtual !(StringSpan val) -> BoxFunc^
+	GetFieldInVTable := virtual !(Str val) -> BoxFunc^
 	{
 		AwaitVTableStep()
 		

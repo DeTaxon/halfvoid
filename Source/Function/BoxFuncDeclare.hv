@@ -1,7 +1,7 @@
 BoxFuncDeclare := class extend BoxFuncCommon
 {
-	itName := StringSpan
-	this := !(TypeFunc^ tp, StringSpan fName) -> void
+	itName := Str
+	this := !(TypeFunc^ tp, Str fName) -> void
 	{
 		SetType(tp)
 		itName = fName
@@ -21,7 +21,7 @@ BoxFuncDeclare := class extend BoxFuncCommon
 	{
 		ctx.writeStream^ << "@" << itName
 	}
-	GetName := virtual !() -> StringSpan
+	GetName := virtual !() -> Str
 	{
 		return itName
 	}

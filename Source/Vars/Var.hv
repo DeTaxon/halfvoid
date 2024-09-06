@@ -442,13 +442,13 @@ FuncVar := class extend BoxUnit
 
 TemplateFuncVar := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 	Value := BoxUnit^
 	IsSuffix := bool
 
 	MemObj := BoxFuncTemplate^
 
-	this := !(StringSpan nm, bool isSuf,BoxFuncTemplate^ obj) -> void
+	this := !(Str nm, bool isSuf,BoxFuncTemplate^ obj) -> void
 	{
 		Name = nm
 		IsSuffix = isSuf

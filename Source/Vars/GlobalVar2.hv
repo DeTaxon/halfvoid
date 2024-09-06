@@ -414,10 +414,9 @@ GetGlobalVar2 := class extend BoxExeObj
 		ctx.writeStream^ << "%TUnref" << ctx.GetUnrefId(this&)
 	}
 }
-CreateGlobalVar := !(StringSpan name, Type^ tp, bool isThreadLocal) -> GlobalVar2^
+CreateGlobalVar := !(Str name, Type^ tp, bool isThreadLocal) -> GlobalVar2^
 {
-	mName := GetFuncMangle(name)
-	newVar := new GlobalVar2(GetConstString(mName.AsStringSpan()),tp,isThreadLocal)
+	newVar := new GlobalVar2(name,tp,isThreadLocal)
 	newVar.CheckValue()
 	GlobalVars2.Push(newVar)
 	return newVar

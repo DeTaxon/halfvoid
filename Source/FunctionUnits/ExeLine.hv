@@ -425,12 +425,12 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 	}
 }
 
-CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs) -> BoxExeObj^
+CreateFuncCall := !(Str name, BoxExeObj^[] Objs) -> BoxExeObj^
 {
 	cnsts := List.{BoxExeConstObj^}
 	return CreateFuncCall(name,Objs,cnsts)
 }
-CreateFuncCall := !(StringSpan name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+CreateFuncCall := !(Str name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	callItem := BoxUnit^
 
@@ -528,7 +528,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	return found
 }
 
-CreateFuncCallOperator := !(StringSpan name, BoxExeObj^[] Objs, BoxExeConstObj^[] consts) -> BoxExeObj^
+CreateFuncCallOperator := !(Str name, BoxExeObj^[] Objs, BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
 	{

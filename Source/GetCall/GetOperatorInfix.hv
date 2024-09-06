@@ -88,14 +88,13 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	return innerTryGetOperMeta(itm)?
 }
 
-innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^
+innertTryGetCompareOverSpaceship := !(Str oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^
 {
 	return TryComputeOperators(oper,lst)?
-	spc := StringSpan("<=>")
 
-	operList := HybridQueue.{StringSpan,2}
+	operList := HybridQueue.{Str,2}
 	operList.Push(oper)
-	operList.Push(spc)
+	operList.Push("<=>")
 
 	usingSpaceship := false
 	resCall := BoxUnit^
@@ -146,7 +145,7 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 
 
 
-	GetItemGlobal2(operList&,(funcList,names) ==> bool {
+	GetItemGlobal2(operList,(funcList,names) ==> bool {
 		priorityes := HybridQueue.{int,13}
 		consts := List.{BoxExeConstObj^}
 
@@ -206,7 +205,7 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 	oneList := CheckExeDownList
 	noConsts := List.{BoxExeConstObj^}
 	oneList.Push(lst[1])
-	result = innerTryGetMethodCall(spc,lst[0],oneList,noConsts)
+	result = innerTryGetMethodCall("<=>",lst[0],oneList,noConsts)
 	if result != null
 	{
 		result = spaceshipConvert(oper,result,debugItem)
@@ -215,7 +214,7 @@ innertTryGetCompareOverSpaceship := !(StringSpan oper,CheckExeDownList lst,Token
 	return innerTryGetMethodCall(oper,lst[0],oneList,noConsts)?
 }
 
-spaceshipConvert := !(StringSpan oper, BoxExeObj^ oldCall,Token^ debugItem) -> BoxExeObj^
+spaceshipConvert := !(Str oper, BoxExeObj^ oldCall,Token^ debugItem) -> BoxExeObj^
 {
 	result = oldCall
 
@@ -327,7 +326,7 @@ innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> B
 	return null
 }
 
-TryComputeOperators := !(StringSpan oper, BoxExeObj^[]  objs) -> BoxExeObj^
+TryComputeOperators := !(Str oper, BoxExeObj^[]  objs) -> BoxExeObj^
 {
 	if oper in !["==","!="]
 	{

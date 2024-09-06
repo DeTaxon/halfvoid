@@ -49,7 +49,7 @@ ParseType := !(Token^ obj) -> Type^
 	return CheckTemplateType(null,obj,someMap)
 }
 
-TypeGetGlobalByIndent := !(StringSpan name) -> BoxUnit^
+TypeGetGlobalByIndent := !(Str name) -> BoxUnit^
 {
 	for it : UnitStack
 	{

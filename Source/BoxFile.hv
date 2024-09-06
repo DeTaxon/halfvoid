@@ -34,7 +34,7 @@ BoxFile := class extend BoxUnit
 	file := File^
 	fileData := Blob^
 	fileSize := int
-	fileName := StringSpan
+	fileName := Str
 
 	loaded := THatch
 
@@ -53,7 +53,7 @@ BoxFile := class extend BoxUnit
 		file = inFile
 		fileData = file.GetBlob()
 		fileSize = file.Size()
-		fileName = GetConstString(file.GetName().AsStringSpan())
+		fileName = file.GetName().Str() //TODO Remove .Str()
 	}
 	GetName := !() -> StringSpan
 	{
@@ -275,7 +275,7 @@ BoxFile := class extend BoxUnit
 			CreateFunc(name,isSuffix,c&,iter)
 		}
 	}
-	CreateFunc := !(StringSpan newName,bool isSuffix,PFunctionParser^ newFunc,Token^ iter) -> void
+	CreateFunc := !(Str newName,bool isSuffix,PFunctionParser^ newFunc,Token^ iter) -> void
 	{
 		fnc := newFunc.CreateObject()
 		assert(fnc != null)
@@ -477,7 +477,7 @@ CWorkBaseFile := class extend CWorkUnit
 		if itToken.Down?.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
 		{
 			//TODO must be token, not str
-			name := itToken.Down->{TokenIndent^}.Value.AsStringSpan()
+			name := itToken.Down->{TokenIndent^}.Value
 			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
 			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
 			return "Complete"
@@ -496,7 +496,7 @@ CWorkBaseFile := class extend CWorkUnit
 					itr2 = itr2.Right
 					isRef = true
 				}
-				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value.AsStringSpan(),itr2,isRef)
+				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itr2,isRef)
 				GlobalVars2.Push(vr->{GlobalVar2^})
 			}
 		}

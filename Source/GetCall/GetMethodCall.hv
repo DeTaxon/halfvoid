@@ -46,7 +46,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	}
 
 	gotName := false
-	methodName := StringSpan
+	methodName := Str
 
 	if itm.Down.Right.Right is TokenIndent
 	{
@@ -55,7 +55,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	}else if itm.Down.Right.Right is TokenString
 	{
 		gotName = true
-		methodName = StringSpan(itm.Down.Right.Right->{TokenString^}.Value.Str())
+		methodName = itm.Down.Right.Right->{TokenString^}.Value
 	}
 
 	if gotName
@@ -72,7 +72,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		objs2.Push(vr)
 		objs2.Push(Objs[^])
 
-		newFnc := CreateFuncCall(nm.Value.AsStringSpan(),objs2,consts)
+		newFnc := CreateFuncCall(nm.Value,objs2,consts)
 		return newFnc?
 	}
 	
@@ -86,7 +86,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
-innerTryGetMethodCall := !(StringSpan name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts) -> BoxExeObj^
+innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
 	if vr == null
 		return null

@@ -9,7 +9,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		dwnTp := GetTypeFromIndent(tk->{TokenIndent^},resCnsts&)
 		if dwnTp == null
 		{
-			name := tk->{TokenIndent^}.Value.AsStringSpan()
+			name := tk->{TokenIndent^}.Value
 			if resCnsts.Contain(name)
 			{
 				itm2 := resCnsts[name]
@@ -193,10 +193,10 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 			cls = tp->{TypeClass^}.ToClass
 		}
 
-		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value.AsStringSpan())
+		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
 
 		if checkRes == null
-			checkRes = GetTypeObjByName(tk.Down->{TokenIndent^}.Value.AsStringSpan())
+			checkRes = GetTypeObjByName(tk.Down->{TokenIndent^}.Value)
 
 		if checkRes == null
 			return null
@@ -399,7 +399,7 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{Str,BoxUnit^} r
 
 	if itm is TokenIndent
 	{
-		name := itm->{TokenIndent^}.Value.AsStringSpan()
+		name := itm->{TokenIndent^}.Value
 		
 		if resCnsts.Contain(name)
 		{

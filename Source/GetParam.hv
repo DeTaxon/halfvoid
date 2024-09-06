@@ -86,7 +86,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		{
 			av := par->{AliasVarOhNo^}
 			if av.itName == asItm.Value
-				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value.AsStringSpan(),par,metFuncs)
+				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is AliasVar
 		{
@@ -102,7 +102,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			lv := par->{LocalVar^}
 
 			if lv.itName == asItm.Value
-				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value.AsStringSpan(),par,metFuncs)
+				return GetParamCaptureVar(lv.CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is TypeVariadicVar
 		{
@@ -121,7 +121,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				}else if par is in MemVar
 				{
 					mv2 := mv->{MemVar^}
-					return GetParamCaptureVar(CallFromSomeVar(mv2),asItm.Value.AsStringSpan(),par,metFuncs)
+					return GetParamCaptureVar(CallFromSomeVar(mv2),asItm.Value,par,metFuncs)
 				}else if par is MacroVar {
 					macro := par->{MacroVar^}
 					return macro.CreateCall()
@@ -173,7 +173,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				assert(clsType is TypeClass)
 				cls := clsType->{TypeClass^}.ToClass
 
-				fld := cls.GetField(asItm.Value.AsStringSpan())
+				fld := cls.GetField(asItm.Value)
 				if fld != null
 				{
 					tkn1 := TokenIndent(StringSpan("this"))
@@ -183,7 +183,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 					return fld.CreateCall(![parGetCall])
 				}
 
-				mt := cls.GetFieldInVTable(asItm.Value.AsStringSpan())
+				mt := cls.GetFieldInVTable(asItm.Value)
 				if mt != null
 				{
 					tkn1 := TokenIndent(StringSpan("this"))
@@ -196,7 +196,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		}
 	}
 	callItem := BoxUnit^
-	GetItemGlobal(asItm.Value.AsStringSpan(), x ==> {
+	GetItemGlobal(asItm.Value, x ==> {
 		for it : x
 		{
 			if it is in GlobalVar2
@@ -292,7 +292,7 @@ CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
 	assert(false)
 	return null
 }
-GetParamCaptureVar := !(BoxExeObj^ preRes,StringSpan varName,BoxUnit^ par,HybridQueue.{BoxFuncBody^,4} fncs) -> BoxExeObj^
+GetParamCaptureVar := !(BoxExeObj^ preRes,Str varName,BoxUnit^ par,HybridQueue.{BoxFuncBody^,4} fncs) -> BoxExeObj^
 {
 	if fncs.Size() == 0
 		return preRes

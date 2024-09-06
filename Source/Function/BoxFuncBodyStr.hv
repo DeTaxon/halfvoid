@@ -1,7 +1,7 @@
 BoxFuncBodyStr := class extend BoxFuncBody
 {
 	funcIsComplete := bool
-	this := !(StringSpan setName,TypeFunc^ fncType) -> void
+	this := !(Str setName,TypeFunc^ fncType) -> void
 	{
 		Name = setName
 		SetType(fncType)

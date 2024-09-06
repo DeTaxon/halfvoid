@@ -162,16 +162,16 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 			{
 				itSpace.itClass.AwaitTypeState()
 
-				if itSpace.Methods.Contain(CurrentFunc.Name.AsStringSpan())
+				if itSpace.Methods.Contain(CurrentFunc.Name)
 				{
-					for it : itSpace.Methods[CurrentFunc.Name.AsStringSpan()]
+					for it : itSpace.Methods[CurrentFunc.Name]
 					{
 						fncs.Push(it)
 					}
 				}
-				if itSpace.VirtualCleanMethods.Contain(CurrentFunc.Name.AsStringSpan())
+				if itSpace.VirtualCleanMethods.Contain(CurrentFunc.Name)
 				{
-					for it : itSpace.VirtualCleanMethods[CurrentFunc.Name.AsStringSpan()]
+					for it : itSpace.VirtualCleanMethods[CurrentFunc.Name]
 					{
 						fncs.Push(it)
 					}
@@ -204,7 +204,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				extraObjs.Push(Objs[^])
 
 				callItem := BoxUnit^
-				cls.GetMethods(asInd.Value.AsStringSpan(),fncs ==> {
+				cls.GetMethods(asInd.Value,fncs ==> {
 					callItem = GetBestFunc(fncs,extraObjs,consts,false)
 				})
 				if callItem != null
@@ -236,7 +236,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 					extraObjs.Push(Objs[^])
 
 					callItem := BoxUnit^
-					cls.GetMethods(asInd.Value.AsStringSpan(),fncs ==> {
+					cls.GetMethods(asInd.Value,fncs ==> {
 						callItem = GetBestFunc(fncs,extraObjs,consts,false)
 					})
 					if callItem != null
@@ -263,7 +263,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		}
 
 		resFunc := BoxExeObj^
-		resFunc = CreateFuncCall(asInd.Value.AsStringSpan(),Objs,consts)
+		resFunc = CreateFuncCall(asInd.Value,Objs,consts)
 
 		if resFunc != null
 			return resFunc

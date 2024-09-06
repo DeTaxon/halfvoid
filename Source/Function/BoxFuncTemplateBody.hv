@@ -11,7 +11,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 	headerCheckHatch := THatch
 
-	Name := StringSpan
+	Name := Str
 
 	headerHash := u32
 	hash := u32
@@ -118,7 +118,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		
 	}
 
-	SetName := virtual !(StringSpan name) -> void
+	SetName := virtual !(Str name) -> void
 	{
 		Name = name
 	}

@@ -88,7 +88,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 		assert(false)
 		return null
 	}
-	SetName := virtual !(StringSpan name) -> void
+	SetName := virtual !(Str name) -> void
 	{
 	}
 	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^

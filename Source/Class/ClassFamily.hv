@@ -8,12 +8,11 @@ ClassFamily := class
 	{
 		UsedVirtualFunctions.Insert(funcName)
 
-		spn := funcName->AsString.AsStringSpan()
 		for cls : Classes
 		{
-			if not cls.PreVTableFuncs.Contain(spn)
+			if not cls.PreVTableFuncs.Contain(funcName)
 				continue
-			for fnc : cls.PreVTableFuncs[spn]
+			for fnc : cls.PreVTableFuncs[funcName]
 			{
 				fnc.ParseBody()
 			}

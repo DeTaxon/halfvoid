@@ -194,7 +194,7 @@ AppendClass BoxFile
 				continue
 
 			d := PFunctionParser(it.1.Down.Right.Right)
-			CreateFunc(GetConstStringSpan(it.0.AsStringSpan()),false,d&,null)
+			CreateFunc(it.0,false,d&,null)
 		}
 		
 	}

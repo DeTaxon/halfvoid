@@ -134,7 +134,7 @@ MCInterpContext := class
 				{
 					if it == vr
 					{
-						lib := GetClibDll(cLib,ind.AsStringSpan())
+						lib := GetClibDll(cLib,ind)
 						fncPtr := lib.Get(ind.AsStringSpan())
 						result->{void^^}^ = fncPtr
 					}
@@ -342,7 +342,7 @@ MCInterpContext := class
 		}
 	}
 
-	GetClibDll := !(CLib^ cLib, StringSpan funcName) -> Library^
+	GetClibDll := !(CLib^ cLib, Str funcName) -> Library^
 	{
 		return loadedDlls[cLib]?
 
@@ -355,7 +355,7 @@ MCInterpContext := class
 		}
 		if useLib == null
 		{
-			printf("could not load library for function %s\n",funcName.GetString().Str())
+			printf("could not load library for function %s\n",funcName)
 			exit(0)
 		}
 		loadedDlls[cLib] = useLib
@@ -380,7 +380,7 @@ MCInterpContext := class
 					continue
 				useLib := GetClibDll(cLib,dclr.GetName())
 
-				fnc := useLib.Get(dclr.GetName())
+				fnc := useLib.Get(dclr.GetName().Str())
 				if fnc == null
 				{
 					continue
