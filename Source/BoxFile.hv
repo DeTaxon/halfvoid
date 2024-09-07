@@ -353,7 +353,7 @@ BoxFile := class extend BoxUnit
 
 	AddWork := !() -> void
 	{
-		fileName = GetConstString(file.GetName().Str())
+		fileName = file.GetName().Str() // TODO remove Str
 		if fileTokens == null
 			return void
 
@@ -372,7 +372,7 @@ BoxFile := class extend BoxUnit
 	}
 	Parse := !() -> void
 	{
-		fileName = GetConstString(file.GetName().Str())
+		fileName = file.GetName().Str()// TODO remove Str
 
 		LoadSpace()
 

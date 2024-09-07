@@ -329,7 +329,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		if OutputName.Size() == 0
+		if OutputName->AsString == null or OutputName.Size() == 0
 		{
 			OutputName = GetFuncMangle(StringSpan("Anon"))
 		}

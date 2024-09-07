@@ -49,11 +49,10 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 
 	asFunc := baseFunc->{BoxFuncBody^}
 
-	autoCastStr := GetConstString("#AddAutoCast")
-	if not asFunc.Properties.Contain(autoCastStr)
+	if not asFunc.Properties.Contain("#AddAutoCast")
 		return void
 	
-	ptr := asFunc.Properties[autoCastStr]
+	ptr := asFunc.Properties["#AddAutoCast"]
 	if ptr is not AutoCastPropertie
 		return void
 
