@@ -5,9 +5,16 @@ WindowCli := class extend TGCObject
 	ctx := DrawCliContext
 	layoutContext := LayoutContext
 
+	working := bool
+
 	InitWindow := virtual !() -> GUIObject^
 	{
 		return new LayoutVertical(![])
+	}
+
+	Quit := !() -> void
+	{
+		working = false
 	}
 	Run := !() -> void
 	{
@@ -24,14 +31,13 @@ WindowCli := class extend TGCObject
 		mainGUIObject.GetLayout(layoutContext&)
 		mainGUIObject.SetLayout(layoutContext&,vec2f(layoutContext.w,layoutContext.h))
 		
-		while true
+		working = true
+		while working
 		{
 			draw()
 
 			c := @work wgetch(ctx.Window) //TODO more normal way to wait
 
-			if c == 'q'
-				break
 			KeyPressed(c)
 		}
 		endwin()

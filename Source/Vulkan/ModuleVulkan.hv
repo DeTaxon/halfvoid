@@ -804,7 +804,7 @@ BoxClassVulkan := class extend BoxClass
 	{
 		finishHatch.Emit()
 	}
-	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethods := virtual !(Str name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{	
 		finishHatch.Await()
 
@@ -814,7 +814,7 @@ BoxClassVulkan := class extend BoxClass
 		if objs.Size() != 0
 			cb(objs)
 	}
-	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethodsInFields := virtual !(Str name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
 	{
 		finishHatch.Await()
 		assert(fieldPtr != null)

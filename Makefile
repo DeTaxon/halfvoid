@@ -73,7 +73,7 @@ run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
 run_nonstop:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run main $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run main -C0 ExperimentalLibrary/ $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run_nonstop.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv
 win.exe:

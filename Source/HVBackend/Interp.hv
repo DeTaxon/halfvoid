@@ -120,7 +120,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	opsCount := interpFunc.Lines.Size()
 	while cs < opsCount
 	{
-		//printf("line %i\n",cs)
+		//printf("line %i %s %i\n",cs,thisFrame.DebugFileName,thisFrame.DebugFileLine)
 		thisLine := ref opPtr[cs]
 		switch thisLine.opcode
 		{

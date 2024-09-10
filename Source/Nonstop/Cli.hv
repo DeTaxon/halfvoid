@@ -1,7 +1,7 @@
 
 CliWin := class extend WindowCli
 {
-	ErrorList := List.{Str}
+	StatusList := List.{Str}
 	HotloadList := List.{Str}
 	ConsoleList := List.{Str}
 
@@ -11,10 +11,10 @@ CliWin := class extend WindowCli
 	{
 		tabs = new  LayoutTabs(![
 			new LayoutHorizontal(![
-				new MultilineText(HotloadList)
+				new MultilineText(StatusList)
 			]),
 			new LayoutHorizontal(![
-				new MultilineText(ErrorList)
+				new MultilineText(HotloadList)
 			]),
 			new LayoutHorizontal(![
 				new MultilineText(ConsoleList)
@@ -30,20 +30,31 @@ CliWin := class extend WindowCli
 		case '\t'
 			tabs.NextTab()
 			Refresh()
+		case 'q'
+			cliQuit = true
+			while cliWorks != 0
+				TSleep(0.2)
+			cliWin.Quit()
 		case 'r'
 			StartInterpreter()
 		}
 	}
 }
 
+runInProgress := bool
+
 StartInterpreter := !() -> void
 {
+	if runInProgress
+		return void
+	runInProgress = true
 	TSpawnTask(() ==> {
-		toRun := intGetFunc(RunModeFuncName)
+		toRun := intGetFunc("main")
 		toRun.ParseBody()
 		WaitForParsingObjects()
 
 		CompileAndRunCode(toRun->{BoxFuncBody^})
+		runInProgress = false
 	})
 }
 
@@ -53,8 +64,8 @@ StreamOnLambda := class extend Stream
 	writeLambda := !(void^,s64)&->void
 	this := !(!(void^,s64)&-> void rl, !(void^,s64)&->void wl) -> void
 	{
-		readLambda = rl
-		writeLambda = wl
+		readLambda = rl?.Capture()
+		writeLambda = wl?.Capture()
 	}
 	Read := virtual !(void^ data, s64 sLen) -> void
 	{
@@ -66,38 +77,21 @@ StreamOnLambda := class extend Stream
 	}
 }
 
+cliWin := CliWin^
+cliQuit := bool
+cliWorks := int
 
-EnterCliMode := !() -> void
+EnterCliMode := !() -> int
 {
 	ExpectWorkers(16)
 
-	win := new CliWin
+	cliWin = new CliWin
 
-	CompileAndRunInit()
-
-	conVar := intGetGlobalVar("Console")
-	if conVar != null
-	{
-		conVar.NotifyUseAndWait()
-		globVar := GInterpCntx.GetGlobalVarMem(conVar)
-
-		newStream := Stream^
-		newStream = new StreamOnLambda(null,(data,sLen) ==> [win&]{
-			st := Str
-			st->AsString = new String(data->{char^},sLen->{int})
-			win.ConsoleList.Push(st)
-			win.Refresh()
-		})
-		newStream = new TextStream(newStream)
-
-		globVar->{Stream^^}^ = newStream
-	}
-
-	HotloadStream& = new StreamOnLambda(null,(data,sLen) ==> [win&]{
+	HotloadStream& = new StreamOnLambda(null,(data,sLen) ==> {
 		st := Str
 		st->AsString = new String(data->{char^},sLen->{int})
-		win.HotloadList.Push(st)
-		win.Refresh()
+		cliWin.HotloadList.Push(st)
+		cliWin.Refresh()
 	})
 	HotloadStream& = new TextStream(HotloadStream&)
 
@@ -105,7 +99,7 @@ EnterCliMode := !() -> void
 
 		hotload := HotloadContext
 
-		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> [win&] {
+		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> {
 			asFile := changedFile->{File^}
 
 			flId := asFile.GetId()
@@ -152,34 +146,85 @@ EnterCliMode := !() -> void
 
 			WaitForParsingObjects()
 
-			//win.ErrorList.Clear()
-
-			win.ErrorList.Push(StrConcat("Error size ",WorkBag.works.Size()))
-			if WorkBag.works.Size() != 0
+			if WorkBag.works.Size() == 0
 			{
-				for it : WorkBag.works
-				{
-					msg := WorkToError(it)
-					if msg->AsString == null
-						continue
-					win.ErrorList.Push(msg)
-				}
+				GInterpCntx.ReloadFunctions(hotload&)
+				hotload.Reset()
+			}else{
 				for it : WorkBag.works
 				{
 					if it is not CWorkFuncCompile
 						continue
 					hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
 				}
-				WorkBag.CancelAll()
-			}else{
-				GInterpCntx.ReloadFunctions(hotload&)
-				hotload.Reset()
 			}
-			win.Refresh()
-
 		})
 	})
 
-	win.Run()
+	TSpawnTask(() ==> {
+		CliParseMain()
+	})
 
+	StartStatusMonitor()
+
+	cliWin.Run()
+	exit(0) //TODO 
+
+}
+
+CliParseMain := !() -> void
+{
+	mainFuncName := "internalHVEntryPoint"
+
+	WaitForParsingObjects()
+	mainFunc := intGetFunc(mainFuncName)
+	assert(mainFunc != null)
+	assert(mainFunc is BoxFuncBody)
+	mainFunc.ParseBody()
+	
+	WaitForParsingObjects()
+
+	mainFunc.ForceOutputName("main")
+
+	WaitForParsingObjects()
+
+	TLSStep()
+
+	while WorkBag.works.Size() != 0
+	{
+		WaitForParsingObjects()
+		TSleep(0.01)
+	}
+
+	for it : CodeSpaces
+	{
+		for libs : it.Modules
+			libs.CreateInitPart()
+	}
+
+	while WorkBag.works.Size() != 0
+	{
+		WaitForParsingObjects()
+		TSleep(0.01)
+	}
+
+	CompileAndRunInit()
+
+	conVar := intGetGlobalVar("Console")
+	if conVar != null
+	{
+		conVar.NotifyUseAndWait()
+		globVar := GInterpCntx.GetGlobalVarMem(conVar)
+
+		newStream := Stream^
+		newStream = new StreamOnLambda(null,(data,sLen) ==> {
+			st := Str
+			st->AsString = new String(data->{char^},sLen->{int})
+			cliWin.ConsoleList.Push(st)
+			cliWin.Refresh()
+		})
+		newStream = new TextStream(newStream)
+
+		globVar->{Stream^^}^ = newStream
+	}
 }

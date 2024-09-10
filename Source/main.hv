@@ -222,6 +222,11 @@ main := !(char^[] args) -> int
 	InitLambda()
 	GParsedAllFiles.Emit()
 
+	if NonStopBuild
+	{
+		return EnterCliMode()
+	}
+
 	mainFuncName := "internalHVEntryPoint"
 
 	WaitForParsingObjects()
@@ -233,13 +238,6 @@ main := !(char^[] args) -> int
 	WaitForParsingObjects()
 
 	mainFunc.ForceOutputName("main")
-
-	//for it : CodeSpaces
-	//{
-	//	for libs : it.Modules
-	//		libs.CreateInitPart()
-	//}
-
 
 	WaitForParsingObjects()
 
@@ -258,12 +256,6 @@ main := !(char^[] args) -> int
 
 	if WorkBagPrintErrors()
 		exit(-1)
-
-	if NonStopBuild
-	{
-		EnterCliMode()
-		exit(0)
-	}
 
 	printf("good to go\n")
 

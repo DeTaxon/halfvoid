@@ -27,7 +27,7 @@ VKGrowableClass := class extend BoxClass
 		ItAlign = 1 //TODO pointer size
 		ItSize = 0
 	}
-	GetNewFieldType := virtual !(StringSpan val) -> Type^
+	GetNewFieldType := virtual !(Str val) -> Type^
 	{
 		if val.Size() > 1000
 			return null
@@ -38,7 +38,7 @@ VKGrowableClass := class extend BoxClass
 		buffer[val.Size() + 5] = 0
 		return itModule.GetTryFuncPointer(buffer[0]&)
 	}
-	GetField := virtual !(StringSpan val) -> FieldPath^
+	GetField := virtual !(Str val) -> FieldPath^
 	{
 		for it : FieldsPath
 		{

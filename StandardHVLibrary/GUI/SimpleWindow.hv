@@ -23,6 +23,7 @@ Window := class extend GLFWWindow
 
 	this := !(int w, int h,char^ title) -> void
 	{
+		printf("those\n")
 		ClearColor = vec4f(1.0,0.5,1.0,1.0)
 		windowTitle = title
 

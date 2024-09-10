@@ -3,28 +3,6 @@ main := !(char^[] args) -> int
 {
 	RunOpenGLTest()
 }
-RunTest := !() -> void
-{
-}
-
-
-
-#Module(
-	GetItem := virtual !(Str st) -> void^
-	{
-		if st == "TestClass"
-		{
-			cls := @once HV.CreateClass()
-			cls.AddField("x",HV.GetType("int"))
-			cls.AddMethodStr("TestFunc","
-				!() -> void{
-					printf(\"Hi, maybe %i\\n\",x)
-				}
-			")
-			return cls.GetType()
-		}
-	}
-)
 
 
 mouseMove := !(void^ w, double itX, double itY) -> void
@@ -76,6 +54,8 @@ RunOpenGLTest := !() -> void
         glfwPollEvents()
 		glfwSwapBuffers(win)
 	}
+	glfwDestroyWindow(win)
+	glfwTerminate()
 }
 
 

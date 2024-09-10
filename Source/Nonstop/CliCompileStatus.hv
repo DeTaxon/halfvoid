@@ -1,0 +1,54 @@
+StartStatusMonitor := !() -> void
+{
+	TSpawnTask(() ==> {
+		cliWorks += 1
+		while not cliQuit
+		{
+			mainStatusFunc()
+			TSleep(0.1)
+		}
+		cliWorks -= 1
+	})
+}
+
+printedGoodStatus := bool
+mainStatusFunc := !() -> void
+{
+	lst := ref cliWin.StatusList
+
+	if WorkBag.works.Size() == 0
+	{
+		if not printedGoodStatus
+		{
+			lst.Destroy()
+			lst.Push("Everything compiled")
+			cliWin.Refresh()
+		}
+		printedGoodStatus = true
+	}else{
+
+		lst.Destroy()
+
+		printedGoodStatus = false
+		st := TEchoStream
+		st << "Work units in progress " << WorkBag.works.Size()
+
+		lst.Push(st.GetString())
+
+
+		maxMessages := 20
+		for it : WorkBag.works
+		{
+			msg := WorkToError(it)
+			if msg->AsString == null
+				continue
+			lst.Push(msg)
+
+			maxMessages -= 1
+			if maxMessages <= 0
+				break
+		}
+
+		cliWin.Refresh()
+	}
+}
