@@ -221,10 +221,15 @@ BoxClassBody := class extend BoxClassPoison
 		})
 		//ComputeDesire(parseTask.Desired,CurrentTask.Desired)
 	}
+
+	thisWork := CWorkClassCompile^
 	AddClassWork := !() -> CWorkUnit^
 	{
-		result = new CWorkClassCompile(this&)
-		WorkBag.AddWork(result)
+		return thisWork?
+
+		thisWork = new CWorkClassCompile(this&)
+		WorkBag.AddWork(thisWork)
+		return thisWork
 	}
 	AwaitTypeState := virtual !() -> void
 	{
@@ -388,6 +393,8 @@ BoxClassBody := class extend BoxClassPoison
 
 		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
 		FieldsState.Emit()
+
+		thisWork = null
 
 	}
 

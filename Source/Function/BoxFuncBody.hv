@@ -173,11 +173,14 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 
 
+	thisWork := CWorkFuncCompile^
 	createCWork := !() -> CWorkFuncCompile^
 	{
-		funcComp := new CWorkFuncCompile(this&)
-		WorkBag.AddWork(funcComp)
-		return funcComp
+		return thisWork?
+
+		thisWork = new CWorkFuncCompile(this&)
+		WorkBag.AddWork(thisWork)
+		return thisWork
 	}
 
 	body := BoxBlock^
@@ -315,6 +318,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		if #Var("Tracy") TracyPrintf("Function %p %s parse ended",this&,GetGoodName())
 		readyState.Emit()
 		parseTask = null
+		thisWork = null
 	}
 	WaitReadyState := virtual !() -> void
 	{
