@@ -35,7 +35,6 @@ TryGetPtrObj := !(Token^ itm) -> BoxExeObj^
 
 	dwn := TryGetExeCall(itm.Down)
 
-	assert(dwn != null)
 	if dwn == null
 	{
 		CurrentFuncWork?.SetErrorMessage(itm.MakeError("can not dereference object"))

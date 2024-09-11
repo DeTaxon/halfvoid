@@ -326,7 +326,7 @@ WorkBagPrintErrors := !() -> bool
 	for it : WorkBag.works
 	{
 		er := it.GetErrorMessage()
-		if er != null
+		if er->AsString != null
 		{
 			puts(er.Str())
 		} else if it is CWorkClassCompile

@@ -64,14 +64,14 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 			{
 				nm := constFunc->{BoxFuncDeclare^}
 
-				//if nm.itName == "printf"
-				//{
-				//	pv := intGetFunc("printf_hv")
-				//	if pv != null
-				//	{
-				//		it&->{MCConstFunction^}.GetValue() = pv
-				//	}
-				//}
+				if nm.itName == "printf"
+				{
+					pv := @once intGetFunc("printf_hv")
+					if pv != null
+					{
+						it&->{MCConstFunction^}.GetValue() = pv
+					}
+				}
 
 			}
 

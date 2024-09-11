@@ -36,17 +36,43 @@ mainStatusFunc := !() -> void
 		lst.Push(st.GetString())
 
 
-		maxMessages := 20
+		gotWorks := AVLSet.{CWorkUnit^}
+		maxMessages := 30
 		for it : WorkBag.works
 		{
-			msg := WorkToError(it)
+			msg := it.GetErrorMessage()
 			if msg->AsString == null
 				continue
 			lst.Push(msg)
+			gotWorks.Insert(it)
 
 			maxMessages -= 1
 			if maxMessages <= 0
 				break
+		}
+
+		if maxMessages != 0
+		{
+			for it : WorkBag.works
+			{
+				if gotWorks.Contain(it)
+					continue
+
+				st := TEchoStream
+				switch it is
+				{
+				case CWorkClassCompile
+					st << "Working on class " << it.itClass.GetGoodName()
+					lst.Push(st.GetString())
+				case CWorkFuncCompile
+					st << "Working on function " << it.itFunc.GetGoodName() << " " << it.itFunc.GetFileScope().fileName.GetString().Str() << ":" << it.itLine
+					lst.Push(st.GetString())
+				}
+
+				maxMessages -= 1
+				if maxMessages <= 0
+					break
+			}
 		}
 
 		cliWin.Refresh()

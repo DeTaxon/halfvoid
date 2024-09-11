@@ -751,7 +751,7 @@ CWorkClassCompile := class extend CWorkUnit
 	{
 		return itClass.IsComplete()
 	}
-	GetErrorMessage := virtual !() -> String^ 
+	GetErrorMessage := virtual !() -> Str 
 	{	
 	}
 	

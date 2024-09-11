@@ -19,9 +19,9 @@ InterpWork := class extend CWorkUnit
 	{
 		return isDone
 	}
-	GetErrorMessage := virtual !() -> String^
+	GetErrorMessage := virtual !() -> Str
 	{
-		return errMessage->AsString
+		return errMessage
 	}
 	SetErrorMessage := virtual !(Str newMessage) -> void
 	{

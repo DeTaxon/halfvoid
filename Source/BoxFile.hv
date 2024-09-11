@@ -461,9 +461,9 @@ CWorkBaseFile := class extend CWorkUnit
 		itToken = inpToken
 		itState = "Created"
 	}
-	GetErrorMessage := virtual !() -> String^
+	GetErrorMessage := virtual !() -> Str
 	{
-		return itError->AsString
+		return itError
 	}
 	
 	DoWork := virtual !() -> CWorkState 

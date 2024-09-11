@@ -179,8 +179,7 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 	{
 		return waitClasses.Size() == 0 and waitFunctions.Size() == 0
 	}
-	GetErrorMessage := virtual !() -> String^ 
+	GetErrorMessage := virtual !() -> Str 
 	{
-		return null
 	}
 }

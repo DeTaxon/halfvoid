@@ -499,7 +499,7 @@ GetParSpan := !(int i) -> StringSpan
 CWorkFuncCompile := class extend CWorkUnit
 {
 	itFunc := BoxFuncBody^
-	itError := String^
+	itError := Str
 	itLine := int
 	isCanceled := bool
 	isFailed := bool
@@ -521,13 +521,13 @@ CWorkFuncCompile := class extend CWorkUnit
 	{
 		return itFunc.IsComplete()
 	}
-	GetErrorMessage := virtual !() -> String^ 
+	GetErrorMessage := virtual !() -> Str 
 	{	
 		return itError
 	}
 	SetErrorMessage := virtual !(Str setError) -> void 
 	{	
-		itError = setError->AsString
+		itError = setError
 		isFailed = true
 	}
 	ClearError := virtual !() -> void

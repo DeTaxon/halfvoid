@@ -66,160 +66,160 @@ Window := class extend GLFWWindow
 		}
 	}
 
-	imgCommands := AVLMap.{u32,SimpleWindowImageInfo}
-	imgGeneration := int
-	cmdGeneration := int
+	//imgCommands := AVLMap.{u32,SimpleWindowImageInfo}
+	//imgGeneration := int
+	//cmdGeneration := int
 	
-	Run := !() -> void
-	{
-		//TracyZone("Window main loop")
-		
-		InitVulkan()
+	//Run := !() -> void
+	//{
+	//	//TracyZone("Window main loop")
+	//	
+	//	InitVulkan()
 
-		imgGeneration = vkOverlay.DataGeneration - 1
-		cmdGeneration = vkOverlay.CmdGeneration - 1
+	//	imgGeneration = vkOverlay.DataGeneration - 1
+	//	cmdGeneration = vkOverlay.CmdGeneration - 1
 
-		lastTime := GetSteadyTime() - 1 //sec
+	//	lastTime := GetSteadyTime() - 1 //sec
 
-		while not ShouldClose()
-		{
-			if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration) or true
-			{
-				imgGeneration = vkOverlay.DataGeneration
-				cmdGeneration = vkOverlay.CmdGeneration
+	//	while not ShouldClose()
+	//	{
+	//		if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration) or true
+	//		{
+	//			imgGeneration = vkOverlay.DataGeneration
+	//			cmdGeneration = vkOverlay.CmdGeneration
 
-				surfaceIndex := u32
-				drawRes := true
-				//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
-				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+	//			surfaceIndex := u32
+	//			drawRes := true
+	//			//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+	//			vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
-				if not drawRes or outdatedWindowSize
-				{
-					outdatedWindowSize = false
-					vInstance.CreateSwapchain(mainRenderPass,Width,Height)
-					vkOverlay.DataGeneration += 1
-					vkOverlay.CmdGeneration += 1
-					continue
-				}
-
-
-				if fpsLimited
-				{
-					itTime := GetSteadyTime()
-					diffTime := itTime - lastTime
-					if diffTime < fpsPeriod
-					{
-						TSleep(fpsPeriod - diffTime)
-					}
-					lastTime = GetSteadyTime()
-				}
-
-				cmdBuf := ref imgCommands[surfaceIndex]
-
-				if not cmdBuf.inited
-				{
-					cmdBuf.cmdData."this"(vInstance,vInstance.itDrawCmdPool2)
-				}
-
-				w := vInstance.GetSurfaceWidth()
-				h := vInstance.GetSurfaceHeight()
-
-				if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration) or true
-				{
-					cmdBuf.cmdGen = vkOverlay.CmdGeneration
-
-					cmdBuf.cmdData.Reset()
-					cmdBuf.cmdData.Start()
-
-					bar1 := VkImageMemoryBarrier()
-					bar1.image = vInstance.surfaceImages^[surfaceIndex]
-					bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
-					bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-					bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
-					bar1.subresourceRange.levelCount = 1
-					bar1.subresourceRange.layerCount = 1
-					vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
-					
-					StartTextDraw(cmdBuf.cmdData.Get(),surfaceIndex)
-
-					if mainGUIObject != null
-					{
-						mainGUIObject.GetLayout(layoutContext&)
-						mainGUIObject.SetLayout(layoutContext&,vec2f(w,h))
-
-						oldW = w
-						oldH = h
-					}
-					vkOverlay.w = w
-					vkOverlay.h = h
-					mainGUIObject.PushDraw(vkOverlay&,cmdBuf.cmdData.Get(),vec2f(0,0))
-					DrawVulkan(cmdBuf.cmdData.Get(),w,h)
-
-					StopTextDraw(cmdBuf.cmdData.Get())
-					
-					bar1.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-					bar1.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-					vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,0,0,null,0,null,1,bar1&)
-
-					cmdBuf.cmdData.Stop()
-				}
-
-				cmdBuf.cmdData.Submit(vInstance.DrawQueue,null)
-
-				@work vInstance.DrawPresentImage(surfaceIndex)
-				cmdBuf.inited = true
+	//			if not drawRes or outdatedWindowSize
+	//			{
+	//				outdatedWindowSize = false
+	//				vInstance.CreateSwapchain(mainRenderPass,Width,Height)
+	//				vkOverlay.DataGeneration += 1
+	//				vkOverlay.CmdGeneration += 1
+	//				continue
+	//			}
 
 
-				//SwapBuffers()
-				PollEvents()
-				TaskYield()
-			}else{
-				@work glfwWaitEventsTimeout(0.01)
-			}	
-		}
-	}
+	//			if fpsLimited
+	//			{
+	//				itTime := GetSteadyTime()
+	//				diffTime := itTime - lastTime
+	//				if diffTime < fpsPeriod
+	//				{
+	//					TSleep(fpsPeriod - diffTime)
+	//				}
+	//				lastTime = GetSteadyTime()
+	//			}
 
-	StartTextDraw := !(VkCommandBuffer cmd,int imgNumber) -> void
-	{
-		clrAtt := VkRenderingAttachmentInfo[10]
+	//			cmdBuf := ref imgCommands[surfaceIndex]
 
-		clrValues := float[4]
-	
-		clrValues[0] = ClearColor.x
-		clrValues[1] = ClearColor.y
-		clrValues[2] = ClearColor.z
-		clrValues[4] = ClearColor.w
+	//			if not cmdBuf.inited
+	//			{
+	//				cmdBuf.cmdData."this"(vInstance,vInstance.itDrawCmdPool2)
+	//			}
 
-		for it,i : mainRenderPass.itFrames
-		{
-			atm := ref clrAtt[i]
-			atm."this"()
-			atm.imageView = vInstance.surfaceImageViews^[imgNumber]
-			atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-			atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
-			atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
-			atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
-			memcpy(atm.clearValue&,clrValues[0]&,4*4)
-		}
+	//			w := vInstance.GetSurfaceWidth()
+	//			h := vInstance.GetSurfaceHeight()
 
-		rndr := VkRenderingInfo()
-		rndr.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
-		rndr.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
-		rndr.layerCount = 1
-		rndr.colorAttachmentCount = 1
-		rndr.pColorAttachments&->{void^^}^ = clrAtt[0]&
+	//			if (not cmdBuf.inited) or (cmdBuf.cmdGen != vkOverlay.CmdGeneration) or true
+	//			{
+	//				cmdBuf.cmdGen = vkOverlay.CmdGeneration
 
-		vInstance.Funcs.vkCmdBeginRendering(cmd,rndr&)
-	}
-	StopTextDraw := !(VkCommandBuffer cmd) -> bool
-	{
-		vInstance.Funcs.vkCmdEndRendering(cmd)
-		//vInstance.Funcs.vkCmdEndRenderPass(cmd)
-	}
+	//				cmdBuf.cmdData.Reset()
+	//				cmdBuf.cmdData.Start()
+
+	//				bar1 := VkImageMemoryBarrier()
+	//				bar1.image = vInstance.surfaceImages^[surfaceIndex]
+	//				bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
+	//				bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	//				bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
+	//				bar1.subresourceRange.levelCount = 1
+	//				bar1.subresourceRange.layerCount = 1
+	//				vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
+	//				
+	//				StartTextDraw(cmdBuf.cmdData.Get(),surfaceIndex)
+
+	//				if mainGUIObject != null
+	//				{
+	//					mainGUIObject.GetLayout(layoutContext&)
+	//					mainGUIObject.SetLayout(layoutContext&,vec2f(w,h))
+
+	//					oldW = w
+	//					oldH = h
+	//				}
+	//				vkOverlay.w = w
+	//				vkOverlay.h = h
+	//				mainGUIObject.PushDraw(vkOverlay&,cmdBuf.cmdData.Get(),vec2f(0,0))
+	//				DrawVulkan(cmdBuf.cmdData.Get(),w,h)
+
+	//				StopTextDraw(cmdBuf.cmdData.Get())
+	//				
+	//				bar1.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	//				bar1.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+	//				vInstance.Funcs.vkCmdPipelineBarrier(cmdBuf.cmdData.Get(),VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,0,0,null,0,null,1,bar1&)
+
+	//				cmdBuf.cmdData.Stop()
+	//			}
+
+	//			cmdBuf.cmdData.Submit(vInstance.DrawQueue,null)
+
+	//			@work vInstance.DrawPresentImage(surfaceIndex)
+	//			cmdBuf.inited = true
+
+
+	//			//SwapBuffers()
+	//			PollEvents()
+	//			TaskYield()
+	//		}else{
+	//			@work glfwWaitEventsTimeout(0.01)
+	//		}	
+	//	}
+	//}
+
+	//StartTextDraw := !(VkCommandBuffer cmd,int imgNumber) -> void
+	//{
+	//	clrAtt := VkRenderingAttachmentInfo[10]
+
+	//	clrValues := float[4]
+	//
+	//	clrValues[0] = ClearColor.x
+	//	clrValues[1] = ClearColor.y
+	//	clrValues[2] = ClearColor.z
+	//	clrValues[4] = ClearColor.w
+
+	//	for it,i : mainRenderPass.itFrames
+	//	{
+	//		atm := ref clrAtt[i]
+	//		atm."this"()
+	//		atm.imageView = vInstance.surfaceImageViews^[imgNumber]
+	//		atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	//		atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+	//		atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+	//		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+	//		memcpy(atm.clearValue&,clrValues[0]&,4*4)
+	//	}
+
+	//	rndr := VkRenderingInfo()
+	//	rndr.renderArea.extent.width = vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+	//	rndr.renderArea.extent.height = vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
+	//	rndr.layerCount = 1
+	//	rndr.colorAttachmentCount = 1
+	//	rndr.pColorAttachments&->{void^^}^ = clrAtt[0]&
+
+	//	vInstance.Funcs.vkCmdBeginRendering(cmd,rndr&)
+	//}
+	//StopTextDraw := !(VkCommandBuffer cmd) -> bool
+	//{
+	//	vInstance.Funcs.vkCmdEndRendering(cmd)
+	//	//vInstance.Funcs.vkCmdEndRenderPass(cmd)
+	//}
 	WindowResized := virtual !(int width, int height) -> void
 	{
-		imgGeneration -= 1
-		outdatedWindowSize = true
+		//imgGeneration -= 1
+		//outdatedWindowSize = true
 	}
 
 	InitWindow := virtual !() -> GUIObject^
