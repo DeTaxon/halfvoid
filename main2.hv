@@ -1,7 +1,13 @@
 
 main := !(char^[] args) -> int
 {
-	RunOpenGLTest()
+	
+	x  := new TGCObject
+	switch x is
+	{
+		case void
+		case TGCObject
+	}
 }
 
 

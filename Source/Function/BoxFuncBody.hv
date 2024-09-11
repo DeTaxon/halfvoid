@@ -526,7 +526,9 @@ CWorkFuncCompile := class extend CWorkUnit
 		return itError
 	}
 	SetErrorMessage := virtual !(Str setError) -> void 
-	{	
+	{
+		if isFailed
+			return void
 		itError = setError
 		isFailed = true
 	}

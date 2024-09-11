@@ -115,9 +115,14 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 
 
 		bdyIter := startIter
-		if startIter != endIter or startIter.GetValue() != "{}"
+		if endIter == null
 		{
-			bdyIter = UNext(startIter,new TokenSymbol(StringSpan("{}"),1) ,endIter)
+			bdyIter = null
+		}else{
+			if startIter != endIter or startIter.GetValue() != "{}"
+			{
+				bdyIter = UNext(startIter,new TokenSymbol(StringSpan("{}"),1) ,endIter)
+			}
 		}
 
 		if caseType != GTypeVoid
@@ -154,12 +159,14 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			}
 
 			newCase.cmpCheck = tpCheck
-			newCase.caseBody = new BoxBlock(bdyIter)
+			if bdyIter != null
+				newCase.caseBody = new BoxBlock(bdyIter)
 			if newVar != null
 				newCase.caseBody.exeLines.PushFront(newVar)
 			cases.Push(newCase)
 		}else{
-			defaultNode = new BoxBlock(bdyIter)
+			if bdyIter != null
+				defaultNode = new BoxBlock(bdyIter)
 		}
 
 	}
