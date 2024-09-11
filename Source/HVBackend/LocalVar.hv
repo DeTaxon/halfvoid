@@ -60,3 +60,10 @@ AppendClass FuncLocalDebugInfoDeclare
 	{
 	}
 }
+
+AppendClass GetLocalVarVoid 
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+	}
+}

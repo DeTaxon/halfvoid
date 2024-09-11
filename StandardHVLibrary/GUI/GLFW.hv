@@ -14,10 +14,10 @@ GLFWWindow := class
 
 	Init := !(int x, int y,char^ title, bool noApi) -> void
 	{
-		@once {
+		//@once { //TODO reonce
 			glfwSetErrorCallback(glfwErrorCB)
 			glfwInit()
-		}
+		//}
 
 		Width = x
 		Height = y
