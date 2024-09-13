@@ -1,12 +1,17 @@
 
+testClass := class
+{
+	BadField := intitn
+}
+
+
 main := !(char^[] args) -> int
 {
+	c := testClass
+	printf("test %i\n",c.BadField)
 }
 RunTest := !() -> void
 {
-	@once {
-		printf("hello\n")
-	}	
 }
 
 

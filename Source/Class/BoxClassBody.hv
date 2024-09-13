@@ -278,6 +278,8 @@ BoxClassBody := class extend BoxClassPoison
 
 		buildCtx := ClassBuildContext
 
+		defer thisWork = null
+
 		for i : ParentTokens.Size()
 		{
 			inhType := CheckTemplateType(null,ParentTokens[i].0,NamedConstants)
@@ -366,9 +368,13 @@ BoxClassBody := class extend BoxClassPoison
 		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
 
 		checkClassBody(Body,oldData,funcs)
+		if thisWork.IsCanceled
+			return void
 		for it : Appends
 		{
 			checkClassBody(it.1,oldData,funcs)
+			if thisWork.IsCanceled
+				return void
 		}
 		
 		if buildCtx.MemParents.Size() != 0
@@ -394,8 +400,6 @@ BoxClassBody := class extend BoxClassPoison
 		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
 		FieldsState.Emit()
 
-		thisWork = null
-
 	}
 
 	CheckVTableFuncUsage := !() -> void
@@ -411,254 +415,270 @@ BoxClassBody := class extend BoxClassPoison
 		}
 	}
 
-	checkClassBody := !(Token^ bodyVal,ClassReloadOldData^ oldData,@TT funcs) -> void
+	checkClassBody := !(Token^ bodyVal,ClassReloadOldData^ oldData,@TT funcs) -> bool
 	{
 		SyntaxCompress(bodyVal,LexHVFileRoot)
 		iter := bodyVal.Down
 
 		while iter != null
 		{
-			if iter.Down?.Right?.GetValue() == ":="
+			while true
 			{
-				assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
-				name := StringSpan
-				if iter.Down is TokenIndent
+				thisWork.ClearError()
+
+				checkBodyElement(bodyVal,iter,oldData,funcs)
+
+				if not thisWork.HaveError()
+					break
+				TaskYield()
+				if thisWork.IsCanceled
+					return false
+			}
+			iter = iter.Right
+		}
+
+		return true
+	}
+	checkBodyElement := !(Token^ bodyVal,Token^ iter,ClassReloadOldData^ oldData,@TT funcs) -> void
+	{
+		if iter.Down?.Right?.GetValue() == ":="
+		{
+			assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
+			name := StringSpan
+			if iter.Down is TokenIndent
+			{
+				name = iter.Down->{TokenIndent^}.Value
+			}else{
+				name = StringSpan(iter.Down->{TokenString^}.Value.Str())
+			}
+
+			itm := iter.Down.Right.Right
+
+			asType := ParseType(itm)
+			if asType != null
+			{
+				newField := FieldParam^
+				if oldData != null
 				{
-					name = iter.Down->{TokenIndent^}.Value
-				}else{
-					name = StringSpan(iter.Down->{TokenString^}.Value.Str())
+					for it : oldData.OldFields
+					{
+						if it.Name == name and it.Value == asType
+						{
+							newField = it
+							oldData.RecoveredFields.Push(it)
+							break
+						}
+					}
+				}
+				if newField == null
+					newField = new FieldParam(name,asType)
+				Fields.Push(newField)
+			}else
+			{
+
+				asFunc := BoxUnit^
+				isPoison := false
+				isVirtual := false
+
+				while true
+				{
+					switch itm.GetValue()
+					{
+						case "poison"
+							isPoison = true
+							itm = itm.Right
+						case "virtual"
+							isVirtual = true
+							itm = itm.Right
+						case void
+							break
+					}
 				}
 
-				itm := iter.Down.Right.Right
+				fncParser := PFunctionParser(itm)
+				fncUsed := false
 
-				asType := ParseType(itm)
-				if asType != null
+				if fncParser.IsFound()
 				{
-					newField := FieldParam^
 					if oldData != null
 					{
-						for it : oldData.OldFields
+						fncHash := fncParser.ComputeHeaderHash(bodyVal.Line.File.fileData)
+						thisFullHash := u32
+						for it : oldData.OldFuncTemplates[name]?
 						{
-							if it.Name == name and it.Value == asType
+							if it.GetHeaderHash() == fncHash
 							{
-								newField = it
-								oldData.RecoveredFields.Push(it)
+								asFunc = it
+								thisFullHash = it.GetFullHash()
+								oldData.RecoveredFuncTemplates.Push(it)
 								break
 							}
 						}
-					}
-					if newField == null
-						newField = new FieldParam(name,asType)
-					Fields.Push(newField)
-				}else
-				{
-
-					asFunc := BoxUnit^
-					isPoison := false
-					isVirtual := false
-
-					while true
-					{
-						switch itm.GetValue()
+						for it : oldData.OldFuncs[name]?
 						{
-							case "poison"
-								isPoison = true
-								itm = itm.Right
-							case "virtual"
-								isVirtual = true
-								itm = itm.Right
-							case void
+							if it.GetHeaderHash() == fncHash
+							{
+								asFunc = it
+								thisFullHash = it.GetFullHash()
+								oldData.RecoveredFuncs.Push(it)
 								break
+							}
 						}
-					}
-
-					fncParser := PFunctionParser(itm)
-					fncUsed := false
-
-					if fncParser.IsFound()
-					{
-						if oldData != null
+						if asFunc != null
 						{
-							fncHash := fncParser.ComputeHeaderHash(bodyVal.Line.File.fileData)
-							thisFullHash := u32
-							for it : oldData.OldFuncTemplates[name]?
-							{
-								if it.GetHeaderHash() == fncHash
-								{
-									asFunc = it
-									thisFullHash = it.GetFullHash()
-									oldData.RecoveredFuncTemplates.Push(it)
-									break
-								}
-							}
-							for it : oldData.OldFuncs[name]?
-							{
-								if it.GetHeaderHash() == fncHash
-								{
-									asFunc = it
-									thisFullHash = it.GetFullHash()
-									oldData.RecoveredFuncs.Push(it)
-									break
-								}
-							}
-							if asFunc != null
-							{
-								fncHash2 := fncParser.ComputeHash(bodyVal.Line.File.fileData)
+							fncHash2 := fncParser.ComputeHash(bodyVal.Line.File.fileData)
 
-								if fncHash2 != thisFullHash
+							if fncHash2 != thisFullHash
+							{
+								HotloadStream << "Function in class changed body\n"
+								if asFunc is in BoxFuncBody
 								{
-									HotloadStream << "Function in class changed body\n"
-									if asFunc is in BoxFuncBody
-									{
-										asFunc->{BoxFuncBody^}.ReloadFunction(oldData.ctx,fncParser&)
-									}else if asFunc is in BoxFuncTemplateBody {
-										asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser&,bodyVal.Line.File.fileData)
-									}
+									asFunc->{BoxFuncBody^}.ReloadFunction(oldData.ctx,fncParser&)
+								}else if asFunc is in BoxFuncTemplateBody {
+									asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser&,bodyVal.Line.File.fileData)
 								}
 							}
-
 						}
+
+					}
+					if asFunc == null
+					{
+						if not isPoison and TemplateParent? is in BoxClassTemplateBody
+						{
+							pr := TemplateParent->{BoxClassTemplateBody^}
+							if pr.ResistFunctions.Contain(fncParser.bodyToken)
+							{
+								readyFunc := pr.ResistFunctions[fncParser.bodyToken]->{BoxFuncBody^}
+								probData := fncParser.CreateObject()->{BoxFuncTemplateBody^}
+								probData.IsOneFunc()
+								probData.AwaitHeaderParse()
+
+								asFunc = new ResistFunc(readyFunc,probData.hData.CreateFuncType())
+
+								delete probData
+							}
+						}
+
 						if asFunc == null
 						{
-							if not isPoison and TemplateParent? is in BoxClassTemplateBody
+							asFunc = fncParser.CreateObject()
+
+							assert(asFunc is in BoxFuncTemplateBody)
+
+							tmpl := asFunc->{BoxFuncTemplateBody^}
+
+							if tmpl.Properties.Contain("#TemplateResist") and TemplateParent? is in BoxClassTemplateBody
 							{
-								pr := TemplateParent->{BoxClassTemplateBody^}
-								if pr.ResistFunctions.Contain(fncParser.bodyToken)
-								{
-									readyFunc := pr.ResistFunctions[fncParser.bodyToken]->{BoxFuncBody^}
-									probData := fncParser.CreateObject()->{BoxFuncTemplateBody^}
-									probData.IsOneFunc()
-									probData.AwaitHeaderParse()
+								tmpl := TemplateParent->{BoxClassTemplateBody^}
 
-									asFunc = new ResistFunc(readyFunc,probData.hData.CreateFuncType())
+								asTmplt := asFunc->{BoxFuncTemplateBody^}
+								assert(asTmplt.IsOneFunc())
+								asTmplt.IsOneFunc()
+								asTmplt.AwaitHeaderParse()
+								newFunc := asTmplt.GetOneFunc()
 
-									delete probData
-								}
-							}
-
-							if asFunc == null
-							{
-								asFunc = fncParser.CreateObject()
-
-								assert(asFunc is in BoxFuncTemplateBody)
-
-								tmpl := asFunc->{BoxFuncTemplateBody^}
-
-								if tmpl.Properties.Contain("#TemplateResist") and TemplateParent? is in BoxClassTemplateBody
-								{
-									tmpl := TemplateParent->{BoxClassTemplateBody^}
-
-									asTmplt := asFunc->{BoxFuncTemplateBody^}
-									assert(asTmplt.IsOneFunc())
-									asTmplt.IsOneFunc()
-									asTmplt.AwaitHeaderParse()
-									newFunc := asTmplt.GetOneFunc()
-
-									tmpl.ResistFunctions[fncParser.bodyToken] = newFunc
-								}
+								tmpl.ResistFunctions[fncParser.bodyToken] = newFunc
 							}
 						}
 					}
+				}
 
-					if fncUsed
+				if fncUsed
+				{
+				}else if asFunc != null
+				{
+					if isPoison
 					{
-					}else if asFunc != null
+						assert(asFunc is in BoxFuncTemplateBody)
+						asTmpl := asFunc->{BoxFuncTemplateBody^}
+						PoisonFunctions[name] = !{itm,isVirtual}
+					}
+					if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
 					{
+						//TODO maybe i only need templates
+						asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
+					}
+					if asFunc is in BoxFunc
+					{
+						if asFunc is in BoxFuncBody
+							asFunc->{BoxFuncBody^}.ParentScope = this&
+
+						f := asFunc->{BoxFunc^}
+						f.SetName(name)
+						f.Work()
+
+						if f is in BoxFuncBody and ParentScope is BoxFile
+						{
+							f2 := f->{BoxFuncBody^}
+							f2.hash = fncParser.ComputeHash(ParentScope->{BoxFile^}.fileData)
+							f2.headerHash = fncParser.ComputeHeaderHash(ParentScope->{BoxFile^}.fileData)
+						}
+
+						if isVirtual
+						{
+							PreVTableFuncs[name].Push(f)
+						}else{
+							DefaultSpace.Methods[name].Push(f)
+						}
+					}else {
 						if isPoison
 						{
-							assert(asFunc is in BoxFuncTemplateBody)
-							asTmpl := asFunc->{BoxFuncTemplateBody^}
-							PoisonFunctions[name] = !{itm,isVirtual}
+							CurrentWork?.SetErrorMessage(itm.MakeError("poison function can not be template"))
+							return void
 						}
-						if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
+						tmpl := asFunc->{BoxFuncTemplate^}
+						tmpl.SetName(name)
+						DefaultSpace.MethodTemplates[name].Push(tmpl)
+					}
+				}else
+				{
+					if itm.Down?.GetValue() == "fake"
+					{
+						CheckFakeFields(iter)
+					}else{
+						if itm.GetValue() == "default"
 						{
-							//TODO maybe i only need templates
-							asFunc = asFunc->{BoxFuncTemplate^}.GetOneFunc()
-						}
-						if asFunc is in BoxFunc
-						{
-							if asFunc is in BoxFuncBody
-								asFunc->{BoxFuncBody^}.ParentScope = this&
+							assert(GDefaultSetTemplate != null)
+							assert(GDefaultCompareTemplate != null)
 
-							f := asFunc->{BoxFunc^}
-							f.SetName(name)
-							f.Work()
-
-							if f is in BoxFuncBody and ParentScope is BoxFile
+							setFunc := BoxFunc^
+							cnsts := List.{BoxExeConstObj^}
+							switch name
 							{
-								f2 := f->{BoxFuncBody^}
-								f2.hash = fncParser.ComputeHash(ParentScope->{BoxFile^}.fileData)
-								f2.headerHash = fncParser.ComputeHeaderHash(ParentScope->{BoxFile^}.fileData)
+								case "="
+									setFunc = GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+								case "<=>"
+									setFunc = GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+								case void
+									CurrentWork?.SetErrorMessage(itm.MakeError("unknown default operator"))
+									return void
 							}
-
-							if isVirtual
-							{
-								PreVTableFuncs[name].Push(f)
-							}else{
-								DefaultSpace.Methods[name].Push(f)
-							}
+							assert(setFunc != null)
+							DefaultSpace.Methods[name].Push(setFunc)
 						}else {
-							if isPoison
+							exeObj := TryGetExeCall(itm)
+							if exeObj == null
 							{
-								CurrentWork?.SetErrorMessage(itm.MakeError("poison function can not be template"))
+								CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
 								return void
 							}
-							tmpl := asFunc->{BoxFuncTemplate^}
-							tmpl.SetName(name)
-							DefaultSpace.MethodTemplates[name].Push(tmpl)
-						}
-					}else
-					{
-						if itm.Down?.GetValue() == "fake"
-						{
-							CheckFakeFields(iter)
-						}else{
-							if itm.GetValue() == "default"
+							if exeObj is in BoxExeConstObj and isVirtual
 							{
-								assert(GDefaultSetTemplate != null)
-								assert(GDefaultCompareTemplate != null)
-
-								setFunc := BoxFunc^
-								cnsts := List.{BoxExeConstObj^}
-								switch name
+								newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
+								PreVTableVars[name] = newVal
+								if isPoison
 								{
-									case "="
-										setFunc = GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
-									case "<=>"
-										setFunc = GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
-									case void
-										CurrentWork?.SetErrorMessage(itm.MakeError("unknown default operator"))
-										return void
+									PoisonFields[name] = !{itm,true}
 								}
-								assert(setFunc != null)
-								DefaultSpace.Methods[name].Push(setFunc)
-							}else {
-								exeObj := TryGetExeCall(itm)
-								if exeObj == null
-								{
-									CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
-									return void
-								}
-								if exeObj is in BoxExeConstObj and isVirtual
-								{
-									newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
-									PreVTableVars[name] = newVal
-									if isPoison
-									{
-										PoisonFields[name] = !{itm,true}
-									}
-								}else{
-									CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
-									return void
-								}
+							}else{
+								CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
+								return void
 							}
 						}
 					}
 				}
 			}
-			iter = iter.Right
 		}
-
 	}
 	CheckFakeFields := !(Token^ itm) -> void
 	{
@@ -735,6 +755,8 @@ BoxClassBody := class extend BoxClassPoison
 CWorkClassCompile := class extend CWorkUnit
 {
 	itClass := BoxClassBody^
+	IsCanceled := bool
+	errMessage := Str
 
 	this := !(BoxClassBody^ b) -> void
 	{
@@ -752,7 +774,24 @@ CWorkClassCompile := class extend CWorkUnit
 		return itClass.IsComplete()
 	}
 	GetErrorMessage := virtual !() -> Str 
-	{	
+	{
+		return errMessage
+	}
+	SetErrorMessage := virtual !(Str err) -> Str 
+	{
+		errMessage = err
+	}
+	HaveError := !() -> bool
+	{
+		return errMessage->AsString != null
+	}
+	ClearError := !() -> void
+	{
+		errMessage->AsString = null
+	}
+	Cancel := virtual !() -> void
+	{
+		IsCanceled = true
 	}
 	
 	GetWorkTask := virtual !() -> Task^ 
