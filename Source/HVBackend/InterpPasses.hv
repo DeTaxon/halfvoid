@@ -64,7 +64,7 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 			{
 				nm := constFunc->{BoxFuncDeclare^}
 
-				if nm.itName == "printf"
+				if RunMode and nm.itName == "printf"
 				{
 					pv := @once intGetFunc("printf_hv")
 					if pv != null

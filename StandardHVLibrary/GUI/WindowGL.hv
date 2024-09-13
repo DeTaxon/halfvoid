@@ -45,5 +45,6 @@ AppendClass Window
 			SwapBuffers()
 			TaskYield()
 		}
+		DestroyWindow()
 	}
 }

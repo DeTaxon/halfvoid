@@ -1,13 +1,12 @@
 
 main := !(char^[] args) -> int
 {
-	
-	x  := new TGCObject
-	switch x is
-	{
-		case void
-		case TGCObject
-	}
+}
+RunTest := !() -> void
+{
+	@once {
+		printf("hello\n")
+	}	
 }
 
 

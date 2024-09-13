@@ -14,10 +14,8 @@ GLFWWindow := class
 
 	Init := !(int x, int y,char^ title, bool noApi) -> void
 	{
-		//@once { //TODO reonce
-			glfwSetErrorCallback(glfwErrorCB)
-			glfwInit()
-		//}
+		glfwSetErrorCallback(glfwErrorCB)
+		glfwInit()
 
 		Width = x
 		Height = y
@@ -39,6 +37,12 @@ GLFWWindow := class
 		glfwSetWindowUserPointer(windowHandle,this&)
 
 		LastTimeResized = GetSteadyTime()
+	}
+
+	DestroyWindow := !() -> void
+	{
+		glfwDestroyWindow(windowHandle)
+		glfwTerminate()
 	}
 
 	SetInputMode := !(char^ newMode) -> void

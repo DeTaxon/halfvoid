@@ -15,7 +15,6 @@ AppendClass BuiltInVoidStore
 	IsMCInlined := virtual true
 	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
 	{
-		indexes[0].WriteMC(ctx)
-		indexes[1].WriteMC(ctx)
+		indexes[^].WriteMC(ctx)
 	}
 }

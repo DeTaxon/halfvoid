@@ -2,6 +2,8 @@
 
 MCObject := class
 {
+	UnitName := poison virtual #ThisClass()->TypeName
+
 	IsConstant := virtual false
 	Value := u64
 	Value2 := u64
