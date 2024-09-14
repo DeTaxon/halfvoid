@@ -49,11 +49,14 @@ StartInterpreter := !() -> void
 		return void
 	runInProgress = true
 	TSpawnTask(() ==> {
-		toRun := intGetFunc("main")
-		toRun.ParseBody()
-		WaitForParsingObjects()
+		@work 
+		{
+			toRun := intGetFunc("main")
+			toRun.ParseBody()
+			WaitForParsingObjects()
 
-		CompileAndRunCode(toRun->{BoxFuncBody^})
+			CompileAndRunCode(toRun->{BoxFuncBody^})
+		}
 		runInProgress = false
 	})
 }

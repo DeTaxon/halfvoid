@@ -2,7 +2,7 @@ AppendClass Window
 {
 	InitGL := !() -> void
 	{
-		Init(vkOverlay.w,vkOverlay.h,windowTitle.Str(),false)
+		Init(windowSize.x,windowSize.y,windowTitle.Str(),false)
 		mainGUIObject = InitWindow()
 	}
 	RunGL := !() -> void

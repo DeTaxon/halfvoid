@@ -34,9 +34,11 @@
 		"alcCreateContext" : "void^,void^,...",
 		"alcMakeContextCurrent" : "void,void^",
 		"alGenBuffers" : "void,int,u32^",
+		"alDeleteBuffers" : "void,int,u32^"
 		"alBufferData" : "void,u32,int,void^,int,int",
 
 		"alGenSources" : "void,int,u32^",
+		"alDeleteSources" : "void,int,u32^"
 
 		"alSourcei" : "void,u32,int,int",
 		"alSourcef" : "void,u32,int,float",
@@ -46,5 +48,8 @@
 		"alSourcePlay" : "void,u32"
 		"alSourceRewind" : "void,u32"
 		"alSourceStop" : "void,u32"
+
+		"alcDestroyContext" : "void,void^"
+		"alcCloseDevice" : "void,void^"
 	}
 }

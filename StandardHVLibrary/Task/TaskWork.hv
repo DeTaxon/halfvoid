@@ -66,6 +66,7 @@ spawnWorkInner := !(!()&->void lmbd) -> Task^
 
 
 ExpectWorkers := !(int x) -> void
+	#Mark("JITPass")
 {
 	diff := x - TaskAdditionalWorkers.Size()
 

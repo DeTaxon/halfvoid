@@ -1,16 +1,17 @@
 Window := class extend GLFWWindow
 {
-	vInstance := VulkanDefaultInstance^
+	//vInstance := VulkanDefaultInstance^
 
-	mainRenderPass := TRenderPass^
+	//mainRenderPass := TRenderPass^
 
 	mainGUIObject := GUIObject^
 	oldW := int
 	oldH := int
 
 	ClearColor := vec4f
-	vkOverlay := VkOverlayContext
-	layoutContext := LayoutContext
+	//vkOverlay := VkOverlayContext
+	//layoutContext := LayoutContext
+	windowSize := vec2f
 
 	outdatedWindowSize := bool
 
@@ -27,8 +28,8 @@ Window := class extend GLFWWindow
 		ClearColor = vec4f(1.0,0.5,1.0,1.0)
 		windowTitle = title
 
-		vkOverlay.w = w
-		vkOverlay.h = h
+		windowSize.x = w
+		windowSize.y = h
 	}
 	InitVulkan := !() -> void
 	{
@@ -243,7 +244,7 @@ Window := class extend GLFWWindow
 	}
 	MousePressed := virtual !(int buttonNum, bool pressed, int mods) -> void //if pressed is false => released
 	{
-		mainGUIObject?.MousePressed(vkOverlay&,buttonNum,pressed,vec2f(MouseX,MouseY))
+		//mainGUIObject?.MousePressed(vkOverlay&,buttonNum,pressed,vec2f(MouseX,MouseY))
 	}
 	WindowRepair := virtual !() -> void
 	{
@@ -251,8 +252,8 @@ Window := class extend GLFWWindow
 	}
 	RedrawWindow := !() -> void
 	{
-		vkOverlay.DataGeneration += 1
-		vkOverlay.CmdGeneration += 1
+		//vkOverlay.DataGeneration += 1
+		//vkOverlay.CmdGeneration += 1
 	}
 }
 

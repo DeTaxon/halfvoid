@@ -104,6 +104,11 @@ SoundEngine := class extend TGCObject
 	Stop := !() -> void
 	{
 		quit = true
+		busySources[^].Cancel()
 		pollTask?.AwaitCompletion()
+
+		alcMakeContextCurrent(null)
+		alcDestroyContext(context)
+		alcCloseDevice(device)
 	}
 }

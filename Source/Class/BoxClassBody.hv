@@ -215,7 +215,6 @@ BoxClassBody := class extend BoxClassPoison
 
 		cls := this&
 		parseTask = TSpawnTask(() ==> [cls] { //todo pass CurrentFile directly?
-			CurrentWork = AddClassWork()
 			CurrentFile = cls.classFile
 			cls.WorkBody(null)
 		})
@@ -271,6 +270,8 @@ BoxClassBody := class extend BoxClassPoison
 	WorkBody := virtual !(ClassReloadOldData^ oldData) -> void
 	{
 		GParsedAllFiles.Await()
+
+		CurrentWork = AddClassWork()
 
 		if #Var("Tracy") TracyPrintf("Started class parse %p %s",this&,GetGoodName())
 

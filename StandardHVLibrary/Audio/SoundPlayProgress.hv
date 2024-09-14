@@ -20,6 +20,6 @@ SoundPlayProgress := class extend TGCObject
 	}
 	Cancel := !() -> void
 	{
-
+		alSourceStop(SourceId)
 	}
 }
