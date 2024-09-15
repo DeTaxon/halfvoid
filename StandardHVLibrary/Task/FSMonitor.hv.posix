@@ -3,6 +3,7 @@
 IN_CLOSE := 24
 IN_OPEN := 32
 IN_MODIFY := 2
+IN_CREATE := 0x100
 
 
 wd_struct := class
@@ -13,6 +14,12 @@ wd_struct := class
 
 	len := u32
 	name := char[1]
+}
+
+FSChangeEvent := enum
+{
+	"Changed",
+	"Created"
 }
 
 
@@ -29,7 +36,7 @@ inotify_wrapper_fd := class
 	{
 	}
 
-	MonitorFolder := !(Str folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
+	MonitorFolder := !(Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> TGCObject^
 	{
 		@once {
 			this.fd = inotify_init1(2048)
@@ -71,22 +78,27 @@ inotify_wrapper_fd := class
 						node.nodeWork.monitorTask.resume()
 						node.nodeWork.isPaused = false
 					}
-					node.nodeWork.changedObjects.Push(newFile)
+					mask := FSChangeEvent
+					mask = "Created"
+					if (ptr.mask and_b IN_MODIFY) != 0
+						mask = "Changed"
+					node.nodeWork.changedObjects.Emplace(newFile,mask)
 					TaskCheckMutex.Unlock()
 				}
 			})
 		}
 
 
+		thisMask := IN_MODIFY + IN_CREATE
+
 		thisWork := NodeWork
 		thisWork.monitorTask = CurrentTask
 		TLock(this&)
 
-		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),IN_MODIFY)
+		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),thisMask)
 		newNode := ref fileNodes[wd]
 		newNode.objectName->AsString = folderPath.GetString()
 		newNode.nodeWork = thisWork&
-
 
 		if recursive
 		{
@@ -94,7 +106,7 @@ inotify_wrapper_fd := class
 				if x is not in Folder
 					return void
 				absPath := fsGetAbsolutePath(x.GetPath())
-				wd := inotify_add_watch(this.fd,absPath.GetOr("").Str(),IN_MODIFY)
+				wd := inotify_add_watch(this.fd,absPath.GetOr("").Str(),thisMask)
 				newNode := ref fileNodes[wd]
 				newNode.objectName = x.GetPath()
 				newNode.nodeWork = thisWork&
@@ -115,7 +127,10 @@ inotify_wrapper_fd := class
 			//TODO also move content to temporary object
 			if thisWork.changedObjects.Size() != 0
 			{
-				cb(thisWork.changedObjects[^])
+				for it : tihsWork.changedObjects
+				{
+					cb(it.0,it.1)
+				}
 				thisWork.changedObjects.Destroy()
 			}
 		}
@@ -130,7 +145,7 @@ inotify_wrapper_node := class
 NodeWork := class
 {
 	monitorTask := Task^
-	changedObjects := List.{FSObject^}
+	changedObjects := List.{Tuple.{FSObject^,FSChangeEvent}}
 	isPaused := bool
 }
 
@@ -143,7 +158,7 @@ initMonitorFolder := !() -> void
 
 
 //#MarkFunction("JITPass",AsyncMonitorFolderNonStop)
-AsyncMonitorFolderNonStop := !(Str folderPath,bool recursive,!(FSObject^)& -> void cb) -> TGCObject^
+AsyncMonitorFolderNonStop := !(Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> TGCObject^
 {
 	#MarkFunction("CallAtStart",initMonitorFolder)
 

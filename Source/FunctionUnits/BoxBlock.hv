@@ -92,12 +92,12 @@ BoxBlock := class extend BoxExeObj
 				}
 
 
-				if CurrentFuncWork.isCanceled
+				if CurrentFuncWork.IsCanceled
 					break
 					
 				TaskYield()
 			}
-			if CurrentFuncWork.isCanceled
+			if CurrentFuncWork.IsCanceled
 				break
 			
 		

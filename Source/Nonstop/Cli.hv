@@ -49,7 +49,7 @@ StartInterpreter := !() -> void
 		return void
 	runInProgress = true
 	TSpawnTask(() ==> {
-		@work 
+		//@work 
 		{
 			toRun := intGetFunc("main")
 			toRun.ParseBody()
@@ -102,11 +102,17 @@ EnterCliMode := !() -> int
 
 		hotload := HotloadContext
 
-		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile) ==> {
+		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile,changeOption) ==> {
 			asFile := changedFile->{File^}
 
-			flId := asFile.GetId()
+			if changeOption == "Created"
+			{
+				newFile := new BoxFile(asFile)
+				CodeSpaces[0].Files.Push(newFile)
+				return void
+			}
 
+			flId := asFile.GetId()
 
 			foundFile := BoxFile^
 			for spc : CodeSpaces
@@ -197,6 +203,8 @@ CliParseMain := !() -> void
 	{
 		WaitForParsingObjects()
 		TSleep(0.01)
+		if WorkBag.works.Size() != 0
+			WorkBag.CancelAll()
 	}
 
 	for it : CodeSpaces
@@ -209,6 +217,8 @@ CliParseMain := !() -> void
 	{
 		WaitForParsingObjects()
 		TSleep(0.01)
+		if WorkBag.works.Size() != 0
+			WorkBag.CancelAll()
 	}
 
 	CompileAndRunInit()

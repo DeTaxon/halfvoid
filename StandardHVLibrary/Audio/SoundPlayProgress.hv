@@ -1,6 +1,6 @@
 SoundPlayProgress := class extend TGCObject
 {
-	SourceId := int
+	SourceId := u32
 	PlaySound := Sound^
 	PlayState := THatch
 

@@ -9,6 +9,12 @@ AppendClass BoxFuncBody
 		readyState.Reset()
 
 		//ExitLabel = null
+		
+		WorkBag.works.DeleteIf(x ==> [c = this&]{
+			if x is not CWorkFuncCompile
+				return false
+			return x->{CWorkFuncCompile^}.itFunc == c
+		})
 
 		Yields.Destroy()
 		YieldStart = null

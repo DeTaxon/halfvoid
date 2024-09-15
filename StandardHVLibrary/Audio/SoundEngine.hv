@@ -6,8 +6,9 @@ SoundEngine := class extend TGCObject
 	device := void^
 	context := void^
 
+	buffers := List.{Sound^}
 
-	freeSources := List.{int}
+	freeSources := List.{u32}
 	busySources := List.{SoundPlayProgress^}
 
 	this := !() -> void
@@ -18,7 +19,8 @@ SoundEngine := class extend TGCObject
 	}
 	CreateSound := !(File^ fil) -> Sound^
 	{
-		return new Sound(fil)	
+		result = new Sound(fil)
+		buffers.Push(result)
 	}
 	ReserveSources := !(int exp) -> void
 	{
@@ -81,7 +83,8 @@ SoundEngine := class extend TGCObject
 			{
 				metFinished := false
 
-				@work {
+				@work 
+				{
 					for it : busySources
 					{
 						if it.IsFinished()
@@ -105,7 +108,21 @@ SoundEngine := class extend TGCObject
 	{
 		quit = true
 		busySources[^].Cancel()
-		pollTask?.AwaitCompletion()
+		//pollTask?.AwaitCompletion()
+
+		for it : busySources
+		{
+			alDeleteSources(1,it.SourceId&)
+		}
+		for it : freeSources
+		{
+			alDeleteSources(1,it&)
+		}
+
+		for it : buffers
+		{
+			alDeleteBuffers(1,it.buf&)
+		}
 
 		alcMakeContextCurrent(null)
 		alcDestroyContext(context)

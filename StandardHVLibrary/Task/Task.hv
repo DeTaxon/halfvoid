@@ -17,7 +17,7 @@ Task := class extend TGCObject
 	{
 		taskLambda = cb
 	}
-	startTaskThread := !() -> void
+	startTaskThread := virtual !() -> void
 	{
 		if #Var("Tracy")
 		{
@@ -61,7 +61,7 @@ Task := class extend TGCObject
 	}
 
 
-	resume := !() -> void
+	resume := virtual !() -> void
 	{
 		itTaskWorker.PendingTasks.Push(this&)
 	}
@@ -80,7 +80,7 @@ Task := class extend TGCObject
 			}
 		}
 	}
-	AwaitCompletion := !() -> void
+	AwaitCompletion := virtual !() -> void
 	{
 		finishedWork.Await()
 	}
