@@ -19,11 +19,11 @@ RawFileStream := class extend Stream
 					posFlg = posFlg or_b O_RDONLY
 				case 'w'
 					posFlg = O_RDWR
-				case 'c'
-					posFlg = posFlg or_b O_CREAT
 			}
 			options = options[1]&
 		}
+		posFlg = posFlg or_b O_CREAT or_b O_APPEND //TODO create and append to flags
+
 		FileFd = open(fileName.Str(),posFlg,493) //TODO base of 4?
 
 		if FileFd == -1

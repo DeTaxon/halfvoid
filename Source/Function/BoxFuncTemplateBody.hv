@@ -57,7 +57,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				Attrs.IsAutoResult = true
 
 			headerHash = headerData.ComputeHeaderHash(fileData)
-			hash = headerData.ComputeHash(fileData)
+			hash = headerData.ComputeHash()
 		}
 
 		for it : AllFuncs[^]

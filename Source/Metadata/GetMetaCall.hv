@@ -153,7 +153,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		itType := getMetaDownType(obj.Down)
 		if itType != null
 		{
-			if RunMode and CurrentFunc != null
+			if RunMode and CurrentFunc != null and itType is in TypeClass
 			{
 				DB_TypeSizeUsage.Add(CurrentFunc,itType->{TypeClass^}.ToClass)
 			}

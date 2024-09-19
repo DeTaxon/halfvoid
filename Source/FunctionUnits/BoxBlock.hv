@@ -52,7 +52,7 @@ BoxBlock := class extend BoxExeObj
 		if lambdaWay->{void^} != null
 		{
 			obj := lambdaWay()
-			assert(obj != null)
+			//assert(obj != null)
 			if obj != null
 				exeLines.Push(obj)
 		}

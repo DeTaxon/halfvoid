@@ -2,16 +2,16 @@ AppendClass BoxFile
 {
 	ReloadFile := !(HotloadContext^ ctx,File^ newFile) -> void
 	{
-		thisData := newFile.GetBlob()
-		fileData = thisData
-		toks := LoadFile(newFile,thisData,true)
+		fileData = newFile.GetBlob()
 
-		ReloadFunctions(ctx,newFile,thisData,toks)
+		toks := LoadFile(newFile,fileData,true)
+
+		ReloadFunctions(ctx,newFile,fileData,toks)
 		
 		changedClasses := AVLSet.{BoxClassBody^}
 
-		ReloadAppends(ctx,newFile,thisData,toks,changedClasses)
-		ReloadClasses(ctx,newFile,thisData,toks,changedClasses)
+		ReloadAppends(ctx,newFile,fileData,toks,changedClasses)
+		ReloadClasses(ctx,newFile,fileData,toks,changedClasses)
 
 		for it : changedClasses
 		{
@@ -137,7 +137,7 @@ AppendClass BoxFile
 			stVal := iter.Down.Right
 
 			c := PFunctionParser(stVal.Right)
-			crc := c.ComputeHash(thisData)
+			crc := c.ComputeHash()
 			newHashs[iter] = crc
 
 			name := String^

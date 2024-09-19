@@ -527,7 +527,9 @@ BoxClassBody := class extend BoxClassPoison
 						}
 						if asFunc != null
 						{
-							fncHash2 := fncParser.ComputeHash(bodyVal.Line.File.fileData)
+							fncHash2 := fncParser.ComputeHash()
+
+							HotloadStream << "Test " << fncHash2 << " , " << thisFullHash << "\n"
 
 							if fncHash2 != thisFullHash
 							{
@@ -611,7 +613,7 @@ BoxClassBody := class extend BoxClassPoison
 						if f is in BoxFuncBody and ParentScope is BoxFile
 						{
 							f2 := f->{BoxFuncBody^}
-							f2.hash = fncParser.ComputeHash(ParentScope->{BoxFile^}.fileData)
+							f2.hash = fncParser.ComputeHash()
 							f2.headerHash = fncParser.ComputeHeaderHash(ParentScope->{BoxFile^}.fileData)
 						}
 

@@ -134,10 +134,6 @@ PFunctionParser := class
 			return 0
 		if bodyToken is not TokenSkobSymbol
 			return 0
-		asSkob := bodyToken->{TokenSkobSymbol^}
-
-		if asSkob.EndLine == null
-			return 0
 
 		startLine := brackets.Line.Line
 		endLine := brackets.Line.Line
@@ -147,8 +143,10 @@ PFunctionParser := class
 
 		return computeHashOnLines(fileData,startLine,endLine)
 	}
-	ComputeHash := !(Blob^ fileData) -> u32
+	ComputeHash := !() -> u32
 	{
+		fileData := baseToken.Line.File.fileData
+
 		if fileData.Size() == 0
 			return 0
 		if baseToken.Line == null or bodyToken == null
@@ -193,9 +191,20 @@ PFunctionParser := class
 			i += 1
 		funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
 
-		crc := Crc32()
-		crc.Feed(funcCode.NonNullStr(),funcCode.Size())
-		return crc.Get()
+		
+		base := u32
+		k := 0
+		sz := funcCode.Size()
+		ch := funcCode.NonNullStr()->{u8^}
+		while k < sz
+		{
+			base = (base shl 4) + ch[k] + (base shr 16)
+			k += 1
+		}
+		return base
+		//crc := Crc32()
+		//crc.Feed(funcCode.NonNullStr(),funcCode.Size())
+		//return crc.Get()
 	}
 	CreateObject := !() -> BoxUnit^
 	{

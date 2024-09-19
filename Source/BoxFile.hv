@@ -283,7 +283,7 @@ BoxFile := class extend BoxUnit
 		if fnc is in BoxFuncTemplateBody
 		{
 			fnc->{BoxFuncTemplateBody^}.headerHash = newFunc.ComputeHeaderHash(fileData)
-			fnc->{BoxFuncTemplateBody^}.hash = newFunc.ComputeHash(fileData)
+			fnc->{BoxFuncTemplateBody^}.hash = newFunc.ComputeHash()
 		}
 		res := new TemplateFuncVar(newName,isSuffix,fnc->{BoxFuncTemplate^})
 

@@ -5,6 +5,9 @@ AppendClass BoxClassBody
 	{
 		className := GetGoodName()
 
+		if not startedParse
+			return void
+
 		HotloadStream << "Started reload of class " << className << "\n"
 
 
@@ -17,6 +20,12 @@ AppendClass BoxClassBody
 			setLine.Push(it[^])
 		}
 		for it, ind : DefaultSpace.Methods
+		{
+			setLine := ref oldData.OldFuncs[ind]
+			setLine.Push(it[^])
+		}
+
+		for it, ind : PreVTableFuncs
 		{
 			setLine := ref oldData.OldFuncs[ind]
 			setLine.Push(it[^])

@@ -124,10 +124,11 @@ inotify_wrapper_fd := class
 			thrd.switchToMain()
 			TaskCheckMutex.Unlock()
 
+
 			//TODO also move content to temporary object
 			if thisWork.changedObjects.Size() != 0
 			{
-				for it : tihsWork.changedObjects
+				for it : thisWork.changedObjects
 				{
 					cb(it.0,it.1)
 				}

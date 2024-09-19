@@ -102,13 +102,18 @@ EnterCliMode := !() -> int
 
 		hotload := HotloadContext
 
-		AsyncMonitorFolderNonStop(StringSpan("."),true,(changedFile,changeOption) ==> {
+		AsyncMonitorFolderNonStop(".",true,(changedFile,changeOption) ==> {
 			asFile := changedFile->{File^}
+
+			fName := asFile.GetName()
+			if fName.End != ".hv"
+				return void
 
 			if changeOption == "Created"
 			{
+				HotloadStream << "File was created " << fName << "\n"
 				newFile := new BoxFile(asFile)
-				CodeSpaces[0].Files.Push(newFile)
+				CodeSpaces[0].Files.Push(newFile) // TODO determine codespace number
 				return void
 			}
 

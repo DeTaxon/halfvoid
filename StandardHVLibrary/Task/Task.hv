@@ -64,6 +64,7 @@ Task := class extend TGCObject
 	resume := virtual !() -> void
 	{
 		itTaskWorker.PendingTasks.Push(this&)
+		TaskWaitTasksConVar.NotifyAll()
 	}
 
 	Destroy := virtual !() -> void

@@ -43,16 +43,15 @@ AppendClass BoxFuncBody
 
 	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser^ headerData) -> void
 	{
-		preParsed := StartedParse or StartedParseForced
-		ClearFunction()
-
 		if headerData != null
 		{
 			inps1 = headerData.brackets
 			resTyp = headerData.resultToken
 			bdy = headerData.bodyToken
 		}
-		if preParsed
+
+		ClearFunction()
+		if StartedParse or StartedParseForced
 		{
 			ParseBody()
 			ctx.ChangedFunctions.Push(this&)
