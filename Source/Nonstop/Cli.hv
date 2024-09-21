@@ -84,6 +84,8 @@ cliWin := CliWin^
 cliQuit := bool
 cliWorks := int
 
+hotload := HotloadContext
+
 EnterCliMode := !() -> int
 {
 	ExpectWorkers(16)
@@ -100,8 +102,6 @@ EnterCliMode := !() -> int
 
 	TSpawnTask(() ==> {
 
-		hotload := HotloadContext
-
 		AsyncMonitorFolderNonStop(".",true,(changedFile,changeOption) ==> {
 			asFile := changedFile->{File^}
 
@@ -116,62 +116,8 @@ EnterCliMode := !() -> int
 				CodeSpaces[0].Files.Push(newFile) // TODO determine codespace number
 				return void
 			}
+			ReloadFile(asFile)
 
-			flId := asFile.GetId()
-
-			foundFile := BoxFile^
-			for spc : CodeSpaces
-			{
-				for thisFile : spc.Files
-				{
-					fId := thisFile.file.GetId()
-					if fId == flId
-					{
-						foundFile = thisFile
-						break
-					}
-				}
-				if foundFile != null
-					break
-			}
-			if foundFile == null
-			{
-				HotloadStream << "Changed file " << changedFile.GetName() << " not found in list\n"
-				return void
-			}
-			HotloadStream << "Changed file " << changedFile.GetName() <<" , reloading content\n"
-
-			foundFile.ReloadFile(hotload&,asFile)
-
-			while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
-			{
-				if hotload.ReloadClasses.Size() != 0
-				{
-					newClass := hotload.ReloadClasses.Pop()
-					newClass.ReloadClass(hotload&)
-				}else{
-					newFunc := hotload.ReloadFunctions.Pop()
-					newFunc.ReloadFunction(hotload&,null)
-				}
-			}
-
-			hotload.FailedToCompile[^].Recompile()
-			hotload.FailedToCompile.Destroy()
-
-			WaitForParsingObjects()
-
-			if WorkBag.works.Size() == 0
-			{
-				GInterpCntx.ReloadFunctions(hotload&)
-				hotload.Reset()
-			}else{
-				for it : WorkBag.works
-				{
-					if it is not CWorkFuncCompile
-						continue
-					hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
-				}
-			}
 		})
 	})
 
@@ -184,6 +130,66 @@ EnterCliMode := !() -> int
 	cliWin.Run()
 	exit(0) //TODO 
 
+}
+
+ReloadFile := !(File^ asFile) -> void
+{
+	flId := asFile.GetId()
+
+	foundFile := BoxFile^
+	for spc : CodeSpaces
+	{
+		for thisFile : spc.Files
+		{
+			fId := thisFile.file.GetId()
+			if fId == flId
+			{
+				foundFile = thisFile
+				break
+			}
+		}
+		if foundFile != null
+			break
+	}
+	if foundFile == null
+	{
+		HotloadStream << "Changed file " << asFile.GetName() << " not found in list\n"
+		return void
+	}
+	HotloadStream << "Changed file " << asFile.GetName() <<" , reloading content\n"
+
+	foundFile.ReloadFile(hotload&,asFile)
+
+	while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
+	{
+		if hotload.ReloadClasses.Size() != 0
+		{
+			newClass := hotload.ReloadClasses.Pop()
+			newClass.ReloadClass(hotload&)
+		}else{
+			newFunc := hotload.ReloadFunctions.Pop()
+			newFunc.ReloadFunction(hotload&,null)
+		}
+	}
+
+	hotload.FailedToCompile[^].Recompile()
+	hotload.FailedToCompile.Destroy()
+
+	WaitForParsingObjects()
+
+	GInterpCntx.ReloadFunctions(hotload&)
+	hotload.Reset()
+
+	if WorkBag.works.Size() == 0
+	{
+	}else{
+		for it : WorkBag.works
+		{
+			if it is not CWorkFuncCompile
+				continue
+			hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
+		}
+	}
 }
 
 CliParseMain := !() -> void

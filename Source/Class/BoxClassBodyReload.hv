@@ -45,6 +45,8 @@ AppendClass BoxClassBody
 		Fields.Destroy()
 		FieldsPath.Destroy()
 
+		VTable.Destroy()
+
 		WorkBody(oldData)
 
 		newSize := ItType.GetSize()
