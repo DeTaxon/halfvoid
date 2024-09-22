@@ -50,8 +50,10 @@ AppendClass BoxFuncBody
 			bdy = headerData.bodyToken
 		}
 
+		oldParsed := StartedParse or StartedParseForced
+
 		ClearFunction()
-		if StartedParse or StartedParseForced
+		if oldParsed 
 		{
 			ParseBody()
 			ctx.ChangedFunctions.Push(this&)

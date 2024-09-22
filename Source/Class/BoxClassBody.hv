@@ -529,8 +529,6 @@ BoxClassBody := class extend BoxClassPoison
 						{
 							fncHash2 := fncParser.ComputeHash()
 
-							HotloadStream << "Test " << fncHash2 << " , " << thisFullHash << "\n"
-
 							if fncHash2 != thisFullHash
 							{
 								HotloadStream << "Function in class changed body\n"
