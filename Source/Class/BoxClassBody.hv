@@ -389,8 +389,8 @@ BoxClassBody := class extend BoxClassPoison
 
 		populatePoisons(Parents[^])
 
-		PrepareVTable(buildCtx)
-		CreateVTable(buildCtx)
+		PrepareVTable(buildCtx,oldData)
+		CreateVTable(buildCtx,oldData)
 
 		VTableState.Emit()
 

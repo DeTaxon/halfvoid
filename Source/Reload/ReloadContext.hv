@@ -1,7 +1,8 @@
-HotloadContext := class
+HotloadContext := class extend TGCObject
 {
 	ChangedFunctions := List.{BoxFuncBody^}
 	ChangedVirtualFunctions := List.{BoxFuncBody^}
+	ChangedVirtualTables := List.{BoxClassBody^} // <- base class, not vtable itself
 
 	ReloadFunctions := List.{BoxFuncBody^}
 	ReloadClasses := List.{BoxClassBody^}

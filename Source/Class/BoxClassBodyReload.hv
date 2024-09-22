@@ -34,6 +34,10 @@ AppendClass BoxClassBody
 		oldSize := ItType.GetSize()
 		oldHash := GetMemStructureHash()
 
+		oldData.VTableType = VTableType
+		oldData.VTableValue = VTableValue
+		oldData.VTableField = VTableField
+
 		PrimeParents.Destroy()
 		Parents.Destroy()
 
@@ -46,6 +50,9 @@ AppendClass BoxClassBody
 		FieldsPath.Destroy()
 
 		VTable.Destroy()
+		VTableType = null
+		VTableValue = null
+		VTableField = null
 
 		WorkBody(oldData)
 
@@ -73,6 +80,14 @@ AppendClass BoxClassBody
 			})
 		}
 
+		if VTableType != oldData.VTableType
+		{
+			HotloadStream << "Class " << className << " changed virtual table\n"
+
+			ctx.ChangedVirtualTables.Push(this&)
+			//TODO delete old vtable
+		}
+
 		if oldHash != newHash
 		{
 			HotloadStream << "Class " << className << " changed structure\n"
@@ -89,7 +104,6 @@ AppendClass BoxClassBody
 				HotloadStream << "Reloading class \n"
 				if x is in BoxClassBody
 				{
-				HotloadStream << "huh \n"
 					ctx.ReloadClasses.PushUniq(x->{BoxClassBody^})
 				}
 			})
@@ -137,5 +151,9 @@ ClassReloadOldData := class extend TGCObject
 	OldFields := List.{FieldParam^}
 	OldFieldPaths := List.{FieldPath^}
 	RecoveredFields := List.{FieldParam^}
+
+	VTableType := BoxClass^
+	VTableValue := GlobalVar2^
+	VTableField := FieldPath^ 
 
 }

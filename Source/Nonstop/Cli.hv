@@ -84,8 +84,6 @@ cliWin := CliWin^
 cliQuit := bool
 cliWorks := int
 
-hotload := HotloadContext
-
 EnterCliMode := !() -> int
 {
 	ExpectWorkers(16)
@@ -134,6 +132,9 @@ EnterCliMode := !() -> int
 
 ReloadFile := !(File^ asFile) -> void
 {
+
+	hotload := HotloadContext
+
 	flId := asFile.GetId()
 
 	foundFile := BoxFile^
@@ -172,17 +173,28 @@ ReloadFile := !(File^ asFile) -> void
 		}
 	}
 
+	while hotload.ChangedVirtualTables.Size() != 0
+	{
+		cls := hotload.ChangedVirtualTables.Pop()
+		DB_VTableUsage.Key.Get(cls,x ==> {
+			if x is in BoxFuncBody
+			{
+				x->{BoxFuncBody^}.ReloadFunction(hotload&,null)
+			}
+		})
+		DB_VTableUsage.Key.RemoveAll(cls)
+	}
+
 	hotload.FailedToCompile[^].Recompile()
 	hotload.FailedToCompile.Destroy()
 
 	WaitForParsingObjects()
 
-	GInterpCntx.ReloadFunctions(hotload&)
+	GInterpCntx.Reload(hotload&)
 	hotload.Reset()
 
-	if WorkBag.works.Size() == 0
+	if WorkBag.works.Size() != 0
 	{
-	}else{
 		for it : WorkBag.works
 		{
 			if it is not CWorkFuncCompile

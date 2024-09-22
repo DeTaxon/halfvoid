@@ -109,8 +109,8 @@ BoxClassTuple := class extend BoxClassPoison
 
 			PrimeParentStep()
 
-			PrepareVTable(buildCtx)
-			CreateVTable(buildCtx)
+			PrepareVTable(buildCtx,null)
+			CreateVTable(buildCtx,null)
 
 			InheritStep(buildCtx,null)
 

@@ -24,7 +24,7 @@ AppendClass BoxClass
 		dat.vals.Push(GetExeInt(VTableId))
 		Parents[^].GetVTableIds(dat)
 	}
-	PrepareVTable := !(ClassBuildContext buildCtx) -> void
+	PrepareVTable := !(ClassBuildContext buildCtx,ClassReloadOldData^ oldData) -> void
 	{
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
@@ -110,7 +110,7 @@ AppendClass BoxClass
 			}
 		}
 	}
-	CreateVTable := !(ClassBuildContext buildCtx) -> void
+	CreateVTable := !(ClassBuildContext buildCtx,ClassReloadOldData^ oldData) -> void
 	{
 		if VTable.Size() == 0
 			return void
@@ -121,6 +121,14 @@ AppendClass BoxClass
 			tps.Push(it.GetType())
 		}
 		VTableType = GetTuple(tps,true,true)
+
+		if oldData?.VTableType == VTableType
+		{
+			VTableValue = oldData.VTableValue
+			VTableField = oldData.VTableField
+			return void
+		}
+
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar2(StringSpan(""),VTableType.ItType,false)
 

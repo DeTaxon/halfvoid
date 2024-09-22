@@ -5,22 +5,36 @@ NewClass := class extend TGCObject
 
 	tst := virtual !() -> void
 	{
-		printf("hoy %i\n",NewClass->TypeSize)
+		printf("hoy9 %i\n",NewClass->TypeSize)
 	}
-	tst2 := !() -> void
+	tst2 := virtual !() -> void
 	{
 		printf("hoy2 %i\n",NewClass->TypeSize)
 	}
 	tst3 := !() -> void
 	{
-		printf("hoy3 %i\n",NewClass->TypeSize)
+		printf("hoy4 %i\n",NewClass->TypeSize)
 	}
+}
+
+Class2 := class extend NewClass
+{
+	tst := virtual !() -> void
+	{
+		printf("hay %i\n",NewClass->TypeSize)
+	}
+	tst2 := virtual !() -> void
+	{
+		printf("yoh2 %i\n",NewClass->TypeSize)
+	}
+
 }
 
 
 main := !(char^[] args) -> int
 {
-	c := NewClass
+	c := NewClass^
+	c = new Class2
 	c.tst()
 	c.tst2()
 	c.tst3()

@@ -199,6 +199,9 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			if cls.VTable.Size() == 0
 				return GObjNone
 			fncCall := cls.VTableValue.proxy&
+
+			if RunMode
+				DB_VTableUsage.Add(cls,CurrentFunc?)
 			return new UnrefFuncCall(fncCall)
 		}
 		dObj := TryGetExeCall(obj.Down)
@@ -216,6 +219,8 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 				cls2.AwaitVTableStep()
 				if cls2.VTable.Size() != 0
 				{
+					if RunMode
+						DB_VTableUsage.Add(cls2,CurrentFunc?)
 					chk := CheckExeDownList
 					chk.Push(dObj)
 					return cls2.VTableField.CreateCall(chk)

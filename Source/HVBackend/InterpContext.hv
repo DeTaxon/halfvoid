@@ -339,6 +339,10 @@ MCInterpContext := class
 		funcs[itm] = result
 	}
 
+	Reload := !(HotloadContext^ ctx) -> void
+	{
+		ReloadFunctions(ctx)
+	}
 	ReloadFunctions := !(HotloadContext^ ctx) -> void
 	{
 		for newFunc : ctx.ChangedFunctions
