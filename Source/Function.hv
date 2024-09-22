@@ -191,20 +191,9 @@ PFunctionParser := class
 			i += 1
 		funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
 
-		
-		base := u32
-		k := 0
-		sz := funcCode.Size()
-		ch := funcCode.NonNullStr()->{u8^}
-		while k < sz
-		{
-			base = (base shl 4) + ch[k] + (base shr 16)
-			k += 1
-		}
-		return base
-		//crc := Crc32()
-		//crc.Feed(funcCode.NonNullStr(),funcCode.Size())
-		//return crc.Get()
+		crc := Crc32()
+		crc.Feed(funcCode.NonNullStr(),funcCode.Size())
+		return crc.Get()
 	}
 	CreateObject := !() -> BoxUnit^
 	{

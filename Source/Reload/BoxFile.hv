@@ -4,19 +4,29 @@ AppendClass BoxFile
 	{
 		fileData = newFile.GetBlob()
 
-		toks := LoadFile(newFile,fileData,true)
+		fileTokens = LoadFile(newFile,fileData,true)
 
-		ReloadFunctions(ctx,newFile,fileData,toks)
-		
-		changedClasses := AVLSet.{BoxClassBody^}
+		oldData := ReloadFileOldData
+		oldData.ctx = ctx
 
-		ReloadAppends(ctx,newFile,fileData,toks,changedClasses)
-		ReloadClasses(ctx,newFile,fileData,toks,changedClasses)
+		oldData.Functions.Push(Functions[^]) //TODO i need std::swap
+		Functions.Destroy()
 
-		for it : changedClasses
+		oldData.FileClasses.Push(FileClasses[^])
+		FileClasses.Destroy()
+
+		oldData.FileClassTemplates.Push(FileClassTemplates[^])
+		FileClassTemplates.Destroy()
+
+		for it,ind : ClassAppends
 		{
-			it.ReloadClass(ctx)
+			oldData.ClassAppends[ind] = it
 		}
+		ClassAppends.Destroy()
+
+		//TODO deleted functions,classes,classtemplates
+		ParseFunctions(oldData&)
+		ParseClasses(oldData&)
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{
@@ -203,4 +213,20 @@ AppendClass BoxFile
 		Functions.DeleteIf(@1 == delFunc)
 		CodeSpaces[^].Templates[^].DeleteIf(@1 == delFunc)
 	}
+}
+
+ReloadFileOldData := class extend TGCObject
+{
+	ctx := HotloadContext^
+
+	Functions := List.{BoxFuncTemplateBody^}
+	UsedFunctions := AVLSet.{BoxFuncTemplateBody^}
+
+	FileClasses := List.{BoxClassBody^}
+	UsedFileClasses := AVLSet.{BoxClassBody^}
+
+	FileClassTemplates := List.{BoxClassTemplateBody^}
+	UsedFileClassTemplates := AVLSet.{BoxClassTemplateBody^}
+
+	ClassAppends := AVLMap.{Str,Token^}
 }

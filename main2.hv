@@ -23,7 +23,7 @@ Class2 := class extend NewClass
 	{
 		printf("hay %i\n",NewClass->TypeSize)
 	}
-	tst2 := virtual !() -> void
+	tst2 := !() -> void
 	{
 		printf("yoh2 %i\n",NewClass->TypeSize)
 	}

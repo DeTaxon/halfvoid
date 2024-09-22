@@ -10,7 +10,7 @@ AppendClass Window
 		InitGL()
 		glfwMakeContextCurrent(windowHandle)
 
-		gl := glFuncsClass
+		ctx := WindowGLContext
 
 		lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
 		glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
@@ -47,4 +47,9 @@ AppendClass Window
 		}
 		DestroyWindow()
 	}
+}
+
+WindowGLContext := class
+{
+	gl := glFuncsClass
 }

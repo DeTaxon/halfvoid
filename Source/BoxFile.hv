@@ -40,7 +40,9 @@ BoxFile := class extend BoxUnit
 
 	FileClasses := List.{BoxClassBody^}
 	FileClassTemplates := List.{BoxClassTemplateBody^}
-	Functions := List.{BoxFuncTemplate^}
+	Functions := List.{BoxFuncTemplateBody^}
+
+	ClassAppends := AVLMap.{Str,Token^}
 
 	fileTokens := Token^
 	tokensChanged := bool
@@ -101,7 +103,7 @@ BoxFile := class extend BoxUnit
 		}
 		return resultTokens
 	}
-	ParseClasses := !() -> void
+	ParseClasses := !(ReloadFileOldData^ oldData = null) -> void
 	{
 		classes := ParseClasses(fileTokens)
 
@@ -118,8 +120,63 @@ BoxFile := class extend BoxUnit
 			}else{
 				assert(false)
 			}
-
 			d := PClassParser(stVal.Right)
+
+			if oldData != null
+			{
+				if not d.IsTemplate() 
+				{
+					foundClass := BoxClassBody^
+
+					for it : oldData.FileClasses
+					{
+						if it.Name == name
+						{
+							foundClass = it
+							break
+						}
+					}
+
+					if foundClass != null
+					{
+						dHsh := d.ComputeHash(fileData)
+						if foundClass.hash != dHsh
+						{
+							//TODO extends tokens
+							foundClass.Body = d.bodyToken
+							foundClass.hash = dHsh
+							//TODO appends
+							foundClass.ReloadClass(oldData.ctx) //TODO not here but batch it, so it could wait for AppendClass when AppendClass changed
+						}
+
+						oldData.UsedFileClasses.Insert(foundClass)
+						FileClasses.Push(foundClass)
+						continue
+					}
+
+				}else{
+					foundTemplate := BoxClassTemplateBody^
+
+					for it : oldData.FileClassTemplates
+					{
+						if it.ItName == name
+						{
+							//TODO reload body
+							foundTemplate = it
+							break
+						}
+					}
+
+					if foundTemplate != null
+					{
+						//TODO check change of hash
+						oldData.UsedFileClassTemplates.Insert(foundTemplate)
+						FileClassTemplates.Push(foundTemplate)
+						continue
+					}
+				}
+			}
+
 			assert(d.IsFound())
 
 			AddClass(name,d&)
@@ -181,7 +238,7 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	ParseAppendClasses := !() -> void
+	ParseAppendClasses := !(ReloadFileOldData^ oldData = null) -> void
 	{
 		lst := ParseAppend(fileTokens)
 
@@ -196,8 +253,23 @@ BoxFile := class extend BoxUnit
 				CurrentWork?.SetErrorMessage(iter.MakeError("class not found"))
 				return void
 			}else{
+
+				if oldData?.ClassAppends.Contain(name)
+				{
+					oldToken := oldData.ClassAppends[name]
+
+					cls->{BoxClassBody^}.Appends.DeleteIf(@1.0 == oldToken)
+
+					//TODO check append change
+
+					oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
+				}
+
 				assert(cls is in BoxClassBody)
-				cls->{BoxClassBody^}.Appends.Emplace(this&,iter.Down.Right.Right,0)
+
+				bodyToken := iter.Down.Right.Right
+				ClassAppends[name] = bodyToken
+				cls->{BoxClassBody^}.Appends.Emplace(this&,bodyToken,0)
 				ParsedTokens.Insert(iter)
 			}
 		}
@@ -249,7 +321,7 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	ParseFunctions := !() -> void
+	ParseFunctions := !(ReloadFileOldData^ oldData = null) -> void
 	{
 		res := ParseFunctions(fileTokens)
 
@@ -258,6 +330,35 @@ BoxFile := class extend BoxUnit
 			stVal := iter.Down.Right
 
 			c := PFunctionParser(stVal.Right)
+
+
+			if oldData != null
+			{
+				hsh := c.ComputeHeaderHash(fileData)
+
+				foundFunc := BoxFuncTemplateBody^
+				for it : oldData.Functions
+				{
+					if it.GetHeaderHash() == hsh
+					{
+						foundFunc = it
+						break
+					}
+				}
+
+				if foundFunc != null
+				{
+					if foundFunc.GetFullHash() != c.ComputeHash()
+					{
+						HotloadStream << "Function "<< foundFunc.Name << " changed its content\n"
+						foundFunc.ReloadFunctions(oldData.ctx,c&,fileData)
+					}
+
+					Functions.Push(foundFunc)
+					oldData.UsedFunctions.Insert(foundFunc)
+					continue
+				}
+			}
 
 			isSuffix := false
 			name := StringSpan
@@ -291,7 +392,7 @@ BoxFile := class extend BoxUnit
 		res.MemObj.SetName(res.Name)
 		CurrentCodeSpace.AddTemplate(res.Name,fnc->{BoxFuncTemplate^})
 
-		Functions.Push(fnc->{BoxFuncTemplate^})
+		Functions.Push(fnc->{BoxFuncTemplateBody^})
 	}
 
 	ParseFunctions := !(Token^ checkTokens) ->	HybridQueue.{Token^,20}
