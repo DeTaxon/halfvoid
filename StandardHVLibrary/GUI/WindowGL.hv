@@ -11,6 +11,7 @@ AppendClass Window
 		glfwMakeContextCurrent(windowHandle)
 
 		ctx := WindowGLContext
+		ctx.gl = new glFuncsClass
 
 		lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
 		glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
@@ -21,26 +22,23 @@ AppendClass Window
 		}
 
 		nameBuffer := char[128]
-		for it,ind : gl->AllFields
+		for it,ind : ctx.gl->AllFields
 		{
 			sprintf(nameBuffer[0]&,"gl%s",ind)
 			it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
 			//printf("proc %s %p\n",ind,it)
 		}
 
-		gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)
+		ctx.gl.Viewport(0,0,windowSize.x,windowSize.y)
+
+		ctx.gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)
 		
 		while not ShouldClose()
 		{
-			gl.Clear(GL_COLOR_BUFFER_BIT)
-			gl.Begin(GL_TRIANGLES)
-			gl.Color3f(1.0,0.0,0.0)
-			gl.Vertex3f(-1.0,-1.0,0.0)
-			gl.Color3f(0.0,1.0,0.0)
-			gl.Vertex3f(1.0,-1.0,0.0)
-			gl.Color3f(0.0,0.0,1.0)
-			gl.Vertex3f(0.0,1.0,0.0)
-			gl.End()
+			ctx.gl.Clear(GL_COLOR_BUFFER_BIT)
+
+			mainGUIObject.DrawGL(ctx&,vec2f(0,0))
+
 			PollEvents()
 			SwapBuffers()
 			TaskYield()
@@ -51,5 +49,6 @@ AppendClass Window
 
 WindowGLContext := class
 {
-	gl := glFuncsClass
+	//TODO i dont need it to be pointer, it's crashes, maybe due to variable type size
+	gl := glFuncsClass^
 }

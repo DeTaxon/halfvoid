@@ -503,7 +503,7 @@ BoxClassBody := class extend BoxClassPoison
 				{
 					if oldData != null
 					{
-						fncHash := fncParser.ComputeHeaderHash(bodyVal.Line.File.fileData)
+						fncHash := fncParser.ComputeHeaderHash()
 						thisFullHash := u32
 						for it : oldData.OldFuncTemplates[name]?
 						{
@@ -612,7 +612,7 @@ BoxClassBody := class extend BoxClassPoison
 						{
 							f2 := f->{BoxFuncBody^}
 							f2.hash = fncParser.ComputeHash()
-							f2.headerHash = fncParser.ComputeHeaderHash(ParentScope->{BoxFile^}.fileData)
+							f2.headerHash = fncParser.ComputeHeaderHash()
 						}
 
 						if isVirtual

@@ -44,6 +44,11 @@ RunTest := !() -> void
 	printf("waw\n")
 }
 
+//for i : ![1,2,3] TODO, this array is not affected by reload
+//{
+//	
+//}
+
 
 
 

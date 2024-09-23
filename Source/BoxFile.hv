@@ -42,7 +42,9 @@ BoxFile := class extend BoxUnit
 	FileClassTemplates := List.{BoxClassTemplateBody^}
 	Functions := List.{BoxFuncTemplateBody^}
 
-	ClassAppends := AVLMap.{Str,Token^}
+	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
+
+	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
 
 	fileTokens := Token^
 	tokensChanged := bool
@@ -55,7 +57,7 @@ BoxFile := class extend BoxUnit
 		file = inFile
 		fileData = file.GetBlob()
 		fileSize = file.Size()
-		fileName = file.GetName().Str() //TODO Remove .Str()
+		fileName = file.GetName()
 	}
 	GetName := !() -> StringSpan
 	{
@@ -145,8 +147,8 @@ BoxFile := class extend BoxUnit
 							//TODO extends tokens
 							foundClass.Body = d.bodyToken
 							foundClass.hash = dHsh
-							//TODO appends
-							foundClass.ReloadClass(oldData.ctx) //TODO not here but batch it, so it could wait for AppendClass when AppendClass changed
+
+							oldData.ctx.ReloadClasses.PushUniq(foundClass)
 						}
 
 						oldData.UsedFileClasses.Insert(foundClass)
@@ -254,22 +256,29 @@ BoxFile := class extend BoxUnit
 				return void
 			}else{
 
-				if oldData?.ClassAppends.Contain(name)
-				{
-					oldToken := oldData.ClassAppends[name]
-
-					cls->{BoxClassBody^}.Appends.DeleteIf(@1.0 == oldToken)
-
-					//TODO check append change
-
-					oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
-				}
-
+				bodyToken := iter.Down.Right.Right
 				assert(cls is in BoxClassBody)
 
-				bodyToken := iter.Down.Right.Right
-				ClassAppends[name] = bodyToken
-				cls->{BoxClassBody^}.Appends.Emplace(this&,bodyToken,0)
+				hsh := u32
+				if RunMode
+					hsh = ComputeBracketsHash(bodyToken.Line.File.fileData,null,bodyToken)
+
+				if oldData?.ClassAppends.Contain(name)
+				{
+					oldAppend := ref oldData.ClassAppends[name]
+
+					cls->{BoxClassBody^}.Appends.DeleteIf(@1.1 == oldAppend.0)
+
+					//TODO case when we have multiple AppendClass of same class
+					if oldAppend.1 != hsh
+					{
+						oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
+					}
+				}
+
+				ClassAppends[name] = !{bodyToken,hsh}
+
+				cls->{BoxClassBody^}.Appends.Emplace(this&,bodyToken,hsh)
 				ParsedTokens.Insert(iter)
 			}
 		}
@@ -297,7 +306,7 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	ParseTypedefs := !() -> void
+	ParseTypedefs := !(ReloadFileOldData^ oldData = null) -> void
 	{
 		if fileTokens == null
 			return void
@@ -308,6 +317,29 @@ BoxFile := class extend BoxUnit
 		{
 			if iter.Down?.Right?.Right?.GetValue() == "type"
 			{
+				if oldData != null
+				{
+					hsh := ComputeHash(iter)
+					foundTypedef := TypedefTemplateVar^
+					for it : oldData.Typedefs
+					{
+						if it.1 == hsh
+						{
+							foundTypedef = it.0
+							break
+						}
+					}
+
+					if foundTypedef != null
+					{
+						Typedefs.Emplace(foundTypedef,hsh)
+						oldData.UsedTypedefs.Insert(foundTypedef)
+
+						iter = iter.Right
+						continue
+					}
+					
+				}
 				res := TryParseTypedefTemplate(iter)
 
 				if res != null
@@ -331,10 +363,9 @@ BoxFile := class extend BoxUnit
 
 			c := PFunctionParser(stVal.Right)
 
-
 			if oldData != null
 			{
-				hsh := c.ComputeHeaderHash(fileData)
+				hsh := c.ComputeHeaderHash()
 
 				foundFunc := BoxFuncTemplateBody^
 				for it : oldData.Functions
@@ -383,7 +414,7 @@ BoxFile := class extend BoxUnit
 		assert(fnc is in BoxFuncTemplate)
 		if fnc is in BoxFuncTemplateBody
 		{
-			fnc->{BoxFuncTemplateBody^}.headerHash = newFunc.ComputeHeaderHash(fileData)
+			fnc->{BoxFuncTemplateBody^}.headerHash = newFunc.ComputeHeaderHash()
 			fnc->{BoxFuncTemplateBody^}.hash = newFunc.ComputeHash()
 		}
 		res := new TemplateFuncVar(newName,isSuffix,fnc->{BoxFuncTemplate^})
@@ -454,7 +485,7 @@ BoxFile := class extend BoxUnit
 
 	AddWork := !() -> void
 	{
-		fileName = file.GetName().Str() // TODO remove Str
+		fileName = file.GetName()
 		if fileTokens == null
 			return void
 
@@ -473,7 +504,7 @@ BoxFile := class extend BoxUnit
 	}
 	Parse := !() -> void
 	{
-		fileName = file.GetName().Str()// TODO remove Str
+		fileName = file.GetName()
 
 		LoadSpace()
 

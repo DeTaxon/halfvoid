@@ -226,9 +226,6 @@ Window := class extend GLFWWindow
 	{
 		return new LayoutVertical(![])
 	}
-	DrawCode := virtual !(void^ nk,int w, int h) -> void
-	{
-	}
 	DrawVulkan := virtual !(VkCommandBuffer cmd,int w, int h) -> void
 	{
 

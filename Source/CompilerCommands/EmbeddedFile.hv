@@ -45,7 +45,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 
 	constStr := GetConstString(itFile.GetPath().Str())
 
-	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),constStr.NonNullStr(),itFile.GetName()^[0..0]
+	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),constStr.NonNullStr(),itFile.GetName()->AsString^[0..0]
 	, compressFile ?: "Deflate" : "None"
 	,() ==> Blob^ {
 		return itFile.GetBlob()

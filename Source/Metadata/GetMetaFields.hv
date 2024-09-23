@@ -2,7 +2,9 @@ TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 {
 	dwn := TryGetExeCall(itm.Down)
 
-	assert(dwn != null)
+	if dwn == null
+		return null
+
 	dwnType := dwn.GetType()
 
 	cls := BoxClass^

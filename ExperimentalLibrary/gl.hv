@@ -114,10 +114,14 @@
 				return HV.GetType("u32")
 			case "GLbitfield"
 				return HV.GetType("s32")
-			case "GLuint"
+			case "GLint"
 				return HV.GetType("s32")
+			case "GLuint"
+				return HV.GetType("u32")
 			case "GLfloat"
 				return HV.GetType("float")
+			case "GLsizei"
+				return HV.GetType("size_t")
 			case void
 				printf("opengl unknown type %s\n",typeName)
 				return null

@@ -56,6 +56,10 @@ GUIObject := class extend TGCObject
 	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
 	}
+	DrawGL := virtual !(WindowGLContext^ ctx, vec2f offset) -> void
+	{
+
+	}
 }
 
 LayoutSpacer := class extend GUIObject

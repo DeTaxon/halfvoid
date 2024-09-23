@@ -6,6 +6,8 @@ AppendClass BoxFile
 
 		fileTokens = LoadFile(newFile,fileData,true)
 
+		ParsedTokens.Destroy()
+
 		oldData := ReloadFileOldData
 		oldData.ctx = ctx
 
@@ -18,15 +20,21 @@ AppendClass BoxFile
 		oldData.FileClassTemplates.Push(FileClassTemplates[^])
 		FileClassTemplates.Destroy()
 
+
+		oldData.Typedefs.Push(Typedefs[^])
+		Typedefs.Destroy()
+
 		for it,ind : ClassAppends
 		{
 			oldData.ClassAppends[ind] = it
 		}
 		ClassAppends.Destroy()
 
-		//TODO deleted functions,classes,classtemplates
-		ParseFunctions(oldData&)
+		//TODO deleted functions,classes,classtemplates,typedefs
 		ParseClasses(oldData&)
+		ParseTypedefs(oldData&)
+		ParseAppendClasses(oldData&)
+		ParseFunctions(oldData&)
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{
@@ -228,5 +236,9 @@ ReloadFileOldData := class extend TGCObject
 	FileClassTemplates := List.{BoxClassTemplateBody^}
 	UsedFileClassTemplates := AVLSet.{BoxClassTemplateBody^}
 
-	ClassAppends := AVLMap.{Str,Token^}
+	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
+
+	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
+	UsedTypedefs := AVLSet.{TypedefTemplateVar^}
+	
 }

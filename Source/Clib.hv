@@ -181,52 +181,6 @@ CLib := class extend ModuleInterface
 
 		return newStruct.ItType
 	}
-	innerMakeType := !(StringSpan name) -> BoxUnit^ //TODO delete
-	{
-		nd := itPreStructs[name]
-
-		newStruct := new BoxClassVulkan
-		newStruct.Name = StringSpan(name)
-		newStruct.ItId = GetNewId()
-		newStruct.ItType = new TypeClass(newStruct)
-
-		for itm : nd^
-		{
-			ind := TokenIndent(itm.Value())
-			ptrs := 0
-			i := ind.Value.Size() - 1
-			while i >= 0
-			{
-				if ind.Value[i] != '^'
-					break
-				ptrs += 1
-				i -= 1
-			}
-			ind.Value = ind.Value[0..(-ptrs)]
-			tp := ParseType(ind&)
-
-			if tp == null
-			{
-				iNeedFString := TEchoStream
-				iNeedFString << "vulkan module: could not load type " << name
-				dat := TokenData
-				CurrentWork?.SetErrorMessage(dat.MakeError(iNeedFString.GetString().Str()))
-				return null
-			}
-
-			for j : ptrs
-				tp = tp.GetPoint()
-			newStruct.Fields.Push(new FieldParam(itm.Key(),tp))
-		}
-		buildCtx := ClassBuildContext
-		newStruct.InheritStep(buildCtx,null)
-		AllClasses.Push(newStruct)
-		newStruct.FinilizeCreation()
-
-		res := newStruct.ItType
-		itStructs[name] = res
-		return res
-	}
 	innerGetFunc := !(Str name) -> BoxUnit^
 	{
 		bdy := itPreFuncs[name]

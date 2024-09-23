@@ -133,4 +133,15 @@ LayoutHorizontal := class extend LayoutBase
 			it.0.PushDraw(ctx,cmdB,offset + it.1)
 		}
 	}
+	DrawGL := virtual !(WindowGLContext^ ctx, vec2f offset) -> void
+	{
+		for it : objects
+		{
+			if it.0 is LayoutSpacer
+				continue
+
+			newOffset := offset + it.1
+			it.0.DrawGL(ctx,offset + it.1)
+		}
+	}
 }

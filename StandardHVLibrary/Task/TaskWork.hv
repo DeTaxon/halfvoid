@@ -48,6 +48,7 @@ taskWorkCallEnd := !() -> void
 }
 
 SpawnWork := !(!()&->void lmbd) -> Task^
+	#Mark("JITPass")
 {
 	return spawnWorkInner(lmbd.Capture())
 }

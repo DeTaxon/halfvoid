@@ -7,7 +7,7 @@ vRepoObject := class extend TGCObject
 	absPath := Str
 	upFolder := Folder^
 
-	GetName := !() -> String^ { return objName }
+	GetName := !() -> Str { return objName }
 	
 	GetUpFolder := !() -> Folder^
 	{

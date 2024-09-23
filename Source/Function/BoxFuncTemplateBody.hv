@@ -56,7 +56,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if resTyp == null
 				Attrs.IsAutoResult = true
 
-			headerHash = headerData.ComputeHeaderHash(fileData)
+			headerHash = headerData.ComputeHeaderHash()
 			hash = headerData.ComputeHash()
 		}
 

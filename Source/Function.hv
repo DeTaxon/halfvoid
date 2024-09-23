@@ -126,8 +126,9 @@ PFunctionParser := class
 	{
 		return found
 	}
-	ComputeHeaderHash := !(Blob^ fileData) -> u32
+	ComputeHeaderHash := !() -> u32
 	{
+		fileData := bodyToken.Line.File.fileData
 		if fileData.Size() == 0
 			return 0
 		if baseToken.Line == null or bodyToken == null
@@ -141,7 +142,7 @@ PFunctionParser := class
 		if resultToken != null
 			endLine = resultToken.Line.Line
 
-		return computeHashOnLines(fileData,startLine,endLine)
+		return ComputeHashOnLines(fileData,startLine,endLine)
 	}
 	ComputeHash := !() -> u32
 	{
@@ -161,39 +162,7 @@ PFunctionParser := class
 		startLine := baseToken.Line.Line
 		endLine := asSkob.EndLine.Line
 
-		return computeHashOnLines(fileData,startLine,endLine)
-	}
-	computeHashOnLines := !(Blob^ fileData, int startLine, int endLine) -> u32
-	{
-		arr := fileData.GetPointer()
-		startLineIndex := 0
-		i := 0
-		curLine := 1
-		blbSize := fileData.Size()
-		while i < blbSize and curLine != startLine
-		{
-			if arr[i] == '\n'
-				curLine += 1
-			i += 1
-		}
-		startLineIndex = i
-		while i < blbSize and curLine != endLine
-		{
-			if arr[i] == '\n'
-				curLine += 1
-			i += 1
-		}
-		while i < blbSize and arr[i] != '\n'
-		{
-			i += 1
-		}
-		if i < blbSize
-			i += 1
-		funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
-
-		crc := Crc32()
-		crc.Feed(funcCode.NonNullStr(),funcCode.Size())
-		return crc.Get()
+		return ComputeHashOnLines(fileData,startLine,endLine)
 	}
 	CreateObject := !() -> BoxUnit^
 	{
