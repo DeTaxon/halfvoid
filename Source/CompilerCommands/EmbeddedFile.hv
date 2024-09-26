@@ -16,6 +16,12 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 	 
 	fileName := skb.Down->{TokenString^}.Value
 
+	if fileName.Start == "local:"
+	{
+		isLocal = true
+		fileName = fileName[6..0]
+	}
+
 	compressFile := false
 	if skb.Down.Right?.GetValue() == "," and skb.Down.Right.Right? is TokenBool
 	{

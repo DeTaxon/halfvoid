@@ -77,7 +77,17 @@
 				return null
 			types.Push(parType)
 		}
-		fType := HV.GetFuncType(types,null,HV.GetType("void"),false,false)
+
+		resType := HV.GetType("void")
+
+		resNode := cmd.GetNode("proto/ptype")
+
+		if resNode != null
+		{
+			resType = GetStringType(resNode.Values[0].ValueSpan)
+		}
+
+		fType := HV.GetFuncType(types,null,resType,false,false)
 		return HV.GetTypePointer(fType)
 	}
 	GetParamType := !(XMLNode^ node) -> HV_Object^
@@ -95,12 +105,64 @@
 
 		switch nodeType
 		{
+		case "0101"
+		 	pType := node.GetNode("ptype")
+
+			pointers := 0
+
+			switch node.Values[2].ValueSpan
+			{
+			case " *const*"
+				pointers = 2
+			case " *"
+				pointers = 1
+			case void
+				//printf("opengl unknown modifier %s\n",nodeValues[2].ValueSpan)
+			}
+		 	if pType != null
+		 	{
+		 		res := GetStringType(pType.Values[0].ValueSpan)
+				for it : pointers
+					res = HV.GetTypePointer(res)
+				return res
+		 	}
+		case "101"
+		 	pType := node.GetNode("ptype")
+		 	if pType != null
+		 	{
+				pointers := 0
+
+				switch node.Values[1].ValueSpan
+				{
+				case " *const*"
+					pointers = 2
+				case " *"
+					pointers = 1
+				case void
+					//printf("opengl unknown modifier %s\n",nodeValues[2].ValueSpan)
+				}
+		 		res := GetStringType(pType.Values[0].ValueSpan)
+				for it : pointers
+					res = HV.GetTypePointer(res)
+				return res
+		 	}
 		case "11"
 		 	pType := node.GetNode("ptype")
 		 	if pType != null
 		 	{
 		 		return GetStringType(pType.Values[0].ValueSpan)
 		 	}
+		case "01"
+
+			switch node.Values[0].ValueSpan
+			{
+			case "const void *"
+				return HV.GetTypePointer(HV.GetType("void"))
+			case void
+				printf("opengl, unknown modifier %s\n",node.Values[0].ValueSpan)
+				return null
+				//TODO add error
+			}
 		case void
 			printf("opengl cant get param %s\n",nodeType)
 		}
@@ -110,6 +172,12 @@
 	{
 		switch typeName
 		{
+			case "GLboolean"
+				return HV.GetType("int")
+			case "GLsizeiptr"
+				return HV.GetType("size_t")
+			case "GLchar"
+				return HV.GetType("char")
 			case "GLenum"
 				return HV.GetType("u32")
 			case "GLbitfield"

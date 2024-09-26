@@ -29,6 +29,12 @@
 		"GLFW_CURSOR_HIDDEN" : 0x34002,
 		"GLFW_CURSOR_DISABLED" : 0x34003,
 
+		"GLFW_CONTEXT_VERSION_MAJOR" :  0x22002,
+		"GLFW_CONTEXT_VERSION_MINOR" :  0x22003,
+
+		"GLFW_OPENGL_PROFILE" :  0x22008,
+		"GLFW_OPENGL_CORE_PROFILE" :  0x32001,
+
 		"GLFW_MOUSE_BUTTON_LEFT" : 0,
 		"GLFW_MOUSE_BUTTON_RIGHT" : 1,
 		"GLFW_MOUSE_BUTTON_MIDDLE" : 2
@@ -76,6 +82,8 @@
 
 
 		"glfwGetMouseButton" : "int,void^,int",
-		"glfwGetCursorPos" : "void,void^,double^,double^"
+		"glfwGetCursorPos" : "void,void^,double^,double^",
+
+		"glfwGetProcAddress" : "void^,char^"
 	}
 }

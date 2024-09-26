@@ -54,9 +54,15 @@ Task := class extend TGCObject
 				taskId = 0
 			}
 		}
+
+		//TODO remove locks, taskLambda = null which causes to call TLock
+		TaskCheckMutex.Unlock() 
+		taskLambda = null
+		TaskCheckMutex.Lock()
+
 		CurrentThread.DeleteTasks.Push(this&)
 		finishedWork.EmitInner()
-		taskLambda = null
+
 		CurrentThread.ThreadMainTask.switchToTask()
 	}
 
@@ -85,6 +91,15 @@ Task := class extend TGCObject
 	{
 		finishedWork.Await()
 	}
+}
+
+
+//TODO remove it, there is a crash in interpreter
+//it seems AppendClass breaks JITPass for classes
+ACompletion := !(Task^  tsk) -> void
+	#Mark("JITPass")
+{
+	tsk?.AwaitCompletion()
 }
 
 TaskStackUsageInfo := class

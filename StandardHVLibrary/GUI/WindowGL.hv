@@ -1,13 +1,17 @@
 AppendClass Window
 {
-	InitGL := !() -> void
+	initGLWindow := !() -> void
 	{
 		Init(windowSize.x,windowSize.y,windowTitle.Str(),false)
 		mainGUIObject = InitWindow()
 	}
+	InitGL := virtual !(WindowGLContext^ ctx) -> bool
+	{
+
+	}
 	RunGL := !() -> void
 	{
-		InitGL()
+		initGLWindow()
 		glfwMakeContextCurrent(windowHandle)
 
 		ctx := WindowGLContext
@@ -20,28 +24,33 @@ AppendClass Window
 		{
 			glGetProcAddress = lib.Get("wglGetProcAddress")->{!(char^)^->void^}
 		}
-
 		nameBuffer := char[128]
 		for it,ind : ctx.gl->AllFields
 		{
 			sprintf(nameBuffer[0]&,"gl%s",ind)
 			it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+			//it&->{void^^}^ = glfwGetProcAddress(nameBuffer[0]&)
 			//printf("proc %s %p\n",ind,it)
 		}
 
-		ctx.gl.Viewport(0,0,windowSize.x,windowSize.y)
 
-		ctx.gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)
-		
-		while not ShouldClose()
+		if InitGL(ctx&)
 		{
-			ctx.gl.Clear(GL_COLOR_BUFFER_BIT)
 
-			mainGUIObject.DrawGL(ctx&,vec2f(0,0))
+			ctx.gl.Viewport(0,0,windowSize.x,windowSize.y)
 
-			PollEvents()
-			SwapBuffers()
-			TaskYield()
+			ctx.gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)
+			
+			while not ShouldClose()
+			{
+				ctx.gl.Clear(GL_COLOR_BUFFER_BIT)
+
+				mainGUIObject.DrawGL(ctx&,vec2f(0,0))
+
+				PollEvents()
+				SwapBuffers()
+				TaskYield()
+			}
 		}
 		DestroyWindow()
 	}

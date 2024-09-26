@@ -23,6 +23,15 @@ vEmbeddedFile := class extend File //TODO, extend IFile, not an already made obj
 		}
 		return new ZipFSFileViewRaw(itData->{u8^},fileSize)
 	}
+	GetBlob := virtual !() -> Blob^
+	{
+		result = MakeBlob(fileSize)
+		mp := GetMap()
+		if result.Size() != 0
+		{
+			memcpy(result.GetPointer(),mp.Get(),fileSize)
+		}
+	}
 	IsVirtual := virtual !() -> bool 
 	{
 		return true
