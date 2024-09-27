@@ -15,24 +15,24 @@ vRepo := class extend TGCObject
 			if x == "." or x == ".."
 				return void
 
-			absPath := CreateString(p.GetString(),"/",x)
+			LocalPath := CreateString(p.GetString(),"/",x)
 
-			if osIsFolder(absPath.Str())
+			if osIsFolder(LocalPath.Str())
 			{
 				if recur
 				{
-					ReadFolder(absPath,recur,callb)
+					ReadFolder(LocalPath,recur,callb)
 				}
 				fold := new Folder
-				fold.absPath = absPath
+				fold.localPath = LocalPath
 				fold.objName = x
 				callb(fold)
 			}else{
-				diffSize := absPath.Size() - p.Size()
+				diffSize := LocalPath.Size() - p.Size()
 				fil := new File
 				fil.ptrToRepo = repoObj
-				fil.fileSize = osFileSize(absPath.Str())
-				fil.absPath = absPath
+				fil.fileSize = osFileSize(LocalPath.Str())
+				fil.localPath = LocalPath
 				fil.objName = x
 
 				callb(fil)
@@ -58,7 +58,7 @@ vRepo := class extend TGCObject
 		if osIsFolder(st.Str())
 			return null
 		result = new File
-		result.absPath = st
+		result.localPath = st
 		result.objName = st
 		result.fileSize = osFileSize(st.Str())
 	}

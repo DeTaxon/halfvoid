@@ -4,6 +4,7 @@ FSObject := type vRepoObject
 vRepoObject := class extend TGCObject
 {
 	objName := Str
+	localPath := Str
 	absPath := Str
 	upFolder := Folder^
 
@@ -12,12 +13,12 @@ vRepoObject := class extend TGCObject
 	GetUpFolder := !() -> Folder^
 	{
 		//TODO this needs upgrade
-		if upFolder == null and absPath->AsString != null
+		if upFolder == null and localPath->AsString != null
 		{
-			if absPath->AsString.End != "/"
+			if localPath->AsString.End != "/"
 			{
-				ptr := absPath.Str()
-				siz := absPath.Size()
+				ptr := localPath.Str()
+				siz := localPath.Size()
 				i := siz - 1
 				while i >= 0
 				{
@@ -27,10 +28,10 @@ vRepoObject := class extend TGCObject
 				}
 				if i < 2
 					return null
-				spn := absPath[0..i]
+				spn := localPath[0..i]
 
 				res := new Folder
-				res.absPath->AsString = spn.GetString()
+				res.localPath->AsString = spn.GetString()
 				return res
 
 			}
@@ -38,9 +39,21 @@ vRepoObject := class extend TGCObject
 		return upFolder 
 	}
 
+	GetAbsPath := !() -> Str
+	{
+		if absPath->AsString != null
+			return absPath
+		absPathM := fsGetAbsolutePath(localPath)
+		if absPathM.IsSet()
+		{
+			absPath = absPathM.value //TODO some method for optional
+			return absPath
+		}
+	}
+
 	GetPath := !() -> Str
 	{
-		return absPath
+		return localPath
 		//itms := HybridStack.{vRepoObject^,16}
 		//iterUp := this&
 		//while iterUp != null

@@ -47,8 +47,8 @@ File := class extend vRepoObject
 	GetParentFolder := !() -> Folder^
 	{
 		lastSlash := 0
-		ptr := absPath.Str()
-		for i : absPath.Size()
+		ptr := localPath.Str()
+		for i : localPath.Size()
 		{
 			if ptr[i] == '/'
 			{
@@ -59,7 +59,7 @@ File := class extend vRepoObject
 			return null
 
 		result = new Folder
-		result.absPath->AsString = absPath[0..lastSlash].GetString()
+		result.localPath->AsString = localPath[0..lastSlash].GetString()
 		result.objName = result.absPath //TODO norman obj Name
 	}
 

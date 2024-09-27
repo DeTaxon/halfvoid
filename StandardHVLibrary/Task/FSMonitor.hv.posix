@@ -69,7 +69,7 @@ inotify_wrapper_fd := class
 					fullPath := sBuf.GetString()
 
 					newFile := new File()
-					newFile.absPath->AsString = fullPath
+					newFile.localPath->AsString = fullPath
 					newFile.objName->AsString = fileName.GetString()
 
 					TaskCheckMutex.Lock()
