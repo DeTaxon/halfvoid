@@ -1,0 +1,25 @@
+
+
+CheckEmbededFile := !(HotloadContext^ hotload,File^ changedFile) -> void
+{
+	bf := changedFile.GetAbsPath()
+
+	if bf->AsString == null
+		return void
+
+	embList := ref EmbeddedObjects["EmbeddedFile"]
+
+	for it : embList
+	{
+		if it.baseFile.GetAbsPath() != bf
+			continue
+
+		it.UpdateData(changedFile.GetBlob())
+
+		HotloadStream << "Reloading embedded file " << bf << "\n"
+
+		DB_EmbeddedFiles.Value.Get(it.baseFile,(x) ==> {
+			hotload.ReloadFunctions.PushUniq(x)
+		})
+	}
+}

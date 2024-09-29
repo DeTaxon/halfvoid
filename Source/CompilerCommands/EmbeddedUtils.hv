@@ -1,6 +1,7 @@
 
 EmbedInfo := class
 {
+	baseFile := File^
 	embedData := Blob^
 	rawData := BoxRawData^
 
@@ -8,11 +9,34 @@ EmbedInfo := class
 	fileSize := s64
 	compressedSize := s64
 	fileName := StringSpan
+
+	UpdateData := !(Blob^ newData) -> void
+	{
+		embedData = newData
+		switch compressionType
+		{
+			case "None"
+			case "Deflate"
+				embedData = CompressBlobDeflate(newData)
+			case void
+		}
+
+		baseFile = baseFile
+		fileSize = newData.Size()
+		compressedSize = embedData.Size()
+		if rawData == null
+		{
+			rawData = new BoxRawData(embedData)
+		}else{
+			rawData.ItBlob = embedData
+		}
+
+	}
 }
 
-EmbeddedObjects := AVLMap.{StringSpan,AVLMap.{void^,EmbedInfo}}
+EmbeddedObjects := AVLMap.{Str,AVLMap.{void^,EmbedInfo}}
 
-CreateEmbeddedObj := !(StringSpan cmp,void^ key,StringSpan setFileName,char^ compType, !()&->Blob^ cb) -> BoxExeObj^
+CreateEmbeddedObj := !(Str cmp,void^ key,StringSpan setFileName,char^ compType, !()&->Blob^ cb, File^ baseFile = null) -> BoxExeObj^
 {
 	cType := compType
 	module := ref EmbeddedObjects[cmp]
@@ -42,6 +66,7 @@ CreateEmbeddedObj := !(StringSpan cmp,void^ key,StringSpan setFileName,char^ com
 				return null
 		}
 
+		embInfo.baseFile = baseFile
 		embInfo.compressionType = cType
 		embInfo.compressedSize = embInfo.embedData.Size()
 		embInfo.rawData = new BoxRawData(embInfo.embedData)
@@ -67,3 +92,24 @@ PrintEmbeddedFiles := !(LLVMWriteContext^ ctx) -> void
 	EmbeddedObjects[^][^].rawData.PrintGlobal(ctx)
 }
 
+
+
+SomeFiles :=  List.{File^}
+
+NormalizeFile := !(File^ fl) -> File^
+{
+	bf := fl.GetAbsPath()
+
+	if bf->AsString == null
+		return null
+	
+	for it : SomeFiles
+	{
+		if it.GetAbsPath() == bf
+			return it
+	}
+
+	SomeFiles.Push(fl)
+
+	return fl
+}

@@ -9,10 +9,7 @@ AppendClass BoxClass
 
 		Parents[^].AwaitTypeState()
 
-		if RunMode
-		{
-			DB_ClassExtends.Add(this&,Parents[^])
-		}
+		DB_ClassExtends.Add(this&,Parents[^])
 
 		DefaultSpace.itClass = this&
 		assert(Parents.Size() <= 1) //FieldSpace does not support multiple inheritance

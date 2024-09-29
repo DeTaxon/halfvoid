@@ -105,15 +105,20 @@ EnterCliMode := !() -> int
 			if changedObj is not in File
 				return void
 
+			hotload := HotloadContext
 			asFile := changedObj->{File^}
+
+			CheckEmbededFile(hotload&,asFile)
 
 			fName := asFile.GetName()
 
 			if fName.End == ".hv"
 			{
-				ChangedHVFile(asFile,changedOption)
+				ChangedHVFile(hotload&,asFile,changedOption)
 				return void
 			}
+
+			ReloadApply(hotload&)
 
 
 		})
@@ -130,7 +135,7 @@ EnterCliMode := !() -> int
 
 }
 
-ChangedHVFile := !(File^ asFile,FSChangeEvent changeOption) -> void
+ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOption) -> void
 {
 	fName := asFile.GetName()
 
@@ -157,7 +162,7 @@ ChangedHVFile := !(File^ asFile,FSChangeEvent changeOption) -> void
 		if foundFile != null
 		{
 			HotloadStream << "Test , redeemed reload\n" //TODO delete after i see it
-			ReloadFile(foundFile)
+			ReloadFile(hotload,foundFile)
 		}else{
 			HotloadStream << "File was created " << fName << "\n"
 			newFile := new BoxFile(asFile)
@@ -166,14 +171,11 @@ ChangedHVFile := !(File^ asFile,FSChangeEvent changeOption) -> void
 
 		return void
 	}
-	ReloadFile(asFile)
+	ReloadFile(hotload,asFile)
 }
 
-ReloadFile := !(File^ asFile) -> void
+ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void
 {
-
-	hotload := HotloadContext
-
 	flId := asFile.GetAbsPath()
 
 	foundFile := BoxFile^
@@ -198,17 +200,22 @@ ReloadFile := !(File^ asFile) -> void
 	}
 	HotloadStream << "Changed file " << asFile.GetName() <<" , reloading content\n"
 
-	foundFile.ReloadFile(hotload&,asFile)
+	foundFile.ReloadFile(hotload,asFile)
 
+}
+ReloadApply := !(HotloadContext^ hotload) -> void
+{
 	while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
 	{
 		if hotload.ReloadClasses.Size() != 0
 		{
 			newClass := hotload.ReloadClasses.Pop()
-			newClass.ReloadClass(hotload&)
+			newClass.ReloadClass(hotload)
 		}else{
 			newFunc := hotload.ReloadFunctions.Pop()
-			newFunc.ReloadFunction(hotload&,null)
+
+			HotloadStream << "Reloading function " << newFunc.GetGoodName() << "\n"
+			newFunc.ReloadFunction(hotload,null)
 		}
 	}
 
@@ -218,7 +225,7 @@ ReloadFile := !(File^ asFile) -> void
 		DB_VTableUsage.Key.Get(cls,x ==> {
 			if x is in BoxFuncBody
 			{
-				x->{BoxFuncBody^}.ReloadFunction(hotload&,null)
+				x->{BoxFuncBody^}.ReloadFunction(hotload,null)
 			}
 		})
 		DB_VTableUsage.Key.RemoveAll(cls)
@@ -229,7 +236,7 @@ ReloadFile := !(File^ asFile) -> void
 
 	WaitForParsingObjects()
 
-	GInterpCntx.Reload(hotload&)
+	GInterpCntx.Reload(hotload)
 	hotload.Reset()
 
 	if WorkBag.works.Size() != 0

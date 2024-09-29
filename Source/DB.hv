@@ -2,6 +2,8 @@
 
 DB_ClassExtends := HVTable2.{BoxClass^,BoxClass^} //Left extend right
 
+DB_EmbeddedFiles := HVTable2.{BoxFuncBody^,File^}
+
 DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}

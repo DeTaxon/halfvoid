@@ -116,8 +116,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 				return null
 			}
 
-			if RunMode
-				DB_FieldUsage.Add(CurrentFunc?,cls)
+			DB_FieldUsage.Add(CurrentFunc?,cls)
 
 			return fld.CreateCall(![val])
 		}

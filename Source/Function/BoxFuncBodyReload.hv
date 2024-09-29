@@ -36,6 +36,7 @@ AppendClass BoxFuncBody
 		body = null
 		readyState.Reset()
 
+		DB_EmbeddedFiles.Key.RemoveAll(this&)
 		DB_TypeSizeUsage.Key.RemoveAll(this&)
 		DB_FieldUsage.Key.RemoveAll(this&)
 		DB_LocalVarUsage.Key.RemoveAll(this&)
@@ -55,7 +56,7 @@ AppendClass BoxFuncBody
 		ClearFunction()
 		if oldParsed 
 		{
-			ParseBody()
+			ParseBodyForced()
 			ctx.ChangedFunctions.Push(this&)
 		}
 	}

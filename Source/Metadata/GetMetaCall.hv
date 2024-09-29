@@ -153,7 +153,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		itType := getMetaDownType(obj.Down)
 		if itType != null
 		{
-			if RunMode and CurrentFunc != null and itType is in TypeClass
+			if CurrentFunc != null and itType is in TypeClass
 			{
 				DB_TypeSizeUsage.Add(CurrentFunc,itType->{TypeClass^}.ToClass)
 			}
@@ -200,8 +200,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 				return GObjNone
 			fncCall := cls.VTableValue.proxy&
 
-			if RunMode
-				DB_VTableUsage.Add(cls,CurrentFunc?)
+			DB_VTableUsage.Add(cls,CurrentFunc?)
 			return new UnrefFuncCall(fncCall)
 		}
 		dObj := TryGetExeCall(obj.Down)
@@ -219,8 +218,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 				cls2.AwaitVTableStep()
 				if cls2.VTable.Size() != 0
 				{
-					if RunMode
-						DB_VTableUsage.Add(cls2,CurrentFunc?)
+					DB_VTableUsage.Add(cls2,CurrentFunc?)
 					chk := CheckExeDownList
 					chk.Push(dObj)
 					return cls2.VTableField.CreateCall(chk)

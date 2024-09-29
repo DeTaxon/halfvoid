@@ -12,7 +12,7 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 		return null
 	}
 
-	isLocal := itm.Down->{TokenIndent^}.Value == "#FileLocal"
+	isLocal := false
 	 
 	fileName := skb.Down->{TokenString^}.Value
 
@@ -49,13 +49,20 @@ TryEmbedFile := !(Token^ itm) -> BoxExeObj^
 		return null
 	}
 
-	constStr := GetConstString(itFile.GetPath().Str())
+	itFile = NormalizeFile(itFile)
 
-	return CreateEmbeddedObj(StringSpan("EmbeddedFile"),constStr.NonNullStr(),itFile.GetName()->AsString^[0..0]
+	res := CreateEmbeddedObj("EmbeddedFile",itFile,itFile.GetName()->AsString^[0..0]
 	, compressFile ?: "Deflate" : "None"
 	,() ==> Blob^ {
 		return itFile.GetBlob()
-	})
+	},itFile)
+
+	if res == null
+		return null
+
+	DB_EmbeddedFiles.Add(CurrentFunc?,itFile)
+
+	return res
 }
 
 blobDatas := List.{BoxRawData^}
@@ -112,6 +119,10 @@ EmbFile := class
 	data := BoxRawData^
 
 	this := !(File^ inFile, bool compressFile) -> void
+	{
+		SetData(inFile,compressFile)
+	}
+	SetData := !(File^ inFile, bool compressFile) -> void
 	{
 		itFile = inFile
 
