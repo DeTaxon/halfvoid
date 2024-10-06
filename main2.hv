@@ -1,47 +1,20 @@
 
-NewClass := class extend TGCObject
-{
-	v := int
-
-	tst := virtual !() -> void
-	{
-		printf("hoy9 %i\n",NewClass->TypeSize)
-	}
-	tst2 := virtual !() -> void
-	{
-		printf("hoy2 %i\n",NewClass->TypeSize)
-	}
-	tst3 := !() -> void
-	{
-		printf("hoy4 %i\n",NewClass->TypeSize)
-	}
-}
-
-Class2 := class extend NewClass
-{
-	tst := virtual !() -> void
-	{
-		printf("hay %i\n",NewClass->TypeSize)
-	}
-	tst2 := !() -> void
-	{
-		printf("yoh2 %i\n",NewClass->TypeSize)
-	}
-
-}
-
 
 main := !(char^[] args) -> int
 {
-	c := NewClass^
-	c = new Class2
-	c.tst()
-	c.tst2()
-	c.tst3()
+	printf("waw\n")
 }
 RunTest := !() -> void
 {
-	printf("waw\n")
+}
+
+JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
+{
+	printf("yep %i %i\n",funcToCompile.GetVariablesCount(), funcToCompile.GetCodeLinesCount())
+}
+JavaMain := !() -> void
+{
+
 }
 
 //

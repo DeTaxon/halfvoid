@@ -14,7 +14,12 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 		CurrentWork?.SetErrorMessage(itm.Down.MakeError("Could not get left of . object"))
 		return null
 	}
-	return innerTryGetFieldCall(val,itm.Down.Right.Right)?
+	t := itm.Down.Right.Right
+	return innerTryGetFieldCall(val,t)?
+
+	return TryRemoveAutoCast(val,![], (obj,inputs) ==> {
+		return innerTryGetFieldCall(obj,t)
+	})
 
 	return null
 }

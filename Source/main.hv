@@ -158,6 +158,7 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("File")
 	#ForceVirtualFunctions("HV_Context")
 	#ForceVirtualFunctions("HV_Class")
+	#ForceVirtualFunctions("HVB_FunctionEditor")
 	#ForceVirtualFunctions("internalHVModuleBase")
 	#ForceVirtualFunctions("BlobOnVector")
 	#ForceVirtualFunctions("StringSpan")

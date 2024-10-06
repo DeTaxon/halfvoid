@@ -1,0 +1,19 @@
+
+HVBFunction := class extend HVB_FunctionEditor
+{
+	baseFunc := MCFunction^
+
+	this := !(MCFunction^ fnc) -> void
+	{
+		baseFunc = fnc
+	}
+
+	GetCodeLinesCount := virtual !() -> int { return baseFunc.Lines.Size() }
+	GetLine := virtual !(int index) -> MCLine^ { return baseFunc.Lines[index]& } 
+	
+	GetVariablesCount := virtual !() -> int { return baseFunc.Objects.Size() }
+	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
+	GetVariableType := virtual !(int index) -> HV_Object^ { return null }
+	GetVatiableValue := virtual !(int index) -> HV_Object^ { return null }
+	GetVariableFuncEditor := virtual !(int index) -> HVB_FunctionEditor^ { return null }
+}

@@ -1,0 +1,59 @@
+
+HVB_VariableObjectType := enum
+{
+	Error
+}
+
+
+HVB_FunctionEditor := class extend TGCObject
+{
+	GetVariablesCount := virtual !() -> int { return 0 }
+	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
+	GetVariableType := virtual !(int index) -> HV_Object^ { return null }
+	GetVatiableValue := virtual !(int index) -> HV_Object^ { return null }
+	GetVariableFuncEditor := virtual !(int index) -> HVB_FunctionEditor^ { return null }
+
+	GetCodeLinesCount := virtual !() -> int { return 0 }
+	GetLine := virtual !(int index) -> MCLine^ {} 
+}
+
+MCLine := class
+{
+	opcode := MCBaseOpcodes
+	var1 := u16
+	var2 := u16
+	var3 := u16
+	var4 := u16
+	var5 := u16
+
+	ConstValue := s32
+
+	"=" := default
+
+	this := !(MCBaseOpcodes code,u16 v1 = 0, u16 v2 = 0, u16 v3 = 0, u16 v4 = 0, u16 v5 = 0) -> void
+	{
+		opcode = code
+		var1 = v1
+		var2 = v2
+		var3 = v3
+		var4 = v4
+		var5 = v5
+	}
+	this := !(MCBaseOpcodes code, u16 v1,MCJumpIfConditions v2, u16 v3 = 0, u16 v4 = 0, u16 v5 = 0) -> void
+	{
+		opcode = code
+		var1 = v1
+		V2Cond() = v2
+		var3 = v3
+		var4 = v4
+		var5 = v5
+	}
+	V1Cond := !() -> ref MCJumpIfConditions
+	{
+		return var1&->{MCJumpIfConditions^}^
+	}
+	V2Cond := !() -> ref MCJumpIfConditions
+	{
+		return var2&->{MCJumpIfConditions^}^
+	}
+}

@@ -35,6 +35,8 @@ CliWin := class extend WindowCli
 			while cliWorks != 0
 				TSleep(0.2)
 			cliWin.Quit()
+		case 'j'
+			TestJavaCompile()
 		case 'r'
 			StartInterpreter()
 		}
@@ -56,6 +58,29 @@ StartInterpreter := !() -> void
 			WaitForParsingObjects()
 
 			CompileAndRunCode(toRun->{BoxFuncBody^})
+		}
+		runInProgress = false
+	})
+}
+TestJavaCompile := !() -> void
+{
+	if runInProgress
+		return void
+	runInProgress = true
+	TSpawnTask(() ==> {
+		//@work 
+		{
+			toRun := intGetFunc("JavaCompile")
+
+			fncRn := GInterpCntx.GetMCFunc(toRun->{BoxFuncBody^})
+			fncPtr := GInterpCntx.GetFunctionPointer(fncRn)->{!(void^)^->void}
+
+			cmplFunc := intGetFunc("JavaMain")
+			mcFuncCmpl := GInterpCntx.GetMCFunc(cmplFunc->{BoxFuncBody^})
+
+			hvb := new HVBFunction(mcFuncCmpl)
+
+			fncPtr(hvb)
 		}
 		runInProgress = false
 	})
