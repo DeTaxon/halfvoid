@@ -1,0 +1,10 @@
+AppendClass EnumToIntExchange
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
+	}
+}

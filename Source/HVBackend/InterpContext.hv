@@ -202,6 +202,14 @@ MCInterpContext := class
 			mem->{void^^}^ = GetGlobalVarMem(obj->{ClassVTablePtrConst^}.itClass.VTableValue)
 		} else if obj is ZeroClassConst {
 			memset(mem,0,obj->{ZeroClassConst^}.GetType().GetSize())
+		} else if obj is ClassArray {
+			objSize := obj->{ClassArray^}.ObjType.Base.GetSize()
+			for it,ind : obj->{ClassArray^}.Value
+			{
+				WriteGlobToMem(it,mem->{u8^}[ind*objSize]&)
+			}
+		} else if obj is BoxExeNull {
+			mem->{void^^}^ = null
 		}else{
 			printf("Unknown const %s\n",obj.UnitName)
 			assert(false)
