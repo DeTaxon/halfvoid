@@ -5,10 +5,10 @@ internalHVNew := !() .{@T} -> T^
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
 
-	if #Var("Tracy") and GlobalTracyInUse
-	{
-		___tracy_emit_memory_alloc_callstack?(result,objSize,62,0)
-	}
+	//if #Var("Tracy") and GlobalTracyInUse
+	//{
+	//	___tracy_emit_memory_alloc_callstack?(result,objSize,62,0)
+	//}
 }
 internalHVNewConstructed := !(@T^ obj, args...) -> T^
 {
@@ -19,9 +19,9 @@ internalHVNewConstructed := !(@T^ obj, args...) -> T^
 
 internalHVDelete := !(void^ x) -> void
 {
-	if #Var("Tracy") and GlobalTracyInUse
-	{
-		___tracy_emit_memory_free_callstack?(x,62,0)
-	}
+	//if #Var("Tracy") and GlobalTracyInUse
+	//{
+	//	___tracy_emit_memory_free_callstack?(x,62,0)
+	//}
 	free(x)
 }

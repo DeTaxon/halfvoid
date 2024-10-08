@@ -11,25 +11,19 @@ StartStatusMonitor := !() -> void
 	})
 }
 
-printedGoodStatus := bool
 mainStatusFunc := !() -> void
 {
 	lst := ref cliWin.StatusList
 
 	if WorkBag.works.Size() == 0
 	{
-		if not printedGoodStatus
-		{
-			lst.Destroy()
-			lst.Push("Everything compiled")
-			cliWin.Refresh()
-		}
-		printedGoodStatus = true
+		lst.Destroy()
+		lst.Push("Everything compiled")
+		cliWin.Refresh()
 	}else{
 
 		lst.Destroy()
 
-		printedGoodStatus = false
 		st := TEchoStream
 		st << "Work units in progress " << WorkBag.works.Size()
 

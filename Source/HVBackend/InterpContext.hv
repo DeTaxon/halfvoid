@@ -325,10 +325,22 @@ MCInterpContext := class
 
 	GetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{
-		somePointer := static 0 //TODO maybe not global
-		TLock(somePointer&)
-		defer TUnlock(somePointer&)
-
+		cb := () ==> {
+			return this.innerGetMCFunc(itm)
+		}
+		if CurrentThread == GCompileThread
+		{
+			return cb()
+		}else{
+			res := MCFunction^
+			GCompileThread.CreateTask(() ==> {
+				res = cb()
+			}).AwaitCompletion()
+			return res
+		}
+	}
+	innerGetMCFunc := !(BoxFuncBody^ itm) -> MCFunction^
+	{
 		return funcs[itm]?
 
 		assert(itm is in BoxFuncBody)

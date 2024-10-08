@@ -1,0 +1,62 @@
+JavaClassFile := class
+{
+	Magic := u32 // 0xCAFEBABE
+	Minor := u16
+	Major := u16
+
+	//ConstPullCount := u16
+	//ConstPool := JavaConstPull[constPoolCount -1]
+	//AcessFlags := u16
+	//ThisClass := u16
+	//SuperClass := u16
+	//InterfacesCount := u16
+	//Interfaces := u16[InterfacesCount]
+	//FieldsCount := u16
+	//Fields := FieldInfo[FieldsCount]
+	//MethodsCount := u16
+	//Methods := MethodInfo[MethodsCount]
+	//AttributesCount := u16
+	//Attributes := AttributeInfo[AttributesCount]
+}
+
+ACC_PUBLIC := 0x001
+
+
+//JAVACONST_Utf8 := 1
+//JAVACONST_Integer := 3
+//JAVACONST_Float := 4
+//JAVACONST_Long := 5
+//JAVACONST_Double := 6
+//JAVACONST_Class := 7
+//JAVACONST_String := 8
+//JAVACONST_Fieldref := 9
+//JAVACONST_Methodref := 10
+//JAVACONST_InterfaceMethodRef := 11
+//JAVACONST_NameAndType := 12
+//JAVACONST_MethodType := 16
+//JAVACONST_InvokeDynamic := 18
+
+JavaConstBase := class extend TGCObject
+{
+	EnumVal := virtual 0
+	Write := virtual !(Stream strm) -> void {}
+
+	writeEnumVal := !(Stream strm) -> void
+	{
+		strm.Write(EnumVal&,1)
+	}
+}
+JavaConstUtf8 := class extend JavaConstBase
+{
+	Value := Str
+	this := !(Str val) -> void { Value = val}
+
+	EnumVal := virtual 1
+
+	Write := virtual !(Stream strm) -> void
+	{
+		writeEnumVal(strm)
+	}
+	
+}
+

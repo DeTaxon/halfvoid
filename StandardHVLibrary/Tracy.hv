@@ -33,7 +33,7 @@ TracyMessage := !(Str setMessage) -> void
 {
 	if #Var("Tracy")
 	{
-		___tracy_emit_message(setMessage.Str(),setMessage.Size(),0)
+		___tracy_emit_message(setMessage.Str(),setMessage.Size(),16)
 	}
 }
 TracyPrintf := !(char^ msg,...) -> void

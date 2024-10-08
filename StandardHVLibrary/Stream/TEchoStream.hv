@@ -100,6 +100,28 @@ TEchoStream := class extend Stream
 		}
 		result = new String(res,outSize)
 	}
+	GetBlob := !()  -> Blob^
+	{
+		if inPtrSize == 0{
+			return MakeBlob(0)
+		}
+		BufSize := 4096
+		indItr := pages.Size()*BufSize
+		outSize := indItr + inPtrSize
+
+		result = MakeBlob(outSize)
+
+		res := result.GetPointer()->{char^}
+		memcpy(res[indItr]&,ptr,inPtrSize)
+		//indItr -= BufSize
+		indItr = 0
+
+		for pages
+		{
+			memcpy(res[indItr]&,it,BufSize)
+			indItr += BufSize
+		}
+	}
 	Destroy := virtual !() -> void
 	{
 		if pages.Size() != 0

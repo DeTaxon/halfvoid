@@ -2,7 +2,6 @@
 
 main := !(char^[] args) -> int
 {
-	printf("waw\n")
 }
 RunTest := !() -> void
 {
@@ -10,13 +9,25 @@ RunTest := !() -> void
 
 JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 {
-	printf("yep %i %i\n",funcToCompile.GetVariablesCount(), funcToCompile.GetCodeLinesCount())
+	//printf("yep %i %i\n",funcToCompile.GetVariablesCount(), funcToCompile.GetCodeLinesCount())
 
-	for i : funcToCompile.GetCodeLinesCount()
-	{
-		line := funcToCompile.GetLine(i)
-		printf("line %s %i %i %i %i\n",line.opcode.ToCStr(),line.var1,line.var2,line.var3,line.var4)
-	}
+	//for i : funcToCompile.GetCodeLinesCount()
+	//{
+	//	line := funcToCompile.GetLine(i)
+	//	printf("line %s %i %i %i %i\n",line.opcode.ToCStr(),line.var1,line.var2,line.var3,line.var4)
+	//}
+
+	ResFile := new ZipFile
+	ResFile.AnalizeFile("test.jar")
+
+	echo := TEchoStream
+	blb := echo.GetBlob()
+
+	ResFile.WriteFile("test",blb)
+
+	ResFile.Flush()
+
+	printf("done\n")
 }
 JavaMain := !() -> void
 {

@@ -46,6 +46,7 @@ NonStopBuild := false
 OutputFile := char^
 main := !(char^[] args) -> int
 {
+	GCompileThread = CurrentThread 
 	HotloadStream& = new VoidStream
 
 	AddCustomTaskPoll()
