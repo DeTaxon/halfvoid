@@ -1,0 +1,65 @@
+
+JavaClass := class
+{
+	Consts := List.{JavaConstBase^}
+
+	
+	this := !(Str className) -> void
+	{
+		Consts.Push(new JavaConstClassInfo(1))
+		Consts.Push(new JavaConstUtf8(className))
+	}
+	
+	Write := !(Stream strm) -> void
+	{
+		//FILE IS BIG ENDIAN
+		magic := u32
+		//magic = 0xCAFEBABE
+		magic = 0xBEBAFECA
+		strm.Write(magic&,4)
+		
+		val16 := u16
+		val16 = 0 //minor
+		strm.Write(val16&,2)
+		val16 = ToBigEndian(62) // major
+		strm.Write(val16&,2)
+
+		val16 = Consts.Size()
+		strm.Write(val16&,2) //consts count
+		for it : Consts
+		{
+			it.Write(strm)
+		}
+
+		val16 = 1->{u16}
+		strm.Write(val16&,2) //access flag
+
+		val16 = 0
+		strm.Write(val16&,2) //this class
+
+		val16 = 0
+		strm.Write(val16&,2) //super class
+
+		val16 = 0
+		strm.Write(val16&,2) //interface count
+
+		val16 = 0
+		strm.Write(val16&,2) //fields count
+
+		val16 = 0
+		strm.Write(val16&,2) //methods count
+
+		val16 = 0
+		strm.Write(val16&,2) //attributes count
+
+	}
+}
+
+ToBigEndian := !(u16 val) -> u16
+{
+	result = val
+	tmp := result&->{u8^}[0]
+	result&->{u8^}[0] = result&->{u8^}[1]
+	result&->{u8^}[1] = tmp
+}
+

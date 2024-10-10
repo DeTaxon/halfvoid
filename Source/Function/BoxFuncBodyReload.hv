@@ -34,7 +34,6 @@ AppendClass BoxFuncBody
 		LocalVarsToDeferGuard.Destroy()
 
 		body = null
-		readyState.Reset()
 
 		DB_EmbeddedFiles.Key.RemoveAll(this&)
 		DB_TypeSizeUsage.Key.RemoveAll(this&)
@@ -58,6 +57,8 @@ AppendClass BoxFuncBody
 		{
 			ParseBodyForced()
 			ctx.ChangedFunctions.Push(this&)
+			//HotloadStream << "Fnc changed " << ctx.ChangedFunctions.Size() << " " << ctx->{void^}->{size_t} << "\n"
+			WaitForParsingObjects()
 		}
 	}
 	Recompile := !() -> void

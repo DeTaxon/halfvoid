@@ -140,7 +140,6 @@ EnterCliMode := !() -> int
 			if fName.End == ".hv"
 			{
 				ChangedHVFile(hotload&,asFile,changedOption)
-				return void
 			}
 
 			ReloadApply(hotload&)
@@ -261,18 +260,20 @@ ReloadApply := !(HotloadContext^ hotload) -> void
 
 	WaitForParsingObjects()
 
+	//HotloadStream << "Apply " << hotload.ChangedFunctions.Size() << " " << hotload&->{void^}->{size_t}  << "\n"
+
 	GInterpCntx.Reload(hotload)
 	hotload.Reset()
 
-	if WorkBag.works.Size() != 0
-	{
-		for it : WorkBag.works
-		{
-			if it is not CWorkFuncCompile
-				continue
-			hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
-		}
-	}
+	//if WorkBag.works.Size() != 0
+	//{
+	//	for it : WorkBag.works
+	//	{
+	//		if it is not CWorkFuncCompile
+	//			continue
+	//		hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
+	//	}
+	//}
 }
 
 CliParseMain := !() -> void

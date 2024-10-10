@@ -17,15 +17,21 @@ JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 	//	printf("line %s %i %i %i %i\n",line.opcode.ToCStr(),line.var1,line.var2,line.var3,line.var4)
 	//}
 
+
 	ResFile := new ZipFile
 	ResFile.AnalizeFile("test.jar")
 
+	jClass := JavaClass("test")
+	
 	echo := TEchoStream
+	jClass.Write(echo)
 	blb := echo.GetBlob()
 
-	ResFile.WriteFile("test",blb)
-
+	ResFile.WriteFile("test.class",blb)
 	ResFile.Flush()
+
+	fl := RawFileStream("test.class","wb")
+	fl.Write(blb.GetPointer(),blb.Size())
 
 	printf("done\n")
 }

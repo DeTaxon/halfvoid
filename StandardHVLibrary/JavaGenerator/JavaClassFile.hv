@@ -55,8 +55,25 @@ JavaConstUtf8 := class extend JavaConstBase
 
 	Write := virtual !(Stream strm) -> void
 	{
+		//TODO this is extra magical utf 8, so modify before writing, 0xF0 - 0xFF are forbidden
 		writeEnumVal(strm)
+		val := Value.Size()->{u16}
+		strm.Write(val&,2)
+		strm.Write(Value.Str(),Value.Size())
 	}
-	
+}
+JavaConstClassInfo := class extend JavaConstBase
+{
+	ClassNameIndex := u16
+	this := !(u16 className) -> void { ClassNameIndex = className}
+
+	EnumVal := virtual 1
+
+	Write := virtual !(Stream strm) -> void
+	{
+		writeEnumVal(strm)
+		val := ClassNameIndex
+		strm.Write(val&,2)
+	}
 }
 

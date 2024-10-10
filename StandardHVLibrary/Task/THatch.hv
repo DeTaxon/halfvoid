@@ -31,20 +31,14 @@ THatch := class
 	}
 	Emit := !() -> void
 	{
-		TaskCheckMutex.Lock()
-		defer TaskCheckMutex.Unlock()
 
 		if flag
 			return void
-		flag = true
-		itr := next_wakeup
-		while itr != null
-		{
-			itr.itTask.resume()
-			itr.itTask = null
-			itr = itr.next_point
-		}
-		TaskWaitTasksConVar.NotifyAll()
+
+		TaskCheckMutex.Lock()
+		defer TaskCheckMutex.Unlock()
+		
+		EmitInner()
 	}
 	EmitInner := !() -> void
 	{
@@ -58,6 +52,7 @@ THatch := class
 			itr.itTask = null
 			itr = itr.next_point
 		}
+		next_wakeup = null
 		TaskWaitTasksConVar.NotifyAll()
 	}
 	GetWaitingCount := !() -> int
@@ -73,48 +68,37 @@ THatch := class
 	}
 	Reset := !() -> void
 	{
+		if not flag
+			return void
+
+		TaskCheckMutex.Lock()
+		defer TaskCheckMutex.Unlock()
+
+		if not flag
+			return void
+
 		flag = false
+		next_wakeup = null
 	}
-	//meh := int
+
 	Await := !() -> void
 	{
 		if flag
 			return void
-		//meh += 1
 
 		TaskCheckMutex.Lock()
+		defer TaskCheckMutex.Unlock()
+
+		if flag
+			return void
 
 		pt := TITaskPausePoint
-		//pt.Pause(next_wakeup&)
 		pt.next_point = next_wakeup
-		next_wakeup = pt&
 		pt.itTask = CurrentTask
+		next_wakeup = pt&
 		assert(pt.itTask != null)
 
-		//if meh >= 3
-		//{
-		//	TestFile^ << "	{\n"
-		//	TestFile^ << "		\"CallsCount\" : \"" << meh << "\"\n"
-		//	TestFile^ << "		\"Stacks\" : [\n"
-
-		//	stk := CreateStackTrace(1)
-		//	stk.ForEachCall((x,y,z) ==> {
-		//		if x == null or y == null
-		//			return void
-		//		TestFile^ << "{"
-		//		TestFile^ << "\"File\" : \"" << x << "\"\n"
-		//		TestFile^ << "\"Function\" : \"" << y << "\"\n"
-		//		TestFile^ << "\"Line\" : \"" << z << "\"\n"
-		//		TestFile^ << "},"
-		//	})
-		//	TestFile^ << "		{}\n"
-
-		//	TestFile^ << "		]\n"
-		//	TestFile^ << "	},\n"
-		//}
-
 		CurrentThread.switchToMain()
-		TaskCheckMutex.Unlock()
 
 	}
 }
