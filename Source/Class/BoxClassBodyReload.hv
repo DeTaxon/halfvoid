@@ -10,7 +10,6 @@ AppendClass BoxClassBody
 
 		HotloadStream << "Started reload of class " << className << "\n"
 
-
 		oldData := new ClassReloadOldData
 		oldData.ctx = ctx
 

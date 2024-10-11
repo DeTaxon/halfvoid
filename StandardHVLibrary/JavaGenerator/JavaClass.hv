@@ -6,7 +6,7 @@ JavaClass := class
 	
 	this := !(Str className) -> void
 	{
-		Consts.Push(new JavaConstClassInfo(1))
+		Consts.Push(new JavaConstClassInfo(ToBigEndian(2->{u16})))
 		Consts.Push(new JavaConstUtf8(className))
 	}
 	
@@ -24,17 +24,17 @@ JavaClass := class
 		val16 = ToBigEndian(62) // major
 		strm.Write(val16&,2)
 
-		val16 = Consts.Size()
+		val16 = ToBigEndian((Consts.Size() + 1)->{u32}->{u16})
 		strm.Write(val16&,2) //consts count
 		for it : Consts
 		{
 			it.Write(strm)
 		}
 
-		val16 = 1->{u16}
+		val16 = ToBigEndian(1->{u16})
 		strm.Write(val16&,2) //access flag
 
-		val16 = 0
+		val16 = ToBigEndian(1->{u16})
 		strm.Write(val16&,2) //this class
 
 		val16 = 0
@@ -51,7 +51,6 @@ JavaClass := class
 
 		val16 = 0
 		strm.Write(val16&,2) //attributes count
-
 	}
 }
 

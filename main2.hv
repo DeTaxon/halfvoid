@@ -17,7 +17,6 @@ JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 	//	printf("line %s %i %i %i %i\n",line.opcode.ToCStr(),line.var1,line.var2,line.var3,line.var4)
 	//}
 
-
 	ResFile := new ZipFile
 	ResFile.AnalizeFile("test.jar")
 
