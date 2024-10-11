@@ -53,8 +53,8 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			}
 			if TaskLoopWorkCounter != 0 and not someResumed
 			{
-				//TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
-				TaskCodePollWork(waitTime)
+				TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
+				//TaskCodePollWork(waitTime)
 			}
 			someoneOnLoop = false
 		}else{

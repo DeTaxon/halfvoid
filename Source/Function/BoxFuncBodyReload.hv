@@ -55,10 +55,9 @@ AppendClass BoxFuncBody
 		ClearFunction()
 		if oldParsed 
 		{
-			ParseBodyForced()
+			ParseBody()
 			ctx.ChangedFunctions.Push(this&)
 			//HotloadStream << "Fnc changed " << ctx.ChangedFunctions.Size() << " " << ctx->{void^}->{size_t} << "\n"
-			WaitForParsingObjects()
 		}
 	}
 	Recompile := !() -> void
