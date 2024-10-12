@@ -54,7 +54,7 @@ JavaConstUtf8 := class extend JavaConstBase
 	{
 		//TODO this is extra magical utf 8, so modify before writing, 0xF0 - 0xFF are forbidden
 		writeEnumVal(strm,1)
-		val := Value.Size()->{u16}
+		val := ToBigEndian(Value.Size()->{u16})
 		strm.Write(val&,2)
 		strm.Write(Value.Str(),Value.Size())
 	}
@@ -67,7 +67,7 @@ JavaConstClassInfo := class extend JavaConstBase
 	Write := virtual !(Stream strm) -> void
 	{
 		writeEnumVal(strm,7)
-		val := ClassNameIndex
+		val := ToBigEndian(ClassNameIndex)
 		strm.Write(val&,2)
 	}
 }

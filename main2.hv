@@ -21,6 +21,7 @@ JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 	ResFile.AnalizeFile("test.jar")
 
 	jClass := JavaClass("test")
+	jClass.CreateMethod("main")
 	
 	echo := TEchoStream
 	jClass.Write(echo)

@@ -1,0 +1,96 @@
+
+
+JavaMethod := class extend TGCObject
+{
+	IsStatic := bool
+
+	NameIndex := u16
+	DescriptionIndex := u16
+
+	Attrs := List.{JavaMethodAttrBase^}
+	
+	this := !() -> void
+	{
+		IsStatic = true
+	}
+	
+	Write := !(Stream strm) -> void
+	{
+		accFlags := 1 // 1 = public
+		if IsStatic
+			accFlags += 8 // 8 = static
+
+		val := ToBigEndian(accFlags->{u16})
+		strm.Write(val&,2)
+
+		val = ToBigEndian(NameIndex)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(DescriptionIndex)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(Attrs.Size()->{u16})
+		strm.Write(val&,2)
+
+		for it : Attrs
+		{
+			it.Write(strm)
+		}
+
+	}
+
+	CreateCode := !(u16 codeVal) -> JavaMethodCode^
+	{
+		result = new JavaMethodCode
+		result.AttributeNameIndex = codeVal
+	}
+}
+
+JavaMethodAttrBase := class extend TGCObject
+{
+	Write := virtual !(Stream strm) -> void
+	{
+
+	}
+}
+
+JavaMethodCode := class extend JavaMethodAttrBase
+{
+	AttributeNameIndex := u16
+	AttributeLength := u32
+	MaxStack := u16
+	MaxLocals := u16
+
+	CodeLength := u32
+
+	ExceptionTableCount := u16
+	AttributesCount := u16
+
+	Write := virtual !(Stream strm) -> void
+	{
+		val := ToBigEndian(AttributeNameIndex)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(AttributeLength)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(MaxStack)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(MaxLocals)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(CodeLength)
+		strm.Write(val&,2)
+
+		val = ToBigEndian(ExceptionTableCount)
+		strm.Write(val&,2)
+		assert(val == 0)
+
+		val = ToBigEndian(AttributesCount)
+		strm.Write(val&,2)
+		assert(val == 0)
+
+
+	}
+}

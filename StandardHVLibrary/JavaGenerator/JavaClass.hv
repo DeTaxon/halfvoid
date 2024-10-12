@@ -1,12 +1,12 @@
 
-JavaClass := class
+JavaClass := class extend TGCObject
 {
 	Consts := List.{JavaConstBase^}
-
+	Methods := List.{JavaMethod^}
 	
 	this := !(Str className) -> void
 	{
-		Consts.Push(new JavaConstClassInfo(ToBigEndian(2->{u16})))
+		Consts.Push(new JavaConstClassInfo(2))
 		Consts.Push(new JavaConstUtf8(className))
 	}
 	
@@ -21,7 +21,7 @@ JavaClass := class
 		val16 := u16
 		val16 = 0 //minor
 		strm.Write(val16&,2)
-		val16 = ToBigEndian(62) // major
+		val16 = ToBigEndian(66) // major
 		strm.Write(val16&,2)
 
 		val16 = ToBigEndian((Consts.Size() + 1)->{u32}->{u16})
@@ -46,12 +46,37 @@ JavaClass := class
 		val16 = 0
 		strm.Write(val16&,2) //fields count
 
-		val16 = 0
+		val16 = ToBigEndian(Methods.Size())
 		strm.Write(val16&,2) //methods count
+		for it : Methods
+		{
+			it.Write(strm)
+		}
 
 		val16 = 0
 		strm.Write(val16&,2) //attributes count
 	}
+
+	CreateString := !(Str strData) -> u16
+	{
+		result = Consts.Size()
+		Consts.Push(new JavaConstUtf8(strData))
+	}
+
+	CreateMethod := !(Str name, bool isStatic = true) -> JavaMethod^
+	{
+		result = new JavaMethod
+
+		result.NameIndex = CreateString(name)
+		result.DescriptionIndex = CreateString("test")
+
+		cd := CreateString("Code")
+
+		result.CreateCode(cd)
+
+		Methods.Push(result)
+	}
+
 }
 
 ToBigEndian := !(u16 val) -> u16
@@ -62,3 +87,13 @@ ToBigEndian := !(u16 val) -> u16
 	result&->{u8^}[1] = tmp
 }
 
+ToBigEndian := !(u32 val) -> u132
+{
+	result = val
+	tmp := result&->{u8^}[0]
+	result&->{u8^}[0] = result&->{u8^}[3]
+	result&->{u8^}[3] = tmp
+	tmp = result&->{u8^}[1]
+	result&->{u8^}[1] = result&->{u8^}[2]
+	result&->{u8^}[2] = tmp
+}
