@@ -14,6 +14,10 @@ HV_Context := class
 	CreateFunction := virtual !(Str funcText) -> HV_Object^ {}
 
 	EmitError := virtual !(Str ErrorMessage) -> void {}
+
+	FindFunction := virtual !(Str funcName) -> HV_Object^ {}
+	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^)&-> void cb) -> void {}
+
 }
 
 HV_Context_Empty := HV_Context
@@ -32,6 +36,18 @@ HV_Object := class
 	IsConst := virtual false
 	//TODO
 	//GetType
+	//
+	//
+	
+	IsEditSupported := virtual false
+	ElementName := virtual "Unknown"
+
+	SubElementsCount := virtual !() -> int { return 0 }
+	GetSubElement := virtual !(int index) -> HV_Object^ { return null }
+	AddSubElement := virtual !(HV_Object^ newElement) -> bool { return false }
+	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool { return false }
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool { return false }
+	DeleteElement := virtual !(int index) -> bool { return false}
 }
 
 HV_FunctionTemplate := class

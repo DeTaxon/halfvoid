@@ -58,6 +58,54 @@ HVContextImplementation := class extend HV_Context
 		CurrentWork?.SetErrorMessage(errorMessage)
 	}
 
+	FindFunction := virtual !(Str funcName) -> HV_Object^
+	{
+		res := BoxFuncTemplate^
+		GetItemGlobal(funcName,x ==> {
+			for itm : x
+			{
+				if itm is in BoxFuncTemplate
+				{
+					res = itm->{BoxFuncTemplate^}
+					return true
+				}
+			}
+		})
+		if res == null
+			return res
+		if not res.IsOneFunc()
+			return null
+		return res.GetOneFunc()
+	}
+	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^)&-> void cb) -> void
+	{
+		if obj == null
+			return void
+		if obj is not in BoxFuncBody
+			return void
+		bdy := obj->{BoxFuncBody^}
+
+		lst := List.{HV_Object^}
+		lst.PushFront(bdy.body)
+
+		while lst.Size() != 0
+		{
+			itm := lst.Pop()
+			if itm.IsEditSupported
+			{
+				for i : itm.SubElementsCount()
+				{
+					newItm := itm.GetSubElement(i)
+					if newItm.IsEditSupported
+						lst.PushFront(newItm)
+				}
+			}else{
+				//TODO emit somewhere
+			}
+			cb(itm)
+		}
+	}
+
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate
 {

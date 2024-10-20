@@ -35,6 +35,8 @@ BoxFuncBody := class extend BoxFuncCommon
 
 	TemplateParent := BoxFuncTemplateBody^
 
+	body := BoxBlock^
+
 	ParentScope := BoxUnit^
 	GetParentScope := virtual !() -> BoxUnit^
 	{
@@ -183,7 +185,6 @@ BoxFuncBody := class extend BoxFuncCommon
 		return thisWork
 	}
 
-	body := BoxBlock^
 	readyState := THatch
 	parseTask := Task^
 	WorkBody := virtual !() -> void

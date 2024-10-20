@@ -1,7 +1,7 @@
 BoxExeLine := class extend BoxExeLineSimple
 {
 	exitLabel := BoxLabel^
-	addPostStack := List.{BoxUnit^}
+	addPostStack := List.{BoxUnit^} //TODO optimize out for size
 
 	this := !() -> void
 	{

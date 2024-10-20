@@ -79,7 +79,7 @@ InitInternals := !() -> void
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
 {
 	res := BoxFuncTemplate^
-	GetItemGlobal(StringSpan(name),x ==> {
+	GetItemGlobal(name,x ==> {
 		for itm : x
 		{
 			if itm is in BoxFuncTemplate

@@ -1,0 +1,38 @@
+AppendClass BoxBlock
+{
+	
+	IsEditSupported := virtual true
+	ElementName := virtual "Block"
+
+
+	SubElementsCount := virtual !() -> int { return exeLines.Size() }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0 or index >= exeLines.Size()
+			return null
+		return exeLines[index]
+	}
+	AddSubElement := virtual !(HV_Object^ newElement) -> bool
+	{
+		exeLines.Push(newElement->{BoxUnit^})
+		return true
+	}
+	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		//TODO use index
+		assert(false)
+		return false
+	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index < 0 or index >= exeLines[index]
+			return false
+		exeLines[index] = newElement->{BoxUnit^}
+		return true
+	}
+	DeleteElement := virtual !(int index) -> bool
+	{
+		//TODO implement
+		return false
+	}
+}

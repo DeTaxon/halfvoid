@@ -37,6 +37,8 @@ CliWin := class extend WindowCli
 			cliWin.Quit()
 		case 'j'
 			TestJavaCompile()
+		case 't'
+			TestOptWave()
 		case 'r'
 			StartInterpreter()
 		}
@@ -81,6 +83,23 @@ TestJavaCompile := !() -> void
 			hvb := new HVBFunction(mcFuncCmpl)
 
 			fncPtr(hvb)
+		}
+		runInProgress = false
+	})
+}
+TestOptWave := !() -> void
+{
+	if runInProgress
+		return void
+	runInProgress = true
+	TSpawnTask(() ==> {
+		//@work 
+		{
+			toRun := intGetFunc("TestWave")
+
+			fncRn := GInterpCntx.GetMCFunc(toRun->{BoxFuncBody^})
+			fncPtr := GInterpCntx.GetFunctionPointer(fncRn)->{!()^->void}
+			fncPtr()
 		}
 		runInProgress = false
 	})

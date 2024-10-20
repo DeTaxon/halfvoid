@@ -1,0 +1,35 @@
+AppendClass BoxExeLineSimple
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Line"
+
+	SubElementsCount := virtual !() -> int
+	{
+		if Down == null
+			return 0
+		return 1
+	}
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+	AddSubElement := virtual !(HV_Object^ newElement) -> bool { return false }
+	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool { return false }
+
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		Down = newElement
+		return true
+	}
+	DeleteElement := virtual !(int index) -> bool
+	{
+		if index != 0
+			return false
+		Down = null
+		return true
+	}
+}

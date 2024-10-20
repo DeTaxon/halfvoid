@@ -167,7 +167,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return null
 		}
 	}
-	if right.Value == "AllFields"
+	if right.Value in !["AllFields","#AllFields"]
 	{
 		return TryGetMetaFields(obj)
 	}

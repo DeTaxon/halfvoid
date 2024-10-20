@@ -2,9 +2,28 @@
 
 main := !(char^[] args) -> int
 {
+	OptTest()
 }
 RunTest := !() -> void
 {
+}
+
+
+OptTest := !() -> void
+{
+	printf("Hello world\n")
+}
+
+
+
+TestWave := !() -> void
+	#OptimizationWave()
+{
+	fnc := HV.FindFunction("OptTest")
+
+	HV.ForEachFuncElement(fnc,x ==> {
+		printf("hoy %s %i\n",x.ElementName,x.SubElementsCount())
+	})
 }
 
 JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void

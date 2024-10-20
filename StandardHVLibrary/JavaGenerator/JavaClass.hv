@@ -68,7 +68,7 @@ JavaClass := class extend TGCObject
 		result = new JavaMethod
 
 		result.NameIndex = CreateString(name)
-		result.DescriptionIndex = CreateString("test")
+		result.DescriptionIndex = CreateString("([Ljava/lang/String;)V")
 
 		cd := CreateString("Code")
 
