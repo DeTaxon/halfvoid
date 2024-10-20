@@ -1,0 +1,9 @@
+AppendClass BoxExeString
+{
+
+	IsEditSupported := virtual true
+	ElementName := virtual "String"
+
+	//TODO GetString value not working
+	GetStringValue := virtual !() -> Str { return Value }
+}

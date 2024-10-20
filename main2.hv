@@ -23,6 +23,10 @@ TestWave := !() -> void
 
 	HV.ForEachFuncElement(fnc,x ==> {
 		printf("hoy %s %i\n",x.ElementName,x.SubElementsCount())
+		if x.ElementName == "String"
+		{
+			printf("str value %s\n","")
+		}
 	})
 }
 

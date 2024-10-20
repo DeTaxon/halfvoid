@@ -223,7 +223,7 @@
 		{
 			ParseXml()
 			if glValues.Contain(name)
-				return HV.Create_int32(glValues[name])
+				return HV.CreateInt32(glValues[name])
 		}
 		if name == "glFuncsClass"
 		{

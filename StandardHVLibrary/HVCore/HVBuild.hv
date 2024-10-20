@@ -10,7 +10,8 @@ HV_Context := class
 
 	CreateClass := virtual !() -> HV_Class^ {}
 
-	Create_int32 := virtual !(int value) -> HV_Object^ {}
+	CreateInt32 := virtual !(int value) -> HV_Object^ {}
+	CreateString := virtual !(Str value) -> HV_Object^ {}
 	CreateFunction := virtual !(Str funcText) -> HV_Object^ {}
 
 	EmitError := virtual !(Str ErrorMessage) -> void {}
@@ -48,6 +49,8 @@ HV_Object := class
 	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool { return false }
 	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool { return false }
 	DeleteElement := virtual !(int index) -> bool { return false}
+
+	GetStringValue := virtual !() -> Str {}
 }
 
 HV_FunctionTemplate := class

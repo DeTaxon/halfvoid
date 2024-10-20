@@ -1,0 +1,30 @@
+AppendClass BoxFuncCall
+{
+
+	IsEditSupported := virtual true
+	ElementName := virtual "FunctionCall"
+
+	SubElementsCount := virtual !() -> int { return downs.Size() }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0 or index >= downs.Size()
+			return null
+		return downs[index]
+	}
+
+	//TODO support for add,delete
+	AddSubElement := virtual !(HV_Object^ newElement) -> bool
+	{
+		return false
+	}
+	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool { return false }
+	DeleteElement := virtual !(int index) -> bool { return false}
+
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{ 
+		if index < 0 or index >= downs.Size()
+			return false
+		downs[index] = newElement
+		return true
+	}
+}

@@ -48,9 +48,13 @@ HVContextImplementation := class extend HV_Context
 		return StrToFunctionTemplate(funcText)
 	}
 
-	Create_int32 := virtual !(int value) -> HV_Object^
+	CreateInt32 := virtual !(int value) -> HV_Object^
 	{
 		return GetExeInt(value)
+	}
+	CreateString := virtual !(Str value) -> HV_Object^
+	{
+		return GetExeString(value)
 	}
 
 	EmitError := virtual !(Str errorMessage) -> void
