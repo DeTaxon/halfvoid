@@ -20,7 +20,11 @@ internalWorkCall := !(!()&->void lmbd) -> void
 	ExpectWorkers(1)
 
 	TaskWorkersToDo.Push(CurrentTask)
-	TaskWaitTasksConVar.NotifyAll()
+
+	for it : TaskAdditionalWorkers //TODO optimize
+	{
+		it.innerNotify()
+	}
 
 	myTask := CurrentTask->{void^}
 	CurrentThread.switchToMain()
@@ -32,7 +36,7 @@ internalWorkCall := !(!()&->void lmbd) -> void
 	myTask := CurrentTask->{void^}
 
 	myTask->{Task^}.resume()
-	TaskWaitTasksConVar.NotifyAll()
+	myTask->{Task^}.itTaskWorker.innerNotify()
 	TaskMainEvent.Emit()
 	CurrentThread.switchToMain()
 
@@ -58,7 +62,12 @@ spawnWorkInner := !(!()&->void lmbd) -> Task^
 	newTask := new Task(lmbd)
 	TaskCheckMutex.Lock() //TODO optimize
 	TaskWorkersToDo.Push(newTask)
-	TaskWaitTasksConVar.NotifyAll()
+
+	for it : TaskAdditionalWorkers //TODO optimize
+	{
+		it.innerNotify()
+	}
+
 	TaskCheckMutex.Unlock()
 	ExpectWorkers(1)
 

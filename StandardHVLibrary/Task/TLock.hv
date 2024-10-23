@@ -69,7 +69,7 @@ TUnlock := !(void^ k) -> void
 		if thisLock.pausedTask != null
 		{
 			thisLock.pausedTask.data.resume()
-			TaskWaitTasksConVar.NotifyAll()
+			thisLock.pausedTask.data.itTaskWorker.innerNotify()
 			thisLock.pausedTask = thisLock.pausedTask.next
 		}
 	}

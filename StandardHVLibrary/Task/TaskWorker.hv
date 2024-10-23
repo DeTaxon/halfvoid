@@ -12,9 +12,13 @@ TaskWorker := class extend TGCObject
 
 	itThread := Thread^
 
+	itConVar := ConVar
+
 	this := !() -> void
 	{
 		internalHVInitClass(AllTasks)
+
+		itConVar."this"()
 	}
 
 	Destroy := virtual !() -> void
@@ -43,7 +47,8 @@ TaskWorker := class extend TGCObject
 		AllTasks.Insert(startTask)
 		CreateTasks.PushFront(startTask)
 
-		TaskWaitTasksConVar.NotifyAll()
+		innerNotify()
+
 		TaskCheckMutex.Unlock()
 		
 		return startTask
@@ -94,6 +99,12 @@ TaskWorker := class extend TGCObject
 	switchToMain := !() -> void
 	{
 		ThreadMainTask.switchToTask()
+	}
+
+	//must have TaskCheckMutex locked
+	innerNotify := !() -> void
+	{
+		itConVar.Notify()
 	}
 }
 TaskWorkerCreated := class extend TaskWorker

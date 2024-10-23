@@ -53,7 +53,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			}
 			if TaskLoopWorkCounter != 0 and not someResumed
 			{
-				TaskWaitTasksConVar.WaitFor(TaskCheckMutex,waitTime)
+				ct.itConVar.WaitFor(TaskCheckMutex,waitTime)
 				//TaskCodePollWork(waitTime)
 			}
 			someoneOnLoop = false
@@ -70,14 +70,15 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 				if cntr == 0
 				{
 					TaskQuitProgram = true
-					TaskWaitTasksConVar.NotifyAll()
+					TaskMainTaskWorker.innerNotify()
+					TaskAdditionalWorkers[^].innerNotify()
 				}else{
 					if TaskMainTaskWorker.PendingTasks.Size() != 0
-						TaskWaitTasksConVar.NotifyAll()
-					TaskWaitTasksConVar.Wait(TaskCheckMutex)
+						TaskMainTaskWorker.innerNotify()
+					ct.itConVar.Wait(TaskCheckMutex)
 				}
 			}else{
-				TaskWaitTasksConVar.Wait(TaskCheckMutex)
+				ct.itConVar.Wait(TaskCheckMutex)
 			}
 			TaskPausedWorkers -= 1
 		}

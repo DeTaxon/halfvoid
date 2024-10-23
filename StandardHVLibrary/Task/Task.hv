@@ -70,7 +70,7 @@ Task := class extend TGCObject
 	resume := virtual !() -> void
 	{
 		itTaskWorker.PendingTasks.Push(this&)
-		TaskWaitTasksConVar.NotifyAll()
+		itTaskWorker.innerNotify()
 	}
 
 	Destroy := virtual !() -> void
@@ -90,12 +90,6 @@ Task := class extend TGCObject
 	AwaitCompletion := virtual !() -> void
 	{
 		finishedWork.Await()
-	}
-
-	//must have TaskWait locked
-	innerNotify := !() -> void
-	{
-		
 	}
 }
 
