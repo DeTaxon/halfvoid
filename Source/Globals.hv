@@ -7,6 +7,10 @@ CurrentLine := task_local BoxExeLine^
 CurrentReturns := task_local ReturnsHolder^
 FuncStack := task_local List.{BoxFuncBody^}
 
+//CurrentHotloadContext := task_local HotloadContext^
+//TODO somehow task local?
+CurrentHotloadContext := task_local HotloadContext^
+
 HotloadStream := ref Stream
 
 CurrentWork := task_local CWorkUnit^

@@ -22,7 +22,7 @@ AppendClass BoxExeLineSimple
 	{
 		if index != 0
 			return false
-		Down = newElement
+		Down = newElement->{BoxUnit^}
 		return true
 	}
 	DeleteElement := virtual !(int index) -> bool

@@ -108,6 +108,7 @@ HVContextImplementation := class extend HV_Context
 			}
 			cb(itm)
 		}
+		CurrentHotloadContext?.ChangedFunctions.PushUniq(bdy)
 	}
 
 }

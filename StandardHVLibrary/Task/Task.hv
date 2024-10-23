@@ -91,6 +91,12 @@ Task := class extend TGCObject
 	{
 		finishedWork.Await()
 	}
+
+	//must have TaskWait locked
+	innerNotify := !() -> void
+	{
+		
+	}
 }
 
 

@@ -5,7 +5,7 @@ StartStatusMonitor := !() -> void
 		while not cliQuit
 		{
 			mainStatusFunc()
-			TSleep(0.1)
+			TSleep(1)
 		}
 		cliWorks -= 1
 	})

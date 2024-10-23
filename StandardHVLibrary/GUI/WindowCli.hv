@@ -36,9 +36,18 @@ WindowCli := class extend TGCObject
 		{
 			draw()
 
-			c := @work wgetch(ctx.Window) //TODO more normal way to wait
+			pollList := pollfd
+			pollList.fd = STDIN_FILENO 
+			pollList.events = POLLIN
 
-			KeyPressed(c)
+
+			@work poll(pollList&,1,500)
+
+			if pollList.revents != 0
+			{
+				c := wgetch(ctx.Window) //TODO more normal way to wait
+				KeyPressed(c)
+			}
 		}
 		endwin()
 	}

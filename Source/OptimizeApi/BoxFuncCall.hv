@@ -22,9 +22,10 @@ AppendClass BoxFuncCall
 
 	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
 	{ 
+		//TODO notify change
 		if index < 0 or index >= downs.Size()
 			return false
-		downs[index] = newElement
+		downs[index] = newElement->{BoxExeObj^}
 		return true
 	}
 }

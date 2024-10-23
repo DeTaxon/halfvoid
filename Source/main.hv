@@ -45,7 +45,7 @@ NonStopBuild := false
 
 OutputFile := char^
 main := !(char^[] args) -> int
-{
+{	
 	GCompileThread = CurrentThread 
 	HotloadStream& = new VoidStream
 
@@ -157,6 +157,7 @@ main := !(char^[] args) -> int
 
 	#ForceVirtualFunctions("vRepoObject")
 	#ForceVirtualFunctions("File")
+	#ForceVirtualFunctions("HV_Object")
 	#ForceVirtualFunctions("HV_Context")
 	#ForceVirtualFunctions("HV_Class")
 	#ForceVirtualFunctions("HVB_FunctionEditor")
@@ -164,6 +165,7 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("BlobOnVector")
 	#ForceVirtualFunctions("StringSpan")
 	#ForceVirtualFunctions("String")
+	#ForceVirtualFunctions("Stream")
 	#ForceVirtualFunctions("XML")
 
 	GetFuncMangle(StringSpan("main"))

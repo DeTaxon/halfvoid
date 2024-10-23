@@ -17,12 +17,12 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			continue
 		}
 
-		if TaskLoopWorkCounter != 0 and not someoneOnLoop
-		{
-			someoneOnLoop = true
-			TaskCodePollWork(0.0)
-			someoneOnLoop = false
-		}
+		//if TaskLoopWorkCounter != 0 and not someoneOnLoop
+		//{
+		//	someoneOnLoop = true
+		//	TaskCodePollWork(0.0)
+		//	someoneOnLoop = false
+		//}
 
 		doTask := ct.PopReadyTask()
 
@@ -57,7 +57,8 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 				//TaskCodePollWork(waitTime)
 			}
 			someoneOnLoop = false
-		}else{
+		}else
+		{
 			TaskPausedWorkers += 1
 			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
 			{

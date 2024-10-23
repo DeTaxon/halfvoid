@@ -25,7 +25,8 @@ AppendClass BoxBlock
 	}
 	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
 	{
-		if index < 0 or index >= exeLines[index]
+		//TODO notify change
+		if index < 0 or index >= exeLines.Size()
 			return false
 		exeLines[index] = newElement->{BoxUnit^}
 		return true

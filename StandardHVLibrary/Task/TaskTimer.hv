@@ -12,8 +12,8 @@ TSleep := !(double val) -> void
 
 	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
 
-	if someoneOnLoop
-		TaskWaitTasksConVar.Notify()
+	//if someoneOnLoop
+	//	TaskWaitTasksConVar.Notify()
 	CurrentThread.ThreadMainTask.switchToTask()
 	TaskCheckMutex.Unlock()
 }

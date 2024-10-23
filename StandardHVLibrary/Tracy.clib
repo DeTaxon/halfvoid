@@ -32,6 +32,12 @@
 		"___tracy_emit_memory_alloc_callstack" : "void,void^,size_t,int,int",
 		"___tracy_emit_memory_free_callstack" : "void,void^,int,int",
 
+		"___tracy_announce_lockable_ctx" : "void^,void^",
+		"___tracy_terminate_lockable_ctx" : "void,void^",
+		"___tracy_before_lock_lockable_ctx" : "void,void^",
+		"___tracy_after_lock_lockable_ctx" : "void,void^",
+		"___tracy_after_unlock_lockable_ctx" : "void,void^",
+
 		"___tracy_fiber_enter" : "void,char^",
 		"___tracy_fiber_leave" : "void"
 	}

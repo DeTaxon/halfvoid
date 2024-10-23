@@ -95,11 +95,17 @@ TestOptWave := !() -> void
 	TSpawnTask(() ==> {
 		//@work 
 		{
+			hotload := HotloadContext
+
+			CurrentHotloadContext = hotload&
+
 			toRun := intGetFunc("TestWave")
 
 			fncRn := GInterpCntx.GetMCFunc(toRun->{BoxFuncBody^})
 			fncPtr := GInterpCntx.GetFunctionPointer(fncRn)->{!()^->void}
 			fncPtr()
+
+			ReloadApply(hotload&)
 		}
 		runInProgress = false
 	})
@@ -130,7 +136,7 @@ cliWorks := int
 
 EnterCliMode := !() -> int
 {
-	ExpectWorkers(16)
+	ExpectWorkers(2)
 
 	cliWin = new CliWin
 

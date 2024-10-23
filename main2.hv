@@ -21,11 +21,19 @@ TestWave := !() -> void
 {
 	fnc := HV.FindFunction("OptTest")
 
-	HV.ForEachFuncElement(fnc,x ==> {
+	c := HV_Object^
+
+	HV.ForEachFuncElement(fnc,(x) ==> {
 		printf("hoy %s %i\n",x.ElementName,x.SubElementsCount())
+		if x.ElementName == "FunctionCall"
+		{
+			c = x
+		}
 		if x.ElementName == "String"
 		{
-			printf("str value %s\n","")
+			printf("str value %s\n",x.GetStringValue())
+			newStr := HV.CreateString("HAHA\n")
+			c.ReplaceSubElement(0,newStr)
 		}
 	})
 }
