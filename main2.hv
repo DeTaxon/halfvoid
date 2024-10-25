@@ -16,6 +16,7 @@ OptTest := !() -> void
 
 
 
+
 TestWave := !() -> void
 	#OptimizationWave()
 {
@@ -36,6 +37,12 @@ TestWave := !() -> void
 			c.ReplaceSubElement(0,newStr)
 		}
 	})
+
+	fncCount := 0
+	HV.ForEachFunction(x ==> {
+		fncCount += 1
+	})
+	printf("func count %i\n",fncCount)
 }
 
 JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void

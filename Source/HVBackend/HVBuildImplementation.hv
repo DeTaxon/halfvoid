@@ -81,6 +81,33 @@ HVContextImplementation := class extend HV_Context
 			return null
 		return res.GetOneFunc()
 	}
+
+	ForEachFunction := virtual !(!(HV_Object^)&-> void cb ) -> void
+	{
+		objs := List.{HV_Object^}
+
+		for spc : CodeSpaces
+		{
+			objs.Push(spc.Templates[^][^].AllFuncs[^][^])
+
+		}
+		for cls : AllClasses
+		{
+			if cls is not in BoxClassBody
+				continue
+			cls2 := cls->{BoxClassBody^}
+
+			objs.Push(cls2.DefaultSpace.Methods[^][^])
+			objs.Push(cls2.DefaultSpace.VirtualCleanMethods[^][^])
+			objs.Push(cls2.DefaultSpace.MethodTemplates[^][^].AllFuncs[^][^])
+
+			objs.Push(cls2.FieldSpaces[^].Methods[^][^])
+			objs.Push(cls2.FieldSpaces[^].VirtualCleanMethods[^][^])
+			objs.Push(cls2.FieldSpaces[^].MethodTemplates[^][^].AllFuncs[^][^])
+		}
+		
+		cb(objs[^])
+	}
 	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^)&-> void cb) -> void
 	{
 		if obj == null
