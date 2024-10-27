@@ -1,0 +1,43 @@
+
+AppendClass BoxAnd
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "And"
+
+	SubElementsCount := virtual !() -> int { return 2 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		switch index
+		{
+			case 0
+				return LeftCall
+			case 1
+				return RightCall
+			case void
+				return null
+		}
+	}
+
+	//TODO add replace element
+}
+AppendClass BoxOr
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Or"
+
+	SubElementsCount := virtual !() -> int { return 2 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		switch index
+		{
+			case 0
+				return LeftCall
+			case 1
+				return RightCall
+			case void
+				return null
+		}
+	}
+
+	//TODO add replace element
+}

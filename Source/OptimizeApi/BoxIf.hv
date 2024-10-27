@@ -1,0 +1,47 @@
+
+AppendClass BoxIfTrueOnly
+{
+	
+	IsEditSupported := virtual true
+	ElementName := virtual "If"
+
+
+	SubElementsCount := virtual !() -> int { return 2 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{ 
+		switch index
+		{
+			case 0
+				return Val
+			case 1
+				return OnTrue 
+			case void
+				return null
+		}
+	}
+	//TODO Add ErplaceElement
+}
+AppendClass BoxIfFull
+{
+	
+	IsEditSupported := virtual true
+	ElementName := virtual "If"
+
+
+	SubElementsCount := virtual !() -> int { return 3 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{ 
+		switch index
+		{
+			case 0
+				return Val
+			case 1
+				return OnTrue 
+			case 2
+				return OnFalse
+			case void
+				return null
+		}
+	}
+	//TODO Add ErplaceElement
+}

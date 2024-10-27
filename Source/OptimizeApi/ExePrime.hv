@@ -4,6 +4,25 @@ AppendClass BoxExeString
 	IsEditSupported := virtual true
 	ElementName := virtual "String"
 
-	//TODO GetString value not working
 	GetStringValue := virtual !() -> Str { return Value }
+}
+
+
+AppendClass BoxExeInt
+{
+
+	IsEditSupported := virtual true
+	ElementName := virtual "Int32"
+}
+AppendClass BoxExeS64
+{
+
+	IsEditSupported := virtual true
+	ElementName := virtual "Int64"
+}
+AppendClass BoxExeDouble
+{
+
+	IsEditSupported := virtual true
+	ElementName := virtual "Double"
 }
