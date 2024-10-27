@@ -1,0 +1,15 @@
+AppendClass IsSameTypeChecker
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Is"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return DownObj
+	}
+
+	//TODO add replace
+}

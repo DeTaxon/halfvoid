@@ -1,6 +1,5 @@
 AppendClass BoxExeString
 {
-
 	IsEditSupported := virtual true
 	ElementName := virtual "String"
 
@@ -10,19 +9,16 @@ AppendClass BoxExeString
 
 AppendClass BoxExeInt
 {
-
 	IsEditSupported := virtual true
 	ElementName := virtual "Int32"
 }
 AppendClass BoxExeS64
 {
-
 	IsEditSupported := virtual true
 	ElementName := virtual "Int64"
 }
 AppendClass BoxExeDouble
 {
-
 	IsEditSupported := virtual true
 	ElementName := virtual "Double"
 }

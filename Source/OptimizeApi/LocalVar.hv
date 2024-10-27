@@ -1,0 +1,5 @@
+AppendClass LocalVarProxy
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "LocalVarProxy"
+}

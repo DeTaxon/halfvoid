@@ -68,7 +68,6 @@ LocalVarProxy := class extend BoxExeObj
 {
 	baseVar := LocalVar^
 	Down := BoxExeObj^
-	BaseDown := BoxExeObj^
 
 	NotifyMemUse := virtual !() -> void
 	{

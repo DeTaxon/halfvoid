@@ -1,0 +1,79 @@
+
+AppendClass FloatExchange
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "FloatToFloat"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}
+AppendClass IntExchange
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "IntToInt"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}
+
+AppendClass PtrToRef
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "PtrToRef"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}
+
+AppendClass IntToFloatExchange
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "IntToFloat"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}
+
+AppendClass ArrToPtr
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "ArrToPtr"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}

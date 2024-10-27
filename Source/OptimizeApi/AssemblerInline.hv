@@ -1,0 +1,7 @@
+AppendClass BoxAssemblerInline
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Assembler"
+
+	SubElementsCount := virtual !() -> int { return 0 }
+}

@@ -1,0 +1,6 @@
+
+AppendClass BoxExeBool
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Bool"
+}
