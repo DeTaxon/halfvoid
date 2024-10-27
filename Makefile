@@ -19,6 +19,9 @@ ifeq ($(massif),yes)
 	mass_if := valgrind --tool=massif
 endif
 
+ifeq ($(opt),yes)
+	opt_mode := -O
+endif
 ifeq ($(callgrind),yes)
 	cg := valgrind --tool=callgrind --dump-instr=yes
 endif
@@ -53,6 +56,9 @@ endif
 ifeq ($(exp),yes)
 	Exper := -C0 ExperimentalLibrary
 endif
+
+
+flags := $(NoScary) $(trc) $(Exper)  $(AddExtra) $(opt_mode)
 
 MainTarget: test
 
@@ -104,10 +110,10 @@ halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(Exper)  $(AddExtra) $(NoScary)  $(trc) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags)  -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -g -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(trc) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -mfsgsbase -O2 -s $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -emulate-tls $(trc) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll

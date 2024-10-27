@@ -122,16 +122,26 @@ HVContextImplementation := class extend HV_Context
 		while lst.Size() != 0
 		{
 			itm := lst.Pop()
-			if itm.IsEditSupported
+
+			assert(itm.IsEditSupported)
+
+			for i : itm.SubElementsCount()
 			{
-				for i : itm.SubElementsCount()
+				newItm := itm.GetSubElement(i)
+				if newItm.IsEditSupported
 				{
-					newItm := itm.GetSubElement(i)
-					if newItm.IsEditSupported
-						lst.PushFront(newItm)
+					lst.PushFront(newItm)
+				}else{
+					c := Str
+					c = newItm->{BoxUnit^}.UnitName
+					metFuncs := static AVLSet.{Str}
+					if c not in metFuncs
+					{
+						metFuncs.Insert(c)
+						//TODO emit somewhere
+						printf("Not implemented EditSupport for %s\n",c)
+					}
 				}
-			}else{
-				//TODO emit somewhere
 			}
 			cb(itm)
 		}

@@ -24,6 +24,8 @@ TryCatchUsed := bool
 
 NeedGuardLocalVar := task_local bool
 
+
+OptimizeMode := bool
 DebugMode := bool
 ErrorState := bool
 

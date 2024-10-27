@@ -90,6 +90,8 @@ main := !(char^[] args) -> int
 				OpenCacheFile(args[i]) //TODO args check
 			case "-extra"
 				UseExtra = true
+			case "-O"
+				OptimizeMode = true
 			case "-run"
 				i += 1
 				RunModeFuncName = args[i]
@@ -258,6 +260,12 @@ main := !(char^[] args) -> int
 
 	if WorkBagPrintErrors()
 		exit(-1)
+
+	if OptimizeMode
+	{
+		printf("Optimization step\n")
+		OptimizeCode()
+	}
 
 	printf("good to go\n")
 
