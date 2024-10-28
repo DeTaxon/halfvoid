@@ -1,0 +1,20 @@
+AppendClass BoxReturn
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Return"
+
+	SubElementsCount := virtual !() -> int
+	{
+		if ResultCall == null
+			return 0
+		return 1
+	}
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return ResultCall
+	}
+
+	//TODO add replace
+}

@@ -1,4 +1,39 @@
-//AppendClass BoxDefer
-//{
-//
-//}
+AppendClass BoxDefer
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Defer"
+
+
+	SubElementsCount := virtual !() -> int { return onDefer.Size() }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0 or index >= onDefer.Size()
+			return null
+		return onDefer[index]
+	}
+	AddSubElement := virtual !(HV_Object^ newElement) -> bool
+	{
+		onDefer.Push(newElement->{BoxExeObj^})
+		return true
+	}
+	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		//TODO use index
+		assert(false)
+		return false
+	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		//TODO notify change
+		if index < 0 or index >= onDefer.Size()
+			return false
+		onDefer[index] = newElement->{BoxExeObj^}
+		return true
+	}
+	DeleteElement := virtual !(int index) -> bool
+	{
+		//TODO implement
+		return false
+	}
+
+}

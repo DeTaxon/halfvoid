@@ -6,7 +6,8 @@ main := !(char^[] args) -> int
 
 	piString := StringSpan(piValue.GetPointer(),piValue.Size())
 
-	//printf("Pi = %s\n",piString)
+	printf("Pi = %s\n",piString)
+	
 }
 
 

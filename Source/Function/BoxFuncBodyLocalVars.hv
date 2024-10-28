@@ -122,7 +122,7 @@ AppendClass BoxFuncBody
 					noObjs := CheckExeDownList
 					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
 					destrCall2 := innerTryGetMethodCall(StringSpan("postDestroy"),access,noObjs,cnsts)
-					createCall.deferCall = new BoxDeferSize2(destrCall,destrCall2)
+					createCall.deferCall = new BoxDefer(destrCall,destrCall2)
 				}
 			}
 
@@ -231,7 +231,7 @@ FuncLocalVarCleanup := class extend BoxExeObj
 
 		typeSize := baseType.GetSize()
 
-		if typeSize < 64
+		if typeSize <= 64
 		{
 
 			f^ << "call  void @llvm.memset.inline.p0.p0i8.i32(i8* "

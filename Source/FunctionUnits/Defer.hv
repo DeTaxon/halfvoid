@@ -1,31 +1,16 @@
 
 BoxDefer := class extend BoxExeObj
 {
-	onDefer := BoxExeObj^
+	onDefer := HybridQueue.{BoxExeObj^,2}
 	this := !(BoxExeObj^ dObj) -> void
 	{
-		onDefer = dObj
+		onDefer.Push(dObj)
 		ObjType = GTypeVoid
 	}
-	IsDefered := virtual !() -> bool { return true }
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.deferObjects.PushFront(this&)
-	}
-	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		onDefer.PrintDefaultUse(ctx)
-	}
-}
-
-BoxDeferSize2 := class extend BoxExeObj
-{
-	onDefer1 := BoxExeObj^
-	onDefer2 := BoxExeObj^
 	this := !(BoxExeObj^ dObj1,BoxExeObj^ dObj2) -> void
 	{
-		onDefer1 = dObj1
-		onDefer2 = dObj2
+		onDefer.Push(dObj1)
+		onDefer.Push(dObj2)
 		ObjType = GTypeVoid
 	}
 	IsDefered := virtual !() -> bool { return true }
@@ -35,7 +20,6 @@ BoxDeferSize2 := class extend BoxExeObj
 	}
 	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		onDefer1.PrintDefaultUse(ctx)
-		onDefer2.PrintDefaultUse(ctx)
+		onDefer[^].PrintDefaultUse(ctx)
 	}
 }
