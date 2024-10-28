@@ -14,7 +14,7 @@ AliasVar := class extend BoxUnit
 	}
 }
 
-AliasVarOhNo := class extend BoxUnit
+BorrowedCallVar := class extend BoxUnit
 {
 	itName := StringSpan
 	itValue := BoxExeObj^

@@ -2,8 +2,63 @@
 
 main := !(char^[] args) -> int
 {
-	OptTest()
+	piValue := #ComputePi(10000)
+
+	piString := StringSpan(piValue.GetPointer(),piValue.Size())
+
+	//printf("Pi = %s\n",piString)
 }
+
+
+
+#CreateCallCommand(
+	Name = "ComputePi",
+	Call = !(int numCount) -> Blob^
+	{
+		return CalculatePiBlob(numCount)
+	}
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 RunTest := !() -> void
 {
 }
@@ -18,7 +73,7 @@ OptTest := !() -> void
 
 
 TestWave := !() -> void
-	#OptimizationWave()
+#OptimizationWave()
 {
 	fnc := HV.FindFunction("OptTest")
 
@@ -44,7 +99,6 @@ TestWave := !() -> void
 	})
 	printf("func count %i\n",fncCount)
 }
-
 JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 {
 	//printf("yep %i %i\n",funcToCompile.GetVariablesCount(), funcToCompile.GetCodeLinesCount())
@@ -99,66 +153,66 @@ JavaMain := !() -> void
 
 
 
-//CalculatePiBlob := !(int nums) -> Blob^
-//{
-//	bigNums := nums*3
-//	values := malloc(bigNums*4)->{int^}
-//
-//	result = new BlobOnVector(nums + 1)
-//	resultPtr := result.GetPointer()->{u8^}
-//	memset(resultPtr,0,result.Size())
-//	//resultPtr[nums] = 0
-//
-//	i := 0
-//	while i < bigNums
-//	{
-//		values[i] = 2
-//		i += 1
-//	}
-//	i = 0
-//	while i < nums
-//	{
-//		j := 0
-//		while j < bigNums
-//		{
-//			values[j] *= 10
-//			j += 1
-//		}
-//		j = bigNums - 1
-//		while j >= 1
-//		{
-//			thisMul := j
-//			thisDiv := 2*j + 1
-//
-//			carry := (values[j] div thisDiv)*thisMul
-//			modul := values[j] mod thisDiv
-//			values[j] = modul
-//			j -= 1
-//			values[j] += carry
-//		}
-//		num := values[0] div 10
-//		values[0] = values[0] mod 10
-//
-//		c := 0
-//		while num != 0
-//		{
-//			resultPtr[i + c] += num
-//			if resultPtr[i + c] >= 10
-//			{
-//				resultPtr[i + c] = resultPtr[i + c] mod 10
-//				num = 1
-//			}else{
-//				num = 0
-//			}
-//			c -= 1
-//		}
-//		i += 1
-//	}
-//	for i : nums
-//	{
-//		resultPtr[i] += '0'
-//	}
-//}
+CalculatePiBlob := !(int nums) -> Blob^
+{
+	bigNums := nums*3
+	values := malloc(bigNums*4)->{int^}
+
+	result = new BlobOnVector(nums + 1)
+	resultPtr := result.GetPointer()->{u8^}
+	memset(resultPtr,0,result.Size())
+	//resultPtr[nums] = 0
+
+	i := 0
+	while i < bigNums
+	{
+		values[i] = 2
+		i += 1
+	}
+	i = 0
+	while i < nums
+	{
+		j := 0
+		while j < bigNums
+		{
+			values[j] *= 10
+			j += 1
+		}
+		j = bigNums - 1
+		while j >= 1
+		{
+			thisMul := j
+			thisDiv := 2*j + 1
+
+			carry := (values[j] div thisDiv)*thisMul
+			modul := values[j] mod thisDiv
+			values[j] = modul
+			j -= 1
+			values[j] += carry
+		}
+		num := values[0] div 10
+		values[0] = values[0] mod 10
+
+		c := 0
+		while num != 0
+		{
+			resultPtr[i + c] += num
+			if resultPtr[i + c] >= 10
+			{
+				resultPtr[i + c] = resultPtr[i + c] mod 10
+				num = 1
+			}else{
+				num = 0
+			}
+			c -= 1
+		}
+		i += 1
+	}
+	for i : nums
+	{
+		resultPtr[i] += '0'
+	}
+}
 
 
 //Zip file

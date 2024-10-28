@@ -13,7 +13,7 @@ AppendClass GlobalVarProxy
 		result.CreatedId = ctx.GetGlobalVar(baseVar)
 	}
 }
-AppendClass AliasVarOhNo
+AppendClass BorrowedCallVar 
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{

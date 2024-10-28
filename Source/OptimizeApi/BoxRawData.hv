@@ -1,0 +1,6 @@
+
+AppendClass BoxRawData
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "RawData"
+}

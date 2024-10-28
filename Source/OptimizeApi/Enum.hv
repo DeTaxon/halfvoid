@@ -1,0 +1,21 @@
+
+AppendClass BoxEnumValue
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "EnumValue"
+}
+AppendClass EnumToIntExchange
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "EnumToInt"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	//TODO add replace
+}

@@ -1,5 +1,5 @@
 
-AppendClass BoxExeNone
+AppendClass BoxExeNull
 {
 	IsEditSupported := virtual true
 	ElementName := virtual "Null"

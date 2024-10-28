@@ -4,6 +4,9 @@ FuncNameIter := int
 
 GetFuncMangle := !(Str name) -> Str
 {
+	if name->AsString == null
+		name = "anon"
+
 	buff := char[1024] //todo unconst
 
 	if isRegularName(name)

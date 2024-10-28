@@ -1,0 +1,11 @@
+AppendClass BoxContinue
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Continue"
+}
+
+AppendClass BoxBreak
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "Break"
+}

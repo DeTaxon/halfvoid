@@ -175,7 +175,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				if fc.ResultVar != null
 				{
 					fc.ResultVar.itName = name
-					return new AliasVarOhNo(name,exeObj,fc.ResultVar) //TODO maybe i can just return fc.ResultVar
+					return new BorrowedCallVar(name,exeObj,fc.ResultVar)
 				}
 				
 			}

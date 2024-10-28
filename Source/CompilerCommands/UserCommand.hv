@@ -162,7 +162,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			interpResult := MCInterpFunction2Resulted(GInterpCntx&,interpFnc,inptPointers,extraStep&)
 
 			resMessage := interpResult.GetErrorMessage()
-			if resMessage != null
+			if resMessage->AsString != null //TODO i dont need AsString
 			{
 				CurrentFuncWork.SetErrorMessage(resMessage)
 				return null
