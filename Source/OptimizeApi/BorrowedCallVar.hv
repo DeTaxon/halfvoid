@@ -1,0 +1,16 @@
+AppendClass BorrowedCallVar
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "BorrowedCallVar"
+
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return itValue 
+	}
+
+	//i am not allowing replace for it
+}

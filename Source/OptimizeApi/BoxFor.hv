@@ -1,0 +1,28 @@
+AppendClass BoxFor
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "For"
+
+	SubElementsCount := virtual !() -> int { return values.Size() + 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index == -1
+			return body
+
+		if index < 0
+			return null
+
+		if index < values.Size()
+		{
+			//TODO maybe add other getters
+			return values[index].GetCall
+		}
+		index -= values.Size()
+
+		if index == 0
+			return body
+
+		return null
+	}
+	//TODO Replace?
+}

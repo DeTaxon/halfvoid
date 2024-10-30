@@ -1,0 +1,20 @@
+AppendClass ConstructorCallWrapper
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "ConstructoCallWrapper"
+
+	SubElementsCount := virtual !() -> int { return 2 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		switch index
+		{
+		case 0
+			return itVar
+		case 1
+			return cCall
+		case void
+			return null
+		}
+	}
+	//TODO consider removing this class
+}

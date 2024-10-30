@@ -42,7 +42,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		GlobalVars2.Push(vrTable)
 		CodeSpaces[-1].Globals[newName].Push(vrTable) //todo Optimize, codespace can have spetial place for unque names
 
-		res := new GlobalNameAlias2 //TODO memory leak
+		res := new GlobalNameAlias2 //TODO memory leak, updated: not a one time use, someone keeps reference
 		res.Name = name
 		res.Value = vrTable
 		return res

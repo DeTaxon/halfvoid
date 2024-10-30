@@ -12,7 +12,19 @@ AppendClass FloatExchange
 		return Down
 	}
 
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if not IsFloat(asThis.GetType())
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 AppendClass IntExchange
 {
@@ -27,7 +39,19 @@ AppendClass IntExchange
 		return Down
 	}
 
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if not IsInt(asThis.GetType())
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 
 AppendClass PtrToRef
@@ -42,8 +66,19 @@ AppendClass PtrToRef
 			return null
 		return Down
 	}
-
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() is not in TypePoint
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 AppendClass PtrExchange
 {
@@ -58,7 +93,19 @@ AppendClass PtrExchange
 		return Down
 	}
 
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() is not in TypePoint
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 
 AppendClass IntToFloatExchange
@@ -73,8 +120,19 @@ AppendClass IntToFloatExchange
 			return null
 		return Down
 	}
-
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if not IsInt(asThis.GetType())
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 
 AppendClass ArrToPtr
@@ -90,7 +148,19 @@ AppendClass ArrToPtr
 		return Down
 	}
 
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() is not in TypeArr
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
 AppendClass RefExchange
 {
@@ -104,6 +174,81 @@ AppendClass RefExchange
 			return null
 		return Down
 	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if not asThis.IsMem()
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
+}
 
-	//TODO add replace
+AppendClass FloatToIntExchange
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "FloatToInt"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if not IsFloat(asThis.GetType())
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
+}
+
+AppendClass PtrToSizeT
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "PtrToSizeT"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() is not in TypePoint
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
+}
+
+AppendClass FuncToPointerObj
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "FuncToFuncPtr"
+
+
 }

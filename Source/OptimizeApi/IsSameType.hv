@@ -10,6 +10,17 @@ AppendClass IsSameTypeChecker
 			return null
 		return DownObj
 	}
-
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if TypeFight(asThis.GetType(),DownObj.GetType()) == null
+			return false
+		DownObj = asThis
+		notifyEditChange()
+		return true
+	}
 }

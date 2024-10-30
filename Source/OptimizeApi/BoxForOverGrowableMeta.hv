@@ -1,0 +1,16 @@
+AppendClass BoxForOverGrowableMeta
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "BoxForOverGrowableMeta"
+
+	//TODO add varaibles
+	SubElementsCount := virtual !() -> int { return blocks.Size() }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0
+			return null
+		if index < blocks.Size()
+			return blocks[index]
+		return null
+	}
+}

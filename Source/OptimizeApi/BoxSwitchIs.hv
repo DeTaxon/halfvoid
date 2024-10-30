@@ -1,0 +1,47 @@
+AppendClass BoxSwitchIs
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "SwitchIs"
+
+
+	SubElementsCount := virtual !() -> int { return caseNodes.Size()*2 + 2 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0
+			return null
+		if index == 0
+			return mainCall
+		if index == 1
+		{
+			if defaultNode == null
+				return GObjNone
+			return defaultNode
+		}
+		indx := (index - 2) div 2
+
+		if indx >= caseNodes.Size()
+			return null
+
+		curNode := ref caseNodes[indx]
+
+		if index mod 2 == 0
+		{
+			assert(curNode.cmpCheck!= null)
+			return curNode.cmpCheck
+		}else{
+			if curNode.caseBody == null //TODO maybe i need to create blank Block here?
+				return GObjNone
+			return curNode.caseBody
+		}
+	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		//TODO notify change
+		return false 
+	}
+	DeleteElement := virtual !(int index) -> bool
+	{
+		//TODO implement
+		return false
+	}
+}

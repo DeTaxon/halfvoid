@@ -17,8 +17,23 @@ AppendClass BoxAnd
 				return null
 		}
 	}
-
-	//TODO add replace element
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index not in 0..1
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() != GTypeBool
+			return false
+		if index == 0 {
+			LeftCall = asThis
+		}else{
+			RightCall = asThis
+		}
+		notifyEditChange()
+		return true
+	}
 }
 AppendClass BoxOr
 {
@@ -38,6 +53,21 @@ AppendClass BoxOr
 				return null
 		}
 	}
-
-	//TODO add replace element
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index not in 0..1
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() != GTypeBool
+			return false
+		if index == 0 {
+			LeftCall = asThis
+		}else{
+			RightCall = asThis
+		}
+		notifyEditChange()
+		return true
+	}
 }

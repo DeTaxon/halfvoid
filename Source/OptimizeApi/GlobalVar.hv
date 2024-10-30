@@ -1,0 +1,5 @@
+AppendClass GlobalVarProxy
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "GlobalVarGetter"
+}

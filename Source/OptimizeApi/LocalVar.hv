@@ -1,5 +1,53 @@
+AppendClass LocalVar
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "LocalVar"
+
+	SubElementsCount := virtual !() -> int
+	{
+		return createVar.Size() + extraWork.Size()  
+	}
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0
+			return null
+		if index < createVar.Size()
+		{
+			return createVar[index]
+		}
+		index -= createVar.Size()
+
+		if index < extraWork.Size()
+		{
+			return extraWork[index]
+		}
+		return null
+	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+	}
+
+	//TODO IMPORTANT PARt
+	//TODO add replace, delete
+}
+
+AppendClass FuncLocalVarAccess
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "LocalVarCleanup"
+}
+AppendClass FuncLocalVarCleanup
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "LocalVarCleanup"
+}
+AppendClass FuncLocalDebugInfoDeclare 
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "LocalVarDebugInfo"
+}
 AppendClass LocalVarProxy
 {
 	IsEditSupported := virtual true
-	ElementName := virtual "LocalVarProxy"
+	ElementName := virtual "LocalVarGetter"
 }

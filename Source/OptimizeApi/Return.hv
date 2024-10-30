@@ -13,8 +13,21 @@ AppendClass BoxReturn
 	{
 		if index != 0
 			return null
+		if ResultCall == null
+			return GObjVoid
 		return ResultCall
 	}
-
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if ResultCall != null and asThis.GetType() != ResultCall.GetType()
+			return false
+		ResultCall = asThis
+		notifyEditChange()
+		return true
+	}
 }

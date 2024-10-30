@@ -19,7 +19,19 @@ AppendClass BoxIfTrueOnly
 				return null
 		}
 	}
-	//TODO Add ErplaceElement
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() != GTypeBool
+			return false
+		Val = asThis
+		notifyEditChange()
+		return true
+	}
 }
 AppendClass BoxIfFull
 {
@@ -43,5 +55,17 @@ AppendClass BoxIfFull
 				return null
 		}
 	}
-	//TODO Add ErplaceElement
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() != GTypeBool
+			return false
+		Val = asThis
+		notifyEditChange()
+		return true
+	}
 }

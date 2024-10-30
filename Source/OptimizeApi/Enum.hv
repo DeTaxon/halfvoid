@@ -16,6 +16,17 @@ AppendClass EnumToIntExchange
 			return null
 		return Down
 	}
-
-	//TODO add replace
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		if index != 0
+			return false
+		if newElement is not in BoxExeObj
+			return false
+		asThis := newElement->{BoxExeObj^}
+		if asThis.GetType() != Down.GetType()
+			return false
+		Down = asThis
+		notifyEditChange()
+		return true
+	}
 }
