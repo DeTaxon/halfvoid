@@ -51,12 +51,13 @@ TryGetTrinary := !(Token^ itm) -> BoxExeObj^
 
 	return null
 }
-TrinaryOper := class extend BoxExeObj
+
+TrinaryOperBase := class extend BoxExeObj
 {
 	ifStatement := BoxExeObj^
 	onTrue := BoxExeObj^
 	onFalse := BoxExeObj^
-	
+
 	trueLabel := BoxLabel^
 	trueExitLabel := BoxLabel^
 	falseLabel := BoxLabel^
@@ -64,6 +65,9 @@ TrinaryOper := class extend BoxExeObj
 	endLabel := BoxLabel^
 
 	ItId := int
+}
+TrinaryOper := class extend TrinaryOperBase
+{
 	this := !(BoxExeObj^ fRes,BoxExeObj^ nTrue,BoxExeObj^ nFalse ) -> void
 	{
 		ifStatement = fRes
@@ -132,19 +136,8 @@ TrinaryOper := class extend BoxExeObj
 		ctx.writeStream^ << "%T" << ItId
 	}
 }
-TrinaryOperMem := class extend BoxExeObj
+TrinaryOperMem := class extend TrinaryOperBase
 {
-	ifStatement := BoxExeObj^
-	onTrue := BoxExeObj^
-	onFalse := BoxExeObj^
-	
-	trueLabel := BoxLabel^
-	trueExitLabel := BoxLabel^
-	falseLabel := BoxLabel^
-	falseExitLabel := BoxLabel^
-	endLabel := BoxLabel^
-
-	ItId := int
 	this := !(BoxExeObj^ fRes,BoxExeObj^ nTrue,BoxExeObj^ nFalse ) -> void
 	{
 		ifStatement = fRes

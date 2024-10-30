@@ -1,4 +1,4 @@
-AppendClass TrinaryOper
+AppendClass TrinaryOperBase
 {
 	IsEditSupported := virtual true
 	ElementName := virtual "Trinary"
@@ -45,27 +45,5 @@ AppendClass TrinaryOper
 
 		notifyEditChange()
 		return true
-	}
-}
-AppendClass TrinaryOperMem
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "Trinary"
-
-
-	SubElementsCount := virtual !() -> int { return 3 }
-	GetSubElement := virtual !(int index) -> HV_Object^
-	{ 
-		switch index
-		{
-			case 0
-				return ifStatement
-			case 1
-				return onTrue 
-			case 2
-				return onFalse
-			case void
-				return null
-		}
 	}
 }
