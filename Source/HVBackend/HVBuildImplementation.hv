@@ -108,7 +108,7 @@ HVContextImplementation := class extend HV_Context
 		
 		cb(objs[^])
 	}
-	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^)&-> void cb) -> void
+	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,int,HV_Object^)&-> void cb) -> void
 	{
 		if obj == null
 			return void
@@ -116,21 +116,25 @@ HVContextImplementation := class extend HV_Context
 			return void
 		bdy := obj->{BoxFuncBody^}
 
-		lst := List.{HV_Object^}
-		lst.PushFront(bdy.body)
+		lst := List.{Tuple.{HV_Object^,int,HV_Object^}}
+		lst.EmplaceFront(null->{HV_Object^},0,bdy.body)
 
 		while lst.Size() != 0
 		{
 			itm := lst.Pop()
 
-			assert(itm.IsEditSupported)
+			assert(itm.2.IsEditSupported)
 
-			for i : itm.SubElementsCount()
+			for i : itm.2.SubElementsCount()
 			{
-				newItm := itm.GetSubElement(i)
+				newItm := itm.2.GetSubElement(i)
+				
+				if newItm == null
+					continue
+
 				if newItm.IsEditSupported
 				{
-					lst.PushFront(newItm)
+					lst.EmplaceFront(itm.2,i,newItm)
 				}else{
 					c := Str
 					c = newItm->{BoxUnit^}.UnitName
@@ -143,7 +147,7 @@ HVContextImplementation := class extend HV_Context
 					}
 				}
 			}
-			cb(itm)
+			cb(itm.0,itm.1,itm.2)
 		}
 		CurrentHotloadContext?.ChangedFunctions.PushUniq(bdy)
 	}

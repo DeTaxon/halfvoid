@@ -4,9 +4,5 @@ OptimizeCode := !() -> void
 {
 	InitRunContext()
 
-	HV.ForEachFunction(x ==> {
-		HV.ForEachFuncElement(x, el ==> {
-
-		})
-	})	
+	RemoveStringSpanDestructor()
 }

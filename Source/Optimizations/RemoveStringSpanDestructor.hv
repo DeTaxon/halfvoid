@@ -1,0 +1,36 @@
+
+
+RemoveStringSpanDestructor := !() -> void
+{
+
+	cls := intGetClass("StringSpan")
+
+	if cls == null
+		return void
+
+	spanType := cls.ItType
+
+	HV.ForEachFunction(x ==> {
+		HV.ForEachFuncElement(x, (upObj,upInd,el) ==> {
+
+			if el.ElementName != "Defer"
+				return void
+
+			def := el->{BoxDefer^}
+
+			delObjs := List.{int}
+
+			for it,i : def.onDefer
+			{
+				if it is not BoxFuncCall
+					continue
+				fCall := it->{BoxFuncCall^}
+				if fCall.downs.Size() == 0 or fCall.downs[0].GetType() != spanType
+					continue
+				delObjs.PushFront(i)
+			}
+
+			el.DeleteElement(delObjs[^])
+		})
+	})	
+}

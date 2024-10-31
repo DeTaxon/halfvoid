@@ -58,6 +58,32 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 		FullSize = 0
 		ListArray.Destroy()
 	}
+	DeleteAt := !(int index) -> bool
+	{
+		if index < 0
+			return DeleteAt(Size() + index)
+		if index >= Size()
+			return false
+
+		if index < StaticSize
+		{
+			moveElements := StaticSize - index - 1
+
+			for i : moveElements
+			{
+				StaticArray[index + i] = StaticArray[index + i + 1]
+			}
+
+			if ListArray.Size() != 0
+			{
+				StaticArray[StaticSize - 1] = ListArray.Pop()
+			}
+		}else{
+			ListArray.DeleteAt(index - StaticSize)
+		}
+		FullSize -= 1
+		
+	}
 	//"for" := !() -> !()&->ref T
 	//{
 	//	lmbd := () ==> ref T{

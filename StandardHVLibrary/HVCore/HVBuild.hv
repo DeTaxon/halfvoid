@@ -18,7 +18,7 @@ HV_Context := class
 
 	FindFunction := virtual !(Str funcName) -> HV_Object^ {}
 	ForEachFunction := virtual !(!(HV_Object^)&-> void cb ) -> void {}
-	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^)&-> void cb) -> void {}
+	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,int,HV_Object^)&-> void cb) -> void {}
 
 }
 

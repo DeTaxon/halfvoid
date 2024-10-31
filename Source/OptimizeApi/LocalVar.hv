@@ -40,6 +40,25 @@ AppendClass FuncLocalVarCleanup
 {
 	IsEditSupported := virtual true
 	ElementName := virtual "LocalVarCleanup"
+
+
+	SubElementsCount := virtual !() -> int
+	{
+		if deferCall == null
+			return 0
+		return 1
+	}
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index == 0
+			return deferCall
+		return null
+	}
+	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
+	{
+		//TODO implement it
+		return false
+	}
 }
 AppendClass FuncLocalDebugInfoDeclare 
 {

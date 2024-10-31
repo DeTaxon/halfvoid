@@ -13,27 +13,23 @@ AppendClass BoxDefer
 	}
 	AddSubElement := virtual !(HV_Object^ newElement) -> bool
 	{
+		if newElement is not in BoxExeObj
+			return false
 		onDefer.Push(newElement->{BoxExeObj^})
+		notifyEditChange()
 		return true
-	}
-	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool
-	{
-		//TODO use index
-		assert(false)
-		return false
 	}
 	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
 	{
-		//TODO notify change
 		if index < 0 or index >= onDefer.Size()
 			return false
+		notifyEditChange()
 		onDefer[index] = newElement->{BoxExeObj^}
 		return true
 	}
 	DeleteElement := virtual !(int index) -> bool
 	{
-		//TODO implement
-		return false
+		return onDefer.DeleteAt(index)
 	}
 
 }

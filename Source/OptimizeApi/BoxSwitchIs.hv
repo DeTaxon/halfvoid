@@ -34,14 +34,4 @@ AppendClass BoxSwitchIs
 			return curNode.caseBody
 		}
 	}
-	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
-	{
-		//TODO notify change
-		return false 
-	}
-	DeleteElement := virtual !(int index) -> bool
-	{
-		//TODO implement
-		return false
-	}
 }

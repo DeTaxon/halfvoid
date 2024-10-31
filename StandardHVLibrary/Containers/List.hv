@@ -228,6 +228,22 @@ List := class.{@T} extend TArrayView.{T}
 			}
 		}
 	}
+	DeleteAt := !(int index) -> bool
+	{
+		if index < 0
+			return DeleteAt(Size() + index)
+		if index > Size()
+			return false
+
+		i := 0
+
+		DeleteIf( x ==> {
+			result = i == index
+			i += 1
+		})
+
+		return true
+	}
 	destroyNode := !(ListNode.{T}^ nd) -> void
 	{
 		if T->IsGCPointer
