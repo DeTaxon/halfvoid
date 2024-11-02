@@ -45,7 +45,7 @@ AppendClass BoxFuncBody
 					objs[0] = new PtrRefExchange(objs[0],GCType.GetPoint())
 					objs[1] = new PtrExchange(objs[1],GCType.GetPoint())
 				}
-				setVar := CreateFuncCall(StringSpan("="),objs)
+				setVar := CreateFuncCall("=",objs)
 				assert(setVar != null)
 				it.extraWork.Push(setVar)
 				it.SetCall(locVar.proxy&)
@@ -62,7 +62,7 @@ AppendClass BoxFuncBody
 		if YieldStateInt == null
 		{
 			assert(CurrentFunc == this&)
-			YieldStateInt = new LocalVar(StringSpan(".anon"),GTypeInt,true,false)
+			YieldStateInt = new LocalVar(".generator_state",GTypeInt,true,false)
 		}
 		return YieldStateInt
 	}

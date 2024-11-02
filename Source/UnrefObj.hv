@@ -19,7 +19,13 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 		CurrentFuncWork?.SetErrorMessage(itm.MakeError("can not get pointer to object, it is not on the memory"))
 		return null
 	}
-	
+
+	if dwn is LocalVarProxyOut
+	{
+		pOut := dwn->{LocalVarProxyOut^}
+		if pOut.Down? is in PtrToRef
+			return pOut.Down->{PtrToRef^}.Down
+	}
 	if dwn is in PtrToRef
 		return dwn->{PtrToRef^}.Down
 

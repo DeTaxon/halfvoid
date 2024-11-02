@@ -16,12 +16,21 @@ LocalVar := class extend BoxExeObj
 		isMemory = isMem
 		isReference = isRef
 
+		proxyOut.ObjType = varType
+		proxyOut.baseVar = this&
+
 		proxy.ObjType = varType
 		proxy.baseVar = this&
 
 		if isRef
 			proxy.ObjType = varType.GetPoint()
 		ObjType = proxy.ObjType
+
+		if isRef {
+			proxyOut.Down = new PtrToRef(proxy&)
+		}else{
+			proxyOut.Down = proxy&
+		}
 	}
 
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
@@ -47,12 +56,7 @@ LocalVar := class extend BoxExeObj
 	}
 	CreateVarCall := !() -> BoxExeObj^
 	{
-		if isReference
-		{
-			return new PtrToRefAuto(proxy&)
-		}else{
-			return proxy&
-		}
+		return proxyOut&
 	}
 
 	SetCall := !(BoxExeObj^ toCall) -> void
@@ -61,6 +65,7 @@ LocalVar := class extend BoxExeObj
 	}
 
 	proxy := LocalVarProxy
+	proxyOut := LocalVarProxyOut
 }
 
 
@@ -92,5 +97,21 @@ LocalVarProxy := class extend BoxExeObj
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		Down.PrintUse(ctx)
+	}
+}
+
+LocalVarProxyOut := class extend LocalVarProxy
+{
+	NotifyMemUse := virtual !() -> void
+	{
+		if baseVar.isReference
+			return void
+		baseVar.NotifyMemUse()
+	}
+	IsMem := virtual !() -> bool
+	{
+		if baseVar.isReference
+			return true
+		return baseVar.isMemory
 	}
 }

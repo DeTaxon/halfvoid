@@ -1,12 +1,53 @@
 
+MegaClass := class
+{
+	SelfShift := virtual !() -> void
+	{
+		if this& is MegaClass
+		{
+			this&->SetType(MegaClass2)
+		}
+	}
+	Print := virtual !() -> void
+	{
+		printf("NO2\n")
+	}
+}
+
+MegaClass2 := class extend MegaClass
+{
+	x := int
+	Print := virtual !() -> void
+	{
+		printf("YES\n")
+	}
+}
+
+
+
+Func2 := !(MegaClass^ x) -> void
+{
+	if x is MegaClass2
+		printf("wow %i\n",x.x)
+}
+
 
 main := !(char^[] args) -> int
 {
-	piValue := #ComputePi(10000)
+	c := new MegaClass
+	c.Print()
 
-	piString := StringSpan(piValue.GetPointer(),piValue.Size())
+	c2 := new MegaClass2
+	c2.Print()
+	c2.x = 100
+	
+	Func2(c2)
+	return 0
+	//piValue := #ComputePi(10000)
 
-	printf("Pi = %s\n",piString)
+	//piString := StringSpan(piValue.GetPointer(),piValue.Size())
+
+	//printf("Pi = %s\n",piString)
 	
 }
 

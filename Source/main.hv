@@ -238,6 +238,10 @@ main := !(char^[] args) -> int
 	assert(mainFunc != null)
 	assert(mainFunc is BoxFuncBody)
 	mainFunc.ParseBody()
+
+
+	//TODO just ask for a function, no need to leak memory, or maybe change local varaible cleanup
+	CreateFuncCall("memset",![GObjNull,GetExeInt(0),GetExeInt(0)])
 	
 	WaitForParsingObjects()
 

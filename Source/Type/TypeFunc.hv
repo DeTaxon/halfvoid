@@ -149,6 +149,7 @@ GetFuncType := !(
 			bool isVargs = false
 			) -> TypeFunc^
 {
+
 	count := 0
 	if args != null
 		count = args.Size()

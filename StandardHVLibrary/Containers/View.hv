@@ -125,10 +125,10 @@ internalCreateEmptyArray := !() .{@Typ} -> ArraySpan.{Typ}
 	result.itSize = Size
 }
 
-"->{}" := !(TArraySpan.{@T} x) .{T[]} -> T[]
-{
-	return x&
-}
+//"->{}" := !(TArraySpan.{@T} x) .{T[]} -> T[]
+//{
+//	return x&
+//}
 
 ToVector := !(@WAWA[] this) -> Vector.{WAWA}^
 {
