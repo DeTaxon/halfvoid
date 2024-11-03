@@ -8,16 +8,15 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 		checkObj := ifCheck->{IsSameTypeChecker^}
 		checkObj2 := ifCheck->{IsSameTypeChecker^}.DownObj
 
-		if checkObj2 is LocalVarProxyOut
+		if checkObj2 is in LocalVarProxy
 		{
 			objIsRef := false
-			oldVar := checkObj2->{LocalVarProxyOut^}.baseVar
+			oldVar := checkObj2->{LocalVarProxy^}.baseVar
 			resObj := BoxExeObj^
 
 			objIsRef = oldVar.isReference
 
-
-			resObj = new PtrExchange(checkObj->{IsSameTypeChecker^}.DownObj,checkObj->{IsSameTypeChecker^}.TargetType.GetPoint())
+			resObj = new PtrExchange(oldVar.proxy&,checkObj.TargetType.GetPoint())
 			if objIsRef
 			{
 				resObj = new PtrToRef(resObj)

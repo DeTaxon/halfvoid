@@ -169,27 +169,25 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
-				clsType := fnc.Params[0].GetType()
+				tkn1 := TokenIndent(StringSpan("this"))
+				parGetCall := TryCheckGetParam(tkn1&)
+
+				if parGetCall == null
+					return null
+
+				clsType := parGetCall.GetType()
 				assert(clsType is TypeClass)
 				cls := clsType->{TypeClass^}.ToClass
 
 				fld := cls.GetField(asItm.Value)
 				if fld != null
 				{
-					tkn1 := TokenIndent(StringSpan("this"))
-					parGetCall := TryCheckGetParam(tkn1&)
-					assert(parGetCall != null)
-
 					return fld.CreateCall(![parGetCall])
 				}
 
 				mt := cls.GetFieldInVTable(asItm.Value)
 				if mt != null
 				{
-					tkn1 := TokenIndent(StringSpan("this"))
-					parGetCall := TryCheckGetParam(tkn1&)
-					assert(parGetCall != null)
-
 					return mt.CreateCall(![parGetCall])
 				}
 			}

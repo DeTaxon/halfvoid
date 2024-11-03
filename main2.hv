@@ -12,6 +12,14 @@ MegaClass := class
 	{
 		printf("NO2\n")
 	}
+	K2 := !() -> void
+	{
+		switch this is
+		{
+			case MegaClass2
+				printf("yep\n",x)
+		}
+	}
 }
 
 MegaClass2 := class extend MegaClass
@@ -25,10 +33,15 @@ MegaClass2 := class extend MegaClass
 
 
 
-Func2 := !(MegaClass^ x) -> void
+Func2 := !(MegaClass x) -> void
 {
-	if x is MegaClass2
-		printf("wow %i\n",x.x)
+	c3 := ref x
+
+	switch c3 is
+	{
+	case MegaClass2
+		printf("wow %i\n",c3.x)
+	}
 }
 
 
@@ -42,6 +55,8 @@ main := !(char^[] args) -> int
 	c2.x = 100
 	
 	Func2(c2)
+
+	c2.K2()
 	return 0
 	//piValue := #ComputePi(10000)
 

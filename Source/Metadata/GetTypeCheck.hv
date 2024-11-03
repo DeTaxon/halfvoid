@@ -31,7 +31,10 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 	checkObj := TryGetExeCall(obj.Down)
 	if checkObj == null
 		return null
-	if not IsVirtualClass(checkObj.GetType().Base)
+
+	isVCls := IsVirtualClass(checkObj.GetType())
+
+	if not ( (isVCls and checkObj.IsMem())  or IsVirtualClass(checkObj.GetType().Base))
 	{
 		CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object on left of is must have type of a pointer to virtual class"))
 		return null
@@ -65,11 +68,10 @@ IsSameTypeChecker := class extend BoxExeObj
 		ObjType = GTypeBool
 		DownObj = dwnObj
 
-		if DownObj.GetType() is TypeClass
-		{
-			DownObj = new UnrefFuncCall(DownObj)
-		}
 		TargetType = expType
+
+		if DownObj.GetType() is in TypePoint
+			assert(DownObj.GetType().Base is in TypeClass)
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -79,18 +81,44 @@ IsSameTypeChecker := class extend BoxExeObj
 	{
 		f := ctx.writeStream
 
-		vType := DownObj.GetType().Base->{TypeClass^}.ToClass
+		objIsRef := true
+		classType := DownObj.GetType()
+
+		if classType is in TypePoint
+		{
+			objIsRef = false
+			classType = classType.Base
+
+			assert(classType is in TypeClass)
+		}
+
+		vType := classType->{TypeClass^}.ToClass
 		vTableType := vType.VTableType
 
-		DownObj.PrintPre(ctx)
+		if objIsRef
+			DownObj.PrintPointPre(ctx)
+		else
+			DownObj.PrintPre(ctx)
+
 		resId = ctx.GetNewId()
 
+		baseType := Type^
+		if objIsRef
+			baseType = DownObj.GetType()
+		else
+			baseType = DownObj.GetType().Base
+
 		f^ << "%TPtr" << resId << " = getelementptr "
-		DownObj.GetType().Base.PrintType(ctx)
+		baseType.PrintType(ctx)
 		f^ << " , "
-		DownObj.GetType().PrintType(ctx)
+		baseType.GetPoint().PrintType(ctx)
 		f^ << " "
-		DownObj.PrintUse(ctx)
+
+		if objIsRef
+			DownObj.PrintPointUse(ctx)
+		else
+			DownObj.PrintUse(ctx)
+
 		f^ <<", i32 0, i32 0\n"
 		f^ << "%TVTable" << resId << " = load "
 		vTableType.ItType.PrintType(ctx)

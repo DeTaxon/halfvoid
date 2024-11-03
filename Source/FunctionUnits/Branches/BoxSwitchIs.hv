@@ -36,8 +36,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 	if callType is in TypeClass
 	{
 		assert(mainCall.IsMem())
-		mainCall = new UnrefFuncCall(mainCall)
-		callType = mainCall.GetType()
+		callType = mainCall.GetType().GetPoint()
 	}
 	if callType is in TypePoint
 	{
@@ -87,9 +86,9 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			if IsVirtualClass(caseType)
 			{
-				tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
+				tpCheck = CreateTypeIsCheck(mainVar.proxyOut&,caseType,isIn,false)
 			}else {
-				tpCheck = innerTryGetMethodCall(StringSpan("is"),mainVar.CreateVarCall(),![],![caseType])
+				tpCheck = innerTryGetMethodCall("is",mainVar.CreateVarCall(),![],![caseType])
 
 				if tpCheck == null
 				{
