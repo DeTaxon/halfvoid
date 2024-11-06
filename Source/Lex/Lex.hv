@@ -45,7 +45,9 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 	switch stp.0
 	{
 	case 2
-		addElement(new TokenString(new String(stp.1[3]&,stp.2 - 6)))
+		strM := StringSpan(stp.1,stp.2)
+		strM = TrimStringSides(strM[3..-3])
+		addElement(new TokenString(strM.GetString()))
 		addNewLines(stp.1,stp.2)
 	case 1
 		addNewLines(stp.1,stp.2)
@@ -116,55 +118,56 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				}
 			}
 			if a == 3 {
+
+				strVal := TrimStringSides(tok[1..-1])
 				j := 0
-				k := 1
-				while tok[k] != '"'
+				k := 0
+				while k < strVal.Size()
 				{
-					if tok[k] == '\\'{
+					if strVal[k] == '\\'{
 						k += 1
-						switch tok[k]
+						switch strVal[k]
 						{
 							case 't' DaBuff[j] = 9
 							case 'n' DaBuff[j] = 10
 							case 'x' 
 								numM := 0
-								switch tok[k+1]
+								switch strVal[k+1]
 								{
 									case in '0'..'9'
-										numM = tok[k+1] - '0'
+										numM = strVal[k+1] - '0'
 									case in 'a'..'f'
-										numM = tok[k+1] - 'a' + 10
+										numM = strVal[k+1] - 'a' + 10
 									case in 'A'..'F'
-										numM = tok[k+1] - 'A' + 10
+										numM = strVal[k+1] - 'A' + 10
 								}
 								numM *= 16
-								switch tok[k+2]
+								switch strVal[k+2]
 								{
 									case in '0'..'9'
-										numM += tok[k+2] - '0'
+										numM += strVal[k+2] - '0'
 									case in 'a'..'f'
-										numM += tok[k+2] - 'a' + 10
+										numM += strVal[k+2] - 'a' + 10
 									case in 'A'..'F'
-										numM += tok[k+2] - 'A' + 10
+										numM += strVal[k+2] - 'A' + 10
 								}
 								DaBuff[j] = numM
 								k += 2
 
-							case void DaBuff[j] = tok[k]
+							case void DaBuff[j] = strVal[k]
 						}
 						j += 1
 						k += 1
 					}else{
-						DaBuff[j] = tok[k]
+						DaBuff[j] = strVal[k]
 						k += 1
 						j += 1
 					}	
 				}
 				DaBuff[j] = 0
 				//val := GetConstString(DaBuff)
-				newStr := new String(DaBuff[0]&)
-				ns = new TokenString(newStr)
-				addNewLines(newStr.Str(),newStr.Size())
+				ns = new TokenString(new String(DaBuff,j))
+				addNewLines(tok.NonNullStr(),tok.Size())
 			}
 			if a == 4 {
 				newVal := int
@@ -387,6 +390,47 @@ PopOutNode := !(Token^ what) -> void
 	what.Up = null
 	what.Left = null
 	what.Right = null
+}
+
+TrimStringSides := !(StringSpan val ) -> StringSpan
+{
+	result = val
+
+	if result.Size() < 1
+		return void
+
+	cutStart := false
+	s := 0
+	while s < result.Size()
+	{
+		c := result[s]
+		if c == '\n'
+		{
+			cutStart = true
+			break
+		}
+		if c != '\t' and c != ' '
+			break
+		s += 1
+	}
+
+	cutEnd := false
+	e := result.Size() - 1
+	while e >= 0
+	{
+		c := result[e]
+		if c == '\n'
+		{
+			cutEnd = true
+			break
+		}
+		if c != '\t' and c != ' '
+			break
+		e -= 1
+	}
+
+	if cutStart and cutEnd
+		result = result[(s + 1) ..-(result.Size()-e - 1)]
 }
 
 gKeywords := ![
