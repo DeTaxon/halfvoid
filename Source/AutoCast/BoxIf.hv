@@ -16,7 +16,14 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 
 			objIsRef = oldVar.isReference
 
-			resObj = new PtrExchange(oldVar.proxy&,checkObj.TargetType.GetPoint())
+			targType := checkObj.TargetType.GetPoint()
+
+			if objIsRef and checkObj2.GetType() is in TypePoint
+			{
+				targType = targType.GetPoint()
+			}
+
+			resObj = new PtrExchange(oldVar.proxy&,targType)
 			if objIsRef
 			{
 				resObj = new PtrToRef(resObj)

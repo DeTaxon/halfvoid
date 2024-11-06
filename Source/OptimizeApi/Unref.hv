@@ -24,3 +24,17 @@ AppendClass UnrefFuncCall
 		return true
 	}
 }
+
+AppendClass RemovedUnref
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "RemovedUnref"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return Down
+	}
+}

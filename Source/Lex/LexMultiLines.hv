@@ -1,0 +1,147 @@
+
+MultiLinesType := enum
+{
+	"Other", // 0
+	"Comment", // 1
+	"MultilineString" // 2
+}
+
+
+GetLinesTokens := !(char^ memPtr,int Siz) -> List.{Tuple.{int,char^,int}}
+{
+	if memPtr == null
+		return void
+
+	i := 0
+
+	prevNon := 0
+	prevNonStart := 0
+	state := 0
+
+	commentCount := 0
+
+	extraStart := 0
+
+	addElement := () ==> [c = result&]
+	{
+		if prevNonStart >= prevNon
+			return void
+		c.Emplace(0,memPtr[prevNonStart]&, prevNon - prevNonStart + 1)
+		prevNonStart = prevNon
+	}
+
+	while i < Siz
+	{
+		switch state
+		{
+		case 0
+			switch memPtr[i]
+			{
+			case '"'
+				state = 101
+				extraStart = i
+			case '/'
+				state = 201
+				extraStart = i
+			case void
+				prevNon = i
+				//nothing
+			}
+
+		case 201
+			switch memPtr[i]
+			{
+			case '*'
+				commentCount += 1
+				state = 202
+			case '/'
+				state = 211
+			case void
+				state = 0
+				prevNon = i
+			}
+		case 211
+			prevNon = i
+			if memPtr[i] == '\n'
+				state = 0
+		case 202
+			switch memPtr[i]
+			{
+			case '/'
+				state = 203
+			case '*'
+				state = 204
+			case void
+			}
+
+		case 203
+			if memPtr[i] == '*'
+				commentCount += 1
+			state = 202
+
+		case 204
+			if memPtr[i] == '/'
+			{
+				commentCount -= 1
+				if commentCount == 0
+				{
+					state = 0
+					addElement()
+					result.Emplace(1,memPtr[extraStart]&,i - extraStart + 1)
+					prevNonStart = i + 1
+
+				}else{
+					state = 202
+				}
+			}else{
+				state = 202
+			}
+
+		case 101
+			if memPtr[i] == '"'
+			{
+				state = 102
+			}else{
+				state = 111
+				prevNon = i
+			}
+		case 111
+			prevNon = i
+			if memPtr[i] == '"'
+				state = 0
+		case 102
+			if memPtr[i] == '"'
+			{
+				state = 103
+			}else{
+				state = 0
+				prevNon = i
+			}
+		case 103
+			if memPtr[i] == '"' //start of end
+			{
+				state = 104
+			}
+		case 104
+			if memPtr[i] == '"'
+			{
+				state = 105
+			}else{
+				state = 103
+			}
+		case 105
+			if memPtr[i] == '"'
+			{
+				addElement()
+				result.Emplace(2,memPtr[extraStart]&,i - extraStart + 1)
+				prevNonStart = i + 1
+				
+				state = 0
+			}else{
+				state = 103
+			}
+		}
+		i += 1
+	}
+	addElement()
+}

@@ -59,9 +59,9 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			return null
 		}
 
-		if namedArgs.Contain(StringSpan("ExchangeOut"))
+		if namedArgs.Contain(StringSpan("ExchangeOutput"))
 		{
-			c2 := PFunctionParser(namedArgs[StringSpan("ExchangeOut")])
+			c2 := PFunctionParser(namedArgs[StringSpan("ExchangeOutput")])
 			if not c2.IsFound()
 			{
 				CurrentWork?.SetErrorMessage(itm.MakeError("ExchangeOut object is not a function"))

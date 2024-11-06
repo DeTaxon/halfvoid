@@ -1,69 +1,11 @@
 
-MegaClass := class
-{
-	SelfShift := virtual !() -> void
-	{
-		if this& is MegaClass
-		{
-			this&->SetType(MegaClass2)
-		}
-	}
-	Print := virtual !() -> void
-	{
-		printf("NO2\n")
-	}
-	K2 := !() -> void
-	{
-		switch this is
-		{
-			case MegaClass2
-				printf("yep\n",x)
-		}
-	}
-}
-
-MegaClass2 := class extend MegaClass
-{
-	x := int
-	Print := virtual !() -> void
-	{
-		printf("YES\n")
-	}
-}
-
-
-
-Func2 := !(MegaClass x) -> void
-{
-	c3 := ref x
-
-	switch c3 is
-	{
-	case MegaClass2
-		printf("wow %i\n",c3.x)
-	}
-}
-
-
 main := !(char^[] args) -> int
 {
-	c := new MegaClass
-	c.Print()
+	printf("HA %p\n",-016)
 
-	c2 := new MegaClass2
-	c2.Print()
-	c2.x = 100
-	
-	Func2(c2)
+	//piValue := #ComputePi(100)
 
-	c2.K2()
-	return 0
-	//piValue := #ComputePi(10000)
-
-	//piString := StringSpan(piValue.GetPointer(),piValue.Size())
-
-	//printf("Pi = %s\n",piString)
-	
+	//printf("Pi = %s\n",piValue.GetPointer())
 }
 
 
@@ -72,8 +14,18 @@ main := !(char^[] args) -> int
 	Name = "ComputePi",
 	Call = !(int numCount) -> Blob^
 	{
-		return CalculatePiBlob(numCount)
-	}
+		pi := CalculatePiBlob(numCount)
+
+		ret := MakeBlob(numCount + 1)
+		memset(ret.GetPointer(),0,ret.Size())
+		memcpy(ret.GetPointer(),pi.GetPointer(),pi.Size())
+
+		return ret
+	}//,
+	//ExchangeOutput = !(Blob^ val) -> Str
+	//{
+	//	return new StringOnCStr(val.GetPointer()->{char^})
+	//}
 )
 
 

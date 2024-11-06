@@ -24,10 +24,20 @@ TryGetUnrefObj := !(Token^ itm) -> BoxExeObj^
 	{
 		pOut := dwn->{LocalVarProxyOut^}
 		if pOut.Down? is in PtrToRef
-			return pOut.Down->{PtrToRef^}.Down
+		{
+			resObj := pOut.Down->{PtrToRef^}.Down
+			if resObj is RemovedUnref
+				return resObj
+			return new RemovedUnref(resObj)
+		}
 	}
 	if dwn is in PtrToRef
-		return dwn->{PtrToRef^}.Down
+	{
+		resObj := dwn->{PtrToRef^}.Down
+		if resObj is RemovedUnref
+			return resObj
+		return new RemovedUnref(resObj)
+	}
 
 	return new UnrefFuncCall(dwn)
 }
@@ -97,4 +107,34 @@ GetElementRetrive := !(BoxExeObj^ hm, BoxExeObj^ ind) -> BoxExeObj^
 	objs.Push(hm)
 	objs.Push(ind)
 	return CreateFuncCall(StringSpan("[]"),objs)
+}
+
+RemovedUnref := class extend BoxExeObj
+{
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj) -> void
+	{
+		Down = obj
+		ObjType = Down.GetType()
+	}
+	IsMem := virtual !() -> bool
+	{
+		return Down.IsMem()
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointPre(ctx)
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointUse(ctx)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintUse(ctx)
+	}
 }

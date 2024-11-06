@@ -8,3 +8,10 @@ AppendClass UnrefFuncCall
 		result.CreatedId = newVar
 	}
 }
+AppendClass RemovedUnref
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = Down.WriteMC(ctx)
+	}
+}
