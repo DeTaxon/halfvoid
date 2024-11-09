@@ -10,16 +10,16 @@ StringSpan := class extend StringView
 
 	this := !(char^ st, int si,Range ran) -> void{
 		startInd := 0
-		if ran.start < 0 {
-			startInd = si + ran.start
+		if ran.Start < 0 {
+			startInd = si + ran.Start
 		}else{
-			startInd = ran.start
+			startInd = ran.Start
 		}
 		endInd := 0
-		if ran.end <= 0 {
-			endInd = si + ran.end - 1
+		if ran.End <= 0 {
+			endInd = si + ran.End - 1
 		}else{
-			endInd = startInd + ran.end - 1
+			endInd = startInd + ran.End - 1
 		}
 		ptr = st[startInd]&
 		itSize = endInd - startInd + 1

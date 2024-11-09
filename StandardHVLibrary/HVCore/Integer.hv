@@ -21,27 +21,27 @@ RangeIterator := class //WARNING end value not included
 
 Range := class
 {
-	start := int
-	end := int
+	Start := int
+	End := int
 
 	this := !(int s, int e) -> Range
 	{
-		start = s
-		end = e
+		Start = s
+		End = e
 	}
 	"for" := !() -> RangeIterator
 	{
-		result.value = start
-		result.end = end + 1
+		result.value = Start
+		result.end = End + 1
 	}
 	"in" := !(int x) -> bool
 	{
-		result = x >= start and x <= end
+		result = x >= Start and x <= End
 	}
 	"=" := default
 }
 ".." := !(int s, int e) -> Range
 {
-	result.start = s
-	result.end = e
+	result.Start = s
+	result.End = e
 }

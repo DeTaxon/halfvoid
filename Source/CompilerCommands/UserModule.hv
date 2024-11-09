@@ -22,7 +22,7 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 	par1 := new TokenIndent("internalHVModuleBase")
 	c := InheritanceType
-	c = "extend"
+	c = "extends"
 	parents.Emplace(par1,c)
 
 	resultClass := new BoxClassBody(false,parents,bdy)

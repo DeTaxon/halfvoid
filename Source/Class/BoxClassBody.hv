@@ -33,14 +33,15 @@ PClassParser := class
 			iter = constValue.Right
 		}
 
-		while iter.GetValue() in !["extend","#Reserve"]
+		while iter.GetValue() in !["extend","extends","#Reserve"]
 		{
 			iter = iter.Right
 
 			inh := InheritanceType
 			switch iter.Left.GetValue()
 			{
-				case "extend" inh = "extend"
+				case "extend" inh = "extends"
+				case "extends" inh = "extends"
 				case "#Reserve" inh = "reserve"
 			}
 

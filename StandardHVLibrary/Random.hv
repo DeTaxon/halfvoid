@@ -13,8 +13,8 @@ RandInt := !(Range rRange) -> int
 
 	res := rand()
 
-	dif := rRange.end - rRange.start
+	dif := rRange.End - rRange.Start
 	
 	res = res mod dif
-	return res + rRange.start
+	return res + rRange.Start
 }

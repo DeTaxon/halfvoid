@@ -399,7 +399,6 @@ GTypeU32 := Type^
 GTypeU64 := Type^
 GTypeS64 := Type^
 GTypeSizeT := Type^
-GTypeRange := Type^
 GTypeVoid := Type^
 GTypeVoidP := Type^
 GTypeString := Type^
@@ -521,7 +520,6 @@ CreateStandardTypes := !() -> void
 	GTypeU64 =    TypeTable[3]
 	GTypeS64 =    TypeTable[7]
 	GTypeSizeT =    TypeTable[3]
-	GTypeRange =  TypeTable[13]
 	GTypeVoid =   TypeTable[11]
 	GTypeString = TypeTable[12]
 	GTypeVoidP =  GTypeVoid.GetPoint()
@@ -554,31 +552,28 @@ CreateStandardTypes := !() -> void
 
 	DefsTable[16] = new TypeDef("opaque",TypeTable[15])
 
-	DefsTable[17] = new TypeDef("range",TypeTable[13])
-	DefsTable[18] = new TypeDef("rangef",TypeTable[14])
+	DefsTable[17] = new TypeDef("vec4f",TypeTable[17])
+	DefsTable[18] = new TypeDef("quantf",TypeTable[18])
 
-	DefsTable[19] = new TypeDef("vec4f",TypeTable[17])
-	DefsTable[20] = new TypeDef("quantf",TypeTable[18])
+	DefsTable[19] = new TypeDef("size_t",TypeTable[3])
+	DefsTable[20] = new TypeDef("half",TypeTable[21])
 
-	DefsTable[21] = new TypeDef("size_t",TypeTable[3])
-	DefsTable[22] = new TypeDef("half",TypeTable[21])
-
-	DefsTable[23] = new TypeDef("vec3f",GTypeVec3f)
-	DefsTable[24] = new TypeDef("vec2f",GTypeVec2f)
+	DefsTable[21] = new TypeDef("vec3f",GTypeVec3f)
+	DefsTable[22] = new TypeDef("vec2f",GTypeVec2f)
 
 	if targetLinux
 	{
-		DefsTable[25] = new TypeDef("c_long",TypeTable[7]) //s64
+		DefsTable[23] = new TypeDef("c_long",TypeTable[7]) //s64
 	}else if targetWindows
 	{
-		DefsTable[25] = new TypeDef("c_long",TypeTable[6]) //s32
+		DefsTable[23] = new TypeDef("c_long",TypeTable[6]) //s32
 	}else {
 		assert(false)
 	}
 
-	DefsTable[26] = new TypeDef("vec4i",TypeTable[23])
-	DefsTable[27] = new TypeDef("vec3i",TypeTable[24])
-	DefsTable[28] = new TypeDef("vec2i",TypeTable[25])
+	DefsTable[24] = new TypeDef("vec4i",TypeTable[23])
+	DefsTable[25] = new TypeDef("vec3i",TypeTable[24])
+	DefsTable[26] = new TypeDef("vec2i",TypeTable[25])
 
 	GTypeQuantf.Base = GTypeFloat
 	GTypeVec2f.Base = GTypeFloat

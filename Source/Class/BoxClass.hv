@@ -1,6 +1,6 @@
 InheritanceType := enum
 {
-	"extend",
+	"extends",
 	"reserve",
 	"copy"
 }

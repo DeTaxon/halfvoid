@@ -240,7 +240,7 @@ RuleEnum := !(void^ itr) -> int
 	It = It.Right
 	if It == null return 0
 
-	if It.GetValue() == "extend"
+	if It.GetValue() in !["extend","extends"]
 	{
 		It = It.Right
 		if It == null return 0
@@ -281,7 +281,7 @@ RuleClass := !(void^ itr) -> int
 	}
 
 
-	while It.GetValue() in !["extend","#Reserve"]
+	while It.GetValue() in !["extends","extend","#Reserve"]
 	{
 		It = It.Right
 		if It == null return 0

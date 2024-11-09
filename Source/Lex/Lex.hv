@@ -447,6 +447,7 @@ gKeywords := ![
 	"class",
 	"extern",
 	"extend",
+	"extends",
 	"at",
 	"defer",
 	"type",
