@@ -1,8 +1,5 @@
-AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars, bool inSwitchIs = false) -> void
+AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{BoxExeObj^} onFalseVars) -> void
 {
-	if not UseExtra and not inSwitchIs
-		return void
-
 	if ifCheck is IsSameTypeChecker
 	{
 		checkObj := ifCheck->{IsSameTypeChecker^}
@@ -34,8 +31,6 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 			return void
 		}
 	}
-	if not UseExtra
-		return void
 	
 	if ifCheck is BoxFuncCall and ifCheck->{BoxFuncCall^}.callObj is BuiltInBoolNot
 	{

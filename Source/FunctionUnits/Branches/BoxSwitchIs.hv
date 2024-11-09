@@ -135,7 +135,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			{	
 				onTrue := List.{BoxExeObj^}
 				onFalse := List.{BoxExeObj^}
-				AutoCastCheckIfState(tpCheck,onTrue,onFalse,true)
+				AutoCastCheckIfState(tpCheck,onTrue,onFalse)
 				assert(onTrue.Size() < 2)
 
 				if onTrue.Size() == 1

@@ -49,16 +49,12 @@ ifeq ($(tui),yes)
 	gdb_tui := gdb --tui --args 
 endif
 
-ifeq ($(extra),yes)
-	AddExtra := -extra
-endif
-
 ifeq ($(exp),yes)
 	Exper := -C0 ExperimentalLibrary
 endif
 
 
-flags := $(NoScary) $(trc) $(Exper)  $(AddExtra) $(opt_mode)
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode)
 
 MainTarget: test
 
