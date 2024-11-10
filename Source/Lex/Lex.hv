@@ -478,7 +478,8 @@ gKeywords := ![
 	"inline",
 	"enum",
 	"#Reserve",
-	"#Copy"
+	"#Copy",
+	"#group"
 ]
 
 IsKeyword := !(StringSpan W) -> bool

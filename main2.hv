@@ -1,22 +1,25 @@
 
 Ha := class
 {
-	p := poison !() -> void
+	Try := !() -> void
 	{
-		printf("test %s\n",#ThisClass()->TypeName)
+		printf("hello\n")
+	}
+	Sub := #group
+	{
+		Try := !() -> void
+		{
+			printf("halo\n")
+		}
+
 	}
 }
 
-Ha2 := class extends Ha
-{
-
-}
-
-
 main := !(char^[] args) -> int
 {
-	c := Ha2
-	c.p()
+	c := Ha
+	c.Try()
+	c.Sub.Try()
 	//piValue := #ComputePi(100)
 
 	//printf("Pi = %s\n",piValue.GetPointer())

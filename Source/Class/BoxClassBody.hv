@@ -635,7 +635,7 @@ BoxClassBody := class extend BoxClassPoison
 					}
 				}else
 				{
-					if itm.Down?.GetValue() == "fake"
+					if itm.Down?.GetValue() in !["fake","#group"]
 					{
 						CheckFakeFields(iter)
 					}else{
@@ -687,7 +687,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		if not (itm.Down is TokenIndent)
 		{
-			CurrentWork?.SetErrorMessage(itm.MakeError("fake field must be named by simple word"))
+			CurrentWork?.SetErrorMessage(itm.MakeError("Group field must be named by simple word"))
 			return void
 		}
 
@@ -706,7 +706,7 @@ BoxClassBody := class extend BoxClassPoison
 		{
 			if itr.Down == null or itr.Down.Right == null or itr.Down.Right.GetValue() != ":="
 			{
-				CurrentWork?.SetErrorMessage(itr.MakeError("Fake field can only contain functions"))
+				CurrentWork?.SetErrorMessage(itr.MakeError("Group field can only contain functions"))
 				return void
 			}
 			name := StringSpan
