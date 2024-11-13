@@ -80,6 +80,12 @@ FunctionHeaderInfo := class
 					Types.Emplace(bag[0]->{TokenIndent^}.Value.AsStringSpan(),null->{Type^},false,null->{Token^})
 				}
 			}else if bag.Size() >= 2 {
+				isRef := false
+				if bag.Size() >= 3 and bag[0].GetValue() == "ref"
+				{
+					isRef = true
+					bag.DeleteAt(0)
+				}
 				if bag[1].GetValue() == "..."
 				{
 					if not (bag[0] is TokenIndent)
@@ -90,7 +96,6 @@ FunctionHeaderInfo := class
 					IsVariadic = true
 					VariadicName = bag[0]->{TokenIndent^}.Value
 				}else{
-					isRef := false
 					indItm := bag[1]
 					if indItm.GetValue() == "&"
 					{

@@ -1,0 +1,6 @@
+
+FSChangeEvent := enum
+{
+	"Changed",
+	"Created"
+}

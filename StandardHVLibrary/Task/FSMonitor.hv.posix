@@ -16,12 +16,6 @@ wd_struct := class
 	name := char[1]
 }
 
-FSChangeEvent := enum
-{
-	"Changed",
-	"Created"
-}
-
 
 //TODO
 //Check for repeats

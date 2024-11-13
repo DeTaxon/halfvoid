@@ -1,40 +1,14 @@
 
-className := class
+Test := !(ref int x) -> void
 {
-    SomeFunction := virtual !() -> void
-    {
-        printf("hello\n")
-    }
-}
-className2 := class extend className
-{
-    SomeFunction := virtual !() -> void
-    {
-        printf("hi\n")
-        this->SetType(className3)
-    }
-}
-
-className3 := class extend className2
-{
-    SomeFunction := virtual !() -> void
-    {
-        printf("q\n")
-    }
+	x = 15
 }
 
 main := !(char^[] args) -> int
 {
-	c := className
-	printf("start %p\n",c&)
-	c.SomeFunction()
-	c->SetType(className2)
-	c.SomeFunction()
-	c.SomeFunction()
-    if c is className3
-        printf("check %p\n",c&)
-    if c->VTable == className3->VTable
-        printf("check\n")
+	x := int
+	Test(x)
+	printf("test %i\n",x)
 	//piValue := #ComputePi(100)
 
 	//printf("Pi = %s\n",piValue.GetPointer())

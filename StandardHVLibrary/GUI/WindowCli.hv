@@ -36,18 +36,26 @@ WindowCli := class extend TGCObject
 		{
 			draw()
 
-			pollList := pollfd
-			pollList.fd = STDIN_FILENO 
-			pollList.events = POLLIN
 
-
-			@work poll(pollList&,1,500)
-
-			if pollList.revents != 0
+			if #OS() == "Linux"
 			{
-				c := wgetch(ctx.Window) //TODO more normal way to wait
-				KeyPressed(c)
+				pollList := pollfd
+				pollList.fd = STDIN_FILENO 
+				pollList.events = POLLIN
+
+
+				@work poll(pollList&,1,500)
+				if pollList.revents != 0
+				{
+					c := wgetch(ctx.Window) //TODO more normal way to wait
+					KeyPressed(c)
+				}
 			}
+			if #OS() == "Windows"
+			{
+				assert(false)
+			}
+
 		}
 		endwin()
 	}
