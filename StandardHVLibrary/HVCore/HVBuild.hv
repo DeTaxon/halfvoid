@@ -20,6 +20,7 @@ HV_Context := class
 	ForEachFunction := virtual !(!(HV_Object^)&-> void cb ) -> void {}
 	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,int,HV_Object^)&-> void cb) -> void {}
 
+	ForEachClass := virtual !(!(HV_Class^)&->void cb) -> void {}
 }
 
 HV_Context_Empty := HV_Context
@@ -31,6 +32,9 @@ HV_Class := class
 	AddMethodStr := virtual !(Str funcName,Str fncText) -> void {}
 	AddCallback_GetFieldFailed := virtual !(!(Str)&->HV_Object^ cb ) -> void{}
 	GetType := virtual !() -> HV_Object^ {}
+	GetName := virtual !() -> Str {}
+
+	HaveVirtualTable := virtual !() -> bool {}
 }
 
 HV_Object := class

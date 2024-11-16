@@ -1,4 +1,4 @@
-ResistFunc := class extend BoxFunc
+ResistFunc := class extend BoxFuncCommon
 {
 	base := BoxFunc^
 	resId := int

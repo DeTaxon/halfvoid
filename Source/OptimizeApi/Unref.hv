@@ -1,7 +1,7 @@
 AppendClass UnrefFuncCall
 {
 	IsEditSupported := virtual true
-	ElementName := virtual "Unref"
+	ElementName := virtual "RefToPtr"
 
 	SubElementsCount := virtual !() -> int { return 1 }
 	GetSubElement := virtual !(int index) -> HV_Object^
@@ -28,7 +28,7 @@ AppendClass UnrefFuncCall
 AppendClass RemovedUnref
 {
 	IsEditSupported := virtual true
-	ElementName := virtual "RemovedUnref"
+	ElementName := virtual "RemovedRefToPtr"
 
 	SubElementsCount := virtual !() -> int { return 1 }
 	GetSubElement := virtual !(int index) -> HV_Object^

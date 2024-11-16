@@ -1,0 +1,94 @@
+
+RemoveStringSpanDestructor := !() -> void
+	#Mark("HVOptimizationWave")
+{
+
+	classes := AVLSet.{BoxClass^}
+	inhrClasses := AVLSet.{BoxClass^}
+
+	HV.ForEachClass(x ==> 
+	{
+		if not x.HaveVirtualTable()
+			return void
+
+		cls := x->{HVClassImpl^}.baseClass
+
+		classes.Insert(cls)
+		inhrClasses.Insert(cls.Parents[^])
+	})
+
+	finalClasses := AVLSet.{BoxClass^}
+
+	for it : classes
+	{
+		if it in inhrClasses
+			continue
+		finalClasses.Insert(it)
+	}
+
+	overWrittenFunctions := AVLSet.{BoxFunc^}
+	allVFuncs := AVLSet.{BoxFunc^}
+
+	for cls : finalClasses
+	{
+		thisFuncs := AVLSet.{Str}
+
+		checkClasses := HybridStack.{BoxClass^,13}
+		checkClasses.PushFront(cls)
+
+		while checkClasses.Size() != 0
+	 	{
+			tc := checkClasses.Pop()
+
+			for fncs, fncName : tc.PreVTableFuncs
+			{
+				if thisFuncs.Contain(fncName)
+				{
+					overWrittenFunctions.Insert(fncs[^])
+				}else{
+					thisFuncs.Insert(fncName)
+				}
+				allVFuncs.Insert(fncs[^])
+			}
+
+			checkClasses.PushFront(tc.Parents[^]) //uncomment for softer checks
+		}
+	}
+
+	
+	lastFunctions := AVLSet.{BoxFunc^}
+
+	for obj : allVFuncs
+	{
+		if overWrittenFunctions.Contain(obj)
+			continue
+		lastFunctions.Insert(obj)
+	}
+
+	//for lst : finalClasses
+	//{
+	//	lastFunctions.Insert(lst.PreVTableFuncs[^][^])
+	//}
+
+	HV.ForEachFunction( fnc ==> {
+		HV.ForEachFuncElement(fnc,(HV_Object^ upElement,int thisIndex,HV_Object^ thisElement) ==> {
+
+			if thisElement is not in BoxFuncCall
+				return void
+
+			asVCall := thisElement->{BoxFuncCall^}
+
+			if asVCall.callObj == null
+				return void
+			if asVCall.callObj is not in BuildInVirtualCall
+				return void
+
+			wFunc := asVCall.callObj->{BuildInVirtualCall^}.wrappedFunc
+
+			if wFunc == null or wFunc not in lastFunctions
+				return void
+
+			asVCall.callObj = wFunc
+		})
+	})
+}

@@ -4,5 +4,9 @@ OptimizeCode := !() -> void
 {
 	InitRunContext()
 
-	RemoveStringSpanDestructor()
+
+	for it : #MarkedFunctions("HVOptimizationWave")
+	{
+		it()
+	}
 }

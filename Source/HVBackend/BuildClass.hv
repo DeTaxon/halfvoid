@@ -109,4 +109,13 @@ HVClassImpl := class extend HV_Class
 			return void
 		baseClass.DefaultSpace.MethodTemplates[funcName].Push(fnc)
 	}
+	HaveVirtualTable := virtual !() -> bool
+	{
+		return baseClass.VTable.Size() != 0
+	}
+	GetName := virtual !() -> Str
+	{
+		return baseClass?.Name
+		return "Invalid class"
+	}
 }
