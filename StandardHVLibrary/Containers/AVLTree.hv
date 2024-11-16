@@ -261,6 +261,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		RemoveNode(toRem)
 	}
 	RebalanceDown := !(CommonTreeNode.{DATA}^ toBal2,bool leftPull2) -> void
+		#TemplateResist()
 	{
 		leftPull := leftPull2
 		toBal := toBal2

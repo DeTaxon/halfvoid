@@ -55,6 +55,28 @@ RemoveStringSpanDestructor := !() -> void
 		}
 	}
 
+	resistFuncs := AVLSet.{HV_Object^}
+
+	for cls : classes
+	{
+		if cls is not in BoxClassBody
+			continue
+
+		c2 := cls->{BoxClassBody^}.TemplateParent
+
+
+		if c2 == null
+			continue
+
+		if c2 is not in BoxClassTemplateBody
+			continue
+
+		for rst : c2->{BoxClassTemplateBody^}.ResistFunctions
+		{
+			if rst is in BoxFunc
+				resistFuncs.Insert(rst)
+		}
+	}
 	
 	lastFunctions := AVLSet.{BoxFunc^}
 
@@ -65,12 +87,10 @@ RemoveStringSpanDestructor := !() -> void
 		lastFunctions.Insert(obj)
 	}
 
-	//for lst : finalClasses
-	//{
-	//	lastFunctions.Insert(lst.PreVTableFuncs[^][^])
-	//}
-
 	HV.ForEachFunction( fnc ==> {
+		if fnc in resistFuncs
+			return void
+		
 		HV.ForEachFuncElement(fnc,(HV_Object^ upElement,int thisIndex,HV_Object^ thisElement) ==> {
 
 			if thisElement is not in BoxFuncCall
