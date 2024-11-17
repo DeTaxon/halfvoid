@@ -1,14 +1,12 @@
 
-Test := !(ref int x) -> void
-{
-	x = 15
-}
-
 main := !(char^[] args) -> int
 {
-	x := int
-	Test(x)
-	printf("test %i\n",x)
+	c := int
+	c = 5
+	for it : c[^]
+	{
+		printf("here\n")
+	}
 	//piValue := #ComputePi(100)
 
 	//printf("Pi = %s\n",piValue.GetPointer())

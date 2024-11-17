@@ -11,7 +11,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 	{
 		if Start == null 
 		{
-			Start = this.createNode()
+			this.createNode(Start)
 			toRet^ = Start
 			Start.data = dat
 			//Start.data = dat
@@ -42,19 +42,17 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		
 		cmpRes2 := prev.data <=> dat
 		if cmpRes2 < 0{
-			prev.Right = this.createNode()
+			this.createNode(prev.Right)
 			prev.Right.Up = prev
 			iter = prev.Right
 		}else{
-			prev.Left = this.createNode()
+			this.createNode(prev.Left)
 			prev.Left.Up = prev
 			iter = prev.Left
 		}
 		iter.data = dat
 		//iter.data = dat
 		
-		//this&->{AVLTree.{void^}^}.AVLRepair(iter->{CommonTreeNode.{void^}^}) //not worth it, 
-		//TODO make a good way to unite functions
 		AVLRepair(iter)
 
 		toRet^ = iter
@@ -148,6 +146,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 	}
 	
 	RemoveNode := !(CommonTreeNode.{DATA}^ toRem) -> void
+		#TemplateResist()
 	{
 		if toRem.Left == null and toRem.Right == null
 		{

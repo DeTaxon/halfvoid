@@ -43,7 +43,7 @@ CommonTree := class .{@DATA}
 		}
 		return itr
 	}
-	createNode := virtual !() -> CommonTreeNode.{DATA}^
+	createNode := virtual !(CommonTreeNode.{DATA}^& res) -> void
 	{
 		newNode := CommonTreeNode.{DATA}^
 		if CreatedNodes != null
@@ -54,7 +54,7 @@ CommonTree := class .{@DATA}
 		}else{
 			newNode = new CommonTreeNode.{DATA}
 		}
-		return newNode
+		res = newNode
 	}
 	RotateLeft := !(CommonTreeNode.{DATA}^ toRotate) -> void
 	{
