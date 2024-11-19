@@ -181,6 +181,24 @@ ToString := !(double this) -> Str
 }
 "<=>" := !(Str a, Str b) -> int
 {
+	if a->AsString == null or b->AsString == null
+	{
+		if a->AsString == null and b->AsString == null
+			return 0
+		if a->AsString == null
+		{
+			if b.itSize == 0
+				return 0
+			return -1
+		}
+		//if b->AsString == 0
+		//{
+			if a.itSize == 0
+				return 0
+			return 1
+		//}
+	}
+
 	aSize := a.itSize
 	bSize := b.itSize
 	minSize := min(aSize,bSize)

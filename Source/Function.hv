@@ -168,6 +168,8 @@ PFunctionParser := class
 	{
 		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken,runToken)->{BoxFuncTemplate^}
 
+		asTempl->{BoxFuncTemplateBody^}.SetName("anon")
+
 		if runToken != null or compilerCommands.Size() != 0
 		{
 			CheckTemplateBodyCommands(asTempl->{BoxFuncTemplateBody^},compilerCommands)
