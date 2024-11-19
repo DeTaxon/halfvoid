@@ -37,7 +37,7 @@ AppendClass BoxFuncBody
 				this.LocalVars.Push(locVar)
 
 				objs := CheckExeDownList
-				objs.Push(locVar.proxy&)
+				objs.Push(locVar.CreateVarBaseCall())
 				objs.Push(getVar)
 
 				if it.GetBaseType() == GTypeStr
@@ -48,11 +48,11 @@ AppendClass BoxFuncBody
 				setVar := CreateFuncCall("=",objs)
 				assert(setVar != null)
 				it.extraWork.Push(setVar)
-				it.SetCall(locVar.proxy&)
+				it.SetCall(locVar.CreateVarBaseCall())
 
 				ParamsLocalVars.Push(locVar)
 			}else{
-				it.createVar.Push(new FuncLocalDebugInfoValue(it.proxy&,it))
+				it.createVar.Push(new FuncLocalDebugInfoValue(it.CreateVarBaseCall(),it))
 				it.SetCall(getVar)
 			}
 		}

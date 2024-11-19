@@ -423,7 +423,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			if ResultVar != null
 			{
 				tmpList := CheckExeDownList
-				cl := ResultVar.proxy&
+				cl := ResultVar.CreateVarBaseCall()
 
 				cl.PrintPre(ctx)
 				f^ << "ret "

@@ -16,6 +16,9 @@ LocalVar := class extend BoxExeObj
 		isMemory = isMem
 		isReference = isRef
 
+		proxy = new LocalVarProxy
+		proxyOut = new LocalVarProxyOut
+
 		proxyOut.ObjType = varType
 		proxyOut.baseVar = this&
 
@@ -27,9 +30,9 @@ LocalVar := class extend BoxExeObj
 		ObjType = proxy.ObjType
 
 		if isRef {
-			proxyOut.Down = new PtrToRef(proxy&)
+			proxyOut.Down = new PtrToRef(proxy)
 		}else{
-			proxyOut.Down = proxy&
+			proxyOut.Down = proxy
 		}
 	}
 
@@ -54,9 +57,15 @@ LocalVar := class extend BoxExeObj
 			return proxy.ObjType.Base
 		return proxy.ObjType
 	}
+	CreateVarBaseCall := !() -> BoxExeObj^
+	{
+		assert(proxy != null)
+		return proxy
+	}
 	CreateVarCall := !() -> BoxExeObj^
 	{
-		return proxyOut&
+		assert(proxyOut != null)
+		return proxyOut
 	}
 
 	SetCall := !(BoxExeObj^ toCall) -> void
@@ -64,8 +73,8 @@ LocalVar := class extend BoxExeObj
 		proxy.Down = toCall
 	}
 
-	proxy := LocalVarProxy
-	proxyOut := LocalVarProxyOut
+	proxy := LocalVarProxy^
+	proxyOut := LocalVarProxyOut^
 }
 
 

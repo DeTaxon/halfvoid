@@ -27,7 +27,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		toSetVar = new UnrefFuncCall(mainCall)
 	
 	mainVar := new LocalVar(StringSpan(""),mainCall.GetType(),true,mainCall.IsMem())
-	setCall := CreateFuncCall(StringSpan("="),![mainVar.proxy&,toSetVar])
+	setCall := CreateFuncCall(StringSpan("="),![mainVar.CreateVarBaseCall(),toSetVar])
 	
 	if setCall == null
 		return null

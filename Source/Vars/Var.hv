@@ -197,7 +197,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				}else{
 					locVar := new LocalVar(name,exeObj.GetType(),true,refVar)
 					objs2 := CheckExeDownList
-					objs2.Push(locVar.proxy&)
+					objs2.Push(locVar.CreateVarBaseCall())
 					if refVar
 					{
 						objs2.Push(new UnrefFuncCall(exeObj))

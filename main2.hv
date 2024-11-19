@@ -1,15 +1,44 @@
 
+someClass1 := class
+{
+	Test := virtual !() -> void
+	{
+
+	}
+}
+
+someClassA := class extend someClass1
+{
+	x := int
+}
+someClassB := class extend someClass1
+{
+	y := double
+
+	Test := virtual !() -> void
+	{
+		
+	}
+}
+
 main := !(char^[] args) -> int
 {
-	c := int
-	c = 5
-	for it : c[^]
-	{
-		printf("here\n")
-	}
-	//piValue := #ComputePi(100)
 
-	//printf("Pi = %s\n",piValue.GetPointer())
+	a := new someClassA
+
+	a.x = 16
+
+	printf("Test %i\n",a.x)
+
+	if a.x == 15
+	{
+		a = new someClassB
+	} else {
+		a.x = 16 //somehow works!!!!
+	}
+
+	//a.x not longer works
+
 }
 
 

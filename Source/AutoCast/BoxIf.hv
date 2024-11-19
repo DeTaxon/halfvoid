@@ -21,9 +21,9 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 			}
 
 			makeRef := false
-			preChange := oldVar.proxy&->{BoxExeObj^}
+			preChange := oldVar.CreateVarBaseCall()->{BoxExeObj^}
 
-			if oldVar.proxy.GetType() is in TypeClass
+			if oldVar.CreateVarBaseCall().GetType() is in TypeClass
 			{
 				makeRef = true
 				oldVar.NotifyMemUse()

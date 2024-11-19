@@ -40,7 +40,7 @@ BoxFor := class extend BoxExeObj
 					assert(CreatedIndexInc != null)
 				}
 				it.IndVar = new LocalVar(it.IndexName,GTypeInt,true,false)
-				it.IndVar.proxy.Down = CreatedIndex.proxy&
+				it.IndVar.proxy.Down = CreatedIndex.CreateVarBaseCall()
 			}
 		}
 

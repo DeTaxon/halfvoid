@@ -147,7 +147,7 @@ ForSubObjects := class
 		objs2 := CheckExeDownList
 		objs2.Push(mainCall)
 		if IndVar != null
-			objs2.Push(IndVar.proxy&)
+			objs2.Push(IndVar.CreateVarBaseCall())
 
 		iCall := objCall->{BoxFunc^}.CreateCall(objs2)
 
@@ -167,10 +167,10 @@ ForSubObjects := class
 		objs8 := CheckExeDownList
 		if iCall.IsMem()
 		{
-			objs8.Push(ValueVar.proxy&)
+			objs8.Push(ValueVar.CreateVarBaseCall())
 			objs8.Push(new UnrefFuncCall(iCall))
 		}else{
-			objs8.Push(ValueVar.proxy&)
+			objs8.Push(ValueVar.CreateVarBaseCall())
 			objs8.Push(iCall)
 		}
 		CallGetValue = CreateFuncCall(StringSpan("="),objs8)

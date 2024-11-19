@@ -182,7 +182,7 @@ ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 	{
 		objRes := new LocalVar(varName,valueType,true,true)
 
-		objs := ![objRes.proxy&,new UnrefFuncCall(itm)]
+		objs := ![objRes.CreateVarBaseCall(),new UnrefFuncCall(itm)]
 
 		setFunc := GPointStoreTemplate.GetFunc(objs,![])
 		setCall := setFunc.CreateCall(objs)
@@ -194,7 +194,7 @@ ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 		return objRes
 	}else{
 		mainVar := new LocalVar(varName,itm.GetType(),true,false)
-		setVar := CreateFuncCall(StringSpan("="),![mainVar.proxy&,itm])
+		setVar := CreateFuncCall(StringSpan("="),![mainVar.CreateVarBaseCall(),itm])
 		assert(setVar != null)
 		mainVar.extraWork.Push(setVar)
 		CurrentFunc.AddLocalVar(mainVar)

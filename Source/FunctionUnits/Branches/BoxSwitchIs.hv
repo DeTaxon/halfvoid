@@ -86,7 +86,7 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			if IsVirtualClass(caseType)
 			{
-				tpCheck = CreateTypeIsCheck(mainVar.proxyOut&,caseType,isIn,false)
+				tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
 			}else {
 				tpCheck = innerTryGetMethodCall("is",mainVar.CreateVarCall(),![],![caseType])
 

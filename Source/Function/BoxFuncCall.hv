@@ -257,7 +257,7 @@ BoxFuncCall := class extend BoxExeObj
 								fInd := 0
 								while oo >= 2
 								{
-									gt := newLocalVar.proxy&->{BoxExeObj^}
+									gt := newLocalVar.CreateVarBaseCall()->{BoxExeObj^}
 									gt = GetExchange2(gt,GTypeVec2f.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd))
 									newDown.Push(gt)
@@ -268,7 +268,7 @@ BoxFuncCall := class extend BoxExeObj
 								}
 								if oo != 0
 								{
-									gt := newLocalVar.proxy&->{BoxExeObj^}
+									gt := newLocalVar.CreateVarBaseCall()->{BoxExeObj^}
 									gt = GetExchange2(gt,GTypeFloat.GetPoint(),false)
 									gt = GetElementRetrive(gt,GetExeInt(fInd*2))
 									newDown.Push(gt)
@@ -285,7 +285,7 @@ BoxFuncCall := class extend BoxExeObj
 								{
 									if oo >= 8
 									{
-										gt := newLocalVar.proxy&->{BoxExeObj^}
+										gt := newLocalVar.CreateVarBaseCall()->{BoxExeObj^}
 										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)
@@ -297,7 +297,7 @@ BoxFuncCall := class extend BoxExeObj
 										oo -= 8
 										fInd += 8
 									}else if oo >= 4 {
-										gt := newLocalVar.proxy&->{BoxExeObj^}
+										gt := newLocalVar.CreateVarBaseCall()->{BoxExeObj^}
 										gt = GetExchange2(gt,GTypeU8.GetPoint(),false)
 										gt = GetElementRetrive(gt,GetExeInt(fInd))
 										gt = new UnrefFuncCall(gt)

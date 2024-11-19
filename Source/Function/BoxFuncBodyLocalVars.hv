@@ -83,7 +83,7 @@ AppendClass BoxFuncBody
 
 		if it.itName.Size() >= 1 and it.itName[0] != '.'
 		{
-			it.createVar.Push(new FuncLocalDebugInfoDeclare(it.proxy&,it))
+			it.createVar.Push(new FuncLocalDebugInfoDeclare(it.CreateVarBaseCall(),it))
 		}
 
 		if tp is TypeClass
