@@ -4,6 +4,8 @@ LocalVar := class extend BoxExeObj
 	isMemory := bool
 	isReference := bool
 
+	isSetCreated := bool //created by operator :=, and right side is not type,  x := 2 + 2
+
 	AutoCastedFrom := LocalVar^
 
 	createVar := HybridQueue.{BoxExeObj^,2}
@@ -16,14 +18,8 @@ LocalVar := class extend BoxExeObj
 		isMemory = isMem
 		isReference = isRef
 
-		proxy = new LocalVarProxy
-		proxyOut = new LocalVarProxyOut
-
-		proxyOut.ObjType = varType
-		proxyOut.baseVar = this&
-
-		proxy.ObjType = varType
-		proxy.baseVar = this&
+		proxy = new LocalVarProxy(this&,varType)
+		proxyOut = new LocalVarProxyOut(this&,varType)
 
 		if isRef
 			proxy.ObjType = varType.GetPoint()
@@ -75,6 +71,28 @@ LocalVar := class extend BoxExeObj
 
 	proxy := LocalVarProxy^
 	proxyOut := LocalVarProxyOut^
+
+
+	SetNewType := !(Type^ newType) -> void
+	{
+		assert(isSetCreated)
+		assert(GetType() is in TypePoint)
+		assert(not isReference)
+
+		ObjType = newType
+
+		oldProxy := proxy
+		oldProxyOut := proxyOut
+
+		proxy = new LocalVarProxy(this&,newType)
+		proxyOut = new LocalVarProxyOut(this&,newType)
+		proxyOut.Down = proxy
+
+		s1 := new UnrefFuncCall(proxy)
+		s2 := new PtrExchange(s1,newType.GetPoint())
+		s3 := new PtrToRef(s2)
+		oldProxy.Down = s3
+	}
 }
 
 
@@ -82,6 +100,12 @@ LocalVarProxy := class extend BoxExeObj
 {
 	baseVar := LocalVar^
 	Down := BoxExeObj^
+
+	this := !(LocalVar^ vr, Type^ objType) -> void
+	{
+		baseVar = vr
+		ObjType = objType
+	}
 
 	NotifyMemUse := virtual !() -> void
 	{

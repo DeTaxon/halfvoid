@@ -175,6 +175,14 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				if fc.ResultVar != null
 				{
 					fc.ResultVar.itName = name
+
+					v := fc.ResultVar
+
+					if not v.isReference and v is in LocalVar and v->{LocalVar^}.GetType() is in TypePoint
+					{
+						v->{LocalVar^}.isSetCreated = true
+					}
+
 					return new BorrowedCallVar(name,exeObj,fc.ResultVar)
 				}
 				
@@ -196,6 +204,10 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 					mVar.Inits.Push(exeObj)
 				}else{
 					locVar := new LocalVar(name,exeObj.GetType(),true,refVar)
+
+					if not refVar and exeObj.GetType() is in TypePoint
+						locVar.isSetCreated = true
+
 					objs2 := CheckExeDownList
 					objs2.Push(locVar.CreateVarBaseCall())
 					if refVar
@@ -214,6 +226,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}else{
 				mVar = new MemVarBorrowed(name,vr)
 				mVar.Inits.Push(exeObj)
+			}
+
+			if not refVar and mVar is in LocalVar and IsGCPtr(mVar->{LocalVar^}.GetType())
+			{
+				mVar->{LocalVar^}.isSetCreated = true
 			}
 			return mVar
 		}else{

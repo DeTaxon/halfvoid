@@ -36,9 +36,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		return TryGetAndOrCall(itm)
 	}
 
-
-
-
 	tmpList.Push(TryGetExeCall(itm.Down))
 	tmpList.Push(TryGetExeCall(itm.Down.Right.Right))
 
@@ -62,12 +59,10 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		pri := GOperatorSetGC.GetPriority(tmpList,![])
 		if fightResult == t1
 			//and pri != CmpNoExchange
-		{	
-			//setFunc := GOperatorSetGC.GetFunc(tmpList,![])
+		{
 			setFunc := GOperatorSetGC.GetFuncByType(fncType,![])
 			return setFunc.CreateCall(tmpList)
 		}else{
-			//printf("wut ~~ %s ~~ %s ~~ %i\n",t1.GetBADStr().Str(),t2.GetBADStr().Str(),pri)
 			return TryRemoveAutoCast(null,tmpList,(newVr,newObjs) ==> {
 				tt1 := newObjs[0].GetType()
 				tt2 := newObjs[1].GetType()
@@ -77,7 +72,13 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 					return GOperatorSetGC.GetFuncByType(fncType,![]).CreateCall(newObjs)
 				}
 				return null->{BoxExeObj^}
-			})
+			})?
+
+			//if tmpList[0] is in LocalVarProxy and tmpList[0]->{LocalVarProxy^}.baseVar.isSetCreated
+			//{
+			//	printf("here %s\n",tmpList[0]->{LocalVarProxy^}.baseVar.itName)
+			//}
+			return null
 		}
 	}
 
@@ -86,6 +87,22 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		return res1
 
 	return innerTryGetOperMeta(itm)?
+
+	if oper == "=" and tmpList[0] is in LocalVarProxy
+	{
+		vr := tmpList[0]->{LocalVarProxy^}.baseVar
+		if vr.isSetCreated
+		{
+			newType := TypeFight(vr.GetType(),tmpList[1].GetType())
+
+			if newType != null
+			{
+				vr.SetNewType(newType)	
+			}
+		}
+	}
+
+	return null
 }
 
 innertTryGetCompareOverSpaceship := !(Str oper,CheckExeDownList lst,Token^ debugItem) -> BoxExeObj^

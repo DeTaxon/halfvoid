@@ -24,20 +24,20 @@ someClassB := class extend someClass1
 main := !(char^[] args) -> int
 {
 
-	a := new someClassA
+	arrr := new someClassA
 
-	a.x = 16
+	arrr.x = 15
 
-	printf("Test %i\n",a.x)
+	printf("Test %i\n",arrr.x)
 
-	if a.x == 15
+	if arrr.x == 15
 	{
-		a = new someClassB
+		arrr = new someClassB
 	} else {
 		a.x = 16 //somehow works!!!!
 	}
 
-	//a.x not longer works
+	//arrr.x //not longer works
 
 }
 
