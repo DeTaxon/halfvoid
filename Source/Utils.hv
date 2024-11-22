@@ -173,7 +173,7 @@ StackCheckpoint := !() -> stackHolder
 
 ToLocalVar := !(BoxExeObj^ itm) -> LocalVar^
 {
-	return ToLocalVar(itm,StringSpan(""))
+	return ToLocalVar(itm,"")
 }
 ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 {
@@ -194,7 +194,7 @@ ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 		return objRes
 	}else{
 		mainVar := new LocalVar(varName,itm.GetType(),true,false)
-		setVar := CreateFuncCall(StringSpan("="),![mainVar.CreateVarBaseCall(),itm])
+		setVar := CreateFuncCall("=",![mainVar.CreateVarBaseCall(),itm])
 		assert(setVar != null)
 		mainVar.extraWork.Push(setVar)
 		CurrentFunc.AddLocalVar(mainVar)

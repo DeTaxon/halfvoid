@@ -58,10 +58,14 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	tru := BoxBlock^
 	fls := BoxBlock^
 
+
+	truHolder := TrueIfPathHolder
+
 	if true
 	{
 		StackCheckpoint()
 		UnitStack.PushFront(onTrueVars[^])
+		UnitStack.PushFront(truHolder&)
 		tru = new BoxBlock(tryToken)
 		tru.Work()
 
@@ -72,6 +76,7 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	{
 		StackCheckpoint()
 		UnitStack.PushFront(onFalseVars[^])
+		UnitStack.PushFront(truHolder.postVars[^])
 		fls = new BoxBlock(flsToken)
 		fls.Work()
 	}
@@ -95,6 +100,7 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	retIfFull := new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
 	retIfFull.PreTrue.Push(onTrueVars[^])
 	retIfFull.PreFalse.Push(onFalseVars[^])
+	retIfFull.PreFalse.Push(truHolder.postVars[^])
 	return retIfFull 
 }
 
@@ -230,4 +236,9 @@ BoxIfFull := class extend BoxExeObj
 		OnTrue.PrintDebugMeta(ctx)
 		OnFalse.PrintDebugMeta(ctx)
 	}
+}
+
+TrueIfPathHolder := class extend BoxUnit
+{
+	postVars := List.{BoxExeObj^}
 }

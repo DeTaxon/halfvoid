@@ -93,11 +93,23 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		vr := tmpList[0]->{LocalVarProxy^}.baseVar
 		if vr.isSetCreated
 		{
+			oldType := vr.GetType()
 			newType := TypeFight(vr.GetType(),tmpList[1].GetType())
 
 			if newType != null
 			{
-				vr.SetNewType(newType)	
+				vr.SetNewType(newType)
+
+				for it : UnitStack
+				{
+					if it is not TrueIfPathHolder
+						continue
+
+					hldr := it->{TrueIfPathHolder^}
+					hldr.postVars.Push(CreateSwapVar(vr.CreateVarCall(),oldType))
+
+					break
+				}
 			}
 		}
 	}

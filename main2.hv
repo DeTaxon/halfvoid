@@ -26,7 +26,7 @@ main := !(char^[] args) -> int
 
 	arrr := new someClassA
 
-	arrr.x = 15
+	arrr.x = 5
 
 	printf("Test %i\n",arrr.x)
 
@@ -34,8 +34,15 @@ main := !(char^[] args) -> int
 	{
 		arrr = new someClassB
 	} else {
-		a.x = 16 //somehow works!!!!
+		printf("hey %p\n",arrr&)
+		arrr.x = 16 //somehow works!!!!
+		printf("h %i\n",arrr.x)
 	}
+
+	printf("hoy %p\n",arrr&)
+
+	if arrr is someClassA
+		printf("yahooo  %p %i\n",arrr&,arrr.x)
 
 	//arrr.x //not longer works
 

@@ -87,3 +87,38 @@ AutoCastCheckIfState := !(BoxExeObj^ ifCheck,List.{BoxExeObj^} onTrueVars,List.{
 
 	onTrueVars.Push(newVar)
 }
+
+CreateSwapVar := !(BoxExeObj^ checkObj2, Type^ newType) -> BoxExeObj^
+{
+	if checkObj2 is not in LocalVarProxy
+		return null
+
+	objIsRef := false
+	oldVar := checkObj2->{LocalVarProxy^}.baseVar
+	resObj := BoxExeObj^
+
+	objIsRef = oldVar.isReference
+
+	assert(not objIsRef)
+
+	makeRef := false
+	preChange := oldVar.CreateVarBaseCall()->{BoxExeObj^}
+
+	if true//oldVar.CreateVarBaseCall().GetType() is in TypeClass
+	{
+		makeRef = true
+		oldVar.NotifyMemUse()
+		preChange = new UnrefFuncCall(preChange)
+
+	}
+
+	resObj = new PtrExchange(preChange,newType.GetPoint())
+	if objIsRef or makeRef
+	{
+		resObj = new PtrToRef(resObj)
+	}
+	newVar := ToLocalVar(resObj,oldVar.itName)
+	newVar.AutoCastedFrom = oldVar
+
+	return newVar
+}
