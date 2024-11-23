@@ -1,0 +1,4 @@
+OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
+{
+		WriteCodeToStream(ctx)
+}

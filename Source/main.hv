@@ -261,7 +261,7 @@ main := !(char^[] args) -> int
 	if WorkBagPrintErrors()
 		exit(-1)
 
-	if OptimizeMode
+	if OptimizeMode and not RunMode
 	{
 		printf("Optimization step\n")
 		OptimizeCode()
@@ -293,7 +293,12 @@ main := !(char^[] args) -> int
 	ctx := LLVMWriteContext
 	ctx.writeStream = outFile
 
-	WriteCodeToStream(ctx&)
+	if OptimizeMode
+	{
+		OptCodeGenLLVM(ctx&)
+	}else{
+		WriteCodeToStream(ctx&)
+	}
 	printf("done\n")
 
 	outFile.Close()
