@@ -1,50 +1,17 @@
 
-someClass1 := class
-{
-	Test := virtual !() -> void
-	{
 
-	}
-}
-
-someClassA := class extend someClass1
+SomeClass := @{@T} class
 {
-	x := int
-}
-someClassB := class extend someClass1
-{
-	y := double
-
-	Test := virtual !() -> void
-	{
-		
-	}
+	x := T
 }
 
 main := !(char^[] args) -> int
 {
+}
 
-	arrr := new someClassA
 
-	arrr.x = 5
-
-	printf("Test %i\n",arrr.x)
-
-	if arrr.x == 15
-	{
-		arrr = new someClassB
-	} else {
-		printf("hey %p\n",arrr&)
-		arrr.x = 16 //somehow works!!!!
-		printf("h %i\n",arrr.x)
-	}
-
-	printf("hoy %p\n",arrr&)
-
-	if arrr is someClassA
-		printf("yahooo  %p %i\n",arrr&,arrr.x)
-
-	//arrr.x //not longer works
+SomeFunc := !() -> void
+{
 
 }
 
