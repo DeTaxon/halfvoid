@@ -1,4 +1,218 @@
 OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 {
-		WriteCodeToStream(ctx)
+	mainFunc := intGetFunc(mainFuncName)
+
+	c := CollectUsesCtx(mainFunc)
+
+	c.Collect()
+
+	ctx.ClassIgnoresVTable = true
+
+	PrintDeclares(ctx)
+
+	for cls : c.writeClasses
+	{
+		cls.PrintAsType(ctx)
+	}
+	for glb : c.writeGlobals
+	{
+		glb.PrintCodeVar(ctx)
+	}
+	for fnc : c.writeFuncs
+	{
+		fnc.PrintCode(ctx)
+	}
+}
+
+
+
+CollectUsesCtx := class
+{
+	writeClasses := List.{BoxClass^}
+	checkedClasses := AVLSet.{BoxClass^}
+	checkClasses  := HybridStack.{BoxClass^,20}
+
+	writeGlobals := List.{GlobalVar2^}
+	checkedGlobals := AVLSet.{GlobalVar2^}
+	checkGlobals := HybridStack.{GlobalVar2^,20}
+
+	writeFuncs := List.{BoxFunc^}
+	checkedFuncs := AVLSet.{BoxFunc^}
+	checkFuncs := HybridStack.{BoxFunc^,20}
+
+	this := !(BoxFunc^ fnc) -> void
+	{
+		checkFuncs.PushFront(fnc)
+	}
+
+	checkType := !(Type^ tp) -> void
+	{
+
+		if tp == null
+			return void
+
+		while tp.Base != nul
+		{
+			if tp is TypeArrayView
+				checkType(tp->{TyepArrayView^}.viewClassType)
+			tp = tp.Base
+		}
+
+		if tp is TypeClass
+		{
+			cls := tp->{TypeClass^}.ToClass
+
+			if cls not in checkedClasses
+			{
+				checkedClasses.Insert(cls)
+				checkClasses.PushFront(cls)
+
+				for cnst : cls.Constants?.Constants
+				{
+					checkConstant(cnst)
+				}
+			}
+		}
+
+		if tp is TypeFunc
+		{
+			fType := tp->{TypeFunc^}
+
+			checkType(fType.Params[^].ItType)
+			checkType(fType.ResultType)
+		}
+	}
+	checkConstant := !(BoxExeConstObj^ cnst) -> void
+	{
+		if cnst is in Type
+		{
+			checkType(cnst->{Type^})
+			return void
+		}
+			
+	}
+	checkGlobal := !(GlobalVar2^ glb) -> void
+	{
+		if glb in checkedGlobals
+			return void
+
+		checkType(glb.GetType())
+		checkedGlobals.Insert(glb)
+		checkGlobals.PushFront(glb)
+	}
+	checkFunction := !(BoxFunc^ fnc) -> void
+	{
+		if fnc in checkedFuncs
+			return void
+
+		checkedFuncs.Insert(fnc)
+		checkFuncs.PushFront(fnc)
+	}
+	Collect := !() -> void
+	{
+		while checkFuncs.Size() != 0 or checkClasses.Size() != 0 or checkGlobals.Size() != 0
+		{
+			if checkFuncs.Size() != 0
+			{
+				fnc := checkFuncs.Pop()
+
+				if fnc == null //TODO why one of them is null
+					continue
+
+				if fnc is in BoxFuncBody and not fnc->{BoxFuncBody^}.IsParsed()
+					continue
+
+				writeFuncs.Push(fnc)
+
+				if fnc is in BoxFuncBody
+				{
+					bdy := fnc->{BoxFuncBody^}
+
+					checkType(bdy.GetType())
+
+					for vr : bdy.LocalVars
+						checkType(vr.GetBaseType())
+
+					HV.ForEachFuncElement(fnc,(x,y,z) ==> {
+						if x is in BoxFuncCall
+						{
+							callObj := x->{BoxFuncCall^}.callObj
+
+							checkFunction(callObj)
+						}
+						if x is in GlobalVarProxy
+						{
+							checkGlobal(x->{GlobalVarProxy^}.baseVar)
+						}
+
+					})
+				}
+
+				if fnc is in BuildInVirtualCall
+				{
+					checkFunction(fnc->{BuildInVirtualCall^}.wrappedFunc)
+				}
+				if fnc is in ResistFunc
+				{
+					checkFunction(fnc->{ResistFunc^}.base)
+				}
+
+			}
+			if checkClasses.Size() != 0
+			{
+				cls := checkClasses.Pop()
+
+				assert(cls != null)
+
+				checkType(cls.VTableType?.ItType)
+				checkType(cls.Fields[^].Value)
+				checkType(cls.Parents[^].ItType)
+
+				for it : cls.VTable
+				{
+					if it is VTableVar
+					{
+						cnst := it->{VTableVar^}.ItConst
+
+						if cnst is CheckInfoConst
+							checkGlobal(cnst->{CheckInfoConst^}.ItGlobVar)
+					}
+					if it is VTableFunc
+					{
+						checkFunction(it->{VTableFunc^}.Value)
+					}
+				}
+
+				writeClasses.Push(cls)
+			}
+			if checkGlobals.Size() != 0
+			{
+				glb := checkGlobals.Pop()
+
+				writeGlobals.Push(glb)
+			}
+		}
+		sortClasses()
+	}
+
+	sortClasses := !() -> void
+	{
+		classesList := AVLMap.{int,List.{BoxClass^}}
+
+		for it : writeClasses
+		{
+			d := getDepth(it)
+			classesList[d].Push(it)
+		}
+		writeClasses.Destroy()
+		writeClasses.Push(classesList[^][^])
+	}
+	getDepth := !(BoxClass^ cls) -> int
+	{
+		val := 0
+		if cls.VTableType != null
+			val = 1
+		val = max(val,getDepth(cls.Parents[^]))
+		return val + 1
+	}
 }

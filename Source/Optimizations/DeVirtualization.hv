@@ -91,7 +91,7 @@ RemoveStringSpanDestructor := !() -> void
 		if fnc in resistFuncs
 			return void
 		
-		HV.ForEachFuncElement(fnc,(HV_Object^ upElement,int thisIndex,HV_Object^ thisElement) ==> {
+		HV.ForEachFuncElement(fnc,(HV_Object^ thisElement, HV_Object^ upElement,int thisIndex) ==> {
 
 			if thisElement is not in BoxFuncCall
 				return void

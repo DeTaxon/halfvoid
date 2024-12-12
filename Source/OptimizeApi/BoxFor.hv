@@ -3,7 +3,7 @@ AppendClass BoxFor
 	IsEditSupported := virtual true
 	ElementName := virtual "For"
 
-	SubElementsCount := virtual !() -> int { return values.Size() + 1 }
+	SubElementsCount := virtual !() -> int { return values.Size()*5 + 1 }
 	GetSubElement := virtual !(int index) -> HV_Object^
 	{
 		if index == -1
@@ -12,12 +12,25 @@ AppendClass BoxFor
 		if index < 0
 			return null
 
-		if index < values.Size()
+		if index < values.Size()*5
 		{
-			//TODO maybe add other getters
-			return values[index].GetCall
+			ind := index div 5
+
+			switch index mod 5
+			{
+			case 0
+				return values[ind].DownResult
+			case 1
+				return values[ind].GetCall
+			case 2
+				return values[ind].IsFinished
+			case 3
+				return values[ind].HaveValue
+			case 4
+				return values[ind].IncFunc
+			}
 		}
-		index -= values.Size()
+		index -= values.Size()*5
 
 		if index == 0
 			return body

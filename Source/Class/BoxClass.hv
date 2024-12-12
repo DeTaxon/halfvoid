@@ -85,7 +85,8 @@ BoxClass := class extend BoxUnit
 	{
 		f := ctx.writeStream
 
-		PrintVTable(ctx)
+		if not ctx.ClassIgnoresVTable
+			PrintVTable(ctx)
 
 		needComma := false
 		f^ << "%Class" << ItId << " = type "

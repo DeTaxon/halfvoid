@@ -46,7 +46,7 @@ AppendClass HVContextImplementation
 		
 		cb(objs[^])
 	}
-	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,int,HV_Object^)&-> void cb) -> void
+	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,HV_Object^,int)&-> void cb) -> void
 	{
 		if obj == null
 			return void
@@ -85,7 +85,7 @@ AppendClass HVContextImplementation
 					}
 				}
 			}
-			cb(itm.0,itm.1,itm.2)
+			cb(itm.2,itm.0,itm.1)
 		}
 		CurrentHotloadContext?.ChangedFunctions.PushUniq(bdy)
 	}

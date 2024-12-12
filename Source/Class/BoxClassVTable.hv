@@ -130,7 +130,7 @@ AppendClass BoxClass
 		}
 
 		VTableType.StartParseBody()
-		VTableValue = new GlobalVar2(StringSpan(""),VTableType.ItType,false)
+		VTableValue = new GlobalVar2("",VTableType.ItType,false)
 
 		VirtualTables.Add(this&,VTableValue)
 		

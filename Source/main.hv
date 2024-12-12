@@ -40,6 +40,7 @@ WorkBag := CompilerWork
 
 NonStopBuild := false
 
+mainFuncName := "internalHVEntryPoint"
 
 OutputFile := char^
 main := !(char^[] args) -> int
@@ -226,8 +227,6 @@ main := !(char^[] args) -> int
 	{
 		return EnterCliMode()
 	}
-
-	mainFuncName := "internalHVEntryPoint"
 
 	WaitForParsingObjects()
 	mainFunc := intGetFunc(mainFuncName)
