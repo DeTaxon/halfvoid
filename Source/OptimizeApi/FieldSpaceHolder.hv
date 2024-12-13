@@ -1,0 +1,14 @@
+AppendClass FieldSpaceHolder
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "FieldSpaceHolder"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index != 0
+			return null
+		return downObj 
+	}
+
+}

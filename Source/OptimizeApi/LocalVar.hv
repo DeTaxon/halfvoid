@@ -70,3 +70,27 @@ AppendClass LocalVarProxy
 	IsEditSupported := virtual true
 	ElementName := virtual "LocalVarGetter"
 }
+AppendClass FuncLocalCallIfTrue
+{
+	IsEditSupported := virtual true
+	ElementName := virtual "FuncLocalCallIfTrue"
+
+
+	SubElementsCount := virtual !() -> int
+	{
+		if DownCall != null
+			result += 1
+		if DownCall2 != null
+			result += 1
+	}
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index < 0 or index >= SubElementsCount()
+			return null
+		if index == 0
+			return DownCall
+		if index == 1
+			return DownCall2
+	}
+	
+}
