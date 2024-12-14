@@ -28,7 +28,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 }
 
 
-CollectFunctionsCtx := class extends TGCObject
+CollectFunctionsCtx := class extend TGCObject
 {
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}

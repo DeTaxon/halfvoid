@@ -1,40 +1,17 @@
-TryParseSwitch := !(Token^ itm) -> BoxExeObj^
+
+CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 {
-	if itm.Down.Right?.Right?.GetValue() == "is"
-	{
-		return ParseBoxSwitchIs(itm)
-	}
-
-	return TryParseRegularSwitch(itm)
-}
-
-TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
-{
-	itr := obj.Down
-
-	itr = itr.Right
-
-	mainCall := TryGetExeCall(itr)
-
-	if mainCall == null
-	{
-		CurrentWork?.SetErrorMessage(itr.MakeError("could not get switch satatement"))
-		return void
-	}
-
-	if mainCall.GetType() is TypeEnum
-		return CreateSwitchOnEnum(obj,mainCall)
+	itr := obj.Down.Right
 
 	toSetVar := mainCall
 	if mainCall.IsMem()
 		toSetVar = new UnrefFuncCall(mainCall)
 	
-	mainVar := new LocalVar(StringSpan(""),mainCall.GetType(),true,mainCall.IsMem())
-	setCall := CreateFuncCall(StringSpan("="),![mainVar.CreateVarBaseCall(),toSetVar])
+	mainVar := new LocalVar("",mainCall.GetType(),true,mainCall.IsMem())
+	setCall := CreateFuncCall("=",![mainVar.CreateVarBaseCall(),toSetVar])
 	
 	if setCall == null
 		return null
-	
 
 	mainVar.extraWork.Push(setCall)
 	CurrentFunc.AddLocalVar(mainVar)
@@ -78,22 +55,61 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		}
 		checkRes := BoxExeObj^
 
+		extraConsts := HybridQueue.{BoxExeConstObj^,13}
 		caseVal := currentCase.Down.Right
+		caseCheck := BoxExeObj^
 		caseCheckFuncName := StringSpan("==")
 		if caseVal.GetValue() == "in"
 		{
 			caseVal = caseVal.Right
 			caseCheckFuncName = StringSpan("in")
-			allConsts = false //TODO cases where "in ![1,2,3]" ,  " in 6..10 "
+
+			caseCheck = TryGetExeCall(caseVal)
+
+			isInConsts := false
+			if caseCheck? is BoxArrayHolder
+			{
+				isInConsts = true
+				cv := caseCheck->{BoxArrayHolder^}
+				for it : cv.vals
+				{
+					if it is not in BoxExeString
+					{
+						isInConsts = false
+					}else{
+						extraConsts.Push(it->{BoxExeConstObj^})
+					}
+
+					//TODO error check
+				}
+			}
+
+			if not isInConsts
+			{
+				allConsts = false
+			}
+		}else{
+			caseCheck = TryGetExeCall(caseVal)
 		}
 
-		caseCheck := TryGetExeCall(caseVal)
 		if caseCheck == null
 		{
 			CurrentWork?.SetErrorMessage(currentCase.MakeError("Could not get case object"))
 			return void
 		}
-		allConsts = false
+		if caseCheck is BoxExeString
+		{
+			asEn := mainCall.GetType()->{TypeEnum^}.ToEnum
+			if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.Value,null)
+			{
+				CurrentWork?.SetErrorMessage(caseVal.MakeError("Enumeration does not contain this value"))
+				return void
+			}
+		}else if caseCheck is BoxArrayHolder
+		{
+		}else {
+			allConsts = false
+		}
 		baseObj := caseCheck
 		
 		objs := CheckExeDownList
@@ -109,7 +125,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 			checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
 		}
 
-		if checkRes == null
+		if checkRes == null and not allConsts
 		{
 			CurrentWork?.SetErrorMessage(currentCase.MakeError("Can not compare case object with switch statement"))
 			return void
@@ -119,6 +135,8 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		newNode.caseBody = thisCaseBlock
 		newNode.cmpCheck = checkRes
 		newNode.baseObj = baseObj
+
+		newNode.extraConsts.Push(extraConsts[^])
 
 		cases.Push(newNode)
 
@@ -148,96 +166,76 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 
 	if allConsts
 	{
-		if mainCall.GetType() is TypeEnum
-		{
-			resSwitch.defaultLabel = new BoxLabel()
-			resSwitch->SetType(BoxSwitchOnEnum)
-		}else{
-			//assert(false) //TODO
-		}
+		resSwitch.defaultLabel = new BoxLabel()
+		resSwitch->SetType(BoxSwitchOnEnum)
 	}
 	return resSwitch
 }
 
-SwitchCase := class
+BoxSwitchOnEnum := class extend BoxSwitch
 {
-	baseObj := BoxExeObj^
-	cmpCheck := BoxExeObj^
-	caseBody := BoxBlock^
-	useNode := BoxLabel^
-	nopeLabel := BoxLabel^
-	
-	defBlock := DeferBlock
-
-	extraConsts := HybridQueue.{BoxExeConstObj^,13}
-
 	this := !() -> void
 	{
-		useNode = new BoxLabel()
-		nopeLabel = new BoxLabel()
-
-		defBlock."this"()
-	}
-
-	PrintIt := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
-	{
-		defBlock.StartBlock(ctx)
-		cmpCheck.PrintPre(ctx)
-		defBlock.EndBlock(ctx)
-
-		PrintBranch(ctx,cmpCheck,useNode,nopeLabel)
-		PrintItBase(ctx,qLabel)
-	}
-	PrintItBase := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
-	{
-		useNode.PrintCode(ctx)
-		caseBody?.PrintCode(ctx)
-		qLabel.PrintGo(ctx)
-		nopeLabel.PrintCode(ctx)
-	}
-}
-BoxSwitch := class extend BoxExeObj
-{
-	mainCall := BoxExeObj^
-	mainVar := LocalVar^
-
-	quitNode := BoxLabel^
-
-	caseNodes := List.{SwitchCase^}
-
-	defaultLabel := BoxLabel^
-	defaultNode := BoxBlock^
-
-	this := !(BoxExeObj^ mCall, LocalVar^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
-	{
 		ObjType = GTypeVoid
-		quitNode = new BoxLabel()
-
-		mainCall = mCall
-		mainVar = mVar
-		defaultNode = defNode
-		caseNodes.Push(cases[^])
-	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintCode(ctx)
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		mainVar.PrintCode(ctx)
+		en := mainCall.GetType()->{TypeEnum^}.ToEnum
+		bsTyp := Type^
+		bsTyp = mainCall.GetType().Base
+		f := ctx.writeStream
 
-		for it : caseNodes
+		mainCall.PrintPre(ctx)
+
+		f^ << "switch "
+		bsTyp.PrintType(ctx)
+		f^ << " "
+		mainCall.PrintUse(ctx)
+		f^ << " , label "
+		if defaultNode != null
 		{
-			it.PrintIt(ctx,quitNode)
+			defaultLabel.PrintLabel(ctx)
+		}else{
+			quitNode.PrintLabel(ctx)
 		}
-		defaultNode?.PrintCode(ctx)
+		f^ << " [ "
+		for it : this.caseNodes
+		{
+			indX := int
+			if it.baseObj? is BoxExeString
+			{
+				en.GetEnumIndex(it.baseObj->{BoxExeString^}.Value,indX&)
+				bsTyp.PrintType(ctx)
+				f^ << " " << indX
+				f^ << ", label "
+				it.useNode.PrintLabel(ctx)
+				f^ << "\n"
+			}
+			for ec : it.extraConsts
+			{
+				if ec is not BoxExeString
+					continue
+				en.GetEnumIndex(ec->{BoxExeString^}.Value,indX&)
+				bsTyp.PrintType(ctx)
+				f^ << " " << indX
+				f^ << ", label "
+				it.useNode.PrintLabel(ctx)
+				f^ << "\n"
+			}
+		}
+		f^ << "]\n"
+		for it : this.caseNodes
+		{
+			it.PrintItBase(ctx,quitNode)
+			quitNode.PrintGo(ctx)
+		}
+		if defaultNode != null
+		{
+			defaultLabel.PrintLabelCreate(ctx)
+			defaultNode.PrintCode(ctx)
+			quitNode.PrintGo(ctx)
+		}
+
 		quitNode?.PrintCode(ctx)
 	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		for it : caseNodes
-			it.caseBody?.PrintDebugMeta(ctx)
-		defaultNode?.PrintDebugMeta(ctx)
-	}
-
 }
