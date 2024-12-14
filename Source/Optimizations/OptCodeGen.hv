@@ -1,6 +1,83 @@
 OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 {
-	//mainFunc := intGetFunc(mainFuncName)
-	WriteCodeToStream(ctx)
+	//WriteCodeToStream(ctx)
 
+	//mainFunc := intGetFunc(mainFuncName)
+	mainFunc := intGetFunc("TestGen")
+
+	assert(mainFunc != null)
+	mainFunc->{BoxFuncBody^}.ForceOutputName("main")
+
+	c := CollectFunctionsCtx(GInterpCntx&,mainFunc->{BoxFuncBody^})
+
+	c.Collect()
+	
+	if true
+	{
+		mainFunc->{BoxFuncBody^}.ForceOutputName("main")
+		wData := c.GenWriteData()
+		LLVMPrintTextModule(wData,ctx)
+	}
+
+	ctx.writeStream.Close()
+	ctx.writeStream = null
+
+	printf("end\n")
+
+	exit(0)
+}
+
+
+CollectFunctionsCtx := class extends TGCObject
+{
+	WriteFunctions := List.{BoxFuncBody^}
+	DeclareFunctions := List.{BoxFuncDeclare^}
+	
+	iCtx := MCInterpContext^
+
+	checkedFunctions := AVLSet.{BoxFuncBody^}
+	checkFunctions := HybridStack.{BoxFuncBody^,20}
+
+	checkFunction := !(BoxFuncBody^ fnc) -> void
+	{
+		if fnc in checkedFunctions
+			return void
+		checkedFunctions.Insert(fnc)
+		checkFunctions.PushFront(fnc)
+	}
+	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
+	{
+		iCtx = interpContext
+
+		assert(mainFunc is in BoxFuncBody)
+
+		checkFunction(mainFunc)
+	}
+
+	Collect := !() -> void
+	{
+		while checkFunctions.Size() != 0
+		{
+			if checkFunctions.Size() != 0
+			{
+				fnc := checkFunctions.Pop()
+				mcFnc := iCtx.GetMCFunc(fnc)
+
+				WriteFunctions.Push(fnc)
+			}
+		}
+	}
+
+	GenWriteData := !() -> HVModule
+	{
+		resFuncs := new Vector.{MCFunction^}
+		resFuncs.Resize(WriteFunctions.Size())
+
+		for it,i : WriteFunctions
+		{
+			resFuncs^[i] = iCtx.GetMCFunc(it)
+		}
+		result.Functions = resFuncs
+
+	}
 }

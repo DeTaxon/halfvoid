@@ -1,4 +1,5 @@
-HVModule := class
+HVModule := class extends TGCObject
 {
-	Functions := MCFunction[]
+	DebugMode := bool
+	Functions := MCFunction^[]
 }

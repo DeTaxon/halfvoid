@@ -1,19 +1,9 @@
 
 
-SomeClass := @{@T} class
-{
-	x := T
-}
-
 main := !(char^[] args) -> int
 {
 }
 
-
-SomeFunc := !() -> void
-{
-
-}
 
 
 
@@ -75,46 +65,9 @@ SomeFunc := !() -> void
 
 
 
-RunTest := !() -> void
-{
-}
-
-
-OptTest := !() -> void
-{
-	printf("Hello world\n")
-}
 
 
 
-
-TestWave := !() -> void
-#OptimizationWave()
-{
-	fnc := HV.FindFunction("OptTest")
-
-	c := HV_Object^
-
-	HV.ForEachFuncElement(fnc,(x) ==> {
-		printf("hoy %s %i\n",x.ElementName,x.SubElementsCount())
-		if x.ElementName == "FunctionCall"
-		{
-			c = x
-		}
-		if x.ElementName == "String"
-		{
-			printf("str value %s\n",x.GetStringValue())
-			newStr := HV.CreateString("HAHA\n")
-			c.ReplaceSubElement(0,newStr)
-		}
-	})
-
-	fncCount := 0
-	HV.ForEachFunction(x ==> {
-		fncCount += 1
-	})
-	printf("func count %i\n",fncCount)
-}
 JavaCompile := !(HVB_FunctionEditor^ funcToCompile) -> void
 {
 	//printf("yep %i %i\n",funcToCompile.GetVariablesCount(), funcToCompile.GetCodeLinesCount())

@@ -1,10 +1,20 @@
 
-LLVMPrintTextModule := !(HVModule module, TIOStream result) -> void
+LLVMPrintTextModule := !(HVModule module, LLVMWriteContext^ ctx) -> void
 {
-	StringValues := AVLMap.{String^,int} 
-	UsedClasses := AVLSet.{BoxClass^}
+	LLVMWriteBodyFunction(module.Functions[^],ctx)
+}
 
-	for func : module.Functions
-	{
-	}
+
+LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
+{
+	out := ref ctx.writeStream^
+
+	base := fnc.BaseFunction
+
+	out << "define "
+	base.GetType()->{TypeFunc^}.ResultType.PrintType(ctx)
+	out << " @" << base.OutputName << "()\n"
+	out << "{\n"
+	out << "	ret void\n"
+	out << "}\n"
 }
