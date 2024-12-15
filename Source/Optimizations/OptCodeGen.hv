@@ -2,25 +2,29 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 {
 	//WriteCodeToStream(ctx)
 
-	//mainFunc := intGetFunc(mainFuncName)
-	mainFunc := intGetFunc("TestGen")
+	mainFunc := intGetFunc(mainFuncName)
 
 	assert(mainFunc != null)
-	mainFunc->{BoxFuncBody^}.ForceOutputName("main")
 
 	c := CollectFunctionsCtx(GInterpCntx&,mainFunc->{BoxFuncBody^})
 
 	c.Collect()
-	
-	if true
+
+	PrintDeclares(ctx)
+
+	for st : GlobalStrings
 	{
-		mainFunc->{BoxFuncBody^}.ForceOutputName("main")
-		wData := c.GenWriteData()
-		LLVMPrintTextModule(wData,ctx)
+		st.PrintCode(ctx)
 	}
+	c.UsedClasses[^].PrintAsType(ctx)
+	c.DeclareFunctions[^].PrintCode(ctx)
+	c.WriteFunctions[^].PrintCode(ctx)
 
 	ctx.writeStream.Close()
 	ctx.writeStream = null
+
+	r := GInterpCntx.GetMCFunc(intGetFunc("internalHVEntryPoint2")->{BoxFuncBody^})
+	r.Print()
 
 	printf("end\n")
 
@@ -32,52 +36,183 @@ CollectFunctionsCtx := class extend TGCObject
 {
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
+	UsedClasses := List.{BoxClass^}
 	
 	iCtx := MCInterpContext^
 
-	checkedFunctions := AVLSet.{BoxFuncBody^}
+	checkedClasses := AVLSet.{BoxClass^}
+	checkClasses := HybridStack.{BoxClass^,20}
+
+	checkedFunctions := AVLSet.{BoxFunc^}
 	checkFunctions := HybridStack.{BoxFuncBody^,20}
 
-	checkFunction := !(BoxFuncBody^ fnc) -> void
+	checkedGlobals := AVLSet.{GlobalVar2^}
+
+	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
+	{
+		iCtx = interpContext
+	
+		assert(mainFunc is in BoxFuncBody)
+	
+		checkFunction(mainFunc)
+	}
+
+	checkFunction := !(BoxFunc^ fnc) -> void
 	{
 		if fnc in checkedFunctions
 			return void
 		checkedFunctions.Insert(fnc)
-		checkFunctions.PushFront(fnc)
+
+		if fnc is in BoxFuncBody
+		{
+			checkFunctions.PushFront(fnc->{BoxFuncBody^})
+		}else if fnc is BoxFuncDeclare
+		{
+			DeclareFunctions.Push(fnc->{BoxFuncDeclare^})
+		}else if fnc is ResistFunc{
+			checkFunction(fnc->{ResistFunc^}.base)
+		}else if fnc is BuildInVirtualCall {
+			checkFunction(fnc->{BuildInVirtualCall^}.wrappedFunc)
+		}else {
+			assert(false)
+		}
+		
 	}
-	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
+	checkType := !(Type^ tp) -> void
 	{
-		iCtx = interpContext
 
-		assert(mainFunc is in BoxFuncBody)
+		if tp == null
+			return void
 
-		checkFunction(mainFunc)
+		while tp.Base != null
+		{
+			if tp is TypeArrayView
+				checkType(tp->{TypeArrayView^}.viewClassType)
+			tp = tp.Base
+		}
+
+		if tp is TypeClass
+		{
+			cls := tp->{TypeClass^}.ToClass
+
+			if cls not in checkedClasses
+			{
+				checkedClasses.Insert(cls)
+				checkClasses.PushFront(cls)
+
+				for cnst : cls.Constants?.Constants
+				{
+					checkConstant(cnst)
+				}
+			}
+		}
+
+		if tp is TypeFunc
+		{
+			fType := tp->{TypeFunc^}
+
+			checkType(fType.Params[^].ItType)
+			checkType(fType.ResultType)
+		}
+	}
+	checkConstant := !(BoxExeConstObj^ cnst) -> void
+	{
+		if cnst is in Type
+		{
+			checkType(cnst->{Type^})
+			return void
+		}
+
+	}
+	checkGlobal := !(GlobalVar2^ glb) -> void
+	{
+		if glb in checkedGlobals
+			return void
+
+		checkType(glb.GetType())
+		checkedGlobals.Insert(glb)
+		//checkGlobals.PushFront(glb)
 	}
 
 	Collect := !() -> void
 	{
-		while checkFunctions.Size() != 0
+		while checkFunctions.Size() != 0 or checkClasses.Size() !=  0
 		{
 			if checkFunctions.Size() != 0
 			{
 				fnc := checkFunctions.Pop()
 				mcFnc := iCtx.GetMCFunc(fnc)
 
+				assert(mcFnc != null)
+
 				WriteFunctions.Push(fnc)
+
+
+				for it : mcFnc.Objects
+				{
+					switch it is
+					{
+					case MCVariable
+						checkType(it.GetType())
+					case MCReference
+						checkType(it.GetType())
+					case MCGlobalVariable
+						checkGlobal(it.GetValueObject())
+					case MCConstFunction
+						checkFunction(it.GetValue())
+					}
+				}
+			}
+			if checkClasses.Size() != 0
+			{
+				cls := checkClasses.Pop()
+
+				assert(cls != null)
+
+				checkType(cls.VTableType?.ItType)
+				checkType(cls.Fields[^].Value)
+				checkType(cls.Parents[^].ItType)
+
+				for it : cls.VTable
+				{
+					if it is VTableVar
+					{
+						cnst := it->{VTableVar^}.ItConst
+
+						if cnst is CheckInfoConst
+							checkGlobal(cnst->{CheckInfoConst^}.ItGlobVar)
+					}
+					if it is VTableFunc
+					{
+						checkFunction(it->{VTableFunc^}.Value)
+					}
+				}
+
+				UsedClasses.Push(cls)
 			}
 		}
+
+		sortClasses()
 	}
-
-	GenWriteData := !() -> HVModule
+	
+	sortClasses := !() -> void
 	{
-		resFuncs := new Vector.{MCFunction^}
-		resFuncs.Resize(WriteFunctions.Size())
+		classesList := AVLMap.{int,List.{BoxClass^}}
 
-		for it,i : WriteFunctions
+		for it : UsedClasses
 		{
-			resFuncs^[i] = iCtx.GetMCFunc(it)
+			d := getDepth(it)
+			classesList[d].Push(it)
 		}
-		result.Functions = resFuncs
-
+		UsedClasses.Destroy()
+		UsedClasses.Push(classesList[^][^])
+	}
+	getDepth := !(BoxClass^ cls) -> int
+	{
+		val := 0
+		if cls.VTableType != null
+			val = 1
+		val = max(val,getDepth(cls.Parents[^]))
+		return val + 1
 	}
 }

@@ -56,4 +56,10 @@ GlobalVarsIterator := class extend BoxMetaObj
 	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return globs[ind].1 }
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return GetExeString(globs[ind].0.GetString()) }
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODO add something,
+		//right now empty is fine
+	}
 }

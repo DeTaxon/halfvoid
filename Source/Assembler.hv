@@ -223,4 +223,10 @@ BoxAssemblerInline := class extend BoxExeObj
 		}
   		//%7 = call ptr asm sideeffect "movq $1,%rax;movq %rax,$0;", "=r,r,~{rax},~{dirflag},~{fpsr},~{flags}"(ptr %6) #5, !srcloc !5
 	}
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODO add something,
+		//right now empty is fine
+	}
 }
