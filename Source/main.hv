@@ -47,6 +47,7 @@ main := !(char^[] args) -> int
 {	
 	GCompileThread = CurrentThread 
 	HotloadStream& = new VoidStream
+	GInterpCntx.InterpMode = true
 
 	AddCustomTaskPoll()
 
@@ -508,6 +509,8 @@ PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 cuId := int
 PrintDebugMeta := !(LLVMWriteContext^ ctx) -> void
 {
+	if not DebugMode
+		return void
 	fil := ctx.writeStream
 
 	globVar := GetNewId()

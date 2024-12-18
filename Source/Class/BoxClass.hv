@@ -384,6 +384,9 @@ TypeClass := class extend Type
 	{
 		ToClass.StartParseBody()
 	}
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
 }
 TypePointComplex := class extend TypePoint
 {

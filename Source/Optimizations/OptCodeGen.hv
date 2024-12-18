@@ -3,13 +3,18 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	//WriteCodeToStream(ctx)
 
 	mainFunc := intGetFunc(mainFuncName)
-
 	assert(mainFunc != null)
 
-	c := CollectFunctionsCtx(GInterpCntx&,mainFunc->{BoxFuncBody^})
+	CodeCheckCtx := MCInterpContext
 
+	c := CollectFunctionsCtx(CodeCheckCtx&,mainFunc->{BoxFuncBody^})
+
+	c.Workarounds()
 	c.Collect()
 
+	ctx.ClassIgnoresVTable = true
+
+	PrintDebugMeta(ctx)
 	PrintDeclares(ctx)
 
 	for st : GlobalStrings
@@ -17,14 +22,24 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 		st.PrintCode(ctx)
 	}
 	c.UsedClasses[^].PrintAsType(ctx)
+	c.WriteGlobals[^].PrintCodeVar(ctx)
 	c.DeclareFunctions[^].PrintCode(ctx)
 	c.WriteFunctions[^].PrintCode(ctx)
 
+	CodeSpaces[^].Files[^].PrintCode(ctx)
+	DummyFile?.PrintCode(ctx)
+
+	c.UsedTypes[^].PrintMeta(ctx)
+
+
+	for refObj,refInd : GRefTypes
+	{
+		if refInd in c.UsedTypes
+			refObj.PrintMeta(ctx)
+	}
+	
 	ctx.writeStream.Close()
 	ctx.writeStream = null
-
-	r := GInterpCntx.GetMCFunc(intGetFunc("internalHVEntryPoint2")->{BoxFuncBody^})
-	r.Print()
 
 	printf("end\n")
 
@@ -34,9 +49,12 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 CollectFunctionsCtx := class extend TGCObject
 {
+	WriteGlobals := List.{GlobalVar2^}
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
 	UsedClasses := List.{BoxClass^}
+
+	UsedTypes := AVLSet.{Type^}
 	
 	iCtx := MCInterpContext^
 
@@ -47,6 +65,7 @@ CollectFunctionsCtx := class extend TGCObject
 	checkFunctions := HybridStack.{BoxFuncBody^,20}
 
 	checkedGlobals := AVLSet.{GlobalVar2^}
+	checkGlobals := HybridStack.{GlobalVar2^,20}
 
 	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
 	{
@@ -84,11 +103,13 @@ CollectFunctionsCtx := class extend TGCObject
 		if tp == null
 			return void
 
+		UsedTypes.Insert(tp)
 		while tp.Base != null
 		{
 			if tp is TypeArrayView
 				checkType(tp->{TypeArrayView^}.viewClassType)
 			tp = tp.Base
+			UsedTypes.Insert(tp)
 		}
 
 		if tp is TypeClass
@@ -131,22 +152,23 @@ CollectFunctionsCtx := class extend TGCObject
 
 		checkType(glb.GetType())
 		checkedGlobals.Insert(glb)
-		//checkGlobals.PushFront(glb)
+		checkGlobals.PushFront(glb)
 	}
 
 	Collect := !() -> void
 	{
-		while checkFunctions.Size() != 0 or checkClasses.Size() !=  0
+		while checkFunctions.Size() != 0 or checkClasses.Size() != 0 or checkGlobals.Size() != 0
 		{
 			if checkFunctions.Size() != 0
 			{
 				fnc := checkFunctions.Pop()
 				mcFnc := iCtx.GetMCFunc(fnc)
 
+				checkType(fnc.GetType())
+
 				assert(mcFnc != null)
 
 				WriteFunctions.Push(fnc)
-
 
 				for it : mcFnc.Objects
 				{
@@ -172,6 +194,8 @@ CollectFunctionsCtx := class extend TGCObject
 				checkType(cls.VTableType?.ItType)
 				checkType(cls.Fields[^].Value)
 				checkType(cls.Parents[^].ItType)
+				checkGlobal(cls.VTableValue?)
+
 
 				for it : cls.VTable
 				{
@@ -180,15 +204,23 @@ CollectFunctionsCtx := class extend TGCObject
 						cnst := it->{VTableVar^}.ItConst
 
 						if cnst is CheckInfoConst
+						{
 							checkGlobal(cnst->{CheckInfoConst^}.ItGlobVar)
-					}
-					if it is VTableFunc
+						}
+					}else if it is VTableFunc
 					{
 						checkFunction(it->{VTableFunc^}.Value)
+					}else {
 					}
 				}
 
 				UsedClasses.Push(cls)
+			}
+			if checkGlobals.Size() != 0
+			{
+				glb := checkGlobals.Pop()
+				checkConstant(glb.value?)
+				WriteGlobals.Push(glb)
 			}
 		}
 
@@ -214,5 +246,21 @@ CollectFunctionsCtx := class extend TGCObject
 			val = 1
 		val = max(val,getDepth(cls.Parents[^]))
 		return val + 1
+	}
+
+	Workarounds := !() -> void
+	{
+		ms := BoxUnit^
+		for spc : CodeSpaced
+		{
+			for md : cps.Modules
+			{
+				ms = md.GetItem("memset")?
+			}
+		}
+		if ms? is in BoxFunc
+		{
+			checkFunction(ms->{BoxFunc^})
+		}
 	}
 }

@@ -15,6 +15,7 @@ MCInterpContext := class
 	
 	vtableFunctions := HVTable2.{BoxFuncBody^,void^}
 
+	InterpMode := bool
 
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
 	{
@@ -353,7 +354,8 @@ MCInterpContext := class
 		itm.CreateMCFunction(buildCtx&)
 		result = buildCtx.CreateMCFunction()
 
-		result = InterpPassPrepare(result)
+		if InterpMode
+			result = InterpPassPrepare(result)
 		result.BaseFunction = itm
 
 		funcs[itm] = result
