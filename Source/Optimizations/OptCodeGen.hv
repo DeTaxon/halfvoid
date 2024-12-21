@@ -17,29 +17,37 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	PrintDebugMeta(ctx)
 	PrintDeclares(ctx)
 
-	for st : GlobalStrings
+	for st : GlobalStrings //TODO replace
 	{
 		st.PrintCode(ctx)
 	}
 	c.UsedClasses[^].PrintAsType(ctx)
-	c.WriteGlobals[^].PrintCodeVar(ctx)
+	OptPrintGlobals(GInterpCntx&,ctx,c.WriteGlobals)
 	c.DeclareFunctions[^].PrintCode(ctx)
 	c.WriteFunctions[^].PrintCode(ctx)
 
 	CodeSpaces[^].Files[^].PrintCode(ctx)
 	DummyFile?.PrintCode(ctx)
 
-	c.UsedTypes[^].PrintMeta(ctx)
 
-
-	for refObj,refInd : GRefTypes
+	PrintEmbeddedFiles(ctx) //TODO only needed
+	if DebugMode
 	{
-		if refInd in c.UsedTypes
-			refObj.PrintMeta(ctx)
+		c.UsedTypes[^].PrintMeta(ctx)
+
+		for refObj,refInd : GRefTypes
+		{
+			if refInd in c.UsedTypes
+				refObj.PrintMeta(ctx)
+		}
 	}
 	
 	ctx.writeStream.Close()
 	ctx.writeStream = null
+
+	//tst := intGetFunc("TryAddCallCommand")
+	//tst2 := CodeCheckCtx.GetMCFunc(tst->{BoxFuncBody^})
+	//tst2.Print()
 
 	printf("end\n")
 
@@ -92,8 +100,8 @@ CollectFunctionsCtx := class extend TGCObject
 			checkFunction(fnc->{ResistFunc^}.base)
 		}else if fnc is BuildInVirtualCall {
 			checkFunction(fnc->{BuildInVirtualCall^}.wrappedFunc)
-		}else {
-			assert(false)
+		}else  {
+			//assert(false)
 		}
 		
 	}
@@ -132,8 +140,21 @@ CollectFunctionsCtx := class extend TGCObject
 		{
 			fType := tp->{TypeFunc^}
 
-			checkType(fType.Params[^].ItType)
+			for pars,i : fType.Params
+			{
+				checkType(pars.ItType)
+				if pars.IsRef
+				{
+					checkType(pars.ItType.GetPoint())
+					pars.ItType.MakeDebugRef()
+				}
+			}
 			checkType(fType.ResultType)
+
+			tp2 := NormalizeFuncType(tp->{TypeFunc^})
+
+			if tp != tp2
+				checkType(tp2)
 		}
 	}
 	checkConstant := !(BoxExeConstObj^ cnst) -> void
@@ -162,6 +183,9 @@ CollectFunctionsCtx := class extend TGCObject
 			if checkFunctions.Size() != 0
 			{
 				fnc := checkFunctions.Pop()
+
+				if fnc is in BoxFuncBody and not fnc->{BoxFuncBody^}.IsParsed()
+					continue
 				mcFnc := iCtx.GetMCFunc(fnc)
 
 				checkType(fnc.GetType())
@@ -209,7 +233,7 @@ CollectFunctionsCtx := class extend TGCObject
 						}
 					}else if it is VTableFunc
 					{
-						checkFunction(it->{VTableFunc^}.Value)
+						checkFunction(it->{VTableFunc^}.Value) //TODO function can be parsed but still not be used
 					}else {
 					}
 				}
@@ -263,4 +287,66 @@ CollectFunctionsCtx := class extend TGCObject
 			checkFunction(ms->{BoxFunc^})
 		}
 	}
+}
+OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,GlobalVar2^[] globals) -> void
+{
+	wr := ref ctx.writeStream^
+	for glob : globals
+	{
+		echo := TEchoStream
+		if GlobTryPrintConst(iCtx,glob,echo)
+		{
+			glob.PrintOutputName(ctx)
+			wr << " = global "
+			wr << echo.GetString()
+			wr << "\n"
+		}else{
+			glob.PrintCodeVar(ctx)
+		}
+	}
+}
+
+GlobTryPrintConst := !(MCInterpContext^ iCtx,GlobalVar2^ var,Stream strm) -> bool
+{
+	tp := var.GetType()
+
+	if tp == null
+		return false
+
+	return GlobTryPrintConst2(iCtx,tp,iCtx.GetGlobalVarMem(var),strm)
+}
+GlobTryPrintConst2 := !(MCInterpContext^ iCtx,Type^ varType,void^ varPtr,Stream strm) -> bool
+{
+	ctx := LLVMWriteContext
+	ctx.writeStream = strm& //TODO bad
+
+	if varType is in TypeArr
+	{
+		sz := varType->{TypeArr^}.len
+		baseSize := varType.Base.GetSize()
+
+		strm << "[" << sz << " x " 
+		varType.Base.PrintType(ctx&)
+		strm << "] ["
+
+		for i : sz
+		{
+			subPtr := varPtr->{u8^}[baseSize*i]&
+
+			if i != 0
+				strm << ","
+			if not GlobTryPrintConst2(iCtx,varType.Base,subPtr,strm)
+				return false
+		}
+
+		strm << "]"
+		return true
+	}
+	if varType == GTypeInt
+	{
+		val := varPtr->{int^}^
+		strm << "i32 " << val
+		return true
+	}
+	return false
 }

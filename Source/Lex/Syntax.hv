@@ -141,6 +141,9 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 							return true
 					if RuleUse(begin,"case()",RuleCase) return true
 					if RuleUse(begin,"#func()",RuleRunFunc) return true
+				case "#FileCommands"
+					if RuleUse(begin,"~d",RuleFileRun)
+						return true
 			}
 		}
 	}
@@ -837,5 +840,19 @@ RuleFor := !(void^ itr)-> int
 
 	if It.GetValue() != "{}" and not InBlockData(It) return 0
 	return Size
+}
+
+RuleFileRun := !(void^ itr) -> int
+{
+	It := itr->{Token^}
+
+	if It.GetValue() != "#Run" return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if It.GetValue() != "{}" return 0
+
+	return 2
 }
 

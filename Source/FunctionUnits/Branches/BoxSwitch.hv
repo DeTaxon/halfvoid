@@ -239,5 +239,4 @@ BoxSwitch := class extend BoxExeObj
 			it.caseBody?.PrintDebugMeta(ctx)
 		defaultNode?.PrintDebugMeta(ctx)
 	}
-
 }

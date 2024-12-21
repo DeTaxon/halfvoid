@@ -176,6 +176,18 @@ DeferBlock := class extend BoxUnit
 	{
 		return EndLabel&
 	}
+	WriteStartMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		DefStackSize = ctx.DeferObjects.Size()
+	}
+	WriteEndMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		while DefStackSize < ctx.DeferObjects.Size()
+		{
+			ob := ctx.DeferObjects.Pop()
+			ob.WriteDeferMC(ctx)
+		}
+	}
 }
 
 PrintBranch := !(LLVMWriteContext^ ctx, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void

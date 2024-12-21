@@ -42,4 +42,9 @@ BoxFuncBodyStr := class extend BoxFuncBody
 	}
 	ParseBody := virtual !() -> void {}
 	IsComplete := virtual !() -> bool { return funcIsComplete }
+
+	IsParsed := virtual !() -> bool
+	{
+		return funcIsComplete
+	}
 }

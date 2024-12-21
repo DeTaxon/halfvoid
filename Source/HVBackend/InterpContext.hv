@@ -123,12 +123,16 @@ MCInterpContext := class
 						fnc = fnc->{ResistFunc^}.base->{BoxFuncBody^}
 					}
 					assert(fnc is in BoxFuncBody)
-					mc := GetMCFunc(fnc)
-					fncPointer := GetFunctionPointer(mc)
-					memPtr->{void^^}^ = fncPointer
 
-					//memPtr->{void^^}^ = asFnc.Value
-					vtableFunctions.Add(asFnc.Value->{BoxFuncBody^},fncPointer)
+					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function an now it's parsed
+					{
+						mc := GetMCFunc(fnc)
+						fncPointer := GetFunctionPointer(mc)
+						memPtr->{void^^}^ = fncPointer
+
+						//memPtr->{void^^}^ = asFnc.Value
+						vtableFunctions.Add(asFnc.Value->{BoxFuncBody^},fncPointer)
+					}
 				}
 			}
 		}else if vr.value != null
@@ -211,6 +215,8 @@ MCInterpContext := class
 			}
 		} else if obj is BoxExeNull {
 			mem->{void^^}^ = null
+		} else if obj is BoxExeBool {
+			mem->{bool^}^ = (obj == GBoolTrue)
 		}else{
 			printf("Unknown const %s\n",obj.UnitName)
 			assert(false)
@@ -301,6 +307,8 @@ MCInterpContext := class
 			return ffi_type_double
 		}else if itType == GTypeInt{
 			return ffi_type_sint32
+		}else if itType == GTypeU32{
+			return ffi_type_uint32
 		}else if itType == GTypeU64{
 			return ffi_type_uint64
 		}else if itType == GTypeS64{
@@ -311,6 +319,8 @@ MCInterpContext := class
 			return ffi_type_uint8
 		}else if itType is TypeVector {
 			return ffi_type_pointer
+		}else if itType is TypeEnum {
+			return ffi_type_sint32
 		}else{
 			printf("unknown type %s\n",itType.GetBADStr().Str())
 			assert(false)

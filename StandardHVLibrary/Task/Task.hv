@@ -93,15 +93,6 @@ Task := class extend TGCObject
 	}
 }
 
-
-//TODO remove it, there is a crash in interpreter
-//it seems AppendClass breaks JITPass for classes
-ACompletion := !(Task^  tsk) -> void
-	#Mark("JITPass")
-{
-	tsk?.AwaitCompletion()
-}
-
 TaskStackUsageInfo := class
 {
 	TotalSize := size_t

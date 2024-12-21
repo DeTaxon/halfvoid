@@ -235,6 +235,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		
 		return GObjNone
 	}
+	if cmd == "#Run"
+	{
+		return CommandRun(itm)	
+	}
 	return null
 }
 

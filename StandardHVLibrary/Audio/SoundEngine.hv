@@ -108,8 +108,7 @@ SoundEngine := class extend TGCObject
 	{
 		quit = true
 		busySources[^].Cancel()
-		ACompletion(pollTask)
-		//pollTask?.AwaitCompletion()
+		pollTask?.AwaitCompletion()
 
 		for it : busySources
 		{

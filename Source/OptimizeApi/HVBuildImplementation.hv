@@ -54,6 +54,9 @@ AppendClass HVContextImplementation
 			return void
 		bdy := obj->{BoxFuncBody^}
 
+		if bdy.body == null
+			return void
+
 		lst := List.{Tuple.{HV_Object^,int,HV_Object^}}
 		lst.EmplaceFront(null->{HV_Object^},0,bdy.body)
 

@@ -216,5 +216,27 @@ BoxSwitchIs := class extend BoxExeObj
 			it.caseBody?.PrintDebugMeta(ctx)
 		defaultNode?.PrintDebugMeta(ctx)
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		mainVar.WriteMC(ctx)
+		//TODOTODOTODOTODO defer block?
+		for it : caseNodes
+		{
+			goLabelId := ctx.GetLabel(it.useNode)
+			it.defBlock.WriteStartMC(ctx)
+			cmpRes := it.cmpCheck.WriteMC(ctx)
+			it.defBlock.WriteEndMC(ctx)
+			HVB_ins_jump_if_bool(ctx,goLabelId,cmpRes.CreatedId)
+			it.nopeLabel.WriteGoMC(ctx)
+			it.useNode.WriteMC(ctx)
+			it.caseBody?.WriteMC(ctx)
+			quitNode.WriteGoMC(ctx)
+			it.nopeLabel.WriteMC(ctx)
+			
+		}
+		defaultNode?.WriteMC(ctx)
+		quitNode.WriteMC(ctx)
+
+	}
 
 }

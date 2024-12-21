@@ -64,5 +64,9 @@ FuncToPointerObj := class extend BoxExeObj
 	{
 		func.PrintName(ctx)
 	}
-	
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODOTODOTODOTODO must not be empty or called
+		ctx.AddFuncConst(func)
+	}
 }

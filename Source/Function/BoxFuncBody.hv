@@ -102,7 +102,7 @@ BoxFuncBody := class extend BoxFuncCommon
 		return ObjType
 	}
 
-	IsParsed := !() -> bool
+	IsParsed := virtual !() -> bool
 	{
 		return StartedParse
 	}

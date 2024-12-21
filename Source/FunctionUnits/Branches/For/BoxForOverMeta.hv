@@ -101,4 +101,16 @@ BoxForOverMeta := class extend BoxExeObj
 		dwnObjs[^].MetaObj.PrintDebugMeta(ctx)
 		blocks[^].PrintDebugMeta(ctx)
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODO check
+		dwnObjs[^].MetaObj.WriteMC(ctx)
+		for it,i : blocks
+		{
+			if middleVars.Contain(i)
+				middleVars[i][^].WriteMC(ctx)
+
+			it.WriteMC(ctx)
+		}
+	}
 }

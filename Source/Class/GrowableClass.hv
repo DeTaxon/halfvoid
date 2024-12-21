@@ -117,4 +117,8 @@ GrowableClassMetaFieldsLocal := class extend  BoxMetaGrowingObject
 		itClass.AwaitTypeState()
 		return GetExeString(itClass.GetFieldByIndexTuple(ind).Field.Name.GetString())
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		//TODOTODOTODOTODO must not be empty or called
+	}
 }
