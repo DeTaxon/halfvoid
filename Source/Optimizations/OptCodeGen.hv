@@ -274,18 +274,14 @@ CollectFunctionsCtx := class extend TGCObject
 
 	Workarounds := !() -> void
 	{
-		ms := BoxUnit^
-		for spc : CodeSpaced
+		msCall := CreateFuncCall("memset",![GObjNull,GetExeInt(0),GetExeInt(0)])
+
+		if msCall? is BoxFuncCall
 		{
-			for md : cps.Modules
-			{
-				ms = md.GetItem("memset")?
-			}
+			ms2 := msCall->{BoxFuncCall^}.callObj
+			checkFunction(ms2)
 		}
-		if ms? is in BoxFunc
-		{
-			checkFunction(ms->{BoxFunc^})
-		}
+			
 	}
 }
 OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,GlobalVar2^[] globals) -> void
