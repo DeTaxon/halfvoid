@@ -1,24 +1,16 @@
 
 
+gWords := !["a","b", "c"]
 
-TestE := enum
+TestIt := !(StringSpan st) -> void
 {
-	"One","Two","Three"
+	st->{Str}
+	t := new TGCObject
 }
 
 main := !(char^[] args) -> int
 {
-	c := TestE
-
-	c = "One"
-	switch c
-	{
-		case "One"
-			printf("test a\n")
-		case in !["Two","Three"] 
-			printf("test b\n")
-	}
-
+	TestIt(StringSpan("Hello"))
 }
 
 

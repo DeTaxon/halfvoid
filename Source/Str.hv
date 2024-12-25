@@ -29,6 +29,10 @@ TypeStr := class extend TypePointLike
 	}
 	IsComplexType := virtual !() -> bool
 	{
+		return false
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
 		return true
 	}
 }
