@@ -298,3 +298,8 @@ ComputeHashOnLines := !(Blob^ fileData, int startLine, int endLine) -> u32
 	crc.Feed(funcCode.NonNullStr(),funcCode.Size())
 	return crc.Get()
 }
+
+MakeErrorMsg := !(Token^ itm,Str errorMsg) -> void
+{
+	CurrentWork?.SetErrorMessage(itm.MakeError(errorMsg))
+}
