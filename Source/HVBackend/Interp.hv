@@ -701,7 +701,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			v3 := thisFrame.GetObjectPtr(thisLine.var3)
 
 
-			if varType is in TypePoint
+			if varType is in TypePoint or varType == GTypeStr
 			{
 				objSet := ref interpFunc.Objects[thisLine.var1]
 				assert(objSet& is MCReference)

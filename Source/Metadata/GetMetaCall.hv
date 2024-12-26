@@ -275,13 +275,58 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 }
 strAsString := !(BoxExeObj^ obj) -> BoxExeObj^
 {
-	if obj.IsMem()
+	if obj.IsMem()// and useMem
 	{
-		unrf := new UnrefFuncCall(obj)
-		exc := new PtrExchange(unrf,GTypeStringP.GetPoint())
-		return new PtrToRef(exc)
+		return new StrToStringPointerExchange(obj,GTypeStringP)
 	}else{
 		return new PtrExchange(obj,GTypeStringP)
+	}
+}
+
+StrToStringPointerExchange := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ toType) -> void
+	{
+		Down = obj
+		ObjType = toType
+	}
+	IsMem := virtual !() -> bool { return Down.IsMem() }
+	NotifyMemUse := virtual !() -> void
+	{
+		Down.NotifyMemUse()
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointPre(ctx)
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPointUse(ctx)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		Down.PrintUse(ctx)
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		return Down.WriteMC(ctx)
+	}
+
+	IsEditSupported := virtual true
+	ElementName := virtual "StrToStringPointer"
+
+	SubElementsCount := virtual !() -> int { return 1 }
+	GetSubElement := virtual !(int index) -> HV_Object^
+	{
+		if index == 0
+			return Down
+		return null
 	}
 }
 

@@ -1,13 +1,49 @@
 
 
-TestIt := !(Str a,Str b) -> void
+TestIt := !(Str a,Str b) -> int
 {
-	a.itSize
+	if a->AsString == null or b->AsString == null
+	{
+		if a->AsString == null and b->AsString == null
+			return 0
+		if a->AsString == null
+		{
+			if b.itSize == 0
+				return 0
+			return -1
+		}
+		//if b->AsString == 0
+		//{
+			if a.itSize == 0
+				return 0
+			return 1
+		//}
+	}
+
+	aSize := a.itSize
+	bSize := b.itSize
+	minSize := min(aSize,bSize)
+	cmpRes := strncmp(a.charPtr,b.charPtr,minSize)
+
+	if cmpRes != 0
+		return cmpRes
+		
+	if aSize == bSize
+		return 0
+	if minSize == aSize
+		return -1
+	return 1
+}
+TestIt2 := !(Str a,Str b) -> int
+{
+	
+	a->AsString
 }
 
 main := !(char^[] args) -> int
 {
 	TestIt("Hello","World")
+	TestIt2("Hello","World")
 }
 
 
