@@ -163,3 +163,8 @@ StrToInt := !(StringSpan strSpn) -> int
 	if Min return -Sum
 	return Sum
 }
+"<=>" := !(StringSpan a,char^ b) -> int
+{
+	vw := StringSpan(b)
+	return a <=> vw&
+}

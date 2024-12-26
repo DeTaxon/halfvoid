@@ -1,16 +1,13 @@
 
 
-gWords := !["a","b", "c"]
-
-TestIt := !(StringSpan st) -> void
+TestIt := !(Str a,Str b) -> void
 {
-	st->{Str}
-	t := new TGCObject
+	a.itSize
 }
 
 main := !(char^[] args) -> int
 {
-	TestIt(StringSpan("Hello"))
+	TestIt("Hello","World")
 }
 
 
