@@ -1,0 +1,67 @@
+
+
+CarPToStrPreCompile := !() -> void
+	#Mark("HVOptimizationWave")
+{
+
+	extraFieldClass := intGetClass("StringOnCStr")
+
+	if extraFieldClass == null
+		return void
+
+	expFuncType := GetFuncType(![GTypeChar.GetPoint(),extraFieldClass.ItType],![false,true],GTypeStr,false)
+
+	changeFunc := BoxFuncBody^
+	GetItemGlobal("->{}", objs ==> {
+		for it : objs
+		{
+			if it is BoxFuncTemplateBody
+			{
+				for fnc : it.AllFuncs[^]
+				{
+					if fnc.GetType() == expFuncType
+					{
+						changeFunc = fnc->{BoxFuncBody^}
+						return true
+					}
+				}
+			}
+		}
+	})
+
+	if changeFunc == null
+		return void
+
+	gVars := static AVLMap.{Str,GlobalVar2^}
+	
+	HV.ForEachFunction( fnc ==> {
+		HV.ForEachFuncElement(fnc,(HV_Object^ thisElement, HV_Object^ upElement,int thisIndex) ==> {
+			if thisElement is not in BoxFuncCall
+				return void
+			if thisElement->{BoxFuncCall^}.callObj != changeFunc
+				return void
+			stVal := thisElement.GetSubElement(1)
+
+			if stVal is not BoxExeString
+			{
+				//TODO log out
+				return void
+			}
+			val := stVal->{BoxExeString^}.Value->{Str}
+
+			if not gVars.Contain(val)
+			{
+				newVar := CreateGlobalVar("",GTypeStrBase,false)
+				gVars[val] = newVar
+
+				newString := ref GInterpCntx.GetGlobalVarMem(newVar)->{String^}^
+
+				newString.itSize = val.itSize
+				newString.charPtr = val.charPtr
+			}
+			upElement.ReplaceSubElement(thisIndex,new UnrefFuncCall(gVars[val].CreateCall()))
+
+		})
+	})
+}
+

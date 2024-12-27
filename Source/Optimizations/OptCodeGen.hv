@@ -344,5 +344,24 @@ GlobTryPrintConst2 := !(MCInterpContext^ iCtx,Type^ varType,void^ varPtr,Stream 
 		strm << "i32 " << val
 		return true
 	}
+	if varType == GTypeStrBase
+	{
+		stClass := GTypeStrBase->{TypeClass^}.ToClass
+
+		stPtr := ref varPtr->{String^}^
+		GTypeStrBase.PrintType(ctx&)
+		strm << " {"
+		stClass.VTableType.ItType.PrintType(ctx&)
+		strm << "* "
+		stClass.VTableValue.PrintOutputName(ctx&)
+		strm <<  ","
+		strm << "i32 " << 9999 << ","
+		strm << "i8* "
+		GetExeString(stPtr.GetString()).PrintConst(ctx&)
+		strm << ","
+		strm << "i32 " << stPtr.itSize
+		strm << "}"
+		return true
+	}
 	return false
 }

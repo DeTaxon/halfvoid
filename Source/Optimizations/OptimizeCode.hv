@@ -4,7 +4,6 @@ OptimizeCode := !() -> void
 {
 	InitRunContext()
 
-
 	for it : #MarkedFunctions("HVOptimizationWave")
 	{
 		it()

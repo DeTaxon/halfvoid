@@ -1,14 +1,16 @@
 
 GTypeStringP := Type^
+GTypeStrBase := Type^
 GTypeStr := Type^
 
 CreateStrType := !() -> void
 {
-	GTypeStrBase := intGetClass2("String")
-	assert(GTypeStrBase != null)
-	GTypeStringP = GTypeStrBase.ItType.GetPoint()
+	GTypeStrBaseClass := intGetClass2("String")
+	assert(GTypeStrBaseClass != null)
+	GTypeStrBase = GTypeStrBaseClass.ItType
+	GTypeStringP = GTypeStrBase.GetPoint()
 
-	GTypeStr = new TypeStr(GTypeStrBase.ItType)
+	GTypeStr = new TypeStr(GTypeStrBase)
 	CodeSpaces[-1].Types[StringSpan("Str")] = GTypeStr
 
 	ExchangeList.Push(new ExchangeStrToStringPointerClass)
