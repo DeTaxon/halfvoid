@@ -157,7 +157,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			}
 			echo << "}"
 		}
-		result->AsString = echo.GetString()
+		result = echo.GetStr()
 	}
 	SetName := virtual !(Str nm) -> void
 	{

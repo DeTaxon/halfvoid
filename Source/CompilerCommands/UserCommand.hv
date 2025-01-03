@@ -28,7 +28,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 		echo := TEchoStream
 		echo << "#" << cmdName->{TokenString^}.Value.Str()
-		spn := echo.GetString()
+		spn := echo.GetStr().Str()
 
 		userCmd := ref UserCommands[spn]
 
@@ -202,7 +202,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				CacheString << "_~&a№_"
 			}
 
-			resBlb = userCmd.CachedValues.GetCachedValue(CacheString.GetString(),usedFiles,callObj)
+			resBlb = userCmd.CachedValues.GetCachedValue(CacheString.GetStr(),usedFiles,callObj)
 		}else{
 
 			resBlb = callObj()

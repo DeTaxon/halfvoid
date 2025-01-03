@@ -124,14 +124,14 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << par.ItType.GetBADStr().Str()
 						tmpl << "\n"
 						tmpl << "Expect ref " << (par.IsRef ?: "yes" : "no") << "\n"
-						c := tmpl.GetString()
+						c := tmpl.GetStr()
 						c.IncRef() //TODO memory leak
 						if CurrentLine?.ItToken != null
 						{
-							CurrentWork?.SetErrorMessage(CurrentLine.ItToken.MakeError(c.Str()))
+							CurrentWork?.SetErrorMessage(CurrentLine.ItToken.MakeError(c))
 							printf("hey %s %s\n",pre.UnitName,pre.GetType().GetBADStr().Str())
 
-							printf("hey %s\n",CurrentLine.ItToken.MakeError(c.Str())) //TODO error is not passed
+							printf("hey %s\n",CurrentLine.ItToken.MakeError(c)) //TODO error is not passed
 							exit(-1)
 						}else{
 							CurrentWork?.SetErrorMessage(c.Str())

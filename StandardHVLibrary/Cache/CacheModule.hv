@@ -22,7 +22,7 @@ CacheModule := class
 		{
 			allKey << it.GetPath()
 		}
-		resKey := allKey.GetString()
+		resKey := allKey.GetStr()
 		result->AsString = Base64Encode(resKey.Str(),resKey.Size())
 	}
 	TryGetCacheValue := !(Str st, File^[] files) -> Blob^

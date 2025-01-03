@@ -124,7 +124,7 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 				st << "~{"
 				st << strValue[1..0]
 				st << "}"
-				res.ClobData.Push(st.GetString())
+				res.ClobData.Push(st.GetStr()->AsString)
 			}
 			itr = itr.Right
 		}

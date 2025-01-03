@@ -58,7 +58,7 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 	{
 		bigName := TEchoStream
 		bigName << ". " << itm.Down.GetValue()
-		bigNameSpan := GetConstString(bigName.GetString().Str())
+		bigNameSpan := GetConstString(bigName.GetStr())
 		if itm.Down.Right == null
 			return null
 		if itm.Down.Right.Right != null

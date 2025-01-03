@@ -3,5 +3,5 @@ CreateString := !(args...) -> Str
 	echo := TEchoStream
 	for arg : args
 		echo << arg
-	result->AsString = echo.GetString()
+	result = echo.GetStr()
 }

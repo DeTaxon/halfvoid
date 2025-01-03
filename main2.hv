@@ -1,13 +1,17 @@
 
 
-TestIt := !(Str a,Str b) -> int
+GG := class
 {
-	printf("%s %s\n",a,b)
+	Test := virtual !(Str err) -> Str
+	{
+		return err
+	}
 }
-
 main := !(char^[] args) -> int
 {
-	TestIt("Hello","World")
+	c := GG
+	c2 := c.Test("Hi")
+	printf("hey %s\n",c2)
 }
 
 

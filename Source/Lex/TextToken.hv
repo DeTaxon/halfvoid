@@ -23,7 +23,7 @@ Token := class
 		//assert(false)
 	}
 
-	MakeError := !(char^ info) -> Str
+	MakeError := !(Str info) -> Str
 	{
 		ln := TEchoStream
 
@@ -59,7 +59,7 @@ Token := class
 				ln << "local var " << nv.Name << " as unknown type\n" 
 			}
 		}
-		result->AsString = ln.GetString()
+		result = ln.GetStr()
 
 		if CurrentWork == null or DisableScary
 		{

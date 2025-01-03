@@ -301,5 +301,7 @@ ComputeHashOnLines := !(Blob^ fileData, int startLine, int endLine) -> u32
 
 MakeErrorMsg := !(Token^ itm,Str errorMsg) -> void
 {
-	CurrentWork?.SetErrorMessage(itm.MakeError(errorMsg))
+	c := itm.MakeError(errorMsg)
+	if CurrentWork != null
+		CurrentWork.SetErrorMessage(c)
 }

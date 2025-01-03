@@ -34,7 +34,7 @@ TextStream := class extend Stream
 	}
 	Flush := !() -> void
 	{
-		st := EchoStream.GetString() //TODO optimizable
+		st := EchoStream.GetStr() //TODO optimizable
 		if st.Size() != 0
 		{
 			BaseStream.Write(st.Str(),st.Size())

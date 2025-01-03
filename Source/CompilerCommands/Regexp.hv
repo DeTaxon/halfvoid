@@ -41,7 +41,7 @@ CommandGetRegexp := !(Token^ itm) -> BoxExeObj^
 
 		echo <<  v1->{BoxExeString^}.Value << v2->{BoxExeInt^}.Value
 	}
-	resSt := echo.GetString()
+	resSt := echo.GetStr().GetString()
 
 	regBlob := CacheBlobByStringReg(resSt, x ==> Blob^ {
 		lx := LexBuilder

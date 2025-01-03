@@ -92,7 +92,7 @@ StringConcat := !(args...) -> String^
 	{
 		echo << it
 	}
-	return echo.GetString()
+	return echo.GetStr()->AsString
 }
 StrConcat := !(args...) -> Str
 {
@@ -102,5 +102,5 @@ StrConcat := !(args...) -> Str
 	{
 		echo << it
 	}
-	result->AsString = echo.GetString()
+	return echo.GetStr()
 }

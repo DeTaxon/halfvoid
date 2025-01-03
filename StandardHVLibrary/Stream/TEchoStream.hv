@@ -78,10 +78,11 @@ TEchoStream := class extend Stream
 		BufSize := 4096
 		return pages.Size()*BufSize + inPtrSize
 	}
-	GetString := !()  -> String^ 
+	GetStr := !()  -> Str 
 	{
 		if inPtrSize == 0{
-			return new String("")
+			result->AsString = new String("")
+			return void
 		}
 		BufSize := 4096
 		indItr := pages.Size()*BufSize
@@ -98,7 +99,7 @@ TEchoStream := class extend Stream
 			memcpy(res[indItr]&,it,BufSize)
 			indItr += BufSize
 		}
-		result = new String(res,outSize)
+		result->AsString = new String(res,outSize)
 	}
 	GetBlob := !()  -> Blob^
 	{

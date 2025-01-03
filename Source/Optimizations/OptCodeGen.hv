@@ -294,7 +294,7 @@ OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,GlobalVar2^[] g
 		{
 			glob.PrintOutputName(ctx)
 			wr << " = global "
-			wr << echo.GetString()
+			wr << echo.GetStr()
 			wr << "\n"
 		}else{
 			glob.PrintCodeVar(ctx)

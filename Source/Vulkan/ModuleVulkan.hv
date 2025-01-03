@@ -566,7 +566,7 @@ ModuleVulkan := class extend ModuleInterface
 						strm << "sType = " << intVal << "\n"
 						strm << "}\n"
 
-						str := StrCopy(strm.GetString().Str())
+						str := StrCopy(strm.GetStr())
 
 						token := GetObjectsFromMemory(GetAnyFile(),str,strlen(str))
 						start := new TokenSymbol(StringSpan("{}"),1)

@@ -16,9 +16,9 @@ TryCheckGetParam := !(Token^ itm) -> BoxExeObj^
 
 			c := TEchoStream
 			c << "Could not get param " << asItm.Value
-			c2 := c.GetString()
+			c2 := c.GetStr()
 			c2.IncRef()
-			errCode := itm.MakeError(c2.Str()) //todo better explanation
+			errCode := itm.MakeError(c2) //todo better explanation
 
 			CurrentFuncWork.SetErrorMessage(errCode)
 		}

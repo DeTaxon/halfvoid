@@ -27,7 +27,7 @@ mainStatusFunc := !() -> void
 		st := TEchoStream
 		st << "Work units in progress " << WorkBag.works.Size()
 
-		lst.Push(st.GetString())
+		lst.Push(st.GetStr())
 
 
 		gotWorks := AVLSet.{CWorkUnit^}
@@ -57,10 +57,10 @@ mainStatusFunc := !() -> void
 				{
 				case CWorkClassCompile
 					st << "Working on class " << it.itClass.GetGoodName()
-					lst.Push(st.GetString())
+					lst.Push(st.GetStr()->AsString)
 				case CWorkFuncCompile
 					st << "Working on function " << it.itFunc.GetGoodName() << " " << it.itFunc.GetFileScope().fileName.GetString().Str() << ":" << it.itLine
-					lst.Push(st.GetString())
+					lst.Push(st.GetStr()->AsString)
 				}
 
 				maxMessages -= 1

@@ -98,7 +98,7 @@ Type := class extend BoxExeConstObj
 		PrintDebugName(ctx&)
 		//ec << ","
 		//PrintType(ec&)
-		return ec.GetString()
+		return ec.GetStr()->AsString
 	}
 	IsMetaReady := virtual !() -> bool
 	{

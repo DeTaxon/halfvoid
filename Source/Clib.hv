@@ -166,7 +166,7 @@ CLib := class extend ModuleInterface
 				iNeedFString := TEchoStream
 				iNeedFString << "clib module: could not load type " << name
 				dat := TokenData
-				CurrentWork?.SetErrorMessage(dat.MakeError(iNeedFString.GetString().Str()))
+				CurrentWork?.SetErrorMessage(dat.MakeError(iNeedFString.GetStr()))
 				return null
 			}
 
@@ -311,7 +311,7 @@ CLib := class extend ModuleInterface
 			dt << ind << "&->{void^^}^ = lib.Get(\"" << ind << "\")\n"
 		}
 
-		st := dt.GetString()
+		st := dt.GetStr()
 		st.IncRef() //TODO memory leak
 
 		blank := StringSpan(st.Str())

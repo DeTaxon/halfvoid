@@ -266,7 +266,7 @@ BoxClassBody := class extend BoxClassPoison
 			}
 			echo << "}"
 		}
-		result->AsString = echo.GetString()
+		return echo.GetStr()
 	}
 	WorkBody := virtual !(ClassReloadOldData^ oldData) -> void
 	{
@@ -662,7 +662,7 @@ BoxClassBody := class extend BoxClassPoison
 							exeObj := TryGetExeCall(itm)
 							if exeObj == null
 							{
-								CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
+								MakeErrorMsg(itm,"Unknown object")
 								return void
 							}
 							if exeObj is in BoxExeConstObj and isVirtual
@@ -780,7 +780,7 @@ CWorkClassCompile := class extend CWorkUnit
 	{
 		return errMessage
 	}
-	SetErrorMessage := virtual !(Str err) -> Str 
+	SetErrorMessage := virtual !(Str err) -> void 
 	{
 		errMessage = err
 	}

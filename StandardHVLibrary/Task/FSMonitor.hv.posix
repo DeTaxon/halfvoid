@@ -60,10 +60,10 @@ inotify_wrapper_fd := class
 					sBuf := TEchoStream
 					sBuf << node.objectName << "/" << fileName
 
-					fullPath := sBuf.GetString()
+					fullPath := sBuf.GetStr()
 
 					newFile := new File()
-					newFile.localPath->AsString = fullPath
+					newFile.localPath = fullPath
 					newFile.objName->AsString = fileName.GetString()
 
 					TaskCheckMutex.Lock()
