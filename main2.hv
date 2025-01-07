@@ -2,13 +2,13 @@
 
 MakeItDouble := !(int x) -> int, int
 {
-	return x*2
+	result.0 = x*2
 }
 
 main := !(char^[] args) -> int
 {
 	c := MakeItDouble(7)
-	printf("hey %i\n",c)
+	printf("hey %i\n",c.0)
 }
 
 

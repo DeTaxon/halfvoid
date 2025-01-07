@@ -167,9 +167,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		if not TempPrefix.CheckByCount(consts.Size())
 			return null
 
-		fInTypes := Type^[100]
-		isRefs := bool[100]
-
 		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
 
 		for it,i  : objs
@@ -337,7 +334,20 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			CurrentWork?.SetErrorMessage(rTokenTree.MakeError("Can not get result value"))
 			return null
 		}
-		return GetFuncType(objs.Size(),ArraySpan.{Type^}(fTyps[0]&,objs.Size()),ArraySpan.{bool}(iRef[0]&,objs.Size()),resTypeT,hData.ResultType.IsRef,hData.IsVargs)
+
+		resTypes := HybridQueue.{Type^,50}
+		resRefs := HybridQueue.{bool,50}
+
+		resTypes.Push(resTypeT)
+		resRefs.Push(hData.ResultType.IsRef)
+
+		for it : hData.ExtraResults
+		{
+			resTypes.Push(it.ItType)
+			resRefs.Push(it.IsRef)
+		}
+
+		return GetFuncType(ArraySpan.{Type^}(fTyps[0]&,objs.Size()),ArraySpan.{bool}(iRef[0]&,objs.Size()),resTypes,resRefs,hData.IsVargs)
 	}
 	checkType := !(BoxExeObj^ obj,Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^} resCnsts) -> Type^
 	{

@@ -45,6 +45,8 @@ FunctionHeaderInfo := class
 	IsAutoResult := bool
 	IsVargs := bool
 
+	ExtraResults := List.{FuncTemplateInput}
+
 	IsVariadic := bool
 	VariadicName := StringSpan
 
@@ -67,6 +69,22 @@ FunctionHeaderInfo := class
 				resToken2 = resToken2.Right
 			}
 			ResultType.ItType = ParseType(resToken2)
+
+			resToken2 = resToken2.Right
+
+			while resToken2?.GetValue() == ","
+			{
+				resToken2 = resToken2.Right
+
+				isRef := resToken2.GetValue() == "ref"
+				if isRef
+					resToken2 = resToken2.Right
+				extraTyp := ParseType(resToken2)
+
+				ExtraResults.Emplace(StringSpan(""),extraTyp,isRef,resToken2)
+
+				resToken2 = resToken2.Right
+			}
 		}
 		
 		checkBag := () ==> {
@@ -191,17 +209,30 @@ FunctionHeaderInfo := class
 	{
 		assert(IsOneFunc())
 
-		fTyp := Type^[100]
-		isRef := bool[100]
+		fTyp := HybridQueue.{Type^,50}
+		isRef := HybridQueue.{bool,50}
 		for it,i : Types
 		{
-			fTyp[i] = it.ItType
-			isRef[i] = it.IsRef
+			fTyp.Push(it.ItType)
+			isRef.Push(it.IsRef)
 		}
+
+		resTypes := HybridQueue.{Type^,50}
+		resRefs := HybridQueue.{bool,50}
+
 		resType := ResultType.ItType
 		if resType == null
 			resType = GTypeVoid
 
-		return GetFuncType(Types.Size(),ArraySpan.{Type^}(fTyp[0]&,Types.Size()),ArraySpan.{bool}(isRef[0]&,Types.Size()),ResultType.ItType,ResultType.IsRef,IsVargs)
+		resTypes.Push(resType)
+		resRefs.Push(ResultType.IsRef)
+
+		for it : ExtraResults
+		{
+			resTypes.Push(it.ItType)
+			resRefs.Push(it.IsRef)
+		}
+
+		return GetFuncType(fTyp,isRef,resTypes,resRefs,IsVargs)
 	}
 }

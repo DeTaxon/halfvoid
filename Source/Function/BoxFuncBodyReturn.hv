@@ -23,6 +23,17 @@ AppendClass BoxFuncBody
 		assert(ResultVar == null)
 
 		tp := ObjType->{TypeFunc^}
+
+		if tp.ExtraResults.Size() != 0
+		{
+			newType := NormalizeFuncType(tp)
+
+			ResultVar = new LocalVar("result",newType.Params[0].ItType,true,true)
+			getRes := new GetFuncResultVar(ResultVar,tp.ResultType.GetPoint())
+			ResultVar.SetCall(getRes)
+
+			return void
+		}
 		
 		if tp.ResultType != GTypeVoid
 		{

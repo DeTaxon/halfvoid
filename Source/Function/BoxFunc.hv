@@ -58,7 +58,7 @@ BoxFunc := class extend BoxExeConstObj
 		f := ctx.writeStream
 		fTyp := GetType()->{TypeFunc^}
 
-		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
+		if (fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef) or (fTyp.ExtraResults.Size() != 0)
 		{
 			GTypeVoid.PrintType(ctx)
 		}else{
@@ -83,7 +83,7 @@ BoxFunc := class extend BoxExeConstObj
 		fTyp := GetType()->{TypeFunc^}
 		needComma := false
 
-		if fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef
+		if (fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef) or fTyp.ExtraResults.Size() != 0
 		{
 			fTyp.ResultType.PrintType(ctx)
 			f^ << "* %result" 
@@ -293,20 +293,46 @@ NormalizeType := !(Type^ oldType) -> Type^
 
 NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 {
-	if inp.ResultType.IsComplexReturn()
+	if inp.ResultType.IsComplexReturn() or inp.ExtraResults.Size() != 0
 	{
 	}else{
 		return inp
 	}
 
-	if inp.ResultRef
+	if inp.ResultRef and inp.ExtraResults.Size() == 0
 		return inp
 	
+
+	resType := inp.ResultType
+
+	if inp.ExtraResults.Size() != 0
+	{
+		typs2 := HybridQueue.{Type^,50}
+
+		if inp.ResultRef
+		{
+			typs2.Push(inp.ResultType.GetPoint())
+		}else{
+			typs2.Push(inp.ResultType)
+		}
+
+		for it : inp.ExtraResults
+		{
+			if it.IsRef 
+			{
+				typs2.Push(it.ItType.GetPoint())
+			}else{
+				typs2.Push(it.ItType)
+			}
+		}
+		resType = GetTuple(typs2).ItType
+	}
+
 	k := 0
 	typs := Type^[100]
 	bls := bool[100]
 
-	typs[0] = inp.ResultType
+	typs[0] = resType
 	bls[0] = true
 	k += 1
 

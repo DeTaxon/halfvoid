@@ -40,9 +40,9 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		itType := NormalizeFuncType(fType)
 
-		if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+		if (fType.ResultType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 		{
-			ResultVar = new LocalVar(StringSpan("anon"),fType.ResultType,true,false)
+			ResultVar = new LocalVar(StringSpan("anon"),itType.Params[0].ItType,true,false)
 			CurrentFunc.AddLocalVar(ResultVar)
 			downs.Push(ResultVar.CreateVarCall())
 

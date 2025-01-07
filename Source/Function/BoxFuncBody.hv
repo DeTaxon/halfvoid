@@ -416,7 +416,12 @@ BoxFuncBody := class extend BoxFuncCommon
 
 		ExitLabel.PrintCode(ctx)
 
+		ft := GetType()->{TypeFunc^}
+
 		isCmplx := rTyp.IsComplexReturn() and not GetType()->{TypeFunc^}.ResultRef
+
+		if ft.ExtraResults.Size() != 0
+			isCmplx = true
 
 		if rTyp == GTypeVoid or isCmplx
 		{
