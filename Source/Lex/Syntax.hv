@@ -380,6 +380,26 @@ RuleFunctionBody := !(void^ itr) -> int
 		if It == null return 0
 
 		size += 2
+
+		while It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
+
+			if It.GetValue() == "ref"
+			{
+				size += 1
+				It = It.Right
+				if It == null return 0
+			}
+
+			if not InDataR(It) return 0
+
+			size += 2
+
+			It = It.Right
+			if It == null return 0
+		}
 	}
 	while It is TokenData
 		and It.Down? is TokenIndent

@@ -1,17 +1,14 @@
 
 
-GG := class
+MakeItDouble := !(int x) -> int, int
 {
-	Test := virtual !(Str err) -> Str
-	{
-		return err
-	}
+	return x*2
 }
+
 main := !(char^[] args) -> int
 {
-	c := GG
-	c2 := c.Test("Hi")
-	printf("hey %s\n",c2)
+	c := MakeItDouble(7)
+	printf("hey %i\n",c)
 }
 
 

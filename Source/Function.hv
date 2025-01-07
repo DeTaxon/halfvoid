@@ -88,6 +88,14 @@ PFunctionParser := class
 			iter = iter.Right
 			if iter == null 
 				return void
+
+			while iter.GetValue() == ","
+			{
+				iter = iter.Right
+				if iter.GetValue() == "ref"
+					iter = iter.Right
+				iter = iter.Right
+			}
 		}
 
 		while iter is TokenData

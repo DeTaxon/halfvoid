@@ -164,7 +164,7 @@ GlobalVar2 := class extend BoxUnit
 				tp = ah.GetArrayType()
 				value = ah.GetAsConst()
 			}else{
-				if not (value is in BoxExeConstObj)
+				if not (value? is in BoxExeConstObj)
 				{
 					CurrentWork?.SetErrorMessage(typeToken.MakeError("Global variable value must be a constant"))
 					return void

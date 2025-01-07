@@ -17,8 +17,24 @@ TypeFunc := class extend Type
 	Params := HybridQueue.{TypeFuncParam,8}
 	ResultType := Type^
 	ResultRef := bool
+	ExtraResult := List.{TypeFuncParam}
 	IsVargs := bool
 
+
+	GetResult := !(int index) -> TypeFuncParam
+	{
+		if index == 0
+			return TypeFuncParam(ResultType,ResultRef)
+		index -= 1
+		if index < ExtraResult.Size()
+			return ExtraResult[index]
+		assert(false)
+		return void
+	}
+	GetResultCount := !() -> int
+	{
+		return ExtraResult.Size() + 1
+	}
 	this := !() -> void
 	{
 		if DebugMode
@@ -149,6 +165,17 @@ GetFuncType := !(
 			bool isVargs = false
 			) -> TypeFunc^
 {
+	return GetFuncType(args,refs,![res],![resRef],isVargs)
+}
+GetFuncType := !(	
+			Type^[] args = null,
+			bool[] refs = null, 
+			Type^[] res,
+			bool[] resRef,
+			bool isVargs = false
+			) -> TypeFunc^
+{
+	assert(res.Size() >= 1)
 
 	count := 0
 	if args != null
@@ -160,8 +187,12 @@ GetFuncType := !(
 		hsh *= 2
 		hsh += args[i].ItHash
 	}
-	hsh *= 2
-	hsh += res.ItHash
+
+	for it : res
+	{
+		hsh *= 2
+		hsh += it.ItHash
+	}
 
 	itList := funcTypes^[hsh mod 9973]&
 
@@ -171,12 +202,25 @@ GetFuncType := !(
 			continue
 		if fnc.IsVargs != isVargs
 			continue
-		if fnc.ResultType != res
+		if fnc.ResultType != res[0]
 			continue
-		if fnc.ResultRef != resRef
+		if fnc.ResultRef != resRef[0]
+			continue
+
+		if fnc.ExtraResult.Size() != (res.Size() - 1)
 			continue
 
 		same := true
+		for j : fnc.ExtraResult.Size()
+		{
+			if res[j - 1] != fnc.ExtraResult[j].ItType
+				same = false
+			if resRef[j - 1] != fnc.ExtraResult[j].IsRef
+				same = false
+		}
+		if not same
+			continue
+
 		for j : count
 		{
 			if fnc.Params[j].ItType != args[j]
@@ -216,8 +260,15 @@ GetFuncType := !(
 		newFunc.Params.Emplace(args[i],isRef)
 	}
 	newFunc.IsVargs = isVargs
-	newFunc.ResultType = res
-	newFunc.ResultRef = resRef
+	newFunc.ResultType = res[0]
+	newFunc.ResultRef = resRef[0]
+
+	for it,i : res
+	{
+		if i == 0
+			continue
+		newFunc.ExtraResult.Emplace(it, resRef[i])
+	}
 
 	newFunc.ItHash = typeHashIterator
 	typeHashIterator += 1
