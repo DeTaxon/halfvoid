@@ -160,7 +160,6 @@ BoxFunc := class extend BoxExeConstObj
 			subCall := innerTryGetFieldCall(fCall,tInt&)
 			if ft.ResultRef
 				subCall = new PtrToRef(subCall)
-			printf("hey %s\n",fCall.GetType().GetBADStr().Str())
 			return subCall
 		}
 

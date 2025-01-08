@@ -406,7 +406,15 @@ BoxFuncCall := class extend BoxExeObj
 	GetType := virtual !() -> Type^
 	{
 		assert(callObj != null)
-		return callObj.GetType()->{TypeFunc^}.ResultType
+		ft := callObj.GetType()->{TypeFunc^}
+
+		if ft.ExtraResults.Size() != 0
+		{
+			ftn := NormalizeFuncType(ft)
+			return ftn.Params[0].ItType
+		}
+		
+		return ft.ResultType
 	}
 
 	IsMem := virtual !() -> bool
